@@ -2965,7 +2965,11 @@ void ReloadAllSliceFiles(void){
       load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
     }
     else{
+#ifdef pp_NEWBOUND_DIALOG
+      load_size+=ReadSliceUseGluiBounds(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+#else
       load_size+=ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+#endif
     }
     file_count++;
   }
@@ -3089,7 +3093,11 @@ void LoadUnloadMenu(int value){
           ReadGeomData(slicei->patchgeom, slicei, load_mode, &errorcode);
         }
         else{
+#ifdef pp_NEWBOUND_DIALOG
+          ReadSliceUseGluiBounds(slicei->file, i, load_mode, set_slicecolor, &errorcode);
+#else
           ReadSlice(slicei->file, i, load_mode, set_slicecolor, &errorcode);
+#endif
         }
       }
     }
@@ -4515,7 +4523,11 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value){
         return_filesize = ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
       }
       else {
+#ifdef pp_NEWBOUND_DIALOG
+        return_filesize=ReadSliceUseGluiBounds(slicei->file, value, LOAD, set_slicecolor, &errorcode);
+#else
         return_filesize=ReadSlice(slicei->file, value, LOAD, set_slicecolor, &errorcode);
+#endif
       }
       if(reset_colorbar == 1)ColorbarMenu(colorbartype_save);
     }
@@ -4615,7 +4627,11 @@ void LoadSliceMenu(int value){
             load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
           }
           else{
+#ifdef pp_NEWBOUND_DIALOG
+            load_size+=ReadSliceUseGluiBounds(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+#else
             load_size+=ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+#endif
           }
           file_count++;
         }
@@ -4786,7 +4802,7 @@ void LoadAllMSlices(int last_slice, multislicedata *mslicei){
       set_slicecolor = SET_SLICECOLOR;
     }
     if(slicei->skipdup== 0){
-      file_size+=LoadSlicei(set_slicecolor,mslicei->islices[i]);
+      file_size += LoadSlicei(set_slicecolor,mslicei->islices[i]);
       file_count++;
     }
   }
@@ -4998,7 +5014,11 @@ void LoadMultiSliceMenu(int value){
         load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
       }
       else{
+#ifdef pp_NEWBOUND_DIALOG
+        load_size+=ReadSliceUseGluiBounds(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+#else
         load_size+=ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+#endif
       }
       file_count++;
     }
@@ -7281,7 +7301,7 @@ updatemenu=0;
   if(GetNumActiveDevices()>0||ncvents>0){
     GLUTADDSUBMENU(_("Objects"),showobjectsmenu);
   }
-  if(nterraininfo>0){
+  if(nterraininfo>0&&ngeominfo==0){
     GLUTADDSUBMENU(_("Terrain"),terrain_showmenu);
   }
   if(GetNTotalVents()>0)GLUTADDSUBMENU(_("Surfaces"), ventmenu);
@@ -11327,7 +11347,7 @@ updatemenu=0;
       // terrain
 
       if(manual_terrain==1&&nterraininfo>0){
-        GLUTADDSUBMENU(_("Terrain"),loadterrainmenu);
+ //       GLUTADDSUBMENU(_("Terrain"),loadterrainmenu);
       }
 
       // slice

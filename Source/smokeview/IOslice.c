@@ -1414,6 +1414,138 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
   CheckMemory;
 }
 
+#ifdef pp_NEWBOUND_DIALOG
+/* ------------------ GetSlicePercentileBounds ------------------------ */
+
+void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max){
+  int iii, ntotal, *buckets;
+  int ii;
+  float factor, p01, p99;
+  int i01, i99, sum;
+  int have_min, have_max;
+  int some_compressed = 0;
+  int some_loaded = 0;
+
+  *per_min = 1.0;
+  *per_max = 0.0;
+  if(global_min>global_max)return;
+  if(NewMemory((void **)&buckets, NBUCKETS*sizeof(int))==0)return;
+  for(iii=0;iii<NBUCKETS;iii++){
+    buckets[iii] = 0;
+  }
+  factor = (float)NBUCKETS/(global_max-global_min);
+
+  ntotal = 0;
+  for(iii = 0; iii<nsliceinfo; iii++){
+    slicedata *slicei;
+    int nn;
+    meshdata *meshi;
+    float *xplt, *yplt, *zplt;
+    char *iblank_node, *iblank_cell;
+    int ibar, jbar, nx, ny, nxy;
+    int itime;
+
+    slicei = sliceinfo+iii;
+    if(strcmp(slicei->label.shortlabel, slicetype)!= 0||slicei->loaded==0)continue;
+    if(slicei->compression_type!=UNCOMPRESSED){
+      some_compressed = 1;
+      continue;
+    }
+    some_loaded = 1;
+
+    meshi = meshinfo+slicei->blocknumber;
+    iblank_node = meshi->c_iblank_node;
+    iblank_cell = meshi->c_iblank_cell;
+    xplt = meshi->xplt_orig;
+    yplt = meshi->yplt_orig;
+    zplt = meshi->zplt_orig;
+
+    ibar = meshi->ibar;
+    jbar = meshi->jbar;
+    nx = ibar+1;
+    ny = jbar+1;
+    nxy = nx*ny;
+
+
+    nn = -1;
+    for(itime = 0; itime<slicei->ntimes; itime++){
+      for(ii = 0; ii<slicei->nslicei; ii++){
+        int j;
+        int i1, i1p1;
+
+        i1 = MIN(slicei->is1+ii, slicei->is2-2);
+        i1p1 = i1+1;
+
+        for(j = 0; j<slicei->nslicej; j++){
+          int k;
+          int j1, j1p1;
+
+          j1 = MIN(slicei->js1+j, slicei->js2-2);
+          j1p1 = j1+1;
+
+          for(k = 0; k<slicei->nslicek; k++){
+            int k1, k1p1;
+            float val;
+            int ival;
+
+            k1 = MIN(slicei->ks1+k, slicei->ks2-2);
+            k1p1 = k1+1;
+
+            nn++;
+            if(slicei->slice_filetype==SLICE_CELL_CENTER&&((k==0&&slicei->nslicek!=1)||(j==0&&slicei->nslicej!=1)||(ii==0&&slicei->nslicei!=1)))continue;
+            if(show_slice_in_obst==ONLY_IN_GAS){
+              if(slicei->slice_filetype!=SLICE_CELL_CENTER&& iblank_node!=NULL&&iblank_node[IJKNODE(slicei->is1+ii, slicei->js1+j, slicei->ks1+k)]==SOLID)continue;
+              if(slicei->slice_filetype==SLICE_CELL_CENTER&& iblank_cell!=NULL&&iblank_cell[IJKCELL(slicei->is1+ii-1, slicei->js1+j-1, slicei->ks1+k-1)]==EMBED_YES)continue;
+            }
+            val = slicei->qslicedata[nn];
+            ival = (int)(factor*(val-global_min)+0.5);
+            ival = CLAMP(ival, 0, NBUCKETS-1);
+            buckets[ival]++;
+            ntotal++;
+          }
+        }
+      }
+    }
+  }
+  if(ntotal==0){
+    if(some_loaded==0&&some_compressed==1){
+      printf("***warning: percentile bounds not computed - all loaded slice files are compressed\n");
+    }
+    if(some_loaded==1){
+      printf("***warning: percentile bounds not computed - no data in files\n");
+    }
+    FREEMEMORY(buckets);
+    return;
+  }
+
+  i01 =   (int)(percentile_level*(float)ntotal);
+  sum = 0;
+  have_min = 0;
+  for(iii = 0; iii<NBUCKETS; iii++){
+    if(sum>i01){
+      *per_min = global_min+(float)iii*(global_max-global_min)/(float)NBUCKETS;
+      have_min = 1;
+      break;
+    }
+    sum += buckets[iii];
+  }
+  if(have_min = 0)*per_min = global_max;
+
+  sum = 0;
+  have_max = 0;
+  for(iii = NBUCKETS-1; iii>=0; iii--){
+    if(sum>i01){
+      *per_max = global_min+(float)iii*(global_max-global_min)/(float)NBUCKETS;
+      have_max = 1;
+      break;
+    }
+    sum += buckets[iii];
+  }
+  if(have_max = 0)*per_max = global_min;
+  FREEMEMORY(buckets);
+}
+#endif
+
 /* ------------------ GetSliceHists ------------------------ */
 
 void GetSliceHists(slicedata *sd){
@@ -1595,17 +1727,17 @@ void UpdateSliceHist(void){
       float val12_min, val12_max, dval;
       float val256_min, val256_max;
 
-      dval = sb->valmax - sb->valmin;
+      dval = sb->dlg_valmax - sb->dlg_valmin;
 
       hist256i = hists256_slice + i;
       hist12i = hists12_slice + i;
 
-      val256_min = sb->valmin - dval / (float)(histogram_nbuckets - 2);
-      val256_max = sb->valmax + dval / (float)(histogram_nbuckets - 2);
+      val256_min = sb->dlg_valmin - dval / (float)(histogram_nbuckets - 2);
+      val256_max = sb->dlg_valmax + dval / (float)(histogram_nbuckets - 2);
       InitHistogram(hist256i, histogram_nbuckets, &val256_min, &val256_max);
 
-      val12_min = sb->valmin - dval / 10.0;
-      val12_max = sb->valmax + dval / 10.0;
+      val12_min = sb->dlg_valmin - dval / 10.0;
+      val12_max = sb->dlg_valmax + dval / 10.0;
       InitHistogram(hist12i, 12, &val12_min, &val12_max);
     }
     for(i = 0; i < nslice_loaded; i++){
@@ -1698,10 +1830,10 @@ void UpdateSliceBounds(void){
       slicej = sliceinfo + j;
       if(slicej->slicefile_labelindex!=i)continue;
       if(is_fed_colorbar==1&&slicej->is_fed==1){
-        slicebounds[i].setvalmin=SET_MIN;
-        slicebounds[i].valmin=0.0;
+        slicebounds[i].dlg_setvalmin=SET_MIN;
+        slicebounds[i].dlg_valmin=0.0;
       }
-      if(slicebounds[i].setvalmin!=SET_MIN){
+      if(slicebounds[i].dlg_setvalmin!=SET_MIN){
         if(minflag==0){
           valmin=slicej->valmin;
           minflag=1;
@@ -1725,10 +1857,10 @@ void UpdateSliceBounds(void){
       slicej = sliceinfo + j;
       if(slicej->slicefile_labelindex!=i)continue;
       if(is_fed_colorbar==1&&slicej->is_fed==1){
-        slicebounds[i].setvalmax=SET_MAX;
-        slicebounds[i].valmax=3.0;
+        slicebounds[i].dlg_setvalmax=SET_MAX;
+        slicebounds[i].dlg_valmax=3.0;
       }
-      if(slicebounds[i].setvalmax!=SET_MAX){
+      if(slicebounds[i].dlg_setvalmax!=SET_MAX){
         if(maxflag==0){
           valmax=sliceinfo[j].valmax;
           maxflag=1;
@@ -1745,10 +1877,10 @@ void UpdateSliceBounds(void){
         if(slicej->valmax_data>valmax_data)valmax_data=slicej->valmax_data;
       }
     }
-    if(minflag==1)slicebounds[i].valmin=valmin;
-    if(maxflag==1)slicebounds[i].valmax=valmax;
-    if(minflag2==1)slicebounds[i].valmin_data=valmin_data;
-    if(maxflag2==1)slicebounds[i].valmax_data=valmax_data;
+    if(minflag==1)slicebounds[i].dlg_valmin=valmin;
+    if(maxflag==1)slicebounds[i].dlg_valmax=valmax;
+    if(minflag2==1)slicebounds[i].data_valmin=valmin_data;
+    if(maxflag2==1)slicebounds[i].data_valmax=valmax_data;
   }
 }
 
@@ -1783,21 +1915,21 @@ void UpdateAllSliceLabels(int slicetype, int *errorcode){
 
   *errorcode=0;
 
-  setvalmin=slicebounds[slicetype].setvalmin;
-  setvalmax=slicebounds[slicetype].setvalmax;
+  setvalmin=slicebounds[slicetype].dlg_setvalmin;
+  setvalmax=slicebounds[slicetype].dlg_setvalmax;
   if(setvalmin==1){
-    valmin=slicebounds[slicetype].valmin;
+    valmin=slicebounds[slicetype].dlg_valmin;
   }
   else{
-    valmin=slicebounds[slicetype].valmin_data;
-    slicebounds[slicetype].valmin=valmin;
+    valmin=slicebounds[slicetype].data_valmin;
+    slicebounds[slicetype].dlg_valmin=valmin;
   }
   if(setvalmax==1){
-    valmax=slicebounds[slicetype].valmax;
+    valmax=slicebounds[slicetype].dlg_valmax;
   }
   else{
-    valmax=slicebounds[slicetype].valmax_data;
-    slicebounds[slicetype].valmax=valmax;
+    valmax=slicebounds[slicetype].data_valmax;
+    slicebounds[slicetype].dlg_valmax=valmax;
   }
   for(ii=0;ii<nslice_loaded;ii++){
     i = slice_loaded_list[ii];
@@ -1807,7 +1939,7 @@ void UpdateAllSliceLabels(int slicetype, int *errorcode){
     }
     if(*errorcode!=0)return;
   }
-  SetSliceBounds(slicetype);
+  SliceBounds2Glui(slicetype);
   UpdateGlui();
 }
 
@@ -1858,21 +1990,21 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
 
   *errorcode=0;
 
-  setvalmin=slicebounds[slicetype].setvalmin;
-  setvalmax=slicebounds[slicetype].setvalmax;
+  setvalmin=slicebounds[slicetype].dlg_setvalmin;
+  setvalmax=slicebounds[slicetype].dlg_setvalmax;
   if(setvalmin==1){
-    valmin=slicebounds[slicetype].valmin;
+    valmin=slicebounds[slicetype].dlg_valmin;
   }
   else{
-    valmin=slicebounds[slicetype].valmin_data;
-    slicebounds[slicetype].valmin=valmin;
+    valmin=slicebounds[slicetype].data_valmin;
+    slicebounds[slicetype].dlg_valmin=valmin;
   }
   if(setvalmax==1){
-    valmax=slicebounds[slicetype].valmax;
+    valmax=slicebounds[slicetype].dlg_valmax;
   }
   else{
-    valmax=slicebounds[slicetype].valmax_data;
-    slicebounds[slicetype].valmax=valmax;
+    valmax=slicebounds[slicetype].data_valmax;
+    slicebounds[slicetype].dlg_valmax=valmax;
   }
   for(ii=0;ii<nslice_loaded;ii++){
     i = slice_loaded_list[ii];
@@ -1881,7 +2013,7 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
     SetSliceColors(valmin,valmax,sd,errorcode);
     if(*errorcode!=0)return;
   }
-  SetSliceBounds(slicetype);
+  SliceBounds2Glui(slicetype);
   UpdateGlui();
 }
 
@@ -3537,23 +3669,25 @@ void UpdateSliceBoundLabels(){
   }
 }
 
-/* ------------------ SetSliceBounds ------------------------ */
+/* ------------------ SliceBounds2Glui ------------------------ */
 
-void SetSliceBounds(int slicetype){
+void SliceBounds2Glui(int slicetype){
   if(slicetype>=0&&slicetype<nslicebounds){
     slice_line_contour_min=slicebounds[slicetype].line_contour_min;
     slice_line_contour_max=slicebounds[slicetype].line_contour_max;
     slice_line_contour_num=slicebounds[slicetype].line_contour_num;
-    slicemin=slicebounds[slicetype].valmin;
-    slicemax=slicebounds[slicetype].valmax;
-    setslicemin=slicebounds[slicetype].setvalmin;
-    setslicemax=slicebounds[slicetype].setvalmax;
-    slicechopmin=slicebounds[slicetype].chopmin;
-    slicechopmax=slicebounds[slicetype].chopmax;
-    setslicechopmin=slicebounds[slicetype].setchopmin;
-    setslicechopmax=slicebounds[slicetype].setchopmax;
-    slicemin_unit = (unsigned char *)slicebounds[slicetype].label->unit;
-    slicemax_unit = slicemin_unit;
+    glui_slicemin=slicebounds[slicetype].dlg_valmin;
+    glui_slicemax=slicebounds[slicetype].dlg_valmax;
+#ifndef pp_NEWBOUND_DIALOG
+    glui_setslicemin=slicebounds[slicetype].dlg_setvalmin;
+    glui_setslicemax=slicebounds[slicetype].dlg_setvalmax;
+#endif
+    glui_slicechopmin=slicebounds[slicetype].chopmin;
+    glui_slicechopmax=slicebounds[slicetype].chopmax;
+    glui_setslicechopmin=slicebounds[slicetype].setchopmin;
+    glui_setslicechopmax=slicebounds[slicetype].setchopmax;
+    glui_slicemin_unit = (unsigned char *)slicebounds[slicetype].label->unit;
+    glui_slicemax_unit = glui_slicemin_unit;
 
     memcpy(&glui_slicebounds, slicebounds + slicetype, sizeof(bounddata));
     UpdateGluiSliceUnits();
@@ -3585,6 +3719,13 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     }
     return;
   }
+#ifdef pp_NEWBOUND_DIALOG
+  if(use_slice_glui_bounds==1&&sd->bounds!=NULL&&sd->bounds->dlg_valmin<sd->bounds->dlg_valmax){
+    *pmin = sd->bounds->dlg_valmin;
+    *pmax = sd->bounds->dlg_valmax;
+    return;
+  }
+#endif
   meshi = meshinfo + sd->blocknumber;
   iblank_node = meshi->c_iblank_node;
   iblank_cell = meshi->c_iblank_cell;
@@ -3657,6 +3798,15 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   }
   FREEMEMORY(slice_mask0);
 }
+
+/* ------------------ AdjustBoundsNoSet ------------------------ */
+#ifdef pp_NEWBOUND_DIALOG
+void AdjustBoundsNoSet(float *pdata, int ndata, float *pmin, float *pmax){
+  if(axislabels_smooth==1){
+    SmoothLabel(pmin, pmax, nrgb);
+  }
+}
+#endif
 
 /* ------------------ AdjustBounds ------------------------ */
 
@@ -3733,7 +3883,11 @@ void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax){
     pdata = sd->qslicedata;
     ndata = sd->nslicetotal;
   }
-  AdjustBounds(setslicemin, setslicemax, pdata, ndata, pmin, pmax);
+#ifdef pp_NEWBOUND_DIALOG
+  AdjustBoundsNoSet(pdata, ndata, pmin, pmax);
+#else
+  AdjustBounds(glui_setslicemin, glui_setslicemax, pdata, ndata, pmin, pmax);
+#endif
 }
 
   /* ------------------ AverageSliceData ------------------------ */
@@ -4419,7 +4573,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
         if(sd->compression_type == UNCOMPRESSED){
           UpdateSliceBounds();
           list_slice_index = slicefile_labelindex;
-          SetSliceBounds(slicefile_labelindex);
+          SliceBounds2Glui(slicefile_labelindex);
           UpdateAllSliceColors(slicefile_labelindex, errorcode);
         }
         else{
@@ -4704,20 +4858,21 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
     UpdateTimes();
     CheckMemory;
 
-    if(flag!=RESETBOUNDS)update_research_mode=1;
+    //*** comment out following line to prevent crash when loading a slice when particles are loaded
+    //if(flag!=RESETBOUNDS)update_research_mode=1;
     if(use_set_slicecolor==0||set_slicecolor==SET_SLICECOLOR){
       if(sd->compression_type==UNCOMPRESSED){
         UpdateSliceBounds();
         UpdateAllSliceColors(slicefile_labelindex, errorcode);
         list_slice_index = slicefile_labelindex;
-        SetSliceBounds(slicefile_labelindex);
+        SliceBounds2Glui(slicefile_labelindex);
       }
       else{
         boundsdata *sb;
 
         sb = slicebounds + slicefile_labelindex;
-        sb->valmin_data = qmin;
-        sb->valmax_data = qmax;
+        sb->data_valmin = qmin;
+        sb->data_valmax = qmax;
 
         UpdateAllSliceLabels(slicefile_labelindex, errorcode);
         MakeColorLabels(sb->colorlabels, sb->colorvalues, qmin, qmax, nrgb);
@@ -4821,6 +4976,17 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
   GLUTPOSTREDISPLAY;
   return return_filesize;
 }
+
+#ifdef pp_NEWBOUND_DIALOG
+FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int flag, int set_slicecolor, int *errorcode){
+  FILE_SIZE file_size;
+
+  use_slice_glui_bounds = 1;
+  file_size = ReadSlice(file, ifile, flag, set_slicecolor, errorcode);
+  use_slice_glui_bounds = 0;
+  return file_size;
+}
+#endif
 
 #ifdef pp_SLICETHREAD
 /* ------------------ FinalizeSliceLoad ------------------------ */

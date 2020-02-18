@@ -5,6 +5,14 @@
 #include "gd.h"
 #endif
 
+#ifdef pp_NEWBOUND_DIALOG
+EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max);
+#endif
+boundsdata *GetBoundsInfo(char *shortlabel);
+#ifdef pp_NEWBOUND_DIALOG
+void GetGlobalSliceBounds(void);
+FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int flag, int set_slicecolor, int *errorcode);
+#endif
 #ifdef pp_SHIFT_COLORBARS
 EXTERNCPP void ShiftColorbars(void);
 #endif
@@ -75,6 +83,9 @@ EXTERNCPP int IsSmokeInMesh(meshdata *meshi);
 #endif
 EXTERNCPP void GetFileSizes(void);
 EXTERNCPP int IsSmokeComponentPresent(smoke3ddata *smoke3di);
+#ifdef pp_NEWBOUND_DIALOG
+EXTERNCPP void AdjustBoundsNoSet(float *pdata, int ndata, float *pmin, float *pmax);
+#endif
 EXTERNCPP void AdjustBounds(int setmin, int setmax, float *pdata, int ndata, float *pmin, float *pmax);
 EXTERNCPP void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax);
 EXTERNCPP void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax);
@@ -718,7 +729,7 @@ EXTERNCPP void GetObstLabels(const char *filein);
 EXTERNCPP void UpdateUseTextures(void);
 EXTERNCPP void AntiAliasLine(int flag);
 EXTERNCPP void AntiAliasSurface(int flag);
-EXTERNCPP void SetSliceBounds(int slicefile_labelindex);
+EXTERNCPP void SliceBounds2Glui(int slicefile_labelindex);
 EXTERNCPP void Local2GlobalBoundaryBounds(const char *key);
 EXTERNCPP void Global2LocalBoundaryBounds(const char *key);
 EXTERNCPP void UpdateLoadedLists(void);

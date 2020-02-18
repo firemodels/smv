@@ -1845,11 +1845,11 @@ void UpdateChopColors(void){
   if(slicebounds!=NULL&&slicefile_labelindex!=-1){
     float smin, smax;
 
-    smin=slicebounds[slicefile_labelindex].valmin;
-    smax=slicebounds[slicefile_labelindex].valmax;
+    smin=slicebounds[slicefile_labelindex].dlg_valmin;
+    smax=slicebounds[slicefile_labelindex].dlg_valmax;
 
-    if(setslicechopmin==1){
-      ichopmin=nrgb_full*(slicechopmin-smin)/(smax-smin);
+    if(glui_setslicechopmin==1){
+      ichopmin=nrgb_full*(glui_slicechopmin-smin)/(smax-smin);
       if(ichopmin<0)ichopmin=0;
       if(ichopmin>nrgb_full-1)ichopmin=nrgb_full-1;
       for(i=0;i<ichopmin;i++){
@@ -1863,8 +1863,8 @@ void UpdateChopColors(void){
         rgb_slice[4*i+3]=transparent_level_local*(float)ii/(float)(NCHOP-1);
       }
     }
-    if(setslicechopmax==1){
-      ichopmax=nrgb_full*(slicechopmax - smin)/(smax-smin);
+    if(glui_setslicechopmax==1){
+      ichopmax=nrgb_full*(glui_slicechopmax - smin)/(smax-smin);
       if(ichopmax<0)ichopmax=0;
       if(ichopmax>nrgb_full-1)ichopmax=nrgb_full-1;
       for(i=ichopmax;i<nrgb_full;i++){

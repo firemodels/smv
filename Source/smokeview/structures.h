@@ -1230,6 +1230,9 @@ typedef struct _slicedata {
   float valmin, valmax;
   float globalmin, globalmax;
   float valmin_data, valmax_data;
+#ifdef pp_NEWBOUND_DIALOG
+  float file_min, file_max;
+#endif
   float diff_valmin,  diff_valmax;
   flowlabels label;
   float *qslicedata, *qsliceframe, *times, *qslice;
@@ -1267,6 +1270,9 @@ typedef struct _slicedata {
   histogramdata *histograms;
   int nhistograms;
   struct _patchdata *patchgeom;
+#ifdef pp_NEWBOUND_DIALOG
+  struct _boundsdata *bounds;
+#endif
 #ifdef pp_FILE_SIZES
   FILE_SIZE file_size;
 #endif
@@ -1305,15 +1311,18 @@ typedef struct _multivslicedata {
 
 typedef struct _boundsdata {
   char *shortlabel;
-  int setvalmin, setvalmax;
+  int dlg_setvalmin, dlg_setvalmax;
   int setchopmin, setchopmax;
+  float chopmin, chopmax;
+  float dlg_valmin, dlg_valmax;
+  float data_valmin,data_valmax;
+  float global_valmin, global_valmax;
+#ifdef pp_NEWBOUND_DIALOG
+  float percentile_valmin, percentile_valmax;
+#endif
   float line_contour_min;
   float line_contour_max;
   int line_contour_num;
-  float valmin, valmax;
-  float global_valmin, global_valmax;
-  float chopmin, chopmax;
-  float valmin_data,valmax_data;
   char  colorlabels[12][11];
   float colorvalues[12];
   float levels256[256];

@@ -1065,7 +1065,13 @@ void InitOpenGL(void){
         set_slicecolor = DEFER_SLICECOLOR;
         if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
         if(slicei->autoload == 0 && slicei->loaded == 1)ReadSlice(slicei->file, i, UNLOAD, set_slicecolor,&errorcode);
-        if(slicei->autoload == 1 && slicei->loaded == 0)ReadSlice(slicei->file, i, LOAD, set_slicecolor, &errorcode);
+        if(slicei->autoload == 1 && slicei->loaded == 0){
+#ifdef pp_NEWBOUND_DIALOG
+          ReadSliceUseGluiBounds(slicei->file, i, LOAD, set_slicecolor, &errorcode);
+#else
+          ReadSlice(slicei->file, i, LOAD, set_slicecolor, &errorcode);
+#endif
+        }
       }
     }
     for(i=0;i<nterraininfo;i++){
@@ -1395,8 +1401,6 @@ void InitVars(void){
   rgb_terrain[9][2]=0.5;
   rgb_terrain[9][3]=1.0;
 
-  percentile_level=0.01;
-
   strcpy(script_inifile_suffix,"");
   strcpy(script_renderdir,"");
   strcpy(script_renderfilesuffix,"");
@@ -1484,7 +1488,6 @@ void InitVars(void){
   settargetmin=0, settargetmax=0;
   setpartchopmin=0, setpartchopmax=0;
   partchopmin=1.0,  partchopmax=0.;
-  slicechopmin=0, slicechopmax=0;
 
   temp_threshold=400.0;
   vis_onlythreshold=0, vis_threshold=0;

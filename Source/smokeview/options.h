@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+//#define pp_NEWBOUND_DIALOG   // redo bound dialog
 #define pp_SHIFT_COLORBARS    // use power law to shift colorbar colors
 #define pp_FILE_SIZES        // add option to output slice files sizes to be loaded
 //#define pp_UPDATE_FILELOAD     // when set only updates fileload variables when a file has been loaded or unloaded
@@ -84,7 +85,7 @@
 //#define pp_SLICE_DEBUG         // slice debug output
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 //#define pp_SMOKEALPHA        // experimental smoke alpha settings
-#define pp_SHOWTERRAIN
+// #define pp_SHOWTERRAIN      // add "2d stepped" and "2d lines" to show/hide terrain menu
 #define pp_TIMINGS
 //#define pp_GPUDEPTH
 //#define pp_SMOKETEST         // experimental smoke dialog box entries

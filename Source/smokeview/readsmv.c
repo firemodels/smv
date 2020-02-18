@@ -2084,7 +2084,7 @@ void InitTextures(void){
 #endif
 #endif
 
-  if(autoterrain==1&&use_graphics==1){
+  if(auto_terrain==1&&use_graphics==1){
     texturedata *tt;
     unsigned char *floortex;
     int texwid, texht;
@@ -2144,10 +2144,14 @@ void UpdateBoundInfo(void){
       isoi->valmax=0.0;
       isoindex[niso_bounds]=i;
       isobounds[niso_bounds].shortlabel=isoi->color_label.shortlabel;
-      isobounds[niso_bounds].setvalmin=0;
-      isobounds[niso_bounds].setvalmax=0;
-      isobounds[niso_bounds].valmin=1.0;
-      isobounds[niso_bounds].valmax=0.0;
+      isobounds[niso_bounds].dlg_setvalmin=0;
+      isobounds[niso_bounds].dlg_setvalmax=0;
+      isobounds[niso_bounds].dlg_valmin=1.0;
+      isobounds[niso_bounds].dlg_valmax=0.0;
+#ifdef pp_NEWBOUND_DIALOG
+      isobounds[niso_bounds].percentile_valmin = 1.0;
+      isobounds[niso_bounds].percentile_valmax = 0.0;
+#endif
       isobounds[niso_bounds].setchopmax=0;
       isobounds[niso_bounds].setchopmin=0;
       isobounds[niso_bounds].chopmax=0.0;
@@ -2186,10 +2190,14 @@ void UpdateBoundInfo(void){
       sbi = slicebounds + nslicebounds;
       sbi->shortlabel=slicei->label.shortlabel;
       if(strcmp(sbi->shortlabel, "TEMP")==0)slicebounds_temp = sbi;
-      sbi->setvalmin=0;
-      sbi->setvalmax=0;
-      sbi->valmin=1.0;
-      sbi->valmax=0.0;
+      sbi->dlg_setvalmin=0;
+      sbi->dlg_setvalmax=0;
+      sbi->dlg_valmin=1.0;
+      sbi->dlg_valmax=0.0;
+#ifdef pp_NEWBOUND_DIALOG
+      sbi->percentile_valmin = 1.0;
+      sbi->percentile_valmax = 0.0;
+#endif
       sbi->chopmax=0.0;
       sbi->chopmin=1.0;
       sbi->setchopmax=0;
@@ -2197,6 +2205,7 @@ void UpdateBoundInfo(void){
       sbi->line_contour_min=0.0;
       sbi->line_contour_max=1.0;
       sbi->line_contour_num=1;
+      sbi->label = &(slicei->label);
       nslicebounds++;
       for(n=0;n<i;n++){
         slicedata *slicen;
@@ -2209,6 +2218,14 @@ void UpdateBoundInfo(void){
         }
       }
     }
+#ifdef pp_NEWBOUND_DIALOG
+    for(i = 0; i<nsliceinfo; i++){
+      slicedata *slicei;
+
+      slicei = sliceinfo+i;
+      slicei->bounds = GetBoundsInfo(slicei->label.shortlabel);
+    }
+#endif
   }
 
   canshow_threshold=0;
@@ -2247,6 +2264,9 @@ void UpdateBoundInfo(void){
     }
   }
   UpdateChar();
+#ifdef pp_NEWBOUND_DIALOG
+  GetGlobalSliceBounds();
+#endif
 }
 
 /* ------------------ UpdateEndianInfo ------------------------ */
@@ -4365,6 +4385,8 @@ int ReadSMV(char *file, char *file2){
       continue;
     }
     if(Match(buffer,"TERRAIN") == 1){
+      manual_terrain = 1;
+      FGETS(buffer, 255, stream);
       nterraininfo++;
       continue;
     }
@@ -4380,7 +4402,7 @@ int ReadSMV(char *file, char *file2){
 
       NewMemory((void **)&terrain_texture,sizeof(texturedata));
       tt = terrain_texture;
-      autoterrain=1;
+      auto_terrain=1;
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&visTerrainType);
       visTerrainType=CLAMP(visTerrainType,0,4);
@@ -5206,7 +5228,7 @@ int ReadSMV(char *file, char *file2){
     +++++++++++++++++++++++++++++ OBST ++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"OBST") == 1&&autoterrain==1){
+    if(Match(buffer,"OBST") == 1&&auto_terrain==1){
       int nobsts=0;
       meshdata *meshi;
       unsigned char *is_block_terrain;
@@ -5238,8 +5260,6 @@ int ReadSMV(char *file, char *file2){
         else{
           is_block_terrain[nn]=0;
         }
-        // temporary work around for terrain display of slice files
-       // if(autoterrain==1)is_block_terrain[nn]=1;
       }
       continue;
     }
@@ -5370,19 +5390,19 @@ int ReadSMV(char *file, char *file2){
   */
 
     if(Match(buffer,"TERRAIN") == 1){
-//      terraindata *terri;
-      float xmin, xmax, ymin, ymax;
-      int nx, ny;
-
-      manual_terrain=1;
-
-  //    terri = terraininfo + nterraininfo;
-
+      terraindata *terraini;
+      int len_buffer;
+      char *file, *buffer_ptr;
+      
       FGETS(buffer,255,stream);
-      sscanf(buffer,"%f %f %i %f %f %i",&xmin, &xmax, &nx, &ymin, &ymax, &ny);
-      // must implement new form for defining terrain surfaces
-      //initterrain(stream, NULL, terri, xmin, xmax, nx, ymin, ymax, ny);
+      buffer_ptr = TrimFrontBack(buffer);
+      len_buffer = strlen(buffer_ptr);
+      NewMemory((void **)&file, len_buffer+1);
+      strcpy(file, buffer_ptr);
 
+      terraini = terraininfo + nterraininfo;
+      terraini->file = file;
+      meshinfo[nterraininfo].terrain = terraini;
       nterraininfo++;
       continue;
     }
@@ -7460,7 +7480,7 @@ typedef struct {
       n_blocks_normal=n_blocks;
       if(n_blocks==0)continue;
 
-      if(autoterrain==1){
+      if(auto_terrain==1||manual_terrain==1){
         is_block_terrain=meshi->is_block_terrain;
         n_blocks_normal=0;
         for(iblock=0;iblock<n_blocks;iblock++){
@@ -7479,7 +7499,7 @@ typedef struct {
         int s_num[6];
         blockagedata *bc;
 
-        if(autoterrain==1&&meshi->is_block_terrain!=NULL&&meshi->is_block_terrain[iblock]==1){
+        if((auto_terrain==1||manual_terrain==1)&&meshi->is_block_terrain!=NULL&&meshi->is_block_terrain[iblock]==1){
           FGETS(buffer,255,stream);
           continue;
         }
@@ -7564,7 +7584,7 @@ typedef struct {
         int *ijk;
         int colorindex, blocktype;
 
-        if(autoterrain==1&&meshi->is_block_terrain!=NULL&&meshi->is_block_terrain[iblock]==1){
+        if((auto_terrain==1||manual_terrain==1)&&meshi->is_block_terrain!=NULL&&meshi->is_block_terrain[iblock]==1){
           FGETS(buffer,255,stream);
           continue;
         }
@@ -8519,11 +8539,18 @@ typedef struct {
       sd->ntimes_old = 0;
       sd->globalmax = -1.0e30;
       sd->globalmin = -sd->globalmax;
+#ifdef pp_NEWBOUND_DIALOG
+      sd->file_min = 1.0;
+      sd->file_max = 0.0;
+#endif
       sd->sliceoffset_fds = sliceoffset_fds;
       sd->reg_file=NULL;
       sd->comp_file=NULL;
       sd->vol_file=NULL;
       sd->slicelabel=NULL;
+#ifdef pp_NEWBOUND_DIALOG
+      sd->bounds = NULL;
+#endif
 #ifdef pp_FILE_SIZES
       sd->file_size = 0;
 #endif
@@ -9204,7 +9231,7 @@ typedef struct {
 
   START_TIMER(pass5_time);
 
-  if(autoterrain==1){
+  if(auto_terrain==1&&manual_terrain==0){
     float zbarmin;
 
     zbarmin=meshinfo->xyz_bar0[ZZZ];
@@ -9249,12 +9276,12 @@ typedef struct {
   if(stream2!=NULL)rewind(stream2);
   stream=stream1;
 #endif
-  if(do_pass4==1||autoterrain==1){
+  if(do_pass4==1||(auto_terrain==1&&manual_terrain==0)){
     do_pass5 = 1;
     PRINTF("%s","  pass 5\n");
   }
 
-  while((autoterrain==1||do_pass4==1)){
+  while(((auto_terrain==1&&manual_terrain==0)||do_pass4==1)){
     if(FEOF(stream)!=0){
       BREAK;
     }
@@ -9335,7 +9362,7 @@ typedef struct {
     ++++++++++++++++++++++ OBST +++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     */
-    if(Match(buffer, "OBST")==1&&autoterrain==1){
+    if(Match(buffer, "OBST")==1&&auto_terrain==1&&manual_terrain==0){
       meshdata *meshi;
       int nxcell;
       int n_blocks;
@@ -9587,7 +9614,7 @@ typedef struct {
   UpdateSliceBoundLabels();
   UpdateIsoTypes();
   UpdateBoundaryTypes();
-  if(autoterrain==1){
+  if(auto_terrain==1&&manual_terrain==0){
     for(i=0;i<nmeshes;i++){
       meshdata *meshi;
       float *zcell;
@@ -10855,10 +10882,10 @@ int ReadIni2(char *inifile, int localfile){
         TrimBack(buffer2);
         for(i = 0; i<nslicebounds; i++){
           if(strcmp(slicebounds[i].shortlabel, buffer2)==0){
-            slicebounds[i].setvalmin = setvalmin;
-            slicebounds[i].setvalmax = setvalmax;
-            slicebounds[i].valmin = valmin;
-            slicebounds[i].valmax = valmax;
+            slicebounds[i].dlg_setvalmin = setvalmin;
+            slicebounds[i].dlg_setvalmax = setvalmax;
+            slicebounds[i].dlg_valmin = valmin;
+            slicebounds[i].dlg_valmax = valmax;
             if(level_val!=NULL){
               slicebounds[i].line_contour_min = slice_line_contour_min;
               slicebounds[i].line_contour_max = slice_line_contour_max;
@@ -10870,10 +10897,10 @@ int ReadIni2(char *inifile, int localfile){
       }
       else{
         for(i = 0; i<nslicebounds; i++){
-          slicebounds[i].setvalmin = setvalmin;
-          slicebounds[i].setvalmax = setvalmax;
-          slicebounds[i].valmin = valmin;
-          slicebounds[i].valmax = valmax;
+          slicebounds[i].dlg_setvalmin = setvalmin;
+          slicebounds[i].dlg_setvalmax = setvalmax;
+          slicebounds[i].dlg_valmin = valmin;
+          slicebounds[i].dlg_valmax = valmax;
           slicebounds[i].line_contour_min = slice_line_contour_min;
           slicebounds[i].line_contour_max = slice_line_contour_max;
           slicebounds[i].line_contour_num = slice_line_contour_num;
@@ -10918,19 +10945,19 @@ int ReadIni2(char *inifile, int localfile){
       if(strcmp(buffer2, "") != 0){
         for(i = 0; i<niso_bounds; i++){
           if(strcmp(isobounds[i].shortlabel, buffer2) != 0)continue;
-          isobounds[i].setvalmin = setvalmin;
-          isobounds[i].setvalmax = setvalmax;
-          isobounds[i].valmin = valmin;
-          isobounds[i].valmax = valmax;
+          isobounds[i].dlg_setvalmin = setvalmin;
+          isobounds[i].dlg_setvalmax = setvalmax;
+          isobounds[i].dlg_valmin = valmin;
+          isobounds[i].dlg_valmax = valmax;
           break;
         }
       }
       else{
         for(i = 0; i<niso_bounds; i++){
-          isobounds[i].setvalmin = setvalmin;
-          isobounds[i].setvalmax = setvalmax;
-          isobounds[i].valmin = valmin;
-          isobounds[i].valmax = valmax;
+          isobounds[i].dlg_setvalmin = setvalmin;
+          isobounds[i].dlg_setvalmax = setvalmax;
+          isobounds[i].dlg_valmin = valmin;
+          isobounds[i].dlg_valmax = valmax;
         }
       }
       continue;
@@ -13405,8 +13432,8 @@ void WriteIniLocal(FILE *fileout){
     for(i = 0; i < niso_bounds; i++){
       fprintf(fileout, "V_ISO\n");
       fprintf(fileout, " %i %f %i %f %s\n",
-        isobounds[i].setvalmin, isobounds[i].valmin,
-        isobounds[i].setvalmax, isobounds[i].valmax,
+        isobounds[i].dlg_setvalmin, isobounds[i].dlg_valmin,
+        isobounds[i].dlg_setvalmax, isobounds[i].dlg_valmax,
         isobounds[i].label->shortlabel
         );
     }
@@ -13439,8 +13466,8 @@ void WriteIniLocal(FILE *fileout){
     for(i = 0; i < nslicebounds; i++){
       fprintf(fileout, "V_SLICE\n");
       fprintf(fileout, " %i %f %i %f %s : %f %f %i\n",
-        slicebounds[i].setvalmin, slicebounds[i].valmin,
-        slicebounds[i].setvalmax, slicebounds[i].valmax,
+        slicebounds[i].dlg_setvalmin, slicebounds[i].dlg_valmin,
+        slicebounds[i].dlg_setvalmax, slicebounds[i].dlg_valmax,
         slicebounds[i].label->shortlabel
         , slicebounds[i].line_contour_min, slicebounds[i].line_contour_max, slicebounds[i].line_contour_num
         );

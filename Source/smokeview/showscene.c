@@ -293,7 +293,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw terrain +++++++++++++++++++++++++ */
 
-  if(visTerrainType != TERRAIN_HIDDEN&&nterraininfo>0){
+  if(visTerrainType != TERRAIN_HIDDEN&&nterraininfo>0&&ngeominfo==0){
     int i;
 
     //shaded 17 0
