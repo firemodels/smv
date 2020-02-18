@@ -5593,12 +5593,12 @@ void DrawVolSliceTerrain(const slicedata *sd){
   if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
     float z11, z31, z13, z33, zmid;
     int maxi;
-    float *znode, zoffset;
+    float *znode, zoffset, zcut;
 
     znode = terri->znode_scaled;
     constval = zplt[plotz] + offset_slice*sd->sliceoffset + 0.001+SCALE2SMV(sd->sliceoffset_fds);
     zoffset = SCALE2SMV(sd->above_ground_level);
-    zmin_scaled+=zoffset; // need to make zmin_scaled local to this if
+    zcut = zmin_scaled + zoffset;
     glBegin(GL_TRIANGLES);
     maxi = MAX(sd->is1 + sd->nslicei - 1, sd->is1 + 1);
     for(i = sd->is1; i<maxi; i++){
@@ -5653,21 +5653,31 @@ void DrawVolSliceTerrain(const slicedata *sd){
         //                (xmid,ymid,rmid,zmid)
         //  (x1,yy1,r11,z11)                    (x3,yy1,r31,z31)
 
-        glTexCoord1f(r11);  glVertex3f(x1, yy1, z11);
-        glTexCoord1f(r31);  glVertex3f(x3, yy1, z31);
-        glTexCoord1f(rmid); glVertex3f(xmid, ymid, zmid);
+        if(zmid>zcut){
+          if(z11>zcut&&z31>zcut){
+            glTexCoord1f(r11);  glVertex3f(x1, yy1, z11);
+            glTexCoord1f(r31);  glVertex3f(x3, yy1, z31);
+            glTexCoord1f(rmid); glVertex3f(xmid, ymid, zmid);
+          }
 
-        glTexCoord1f(r31);  glVertex3f(x3, yy1, z31);
-        glTexCoord1f(r33);  glVertex3f(x3, y3, z33);
-        glTexCoord1f(rmid); glVertex3f(xmid, ymid, zmid);
+          if(z33>zcut&&z31>zcut){
+            glTexCoord1f(r31);  glVertex3f(x3, yy1, z31);
+            glTexCoord1f(r33);  glVertex3f(x3, y3, z33);
+            glTexCoord1f(rmid); glVertex3f(xmid, ymid, zmid);
+          }
 
-        glTexCoord1f(r33);  glVertex3f(x3, y3, z33);
-        glTexCoord1f(r13);  glVertex3f(x1, y3, z13);
-        glTexCoord1f(rmid); glVertex3f(xmid, ymid, zmid);
+          if(z13>zcut&&z33>zcut){
+            glTexCoord1f(r33);  glVertex3f(x3, y3, z33);
+            glTexCoord1f(r13);  glVertex3f(x1, y3, z13);
+            glTexCoord1f(rmid); glVertex3f(xmid, ymid, zmid);
+          }
 
-        glTexCoord1f(r13);  glVertex3f(x1, y3, z13);
-        glTexCoord1f(r11);  glVertex3f(x1, yy1, z11);
-        glTexCoord1f(rmid); glVertex3f(xmid, ymid, zmid);
+          if(z11>zcut&&z13>zcut){
+            glTexCoord1f(r13);  glVertex3f(x1, y3, z13);
+            glTexCoord1f(r11);  glVertex3f(x1, yy1, z11);
+            glTexCoord1f(rmid); glVertex3f(xmid, ymid, zmid);
+          }
+        }
       }
     }
     glEnd();
