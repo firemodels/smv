@@ -262,6 +262,7 @@ void ComputeTerrainNormalsManual(void){
 
     meshi = meshinfo + imesh;
     terri = meshi->terrain;
+    if(terri==NULL)continue;
     znode = terri->znode;
     ibarp1 = meshi->ibar+1;
 
@@ -271,7 +272,7 @@ void ComputeTerrainNormalsManual(void){
 
       dy1 = 0.0;
       if(j!=0)dy1 = (terri->y[j]-terri->y[j-1]);
-      dy2 = (terri->y[j+1]-terri->y[j]);
+      if(j!=terri->ny)dy2 = (terri->y[j+1]-terri->y[j]);
 
 
       for(i=0;i<=terri->nx;i++){
@@ -282,7 +283,7 @@ void ComputeTerrainNormalsManual(void){
 
         dx1 = 0.0;
         if(i!=0)dx1 = (terri->x[i]-terri->x[i-1]);
-        dx2 = (terri->x[i+1]-terri->x[i]);
+        if(i!=terri->nx)dx2 = (terri->x[i+1]-terri->x[i]);
 
      //     i      j    k
      //     1      0    dzdx
@@ -293,11 +294,11 @@ void ComputeTerrainNormalsManual(void){
         //znormal = terri->znormal + 3*ijnode2(i,j);
         dzdx1 = 0.0;
         if(i!=0)dzdx1 = (znode[j*ibarp1+i]-znode[j*ibarp1+i-1])/dx1;
-        dzdx2 = (znode[j*ibarp1+i+1]-znode[j*ibarp1+i])/dx2;
+        if(i!=terri->nx)dzdx2 = (znode[j*ibarp1+i+1]-znode[j*ibarp1+i])/dx2;
 
         dzdy1 = 0.0;
         if(j!=0)dzdy1 = (znode[(j)*ibarp1+i]-znode[(j-1)*ibarp1+i])/dy1;
-        dzdy2 = (znode[(j+1)*ibarp1+i]-znode[j*ibarp1+i])/dy2;
+        if(j!=terri->ny)dzdy2 = (znode[(j+1)*ibarp1+i]-znode[j*ibarp1+i])/dy2;
 
         dzdx = (dzdx1*dx2+dzdx2*dx1)/(dx2+dx1);
         dzdy = (dzdy1*dy2+dzdy2*dy1)/(dy2+dy1);
@@ -542,6 +543,7 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
     meshi->terrain=terri;
   }
 
+  if(terri==NULL)return;
   if(allocate_memory==1){
     terri->display=0;
     terri->loaded=0;
@@ -983,6 +985,7 @@ int GetTerrainData(char *file, terraindata *terri){
   int ibp1, jbp1, ijbar[2];
   float *xplt, *yplt, *z_terrain;
   int returncode=1;
+  int nvalues,i;
 
 #ifdef _DEBUG
   printf("reading terrain data mesh: %i\n",(int)(terri-terraininfo));
@@ -997,6 +1000,7 @@ int GetTerrainData(char *file, terraindata *terri){
 //    WRITE(LU_TERRAIN(NM)) Z_TERRAIN
 
   FORTWUIREAD(&zmin, 1);
+  terri->zmin = zmin;
   FORTWUIREAD(ijbar, 2);
   ibp1 = ijbar[0];
   jbp1 = ijbar[1];
@@ -1016,6 +1020,11 @@ int GetTerrainData(char *file, terraindata *terri){
     z_terrain = terri->znode;
   }
   FORTWUIREAD(z_terrain, ibp1*jbp1);
+
+  for(i = 0, nvalues=0; i<ibp1*jbp1; i++){
+    if(z_terrain[i]>zmin)nvalues++;
+  }
+  terri->nvalues = nvalues;
   if(returncode!=0)returncode=0;
   fclose(WUIFILE);
   return returncode;
@@ -1155,9 +1164,11 @@ void UpdateTerrain(int allocate_memory, float vertical_factor_local){
   if(auto_terrain==1||manual_terrain==1){
     int i;
 
-    nterraininfo = nmeshes;
-    if(allocate_memory==1&&manual_terrain==0){
-      NewMemory((void **)&terraininfo,nterraininfo*sizeof(terraindata));
+    if(manual_terrain==0){
+      nterraininfo = nmeshes;
+      if(allocate_memory==1&&manual_terrain==0){
+        NewMemory((void **)&terraininfo, nterraininfo*sizeof(terraindata));
+      }
     }
 
     for(i=0;i<nmeshes;i++){
@@ -1167,7 +1178,12 @@ void UpdateTerrain(int allocate_memory, float vertical_factor_local){
       int nx, ny;
 
       meshi=meshinfo + i;
-      terri = terraininfo + i;
+      if(manual_terrain==1){
+        terri = meshi->terrain;
+      }
+      else{
+        terri = terraininfo + i;
+      }
 
       nx = meshi->ibar;
       ny = meshi->jbar;

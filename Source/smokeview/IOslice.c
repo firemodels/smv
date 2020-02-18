@@ -4453,6 +4453,12 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
   show_slice_average = 0;
   blocknumber = sliceinfo[ifile].blocknumber;
   meshi = meshinfo + blocknumber;
+  if(meshi->terrain!=NULL&&meshi->terrain->nvalues==0){
+    if(flag==LOAD){
+      printf("***warning: all terrain elevations below %f.  Slice file %s not loaded\n", meshi->terrain->zmin, file);
+    }
+    return 0;
+  }
 
   slicefilenumber = ifile;
   slicefilenum = ifile;
@@ -5424,6 +5430,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
   terraindata *terri;
   int nycell;
   char *iblank_embed;
+  float zmin_scaled;
 
   meshdata *meshi;
 
@@ -5431,6 +5438,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
   terri = meshi->terrain;
   if(terri == NULL)return;
+  zmin_scaled = NORMALIZE_Z(terri->zmin);
   nycell = terri->ny;
 
   xplt = meshi->xplt;
@@ -5590,6 +5598,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
     znode = terri->znode_scaled;
     constval = zplt[plotz] + offset_slice*sd->sliceoffset + 0.001+SCALE2SMV(sd->sliceoffset_fds);
     zoffset = SCALE2SMV(sd->above_ground_level);
+    zmin_scaled+=zoffset; // need to make zmin_scaled local to this if
     glBegin(GL_TRIANGLES);
     maxi = MAX(sd->is1 + sd->nslicei - 1, sd->is1 + 1);
     for(i = sd->is1; i<maxi; i++){
@@ -5613,6 +5622,8 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
         if(iblank_z != NULL&&iblank_z[IJK(i, j, plotz)] != GASGAS)continue;
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
+
+        if(z11<=zmin_scaled||z31<=zmin_scaled||z13<=zmin_scaled||z33<=zmin_scaled)continue;
 
         n11 = (i - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek;
         r11 = Interp3DSliceIndex(sd->iqsliceframe, zplt, meshi->kbar, n11, constval) / 255.0;
@@ -5642,20 +5653,20 @@ void DrawVolSliceTerrain(const slicedata *sd){
         //                (xmid,ymid,rmid,zmid)
         //  (x1,yy1,r11,z11)                    (x3,yy1,r31,z31)
 
-        glTexCoord1f(r11); glVertex3f(x1, yy1, z11);
-        glTexCoord1f(r31); glVertex3f(x3, yy1, z31);
+        glTexCoord1f(r11);  glVertex3f(x1, yy1, z11);
+        glTexCoord1f(r31);  glVertex3f(x3, yy1, z31);
         glTexCoord1f(rmid); glVertex3f(xmid, ymid, zmid);
 
-        glTexCoord1f(r31); glVertex3f(x3, yy1, z31);
-        glTexCoord1f(r33); glVertex3f(x3, y3, z33);
+        glTexCoord1f(r31);  glVertex3f(x3, yy1, z31);
+        glTexCoord1f(r33);  glVertex3f(x3, y3, z33);
         glTexCoord1f(rmid); glVertex3f(xmid, ymid, zmid);
 
-        glTexCoord1f(r33); glVertex3f(x3, y3, z33);
-        glTexCoord1f(r13); glVertex3f(x1, y3, z13);
+        glTexCoord1f(r33);  glVertex3f(x3, y3, z33);
+        glTexCoord1f(r13);  glVertex3f(x1, y3, z13);
         glTexCoord1f(rmid); glVertex3f(xmid, ymid, zmid);
 
-        glTexCoord1f(r13); glVertex3f(x1, y3, z13);
-        glTexCoord1f(r11); glVertex3f(x1, yy1, z11);
+        glTexCoord1f(r13);  glVertex3f(x1, y3, z13);
+        glTexCoord1f(r11);  glVertex3f(x1, yy1, z11);
         glTexCoord1f(rmid); glVertex3f(xmid, ymid, zmid);
       }
     }

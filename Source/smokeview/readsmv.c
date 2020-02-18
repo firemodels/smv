@@ -5393,6 +5393,11 @@ int ReadSMV(char *file, char *file2){
       terraindata *terraini;
       int len_buffer;
       char *file, *buffer_ptr;
+      int mesh_terrain = -1;
+
+      if(strlen(buffer)>7){
+        sscanf(buffer+7, "%i", &mesh_terrain);
+      }
 
       FGETS(buffer,255,stream);
       buffer_ptr = TrimFrontBack(buffer);
@@ -5402,7 +5407,14 @@ int ReadSMV(char *file, char *file2){
 
       terraini = terraininfo + nterraininfo;
       terraini->file = file;
-      meshinfo[nterraininfo].terrain = terraini;
+      if(mesh_terrain==-1){
+        mesh_terrain = nterraininfo;    // no mesh_terrain on TERRAIN line so assume that number of TERRAIN and MESH lines are the same
+      }
+      else{
+        mesh_terrain--;                 // mesh_terrain on TERRAIN line goes from 1 to number of meshes so subtract 1
+      }
+      meshinfo[mesh_terrain].terrain = terraini;
+      terraini->terrain_mesh = meshinfo+mesh_terrain;
       nterraininfo++;
       continue;
     }

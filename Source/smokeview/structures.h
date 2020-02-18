@@ -329,6 +329,8 @@ typedef struct _terraindata {
   float *x, *y;
   float levels[13];
   float *zcell, *znode, *znode_scaled, *znode_offset;
+  float zmin;  // any znode value below zmin will be ignored
+  int nvalues; // number of values above zmin
   unsigned char *uc_znormal;
   float *times;
   terraincell *tcell;
