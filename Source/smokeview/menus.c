@@ -1874,7 +1874,6 @@ void RenderMenu(int value){
     }
     Keyboard('R',FROM_SMOKEVIEW);
     break;
-#ifdef pp_HTML
   case RenderJSON:
   case RenderJSONALL:
     {
@@ -1911,7 +1910,6 @@ void RenderMenu(int value){
     Smv2Html(html_filename,   HTML_ALL_TIMES, FROM_SMOKEVIEW, VR_NO);
     Smv2Html(htmlvr_filename, HTML_ALL_TIMES, FROM_SMOKEVIEW, VR_YES);
     break;
-#endif
   case RenderCancel:
     RenderState(RENDER_OFF);
     break;
@@ -9019,10 +9017,8 @@ updatemenu=0;
     glutAddMenuEntry("-", MENU_DUMMY);
     glutAddMenuEntry(_("Render html(current)"), RenderHTML);
     glutAddMenuEntry(_("Render html(all)"),     RenderHTMLALL);
-#ifdef pp_HTML
     glutAddMenuEntry(_("Render json(current)"),  RenderJSON);
     glutAddMenuEntry(_("Render json(all)"),     RenderJSONALL);
-#endif
 
     glutAddMenuEntry("-", MENU_DUMMY);
 

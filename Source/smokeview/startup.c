@@ -335,7 +335,6 @@ void SetupGlut(int argc, char **argv){
 
   // create full path for html template file
 
-#ifdef pp_HTML
   NewMemory((void **)&smokeview_html, (unsigned int)(strlen(smokeview_bindir)+strlen("smokeview.html")+1));
   STRCPY(smokeview_html, smokeview_bindir);
   STRCAT(smokeview_html, "smokeview.html");
@@ -343,7 +342,6 @@ void SetupGlut(int argc, char **argv){
   NewMemory((void **)&smokeviewvr_html, (unsigned int)(strlen(smokeview_bindir)+strlen("smokeview_vr.html")+1));
   STRCPY(smokeviewvr_html, smokeview_bindir);
   STRCAT(smokeviewvr_html, "smokeview_vr.html");
-#endif
 
   startup_pass=2;
 

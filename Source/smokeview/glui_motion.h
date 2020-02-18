@@ -82,9 +82,7 @@
 #define RENDER_CLIP_ROLLOUT   3
 
 #define RENDER_360CB 9
-#ifdef pp_HTML
 #define RENDER_HTML 15
-#endif
 
 #endif
 

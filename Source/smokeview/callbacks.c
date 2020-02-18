@@ -3397,7 +3397,6 @@ void DoScript(void){
 
 /* ------------------ DoScriptHtml ------------------------ */
 
-#ifdef pp_HTML
 void DoScriptHtml(void){
   int i;
 
@@ -3410,7 +3409,6 @@ void DoScriptHtml(void){
     RunScriptCommand(scripti);
   }
 }
-#endif
 
 /* ------------------ IdleDisplay ------------------------ */
 

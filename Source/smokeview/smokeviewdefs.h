@@ -746,14 +746,12 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define RenderLABELframenumber 980
 #define RenderLABELtime 979
 #define MENU_RENDER_SETTINGS 900
-#ifdef pp_HTML
 #define RenderJSON        982
 #define RenderJSONALL     983
 #define RenderHTML        984
 #define RenderHTMLALL     985
 #define HTML_CURRENT_TIME   0
 #define HTML_ALL_TIMES      1
-#endif
 
 #define ShowEXTERIORwallmenu -1
 #define HideEXTERIORwallmenu -19

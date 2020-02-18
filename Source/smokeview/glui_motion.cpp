@@ -1217,9 +1217,7 @@ extern "C" void GluiMotionSetup(int main_window){
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "png");
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "jpg");
 
-#ifdef pp_HTML
   glui_motion->add_button_to_panel(PANEL_render_file, "Render to html", RENDER_HTML, RenderCB);
-#endif
 
   LIST_render_skip = glui_motion->add_listbox_to_panel(ROLLOUT_render, _("Show:"), &render_skip, RENDER_SKIP, RenderCB);
   for(i = 0; i<NRENDER_SKIPS; i++){
@@ -2241,12 +2239,10 @@ void RenderCB(int var){
     case RENDER_LABEL:
     case RENDER_TYPE:
       break;
-#ifdef pp_HTML
     case RENDER_HTML:
       Smv2Html(html_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_NO);
       Smv2Html(htmlvr_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_YES);
       break;
-#endif
 #ifdef pp_RENDER360_DEBUG
     case RENDER_DEBUG_360:
       if(debug_360_skip_x<2){

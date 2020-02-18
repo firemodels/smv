@@ -1512,9 +1512,7 @@ SVEXTERN char SVDECL(*script_dir_path,NULL), SVDECL(*script_htmldir_path, NULL);
 SVEXTERN int SVDECL(nscriptinfo,0);
 SVEXTERN scriptfiledata SVDECL(*script_recording,NULL);
 SVEXTERN int SVDECL(runscript,0), SVDECL(noexit,0);
-#ifdef pp_HTML
 SVEXTERN int SVDECL(runhtmlscript, 0);
-#endif
 #ifdef pp_LUA
 SVEXTERN int SVDECL(runluascript,0);
 SVEXTERN int SVDECL(exit_on_script_crash,0);
@@ -1531,7 +1529,6 @@ SVEXTERN char SVDECL(*INI_fds_filein,NULL), SVDECL(*fds_filein,NULL);
 SVEXTERN char SVDECL(*caseini_filename,NULL),SVDECL(*boundinfo_filename,NULL);
 SVEXTERN char SVDECL(*zonelonglabels,NULL), SVDECL(*zoneshortlabels,NULL), SVDECL(*zoneunits,NULL);
 SVEXTERN char SVDECL(*smokeviewini,NULL);
-#ifdef pp_HTML
 SVEXTERN char SVDECL(*html_filename, NULL);
 SVEXTERN char SVDECL(*htmlvr_filename, NULL);
 SVEXTERN char SVDECL(*htmlslicenode_filename, NULL);
@@ -1539,7 +1536,6 @@ SVEXTERN char SVDECL(*htmlslicecell_filename, NULL);
 SVEXTERN char SVDECL(*htmlobst_filename, NULL);
 SVEXTERN char SVDECL(*smokeview_html, NULL);
 SVEXTERN char SVDECL(*smokeviewvr_html, NULL);
-#endif
 SVEXTERN int overwrite_all,erase_all;
 SVEXTERN int compress_autoloaded;
 SVEXTERN tridata SVDECL(**opaque_triangles,NULL),SVDECL(**transparent_triangles,NULL),SVDECL(**alltriangles,NULL);

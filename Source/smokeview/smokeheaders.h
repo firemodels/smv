@@ -59,13 +59,11 @@ EXTERNCPP void UpdateCO2ColorbarList(int value);
 EXTERNCPP int GetTourFrame(tourdata *touri, int itime);
 EXTERNCPP int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to);
 EXTERNCPP void InitNabors(void);
-#ifdef pp_HTML
 EXTERNCPP int Smv2Html(char *html_out, int option, int from_where, int vr_flag);
 EXTERNCPP int Smv2Geom(char *html_file);
 EXTERNCPP int Obst2Data(char *html_file);
 EXTERNCPP int SliceNode2Data(char *html_file, int option);
 EXTERNCPP int SliceCell2Data(char *html_file, int option);
-#endif
 EXTERNCPP void UpdateBackgroundFlip(int flip);
 EXTERNCPP void UpdateBackgroundFlip2(int flip);
 EXTERNCPP void UpdateVectorpointsize(void);
@@ -412,9 +410,7 @@ EXTERNCPP void GetSmokeSensors(void);
 EXTERNCPP void AddNewTour(void);
 EXTERNCPP void StartScript(void);
 EXTERNCPP int RunScriptCommand(scriptdata *script_command);
-#ifdef pp_HTML
 EXTERNCPP void DoScriptHtml(void);
-#endif
 EXTERNCPP int  CompileScript(char *scriptfile);
 EXTERNCPP scriptfiledata *InsertScriptFile(char *file);
 #ifdef pp_LUA
