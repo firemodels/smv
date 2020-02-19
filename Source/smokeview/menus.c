@@ -2987,10 +2987,6 @@ void LoadUnloadMenu(int value){
   if(value==MENU_DUMMY)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value==UNLOADALL){
-   // leaving code here commented in case I later decide to unload terrain files
-   // for(i=0;i<nterraininfo;i++){
-   //   ReadTerrain("",i,UNLOAD,&errorcode);
-   // }
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"UNLOADALL\n");
     }
@@ -3051,11 +3047,6 @@ void LoadUnloadMenu(int value){
     slicefile_labelindex_save=slicefile_labelindex;
     for(i=0;i<nsliceinfo;i++){
       sliceinfo[i].reload=1;
-    }
-    for(i=0;i<nterraininfo;i++){
-      if(terraininfo[i].loaded==1){
-        ReadTerrain(terraininfo[i].file,i,LOAD,&errorcode);
-      }
     }
     for(i=0;i<nvsliceinfo;i++){
       if(vsliceinfo[i].loaded==1){
@@ -4416,49 +4407,6 @@ int AnySlices(char *type){
     if(STRCMP(sliceinfo[i].label.longlabel,type)==0)return 1;
   }
   return 0;
-}
-
-/* ------------------ UnLoadTerrainMenu ------------------------ */
-
-void UnloadTerrainMenu(int value){
-  int i;
-  int errorcode;
-
-  if(value >= 0 && value < nterraininfo){
-    ReadTerrain("", value, UNLOAD, &errorcode);
-  }
-  else if(value == MENU_UNLOADTERRAIN_UNLOADALL){
-    for(i = 0; i < nterraininfo; i++){
-      UnloadTerrainMenu(i);
-    }
-  }
-  updatemenu = 1;
-  GLUTPOSTREDISPLAY;
-
-}
-
-/* ------------------ LoadTerrainMenu ------------------------ */
-
-void LoadTerrainMenu(int value){
-  int i;
-  int errorcode;
-
-  if(value>=0&&value<nterraininfo){
-    terraindata *terri;
-
-    terri = terraininfo + value;
-    ReadTerrain(terri->file,value,LOAD,&errorcode);
-  }
-  else if(value==MENU_LOADTERRAIN_UNLOAD){
-    UnloadTerrainMenu(value);
-  }
-  else if(value==MENU_LOADTERRAIN_LOADALL){
-    for(i=0;i<nterraininfo;i++){
-      LoadTerrainMenu(i);
-    }
-  }
-  updatemenu=1;
-  GLUTPOSTREDISPLAY;
 }
 
 /* ------------------ DefineAllFEDs ------------------------ */
@@ -6063,8 +6011,6 @@ void GeometryMenu(int value){
     break;
 
   case 17+TERRAIN_3D:
-  case 17+TERRAIN_2D_STEPPED:
-  case 17+TERRAIN_2D_LINE:
   case 17+TERRAIN_3D_MAP:
   case 17+TERRAIN_HIDDEN:
     if(value==17+TERRAIN_HIDDEN){
@@ -7120,12 +7066,6 @@ updatemenu=0;
   CREATEMENU(terrain_showmenu,GeometryMenu);
   if(visTerrainType==TERRAIN_3D)glutAddMenuEntry(_("*3D surface"),17+TERRAIN_3D);
   if(visTerrainType!=TERRAIN_3D)glutAddMenuEntry(_("3D surface"),17+TERRAIN_3D);
-#ifdef pp_SHOWTERRAIN
-  if(visTerrainType==TERRAIN_2D_STEPPED)glutAddMenuEntry(_("*2D stepped"),17+TERRAIN_2D_STEPPED);
-  if(visTerrainType!=TERRAIN_2D_STEPPED)glutAddMenuEntry(_("2D stepped"),17+TERRAIN_2D_STEPPED);
-  if(visTerrainType==TERRAIN_2D_LINE)glutAddMenuEntry(_("*2D lines"),17+TERRAIN_2D_LINE);
-  if(visTerrainType!=TERRAIN_2D_LINE)glutAddMenuEntry(_("2D lines"),17+TERRAIN_2D_LINE);
-#endif
   if(terrain_texture!=NULL&&terrain_texture->loaded==1){
     if(visTerrainType==TERRAIN_3D_MAP)glutAddMenuEntry(_("*Image"),17+TERRAIN_3D_MAP);
     if(visTerrainType!=TERRAIN_3D_MAP)glutAddMenuEntry(_("Image"),17+TERRAIN_3D_MAP);
@@ -9827,54 +9767,6 @@ updatemenu=0;
     }
     else{
      glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
-    }
-  }
-
-  /* --------------------------------unload and load terrain menus -------------------------- */
-
-  if(nterraininfo>0){
-    int nterrainloaded=0;
-
-    CREATEMENU(unloadterrainmenu,UnloadTerrainMenu);
-    for(i=0;i<nterraininfo;i++){
-      terraindata *terri;
-
-      terri = terraininfo + i;
-      if(terri->loaded==1){
-        nterrainloaded++;
-        glutAddMenuEntry(terri->file,i);
-      }
-    }
-    if(nterrainloaded>1){
-        glutAddMenuEntry("-",MENU_UNLOADTERRAIN_DUMMY);
-        glutAddMenuEntry(_("Unload all"), MENU_UNLOADTERRAIN_UNLOADALL);
-    }
-    CREATEMENU(loadterrainmenu,LoadTerrainMenu);
-    if(nterraininfo>1){
-      glutAddMenuEntry(_("All terrains"), MENU_LOADTERRAIN_LOADALL);
-      glutAddMenuEntry("-",MENU_LOADTERRAIN_DUMMY);
-    }
-    /*
-    leaving code commented in case I later decide to load/unload terrain files
-    for(i=0;i<nterraininfo;i++){
-      char menulabel[256];
-
-      terraindata *terri;
-
-      terri = terraininfo + i;
-      strcpy(menulabel,"");
-      if(terri->loaded==1)strcat(menulabel,"*");
-      strcat(menulabel,terri->file);
-      glutAddMenuEntry(menulabel,i);
-    }
-    */
-    if(nterrainloaded==1){
-      glutAddMenuEntry("-",MENU_LOADTERRAIN_DUMMY);
-      glutAddMenuEntry(_("Unload terrain"), MENU_LOADTERRAIN_UNLOAD);
-    }
-    else if(nterrainloaded>1){
-      glutAddMenuEntry("-",MENU_LOADTERRAIN_DUMMY);
-      GLUTADDSUBMENU(_("Unload terrain"),unloadterrainmenu);
     }
   }
 

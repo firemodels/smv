@@ -5439,7 +5439,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
   terri = meshi->terrain;
   if(terri == NULL)return;
   zmin_scaled = NORMALIZE_Z(terri->zmin);
-  nycell = terri->ny;
+  nycell = terri->jbar;
 
   xplt = meshi->xplt;
   yplt = meshi->yplt;
@@ -7330,7 +7330,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   terri = meshi->terrain;
   if(terri == NULL)return;
   znode = terri->znode_scaled;
-  nycell = terri->ny;
+  nycell = terri->jbar;
 
   vrange = velocity_range;
   if(vrange <= 0.0)vrange = 1.0;

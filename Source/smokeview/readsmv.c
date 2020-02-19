@@ -3884,11 +3884,10 @@ int ReadSMV(char *file, char *file2){
     terraindata *terri;
 
     terri = terraininfo + i;
-    FREEMEMORY(terri->x);
-    FREEMEMORY(terri->y);
+    FREEMEMORY(terri->xplt);
+    FREEMEMORY(terri->yplt);
     FREEMEMORY(terri->zcell);
     FREEMEMORY(terri->znode);
-//    FREEMEMORY(terri->znormal);
   }
   FREEMEMORY(terraininfo);
   nterraininfo=0;

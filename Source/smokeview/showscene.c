@@ -305,41 +305,21 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     CLIP_GEOMETRY;
     for(i = 0;i<nterraininfo;i++){
       terraindata *terri;
-      int only_geom;
 
       terri = terraininfo + i;
-      if(terri->loaded == 1){
-        only_geom = 0;
-      }
-      else{
-        only_geom = 1;
-      }
       switch(visTerrainType){
       case TERRAIN_3D:
-        DrawTerrain(terri, only_geom);
+        DrawTerrain(terri);
         break;
       case TERRAIN_2D_STEPPED:
-        if(cullfaces == 1)glDisable(GL_CULL_FACE);
-        glPushMatrix();
-        glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-        glTranslatef(-xbar0, -ybar0, -zbar0);
-        DrawContours(&meshinfo[i].terrain_contour);
-        glPopMatrix();
-        if(cullfaces == 1)glEnable(GL_CULL_FACE);
-        break;
       case TERRAIN_2D_LINE:
-        glPushMatrix();
-        glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-        glTranslatef(-xbar0, -ybar0, -zbar0);
-        DrawLineContours(&meshinfo[i].terrain_contour, 1.0);
-        glPopMatrix();
         break;
       case TERRAIN_3D_MAP:
         if(terrain_texture != NULL&&terrain_texture->loaded == 1){
-          DrawTerrainTexture(terri, only_geom);
+          DrawTerrainTexture(terri);
         }
         else{
-          DrawTerrain(terri, only_geom);
+          DrawTerrain(terri);
         }
         break;
       default:

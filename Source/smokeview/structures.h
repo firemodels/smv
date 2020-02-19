@@ -319,23 +319,15 @@ typedef struct _terraincell {
 
 typedef struct _terraindata {
   char *file;
-  unsigned char *state;
-  int *timeslist;
-  int loaded, display;
-  int autoload;
   texturedata *ter_texture;
-  int nx, ny;
-  float xmin, xmax, ymin, ymax;
-  float *x, *y;
-  float levels[13];
+  int ibar, jbar;
+  float xmin, xmax, ymin, ymax, zmin;
+  float *xplt, *yplt;
   float *zcell, *znode, *znode_scaled, *znode_offset;
-  float zmin;  // any znode value below zmin will be ignored
   int nvalues; // number of values above zmin
   unsigned char *uc_znormal;
-  float *times;
   terraincell *tcell;
   struct _meshdata *terrain_mesh;
-  int ntimes;
 } terraindata;
 
 /* --------------------------  matldata ------------------------------------ */
@@ -740,7 +732,6 @@ typedef struct _meshdata {
   char *c_iblank_xy, *c_iblank_xz, *c_iblank_yz;
   float plot3d_speedmax;
   contour plot3dcontour1,plot3dcontour2,plot3dcontour3;
-  contour terrain_contour;
   isosurface currentsurf,currentsurf2;
   isosurface *blockagesurface;
   isosurface **blockagesurfaces;

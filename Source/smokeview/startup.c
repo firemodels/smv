@@ -1072,13 +1072,6 @@ void InitOpenGL(void){
         }
       }
     }
-    for(i=0;i<nterraininfo;i++){
-      terraindata *terri;
-
-      terri = terraininfo + i;
-      if(terri->autoload==0&&terri->loaded==1)ReadTerrain(terri->file,i,UNLOAD,&errorcode);
-      if(terri->autoload==1&&terri->loaded==0)ReadTerrain(terri->file,i,LOAD,&errorcode);
-    }
     for(i=0;i<nsmoke3dinfo;i++){
       smoke3ddata *smoke3di;
 
@@ -1320,7 +1313,6 @@ void InitVars(void){
   direction_color[3]=1.0;
 
   direction_color_ptr=GetColorPtr(direction_color);
-  show_slice_terrain=0;
 
   shooter_uvw[0]=0.0;
   shooter_uvw[1]=0.0;
@@ -1512,7 +1504,6 @@ void InitVars(void){
   hrrpuv_iso_color[1]=0.5;
   hrrpuv_iso_color[2]=0.0;
   hrrpuv_iso_color[3]=1.0;
-  showterrain=0;
   showgluitrainer=0;
   colorbartype=0;
   colorbartype_ini=-1;
