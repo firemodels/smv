@@ -6156,7 +6156,6 @@ static int luascriptmenu=0;
 static int luascriptlistmenu=0;
 #endif
 static int loadplot3dmenu=0, unloadvslicemenu=0, unloadslicemenu=0;
-static int loadterrainmenu=0, unloadterrainmenu=0;
 static int loadsmoke3dmenu=0,loadsmoke3dsootmenu=0,loadsmoke3dhrrmenu=0;
 static int loadsmoke3dtempmenu = 0, loadsmoke3dco2menu = 0;
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;

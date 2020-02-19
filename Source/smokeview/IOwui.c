@@ -328,7 +328,7 @@ void ComputeTerrainNormalsManual(void){
 
 void ComputeTerrainNormalsAuto(void){
   int imesh;
-  float zmin, zmax, dz;
+  float zmin, zmax;
 
   for(imesh=0;imesh<nmeshes;imesh++){
     meshdata *meshi;
@@ -676,7 +676,6 @@ void DrawTerrain(terraindata *terri){
     for(i=0;i<terri->ibar;i++){
       unsigned char *uc_zn;
       int ip1;
-      float *ter_rgbptr;
       float zval;
 
       ip1 = i + 1;
