@@ -4455,7 +4455,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
   meshi = meshinfo + blocknumber;
   if(meshi->terrain!=NULL&&meshi->terrain->nvalues==0){
     if(flag==LOAD){
-      printf("***warning: all terrain elevations below %f.  Slice file %s not loaded\n", meshi->terrain->zmin, file);
+      printf("***warning: all terrain elevations below %f.  Slice file %s not loaded\n", meshi->terrain->zmin_cutoff, file);
     }
     return 0;
   }
@@ -5438,7 +5438,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
   terri = meshi->terrain;
   if(terri == NULL)return;
-  zmin_scaled = NORMALIZE_Z(terri->zmin);
+  zmin_scaled = NORMALIZE_Z(terri->zmin_cutoff);
   nycell = terri->jbar;
 
   xplt = meshi->xplt;
@@ -5593,12 +5593,14 @@ void DrawVolSliceTerrain(const slicedata *sd){
   if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
     float z11, z31, z13, z33, zmid;
     int maxi;
-    float *znode, zoffset, zcut;
+    float *znode, agl_smv, zcut;
 
     znode = terri->znode_scaled;
     constval = zplt[plotz] + offset_slice*sd->sliceoffset + 0.001+SCALE2SMV(sd->sliceoffset_fds);
-    zoffset = SCALE2SMV(sd->above_ground_level);
-    zcut = zmin_scaled + zoffset;
+    agl_smv = SCALE2SMV(sd->above_ground_level);
+    zcut = zmin_scaled + agl_smv;
+    glPushMatrix();
+    glScalef(1.0,1.0,vertical_factor);
     glBegin(GL_TRIANGLES);
     maxi = MAX(sd->is1 + sd->nslicei - 1, sd->is1 + 1);
     for(i = sd->is1; i<maxi; i++){
@@ -5614,10 +5616,10 @@ void DrawVolSliceTerrain(const slicedata *sd){
         float ymid, rmid;
         int n11, n31, n13, n33;
 
-        z11 = znode[IJ2(i, j)] + zoffset;
-        z31 = znode[IJ2(i + 1, j)] + zoffset;
-        z13 = znode[IJ2(i, j + 1)] + zoffset;
-        z33 = znode[IJ2(i + 1, j + 1)] + zoffset;
+        z11 = znode[IJ2(i, j)]         + agl_smv;
+        z31 = znode[IJ2(i + 1, j)]     + agl_smv;
+        z13 = znode[IJ2(i, j + 1)]     + agl_smv;
+        z33 = znode[IJ2(i + 1, j + 1)] + agl_smv;
         zmid = (z11 + z31 + z13 + z33) / 4.0;
 
         if(iblank_z != NULL&&iblank_z[IJK(i, j, plotz)] != GASGAS)continue;
@@ -5681,6 +5683,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
       }
     }
     glEnd();
+    glPopMatrix();
   }
   glDisable(GL_TEXTURE_1D);
   if(use_transparency_data == 1)TransparentOff();

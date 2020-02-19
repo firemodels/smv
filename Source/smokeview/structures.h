@@ -312,7 +312,8 @@ typedef struct _terraindata {
   char *file;
   texturedata *ter_texture;
   int ibar, jbar;
-  float xmin, xmax, ymin, ymax, zmin;
+  float xmin, xmax, ymin, ymax;
+  float zmin_cutoff;
   float *xplt, *yplt;
   float *zcell, *znode, *znode_scaled, *znode_offset;
   int nvalues; // number of values above zmin

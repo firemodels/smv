@@ -506,7 +506,7 @@ void DrawGeom(int flag, int timestate){
     glEnable(GL_COLOR_MATERIAL);
 
     glPushMatrix();
-    glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
+    glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
     glTranslatef(-xbar0,-ybar0,-zbar0);
     glTranslatef(geom_delx, geom_dely, geom_delz);
     glBegin(GL_TRIANGLES);

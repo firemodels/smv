@@ -687,7 +687,7 @@ void DrawTerrainTexture(terraindata *terri){
   terrain_color[3]=1.0;
 
   glPushMatrix();
-  glScalef(SCALE2SMV(mscale[0]),SCALE2SMV(mscale[1]),SCALE2SMV(mscale[2]));
+  glScalef(SCALE2SMV(mscale[0]),SCALE2SMV(mscale[1]),vertical_factor*SCALE2SMV(mscale[2]));
   glTranslatef(-xbar0,-ybar0,-zbar0);
 
   ENABLE_LIGHTING;
@@ -762,7 +762,7 @@ void DrawTerrainTexture(terraindata *terri){
 
 int GetTerrainData(char *file, terraindata *terri){
   FILE *WUIFILE;
-  float zmin;
+  float zmin_cutoff;
   int ibp1, jbp1, ijbar[2];
   float *xplt, *yplt, *z_terrain;
   int returncode=1;
@@ -780,8 +780,8 @@ int GetTerrainData(char *file, terraindata *terri){
 //    WRITE(LU_TERRAIN(NM)) (M%YPLT(J), J = 0, JBAR)
 //    WRITE(LU_TERRAIN(NM)) Z_TERRAIN
 
-  FORTWUIREAD(&zmin, 1);
-  terri->zmin = zmin;
+  FORTWUIREAD(&zmin_cutoff, 1);
+  terri->zmin_cutoff = zmin_cutoff;
   FORTWUIREAD(ijbar, 2);
   ibp1 = ijbar[0];
   jbp1 = ijbar[1];
@@ -803,7 +803,7 @@ int GetTerrainData(char *file, terraindata *terri){
   FORTWUIREAD(z_terrain, ibp1*jbp1);
 
   for(i = 0, nvalues=0; i<ibp1*jbp1; i++){
-    if(z_terrain[i]>zmin)nvalues++;
+    if(z_terrain[i]>zmin_cutoff)nvalues++;
   }
   terri->nvalues = nvalues;
   if(returncode!=0)returncode=0;
