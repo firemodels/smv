@@ -531,7 +531,6 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
     terri->zcell=NULL;
     terri->znode=NULL;
     terri->uc_znormal=NULL;
-    terri->tcell=NULL;
     terri->ter_texture=NULL;
   }
 
@@ -583,49 +582,7 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
       }
     }
   }
-
   GetTerrainData(terri->file, terri);
-
-}
-
-/* ------------------ GetTerrainColor ------------------------ */
-
-float *GetTerrainColor(terraincell *ti){
-  int index;
-  int i, ileft;
-  float sv_time;
-  float *ter_time;
-  float wuicolor[4] = {1.0,0.0,0.0,1.0};
-
-  if(ti == NULL)return GetColorPtr(wuicolor);
-
-  if(global_times == NULL || ti->time == NULL){
-    index = ti->state[0] % 10;
-    return rgb_terrain[index];
-  }
-
-  sv_time = global_times[itimes];
-  ter_time = ti->time;
-  ileft = ti->interval;
-
-  if(ter_time[ileft] <= sv_time&&sv_time < ter_time[ileft + 1]){
-    return rgb_terrain[ileft % 10];
-  }
-
-  for(i = ileft + 1;i < ti->nstates - 1;i++){
-    if(ter_time[i] <= sv_time&&sv_time < ter_time[i + 1]){
-      ti->interval = i;
-      return rgb_terrain[i % 10];
-    }
-  }
-  if(sv_time >= ter_time[ti->nstates - 1]){
-    ileft = ti->nstates - 1;
-    ti->interval = ileft;
-    return rgb_terrain[ileft % 10];
-  }
-  ileft = 0;
-  ti->interval = ileft;
-  return rgb_terrain[ileft % 10];
 }
 
 /* ------------------ DrawTerrain ------------------------ */
@@ -636,7 +593,6 @@ void DrawTerrain(terraindata *terri){
   int nycell;
   int i, j;
   float *x, *y;
-  terraincell *ti;
   float terrain_color[4];
   float terrain_shininess=100.0;
   float terrain_specular[4]={0.8,0.8,0.8,1.0};
@@ -666,7 +622,6 @@ void DrawTerrain(terraindata *terri){
   nycell = terri->jbar;
   x = terri->xplt;
   y = terri->yplt;
-  ti = terri->tcell;
   glColor4fv(terrain_color);
   for(j=0;j<terri->jbar;j++){
     int jp1;
@@ -703,8 +658,6 @@ void DrawTerrain(terraindata *terri){
       glNormal3fv(zn);
       zval = znode[ijnode3(i,jp1)]+ZOFFSET;
       glVertex3f(x[i],y[j+1],zval);
-
-      ti++;
     }
   }
   glEnd();
@@ -803,141 +756,6 @@ void DrawTerrainTexture(terraindata *terri){
 
   glPopMatrix();
 
-}
-
-/* ------------------ InitTerrainCell ------------------------ */
-
-void InitTerrainCell(terraindata *terri){
-  int i;
-  int nx, ny;
-
-  nx = terri->ibar;
-  ny = terri->jbar;
-
-  NewMemory((void **)&terri->tcell, nx*ny * sizeof(terraincell));
-  for(i = 0;i < terri->ibar*terri->jbar;i++){
-    terraincell *ti;
-    int nalloc;
-
-    nalloc = 5;
-    ti = terri->tcell + i;
-    ti->nallocated = nalloc;
-    ti->nstates = 0;
-    ti->state = NULL;
-    ti->interval = 0;
-    ti->time = NULL;
-    NewMemory((void **)&ti->state, nalloc);
-    NewMemory((void **)&ti->time, nalloc * sizeof(float));
-  }
-
-}
-
-/* ------------------ FreeTerraincell ------------------------ */
-
-void FreeTerraincell(terraindata *terri){
-  int i;
-  if(terri->tcell != NULL){
-    for(i = 0;i < terri->ibar*terri->jbar;i++){
-      terraincell *ti;
-
-      ti = terri->tcell + i;
-
-      FREEMEMORY(ti->time);
-      FREEMEMORY(ti->state);
-    }
-    FREEMEMORY(terri->tcell);
-  }
-}
-
-/* ------------------ InitTNode ------------------------ */
-
-void InitTNode(terraindata *terri){
-  float *znode, *zcell;
-  int i, j;
-  int nxcell;
-
-  znode = terri->znode;
-  zcell = terri->zcell;
-  nxcell = terri->ibar;
-  for(j = 0;j <= terri->jbar;j++){
-    int jm1, im1, ii, jj;
-    float zz;
-
-    jm1 = j - 1;
-    if(jm1 < 0)jm1 = 0;
-    jj = j;
-    if(jj == terri->jbar)jj--;
-
-    for(i = 0;i <= terri->ibar;i++){
-      im1 = i - 1;
-      if(im1 < 0)im1 = 0;
-      ii = i;
-      if(ii == terri->ibar)ii--;
-
-      zz = zcell[IJCELL2(im1, jm1)];
-      zz += zcell[IJCELL2(im1, jj)];
-      zz += zcell[IJCELL2(ii, jm1)];
-      zz += zcell[IJCELL2(ii, jj)];
-      zz *= 0.25;
-      *znode++ = zz;
-    }
-  }
-}
-
-/* ------------------ InitTNorm ------------------------ */
-
-void InitTNorm(terraindata *terri){
-  float *znode;
-  unsigned char *uc_znormal;
-  float znormal3[3];
-  int i, j;
-  int nycell;
-  float dx, dy;
-
-  //znormal = terri->znormal;
-  uc_znormal = terri->uc_znormal;
-  znode = terri->znode;
-  nycell = terri->jbar;
-  dx = (terri->xmax - terri->xmin) / terri->ibar;
-  dy = (terri->ymax - terri->ymin) / terri->jbar;
-
-  for(j = 0;j <= terri->jbar;j++){
-    int jp1, ip1;
-    float dzdx, dzdy;
-    float sum;
-
-    jp1 = j + 1;
-    if(jp1 > terri->jbar)jp1 = terri->jbar;
-
-    for(i = 0;i <= terri->ibar;i++){
-      ip1 = i + 1;
-      if(ip1 > terri->ibar)ip1 = terri->ibar;
-      dzdx = (znode[ijnode3(ip1, j)] - znode[ijnode3(i, j)]) / dx;
-      dzdy = (znode[ijnode3(i, jp1)] - znode[ijnode3(i, j)]) / dy;
-
-      //     i  j  k
-      //     1  0 dzdx           uu
-      //     0  1 dzdy           vv
-
-      //     -dzdx -dzdy 1       uu x vv
-
-
-      //      znormal = terri->znormal + 3*ijnode2(i,j);
-      uc_znormal = terri->uc_znormal + ijnode3(i, j);
-      znormal3[0] = -dzdx;
-      znormal3[1] = -dzdy;
-      znormal3[2] = 1.0;
-
-      sum = znormal3[0] * znormal3[0];
-      sum += znormal3[1] * znormal3[1];
-      sum += znormal3[2] * znormal3[2];
-      sum = sqrt(sum);
-      znormal3[0] /= sum;
-      znormal3[1] /= sum;
-      znormal3[2] /= sum;
-      *uc_znormal = GetNormalIndex(wui_sphereinfo, znormal3);
-    }
-  }
 }
 
 /* ------------------ GetTerrainData ------------------------ */

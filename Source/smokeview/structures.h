@@ -306,15 +306,6 @@ typedef struct _texturedata {
   GLuint name;
 } texturedata;
 
-/* --------------------------  terraincell ------------------------------------ */
-
-typedef struct _terraincell {
-  int nallocated, nstates;
-  float *time;
-  int interval;
-  unsigned char *state;
-} terraincell;
-
 /* --------------------------  terraindata ------------------------------------ */
 
 typedef struct _terraindata {
@@ -326,7 +317,6 @@ typedef struct _terraindata {
   float *zcell, *znode, *znode_scaled, *znode_offset;
   int nvalues; // number of values above zmin
   unsigned char *uc_znormal;
-  terraincell *tcell;
   struct _meshdata *terrain_mesh;
 } terraindata;
 
