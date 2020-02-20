@@ -818,7 +818,7 @@ int GetTerrainData(char *file, terraindata *terri){
     int j;
  
     fprintf(stream, "%s\n", file);
-    fprintf(stream, " ibar,jbar,xmin,xmax,ymin,ymax,z cutoff\n");
+    fprintf(stream, " ibar+1,jbar+1,xmin,xmax,ymin,ymax,z cutoff\n");
     fprintf(stream, " %i,%i,%f,%f,%f,%f,%f\n", ibp1, jbp1,xplt[0], xplt[ibp1-1], yplt[0], yplt[jbp1-1],zmin_cutoff);
     fprintf(stream, "\nelevations\n");
     for(j = jbp1-1; j>=0; j--){
