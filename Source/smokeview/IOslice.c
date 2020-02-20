@@ -3820,11 +3820,21 @@ void AdjustBounds(int setmin, int setmax, float *pdata, int ndata, float *pmin, 
       buckets[n] = 0;
     }
     for(n = 0; n<ndata; n++){
-      level = 0;
-      if(pdata[n]>*pmin&&dp!=0.0f){
-        level = (int)((pdata[n]-*pmin)/dp);
+      if(pdata[n]<=*pmin){
+        level = 0;
       }
-      level = MIN(level,NBUCKETS-1);
+      else if(pdata[n]>=*pmax){
+        level = NBUCKETS-1;
+      }
+      else{
+        if(dp!=0.0f){
+          level = (int)((pdata[n]-*pmin)/dp);
+        }
+        else{
+          level = 0;
+        }
+      }
+      level = CLAMP(level,0,NBUCKETS-1);
       buckets[level]++;
     }
     alpha05 = (int)(.01f*ndata);
@@ -4826,7 +4836,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
   sd->globalmax = qmax;
   if(sd->compression_type == UNCOMPRESSED){
     if(nzoneinfo==0||strcmp(sd->label.shortlabel, "TEMP")!=0){
-      AdjustSliceBounds(sd, &qmin, &qmax);
+      if(research_mode==0)AdjustSliceBounds(sd, &qmin, &qmax);
     }
   }
   sd->valmin = qmin;
