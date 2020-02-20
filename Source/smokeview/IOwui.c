@@ -785,7 +785,7 @@ int GetTerrainData(char *file, terraindata *terri){
 //    WRITE(LU_TERRAIN(NM)) Z_TERRAIN
 
   FORTWUIREAD(&zmin_cutoff, 1);
-  zmin_cutoff += 0.1;
+  zmin_cutoff -= 0.1;
   terri->zmin_cutoff = zmin_cutoff;
   FORTWUIREAD(ijbar, 2);
   ibp1 = ijbar[0];
@@ -816,7 +816,7 @@ int GetTerrainData(char *file, terraindata *terri){
   stream = fopen(fileout, "w");
   if(stream!=NULL){
     int j;
- 
+
     fprintf(stream, "%s\n", file);
     fprintf(stream, " ibar+1,jbar+1,xmin,xmax,ymin,ymax,z cutoff\n");
     fprintf(stream, " %i,%i,%f,%f,%f,%f,%f\n", ibp1, jbp1,xplt[0], xplt[ibp1-1], yplt[0], yplt[jbp1-1],zmin_cutoff);
