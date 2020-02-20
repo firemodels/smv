@@ -767,6 +767,10 @@ int GetTerrainData(char *file, terraindata *terri){
   float *xplt, *yplt, *z_terrain;
   int returncode=1;
   int nvalues,i;
+#ifdef pp_DEBUG_TERRAIN
+  FILE *stream = NULL;
+  char fileout[255];
+#endif
 
 #ifdef _DEBUG
   printf("reading terrain data mesh: %i\n",(int)(terri-terraininfo));
@@ -781,6 +785,7 @@ int GetTerrainData(char *file, terraindata *terri){
 //    WRITE(LU_TERRAIN(NM)) Z_TERRAIN
 
   FORTWUIREAD(&zmin_cutoff, 1);
+  zmin_cutoff += 0.1;
   terri->zmin_cutoff = zmin_cutoff;
   FORTWUIREAD(ijbar, 2);
   ibp1 = ijbar[0];
@@ -805,6 +810,27 @@ int GetTerrainData(char *file, terraindata *terri){
   for(i = 0, nvalues=0; i<ibp1*jbp1; i++){
     if(z_terrain[i]>zmin_cutoff)nvalues++;
   }
+#ifdef pp_DEBUG_TERRAIN
+  strcpy(fileout, file);
+  strcat(fileout, ".csv");
+  stream = fopen(fileout, "w");
+  if(stream!=NULL){
+    int j;
+ 
+    fprintf(stream, "%s\n", file);
+    fprintf(stream, " ibar,jbar,xmin,xmax,ymin,ymax,z cutoff\n");
+    fprintf(stream, " %i,%i,%f,%f,%f,%f,%f\n", ibp1, jbp1,xplt[0], xplt[ibp1-1], yplt[0], yplt[jbp1-1],zmin_cutoff);
+    fprintf(stream, "\nelevations\n");
+    for(j = jbp1-1; j>=0; j--){
+      for(i = 0; i<ibp1-1; i++){
+        fprintf(stream, " %f,", z_terrain[i*jbp1+j]);
+      }
+      i = ibp1-1;
+      fprintf(stream, " %f\n", z_terrain[i*jbp1+j]);
+    }
+    fclose(stream);
+  }
+#endif
   terri->nvalues = nvalues;
   if(returncode!=0)returncode=0;
   fclose(WUIFILE);
