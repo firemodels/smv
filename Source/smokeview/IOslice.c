@@ -6653,7 +6653,7 @@ void DrawSliceFrame(){
     if(strcmp(sd->label.shortlabel,"ccell")!=0&&sd->slicefile_labelindex!=slicefile_labelindex)continue;
     if(sd->display==0){
       if(showvslice==0)continue;
-      if(sd->slice_filetype==SLICE_NODE_CENTER&&show_node_slices_and_vectors==0)continue;
+      if((sd->slice_filetype==SLICE_NODE_CENTER||sd->slice_filetype==SLICE_TERRAIN)&&show_node_slices_and_vectors==0)continue;
       if(sd->slice_filetype==SLICE_CELL_CENTER||sd->slice_filetype==SLICE_FACE_CENTER){
         if(show_cell_slices_and_vectors==0)continue;
       }
