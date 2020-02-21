@@ -13961,7 +13961,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWSTREAK\n");
   fprintf(fileout, " %i %i %i %i\n", streak5show, streak5step, showstreakhead, streak_index);
   fprintf(fileout, "SHOWTERRAIN\n");
-  fprintf(fileout, " %i\n", visTerrainType, terrain_slice_overlap);
+  fprintf(fileout, " %i %i\n", visTerrainType, terrain_slice_overlap);
   fprintf(fileout, "SHOWTETRAS\n");
   fprintf(fileout, " %i %i\n", show_volumes_solid, show_volumes_outline);
   fprintf(fileout, "SHOWTHRESHOLD\n");
