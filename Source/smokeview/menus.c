@@ -8185,6 +8185,7 @@ updatemenu=0;
     for(ii=0;ii<nslice_loaded;ii++){
       slicedata *sd;
       char menulabel[1024];
+      int doit;
 
       i = slice_loaded_list[ii];
       sd = sliceinfo + i;
@@ -8201,7 +8202,16 @@ updatemenu=0;
         STRCAT(menulabel," - ");
         STRCAT(menulabel,sd->slicelabel);
       }
-      glutAddMenuEntry(menulabel,i);
+      doit=1;
+      if(sd->slice_filetype==SLICE_TERRAIN){
+        meshdata *meshslice;
+        terraindata *terri;
+
+        meshslice = meshinfo + sd->blocknumber;
+        terri = meshslice->terrain;
+        if(terri==NULL||terri->nvalues==0)doit = 0;
+      }
+      if(doit==1)glutAddMenuEntry(menulabel,i);
     }
     // loaded geometry slice entries
     for(ii = 0;ii<npatchinfo;ii++){
@@ -9899,7 +9909,18 @@ updatemenu=0;
         STRCAT(menulabel,sd->slicelabel);
       }
       if(sd->menu_show==1){
-        glutAddMenuEntry(menulabel,sliceorderindex[i]);
+        int doit;
+
+        doit=1;
+        if(sd->slice_filetype==SLICE_TERRAIN){
+          meshdata *meshslice;
+          terraindata *terri;
+
+          meshslice = meshinfo + sd->blocknumber;
+          terri = meshslice->terrain;
+          if(terri==NULL||terri->nvalues==0)doit = 0;
+        }
+        if(doit==1)glutAddMenuEntry(menulabel,sliceorderindex[i]);
       }
       if(i==nsliceinfo-1||strcmp(sd->label.longlabel,sdip1->label.longlabel)!=0){
         subslice_menuindex[iloadsubslicemenu]=sliceorderindex[i];
