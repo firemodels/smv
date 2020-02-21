@@ -112,7 +112,10 @@ extern "C" void GluiWuiSetup(int main_window){
     glui_wui->add_button_to_panel(PANEL_fire_line,_("Update"),TERRAIN_FIRE_LINE_UPDATE,WuiCB);
 
     SPINNER_vertical_factor=glui_wui->add_spinner_to_panel(PANEL_terrain_hidden1,"vertical exaggeration",GLUI_SPINNER_FLOAT,&vertical_factor,TERRAIN_VERT,WuiCB);
-     SPINNER_vertical_factor->set_float_limits(0.25,4.0,GLUI_LIMIT_CLAMP);
+    SPINNER_vertical_factor->set_float_limits(0.25,4.0,GLUI_LIMIT_CLAMP);
+    glui_wui->add_checkbox_to_panel(PANEL_terrain_hidden1, "show terrain grid", &show_terrain_grid);
+    glui_wui->add_checkbox_to_panel(PANEL_terrain_hidden1, "show terrain normals", &show_terrain_normals);
+    glui_wui->add_spinner_to_panel(PANEL_terrain_hidden1, "vector length", GLUI_SPINNER_FLOAT, &terrain_normal_length);
 
     BUTTON_wui_1=glui_wui->add_button("Save settings",SAVE_SETTINGS_WUI,WuiCB);
     BUTTON_wui_2=glui_wui->add_button("Close",WUI_CLOSE,WuiCB);
