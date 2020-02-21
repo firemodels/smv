@@ -10299,7 +10299,7 @@ int ReadIni2(char *inifile, int localfile){
 
     if(Match(buffer, "SHOWTERRAIN") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &visTerrainType);
+      sscanf(buffer, "%i %i", &visTerrainType, &terrain_slice_overlap);
       continue;
     }
     if(Match(buffer, "STEREO") == 1){
@@ -13961,7 +13961,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWSTREAK\n");
   fprintf(fileout, " %i %i %i %i\n", streak5show, streak5step, showstreakhead, streak_index);
   fprintf(fileout, "SHOWTERRAIN\n");
-  fprintf(fileout, " %i\n", visTerrainType);
+  fprintf(fileout, " %i\n", visTerrainType, terrain_slice_overlap);
   fprintf(fileout, "SHOWTETRAS\n");
   fprintf(fileout, " %i %i\n", show_volumes_solid, show_volumes_outline);
   fprintf(fileout, "SHOWTHRESHOLD\n");

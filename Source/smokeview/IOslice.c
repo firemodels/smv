@@ -5632,10 +5632,17 @@ void DrawVolSliceTerrain(const slicedata *sd){
         z33 = znode[IJ2(i + 1, j + 1)];
         zmid = (z11 + z31 + z13 + z33)/4.0;
 
+        yy1 = yplt[j];
+        y3 = yplt[j+1];
+        ymid = (yy1+y3)/2.0;
+
         if(iblank_z != NULL&&iblank_z[IJK(i, j, plotz)] != GASGAS)continue;
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
 
         if(z11<z_cutoff||z31<z_cutoff||z13<z_cutoff||z33<z_cutoff)continue;
+        if(terrain_slice_overlap==0){
+          if(z11<zplt[0]||z31<zplt[0]||z13<zplt[0]||z33<zplt[0])continue;
+        }
 
         n11 = (i - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek;
         r11 = (float)sd->iqsliceframe[n11]/255.0;
@@ -5650,10 +5657,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
         r33 = (float)sd->iqsliceframe[n33]/255.0;
 
         rmid = (r11 + r31 + r13 + r33) / 4.0;
-
-        yy1 = yplt[j];
-        y3 = yplt[j + 1];
-        ymid = (yy1 + y3) / 2.0;
 
         /*
         n+nk (x1,y3)   n2+nk (x3,y3)
