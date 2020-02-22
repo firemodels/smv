@@ -8444,9 +8444,8 @@ typedef struct {
         (Match(buffer,"SLCT") == 1)
       || (Match(buffer, "BNDS") == 1)
       ){
-      char *slicelabelptr, slicelabel[256], *sliceparms, *sliceoffsetptr;
+      char *slicelabelptr, slicelabel[256], *sliceparms;
       float above_ground_level=0.0;
-      float sliceoffset_fds=0.0;
       int terrain=0, cellcenter=0, facecenter=0;
       int slicegeom=0;
       int slcf_index = 0;
@@ -8466,13 +8465,6 @@ typedef struct {
         *char_slcf_index = 0;
         char_slcf_index++;
         sscanf(char_slcf_index, "%i", &slcf_index);
-      }
-
-      sliceoffsetptr = strchr(buffer, '$');
-      if(sliceoffsetptr!=NULL){
-        *sliceoffsetptr = 0;
-        sliceoffsetptr++;
-        sscanf(sliceoffsetptr, "%f", &sliceoffset_fds);
       }
 
       sliceparms=strchr(buffer,'&');
@@ -8552,7 +8544,6 @@ typedef struct {
       sd->file_min = 1.0;
       sd->file_max = 0.0;
 #endif
-      sd->sliceoffset_fds = sliceoffset_fds;
       sd->reg_file=NULL;
       sd->comp_file=NULL;
       sd->vol_file=NULL;
@@ -11283,7 +11274,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SLICEOFFSET") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%f ", &sliceoffset_factor);
+      sscanf(buffer, "%f %f", &sliceoffset_factor, &sliceoffset_all);
       continue;
     }
     if(Match(buffer, "TITLESAFE") == 1){
@@ -13689,7 +13680,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SENSORRELSIZE\n");
   fprintf(fileout, " %f\n", sensorrelsize);
   fprintf(fileout, "SLICEOFFSET\n");
-  fprintf(fileout, " %f\n", sliceoffset_factor);
+  fprintf(fileout, " %f %f\n", sliceoffset_factor,sliceoffset_all);
   fprintf(fileout, "SMOOTHLINES\n");
   fprintf(fileout, " %i\n", antialiasflag);
   fprintf(fileout, "SPHERESEGS\n");
