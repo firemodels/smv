@@ -258,13 +258,12 @@ void ComputeTerrainNormalsManual(void){
     terraindata *terri;
     float *znode;
     int j;
-    int ibarp1, nycell;
+    int nycell;
 
     meshi = meshinfo + imesh;
     terri = meshi->terrain;
     if(terri==NULL)continue;
     znode = terri->znode;
-    ibarp1 = meshi->ibar+1;
     nycell = meshi->jbar;
 
     for(j=0;j<=terri->jbar;j++){
