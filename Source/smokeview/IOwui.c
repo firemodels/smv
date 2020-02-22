@@ -258,7 +258,7 @@ void ComputeTerrainNormalsManual(void){
     terraindata *terri;
     float *znode;
     int j;
-    int jbar, ibarp1, nycell;
+    int ibarp1, nycell;
 
     meshi = meshinfo + imesh;
     terri = meshi->terrain;
