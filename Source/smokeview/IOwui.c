@@ -269,27 +269,10 @@ void ComputeTerrainNormalsManual(void){
 
     for(j=0;j<=terri->jbar;j++){
       int i;
-      float dy;
-
-      if(j==0){
-        dy = (terri->yplt[j+1]-terri->yplt[j]);
-      }
-      else{
-        dy = (terri->yplt[j]-terri->yplt[j-1]);
-      }
-
 
       for(i=0;i<=terri->ibar;i++){
         float dzdx, dzdy, sum, znormal3[3];
         unsigned char *uc_znormal;
-        float dx;
-
-        if(i==0){
-          dx = (terri->xplt[i+1]-terri->xplt[i]);
-        }
-        else{
-          dx = (terri->xplt[i]-terri->xplt[i-1]);
-        }
 
      //     i      j    k
      //     1      0    dzdx
@@ -298,17 +281,37 @@ void ComputeTerrainNormalsManual(void){
      //     -dzdx -dzdy 1
 
         if(i==0){
-          dzdx = (znode[IJ2(i+1,j)]  -znode[IJ2(i,j)])/dx;
+          dzdx = (znode[IJ2(i+1,j)]  -znode[IJ2(i,j)])/(terri->xplt[i+1]-terri->xplt[i]);
+        }
+        else if(i==terri->ibar){
+          dzdx = (znode[IJ2(i, j)]-znode[IJ2(i-1, j)])/(terri->xplt[i]-terri->xplt[i-1]);
         }
         else{
-          dzdx = (znode[IJ2(i,j)]  -znode[IJ2(i-1,j)])/dx;
+          float dx1, dx3;
+          float dz1, dz3;
+
+          dx1 = (terri->xplt[i]-terri->xplt[i-1]);
+          dx3 = (terri->xplt[i+1]-terri->xplt[i]);
+          dz1 = (znode[IJ2(i,j)]  -znode[IJ2(i-1,j)]);
+          dz3 = (znode[IJ2(i+1, j)]-znode[IJ2(i, j)]);
+          dzdx = ((dz1/dx1)*dx3+(dz3/dx3)*dx1)/(dx1+dx3);
         }
 
         if(j==0){
-          dzdy = (znode[IJ2(i,j+1)]  -znode[IJ2(i,j)])/dy;
+          dzdy = (znode[IJ2(i, j+1)]-znode[IJ2(i, j)])/(terri->yplt[j+1]-terri->yplt[j]);
+        }
+        else if(j==terri->jbar){
+          dzdy = (znode[IJ2(i, j)]-znode[IJ2(i, j-1)])/(terri->yplt[j]-terri->yplt[j-1]);
         }
         else{
-          dzdy = (znode[IJ2(i,j)]  -znode[IJ2(i,j-1)])/dy;
+          float dy1, dy3;
+          float dz1, dz3;
+
+          dy1 = (terri->yplt[j]-terri->xplt[j-1]);
+          dy3 = (terri->yplt[j+1]-terri->yplt[j]);
+          dz1 = (znode[IJ2(i, j)]-znode[IJ2(i, j-1)]);
+          dz3 = (znode[IJ2(i, j+1)]-znode[IJ2(i, j)]);
+          dzdy = ((dz1/dy1)*dy3+(dz3/dy3)*dy1)/(dy1+dy3);
         }
 
         uc_znormal = terri->uc_znormal + IJ2(i,j);
