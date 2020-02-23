@@ -687,7 +687,6 @@ void DrawTerrain(terraindata *terri){
     if(show_terrain_grid==1){
       for(j = 0; j<terri->jbar; j++){
         for(i = 0; i<terri->ibar; i++){
-          unsigned char *uc_zn;
           float zval11, zval13, zval33, zval31;
 
           zval11 = znode[ijnode3(i,     j)]+ZOFFSET;
@@ -713,12 +712,9 @@ void DrawTerrain(terraindata *terri){
       for(j = 0; j<terri->jbar; j+=MAX(ABS(terrain_normal_skip),1)){
         for(i = 0; i<terri->ibar; i+= MAX(ABS(terrain_normal_skip), 1)){
           unsigned char *uc_zn;
-          float zval11, zval13, zval33, zval31;
+          float zval11;
 
           zval11 = znode[ijnode3(i,     j)]+ZOFFSET;
-          zval31 = znode[ijnode3(i+1,   j)]+ZOFFSET;
-          zval33 = znode[ijnode3(i+1, j+1)]+ZOFFSET;
-          zval13 = znode[ijnode3(i,   j+1)]+ZOFFSET;
 
           uc_zn = uc_znormal+ijnode3(i, j);
           zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
