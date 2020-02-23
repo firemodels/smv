@@ -268,10 +268,13 @@ void ComputeTerrainNormalsManual(void){
 
     for(j=0;j<=terri->jbar;j++){
       int i;
+      float *yplt;
 
+      yplt = terri->yplt+j;
       for(i=0;i<=terri->ibar;i++){
         float dzdx, dzdy, sum, znormal3[3];
         unsigned char *uc_znormal;
+        float *xplt;
 
      //     i      j    k
      //     1      0    dzdx
@@ -279,35 +282,36 @@ void ComputeTerrainNormalsManual(void){
 
      //     -dzdx -dzdy 1
 
+        xplt = terri->xplt+i;
         if(i==0){
-          dzdx = (znode[IJ2(i+1,j)]  -znode[IJ2(i,j)])/(terri->xplt[i+1]-terri->xplt[i]);
+          dzdx = (znode[IJ2(i+1,j)]  -znode[IJ2(i,j)])/(xplt[1]-xplt[0]);
         }
         else if(i==terri->ibar){
-          dzdx = (znode[IJ2(i, j)]-znode[IJ2(i-1, j)])/(terri->xplt[i]-terri->xplt[i-1]);
+          dzdx = (znode[IJ2(i, j)]-znode[IJ2(i-1, j)])/(xplt[0]-terri->xplt[-1]);
         }
         else{
           float dx1, dx3;
           float dz1, dz3;
 
-          dx1 = (terri->xplt[i]-terri->xplt[i-1]);
-          dx3 = (terri->xplt[i+1]-terri->xplt[i]);
+          dx1 = (xplt[0]-xplt[-1]);
+          dx3 = (xplt[1]-xplt[0]);
           dz1 = (znode[IJ2(i,j)]  -znode[IJ2(i-1,j)]);
           dz3 = (znode[IJ2(i+1, j)]-znode[IJ2(i, j)]);
           dzdx = ((dz1/dx1)*dx3+(dz3/dx3)*dx1)/(dx1+dx3);
         }
 
         if(j==0){
-          dzdy = (znode[IJ2(i, j+1)]-znode[IJ2(i, j)])/(terri->yplt[j+1]-terri->yplt[j]);
+          dzdy = (znode[IJ2(i, j+1)]-znode[IJ2(i, j)])/(yplt[1]-yplt[0]);
         }
         else if(j==terri->jbar){
-          dzdy = (znode[IJ2(i, j)]-znode[IJ2(i, j-1)])/(terri->yplt[j]-terri->yplt[j-1]);
+          dzdy = (znode[IJ2(i, j)]-znode[IJ2(i, j-1)])/(yplt[0]-yplt[-1]);
         }
         else{
           float dy1, dy3;
           float dz1, dz3;
 
-          dy1 = (terri->yplt[j]-terri->xplt[j-1]);
-          dy3 = (terri->yplt[j+1]-terri->yplt[j]);
+          dy1 = (yplt[0]-yplt[-1]);
+          dy3 = (yplt[1]-yplt[0]);
           dz1 = (znode[IJ2(i, j)]-znode[IJ2(i, j-1)]);
           dz3 = (znode[IJ2(i, j+1)]-znode[IJ2(i, j)]);
           dzdy = ((dz1/dy1)*dy3+(dz3/dy3)*dy1)/(dy1+dy3);
@@ -680,17 +684,42 @@ void DrawTerrain(terraindata *terri){
     x = terri->xplt;
     y = terri->yplt;
     glColor3f(0.0, 0.0, 0.0);
-    for(j = 0; j<terri->jbar; j++){
-      for(i = 0; i<terri->ibar; i++){
-        unsigned char *uc_zn;
-        float zval11, zval13, zval33, zval31;
+    if(show_terrain_grid==1){
+      for(j = 0; j<terri->jbar; j++){
+        for(i = 0; i<terri->ibar; i++){
+          unsigned char *uc_zn;
+          float zval11, zval13, zval33, zval31;
 
-        zval11 = znode[ijnode3(i,     j)]+ZOFFSET;
-        zval31 = znode[ijnode3(i+1,   j)]+ZOFFSET;
-        zval33 = znode[ijnode3(i+1, j+1)]+ZOFFSET;
-        zval13 = znode[ijnode3(i,   j+1)]+ZOFFSET;
+          zval11 = znode[ijnode3(i,     j)]+ZOFFSET;
+          zval31 = znode[ijnode3(i+1,   j)]+ZOFFSET;
+          zval33 = znode[ijnode3(i+1, j+1)]+ZOFFSET;
+          zval13 = znode[ijnode3(i,   j+1)]+ZOFFSET;
 
-        if(show_terrain_normals==1){
+          glVertex3f(x[i],   y[j],   zval11);
+          glVertex3f(x[i+1], y[j],   zval31);
+
+          glVertex3f(x[i+1], y[j],   zval31);
+          glVertex3f(x[i+1], y[j+1], zval33);
+
+          glVertex3f(x[i+1], y[j+1], zval33);
+          glVertex3f(x[i],   y[j+1], zval13);
+
+          glVertex3f(x[i],   y[j+1], zval13);
+          glVertex3f(x[i],   y[j],   zval11);
+        }
+      }
+    }
+    if(show_terrain_normals==1){
+      for(j = 0; j<terri->jbar; j+=MAX(ABS(terrain_normal_skip),1)){
+        for(i = 0; i<terri->ibar; i+= MAX(ABS(terrain_normal_skip), 1)){
+          unsigned char *uc_zn;
+          float zval11, zval13, zval33, zval31;
+
+          zval11 = znode[ijnode3(i,     j)]+ZOFFSET;
+          zval31 = znode[ijnode3(i+1,   j)]+ZOFFSET;
+          zval33 = znode[ijnode3(i+1, j+1)]+ZOFFSET;
+          zval13 = znode[ijnode3(i,   j+1)]+ZOFFSET;
+
           uc_zn = uc_znormal+ijnode3(i, j);
           zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
 
@@ -698,35 +727,6 @@ void DrawTerrain(terraindata *terri){
           glVertex3f(x[i]  +terrain_normal_length*zn[0],
                      y[j]  +terrain_normal_length*zn[1],
                      zval11+terrain_normal_length*zn[2]);
-
-          uc_zn = uc_znormal+ijnode3(i+1, j);
-          zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
-          glVertex3f(x[i+1], y[j], zval31);
-          glVertex3f(x[i+1]+terrain_normal_length*zn[0], y[j]+terrain_normal_length*zn[1], zval31+terrain_normal_length*zn[2]);
-
-          uc_zn = uc_znormal+ijnode3(i+1, j+1);
-          zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
-          glVertex3f(x[i+1], y[j+1], zval33);
-          glVertex3f(x[i+1]+terrain_normal_length*zn[0], y[j+1]+terrain_normal_length*zn[1], zval33+terrain_normal_length*zn[2]);
-
-          uc_zn = uc_znormal+ijnode3(i, j+1);
-          zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
-          glVertex3f(x[i], y[j+1], zval13);
-          glVertex3f(x[i]+terrain_normal_length*zn[0], y[j+1]+terrain_normal_length*zn[1], zval13+terrain_normal_length*zn[2]);
-        }
-
-        if(show_terrain_grid==1){
-          glVertex3f(x[i],   y[j],   zval11);
-          glVertex3f(x[i+1], y[j],   zval31);
-
-          glVertex3f(x[i+1], y[j],   zval31);
-          glVertex3f(x[i+1], y[j+1], zval33);
-
-          glVertex3f(x[i+1], y[j+1], zval33);
-          glVertex3f(x[i],   y[j+1], zval13);
-
-          glVertex3f(x[i],   y[j+1], zval13);
-          glVertex3f(x[i],   y[j],   zval11);
         }
       }
     }

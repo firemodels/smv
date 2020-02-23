@@ -19,6 +19,7 @@ GLUI_Panel *PANEL_fire_line=NULL;
 GLUI_Panel *PANEL_terrain_hidden1=NULL;
 GLUI_Panel *PANEL_terrain_color=NULL;
 GLUI_Panel *PANEL_terrain_type=NULL;
+GLUI_Panel *PANEL_terrain_normal=NULL;
 
 GLUI_RadioGroup *RADIO_terrain_type=NULL;
 
@@ -113,9 +114,11 @@ extern "C" void GluiWuiSetup(int main_window){
 
     SPINNER_vertical_factor=glui_wui->add_spinner_to_panel(PANEL_terrain_hidden1,"vertical exaggeration",GLUI_SPINNER_FLOAT,&vertical_factor,TERRAIN_VERT,WuiCB);
     SPINNER_vertical_factor->set_float_limits(0.25,4.0,GLUI_LIMIT_CLAMP);
-    glui_wui->add_checkbox_to_panel(PANEL_terrain_hidden1, "show terrain grid", &show_terrain_grid);
-    glui_wui->add_checkbox_to_panel(PANEL_terrain_hidden1, "show terrain normals", &show_terrain_normals);
-    glui_wui->add_spinner_to_panel(PANEL_terrain_hidden1, "vector length", GLUI_SPINNER_FLOAT, &terrain_normal_length);
+    glui_wui->add_checkbox_to_panel(PANEL_terrain_hidden1, "show grid", &show_terrain_grid);
+    PANEL_terrain_normal=glui_wui->add_panel_to_panel(PANEL_terrain_hidden1,_("normals"));
+    glui_wui->add_checkbox_to_panel(PANEL_terrain_normal, "show", &show_terrain_normals);
+    glui_wui->add_spinner_to_panel(PANEL_terrain_normal, "length", GLUI_SPINNER_FLOAT, &terrain_normal_length);
+    glui_wui->add_spinner_to_panel(PANEL_terrain_normal, "skip", GLUI_SPINNER_INT, &terrain_normal_skip);
 
     BUTTON_wui_1=glui_wui->add_button("Save settings",SAVE_SETTINGS_WUI,WuiCB);
     BUTTON_wui_2=glui_wui->add_button("Close",WUI_CLOSE,WuiCB);

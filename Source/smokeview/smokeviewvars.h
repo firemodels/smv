@@ -35,6 +35,7 @@ SVEXTERN char *crender_skips[NRENDER_SKIPS];
 
 SVEXTERN float SVDECL(sliceoffset_all, 0.0);
 SVEXTERN float SVDECL(terrain_normal_length, 1.0);
+SVEXTERN int SVDECL(terrain_normal_skip, 1);
 SVEXTERN int SVDECL(show_terrain_normals, 0), SVDECL(show_terrain_grid,0);
 SVEXTERN int SVDECL(terrain_slice_overlap, 0);
 SVEXTERN int GetTerrainData(char *file, terraindata *terri);
