@@ -1738,7 +1738,7 @@ void InitVars(void){
   right_green=0.0;
   right_blue=1.0;
   apertureindex=1;
-  zoomindex=2;
+  zoomindex=ZOOMINDEX_ONE;
   projection_type=PROJECTION_PERSPECTIVE;
   apertures[0]=30.;
   apertures[1]=45.;
@@ -1747,11 +1747,13 @@ void InitVars(void){
   apertures[3]=90.;
   planar_terrain_slice=0;
 
-  zooms[0]=0.25;
-  zooms[1]=0.5;
-  zooms[2]=1.0;
-  zooms[3]=2.0;
-  zooms[4]=4.0;
+  zooms[0] = 0.25;
+  zooms[1] = 0.5;
+  zooms[2] = 1.0;
+  zooms[3] = 2.0;
+  zooms[4] = 4.0;
+  zooms[5] = 10.0;
+  zooms[MAX_ZOOMS] = -1.0;
   zoom=1.0;
   aperture = Zoom2Aperture(zoom);
   aperture_glui = aperture;

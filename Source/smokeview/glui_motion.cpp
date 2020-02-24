@@ -1907,13 +1907,18 @@ extern "C" void SceneMotionCB(int var){
       update_rotation_center=1;
       return;
     case ZOOM:
+      updatemenu = 1;
       zoomindex=-1;
-      for(i=0;i<5;i++){
+      for(i=0;i<MAX_ZOOMS;i++){
         if(ABS(zoom-zooms[i])<0.001){
           zoomindex=i;
           zoom=zooms[i];
           break;
         }
+      }
+      if(zoomindex==-1&&zoom>0.0){
+        zooms[MAX_ZOOMS] = zoom;
+        zoomindex = MAX_ZOOMS;
       }
       camera_current->zoom=zoom;
       aperture_glui=Zoom2Aperture(zoom);
@@ -1928,8 +1933,8 @@ extern "C" void SceneMotionCB(int var){
         if(SPINNER_aperture!=NULL)SPINNER_aperture->set_float_val(aperture_glui);
       }
       zoomindex=-1;
-      for(i=0;i<5;i++){
-        if(ABS(zoom-zooms[i])<0.001){
+      for(i=0;i<MAX_ZOOMS+1;i++){
+        if(ABS(zoom-zooms[i])<0.001&&zooms[i]>0.0){
           zoomindex=i;
           zoom=zooms[i];
           aperture_glui=Zoom2Aperture(zoom);

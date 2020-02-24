@@ -1567,9 +1567,9 @@ void ZoomMenu(int value){
       zoom=zooms[0];
       zoomindex=0;
     }
-    if(zoom>zooms[4]){
-      zoom=zooms[4];
-      zoomindex=4;
+    if(zoomindex!=MAX_ZOOMS&&zoom>zooms[MAX_ZOOMS-1]){
+      zoom=zooms[MAX_ZOOMS-1];
+      zoomindex=MAX_ZOOMS-1;
     }
     if(projection_type!= PROJECTION_PERSPECTIVE){
       camera_current->projection_type=projection_type;
@@ -1586,8 +1586,8 @@ void ZoomMenu(int value){
     }
   }
   else{
-    if(zoomindex<0)zoomindex=2;
-    if(zoomindex>4)zoomindex=2;
+    if(zoomindex<0)zoomindex=ZOOMINDEX_ONE;
+    if(zoomindex>MAX_ZOOMS)zoomindex=ZOOMINDEX_ONE;
     zoom=zooms[zoomindex];
     if(projection_type!= PROJECTION_PERSPECTIVE){
       SetViewPoint(RESTORE_EXTERIOR_VIEW_ZOOM);
@@ -8530,16 +8530,20 @@ updatemenu=0;
   if(apertureindex!=4)glutAddMenuEntry("90",4);
 
   CREATEMENU(zoommenu,ZoomMenu);
-  if(zoomindex==0)glutAddMenuEntry("*0.25",0);
-  if(zoomindex!=0)glutAddMenuEntry("0.25",0);
-  if(zoomindex==1)glutAddMenuEntry("*0.50",1);
-  if(zoomindex!=1)glutAddMenuEntry("0.50",1);
-  if(zoomindex==2)glutAddMenuEntry("*1.0",2);
-  if(zoomindex!=2)glutAddMenuEntry("1.0",2);
-  if(zoomindex==3)glutAddMenuEntry("*2.0",3);
-  if(zoomindex!=3)glutAddMenuEntry("2.0",3);
-  if(zoomindex==4)glutAddMenuEntry("*4.0",4);
-  if(zoomindex!=4)glutAddMenuEntry("4.0",4);
+  for(i = 0; i<MAX_ZOOMS+1; i++){
+    char label[64];
+
+    if(zooms[i]>0.0){
+      if(zoomindex==i){
+        sprintf(label, "*%f", zooms[i]);
+      }
+      else{
+        sprintf(label, "%f", zooms[i]);
+      }
+      TrimZeros(label);
+      glutAddMenuEntry(label, i);
+    }
+  }
 
   /* --------------------------------reset menu -------------------------- */
 

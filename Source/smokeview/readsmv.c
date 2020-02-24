@@ -11404,21 +11404,9 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "ZOOM") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f ", &zoomindex, &zoom);
-      if(zoomindex != -1){
-        if(zoomindex<0)zoomindex = 2;
-        if(zoomindex>4)zoomindex = 2;
-        zoom = zooms[zoomindex];
-      }
-      else{
-        if(zoom<zooms[0]){
-          zoom = zooms[0];
-          zoomindex = 0;
-        }
-        if(zoom>zooms[4]){
-          zoom = zooms[4];
-          zoomindex = 4;
-        }
-      }
+      if(zoomindex<0)zoomindex = ZOOMINDEX_ONE;
+      if(zoomindex>MAX_ZOOMS+1)zoomindex = ZOOMINDEX_ONE;
+      zooms[zoomindex] = zoom;
       zoomini = zoom;
       updatezoomini = 1;
       ZoomMenu(zoomindex);
@@ -12018,8 +12006,9 @@ int ReadIni2(char *inifile, int localfile){
       zoom = zoom_in;
       zoomindex = zoomindex_in;
       if(zoomindex != -1){
-        if(zoomindex<0)zoomindex = 2;
-        if(zoomindex>4)zoomindex = 2;
+        if(zoomindex<0)zoomindex = ZOOMINDEX_ONE;
+        if(zooms[MAX_ZOOMS]>0.0&&zoomindex>MAX_ZOOMS)zoomindex = ZOOMINDEX_ONE;
+        if(zooms[MAX_ZOOMS]<=0.0&&zoomindex>MAX_ZOOMS-1)zoomindex = ZOOMINDEX_ONE;
         zoom = zooms[zoomindex];
       }
       else{
@@ -12027,9 +12016,9 @@ int ReadIni2(char *inifile, int localfile){
           zoom = zooms[0];
           zoomindex = 0;
         }
-        if(zoom>zooms[4]){
-          zoom = zooms[4];
-          zoomindex = 4;
+        if(zoomindex!=MAX_ZOOMS&&zoom>zooms[MAX_ZOOMS-1]){
+          zoom = zooms[MAX_ZOOMS-1];
+          zoomindex = MAX_ZOOMS-1;
         }
       }
       updatezoommenu = 1;

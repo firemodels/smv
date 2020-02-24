@@ -1463,7 +1463,9 @@ SVEXTERN float apertures[5];
 SVEXTERN float SVDECL(zoom_min, 0.1), SVDECL(zoom_max, 10.0);
 SVEXTERN float aperture_min, aperture_max;
 SVEXTERN float aperture,aperture_glui,aperture_default,aperture_glui0;
-SVEXTERN float zooms[5];
+#define MAX_ZOOMS 6
+#define ZOOMINDEX_ONE 2
+SVEXTERN float zooms[MAX_ZOOMS+1];
 SVEXTERN float zoom,SVDECL(zoomini,1.0);
 SVEXTERN int rgbmask[16];
 SVEXTERN GLint nredbits, ngreenbits, nbluebits;
