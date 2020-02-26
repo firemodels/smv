@@ -212,7 +212,7 @@ intel_win_64 : $(objwin)
 
 # ------------- gnu_win_64 ----------------
 
-gnu_win_64 : INC       += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
+gnu_win_64 : INC       += -I $(SOURCE_DIR)/glui_gl -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
 gnu_win_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 $(SMV_PROFILEFLAG)
 gnu_win_64 : CFLAGS    = -O0 -m64 $(D_FREEGLUT) -D GLEW_STATIC -D WIN32 -D pp_GCC -D __MINGW32__ -fno-builtin -Wno-write-strings $(GITINFO) $(GNU_COMPINFO) $(SMV_PROFILEFLAG)
 gnu_win_64 : LFLAGS    = -m64 $(SMV_LIBS_GNU) -lgfortran -lm -lopengl32 -lglu32 -lgdi32 -lwinmm -lcomdlg32 -lhid -lquadmath $(SMV_PROFILEFLAG)
@@ -234,7 +234,7 @@ gnu_win_64 : $(obj)
 # 2.  run case using smokeview_win_test_db
 # 3.  type: gprof smokeview_application_name > results.out
 
-gnu_win_64_db : INC       += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
+gnu_win_64_db : INC       += -I $(SOURCE_DIR)/glui_gl -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
 gnu_win_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D _DEBUG -D pp_GCC -ffree-form -frecord-marker=4 $(SMV_PROFILEFLAG) 
 gnu_win_64_db : CFLAGS    = -O0 -m64 -g -Wunused-label -Wunused-value -Wunused-variable $(D_FREEGLUT) $(SMV_PROFILEFLAG) -D GLEW_STATIC -D WIN32 -D pp_GCC -D __MINGW32__ -fno-builtin -Wno-write-strings $(GITINFO) $(GNU_COMPINFO)
 gnu_win_64_db : LFLAGS    = -m64 $(SMV_LIBS_GNU) -lgfortran -lm -lopengl32 -lglu32 -lgdi32 -lwinmm -lcomdlg32 -lhid -lquadmath $(SMV_PROFILEFLAG)
