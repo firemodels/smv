@@ -83,7 +83,7 @@ INC += -I $(SOURCE_DIR)/glui_v2_1_beta -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DI
 ifeq ($(GLUT),freeglut)
   WININC = -I $(SOURCE_DIR)/freeglut3.0.0/include
 else
-  WININC = -I $(SOURCE_DIR)/glui_gl
+  WININC = -I $(SOURCE_DIR)/glut_gl
 endif
 WININC += -I $(SOURCE_DIR)/pthreads
 WININC += -I $(SOURCE_DIR)/openvr/headers
