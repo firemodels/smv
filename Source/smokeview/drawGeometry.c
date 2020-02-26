@@ -605,9 +605,20 @@ void UpdateIndexColors(void){
       bc = meshi->blockageinfoptrs[j];
       if(bc->usecolorindex==1){
         colorindex=bc->colorindex;
+#ifdef pp_BLOCK_COLOR
+        if(colorindex>=0){
+          if(bc->use_block_transparency==1&&bc->transparency>=0.0){
+            bc->color = GetColorTranPtr(rgb[nrgb+colorindex],bc->transparency);
+          }
+          else{
+            bc->color = GetColorPtr(rgb[nrgb+colorindex]);
+          }
+        }
+#else
         if(colorindex>=0){
           bc->color = GetColorPtr(rgb[nrgb+colorindex]);
         }
+#endif
       }
     }
     for(j=0;j<meshi->nvents;j++){
@@ -2173,6 +2184,12 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
           faceptr->invisible=bc->surf[j]->invisible;
           faceptr->transparent=bc->surf[j]->transparent;
         }
+#ifdef pp_BLOCK_COLOR
+        if(bc->use_block_transparency==1){
+          faceptr->transparent = bc->transparent;
+          faceptr->color = GetColorTranPtr(faceptr->color, bc->transparency);
+        }
+#endif
         break;
       default:
         ASSERT(FFALSE);
@@ -2457,6 +2474,9 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
     }
     faceptr++;
   }
+#ifdef pp_BLOCK_COLOR
+  UpdateBlockType();
+#endif
 }
 
 /* ------------------ UpdateFaces ------------------------ */

@@ -1975,7 +1975,7 @@ void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned cha
 
 /* ------------------ GetColorPtr ------------------------ */
 
-float *GetColorPtr(const float *color){
+float *GetColorPtr(float *color){
   colordata *colorptr,*oldlastcolor,*lastcolor;
 
   int i;
@@ -2017,7 +2017,19 @@ float *GetColorPtr(const float *color){
   return lastcolor->color;
 }
 
-/* ------------------ ConvertColor ------------------------ */
+/* ------------------ GetColorTranPtr ------------------------ */
+
+float *GetColorTranPtr(float *color, float transparency){
+  float col[4];
+
+  col[0] = color[0];
+  col[1] = color[1];
+  col[2] = color[2];
+  col[3] = transparency;
+  return GetColorPtr(col);
+}
+
+  /* ------------------ ConvertColor ------------------------ */
 
 void ConvertColor(int flag){
   colordata *colorptr;

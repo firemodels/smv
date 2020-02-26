@@ -2345,6 +2345,40 @@ void UpdateVentOffset(void){
   }
 }
 
+/* ------------------ UpdateBlockType ------------------------ */
+
+void UpdateBlockType(void){
+  int igrid, i;
+
+  ntransparentblocks = 0;
+  ntransparentvents = 0;
+  nopenvents = 0;
+  nopenvents_nonoutline = 0;
+  ndummyvents = 0;
+  for(igrid = 0; igrid<nmeshes; igrid++){
+    meshdata *meshi;
+
+    meshi = meshinfo+igrid;
+    for(i = 0; i<meshi->nbptrs; i++){
+      blockagedata *bc;
+
+      bc = meshi->blockageinfoptrs[i];
+      if(bc->color[3]<0.99)ntransparentblocks++;
+    }
+    for(i = 0; i<meshi->nvents; i++){
+      ventdata *vi;
+
+      vi = meshi->ventinfo+i;
+      if(vi->isOpenvent==1){
+        nopenvents++;
+        if(vi->type!=BLOCK_OUTLINE)nopenvents_nonoutline++;
+      }
+      if(vi->dummy==1)ndummyvents++;
+      if(vi->color[3]<0.99)ntransparentvents++;
+    }
+  }
+}
+
 /* ------------------ UpdateMeshCoords ------------------------ */
 
 void UpdateMeshCoords(void){
@@ -2723,33 +2757,7 @@ void UpdateMeshCoords(void){
     face_centers[17]=meshi->boxmax_scaled[2];
   }
 
-  ntransparentblocks=0;
-  ntransparentvents=0;
-  nopenvents=0;
-  nopenvents_nonoutline=0;
-  ndummyvents=0;
-  for(igrid=0;igrid<nmeshes;igrid++){
-    meshdata *meshi;
-
-    meshi=meshinfo+igrid;
-    for(i=0;i<meshi->nbptrs;i++){
-      blockagedata *bc;
-
-      bc=meshi->blockageinfoptrs[i];
-      if(bc->color[3]<0.99)ntransparentblocks++;
-    }
-    for(i=0;i<meshi->nvents;i++){
-      ventdata *vi;
-
-      vi = meshi->ventinfo + i;
-      if(vi->isOpenvent==1){
-        nopenvents++;
-        if(vi->type!=BLOCK_OUTLINE)nopenvents_nonoutline++;
-      }
-      if(vi->dummy==1)ndummyvents++;
-      if(vi->color[3]<0.99)ntransparentvents++;
-    }
-  }
+  UpdateBlockType();
 
   for(igrid=0;igrid<nmeshes;igrid++){
     meshdata *meshi;
@@ -3078,6 +3086,9 @@ void InitObst(blockagedata *bc, surfdata *surf, int index, int meshindex){
 
   bc->color = surf->color;
   bc->useblockcolor = 0;
+#ifdef pp_BLOCK_COLOR
+  bc->use_block_transparency = 0;
+#endif
   for(i = 0; i<6; i++){
     bc->surf_index[i] = -1;
     bc->surf[i] = surf;
@@ -7635,6 +7646,22 @@ typedef struct {
 
         if(colorindex==0||colorindex==7)colorindex=-3;
 
+#ifdef pp_BLOCK_COLOR
+        bc->transparency = -1.0;
+        if(colorindex==-1){
+          float s_color[3], transparent=-1.0, rdummy;
+          int dummy;
+
+          sscanf(buffer, "%i %i %i %i %i %i %i %i %f %f %f %f",
+            &dummy, &dummy, &dummy, &dummy, &dummy, &dummy,
+            &dummy, &dummy, &rdummy, &rdummy, &rdummy, &transparent);
+          bc->transparency = transparent;
+          if(transparent>=0.0){
+            bc->use_block_transparency = 1;
+            if(transparent<0.999)bc->transparent = 1;
+          }
+        }
+#endif
         if(colorindex==-3){
           float s_color[4];
 
@@ -7677,12 +7704,17 @@ typedef struct {
             bc->color=GetColorPtr(s_color);
           }
           bc->nnodes=(ijk[1]+1-ijk[0])*(ijk[3]+1-ijk[2])*(ijk[5]+1-ijk[4]);
-          bc->useblockcolor=1;
+          bc->useblockcolor = 1;
+#ifdef pp_BLOCK_COLOR
+          bc->use_block_transparency = 1;
+#endif
         }
         else{
           if(colorindex>=0){
             bc->color = GetColorPtr(rgb[nrgb+colorindex]);
-            bc->useblockcolor=1;
+#ifdef pp_BLOCK_COLOR
+            bc->useblockcolor =1;
+#endif
             bc->usecolorindex=1;
             bc->colorindex=colorindex;
             updateindexcolors=1;
@@ -7695,7 +7727,6 @@ typedef struct {
 
         if(colorindex==COLOR_INVISIBLE){
           bc->type=BLOCK_hidden;
-//          bc->del=1;
           bc->invisible=1;
         }
         if(bc->useblockcolor==0){
