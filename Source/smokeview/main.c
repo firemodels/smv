@@ -40,9 +40,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
     PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time"));
     PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
-#ifdef pp_HTML
     PRINTF("%s\n", _(" -html          - output html version of smokeview scene"));
-#endif
 #ifdef pp_LANG
     PRINTF("%s\n", _(" -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian"));
 #endif
@@ -59,9 +57,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", " -luascript scriptfile - run the Lua script file scriptfile");
     PRINTF("%s\n", " -killscript    - exit smokeview (with an error code) if the script fails");
 #endif
-#ifdef pp_HTML
     PRINTF("%s\n", _(" -runhtmlscript - run the script file casename.ssf without using graphics"));
-#endif
     PRINTF("%s\n", _(" -sizes         - output files sizes then exit"));
     PRINTF("%s\n", _(" -skipframe n   - render every n frames"));
     PRINTF("%s\n", _(" -smoke3d       - only show 3d smoke"));
@@ -170,10 +166,9 @@ void Usage(char *prog,int option){
 #ifdef pp_SETTIME
     strcat(label, ", pp_SETTIME");
 #endif
-#ifdef pp_SHOWTERRAIN
-    strcat(label, ", pp_SHOWTERRAIN");
-#endif
+#ifdef pp_SLICELOAD
     strcat(label, ", pp_SLICELOAD");
+#endif
 #ifdef pp_THREAD
     strcat(label, ", pp_THREAD");
 #endif
@@ -321,7 +316,6 @@ void ParseCommandline(int argc, char **argv){
   STRCPY(caseini_filename, fdsprefix);
   STRCAT(caseini_filename, ".ini");
 
-#ifdef pp_HTML
   FREEMEMORY(html_filename);
   NewMemory((void **)&html_filename, len_casename+strlen(".html")+1);
   STRCPY(html_filename, fdsprefix);
@@ -346,7 +340,6 @@ void ParseCommandline(int argc, char **argv){
   NewMemory((void **)&htmlslicecell_filename, len_casename+strlen("_slicecell.json")+1);
   STRCPY(htmlslicecell_filename, fdsprefix);
   STRCAT(htmlslicecell_filename, "_slicecell.json");
-#endif
 
   FREEMEMORY(boundinfo_filename);
   NewMemory((void **)&boundinfo_filename, len_casename + strlen(".binfo") + 1);
@@ -605,14 +598,12 @@ void ParseCommandline(int argc, char **argv){
 #endif
       runscript = 1;
     }
-#ifdef pp_HTML
     else if(strncmp(argv[i], "-runhtmlscript", 14)==0){
       from_commandline = 1;
       use_graphics = 0;
       iso_multithread = 0;
       runhtmlscript = 1;
     }
-#endif
 #ifdef pp_LUA
     else if(strncmp(argv[i], "-runluascript", 13) == 0){
       from_commandline = 1;
@@ -824,19 +815,15 @@ int main(int argc, char **argv){
   if(convert_ini==1){
     ReadIni(ini_from);
   }
-#ifdef pp_HTML
   if(runhtmlscript==1){
     DoScriptHtml();
   }
-#endif
 
   STOP_TIMER(startup_time);
-#ifdef pp_HTML
   if(runhtmlscript==1){
     PRINTF("\nTime: %.1f s\n", startup_time);
     return 0;
   }
-#endif
   PRINTF("\nStartup time: %.1f s\n", startup_time);
 
   glutMainLoop();

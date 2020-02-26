@@ -2741,14 +2741,12 @@ void DrawVerticalColorbarRegLabels(void){
       char *slicecolorlabel_ptr = NULL;
       float vert_position;
       int shifted_colorbar_index;
-      
+
       tttval = sb->levels256[valindex];
       shifted_colorbar_index = global_colorbar_index;
-#ifdef pp_SHIFT_COLORBARS
       if(ABS(colorbar_shift-1.0)>0.0001){
         shifted_colorbar_index = SHIFT_VAL(global_colorbar_index, 0, 255, colorbar_shift);
       }
-#endif
       SliceNum2String(slicelabel, tttval, ncolorlabel_decimals);
       slicecolorlabel_ptr = slicelabel;
       if(sliceflag == 1){
@@ -2777,7 +2775,6 @@ void DrawVerticalColorbarRegLabels(void){
       }
     }
     else{
-#ifdef pp_SHIFT_COLORBARS
       float valmin, valmax;
 
 
@@ -2796,7 +2793,6 @@ void DrawVerticalColorbarRegLabels(void){
         valmax = sb->colorvalues[nrgb-1];
       }
       valmax = ScaleFloat2Float(valmax, slicefactor);
-#endif
 
       for(i = 0; i < nrgb - 1; i++){
         float vert_position, val;
@@ -2811,11 +2807,9 @@ void DrawVerticalColorbarRegLabels(void){
           val = sb->colorvalues[i+1];
         }
         val = ScaleFloat2Float(val, slicefactor);
-#ifdef pp_SHIFT_COLORBARS
         if(ABS(colorbar_shift-1.0)>0.0001){
           val = SHIFT_VAL(val,valmin,valmax,1.0/colorbar_shift);
         }
-#endif
         SliceNum2String(slicecolorlabel, val, ncolorlabel_decimals);
         slicecolorlabel_ptr = slicecolorlabel;
         OutputBarText(0.0, vert_position, foreground_color, slicecolorlabel_ptr);

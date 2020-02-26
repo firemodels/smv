@@ -375,7 +375,6 @@ void UpdateShow(void){
   show3dsmoke=0;
   smoke3dflag=0;
   showtours=0;
-  showterrain=0;
   visTimeParticles=1; visTimeSlice=1; visTimeBoundary=1; visTimeZone=1; visTimeIso=1;
 
   RenderTime=0;
@@ -407,17 +406,6 @@ void UpdateShow(void){
           showtours=1;
           break;
         }
-      }
-    }
-  }
-  if(visTerrainType!=TERRAIN_HIDDEN){
-    for(i=0;i<nterraininfo;i++){
-      terraindata *terri;
-
-      terri = terraininfo + i;
-      if(terri->loaded==1){
-        showterrain=1;
-        break;
       }
     }
   }
@@ -642,10 +630,8 @@ void UpdateShow(void){
 
   if( plotstate==DYNAMIC_PLOTS &&
     ( sliceflag==1 || vsliceflag==1 || partflag==1 || patchflag==1 ||
-    shooter_flag==1||
-    smoke3dflag==1|| showtours==1 || evacflag==1||
-    (ReadZoneFile==1&&visZone==1&&visTimeZone==1)||
-    showterrain==1||showvolrender==1
+    shooter_flag==1|| smoke3dflag==1 || showtours==1 || evacflag==1 ||
+    (ReadZoneFile==1&&visZone==1&&visTimeZone==1)||showvolrender==1
     )
     )showtime=1;
   if(plotstate==DYNAMIC_PLOTS&&ReadIsoFile==1&&visAIso!=0&&isoflag==1)showtime2=1;
@@ -793,15 +779,8 @@ void SynchTimes(void){
       tourj->timeslist[n]=GetItime(n,tourj->timeslist,tourj->path_times,tourj->ntimes);
     }
 
-    /* synchronize terrain times */
+    /* synchronize hrrpuv times */
 
-    for(j=0;j<nterraininfo;j++){
-      terraindata *terri;
-
-      terri = terraininfo + j;
-      if(terri->loaded==0)continue;
-      terri->timeslist[n]=GetItime(n,terri->timeslist,terri->times,terri->ntimes);
-    }
     if(hrrinfo!=NULL&&hrrinfo->loaded==1&&hrrinfo->display==1){
       hrrinfo->timeslist[n]=GetItime(n,hrrinfo->timeslist,hrrinfo->times,hrrinfo->ntimes);
     }
@@ -1103,18 +1082,6 @@ void UpdateTimes(void){
     global_timemin = MIN(global_timemin, geomi->times[0]);
     global_timemax = MAX(global_timemax, geomi->times[geomi->ntimes-1]);
   }
-  if(visTerrainType!=TERRAIN_HIDDEN){
-    for(i=0;i<nterraininfo;i++){
-      terraindata *terri;
-
-      terri = terraininfo + i;
-      if(terri->loaded==1){
-        nglobal_times = MAX(nglobal_times,terri->ntimes);
-        global_timemin = MIN(global_timemin, terri->times[0]);
-        global_timemax = MAX(global_timemax, terri->times[terri->ntimes-1]);
-      }
-    }
-  }
   if(visShooter!=0&&shooter_active==1){
     nglobal_times = MAX(nglobal_times,nshooter_frames);
   }
@@ -1264,16 +1231,6 @@ void UpdateTimes(void){
     if(touri->display==0)continue;
     FREEMEMORY(touri->timeslist);
     if(nglobal_times>0)NewMemory((void **)&touri->timeslist,nglobal_times*sizeof(int));
-  }
-  if(visTerrainType!=TERRAIN_HIDDEN){
-    for(i=0;i<nterraininfo;i++){
-      terraindata *terri;
-
-      terri = terraininfo + i;
-      if(terri->loaded==0)continue;
-      FREEMEMORY(terri->timeslist);
-      if(nglobal_times>0)NewMemory((void **)&terri->timeslist,nglobal_times*sizeof(int));
-    }
   }
   if(hrrinfo!=NULL){
     FREEMEMORY(hrrinfo->timeslist);
@@ -1561,17 +1518,6 @@ void UpdateTimes(void){
     UpdateTimeLabels();
     UpdateGluiTimeBounds(global_times[0],global_times[nglobal_times-1]);
   }
-  show_slice_terrain=0;
-  if(visTerrainType==TERRAIN_3D_MAP){
-    for(i=0;i<nsliceinfo;i++){
-      slicedata *sd;
-
-      sd = sliceinfo + i;
-      if(sd->loaded==0||sd->display==0||sd->slice_filetype!=SLICE_TERRAIN)continue;
-      show_slice_terrain=1;
-      break;
-    }
-  }
   CheckMemory;
 }
 
@@ -1611,16 +1557,6 @@ int GetPlotState(int choice){
         return DYNAMIC_PLOTS;
       }
       if(visGrid==0)stept = 1;
-      if(visTerrainType!=TERRAIN_HIDDEN){
-        for(i=0;i<nterraininfo;i++){
-          terraindata *terri;
-
-          terri = terraininfo + i;
-          if(terri->loaded==1){
-            return DYNAMIC_PLOTS;
-          }
-        }
-      }
       for(i=0;i<nvsliceinfo;i++){
         vslicedata *vslicei;
 
@@ -2057,7 +1993,6 @@ void UpdateDisplay(void){
 
 /* ------------------ ShiftColorbars ------------------------ */
 
-#ifdef pp_SHIFT_COLORBARS
 void ShiftColorbars(void){
   int i;
 
@@ -2084,4 +2019,3 @@ void ShiftColorbars(void){
   }
   CheckMemory;
 }
-#endif

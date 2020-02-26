@@ -2306,9 +2306,7 @@ void UpdateVsliceMenuLabels(void){
 /* ------------------ NewMultiSlice ------------------------ */
 
 int NewMultiSlice(slicedata *sdold,slicedata *sd){
-#ifdef pp_SLICE_USE_ID
     float same=0;
-#endif
 
   if(sdold->volslice!=sd->volslice)return 1;
   if(sd->volslice==0){
@@ -2320,7 +2318,6 @@ int NewMultiSlice(slicedata *sdold,slicedata *sd){
   // convert from physical to scaled units using xyzmaxdiff
     delta_orig = 1.5*MAX(sdold->delta_orig,sd->delta_orig);
     delta_scaled = SCALE2SMV(delta_orig);
-#ifdef pp_SLICE_USE_ID
       if(use_new_slice_menus==0||sd->slcf_index==0){
         if(
         ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled&&         // test whether two slices are identical
@@ -2331,15 +2328,8 @@ int NewMultiSlice(slicedata *sdold,slicedata *sd){
       else{
         if(sd->slcf_index==sdold->slcf_index)same=1;
       }
-#endif
     if(
-#ifdef pp_SLICE_USE_ID
       same==1&&
-#else
-      ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled&&         // test whether two slices are identical
-      ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled&&
-      ABS(sd->zmin-sdold->zmin)<delta_scaled&&ABS(sd->zmax-sdold->zmax)<delta_scaled&&
-#endif
       sd->blocknumber==sdold->blocknumber
         ){
       return 1;
@@ -2347,12 +2337,8 @@ int NewMultiSlice(slicedata *sdold,slicedata *sd){
 
     if(strcmp(sd->label.shortlabel,sdold->label.shortlabel)!=0
       ||sd->idir!=sdold->idir
-#ifdef pp_SLICE_USE_ID
       ||(use_new_slice_menus==1&&sd->slcf_index!=0&&sd->slcf_index!=sdold->slcf_index)
       ||((use_new_slice_menus==0||sd->slcf_index==0)&&ABS(sd->position_orig-sdold->position_orig)>delta_orig)
-#else
-      ||ABS(sd->position_orig-sdold->position_orig)>delta_orig
-#endif
       ||sd->mesh_type!=sdold->mesh_type
       ||sd->slice_filetype!=sdold->slice_filetype
         ){
@@ -3553,7 +3539,7 @@ void UpdateSliceContours(int slice_type_index, float line_min, float line_max, i
         ASSERT(FFALSE);
         break;
     }
-    constval += SCALE2SMV(sd->sliceoffset_fds);
+    constval += sliceoffset_all;
 
     FreeContours(sd->line_contours,sd->nline_contours);
     sd->nline_contours=sd->ntimes;
@@ -3834,11 +3820,21 @@ void AdjustBounds(int setmin, int setmax, float *pdata, int ndata, float *pmin, 
       buckets[n] = 0;
     }
     for(n = 0; n<ndata; n++){
-      level = 0;
-      if(pdata[n]>*pmin&&dp!=0.0f){
-        level = (int)((pdata[n]-*pmin)/dp);
+      if(pdata[n]<=*pmin){
+        level = 0;
       }
-      level = MIN(level,NBUCKETS-1);
+      else if(pdata[n]>=*pmax){
+        level = NBUCKETS-1;
+      }
+      else{
+        if(dp!=0.0f){
+          level = (int)((pdata[n]-*pmin)/dp);
+        }
+        else{
+          level = 0;
+        }
+      }
+      level = CLAMP(level,0,NBUCKETS-1);
       buckets[level]++;
     }
     alpha05 = (int)(.01f*ndata);
@@ -4467,6 +4463,12 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
   show_slice_average = 0;
   blocknumber = sliceinfo[ifile].blocknumber;
   meshi = meshinfo + blocknumber;
+  if(meshi->terrain!=NULL&&meshi->terrain->nvalues==0){
+    if(flag==LOAD){
+      printf("***warning: all terrain elevations below %f.  Slice file %s not loaded\n", meshi->terrain->zmin_cutoff, file);
+    }
+    return 0;
+  }
 
   slicefilenumber = ifile;
   slicefilenum = ifile;
@@ -4834,7 +4836,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
   sd->globalmax = qmax;
   if(sd->compression_type == UNCOMPRESSED){
     if(nzoneinfo==0||strcmp(sd->label.shortlabel, "TEMP")!=0){
-      AdjustSliceBounds(sd, &qmin, &qmax);
+      if(research_mode==0)AdjustSliceBounds(sd, &qmin, &qmax);
     }
   }
   sd->valmin = qmin;
@@ -5162,7 +5164,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
       ASSERT(FFALSE);
       break;
     }
-    constval += SCALE2SMV(sd->sliceoffset_fds);
+    constval += SCALE2SMV(sliceoffset_all);
 
     glBegin(GL_TRIANGLES);
     maxj = sd->js2;
@@ -5253,7 +5255,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
       ASSERT(FFALSE);
       break;
     }
-    constval += SCALE2SMV(sd->sliceoffset_fds);
+    constval += SCALE2SMV(sliceoffset_all);
 
     glBegin(GL_TRIANGLES);
     maxi = sd->is1 + sd->nslicei - 1;
@@ -5344,7 +5346,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
       ASSERT(FFALSE);
       break;
     }
-    constval += SCALE2SMV(sd->sliceoffset_fds);
+    constval += SCALE2SMV(sliceoffset_all);
 
     glBegin(GL_TRIANGLES);
     maxi = sd->is1 + sd->nslicei - 1;
@@ -5445,11 +5447,12 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
   terri = meshi->terrain;
   if(terri == NULL)return;
-  nycell = terri->ny;
+  nycell = terri->jbar;
 
-  xplt = meshi->xplt;
-  yplt = meshi->yplt;
-  zplt = meshi->zplt;
+  xplt = meshi->xplt_orig;
+  yplt = meshi->yplt_orig;
+  zplt = meshi->zplt_orig;
+
   if(sd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
     ploty = meshi->iploty_all[iploty_all];
@@ -5479,7 +5482,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
   if((sd->volslice == 1 && plotx >= 0 && visx_all == 1) || (sd->volslice == 0 && sd->idir == XDIR)){
     int maxj;
 
-    constval = xplt[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    constval = xplt[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glBegin(GL_TRIANGLES);
     maxj = sd->js2;
     if(sd->js1 + 1>maxj){
@@ -5538,7 +5541,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
   if((sd->volslice == 1 && ploty >= 0 && visy_all == 1) || (sd->volslice == 0 && sd->idir == YDIR)){
     int maxi;
 
-    constval = yplt[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    constval = yplt[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glBegin(GL_TRIANGLES);
     maxi = sd->is1 + sd->nslicei - 1;
     if(sd->is1 + 1>maxi){
@@ -5599,11 +5602,15 @@ void DrawVolSliceTerrain(const slicedata *sd){
   if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
     float z11, z31, z13, z33, zmid;
     int maxi;
-    float *znode, zoffset;
+    float *znode, agl_smv, z_cutoff;
 
-    znode = terri->znode_scaled;
-    constval = zplt[plotz] + offset_slice*sd->sliceoffset + 0.001+SCALE2SMV(sd->sliceoffset_fds);
-    zoffset = SCALE2SMV(sd->above_ground_level);
+    znode = terri->znode;
+    agl_smv = sd->above_ground_level;
+    z_cutoff = terri->zmin_cutoff;
+    glPushMatrix();
+    glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
+    glTranslatef(-xbar0,-ybar0,-zbar0+agl_smv+sliceoffset_all);
+
     glBegin(GL_TRIANGLES);
     maxi = MAX(sd->is1 + sd->nslicei - 1, sd->is1 + 1);
     for(i = sd->is1; i<maxi; i++){
@@ -5619,32 +5626,37 @@ void DrawVolSliceTerrain(const slicedata *sd){
         float ymid, rmid;
         int n11, n31, n13, n33;
 
-        z11 = znode[IJ2(i, j)] + zoffset;
-        z31 = znode[IJ2(i + 1, j)] + zoffset;
-        z13 = znode[IJ2(i, j + 1)] + zoffset;
-        z33 = znode[IJ2(i + 1, j + 1)] + zoffset;
-        zmid = (z11 + z31 + z13 + z33) / 4.0;
+        z11 = znode[IJ2(i, j)];
+        z31 = znode[IJ2(i + 1, j)];
+        z13 = znode[IJ2(i, j + 1)];
+        z33 = znode[IJ2(i + 1, j + 1)];
+        zmid = (z11 + z31 + z13 + z33)/4.0;
+
+        yy1 = yplt[j];
+        y3 = yplt[j+1];
+        ymid = (yy1+y3)/2.0;
 
         if(iblank_z != NULL&&iblank_z[IJK(i, j, plotz)] != GASGAS)continue;
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
 
+        if(z11<z_cutoff||z31<z_cutoff||z13<z_cutoff||z33<z_cutoff)continue;
+        if(terrain_slice_overlap==0){
+          if(z11<zplt[0]||z31<zplt[0]||z13<zplt[0]||z33<zplt[0])continue;
+        }
+
         n11 = (i - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek;
-        r11 = Interp3DSliceIndex(sd->iqsliceframe, zplt, meshi->kbar, n11, constval) / 255.0;
+        r11 = (float)sd->iqsliceframe[n11]/255.0;
 
         n31 = n11 + sd->nslicej*sd->nslicek;
-        r31 = Interp3DSliceIndex(sd->iqsliceframe, zplt, meshi->kbar, n31, constval) / 255.0;
+        r31 = (float)sd->iqsliceframe[n31]/255.0;
 
         n13 = n11 + sd->nslicek;
-        r13 = Interp3DSliceIndex(sd->iqsliceframe, zplt, meshi->kbar, n13, constval) / 255.0;
+        r13 = (float)sd->iqsliceframe[n13]/255.0;
 
         n33 = n13 + sd->nslicej*sd->nslicek;
-        r33 = Interp3DSliceIndex(sd->iqsliceframe, zplt, meshi->kbar, n33, constval) / 255.0;
+        r33 = (float)sd->iqsliceframe[n33]/255.0;
 
         rmid = (r11 + r31 + r13 + r33) / 4.0;
-
-        yy1 = yplt[j];
-        y3 = yplt[j + 1];
-        ymid = (yy1 + y3) / 2.0;
 
         /*
         n+nk (x1,y3)   n2+nk (x3,y3)
@@ -5656,24 +5668,25 @@ void DrawVolSliceTerrain(const slicedata *sd){
         //                (xmid,ymid,rmid,zmid)
         //  (x1,yy1,r11,z11)                    (x3,yy1,r31,z31)
 
-        glTexCoord1f(r11); glVertex3f(x1, yy1, z11);
-        glTexCoord1f(r31); glVertex3f(x3, yy1, z31);
+        glTexCoord1f(r11);  glVertex3f(x1, yy1, z11);
+        glTexCoord1f(r31);  glVertex3f(x3, yy1, z31);
         glTexCoord1f(rmid); glVertex3f(xmid, ymid, zmid);
 
-        glTexCoord1f(r31); glVertex3f(x3, yy1, z31);
-        glTexCoord1f(r33); glVertex3f(x3, y3, z33);
+        glTexCoord1f(r31);  glVertex3f(x3, yy1, z31);
+        glTexCoord1f(r33);  glVertex3f(x3, y3, z33);
         glTexCoord1f(rmid); glVertex3f(xmid, ymid, zmid);
 
-        glTexCoord1f(r33); glVertex3f(x3, y3, z33);
-        glTexCoord1f(r13); glVertex3f(x1, y3, z13);
+        glTexCoord1f(r33);  glVertex3f(x3, y3, z33);
+        glTexCoord1f(r13);  glVertex3f(x1, y3, z13);
         glTexCoord1f(rmid); glVertex3f(xmid, ymid, zmid);
 
-        glTexCoord1f(r13); glVertex3f(x1, y3, z13);
-        glTexCoord1f(r11); glVertex3f(x1, yy1, z11);
+        glTexCoord1f(r13);  glVertex3f(x1, y3, z13);
+        glTexCoord1f(r11);  glVertex3f(x1, yy1, z11);
         glTexCoord1f(rmid); glVertex3f(xmid, ymid, zmid);
       }
     }
     glEnd();
+    glPopMatrix();
   }
   glDisable(GL_TEXTURE_1D);
   if(use_transparency_data == 1)TransparentOff();
@@ -5924,7 +5937,7 @@ void DrawVolSliceTexture(const slicedata *sd){
   if((sd->volslice == 1 && plotx >= 0 && visx_all == 1) || (sd->volslice == 0 && sd->idir == XDIR)){
     int maxj;
 
-    constval = xplt[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    constval = xplt[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glBegin(GL_TRIANGLES);
     maxj = sd->js2;
     if(sd->js1 + 1>maxj){
@@ -5984,7 +5997,7 @@ void DrawVolSliceTexture(const slicedata *sd){
   if((sd->volslice == 1 && ploty >= 0 && visy_all == 1) || (sd->volslice == 0 && sd->idir == YDIR)){
     int maxi;
 
-    constval = yplt[ploty]+offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    constval = yplt[ploty]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glBegin(GL_TRIANGLES);
     maxi = sd->is1 + sd->nslicei - 1;
     if(sd->is1 + 1>maxi){
@@ -6046,7 +6059,7 @@ void DrawVolSliceTexture(const slicedata *sd){
   if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
     int maxi;
 
-    constval = zplt[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    constval = zplt[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glBegin(GL_TRIANGLES);
     maxi = sd->is1 + sd->nslicei - 1;
     if(sd->is1 + 1>maxi){
@@ -6343,7 +6356,7 @@ void DrawVolSlice(const slicedata *sd){
     float *opacity_adjustments;
 
     opacity_adjustments = meshi->opacity_adjustments;
-    constval = xplt[plotx]+offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    constval = xplt[plotx]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glBegin(GL_TRIANGLES);
     maxj = MAX(sd->js1 + 1, sd->js2);
     for(j = sd->js1; j<maxj; j++){
@@ -6432,7 +6445,7 @@ void DrawVolSlice(const slicedata *sd){
   if((sd->volslice == 1 && ploty >= 0 && visy_all == 1) || (sd->volslice == 0 && sd->idir == YDIR)){
     int maxi;
 
-    constval = yplt[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    constval = yplt[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glBegin(GL_TRIANGLES);
     maxi = MAX(sd->is1 + sd->nslicei - 1, sd->is1 + 1);
     for(i = sd->is1; i<maxi; i++){
@@ -6485,7 +6498,7 @@ void DrawVolSlice(const slicedata *sd){
   if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
     int maxi;
 
-    constval = zplt[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    constval = zplt[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glBegin(GL_TRIANGLES);
     maxi = MAX(sd->is1 + sd->nslicei - 1, sd->is1 + 1);
     for(i = sd->is1; i<maxi; i++){
@@ -6653,7 +6666,7 @@ void DrawSliceFrame(){
     if(strcmp(sd->label.shortlabel,"ccell")!=0&&sd->slicefile_labelindex!=slicefile_labelindex)continue;
     if(sd->display==0){
       if(showvslice==0)continue;
-      if(sd->slice_filetype==SLICE_NODE_CENTER&&show_node_slices_and_vectors==0)continue;
+      if((sd->slice_filetype==SLICE_NODE_CENTER||sd->slice_filetype==SLICE_TERRAIN)&&show_node_slices_and_vectors==0)continue;
       if(sd->slice_filetype==SLICE_CELL_CENTER||sd->slice_filetype==SLICE_FACE_CENTER){
         if(show_cell_slices_and_vectors==0)continue;
       }
@@ -6896,7 +6909,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       xhalf = xplttemp[plotx];
     }
 
-    constval = xhalf + offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    constval = xhalf + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     glColor4fv(foregroundcolor);
@@ -7022,7 +7035,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       yhalf = yplttemp[ploty];
     }
 
-    constval = yhalf + offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    constval = yhalf + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glLineWidth(vectorlinewidth);
     maxi = sd->is1 + sd->nslicei - 1;
     if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
@@ -7154,7 +7167,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       zhalf = zplttemp[plotz];
     }
 
-    constval = zhalf + offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    constval = zhalf + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glLineWidth(vectorlinewidth);
     maxi = sd->is1 + sd->nslicei - 1;
     if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
@@ -7281,6 +7294,26 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   }
 }
 
+/* ------------------ GetZInterpFactors ------------------------ */
+
+void GetZInterpFactors(float *zplt, int nz, float z, int *k1, int *k2, float *f1, float *f2){
+  float dz;
+  int ileft, iright;
+
+  dz = zplt[1]-zplt[0];
+
+  ileft = (z-zplt[0])/dz;
+  if(ileft<0)ileft = 0;
+  if(ileft>nz-1)ileft = nz-1;
+  iright = ileft+1;
+
+  *k1 = ileft;
+  *k2 = iright;
+  *f1 = (z-zplt[ileft])/dz;
+  *f2 = (zplt[iright]-z)/dz;
+  return;
+}
+
 /* ------------------ DrawVVolSliceTerrain ------------------------ */
 
 void DrawVVolSliceTerrain(const vslicedata *vd){
@@ -7323,7 +7356,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   terri = meshi->terrain;
   if(terri == NULL)return;
   znode = terri->znode_scaled;
-  nycell = terri->ny;
+  nycell = terri->jbar;
 
   vrange = velocity_range;
   if(vrange <= 0.0)vrange = 1.0;
@@ -7333,7 +7366,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   if((vd->volslice == 1 && plotx >= 0 && visx_all == 1) || (vd->volslice == 0 && sd->idir == XDIR)){
     int maxj;
 
-    constval = xplttemp[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    constval = xplttemp[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     maxj = sd->js2;
@@ -7396,7 +7429,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   if((vd->volslice == 1 && ploty >= 0 && visy_all == 1) || (vd->volslice == 0 && sd->idir == YDIR)){
     int maxi;
 
-    constval = yplttemp[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    constval = yplttemp[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     maxi = sd->is1 + sd->nslicei - 1;
@@ -7464,7 +7497,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     int maxi;
 
     zmax = zplttemp[meshi->kbar];
-    constval = zplttemp[plotz] + offset_slice*sd->sliceoffset - znode[0]+SCALE2SMV(sd->sliceoffset_fds);
+    constval = zplttemp[plotz] + offset_slice*sd->sliceoffset - znode[0]+SCALE2SMV(sliceoffset_all);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     maxi = sd->is1 + sd->nslicei - 1;
@@ -7483,7 +7516,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
         z11 = MIN(zmax, constval + znode[ij2]);
         n11 = i*sd->nslicej*sd->nslicek + j*sd->nslicek;
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
-          rgb_ptr = rgb_slice + 4 *Interp3DSliceIndex(sd->iqsliceframe, meshi->zplt, meshi->kbar, n11, constval);
+          rgb_ptr = rgb_slice + 4*sd->iqsliceframe[n11];
         }
         else{
           rgb_ptr = foregroundcolor;
@@ -7528,7 +7561,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
         z11 = MIN(constval + znode[ij2], zmax);
         n11 = i*sd->nslicej*sd->nslicek + j*sd->nslicek;
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
-          rgb_ptr = rgb_slice + 4 *Interp3DSliceIndex(sd->iqsliceframe, meshi->zplt, meshi->kbar, n11, constval);
+          rgb_ptr = rgb_slice + 4*sd->iqsliceframe[n11];
         }
         else{
           rgb_ptr = foregroundcolor;
@@ -7600,7 +7633,7 @@ void DrawVVolSlice(const vslicedata *vd){
   if((vd->volslice == 1 && plotx >= 0 && visx_all == 1) || (vd->volslice == 0 && sd->idir == XDIR)){
     int maxj;
 
-    constval = xplttemp[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    constval = xplttemp[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     maxj = sd->js2;
@@ -7681,7 +7714,7 @@ void DrawVVolSlice(const vslicedata *vd){
   if((vd->volslice == 1 && ploty >= 0 && visy_all == 1) || (vd->volslice == 0 && sd->idir == YDIR)){
     int maxi;
 
-    constval = yplttemp[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    constval = yplttemp[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     maxi = sd->is1 + sd->nslicei - 1;
@@ -7763,7 +7796,7 @@ void DrawVVolSlice(const vslicedata *vd){
   if((vd->volslice == 1 && plotz >= 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
     int maxi;
 
-    constval = zplttemp[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(sd->sliceoffset_fds);
+    constval = zplttemp[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     maxi = sd->is1 + sd->nslicei - 1;

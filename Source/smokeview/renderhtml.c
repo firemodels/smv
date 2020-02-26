@@ -9,8 +9,6 @@
 #include "smokeviewvars.h"
 #include "interp.h"
 
-#ifdef pp_HTML
-
 /* --------------------------  webgeomdata ------------------------------------ */
 
 typedef struct _webgeomdata {
@@ -2543,4 +2541,3 @@ int Smv2Html(char *html_file, int option, int from_where, int vr_flag){
   printf(" - complete\n");
   return 0;
 }
-#endif

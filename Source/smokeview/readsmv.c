@@ -2345,6 +2345,40 @@ void UpdateVentOffset(void){
   }
 }
 
+/* ------------------ UpdateBlockType ------------------------ */
+
+void UpdateBlockType(void){
+  int igrid, i;
+
+  ntransparentblocks = 0;
+  ntransparentvents = 0;
+  nopenvents = 0;
+  nopenvents_nonoutline = 0;
+  ndummyvents = 0;
+  for(igrid = 0; igrid<nmeshes; igrid++){
+    meshdata *meshi;
+
+    meshi = meshinfo+igrid;
+    for(i = 0; i<meshi->nbptrs; i++){
+      blockagedata *bc;
+
+      bc = meshi->blockageinfoptrs[i];
+      if(bc->color[3]<0.99)ntransparentblocks++;
+    }
+    for(i = 0; i<meshi->nvents; i++){
+      ventdata *vi;
+
+      vi = meshi->ventinfo+i;
+      if(vi->isOpenvent==1){
+        nopenvents++;
+        if(vi->type!=BLOCK_OUTLINE)nopenvents_nonoutline++;
+      }
+      if(vi->dummy==1)ndummyvents++;
+      if(vi->color[3]<0.99)ntransparentvents++;
+    }
+  }
+}
+
 /* ------------------ UpdateMeshCoords ------------------------ */
 
 void UpdateMeshCoords(void){
@@ -2723,33 +2757,7 @@ void UpdateMeshCoords(void){
     face_centers[17]=meshi->boxmax_scaled[2];
   }
 
-  ntransparentblocks=0;
-  ntransparentvents=0;
-  nopenvents=0;
-  nopenvents_nonoutline=0;
-  ndummyvents=0;
-  for(igrid=0;igrid<nmeshes;igrid++){
-    meshdata *meshi;
-
-    meshi=meshinfo+igrid;
-    for(i=0;i<meshi->nbptrs;i++){
-      blockagedata *bc;
-
-      bc=meshi->blockageinfoptrs[i];
-      if(bc->color[3]<0.99)ntransparentblocks++;
-    }
-    for(i=0;i<meshi->nvents;i++){
-      ventdata *vi;
-
-      vi = meshi->ventinfo + i;
-      if(vi->isOpenvent==1){
-        nopenvents++;
-        if(vi->type!=BLOCK_OUTLINE)nopenvents_nonoutline++;
-      }
-      if(vi->dummy==1)ndummyvents++;
-      if(vi->color[3]<0.99)ntransparentvents++;
-    }
-  }
+  UpdateBlockType();
 
   for(igrid=0;igrid<nmeshes;igrid++){
     meshdata *meshi;
@@ -3078,6 +3086,9 @@ void InitObst(blockagedata *bc, surfdata *surf, int index, int meshindex){
 
   bc->color = surf->color;
   bc->useblockcolor = 0;
+#ifdef pp_BLOCK_COLOR
+  bc->use_block_transparency = 0;
+#endif
   for(i = 0; i<6; i++){
     bc->surf_index[i] = -1;
     bc->surf[i] = surf;
@@ -3884,11 +3895,10 @@ int ReadSMV(char *file, char *file2){
     terraindata *terri;
 
     terri = terraininfo + i;
-    FREEMEMORY(terri->x);
-    FREEMEMORY(terri->y);
+    FREEMEMORY(terri->xplt);
+    FREEMEMORY(terri->yplt);
     FREEMEMORY(terri->zcell);
     FREEMEMORY(terri->znode);
-//    FREEMEMORY(terri->znormal);
   }
   FREEMEMORY(terraininfo);
   nterraininfo=0;
@@ -5393,7 +5403,12 @@ int ReadSMV(char *file, char *file2){
       terraindata *terraini;
       int len_buffer;
       char *file, *buffer_ptr;
-      
+      int mesh_terrain = -1;
+
+      if(strlen(buffer)>7){
+        sscanf(buffer+7, "%i", &mesh_terrain);
+      }
+
       FGETS(buffer,255,stream);
       buffer_ptr = TrimFrontBack(buffer);
       len_buffer = strlen(buffer_ptr);
@@ -5402,7 +5417,14 @@ int ReadSMV(char *file, char *file2){
 
       terraini = terraininfo + nterraininfo;
       terraini->file = file;
-      meshinfo[nterraininfo].terrain = terraini;
+      if(mesh_terrain==-1){
+        mesh_terrain = nterraininfo;    // no mesh_terrain on TERRAIN line so assume that number of TERRAIN and MESH lines are the same
+      }
+      else{
+        mesh_terrain--;                 // mesh_terrain on TERRAIN line goes from 1 to number of meshes so subtract 1
+      }
+      meshinfo[mesh_terrain].terrain = terraini;
+      terraini->terrain_mesh = meshinfo+mesh_terrain;
       nterraininfo++;
       continue;
     }
@@ -5963,9 +5985,7 @@ int ReadSMV(char *file, char *file2){
         smoke3di->finalize = 0;
         smoke3di->request_load = 0;
         smoke3di->primary_file=0;
-#ifdef pp_FILE_SIZES
         smoke3di->file_size = 0;
-#endif
         smoke3di->blocknumber=blocknumber;
         smoke3di->lastiframe=-999;
         for(ii = 0;ii < MAXSMOKETYPES;ii++){
@@ -7626,6 +7646,22 @@ typedef struct {
 
         if(colorindex==0||colorindex==7)colorindex=-3;
 
+#ifdef pp_BLOCK_COLOR
+        bc->transparency = -1.0;
+        if(colorindex==-1){
+          float s_color[3], transparent=-1.0, rdummy;
+          int dummy;
+
+          sscanf(buffer, "%i %i %i %i %i %i %i %i %f %f %f %f",
+            &dummy, &dummy, &dummy, &dummy, &dummy, &dummy,
+            &dummy, &dummy, &rdummy, &rdummy, &rdummy, &transparent);
+          bc->transparency = transparent;
+          if(transparent>=0.0){
+            bc->use_block_transparency = 1;
+            if(transparent<0.999)bc->transparent = 1;
+          }
+        }
+#endif
         if(colorindex==-3){
           float s_color[4];
 
@@ -7668,12 +7704,17 @@ typedef struct {
             bc->color=GetColorPtr(s_color);
           }
           bc->nnodes=(ijk[1]+1-ijk[0])*(ijk[3]+1-ijk[2])*(ijk[5]+1-ijk[4]);
-          bc->useblockcolor=1;
+          bc->useblockcolor = 1;
+#ifdef pp_BLOCK_COLOR
+          bc->use_block_transparency = 1;
+#endif
         }
         else{
           if(colorindex>=0){
             bc->color = GetColorPtr(rgb[nrgb+colorindex]);
-            bc->useblockcolor=1;
+#ifdef pp_BLOCK_COLOR
+            bc->useblockcolor =1;
+#endif
             bc->usecolorindex=1;
             bc->colorindex=colorindex;
             updateindexcolors=1;
@@ -7686,7 +7727,6 @@ typedef struct {
 
         if(colorindex==COLOR_INVISIBLE){
           bc->type=BLOCK_hidden;
-//          bc->del=1;
           bc->invisible=1;
         }
         if(bc->useblockcolor==0){
@@ -8435,9 +8475,8 @@ typedef struct {
         (Match(buffer,"SLCT") == 1)
       || (Match(buffer, "BNDS") == 1)
       ){
-      char *slicelabelptr, slicelabel[256], *sliceparms, *sliceoffsetptr;
+      char *slicelabelptr, slicelabel[256], *sliceparms;
       float above_ground_level=0.0;
-      float sliceoffset_fds=0.0;
       int terrain=0, cellcenter=0, facecenter=0;
       int slicegeom=0;
       int slcf_index = 0;
@@ -8457,13 +8496,6 @@ typedef struct {
         *char_slcf_index = 0;
         char_slcf_index++;
         sscanf(char_slcf_index, "%i", &slcf_index);
-      }
-
-      sliceoffsetptr = strchr(buffer, '$');
-      if(sliceoffsetptr!=NULL){
-        *sliceoffsetptr = 0;
-        sliceoffsetptr++;
-        sscanf(sliceoffsetptr, "%f", &sliceoffset_fds);
       }
 
       sliceparms=strchr(buffer,'&');
@@ -8543,7 +8575,6 @@ typedef struct {
       sd->file_min = 1.0;
       sd->file_max = 0.0;
 #endif
-      sd->sliceoffset_fds = sliceoffset_fds;
       sd->reg_file=NULL;
       sd->comp_file=NULL;
       sd->vol_file=NULL;
@@ -8551,9 +8582,7 @@ typedef struct {
 #ifdef pp_NEWBOUND_DIALOG
       sd->bounds = NULL;
 #endif
-#ifdef pp_FILE_SIZES
       sd->file_size = 0;
-#endif
       sd->slice_filetype=SLICE_NODE_CENTER;
       sd->patchgeom = NULL;
       if(slicegeom==1){
@@ -9847,12 +9876,8 @@ int ReadIni2(char *inifile, int localfile){
 
     if(Match(buffer, "RESEARCHMODE") == 1){
       fgets(buffer, 255, stream);
-#ifdef pp_SHIFT_COLORBARS
       sscanf(buffer, " %i %i %f", &research_mode, &ncolorlabel_decimals, &colorbar_shift);
       colorbar_shift = CLAMP(colorbar_shift, COLORBAR_SHIFT_MIN, COLORBAR_SHIFT_MAX);
-#else
-      sscanf(buffer, " %i %i", &research_mode, &ncolorlabel_decimals);
-#endif
       if(research_mode==1&&research_mode_override==0)research_mode=0;
       ncolorlabel_decimals = CLAMP(ncolorlabel_decimals, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
       ONEORZERO(research_mode);
@@ -10296,7 +10321,7 @@ int ReadIni2(char *inifile, int localfile){
 
     if(Match(buffer, "SHOWTERRAIN") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &visTerrainType);
+      sscanf(buffer, "%i %i", &visTerrainType, &terrain_slice_overlap);
       continue;
     }
     if(Match(buffer, "STEREO") == 1){
@@ -11280,7 +11305,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SLICEOFFSET") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%f ", &sliceoffset_factor);
+      sscanf(buffer, "%f %f", &sliceoffset_factor, &sliceoffset_all);
       continue;
     }
     if(Match(buffer, "TITLESAFE") == 1){
@@ -11410,21 +11435,9 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "ZOOM") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f ", &zoomindex, &zoom);
-      if(zoomindex != -1){
-        if(zoomindex<0)zoomindex = 2;
-        if(zoomindex>4)zoomindex = 2;
-        zoom = zooms[zoomindex];
-      }
-      else{
-        if(zoom<zooms[0]){
-          zoom = zooms[0];
-          zoomindex = 0;
-        }
-        if(zoom>zooms[4]){
-          zoom = zooms[4];
-          zoomindex = 4;
-        }
-      }
+      if(zoomindex<0)zoomindex = ZOOMINDEX_ONE;
+      if(zoomindex>MAX_ZOOMS+1)zoomindex = ZOOMINDEX_ONE;
+      zooms[zoomindex] = zoom;
       zoomini = zoom;
       updatezoomini = 1;
       ZoomMenu(zoomindex);
@@ -12024,8 +12037,9 @@ int ReadIni2(char *inifile, int localfile){
       zoom = zoom_in;
       zoomindex = zoomindex_in;
       if(zoomindex != -1){
-        if(zoomindex<0)zoomindex = 2;
-        if(zoomindex>4)zoomindex = 2;
+        if(zoomindex<0)zoomindex = ZOOMINDEX_ONE;
+        if(zooms[MAX_ZOOMS]>0.0&&zoomindex>MAX_ZOOMS)zoomindex = ZOOMINDEX_ONE;
+        if(zooms[MAX_ZOOMS]<=0.0&&zoomindex>MAX_ZOOMS-1)zoomindex = ZOOMINDEX_ONE;
         zoom = zooms[zoomindex];
       }
       else{
@@ -12033,9 +12047,9 @@ int ReadIni2(char *inifile, int localfile){
           zoom = zooms[0];
           zoomindex = 0;
         }
-        if(zoom>zooms[4]){
-          zoom = zooms[4];
-          zoomindex = 4;
+        if(zoomindex!=MAX_ZOOMS&&zoom>zooms[MAX_ZOOMS-1]){
+          zoom = zooms[MAX_ZOOMS-1];
+          zoomindex = MAX_ZOOMS-1;
         }
       }
       updatezoommenu = 1;
@@ -13686,7 +13700,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SENSORRELSIZE\n");
   fprintf(fileout, " %f\n", sensorrelsize);
   fprintf(fileout, "SLICEOFFSET\n");
-  fprintf(fileout, " %f\n", sliceoffset_factor);
+  fprintf(fileout, " %f %f\n", sliceoffset_factor,sliceoffset_all);
   fprintf(fileout, "SMOOTHLINES\n");
   fprintf(fileout, " %i\n", antialiasflag);
   fprintf(fileout, "SPHERESEGS\n");
@@ -13753,11 +13767,7 @@ void WriteIni(int flag,char *filename){
     research_mode = 0;
     update_research_mode = 1;
   }
-#ifdef pp_SHIFT_COLORBARS
   fprintf(fileout, " %i %i %f\n", research_mode, ncolorlabel_decimals, colorbar_shift);
-#else
-  fprintf(fileout, " %i %i\n", research_mode, ncolorlabel_decimals);
-#endif
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
   fprintf(fileout, "SLICEAVERAGE\n");
@@ -13962,7 +13972,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWSTREAK\n");
   fprintf(fileout, " %i %i %i %i\n", streak5show, streak5step, showstreakhead, streak_index);
   fprintf(fileout, "SHOWTERRAIN\n");
-  fprintf(fileout, " %i\n", visTerrainType);
+  fprintf(fileout, " %i %i\n", visTerrainType, terrain_slice_overlap);
   fprintf(fileout, "SHOWTETRAS\n");
   fprintf(fileout, " %i %i\n", show_volumes_solid, show_volumes_outline);
   fprintf(fileout, "SHOWTHRESHOLD\n");

@@ -1217,9 +1217,7 @@ extern "C" void GluiMotionSetup(int main_window){
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "png");
   glui_motion->add_radiobutton_to_group(RADIO_render_type, "jpg");
 
-#ifdef pp_HTML
   glui_motion->add_button_to_panel(PANEL_render_file, "Render to html", RENDER_HTML, RenderCB);
-#endif
 
   LIST_render_skip = glui_motion->add_listbox_to_panel(ROLLOUT_render, _("Show:"), &render_skip, RENDER_SKIP, RenderCB);
   for(i = 0; i<NRENDER_SKIPS; i++){
@@ -1909,13 +1907,18 @@ extern "C" void SceneMotionCB(int var){
       update_rotation_center=1;
       return;
     case ZOOM:
+      updatemenu = 1;
       zoomindex=-1;
-      for(i=0;i<5;i++){
+      for(i=0;i<MAX_ZOOMS;i++){
         if(ABS(zoom-zooms[i])<0.001){
           zoomindex=i;
           zoom=zooms[i];
           break;
         }
+      }
+      if(zoomindex==-1&&zoom>0.0){
+        zooms[MAX_ZOOMS] = zoom;
+        zoomindex = MAX_ZOOMS;
       }
       camera_current->zoom=zoom;
       aperture_glui=Zoom2Aperture(zoom);
@@ -1930,8 +1933,8 @@ extern "C" void SceneMotionCB(int var){
         if(SPINNER_aperture!=NULL)SPINNER_aperture->set_float_val(aperture_glui);
       }
       zoomindex=-1;
-      for(i=0;i<5;i++){
-        if(ABS(zoom-zooms[i])<0.001){
+      for(i=0;i<MAX_ZOOMS+1;i++){
+        if(ABS(zoom-zooms[i])<0.001&&zooms[i]>0.0){
           zoomindex=i;
           zoom=zooms[i];
           aperture_glui=Zoom2Aperture(zoom);
@@ -2241,12 +2244,10 @@ void RenderCB(int var){
     case RENDER_LABEL:
     case RENDER_TYPE:
       break;
-#ifdef pp_HTML
     case RENDER_HTML:
       Smv2Html(html_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_NO);
       Smv2Html(htmlvr_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_YES);
       break;
-#endif
 #ifdef pp_RENDER360_DEBUG
     case RENDER_DEBUG_360:
       if(debug_360_skip_x<2){

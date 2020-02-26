@@ -1614,11 +1614,9 @@ void UpdateRGBColors(int colorbar_index){
     if(valindex<0)valindex=0;
     if(valindex>255)valindex=255;
     cci = colorbar_index;
-#ifdef pp_SHIFT_COLORBARS
     if(ABS(colorbar_shift-1.0)>0.0001){
       cci = SHIFT_VAL(cci, 0, 255, colorbar_shift);
     }
-#endif
 
     if(setbw==1){
       highlight_color=highlight_red;
@@ -1953,9 +1951,7 @@ void UpdateChopColors(void){
     break;
   }
   UpdateTexturebar();
-#ifdef pp_SHIFT_COLORBARS
   ShiftColorbars();
-#endif
 }
 
 /* ------------------ GetRGB ------------------------ */
@@ -1979,7 +1975,7 @@ void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned cha
 
 /* ------------------ GetColorPtr ------------------------ */
 
-float *GetColorPtr(const float *color){
+float *GetColorPtr(float *color){
   colordata *colorptr,*oldlastcolor,*lastcolor;
 
   int i;
@@ -2021,7 +2017,19 @@ float *GetColorPtr(const float *color){
   return lastcolor->color;
 }
 
-/* ------------------ ConvertColor ------------------------ */
+/* ------------------ GetColorTranPtr ------------------------ */
+
+float *GetColorTranPtr(float *color, float transparency){
+  float col[4];
+
+  col[0] = color[0];
+  col[1] = color[1];
+  col[2] = color[2];
+  col[3] = transparency;
+  return GetColorPtr(col);
+}
+
+  /* ------------------ ConvertColor ------------------------ */
 
 void ConvertColor(int flag){
   colordata *colorptr;

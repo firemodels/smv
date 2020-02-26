@@ -294,7 +294,6 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"RENDERCLIP") == MATCH)return SCRIPT_RENDERCLIP;                 // documented
   if(MatchUpper(keyword,"RENDERDIR") == MATCH)return SCRIPT_RENDERDIR;                   // documented
   if(MatchUpper(keyword,"RENDERDOUBLEONCE") == MATCH)return SCRIPT_RENDERDOUBLEONCE;     // documented
-#ifdef pp_HTML
   if(MatchUpper(keyword,"RENDERHTMLALL")==MATCH)return SCRIPT_RENDERHTMLALL;
   if(MatchUpper(keyword,"RENDERHTMLDIR") == MATCH)return SCRIPT_RENDERHTMLDIR;
   if(MatchUpper(keyword,"RENDERHTMLGEOM") == MATCH)return SCRIPT_RENDERHTMLGEOM;
@@ -302,7 +301,6 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"RENDERHTMLONCE") ==MATCH)return SCRIPT_RENDERHTMLONCE;
   if(MatchUpper(keyword,"RENDERHTMLSLICENODE")==MATCH)return SCRIPT_RENDERHTMLSLICENODE;
   if(MatchUpper(keyword,"RENDERHTMLSLICECELL")==MATCH)return SCRIPT_RENDERHTMLSLICECELL;
-#endif
   if(MatchUpper(keyword,"RENDERONCE") == MATCH)return SCRIPT_RENDERONCE;                 // documented
   if(MatchUpper(keyword,"RENDERSIZE") == MATCH)return SCRIPT_RENDERSIZE;
   if(MatchUpper(keyword,"RENDERSTART") == MATCH)return SCRIPT_RENDERSTART;
@@ -499,9 +497,7 @@ int CompileScript(char *scriptfile){
 
 // LOADPARTICLES
       case SCRIPT_LOADPARTICLES:
-#ifdef pp_HTML
         scripti->need_graphics = 0;
-#endif
         break;
 
 // CBARFLIP:
@@ -552,17 +548,13 @@ int CompileScript(char *scriptfile){
 // RENDERHTMLDIR
 //  directory name (char) (where rendered files will go)
       case SCRIPT_RENDERDIR:
-#ifdef pp_HTML
       case SCRIPT_RENDERHTMLDIR:
-#endif
       {
         int len;
         int i;
 
         scripti->need_graphics = 1;
-#ifdef pp_HTML
         if(keyword_index==SCRIPT_RENDERHTMLDIR)scripti->need_graphics = 0;
-#endif
         SETbuffer;
         if(script_renderdir_cmd!=NULL&&strlen(script_renderdir_cmd)>0){
           strcpy(buffer, script_renderdir_cmd);
@@ -592,9 +584,7 @@ int CompileScript(char *scriptfile){
 // LOADVOLSMOKE
 //  mesh number (-1 for all meshes) (int)
       case SCRIPT_LOADVOLSMOKE:
-#ifdef pp_HTML
         scripti->need_graphics = 0;
-#endif
         SETival;
         break;
 
@@ -627,7 +617,6 @@ int CompileScript(char *scriptfile){
 // RENDERHTMLONCE
 // RENDERHTMLALL
 // file name base (char) (or blank to use smokeview default)
-#ifdef pp_HTML
       case SCRIPT_RENDERHTMLONCE:
       case SCRIPT_RENDERHTMLALL:
       case SCRIPT_RENDERHTMLGEOM:
@@ -646,7 +635,6 @@ int CompileScript(char *scriptfile){
         SETcval2;
         scripti->need_graphics = 0;
         break;
-#endif
 
 // RENDERSTART
 //  start_frame (int) skip_frame (int)
@@ -712,9 +700,7 @@ int CompileScript(char *scriptfile){
 #endif
         scripti->ival = 1;
         SETival;
-#ifdef pp_HTML
         scripti->need_graphics = 0;
-#endif
         break;
 
 // ISORENDERALL
@@ -808,9 +794,7 @@ int CompileScript(char *scriptfile){
       case SCRIPT_LOADBOUNDARYM:
         SETcval;
         SETival;
-#ifdef pp_HTML
         scripti->need_graphics = 0;
-#endif
         break;
 
 // PLOT3DPROPS
@@ -878,9 +862,7 @@ int CompileScript(char *scriptfile){
         SETbuffer;
         sscanf(buffer, "%i %f", &scripti->ival, &scripti->fval);
         scripti->ival = CLAMP(scripti->ival, 0, 3);
-#ifdef pp_HTML
         scripti->need_graphics = 0;
-#endif
         break;
 
 // LOADVSLICEM
@@ -894,9 +876,7 @@ int CompileScript(char *scriptfile){
         sscanf(buffer, "%i %f", &scripti->ival, &scripti->fval);
         scripti->ival = CLAMP(scripti->ival, 0, 3);
         SETival2;
-#ifdef pp_HTML
         scripti->need_graphics = 0;
-#endif
         break;
 
 // LOADSLICEM
@@ -910,9 +890,7 @@ int CompileScript(char *scriptfile){
         sscanf(buffer, "%i %f", &scripti->ival, &scripti->fval);
         scripti->ival = CLAMP(scripti->ival, 0, 3);
         SETival2;
-#ifdef pp_HTML
         scripti->need_graphics = 0;
-#endif
         break;
 
 // LOADPLOT3D
@@ -920,9 +898,7 @@ int CompileScript(char *scriptfile){
       case SCRIPT_LOADPLOT3D:
         SETbuffer;
         sscanf(buffer," %i %f",&scripti->ival,&scripti->fval);
-#ifdef pp_HTML
         scripti->need_graphics = 0;
-#endif
         break;
 
 // SETTIMEVAL
@@ -930,9 +906,7 @@ int CompileScript(char *scriptfile){
       case SCRIPT_SETTIMEVAL:
         SETfval;
         if(scripti->fval<0.0)scripti->fval=0.0;
-#ifdef pp_HTML
         scripti->need_graphics = 0;
-#endif
         break;
 
 // SETTOURVIEW
@@ -998,8 +972,6 @@ int CompileScript(char *scriptfile){
   fclose(stream);
   return return_val;
 }
-
-#ifdef pp_HTML
 
 /* ------------------ GetWebFileName ------------------------ */
 
@@ -1076,7 +1048,6 @@ void ScriptRenderHtml(scriptdata *scripti, int option){
   strcat(webvr_filename,"_vr.html");
   Smv2Html(webvr_filename, option, FROM_SCRIPT, VR_YES);
 }
-#endif
 
 /* ------------------ ScriptRenderStart ------------------------ */
 
@@ -2709,7 +2680,6 @@ int RunScriptCommand(scriptdata *script_command){
         script_dir_path=NULL;
       }
       break;
-#ifdef pp_HTML
     case SCRIPT_RENDERHTMLDIR:
       if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
         script_htmldir_path = scripti->cval;
@@ -2723,7 +2693,6 @@ int RunScriptCommand(scriptdata *script_command){
         script_htmldir_path = NULL;
       }
       break;
-#endif
     case SCRIPT_KEYBOARD:
       {
         char *key;
@@ -2775,7 +2744,6 @@ int RunScriptCommand(scriptdata *script_command){
       Keyboard('r',FROM_SMOKEVIEW);
       returnval=1;
       break;
-#ifdef pp_HTML
     case SCRIPT_RENDERHTMLALL:
       ScriptRenderHtml(scripti, HTML_ALL_TIMES);
       returnval = 1;
@@ -2800,7 +2768,6 @@ int RunScriptCommand(scriptdata *script_command){
       ScriptRenderSliceCell(scripti);
       returnval = 1;
       break;
-#endif
     case SCRIPT_RENDERDOUBLEONCE:
       Keyboard('R',FROM_SMOKEVIEW);
       returnval=1;

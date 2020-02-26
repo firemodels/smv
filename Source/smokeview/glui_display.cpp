@@ -32,9 +32,7 @@ GLUI_Spinner *SPINNER_light_az1=NULL;
 GLUI_Spinner *SPINNER_light_elev0=NULL;
 GLUI_Spinner *SPINNER_light_elev1=NULL;
 
-#ifdef pp_SHIFT_COLORBARS
 GLUI_Spinner *SPINNER_colorbar_shift = NULL;
-#endif
 
 GLUI_Spinner *SPINNER_ncolorlabel_decimals =NULL;
 GLUI_Spinner *SPINNER_ntick_decimals=NULL;
@@ -250,9 +248,7 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LABELS_shownorth 31
 #define LABELS_tick_inside 32
 #define LABELS_tick_outside 33
-#ifdef pp_SHIFT_COLORBARS
 #define LABELS_colorbar_shift 36
-#endif
 
 #define SPLIT_COLORBAR 1
 
@@ -760,10 +756,8 @@ extern "C" void GluiLabelsSetup(int main_window){
   glui_labels->add_radiobutton_to_group(RADIO2_plot3d_display,_("Line"));
   CHECKBOX_colorbar_flip = glui_labels->add_checkbox_to_panel(PANEL_colorbar_properties, _("flip"), &colorbar_flip, FLIP, LabelsCB);
   CHECKBOX_colorbar_autoflip = glui_labels->add_checkbox_to_panel(PANEL_colorbar_properties, _("Auto flip"), &colorbar_autoflip, FLIP, LabelsCB);
-#ifdef pp_SHIFT_COLORBARS
   SPINNER_colorbar_shift = glui_labels->add_spinner_to_panel(PANEL_colorbar_properties, _("shift:"), GLUI_SPINNER_FLOAT, &colorbar_shift, LABELS_colorbar_shift, LabelsCB);
   SPINNER_colorbar_shift->set_float_limits(COLORBAR_SHIFT_MIN, COLORBAR_SHIFT_MAX);
-#endif
 
   glui_labels->add_separator_to_panel(PANEL_colorbar_properties);
 
@@ -1183,11 +1177,9 @@ extern "C" void ShowGluiDisplay(int menu_id){
 extern "C" void LabelsCB(int var){
   updatemenu=1;
   switch(var){
-#ifdef pp_SHIFT_COLORBARS
   case LABELS_colorbar_shift:
     UpdateRGBColors(colorbar_select_index);
     break;
-#endif
   case LABELS_vcolorbar:
     if(visColorbarVertical==1){
       visColorbarHorizontal=0;

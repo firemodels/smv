@@ -33,6 +33,11 @@ SVEXTERN int render_skips[NRENDER_SKIPS];
 SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
+SVEXTERN float SVDECL(sliceoffset_all, 0.0);
+SVEXTERN float SVDECL(terrain_normal_length, 1.0);
+SVEXTERN int SVDECL(terrain_normal_skip, 1);
+SVEXTERN int SVDECL(show_terrain_normals, 0), SVDECL(show_terrain_grid,0);
+SVEXTERN int SVDECL(terrain_slice_overlap, 0);
 SVEXTERN int GetTerrainData(char *file, terraindata *terri);
 
 #ifdef pp_NEWBOUND_DIALOG
@@ -46,14 +51,10 @@ SVEXTERN int SVDECL(vis_title_smv_version, 1);
 SVEXTERN int SVDECL(vis_title_fds, 0);
 SVEXTERN int SVDECL(vis_title_CHID,0);
 
-#ifdef pp_SHIFT_COLORBARS
 SVEXTERN float SVDECL(colorbar_shift, 1.0);
-#endif
 
-#ifdef pp_FILE_SIZES
 SVEXTERN int SVDECL(compute_slice_file_sizes, 0);
 SVEXTERN int SVDECL(compute_smoke3d_file_sizes, 0);
-#endif
 
 SVEXTERN int SVDECL(update_fileload, 1);
 
@@ -684,7 +685,6 @@ SVEXTERN int SVDECL(usemenu,1),SVDECL(show_evac_slices,0);
 SVEXTERN float direction_color[4], SVDECL(*direction_color_ptr,NULL);
 SVEXTERN int SVDECL(constant_evac_coloring,1),SVDECL(data_evac_coloring,1),SVDECL(show_evac_colorbar,0);
 SVEXTERN float hrrpuv_iso_color[4];
-SVEXTERN int show_slice_terrain;
 SVEXTERN int npropinfo;
 SVEXTERN propdata SVDECL(*propinfo,NULL);
 SVEXTERN float right_green, right_blue;
@@ -1431,7 +1431,6 @@ SVEXTERN terraindata SVDECL(*terraininfo,NULL);
 SVEXTERN int SVDECL(ntreeinfo,0), SVDECL(nterraininfo,0), SVDECL(visTerrainType,0);
 SVEXTERN float treecolor[4], treecharcolor[4], trunccolor[4];
 SVEXTERN unsigned char treecolor_uc[4], treecharcolor_uc[4], trunccolor_uc[4];
-SVEXTERN int showterrain;
 SVEXTERN float rgb_terrain[10][4];
 SVEXTERN tourdata SVDECL(*tourinfo,NULL);
 SVEXTERN keyframe SVDECL(**tourknotskeylist,NULL);
@@ -1464,7 +1463,9 @@ SVEXTERN float apertures[5];
 SVEXTERN float SVDECL(zoom_min, 0.1), SVDECL(zoom_max, 10.0);
 SVEXTERN float aperture_min, aperture_max;
 SVEXTERN float aperture,aperture_glui,aperture_default,aperture_glui0;
-SVEXTERN float zooms[5];
+#define MAX_ZOOMS 6
+#define ZOOMINDEX_ONE 2
+SVEXTERN float zooms[MAX_ZOOMS+1];
 SVEXTERN float zoom,SVDECL(zoomini,1.0);
 SVEXTERN int rgbmask[16];
 SVEXTERN GLint nredbits, ngreenbits, nbluebits;
@@ -1514,9 +1515,7 @@ SVEXTERN char SVDECL(*script_dir_path,NULL), SVDECL(*script_htmldir_path, NULL);
 SVEXTERN int SVDECL(nscriptinfo,0);
 SVEXTERN scriptfiledata SVDECL(*script_recording,NULL);
 SVEXTERN int SVDECL(runscript,0), SVDECL(noexit,0);
-#ifdef pp_HTML
 SVEXTERN int SVDECL(runhtmlscript, 0);
-#endif
 #ifdef pp_LUA
 SVEXTERN int SVDECL(runluascript,0);
 SVEXTERN int SVDECL(exit_on_script_crash,0);
@@ -1533,7 +1532,6 @@ SVEXTERN char SVDECL(*INI_fds_filein,NULL), SVDECL(*fds_filein,NULL);
 SVEXTERN char SVDECL(*caseini_filename,NULL),SVDECL(*boundinfo_filename,NULL);
 SVEXTERN char SVDECL(*zonelonglabels,NULL), SVDECL(*zoneshortlabels,NULL), SVDECL(*zoneunits,NULL);
 SVEXTERN char SVDECL(*smokeviewini,NULL);
-#ifdef pp_HTML
 SVEXTERN char SVDECL(*html_filename, NULL);
 SVEXTERN char SVDECL(*htmlvr_filename, NULL);
 SVEXTERN char SVDECL(*htmlslicenode_filename, NULL);
@@ -1541,7 +1539,6 @@ SVEXTERN char SVDECL(*htmlslicecell_filename, NULL);
 SVEXTERN char SVDECL(*htmlobst_filename, NULL);
 SVEXTERN char SVDECL(*smokeview_html, NULL);
 SVEXTERN char SVDECL(*smokeviewvr_html, NULL);
-#endif
 SVEXTERN int overwrite_all,erase_all;
 SVEXTERN int compress_autoloaded;
 SVEXTERN tridata SVDECL(**opaque_triangles,NULL),SVDECL(**transparent_triangles,NULL),SVDECL(**alltriangles,NULL);

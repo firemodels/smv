@@ -26,10 +26,8 @@
 
 #define PLANEDIST(norm,xyz0,xyz) ((xyz[0]-xyz0[0])*norm[0]+(xyz[1]-xyz0[1])*norm[1]+(xyz[2]-xyz0[2])*norm[2])
 
-#ifdef pp_SHIFT_COLORBARS
 #define REL_VAL(val, valmin, valmax) ((float)((val)-(valmin))/(float)((valmax)-(valmin)))
 #define SHIFT_VAL(val, valmin, valmax, shift_val) ((valmin) + ((valmax)-(valmin))*pow(REL_VAL((val),(valmin),(valmax)),(shift_val)))
-#endif
 
 #define NORMALIZE_X(x) (((x)-xbar0)/xyzmaxdiff)
 #define NORMALIZE_Y(y) (((y)-ybar0)/xyzmaxdiff)
