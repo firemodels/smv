@@ -52,6 +52,21 @@ void GetViewportInfo(void){
   int info_width;
   int dohist=0;
   int hbar_height;
+  int show_horizontal_colorbar;
+  int show_vertical_colorbar;
+
+  if(visColorbarHorizontal==1&&(showtime==1||showplot3d==1)){
+    show_horizontal_colorbar = 1;
+  }
+  else{
+    show_horizontal_colorbar = 0;
+  }
+  if(visColorbarVertical==1&&(showtime==1||showplot3d==1)){
+    show_vertical_colorbar = 1;
+  }
+  else{
+    show_vertical_colorbar = 0;
+  }
 
   info_width = GetStringWidth("y: 115, 11.5 m");
   colorbar_label_width = GetStringWidth("*10^-02");
@@ -130,7 +145,7 @@ void GetViewportInfo(void){
     if(doit==0&&visFramerate==1)doit=1;
     if(doit==0&&vis_slice_average==1&&show_slice_average&&slice_average_flag==1)doit=1;
   }
-  if(visColorbarHorizontal == 1){
+  if(show_horizontal_colorbar == 1){
     doit = 1;
   }
 #ifdef pp_memstatus
@@ -149,7 +164,7 @@ void GetViewportInfo(void){
     if(show_firecutoff==1 && current_mesh != NULL){
       if(hrrpuv_loaded == 1||temp_loaded == 1)VP_timebar.height += (text_height + v_space);
     }
-    if(visColorbarHorizontal==1){
+    if(show_horizontal_colorbar==1){
       VP_timebar.height += hbar_height;
     }
   }
@@ -169,7 +184,7 @@ void GetViewportInfo(void){
     }
   }
 
-  if(visColorbarVertical==0||num_colorbars==0||(showtime==0&&showplot3d==0))doit=0;
+  if(show_vertical_colorbar==0||num_colorbars==0)doit=0;
   vis_colorbar = GetColorbarState();
   VP_vcolorbar.left = screenWidth-vcolorbar_delta - num_colorbars*(colorbar_label_width+2*h_space)-titlesafe_offset;
   if(dohist==1){
@@ -256,7 +271,7 @@ void GetViewportInfo(void){
 
     timebar_height = MAX(VP_timebar.height, VP_info.height);
     if(timebar_overlap == TIMEBAR_OVERLAP_ALWAYS)timebar_height = 0;
-    if(timebar_overlap==TIMEBAR_OVERLAP_AUTO&&visTimebar==0&&visColorbarHorizontal==0)timebar_height = 0;
+    if(timebar_overlap==TIMEBAR_OVERLAP_AUTO&&visTimebar==0&&show_horizontal_colorbar==0)timebar_height = 0;
     VP_scene.text_height = text_height;
     VP_scene.text_width = text_width;
     VP_scene.left = titlesafe_offset;
@@ -274,14 +289,14 @@ void GetViewportInfo(void){
 
   vcolorbar_right_pos = VP_vcolorbar.right  - h_space;
   vcolorbar_left_pos  = vcolorbar_right_pos - vcolorbar_delta;
-  vcolorbar_top_pos   = VP_vcolorbar.top - 4*(v_space + VP_vcolorbar.text_height) - vcolorbar_delta;
-  vcolorbar_down_pos  = VP_vcolorbar.down + vcolorbar_delta;
+  vcolorbar_top_pos   = VP_vcolorbar.top    - 4*(v_space + VP_vcolorbar.text_height) - vcolorbar_delta;
+  vcolorbar_down_pos  = VP_vcolorbar.down   + vcolorbar_delta;
 
   // horizontal colorbar boundaries
 
-  hcolorbar_right_pos = VP_timebar.right - colorbar_label_width-hcolorbar_delta;
-  hcolorbar_left_pos  = VP_timebar.left  + colorbar_label_width;
-  hcolorbar_down_pos  = VP_timebar.top - hbar_height + (text_height + v_space);
+  hcolorbar_right_pos = VP_timebar.right   - hcolorbar_delta - colorbar_label_width;
+  hcolorbar_left_pos  = VP_timebar.left                      + colorbar_label_width;
+  hcolorbar_down_pos  = VP_timebar.top     - hbar_height     + (text_height + v_space);
   hcolorbar_top_pos   = hcolorbar_down_pos + hcolorbar_delta;
 }
 
