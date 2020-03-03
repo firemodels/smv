@@ -9,6 +9,7 @@
 #define SMOKE_RED 51
 #define SMOKE_GREEN 52
 #define SMOKE_BLUE 53
+#define SMOKE_GRAY 56
 #ifndef UPDATE_SMOKEFIRE_COLORS
 #define UPDATE_SMOKEFIRE_COLORS 54
 #endif

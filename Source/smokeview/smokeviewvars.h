@@ -1755,11 +1755,11 @@ SVEXTERN smoke3ddata SVDECL(*smoke3dinfo,NULL);
 
 #ifdef INMAIN
 int fire_color_int255[3]  = { 255, 128,0 };
-int smoke_color_int255[3] = { 0,0,0 };
+int smoke_color_int255[4] = { 0,0,0,0 };
 int co2_color_int255[3]   = {64,156,215};
 #else
 SVEXTERN int fire_color_int255[3];
-SVEXTERN int smoke_color_int255[3];
+SVEXTERN int smoke_color_int255[4];
 SVEXTERN int co2_color_int255[3];
 #endif
 SVEXTERN float SVDECL(fire_halfdepth,2.0), SVDECL(fire_halfdepth2, 2.0), SVDECL(smoke_albedo, 0.3), SVDECL(smoke_albedo_base, 0.3);
