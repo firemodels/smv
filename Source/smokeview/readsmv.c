@@ -8731,7 +8731,7 @@ typedef struct {
       if(read_slice_header==1){
         int error;
 
-        FORTgetsliceheader(sd->file,&ii1,&ii2,&jj1,&jj2,&kk1,&kk2,&error,strlen(sd->file));
+        GetSliceFileHeader(sd->file, &ii1, &ii2, &jj1, &jj2, &kk1, &kk2, &error);
       }
       sd->is1=ii1;
       sd->is2=ii2;

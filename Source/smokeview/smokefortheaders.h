@@ -16,7 +16,6 @@
                            if(returncode!=count)returncode=0;\
                            FSEEK(STREAM,TRAILER_SIZE,SEEK_CUR)
 
-#define FORTgetsliceheader        _F(getsliceheader)
 #define FORTgetslicefiledirection _F(getslicefiledirection)
 #define FORTgetgeomdatasize      _F(getgeomdatasize)
 #define FORTgetgeomdata          _F(getgeomdata)
@@ -65,7 +64,6 @@ STDCALLF FORTgetpatchdata(int *lunit, int *npatch,int *pi1,int *pi2,int *pj1,int
 STDCALLF FORTskipdata(int *lunit, int *size);
 STDCALLF FORTgetdata1(int *file_unit, int *ipart, int *error);
 
-STDCALLF FORTgetsliceheader(char *slicefilename, int *is1, int *is2, int *js1, int *js2, int *ks1, int *ks2, int *error, FILE_SIZE slicefilelen);
 STDCALLF FORTgetslicesizes(char *slicefilename, int *nslicei, int *nslicej, int *nslicek,
                           int *nsteps,int *sliceframestep, int *error,
                           int *settime_p, int *settmax_p, float *tmin_p, float *tmax_p,

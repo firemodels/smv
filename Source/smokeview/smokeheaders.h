@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error);
 EXTERNCPP void UpdateBlockType(void);
 #ifdef pp_NEWBOUND_DIALOG
 EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max);
