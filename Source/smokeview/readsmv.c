@@ -3428,7 +3428,7 @@ void ParseDatabase(char *file){
       FREEMEMORY(surfinfo);
       FREEMEMORY(textureinfo);
       NewMemory((void **)&surfinfo, (nsurfids_shown+MAX_ISO_COLORS+1)*sizeof(surfdata));
-      NewMemory((void **)&textureinfo, nsurfids_shown*sizeof(surfdata));
+      NewMemory((void **)&textureinfo, nsurfids_shown*sizeof(texturedata));
     }
     if(nsurfinfo>0){
       if(surfinfo==NULL){
@@ -3438,10 +3438,10 @@ void ParseDatabase(char *file){
         ResizeMemory((void **)&surfinfo, (nsurfids_shown+nsurfinfo+MAX_ISO_COLORS+1)*sizeof(surfdata));
       }
       if(textureinfo==NULL){
-        NewMemory((void **)&textureinfo, (nsurfids_shown+nsurfinfo)*sizeof(surfdata));
+        NewMemory((void **)&textureinfo, (nsurfids_shown+nsurfinfo)*sizeof(texturedata));
       }
       else{
-        ResizeMemory((void **)&textureinfo, (nsurfids_shown+nsurfinfo)*sizeof(surfdata));
+        ResizeMemory((void **)&textureinfo, (nsurfids_shown+nsurfinfo)*sizeof(texturedata));
       }
     }
     surfj = surfinfo+nsurfinfo-1;
