@@ -3869,7 +3869,7 @@ void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
   geomi->display=0;
   geomi->loaded=0;
   geomi->geomlistinfo_0=NULL;
-  geomi->surf=NULL;
+  geomi->surfgeom=NULL;
   geomi->geomlistinfo=NULL;
   geomi->currentframe = NULL;
   geomi->times=NULL;

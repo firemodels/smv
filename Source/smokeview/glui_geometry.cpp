@@ -213,7 +213,7 @@ extern "C" void GetGeomDialogState(void){
 int HaveTexture(void){
   int i;
 
-  for(i = 0; i < ntextures; i++){
+  for(i = 0; i < ntextureinfo; i++){
     texturedata *texti;
 
     texti = textureinfo + i;
@@ -227,7 +227,7 @@ int HaveTexture(void){
 int GetTextureShow(void){
   int i;
 
-  for(i = 0; i<ntextures; i++){
+  for(i = 0; i<ntextureinfo; i++){
     texturedata *texti;
 
     texti = textureinfo+i;
@@ -791,7 +791,7 @@ extern "C" void VolumeCB(int var){
       show_texture_1dimage=0;
       if(CHECKBOX_show_texture_1dimage->get_int_val() == 1)CHECKBOX_show_texture_1dimage->set_int_val(0);
     }
-    for(i = 0; i<ntextures; i++){
+    for(i = 0; i<ntextureinfo; i++){
       texturedata *texti;
 
       texti = textureinfo+i;

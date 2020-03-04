@@ -110,7 +110,7 @@ typedef struct _geomdata {
   float *times;
   int ntimes,itime,*timeslist;
   int ngeomobjinfo, geomtype, patchactive, fdsblock;
-  struct _surfdata *surf;
+  struct _surfdata *surfgeom;
   geomlistdata *geomlistinfo,*geomlistinfo_0, *currentframe;
   geomobjdata *geomobjinfo;
 } geomdata;

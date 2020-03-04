@@ -1835,7 +1835,6 @@ void InitVars(void){
   nearclip=0.001,farclip=3.0;
   updateclipvals=0;
   updateUpdateFrameRateMenu=0;
-  ntextures=0;
   nskyboxinfo=0;
 
   streak_rvalue[0]=0.25;

@@ -2355,7 +2355,7 @@ void TextureShowMenu(int value){
     texti = textureinfo + value;
     texti->display = 1-texti->display;
     if(texti->display==1)texturedisplay=1;
-    for(i=0;i<ntextures;i++){
+    for(i=0;i<ntextureinfo;i++){
       texti = textureinfo + i;
       if(texti->loaded==0||texti->used==0)continue;
       if(texti->display==0){
@@ -2369,7 +2369,7 @@ void TextureShowMenu(int value){
   else{
     switch(value){
     case MENU_TEXTURE_SHOWALL:
-      for(i=0;i<ntextures;i++){
+      for(i=0;i<ntextureinfo;i++){
         texti = textureinfo + i;
         if(texti->loaded==0||texti->used==0)continue;
         texti->display=1;
@@ -2378,7 +2378,7 @@ void TextureShowMenu(int value){
       showall_textures=1;
       break;
     case MENU_TEXTURE_HIDEALL:
-      for(i=0;i<ntextures;i++){
+      for(i=0;i<ntextureinfo;i++){
         texti = textureinfo + i;
         if(texti->loaded==0||texti->used==0)continue;
         texti->display=0;
@@ -2398,7 +2398,7 @@ void TextureShowMenu(int value){
       texturedata *textii=NULL;
 
       geomi = geominfo + i;
-      surf = geomi->surf;
+      surf = geomi->surfgeom;
       if(surf!=NULL)textii=surf->textureinfo;
       if(textii!=NULL&&textii->display==1){
         visGeomTextures=1;
@@ -6858,7 +6858,7 @@ updatemenu=0;
 
     CREATEMENU(textureshowmenu,TextureShowMenu);
     ntextures_used=0;
-    for(i=0;i<ntextures;i++){
+    for(i=0;i<ntextureinfo;i++){
       texturedata *texti;
       char menulabel[1024];
 

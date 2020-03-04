@@ -1866,7 +1866,7 @@ void InitTextures(void){
   // get texture filename from SURF and device info
   int i;
 
-  ntextures = 0;
+  ntextureinfo = 0;
   for(i=0;i<nsurfinfo;i++){
     surfdata *surfi;
     texturedata *texti;
@@ -1874,15 +1874,15 @@ void InitTextures(void){
 
     surfi = surfinfo + i;
     if(surfi->texturefile==NULL)continue;
-    texti = textureinfo + ntextures;
+    texti = textureinfo + ntextureinfo;
     len = strlen(surfi->texturefile);
     NewMemory((void **)&texti->file,(len+1)*sizeof(char));
     strcpy(texti->file,surfi->texturefile);
     texti->loaded=0;
     texti->used=0;
     texti->display=0;
-    ntextures++;
-    surfi->textureinfo=textureinfo+ntextures-1;
+    ntextureinfo++;
+    surfi->textureinfo=textureinfo+ntextureinfo-1;
   }
 
   for(i=0;i<ndevice_texture_list;i++){
@@ -1891,21 +1891,21 @@ void InitTextures(void){
     int len;
 
     texturefile = device_texture_list[i];
-    texti = textureinfo + ntextures;
+    texti = textureinfo + ntextureinfo;
     len = strlen(texturefile);
     NewMemory((void **)&texti->file,(len+1)*sizeof(char));
-    device_texture_list_index[i]=ntextures;
+    device_texture_list_index[i]=ntextureinfo;
     strcpy(texti->file,texturefile);
     texti->loaded=0;
     texti->used=0;
     texti->display=0;
-    ntextures++;
+    ntextureinfo++;
   }
 
   // check to see if texture files exist .
   // If so, then convert to OpenGL format
 
-  for(i=0;i<ntextures;i++){
+  for(i=0;i<ntextureinfo;i++){
     unsigned char *floortex;
     int texwid, texht;
     texturedata *texti;
@@ -1974,7 +1974,7 @@ void InitTextures(void){
   }
 
   CheckMemory;
-  if(ntextures==0){
+  if(ntextureinfo==0){
     FREEMEMORY(textureinfo);
   }
 
@@ -5219,7 +5219,7 @@ int ReadSMV(char *file, char *file2){
             if(surflabel!=NULL){
               TrimBack(surflabel);
               surflabel=TrimFront(surflabel+1);
-              geomi->surf=GetSurface(surflabel);
+              geomi->surfgeom=GetSurface(surflabel);
             }
           }
 
@@ -9745,7 +9745,7 @@ typedef struct {
 void UpdateUseTextures(void){
   int i;
 
-  for(i=0;i<ntextures;i++){
+  for(i=0;i<ntextureinfo;i++){
     texturedata *texti;
 
     texti=textureinfo + i;
@@ -9815,10 +9815,10 @@ void UpdateUseTextures(void){
     geomdata *geomi;
 
     geomi = geominfo + i;
-    if(textureinfo!=NULL&&geomi->surf!=NULL){
+    if(textureinfo!=NULL&&geomi->surfgeom!=NULL){
         texturedata *texti;
 
-      texti = geomi->surf->textureinfo;
+      texti = geomi->surfgeom->textureinfo;
       if(texti!=NULL&&texti->loaded==1){
         if(usetextures==1)texti->display=1;
         texti->used=1;
@@ -9826,7 +9826,7 @@ void UpdateUseTextures(void){
     }
   }
   ntextures_loaded_used=0;
-  for(i=0;i<ntextures;i++){
+  for(i=0;i<ntextureinfo;i++){
     texturedata *texti;
 
     texti = textureinfo + i;
