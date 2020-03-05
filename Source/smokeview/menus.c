@@ -10369,8 +10369,9 @@ updatemenu=0;
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
           {
 #ifdef pp_SMOKE_FAST
-            if(smoke3d_load_test==1)glutAddMenuEntry("*smoke3d load test", MENU_SMOKE3D_LOAD_TEST);
-            if(smoke3d_load_test == 0)glutAddMenuEntry("smoke3d load test", MENU_SMOKE3D_LOAD_TEST);
+            // comment out for now
+           // if(smoke3d_load_test==1)glutAddMenuEntry("*smoke3d load test", MENU_SMOKE3D_LOAD_TEST);
+           // if(smoke3d_load_test == 0)glutAddMenuEntry("smoke3d load test", MENU_SMOKE3D_LOAD_TEST);
 #endif
           }
           // multi mesh smoke menus items
