@@ -795,8 +795,8 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
     SPINNER_fire_opacity_factor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_compute, _("Fire opacity multiplier"), GLUI_SPINNER_FLOAT, &fire_opacity_factor);
     SPINNER_fire_opacity_factor->set_float_limits(1.0, 50.0);
-    SPINNER_mass_extinct = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_compute, _("Mass extinction coeff (m2/g)"), GLUI_SPINNER_FLOAT, &mass_extinct);
-    SPINNER_mass_extinct->set_float_limits(100.0, 100000.0);
+    SPINNER_mass_extinct = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_compute, _("Mass extinction coeff (m2/g)"), GLUI_SPINNER_FLOAT, &mass_extinct, MASS_EXTINCTION, Smoke3dCB);
+    Smoke3dCB(MASS_EXTINCTION);
     glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_compute, _("adaptive integration"), &vol_adaptive);
     CHECKBOX_combine_meshes = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_volsmoke_compute, _("Combine meshes"), &combine_meshes, COMBINE_MESHES, Smoke3dCB);
     SPINNER_nongpu_vol_factor = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_volsmoke_compute, _("non-gpu grid multiplier"), GLUI_SPINNER_FLOAT, &nongpu_vol_factor, NONGPU_VOL_FACTOR, Smoke3dCB);
@@ -1161,6 +1161,12 @@ extern "C" void Smoke3dCB(int var){
     break;
   case NONGPU_VOL_FACTOR:
     InitVolRenderSurface(NOT_FIRSTCALL);
+    break;
+  case MASS_EXTINCTION:
+    if(mass_extinct<1.0){
+      mass_extinct = 1.0;
+      SPINNER_mass_extinct->set_float_val(mass_extinct);
+    }
     break;
   case GPU_VOL_FACTOR:
     break;

@@ -10172,12 +10172,14 @@ updatemenu=0;
     else{
       glutAddMenuEntry(_("  defer slice coloring"), MENU_SLICECOLORDEFER);
     }
+#ifdef pp_NEW_SLICE_MENUS
     if(use_new_slice_menus==1){
       glutAddMenuEntry(_("  *use new slice menus"), MENU_NEWSLICEMENUS);
     }
     else{
       glutAddMenuEntry(_("  use new slice menus"), MENU_NEWSLICEMENUS);
     }
+#endif
     if(nslicedups > 0){
       GLUTADDSUBMENU(_("Duplicate slices"), duplicateslicemenu);
     }
@@ -10369,8 +10371,9 @@ updatemenu=0;
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
           {
 #ifdef pp_SMOKE_FAST
-            if(smoke3d_load_test==1)glutAddMenuEntry("*smoke3d load test", MENU_SMOKE3D_LOAD_TEST);
-            if(smoke3d_load_test == 0)glutAddMenuEntry("smoke3d load test", MENU_SMOKE3D_LOAD_TEST);
+            // comment out for now
+           // if(smoke3d_load_test==1)glutAddMenuEntry("*smoke3d load test", MENU_SMOKE3D_LOAD_TEST);
+           // if(smoke3d_load_test == 0)glutAddMenuEntry("smoke3d load test", MENU_SMOKE3D_LOAD_TEST);
 #endif
           }
           // multi mesh smoke menus items

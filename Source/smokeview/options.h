@@ -17,7 +17,8 @@
 
 //*** options: all platforms
 
-//define pp_BLOCK_COLOR        //  new algorithm for assigning obst colors
+//#define pp_NEW_SLICE_MENUS    // new slice menus
+//#define pp_BLOCK_COLOR        //  new algorithm for assigning obst colors
 //#define pp_NEWBOUND_DIALOG   // redo bound dialog
 //#define pp_UPDATE_FILELOAD     // when set only updates fileload variables when a file has been loaded or unloaded
 //#define pp_PLOT3D_REDUCEMENUS   // eliminate plot3d sub-menus

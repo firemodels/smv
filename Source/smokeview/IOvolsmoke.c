@@ -831,7 +831,7 @@ void InitVolRender(void){
     if(blocknumber<0||blocknumber>=nmeshes)continue;
     shortlabel = slicei->label.shortlabel;
     longlabel = slicei->label.longlabel;
-    if(STRCMP(shortlabel, "temp")!=0&&STRCMP(shortlabel, "rho_Soot")!=0&&STRCMP(shortlabel, "frac")!=0&&STRCMP(shortlabel, "X_CO2")!=0)continue;
+    if(STRCMP(shortlabel, "temp")!=0&&STRCMP(shortlabel, "rho_Soot")!=0&&STRCMP(shortlabel, "rho_C0.9H0.1")!=0&&STRCMP(shortlabel, "frac")!=0&&STRCMP(shortlabel, "X_CO2")!=0)continue;
     if(slicei->full_mesh==NO)continue;
     if(FILE_EXISTS(slicei->reg_file)==NO)continue;
 
@@ -843,7 +843,7 @@ void InitVolRender(void){
       vr->fireslice=slicei;
      continue;
     }
-    if(STRCMP(shortlabel, "rho_Soot")==0||(strlen(longlabel)>=12&&strncmp(longlabel, "SOOT DENSITY",12)==0)){
+    if(STRCMP(shortlabel, "rho_Soot")==0||STRCMP(shortlabel, "rho_C0.9H0.1")==0||(strlen(longlabel)>=12&&strncmp(longlabel, "SOOT DENSITY",12)==0)){
       vr->smokeslice=slicei;
       continue;
     }
