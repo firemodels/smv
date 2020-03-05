@@ -10172,12 +10172,14 @@ updatemenu=0;
     else{
       glutAddMenuEntry(_("  defer slice coloring"), MENU_SLICECOLORDEFER);
     }
+#ifdef pp_NEW_SLICE_MENUS
     if(use_new_slice_menus==1){
       glutAddMenuEntry(_("  *use new slice menus"), MENU_NEWSLICEMENUS);
     }
     else{
       glutAddMenuEntry(_("  use new slice menus"), MENU_NEWSLICEMENUS);
     }
+#endif
     if(nslicedups > 0){
       GLUTADDSUBMENU(_("Duplicate slices"), duplicateslicemenu);
     }
