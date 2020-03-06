@@ -437,6 +437,13 @@ extern "C" void GluiGeometrySetup(int main_window){
 
   PANEL_obj_stretch2 = glui_geometry->add_panel_to_panel(ROLLOUT_structured,"Coordinates");
 
+  if(blocklocation==BLOCKlocation_grid){
+    blockage_snapped = 1;
+  }
+  else{
+    blockage_snapped = 0;
+  }
+  blockage_as_input = 1-blockage_snapped;
   CHECKBOX_blockage=glui_geometry->add_checkbox_to_panel(PANEL_obj_stretch2,_("Dimensions snapped to grid"),&blockage_snapped,
     BLOCKAGE_AS_INPUT,ObjectCB);
   CHECKBOX_visaxislabels=glui_geometry->add_checkbox_to_panel(PANEL_obj_stretch2,_("Show axis labels"),&visaxislabels,VISAXISLABELS,ObjectCB);
