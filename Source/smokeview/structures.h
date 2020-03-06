@@ -105,6 +105,7 @@ typedef struct _geomdata {
   char *file, *topo_file;
   int cache_defined;
   int memory_id, loaded, display;
+  int is_terrain;
   float *float_vals;
   int *int_vals, nfloat_vals, nint_vals;
   float *times;

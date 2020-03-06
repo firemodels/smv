@@ -2429,6 +2429,55 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       FORTREADBR(texture_coords,6*ntris,stream);
       return_filesize += 4+6*ntris*4+4;
 
+      // compute texture coordinates
+
+      if(terrain_texture!=NULL&&geomi->is_terrain==1){
+        float xmin, xmax, ymin, ymax, xfactor, yfactor;
+        int ii;
+
+        xmin = verts[0].xyz[0];
+        xmax = xmin;
+        ymin = verts[0].xyz[1];
+        ymax = ymin;
+        for(ii=1;ii<nverts;ii++){
+          float *xyz;
+
+          xyz = verts[ii].xyz;
+          xmin = MIN(xmin,xyz[0]);
+          xmax = MAX(xmax,xyz[0]);
+          ymin = MIN(ymin,xyz[1]);
+          ymax = MAX(ymax,xyz[1]);
+        }
+        xfactor = 1.0;
+        yfactor = 1.0;
+        if(ABS(xmax-xmin)>0.0001)xfactor = 1.0/(xmax-xmin);
+        if(ABS(ymax-ymin)>0.0001)yfactor = 1.0/(ymax-ymin);
+        for(ii=0;ii<ntris;ii++){
+          float *text_coords;
+          int *tri_ind;
+          float *xy;
+          vertdata *vert;
+
+          text_coords = texture_coords + 6*ii;
+          tri_ind = ijk + 3*ii;
+
+          vert = verts+tri_ind[0];
+          xy = vert->xyz;
+          text_coords[0] = (xy[0]-xmin)*xfactor;
+          text_coords[1] = (xy[1]-ymin)*yfactor;
+
+          vert = verts+tri_ind[1];
+          xy = vert->xyz;
+          text_coords[2] = (xy[0]-xmin)*xfactor;
+          text_coords[3] = (xy[1]-ymin)*yfactor;
+
+          vert = verts+tri_ind[2];
+          xy = vert->xyz;
+          text_coords[4] = (xy[0]-xmin)*xfactor;
+          text_coords[5] = (xy[1]-ymin)*yfactor;
+        }
+      }
+
       CheckMemory;
       for(ii=0;ii<ntris;ii++){
         surfdata *surfi;
@@ -2459,7 +2508,12 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
         if(geomi->geomtype==GEOM_GEOM)surfi->used_by_geom = 1;
 #endif
         triangles[ii].geomsurf=surfi;
-        triangles[ii].textureinfo=surfi->textureinfo;
+        if(terrain_texture!=NULL&&geomi->is_terrain==1){
+          triangles[ii].textureinfo = terrain_texture;
+        }
+        else{
+          triangles[ii].textureinfo = surfi->textureinfo;
+        }
         triangles[ii].outside_domain = OutSideDomain(triangles[ii].verts);
       }
 
@@ -3882,6 +3936,7 @@ void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
   geomi->nint_vals=0;
   geomi->geomtype = geomtype;
   geomi->fdsblock = fdsblock;
+  geomi->is_terrain = 0;
 }
 /* ------------------ RotateU2V ------------------------ */
 

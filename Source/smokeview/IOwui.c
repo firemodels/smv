@@ -593,7 +593,7 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
       }
     }
   }
-  GetTerrainData(terri->file, terri);
+  if(terri->file!=NULL)GetTerrainData(terri->file, terri);
 }
 
 /* ------------------ DrawTerrain ------------------------ */
@@ -976,6 +976,7 @@ void UpdateTerrain(int allocate_memory, float vertical_factor_local){
       }
       else{
         terri = terraininfo + i;
+        terri->file = NULL;
       }
 
       nx = meshi->ibar;
