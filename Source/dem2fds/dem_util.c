@@ -977,6 +977,9 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
   if(option == FDS_OBST) {
     fprintf(streamout, "&MISC TERRAIN_CASE = .TRUE., TERRAIN_IMAGE = '%s.png' /\n", basename);
   }
+  if(option==FDS_GEOM) {
+    fprintf(streamout, "&MISC TERRAIN_IMAGE = '%s.png' /\n", basename);
+  }
   fprintf(streamout, "&TIME T_END = 0.0 /\n");
   fprintf(streamout, "&VENT MB = 'XMIN', SURF_ID = 'OPEN' /\n");
   fprintf(streamout, "&VENT MB = 'XMAX', SURF_ID = 'OPEN' /\n");
