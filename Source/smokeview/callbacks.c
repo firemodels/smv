@@ -2009,6 +2009,9 @@ void Keyboard(unsigned char key, int flag){
                        blocklocation>BLOCKlocation_cad){
         blocklocation=BLOCKlocation_grid;
       }
+      if(blocklocation==BLOCKlocation_grid)printf("blocklocation: snapped to grid\n");
+      if(blocklocation==BLOCKlocation_exact)printf("blocklocation: as input\n");
+      if(blocklocation==BLOCKlocation_cad)printf("blocklocation: cad\n");
       if(showedit_dialog==1){
         if(blocklocation==BLOCKlocation_exact){
           blockage_as_input=1;
