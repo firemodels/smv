@@ -395,6 +395,40 @@ call getslicefiledirection(ip1,ip2,iip1, iip2, jp1,jp2,kp1,kp2,idir,joff,koff,vo
 return
 end subroutine getsliceparms
 
+!  ------------------ getsliceheader ------------------------
+
+subroutine getsliceheader(slicefilename, ip1, ip2, jp1, jp2, kp1, kp2, error)
+use cio
+implicit none
+
+character(len=*), intent(in) :: slicefilename
+integer, intent(out) :: ip1, ip2, jp1, jp2, kp1, kp2
+integer, intent(out) :: error
+
+logical :: exists
+integer :: lu11, nsizes, sizes(3)
+
+error=0
+inquire(file=trim(slicefilename),exist=exists)
+if(exists)then
+  open(newunit=lu11,file=trim(slicefilename),form="unformatted",action="read")
+ else
+  error=1
+  return
+endif
+
+sizes(1) = 30
+sizes(2) = 30
+sizes(3) = 30
+nsizes = 3
+
+call ffseek(lu11,sizes,nsizes,seek_set,error)
+
+read(lu11,iostat=error)ip1, ip2, jp1, jp2, kp1, kp2
+close(lu11)
+
+end subroutine getsliceheader
+
 !  ------------------ getslicesizes ------------------------
 
 subroutine getslicesizes(slicefilename, nslicei, nslicej, nslicek, nsteps, sliceframestep,&

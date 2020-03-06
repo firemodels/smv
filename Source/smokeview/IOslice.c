@@ -4222,6 +4222,7 @@ void GetSliceSizes(char *slicefilenameptr, int *nsliceiptr, int *nslicejptr, int
   fclose(SLICEFILE);
 }
 
+#ifdef pp_C_SLICE
 /* ------------------ GetSliceFileHeader ------------------------ */
 
 void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error){
@@ -4248,6 +4249,7 @@ void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int 
   *error = 0;
   fclose(stream);
 }
+#endif
 
 /* ------------------ GetSliceData ------------------------ */
 

@@ -8777,7 +8777,11 @@ typedef struct {
       if(read_slice_header==1){
         int error;
 
+#ifdef pp_C_SLICE
         GetSliceFileHeader(sd->file, &ii1, &ii2, &jj1, &jj2, &kk1, &kk2, &error);
+#else
+        FORTgetsliceheader(sd->file,&ii1,&ii2,&jj1,&jj2,&kk1,&kk2,&error,strlen(sd->file));
+#endif
       }
       sd->is1=ii1;
       sd->is2=ii2;

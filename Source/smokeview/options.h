@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+#define pp_C_SLICE              // use C to read in slice file headers
 //#define pp_NEW_SLICE_MENUS    // new slice menus
 //#define pp_BLOCK_COLOR        //  new algorithm for assigning obst colors
 //#define pp_NEWBOUND_DIALOG   // redo bound dialog
