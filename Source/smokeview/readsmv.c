@@ -1902,6 +1902,24 @@ void InitTextures(void){
     ntextureinfo++;
   }
 
+  if(nterrain_texture>0){
+    char *texturefile;
+    texturedata *texti;
+    int len;
+
+    texturefile = terrain_texture->file;
+    texti = textureinfo + ntextureinfo;
+    len = strlen(texturefile);
+    NewMemory((void **)&texti->file,(len+1)*sizeof(char));
+    strcpy(texti->file,texturefile);
+    FREEMEMORY(terrain_texture);
+    terrain_texture = texti;
+    texti->loaded=0;
+    texti->used=0;
+    texti->display=0;
+    ntextureinfo++;
+  }
+
   // check to see if texture files exist .
   // If so, then convert to OpenGL format
 
@@ -2084,7 +2102,9 @@ void InitTextures(void){
 #endif
 #endif
 
-  if(auto_terrain==1&&use_graphics==1){
+  // define terrain texture
+
+  if((auto_terrain==1||nterrain_texture>0)&&use_graphics==1){
     texturedata *tt;
     unsigned char *floortex;
     int texwid, texht;
@@ -4410,6 +4430,7 @@ int ReadSMV(char *file, char *file2){
       texturedata *tt;
       char *buff2;
 
+      nterrain_texture = 1;
       NewMemory((void **)&terrain_texture,sizeof(texturedata));
       tt = terrain_texture;
       auto_terrain=1;
@@ -4431,8 +4452,30 @@ int ReadSMV(char *file, char *file2){
       buff2 = TrimFront(buffer);
       TrimBack(buff2);
       len_buffer = strlen(buff2);
-      if(len_buffer>0&&strcmp(buff2, "xxxnull")!=0){
+      if(len_buffer>0&&strcmp(buff2, "null")!=0){
 
+        NewMemory((void **)&tt->file, (len_buffer+1)*sizeof(char));
+        strcpy(tt->file, buff2);
+      }
+      else{
+        tt->file = NULL;
+      }
+      continue;
+    }
+    if(Match(buffer, "TERRAINIMAGE")==1){
+      int len_buffer;
+      texturedata *tt;
+      char *buff2;
+
+      nterrain_texture = 1;
+      FREEMEMORY(terrain_texture);
+      NewMemory((void **)&terrain_texture, sizeof(texturedata));
+      tt = terrain_texture;
+
+      FGETS(buffer, 255, stream);
+      buff2 = TrimFrontBack(buffer);
+      len_buffer = strlen(buff2);
+      if(len_buffer>0&&strcmp(buff2, "null")!=0){
         NewMemory((void **)&tt->file, (len_buffer+1)*sizeof(char));
         strcpy(tt->file, buff2);
       }
@@ -5210,19 +5253,22 @@ int ReadSMV(char *file, char *file2){
 
           if(texture_vals!=NULL){
             char *surflabel;
+            int is_terrain=0;
 
             texture_vals++;
             texture_vals[-1]=0;
             center = geomobji->texture_center;
-            sscanf(texture_vals,"%f %f %f",center,center+1,center+2);
             surflabel=strchr(texture_vals,'%');
             if(surflabel!=NULL){
+              surflabel++;
+              surflabel[-1] = 0;
               TrimBack(surflabel);
               surflabel=TrimFront(surflabel+1);
               geomi->surfgeom=GetSurface(surflabel);
             }
+            sscanf(texture_vals, "%f %f %f %i", center, center+1, center+2, &is_terrain);
+            geomi->is_terrain = is_terrain;
           }
-
           if(texture_mapping!=NULL&&strcmp(texture_mapping,"SPHERICAL")==0){
             geomobji->texture_mapping=TEXTURE_SPHERICAL;
           }
@@ -6921,7 +6967,7 @@ int ReadSMV(char *file, char *file2){
 
   UpdateDeviceTextures();
   if(nsurfinfo>0||ndevice_texture_list>0){
-    if(NewMemory((void **)&textureinfo,(nsurfinfo+ndevice_texture_list)*sizeof(texturedata))==0)return 2;
+    if(NewMemory((void **)&textureinfo,(nsurfinfo+ndevice_texture_list+nterrain_texture)*sizeof(texturedata))==0)return 2;
   }
   if(use_graphics==1)InitTextures();
 
@@ -9823,6 +9869,14 @@ void UpdateUseTextures(void){
         if(usetextures==1)texti->display=1;
         texti->used=1;
       }
+    }
+  }
+  if(nterrain_texture>0){
+    texturedata *texti;
+
+    texti = textureinfo+ntextureinfo-1;
+    if(texti==terrain_texture){
+      texti->used = 1;
     }
   }
   ntextures_loaded_used=0;

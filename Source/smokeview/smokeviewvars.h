@@ -1707,7 +1707,7 @@ SVEXTERN float xclip_max, yclip_max, zclip_max;
 SVEXTERN float nearclip,farclip;
 SVEXTERN int updateclipvals;
 SVEXTERN int updateUpdateFrameRateMenu;
-SVEXTERN int SVDECL(ntextureinfo,0),ntextures_loaded_used;
+SVEXTERN int SVDECL(ntextureinfo,0),ntextures_loaded_used, SVDECL(nterrain_texture, 0);
 SVEXTERN int SVDECL(nskyboxinfo,0);
 SVEXTERN skyboxdata SVDECL(*skyboxinfo,NULL);
 SVEXTERN firedata SVDECL(*fireinfo,NULL);

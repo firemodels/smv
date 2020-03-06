@@ -2399,7 +2399,12 @@ void TextureShowMenu(int value){
 
       geomi = geominfo + i;
       surf = geomi->surfgeom;
-      if(surf!=NULL)textii=surf->textureinfo;
+      if(terrain_texture!=NULL){
+        textii = terrain_texture;
+      }
+      else{
+        if(surf!=NULL)textii = surf->textureinfo;
+      }
       if(textii!=NULL&&textii->display==1){
         visGeomTextures=1;
         break;
