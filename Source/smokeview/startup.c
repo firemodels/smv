@@ -194,6 +194,9 @@ int SetupCase(int argc, char **argv){
   STRCAT(part_globalbound_filename, ".prt5.gbnd");
   part_globalbound_filename = GetFileName(smokeviewtempdir, part_globalbound_filename, NOT_FORCE_IN_DIR);
 
+  // setup input files names
+
+  input_file = smv_filename;
   if(strcmp(input_filename_ext,".svd")==0||demo_option==1){
     trainer_mode=1;
     trainer_active=1;
@@ -203,38 +206,21 @@ int SetupCase(int argc, char **argv){
     else if(strcmp(input_filename_ext,".smt")==0){
       input_file=test_filename;
     }
-    else{
-      input_file=smv_filename;
-    }
-#ifdef pp_READBUFFER
-    {
-      bufferstreamdata *smv_streaminfo = NULL;
-
-      smv_streaminfo = GetSMVBuffer(input_file, iso_filename);
-      return_code = ReadSMV(smv_streaminfo, input_file, iso_filename);
-      FCLOSE(smv_streaminfo);
-    }
-#else
-    return_code=ReadSMV(input_file,iso_filename);
-#endif
-    if(return_code==0){
-      ShowGluiTrainer();
-      ShowGluiAlert();
-    }
   }
-  else{
-    input_file = smv_filename;
 #ifdef pp_READBUFFER
-    {
-      bufferstreamdata *smv_streaminfo = NULL;
+  {
+    bufferstreamdata *smv_streaminfo = NULL;
 
-      smv_streaminfo = GetSMVBuffer(input_file, iso_filename);
-      return_code = ReadSMV(smv_streaminfo, input_file, iso_filename);
-      FCLOSE(smv_streaminfo);
-    }
+    smv_streaminfo = GetSMVBuffer(input_file, iso_filename);
+    return_code = ReadSMV(smv_streaminfo, input_file, iso_filename);
+    FCLOSE(smv_streaminfo);
+  }
 #else
-    return_code = ReadSMV(input_file, iso_filename);
+  return_code = ReadSMV(input_file, iso_filename);
 #endif
+  if(return_code==0&&trainer_mode==1){
+    ShowGluiTrainer();
+    ShowGluiAlert();
   }
   switch(return_code){
     case 1:
