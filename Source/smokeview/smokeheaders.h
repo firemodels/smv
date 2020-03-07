@@ -8,6 +8,9 @@
 #ifdef pp_C_SLICE
 EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error);
 #endif
+#ifdef pp_READBUFFER
+bufferstreamdata *GetSMVBuffer(char *file, char *file2);
+#endif
 EXTERNCPP void UpdateBlockType(void);
 #ifdef pp_NEWBOUND_DIALOG
 EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max);
@@ -867,8 +870,12 @@ EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_fra
 
 EXTERNCPP void InitMenus(int unload);
 EXTERNCPP void SmoothLabel(float *min, float *max, int n);
-EXTERNCPP int  ReadSMV(char *file, char *file2);
-EXTERNCPP void ReadSMVDynamic(char *file);
+#ifdef pp_READBUFFER
+int ReadSMV(bufferstreamdata *stream, char *file, char *file2);
+#else
+int ReadSMV(char *file, char *file2);
+#endif
+  EXTERNCPP void ReadSMVDynamic(char *file);
 EXTERNCPP int  STRCMP(const char *s1, const char *s2);
 EXTERNCPP void OutputAxisLabels(void);
 EXTERNCPP void OutputLargeText(float x, float y, char *string);
