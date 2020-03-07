@@ -3817,9 +3817,36 @@ void MakeFileLists(void){
   MakeFileList(".", filter_casedir, nfilelist_casedir, YES, &filelist_casedir);
 }
 
+#ifdef pp_READBUFFER
+
+/* ------------------ GetSMVBuffer ------------------------ */
+
+bufferstreamdata *GetSMVBuffer(char *file, char *file2){
+  bufferstreamdata *stream;
+
+  NewMemory((void **)&stream,sizeof(bufferstreamdata));
+
+  stream->fileinfo = File2Buffer(file);
+  if(stream->fileinfo!=NULL&&file2!=NULL){
+    bufferstreamdata streaminfo2, *stream2 = &streaminfo2;
+
+    stream2->fileinfo = File2Buffer(file2);
+    if(stream2->fileinfo!=NULL){
+      AppendFileBuffer(stream->fileinfo, stream2->fileinfo);
+    }
+    FreeFileBuffer(stream2->fileinfo);
+  }
+  return stream;
+}
+#endif
+
 /* ------------------ ReadSMV ------------------------ */
 
+#ifdef pp_READBUFFER
+int ReadSMV(bufferstreamdata *stream, char *file, char *file2){
+#else
 int ReadSMV(char *file, char *file2){
+#endif
 
 /* read the .smv file */
   float read_time, processing_time, wrapup_time, getfilelist_time;
@@ -3847,9 +3874,7 @@ int ReadSMV(char *file, char *file2){
   char buffer[256],buffer2[256],*bufferptr,*bufferptr2;
   char bufferA[256], bufferB[256], bufferC[256], bufferD[256], bufferE[256], bufferF[256];
   patchdata *patchgeom;
-#ifdef pp_READBUFFER
-  bufferstreamdata streaminfo, *stream=&streaminfo;
-#else
+#ifndef pp_READBUFFER
   FILE *stream=NULL,*stream1=NULL,*stream2=NULL;
 #endif
 
@@ -3861,21 +3886,6 @@ int ReadSMV(char *file, char *file2){
 
   START_TIMER(pass0_time);
   START_TIMER(read_time);
-
-#ifdef pp_READBUFFER
-  if(readfile_option==READBUFFER){
-    stream->fileinfo = File2Buffer(file);
-    if(stream->fileinfo!=NULL&&file2!=NULL){
-      bufferstreamdata streaminfo2, *stream2 = &streaminfo2;
-
-      stream2->fileinfo = File2Buffer(file2);
-      if(stream2->fileinfo!=NULL){
-        AppendFileBuffer(stream->fileinfo, stream2->fileinfo);
-      }
-      FreeFileBuffer(stream2->fileinfo);
-    }
-  }
-#endif
 
   STOP_TIMER(read_time);
   STOP_TIMER(read_time_elapsed);
@@ -4431,7 +4441,7 @@ int ReadSMV(char *file, char *file2){
       buff2 = TrimFront(buffer);
       TrimBack(buff2);
       len_buffer = strlen(buff2);
-      if(len_buffer>0&&strcmp(buff2, "xxxnull")!=0){
+      if(len_buffer>0&&strcmp(buff2, "null")!=0){
 
         NewMemory((void **)&tt->file, (len_buffer+1)*sizeof(char));
         strcpy(tt->file, buff2);
@@ -9630,9 +9640,7 @@ typedef struct {
 
   // close .smv file
 
-#ifdef pp_READBUFFER
-  FCLOSE(stream);
-#else
+#ifndef pp_READBUFFER
   FCLOSE(stream1);
   if(stream2!=NULL)fclose(stream2);
   stream = NULL;
