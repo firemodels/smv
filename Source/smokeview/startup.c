@@ -206,15 +206,35 @@ int SetupCase(int argc, char **argv){
     else{
       input_file=smv_filename;
     }
+#ifdef pp_READBUFFER
+    {
+      bufferstreamdata *smv_streaminfo = NULL;
+
+      smv_streaminfo = GetSMVBuffer(input_file, iso_filename);
+      return_code = ReadSMV(smv_streaminfo, input_file, iso_filename);
+      FCLOSE(smv_streaminfo);
+    }
+#else
     return_code=ReadSMV(input_file,iso_filename);
+#endif
     if(return_code==0){
       ShowGluiTrainer();
       ShowGluiAlert();
     }
   }
   else{
-    input_file=smv_filename;
-    return_code=ReadSMV(input_file,iso_filename);
+    input_file = smv_filename;
+#ifdef pp_READBUFFER
+    {
+      bufferstreamdata *smv_streaminfo = NULL;
+
+      smv_streaminfo = GetSMVBuffer(input_file, iso_filename);
+      return_code = ReadSMV(smv_streaminfo, input_file, iso_filename);
+      FCLOSE(smv_streaminfo);
+    }
+#else
+    return_code = ReadSMV(input_file, iso_filename);
+#endif
   }
   switch(return_code){
     case 1:
