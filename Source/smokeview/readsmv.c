@@ -3837,6 +3837,364 @@ void MakeFileLists(void){
   MakeFileList(".", filter_casedir, nfilelist_casedir, YES, &filelist_casedir);
 }
 
+/* ------------------ ParseSLCF ------------------------ */
+#define RETURN_TWO        2
+#define RETURN_BREAK      3
+#define RETURN_CONTINUE   4
+#define RETURN_PROCEED    5
+
+int ParseSLCF(bufferstreamdata *stream, char *buffer, int *nn_sliceptr, int ioffset, int *islicecountptr,
+  int *nslicefilesptr, slicedata **sliceinfo_copyptr, patchdata **patchgeomptr){
+  char *slicelabelptr, slicelabel[256], *sliceparms;
+  float above_ground_level = 0.0;
+  int terrain = 0, cellcenter = 0, facecenter = 0;
+  int slicegeom = 0;
+  int slcf_index = 0;
+  char *char_slcf_index;
+  int has_reg, compression_type;
+  int ii1 = -1, ii2 = -1, jj1 = -1, jj2 = -1, kk1 = -1, kk2 = -1;
+  int blocknumber;
+  slicedata *sd;
+  size_t len;
+  int read_slice_header = 0;
+  char zlib_file[255], rle_file[255];
+  int nn_slice;
+  char bufferA[256], bufferB[256], bufferC[256], bufferD[256], bufferE[256], bufferF[256];
+  char buffer2[256], *bufferptr, *bufferptr2;
+  int islicecount, nslicefiles;
+  slicedata *sliceinfo_copy;
+
+  if(setup_only==1||smoke3d_only==1)return RETURN_CONTINUE;
+
+  char_slcf_index = strchr(buffer, '!');
+  if(char_slcf_index!=NULL){
+    *char_slcf_index = 0;
+    char_slcf_index++;
+    sscanf(char_slcf_index, "%i", &slcf_index);
+  }
+
+  sliceparms = strchr(buffer, '&');
+  if(sliceparms==NULL){
+    read_slice_header = 1;
+  }
+  else{
+    sliceparms++;
+    sliceparms[-1] = 0;
+    sscanf(sliceparms, "%i %i %i %i %i %i", &ii1, &ii2, &jj1, &jj2, &kk1, &kk2);
+  }
+
+  nn_slice = *nn_sliceptr + 1;
+  *nn_sliceptr = nn_slice;
+  slicelabelptr = strchr(buffer, '%');
+  if(slicelabelptr!=NULL){
+    *slicelabelptr = 0;
+    slicelabelptr++;
+    TrimBack(slicelabelptr);
+    slicelabelptr = TrimFront(slicelabelptr);
+    strcpy(slicelabel, slicelabelptr);
+    slicelabelptr = slicelabel;
+  }
+  if(Match(buffer, "BNDS")==1){
+    strcpy(bufferA, buffer);
+    slicegeom = 1;
+  }
+  if(Match(buffer, "SLCT")==1){
+    terrain = 1;
+  }
+  if(Match(buffer, "SLCC")==1){
+    cellcenter_slice_active = 1;
+    cellcenter = 1;
+  }
+  if(Match(buffer, "SLCD")==1){
+    facecenter_slice_active = 1;
+    facecenter = 1;
+  }
+  TrimBack(buffer);
+  len = strlen(buffer);
+  if(nmeshes>1){
+    blocknumber = ioffset-1;
+  }
+  else{
+    blocknumber = 0;
+  }
+  if(len>5){
+    char *buffer3;
+
+    buffer3 = buffer+4;
+    sscanf(buffer3, "%i %f", &blocknumber, &above_ground_level);
+    blocknumber--;
+  }
+
+  // read in slice file name
+
+  if(FGETS(buffer, 255, stream)==NULL){
+    nsliceinfo--;
+    return RETURN_BREAK;
+  }
+  if(slicegeom==1){
+    strcpy(bufferB, buffer);
+  }
+
+  bufferptr = TrimFrontBack(buffer);
+  len = strlen(bufferptr);
+
+  sd = sliceinfo+nn_slice-1;
+
+  sd->slcf_index = slcf_index;
+  sd->finalize = 1;
+  sd->ntimes = 0;
+  sd->skipdup = 0;
+  sd->ntimes_old = 0;
+  sd->globalmax = -1.0e30;
+  sd->globalmin = -sd->globalmax;
+#ifdef pp_NEWBOUND_DIALOG
+  sd->file_min = 1.0;
+  sd->file_max = 0.0;
+#endif
+  sd->reg_file = NULL;
+  sd->comp_file = NULL;
+  sd->vol_file = NULL;
+  sd->slicelabel = NULL;
+#ifdef pp_NEWBOUND_DIALOG
+  sd->bounds = NULL;
+#endif
+  sd->file_size = 0;
+  sd->slice_filetype = SLICE_NODE_CENTER;
+  sd->patchgeom = NULL;
+  if(slicegeom==1){
+    patchdata *patchgeom_local;
+
+    sd->slice_filetype = SLICE_GEOM;
+    NewMemory((void **)&patchgeom_local, sizeof(patchdata));
+    sd->patchgeom = patchgeom_local;
+  }
+  if(terrain==1){
+    sd->slice_filetype = SLICE_TERRAIN;
+  }
+  if(cellcenter==1){
+    sd->slice_filetype = SLICE_CELL_CENTER;
+  }
+  if(facecenter==1){
+    sd->slice_filetype = SLICE_FACE_CENTER;
+  }
+
+  islicecount = *islicecountptr + 1;
+  *islicecountptr = islicecount;
+
+  strcpy(zlib_file, bufferptr);
+  strcat(zlib_file, ".svz");
+  strcpy(rle_file, bufferptr);
+  strcat(rle_file, ".rle");
+
+  has_reg = 0;
+  compression_type = UNCOMPRESSED;
+  if(lookfor_compressed_slice==1){
+    if(FILE_EXISTS_CASEDIR(rle_file)==YES)compression_type = COMPRESSED_RLE;
+    if(FILE_EXISTS_CASEDIR(zlib_file)==YES)compression_type = COMPRESSED_ZLIB;
+  }
+  if(compression_type==UNCOMPRESSED&&(fast_startup==1||FILE_EXISTS_CASEDIR(bufferptr)==YES))has_reg = 1;
+  if(has_reg==0&&compression_type==UNCOMPRESSED){
+    nsliceinfo--;
+    nslicefiles = *nslicefilesptr-1;
+    *nslicefilesptr = nslicefiles;
+    nn_slice--;
+    *nn_sliceptr = nn_slice;
+    if(FGETS(buffer, 255, stream)==NULL){
+      return RETURN_BREAK;
+    }
+    if(FGETS(buffer, 255, stream)==NULL){
+      return RETURN_BREAK;
+    }
+    if(FGETS(buffer, 255, stream)==NULL){
+      return RETURN_BREAK;
+    }
+    if(slicegeom==1){
+      if(FGETS(buffer, 255, stream)==NULL){
+        return RETURN_BREAK;
+      }
+    }
+    return RETURN_CONTINUE;
+  }
+
+  NewMemory((void **)&sd->reg_file, (unsigned int)(len+1));
+  STRCPY(sd->reg_file, bufferptr);
+  NewMemory((void **)&sd->comp_file, (unsigned int)(len+4+1));
+
+  sd->compression_type = compression_type;
+  switch(compression_type){
+  case UNCOMPRESSED:
+    sd->file = sd->reg_file;
+    break;
+  case COMPRESSED_ZLIB:
+    STRCPY(sd->comp_file, zlib_file);
+    sd->file = sd->comp_file;
+    break;
+  case COMPRESSED_RLE:
+    STRCPY(sd->comp_file, rle_file);
+    sd->file = sd->comp_file;
+    break;
+  }
+
+  // read in geometry file name
+
+  if(slicegeom==1){
+    int lengeom;
+
+    if(FGETS(buffer2, 255, stream)==NULL){
+      nsliceinfo--;
+      return RETURN_BREAK;
+    }
+    strcpy(bufferC, buffer2);
+    bufferptr2 = TrimFrontBack(buffer2);
+    lengeom = strlen(bufferptr2);
+    sd->geom_file = NULL;
+    NewMemory((void **)&sd->geom_file, (unsigned int)(lengeom+1));
+    STRCPY(sd->geom_file, bufferptr2);
+  }
+
+  // read in labels
+
+  if(sd->slice_filetype==SLICE_TERRAIN){
+    if(ReadLabels(&sd->label, stream, "(terrain)")==LABEL_ERR)return RETURN_TWO;
+  }
+  else if(sd->slice_filetype==SLICE_CELL_CENTER){
+    if(ReadLabels(&sd->label, stream, "(cell centered)")==LABEL_ERR)return RETURN_TWO;
+  }
+  else if(sd->slice_filetype==SLICE_GEOM){
+    if(ReadLabelsBNDS(&sd->label, stream, bufferD, bufferE, bufferF, "(geometry)")==LABEL_ERR)return RETURN_TWO;
+  }
+  else if(sd->slice_filetype==SLICE_FACE_CENTER){
+    if(ReadLabels(&sd->label, stream, "(face centered)")==LABEL_ERR)return RETURN_TWO;
+  }
+  else{
+    if(ReadLabels(&sd->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
+  }
+  if(strlen(sd->label.longlabel)>14&&
+    strncmp(sd->label.longlabel, "SOOT VISIBILITY", 15)==0){
+    sd->colorbar_autoflip = 1;
+  }
+  else{
+    sd->colorbar_autoflip = 0;
+  }
+
+
+  {
+    char volfile[1024];
+
+    strcpy(volfile, bufferptr);
+    strcat(volfile, ".svv");
+    sd->vol_file = NULL;
+    if(FILE_EXISTS_CASEDIR(volfile)==YES){
+      NewMemory((void **)&sd->vol_file, (unsigned int)(len+4+1));
+      STRCPY(sd->vol_file, volfile);
+      have_volcompressed = 1;
+    }
+  }
+
+  NewMemory((void **)&sd->size_file, (unsigned int)(len+3+1));
+  STRCPY(sd->size_file, bufferptr);
+  STRCAT(sd->size_file, ".sz");
+
+  NewMemory((void **)&sd->bound_file, (unsigned int)(len+4+1));
+  STRCPY(sd->bound_file, bufferptr);
+  STRCAT(sd->bound_file, ".bnd");
+
+  sd->slicelabel = NULL;
+  if(slicelabelptr!=NULL){
+    int lenslicelabel;
+
+    lenslicelabel = strlen(slicelabel)+1;
+    NewMemory((void **)&sd->slicelabel, lenslicelabel);
+    strcpy(sd->slicelabel, slicelabel);
+  }
+  if(read_slice_header==1){
+    int error;
+
+#ifdef pp_C_SLICE
+    GetSliceFileHeader(sd->file, &ii1, &ii2, &jj1, &jj2, &kk1, &kk2, &error);
+#else
+    FORTgetsliceheader(sd->file, &ii1, &ii2, &jj1, &jj2, &kk1, &kk2, &error, strlen(sd->file));
+#endif
+  }
+  sd->is1 = ii1;
+  sd->is2 = ii2;
+  sd->js1 = jj1;
+  sd->js2 = jj2;
+  sd->ks1 = kk1;
+  sd->ks2 = kk2;
+  sd->ijk_min[0] = ii1;
+  sd->ijk_max[0] = ii2;
+  sd->ijk_min[1] = jj1;
+  sd->ijk_max[1] = jj2;
+  sd->ijk_min[2] = kk1;
+  sd->ijk_max[2] = kk2;
+  sd->is_fed = 0;
+  sd->above_ground_level = above_ground_level;
+  sd->seq_id = nn_slice;
+  sd->autoload = 0;
+  sd->display = 0;
+  sd->loaded = 0;
+  sd->loading = 0;
+  sd->qslicedata = NULL;
+  sd->compindex = NULL;
+  sd->slicecomplevel = NULL;
+  sd->qslicedata_compressed = NULL;
+  if(sd->is1!=sd->is2&&sd->js1!=sd->js2&&sd->ks1!=sd->ks2){
+    sd->volslice = 1;
+  }
+  else{
+    sd->volslice = 0;
+  }
+  sd->times = NULL;
+  sd->slicelevel = NULL;
+  sd->iqsliceframe = NULL;
+  sd->qsliceframe = NULL;
+  sd->timeslist = NULL;
+  sd->blocknumber = blocknumber;
+  sd->vloaded = 0;
+  sd->reload = 0;
+  sd->nline_contours = 0;
+  sd->line_contours = NULL;
+  sd->menu_show = 1;
+  sd->constant_color = NULL;
+  sd->histograms = NULL;
+  sd->nhistograms = 0;
+  {
+    meshdata *meshi;
+
+    meshi = meshinfo+blocknumber;
+    sd->mesh_type = meshi->mesh_type;
+    sd->full_mesh = NO;
+    if(sd->is2-sd->is1==meshi->ibar &&
+      sd->js2-sd->js1==meshi->jbar &&
+      sd->ks2-sd->ks1==meshi->kbar)sd->full_mesh = YES;
+  }
+
+  if(IsSliceDup(sd, nn_slice)==1){
+    FREEMEMORY(sd->reg_file);
+    FREEMEMORY(sd->comp_file);
+    FREEMEMORY(sd->vol_file);
+    FREEMEMORY(sd->slicelabel);
+
+    nsliceinfo--;
+    nslicefiles = *nslicefilesptr-1;;
+    *nslicefilesptr = nslicefiles;
+    nn_slice--;
+    *nn_sliceptr = nn_slice;
+    return RETURN_CONTINUE;
+  }
+  sliceinfo_copy = *sliceinfo_copyptr + 1;
+  *sliceinfo_copyptr = sliceinfo_copy;
+  if(slicegeom==1){
+    strcpy(buffer, bufferA);
+    *patchgeomptr = sd->patchgeom;
+  }
+  else{
+    return RETURN_CONTINUE;
+  }
+  return RETURN_PROCEED;
+}
+
 /* ------------------ FreeSliceData ------------------------ */
 
 void FreeSliceData(void){
@@ -8555,341 +8913,19 @@ typedef struct {
         (Match(buffer,"SLCT") == 1)
       || (Match(buffer, "BNDS") == 1)
       ){
-      char *slicelabelptr, slicelabel[256], *sliceparms;
-      float above_ground_level=0.0;
-      int terrain=0, cellcenter=0, facecenter=0;
-      int slicegeom=0;
-      int slcf_index = 0;
-      char *char_slcf_index;
-      int has_reg, compression_type;
-      int ii1 = -1, ii2 = -1, jj1 = -1, jj2 = -1, kk1 = -1, kk2 = -1;
-      int blocknumber;
-      slicedata *sd;
-      size_t len;
-      int read_slice_header=0;
-      char zlib_file[255], rle_file[255];
+      int return_val;
 
-      if(setup_only == 1||smoke3d_only==1)continue;
-
-      char_slcf_index = strchr(buffer, '!');
-      if(char_slcf_index!=NULL){
-        *char_slcf_index = 0;
-        char_slcf_index++;
-        sscanf(char_slcf_index, "%i", &slcf_index);
-      }
-
-      sliceparms=strchr(buffer,'&');
-      if(sliceparms==NULL){
-        read_slice_header=1;
-      }
-      else{
-        sliceparms++;
-        sliceparms[-1]=0;
-        sscanf(sliceparms,"%i %i %i %i %i %i",&ii1,&ii2,&jj1,&jj2,&kk1,&kk2);
-      }
-
-      nn_slice++;
-      slicelabelptr=strchr(buffer,'%');
-      if(slicelabelptr!=NULL){
-        *slicelabelptr=0;
-        slicelabelptr++;
-        TrimBack(slicelabelptr);
-        slicelabelptr=TrimFront(slicelabelptr);
-        strcpy(slicelabel,slicelabelptr);
-        slicelabelptr=slicelabel;
-      }
-      if(Match(buffer,"BNDS") == 1){
-        strcpy(bufferA,buffer);
-        slicegeom=1;
-      }
-      if(Match(buffer,"SLCT") == 1){
-        terrain=1;
-      }
-      if(Match(buffer,"SLCC") == 1){
-        cellcenter_slice_active = 1;
-        cellcenter=1;
-      }
-      if(Match(buffer, "SLCD") == 1){
-        facecenter_slice_active = 1;
-        facecenter = 1;
-      }
-      TrimBack(buffer);
-      len=strlen(buffer);
-      if(nmeshes>1){
-        blocknumber=ioffset-1;
-      }
-      else{
-        blocknumber=0;
-      }
-      if(len>5){
-        char *buffer3;
-
-        buffer3=buffer+4;
-        sscanf(buffer3,"%i %f",&blocknumber,&above_ground_level);
-        blocknumber--;
-      }
-
-// read in slice file name
-
-      if(FGETS(buffer,255,stream)==NULL){
-        nsliceinfo--;
+      return_val = ParseSLCF(stream, buffer, &nn_slice, ioffset, &islicecount, &nslicefiles, &sliceinfo_copy, &patchgeom);
+      if(return_val==RETURN_BREAK){
         BREAK;
       }
-      if(slicegeom == 1){
-        strcpy(bufferB,buffer);
-      }
-
-      bufferptr=TrimFrontBack(buffer);
-      len=strlen(bufferptr);
-
-      sd = sliceinfo + nn_slice - 1;
-
-      sd->slcf_index = slcf_index;
-      sd->finalize = 1;
-      sd->ntimes = 0;
-      sd->skipdup = 0;
-      sd->ntimes_old = 0;
-      sd->globalmax = -1.0e30;
-      sd->globalmin = -sd->globalmax;
-#ifdef pp_NEWBOUND_DIALOG
-      sd->file_min = 1.0;
-      sd->file_max = 0.0;
-#endif
-      sd->reg_file=NULL;
-      sd->comp_file=NULL;
-      sd->vol_file=NULL;
-      sd->slicelabel=NULL;
-#ifdef pp_NEWBOUND_DIALOG
-      sd->bounds = NULL;
-#endif
-      sd->file_size = 0;
-      sd->slice_filetype=SLICE_NODE_CENTER;
-      sd->patchgeom = NULL;
-      if(slicegeom==1){
-        patchdata *patchgeom;
-
-        sd->slice_filetype=SLICE_GEOM;
-        NewMemory((void **)&patchgeom,sizeof(patchdata));
-        sd->patchgeom=patchgeom;
-      }
-      if(terrain==1){
-        sd->slice_filetype=SLICE_TERRAIN;
-      }
-      if(cellcenter==1){
-        sd->slice_filetype=SLICE_CELL_CENTER;
-      }
-      if(facecenter == 1){
-        sd->slice_filetype = SLICE_FACE_CENTER;
-      }
-
-      islicecount++;
-
-      strcpy(zlib_file,bufferptr);
-      strcat(zlib_file,".svz");
-      strcpy(rle_file,bufferptr);
-      strcat(rle_file,".rle");
-
-      has_reg=0;
-      compression_type=UNCOMPRESSED;
-      if(lookfor_compressed_slice==1){
-        if(FILE_EXISTS_CASEDIR(rle_file)==YES)compression_type  = COMPRESSED_RLE;
-        if(FILE_EXISTS_CASEDIR(zlib_file)==YES)compression_type = COMPRESSED_ZLIB;
-      }
-      if(compression_type==UNCOMPRESSED&&(fast_startup==1||FILE_EXISTS_CASEDIR(bufferptr)==YES))has_reg=1;
-      if(has_reg==0&&compression_type==UNCOMPRESSED){
-        nsliceinfo--;
-        nslicefiles--;
-        nn_slice--;
-        if(FGETS(buffer,255,stream)==NULL){
-          BREAK;
-        }
-        if(FGETS(buffer,255,stream)==NULL){
-          BREAK;
-        }
-        if(FGETS(buffer,255,stream)==NULL){
-          BREAK;
-        }
-        if(slicegeom==1){
-          if(FGETS(buffer,255,stream)==NULL){
-            BREAK;
-          }
-        }
+      if(return_val==RETURN_CONTINUE){
         continue;
       }
-
-      NewMemory((void **)&sd->reg_file,(unsigned int)(len+1));
-      STRCPY(sd->reg_file,bufferptr);
-      NewMemory((void **)&sd->comp_file,(unsigned int)(len+4+1));
-
-      sd->compression_type = compression_type;
-      switch (compression_type){
-        case UNCOMPRESSED:
-          sd->file=sd->reg_file;
-          break;
-        case COMPRESSED_ZLIB:
-          STRCPY(sd->comp_file,zlib_file);
-          sd->file=sd->comp_file;
-          break;
-        case COMPRESSED_RLE:
-          STRCPY(sd->comp_file,rle_file);
-          sd->file=sd->comp_file;
-          break;
+      if(return_val==RETURN_TWO){
+        return 2;
       }
-
-// read in geometry file name
-
-      if(slicegeom==1){
-        int lengeom;
-
-        if(FGETS(buffer2,255,stream)==NULL){
-          nsliceinfo--;
-          BREAK;
-        }
-        strcpy(bufferC,buffer2);
-        bufferptr2=TrimFrontBack(buffer2);
-        lengeom=strlen(bufferptr2);
-        sd->geom_file = NULL;
-        NewMemory((void **)&sd->geom_file,(unsigned int)(lengeom+1));
-        STRCPY(sd->geom_file,bufferptr2);
-      }
-
-// read in labels
-
-      if(sd->slice_filetype==SLICE_TERRAIN){
-        if(ReadLabels(&sd->label,stream,"(terrain)")==LABEL_ERR)return 2;
-      }
-      else if(sd->slice_filetype==SLICE_CELL_CENTER){
-        if(ReadLabels(&sd->label,stream,"(cell centered)")==LABEL_ERR)return 2;
-      }
-      else if(sd->slice_filetype==SLICE_GEOM){
-        if(ReadLabelsBNDS(&sd->label,stream,bufferD,bufferE,bufferF,"(geometry)")==LABEL_ERR)return 2;
-      }
-      else if(sd->slice_filetype == SLICE_FACE_CENTER){
-        if(ReadLabels(&sd->label, stream,"(face centered)") == LABEL_ERR)return 2;
-      }
-      else{
-        if(ReadLabels(&sd->label,stream,NULL)==LABEL_ERR)return 2;
-      }
-      if(strlen(sd->label.longlabel)>14&&
-         strncmp(sd->label.longlabel,"SOOT VISIBILITY",15)==0){
-         sd->colorbar_autoflip=1;
-      }
-      else{
-         sd->colorbar_autoflip=0;
-      }
-
-
-      {
-        char volfile[1024];
-
-        strcpy(volfile,bufferptr);
-        strcat(volfile,".svv");
-        sd->vol_file=NULL;
-        if(FILE_EXISTS_CASEDIR(volfile)==YES){
-          NewMemory((void **)&sd->vol_file,(unsigned int)(len+4+1));
-          STRCPY(sd->vol_file,volfile);
-          have_volcompressed=1;
-        }
-      }
-
-      NewMemory((void **)&sd->size_file,(unsigned int)(len+3+1));
-      STRCPY(sd->size_file,bufferptr);
-      STRCAT(sd->size_file,".sz");
-
-      NewMemory((void **)&sd->bound_file, (unsigned int)(len+4+1));
-      STRCPY(sd->bound_file, bufferptr);
-      STRCAT(sd->bound_file, ".bnd");
-
-      sd->slicelabel=NULL;
-      if(slicelabelptr!=NULL){
-        int lenslicelabel;
-
-        lenslicelabel=strlen(slicelabel)+1;
-        NewMemory((void **)&sd->slicelabel,lenslicelabel);
-        strcpy(sd->slicelabel,slicelabel);
-      }
-      if(read_slice_header==1){
-        int error;
-
-#ifdef pp_C_SLICE
-        GetSliceFileHeader(sd->file, &ii1, &ii2, &jj1, &jj2, &kk1, &kk2, &error);
-#else
-        FORTgetsliceheader(sd->file,&ii1,&ii2,&jj1,&jj2,&kk1,&kk2,&error,strlen(sd->file));
-#endif
-      }
-      sd->is1=ii1;
-      sd->is2=ii2;
-      sd->js1=jj1;
-      sd->js2=jj2;
-      sd->ks1=kk1;
-      sd->ks2=kk2;
-      sd->ijk_min[0] = ii1;
-      sd->ijk_max[0] = ii2;
-      sd->ijk_min[1] = jj1;
-      sd->ijk_max[1] = jj2;
-      sd->ijk_min[2] = kk1;
-      sd->ijk_max[2] = kk2;
-      sd->is_fed=0;
-      sd->above_ground_level=above_ground_level;
-      sd->seq_id=nn_slice;
-      sd->autoload=0;
-      sd->display=0;
-      sd->loaded=0;
-      sd->loading = 0;
-      sd->qslicedata=NULL;
-      sd->compindex=NULL;
-      sd->slicecomplevel=NULL;
-      sd->qslicedata_compressed=NULL;
-      if(sd->is1!=sd->is2&&sd->js1!=sd->js2&&sd->ks1!=sd->ks2){
-        sd->volslice=1;
-      }
-      else{
-        sd->volslice = 0;
-      }
-      sd->times=NULL;
-      sd->slicelevel=NULL;
-      sd->iqsliceframe=NULL;
-      sd->qsliceframe=NULL;
-      sd->timeslist=NULL;
-      sd->blocknumber=blocknumber;
-      sd->vloaded=0;
-      sd->reload=0;
-      sd->nline_contours=0;
-      sd->line_contours=NULL;
-      sd->menu_show=1;
-      sd->constant_color=NULL;
-      sd->histograms = NULL;
-      sd->nhistograms=0;
-      {
-        meshdata *meshi;
-
-        meshi = meshinfo + blocknumber;
-        sd->mesh_type=meshi->mesh_type;
-        sd->full_mesh = NO;
-        if(sd->is2 - sd->is1 == meshi->ibar &&
-           sd->js2 - sd->js1 == meshi->jbar &&
-           sd->ks2 - sd->ks1 == meshi->kbar)sd->full_mesh = YES;
-      }
-
-      if(IsSliceDup(sd,nn_slice)==1){
-        FREEMEMORY(sd->reg_file);
-        FREEMEMORY(sd->comp_file);
-        FREEMEMORY(sd->vol_file);
-        FREEMEMORY(sd->slicelabel);
-
-        nsliceinfo--;
-        nslicefiles--;
-        nn_slice--;
-        continue;
-      }
-      sliceinfo_copy++;
-      if(slicegeom==1){
-        strcpy(buffer,bufferA);
-        patchgeom = sd->patchgeom;
-      }
-      else{
-        continue;
-      }
+      // return_val==RETURN_PROCEED - proceed on to other keywords
     }
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
