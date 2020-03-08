@@ -4261,7 +4261,7 @@ bufferstreamdata *CopySMVBuffer(bufferstreamdata *stream_in){
 /* ------------------ GetSMVBuffer ------------------------ */
 
 bufferstreamdata *GetSMVBuffer(char *file, char *file2){
-  bufferstreamdata *stream, *stream2;
+  bufferstreamdata *stream;
 
   NewMemory((void **)&stream,sizeof(bufferstreamdata));
 
@@ -4310,8 +4310,8 @@ int ReadSMV(char *file, char *file2){
   int setGRID=0;
   int  i;
 
-  char buffer[256],buffer2[256],*bufferptr,*bufferptr2;
-  char bufferA[256], bufferB[256], bufferC[256], bufferD[256], bufferE[256], bufferF[256];
+  char buffer[256],buffer2[256],*bufferptr;
+  char bufferB[256], bufferC[256], bufferD[256], bufferE[256], bufferF[256];
   patchdata *patchgeom;
 #ifndef pp_READBUFFER
   FILE *stream=NULL,*stream1=NULL,*stream2=NULL;
