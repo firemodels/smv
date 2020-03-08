@@ -4857,23 +4857,16 @@ int ReadSMV(char *file, char *file2){
     }
     if(Match(buffer, "TERRAINIMAGE")==1){
       int len_buffer;
-      texturedata *tt;
       char *buff2;
-
-      nterrain_texture = 1;
-      FREEMEMORY(terrain_texture);
-      NewMemory((void **)&terrain_texture, sizeof(texturedata));
-      tt = terrain_texture;
 
       FGETS(buffer, 255, stream);
       buff2 = TrimFrontBack(buffer);
       len_buffer = strlen(buff2);
       if(len_buffer>0&&strcmp(buff2, "null")!=0){
-        NewMemory((void **)&tt->file, (len_buffer+1)*sizeof(char));
-        strcpy(tt->file, buff2);
-      }
-      else{
-        tt->file = NULL;
+        nterrain_texture = 1;
+        NewMemory((void **)&terrain_texture, sizeof(texturedata));
+        NewMemory((void **)&terrain_texture->file, (len_buffer+1)*sizeof(char));
+        strcpy(terrain_texture->file, buff2);
       }
       continue;
     }
