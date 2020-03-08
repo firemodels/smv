@@ -3837,12 +3837,73 @@ void MakeFileLists(void){
   MakeFileList(".", filter_casedir, nfilelist_casedir, YES, &filelist_casedir);
 }
 
+/* ------------------ FreeSliceData ------------------------ */
+
+void FreeSliceData(void){
+  int i;
+
+  FREEMEMORY(surfinfo);
+  if(nsliceinfo>0){
+    for(i = 0; i<nsliceinfo; i++){
+      slicedata *sd;
+      sd = sliceinfo+i;
+      FreeLabels(&sliceinfo[i].label);
+      FREEMEMORY(sd->reg_file);
+      FREEMEMORY(sd->comp_file);
+      FREEMEMORY(sd->size_file);
+    }
+    FREEMEMORY(sliceorderindex);
+    for(i = 0; i<nmultisliceinfo; i++){
+      multislicedata *mslicei;
+
+      mslicei = multisliceinfo+i;
+      FREEMEMORY(mslicei->islices);
+    }
+    FREEMEMORY(multisliceinfo);
+    nmultisliceinfo = 0;
+    FREEMEMORY(sliceinfo);
+  }
+  nsliceinfo = 0;
+
+  //*** free multi-vector slice data
+
+  if(nvsliceinfo>0){
+    FREEMEMORY(vsliceorderindex);
+    for(i = 0; i<nmultivsliceinfo; i++){
+      multivslicedata *mvslicei;
+
+      mvslicei = multivsliceinfo+i;
+      FREEMEMORY(mvslicei->ivslices);
+    }
+    FREEMEMORY(multivsliceinfo);
+    nmultivsliceinfo = 0;
+  }
+}
+
 #ifdef pp_READBUFFER
+
+/* ------------------ CopySMVBuffer ------------------------ */
+
+bufferstreamdata *CopySMVBuffer(bufferstreamdata *stream_in){
+  bufferstreamdata *stream_out;
+  filedata *fileinfo;
+
+  if(stream_in==NULL)return NULL;
+
+  NewMemory((void **)&stream_out, sizeof(bufferstreamdata));
+  memcpy(stream_out, stream_in, sizeof(bufferstreamdata));
+
+  NewMemory((void **)&fileinfo, sizeof(filedata));
+  stream_out->fileinfo = fileinfo;
+
+  memcpy(fileinfo, stream_in->fileinfo,sizeof(filedata));
+  return stream_out;
+}
 
 /* ------------------ GetSMVBuffer ------------------------ */
 
 bufferstreamdata *GetSMVBuffer(char *file, char *file2){
-  bufferstreamdata *stream;
+  bufferstreamdata *stream, *stream2;
 
   NewMemory((void **)&stream,sizeof(bufferstreamdata));
 
@@ -4121,43 +4182,7 @@ int ReadSMV(char *file, char *file2){
 
 
   //*** free slice data
-
-  FREEMEMORY(surfinfo);
-  if(nsliceinfo>0){
-    for(i=0;i<nsliceinfo;i++){
-      slicedata *sd;
-      sd = sliceinfo + i;
-      FreeLabels(&sliceinfo[i].label);
-      FREEMEMORY(sd->reg_file);
-      FREEMEMORY(sd->comp_file);
-      FREEMEMORY(sd->size_file);
-    }
-    FREEMEMORY(sliceorderindex);
-    for(i=0;i<nmultisliceinfo;i++){
-      multislicedata *mslicei;
-
-      mslicei = multisliceinfo + i;
-      FREEMEMORY(mslicei->islices);
-    }
-    FREEMEMORY(multisliceinfo);
-    nmultisliceinfo=0;
-    FREEMEMORY(sliceinfo);
-  }
-  nsliceinfo=0;
-
-  //*** free multi-vector slice data
-
-  if(nvsliceinfo>0){
-    FREEMEMORY(vsliceorderindex);
-    for(i=0;i<nmultivsliceinfo;i++){
-      multivslicedata *mvslicei;
-
-      mvslicei = multivsliceinfo + i;
-      FREEMEMORY(mvslicei->ivslices);
-    }
-    FREEMEMORY(multivsliceinfo);
-    nmultivsliceinfo=0;
-  }
+  FreeSliceData();
 
   if(npatchinfo>0){
     for(i=0;i<npatchinfo;i++){
@@ -4926,7 +4951,6 @@ int ReadSMV(char *file, char *file2){
     imslice_loadstack=0;
     nmvslice_loadstack=nsliceinfo;
     imvslice_loadstack=0;
-
   }
   if(nsmoke3dinfo>0){
     if(NewMemory( (void **)&smoke3dinfo, nsmoke3dinfo*sizeof(smoke3ddata))==0)return 2;
