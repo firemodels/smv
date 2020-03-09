@@ -868,7 +868,7 @@ EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_fra
 
 EXTERNCPP void InitMenus(int unload);
 EXTERNCPP void SmoothLabel(float *min, float *max, int n);
-int ReadSMV(bufferstreamdata *stream, char *file, char *file2);
+int ReadSMV(bufferstreamdata *stream);
 EXTERNCPP void ReadSMVDynamic(char *file);
 EXTERNCPP int  STRCMP(const char *s1, const char *s2);
 EXTERNCPP void OutputAxisLabels(void);

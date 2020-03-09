@@ -1495,7 +1495,6 @@ SVEXTERN int SVDECL(update_bounds,0);
 SVEXTERN int SVDECL(*sorted_surfidlist,NULL),SVDECL(*inv_sorted_surfidlist,NULL),nsorted_surfidlist;
 SVEXTERN char SVDECL(*trainer_filename,NULL), SVDECL(*test_filename,NULL);
 SVEXTERN FILE SVDECL(*STREAM_SB,NULL);
-SVEXTERN time_t smv_modtime;
 SVEXTERN float temp_threshold;
 SVEXTERN char SVDECL(*smv_filename,NULL),SVDECL(*fed_filename,NULL),fed_filename_base[1024],SVDECL(*stop_filename,NULL);
 SVEXTERN char SVDECL(*part_globalbound_filename, NULL);

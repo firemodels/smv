@@ -4264,7 +4264,7 @@ bufferstreamdata *GetSMVBuffer(char *file, char *file2){
 
 /* ------------------ ReadSMV ------------------------ */
 
-int ReadSMV(bufferstreamdata *stream, char *file, char *file2){
+int ReadSMV(bufferstreamdata *stream){
 
 /* read the .smv file */
   float read_time, processing_time, wrapup_time, getfilelist_time;
@@ -4370,47 +4370,43 @@ int ReadSMV(bufferstreamdata *stream, char *file, char *file2){
   ntickinfo_smv=0;
 
   FREEMEMORY(camera_external);
-  if(file!=NULL)NewMemory((void **)&camera_external,sizeof(cameradata));
+  NewMemory((void **)&camera_external,sizeof(cameradata));
 
   FREEMEMORY(camera_external_save);
-  if(file!=NULL)NewMemory((void **)&camera_external_save,sizeof(cameradata));
+  NewMemory((void **)&camera_external_save,sizeof(cameradata));
 
   FREEMEMORY(camera_ini);
-  if(file!=NULL){
-    NewMemory((void **)&camera_ini,sizeof(cameradata));
-    camera_ini->defined=0;
-  }
+  NewMemory((void **)&camera_ini,sizeof(cameradata));
+  camera_ini->defined=0;
 
   FREEMEMORY(camera_current);
-  if(file!=NULL)NewMemory((void **)&camera_current,sizeof(cameradata));
+  NewMemory((void **)&camera_current,sizeof(cameradata));
 
   FREEMEMORY(camera_internal);
-  if(file!=NULL)NewMemory((void **)&camera_internal,sizeof(cameradata));
+  NewMemory((void **)&camera_internal,sizeof(cameradata));
 
   FREEMEMORY(camera_save);
-  if(file!=NULL)NewMemory((void **)&camera_save,sizeof(cameradata));
+  NewMemory((void **)&camera_save,sizeof(cameradata));
 
   FREEMEMORY(camera_last);
-  if(file!=NULL)NewMemory((void **)&camera_last,sizeof(cameradata));
+  NewMemory((void **)&camera_last,sizeof(cameradata));
 
   updatefaces=1;
   nfires=0;
   nrooms=0;
 
-  if(file!=NULL){
-    InitSurface(&sdefault);
-    NewMemory((void **)&sdefault.surfacelabel,(5+1));
-    strcpy(sdefault.surfacelabel,"INERT");
+  InitSurface(&sdefault);
+  NewMemory((void **)&sdefault.surfacelabel,(5+1));
+  strcpy(sdefault.surfacelabel,"INERT");
 
-    InitVentSurface(&v_surfacedefault);
-    NewMemory((void **)&v_surfacedefault.surfacelabel,(4+1));
-    strcpy(v_surfacedefault.surfacelabel,"VENT");
+  InitVentSurface(&v_surfacedefault);
+  NewMemory((void **)&v_surfacedefault.surfacelabel,(4+1));
+  strcpy(v_surfacedefault.surfacelabel,"VENT");
 
-    InitSurface(&e_surfacedefault);
-    NewMemory((void **)&e_surfacedefault.surfacelabel,(8+1));
-    strcpy(e_surfacedefault.surfacelabel,"EXTERIOR");
-    e_surfacedefault.color=mat_ambient2;
-  }
+  InitSurface(&e_surfacedefault);
+  NewMemory((void **)&e_surfacedefault.surfacelabel,(8+1));
+  strcpy(e_surfacedefault.surfacelabel,"EXTERIOR");
+  e_surfacedefault.color=mat_ambient2;
 
   // free memory for particle class
 
@@ -4584,15 +4580,6 @@ int ReadSMV(bufferstreamdata *stream, char *file, char *file2){
 
   if(cadgeominfo!=NULL)FreeCADInfo();
 
-  if(file==NULL){
-    InitVars();
-    return -1;  // finished  unloading memory from previous case
-  }
-
-  smv_modtime= FileModtime(file);
-
-  PRINTF(_("processing smokeview file:"));
-  PRINTF(" %s\n", file);
   STOP_TIMER(pass0_time );
 
 /*
