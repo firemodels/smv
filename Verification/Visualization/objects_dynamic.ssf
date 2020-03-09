@@ -1,5 +1,7 @@
 RENDERDIR
-..\..\Manuals\SMV_User_Guide\SCRIPT_FIGURES
+ ..\..\Manuals\SMV_User_Guide\SCRIPT_FIGURES
+SETTIMEVAL
+  0.0
 SETVIEWPOINT
  tsphere
 RENDERONCE
