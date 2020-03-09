@@ -64,30 +64,10 @@ typedef struct bufferstreamdata{
 #define NOT_FORCE_IN_DIR 0
 #define FORCE_IN_DIR 1
 
-#define READFILE 0
-#define READBUFFER 1
-
-#define FEOF(stream)              (readfile_option==READBUFFER ? FeofBuffer(stream->fileinfo)               : feof(stream->stream))
-#define FGETS(buffer,size,stream) (readfile_option==READBUFFER ? FgetsBuffer(stream->fileinfo,buffer,size) : fgets(buffer,size,stream->stream) )
-#define REWIND(stream)   \
-if(readfile_option==READBUFFER){\
-  RewindFileBuffer(stream->fileinfo);\
-}\
-else{\
-  stream->stream = stream->stream1;\
-  rewind(stream->stream1);\
-  if(stream->stream2!=NULL){\
-    rewind(stream->stream2);\
-  }\
-}
-#define FCLOSE(stream) \
-if(readfile_option==READBUFFER){\
-  FreeFileBuffer(stream->fileinfo);\
-}\
-else{\
-  if(stream->stream1!=NULL)fclose(stream->stream1);\
-  if(stream->stream2!=NULL)fclose(stream->stream2);\
-}
+#define FEOF(stream)              FeofBuffer(stream->fileinfo)
+#define FGETS(buffer,size,stream) FgetsBuffer(stream->fileinfo,buffer,size)
+#define REWIND(stream)            RewindFileBuffer(stream->fileinfo)
+#define FCLOSE(stream)            FreeFileBuffer(stream->fileinfo)
 
 #define BFILE bufferstreamdata
 
@@ -177,12 +157,6 @@ EXTERNCPP char *getprogdirabs(char *progname, char **svpath);
 EXTERNCPP char *LastName(char *argi);
 
 // vvvvvvvvvvvvvvvvvvvvvvvv variables vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-
-#ifdef INMAIN
-int readfile_option = READBUFFER;
-#else
-EXTERNCPP int readfile_option;
-#endif
 
 #ifndef STREXTERN
 #ifdef WIN32

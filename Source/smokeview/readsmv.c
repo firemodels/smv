@@ -17,15 +17,7 @@
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 
-#define BREAK \
-      if(readfile_option==READBUFFER){\
-        break;\
-      }\
-      else{\
-        if((stream->stream==stream->stream1&&stream->stream2==NULL)||stream->stream==stream->stream2)break;\
-        stream->stream=stream->stream2;\
-        continue;\
-      }
+#define BREAK break
 #define BREAK2 \
       if((stream==stream1&&stream2==NULL)||stream==stream2)break;\
       stream=stream2;\
@@ -599,9 +591,7 @@ void ReadSMVDynamic(char *file){
   int nplot3dinfo_old;
   bufferstreamdata streaminfo, *stream=&streaminfo;
 
-  if(readfile_option==READBUFFER){
-    stream->fileinfo = File2Buffer(file);
-  }
+  stream->fileinfo = File2Buffer(file);
 
   nplot3dinfo_old=nplot3dinfo;
 
@@ -624,12 +614,6 @@ void ReadSMVDynamic(char *file){
   }
   nplot3dinfo=0;
 
-  if(readfile_option==READFILE){
-    stream->stream1 = fopen(file, "r");
-    stream->stream2 = NULL;
-    stream->stream = stream->stream1;
-    if(stream->stream==NULL)return;
-  }
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
     int j;
@@ -4610,20 +4594,6 @@ int ReadSMV(bufferstreamdata *stream, char *file, char *file2){
   if(file==NULL){
     InitVars();
     return -1;  // finished  unloading memory from previous case
-  }
-
-  if(readfile_option==READFILE){
-    stream->stream1 = fopen(file, "r");
-    stream->stream2 = NULL;
-    if(stream->stream1==NULL)return 1;
-    stream->stream=stream->stream1;
-    if(file2!=NULL){
-      stream->stream2 = fopen(file2, "r");
-      if(stream->stream2==NULL){
-        fclose(stream->stream1);
-        return 1;
-      }
-    }
   }
 
   smv_modtime= FileModtime(file);

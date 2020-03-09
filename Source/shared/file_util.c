@@ -524,7 +524,6 @@ int AppendFileBuffer(filedata *file1, filedata *file2){
 
   new_filesize = file1->filesize + file2->filesize;
   if(NewMemory((void **)&new_buffer, new_filesize)==0){
-    readfile_option = READFILE;
     return -1;
   }
   new_buffer1 = new_buffer;
@@ -535,7 +534,6 @@ int AppendFileBuffer(filedata *file1, filedata *file2){
   new_nlines = file1->nlines+file2->nlines;
   if(NewMemory((void **)&new_lines, new_nlines*sizeof(char *))==0){
     FREEMEMORY(new_buffer);
-    readfile_option = READFILE;
     return  -1;
   }
 
@@ -572,7 +570,6 @@ filedata *File2Buffer(char *filename){
   NewMemory((void **)&fileinfo, sizeof(filedata));
   if(NewMemory((void **)&buffer, filesize+1)==0){
     FREEMEMORY(fileinfo);
-    readfile_option = READFILE;
     fclose(stream);
     return NULL;
   }
