@@ -48,8 +48,6 @@
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
 #endif
 
-#define pp_READBUFFER   // read .smv file from a memory buffer
-
 #define pp_THREAD       // turn on multi-threading
 #ifdef pp_THREAD
 #define pp_THREADIBLANK // construct iblank arrays in background

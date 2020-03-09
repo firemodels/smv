@@ -17,7 +17,6 @@
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 
-#ifdef pp_READBUFFER
 #define BREAK \
       if(readfile_option==READBUFFER){\
         break;\
@@ -27,12 +26,6 @@
         stream->stream=stream->stream2;\
         continue;\
       }
-#else
-#define BREAK \
-      if((stream==stream1&&stream2==NULL)||stream==stream2)break;\
-      stream=stream2;\
-      continue
-#endif
 #define BREAK2 \
       if((stream==stream1&&stream2==NULL)||stream==stream2)break;\
       stream=stream2;\
@@ -604,17 +597,11 @@ void ReadSMVDynamic(char *file){
   int nn_plot3d=0,iplot3d=0;
   int do_pass2=0, do_pass3=0, minmaxpl3d=0;
   int nplot3dinfo_old;
-#ifdef pp_READBUFFER
   bufferstreamdata streaminfo, *stream=&streaminfo;
-#else
-  FILE *stream=NULL;
-#endif
 
-#ifdef pp_READBUFFER
   if(readfile_option==READBUFFER){
     stream->fileinfo = File2Buffer(file);
   }
-#endif
 
   nplot3dinfo_old=nplot3dinfo;
 
@@ -637,17 +624,12 @@ void ReadSMVDynamic(char *file){
   }
   nplot3dinfo=0;
 
-#ifdef pp_READBUFFER
   if(readfile_option==READFILE){
     stream->stream1 = fopen(file, "r");
     stream->stream2 = NULL;
     stream->stream = stream->stream1;
     if(stream->stream==NULL)return;
   }
-#else
-  stream=fopen(file,"r");
-  if(stream==NULL)return;
-#endif
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
     int j;
@@ -4265,8 +4247,6 @@ void FreeSliceData(void){
   }
 }
 
-#ifdef pp_READBUFFER
-
 /* ------------------ CopySMVBuffer ------------------------ */
 
 bufferstreamdata *CopySMVBuffer(bufferstreamdata *stream_in){
@@ -4304,15 +4284,10 @@ bufferstreamdata *GetSMVBuffer(char *file, char *file2){
   }
   return stream;
 }
-#endif
 
 /* ------------------ ReadSMV ------------------------ */
 
-#ifdef pp_READBUFFER
 int ReadSMV(bufferstreamdata *stream, char *file, char *file2){
-#else
-int ReadSMV(char *file, char *file2){
-#endif
 
 /* read the .smv file */
   float read_time, processing_time, wrapup_time, getfilelist_time;
@@ -4340,9 +4315,6 @@ int ReadSMV(char *file, char *file2){
   char buffer[256],buffer2[256],*bufferptr;
   char bufferB[256], bufferC[256], bufferD[256], bufferE[256], bufferF[256];
   patchdata *patchgeom;
-#ifndef pp_READBUFFER
-  FILE *stream=NULL,*stream1=NULL,*stream2=NULL;
-#endif
 
   START_TIMER(processing_time);
 
@@ -4640,7 +4612,6 @@ int ReadSMV(char *file, char *file2){
     return -1;  // finished  unloading memory from previous case
   }
 
-#ifdef pp_READBUFFER
   if(readfile_option==READFILE){
     stream->stream1 = fopen(file, "r");
     stream->stream2 = NULL;
@@ -4654,18 +4625,6 @@ int ReadSMV(char *file, char *file2){
       }
     }
   }
-#else
-  stream1 = fopen(file, "r");
-  if(stream1==NULL)return 1;
-  if(file2!=NULL){
-    stream2 = fopen(file2, "r");
-    if(stream2==NULL){
-      fclose(stream1);
-      return 1;
-    }
-  }
-  stream=stream1;
-#endif
 
   smv_modtime= FileModtime(file);
 
@@ -5429,13 +5388,7 @@ int ReadSMV(char *file, char *file2){
   noutlineinfo=0;
   if(noffset==0)ioffset=1;
 
-#ifdef pp_READBUFFER
   REWIND(stream);
-#else
-  REWIND(stream1);
-  if(stream2!=NULL)rewind(stream2);
-  stream=stream1;
-#endif
   PRINTF("%s","  pass 2\n");
   for(;;){
     if(FEOF(stream)!=0){
@@ -6919,13 +6872,7 @@ int ReadSMV(char *file, char *file2){
     devicecopy=deviceinfo;;
   }
   ndeviceinfo=0;
-#ifdef pp_READBUFFER
   REWIND(stream);
-#else
-  REWIND(stream1);
-  if(stream2!=NULL)rewind(stream2);
-  stream=stream1;
-#endif
   PRINTF("%s","  pass 3\n");
 
   /*
@@ -7408,13 +7355,7 @@ int ReadSMV(char *file, char *file2){
    ************************************************************************
  */
 
-#ifdef pp_READBUFFER
   REWIND(stream);
-#else
-  REWIND(stream1);
-  if(stream2!=NULL)rewind(stream2);
-  stream=stream1;
-#endif
   PRINTF("%s","  pass 4\n");
   startpass=1;
   CheckMemory;
@@ -9420,13 +9361,7 @@ typedef struct {
    ************************************************************************
  */
 
-#ifdef pp_READBUFFER
   REWIND(stream);
-#else
-  REWIND(stream1);
-  if(stream2!=NULL)rewind(stream2);
-  stream=stream1;
-#endif
   if(do_pass4==1||(auto_terrain==1&&manual_terrain==0)){
     do_pass5 = 1;
     PRINTF("%s","  pass 5\n");
@@ -9751,12 +9686,6 @@ typedef struct {
   UpdateObjectUsed();
 
   // close .smv file
-
-#ifndef pp_READBUFFER
-  FCLOSE(stream1);
-  if(stream2!=NULL)fclose(stream2);
-  stream = NULL;
-#endif
 
   UpdateSelectFaces();
   UpdateSliceBoundIndexes();

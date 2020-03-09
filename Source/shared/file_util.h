@@ -27,8 +27,6 @@ typedef struct {
   int type;
 } filelistdata;
 
-#ifdef pp_READBUFFER
-
 /* --------------------------  _filedata ------------------------------------ */
 
 typedef struct _filedata {
@@ -43,7 +41,6 @@ typedef struct bufferstreamdata{
   FILE *stream,*stream1,*stream2;
   filedata *fileinfo;
 } bufferstreamdata;
-#endif
 
 // vvvvvvvvvvvvvvvvvvvvvvvv preprocessing directives vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
@@ -67,7 +64,6 @@ typedef struct bufferstreamdata{
 #define NOT_FORCE_IN_DIR 0
 #define FORCE_IN_DIR 1
 
-#ifdef pp_READBUFFER
 #define READFILE 0
 #define READBUFFER 1
 
@@ -92,18 +88,8 @@ else{\
   if(stream->stream1!=NULL)fclose(stream->stream1);\
   if(stream->stream2!=NULL)fclose(stream->stream2);\
 }
-#else
-#define FEOF(stream)              feof(stream)
-#define FGETS(buffer,size,stream) fgets(buffer,size,stream)
-#define REWIND(stream)            rewind(stream)
-#define FCLOSE(stream)            fclose(stream)
-#endif
 
-#ifdef pp_READBUFFER
 #define BFILE bufferstreamdata
-#else
-#define BFILE FILE
-#endif
 
 #ifdef pp_FILELIST
 #define FILE_EXISTS(a)         FileExists(a,NULL,0,NULL,0)
@@ -140,7 +126,6 @@ int FileExistsOrig(char *filename);
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-#ifdef pp_READBUFFER
 EXTERNCPP int AppendFileBuffer(filedata *file1, filedata *file2);
 EXTERNCPP int FeofBuffer(filedata *fileinfo);
 EXTERNCPP char *FgetsBuffer(filedata *fileinfo,char *buffer,int size);
@@ -148,7 +133,6 @@ EXTERNCPP void RewindFileBuffer(filedata *fileinfo);
 EXTERNCPP void OutputFileBuffer(filedata *fileinfo);
 EXTERNCPP void FreeFileBuffer(filedata *fileinfo);
 EXTERNCPP filedata *File2Buffer(char *filename);
-#endif
 EXTERNCPP int FFLUSH(void);
 EXTERNCPP int PRINTF(const char * format, ...);
 EXTERNCPP void SetStdOut(FILE *stream);
@@ -194,12 +178,10 @@ EXTERNCPP char *LastName(char *argi);
 
 // vvvvvvvvvvvvvvvvvvvvvvvv variables vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-#ifdef pp_READBUFFER
 #ifdef INMAIN
 int readfile_option = READBUFFER;
 #else
 EXTERNCPP int readfile_option;
-#endif
 #endif
 
 #ifndef STREXTERN

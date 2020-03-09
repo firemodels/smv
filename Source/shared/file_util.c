@@ -455,7 +455,6 @@ FILE_SIZE GetFileSizeSMV(const char *filename){
   return return_val;
 }
 
-#ifdef pp_READBUFFER
 /* ------------------ FeofBuffer ------------------------ */
 
 int FeofBuffer(filedata *fileinfo){
@@ -624,7 +623,6 @@ filedata *File2Buffer(char *filename){
   CheckMemory;
   return fileinfo;
 }
-#endif
 
 /* ------------------ FileExistsOrig ------------------------ */
 

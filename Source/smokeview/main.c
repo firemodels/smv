@@ -31,9 +31,6 @@ void Usage(char *prog,int option){
   UsageCommon(HELP_SUMMARY);
   if(option==HELP_ALL){
     PRINTF("\n%s\n", _("Other options:"));
-#ifdef pp_READBUFFER
-    PRINTF("%s\n", _(" -buffer        - scan .smv file using a memory buffer"));
-#endif
     PRINTF("%s\n", _(" -build         - show directives used in this build of Smokeview"));
     PRINTF("%s\n", _(" -convert_ini case1.ini case2.ini - update case1.ini to the current format"));
     PRINTF("%s\n", _("                  and save results into case2.ini"));
@@ -45,9 +42,6 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian"));
 #endif
     PRINTF("%s\n", _(" -ng_ini        - non-graphics version of -ini."));
-#ifdef pp_READBUFFER
-    PRINTF("%s\n", _(" -no_buffer     - scan .smv file using file I/O rather from memory"));
-#endif
     PRINTF("%s\n", _(" -scriptrenderdir dir - directory containing script rendered images"));
     PRINTF("%s\n", _("                  (override directory specified by RENDERDIR script keyword)"));
     PRINTF("%s\n", _(" -setup         - only show geometry"));
@@ -153,9 +147,6 @@ void Usage(char *prog,int option){
 #endif
 #ifdef pp_PART_TEST
     strcat(label, ", pp_PART_TEST");
-#endif
-#ifdef pp_READBUFFER
-    strcat(label, ", pp_READBUFFER");
 #endif
 #ifdef pp_release
     strcat(label, ", pp_release");
@@ -453,14 +444,6 @@ void ParseCommandline(int argc, char **argv){
       use_graphics = 0;
       update_slice = 1;
     }
-#ifdef pp_READBUFFER
-    else if(strncmp(argv[i], "-no_buffer", 10)==0){
-      readfile_option = READFILE;
-    }
-    else if(strncmp(argv[i], "-buffer", 7)==0){
-      readfile_option = READBUFFER;
-    }
-#endif
     else if(strncmp(argv[i], "-update", 7)==0){
       if(strncmp(argv[i], "-update_slice", 13)!=0&&strncmp(argv[i], "-update_bounds", 14)!=0){
         use_graphics = 0;

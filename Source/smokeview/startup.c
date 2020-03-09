@@ -207,7 +207,6 @@ int SetupCase(int argc, char **argv){
       input_file=test_filename;
     }
   }
-#ifdef pp_READBUFFER
   {
     bufferstreamdata *smv_streaminfo = NULL;
 
@@ -215,9 +214,6 @@ int SetupCase(int argc, char **argv){
     return_code = ReadSMV(smv_streaminfo, input_file, iso_filename);
     FCLOSE(smv_streaminfo);
   }
-#else
-  return_code = ReadSMV(input_file, iso_filename);
-#endif
   if(return_code==0&&trainer_mode==1){
     ShowGluiTrainer();
     ShowGluiAlert();
