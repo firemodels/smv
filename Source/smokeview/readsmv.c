@@ -3837,13 +3837,40 @@ void MakeFileLists(void){
   MakeFileList(".", filter_casedir, nfilelist_casedir, YES, &filelist_casedir);
 }
 
-/* ------------------ ParseSLCF ------------------------ */
 #define RETURN_TWO        2
 #define RETURN_BREAK      3
 #define RETURN_CONTINUE   4
 #define RETURN_PROCEED    5
 
-int ParseSLCF(bufferstreamdata *stream, char *buffer, int *nn_sliceptr, int ioffset, int *islicecountptr,
+/* ------------------ ParseSLCF_Count ------------------------ */
+
+int ParseSLCF_Count(bufferstreamdata *stream, char *buffer, int *nslicefiles){
+  if(setup_only==1||smoke3d_only==1)RETURN_CONTINUE;
+  nsliceinfo++;
+  *nslicefiles = nsliceinfo;
+  if(Match(buffer, "BNDS")==1){
+    if(FGETS(buffer, 255, stream)==NULL){
+      return RETURN_BREAK;
+    }
+  }
+  if(FGETS(buffer, 255, stream)==NULL){
+    return RETURN_BREAK;
+  }
+  if(FGETS(buffer, 255, stream)==NULL){
+    return RETURN_BREAK;
+  }
+  if(FGETS(buffer, 255, stream)==NULL){
+    return RETURN_BREAK;
+  }
+  if(FGETS(buffer, 255, stream)==NULL){
+    return RETURN_BREAK;
+  }
+  return RETURN_CONTINUE;
+}
+
+/* ------------------ ParseSLCF_Process ------------------------ */
+
+int ParseSLCF_Process(bufferstreamdata *stream, char *buffer, int *nn_sliceptr, int ioffset, int *islicecountptr,
   int *nslicefilesptr, slicedata **sliceinfo_copyptr, patchdata **patchgeomptr){
   char *slicelabelptr, slicelabel[256], *sliceparms;
   float above_ground_level = 0.0;
@@ -5024,28 +5051,17 @@ int ReadSMV(char *file, char *file2){
     if( (Match(buffer,"SLCF") == 1)  ||
         (Match(buffer,"SLCC") == 1)  ||
         (Match(buffer, "SLCD") == 1) ||
-        (Match(buffer,"SLCT") == 1)
-        || (Match(buffer, "BNDS") == 1)
+        (Match(buffer,"SLCT") == 1)  ||
+        (Match(buffer, "BNDS") == 1)
       ){
-      if(setup_only == 1||smoke3d_only==1)continue;
-      nsliceinfo++;
-      nslicefiles=nsliceinfo;
-      if(Match(buffer, "BNDS") == 1){
-        if(FGETS(buffer,255,stream)==NULL){
-          BREAK;
-        }
-      }
-      if(FGETS(buffer,255,stream)==NULL){
+      int return_val;
+
+      return_val = ParseSLCF_Count(stream, buffer, &nslicefiles);
+      if(return_val==RETURN_BREAK){
         BREAK;
       }
-      if(FGETS(buffer,255,stream)==NULL){
-        BREAK;
-      }
-      if(FGETS(buffer,255,stream)==NULL){
-        BREAK;
-      }
-      if(FGETS(buffer,255,stream)==NULL){
-        BREAK;
+      if(return_val==RETURN_CONTINUE){
+        continue;
       }
       continue;
     }
@@ -8896,12 +8912,12 @@ typedef struct {
     if( (Match(buffer,"SLCF") == 1)  ||
         (Match(buffer,"SLCC") == 1)  ||
         (Match(buffer, "SLCD") == 1) ||
-        (Match(buffer,"SLCT") == 1)
-      || (Match(buffer, "BNDS") == 1)
+        (Match(buffer,"SLCT") == 1)  ||
+        (Match(buffer, "BNDS") == 1)
       ){
       int return_val;
 
-      return_val = ParseSLCF(stream, buffer, &nn_slice, ioffset, &islicecount, &nslicefiles, &sliceinfo_copy, &patchgeom);
+      return_val = ParseSLCF_Process(stream, buffer, &nn_slice, ioffset, &islicecount, &nslicefiles, &sliceinfo_copy, &patchgeom);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
