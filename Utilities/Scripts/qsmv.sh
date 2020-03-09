@@ -346,7 +346,7 @@ QSUB="qsub -q $queue"
 #*** setup for SLURM (alternative to torque)
 
 if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
-  QSUB="sbatch -p $queue --ignore-pbs"
+  QSUB="sbatch -p $queue --ignore-pbs --exclusive"
 fi
 
 if [ "$queue" == "terminal" ]; then
