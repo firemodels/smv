@@ -3801,6 +3801,209 @@ void MakeFileLists(void){
 #define RETURN_CONTINUE   4
 #define RETURN_PROCEED    5
 
+/* ------------------ ParsePRT_count ------------------------ */
+
+void ParsePRT_count(void){
+  if(setup_only==1||smoke3d_only==1)return;
+  npartinfo++;
+}
+
+/* ------------------ ParsePRT5_process ------------------------ */
+
+int ParsePRT5_process(bufferstreamdata *stream, char *buffer, int *nn_part_in, int *ipart_in, int *ioffset_in){
+  unsigned int lenkey;
+  partdata *parti;
+  int blocknumber;
+  size_t len;
+  char *buffer3, *bufferptr;
+
+  int nn_part, ipart, ioffset;
+  int i;
+  
+  if(setup_only==1||smoke3d_only==1)return RETURN_CONTINUE;
+
+  nn_part = *nn_part_in;
+  ioffset = *ioffset_in;
+  ipart = *ipart_in;
+
+  nn_part++;
+  *nn_part_in = nn_part;
+
+
+  parti = partinfo+ipart;
+
+  lenkey = 4;
+  parti->evac = 0;
+  if(Match(buffer, "EVA5")==1
+    ){
+    parti->evac = 1;
+    nevac++;
+  }
+  len = strlen(buffer);
+  if(nmeshes>1){
+    blocknumber = ioffset-1;
+  }
+  else{
+    blocknumber = 0;
+  }
+  if(len>lenkey+1){
+    buffer3 = buffer+lenkey;
+    if(parti->evac==1){
+      float zoffset = 0.0;
+
+      sscanf(buffer3, "%i %f", &blocknumber, &zoffset);
+      parti->zoffset = zoffset;
+    }
+    else{
+      sscanf(buffer3, "%i", &blocknumber);
+    }
+    blocknumber--;
+  }
+
+  parti->blocknumber = blocknumber;
+  parti->seq_id = nn_part;
+  parti->autoload = 0;
+  parti->finalize = 1;
+  if(FGETS(buffer, 255, stream)==NULL){
+    npartinfo--;
+    return RETURN_BREAK;
+  }
+
+  bufferptr = TrimFrontBack(buffer);
+  len = strlen(bufferptr);
+  parti->reg_file = NULL;
+  if(NewMemory((void **)&parti->reg_file, (unsigned int)(len+1))==0)return 2;
+  STRCPY(parti->reg_file, bufferptr);
+  parti->reg_file_size = GetFileSizeSMV(parti->reg_file);
+
+  if(NewMemory((void **)&parti->bound_file, (unsigned int)(len+4+1))==0)return 2;
+  STRCPY(parti->bound_file, bufferptr);
+  STRCAT(parti->bound_file, ".bnd");
+
+  parti->size_file = NULL;
+  if(NewMemory((void **)&parti->size_file, (unsigned int)(len+1+3))==0)return 2;
+  STRCPY(parti->size_file, bufferptr);
+  STRCAT(parti->size_file, ".sz");
+
+  parti->hist_file = NULL;
+  if(NewMemory((void **)&parti->hist_file, (unsigned int)(len+1+5))==0)return 2;
+  STRCPY(parti->hist_file, bufferptr);
+  STRCAT(parti->hist_file, ".hist");
+
+  // parti->size_file can't be written to, then put it in a world writable temp directory
+
+  if(FILE_EXISTS_CASEDIR(parti->size_file)==NO&&curdir_writable==NO&&smokeviewtempdir!=NULL){
+    len = strlen(smokeviewtempdir)+strlen(bufferptr)+1+3+1;
+    FREEMEMORY(parti->size_file);
+    if(NewMemory((void **)&parti->size_file, (unsigned int)len)==0)return 2;
+    STRCPY(parti->size_file, smokeviewtempdir);
+    STRCAT(parti->size_file, dirseparator);
+    STRCAT(parti->size_file, bufferptr);
+    STRCAT(parti->size_file, ".sz");
+  }
+
+  // parti->hist_file can't be written to, then put it in a world writable temp directory
+
+  if(FILE_EXISTS_CASEDIR(parti->hist_file)==NO && curdir_writable==NO && smokeviewtempdir!=NULL){
+    len = strlen(smokeviewtempdir)+strlen(bufferptr)+1+5+1;
+    FREEMEMORY(parti->hist_file);
+    if(NewMemory((void **)&parti->hist_file, (unsigned int)len)==0)return 2;
+    STRCPY(parti->hist_file, smokeviewtempdir);
+    STRCAT(parti->hist_file, dirseparator);
+    STRCAT(parti->hist_file, bufferptr);
+    STRCAT(parti->hist_file, ".hist");
+  }
+
+  parti->comp_file = NULL;
+  if(NewMemory((void **)&parti->comp_file, (unsigned int)(len+1+4))==0)return 2;
+  STRCPY(parti->comp_file, bufferptr);
+  STRCAT(parti->comp_file, ".svz");
+
+  if(FILE_EXISTS_CASEDIR(parti->comp_file)==YES){
+    parti->compression_type = COMPRESSED_ZLIB;
+    parti->file = parti->comp_file;
+  }
+  else{
+    parti->compression_type = UNCOMPRESSED;
+    if(FILE_EXISTS_CASEDIR(parti->reg_file)==YES){
+      parti->file = parti->reg_file;
+    }
+    else{
+      FREEMEMORY(parti->reg_file);
+      FREEMEMORY(parti->comp_file);
+      FREEMEMORY(parti->size_file);
+      parti->file = NULL;
+    }
+  }
+  parti->compression_type = UNCOMPRESSED;
+  parti->loaded = 0;
+  parti->request_load = 0;
+  parti->finalize = 0;
+  parti->display = 0;
+  parti->times = NULL;
+  parti->timeslist = NULL;
+  parti->histograms = NULL;
+  parti->bounds_set = 0;
+  parti->global_min = NULL;
+  parti->global_max = NULL;
+  parti->filepos = NULL;
+  parti->tags = NULL;
+  parti->sort_tags = NULL;
+  parti->vis_part = NULL;
+  parti->sx = NULL;
+  parti->sy = NULL;
+  parti->sz = NULL;
+  parti->irvals = NULL;
+
+  parti->data5 = NULL;
+  parti->partclassptr = NULL;
+
+  FGETS(buffer, 255, stream);
+  sscanf(buffer, "%i", &parti->nclasses);
+  if(parti->nclasses>0){
+    if(parti->file!=NULL)NewMemory((void **)&parti->partclassptr, parti->nclasses*sizeof(partclassdata *));
+    for(i = 0; i<parti->nclasses; i++){
+      int iclass;
+      int ic, iii;
+
+      FGETS(buffer, 255, stream);
+      if(parti->file==NULL)continue;
+      sscanf(buffer, "%i", &iclass);
+      if(iclass<1)iclass = 1;
+      if(iclass>npartclassinfo)iclass = npartclassinfo;
+      ic = 0;
+      for(iii = 0; iii<npartclassinfo; iii++){
+        partclassdata *pci;
+
+        pci = partclassinfo+iii;
+        if(parti->evac==1&&pci->kind!=HUMANS)continue;
+        if(parti->evac==0&&pci->kind!=PARTICLES)continue;
+        if(iclass-1==ic){
+          parti->partclassptr[i] = pci;
+          break;
+        }
+        ic++;
+      }
+    }
+  }
+
+  // if no classes were specified for the prt5 entry then assign it the default class
+
+  if(parti->file!=NULL&&parti->nclasses==0){
+    NewMemory((void **)&parti->partclassptr, sizeof(partclassdata *));
+    parti->partclassptr[i] = partclassinfo+parti->nclasses;
+  }
+  if(fast_startup==1||(parti->file!=NULL&&FILE_EXISTS_CASEDIR(parti->file)==YES)){
+    ipart++;
+    *ipart_in = ipart;
+  }
+  else{
+    npartinfo--;
+  }
+  return RETURN_CONTINUE;
+}
+
+
 /* ------------------ ParseSLCF_Count ------------------------ */
 
 int ParseSLCF_Count(bufferstreamdata *stream, char *buffer, int *nslicefiles){
@@ -4953,8 +5156,7 @@ int ReadSMV(bufferstreamdata *stream){
     }
     if(Match(buffer,"PRT5")==1||Match(buffer,"EVA5")==1
       ){
-      if(setup_only == 1||smoke3d_only==1)continue;
-      npartinfo++;
+      ParsePRT_count();
       continue;
     }
     if( (Match(buffer,"SLCF") == 1)  ||
@@ -8555,185 +8757,9 @@ typedef struct {
   */
     if(Match(buffer,"PRT5")==1||Match(buffer,"EVA5")==1
       ){
-      unsigned int lenkey;
-      partdata *parti;
-      int blocknumber;
-      size_t len;
-      char *buffer3;
+      int return_val;
 
-      if(setup_only == 1||smoke3d_only==1)continue;
-      nn_part++;
-
-      parti = partinfo + ipart;
-
-      lenkey=4;
-      parti->evac=0;
-      if(Match(buffer,"EVA5")==1
-        ){
-        parti->evac=1;
-        nevac++;
-      }
-      len=strlen(buffer);
-      if(nmeshes>1){
-        blocknumber=ioffset-1;
-      }
-      else{
-        blocknumber=0;
-      }
-      if(len>lenkey+1){
-        buffer3=buffer+lenkey;
-        if(parti->evac==1){
-          float zoffset=0.0;
-
-          sscanf(buffer3,"%i %f",&blocknumber,&zoffset);
-          parti->zoffset=zoffset;
-        }
-        else{
-          sscanf(buffer3,"%i",&blocknumber);
-        }
-        blocknumber--;
-      }
-
-      parti->blocknumber=blocknumber;
-      parti->seq_id=nn_part;
-      parti->autoload=0;
-      parti->finalize = 1;
-      if(FGETS(buffer,255,stream)==NULL){
-        npartinfo--;
-        BREAK;
-      }
-
-      bufferptr=TrimFrontBack(buffer);
-      len=strlen(bufferptr);
-      parti->reg_file=NULL;
-      if(NewMemory((void **)&parti->reg_file,(unsigned int)(len+1))==0)return 2;
-      STRCPY(parti->reg_file,bufferptr);
-      parti->reg_file_size = GetFileSizeSMV(parti->reg_file);
-
-      if(NewMemory((void **)&parti->bound_file, (unsigned int)(len+4+1))==0)return 2;
-      STRCPY(parti->bound_file, bufferptr);
-      STRCAT(parti->bound_file, ".bnd");
-
-      parti->size_file=NULL;
-      if(NewMemory((void **)&parti->size_file,(unsigned int)(len+1+3))==0)return 2;
-      STRCPY(parti->size_file,bufferptr);
-      STRCAT(parti->size_file,".sz");
-
-      parti->hist_file = NULL;
-      if(NewMemory((void **)&parti->hist_file, (unsigned int)(len + 1 + 5)) == 0)return 2;
-      STRCPY(parti->hist_file, bufferptr);
-      STRCAT(parti->hist_file, ".hist");
-
-      // parti->size_file can't be written to, then put it in a world writable temp directory
-
-      if(FILE_EXISTS_CASEDIR(parti->size_file)==NO&&curdir_writable ==NO&&smokeviewtempdir!=NULL){
-        len = strlen(smokeviewtempdir)+strlen(bufferptr)+1+3+1;
-        FREEMEMORY(parti->size_file);
-        if(NewMemory((void **)&parti->size_file,(unsigned int)len)==0)return 2;
-        STRCPY(parti->size_file,smokeviewtempdir);
-        STRCAT(parti->size_file,dirseparator);
-        STRCAT(parti->size_file,bufferptr);
-        STRCAT(parti->size_file,".sz");
-      }
-
-      // parti->hist_file can't be written to, then put it in a world writable temp directory
-
-      if(FILE_EXISTS_CASEDIR(parti->hist_file) == NO && curdir_writable == NO && smokeviewtempdir != NULL){
-        len = strlen(smokeviewtempdir) + strlen(bufferptr) + 1 + 5 + 1;
-        FREEMEMORY(parti->hist_file);
-        if(NewMemory((void **)&parti->hist_file, (unsigned int)len) == 0)return 2;
-        STRCPY(parti->hist_file, smokeviewtempdir);
-        STRCAT(parti->hist_file, dirseparator);
-        STRCAT(parti->hist_file, bufferptr);
-        STRCAT(parti->hist_file, ".hist");
-      }
-
-      parti->comp_file = NULL;
-      if(NewMemory((void **)&parti->comp_file,(unsigned int)(len+1+4))==0)return 2;
-      STRCPY(parti->comp_file,bufferptr);
-      STRCAT(parti->comp_file,".svz");
-
-      if(FILE_EXISTS_CASEDIR(parti->comp_file)==YES){
-        parti->compression_type=COMPRESSED_ZLIB;
-        parti->file=parti->comp_file;
-      }
-      else{
-        parti->compression_type=UNCOMPRESSED;
-        if(FILE_EXISTS_CASEDIR(parti->reg_file)==YES){
-          parti->file=parti->reg_file;
-        }
-        else{
-          FREEMEMORY(parti->reg_file);
-          FREEMEMORY(parti->comp_file);
-          FREEMEMORY(parti->size_file);
-          parti->file=NULL;
-        }
-      }
-      parti->compression_type=UNCOMPRESSED;
-      parti->loaded=0;
-      parti->request_load = 0;
-      parti->finalize = 0;
-      parti->display=0;
-      parti->times=NULL;
-      parti->timeslist=NULL;
-      parti->histograms = NULL;
-      parti->bounds_set = 0;
-      parti->global_min = NULL;
-      parti->global_max = NULL;
-      parti->filepos = NULL;
-      parti->tags = NULL;
-      parti->sort_tags = NULL;
-      parti->vis_part = NULL;
-      parti->sx = NULL;
-      parti->sy = NULL;
-      parti->sz = NULL;
-      parti->irvals = NULL;
-
-      parti->data5=NULL;
-      parti->partclassptr=NULL;
-
-      FGETS(buffer,255,stream);
-      sscanf(buffer,"%i",&parti->nclasses);
-      if(parti->nclasses>0){
-        if(parti->file!=NULL)NewMemory((void **)&parti->partclassptr,parti->nclasses*sizeof(partclassdata *));
-        for(i=0;i<parti->nclasses;i++){
-          int iclass;
-          int ic,iii;
-
-          FGETS(buffer,255,stream);
-          if(parti->file==NULL)continue;
-          sscanf(buffer,"%i",&iclass);
-          if(iclass<1)iclass=1;
-          if(iclass>npartclassinfo)iclass=npartclassinfo;
-          ic=0;
-          for(iii=0;iii<npartclassinfo;iii++){
-            partclassdata *pci;
-
-            pci = partclassinfo + iii;
-            if(parti->evac==1&&pci->kind!=HUMANS)continue;
-            if(parti->evac==0&&pci->kind!=PARTICLES)continue;
-            if(iclass-1==ic){
-              parti->partclassptr[i]=pci;
-              break;
-            }
-            ic++;
-          }
-        }
-      }
-
-      // if no classes were specified for the prt5 entry then assign it the default class
-
-      if(parti->file!=NULL&&parti->nclasses==0){
-        NewMemory((void **)&parti->partclassptr,sizeof(partclassdata *));
-          parti->partclassptr[i]=partclassinfo + parti->nclasses;
-      }
-      if(fast_startup==1||(parti->file!=NULL&&FILE_EXISTS_CASEDIR(parti->file)==YES)){
-        ipart++;
-      }
-      else{
-        npartinfo--;
-      }
-      continue;
+      return_val = ParsePRT5_process(stream, buffer, &nn_part, &ipart, &ioffset);
     }
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
