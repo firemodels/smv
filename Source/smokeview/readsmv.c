@@ -2104,7 +2104,7 @@ void InitTextures(void){
 
   // define terrain texture
 
-  if((auto_terrain==1||nterrain_texture>0)&&use_graphics==1){
+  if(nterrain_texture>0&&use_graphics==1){
     texturedata *tt;
     unsigned char *floortex;
     int texwid, texht;
