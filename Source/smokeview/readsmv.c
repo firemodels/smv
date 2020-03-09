@@ -1747,35 +1747,29 @@ void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
   }
 }
 
+bufferstreamdata *CopySMVBuffer(bufferstreamdata *stream_in);
+
 /* ------------------ GetInpf ------------------------ */
 
-int GetInpf(char *file, char *file2){
-  FILE *stream=NULL,*stream1=NULL,*stream2=NULL;
-  char buffer[255],*bufferptr;
+int GetInpf(bufferstreamdata *stream_in){
+  char buffer[255], *bufferptr;
+  bufferstreamdata *stream;
   int len;
 
-  if(file==NULL)return 1;
-  stream1=fopen(file,"r");
-  if(stream1==NULL)return 1;
-  if(file2!=NULL){
-    stream2=fopen(file2,"r");
-    if(stream2==NULL){
-      fclose(stream1);
-      return 1;
-    }
-  }
-  stream=stream1;
+  if(stream_in==NULL)return 1;
+  stream = CopySMVBuffer(stream_in);
+  if(stream==NULL)return 1;
   for(;;){
-    if(feof(stream)!=0){
-      BREAK2;
+    if(FEOF(stream)!=0){
+      BREAK;
     }
-    if(fgets(buffer,255,stream)==NULL){
-      BREAK2;
+    if(FGETS(buffer, 255,stream)==NULL){
+      BREAK;
     }
     if(strncmp(buffer," ",1)==0)continue;
     if(Match(buffer,"INPF") == 1){
-      if(fgets(buffer,255,stream)==NULL){
-        BREAK2;
+      if(FGETS(buffer,255,stream)==NULL){
+        BREAK;
       }
       bufferptr=TrimFrontBack(buffer);
 
@@ -1819,10 +1813,9 @@ int GetInpf(char *file, char *file2){
           FREEMEMORY(exp_csv_filename);
         }
       }
-      continue;
+      break;
     }
   }
-  fclose(stream);
   return 0;
 }
 
@@ -4460,7 +4453,7 @@ int ReadSMV(bufferstreamdata *stream, char *file, char *file2){
 
   // get input file name
 
-    return_code=GetInpf(file,file2);
+    return_code=GetInpf(stream);
     if(return_code!=0)return return_code;
   }
 
