@@ -4265,6 +4265,187 @@ int ParseBNDF_process(bufferstreamdata *stream, char *buffer, int *nn_patch_in, 
   return RETURN_CONTINUE;
 }
 
+/* ------------------ ParseSMOKE3D_count ------------------------ */
+
+void ParseSMOKE3D_count(void){
+  if(setup_only==1)return;
+  nsmoke3dinfo++;
+}
+
+/* ------------------ ParseSMOKE3D_process ------------------------ */
+
+int ParseSMOKE3D_process(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_in, int *ioffset_in, int *ismoke3dcount_in, int *ismoke3d_in){
+  size_t len;
+  size_t lenbuffer;
+  float temp_val = -1.0;
+  char *buffer_temp;
+  int filetype = C_GENERATED;
+  int blocknumber;
+  char buffer2[256];
+  char *bufferptr;
+
+  int nn_smoke3d, ioffset, ismoke3dcount, ismoke3d;
+
+  if(setup_only==1)return RETURN_CONTINUE;
+
+  nn_smoke3d    = *nn_smoke3d_in;
+  ioffset       = *ioffset_in;
+  ismoke3dcount = *ismoke3dcount_in;
+  ismoke3d      = *ismoke3d_in;
+
+  if(Match(buffer, "SMOKF3D")==1||Match(buffer, "VSMOKF3D")==1||
+     Match(buffer, "SMOKG3D")==1||Match(buffer, "VSMOKG3D")==1
+    ){
+    filetype = FORTRAN_GENERATED;
+  }
+
+  if(Match(buffer, "VSMOKE3D")==1||Match(buffer, "VSMOKF3D")==1||Match(buffer, "VSMOKG3D")==1){
+    int idummy;
+
+    buffer_temp = buffer+8;
+    sscanf(buffer_temp, "%i %f", &idummy, &temp_val);
+    if(temp_val>0.0)hrrpuv_max_smv = temp_val;
+  }
+  nn_smoke3d++;
+  *nn_smoke3d_in = nn_smoke3d;
+
+  TrimBack(buffer);
+  len = strlen(buffer);
+  if(nmeshes>1){
+    blocknumber = ioffset-1;
+  }
+  else{
+    blocknumber = 0;
+  }
+  if(len>8){
+    char *buffer3;
+
+    buffer3 = buffer+8;
+    sscanf(buffer3, "%i", &blocknumber);
+    blocknumber--;
+  }
+  if(FGETS(buffer, 255, stream)==NULL){
+    nsmoke3dinfo--;
+    return RETURN_BREAK;
+  }
+  bufferptr = TrimFrontBack(buffer);
+  len = strlen(buffer);
+  lenbuffer = len;
+  {
+    smoke3ddata *smoke3di;
+    int ii;
+
+    smoke3di = smoke3dinfo+ismoke3d;
+
+#ifdef _DEBUG
+    if(nsmoke3dinfo>500&&(ismoke3d%100==0||ismoke3d==nsmoke3dinfo-1)){
+      PRINTF("     examining %i'st 3D smoke file\n", ismoke3dcount);
+    }
+#endif
+    ismoke3dcount++;
+    *ismoke3dcount_in = ismoke3dcount;
+
+    if(NewMemory((void **)&smoke3di->reg_file, (unsigned int)(len+1))==0)return RETURN_TWO;
+    STRCPY(smoke3di->reg_file, bufferptr);
+
+    smoke3di->ntimes = 0;
+    smoke3di->ntimes_old = 0;
+    smoke3di->filetype = filetype;
+    smoke3di->is_zlib = 0;
+    smoke3di->seq_id = nn_smoke3d;
+    smoke3di->autoload = 0;
+    smoke3di->compression_type = UNKNOWN;
+    for(ii = 0; ii<MAXSMOKETYPES; ii++){
+      smoke3di->smokestate[ii].color = NULL;
+    }
+    smoke3di->file = NULL;
+    smoke3di->smokeframe_in = NULL;
+    smoke3di->smokeframe_comp_list = NULL;
+    smoke3di->smokeframe_out = NULL;
+    smoke3di->timeslist = NULL;
+    smoke3di->smoke_comp_all = NULL;
+    smoke3di->smokeview_tmp = NULL;
+    smoke3di->times = NULL;
+    smoke3di->use_smokeframe = NULL;
+    smoke3di->nchars_compressed_smoke = NULL;
+    smoke3di->nchars_compressed_smoke_full = NULL;
+    smoke3di->maxval = -1.0;
+    smoke3di->frame_all_zeros = NULL;
+    smoke3di->smoke_boxmin = NULL;
+    smoke3di->smoke_boxmax = NULL;
+    smoke3di->display = 0;
+    smoke3di->loaded = 0;
+    smoke3di->finalize = 0;
+    smoke3di->request_load = 0;
+    smoke3di->primary_file = 0;
+    smoke3di->file_size = 0;
+    smoke3di->blocknumber = blocknumber;
+    smoke3di->lastiframe = -999;
+    for(ii = 0; ii<MAXSMOKETYPES; ii++){
+      smoke3di->smokestate[ii].index = -1;
+    }
+    smoke3di->ismoke3d_time = 0;
+
+    STRCPY(buffer2, bufferptr);
+    STRCAT(buffer2, ".svz");
+
+    len = lenbuffer+4;
+    if(NewMemory((void **)&smoke3di->comp_file, (unsigned int)(len+1))==0)return RETURN_TWO;
+    STRCPY(smoke3di->comp_file, buffer2);
+
+    if(FILE_EXISTS_CASEDIR(smoke3di->comp_file)==YES){
+      smoke3di->file = smoke3di->comp_file;
+      smoke3di->is_zlib = 1;
+      smoke3di->compression_type = COMPRESSED_ZLIB;
+    }
+    else{
+      smoke3di->file = smoke3di->reg_file;
+    }
+    if(FILE_EXISTS_CASEDIR(smoke3di->file)==YES){
+      if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
+      if(strcmp(smoke3di->label.longlabel, "HRRPUV")==0){
+        show_hrrcutoff_active = 1;
+      }
+      if(strcmp(smoke3di->label.longlabel, "TEMPERATURE")==0) {
+        show_tempcutoff_active = 1;
+      }
+      ismoke3d++;
+      *ismoke3d_in = ismoke3d;
+    }
+    else{
+      if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
+      nsmoke3dinfo--;
+    }
+    if(Match(smoke3di->label.shortlabel, "soot")==1||Match(smoke3di->label.shortlabel, "rho_C")==1){
+      smoke3di->type = SOOT;
+      smoke3di->type2 = SOOT_2;
+      nsmoke3d_soot++;
+    }
+    else if(Match(smoke3di->label.shortlabel, "hrrpuv")==1){
+      smoke3di->type = HRRPUV;
+      smoke3di->type2 = HRRPUV_2;
+      nsmoke3d_hrrpuv++;
+    }
+    else if(Match(smoke3di->label.shortlabel, "temp")==1){
+      smoke3di->type = TEMP;
+      smoke3di->type2 = TEMP_2;
+      nsmoke3d_temp++;
+    }
+    else if(Match(smoke3di->label.shortlabel, "rho_CO2")==1){
+      smoke3di->type = CO2;
+      smoke3di->type2 = CO2_2;
+      nsmoke3d_co2++;
+    }
+    else{
+      smoke3di->type = SOOT;
+      smoke3di->type2 = SOOT_2;
+      nsmoke3d_soot++;
+    }
+  }
+  return RETURN_CONTINUE;
+}
+
+
 /* ------------------ ParseSLCF_count ------------------------ */
 
 int ParseSLCF_count(bufferstreamdata *stream, char *buffer, int *nslicefiles){
@@ -5440,12 +5621,11 @@ int ReadSMV(bufferstreamdata *stream){
       Match(buffer, "SMOKE3D") == 1  ||
       Match(buffer, "VSMOKE3D") == 1 ||
       Match(buffer, "SMOKF3D") == 1  ||
-      Match(buffer, "VSMOKF3D") == 1
-      || Match(buffer, "SMOKG3D") == 1 ||
+      Match(buffer, "VSMOKF3D") == 1 || 
+      Match(buffer, "SMOKG3D") == 1  ||
       Match(buffer, "VSMOKG3D") == 1
       ){
-      if(setup_only == 1)continue;
-      nsmoke3dinfo++;
+      ParseSMOKE3D_count();
       continue;
     }
     if (
@@ -6696,168 +6876,27 @@ int ReadSMV(bufferstreamdata *stream){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(
-      Match(buffer,"SMOKE3D") == 1||
-      Match(buffer,"VSMOKE3D") == 1||
-      Match(buffer,"SMOKF3D") == 1||
-      Match(buffer,"VSMOKF3D") == 1
-      ||Match(buffer, "SMOKG3D") == 1 ||
+      Match(buffer,"SMOKE3D") == 1   ||
+      Match(buffer,"VSMOKE3D") == 1  ||
+      Match(buffer,"SMOKF3D") == 1   ||
+      Match(buffer,"VSMOKF3D") == 1  ||
+      Match(buffer, "SMOKG3D") == 1  ||
       Match(buffer, "VSMOKG3D") == 1
       ){
+      int return_val;
 
-      size_t len;
-      size_t lenbuffer;
-      float temp_val=-1.0;
-      char *buffer_temp;
-      int filetype=C_GENERATED;
-      int blocknumber;
-      char buffer2[256];
-      char *bufferptr;
-
-      if(setup_only==1)continue;
-      if(Match(buffer,"SMOKF3D") == 1||Match(buffer,"VSMOKF3D") == 1||
-         Match(buffer, "SMOKG3D") == 1 || Match(buffer, "VSMOKG3D") == 1
-        ){
-        filetype=FORTRAN_GENERATED;
-      }
-
-      if(Match(buffer,"VSMOKE3D") == 1||Match(buffer,"VSMOKF3D") == 1|| Match(buffer, "VSMOKG3D") == 1){
-        int idummy;
-
-        buffer_temp=buffer+8;
-        sscanf(buffer_temp,"%i %f",&idummy,&temp_val);
-        if(temp_val>0.0)hrrpuv_max_smv=temp_val;
-      }
-      nn_smoke3d++;
-      TrimBack(buffer);
-      len=strlen(buffer);
-      if(nmeshes>1){
-        blocknumber=ioffset-1;
-      }
-      else{
-        blocknumber=0;
-      }
-      if(len>8){
-        char *buffer3;
-
-        buffer3=buffer+8;
-        sscanf(buffer3,"%i",&blocknumber);
-        blocknumber--;
-      }
-      if(FGETS(buffer,255,stream)==NULL){
-        nsmoke3dinfo--;
+      return_val = ParseSMOKE3D_process(stream, buffer, &nn_smoke3d, &ioffset, &ismoke3dcount, &ismoke3d);
+      if(return_val==RETURN_BREAK){
         BREAK;
       }
-      bufferptr=TrimFrontBack(buffer);
-      len=strlen(buffer);
-      lenbuffer=len;
-      {
-        smoke3ddata *smoke3di;
-        int ii;
-
-        smoke3di = smoke3dinfo + ismoke3d;
-
-#ifdef _DEBUG
-        if(nsmoke3dinfo>500&&(ismoke3d%100==0||ismoke3d==nsmoke3dinfo-1)){
-          PRINTF("     examining %i'st 3D smoke file\n",ismoke3dcount);
-        }
-#endif
-        ismoke3dcount++;
-
-        if(NewMemory((void **)&smoke3di->reg_file,(unsigned int)(len+1))==0)return 2;
-        STRCPY(smoke3di->reg_file,bufferptr);
-
-        smoke3di->ntimes = 0;
-        smoke3di->ntimes_old = 0;
-        smoke3di->filetype=filetype;
-        smoke3di->is_zlib=0;
-        smoke3di->seq_id=nn_smoke3d;
-        smoke3di->autoload=0;
-        smoke3di->compression_type=UNKNOWN;
-        for(ii = 0;ii < MAXSMOKETYPES;ii++){
-          smoke3di->smokestate[ii].color = NULL;
-        }
-        smoke3di->file=NULL;
-        smoke3di->smokeframe_in=NULL;
-        smoke3di->smokeframe_comp_list=NULL;
-        smoke3di->smokeframe_out=NULL;
-        smoke3di->timeslist=NULL;
-        smoke3di->smoke_comp_all=NULL;
-        smoke3di->smokeview_tmp=NULL;
-        smoke3di->times=NULL;
-        smoke3di->use_smokeframe=NULL;
-        smoke3di->nchars_compressed_smoke=NULL;
-        smoke3di->nchars_compressed_smoke_full=NULL;
-        smoke3di->maxval = -1.0;
-        smoke3di->frame_all_zeros=NULL;
-        smoke3di->smoke_boxmin=NULL;
-        smoke3di->smoke_boxmax=NULL;
-        smoke3di->display=0;
-        smoke3di->loaded=0;
-        smoke3di->finalize = 0;
-        smoke3di->request_load = 0;
-        smoke3di->primary_file=0;
-        smoke3di->file_size = 0;
-        smoke3di->blocknumber=blocknumber;
-        smoke3di->lastiframe=-999;
-        for(ii = 0;ii < MAXSMOKETYPES;ii++){
-          smoke3di->smokestate[ii].index = -1;
-        }
-        smoke3di->ismoke3d_time=0;
-
-        STRCPY(buffer2,bufferptr);
-        STRCAT(buffer2,".svz");
-
-        len=lenbuffer+4;
-        if(NewMemory((void **)&smoke3di->comp_file,(unsigned int)(len+1))==0)return 2;
-        STRCPY(smoke3di->comp_file,buffer2);
-
-        if(FILE_EXISTS_CASEDIR(smoke3di->comp_file)==YES){
-          smoke3di->file=smoke3di->comp_file;
-          smoke3di->is_zlib=1;
-          smoke3di->compression_type = COMPRESSED_ZLIB;
-        }
-        else{
-          smoke3di->file=smoke3di->reg_file;
-        }
-        if(FILE_EXISTS_CASEDIR(smoke3di->file)==YES){
-          if(ReadLabels(&smoke3di->label,stream,NULL)==LABEL_ERR)return 2;
-          if(strcmp(smoke3di->label.longlabel,"HRRPUV")==0){
-            show_hrrcutoff_active=1;
-          }
-          if (strcmp(smoke3di->label.longlabel, "TEMPERATURE") == 0) {
-            show_tempcutoff_active = 1;
-          }
-          ismoke3d++;
-        }
-        else{
-          if(ReadLabels(&smoke3di->label,stream,NULL)==LABEL_ERR)return 2;
-          nsmoke3dinfo--;
-        }
-        if(Match(smoke3di->label.shortlabel,"soot")==1|| Match(smoke3di->label.shortlabel, "rho_C") == 1){
-          smoke3di->type=SOOT;
-          smoke3di->type2 = SOOT_2;
-          nsmoke3d_soot++;
-        }
-        else if(Match(smoke3di->label.shortlabel,"hrrpuv")==1){
-          smoke3di->type=HRRPUV;
-          smoke3di->type2 = HRRPUV_2;
-          nsmoke3d_hrrpuv++;
-        }
-        else if(Match(smoke3di->label.shortlabel, "temp") == 1){
-          smoke3di->type = TEMP;
-          smoke3di->type2 = TEMP_2;
-          nsmoke3d_temp++;
-        }
-        else if(Match(smoke3di->label.shortlabel, "rho_CO2") == 1){
-          smoke3di->type = CO2;
-          smoke3di->type2 = CO2_2;
-          nsmoke3d_co2++;
-        }
-        else{
-          smoke3di->type=SOOT;
-          smoke3di->type2 = SOOT_2;
-          nsmoke3d_soot++;
-        }
+      else if(return_val==RETURN_CONTINUE){
+        continue;
+      }
+      else if(return_val==RETURN_TWO){
+        return 2;
+      }
+      else{
+        ASSERT(FFALSE);
       }
       continue;
     }
