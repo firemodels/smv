@@ -4265,9 +4265,9 @@ int ParseBNDF_process(bufferstreamdata *stream, char *buffer, int *nn_patch_in, 
   return RETURN_CONTINUE;
 }
 
-/* ------------------ ParseSLCF_Count ------------------------ */
+/* ------------------ ParseSLCF_count ------------------------ */
 
-int ParseSLCF_Count(bufferstreamdata *stream, char *buffer, int *nslicefiles){
+int ParseSLCF_count(bufferstreamdata *stream, char *buffer, int *nslicefiles){
   if(setup_only==1||smoke3d_only==1)RETURN_CONTINUE;
   nsliceinfo++;
   *nslicefiles = nsliceinfo;
@@ -4291,9 +4291,9 @@ int ParseSLCF_Count(bufferstreamdata *stream, char *buffer, int *nslicefiles){
   return RETURN_CONTINUE;
 }
 
-/* ------------------ ParseSLCF_Process ------------------------ */
+/* ------------------ ParseSLCF_process ------------------------ */
 
-int ParseSLCF_Process(bufferstreamdata *stream, char *buffer, int *nn_sliceptr, int ioffset, int *islicecountptr,
+int ParseSLCF_process(bufferstreamdata *stream, char *buffer, int *nn_sliceptr, int ioffset, int *islicecountptr,
   int *nslicefilesptr, slicedata **sliceinfo_copyptr, patchdata **patchgeomptr){
   char *slicelabelptr, slicelabel[256], *sliceparms;
   float above_ground_level = 0.0;
@@ -5427,7 +5427,7 @@ int ReadSMV(bufferstreamdata *stream){
       ){
       int return_val;
 
-      return_val = ParseSLCF_Count(stream, buffer, &nslicefiles);
+      return_val = ParseSLCF_count(stream, buffer, &nslicefiles);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -9106,7 +9106,7 @@ typedef struct {
       ){
       int return_val;
 
-      return_val = ParseSLCF_Process(stream, buffer, &nn_slice, ioffset, &islicecount, &nslicefiles, &sliceinfo_copy, &patchgeom);
+      return_val = ParseSLCF_process(stream, buffer, &nn_slice, ioffset, &islicecount, &nslicefiles, &sliceinfo_copy, &patchgeom);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
