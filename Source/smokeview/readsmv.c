@@ -3801,16 +3801,226 @@ void MakeFileLists(void){
 #define RETURN_CONTINUE   4
 #define RETURN_PROCEED    5
 
-/* ------------------ ParsePRT_count ------------------------ */
+/* ------------------ ParseISOFCount ------------------------ */
 
-void ParsePRT5_count(void){
+void ParseISOFCount(void){
+   if(setup_only == 1||smoke3d_only==1)return;
+   nisoinfo++;
+}
+
+/* ------------------ ParseISOFCount ------------------------ */
+
+int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *ioffset_in, int *nn_iso_in, int nisos_per_mesh_in){
+  isodata *isoi;
+  int get_isolevels;
+  int dataflag = 0, geomflag = 0;
+  char tbuffer[255], *tbufferptr;
+  int blocknumber;
+  size_t len;
+  char *buffer3, *ext;
+  int fds_skip = 1;
+  float fds_delta = -1.0;
+  char *bufferptr;
+
+  int ioffset, iiso, nn_iso, nisos_per_mesh;
+  int i;
+
+  if(setup_only==1||smoke3d_only==1)return RETURN_CONTINUE;
+
+  iiso = *iiso_in;
+  ioffset = *ioffset_in;
+  nn_iso = *nn_iso_in;
+  nisos_per_mesh = nisos_per_mesh_in;
+
+  isoi = isoinfo+iiso;
+  isoi->isof_index = nn_iso%nisos_per_mesh;
+  nn_iso++;
+  *nn_iso_in = nn_iso;
+
+  if(Match(buffer, "TISOF")==1||Match(buffer, "TISOG")==1)dataflag = 1;
+  if(Match(buffer, "ISOG")==1||Match(buffer, "TISOG")==1)geomflag = 1;
+  TrimBack(buffer);
+  len = strlen(buffer);
+
+  if(nmeshes>1){
+    blocknumber = ioffset-1;
+  }
+  else{
+    blocknumber = 0;
+  }
+  if(len>5&&dataflag==0){
+    buffer3 = buffer+4;
+    sscanf(buffer3, "%i %i %f", &blocknumber, &fds_skip, &fds_delta);
+    blocknumber--;
+  }
+  if(len>6&&dataflag==1){
+    buffer3 = buffer+5;
+    sscanf(buffer3, "%i", &blocknumber);
+    blocknumber--;
+  }
+  if(FGETS(buffer, 255, stream)==NULL){
+    nisoinfo--;
+    return RETURN_BREAK;
+  }
+
+  isoi->fds_skip = fds_skip;
+  isoi->fds_delta = fds_delta;
+  isoi->tfile = NULL;
+  isoi->seq_id = nn_iso;
+  isoi->autoload = 0;
+  isoi->blocknumber = blocknumber;
+  isoi->loaded = 0;
+  isoi->loading = 0;
+  isoi->display = 0;
+  isoi->dataflag = dataflag;
+  isoi->geomflag = geomflag;
+  isoi->nlevels = 0;
+  isoi->levels = NULL;
+  isoi->is_fed = 0;
+  isoi->memory_id = ++nmemory_ids;
+  isoi->geom_nstatics = NULL;
+  isoi->geom_ndynamics = NULL;
+  isoi->geom_times = NULL;
+  isoi->geom_vals = NULL;
+  isoi->histogram = NULL;
+
+  isoi->normaltable = NULL;
+  isoi->color_label.longlabel = NULL;
+  isoi->color_label.shortlabel = NULL;
+  isoi->color_label.unit = NULL;
+  isoi->geominfo = NULL;
+  NewMemory((void **)&isoi->geominfo, sizeof(geomdata));
+  nmemory_ids++;
+  isoi->geominfo->memory_id = nmemory_ids;
+  InitGeom(isoi->geominfo, GEOM_ISO, NOT_FDSBLOCK);
+
+  bufferptr = TrimFrontBack(buffer);
+
+  len = strlen(bufferptr);
+
+  NewMemory((void **)&isoi->reg_file, (unsigned int)(len+1));
+  STRCPY(isoi->reg_file, bufferptr);
+
+  ext = strrchr(bufferptr, '.');
+  if(ext!=NULL)*ext = 0;
+  NewMemory((void **)&isoi->topo_file, (unsigned int)(strlen(bufferptr)+5+1));
+  STRCPY(isoi->topo_file, bufferptr);
+  strcat(isoi->topo_file, ".niso");
+
+  NewMemory((void **)&isoi->size_file, (unsigned int)(len+3+1));
+  STRCPY(isoi->size_file, bufferptr);
+  STRCAT(isoi->size_file, ".sz");
+
+  if(dataflag==1&&geomflag==1){
+    if(FGETS(tbuffer, 255, stream)==NULL){
+      nisoinfo--;
+      return RETURN_BREAK;
+    }
+    TrimBack(tbuffer);
+    tbufferptr = TrimFront(tbuffer);
+    NewMemory((void **)&isoi->tfile, strlen(tbufferptr)+1);
+    strcpy(isoi->tfile, tbufferptr);
+  }
+
+  if(fast_startup==1||FILE_EXISTS_CASEDIR(isoi->reg_file)==YES){
+    get_isolevels = 1;
+    isoi->file = isoi->reg_file;
+    if(ReadLabels(&isoi->surface_label, stream, NULL)==LABEL_ERR)return 2;
+    if(isoi->fds_delta>0.0){  // only append delete parameter if it is > 0.0
+      char delta_label[100];
+
+      sprintf(delta_label, "%f", isoi->fds_delta);
+      TrimZeros(delta_label);
+      strcat(isoi->surface_label.longlabel, "(");
+      strcat(isoi->surface_label.longlabel, delta_label);
+      strcat(isoi->surface_label.longlabel, ")");
+    }
+    if(isoi->fds_skip!=1){  // only append skip parameter if it is > 1
+      char skip_label[100];
+
+      sprintf(skip_label, "/%i", isoi->fds_skip);
+      strcat(isoi->surface_label.longlabel, skip_label);
+    }
+    if(geomflag==1){
+      int ntimes_local;
+      geomdata *geomi;
+      float **colorlevels, *levels;
+
+      geomi = isoi->geominfo;
+      geomi->file = isoi->file;
+      geomi->topo_file = isoi->topo_file;
+      geomi->file = isoi->file;
+      ReadGeomHeader(geomi, NULL, &ntimes_local);
+      isoi->nlevels = geomi->nfloat_vals;
+      if(isoi->nlevels>0){
+        NewMemory((void **)&levels, isoi->nlevels*sizeof(float));
+        NewMemory((void **)&colorlevels, isoi->nlevels*sizeof(float *));
+        for(i = 0; i<isoi->nlevels; i++){
+          colorlevels[i] = NULL;
+          levels[i] = geomi->float_vals[i];
+        }
+        isoi->levels = levels;
+        isoi->colorlevels = colorlevels;
+      }
+    }
+    else{
+      GetIsoLevels(isoi->file, dataflag, &isoi->levels, &isoi->colorlevels, &isoi->nlevels);
+    }
+    if(dataflag==1){
+      if(ReadLabels(&isoi->color_label, stream, NULL)==LABEL_ERR)return 2;
+    }
+    iiso++;
+    *iiso_in = iiso;
+  }
+  else{
+    get_isolevels = 0;
+    if(ReadLabels(&isoi->surface_label, stream, NULL)==LABEL_ERR)return 2;
+    if(dataflag==1){
+      if(ReadLabels(&isoi->color_label, stream, NULL)==LABEL_ERR)return 2;
+    }
+    nisoinfo--;
+  }
+  if(get_isolevels==1){
+    int len_clevels;
+    char clevels[1024];
+
+    Array2String(isoi->levels, isoi->nlevels, clevels);
+    len_clevels = strlen(clevels);
+    if(len_clevels>0){
+      int len_long;
+      char *long_label, *unit_label;
+
+      long_label = isoi->surface_label.longlabel;
+      unit_label = isoi->surface_label.unit;
+      len_long = strlen(long_label)+strlen(unit_label)+len_clevels+3+1;
+      if(dataflag==1)len_long += (strlen(isoi->color_label.longlabel)+15+1);
+      ResizeMemory((void **)&long_label, (unsigned int)len_long);
+      isoi->surface_label.longlabel = long_label;
+      strcat(long_label, ": ");
+      strcat(long_label, clevels);
+      strcat(long_label, " ");
+      strcat(long_label, unit_label);
+      if(dataflag==1){
+        strcat(long_label, " (Colored by: ");
+        strcat(long_label, isoi->color_label.longlabel);
+        strcat(long_label, ")");
+      }
+      TrimBack(long_label);
+    }
+  }
+  return RETURN_CONTINUE;
+}
+
+/* ------------------ ParsePRTCount ------------------------ */
+
+void ParsePRT5Count(void){
   if(setup_only==1||smoke3d_only==1)return;
   npartinfo++;
 }
 
-/* ------------------ ParsePRT5_process ------------------------ */
+/* ------------------ ParsePRT5Process ------------------------ */
 
-int ParsePRT5_process(bufferstreamdata *stream, char *buffer, int *nn_part_in, int *ipart_in, int *ioffset_in){
+int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, int *ipart_in, int *ioffset_in){
   unsigned int lenkey;
   partdata *parti;
   int blocknumber;
@@ -3819,7 +4029,7 @@ int ParsePRT5_process(bufferstreamdata *stream, char *buffer, int *nn_part_in, i
 
   int nn_part, ipart, ioffset;
   int i;
-  
+
   if(setup_only==1||smoke3d_only==1)return RETURN_CONTINUE;
 
   nn_part = *nn_part_in;
@@ -4003,17 +4213,17 @@ int ParsePRT5_process(bufferstreamdata *stream, char *buffer, int *nn_part_in, i
   return RETURN_CONTINUE;
 }
 
-/* ------------------ ParseBNDF_count ------------------------ */
+/* ------------------ ParseBNDFCount ------------------------ */
 
-int ParseBNDF_count(void){
+int ParseBNDFCount(void){
   if(setup_only==1||smoke3d_only==1)return RETURN_CONTINUE;
   npatchinfo++;
   return RETURN_CONTINUE;
 }
 
-/* ------------------ ParseBNDF_process ------------------------ */
+/* ------------------ ParseBNDFProcess ------------------------ */
 
-int ParseBNDF_process(bufferstreamdata *stream, char *buffer, int *nn_patch_in, int *ioffset_in, patchdata **patchgeom_in, int *ipatch_in, char buffers[6][256]){
+int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, int *ioffset_in, patchdata **patchgeom_in, int *ipatch_in, char buffers[6][256]){
   patchdata *patchi;
   int version;
   int blocknumber;
@@ -4265,16 +4475,16 @@ int ParseBNDF_process(bufferstreamdata *stream, char *buffer, int *nn_patch_in, 
   return RETURN_CONTINUE;
 }
 
-/* ------------------ ParseSMOKE3D_count ------------------------ */
+/* ------------------ ParseSMOKE3DCount ------------------------ */
 
-void ParseSMOKE3D_count(void){
+void ParseSMOKE3DCount(void){
   if(setup_only==1)return;
   nsmoke3dinfo++;
 }
 
-/* ------------------ ParseSMOKE3D_process ------------------------ */
+/* ------------------ ParseSMOKE3DProcess ------------------------ */
 
-int ParseSMOKE3D_process(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_in, int *ioffset_in, int *ismoke3dcount_in, int *ismoke3d_in){
+int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_in, int *ioffset_in, int *ismoke3dcount_in, int *ismoke3d_in){
   size_t len;
   size_t lenbuffer;
   float temp_val = -1.0;
@@ -4446,9 +4656,9 @@ int ParseSMOKE3D_process(bufferstreamdata *stream, char *buffer, int *nn_smoke3d
 }
 
 
-/* ------------------ ParseSLCF_count ------------------------ */
+/* ------------------ ParseSLCFCount ------------------------ */
 
-int ParseSLCF_count(bufferstreamdata *stream, char *buffer, int *nslicefiles){
+int ParseSLCFCount(bufferstreamdata *stream, char *buffer, int *nslicefiles){
   if(setup_only==1||smoke3d_only==1)return RETURN_CONTINUE;
   nsliceinfo++;
   *nslicefiles = nsliceinfo;
@@ -4472,9 +4682,9 @@ int ParseSLCF_count(bufferstreamdata *stream, char *buffer, int *nslicefiles){
   return RETURN_CONTINUE;
 }
 
-/* ------------------ ParseSLCF_process ------------------------ */
+/* ------------------ ParseSLCFProcess ------------------------ */
 
-int ParseSLCF_process(bufferstreamdata *stream, char *buffer, int *nn_sliceptr, int ioffset, int *islicecountptr,
+int ParseSLCFProcess(bufferstreamdata *stream, char *buffer, int *nn_sliceptr, int ioffset, int *islicecountptr,
   int *nslicefilesptr, slicedata **sliceinfo_copyptr, patchdata **patchgeomptr, char buffers[6][256]){
   char *slicelabelptr, slicelabel[256], *sliceparms;
   float above_ground_level = 0.0;
@@ -5595,39 +5805,6 @@ int ReadSMV(bufferstreamdata *stream){
       nVENT++;
       continue;
     }
-    if(Match(buffer,"PRT5")==1||Match(buffer,"EVA5")==1
-      ){
-      ParsePRT5_count();
-      continue;
-    }
-    if( (Match(buffer,"SLCF") == 1)  ||
-        (Match(buffer,"SLCC") == 1)  ||
-        (Match(buffer, "SLCD") == 1) ||
-        (Match(buffer,"SLCT") == 1)  ||
-        (Match(buffer, "BNDS") == 1)
-      ){
-      int return_val;
-
-      return_val = ParseSLCF_count(stream, buffer, &nslicefiles);
-      if(return_val==RETURN_BREAK){
-        BREAK;
-      }
-      if(return_val==RETURN_CONTINUE){
-        continue;
-      }
-      continue;
-    }
-    if(
-      Match(buffer, "SMOKE3D") == 1  ||
-      Match(buffer, "VSMOKE3D") == 1 ||
-      Match(buffer, "SMOKF3D") == 1  ||
-      Match(buffer, "VSMOKF3D") == 1 || 
-      Match(buffer, "SMOKG3D") == 1  ||
-      Match(buffer, "VSMOKG3D") == 1
-      ){
-      ParseSMOKE3D_count();
-      continue;
-    }
     if (
       Match(buffer, "MINMAXBNDF") == 1 ||
       Match(buffer, "MINMAXPL3D") == 1 ||
@@ -5636,17 +5813,69 @@ int ReadSMV(bufferstreamdata *stream){
       do_pass4 = 1;
       continue;
     }
+
+//-----------------
+// count file types
+//-----------------
+
+//*** PRT5
+
+    if(Match(buffer,"PRT5")==1||Match(buffer,"EVA5")==1
+      ){
+      ParsePRT5Count();
+      continue;
+    }
+
+//*** SLCF
+
+    if( (Match(buffer,"SLCF") == 1)  ||
+        (Match(buffer,"SLCC") == 1)  ||
+        (Match(buffer, "SLCD") == 1) ||
+        (Match(buffer,"SLCT") == 1)  ||
+        (Match(buffer, "BNDS") == 1)
+      ){
+      int return_val;
+
+      return_val = ParseSLCFCount(stream, buffer, &nslicefiles);
+      if(return_val==RETURN_BREAK){
+        BREAK;
+      }
+      if(return_val==RETURN_CONTINUE){
+        continue;
+      }
+      continue;
+    }
+
+//*** SMOKE3D
+
+    if(
+      Match(buffer, "SMOKE3D") == 1  ||
+      Match(buffer, "VSMOKE3D") == 1 ||
+      Match(buffer, "SMOKF3D") == 1  ||
+      Match(buffer, "VSMOKF3D") == 1 ||
+      Match(buffer, "SMOKG3D") == 1  ||
+      Match(buffer, "VSMOKG3D") == 1
+      ){
+      ParseSMOKE3DCount();
+      continue;
+    }
+
+//*** BNDF
+
     if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1
       || Match(buffer, "BNDS") == 1
       ){
-      ParseBNDF_count();
+      ParseBNDFCount();
       continue;
     }
+
+//*** ISOF
+
     if(Match(buffer,"ISOF") == 1||Match(buffer,"TISOF")==1||Match(buffer,"ISOG") == 1||Match(buffer, "TISOG")==1){
-      if(setup_only == 1||smoke3d_only==1)continue;
-      nisoinfo++;
+      ParseISOFCount();
       continue;
     }
+
     if(Match(buffer,"ROOM") == 1){
       isZoneFireModel=1;
       nrooms++;
@@ -6868,36 +7097,6 @@ int ReadSMV(bufferstreamdata *stream){
       FGETS(buffer,255,stream);
       bufferptr=TrimFrontBack(buffer);
       strcpy(surfacedefaultlabel,TrimFront(bufferptr));
-      continue;
-    }
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ SMOKE3D ++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(
-      Match(buffer,"SMOKE3D") == 1   ||
-      Match(buffer,"VSMOKE3D") == 1  ||
-      Match(buffer,"SMOKF3D") == 1   ||
-      Match(buffer,"VSMOKF3D") == 1  ||
-      Match(buffer, "SMOKG3D") == 1  ||
-      Match(buffer, "VSMOKG3D") == 1
-      ){
-      int return_val;
-
-      return_val = ParseSMOKE3D_process(stream, buffer, &nn_smoke3d, &ioffset, &ismoke3dcount, &ismoke3d);
-      if(return_val==RETURN_BREAK){
-        BREAK;
-      }
-      else if(return_val==RETURN_CONTINUE){
-        continue;
-      }
-      else if(return_val==RETURN_TWO){
-        return 2;
-      }
-      else{
-        ASSERT(FFALSE);
-      }
       continue;
     }
   /*
@@ -9058,30 +9257,6 @@ typedef struct {
     }
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ PART ++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(Match(buffer,"PRT5")==1||Match(buffer,"EVA5")==1
-      ){
-      int return_val;
-
-      return_val = ParsePRT5_process(stream, buffer, &nn_part, &ipart, &ioffset);
-      if(return_val==RETURN_BREAK){
-        BREAK;
-      }
-      else if(return_val==RETURN_CONTINUE){
-        continue;
-      }
-      else if(return_val==RETURN_TWO){
-        return 2;
-      }
-      else{
-        ASSERT(FFALSE);
-      }
-      continue;
-    }
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ ENDF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
@@ -9144,6 +9319,60 @@ typedef struct {
 
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    ++++++++++++++++++++++ SMOKE3D ++++++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  */
+    if(
+      Match(buffer,"SMOKE3D") == 1   ||
+      Match(buffer,"VSMOKE3D") == 1  ||
+      Match(buffer,"SMOKF3D") == 1   ||
+      Match(buffer,"VSMOKF3D") == 1  ||
+      Match(buffer, "SMOKG3D") == 1  ||
+      Match(buffer, "VSMOKG3D") == 1
+      ){
+      int return_val;
+
+      return_val = ParseSMOKE3DProcess(stream, buffer, &nn_smoke3d, &ioffset, &ismoke3dcount, &ismoke3d);
+      if(return_val==RETURN_BREAK){
+        BREAK;
+      }
+      else if(return_val==RETURN_CONTINUE){
+        continue;
+      }
+      else if(return_val==RETURN_TWO){
+        return 2;
+      }
+      else{
+        ASSERT(FFALSE);
+      }
+      continue;
+    }
+  /*
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    ++++++++++++++++++++++ PART ++++++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  */
+    if(Match(buffer,"PRT5")==1||Match(buffer,"EVA5")==1
+      ){
+      int return_val;
+
+      return_val = ParsePRT5Process(stream, buffer, &nn_part, &ipart, &ioffset);
+      if(return_val==RETURN_BREAK){
+        BREAK;
+      }
+      else if(return_val==RETURN_CONTINUE){
+        continue;
+      }
+      else if(return_val==RETURN_TWO){
+        return 2;
+      }
+      else{
+        ASSERT(FFALSE);
+      }
+      continue;
+    }
+  /*
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ SLCF ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
@@ -9155,7 +9384,7 @@ typedef struct {
       ){
       int return_val;
 
-      return_val = ParseSLCF_process(stream, buffer, &nn_slice, ioffset, &islicecount, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
+      return_val = ParseSLCFProcess(stream, buffer, &nn_slice, ioffset, &islicecount, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -9181,7 +9410,7 @@ typedef struct {
       ){
       int return_val;
 
-      return_val = ParseBNDF_process(stream, buffer, &nn_patch, &ioffset, &patchgeom, &ipatch, buffers);
+      return_val = ParseBNDFProcess(stream, buffer, &nn_patch, &ioffset, &patchgeom, &ipatch, buffers);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -9204,191 +9433,17 @@ typedef struct {
   */
 
     if(Match(buffer,"ISOF") == 1||Match(buffer,"TISOF")==1||Match(buffer,"ISOG") == 1||Match(buffer, "TISOG")==1){
-      isodata *isoi;
-      int get_isolevels;
-      int dataflag=0,geomflag=0;
-      char tbuffer[255], *tbufferptr;
-      int blocknumber;
-      size_t len;
-      char *buffer3,*ext;
-      int fds_skip = 1;
-      float fds_delta = -1.0;
-      char *bufferptr;
+      int return_val;
 
-      if(setup_only == 1||smoke3d_only==1)continue;
-      isoi = isoinfo + iiso;
-      isoi->isof_index = nn_iso%nisos_per_mesh;
-      nn_iso++;
-
-      if(Match(buffer, "TISOF") == 1||Match(buffer, "TISOG") == 1)dataflag = 1;
-      if(Match(buffer,"ISOG")==1||Match(buffer,"TISOG")==1)geomflag=1;
-      TrimBack(buffer);
-      len=strlen(buffer);
-
-      if(nmeshes>1){
-        blocknumber=ioffset-1;
-      }
-      else{
-        blocknumber=0;
-      }
-      if(len>5&&dataflag==0){
-        buffer3=buffer+4;
-        sscanf(buffer3,"%i %i %f",&blocknumber,&fds_skip,&fds_delta);
-        blocknumber--;
-      }
-      if(len>6&&dataflag==1){
-        buffer3=buffer+5;
-        sscanf(buffer3,"%i",&blocknumber);
-        blocknumber--;
-      }
-      if(FGETS(buffer,255,stream)==NULL){
-        nisoinfo--;
+      return_val = ParseISOFProcess(stream, buffer, &iiso, &ioffset, &nn_iso, nisos_per_mesh);
+      if(return_val==RETURN_BREAK){
         BREAK;
       }
-
-      isoi->fds_skip = fds_skip;
-      isoi->fds_delta = fds_delta;
-      isoi->tfile=NULL;
-      isoi->seq_id=nn_iso;
-      isoi->autoload=0;
-      isoi->blocknumber=blocknumber;
-      isoi->loaded=0;
-      isoi->loading = 0;
-      isoi->display=0;
-      isoi->dataflag=dataflag;
-      isoi->geomflag=geomflag;
-      isoi->nlevels=0;
-      isoi->levels=NULL;
-      isoi->is_fed=0;
-      isoi->memory_id = ++nmemory_ids;
-      isoi->geom_nstatics = NULL;
-      isoi->geom_ndynamics=NULL;
-      isoi->geom_times=NULL;
-      isoi->geom_vals=NULL;
-      isoi->histogram = NULL;
-
-      isoi->normaltable=NULL;
-      isoi->color_label.longlabel=NULL;
-      isoi->color_label.shortlabel=NULL;
-      isoi->color_label.unit=NULL;
-      isoi->geominfo=NULL;
-      NewMemory((void **)&isoi->geominfo,sizeof(geomdata));
-      nmemory_ids++;
-      isoi->geominfo->memory_id=nmemory_ids;
-      InitGeom(isoi->geominfo,GEOM_ISO,NOT_FDSBLOCK);
-
-      bufferptr=TrimFrontBack(buffer);
-
-      len=strlen(bufferptr);
-
-      NewMemory((void **)&isoi->reg_file,(unsigned int)(len+1));
-      STRCPY(isoi->reg_file,bufferptr);
-
-      ext = strrchr(bufferptr, '.');
-      if(ext!=NULL)*ext = 0;
-      NewMemory((void **)&isoi->topo_file, (unsigned int)(strlen(bufferptr)+5+1));
-      STRCPY(isoi->topo_file, bufferptr);
-      strcat(isoi->topo_file, ".niso");
-
-      NewMemory((void **)&isoi->size_file,(unsigned int)(len+3+1));
-      STRCPY(isoi->size_file,bufferptr);
-      STRCAT(isoi->size_file,".sz");
-
-      if(dataflag==1&&geomflag==1){
-        if(FGETS(tbuffer,255,stream)==NULL){
-          nisoinfo--;
-          BREAK;
-        }
-        TrimBack(tbuffer);
-        tbufferptr=TrimFront(tbuffer);
-        NewMemory((void **)&isoi->tfile,strlen(tbufferptr)+1);
-        strcpy(isoi->tfile,tbufferptr);
-      }
-
-      if(fast_startup==1||FILE_EXISTS_CASEDIR(isoi->reg_file)==YES){
-        get_isolevels=1;
-        isoi->file=isoi->reg_file;
-        if(ReadLabels(&isoi->surface_label,stream,NULL)==LABEL_ERR)return 2;
-        if(isoi->fds_delta>0.0){  // only append delete parameter if it is > 0.0
-          char delta_label[100];
-
-          sprintf(delta_label, "%f", isoi->fds_delta);
-          TrimZeros(delta_label);
-          strcat(isoi->surface_label.longlabel, "(");
-          strcat(isoi->surface_label.longlabel, delta_label);
-          strcat(isoi->surface_label.longlabel, ")");
-        }
-        if(isoi->fds_skip!=1){  // only append skip parameter if it is > 1
-          char skip_label[100];
-
-          sprintf(skip_label, "/%i", isoi->fds_skip);
-          strcat(isoi->surface_label.longlabel, skip_label);
-        }
-        if(geomflag==1){
-          int ntimes_local;
-          geomdata *geomi;
-          float **colorlevels,*levels;
-
-          geomi = isoi->geominfo;
-          geomi->file=isoi->file;
-          geomi->topo_file = isoi->topo_file;
-          geomi->file=isoi->file;
-          ReadGeomHeader(geomi,NULL,&ntimes_local);
-          isoi->nlevels=geomi->nfloat_vals;
-          if(isoi->nlevels>0){
-            NewMemory((void **)&levels,isoi->nlevels*sizeof(float));
-            NewMemory((void **)&colorlevels,isoi->nlevels*sizeof(float *));
-            for(i=0;i<isoi->nlevels;i++){
-              colorlevels[i]=NULL;
-              levels[i]=geomi->float_vals[i];
-            }
-            isoi->levels=levels;
-            isoi->colorlevels=colorlevels;
-          }
-        }
-        else{
-          GetIsoLevels(isoi->file,dataflag,&isoi->levels,&isoi->colorlevels,&isoi->nlevels);
-        }
-        if(dataflag==1){
-          if(ReadLabels(&isoi->color_label,stream,NULL)==LABEL_ERR)return 2;
-        }
-        iiso++;
+      else if(return_val==RETURN_CONTINUE){
+        continue;
       }
       else{
-        get_isolevels=0;
-        if(ReadLabels(&isoi->surface_label,stream,NULL)==LABEL_ERR)return 2;
-        if(dataflag==1){
-          if(ReadLabels(&isoi->color_label,stream,NULL)==LABEL_ERR)return 2;
-        }
-        nisoinfo--;
-      }
-      if(get_isolevels==1){
-        int len_clevels;
-        char clevels[1024];
-
-        Array2String(isoi->levels,isoi->nlevels,clevels);
-        len_clevels = strlen(clevels);
-        if(len_clevels>0){
-          int len_long;
-          char *long_label, *unit_label;
-
-          long_label = isoi->surface_label.longlabel;
-          unit_label = isoi->surface_label.unit;
-          len_long = strlen(long_label)+strlen(unit_label)+len_clevels+3+1;
-          if(dataflag==1)len_long+=(strlen(isoi->color_label.longlabel)+15+1);
-          ResizeMemory((void **)&long_label,(unsigned int)len_long);
-          isoi->surface_label.longlabel=long_label;
-          strcat(long_label,": ");
-          strcat(long_label,clevels);
-          strcat(long_label," ");
-          strcat(long_label,unit_label);
-          if(dataflag==1){
-            strcat(long_label," (Colored by: ");
-            strcat(long_label,isoi->color_label.longlabel);
-            strcat(long_label,")");
-          }
-          TrimBack(long_label);
-        }
+        ASSERT(FFALSE);
       }
       continue;
     }
