@@ -4268,7 +4268,7 @@ int ParseBNDF_process(bufferstreamdata *stream, char *buffer, int *nn_patch_in, 
 /* ------------------ ParseSLCF_count ------------------------ */
 
 int ParseSLCF_count(bufferstreamdata *stream, char *buffer, int *nslicefiles){
-  if(setup_only==1||smoke3d_only==1)RETURN_CONTINUE;
+  if(setup_only==1||smoke3d_only==1)return RETURN_CONTINUE;
   nsliceinfo++;
   *nslicefiles = nsliceinfo;
   if(Match(buffer, "BNDS")==1){
