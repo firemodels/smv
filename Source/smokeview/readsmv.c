@@ -4013,7 +4013,7 @@ int ParseBNDF_count(void){
 
 /* ------------------ ParseBNDF_process ------------------------ */
 
-int ParseBNDF_process(bufferstreamdata *stream, char *buffer, int *nn_patch_in, int *ioffset_in, patchdata **patchgeom_in, int *ipatch_in){
+int ParseBNDF_process(bufferstreamdata *stream, char *buffer, int *nn_patch_in, int *ioffset_in, patchdata **patchgeom_in, int *ipatch_in, char buffers[6][256]){
   patchdata *patchi;
   int version;
   int blocknumber;
@@ -4024,7 +4024,7 @@ int ParseBNDF_process(bufferstreamdata *stream, char *buffer, int *nn_patch_in, 
   int i;
   int nn_patch, ioffset, ipatch;
   patchdata *patchgeom;
-  char *bufferB, *bufferC, *bufferD, *bufferE, *bufferF, *bufferptr;
+  char *bufferptr;
 
   if(setup_only==1||smoke3d_only==1)return RETURN_CONTINUE;
 
@@ -4121,7 +4121,7 @@ int ParseBNDF_process(bufferstreamdata *stream, char *buffer, int *nn_patch_in, 
   }
 
   if(slicegeom==1){
-    strcpy(buffer, bufferB);
+    strcpy(buffer, buffers[1]);
   }
   else{
     if(FGETS(buffer, 255, stream)==NULL){
@@ -4162,7 +4162,7 @@ int ParseBNDF_process(bufferstreamdata *stream, char *buffer, int *nn_patch_in, 
     int igeom;
 
     if(slicegeom==1){
-      strcpy(buffer, bufferC);
+      strcpy(buffer, buffers[2]);
     }
     else{
       if(FGETS(buffer, 255, stream)==NULL){
@@ -4240,7 +4240,7 @@ int ParseBNDF_process(bufferstreamdata *stream, char *buffer, int *nn_patch_in, 
         }
       }
       if(slicegeom==1){
-        if(ReadLabelsBNDS(&patchi->label, NULL, bufferD, bufferE, bufferF, geomlabel)==2)return RETURN_TWO;
+        if(ReadLabelsBNDS(&patchi->label, NULL, buffers[3], buffers[4], buffers[5], geomlabel)==2)return RETURN_TWO;
       }
       else{
         if(ReadLabels(&patchi->label, stream, geomlabel)==LABEL_ERR)return RETURN_TWO;
@@ -4294,7 +4294,7 @@ int ParseSLCF_count(bufferstreamdata *stream, char *buffer, int *nslicefiles){
 /* ------------------ ParseSLCF_process ------------------------ */
 
 int ParseSLCF_process(bufferstreamdata *stream, char *buffer, int *nn_sliceptr, int ioffset, int *islicecountptr,
-  int *nslicefilesptr, slicedata **sliceinfo_copyptr, patchdata **patchgeomptr){
+  int *nslicefilesptr, slicedata **sliceinfo_copyptr, patchdata **patchgeomptr, char buffers[6][256]){
   char *slicelabelptr, slicelabel[256], *sliceparms;
   float above_ground_level = 0.0;
   int terrain = 0, cellcenter = 0, facecenter = 0;
@@ -4309,8 +4309,7 @@ int ParseSLCF_process(bufferstreamdata *stream, char *buffer, int *nn_sliceptr, 
   int read_slice_header = 0;
   char zlib_file[255], rle_file[255];
   int nn_slice;
-  char bufferA[256], bufferB[256], bufferC[256], bufferD[256], bufferE[256], bufferF[256];
-  char buffer2[256], *bufferptr, *bufferptr2;
+  char *bufferptr, *bufferptr2;
   int islicecount, nslicefiles;
   slicedata *sliceinfo_copy;
 
@@ -4345,7 +4344,7 @@ int ParseSLCF_process(bufferstreamdata *stream, char *buffer, int *nn_sliceptr, 
     slicelabelptr = slicelabel;
   }
   if(Match(buffer, "BNDS")==1){
-    strcpy(bufferA, buffer);
+    strcpy(buffers[0], buffer);
     slicegeom = 1;
   }
   if(Match(buffer, "SLCT")==1){
@@ -4382,7 +4381,7 @@ int ParseSLCF_process(bufferstreamdata *stream, char *buffer, int *nn_sliceptr, 
     return RETURN_BREAK;
   }
   if(slicegeom==1){
-    strcpy(bufferB, buffer);
+    strcpy(buffers[1], buffer);
   }
 
   bufferptr = TrimFrontBack(buffer);
@@ -4489,12 +4488,13 @@ int ParseSLCF_process(bufferstreamdata *stream, char *buffer, int *nn_sliceptr, 
 
   if(slicegeom==1){
     int lengeom;
+    char buffer2[256];
 
     if(FGETS(buffer2, 255, stream)==NULL){
       nsliceinfo--;
       return RETURN_BREAK;
     }
-    strcpy(bufferC, buffer2);
+    strcpy(buffers[2], buffer2);
     bufferptr2 = TrimFrontBack(buffer2);
     lengeom = strlen(bufferptr2);
     sd->geom_file = NULL;
@@ -4511,7 +4511,7 @@ int ParseSLCF_process(bufferstreamdata *stream, char *buffer, int *nn_sliceptr, 
     if(ReadLabels(&sd->label, stream, "(cell centered)")==LABEL_ERR)return RETURN_TWO;
   }
   else if(sd->slice_filetype==SLICE_GEOM){
-    if(ReadLabelsBNDS(&sd->label, stream, bufferD, bufferE, bufferF, "(geometry)")==LABEL_ERR)return RETURN_TWO;
+    if(ReadLabelsBNDS(&sd->label, stream, buffers[3], buffers[4], buffers[5], "(geometry)")==LABEL_ERR)return RETURN_TWO;
   }
   else if(sd->slice_filetype==SLICE_FACE_CENTER){
     if(ReadLabels(&sd->label, stream, "(face centered)")==LABEL_ERR)return RETURN_TWO;
@@ -4636,7 +4636,7 @@ int ParseSLCF_process(bufferstreamdata *stream, char *buffer, int *nn_sliceptr, 
   sliceinfo_copy = *sliceinfo_copyptr + 1;
   *sliceinfo_copyptr = sliceinfo_copy;
   if(slicegeom==1){
-    strcpy(buffer, bufferA);
+    strcpy(buffer, buffers[0]);
     *patchgeomptr = sd->patchgeom;
   }
   else{
@@ -4752,8 +4752,7 @@ int ReadSMV(bufferstreamdata *stream){
   int setGRID=0;
   int  i;
 
-  char buffer[256],buffer2[256],*bufferptr;
-  char bufferB[256], bufferC[256], bufferD[256], bufferE[256], bufferF[256];
+  char buffer[256], buffers[6][256];
   patchdata *patchgeom;
 
   START_TIMER(processing_time);
@@ -5121,6 +5120,7 @@ int ReadSMV(bufferstreamdata *stream){
     if(Match(buffer,"CSVF") == 1){
       int nfiles;
       char *file_ptr,*type_ptr;
+      char buffer2[256];
 
       FGETS(buffer,255,stream);
       TrimBack(buffer);
@@ -5829,6 +5829,7 @@ int ReadSMV(bufferstreamdata *stream){
       csvdata *csvi;
       char *type_ptr, *file_ptr;
       int nfiles=1;
+      char buffer2[256];
 
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;
@@ -6422,6 +6423,7 @@ int ReadSMV(bufferstreamdata *stream){
         float *xyz, *frgbtemp, *tstart_stop;
         int *rgbtemp;
         labeldata labeltemp, *labeli;
+        char *bufferptr;
 
         labeli = &labeltemp;
 
@@ -6644,6 +6646,7 @@ int ReadSMV(bufferstreamdata *stream){
   */
     if(Match(buffer,"CADGEOM") == 1){
       size_t len;
+      char *bufferptr;
 
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;
@@ -6680,6 +6683,8 @@ int ReadSMV(bufferstreamdata *stream){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(Match(buffer,"SURFDEF") == 1){
+      char *bufferptr;
+
       FGETS(buffer,255,stream);
       bufferptr=TrimFrontBack(buffer);
       strcpy(surfacedefaultlabel,TrimFront(bufferptr));
@@ -6705,6 +6710,8 @@ int ReadSMV(bufferstreamdata *stream){
       char *buffer_temp;
       int filetype=C_GENERATED;
       int blocknumber;
+      char buffer2[256];
+      char *bufferptr;
 
       if(setup_only==1)continue;
       if(Match(buffer,"SMOKF3D") == 1||Match(buffer,"VSMOKF3D") == 1||
@@ -7097,6 +7104,7 @@ int ReadSMV(bufferstreamdata *stream){
       char *period=NULL;
       size_t len;
       int n;
+      char *bufferptr;
 
       zonei = zoneinfo + izone_local;
       if(FGETS(buffer,255,stream)==NULL){
@@ -9042,6 +9050,7 @@ typedef struct {
     if(Match(buffer,"ENDF") == 1){
       FILE *ENDIANfile;
       size_t len;
+      char *bufferptr;
 
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;
@@ -9072,6 +9081,7 @@ typedef struct {
   */
     if(Match(buffer,"CHID") == 1){
       size_t len;
+      char *bufferptr;
 
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;
@@ -9106,7 +9116,7 @@ typedef struct {
       ){
       int return_val;
 
-      return_val = ParseSLCF_process(stream, buffer, &nn_slice, ioffset, &islicecount, &nslicefiles, &sliceinfo_copy, &patchgeom);
+      return_val = ParseSLCF_process(stream, buffer, &nn_slice, ioffset, &islicecount, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -9132,7 +9142,7 @@ typedef struct {
       ){
       int return_val;
 
-      return_val = ParseBNDF_process(stream, buffer, &nn_patch, &ioffset, &patchgeom, &ipatch);
+      return_val = ParseBNDF_process(stream, buffer, &nn_patch, &ioffset, &patchgeom, &ipatch, buffers);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -9164,6 +9174,7 @@ typedef struct {
       char *buffer3,*ext;
       int fds_skip = 1;
       float fds_delta = -1.0;
+      char *bufferptr;
 
       if(setup_only == 1||smoke3d_only==1)continue;
       isoi = isoinfo + iiso;
