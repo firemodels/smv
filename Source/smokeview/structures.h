@@ -1405,7 +1405,6 @@ typedef struct _patchdata {
   int shortlabel_index;
   int boundary;
   int inuse,inuse_getbounds;
-  int unit_start;
   int firstshort;
   int compression_type;
   int setvalmin, setvalmax;

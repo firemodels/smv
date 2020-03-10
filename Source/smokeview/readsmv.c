@@ -3803,7 +3803,7 @@ void MakeFileLists(void){
 
 /* ------------------ ParsePRT_count ------------------------ */
 
-void ParsePRT_count(void){
+void ParsePRT5_count(void){
   if(setup_only==1||smoke3d_only==1)return;
   npartinfo++;
 }
@@ -3872,21 +3872,21 @@ int ParsePRT5_process(bufferstreamdata *stream, char *buffer, int *nn_part_in, i
   bufferptr = TrimFrontBack(buffer);
   len = strlen(bufferptr);
   parti->reg_file = NULL;
-  if(NewMemory((void **)&parti->reg_file, (unsigned int)(len+1))==0)return 2;
+  if(NewMemory((void **)&parti->reg_file, (unsigned int)(len+1))==0)return RETURN_TWO;
   STRCPY(parti->reg_file, bufferptr);
   parti->reg_file_size = GetFileSizeSMV(parti->reg_file);
 
-  if(NewMemory((void **)&parti->bound_file, (unsigned int)(len+4+1))==0)return 2;
+  if(NewMemory((void **)&parti->bound_file, (unsigned int)(len+4+1))==0)return RETURN_TWO;
   STRCPY(parti->bound_file, bufferptr);
   STRCAT(parti->bound_file, ".bnd");
 
   parti->size_file = NULL;
-  if(NewMemory((void **)&parti->size_file, (unsigned int)(len+1+3))==0)return 2;
+  if(NewMemory((void **)&parti->size_file, (unsigned int)(len+1+3))==0)return RETURN_TWO;
   STRCPY(parti->size_file, bufferptr);
   STRCAT(parti->size_file, ".sz");
 
   parti->hist_file = NULL;
-  if(NewMemory((void **)&parti->hist_file, (unsigned int)(len+1+5))==0)return 2;
+  if(NewMemory((void **)&parti->hist_file, (unsigned int)(len+1+5))==0)return RETURN_TWO;
   STRCPY(parti->hist_file, bufferptr);
   STRCAT(parti->hist_file, ".hist");
 
@@ -3895,7 +3895,7 @@ int ParsePRT5_process(bufferstreamdata *stream, char *buffer, int *nn_part_in, i
   if(FILE_EXISTS_CASEDIR(parti->size_file)==NO&&curdir_writable==NO&&smokeviewtempdir!=NULL){
     len = strlen(smokeviewtempdir)+strlen(bufferptr)+1+3+1;
     FREEMEMORY(parti->size_file);
-    if(NewMemory((void **)&parti->size_file, (unsigned int)len)==0)return 2;
+    if(NewMemory((void **)&parti->size_file, (unsigned int)len)==0)return RETURN_TWO;
     STRCPY(parti->size_file, smokeviewtempdir);
     STRCAT(parti->size_file, dirseparator);
     STRCAT(parti->size_file, bufferptr);
@@ -3907,7 +3907,7 @@ int ParsePRT5_process(bufferstreamdata *stream, char *buffer, int *nn_part_in, i
   if(FILE_EXISTS_CASEDIR(parti->hist_file)==NO && curdir_writable==NO && smokeviewtempdir!=NULL){
     len = strlen(smokeviewtempdir)+strlen(bufferptr)+1+5+1;
     FREEMEMORY(parti->hist_file);
-    if(NewMemory((void **)&parti->hist_file, (unsigned int)len)==0)return 2;
+    if(NewMemory((void **)&parti->hist_file, (unsigned int)len)==0)return RETURN_TWO;
     STRCPY(parti->hist_file, smokeviewtempdir);
     STRCAT(parti->hist_file, dirseparator);
     STRCAT(parti->hist_file, bufferptr);
@@ -3915,7 +3915,7 @@ int ParsePRT5_process(bufferstreamdata *stream, char *buffer, int *nn_part_in, i
   }
 
   parti->comp_file = NULL;
-  if(NewMemory((void **)&parti->comp_file, (unsigned int)(len+1+4))==0)return 2;
+  if(NewMemory((void **)&parti->comp_file, (unsigned int)(len+1+4))==0)return RETURN_TWO;
   STRCPY(parti->comp_file, bufferptr);
   STRCAT(parti->comp_file, ".svz");
 
@@ -4003,6 +4003,267 @@ int ParsePRT5_process(bufferstreamdata *stream, char *buffer, int *nn_part_in, i
   return RETURN_CONTINUE;
 }
 
+/* ------------------ ParseBNDF_count ------------------------ */
+
+int ParseBNDF_count(void){
+  if(setup_only==1||smoke3d_only==1)return RETURN_CONTINUE;
+  npatchinfo++;
+  return RETURN_CONTINUE;
+}
+
+/* ------------------ ParseBNDF_process ------------------------ */
+
+int ParseBNDF_process(bufferstreamdata *stream, char *buffer, int *nn_patch_in, int *ioffset_in, patchdata **patchgeom_in, int *ipatch_in){
+  patchdata *patchi;
+  int version;
+  int blocknumber;
+  size_t len;
+  char *filetype_label;
+  int slicegeom = 0;
+
+  int i;
+  int nn_patch, ioffset, ipatch;
+  patchdata *patchgeom;
+  char *bufferB, *bufferC, *bufferD, *bufferE, *bufferF, *bufferptr;
+
+  if(setup_only==1||smoke3d_only==1)return RETURN_CONTINUE;
+
+  nn_patch = *nn_patch_in;
+  ioffset = *ioffset_in;
+  ipatch = *ipatch_in;
+  patchgeom = *patchgeom_in;
+
+  if(Match(buffer, "BNDS")==1){
+    slicegeom = 1;
+  }
+  nn_patch++;
+  *nn_patch_in = nn_patch;
+
+  TrimBack(buffer);
+  len = strlen(buffer);
+
+  if(nmeshes>1){
+    blocknumber = ioffset-1;
+  }
+  else{
+    blocknumber = 0;
+  }
+  version = 0;
+  if(len>5){
+    char *buffer3;
+
+    buffer3 = buffer+4;
+    sscanf(buffer3, "%i %i", &blocknumber, &version);
+    blocknumber--;
+  }
+  if(slicegeom==1){
+    patchi = patchgeom;
+  }
+  else{
+    patchi = patchinfo+ipatch;
+  }
+
+  for(i = 0; i<6; i++){
+    patchi->ijk[i] = -1;
+  }
+  patchi->skip = 0;
+  patchi->version = version;
+  patchi->ntimes = 0;
+  patchi->ntimes_old = 0;
+  strcpy(patchi->scale, "");
+  patchi->filetype_label = NULL;
+  patchi->patch_filetype = PATCH_STRUCTURED_NODE_CENTER;
+  patchi->structured = YES;
+  patchi->boundary = 1;
+  if(Match(buffer, "BNDC")==1){
+    patchi->patch_filetype = PATCH_STRUCTURED_CELL_CENTER;
+  }
+  if(Match(buffer, "BNDE")==1){
+    ngeom_data++;
+    patchi->patch_filetype = PATCH_GEOMETRY_BOUNDARY;
+    patchi->structured = NO;
+  }
+
+  if(Match(buffer, "BNDS")==1){
+    char *sliceparms;
+
+    CheckMemory;
+    ngeom_data++;
+    patchi->patch_filetype = PATCH_GEOMETRY_SLICE;
+    patchi->structured = NO;
+    patchi->boundary = 0;
+
+    sliceparms = strchr(buffer, '&');
+    if(sliceparms!=NULL){
+      int ijk[6], j;
+
+      sliceparms++;
+      sliceparms[-1] = 0;
+      sscanf(sliceparms, "%i %i %i %i %i %i", ijk, ijk+1, ijk+2, ijk+3, ijk+4, ijk+5);
+      for(j = 0; j<6; j++){
+        patchi->ijk[j] = ijk[j];
+      }
+    }
+    filetype_label = strchr(buffer, '#');
+    if(filetype_label!=NULL){
+      int len_filetype_label;
+
+      filetype_label++;
+      filetype_label[-1] = 0;
+      filetype_label = TrimFrontBack(filetype_label);
+      len_filetype_label = strlen(filetype_label);
+      if(len_filetype_label>0){
+        NewMemory((void **)&patchi->filetype_label, (unsigned int)(len_filetype_label+1));
+        strcpy(patchi->filetype_label, filetype_label);
+      }
+    }
+    CheckMemory;
+  }
+
+  if(slicegeom==1){
+    strcpy(buffer, bufferB);
+  }
+  else{
+    if(FGETS(buffer, 255, stream)==NULL){
+      npatchinfo--;
+      return RETURN_BREAK;
+    }
+  }
+
+  bufferptr = TrimFrontBack(buffer);
+  len = strlen(bufferptr);
+  NewMemory((void **)&patchi->reg_file, (unsigned int)(len+1));
+  STRCPY(patchi->reg_file, bufferptr);
+
+  NewMemory((void **)&patchi->bound_file, (unsigned int)(len+4+1));
+  STRCPY(patchi->bound_file, bufferptr);
+  strcat(patchi->bound_file, ".bnd");
+
+  NewMemory((void **)&patchi->comp_file, (unsigned int)(len+4+1));
+  STRCPY(patchi->comp_file, bufferptr);
+  STRCAT(patchi->comp_file, ".svz");
+
+  NewMemory((void **)&patchi->size_file, (unsigned int)(len+4+1));
+  STRCPY(patchi->size_file, bufferptr);
+  //      STRCAT(patchi->size_file,".szz"); when we actully use file check both .sz and .szz extensions
+
+  if(FILE_EXISTS_CASEDIR(patchi->comp_file)==YES){
+    patchi->compression_type = COMPRESSED_ZLIB;
+    patchi->file = patchi->comp_file;
+  }
+  else{
+    patchi->compression_type = UNCOMPRESSED;
+    patchi->file = patchi->reg_file;
+  }
+
+  patchi->geomfile = NULL;
+  patchi->geominfo = NULL;
+  if(patchi->structured==NO){
+    int igeom;
+
+    if(slicegeom==1){
+      strcpy(buffer, bufferC);
+    }
+    else{
+      if(FGETS(buffer, 255, stream)==NULL){
+        npatchinfo--;
+        return RETURN_BREAK;
+      }
+    }
+    bufferptr = TrimFrontBack(buffer);
+    NewMemory((void **)&patchi->geomfile, strlen(bufferptr)+1);
+    strcpy(patchi->geomfile, bufferptr);
+    for(igeom = 0; igeom<ngeominfo; igeom++){
+      geomdata *geomi;
+
+      geomi = geominfo+igeom;
+      if(strcmp(geomi->file, patchi->geomfile)==0){
+        patchi->geominfo = geomi;
+        if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
+          geomi->geomtype = GEOM_BOUNDARY;
+          geomi->fdsblock = FDSBLOCK;
+        }
+        else{
+          geomi->geomtype = GEOM_SLICE;
+          geomi->fdsblock = NOT_FDSBLOCK;
+        }
+        break;
+      }
+    }
+  }
+  patchi->modtime = 0;
+  patchi->geom_timeslist = NULL;
+  patchi->geom_ivals_dynamic = NULL;
+  patchi->geom_ivals_static = NULL;
+  patchi->geom_ndynamics = NULL;
+  patchi->geom_nstatics = NULL;
+  patchi->geom_times = NULL;
+  patchi->geom_vals = NULL;
+  patchi->geom_ivals = NULL;
+  patchi->geom_nvals = 0;
+  patchi->histogram = NULL;
+  patchi->blocknumber = blocknumber;
+  patchi->seq_id = nn_patch;
+  patchi->autoload = 0;
+  patchi->loaded = 0;
+  patchi->display = 0;
+  patchi->inuse = 0;
+  patchi->inuse_getbounds = 0;
+  patchi->bounds.defined = 0;
+  patchi->setchopmin = 0;
+  patchi->chopmin = 1.0;
+  patchi->setchopmax = 0;
+  patchi->chopmax = 0.0;
+  meshinfo[blocknumber].patchfilenum = -1;
+  if(fast_startup==1||FILE_EXISTS_CASEDIR(patchi->file)==YES){
+    char geomlabel2[256], *geomptr = NULL;
+
+    strcpy(geomlabel2, "");
+    if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
+      if(ReadLabels(&patchi->label, stream, "(cell centered)")==LABEL_ERR)return RETURN_TWO;
+    }
+    else if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
+      if(ReadLabels(&patchi->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
+    }
+    else if(patchi->structured==NO){
+      char geomlabel[256];
+
+      strcpy(geomlabel, "(geometry)");
+      if(patchi->filetype_label!=NULL){
+        if(strcmp(patchi->filetype_label, "EXIMBND_FACES")==0){
+          strcat(geomlabel, " - EXIM faces");
+          strcpy(geomlabel2, " - EXIM faces");
+        }
+        if(strcmp(patchi->filetype_label, "CUT_CELLS")==0){
+          strcat(geomlabel, " - Cut cell faces");
+          strcpy(geomlabel2, " - Cut cell faces");
+        }
+      }
+      if(slicegeom==1){
+        if(ReadLabelsBNDS(&patchi->label, NULL, bufferD, bufferE, bufferF, geomlabel)==2)return RETURN_TWO;
+      }
+      else{
+        if(ReadLabels(&patchi->label, stream, geomlabel)==LABEL_ERR)return RETURN_TWO;
+      }
+    }
+    strcpy(patchi->menulabel_base, patchi->label.longlabel);
+    if(strlen(geomlabel2)>0){
+      geomptr = strstr(patchi->menulabel_base, geomlabel2);
+      if(geomptr!=NULL)geomptr[0] = 0;
+    }
+    NewMemory((void **)&patchi->histogram, sizeof(histogramdata));
+    InitHistogram(patchi->histogram, NHIST_BUCKETS, NULL, NULL);
+    if(slicegeom==0){
+      ipatch++;
+      *ipatch_in = ipatch;
+    }
+  }
+  else{
+    if(ReadLabels(&patchi->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
+    npatchinfo--;
+  }
+  return RETURN_CONTINUE;
+}
 
 /* ------------------ ParseSLCF_Count ------------------------ */
 
@@ -4473,7 +4734,6 @@ int ReadSMV(bufferstreamdata *stream){
   float read_time, processing_time, wrapup_time, getfilelist_time;
   float pass0_time, pass1_time, pass2_time, pass3_time, pass4_time, pass5_time;
   int have_zonevents,nzventsnew=0;
-  int unit_start=20;
   devicedata *devicecopy;
   int do_pass4=0, do_pass5=0;
   int roomdefined=0;
@@ -5156,7 +5416,7 @@ int ReadSMV(bufferstreamdata *stream){
     }
     if(Match(buffer,"PRT5")==1||Match(buffer,"EVA5")==1
       ){
-      ParsePRT_count();
+      ParsePRT5_count();
       continue;
     }
     if( (Match(buffer,"SLCF") == 1)  ||
@@ -5199,8 +5459,7 @@ int ReadSMV(bufferstreamdata *stream){
     if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1
       || Match(buffer, "BNDS") == 1
       ){
-      if(setup_only == 1||smoke3d_only==1)continue;
-      npatchinfo++;
+      ParseBNDF_count();
       continue;
     }
     if(Match(buffer,"ISOF") == 1||Match(buffer,"TISOF")==1||Match(buffer,"ISOG") == 1||Match(buffer, "TISOG")==1){
@@ -8760,6 +9019,19 @@ typedef struct {
       int return_val;
 
       return_val = ParsePRT5_process(stream, buffer, &nn_part, &ipart, &ioffset);
+      if(return_val==RETURN_BREAK){
+        BREAK;
+      }
+      else if(return_val==RETURN_CONTINUE){
+        continue;
+      }
+      else if(return_val==RETURN_TWO){
+        return 2;
+      }
+      else{
+        ASSERT(FFALSE);
+      }
+      continue;
     }
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -8838,13 +9110,17 @@ typedef struct {
       if(return_val==RETURN_BREAK){
         BREAK;
       }
-      if(return_val==RETURN_CONTINUE){
+      else if(return_val==RETURN_CONTINUE){
         continue;
       }
-      if(return_val==RETURN_TWO){
+      else if(return_val==RETURN_TWO){
         return 2;
       }
-      // return_val==RETURN_PROCEED - proceed on to other keywords
+      else if(return_val==RETURN_PROCEED){
+      }
+      else{
+        ASSERT(FFALSE);
+      }
     }
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -8854,240 +9130,20 @@ typedef struct {
     if(Match(buffer, "BNDF") == 1 || Match(buffer, "BNDC") == 1 || Match(buffer, "BNDE") == 1
       || Match(buffer, "BNDS")==1
       ){
-      patchdata *patchi;
-      int version;
-      int blocknumber;
-      size_t len;
-      char *filetype_label;
-      int slicegeom=0;
+      int return_val;
 
-      if(setup_only == 1||smoke3d_only==1)continue;
-
-      if(Match(buffer, "BNDS")==1){
-        slicegeom=1;
+      return_val = ParseBNDF_process(stream, buffer, &nn_patch, &ioffset, &patchgeom, &ipatch);
+      if(return_val==RETURN_BREAK){
+        BREAK;
       }
-      nn_patch++;
-
-      TrimBack(buffer);
-      len=strlen(buffer);
-
-      if(nmeshes>1){
-        blocknumber=ioffset-1;
+      else if(return_val==RETURN_CONTINUE){
+        continue;
+      }
+      else if(return_val==RETURN_TWO){
+        return 2;
       }
       else{
-        blocknumber=0;
-      }
-      version=0;
-      if(len>5){
-        char *buffer3;
-
-        buffer3=buffer+4;
-        sscanf(buffer3,"%i %i",&blocknumber,&version);
-        blocknumber--;
-      }
-      if(slicegeom==1){
-        patchi = patchgeom;
-      }
-      else{
-        patchi = patchinfo + ipatch;
-      }
-
-      for(i = 0; i < 6; i++){
-        patchi->ijk[i] = -1;
-      }
-      patchi->skip = 0;
-      patchi->version=version;
-      patchi->ntimes = 0;
-      patchi->ntimes_old = 0;
-      strcpy(patchi->scale, "");
-      patchi->filetype_label=NULL;
-      patchi->patch_filetype = PATCH_STRUCTURED_NODE_CENTER;
-      patchi->structured = YES;
-      patchi->boundary = 1;
-      if(Match(buffer,"BNDC") == 1){
-        patchi->patch_filetype = PATCH_STRUCTURED_CELL_CENTER;
-      }
-      if(Match(buffer,"BNDE") == 1){
-        ngeom_data++;
-        patchi->patch_filetype=PATCH_GEOMETRY_BOUNDARY;
-        patchi->structured = NO;
-      }
-
-      if(Match(buffer, "BNDS") == 1){
-        char *sliceparms;
-
-        CheckMemory;
-        ngeom_data++;
-        patchi->patch_filetype = PATCH_GEOMETRY_SLICE;
-        patchi->structured = NO;
-        patchi->boundary = 0;
-
-        sliceparms = strchr(buffer, '&');
-        if(sliceparms != NULL){
-          int ijk[6],j;
-
-          sliceparms++;
-          sliceparms[-1] = 0;
-          sscanf(sliceparms, "%i %i %i %i %i %i", ijk,ijk+1,ijk+2,ijk+3,ijk+4,ijk+5);
-          for(j=0;j<6;j++){
-            patchi->ijk[j]=ijk[j];
-          }
-        }
-        filetype_label = strchr(buffer, '#');
-        if(filetype_label != NULL){
-          int len_filetype_label;
-
-          filetype_label++;
-          filetype_label[-1] = 0;
-          filetype_label = TrimFrontBack(filetype_label);
-          len_filetype_label = strlen(filetype_label);
-          if(len_filetype_label>0){
-            NewMemory((void **)&patchi->filetype_label,(unsigned int)(len_filetype_label+1));
-            strcpy(patchi->filetype_label,filetype_label);
-          }
-        }
-        CheckMemory;
-      }
-
-      if(slicegeom==1){
-        strcpy(buffer,bufferB);
-      }
-      else{
-        if(FGETS(buffer,255,stream)==NULL){
-          npatchinfo--;
-          BREAK;
-        }
-      }
-
-      bufferptr=TrimFrontBack(buffer);
-      len=strlen(bufferptr);
-      NewMemory((void **)&patchi->reg_file,(unsigned int)(len+1));
-      STRCPY(patchi->reg_file,bufferptr);
-
-      NewMemory((void **)&patchi->bound_file, (unsigned int)(len+4+1));
-      STRCPY(patchi->bound_file, bufferptr);
-      strcat(patchi->bound_file, ".bnd");
-
-      NewMemory((void **)&patchi->comp_file,(unsigned int)(len+4+1));
-      STRCPY(patchi->comp_file,bufferptr);
-      STRCAT(patchi->comp_file,".svz");
-
-      NewMemory((void **)&patchi->size_file,(unsigned int)(len+4+1));
-      STRCPY(patchi->size_file,bufferptr);
-//      STRCAT(patchi->size_file,".szz"); when we actully use file check both .sz and .szz extensions
-
-      if(FILE_EXISTS_CASEDIR(patchi->comp_file)==YES){
-        patchi->compression_type=COMPRESSED_ZLIB;
-        patchi->file=patchi->comp_file;
-      }
-      else{
-        patchi->compression_type=UNCOMPRESSED;
-        patchi->file=patchi->reg_file;
-      }
-
-      patchi->geomfile=NULL;
-      patchi->geominfo=NULL;
-      if(patchi->structured == NO){
-        int igeom;
-
-      if(slicegeom==1){
-        strcpy(buffer,bufferC);
-      }
-      else{
-        if(FGETS(buffer,255,stream)==NULL){
-          npatchinfo--;
-          BREAK;
-        }
-      }
-        bufferptr=TrimFrontBack(buffer);
-        NewMemory((void **)&patchi->geomfile,strlen(bufferptr)+1);
-        strcpy(patchi->geomfile,bufferptr);
-        for(igeom=0;igeom<ngeominfo;igeom++){
-          geomdata *geomi;
-
-          geomi = geominfo + igeom;
-          if(strcmp(geomi->file,patchi->geomfile)==0){
-            patchi->geominfo=geomi;
-            if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
-              geomi->geomtype = GEOM_BOUNDARY;
-              geomi->fdsblock = FDSBLOCK;
-            }
-            else{
-              geomi->geomtype = GEOM_SLICE;
-              geomi->fdsblock = NOT_FDSBLOCK;
-            }
-            break;
-          }
-        }
-      }
-      patchi->modtime=0;
-      patchi->geom_timeslist=NULL;
-      patchi->geom_ivals_dynamic=NULL;
-      patchi->geom_ivals_static=NULL;
-      patchi->geom_ndynamics=NULL;
-      patchi->geom_nstatics=NULL;
-      patchi->geom_times=NULL;
-      patchi->geom_vals=NULL;
-      patchi->geom_ivals=NULL;
-      patchi->geom_nvals=0;
-      patchi->histogram = NULL;
-      patchi->blocknumber=blocknumber;
-      patchi->seq_id=nn_patch;
-      patchi->autoload=0;
-      patchi->loaded=0;
-      patchi->display=0;
-      patchi->inuse=0;
-      patchi->inuse_getbounds=0;
-      patchi->bounds.defined=0;
-      patchi->unit_start=unit_start++;
-      patchi->setchopmin=0;
-      patchi->chopmin=1.0;
-      patchi->setchopmax=0;
-      patchi->chopmax=0.0;
-      meshinfo[blocknumber].patchfilenum=-1;
-      if(fast_startup==1||FILE_EXISTS_CASEDIR(patchi->file)==YES){
-        char geomlabel2[256], *geomptr=NULL;
-
-        strcpy(geomlabel2, "");
-        if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
-          if(ReadLabels(&patchi->label,stream,"(cell centered)")==LABEL_ERR)return 2;
-        }
-        else if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
-          if(ReadLabels(&patchi->label,stream,NULL)==LABEL_ERR)return 2;
-        }
-        else if(patchi->structured == NO){
-          char geomlabel[256];
-
-          strcpy(geomlabel, "(geometry)");
-          if(patchi->filetype_label != NULL){
-            if(strcmp(patchi->filetype_label, "EXIMBND_FACES") == 0){
-              strcat(geomlabel, " - EXIM faces");
-              strcpy(geomlabel2, " - EXIM faces");
-            }
-            if(strcmp(patchi->filetype_label, "CUT_CELLS") == 0){
-              strcat(geomlabel, " - Cut cell faces");
-              strcpy(geomlabel2, " - Cut cell faces");
-            }
-          }
-          if(slicegeom==1){
-            if(ReadLabelsBNDS(&patchi->label,NULL,bufferD,bufferE,bufferF,geomlabel)==2)return 2;
-          }
-          else{
-            if(ReadLabels(&patchi->label,stream,geomlabel)==LABEL_ERR)return 2;
-          }
-        }
-        strcpy(patchi->menulabel_base, patchi->label.longlabel);
-        if(strlen(geomlabel2) > 0){
-          geomptr = strstr(patchi->menulabel_base, geomlabel2);
-          if(geomptr != NULL)geomptr[0] = 0;
-        }
-        NewMemory((void **)&patchi->histogram,sizeof(histogramdata));
-        InitHistogram(patchi->histogram,NHIST_BUCKETS, NULL, NULL);
-        if(slicegeom==0)ipatch++;
-      }
-      else{
-        if(ReadLabels(&patchi->label,stream,NULL)==LABEL_ERR)return 2;
-        npatchinfo--;
+        ASSERT(FFALSE);
       }
       continue;
     }
