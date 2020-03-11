@@ -446,11 +446,7 @@ SVEXTERN int SVDECL(showlabels_windrose,1), SVDECL(windstate_windrose,WINDROSE_D
 SVEXTERN int SVDECL(ngeomdiaginfo, 0), SVDECL(show_geometry_diagnostics,0);
 SVEXTERN geomdiagdata SVDECL(*geomdiaginfo,NULL);
 SVEXTERN int SVDECL(zone_rho, 1);
-#ifdef pp_VENTPROFILE
 SVEXTERN int SVDECL(visventslab, 0), SVDECL(visventprofile, 1);
-#else
-SVEXTERN int SVDECL(visventslab, 1), SVDECL(visventprofile,0);
-#endif
 SVEXTERN int SVDECL(update_readiso_geom_wrapup, UPDATE_ISO_OFF);
 SVEXTERN int SVDECL(nmemory_ids, 0);
 SVEXTERN int SVDECL(update_playmovie, 0);

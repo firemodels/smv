@@ -11536,14 +11536,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWVENTFLOW") == 1){
       fgets(buffer, 255, stream);
-#ifdef pp_VENTPROFILE
       sscanf(buffer, "%i %i %i %i %i", &visVentHFlow, &visventslab, &visventprofile, &visVentVFlow, &visVentMFlow);
-#else
-      {
-        int dummy;
-        sscanf(buffer, "%i %i %i %i %i", &visVentHFlow, &visventslab, &dummy, &visVentVFlow, &visVentMFlow);
-      }
-#endif
       continue;
     }
     if(Match(buffer, "SHOWVENTS") == 1){

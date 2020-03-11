@@ -29,7 +29,6 @@
 #define pp_SMOKE_FAST         // load 3d smoke in parallel
 //#define pp_PART_TEST          // for debugging, set particle values to 100*parti->seq_id + small random number
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
-#define pp_VENTPROFILE        // show original zonefire vent flow profile (calculated in smokeview)
 #define pp_GPUSMOKE           // code to speed up 3d smoke using the gpu
 //#define pp_SMOKEDIAG        // output smoke3d diagnostics (number of meshes, total triangles, triangles drawn)
 //#define pp_GEOMPRINT        // output geometry info
