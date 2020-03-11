@@ -528,7 +528,6 @@ void MouseSelectAvatar(int button, int state, int x, int y){
   }
 }
 
-#ifdef pp_SELECT_GEOM
 /* ------------------ MouseSelectGeom ------------------------ */
 
 void MouseSelectGeom(int button, int state, int x, int y){
@@ -619,7 +618,6 @@ void MouseSelectGeom(int button, int state, int x, int y){
     ENABLE_LIGHTING;
   }
 }
-#endif
 
 /* ------------------ CheckTimeBound ------------------------ */
 
@@ -1053,9 +1051,7 @@ void MouseCB(int button, int state, int xm, int ym){
       if(viscolorbarpath==1)MouseEditColorbar(button, state, xm, ym);
       if(select_avatar==1)MouseSelectAvatar(button,state,xm,ym);
       if(select_device==1)MouseSelectDevice(button,state,xm,ym);
-#ifdef pp_SELECT_GEOM
       if(select_geom!=GEOM_PROP_NONE)MouseSelectGeom(button, state, xm, ym);
-#endif
     }
     glutPostRedisplay();
     if( showtime==1 || showplot3d==1){
@@ -2308,7 +2304,6 @@ void Keyboard(unsigned char key, int flag){
       LevelScene(1,1,quat_general);
       Quat2Rot(quat_general,quat_rotation);
       break;
-#ifdef pp_SELECT_GEOM
     case '=':
       if(ngeominfo>0){
         select_geom++;
@@ -2321,7 +2316,6 @@ void Keyboard(unsigned char key, int flag){
         UpdateSelectGeom();
       }
       break;
-#endif
     case '!':
       SnapScene();
       break;

@@ -48,11 +48,8 @@ GLUI_Checkbox *CHECKBOX_volumes_exterior=NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_1dimage = NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_2dimage = NULL;
 
-#ifdef pp_SELECT_GEOM
 GLUI_RadioGroup *RADIO_select_geom = NULL;
-#endif
 
-#ifdef pp_SELECT_GEOM
 GLUI_StaticText *STATIC_vertx1=NULL;
 GLUI_StaticText *STATIC_verty1=NULL;
 GLUI_StaticText *STATIC_vertz1=NULL;
@@ -61,11 +58,8 @@ GLUI_StaticText *STATIC_verty2 = NULL;
 GLUI_StaticText *STATIC_vertz2 = NULL;
 GLUI_StaticText *STATIC_dist=NULL;
 GLUI_StaticText *STATIC_tri_area = NULL;
-#endif
 
-#ifdef pp_SELECT_GEOM
 GLUI_Checkbox *CHECKBOX_use_surf_color=NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_highlight_edge0=NULL;
 GLUI_Checkbox *CHECKBOX_highlight_edge1=NULL;
 GLUI_Checkbox *CHECKBOX_highlight_edge2=NULL;
@@ -75,13 +69,11 @@ GLUI_Checkbox *CHECKBOX_visaxislabels=NULL;
 
 GLUI_Rollout *ROLLOUT_geomtest=NULL;
 GLUI_Rollout *ROLLOUT_geomtest2 = NULL;
-#ifdef pp_SELECT_GEOM
 GLUI_Rollout *ROLLOUT_geom_rgbs = NULL;
 GLUI_Rollout *ROLLOUT_geom_properties=NULL;
 GLUI_Panel *PANEL_surf_color = NULL;
 GLUI_Panel *PANEL_surf_axis = NULL;
 GLUI_Panel *PANEL_surf_coloraxis = NULL;
-#endif
 
 GLUI_Panel *PANEL_geom_transparency = NULL;
 GLUI_Panel *PANEL_normals = NULL;
@@ -95,18 +87,14 @@ GLUI_Spinner *SPINNER_geom_zmin = NULL, *SPINNER_geom_zmax = NULL, *SPINNER_geom
 GLUI_Spinner *SPINNER_geom_delx = NULL;
 GLUI_Spinner *SPINNER_geom_dely = NULL;
 GLUI_Spinner *SPINNER_geom_delz = NULL;
-#ifdef pp_SELECT_GEOM
 GLUI_Spinner *SPINNER_geom_vertex1_rgb[3]  = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_vertex2_rgb[3]  = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_triangle_rgb[3] = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_surf_rgb[3]          = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_surf_axis[3]         = {NULL, NULL, NULL};
-#endif
 
 #define VOL_SHOWHIDE 3
-#ifdef pp_SELECT_GEOM
 #define SELECT_GEOM  4
-#endif
 
 GLUI *glui_geometry=NULL;
 
@@ -120,12 +108,9 @@ GLUI_EditText *EDIT_xmin=NULL, *EDIT_ymin=NULL, *EDIT_zmin=NULL;
 GLUI_EditText *EDIT_xmax=NULL, *EDIT_ymax=NULL, *EDIT_zmax=NULL;
 
 GLUI_Listbox *LIST_obst_surface[7]={NULL,NULL,NULL,NULL,NULL,NULL,NULL};
-#ifdef pp_SELECT_GEOM
 GLUI_Listbox *LIST_geom_surface=NULL;
-#endif
 
 GLUI_Panel *PANEL_obj_select=NULL,*PANEL_faces=NULL,*PANEL_triangles=NULL,*PANEL_volumes=NULL,*PANEL_geom_showhide;
-#ifdef pp_SELECT_GEOM
 GLUI_Panel *PANEL_properties_surf = NULL;
 GLUI_Panel *PANEL_properties_vertex = NULL;
 GLUI_Panel *PANEL_properties_triangle = NULL;
@@ -133,7 +118,6 @@ GLUI_Panel *PANEL_vertex1_rgb = NULL;
 GLUI_Panel *PANEL_vertex2_rgb = NULL;
 GLUI_Panel *PANEL_triangle_rgb = NULL;
 GLUI_Panel *PANEL_properties2 = NULL;
-#endif
 GLUI_Panel *PANEL_obj_stretch2=NULL,*PANEL_obj_stretch3=NULL, *PANEL_obj_stretch4=NULL;
 GLUI_Panel *PANEL_geomedgecheck=NULL;
 GLUI_Panel *PANEL_group1=NULL;
@@ -154,11 +138,9 @@ char *updatelabel=NULL;
 
 /* ------------------ UpdateSelectGeom ------------------------ */
 
-#ifdef pp_SELECT_GEOM
 extern "C" void UpdateSelectGeom(void){
   RADIO_select_geom->set_int_val(select_geom);
 }
-#endif
 
 /* ------------------ UpdateWhereFaceVolumes ------------------------ */
 
@@ -256,7 +238,6 @@ void BlockeditDlgCB(int var){
 
 }
 
-#ifdef pp_SELECT_GEOM
 /* ------------------ UpdateTriangleInfo ------------------------ */
 
 
@@ -316,7 +297,6 @@ extern "C" void UpdateVertexInfo(float *xyz1, float *xyz2){
     STATIC_dist->set_name("dist:");
   }
 }
-#endif
 
 /* ------------------ GluiGeometrySetup ------------------------ */
 
@@ -518,7 +498,6 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_geom_ivecfactor = glui_geometry->add_spinner_to_panel(PANEL_normals, "length", GLUI_SPINNER_INT, &geom_ivecfactor, GEOM_IVECFACTOR, VolumeCB);
     SPINNER_geom_ivecfactor->set_int_limits(0, 200);
 
-#ifdef pp_SELECT_GEOM
     UpdateGeomAreas();
     ROLLOUT_geom_properties = glui_geometry->add_rollout_to_panel(PANEL_geom_showhide, "properties",false);
     PANEL_properties2 = glui_geometry->add_panel_to_panel(ROLLOUT_geom_properties,"",GLUI_PANEL_NONE);
@@ -614,7 +593,6 @@ extern "C" void GluiGeometrySetup(int main_window){
       SPINNER_geom_vertex2_rgb[i]->set_int_limits(0, 255);
       SPINNER_geom_triangle_rgb[i]->set_int_limits(0, 255);
     }
-#endif
 
     ROLLOUT_geomtest2 = glui_geometry->add_rollout_to_panel(ROLLOUT_unstructured, "parameters", false);
     INSERT_ROLLOUT(ROLLOUT_geomtest2, glui_geometry);
@@ -682,7 +660,6 @@ extern "C" void GluiGeometrySetup(int main_window){
 extern "C" void VolumeCB(int var){
   int i;
   switch(var){
-#ifdef pp_SELECT_GEOM
   case SURF_GET:
     for(i = 0; i<nsurfinfo; i++){
       surfdata *surfi;
@@ -751,7 +728,6 @@ extern "C" void VolumeCB(int var){
       selected_geom_triangle = -1;
     }
     break;
-#endif
   case UPDATE_GEOM:
     LOCK_TRIANGLES;
     show_geom_bndf = glui_show_geom_bndf;

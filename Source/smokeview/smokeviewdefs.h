@@ -26,10 +26,8 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define PART_BOUND_COMPUTING 1
 #define PART_BOUND_DEFINED   2
 
-#ifdef pp_SELECT_GEOM
 #define VERTEX1 1
 #define VERTEX2 2
-#endif
 
 #define PART_SIZING  0
 #define PART_LOADING 1
@@ -494,13 +492,11 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define HIDEALL_EVAC 4
 #define SHOWALL_EVAC 3
 
-#ifdef pp_SELECT_GEOM
 #define GEOM_PROP_NONE     0
 #define GEOM_PROP_VERTEX1  1
 #define GEOM_PROP_VERTEX2  2
 #define GEOM_PROP_TRIANGLE 3
 #define GEOM_PROP_SURF     4
-#endif
 
 #define TEMP_IGNITION_MAX 100000.
 #define SURFACE_TEMPMIN  -100000.

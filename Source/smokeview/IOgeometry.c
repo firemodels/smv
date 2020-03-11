@@ -287,7 +287,6 @@ int TextureOn(GLuint texture_id,int *texture_first){
   return 1;
 }
 
-#ifdef pp_SELECT_GEOM
 /* ------------------ UpdateGeomAreas ------------------------ */
 
 void UpdateGeomAreas(void){
@@ -444,7 +443,6 @@ void DrawSelectGeom(void){
   break;
   }
 }
-#endif
 
 /* ------------------ DrawGeom ------------------------ */
 
@@ -473,9 +471,7 @@ void DrawGeom(int flag, int timestate){
 
   if(ntris>0&&timestate==GEOM_STATIC){
     float *color;
-#ifdef pp_SELECT_GEOM
     surfdata *selected_surf;
-#endif
 
   // draw geometry surface
 
@@ -485,7 +481,6 @@ void DrawGeom(int flag, int timestate){
       texture_state=TextureOn(texture_iso_colorbar_id,&texture_first);
     }
 
-#ifdef pp_SELECT_GEOM
     if(select_geom==GEOM_PROP_SURF&&ntris>0&&selected_geom_triangle>=0){
       tridata *selected_triangle;
 
@@ -495,7 +490,6 @@ void DrawGeom(int flag, int timestate){
     else{
       selected_surf = NULL;
     }
-#endif
     if(cullfaces == 1)glDisable(GL_CULL_FACE);
     glEnable(GL_NORMALIZE);
     glShadeModel(GL_SMOOTH);
@@ -516,19 +510,15 @@ void DrawGeom(int flag, int timestate){
       texturedata *ti;
       int  j;
       int smooth_triangles;
-#ifdef pp_SELECT_GEOM
       int use_select_color;
-#endif
 
       trianglei = tris[i];
-#ifdef pp_SELECT_GEOM
       use_select_color = 0;
       if(select_geom==GEOM_PROP_TRIANGLE||select_geom==GEOM_PROP_SURF){
         if(trianglei->geomtype==GEOM_ISO)continue;
         if(select_geom==GEOM_PROP_TRIANGLE&&selected_geom_triangle==i)use_select_color=1;
         if(select_geom==GEOM_PROP_SURF&&selected_surf==trianglei->geomsurf)use_select_color = 1;
       }
-#endif
       if(trianglei->geomtype!=GEOM_ISO){
         if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
         if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
@@ -560,7 +550,6 @@ void DrawGeom(int flag, int timestate){
         transparent_level_local=trianglei->geomsurf->transparent_level;
       }
       if(geom_force_transparent == 1)transparent_level_local = geom_transparency;
-#ifdef pp_SELECT_GEOM
       if(use_select_color==1||use_surf_color==1){
         unsigned char geom_rgb_uc[4];
 
@@ -607,20 +596,6 @@ void DrawGeom(int flag, int timestate){
           }
         }
       }
-#else
-      if(iso_opacity_change==0||trianglei->geomtype!=GEOM_ISO){
-        if(color!=last_color||ABS(last_transparent_level-transparent_level_local)>0.001){
-          if(texture_state==ON){
-            glEnd();
-            texture_state = TextureOff();
-            glBegin(GL_TRIANGLES);
-          }
-          glColor4f(color[0], color[1], color[2], transparent_level_local);
-          last_color = color;
-          last_transparent_level = transparent_level_local;
-        }
-      }
-#endif
 
       if(smooth_triangles==0){
         glNormal3fv(trianglei->tri_norm);
@@ -887,7 +862,6 @@ void DrawGeom(int flag, int timestate){
       DISABLE_LIGHTING;
       glPopMatrix();
     }
-#ifdef pp_SELECT_GEOM
     if(show_surf_axis==1){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
@@ -951,7 +925,6 @@ void DrawGeom(int flag, int timestate){
       }
       glPopMatrix();
     }
-#endif
 
       // draw volume outline
 
@@ -1108,12 +1081,9 @@ void DrawGeom(int flag, int timestate){
       glBegin(GL_POINTS);
       for(j=0;j<geomlisti->nverts;j++){
         vertdata *verti;
-#ifdef pp_SELECT_GEOM
         int use_select_color;
-#endif
 
         verti = geomlisti->verts+j;
-#ifdef pp_SELECT_GEOM
         use_select_color=0;
         if(select_geom==GEOM_PROP_VERTEX1||select_geom==GEOM_PROP_VERTEX2){
           if(verti->geomtype==GEOM_ISO||verti->ntriangles==0)continue;
@@ -1150,16 +1120,6 @@ void DrawGeom(int flag, int timestate){
             last_color=color;
           }
         }
-#else
-        if(verti->geomtype == GEOM_GEOM&&show_geom_verts == 0)continue;
-        if(verti->geomtype == GEOM_ISO&&show_iso_points == 0)continue;
-        if(verti->ntriangles==0)continue;
-        color = verti->triangles[0]->geomsurf->color;
-        if(last_color!=color){
-          glColor3fv(color);
-          last_color=color;
-        }
-#endif
         glVertex3fv(verti->xyz);
       }
       glEnd();
@@ -2258,9 +2218,7 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
 
         surfi = surfinfo+CLAMP(surf_ind[ii]+offset, nsurfinfo+1, nsurfinfo+MAX_ISO_COLORS);
         triangles[ii].geomsurf=surfi;
-#ifdef pp_SELECT_GEOM
         surfi->used_by_geom = 1;
-#endif
         triangles[ii].textureinfo=NULL;
       }
       FREEMEMORY(ijk);
@@ -2504,9 +2462,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           triangles[ii].insolid = 0;
           break;
         }
-#ifdef pp_SELECT_GEOM
         if(geomi->geomtype==GEOM_GEOM)surfi->used_by_geom = 1;
-#endif
         triangles[ii].geomsurf=surfi;
         if(terrain_texture!=NULL&&geomi->is_terrain==1){
           triangles[ii].textureinfo = terrain_texture;

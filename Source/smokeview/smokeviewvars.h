@@ -63,7 +63,6 @@ SVEXTERN int SVDECL(ncolorlabel_decimals, 1);
 SVEXTERN int SVDECL(ntick_decimals, 1);
 SVEXTERN int SVDECL(mpi_nprocesses, -1), SVDECL(mpi_iprocess,-1);
 
-#ifdef pp_SELECT_GEOM
 #ifdef INMAIN
 SVEXTERN unsigned int geom_vertex1_rgb[3]  = {255, 255, 255};
 SVEXTERN unsigned int geom_vertex2_rgb[3]  = {  0,   0,   0};
@@ -83,7 +82,6 @@ SVEXTERN int SVDECL(select_geom, GEOM_PROP_NONE);
 SVEXTERN int SVDECL(selected_geom_vertex1,  -1);
 SVEXTERN int SVDECL(selected_geom_vertex2,  -1);
 SVEXTERN int SVDECL(selected_geom_triangle, -1);
-#endif
 
 SVEXTERN int SVDECL(nlist_slice_index, 0);
 SVEXTERN int SVDECL(slice_fileupdate, 0);

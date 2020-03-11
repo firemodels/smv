@@ -18,7 +18,6 @@
 //*** options: all platforms
 
 //#define pp_UPDATE_FILELOAD     // when set only updates fileload variables when a file has been loaded or unloaded
-#define pp_SELECT_GEOM        //  select and show geometry properties
 #define pp_SMOKE_FAST         // load 3d smoke in parallel
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
 #define pp_GPUSMOKE           // code to speed up 3d smoke using the gpu
