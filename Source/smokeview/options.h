@@ -18,7 +18,6 @@
 //*** options: all platforms
 
 //#define pp_UPDATE_FILELOAD     // when set only updates fileload variables when a file has been loaded or unloaded
-#define pp_SMOKE_FAST         // load 3d smoke in parallel
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
 #define pp_GPUSMOKE           // code to speed up 3d smoke using the gpu
 //#define pp_MAKE_SMOKEIBLANK // generate smoke iblank arrays
@@ -33,6 +32,7 @@
 //#define pp_PART_TEST          // for debugging, set particle values to 100*parti->seq_id + small random number
 
 // in development
+#define pp_SMOKE_FAST         // load 3d smoke in parallel
 //#define pp_SMOKETEST          // max blending for fire, regular blending for smoke
 //#define pp_SPECTRAL           // use black body colors - not fully implemented
 //#define pp_SLICETHREAD        // parallel slice file loading
