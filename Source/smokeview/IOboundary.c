@@ -2641,6 +2641,20 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     slicei->globalmin = qmin;
     slicei->globalmax = qmax;
     AdjustSliceBounds(slicei, &qmin, &qmax);
+    if(slice_average_flag==1){
+      int data_per_timestep, nvals, ntimes;
+      float *vals, *times;
+
+      show_slice_average = 1;
+      vals = slicei->patchgeom->geom_vals;
+      nvals = slicei->patchgeom->geom_nvals;
+      times = patchi->geom_times;
+      ntimes = patchi->ngeom_times;
+      data_per_timestep = nvals/ntimes;
+      if(TimeAverageData(vals, vals, nvals, data_per_timestep, times, ntimes, slice_average_interval)==1){
+        show_slice_average = 0;
+      }
+    }
     slicei->valmin = qmin;
     slicei->valmax = qmax;
     slicei->valmin_data = qmin;

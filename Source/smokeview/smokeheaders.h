@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP int TimeAverageData(float *data_out, float *data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time);
 #ifdef pp_READBUFFER
 bufferstreamdata *GetSMVBuffer(char *file, char *file2);
 #endif

@@ -3886,9 +3886,9 @@ void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax){
 #endif
 }
 
-  /* ------------------ AverageSliceData ------------------------ */
+  /* ------------------ TimeAverageData ------------------------ */
 
-int AverageSliceData(float *data_out, float *data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time){
+int TimeAverageData(float *data_out, float *data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time){
 
 #define IND(itime,ival) ((itime)*data_per_timestep + (ival))
   float *datatemp = NULL;
@@ -4723,7 +4723,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *er
 
       if(
         sd->compression_type != UNCOMPRESSED ||
-        AverageSliceData(sd->qslicedata, sd->qslicedata, ndata, data_per_timestep, sd->times, ntimes_local, slice_average_interval) == 1
+        TimeAverageData(sd->qslicedata, sd->qslicedata, ndata, data_per_timestep, sd->times, ntimes_local, slice_average_interval) == 1
         ){
         show_slice_average = 0; // averaging failed
       }
