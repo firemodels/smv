@@ -609,9 +609,7 @@ SVEXTERN int SVDECL(update_glui_bounds,0);
 SVEXTERN int SVDECL(update_glui_shooter,0);
 
 SVEXTERN int SVDECL(update_glui_dialogs,0);
-#ifdef pp_LANG
 SVEXTERN char startup_lang_code[3];
-#endif
 
 #ifdef pp_GPUTHROTTLE
   SVEXTERN float SVDECL(thisGPUtime,0.0), SVDECL(lastGPUtime,0.0);

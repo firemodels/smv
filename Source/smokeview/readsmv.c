@@ -10388,7 +10388,6 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
-#ifdef pp_LANG
     if(Match(buffer, "STARTUPLANG") == 1){
       char *bufptr;
 
@@ -10406,7 +10405,6 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
-#endif
     if(Match(buffer, "MESHVIS") == 1){
       int nm;
       meshdata *meshi;
@@ -14201,10 +14199,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %f %f %i %i %i\n",  use_newsmoke, smoke_mesh_aligned, smoke3d_delta_par, smoke3d_delta_multiple,
                                                use_smokebox, smokebox_buffer, update_smokeplanes);
 #endif
-#ifdef pp_LANG
   fprintf(fileout, "STARTUPLANG\n");
   fprintf(fileout, " %s\n", startup_lang_code);
-#endif
   fprintf(fileout, "STEREO\n");
   fprintf(fileout, " %i\n", stereotype);
   fprintf(fileout, "SURFINC\n");

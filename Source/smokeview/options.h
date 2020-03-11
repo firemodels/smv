@@ -17,30 +17,33 @@
 
 //*** options: all platforms
 
+//#define pp_UPDATE_FILELOAD     // when set only updates fileload variables when a file has been loaded or unloaded
+#define pp_SELECT_GEOM        //  select and show geometry properties
+#define pp_SMOKE_FAST         // load 3d smoke in parallel
+//#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
+#define pp_GPUSMOKE           // code to speed up 3d smoke using the gpu
+//#define pp_MAKE_SMOKEIBLANK // generate smoke iblank arrays
+#define pp_CLIP               // test frustum near/far clip planes
+#define pp_DRAWISO            // turn on drawing routines
+#define pp_FILELIST           // use list of file names
+
+// debug
+//#define pp_ISOTIME            // output iso load times
+//#define pp_DPRINT           // debug print, printf line number and source file
+//#define pp_SMOKEDIAG        // output smoke3d diagnostics (number of meshes, total triangles, triangles drawn)
+//#define pp_GEOMPRINT        // output geometry info
+//#define pp_PART_TEST          // for debugging, set particle values to 100*parti->seq_id + small random number
+
+// in development
+//#define pp_SMOKETEST          // max blending for fire, regular blending for smoke
+//#define pp_SPECTRAL           // use black body colors - not fully implemented
+//#define pp_SLICETHREAD        // parallel slice file loading
 #define pp_C_SLICE              // use C to read in slice file headers
 //#define pp_NEW_SLICE_MENUS    // new slice menus
 //#define pp_BLOCK_COLOR        //  new algorithm for assigning obst colors
 //#define pp_NEWBOUND_DIALOG   // redo bound dialog
-//#define pp_UPDATE_FILELOAD     // when set only updates fileload variables when a file has been loaded or unloaded
 //#define pp_PLOT3D_REDUCEMENUS   // eliminate plot3d sub-menus
 //#define pp_PLOT3D_STATIC      // use static memory for plot3d labels
-//#define pp_SLICETHREAD        // parallel slice file loading
-#define pp_SELECT_GEOM        //  select and show geometry properties
-#define pp_SMOKE_FAST         // load 3d smoke in parallel
-//#define pp_PART_TEST          // for debugging, set particle values to 100*parti->seq_id + small random number
-//#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
-#define pp_GPUSMOKE           // code to speed up 3d smoke using the gpu
-//#define pp_SMOKEDIAG        // output smoke3d diagnostics (number of meshes, total triangles, triangles drawn)
-//#define pp_GEOMPRINT        // output geometry info
-//#define pp_MAKE_SMOKEIBLANK // generate smoke iblank arrays
-//#define pp_DPRINT           // debug print, printf line number and source file
-#define pp_CLIP               // test frustum near/far clip planes
-#define pp_DRAWISO            // turn on drawing routines
-#define pp_FILELIST           // use list of file names
-#define pp_LANG               // support other languages
-//#define pp_ISOTIME            // output iso load times
-//#define pp_SMOKETEST          // max blending for fire, regular blending for smoke
-//#define pp_SPECTRAL           // use black body colors - not fully implemented
 
 #define pp_GPU                // support the GPU
 #ifdef pp_GPU

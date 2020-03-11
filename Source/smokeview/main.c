@@ -38,9 +38,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time"));
     PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
     PRINTF("%s\n", _(" -html          - output html version of smokeview scene"));
-#ifdef pp_LANG
     PRINTF("%s\n", _(" -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian"));
-#endif
     PRINTF("%s\n", _(" -ng_ini        - non-graphics version of -ini."));
     PRINTF("%s\n", _(" -scriptrenderdir dir - directory containing script rendered images"));
     PRINTF("%s\n", _("                  (override directory specified by RENDERDIR script keyword)"));
@@ -114,9 +112,6 @@ void Usage(char *prog,int option){
 #endif
 #ifdef pp_INTEL
     strcat(label, ", pp_INTEL");
-#endif
-#ifdef pp_LANG
-    strcat(label, ", pp_LANG");
 #endif
 #ifdef pp_LINUX
     strcat(label, ", pp_LINUX");
@@ -221,9 +216,7 @@ void ParseCommandline(int argc, char **argv){
       if(
         strncmp(argi, "-points", 7) == 0 ||
         strncmp(argi, "-frames", 7) == 0 ||
-#ifdef pp_LANG
         strncmp(argi, "-lang", 5) == 0 ||
-#endif
         strncmp(argi, "-script", 7) == 0 ||
 #ifdef pp_LUA
         strncmp(argi, "-luascript", 10) == 0 ||
@@ -466,7 +459,6 @@ void ParseCommandline(int argc, char **argv){
       stereotype = STEREO_TIME;
       PRINTF("stereo option activated\n");
     }
-#ifdef pp_LANG
     else if(strncmp(argv[i], "-lang", 5) == 0){
       ++i;
       if(i < argc){
@@ -480,7 +472,6 @@ void ParseCommandline(int argc, char **argv){
         strcpy(tr_name, lang);
       }
     }
-#endif
     else if(strncmp(argv[i], "-convert_ini", 12) == 0){
       char *local_ini_from = NULL, *local_ini_to = NULL;
 

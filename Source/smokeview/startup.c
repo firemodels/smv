@@ -250,9 +250,7 @@ int SetupCase(int argc, char **argv){
 
   if(use_graphics==0)return 0;
   glui_defined = 1;
-#ifdef pp_LANG
   InitTranslate(smokeview_bindir, tr_name);
-#endif
 
 #ifdef pp_OPENVR
   have_vr = HaveVR();
@@ -1237,9 +1235,7 @@ void InitVars(void){
     memcpy(&LABEL_local,&LABEL_default,sizeof(labeldata));
   }
 
-#ifdef pp_LANG
   strcpy(startup_lang_code,"en");
-#endif
   mat_specular_orig[0]=0.5f;
   mat_specular_orig[1]=0.5f;
   mat_specular_orig[2]=0.2f;
