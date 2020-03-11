@@ -23,7 +23,6 @@
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
 #define pp_GPUSMOKE           // code to speed up 3d smoke using the gpu
 //#define pp_MAKE_SMOKEIBLANK // generate smoke iblank arrays
-#define pp_CLIP               // test frustum near/far clip planes
 #define pp_DRAWISO            // turn on drawing routines
 #define pp_FILELIST           // use list of file names
 

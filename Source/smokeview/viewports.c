@@ -1647,7 +1647,6 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
   eyeyINI = camera_current->eye[1];
   eyezINI = camera_current->eye[2];
 
-#ifdef pp_CLIP
   if(projection_type==PROJECTION_ORTHOGRAPHIC){
     fnear = -eyeyINI - 1.0;
     if(fnear < nearclip)fnear = nearclip;
@@ -1661,11 +1660,6 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     fnear = MAX(min_depth-1.0, 0.001);
     ffar  = MAX(    max_depth+1.0, farclip);
   }
-#else
-  fnear = -eyeyINI - 1.0;
-  if(fnear < nearclip)fnear = nearclip;
-  ffar = fnear + farclip;
-#endif
 
   aperture_temp = Zoom2Aperture(zoom);
 
