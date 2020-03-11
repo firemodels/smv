@@ -510,9 +510,6 @@ void InitOpenGL(void){
 #ifdef _DEBUG
   PRINTF("%s",_("   Initializing Glut display mode - "));
 #endif
-#ifdef pp_OSXGLUT32
-  type|=GLUT_3_2_CORE_PROFILE;
-#endif
   glutInitDisplayMode(type);
 #ifdef _DEBUG
   PRINTF("%s\n",_("initialized"));

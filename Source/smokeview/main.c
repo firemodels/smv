@@ -137,9 +137,6 @@ void Usage(char *prog,int option){
 #ifdef pp_OSX
     strcat(label, ", pp_OSX");
 #endif
-#ifdef pp_OSXGLUT32
-    strcat(label, ", pp_OSXGLUT32");
-#endif
 #ifdef pp_PART_TEST
     strcat(label, ", pp_PART_TEST");
 #endif
