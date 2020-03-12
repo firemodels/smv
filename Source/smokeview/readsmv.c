@@ -4009,6 +4009,55 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
   return RETURN_CONTINUE;
 }
 
+#define SCAN    0
+#define NO_SCAN 1
+/* ------------------ ParseCHIDProcess ------------------------ */
+
+int ParseCHIDProcess(bufferstreamdata *stream, int option){
+  size_t len;
+  char buffer[255], *bufferptr;
+
+  if(option==SCAN){
+    for(;;){
+      if(FGETS(buffer, 255, stream)==NULL){
+        return RETURN_BREAK;
+      }
+      if(Match(buffer,"CHID") != 1)continue;
+      break;
+    }
+    return RETURN_BREAK;
+  }
+
+  if(FGETS(buffer, 255, stream)==NULL){
+    return RETURN_BREAK;
+  }
+  bufferptr = TrimFrontBack(buffer);
+  len = strlen(bufferptr);
+  FREEMEMORY(chidfilebase);
+  NewMemory((void **)&chidfilebase, (unsigned int)(len+1));
+  STRCPY(chidfilebase, bufferptr);
+
+  if(chidfilebase!=NULL){
+    NewMemory((void **)&hrr_csv_filename, (unsigned int)(strlen(chidfilebase)+8+1));
+    STRCPY(hrr_csv_filename, chidfilebase);
+    STRCAT(hrr_csv_filename, "_hrr.csv");
+    if(FILE_EXISTS_CASEDIR(hrr_csv_filename)==NO){
+      FREEMEMORY(hrr_csv_filename);
+    }
+  }
+  return RETURN_CONTINUE;
+}
+
+/* ------------------ ReadSMVCHID ------------------------ */
+
+int ReadSMVCHID(bufferstreamdata *stream){
+  char buffer[255];
+
+  ParseCHIDProcess(stream, SCAN);
+  return 0;
+}
+
+
 /* ------------------ ParsePRTCount ------------------------ */
 
 void ParsePRT5Count(void){
@@ -4656,8 +4705,24 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
 
 /* ------------------ ParseSLCFCount ------------------------ */
 
-int ParseSLCFCount(bufferstreamdata *stream, char *buffer, int *nslicefiles){
+int ParseSLCFCount(int option, bufferstreamdata *stream, char *buffer, int *nslicefiles){
   if(setup_only==1||smoke3d_only==1)return RETURN_CONTINUE;
+  if(option==SCAN){
+    for(;;){
+      if(FGETS(buffer, 255, stream)==NULL){
+        return RETURN_BREAK;
+      }
+      if((Match(buffer, "SLCF")==1)||
+        (Match(buffer, "SLCC")==1)||
+        (Match(buffer, "SLCD")==1)||
+        (Match(buffer, "SLCT")==1)||
+        (Match(buffer, "BNDS")==1)
+        ){
+        break;
+      }
+      return RETURN_BREAK;
+    }
+  }
   nsliceinfo++;
   *nslicefiles = nsliceinfo;
   if(Match(buffer, "BNDS")==1){
@@ -4682,7 +4747,7 @@ int ParseSLCFCount(bufferstreamdata *stream, char *buffer, int *nslicefiles){
 
 /* ------------------ ParseSLCFProcess ------------------------ */
 
-int ParseSLCFProcess(bufferstreamdata *stream, char *buffer, int *nn_sliceptr, int ioffset, int *islicecountptr,
+int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn_sliceptr, int ioffset, int *islicecountptr,
   int *nslicefilesptr, slicedata **sliceinfo_copyptr, patchdata **patchgeomptr, char buffers[6][256]){
   char *slicelabelptr, slicelabel[256], *sliceparms;
   float above_ground_level = 0.0;
@@ -4703,6 +4768,22 @@ int ParseSLCFProcess(bufferstreamdata *stream, char *buffer, int *nn_sliceptr, i
   slicedata *sliceinfo_copy;
 
   if(setup_only==1||smoke3d_only==1)return RETURN_CONTINUE;
+  if(option==SCAN){
+    for(;;){
+      if(FGETS(buffer, 255, stream)==NULL){
+        return RETURN_BREAK;
+      }
+      if( (Match(buffer, "SLCF") == 1)  ||
+          (Match(buffer, "SLCC") == 1)  ||
+          (Match(buffer, "SLCD") == 1)  ||
+          (Match(buffer, "SLCT") == 1)  ||
+          (Match(buffer, "BNDS") == 1)
+        ){
+        break;
+      }
+    }
+    return RETURN_BREAK;
+  }
 
   char_slcf_index = strchr(buffer, '!');
   if(char_slcf_index!=NULL){
@@ -5033,6 +5114,47 @@ int ParseSLCFProcess(bufferstreamdata *stream, char *buffer, int *nn_sliceptr, i
   }
   return RETURN_PROCEED;
 }
+
+/* ------------------ ReadSMVSLCF ------------------------ */
+
+int ReadSMVSLCF(bufferstreamdata *stream){
+  char buffer[256], buffers[6][256];
+  int nn_slice = 0, ioffset=0, isliceount=0, nslicefiles=0, islicecount=0;
+  slicedata *sliceinfo_copy=NULL;
+  patchdata *patchgeom;
+
+  for(;;){
+    int return_val;
+
+    return_val = ParseSLCFCount(SCAN, stream, buffer, &nslicefiles);
+    if(return_val==RETURN_BREAK){
+      BREAK;
+    }
+  }
+  REWIND(stream);
+  sliceinfo_copy = sliceinfo;
+  for(;;){
+    int return_val;
+
+    return_val = ParseSLCFProcess(SCAN, stream, buffer, &nn_slice, ioffset, &islicecount, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
+    if(return_val==RETURN_BREAK){
+      BREAK;
+    }
+    else if(return_val==RETURN_CONTINUE){
+      continue;
+    }
+    else if(return_val==RETURN_TWO){
+      return 2;
+    }
+    else if(return_val==RETURN_PROCEED){
+    }
+    else{
+      ASSERT(FFALSE);
+    }
+  }
+  return 0;
+}
+
 
 /* ------------------ FreeSliceData ------------------------ */
 
@@ -5834,7 +5956,7 @@ int ReadSMV(bufferstreamdata *stream){
       ){
       int return_val;
 
-      return_val = ParseSLCFCount(stream, buffer, &nslicefiles);
+      return_val = ParseSLCFCount(NO_SCAN, stream, buffer, &nslicefiles);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
@@ -9290,25 +9412,17 @@ typedef struct {
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(Match(buffer,"CHID") == 1){
-      size_t len;
-      char *bufferptr;
+      int return_val;
 
-      if(FGETS(buffer,255,stream)==NULL){
+      return_val = ParseCHIDProcess(stream, NO_SCAN);
+      if(return_val==RETURN_BREAK){
         BREAK;
       }
-      bufferptr=TrimFrontBack(buffer);
-      len=strlen(bufferptr);
-      FREEMEMORY(chidfilebase);
-      NewMemory((void **)&chidfilebase,(unsigned int)(len+1));
-      STRCPY(chidfilebase,bufferptr);
-
-      if(chidfilebase!=NULL){
-        NewMemory((void **)&hrr_csv_filename,(unsigned int)(strlen(chidfilebase)+8+1));
-        STRCPY(hrr_csv_filename,chidfilebase);
-        STRCAT(hrr_csv_filename,"_hrr.csv");
-        if(FILE_EXISTS_CASEDIR(hrr_csv_filename)==NO){
-          FREEMEMORY(hrr_csv_filename);
-        }
+      else if(return_val==RETURN_CONTINUE){
+        continue;
+      }
+      else{
+        ASSERT(FFALSE);
       }
       continue;
     }
@@ -9380,7 +9494,7 @@ typedef struct {
       ){
       int return_val;
 
-      return_val = ParseSLCFProcess(stream, buffer, &nn_slice, ioffset, &islicecount, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
+      return_val = ParseSLCFProcess(NO_SCAN, stream, buffer, &nn_slice, ioffset, &islicecount, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
