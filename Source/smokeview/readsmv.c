@@ -5128,7 +5128,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 
 int ReadSMVSLCF(bufferstreamdata *stream){
   char buffer[256], buffers[6][256];
-  int nn_slice = 0, ioffset=0, isliceount=0, nslicefiles=0;
+  int nn_slice = 0, ioffset=0, nslicefiles=0;
   slicedata *sliceinfo_copy=NULL;
   patchdata *patchgeom;
 
