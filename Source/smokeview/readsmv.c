@@ -4051,8 +4051,6 @@ int ParseCHIDProcess(bufferstreamdata *stream, int option){
 /* ------------------ ReadSMVCHID ------------------------ */
 
 int ReadSMVCHID(bufferstreamdata *stream){
-  char buffer[255];
-
   ParseCHIDProcess(stream, SCAN);
   return 0;
 }
