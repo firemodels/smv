@@ -17,4 +17,6 @@
 #define PROGVERSION "1.0.1"
 #endif
 
+//#define pp_ADF // option to parse adf files
+
 #endif
