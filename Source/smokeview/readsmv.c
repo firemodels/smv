@@ -4051,8 +4051,6 @@ int ParseCHIDProcess(bufferstreamdata *stream, int option){
 /* ------------------ ReadSMVCHID ------------------------ */
 
 int ReadSMVCHID(bufferstreamdata *stream){
-  char buffer[255];
-
   ParseCHIDProcess(stream, SCAN);
   return 0;
 }
@@ -4705,7 +4703,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
 
 /* ------------------ ParseSLCFCount ------------------------ */
 
-int ParseSLCFCount(int option, bufferstreamdata *stream, char *buffer, int *nslicefiles){
+int ParseSLCFCount(int option, bufferstreamdata *stream, char *buffer, int *nslicefiles_in){
   if(setup_only==1||smoke3d_only==1)return RETURN_CONTINUE;
   if(option==SCAN){
     for(;;){
@@ -4724,7 +4722,7 @@ int ParseSLCFCount(int option, bufferstreamdata *stream, char *buffer, int *nsli
     }
   }
   nsliceinfo++;
-  *nslicefiles = nsliceinfo;
+  *nslicefiles_in = nsliceinfo;
   if(Match(buffer, "BNDS")==1){
     if(FGETS(buffer, 255, stream)==NULL){
       return RETURN_BREAK;
@@ -4747,8 +4745,9 @@ int ParseSLCFCount(int option, bufferstreamdata *stream, char *buffer, int *nsli
 
 /* ------------------ ParseSLCFProcess ------------------------ */
 
-int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn_sliceptr, int ioffset, int *islicecountptr,
-  int *nslicefilesptr, slicedata **sliceinfo_copyptr, patchdata **patchgeomptr, char buffers[6][256]){
+int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn_slice_in, int ioffset_in,
+  int *nslicefiles_in, slicedata **sliceinfo_copy_in, patchdata **patchgeom_in,
+  char buffers[6][256]){
   char *slicelabelptr, slicelabel[256], *sliceparms;
   float above_ground_level = 0.0;
   int terrain = 0, cellcenter = 0, facecenter = 0;
@@ -4762,9 +4761,9 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   size_t len;
   int read_slice_header = 0;
   char zlib_file[255], rle_file[255];
-  int nn_slice;
+
   char *bufferptr, *bufferptr2;
-  int islicecount, nslicefiles;
+  int nslicefiles, nn_slice;
   slicedata *sliceinfo_copy;
 
   if(setup_only==1||smoke3d_only==1)return RETURN_CONTINUE;
@@ -4785,6 +4784,10 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     return RETURN_BREAK;
   }
 
+  nn_slice       = *nn_slice_in;
+  nslicefiles    = *nslicefiles_in;
+  sliceinfo_copy = *sliceinfo_copy_in;
+
   char_slcf_index = strchr(buffer, '!');
   if(char_slcf_index!=NULL){
     *char_slcf_index = 0;
@@ -4802,8 +4805,9 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     sscanf(sliceparms, "%i %i %i %i %i %i", &ii1, &ii2, &jj1, &jj2, &kk1, &kk2);
   }
 
-  nn_slice = *nn_sliceptr + 1;
-  *nn_sliceptr = nn_slice;
+  nn_slice++;
+  *nn_slice_in = nn_slice;
+
   slicelabelptr = strchr(buffer, '%');
   if(slicelabelptr!=NULL){
     *slicelabelptr = 0;
@@ -4831,7 +4835,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   TrimBack(buffer);
   len = strlen(buffer);
   if(nmeshes>1){
-    blocknumber = ioffset-1;
+    blocknumber = ioffset_in-1;
   }
   else{
     blocknumber = 0;
@@ -4897,9 +4901,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     sd->slice_filetype = SLICE_FACE_CENTER;
   }
 
-  islicecount = *islicecountptr + 1;
-  *islicecountptr = islicecount;
-
   strcpy(zlib_file, bufferptr);
   strcat(zlib_file, ".svz");
   strcpy(rle_file, bufferptr);
@@ -4914,10 +4915,13 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   if(compression_type==UNCOMPRESSED&&(fast_startup==1||FILE_EXISTS_CASEDIR(bufferptr)==YES))has_reg = 1;
   if(has_reg==0&&compression_type==UNCOMPRESSED){
     nsliceinfo--;
-    nslicefiles = *nslicefilesptr-1;
-    *nslicefilesptr = nslicefiles;
+
+    nslicefiles--;
+    *nslicefiles_in = nslicefiles;
+
     nn_slice--;
-    *nn_sliceptr = nn_slice;
+    *nn_slice_in = nn_slice;
+
     if(FGETS(buffer, 255, stream)==NULL){
       return RETURN_BREAK;
     }
@@ -5097,17 +5101,22 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     FREEMEMORY(sd->slicelabel);
 
     nsliceinfo--;
-    nslicefiles = *nslicefilesptr-1;;
-    *nslicefilesptr = nslicefiles;
+
+    nslicefiles--;
+    *nslicefiles_in = nslicefiles;
+
     nn_slice--;
-    *nn_sliceptr = nn_slice;
+    *nn_slice_in = nn_slice;
+
     return RETURN_CONTINUE;
   }
-  sliceinfo_copy = *sliceinfo_copyptr + 1;
-  *sliceinfo_copyptr = sliceinfo_copy;
+
+  sliceinfo_copy++;
+  *sliceinfo_copy_in = sliceinfo_copy;
+
   if(slicegeom==1){
     strcpy(buffer, buffers[0]);
-    *patchgeomptr = sd->patchgeom;
+    *patchgeom_in = sd->patchgeom;
   }
   else{
     return RETURN_CONTINUE;
@@ -5119,7 +5128,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 
 int ReadSMVSLCF(bufferstreamdata *stream){
   char buffer[256], buffers[6][256];
-  int nn_slice = 0, ioffset=0, isliceount=0, nslicefiles=0, islicecount=0;
+  int nn_slice = 0, ioffset=0, nslicefiles=0;
   slicedata *sliceinfo_copy=NULL;
   patchdata *patchgeom;
 
@@ -5136,7 +5145,7 @@ int ReadSMVSLCF(bufferstreamdata *stream){
   for(;;){
     int return_val;
 
-    return_val = ParseSLCFProcess(SCAN, stream, buffer, &nn_slice, ioffset, &islicecount, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
+    return_val = ParseSLCFProcess(SCAN, stream, buffer, &nn_slice, ioffset, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
     if(return_val==RETURN_BREAK){
       BREAK;
     }
@@ -5255,7 +5264,7 @@ int ReadSMV(bufferstreamdata *stream){
 
   int nn_smoke3d=0,nn_patch=0,nn_iso=0,nn_part=0,nn_slice=0,nslicefiles=0,nvents;
 
-  int ipart=0, islicecount=1, ipatch=0, iroom=0,izone_local=0,ifire=0,iiso=0;
+  int ipart=0, ipatch=0, iroom=0,izone_local=0,ifire=0,iiso=0;
   int ismoke3d=0,ismoke3dcount=1,igrid,ioffset;
   int itrnx, itrny, itrnz, ipdim, iobst, ivent, icvent;
   int ibartemp=2, jbartemp=2, kbartemp=2;
@@ -9494,7 +9503,7 @@ typedef struct {
       ){
       int return_val;
 
-      return_val = ParseSLCFProcess(NO_SCAN, stream, buffer, &nn_slice, ioffset, &islicecount, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
+      return_val = ParseSLCFProcess(NO_SCAN, stream, buffer, &nn_slice, ioffset, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
       if(return_val==RETURN_BREAK){
         BREAK;
       }
