@@ -67,6 +67,7 @@ int main(int argc, char **argv){
   int HCellType, CompFlag, HTilesPerRow, HTilesPerColumn, HTileXSize, HTileYSize;
   double HPixelSizeX, HPixelSizeY;
   int *tileinfo, ntiles;
+  int *vals;
 #endif
 
 
@@ -80,7 +81,7 @@ int main(int argc, char **argv){
 #ifdef pp_ADF
 //  ADF_Read_hdr(&HCellType, &CompFlag, &HPixelSizeX, &HPixelSizeY, &HTilesPerRow, &HTilesPerColumn, &HTileXSize, &HTileYSize);
   ADF_Read_w001001x(&tileinfo, &ntiles);
-  ADF_Read_w001001(tileinfo, ntiles);
+  ADF_Read_w001001(tileinfo, ntiles, &vals);
 
   stream = fopen("w001001x.adf", "rb");
   fseek(stream, 24, SEEK_SET);

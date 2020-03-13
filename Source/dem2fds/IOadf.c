@@ -7,6 +7,8 @@
 #include "MALLOCC.h"
 #include "IOadf.h"
 
+/* ------------------ ADF_Read_hdr ------------------------ */
+
 int ADF_Read_hdr(int *HCellType, int *CompFlag, double *HPixelSizeX, double *HPixelSizeY, int *HTilesPerRow, int *HTilesPerColumn,
   int *HTileXSize, int *HTileYSize){
   FILE *stream;
@@ -86,24 +88,46 @@ int ADF_Read_w001001x(int **tile_info, int *ntiles){
   return 0;
 }
 
-/* ------------------ ADF_Read_w001001x ------------------------ */
+/* ------------------ ADF_Read_w001001 ------------------------ */
 
-int ADF_Read_w001001(int *tileinfo, int ntiles){
+int ADF_Read_w001001(int *tileinfo, int ntiles, int **vals){
   FILE *stream;
   int i;
   char RMinSize;
   short RMin;
+  int *vals_local;
+  short tile_size;
+  int offset;
 
   stream = fopen("w001001.adf", "rb");
   if(stream==NULL)return 1;
 
+  NewMemory((void **)&vals_local, ntiles*sizeof(int));
+  *vals = vals_local;
+
+  fseek(stream, 100, SEEK_SET);
+  fread(&tile_size, 2, 1, stream);
+  tile_size = ShortSwitch(tile_size);
   fseek(stream, 103, SEEK_SET);
   fread(&RMinSize, 1, 1, stream);
   fread(&RMin, 2, 1, stream);
   RMin = ShortSwitch(RMin);
 
+  offset = 100;
   for(i = 0; i<ntiles; i++){
+    short val;
 
+    fseek(stream, offset, SEEK_SET);
+    fread(&tile_size, 2, 1, stream);
+    tile_size = ShortSwitch(tile_size);
+    fseek(stream, offset+4, SEEK_SET);
+    fread(&val, 2, 1, stream);
+    val = ShortSwitch(val);
+    printf("%i ", (int)val);
+    if(i%42==41){
+      printf("\n");
+    }
+    offset += 2*tile_size+2;
   }
   return 0;
 }
