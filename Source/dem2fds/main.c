@@ -11,6 +11,9 @@
 #include "MALLOCC.h"
 #include "gd.h"
 #include "dem_util.h"
+#ifdef pp_TEST
+#include "smv_endian.h"
+#endif
 
 /* ------------------ Usage ------------------------ */
 
@@ -54,11 +57,40 @@ int main(int argc, char **argv){
   char casename_fds[LEN_BUFFER], image_file[LEN_BUFFER];
   elevdata fds_elevs;
   int fatal_error = 0;
+#ifdef pp_TEST
+  FILE *stream = NULL;
+  int file_size;
+  short tile_size;
+  unsigned char file_type, rminsize;
+  unsigned char data[100];
+  int ntiles;
+#endif
+
 
   if(argc == 1){
     Usage("dem2fds",HELP_ALL);
     return 0;
   }
+
+#ifdef pp_TEST
+  stream = fopen("w001001x.adf", "rb");
+  fseek(stream, 24, SEEK_SET);
+  fread(&file_size, 4, 1, stream);
+  file_size = IntSwitch(file_size);
+  ntiles = (2*file_size-100)/8-1;
+  for(i = 0; i<ntiles; i++){
+    int offset, size;
+
+    fseek(stream, 100+8*i, SEEK_SET);
+    fread(&offset, 4, 1, stream);
+    offset = IntSwitch(offset);
+    fread(&size, 4, 1, stream);
+    size = IntSwitch(size);
+    printf(" (%i,%i) ", offset,size);
+    if(i%40==39)printf("\n");
+  }
+#endif
+
 
   strcpy(casename_fds, "");
   strcpy(file_default, "terrain");
