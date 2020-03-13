@@ -47,6 +47,22 @@ int IntSwitch(int val){
 
 }
 
+/* ------------------ ShortSwitch ------------------------ */
+
+short ShortSwitch(short val){
+  short *val2ptr;
+  unsigned char *buffer;
+  unsigned char buffer2[2];
+
+  buffer = (unsigned char *)&val;
+
+  buffer2[0] = *(buffer+1);
+  buffer2[1] = *(buffer+0);
+
+  val2ptr = (short *)buffer2;
+  return *val2ptr;
+}
+
 /* ------------------ EndianSwitch ------------------------ */
 
 void EndianSwitch(void *val, int nval){

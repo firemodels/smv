@@ -6,6 +6,7 @@
 
 int GetEndian(void);
 float FloatSwitch(float val);
+short ShortSwitch(short val);
 int IntSwitch(int val);
 void EndianSwitch(void *val, int nval);
 #endif
