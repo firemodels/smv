@@ -11,6 +11,9 @@
 #include "MALLOCC.h"
 #include "gd.h"
 #include "dem_util.h"
+#ifdef pp_ADF
+#include "IOadf.h"
+#endif
 
 /* ------------------ Usage ------------------------ */
 
@@ -54,11 +57,52 @@ int main(int argc, char **argv){
   char casename_fds[LEN_BUFFER], image_file[LEN_BUFFER];
   elevdata fds_elevs;
   int fatal_error = 0;
+#ifdef pp_ADF
+  FILE *stream = NULL;
+  int file_size;
+  short tile_size;
+  unsigned char file_type, rminsize;
+  unsigned char data[100];
+  int total_size = 0;
+  int HCellType, CompFlag, HTilesPerRow, HTilesPerColumn, HTileXSize, HTileYSize;
+  double HPixelSizeX, HPixelSizeY;
+  int *tileinfo, ntiles;
+  int *vals;
+#endif
+
 
   if(argc == 1){
     Usage("dem2fds",HELP_ALL);
     return 0;
   }
+  initMALLOC();
+  SetStdOut(stdout);
+
+#ifdef pp_ADF
+//  ADF_Read_hdr(&HCellType, &CompFlag, &HPixelSizeX, &HPixelSizeY, &HTilesPerRow, &HTilesPerColumn, &HTileXSize, &HTileYSize);
+  ADF_Read_w001001x(&tileinfo, &ntiles);
+  ADF_Read_w001001(tileinfo, ntiles, &vals);
+
+  stream = fopen("w001001x.adf", "rb");
+  fseek(stream, 24, SEEK_SET);
+  fread(&file_size, 4, 1, stream);
+  file_size = IntSwitch(file_size);
+  ntiles = (2*file_size-100)/8-1;
+  for(i = 0; i<ntiles; i++){
+    int offset, size;
+
+    fseek(stream, 100+8*i, SEEK_SET);
+    fread(&offset, 4, 1, stream);
+    offset = IntSwitch(offset);
+    fread(&size, 4, 1, stream);
+    size = IntSwitch(size);
+    printf(" (%i,%i) ", offset,size);
+    if(i%40==39)printf("\n");
+    total_size += size;
+  }
+  printf("total_size=%i\n", total_size);
+#endif
+
 
   strcpy(casename_fds, "");
   strcpy(file_default, "terrain");
@@ -68,9 +112,6 @@ int main(int argc, char **argv){
   strcpy(surf_id2,     "surf2");
   strcpy(matl_id,      "matl1");
   strcpy(image_type,   ".png");
-
-  initMALLOC();
-  SetStdOut(stdout);
 
   ParseCommonOptions(argc, argv);
   if(show_help!=0){

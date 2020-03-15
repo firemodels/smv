@@ -1,3 +1,5 @@
+#ifndef DEM_UTIL_H_DEFINED
+#define DEM_UTIL_H_DEFINED
 #define FDS_OBST 0
 #define FDS_GEOM 1
 #define LEN_BUFFER 1024
@@ -53,3 +55,4 @@ SVEXTERN float   SVDECL(*xplt, NULL), SVDECL(*yplt, NULL);
 SVEXTERN int SVDECL(terrain_image_width, 2048);
 SVEXTERN int SVDECL(terrain_image_height, 0);
 SVEXTERN char image_type[10];
+#endif
