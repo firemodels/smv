@@ -5208,44 +5208,6 @@ void FreeSliceData(void){
   }
 }
 
-/* ------------------ CopySMVBuffer ------------------------ */
-
-bufferstreamdata *CopySMVBuffer(bufferstreamdata *stream_in){
-  bufferstreamdata *stream_out;
-  filedata *fileinfo;
-
-  if(stream_in==NULL)return NULL;
-
-  NewMemory((void **)&stream_out, sizeof(bufferstreamdata));
-  memcpy(stream_out, stream_in, sizeof(bufferstreamdata));
-
-  NewMemory((void **)&fileinfo, sizeof(filedata));
-  stream_out->fileinfo = fileinfo;
-
-  memcpy(fileinfo, stream_in->fileinfo,sizeof(filedata));
-  return stream_out;
-}
-
-/* ------------------ GetSMVBuffer ------------------------ */
-
-bufferstreamdata *GetSMVBuffer(char *file, char *file2){
-  bufferstreamdata *stream;
-
-  NewMemory((void **)&stream,sizeof(bufferstreamdata));
-
-  stream->fileinfo = File2Buffer(file);
-  if(stream->fileinfo!=NULL&&file2!=NULL){
-    bufferstreamdata streaminfo2, *stream2 = &streaminfo2;
-
-    stream2->fileinfo = File2Buffer(file2);
-    if(stream2->fileinfo!=NULL){
-      AppendFileBuffer(stream->fileinfo, stream2->fileinfo);
-    }
-    FreeFileBuffer(stream2->fileinfo);
-  }
-  return stream;
-}
-
 /* ------------------ ReadSMV ------------------------ */
 
 int ReadSMV(bufferstreamdata *stream){
