@@ -62,6 +62,7 @@ typedef struct _tridata {
   struct _texturedata *textureinfo;
   struct _surfdata *geomsurf;
   struct _geomlistdata *geomlisti;
+  struct _geomobjdata *geomobj;
   int vert_index[3], exterior, geomtype, insolid, outside_domain;
   vertdata *verts[3];
   edgedata *edges[3];
@@ -94,6 +95,7 @@ typedef struct _geomlistdata {
 typedef struct _geomobjdata {
   struct _surfdata *surf;
   struct _texturedata *texture;
+  float *color;
   char *texture_name;
   float texture_width, texture_height, texture_center[3];
   int texture_mapping;
@@ -102,11 +104,12 @@ typedef struct _geomobjdata {
 /* --------------------------  geomdata ------------------------------------ */
 
 typedef struct _geomdata {
-  char *file, *topo_file;
+  char *file, *file2, *topo_file;
   int cache_defined;
   int memory_id, loaded, display;
   int is_terrain;
   float *float_vals;
+  int *file2_tris, nfile2_tris;
   int *int_vals, nfloat_vals, nint_vals;
   float *times;
   int ntimes,itime,*timeslist;

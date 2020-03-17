@@ -6503,6 +6503,7 @@ int ReadSMV(bufferstreamdata *stream){
       geomdata *geomi;
       char *buff2;
       int ngeomobjinfo=0;
+      int is_geom=0;
 
       geomi = geominfo + ngeominfo;
       geomi->ngeomobjinfo=0;
@@ -6522,6 +6523,7 @@ int ReadSMV(bufferstreamdata *stream){
         InitGeom(geomi, GEOM_SLICE, NOT_FDSBLOCK);
       }
       else{
+        is_geom = 1;
         InitGeom(geomi, GEOM_GEOM, FDSBLOCK);
       }
 
@@ -6531,12 +6533,29 @@ int ReadSMV(bufferstreamdata *stream){
       NewMemory((void **)&geomi->file,strlen(buff2)+1);
       strcpy(geomi->file,buff2);
 
+      geomi->file2 = NULL;
+      if(fast_startup==0&&is_geom==1){
+        char *ext;
+
+        ext = strrchr(buff2,'.');
+        if(ext!=NULL){
+          ext[0] = 0;
+          strcat(buff2,".ge2");
+          if(FILE_EXISTS_CASEDIR(buff2)==YES){
+            NewMemory((void **)&geomi->file2,strlen(buff2)+1);
+            strcpy(geomi->file2,buff2);
+            ReadGeomFile2(geomi);
+          }
+        }
+      }
+
       if(ngeomobjinfo>0){
         NewMemory((void **)&geomi->geomobjinfo,ngeomobjinfo*sizeof(geomobjdata));
         for(i=0;i<ngeomobjinfo;i++){
           geomobjdata *geomobji;
           float *center;
           char *texture_mapping=NULL, *texture_vals=NULL;
+          char *colorlabel;
 
           geomobji = geomi->geomobjinfo + i;
 
@@ -6544,6 +6563,25 @@ int ReadSMV(bufferstreamdata *stream){
           geomobji->texture_mapping=TEXTURE_RECTANGULAR;
 
           FGETS(buffer,255,stream);
+
+          colorlabel = strchr(buffer, '!');
+          geomobji->color = NULL;
+          if(colorlabel!=NULL){
+            int colors[3] = {-1, -1, -1};
+
+            colorlabel++;
+            if(colorlabel!=buffer)colorlabel[-1] = 0;
+            sscanf(colorlabel, "%i %i %i", colors, colors+1, colors+2);
+            if(colors[0]>=0&&colors[1]>=0&&colors[2]>=0){
+              float fcolors[4];
+
+              fcolors[0] = colors[0]/255.0;
+              fcolors[1] = colors[1]/255.0;
+              fcolors[2] = colors[2]/255.0;
+              fcolors[3] = 1.0;
+              geomobji->color = GetColorPtr(fcolors);
+            }
+          }
 
           texture_mapping = TrimFront(buffer);
           if(texture_mapping!=NULL)texture_vals = strchr(texture_mapping,' ');
@@ -6562,6 +6600,7 @@ int ReadSMV(bufferstreamdata *stream){
               TrimBack(surflabel);
               surflabel=TrimFront(surflabel+1);
               geomi->surfgeom=GetSurface(surflabel);
+              if(geomobji->color==NULL)geomobji->color = geomi->surfgeom->color;
             }
             sscanf(texture_vals, "%f %f %f %i", center, center+1, center+2, &is_terrain);
             geomi->is_terrain = is_terrain;

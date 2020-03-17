@@ -546,7 +546,12 @@ void DrawGeom(int flag, int timestate){
         transparent_level_local=1.0;
       }
       else{
-        color = trianglei->geomsurf->color;
+        if(trianglei->geomobj!=NULL&&trianglei->geomobj->color!=NULL){
+          color = trianglei->geomobj->color;
+        }
+        else{
+          color = trianglei->geomsurf->color;
+        }
         transparent_level_local=trianglei->geomsurf->transparent_level;
       }
       if(geom_force_transparent == 1)transparent_level_local = geom_transparency;
@@ -2218,6 +2223,12 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
 
         surfi = surfinfo+CLAMP(surf_ind[ii]+offset, nsurfinfo+1, nsurfinfo+MAX_ISO_COLORS);
         triangles[ii].geomsurf=surfi;
+        if(geomi->file2_tris!=NULL){
+          triangles[ii].geomobj = geomi->geomobjinfo + geomi->file2_tris[ii] - 1;
+        }
+        else{
+          triangles[ii].geomobj = NULL;
+        }
         surfi->used_by_geom = 1;
         triangles[ii].textureinfo=NULL;
       }
@@ -2455,6 +2466,12 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           surfi=surfinfo + CLAMP(surf_ind[ii],0,nsurfinfo-1);
           if(type==GEOM_ISO)surfi+=nsurfinfo;
           triangles[ii].insolid = surf_ind[ii];
+          if(geomi->file2_tris!=NULL){
+            triangles[ii].geomobj = geomi->geomobjinfo+geomi->file2_tris[ii]-1;
+          }
+          else{
+            triangles[ii].geomobj = NULL;
+          }
           break;
         case GEOM_SLICE:
         case GEOM_BOUNDARY:
@@ -2989,6 +3006,28 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
         FREEMEMORY(vertlist_index);
     }
   }
+}
+
+/* ------------------ ReadGeom ------------------------ */
+
+void ReadGeomFile2(geomdata *geomi){
+  FILE *stream;
+  int ntris, *tris;
+  int i;
+
+  if(geomi->file2==NULL)return;
+  stream = fopen(geomi->file2, "rb");
+  if(stream==NULL)return;
+  FSEEK(stream, 4, SEEK_CUR); fread(&ntris, 4, 1, stream); FSEEK(stream, 4, SEEK_CUR);
+  if(ntris<=0){
+    fclose(stream);
+    return;
+  }
+  NewMemory((void **)&tris, ntris*sizeof(int));
+  FSEEK(stream, 4, SEEK_CUR); fread(tris, 4, ntris, stream); FSEEK(stream, 4, SEEK_CUR);
+  geomi->file2_tris = tris;
+  geomi->nfile2_tris = ntris;
+  fclose(stream);
 }
 
 /* ------------------ ReadGeom ------------------------ */
@@ -3893,6 +3932,8 @@ void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
   geomi->geomtype = geomtype;
   geomi->fdsblock = fdsblock;
   geomi->is_terrain = 0;
+  geomi->file2_tris = NULL;
+  geomi->nfile2_tris = 0;
 }
 /* ------------------ RotateU2V ------------------------ */
 
