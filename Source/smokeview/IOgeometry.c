@@ -3013,7 +3013,6 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
 void ReadGeomFile2(geomdata *geomi){
   FILE *stream;
   int ntris, *tris;
-  int i;
 
   if(geomi->file2==NULL)return;
   stream = fopen(geomi->file2, "rb");
