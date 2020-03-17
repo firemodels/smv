@@ -56,6 +56,7 @@ void Usage(char *prog, int option){
 int main(int argc, char **argv){
 
   char *smv1=NULL, *smv2=NULL, *arg;
+  bufferstreamdata *smv_buffer1, *smv_buffer2;
   char smv1_out[1024];
   char svdlogfile[1024];
   char *smoke1, *smoke2, smv_out[1024];
@@ -262,20 +263,31 @@ int main(int argc, char **argv){
   if(stream_in2==NULL){
     fprintf(stderr,"*** Error The .smv file, %s, could not be opened for input.\n",smoke2);
   }
-  if(stream_out==NULL||stream_in1==NULL||stream_in2==NULL)return 1;
+  if(stream_out==NULL||stream_in1==NULL||stream_in2==NULL){
+    if(stream_out!=NULL)fclose(stream_out);
+    if(stream_in1!=NULL)fclose(stream_in1);
+    if(stream_in2!=NULL)fclose(stream_in2);
+    return 1;
+  }
+  fclose(stream_in1);
+  fclose(stream_in2);
 
   caseinfo[0].dir=sourcedir1;
   caseinfo[1].dir=sourcedir2;
 
   PRINTF("reading %s\n",smoke1);
   FFLUSH();
-  ReadSMV(stream_in1, stream_out, caseinfo);
-  fclose(stream_in1);
+
+  smv_buffer1 = GetSMVBuffer(smoke1, NULL);
+
+  ReadSMV(smv_buffer1, stream_out, caseinfo);
+  FCLOSE(smv_buffer1);
 
   PRINTF("reading %s\n",smoke2);
   FFLUSH();
-  ReadSMV(stream_in2, NULL, caseinfo+1);
-  fclose(stream_in2);
+  smv_buffer2 = GetSMVBuffer(smoke2, NULL);
+  ReadSMV(smv_buffer2, NULL, caseinfo+1);
+  FCLOSE(smv_buffer2);
 
   if(no_plot3d==0){
     SetupPlot3D(stream_out);
