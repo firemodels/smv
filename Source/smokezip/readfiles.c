@@ -290,9 +290,6 @@ int ReadSMV(char *smvfile){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(Match(buffer,"ENDF") == 1){
-      FILE *endianstream;
-      int one;
-
       GLOBendf=1;
       if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
       TrimBack(buffer);
