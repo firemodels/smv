@@ -10234,10 +10234,11 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "GEOMBOUNDARYPROPS")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %f %f", &show_boundary_shaded, &show_boundary_outline, &show_boundary_points, &geomboundary_linewidth, &geomboundary_pointsize);
+      sscanf(buffer, " %i %i %i %f %f %i", &show_boundary_shaded, &show_boundary_outline, &show_boundary_points, &geomboundary_linewidth, &geomboundary_pointsize, &boundary_edgetype);
       ONEORZERO(show_boundary_shaded);
       ONEORZERO(show_boundary_outline);
       ONEORZERO(show_boundary_points);
+      ONEORZERO(boundary_edgetype);
       continue;
     }
     if(Match(buffer, "GEOMSLICEPROPS")==1){
@@ -14127,7 +14128,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "FREEZEVOLSMOKE\n");
   fprintf(fileout, " %i %i\n", freeze_volsmoke, autofreeze_volsmoke);
   fprintf(fileout, "GEOMBOUNDARYPROPS\n");
-  fprintf(fileout, " %i %i %i %f %f\n",show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize);
+  fprintf(fileout, " %i %i %i %f %f %i\n",show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize, boundary_edgetype);
   fprintf(fileout, "GEOMCELLPROPS\n");
   fprintf(fileout, " %i\n",
     slice_celltype);

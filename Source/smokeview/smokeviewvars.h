@@ -641,6 +641,8 @@ SVEXTERN int SVDECL(show_geom_verts, 0);
 
 SVEXTERN int SVDECL(show_iso_normal, 0), SVDECL(smooth_iso_normal, 1);
 
+SVEXTERN int SVDECL(boundary_edgetype, IMMERSED_HIDDEN);
+
 SVEXTERN int SVDECL(glui_slice_edgetype, IMMERSED_POLYGON);
 SVEXTERN int SVDECL(slice_celltype, 0);
 SVEXTERN int slice_edgetypes[3];

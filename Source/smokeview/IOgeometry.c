@@ -3551,7 +3551,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
             if(insolid == IN_SOLID   && show_slice_outlines[IN_SOLID_GLUI] == 0)continue;
             if(insolid == IN_GAS     && show_slice_outlines[IN_GAS_GLUI] == 0)continue;
 
-            if(insolid_glui!=-1&&slice_edgetypes[insolid_glui] == 0){
+            if(insolid_glui!=-1&&slice_edgetypes[insolid_glui] == IMMERSED_POLYGON){
               int insolid4, insolid8, insolid16;
 
               insolid4 = trianglei->insolid&4;
@@ -3573,6 +3573,22 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
             }
           }
           if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_outline == 1){
+            int insolid, insolid_glui = -1;
+
+            insolid = trianglei->insolid & 3;
+            if(insolid>=0&&insolid<3)insolid_glui = insolid;
+            if(insolid_glui!=-1&&boundary_edgetype==IMMERSED_POLYGON){
+              int insolid4, insolid8, insolid16;
+
+              insolid4 = trianglei->insolid&4;
+              if(insolid4  ==  4)show_edge1 = 0;
+
+              insolid8 = trianglei->insolid&8;
+              if(insolid8  ==  8)show_edge2 = 0;
+
+              insolid16 = trianglei->insolid&16;
+              if(insolid16 == 16)show_edge3 = 0;
+            }
             if(show_boundary_shaded==1){
               draw_foreground=1;
             }
