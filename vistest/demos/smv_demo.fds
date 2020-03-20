@@ -16,7 +16,6 @@
       FYI= 'Previously thin oak'/
 
 &PART ID='tracers',MASSLESS=.TRUE.,
-   QUANTITIES(1:3)='U-VELOCITY','V-VELOCITY','W-VELOCITY'
    SAMPLING_FACTOR=10 /
 &SURF ID='FIRE_RAMP', HRRPUA=1350.0, PART_ID='tracers'/
 
