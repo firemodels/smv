@@ -850,7 +850,6 @@ void GetGlobalSliceBounds(char *label){
   if(count>0){
     for(j = 0;j<nsliceinfo;j++){
       slicedata *slicej;
-      FILE *stream;
 
       slicej = sliceinfo+j;
       if(strcmp(label, slicej->label.shortlabel)!=0)continue;

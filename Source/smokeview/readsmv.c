@@ -5208,44 +5208,6 @@ void FreeSliceData(void){
   }
 }
 
-/* ------------------ CopySMVBuffer ------------------------ */
-
-bufferstreamdata *CopySMVBuffer(bufferstreamdata *stream_in){
-  bufferstreamdata *stream_out;
-  filedata *fileinfo;
-
-  if(stream_in==NULL)return NULL;
-
-  NewMemory((void **)&stream_out, sizeof(bufferstreamdata));
-  memcpy(stream_out, stream_in, sizeof(bufferstreamdata));
-
-  NewMemory((void **)&fileinfo, sizeof(filedata));
-  stream_out->fileinfo = fileinfo;
-
-  memcpy(fileinfo, stream_in->fileinfo,sizeof(filedata));
-  return stream_out;
-}
-
-/* ------------------ GetSMVBuffer ------------------------ */
-
-bufferstreamdata *GetSMVBuffer(char *file, char *file2){
-  bufferstreamdata *stream;
-
-  NewMemory((void **)&stream,sizeof(bufferstreamdata));
-
-  stream->fileinfo = File2Buffer(file);
-  if(stream->fileinfo!=NULL&&file2!=NULL){
-    bufferstreamdata streaminfo2, *stream2 = &streaminfo2;
-
-    stream2->fileinfo = File2Buffer(file2);
-    if(stream2->fileinfo!=NULL){
-      AppendFileBuffer(stream->fileinfo, stream2->fileinfo);
-    }
-    FreeFileBuffer(stream2->fileinfo);
-  }
-  return stream;
-}
-
 /* ------------------ ReadSMV ------------------------ */
 
 int ReadSMV(bufferstreamdata *stream){
@@ -10272,10 +10234,11 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "GEOMBOUNDARYPROPS")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %f %f", &show_boundary_shaded, &show_boundary_outline, &show_boundary_points, &geomboundary_linewidth, &geomboundary_pointsize);
+      sscanf(buffer, " %i %i %i %f %f %i", &show_boundary_shaded, &show_boundary_outline, &show_boundary_points, &geomboundary_linewidth, &geomboundary_pointsize, &boundary_edgetype);
       ONEORZERO(show_boundary_shaded);
       ONEORZERO(show_boundary_outline);
       ONEORZERO(show_boundary_points);
+      ONEORZERO(boundary_edgetype);
       continue;
     }
     if(Match(buffer, "GEOMSLICEPROPS")==1){
@@ -14165,7 +14128,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "FREEZEVOLSMOKE\n");
   fprintf(fileout, " %i %i\n", freeze_volsmoke, autofreeze_volsmoke);
   fprintf(fileout, "GEOMBOUNDARYPROPS\n");
-  fprintf(fileout, " %i %i %i %f %f\n",show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize);
+  fprintf(fileout, " %i %i %i %f %f %i\n",show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize, boundary_edgetype);
   fprintf(fileout, "GEOMCELLPROPS\n");
   fprintf(fileout, " %i\n",
     slice_celltype);
