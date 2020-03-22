@@ -11,7 +11,7 @@ $RUNCFAST -d Visualization cfast_test.in
 $QFDS -d Visualization colorbar.fds
 $QFDS -d Visualization colorconv.fds
 $QFDS -d Visualization fed_test.fds
-$QFDS -d Visualization -p 8 mplume5c8.fds
+$QFDS -d Visualization -p 8 -n 8mplume5c8.fds
 $QFDS -d Visualization objects_dynamic.fds
 $QFDS -d Visualization objects_elem.fds
 $QFDS -d Visualization objects_static.fds
@@ -25,7 +25,7 @@ $QFDS -d Visualization script_slice_test.fds
 $QFDS -d Visualization sillytexture.fds
 $QFDS -d Visualization slicemask.fds
 $QFDS -d Visualization smokegeom.fds
-$QFDS -d Visualization -p 8 smokegeom2.fds
+$QFDS -d Visualization -p 8 -n 8 smokegeom2.fds
 $QFDS -d Visualization smoke_sensor.fds
 $QFDS -d Visualization smoke_test.fds
 $QFDS -d Visualization smoke_test2.fds
