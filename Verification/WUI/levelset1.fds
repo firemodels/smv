@@ -12,7 +12,6 @@
 &VENT XB=48,52,-2,2,0,0,SURF_ID='SPOT IGN' /
 
 &SURF ID = 'GRASS'
-            VEG_LSET_SPREAD = .TRUE.
             VEG_LSET_COUPLED = .FALSE.
             VEG_LSET_ROS_HEAD  = 1.5
             VEG_LSET_ROS_FLANK = 0.48
@@ -23,7 +22,6 @@
 &VENT XB =50,150,-100,100,0,0,SURF_ID='GRASS'/
 
 &SURF ID = 'NO BURN GRASS'
-            VEG_LSET_SPREAD = .TRUE.
             VEG_LSET_ROS_HEAD  = 0
             VEG_LSET_ROS_FLANK = 0
             VEG_LSET_ROS_BACK  = 0
