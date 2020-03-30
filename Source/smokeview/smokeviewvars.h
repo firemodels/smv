@@ -121,7 +121,7 @@ SVEXTERN float SVDECL(timer_reshape, 0.0);
 
 SVEXTERN int SVDECL(cancel_update_triangles, 0);
 SVEXTERN int SVDECL(updating_triangles, 0);
-SVEXTERN int SVDECL(iso_multithread, 1), SVDECL(iso_multithread_save,1);
+SVEXTERN int SVDECL(iso_multithread, 0), SVDECL(iso_multithread_save,0);
 SVEXTERN int SVDECL(part_multithread, 0);
 SVEXTERN int SVDECL(lighting_on,0);
 SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 0);
