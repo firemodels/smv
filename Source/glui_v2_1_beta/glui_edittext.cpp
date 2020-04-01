@@ -148,7 +148,7 @@ int    GLUI_EditText::key_handler( unsigned char key,int modifiers )
     
     /** Check if we only accept numbers **/
     if (data_type == GLUI_EDITTEXT_FLOAT ) {
-      if ( (key < '0' OR key > '9') AND key != '.' AND key != '-' )
+      if ( (key < '0' OR key > '9') AND key != '.' AND key != '-' AND key != 'e' AND key != 'E' )
 	return true;
 
       if ( key == '-' ) { /* User typed a '-' */
