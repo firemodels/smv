@@ -21,8 +21,8 @@
 
 #define SCALE2FDSL(x) ((x)*xyzmaxdiff_local)
 
-#define YES 1
-#define NO 0
+#define NO      0
+#define YES     1
 
 #define PLANEDIST(norm,xyz0,xyz) ((xyz[0]-xyz0[0])*norm[0]+(xyz[1]-xyz0[1])*norm[1]+(xyz[2]-xyz0[2])*norm[2])
 

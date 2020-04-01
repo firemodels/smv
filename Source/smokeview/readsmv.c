@@ -4906,14 +4906,14 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   strcpy(rle_file, bufferptr);
   strcat(rle_file, ".rle");
 
-  has_reg = 0;
+  has_reg = NO;
   compression_type = UNCOMPRESSED;
   if(lookfor_compressed_slice==1){
     if(FILE_EXISTS_CASEDIR(rle_file)==YES)compression_type = COMPRESSED_RLE;
     if(FILE_EXISTS_CASEDIR(zlib_file)==YES)compression_type = COMPRESSED_ZLIB;
   }
-  if(compression_type==UNCOMPRESSED&&(fast_startup==1||FILE_EXISTS_CASEDIR(bufferptr)==YES))has_reg = 1;
-  if(has_reg==0&&compression_type==UNCOMPRESSED){
+  if(compression_type==UNCOMPRESSED&&(fast_startup==1||FILE_EXISTS_CASEDIR(bufferptr)==YES))has_reg = YES;
+  if(has_reg==NO&&compression_type==UNCOMPRESSED){
     nsliceinfo--;
 
     nslicefiles--;

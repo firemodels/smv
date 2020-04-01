@@ -381,8 +381,8 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define FED_ISO 1
 
 #define UNKNOWN -1
-#define RLE 0
-#define ZLIB 1
+#define RLE      0
+#define ZLIB     1
 
 #define SLICE_NODE_CENTER 1
 #define SLICE_CELL_CENTER 2
