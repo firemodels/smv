@@ -24,7 +24,6 @@
 #define pp_FILELIST           // use list of file names
 //#define pp_UPDATE_FILELOAD  // updates fileload variables when a file has been loaded or unloaded
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
-//#define pp_MAKE_SMOKEIBLANK // generate smoke iblank arrays
 
 //*** debug: all platforms
 //#define pp_ISOTIME          // output iso load times

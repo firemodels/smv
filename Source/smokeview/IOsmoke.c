@@ -5871,7 +5871,6 @@ void UpdateLoadedSmoke(int *h_loaded, int *t_loaded){
 #define SMOKE_OPTIONS 19
 void SmokeWrapup(void){
   UpdateFireCutoffs();
-  update_makeiblank_smoke3d = 1;
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   SetSmokeColorFlags();
   UpdateLoadedSmoke(&hrrpuv_loaded,&temp_loaded);
@@ -5988,10 +5987,8 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
       if(free_iblank_smoke3d_local==1){
         FREEMEMORY(mesh_smoke3d->iblank_smoke3d);
         mesh_smoke3d->iblank_smoke3d_defined = 0;
-        update_makeiblank_smoke3d = 1;
       }
     }
-    update_makeiblank_smoke3d = 1;
     UpdateSmoke3dFileParms();
     UpdateFireCutoffs();
     return READSMOKE3D_RETURN;
@@ -6904,7 +6901,6 @@ void MakeIBlankSmoke3D(void){
   int i, ii;
   int ic;
 
-  update_makeiblank_smoke3d=0;
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
     meshdata *mesh_smoke3d;

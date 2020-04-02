@@ -4277,7 +4277,6 @@ void LoadSmoke3DMenu(int value){
 #define MENU_DUMMY_SMOKE           -9
 #define MENU_SMOKE_SETTINGS        -4
 #define MENU_SMOKE_FILE_SIZES     -10
-#define MENU_SMOKE3D_IBLANK        -2
 
   if(value == MENU_DUMMY_SMOKE)return;
   START_TIMER(load_time);
@@ -4304,9 +4303,6 @@ void LoadSmoke3DMenu(int value){
     for(i=0;i<nsmoke3dinfo;i++){
       ReadSmoke3D(ALL_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
     }
-  }
-  else if(value==MENU_SMOKE3D_IBLANK){
-    update_makeiblank_smoke3d = 1;
   }
   else if(value == MENU_SMOKE_SETTINGS){
     ShowBoundsDialog(DLG_3DSMOKE);
@@ -10396,10 +10392,6 @@ updatemenu=0;
           }
         }
 
-        if(use_iblank==0){
-          glutAddMenuEntry("-", MENU_DUMMY3);
-          glutAddMenuEntry(_("Initialize smoke blockage info"), MENU_SMOKE3D_IBLANK);
-        }
         glutAddMenuEntry("-", MENU_DUMMY3);
         if(compute_smoke3d_file_sizes==1){
           glutAddMenuEntry(_("*compute size of 3D smoke files to be loaded"), MENU_SMOKE_FILE_SIZES);

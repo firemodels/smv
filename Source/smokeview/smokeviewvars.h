@@ -1198,7 +1198,6 @@ SVEXTERN float min_gridcell_size;
 
 SVEXTERN volfacelistdata SVDECL(*volfacelistinfo,NULL),SVDECL(**volfacelistinfoptrs,NULL);
 SVEXTERN int SVDECL(nvolfacelistinfo,0);
-SVEXTERN int SVDECL(update_makeiblank_smoke3d,0);
 SVEXTERN int setPDIM;
 SVEXTERN int menustatus;
 SVEXTERN int SVDECL(visTimeZone,1), SVDECL(visTimeParticles,1), SVDECL(visTimeSlice,1), SVDECL(visTimeBoundary,1);
