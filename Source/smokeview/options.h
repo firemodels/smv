@@ -36,7 +36,6 @@
 //#define pp_SMOKETEST          // max blending for fire, regular blending for smoke
 //#define pp_SPECTRAL           // use black body colors - not fully implemented
 //#define pp_SLICETHREAD        // parallel slice file loading
-//#define pp_NEW_SLICE_MENUS    // new slice menus
 //#define pp_BLOCK_COLOR        //  new algorithm for assigning obst colors
 //#define pp_NEWBOUND_DIALOG    // redo bound dialog
 //#define pp_PLOT3D_REDUCEMENUS // eliminate plot3d sub-menus

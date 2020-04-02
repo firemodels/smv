@@ -48,7 +48,6 @@ float     slice_load_time;
 #define MENU_KEEP_COARSE -4
 
 #define MENU_SLICECOLORDEFER -5
-#define MENU_NEWSLICEMENUS   -7
 
 #define MENU_SLICE_FILE_SIZES -9
 
@@ -4976,10 +4975,6 @@ void LoadMultiSliceMenu(int value){
         UpdateSliceDupDialog();
       }
       break;
-      case MENU_NEWSLICEMENUS:
-        use_new_slice_menus = 1 - use_new_slice_menus;
-        updatemenu = 1;
-        break;
       case MENU_SLICECOLORDEFER:
         use_set_slicecolor = 1 - use_set_slicecolor;
         updatemenu = 1;
@@ -10166,14 +10161,6 @@ updatemenu=0;
     else{
       glutAddMenuEntry(_("  defer slice coloring"), MENU_SLICECOLORDEFER);
     }
-#ifdef pp_NEW_SLICE_MENUS
-    if(use_new_slice_menus==1){
-      glutAddMenuEntry(_("  *use new slice menus"), MENU_NEWSLICEMENUS);
-    }
-    else{
-      glutAddMenuEntry(_("  use new slice menus"), MENU_NEWSLICEMENUS);
-    }
-#endif
     if(nslicedups > 0){
       GLUTADDSUBMENU(_("Duplicate slices"), duplicateslicemenu);
     }
