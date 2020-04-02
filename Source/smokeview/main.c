@@ -87,9 +87,6 @@ void Usage(char *prog,int option){
 #ifdef pp_DRAWISO
     strcat(label, ", pp_DRAWISO");
 #endif
-#ifdef pp_FILELIST
-    strcat(label, ", pp_FILELIST");
-#endif
 #ifdef pp_GCC
     strcat(label, ", pp_GCC");
 #endif

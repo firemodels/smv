@@ -672,22 +672,16 @@ int FileExistsOrig(char *filename){
 
   /* ------------------ FileExists ------------------------ */
 
-#ifdef pp_FILELIST
 int FileExists(char *filename, filelistdata *filelist, int nfilelist, filelistdata *filelist2, int nfilelist2){
-#else
-int FileExists(char *filename){
-#endif
 
 // returns YES if the file filename exists, NO otherwise
 
   if(filename == NULL)return NO;
-#ifdef pp_FILELIST
   if(filelist != NULL&&nfilelist>0){
     if(FileInList(filename, filelist, nfilelist, filelist2, nfilelist2) != NULL){
       return YES;
     }
   }
-#endif
   if(ACCESS(filename,F_OK)==-1){
     return NO;
   }
@@ -739,7 +733,6 @@ int CompareFileList(const void *arg1, const void *arg2){
 }
 
 /* ------------------ getfile ------------------------ */
-#ifdef pp_FILELIST
 filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles, filelistdata *filelist2, int nfiles2){
   filelistdata *entry=NULL, fileitem;
 
@@ -755,7 +748,6 @@ filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles, filelis
   }
   return entry;
 }
-#endif
 
 /* ------------------ MakeFileList ------------------------ */
 
