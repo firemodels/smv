@@ -96,9 +96,6 @@ void Usage(char *prog,int option){
 #ifdef pp_GPU
     strcat(label, ", pp_GPU");
 #endif
-#ifdef pp_GPU_CULL_STATE
-    strcat(label, ", pp_GPU_CULL_STATE");
-#endif
 #ifdef pp_GPUTHROTTLE
     strcat(label, ", pp_GPUTHROTTLE");
 #endif

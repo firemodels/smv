@@ -18,11 +18,6 @@
 #endif
 #include "IOscript.h"
 
-#undef pp_GPU_CULL_STATE
-#ifdef pp_GPU
-#define pp_GPU_CULL_STATE
-#endif
-
 /* ------------------ GetGridIndex ------------------------ */
 
 int GetGridIndex(float val, int dir, float *plotxyz, int nplotxyz){
@@ -1528,12 +1523,11 @@ void KeyboardUpCB(unsigned char key, int x, int y){
 #endif
 }
 
-#ifdef pp_GPU_CULL_STATE
-/* ------------------ PrintGPUCullState ------------------------ */
-
-void PrintGPUCullState(void){
-  char gpu_label[128];
 #ifdef pp_GPU
+/* ------------------ PrintGPUState ------------------------ */
+
+void PrintGPUState(void){
+  char gpu_label[128];
   if(gpuactive==1){
     if(usegpu==1){
       strcpy(gpu_label,"GPU in use.");
@@ -1546,7 +1540,6 @@ void PrintGPUCullState(void){
     strcpy(gpu_label,"GPU not available.");
   }
   PRINTF("%s ",gpu_label);
-#endif
   PRINTF("\n");
 }
 #endif
@@ -1801,7 +1794,7 @@ void Keyboard(unsigned char key, int flag){
       if(nsmoke3dinfo>0){
         UpdateSmoke3dFlags();
       }
-      PrintGPUCullState();
+      PrintGPUState();
       return;
 #endif
     case 'h':
@@ -2237,7 +2230,7 @@ void Keyboard(unsigned char key, int flag){
         usevolrender=1-usevolrender;
         UpdateSmoke3dFlags();
 #ifdef pp_GPU
-        PrintGPUCullState();
+        PrintGPUState();
 #endif
         return;
       }
