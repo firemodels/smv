@@ -37,6 +37,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
     PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time"));
     PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
+    PRINTF("%s\n", _(" -geominfo      - output information about geometry triangles"));
     PRINTF("%s\n", _(" -html          - output html version of smokeview scene"));
     PRINTF("%s\n", _(" -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian"));
     PRINTF("%s\n", _(" -ng_ini        - non-graphics version of -ini."));
@@ -534,6 +535,9 @@ void ParseCommandline(int argc, char **argv){
     }
     else if(strncmp(argv[i], "-fed", 4) == 0){
       compute_fed = 1;
+    }
+    else if(strncmp(argv[i], "-geominfo", 9)==0){
+      print_geominfo = 1;
     }
     else if(strncmp(argv[i], "-fast", 5) == 0){
       fast_startup = 1;

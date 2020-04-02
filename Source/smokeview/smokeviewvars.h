@@ -33,6 +33,8 @@ SVEXTERN int render_skips[NRENDER_SKIPS];
 SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
+SVEXTERN int SVDECL(print_geominfo, 1);
+
 SVEXTERN float SVDECL(sliceoffset_all, 0.0);
 SVEXTERN float SVDECL(terrain_normal_length, 1.0);
 SVEXTERN int SVDECL(terrain_normal_skip, 1);

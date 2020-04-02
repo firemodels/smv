@@ -177,14 +177,14 @@ void GetFaceInfo(void){
       for(j=0;j<geomlisti->nverts;j++){
         if(verts[j]->nused>0)nused++;
       }
-#ifdef pp_GEOMPRINT
-      PRINTF("Face/Vertex Summary\n");
-      PRINTF("      Faces: %i\n",geomlisti->ntriangles);
-      PRINTF(" slim faces: %i\n",nskinny);
-      PRINTF("   Vertices: %i\n",geomlisti->nverts);
-      PRINTF("     unused: %i\n",geomlisti->nverts-nused);
-      PRINTF(" duplicates: %i\n\n",ndups);
-#endif
+      if(print_geominfo==1){
+        PRINTF("Face/Vertex Summary\n");
+        PRINTF("      Faces: %i\n", geomlisti->ntriangles);
+        PRINTF(" slim faces: %i\n", nskinny);
+        PRINTF("   Vertices: %i\n", geomlisti->nverts);
+        PRINTF("     unused: %i\n", geomlisti->nverts-nused);
+        PRINTF(" duplicates: %i\n\n", ndups);
+      }
       FREEMEMORY(verts);
     }
   }

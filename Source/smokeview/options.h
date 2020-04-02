@@ -18,29 +18,28 @@
 //*** options: all platforms
 
 #define pp_GPU                // support the GPU
-#define pp_THREAD       // turn on multi-threading
+#define pp_THREAD             // turn on multi-threading
 #define pp_GPUSMOKE           // code to speed up 3d smoke using the gpu
 #define pp_DRAWISO            // turn on drawing routines
 #define pp_FILELIST           // use list of file names
-//#define pp_UPDATE_FILELOAD     // when set only updates fileload variables when a file has been loaded or unloaded
+//#define pp_UPDATE_FILELOAD  // updates fileload variables when a file has been loaded or unloaded
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
 //#define pp_MAKE_SMOKEIBLANK // generate smoke iblank arrays
 
 //*** debug: all platforms
-//#define pp_ISOTIME            // output iso load times
-//#define pp_GEOMPRINT        // output geometry info
-//#define pp_PART_TEST          // for debugging, set particle values to 100*parti->seq_id + small random number
+//#define pp_ISOTIME          // output iso load times
+//#define pp_PART_TEST        // for debugging, set particle values to 100*parti->seq_id + small random number
 
 //*** in development: all platforms
 #define pp_C_SLICE              // use C to read in slice file headers
-#define pp_SMOKE_FAST         // load 3d smoke in parallel
+#define pp_SMOKE_FAST           // load 3d smoke in parallel
 //#define pp_SMOKETEST          // max blending for fire, regular blending for smoke
 //#define pp_SPECTRAL           // use black body colors - not fully implemented
 //#define pp_SLICETHREAD        // parallel slice file loading
 //#define pp_NEW_SLICE_MENUS    // new slice menus
 //#define pp_BLOCK_COLOR        //  new algorithm for assigning obst colors
-//#define pp_NEWBOUND_DIALOG   // redo bound dialog
-//#define pp_PLOT3D_REDUCEMENUS   // eliminate plot3d sub-menus
+//#define pp_NEWBOUND_DIALOG    // redo bound dialog
+//#define pp_PLOT3D_REDUCEMENUS // eliminate plot3d sub-menus
 //#define pp_PLOT3D_STATIC      // use static memory for plot3d labels
 
 #ifdef pp_GPU
