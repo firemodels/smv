@@ -28,7 +28,6 @@
 
 //*** debug: all platforms
 //#define pp_ISOTIME            // output iso load times
-//#define pp_SMOKEDIAG        // output smoke3d diagnostics (number of meshes, total triangles, triangles drawn)
 //#define pp_GEOMPRINT        // output geometry info
 //#define pp_PART_TEST          // for debugging, set particle values to 100*parti->seq_id + small random number
 

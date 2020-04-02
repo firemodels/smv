@@ -1880,10 +1880,6 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       ComputeAllSmokecolors();
 #endif
     }
-#ifdef pp_SMOKEDIAG
-    smoketime_merge = 0.0;
-    smoketime_draw = 0.0;
-#endif
     if(nsmoke3dinfo>0&&show3dsmoke==1){
       SortSmoke3dinfo();
 #ifdef pp_GPUSMOKE

@@ -197,9 +197,6 @@ SVEXTERN int SVDECL(update_research_mode, 1);
 SVEXTERN int SVDECL(research_mode, 1);
 SVEXTERN int SVDECL(research_mode_override, -1);
 
-#ifdef pp_SMOKEDIAG
-SVEXTERN unsigned int total_triangles, total_drawn_triangles;
-#endif
 SVEXTERN float SVDECL(geomslice_pointsize, 5.0);
 SVEXTERN float SVDECL(geomboundary_pointsize, 5.0);
 SVEXTERN float SVDECL(geomslice_linewidth, 5.0);
