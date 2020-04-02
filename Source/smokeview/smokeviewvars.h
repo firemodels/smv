@@ -757,13 +757,8 @@ SVEXTERN int GPU3dslice_transparent_level;
 SVEXTERN int GPUvol_block_volsmoke;
 SVEXTERN int GPUvol_voltemp_offset;
 SVEXTERN int GPUvol_voltemp_factor;
-
-#ifdef pp_GPUDEPTH
-SVEXTERN int GPUvol_depthtexture, GPUvol_screensize,GPUvol_nearfar;
-SVEXTERN GLuint SVDECL(depthtexture_id,0);
 #endif
 
-#endif
 SVEXTERN int SVDECL(ncsvinfo,0);
 SVEXTERN csvdata SVDECL(*csvinfo,NULL);
 SVEXTERN int smoke_render_option;

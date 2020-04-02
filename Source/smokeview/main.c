@@ -99,9 +99,6 @@ void Usage(char *prog,int option){
 #ifdef pp_GPU_CULL_STATE
     strcat(label, ", pp_GPU_CULL_STATE");
 #endif
-#ifdef pp_GPUDEPTH
-    strcat(label, ", pp_GPUDEPTH");
-#endif
 #ifdef pp_GPUTHROTTLE
     strcat(label, ", pp_GPUTHROTTLE");
 #endif

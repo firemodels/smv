@@ -2053,14 +2053,6 @@ void InitTextures(void){
 
   CheckMemory;
 
-#ifdef pp_GPU
-#ifdef pp_GPUDEPTH
-  if(use_graphics==1){
-    CreateDepthTexture();
-  }
-#endif
-#endif
-
   // define terrain texture
 
   if(nterrain_texture>0&&use_graphics==1){

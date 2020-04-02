@@ -3057,11 +3057,6 @@ void ReshapeCB(int width, int height){
     CopyCamera(camera_current,camera_save);
   }
   UpdateWindowSizeList();
-#ifdef pp_GPU
-#ifdef pp_GPUDEPTH
-  CreateDepthTexture();
-#endif
-#endif
 }
 
 /* ------------------ ResetGLTime ------------------------ */

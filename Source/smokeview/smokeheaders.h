@@ -443,10 +443,6 @@ EXTERNCPP void DrawTrees(void);
 EXTERNCPP void InitCullGeom(int cullflag);
 EXTERNCPP void GetCullSkips(meshdata *meshi, int cullflag, int cull_portsize, int *iiskip, int *jjskip, int *kkskip);
 #ifdef pp_GPU
-#ifdef pp_GPUDEPTH
-EXTERNCPP void GetDepthTexture( void );
-EXTERNCPP void CreateDepthTexture( void );
-#endif
 EXTERNCPP int  InitShaders(void);
 #ifdef pp_GPUSMOKE
 EXTERNCPP void LoadNewSmokeShaders(void);

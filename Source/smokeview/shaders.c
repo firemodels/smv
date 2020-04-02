@@ -394,11 +394,6 @@ int SetVolSmokeShaders(){
   const GLchar *FragmentShaderSource[] = {
     "#version 120\n"
     "uniform sampler1D smokecolormap;"
-#ifdef pp_GPUDEPTH
-    "uniform sampler2D depthtexture;"
-    "uniform vec2 screensize;"
-    "uniform vec2 nearfar;"
-#endif
     "uniform sampler3D soot_density_texture,fire_texture,light_texture,blockage_texture;"
     "uniform vec3 eyepos,boxmin,boxmax,dcell3,light_color,light_position;"
     "varying vec3 fragpos;"
@@ -410,25 +405,10 @@ int SetVolSmokeShaders(){
     "uniform int drawsides[7];"
     "uniform int scatter_type,light_type,vol_adaptive;"
 
-#ifdef pp_GPUDEPTH
-    // http://en.wikipedia.org/wiki/Depth_buffer#Mathematics
-        "float LinearizeDepth(vec2 uv){"
-        "  float near, far, z;"
-        "  near=nearfar.x;"
-        "  far=nearfar.y;"
-        "  z = texture2D(depthtexture, uv).x;"
-        "  return (near*far)/(far+z*(near-far));"
-        "}"
-    #endif
-
     "float color2bw(vec3 color){"
     " return 0.299*color.r+0.587*color.g+0.114*color.b;"
     "}"
     "void main(){"
-    #ifdef pp_GPUDEPTH
-    //  "  vec2 uv = gl_TexCoord[4].xy;"
-      "  vec2 uv = gl_FragCoord.st/screensize.xy;"
-  #endif
     "  vec3 dalphamin,dalphamax,fragmaxpos,position,position2,color_val,color_total,block_pos,block_pos2;"
     "  vec3 uvec, vvec;"
     "  float d;"
@@ -479,12 +459,7 @@ int SetVolSmokeShaders(){
     "  if(inside==1){"
     "  }" // end inside=1
     "  fragmaxpos = mix(fragpos,eyepos,-alpha_min);"
-#ifdef pp_GPUDEPTH
-    "  d = LinearizeDepth(uv);"
-    "  pathdist = d-distance(fragpos,eyepos);"
-#else
     "  pathdist = distance(fragpos,fragmaxpos);"
-#endif
     "  n_iter = int(gpu_vol_factor*pathdist/dcell+0.5);"
     "  if(n_iter<1)n_iter=1;"
     "  taun=1.0;"
@@ -514,7 +489,6 @@ int SetVolSmokeShaders(){
     "      position2=position+dcell3*(boxmax-position)/(boxmax-boxmin);"
     "    }"
     "    block_val=1.0;"
-#ifndef pp_GPUDEPTH
     "    if(block_volsmoke==0){"
     "      block_val=1.0;"
     "      block_val2=1.0;"
@@ -525,7 +499,6 @@ int SetVolSmokeShaders(){
     "      block_val = texture3D(blockage_texture,block_pos).x;"
     "      block_val2 = texture3D(blockage_texture,block_pos2).x;"
     "    }"
-#endif
     "    if(slicetype==1){"
     "      soot_val = texture3D(soot_density_texture,position).x;"
     "    }"
@@ -556,7 +529,6 @@ int SetVolSmokeShaders(){
     "    else{"
     "      color_val = vec3(0.0,0.0,0.0);"
     "    }"
-#ifndef pp_GPUDEPTH
     //  block_val  0.5  block_val2
     //  0.0        x     dstep
     //  x = dstep*(.5-block_val)/(block_val2-block_val)
@@ -564,7 +536,6 @@ int SetVolSmokeShaders(){
     "      in_block=1;"
     "      dstep *= (0.5-block_val)/(block_val2-block_val);"
     "    }"
-#endif
     "    taui = exp(-mass_extinct*soot_val*dstep);"
     "    alphai = 1.0 - taui;"
     "    taun *= taui;"
@@ -608,9 +579,7 @@ int SetVolSmokeShaders(){
     "      }"
     "    }"
     "    factor+=dfactor;"
-#ifndef pp_GPUDEPTH
     "    if(block_val2<0.5)break;"
-#endif
     "    if(in_block==1){"
     "      break;"
     "    }"
@@ -660,11 +629,6 @@ int SetVolSmokeShaders(){
   
   GPUvol_inside = glGetUniformLocation(p_volsmoke,"inside");
   GPUvol_eyepos = glGetUniformLocation(p_volsmoke,"eyepos");
-#ifdef pp_GPUDEPTH
-  GPUvol_depthtexture = glGetUniformLocation(p_volsmoke,"depthtexture");
-  GPUvol_screensize = glGetUniformLocation(p_volsmoke,"screensize");
-  GPUvol_nearfar = glGetUniformLocation(p_volsmoke,"nearfar");
-#endif
   GPUvol_voltemp_offset = glGetUniformLocation(p_volsmoke, "voltemp_offset");
   GPUvol_voltemp_factor = glGetUniformLocation(p_volsmoke, "voltemp_factor");
   GPUvol_block_volsmoke = glGetUniformLocation(p_volsmoke,"block_volsmoke");
@@ -907,39 +871,5 @@ int InitShaders(void){
   if(err==0)gpuactive=1;
   return err;
 }
-
-#ifdef pp_GPUDEPTH
-/* ------------------ CreateDepthTexture ------------------------ */
-
-void CreateDepthTexture( void ){
-  if( depthtexture_id!=0 ){
-    glDeleteTextures( 1, &depthtexture_id );
-    depthtexture_id = 0;
-  }
-
-  glActiveTexture(GL_TEXTURE4);
-  glGenTextures(1, &depthtexture_id);
-  glBindTexture(GL_TEXTURE_2D, depthtexture_id);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, screenWidth, screenHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-  glActiveTexture(GL_TEXTURE0);
-
-}
-
-/* ------------------ GetDepthTexture ------------------------ */
-
-void GetDepthTexture( void ){
-  if( depthtexture_id==0 ) CreateDepthTexture();
-  glActiveTexture(GL_TEXTURE4);
-  glBindTexture(GL_TEXTURE_2D, depthtexture_id);
-  glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0,0, 0, 0, screenWidth, screenHeight);
-  glActiveTexture(GL_TEXTURE0);
-}
-#endif
 
 #endif

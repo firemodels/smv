@@ -77,7 +77,6 @@
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 //#define pp_SMOKEALPHA        // experimental smoke alpha settings
 #define pp_TIMINGS
-//#define pp_GPUDEPTH
 //#define pp_SMOKETEST         // experimental smoke dialog box entries
 #endif
 
