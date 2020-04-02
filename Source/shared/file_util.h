@@ -94,8 +94,6 @@ int FileExistsOrig(char *filename);
 #define ACCESS access
 #endif
 
-#define DPRINTF(_fmt, ...)  fprintf(stderr, "[file %s, line %d]: " _fmt, __FILE__, __LINE__, __VA_ARGS__)
-
 #ifndef NO
 #define NO 0
 #endif
