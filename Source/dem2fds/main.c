@@ -67,11 +67,11 @@ int main(int argc, char **argv){
   int HCellType, CompFlag, HTilesPerRow, HTilesPerColumn, HTileXSize, HTileYSize;
   double HPixelSizeX, HPixelSizeY;
   int *tileinfo, ntiles;
-  int *vals;
+  int *vals, nrows, ncols;
 #endif
 
 
-  if(argc == 1){
+  if(1==0&&argc == 1){
     Usage("dem2fds",HELP_ALL);
     return 0;
   }
@@ -80,7 +80,7 @@ int main(int argc, char **argv){
 
 #ifdef pp_ADF
 //  ADF_Read_hdr(&HCellType, &CompFlag, &HPixelSizeX, &HPixelSizeY, &HTilesPerRow, &HTilesPerColumn, &HTileXSize, &HTileYSize);
-  ADF_Read_w001001(&tileinfo, &ntiles, &vals);
+  ADF_Read_w001001(&tileinfo, &ntiles, &vals, &nrows, &ncols);
 
   stream = fopen("w001001x.adf", "rb");
   fseek(stream, 24, SEEK_SET);
