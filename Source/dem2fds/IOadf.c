@@ -6,6 +6,8 @@
 
 #include "MALLOCC.h"
 #include "IOadf.h"
+#include "datadefs.h"
+#include "gd.h"
 
 /* ------------------ ADF_Read_dblbnd ------------------------ */
 
@@ -134,9 +136,102 @@ int GetValIndex(int val){
   return NFIRE_TYPES-1;
 }
 
-/* ------------------ ADF_Read_w001001 ------------------------ */
+/* ------------------ CopyValues ------------------------ */
 
-int ADF_Read_w001001(int **tileinfo_arg, int *ntiles_arg, int **vals, int *nvals_rows, int *nvals_cols){
+void CopyValues(unsigned char *val_in, int nx_in, int ny_in, int offsetx_in, int offsety_in, 
+                int *val_out, int nx_out, int ny_out){
+  int j_in;
+
+  for(j_in = 0; j_in<ny_in; j_in++){
+    int i_in, j_out;
+
+    j_out = j_in+offsety_in;
+    if(j_out>=ny_out)return;
+    for(i_in = 0; i_in<nx_in; i_in++){
+      int i_out, index_out, index_in;
+      unsigned char cval;
+
+      i_out = i_in+offsetx_in;
+      if(i_out>=nx_out)break;
+
+      index_in = j_in*nx_in+i_in;
+      index_out = j_out*nx_out + i_out;
+      cval = val_in[index_in];
+      val_out[index_out] = (int)cval;
+    }
+  }
+}
+
+/* ------------------ GetValIndex2 ------------------------ */
+
+int GetValIndex2(int val, int *val_table, int ntable){
+  int i;
+
+  for(i = 0; i<ntable; i++){
+    if(val==val_table[i])return i;
+  }
+  return -1;
+}
+
+/* ------------------ ADF2PNG ------------------------ */
+
+void ADF2PNG(int *vals, int nrows, int ncols){
+  int *val_table = NULL;
+  int i, ntable=0;
+  int *rgb;
+  int dcolor;
+  gdImagePtr RENDERimage;
+  FILE *RENDERfile = NULL;
+
+  NewMemory((void **)&val_table, nrows*ncols*sizeof(int));
+  for(i = 0; i<nrows*ncols;i++){
+    int j, ival;
+
+    if(GetValIndex2(vals[i],val_table,ntable)==-1)val_table[ntable++] = vals[i];
+  }
+  NewMemory((void **)&rgb, 3*ntable*sizeof(int));
+  dcolor = 256*256*256/(ntable+2);
+  for(i = 0; i<ntable; i++){
+    int icolor;
+    int red, green, blue;
+
+    icolor = (i+1)*dcolor;
+    red = CLAMP(icolor%256, 0, 255);
+    green = CLAMP((icolor/256)%256,0,255);
+    blue = CLAMP(icolor/(256*256),0,255);
+    rgb[3*i] = red;
+    rgb[3*i+1] = green;
+    rgb[3*i+2] = blue;
+  }
+
+  RENDERimage = gdImageCreateTrueColor(3*ncols, 3*nrows);
+
+  for(i = 0; i<ncols; i++){
+    int j;
+
+    for(j = 0; j<nrows; j++){
+      unsigned char r, g, b;
+      int rgb_local, index, ii, jj;
+
+      index = vals[j*ncols+i];
+      r = (unsigned char)val_table[3*index];
+      g = (unsigned char)val_table[3*index+1];
+      b = (unsigned char)val_table[3*index+2];
+      rgb_local = (r<<16)|(g<<8)|b;
+      for(ii=0;ii<3;ii++){
+        for(jj=0;jj<3;jj++){
+          gdImageSetPixel(RENDERimage, 3*i+ii, 3*j+jj, rgb_local);
+        }
+      }
+    }
+  }
+  RENDERfile = fopen("w001001.png", "wb");
+  gdImagePng(RENDERimage, RENDERfile);
+}
+
+  /* ------------------ ADF_Read_w001001 ------------------------ */
+
+int ADF_Read_w001001(int **tileinfo_arg, int *ntiles_arg, int **vals_out, int *nvals_rows, int *nvals_cols){
   FILE *stream;
   int i;
   unsigned char *tile_vals, *tile_buffer=NULL;
@@ -161,7 +256,8 @@ int ADF_Read_w001001(int **tileinfo_arg, int *ntiles_arg, int **vals, int *nvals
   npixels = (D_URX-D_LRX)/HPixelSizeX;
   nlines = (D_URY-D_LRY)/HPixelSizeY;
 
-#define IJ(ii,jj) (npixels*(jj) + (ii))
+  *nvals_rows = nlines;
+  *nvals_cols = npixels;
 
   *tileinfo_arg = tile_info;
   *ntiles_arg = ntiles;
@@ -177,7 +273,7 @@ int ADF_Read_w001001(int **tileinfo_arg, int *ntiles_arg, int **vals, int *nvals
     int *vals_local;
 
     NewMemory((void **)&vals_local, npixels*nlines*sizeof(int));
-    *vals = (int *)vals_local;
+    *vals_out = (int *)vals_local;
 
     for(i = 0; i<npixels*nlines; i++){
       vals_local[i] = -1;
@@ -190,7 +286,7 @@ int ADF_Read_w001001(int **tileinfo_arg, int *ntiles_arg, int **vals, int *nvals
     int RMin, tile_size, offset;
     short RMinshort, RTileSize;
     unsigned char RMinSize, RTileType;
-    int nbuffer, total_sizei;
+    int nbuffer;
 
     if(i%HTilesPerRow==0){
       irow++;
@@ -204,7 +300,6 @@ int ADF_Read_w001001(int **tileinfo_arg, int *ntiles_arg, int **vals, int *nvals
     fread(&RTileSize, 2, 1, stream);
     RTileSize = ShortSwitch(RTileSize);
 
-    total_sizei = 0;
     itile = 0;
     if(RTileSize>0){
       fseek(stream, offset+2, SEEK_SET);
@@ -258,20 +353,17 @@ int ADF_Read_w001001(int **tileinfo_arg, int *ntiles_arg, int **vals, int *nvals
       }
       else if(RTileType==248){  // 0xF8
         for(j = 0; j<nbuffer; j+=2){
-          int kkk, mink;
+          int kkk;
           unsigned char size, val;
 
           size = tile_buffer[j];
           val = tile_buffer[j+1];
-          total_sizei += size;
-          mink = size;
-          if(tile_size0-itile<mink)mink = tile_size0-itile;
-          for(kkk = 0; kkk<mink; kkk++){
-            ASSERT(itile+kkk<tile_size0);
-            tile_vals[itile+kkk] = val;
+          for(kkk = itile; kkk<MIN(itile+size,tile_size0); kkk++){
+            tile_vals[kkk] = val;
           }
           itile += size;
         }
+        CopyValues(tile_vals, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, *vals_out, npixels, nlines);
       }
       else if(RTileType==252){  // 0xFC
       }
@@ -281,13 +373,7 @@ int ADF_Read_w001001(int **tileinfo_arg, int *ntiles_arg, int **vals, int *nvals
         ASSERT(0);
       }
     }
-    printf("irow=%i icol=%i tile type: %i size_tile=%i\n", irow, icol, (int)RTileType,total_sizei);
-    if(i%HTilesPerRow==HTilesPerRow-1){
-      printf("\n");
-    }
   }
-
-  printf("npixels_x=%i nlines_y=%i\n", npixels, nlines);
   fclose(stream);
   FREEMEMORY(tile_buffer);
   FREEMEMORY(tile_vals);

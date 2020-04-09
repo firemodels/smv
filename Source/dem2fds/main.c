@@ -81,6 +81,7 @@ int main(int argc, char **argv){
 #ifdef pp_ADF
 //  ADF_Read_hdr(&HCellType, &CompFlag, &HPixelSizeX, &HPixelSizeY, &HTilesPerRow, &HTilesPerColumn, &HTileXSize, &HTileYSize);
   ADF_Read_w001001(&tileinfo, &ntiles, &vals, &nrows, &ncols);
+  ADF2PNG(vals, nrows, ncols);
 
   stream = fopen("w001001x.adf", "rb");
   fseek(stream, 24, SEEK_SET);
