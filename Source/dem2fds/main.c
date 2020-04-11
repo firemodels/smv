@@ -58,18 +58,8 @@ int main(int argc, char **argv){
   elevdata fds_elevs;
   int fatal_error = 0;
 #ifdef pp_ADF
-  FILE *stream = NULL;
-  int file_size;
-  short tile_size;
-  unsigned char file_type, rminsize;
-  unsigned char data[100];
-  int total_size = 0;
-  int HCellType, CompFlag, HTilesPerRow, HTilesPerColumn, HTileXSize, HTileYSize;
-  double HPixelSizeX, HPixelSizeY;
-  int *tileinfo, ntiles;
-  int *vals, nrows, ncols;
+    wuifiredata *wuifireinfo;
 #endif
-
 
   if(1==0&&argc == 1){
     Usage("dem2fds",HELP_ALL);
@@ -77,32 +67,6 @@ int main(int argc, char **argv){
   }
   initMALLOC();
   SetStdOut(stdout);
-
-#ifdef pp_ADF
-//  ADF_Read_hdr(&HCellType, &CompFlag, &HPixelSizeX, &HPixelSizeY, &HTilesPerRow, &HTilesPerColumn, &HTileXSize, &HTileYSize);
-  ADF_Read_w001001(&tileinfo, &ntiles, &vals, &nrows, &ncols);
-  ADF2PNG(vals, nrows, ncols);
-
-  stream = fopen("w001001x.adf", "rb");
-  fseek(stream, 24, SEEK_SET);
-  fread(&file_size, 4, 1, stream);
-  file_size = IntSwitch(file_size);
-  ntiles = (2*file_size-100)/8-1;
-  for(i = 0; i<ntiles; i++){
-    int offset, size;
-
-    fseek(stream, 100+8*i, SEEK_SET);
-    fread(&offset, 4, 1, stream);
-    offset = IntSwitch(offset);
-    fread(&size, 4, 1, stream);
-    size = IntSwitch(size);
-    printf(" (%i,%i) ", offset,size);
-    if(i%40==39)printf("\n");
-    total_size += size;
-  }
-  printf("total_size=%i\n", total_size);
-#endif
-
 
   strcpy(casename_fds, "");
   strcpy(file_default, "terrain");
@@ -267,6 +231,17 @@ int main(int argc, char **argv){
   if(strlen(elev_dir) == 0) {
     strcpy(elev_dir, image_dir);
   }
+
+#ifdef pp_ADF
+  // define directory where anderson 13 fire material data is expected
+  strcpy(fire_dir, elev_dir);
+  strcat(fire_dir, dirseparator);
+  strcat(fire_dir, "anderson13");
+  strcat(fire_dir, dirseparator);
+  strcat(fire_dir, "us_200fbfm13");
+  strcat(fire_dir, dirseparator);
+#endif
+
   if(casename == NULL)casename = file_default;
   if(strlen(casename_fds) == 0){
     strcpy(casename_fds, casename);
@@ -278,6 +253,10 @@ int main(int argc, char **argv){
   last = strrchr(image_file, '.');
   if(last != NULL)last[0] = 0;
   strcat(image_file,image_type);
+
+#ifdef pp_ADF
+  wuifireinfo = ADF_GetFireData(fire_dir, casename);
+#endif
 
   if(GetElevations(casename, image_file, image_type, &fds_elevs)==1) {
      GenerateFDSInputFile(casename, casename_fds, &fds_elevs, gen_fds);

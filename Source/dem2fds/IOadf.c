@@ -11,10 +11,10 @@
 
 /* ------------------ ADF_Read_dblbnd ------------------------ */
 
-int ADF_Read_dblbnd(double *D_LLX, double *D_LLY, double *D_URX, double *D_URY){
+int ADF_Read_dblbnd(char *adf_dir, double *D_LLX, double *D_LLY, double *D_URX, double *D_URY){
   FILE *stream;
 
-  stream = fopen("dblbnd.adf", "rb");
+  stream = fopen_indir(adf_dir, "dblbnd.adf", "rb");
   if(stream==NULL)return 1;
 
   fseek(stream, 0, SEEK_SET);
@@ -39,11 +39,11 @@ int ADF_Read_dblbnd(double *D_LLX, double *D_LLY, double *D_URX, double *D_URY){
 
 /* ------------------ ADF_Read_hdr ------------------------ */
 
-int ADF_Read_hdr(int *HCellType, int *CompFlag, double *HPixelSizeX, double *HPixelSizeY, int *HTilesPerRow, int *HTilesPerColumn,
+int ADF_Read_hdr(char *adf_dir, int *HCellType, int *CompFlag, double *HPixelSizeX, double *HPixelSizeY, int *HTilesPerRow, int *HTilesPerColumn,
   int *HTileXSize, int *HTileYSize){
   FILE *stream;
 
-  stream = fopen("hdr.adf", "rb");
+  stream = fopen_indir(adf_dir, "hdr.adf", "rb");
   if(stream==NULL)return 1;
 
   fseek(stream, 16, SEEK_SET);
@@ -84,13 +84,13 @@ int ADF_Read_hdr(int *HCellType, int *CompFlag, double *HPixelSizeX, double *HPi
 
 /* ------------------ ADF_Read_w001001x ------------------------ */
 
-int ADF_Read_w001001x(int **tile_info, int *ntiles){
+int ADF_Read_w001001x(char *adf_dir, int **tile_info, int *ntiles){
   FILE *stream;
   int file_size;
   int i;
   int *tinfo = NULL;
 
-  stream = fopen("w001001x.adf", "rb");
+  stream = fopen_indir(adf_dir, "w001001x.adf", "rb");
   if(stream==NULL)return 1;
 
   fseek(stream, 24, SEEK_SET);
@@ -175,7 +175,7 @@ int GetValIndex2(int val, int *val_table, int ntable){
 
 /* ------------------ ADF2PNG ------------------------ */
 
-void ADF2PNG(int *vals, int nrows, int ncols){
+void ADF2PNG(char *basename, int *vals, int nrows, int ncols){
   int *val_table = NULL;
   int i, ntable=0;
   int *rgb;
@@ -225,19 +225,81 @@ void ADF2PNG(int *vals, int nrows, int ncols){
       }
     }
   }
-  RENDERfile = fopen("w001001.png", "wb");
+  {
+    char filename[1000];
+
+    strcpy(filename,basename);
+    strcat(filename,".png");
+    RENDERfile = fopen(filename, "wb");
+  }
   gdImagePng(RENDERimage, RENDERfile);
+  fclose(RENDERfile);
+}
+
+/* ------------------ ADF_GetInfo ------------------------ */
+
+int ADF_GetInfo(char *adf_dir, wuifiredata *wuifireinfo){
+  char parent_dir[1000];
+  FILE *stream;
+  char buffer[1000];
+  char key[] = "Top edge WGS84:";
+  char *colon;
+  float longmin, longmax, latmin, latmax;
+
+  if(adf_dir==NULL||strlen(adf_dir)==0)return 1;
+  strcpy(parent_dir, adf_dir);
+  strcat(parent_dir, dirseparator);
+  strcat(parent_dir, "..");
+
+  stream = fopen_indir(parent_dir, "output_parameters.txt", "r");
+  if(stream==NULL)return 1;
+  for(;;){
+    if(fgets(buffer, 1000, stream)==NULL){ fclose(stream); return 1; }
+    if(strncmp(buffer, key, strlen(key))==0)break;
+  }
+
+  colon = strchr(buffer, ':');
+  if(colon==NULL){fclose(stream);return 1;}
+  colon++;
+  sscanf(colon, "%f", &latmax);
+
+  if(fgets(buffer, 1000, stream)==NULL){ fclose(stream); return 1; }
+  colon = strchr(buffer, ':');
+  if(colon==NULL){ fclose(stream); return 1; }
+  colon++;
+  sscanf(colon, "%f", &latmin);
+
+  if(fgets(buffer, 1000, stream)==NULL){ fclose(stream); return 1; }
+  colon = strchr(buffer, ':');
+  if(colon==NULL){ fclose(stream); return 1; }
+  colon++;
+  sscanf(colon, "%f", &longmin);
+
+  if(fgets(buffer, 1000, stream)==NULL){ fclose(stream); return 1; }
+  colon = strchr(buffer, ':');
+  if(colon==NULL){ fclose(stream); return 1; }
+  colon++;
+  sscanf(colon, "%f", &longmax);
+
+  wuifireinfo->latmin = latmin;
+  wuifireinfo->latmax = latmax;
+  wuifireinfo->longmin = longmin;
+  wuifireinfo->longmax = longmax;
+
+  fclose(stream);
+  return 0;
 }
 
   /* ------------------ ADF_Read_w001001 ------------------------ */
 
-int ADF_Read_w001001(int **tileinfo_arg, int *ntiles_arg, int **vals_out, int *nvals_rows, int *nvals_cols){
+int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
   FILE *stream;
   int i;
   unsigned char *tile_vals, *tile_buffer=NULL;
   int max_tilebuffer = -1;
   int npixels, nlines;
   int itile, tile_size0;
+  int *tile_info, ntiles;
 
   int HCellType, CompFlag;
   double HPixelSizeX, HPixelSizeY;
@@ -247,33 +309,31 @@ int ADF_Read_w001001(int **tileinfo_arg, int *ntiles_arg, int **vals_out, int *n
   int total_nrows, total_ncols;
   int icol, irow;
 
-  int *tile_info, ntiles;
+  wuifireinfo->ntypes = 0;
 
-  ADF_Read_hdr(&HCellType, &CompFlag, &HPixelSizeX, &HPixelSizeY, &HTilesPerRow, &HTilesPerColumn, &HTileXSize, &HTileYSize);
-  ADF_Read_dblbnd(&D_LRX, &D_LRY, &D_URX, &D_URY);
-  ADF_Read_w001001x(&tile_info, &ntiles);
+  ADF_Read_hdr(adf_dir, &HCellType, &CompFlag, &HPixelSizeX, &HPixelSizeY, &HTilesPerRow, &HTilesPerColumn, &HTileXSize, &HTileYSize);
+  ADF_Read_dblbnd(adf_dir, &D_LRX, &D_LRY, &D_URX, &D_URY);
+  ADF_Read_w001001x(adf_dir, &tile_info, &ntiles);
+  ADF_GetInfo(adf_dir, wuifireinfo);
 
   npixels = (D_URX-D_LRX)/HPixelSizeX;
   nlines = (D_URY-D_LRY)/HPixelSizeY;
 
-  *nvals_rows = nlines;
-  *nvals_cols = npixels;
-
-  *tileinfo_arg = tile_info;
-  *ntiles_arg = ntiles;
+  wuifireinfo->ny = nlines;
+  wuifireinfo->nx = npixels;
 
   total_ncols = HTilesPerRow*HTileXSize;
   total_nrows = HTilesPerColumn*HTileYSize;
   tile_size0 = HTileYSize*HTileXSize;
 
-  stream = fopen("w001001.adf", "rb");
+  stream = fopen_indir(adf_dir, "w001001.adf", "rb");
   if(stream==NULL||total_ncols*total_nrows<1)return 1;
 
   {
     int *vals_local;
 
     NewMemory((void **)&vals_local, npixels*nlines*sizeof(int));
-    *vals_out = (int *)vals_local;
+    wuifireinfo->vals = (int *)vals_local;
 
     for(i = 0; i<npixels*nlines; i++){
       vals_local[i] = -1;
@@ -363,7 +423,7 @@ int ADF_Read_w001001(int **tileinfo_arg, int *ntiles_arg, int **vals_out, int *n
           }
           itile += size;
         }
-        CopyValues(tile_vals, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, *vals_out, npixels, nlines);
+        CopyValues(tile_vals, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, wuifireinfo->vals, npixels, nlines);
       }
       else if(RTileType==252){  // 0xFC
       }
@@ -372,12 +432,28 @@ int ADF_Read_w001001(int **tileinfo_arg, int *ntiles_arg, int **vals_out, int *n
       else{
         ASSERT(0);
       }
+      if(RTileType!=248)(wuifireinfo->ntypes)++;
     }
   }
   fclose(stream);
   FREEMEMORY(tile_buffer);
   FREEMEMORY(tile_vals);
+  if(wuifireinfo->ntypes>0)printf("***warning: number of non 248-type tiles=%i\n", wuifireinfo->ntypes);
   return 0;
 }
+
+/* ------------------ ADF_GetFireData ------------------------ */
+
+wuifiredata *ADF_GetFireData(char *adf_dir, char *casename){
+  wuifiredata *wuifireinfo;
+  int ntypes;
+
+  NewMemory((void **)&wuifireinfo, sizeof(wuifiredata));
+
+  ADF_Read_w001001(adf_dir, wuifireinfo);
+  ADF2PNG(casename, wuifireinfo->vals, wuifireinfo->ny, wuifireinfo->nx);
+  return wuifireinfo;
+}
+
 
 #endif
