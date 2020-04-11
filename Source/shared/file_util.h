@@ -99,6 +99,7 @@ int FileExistsOrig(char *filename);
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
+EXTERNCPP FILE *fopen_indir(char *dir, char *file, char *mode);
 EXTERNCPP bufferstreamdata *GetSMVBuffer(char *file, char *file2);
 EXTERNCPP bufferstreamdata *CopySMVBuffer(bufferstreamdata *stream_in);
 EXTERNCPP int AppendFileBuffer(filedata *file1, filedata *file2);

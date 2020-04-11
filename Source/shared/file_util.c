@@ -721,6 +721,31 @@ int GetFileListSize(const char *path, char *filter){
   return maxfiles;
 }
 
+
+/* ------------------ fopen_indir  ------------------------ */
+
+FILE *fopen_indir(char *dir, char *file, char *mode){
+  FILE *stream;
+
+  if(file==NULL||strlen(file)==0)return NULL;
+  if(dir==NULL||strlen(dir)==0){
+    stream = fopen(file,mode);
+  }
+  else{
+    char *filebuffer;
+    int lenfile;
+
+    lenfile = strlen(dir)+1+strlen(file)+1;
+    NewMemory((void **)&filebuffer,lenfile*sizeof(char));
+    strcpy(filebuffer,dir);
+    strcat(filebuffer,dirseparator);
+    strcat(filebuffer,file);
+    stream = fopen(filebuffer,mode);
+    FREEMEMORY(filebuffer);
+  }
+  return stream;
+}
+
 /* ------------------ CompareFileList ------------------------ */
 
 int CompareFileList(const void *arg1, const void *arg2){
