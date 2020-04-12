@@ -238,13 +238,24 @@ void ADF2PNG(char *basename, int *vals, int nrows, int ncols){
 
 /* ------------------ ADF_GetInfo ------------------------ */
 
+#define GET_BUFFER(flag) \
+  if(flag==1){if(fgets(buffer, 1000, stream)==NULL){ fclose(stream); return 1; }} \
+  colon = strchr(buffer, ':'); \
+  if(colon==NULL){ fclose(stream); return 1; } \
+  colon++;
+
 int ADF_GetInfo(char *adf_dir, wuifiredata *wuifireinfo){
   char parent_dir[1000];
   FILE *stream;
   char buffer[1000];
-  char key[] = "Top edge WGS84:";
+  char key1[] = "Number of columns:";
+  char key2[] = "Top edge Native:";
+  char key3[] = "Top edge WGS84:";
   char *colon;
-  float longmin, longmax, latmin, latmax;
+  int n_columns, n_rows;
+  float res_x, res_y;
+  int top_edge, bottom_edge, left_edge, right_edge;
+  float lat_max, lat_min, long_min, long_max;
 
   if(adf_dir==NULL||strlen(adf_dir)==0)return 1;
   strcpy(parent_dir, adf_dir);
@@ -252,39 +263,78 @@ int ADF_GetInfo(char *adf_dir, wuifiredata *wuifireinfo){
   strcat(parent_dir, "..");
 
   stream = fopen_indir(parent_dir, "output_parameters.txt", "r");
+
+  //skip until key1 is located
   if(stream==NULL)return 1;
   for(;;){
     if(fgets(buffer, 1000, stream)==NULL){ fclose(stream); return 1; }
-    if(strncmp(buffer, key, strlen(key))==0)break;
+    if(strncmp(buffer, key1, strlen(key1))==0)break;
   }
 
-  colon = strchr(buffer, ':');
-  if(colon==NULL){fclose(stream);return 1;}
-  colon++;
-  sscanf(colon, "%f", &latmax);
+  GET_BUFFER(0);
+  sscanf(colon, "%i", &n_columns);
 
-  if(fgets(buffer, 1000, stream)==NULL){ fclose(stream); return 1; }
-  colon = strchr(buffer, ':');
-  if(colon==NULL){ fclose(stream); return 1; }
-  colon++;
-  sscanf(colon, "%f", &latmin);
+  GET_BUFFER(1);
+  sscanf(colon, "%i", &n_rows);
 
-  if(fgets(buffer, 1000, stream)==NULL){ fclose(stream); return 1; }
-  colon = strchr(buffer, ':');
-  if(colon==NULL){ fclose(stream); return 1; }
-  colon++;
-  sscanf(colon, "%f", &longmin);
+  GET_BUFFER(1);
+  sscanf(colon, "%f", &res_x);
 
-  if(fgets(buffer, 1000, stream)==NULL){ fclose(stream); return 1; }
-  colon = strchr(buffer, ':');
-  if(colon==NULL){ fclose(stream); return 1; }
-  colon++;
-  sscanf(colon, "%f", &longmax);
+  GET_BUFFER(1);
+  sscanf(colon, "%f", &res_y);
 
-  wuifireinfo->latmin = latmin;
-  wuifireinfo->latmax = latmax;
-  wuifireinfo->longmin = longmin;
-  wuifireinfo->longmax = longmax;
+  //skip until key2 is located
+  if(stream==NULL)return 1;
+  for(;;){
+    if(fgets(buffer, 1000, stream)==NULL){ fclose(stream); return 1; }
+    if(strncmp(buffer, key2, strlen(key2))==0)break;
+  }
+
+  GET_BUFFER(0);
+  sscanf(colon, "%i", &top_edge);
+
+  GET_BUFFER(1);
+  sscanf(colon, "%i", &bottom_edge);
+
+  GET_BUFFER(1);
+  sscanf(colon, "%i", &left_edge);
+
+  GET_BUFFER(1);
+  sscanf(colon, "%i", &right_edge);
+
+  //skip until key3 is located
+  if(stream==NULL)return 1;
+  for(;;){
+    if(fgets(buffer, 1000, stream)==NULL){ fclose(stream); return 1; }
+    if(strncmp(buffer, key3, strlen(key3))==0)break;
+  }
+
+  GET_BUFFER(0);
+  sscanf(colon, "%f", &lat_max);
+
+  GET_BUFFER(1);
+  sscanf(colon, "%f", &lat_min);
+
+  GET_BUFFER(1);
+  sscanf(colon, "%f", &long_min);
+
+  GET_BUFFER(1);
+  sscanf(colon, "%f", &long_max);
+
+  wuifireinfo->res_x = res_x;
+  wuifireinfo->res_y = res_y;
+  wuifireinfo->n_columns = n_columns;
+  wuifireinfo->n_rows = n_rows;
+
+  wuifireinfo->left_edge = left_edge;
+  wuifireinfo->right_edge = right_edge;
+  wuifireinfo->bottom_edge = bottom_edge;
+  wuifireinfo->top_edge = top_edge;
+
+  wuifireinfo->lat_min = lat_min;
+  wuifireinfo->lat_max = lat_max;
+  wuifireinfo->long_min = long_min;
+  wuifireinfo->long_max = long_max;
 
   fclose(stream);
   return 0;

@@ -6,9 +6,12 @@
 /* --------------------------  firedata ------------------------------------ */
 
 typedef struct _wuifiredata {
+  int n_columns, n_rows;
   int *vals, nx, ny, ntypes;
   int *case_vals, case_nx, case_ny;
-  float latmin, latmax, longmin, longmax;
+  int left_edge, right_edge, bottom_edge, top_edge;
+  float lat_min, lat_max, long_min, long_max;
+  float res_x, res_y;
 } wuifiredata;
 
 
