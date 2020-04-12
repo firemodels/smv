@@ -443,7 +443,10 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
 
       if(RTileType==0){         // 0x00
         hist[0]++;
-        nfail++;
+        for(j = 0; j<nbuffer; j++){
+          tile_vals[j] = (unsigned char)RMin;
+        }
+        CopyValues(tile_vals, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, wuifireinfo->vals, npixels, nlines);
       }
       else if(RTileType==1){    // 0x01
         hist[1]++;
