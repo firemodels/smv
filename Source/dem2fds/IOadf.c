@@ -358,6 +358,8 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
   double D_LRX, D_LRY, D_URX, D_URY;
   int total_nrows, total_ncols;
   int icol, irow;
+  int hist[15] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  int nfail = 0;
 
   wuifireinfo->ntypes = 0;
 
@@ -440,28 +442,58 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
       fread(tile_buffer, nbuffer, 1, stream);
 
       if(RTileType==0){         // 0x00
+        hist[0]++;
+        nfail++;
       }
       else if(RTileType==1){    // 0x01
+        hist[1]++;
       }
       else if(RTileType==4){    // 0x04
+        hist[2]++;
+        for(j = 0; j<nbuffer; j++){
+          unsigned char cval;
+
+          cval = tile_buffer[j];
+          tile_vals[2*j+0] = (cval&0xF0)>4;
+          tile_vals[2*j+1] = cval&0x0F;
+        }
+        CopyValues(tile_vals, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, wuifireinfo->vals, npixels, nlines);
       }
       else if(RTileType==8){    // 0x08
+        hist[3]++;
+        CopyValues(tile_buffer, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, wuifireinfo->vals, npixels, nlines);
       }
       else if(RTileType==16){   // 0x10
+        hist[4]++;
+        nfail++;
       }
       else if(RTileType==32){   // 0x20
+        hist[5]++;
+        nfail++;
       }
       else if(RTileType==207){  // 0xCF
+        hist[6]++;
+        nfail++;
       }
       else if(RTileType==215){  // 0xD7
+        hist[7]++;
+        nfail++;
       }
       else if(RTileType==223){  // 0xDF
+        hist[8]++;
+        nfail++;
       }
       else if(RTileType==224){  // 0xE0
+        hist[9]++;
+        nfail++;
       }
       else if(RTileType==240){  // 0xF0
+        hist[10]++;
+        nfail++;
       }
-      else if(RTileType==248){  // 0xF8
+      else if(RTileType==248||RTileType==252){  // 0xF8 0xFC
+        if(RTileType==248)hist[11]++;
+        if(RTileType==252)hist[12]++;
         for(j = 0; j<nbuffer; j+=2){
           int kkk;
           unsigned char size, val;
@@ -475,12 +507,14 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
         }
         CopyValues(tile_vals, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, wuifireinfo->vals, npixels, nlines);
       }
-      else if(RTileType==252){  // 0xFC
-      }
       else if(RTileType==255){  // 0xFF
+        hist[13]++;
+        nfail++;
       }
       else{
+        hist[14]++;
         ASSERT(0);
+        nfail++;
       }
       if(RTileType!=248)(wuifireinfo->ntypes)++;
     }
@@ -488,7 +522,23 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
   fclose(stream);
   FREEMEMORY(tile_buffer);
   FREEMEMORY(tile_vals);
-  if(wuifireinfo->ntypes>0)printf("***warning: number of non 248-type tiles=%i\n", wuifireinfo->ntypes);
+  if(nfail>0){
+    printf("***warning: number of un-handled tiles=%i\n", nfail);
+    printf("tile representation distribution:\n");
+    for(i = 0; i<15; i++){
+      printf(" %i/%i ", i,hist[i]);
+    }
+    printf("\n");
+  }
+#ifdef _DEBUG
+  if(nfail==0){
+    printf("tile representation distribution:\n");
+    for(i = 0; i<15; i++){
+      printf(" %i/%i ", i,hist[i]);
+    }
+    printf("\n");
+  }
+#endif
   return 0;
 }
 
