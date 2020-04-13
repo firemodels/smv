@@ -28,8 +28,10 @@ void Usage(char *prog, int option){
   fprintf(stdout, "  data obtained from http://viewer.nationalmap.gov \n\n");
   fprintf(stdout, "Usage:\n");
   fprintf(stdout, "  dem2fds [options] casename.in\n");
-  fprintf(stdout, "  -dir dir      - directory containing map and elevation files\n");
-  fprintf(stdout, "  -elevdir dir  - directory containing elevation files (if different than -dir directory)\n");
+  fprintf(stdout, "  -dir dir      - directory containing image, fire and elevation files (dir/images, dir/anderson13, dir/elevations\n");
+  fprintf(stdout, "  -elevdir dir  - directory containing elevation files (if different than -dir/elevations)\n");
+  fprintf(stdout, "  -imagedir dir  - directory containing image files (if different than -dir/images)\n");
+  fprintf(stdout, "  -firedir dir  - directory containing anderson 13 fire data(if different than -dir/anderson13)\n");
   fprintf(stdout, "  -fds          - specify fds input file [default: casename.fds]\n");
   fprintf(stdout, "  -geom         - represent terrain using using &GEOM keywords (experimental)\n");
   fprintf(stdout, "  -obst         - represent terrain using &OBST keywords \n");
@@ -160,9 +162,20 @@ int main(int argc, char **argv){
       if(strncmp(arg, "-dir", 4) == 0){
         i++;
         if(FILE_EXISTS(argv[i]) == YES){
-          strcpy(image_dir, argv[i]);
+          if(strlen(image_dir)==0) {
+            strcpy(image_dir, argv[i]);
+            strcat(image_dir, dirseparator);
+            strcat(image_dir, "images");
+          }
           if(strlen(elev_dir) == 0) {
-            strcpy(elev_dir, image_dir);
+            strcpy(elev_dir, argv[i]);
+            strcat(elev_dir, dirseparator);
+            strcat(elev_dir, "elevations");
+          }
+          if(strlen(fire_dir)==0) {
+            strcpy(fire_dir, argv[i]);
+            strcat(fire_dir, dirseparator);
+            strcat(fire_dir, "anderson13");
           }
         }
         else {
@@ -170,13 +183,33 @@ int main(int argc, char **argv){
           fatal_error = 1;
         }
       }
-      else if(strncmp(arg, "-elevdir", 8) == 0) {
+      else if(strncmp(arg, "-elevdir", 8) == 0){
         i++;
         if(FILE_EXISTS(argv[i]) == YES) {
           strcpy(elev_dir, argv[i]);
         }
         else {
-          fprintf(stderr, "***error: directory %s does not exist or cannot be accessed\n", argv[i]);
+          fprintf(stderr, "***error: elevation directory %s does not exist or cannot be accessed\n", argv[i]);
+          fatal_error = 1;
+        }
+      }
+      else if(strncmp(arg, "-imagedir", 9)==0){
+        i++;
+        if(FILE_EXISTS(argv[i])==YES) {
+          strcpy(image_dir, argv[i]);
+        }
+        else {
+          fprintf(stderr, "***error: image directory %s does not exist or cannot be accessed\n", argv[i]);
+          fatal_error = 1;
+        }
+      }
+      else if(strncmp(arg, "-firedir", 8)==0){
+        i++;
+        if(FILE_EXISTS(argv[i])==YES) {
+          strcpy(fire_dir, argv[i]);
+        }
+        else {
+          fprintf(stderr, "***error: fire directory %s does not exist or cannot be accessed\n", argv[i]);
           fatal_error = 1;
         }
       }
