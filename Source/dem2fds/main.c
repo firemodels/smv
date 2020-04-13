@@ -31,7 +31,9 @@ void Usage(char *prog, int option){
   fprintf(stdout, "  -dir dir      - directory containing image, fire and elevation files (dir/images, dir/anderson13, dir/elevations\n");
   fprintf(stdout, "  -elevdir dir  - directory containing elevation files (if different than -dir/elevations)\n");
   fprintf(stdout, "  -imagedir dir  - directory containing image files (if different than -dir/images)\n");
+#ifdef pp_ADF
   fprintf(stdout, "  -firedir dir  - directory containing anderson 13 fire data(if different than -dir/anderson13)\n");
+#endif
   fprintf(stdout, "  -fds          - specify fds input file [default: casename.fds]\n");
   fprintf(stdout, "  -geom         - represent terrain using using &GEOM keywords (experimental)\n");
   fprintf(stdout, "  -obst         - represent terrain using &OBST keywords \n");
@@ -172,11 +174,13 @@ int main(int argc, char **argv){
             strcat(elev_dir, dirseparator);
             strcat(elev_dir, "elevations");
           }
+#ifdef pp_ADF
           if(strlen(fire_dir)==0) {
             strcpy(fire_dir, argv[i]);
             strcat(fire_dir, dirseparator);
             strcat(fire_dir, "anderson13");
           }
+#endif
         }
         else {
           fprintf(stderr, "***error: directory %s does not exist or cannot be accessed\n",argv[i]);
@@ -203,6 +207,7 @@ int main(int argc, char **argv){
           fatal_error = 1;
         }
       }
+#ifdef pp_ADF
       else if(strncmp(arg, "-firedir", 8)==0){
         i++;
         if(FILE_EXISTS(argv[i])==YES) {
@@ -213,6 +218,7 @@ int main(int argc, char **argv){
           fatal_error = 1;
         }
       }
+#endif
       else if(strncmp(arg, "-geom", 5) == 0 ){
         gen_fds = FDS_GEOM;
       }
@@ -267,9 +273,6 @@ int main(int argc, char **argv){
 
 #ifdef pp_ADF
   // define directory where anderson 13 fire material data is expected
-  strcpy(fire_dir, elev_dir);
-  strcat(fire_dir, dirseparator);
-  strcat(fire_dir, "anderson13");
   strcat(fire_dir, dirseparator);
   strcat(fire_dir, "us_200fbfm13");
   strcat(fire_dir, dirseparator);

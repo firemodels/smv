@@ -136,9 +136,9 @@ int GetValIndex(int val){
   return NFIRE_TYPES-1;
 }
 
-/* ------------------ CopyValues ------------------------ */
+/* ------------------ ADF_CopyValues ------------------------ */
 
-void CopyValues(unsigned char *val_in, int nx_in, int ny_in, int offsetx_in, int offsety_in, 
+void ADF_CopyValues(unsigned char *val_in, int nx_in, int ny_in, int offsetx_in, int offsety_in, 
                 int *val_out, int nx_out, int ny_out){
   int j_in;
 
@@ -323,8 +323,8 @@ int ADF_GetInfo(char *adf_dir, wuifiredata *wuifireinfo){
 
   wuifireinfo->res_x = res_x;
   wuifireinfo->res_y = res_y;
-  wuifireinfo->n_columns = n_columns;
-  wuifireinfo->n_rows = n_rows;
+  wuifireinfo->tiles_ncolumns = n_columns;
+  wuifireinfo->tiles_nrows = n_rows;
 
   wuifireinfo->left_edge = left_edge;
   wuifireinfo->right_edge = right_edge;
@@ -338,6 +338,18 @@ int ADF_GetInfo(char *adf_dir, wuifiredata *wuifireinfo){
 
   fclose(stream);
   return 0;
+}
+
+/* ------------------ ADF_GetFireIndex ------------------------ */
+
+int ADF_GetFireIndex(wuifiredata *wuifireinfo, float longitude, float latitude){
+  int ix, iy, index, val;
+
+  ix = CLAMP(wuifireinfo->vals_nx*(longitude-wuifireinfo->long_min)/(wuifireinfo->long_max-wuifireinfo->long_min),0,wuifireinfo->vals_nx-1);
+  iy = CLAMP(wuifireinfo->vals_ny*(latitude-wuifireinfo->lat_min)/(wuifireinfo->lat_max-wuifireinfo->lat_min), 0, wuifireinfo->vals_ny-1);
+  index = iy*wuifireinfo->vals_nx+ix;
+  val = wuifireinfo->vals[index];
+  return val;
 }
 
   /* ------------------ ADF_Read_w001001 ------------------------ */
@@ -361,7 +373,7 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
   int hist[15] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   int nfail = 0;
 
-  wuifireinfo->ntypes = 0;
+  wuifireinfo->vals_ntypes = 0;
 
   ADF_Read_hdr(adf_dir, &HCellType, &CompFlag, &HPixelSizeX, &HPixelSizeY, &HTilesPerRow, &HTilesPerColumn, &HTileXSize, &HTileYSize);
   ADF_Read_dblbnd(adf_dir, &D_LRX, &D_LRY, &D_URX, &D_URY);
@@ -371,8 +383,8 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
   npixels = (D_URX-D_LRX)/HPixelSizeX;
   nlines = (D_URY-D_LRY)/HPixelSizeY;
 
-  wuifireinfo->ny = nlines;
-  wuifireinfo->nx = npixels;
+  wuifireinfo->vals_ny = nlines;
+  wuifireinfo->vals_nx = npixels;
 
   total_ncols = HTilesPerRow*HTileXSize;
   total_nrows = HTilesPerColumn*HTileYSize;
@@ -446,7 +458,7 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
         for(j = 0; j<nbuffer; j++){
           tile_vals[j] = (unsigned char)RMin;
         }
-        CopyValues(tile_vals, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, wuifireinfo->vals, npixels, nlines);
+        ADF_CopyValues(tile_vals, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, wuifireinfo->vals, npixels, nlines);
       }
       else if(RTileType==1){    // 0x01
         hist[1]++;
@@ -460,11 +472,11 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
           tile_vals[2*j+0] = (cval&0xF0)>4;
           tile_vals[2*j+1] = cval&0x0F;
         }
-        CopyValues(tile_vals, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, wuifireinfo->vals, npixels, nlines);
+        ADF_CopyValues(tile_vals, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, wuifireinfo->vals, npixels, nlines);
       }
       else if(RTileType==8){    // 0x08
         hist[3]++;
-        CopyValues(tile_buffer, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, wuifireinfo->vals, npixels, nlines);
+        ADF_CopyValues(tile_buffer, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, wuifireinfo->vals, npixels, nlines);
       }
       else if(RTileType==16){   // 0x10
         hist[4]++;
@@ -508,7 +520,7 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
           }
           itile += size;
         }
-        CopyValues(tile_vals, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, wuifireinfo->vals, npixels, nlines);
+        ADF_CopyValues(tile_vals, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, wuifireinfo->vals, npixels, nlines);
       }
       else if(RTileType==255){  // 0xFF
         hist[13]++;
@@ -519,7 +531,7 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
         ASSERT(0);
         nfail++;
       }
-      if(RTileType!=248)(wuifireinfo->ntypes)++;
+      if(RTileType!=248)(wuifireinfo->vals_ntypes)++;
     }
   }
   fclose(stream);
@@ -554,7 +566,7 @@ wuifiredata *ADF_GetFireData(char *adf_dir, char *casename){
   NewMemory((void **)&wuifireinfo, sizeof(wuifiredata));
 
   ADF_Read_w001001(adf_dir, wuifireinfo);
-  ADF2PNG(casename, wuifireinfo->vals, wuifireinfo->ny, wuifireinfo->nx);
+  ADF2PNG(casename, wuifireinfo->vals, wuifireinfo->vals_ny, wuifireinfo->vals_nx);
   return wuifireinfo;
 }
 

@@ -6,8 +6,8 @@
 /* --------------------------  firedata ------------------------------------ */
 
 typedef struct _wuifiredata {
-  int n_columns, n_rows;
-  int *vals, nx, ny, ntypes;
+  int tiles_ncolumns, tiles_nrows;
+  int *vals, vals_nx, vals_ny, vals_ntypes;
   int *case_vals, case_nx, case_ny;
   int left_edge, right_edge, bottom_edge, top_edge;
   float lat_min, lat_max, long_min, long_max;
@@ -22,5 +22,6 @@ int ADF_Read_w001001x(char *adf_dir, int **tile_info, int *ntiles);
 int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo);
 int ADF_Read_dblbnd(char *adf_dir, double *D_LLX, double *D_LLY, double *D_URX, double *D_URY);
 void ADF2PNG(char *basename, int *vals, int nrows, int ncols);
+int ADF_GetFireIndex(wuifiredata *wuifireinfo, float longitude, float latitude);
 
 #endif
