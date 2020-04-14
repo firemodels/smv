@@ -370,15 +370,15 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
   double D_LRX, D_LRY, D_URX, D_URY;
   int total_nrows, total_ncols;
   int icol, irow;
-  int hist[15] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  int compression_type[15] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   int nfail = 0;
 
   wuifireinfo->vals_ntypes = 0;
 
-  ADF_Read_hdr(adf_dir, &HCellType, &CompFlag, &HPixelSizeX, &HPixelSizeY, &HTilesPerRow, &HTilesPerColumn, &HTileXSize, &HTileYSize);
-  ADF_Read_dblbnd(adf_dir, &D_LRX, &D_LRY, &D_URX, &D_URY);
-  ADF_Read_w001001x(adf_dir, &tile_info, &ntiles);
-  ADF_GetInfo(adf_dir, wuifireinfo);
+  if(ADF_Read_hdr(adf_dir, &HCellType, &CompFlag, &HPixelSizeX, &HPixelSizeY, &HTilesPerRow, &HTilesPerColumn, &HTileXSize, &HTileYSize)!=0)return 1;
+  if(ADF_Read_dblbnd(adf_dir, &D_LRX, &D_LRY, &D_URX, &D_URY)!=0)return 1;
+  if(ADF_Read_w001001x(adf_dir, &tile_info, &ntiles)!=0)return 1;
+  if(ADF_GetInfo(adf_dir, wuifireinfo)!=0)return 1;
 
   npixels = (D_URX-D_LRX)/HPixelSizeX;
   nlines = (D_URY-D_LRY)/HPixelSizeY;
@@ -454,17 +454,17 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
       fread(tile_buffer, nbuffer, 1, stream);
 
       if(RTileType==0){         // 0x00
-        hist[0]++;
+        compression_type[0]++;
         for(j = 0; j<nbuffer; j++){
           tile_vals[j] = (unsigned char)RMin;
         }
         ADF_CopyValues(tile_vals, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, wuifireinfo->vals, npixels, nlines);
       }
       else if(RTileType==1){    // 0x01
-        hist[1]++;
+        compression_type[1]++;
       }
       else if(RTileType==4){    // 0x04
-        hist[2]++;
+        compression_type[2]++;
         for(j = 0; j<nbuffer; j++){
           unsigned char cval;
 
@@ -475,40 +475,40 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
         ADF_CopyValues(tile_vals, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, wuifireinfo->vals, npixels, nlines);
       }
       else if(RTileType==8){    // 0x08
-        hist[3]++;
+        compression_type[3]++;
         ADF_CopyValues(tile_buffer, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, wuifireinfo->vals, npixels, nlines);
       }
       else if(RTileType==16){   // 0x10
-        hist[4]++;
+        compression_type[4]++;
         nfail++;
       }
       else if(RTileType==32){   // 0x20
-        hist[5]++;
+        compression_type[5]++;
         nfail++;
       }
       else if(RTileType==207){  // 0xCF
-        hist[6]++;
+        compression_type[6]++;
         nfail++;
       }
       else if(RTileType==215){  // 0xD7
-        hist[7]++;
+        compression_type[7]++;
         nfail++;
       }
       else if(RTileType==223){  // 0xDF
-        hist[8]++;
+        compression_type[8]++;
         nfail++;
       }
       else if(RTileType==224){  // 0xE0
-        hist[9]++;
+        compression_type[9]++;
         nfail++;
       }
       else if(RTileType==240){  // 0xF0
-        hist[10]++;
+        compression_type[10]++;
         nfail++;
       }
       else if(RTileType==248||RTileType==252){  // 0xF8 0xFC
-        if(RTileType==248)hist[11]++;
-        if(RTileType==252)hist[12]++;
+        if(RTileType==248)compression_type[11]++;
+        if(RTileType==252)compression_type[12]++;
         for(j = 0; j<nbuffer; j+=2){
           int kkk;
           unsigned char size, val;
@@ -523,11 +523,11 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
         ADF_CopyValues(tile_vals, HTileXSize, HTileYSize, icol*HTileXSize, irow*HTileYSize, wuifireinfo->vals, npixels, nlines);
       }
       else if(RTileType==255){  // 0xFF
-        hist[13]++;
+        compression_type[13]++;
         nfail++;
       }
       else{
-        hist[14]++;
+        compression_type[14]++;
         ASSERT(0);
         nfail++;
       }
@@ -541,7 +541,7 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
     printf("***warning: number of un-handled tiles=%i\n", nfail);
     printf("tile representation distribution:\n");
     for(i = 0; i<15; i++){
-      printf(" %i/%i ", i,hist[i]);
+      printf(" %i/%i ", i,compression_type[i]);
     }
     printf("\n");
   }
@@ -549,7 +549,7 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
   if(nfail==0){
     printf("tile representation distribution:\n");
     for(i = 0; i<15; i++){
-      printf(" %i/%i ", i,hist[i]);
+      printf(" %i/%i ", i,compression_type[i]);
     }
     printf("\n");
   }
@@ -565,7 +565,10 @@ wuifiredata *ADF_GetFireData(char *adf_dir, char *casename){
 
   NewMemory((void **)&wuifireinfo, sizeof(wuifiredata));
 
-  ADF_Read_w001001(adf_dir, wuifireinfo);
+  if(ADF_Read_w001001(adf_dir, wuifireinfo)!=0){
+    FREEMEMORY(wuifireinfo);
+    return NULL;
+  }
   ADF2PNG(casename, wuifireinfo->vals, wuifireinfo->vals_ny, wuifireinfo->vals_nx);
   return wuifireinfo;
 }

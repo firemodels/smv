@@ -10,6 +10,7 @@ typedef struct _wuifiredata {
   int *vals, vals_nx, vals_ny, vals_ntypes;
   int *case_vals, case_nx, case_ny;
   int left_edge, right_edge, bottom_edge, top_edge;
+  int fire_types[101];
   float lat_min, lat_max, long_min, long_max;
   float res_x, res_y;
 } wuifiredata;
