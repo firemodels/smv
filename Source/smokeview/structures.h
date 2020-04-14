@@ -99,6 +99,7 @@ typedef struct _geomobjdata {
   char *texture_name;
   float texture_width, texture_height, texture_center[3];
   int texture_mapping;
+  int use_geom_color;
 } geomobjdata;
 
 /* --------------------------  geomdata ------------------------------------ */

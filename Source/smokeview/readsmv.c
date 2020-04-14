@@ -6520,6 +6520,7 @@ int ReadSMV(bufferstreamdata *stream){
 
           colorlabel = strchr(buffer, '!');
           geomobji->color = NULL;
+          geomobji->use_geom_color = 0;
           if(colorlabel!=NULL){
             int colors[3] = {-1, -1, -1};
 
@@ -6534,6 +6535,7 @@ int ReadSMV(bufferstreamdata *stream){
               fcolors[2] = colors[2]/255.0;
               fcolors[3] = 1.0;
               geomobji->color = GetColorPtr(fcolors);
+              geomobji->use_geom_color = 1;
             }
           }
 

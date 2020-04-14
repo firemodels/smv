@@ -546,7 +546,7 @@ void DrawGeom(int flag, int timestate){
         transparent_level_local=1.0;
       }
       else{
-        if(trianglei->geomobj!=NULL&&trianglei->geomobj->color!=NULL){
+        if(trianglei->geomobj!=NULL&&trianglei->geomobj->color!=NULL&&trianglei->geomobj->use_geom_color==1){
           color = trianglei->geomobj->color;
         }
         else{
