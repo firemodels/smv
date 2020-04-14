@@ -429,7 +429,7 @@ int GetElevations(char *input_file, char *image_file, char *image_file_type, ele
   int kbar;
   int nlongs = 100, nlats = 100;
   float dlat, dlong;
-  int count, *have_vals;
+  int *have_vals;
   float valmin=0.0, valmax=1.0, *vals;
   char *ext;
   float longref = -1000.0, latref = -1000.0;
@@ -826,28 +826,31 @@ int GetElevations(char *input_file, char *image_file, char *image_file_type, ele
   fds_elevs->longref = longref;
   fds_elevs->latref = latref;
 
-  count = 0;
-  for(j = 0; j < nlats; j++) {
-    for(i = 0; i < nlongs; i++){
-      float llong, llat, elevij;
-      int have_val;
+  {
+    int count=0;
 
-      llong = *longlats++;
-      llat = *longlats++;
-      elevij = GetElevation(elevinfo, nelevinfo, llong, llat, INTERPOLATE, &have_val);
-      vals[count] = elevij;
-      have_vals[count] = have_val;
-      if(have_val == 1){
-        if(count == 0){
-          valmin = elevij;
-          valmax = elevij;
+    for(j = 0; j<nlats; j++) {
+      for(i = 0; i<nlongs; i++){
+        float llong, llat, elevij;
+        int have_val;
+
+        llong = *longlats++;
+        llat = *longlats++;
+        elevij = GetElevation(elevinfo, nelevinfo, llong, llat, INTERPOLATE, &have_val);
+        vals[count] = elevij;
+        have_vals[count] = have_val;
+        if(have_val==1){
+          if(count==0){
+            valmin = elevij;
+            valmax = elevij;
+          }
+          else{
+            valmin = MIN(valmin, elevij);
+            valmax = MAX(valmax, elevij);
+          }
         }
-        else{
-          valmin = MIN(valmin, elevij);
-          valmax = MAX(valmax, elevij);
-        }
+        count++;
       }
-      count++;
     }
   }
   fds_elevs->val_min = valmin;
@@ -935,14 +938,16 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
   kbar = nz;
 
   NewMemory((void **)&xgrid, sizeof(float)*(ibar + 1));
-  for(i = 0; i < ibar + 1; i++){
+  for(i = 0; i < ibar; i++){
     xgrid[i] = xmax*(float)i / (float)ibar;
   }
+  xgrid[ibar] = xmax;
 
   NewMemory((void **)&ygrid, sizeof(float)*(jbar + 1));
-  for(i = 0; i < jbar + 1; i++){
-    ygrid[i] = ymax*(float)(jbar - i) / (float)jbar;
+  for(i = 0; i < jbar; i++){
+    ygrid[i] = ymax*(float)(i)/(float)jbar;
   }
+  ygrid[jbar] = ymax;
 
   if(option==FDS_OBST){
     int nvals = ibar*jbar, len;
@@ -978,7 +983,7 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
     fprintf(streamout, "&MISC TERRAIN_CASE = .TRUE., TERRAIN_IMAGE = '%s.png' /\n", basename);
   }
   if(option==FDS_GEOM) {
-    fprintf(streamout, "&MISC TERRAIN_IMAGE = '%s.png' /\n", basename);
+    fprintf(streamout, "&MISC TERRAIN_CASE = .TRUE., TERRAIN_IMAGE = '%s.png' /\n", basename);
   }
   fprintf(streamout, "&TIME T_END = 0.0 /\n");
   fprintf(streamout, "&VENT MB = 'XMIN', SURF_ID = 'OPEN' /\n");
@@ -990,19 +995,58 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
   fprintf(streamout, "\nTerrain Geometry\n\n");
 
   if(option == FDS_GEOM){
-    fprintf(streamout, "&MATL ID = '%s', DENSITY = 1000., CONDUCTIVITY = 1., SPECIFIC_HEAT = 1., RGB = 122,117,48 /\n",matl_id);
-    fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 TEXTURE_MAP='%s.png' /\n", surf_id1, basename);
-    fprintf(streamout, "&GEOM ID='terrain', SURF_ID='%s',MATL_ID='%s',\nIJK=%i,%i,XB=%f,%f,%f,%f,\nZVALS=\n",
-      surf_id1,matl_id,nlong, nlat, 0.0, xmax, 0.0, ymax);
-    count = 1;
-    for(j = 0; j < jbar + 1; j++){
-      for(i = 0; i < ibar + 1; i++){
-        fprintf(streamout, " %f,", vals[(jbar-j)*(ibar+1)+i]);
-        if(count % 10 == 0)fprintf(streamout, "\n");
-        count++;
+    float *verts;
+    int *faces;
+    int nverts, nfaces;
+
+    NewMemory((void **)&verts, 3*(ibar+1)*(jbar+1)*sizeof(float));
+    NewMemory((void **)&faces, 3*2*ibar*jbar*sizeof(int));
+
+#define VERTIJ(i,j) ((j)*(ibar+1)+(i))
+
+    nverts = 0;
+    for(j = 0; j<jbar+1; j++){
+      for(i = 0; i<ibar+1; i++){
+        verts[3*nverts+0] = xgrid[i];
+        verts[3*nverts+1] = ymax-ygrid[j];
+        verts[3*nverts+2] = vals[VERTIJ(i,j)];
+        nverts++;
       }
     }
-    fprintf(streamout, "/\n");
+
+    nfaces = 0;
+    for(j = 0; j<jbar; j++){
+      for(i = 0; i<ibar; i++){
+        faces[3*nfaces+0] = 1+VERTIJ(i, j);
+        faces[3*nfaces+1] = 1+VERTIJ(i+1, j+1);
+        faces[3*nfaces+2] = 1+VERTIJ(i+1, j);
+        nfaces++;
+
+        faces[3*nfaces+0] = 1+VERTIJ(i, j);
+        faces[3*nfaces+1] = 1+VERTIJ(i, j+1);
+        faces[3*nfaces+2] = 1+VERTIJ(i+1, j+1);
+        nfaces++;
+      }
+    }
+
+    fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 /\n", surf_id1);
+    fprintf(streamout, "&GEOM ID='terrain', IS_TERRAIN=T, SURF_ID='%s',\n", surf_id1);
+    fprintf(streamout, "  VERTS=\n");
+    for(i = 0; i < nverts; i++){
+        fprintf(streamout, " %f,%f,%f", verts[3*i+0], verts[3*i+1], verts[3*i+2]);
+        if(i!=nverts-1)fprintf(streamout,",  ");
+          if((i+1)%3==0)fprintf(streamout, "\n");
+    }
+
+    fprintf(streamout, "  FACES=\n");
+    for(i = 0; i<nfaces; i++){
+      fprintf(streamout, " %i,%i,%i,%i", faces[3*i+0], faces[3*i+1], faces[3*i+2],1);
+      if(i!=nfaces-1)fprintf(streamout, ",  ");
+      if((i+1)%6==0)fprintf(streamout, "\n");
+    }
+    fprintf(streamout,"/\n");
+    FREEMEMORY(verts);
+    FREEMEMORY(faces);
   }
 
   if(option == FDS_OBST){

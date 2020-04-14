@@ -46,7 +46,45 @@ EXTERNCPP int GetElevations(char *elevfile, char *image_file, char *image_type, 
 
 SVEXTERN char image_dir[1024], elev_dir[1024];
 #ifdef pp_ADF
+#define NFIRETYPES 20
+#define MAXFIRETYPE 100
+SVEXTERN int firehash[MAXFIRETYPE];
 SVEXTERN char fire_dir[1024];
+#ifdef INMAIN
+SVEXTERN int fireindices[NFIRETYPES] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 90, 91, 92, 93, 98, 99, 100};
+SVEXTERN int fireolors[3*NFIRETYPES] = {
+255, 255, 190, // FBFM1
+255, 255,   0, // FBFM2
+230, 197,   7, // FBFM3
+255, 211, 127, // FBFM4
+255, 169,   0, // FBFM5
+206, 169, 102, // FBFM6
+136, 111,  69, // FBFM7
+211, 255, 190, // FBFM8
+111, 168,   0, // FBFM9
+ 36, 116,   0, // FBFM10
+232, 190, 255, // FBFM11
+123, 141, 245, // FBFM12
+197,   0, 255, // FBFM13
+
+  0,   0,   0,  // UNKNOWN  FB90 - code 90 appears in data - not documented
+103, 103, 103, // Urban    FB91
+225, 225, 225, // Snow     FB92
+255, 238, 238, // Aricul   FB93
+  0,   7, 214, // Water    FB98
+ 77, 108, 111, // Barren   FB99
+  0,   0,   0  // No Data  
+};
+SVEXTERN char *firetypes[NFIRETYPES] = {
+"FBFM1", "FBFM2", "FBFM3", "FBFM4", "FBFM5", "FBFM6", "FBFM7", "FBFM8", "FBFM9", "FBFM10", "FBFM11", "FBFM12", "FBFM13",
+"FB90", "FB91", "FB92", "FB93", "FB98", "FB99", "NODATA"};
+#else
+SVEXTERN char image_dir[1024];
+SVEXTERN char elev_dir[1024];
+SVEXTERN int fireindices[NFIRETYPES];
+SVEXTERN char *firetypes[NFIRETYPES];
+SVEXTERN int fireolors[];
+#endif
 #endif
 SVEXTERN int SVDECL(overlap_size,0), SVDECL(show_maps,0);
 SVEXTERN char surf_id1[1024], surf_id2[1024], matl_id[1024];

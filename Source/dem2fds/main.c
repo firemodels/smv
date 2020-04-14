@@ -74,7 +74,10 @@ int main(int argc, char **argv){
 
   strcpy(casename_fds, "");
   strcpy(file_default, "terrain");
-  strcpy(image_dir,    ".");
+#ifdef pp_ADF
+  strcpy(fire_dir, "");
+#endif
+  strcpy(image_dir,    "");
   strcpy(elev_dir,     "");
   strcpy(surf_id1,     "surf1");
   strcpy(surf_id2,     "surf2");
@@ -130,7 +133,7 @@ int main(int argc, char **argv){
       else if(strncmp(arg, "-jpeg", 5)==0){
         strcpy(image_type, ".jpg");
       }
-      else if(strncmp(arg, "-elevdir", 8) == 0) {
+      else if(strncmp(arg, "-elevdir", 8) == 0){
         i++;
         if(FILE_EXISTS(argv[i]) == NO)fatal_error = 1;
       }
@@ -148,7 +151,7 @@ int main(int argc, char **argv){
     fprintf(stderr, "\n***error: input file %s does not exist\n",casename);
     return 1;
   }
-  if(fatal_error == 1) {
+  if(fatal_error == 1){
     fprintf(stderr, "\ncase: %s\n", casename);
   }
 
@@ -164,18 +167,18 @@ int main(int argc, char **argv){
       if(strncmp(arg, "-dir", 4) == 0){
         i++;
         if(FILE_EXISTS(argv[i]) == YES){
-          if(strlen(image_dir)==0) {
+          if(strlen(image_dir)==0){
             strcpy(image_dir, argv[i]);
             strcat(image_dir, dirseparator);
             strcat(image_dir, "images");
           }
-          if(strlen(elev_dir) == 0) {
+          if(strlen(elev_dir) == 0){
             strcpy(elev_dir, argv[i]);
             strcat(elev_dir, dirseparator);
             strcat(elev_dir, "elevations");
           }
 #ifdef pp_ADF
-          if(strlen(fire_dir)==0) {
+          if(strlen(fire_dir)==0){
             strcpy(fire_dir, argv[i]);
             strcat(fire_dir, dirseparator);
             strcat(fire_dir, "anderson13");
@@ -189,7 +192,7 @@ int main(int argc, char **argv){
       }
       else if(strncmp(arg, "-elevdir", 8) == 0){
         i++;
-        if(FILE_EXISTS(argv[i]) == YES) {
+        if(FILE_EXISTS(argv[i]) == YES){
           strcpy(elev_dir, argv[i]);
         }
         else {
@@ -199,7 +202,7 @@ int main(int argc, char **argv){
       }
       else if(strncmp(arg, "-imagedir", 9)==0){
         i++;
-        if(FILE_EXISTS(argv[i])==YES) {
+        if(FILE_EXISTS(argv[i])==YES){
           strcpy(image_dir, argv[i]);
         }
         else {
@@ -210,7 +213,7 @@ int main(int argc, char **argv){
 #ifdef pp_ADF
       else if(strncmp(arg, "-firedir", 8)==0){
         i++;
-        if(FILE_EXISTS(argv[i])==YES) {
+        if(FILE_EXISTS(argv[i])==YES){
           strcpy(fire_dir, argv[i]);
         }
         else {
@@ -239,7 +242,7 @@ int main(int argc, char **argv){
         i++;
         strcpy(surf_id1, argv[i]);
       }
-      else if (strncmp(arg, "-surf2", 6) == 0) {
+      else if (strncmp(arg, "-surf2", 6) == 0){
         i++;
         strcpy(surf_id2, argv[i]);
       }
@@ -267,7 +270,7 @@ int main(int argc, char **argv){
 
   if(fatal_error == 1) return 1;
 
-  if(strlen(elev_dir) == 0) {
+  if(strlen(elev_dir) == 0){
     strcpy(elev_dir, image_dir);
   }
 
@@ -294,7 +297,7 @@ int main(int argc, char **argv){
   wuifireinfo = ADF_GetFireData(fire_dir, casename);
 #endif
 
-  if(GetElevations(casename, image_file, image_type, &fds_elevs)==1) {
+  if(GetElevations(casename, image_file, image_type, &fds_elevs)==1){
      GenerateFDSInputFile(casename, casename_fds, &fds_elevs, gen_fds);
   }
   return 0;
