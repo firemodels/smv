@@ -200,6 +200,8 @@ int GetColor(elevdata *imagei, float llong, float llat) {
     int irow, icol;
     float latfact, longfact;
 
+    if(imagei->image==NULL)imagei->image = GetJPEGImage(imagei->datafile, &imagei->ncols, &imagei->nrows);
+
     latfact = (llat-imagei->lat_min)/(imagei->lat_max-imagei->lat_min);
     longfact = (llong-imagei->long_min)/(imagei->long_max-imagei->long_min);
 
@@ -266,7 +268,6 @@ void GenerateMapImage(char *image_file, char *image_file_type, elevdata *fds_ele
 
     imagei = imageinfo+ii;
     printf(" processing image file %i of %i\n",ii+1,nimageinfo);
-    if(imagei->image==NULL)imagei->image = GetJPEGImage(imagei->datafile, &imagei->ncols, &imagei->nrows);
 
     for(j = 0; j<nrows; j++) {
       int i;
@@ -283,7 +284,7 @@ void GenerateMapImage(char *image_file, char *image_file_type, elevdata *fds_ele
         if(rgb_local>=0)gdImageSetPixel(RENDERimage, i, j, rgb_local);
       }
     }
-    gdImageDestroy(imagei->image);
+    if(imagei->image!=NULL)gdImageDestroy(imagei->image);
   }
 #else
   for(j = 0; j < nrows; j++) {
@@ -425,7 +426,7 @@ int GetElevations(char *input_file, char *image_file, char *image_file_type, ele
   int nelevinfo, nimageinfo, i, j;
   filelistdata *headerfiles, *imagefiles;
   FILE *stream_in;
-  elevdata *elevinfo, *imageinfo;
+  elevdata *elevinfo=NULL, *imageinfo=NULL;
   int kbar;
   int nlongs = 100, nlats = 100;
   float dlat, dlong;
@@ -888,7 +889,11 @@ int GetElevations(char *input_file, char *image_file, char *image_file_type, ele
 
 /* ------------------ GenerateFDSInputFile ------------------------ */
 
-void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option){
+void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option
+#ifdef pp_ADF
+  , wuifiredata *wuifireinfo
+#endif
+){
   char output_file[LEN_BUFFER], output_elev_file[LEN_BUFFER], *ext;
   char basename[LEN_BUFFER];
 
@@ -996,11 +1001,12 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
 
   if(option == FDS_GEOM){
     float *verts;
-    int *faces;
+    int *faces, *surfs;
     int nverts, nfaces;
 
     NewMemory((void **)&verts, 3*(ibar+1)*(jbar+1)*sizeof(float));
     NewMemory((void **)&faces, 3*2*ibar*jbar*sizeof(int));
+    NewMemory((void **)&surfs, 2*ibar*jbar*sizeof(int));
 
 #define VERTIJ(i,j) ((j)*(ibar+1)+(i))
 
@@ -1029,8 +1035,33 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
       }
     }
 
-    fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 /\n", surf_id1);
+#ifdef pp_ADF
+    if(wuifireinfo==NULL){
+      for(i = 0; i<nfaces; i++){
+        surfs[i] = 1;
+      }
+      fprintf(streamout, "&GEOM ID='terrain', IS_TERRAIN=T, SURF_ID='%s',\n", surf_id1);
+    }
+    else{
+      for(i = 0; i<NFIRETYPES; i++){
+        fprintf(streamout, "&SURF ID = '%s', RGB = %i, %i, %i /\n", firetypes[i],firecolors[3*i],firecolors[3*i+1],firecolors[3*i+2]);
+      }
+      ADF_GetSurfs(wuifireinfo, fds_elevs, verts, nverts, faces, surfs, nfaces);
+      fprintf(streamout, "&GEOM ID='terrain', IS_TERRAIN=T, SURF_ID=\n");
+      for(i = 0; i<NFIRETYPES; i++){
+        fprintf(streamout, " '%s'",firetypes[i]);
+        if(i!=NFIRETYPES-1)fprintf(streamout, ", ");
+        if(i==9||i==NFIRETYPES-1)fprintf(streamout,"\n");
+      }
+    }
+#else
     fprintf(streamout, "&GEOM ID='terrain', IS_TERRAIN=T, SURF_ID='%s',\n", surf_id1);
+    fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 /\n", surf_id1);
+    for(i = 0; i<nfaces; i++){
+      surfs[i] = 1;
+    }
+#endif
+
     fprintf(streamout, "  VERTS=\n");
     for(i = 0; i < nverts; i++){
         fprintf(streamout, " %f,%f,%f", verts[3*i+0], verts[3*i+1], verts[3*i+2]);
@@ -1040,7 +1071,7 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
 
     fprintf(streamout, "  FACES=\n");
     for(i = 0; i<nfaces; i++){
-      fprintf(streamout, " %i,%i,%i,%i", faces[3*i+0], faces[3*i+1], faces[3*i+2],1);
+      fprintf(streamout, " %i,%i,%i,%i", faces[3*i+0], faces[3*i+1], faces[3*i+2],surfs[i]);
       if(i!=nfaces-1)fprintf(streamout, ",  ");
       if((i+1)%6==0)fprintf(streamout, "\n");
     }

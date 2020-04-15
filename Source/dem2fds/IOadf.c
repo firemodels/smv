@@ -5,9 +5,10 @@
 #include <string.h>
 
 #include "MALLOCC.h"
+#include "gd.h"
+#include "dem_util.h"
 #include "IOadf.h"
 #include "datadefs.h"
-#include "gd.h"
 
 /* ------------------ ADF_Read_dblbnd ------------------------ */
 
@@ -123,17 +124,17 @@ int ADF_Read_w001001x(char *adf_dir, int **tile_info, int *ntiles){
   return 0;
 }
 
-/* ------------------ GetValIndex ------------------------ */
+/* ------------------ GetAndersonFireIndex ------------------------ */
 
 #define NFIRE_TYPES 20
-int GetValIndex(int val){
+int GetAndersonFireIndex(int val){
   int j;
   int fire_type[NFIRE_TYPES] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 90, 91, 92, 93, 98, 99,9999};
 
   for(j = 0; j<NFIRE_TYPES-1; j++){
-    if(val==fire_type[j])return j;
+    if(val==fire_type[j])return j+1;
   }
-  return NFIRE_TYPES-1;
+  return NFIRE_TYPES;
 }
 
 /* ------------------ ADF_CopyValues ------------------------ */
@@ -176,33 +177,9 @@ int GetValIndex2(int val, int *val_table, int ntable){
 /* ------------------ ADF2PNG ------------------------ */
 
 void ADF2PNG(char *basename, int *vals, int nrows, int ncols){
-  int *val_table = NULL;
-  int i, ntable=0;
-  int *rgb;
-  int dcolor;
+  int i;
   gdImagePtr RENDERimage;
   FILE *RENDERfile = NULL;
-
-  NewMemory((void **)&val_table, nrows*ncols*sizeof(int));
-  for(i = 0; i<nrows*ncols;i++){
-    int j, ival;
-
-    if(GetValIndex2(vals[i],val_table,ntable)==-1)val_table[ntable++] = vals[i];
-  }
-  NewMemory((void **)&rgb, 3*ntable*sizeof(int));
-  dcolor = 256*256*256/(ntable+2);
-  for(i = 0; i<ntable; i++){
-    int icolor;
-    int red, green, blue;
-
-    icolor = (i+1)*dcolor;
-    red = CLAMP(icolor%256, 0, 255);
-    green = CLAMP((icolor/256)%256,0,255);
-    blue = CLAMP(icolor/(256*256),0,255);
-    rgb[3*i] = red;
-    rgb[3*i+1] = green;
-    rgb[3*i+2] = blue;
-  }
 
   RENDERimage = gdImageCreateTrueColor(3*ncols, 3*nrows);
 
@@ -211,12 +188,17 @@ void ADF2PNG(char *basename, int *vals, int nrows, int ncols){
 
     for(j = 0; j<nrows; j++){
       unsigned char r, g, b;
-      int rgb_local, index, ii, jj;
+      int rgb_local, color_index, ii, jj;
+      int val;
 
-      index = vals[j*ncols+i];
-      r = (unsigned char)val_table[3*index];
-      g = (unsigned char)val_table[3*index+1];
-      b = (unsigned char)val_table[3*index+2];
+      val = vals[j*ncols+i];
+      if(val==98){
+        val = 98;
+      }
+      color_index = GetAndersonFireIndex(val)-1;
+      r = (unsigned char)firecolors[3*color_index];
+      g = (unsigned char)firecolors[3*color_index+1];
+      b = (unsigned char)firecolors[3*color_index+2];
       rgb_local = (r<<16)|(g<<8)|b;
       for(ii=0;ii<3;ii++){
         for(jj=0;jj<3;jj++){
@@ -234,6 +216,33 @@ void ADF2PNG(char *basename, int *vals, int nrows, int ncols){
   }
   gdImagePng(RENDERimage, RENDERfile);
   fclose(RENDERfile);
+}
+
+/* ------------------ ADF_GetSurfs ------------------------ */
+
+void ADF_GetSurfs(wuifiredata *wuifireinfo, struct _elevdata *fds_elevs, float *verts, int nverts, int *faces, int *surfs, int nfaces){
+  int i, fire_index;
+  float longitude, latitude;
+
+  for(i = 0; i<nfaces; i++){
+    int f1, f2, f3;
+    float *v1, *v2, *v3, xavg, yavg;
+    int firetype_index;
+
+    f1 = faces[3*i+0]-1;
+    f2 = faces[3*i+1]-1;
+    f3 = faces[3*i+2]-1;
+    v1 = verts+3*f1;
+    v2 = verts+3*f2;
+    v3 = verts+3*f3;
+    xavg = (v1[0]+v2[0]+v3[0])/3.0;
+    yavg = (v1[1]+v2[1]+v3[1])/3.0;
+    longitude = fds_elevs->long_min + (xavg/fds_elevs->xmax)*(fds_elevs->long_max-fds_elevs->long_min);
+    latitude = fds_elevs->lat_min   + (yavg/fds_elevs->ymax)*(fds_elevs->lat_max-fds_elevs->lat_min);
+    fire_index = ADF_GetFireIndex(wuifireinfo, longitude, latitude);
+    firetype_index = GetAndersonFireIndex(fire_index);
+    surfs[i] = firetype_index;
+  }
 }
 
 /* ------------------ ADF_GetInfo ------------------------ */

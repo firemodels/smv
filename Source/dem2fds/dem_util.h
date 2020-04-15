@@ -8,6 +8,11 @@
 #define DONT_INTERPOLATE 0
 #define INTERPOLATE 1
 
+#include "dem_util.h"
+
+#ifdef pp_ADF
+#include "IOadf.h"
+#endif
 
 #ifdef WIN32
 #define STDCALLF extern void _stdcall
@@ -21,7 +26,7 @@ STDCALLF FORTelev2geom(char *output_elev_file, float *xgrid, int *ibar, float *y
 
 /* --------------------------  elevdata ------------------------------------ */
 
-typedef struct {
+typedef struct _elevdata {
   int ncols, nrows, nz, use_it;
   float xllcorner, yllcorner, cellsize;
   char *headerfile, *datafile;
@@ -41,7 +46,11 @@ typedef struct {
   float xmin, xmax, ymin, ymax;
 } excludedata;
 
-EXTERNCPP void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option);
+EXTERNCPP void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option
+#ifdef pp_ADF
+  , wuifiredata *wuifireinfo
+#endif
+);
 EXTERNCPP int GetElevations(char *elevfile, char *image_file, char *image_type, elevdata *fds_elevs);
 
 SVEXTERN char image_dir[1024], elev_dir[1024];
@@ -51,8 +60,9 @@ SVEXTERN char image_dir[1024], elev_dir[1024];
 SVEXTERN int firehash[MAXFIRETYPE];
 SVEXTERN char fire_dir[1024];
 #ifdef INMAIN
+SVEXTERN int have_firetypes[NFIRETYPES] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 SVEXTERN int fireindices[NFIRETYPES] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 90, 91, 92, 93, 98, 99, 100};
-SVEXTERN int fireolors[3*NFIRETYPES] = {
+SVEXTERN int firecolors[3*NFIRETYPES] = {
 255, 255, 190, // FBFM1
 255, 255,   0, // FBFM2
 230, 197,   7, // FBFM3
@@ -70,7 +80,7 @@ SVEXTERN int fireolors[3*NFIRETYPES] = {
   0,   0,   0,  // UNKNOWN  FB90 - code 90 appears in data - not documented
 103, 103, 103, // Urban    FB91
 225, 225, 225, // Snow     FB92
-255, 238, 238, // Aricul   FB93
+255, 238, 238, // Agricul   FB93
   0,   7, 214, // Water    FB98
  77, 108, 111, // Barren   FB99
   0,   0,   0  // No Data  
@@ -79,11 +89,12 @@ SVEXTERN char *firetypes[NFIRETYPES] = {
 "FBFM1", "FBFM2", "FBFM3", "FBFM4", "FBFM5", "FBFM6", "FBFM7", "FBFM8", "FBFM9", "FBFM10", "FBFM11", "FBFM12", "FBFM13",
 "FB90", "FB91", "FB92", "FB93", "FB98", "FB99", "NODATA"};
 #else
+SVEXTERN int have_firetypes[NFIRETYPES];
 SVEXTERN char image_dir[1024];
 SVEXTERN char elev_dir[1024];
 SVEXTERN int fireindices[NFIRETYPES];
 SVEXTERN char *firetypes[NFIRETYPES];
-SVEXTERN int fireolors[];
+SVEXTERN int firecolors[];
 #endif
 #endif
 SVEXTERN int SVDECL(overlap_size,0), SVDECL(show_maps,0);

@@ -65,7 +65,7 @@ int main(int argc, char **argv){
     wuifiredata *wuifireinfo;
 #endif
 
-  if(1==0&&argc == 1){
+  if(argc == 1){
     Usage("dem2fds",HELP_ALL);
     return 0;
   }
@@ -298,7 +298,11 @@ int main(int argc, char **argv){
 #endif
 
   if(GetElevations(casename, image_file, image_type, &fds_elevs)==1){
-     GenerateFDSInputFile(casename, casename_fds, &fds_elevs, gen_fds);
+     GenerateFDSInputFile(casename, casename_fds, &fds_elevs, gen_fds
+#ifdef pp_ADF
+       , wuifireinfo
+#endif
+     );
   }
   return 0;
 }

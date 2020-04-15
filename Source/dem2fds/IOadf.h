@@ -24,5 +24,6 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo);
 int ADF_Read_dblbnd(char *adf_dir, double *D_LLX, double *D_LLY, double *D_URX, double *D_URY);
 void ADF2PNG(char *basename, int *vals, int nrows, int ncols);
 int ADF_GetFireIndex(wuifiredata *wuifireinfo, float longitude, float latitude);
+void ADF_GetSurfs(wuifiredata *wuifireinfo, struct _elevdata *fds_elevs, float *verts, int nverts, int *faces, int *surfs, int nfaces);
 
 #endif
