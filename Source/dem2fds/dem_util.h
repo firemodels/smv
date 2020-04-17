@@ -48,7 +48,7 @@ typedef struct {
 
 EXTERNCPP void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option
 #ifdef pp_ADF
-  , wuifiredata *wuifireinfo
+  , wuigriddata *wuifireinfo
 #endif
 );
 EXTERNCPP int GetElevations(char *elevfile, char *image_file, char *image_type, elevdata *fds_elevs);

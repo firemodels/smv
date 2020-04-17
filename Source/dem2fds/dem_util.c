@@ -891,7 +891,7 @@ int GetElevations(char *input_file, char *image_file, char *image_file_type, ele
 
 void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option
 #ifdef pp_ADF
-  , wuifiredata *wuifireinfo
+  , wuigriddata *wuifireinfo
 #endif
 ){
   char output_file[LEN_BUFFER], output_elev_file[LEN_BUFFER], *ext;
@@ -1064,10 +1064,11 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
 
     fprintf(streamout, "  VERTS=\n");
     for(i = 0; i < nverts; i++){
-        fprintf(streamout, " %f,%f,%f", verts[3*i+0], verts[3*i+1], verts[3*i+2]);
-        if(i!=nverts-1)fprintf(streamout,",  ");
-          if((i+1)%3==0)fprintf(streamout, "\n");
+      fprintf(streamout, " %f,%f,%f", verts[3*i+0], verts[3*i+1], verts[3*i+2]);
+      fprintf(streamout,",  ");
+      if((i+1)%3==0)fprintf(streamout, "\n");
     }
+    fprintf(streamout,"\n");
 
     fprintf(streamout, "  FACES=\n");
     for(i = 0; i<nfaces; i++){

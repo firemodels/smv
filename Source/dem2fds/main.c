@@ -62,7 +62,7 @@ int main(int argc, char **argv){
   elevdata fds_elevs;
   int fatal_error = 0;
 #ifdef pp_ADF
-    wuifiredata *wuifireinfo;
+  wuigriddata *wuifireinfo;
 #endif
 
   if(argc == 1){

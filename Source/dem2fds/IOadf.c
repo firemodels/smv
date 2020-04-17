@@ -80,7 +80,7 @@ void ADF2PNG(char *basename, int *vals, int nrows, int ncols){
 
 /* ------------------ ADF_GetSurfs ------------------------ */
 
-void ADF_GetSurfs(wuifiredata *wuifireinfo, struct _elevdata *fds_elevs, float *verts, int nverts, int *faces, int *surfs, int nfaces){
+void ADF_GetSurfs(wuigriddata *wuifireinfo, struct _elevdata *fds_elevs, float *verts, int nverts, int *faces, int *surfs, int nfaces){
   int i, fire_index;
   float longitude, latitude;
 
@@ -105,113 +105,9 @@ void ADF_GetSurfs(wuifiredata *wuifireinfo, struct _elevdata *fds_elevs, float *
   }
 }
 
-/* ------------------ ADF_GetInfo ------------------------ */
-
-#define GET_BUFFER(flag) \
-  if(flag==1){if(fgets(buffer, 1000, stream)==NULL){ fclose(stream); return 1; }} \
-  colon = strchr(buffer, ':'); \
-  if(colon==NULL){ fclose(stream); return 1; } \
-  colon++;
-
-int ADF_GetInfo(char *adf_dir, wuifiredata *wuifireinfo){
-  char parent_dir[1000];
-  FILE *stream;
-  char buffer[1000];
-  char key1[] = "Number of columns:";
-  char key2[] = "Top edge Native:";
-  char key3[] = "Top edge WGS84:";
-  char *colon;
-  int n_columns, n_rows;
-  float res_x, res_y;
-  int top_edge, bottom_edge, left_edge, right_edge;
-  float lat_max, lat_min, long_min, long_max;
-
-  if(adf_dir==NULL||strlen(adf_dir)==0)return 1;
-  strcpy(parent_dir, adf_dir);
-  strcat(parent_dir, dirseparator);
-  strcat(parent_dir, "..");
-
-  stream = fopen_indir(parent_dir, "output_parameters.txt", "r");
-
-  //skip until key1 is located
-  if(stream==NULL)return 1;
-  for(;;){
-    if(fgets(buffer, 1000, stream)==NULL){ fclose(stream); return 1; }
-    if(strncmp(buffer, key1, strlen(key1))==0)break;
-  }
-
-  GET_BUFFER(0);
-  sscanf(colon, "%i", &n_columns);
-
-  GET_BUFFER(1);
-  sscanf(colon, "%i", &n_rows);
-
-  GET_BUFFER(1);
-  sscanf(colon, "%f", &res_x);
-
-  GET_BUFFER(1);
-  sscanf(colon, "%f", &res_y);
-
-  //skip until key2 is located
-  if(stream==NULL)return 1;
-  for(;;){
-    if(fgets(buffer, 1000, stream)==NULL){ fclose(stream); return 1; }
-    if(strncmp(buffer, key2, strlen(key2))==0)break;
-  }
-
-  GET_BUFFER(0);
-  sscanf(colon, "%i", &top_edge);
-
-  GET_BUFFER(1);
-  sscanf(colon, "%i", &bottom_edge);
-
-  GET_BUFFER(1);
-  sscanf(colon, "%i", &left_edge);
-
-  GET_BUFFER(1);
-  sscanf(colon, "%i", &right_edge);
-
-  //skip until key3 is located
-  if(stream==NULL)return 1;
-  for(;;){
-    if(fgets(buffer, 1000, stream)==NULL){ fclose(stream); return 1; }
-    if(strncmp(buffer, key3, strlen(key3))==0)break;
-  }
-
-  GET_BUFFER(0);
-  sscanf(colon, "%f", &lat_max);
-
-  GET_BUFFER(1);
-  sscanf(colon, "%f", &lat_min);
-
-  GET_BUFFER(1);
-  sscanf(colon, "%f", &long_min);
-
-  GET_BUFFER(1);
-  sscanf(colon, "%f", &long_max);
-
-  wuifireinfo->res_x = res_x;
-  wuifireinfo->res_y = res_y;
-  wuifireinfo->ncols = n_columns;
-  wuifireinfo->nrows = n_rows;
-
-  wuifireinfo->left_edge = left_edge;
-  wuifireinfo->right_edge = right_edge;
-  wuifireinfo->bottom_edge = bottom_edge;
-  wuifireinfo->top_edge = top_edge;
-
-  wuifireinfo->lat_min = lat_min;
-  wuifireinfo->lat_max = lat_max;
-  wuifireinfo->long_min = long_min;
-  wuifireinfo->long_max = long_max;
-
-  fclose(stream);
-  return 0;
-}
-
 /* ------------------ ADF_GetFireIndex ------------------------ */
 
-int ADF_GetFireIndex(wuifiredata *wuifireinfo, float longitude, float latitude){
+int ADF_GetFireIndex(wuigriddata *wuifireinfo, float longitude, float latitude){
   int ix, iy, index, val;
 
   ix = CLAMP(wuifireinfo->ncols*(longitude-wuifireinfo->long_min)/(wuifireinfo->long_max-wuifireinfo->long_min),0,wuifireinfo->ncols-1);
@@ -221,56 +117,62 @@ int ADF_GetFireIndex(wuifiredata *wuifireinfo, float longitude, float latitude){
   return val;
 }
 
-  /* ------------------ ADF_Read_w001001 ------------------------ */
+  /* ------------------ ADF_ReadIGrid ------------------------ */
 
-int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
+int ADF_ReadIGrid(char *adf_dir, char *file, wuigriddata *wuifireinfo){
   FILE *stream;
   int i;
   int *vals_local = NULL, nvals_local;
   char *buffer = NULL;
-  int ncols, nrows;
   int size_buffer;
 
   wuifireinfo->vals_ntypes = 0;
 
-  if(ADF_GetInfo(adf_dir, wuifireinfo)!=0)return 1;
-  nvals_local = wuifireinfo->ncols*wuifireinfo->nrows;
-  if(nvals_local<=0)return 1;
-
-  stream = fopen_indir(adf_dir, "w001001.asc", "r");
+  stream = fopen_indir(adf_dir, file, "r");
   if(stream==NULL)return 1;
 
   size_buffer = 100;
   NewMemory((void **)&buffer, size_buffer*sizeof(char));
-  fgets(buffer, size_buffer, stream);
-  sscanf(buffer+13, "%i", &ncols);
 
   fgets(buffer, size_buffer, stream);
-  sscanf(buffer+13, "%i", &nrows);
-
-  if(ncols!=wuifireinfo->ncols||nrows!=wuifireinfo->nrows){
-    fclose(stream);
-    return 1;
-  }
+  sscanf(buffer+13, "%i", &wuifireinfo->ncols);
 
   fgets(buffer, size_buffer, stream);
+  sscanf(buffer+13, "%i", &wuifireinfo->nrows);
+
   fgets(buffer, size_buffer, stream);
+  sscanf(buffer+13, "%f", &wuifireinfo->long_min);
+
   fgets(buffer, size_buffer, stream);
+  sscanf(buffer+13, "%f", &wuifireinfo->lat_min);
+
   fgets(buffer, size_buffer, stream);
+  sscanf(buffer+13, "%f", &wuifireinfo->dlong);
+
+  fgets(buffer, size_buffer, stream);
+  sscanf(buffer+13, "%f", &wuifireinfo->dlat);
+
+  wuifireinfo->long_max = wuifireinfo->long_min + (float)wuifireinfo->ncols*wuifireinfo->dlong;
+  wuifireinfo->lat_max  = wuifireinfo->lat_min  + (float)wuifireinfo->nrows*wuifireinfo->dlat;
+
+  fgets(buffer, size_buffer, stream);
+
+  nvals_local = wuifireinfo->ncols*wuifireinfo->nrows;
+  if(nvals_local<=0)return 1;
 
   FREEMEMORY(buffer);
-  size_buffer = 5*ncols;
+  size_buffer = 5*wuifireinfo->ncols;
   NewMemory((void **)&buffer, size_buffer*sizeof(char));
 
-  NewMemory((void **)&vals_local, nvals_local*sizeof(wuifiredata));
+  NewMemory((void **)&vals_local, nvals_local*sizeof(int));
   wuifireinfo->vals = vals_local;
-  for(i = 0; i<nrows; i++){
+  for(i = 0; i<wuifireinfo->nrows; i++){
     int j;
     char *tok;
 
     if(fgets(buffer, size_buffer, stream)==NULL)break;
     tok = strtok(buffer, " ");
-    for(j = 0; j<ncols; j++){
+    for(j = 0; j<wuifireinfo->ncols; j++){
       sscanf(tok, "%i", vals_local);
       tok = strtok(NULL, " ");
       vals_local++;
@@ -279,15 +181,67 @@ int ADF_Read_w001001(char *adf_dir, wuifiredata *wuifireinfo){
   return 0;
 }
 
+/* ------------------ ADF_ReadFGrid ------------------------ */
+
+int ADF_ReadFGrid(char *adf_dir, char *file, wuigriddata *wuigridinfo){
+  FILE *stream;
+  int i, nvals_local, ncols, nrows, size_buffer;
+  float *vals_local = NULL;
+  char *buffer = NULL;
+
+  stream = fopen_indir(adf_dir, file, "r");
+  if(stream==NULL)return 1;
+
+  size_buffer = 100;
+  NewMemory((void **)&buffer, size_buffer*sizeof(char));
+
+  fgets(buffer, size_buffer, stream);
+  sscanf(buffer+13, "%i", &ncols);
+  wuigridinfo->ncols = ncols;
+
+  fgets(buffer, size_buffer, stream);
+  sscanf(buffer+13, "%i", &nrows);
+  wuigridinfo->nrows = nrows;
+
+  nvals_local = wuigridinfo->ncols*wuigridinfo->nrows;
+  if(nvals_local<=0)return 1;
+
+  fgets(buffer, size_buffer, stream);
+  fgets(buffer, size_buffer, stream);
+  fgets(buffer, size_buffer, stream);
+  fgets(buffer, size_buffer, stream);
+
+  FREEMEMORY(buffer);
+  size_buffer = 20*ncols;
+  NewMemory((void **)&buffer, size_buffer*sizeof(char));
+
+  NewMemory((void **)&vals_local, nvals_local*sizeof(float));
+  wuigridinfo->fvals = vals_local;
+  for(i = 0; i<nrows; i++){
+    int j;
+    char *tok;
+
+    if(fgets(buffer, size_buffer, stream)==NULL)break;
+    tok = strtok(buffer, " ");
+    for(j = 0; j<ncols; j++){
+      sscanf(tok, "%f", vals_local);
+      tok = strtok(NULL, " ");
+      vals_local++;
+    }
+  }
+  FREEMEMORY(buffer);
+  return 0;
+}
+
 /* ------------------ ADF_GetFireData ------------------------ */
 
-wuifiredata *ADF_GetFireData(char *adf_dir, char *casename){
-  wuifiredata *wuifireinfo;
+wuigriddata *ADF_GetFireData(char *adf_dir, char *casename){
+  wuigriddata *wuifireinfo;
   int ntypes;
 
-  NewMemory((void **)&wuifireinfo, sizeof(wuifiredata));
+  NewMemory((void **)&wuifireinfo, sizeof(wuigriddata));
 
-  if(ADF_Read_w001001(adf_dir, wuifireinfo)!=0){
+  if(ADF_ReadIGrid(adf_dir, "w001001.asc", wuifireinfo)!=0){
     FREEMEMORY(wuifireinfo);
     return NULL;
   }
