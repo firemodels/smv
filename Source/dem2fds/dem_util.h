@@ -10,10 +10,6 @@
 
 #include "dem_util.h"
 
-#ifdef pp_ADF
-#include "IOadf.h"
-#endif
-
 #ifdef WIN32
 #define STDCALLF extern void _stdcall
 #else
@@ -40,21 +36,28 @@ typedef struct _elevdata {
   gdImagePtr image;
 } elevdata;
 
+typedef struct _wuigriddata {
+  int ncols, nrows;
+  int *vals, vals_ntypes;
+  float *fvals;
+  int *case_vals, case_nx, case_ny;
+  int fire_types[101];
+  float lat_min, lat_max, long_min, long_max;
+  float dlong, dlat;
+} wuigriddata;
+
+
 /* --------------------------  excludedata ------------------------------------ */
 
 typedef struct {
   float xmin, xmax, ymin, ymax;
 } excludedata;
 
-EXTERNCPP void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option
-#ifdef pp_ADF
-  , wuigriddata *wuifireinfo
-#endif
-);
+EXTERNCPP void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option, wuigriddata *wuifireinfo);
 EXTERNCPP int GetElevations(char *elevfile, char *image_file, char *image_type, elevdata *fds_elevs);
+EXTERNCPP wuigriddata *GetFireData(char *adf_dir, char *casename);
 
 SVEXTERN char image_dir[1024], elev_dir[1024];
-#ifdef pp_ADF
 #define NFIRETYPES 20
 #define MAXFIRETYPE 100
 SVEXTERN int firehash[MAXFIRETYPE];
@@ -95,7 +98,6 @@ SVEXTERN char elev_dir[1024];
 SVEXTERN int fireindices[NFIRETYPES];
 SVEXTERN char *firetypes[NFIRETYPES];
 SVEXTERN int firecolors[];
-#endif
 #endif
 SVEXTERN int SVDECL(overlap_size,0), SVDECL(show_maps,0);
 SVEXTERN char surf_id1[1024], surf_id2[1024], matl_id[1024];

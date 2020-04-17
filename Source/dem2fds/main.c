@@ -11,9 +11,6 @@
 #include "MALLOCC.h"
 #include "gd.h"
 #include "dem_util.h"
-#ifdef pp_ADF
-#include "IOadf.h"
-#endif
 
 /* ------------------ Usage ------------------------ */
 
@@ -31,9 +28,7 @@ void Usage(char *prog, int option){
   fprintf(stdout, "  -dir dir      - directory containing image, fire and elevation files (dir/images, dir/anderson13, dir/elevations\n");
   fprintf(stdout, "  -elevdir dir  - directory containing elevation files (if different than -dir/elevations)\n");
   fprintf(stdout, "  -imagedir dir  - directory containing image files (if different than -dir/images)\n");
-#ifdef pp_ADF
   fprintf(stdout, "  -firedir dir  - directory containing anderson 13 fire data(if different than -dir/anderson13)\n");
-#endif
   fprintf(stdout, "  -fds          - specify fds input file [default: casename.fds]\n");
   fprintf(stdout, "  -geom         - represent terrain using using &GEOM keywords (experimental)\n");
   fprintf(stdout, "  -obst         - represent terrain using &OBST keywords \n");
@@ -61,9 +56,7 @@ int main(int argc, char **argv){
   char casename_fds[LEN_BUFFER], image_file[LEN_BUFFER];
   elevdata fds_elevs;
   int fatal_error = 0;
-#ifdef pp_ADF
   wuigriddata *wuifireinfo;
-#endif
 
   if(argc == 1){
     Usage("dem2fds",HELP_ALL);
@@ -74,9 +67,7 @@ int main(int argc, char **argv){
 
   strcpy(casename_fds, "");
   strcpy(file_default, "terrain");
-#ifdef pp_ADF
   strcpy(fire_dir, "");
-#endif
   strcpy(image_dir,    "");
   strcpy(elev_dir,     "");
   strcpy(surf_id1,     "surf1");
@@ -177,13 +168,11 @@ int main(int argc, char **argv){
             strcat(elev_dir, dirseparator);
             strcat(elev_dir, "elevations");
           }
-#ifdef pp_ADF
           if(strlen(fire_dir)==0){
             strcpy(fire_dir, argv[i]);
             strcat(fire_dir, dirseparator);
             strcat(fire_dir, "anderson13");
           }
-#endif
         }
         else {
           fprintf(stderr, "***error: directory %s does not exist or cannot be accessed\n",argv[i]);
@@ -210,7 +199,6 @@ int main(int argc, char **argv){
           fatal_error = 1;
         }
       }
-#ifdef pp_ADF
       else if(strncmp(arg, "-firedir", 8)==0){
         i++;
         if(FILE_EXISTS(argv[i])==YES){
@@ -221,7 +209,6 @@ int main(int argc, char **argv){
           fatal_error = 1;
         }
       }
-#endif
       else if(strncmp(arg, "-geom", 5) == 0 ){
         gen_fds = FDS_GEOM;
       }
@@ -274,12 +261,10 @@ int main(int argc, char **argv){
     strcpy(elev_dir, image_dir);
   }
 
-#ifdef pp_ADF
   // define directory where anderson 13 fire material data is expected
   strcat(fire_dir, dirseparator);
   strcat(fire_dir, "us_200fbfm13");
   strcat(fire_dir, dirseparator);
-#endif
 
   if(casename == NULL)casename = file_default;
   if(strlen(casename_fds) == 0){
@@ -293,16 +278,10 @@ int main(int argc, char **argv){
   if(last != NULL)last[0] = 0;
   strcat(image_file,image_type);
 
-#ifdef pp_ADF
-  wuifireinfo = ADF_GetFireData(fire_dir, casename);
-#endif
+  wuifireinfo = GetFireData(fire_dir, casename);
 
   if(GetElevations(casename, image_file, image_type, &fds_elevs)==1){
-     GenerateFDSInputFile(casename, casename_fds, &fds_elevs, gen_fds
-#ifdef pp_ADF
-       , wuifireinfo
-#endif
-     );
+     GenerateFDSInputFile(casename, casename_fds, &fds_elevs, gen_fds, wuifireinfo);
   }
   return 0;
 }
