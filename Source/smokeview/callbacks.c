@@ -1992,7 +1992,6 @@ void Keyboard(unsigned char key, int flag){
       UpdatePlot3dListIndex();
       break;
     case 'q':
-    case 'Q':
       blocklocation++;
       if((ncadgeom==0&&blocklocation>BLOCKlocation_exact)||
                        blocklocation>BLOCKlocation_cad){
@@ -2009,6 +2008,25 @@ void Keyboard(unsigned char key, int flag){
           blockage_as_input=0;
         }
         ObjectCB(BLOCKAGE_AS_INPUT2);
+      }
+      break;
+    case 'Q':
+      showhide_textures = 1-showhide_textures;
+      for(i = 0; i<ntextureinfo; i++){
+        texturedata *texti;
+
+        texti = textureinfo+i;
+        if(texti->loaded==0||texti->used==0)continue;
+        if(texti->display==0){ // if any textures are hidden then show them all
+          showhide_textures = 1;
+          break;
+        }
+      }
+      if(showhide_textures==1){
+        TextureShowMenu(MENU_TEXTURE_SHOWALL);
+      }
+      else{
+        TextureShowMenu(MENU_TEXTURE_HIDEALL);
       }
       break;
     case 'r':
