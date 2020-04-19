@@ -1016,7 +1016,7 @@ wuigriddata *GetFireData(char *directory, char *casename){
 
   NewMemory((void **)&wuifireinfo, sizeof(wuigriddata));
 
-  if(ReadIGrid(directory, "w001001.asc", wuifireinfo)!=0){
+  if(ReadIGrid(directory, "anderson13.asc", wuifireinfo)!=0){
     FREEMEMORY(wuifireinfo);
     return NULL;
   }
