@@ -5,4 +5,10 @@
 set dem2fds=..\intel_win_64\dem2fds_win_64.exe
 ::set dem2fds=dem2fds
 
-%dem2fds% %option% -show -elevdir %userprofile%\terrain\N40W078 -dir %userprofile%\terrain\nist nist.in 
+set "GOOGLE=%userprofile%\Google Drive\terrain"
+set HOME=%userprofile%\terrain
+
+set "DIR=%GOOGLE%"
+if exist %HOME% set "DIR=%HOME%"
+
+%dem2fds% %option% -show -elevdir "%DIR%\N40W078" -dir "%DIR%\nist" nist.in 
