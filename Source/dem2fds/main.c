@@ -171,7 +171,7 @@ int main(int argc, char **argv){
           if(strlen(fire_dir)==0){
             strcpy(fire_dir, argv[i]);
             strcat(fire_dir, dirseparator);
-            strcat(fire_dir, "anderson13");
+            strcat(fire_dir, "fire");
           }
         }
         else {
@@ -260,11 +260,6 @@ int main(int argc, char **argv){
   if(strlen(elev_dir) == 0){
     strcpy(elev_dir, image_dir);
   }
-
-  // define directory where anderson 13 fire material data is expected
-  strcat(fire_dir, dirseparator);
-  strcat(fire_dir, "us_200fbfm13");
-  strcat(fire_dir, dirseparator);
 
   if(casename == NULL)casename = file_default;
   if(strlen(casename_fds) == 0){
