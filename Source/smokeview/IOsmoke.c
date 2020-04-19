@@ -138,15 +138,7 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
               alphaf_out[n]=AdjustAlpha(ALPHAIN, ASPECTRATIO);\
             }
 
-#ifdef pp_SMOKEDIAG
-#define SMOKESKIP \
-  total_triangles++;\
-  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
-  total_drawn_triangles++
-#else
-#define SMOKESKIP \
-  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue
-#endif
+#define SMOKESKIP if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue
 #ifdef pp_GPUSMOKE
 #define SMOKETIMER   if(smoke_timer==1)triangle_count+=2
 #else
@@ -3526,9 +3518,6 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
   float aspectratio;
   int ssmokedir;
   unsigned char *iblank_smoke3d;
-#ifdef pp_SMOKEDIAG
-  float merge_time, draw_time;
-#endif
 
   unsigned char value[4];
   int ivalue[4];
@@ -3538,18 +3527,10 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
   meshi = meshinfo+smoke3di->blocknumber;
   if(meshvisptr[meshi-meshinfo]==0)return;
 
-#ifdef pp_SMOKEDIAG
-  START_TIMER(merge_time);
-#endif
   if(meshi->smokealpha_ptr==NULL||meshi->merge_alpha==NULL||meshi->update_smoke3dcolors==1){
     meshi->update_smoke3dcolors = 0;
     MergeSmoke3D(smoke3di);
   }
-#ifdef pp_SMOKEDIAG
-  STOP_TIMER(merge_time);
-  smoketime_merge += merge_time;
-  START_TIMER(draw_time);
-#endif
   smokealpha_ptr = meshi->smokealpha_ptr;
   smokecolor_ptr = meshi->smokecolor_ptr;
   value[0] = 255;
@@ -5218,10 +5199,6 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
   }
   TransparentOff();
   if(cullfaces==1)glEnable(GL_CULL_FACE);
-#ifdef pp_SMOKEDIAG
-  STOP_TIMER(draw_time);
-  smoketime_draw += draw_time;
-#endif
 }
 
 /* ------------------ DrawSmokeFrame ------------------------ */
@@ -5242,9 +5219,6 @@ void DrawSmokeFrame(void){
   int load_shaders = 0;
   int i;
   int blend_mode;
-#ifdef pp_SMOKEDIAG
-  int nm=0;
-#endif
 
   triangle_count = 0;
 #ifdef pp_GPUSMOKE
@@ -5276,10 +5250,6 @@ void DrawSmokeFrame(void){
     blend_mode = 1;
     glBlendEquation(GL_MAX);
   }
-#ifdef pp_SMOKEDIAG
-  total_triangles=0;
-  total_drawn_triangles=0;
-#endif
   for(i = 0; i<nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
 
@@ -5301,9 +5271,6 @@ void DrawSmokeFrame(void){
 #else
     if(smoke3di->primary_file==0)continue;
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
-#endif
-#ifdef pp_SMOKEDIAG
-    nm++;
 #endif
 #ifdef pp_GPU
     if(usegpu==1){
@@ -5346,11 +5313,6 @@ void DrawSmokeFrame(void){
     DrawSmoke3D(smoke3di);
 #endif
   }
-#ifdef pp_SMOKEDIAG
-  printf("meshes: %i triangles: total=%u drawn=%u fraction skipped=%f\n",
-    nm,total_triangles,total_drawn_triangles,(float)(total_triangles-total_drawn_triangles)/(float)total_triangles);
-  printf("times: merge=%f draw=%f\n", smoketime_merge, smoketime_draw);
-#endif
   if(blend_mode==1){
     glBlendEquation(GL_FUNC_ADD);
   }
@@ -5909,7 +5871,6 @@ void UpdateLoadedSmoke(int *h_loaded, int *t_loaded){
 #define SMOKE_OPTIONS 19
 void SmokeWrapup(void){
   UpdateFireCutoffs();
-  update_makeiblank_smoke3d = 1;
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   SetSmokeColorFlags();
   UpdateLoadedSmoke(&hrrpuv_loaded,&temp_loaded);
@@ -6026,10 +5987,8 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
       if(free_iblank_smoke3d_local==1){
         FREEMEMORY(mesh_smoke3d->iblank_smoke3d);
         mesh_smoke3d->iblank_smoke3d_defined = 0;
-        update_makeiblank_smoke3d = 1;
       }
     }
-    update_makeiblank_smoke3d = 1;
     UpdateSmoke3dFileParms();
     UpdateFireCutoffs();
     return READSMOKE3D_RETURN;
@@ -6942,7 +6901,6 @@ void MakeIBlankSmoke3D(void){
   int i, ii;
   int ic;
 
-  update_makeiblank_smoke3d=0;
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
     meshdata *mesh_smoke3d;

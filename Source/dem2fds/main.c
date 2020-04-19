@@ -25,8 +25,10 @@ void Usage(char *prog, int option){
   fprintf(stdout, "  data obtained from http://viewer.nationalmap.gov \n\n");
   fprintf(stdout, "Usage:\n");
   fprintf(stdout, "  dem2fds [options] casename.in\n");
-  fprintf(stdout, "  -dir dir      - directory containing map and elevation files\n");
-  fprintf(stdout, "  -elevdir dir  - directory containing elevation files (if different than -dir directory)\n");
+  fprintf(stdout, "  -dir dir      - directory containing image, fire and elevation files (dir/images, dir/anderson13, dir/elevations\n");
+  fprintf(stdout, "  -elevdir dir  - directory containing elevation files (if different than -dir/elevations)\n");
+  fprintf(stdout, "  -imagedir dir  - directory containing image files (if different than -dir/images)\n");
+  fprintf(stdout, "  -firedir dir  - directory containing anderson 13 fire data(if different than -dir/anderson13)\n");
   fprintf(stdout, "  -fds          - specify fds input file [default: casename.fds]\n");
   fprintf(stdout, "  -geom         - represent terrain using using &GEOM keywords (experimental)\n");
   fprintf(stdout, "  -obst         - represent terrain using &OBST keywords \n");
@@ -54,23 +56,24 @@ int main(int argc, char **argv){
   char casename_fds[LEN_BUFFER], image_file[LEN_BUFFER];
   elevdata fds_elevs;
   int fatal_error = 0;
+  wuigriddata *wuifireinfo;
 
   if(argc == 1){
     Usage("dem2fds",HELP_ALL);
     return 0;
   }
+  initMALLOC();
+  SetStdOut(stdout);
 
   strcpy(casename_fds, "");
   strcpy(file_default, "terrain");
-  strcpy(image_dir,    ".");
+  strcpy(fire_dir, "");
+  strcpy(image_dir,    "");
   strcpy(elev_dir,     "");
   strcpy(surf_id1,     "surf1");
   strcpy(surf_id2,     "surf2");
   strcpy(matl_id,      "matl1");
   strcpy(image_type,   ".png");
-
-  initMALLOC();
-  SetStdOut(stdout);
 
   ParseCommonOptions(argc, argv);
   if(show_help!=0){
@@ -121,7 +124,7 @@ int main(int argc, char **argv){
       else if(strncmp(arg, "-jpeg", 5)==0){
         strcpy(image_type, ".jpg");
       }
-      else if(strncmp(arg, "-elevdir", 8) == 0) {
+      else if(strncmp(arg, "-elevdir", 8) == 0){
         i++;
         if(FILE_EXISTS(argv[i]) == NO)fatal_error = 1;
       }
@@ -139,7 +142,7 @@ int main(int argc, char **argv){
     fprintf(stderr, "\n***error: input file %s does not exist\n",casename);
     return 1;
   }
-  if(fatal_error == 1) {
+  if(fatal_error == 1){
     fprintf(stderr, "\ncase: %s\n", casename);
   }
 
@@ -155,9 +158,20 @@ int main(int argc, char **argv){
       if(strncmp(arg, "-dir", 4) == 0){
         i++;
         if(FILE_EXISTS(argv[i]) == YES){
-          strcpy(image_dir, argv[i]);
-          if(strlen(elev_dir) == 0) {
-            strcpy(elev_dir, image_dir);
+          if(strlen(image_dir)==0){
+            strcpy(image_dir, argv[i]);
+            strcat(image_dir, dirseparator);
+            strcat(image_dir, "images");
+          }
+          if(strlen(elev_dir) == 0){
+            strcpy(elev_dir, argv[i]);
+            strcat(elev_dir, dirseparator);
+            strcat(elev_dir, "elevations");
+          }
+          if(strlen(fire_dir)==0){
+            strcpy(fire_dir, argv[i]);
+            strcat(fire_dir, dirseparator);
+            strcat(fire_dir, "anderson13");
           }
         }
         else {
@@ -165,13 +179,33 @@ int main(int argc, char **argv){
           fatal_error = 1;
         }
       }
-      else if(strncmp(arg, "-elevdir", 8) == 0) {
+      else if(strncmp(arg, "-elevdir", 8) == 0){
         i++;
-        if(FILE_EXISTS(argv[i]) == YES) {
+        if(FILE_EXISTS(argv[i]) == YES){
           strcpy(elev_dir, argv[i]);
         }
         else {
-          fprintf(stderr, "***error: directory %s does not exist or cannot be accessed\n", argv[i]);
+          fprintf(stderr, "***error: elevation directory %s does not exist or cannot be accessed\n", argv[i]);
+          fatal_error = 1;
+        }
+      }
+      else if(strncmp(arg, "-imagedir", 9)==0){
+        i++;
+        if(FILE_EXISTS(argv[i])==YES){
+          strcpy(image_dir, argv[i]);
+        }
+        else {
+          fprintf(stderr, "***error: image directory %s does not exist or cannot be accessed\n", argv[i]);
+          fatal_error = 1;
+        }
+      }
+      else if(strncmp(arg, "-firedir", 8)==0){
+        i++;
+        if(FILE_EXISTS(argv[i])==YES){
+          strcpy(fire_dir, argv[i]);
+        }
+        else {
+          fprintf(stderr, "***error: fire directory %s does not exist or cannot be accessed\n", argv[i]);
           fatal_error = 1;
         }
       }
@@ -195,7 +229,7 @@ int main(int argc, char **argv){
         i++;
         strcpy(surf_id1, argv[i]);
       }
-      else if (strncmp(arg, "-surf2", 6) == 0) {
+      else if (strncmp(arg, "-surf2", 6) == 0){
         i++;
         strcpy(surf_id2, argv[i]);
       }
@@ -223,9 +257,15 @@ int main(int argc, char **argv){
 
   if(fatal_error == 1) return 1;
 
-  if(strlen(elev_dir) == 0) {
+  if(strlen(elev_dir) == 0){
     strcpy(elev_dir, image_dir);
   }
+
+  // define directory where anderson 13 fire material data is expected
+  strcat(fire_dir, dirseparator);
+  strcat(fire_dir, "us_200fbfm13");
+  strcat(fire_dir, dirseparator);
+
   if(casename == NULL)casename = file_default;
   if(strlen(casename_fds) == 0){
     strcpy(casename_fds, casename);
@@ -238,8 +278,10 @@ int main(int argc, char **argv){
   if(last != NULL)last[0] = 0;
   strcat(image_file,image_type);
 
-  if(GetElevations(casename, image_file, image_type, &fds_elevs)==1) {
-     GenerateFDSInputFile(casename, casename_fds, &fds_elevs, gen_fds);
+  wuifireinfo = GetFireData(fire_dir, casename);
+
+  if(GetElevations(casename, image_file, image_type, &fds_elevs)==1){
+     GenerateFDSInputFile(casename, casename_fds, &fds_elevs, gen_fds, wuifireinfo);
   }
   return 0;
 }

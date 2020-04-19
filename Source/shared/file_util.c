@@ -28,6 +28,44 @@
 
 FILE *alt_stdout=NULL;
 
+/* ------------------ CopySMVBuffer ------------------------ */
+
+bufferstreamdata *CopySMVBuffer(bufferstreamdata *stream_in){
+  bufferstreamdata *stream_out;
+  filedata *fileinfo;
+
+  if(stream_in==NULL)return NULL;
+
+  NewMemory((void **)&stream_out, sizeof(bufferstreamdata));
+  memcpy(stream_out, stream_in, sizeof(bufferstreamdata));
+
+  NewMemory((void **)&fileinfo, sizeof(filedata));
+  stream_out->fileinfo = fileinfo;
+
+  memcpy(fileinfo, stream_in->fileinfo, sizeof(filedata));
+  return stream_out;
+}
+
+/* ------------------ GetSMVBuffer ------------------------ */
+
+bufferstreamdata *GetSMVBuffer(char *file, char *file2){
+  bufferstreamdata *stream;
+
+  NewMemory((void **)&stream, sizeof(bufferstreamdata));
+
+  stream->fileinfo = File2Buffer(file);
+  if(stream->fileinfo!=NULL&&file2!=NULL){
+    bufferstreamdata streaminfo2, *stream2 = &streaminfo2;
+
+    stream2->fileinfo = File2Buffer(file2);
+    if(stream2->fileinfo!=NULL){
+      AppendFileBuffer(stream->fileinfo, stream2->fileinfo);
+    }
+    FreeFileBuffer(stream2->fileinfo);
+  }
+  return stream;
+}
+
 /* ------------------ FFLUSH ------------------------ */
 
 int FFLUSH(void){
@@ -455,7 +493,6 @@ FILE_SIZE GetFileSizeSMV(const char *filename){
   return return_val;
 }
 
-#ifdef pp_READBUFFER
 /* ------------------ FeofBuffer ------------------------ */
 
 int FeofBuffer(filedata *fileinfo){
@@ -525,7 +562,6 @@ int AppendFileBuffer(filedata *file1, filedata *file2){
 
   new_filesize = file1->filesize + file2->filesize;
   if(NewMemory((void **)&new_buffer, new_filesize)==0){
-    readfile_option = READFILE;
     return -1;
   }
   new_buffer1 = new_buffer;
@@ -536,7 +572,6 @@ int AppendFileBuffer(filedata *file1, filedata *file2){
   new_nlines = file1->nlines+file2->nlines;
   if(NewMemory((void **)&new_lines, new_nlines*sizeof(char *))==0){
     FREEMEMORY(new_buffer);
-    readfile_option = READFILE;
     return  -1;
   }
 
@@ -573,7 +608,6 @@ filedata *File2Buffer(char *filename){
   NewMemory((void **)&fileinfo, sizeof(filedata));
   if(NewMemory((void **)&buffer, filesize+1)==0){
     FREEMEMORY(fileinfo);
-    readfile_option = READFILE;
     fclose(stream);
     return NULL;
   }
@@ -624,7 +658,6 @@ filedata *File2Buffer(char *filename){
   CheckMemory;
   return fileinfo;
 }
-#endif
 
 /* ------------------ FileExistsOrig ------------------------ */
 
@@ -639,22 +672,16 @@ int FileExistsOrig(char *filename){
 
   /* ------------------ FileExists ------------------------ */
 
-#ifdef pp_FILELIST
 int FileExists(char *filename, filelistdata *filelist, int nfilelist, filelistdata *filelist2, int nfilelist2){
-#else
-int FileExists(char *filename){
-#endif
 
 // returns YES if the file filename exists, NO otherwise
 
   if(filename == NULL)return NO;
-#ifdef pp_FILELIST
   if(filelist != NULL&&nfilelist>0){
     if(FileInList(filename, filelist, nfilelist, filelist2, nfilelist2) != NULL){
       return YES;
     }
   }
-#endif
   if(ACCESS(filename,F_OK)==-1){
     return NO;
   }
@@ -694,6 +721,31 @@ int GetFileListSize(const char *path, char *filter){
   return maxfiles;
 }
 
+
+/* ------------------ fopen_indir  ------------------------ */
+
+FILE *fopen_indir(char *dir, char *file, char *mode){
+  FILE *stream;
+
+  if(file==NULL||strlen(file)==0)return NULL;
+  if(dir==NULL||strlen(dir)==0){
+    stream = fopen(file,mode);
+  }
+  else{
+    char *filebuffer;
+    int lenfile;
+
+    lenfile = strlen(dir)+1+strlen(file)+1;
+    NewMemory((void **)&filebuffer,lenfile*sizeof(char));
+    strcpy(filebuffer,dir);
+    strcat(filebuffer,dirseparator);
+    strcat(filebuffer,file);
+    stream = fopen(filebuffer,mode);
+    FREEMEMORY(filebuffer);
+  }
+  return stream;
+}
+
 /* ------------------ CompareFileList ------------------------ */
 
 int CompareFileList(const void *arg1, const void *arg2){
@@ -706,7 +758,6 @@ int CompareFileList(const void *arg1, const void *arg2){
 }
 
 /* ------------------ getfile ------------------------ */
-#ifdef pp_FILELIST
 filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles, filelistdata *filelist2, int nfiles2){
   filelistdata *entry=NULL, fileitem;
 
@@ -722,7 +773,6 @@ filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles, filelis
   }
   return entry;
 }
-#endif
 
 /* ------------------ MakeFileList ------------------------ */
 

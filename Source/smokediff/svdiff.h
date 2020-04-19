@@ -107,7 +107,7 @@ typedef struct {
 //************************** headers ****************************************
 
 int mesh_Match(meshdata *mesh1, meshdata *mesh2);
-int ReadSMV(FILE *streamsmv, FILE *stream_out, casedata *smvcase);
+int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase);
 void setup_boundary(FILE *stream_out);
 void setup_slice(FILE *stream_out);
 void SetupPlot3D(FILE *stream_out);

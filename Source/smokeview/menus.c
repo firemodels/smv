@@ -48,7 +48,6 @@ float     slice_load_time;
 #define MENU_KEEP_COARSE -4
 
 #define MENU_SLICECOLORDEFER -5
-#define MENU_NEWSLICEMENUS   -7
 
 #define MENU_SLICE_FILE_SIZES -9
 
@@ -2355,7 +2354,7 @@ void TextureShowMenu(int value){
     texti = textureinfo + value;
     texti->display = 1-texti->display;
     if(texti->display==1)texturedisplay=1;
-    for(i=0;i<ntextures;i++){
+    for(i=0;i<ntextureinfo;i++){
       texti = textureinfo + i;
       if(texti->loaded==0||texti->used==0)continue;
       if(texti->display==0){
@@ -2369,7 +2368,7 @@ void TextureShowMenu(int value){
   else{
     switch(value){
     case MENU_TEXTURE_SHOWALL:
-      for(i=0;i<ntextures;i++){
+      for(i=0;i<ntextureinfo;i++){
         texti = textureinfo + i;
         if(texti->loaded==0||texti->used==0)continue;
         texti->display=1;
@@ -2378,7 +2377,7 @@ void TextureShowMenu(int value){
       showall_textures=1;
       break;
     case MENU_TEXTURE_HIDEALL:
-      for(i=0;i<ntextures;i++){
+      for(i=0;i<ntextureinfo;i++){
         texti = textureinfo + i;
         if(texti->loaded==0||texti->used==0)continue;
         texti->display=0;
@@ -2398,8 +2397,13 @@ void TextureShowMenu(int value){
       texturedata *textii=NULL;
 
       geomi = geominfo + i;
-      surf = geomi->surf;
-      if(surf!=NULL)textii=surf->textureinfo;
+      surf = geomi->surfgeom;
+      if(terrain_texture!=NULL){
+        textii = terrain_texture;
+      }
+      else{
+        if(surf!=NULL)textii = surf->textureinfo;
+      }
       if(textii!=NULL&&textii->display==1){
         visGeomTextures=1;
         break;
@@ -4273,7 +4277,6 @@ void LoadSmoke3DMenu(int value){
 #define MENU_DUMMY_SMOKE           -9
 #define MENU_SMOKE_SETTINGS        -4
 #define MENU_SMOKE_FILE_SIZES     -10
-#define MENU_SMOKE3D_IBLANK        -2
 
   if(value == MENU_DUMMY_SMOKE)return;
   START_TIMER(load_time);
@@ -4300,9 +4303,6 @@ void LoadSmoke3DMenu(int value){
     for(i=0;i<nsmoke3dinfo;i++){
       ReadSmoke3D(ALL_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
     }
-  }
-  else if(value==MENU_SMOKE3D_IBLANK){
-    update_makeiblank_smoke3d = 1;
   }
   else if(value == MENU_SMOKE_SETTINGS){
     ShowBoundsDialog(DLG_3DSMOKE);
@@ -4971,10 +4971,6 @@ void LoadMultiSliceMenu(int value){
         UpdateSliceDupDialog();
       }
       break;
-      case MENU_NEWSLICEMENUS:
-        use_new_slice_menus = 1 - use_new_slice_menus;
-        updatemenu = 1;
-        break;
       case MENU_SLICECOLORDEFER:
         use_set_slicecolor = 1 - use_set_slicecolor;
         updatemenu = 1;
@@ -6858,7 +6854,7 @@ updatemenu=0;
 
     CREATEMENU(textureshowmenu,TextureShowMenu);
     ntextures_used=0;
-    for(i=0;i<ntextures;i++){
+    for(i=0;i<ntextureinfo;i++){
       texturedata *texti;
       char menulabel[1024];
 
@@ -7442,7 +7438,6 @@ updatemenu=0;
         glutAddMenuEntry(_("Vent flow"), MENU_ZONE_VENTS);
       }
       if(nzhvents>0){
-#ifdef pp_VENTPROFILE
         if(visVentHFlow == 1){
           glutAddMenuEntry(_("   *Horizontal"), MENU_ZONE_HVENTS);
         }
@@ -7471,16 +7466,6 @@ updatemenu=0;
             glutAddMenuEntry(_("      velocity profile"), MENU_ZONE_VENT_PROFILE);
           }
         }
-#else
-        if(have_ventslab_flow == 1){
-          if(visVentHFlow == 1){
-            glutAddMenuEntry(_("   *Horizontal"), MENU_ZONE_HVENTS);
-          }
-          else{
-            glutAddMenuEntry(_("   Horizontal"), MENU_ZONE_HVENTS);
-          }
-        }
-#endif
       }
       if(nzvvents>0){
         if(visVentVFlow==1){
@@ -10172,14 +10157,6 @@ updatemenu=0;
     else{
       glutAddMenuEntry(_("  defer slice coloring"), MENU_SLICECOLORDEFER);
     }
-#ifdef pp_NEW_SLICE_MENUS
-    if(use_new_slice_menus==1){
-      glutAddMenuEntry(_("  *use new slice menus"), MENU_NEWSLICEMENUS);
-    }
-    else{
-      glutAddMenuEntry(_("  use new slice menus"), MENU_NEWSLICEMENUS);
-    }
-#endif
     if(nslicedups > 0){
       GLUTADDSUBMENU(_("Duplicate slices"), duplicateslicemenu);
     }
@@ -10415,10 +10392,6 @@ updatemenu=0;
           }
         }
 
-        if(use_iblank==0){
-          glutAddMenuEntry("-", MENU_DUMMY3);
-          glutAddMenuEntry(_("Initialize smoke blockage info"), MENU_SMOKE3D_IBLANK);
-        }
         glutAddMenuEntry("-", MENU_DUMMY3);
         if(compute_smoke3d_file_sizes==1){
           glutAddMenuEntry(_("*compute size of 3D smoke files to be loaded"), MENU_SMOKE_FILE_SIZES);

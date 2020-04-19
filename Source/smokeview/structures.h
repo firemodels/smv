@@ -62,6 +62,7 @@ typedef struct _tridata {
   struct _texturedata *textureinfo;
   struct _surfdata *geomsurf;
   struct _geomlistdata *geomlisti;
+  struct _geomobjdata *geomobj;
   int vert_index[3], exterior, geomtype, insolid, outside_domain;
   vertdata *verts[3];
   edgedata *edges[3];
@@ -94,23 +95,27 @@ typedef struct _geomlistdata {
 typedef struct _geomobjdata {
   struct _surfdata *surf;
   struct _texturedata *texture;
+  float *color;
   char *texture_name;
   float texture_width, texture_height, texture_center[3];
   int texture_mapping;
+  int use_geom_color;
 } geomobjdata;
 
 /* --------------------------  geomdata ------------------------------------ */
 
 typedef struct _geomdata {
-  char *file, *topo_file;
+  char *file, *file2, *topo_file;
   int cache_defined;
   int memory_id, loaded, display;
+  int is_terrain;
   float *float_vals;
+  int *file2_tris, nfile2_tris;
   int *int_vals, nfloat_vals, nint_vals;
   float *times;
   int ntimes,itime,*timeslist;
   int ngeomobjinfo, geomtype, patchactive, fdsblock;
-  struct _surfdata *surf;
+  struct _surfdata *surfgeom;
   geomlistdata *geomlistinfo,*geomlistinfo_0, *currentframe;
   geomobjdata *geomobjinfo;
 } geomdata;
@@ -349,14 +354,12 @@ typedef struct _surfdata {
   int location;
   int transparent;
   int used_by_obst,used_by_vent;
-#ifdef pp_SELECT_GEOM
   int used_by_geom;
   int glui_color[3];
   float axis[3];
   int in_geom_list;
   int ntris;
   float geom_area;
-#endif
 } surfdata;
 
 /* --------------------------  facedata ------------------------------------ */
@@ -1404,7 +1407,6 @@ typedef struct _patchdata {
   int shortlabel_index;
   int boundary;
   int inuse,inuse_getbounds;
-  int unit_start;
   int firstshort;
   int compression_type;
   int setvalmin, setvalmax;

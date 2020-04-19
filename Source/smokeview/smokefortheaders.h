@@ -16,7 +16,9 @@
                            if(returncode!=count)returncode=0;\
                            FSEEK(STREAM,TRAILER_SIZE,SEEK_CUR)
 
+#ifndef pp_C_SLICE
 #define FORTgetsliceheader        _F(getsliceheader)
+#endif
 #define FORTgetslicefiledirection _F(getslicefiledirection)
 #define FORTgetgeomdatasize      _F(getgeomdatasize)
 #define FORTgetgeomdata          _F(getgeomdata)

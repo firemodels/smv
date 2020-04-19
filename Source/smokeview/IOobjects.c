@@ -1061,7 +1061,7 @@ void DrawCDisk(float diameter, float height, unsigned char *rgbcolor){
 void DrawTSphere(int texture_index,float diameter, unsigned char *rgbcolor){
   texturedata *texti;
 
-  if(texture_index<0||texture_index>ntextures-1){
+  if(texture_index<0||texture_index>ntextureinfo-1){
     texti=NULL;
   }
   else{
