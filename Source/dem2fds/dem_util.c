@@ -1012,7 +1012,6 @@ int ReadIGrid(char *directory, char *file, wuigriddata *wuifireinfo){
 
 wuigriddata *GetFireData(char *directory, char *casename){
   wuigriddata *wuifireinfo;
-  int ntypes;
 
   NewMemory((void **)&wuifireinfo, sizeof(wuigriddata));
 
