@@ -1090,7 +1090,7 @@ void GetSurfsFromFaces(wuigriddata *wuifireinfo, struct _elevdata *fds_elevs, fl
 
 /* ------------------ GenerateFDSInputFile ------------------------ */
 
-void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option, wuigriddata *wuifireinfo){
+void GenerateFDSInputFile(char *casename, char *casename_fds, char *casename_bingeom, elevdata *fds_elevs, int option, wuigriddata *wuifireinfo){
   char output_file[LEN_BUFFER], output_elev_file[LEN_BUFFER], *ext;
   char basename[LEN_BUFFER];
 
@@ -1244,29 +1244,42 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
         fprintf(streamout, "&SURF ID = '%s', RGB = %i, %i, %i /\n", firetypes[i],firecolors[3*i],firecolors[3*i+1],firecolors[3*i+2]);
       }
       GetSurfsFromFaces(wuifireinfo, fds_elevs, verts, nverts, faces, surfs, nfaces);
+
+      fprintf(streamout, " LONG/LAT bounds: %f %f %f %f\n",fds_elevs->long_min,fds_elevs->long_max,fds_elevs->lat_min,fds_elevs->lat_max);
       fprintf(streamout, "&GEOM ID='terrain', IS_TERRAIN=T, SURF_ID=\n");
       for(i = 0; i<NFIRETYPES; i++){
-        fprintf(streamout, " '%s'",firetypes[i]);
-        if(i!=NFIRETYPES-1)fprintf(streamout, ", ");
+        fprintf(streamout, " '%s', ",firetypes[i]);
         if(i==9||i==NFIRETYPES-1)fprintf(streamout,"\n");
       }
     }
 
-    fprintf(streamout, "  VERTS=\n");
-    for(i = 0; i < nverts; i++){
-      fprintf(streamout, " %f,%f,%f", verts[3*i+0], verts[3*i+1], verts[3*i+2]);
-      fprintf(streamout,",  ");
-      if((i+1)%3==0)fprintf(streamout, "\n");
-    }
-    fprintf(streamout,"\n");
+    if(bingeom==1){
+      FILE_SIZE filelen;
+      int error, nsurfs;
 
-    fprintf(streamout, "  FACES=\n");
-    for(i = 0; i<nfaces; i++){
-      fprintf(streamout, " %i,%i,%i,%i", faces[3*i+0], faces[3*i+1], faces[3*i+2],surfs[i]);
-      if(i!=nfaces-1)fprintf(streamout, ",  ");
-      if((i+1)%6==0)fprintf(streamout, "\n");
+      nsurfs = nfaces;
+      filelen = strlen(casename_bingeom);
+      FORTwrite_bingeom(casename_bingeom, verts, faces, surfs, &nverts, &nfaces, &nsurfs, &error, filelen);
+      fprintf(streamout, " READ_BINARY=T, BINARY_NAME='%s' ", casename_bingeom);
+      fprintf(streamout, "/\n");
     }
-    fprintf(streamout,"/\n");
+    else{
+      fprintf(streamout, "  VERTS=\n");
+      for(i = 0; i<nverts; i++){
+        fprintf(streamout, " %f,%f,%f", verts[3*i+0], verts[3*i+1], verts[3*i+2]);
+        fprintf(streamout, ",  ");
+        if((i+1)%3==0)fprintf(streamout, "\n");
+      }
+      fprintf(streamout,"\n");
+
+      fprintf(streamout, "  FACES=\n");
+      for(i = 0; i<nfaces; i++){
+        fprintf(streamout, " %i,%i,%i,%i", faces[3*i+0], faces[3*i+1], faces[3*i+2], surfs[i]);
+        if(i!=nfaces-1)fprintf(streamout, ",  ");
+        if((i+1)%6==0)fprintf(streamout, "\n");
+      }
+      fprintf(streamout,"/\n");
+    }
     FREEMEMORY(verts);
     FREEMEMORY(faces);
   }
