@@ -31,23 +31,16 @@ void Usage(char *prog,int option){
   UsageCommon(HELP_SUMMARY);
   if(option==HELP_ALL){
     PRINTF("\n%s\n", _("Other options:"));
-#ifdef pp_READBUFFER
-    PRINTF("%s\n", _(" -buffer        - scan .smv file using a memory buffer"));
-#endif
     PRINTF("%s\n", _(" -build         - show directives used in this build of Smokeview"));
     PRINTF("%s\n", _(" -convert_ini case1.ini case2.ini - update case1.ini to the current format"));
     PRINTF("%s\n", _("                  and save results into case2.ini"));
     PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
     PRINTF("%s\n", _(" -fast          - assume slice files exist in order to reduce startup time"));
     PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
+    PRINTF("%s\n", _(" -geominfo      - output information about geometry triangles"));
     PRINTF("%s\n", _(" -html          - output html version of smokeview scene"));
-#ifdef pp_LANG
     PRINTF("%s\n", _(" -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian"));
-#endif
     PRINTF("%s\n", _(" -ng_ini        - non-graphics version of -ini."));
-#ifdef pp_READBUFFER
-    PRINTF("%s\n", _(" -no_buffer     - scan .smv file using file I/O rather from memory"));
-#endif
     PRINTF("%s\n", _(" -scriptrenderdir dir - directory containing script rendered images"));
     PRINTF("%s\n", _("                  (override directory specified by RENDERDIR script keyword)"));
     PRINTF("%s\n", _(" -setup         - only show geometry"));
@@ -94,9 +87,6 @@ void Usage(char *prog,int option){
 #ifdef pp_DRAWISO
     strcat(label, ", pp_DRAWISO");
 #endif
-#ifdef pp_FILELIST
-    strcat(label, ", pp_FILELIST");
-#endif
 #ifdef pp_GCC
     strcat(label, ", pp_GCC");
 #endif
@@ -106,12 +96,6 @@ void Usage(char *prog,int option){
 #ifdef pp_GPU
     strcat(label, ", pp_GPU");
 #endif
-#ifdef pp_GPU_CULL_STATE
-    strcat(label, ", pp_GPU_CULL_STATE");
-#endif
-#ifdef pp_GPUDEPTH
-    strcat(label, ", pp_GPUDEPTH");
-#endif
 #ifdef pp_GPUTHROTTLE
     strcat(label, ", pp_GPUTHROTTLE");
 #endif
@@ -120,9 +104,6 @@ void Usage(char *prog,int option){
 #endif
 #ifdef pp_INTEL
     strcat(label, ", pp_INTEL");
-#endif
-#ifdef pp_LANG
-    strcat(label, ", pp_LANG");
 #endif
 #ifdef pp_LINUX
     strcat(label, ", pp_LINUX");
@@ -148,14 +129,8 @@ void Usage(char *prog,int option){
 #ifdef pp_OSX
     strcat(label, ", pp_OSX");
 #endif
-#ifdef pp_OSXGLUT32
-    strcat(label, ", pp_OSXGLUT32");
-#endif
 #ifdef pp_PART_TEST
     strcat(label, ", pp_PART_TEST");
-#endif
-#ifdef pp_READBUFFER
-    strcat(label, ", pp_READBUFFER");
 #endif
 #ifdef pp_release
     strcat(label, ", pp_release");
@@ -230,9 +205,7 @@ void ParseCommandline(int argc, char **argv){
       if(
         strncmp(argi, "-points", 7) == 0 ||
         strncmp(argi, "-frames", 7) == 0 ||
-#ifdef pp_LANG
         strncmp(argi, "-lang", 5) == 0 ||
-#endif
         strncmp(argi, "-script", 7) == 0 ||
 #ifdef pp_LUA
         strncmp(argi, "-luascript", 10) == 0 ||
@@ -453,14 +426,6 @@ void ParseCommandline(int argc, char **argv){
       use_graphics = 0;
       update_slice = 1;
     }
-#ifdef pp_READBUFFER
-    else if(strncmp(argv[i], "-no_buffer", 10)==0){
-      readfile_option = READFILE;
-    }
-    else if(strncmp(argv[i], "-buffer", 7)==0){
-      readfile_option = READBUFFER;
-    }
-#endif
     else if(strncmp(argv[i], "-update", 7)==0){
       if(strncmp(argv[i], "-update_slice", 13)!=0&&strncmp(argv[i], "-update_bounds", 14)!=0){
         use_graphics = 0;
@@ -483,7 +448,6 @@ void ParseCommandline(int argc, char **argv){
       stereotype = STEREO_TIME;
       PRINTF("stereo option activated\n");
     }
-#ifdef pp_LANG
     else if(strncmp(argv[i], "-lang", 5) == 0){
       ++i;
       if(i < argc){
@@ -497,7 +461,6 @@ void ParseCommandline(int argc, char **argv){
         strcpy(tr_name, lang);
       }
     }
-#endif
     else if(strncmp(argv[i], "-convert_ini", 12) == 0){
       char *local_ini_from = NULL, *local_ini_to = NULL;
 
@@ -563,6 +526,9 @@ void ParseCommandline(int argc, char **argv){
     }
     else if(strncmp(argv[i], "-fed", 4) == 0){
       compute_fed = 1;
+    }
+    else if(strncmp(argv[i], "-geominfo", 9)==0){
+      print_geominfo = 1;
     }
     else if(strncmp(argv[i], "-fast", 5) == 0){
       fast_startup = 1;

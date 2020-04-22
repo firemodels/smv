@@ -100,6 +100,7 @@ GLUI_Panel *PANEL_partread = NULL;
 #ifdef pp_SLICETHREAD
 GLUI_Panel *PANEL_sliceread = NULL;
 #endif
+GLUI_Panel *PANEL_boundary_outline_type = NULL;
 GLUI_Panel *PANEL_iso1 = NULL;
 GLUI_Panel *PANEL_iso2 = NULL;
 GLUI_Panel *PANEL_geomexp = NULL;
@@ -193,6 +194,7 @@ GLUI_EditText *EDIT_part_min=NULL, *EDIT_part_max=NULL;
 GLUI_EditText *EDIT_p3_min=NULL, *EDIT_p3_max=NULL;
 GLUI_EditText *EDIT_p3_chopmin=NULL, *EDIT_p3_chopmax=NULL;
 
+GLUI_Checkbox *CHECKBOX_show_boundary_outline=NULL;
 #ifdef pp_SLICETHREAD
 GLUI_Checkbox *CHECKBOX_slice_multithread = NULL;
 #endif
@@ -249,6 +251,7 @@ GLUI_RadioGroup *RADIO_iso_setmax=NULL;
 GLUI_RadioGroup *RADIO_transparency_option=NULL;
 GLUI_RadioGroup *RADIO_slice_celltype=NULL;
 GLUI_RadioGroup *RADIO_slice_edgetype=NULL;
+GLUI_RadioGroup *RADIO_boundary_edgetype = NULL;
 GLUI_RadioGroup *RADIO_show_slice_in_obst=NULL;
 GLUI_RadioGroup *RADIO_boundaryslicedup = NULL;
 GLUI_RadioGroup *RADIO_slicedup = NULL;
@@ -999,6 +1002,17 @@ void BoundBoundCB(int var){
   int i;
 
   switch(var){
+  case SHOW_BOUNDARY_OUTLINE:
+    if(ngeom_data==0)break;
+    if(show_boundary_outline==1&&boundary_edgetype==IMMERSED_HIDDEN)boundary_edgetype = IMMERSED_POLYGON;
+    if(show_boundary_outline==0&&boundary_edgetype!=IMMERSED_HIDDEN)boundary_edgetype = IMMERSED_HIDDEN;
+    if(boundary_edgetype!=RADIO_boundary_edgetype->get_int_val())RADIO_boundary_edgetype->set_int_val(boundary_edgetype);
+    break;
+  case BOUNDARY_EDGETYPE:
+    if(boundary_edgetype==IMMERSED_HIDDEN&&show_boundary_outline==1)show_boundary_outline=0;
+    if(boundary_edgetype!=IMMERSED_HIDDEN&&show_boundary_outline==0)show_boundary_outline=1;
+    if(show_boundary_outline!=CHECKBOX_show_boundary_outline->get_int_val())CHECKBOX_show_boundary_outline->set_int_val(show_boundary_outline);
+    break;
   case UPDATE_BOUNDARYSLICEDUPS:
     UpdateBoundarySliceDups();
     updatemenu = 1;
@@ -1967,8 +1981,17 @@ extern "C" void GluiBoundsSetup(int main_window){
 
     if(ngeom_data > 0){
       glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("shaded"), &show_boundary_shaded);
-      glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("outline"), &show_boundary_outline);
+      CHECKBOX_show_boundary_outline=glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("outline"), &show_boundary_outline, SHOW_BOUNDARY_OUTLINE, BoundBoundCB);
       glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("points"), &show_boundary_points);
+
+      PANEL_boundary_outline_type = glui_bounds->add_panel_to_panel(ROLLOUT_boundary_settings,"outline type");
+      RADIO_boundary_edgetype = glui_bounds->add_radiogroup_to_panel(PANEL_boundary_outline_type, &boundary_edgetype, BOUNDARY_EDGETYPE, BoundBoundCB);
+      glui_bounds->add_radiobutton_to_group(RADIO_boundary_edgetype, _("polygon"));
+      glui_bounds->add_radiobutton_to_group(RADIO_boundary_edgetype, _("triangle"));
+      glui_bounds->add_radiobutton_to_group(RADIO_boundary_edgetype, _("none"));
+      BoundBoundCB(BOUNDARY_EDGETYPE);
+      BoundBoundCB(SHOW_BOUNDARY_OUTLINE);
+
       PANEL_geomexp = glui_bounds->add_panel_to_panel(ROLLOUT_boundary_settings,"experimental");
       glui_bounds->add_checkbox_to_panel(PANEL_geomexp, _("smooth normals"), &geomdata_smoothnormals);
       glui_bounds->add_checkbox_to_panel(PANEL_geomexp, _("smooth color/data"), &geomdata_smoothcolors);

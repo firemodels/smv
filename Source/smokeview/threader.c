@@ -299,6 +299,35 @@ void *MtMakeIBlank(void *arg){
 #endif
 #endif
 
+/* ------------------ Sample ------------------------ */
+
+#ifdef pp_SAMPLE
+// example multi threading routines 
+// need to declare sample_thread_id in threader.h
+// need to declare sample_multithread in smokeviewvars.h
+
+#ifdef pp_THREAD
+void *MtSample(void *arg){
+  Sample();
+  pthread_exit(NULL);
+  return NULL;
+}
+
+void SampleMT(void){
+  if(sample_multithread==1){
+    pthread_create(&sample_thread_id, NULL, MtSample, NULL);
+  }
+  else{
+    Sample();
+  }
+}
+#else
+void SampleMT(void){
+  Sample();
+}
+#endif
+#endif
+
 /* ------------------ makeiblank_all ------------------------ */
 
 #ifdef pp_THREAD

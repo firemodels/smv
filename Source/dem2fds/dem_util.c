@@ -200,6 +200,8 @@ int GetColor(elevdata *imagei, float llong, float llat) {
     int irow, icol;
     float latfact, longfact;
 
+    if(imagei->image==NULL)imagei->image = GetJPEGImage(imagei->datafile, &imagei->ncols, &imagei->nrows);
+
     latfact = (llat-imagei->lat_min)/(imagei->lat_max-imagei->lat_min);
     longfact = (llong-imagei->long_min)/(imagei->long_max-imagei->long_min);
 
@@ -266,7 +268,6 @@ void GenerateMapImage(char *image_file, char *image_file_type, elevdata *fds_ele
 
     imagei = imageinfo+ii;
     printf(" processing image file %i of %i\n",ii+1,nimageinfo);
-    if(imagei->image==NULL)imagei->image = GetJPEGImage(imagei->datafile, &imagei->ncols, &imagei->nrows);
 
     for(j = 0; j<nrows; j++) {
       int i;
@@ -283,7 +284,7 @@ void GenerateMapImage(char *image_file, char *image_file_type, elevdata *fds_ele
         if(rgb_local>=0)gdImageSetPixel(RENDERimage, i, j, rgb_local);
       }
     }
-    gdImageDestroy(imagei->image);
+    if(imagei->image!=NULL)gdImageDestroy(imagei->image);
   }
 #else
   for(j = 0; j < nrows; j++) {
@@ -425,11 +426,11 @@ int GetElevations(char *input_file, char *image_file, char *image_file_type, ele
   int nelevinfo, nimageinfo, i, j;
   filelistdata *headerfiles, *imagefiles;
   FILE *stream_in;
-  elevdata *elevinfo, *imageinfo;
+  elevdata *elevinfo=NULL, *imageinfo=NULL;
   int kbar;
   int nlongs = 100, nlats = 100;
   float dlat, dlong;
-  int count, *have_vals;
+  int *have_vals;
   float valmin=0.0, valmax=1.0, *vals;
   char *ext;
   float longref = -1000.0, latref = -1000.0;
@@ -826,28 +827,31 @@ int GetElevations(char *input_file, char *image_file, char *image_file_type, ele
   fds_elevs->longref = longref;
   fds_elevs->latref = latref;
 
-  count = 0;
-  for(j = 0; j < nlats; j++) {
-    for(i = 0; i < nlongs; i++){
-      float llong, llat, elevij;
-      int have_val;
+  {
+    int count=0;
 
-      llong = *longlats++;
-      llat = *longlats++;
-      elevij = GetElevation(elevinfo, nelevinfo, llong, llat, INTERPOLATE, &have_val);
-      vals[count] = elevij;
-      have_vals[count] = have_val;
-      if(have_val == 1){
-        if(count == 0){
-          valmin = elevij;
-          valmax = elevij;
+    for(j = 0; j<nlats; j++) {
+      for(i = 0; i<nlongs; i++){
+        float llong, llat, elevij;
+        int have_val;
+
+        llong = *longlats++;
+        llat = *longlats++;
+        elevij = GetElevation(elevinfo, nelevinfo, llong, llat, INTERPOLATE, &have_val);
+        vals[count] = elevij;
+        have_vals[count] = have_val;
+        if(have_val==1){
+          if(count==0){
+            valmin = elevij;
+            valmax = elevij;
+          }
+          else{
+            valmin = MIN(valmin, elevij);
+            valmax = MAX(valmax, elevij);
+          }
         }
-        else{
-          valmin = MIN(valmin, elevij);
-          valmax = MAX(valmax, elevij);
-        }
+        count++;
       }
-      count++;
     }
   }
   fds_elevs->val_min = valmin;
@@ -883,9 +887,185 @@ int GetElevations(char *input_file, char *image_file, char *image_file_type, ele
   return 1;
 }
 
+/* ------------------ GetAndersonFireIndex ------------------------ */
+
+#define NFIRE_TYPES 20
+int GetAndersonFireIndex(int val){
+  int j;
+  int fire_type[NFIRE_TYPES] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 90, 91, 92, 93, 98, 99, 9999};
+
+  for(j = 0; j<NFIRE_TYPES-1; j++){
+    if(val==fire_type[j])return j+1;
+  }
+  return NFIRE_TYPES;
+}
+
+/* ------------------ FIRE2PNG ------------------------ */
+
+void FIRE2PNG(char *basename, int *vals, int nrows, int ncols){
+  int i;
+  gdImagePtr RENDERimage;
+  FILE *RENDERfile = NULL;
+
+  RENDERimage = gdImageCreateTrueColor(3*ncols, 3*nrows);
+
+  for(i = 0; i<ncols; i++){
+    int j;
+
+    for(j = 0; j<nrows; j++){
+      unsigned char r, g, b;
+      int rgb_local, color_index, ii, jj;
+      int val;
+
+      val = vals[j*ncols+i];
+      if(val==98){
+        val = 98;
+      }
+      color_index = GetAndersonFireIndex(val)-1;
+      r = (unsigned char)firecolors[3*color_index];
+      g = (unsigned char)firecolors[3*color_index+1];
+      b = (unsigned char)firecolors[3*color_index+2];
+      rgb_local = (r<<16)|(g<<8)|b;
+      for(ii = 0; ii<3; ii++){
+        for(jj = 0; jj<3; jj++){
+          gdImageSetPixel(RENDERimage, 3*i+ii, 3*j+jj, rgb_local);
+        }
+      }
+    }
+  }
+  {
+    char filename[1000];
+
+    strcpy(filename, basename);
+    strcat(filename, ".png");
+    RENDERfile = fopen(filename, "wb");
+  }
+  gdImagePng(RENDERimage, RENDERfile);
+  fclose(RENDERfile);
+}
+
+/* ------------------ ReadIGrid ------------------------ */
+
+int ReadIGrid(char *directory, char *file, wuigriddata *wuifireinfo){
+  FILE *stream;
+  int i;
+  int *vals_local = NULL, nvals_local;
+  char *buffer = NULL;
+  int size_buffer;
+
+  wuifireinfo->vals_ntypes = 0;
+
+  stream = fopen_indir(directory, file, "r");
+  if(stream==NULL)return 1;
+
+  size_buffer = 100;
+  NewMemory((void **)&buffer, size_buffer*sizeof(char));
+
+  fgets(buffer, size_buffer, stream);
+  sscanf(buffer+13, "%i", &wuifireinfo->ncols);
+
+  fgets(buffer, size_buffer, stream);
+  sscanf(buffer+13, "%i", &wuifireinfo->nrows);
+
+  fgets(buffer, size_buffer, stream);
+  sscanf(buffer+13, "%f", &wuifireinfo->long_min);
+
+  fgets(buffer, size_buffer, stream);
+  sscanf(buffer+13, "%f", &wuifireinfo->lat_min);
+
+  fgets(buffer, size_buffer, stream);
+  sscanf(buffer+13, "%f", &wuifireinfo->dlong);
+
+  fgets(buffer, size_buffer, stream);
+  sscanf(buffer+13, "%f", &wuifireinfo->dlat);
+
+  wuifireinfo->long_max = wuifireinfo->long_min+(float)wuifireinfo->ncols*wuifireinfo->dlong;
+  wuifireinfo->lat_max = wuifireinfo->lat_min+(float)wuifireinfo->nrows*wuifireinfo->dlat;
+
+  fgets(buffer, size_buffer, stream);
+
+  nvals_local = wuifireinfo->ncols*wuifireinfo->nrows;
+  if(nvals_local<=0)return 1;
+
+  FREEMEMORY(buffer);
+  size_buffer = 5*wuifireinfo->ncols;
+  NewMemory((void **)&buffer, size_buffer*sizeof(char));
+
+  NewMemory((void **)&vals_local, nvals_local*sizeof(int));
+  wuifireinfo->vals = vals_local;
+  for(i = 0; i<wuifireinfo->nrows; i++){
+    int j;
+    char *tok;
+
+    if(fgets(buffer, size_buffer, stream)==NULL)break;
+    tok = strtok(buffer, " ");
+    for(j = 0; j<wuifireinfo->ncols; j++){
+      sscanf(tok, "%i", vals_local);
+      tok = strtok(NULL, " ");
+      vals_local++;
+    }
+  }
+  return 0;
+}
+
+/* ------------------ GetFireData ------------------------ */
+
+wuigriddata *GetFireData(char *directory, char *casename){
+  wuigriddata *wuifireinfo;
+  int ntypes;
+
+  NewMemory((void **)&wuifireinfo, sizeof(wuigriddata));
+
+  if(ReadIGrid(directory, "anderson13.asc", wuifireinfo)!=0){
+    FREEMEMORY(wuifireinfo);
+    return NULL;
+  }
+  FIRE2PNG(casename, wuifireinfo->vals, wuifireinfo->nrows, wuifireinfo->ncols);
+  return wuifireinfo;
+}
+
+/* ------------------ GetFireIndex ------------------------ */
+
+int GetFireIndex(wuigriddata *wuifireinfo, float longitude, float latitude){
+  int ix, iy, index, val;
+
+  ix = CLAMP(wuifireinfo->ncols*(longitude-wuifireinfo->long_min)/(wuifireinfo->long_max-wuifireinfo->long_min), 0, wuifireinfo->ncols-1);
+  iy = CLAMP(wuifireinfo->nrows*(wuifireinfo->lat_max-latitude)/(wuifireinfo->lat_max-wuifireinfo->lat_min), 0, wuifireinfo->nrows-1);
+  index = iy*wuifireinfo->ncols+ix;
+  val = wuifireinfo->vals[index];
+  return val;
+}
+
+/* ------------------ GetSurfs ------------------------ */
+
+void GetSurfs(wuigriddata *wuifireinfo, struct _elevdata *fds_elevs, float *verts, int nverts, int *faces, int *surfs, int nfaces){
+  int i, fire_index;
+  float longitude, latitude;
+
+  for(i = 0; i<nfaces; i++){
+    int f1, f2, f3;
+    float *v1, *v2, *v3, xavg, yavg;
+    int firetype_index;
+
+    f1 = faces[3*i+0]-1;
+    f2 = faces[3*i+1]-1;
+    f3 = faces[3*i+2]-1;
+    v1 = verts+3*f1;
+    v2 = verts+3*f2;
+    v3 = verts+3*f3;
+    xavg = (v1[0]+v2[0]+v3[0])/3.0;
+    yavg = (v1[1]+v2[1]+v3[1])/3.0;
+    longitude = fds_elevs->long_min+(xavg/fds_elevs->xmax)*(fds_elevs->long_max-fds_elevs->long_min);
+    latitude = fds_elevs->lat_min+(yavg/fds_elevs->ymax)*(fds_elevs->lat_max-fds_elevs->lat_min);
+    fire_index = GetFireIndex(wuifireinfo, longitude, latitude);
+    firetype_index = GetAndersonFireIndex(fire_index);
+    surfs[i] = firetype_index;
+  }
+}
+
 /* ------------------ GenerateFDSInputFile ------------------------ */
 
-void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option){
+void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option, wuigriddata *wuifireinfo){
   char output_file[LEN_BUFFER], output_elev_file[LEN_BUFFER], *ext;
   char basename[LEN_BUFFER];
 
@@ -935,14 +1115,16 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
   kbar = nz;
 
   NewMemory((void **)&xgrid, sizeof(float)*(ibar + 1));
-  for(i = 0; i < ibar + 1; i++){
+  for(i = 0; i < ibar; i++){
     xgrid[i] = xmax*(float)i / (float)ibar;
   }
+  xgrid[ibar] = xmax;
 
   NewMemory((void **)&ygrid, sizeof(float)*(jbar + 1));
-  for(i = 0; i < jbar + 1; i++){
-    ygrid[i] = ymax*(float)(jbar - i) / (float)jbar;
+  for(i = 0; i < jbar; i++){
+    ygrid[i] = ymax*(float)(i)/(float)jbar;
   }
+  ygrid[jbar] = ymax;
 
   if(option==FDS_OBST){
     int nvals = ibar*jbar, len;
@@ -977,6 +1159,9 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
   if(option == FDS_OBST) {
     fprintf(streamout, "&MISC TERRAIN_CASE = .TRUE., TERRAIN_IMAGE = '%s.png' /\n", basename);
   }
+  if(option==FDS_GEOM) {
+    fprintf(streamout, "&MISC TERRAIN_CASE = .TRUE., TERRAIN_IMAGE = '%s.png' /\n", basename);
+  }
   fprintf(streamout, "&TIME T_END = 0.0 /\n");
   fprintf(streamout, "&VENT MB = 'XMIN', SURF_ID = 'OPEN' /\n");
   fprintf(streamout, "&VENT MB = 'XMAX', SURF_ID = 'OPEN' /\n");
@@ -987,19 +1172,78 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
   fprintf(streamout, "\nTerrain Geometry\n\n");
 
   if(option == FDS_GEOM){
-    fprintf(streamout, "&MATL ID = '%s', DENSITY = 1000., CONDUCTIVITY = 1., SPECIFIC_HEAT = 1., RGB = 122,117,48 /\n",matl_id);
-    fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 TEXTURE_MAP='%s.png' /\n", surf_id1, basename);
-    fprintf(streamout, "&GEOM ID='terrain', SURF_ID='%s',MATL_ID='%s',\nIJK=%i,%i,XB=%f,%f,%f,%f,\nZVALS=\n",
-      surf_id1,matl_id,nlong, nlat, 0.0, xmax, 0.0, ymax);
-    count = 1;
-    for(j = 0; j < jbar + 1; j++){
-      for(i = 0; i < ibar + 1; i++){
-        fprintf(streamout, " %f,", vals[(jbar-j)*(ibar+1)+i]);
-        if(count % 10 == 0)fprintf(streamout, "\n");
-        count++;
+    float *verts;
+    int *faces, *surfs;
+    int nverts, nfaces;
+
+    NewMemory((void **)&verts, 3*(ibar+1)*(jbar+1)*sizeof(float));
+    NewMemory((void **)&faces, 3*2*ibar*jbar*sizeof(int));
+    NewMemory((void **)&surfs, 2*ibar*jbar*sizeof(int));
+
+#define VERTIJ(i,j) ((j)*(ibar+1)+(i))
+
+    nverts = 0;
+    for(j = 0; j<jbar+1; j++){
+      for(i = 0; i<ibar+1; i++){
+        verts[3*nverts+0] = xgrid[i];
+        verts[3*nverts+1] = ymax-ygrid[j];
+        verts[3*nverts+2] = vals[VERTIJ(i,j)];
+        nverts++;
       }
     }
-    fprintf(streamout, "/\n");
+
+    nfaces = 0;
+    for(j = 0; j<jbar; j++){
+      for(i = 0; i<ibar; i++){
+        faces[3*nfaces+0] = 1+VERTIJ(i, j);
+        faces[3*nfaces+1] = 1+VERTIJ(i+1, j+1);
+        faces[3*nfaces+2] = 1+VERTIJ(i+1, j);
+        nfaces++;
+
+        faces[3*nfaces+0] = 1+VERTIJ(i, j);
+        faces[3*nfaces+1] = 1+VERTIJ(i, j+1);
+        faces[3*nfaces+2] = 1+VERTIJ(i+1, j+1);
+        nfaces++;
+      }
+    }
+
+    if(wuifireinfo==NULL){
+      for(i = 0; i<nfaces; i++){
+        surfs[i] = 1;
+      }
+      fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 /\n", surf_id1);
+      fprintf(streamout, "&GEOM ID='terrain', IS_TERRAIN=T, SURF_ID='%s',\n", surf_id1);
+    }
+    else{
+      for(i = 0; i<NFIRETYPES; i++){
+        fprintf(streamout, "&SURF ID = '%s', RGB = %i, %i, %i /\n", firetypes[i],firecolors[3*i],firecolors[3*i+1],firecolors[3*i+2]);
+      }
+      GetSurfs(wuifireinfo, fds_elevs, verts, nverts, faces, surfs, nfaces);
+      fprintf(streamout, "&GEOM ID='terrain', IS_TERRAIN=T, SURF_ID=\n");
+      for(i = 0; i<NFIRETYPES; i++){
+        fprintf(streamout, " '%s'",firetypes[i]);
+        if(i!=NFIRETYPES-1)fprintf(streamout, ", ");
+        if(i==9||i==NFIRETYPES-1)fprintf(streamout,"\n");
+      }
+    }
+
+    fprintf(streamout, "  VERTS=\n");
+    for(i = 0; i < nverts; i++){
+      fprintf(streamout, " %f,%f,%f", verts[3*i+0], verts[3*i+1], verts[3*i+2]);
+      fprintf(streamout,",  ");
+      if((i+1)%3==0)fprintf(streamout, "\n");
+    }
+    fprintf(streamout,"\n");
+
+    fprintf(streamout, "  FACES=\n");
+    for(i = 0; i<nfaces; i++){
+      fprintf(streamout, " %i,%i,%i,%i", faces[3*i+0], faces[3*i+1], faces[3*i+2],surfs[i]);
+      if(i!=nfaces-1)fprintf(streamout, ",  ");
+      if((i+1)%6==0)fprintf(streamout, "\n");
+    }
+    fprintf(streamout,"/\n");
+    FREEMEMORY(verts);
+    FREEMEMORY(faces);
   }
 
   if(option == FDS_OBST){

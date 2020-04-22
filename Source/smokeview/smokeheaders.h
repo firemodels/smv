@@ -5,11 +5,12 @@
 #include "gd.h"
 #endif
 
-EXTERNCPP int TimeAverageData(float *data_out, float *data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time);
-#ifdef pp_READBUFFER
-bufferstreamdata *GetSMVBuffer(char *file, char *file2);
+#ifdef pp_C_SLICE
+EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error);
 #endif
-  EXTERNCPP void UpdateBlockType(void);
+EXTERNCPP int TimeAverageData(float *data_out, float *data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time);
+bufferstreamdata *GetSMVBuffer(char *file, char *file2);
+EXTERNCPP void UpdateBlockType(void);
 #ifdef pp_NEWBOUND_DIALOG
 EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max);
 #endif
@@ -22,13 +23,11 @@ EXTERNCPP void ShiftColorbars(void);
 EXTERNCPP int GetColorbarState(void);
 EXTERNCPP void ViewpointCB(int val);
 EXTERNCPP void SMV_EXIT(int code);
-#ifdef pp_SELECT_GEOM
 EXTERNCPP void UpdateSelectGeom(void);
 EXTERNCPP void UpdateVertexInfo(float *xyz1, float *xyz2);
 EXTERNCPP void UpdateTriangleInfo(surfdata *tri_surf, float tri_area);
 EXTERNCPP void DrawSelectGeom(void);
 EXTERNCPP void UpdateGeomAreas(void);
-#endif
 EXTERNCPP void GetZoneTempBounds(void);
 EXTERNCPP FILE_SIZE GetSliceData(char *slicefilename, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
   float *qminptr, float *qmaxptr, float *qdataptr, float *timesptr, int ntimes_old_arg, int *ntimesptr,
@@ -444,10 +443,6 @@ EXTERNCPP void DrawTrees(void);
 EXTERNCPP void InitCullGeom(int cullflag);
 EXTERNCPP void GetCullSkips(meshdata *meshi, int cullflag, int cull_portsize, int *iiskip, int *jjskip, int *kkskip);
 #ifdef pp_GPU
-#ifdef pp_GPUDEPTH
-EXTERNCPP void GetDepthTexture( void );
-EXTERNCPP void CreateDepthTexture( void );
-#endif
 EXTERNCPP int  InitShaders(void);
 #ifdef pp_GPUSMOKE
 EXTERNCPP void LoadNewSmokeShaders(void);
@@ -850,6 +845,7 @@ EXTERNCPP void ReadPlot3D(char *file, int ifile, int flag,int *errorcode);
 EXTERNCPP void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local);
 EXTERNCPP void ReadAllGeom(void);
 EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode);
+EXTERNCPP void ReadGeomFile2(geomdata *geomi);
 EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock);
 EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode);
@@ -868,12 +864,8 @@ EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_fra
 
 EXTERNCPP void InitMenus(int unload);
 EXTERNCPP void SmoothLabel(float *min, float *max, int n);
-#ifdef pp_READBUFFER
-int ReadSMV(bufferstreamdata *stream, char *file, char *file2);
-#else
-int ReadSMV(char *file, char *file2);
-#endif
-  EXTERNCPP void ReadSMVDynamic(char *file);
+int ReadSMV(bufferstreamdata *stream);
+EXTERNCPP void ReadSMVDynamic(char *file);
 EXTERNCPP int  STRCMP(const char *s1, const char *s2);
 EXTERNCPP void OutputAxisLabels(void);
 EXTERNCPP void OutputLargeText(float x, float y, char *string);

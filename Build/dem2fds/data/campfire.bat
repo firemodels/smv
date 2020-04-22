@@ -4,8 +4,10 @@ set option=-geom
 
 set dem2fds=..\intel_win_64\dem2fds_win_64.exe
 ::set dem2fds=dem2fds
-set "terrain1=%userprofile%\terrain"
-set "terrain2=%userprofile%\Google drive\documents\terrain"
+
+set "GOOGLE=%userprofile%\Google Drive\documents\terrain"
+set HOME=%userprofile%\terrain
+set "DIR=%GOOGLE%"
 
 set terrain=
 if EXIST "%terrain1%" set "terrain=%terrain1%"
@@ -15,5 +17,5 @@ if NOT "x%terrain%" == "x" goto endif1
   exit /b
 :endif1
 
-%dem2fds% %option%  -width 3000     -dir "%terrain%\campfire" campfire3.in 
-%dem2fds% %option% -show -dir "%terrain%\campfire" campfire4.in 
+%dem2fds% %option%  -width 3000 -dir "%DIR%\campfire" campfire3.in 
+::%dem2fds% %option% -show      -dir "%DIR%\campfire" campfire4.in 

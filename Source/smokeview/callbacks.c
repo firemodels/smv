@@ -18,11 +18,6 @@
 #endif
 #include "IOscript.h"
 
-#undef pp_GPU_CULL_STATE
-#ifdef pp_GPU
-#define pp_GPU_CULL_STATE
-#endif
-
 /* ------------------ GetGridIndex ------------------------ */
 
 int GetGridIndex(float val, int dir, float *plotxyz, int nplotxyz){
@@ -528,7 +523,6 @@ void MouseSelectAvatar(int button, int state, int x, int y){
   }
 }
 
-#ifdef pp_SELECT_GEOM
 /* ------------------ MouseSelectGeom ------------------------ */
 
 void MouseSelectGeom(int button, int state, int x, int y){
@@ -619,7 +613,6 @@ void MouseSelectGeom(int button, int state, int x, int y){
     ENABLE_LIGHTING;
   }
 }
-#endif
 
 /* ------------------ CheckTimeBound ------------------------ */
 
@@ -1053,9 +1046,7 @@ void MouseCB(int button, int state, int xm, int ym){
       if(viscolorbarpath==1)MouseEditColorbar(button, state, xm, ym);
       if(select_avatar==1)MouseSelectAvatar(button,state,xm,ym);
       if(select_device==1)MouseSelectDevice(button,state,xm,ym);
-#ifdef pp_SELECT_GEOM
       if(select_geom!=GEOM_PROP_NONE)MouseSelectGeom(button, state, xm, ym);
-#endif
     }
     glutPostRedisplay();
     if( showtime==1 || showplot3d==1){
@@ -1532,12 +1523,11 @@ void KeyboardUpCB(unsigned char key, int x, int y){
 #endif
 }
 
-#ifdef pp_GPU_CULL_STATE
-/* ------------------ PrintGPUCullState ------------------------ */
-
-void PrintGPUCullState(void){
-  char gpu_label[128];
 #ifdef pp_GPU
+/* ------------------ PrintGPUState ------------------------ */
+
+void PrintGPUState(void){
+  char gpu_label[128];
   if(gpuactive==1){
     if(usegpu==1){
       strcpy(gpu_label,"GPU in use.");
@@ -1550,7 +1540,6 @@ void PrintGPUCullState(void){
     strcpy(gpu_label,"GPU not available.");
   }
   PRINTF("%s ",gpu_label);
-#endif
   PRINTF("\n");
 }
 #endif
@@ -1805,7 +1794,7 @@ void Keyboard(unsigned char key, int flag){
       if(nsmoke3dinfo>0){
         UpdateSmoke3dFlags();
       }
-      PrintGPUCullState();
+      PrintGPUState();
       return;
 #endif
     case 'h':
@@ -2003,7 +1992,6 @@ void Keyboard(unsigned char key, int flag){
       UpdatePlot3dListIndex();
       break;
     case 'q':
-    case 'Q':
       blocklocation++;
       if((ncadgeom==0&&blocklocation>BLOCKlocation_exact)||
                        blocklocation>BLOCKlocation_cad){
@@ -2020,6 +2008,25 @@ void Keyboard(unsigned char key, int flag){
           blockage_as_input=0;
         }
         ObjectCB(BLOCKAGE_AS_INPUT2);
+      }
+      break;
+    case 'Q':
+      showhide_textures = 1-showhide_textures;
+      for(i = 0; i<ntextureinfo; i++){
+        texturedata *texti;
+
+        texti = textureinfo+i;
+        if(texti->loaded==0||texti->used==0)continue;
+        if(texti->display==0){ // if any textures are hidden then show them all
+          showhide_textures = 1;
+          break;
+        }
+      }
+      if(showhide_textures==1){
+        TextureShowMenu(MENU_TEXTURE_SHOWALL);
+      }
+      else{
+        TextureShowMenu(MENU_TEXTURE_HIDEALL);
       }
       break;
     case 'r':
@@ -2241,7 +2248,7 @@ void Keyboard(unsigned char key, int flag){
         usevolrender=1-usevolrender;
         UpdateSmoke3dFlags();
 #ifdef pp_GPU
-        PrintGPUCullState();
+        PrintGPUState();
 #endif
         return;
       }
@@ -2308,7 +2315,6 @@ void Keyboard(unsigned char key, int flag){
       LevelScene(1,1,quat_general);
       Quat2Rot(quat_general,quat_rotation);
       break;
-#ifdef pp_SELECT_GEOM
     case '=':
       if(ngeominfo>0){
         select_geom++;
@@ -2321,7 +2327,6 @@ void Keyboard(unsigned char key, int flag){
         UpdateSelectGeom();
       }
       break;
-#endif
     case '!':
       SnapScene();
       break;
@@ -3063,11 +3068,6 @@ void ReshapeCB(int width, int height){
     CopyCamera(camera_current,camera_save);
   }
   UpdateWindowSizeList();
-#ifdef pp_GPU
-#ifdef pp_GPUDEPTH
-  CreateDepthTexture();
-#endif
-#endif
 }
 
 /* ------------------ ResetGLTime ------------------------ */
