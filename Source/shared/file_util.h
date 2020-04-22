@@ -71,8 +71,8 @@ typedef struct bufferstreamdata{
 
 #define BFILE bufferstreamdata
 
-#define FILE_EXISTS(a)         FileExists(a,NULL,0,NULL,0)
-#define FILE_EXISTS_CASEDIR(a) FileExists(a,filelist_casename, nfilelist_casename,filelist_casedir,nfilelist_casedir)
+#define FILE_EXISTS(a)         FileExists(a,NULL,0)
+#define FILE_EXISTS_CASEDIR(a) FileExists(a,filelist_casedir,nfilelist_casedir)
 int FileExistsOrig(char *filename);
 
 #ifdef WIN32
@@ -131,8 +131,8 @@ EXTERNCPP int GetFileInfo(char *filename, char *sourcedir, FILE_SIZE *filesize);
 EXTERNCPP char *GetZoneFileName(char *buffer);
 EXTERNCPP int Writable(char *dir);
 
-EXTERNCPP   int FileExists(char *filename, filelistdata *filelist, int nfiles, filelistdata *filelist2, int nfiles2);
-EXTERNCPP filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles, filelistdata *filelist2, int nfiles2);
+EXTERNCPP   int FileExists(char *filename, filelistdata *filelist, int nfiles);
+EXTERNCPP filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles);
 EXTERNCPP void FreeFileList(filelistdata *filelist, int *nfilelist);
 EXTERNCPP int GetFileListSize(const char *path, char *filter) ;
 EXTERNCPP int MakeFileList(const char *path, char *filter, int maxfiles, int sort_files, filelistdata **filelist);
