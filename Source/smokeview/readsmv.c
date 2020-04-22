@@ -8132,7 +8132,7 @@ int ReadSMV(bufferstreamdata *stream){
    ************************************************************************
  */
 
-// #define pp_TIMING
+//#define pp_TIMING
 #ifdef pp_TIMING
   float total_smoke_time=0.0;
   float total_slice_time = 0.0;
@@ -9450,7 +9450,7 @@ typedef struct {
       Match(buffer, "VSMOKG3D") == 1
       ){
       int return_val;
-#if pp_TIMING
+#ifdef pp_TIMING
       float smoke_time;
 #endif
 
@@ -9524,42 +9524,43 @@ typedef struct {
         (Match(buffer, "BNDS") == 1)
       ){
       int return_val;
-#if pp_TIMING
+#ifdef pp_TIMING
       float slice_time;
 #endif
 
+#ifdef pp_TIMING
       START_TIMER(slice_time);
 #endif
       return_val = ParseSLCFProcess(NO_SCAN, stream, buffer, &nn_slice, ioffset, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
       if(return_val==RETURN_BREAK){
-#if pp_TIMING
+#ifdef pp_TIMING
         STOP_TIMER(slice_time);
         total_slice_time += slice_time;
 #endif
         BREAK;
       }
       else if(return_val==RETURN_CONTINUE){
-#if pp_TIMING
+#ifdef pp_TIMING
         STOP_TIMER(slice_time);
         total_slice_time += slice_time;
 #endif
         continue;
       }
       else if(return_val==RETURN_TWO){
-#if pp_TIMING
+#ifdef pp_TIMING
         STOP_TIMER(slice_time);
         total_slice_time += slice_time;
 #endif
         return 2;
       }
       else if(return_val==RETURN_PROCEED){
-#if pp_TIMING
+#ifdef pp_TIMING
         STOP_TIMER(slice_time);
         total_slice_time += slice_time;
 #endif
       }
       else{
-#if pp_TIMING
+#ifdef pp_TIMING
         STOP_TIMER(slice_time);
         total_slice_time += slice_time;
 #endif
@@ -9575,37 +9576,37 @@ typedef struct {
       || Match(buffer, "BNDS")==1
       ){
       int return_val;
-#if pp_TIMING
+#ifdef pp_TIMING
       float boundary_time;
 #endif
 
-#if pp_TIMING
+#ifdef pp_TIMING
       START_TIMER(boundary_time);
 #endif
       return_val = ParseBNDFProcess(stream, buffer, &nn_patch, &ioffset, &patchgeom, &ipatch, buffers);
       if(return_val==RETURN_BREAK){
-#if pp_TIMING
+#ifdef pp_TIMING
         STOP_TIMER(boundary_time);
         total_boundary_time += boundary_time;
 #endif
         BREAK;
       }
       else if(return_val==RETURN_CONTINUE){
-#if pp_TIMING
+#ifdef pp_TIMING
         STOP_TIMER(boundary_time);
         total_boundary_time += boundary_time;
 #endif
         continue;
       }
       else if(return_val==RETURN_TWO){
-#if pp_TIMING
+#ifdef pp_TIMING
         STOP_TIMER(boundary_time);
         total_boundary_time += boundary_time;
 #endif
         return 2;
       }
       else{
-#if pp_TIMING
+#ifdef pp_TIMING
         STOP_TIMER(boundary_time);
         total_boundary_time += boundary_time;
 #endif
@@ -10043,11 +10044,15 @@ typedef struct {
       }
     }
   }
+  printf("before UpdateTerrain\n");
   UpdateTerrain(1,vertical_factor); //xxx_slow
+  printf("after UpdateTerrain\n");
   UpdateTerrainColors();
   UpdateSmoke3dMenuLabels();
   UpdateVSliceBoundIndexes();
+  printf("before UpdateBoundaryMenuLabels\n");
   UpdateBoundaryMenuLabels(); //xxx_slow
+  printf("after UpdateBoundaryMenuLabels\n");
   UpdateIsoMenuLabels();
   UpdatePartMenuLabels();
   UpdateTourMenuLabels();
@@ -10081,8 +10086,13 @@ typedef struct {
   InitVolRenderSurface(FIRSTCALL);
   radius_windrose = 0.2*xyzmaxdiff;
 
+  printf("before UpdateMeshTerrain\n");
   UpdateMeshTerrain(); //xxx_slow
+  printf("after MeshTerrain\n");
+
+  printf("before ReadAllGeom\n");
   ReadAllGeom(); //xxx_slow
+  printf("after ReadAllGeom\n");
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
 
