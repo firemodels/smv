@@ -2318,7 +2318,7 @@ int NewMultiSlice(slicedata *sdold,slicedata *sd){
   // convert from physical to scaled units using xyzmaxdiff
     delta_orig = 1.5*MAX(sdold->delta_orig,sd->delta_orig);
     delta_scaled = SCALE2SMV(delta_orig);
-      if(use_new_slice_menus==0||sd->slcf_index==0){
+      if(sd->slcf_index==0){
         if(
         ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled&&         // test whether two slices are identical
         ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled&&
@@ -2337,8 +2337,8 @@ int NewMultiSlice(slicedata *sdold,slicedata *sd){
 
     if(strcmp(sd->label.shortlabel,sdold->label.shortlabel)!=0
       ||sd->idir!=sdold->idir
-      ||(use_new_slice_menus==1&&sd->slcf_index!=0&&sd->slcf_index!=sdold->slcf_index)
-      ||((use_new_slice_menus==0||sd->slcf_index==0)&&ABS(sd->position_orig-sdold->position_orig)>delta_orig)
+      ||(sd->slcf_index!=0&&sd->slcf_index!=sdold->slcf_index)
+      ||(sd->slcf_index==0&&ABS(sd->position_orig-sdold->position_orig)>delta_orig)
       ||sd->mesh_type!=sdold->mesh_type
       ||sd->slice_filetype!=sdold->slice_filetype
         ){
@@ -4221,6 +4221,35 @@ void GetSliceSizes(char *slicefilenameptr, int *nsliceiptr, int *nslicejptr, int
   *errorptr = 0;
   fclose(SLICEFILE);
 }
+
+#ifdef pp_C_SLICE
+/* ------------------ GetSliceFileHeader ------------------------ */
+
+void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error){
+  FILE *stream = NULL;
+  int vals[6];
+
+  stream = fopen(file, "rb");
+  *error = 1;
+  *ip1 = 0;
+  *ip2 = 0;
+  *jp1 = 0;
+  *jp2 = 0;
+  *kp1 = 0;
+  *kp2 = 0;
+  if(stream==NULL)return;
+  fseek(stream, 3*(4+30+4), SEEK_CUR);
+  fseek(stream, 4, SEEK_CUR); fread(vals, sizeof(int), 6, stream);
+  *ip1 = vals[0];
+  *ip2 = vals[1];
+  *jp1 = vals[2];
+  *jp2 = vals[3];
+  *kp1 = vals[4];
+  *kp2 = vals[5];
+  *error = 0;
+  fclose(stream);
+}
+#endif
 
 /* ------------------ GetSliceData ------------------------ */
 

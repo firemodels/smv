@@ -194,6 +194,9 @@ int SetupCase(int argc, char **argv){
   STRCAT(part_globalbound_filename, ".prt5.gbnd");
   part_globalbound_filename = GetFileName(smokeviewtempdir, part_globalbound_filename, NOT_FORCE_IN_DIR);
 
+  // setup input files names
+
+  input_file = smv_filename;
   if(strcmp(input_filename_ext,".svd")==0||demo_option==1){
     trainer_mode=1;
     trainer_active=1;
@@ -203,38 +206,19 @@ int SetupCase(int argc, char **argv){
     else if(strcmp(input_filename_ext,".smt")==0){
       input_file=test_filename;
     }
-    else{
-      input_file=smv_filename;
-    }
-#ifdef pp_READBUFFER
-    {
-      bufferstreamdata *smv_streaminfo = NULL;
-
-      smv_streaminfo = GetSMVBuffer(input_file, iso_filename);
-      return_code = ReadSMV(smv_streaminfo, input_file, iso_filename);
-      FCLOSE(smv_streaminfo);
-    }
-#else
-    return_code=ReadSMV(input_file,iso_filename);
-#endif
-    if(return_code==0){
-      ShowGluiTrainer();
-      ShowGluiAlert();
-    }
   }
-  else{
-    input_file = smv_filename;
-#ifdef pp_READBUFFER
-    {
-      bufferstreamdata *smv_streaminfo = NULL;
+  {
+    bufferstreamdata *smv_streaminfo = NULL;
 
-      smv_streaminfo = GetSMVBuffer(input_file, iso_filename);
-      return_code = ReadSMV(smv_streaminfo, input_file, iso_filename);
-      FCLOSE(smv_streaminfo);
-    }
-#else
-    return_code = ReadSMV(input_file, iso_filename);
-#endif
+    PRINTF(_("processing smokeview file:"));
+    PRINTF(" %s\n", input_file);
+    smv_streaminfo = GetSMVBuffer(input_file, iso_filename);
+    return_code = ReadSMV(smv_streaminfo);
+    FCLOSE(smv_streaminfo);
+  }
+  if(return_code==0&&trainer_mode==1){
+    ShowGluiTrainer();
+    ShowGluiAlert();
   }
   switch(return_code){
     case 1:
@@ -266,9 +250,7 @@ int SetupCase(int argc, char **argv){
 
   if(use_graphics==0)return 0;
   glui_defined = 1;
-#ifdef pp_LANG
   InitTranslate(smokeview_bindir, tr_name);
-#endif
 
 #ifdef pp_OPENVR
   have_vr = HaveVR();
@@ -527,9 +509,6 @@ void InitOpenGL(void){
 
 #ifdef _DEBUG
   PRINTF("%s",_("   Initializing Glut display mode - "));
-#endif
-#ifdef pp_OSXGLUT32
-  type|=GLUT_3_2_CORE_PROFILE;
 #endif
   glutInitDisplayMode(type);
 #ifdef _DEBUG
@@ -1253,9 +1232,7 @@ void InitVars(void){
     memcpy(&LABEL_local,&LABEL_default,sizeof(labeldata));
   }
 
-#ifdef pp_LANG
   strcpy(startup_lang_code,"en");
-#endif
   mat_specular_orig[0]=0.5f;
   mat_specular_orig[1]=0.5f;
   mat_specular_orig[2]=0.2f;
@@ -1855,7 +1832,6 @@ void InitVars(void){
   nearclip=0.001,farclip=3.0;
   updateclipvals=0;
   updateUpdateFrameRateMenu=0;
-  ntextures=0;
   nskyboxinfo=0;
 
   streak_rvalue[0]=0.25;

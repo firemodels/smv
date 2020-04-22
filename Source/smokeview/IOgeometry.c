@@ -177,14 +177,14 @@ void GetFaceInfo(void){
       for(j=0;j<geomlisti->nverts;j++){
         if(verts[j]->nused>0)nused++;
       }
-#ifdef pp_GEOMPRINT
-      PRINTF("Face/Vertex Summary\n");
-      PRINTF("      Faces: %i\n",geomlisti->ntriangles);
-      PRINTF(" slim faces: %i\n",nskinny);
-      PRINTF("   Vertices: %i\n",geomlisti->nverts);
-      PRINTF("     unused: %i\n",geomlisti->nverts-nused);
-      PRINTF(" duplicates: %i\n\n",ndups);
-#endif
+      if(print_geominfo==1){
+        PRINTF("Face/Vertex Summary\n");
+        PRINTF("      Faces: %i\n", geomlisti->ntriangles);
+        PRINTF(" slim faces: %i\n", nskinny);
+        PRINTF("   Vertices: %i\n", geomlisti->nverts);
+        PRINTF("     unused: %i\n", geomlisti->nverts-nused);
+        PRINTF(" duplicates: %i\n\n", ndups);
+      }
       FREEMEMORY(verts);
     }
   }
@@ -287,7 +287,6 @@ int TextureOn(GLuint texture_id,int *texture_first){
   return 1;
 }
 
-#ifdef pp_SELECT_GEOM
 /* ------------------ UpdateGeomAreas ------------------------ */
 
 void UpdateGeomAreas(void){
@@ -444,7 +443,6 @@ void DrawSelectGeom(void){
   break;
   }
 }
-#endif
 
 /* ------------------ DrawGeom ------------------------ */
 
@@ -473,9 +471,7 @@ void DrawGeom(int flag, int timestate){
 
   if(ntris>0&&timestate==GEOM_STATIC){
     float *color;
-#ifdef pp_SELECT_GEOM
     surfdata *selected_surf;
-#endif
 
   // draw geometry surface
 
@@ -485,7 +481,6 @@ void DrawGeom(int flag, int timestate){
       texture_state=TextureOn(texture_iso_colorbar_id,&texture_first);
     }
 
-#ifdef pp_SELECT_GEOM
     if(select_geom==GEOM_PROP_SURF&&ntris>0&&selected_geom_triangle>=0){
       tridata *selected_triangle;
 
@@ -495,7 +490,6 @@ void DrawGeom(int flag, int timestate){
     else{
       selected_surf = NULL;
     }
-#endif
     if(cullfaces == 1)glDisable(GL_CULL_FACE);
     glEnable(GL_NORMALIZE);
     glShadeModel(GL_SMOOTH);
@@ -516,19 +510,15 @@ void DrawGeom(int flag, int timestate){
       texturedata *ti;
       int  j;
       int smooth_triangles;
-#ifdef pp_SELECT_GEOM
       int use_select_color;
-#endif
 
       trianglei = tris[i];
-#ifdef pp_SELECT_GEOM
       use_select_color = 0;
       if(select_geom==GEOM_PROP_TRIANGLE||select_geom==GEOM_PROP_SURF){
         if(trianglei->geomtype==GEOM_ISO)continue;
         if(select_geom==GEOM_PROP_TRIANGLE&&selected_geom_triangle==i)use_select_color=1;
         if(select_geom==GEOM_PROP_SURF&&selected_surf==trianglei->geomsurf)use_select_color = 1;
       }
-#endif
       if(trianglei->geomtype!=GEOM_ISO){
         if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
         if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
@@ -556,11 +546,15 @@ void DrawGeom(int flag, int timestate){
         transparent_level_local=1.0;
       }
       else{
-        color = trianglei->geomsurf->color;
+        if(trianglei->geomobj!=NULL&&trianglei->geomobj->color!=NULL&&trianglei->geomobj->use_geom_color==1){
+          color = trianglei->geomobj->color;
+        }
+        else{
+          color = trianglei->geomsurf->color;
+        }
         transparent_level_local=trianglei->geomsurf->transparent_level;
       }
       if(geom_force_transparent == 1)transparent_level_local = geom_transparency;
-#ifdef pp_SELECT_GEOM
       if(use_select_color==1||use_surf_color==1){
         unsigned char geom_rgb_uc[4];
 
@@ -607,20 +601,6 @@ void DrawGeom(int flag, int timestate){
           }
         }
       }
-#else
-      if(iso_opacity_change==0||trianglei->geomtype!=GEOM_ISO){
-        if(color!=last_color||ABS(last_transparent_level-transparent_level_local)>0.001){
-          if(texture_state==ON){
-            glEnd();
-            texture_state = TextureOff();
-            glBegin(GL_TRIANGLES);
-          }
-          glColor4f(color[0], color[1], color[2], transparent_level_local);
-          last_color = color;
-          last_transparent_level = transparent_level_local;
-        }
-      }
-#endif
 
       if(smooth_triangles==0){
         glNormal3fv(trianglei->tri_norm);
@@ -887,7 +867,6 @@ void DrawGeom(int flag, int timestate){
       DISABLE_LIGHTING;
       glPopMatrix();
     }
-#ifdef pp_SELECT_GEOM
     if(show_surf_axis==1){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
@@ -951,7 +930,6 @@ void DrawGeom(int flag, int timestate){
       }
       glPopMatrix();
     }
-#endif
 
       // draw volume outline
 
@@ -1108,12 +1086,9 @@ void DrawGeom(int flag, int timestate){
       glBegin(GL_POINTS);
       for(j=0;j<geomlisti->nverts;j++){
         vertdata *verti;
-#ifdef pp_SELECT_GEOM
         int use_select_color;
-#endif
 
         verti = geomlisti->verts+j;
-#ifdef pp_SELECT_GEOM
         use_select_color=0;
         if(select_geom==GEOM_PROP_VERTEX1||select_geom==GEOM_PROP_VERTEX2){
           if(verti->geomtype==GEOM_ISO||verti->ntriangles==0)continue;
@@ -1150,16 +1125,6 @@ void DrawGeom(int flag, int timestate){
             last_color=color;
           }
         }
-#else
-        if(verti->geomtype == GEOM_GEOM&&show_geom_verts == 0)continue;
-        if(verti->geomtype == GEOM_ISO&&show_iso_points == 0)continue;
-        if(verti->ntriangles==0)continue;
-        color = verti->triangles[0]->geomsurf->color;
-        if(last_color!=color){
-          glColor3fv(color);
-          last_color=color;
-        }
-#endif
         glVertex3fv(verti->xyz);
       }
       glEnd();
@@ -2258,9 +2223,13 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
 
         surfi = surfinfo+CLAMP(surf_ind[ii]+offset, nsurfinfo+1, nsurfinfo+MAX_ISO_COLORS);
         triangles[ii].geomsurf=surfi;
-#ifdef pp_SELECT_GEOM
+        if(geomi->file2_tris!=NULL){
+          triangles[ii].geomobj = geomi->geomobjinfo + geomi->file2_tris[ii] - 1;
+        }
+        else{
+          triangles[ii].geomobj = NULL;
+        }
         surfi->used_by_geom = 1;
-#endif
         triangles[ii].textureinfo=NULL;
       }
       FREEMEMORY(ijk);
@@ -2429,6 +2398,55 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       FORTREADBR(texture_coords,6*ntris,stream);
       return_filesize += 4+6*ntris*4+4;
 
+      // compute texture coordinates
+
+      if(terrain_texture!=NULL&&geomi->is_terrain==1){
+        float xmin, xmax, ymin, ymax, xfactor, yfactor;
+        int ii;
+
+        xmin = verts[0].xyz[0];
+        xmax = xmin;
+        ymin = verts[0].xyz[1];
+        ymax = ymin;
+        for(ii=1;ii<nverts;ii++){
+          float *xyz;
+
+          xyz = verts[ii].xyz;
+          xmin = MIN(xmin,xyz[0]);
+          xmax = MAX(xmax,xyz[0]);
+          ymin = MIN(ymin,xyz[1]);
+          ymax = MAX(ymax,xyz[1]);
+        }
+        xfactor = 1.0;
+        yfactor = 1.0;
+        if(ABS(xmax-xmin)>0.0001)xfactor = 1.0/(xmax-xmin);
+        if(ABS(ymax-ymin)>0.0001)yfactor = 1.0/(ymax-ymin);
+        for(ii=0;ii<ntris;ii++){
+          float *text_coords;
+          int *tri_ind;
+          float *xy;
+          vertdata *vert;
+
+          text_coords = texture_coords + 6*ii;
+          tri_ind = ijk + 3*ii;
+
+          vert = verts+tri_ind[0];
+          xy = vert->xyz;
+          text_coords[0] = (xy[0]-xmin)*xfactor;
+          text_coords[1] = (xy[1]-ymin)*yfactor;
+
+          vert = verts+tri_ind[1];
+          xy = vert->xyz;
+          text_coords[2] = (xy[0]-xmin)*xfactor;
+          text_coords[3] = (xy[1]-ymin)*yfactor;
+
+          vert = verts+tri_ind[2];
+          xy = vert->xyz;
+          text_coords[4] = (xy[0]-xmin)*xfactor;
+          text_coords[5] = (xy[1]-ymin)*yfactor;
+        }
+      }
+
       CheckMemory;
       for(ii=0;ii<ntris;ii++){
         surfdata *surfi;
@@ -2448,6 +2466,12 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           surfi=surfinfo + CLAMP(surf_ind[ii],0,nsurfinfo-1);
           if(type==GEOM_ISO)surfi+=nsurfinfo;
           triangles[ii].insolid = surf_ind[ii];
+          if(geomi->file2_tris!=NULL){
+            triangles[ii].geomobj = geomi->geomobjinfo+geomi->file2_tris[ii]-1;
+          }
+          else{
+            triangles[ii].geomobj = NULL;
+          }
           break;
         case GEOM_SLICE:
         case GEOM_BOUNDARY:
@@ -2455,11 +2479,14 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           triangles[ii].insolid = 0;
           break;
         }
-#ifdef pp_SELECT_GEOM
         if(geomi->geomtype==GEOM_GEOM)surfi->used_by_geom = 1;
-#endif
         triangles[ii].geomsurf=surfi;
-        triangles[ii].textureinfo=surfi->textureinfo;
+        if(terrain_texture!=NULL&&geomi->is_terrain==1){
+          triangles[ii].textureinfo = terrain_texture;
+        }
+        else{
+          triangles[ii].textureinfo = surfi->textureinfo;
+        }
         triangles[ii].outside_domain = OutSideDomain(triangles[ii].verts);
       }
 
@@ -2921,14 +2948,14 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
           break;
         }
       }
-#ifdef XXXXXXX
-//      printf("\n\nedges\n");
-//      printf("                       total: %i\n", nedges);
-//      printf("        0 connected triangle: %i\n", ntri0);
-//      printf("        1 connected triangle: %i\n", ntri1);
-//      printf("        2 connected triangle: %i\n", ntri2);
-//      printf("3 or more connected triangle: %i\n", ntri_other);      FREEMEMORY(edgelist_index);
-#endif
+//#ifdef XXXXXXX
+      printf("\n\nedges\n");
+      printf("                       total: %i\n", nedges);
+      printf("        0 connected triangle: %i\n", ntri0);
+      printf("        1 connected triangle: %i\n", ntri1);
+      printf("        2 connected triangle: %i\n", ntri2);
+      printf("3 or more connected triangle: %i\n", ntri_other);      FREEMEMORY(edgelist_index);
+//#endif
     }
     if(nverts > 0){
       int *vertlist_index, nvertlist_index = 0;
@@ -2979,6 +3006,27 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
         FREEMEMORY(vertlist_index);
     }
   }
+}
+
+/* ------------------ ReadGeom ------------------------ */
+
+void ReadGeomFile2(geomdata *geomi){
+  FILE *stream;
+  int ntris, *tris;
+
+  if(geomi->file2==NULL)return;
+  stream = fopen(geomi->file2, "rb");
+  if(stream==NULL)return;
+  FSEEK(stream, 4, SEEK_CUR); fread(&ntris, 4, 1, stream); FSEEK(stream, 4, SEEK_CUR);
+  if(ntris<=0){
+    fclose(stream);
+    return;
+  }
+  NewMemory((void **)&tris, ntris*sizeof(int));
+  FSEEK(stream, 4, SEEK_CUR); fread(tris, 4, ntris, stream); FSEEK(stream, 4, SEEK_CUR);
+  geomi->file2_tris = tris;
+  geomi->nfile2_tris = ntris;
+  fclose(stream);
 }
 
 /* ------------------ ReadGeom ------------------------ */
@@ -3503,7 +3551,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
             if(insolid == IN_SOLID   && show_slice_outlines[IN_SOLID_GLUI] == 0)continue;
             if(insolid == IN_GAS     && show_slice_outlines[IN_GAS_GLUI] == 0)continue;
 
-            if(insolid_glui!=-1&&slice_edgetypes[insolid_glui] == 0){
+            if(insolid_glui!=-1&&slice_edgetypes[insolid_glui] == IMMERSED_POLYGON){
               int insolid4, insolid8, insolid16;
 
               insolid4 = trianglei->insolid&4;
@@ -3525,6 +3573,22 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
             }
           }
           if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY&&show_boundary_outline == 1){
+            int insolid, insolid_glui = -1;
+
+            insolid = trianglei->insolid & 3;
+            if(insolid>=0&&insolid<3)insolid_glui = insolid;
+            if(insolid_glui!=-1&&boundary_edgetype==IMMERSED_POLYGON){
+              int insolid4, insolid8, insolid16;
+
+              insolid4 = trianglei->insolid&4;
+              if(insolid4  ==  4)show_edge1 = 0;
+
+              insolid8 = trianglei->insolid&8;
+              if(insolid8  ==  8)show_edge2 = 0;
+
+              insolid16 = trianglei->insolid&16;
+              if(insolid16 == 16)show_edge3 = 0;
+            }
             if(show_boundary_shaded==1){
               draw_foreground=1;
             }
@@ -3869,7 +3933,7 @@ void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
   geomi->display=0;
   geomi->loaded=0;
   geomi->geomlistinfo_0=NULL;
-  geomi->surf=NULL;
+  geomi->surfgeom=NULL;
   geomi->geomlistinfo=NULL;
   geomi->currentframe = NULL;
   geomi->times=NULL;
@@ -3882,6 +3946,9 @@ void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
   geomi->nint_vals=0;
   geomi->geomtype = geomtype;
   geomi->fdsblock = fdsblock;
+  geomi->is_terrain = 0;
+  geomi->file2_tris = NULL;
+  geomi->nfile2_tris = 0;
 }
 /* ------------------ RotateU2V ------------------------ */
 

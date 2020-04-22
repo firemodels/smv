@@ -215,7 +215,6 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   }
 
   /* ++++++++++++++++++++++++ draw selected avatars +++++++++++++++++++++++++ */
-#ifdef pp_SELECT_GEOM
   if(mode==SELECTOBJECT){
     if(select_geom!=GEOM_PROP_NONE){
       CLIP_GEOMETRY;
@@ -224,7 +223,6 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
       return;
     }
   }
-#endif
 
   /* ++++++++++++++++++++++++ DrawSelectTours +++++++++++++++++++++++++ */
 

@@ -26,10 +26,8 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define PART_BOUND_COMPUTING 1
 #define PART_BOUND_DEFINED   2
 
-#ifdef pp_SELECT_GEOM
 #define VERTEX1 1
 #define VERTEX2 2
-#endif
 
 #define PART_SIZING  0
 #define PART_LOADING 1
@@ -56,12 +54,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 
 #define ENABLE_LIGHTING if(use_lighting==1&&lighting_on==0){glEnable(GL_LIGHTING);lighting_on=1;}
 #define DISABLE_LIGHTING if(use_lighting==1&&lighting_on==1){glDisable(GL_LIGHTING);lighting_on=0;}
-
-#ifdef pp_DPRINT
-#define DPRINT printf("line: %i file: %s \n",__LINE__,__FILE__)
-#else
-#define DPRINT
-#endif
 
 #define PROJECTION_PERSPECTIVE  0
 #define PROJECTION_ORTHOGRAPHIC 1
@@ -383,8 +375,8 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define FED_ISO 1
 
 #define UNKNOWN -1
-#define RLE 0
-#define ZLIB 1
+#define RLE      0
+#define ZLIB     1
 
 #define SLICE_NODE_CENTER 1
 #define SLICE_CELL_CENTER 2
@@ -494,13 +486,11 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define HIDEALL_EVAC 4
 #define SHOWALL_EVAC 3
 
-#ifdef pp_SELECT_GEOM
 #define GEOM_PROP_NONE     0
 #define GEOM_PROP_VERTEX1  1
 #define GEOM_PROP_VERTEX2  2
 #define GEOM_PROP_TRIANGLE 3
 #define GEOM_PROP_SURF     4
-#endif
 
 #define TEMP_IGNITION_MAX 100000.
 #define SURFACE_TEMPMIN  -100000.

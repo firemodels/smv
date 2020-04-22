@@ -78,6 +78,7 @@ GLUI_Spinner *SPINNER_smoke3d_smoke_red=NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_alpha = NULL;
 GLUI_Spinner *SPINNER_smoke3d_smoke_green=NULL;
 GLUI_Spinner *SPINNER_smoke3d_smoke_blue=NULL;
+GLUI_Spinner *SPINNER_smoke3d_smoke_gray = NULL;
 GLUI_Spinner *SPINNER_load_3dsmoke = NULL;
 GLUI_Spinner *SPINNER_load_hrrpuv = NULL;
 GLUI_Spinner *SPINNER_light_xyz[3];
@@ -470,9 +471,11 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_smoke3d_smoke_red   = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("red"),   GLUI_SPINNER_INT, smoke_color_int255,   SMOKE_RED,   Smoke3dCB);
   SPINNER_smoke3d_smoke_green = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("green"), GLUI_SPINNER_INT, smoke_color_int255+1, SMOKE_GREEN, Smoke3dCB);
   SPINNER_smoke3d_smoke_blue  = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("blue"),  GLUI_SPINNER_INT, smoke_color_int255+2, SMOKE_BLUE,  Smoke3dCB);
+  SPINNER_smoke3d_smoke_gray  = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("gray"), GLUI_SPINNER_INT, smoke_color_int255+3, SMOKE_GRAY, Smoke3dCB);
   SPINNER_smoke3d_smoke_red->set_int_limits(0, 255);
   SPINNER_smoke3d_smoke_green->set_int_limits(0, 255);
   SPINNER_smoke3d_smoke_blue->set_int_limits(0, 255);
+  SPINNER_smoke3d_smoke_gray->set_int_limits(0, 255);
 
   ROLLOUT_firecolor = glui_3dsmoke->add_rollout_to_panel(PANEL_colormap, _("HRRPUV/temperature"),false, FIRECOLOR_ROLLOUT, ColorRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_firecolor, glui_3dsmoke);
@@ -1282,6 +1285,7 @@ extern "C" void Smoke3dCB(int var){
       SPINNER_smoke3d_smoke_red->disable();
       SPINNER_smoke3d_smoke_green->disable();
       SPINNER_smoke3d_smoke_blue->disable();
+      SPINNER_smoke3d_smoke_gray->disable();
       CHECKBOX_edit_colormap->enable();
       LISTBOX_smoke_colorbar->enable();
       break;
@@ -1297,6 +1301,7 @@ extern "C" void Smoke3dCB(int var){
       SPINNER_smoke3d_smoke_red->enable();
       SPINNER_smoke3d_smoke_green->enable();
       SPINNER_smoke3d_smoke_blue->enable();
+      SPINNER_smoke3d_smoke_gray->enable();
 
       fire_colorbar_index_save = fire_colorbar_index;
       UpdateRGBColors(COLORBAR_INDEX_NONE);
@@ -1360,6 +1365,20 @@ extern "C" void Smoke3dCB(int var){
   case CO2_COLOR:
     Smoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
     UpdateCO2Colormap();
+    break;
+  case SMOKE_GRAY:
+  {
+    int smoke_gray_level;
+
+    smoke_gray_level = smoke_color_int255[3];
+    smoke_color_int255[0] = smoke_gray_level;
+    smoke_color_int255[1] = smoke_gray_level;
+    smoke_color_int255[2] = smoke_gray_level;
+    SPINNER_smoke3d_smoke_red->set_float_val(smoke_gray_level);
+    SPINNER_smoke3d_smoke_green->set_float_val(smoke_gray_level);
+    SPINNER_smoke3d_smoke_blue->set_float_val(smoke_gray_level);
+  }
+    Smoke3dCB(SMOKE_RED);
     break;
   case UPDATE_SMOKEFIRE_COLORS_COMMON:
   case FIRE_RED:

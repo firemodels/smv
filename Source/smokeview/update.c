@@ -1926,11 +1926,6 @@ void UpdateDisplay(void){
     updatezoommenu = 0;
     ZoomMenu(zoomindex);
   }
-#ifdef pp_MAKE_SMOKEIBLANK
-  if(update_makeiblank_smoke3d == 1){
-    MakeIBlankSmoke3D();
-  }
-#endif
   if(update_streaks == 1 && ReadPartFile == 1){
     ParticleStreakShowMenu(streak_index);
     update_streaks = 0;

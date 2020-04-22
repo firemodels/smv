@@ -17,39 +17,32 @@
 
 //*** options: all platforms
 
-//#define pp_NEW_SLICE_MENUS    // new slice menus
-//#define pp_BLOCK_COLOR        //  new algorithm for assigning obst colors
-//#define pp_NEWBOUND_DIALOG   // redo bound dialog
-//#define pp_UPDATE_FILELOAD     // when set only updates fileload variables when a file has been loaded or unloaded
-//#define pp_PLOT3D_REDUCEMENUS   // eliminate plot3d sub-menus
-//#define pp_PLOT3D_STATIC      // use static memory for plot3d labels
-//#define pp_SLICETHREAD        // parallel slice file loading
-#define pp_SELECT_GEOM        //  select and show geometry properties
-#define pp_SMOKE_FAST         // load 3d smoke in parallel
-//#define pp_PART_TEST          // for debugging, set particle values to 100*parti->seq_id + small random number
-//#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
-#define pp_VENTPROFILE        // show original zonefire vent flow profile (calculated in smokeview)
+#define pp_GPU                // support the GPU
+#define pp_THREAD             // turn on multi-threading
 #define pp_GPUSMOKE           // code to speed up 3d smoke using the gpu
-//#define pp_SMOKEDIAG        // output smoke3d diagnostics (number of meshes, total triangles, triangles drawn)
-//#define pp_GEOMPRINT        // output geometry info
-//#define pp_MAKE_SMOKEIBLANK // generate smoke iblank arrays
-//#define pp_DPRINT           // debug print, printf line number and source file
-#define pp_CLIP               // test frustum near/far clip planes
 #define pp_DRAWISO            // turn on drawing routines
-#define pp_FILELIST           // use list of file names
-#define pp_LANG               // support other languages
-//#define pp_ISOTIME            // output iso load times
+//#define pp_UPDATE_FILELOAD  // updates fileload variables when a file has been loaded or unloaded
+//#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
+
+//*** debug: all platforms
+//#define pp_ISOTIME          // output iso load times
+//#define pp_PART_TEST        // for debugging, set particle values to 100*parti->seq_id + small random number
+
+//*** in development: all platforms
+#define pp_C_SLICE              // use C to read in slice file headers
+#define pp_SMOKE_FAST           // load 3d smoke in parallel
 //#define pp_SMOKETEST          // max blending for fire, regular blending for smoke
 //#define pp_SPECTRAL           // use black body colors - not fully implemented
+//#define pp_SLICETHREAD        // parallel slice file loading
+//#define pp_BLOCK_COLOR        //  new algorithm for assigning obst colors
+//#define pp_NEWBOUND_DIALOG    // redo bound dialog
+//#define pp_PLOT3D_REDUCEMENUS // eliminate plot3d sub-menus
+//#define pp_PLOT3D_STATIC      // use static memory for plot3d labels
 
-#define pp_GPU                // support the GPU
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
 #endif
 
-#define pp_READBUFFER   // read .smv file from a memory buffer
-
-#define pp_THREAD       // turn on multi-threading
 #ifdef pp_THREAD
 #define pp_THREADIBLANK // construct iblank arrays in background
 #endif
@@ -74,7 +67,6 @@
 
 #ifdef pp_OSX
 #define pp_GLUTGET      // use d and f key in place of CTRL and ALT key
-// #define pp_OSXGLUT32 // used to test advanced OpenGL profile on mac
 #endif
 
 //*** options: options being tested on all platforms
@@ -85,7 +77,6 @@
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 //#define pp_SMOKEALPHA        // experimental smoke alpha settings
 #define pp_TIMINGS
-//#define pp_GPUDEPTH
 //#define pp_SMOKETEST         // experimental smoke dialog box entries
 #endif
 

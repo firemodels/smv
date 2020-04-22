@@ -52,7 +52,17 @@ XSTART=$REPOROOT/smv/Utilities/Scripts/startXserver.sh
 XSTOP=$REPOROOT/smv/Utilities/Scripts/stopXserver.sh
 
 #*** define resource manager that is used
-#    (not tested with slurm yet)
+
+missing_slurm=`srun -V |& tail -1 | grep "not found" | wc -l`
+RESOURCE_MANAGER="NONE"
+if [ $missing_slurm -eq 0 ]; then
+  RESOURCE_MANAGER="SLURM"
+else
+  missing_torque=`echo | qmgr -n |& tail -1 | grep "not found" | wc -l`
+  if [ $missing_torque -eq 0 ]; then
+    RESOURCE_MANAGER="TORQUE"
+  fi
+fi
 
 if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
   if [ "$SLURM_MEM" != "" ]; then
@@ -336,8 +346,7 @@ QSUB="qsub -q $queue"
 #*** setup for SLURM (alternative to torque)
 
 if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
-  QSUB="sbatch -p $queue --ignore-pbs"
-  MPIRUN='srun'
+  QSUB="sbatch -p $queue --ignore-pbs --exclusive"
 fi
 
 if [ "$queue" == "terminal" ]; then

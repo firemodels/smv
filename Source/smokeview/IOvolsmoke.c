@@ -366,7 +366,6 @@ void InitVolsmokeSuperTexture(supermeshdata *smesh){
     glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, MAXSMOKERGB, 0, GL_RGBA, GL_FLOAT, rgb_volsmokecolormap);
   }
 
-#ifndef pp_GPUDEPTH
   nx = smesh->ibar;
   ny = smesh->jbar;
   nz = smesh->kbar;
@@ -381,7 +380,6 @@ void InitVolsmokeSuperTexture(supermeshdata *smesh){
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, smesh->f_iblank_cell);
   }
-#endif
   glActiveTexture(GL_TEXTURE0);
   FFLUSH();
 }
@@ -2117,13 +2115,6 @@ void DrawSmoke3DGPUVol(void){
   if(mouse_down==1&&show_volsmoke_moving==0){
     return;
   }
-#ifdef pp_GPUDEPTH
-  GetDepthTexture();
-  glUniform1i(GPUvol_depthtexture,4);
-  glUniform2f(GPUvol_screensize,(float)screenWidth,(float)screenHeight);
-  glUniform2f(GPUvol_nearfar,fnear,ffar);
-  SNIFF_ERRORS("after DrawSmoke3dGpuVol A");
-#endif
   glUniform3f(GPUvol_light_position, xyz_light_glui[0],xyz_light_glui[1],xyz_light_glui[2]);
   glUniform1i(GPUvol_light_type, light_type_glui);
   glUniform1f(GPUvol_scatter_param, scatter_param);
@@ -3060,7 +3051,6 @@ void InitVolsmokeTexture(meshdata *meshi){
 
 // define blockage texture
 
-#ifndef pp_GPUDEPTH
   nx = meshi->ibar;
   ny = meshi->jbar;
   nz = meshi->kbar;
@@ -3076,7 +3066,6 @@ void InitVolsmokeTexture(meshdata *meshi){
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, meshi->f_iblank_cell);
   }
-#endif
 
   glActiveTexture(GL_TEXTURE0);
   PRINTF("complete");
