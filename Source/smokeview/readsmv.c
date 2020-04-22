@@ -4278,7 +4278,8 @@ int ReadSMV(char *file, char *file2){
 
 
     if(Match(buffer, "TITLE")==1){
-      char *fds_title_local, len_title;
+      char *fds_title_local;
+      int len_title;
 
       FGETS(buffer, 255, stream);
       fds_title_local = TrimFrontBack(buffer);
