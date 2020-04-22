@@ -5,4 +5,10 @@
 set dem2fds=..\intel_win_64\dem2fds_win_64.exe
 ::set dem2fds=dem2fds
 
-%dem2fds% %option% -elevdir %userprofile%\terrain\N40W078 -dir %userprofile%\terrain\sugarloaf sugarloaf.in 
+set "GOOGLE=%userprofile%\Google Drive\terrain"
+set HOME=%userprofile%\terrain
+
+set "DIR=%GOOGLE%"
+if exist %HOME% set "DIR=%HOME%"
+
+%dem2fds% %option% -elevdir "%DIR%\N40W078" -dir "%DIR%\sugarloaf" sugarloaf.in 

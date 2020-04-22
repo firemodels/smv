@@ -887,10 +887,10 @@ int GetElevations(char *input_file, char *image_file, char *image_file_type, ele
   return 1;
 }
 
-/* ------------------ GetAndersonFireIndex ------------------------ */
+/* ------------------ GetAndersonSurfIndex ------------------------ */
 
 #define NFIRE_TYPES 20
-int GetAndersonFireIndex(int val){
+int GetAndersonSurfIndex(int val){
   int j;
   int fire_type[NFIRE_TYPES] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 90, 91, 92, 93, 98, 99, 9999};
 
@@ -921,7 +921,7 @@ void FIRE2PNG(char *basename, int *vals, int nrows, int ncols){
       if(val==98){
         val = 98;
       }
-      color_index = GetAndersonFireIndex(val)-1;
+      color_index = GetAndersonSurfIndex(val)-1;
       r = (unsigned char)firecolors[3*color_index];
       g = (unsigned char)firecolors[3*color_index+1];
       b = (unsigned char)firecolors[3*color_index+2];
@@ -1012,7 +1012,6 @@ int ReadIGrid(char *directory, char *file, wuigriddata *wuifireinfo){
 
 wuigriddata *GetFireData(char *directory, char *casename){
   wuigriddata *wuifireinfo;
-  int ntypes;
 
   NewMemory((void **)&wuifireinfo, sizeof(wuigriddata));
 
@@ -1028,19 +1027,48 @@ wuigriddata *GetFireData(char *directory, char *casename){
 
 int GetFireIndex(wuigriddata *wuifireinfo, float longitude, float latitude){
   int ix, iy, index, val;
+  float dlong, dlat;
+  int nrows, ncols;
 
-  ix = CLAMP(wuifireinfo->ncols*(longitude-wuifireinfo->long_min)/(wuifireinfo->long_max-wuifireinfo->long_min), 0, wuifireinfo->ncols-1);
-  iy = CLAMP(wuifireinfo->nrows*(wuifireinfo->lat_max-latitude)/(wuifireinfo->lat_max-wuifireinfo->lat_min), 0, wuifireinfo->nrows-1);
+  dlong = wuifireinfo->long_max-wuifireinfo->long_min;
+  dlat = wuifireinfo->lat_max-wuifireinfo->lat_min;
+  nrows = wuifireinfo->nrows;
+  ncols = wuifireinfo->ncols;  
+  ix = CLAMP(ncols*(longitude-wuifireinfo->long_min)/dlong, 0, wuifireinfo->ncols-1);
+  iy = CLAMP(nrows*(wuifireinfo->lat_max-latitude)/dlat,    0, wuifireinfo->nrows-1);
   index = iy*wuifireinfo->ncols+ix;
   val = wuifireinfo->vals[index];
   return val;
 }
 
-/* ------------------ GetSurfs ------------------------ */
+/* ------------------ GetSurfsFromXY ------------------------ */
 
-void GetSurfs(wuigriddata *wuifireinfo, struct _elevdata *fds_elevs, float *verts, int nverts, int *faces, int *surfs, int nfaces){
-  int i, fire_index;
-  float longitude, latitude;
+void GetSurfsFromXY(wuigriddata *wuifireinfo, struct _elevdata *fds_elevs, float *xy, int *surfs, int nfaces){
+  int i;
+  float dlong, dlat;
+
+  dlong = fds_elevs->long_max-fds_elevs->long_min;
+  dlat  = fds_elevs->lat_max-fds_elevs->lat_min;
+  for(i = 0; i<nfaces; i++){
+    float xavg, yavg, longitude, latitude;
+    int fire_index;
+
+    xavg           = xy[2*i+0];
+    yavg           = xy[2*i+1];
+    longitude      = fds_elevs->long_min + (xavg/fds_elevs->xmax)*dlong;
+    latitude       = fds_elevs->lat_min  + (yavg/fds_elevs->ymax)*dlat;
+    fire_index     = GetFireIndex(wuifireinfo, longitude, latitude);
+    surfs[i]       = GetAndersonSurfIndex(fire_index);
+  }
+}
+
+/* ------------------ GetSurfsFromFaces ------------------------ */
+
+void GetSurfsFromFaces(wuigriddata *wuifireinfo, struct _elevdata *fds_elevs, float *verts, int nverts, int *faces, int *surfs, int nfaces){
+  int i;
+  float *xy;
+
+  NewMemory((void **)&xy, 2*sizeof(float)*nfaces);
 
   for(i = 0; i<nfaces; i++){
     int f1, f2, f3;
@@ -1053,19 +1081,16 @@ void GetSurfs(wuigriddata *wuifireinfo, struct _elevdata *fds_elevs, float *vert
     v1 = verts+3*f1;
     v2 = verts+3*f2;
     v3 = verts+3*f3;
-    xavg = (v1[0]+v2[0]+v3[0])/3.0;
-    yavg = (v1[1]+v2[1]+v3[1])/3.0;
-    longitude = fds_elevs->long_min+(xavg/fds_elevs->xmax)*(fds_elevs->long_max-fds_elevs->long_min);
-    latitude = fds_elevs->lat_min+(yavg/fds_elevs->ymax)*(fds_elevs->lat_max-fds_elevs->lat_min);
-    fire_index = GetFireIndex(wuifireinfo, longitude, latitude);
-    firetype_index = GetAndersonFireIndex(fire_index);
-    surfs[i] = firetype_index;
+    xy[2*i+0] = (v1[0]+v2[0]+v3[0])/3.0;
+    xy[2*i+1] = (v1[1]+v2[1]+v3[1])/3.0;
   }
+  GetSurfsFromXY(wuifireinfo, fds_elevs, xy, surfs, nfaces);
+  FREEMEMORY(xy);
 }
 
 /* ------------------ GenerateFDSInputFile ------------------------ */
 
-void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option, wuigriddata *wuifireinfo){
+void GenerateFDSInputFile(char *casename, char *casename_fds, char *casename_bingeom, elevdata *fds_elevs, int option, wuigriddata *wuifireinfo){
   char output_file[LEN_BUFFER], output_elev_file[LEN_BUFFER], *ext;
   char basename[LEN_BUFFER];
 
@@ -1218,30 +1243,43 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elev
       for(i = 0; i<NFIRETYPES; i++){
         fprintf(streamout, "&SURF ID = '%s', RGB = %i, %i, %i /\n", firetypes[i],firecolors[3*i],firecolors[3*i+1],firecolors[3*i+2]);
       }
-      GetSurfs(wuifireinfo, fds_elevs, verts, nverts, faces, surfs, nfaces);
+      GetSurfsFromFaces(wuifireinfo, fds_elevs, verts, nverts, faces, surfs, nfaces);
+
+      fprintf(streamout, " LONG/LAT bounds: %f %f %f %f\n",fds_elevs->long_min,fds_elevs->long_max,fds_elevs->lat_min,fds_elevs->lat_max);
       fprintf(streamout, "&GEOM ID='terrain', IS_TERRAIN=T, SURF_ID=\n");
       for(i = 0; i<NFIRETYPES; i++){
-        fprintf(streamout, " '%s'",firetypes[i]);
-        if(i!=NFIRETYPES-1)fprintf(streamout, ", ");
+        fprintf(streamout, " '%s', ",firetypes[i]);
         if(i==9||i==NFIRETYPES-1)fprintf(streamout,"\n");
       }
     }
 
-    fprintf(streamout, "  VERTS=\n");
-    for(i = 0; i < nverts; i++){
-      fprintf(streamout, " %f,%f,%f", verts[3*i+0], verts[3*i+1], verts[3*i+2]);
-      fprintf(streamout,",  ");
-      if((i+1)%3==0)fprintf(streamout, "\n");
-    }
-    fprintf(streamout,"\n");
+    if(bingeom==1){
+      FILE_SIZE filelen;
+      int error, nsurfs;
 
-    fprintf(streamout, "  FACES=\n");
-    for(i = 0; i<nfaces; i++){
-      fprintf(streamout, " %i,%i,%i,%i", faces[3*i+0], faces[3*i+1], faces[3*i+2],surfs[i]);
-      if(i!=nfaces-1)fprintf(streamout, ",  ");
-      if((i+1)%6==0)fprintf(streamout, "\n");
+      nsurfs = nfaces;
+      filelen = strlen(casename_bingeom);
+      FORTwrite_bingeom(casename_bingeom, verts, faces, surfs, &nverts, &nfaces, &nsurfs, &error, filelen);
+      fprintf(streamout, " READ_BINARY=T, BINARY_NAME='%s' ", casename_bingeom);
+      fprintf(streamout, "/\n");
     }
-    fprintf(streamout,"/\n");
+    else{
+      fprintf(streamout, "  VERTS=\n");
+      for(i = 0; i<nverts; i++){
+        fprintf(streamout, " %f,%f,%f", verts[3*i+0], verts[3*i+1], verts[3*i+2]);
+        fprintf(streamout, ",  ");
+        if((i+1)%3==0)fprintf(streamout, "\n");
+      }
+      fprintf(streamout,"\n");
+
+      fprintf(streamout, "  FACES=\n");
+      for(i = 0; i<nfaces; i++){
+        fprintf(streamout, " %i,%i,%i,%i", faces[3*i+0], faces[3*i+1], faces[3*i+2], surfs[i]);
+        if(i!=nfaces-1)fprintf(streamout, ",  ");
+        if((i+1)%6==0)fprintf(streamout, "\n");
+      }
+      fprintf(streamout,"/\n");
+    }
     FREEMEMORY(verts);
     FREEMEMORY(faces);
   }

@@ -543,6 +543,44 @@ endif
 return
 end subroutine openpart
 
+!  ------------------ write_bingeom------------------------
+
+subroutine write_bingeom(filename, verts, faces, surfs, n_verts, n_faces, n_surf_id, error)
+implicit none
+integer :: i
+
+character(len=*), intent(in) :: filename
+integer, intent(in) :: n_verts, n_faces, n_surf_id
+real, dimension(*), intent(in) :: verts
+integer, dimension(*), intent(in) :: faces
+integer, dimension(*), intent(in) :: surfs
+integer, intent(out) :: error
+integer, parameter :: double = selected_real_kind(12)
+
+
+integer :: n_volus
+integer, dimension(4) :: volus
+
+integer :: unitnum, integer_one=1
+
+error=0
+n_volus =0
+volus(1:4)=0
+
+open(newunit=unitnum,file=filename,form="unformatted",action="write")
+
+write(unitnum) integer_one
+write(unitnum) n_verts, n_faces, n_surf_id, n_volus
+write(unitnum) (real(verts(i),double),i=1,3*n_verts)
+write(unitnum) faces(1:3*n_faces)
+write(unitnum) surfs(1:n_surf_id)
+write(unitnum) volus(1:4*n_volus)
+
+close(unitnum)
+
+return
+end subroutine write_bingeom
+
 !  ------------------ openslice ------------------------
 
 subroutine openslice(slicefilename, unitnum, is1, is2, js1, js2, ks1, ks2, error)

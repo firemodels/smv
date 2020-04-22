@@ -3778,9 +3778,6 @@ void MakeFileLists(void){
 
   // create a list of all files in the current directory
 
-  nfilelist_casename = GetFileListSize(".", filter_casename);
-  MakeFileList(".", filter_casename, nfilelist_casename, YES, &filelist_casename);
-
   strcpy(filter_casedir, "");
   nfilelist_casedir = GetFileListSize(".", filter_casedir);
   MakeFileList(".", filter_casedir, nfilelist_casedir, YES, &filelist_casedir);
@@ -4905,7 +4902,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     if(FILE_EXISTS_CASEDIR(zlib_file)==YES)compression_type = COMPRESSED_ZLIB;
   }
   if(compression_type==UNCOMPRESSED&&(fast_startup==1||FILE_EXISTS_CASEDIR(bufferptr)==YES))has_reg = YES;
-  if(has_reg==NO&&compression_type==UNCOMPRESSED){
+  if(sliceparms==NULL||(has_reg==NO&&compression_type==UNCOMPRESSED)){
     nsliceinfo--;
 
     nslicefiles--;
@@ -7297,7 +7294,7 @@ int ReadSMV(bufferstreamdata *stream){
       FGETS(buffer,255,stream);
       TrimBack(buffer);
       buffer3 = TrimFront(buffer);
-      {
+      if(strlen(buffer3)>0&&strcmp(buffer3,"null")!=0){
         int found_texture;
         char texturebuffer[1024];
 
@@ -7318,7 +7315,7 @@ int ReadSMV(bufferstreamdata *stream){
           STRCPY(surfi->texturefile,buffer3);
           found_texture=1;
         }
-        if(buffer3!=NULL&&found_texture==0&&strncmp(buffer3,"null",4)!=0){
+        if(buffer3!=NULL&&found_texture==0){
           fprintf(stderr,"*** Error: The texture file %s was not found\n",buffer3);
         }
       }
@@ -8134,6 +8131,13 @@ int ReadSMV(bufferstreamdata *stream){
    ************************ start of pass 4 *******************************
    ************************************************************************
  */
+
+//#define pp_TIMING
+#ifdef pp_TIMING
+  float total_smoke_time=0.0;
+  float total_slice_time = 0.0;
+  float total_boundary_time = 0.0;
+#endif
 
   REWIND(stream);
   PRINTF("%s","  pass 4\n");
@@ -9446,18 +9450,40 @@ typedef struct {
       Match(buffer, "VSMOKG3D") == 1
       ){
       int return_val;
+#ifdef pp_TIMING
+      float smoke_time;
+#endif
 
+#ifdef pp_TIMING
+      START_TIMER(smoke_time);
+#endif
       return_val = ParseSMOKE3DProcess(stream, buffer, &nn_smoke3d, &ioffset, &ismoke3dcount, &ismoke3d);
       if(return_val==RETURN_BREAK){
+#ifdef pp_TIMING
+        STOP_TIMER(smoke_time);
+        total_smoke_time += smoke_time;
+#endif
         BREAK;
       }
       else if(return_val==RETURN_CONTINUE){
+#ifdef pp_TIMING
+        STOP_TIMER(smoke_time);
+        total_smoke_time += smoke_time;
+#endif
         continue;
       }
       else if(return_val==RETURN_TWO){
+#ifdef pp_TIMING
+        STOP_TIMER(smoke_time);
+        total_smoke_time += smoke_time;
+#endif
         return 2;
       }
       else{
+#ifdef pp_TIMING
+        STOP_TIMER(smoke_time);
+        total_smoke_time += smoke_time;
+#endif
         ASSERT(FFALSE);
       }
       continue;
@@ -9498,20 +9524,46 @@ typedef struct {
         (Match(buffer, "BNDS") == 1)
       ){
       int return_val;
+#ifdef pp_TIMING
+      float slice_time;
+#endif
 
+#ifdef pp_TIMING
+      START_TIMER(slice_time);
+#endif
       return_val = ParseSLCFProcess(NO_SCAN, stream, buffer, &nn_slice, ioffset, &nslicefiles, &sliceinfo_copy, &patchgeom, buffers);
       if(return_val==RETURN_BREAK){
+#ifdef pp_TIMING
+        STOP_TIMER(slice_time);
+        total_slice_time += slice_time;
+#endif
         BREAK;
       }
       else if(return_val==RETURN_CONTINUE){
+#ifdef pp_TIMING
+        STOP_TIMER(slice_time);
+        total_slice_time += slice_time;
+#endif
         continue;
       }
       else if(return_val==RETURN_TWO){
+#ifdef pp_TIMING
+        STOP_TIMER(slice_time);
+        total_slice_time += slice_time;
+#endif
         return 2;
       }
       else if(return_val==RETURN_PROCEED){
+#ifdef pp_TIMING
+        STOP_TIMER(slice_time);
+        total_slice_time += slice_time;
+#endif
       }
       else{
+#ifdef pp_TIMING
+        STOP_TIMER(slice_time);
+        total_slice_time += slice_time;
+#endif
         ASSERT(FFALSE);
       }
     }
@@ -9524,18 +9576,40 @@ typedef struct {
       || Match(buffer, "BNDS")==1
       ){
       int return_val;
+#ifdef pp_TIMING
+      float boundary_time;
+#endif
 
+#ifdef pp_TIMING
+      START_TIMER(boundary_time);
+#endif
       return_val = ParseBNDFProcess(stream, buffer, &nn_patch, &ioffset, &patchgeom, &ipatch, buffers);
       if(return_val==RETURN_BREAK){
+#ifdef pp_TIMING
+        STOP_TIMER(boundary_time);
+        total_boundary_time += boundary_time;
+#endif
         BREAK;
       }
       else if(return_val==RETURN_CONTINUE){
+#ifdef pp_TIMING
+        STOP_TIMER(boundary_time);
+        total_boundary_time += boundary_time;
+#endif
         continue;
       }
       else if(return_val==RETURN_TWO){
+#ifdef pp_TIMING
+        STOP_TIMER(boundary_time);
+        total_boundary_time += boundary_time;
+#endif
         return 2;
       }
       else{
+#ifdef pp_TIMING
+        STOP_TIMER(boundary_time);
+        total_boundary_time += boundary_time;
+#endif
         ASSERT(FFALSE);
       }
       continue;
@@ -9566,6 +9640,12 @@ typedef struct {
   }
 
   STOP_TIMER(pass4_time);
+
+#ifdef pp_TIMING
+  printf("slice time=%f\n", total_slice_time);
+  printf("boundary time=%f\n", total_boundary_time);
+  printf("boundary time=%f\n", total_smoke_time);
+#endif
 
 /*
    ************************************************************************
@@ -9783,7 +9863,7 @@ typedef struct {
   InitCullGeom(cullgeom);
   InitEvacProp();
 
-  UpdateINIList();
+  UpdateINIList(); //xxx4 slow
 
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
 
@@ -9964,11 +10044,15 @@ typedef struct {
       }
     }
   }
-  UpdateTerrain(1,vertical_factor); // xxslow
+  printf("before UpdateTerrain\n");
+  UpdateTerrain(1,vertical_factor); //xxx_slow
+  printf("after UpdateTerrain\n");
   UpdateTerrainColors();
   UpdateSmoke3dMenuLabels();
   UpdateVSliceBoundIndexes();
-  UpdateBoundaryMenuLabels();
+  printf("before UpdateBoundaryMenuLabels\n");
+  UpdateBoundaryMenuLabels(); //xxx_slow
+  printf("after UpdateBoundaryMenuLabels\n");
   UpdateIsoMenuLabels();
   UpdatePartMenuLabels();
   UpdateTourMenuLabels();
@@ -10002,9 +10086,13 @@ typedef struct {
   InitVolRenderSurface(FIRSTCALL);
   radius_windrose = 0.2*xyzmaxdiff;
 
-  UpdateMeshTerrain(); // xxslow
+  printf("before UpdateMeshTerrain\n");
+  UpdateMeshTerrain(); //xxx_slow
+  printf("after MeshTerrain\n");
 
-  ReadAllGeom();
+  printf("before ReadAllGeom\n");
+  ReadAllGeom(); //xxx_slow
+  printf("after ReadAllGeom\n");
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
 
