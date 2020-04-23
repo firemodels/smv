@@ -18,6 +18,7 @@
 
 &SURF ID = 'GRASS'
             DEFAULT = .TRUE.
+            VEG_LSET_ELLIPSE = .FALSE.
             VEG_LSET_ROS_HEAD  = 1.5
             VEG_LSET_ROS_FLANK = 0.48
             VEG_LSET_ROS_BACK  = 0.15
