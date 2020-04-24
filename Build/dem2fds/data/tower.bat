@@ -11,4 +11,4 @@ set HOME=%userprofile%\terrain
 set "DIR=%GOOGLE%"
 if exist %HOME% set "DIR=%HOME%"
 
-%dem2fds% %option% -overlap -show -dir "DUR%\tower" tower.in 
+%dem2fds% %option% -overlap -dir "%DIR%\tower" tower.in 
