@@ -672,12 +672,12 @@ int GetElevations(char *input_file, char *image_file, char *image_file_type, ele
       sscanf(buffer, "%f %f", &longref, &latref);
       longlatref_mode = LONGLATREF_ORIG;
 
-      xref = xmax;
-      yref = ymax;
-      dlat = yref / EARTH_RADIUS;
+      xref = 0.0;
+      yref = 0.0;
+      dlat = ymax / EARTH_RADIUS;
       fds_lat_max = latref + RAD2DEG*dlat;
       fds_lat_min = latref;
-      dlong = ABS(2.0*asin(sin(xref / (2.0*EARTH_RADIUS)) / cos(DEG2RAD*latref)));
+      dlong = ABS(2.0*asin(sin(xmax / (2.0*EARTH_RADIUS)) / cos(DEG2RAD*latref)));
       fds_long_max = longref + RAD2DEG*dlong;
       fds_long_min = longref;
       continue;
