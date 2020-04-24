@@ -1244,6 +1244,9 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, char *casename_bin
       }
     }
 
+    fprintf(streamout, " LONGMIN=%f LONGMAX=%f \n", fds_elevs->long_min, fds_elevs->long_max);
+    fprintf(streamout, " LATMIN=%f LATMAX=%f\n", fds_elevs->lat_min, fds_elevs->lat_max);
+    fprintf(streamout, " ZMIN=%f ZMAX=%f\n", fds_elevs->val_min, fds_elevs->val_max);
     if(wuifireinfo==NULL){
       for(i = 0; i<nfaces; i++){
         surfs[i] = 1;
@@ -1257,8 +1260,6 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, char *casename_bin
       }
       GetSurfsFromFaces(wuifireinfo, fds_elevs, verts, nverts, faces, surfs, nfaces);
 
-      fprintf(streamout, " ZMIN=%f ZMAX=%f\n", fds_elevs->val_min, fds_elevs->val_max);
-      fprintf(streamout, " LONG/LAT bounds: %f %f %f %f\n",fds_elevs->long_min,fds_elevs->long_max,fds_elevs->lat_min,fds_elevs->lat_max);
       fprintf(streamout, "&GEOM ID='terrain', IS_TERRAIN=T, SURF_ID=\n");
       for(i = 0; i<NFIRETYPES; i++){
         fprintf(streamout, " '%s', ",firetypes[i]);
