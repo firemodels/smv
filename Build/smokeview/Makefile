@@ -410,9 +410,9 @@ intel_osx_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 
 # ------------- intel_osx_64_db ----------------
 
-intel_osx_64_db : FFLAGS    = -O0 -g -m64 -traceback -static-intel -fpp     -D pp_OSX -D pp_INTEL -mmacosx-version-min=10.7 -stand:f08
-intel_osx_64_db : CFLAGS    = -O0 -g -m64 -traceback -static-intel -D _DEBUG -D pp_OSX -D pp_INTEL -mmacosx-version-min=10.7 $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
-intel_osx_64_db : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_64 $(SMV_LIBS_OSX) -traceback -static-intel -mmacosx-version-min=10.7
+intel_osx_64_db : FFLAGS    = -O0 -g -m64 -traceback -static-intel -fpp     -D pp_OSX -D pp_INTEL -stand:f08
+intel_osx_64_db : CFLAGS    = -O0 -g -m64 -traceback -static-intel -D _DEBUG -D pp_OSX -D pp_INTEL $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64_db : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_64 $(SMV_LIBS_OSX) -traceback -static-intel
 ifeq ($(GLUT),freeglut)
 intel_osx_64_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 else
