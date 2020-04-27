@@ -651,6 +651,9 @@ extern "C" void GluiGeometrySetup(int main_window){
   glui_geometry->add_separator();
   glui_geometry->add_button(_("Save settings"),SAVE_SETTINGS_GEOM, BlockeditDlgCB);
   BUTTON_blockage_1=glui_geometry->add_button(_("Close"),CLOSE_WINDOW, BlockeditDlgCB);
+#ifdef pp_CLOSEOFF
+  BUTTON_blockage_1->disable();
+#endif
 
   glui_geometry->set_main_gfx_window( main_window );
 }
