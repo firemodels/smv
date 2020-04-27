@@ -2682,12 +2682,14 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   else {
     slicefile_labelindex = GetSliceBoundsIndexFromLabel(patchi->label.shortlabel);
   }
-  plotstate = GetPlotState(DYNAMIC_PLOTS);
-  if(patchi->boundary==1)UpdateBoundaryType();
-  UpdateUnitDefs();
-  UpdateTimes();
-  force_redisplay=1;
-  UpdateFrameNumber(1);
+  if(patchi->finalize==1){
+    plotstate = GetPlotState(DYNAMIC_PLOTS);
+    if(patchi->boundary==1)UpdateBoundaryType();
+    UpdateUnitDefs();
+    UpdateTimes();
+    force_redisplay = 1;
+    UpdateFrameNumber(1);
+  }
   updatemenu = 1;
   STOP_TIMER(total_time);
   PRINTF(" - %.1f MB/%.1f s\n", (float)return_filesize/1000000., total_time);
