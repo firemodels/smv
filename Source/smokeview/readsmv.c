@@ -4310,6 +4310,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   for(i = 0; i<6; i++){
     patchi->ijk[i] = -1;
   }
+  patchi->finalize = 1;
   patchi->skip = 0;
   patchi->version = version;
   patchi->ntimes = 0;
@@ -6761,6 +6762,7 @@ int ReadSMV(bufferstreamdata *stream){
       }
       meshinfo[mesh_terrain].terrain = terraini;
       terraini->terrain_mesh = meshinfo+mesh_terrain;
+      terraini->defined = 0;
       nterraininfo++;
       continue;
     }

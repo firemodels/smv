@@ -315,6 +315,7 @@ typedef struct _texturedata {
 
 typedef struct _terraindata {
   char *file;
+  int defined;
   texturedata *ter_texture;
   int ibar, jbar;
   float xmin, xmax, ymin, ymax;
@@ -1429,6 +1430,7 @@ typedef struct _patchdata {
   int ijk[6];
   int extreme_min, extreme_max;
   time_t modtime;
+  int finalize;
   histogramdata *histogram;
   bounddata bounds;
 } patchdata;
