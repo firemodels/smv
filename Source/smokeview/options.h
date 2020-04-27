@@ -67,6 +67,7 @@
 
 #ifdef pp_OSX
 #define pp_GLUTGET      // use d and f key in place of CTRL and ALT key
+#define pp_CLOSEOFF     // turn off and disable close buttons in dialog box
 #endif
 
 //*** options: options being tested on all platforms
