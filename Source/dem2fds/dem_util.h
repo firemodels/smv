@@ -16,9 +16,16 @@
 #define STDCALLF extern void
 #endif
 
+#define FORTelev2geom      _F(elev2geom)
+#define FORTwrite_bingeom _F(write_bingeom)
+
 //subroutine elev2geom(output_elev_file, xgrid, ibar, ygrid, jbar, vals, nvals)
-#define FORTelev2geom _F(elev2geom)
 STDCALLF FORTelev2geom(char *output_elev_file, float *xgrid, int *ibar, float *ygrid, int *jbar, float *vals, int *nvals, FILE_SIZE filelen);
+
+
+// subroutine write_bingeom(filename, verts, faces, surfs, n_verts, n_faces, n_surf_id, error)
+STDCALLF FORTwrite_bingeom(char *filename, float *verts, int *faces, int *surfs, int *n_verts, int *n_faces, int *nsurf_id, int *error, FILE_SIZE filelen);
+
 
 /* --------------------------  elevdata ------------------------------------ */
 
@@ -53,7 +60,7 @@ typedef struct {
   float xmin, xmax, ymin, ymax;
 } excludedata;
 
-EXTERNCPP void GenerateFDSInputFile(char *casename, char *casename_fds, elevdata *fds_elevs, int option, wuigriddata *wuifireinfo);
+EXTERNCPP void GenerateFDSInputFile(char *casename, char *casename_fds, char *casename_bingeom, elevdata *fds_elevs, int option, wuigriddata *wuifireinfo);
 EXTERNCPP int GetElevations(char *elevfile, char *image_file, char *image_type, elevdata *fds_elevs);
 EXTERNCPP wuigriddata *GetFireData(char *adf_dir, char *casename);
 
@@ -109,4 +116,5 @@ SVEXTERN float   SVDECL(*xplt, NULL), SVDECL(*yplt, NULL);
 SVEXTERN int SVDECL(terrain_image_width, 2048);
 SVEXTERN int SVDECL(terrain_image_height, 0);
 SVEXTERN char image_type[10];
+SVEXTERN int SVDECL(bingeom, 0);
 #endif

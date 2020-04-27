@@ -5207,6 +5207,25 @@ void LoadBoundaryMenu(int value){
       float load_time=0.0, load_size=0.0;
 
       START_TIMER(load_time);
+
+      // only perform wrapup operations when loading last boundary file
+      for(i = 0; i<npatchinfo;i++){
+        patchdata *patchi;
+
+        patchi = patchinfo+i;
+        patchi->finalize = 0;
+      }
+      for(i = npatchinfo-1; i>=0; i--){
+        patchdata *patchi;
+
+        patchi = patchinfo+i;
+        if(strcmp(patchi->label.longlabel, patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
+          LOCK_COMPRESS;
+          patchi->finalize = 1;
+          UNLOCK_COMPRESS;
+          break;
+        }
+      }
       for(i=0;i<npatchinfo;i++){
         patchdata *patchi;
 
