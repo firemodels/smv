@@ -914,8 +914,10 @@ void MemcheckCB(int var){
 void BoundsDlgCB(int var){
   switch(var){
   case CLOSE_BOUNDS:
+#ifndef pp_CLOSEOFF
     glui_bounds->hide();
     updatemenu = 1;
+#endif
     break;
   case SAVE_SETTINGS_BOUNDS:
     WriteIni(LOCAL_INI, NULL);
@@ -2594,7 +2596,12 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
   glui_bounds->add_button(_("Save settings"), SAVE_SETTINGS_BOUNDS, BoundsDlgCB);
+#ifdef pp_CLOSEOFF
+  GLUI_Button *BUTTON_button1=glui_bounds->add_button(_("Close"), CLOSE_BOUNDS, BoundsDlgCB);
+  BUTTON_button1->disable();
+#else
   glui_bounds->add_button(_("Close"), CLOSE_BOUNDS, BoundsDlgCB);
+#endif
 
   glui_bounds->set_main_gfx_window( main_window );
 }
