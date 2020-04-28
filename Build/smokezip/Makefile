@@ -162,9 +162,9 @@ OSXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libifport.
 
 # ------------- intel osx 64 ----------------
 
-intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_INTEL -D pp_OSX
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
-intel_osx_64 : LFLAGS    = -m64 -static-intel -mmacosx-version-min=10.7 $(OSXFORTLIBS) -L $(LIB_DIR)/intel_osx_64 -lz -lpthread
+intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_INTEL -D pp_OSX  -mmacosx-version-min=10.9 -stand:f08
+intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)  -mmacosx-version-min=10.9 
+intel_osx_64 : LFLAGS    = -m64 -static-intel -mmacosx-version-min=10.9 $(OSXFORTLIBS) -L $(LIB_DIR)/intel_osx_64 -lz -lpthread
 intel_osx_64 : CC        = icc
 intel_osx_64 : CPP       = icc
 intel_osx_64 : FC        = ifort
@@ -175,9 +175,9 @@ intel_osx_64 : $(obj)
 
 # ------------- intel osx 64 db ----------------
 
-intel_osx_64_db : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_INTEL -D pp_OSX -mmacosx-version-min=10.7 -stand:f08
-intel_osx_64_db : CFLAGS    = -O0 -g -m64 -static-intel -D _DEBUG -D pp_OSX -D pp_INTEL -mmacosx-version-min=10.7 $(SMV_TESTFLAG) -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
-intel_osx_64_db : LFLAGS    = -m64 -static-intel -mmacosx-version-min=10.7 $(OSXFORTLIBS) -L $(LIB_DIR)/intel_osx_64 -lz -lpthread
+intel_osx_64_db : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_INTEL -D pp_OSX -mmacosx-version-min=10.9 -stand:f08
+intel_osx_64_db : CFLAGS    = -O0 -g -m64 -static-intel -D _DEBUG -D pp_OSX -D pp_INTEL -mmacosx-version-min=10.9 $(SMV_TESTFLAG) -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64_db : LFLAGS    = -m64 -static-intel -mmacosx-version-min=10.9 $(OSXFORTLIBS) -L $(LIB_DIR)/intel_osx_64 -lz -lpthread
 intel_osx_64_db : CC        = icc
 intel_osx_64_db : CPP       = icc
 intel_osx_64_db : FC        = ifort
