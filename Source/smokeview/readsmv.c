@@ -14031,10 +14031,17 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout," %i\n",-1);
   }
   else{
+#ifdef pp_OSX
+    fprintf(fileout,"WINDOWWIDTH\n");
+    fprintf(fileout," %i\n",screenWidth/2);
+    fprintf(fileout,"WINDOWHEIGHT\n");
+    fprintf(fileout," %i\n",screenHeight/2);
+#else
     fprintf(fileout,"WINDOWWIDTH\n");
     fprintf(fileout," %i\n",screenWidth);
     fprintf(fileout,"WINDOWHEIGHT\n");
     fprintf(fileout," %i\n",screenHeight);
+#endif
   }
 
   fprintf(fileout, "\n *** DATA LOADING ***\n\n");

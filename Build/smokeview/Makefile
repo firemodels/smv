@@ -433,15 +433,25 @@ intel_osx_64_db : $(obj)
 # ------------- gnu_osx_64_db ----------------
 
 gnu_osx_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form $(SMV_PROFILEFLAG)
-gnu_osx_64_db : CFLAGS    = -O0 -m64 -D _DEBUG -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wall -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
-gnu_osx_64_db : LFLAGS    = -m64 -framework OpenGL -framework GLUT $(SMV_PROFILEFLAG)
+gnu_osx_64_db : CFLAGS    = -O0 -ggdb -m64 -D _DEBUG -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wall -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
+gnu_osx_64_db : LFLAGS    = -m64 -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX) $(GLIBDIROPT) -lgfortran $(SMV_PROFILEFLAG)
+ifeq ($(GLUT),freeglut)
+gnu_osx_64_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
+gnu_osx_64_db : CFLAGS   += -D FREEGLUT_STATIC
+else
+ifeq ($(QUARTZ),framework)
+gnu_osx_64_db : LFLAGS   += -framework OpenGL -framework GLUT
+else
+gnu_osx_64_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
+endif
+endif
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : CPP       = g++
 gnu_osx_64_db : FC        = gfortran
 gnu_osx_64_db : exe       = smokeview_osx_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
 
 gnu_osx_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX) $(GLIBDIROPT) -lgfortran
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) 
 
 # ------------- gnu_osx_64 ----------------
 
