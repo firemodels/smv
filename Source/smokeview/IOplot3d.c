@@ -1492,7 +1492,7 @@ void UpdatePlotSliceMesh(meshdata *mesh_in, int slicedir){
   char *iblank_xy = NULL, *iblank_xz = NULL, *iblank_yz = NULL;
   int nx, ny, nz, nxy, nxyz;
   char *c_iblank_x, *c_iblank_y, *c_iblank_z;
-  float qval;
+  float qval=0.0;
 
   meshi = mesh_in;
   plotx = meshi->iplotx_all[iplotx_all];

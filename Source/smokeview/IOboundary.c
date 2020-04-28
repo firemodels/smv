@@ -1217,7 +1217,6 @@ void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
 
     strcpy(sizefile, patchi->size_file);
     strcat(sizefile, ".sz");
-    streamsize = fopen(sizefile, "r");
 
     stream = fopen(patchi->file, "rb");
     if(stream==NULL){
@@ -2380,7 +2379,7 @@ void GetGeomDataSize(char *filename,int *ntimes,int *nvars,int *error){
   int one, version;
   int nvert_s, nvert_d, nface_s, nface_d;
   FILE *stream=NULL;
-  int returncode;
+  int returncode=0;
   int nvars_local, ntimes_local;
 
   *error=1;
@@ -2427,7 +2426,7 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
   int i, one, nvars;
   int nvert_s, ntri_s, nvert_d, ntri_d;
   int version;
-  int returncode;
+  int returncode=0;
   float time;
 
   FILE *stream;

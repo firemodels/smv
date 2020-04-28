@@ -923,7 +923,7 @@ void CreatePartSizeFileFromBound(char *part5boundfile_arg, char *part5sizefile_a
 
 void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, int angle_flag_arg, LINT file_offset_arg){
   FILE *PART5FILE, *streamout_local;
-  int returncode;
+  int returncode=0;
   int one_local, version_local, nclasses_local=0;
   int i;
   int *numtypes_local, *numpoints_local;
@@ -987,7 +987,7 @@ LINT GetPartHeaderOffset(partdata *parti_arg){
   int nclasses_local, one_local;
   FILE *PART5FILE=NULL;
   int version_local;
-  int returncode;
+  int returncode=0;
   int skip_local;
   int i;
   int *numtypes_local = NULL, *numtypescopy_local, *numpoints_local = NULL;

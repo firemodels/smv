@@ -1794,7 +1794,7 @@ float GetZoneThick(int dir, roomdata *roomi, float xyz[3]){
   float dx, dy, dz, L;
   float alpha, alpha_min, alpha_ylay;
   float x0, x1, yy0, yy1, z0, z1;
-  float factor_L, factor_U, factor;
+  float factor_L=0.0, factor_U=0.0, factor;
   float ylay;
   float thick;
   float odl, odu;

@@ -784,7 +784,7 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   FILE *SLICEFILE;
   float *time_local,*slicevals;
   int error;
-  int returncode;
+  int returncode=0;
 
   sd = sliceinfo + sd_index;
   if(sd->loaded==1)ReadSlice(sd->file,sd_index,UNLOAD,SET_SLICECOLOR,&error);
@@ -1888,20 +1888,23 @@ void UpdateSliceBounds(void){
 
 void SetSliceLabels(float smin, float smax,
   slicedata *sd, patchdata *pd, int *errorcode){
-  char *scale;
-  int slicetype;
-  boundsdata *sb;
+  int slicetype=-1;
 
   ASSERT((sd != NULL && pd == NULL)||(sd == NULL && pd != NULL));
   if(sd!=NULL)slicetype = GetSliceBoundsIndexFromLabel(sd->label.shortlabel);
   if(pd != NULL)slicetype = GetSliceBoundsIndexFromLabel(pd->label.shortlabel);
-  sb = slicebounds + slicetype;
-  if(sd!=NULL)sb->label = &(sd->label);
-  if(pd != NULL)sb->label = &(pd->label);
+  if(slicetype!=-1){
+    boundsdata *sb;
+    char *scale;
 
-  *errorcode = 0;
-  scale = sb->scale;
-  GetSliceLabels(smin, smax, nrgb, sb->colorlabels, &scale, &sb->fscale, sb->levels256);
+    sb = slicebounds+slicetype;
+    if(sd!=NULL)sb->label = &(sd->label);
+    if(pd!=NULL)sb->label = &(pd->label);
+
+    *errorcode = 0;
+    scale = sb->scale;
+    GetSliceLabels(smin, smax, nrgb, sb->colorlabels, &scale, &sb->fscale, sb->levels256);
+  }
 }
 
 /* ------------------ UpdateAllSliceLabels ------------------------ */
@@ -2739,8 +2742,13 @@ void UpdateFedinfo(void){
     *ext = 0;
     strcat(filename_base, "_fed.sf");
     filename = GetFileName(smokeviewtempdir, filename_base, NOT_FORCE_IN_DIR);
+
     NewMemory((void **)&fedi->fed_slice->reg_file, strlen(filename) + 1);
+    strcpy(fedi->fed_slice->reg_file, filename);
+
+    NewMemory((void **)&sd->reg_file, strlen(filename)+1);
     strcpy(sd->reg_file, filename);
+
     FREEMEMORY(filename);
     sd->file = sd->reg_file;
     if(stream_fedsmv != NULL){
@@ -4162,7 +4170,7 @@ void GetSliceSizes(char *slicefilenameptr, int *nsliceiptr, int *nslicejptr, int
   FILE *SLICEFILE;
   int ijk[6];
   int loadframe;
-  int returncode;
+  int returncode=0;
 
   *errorptr = 0;
   *ntimesptr = 0;
@@ -4271,7 +4279,7 @@ FILE_SIZE GetSliceData(char *slicefilename, int *is1ptr, int *is2ptr, int *js1pt
   int ijk[6];
   int file_size;
   FILE *stream;
-  int returncode;
+  int returncode=0;
   float *qq;
   int nx, ny, nxy;
 

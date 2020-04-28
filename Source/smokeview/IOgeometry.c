@@ -473,7 +473,7 @@ void DrawGeom(int flag, int timestate){
   float skinny_color[]={1.0,0.0,0.0,1.0};
   float *last_color=NULL;
   float last_transparent_level=-1.0;
-  int ntris;
+  int ntris=0;
   tridata **tris;
   int texture_state = OFF, texture_first=1;
 
@@ -1853,7 +1853,7 @@ void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
   int nvertfaces[2];
   float times_local[2];
   int nt;
-  int returncode;
+  int returncode=0;
   int version;
   int nfloat_vals, nint_vals;
   int *int_vals;
@@ -1948,7 +1948,7 @@ void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
   int one=0;
   int nvertfacesvolumes[3];
   int nt;
-  int returncode;
+  int returncode=0;
   int version;
   int nverts=0, ntris=0, nvolumes=0;
   int first_frame_static;
@@ -2006,7 +2006,7 @@ void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
 void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
   FILE *stream;
   int version;
-  int returncode;
+  int returncode=0;
   int one=0;
 
   stream = fopen(geomi->file,"rb");
@@ -2034,7 +2034,7 @@ void GetGeomDataHeader(char *file, int *ntimes_local, int *nvals){
   int nface_static,nface_dynamic;
   float time_local;
   int nt,nv;
-  int returncode;
+  int returncode=0;
 
   stream = fopen(file,"r");
   if(stream==NULL){
@@ -2100,7 +2100,7 @@ void InitGeomlist(geomlistdata *geomlisti){
 FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode){
   FILE *stream;
   int one=1;
-  int returncode;
+  int returncode=0;
   int ntimes_local;
   int version;
   int nvertfacesvolumes[3];
@@ -2304,7 +2304,7 @@ int OutSideDomain(vertdata **verts){
 FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
   FILE *stream;
   int one=1;
-  int returncode;
+  int returncode=0;
   int ntimes_local;
   int i;
   vertdata *verts;
@@ -3056,7 +3056,7 @@ void ReadGeomFile2(geomdata *geomi){
 FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode){
   FILE *stream;
   int version;
-  int returncode;
+  int returncode=0;
   int one=0;
   FILE_SIZE return_filesize=0;
 #ifdef pp_ISOTIME
@@ -3701,6 +3701,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
         int draw_foreground;
 
         trianglei = geomlisti->triangles + j;
+        draw_foreground = 0;
 
         if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
           int insolid;

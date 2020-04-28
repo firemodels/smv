@@ -4202,7 +4202,7 @@ void DrawUserTicks(void){
   int i;
   float xyz[3],xyz2[3];
   float tick_origin[3], step[3];
-  int show_tick_x, show_tick_y, show_tick_z;
+  int show_tick_x=0, show_tick_y=0, show_tick_z=0;
   float fds_tick_length;
 
 #define MIN_DTICK 0.0
