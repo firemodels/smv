@@ -3035,9 +3035,15 @@ void SetScreenSize(int *width, int *height){
     screenWidth=MAX(*width,1);
     screenWidth = MAX(screenWidth, 1);
     if(screenWidth%2==1)screenWidth++;
+#ifdef pp_OSX
+    screenWidth*=2;
+#endif
   }
   if(height!=NULL){
     screenHeight=MAX(*height,1);
+#ifdef pp_OSX
+    screenHeight*=2;
+#endif
   }
   {
     int width_low, height_low, width_high, height_high;

@@ -376,6 +376,9 @@ int          GLUI_Control::char_width( char c )
 
 void    *GLUI_Control::get_font( void )
 {
+#ifdef pp_OSX
+  return GLUT_BITMAP_TIMES_ROMAN_24;
+#else
   /*** Does this control have its own font? ***/
   if ( this->font != NULL )
     return this->font;
@@ -386,6 +389,7 @@ void    *GLUI_Control::get_font( void )
 
   /*** Return the default font ***/
   return GLUT_BITMAP_HELVETICA_12;
+#endif
 }
 
 

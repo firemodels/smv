@@ -7,7 +7,13 @@ LIBDIR=../../LIBS/gnu_osx_64
 CURDIR=`pwd`
 cd $LIBDIR
 build_libs=
-LIBS="libgd.a libglui.a libglut.a libjpeg.a libpng.a libz.a"
+LIBS="libgd.a libglui.a libjpeg.a libpng.a libz.a"
+
+# build glut if using the quartz library
+if [ "$QUARTZSMV" == "use_quartz" ]; then
+  LIBS="$LIBS libglut.a"
+fi
+
 for f in $LIBS
 do
   if [ ! -e $f ]; then
@@ -22,4 +28,4 @@ fi
 cd $CURDIR
 
 rm -f *.o *.mod smokeview_osx_64*
-eval make QUARTZ="$QUARTZ" GLUT="$GLUT" ${SMV_MAKE_OPTS} -f ../Makefile gnu_osx_64_db
+eval make QUARTZ="$QUARTZSMV" GLUT="$GLUT" ${SMV_MAKE_OPTS} -f ../Makefile gnu_osx_64_db
