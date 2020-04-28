@@ -26,7 +26,7 @@ int ConvertVolSlice(slicedata *slicei, int *thread_index){
   uLong framesize;
   float *sliceframe_data=NULL;
   int sizebefore, sizeafter;
-  int returncode;
+  int returncode=0;
   LINT data_loc;
   int percent_done;
   int percent_next=10;
@@ -273,7 +273,7 @@ int ConvertSlice(slicedata *slicei, int *thread_index){
   unsigned char *sliceframe_compressed_rle=NULL, *sliceframe_uncompressed_rle=NULL;
   char cval[256];
   int sizebefore, sizeafter;
-  int returncode;
+  int returncode=0;
   float minmax[2];
   float time_local;
   LINT data_loc;

@@ -28,7 +28,7 @@ void convert_3dsmoke(smoke3d *smoke3di, int *thread_index){
   int nfull_file,nfull_data;
   int ncompressed_rle;
   uLongf ncompressed_zlib;
-  int returncode;
+  int returncode=0;
   int percent_done;
   int percent_next=10;
   LINT data_loc;
