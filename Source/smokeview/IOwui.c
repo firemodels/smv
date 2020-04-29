@@ -19,17 +19,26 @@
                            FSEEK(WUIFILE,4,SEEK_CUR)
 
 #ifdef pp_WUI_VAO
+int terrain_nindices;
 void InitTerrainVAO(void){
-  float vertices[] = {
+  float vertices_demo[] = {
     1.6f, 0.8, 3.2f,  // top right
     1.6f, 0.8, 0.0f,  // bottom right
     0.0f, 0.8, 0.0f,  // bottom left
-    0.0f, 0.8, 3.2f  // top left 
+    0.0f, 0.8, 3.2f,  // top left 
+    0.8f, 0.8, 4.8f  // top middle 
   };
-  unsigned int indices[] = {  // note that we start from 0!
+  float *vertices = vertices_demo;
+  int sizeof_vertices = sizeof(vertices_demo);
+
+  unsigned int indices_demo[] = {  // note that we start from 0!
+    0, 4, 3,    // third triangle
     0, 3, 1,   // first triangle
     1, 3, 2    // second triangle
   };
+  unsigned int *indices = indices_demo;
+  int sizeof_indices = sizeof(indices_demo);
+  terrain_nindices = sizeof_indices/sizeof(unsigned int);
 
   //******** vertex shader
 
@@ -54,6 +63,8 @@ void InitTerrainVAO(void){
     "  outputF = vec4(0.0f, 0.0f, 1.0f, 1.0f);\n"
     "}\0";
 
+  // setup vertex shader
+
   unsigned int TerrainVertexShader;
   TerrainVertexShader = glCreateShader(GL_VERTEX_SHADER);
 
@@ -70,6 +81,8 @@ void InitTerrainVAO(void){
     printf("%s\n",infoLog);
   }
 
+  // setup fragment shader
+
   unsigned int TerrainFragmentShader;
   TerrainFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(TerrainFragmentShader, 1, &TerrainFragmentShaderSource, NULL);
@@ -82,6 +95,8 @@ void InitTerrainVAO(void){
     printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n");
     printf("%s\n", infoLog);
   }
+
+  // setup program
 
   TerrainShaderProgram = glCreateProgram();
 
@@ -114,10 +129,10 @@ void InitTerrainVAO(void){
   glBindVertexArray(terrain_VAO);
 
   glBindBuffer(GL_ARRAY_BUFFER, terrain_VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof_vertices, vertices, GL_STATIC_DRAW);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain_EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof_indices, indices, GL_STATIC_DRAW);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
@@ -146,7 +161,7 @@ void DrawTerrainGPU(void){
   glUniformMatrix4fv(GPU_projection_matrix, 1, GL_FALSE, projection_matrix);
 
   glBindVertexArray(terrain_VAO);
-  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_TRIANGLES, terrain_nindices, GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
   glUseProgram(0);
   glPopMatrix();
