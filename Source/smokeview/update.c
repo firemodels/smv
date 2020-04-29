@@ -1190,6 +1190,10 @@ void UpdateTimes(void){
   // setup global_times array
 
   FREEMEMORY(global_times);
+
+  if(ReadZoneFile==1&&visZone==1){
+    nglobal_times = nzone_times;
+  }
   if(nglobal_times>0){
     int i;
     NewMemory((void **)&global_times, nglobal_times*sizeof(float));
@@ -1199,6 +1203,11 @@ void UpdateTimes(void){
 
       f1 = (float)i/(float)(nglobal_times-1);
       global_times[i] = (1.0-f1)*global_timemin+f1*global_timemax;
+    }
+  }
+  if(ReadZoneFile==1&&visZone==1){
+    for(i = 0; i<nglobal_times; i++){
+      global_times[i] = zone_times[i];
     }
   }
 
