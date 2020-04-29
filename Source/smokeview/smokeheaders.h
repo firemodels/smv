@@ -5,6 +5,11 @@
 #include "gd.h"
 #endif
 
+#ifdef pp_WUI_VAO
+void InitTerrainVAO(void);
+void DrawTerrainGPU(void);
+#endif
+
 #ifdef pp_C_SLICE
 EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error);
 #endif

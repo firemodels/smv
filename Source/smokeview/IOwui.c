@@ -1,4 +1,7 @@
 #include "options.h"
+#ifdef pp_WUI_VAO
+#include "glew.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -14,6 +17,128 @@
 #define FORTWUIREAD(var,size) FSEEK(WUIFILE,4,SEEK_CUR);\
                            returncode=fread(var,4,size,WUIFILE);\
                            FSEEK(WUIFILE,4,SEEK_CUR)
+
+#ifdef pp_WUI_VAO
+void InitTerrainVAO(void){
+  float vertices[] = {
+    1.6f, 0.8, 3.2f,  // top right
+    1.6f, 0.8, 0.0f,  // bottom right
+    0.0f, 0.8, 0.0f,  // bottom left
+    0.0f, 0.8, 3.2f  // top left 
+  };
+  unsigned int indices[] = {  // note that we start from 0!
+    0, 1, 3,   // first triangle
+    1, 2, 3    // second triangle
+  };
+
+  //******** vertex shader
+
+  const char *TerrainVertexShaderSource =
+    "#version 330 core\n"
+    // "layout (location = 0) in vec3 aPos;\n"
+    "void main()\n"
+    "{\n"
+    "  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+    "}\0";
+
+  //******** fragment shader
+
+  const char *TerrainFragmentShaderSource =
+    "#version 330 core\n"
+
+    "out vec4 outputF;\n"
+    "void main()\n"
+    "{\n"
+    "  outputF = vec4(1.0f, 0.0f, 1.0f, 1.0f);\n"
+    "}\0";
+
+  unsigned int TerrainVertexShader;
+  TerrainVertexShader = glCreateShader(GL_VERTEX_SHADER);
+
+  glShaderSource(TerrainVertexShader, 1, &TerrainVertexShaderSource, NULL);
+  glCompileShader(TerrainVertexShader);
+
+  int  success;
+  char infoLog[512];
+  glGetShaderiv(TerrainVertexShader, GL_COMPILE_STATUS, &success);
+
+  if(!success)  {
+    glGetShaderInfoLog(TerrainVertexShader, 512, NULL, infoLog);
+    printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n");
+    printf("%s\n",infoLog);
+  }
+
+  unsigned int TerrainFragmentShader;
+  TerrainFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(TerrainFragmentShader, 1, &TerrainFragmentShaderSource, NULL);
+  glCompileShader(TerrainFragmentShader);
+
+  glGetShaderiv(TerrainFragmentShader, GL_COMPILE_STATUS, &success);
+
+  if(!success)  {
+    glGetShaderInfoLog(TerrainFragmentShader, 512, NULL, infoLog);
+    printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n");
+    printf("%s\n", infoLog);
+  }
+
+  TerrainShaderProgram = glCreateProgram();
+
+  glAttachShader(TerrainShaderProgram, TerrainVertexShader);
+  glAttachShader(TerrainShaderProgram, TerrainFragmentShader);
+  glLinkProgram(TerrainShaderProgram);
+
+  glGetShaderiv(TerrainShaderProgram, GL_LINK_STATUS, &success);
+
+  if(!success)  {
+    glGetProgramInfoLog(TerrainShaderProgram, 512, NULL, infoLog);
+    printf("ERROR::SHADER::PROGRAM::LINK_FAILED\n");
+    printf("%s\n", infoLog);
+  }
+
+  glUseProgram(TerrainShaderProgram);
+
+  glDeleteShader(TerrainVertexShader);
+  glDeleteShader(TerrainFragmentShader);
+
+//---------------
+
+  glGenVertexArrays(1, &terrain_VAO);
+  glGenBuffers(1, &terrain_VBO);
+  glGenBuffers(1, &terrain_EBO);
+
+  glBindVertexArray(terrain_VAO);
+
+  glBindBuffer(GL_ARRAY_BUFFER, terrain_VBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain_EBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+  glEnableVertexAttribArray(0);
+
+  glBindBuffer(GL_ARRAY_BUFFER,0);
+
+  glBindVertexArray(0);
+}
+
+/* ------------------ DrawTerrainGPU ------------------------ */
+
+void DrawTerrainGPU(void){
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(-xbar0, -ybar0, -zbar0);
+
+  glUseProgram(TerrainShaderProgram);
+  glBindVertexArray(terrain_VAO);
+  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+  glBindVertexArray(0);
+  glUseProgram(0);
+  glPopMatrix();
+}
+
+
+#endif
 
 /* ------------------ DrawNorth ------------------------ */
 
