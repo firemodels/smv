@@ -27,18 +27,20 @@ void InitTerrainVAO(void){
     0.0f, 0.8, 3.2f  // top left 
   };
   unsigned int indices[] = {  // note that we start from 0!
-    0, 1, 3,   // first triangle
-    1, 2, 3    // second triangle
+    0, 3, 1,   // first triangle
+    1, 3, 2    // second triangle
   };
 
   //******** vertex shader
 
   const char *TerrainVertexShaderSource =
     "#version 330 core\n"
-    // "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "uniform mat4 projection_matrix;\n"
+    "uniform mat4 modelview_matrix;\n"
     "void main()\n"
     "{\n"
-    "  gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
+    "  gl_Position = projection_matrix * modelview_matrix * vec4(aPos.x,aPos.y,aPos.z,1.0);\n"
     "}\0";
 
   //******** fragment shader
@@ -49,7 +51,7 @@ void InitTerrainVAO(void){
     "out vec4 outputF;\n"
     "void main()\n"
     "{\n"
-    "  outputF = vec4(1.0f, 0.0f, 1.0f, 1.0f);\n"
+    "  outputF = vec4(0.0f, 0.0f, 1.0f, 1.0f);\n"
     "}\0";
 
   unsigned int TerrainVertexShader;
@@ -97,6 +99,9 @@ void InitTerrainVAO(void){
 
   glUseProgram(TerrainShaderProgram);
 
+  GPU_modelview_matrix  = glGetUniformLocation(TerrainShaderProgram, "modelview_matrix");
+  GPU_projection_matrix = glGetUniformLocation(TerrainShaderProgram, "projection_matrix");
+
   glDeleteShader(TerrainVertexShader);
   glDeleteShader(TerrainFragmentShader);
 
@@ -125,16 +130,27 @@ void InitTerrainVAO(void){
 /* ------------------ DrawTerrainGPU ------------------------ */
 
 void DrawTerrainGPU(void){
+  float projection_matrix[16], modelview_matrix[16];
+
+  DISABLE_LIGHTING;
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-xbar0, -ybar0, -zbar0);
 
   glUseProgram(TerrainShaderProgram);
+
+  glGetFloatv( GL_PROJECTION_MATRIX, projection_matrix );
+  glGetFloatv( GL_MODELVIEW_MATRIX, modelview_matrix );
+
+  glUniformMatrix4fv(GPU_modelview_matrix, 1, GL_FALSE, modelview_matrix);
+  glUniformMatrix4fv(GPU_projection_matrix, 1, GL_FALSE, projection_matrix);
+
   glBindVertexArray(terrain_VAO);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
   glUseProgram(0);
   glPopMatrix();
+  ENABLE_LIGHTING;
 }
 
 
