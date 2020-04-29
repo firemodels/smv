@@ -10048,9 +10048,6 @@ typedef struct {
   }
   printf("before UpdateTerrain\n");
   UpdateTerrain(1,vertical_factor); //xxx_slow
-#ifdef pp_WUI_VAO
-  InitTerrainVAO();
-#endif
   printf("after UpdateTerrain\n");
   UpdateTerrainColors();
   UpdateSmoke3dMenuLabels();
@@ -10100,6 +10097,9 @@ typedef struct {
   printf("after ReadAllGeom\n");
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
+#ifdef pp_WUI_VAO
+  InitTerrainVAO();
+#endif
 
   SetupMeshWalls();
   update_windrose = 1;

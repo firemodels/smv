@@ -19,8 +19,17 @@
                            FSEEK(WUIFILE,4,SEEK_CUR)
 
 #ifdef pp_WUI_VAO
+
+/* ------------------ DrawTerrainGPU ------------------------ */
+
+#define USE_DEMO 0
+#define USE_TERRAIN 1
 int terrain_nindices;
 void InitTerrainVAO(void){
+  int option= USE_TERRAIN;
+  float *terrain_vertices=NULL;
+  unsigned int *terrain_indices=NULL;
+
   float vertices_demo[] = {
     1.6f, 0.8, 3.2f,  // top right
     1.6f, 0.8, 0.0f,  // bottom right
@@ -121,6 +130,37 @@ void InitTerrainVAO(void){
   glDeleteShader(TerrainFragmentShader);
 
 //---------------
+  if(option==USE_TERRAIN&&ngeominfo>0){
+    geomlistdata *terrain;
+    int i;
+
+    terrain = geominfo->geomlistinfo-1;
+
+    sizeof_vertices = 3*terrain->nverts*sizeof(float);
+    NewMemory((void **)&terrain_vertices, sizeof_vertices);
+    vertices = terrain_vertices;
+    for(i = 0; i<terrain->nverts; i++){
+      vertdata *verti;
+
+      verti = terrain->verts+i;
+      terrain_vertices[3*i+0] = verti->xyz[0];
+      terrain_vertices[3*i+1] = verti->xyz[1];
+      terrain_vertices[3*i+2] = verti->xyz[2];
+    }
+
+    sizeof_indices = 3*terrain->ntriangles*sizeof(unsigned int);
+    NewMemory((void **)&terrain_indices, sizeof_indices);
+    indices = terrain_indices;
+    for(i = 0; i<terrain->ntriangles; i++){
+      tridata *trii;
+
+      trii = terrain->triangles+i;
+      terrain_indices[3*i+0] = trii->verts[0]-terrain->verts;
+      terrain_indices[3*i+1] = trii->verts[1]-terrain->verts;
+      terrain_indices[3*i+2] = trii->verts[2]-terrain->verts;
+    }
+    terrain_nindices = 3*terrain->ntriangles;
+  }
 
   glGenVertexArrays(1, &terrain_VAO);
   glGenBuffers(1, &terrain_VBO);
