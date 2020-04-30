@@ -90,7 +90,9 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     }
 
 #ifdef pp_WUI_VAO
-    DrawTerrainGPU();
+    if(have_terrain_vao==1){
+      DrawTerrainGPU();
+    }
 #endif
 
     /* ++++++++++++++++++++++++ draw evacuation +++++++++++++++++++++++++ */
@@ -272,8 +274,15 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(ngeominfoptrs>0){
     CLIP_GEOMETRY;
+#ifdef pp_WUI_VAO
+    if(have_terrain_vao==0){
+      DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
+      DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
+    }
+#else
     DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
     DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
+#endif
     SNIFF_ERRORS("DrawGeom");
   }
 

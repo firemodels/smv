@@ -6,7 +6,7 @@
 #endif
 
 #ifdef pp_WUI_VAO
-void InitTerrainVAO(void);
+int InitTerrainVAO(void);
 void DrawTerrainGPU(void);
 #endif
 
