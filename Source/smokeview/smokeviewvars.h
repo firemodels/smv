@@ -34,6 +34,7 @@ SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
 #ifdef pp_WUI_VAO
+SVEXTERN int SVDECL(have_terrain_vao, 0);
 SVEXTERN int GPU_modelview_matrix, GPU_projection_matrix;
 SVEXTERN unsigned int SVDECL(TerrainShaderProgram,0);
 SVEXTERN unsigned int SVDECL(terrain_VBO,0), SVDECL(terrain_VAO,0), SVDECL(terrain_EBO,0);

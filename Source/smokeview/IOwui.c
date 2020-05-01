@@ -24,8 +24,8 @@
 
 #define USE_DEMO 0
 #define USE_TERRAIN 1
-int terrain_nindices;
-void InitTerrainVAO(void){
+int terrain_nindices=0;
+int InitTerrainVAO(void){
   int option= USE_TERRAIN;
   float *terrain_vertices=NULL;
   unsigned int *terrain_indices=NULL;
@@ -54,22 +54,25 @@ void InitTerrainVAO(void){
   const char *TerrainVertexShaderSource =
     "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec3 vcolor;\n"
+    "out vec3 vertexcolor;\n"
     "uniform mat4 projection_matrix;\n"
     "uniform mat4 modelview_matrix;\n"
     "void main()\n"
     "{\n"
     "  gl_Position = projection_matrix * modelview_matrix * vec4(aPos.x,aPos.y,aPos.z,1.0);\n"
+    " vertexcolor=vcolor;\n"
     "}\0";
 
   //******** fragment shader
 
   const char *TerrainFragmentShaderSource =
     "#version 330 core\n"
-
+    "in vec3 vertexcolor;\n"
     "out vec4 outputF;\n"
     "void main()\n"
     "{\n"
-    "  outputF = vec4(0.0f, 0.0f, 1.0f, 1.0f);\n"
+    " outputF=vec4(vertexcolor.r,vertexcolor.g,vertexcolor.b,1.0);\n"
     "}\0";
 
   // setup vertex shader
@@ -80,11 +83,11 @@ void InitTerrainVAO(void){
   glShaderSource(TerrainVertexShader, 1, &TerrainVertexShaderSource, NULL);
   glCompileShader(TerrainVertexShader);
 
-  int  success;
+  int  success_vertex;
   char infoLog[512];
-  glGetShaderiv(TerrainVertexShader, GL_COMPILE_STATUS, &success);
+  glGetShaderiv(TerrainVertexShader, GL_COMPILE_STATUS, &success_vertex);
 
-  if(!success)  {
+  if(!success_vertex){
     glGetShaderInfoLog(TerrainVertexShader, 512, NULL, infoLog);
     printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n");
     printf("%s\n",infoLog);
@@ -97,9 +100,10 @@ void InitTerrainVAO(void){
   glShaderSource(TerrainFragmentShader, 1, &TerrainFragmentShaderSource, NULL);
   glCompileShader(TerrainFragmentShader);
 
-  glGetShaderiv(TerrainFragmentShader, GL_COMPILE_STATUS, &success);
+  int  success_fragment;
+  glGetShaderiv(TerrainFragmentShader, GL_COMPILE_STATUS, &success_fragment);
 
-  if(!success)  {
+  if(!success_fragment)  {
     glGetShaderInfoLog(TerrainFragmentShader, 512, NULL, infoLog);
     printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n");
     printf("%s\n", infoLog);
@@ -113,12 +117,20 @@ void InitTerrainVAO(void){
   glAttachShader(TerrainShaderProgram, TerrainFragmentShader);
   glLinkProgram(TerrainShaderProgram);
 
-  glGetShaderiv(TerrainShaderProgram, GL_LINK_STATUS, &success);
+  int  success_program;
+  glGetShaderiv(TerrainShaderProgram, GL_LINK_STATUS, &success_program);
 
-  if(!success)  {
+  if(!success_program){
     glGetProgramInfoLog(TerrainShaderProgram, 512, NULL, infoLog);
     printf("ERROR::SHADER::PROGRAM::LINK_FAILED\n");
     printf("%s\n", infoLog);
+  }
+
+  if(!success_program||!success_fragment||!success_vertex){
+    return 0;
+  }
+  else{
+    printf("terrain shader program successfully compiled and linked");
   }
 
   glUseProgram(TerrainShaderProgram);
@@ -136,16 +148,34 @@ void InitTerrainVAO(void){
 
     terrain = geominfo->geomlistinfo-1;
 
-    sizeof_vertices = 3*terrain->nverts*sizeof(float);
+    sizeof_vertices = 9*terrain->nverts*sizeof(float);
     NewMemory((void **)&terrain_vertices, sizeof_vertices);
     vertices = terrain_vertices;
     for(i = 0; i<terrain->nverts; i++){
       vertdata *verti;
+      surfdata *geomsurf;
 
       verti = terrain->verts+i;
-      terrain_vertices[3*i+0] = verti->xyz[0];
-      terrain_vertices[3*i+1] = verti->xyz[1];
-      terrain_vertices[3*i+2] = verti->xyz[2];
+      terrain_vertices[9*i+0] = verti->xyz[0];
+      terrain_vertices[9*i+1] = verti->xyz[1];
+      terrain_vertices[9*i+2] = verti->xyz[2];
+      terrain_vertices[9*i+3] = verti->vert_norm[0];;
+      terrain_vertices[9*i+4] = verti->vert_norm[1];
+      terrain_vertices[9*i+5] = verti->vert_norm[2];
+      geomsurf = verti->triangles[0]->geomsurf;
+      if(geomsurf!=NULL){
+        float *color;
+
+        color = geomsurf->color;
+        terrain_vertices[9*i+6] = color[0];
+        terrain_vertices[9*i+7] = color[1];
+        terrain_vertices[9*i+8] = color[2];
+      }
+      else{
+        terrain_vertices[9*i+6] = 0.0;
+        terrain_vertices[9*i+7] = 0.0;
+        terrain_vertices[9*i+8] = 1.0;
+      }
     }
 
     sizeof_indices = 3*terrain->ntriangles*sizeof(unsigned int);
@@ -174,12 +204,20 @@ void InitTerrainVAO(void){
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrain_EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof_indices, indices, GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+ #define BUFFER_OFFSET(i) ((void *)(i))
+ 
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), BUFFER_OFFSET(0));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), BUFFER_OFFSET(6*sizeof(float)));
   glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
 
   glBindBuffer(GL_ARRAY_BUFFER,0);
 
   glBindVertexArray(0);
+
+  FREEMEMORY(terrain_vertices);
+  FREEMEMORY(terrain_indices);
+  return 1;
 }
 
 /* ------------------ DrawTerrainGPU ------------------------ */

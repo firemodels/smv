@@ -10098,7 +10098,7 @@ typedef struct {
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
 #ifdef pp_WUI_VAO
-  InitTerrainVAO();
+  have_terrain_vao = InitTerrainVAO();
 #endif
 
   SetupMeshWalls();
