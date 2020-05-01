@@ -7,6 +7,8 @@
 //#undef pp_BETA
 //#define pp_BETA
 
+//#define pp_TIFF_TEST
+
 //*** define dem2fds title
 
 #define pp_FASTCOLOR    // fast color computation
