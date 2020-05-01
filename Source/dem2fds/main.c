@@ -47,6 +47,32 @@ void Usage(char *prog, int option){
   }
 }
 
+#ifdef pp_TIFF_TEST
+/* ------------------ main ------------------------ */
+#include "tiffio.h"
+
+void GetElevData(char *elevdir){
+  char file[256];
+  uint32 w, h;
+  float xdpi, ydpi;
+
+  strcpy(file, elevdir);
+  strcat(file, dirseparator);
+  strcat(file, "elevations.tif");
+
+  int test = sizeof(long long);
+  TIFF* tif = TIFFOpen(file, "rh");
+  TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &w);
+  TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &h);
+  TIFFGetField(tif, TIFFTAG_XRESOLUTION, &xdpi);
+  TIFFGetField(tif, TIFFTAG_YRESOLUTION, &ydpi);
+
+  printf("w=%i h=%i\n", (int)w, (int)h);
+  printf("xdpi=%f ydpi=%f\n", xdpi, ydpi);
+  printf("file=%s\n", file);
+}
+#endif
+
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
@@ -282,6 +308,10 @@ int main(int argc, char **argv){
   last = strrchr(image_file, '.');
   if(last != NULL)last[0] = 0;
   strcat(image_file,image_type);
+
+#ifdef pp_TIFF_TEST
+  GetElevData(elev_dir);
+#endif
 
   wuifireinfo = GetFireData(fire_dir, casename);
 

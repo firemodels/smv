@@ -172,7 +172,19 @@
 #define HAVE_SYS_TYPES_H 1
 
 /* Define to 1 if you have the <unistd.h> header file. */
+#ifdef pp_LINUX
 #define HAVE_UNISTD_H 1
+#endif
+
+#ifdef pp_GCC
+#undef HAVE_UNISTD_H
+#define HAVE_UNISTD_H 1
+#endif
+
+#ifdef pp_OSX
+#undef HAVE_UNISTD_H
+#define HAVE_UNISTD_H 1
+#endif
 
 /* Use nonstandard varargs form for the GLU tesselator callback */
 /* #undef HAVE_VARARGS_GLU_TESSCB */
@@ -206,7 +218,9 @@
 #define LT_OBJDIR ".libs/"
 
 /* Support LZMA2 compression */
+#ifdef pp_XXX
 #define LZMA_SUPPORT 1
+#endif
 
 /* Support LZW algorithm */
 #define LZW_SUPPORT 1
@@ -245,7 +259,9 @@
 #define PACKBITS_SUPPORT 1
 
 /* Support Pixar log-format algorithm (requires Zlib) */
+#ifdef XXX
 #define PIXARLOG_SUPPORT 1
+#endif
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
@@ -310,7 +326,12 @@
 #define TIFF_INT64_FORMAT "%ld"
 
 /* Signed 64-bit type */
+#undef TIFF_INT64_T
+#ifdef WIN32
+#define TIFF_INT64_T signed long long
+#else
 #define TIFF_INT64_T signed long
+#endif
 
 /* Signed 8-bit type */
 #define TIFF_INT8_T signed char
@@ -325,13 +346,24 @@
 #define TIFF_SIZE_FORMAT "%lu"
 
 /* Unsigned size type */
+#undef TIFF_SIZE_T
+#ifdef WIN32
+#define TIFF_SIZE_T unsigned long long
+#else
 #define TIFF_SIZE_T unsigned long
+#endif
 
 /* Signed size type formatter */
 #define TIFF_SSIZE_FORMAT "%ld"
 
 /* Signed size type */
+#undef TIFF_SSIZE_T
+#ifdef WIN32
+#define TIFF_SSIZE_T signed long long
+#else
 #define TIFF_SSIZE_T signed long
+#endif
+
 
 /* Unsigned 16-bit type */
 #define TIFF_UINT16_T unsigned short
@@ -346,7 +378,12 @@
 #define TIFF_UINT64_FORMAT "%lu"
 
 /* Unsigned 64-bit type */
+#undef TIFF_UINT64_T
+#ifdef WIN32
+#define TIFF_UINT64_T unsigned long long
+#else
 #define TIFF_UINT64_T unsigned long
+#endif
 
 /* Unsigned 8-bit type */
 #define TIFF_UINT8_T unsigned char
