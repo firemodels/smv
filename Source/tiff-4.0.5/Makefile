@@ -5,7 +5,7 @@ SIZE=-m64
 CC=$(COMPILER) $(SIZE)
 
 # You may need to adjust these cc options:
-CFLAGS= -O2  -I$(srcdir)
+CFLAGS= -O2  -I$(srcdir) -I../jpeg-9b
 
 .c.obj:
 	$(CC) -c $(CFLAGS) $(INC) $(FILTERC) $<
