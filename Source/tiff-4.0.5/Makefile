@@ -1,6 +1,6 @@
 srcdir = .
 
-COMPILER=icl
+COMPILER=icc
 SIZE=-m64
 CC=$(COMPILER) $(SIZE)
 
@@ -33,10 +33,10 @@ tif_color.o tif_dumpmode.o tif_getimage.o tif_lzw.o tif_predict.o tif_tile.o  \
 tif_compress.o  tif_error.o tif_jbig.o tif_next.o tif_print.o   \
 tif_extension.o  tif_jpeg_12.o tif_ojpeg.o tif_read.o tif_version.o  tif_write.o
 
-ifeq ($(shell echo "check_quotes"),"check_quotes")
+ifeq ($(SHELL echo "check_quotes"),"check_quotes")
 #
 else
-  OBJECTS+= tif_zip.o lzma.o tif_pixarlog.o tif_thunder.o tif_unix.o
+  OBJECTS+= tif_zip.o tif_lzma.o tif_pixarlog.o tif_thunder.o tif_unix.o
 endif
 
 OBJECTSWIN = $(OBJECTS:.o=.obj)
