@@ -1008,6 +1008,168 @@ int ReadIGrid(char *directory, char *file, wuigriddata *wuifireinfo){
   return 0;
 }
 
+// tiff labels: "ncols", "nrows", "xllcorner", "yllcorner", "cellsize", "NODATA_value"};
+
+
+  /* ------------------ ReadTiffHeaderAsc ------------------------ */
+
+
+int InitTiffData(char *file, tiffdata *data, int option){
+  int size;
+
+  if(option==TIFF_INIT){
+    if(file==NULL||strlen(file)==0)return 0;
+
+    NewMemory((void **)&(data->file), strlen(file)+1);
+
+    data->fvals = NULL;
+    data->ivals = NULL;
+    data->ncols = -1;
+    data->nrows = -1;
+    data->xllcorner = 0.0;
+    data->yllcorner = 0.0;
+    data->cellsize = -1.0;
+    return 1;
+  }
+
+  size = data->ncols*data->nrows;
+  if(size<=0)return 0;
+
+  if(option==TIFF_INT_DATA){
+    NewMemory((void **)&(data->ivals), size*sizeof(int));
+  }
+  else if(option==TIFF_FLOAT_DATA){
+    NewMemory((void **)&(data->fvals), size*sizeof(float));
+  }
+  else{
+    ASSERT(0);
+    return 0;
+  }
+  return 1;
+}
+
+/* ------------------ ReadTiffHeaderAsc ------------------------ */
+
+int ReadTiffHeaderAsc(tiffdata *data){
+  FILE *stream = NULL;
+  int i;
+
+  stream = fopen(data->file, "r");
+  if(stream==NULL)return 0;
+
+  for(i = 0; i<6; i++){
+    char *blank, *val, buffer[255];
+
+    fgets(buffer, 255, stream);
+    blank = strchr(buffer, ' ');
+    if(blank==NULL)return 1;
+    val = blank+1;
+    blank[0] = 0;
+    if(strcmp(buffer, "ncols")==0){
+      sscanf(val, "%i", &(data->ncols));
+      continue;
+    }
+    if(strcmp(buffer, "nrows")==0){
+      sscanf(val, "%i", &(data->nrows));
+      continue;
+    }
+    if(strcmp(buffer, "xllcorner")==0){
+      sscanf(val, "%f", &(data->xllcorner));
+      continue;
+    }
+    if(strcmp(buffer, "yllcorner")==0){
+      sscanf(val, "%f", &(data->yllcorner));
+      continue;
+    }
+    if(strcmp(buffer, "cellsize")==0){
+      sscanf(val, "%f", &(data->cellsize));
+      continue;
+    }
+    if(strcmp(buffer, "NODATA_value")==0){
+      break;
+    }
+  }
+  fclose(stream);
+  return 1;
+}
+
+/* ------------------ ReadTiffData ------------------------ */
+
+int ReadTiffData(tiffdata *data, int type){
+  int i, return_val;
+  FILE *stream;
+  char *buffer=NULL;
+  int size_buffer = 256;
+  float *fvals;
+  int *ivals;
+
+  ReadTiffHeaderAsc(data);
+
+  InitTiffData(NULL, data,type);
+
+  stream = fopen(data->file, "r");
+  if(stream==NULL)return 0;
+
+  NewMemory((void **)&buffer, size_buffer*sizeof(char));
+
+  // skip over header
+  for(i = 0; i<6; i++){
+    char *blank;
+
+    fgets(buffer, size_buffer, stream);
+    blank = strchr(buffer, ' ');
+    if(blank==NULL){
+      fclose(stream);
+      return 0;
+    }
+    blank[0] = 0;
+    if(strcmp(buffer, "NODATA_value")==0){
+      break;
+    }
+  }
+
+  FREEMEMORY(buffer);
+
+  if(type==TIFF_INT_DATA){
+    size_buffer = 5*data->ncols;
+  }
+  else if(type==TIFF_FLOAT_DATA){
+    size_buffer = 20*data->ncols;
+  }
+  else{
+    fclose(stream);
+    ASSERT(0);
+    return 0;
+  }
+  NewMemory((void **)&buffer, size_buffer*sizeof(char));
+
+  ivals = data->ivals;
+  fvals = data->fvals;
+  for(i = 0; i<data->nrows; i++){
+    int j;
+    char *tok;
+
+    if(fgets(buffer, size_buffer, stream)==NULL)break;
+    tok = strtok(buffer, " ");
+    if(type==TIFF_INT_DATA){
+      for(j = 0; j<data->ncols; j++){
+        sscanf(tok, "%i", ivals);
+        tok = strtok(NULL, " ");
+        ivals++;
+      }
+    }
+    else{
+      for(j = 0; j<data->ncols; j++){
+        sscanf(tok, "%f", fvals);
+        tok = strtok(NULL, " ");
+        fvals++;
+      }
+    }
+  }
+  FREEMEMORY(buffer);
+  return 1;
+}
+
 /* ------------------ GetFireData ------------------------ */
 
 wuigriddata *GetFireData(char *directory, char *casename){
