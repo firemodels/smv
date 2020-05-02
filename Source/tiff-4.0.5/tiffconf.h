@@ -15,12 +15,7 @@
 #define TIFF_INT32_T signed int
 
 /* Signed 64-bit type */
-#undef TIFF_INT64_T
-#ifdef WIN32
-#define TIFF_INT64_T signed long long
-#else
 #define TIFF_INT64_T signed long
-#endif
 
 /* Signed 8-bit type */
 #define TIFF_INT8_T signed char
@@ -32,23 +27,13 @@
 #define TIFF_UINT32_T unsigned int
 
 /* Unsigned 64-bit type */
-#undef TIFF_UINT64_T
-#ifdef WIN32
-#define TIFF_UINT64_T unsigned long long
-#else
 #define TIFF_UINT64_T unsigned long
-#endif
 
 /* Unsigned 8-bit type */
 #define TIFF_UINT8_T unsigned char
 
 /* Signed size type */
-#undef TIFF_SSIZE_T
-#ifdef WIN32
-#define TIFF_SSIZE_T signed long long
-#else
 #define TIFF_SSIZE_T signed long
-#endif
 
 /* Pointer difference type */
 #define TIFF_PTRDIFF_T ptrdiff_t
@@ -101,9 +86,7 @@
 #define PACKBITS_SUPPORT 1
 
 /* Support Pixar log-format algorithm (requires Zlib) */
-#ifdef pp_XXX
 #define PIXARLOG_SUPPORT 1
-#endif
 
 /* Support ThunderScan 4-bit RLE algorithm */
 #define THUNDER_SUPPORT 1

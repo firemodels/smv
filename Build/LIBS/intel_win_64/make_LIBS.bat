@@ -29,8 +29,8 @@ set BUILDDIR=%CD%
 ::start %WAIT% makelib %OPTS% -copy libopenvr.lib %LIBDIR%\openvr.lib
 
 :: TIFF
-cd %SRCDIR%\tiff-4.0.5
-start "building windows tiff" %WAIT% makelib %OPTS% -copy libtiff.lib %LIBDIR%\tiff.lib
+#cd %SRCDIR%\tiff-4.0.5
+#start "building windows tiff" %WAIT% makelib %OPTS% -copy libtiff.lib %LIBDIR%\tiff.lib
 
 :: ZLIB
 cd %SRCDIR%\zlib128
