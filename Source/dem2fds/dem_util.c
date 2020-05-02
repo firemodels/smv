@@ -1095,6 +1095,38 @@ int ReadTiffHeaderAsc(tiffdata *data){
 
 /* ------------------ ReadTiffData ------------------------ */
 
+int CopyTiffData(tiffdata *data, int type, char *file){
+  FILE *stream;
+  int size;
+
+  if(file==NULL||strlen(file)==0||data->ncols<=0||data->nrows<=0)return 0;
+  size = data->ncols*data->nrows;
+
+  stream = fopen(file, "wb");
+  if(stream==NULL)return 0;
+
+  fwrite(&(data->ncols), sizeof(int), 1, stream);
+  fwrite(&(data->nrows), sizeof(int), 1, stream);
+  fwrite(&(data->xllcorner), sizeof(float),1, stream);
+  fwrite(&(data->yllcorner), sizeof(float),1, stream);
+  fwrite(&(data->cellsize), sizeof(float), 1,stream);
+  if(type==TIFF_INT_DATA){
+    fwrite(data->ivals, sizeof(int), size,stream);
+  }
+  else if(type==TIFF_FLOAT_DATA){
+    fwrite(data->fvals, sizeof(float), size,stream);
+  }
+  else{
+    ASSERT(0);
+    fclose(stream);
+    return 0;
+  }
+  fclose(stream);
+  return 1;
+}
+
+  /* ------------------ ReadTiffData ------------------------ */
+
 int ReadTiffData(tiffdata *data, int type){
   int i, return_val;
   FILE *stream;

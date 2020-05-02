@@ -74,6 +74,7 @@ typedef struct {
   float xmin, xmax, ymin, ymax;
 } excludedata;
 
+EXTERNCPP int CopyTiffData(tiffdata *data, int type, char *file);
 EXTERNCPP int InitTiffData(char *file, tiffdata *data, int option);
 EXTERNCPP int ReadTiffHeaderAsc(tiffdata *data);
 EXTERNCPP int ReadTiffData(tiffdata *data, int type);
