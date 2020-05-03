@@ -1027,22 +1027,27 @@ int ReadTiffHeader(tiffdata *data){
     blank[0] = 0;
     if(strcmp(buffer, "ncols")==0){
       sscanf(val, "%i", &(data->ncols));
+      data->have_ncols = 1;
       continue;
     }
     if(strcmp(buffer, "nrows")==0){
       sscanf(val, "%i", &(data->nrows));
+      data->have_nrows = 1;
       continue;
     }
     if(strcmp(buffer, "xllcorner")==0){
       sscanf(val, "%f", &(data->xllcorner));
+      data->have_xllcorner = 1;
       continue;
     }
     if(strcmp(buffer, "yllcorner")==0){
       sscanf(val, "%f", &(data->yllcorner));
+      data->have_yllcorner = 1;
       continue;
     }
     if(strcmp(buffer, "cellsize")==0){
       sscanf(val, "%f", &(data->cellsize));
+      data->have_cellsize = 1;
       continue;
     }
     if(strcmp(buffer, "NODATA_value")==0){
@@ -1063,7 +1068,17 @@ int ReadTiffHeader(tiffdata *data){
     }
     FREEMEMORY(buffer);
   }
-  fclose(stream);
+
+  if(data->have_cellsize==1){
+    data->dx = data->cellsize;
+    data->dy = data->cellsize;
+  }
+    data->longmin = data->xllcorner;
+    data->longmax = data->longmin+(float)data->ncols*data->dx;
+    data->latmin = data->yllcorner;
+    data->latmax = data->latmin+(float)data->nrows*data->dy;
+
+    fclose(stream);
   return 1;
 }
 
@@ -1103,10 +1118,25 @@ tiffdata *InitTiffData(char *file){
   data->type = 0;
   data->vals = NULL;
   data->ncols = -1;
+  data->have_ncols = 0;
+
   data->nrows = -1;
+  data->have_nrows = 0;
+
   data->xllcorner = 0.0;
+  data->have_xllcorner = 0;
+
   data->yllcorner = 0.0;
+  data->have_yllcorner = 0;
+
   data->cellsize = -1.0;
+  data->have_cellsize = 0;
+
+  data->dx = -1.0;
+  data->have_dx = 0;
+
+  data->dy = -1.0;
+  data->have_dy = 0;
 
   if(ReadTiffHeader(data)==0){
     FREEMEMORY(data->file);
@@ -1152,7 +1182,7 @@ int CopyTiffData(tiffdata *data, int type, char *file){
   return 1;
 }
 
-/* ------------------ ReadTiffData ------------------------ */
+/* ------------------ FreeTiffData ------------------------ */
 
 void FreeTiffData(tiffdata *data){
   FREEMEMORY(data->file);
@@ -1162,20 +1192,32 @@ void FreeTiffData(tiffdata *data){
 
   /* ------------------ ReadTiffData ------------------------ */
 
-tiffdata *ReadTiffData(char *file, char *mode){
+tiffdata *ReadTiffData(char *directory, char *file, char *mode){
   int i;
   FILE *stream;
   char *buffer=NULL;
   int size_buffer = 256;
   tiffdata *data;
+  char fullfile[256];
 
-  data = InitTiffData(file);
+  if(file==NULL||strlen(file)==0)return NULL;
+
+  if(directory==NULL||strlen(directory)==0||strcmp(directory, ".")==0){
+    strcmp(fullfile, file);
+  }
+  else{
+    strcmp(fullfile, directory);
+    strcat(fullfile, dirseparator);
+    strcat(fullfile, file);
+  }
+
+  data = InitTiffData(fullfile);
   if(data==NULL)return NULL;
     
   stream = fopen(data->file, "r");
   if(stream==NULL||
-    (data->type==TIFF_FLOAT_DATA&&strcmp(mode, "f")!=0)||
-    (data->type==TIFF_INT_DATA&&strcmp(mode, "i")!=0)
+    (data->type==TIFF_FLOAT_DATA&&strcmp(mode, "float")!=0)||
+    (data->type==TIFF_INT_DATA&&strcmp(mode, "int")!=0)
     ){
     FreeTiffData(data);
     return NULL;
