@@ -19,11 +19,6 @@
 #define FORTelev2geom      _F(elev2geom)
 #define FORTwrite_bingeom _F(write_bingeom)
 
-#define GRID_ALLOCATE   -1
-#define GRID_INIT       0
-#define GRID_INT_DATA   1
-#define GRID_FLOAT_DATA 2
-
 //subroutine elev2geom(output_elev_file, xgrid, ibar, ygrid, jbar, vals, nvals)
 STDCALLF FORTelev2geom(char *output_elev_file, float *xgrid, int *ibar, float *ygrid, int *jbar, float *vals, int *nvals, FILE_SIZE filelen);
 
