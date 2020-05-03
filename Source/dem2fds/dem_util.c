@@ -1008,9 +1008,9 @@ int ReadIGrid(char *directory, char *file, wuigriddata *wuifireinfo){
   return 0;
 }
 
-/* ------------------ ReadTiffHeader ------------------------ */
+/* ------------------ ReadGridHeader ------------------------ */
 
-int ReadTiffHeader(tiffdata *data){
+int ReadGridHeader(griddata *data){
   FILE *stream = NULL;
   int i;
 
@@ -1061,10 +1061,10 @@ int ReadTiffHeader(tiffdata *data){
     NewMemory((void **)&buffer, size_buffer*sizeof(char));
     fgets(buffer, size_buffer, stream);
     if(strchr(buffer, '.')!=NULL){
-      data->type = TIFF_FLOAT_DATA;
+      data->type = GRID_FLOAT_DATA;
     }
     else{
-      data->type = TIFF_INT_DATA;
+      data->type = GRID_INT_DATA;
     }
     FREEMEMORY(buffer);
   }
@@ -1082,18 +1082,18 @@ int ReadTiffHeader(tiffdata *data){
   return 1;
 }
 
-/* ------------------ AllocateTiffData ------------------------ */
+/* ------------------ AllocateGridData ------------------------ */
 
-int AllocateTiffData(tiffdata *data){
+int AllocateGridData(griddata *data){
   int size, size_data;
 
   size = data->ncols*data->nrows;
   if(size<=0)return 0;
 
-  if(data->type==TIFF_INT_DATA){
+  if(data->type==GRID_INT_DATA){
     size_data = size*sizeof(int);
   }
-  else if(data->type==TIFF_FLOAT_DATA){
+  else if(data->type==GRID_FLOAT_DATA){
     size_data = size*sizeof(float);
   }
   else{
@@ -1105,14 +1105,14 @@ int AllocateTiffData(tiffdata *data){
   return 1;
 }
 
-/* ------------------ InitTiffData ------------------------ */
+/* ------------------ InitGridData ------------------------ */
 
-tiffdata *InitTiffData(char *file){
-  tiffdata *data;
+griddata *InitGridData(char *file){
+  griddata *data;
 
   if(file==NULL||strlen(file)==0)return NULL;
 
-  NewMemory((void **)&(data), sizeof(tiffdata));
+  NewMemory((void **)&(data), sizeof(griddata));
   NewMemory((void **)&(data->file), strlen(file)+1);
 
   data->type = 0;
@@ -1138,12 +1138,12 @@ tiffdata *InitTiffData(char *file){
   data->dy = -1.0;
   data->have_dy = 0;
 
-  if(ReadTiffHeader(data)==0){
+  if(ReadGridHeader(data)==0){
     FREEMEMORY(data->file);
     FREEMEMORY(data);
     return NULL;
   }
-  if(AllocateTiffData(data)==0){
+  if(AllocateGridData(data)==0){
     FREEMEMORY(data->file);
     FREEMEMORY(data);
     return NULL;
@@ -1152,9 +1152,9 @@ tiffdata *InitTiffData(char *file){
   return data;
 }
 
-/* ------------------ CopyTiffData ------------------------ */
+/* ------------------ CopyGridData ------------------------ */
 
-int CopyTiffData(tiffdata *data, int type, char *file){
+int CopyGridData(griddata *data, int type, char *file){
   if(file==NULL||strlen(file)==0||data->ncols<=0||data->nrows<=0)return 0;
   int size = data->ncols*data->nrows;
 
@@ -1167,10 +1167,10 @@ int CopyTiffData(tiffdata *data, int type, char *file){
   fwrite(&(data->xllcorner), sizeof(float),1, stream);
   fwrite(&(data->yllcorner), sizeof(float),1, stream);
   fwrite(&(data->cellsize), sizeof(float), 1,stream);
-  if(type==TIFF_INT_DATA){
+  if(type==GRID_INT_DATA){
     fwrite((int *)data->vals, sizeof(int), size,stream);
   }
-  else if(type==TIFF_FLOAT_DATA){
+  else if(type==GRID_FLOAT_DATA){
     fwrite((float *)data->vals, sizeof(float), size,stream);
   }
   else{
@@ -1182,22 +1182,22 @@ int CopyTiffData(tiffdata *data, int type, char *file){
   return 1;
 }
 
-/* ------------------ FreeTiffData ------------------------ */
+/* ------------------ FreeGridData ------------------------ */
 
-void FreeTiffData(tiffdata *data){
+void FreeGridData(griddata *data){
   FREEMEMORY(data->file);
   FREEMEMORY(data->vals);
   FREEMEMORY(data);
 }
 
-  /* ------------------ ReadTiffData ------------------------ */
+  /* ------------------ ReadGridData ------------------------ */
 
-tiffdata *ReadTiffData(char *directory, char *file, char *mode){
+griddata *ReadGridData(char *directory, char *file, char *mode){
   int i;
   FILE *stream;
   char *buffer=NULL;
   int size_buffer = 256;
-  tiffdata *data;
+  griddata *data;
   char fullfile[256];
 
   if(file==NULL||strlen(file)==0)return NULL;
@@ -1211,15 +1211,15 @@ tiffdata *ReadTiffData(char *directory, char *file, char *mode){
     strcat(fullfile, file);
   }
 
-  data = InitTiffData(fullfile);
+  data = InitGridData(fullfile);
   if(data==NULL)return NULL;
     
   stream = fopen(data->file, "r");
   if(stream==NULL||
-    (data->type==TIFF_FLOAT_DATA&&strcmp(mode, "float")!=0)||
-    (data->type==TIFF_INT_DATA&&strcmp(mode, "int")!=0)
+    (data->type==GRID_FLOAT_DATA&&strcmp(mode, "float")!=0)||
+    (data->type==GRID_INT_DATA&&strcmp(mode, "int")!=0)
     ){
-    FreeTiffData(data);
+    FreeGridData(data);
     return NULL;
   }
 
@@ -1233,7 +1233,7 @@ tiffdata *ReadTiffData(char *directory, char *file, char *mode){
     blank = strchr(buffer, ' ');
     if(blank==NULL){
       fclose(stream);
-      FreeTiffData(data);
+      FreeGridData(data);
       return NULL;
     }
     blank[0] = 0;
@@ -1244,15 +1244,15 @@ tiffdata *ReadTiffData(char *directory, char *file, char *mode){
 
   FREEMEMORY(buffer);
 
-  if(data->type==TIFF_INT_DATA){
+  if(data->type==GRID_INT_DATA){
     size_buffer = 5*data->ncols;
   }
-  else if(data->type==TIFF_FLOAT_DATA){
+  else if(data->type==GRID_FLOAT_DATA){
     size_buffer = 20*data->ncols;
   }
   else{
     fclose(stream);
-    FreeTiffData(data);
+    FreeGridData(data);
     ASSERT(0);
     return NULL;
   }
@@ -1267,14 +1267,14 @@ tiffdata *ReadTiffData(char *directory, char *file, char *mode){
 
     if(fgets(buffer, size_buffer, stream)==NULL)break;
     tok = strtok(buffer, " ");
-    if(data->type==TIFF_FLOAT_DATA){
+    if(data->type==GRID_FLOAT_DATA){
       for(j = 0; j<data->ncols; j++){
         sscanf(tok, "%f", (float *)fvals);
         tok = strtok(NULL, " ");
         fvals++;
       }
     }
-    else if(data->type==TIFF_INT_DATA){
+    else if(data->type==GRID_INT_DATA){
       for(j = 0; j<data->ncols; j++){
         sscanf(tok, "%i", (int *)ivals);
         tok = strtok(NULL, " ");

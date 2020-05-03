@@ -19,10 +19,10 @@
 #define FORTelev2geom      _F(elev2geom)
 #define FORTwrite_bingeom _F(write_bingeom)
 
-#define TIFF_ALLOCATE   -1
-#define TIFF_INIT       0
-#define TIFF_INT_DATA   1
-#define TIFF_FLOAT_DATA 2
+#define GRID_ALLOCATE   -1
+#define GRID_INIT       0
+#define GRID_INT_DATA   1
+#define GRID_FLOAT_DATA 2
 
 //subroutine elev2geom(output_elev_file, xgrid, ibar, ygrid, jbar, vals, nvals)
 STDCALLF FORTelev2geom(char *output_elev_file, float *xgrid, int *ibar, float *ygrid, int *jbar, float *vals, int *nvals, FILE_SIZE filelen);
@@ -34,7 +34,7 @@ STDCALLF FORTwrite_bingeom(char *filename, float *verts, int *faces, int *surfs,
 
 /* --------------------------  tiffdata ------------------------------------ */
 
-typedef struct _tiffdata {
+typedef struct _griddata {
   char *file;
   int type;
   int ncols, nrows;
@@ -45,7 +45,7 @@ typedef struct _tiffdata {
   int have_dx, have_dy;
   float latmin, latmax, longmin, longmax;
   void *vals;
-} tiffdata;
+} griddata;
 
 /* --------------------------  elevdata ------------------------------------ */
 
@@ -82,8 +82,8 @@ typedef struct {
   float xmin, xmax, ymin, ymax;
 } excludedata;
 
-EXTERNCPP int CopyTiffData(tiffdata *data, int type, char *file);
-EXTERNCPP tiffdata *ReadTiffData(char *directory, char *file, char *mode);
+EXTERNCPP int CopyGridData(griddata *data, int type, char *file);
+EXTERNCPP griddata *ReadGridData(char *directory, char *file, char *mode);
 EXTERNCPP void GenerateFDSInputFile(char *casename, char *casename_fds, char *casename_bingeom, elevdata *fds_elevs, int option, wuigriddata *wuifireinfo);
 EXTERNCPP int GetElevations(char *elevfile, char *image_file, char *image_type, elevdata *fds_elevs);
 EXTERNCPP wuigriddata *GetFireData(char *adf_dir, char *casename);
