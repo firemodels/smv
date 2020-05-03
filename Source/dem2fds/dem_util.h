@@ -27,21 +27,6 @@ STDCALLF FORTelev2geom(char *output_elev_file, float *xgrid, int *ibar, float *y
 STDCALLF FORTwrite_bingeom(char *filename, float *verts, int *faces, int *surfs, int *n_verts, int *n_faces, int *nsurf_id, int *error, FILE_SIZE filelen);
 
 
-/* --------------------------  tiffdata ------------------------------------ */
-
-typedef struct _griddata {
-  char *file;
-  int type;
-  int ncols, nrows;
-  int have_ncols, have_nrows;
-  float xllcorner, yllcorner, cellsize;
-  int have_xllcorner, have_yllcorner, have_cellsize;
-  float dx, dy;
-  int have_dx, have_dy;
-  float latmin, latmax, longmin, longmax;
-  void *vals;
-} griddata;
-
 /* --------------------------  elevdata ------------------------------------ */
 
 typedef struct _elevdata {
@@ -77,8 +62,6 @@ typedef struct {
   float xmin, xmax, ymin, ymax;
 } excludedata;
 
-EXTERNCPP int CopyGridData(griddata *data, int type, char *file);
-EXTERNCPP griddata *ReadGridData(char *directory, char *file, char *mode);
 EXTERNCPP void GenerateFDSInputFile(char *casename, char *casename_fds, char *casename_bingeom, elevdata *fds_elevs, int option, wuigriddata *wuifireinfo);
 EXTERNCPP int GetElevations(char *elevfile, char *image_file, char *image_type, elevdata *fds_elevs);
 EXTERNCPP wuigriddata *GetFireData(char *adf_dir, char *casename);

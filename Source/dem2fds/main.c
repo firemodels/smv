@@ -11,6 +11,7 @@
 #include "MALLOCC.h"
 #include "gd.h"
 #include "dem_util.h"
+#include "dem_grid.h"
 
 /* ------------------ Usage ------------------------ */
 
@@ -312,7 +313,9 @@ int main(int argc, char **argv){
 #ifdef pp_TIFF_TEST
   GetElevData(elev_dir);
 #endif
-
+//  griddata *firedata = ReadGridData(fire_dir, "anderson13.asc", "int");
+//  griddata *elevdata = ReadGridData(elev_dir, "elevations.asc", "float");
+//  CopyGridData(elevdata, "elev.asc.bin");
   wuifireinfo = GetFireData(fire_dir, casename);
 
   if(GetElevations(casename, image_file, image_type, &fds_elevs)==1){
