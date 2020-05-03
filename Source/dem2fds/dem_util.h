@@ -19,6 +19,7 @@
 #define FORTelev2geom      _F(elev2geom)
 #define FORTwrite_bingeom _F(write_bingeom)
 
+#define TIFF_ALLOCATE   -1
 #define TIFF_INIT       0
 #define TIFF_INT_DATA   1
 #define TIFF_FLOAT_DATA 2
@@ -35,10 +36,10 @@ STDCALLF FORTwrite_bingeom(char *filename, float *verts, int *faces, int *surfs,
 
 typedef struct _tiffdata {
   char *file;
+  int type;
   int ncols, nrows;
   float xllcorner, yllcorner, cellsize;
-  float *fvals;
-  int *ivals;
+  void *vals;
 } tiffdata;
 
 /* --------------------------  elevdata ------------------------------------ */
@@ -56,6 +57,8 @@ typedef struct _elevdata {
   float *valbuffer;
   gdImagePtr image;
 } elevdata;
+
+/* --------------------------  _wuigriddata ------------------------------------ */
 
 typedef struct _wuigriddata {
   int ncols, nrows;
@@ -75,9 +78,7 @@ typedef struct {
 } excludedata;
 
 EXTERNCPP int CopyTiffData(tiffdata *data, int type, char *file);
-EXTERNCPP int InitTiffData(char *file, tiffdata *data, int option);
-EXTERNCPP int ReadTiffHeaderAsc(tiffdata *data);
-EXTERNCPP int ReadTiffData(tiffdata *data, int type);
+EXTERNCPP tiffdata *ReadTiffData(char *file, char *mode);
 EXTERNCPP void GenerateFDSInputFile(char *casename, char *casename_fds, char *casename_bingeom, elevdata *fds_elevs, int option, wuigriddata *wuifireinfo);
 EXTERNCPP int GetElevations(char *elevfile, char *image_file, char *image_type, elevdata *fds_elevs);
 EXTERNCPP wuigriddata *GetFireData(char *adf_dir, char *casename);

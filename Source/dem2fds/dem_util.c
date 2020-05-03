@@ -1008,49 +1008,9 @@ int ReadIGrid(char *directory, char *file, wuigriddata *wuifireinfo){
   return 0;
 }
 
-// tiff labels: "ncols", "nrows", "xllcorner", "yllcorner", "cellsize", "NODATA_value"};
+/* ------------------ ReadTiffHeader ------------------------ */
 
-
-  /* ------------------ ReadTiffHeaderAsc ------------------------ */
-
-
-int InitTiffData(char *file, tiffdata *data, int option){
-  int size;
-
-  if(option==TIFF_INIT){
-    if(file==NULL||strlen(file)==0)return 0;
-
-    NewMemory((void **)&(data->file), strlen(file)+1);
-
-    data->fvals = NULL;
-    data->ivals = NULL;
-    data->ncols = -1;
-    data->nrows = -1;
-    data->xllcorner = 0.0;
-    data->yllcorner = 0.0;
-    data->cellsize = -1.0;
-    return 1;
-  }
-
-  size = data->ncols*data->nrows;
-  if(size<=0)return 0;
-
-  if(option==TIFF_INT_DATA){
-    NewMemory((void **)&(data->ivals), size*sizeof(int));
-  }
-  else if(option==TIFF_FLOAT_DATA){
-    NewMemory((void **)&(data->fvals), size*sizeof(float));
-  }
-  else{
-    ASSERT(0);
-    return 0;
-  }
-  return 1;
-}
-
-/* ------------------ ReadTiffHeaderAsc ------------------------ */
-
-int ReadTiffHeaderAsc(tiffdata *data){
+int ReadTiffHeader(tiffdata *data){
   FILE *stream = NULL;
   int i;
 
@@ -1089,32 +1049,102 @@ int ReadTiffHeaderAsc(tiffdata *data){
       break;
     }
   }
+  if(data->ncols>0&&data->nrows>0){
+    char *buffer;
+    int size, size_buffer;
+
+    size = data->ncols*data->nrows;
+    size_buffer = 20*data->ncols;
+    NewMemory((void **)&buffer, size_buffer*sizeof(char));
+    fgets(buffer, size_buffer, stream);
+    if(strchr(buffer, '.')!=NULL){
+      data->type = TIFF_FLOAT_DATA;
+    }
+    else{
+      data->type-TIFF_INT_DATA;
+    }
+    FREEMEMORY(buffer);
+  }
   fclose(stream);
   return 1;
 }
 
-/* ------------------ ReadTiffData ------------------------ */
+/* ------------------ AllocateTiffData ------------------------ */
+
+int AllocateTiffData(tiffdata *data){
+  int size, size_data;
+
+  size = data->ncols*data->nrows;
+  if(size<=0)return 0;
+
+  if(data->type==TIFF_INT_DATA){
+    size_data = size*sizeof(int);
+  }
+  else if(data->type==TIFF_FLOAT_DATA){
+    size_data = size*sizeof(float);
+  }
+  else{
+    ASSERT(0);
+    return 0;
+  }
+
+  NewMemory((void **)&(data->vals), size_data);
+  return 1;
+}
+
+/* ------------------ InitTiffData ------------------------ */
+
+tiffdata *InitTiffData(char *file){
+  int size, size_data;
+  tiffdata *data;
+
+  if(file==NULL||strlen(file)==0)return NULL;
+
+  NewMemory((void **)&(data), sizeof(tiffdata));
+  NewMemory((void **)&(data->file), strlen(file)+1);
+
+  data->type = 0;
+  data->vals = NULL;
+  data->ncols = -1;
+  data->nrows = -1;
+  data->xllcorner = 0.0;
+  data->yllcorner = 0.0;
+  data->cellsize = -1.0;
+
+  if(ReadTiffHeader(data)==0){
+    FREEMEMORY(data->file);
+    FREEMEMORY(data);
+    return NULL;
+  }
+  if(AllocateTiffData(data)==0){
+    FREEMEMORY(data->file);
+    FREEMEMORY(data);
+    return NULL;
+  }
+    
+  return data;
+}
+
+/* ------------------ CopyTiffData ------------------------ */
 
 int CopyTiffData(tiffdata *data, int type, char *file){
-  FILE *stream;
-  int size;
-
   if(file==NULL||strlen(file)==0||data->ncols<=0||data->nrows<=0)return 0;
-  size = data->ncols*data->nrows;
+  int size = data->ncols*data->nrows;
 
-  stream = fopen(file, "wb");
+  FILE *stream = fopen(file, "wb");
   if(stream==NULL)return 0;
 
+  fwrite(&(data->type), sizeof(int), 1, stream);
   fwrite(&(data->ncols), sizeof(int), 1, stream);
   fwrite(&(data->nrows), sizeof(int), 1, stream);
   fwrite(&(data->xllcorner), sizeof(float),1, stream);
   fwrite(&(data->yllcorner), sizeof(float),1, stream);
   fwrite(&(data->cellsize), sizeof(float), 1,stream);
   if(type==TIFF_INT_DATA){
-    fwrite(data->ivals, sizeof(int), size,stream);
+    fwrite((int *)data->vals, sizeof(int), size,stream);
   }
   else if(type==TIFF_FLOAT_DATA){
-    fwrite(data->fvals, sizeof(float), size,stream);
+    fwrite((float *)data->vals, sizeof(float), size,stream);
   }
   else{
     ASSERT(0);
@@ -1125,22 +1155,34 @@ int CopyTiffData(tiffdata *data, int type, char *file){
   return 1;
 }
 
+/* ------------------ ReadTiffData ------------------------ */
+
+void FreeTiffData(tiffdata *data){
+  FREEMEMORY(data->file);
+  FREEMEMORY(data->vals);
+  FREEMEMORY(data);
+}
+
   /* ------------------ ReadTiffData ------------------------ */
 
-int ReadTiffData(tiffdata *data, int type){
+tiffdata *ReadTiffData(char *file, char *mode){
   int i, return_val;
   FILE *stream;
   char *buffer=NULL;
   int size_buffer = 256;
-  float *fvals;
-  int *ivals;
+  tiffdata *data;
 
-  ReadTiffHeaderAsc(data);
-
-  InitTiffData(NULL, data,type);
-
+  data = InitTiffData(file);
+  if(data==NULL)return NULL;
+    
   stream = fopen(data->file, "r");
-  if(stream==NULL)return 0;
+  if(stream==NULL||
+    (data->type==TIFF_FLOAT_DATA&&strcmp(mode, "f")!=0)||
+    (data->type==TIFF_INT_DATA&&strcmp(mode, "i")!=0)
+    ){
+    FreeTiffData(data);
+    return NULL;
+  }
 
   NewMemory((void **)&buffer, size_buffer*sizeof(char));
 
@@ -1152,7 +1194,8 @@ int ReadTiffData(tiffdata *data, int type){
     blank = strchr(buffer, ' ');
     if(blank==NULL){
       fclose(stream);
-      return 0;
+      FreeTiffData(data);
+      return NULL;
     }
     blank[0] = 0;
     if(strcmp(buffer, "NODATA_value")==0){
@@ -1162,44 +1205,46 @@ int ReadTiffData(tiffdata *data, int type){
 
   FREEMEMORY(buffer);
 
-  if(type==TIFF_INT_DATA){
+  if(data->type==TIFF_INT_DATA){
     size_buffer = 5*data->ncols;
   }
-  else if(type==TIFF_FLOAT_DATA){
+  else if(data->type==TIFF_FLOAT_DATA){
     size_buffer = 20*data->ncols;
   }
   else{
     fclose(stream);
+    FreeTiffData(data);
     ASSERT(0);
-    return 0;
+    return NULL;
   }
+  
   NewMemory((void **)&buffer, size_buffer*sizeof(char));
+  float *fvals = (float *)(data->vals);
+  int *ivals = (int *)(data->vals);
 
-  ivals = data->ivals;
-  fvals = data->fvals;
   for(i = 0; i<data->nrows; i++){
     int j;
     char *tok;
 
     if(fgets(buffer, size_buffer, stream)==NULL)break;
     tok = strtok(buffer, " ");
-    if(type==TIFF_INT_DATA){
+    if(data->type==TIFF_FLOAT_DATA){
       for(j = 0; j<data->ncols; j++){
-        sscanf(tok, "%i", ivals);
-        tok = strtok(NULL, " ");
-        ivals++;
-      }
-    }
-    else{
-      for(j = 0; j<data->ncols; j++){
-        sscanf(tok, "%f", fvals);
+        sscanf(tok, "%f", (float *)fvals);
         tok = strtok(NULL, " ");
         fvals++;
       }
     }
+    else if(data->type==TIFF_INT_DATA){
+      for(j = 0; j<data->ncols; j++){
+        sscanf(tok, "%i", (int *)ivals);
+        tok = strtok(NULL, " ");
+        ivals++;
+      }
+    }
   }
   FREEMEMORY(buffer);
-  return 1;
+  return data;
 }
 
 /* ------------------ GetFireData ------------------------ */
