@@ -1051,17 +1051,15 @@ int ReadTiffHeader(tiffdata *data){
   }
   if(data->ncols>0&&data->nrows>0){
     char *buffer;
-    int size, size_buffer;
 
-    size = data->ncols*data->nrows;
-    size_buffer = 20*data->ncols;
+    int size_buffer = 20*data->ncols;
     NewMemory((void **)&buffer, size_buffer*sizeof(char));
     fgets(buffer, size_buffer, stream);
     if(strchr(buffer, '.')!=NULL){
       data->type = TIFF_FLOAT_DATA;
     }
     else{
-      data->type-TIFF_INT_DATA;
+      data->type = TIFF_INT_DATA;
     }
     FREEMEMORY(buffer);
   }
@@ -1095,7 +1093,6 @@ int AllocateTiffData(tiffdata *data){
 /* ------------------ InitTiffData ------------------------ */
 
 tiffdata *InitTiffData(char *file){
-  int size, size_data;
   tiffdata *data;
 
   if(file==NULL||strlen(file)==0)return NULL;
@@ -1166,7 +1163,7 @@ void FreeTiffData(tiffdata *data){
   /* ------------------ ReadTiffData ------------------------ */
 
 tiffdata *ReadTiffData(char *file, char *mode){
-  int i, return_val;
+  int i;
   FILE *stream;
   char *buffer=NULL;
   int size_buffer = 256;
