@@ -89,7 +89,7 @@ int ReadGridHeader(griddata *data){
   if(data->type!=GRID_IMAGE_DATA&&data->ncols>0&&data->nrows>0){
     char *buffer;
 
-    int size_buffer = 20*data->ncols;
+    int size_buffer = 40*data->ncols;
     NewMemory((void **)&buffer, size_buffer*sizeof(char));
     fgets(buffer, size_buffer, stream);
     if(strchr(buffer, '.')!=NULL){
@@ -295,7 +295,7 @@ griddata *ReadGridData(char *directory, char *file, char *mode){
     size_buffer = 5*data->ncols;
   }
   else if(data->type==GRID_FLOAT_DATA){
-    size_buffer = 20*data->ncols;
+    size_buffer = 40*data->ncols;
   }
   else{
     fclose(stream);
