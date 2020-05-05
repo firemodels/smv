@@ -7,11 +7,10 @@
 //#undef pp_BETA
 //#define pp_BETA
 
-//#define pp_TIFF_TEST
-
 //*** define dem2fds title
 
 #define pp_FASTCOLOR    // fast color computation
+#define pp_GRIDDATA     // new methode for getting data
 
 #ifdef pp_BETA
 #define PROGVERSION "Test"

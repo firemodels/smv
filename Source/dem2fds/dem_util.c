@@ -10,12 +10,229 @@
 #include "MALLOCC.h"
 #include "gd.h"
 #include "gdfontg.h"
+#include "dem_grid.h"
 #include "dem_util.h"
 
 #define LONGLATREF_NONE -1
 #define LONGLATREF_ORIG 0
 #define LONGLATREF_CENTER 1
 #define LONGLATREF_MINMAX 2
+
+/* ------------------ SphereDistance ------------------------ */
+
+float SphereDistance(float llong1, float llat1, float llong2, float llat2){
+  // https://en.wikipedia.org/wiki/Great-circle_distance
+  // a = sin(dlat/2)^2 + cos(lat1)*cos(lat2)*sin(dlong/2)^2
+  // c = 2*asin(sqrt(a))
+  // d = R*c
+  // R = RAD_EARTH
+
+  float deg2rad;
+  float a, c;
+  float dlat, dlong;
+
+  deg2rad = 4.0*atan(1.0)/180.0;
+  llat1 *= deg2rad;
+  llat2 *= deg2rad;
+  llong1 *= deg2rad;
+  llong2 *= deg2rad;
+  dlat = llat2-llat1;
+  dlong = llong2-llong1;
+  a = pow(sin(dlat/2.0), 2)+cos(llat1)*cos(llat2)*pow(sin(dlong/2.0), 2);
+  c = 2.0 * asin(sqrt(ABS(a)));
+  return EARTH_RADIUS*c;
+}
+
+/* ------------------ ParseInput ------------------------ */
+
+griddata *ParseInput(char *file){
+  FILE *stream_in;
+  int nlongs = 100, nlats = 100;
+  int kbar=10;
+  float xmax = -1000.0, ymax = -1000.0, zmin = -1000.0, zmax = -1000.0;
+  int xymax_defined = 0;
+  float longref = -1000.0, latref = -1000.0;
+  int longlatref_mode = LONGLATREF_NONE;
+  float xref = 0.0, yref = 0.0;
+  float dlat, dlong;
+  float fds_long_min, fds_long_max, fds_lat_min, fds_lat_max;
+  griddata *inputdata;
+
+  if(file==NULL||strlen(file)==0)return NULL;
+  NewMemory((void **)&(inputdata), sizeof(griddata));
+  NewMemory((void **)&(inputdata->file), strlen(file)+1);
+  inputdata->vals = NULL;
+  strcpy(inputdata->file, file);
+
+  stream_in = fopen(file, "r");
+  if(stream_in==NULL) {
+    FreeGridData(inputdata);
+    fprintf(stderr, "***error: unable to open file %s for input\n", file);
+    return NULL;
+  }
+
+  // pass 1
+
+  nexcludeinfo = 0;
+  while(!feof(stream_in)){
+    char buffer[LEN_BUFFER], *buffer2;
+
+    CheckMemory;
+
+    if(fgets(buffer, LEN_BUFFER, stream_in)==NULL)break;
+    buffer2 = strstr(buffer, "//");
+    if(buffer2!=NULL)buffer2[0] = 0;
+    buffer2 = TrimFrontBack(buffer);
+    if(strlen(buffer2)==0)continue;
+
+    if(Match(buffer, "BUFF_DIST")==1) {
+      if(fgets(buffer, LEN_BUFFER, stream_in)==NULL)break;
+      sscanf(buffer, "%f", &buff_dist);
+      continue;
+    }
+    if(Match(buffer, "GRID")==1){
+      nlongs = 10;
+      nlats = 10;
+      kbar = 10;
+      if(fgets(buffer, LEN_BUFFER, stream_in)==NULL)break;
+      sscanf(buffer, "%i %i %i %f %f %f %f", &nlongs, &nlats, &kbar, &xmax, &ymax, &zmin, &zmax);
+      if(xmax>0.0&&ymax>0.0)xymax_defined = 1;
+      continue;
+    }
+    if(Match(buffer, "EXCLUDE")==1){
+      nexcludeinfo++;
+      continue;
+    }
+  }
+
+  if(nexcludeinfo>0){
+    NewMemory((void **)&excludeinfo, nexcludeinfo*sizeof(excludedata));
+  }
+
+  // pass 2
+
+  rewind(stream_in);
+  nexcludeinfo = 0;
+  while(!feof(stream_in)){
+    char buffer[LEN_BUFFER], *buffer2;
+
+    CheckMemory;
+
+    if(fgets(buffer, LEN_BUFFER, stream_in)==NULL)break;
+    buffer2 = strstr(buffer, "//");
+    if(buffer2!=NULL)buffer2[0] = 0;
+    buffer2 = TrimFrontBack(buffer);
+    if(strlen(buffer2)==0)continue;
+
+    if(Match(buffer, "LONGLATORIG")==1){
+      if(fgets(buffer, LEN_BUFFER, stream_in)==NULL)break;
+      sscanf(buffer, "%f %f", &longref, &latref);
+      longlatref_mode = LONGLATREF_ORIG;
+
+      xref = 0.0;
+      yref = 0.0;
+      dlat = ymax/EARTH_RADIUS;
+      fds_lat_max = latref+RAD2DEG*dlat;
+      fds_lat_min = latref;
+      dlong = ABS(2.0*asin(sin(xmax/(2.0*EARTH_RADIUS))/cos(DEG2RAD*latref)));
+      fds_long_max = longref+RAD2DEG*dlong;
+      fds_long_min = longref;
+      continue;
+    }
+
+    // a = sin(dlat/2)^2 + cos(lat1)*cos(lat2)*sin(dlong/2)^2
+    // c = 2*asin(sqrt(a))
+    // d = R*c
+    // R = RAD_EARTH
+
+    // dlat = 0 ==> d = 2*R*asin(cos(lat1)*sin(dlong/2))
+    //              dlong = 2*asin(sin(d/(2*R))/cos(lat1))
+    // dlong = 0 ==> d = R*dlat
+    //               dlat = d/R
+
+    if(Match(buffer, "LONGLATCENTER")==1){
+      if(fgets(buffer, LEN_BUFFER, stream_in)==NULL)break;
+      sscanf(buffer, "%f %f", &longref, &latref);
+      longlatref_mode = LONGLATREF_CENTER;
+      xref = xmax/2.0;
+      yref = ymax/2.0;
+      dlat = yref/EARTH_RADIUS;
+      fds_lat_max = latref+RAD2DEG*dlat;
+      fds_lat_min = latref-RAD2DEG*dlat;
+      dlong = ABS(2.0*asin(sin(xref/(2.0*EARTH_RADIUS))/cos(DEG2RAD*latref)));
+      fds_long_max = longref+RAD2DEG*dlong;
+      fds_long_min = longref-RAD2DEG*dlong;
+      continue;
+    }
+
+    if(Match(buffer, "MESH")==1){
+      if(fgets(buffer, LEN_BUFFER, stream_in)==NULL)break;
+      sscanf(buffer, "%i %i", &nmeshx, &nmeshy);
+      nmeshx = MAX(1, nmeshx);
+      nmeshy = MAX(1, nmeshy);
+    }
+
+    if(Match(buffer, "LONGLATMINMAX")==1){
+      fds_long_min = -1000.0;
+      fds_long_max = -1000.0;
+      fds_lat_min = -1000.0;
+      fds_lat_max = -1000.0;
+      if(fgets(buffer, LEN_BUFFER, stream_in)==NULL)break;
+      sscanf(buffer, "%f %f %f %f", &fds_long_min, &fds_long_max, &fds_lat_min, &fds_lat_max);
+      longlatref_mode = LONGLATREF_MINMAX;
+      longref = (fds_long_min+fds_long_max)/2.0;
+      latref = (fds_lat_min+fds_lat_max)/2.0;
+      xmax = SphereDistance(fds_long_min, latref, fds_long_max, latref);
+      ymax = SphereDistance(longref, fds_lat_min, longref, fds_lat_max);
+      xref = xmax/2.0;
+      yref = ymax/2.0;
+      xymax_defined = 1;
+      continue;
+    }
+
+    if(Match(buffer, "EXCLUDE")==1){
+      excludedata *exi;
+
+      exi = excludeinfo+nexcludeinfo++;
+      if(fgets(buffer, LEN_BUFFER, stream_in)==NULL)break;
+      exi->xmin = -1.0;
+      exi->xmax = -1.0;
+      exi->ymin = -1.0;
+      exi->ymax = -1.0;
+      sscanf(buffer, "%f %f %f %f", &exi->xmin, &exi->ymin, &exi->xmax, &exi->ymax);
+      continue;
+    }
+  }
+  fclose(stream_in);
+
+  inputdata->latmin = fds_lat_min;
+  inputdata->have_latmin = 1;
+
+  inputdata->latmax = fds_lat_max;
+  inputdata->have_latmax = 1;
+
+  inputdata->longmin = fds_long_min;
+  inputdata->have_longmin = 1;
+
+  inputdata->longmax = fds_long_max;
+  inputdata->have_longmax = 1;
+
+  inputdata->ncols = nlongs;
+  inputdata->have_ncols = 1;
+
+  inputdata->nz = kbar;
+
+  inputdata->nrows = nlats;
+  inputdata->have_nrows = 1;
+
+  inputdata->xmax = xmax;
+  inputdata->ymax = ymax;
+
+  inputdata->zmin = zmin;
+  inputdata->zmax = zmax;
+
+  return inputdata;
+}
 
 /* ------------------ CopyString ------------------------ */
 
@@ -64,31 +281,6 @@ void GetLongLats(
       *longlats++ = latref + RAD2DEG*dlat;
     }
   }
-}
-
-/* ------------------ SphereDistance ------------------------ */
-
-float SphereDistance(float llong1, float llat1, float llong2, float llat2){
-  // https://en.wikipedia.org/wiki/Great-circle_distance
-  // a = sin(dlat/2)^2 + cos(lat1)*cos(lat2)*sin(dlong/2)^2
-  // c = 2*asin(sqrt(a))
-  // d = R*c
-  // R = RAD_EARTH
-
-  float deg2rad;
-  float a, c;
-  float dlat, dlong;
-
-  deg2rad = 4.0*atan(1.0) / 180.0;
-  llat1 *= deg2rad;
-  llat2 *= deg2rad;
-  llong1 *= deg2rad;
-  llong2 *= deg2rad;
-  dlat = llat2 - llat1;
-  dlong = llong2 - llong1;
-  a = pow(sin(dlat / 2.0), 2) + cos(llat1)*cos(llat2)*pow(sin(dlong / 2.0), 2);
-  c = 2.0 * asin(sqrt(ABS(a)));
-  return EARTH_RADIUS*c;
 }
 
 
@@ -1103,6 +1295,323 @@ void GetSurfsFromFaces(wuigriddata *wuifireinfo, struct _elevdata *fds_elevs, fl
 
 /* ------------------ GenerateFDSInputFile ------------------------ */
 
+#ifdef pp_GRIDDATA
+int GenerateFDSInputFile(int option, char *casename, char *casename_fds, char *casename_bingeom,
+  griddata *inputdata, griddata *firedata, griddata *elevdata, griddata *imagedata){
+  int *fire_fds = NULL;
+  float *elev_fds = NULL;
+  int size_fire=0, size_elev=0, size_input=0;
+  float dlat_fds, dlong_fds;
+  float dlat_elev, dlong_elev;
+  float *vals_elev;
+  int *ivals;
+  int i, j;
+  float valmin_fds, valmax_fds;
+
+  if(inputdata==NULL||elevdata==NULL)return 0;
+  
+  size_input = inputdata->ncols*inputdata->nrows;
+  if(firedata!=NULL)size_fire = size_input*sizeof(int);
+  if(elevdata!=NULL)size_elev = size_input*sizeof(float);
+
+  if(size_fire>0)NewMemory((void **)&fire_fds, sizeof(float)*(size_fire));
+  if(size_elev>0)NewMemory((void **)&elev_fds, sizeof(float)*(size_elev));
+  dlat_fds   = (inputdata->latmax  - inputdata->latmin)/(float)inputdata->nrows;
+  dlong_fds  = (inputdata->longmax - inputdata->longmin)/(float)inputdata->ncols;
+  dlat_elev  = (elevdata->latmax   - elevdata->latmin)/(float)elevdata->nrows;
+  dlong_elev = (elevdata->longmax  - elevdata->longmin)/(float)elevdata->ncols;
+
+  vals_elev = (float *)elevdata->vals;
+  for(i = 0; i<inputdata->nrows; i++){
+    float lati;
+    int ii;
+
+    lati = inputdata->latmin+(float)i*dlat_fds;
+    ii = elevdata->nrows-1-(lati-elevdata->latmin)/dlat_elev;
+    ii = CLAMP(ii, 0, elevdata->nrows-1);
+
+    for(j = 0; j<inputdata->ncols; j++){
+      float longj;
+      int jj;
+      float val;
+
+      longj = inputdata->longmin+(float)j*dlong_fds;
+      jj = CLAMP((longj-elevdata->longmin)/dlong_elev, 0, elevdata->ncols-1);
+      val = vals_elev[ii*elevdata->ncols+jj];
+      elev_fds[i*inputdata->ncols+j] = val;
+    }
+  }
+  valmin_fds = elev_fds[0];
+  valmax_fds = valmin_fds;
+  for(i = 1; i<inputdata->nrows*inputdata->ncols; i++){
+    float val;
+
+    val = elev_fds[i];
+    valmin_fds = MIN(valmin_fds, val);
+    valmax_fds = MAX(valmax_fds, val);
+  }
+  if(inputdata->zmin<=-999.0){
+    inputdata->zmin = valmin_fds-(valmax_fds-valmin_fds)/10.0;
+  }
+  if(inputdata->zmax<=-999.0){
+    inputdata->zmax = valmax_fds+(valmax_fds-valmin_fds)/10.0;
+  }
+
+  char output_file[LEN_BUFFER], output_elev_file[LEN_BUFFER], *ext;
+  char basename[LEN_BUFFER];
+
+  char casename_fds_basename[LEN_BUFFER];
+  int nlong, nlat, nz;
+  float xmax, ymax, zmin, zmax;
+  float *xgrid, *ygrid;
+  int count;
+  int ibar, jbar, kbar;
+  FILE *streamout = NULL;
+  char *last;
+
+  strcpy(casename_fds_basename, casename_fds);
+  last = strrchr(casename_fds_basename, '.');
+  if(last!=NULL)last[0] = 0;
+
+  strcpy(basename, casename_fds_basename);
+  ext = strrchr(basename, '.');
+  if(ext!=NULL)ext[0] = 0;
+
+  strcpy(output_file, casename_fds);
+  streamout = fopen(output_file, "w");
+  if(streamout==NULL){
+    fprintf(stderr, "***error: unable to open %s for output\n", output_file);
+    return 0;
+  }
+
+  strcpy(output_elev_file, basename);
+  strcat(output_elev_file, ".elev");
+
+  nlong = inputdata->ncols;
+  nlat = inputdata->nrows;
+
+  zmin = inputdata->zmin;
+  zmax = inputdata->zmax;
+  nz = inputdata->nz;
+
+  xmax = inputdata->xmax;
+  ymax = inputdata->ymax;
+
+  ibar = nlong-1;
+  jbar = nlat-1;
+  kbar = nz;
+
+  NewMemory((void **)&xgrid, sizeof(float)*(ibar+1));
+  for(i = 0; i<ibar; i++){
+    xgrid[i] = xmax*(float)i/(float)ibar;
+  }
+  xgrid[ibar] = xmax;
+
+  NewMemory((void **)&ygrid, sizeof(float)*(jbar+1));
+  for(i = 0; i<jbar; i++){
+    ygrid[i] = ymax*(float)(i)/(float)jbar;
+  }
+  ygrid[jbar] = ymax;
+
+  if(option==FDS_OBST){
+    int nvals = ibar*jbar, len;
+
+    len = strlen(output_elev_file);
+    FORTelev2geom(output_elev_file, xgrid, &ibar, ygrid, &jbar, elev_fds, &nvals, len);
+  }
+
+  fprintf(streamout, "&HEAD CHID='%s', TITLE='created from %s' /\n", basename, casename);
+
+  NewMemory((void **)&xplt, (nmeshx+1)*sizeof(float));
+  xplt[0] = 0.0;
+  for(i = 1; i<nmeshx-1; i++){
+    xplt[i] = xmax*(float)i/(float)nmeshx;
+  }
+  xplt[nmeshx] = xmax;
+
+  NewMemory((void **)&yplt, (nmeshy+1)*sizeof(float));
+  yplt[0] = 0.0;
+  for(i = 1; i<nmeshy-1; i++){
+    yplt[i] = ymax*(float)i/(float)nmeshy;
+  }
+  yplt[nmeshy] = ymax;
+
+  for(j = 0; j<nmeshy; j++){
+    for(i = 0; i<nmeshx; i++){
+      fprintf(streamout, "&MESH IJK = %i, %i, %i, XB = %f, %f, %f, %f, %f, %f /\n",
+        ibar, jbar, kbar, xplt[i], xplt[i+1], yplt[j], yplt[j+1], zmin, zmax);
+    }
+  }
+
+  if(option==FDS_OBST) {
+    fprintf(streamout, "&MISC TERRAIN_CASE = .TRUE., TERRAIN_IMAGE = '%s.png' /\n", basename);
+  }
+  if(option==FDS_GEOM) {
+    fprintf(streamout, "&MISC TERRAIN_CASE = .TRUE., TERRAIN_IMAGE = '%s.png' /\n", basename);
+  }
+  fprintf(streamout, "&TIME T_END = 0.0 /\n");
+  fprintf(streamout, "&VENT MB = 'XMIN', SURF_ID = 'OPEN' /\n");
+  fprintf(streamout, "&VENT MB = 'XMAX', SURF_ID = 'OPEN' /\n");
+  fprintf(streamout, "&VENT MB = 'YMIN', SURF_ID = 'OPEN' /\n");
+  fprintf(streamout, "&VENT MB = 'YMAX', SURF_ID = 'OPEN' /\n");
+  fprintf(streamout, "&VENT MB = 'ZMAX', SURF_ID = 'OPEN' /\n");
+
+  fprintf(streamout, "\nTerrain Geometry\n\n");
+
+  if(option==FDS_GEOM){
+    float *verts;
+    int *faces, *surfs;
+    int nverts, nfaces;
+
+    NewMemory((void **)&verts, 3*(ibar+1)*(jbar+1)*sizeof(float));
+    NewMemory((void **)&faces, 3*2*ibar*jbar*sizeof(int));
+    NewMemory((void **)&surfs, 2*ibar*jbar*sizeof(int));
+
+#define VERTIJ(i,j) ((j)*(ibar+1)+(i))
+
+    nverts = 0;
+    for(j = 0; j<jbar+1; j++){
+      for(i = 0; i<ibar+1; i++){
+        verts[3*nverts+0] = xgrid[i];
+        verts[3*nverts+1] = ymax-ygrid[j];
+        verts[3*nverts+2] = elev_fds[VERTIJ(i, j)];
+        nverts++;
+      }
+    }
+
+    nfaces = 0;
+    for(j = 0; j<jbar; j++){
+      for(i = 0; i<ibar; i++){
+        faces[3*nfaces+0] = 1+VERTIJ(i, j);
+        faces[3*nfaces+1] = 1+VERTIJ(i+1, j+1);
+        faces[3*nfaces+2] = 1+VERTIJ(i+1, j);
+        nfaces++;
+
+        faces[3*nfaces+0] = 1+VERTIJ(i, j);
+        faces[3*nfaces+1] = 1+VERTIJ(i, j+1);
+        faces[3*nfaces+2] = 1+VERTIJ(i+1, j+1);
+        nfaces++;
+      }
+    }
+
+    fprintf(streamout, " LONGMIN=%f LONGMAX=%f \n", inputdata->longmin, inputdata->longmax);
+    fprintf(streamout, " LATMIN=%f LATMAX=%f\n", inputdata->latmin, inputdata->latmax);
+    fprintf(streamout, " ZMIN=%f ZMAX=%f\n", valmin_fds, valmax_fds);
+    if(firedata==NULL){
+      for(i = 0; i<nfaces; i++){
+        surfs[i] = 1;
+      }
+      fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 /\n", surf_id1);
+      fprintf(streamout, "&GEOM ID='terrain', IS_TERRAIN=T, SURF_ID='%s',\n", surf_id1);
+    }
+    else{
+      for(i = 0; i<NFIRETYPES; i++){
+        fprintf(streamout, "&SURF ID = '%s', RGB = %i, %i, %i /\n", firetypes[i], firecolors[3*i], firecolors[3*i+1], firecolors[3*i+2]);
+      }
+   //   GetSurfsFromFaces(wuifireinfo, fds_elevs, verts, nverts, faces, surfs, nfaces);
+
+      fprintf(streamout, "&GEOM ID='terrain', IS_TERRAIN=T, SURF_ID=\n");
+      for(i = 0; i<NFIRETYPES; i++){
+        fprintf(streamout, " '%s', ", firetypes[i]);
+        if(i==9||i==NFIRETYPES-1)fprintf(streamout, "\n");
+      }
+    }
+
+    if(bingeom==1){
+      FILE_SIZE filelen;
+      int error, nsurfs;
+
+      nsurfs = nfaces;
+      filelen = strlen(casename_bingeom);
+      FORTwrite_bingeom(casename_bingeom, verts, faces, surfs, &nverts, &nfaces, &nsurfs, &error, filelen);
+      fprintf(streamout, " READ_BINARY=T, BINARY_NAME='%s' ", casename_bingeom);
+      fprintf(streamout, "/\n");
+    }
+    else{
+      fprintf(streamout, "  VERTS=\n");
+      for(i = 0; i<nverts; i++){
+        fprintf(streamout, " %f,%f,%f", verts[3*i+0], verts[3*i+1], verts[3*i+2]);
+        fprintf(streamout, ",  ");
+        if((i+1)%3==0)fprintf(streamout, "\n");
+      }
+      fprintf(streamout, "\n");
+
+      fprintf(streamout, "  FACES=\n");
+      for(i = 0; i<nfaces; i++){
+        fprintf(streamout, " %i,%i,%i,%i", faces[3*i+0], faces[3*i+1], faces[3*i+2], surfs[i]);
+        if(i!=nfaces-1)fprintf(streamout, ",  ");
+        if((i+1)%6==0)fprintf(streamout, "\n");
+      }
+      fprintf(streamout, "/\n");
+    }
+    FREEMEMORY(verts);
+    FREEMEMORY(faces);
+  }
+
+  if(option==FDS_OBST){
+    fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 /\n", surf_id1);
+    fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 /\n", surf_id2);
+    count = 0;
+    float *valsp1 = elev_fds+nlong;
+    for(j = 0; j<jbar; j++){
+      float ycen;
+
+      ycen = (ygrid[j]+ygrid[j+1])/2.0;
+      for(i = 0; i<ibar; i++){
+        float vavg, xcen;
+        int k;
+        int exclude;
+        float x1, x2, y1, y2;
+
+        xcen = (xgrid[i]+xgrid[i+1])/2.0;
+
+        exclude = 0;
+        for(k = 0; k<nexcludeinfo; k++){
+          excludedata *exi;
+
+          exi = excludeinfo+k;
+          if(exi->xmin<=xcen&&xcen<=exi->xmax&&exi->ymin<=ycen&&ycen<=exi->ymax){
+            exclude = 1;
+            break;
+          }
+        }
+        if(exclude==1)continue;
+        vavg = (elev_fds[count]+elev_fds[count+1]+valsp1[count]+valsp1[count+1])/4.0;
+        x1 = MIN(xgrid[i], xgrid[i+1]);
+        x2 = MAX(xgrid[i], xgrid[i+1]);
+        y1 = MIN(ygrid[j], ygrid[j+1]);
+        y2 = MAX(ygrid[j], ygrid[j+1]);
+        if(ABS(x1)<buff_dist||ABS(x2-xmax)<buff_dist||ABS(y1)<buff_dist||ABS(y2-ymax)<buff_dist) {
+          fprintf(streamout, "&OBST XB=%f,%f,%f,%f,0.0,%f SURF_ID='%s'/\n", x1, x2, y1, y2, vavg, surf_id2);
+        }
+        else {
+          fprintf(streamout, "&OBST XB=%f,%f,%f,%f,0.0,%f SURF_ID='%s'/\n", x1, x2, y1, y2, vavg, surf_id1);
+        }
+        count++;
+      }
+      count++;
+    }
+  }
+  fprintf(streamout, "\n&TAIL /\n");
+
+  fprintf(stderr, "\n");
+  fprintf(stderr, "FDS input file properties:\n");
+  fprintf(stderr, "         file name: %s\n", output_file);
+  fprintf(stderr, "             max x: %f\n", xmax);
+  fprintf(stderr, "             max y: %f\n", ymax);
+  fprintf(stderr, "  elevation bounds: %f %f\n", valmin_fds, valmax_fds);
+
+
+  FREEMEMORY(fire_fds);
+  FREEMEMORY(elev_fds);
+  fclose(streamout);
+  return 1;
+}
+
+#else
+
+/* ------------------ GenerateFDSInputFile ------------------------ */
+
 void GenerateFDSInputFile(char *casename, char *casename_fds, char *casename_bingeom, elevdata *fds_elevs, int option, wuigriddata *wuifireinfo){
   char output_file[LEN_BUFFER], output_elev_file[LEN_BUFFER], *ext;
   char basename[LEN_BUFFER];
@@ -1370,3 +1879,4 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, char *casename_bin
     }
   }
 }
+#endif

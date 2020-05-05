@@ -8,8 +8,6 @@
 #define DONT_INTERPOLATE 0
 #define INTERPOLATE 1
 
-#include "dem_util.h"
-
 #ifdef WIN32
 #define STDCALLF extern void _stdcall
 #else
@@ -62,7 +60,13 @@ typedef struct {
   float xmin, xmax, ymin, ymax;
 } excludedata;
 
+EXTERNCPP griddata *ParseInput(char *file);
+#ifdef pp_GRIDDATA
+int GenerateFDSInputFile(int option, char *casename, char *casename_fds, char *casename_bingeom,
+  griddata *inputdata, griddata *firedata, griddata *elevdata, griddata *imagedata);
+#else
 EXTERNCPP void GenerateFDSInputFile(char *casename, char *casename_fds, char *casename_bingeom, elevdata *fds_elevs, int option, wuigriddata *wuifireinfo);
+#endif
 EXTERNCPP int GetElevations(char *elevfile, char *image_file, char *image_type, elevdata *fds_elevs);
 EXTERNCPP wuigriddata *GetFireData(char *adf_dir, char *casename);
 

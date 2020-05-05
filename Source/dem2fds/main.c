@@ -10,8 +10,8 @@
 #include "datadefs.h"
 #include "MALLOCC.h"
 #include "gd.h"
-#include "dem_util.h"
 #include "dem_grid.h"
+#include "dem_util.h"
 
 /* ------------------ Usage ------------------------ */
 
@@ -47,32 +47,6 @@ void Usage(char *prog, int option){
     UsageCommon(HELP_ALL);
   }
 }
-
-#ifdef pp_TIFF_TEST
-/* ------------------ main ------------------------ */
-#include "tiffio.h"
-
-void GetElevData(char *elevdir){
-  char file[256];
-  uint32 w, h;
-  float xdpi, ydpi;
-
-  strcpy(file, elevdir);
-  strcat(file, dirseparator);
-  strcat(file, "elevations.tif");
-
-  int test = sizeof(long long);
-  TIFF* tif = TIFFOpen(file, "rh");
-  TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &w);
-  TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &h);
-  TIFFGetField(tif, TIFFTAG_XRESOLUTION, &xdpi);
-  TIFFGetField(tif, TIFFTAG_YRESOLUTION, &ydpi);
-
-  printf("w=%i h=%i\n", (int)w, (int)h);
-  printf("xdpi=%f ydpi=%f\n", xdpi, ydpi);
-  printf("file=%s\n", file);
-}
-#endif
 
 /* ------------------ main ------------------------ */
 
@@ -310,16 +284,18 @@ int main(int argc, char **argv){
   if(last != NULL)last[0] = 0;
   strcat(image_file,image_type);
 
-#ifdef pp_TIFF_TEST
-  GetElevData(elev_dir);
-#endif
-//  griddata *firedata = ReadGridData(fire_dir, "anderson13.asc", "int");
-//  griddata *elevdata = ReadGridData(elev_dir, "elevations.asc", "float");
-//  CopyGridData(elevdata, "elev.asc.bin");
+#ifdef pp_GRIDDATA
+  griddata *inputdata = ParseInput(casename);
+  griddata *firedata = ReadGridData(fire_dir, "anderson13.asc", "int");
+  griddata *elevdata = ReadGridData(elev_dir, "elevations.asc", "float");
+  griddata *imagedata = ReadGridData(image_dir, "image.asc", "image");
+  GenerateFDSInputFile(gen_fds, casename, casename_fds, casename_bingeom, inputdata,firedata,elevdata,imagedata);
+#else
   wuifireinfo = GetFireData(fire_dir, casename);
 
   if(GetElevations(casename, image_file, image_type, &fds_elevs)==1){
      GenerateFDSInputFile(casename, casename_fds, casename_bingeom, &fds_elevs, gen_fds, wuifireinfo);
   }
+#endif
   return 0;
 }

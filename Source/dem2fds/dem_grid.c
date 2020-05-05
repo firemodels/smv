@@ -46,6 +46,26 @@ int ReadGridHeader(griddata *data){
       data->have_yllcorner = 1;
       continue;
     }
+    if(strcmp(buffer, "latmin")==0){
+      sscanf(val, "%f", &(data->latmin));
+      data->have_latmin = 1;
+      continue;
+    }
+    if(strcmp(buffer, "latmax")==0){
+      sscanf(val, "%f", &(data->latmax));
+      data->have_latmax = 1;
+      continue;
+    }
+    if(strcmp(buffer, "longmin")==0){
+      sscanf(val, "%f", &(data->longmin));
+      data->have_longmin = 1;
+      continue;
+    }
+    if(strcmp(buffer, "longmax")==0){
+      sscanf(val, "%f", &(data->longmax));
+      data->have_longmax = 1;
+      continue;
+    }
     if(strcmp(buffer, "dx")==0){
       sscanf(val, "%f", &(data->dx));
       data->have_dx = 1;
@@ -66,7 +86,7 @@ int ReadGridHeader(griddata *data){
     if(buffer[0]>='A'&&buffer[0]<='A')continue;
     break;
   }
-  if(data->ncols>0&&data->nrows>0){
+  if(data->type!=GRID_IMAGE_DATA&&data->ncols>0&&data->nrows>0){
     char *buffer;
 
     int size_buffer = 20*data->ncols;
@@ -81,16 +101,19 @@ int ReadGridHeader(griddata *data){
     FREEMEMORY(buffer);
   }
 
-  if(data->have_cellsize==1){
-    data->dx = data->cellsize;
-    data->dy = data->cellsize;
+  if(data->type!=GRID_IMAGE_DATA){
+    if(data->have_cellsize==1){
+      data->dx = data->cellsize;
+      data->dy = data->cellsize;
+    }
+    if(data->have_xllcorner==1){
+      data->longmin = data->xllcorner;
+      data->longmax = data->longmin+(float)data->ncols*data->dx;
+      data->latmin = data->yllcorner;
+      data->latmax = data->latmin+(float)data->nrows*data->dy;
+    }
   }
-    data->longmin = data->xllcorner;
-    data->longmax = data->longmin+(float)data->ncols*data->dx;
-    data->latmin = data->yllcorner;
-    data->latmax = data->latmin+(float)data->nrows*data->dy;
-
-    fclose(stream);
+  fclose(stream);
   return 1;
 }
 
@@ -119,7 +142,7 @@ int AllocateGridData(griddata *data){
 
 /* ------------------ InitGridData ------------------------ */
 
-griddata *InitGridData(char *file){
+griddata *InitGridData(char *file, char *filemode){
   griddata *data;
 
   if(file==NULL||strlen(file)==0)return NULL;
@@ -129,6 +152,9 @@ griddata *InitGridData(char *file){
   strcpy(data->file, file);
 
   data->type = 0;
+  if(strcmp(filemode,"image")==0){
+    data->type=GRID_IMAGE_DATA;
+  }
   data->vals = NULL;
   data->ncols = -1;
   data->have_ncols = 0;
@@ -151,12 +177,17 @@ griddata *InitGridData(char *file){
   data->dy = -1.0;
   data->have_dy = 0;
 
+  data->have_longmin = 0;
+  data->have_longmax = 0;
+  data->have_latmin = 0;
+  data->have_latmax = 0;
+
   if(ReadGridHeader(data)==0){
     FREEMEMORY(data->file);
     FREEMEMORY(data);
     return NULL;
   }
-  if(AllocateGridData(data)==0){
+  if(data->type!=GRID_IMAGE_DATA&&AllocateGridData(data)==0){
     FREEMEMORY(data->file);
     FREEMEMORY(data);
     return NULL;
@@ -225,8 +256,9 @@ griddata *ReadGridData(char *directory, char *file, char *mode){
     strcat(fullfile, file);
   }
 
-  data = InitGridData(fullfile);
+  data = InitGridData(fullfile,mode);
   if(data==NULL)return NULL;
+  if(data->type==GRID_IMAGE_DATA)return data;
     
   stream = fopen(data->file, "r");
   if(stream==NULL||
