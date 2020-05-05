@@ -11,4 +11,4 @@ set HOME=%userprofile%\terrain
 set "DIR=%GOOGLE%"
 if exist %HOME% set "DIR=%HOME%"
 
-%dem2fds% %option% -dir "%DIR%\colgoloto" cogoloto1.in 
+%dem2fds% %option% -dir "%DIR%\cogoleto" cogoleto1.in 
