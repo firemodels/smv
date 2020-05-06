@@ -1510,11 +1510,54 @@ int GenerateFDSInputFile(int option, char *casename, char *casename_fds, char *c
     fprintf(streamout, " LATMIN=%f LATMAX=%f\n", inputdata->latmin, inputdata->latmax);
     fprintf(streamout, " ZMIN=%f ZMAX=%f\n", valmin_fds, valmax_fds);
     if(firedata==NULL){
+      int below_zero = 0;
+
       for(i = 0; i<nfaces; i++){
-        surfs[i] = 1;
+        int v1, v2, v3;
+        float z1, z2, z3;
+
+        v1 = faces[3*i+0]-1;
+        v2 = faces[3*i+1]-1;
+        v3 = faces[3*i+2]-1;
+
+        z1 = verts[3*v1+2];
+        z2 = verts[3*v2+2];
+        z3 = verts[3*v3+2];
+        if(z1<0.0||z2<0.0||z3<0.0){
+          below_zero = 1;
+          break;
+        }
       }
-      fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 /\n", surf_id1);
-      fprintf(streamout, "&GEOM ID='terrain', IS_TERRAIN=T, SURF_ID='%s',\n", surf_id1);
+      if(below_zero==1){
+        for(i = 0; i<nfaces; i++){
+          int v1, v2, v3;
+          float z1, z2, z3;
+
+          v1 = faces[3*i+0]-1;
+          v2 = faces[3*i+1]-1;
+          v3 = faces[3*i+2]-1;
+
+          z1 = verts[3*v1+2];
+          z2 = verts[3*v2+2];
+          z3 = verts[3*v3+2];
+          if(z1<0.0||z2<0.0||z3<0.0){
+            surfs[i] = 1;
+          }
+          else{
+            surfs[i] = 2;
+          }
+        }
+        fprintf(streamout, "&SURF ID = 'bsl', RGB = 0,0,255 /\n");
+        fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48/\n", surf_id1);
+        fprintf(streamout, "&GEOM ID='terrain', IS_TERRAIN=T, SURF_ID='bsl','%s',\n", surf_id1);
+      }
+      else{
+        for(i = 0; i<nfaces; i++){
+          surfs[i] = 1;
+        }
+        fprintf(streamout, "&SURF ID = 'bsl','%s', /\n", surf_id1);
+        fprintf(streamout, "&GEOM ID='terrain', IS_TERRAIN=T, SURF_ID='%s',\n", surf_id1);
+      }
     }
     else{
       for(i = 0; i<NFIRETYPES; i++){
