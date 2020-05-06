@@ -1309,36 +1309,58 @@ int GenerateFDSInputFile(int option, char *casename, char *casename_fds, char *c
   float valmin_fds, valmax_fds;
 
   if(inputdata==NULL||elevdata==NULL)return 0;
-  
   size_input = inputdata->ncols*inputdata->nrows;
   if(firedata!=NULL)size_fire = size_input*sizeof(int);
   if(elevdata!=NULL)size_elev = size_input*sizeof(float);
 
   if(size_fire>0)NewMemory((void **)&fire_fds, sizeof(float)*(size_fire));
   if(size_elev>0)NewMemory((void **)&elev_fds, sizeof(float)*(size_elev));
-  dlat_fds   = (inputdata->latmax  - inputdata->latmin)/(float)inputdata->nrows;
-  dlong_fds  = (inputdata->longmax - inputdata->longmin)/(float)inputdata->ncols;
-  dlat_elev  = (elevdata->latmax   - elevdata->latmin)/(float)elevdata->nrows;
-  dlong_elev = (elevdata->longmax  - elevdata->longmin)/(float)elevdata->ncols;
+  dlat_fds   = (inputdata->latmax  - inputdata->latmin)/(float)(inputdata->nrows-1);
+  dlong_fds  = (inputdata->longmax - inputdata->longmin)/(float)(inputdata->ncols-1);
+  dlat_elev  = (elevdata->latmax   - elevdata->latmin)/(float)(elevdata->nrows-1);
+  dlong_elev = (elevdata->longmax  - elevdata->longmin)/(float)(elevdata->ncols-1);
+
+#define IJ3(i,j,nj) ((i)*(nj)+(j))
 
   vals_elev = (float *)elevdata->vals;
   for(i = 0; i<inputdata->nrows; i++){
-    float lati;
-    int ii;
+    float lati, lat_factor;
+    int ii, ii2;
+    float yii;
 
-    lati = inputdata->latmin+(float)i*dlat_fds;
-    ii = elevdata->nrows-1-(lati-elevdata->latmin)/dlat_elev;
-    ii = CLAMP(ii, 0, elevdata->nrows-1);
+    lati = inputdata->latmax-(float)i*dlat_fds;
+    if(i==inputdata->nrows-1)lati = inputdata->latmin;
+
+    yii = (lati - elevdata->latmin)/dlat_elev;
+    ii = CLAMP((int)yii, 0, elevdata->nrows-1);
+    ii2 = CLAMP(ii+1, 0, elevdata->nrows-1);
+    lat_factor = yii-(float)ii;
+    lat_factor = CLAMP(lat_factor,0.0,1.0);
 
     for(j = 0; j<inputdata->ncols; j++){
-      float longj;
-      int jj;
-      float val;
+      float longj, long_factor;
+      int jj, jj2;
+      float xjj;
+      float val, val1, val2, val11, val12, val21, val22;
 
       longj = inputdata->longmin+(float)j*dlong_fds;
-      jj = CLAMP((longj-elevdata->longmin)/dlong_elev, 0, elevdata->ncols-1);
-      val = vals_elev[ii*elevdata->ncols+jj];
-      elev_fds[i*inputdata->ncols+j] = val;
+      if(j==inputdata->ncols-1)longj = inputdata->longmax;
+
+      xjj = (longj-elevdata->longmin)/dlong_elev;
+      jj = CLAMP((int)xjj, 0, elevdata->ncols-1);
+      jj2 = CLAMP(jj+1, 0, elevdata->ncols-1);
+      long_factor = xjj-(float)jj;
+      long_factor = CLAMP(long_factor, 0.0, 1.0);
+
+      val11 = vals_elev[IJ3(ii,  jj, elevdata->ncols)];
+      val12 = vals_elev[IJ3(ii, jj2, elevdata->ncols)];
+      val21 = vals_elev[IJ3(ii2, jj, elevdata->ncols)];
+      val22 = vals_elev[IJ3(ii2,jj2, elevdata->ncols)];
+      val1 = (1.0-long_factor)*val11 + long_factor*val12;
+      val2 = (1.0-long_factor)*val21 + long_factor*val22;
+      
+      val = (1.0-lat_factor)*val1 + lat_factor*val2;
+      elev_fds[IJ3(i,j,inputdata->ncols)] = val;
     }
   }
   valmin_fds = elev_fds[0];
@@ -1361,11 +1383,11 @@ int GenerateFDSInputFile(int option, char *casename, char *casename_fds, char *c
   char basename[LEN_BUFFER];
 
   char casename_fds_basename[LEN_BUFFER];
-  int nlong, nlat, nz;
+  int nz;
   float xmax, ymax, zmin, zmax;
   float *xgrid, *ygrid;
   int count;
-  int ibar, jbar, kbar;
+  int kbar;
   FILE *streamout = NULL;
   char *last;
 
@@ -1387,9 +1409,6 @@ int GenerateFDSInputFile(int option, char *casename, char *casename_fds, char *c
   strcpy(output_elev_file, basename);
   strcat(output_elev_file, ".elev");
 
-  nlong = inputdata->ncols;
-  nlat = inputdata->nrows;
-
   zmin = inputdata->zmin;
   zmax = inputdata->zmax;
   nz = inputdata->nz;
@@ -1397,23 +1416,24 @@ int GenerateFDSInputFile(int option, char *casename, char *casename_fds, char *c
   xmax = inputdata->xmax;
   ymax = inputdata->ymax;
 
-  ibar = nlong-1;
-  jbar = nlat-1;
   kbar = nz;
 
-  NewMemory((void **)&xgrid, sizeof(float)*(ibar+1));
-  for(i = 0; i<ibar; i++){
-    xgrid[i] = xmax*(float)i/(float)ibar;
+  NewMemory((void **)&xgrid, sizeof(float)*inputdata->ncols);
+  for(i = 0; i<inputdata->ncols-1; i++){
+    xgrid[i] = xmax*(float)i/(float)(inputdata->ncols-1);
   }
-  xgrid[ibar] = xmax;
+  xgrid[inputdata->ncols-1] = xmax;
 
-  NewMemory((void **)&ygrid, sizeof(float)*(jbar+1));
-  for(i = 0; i<jbar; i++){
-    ygrid[i] = ymax*(float)(i)/(float)jbar;
+  NewMemory((void **)&ygrid, sizeof(float)*inputdata->nrows);
+  for(i = 0; i<inputdata->nrows-1; i++){
+    ygrid[i] = ymax*(float)(i)/(float)(inputdata->nrows-1);
   }
-  ygrid[jbar] = ymax;
+  ygrid[inputdata->nrows-1] = ymax;
+
 
   if(option==FDS_OBST){
+    int ibar = inputdata->ncols - 1;
+    int jbar = inputdata->nrows - 1;
     int nvals = ibar*jbar, len;
 
     len = strlen(output_elev_file);
@@ -1439,7 +1459,7 @@ int GenerateFDSInputFile(int option, char *casename, char *casename_fds, char *c
   for(j = 0; j<nmeshy; j++){
     for(i = 0; i<nmeshx; i++){
       fprintf(streamout, "&MESH IJK = %i, %i, %i, XB = %f, %f, %f, %f, %f, %f /\n",
-        ibar, jbar, kbar, xplt[i], xplt[i+1], yplt[j], yplt[j+1], zmin, zmax);
+        inputdata->ncols-1, inputdata->nrows-1, kbar, xplt[i], xplt[i+1], yplt[j], yplt[j+1], zmin, zmax);
     }
   }
 
@@ -1463,15 +1483,15 @@ int GenerateFDSInputFile(int option, char *casename, char *casename_fds, char *c
     int *faces, *surfs;
     int nverts, nfaces;
 
-    NewMemory((void **)&verts, 3*(ibar+1)*(jbar+1)*sizeof(float));
-    NewMemory((void **)&faces, 3*2*ibar*jbar*sizeof(int));
-    NewMemory((void **)&surfs, 2*ibar*jbar*sizeof(int));
+    NewMemory((void **)&verts, 3*inputdata->nrows*inputdata->ncols*sizeof(float));
+    NewMemory((void **)&faces, 3*2*(inputdata->nrows-1)*(inputdata->ncols-1)*sizeof(int));
+    NewMemory((void **)&surfs, 2*(inputdata->nrows-1)*(inputdata->ncols-1)*sizeof(int));
 
-#define VERTIJ(i,j) ((j)*(ibar+1)+(i))
+#define VERTIJ(i,j) ((j)*(inputdata->ncols)+(i))
 
     nverts = 0;
-    for(j = 0; j<jbar+1; j++){
-      for(i = 0; i<ibar+1; i++){
+    for(j = 0; j<inputdata->nrows; j++){
+      for(i = 0; i<inputdata->ncols; i++){
         verts[3*nverts+0] = xgrid[i];
         verts[3*nverts+1] = ymax-ygrid[j];
         verts[3*nverts+2] = elev_fds[VERTIJ(i, j)];
@@ -1480,8 +1500,8 @@ int GenerateFDSInputFile(int option, char *casename, char *casename_fds, char *c
     }
 
     nfaces = 0;
-    for(j = 0; j<jbar; j++){
-      for(i = 0; i<ibar; i++){
+    for(j = 0; j<inputdata->nrows-1; j++){
+      for(i = 0; i<inputdata->ncols-1; i++){
         faces[3*nfaces+0] = 1+VERTIJ(i, j);
         faces[3*nfaces+1] = 1+VERTIJ(i+1, j+1);
         faces[3*nfaces+2] = 1+VERTIJ(i+1, j);
@@ -1552,12 +1572,12 @@ int GenerateFDSInputFile(int option, char *casename, char *casename_fds, char *c
     fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 /\n", surf_id1);
     fprintf(streamout, "&SURF ID = '%s', RGB = 122,117,48 /\n", surf_id2);
     count = 0;
-    float *valsp1 = elev_fds+nlong;
-    for(j = 0; j<jbar; j++){
+    float *valsp1 = elev_fds+inputdata->ncols;
+    for(j = 0; j<inputdata->nrows-1; j++){
       float ycen;
 
       ycen = (ygrid[j]+ygrid[j+1])/2.0;
-      for(i = 0; i<ibar; i++){
+      for(i = 0; i<inputdata->ncols-1; i++){
         float vavg, xcen;
         int k;
         int exclude;
