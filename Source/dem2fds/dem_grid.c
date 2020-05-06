@@ -317,6 +317,9 @@ griddata *ReadGridData(char *directory, char *file, char *mode){
       for(j = 0; j<data->ncols; j++){
         sscanf(tok, "%f", (float *)fvals);
         tok = strtok(NULL, " ");
+        if(*fvals<10.0){
+          *fvals = -10.0;
+        }
         fvals++;
       }
     }

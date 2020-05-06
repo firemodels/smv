@@ -1323,8 +1323,8 @@ int GenerateFDSInputFile(int option, char *casename, char *casename_fds, char *c
     lati = inputdata->latmax-(float)i*dlat_fds;
     if(i==inputdata->nrows-1)lati = inputdata->latmin;
 
-    yii = (lati - elevdata->latmin)/dlat_elev;
-    ii = CLAMP((int)yii, 0, elevdata->nrows-1);
+    yii = (elevdata->latmax - lati)/dlat_elev;
+    ii =  CLAMP((int)yii, 0, elevdata->nrows-1);
     ii2 = CLAMP(ii+1, 0, elevdata->nrows-1);
     lat_factor = yii-(float)ii;
     lat_factor = CLAMP(lat_factor,0.0,1.0);
