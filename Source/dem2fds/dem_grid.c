@@ -13,7 +13,6 @@
 
 int ReadGridHeader(griddata *data){
   FILE *stream = NULL;
-  int i;
 
   stream = fopen(data->file, "r");
   if(stream==NULL)return 0;
@@ -248,7 +247,7 @@ griddata *ReadGridData(char *directory, char *file, char *mode){
   if(file==NULL||strlen(file)==0)return NULL;
 
   if(directory==NULL||strlen(directory)==0||strcmp(directory, ".")==0){
-    strcmp(fullfile, file);
+    strcpy(fullfile, file);
   }
   else{
     strcpy(fullfile, directory);

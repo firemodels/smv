@@ -50,9 +50,7 @@ griddata *ParseInput(char *file){
   int nlongs = 100, nlats = 100;
   int kbar=10;
   float xmax = -1000.0, ymax = -1000.0, zmin = -1000.0, zmax = -1000.0;
-  int xymax_defined = 0;
   float longref = -1000.0, latref = -1000.0;
-  int longlatref_mode = LONGLATREF_NONE;
   float xref = 0.0, yref = 0.0;
   float dlat, dlong;
   float fds_long_min, fds_long_max, fds_lat_min, fds_lat_max;
@@ -96,7 +94,6 @@ griddata *ParseInput(char *file){
       kbar = 10;
       if(fgets(buffer, LEN_BUFFER, stream_in)==NULL)break;
       sscanf(buffer, "%i %i %i %f %f %f %f", &nlongs, &nlats, &kbar, &xmax, &ymax, &zmin, &zmax);
-      if(xmax>0.0&&ymax>0.0)xymax_defined = 1;
       continue;
     }
     if(Match(buffer, "EXCLUDE")==1){
@@ -127,7 +124,6 @@ griddata *ParseInput(char *file){
     if(Match(buffer, "LONGLATORIG")==1){
       if(fgets(buffer, LEN_BUFFER, stream_in)==NULL)break;
       sscanf(buffer, "%f %f", &longref, &latref);
-      longlatref_mode = LONGLATREF_ORIG;
 
       xref = 0.0;
       yref = 0.0;
@@ -153,7 +149,6 @@ griddata *ParseInput(char *file){
     if(Match(buffer, "LONGLATCENTER")==1){
       if(fgets(buffer, LEN_BUFFER, stream_in)==NULL)break;
       sscanf(buffer, "%f %f", &longref, &latref);
-      longlatref_mode = LONGLATREF_CENTER;
       xref = xmax/2.0;
       yref = ymax/2.0;
       dlat = yref/EARTH_RADIUS;
@@ -179,14 +174,12 @@ griddata *ParseInput(char *file){
       fds_lat_max = -1000.0;
       if(fgets(buffer, LEN_BUFFER, stream_in)==NULL)break;
       sscanf(buffer, "%f %f %f %f", &fds_long_min, &fds_long_max, &fds_lat_min, &fds_lat_max);
-      longlatref_mode = LONGLATREF_MINMAX;
       longref = (fds_long_min+fds_long_max)/2.0;
       latref = (fds_lat_min+fds_lat_max)/2.0;
       xmax = SphereDistance(fds_long_min, latref, fds_long_max, latref);
       ymax = SphereDistance(longref, fds_lat_min, longref, fds_lat_max);
       xref = xmax/2.0;
       yref = ymax/2.0;
-      xymax_defined = 1;
       continue;
     }
 
@@ -1304,7 +1297,6 @@ int GenerateFDSInputFile(int option, char *casename, char *casename_fds, char *c
   float dlat_fds, dlong_fds;
   float dlat_elev, dlong_elev;
   float *vals_elev;
-  int *ivals;
   int i, j;
   float valmin_fds, valmax_fds;
 

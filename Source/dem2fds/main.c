@@ -56,9 +56,10 @@ int main(int argc, char **argv){
   char *casename = NULL, *last=NULL;
   char file_default[LEN_BUFFER];
   char casename_fds[LEN_BUFFER], casename_bingeom[LEN_BUFFER], image_file[LEN_BUFFER];
+#ifndef pp_GRIDDATA
   elevdata fds_elevs;
+#endif
   int fatal_error = 0;
-  wuigriddata *wuifireinfo;
 
   if(argc == 1){
     Usage("dem2fds",HELP_ALL);
@@ -291,7 +292,7 @@ int main(int argc, char **argv){
   griddata *imagedata = ReadGridData(image_dir, "image.asc", "image");
   GenerateFDSInputFile(gen_fds, casename, casename_fds, casename_bingeom, inputdata,firedata,elevdata,imagedata);
 #else
-  wuifireinfo = GetFireData(fire_dir, casename);
+  wuigriddata *wuifireinfo = GetFireData(fire_dir, casename);
 
   if(GetElevations(casename, image_file, image_type, &fds_elevs)==1){
      GenerateFDSInputFile(casename, casename_fds, casename_bingeom, &fds_elevs, gen_fds, wuifireinfo);
