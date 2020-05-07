@@ -1324,15 +1324,16 @@ int GetImageColor(float x, float y, griddata *imagedata){
 
 void GenerateImage(griddata *inputdata, griddata *imagedata) {
   gdImagePtr RENDERimage;
+  int j;
 
   float dx = (inputdata->longmax-inputdata->longmin)/(float)(inputdata->image_ncols-1);
   float dy = (inputdata->latmax-inputdata->latmin)/(float)(inputdata->image_nrows-1);
   RENDERimage = gdImageCreateTrueColor(inputdata->image_ncols, inputdata->image_nrows);
-  for(int j = 0; j<inputdata->image_nrows; j++) {
+  for(j=0; j<inputdata->image_nrows; j++) {
     int i;
 
     float latj = inputdata->latmax - (float)j*dy;
-    for(int i = 0; i<inputdata->image_ncols; i++) {
+    for(i=0; i<inputdata->image_ncols; i++) {
       int rgb_local;
 
       float longi = inputdata->longmin+(float)i*dx;
