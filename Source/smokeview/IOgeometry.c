@@ -2970,14 +2970,14 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
           break;
         }
       }
-#ifdef XXXXXXX
+//#ifdef XXXXXXX
       printf("\n\nedges\n");
       printf("                       total: %i\n", nedges);
       printf("        0 connected triangle: %i\n", ntri0);
       printf("        1 connected triangle: %i\n", ntri1);
       printf("        2 connected triangle: %i\n", ntri2);
       printf("3 or more connected triangle: %i\n", ntri_other);      FREEMEMORY(edgelist_index);
-#endif
+//#endif
     }
     if(nverts > 0){
       int *vertlist_index, nvertlist_index = 0;

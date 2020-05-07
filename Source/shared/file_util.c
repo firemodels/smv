@@ -672,22 +672,16 @@ int FileExistsOrig(char *filename){
 
   /* ------------------ FileExists ------------------------ */
 
-int FileExists(char *filename, filelistdata *filelist, int nfilelist){
+int FileExists(char *filename, filelistdata *filelist, int nfilelist, filelistdata *filelist2, int nfilelist2){
 
 // returns YES if the file filename exists, NO otherwise
 
-  if(filename == NULL||strcmp(filename,"null")==0)return NO;
+  if(filename == NULL)return NO;
   if(filelist != NULL&&nfilelist>0){
-    if(FileInList(filename, filelist, nfilelist) != NULL){
+    if(FileInList(filename, filelist, nfilelist, filelist2, nfilelist2) != NULL){
       return YES;
     }
-    else{
-      return NO;
-    }
   }
-
-  // only use ACCESS if filelist is not defined
-
   if(ACCESS(filename,F_OK)==-1){
     return NO;
   }
@@ -708,7 +702,7 @@ void FreeFileList(filelistdata *filelist, int *nfilelist){
   *nfilelist=0;
 }
 
-  /* ------------------ GetFileListSize ------------------------ */
+  /* ------------------ get_nfilelist ------------------------ */
 
 int GetFileListSize(const char *path, char *filter){
   struct dirent *entry;
@@ -763,8 +757,8 @@ int CompareFileList(const void *arg1, const void *arg2){
   return strcmp(x->file, y->file);
 }
 
-/* ------------------ FileInList ------------------------ */
-filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles){
+/* ------------------ getfile ------------------------ */
+filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles, filelistdata *filelist2, int nfiles2){
   filelistdata *entry=NULL, fileitem;
 
   if(file==NULL)return NULL;
@@ -773,6 +767,9 @@ filelistdata *FileInList(char *file, filelistdata *filelist, int nfiles){
   if(filelist!=NULL&&nfiles>0){
     entry = bsearch(&fileitem, (filelistdata *)filelist, (size_t)nfiles, sizeof(filelistdata), CompareFileList);
     if(entry!=NULL)return entry;
+  }
+  if(filelist2!=NULL&&nfiles2>0){
+    entry = bsearch(&fileitem, (filelistdata *)filelist2, (size_t)nfiles2, sizeof(filelistdata), CompareFileList);
   }
   return entry;
 }
