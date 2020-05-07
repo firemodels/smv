@@ -8,6 +8,7 @@
 #include "file_util.h"
 #include "datadefs.h"
 #include "MALLOCC.h"
+#include "gd.h"
 #include "dem_grid.h"
 /* ------------------ ReadGridHeader ------------------------ */
 
@@ -20,9 +21,10 @@ int ReadGridHeader(griddata *data){
   for(;;){
     char *blank, *val, buffer[255];
 
-    fgets(buffer, 255, stream);
+    if(fgets(buffer, 255, stream)==NULL)break;
+    TrimBack(buffer);
     blank = strchr(buffer, ' ');
-    if(blank==NULL)return 1;
+    if(blank==NULL)break;
     val = blank+1;
     blank[0] = 0;
     if(strcmp(buffer, "ncols")==0){
@@ -85,6 +87,7 @@ int ReadGridHeader(griddata *data){
     if(buffer[0]>='A'&&buffer[0]<='A')continue;
     break;
   }
+
   if(data->type!=GRID_IMAGE_DATA&&data->ncols>0&&data->nrows>0){
     char *buffer;
 
@@ -112,7 +115,30 @@ int ReadGridHeader(griddata *data){
       data->latmax = data->latmin+(float)data->nrows*data->dy;
     }
   }
+
   fclose(stream);
+
+  if(data->type==GRID_IMAGE_DATA){
+    char *image_file;
+
+    char *file = data->file;
+    if(file==NULL||strlen(file)==0)return 0;
+    NewMemory((void **)&image_file, (strlen(file)+6)*sizeof(char));
+    strcpy(image_file, file);
+    char *ext = strrchr(image_file, '.');
+    if(ext==NULL){
+      FREEMEMORY(image_file);
+      return 0;
+    }
+
+    *ext = 0;
+    strcat(image_file, ".jpg");
+    data->image_file = image_file;
+    data->image = NULL;
+    stream = fopen(image_file, "r");
+    if(stream==NULL)return 0;
+    fclose(stream);
+  }
   return 1;
 }
 

@@ -17,7 +17,9 @@
 /* --------------------------  griddata ------------------------------------ */
 
 typedef struct _griddata {
-  char *file;
+  char *file, *image_file;
+  gdImagePtr image;
+  int image_nrows, image_ncols;
   int type;
   int ncols, nrows, kbar;
   int have_ncols, have_nrows;

@@ -59,8 +59,18 @@ griddata *ParseInput(char *file){
   if(file==NULL||strlen(file)==0)return NULL;
   NewMemory((void **)&(inputdata), sizeof(griddata));
   NewMemory((void **)&(inputdata->file), strlen(file)+1);
+  NewMemory((void **)&(inputdata->image_file), strlen(file)+5);
   inputdata->vals = NULL;
   strcpy(inputdata->file, file);
+  strcpy(inputdata->image_file, file);
+  inputdata->image_ncols = 1000;
+  inputdata->image_nrows = 1000;
+  char *ext = strrchr(inputdata->image_file, '.');
+  if(ext!=NULL){
+    ext[0] = 0;
+  }
+  strcat(inputdata->image_file, ".png");
+  inputdata->image = NULL;
 
   stream_in = fopen(file, "r");
   if(stream_in==NULL) {
@@ -1286,6 +1296,59 @@ void GetSurfsFromFaces(wuigriddata *wuifireinfo, struct _elevdata *fds_elevs, fl
   FREEMEMORY(xy);
 }
 
+/* ------------------ GetImageColor ------------------------ */
+
+int GetImageColor(float x, float y, griddata *imagedata){
+  if(imagedata->image==NULL){
+    int ncols, nrows;
+
+    imagedata->image = GetJPEGImage(imagedata->image_file, &ncols, &nrows);
+    imagedata->image_ncols = ncols;
+    imagedata->image_nrows = nrows;
+  }
+
+  int icol, irow;
+  int rgb_default = (0<<16)|(0<<8)|0;
+
+  if(x<imagedata->longmin||x>imagedata->longmax)return rgb_default;
+  if(y<imagedata->latmin||y>imagedata->latmax)return rgb_default;
+
+  icol = (float)(imagedata->ncols-1)*(x-imagedata->longmin)/(imagedata->longmax-imagedata->longmin);
+  irow = (float)(imagedata->nrows-1)*(y-imagedata->latmin)/(imagedata->latmax-imagedata->latmin);
+  icol = CLAMP(icol, 0, imagedata->ncols-1);
+  irow = CLAMP(irow, 0, imagedata->nrows-1);
+  return gdImageGetPixel(imagedata->image, icol, irow);
+}
+
+/* ------------------ GenerateImage ------------------------ */
+
+void GenerateImage(griddata *inputdata, griddata *imagedata) {
+  gdImagePtr RENDERimage;
+
+  float dx = (inputdata->longmax-inputdata->longmin)/(float)(inputdata->image_ncols-1);
+  float dy = (inputdata->latmax-inputdata->latmin)/(float)(inputdata->image_nrows-1);
+  RENDERimage = gdImageCreateTrueColor(inputdata->image_ncols, inputdata->image_nrows);
+  for(int j = 0; j<inputdata->image_nrows; j++) {
+    int i;
+
+    float latj = inputdata->latmax - (float)j*dy;
+    for(int i = 0; i<inputdata->image_ncols; i++) {
+      int rgb_local;
+
+      float longi = inputdata->longmin+(float)i*dx;
+
+      rgb_local = GetImageColor(longi, latj, imagedata);
+      gdImageSetPixel(RENDERimage, i, j, rgb_local);
+    }
+  }
+
+
+  FILE *stream = fopen(inputdata->image_file, "wb");
+  if(stream!=NULL)gdImagePng(RENDERimage, stream);
+  gdImageDestroy(RENDERimage);
+  if(stream!=NULL)fclose(stream);
+}
+
 /* ------------------ GenerateFDSInputFile ------------------------ */
 
 #ifdef pp_GRIDDATA
@@ -1311,6 +1374,10 @@ int GenerateFDSInputFile(int option, char *casename, char *casename_fds, char *c
   dlong_fds  = (inputdata->longmax - inputdata->longmin)/(float)(inputdata->ncols-1);
   dlat_elev  = (elevdata->latmax   - elevdata->latmin)/(float)(elevdata->nrows-1);
   dlong_elev = (elevdata->longmax  - elevdata->longmin)/(float)(elevdata->ncols-1);
+
+ // if(imagedata!=NULL){
+ //   GenerateImage(inputdata, imagedata);
+ // }
 
 #define IJ3(i,j,nj) ((i)*(nj)+(j))
 
