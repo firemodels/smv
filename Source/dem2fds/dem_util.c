@@ -220,7 +220,7 @@ griddata *ParseInput(char *file){
   inputdata->longmax = fds_long_max;
   inputdata->have_longmax = 1;
 
-  inputdata->image_nrows = inputdata->image_ncols*(fds_latmax-fds_latmin)/(fds_longmax-fds_longmin);
+  inputdata->image_nrows = inputdata->image_ncols*(fds_lat_max-fds_lat_min)/(fds_long_max-fds_long_min);
 
   inputdata->ncols = nlongs;
   inputdata->have_ncols = 1;
