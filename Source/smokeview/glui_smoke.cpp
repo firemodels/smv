@@ -258,7 +258,7 @@ extern "C" void UpdateCO2ColorbarList(int value){
 /* ------------------ UpdateBackgroundFlip2 ------------------------ */
 
 extern "C" void UpdateBackgroundFlip2(int flip) {
-  CHECKBOX_smoke_flip->set_int_val(flip);
+  if(CHECKBOX_smoke_flip!=NULL)CHECKBOX_smoke_flip->set_int_val(flip);
 }
 
 #ifdef pp_GPUSMOKE
