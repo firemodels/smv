@@ -69,6 +69,7 @@ EXTERNCPP void GenerateFDSInputFile(char *casename, char *casename_fds, char *ca
 #endif
 EXTERNCPP int GetElevations(char *elevfile, char *image_file, char *image_type, elevdata *fds_elevs);
 EXTERNCPP wuigriddata *GetFireData(char *adf_dir, char *casename);
+EXTERNCPP gdImagePtr GetJPEGImage(const char *filename, int *width, int *height);
 
 SVEXTERN char image_dir[1024], elev_dir[1024];
 #define NFIRETYPES 20

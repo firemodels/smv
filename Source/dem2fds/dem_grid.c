@@ -10,6 +10,7 @@
 #include "MALLOCC.h"
 #include "gd.h"
 #include "dem_grid.h"
+#include "dem_util.h"
 /* ------------------ ReadGridHeader ------------------------ */
 
 int ReadGridHeader(griddata *data){
@@ -135,9 +136,9 @@ int ReadGridHeader(griddata *data){
     strcat(image_file, ".jpg");
     data->image_file = image_file;
     data->image = NULL;
-    stream = fopen(image_file, "r");
-    if(stream==NULL)return 0;
-    fclose(stream);
+    gdImagePtr image = GetJPEGImage(data->image_file, &data->ncols, &data->nrows);
+    if(image==NULL)return 0;
+    gdImageDestroy(image);
   }
   return 1;
 }

@@ -63,8 +63,8 @@ griddata *ParseInput(char *file){
   inputdata->vals = NULL;
   strcpy(inputdata->file, file);
   strcpy(inputdata->image_file, file);
-  inputdata->image_ncols = 1000;
-  inputdata->image_nrows = 1000;
+  inputdata->image_ncols = 2000;
+  inputdata->image_nrows = 2000;
   char *ext = strrchr(inputdata->image_file, '.');
   if(ext!=NULL){
     ext[0] = 0;
@@ -219,6 +219,8 @@ griddata *ParseInput(char *file){
 
   inputdata->longmax = fds_long_max;
   inputdata->have_longmax = 1;
+
+  inputdata->image_nrows = inputdata->image_ncols*(fds_latmax-fds_latmin)/(fds_longmax-fds_longmin);
 
   inputdata->ncols = nlongs;
   inputdata->have_ncols = 1;
@@ -1316,7 +1318,7 @@ int GetImageColor(float x, float y, griddata *imagedata){
   icol = (float)(imagedata->ncols-1)*(x-imagedata->longmin)/(imagedata->longmax-imagedata->longmin);
   irow = (float)(imagedata->nrows-1)*(y-imagedata->latmin)/(imagedata->latmax-imagedata->latmin);
   icol = CLAMP(icol, 0, imagedata->ncols-1);
-  irow = CLAMP(irow, 0, imagedata->nrows-1);
+  irow = CLAMP(imagedata->nrows-1-irow, 0, imagedata->nrows-1);
   return gdImageGetPixel(imagedata->image, icol, irow);
 }
 
@@ -1376,9 +1378,9 @@ int GenerateFDSInputFile(int option, char *casename, char *casename_fds, char *c
   dlat_elev  = (elevdata->latmax   - elevdata->latmin)/(float)(elevdata->nrows-1);
   dlong_elev = (elevdata->longmax  - elevdata->longmin)/(float)(elevdata->ncols-1);
 
- // if(imagedata!=NULL){
- //   GenerateImage(inputdata, imagedata);
- // }
+  if(imagedata!=NULL){
+    GenerateImage(inputdata, imagedata);
+  }
 
 #define IJ3(i,j,nj) ((i)*(nj)+(j))
 
