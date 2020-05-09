@@ -287,7 +287,11 @@ int main(int argc, char **argv){
 
 #ifdef pp_GRIDDATA
   griddata *inputdata = ParseInput(casename);
+#ifdef pp_NOFIRE
+  griddata *firedata = NULL;
+#else
   griddata *firedata = ReadGridData(fire_dir, "anderson13.asc", "int");
+#endif
   griddata *elevdata = ReadGridData(elev_dir, "elevations.asc", "float");
   griddata *imagedata = ReadGridData(image_dir, "image.asc", "image");
   GenerateFDSInputFile(gen_fds, casename, casename_fds, casename_bingeom, inputdata,firedata,elevdata,imagedata);
