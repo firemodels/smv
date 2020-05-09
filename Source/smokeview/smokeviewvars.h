@@ -1690,7 +1690,7 @@ SVEXTERN surfdata SVDECL(*surfacedefault,NULL), SVDECL(*vent_surfacedefault,NULL
 SVEXTERN char surfacedefaultlabel[256];
 SVEXTERN int ntotalfaces;
 SVEXTERN colordata SVDECL(*firstcolor,NULL);
-SVEXTERN texturedata SVDECL(*textureinfo,NULL), SVDECL(*terrain_texture,NULL);
+SVEXTERN texturedata SVDECL(*textureinfo,NULL), SVDECL(*terrain_textures,NULL);
 SVEXTERN GLuint texture_colorbar_id, texture_slice_colorbar_id, texture_patch_colorbar_id, texture_plot3d_colorbar_id, texture_iso_colorbar_id, terrain_colorbar_id;
 SVEXTERN GLuint volsmoke_colormap_id,slice3d_colormap_id,slicesmoke_colormap_id;
 SVEXTERN int SVDECL(volsmoke_colormap_id_defined,-1);
@@ -1702,7 +1702,7 @@ SVEXTERN float xclip_max, yclip_max, zclip_max;
 SVEXTERN float nearclip,farclip;
 SVEXTERN int updateclipvals;
 SVEXTERN int updateUpdateFrameRateMenu;
-SVEXTERN int SVDECL(ntextureinfo,0),ntextures_loaded_used, SVDECL(nterrain_texture, 0);
+SVEXTERN int SVDECL(ntextureinfo,0),ntextures_loaded_used, SVDECL(nterrain_textures, 0), SVDECL(iterrain_textures,0);
 SVEXTERN int SVDECL(nskyboxinfo,0);
 SVEXTERN skyboxdata SVDECL(*skyboxinfo,NULL);
 SVEXTERN firedata SVDECL(*fireinfo,NULL);

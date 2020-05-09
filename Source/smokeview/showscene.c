@@ -326,7 +326,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
       case TERRAIN_2D_LINE:
         break;
       case TERRAIN_3D_MAP:
-        if(terrain_texture != NULL&&terrain_texture->loaded == 1){
+        if(terrain_textures != NULL&&terrain_textures[iterrain_textures].loaded == 1){
           DrawTerrainTexture(terri);
         }
         else{

@@ -1003,7 +1003,7 @@ void DrawTerrainTexture(terraindata *terri){
   glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&block_shininess);
   glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
   glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D,terrain_texture->name);
+  glBindTexture(GL_TEXTURE_2D,terrain_textures[iterrain_textures].name);
 
   glEnable(GL_COLOR_MATERIAL);
   glColor4fv(terrain_color);

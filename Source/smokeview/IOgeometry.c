@@ -492,7 +492,13 @@ void DrawGeom(int flag, int timestate){
 
   // draw geometry surface
 
-    if(flag==DRAW_TRANSPARENT&&use_transparency_data==1)TransparentOn();
+#ifdef pp_FORCE_TRANSPARENCY
+    TransparentOn();
+#else
+    if(flag==DRAW_TRANSPARENT&&use_transparency_data==1){
+      TransparentOn();
+    }
+#endif
 
     if(usetexturebar==1&&texture_state==OFF){
       texture_state=TextureOn(texture_iso_colorbar_id,&texture_first);
@@ -758,6 +764,9 @@ void DrawGeom(int flag, int timestate){
             glBegin(GL_TRIANGLES);
             lasttexture = texti;
           }
+#ifdef pp_FORCE_TRANSPARENCY
+          if(trianglei->verts[0]->vert_norm[2]<0.0)continue;
+#endif
           for(j = 0; j < 3; j++){
             vertdata *vertj;
             float *tvertj;
@@ -782,10 +791,14 @@ void DrawGeom(int flag, int timestate){
     glDisable(GL_COLOR_MATERIAL);
     DISABLE_LIGHTING;
     glPopMatrix();
+#ifdef _FORCE_TRANSPARENCY
+    TransparentOff();
+#else
     if(flag==DRAW_TRANSPARENT){
       if(use_transparency_data==1)TransparentOff();
       return;
     }
+#endif
     if(cullfaces==1)glEnable(GL_CULL_FACE);
   }
 
@@ -2422,7 +2435,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
 
       // compute texture coordinates
 
-      if(terrain_texture!=NULL&&geomi->is_terrain==1){
+      if(terrain_textures!=NULL&&geomi->is_terrain==1){
         float xmin, xmax, ymin, ymax, xfactor, yfactor;
         int ii;
 
@@ -2503,8 +2516,8 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
         }
         if(geomi->geomtype==GEOM_GEOM)surfi->used_by_geom = 1;
         triangles[ii].geomsurf=surfi;
-        if(terrain_texture!=NULL&&geomi->is_terrain==1){
-          triangles[ii].textureinfo = terrain_texture;
+        if(terrain_textures!=NULL&&geomi->is_terrain==1){
+          triangles[ii].textureinfo = terrain_textures;
         }
         else{
           triangles[ii].textureinfo = surfi->textureinfo;

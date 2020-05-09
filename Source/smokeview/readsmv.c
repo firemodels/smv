@@ -1861,22 +1861,27 @@ void InitTextures(void){
     ntextureinfo++;
   }
 
-  if(nterrain_texture>0){
-    char *texturefile;
-    texturedata *texti;
-    int len;
+  if(nterrain_textures>0){
+    texturedata *texture_base;
 
-    texturefile = terrain_texture->file;
-    texti = textureinfo + ntextureinfo;
-    len = strlen(texturefile);
-    NewMemory((void **)&texti->file,(len+1)*sizeof(char));
-    strcpy(texti->file,texturefile);
-    FREEMEMORY(terrain_texture);
-    terrain_texture = texti;
-    texti->loaded=0;
-    texti->used=0;
-    texti->display=0;
-    ntextureinfo++;
+    texture_base = textureinfo + ntextureinfo;
+    for(i=0;i<nterrain_textures;i++){
+      char *texturefile;
+      texturedata *texti;
+      int len;
+
+      texturefile = terrain_textures[i].file;
+      texti = textureinfo + ntextureinfo;
+      len = strlen(texturefile);
+      NewMemory((void **)&texti->file,(len+1)*sizeof(char));
+      strcpy(texti->file,texturefile);
+      texti->loaded=0;
+      texti->used=0;
+      texti->display=0;
+      ntextureinfo++;
+    }
+    FREEMEMORY(terrain_textures);
+    terrain_textures = texture_base;
   }
 
   // check to see if texture files exist .
@@ -2055,39 +2060,41 @@ void InitTextures(void){
 
   // define terrain texture
 
-  if(nterrain_texture>0&&use_graphics==1){
+  if(nterrain_textures>0&&use_graphics==1){
     texturedata *tt;
     unsigned char *floortex;
     int texwid, texht;
     int errorcode;
 
-    tt = terrain_texture;
-    tt->loaded=0;
-    tt->used=0;
-    tt->display=0;
+    for(i=0;i<nterrain_textures;i++){
+      tt = terrain_textures + i;
+      tt->loaded=0;
+      tt->used=0;
+      tt->display=0;
 
-    glGenTextures(1,&tt->name);
-    glBindTexture(GL_TEXTURE_2D,tt->name);
-    floortex=NULL;
-    errorcode=1;
-    if(tt->file!=NULL){
+      glGenTextures(1,&tt->name);
+      glBindTexture(GL_TEXTURE_2D,tt->name);
+      floortex=NULL;
+      errorcode=1;
+      if(tt->file!=NULL){
 #ifdef _DEBUG
-      PRINTF("terrain texture file: %s",tt->file);
+        PRINTF("terrain texture file: %s",tt->file);
 #endif
-      floortex=ReadPicture(tt->file,&texwid,&texht,0);
-      if(floortex==NULL)PRINTF("***Error: Texture file %s failed to load\n",tt->file);
-    }
-    if(floortex!=NULL){
-      errorcode=gluBuild2DMipmaps(GL_TEXTURE_2D,4, texwid, texht, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
-      if(errorcode!=0)PRINTF("***Error: Texture file %s failed to load\n",tt->file);
-    }
-    FREEMEMORY(floortex);
-    if(errorcode==0){
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-      tt->loaded=1;
+        floortex=ReadPicture(tt->file,&texwid,&texht,0);
+        if(floortex==NULL)PRINTF("***Error: Texture file %s failed to load\n",tt->file);
+      }
+      if(floortex!=NULL){
+        errorcode=gluBuild2DMipmaps(GL_TEXTURE_2D,4, texwid, texht, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
+        if(errorcode!=0)PRINTF("***Error: Texture file %s failed to load\n",tt->file);
+      }
+      FREEMEMORY(floortex);
+      if(errorcode==0){
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        tt->loaded=1;
+      }
     }
   }
 }
@@ -5226,6 +5233,7 @@ int ReadSMV(bufferstreamdata *stream){
 
   int setGRID=0;
   int  i;
+  int have_auto_terrain_image=0;
 
   char buffer[256], buffers[6][256];
   patchdata *patchgeom;
@@ -5513,7 +5521,7 @@ int ReadSMV(bufferstreamdata *stream){
 
   FREEMEMORY(textureinfo);
   FREEMEMORY(surfinfo);
-  FREEMEMORY(terrain_texture);
+  FREEMEMORY(terrain_textures);
 
   if(cadgeominfo!=NULL)FreeCADInfo();
 
@@ -5715,25 +5723,45 @@ int ReadSMV(bufferstreamdata *stream){
       TrimBack(buff2);
       len_buffer = strlen(buff2);
       if(len_buffer>0&&strcmp(buff2, "null")!=0){
-        nterrain_texture = 1;
-        NewMemory((void **)&terrain_texture, sizeof(texturedata));
-        NewMemory((void **)&(terrain_texture->file), (len_buffer+1)*sizeof(char));
-        strcpy(terrain_texture->file, buff2);
+        nterrain_textures = 1;
+        NewMemory((void **)&terrain_textures, sizeof(texturedata));
+        NewMemory((void **)&(terrain_textures->file), (len_buffer+1)*sizeof(char));
+        strcpy(terrain_textures->file, buff2);
       }
+      have_auto_terrain_image=1;
       continue;
     }
     if(Match(buffer, "TERRAINIMAGE")==1){
       int len_buffer;
-      char *buff2;
+      char *buff2, *blank;
 
-      FGETS(buffer, 255, stream);
-      buff2 = TrimFrontBack(buffer);
-      len_buffer = strlen(buff2);
-      if(len_buffer>0&&strcmp(buff2, "null")!=0){
-        nterrain_texture = 1;
-        NewMemory((void **)&terrain_texture, sizeof(texturedata));
-        NewMemory((void **)&terrain_texture->file, (len_buffer+1)*sizeof(char));
-        strcpy(terrain_texture->file, buff2);
+      if(have_auto_terrain_image == 1){
+        FREEMEMORY(terrain_textures->file);
+        FREEMEMORY(terrain_textures);
+      }
+      nterrain_textures = 1;
+      blank = strchr(buffer,' ');
+      if(blank!=NULL){
+        int nvals=0;
+        
+        sscanf(blank+1,"%i",&nvals);
+        if(nvals!=0)nterrain_textures = MAX(nvals,0);
+      }
+      
+
+      if(nterrain_textures>0){
+        NewMemory((void **)&terrain_textures, nterrain_textures*sizeof(texturedata));
+
+        for(i=0;i<nterrain_textures;i++){
+          FGETS(buffer, 255, stream);
+          buff2 = TrimFrontBack(buffer);
+          len_buffer = strlen(buff2);
+          if(len_buffer>0&&strcmp(buff2, "null")!=0){
+            nterrain_textures = 1;
+            NewMemory((void **)&terrain_textures[i].file, (len_buffer+1)*sizeof(char));
+            strcpy(terrain_textures[i].file, buff2);
+          }
+        }
       }
       continue;
     }
@@ -8089,7 +8117,7 @@ int ReadSMV(bufferstreamdata *stream){
 
   UpdateDeviceTextures();
   if(nsurfinfo>0||ndevice_texture_list>0){
-    if(NewMemory((void **)&textureinfo,(nsurfinfo+ndevice_texture_list+nterrain_texture)*sizeof(texturedata))==0)return 2;
+    if(NewMemory((void **)&textureinfo,(nsurfinfo+ndevice_texture_list+nterrain_textures)*sizeof(texturedata))==0)return 2;
   }
   if(use_graphics==1)InitTextures();
 
@@ -10130,12 +10158,14 @@ void UpdateUseTextures(void){
       }
     }
   }
-  if(nterrain_texture>0){
-    texturedata *texti;
+  if(nterrain_textures>0){
+    for(i=0;i<nterrain_textures;i++){
+      texturedata *texti;
 
-    texti = textureinfo+ntextureinfo-1;
-    if(texti==terrain_texture){
-      texti->used = 1;
+      texti = textureinfo+ntextureinfo-1 + i;
+      if(texti==terrain_textures+i){
+        texti->used = 1;
+      }
     }
   }
   ntextures_loaded_used=0;

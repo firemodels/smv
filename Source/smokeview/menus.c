@@ -2398,8 +2398,8 @@ void TextureShowMenu(int value){
 
       geomi = geominfo + i;
       surf = geomi->surfgeom;
-      if(terrain_texture!=NULL){
-        textii = terrain_texture;
+      if(terrain_textures!=NULL){
+        textii = terrain_textures+iterrain_textures;
       }
       else{
         if(surf!=NULL)textii = surf->textureinfo;
@@ -7080,7 +7080,7 @@ updatemenu=0;
   CREATEMENU(terrain_showmenu,GeometryMenu);
   if(visTerrainType==TERRAIN_3D)glutAddMenuEntry(_("*3D surface"),17+TERRAIN_3D);
   if(visTerrainType!=TERRAIN_3D)glutAddMenuEntry(_("3D surface"),17+TERRAIN_3D);
-  if(terrain_texture!=NULL&&terrain_texture->loaded==1){
+  if(terrain_textures!=NULL){ // &&terrain_texture->loaded==1
     if(visTerrainType==TERRAIN_3D_MAP)glutAddMenuEntry(_("*Image"),17+TERRAIN_3D_MAP);
     if(visTerrainType!=TERRAIN_3D_MAP)glutAddMenuEntry(_("Image"),17+TERRAIN_3D_MAP);
   }
