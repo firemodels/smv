@@ -7532,9 +7532,17 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   if((vd->volslice == 1 && plotz >= 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
     float zmax;
     int maxi;
+    float agl_smv;
 
     zmax = zplttemp[meshi->kbar];
     constval = zplttemp[plotz] + offset_slice*sd->sliceoffset - znode[0]+SCALE2SMV(sliceoffset_all);
+    xplttemp = meshi->xplt_orig;
+    yplttemp = meshi->yplt_orig;
+    znode = terri->znode;
+    agl_smv = sd->above_ground_level;
+    glPushMatrix();
+    glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
+    glTranslatef(-xbar0,-ybar0,-zbar0+agl_smv+sliceoffset_all);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     maxi = sd->is1 + sd->nslicei - 1;
@@ -7546,11 +7554,9 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
       for(j = sd->js1; j < sd->js2 + 1; j += vectorskip){
         int n11;
         float z11;
-        int ij2;
 
         n += vectorskip*sd->nslicek;
-        ij2 = IJ2(i, j);
-        z11 = MIN(zmax, constval + znode[ij2]);
+        z11 = znode[IJ2(i, j)];
         n11 = i*sd->nslicej*sd->nslicek + j*sd->nslicek;
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           rgb_ptr = rgb_slice + 4*sd->iqsliceframe[n11];
@@ -7578,6 +7584,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
       }
     }
     glEnd();
+    glPopMatrix();
     SNIFF_ERRORS("after DrawVVolSliceTerrain:lines dir=3");
 
     glPointSize(vectorpointsize);
