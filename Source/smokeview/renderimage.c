@@ -1403,7 +1403,11 @@ unsigned char *ReadJPEG(const char *filename,int *width, int *height){
       *dptr++ = (intrgb>>16)&255;
       *dptr++ = (intrgb>>8)&255;
       *dptr++ = intrgb&255;
+#ifdef pp_FORCE_TRANSPARENCY
+      *dptr++ = (intrgb>>24)&255;
+#else
       *dptr++=0xff;
+#endif
     }
   }
   gdImageDestroy(image);
@@ -1438,7 +1442,11 @@ unsigned char *ReadPNG(const char *filename,int *width, int *height){
       *dptr++ = (intrgb>>16)&255;
       *dptr++ = (intrgb>>8)&255;
       *dptr++ = intrgb&255;
-      *dptr++ = 0xff;
+#ifdef pp_FORCE_TRANSPARENCY
+      *dptr++ = (intrgb>>24)&255;
+#else
+      *dptr++=0xff;
+#endif
     }
   }
   gdImageDestroy(image);
