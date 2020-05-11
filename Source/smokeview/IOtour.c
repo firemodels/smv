@@ -1261,6 +1261,29 @@ void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth){
     }
   }
 
+  // get distance to each corner of the terrain (if it exists)
+
+  if(have_box_geom_corners==1){
+    for(i = 0; i<8; i++){
+      float depth, dx, dy, dz;
+
+      dx = box_geom_corners[i][0]-eye[0];
+      dy = box_geom_corners[i][1]-eye[1];
+      dz = box_geom_corners[i][2]-eye[2];
+      if(dy<0.0)continue;
+      depth = sqrt(dx*dx+dy*dy+dz*dz);
+      if(first==1){
+        first = 0;
+        *max_depth = depth;
+        *min_depth = depth;
+      }
+      else{
+        *min_depth = MIN(*min_depth, depth);
+        *max_depth = MAX(*max_depth, depth);
+      }
+    }
+  }
+
   // get distance to each tour node
 
   if(edittour==1){
