@@ -1,5 +1,6 @@
 #!/bin/bash
 OPTS="$*"
+OPTS="-q $*"
 source ../../scripts/setopts.sh $OPTS
 
 LIBDIR=../../LIBS/intel_osx_64
