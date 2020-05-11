@@ -90,9 +90,14 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     }
 
 #ifdef pp_WUI_VAO
-    if(have_terrain_vao==1){
-      DrawTerrainGPU();
+    if(have_terrain_vao==1&&usegpu==1){
+      DrawTerrainGeomGPU();
     }
+#ifdef pp_WUI_NEW
+    else{
+      DrawTerrainGeom();
+    }
+#endif
 #endif
 
     /* ++++++++++++++++++++++++ draw evacuation +++++++++++++++++++++++++ */
@@ -274,6 +279,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(ngeominfoptrs>0){
     CLIP_GEOMETRY;
+#ifndef WUI_NEW
 #ifdef pp_WUI_VAO
     if(have_terrain_vao==0){
       DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
@@ -282,6 +288,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 #else
     DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
     DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
+#endif
 #endif
     SNIFF_ERRORS("DrawGeom");
   }
@@ -320,17 +327,17 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
       terri = terraininfo + i;
       switch(visTerrainType){
       case TERRAIN_3D:
-        DrawTerrain(terri);
+        DrawTerrainOBST(terri);
         break;
       case TERRAIN_2D_STEPPED:
       case TERRAIN_2D_LINE:
         break;
       case TERRAIN_3D_MAP:
         if(terrain_textures != NULL&&terrain_textures[iterrain_textures].loaded == 1){
-          DrawTerrainTexture(terri);
+          DrawTerrainOBSTTexture(terri);
         }
         else{
-          DrawTerrain(terri);
+          DrawTerrainOBST(terri);
         }
         break;
       default:

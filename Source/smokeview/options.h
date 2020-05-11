@@ -19,6 +19,7 @@
 
 //#define pp_FORCE_TRANSPARENCY // force transparency when drawing geometry textures
 //#define pp_WUI_VAO            // use opengl vao objects for drawing terrain
+//#define pp_WUI_NEW            // use standalone geom routine for drawing wui terrain
 //#define pp_SKIP_TERRAIN_DATA  // skip reading in terrain data if case is using immersed geometry
 #define pp_SKIP_BOUNDARY_GEOMS // skips reading of boundary geometry files
 #define pp_GPU                // support the GPU

@@ -7,7 +7,10 @@
 
 #ifdef pp_WUI_VAO
 int InitTerrainVAO(void);
-void DrawTerrainGPU(void);
+#ifdef pp_WUI_NEW
+void DrawTerrainGeom(void);
+#endif
+void DrawTerrainGeomGPU(void);
 #endif
 
 #ifdef pp_C_SLICE
@@ -442,8 +445,8 @@ EXTERNCPP void WuiCB(int var);
 EXTERNCPP void CompressOnOff(int flag);
 EXTERNCPP void CompressSVZip2(void);
 EXTERNCPP void UpdateTerrainColors(void);
-EXTERNCPP void DrawTerrain(terraindata *terri);
-EXTERNCPP void DrawTerrainTexture(terraindata *terri);
+EXTERNCPP void DrawTerrainOBST(terraindata *terri);
+EXTERNCPP void DrawTerrainOBSTTexture(terraindata *terri);
 EXTERNCPP void DrawTrees(void);
 EXTERNCPP void InitCullGeom(int cullflag);
 EXTERNCPP void GetCullSkips(meshdata *meshi, int cullflag, int cull_portsize, int *iiskip, int *jjskip, int *kkskip);

@@ -10124,7 +10124,12 @@ typedef struct {
   GetFaceInfo();
   GetBoxGeomCorners();
 #ifdef pp_WUI_VAO
-  have_terrain_vao = InitTerrainVAO();
+  if(ngeominfo>0&&auto_terrain==1){
+    have_terrain_vao = InitTerrainVAO();
+  }
+  else{
+    have_terrain_vao = 0;
+  }
 #endif
   
 

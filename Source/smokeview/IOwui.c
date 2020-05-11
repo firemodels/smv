@@ -19,12 +19,12 @@
                            FSEEK(WUIFILE,4,SEEK_CUR)
 
 #ifdef pp_WUI_VAO
-
-/* ------------------ DrawTerrainGPU ------------------------ */
-
 #define USE_DEMO 0
 #define USE_TERRAIN 1
 int terrain_nindices=0;
+
+/* ------------------ InitTerrainVAO ------------------------ */
+
 int InitTerrainVAO(void){
   int option= USE_TERRAIN;
   float *terrain_vertices=NULL;
@@ -141,12 +141,11 @@ int InitTerrainVAO(void){
   glDeleteShader(TerrainVertexShader);
   glDeleteShader(TerrainFragmentShader);
 
-//---------------
   if(option==USE_TERRAIN&&ngeominfo>0){
     geomlistdata *terrain;
     int i;
 
-    terrain = geominfo->geomlistinfo-1;
+    terrain = geominfo->geomlistinfo - 1;
 
     sizeof_vertices = 9*terrain->nverts*sizeof(float);
     NewMemory((void **)&terrain_vertices, sizeof_vertices);
@@ -220,9 +219,16 @@ int InitTerrainVAO(void){
   return 1;
 }
 
-/* ------------------ DrawTerrainGPU ------------------------ */
+/* ------------------ DrawTerrainGeom ------------------------ */
 
-void DrawTerrainGPU(void){
+#ifdef pp_WUI_NEW
+void DrawTerrainGeom(void){
+}
+#endif
+
+  /* ------------------ DrawTerrainGeomGPU ------------------------ */
+
+void DrawTerrainGeomGPU(void){
   float projection_matrix[16], modelview_matrix[16];
 
   DISABLE_LIGHTING;
@@ -842,9 +848,9 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
 #endif
 }
 
-/* ------------------ DrawTerrain ------------------------ */
+/* ------------------ DrawTerrainOBST ------------------------ */
 
-void DrawTerrain(terraindata *terri){
+void DrawTerrainOBST(terraindata *terri){
   float *znode, *zn;
   unsigned char *uc_znormal;
   int nycell;
@@ -978,9 +984,9 @@ void DrawTerrain(terraindata *terri){
 
 }
 
-/* ------------------ DrawTerrainTexture ------------------------ */
+/* ------------------ DrawTerrainOBSTTexture ------------------------ */
 
-void DrawTerrainTexture(terraindata *terri){
+void DrawTerrainOBSTTexture(terraindata *terri){
   float *znode;
   unsigned char *uc_znormal, *uc_zn;
   int nxcell,nycell;
