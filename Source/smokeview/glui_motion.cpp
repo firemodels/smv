@@ -1692,11 +1692,11 @@ extern "C" void SceneMotionCB(int var){
   }
   if(var == NEARFARCLIP){
     if(nearclip<0.0){
-      nearclip=0.001;
+      nearclip=0.00001;
       SPINNER_nearclip->set_float_val(nearclip);
     }
     if(farclip<0.0){
-      farclip=0.001;
+      farclip=0.00001;
       SPINNER_farclip->set_float_val(farclip);
     }
     return;

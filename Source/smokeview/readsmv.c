@@ -2357,6 +2357,122 @@ void UpdateBlockType(void){
   }
 }
 
+/* ------------------ GetBoxGeomCorners ------------------------ */
+
+void GetBoxGeomCorners(void){
+  float xmin, xmax, ymin, ymax, zmin, zmax;
+  int i;
+  float *xyz;
+  geomdata *geomi;
+  vertdata *verti;
+  geomlistdata *geomlisti;
+
+  if(geominfo==NULL||geominfo->geomlistinfo==NULL||auto_terrain==0||ngeominfo==0)return;
+
+  geomi = geominfo;
+  geomlisti = geomi->geomlistinfo-1;
+  if(geomlisti->nverts<=0)return;
+
+  have_box_geom_corners = 1;
+
+  verti = geomlisti->verts;
+  xyz = verti->xyz;
+
+  xmin = xyz[0];
+  xmax = xmin;
+  ymin = xyz[1];
+  ymax = ymin;
+  zmin = xyz[2];
+  zmax = zmin;
+
+  for(i = 1; i<geomlisti->nverts; i++){
+    verti = geomlisti->verts+i;
+    xyz = verti->xyz;
+    xmin = MIN(xyz[0], xmin);
+    xmax = MAX(xyz[0], xmax);
+    ymin = MIN(xyz[1], ymin);
+    ymax = MAX(xyz[1], ymax);
+    zmin = MIN(xyz[2], zmin);
+    zmax = MAX(xyz[2], zmax);
+  }
+
+  xmin = NORMALIZE_X(xmin);
+  xmax = NORMALIZE_X(xmax);
+  ymin = NORMALIZE_Y(ymin);
+  ymax = NORMALIZE_Y(ymax);
+  zmin = NORMALIZE_Z(zmin);
+  zmax = NORMALIZE_Z(zmax);
+
+  box_corners[0][0] = xmin;
+  box_corners[0][1] = ymin;
+  box_corners[0][2] = zmin;
+
+  box_corners[1][0] = xmax;
+  box_corners[1][1] = ymin;
+  box_corners[1][2] = zmin;
+
+  box_corners[2][0] = xmax;
+  box_corners[2][1] = ymax;
+  box_corners[2][2] = zmin;
+
+  box_corners[3][0] = xmin;
+  box_corners[3][1] = ymax;
+  box_corners[3][2] = zmin;
+
+  box_corners[4][0] = xmin;
+  box_corners[4][1] = ymin;
+  box_corners[4][2] = zmax;
+
+  box_corners[5][0] = xmax;
+  box_corners[5][1] = ymin;
+  box_corners[5][2] = zmax;
+
+  box_corners[6][0] = xmax;
+  box_corners[6][1] = ymax;
+  box_corners[6][2] = zmax;
+
+  box_corners[7][0] = xmin;
+  box_corners[7][1] = ymax;
+  box_corners[7][2] = zmax;
+
+}
+  
+  /* ------------------ GetBoxCorners ------------------------ */
+
+void GetBoxCorners(float xbar_local, float ybar_local, float zbar_local){
+  box_corners[0][0] = 0.0;
+  box_corners[0][1] = 0.0;
+  box_corners[0][2] = 0.0;
+
+  box_corners[1][0] = xbar_local;
+  box_corners[1][1] = 0.0;
+  box_corners[1][2] = 0.0;
+
+  box_corners[2][0] = xbar_local;
+  box_corners[2][1] = ybar_local;
+  box_corners[2][2] = 0.0;
+
+  box_corners[3][0] = 0.0;
+  box_corners[3][1] = ybar_local;
+  box_corners[3][2] = 0.0;
+
+  box_corners[4][0] = 0.0;
+  box_corners[4][1] = 0.0;
+  box_corners[4][2] = zbar_local;
+
+  box_corners[5][0] = xbar_local;
+  box_corners[5][1] = 0.0;
+  box_corners[5][2] = zbar_local;
+
+  box_corners[6][0] = xbar_local;
+  box_corners[6][1] = ybar_local;
+  box_corners[6][2] = zbar_local;
+
+  box_corners[7][0] = 0.0;
+  box_corners[7][1] = ybar_local;
+  box_corners[7][2] = zbar_local;
+}
+
 /* ------------------ UpdateMeshCoords ------------------------ */
 
 void UpdateMeshCoords(void){
@@ -2530,37 +2646,7 @@ void UpdateMeshCoords(void){
   ybar = NORMALIZE_Y(ybar);
   zbar = NORMALIZE_Z(zbar);
 
-  box_corners[0][0] = 0.0;
-  box_corners[0][1] = 0.0;
-  box_corners[0][2] = 0.0;
-
-  box_corners[1][0] = xbar;
-  box_corners[1][1] = 0.0;
-  box_corners[1][2] = 0.0;
-
-  box_corners[2][0] = xbar;
-  box_corners[2][1] = ybar;
-  box_corners[2][2] = 0.0;
-
-  box_corners[3][0] = 0.0;
-  box_corners[3][1] = ybar;
-  box_corners[3][2] = 0.0;
-
-  box_corners[4][0] = 0.0;
-  box_corners[4][1] = 0.0;
-  box_corners[4][2] = zbar;
-
-  box_corners[5][0] = xbar;
-  box_corners[5][1] = 0.0;
-  box_corners[5][2] = zbar;
-
-  box_corners[6][0] = xbar;
-  box_corners[6][1] = ybar;
-  box_corners[6][2] = zbar;
-
-  box_corners[7][0] = 0.0;
-  box_corners[7][1] = ybar;
-  box_corners[7][2] = zbar;
+  GetBoxCorners(xbar, ybar, zbar);
 
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
@@ -10036,9 +10122,11 @@ typedef struct {
   ReadAllGeom();
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
+  GetBoxGeomCorners();
 #ifdef pp_WUI_VAO
   have_terrain_vao = InitTerrainVAO();
 #endif
+  
 
   SetupMeshWalls();
   update_windrose = 1;
