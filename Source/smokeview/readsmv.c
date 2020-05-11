@@ -14118,7 +14118,16 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout," %i\n",-1);
   }
   else{
-#ifdef pp_OSX
+#define USE_SPECIAL
+#ifndef pp_OSX
+#undef USE_SPECIAL
+#endif
+
+#ifndef pp_QUART
+#undef USE_SPECIAL
+#endif
+
+#ifdef USE_SPECIAL
     fprintf(fileout,"WINDOWWIDTH\n");
     fprintf(fileout," %i\n",screenWidth/2);
     fprintf(fileout,"WINDOWHEIGHT\n");
