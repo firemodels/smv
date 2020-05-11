@@ -67,7 +67,7 @@
 
 #ifdef pp_OSX
 #define pp_GLUTGET      // use d and f key in place of CTRL and ALT key
-//#define pp_QUARTZ         // use Quartz
+#define pp_QUARTZ         // use Quartz
 #endif
 
 #ifdef pp_QUARTZ
