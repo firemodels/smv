@@ -1,0 +1,52 @@
+&HEAD CHID='vector_test', TITLE='test terrain vector slices' /
+
+&MESH IJK=75,40,100, XB=0,300,-160,  0,0,100 /
+&MESH IJK=75,40,100, XB=0,300,   0,160,0,100 /
+
+&TIME T_END=200 /
+&MISC TERRAIN_CASE=.TRUE., SOLID_PHASE_ONLY=.TRUE., FREEZE_VELOCITY=.TRUE. /
+
+&WIND U0=10.,RAMP_U0_Z='ramp_u_z',
+      V0=10.,RAMP_V0_Z='ramp_v_z'/
+
+&RAMP ID='ramp_u_z', Z= -10, F= 0.0 /
+&RAMP ID='ramp_u_z', Z=   0, F= 1.0 /
+&RAMP ID='ramp_u_z', Z= 100, F= 1.0 /
+
+&RAMP ID='ramp_v_z', Z= -10, F= 0.0 /
+&RAMP ID='ramp_v_z', Z=   0, F= 1.0 /
+&RAMP ID='ramp_v_z', Z= 100, F= 1.0 /
+
+&SLCF AGL_SLICE=5.,  QUANTITY='VELOCITY', VECTOR=T /
+&SLCF AGL_SLICE=25., QUANTITY='VELOCITY', VECTOR=T /
+&SLCF PBX=75.0,      QUANTITY='VELOCITY', VECTOR=T /
+&SLCF PBX=225.0,     QUANTITY='VELOCITY', VECTOR=T /
+&SLCF PBY=150.0,     QUANTITY='VELOCITY', VECTOR=T /
+&SLCF PBZ= 31.0,     QUANTITY='VELOCITY', VECTOR=T /
+&SLCF PBZ= 61.0,     QUANTITY='VELOCITY', VECTOR=T /
+
+&SURF ID = 'GRASS'
+            RGB=122,117,48 /
+
+&VENT XB=   0.0,  0.0,-160.0, 160.0,  0.0,100.0,SURF_ID='OPEN' /
+&VENT XB= 300.0,300.0,-160.0, 160.0,  0.0,100.0,SURF_ID='OPEN' /
+&VENT XB=   0.0,300.0,-160.0,-160.0,  0.0,100.0,SURF_ID='OPEN' /
+&VENT XB=   0.0,300.0, 160.0, 160.0,  0.0,100.0,SURF_ID='OPEN' /
+&VENT XB=   0.0,300.0,   0.0, 160.0,100.0,100.0,SURF_ID='OPEN' /
+
+
+&GEOM ID='HILL', IS_TERRAIN=T, SURF_ID='GRASS',
+VERTS=
+   0.000,   -160.000,   0.000,
+ 150.000,   -160.000,  20.000,
+ 300.000,   -160.000,  40.000,
+ 300.000,    160.000,  40.000,
+ 150.000,    160.000,  20.000,
+   0.000,    160.000,   0.000,  
+FACES=
+   1 , 2 , 6, 1,
+   2,  5,  6, 1,
+   2,  3,  5, 1,
+   3,  4,  5, 1 /
+
+&TAIL /
