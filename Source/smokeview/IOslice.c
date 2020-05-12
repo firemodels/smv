@@ -7614,9 +7614,9 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
 
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
-    for(i = sd->is1; i < maxi + 1 - 1; i += vectorskip){
+    for(i = sd->is1; i < maxi + 1; i += vectorskip){
       x1 = xplttemp[i];
-      for(j = sd->js1; j < sd->js2 + 1 - 1; j += vectorskip){
+      for(j = sd->js1; j < sd->js2 + 1; j += vectorskip){
         int n11;
         float z11;
 
