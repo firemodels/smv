@@ -2336,6 +2336,9 @@ void Keyboard(unsigned char key, int flag){
     case '.':
       lock_mouse_aperture = 1 - lock_mouse_aperture;
       break;
+    case '?':
+      vector_debug = 1 - vector_debug;
+      break;
     case ':':
       timebar_overlap++;
       if (timebar_overlap > 2)timebar_overlap = 0;

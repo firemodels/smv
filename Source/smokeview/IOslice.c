@@ -47,33 +47,34 @@ slicedata *gslice;
 
 #define GET_VAL_N(U,n)  ( (U)->compression_type!=UNCOMPRESSED ? (U)->qval256[(U)->iqsliceframe[(n)]] : (U)->qslice[(n)] )
 
-#define GET_VEC_DXYZ(U,DU,n) \
-         if(U==NULL){       \
-           DU=0.0;           \
-         }\
-         else{\
-           if(U->compression_type!=UNCOMPRESSED){\
-             DU=U->qval256[U->iqsliceframe[(n)]];\
-           }                                  \
-           else{                              \
-             DU = U->qslice[(n)];               \
-           }                                  \
-         }                                   \
-         DU *= 0.05*vecfactor/vrange
+#define GET_VEC_DXYZ(U,DU,n)                       \
+         if(U==NULL){                              \
+           DU=0.0;                                 \
+         }                                         \
+         else{                                     \
+           if(U->compression_type==UNCOMPRESSED){  \
+             DU = U->qslice[(n)];                  \
+           }                                       \
+           else{                                   \
+             DU = U->qval256[U->iqsliceframe[(n)]];\
+           }                                       \
+         }                                         \
+         DU *= 0.05*vecfactor/vel_max
 
-#define GET_VEC_DXYZ_TERRAIN(U,DU) \
-         if(U==NULL){\
-           DU=0.0;\
-         }\
-         else{       \
-           if(U->compression_type!=UNCOMPRESSED){\
-             DU=U->qval256[(int)(f1*U->iqsliceframe[n1]+f2*U->iqsliceframe[n2])];\
-           }                                  \
-           else{                              \
-             DU=f1*U->qslice[n1]+f2*U->qslice[n2];               \
-           }                                  \
-         }                                   \
-         DU *= 0.05*vecfactor/vrange
+
+#define GET_VEC_DXYZ_TERRAIN(U,DU,n)                                                 \
+         if(U==NULL){                                                              \
+           DU=0.0;                                                                 \
+         }                                                                         \
+         else{                                                                     \
+           if(U->compression_type==UNCOMPRESSED){                                  \
+             DU = U->qslice[n];                               \
+           }                                                                       \
+           else{                                                                   \
+             DU = U->qval256[(int)(U->iqsliceframe[n])];\
+           }                                                                       \
+         }                                                                         \
+         DU *= SCALE2FDS(.05*vecfactor/vel_max)
 
 /* ------------------ Get3DSliceVal ------------------------ */
 
@@ -436,11 +437,11 @@ void DrawTriangleVectorSlice(float *v1, float *v2, float *v3, float del, int lev
   DIST3(v1, v3, d13);
   DIST3(v2, v3, d23);
   if(d12 <= del&&d13 <= del&&d23 < del){
-    float vecfactor2, vrange;
+    float vecfactor2, vel_max;
 
-    vrange = velocity_range;
-    if(vrange <= 0.0)vrange = 1.0;
-    vecfactor2 = 0.05*vecfactor / vrange*xyzmaxdiff;
+    vel_max = max_velocity;
+    if(vel_max<= 0.0)vel_max = 1.0;
+    vecfactor2 = 0.05*vecfactor /vel_max*xyzmaxdiff;
 
     VERT_AVG3(v1, v2, v3, vavg);
     dx = Get3DSliceVal(gslice_u, vavg)*vecfactor2;
@@ -1369,7 +1370,7 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
         valmax = MAX(w->valmax, valmax);
       }
     }
-    velocity_range = valmax-valmin;
+    max_velocity = MAX(ABS(valmax),ABS(valmin));
   }
   PushVSliceLoadstack(ivslice);
 
@@ -6908,7 +6909,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   int i;
   float constval;
   slicedata *u, *v, *w, *sd;
-  float vrange;
+  float vel_max;
   meshdata *meshi;
   float *xplttemp, *yplttemp, *zplttemp;
   int plotx, ploty, plotz;
@@ -6929,8 +6930,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     plotz = sd->ks1;
   }
 
-  vrange = velocity_range;
-  if(vrange <= 0.0)vrange = 1.0;
+  vel_max = max_velocity;
+  if(vel_max<= 0.0)vel_max = 1.0;
   u = vd->u;
   v = vd->v;
   w = vd->w;
@@ -7331,35 +7332,15 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   }
 }
 
-/* ------------------ GetZInterpFactors ------------------------ */
-
-void GetZInterpFactors(float *zplt, int nz, float z, int *k1, int *k2, float *f1, float *f2){
-  float dz;
-  int ileft, iright;
-
-  dz = zplt[1]-zplt[0];
-
-  ileft = (z-zplt[0])/dz;
-  if(ileft<0)ileft = 0;
-  if(ileft>nz-1)ileft = nz-1;
-  iright = ileft+1;
-
-  *k1 = ileft;
-  *k2 = iright;
-  *f1 = (z-zplt[ileft])/dz;
-  *f2 = (zplt[iright]-z)/dz;
-  return;
-}
-
 /* ------------------ DrawVVolSliceTerrain ------------------------ */
 
 void DrawVVolSliceTerrain(const vslicedata *vd){
-  int i, j, k, n;
+  int i, j, k;
   int i11;
   float constval, x1, yy1, z1;
   slicedata *u, *v, *w, *sd;
   float dx, dy, dz;
-  float vrange;
+  float vel_max;
   meshdata *meshi;
   float *xplttemp, *yplttemp, *zplttemp;
   char *iblank;
@@ -7395,13 +7376,13 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   znode = terri->znode_scaled;
   nycell = terri->jbar;
 
-  vrange = velocity_range;
-  if(vrange <= 0.0)vrange = 1.0;
+  vel_max = max_velocity;
+  if(vel_max<= 0.0)vel_max = 1.0;
   u = vd->u;
   v = vd->v;
   w = vd->w;
   if((vd->volslice == 1 && plotx >= 0 && visx_all == 1) || (vd->volslice == 0 && sd->idir == XDIR)){
-    int maxj;
+    int maxj, n;
 
     constval = xplttemp[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glLineWidth(vectorlinewidth);
@@ -7465,6 +7446,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   }
   if((vd->volslice == 1 && ploty >= 0 && visy_all == 1) || (vd->volslice == 0 && sd->idir == YDIR)){
     int maxi;
+    int n;
 
     constval = yplttemp[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glLineWidth(vectorlinewidth);
@@ -7529,6 +7511,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     glEnd();
     SNIFF_ERRORS("after DrawVVolSliceTerrain:points dir=2");
   }
+
   if((vd->volslice == 1 && plotz >= 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
     float zmax;
     int maxi;
@@ -7544,20 +7527,101 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
     glTranslatef(-xbar0,-ybar0,-zbar0+agl_smv+sliceoffset_all);
     glLineWidth(vectorlinewidth);
-    glBegin(GL_LINES);
     maxi = sd->is1 + sd->nslicei - 1;
-    if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
-    for(i = sd->is1; i < maxi + 1; i += vectorskip){
+    if(sd->is1+1>maxi)maxi = sd->is1+1;
+
+    if(vector_debug==0){
+      glBegin(GL_LINES);
+      for(i = sd->is1; i<maxi+1; i += vectorskip){
+        x1 = xplttemp[i];
+        for(j = sd->js1; j<sd->js2+1; j += vectorskip){
+          int n11;
+          float z11;
+
+          z11 = znode[IJ2(i, j)];
+          n11 = (i-sd->is1)*sd->nslicej*sd->nslicek + (j-sd->js1)*sd->nslicek;
+          if(color_vector_black==0&&show_node_slices_and_vectors==0){
+            rgb_ptr = rgb_slice+4*sd->iqsliceframe[n11];
+          }
+          else{
+            rgb_ptr = foregroundcolor;
+          }
+          if(rgb_ptr[3] > 0.5){
+            yy1 = yplttemp[j];
+            GET_VEC_DXYZ_TERRAIN(u, dx, n11);
+            GET_VEC_DXYZ_TERRAIN(v, dy, n11);
+            GET_VEC_DXYZ_TERRAIN(w, dz, n11);
+
+            glColor4fv(rgb_ptr);
+            glVertex3f(x1 - dx, yy1 - dy, z11 - dz);
+            glVertex3f(x1 + dx, yy1 + dy, z11 + dz);
+          }
+        }
+      }
+      glEnd();
+    }
+
+    if(vector_debug==1){
+      glBegin(GL_LINES);
+      for(i = sd->is1; i<sd->is2; i++){
+        x1 = xplttemp[i];
+
+        for(j = sd->js1; j<sd->js2; j++){
+          int n11;
+          float z11, yy2, z22;
+
+          z11 = znode[IJ2(i, j)];
+          z22 = znode[IJ2(i, j+1)];
+          n11 = i*sd->nslicej*sd->nslicek+j*sd->nslicek;
+          if(color_vector_black==0&&show_node_slices_and_vectors==0){
+            rgb_ptr = rgb_slice+4*sd->iqsliceframe[n11];
+          }
+          else{
+            rgb_ptr = foregroundcolor;
+          }
+          if(rgb_ptr[3]>0.5){
+            yy1 = yplttemp[j];
+            yy2 = yplttemp[j+1];
+
+            glColor4fv(rgb_ptr);
+            glVertex3f(x1, yy1, z11);
+            glVertex3f(x1, yy2, z22);
+          }
+        }
+      }
+      for(j = sd->js1; j<sd->js2; j++){
+        yy1 = yplttemp[j];
+        for(i = sd->is1; i<sd->is2; i++){
+          float z11, yy2, z22;
+
+          z11 = znode[IJ2(i, j)];
+          z22 = znode[IJ2(i+1, j)];
+          rgb_ptr = foregroundcolor;
+          if(rgb_ptr[3]>0.5){
+            float x2;
+
+            x1 = xplttemp[i];
+            x2 = xplttemp[i+1];
+
+            glColor4fv(rgb_ptr);
+            glVertex3f(x1, yy1, z11);
+            glVertex3f(x2, yy1, z22);
+          }
+        }
+      }
+      glEnd();
+    }
+
+    glPointSize(vectorpointsize);
+    glBegin(GL_POINTS);
+    for(i = sd->is1; i < maxi + 1 - 1; i += vectorskip){
       x1 = xplttemp[i];
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskip*sd->nslicek;
-      n += (plotz - sd->ks1);
-      for(j = sd->js1; j < sd->js2 + 1; j += vectorskip){
+      for(j = sd->js1; j < sd->js2 + 1 - 1; j += vectorskip){
         int n11;
         float z11;
 
-        n += vectorskip*sd->nslicek;
         z11 = znode[IJ2(i, j)];
-        n11 = i*sd->nslicej*sd->nslicek + j*sd->nslicek;
+        n11 = (i-sd->is1)*sd->nslicej*sd->nslicek+(j-sd->js1)*sd->nslicek;
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           rgb_ptr = rgb_slice + 4*sd->iqsliceframe[n11];
         }
@@ -7565,70 +7629,18 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           rgb_ptr = foregroundcolor;
         }
         if(rgb_ptr[3] > 0.5){
-          float f1, f2;
-          int k1, k2;
-          int n1, n2;
-
-          GetZInterpFactors(meshi->zplt, meshi->kbar, z11, &k1, &k2, &f1, &f2);
-          n1 = n11 + k1;
-          n2 = n11 + k2;
           yy1 = yplttemp[j];
-          GET_VEC_DXYZ_TERRAIN(u, dx);
-          GET_VEC_DXYZ_TERRAIN(v, dy);
-          GET_VEC_DXYZ_TERRAIN(w, dz);
-
+          GET_VEC_DXYZ_TERRAIN(u, dx, n11);
+          GET_VEC_DXYZ_TERRAIN(v, dy, n11);
+          GET_VEC_DXYZ_TERRAIN(w, dz, n11);
           glColor4fv(rgb_ptr);
-          glVertex3f(x1 - dx, yy1 - dy, z11 - dz);
           glVertex3f(x1 + dx, yy1 + dy, z11 + dz);
         }
       }
     }
     glEnd();
     glPopMatrix();
-    SNIFF_ERRORS("after DrawVVolSliceTerrain:lines dir=3");
-
-    glPointSize(vectorpointsize);
-    glBegin(GL_POINTS);
-    for(i = sd->is1; i < maxi + 1; i += vectorskip){
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskip*sd->nslicek;
-      n += (plotz - sd->ks1);
-
-      x1 = xplttemp[i];
-      for(j = sd->js1; j < sd->js2 + 1; j += vectorskip){
-        int n11;
-        float z11;
-        int ij2;
-
-        n += vectorskip*sd->nslicek;
-
-        ij2 = IJ2(i, j);
-        z11 = MIN(constval + znode[ij2], zmax);
-        n11 = i*sd->nslicej*sd->nslicek + j*sd->nslicek;
-        if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
-          rgb_ptr = rgb_slice + 4*sd->iqsliceframe[n11];
-        }
-        else{
-          rgb_ptr = foregroundcolor;
-        }
-        if(rgb_ptr[3] > 0.5){
-          float f1, f2;
-          int k1, k2;
-          int n1, n2;
-
-          GetZInterpFactors(meshi->zplt, meshi->kbar, z11, &k1, &k2, &f1, &f2);
-          n1 = n11 + k1;
-          n2 = n11 + k2;
-          yy1 = yplttemp[j];
-          GET_VEC_DXYZ_TERRAIN(u, dx);
-          GET_VEC_DXYZ_TERRAIN(v, dy);
-          GET_VEC_DXYZ_TERRAIN(w, dz);
-          glColor4fv(rgb_ptr);
-          glVertex3f(x1 + dx, yy1 + dy, z11 + dz);
-        }
-      }
-    }
-    glEnd();
-    SNIFF_ERRORS("after DrawVVolSliceTerrain:points dir=3");
+    SNIFF_ERRORS("after DrawVVolSliceTerrain dir=3");
   }
 }
 
@@ -7640,7 +7652,7 @@ void DrawVVolSlice(const vslicedata *vd){
   float constval, x1, yy1, z1;
   slicedata *u, *v, *w, *sd;
   float dx, dy, dz;
-  float vrange;
+  float vel_max;
   meshdata *meshi;
   float *xplttemp, *yplttemp, *zplttemp;
   int plotx, ploty, plotz;
@@ -7669,8 +7681,8 @@ void DrawVVolSlice(const vslicedata *vd){
   ny = meshi->jbar + 1;
   nxy = nx*ny;
 
-  vrange = velocity_range;
-  if(vrange <= 0.0)vrange = 1.0;
+  vel_max = max_velocity;
+  if(vel_max<= 0.0)vel_max = 1.0;
   u = vd->u;
   v = vd->v;
   w = vd->w;

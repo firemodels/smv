@@ -33,6 +33,7 @@ SVEXTERN int render_skips[NRENDER_SKIPS];
 SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
+SVEXTERN int SVDECL(vector_debug, 0);
 #ifdef pp_WUI_VAO
 SVEXTERN int SVDECL(have_terrain_vao, 0);
 SVEXTERN int GPU_modelview_matrix, GPU_projection_matrix;
@@ -1479,7 +1480,7 @@ SVEXTERN int titlesafe_offset;
 SVEXTERN int titlesafe_offsetBASE;
 SVEXTERN int   reset_frame;
 SVEXTERN float reset_time,start_frametime,stop_frametime;
-SVEXTERN float SVDECL(velocity_range,0.0);
+SVEXTERN float SVDECL(max_velocity,0.0);
 SVEXTERN int niso_compressed;
 SVEXTERN int nslice_loaded, ngeomslice_loaded, npatch_loaded, nvolsmoke_loaded;
 SVEXTERN int SVDECL(*slice_loaded_list,NULL), SVDECL(*slice_sorted_loaded_list,NULL),SVDECL(*patch_loaded_list,NULL);
