@@ -9,11 +9,14 @@
 EXTERNCPP void ComputePartHistograms(void);
 #endif
 #ifdef pp_WUI_VAO
-int InitTerrainVAO(void);
+int InitTerrainVAO(int sizeof_vertices, int sizeof_indices);
+void DrawTerrainGeomGPU(void);
+#endif
 #ifdef pp_WUI_NEW
 void DrawTerrainGeom(void);
 #endif
-void DrawTerrainGeomGPU(void);
+#ifdef pp_VAO_OR_WUI_NEW
+void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, int **indices_arg, int *sizeof_indices_arg, int *nindices_arg);
 #endif
 
 #ifdef pp_C_SLICE

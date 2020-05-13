@@ -485,6 +485,7 @@ void DrawGeom(int flag, int timestate){
     ntris=ntransparent_triangles;
     tris=transparent_triangles;
   }
+  if(ntris==0)return;
 
   if(ntris>0&&timestate==GEOM_STATIC){
     float *color;

@@ -19,8 +19,6 @@
 
 //#define pp_PART_HIST            // compute particle histograms
 //#define pp_FORCE_TRANSPARENCY // force transparency when drawing geometry textures
-//#define pp_WUI_VAO            // use opengl vao objects for drawing terrain
-//#define pp_WUI_NEW            // use standalone geom routine for drawing wui terrain
 //#define pp_SKIP_TERRAIN_DATA  // skip reading in terrain data if case is using immersed geometry
 #define pp_SKIP_BOUNDARY_GEOMS // skips reading of boundary geometry files
 #define pp_GPU                // support the GPU
@@ -29,6 +27,19 @@
 #define pp_DRAWISO            // turn on drawing routines
 //#define pp_UPDATE_FILELOAD  // updates fileload variables when a file has been loaded or unloaded
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
+
+//#define pp_WUI_VAO            // use opengl vao objects for drawing terrain
+#define pp_WUI_NEW            // use standalone geom routine for drawing wui terrain
+
+#ifdef pp_WUI_VAO
+#define pp_VAO_OR_WUI_NEW
+#endif
+
+#ifdef pp_WUI_NEW
+#undef pp_VAO_OR_WUI_NEW
+#define pp_VAO_OR_WUI_NEW
+#endif
+
 
 //*** debug: all platforms
 //#define pp_ISOTIME          // output iso load times

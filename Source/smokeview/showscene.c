@@ -89,17 +89,6 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
       DrawPartFrame();
     }
 
-#ifdef pp_WUI_VAO
-    if(have_terrain_vao==1&&usegpu==1){
-      DrawTerrainGeomGPU();
-    }
-#ifdef pp_WUI_NEW
-    else{
-      DrawTerrainGeom();
-    }
-#endif
-#endif
-
     /* ++++++++++++++++++++++++ draw evacuation +++++++++++++++++++++++++ */
 
     if(showevac == 1){
@@ -310,6 +299,26 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   }
 
   /* ++++++++++++++++++++++++ draw terrain +++++++++++++++++++++++++ */
+
+#ifdef pp_WUI_VAO
+  if(have_terrain_vao==1&&usegpu==1){
+    CLIP_GEOMETRY;
+    DrawTerrainGeomGPU();
+  }
+#ifdef pp_WUI_NEW
+  else{
+    CLIP_GEOMETRY;
+    DrawTerrainGeom();
+  }
+#endif
+#endif
+
+#ifndef pp_WUI_VAO
+#ifdef pp_WUI_NEW
+  CLIP_GEOMETRY;
+  DrawTerrainGeom();
+#endif
+#endif
 
   if(visTerrainType != TERRAIN_HIDDEN&&nterraininfo>0&&ngeominfo==0){
     int i;
