@@ -91,7 +91,9 @@ GLUI_Rollout *ROLLOUT_vector = NULL;
 GLUI_Rollout *ROLLOUT_isosurface = NULL;
 GLUI_Rollout *ROLLOUT_boundary_settings = NULL;
 GLUI_Rollout *ROLLOUT_particle_settings=NULL;
-
+#ifdef pp_PART_HIST
+GLUI_Rollout *ROLLOUT_particle_histogram = NULL;
+#endif
 #ifndef pp_NEWBOUND_DIALOG
 GLUI_Panel *PANEL_slice_bound = NULL;
 #endif
@@ -245,6 +247,9 @@ GLUI_Checkbox *CHECKBOX_use_tload_begin=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_end=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_skip=NULL;
 GLUI_Checkbox *CHECKBOX_research_mode=NULL;
+#ifdef pp_PART_HIST
+GLUI_Checkbox *CHECKBOX_part_histogram=NULL;
+#endif
 
 GLUI_RadioGroup *RADIO_iso_setmin=NULL;
 GLUI_RadioGroup *RADIO_iso_setmax=NULL;
@@ -343,7 +348,12 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 
 procdata  boundprocinfo[8],   fileprocinfo[8],   plot3dprocinfo[4];
 int      nboundprocinfo = 0, nfileprocinfo = 0, nplot3dprocinfo=0;
-procdata  isoprocinfo[3], subboundprocinfo[6], sliceprocinfo[8], particleprocinfo[3];
+procdata  isoprocinfo[3], subboundprocinfo[6], sliceprocinfo[8];
+#ifdef pp_PART_HIST
+procdata particleprocinfo[4];
+#else
+procdata particleprocinfo[3];
+#endif
 int      nisoprocinfo=0, nsubboundprocinfo=0, nsliceprocinfo=0, nparticleprocinfo=0;
 
 /* ------------------ UpdateGluiPartFast ------------------------ */
@@ -2196,8 +2206,15 @@ extern "C" void GluiBoundsSetup(int main_window){
       RADIO_part_setmin_percentile->disable();
       RADIO_part_setmax_percentile->disable();
       PartBoundCB(FILETYPEINDEX);
-      ROLLOUT_particle_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_part,"Settings",false,
-        PARTICLE_SETTINGS, ParticleRolloutCB);
+
+#ifdef pp_PART_HIST
+      ROLLOUT_particle_histogram = glui_bounds->add_rollout_to_panel(ROLLOUT_part, "Histogram", false, PARTICLE_HISTOGRAM, ParticleRolloutCB);
+      INSERT_ROLLOUT(ROLLOUT_particle_histogram, glui_bounds);
+      ADDPROCINFO(particleprocinfo, nparticleprocinfo, ROLLOUT_particle_histogram, PARTICLE_HISTOGRAM, glui_bounds);
+      CHECKBOX_part_histogram=glui_bounds->add_checkbox_to_panel(ROLLOUT_particle_histogram,_("Generate"),&generate_part_histograms);
+#endif
+
+      ROLLOUT_particle_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_part,"Settings",false,PARTICLE_SETTINGS, ParticleRolloutCB);
       INSERT_ROLLOUT(ROLLOUT_particle_settings, glui_bounds);
       ADDPROCINFO(particleprocinfo, nparticleprocinfo, ROLLOUT_particle_settings, PARTICLE_SETTINGS, glui_bounds);
 

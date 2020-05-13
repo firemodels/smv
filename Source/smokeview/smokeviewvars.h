@@ -33,6 +33,9 @@ SVEXTERN int render_skips[NRENDER_SKIPS];
 SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
+#ifdef pp_PART_HIST
+SVEXTERN int SVDECL(generate_part_histograms, 0);
+#endif
 SVEXTERN int SVDECL(vector_debug, 0);
 #ifdef pp_WUI_VAO
 SVEXTERN int SVDECL(have_terrain_vao, 0);
@@ -353,6 +356,9 @@ SVEXTERN int SVDECL(histogram_show_graph, 0), SVDECL(histogram_show_numbers, 0);
 SVEXTERN int SVDECL(histogram_nbuckets,10), SVDECL(histogram_static, 0), SVDECL(histogram_show_outline, 0);
 SVEXTERN int SVDECL(histograms_defined,0), SVDECL(update_slice_hists, 0), SVDECL(nhists256_slice, 0);
 SVEXTERN histogramdata SVDECL(*hists256_slice, NULL), SVDECL(*hists12_slice, NULL);
+#ifdef pp_PART_HIST
+SVEXTERN histogramdata SVDECL(*full_part_histogram, NULL);
+#endif
 
 SVEXTERN int SVDECL(color_vector_black, 0);
 SVEXTERN float SVDECL(geom_transparency, 0.5);

@@ -1165,7 +1165,7 @@ void CreatePartSizeFile(partdata *parti, int angle_flag_arg){
 }
 
   /* ------------------ GetPartHistogramFile ------------------------ */
-
+#ifdef pp_PART_HIST
 void GetPartHistogramFile(partdata *parti){
   int i;
   part5data *datacopy;
@@ -1211,6 +1211,48 @@ void GetPartHistogramFile(partdata *parti){
     }
   }
 }
+
+/* ------------------ MergePartHistograms ------------------------ */
+
+void MergePartHistograms(void){
+  int i;
+
+  if(full_part_histogram==NULL){
+    NewMemory((void **)&full_part_histogram, npart5prop*sizeof(histogramdata));
+  }
+  else{
+    for(i=0;i<npart5prop;i++){
+      FreeHistogram(full_part_histogram+i);
+    }
+  }
+  for(i=0;i<npart5prop;i++){
+    InitHistogram(full_part_histogram+i, NHIST_BUCKETS, NULL, NULL);
+  }
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+    int j;
+
+    parti = partinfo + i;
+    if(parti->loaded==0)continue;
+    for(j = 0; j < parti->nclasses; j++){
+      partclassdata *partclassi;
+      int k;
+
+      partclassi = parti->partclassptr[j];
+      for(k = 2; k<partclassi->ntypes; k++){
+        partpropdata *prop_id;
+        int partprop_index;
+
+        prop_id = GetPartProp(partclassi->labels[k].longlabel);
+        if(prop_id==NULL)continue;
+
+        partprop_index = prop_id-part5propinfo;
+        MergeHistogram(full_part_histogram+partprop_index, parti->histogram_all+partprop_index, MERGE_BOUNDS);
+      }
+    }
+  }
+}
+#endif
 
 /* ------------------ GetPartData ------------------------ */
 
@@ -2117,6 +2159,11 @@ void FinalizePartLoad(partdata *parti){
     visEvac = 1;
   }
 
+#ifdef pp_PART_HIST
+  if(generate_part_histograms==1){
+    MergePartHistograms();
+  }
+#endif
   parttype = 0;
   PartBoundCBInit();
   ParticlePropShowMenu(part5colorindex);
@@ -2191,6 +2238,11 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   LOCK_PART_LOAD;
   parti->loaded = 1;
   parti->display = 1;
+#ifdef pp_PART_HIST
+  if(generate_part_histograms==1){
+    GetPartHistogramFile(parti);
+  }
+#endif
   UpdatePartColors(parti);
   UNLOCK_PART_LOAD;
   FCLOSE_m(parti->stream);

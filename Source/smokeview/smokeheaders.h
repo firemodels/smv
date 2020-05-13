@@ -5,6 +5,9 @@
 #include "gd.h"
 #endif
 
+#ifdef pp_PART_HIST
+EXTERNCPP void ComputePartHistograms(void);
+#endif
 #ifdef pp_WUI_VAO
 int InitTerrainVAO(void);
 #ifdef pp_WUI_NEW

@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+//#define pp_PART_HIST            // compute particle histograms
 //#define pp_FORCE_TRANSPARENCY // force transparency when drawing geometry textures
 //#define pp_WUI_VAO            // use opengl vao objects for drawing terrain
 //#define pp_WUI_NEW            // use standalone geom routine for drawing wui terrain

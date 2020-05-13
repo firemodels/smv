@@ -1154,7 +1154,10 @@ typedef struct _partdata {
   int nclasses;
   partclassdata **partclassptr;
   part5data *data5;
-  histogramdata **histograms;
+#ifdef pp_PART_HIST
+  histogramdata **histograms; 
+  histogramdata *histogram_all;
+#endif
   int bounds_set;
   float *global_min, *global_max;
   unsigned char *vis_part;
