@@ -1298,7 +1298,7 @@ int SVimage2var(int rendertype,
 
 /* ------------------ ReadPicture ------------------------ */
 
-unsigned char *ReadPicture(char *filename, int *width, int *height, int printflag){
+unsigned char *ReadPicture(char *filename, int *width, int *height, int *is_transparent, int printflag){
   char *ext;
   unsigned char *returncode;
   char *filebuffer=NULL;
@@ -1345,10 +1345,10 @@ unsigned char *ReadPicture(char *filename, int *width, int *height, int printfla
   if(printflag==1)PRINTF("Loading texture:%s ",filebuffer);
   ext = filebuffer + strlen(filebuffer) - 4;
   if(strncmp(ext,".jpg",4)==0||strncmp(ext,".JPG",4)==0){
-    returncode = ReadJPEG(filebuffer,width,height);
+    returncode = ReadJPEG(filebuffer,width,height,is_transparent);
   }
   else if(strncmp(ext,".png",4)==0||strncmp(ext,".PNG",4)==0){
-    returncode = ReadPNG(filebuffer,width,height);
+    returncode = ReadPNG(filebuffer,width,height,is_transparent);
   }
   else{
     if(allocated==1){
@@ -1374,7 +1374,7 @@ unsigned char *ReadPicture(char *filename, int *width, int *height, int printfla
 
 /* ------------------ ReadJPEG ------------------------ */
 
-unsigned char *ReadJPEG(const char *filename,int *width, int *height){
+unsigned char *ReadJPEG(const char *filename,int *width, int *height, int *is_transparent){
 
   FILE *file;
   gdImagePtr image;
@@ -1397,6 +1397,7 @@ unsigned char *ReadJPEG(const char *filename,int *width, int *height){
     return NULL;
   }
   dptr=dataptr;
+  *is_transparent = 0;
   for(i = 0; i<HEIGHT; i++){
     for(j=0;j<WIDTH;j++){
       unsigned int a;
@@ -1409,6 +1410,7 @@ unsigned char *ReadJPEG(const char *filename,int *width, int *height){
       a = (intrgb>>24)&255;
       a = 255-a;
       if(a<129)a = 0;
+      if(a==0)*is_transparent = 1;
       *dptr++ = (unsigned char)a;
 #else
       *dptr++=0xff;
@@ -1422,7 +1424,7 @@ unsigned char *ReadJPEG(const char *filename,int *width, int *height){
 
 /* ------------------ ReadPNG ------------------------ */
 
-unsigned char *ReadPNG(const char *filename,int *width, int *height){
+unsigned char *ReadPNG(const char *filename,int *width, int *height, int *is_transparent){
 
   FILE *file;
   gdImagePtr image;
@@ -1441,6 +1443,7 @@ unsigned char *ReadPNG(const char *filename,int *width, int *height){
     return NULL;
   }
   dptr=dataptr;
+  *is_transparent = 0;
   for(i = 0; i<*height; i++){
     for(j=0;j<*width;j++){
       unsigned int a;
@@ -1453,6 +1456,7 @@ unsigned char *ReadPNG(const char *filename,int *width, int *height){
       a = (intrgb>>24)&255;
       a = 255-a;
       if(a<129)a=0;
+      if(a==0)*is_transparent = 1;
       *dptr++ = (unsigned char)a;
 #else
       *dptr++=0xff;

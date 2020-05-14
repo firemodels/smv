@@ -48,6 +48,7 @@ SVEXTERN unsigned int SVDECL(*terrain_indices, NULL);
 SVEXTERN int SVDECL(terrain_nindices, 0);
 
 
+SVEXTERN int SVDECL(terrain_show_geometry, 1); 
 SVEXTERN int SVDECL(showhide_textures, 0);
 
 SVEXTERN int SVDECL(print_geominfo, 1);

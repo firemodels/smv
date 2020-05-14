@@ -1614,10 +1614,12 @@ void ReadCAD2Geom(cadgeomdata *cd){
     texti->loaded=0;
     texti->used=0;
     texti->name=0;
+    texti->is_transparent = 0;
 
     if(texti->file!=NULL){
       int texwid, texht;
       unsigned char *floortex;
+      int is_transparent;
 
       if(have_textures==0){
         PRINTF("     Loading CAD textures\n");
@@ -1626,7 +1628,8 @@ void ReadCAD2Geom(cadgeomdata *cd){
       PRINTF("       Loading texture: %s",texti->file);
       glGenTextures(1,&texti->name);
       glBindTexture(GL_TEXTURE_2D,texti->name);
-      floortex=ReadPicture(texti->file,&texwid,&texht,0);
+      floortex=ReadPicture(texti->file,&texwid,&texht,&is_transparent,0);
+      texti->is_transparent = is_transparent;
       if(floortex==NULL){
         PRINTF(" - failed\n");
         fprintf(stderr,"*** Error: Texture file %s failed to load\n",texti->file);

@@ -1917,6 +1917,7 @@ void InitTextures(void){
     if(use_graphics==1){
       char *filename;
       int max_texture_size;
+      int is_transparent;
 
       CheckMemory;
       filename=strrchr(texti->file,*dirseparator);
@@ -1931,7 +1932,8 @@ void InitTextures(void){
       printf("  reading in texture image: %s",texti->file);
       glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
 
-      floortex=ReadPicture(texti->file,&texwid,&texht,0);
+      floortex=ReadPicture(texti->file,&texwid,&texht,&is_transparent,0);
+      texti->is_transparent = is_transparent;
       if(floortex==NULL){
         PRINTF("\n***Error: Texture %s failed to load\n", filename);
         continue;
@@ -2067,10 +2069,13 @@ void InitTextures(void){
     int errorcode;
 
     for(i=0;i<nterrain_textures;i++){
+      int is_transparent;
+
       tt = terrain_textures + i;
       tt->loaded=0;
       tt->used=0;
       tt->display=0;
+      tt->is_transparent = 0;
 
       glGenTextures(1,&tt->name);
       glBindTexture(GL_TEXTURE_2D,tt->name);
@@ -2080,7 +2085,8 @@ void InitTextures(void){
 #ifdef _DEBUG
         PRINTF("terrain texture file: %s",tt->file);
 #endif
-        floortex=ReadPicture(tt->file,&texwid,&texht,0);
+        floortex=ReadPicture(tt->file,&texwid,&texht,&is_transparent,0);
+        tt->is_transparent = is_transparent;
         if(floortex==NULL)PRINTF("***Error: Texture file %s failed to load\n",tt->file);
       }
       if(floortex!=NULL){
@@ -5845,7 +5851,6 @@ int ReadSMV(bufferstreamdata *stream){
           buff2 = TrimFrontBack(buffer);
           len_buffer = strlen(buff2);
           if(len_buffer>0&&strcmp(buff2, "null")!=0){
-            nterrain_textures = 1;
             NewMemory((void **)&terrain_textures[i].file, (len_buffer+1)*sizeof(char));
             strcpy(terrain_textures[i].file, buff2);
           }
@@ -12744,6 +12749,23 @@ int ReadIni2(char *inifile, int localfile){
         sscanf(buffer, "%i", &show_path_knots);
         continue;
       }
+      if(Match(buffer, "SHOWGEOMTERRAIN")==1){
+        int nt;
+
+        if(fgets(buffer, 255, stream)==NULL)break;
+        sscanf(buffer, "%i %i", &nt, &terrain_show_geometry);
+        if(terrain_textures!=NULL){
+          for(i = 0; i<MIN(nt, nterrain_textures); i++){
+            texturedata *texti;
+
+            texti = terrain_textures+i;
+            if(fgets(buffer, 255, stream)==NULL)break;
+            sscanf(buffer, "%i ", &(texti->display));
+          }
+        }
+        continue;
+      }
+
       if(Match(buffer, "SHOWIGNITION") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%i %i", &vis_threshold, &vis_onlythreshold);
@@ -13709,6 +13731,14 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, "TICKS\n");
     fprintf(fileout, " %f %f %f %f %f %f %i\n", begt[0], begt[1], begt[2], endt[0], endt[1], endt[2], ticki->nbars);
     fprintf(fileout, " %f %i %f %f %f %f\n", ticki->dlength, ticki->dir, rgbtemp[0], rgbtemp[1], rgbtemp[2], ticki->width);
+  }
+  fprintf(fileout, "SHOWGEOMTERRAIN\n");
+  fprintf(fileout, "%i %i\n", nterrain_textures, terrain_show_geometry);
+  for(i = 0; i<nterrain_textures; i++){
+    texturedata *texti;
+
+    texti = terrain_textures+i;
+    fprintf(fileout, "%i\n", texti->display);
   }
 
   fprintf(fileout, "TOURCIRCLE\n");

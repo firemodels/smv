@@ -270,21 +270,36 @@ void DrawTerrainGeom(int option){
   int i;
   float terrain_shininess = 100.0;
   float terrain_specular[4] = {0.8, 0.8, 0.8, 1.0};
+  int draw_opaque_texture=0;
 
   if(terrain_nindices<=0)return;
-    glEnable(GL_NORMALIZE);
-    glShadeModel(GL_SMOOTH);
-    ENABLE_LIGHTING;
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&terrain_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,rgbterrain);
-    glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,terrain_specular);
-    glEnable(GL_COLOR_MATERIAL);
+  
+  glEnable(GL_NORMALIZE);
+  glShadeModel(GL_SMOOTH);
+  ENABLE_LIGHTING;
+  glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&terrain_shininess);
+  glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,rgbterrain);
+  glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,terrain_specular);
+  glEnable(GL_COLOR_MATERIAL);
   
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-xbar0, -ybar0, -zbar0);
 
-  if(option==DRAW_OPAQUE){
+  if(terrain_show_geometry==1&&option==DRAW_OPAQUE){
+    for(i = 0; i<nterrain_textures; i++){
+      float dz;
+      texturedata *texti;
+
+
+      texti = terrain_textures+i;
+      if(texti->loaded==1&&texti->display==1&&texti->is_transparent==0){
+        draw_opaque_texture = 1;
+        break;
+      }
+    }
+  }
+  if(terrain_show_geometry==1&&option==DRAW_OPAQUE&&draw_opaque_texture==0){
     glBegin(GL_TRIANGLES);
 
 // surface
@@ -324,50 +339,81 @@ void DrawTerrainGeom(int option){
  // draw texture
 
   if(option==DRAW_TRANSPARENT){
-    float dz;
+    int ii;
+    int opaque_texture_index=-1;
 
-    dz = SCALE2FDS(0.01);
+    for(i = 0; i<nterrain_textures; i++){
+      float dz;
+      texturedata *texti;
+
+
+      texti = terrain_textures+i;
+      if(texti->loaded==1&&texti->display==1&&texti->is_transparent==0){
+        opaque_texture_index = i;;
+        break;
+      }
+    }
+
     TransparentOn();
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     glEnable(GL_TEXTURE_2D);
 
-    glBegin(GL_TRIANGLES);
+    int count = 1;
+    for(ii = -1; ii<nterrain_textures; ii++){
+      float dz;
+      texturedata *texti;
 
-    glBindTexture(GL_TEXTURE_2D, terrain_textures->name);
 
-    for(i = 0; i<terrain_nindices/3; i++){
-      float *v1, *v2, *v3;
-      float *n1, *n2, *n3;
-      float *t1, *t2, *t3;
-      unsigned int *ind;
+      // draw opaque texture first
+      if(ii==-1){
+        if(opaque_texture_index==-1)continue;
+        texti = terrain_textures+opaque_texture_index;
+      }
+      else{
+        if(ii==opaque_texture_index)continue;
+        texti = terrain_textures+ii;
+      }
+      if(texti->loaded==0||texti->display==0)continue;
+      dz = SCALE2FDS((float)(count)*0.01);
+      count++;
 
-      ind = terrain_indices + 3*i;
+      glBindTexture(GL_TEXTURE_2D, texti->name);
 
-      v1 = terrain_vertices  + 9*ind[0];
-      t1 = terrain_tvertices + 2*ind[0];
-      n1 = v1 + 3;
-      if(n1[2]<0.0)continue;
-      glNormal3fv(n1);
-      glTexCoord2fv(t1);
-      glVertex3f(v1[0], v1[1], v1[2]+dz);
+      glBegin(GL_TRIANGLES);
 
-      v2 = terrain_vertices  + 9*ind[1];
-      t2 = terrain_tvertices + 2*ind[1];
-      n2 = v2 + 3;
-      glTexCoord2fv(t2);
-      glNormal3fv(n2);
-      glVertex3f(v2[0], v2[1], v2[2]+dz);
+      for(i = 0; i<terrain_nindices/3; i++){
+        float *v1, *v2, *v3;
+        float *n1, *n2, *n3;
+        float *t1, *t2, *t3;
+        unsigned int *ind;
 
-      v3 = terrain_vertices  + 9*ind[2];
-      t3 = terrain_tvertices + 2*ind[2];
-      n3 = v3 + 3;
-      glTexCoord2fv(t3);
-      glNormal3fv(n3);
-      glVertex3f(v3[0], v3[1], v3[2]+dz);
+        ind = terrain_indices+3*i;
+
+        v1 = terrain_vertices+9*ind[0];
+        t1 = terrain_tvertices+2*ind[0];
+        n1 = v1+3;
+        if(n1[2]<0.0)continue;
+        glNormal3fv(n1);
+        glTexCoord2fv(t1);
+        glVertex3f(v1[0], v1[1], v1[2]+dz);
+
+        v2 = terrain_vertices+9*ind[1];
+        t2 = terrain_tvertices+2*ind[1];
+        n2 = v2+3;
+        glTexCoord2fv(t2);
+        glNormal3fv(n2);
+        glVertex3f(v2[0], v2[1], v2[2]+dz);
+
+        v3 = terrain_vertices+9*ind[2];
+        t3 = terrain_tvertices+2*ind[2];
+        n3 = v3+3;
+        glTexCoord2fv(t3);
+        glNormal3fv(n3);
+        glVertex3f(v3[0], v3[1], v3[2]+dz);
+      }
+      glEnd();
+
     }
-
-
-    glEnd();
     glDisable(GL_TEXTURE_2D);
     TransparentOff();
   }

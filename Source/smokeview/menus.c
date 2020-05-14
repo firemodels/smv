@@ -5885,7 +5885,33 @@ void ShowObjectsMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
-/* ------------------ ZoneShowMenu ------------------------ */
+
+/* ------------------ TerrainShowMenu ------------------------ */
+
+void TerrainMenu(int value){
+  if(value>=0){
+    texturedata *texti;
+
+    if(value>=0&&value<nterrain_textures){
+      texti = terrain_textures+value;
+      texti->display = 1-texti->display;
+    }
+  }
+  else{
+    switch(value){
+    case -1:
+      terrain_show_geometry = 1-terrain_show_geometry;
+      break;
+    default:
+      ASSERT(0);
+      break;
+    }
+  }
+  updatemenu = 1;
+  GLUTPOSTREDISPLAY;
+}
+  
+  /* ------------------ ZoneShowMenu ------------------------ */
 
 void ZoneShowMenu(int value){
   switch(value){
@@ -6148,6 +6174,7 @@ static int filesdialogmenu = 0, viewdialogmenu = 0, datadialogmenu = 0, windowdi
 static int labelmenu=0, titlemenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0;
 static int optionmenu=0, rotatetypemenu=0;
 static int resetmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
+static int terrainmenu = 0;
 static int render_resolutionmenu=0, render_filetypemenu=0, render_filesuffixmenu=0, render_skipmenu=0;
 static int render_startmenu = 0;
 #ifdef pp_COMPRESS
@@ -8549,6 +8576,35 @@ updatemenu=0;
     }
   }
 
+  /* --------------------------------terrain menu -------------------------- */
+
+
+  if(terrain_nindices>0||nterrain_textures>0){
+    int i;
+
+    CREATEMENU(terrainmenu, TerrainMenu);
+    if(terrain_nindices>0){
+      if(terrain_show_geometry==1)glutAddMenuEntry(_("*show terrain"), -1);
+      if(terrain_show_geometry==0)glutAddMenuEntry(_("show terrain"), -1);
+    }
+    for(i = 0; i<nterrain_textures; i++){
+      texturedata *texti;
+
+      texti = terrain_textures+i;
+      if(texti->loaded==1){
+        char tlabel[256];
+        
+        strcpy(tlabel, "");
+        if(texti->display==1)strcat(tlabel, "*");
+        strcat(tlabel, texti->file);
+        if(texti->display==1)glutAddMenuEntry(tlabel, i);
+        if(texti->display==0)glutAddMenuEntry(tlabel, i);
+      }
+    }
+
+  }
+
+
   /* --------------------------------reset menu -------------------------- */
 
   CREATEMENU(resetmenu,ResetMenu);
@@ -8638,6 +8694,9 @@ updatemenu=0;
   GLUTADDSUBMENU(_("Geometry"),geometrymenu);
   GLUTADDSUBMENU(_("Labels"),labelmenu);
   GLUTADDSUBMENU(_("Viewpoints"), resetmenu);
+  if(terrain_nindices>0||nterrain_textures>0){
+    GLUTADDSUBMENU(_("Terrain"), terrainmenu);
+  }
   glutAddMenuEntry("-", MENU_DUMMY);
   if(nsmoke3dloaded>0){
     showhide_data = 1;

@@ -307,7 +307,7 @@ typedef struct _labeldata {
 
 typedef struct _texturedata {
   char *file;
-  int loaded, display, used;
+  int loaded, display, used, is_transparent;
   GLuint name;
 } texturedata;
 
