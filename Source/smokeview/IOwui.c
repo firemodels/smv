@@ -24,7 +24,8 @@
 
 void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigned int **indices_arg, int *sizeof_indices_arg, int *nindices_arg){
   geomlistdata *terrain;
-  int i, sizeof_indices, sizeof_vertices, sizeof_tvertices, terrain_nindices, *terrain_indices;
+  int i, sizeof_indices, sizeof_vertices, sizeof_tvertices, terrain_nindices;
+ unsigned int *terrain_indices;
   float *terrain_vertices;
   float terrain_xmin, terrain_xmax, terrain_ymin, terrain_ymax;
   int first = 1;
@@ -295,7 +296,7 @@ void DrawTerrainGeom(int option){
       float *v1, *v2, *v3;
       float *c1, *c2, *c3;
       float *n1, *n2, *n3;
-      int *ind;
+      unsigned int *ind;
 
       ind = terrain_indices + 3*i;
 
@@ -342,7 +343,7 @@ void DrawTerrainGeom(int option){
       float *v1, *v2, *v3;
       float *n1, *n2, *n3;
       float *t1, *t2, *t3;
-      int *ind;
+      unsigned int *ind;
 
       ind = terrain_indices + 3*i;
 
