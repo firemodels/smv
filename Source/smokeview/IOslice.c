@@ -7513,11 +7513,9 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   }
 
   if((vd->volslice == 1 && plotz >= 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
-    float zmax;
     int maxi;
     float agl_smv;
 
-    zmax = zplttemp[meshi->kbar];
     constval = zplttemp[plotz] + offset_slice*sd->sliceoffset - znode[0]+SCALE2SMV(sliceoffset_all);
     xplttemp = meshi->xplt_orig;
     yplttemp = meshi->yplt_orig;
@@ -7592,7 +7590,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
       for(j = sd->js1; j<sd->js2; j++){
         yy1 = yplttemp[j];
         for(i = sd->is1; i<sd->is2; i++){
-          float z11, yy2, z22;
+          float z11, z22;
 
           z11 = znode[IJ2(i, j)];
           z22 = znode[IJ2(i+1, j)];

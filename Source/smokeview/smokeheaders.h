@@ -16,7 +16,7 @@ void DrawTerrainGeomGPU(void);
 void DrawTerrainGeom(int option);
 #endif
 #ifdef pp_VAO_OR_WUI_NEW
-void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, int **indices_arg, int *sizeof_indices_arg, int *nindices_arg);
+void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigned int **indices_arg, int *sizeof_indices_arg, int *nindices_arg);
 #endif
 
 #ifdef pp_C_SLICE

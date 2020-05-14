@@ -22,12 +22,10 @@
 
 /* ------------------ GenerateTerrainGeom ------------------------ */
 
-void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, int **indices_arg, int *sizeof_indices_arg, int *nindices_arg){
+void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigned int **indices_arg, int *sizeof_indices_arg, int *nindices_arg){
   geomlistdata *terrain;
   int i, sizeof_indices, sizeof_vertices, sizeof_tvertices, terrain_nindices, *terrain_indices;
   float *terrain_vertices;
-  float *vertices;
-  int *indices;
   float terrain_xmin, terrain_xmax, terrain_ymin, terrain_ymax;
   int first = 1;
 
@@ -37,7 +35,6 @@ void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, int **i
   sizeof_tvertices = 2*terrain->nverts*sizeof(float);
   NewMemory((void **)&terrain_vertices, sizeof_vertices);
   NewMemory((void **)&terrain_tvertices, sizeof_tvertices);
-  vertices = terrain_vertices;
   for(i = 0; i<terrain->nverts; i++){
     vertdata *verti;
     float *xyz;
@@ -92,7 +89,6 @@ void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, int **i
 
   sizeof_indices = 3*terrain->ntriangles*sizeof(unsigned int);
   NewMemory((void **)&terrain_indices, sizeof_indices);
-  indices = terrain_indices;
   for(i = 0; i<terrain->ntriangles; i++){
     tridata *trii;
     int i0, i1, i2;
