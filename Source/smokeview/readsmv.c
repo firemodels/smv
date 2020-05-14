@@ -2409,37 +2409,37 @@ void GetBoxGeomCorners(void){
   zmin = NORMALIZE_Z(zmin);
   zmax = NORMALIZE_Z(zmax);
 
-  box_corners[0][0] = xmin;
-  box_corners[0][1] = ymin;
-  box_corners[0][2] = zmin;
+  box_geom_corners[0][0] = xmin;
+  box_geom_corners[0][1] = ymin;
+  box_geom_corners[0][2] = zmin;
 
-  box_corners[1][0] = xmax;
-  box_corners[1][1] = ymin;
-  box_corners[1][2] = zmin;
+  box_geom_corners[1][0] = xmax;
+  box_geom_corners[1][1] = ymin;
+  box_geom_corners[1][2] = zmin;
 
-  box_corners[2][0] = xmax;
-  box_corners[2][1] = ymax;
-  box_corners[2][2] = zmin;
+  box_geom_corners[2][0] = xmax;
+  box_geom_corners[2][1] = ymax;
+  box_geom_corners[2][2] = zmin;
 
-  box_corners[3][0] = xmin;
-  box_corners[3][1] = ymax;
-  box_corners[3][2] = zmin;
+  box_geom_corners[3][0] = xmin;
+  box_geom_corners[3][1] = ymax;
+  box_geom_corners[3][2] = zmin;
 
-  box_corners[4][0] = xmin;
-  box_corners[4][1] = ymin;
-  box_corners[4][2] = zmax;
+  box_geom_corners[4][0] = xmin;
+  box_geom_corners[4][1] = ymin;
+  box_geom_corners[4][2] = zmax;
 
-  box_corners[5][0] = xmax;
-  box_corners[5][1] = ymin;
-  box_corners[5][2] = zmax;
+  box_geom_corners[5][0] = xmax;
+  box_geom_corners[5][1] = ymin;
+  box_geom_corners[5][2] = zmax;
 
-  box_corners[6][0] = xmax;
-  box_corners[6][1] = ymax;
-  box_corners[6][2] = zmax;
+  box_geom_corners[6][0] = xmax;
+  box_geom_corners[6][1] = ymax;
+  box_geom_corners[6][2] = zmax;
 
-  box_corners[7][0] = xmin;
-  box_corners[7][1] = ymax;
-  box_corners[7][2] = zmax;
+  box_geom_corners[7][0] = xmin;
+  box_geom_corners[7][1] = ymax;
+  box_geom_corners[7][2] = zmax;
 
 }
   
