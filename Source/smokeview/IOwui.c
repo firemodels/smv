@@ -24,27 +24,56 @@
 
 void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, int **indices_arg, int *sizeof_indices_arg, int *nindices_arg){
   geomlistdata *terrain;
-  int i, sizeof_indices, sizeof_vertices, terrain_nindices, *terrain_indices;
+  int i, sizeof_indices, sizeof_vertices, sizeof_tvertices, terrain_nindices, *terrain_indices;
   float *terrain_vertices;
   float *vertices;
   int *indices;
+  float terrain_xmin, terrain_xmax, terrain_ymin, terrain_ymax;
+  int first = 1;
 
   terrain = geominfo->geomlistinfo - 1;
 
-  sizeof_vertices = 9*terrain->nverts*sizeof(float);
+  sizeof_vertices  = 9*terrain->nverts*sizeof(float);
+  sizeof_tvertices = 2*terrain->nverts*sizeof(float);
   NewMemory((void **)&terrain_vertices, sizeof_vertices);
+  NewMemory((void **)&terrain_tvertices, sizeof_tvertices);
   vertices = terrain_vertices;
   for(i = 0; i<terrain->nverts; i++){
     vertdata *verti;
-    surfdata *geomsurf;
+    float *xyz;
 
     verti = terrain->verts+i;
-    terrain_vertices[9*i+0] = verti->xyz[0];
-    terrain_vertices[9*i+1] = verti->xyz[1];
-    terrain_vertices[9*i+2] = verti->xyz[2];
+    xyz = verti->xyz;
+    if(first==1){
+      first = 0;
+      terrain_xmin = xyz[0];
+      terrain_xmax = xyz[0];
+      terrain_ymin = xyz[1];
+      terrain_ymax = xyz[1];
+    }
+    else{
+      terrain_xmin = MIN(terrain_xmin, xyz[0]);
+      terrain_xmax = MAX(terrain_xmax, xyz[0]);
+      terrain_ymin = MIN(terrain_ymin, xyz[1]);
+      terrain_ymax = MAX(terrain_ymax, xyz[1]);
+    }
+  }
+  for(i = 0; i<terrain->nverts; i++){
+    vertdata *verti;
+    surfdata *geomsurf;
+    float *xyz;
+
+    verti = terrain->verts+i;
+    xyz = verti->xyz;
+
+    terrain_vertices[9*i+0] = xyz[0];
+    terrain_vertices[9*i+1] = xyz[1];
+    terrain_vertices[9*i+2] = xyz[2];
     terrain_vertices[9*i+3] = verti->vert_norm[0];;
     terrain_vertices[9*i+4] = verti->vert_norm[1];
     terrain_vertices[9*i+5] = verti->vert_norm[2];
+    terrain_tvertices[2*i+0] = (xyz[0]-terrain_xmin)/(terrain_xmax-terrain_xmin);
+    terrain_tvertices[2*i+1] = (xyz[1]-terrain_ymin)/(terrain_ymax-terrain_ymin);
     geomsurf = verti->triangles[0]->geomsurf;
     if(geomsurf!=NULL){
       float *color;
@@ -66,11 +95,15 @@ void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, int **i
   indices = terrain_indices;
   for(i = 0; i<terrain->ntriangles; i++){
     tridata *trii;
+    int i0, i1, i2;
 
     trii = terrain->triangles+i;
-    terrain_indices[3*i+0] = trii->verts[0]-terrain->verts;
-    terrain_indices[3*i+1] = trii->verts[1]-terrain->verts;
-    terrain_indices[3*i+2] = trii->verts[2]-terrain->verts;
+    i0 = trii->verts[0]-terrain->verts;
+    i1 = trii->verts[1]-terrain->verts;
+    i2 = trii->verts[2]-terrain->verts;
+    terrain_indices[3*i+0] = i0;
+    terrain_indices[3*i+1] = i1;
+    terrain_indices[3*i+2] = i2;
   }
   terrain_nindices = 3*terrain->ntriangles;
   *vertices_arg = terrain_vertices;
@@ -239,52 +272,113 @@ void DrawTerrainGeomGPU(void){
 /* ------------------ DrawTerrainGeom ------------------------ */
 
 #ifdef pp_WUI_NEW
-void DrawTerrainGeom(void){
+void DrawTerrainGeom(int option){
 // xyz, norm, color
   int i;
   float terrain_shininess = 100.0;
   float terrain_specular[4] = {0.8, 0.8, 0.8, 1.0};
 
   if(terrain_nindices<=0)return;
-  glEnable(GL_NORMALIZE);
-  glShadeModel(GL_SMOOTH);
-  ENABLE_LIGHTING;
-  glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&terrain_shininess);
-  glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,rgbterrain);
-  glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,terrain_specular);
-  glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_NORMALIZE);
+    glShadeModel(GL_SMOOTH);
+    ENABLE_LIGHTING;
+    glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&terrain_shininess);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,rgbterrain);
+    glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,terrain_specular);
+    glEnable(GL_COLOR_MATERIAL);
+  
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-xbar0, -ybar0, -zbar0);
-  glBegin(GL_TRIANGLES);
 
-  for(i = 0; i<terrain_nindices/3; i++){
-    float *v1, *v2, *v3;
-    float *c1, *c2, *c3;
-    float *n1, *n2, *n3;
+  if(option==DRAW_OPAQUE){
+    glBegin(GL_TRIANGLES);
 
-    v1 = terrain_vertices + 9*terrain_indices[3*i+0];
-    n1 = v1 + 3;
-    c1 = v1 + 6;
-    glColor3fv(c1);
-    glNormal3fv(n1);
-    glVertex3fv(v1);
+// surface
+    for(i = 0; i<terrain_nindices/3; i++){
+      float *v1, *v2, *v3;
+      float *c1, *c2, *c3;
+      float *n1, *n2, *n3;
+      int *ind;
 
-    v2 = terrain_vertices + 9*terrain_indices[3*i+1];
-    n2 = v2 + 3;
-    c2 = v2 + 6;
-    glColor3fv(c2);
-    glNormal3fv(n2);
-    glVertex3fv(v2);
+      ind = terrain_indices + 3*i;
 
-    v3 = terrain_vertices + 9*terrain_indices[3*i+2];
-    n3 = v3 + 3;
-    c3 = v3 + 6;
-    glColor3fv(c3);
-    glNormal3fv(n3);
-    glVertex3fv(v3);
+      v1 = terrain_vertices  + 9*ind[0];
+      n1 = v1 + 3;
+      c1 = v1 + 6;
+      if(n1[2]<0)continue;
+      glColor3fv(c1);
+      glNormal3fv(n1);
+      glVertex3fv(v1);
+
+      v2 = terrain_vertices  + 9*ind[1];
+      n2 = v2 + 3;
+      c2 = v2 + 6;
+      glColor3fv(c2);
+      glNormal3fv(n2);
+      glVertex3fv(v2);
+
+      v3 = terrain_vertices  + 9*ind[2];
+      n3 = v3 + 3;
+      c3 = v3 + 6;
+      glColor3fv(c3);
+      glNormal3fv(n3);
+      glVertex3fv(v3);
+    }
+    glEnd();
   }
-  glEnd();
+
+ // draw texture
+
+  if(option==DRAW_TRANSPARENT){
+    float dz;
+
+    dz = SCALE2FDS(0.01);
+    TransparentOn();
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    glEnable(GL_TEXTURE_2D);
+
+    glBegin(GL_TRIANGLES);
+
+    glBindTexture(GL_TEXTURE_2D, terrain_textures->name);
+
+    for(i = 0; i<terrain_nindices/3; i++){
+      float *v1, *v2, *v3;
+      float *n1, *n2, *n3;
+      float *t1, *t2, *t3;
+      int *ind;
+
+      ind = terrain_indices + 3*i;
+
+      v1 = terrain_vertices  + 9*ind[0];
+      t1 = terrain_tvertices + 2*ind[0];
+      n1 = v1 + 3;
+      if(n1[2]<0.0)continue;
+      glNormal3fv(n1);
+      glTexCoord2fv(t1);
+      glVertex3f(v1[0], v1[1], v1[2]+dz);
+
+      v2 = terrain_vertices  + 9*ind[1];
+      t2 = terrain_tvertices + 2*ind[1];
+      n2 = v2 + 3;
+      glTexCoord2fv(t2);
+      glNormal3fv(n2);
+      glVertex3f(v2[0], v2[1], v2[2]+dz);
+
+      v3 = terrain_vertices  + 9*ind[2];
+      t3 = terrain_tvertices + 2*ind[2];
+      n3 = v3 + 3;
+      glTexCoord2fv(t3);
+      glNormal3fv(n3);
+      glVertex3f(v3[0], v3[1], v3[2]+dz);
+    }
+
+
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+    TransparentOff();
+  }
+
   glPopMatrix();
   glDisable(GL_COLOR_MATERIAL);
   DISABLE_LIGHTING;

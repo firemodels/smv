@@ -13,7 +13,7 @@ int InitTerrainVAO(int sizeof_vertices, int sizeof_indices);
 void DrawTerrainGeomGPU(void);
 #endif
 #ifdef pp_WUI_NEW
-void DrawTerrainGeom(void);
+void DrawTerrainGeom(int option);
 #endif
 #ifdef pp_VAO_OR_WUI_NEW
 void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, int **indices_arg, int *sizeof_indices_arg, int *nindices_arg);

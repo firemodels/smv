@@ -44,7 +44,7 @@ SVEXTERN unsigned int SVDECL(TerrainShaderProgram,0);
 SVEXTERN unsigned int SVDECL(terrain_VBO,0), SVDECL(terrain_VAO,0), SVDECL(terrain_EBO,0);
 #endif
 #ifdef pp_VAO_OR_WUI_NEW
-SVEXTERN float SVDECL(*terrain_vertices, NULL);
+SVEXTERN float SVDECL(*terrain_vertices, NULL), SVDECL(*terrain_tvertices, NULL);
 SVEXTERN unsigned int SVDECL(*terrain_indices, NULL), SVDECL(terrain_nindices, 0);
 #endif
 

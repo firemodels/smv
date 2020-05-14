@@ -18,7 +18,7 @@
 //*** options: all platforms
 
 //#define pp_PART_HIST            // compute particle histograms
-//#define pp_FORCE_TRANSPARENCY // force transparency when drawing geometry textures
+#define pp_FORCE_TRANSPARENCY // force transparency when drawing geometry textures
 //#define pp_SKIP_TERRAIN_DATA  // skip reading in terrain data if case is using immersed geometry
 #define pp_SKIP_BOUNDARY_GEOMS // skips reading of boundary geometry files
 #define pp_GPU                // support the GPU

@@ -1399,12 +1399,17 @@ unsigned char *ReadJPEG(const char *filename,int *width, int *height){
   dptr=dataptr;
   for(i = 0; i<HEIGHT; i++){
     for(j=0;j<WIDTH;j++){
+      unsigned int a;
+
       intrgb=(unsigned int)gdImageGetPixel(image,j,(unsigned int)(HEIGHT-(1+i)));
       *dptr++ = (intrgb>>16)&255;
       *dptr++ = (intrgb>>8)&255;
       *dptr++ = intrgb&255;
 #ifdef pp_FORCE_TRANSPARENCY
-      *dptr++ = (intrgb>>24)&255;
+      a = (intrgb>>24)&255;
+      a = 255-a;
+      if(a<129)a = 0;
+      *dptr++ = (unsigned char)a;
 #else
       *dptr++=0xff;
 #endif
@@ -1438,12 +1443,17 @@ unsigned char *ReadPNG(const char *filename,int *width, int *height){
   dptr=dataptr;
   for(i = 0; i<*height; i++){
     for(j=0;j<*width;j++){
+      unsigned int a;
+
       intrgb=(unsigned int)gdImageGetPixel(image,j,(unsigned int)(*height-(1+i)));
       *dptr++ = (intrgb>>16)&255;
       *dptr++ = (intrgb>>8)&255;
       *dptr++ = intrgb&255;
 #ifdef pp_FORCE_TRANSPARENCY
-      *dptr++ = (intrgb>>24)&255;
+      a = (intrgb>>24)&255;
+      a = 255-a;
+      if(a<129)a=0;
+      *dptr++ = (unsigned char)a;
 #else
       *dptr++=0xff;
 #endif
