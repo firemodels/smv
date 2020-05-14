@@ -12,12 +12,8 @@ EXTERNCPP void ComputePartHistograms(void);
 int InitTerrainVAO(int sizeof_vertices, int sizeof_indices);
 void DrawTerrainGeomGPU(void);
 #endif
-#ifdef pp_WUI_NEW
 void DrawTerrainGeom(int option);
-#endif
-#ifdef pp_VAO_OR_WUI_NEW
 void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigned int **indices_arg, int *sizeof_indices_arg, int *nindices_arg);
-#endif
 
 #ifdef pp_C_SLICE
 EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error);

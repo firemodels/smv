@@ -29,17 +29,6 @@
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
 
 //#define pp_WUI_VAO            // use opengl vao objects for drawing terrain
-#define pp_WUI_NEW            // use standalone geom routine for drawing wui terrain
-
-#ifdef pp_WUI_VAO
-#define pp_VAO_OR_WUI_NEW
-#endif
-
-#ifdef pp_WUI_NEW
-#undef pp_VAO_OR_WUI_NEW
-#define pp_VAO_OR_WUI_NEW
-#endif
-
 
 //*** debug: all platforms
 //#define pp_ISOTIME          // output iso load times

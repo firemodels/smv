@@ -10125,13 +10125,11 @@ typedef struct {
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
   GetBoxGeomCorners();
-#ifdef pp_WUI_NEW
   if(ngeominfo>0&&auto_terrain==1){
     int sizeof_vertices, sizeof_indices;
 
     GenerateTerrainGeom(&terrain_vertices, &sizeof_vertices, &terrain_indices, &sizeof_indices, &terrain_nindices);
   }
-#endif
 #ifdef pp_WUI_VAO
   have_terrain_vao = 0;
   if(ngeominfo>0&&auto_terrain==1){

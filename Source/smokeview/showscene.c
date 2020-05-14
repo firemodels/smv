@@ -305,19 +305,13 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     CLIP_GEOMETRY;
     DrawTerrainGeomGPU(DRAW_OPAQUE);
   }
-#ifdef pp_WUI_NEW
   else{
     CLIP_GEOMETRY;
     DrawTerrainGeom(DRAW_OPAQUE);
   }
-#endif
-#endif
-
-#ifndef pp_WUI_VAO
-#ifdef pp_WUI_NEW
+#else
   CLIP_GEOMETRY;
   DrawTerrainGeom(DRAW_OPAQUE);
-#endif
 #endif
 
   if(visTerrainType != TERRAIN_HIDDEN&&nterraininfo>0&&ngeominfo==0){
@@ -435,19 +429,13 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     CLIP_GEOMETRY;
     DrawTerrainGeomGPU(DRAW_TRANSPARENT);
   }
-#ifdef pp_WUI_NEW
   else{
     CLIP_GEOMETRY;
     DrawTerrainGeom(DRAW_TRANSPARENT);
   }
-#endif
-#endif
-
-#ifndef pp_WUI_VAO
-#ifdef pp_WUI_NEW
+#else
   CLIP_GEOMETRY;
   DrawTerrainGeom(DRAW_TRANSPARENT);
-#endif
 #endif
 
   /* ++++++++++++++++++++++++ draw triangles +++++++++++++++++++++++++ */

@@ -18,8 +18,6 @@
                            returncode=fread(var,4,size,WUIFILE);\
                            FSEEK(WUIFILE,4,SEEK_CUR)
 
-#ifdef pp_VAO_OR_WUI_NEW
-
 /* ------------------ GenerateTerrainGeom ------------------------ */
 
 void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigned int **indices_arg, int *sizeof_indices_arg, int *nindices_arg){
@@ -109,7 +107,6 @@ void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigne
   *sizeof_indices_arg = sizeof_indices;
   *nindices_arg = terrain_nindices;
 }
-#endif
 
 #ifdef pp_WUI_VAO
 /* ------------------ InitTerrainVAO ------------------------ */
@@ -268,7 +265,6 @@ void DrawTerrainGeomGPU(void){
 
 /* ------------------ DrawTerrainGeom ------------------------ */
 
-#ifdef pp_WUI_NEW
 void DrawTerrainGeom(int option){
 // xyz, norm, color
   int i;
@@ -380,7 +376,6 @@ void DrawTerrainGeom(int option){
   glDisable(GL_COLOR_MATERIAL);
   DISABLE_LIGHTING;
 }
-#endif
 
 /* ------------------ DrawNorth ------------------------ */
 
