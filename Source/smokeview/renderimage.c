@@ -1406,15 +1406,11 @@ unsigned char *ReadJPEG(const char *filename,int *width, int *height, int *is_tr
       *dptr++ = (intrgb>>16)&255;
       *dptr++ = (intrgb>>8)&255;
       *dptr++ = intrgb&255;
-#ifdef pp_FORCE_TRANSPARENCY
       a = (intrgb>>24)&255;
       a = 255-a;
       if(a<129)a = 0;
       if(a==0)*is_transparent = 1;
       *dptr++ = (unsigned char)a;
-#else
-      *dptr++=0xff;
-#endif
     }
   }
   gdImageDestroy(image);
@@ -1452,15 +1448,11 @@ unsigned char *ReadPNG(const char *filename,int *width, int *height, int *is_tra
       *dptr++ = (intrgb>>16)&255;
       *dptr++ = (intrgb>>8)&255;
       *dptr++ = intrgb&255;
-#ifdef pp_FORCE_TRANSPARENCY
       a = (intrgb>>24)&255;
       a = 255-a;
       if(a<129)a=0;
       if(a==0)*is_transparent = 1;
       *dptr++ = (unsigned char)a;
-#else
-      *dptr++=0xff;
-#endif
     }
   }
   gdImageDestroy(image);

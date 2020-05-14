@@ -493,13 +493,9 @@ void DrawGeom(int flag, int timestate){
 
   // draw geometry surface
 
-#ifdef pp_FORCE_TRANSPARENCY
-    TransparentOn();
-#else
     if(flag==DRAW_TRANSPARENT&&use_transparency_data==1){
       TransparentOn();
     }
-#endif
 
     if(usetexturebar==1&&texture_state==OFF){
       texture_state=TextureOn(texture_iso_colorbar_id,&texture_first);
@@ -765,9 +761,6 @@ void DrawGeom(int flag, int timestate){
             glBegin(GL_TRIANGLES);
             lasttexture = texti;
           }
-#ifdef pp_FORCE_TRANSPARENCY
-          if(trianglei->verts[0]->vert_norm[2]<0.0)continue;
-#endif
           for(j = 0; j < 3; j++){
             vertdata *vertj;
             float *tvertj;
