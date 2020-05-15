@@ -288,7 +288,6 @@ void DrawTerrainGeom(int option){
 
   if(terrain_show_geometry==1&&option==DRAW_OPAQUE){
     for(i = 0; i<nterrain_textures; i++){
-      float dz;
       texturedata *texti;
 
 
@@ -343,7 +342,6 @@ void DrawTerrainGeom(int option){
     int opaque_texture_index=-1;
 
     for(i = 0; i<nterrain_textures; i++){
-      float dz;
       texturedata *texti;
 
 
