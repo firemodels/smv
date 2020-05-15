@@ -5900,7 +5900,10 @@ void TerrainMenu(int value){
   else{
     switch(value){
     case -1:
-      terrain_show_geometry = 1-terrain_show_geometry;
+      terrain_show_geometry_surface = 1 - terrain_show_geometry_surface;
+      break;
+    case -2:
+      terrain_show_geometry_outline = 1 - terrain_show_geometry_outline;
       break;
     default:
       ASSERT(0);
@@ -8584,8 +8587,10 @@ updatemenu=0;
 
     CREATEMENU(terrainmenu, TerrainMenu);
     if(terrain_nindices>0){
-      if(terrain_show_geometry==1)glutAddMenuEntry(_("*show terrain"), -1);
-      if(terrain_show_geometry==0)glutAddMenuEntry(_("show terrain"), -1);
+      if(terrain_show_geometry_surface==1)glutAddMenuEntry(_("*surface"), -1);
+      if(terrain_show_geometry_surface==0)glutAddMenuEntry(_("surface"), -1);
+      if(terrain_show_geometry_outline==1)glutAddMenuEntry(_("*outline"), -2);
+      if(terrain_show_geometry_outline==0)glutAddMenuEntry(_("outline"), -2);
     }
     for(i = 0; i<nterrain_textures; i++){
       texturedata *texti;

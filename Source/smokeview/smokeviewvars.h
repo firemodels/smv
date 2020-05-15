@@ -48,7 +48,8 @@ SVEXTERN unsigned int SVDECL(*terrain_indices, NULL);
 SVEXTERN int SVDECL(terrain_nindices, 0);
 
 
-SVEXTERN int SVDECL(terrain_show_geometry, 1); 
+SVEXTERN int SVDECL(terrain_show_geometry_surface, 1); 
+SVEXTERN int SVDECL(terrain_show_geometry_outline, 0);
 SVEXTERN int SVDECL(showhide_textures, 0);
 
 SVEXTERN int SVDECL(print_geominfo, 1);
@@ -343,7 +344,8 @@ SVEXTERN int SVDECL(light_type_global, INFINITE_LIGHT), SVDECL(update_vol_lights
 SVEXTERN int SVDECL(scatter_type_glui,ISOTROPIC);
 SVEXTERN float SVDECL(scatter_param, 0.5);
 
-SVEXTERN float box_corners[8][3], box_geom_corners[8][3], SVDECL(have_box_geom_corners,0);
+SVEXTERN float box_corners[8][3], box_geom_corners[8][3];
+SVEXTERN int SVDECL(have_box_geom_corners, 0);
 SVEXTERN float boxmin_global[3], boxmax_global[3], max_cell_length;
 SVEXTERN int SVDECL(update_boxbounds, 1);
 SVEXTERN int SVDECL(have_beam, 0), SVDECL(showbeam_as_line, 1), SVDECL(use_beamcolor,0), beam_color[3];

@@ -286,7 +286,7 @@ void DrawTerrainGeom(int option){
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-xbar0, -ybar0, -zbar0);
 
-  if(terrain_show_geometry==1&&option==DRAW_OPAQUE){
+  if((terrain_show_geometry_outline==1||terrain_show_geometry_surface==1)&&option==DRAW_OPAQUE){
     for(i = 0; i<nterrain_textures; i++){
       texturedata *texti;
 
@@ -298,7 +298,7 @@ void DrawTerrainGeom(int option){
       }
     }
   }
-  if(terrain_show_geometry==1&&option==DRAW_OPAQUE&&draw_opaque_texture==0){
+  if(terrain_show_geometry_surface==1&&option==DRAW_OPAQUE&&draw_opaque_texture==0){
     glBegin(GL_TRIANGLES);
 
 // surface
@@ -313,7 +313,7 @@ void DrawTerrainGeom(int option){
       v1 = terrain_vertices  + 9*ind[0];
       n1 = v1 + 3;
       c1 = v1 + 6;
-      if(n1[2]<0)continue;
+  //    if(n1[2]<0)continue;
       glColor3fv(c1);
       glNormal3fv(n1);
       glVertex3fv(v1);
@@ -331,6 +331,45 @@ void DrawTerrainGeom(int option){
       glColor3fv(c3);
       glNormal3fv(n3);
       glVertex3fv(v3);
+    }
+    glEnd();
+  }
+
+  if(terrain_show_geometry_outline==1&&option==DRAW_OPAQUE&&draw_opaque_texture==0){
+    glBegin(GL_LINES);
+
+    // surface
+    for(i = 0; i<terrain_nindices/3; i++){
+      float *v1, *v2, *v3;
+      float *c1, *c2, *c3;
+      unsigned int *ind;
+
+      ind = terrain_indices+3*i;
+
+      v1 = terrain_vertices+9*ind[0];
+      c1 = v1+6;
+      v2 = terrain_vertices+9*ind[1];
+      c2 = v2+6;
+      v3 = terrain_vertices+9*ind[2];
+      c3 = v3+6;
+
+      glColor3fv(c1);
+      glVertex3fv(v1);
+
+      glColor3fv(c2);
+      glVertex3fv(v2);
+
+      glColor3fv(c2);
+      glVertex3fv(v2);
+
+      glColor3fv(c3);
+      glVertex3fv(v3);
+
+      glColor3fv(c3);
+      glVertex3fv(v3);
+
+      glColor3fv(c1);
+      glVertex3fv(v1);
     }
     glEnd();
   }

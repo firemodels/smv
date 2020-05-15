@@ -2373,6 +2373,7 @@ void GetBoxGeomCorners(void){
   vertdata *verti;
   geomlistdata *geomlisti;
 
+  have_box_geom_corners = 0;
   if(geominfo==NULL||geominfo->geomlistinfo==NULL||auto_terrain==0||ngeominfo==0)return;
 
   geomi = geominfo;
@@ -12753,7 +12754,7 @@ int ReadIni2(char *inifile, int localfile){
         int nt;
 
         if(fgets(buffer, 255, stream)==NULL)break;
-        sscanf(buffer, "%i %i", &nt, &terrain_show_geometry);
+        sscanf(buffer, "%i %i %i", &nt, &terrain_show_geometry_surface, &terrain_show_geometry_outline);
         if(terrain_textures!=NULL){
           for(i = 0; i<MIN(nt, nterrain_textures); i++){
             texturedata *texti;
@@ -13733,7 +13734,7 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, " %f %i %f %f %f %f\n", ticki->dlength, ticki->dir, rgbtemp[0], rgbtemp[1], rgbtemp[2], ticki->width);
   }
   fprintf(fileout, "SHOWGEOMTERRAIN\n");
-  fprintf(fileout, "%i %i\n", nterrain_textures, terrain_show_geometry);
+  fprintf(fileout, "%i %i %i\n", nterrain_textures, terrain_show_geometry_surface, terrain_show_geometry_outline);
   for(i = 0; i<nterrain_textures; i++){
     texturedata *texti;
 
