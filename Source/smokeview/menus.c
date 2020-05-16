@@ -43,6 +43,11 @@ float     slice_load_time;
     }\
   }
 
+#define MENU_TERRAIN_SHOW_SURFACE -1
+#define MENU_TERRAIN_SHOW_LINES   -2
+#define MENU_TERRAIN_SHOW_POINTS  -3
+#define MENU_TERRAIN_SHOW_TOP     -4
+
 #define MENU_KEEP_ALL -2
 #define MENU_KEEP_FINE -3
 #define MENU_KEEP_COARSE -4
@@ -5886,9 +5891,10 @@ void ShowObjectsMenu(int value){
 }
 
 
-/* ------------------ TerrainShowMenu ------------------------ */
+/* ------------------ TerrainGeomShowMenu ------------------------ */
 
-void TerrainMenu(int value){
+void TerrainGeomShowMenu(int value){
+  if(value==MENU_DUMMY)return;
   if(value>=0){
     texturedata *texti;
 
@@ -5899,11 +5905,17 @@ void TerrainMenu(int value){
   }
   else{
     switch(value){
-    case -1:
+    case MENU_TERRAIN_SHOW_SURFACE:
       terrain_show_geometry_surface = 1 - terrain_show_geometry_surface;
       break;
-    case -2:
+    case MENU_TERRAIN_SHOW_LINES:
       terrain_show_geometry_outline = 1 - terrain_show_geometry_outline;
+      break;
+    case MENU_TERRAIN_SHOW_POINTS:
+      terrain_show_geometry_points = 1-terrain_show_geometry_points;
+      break;
+    case MENU_TERRAIN_SHOW_TOP:
+      terrain_showonly_top = 1 - terrain_showonly_top;
       break;
     default:
       ASSERT(0);
@@ -6177,7 +6189,7 @@ static int filesdialogmenu = 0, viewdialogmenu = 0, datadialogmenu = 0, windowdi
 static int labelmenu=0, titlemenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0;
 static int optionmenu=0, rotatetypemenu=0;
 static int resetmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
-static int terrainmenu = 0;
+static int terrain_geom_showmenu = 0;
 static int render_resolutionmenu=0, render_filetypemenu=0, render_filesuffixmenu=0, render_skipmenu=0;
 static int render_startmenu = 0;
 #ifdef pp_COMPRESS
@@ -6193,7 +6205,7 @@ static int loadpatchsinglemenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=
 static int plot3dshowsinglemeshmenu=0;
 static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
 static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchsinglemenu=0,showpatchextmenu=0;
-static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, aboutmenu=0, disclaimermenu=0, terrain_showmenu=0;
+static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
 static int scriptmenu=0;
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
 #ifdef pp_LUA
@@ -6909,6 +6921,7 @@ updatemenu=0;
 
       texti = textureinfo + i;
       if(texti->loaded==0||texti->used==0)continue;
+      if(texti>=terrain_textures&&texti<terrain_textures+nterrain_textures)continue;
       ntextures_used++;
       if(texti->display==1){
         STRCPY(menulabel,"*");
@@ -7105,9 +7118,9 @@ updatemenu=0;
     }
   }
 
-/* --------------------------------terrain_showmenu -------------------------- */
+/* --------------------------------terrain_obst_showmenu -------------------------- */
 
-  CREATEMENU(terrain_showmenu,GeometryMenu);
+  CREATEMENU(terrain_obst_showmenu,GeometryMenu);
   if(visTerrainType==TERRAIN_3D)glutAddMenuEntry(_("*3D surface"),17+TERRAIN_3D);
   if(visTerrainType!=TERRAIN_3D)glutAddMenuEntry(_("3D surface"),17+TERRAIN_3D);
   if(terrain_textures!=NULL){ // &&terrain_texture->loaded==1
@@ -7239,16 +7252,59 @@ updatemenu=0;
 
   }
 
-/* --------------------------------geometry menu -------------------------- */
+  /* --------------------------------terrain menu -------------------------- */
+
+
+  if(terrain_nindices>0||nterrain_textures>0){
+    int i;
+
+    CREATEMENU(terrain_geom_showmenu, TerrainGeomShowMenu);
+    if(terrain_nindices>0){
+      if(terrain_show_geometry_surface==1)glutAddMenuEntry(_("*surface"),      MENU_TERRAIN_SHOW_SURFACE);
+      if(terrain_show_geometry_surface==0)glutAddMenuEntry(_("surface"),       MENU_TERRAIN_SHOW_SURFACE);
+      if(terrain_showonly_top==1)glutAddMenuEntry(_("*show only top surface"), MENU_TERRAIN_SHOW_TOP);
+      if(terrain_showonly_top==0)glutAddMenuEntry(_("show only top surface"),  MENU_TERRAIN_SHOW_TOP);
+      if(terrain_show_geometry_outline==1)glutAddMenuEntry(_("*outline"),      MENU_TERRAIN_SHOW_LINES);
+      if(terrain_show_geometry_outline==0)glutAddMenuEntry(_("outline"),       MENU_TERRAIN_SHOW_LINES);
+      if(terrain_show_geometry_points==1)glutAddMenuEntry(_("*points"),        MENU_TERRAIN_SHOW_POINTS);
+      if(terrain_show_geometry_points==0)glutAddMenuEntry(_("points"),         MENU_TERRAIN_SHOW_POINTS);
+    }
+    if(nterrain_textures>0){
+      glutAddMenuEntry("-", MENU_DUMMY);
+      glutAddMenuEntry("textures:", MENU_DUMMY);
+    }
+    for(i = 0; i<nterrain_textures; i++){
+      texturedata *texti;
+
+      texti = terrain_textures+i;
+      if(texti->loaded==1){
+        char tlabel[256];
+
+        strcpy(tlabel, "  ");
+        if(texti->display==1)strcat(tlabel, "*");
+        strcat(tlabel, texti->file);
+        if(texti->display==1)glutAddMenuEntry(tlabel, i);
+        if(texti->display==0)glutAddMenuEntry(tlabel, i);
+      }
+    }
+
+  }
+  
+  /* --------------------------------geometry menu -------------------------- */
 
   CREATEMENU(geometrymenu,GeometryMenu);
   if(ntotal_blockages>0)GLUTADDSUBMENU(_("Obstacles"),blockagemenu);
-  if(ngeominfo>0)GLUTADDSUBMENU(_("Immersed"),immersedmenu);
+  if((auto_terrain==0&ngeominfo>0)||(auto_terrain==1&&ngeominfo>1)){
+    GLUTADDSUBMENU(_("Immersed"), immersedmenu);
+  }
   if(GetNumActiveDevices()>0||ncvents>0){
     GLUTADDSUBMENU(_("Objects"),showobjectsmenu);
   }
   if(nterraininfo>0&&ngeominfo==0){
-    GLUTADDSUBMENU(_("Terrain"),terrain_showmenu);
+    GLUTADDSUBMENU(_("Terrain"),terrain_obst_showmenu);
+  }
+  if(terrain_nindices>0||nterrain_textures>0){
+    GLUTADDSUBMENU(_("Terrain"), terrain_geom_showmenu);
   }
   if(GetNTotalVents()>0)GLUTADDSUBMENU(_("Surfaces"), ventmenu);
   if(nrooms > 0){
@@ -8579,37 +8635,6 @@ updatemenu=0;
     }
   }
 
-  /* --------------------------------terrain menu -------------------------- */
-
-
-  if(terrain_nindices>0||nterrain_textures>0){
-    int i;
-
-    CREATEMENU(terrainmenu, TerrainMenu);
-    if(terrain_nindices>0){
-      if(terrain_show_geometry_surface==1)glutAddMenuEntry(_("*surface"), -1);
-      if(terrain_show_geometry_surface==0)glutAddMenuEntry(_("surface"), -1);
-      if(terrain_show_geometry_outline==1)glutAddMenuEntry(_("*outline"), -2);
-      if(terrain_show_geometry_outline==0)glutAddMenuEntry(_("outline"), -2);
-    }
-    for(i = 0; i<nterrain_textures; i++){
-      texturedata *texti;
-
-      texti = terrain_textures+i;
-      if(texti->loaded==1){
-        char tlabel[256];
-        
-        strcpy(tlabel, "");
-        if(texti->display==1)strcat(tlabel, "*");
-        strcat(tlabel, texti->file);
-        if(texti->display==1)glutAddMenuEntry(tlabel, i);
-        if(texti->display==0)glutAddMenuEntry(tlabel, i);
-      }
-    }
-
-  }
-
-
   /* --------------------------------reset menu -------------------------- */
 
   CREATEMENU(resetmenu,ResetMenu);
@@ -8699,9 +8724,6 @@ updatemenu=0;
   GLUTADDSUBMENU(_("Geometry"),geometrymenu);
   GLUTADDSUBMENU(_("Labels"),labelmenu);
   GLUTADDSUBMENU(_("Viewpoints"), resetmenu);
-  if(terrain_nindices>0||nterrain_textures>0){
-    GLUTADDSUBMENU(_("Terrain"), terrainmenu);
-  }
   glutAddMenuEntry("-", MENU_DUMMY);
   if(nsmoke3dloaded>0){
     showhide_data = 1;
@@ -8845,7 +8867,7 @@ updatemenu=0;
   }
   if(titlesafe_offset==0)glutAddMenuEntry(_("Offset window"), MENU_SHOWHIDE_OFFSET);
   if(titlesafe_offset!=0)glutAddMenuEntry(_("*Offset window"),MENU_SHOWHIDE_OFFSET);
-  if(ntextures_loaded_used>0){
+  if(ntextures_loaded_used>nterrain_textures){
     GLUTADDSUBMENU(_("Textures"),textureshowmenu);
   }
 #ifdef pp_MEMPRINT
