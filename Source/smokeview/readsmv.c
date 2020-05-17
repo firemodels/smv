@@ -12754,7 +12754,8 @@ int ReadIni2(char *inifile, int localfile){
         int nt;
 
         if(fgets(buffer, 255, stream)==NULL)break;
-        sscanf(buffer, "%i %i %i", &nt, &terrain_show_geometry_surface, &terrain_show_geometry_outline);
+        sscanf(buffer, "%i %i %i %i %i",
+          &nt, &terrain_show_geometry_surface, &terrain_show_geometry_outline, &terrain_show_geometry_points, &terrain_showonly_top);
         if(terrain_textures!=NULL){
           for(i = 0; i<MIN(nt, nterrain_textures); i++){
             texturedata *texti;
@@ -13734,7 +13735,8 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, " %f %i %f %f %f %f\n", ticki->dlength, ticki->dir, rgbtemp[0], rgbtemp[1], rgbtemp[2], ticki->width);
   }
   fprintf(fileout, "SHOWGEOMTERRAIN\n");
-  fprintf(fileout, "%i %i %i\n", nterrain_textures, terrain_show_geometry_surface, terrain_show_geometry_outline);
+  fprintf(fileout, "%i %i %i %i %i\n",
+    nterrain_textures, terrain_show_geometry_surface, terrain_show_geometry_outline, terrain_show_geometry_points, terrain_showonly_top);
   for(i = 0; i<nterrain_textures; i++){
     texturedata *texti;
 

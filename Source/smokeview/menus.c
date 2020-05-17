@@ -7264,10 +7264,10 @@ updatemenu=0;
       if(terrain_show_geometry_surface==0)glutAddMenuEntry(_("surface"),       MENU_TERRAIN_SHOW_SURFACE);
       if(terrain_showonly_top==1)glutAddMenuEntry(_("*show only top surface"), MENU_TERRAIN_SHOW_TOP);
       if(terrain_showonly_top==0)glutAddMenuEntry(_("show only top surface"),  MENU_TERRAIN_SHOW_TOP);
-      if(terrain_show_geometry_outline==1)glutAddMenuEntry(_("*outline"),      MENU_TERRAIN_SHOW_LINES);
-      if(terrain_show_geometry_outline==0)glutAddMenuEntry(_("outline"),       MENU_TERRAIN_SHOW_LINES);
-      if(terrain_show_geometry_points==1)glutAddMenuEntry(_("*points"),        MENU_TERRAIN_SHOW_POINTS);
-      if(terrain_show_geometry_points==0)glutAddMenuEntry(_("points"),         MENU_TERRAIN_SHOW_POINTS);
+      if(terrain_show_geometry_outline==1)glutAddMenuEntry(_("*edges"),        MENU_TERRAIN_SHOW_LINES);
+      if(terrain_show_geometry_outline==0)glutAddMenuEntry(_("edges"),         MENU_TERRAIN_SHOW_LINES);
+      if(terrain_show_geometry_points==1)glutAddMenuEntry(_("*vertices"),      MENU_TERRAIN_SHOW_POINTS);
+      if(terrain_show_geometry_points==0)glutAddMenuEntry(_("vertices"),       MENU_TERRAIN_SHOW_POINTS);
     }
     if(nterrain_textures>0){
       glutAddMenuEntry("-", MENU_DUMMY);

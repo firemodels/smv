@@ -23,8 +23,6 @@
 void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigned int **indices_arg, int *sizeof_indices_arg, int *nindices_arg){
   geomlistdata *terrain;
   int i, sizeof_indices, sizeof_vertices, sizeof_tvertices, terrain_nindices;
- unsigned int *terrain_indices;
-  float *terrain_vertices;
   float terrain_xmin, terrain_xmax, terrain_ymin, terrain_ymax;
   int first = 1;
 
@@ -88,17 +86,31 @@ void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigne
 
   sizeof_indices = 3*terrain->ntriangles*sizeof(unsigned int);
   NewMemory((void **)&terrain_indices, sizeof_indices);
+  NewMemory((void **)&terrain_colors, 3*terrain->ntriangles*sizeof(float));
   for(i = 0; i<terrain->ntriangles; i++){
     tridata *trii;
     int i0, i1, i2;
+    surfdata *geomsurf;
 
     trii = terrain->triangles+i;
+    geomsurf = trii->geomsurf;
+
     i0 = trii->verts[0]-terrain->verts;
     i1 = trii->verts[1]-terrain->verts;
     i2 = trii->verts[2]-terrain->verts;
     terrain_indices[3*i+0] = i0;
     terrain_indices[3*i+1] = i1;
     terrain_indices[3*i+2] = i2;
+    if(geomsurf!=NULL){
+      terrain_colors[3*i+0] = geomsurf->color[0];
+      terrain_colors[3*i+1] = geomsurf->color[1];
+      terrain_colors[3*i+2] = geomsurf->color[2];
+    }
+    else{
+      terrain_colors[3*i+0] = 0.0;
+      terrain_colors[3*i+1] = 0.0;
+      terrain_colors[3*i+2] = 1.0;
+    }
   }
   terrain_nindices = 3*terrain->ntriangles;
   terrain_nfaces = terrain->ntriangles;
@@ -271,164 +283,246 @@ void DrawTerrainGeom(int option){
   int i;
   float terrain_shininess = 100.0;
   float terrain_specular[4] = {0.8, 0.8, 0.8, 1.0};
-  int draw_opaque_texture=0;
+  float neutral_color[4] = {0.91, 0.91, 0.76, 1.0};
+  int draw_surface = 1, draw_texture=0;
 
   if(terrain_nindices<=0)return;
-  
+
+  for(i = 0; i<nterrain_textures; i++){
+    texturedata *texti;
+
+    texti = terrain_textures+i;
+    if(texti->loaded==1&&texti->display==1){
+      draw_texture = 1;
+      if(texti->is_transparent==0)draw_surface = 0; // don't draw a surface if we are drawing a texture
+    }
+  }
+  if(option==DRAW_TRANSPARENT&&draw_texture==0)return;
+
   glEnable(GL_NORMALIZE);
   glShadeModel(GL_SMOOTH);
   ENABLE_LIGHTING;
-  glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&terrain_shininess);
-  glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,rgbterrain);
-  glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,terrain_specular);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &terrain_shininess);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, rgbterrain);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, terrain_specular);
   glEnable(GL_COLOR_MATERIAL);
-  
+
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-xbar0, -ybar0, -zbar0);
 
-  if((terrain_show_geometry_points==1||terrain_show_geometry_outline==1||terrain_show_geometry_surface==1)&&option==DRAW_OPAQUE){
-    for(i = 0; i<nterrain_textures; i++){
-      texturedata *texti;
+  if(option==DRAW_OPAQUE){
 
+    //*** surface
 
-      texti = terrain_textures+i;
-      if(texti->loaded==1&&texti->display==1&&texti->is_transparent==0){
-        draw_opaque_texture = 1;
-        break;
+    if(terrain_show_geometry_surface==1&&draw_surface==1){
+      glBegin(GL_TRIANGLES);
+
+      // surface
+      for(i = 0; i<terrain_nindices/3; i++){
+        float *v1, *v2, *v3;
+        float *c1;
+        float *n1, *n2, *n3;
+        unsigned int *ind;
+
+        ind = terrain_indices+3*i;
+
+        c1 = terrain_colors+3*i;
+
+        v1 = terrain_vertices+9*ind[0];
+        n1 = v1+3;
+        if(terrain_showonly_top==1&&n1[2]<0.0)continue;
+        glColor3fv(c1);
+        glNormal3fv(n1);
+        glVertex3fv(v1);
+
+        v2 = terrain_vertices+9*ind[1];
+        n2 = v2+3;
+        glNormal3fv(n2);
+        glVertex3fv(v2);
+
+        v3 = terrain_vertices+9*ind[2];
+        n3 = v3+3;
+        glNormal3fv(n3);
+        glVertex3fv(v3);
       }
+      glEnd();
     }
-  }
-  if(terrain_show_geometry_surface==1&&option==DRAW_OPAQUE&&draw_opaque_texture==0){
-    glBegin(GL_TRIANGLES);
 
-// surface
-    for(i = 0; i<terrain_nindices/3; i++){
-      float *v1, *v2, *v3;
-      float *c1, *c2, *c3;
-      float *n1, *n2, *n3;
-      unsigned int *ind;
+#define FDS_OFFSET 0.005
 
-      ind = terrain_indices + 3*i;
+    //*** edges
 
-      v1 = terrain_vertices  + 9*ind[0];
-      n1 = v1 + 3;
-      c1 = v1 + 6;
-      if(terrain_showonly_top==1&&n1[2]<0.0)continue;
-      glColor3fv(c1);
-      glNormal3fv(n1);
-      glVertex3fv(v1);
+    if(terrain_show_geometry_outline==1){
+      glBegin(GL_LINES);
 
-      v2 = terrain_vertices  + 9*ind[1];
-      n2 = v2 + 3;
-      c2 = v2 + 6;
-      glColor3fv(c2);
-      glNormal3fv(n2);
-      glVertex3fv(v2);
+      // lines
+      glColor3fv(foregroundcolor);
+      for(i = 0; i<terrain_nfaces; i++){
+        int j;
 
-      v3 = terrain_vertices  + 9*ind[2];
-      n3 = v3 + 3;
-      c3 = v3 + 6;
-      glColor3fv(c3);
-      glNormal3fv(n3);
-      glVertex3fv(v3);
-    }
-    glEnd();
-  }
+        float *v1, *v2, *v3;
+        float v1o[3], v2o[3], v3o[3];
+        float *n1, *n2, *n3;
+        unsigned int *ind;
 
-  #define FDS_OFFSET 0.005
+        ind = terrain_indices+3*i;
 
-  if(terrain_show_geometry_outline==1&&option==DRAW_OPAQUE&&draw_opaque_texture==0){
-    glBegin(GL_LINES);
+        v1 = terrain_vertices+9*ind[0];
+        v2 = terrain_vertices+9*ind[1];
+        v3 = terrain_vertices+9*ind[2];
+        n1 = v1+3;
+        n2 = v2+3;
+        n3 = v3+3;
+        if(terrain_showonly_top==1&&n1[2]<0.0)continue;
 
-    // lines
-    glColor3fv(foregroundcolor);
-    for(i = 0; i<terrain_nfaces; i++){
-      int j;
+        for(j = 0; j<3; j++){
+          v1o[j] = v1[j]+SCALE2FDS(FDS_OFFSET*n1[j]);
+          v2o[j] = v2[j]+SCALE2FDS(FDS_OFFSET*n2[j]);
+          v3o[j] = v3[j]+SCALE2FDS(FDS_OFFSET*n3[j]);
+        }
 
-      float *v1, *v2, *v3;
-      float v1o[3], v2o[3], v3o[3];
-      float *n1, *n2, *n3;
-      unsigned int *ind;
+        glVertex3fv(v1o);
+        glVertex3fv(v2o);
 
-      ind = terrain_indices+3*i;
+        glVertex3fv(v2o);
+        glVertex3fv(v3o);
 
-      v1 = terrain_vertices+9*ind[0];
-      v2 = terrain_vertices+9*ind[1];
-      v3 = terrain_vertices+9*ind[2];
-      n1 = v1+3;
-      n2 = v2+3;
-      n3 = v3+3;
-      if(terrain_showonly_top==1&&n1[2]<0.0)continue;
-
-      for(j = 0; j<3; j++){
-        v1o[j] = v1[j]+SCALE2FDS(FDS_OFFSET*n1[j]);
-        v2o[j] = v2[j]+SCALE2FDS(FDS_OFFSET*n2[j]);
-        v3o[j] = v3[j]+SCALE2FDS(FDS_OFFSET*n3[j]);
+        glVertex3fv(v3o);
+        glVertex3fv(v1o);
       }
-
-      glVertex3fv(v1o);
-      glVertex3fv(v2o);
-
-      glVertex3fv(v2o);
-      glVertex3fv(v3o);
-
-      glVertex3fv(v3o);
-      glVertex3fv(v1o);
+      glEnd();
     }
-    glEnd();
-  }
 
-  if(terrain_show_geometry_points==1&&option==DRAW_OPAQUE&&draw_opaque_texture==0){
-    glPointSize(4.0);
-    glBegin(GL_POINTS);
+    //*** vertices
 
-    // points
-    glColor3fv(foregroundcolor);
-    for(i = 0; i<terrain_nfaces; i++){
-      int j;
+    if(terrain_show_geometry_points==1){
+      glPointSize(6.0);
+      glBegin(GL_POINTS);
 
-      float *v1, *v2, *v3;
-      float v1o[3], v2o[3], v3o[3];
-      float *n1, *n2, *n3;
-      unsigned int *ind;
+      // points
+      glColor3fv(foregroundcolor);
+      for(i = 0; i<terrain_nfaces; i++){
+        int j;
 
-      ind = terrain_indices+3*i;
+        float *v1, *v2, *v3;
+        float v1o[3], v2o[3], v3o[3];
+        float *n1, *n2, *n3;
+        unsigned int *ind;
 
-      v1 = terrain_vertices+9*ind[0];
-      v2 = terrain_vertices+9*ind[1];
-      v3 = terrain_vertices+9*ind[2];
-      n1 = v1+3;
-      n2 = v2+3;
-      n3 = v3+3;
-      if(terrain_showonly_top==1&&n1[2]<0.0)continue;
+        ind = terrain_indices+3*i;
 
-      for(j = 0; j<3; j++){
-        v1o[j] = v1[j]+SCALE2FDS(FDS_OFFSET*n1[j]);
-        v2o[j] = v2[j]+SCALE2FDS(FDS_OFFSET*n2[j]);
-        v3o[j] = v3[j]+SCALE2FDS(FDS_OFFSET*n3[j]);
+        v1 = terrain_vertices+9*ind[0];
+        v2 = terrain_vertices+9*ind[1];
+        v3 = terrain_vertices+9*ind[2];
+        n1 = v1+3;
+        n2 = v2+3;
+        n3 = v3+3;
+        if(terrain_showonly_top==1&&n1[2]<0.0)continue;
+
+        for(j = 0; j<3; j++){
+          v1o[j] = v1[j]+SCALE2FDS(FDS_OFFSET*n1[j]);
+          v2o[j] = v2[j]+SCALE2FDS(FDS_OFFSET*n2[j]);
+          v3o[j] = v3[j]+SCALE2FDS(FDS_OFFSET*n3[j]);
+        }
+
+        glVertex3fv(v1o);
+        glVertex3fv(v2o);
+        glVertex3fv(v3o);
       }
-
-      glVertex3fv(v1o);
-      glVertex3fv(v2o);
-      glVertex3fv(v3o);
+      glEnd();
     }
-    glEnd();
-  }
-  
-  // draw texture
 
-  if(option==DRAW_TRANSPARENT){
+    //*** bottom side of top surface
+
+    if(terrain_showonly_top==1&&(terrain_show_geometry_surface==1||draw_texture==1)){
+      glBegin(GL_TRIANGLES);
+
+      // surface
+      for(i = 0; i<terrain_nindices/3; i++){
+        float *v1, *v2, *v3;
+        float *n1, *n2, *n3;
+        unsigned int *ind;
+        float n1n[3], n2n[3], n3n[3];
+
+        ind = terrain_indices+3*i;
+
+
+        v1 = terrain_vertices+9*ind[0];
+        n1 = v1+3;
+        if(n1[2]<0.0)continue;
+        n1n[0] = -n1[0];
+        n1n[1] = -n1[1];
+        n1n[2] = -n1[2];
+        glColor4fv(neutral_color);
+
+        glNormal3fv(n1n);
+        glVertex3fv(v1);
+
+        v3 = terrain_vertices+9*ind[2];
+        n3 = v3+3;
+        n3n[0] = -n3[0];
+        n3n[1] = -n3[1];
+        n3n[2] = -n3[2];
+        glNormal3fv(n3n);
+        glVertex3fv(v3);
+
+        v2 = terrain_vertices+9*ind[1];
+        n2 = v2+3;
+        n2n[0] = -n2[0];
+        n2n[1] = -n2[1];
+        n2n[2] = -n2[2];
+        glNormal3fv(n2n);
+        glVertex3fv(v2);
+      }
+      glEnd();
+    }
+
+    //*** draw sides in a neutral color
+
+      if(terrain_showonly_top==0&&(terrain_show_geometry_surface==1||draw_texture==1)){
+      glBegin(GL_TRIANGLES);
+
+      // surface
+      for(i = 0; i<terrain_nindices/3; i++){
+        float *v1, *v2, *v3;
+        float *n1, *n2, *n3;
+        unsigned int *ind;
+
+        ind = terrain_indices+3*i;
+
+        v1 = terrain_vertices+9*ind[0];
+        n1 = v1+3;
+        if(n1[2]>=0.0)continue;
+        glColor4fv(neutral_color);
+        glNormal3fv(n1);
+        glVertex3fv(v1);
+
+        v2 = terrain_vertices+9*ind[1];
+        n2 = v2+3;
+        glNormal3fv(n2);
+        glVertex3fv(v2);
+
+        v3 = terrain_vertices+9*ind[2];
+        n3 = v3+3;
+        glNormal3fv(n3);
+        glVertex3fv(v3);
+      }
+      glEnd();
+    }
+  }
+  else{
+    // draw texture
+
     int ii;
-    int opaque_texture_index=-1;
+    int opaque_texture_index = -1;
 
     for(i = 0; i<nterrain_textures; i++){
       texturedata *texti;
 
-
       texti = terrain_textures+i;
       if(texti->loaded==1&&texti->display==1&&texti->is_transparent==0){
-        opaque_texture_index = i;;
+        opaque_texture_index = i;
         break;
       }
     }
@@ -437,11 +531,10 @@ void DrawTerrainGeom(int option){
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     glEnable(GL_TEXTURE_2D);
 
-    int count = 1;
+    int count = 0;
     for(ii = -1; ii<nterrain_textures; ii++){
       float dz;
       texturedata *texti;
-
 
       // draw opaque texture first
       if(ii==-1){
@@ -453,7 +546,7 @@ void DrawTerrainGeom(int option){
         texti = terrain_textures+ii;
       }
       if(texti->loaded==0||texti->display==0)continue;
-      dz = SCALE2FDS((float)(count)*0.01);
+      dz = SCALE2FDS((float)(count)*FDS_OFFSET);
       count++;
 
       glBindTexture(GL_TEXTURE_2D, texti->name);
@@ -471,7 +564,7 @@ void DrawTerrainGeom(int option){
         v1 = terrain_vertices+9*ind[0];
         t1 = terrain_tvertices+2*ind[0];
         n1 = v1+3;
-        if(terrain_showonly_top==1&&n1[2]<0.0)continue;
+        if(n1[2]<0.0)continue;
         glNormal3fv(n1);
         glTexCoord2fv(t1);
         glVertex3f(v1[0], v1[1], v1[2]+dz);

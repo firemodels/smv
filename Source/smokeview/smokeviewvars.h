@@ -43,7 +43,7 @@ SVEXTERN int GPU_modelview_matrix, GPU_projection_matrix;
 SVEXTERN unsigned int SVDECL(TerrainShaderProgram,0);
 SVEXTERN unsigned int SVDECL(terrain_VBO,0), SVDECL(terrain_VAO,0), SVDECL(terrain_EBO,0);
 #endif
-SVEXTERN float SVDECL(*terrain_vertices, NULL), SVDECL(*terrain_tvertices, NULL);
+SVEXTERN float SVDECL(*terrain_vertices, NULL), SVDECL(*terrain_tvertices, NULL), SVDECL(*terrain_colors, NULL);
 SVEXTERN unsigned int SVDECL(*terrain_indices, NULL);
 SVEXTERN int SVDECL(terrain_nindices, 0);
 SVEXTERN int SVDECL(terrain_nfaces, 0);
