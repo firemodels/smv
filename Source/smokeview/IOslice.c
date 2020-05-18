@@ -2310,9 +2310,19 @@ void UpdateVsliceMenuLabels(void){
 /* ------------------ NewMultiSlice ------------------------ */
 
 int NewMultiSlice(slicedata *sdold,slicedata *sd){
-    float same=0;
+    int same=0;
 
   if(sdold->volslice!=sd->volslice)return 1;
+  if(sd->volslice==0&&sd->slcf_index==0&&sd->slice_filetype==SLICE_TERRAIN){
+    if(ABS(sd->above_ground_level-sdold->above_ground_level)<0.001&&
+      strcmp(sd->label.longlabel, sdold->label.longlabel)==0
+      ){
+      return 0;
+    }
+    else{
+      return 1;
+    }
+  }
   if(sd->volslice==0){
     float delta_orig;
     float delta_scaled;
@@ -2322,16 +2332,16 @@ int NewMultiSlice(slicedata *sdold,slicedata *sd){
   // convert from physical to scaled units using xyzmaxdiff
     delta_orig = 1.5*MAX(sdold->delta_orig,sd->delta_orig);
     delta_scaled = SCALE2SMV(delta_orig);
-      if(sd->slcf_index==0){
-        if(
-        ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled&&         // test whether two slices are identical
-        ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled&&
-        ABS(sd->zmin-sdold->zmin)<delta_scaled&&ABS(sd->zmax-sdold->zmax)<delta_scaled
-        )same=1;
-      }
-      else{
-        if(sd->slcf_index==sdold->slcf_index)same=1;
-      }
+    if(sd->slcf_index==0){
+      if(
+      ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled&&         // test whether two slices are identical
+      ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled&&
+      ABS(sd->zmin-sdold->zmin)<delta_scaled&&ABS(sd->zmax-sdold->zmax)<delta_scaled
+      )same=1;
+    }
+    else{
+      if(sd->slcf_index==sdold->slcf_index)same=1;
+    }
     if(
       same==1&&
       sd->blocknumber==sdold->blocknumber
