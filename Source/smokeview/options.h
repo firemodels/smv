@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+//#define pp_HTML_VR           // output VR html code
 //#define pp_PART_HIST            // compute particle histograms
 //#define pp_SKIP_TERRAIN_DATA  // skip reading in terrain data if case is using immersed geometry
 //#define pp_SKIP_BOUNDARY_GEOMS // skips reading of boundary geometry files
