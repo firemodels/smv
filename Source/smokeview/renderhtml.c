@@ -702,6 +702,7 @@ void GetSliceNodeVerts(int option, int option2,
           int ii, jj, kk;
           char *iblank;
           int nx, ny, nxy;
+          float agl;
 
           meshi = meshinfo+slicei->blocknumber;
           nx = meshi->ibar+1;
@@ -711,6 +712,7 @@ void GetSliceNodeVerts(int option, int option2,
           xplt = meshi->xplt;
           yplt = meshi->yplt;
           if(slicei->slice_filetype==SLICE_TERRAIN){
+            agl = SCALE2FDS(.005) + slicei->above_ground_level;
             zplt = meshi->terrain->znode;
           }
           else{
@@ -842,7 +844,7 @@ void GetSliceNodeVerts(int option, int option2,
                   *verts++ = xplt[i];
                   *verts++ = yplt[j];
                   if(slicei->slice_filetype==SLICE_TERRAIN){
-                    *verts++ = NORMALIZE_Z(zplt[i*ny+j] + slicei->above_ground_level);
+                    *verts++ = NORMALIZE_Z(zplt[i*ny+j] + agl);
                   }
                   else{
                     *verts++ = constval;
