@@ -45,6 +45,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _("                  (override directory specified by RENDERDIR script keyword)"));
     PRINTF("%s\n", _(" -setup         - only show geometry"));
     PRINTF("%s\n", _(" -script scriptfile - run the script file scriptfile"));
+    PRINTF("%s\n", _(" -slice_info    - generate casename.slcf file containing slice file info"));
 #ifdef pp_LUA
     PRINTF("%s\n", " -runluascript  - run the lua script file casename.lua");
     PRINTF("%s\n", " -luascript scriptfile - run the Lua script file scriptfile");
@@ -441,6 +442,10 @@ void ParseCommandline(int argc, char **argv){
     }
     else if(strncmp(argv[i], "-demo", 5) == 0){
       demo_option = 1;
+    }
+    else if(strncmp(argv[i], "-slice_info", 5)==0){
+      generate_slice_info_from_commandline = 1;
+      use_graphics = 0;
     }
     else if(strncmp(argv[1], "-sizes", 6)==0){
       update_filesizes = 1;
