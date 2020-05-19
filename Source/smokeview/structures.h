@@ -1274,6 +1274,12 @@ typedef struct _slicedata {
 #endif
 } slicedata;
 
+/* --------------------------  slicemenudata ------------------------------------ */
+
+typedef struct _slicemenudata {
+  slicedata *sliceinfo;
+} slicemenudata;
+
 /* --------------------------  multislicedata ------------------------------------ */
 
 typedef struct _multislicedata {

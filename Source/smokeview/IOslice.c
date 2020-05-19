@@ -8466,10 +8466,6 @@ void SliceData2Hist(slicedata *sd, float *xyz, float *dxyz, float time, float dt
 }
 
 
-typedef struct _slicemenudata {
-  slicedata *sliceinfo;
-} slicemenudata;
-
 /* ------------------ ISSliceMenuDup ------------------------ */
 
 int IsSliceMenuDup(slicemenudata *slicemenuinfo, int nslicemenuinfo, char *label, int slcf_index, float position_arg){
@@ -8490,26 +8486,54 @@ int IsSliceMenuDup(slicemenudata *slicemenuinfo, int nslicemenuinfo, char *label
   return 0;
 }
 
+/* ------------------ CompareSliceMenuInfo ------------------------ */
+
+int CompareSliceMenuInfo(const void *arg1, const void *arg2){
+  slicemenudata *sm1, *sm2;
+  slicedata *sf1, *sf2;
+  int i1, i2, compare_label;
+  char *label1, *label2;
+
+  sm1 = *(slicemenudata **)arg1;
+  sm2 = *(slicemenudata **)arg2;
+  sf1 = sm1->sliceinfo;
+  sf2 = sm2->sliceinfo;
+  label1 = sf1->label.longlabel;
+  label2 = sf2->label.longlabel;
+  compare_label = strcmp(label1, label2);
+  if(sf1->slice_filetype>sf2->slice_filetype)return 1;
+  if(sf1->slice_filetype<sf2->slice_filetype)return -1;
+  if(compare_label>0)return 1;
+  if(compare_label<0)return -1;
+  if(sf1->position_orig-sf2->position_orig>0.001)return 1;
+  if(sf1->position_orig-sf2->position_orig<-0.001)return -1;
+  if(sf1->idir>sf2->idir)return 1;
+  if(sf1->idir<sf2->idir)return -1;
+  return 0;
+}
+
+
 /* ------------------ GenerateSliceMenu ------------------------ */
 
 void GenerateSliceMenu(void){
   char slicemenu_filename[256];
   int i;
-  slicemenudata *slicemenuinfo;
   int nslicemenuinfo;
   FILE *stream = NULL;
+
+  if(nsliceinfo==0)return;
 
   strcpy(slicemenu_filename, fdsprefix);
   strcat(slicemenu_filename, ".slcf");
 
-//  if(generate_slice_info_from_commandline==0){
-//  // if slicemenu file already exists then don't generate it again
-//    stream = fopen(slicemenu_filename, "r");
-//    if(stream!=NULL){
-//      fclose(stream);
-//      return;
-//    }
-//  }
+  if(generate_slice_info_from_commandline==0){
+  // if slicemenu file already exists then don't generate it again
+    stream = fopen(slicemenu_filename, "r");
+    if(stream!=NULL){
+      fclose(stream);
+      return;
+    }
+  }
 
   // if we can write out to the slice menu file then abort
   stream = fopen(slicemenu_filename, "w");
@@ -8529,6 +8553,14 @@ void GenerateSliceMenu(void){
     slicemi->sliceinfo = slicei;
     nslicemenuinfo++;
   }
+
+  slicemenudata **menu_sort = NULL;
+  NewMemory((void **)&menu_sort, nslicemenuinfo*sizeof(slicemenudata));
+  for(i = 0; i<nslicemenuinfo; i++){
+    menu_sort[i] = slicemenuinfo+i;
+  }
+  qsort((slicemenudata **)menu_sort, (size_t)nslicemenuinfo, sizeof(slicemenudata *), CompareSliceMenuInfo);
+
   int max1=0,  max2=0, max3=0, max4=0;
   for(i = 0; i<nslicemenuinfo; i++){
     slicedata *slicei;
@@ -8536,7 +8568,7 @@ void GenerateSliceMenu(void){
     char *quantity, cposition[25];
     int dir;
 
-    slicemi = slicemenuinfo+i;
+    slicemi = menu_sort[i];
     slicei = slicemi->sliceinfo;
     quantity = slicei->label.longlabel;
     if(strlen(quantity)>max2)max2 = strlen(quantity);
@@ -8568,7 +8600,7 @@ void GenerateSliceMenu(void){
 
     char format[80];
     sprintf(format, "%s, %s, %s, %s\n",cform1, cform2, "%i", cform4);
-    slicemi = slicemenuinfo+i;
+    slicemi = menu_sort[i];
     slicei = slicemi->sliceinfo;
     quantity = slicei->label.longlabel;
     dir = slicei->idir;
