@@ -8501,14 +8501,19 @@ int CompareSliceMenuInfo(const void *arg1, const void *arg2){
   label1 = sf1->label.longlabel;
   label2 = sf2->label.longlabel;
   compare_label = strcmp(label1, label2);
-  if(sf1->slice_filetype>sf2->slice_filetype)return 1;
+
+  if(sf1->slice_filetype>sf2->slice_filetype)return  1;
   if(sf1->slice_filetype<sf2->slice_filetype)return -1;
-  if(compare_label>0)return 1;
+
+  if(compare_label>0)return  1;
   if(compare_label<0)return -1;
-  if(sf1->position_orig-sf2->position_orig>0.001)return 1;
-  if(sf1->position_orig-sf2->position_orig<-0.001)return -1;
-  if(sf1->idir>sf2->idir)return 1;
+
+  if(sf1->idir>sf2->idir)return  1;
   if(sf1->idir<sf2->idir)return -1;
+
+  if(sf1->position_orig-sf2->position_orig> 0.001)return  1;
+  if(sf1->position_orig-sf2->position_orig<-0.001)return -1;
+
   return 0;
 }
 
