@@ -5,6 +5,7 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void GenerateSliceMenu(void);
 #ifdef pp_PART_HIST
 EXTERNCPP void ComputePartHistograms(void);
 #endif

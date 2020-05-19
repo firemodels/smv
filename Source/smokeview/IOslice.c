@@ -8465,3 +8465,126 @@ void SliceData2Hist(slicedata *sd, float *xyz, float *dxyz, float time, float dt
   FREEMEMORY(vals);
 }
 
+
+typedef struct _slicemenudata {
+  slicedata *sliceinfo;
+} slicemenudata;
+
+/* ------------------ ISSliceMenuDup ------------------------ */
+
+int IsSliceMenuDup(slicemenudata *slicemenuinfo, int nslicemenuinfo, char *label, int slcf_index, float position_arg){
+  int i;
+
+  for(i = 0; i<nslicemenuinfo; i++){
+    slicemenudata *slicemi;
+    slicedata *slicei;
+
+    slicemi = slicemenuinfo+i;
+    slicei = slicemi->sliceinfo;
+    if(
+      slicei->slcf_index==slcf_index&&
+      strcmp(slicei->label.longlabel, label)==0&&
+      ABS(slicei->position_orig-position_arg)<0.001
+      )return 1;
+  }
+  return 0;
+}
+
+/* ------------------ GenerateSliceMenu ------------------------ */
+
+void GenerateSliceMenu(void){
+  char slicemenu_filename[256];
+  int i;
+  slicemenudata *slicemenuinfo;
+  int nslicemenuinfo;
+  FILE *stream = NULL;
+
+  strcpy(slicemenu_filename, fdsprefix);
+  strcat(slicemenu_filename, ".slcf");
+
+//  if(generate_slice_info_from_commandline==0){
+//  // if slicemenu file already exists then don't generate it again
+//    stream = fopen(slicemenu_filename, "r");
+//    if(stream!=NULL){
+//      fclose(stream);
+//      return;
+//    }
+//  }
+
+  // if we can write out to the slice menu file then abort
+  stream = fopen(slicemenu_filename, "w");
+  if(stream==NULL)return;
+
+  nslicemenuinfo = 0;
+  NewMemory((void **)&slicemenuinfo, nsliceinfo*sizeof(slicemenudata));
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+    slicemenudata *slicemi;
+    int j;
+
+    slicei = sliceinfo+i;
+    if(slicei->volslice==1)continue;
+    if(IsSliceMenuDup(slicemenuinfo, nslicemenuinfo, slicei->label.longlabel, slicei->slcf_index, slicei->position_orig)==1)continue;
+    slicemi = slicemenuinfo+nslicemenuinfo;
+    slicemi->sliceinfo = slicei;
+    nslicemenuinfo++;
+  }
+  int max1=0,  max2=0, max3=0, max4=0;
+  for(i = 0; i<nslicemenuinfo; i++){
+    slicedata *slicei;
+    slicemenudata *slicemi;
+    char *quantity, cposition[25];
+    int dir;
+
+    slicemi = slicemenuinfo+i;
+    slicei = slicemi->sliceinfo;
+    quantity = slicei->label.longlabel;
+    if(strlen(quantity)>max2)max2 = strlen(quantity);
+    dir = slicei->idir;
+    sprintf(cposition, "%f", slicei->position_orig);
+    TrimZeros(cposition);
+    if(strlen(cposition)>max4)max4 = strlen(cposition);
+  }
+  if(nslicemenuinfo<1000)max1 = 4;
+  if(nslicemenuinfo<100)max1 = 3;
+  if(nslicemenuinfo<100)max1 = 2;
+  if(nslicemenuinfo<10)max1 = 1;
+  max1++;
+  max2++;
+  max3=2;
+  max4++;
+  char cform1[20], cform2[20], cform3[20], cform4[20];
+  sprintf(cform1, "%s%i.%is", "%",max1,max1);/* %20.20s*/
+  sprintf(cform2, "%s-%i.%is", "%", max2,max2);
+  sprintf(cform3, "%s%i.%is", "%", max3,max3);
+  sprintf(cform4, "%s%i.%is", "%", max4,max4);
+  for(i = 0; i<nslicemenuinfo; i++){
+    slicedata *slicei;
+    slicemenudata *slicemi;
+    char *quantity, cposition[25];
+    int dir;
+    float position;
+    char index[10];
+
+    char format[80];
+    sprintf(format, "%s, %s, %s, %s\n",cform1, cform2, "%i", cform4);
+    slicemi = slicemenuinfo+i;
+    slicei = slicemi->sliceinfo;
+    quantity = slicei->label.longlabel;
+    dir = slicei->idir;
+    position = slicei->position_orig;
+    sprintf(cposition, "%f", position);
+    TrimZeros(cposition);
+    if(strcmp(quantity, "BURNING RATE")==0){
+      printf("were here\n");
+    }
+    sprintf(index, "%i", i+1);
+    fprintf(stream, format, index, quantity, dir, cposition);
+#ifdef _DEBUG
+    printf(format, index, quantity, dir, cposition);
+#endif
+  }
+  fclose(stream);
+}
+
+ 

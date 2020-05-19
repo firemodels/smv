@@ -10017,6 +10017,11 @@ typedef struct {
   UpdateVSlices();
   if(update_slice==1)return 3;
 
+  GenerateSliceMenu();
+  if(generate_slice_info_from_commandline==1){
+    exit(0);
+  }
+
   GetBoundaryParams();
 
   GetGSliceParams();
