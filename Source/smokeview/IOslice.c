@@ -8582,33 +8582,37 @@ void GenerateSliceMenu(void){
     TrimZeros(cposition);
     if(strlen(cposition)>max4)max4 = strlen(cposition);
   }
-  if(nslicemenuinfo<1000)max1 = 4;
-  if(nslicemenuinfo<100)max1 = 3;
-  if(nslicemenuinfo<100)max1 = 2;
-  if(nslicemenuinfo<10)max1 = 1;
-  max1++;
-  max2++;
-  max3=2;
-  max4++;
+  max1 = 5;
+  max2 = MAX(5, max2) + 1;
+  max3 = 4;
+  max4 = MAX(8, max4) + 1;
   char cform1[20], cform2[20], cform3[20], cform4[20];
   sprintf(cform1, "%s%i.%is", "%",max1,max1);/* %20.20s*/
   sprintf(cform2, "%s-%i.%is", "%", max2,max2);
   sprintf(cform3, "%s%i.%is", "%", max3,max3);
   sprintf(cform4, "%s%i.%is", "%", max4,max4);
+
+  char format[80];
+  sprintf(format, "%s, %s, %s, %s\n",cform1, cform2, cform3, cform4);
+
+
+  fprintf(stream, "\n");
+  fprintf(stream, format, "index", "quantity", "dir", "position");
+#ifdef _DEBUG
+  printf("\n");
+  printf(format, "ind", "quantity", "dir", "pos");
+#endif
   for(i = 0; i<nslicemenuinfo; i++){
     slicedata *slicei;
     slicemenudata *slicemi;
     char *quantity, cposition[25];
-    int dir;
     float position;
-    char index[10];
+    char index[10], cdir[10];
 
-    char format[80];
-    sprintf(format, "%s, %s, %s, %s\n",cform1, cform2, "%i", cform4);
     slicemi = menu_sort[i];
     slicei = slicemi->sliceinfo;
     quantity = slicei->label.longlabel;
-    dir = slicei->idir;
+    sprintf(cdir,"%i",slicei->idir);
     position = slicei->position_orig;
     sprintf(cposition, "%f", position);
     TrimZeros(cposition);
@@ -8616,7 +8620,7 @@ void GenerateSliceMenu(void){
       printf("were here\n");
     }
     sprintf(index, "%i", i+1);
-    fprintf(stream, format, index, quantity, dir, cposition);
+    fprintf(stream, format, index, quantity, cdir, cposition);
 #ifdef _DEBUG
     printf(format, index, quantity, dir, cposition);
 #endif
