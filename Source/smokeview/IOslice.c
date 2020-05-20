@@ -788,7 +788,7 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   int returncode=0;
 
   sd = sliceinfo + sd_index;
-  if(sd->loaded==1)ReadSlice(sd->file,sd_index,ALL_FRAMES, UNLOAD,SET_SLICECOLOR,&error);
+  if(sd->loaded==1)ReadSlice(sd->file,sd_index, ALL_SLICE_FRAMES, UNLOAD,SET_SLICECOLOR,&error);
   if(flag==UNLOAD){
     FREEMEMORY(sd->qslicedata);
     FREEMEMORY(sd->times);
@@ -807,7 +807,7 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
         GetSliceHeader(sd->comp_file,sd->size_file,sd->compression_type,
                        sliceframestep,settmin_s,settmax_s,tmin_s,tmax_s,
                        &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sd->ncompressed, &sd->valmin, &sd->valmax)==0){
-        ReadSlice("",sd_index,ALL_FRAMES,UNLOAD,SET_SLICECOLOR,&error);
+        ReadSlice("",sd_index, ALL_SLICE_FRAMES,UNLOAD,SET_SLICECOLOR,&error);
         return -1;
       }
     }
@@ -940,7 +940,7 @@ void ReadFed(int file_index, int time_frame, int flag, int file_type, int *error
   }
 
   if(file_type==FED_SLICE){
-    ReadSlice(fed_slice->file,fedi->fed_index, ALL_FRAMES, UNLOAD,SET_SLICECOLOR,&error_local);
+    ReadSlice(fed_slice->file,fedi->fed_index, ALL_SLICE_FRAMES, UNLOAD,SET_SLICECOLOR,&error_local);
   }
   else if(file_type==FED_ISO){
     ReadIsoOrig(fed_iso->file,file_index,UNLOAD,&error_local);
@@ -1142,7 +1142,7 @@ void ReadFed(int file_index, int time_frame, int flag, int file_type, int *error
     CReadSlice_frame(0,fedi->co_index,UNLOAD);
   }
   if(file_type==FED_SLICE){
-    ReadSlice(fed_slice->file,fedi->fed_index,ALL_FRAMES,flag,SET_SLICECOLOR,&error_local);
+    ReadSlice(fed_slice->file,fedi->fed_index,ALL_SLICE_FRAMES,flag,SET_SLICECOLOR,&error_local);
   }
   else{
     ReadIsoOrig(fed_iso->file,file_index,flag,&error_local);
@@ -5032,7 +5032,7 @@ FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int flag, int set_slicec
   FILE_SIZE file_size;
 
   use_slice_glui_bounds = 1;
-  file_size = ReadSlice(file, ifile, ALL_FRAMES, flag, set_slicecolor, errorcode);
+  file_size = ReadSlice(file, ifile, ALL_SLICE_FRAMES, flag, set_slicecolor, errorcode);
   use_slice_glui_bounds = 0;
   return file_size;
 }

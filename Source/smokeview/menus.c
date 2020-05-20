@@ -2977,7 +2977,7 @@ void ReloadAllSliceFiles(void){
 #ifdef pp_NEWBOUND_DIALOG
       load_size+=ReadSliceUseGluiBounds(slicei->file,i,LOAD,set_slicecolor,&errorcode);
 #else
-      load_size+=ReadSlice(slicei->file,i,ALL_FRAMES,LOAD,set_slicecolor,&errorcode);
+      load_size+=ReadSlice(slicei->file,i,ALL_SLICE_FRAMES, LOAD,set_slicecolor,&errorcode);
 #endif
     }
     file_count++;
@@ -3018,7 +3018,7 @@ void LoadUnloadMenu(int value){
           ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
         }
         else{
-          ReadSlice(slicei->file, i, ALL_FRAMES, UNLOAD, DEFER_SLICECOLOR,&errorcode);
+          ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, UNLOAD, DEFER_SLICECOLOR,&errorcode);
         }
       }
     }
@@ -3038,7 +3038,7 @@ void LoadUnloadMenu(int value){
       ReadZone(i,UNLOAD,&errorcode);
     }
     for(i=0;i<nsmoke3dinfo;i++){
-      ReadSmoke3D(ALL_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
+      ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
     }
     if(nvolrenderinfo>0){
       UnLoadVolsmoke3DMenu(UNLOAD_ALL);
@@ -3063,7 +3063,7 @@ void LoadUnloadMenu(int value){
     }
     for(i=0;i<nvsliceinfo;i++){
       if(vsliceinfo[i].loaded==1){
-        ReadVSlice(i, ALL_FRAMES, load_mode,&errorcode);
+        ReadVSlice(i, ALL_SLICE_FRAMES, load_mode,&errorcode);
       }
     }
     if(nslice_loaded>1)last_slice_loaded = slice_loaded_list[nslice_loaded-1];
@@ -3096,7 +3096,7 @@ void LoadUnloadMenu(int value){
 #ifdef pp_NEWBOUND_DIALOG
           ReadSliceUseGluiBounds(slicei->file, i, load_mode, set_slicecolor, &errorcode);
 #else
-          ReadSlice(slicei->file, i, ALL_FRAMES, load_mode, set_slicecolor, &errorcode);
+          ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, load_mode, set_slicecolor, &errorcode);
 #endif
         }
       }
@@ -3115,7 +3115,7 @@ void LoadUnloadMenu(int value){
     }
     for(i=0;i<nsmoke3dinfo;i++){
       if(smoke3dinfo[i].loaded==1||smoke3dinfo[i].request_load==1){
-        ReadSmoke3D(ALL_FRAMES, i, load_mode, FIRST_TIME, &errorcode);
+        ReadSmoke3D(ALL_SMOKE_FRAMES, i, load_mode, FIRST_TIME, &errorcode);
       }
     }
     for(i=0;i<npartinfo;i++){
@@ -3596,7 +3596,7 @@ void LoadAllSliceFiles(int slicenum){
     if(slicei->loadstatus==FILE_UNLOADED){
       slicei->loadstatus = FILE_LOADING;
       UNLOCK_SLICE_LOAD;
-      file_size = ReadSlice(slicei->file, i, ALL_FRAMES, LOAD, SET_SLICECOLOR, &errorcode);
+      file_size = ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, LOAD, SET_SLICECOLOR, &errorcode);
       LOCK_SLICE_LOAD;
       slicei->loadstatus = FILE_LOADED;
       slice_load_size += file_size;
@@ -3811,11 +3811,11 @@ void UnloadVSliceMenu(int value){
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   if(value>=0){
-    ReadVSlice(value,ALL_FRAMES,UNLOAD,&errorcode);
+    ReadVSlice(value,ALL_SLICE_FRAMES, UNLOAD,&errorcode);
   }
   else if(value==UNLOAD_ALL){
     for(i=0;i<nvsliceinfo;i++){
-      ReadVSlice(i,ALL_FRAMES,UNLOAD,&errorcode);
+      ReadVSlice(i,ALL_SLICE_FRAMES, UNLOAD,&errorcode);
     }
   }
   else if(value==-2){
@@ -3823,7 +3823,7 @@ void UnloadVSliceMenu(int value){
 
     unload_index=LastVSliceLoadstack();
     if(unload_index>=0&&unload_index<nvsliceinfo){
-      ReadVSlice(unload_index,ALL_FRAMES,UNLOAD,&errorcode);
+      ReadVSlice(unload_index,ALL_SLICE_FRAMES, UNLOAD,&errorcode);
     }
   }
 }
@@ -3931,7 +3931,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value==UNLOAD_ALL){
     for(i=0;i<nvsliceinfo;i++){
-      ReadVSlice(i,ALL_FRAMES,UNLOAD,&errorcode);
+      ReadVSlice(i,ALL_SLICE_FRAMES, UNLOAD,&errorcode);
     }
     return 0;
   }
@@ -3942,7 +3942,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
     vslicedata *vslicei;
     slicedata *slicei;
 
-    return_filesize = ReadVSlice(value, ALL_FRAMES,LOAD, &errorcode);
+    return_filesize = ReadVSlice(value, ALL_SLICE_FRAMES, LOAD, &errorcode);
     vslicei = vsliceinfo + value;
     slicei = vslicei->val;
     if(script_multivslice==0&&slicei!=NULL&&scriptoutstream!=NULL){
@@ -3978,7 +3978,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
       if(strcmp(longlabel,submenulabel)!=0)continue;
       if(dir!=0&&dir!=slicei->idir)continue;
       file_count++;
-      load_size+=ReadVSlice(i,ALL_FRAMES,LOAD,&errorcode);
+      load_size+=ReadVSlice(i,ALL_SLICE_FRAMES, LOAD,&errorcode);
     }
     STOP_TIMER(load_time);
     PRINT_LOADTIMES(file_count,load_size,load_time);
@@ -4010,7 +4010,7 @@ void UnloadSliceMenu(int value){
       ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
     }
     else{
-      ReadSlice("", value, ALL_FRAMES, UNLOAD, SET_SLICECOLOR, &errorcode);
+      ReadSlice("", value, ALL_SLICE_FRAMES, UNLOAD, SET_SLICECOLOR, &errorcode);
     }
   }
   if(value<=-3){
@@ -4026,7 +4026,7 @@ void UnloadSliceMenu(int value){
           ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
         }
         else{
-          ReadSlice("",i, ALL_FRAMES, UNLOAD,DEFER_SLICECOLOR,&errorcode);
+          ReadSlice("",i, ALL_SLICE_FRAMES, UNLOAD,DEFER_SLICECOLOR,&errorcode);
         }
       }
       for(i=0;i<npatchinfo;i++){
@@ -4050,7 +4050,7 @@ void UnloadSliceMenu(int value){
           ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
         }
         else{
-          ReadSlice("", unload_index, ALL_FRAMES, UNLOAD, SET_SLICECOLOR, &errorcode);
+          ReadSlice("", unload_index, ALL_SLICE_FRAMES, UNLOAD, SET_SLICECOLOR, &errorcode);
         }
       }
     }
@@ -4194,12 +4194,12 @@ void UnLoadSmoke3DMenu(int value){
     for(i=0;i<nsmoke3dinfo;i++){
       smoke3di = smoke3dinfo + i;
       if(smoke3di->loaded==1&&smoke3di->type==value){
-        ReadSmoke3D(ALL_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
+        ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
       }
     }
   }
   else{
-    ReadSmoke3D(ALL_FRAMES, value, UNLOAD, FIRST_TIME, &errorcode);
+    ReadSmoke3D(ALL_SMOKE_FRAMES, value, UNLOAD, FIRST_TIME, &errorcode);
   }
 }
 
@@ -4246,7 +4246,7 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
         total_size += smoke3di->file_size;
       }
       else{
-        load_size += ReadSmoke3D(ALL_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
+        load_size += ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
       }
     }
   }
@@ -4305,12 +4305,12 @@ void LoadSmoke3DMenu(int value){
 
       smoke3di = smoke3dinfo + value;
       smoke3di->finalize = 1;
-      ReadSmoke3D(ALL_FRAMES, value, LOAD, FIRST_TIME, &errorcode);
+      ReadSmoke3D(ALL_SMOKE_FRAMES, value, LOAD, FIRST_TIME, &errorcode);
     }
   }
   else if(value==UNLOAD_ALL){
     for(i=0;i<nsmoke3dinfo;i++){
-      ReadSmoke3D(ALL_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
+      ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
     }
   }
   else if(value == MENU_SMOKE_SETTINGS){
@@ -4461,7 +4461,7 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value){
 #ifdef pp_NEWBOUND_DIALOG
         return_filesize=ReadSliceUseGluiBounds(slicei->file, value, LOAD, set_slicecolor, &errorcode);
 #else
-        return_filesize=ReadSlice(slicei->file, value, ALL_FRAMES, LOAD, set_slicecolor, &errorcode);
+        return_filesize=ReadSlice(slicei->file, value, ALL_SLICE_FRAMES, LOAD, set_slicecolor, &errorcode);
 #endif
       }
       if(reset_colorbar == 1)ColorbarMenu(colorbartype_save);
@@ -4471,7 +4471,7 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value){
 
       fed_colorbar = GetColorbar(default_fed_colorbar);
       if(fed_colorbar != NULL && current_colorbar != fed_colorbar)colorbartype_save = current_colorbar - colorbarinfo;
-      ReadFed(value, ALL_FRAMES,LOAD, FED_SLICE, &errorcode);
+      ReadFed(value, ALL_SLICE_FRAMES, LOAD, FED_SLICE, &errorcode);
       if(fed_colorbar != NULL)ColorbarMenu(fed_colorbar - colorbarinfo);
       return_filesize = 0;
     }
@@ -4509,7 +4509,7 @@ void LoadSliceMenu(int value){
               ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
             }
             else{
-              ReadSlice("",i,UNLOAD, ALL_FRAMES, DEFER_SLICECOLOR,&errorcode);
+              ReadSlice("",i, ALL_SLICE_FRAMES, UNLOAD, DEFER_SLICECOLOR,&errorcode);
             }
           }
         }
@@ -4565,7 +4565,7 @@ void LoadSliceMenu(int value){
 #ifdef pp_NEWBOUND_DIALOG
             load_size+=ReadSliceUseGluiBounds(slicei->file,i,LOAD,set_slicecolor,&errorcode);
 #else
-            load_size+=ReadSlice(slicei->file,i, ALL_FRAMES, LOAD,set_slicecolor,&errorcode);
+            load_size+=ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, LOAD,set_slicecolor,&errorcode);
 #endif
           }
           file_count++;
@@ -4938,7 +4938,7 @@ void LoadMultiSliceMenu(int value){
 #ifdef pp_NEWBOUND_DIALOG
         load_size+=ReadSliceUseGluiBounds(slicei->file,i,LOAD,set_slicecolor,&errorcode);
 #else
-        load_size+=ReadSlice(slicei->file,i, ALL_FRAMES, LOAD,set_slicecolor,&errorcode);
+        load_size+=ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, LOAD,set_slicecolor,&errorcode);
 #endif
       }
       file_count++;

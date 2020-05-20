@@ -7,7 +7,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
-#define ALL_FRAMES -1
+#define ALL_SLICE_FRAMES -1
 
 #define COLORBAR_SHIFT_MIN          0.1
 #define COLORBAR_SHIFT_MAX         10.0
@@ -59,7 +59,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 
 #define PROJECTION_PERSPECTIVE  0
 #define PROJECTION_ORTHOGRAPHIC 1
-#define ALL_FRAMES -1
+#define ALL_SMOKE_FRAMES -1
 
 #define INIT 0
 #define UPDATE 1

@@ -1527,7 +1527,7 @@ void ScriptLoad3dSmoke(scriptdata *scripti){
     if(MatchUpper(smoke3di->label.longlabel,scripti->cval) == MATCH){
       smoke3di->finalize = 0;
       if(lastsmoke == i)smoke3di->finalize = 1;
-      ReadSmoke3D(ALL_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
+      ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
       if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
         FREEMEMORY(loaded_file);
         NewMemory((void **)&loaded_file,strlen(scripti->cval)+1);
@@ -2066,10 +2066,10 @@ void ScriptLoadFile(scriptdata *scripti){
     sd = sliceinfo + i;
     if(strcmp(sd->file,scripti->cval)==0){
       if(i<nsliceinfo-nfedinfo){
-        ReadSlice(sd->file,i,ALL_FRAMES, LOAD, SET_SLICECOLOR,&errorcode);
+        ReadSlice(sd->file,i, ALL_SLICE_FRAMES, LOAD, SET_SLICECOLOR,&errorcode);
       }
       else{
-        ReadFed(i,ALL_FRAMES, LOAD,FED_SLICE,&errorcode);
+        ReadFed(i, ALL_SLICE_FRAMES, LOAD,FED_SLICE,&errorcode);
       }
       return;
     }
@@ -2110,7 +2110,7 @@ void ScriptLoadFile(scriptdata *scripti){
     smoke3di = smoke3dinfo + i;
     if(strcmp(smoke3di->file,scripti->cval)==0){
       smoke3di->finalize = 1;
-      ReadSmoke3D(ALL_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
+      ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
       return;
     }
   }
