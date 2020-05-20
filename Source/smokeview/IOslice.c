@@ -872,7 +872,7 @@ void OutputFedCSV(void){
 
 /* ------------------ ReadFed ------------------------ */
 
-void ReadFed(int file_index, int flag, int file_type, int *errorcode){
+void ReadFed(int file_index, int time_frame, int flag, int file_type, int *errorcode){
   feddata *fedi;
   slicedata *fed_slice,*o2,*co2,*co;
   isodata *fed_iso;
@@ -1012,7 +1012,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
        CReadSlice_frame(0,fedi->co2_index,LOAD)<0||
        CReadSlice_frame(0,fedi->co_index,LOAD)<0){
 
-       ReadFed(file_index,UNLOAD, file_type, errorcode);
+       ReadFed(file_index,time_frame, UNLOAD, file_type, errorcode);
        return;
     }
 
@@ -1039,7 +1039,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
     if(NewMemory((void **)&fed_slice->qslicedata,sizeof(float)*frame_size*fed_slice->ntimes)==0||
        NewMemory((void **)&fed_slice->times,sizeof(float)*fed_slice->ntimes)==0
        ){
-       ReadFed(file_index,UNLOAD, file_type, errorcode);
+       ReadFed(file_index,time_frame,UNLOAD, file_type, errorcode);
       *errorcode=-1;
     }
     times=fed_slice->times;
@@ -1065,7 +1065,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
       if(CReadSlice_frame(i,fedi->o2_index,LOAD)<0||
          CReadSlice_frame(i,fedi->co2_index,LOAD)<0||
          CReadSlice_frame(i,fedi->co_index,LOAD)){
-         ReadFed(file_index, UNLOAD, file_type,errorcode);
+         ReadFed(file_index, time_frame,UNLOAD, file_type,errorcode);
          return;
       }
 
@@ -1164,7 +1164,7 @@ void ReadFed(int file_index, int flag, int file_type, int *errorcode){
 
 /* ------------------ ReadVSlice ------------------------ */
 
-FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
+FILE_SIZE ReadVSlice(int ivslice, int time_frame, int flag, int *errorcode){
   vslicedata *vd;
   float valmin, valmax;
   int display;
@@ -1190,7 +1190,7 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
       u = sliceinfo + vd->iu;
       display=u->display;
       if(u->loaded==1){
-        return_filesize+=ReadSlice(u->file, vd->iu, ALL_FRAMES,UNLOAD, SET_SLICECOLOR, errorcode);
+        return_filesize+=ReadSlice(u->file, vd->iu, time_frame,UNLOAD, SET_SLICECOLOR, errorcode);
       }
       u->display=display;
       u->vloaded=0;
@@ -1201,7 +1201,7 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
       v = sliceinfo + vd->iv;
       display=v->display;
       if(v->loaded==1){
-        return_filesize+=ReadSlice(v->file, vd->iv, ALL_FRAMES,UNLOAD, SET_SLICECOLOR, errorcode);
+        return_filesize+=ReadSlice(v->file, vd->iv, time_frame,UNLOAD, SET_SLICECOLOR, errorcode);
       }
       v->display=display;
       v->vloaded=0;
@@ -1212,7 +1212,7 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
       w = sliceinfo + vd->iw;
       display=w->display;
       if(w->loaded==1){
-        return_filesize+=ReadSlice(w->file, vd->iw, ALL_FRAMES,UNLOAD, SET_SLICECOLOR, errorcode);
+        return_filesize+=ReadSlice(w->file, vd->iw, time_frame,UNLOAD, SET_SLICECOLOR, errorcode);
       }
       w->display=display;
       w->vloaded=0;
@@ -1223,7 +1223,7 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
       val = sliceinfo + vd->ival;
       display=val->display;
       if(val->loaded==1){
-        return_filesize+=ReadSlice(val->file, vd->ival, ALL_FRAMES,UNLOAD, SET_SLICECOLOR, errorcode);
+        return_filesize+=ReadSlice(val->file, vd->ival, time_frame,UNLOAD, SET_SLICECOLOR, errorcode);
       }
       val->display=display;
       val->vloaded=0;
@@ -1245,11 +1245,11 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
     finalize = vd->finalize;
     vd->u=u;
     if(scriptoutstream==NULL||script_defer_loading==0){
-      return_filesize += ReadSlice(u->file, vd->iu, ALL_FRAMES,flag, set_slicecolor, errorcode);
+      return_filesize += ReadSlice(u->file, vd->iu, time_frame,flag, set_slicecolor, errorcode);
       if(*errorcode!=0){
         vd->loaded = 1;
         fprintf(stderr, "*** Error: unable to load U velocity vector components in %s . Vector load aborted\n", u->file);
-        ReadVSlice(ivslice, UNLOAD, errorcode);
+        ReadVSlice(ivslice, time_frame, UNLOAD, errorcode);
         *errorcode = 1;
         return 0;
       }
@@ -1268,11 +1268,11 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
     finalize = vd->finalize;
     vd->v=v;
     if(scriptoutstream==NULL||script_defer_loading==0){
-      return_filesize += ReadSlice(v->file, vd->iv, ALL_FRAMES,flag, set_slicecolor, errorcode);
+      return_filesize += ReadSlice(v->file, vd->iv, time_frame,flag, set_slicecolor, errorcode);
       if(*errorcode!=0){
         fprintf(stderr, "*** Error: unable to load V velocity vector components in %s . Vector load aborted\n", v->file);
         vd->loaded = 1;
-        ReadVSlice(ivslice, UNLOAD, errorcode);
+        ReadVSlice(ivslice, time_frame, UNLOAD, errorcode);
         *errorcode = 1;
         return 0;
       }
@@ -1292,11 +1292,11 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
     finalize = vd->finalize;
     vd->w=w;
     if(scriptoutstream==NULL||script_defer_loading==0){
-      return_filesize += ReadSlice(w->file, vd->iw, ALL_FRAMES,flag, set_slicecolor, errorcode);
+      return_filesize += ReadSlice(w->file, vd->iw, time_frame,flag, set_slicecolor, errorcode);
       if(*errorcode!=0){
         fprintf(stderr, "*** Error: unable to load W velocity vector components in %s . Vector load aborted\n", w->file);
         vd->loaded = 1;
-        ReadVSlice(ivslice, UNLOAD, errorcode);
+        ReadVSlice(ivslice, time_frame, UNLOAD, errorcode);
         *errorcode = 1;
         return 0;
       }
@@ -1317,11 +1317,11 @@ FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode){
     finalize = vd->finalize;
     vd->val=val;
     if(scriptoutstream==NULL||script_defer_loading==0){
-      return_filesize += ReadSlice(val->file, vd->ival, ALL_FRAMES,flag, set_slicecolor, errorcode);
+      return_filesize += ReadSlice(val->file, vd->ival, time_frame,flag, set_slicecolor, errorcode);
       if(*errorcode!=0){
         fprintf(stderr, "*** Error: unable to load vector values in %s . Vector load aborted\n", val->file);
         vd->loaded = 1;
-        ReadVSlice(ivslice, UNLOAD, errorcode);
+        ReadVSlice(ivslice, time_frame, UNLOAD, errorcode);
         *errorcode = 1;
         return 0;
       }
@@ -4658,7 +4658,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, int flag, int set_sli
         GetSliceHeader(sd->comp_file, sd->size_file, sd->compression_type,
           sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s,
           &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sd->ncompressed, &sd->valmin, &sd->valmax) == 0){
-        ReadSlice("", ifile, ALL_FRAMES, UNLOAD, set_slicecolor, &error);
+        ReadSlice("", ifile, time_frame, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return 0;
       }
@@ -4668,7 +4668,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, int flag, int set_sli
       ReadVolSlice = 1;
     }
     if(error != 0){
-      ReadSlice("", ifile, ALL_FRAMES, UNLOAD, set_slicecolor, &error);
+      ReadSlice("", ifile, time_frame, UNLOAD, set_slicecolor, &error);
       *errorcode = 1;
       return 0;
     }
@@ -4683,7 +4683,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, int flag, int set_sli
       }
     }
     if(error != 0 || sd->ntimes<1){
-      ReadSlice("", ifile, ALL_FRAMES, UNLOAD, set_slicecolor, &error);
+      ReadSlice("", ifile, time_frame, UNLOAD, set_slicecolor, &error);
       *errorcode = 1;
       return 0;
     }
@@ -4697,7 +4697,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, int flag, int set_sli
       if(return_code!=0)return_code = NewResizeMemory(sd->times, sizeof(float)*sd->ntimes);
       if(return_code!=0)return_code = NewResizeMemory(sd->compindex, sizeof(compdata)*(1+sd->ntimes));
       if(return_code==0){
-        ReadSlice("", ifile, ALL_FRAMES, UNLOAD, set_slicecolor, &error);
+        ReadSlice("", ifile, time_frame, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
         return 0;
       }
@@ -4705,7 +4705,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, int flag, int set_sli
         settmin_s, settmax_s, tmin_s, tmax_s, sd->ncompressed, sliceframestep, sd->ntimes,
         sd->times, sd->qslicedata_compressed, sd->compindex, &sd->globalmin, &sd->globalmax);
       if(return_code == 0){
-        ReadSlice("", ifile, ALL_FRAMES, UNLOAD,  set_slicecolor, &error);
+        ReadSlice("", ifile, time_frame, UNLOAD,  set_slicecolor, &error);
         *errorcode = 1;
         return 0;
       }
@@ -4720,7 +4720,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, int flag, int set_sli
 
       if(return_val == 0){
         *errorcode = 1;
-        ReadSlice("", ifile, ALL_FRAMES, UNLOAD, set_slicecolor, &error);
+        ReadSlice("", ifile, time_frame, UNLOAD, set_slicecolor, &error);
         return 0;
       }
 #ifdef pp_MEMDEBUG
@@ -4840,7 +4840,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, int flag, int set_sli
     sd->nslicetotal = sd->ntimes*sd->nsliceijk;
     if(sd->compression_type != UNCOMPRESSED){
       if(NewMemory((void **)&sd->slicecomplevel, sd->nsliceijk * sizeof(unsigned char)) == 0){
-        ReadSlice("", ifile, ALL_FRAMES, UNLOAD,  set_slicecolor, &error);
+        ReadSlice("", ifile, time_frame, UNLOAD,  set_slicecolor, &error);
         *errorcode = 1;
         return 0;
       }
@@ -4850,7 +4850,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, int flag, int set_sli
 
       return_code = NewResizeMemory(sd->slicelevel, sd->nslicetotal*sizeof(int));
       if(return_code == 0){
-        ReadSlice("", ifile, ALL_FRAMES, UNLOAD,  set_slicecolor, &error);
+        ReadSlice("", ifile, time_frame, UNLOAD,  set_slicecolor, &error);
         *errorcode = 1;
         return 0;
       }

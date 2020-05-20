@@ -1035,9 +1035,9 @@ void InitOpenGL(void){
       vslicedata *vslicei;
 
       vslicei = vsliceinfo + i;
-      if(vslicei->autoload==0&&vslicei->loaded==1)ReadVSlice(i,UNLOAD,&errorcode);
+      if(vslicei->autoload==0&&vslicei->loaded==1)ReadVSlice(i,ALL_FRAMES,UNLOAD,&errorcode);
       if(vslicei->autoload==1){
-        ReadVSlice(i,LOAD,&errorcode);
+        ReadVSlice(i,ALL_FRAMES,LOAD,&errorcode);
       }
     }
     // note:  only slices that are NOT a part of a vector slice will be loaded here

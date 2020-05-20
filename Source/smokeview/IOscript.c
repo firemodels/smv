@@ -2069,7 +2069,7 @@ void ScriptLoadFile(scriptdata *scripti){
         ReadSlice(sd->file,i,ALL_FRAMES, LOAD, SET_SLICECOLOR,&errorcode);
       }
       else{
-        ReadFed(i,LOAD,FED_SLICE,&errorcode);
+        ReadFed(i,ALL_FRAMES, LOAD,FED_SLICE,&errorcode);
       }
       return;
     }

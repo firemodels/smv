@@ -3063,7 +3063,7 @@ void LoadUnloadMenu(int value){
     }
     for(i=0;i<nvsliceinfo;i++){
       if(vsliceinfo[i].loaded==1){
-        ReadVSlice(i, load_mode,&errorcode);
+        ReadVSlice(i, ALL_FRAMES, load_mode,&errorcode);
       }
     }
     if(nslice_loaded>1)last_slice_loaded = slice_loaded_list[nslice_loaded-1];
@@ -3811,11 +3811,11 @@ void UnloadVSliceMenu(int value){
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   if(value>=0){
-    ReadVSlice(value,UNLOAD,&errorcode);
+    ReadVSlice(value,ALL_FRAMES,UNLOAD,&errorcode);
   }
   else if(value==UNLOAD_ALL){
     for(i=0;i<nvsliceinfo;i++){
-      ReadVSlice(i,UNLOAD,&errorcode);
+      ReadVSlice(i,ALL_FRAMES,UNLOAD,&errorcode);
     }
   }
   else if(value==-2){
@@ -3823,7 +3823,7 @@ void UnloadVSliceMenu(int value){
 
     unload_index=LastVSliceLoadstack();
     if(unload_index>=0&&unload_index<nvsliceinfo){
-      ReadVSlice(unload_index,UNLOAD,&errorcode);
+      ReadVSlice(unload_index,ALL_FRAMES,UNLOAD,&errorcode);
     }
   }
 }
@@ -3931,7 +3931,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value==UNLOAD_ALL){
     for(i=0;i<nvsliceinfo;i++){
-      ReadVSlice(i,UNLOAD,&errorcode);
+      ReadVSlice(i,ALL_FRAMES,UNLOAD,&errorcode);
     }
     return 0;
   }
@@ -3942,7 +3942,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
     vslicedata *vslicei;
     slicedata *slicei;
 
-    return_filesize = ReadVSlice(value, LOAD, &errorcode);
+    return_filesize = ReadVSlice(value, ALL_FRAMES,LOAD, &errorcode);
     vslicei = vsliceinfo + value;
     slicei = vslicei->val;
     if(script_multivslice==0&&slicei!=NULL&&scriptoutstream!=NULL){
@@ -3978,7 +3978,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
       if(strcmp(longlabel,submenulabel)!=0)continue;
       if(dir!=0&&dir!=slicei->idir)continue;
       file_count++;
-      load_size+=ReadVSlice(i,LOAD,&errorcode);
+      load_size+=ReadVSlice(i,ALL_FRAMES,LOAD,&errorcode);
     }
     STOP_TIMER(load_time);
     PRINT_LOADTIMES(file_count,load_size,load_time);
@@ -4471,7 +4471,7 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value){
 
       fed_colorbar = GetColorbar(default_fed_colorbar);
       if(fed_colorbar != NULL && current_colorbar != fed_colorbar)colorbartype_save = current_colorbar - colorbarinfo;
-      ReadFed(value, LOAD, FED_SLICE, &errorcode);
+      ReadFed(value, ALL_FRAMES,LOAD, FED_SLICE, &errorcode);
       if(fed_colorbar != NULL)ColorbarMenu(fed_colorbar - colorbarinfo);
       return_filesize = 0;
     }
