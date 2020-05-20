@@ -5028,11 +5028,11 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, int flag, int set_sli
 }
 
 #ifdef pp_NEWBOUND_DIALOG
-FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int flag, int set_slicecolor, int *errorcode){
+FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int time_frame, int flag, int set_slicecolor, int *errorcode){
   FILE_SIZE file_size;
 
   use_slice_glui_bounds = 1;
-  file_size = ReadSlice(file, ifile, ALL_SLICE_FRAMES, flag, set_slicecolor, errorcode);
+  file_size = ReadSlice(file, ifile, time_frame, flag, set_slicecolor, errorcode);
   use_slice_glui_bounds = 0;
   return file_size;
 }

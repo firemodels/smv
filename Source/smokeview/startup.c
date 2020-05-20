@@ -1064,7 +1064,7 @@ void InitOpenGL(void){
         if(slicei->autoload == 0 && slicei->loaded == 1)ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, UNLOAD, set_slicecolor,&errorcode);
         if(slicei->autoload == 1 && slicei->loaded == 0){
 #ifdef pp_NEWBOUND_DIALOG
-          ReadSliceUseGluiBounds(slicei->file, i, LOAD, set_slicecolor, &errorcode);
+          ReadSliceUseGluiBounds(slicei->file, i, ALL_SLICE_FRAMES, LOAD, set_slicecolor, &errorcode);
 #else
           ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, LOAD, set_slicecolor, &errorcode);
 #endif

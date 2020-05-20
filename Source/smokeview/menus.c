@@ -2975,7 +2975,7 @@ void ReloadAllSliceFiles(void){
     }
     else{
 #ifdef pp_NEWBOUND_DIALOG
-      load_size+=ReadSliceUseGluiBounds(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+      load_size+=ReadSliceUseGluiBounds(slicei->file,i, ALL_SLICE_FRAMES,LOAD,set_slicecolor,&errorcode);
 #else
       load_size+=ReadSlice(slicei->file,i,ALL_SLICE_FRAMES, LOAD,set_slicecolor,&errorcode);
 #endif
@@ -3094,7 +3094,7 @@ void LoadUnloadMenu(int value){
         }
         else{
 #ifdef pp_NEWBOUND_DIALOG
-          ReadSliceUseGluiBounds(slicei->file, i, load_mode, set_slicecolor, &errorcode);
+          ReadSliceUseGluiBounds(slicei->file, i, ALL_SLICE_FRAMES, load_mode, set_slicecolor, &errorcode);
 #else
           ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, load_mode, set_slicecolor, &errorcode);
 #endif
@@ -4459,7 +4459,7 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value){
       }
       else {
 #ifdef pp_NEWBOUND_DIALOG
-        return_filesize=ReadSliceUseGluiBounds(slicei->file, value, LOAD, set_slicecolor, &errorcode);
+        return_filesize=ReadSliceUseGluiBounds(slicei->file, value, ALL_SLICE_FRAMES, LOAD, set_slicecolor, &errorcode);
 #else
         return_filesize=ReadSlice(slicei->file, value, ALL_SLICE_FRAMES, LOAD, set_slicecolor, &errorcode);
 #endif
@@ -4563,7 +4563,7 @@ void LoadSliceMenu(int value){
           }
           else{
 #ifdef pp_NEWBOUND_DIALOG
-            load_size+=ReadSliceUseGluiBounds(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+            load_size+=ReadSliceUseGluiBounds(slicei->file,i, ALL_SLICE_FRAMES, LOAD,set_slicecolor,&errorcode);
 #else
             load_size+=ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, LOAD,set_slicecolor,&errorcode);
 #endif
@@ -4936,7 +4936,7 @@ void LoadMultiSliceMenu(int value){
       }
       else{
 #ifdef pp_NEWBOUND_DIALOG
-        load_size+=ReadSliceUseGluiBounds(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+        load_size+=ReadSliceUseGluiBounds(slicei->file,i, ALL_SLICE_FRAMES, LOAD,set_slicecolor,&errorcode);
 #else
         load_size+=ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, LOAD,set_slicecolor,&errorcode);
 #endif

@@ -28,7 +28,7 @@ EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float
 boundsdata *GetBoundsInfo(char *shortlabel);
 #ifdef pp_NEWBOUND_DIALOG
 void GetGlobalSliceBounds(void);
-FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int flag, int set_slicecolor, int *errorcode);
+FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int time_frame, int flag, int set_slicecolor, int *errorcode);
 #endif
 EXTERNCPP void ShiftColorbars(void);
 EXTERNCPP int GetColorbarState(void);
