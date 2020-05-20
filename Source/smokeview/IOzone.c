@@ -843,7 +843,7 @@ void GetSliceTempBounds(void){
     slicei = sliceinfo + i;
     if(strcmp(slicei->label.shortlabel, "TEMP")!=0)continue;
     if(use_cslice==1){
-      GetSliceSizes(slicei->file, &slicei->nslicei, &slicei->nslicej, &slicei->nslicek, &slicei->ntimes, sliceframestep, &error,
+      GetSliceSizes(slicei->file, ALL_SLICE_FRAMES, &slicei->nslicei, &slicei->nslicej, &slicei->nslicek, &slicei->ntimes, sliceframestep, &error,
         settmin_s, settmax_s, tmin_s, tmax_s, &headersize, &framesize);
     }
     else{
@@ -856,7 +856,7 @@ void GetSliceTempBounds(void){
     qmin = 1.0e30;
     qmax = -1.0e30;
     if(use_cslice==1){
-      GetSliceData(slicei->file, &slicei->is1, &slicei->is2, &slicei->js1, &slicei->js2, &slicei->ks1, &slicei->ks2, &slicei->idir,
+      GetSliceData(slicei->file, ALL_SLICE_FRAMES, &slicei->is1, &slicei->is2, &slicei->js1, &slicei->js2, &slicei->ks1, &slicei->ks2, &slicei->idir,
         &qmin, &qmax, slicei->qslicedata, slicei->times, ntimes_slice_old, &slicei->ntimes,
         sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s);
     }
