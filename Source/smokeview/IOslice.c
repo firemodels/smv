@@ -8491,7 +8491,7 @@ int IsSliceMenuDup(slicemenudata *slicemenuinfo, int nslicemenuinfo, char *label
 int CompareSliceMenuInfo(const void *arg1, const void *arg2){
   slicemenudata *sm1, *sm2;
   slicedata *sf1, *sf2;
-  int i1, i2, compare_label;
+  int compare_label;
   char *label1, *label2;
 
   sm1 = *(slicemenudata **)arg1;
@@ -8549,7 +8549,6 @@ void GenerateSliceMenu(void){
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
     slicemenudata *slicemi;
-    int j;
 
     slicei = sliceinfo+i;
     if(slicei->volslice==1)continue;
@@ -8571,13 +8570,11 @@ void GenerateSliceMenu(void){
     slicedata *slicei;
     slicemenudata *slicemi;
     char *quantity, cposition[25];
-    int dir;
 
     slicemi = menu_sort[i];
     slicei = slicemi->sliceinfo;
     quantity = slicei->label.longlabel;
     if(strlen(quantity)>max2)max2 = strlen(quantity);
-    dir = slicei->idir;
     sprintf(cposition, "%f", slicei->position_orig);
     TrimZeros(cposition);
     if(strlen(cposition)>max4)max4 = strlen(cposition);
@@ -8622,7 +8619,7 @@ void GenerateSliceMenu(void){
     sprintf(index, "%i", i+1);
     fprintf(stream, format, index, quantity, cdir, cposition);
 #ifdef _DEBUG
-    printf(format, index, quantity, dir, cposition);
+    printf(format, index, quantity, cdir, cposition);
 #endif
   }
   fclose(stream);
