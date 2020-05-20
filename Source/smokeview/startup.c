@@ -1061,12 +1061,12 @@ void InitOpenGL(void){
         slicei = sliceinfo + i;
         set_slicecolor = DEFER_SLICECOLOR;
         if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-        if(slicei->autoload == 0 && slicei->loaded == 1)ReadSlice(slicei->file, i, UNLOAD, set_slicecolor,&errorcode);
+        if(slicei->autoload == 0 && slicei->loaded == 1)ReadSlice(slicei->file, i, ALL_FRAMES, UNLOAD, set_slicecolor,&errorcode);
         if(slicei->autoload == 1 && slicei->loaded == 0){
 #ifdef pp_NEWBOUND_DIALOG
           ReadSliceUseGluiBounds(slicei->file, i, LOAD, set_slicecolor, &errorcode);
 #else
-          ReadSlice(slicei->file, i, LOAD, set_slicecolor, &errorcode);
+          ReadSlice(slicei->file, i, ALL_FRAMES, LOAD, set_slicecolor, &errorcode);
 #endif
         }
       }

@@ -4264,7 +4264,7 @@ extern "C" void SliceBoundCB(int var){
 
         set_slicecolor = DEFER_SLICECOLOR;
         if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-        ReadSlice("", i, RESETBOUNDS, set_slicecolor, &error);
+        ReadSlice("", i, ALL_FRAMES, RESETBOUNDS, set_slicecolor, &error);
       }
     }
     slice_fileupdate--;

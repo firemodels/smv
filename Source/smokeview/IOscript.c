@@ -2066,7 +2066,7 @@ void ScriptLoadFile(scriptdata *scripti){
     sd = sliceinfo + i;
     if(strcmp(sd->file,scripti->cval)==0){
       if(i<nsliceinfo-nfedinfo){
-        ReadSlice(sd->file,i,LOAD,SET_SLICECOLOR,&errorcode);
+        ReadSlice(sd->file,i,ALL_FRAMES, LOAD, SET_SLICECOLOR,&errorcode);
       }
       else{
         ReadFed(i,LOAD,FED_SLICE,&errorcode);

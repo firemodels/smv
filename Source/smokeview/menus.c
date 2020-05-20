@@ -2977,7 +2977,7 @@ void ReloadAllSliceFiles(void){
 #ifdef pp_NEWBOUND_DIALOG
       load_size+=ReadSliceUseGluiBounds(slicei->file,i,LOAD,set_slicecolor,&errorcode);
 #else
-      load_size+=ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+      load_size+=ReadSlice(slicei->file,i,ALL_FRAMES,LOAD,set_slicecolor,&errorcode);
 #endif
     }
     file_count++;
@@ -3018,7 +3018,7 @@ void LoadUnloadMenu(int value){
           ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
         }
         else{
-          ReadSlice(slicei->file, i, UNLOAD, DEFER_SLICECOLOR,&errorcode);
+          ReadSlice(slicei->file, i, ALL_FRAMES, UNLOAD, DEFER_SLICECOLOR,&errorcode);
         }
       }
     }
@@ -3096,7 +3096,7 @@ void LoadUnloadMenu(int value){
 #ifdef pp_NEWBOUND_DIALOG
           ReadSliceUseGluiBounds(slicei->file, i, load_mode, set_slicecolor, &errorcode);
 #else
-          ReadSlice(slicei->file, i, load_mode, set_slicecolor, &errorcode);
+          ReadSlice(slicei->file, i, ALL_FRAMES, load_mode, set_slicecolor, &errorcode);
 #endif
         }
       }
@@ -3596,7 +3596,7 @@ void LoadAllSliceFiles(int slicenum){
     if(slicei->loadstatus==FILE_UNLOADED){
       slicei->loadstatus = FILE_LOADING;
       UNLOCK_SLICE_LOAD;
-      file_size = ReadSlice(slicei->file, i, LOAD, SET_SLICECOLOR, &errorcode);
+      file_size = ReadSlice(slicei->file, i, ALL_FRAMES, LOAD, SET_SLICECOLOR, &errorcode);
       LOCK_SLICE_LOAD;
       slicei->loadstatus = FILE_LOADED;
       slice_load_size += file_size;
@@ -4010,7 +4010,7 @@ void UnloadSliceMenu(int value){
       ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
     }
     else{
-      ReadSlice("", value, UNLOAD, SET_SLICECOLOR, &errorcode);
+      ReadSlice("", value, ALL_FRAMES, UNLOAD, SET_SLICECOLOR, &errorcode);
     }
   }
   if(value<=-3){
@@ -4026,7 +4026,7 @@ void UnloadSliceMenu(int value){
           ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
         }
         else{
-          ReadSlice("",i,UNLOAD,DEFER_SLICECOLOR,&errorcode);
+          ReadSlice("",i, ALL_FRAMES, UNLOAD,DEFER_SLICECOLOR,&errorcode);
         }
       }
       for(i=0;i<npatchinfo;i++){
@@ -4050,7 +4050,7 @@ void UnloadSliceMenu(int value){
           ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
         }
         else{
-          ReadSlice("", unload_index, UNLOAD, SET_SLICECOLOR, &errorcode);
+          ReadSlice("", unload_index, ALL_FRAMES, UNLOAD, SET_SLICECOLOR, &errorcode);
         }
       }
     }
@@ -4461,7 +4461,7 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value){
 #ifdef pp_NEWBOUND_DIALOG
         return_filesize=ReadSliceUseGluiBounds(slicei->file, value, LOAD, set_slicecolor, &errorcode);
 #else
-        return_filesize=ReadSlice(slicei->file, value, LOAD, set_slicecolor, &errorcode);
+        return_filesize=ReadSlice(slicei->file, value, ALL_FRAMES, LOAD, set_slicecolor, &errorcode);
 #endif
       }
       if(reset_colorbar == 1)ColorbarMenu(colorbartype_save);
@@ -4509,7 +4509,7 @@ void LoadSliceMenu(int value){
               ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
             }
             else{
-              ReadSlice("",i,UNLOAD,DEFER_SLICECOLOR,&errorcode);
+              ReadSlice("",i,UNLOAD, ALL_FRAMES, DEFER_SLICECOLOR,&errorcode);
             }
           }
         }
@@ -4565,7 +4565,7 @@ void LoadSliceMenu(int value){
 #ifdef pp_NEWBOUND_DIALOG
             load_size+=ReadSliceUseGluiBounds(slicei->file,i,LOAD,set_slicecolor,&errorcode);
 #else
-            load_size+=ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+            load_size+=ReadSlice(slicei->file,i, ALL_FRAMES, LOAD,set_slicecolor,&errorcode);
 #endif
           }
           file_count++;
@@ -4938,7 +4938,7 @@ void LoadMultiSliceMenu(int value){
 #ifdef pp_NEWBOUND_DIALOG
         load_size+=ReadSliceUseGluiBounds(slicei->file,i,LOAD,set_slicecolor,&errorcode);
 #else
-        load_size+=ReadSlice(slicei->file,i,LOAD,set_slicecolor,&errorcode);
+        load_size+=ReadSlice(slicei->file,i, ALL_FRAMES, LOAD,set_slicecolor,&errorcode);
 #endif
       }
       file_count++;
