@@ -10,6 +10,8 @@
 //*** define dem2fds title
 
 #define pp_FASTCOLOR    // fast color computation
+#define pp_GRIDDATA     // new methode for getting data
+#define pp_NOFIRE       // ignore fire data
 
 #ifdef pp_BETA
 #define PROGVERSION "Test"

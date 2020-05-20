@@ -804,7 +804,7 @@ void LoadVolsmokeShaders(void){
   glUseProgram(p_volsmoke);
 }
 
-/* ------------------ UnloadShaders ------------------------ */
+/* ------------------ UnLoadShaders ------------------------ */
 
 void UnLoadShaders(void){
   glUseProgram(0);

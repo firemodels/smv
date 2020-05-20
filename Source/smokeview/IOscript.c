@@ -1046,7 +1046,9 @@ void ScriptRenderHtml(scriptdata *scripti, int option){
 
   GetWebFileName(webvr_filename, scripti);
   strcat(webvr_filename,"_vr.html");
+#ifdef pp_HTML_VR
   Smv2Html(webvr_filename, option, FROM_SCRIPT, VR_YES);
+#endif
 }
 
 /* ------------------ ScriptRenderStart ------------------------ */

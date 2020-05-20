@@ -630,7 +630,7 @@ void GetSliceNodeVerts(int option, int option2,
     slicedata *slicei;
 
     slicei = sliceinfo+islice;
-    if(slicei->loaded==0||slicei->display==0||slicei->slice_filetype!=SLICE_NODE_CENTER||slicei->volslice==1)continue;
+    if(slicei->loaded==0||slicei->display==0||(slicei->slice_filetype!=SLICE_NODE_CENTER&&slicei->slice_filetype!=SLICE_TERRAIN)||slicei->volslice==1)continue;
     if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
     slicetime = slicei;
     if(first==1){
@@ -669,7 +669,7 @@ void GetSliceNodeVerts(int option, int option2,
 
       slicei = sliceinfo+islice;
 
-      if(slicei->loaded==0||slicei->display==0||slicei->slice_filetype!=SLICE_NODE_CENTER||slicei->volslice==1)continue;
+      if(slicei->loaded==0||slicei->display==0||(slicei->slice_filetype!=SLICE_NODE_CENTER&&slicei->slice_filetype!=SLICE_TERRAIN)||slicei->volslice==1)continue;
       if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
 
       iq = slicei->slicelevel+itime*slicei->nsliceijk;
@@ -702,6 +702,7 @@ void GetSliceNodeVerts(int option, int option2,
           int ii, jj, kk;
           char *iblank;
           int nx, ny, nxy;
+          float agl;
 
           meshi = meshinfo+slicei->blocknumber;
           nx = meshi->ibar+1;
@@ -710,7 +711,13 @@ void GetSliceNodeVerts(int option, int option2,
           iblank = meshi->c_iblank_node_html;
           xplt = meshi->xplt;
           yplt = meshi->yplt;
-          zplt = meshi->zplt;
+          if(slicei->slice_filetype==SLICE_TERRAIN){
+            agl = SCALE2FDS(.005) + slicei->above_ground_level;
+            zplt = meshi->terrain->znode;
+          }
+          else{
+            zplt = meshi->zplt;
+          }
           plotx = slicei->is1;
           ploty = slicei->js1;
           plotz = slicei->ks1;
@@ -836,7 +843,12 @@ void GetSliceNodeVerts(int option, int option2,
                 for(j = slicei->js1; j<=slicei->js2; j++){
                   *verts++ = xplt[i];
                   *verts++ = yplt[j];
-                  *verts++ = constval;
+                  if(slicei->slice_filetype==SLICE_TERRAIN){
+                    *verts++ = NORMALIZE_Z(zplt[i*ny+j] + agl);
+                  }
+                  else{
+                    *verts++ = constval;
+                  }
 
                 // define blank array
 

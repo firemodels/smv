@@ -101,7 +101,7 @@ extern "C" void GluiWuiSetup(int main_window){
     RADIOBUTTON_wui_1b->disable();
     RADIOBUTTON_wui_1c->disable();
 
-    if(terrain_texture==NULL||terrain_texture->loaded==0){
+    if(terrain_textures==NULL){
       RADIOBUTTON_texture->disable();
     }
 

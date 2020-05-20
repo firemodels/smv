@@ -25,30 +25,6 @@ float FloatSwitch(float val){
 
   val2ptr=(float *)buffer2;
   return *val2ptr;
-
-}
-
-/* ------------------ DoubleSwitch ------------------------ */
-
-double DoubleSwitch(double val){
-  double *val2ptr;
-  unsigned char *buffer;
-  unsigned char buffer2[8];
-
-  buffer = (unsigned char *)&val;
-
-  buffer2[0] = buffer[7];
-  buffer2[1] = buffer[6];
-  buffer2[2] = buffer[5];
-  buffer2[3] = buffer[4];
-  buffer2[4] = buffer[3];
-  buffer2[5] = buffer[2];
-  buffer2[6] = buffer[1];
-  buffer2[7] = buffer[0];
-
-  val2ptr = (double *)buffer2;
-  return *val2ptr;
-
 }
 
 /* ------------------ IntSwitch ------------------------ */
@@ -66,23 +42,6 @@ int IntSwitch(int val){
   buffer2[3]=*buffer;
 
   val2ptr=(int *)buffer2;
-  return *val2ptr;
-
-}
-
-/* ------------------ ShortSwitch ------------------------ */
-
-short ShortSwitch(short val){
-  short *val2ptr;
-  unsigned char *buffer;
-  unsigned char buffer2[2];
-
-  buffer = (unsigned char *)&val;
-
-  buffer2[0] = *(buffer+1);
-  buffer2[1] = *(buffer+0);
-
-  val2ptr = (short *)buffer2;
   return *val2ptr;
 }
 

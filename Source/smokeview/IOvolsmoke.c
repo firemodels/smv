@@ -2453,7 +2453,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
   FILE *SLICEFILE;
   int framesize,framesize2;
   LINT skip_local;
-  float time_local, *smokeframe_data, *fireframe_data, *lightframe_data;
+  float time_local, *smokeframe_data=NULL, *fireframe_data=NULL, *lightframe_data=NULL;
 #ifdef pp_VOLCO2
   unsigned char *c_smokedata_compressed=NULL, *c_firedata_compressed=NULL, *c_lightdata_compressed=NULL, *c_co2data_compressed = NULL;
   unsigned char *c_firedata_compressed2=NULL, *c_lightdata_compressed2=NULL, *c_co2data_compressed2 = NULL;

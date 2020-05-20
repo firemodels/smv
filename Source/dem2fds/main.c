@@ -10,6 +10,7 @@
 #include "datadefs.h"
 #include "MALLOCC.h"
 #include "gd.h"
+#include "dem_grid.h"
 #include "dem_util.h"
 
 /* ------------------ Usage ------------------------ */
@@ -25,6 +26,7 @@ void Usage(char *prog, int option){
   fprintf(stdout, "  data obtained from http://viewer.nationalmap.gov \n\n");
   fprintf(stdout, "Usage:\n");
   fprintf(stdout, "  dem2fds [options] casename.in\n");
+  fprintf(stdout, "  -bingeom      - output vertex and face information to a binary file (rather than in the .fds input file)\n");
   fprintf(stdout, "  -dir dir      - directory containing image, fire and elevation files (dir/images, dir/anderson13, dir/elevations\n");
   fprintf(stdout, "  -elevdir dir  - directory containing elevation files (if different than -dir/elevations)\n");
   fprintf(stdout, "  -imagedir dir  - directory containing image files (if different than -dir/images)\n");
@@ -53,10 +55,11 @@ int main(int argc, char **argv){
   int gen_fds = FDS_OBST;
   char *casename = NULL, *last=NULL;
   char file_default[LEN_BUFFER];
-  char casename_fds[LEN_BUFFER], image_file[LEN_BUFFER];
+  char casename_fds[LEN_BUFFER], casename_bingeom[LEN_BUFFER], image_file[LEN_BUFFER];
+#ifndef pp_GRIDDATA
   elevdata fds_elevs;
+#endif
   int fatal_error = 0;
-  wuigriddata *wuifireinfo;
 
   if(argc == 1){
     Usage("dem2fds",HELP_ALL);
@@ -209,6 +212,10 @@ int main(int argc, char **argv){
           fatal_error = 1;
         }
       }
+      else if(strncmp(arg, "-bingeom", 5)==0){
+        bingeom = 1;;
+        gen_fds = FDS_GEOM;
+      }
       else if(strncmp(arg, "-geom", 5) == 0 ){
         gen_fds = FDS_GEOM;
       }
@@ -267,16 +274,33 @@ int main(int argc, char **argv){
     last = strrchr(casename_fds, '.');
     if(last!=NULL)last[0]=0;
     strcat(casename_fds, ".fds");
+
+    strcpy(casename_bingeom, casename);
+    last = strrchr(casename_bingeom, '.');
+    if(last!=NULL)last[0]=0;
+    strcat(casename_bingeom, "_terrain.bingeom");
   }
   strcpy(image_file, casename_fds);
   last = strrchr(image_file, '.');
   if(last != NULL)last[0] = 0;
   strcat(image_file,image_type);
 
-  wuifireinfo = GetFireData(fire_dir, casename);
+#ifdef pp_GRIDDATA
+  griddata *inputdata = ParseInput(casename);
+#ifdef pp_NOFIRE
+  griddata *firedata = NULL;
+#else
+  griddata *firedata = ReadGridData(fire_dir, "anderson13.asc", "int");
+#endif
+  griddata *elevdata = ReadGridData(elev_dir, "elevations.asc", "float");
+  griddata *imagedata = ReadGridData(image_dir, "image.asc", "image");
+  GenerateFDSInputFile(gen_fds, casename, casename_fds, casename_bingeom, inputdata,firedata,elevdata,imagedata);
+#else
+  wuigriddata *wuifireinfo = GetFireData(fire_dir, casename);
 
   if(GetElevations(casename, image_file, image_type, &fds_elevs)==1){
-     GenerateFDSInputFile(casename, casename_fds, &fds_elevs, gen_fds, wuifireinfo);
+     GenerateFDSInputFile(casename, casename_fds, casename_bingeom, &fds_elevs, gen_fds, wuifireinfo);
   }
+#endif
   return 0;
 }

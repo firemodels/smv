@@ -95,7 +95,7 @@ int convert_boundary(patch *patchi, int *thread_index){
   int i1, i2, j1, j2, k1, k2;
   float *patchvals=NULL,*patchvalscopy;
   unsigned char *full_boundarybuffer=NULL,*compressed_boundarybuffer=NULL;
-  int returncode;
+  int returncode=0;
   int ncompressed_zlibSAVE;
   uLongf ncompressed_zlib;
   uLong npatchfull;

@@ -1217,7 +1217,6 @@ void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
 
     strcpy(sizefile, patchi->size_file);
     strcat(sizefile, ".sz");
-    streamsize = fopen(sizefile, "r");
 
     stream = fopen(patchi->file, "rb");
     if(stream==NULL){
@@ -2380,7 +2379,7 @@ void GetGeomDataSize(char *filename,int *ntimes,int *nvars,int *error){
   int one, version;
   int nvert_s, nvert_d, nface_s, nface_d;
   FILE *stream=NULL;
-  int returncode;
+  int returncode=0;
   int nvars_local, ntimes_local;
 
   *error=1;
@@ -2427,7 +2426,7 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
   int i, one, nvars;
   int nvert_s, ntri_s, nvert_d, ntri_d;
   int version;
-  int returncode;
+  int returncode=0;
   float time;
 
   FILE *stream;
@@ -2682,12 +2681,14 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   else {
     slicefile_labelindex = GetSliceBoundsIndexFromLabel(patchi->label.shortlabel);
   }
-  plotstate = GetPlotState(DYNAMIC_PLOTS);
-  if(patchi->boundary==1)UpdateBoundaryType();
-  UpdateUnitDefs();
-  UpdateTimes();
-  force_redisplay=1;
-  UpdateFrameNumber(1);
+  if(patchi->finalize==1){
+    plotstate = GetPlotState(DYNAMIC_PLOTS);
+    if(patchi->boundary==1)UpdateBoundaryType();
+    UpdateUnitDefs();
+    UpdateTimes();
+    force_redisplay = 1;
+    UpdateFrameNumber(1);
+  }
   updatemenu = 1;
   STOP_TIMER(total_time);
   PRINTF(" - %.1f MB/%.1f s\n", (float)return_filesize/1000000., total_time);

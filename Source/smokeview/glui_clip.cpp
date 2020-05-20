@@ -73,8 +73,6 @@ extern "C" void UpdateShowRotationCenter2(void){
 /* ------------------ ClipCB ------------------------ */
 
 void ClipCB(int var){
-  int i;
-
   glutPostRedisplay();
   switch(var){
   case CLIP_ROTATE:
@@ -136,6 +134,8 @@ void ClipCB(int var){
     updatefacelists = 1;
     UpdateClipPlanes();
     if(clip_mode != CLIP_OFF){
+      int i;
+
       for(i = 0;i < 6;i++){
         ClipCB(i);
       }
@@ -279,8 +279,6 @@ void SetClipControls(int val){
 /* ------------------ GluiClipSetup ------------------------ */
 
 extern "C" void GluiClipSetup(int main_window){
-  int i;
-
   update_glui_clip=0;
   if(glui_clip!=NULL){
     glui_clip->close();
@@ -343,6 +341,7 @@ extern "C" void GluiClipSetup(int main_window){
 
   {
     int nblocks = 0;
+    int i;
 
     for(i = 0;i < nmeshes;i++){
       meshdata *meshi;

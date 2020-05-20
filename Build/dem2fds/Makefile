@@ -6,10 +6,12 @@ BUILD_DIR = ../../../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
 INC_DIR =  -I $(SOURCE_DIR)/gd-2.0.15 -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared
 INC_DIR += -I $(SOURCE_DIR)/dem2fds -I $(SOURCE_DIR)/smokeview
+#INC_DIR += -I $(SOURCE_DIR)/tiff-4.0.5 -I $(SOURCE_DIR)/dem2fds -I $(SOURCE_DIR)/smokeview
 
 
 WIN_LIBDIR = $(LIB_DIR)/intel_win_64
 LIBS_WIN = $(WIN_LIBDIR)\gd.lib $(WIN_LIBDIR)\jpeg.lib $(WIN_LIBDIR)\png.lib $(WIN_LIBDIR)\zlib.lib
+#LIBS_WIN = $(WIN_LIBDIR)\tiff.lib $(WIN_LIBDIR)\gd.lib $(WIN_LIBDIR)\jpeg.lib $(WIN_LIBDIR)\png.lib $(WIN_LIBDIR)\zlib.lib
 
 
 GNU_LIBDIR = $(LIB_DIR)/gnu_win_64
@@ -18,6 +20,7 @@ LIBS_GNU = $(GNU_LIBDIR)\gd.a $(GNU_LIBDIR)\jpeg.a $(GNU_LIBDIR)\png.a $(GNU_LIB
 #--- OSX
 
 LIBS_OSX = -lgd -ljpeg -lpng -lz
+#LIBS_OSX = -ltiff -lgd -ljpeg -lpng -lz
 
 #--- Linux
 
@@ -51,7 +54,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # Definition of the object variables
 
-obj =    assert.o dmalloc.o file_util.o string_util.o dem_util.o  md5.o sha1.o sha256.o \
+obj =    assert.o dmalloc.o file_util.o string_util.o dem_grid.o dem_util.o  md5.o sha1.o sha256.o \
          fdsmodules.o gsmv.o getdata.o main.o
 objwin = $(obj:.o=.obj)
 

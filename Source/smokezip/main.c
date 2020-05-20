@@ -95,7 +95,7 @@ int main(int argc, char **argv){
 
 //  Bytef *source,*sourcecheck,*dest;
 //  int sourceLen, destLen;
-//  int returncode;
+//  int returncode=0;
 
   char *arg;
 

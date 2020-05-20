@@ -5,6 +5,17 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void GenerateSliceMenu(void);
+#ifdef pp_PART_HIST
+EXTERNCPP void ComputePartHistograms(void);
+#endif
+#ifdef pp_WUI_VAO
+int InitTerrainVAO(int sizeof_vertices, int sizeof_indices);
+void DrawTerrainGeomGPU(void);
+#endif
+void DrawTerrainGeom(int option);
+void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigned int **indices_arg, int *sizeof_indices_arg, int *nindices_arg);
+
 #ifdef pp_C_SLICE
 EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error);
 #endif
@@ -437,8 +448,8 @@ EXTERNCPP void WuiCB(int var);
 EXTERNCPP void CompressOnOff(int flag);
 EXTERNCPP void CompressSVZip2(void);
 EXTERNCPP void UpdateTerrainColors(void);
-EXTERNCPP void DrawTerrain(terraindata *terri);
-EXTERNCPP void DrawTerrainTexture(terraindata *terri);
+EXTERNCPP void DrawTerrainOBST(terraindata *terri);
+EXTERNCPP void DrawTerrainOBSTTexture(terraindata *terri);
 EXTERNCPP void DrawTrees(void);
 EXTERNCPP void InitCullGeom(int cullflag);
 EXTERNCPP void GetCullSkips(meshdata *meshi, int cullflag, int cull_portsize, int *iiskip, int *jjskip, int *kkskip);
@@ -677,9 +688,9 @@ EXTERNCPP void HandleRotationType(int flag);
 
 EXTERNCPP void InitTextureDir(void);
 EXTERNCPP void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned char *bb);
-EXTERNCPP unsigned char *ReadPicture(char *filename, int *width, int *height, int printflag);
-EXTERNCPP unsigned char *ReadJPEG(const char *filename,int *width, int *height);
-EXTERNCPP unsigned char *ReadPNG(const char *filename,int *width, int *height);
+EXTERNCPP unsigned char *ReadPicture(char *filename, int *width, int *height, int *is_transparent, int printflag);
+EXTERNCPP unsigned char *ReadJPEG(const char *filename,int *width, int *height, int *is_transparent);
+EXTERNCPP unsigned char *ReadPNG(const char *filename,int *width, int *height, int *is_transparent);
 
 EXTERNCPP void UpdateBlockVals(int flag);
 

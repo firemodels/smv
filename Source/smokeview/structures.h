@@ -307,7 +307,7 @@ typedef struct _labeldata {
 
 typedef struct _texturedata {
   char *file;
-  int loaded, display, used;
+  int loaded, display, used, is_transparent;
   GLuint name;
 } texturedata;
 
@@ -315,6 +315,7 @@ typedef struct _texturedata {
 
 typedef struct _terraindata {
   char *file;
+  int defined;
   texturedata *ter_texture;
   int ibar, jbar;
   float xmin, xmax, ymin, ymax;
@@ -1153,7 +1154,10 @@ typedef struct _partdata {
   int nclasses;
   partclassdata **partclassptr;
   part5data *data5;
-  histogramdata **histograms;
+#ifdef pp_PART_HIST
+  histogramdata **histograms; 
+  histogramdata *histogram_all;
+#endif
   int bounds_set;
   float *global_min, *global_max;
   unsigned char *vis_part;
@@ -1269,6 +1273,12 @@ typedef struct _slicedata {
   int skipload, loadstatus, boundstatus;
 #endif
 } slicedata;
+
+/* --------------------------  slicemenudata ------------------------------------ */
+
+typedef struct _slicemenudata {
+  slicedata *sliceinfo;
+} slicemenudata;
 
 /* --------------------------  multislicedata ------------------------------------ */
 
@@ -1429,6 +1439,7 @@ typedef struct _patchdata {
   int ijk[6];
   int extreme_min, extreme_max;
   time_t modtime;
+  int finalize;
   histogramdata *histogram;
   bounddata bounds;
 } patchdata;
