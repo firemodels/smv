@@ -270,6 +270,7 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"LOADPARTICLES") == MATCH)return SCRIPT_LOADPARTICLES;           // documented
   if(MatchUpper(keyword,"LOADPLOT3D") == MATCH)return SCRIPT_LOADPLOT3D;                 // documented
   if(MatchUpper(keyword,"LOADSLICE") == MATCH)return SCRIPT_LOADSLICE;                   // documented
+  if(MatchUpper(keyword,"LOADSLICERENDER")==MATCH)return SCRIPT_LOADSLICERENDER;
   if(MatchUpper(keyword,"LOADSLICEM") == MATCH)return SCRIPT_LOADSLICEM;
   if(MatchUpper(keyword,"LOADTOUR") == MATCH)return SCRIPT_LOADTOUR;                     // documented
   if(MatchUpper(keyword,"LOADVOLSMOKE") == MATCH)return SCRIPT_LOADVOLSMOKE;             // documented
@@ -848,9 +849,33 @@ int CompileScript(char *scriptfile){
         sscanf(buffer,"%i %i",&scripti->ival,&scripti->ival2);
         break;
 
+// LOADSLICERENDER
+//  (char)quantity
+//  1/2/3 (int)dir  (float)position
+//  (char)renderfile_base
+// (int)start (int)skip (float) tmin (float)tmax
+      case SCRIPT_LOADSLICERENDER:
+        SETcval;
+
+        SETbuffer;
+        sscanf(buffer, "%i %f", &scripti->ival, &scripti->fval);
+        scripti->ival = CLAMP(scripti->ival, 0, 3);
+        scripti->need_graphics = 0;
+        SETcval2;
+        SETbuffer;
+        scripti->fval2 = 1.0;
+        scripti->fval3 = 0.0;
+        sscanf(buffer, "%i %i %f %f", &scripti->ival2, &scripti->ival3, &scripti->fval2, &scripti->fval3);
+        scripti->ival4 = scripti->ival2;
+        scripti->first = 1;
+        scripti->exit = 0;
+        scripti->fval2 = 1.0;
+        scripti->fval3 = 0.0;
+        break;
+        
 // LOADSLICE
-//  type (char)
-//  1/2/3 (int)  val (float)
+//  (char)quantity
+//  1/2/3 (int)dir  (float)position
       case SCRIPT_LOADSLICE:
 
 // LOADVSLICE
@@ -1600,6 +1625,108 @@ void ScriptLoadSlice(scriptdata *scripti){
   }
 }
 
+/* ------------------ ScriptLoadSliceRender ------------------------ */
+
+void ScriptLoadSliceRender(scriptdata *scripti){
+  int i;
+  int count = 0;
+  int frame_start, frame_skip, frame_current;
+  int valid_frame = 1;
+
+  frame_start = scripti->ival2;
+  frame_skip = scripti->ival3;
+
+  if(scripti->first==1){
+    PRINTF("script: loading slice files of type: %s\n", scripti->cval);
+    PRINTF("  frames: %i,%i,%i,... \n\n", frame_start, frame_start+frame_skip, frame_start+2*frame_skip);
+    scripti->first = 0;
+    scripti->exit = 0;
+    frame_current = frame_start;
+  }
+  else{
+    frame_current = scripti->ival4;
+    frame_current += frame_skip;
+  }
+  scripti->ival4 = frame_current;
+
+   PRINTF("  frame: %i \n\n", frame_current);
+
+
+  for(i = 0; i<nmultisliceinfo; i++){
+    multislicedata *mslicei;
+    slicedata *slicei;
+    int j;
+
+    mslicei = multisliceinfo+i;
+    if(mslicei->nslices<=0)continue;
+    slicei = sliceinfo+mslicei->islices[0];
+    if(MatchUpper(slicei->label.longlabel, scripti->cval)==NOTMATCH)continue;
+    if(scripti->ival==0){
+      if(slicei->volslice==0)continue;
+    }
+    else{
+      if(slicei->idir!=scripti->ival)continue;
+      if(ABS(slicei->position_orig-scripti->fval)>slicei->delta_orig)continue;
+    }
+
+    GLUTSETCURSOR(GLUT_CURSOR_WAIT);
+    for(j = 0; j<mslicei->nslices; j++){
+      slicedata *slicej;
+      int finalize_save;
+      slicedata *slicei;
+      float time_value;
+
+      slicei = sliceinfo+mslicei->islices[j];
+      finalize_save = slicei->finalize;
+      if(j==mslicei->nslices-1){
+        slicei->finalize = 1;
+      }
+      else{
+        slicei->finalize = 0;
+      }
+
+      if(slicei->nframes==0){
+        float dt=1.0, val_min, val_max;
+        
+        slicei->nframes = GetNSliceFrames(slicei->file, &scripti->fval2, &scripti->fval3);
+        val_min = scripti->fval2;
+        val_max = scripti->fval3;
+        if(slicei->nframes>0&&val_min<=val_max){
+          dt = (val_max-val_min)/(float)slicei->nframes;
+        }
+        scripti->fval5 = dt;
+      }
+      if(frame_current>=slicei->nframes){
+        scripti->exit = 1;
+        valid_frame = 0;
+        RenderState(RENDER_OFF);
+        break;
+      }
+
+      FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_value);
+      LoadSlicei(SET_SLICECOLOR, mslicei->islices[j], frame_current, &time_value);
+      scripti->fval4 = time_value;
+      CheckMemory;
+
+      slicei->finalize = finalize_save;
+      FREEMEMORY(loaded_file);
+      slicej = sliceinfo+mslicei->islices[j];
+      if(slicej->file!=NULL&&strlen(slicej->file)>0){
+        NewMemory((void **)&loaded_file, strlen(slicej->file)+1);
+        strcpy(loaded_file, slicej->file);
+      }
+      count++;
+    }
+    GLUTPOSTREDISPLAY;
+    GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
+    updatemenu = 1;
+    break;
+  }
+  if(valid_frame==1&&count==0){
+    fprintf(stderr,  "*** Error: Slice files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
+    if(stderr2!=NULL)fprintf(stderr2, "*** Error: Slice files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
+  }
+}
 
 /* ------------------ ScriptLoadSliceM ------------------------ */
 
@@ -2066,10 +2193,10 @@ void ScriptLoadFile(scriptdata *scripti){
     sd = sliceinfo + i;
     if(strcmp(sd->file,scripti->cval)==0){
       if(i<nsliceinfo-nfedinfo){
-        ReadSlice(sd->file,i, ALL_SLICE_FRAMES, LOAD, SET_SLICECOLOR,&errorcode);
+        ReadSlice(sd->file,i, ALL_SLICE_FRAMES, NULL, LOAD, SET_SLICECOLOR,&errorcode);
       }
       else{
-        ReadFed(i, ALL_SLICE_FRAMES, LOAD,FED_SLICE,&errorcode);
+        ReadFed(i, ALL_SLICE_FRAMES, NULL, LOAD,FED_SLICE,&errorcode);
       }
       return;
     }
@@ -2873,6 +3000,10 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_LOADSLICE:
       ScriptLoadSlice(scripti);
+      break;
+    case SCRIPT_LOADSLICERENDER:
+ //   Since ScriptLoadSliceRender is called multiple times, call this routine from DoScripts in callback.c
+ //     ScriptLoadSliceRender(scripti);
       break;
     case SCRIPT_LOADSLICEM:
       ScriptLoadSliceM(scripti, scripti->ival2);

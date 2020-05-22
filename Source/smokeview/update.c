@@ -1073,6 +1073,19 @@ void UpdateTimes(void){
 
   // determine min time, max time and number of times
 
+  if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER){
+    scriptdata *ss;
+
+    ss = current_script_command;
+    float ss_tmin = ss->fval2;
+    float ss_tmax = ss->fval3;
+    if(ss_tmin<=ss_tmax){
+      nglobal_times = MAX(nglobal_times, 1);
+      global_timemin = MIN(global_timemin, ss_tmin);
+      global_timemax = MAX(global_timemax, ss_tmax);
+    }
+  }
+
   for(i=0;i<ngeominfoptrs;i++){
     geomdata *geomi;
 

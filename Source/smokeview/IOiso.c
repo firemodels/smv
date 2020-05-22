@@ -972,7 +972,7 @@ FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, 
     isoi = isoinfo+ifile;
     if(flag==LOAD)PRINTF("Loading %s(%s)", file,isoi->surface_label.shortlabel);
     if(isoi->is_fed==1){
-      ReadFed(ifile, ALL_SLICE_FRAMES, flag, FED_ISO, errorcode);
+      ReadFed(ifile, ALL_SLICE_FRAMES, NULL,  flag, FED_ISO, errorcode);
     }
     else{
       if(isoi->geomflag==1){
