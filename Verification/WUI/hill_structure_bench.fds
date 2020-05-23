@@ -129,7 +129,7 @@ cMESH IJK=50,50,25, XB=0,50,-25,25,0,25 /
 
 -- red structure on flat hill top
 &SURF ID='red box',COLOR='RED'/
-&OBST XB=25,27,-2,2,4,6,SURF_ID='red box',NOTERRAIN=.TRUE. /
+&OBST XB=25,27,-2,2,4,6,SURF_ID='red box'/
 
 -- downslope
 &OBST XB=28,29,-20,20, 0, 3,SURF_ID6='GRASS','INERT','INERT','INERT','INERT','GRASS'/
