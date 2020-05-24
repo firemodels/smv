@@ -1,14 +1,18 @@
 #!/bin/bash
-input=$1
 
+#---------------------------------------------
+#                   Usge
+#---------------------------------------------
 
-smvfile=$1.smv
-slcffile=$1.slcf
+function Usage {
+  scriptname=`basename $0`
+  echo "Usage: $scriptname [options] casename"
+  echo ""
+  echo "This script generates a smkeview script used to generate images for creating an animation"
+  echo ""
+  exit
+}
 
-HTMLDIR=/var/www/html/`whoami`
-if [ ! -e $HTMLDIR ]; then
-  HTMLDIR=.
-fi
 
 #---------------------------------------------
 #                   is_file_installed
@@ -29,36 +33,80 @@ is_file_installed()
   return 0
 }
 
+#---------------------------------------------
+#                   OUTPUT_SLICES
+#---------------------------------------------
 
 OUTPUT_SLICES ()
 {
   cat $slcffile | awk -F"," '{ print $1" ",$2," ",$3," ",$4}'
 }
 
+#---------------------------------------------
+#                   GENERATE_SCRIPT
+#---------------------------------------------
+
 GENERATE_SCRIPT ()
 {
   ind=$1
   scriptname=$2
-  scriptname=${input}_slice_${ind}.ssf
-  htmlbase=${input}_slice_${ind}
-  htmlfile=$HTMLDIR/${htmlbase}.html
+  basename=${input}_slice_${ind}
+  scriptname=${basename}.ssf
+  makemovie=${basename}.sh
   cat << EOF > $scriptname
-RENDERHTMLDIR
-  $HTMLDIR
+RENDERDIR
+  $RENDERDIR
 UNLOADALL
-LOADSLICE
+LOADSLICERENDER
 EOF
-  cat $slcffile | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2"\n" $3 $4"\n"} }' >> $scriptname
+  cat $slcffile | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2"\n" $3 $4} }' >> $scriptname
   cat << EOF >> $scriptname
-RENDERHTMLALL
-  $htmlbase
+  $basename 
+  0 1
+EOF
+  echo "smokeview script $scriptname generated"
+  cat << EOF > $makemovie
+#!/bin/bash
+NPROC=1
+PROCPERNODE=1
+QUEUE=batch
+EXE=`which smokeview`
+qsmv.sh -p \$NPROC -n \$PROCPERNODE -q \$QUEUE -e \$EXE -c $scriptname $input
 EOF
 }
+
+#*** initialize variables
+
+RENDERDIR=.
+
+#---------------------------------------------
+#                  parse command line options 
+#---------------------------------------------
+
+while getopts 'a:hr:' OPTION
+do
+case $OPTION  in
+  r)
+   RENDERDIR="$OPTARG"
+   ;;
+  h)
+   Usage
+   exit
+   ;;
+esac
+done
+shift $(($OPTIND-1))
+
+input=$1
+
+smvfile=$1.smv
+slcffile=$1.slcf
 
 is_file_installed smokeview || exit 1
 
 if [ ! -e $smvfile ]; then
   echo "***error: $smvfile does not exist"
+  exit
 fi
 
 if [ ! -e $slcffile ]; then
@@ -66,20 +114,20 @@ if [ ! -e $slcffile ]; then
 fi
 
 if [ ! -e $slcffile ]; then
-  echo "*** error: $slicffile does not exist"
-  exit 1
+  echo "*** error: $slcffile does not exist"
+  exit
 fi
 
 nslices=`cat $slcffile | wc -l`
 if [ "$nslices" == "0" ]; then
-  echo "*** No slice files exist in the smokeview file $smvfile"
+  echo "*** error:  No slice files found in $smvfile"
   exit
 fi
 
 while true; do
   OUTPUT_SLICES
   echo "x - exit script"
-  read -p "Select slice index to generate an html file: " ans
+  read -p "Select slice index: " ans
   if [ "$ans" == "x" ]; then
     exit 
   fi
@@ -87,21 +135,10 @@ while true; do
     echo continue 
   fi
   if [[ "$ans" -ge 1 ]] && [[ "$ans" -le "$nslices" ]]; then
-    echo converting index $ans
+    echo creating smokeview script using $ans
     scriptname=${input}_slice_${ans}.ssf
     rm -f $scriptname
     GENERATE_SCRIPT $ans $scriptname
-    if [ -e $scriptname ]; then
-      echo "***ceating html file"
-      rm -f $htmlfile
-      smokeview -htmlscript $scriptname $input
-      if [ -e $htmlfile ]; then
-        filesize=`ls -lk $htmlfile | awk '{print $5}'`
-        echo "*** The html file, $htmlfile(${filesize}K), has been created."
-      else
-        echo "*** The html file $htmlfile failed to be created."
-      fi
-    fi
   else
     echo index $ans out of bounds
   fi
