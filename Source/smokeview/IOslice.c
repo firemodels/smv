@@ -3272,15 +3272,15 @@ void UpdateVSlices(void){
 
     sdi = sliceinfo+i;
     sdi->vec_comp=0;
-    if(STRNCMP(sdi->label.shortlabel,"U-VEL",5)==0){
+    if(strncmp(sdi->label.shortlabel,"U-VEL",5)==0){
        sdi->vec_comp=1;
        continue;
     }
-    if(STRNCMP(sdi->label.shortlabel,"V-VEL",5)==0){
+    if(strncmp(sdi->label.shortlabel,"V-VEL",5)==0){
       sdi->vec_comp=2;
       continue;
     }
-    if(STRNCMP(sdi->label.shortlabel,"W-VEL",5)==0){
+    if(strncmp(sdi->label.shortlabel,"W-VEL",5)==0){
       sdi->vec_comp=3;
       continue;
     }
