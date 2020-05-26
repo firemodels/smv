@@ -90,6 +90,7 @@ void DrawTimebar(float xleft, float xright, float ybot, float ytop){
   glVertex2f(xleft,ytop);
   glEnd();
 
+  xxright = xright;
   if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER){
     float factor, time_min, time_max, time_now;
 
@@ -104,9 +105,6 @@ void DrawTimebar(float xleft, float xright, float ybot, float ytop){
   else{
     if(nglobal_times!=1){
       xxright = xleft+(float)itimes*(xright-xleft)/(nglobal_times-1);
-    }
-    else{
-      xxright = xright;
     }
   }
   glBegin(GL_POLYGON);
