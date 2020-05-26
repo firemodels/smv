@@ -28,7 +28,7 @@ Title Building smokeview utilities for 64 bit %platform%
 
 set EXIT_SCRIPT=1
 
-set progs=background dem2fds flush hashfile smokediff smokezip wind2fds
+set progs=background flush hashfile smokediff smokezip wind2fds
 set smvprogs=get_time set_path sh2bat timep
 
 if NOT "%platform%" == "windows" goto endif1

@@ -1655,7 +1655,7 @@ void ScriptLoadSliceRender(scriptdata *scripti){
   }
   scripti->ival4 = frame_current;
 
-  PRINTF("  frame %i/", frame_current);
+  PRINTF("\nFrame %i/", frame_current);
 
   for(i = 0; i<nmultisliceinfo; i++){
     multislicedata *mslicei;
@@ -1744,7 +1744,6 @@ void ScriptLoadSliceRender(scriptdata *scripti){
 
     break;
   }
-  printf("\n");
   if(valid_frame==1&&count==0){
     fprintf(stderr,  "*** Error: Slice files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
     if(stderr2!=NULL)fprintf(stderr2, "*** Error: Slice files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
