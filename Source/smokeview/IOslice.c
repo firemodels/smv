@@ -4747,7 +4747,9 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
       *errorcode = 1;
       return 0;
     }
-    PRINTF("Loading %s(%s)", file,sd->label.shortlabel);
+    if(time_frame==ALL_SLICE_FRAMES){
+      PRINTF("Loading %s(%s)", file, sd->label.shortlabel);
+    }
     MEMSTATUS(1, &availmemory, NULL, NULL);
     START_TIMER(read_time);
     if(sd->compression_type != UNCOMPRESSED){
@@ -5016,7 +5018,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   STOP_TIMER(total_time);
 
 
-  if(flag != RESETBOUNDS){
+  if(time_frame==ALL_SLICE_FRAMES&&flag != RESETBOUNDS){
     if(file_size>1000000000){
       PRINTF(" - %.1f GB/%.1f s\n", (float)file_size / 1000000000., total_time);
     }

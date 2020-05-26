@@ -1655,8 +1655,7 @@ void ScriptLoadSliceRender(scriptdata *scripti){
   }
   scripti->ival4 = frame_current;
 
-   PRINTF("  frame: %i \n\n", frame_current);
-
+  PRINTF("  frame %i/", frame_current);
 
   for(i = 0; i<nmultisliceinfo; i++){
     multislicedata *mslicei;
@@ -1675,6 +1674,10 @@ void ScriptLoadSliceRender(scriptdata *scripti){
       if(ABS(slicei->position_orig-scripti->fval)>slicei->delta_orig)continue;
     }
 
+    float slice_load_time = 0.0;
+    FILE_SIZE total_slice_size = 0.0;
+
+    START_TIMER(slice_load_time);
     GLUTSETCURSOR(GLUT_CURSOR_WAIT);
     for(j = 0; j<mslicei->nslices; j++){
       slicedata *slicej;
@@ -1710,7 +1713,7 @@ void ScriptLoadSliceRender(scriptdata *scripti){
       }
 
       FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_value);
-      LoadSlicei(SET_SLICECOLOR, mslicei->islices[j], frame_current, &time_value);
+      total_slice_size += LoadSlicei(SET_SLICECOLOR, mslicei->islices[j], frame_current, &time_value);
       scripti->fval4 = time_value;
       CheckMemory;
 
@@ -1726,8 +1729,22 @@ void ScriptLoadSliceRender(scriptdata *scripti){
     GLUTPOSTREDISPLAY;
     GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
     updatemenu = 1;
+    STOP_TIMER(slice_load_time);
+
+    printf("%i files/", count);
+    if(total_slice_size>1000000000){
+      PRINTF("%.1f GB/%.1f s\n", (float)total_slice_size/1000000000., slice_load_time);
+    }
+    else if(total_slice_size>1000000){
+      PRINTF("%.1f MB/%.1f s\n", (float)total_slice_size/1000000., slice_load_time);
+    }
+    else{
+      PRINTF("%.0f KB/%.1f s\n", (float)total_slice_size/1000., slice_load_time);
+    }
+
     break;
   }
+  printf("\n");
   if(valid_frame==1&&count==0){
     fprintf(stderr,  "*** Error: Slice files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
     if(stderr2!=NULL)fprintf(stderr2, "*** Error: Slice files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
