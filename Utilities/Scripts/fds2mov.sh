@@ -8,9 +8,11 @@ function Usage {
   scriptname=`basename $0`
   echo "Usage: $scriptname [options] casename"
   echo ""
+  echo "This script generates image frames for a specified slice file"
+  echo ""
   echo "-h - display this message"
-  echo "-p - number of processes"
-  echo "-q - queue"
+  echo "-p - number of processes [default $NPROCS]"
+  echo "-q - queue  [default: $QUEUE]"
   echo "-r - directory containing generated images. [default: $RENDERDIR]"
   if [ "$SMOKEVIEW" == "" ]; then
     echo "-s - full path of smokeview executable."
@@ -61,6 +63,24 @@ OUTPUT_SLICES ()
 }
 
 #---------------------------------------------
+#                   select_slice_file
+#---------------------------------------------
+
+select_slice_file ()
+{
+while true; do
+  OUTPUT_SLICES
+  read -p "Select slice file: " ans
+  if [[ "$ans" -ge 1 ]] && [[ "$ans" -le "$nslices" ]]; then
+    slice_index=$ans
+    return 0
+  else
+    echo index $ans out of bounds
+  fi
+done
+}
+
+#---------------------------------------------
 #                   GENERATE_SCRIPT
 #---------------------------------------------
 
@@ -77,16 +97,19 @@ RENDERDIR
 UNLOADALL
 LOADSLICERENDER
 EOF
+  slice_quantity=`cat $slcffile | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2} }'`
+  echo "generating smokeview script using  $slice_quantity
   cat $slcffile | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2"\n" $3 $4} }' >> $scriptname
   cat << EOF >> $scriptname
   $basename 
   0 1
 EOF
-  echo "smokeview script named $scriptname generated"
+  echo "generating bash script $makemovie that generates images"
   cat << EOF > $makemovie
 #!/bin/bash
 qsmv.sh -P $NPROC -q $QUEUE -e $SMOKEVIEW -c $scriptname $input
 EOF
+chmod +x $makemovie
 }
 
 #*** initialize variables
@@ -94,6 +117,7 @@ EOF
 RENDERDIR=.
 NPROC=1
 QUEUE=batch
+slice_index=
 
 #---------------------------------------------
 #                  parse command line options 
@@ -149,23 +173,12 @@ if [ "$nslices" == "0" ]; then
   exit
 fi
 
-while true; do
-  OUTPUT_SLICES
-  echo "x - make smokeview script $scriptname"
-  read -p "Select slice index: " ans
-  if [ "$ans" == "x" ]; then
-    exit 
-  fi
-  if [ "$ans" == "r" ]; then
-    echo continue 
-  fi
-  if [[ "$ans" -ge 1 ]] && [[ "$ans" -le "$nslices" ]]; then
-    echo creating smokeview script using $ans
-    scriptname=${input}_slice_${ans}.ssf
-    rm -f $scriptname
-    GENERATE_SCRIPT $ans $scriptname
-  else
-    echo index $ans out of bounds
-  fi
-done
+select_slice_file
+
+if [ "$slice_index" != "" ]; then
+  scriptname=${input}_slice_${slice_index}.ssf
+  rm -f $scriptname
+  GENERATE_SCRIPT $slice_index $scriptname
+fi
+
 
