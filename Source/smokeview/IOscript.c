@@ -871,8 +871,14 @@ int CompileScript(char *scriptfile){
         scripti->exit = 0;
         scripti->fval2 = 1.0;
         scripti->fval3 = 0.0;
+
+        if(script_startframe>0)scripti->ival2=script_startframe;
+        if(render_startframe0>=0)scripti->ival2=render_startframe0;
+
+        if(script_skipframe>0)scripti->ival3=script_skipframe;
+        if(render_skipframe0>0)scripti->ival3=render_skipframe0;
         break;
-        
+
 // LOADSLICE
 //  (char)quantity
 //  1/2/3 (int)dir  (float)position
