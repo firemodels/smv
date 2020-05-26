@@ -8,7 +8,15 @@ function Usage {
   scriptname=`basename $0`
   echo "Usage: $scriptname [options] casename"
   echo ""
-  echo "This script generates a smkeview script used to generate images for creating an animation"
+  echo "-h - display this message"
+  echo "-p - number of processes"
+  echo "-q - queue"
+  echo "-r - directory containing generated images. [default: $RENDERDIR]"
+  if [ "$SMOKEVIEW" == "" ]; then
+    echo "-s - full path of smokeview executable."
+  else
+    echo "-s - full path of smokeview executable. [default: $SMOKEVIEW]"
+  fi
   echo ""
   exit
 }
@@ -18,18 +26,28 @@ function Usage {
 #                   is_file_installed
 #---------------------------------------------
 
-is_file_installed()
+get_smokeview ()
 {
-  local program=$1
-
+  if [ "$SMOKEVIEW" != "" ]; then
+    if [ -e $SMOKEVIEW ]; then
+      return 0
+    fi
+    echo "***error: The smokeview file, $SMOKEVIEW, does not exist. Add smokeview to"
+    echo "your path or define the environment variable SMOKEVIEW in a startup file"
+    echo "that points to smokeview's location."
+    return 1
+  fi
   out=/tmp/program.out.$$
-  $program -v >& $out
+  smokeview -v >& $out
   notfound=`cat $out | tail -1 | grep "not found" | wc -l`
   rm $out
   if [ "$notfound" == "1" ] ; then
-    echo "***error: $program not installed" 
+    echo "***error: smokeview is not installed. Add smokeview to your PATH or" 
+    echo "define the environment variable SMOKEVIEW in a startup file that points "
+    echo "to smokeview's location."
     return 1
   fi
+  SMOKEVIEW=`which smokeview`
   return 0
 }
 
@@ -64,34 +82,41 @@ EOF
   $basename 
   0 1
 EOF
-  echo "smokeview script $scriptname generated"
+  echo "smokeview script named $scriptname generated"
   cat << EOF > $makemovie
 #!/bin/bash
-NPROC=1
-PROCPERNODE=1
-QUEUE=batch
-EXE=`which smokeview`
-qsmv.sh -p \$NPROC -n \$PROCPERNODE -q \$QUEUE -e \$EXE -c $scriptname $input
+qsmv.sh -P $NPROC -q $QUEUE -e $SMOKEVIEW -c $scriptname $input
 EOF
 }
 
 #*** initialize variables
 
 RENDERDIR=.
+NPROC=1
+QUEUE=batch
 
 #---------------------------------------------
 #                  parse command line options 
 #---------------------------------------------
 
-while getopts 'a:hr:' OPTION
+while getopts 'hp:q:r:s:' OPTION
 do
 case $OPTION  in
-  r)
-   RENDERDIR="$OPTARG"
-   ;;
   h)
    Usage
    exit
+   ;;
+  p)
+   NPROC="$OPTARG"
+   ;;
+  q)
+   QUEUE="$OPTARG"
+   ;;
+  r)
+   RENDERDIR="$OPTARG"
+   ;;
+  s)
+   SMOKEVIEW="$OPTARG"
    ;;
 esac
 done
@@ -102,7 +127,7 @@ input=$1
 smvfile=$1.smv
 slcffile=$1.slcf
 
-is_file_installed smokeview || exit 1
+get_smokeview || exit 1
 
 if [ ! -e $smvfile ]; then
   echo "***error: $smvfile does not exist"
@@ -110,7 +135,7 @@ if [ ! -e $smvfile ]; then
 fi
 
 if [ ! -e $slcffile ]; then
-  smokeview -slice_info $input >& /dev/null
+  $SMOKEVIEW -slice_info $input >& /dev/null
 fi
 
 if [ ! -e $slcffile ]; then
@@ -126,7 +151,7 @@ fi
 
 while true; do
   OUTPUT_SLICES
-  echo "x - exit script"
+  echo "x - make smokeview script $scriptname"
   read -p "Select slice index: " ans
   if [ "$ans" == "x" ]; then
     exit 
