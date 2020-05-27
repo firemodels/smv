@@ -61,6 +61,48 @@ OUTPUT_SLICES ()
 }
 
 #---------------------------------------------
+#                  generate_images
+#---------------------------------------------
+
+generate_images_movie ()
+{
+while true; do
+  echo ""
+  echo "    processes: $NPROCS"
+  echo "        queue: $QUEUE"
+  echo "    smokeview: $SMOKEVIEW"
+  echo "      qsmv.sh: $QSMV"
+  echo " image script: $makemovie"
+  echo ""
+  echo "q - define queue"
+  echo "p - define number of processes"
+  echo "1 - generate images"
+  echo "2 - generate images and movie"
+  echo "x - exit"
+  read -p "option: " ans
+  if [ "$ans" == "p" ]; then
+    read -p "   enter number or processes: " NPROCS
+    continue
+  fi
+  if [ "$ans" == "q" ]; then
+    read -p "   enter queue: " QUEUE
+    continue
+  fi
+  if [ "$ans" == "x" ]; then
+    exit
+  fi
+  if [[ "$ans" -ge 1 ]] && [[ "$ans" -le "2" ]]; then
+    if [ "$ans" == "1" ]; then
+      return
+    fi
+    if [ "$ans" == "2" ]; then
+      return
+    fi
+  fi
+done
+}
+
+#---------------------------------------------
 #                   select_slice_file
 #---------------------------------------------
 
@@ -102,7 +144,6 @@ EOF
   0 1
 EOF
   echo ""
-  echo "image generating script: $makemovie "
   cat << EOF > $makemovie
 #!/bin/bash
 NPROCS=$NPROCS
@@ -129,10 +170,12 @@ CURDIR=`pwd`
 SCRIPTDIR=`dirname "$0"`
 cd $SCRIPTDIR/../../..
 ROOTDIR=`pwd`
+SMVREPO=$ROOTDIR/smv
 cd $CURDIR
-SMOKEVIEW=$ROOTDIR/smv/Build/smokeview/intel_linux_64/smokeview_linux_64
-SMOKEVIEW_TEST=$ROOTDIR/smv/Build/smokeview/intel_linux_64/smokeview_linux_test_64
-QSMV=$ROOTDIR/smv/Utilities/Scripts/qsmv.sh
+SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_64
+SMOKEVIEW_TEST=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_test_64
+QSMV=$SMVREPO/Utilities/Scripts/qsmv.sh
+MAKEMOVIE=$SMVREPO/Utilities/Scripts/make_movie.sh
 
 
 #---------------------------------------------
@@ -204,5 +247,8 @@ if [ "$slice_index" != "" ]; then
   rm -f $scriptname
   GENERATE_SCRIPT $slice_index $scriptname
 fi
+
+generate_images_movie
+
 
 
