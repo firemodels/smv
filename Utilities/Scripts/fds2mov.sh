@@ -18,6 +18,7 @@ function Usage {
     echo "-e - full path of smokeview executable."
     echo "     [default: $SMOKEVIEW]"
     echo "-i - use installed smokeview"
+    echo "-o - directory containing generated movie. [default: $OUTDIR]"
     echo "-r - directory containing generated images. [default: $RENDERDIR]"
   fi
   echo ""
@@ -61,6 +62,19 @@ OUTPUT_SLICES ()
 }
 
 #---------------------------------------------
+#                   wait_cases_end
+#---------------------------------------------
+
+wait_cases_end()
+{
+  while [[ `qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep ${JOBPREFIX} | grep -v 'C$'` != '' ]]; do
+     JOBS_REMAINING=`qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep ${JOBPREFIX} | grep -v 'C$' | wc -l`
+     echo "Waiting for ${JOBS_REMAINING} cases to complete."
+     sleep 15
+  done
+}
+
+#---------------------------------------------
 #                  generate_images
 #---------------------------------------------
 
@@ -72,16 +86,16 @@ while true; do
   echo "        queue: $QUEUE"
   echo "    smokeview: $SMOKEVIEW"
   echo "      qsmv.sh: $QSMV"
-  echo " image script: $makemovie"
+  echo " image script: $img_script"
   echo ""
-  echo "q - define queue"
   echo "p - define number of processes"
+  echo "q - define queue"
   echo "1 - generate images"
   echo "2 - generate images and movie"
   echo "x - exit"
   read -p "option: " ans
   if [ "$ans" == "p" ]; then
-    read -p "   enter number or processes: " NPROCS
+    read -p "   enter number of processes: " NPROCS
     continue
   fi
   if [ "$ans" == "q" ]; then
@@ -93,9 +107,14 @@ while true; do
   fi
   if [[ "$ans" -ge 1 ]] && [[ "$ans" -le "2" ]]; then
     if [ "$ans" == "1" ]; then
+      GENERATE_IMAGES=1
+      GENERATE_SCRIPTS $slice_index
       return
     fi
     if [ "$ans" == "2" ]; then
+      GENERATE_IMAGES=1
+      MAKE_MOVIE=1
+      GENERATE_SCRIPTS $slice_index
       return
     fi
   fi
@@ -124,45 +143,48 @@ done
 #                   GENERATE_SCRIPT
 #---------------------------------------------
 
-GENERATE_SCRIPT ()
+GENERATE_SCRIPTS ()
 {
   ind=$1
-  scriptname=$2
-  basename=${input}_slice_${ind}
-  scriptname=${basename}.ssf
-  makemovie=${basename}.sh
-  cat << EOF > $scriptname
+  img_basename=${input}_slice_${ind}
+  smv_scriptname=${img_basename}.ssf
+  img_scriptname=${img_basename}.sh
+  cat << EOF > ${smv_scriptname}
 RENDERDIR
   $RENDERDIR
 UNLOADALL
 LOADSLICERENDER
 EOF
   slice_quantity=`cat $slcffile | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2} }'`
-  cat $slcffile | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2"\n" $3 $4} }' >> $scriptname
-  cat << EOF >> $scriptname
-  $basename 
+  cat $slcffile | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2"\n" $3 $4} }' >> $smv_scriptname
+  cat << EOF >> $smv_scriptname
+  $img_basename 
   0 1
 EOF
   echo ""
-  cat << EOF > $makemovie
+  cat << EOF > $img_scriptname
 #!/bin/bash
 NPROCS=$NPROCS
 QUEUE=$QUEUE
 SMOKEVIEW=$SMOKEVIEW
 QSMV=$FIREMODELS/smv/Utilities/Scripts/qsmv.sh
-\$QSMV -P \$NPROCS -q \$QUEUE -e \$SMOKEVIEW -c $scriptname $input
+\$QSMV -j $JOBPREFIX -P \$NPROCS -q \$QUEUE -e \$SMOKEVIEW -c $smv_scriptname $input
 EOF
-chmod +x $makemovie
+chmod +x $img_scriptname
 }
 
 #*** initialize variables
 
 RENDERDIR=.
+OUTDIR=.
 NPROCS=1
 QUEUE=batch
 slice_index=
 USE_INSTALLED=
 HELP_ALL=
+JOBPREFIX=SV_
+GENERATE_IMAGES=
+MAKE_MOVIE=
 
 # define repo variables
 
@@ -173,7 +195,6 @@ ROOTDIR=`pwd`
 SMVREPO=$ROOTDIR/smv
 cd $CURDIR
 SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_64
-SMOKEVIEW_TEST=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_test_64
 QSMV=$SMVREPO/Utilities/Scripts/qsmv.sh
 MAKEMOVIE=$SMVREPO/Utilities/Scripts/make_movie.sh
 
@@ -182,7 +203,7 @@ MAKEMOVIE=$SMVREPO/Utilities/Scripts/make_movie.sh
 #                  parse command line options 
 #---------------------------------------------
 
-while getopts 'e:hHip:q:r:' OPTION
+while getopts 'e:hHio:p:q:r:' OPTION
 do
 case $OPTION  in
   e)
@@ -199,6 +220,9 @@ case $OPTION  in
    ;;
   i)
    USE_INSTALLED=1
+   ;;
+  o)
+   OUTDIR="$OPTARG"
    ;;
   p)
    NPROCS="$OPTARG"
@@ -242,13 +266,17 @@ fi
 
 select_slice_file
 
-if [ "$slice_index" != "" ]; then
-  scriptname=${input}_slice_${slice_index}.ssf
-  rm -f $scriptname
-  GENERATE_SCRIPT $slice_index $scriptname
-fi
-
 generate_images_movie
 
-
+if [ "$GENERATE_IMAGES" == "1" ]; then
+  bash $img_scriptname
+  if [ "$MAKE_MOVIE" == "1" ]; then
+    wait_cases_end
+    $MAKEMOVIE -o $OUTDIR $img_basename $img_basename
+  fi
+else
+  echo ""
+  echo "image generatingscript: $img_scriptnme"
+  cat $img_scriptname
+fi
 
