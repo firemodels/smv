@@ -10,19 +10,19 @@ function Usage {
   echo ""
   echo "This script generates image frames for a specified slice file"
   echo ""
-  echo "-h - display this message"
   echo "-p - number of processes [default $NPROCS]"
   echo "-q - queue  [default: $QUEUE]"
-  echo "-r - directory containing generated images. [default: $RENDERDIR]"
-  if [ "$SMOKEVIEW" == "" ]; then
-    echo "-s - full path of smokeview executable."
-  else
-    echo "-s - full path of smokeview executable. [default: $SMOKEVIEW]"
+  echo "-h - show commonly used options"
+  echo "-H - show all options"
+  if [ "$HELP_ALL" == "1" ]; then
+    echo "-e - full path of smokeview executable."
+    echo "     [default: $SMOKEVIEW]"
+    echo "-i - use installed smokeview"
+    echo "-r - directory containing generated images. [default: $RENDERDIR]"
   fi
   echo ""
   exit
 }
-
 
 #---------------------------------------------
 #                   is_file_installed
@@ -30,26 +30,24 @@ function Usage {
 
 get_smokeview ()
 {
-  if [ "$SMOKEVIEW" != "" ]; then
+  if [ "$USE_INSTALLED" == "" ]; then
     if [ -e $SMOKEVIEW ]; then
       return 0
     fi
-    echo "***error: The smokeview file, $SMOKEVIEW, does not exist. Add smokeview to"
-    echo "your path or define the environment variable SMOKEVIEW in a startup file"
-    echo "that points to smokeview's location."
+    echo "***error: The smokeview file, $SMOKEVIEW, does not exist."
     return 1
+  else
+    out=/tmp/program.out.$$
+    smokeview -v >& $out
+    notfound=`cat $out | tail -1 | grep "not found" | wc -l`
+    rm $out
+    if [ "$notfound" == "1" ] ; then
+      echo "***error: smokeview is not installed. Install smokeview"
+      echo "          and/or add smokeview to your PATH" 
+      return 1
+    fi
+    SMOKEVIEW=`which smokeview`
   fi
-  out=/tmp/program.out.$$
-  smokeview -v >& $out
-  notfound=`cat $out | tail -1 | grep "not found" | wc -l`
-  rm $out
-  if [ "$notfound" == "1" ] ; then
-    echo "***error: smokeview is not installed. Add smokeview to your PATH or" 
-    echo "define the environment variable SMOKEVIEW in a startup file that points "
-    echo "to smokeview's location."
-    return 1
-  fi
-  SMOKEVIEW=`which smokeview`
   return 0
 }
 
@@ -98,16 +96,20 @@ UNLOADALL
 LOADSLICERENDER
 EOF
   slice_quantity=`cat $slcffile | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2} }'`
-  echo "generating smokeview script using  $slice_quantity
   cat $slcffile | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2"\n" $3 $4} }' >> $scriptname
   cat << EOF >> $scriptname
   $basename 
   0 1
 EOF
-  echo "generating bash script $makemovie that generates images"
+  echo ""
+  echo "image generating script: $makemovie "
   cat << EOF > $makemovie
 #!/bin/bash
-qsmv.sh -P $NPROC -q $QUEUE -e $SMOKEVIEW -c $scriptname $input
+NPROCS=$NPROCS
+QUEUE=$QUEUE
+SMOKEVIEW=$SMOKEVIEW
+QSMV=$FIREMODELS/smv/Utilities/Scripts/qsmv.sh
+\$QSMV -P \$NPROCS -q \$QUEUE -e \$SMOKEVIEW -c $scriptname $input
 EOF
 chmod +x $makemovie
 }
@@ -115,32 +117,54 @@ chmod +x $makemovie
 #*** initialize variables
 
 RENDERDIR=.
-NPROC=1
+NPROCS=1
 QUEUE=batch
 slice_index=
+USE_INSTALLED=
+HELP_ALL=
+
+# define repo variables
+
+CURDIR=`pwd`
+SCRIPTDIR=`dirname "$0"`
+cd $SCRIPTDIR/../../..
+ROOTDIR=`pwd`
+cd $CURDIR
+SMOKEVIEW=$ROOTDIR/smv/Build/smokeview/intel_linux_64/smokeview_linux_64
+SMOKEVIEW_TEST=$ROOTDIR/smv/Build/smokeview/intel_linux_64/smokeview_linux_test_64
+QSMV=$ROOTDIR/smv/Utilities/Scripts/qsmv.sh
+
 
 #---------------------------------------------
 #                  parse command line options 
 #---------------------------------------------
 
-while getopts 'hp:q:r:s:' OPTION
+while getopts 'e:hHip:q:r:' OPTION
 do
 case $OPTION  in
+  e)
+   SMOKEVIEW="$OPTARG"
+   ;;
   h)
    Usage
    exit
    ;;
+  H)
+   HELP_ALL=1
+   Usage
+   exit
+   ;;
+  i)
+   USE_INSTALLED=1
+   ;;
   p)
-   NPROC="$OPTARG"
+   NPROCS="$OPTARG"
    ;;
   q)
    QUEUE="$OPTARG"
    ;;
   r)
    RENDERDIR="$OPTARG"
-   ;;
-  s)
-   SMOKEVIEW="$OPTARG"
    ;;
 esac
 done
