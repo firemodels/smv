@@ -248,8 +248,9 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
     command = current_script_command->command;
 
     if(
-      (command == SCRIPT_RENDERONCE || command == SCRIPT_RENDERALL ||
-        command == SCRIPT_RENDER360ALL || command == SCRIPT_VOLSMOKERENDERALL || command == SCRIPT_ISORENDERALL
+      ( command == SCRIPT_RENDERONCE   || command == SCRIPT_RENDERALL         ||
+        command == SCRIPT_RENDER360ALL || command == SCRIPT_VOLSMOKERENDERALL ||
+        command == SCRIPT_ISORENDERALL || command == SCRIPT_LOADSLICERENDER
         ) &&
       current_script_command->cval2 != NULL
       ){
