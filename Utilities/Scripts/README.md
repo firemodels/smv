@@ -2,6 +2,19 @@
 
 This directory contains scripts used by other scripts in the smv repo. The script qsmv.sh is described below.
 
+## fds2html.sh
+
+This script is used to generate a web (html) version of a smokeview (.smv) file and associated slice and boundary files.
+
+## fds2png.sh
+
+This script is used to generate png image files for a case that was previously run by fds.  To get started, add the following line to your startup file, typically .bashrc 
+(change the first part of the following alias command to match where your repo is located):
+
+```alias fds2png="/home/gforney/FireModels_fork/smv/Utilities/Scripts/fds2png.sh"```
+
+Type `fds2png casename` to get a list of available slice files. After selecting a slice file the script will generate a script (for now) that you can run to generate the png files.
+
 ## qsmv.sh
 
 The script qsmv.sh is used to run smokeview on a Linux cluster with a PBS or Slurm queuing system in order to generate images for creating an animation. qsmv.sh can also be used to run arbitrary commands using the -C option.  qsmv.sh speeds up the rendering of smokeview images by running multiple instances of qsmv.sh. Each instance renders a subset of the simulation time frames. By running multiple instances of qsmv.sh, the total time required to render simulation images is reduced.
