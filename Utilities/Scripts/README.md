@@ -1,27 +1,60 @@
 # Utilities/Scripts
 
-This directory contains scripts for generating images and animations of FDS cases and scripts used by other scripts in this repo.
-These notes are preiminary, a work in progress.
+This directory contains scripts for generating images and animations of FDS cases.  It also contains scripts for
+peforming tasks such setting up the graphics environment for the image generating scripts and scripts for identifying Git and compiler 
+versions for the compilation sccripts. These notes are preliminary, a work in progress.
 
 ## fds2html.sh
 
 This script is used to generate an HTML page from a casename.smv, slice and boundary files.
-To use, add an alias to your startup file, typically .bashrc (change to match your repo located):
+To use, add an alias to your startup file, typically .bashrc (change the first part to match your repo location):
 
-```alias fds2html="/home/gforney/FireModels_fork/smv/Utilities/Scripts/fds2html.sh"```
+```alias fds2html.sh="/home/gforney/FireModels_fork/smv/Utilities/Scripts/fds2html.sh"```
 
-Then type `fds2html casename` at a command line.
+Then type `fds2html casename` at a command line. (add more description)
 
 ## fds2mov.sh
 
-This script is used to generate a MP4 movie file from an FDS slice file.  To use, add an alias to your startup file, 
-typically .bashrc (change to match your repo located):
+This script is used to generate an MP4 animation file from an FDS slice file.  To use, add an alias to your startup file, 
+typically .bashrc (change the first part to match your repo location):
 
-```alias fds2mov="/home/gforney/FireModels_fork/smv/Utilities/Scripts/fds2mov.sh"```
+```alias fds2mov.sh="/home/gforney/FireModels_fork/smv/Utilities/Scripts/fds2mov.sh"```
 
-Type `fds2mov casename` to get a list of available slice files. After selecting a slice file the script give you the option 
-to generate PNG images for each slice file time step, to generate a MP4 movie file (along with PNG files) or a 
-BASH script for generating images which can be customized later.
+Then type `fds2mov casename` .  You will see a list of slice files for this case such as
+```
+  1   VELOCITY                     3     95.0
+  2   U-VELOCITY                   3     95.0
+  3   V-VELOCITY                   3     95.0
+  4   W-VELOCITY                   3     95.0
+  5   VELOCITY(terrain)            3     40.0
+  6   U-VELOCITY(terrain)          3     40.0
+  7   V-VELOCITY(terrain)          3     40.0
+  8   W-VELOCITY(terrain)          3     40.0
+  9   LEVEL SET VALUE(terrain)     3      1.0
+Select slice file: 
+   ```
+
+After selecting an option such as `9`, LEVEL SET in this caes, you will see options for 
+setting the number of procceses, defining the queue, generating images or generating images and an animation.  
+Also, the script for generating images may be customized and run later.
+
+```
+     quantity:  LEVEL SET VALUE(terrain)
+    processes: 1
+        queue: batch
+    smokeview: /...../smv/Build/smokeview/intel_linux_64/smokeview_linux_64
+      qsmv.sh: /...../smv/Utilities/Scripts/qsmv.sh
+ image script: casename_slice_9.sh
+
+p - define number of processes
+q - define queue
+1 - generate PNG images
+2 - generate PNG images and an MP4 animation
+x - exit
+option:
+```
+
+To generate an animation then, select option 2.
 
 ## qsmv.sh
 
