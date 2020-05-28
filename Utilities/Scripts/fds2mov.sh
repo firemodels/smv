@@ -179,8 +179,8 @@ chmod +x $img_scriptname
 
 RENDERDIR=.
 OUTDIR=.
-NPROCS=1
-QUEUE=batch
+NPROCS=20
+QUEUE=batch4
 slice_index=
 USE_INSTALLED=
 HELP_ALL=
