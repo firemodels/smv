@@ -18,19 +18,19 @@ This script is used to generate an MP4 animation file from an FDS slice file.  T
 
 cd to a directory containing your case and type `fds2mov casename` .  You will see a list of slice files for this case such as
 ```
-  1   VELOCITY                     3     95.0
-  2   U-VELOCITY                   3     95.0
-  3   V-VELOCITY                   3     95.0
-  4   W-VELOCITY                   3     95.0
-  5   VELOCITY(terrain)            3     40.0
-  6   U-VELOCITY(terrain)          3     40.0
-  7   V-VELOCITY(terrain)          3     40.0
-  8   W-VELOCITY(terrain)          3     40.0
-  9   LEVEL SET VALUE(terrain)     3      1.0
-Select slice file: 
+index   quantity                      dir       position
+    1   U-VELOCITY                      3     255.249954
+    2   V-VELOCITY                      3     255.249954
+    3   VELOCITY                        3     255.249954
+    4   W-VELOCITY                      3     255.249954
+    5   BURNING RATE(terrain)           3           0.01
+    6   LEVEL SET VALUE(terrain)        3            1.0
+    7   U-VELOCITY(terrain)             3           25.0
+    8   V-VELOCITY(terrain)             3           25.0
+    9   VELOCITY(terrain)               3           25.0
    ```
 
-After selecting an option such as `9`, LEVEL SET in this caes, you will see options for setting the number of procceses, defining the queue, generating images or generating images and an animation. The script for generating images may be customized and run later.
+After selecting an option such as `9`, LEVEL SET in this caes, you will see various option specifying how images are generated (number of processes, what queue to use) and whether to images and an animation or just images. The script for generating images is identified and may be customized and run later.
 
 ```
      quantity:  LEVEL SET VALUE(terrain)
