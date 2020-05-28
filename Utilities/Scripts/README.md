@@ -12,7 +12,7 @@ Then type `fds2html casename` at a command line. (add more description)
 
 ## fds2mov.sh
 
-This script is used to generate an MP4 animation file from an FDS slice file.  To use, add an alias to your startup file, typically .bashrc (change the first part to match your repo location):
+This script is used to generate an MP4 animation file from an FDS slice file.  For now, it uses smokeview built at smv/Build/smokeview/intel_linux_64 .  To use, add an alias to your startup file, typically .bashrc (change the first part to match your repo location):
 
 ```alias fds2mov.sh="/home/gforney/FireModels_fork/smv/Utilities/Scripts/fds2mov.sh"```
 
@@ -30,7 +30,7 @@ index   quantity                      dir       position
     9   VELOCITY(terrain)               3           25.0
    ```
 
-After selecting an option such as `9`, LEVEL SET in this caes, you will see various option specifying how images are generated (number of processes, what queue to use) and whether to images and an animation or just images. The script for generating images is identified and may be customized and run later.
+After selecting an option such as `9`, LEVEL SET in this caes, you will see various options specifying how images are generated (number of processes, what queue to use) and whether to generate images and an animation or just images. fds2mov.sh creates a script (casename_slice_9.sh in this case) for generating images which it runs. You may also customize this script and run it later.
 
 ```
      quantity:  LEVEL SET VALUE(terrain)
