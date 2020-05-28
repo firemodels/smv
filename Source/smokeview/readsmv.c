@@ -5319,14 +5319,17 @@ char *GetViewPointPtr(char **viewpoint_list, int nviewpoint_list, char *viewpoin
 /* ------------------ GetCharPtr ------------------------ */
 
 char *GetCharPtr(char *label){
-  char *labelptr;
+  char *labelptr, labelcopy[256], *labelcopyptr;
   int lenlabel;
+  
 
-  label = TrimFrontBack(label);
-  lenlabel = strlen(label);
+  if(label==NULL||strlen(label)==0)return NULL;
+  strcpy(labelcopy,label);
+  labelcopyptr = TrimFrontBack(labelcopy);
+  lenlabel = strlen(labelcopyptr);
   if(lenlabel==0)return NULL;
   NewMemory((void **)&labelptr, lenlabel+1);
-  strcpy(labelptr, label);
+  strcpy(labelptr, labelcopyptr);
   return labelptr;
 }
 
@@ -5393,14 +5396,16 @@ int GetAllViewPoints(char *casenameini, char ***all_viewpoints_ptr){
   int n1 = 0, nall_viewpoints = 0;
   char **vp1 = NULL, **all_viewpoints = NULL;
   int i;
-  char *default_views[7] = {"external", "VIEWXMIN", "VIEWXMAX", "VIEWYMIN", "VIEWYMAX", "VIEWZMIN", "VIEWZMAX"};
+#define NDEFAULT_VIEWS 1
+  char *default_views[NDEFAULT_VIEWS] = {"external"};
+//  char *default_views[NDEFAULT_VIEWS] = {"external", "VIEWXMIN", "VIEWXMAX", "VIEWYMIN", "VIEWYMAX", "VIEWZMIN", "VIEWZMAX"};
 
   n1 = GetViewpoints(casenameini, &vp1);
   nall_viewpoints = 7+n1;
   NewMemory((void **)&all_viewpoints, nall_viewpoints*sizeof(char *));
 
   nall_viewpoints = 0;
-  for(i = 0; i<7; i++){
+  for(i = 0; i<NDEFAULT_VIEWS; i++){
     char *viewptr;
 
     if(GetViewPointPtr(all_viewpoints, nall_viewpoints, default_views[i])==NULL){
@@ -5452,7 +5457,8 @@ void GenerateViewpointMenu(void){
 
   int count = 1;
   fprintf(stream, "\n");
-  fprintf(stream, format, "index", "view point");
+  fprintf(stream, format, "index", "viewpoint");
+  fprintf(stream, format, "d", "delete");
   for(i = 0; i<nviewpoints; i++){
     char index[10];
 
