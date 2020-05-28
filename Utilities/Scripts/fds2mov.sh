@@ -51,6 +51,15 @@ get_smokeview ()
   fi
   return 0
 }
+#---------------------------------------------
+#                   OUTPUT_VIEWPOINTS
+#---------------------------------------------
+
+OUTPUT_VIEWPOINTS ()
+{
+  cat $viewpointmenu | awk -F"," '{ print $1" ",$2}'
+}
+
 
 #---------------------------------------------
 #                   OUTPUT_SLICES
@@ -58,7 +67,7 @@ get_smokeview ()
 
 OUTPUT_SLICES ()
 {
-  cat $slcffile | awk -F"," '{ print $1" ",$2," ",$3," ",$4}'
+  cat $slicefilemenu | awk -F"," '{ print $1" ",$2," ",$3," ",$4}'
 }
 
 #---------------------------------------------
@@ -87,10 +96,12 @@ while true; do
   echo "        queue: $QUEUE"
   echo "    smokeview: $SMOKEVIEW"
   echo "      qsmv.sh: $QSMV"
+  echo "    viewpoint: $viewpoint"
   echo " image script: $img_scriptname"
   echo ""
   echo "p - define number of processes"
   echo "q - define queue"
+  echo "v - select viewpoint"
   echo "1 - generate PNG images"
   echo "2 - generate PNG images and an MP4 animation"
   echo "x - exit"
@@ -101,6 +112,10 @@ while true; do
   fi
   if [ "$ans" == "q" ]; then
     read -p "   enter queue: " QUEUE
+    continue
+  fi
+  if [ "$ans" == "v" ]; then
+    select_viewpoint
     continue
   fi
   if [ "$ans" == "x" ]; then
@@ -123,6 +138,30 @@ done
 }
 
 #---------------------------------------------
+#                   select_viewpoint
+#---------------------------------------------
+
+select_viewpoint ()
+{
+while true; do
+  OUTPUT_VIEWPOINTS
+  read -p "Select viewpoint: " ans
+  echo ans=$ans $nviewpoints
+  if [ "$ans" == "d" ]; then
+    viewpoint=
+    return 0
+  fi
+  if [[ $ans -ge 1 ]] && [[ $ans -le $nviewpoints ]]; then
+    viewpoint_index=$ans
+    viewpoint=`cat $viewpointmenu | awk -v ind="$viewpoint_index" -F"," '{ if($1 == ind){print $2} }'`
+    return 0
+  else
+    echo index $ans out of bounds
+  fi
+done
+}
+
+#---------------------------------------------
 #                   select_slice_file
 #---------------------------------------------
 
@@ -136,7 +175,7 @@ while true; do
     img_basename=${input}_slice_${slice_index}
     smv_scriptname=${img_basename}.ssf
     img_scriptname=${img_basename}.sh
-    slice_quantity=`cat $slcffile | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $2} }'`
+    slice_quantity=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $2} }'`
     return 0
   else
     echo index $ans out of bounds
@@ -155,10 +194,18 @@ GENERATE_SCRIPTS ()
 RENDERDIR
   $RENDERDIR
 UNLOADALL
+EOF
+if [ "$viewpoint" != "" ]; then
+  cat << EOF >> ${smv_scriptname}
+SETVIEWPOINT
+  $viewpoint
+EOF
+fi
+  cat << EOF >> ${smv_scriptname}
 LOADSLICERENDER
 EOF
-  slice_quantity=`cat $slcffile | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2} }'`
-  cat $slcffile | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2"\n" $3 $4} }' >> $smv_scriptname
+  slice_quantity=`cat $slicefilemenu | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2} }'`
+  cat $slicefilemenu | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2"\n" $3 $4} }' >> $smv_scriptname
   cat << EOF >> $smv_scriptname
   $img_basename 
   0 1
@@ -242,7 +289,13 @@ shift $(($OPTIND-1))
 input=$1
 
 smvfile=$1.smv
-slcffile=$1.slcf
+slicefilemenu=$1.slcf
+
+nviewpoints=0
+viewpointmenu=$1.viewpoints
+if [ -e $viewpointmenu ]; then
+  nviewpoints=`cat $viewpointmenu | wc -l`
+fi
 
 get_smokeview || exit 1
 
@@ -251,16 +304,15 @@ if [ ! -e $smvfile ]; then
   exit
 fi
 
-if [ ! -e $slcffile ]; then
-  $SMOKEVIEW -slice_info $input >& /dev/null
-fi
+$SMOKEVIEW -info $input
+#$SMOKEVIEW -info $input >& /dev/null
 
-if [ ! -e $slcffile ]; then
-  echo "*** error: $slcffile does not exist"
+if [ ! -e $slicefilemenu ]; then
+  echo "*** error: $slicefilemenu does not exist"
   exit
 fi
 
-nslices=`cat $slcffile | wc -l`
+nslices=`cat $slicefilemenu | wc -l`
 if [ "$nslices" == "0" ]; then
   echo "*** error:  No slice files found in $smvfile"
   exit
