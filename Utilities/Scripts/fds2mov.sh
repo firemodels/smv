@@ -82,16 +82,17 @@ generate_images_movie ()
 {
 while true; do
   echo ""
+  echo "     quantity: $slice_quantity "
   echo "    processes: $NPROCS"
   echo "        queue: $QUEUE"
   echo "    smokeview: $SMOKEVIEW"
   echo "      qsmv.sh: $QSMV"
-  echo " image script: $img_script"
+  echo " image script: $img_scriptname"
   echo ""
   echo "p - define number of processes"
   echo "q - define queue"
-  echo "1 - generate images"
-  echo "2 - generate images and movie"
+  echo "1 - generate PNG images"
+  echo "2 - generate PNG images and an MP4 animation"
   echo "x - exit"
   read -p "option: " ans
   if [ "$ans" == "p" ]; then
@@ -132,6 +133,10 @@ while true; do
   read -p "Select slice file: " ans
   if [[ "$ans" -ge 1 ]] && [[ "$ans" -le "$nslices" ]]; then
     slice_index=$ans
+    img_basename=${input}_slice_${slice_index}
+    smv_scriptname=${img_basename}.ssf
+    img_scriptname=${img_basename}.sh
+    slice_quantity=`cat $slcffile | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $2} }'`
     return 0
   else
     echo index $ans out of bounds
@@ -146,9 +151,6 @@ done
 GENERATE_SCRIPTS ()
 {
   ind=$1
-  img_basename=${input}_slice_${ind}
-  smv_scriptname=${img_basename}.ssf
-  img_scriptname=${img_basename}.sh
   cat << EOF > ${smv_scriptname}
 RENDERDIR
   $RENDERDIR
