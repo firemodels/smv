@@ -5338,6 +5338,7 @@ int GetViewpoints(char *inifile, char ***viewpointlist_ptr){
 
   if(inifile==NULL||strlen(inifile)==0)return 0;
   stream = fopen(inifile, "r");
+  if(stream==NULL)return 0;
 
   int nviewpoints = 0;
   while(!feof(stream)){
@@ -5351,7 +5352,10 @@ int GetViewpoints(char *inifile, char ***viewpointlist_ptr){
       nviewpoints++;
     }
   }
-  if(nviewpoints==0)return 0;
+  if(nviewpoints==0){
+    fclose(stream);
+    return 0;
+  }
 
   NewMemory((void **)&viewpointlist, nviewpoints*sizeof(char *));
   *viewpointlist_ptr = viewpointlist;
@@ -5379,6 +5383,7 @@ int GetViewpoints(char *inifile, char ***viewpointlist_ptr){
       }
     }
   }
+  fclose(stream);
   return nviewpoints;
 }
 
