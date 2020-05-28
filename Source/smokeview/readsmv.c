@@ -5305,6 +5305,160 @@ void FreeSliceData(void){
   }
 }
 
+/* ------------------ GetViewPointPtr ------------------------ */
+
+char *GetViewPointPtr(char **viewpoint_list, int nviewpoint_list, char *viewpoint){
+  int i;
+
+  for(i = 0; i<nviewpoint_list; i++){
+    if(strcmp(viewpoint_list[i], viewpoint)==0)return viewpoint_list[i];
+  }
+  return NULL;
+}
+
+/* ------------------ GetCharPtr ------------------------ */
+
+char *GetCharPtr(char *label){
+  char *labelptr;
+  int lenlabel;
+
+  label = TrimFrontBack(label);
+  lenlabel = strlen(label);
+  if(lenlabel==0)return NULL;
+  NewMemory((void **)&labelptr, lenlabel+1);
+  strcpy(labelptr, label);
+  return labelptr;
+}
+
+/* ------------------ GetViewPoints ------------------------ */
+
+int GetViewpoints(char *inifile, char ***viewpointlist_ptr){
+  FILE *stream;
+  char **viewpointlist;
+
+  if(inifile==NULL||strlen(inifile)==0)return 0;
+  stream = fopen(inifile, "r");
+
+  int nviewpoints = 0;
+  while(!feof(stream)){
+    char buffer[255], buffer2[255];
+
+
+    CheckMemory;
+    if(fgets(buffer, 255, stream)==NULL)break;
+    if(Match(buffer, "VIEWPOINT5")==1||Match(buffer, "VIEWPOINT6")==1){
+
+      nviewpoints++;
+    }
+  }
+  if(nviewpoints==0)return 0;
+
+  NewMemory((void **)&viewpointlist, nviewpoints*sizeof(char *));
+  *viewpointlist_ptr = viewpointlist;
+
+  rewind(stream);
+
+  nviewpoints = 0;
+  while(!feof(stream)){
+    char buffer[255], buffer2[255], *buffptr;
+
+    CheckMemory;
+    if(fgets(buffer, 255, stream)==NULL)break;
+    if(Match(buffer, "VIEWPOINT5")==1||Match(buffer, "VIEWPOINT6")==1){
+      int nskip, i;
+
+      nskip = 11;
+      if(Match(buffer, "VIEWPOINT6")==1)nskip = 12;
+      for(i = 0; i<nskip; i++){
+        if(fgets(buffer, 255, stream)==NULL)break;
+      }
+      if(fgets(buffer, 255, stream)==NULL)break;
+      buffptr = GetCharPtr(buffer);
+      if(buffptr!=NULL){
+        viewpointlist[nviewpoints++] = buffptr;
+      }
+    }
+  }
+  return nviewpoints;
+}
+
+/* ------------------ GetAllViewPoints ------------------------ */
+
+int GetAllViewPoints(char *casenameini, char ***all_viewpoints_ptr){
+  int n1 = 0, nall_viewpoints = 0;
+  char **vp1 = NULL, **all_viewpoints = NULL;
+  int i;
+  char *default_views[7] = {"external", "VIEWXMIN", "VIEWXMAX", "VIEWYMIN", "VIEWYMAX", "VIEWZMIN", "VIEWZMAX"};
+
+  n1 = GetViewpoints(casenameini, &vp1);
+  nall_viewpoints = 7+n1;
+  NewMemory((void **)&all_viewpoints, nall_viewpoints*sizeof(char *));
+
+  nall_viewpoints = 0;
+  for(i = 0; i<7; i++){
+    char *viewptr;
+
+    if(GetViewPointPtr(all_viewpoints, nall_viewpoints, default_views[i])==NULL){
+      viewptr = GetCharPtr(default_views[i]);
+      if(viewptr!=NULL){
+        all_viewpoints[nall_viewpoints++] = viewptr;
+      }
+    }
+  }
+  for(i = 0; i<n1; i++){
+    char *viewptr;
+
+    if(GetViewPointPtr(all_viewpoints, nall_viewpoints, vp1[i])==NULL){
+      all_viewpoints[nall_viewpoints] = vp1[i];
+      nall_viewpoints++;
+    }
+  }
+  *all_viewpoints_ptr = all_viewpoints;
+  return nall_viewpoints;
+}
+/* ------------------ GenerateViewpointMenu ------------------------ */
+
+void GenerateViewpointMenu(void){
+  char viewpiontemenu_filename[256];
+  FILE *stream = NULL;
+  int i;
+  char cform1[20], cform2[20];
+  char **all_viewpoints;
+  int nviewpoints;
+  char casenameini[256];
+
+  strcpy(viewpiontemenu_filename, fdsprefix);
+  strcat(viewpiontemenu_filename, ".viewpoints");
+  strcpy(casenameini, fdsprefix);
+  strcat(casenameini, ".ini");
+
+  nviewpoints = GetAllViewPoints(casenameini, &all_viewpoints);
+  if(nviewpoints==0)return;
+
+  // if we can't write out to the viewpoint menu file then abort
+  stream = fopen(viewpiontemenu_filename, "w");
+  if(stream==NULL)return;
+
+  int max1 = 5;
+  int max2 = 20;
+  sprintf(cform1, "%s%i.%is", "%", max1, max1);/* %20.20s*/
+  sprintf(cform2, "%s-%i.%is", "%", max2, max2);
+
+  char format[80];
+  sprintf(format, "%s, %s\n", cform1, cform2);
+
+  int count = 1;
+  fprintf(stream, "\n");
+  fprintf(stream, format, "index", "view point");
+  for(i = 0; i<nviewpoints; i++){
+    char index[10];
+
+    sprintf(index, "%i", count++);
+    fprintf(stream, format, index, all_viewpoints[i]);
+  }
+  fclose(stream);
+}
+
 /* ------------------ ReadSMV ------------------------ */
 
 int ReadSMV(bufferstreamdata *stream){
@@ -10019,8 +10173,9 @@ typedef struct {
   UpdateVSlices();
   if(update_slice==1)return 3;
 
-  GenerateSliceMenu();
-  if(generate_slice_info_from_commandline==1){
+  if(generate_info_from_commandline==1){
+    GenerateSliceMenu();
+    GenerateViewpointMenu();
     exit(0);
   }
 
@@ -13407,7 +13562,6 @@ int ReadIni2(char *inifile, int localfile){
         }
       }
     }
-
   }
   fclose(stream);
   return 0;

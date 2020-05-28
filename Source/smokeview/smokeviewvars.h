@@ -34,7 +34,7 @@ SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
 SVEXTERN slicemenudata SVDECL(*slicemenuinfo, NULL);
-SVEXTERN int SVDECL(generate_slice_info_from_commandline, 0);
+SVEXTERN int SVDECL(generate_info_from_commandline, 0);
 #ifdef pp_PART_HIST
 SVEXTERN int SVDECL(generate_part_histograms, 0);
 #endif
