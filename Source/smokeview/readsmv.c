@@ -4965,6 +4965,8 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->ntimes_old = 0;
   sd->globalmax = -1.0e30;
   sd->globalmin = -sd->globalmax;
+ // sd->file_size = 0;
+  sd->nframes = 0;
 #ifdef pp_NEWBOUND_DIALOG
   sd->file_min = 1.0;
   sd->file_max = 0.0;

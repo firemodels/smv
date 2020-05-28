@@ -5,6 +5,7 @@
 #include GLUT_H
 
 #include "smokeviewvars.h"
+#include "IOscript.h"
 
 /* ------------------ UpdateTimeLabels ------------------------ */
 
@@ -13,6 +14,10 @@ void UpdateTimeLabels(void){
 
   time0 = timeoffset;
   if(global_times!=NULL)time0 = timeoffset + global_times[itimes];
+  if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER){
+    time0 = current_script_command->fval4;
+  }
+
   if(vishmsTimelabel==1){
     int hour, min, sec,sec10;
     char sign[2];
@@ -35,11 +40,16 @@ void UpdateTimeLabels(void){
     float dt;
     char timeval[30], *timevalptr;
 
-    if(nglobal_times>1){
-      dt=global_times[1]-global_times[0];
+    if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER){
+      dt = current_script_command->fval5;
     }
     else{
-      dt=0.0;
+      if(nglobal_times>1){
+        dt = global_times[1]-global_times[0];
+      }
+      else{
+        dt = 0.0;
+      }
     }
     if(dt<0.0)dt=-dt;
     timevalptr=Time2TimeLabel(time0,dt,timeval);
@@ -80,11 +90,22 @@ void DrawTimebar(float xleft, float xright, float ybot, float ytop){
   glVertex2f(xleft,ytop);
   glEnd();
 
-  if(nglobal_times != 1){
-    xxright = xleft + (float)itimes*(xright-xleft)/(nglobal_times-1);
+  xxright = xright;
+  if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER){
+    float factor, time_min, time_max, time_now;
+
+    time_min = current_script_command->fval2;
+    time_max = current_script_command->fval3;
+    if(time_max>time_min){
+      time_now = current_script_command->fval4;
+      factor = CLAMP((time_now-time_min)/(time_max-time_min), 0.0, 1.0);
+      xxright = (1.0-factor)*xleft+factor*xright;
+    }
   }
   else{
-    xxright=xright;
+    if(nglobal_times!=1){
+      xxright = xleft+(float)itimes*(xright-xleft)/(nglobal_times-1);
+    }
   }
   glBegin(GL_POLYGON);
   glColor4fv(timebarcolor);

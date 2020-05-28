@@ -97,6 +97,7 @@ function usage {
     exit
   fi
   echo "Other options:"
+  echo " -b email_address - send an email to email_address when jobs starts, aborts and finishes"
   echo " -c file - loads Intel Trace Collector configuration file "
   echo " -C   - use modules currently loaded rather than modules loaded when fds was built."
   echo " -d dir - specify directory where the case is found [default: .]"
@@ -217,6 +218,7 @@ iinspectargs=
 vtuneresdir=
 vtuneargs=
 use_config=""
+EMAIL=
 
 # determine which resource manager is running (or none)
 
@@ -277,7 +279,7 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'Aa:c:Cd:D:e:Ef:hHiIj:Lm:Mn:No:O:p:Pq:rsStT:vVw:x:' OPTION
+while getopts 'Aa:b:c:Cd:D:e:Ef:hHiIj:Lm:Mn:No:O:p:Pq:rsStT:vVw:x:' OPTION
 do
 case $OPTION  in
   A) # used by timing scripts to identify benchmark cases
@@ -286,6 +288,9 @@ case $OPTION  in
   a)
    vtuneresdir="$OPTARG"
    use_vtune=1
+   ;;
+  b)
+   EMAIL="$OPTARG"
    ;;
   c)
    use_config="$OPTARG"
@@ -802,6 +807,12 @@ if [ "$queue" != "none" ]; then
 #SBATCH --cpus-per-task=$n_openmp_threads
 #SBATCH --ntasks-per-node=$n_mpi_processes_per_node
 EOF
+if [ "$EMAIL" != "" ]; then
+    cat << EOF >> $scriptfile
+#SBATCH --mail-user=$EMAIL
+#SBATCH --mail-type=ALL
+EOF
+fi
 
 if [ "$benchmark" == "yes" ]; then
 cat << EOF >> $scriptfile
@@ -826,6 +837,12 @@ EOF
 #PBS -o $outlog
 #PBS -l nodes=$nodes:ppn=$ppn
 EOF
+if [ "$EMAIL" != "" ]; then
+    cat << EOF >> $scriptfile
+#PBS -m abe
+#PBS -M $EMAIL
+EOF
+fi
     if [ "$walltimestring_pbs" != "" ]; then
       cat << EOF >> $scriptfile
 #PBS $walltimestring_pbs

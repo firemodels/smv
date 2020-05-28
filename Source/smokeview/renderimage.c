@@ -248,8 +248,9 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
     command = current_script_command->command;
 
     if(
-      (command == SCRIPT_RENDERONCE || command == SCRIPT_RENDERALL ||
-        command == SCRIPT_RENDER360ALL || command == SCRIPT_VOLSMOKERENDERALL || command == SCRIPT_ISORENDERALL
+      ( command == SCRIPT_RENDERONCE   || command == SCRIPT_RENDERALL         ||
+        command == SCRIPT_RENDER360ALL || command == SCRIPT_VOLSMOKERENDERALL ||
+        command == SCRIPT_ISORENDERALL || command == SCRIPT_LOADSLICERENDER
         ) &&
       current_script_command->cval2 != NULL
       ){
@@ -293,6 +294,7 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
     (current_script_command->command == SCRIPT_RENDERALL ||
       current_script_command->command == SCRIPT_RENDER360ALL ||
       current_script_command->command == SCRIPT_VOLSMOKERENDERALL ||
+      current_script_command->command == SCRIPT_LOADSLICERENDER ||
       current_script_command->command == SCRIPT_ISORENDERALL
       ))){
     int image_num;
@@ -304,6 +306,10 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
     }
     else{
       image_num = itimes;
+    }
+    if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER){
+      int time_current = current_script_command->ival4;
+      image_num = time_current;
     }
     if(render_label_type == RENDER_LABEL_FRAMENUM || RenderTime == 0){
       float time_local;

@@ -1,10 +1,31 @@
 # Utilities/Scripts
 
-This directory contains scripts used by other scripts in the smv repo. The script qsmv.sh is described below.
+This directory contains scripts for generating images and animations of FDS cases and scripts used by other scripts in this repo.
+These notes are preiminary, a work in progress.
+
+## fds2html.sh
+
+This script is used to generate an HTML page from a casename.smv, slice and boundary files.
+To use, add an alias to your startup file, typically .bashrc (change to match your repo located):
+
+```alias fds2html="/home/gforney/FireModels_fork/smv/Utilities/Scripts/fds2html.sh"```
+
+Then type `fds2html casename` at a command line.
+
+## fds2mov.sh
+
+This script is used to generate a MP4 movie file from an FDS slice file.  To use, add an alias to your startup file, 
+typically .bashrc (change to match your repo located):
+
+```alias fds2mov="/home/gforney/FireModels_fork/smv/Utilities/Scripts/fds2mov.sh"```
+
+Type `fds2mov casename` to get a list of available slice files. After selecting a slice file the script give you the option 
+to generate PNG images for each slice file time step, to generate a MP4 movie file (along with PNG files) or a 
+BASH script for generating images which can be customized later.
 
 ## qsmv.sh
 
-The script qsmv.sh is used to run smokeview on a Linux cluster with a PBS or Slurm queuing system in order to generate images for creating an animation. qsmv.sh can also be used to run arbitrary commands using the -C option.  qsmv.sh speeds up the rendering of smokeview images by running multiple instances of qsmv.sh. Each instance renders a subset of the simulation time frames. By running multiple instances of qsmv.sh, the total time required to render simulation images is reduced.
+This script is used to run smokeview on a Linux cluster with a PBS or Slurm queuing system in order to generate images for creating an animation. qsmv.sh speeds up the rendering prrocess by running multiple instances of smokeview. Each instance renders a subset of the simulation time frames. By running multiple instances, the total time required to render simulation image frames is reduced.
 
 To get started, add the following line to your startup file, typically .bashrc 
 (change the first part of the following alias command to match where your repo is located):

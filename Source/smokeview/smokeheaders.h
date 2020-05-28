@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void ScriptLoadSliceRender(scriptdata *scripti);
+EXTERNCPP int GetNSliceFrames(char *file, float *stime_min, float *stime_max);
 EXTERNCPP void GenerateSliceMenu(void);
 #ifdef pp_PART_HIST
 EXTERNCPP void ComputePartHistograms(void);
@@ -28,7 +30,7 @@ EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float
 boundsdata *GetBoundsInfo(char *shortlabel);
 #ifdef pp_NEWBOUND_DIALOG
 void GetGlobalSliceBounds(void);
-FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int flag, int set_slicecolor, int *errorcode);
+FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
 #endif
 EXTERNCPP void ShiftColorbars(void);
 EXTERNCPP int GetColorbarState(void);
@@ -40,10 +42,10 @@ EXTERNCPP void UpdateTriangleInfo(surfdata *tri_surf, float tri_area);
 EXTERNCPP void DrawSelectGeom(void);
 EXTERNCPP void UpdateGeomAreas(void);
 EXTERNCPP void GetZoneTempBounds(void);
-EXTERNCPP FILE_SIZE GetSliceData(char *slicefilename, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
+EXTERNCPP FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
   float *qminptr, float *qmaxptr, float *qdataptr, float *timesptr, int ntimes_old_arg, int *ntimesptr,
   int sliceframestep_arg, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg);
-EXTERNCPP void GetSliceSizes(char *slicefilenameptr, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int sliceframestep_arg,
+EXTERNCPP void GetSliceSizes(char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int sliceframestep_arg,
   int *errorptr, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg, int *headersizeptr, int *framesizeptr);
 EXTERNCPP void PrintPartLoadSummary(int option, int type);
 EXTERNCPP void CreatePartSizeFile(partdata *parti, int angle_flag_arg);
@@ -862,15 +864,15 @@ EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode);
 
 EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
-EXTERNCPP FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode);
+EXTERNCPP FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, int *errorcode);
 
 EXTERNCPP void FreeSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *ntimes_found, int *ntimes_full);
 EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode);
 EXTERNCPP void ReadSmoke3DAllMeshesAllTimes(int smoketype2, int *errorcode);
 EXTERNCPP FILE_SIZE ReadSmoke3D(int iframe, int ifile, int flag, int first_time, int *errorcode);
-EXTERNCPP void ReadFed(int ifile, int flag, int file_type, int *errorcode);
-EXTERNCPP FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode);
+EXTERNCPP void ReadFed(int ifile, int time_frame, float *time_value, int flag, int file_type, int *errorcode);
+EXTERNCPP FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
 EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);
 
 EXTERNCPP void InitMenus(int unload);
