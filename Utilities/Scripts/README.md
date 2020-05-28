@@ -1,20 +1,27 @@
 # Utilities/Scripts
 
-This directory contains scripts for generating images and movies of FDS cases and utility routines used by other scripts in this repo. 
+This directory contains scripts for generating images and animations of FDS cases and scripts used by other scripts in this repo.
+These notes are preiminary, a work in progress.
 
 ## fds2html.sh
 
-This script is used to generate an HTML page from smokeview (.smv) file and associated slice and boundary files.
-To use type `fds2html.sh casename` .
+This script is used to generate an HTML page from a casename.smv, slice and boundary files.
+To use, add an alias to your startup file, typically .bashrc (change to match your repo located):
+
+```alias fds2html="/home/gforney/FireModels_fork/smv/Utilities/Scripts/fds2html.sh"```
+
+Then type `fds2html casename` at a command line.
 
 ## fds2mov.sh
 
-This script is used to generate a MP4 movie file from an FDS slice file.  Add the following line to your startup file, typically .bashrc 
-(change the first part of the following alias command to match where your repo is located):
+This script is used to generate a MP4 movie file from an FDS slice file.  To use, add an alias to your startup file, 
+typically .bashrc (change to match your repo located):
 
 ```alias fds2mov="/home/gforney/FireModels_fork/smv/Utilities/Scripts/fds2mov.sh"```
 
-Type `fds2mov casename` to get a list of available slice files. After selecting a slice file the script give you the option to generate PNG images for each slice file time step, to generate a MP4 movie file (along with PNG files) or a BASH script for generating images which can be customized later.
+Type `fds2mov casename` to get a list of available slice files. After selecting a slice file the script give you the option 
+to generate PNG images for each slice file time step, to generate a MP4 movie file (along with PNG files) or a 
+BASH script for generating images which can be customized later.
 
 ## qsmv.sh
 
