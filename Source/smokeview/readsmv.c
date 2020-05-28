@@ -5342,7 +5342,7 @@ int GetViewpoints(char *inifile, char ***viewpointlist_ptr){
 
   int nviewpoints = 0;
   while(!feof(stream)){
-    char buffer[255], buffer2[255];
+    char buffer[255];
 
 
     CheckMemory;
@@ -5364,7 +5364,7 @@ int GetViewpoints(char *inifile, char ***viewpointlist_ptr){
 
   nviewpoints = 0;
   while(!feof(stream)){
-    char buffer[255], buffer2[255], *buffptr;
+    char buffer[255], *buffptr;
 
     CheckMemory;
     if(fgets(buffer, 255, stream)==NULL)break;
@@ -5411,8 +5411,6 @@ int GetAllViewPoints(char *casenameini, char ***all_viewpoints_ptr){
     }
   }
   for(i = 0; i<n1; i++){
-    char *viewptr;
-
     if(GetViewPointPtr(all_viewpoints, nall_viewpoints, vp1[i])==NULL){
       all_viewpoints[nall_viewpoints] = vp1[i];
       nall_viewpoints++;
