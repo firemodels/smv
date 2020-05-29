@@ -1668,7 +1668,7 @@ void SetSliceGlobalBounds(char *type){
       slicebounds[slice_index].dlg_setvalmin = SET_MIN;
       slicebounds[slice_index].dlg_valmin = valmin;
     }
-    if(slicebounds[slice_index].dlg_setvalmin!=SET_MAX){
+    if(slicebounds[slice_index].dlg_setvalmax!=SET_MAX){
       slicebounds[slice_index].dlg_setvalmax = SET_MAX;
       slicebounds[slice_index].dlg_valmax = valmax;
     }
