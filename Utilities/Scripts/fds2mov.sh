@@ -18,7 +18,7 @@ function Usage {
     echo "-e - full path of smokeview executable."
     echo "     [default: $SMOKEVIEW]"
     echo "-i - use installed smokeview"
-    echo "-o - directory containing generated movie. [default: $OUTDIR]"
+    echo "-o - directory containing generated animation [default: $MOVIEDIR]"
     echo "-r - directory containing generated images. [default: $RENDERDIR]"
   fi
   echo ""
@@ -60,6 +60,28 @@ OUTPUT_VIEWPOINTS ()
   cat $viewpointmenu | awk -F"," '{ print $1" ",$2}'
 }
 
+#---------------------------------------------
+#                   CHECK_WRITE
+#---------------------------------------------
+
+CHECK_WRITE ()
+{
+  DIR=$1
+  if [ ! -e $DIR ]; then
+    mkdir $DIR
+    if [ ! -e $DIR ]; then
+      echo "***error: the directory $DIR could not be created"
+      return 1
+    fi
+  fi
+  touch $DIR/.test
+  if [ ! -e $DIR/.test ]; then
+    echo "***error: the directdory $DIR cannot be written too"
+    return 1
+  fi
+  rm $DIR/.test
+}
+
 
 #---------------------------------------------
 #                   OUTPUT_SLICES
@@ -84,6 +106,36 @@ wait_cases_end()
 }
 
 #---------------------------------------------
+#                   restore_state
+#---------------------------------------------
+
+restore_state()
+{
+  FILE=$HOME/.fds2mov
+  if [ -e $FILE ]; then
+    source $FILE
+    NPROCS=${FDS2MOV_NPROCS}
+    QUEUE=${FDS2MOV_QUEUE}
+    RENDERDIR=${FDS2MOV_RENDERDIR}
+    MOVIEDIR=${FDS2MOV_MOVIEDIR}
+  fi
+}
+
+#---------------------------------------------
+#                   save_state
+#---------------------------------------------
+
+save_state()
+{
+  FILE=$HOME/.fds2mov
+  echo "#/bin/bash"                    >  $FILE
+  echo "export FDS2MOV_NPROCS=$NPROCS"        >> $FILE
+  echo "export FDS2MOV_QUEUE=$QUEUE"          >> $FILE
+  echo "expott FDS2MOV_RENDERDIR=$RENDERDIR"  >> $FILE
+  echo "export FDS2MOV_MOVIEDIR=$MOVIEDIR"    >> $FILE
+}
+
+#---------------------------------------------
 #                  generate_images
 #---------------------------------------------
 
@@ -91,14 +143,18 @@ generate_images_movie ()
 {
 while true; do
   echo ""
-  echo "     quantity: $slice_quantity "
-  echo "    processes: $NPROCS"
-  echo "        queue: $QUEUE"
-  echo "    smokeview: $SMOKEVIEW"
-  echo "      qsmv.sh: $QSMV"
-  echo "    viewpoint: $viewpoint"
-  echo " image script: $img_scriptname"
+  echo "slice quantity: $slice_quantity "
+  echo "     processes: $NPROCS"
+  echo "         queue: $QUEUE"
+  echo "       mp4 dir: $MOVIEDIR"
+  echo "       PNG dir: $RENDERDIR"
+  echo "     smokeview: $SMOKEVIEW"
+  echo "       qsmv.sh: $QSMV"
+  echo "     viewpoint: $viewpoint"
+  echo "  image script: $img_scriptname"
   echo ""
+  echo "a - define directory containing animation"
+  echo "i - define directory containing image frames"
   echo "p - define number of processes"
   echo "q - define queue"
   echo "v - select viewpoint"
@@ -106,6 +162,16 @@ while true; do
   echo "2 - generate PNG images and an MP4 animation"
   echo "x - exit"
   read -p "option: " ans
+  if [ "$ans" == "a" ]; then
+    read -p "   enter animation directory: " MOVIEDIR
+    CHECK_WRITE $MOVIEDIR
+    continue
+  fi
+  if [ "$ans" == "i" ]; then
+    read -p "   enter image frame directory: " RENDERDIR
+    CHECK_WRITE $RENDERDIR
+    continue
+  fi
   if [ "$ans" == "p" ]; then
     read -p "   enter number of processes: " NPROCS
     continue
@@ -119,6 +185,7 @@ while true; do
     continue
   fi
   if [ "$ans" == "x" ]; then
+    save_state
     exit
   fi
   if [[ "$ans" -ge 1 ]] && [[ "$ans" -le "2" ]]; then
@@ -225,7 +292,7 @@ chmod +x $img_scriptname
 #*** initialize variables
 
 RENDERDIR=.
-OUTDIR=.
+MOVIEDIR=.
 NPROCS=20
 QUEUE=batch4
 slice_index=
@@ -246,6 +313,7 @@ cd $CURDIR
 SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_64
 QSMV=$SMVREPO/Utilities/Scripts/qsmv.sh
 MAKEMOVIE=$SMVREPO/Utilities/Scripts/make_movie.sh
+restore_state
 
 
 #---------------------------------------------
@@ -271,7 +339,7 @@ case $OPTION  in
    USE_INSTALLED=1
    ;;
   o)
-   OUTDIR="$OPTARG"
+   MOVIEDIR="$OPTARG"
    ;;
   p)
    NPROCS="$OPTARG"
@@ -304,7 +372,6 @@ if [ ! -e $smvfile ]; then
   exit
 fi
 
-$SMOKEVIEW -info $input
 #$SMOKEVIEW -info $input >& /dev/null
 
 if [ ! -e $slicefilemenu ]; then
@@ -322,11 +389,13 @@ select_slice_file
 
 generate_images_movie
 
+save_state
+
 if [ "$GENERATE_IMAGES" == "1" ]; then
   bash $img_scriptname
   if [ "$MAKE_MOVIE" == "1" ]; then
     wait_cases_end
-    $MAKEMOVIE -o $OUTDIR $img_basename $img_basename
+    $MAKEMOVIE -i $RENDERDIR -o $MOVIEDIR $img_basename $img_basename
   fi
 else
   echo ""
