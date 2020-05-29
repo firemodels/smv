@@ -1637,7 +1637,9 @@ void SetSliceGlobalBounds(char *type){
   int slice_index;
 
   slice_index = GetSliceBoundsIndexFromLabel(type);
-  if(slice_index>=0){
+  if(slice_index>=0&&
+    (slicebounds[slice_index].dlg_setvalmin!=SET_MIN||slicebounds[slice_index].dlg_setvalmax!=SET_MAX)
+    ){
     int i;
     float valmin = 1000000000.0, valmax = -1000000000.0;
 
@@ -1662,10 +1664,14 @@ void SetSliceGlobalBounds(char *type){
       }
       fclose(stream);
     }
-    slicebounds[slice_index].dlg_setvalmin = SET_MIN;
-    slicebounds[slice_index].dlg_valmin    = valmin;
-    slicebounds[slice_index].dlg_setvalmax = SET_MAX;
-    slicebounds[slice_index].dlg_valmax    = valmax;
+    if(slicebounds[slice_index].dlg_setvalmin!=SET_MIN){
+      slicebounds[slice_index].dlg_setvalmin = SET_MIN;
+      slicebounds[slice_index].dlg_valmin = valmin;
+    }
+    if(slicebounds[slice_index].dlg_setvalmin!=SET_MAX){
+      slicebounds[slice_index].dlg_setvalmax = SET_MAX;
+      slicebounds[slice_index].dlg_valmax = valmax;
+    }
   }
 }
 
