@@ -108,7 +108,7 @@ wait_cases_end()
 
 restore_state()
 {
-  FILE=$HOME/.fds2mov
+  FILE=$HOME/.fds2mp4
   if [ -e $FILE ]; then
     source $FILE
     NPROCS=${FDS2MOV_NPROCS}
@@ -116,7 +116,7 @@ restore_state()
     RENDERDIR=${FDS2MOV_RENDERDIR}
     MOVIEDIR=${FDS2MOV_MOVIEDIR}
   fi
-  LOCALFILE=$HOME/.fds2mov_${input}
+  LOCALFILE=$HOME/.fds2mp4_${input}
   if [ -e $LOCALFILE ]; then
     source $LOCALFILE
     viewpoint=$FDS2MOV_VIEWPOINT
@@ -129,14 +129,14 @@ restore_state()
 
 save_state()
 {
-  FILE=$HOME/.fds2mov
+  FILE=$HOME/.fds2mp4
   echo "#/bin/bash"                           >  $FILE
   echo "export FDS2MOV_NPROCS=$NPROCS"        >> $FILE
   echo "export FDS2MOV_QUEUE=$QUEUE"          >> $FILE
   echo "export FDS2MOV_RENDERDIR=$RENDERDIR"  >> $FILE
   echo "export FDS2MOV_MOVIEDIR=$MOVIEDIR"    >> $FILE
   
-  LOCALFILE=$HOME/.fds2mov_${input}
+  LOCALFILE=$HOME/.fds2mp4_${input}
   echo "#/bin/bash"                               >  $LOCALFILE
   echo "export FDS2MOV_VIEWPOINT=\"$viewpoint\""  >> $LOCALFILE
 }
