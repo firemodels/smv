@@ -10,17 +10,14 @@ function Usage {
   echo ""
   echo "This script generates image frames for a specified slice file"
   echo ""
+  echo "-a - directory containing animation [default: $MOVIEDIR]"
+  echo "-e - full path of smokeview executable."
+  echo "     [default: $SMOKEVIEW]"
+  echo "-h - show commonly used options"
+  echo "-i - use installed smokeview"
   echo "-p - number of processes [default $NPROCS]"
   echo "-q - queue  [default: $QUEUE]"
-  echo "-h - show commonly used options"
-  echo "-H - show all options"
-  if [ "$HELP_ALL" == "1" ]; then
-    echo "-e - full path of smokeview executable."
-    echo "     [default: $SMOKEVIEW]"
-    echo "-i - use installed smokeview"
-    echo "-o - directory containing generated animation [default: $MOVIEDIR]"
-    echo "-r - directory containing generated images. [default: $RENDERDIR]"
-  fi
+  echo "-r - directory containing rendered images. [default: $RENDERDIR]"
   echo ""
   exit
 }
@@ -119,6 +116,11 @@ restore_state()
     RENDERDIR=${FDS2MOV_RENDERDIR}
     MOVIEDIR=${FDS2MOV_MOVIEDIR}
   fi
+  LOCALFILE=$HOME/.fds2mov_${input}
+  if [ -e $LOCALFILE ]; then
+    source $LOCALFILE
+    viewpoint=$FDS2MOV_VIEWPOINT
+  fi
 }
 
 #---------------------------------------------
@@ -128,11 +130,15 @@ restore_state()
 save_state()
 {
   FILE=$HOME/.fds2mov
-  echo "#/bin/bash"                    >  $FILE
+  echo "#/bin/bash"                           >  $FILE
   echo "export FDS2MOV_NPROCS=$NPROCS"        >> $FILE
   echo "export FDS2MOV_QUEUE=$QUEUE"          >> $FILE
-  echo "expott FDS2MOV_RENDERDIR=$RENDERDIR"  >> $FILE
+  echo "export FDS2MOV_RENDERDIR=$RENDERDIR"  >> $FILE
   echo "export FDS2MOV_MOVIEDIR=$MOVIEDIR"    >> $FILE
+  
+  LOCALFILE=$HOME/.fds2mov_${input}
+  echo "#/bin/bash"                               >  $LOCALFILE
+  echo "export FDS2MOV_VIEWPOINT=\"$viewpoint\""  >> $LOCALFILE
 }
 
 #---------------------------------------------
@@ -154,9 +160,9 @@ while true; do
   echo "  image script: $img_scriptname"
   echo ""
   echo "a - define directory containing animation"
-  echo "i - define directory containing image frames"
   echo "p - define number of processes"
   echo "q - define queue"
+  echo "r - define directory containing rendered images"
   echo "v - select viewpoint"
   echo "1 - generate PNG images"
   echo "2 - generate PNG images and an MP4 animation"
@@ -213,7 +219,6 @@ select_viewpoint ()
 while true; do
   OUTPUT_VIEWPOINTS
   read -p "Select viewpoint: " ans
-  echo ans=$ans $nviewpoints
   if [ "$ans" == "d" ]; then
     viewpoint=
     return 0
@@ -292,7 +297,10 @@ chmod +x $img_scriptname
 #*** initialize variables
 
 RENDERDIR=.
-MOVIEDIR=.
+MOVIEDIR=/var/www/html/`whoami`
+if [ ! -e $MOVIEDIR ]; then
+  MOVIEDIR=.
+fi
 NPROCS=20
 QUEUE=batch4
 slice_index=
@@ -313,25 +321,19 @@ cd $CURDIR
 SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_64
 QSMV=$SMVREPO/Utilities/Scripts/qsmv.sh
 MAKEMOVIE=$SMVREPO/Utilities/Scripts/make_movie.sh
-restore_state
 
 
 #---------------------------------------------
 #                  parse command line options 
 #---------------------------------------------
 
-while getopts 'e:hHio:p:q:r:' OPTION
+while getopts 'e:hio:p:q:r:' OPTION
 do
 case $OPTION  in
   e)
    SMOKEVIEW="$OPTARG"
    ;;
   h)
-   Usage
-   exit
-   ;;
-  H)
-   HELP_ALL=1
    Usage
    exit
    ;;
@@ -355,6 +357,7 @@ done
 shift $(($OPTIND-1))
 
 input=$1
+restore_state
 
 smvfile=$1.smv
 slicefilemenu=$1.slcf
@@ -372,7 +375,7 @@ if [ ! -e $smvfile ]; then
   exit
 fi
 
-#$SMOKEVIEW -info $input >& /dev/null
+$SMOKEVIEW -info $input >& /dev/null
 
 if [ ! -e $slicefilemenu ]; then
   echo "*** error: $slicefilemenu does not exist"
