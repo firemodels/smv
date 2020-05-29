@@ -8599,16 +8599,7 @@ void GenerateSliceMenu(void){
   strcpy(slicemenu_filename, fdsprefix);
   strcat(slicemenu_filename, ".slcf");
 
-  if(generate_slice_info_from_commandline==0){
-  // if slicemenu file already exists then don't generate it again
-    stream = fopen(slicemenu_filename, "r");
-    if(stream!=NULL){
-      fclose(stream);
-      return;
-    }
-  }
-
-  // if we can write out to the slice menu file then abort
+  // if we can't write out to the slice menu file then abort
   stream = fopen(slicemenu_filename, "w");
   if(stream==NULL)return;
 

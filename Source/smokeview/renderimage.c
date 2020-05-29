@@ -314,12 +314,16 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
     if(render_label_type == RENDER_LABEL_FRAMENUM || RenderTime == 0){
       float time_local;
       int code;
+      int do_time=0;
 
-      if(RenderTime == 0){
-        sprintf(suffix, "s%04i", image_num);
+      if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER)do_time = 1;
+      if(RenderTime!=0)do_time=1;
+
+      if(do_time == 1){
+        sprintf(suffix, "%04i", image_num);
       }
       else{
-        sprintf(suffix, "%04i", image_num);
+        sprintf(suffix, "s%04i", image_num);
       }
       code = GetPlot3dTime(&time_local);
       if(code == 1 && render_label_type == RENDER_LABEL_TIME){

@@ -10,17 +10,14 @@ function Usage {
   echo ""
   echo "This script generates image frames for a specified slice file"
   echo ""
+  echo "-a - directory containing animation [default: $MOVIEDIR]"
+  echo "-e - full path of smokeview executable."
+  echo "     [default: $SMOKEVIEW]"
+  echo "-h - show commonly used options"
+  echo "-i - use installed smokeview"
   echo "-p - number of processes [default $NPROCS]"
   echo "-q - queue  [default: $QUEUE]"
-  echo "-h - show commonly used options"
-  echo "-H - show all options"
-  if [ "$HELP_ALL" == "1" ]; then
-    echo "-e - full path of smokeview executable."
-    echo "     [default: $SMOKEVIEW]"
-    echo "-i - use installed smokeview"
-    echo "-o - directory containing generated movie. [default: $OUTDIR]"
-    echo "-r - directory containing generated images. [default: $RENDERDIR]"
-  fi
+  echo "-r - directory containing rendered images. [default: $RENDERDIR]"
   echo ""
   exit
 }
@@ -51,6 +48,37 @@ get_smokeview ()
   fi
   return 0
 }
+#---------------------------------------------
+#                   OUTPUT_VIEWPOINTS
+#---------------------------------------------
+
+OUTPUT_VIEWPOINTS ()
+{
+  cat $viewpointmenu | awk -F"," '{ print $1" ",$2}'
+}
+
+#---------------------------------------------
+#                   CHECK_WRITE
+#---------------------------------------------
+
+CHECK_WRITE ()
+{
+  DIR=$1
+  if [ ! -e $DIR ]; then
+    mkdir $DIR
+    if [ ! -e $DIR ]; then
+      echo "***error: the directory $DIR could not be created"
+      return 1
+    fi
+  fi
+  touch $DIR/.test
+  if [ ! -e $DIR/.test ]; then
+    echo "***error: the directdory $DIR cannot be written too"
+    return 1
+  fi
+  rm $DIR/.test
+}
+
 
 #---------------------------------------------
 #                   OUTPUT_SLICES
@@ -58,7 +86,7 @@ get_smokeview ()
 
 OUTPUT_SLICES ()
 {
-  cat $slcffile | awk -F"," '{ print $1" ",$2," ",$3," ",$4}'
+  cat $slicefilemenu | awk -F"," '{ print $1" ",$2," ",$3," ",$4}'
 }
 
 #---------------------------------------------
@@ -75,6 +103,45 @@ wait_cases_end()
 }
 
 #---------------------------------------------
+#                   restore_state
+#---------------------------------------------
+
+restore_state()
+{
+  FILE=$HOME/.fds2mov
+  if [ -e $FILE ]; then
+    source $FILE
+    NPROCS=${FDS2MOV_NPROCS}
+    QUEUE=${FDS2MOV_QUEUE}
+    RENDERDIR=${FDS2MOV_RENDERDIR}
+    MOVIEDIR=${FDS2MOV_MOVIEDIR}
+  fi
+  LOCALFILE=$HOME/.fds2mov_${input}
+  if [ -e $LOCALFILE ]; then
+    source $LOCALFILE
+    viewpoint=$FDS2MOV_VIEWPOINT
+  fi
+}
+
+#---------------------------------------------
+#                   save_state
+#---------------------------------------------
+
+save_state()
+{
+  FILE=$HOME/.fds2mov
+  echo "#/bin/bash"                           >  $FILE
+  echo "export FDS2MOV_NPROCS=$NPROCS"        >> $FILE
+  echo "export FDS2MOV_QUEUE=$QUEUE"          >> $FILE
+  echo "export FDS2MOV_RENDERDIR=$RENDERDIR"  >> $FILE
+  echo "export FDS2MOV_MOVIEDIR=$MOVIEDIR"    >> $FILE
+  
+  LOCALFILE=$HOME/.fds2mov_${input}
+  echo "#/bin/bash"                               >  $LOCALFILE
+  echo "export FDS2MOV_VIEWPOINT=\"$viewpoint\""  >> $LOCALFILE
+}
+
+#---------------------------------------------
 #                  generate_images
 #---------------------------------------------
 
@@ -82,19 +149,35 @@ generate_images_movie ()
 {
 while true; do
   echo ""
-  echo "     quantity: $slice_quantity "
-  echo "    processes: $NPROCS"
-  echo "        queue: $QUEUE"
-  echo "    smokeview: $SMOKEVIEW"
-  echo "      qsmv.sh: $QSMV"
-  echo " image script: $img_scriptname"
+  echo "slice quantity: $slice_quantity "
+  echo "     processes: $NPROCS"
+  echo "         queue: $QUEUE"
+  echo "       mp4 dir: $MOVIEDIR"
+  echo "       PNG dir: $RENDERDIR"
+  echo "     smokeview: $SMOKEVIEW"
+  echo "       qsmv.sh: $QSMV"
+  echo "     viewpoint: $viewpoint"
+  echo "  image script: $img_scriptname"
   echo ""
+  echo "a - define directory containing animation"
   echo "p - define number of processes"
   echo "q - define queue"
+  echo "r - define directory containing rendered images"
+  echo "v - select viewpoint"
   echo "1 - generate PNG images"
   echo "2 - generate PNG images and an MP4 animation"
   echo "x - exit"
   read -p "option: " ans
+  if [ "$ans" == "a" ]; then
+    read -p "   enter animation directory: " MOVIEDIR
+    CHECK_WRITE $MOVIEDIR
+    continue
+  fi
+  if [ "$ans" == "i" ]; then
+    read -p "   enter image frame directory: " RENDERDIR
+    CHECK_WRITE $RENDERDIR
+    continue
+  fi
   if [ "$ans" == "p" ]; then
     read -p "   enter number of processes: " NPROCS
     continue
@@ -103,7 +186,12 @@ while true; do
     read -p "   enter queue: " QUEUE
     continue
   fi
+  if [ "$ans" == "v" ]; then
+    select_viewpoint
+    continue
+  fi
   if [ "$ans" == "x" ]; then
+    save_state
     exit
   fi
   if [[ "$ans" -ge 1 ]] && [[ "$ans" -le "2" ]]; then
@@ -123,6 +211,29 @@ done
 }
 
 #---------------------------------------------
+#                   select_viewpoint
+#---------------------------------------------
+
+select_viewpoint ()
+{
+while true; do
+  OUTPUT_VIEWPOINTS
+  read -p "Select viewpoint: " ans
+  if [ "$ans" == "d" ]; then
+    viewpoint=
+    return 0
+  fi
+  if [[ $ans -ge 1 ]] && [[ $ans -le $nviewpoints ]]; then
+    viewpoint_index=$ans
+    viewpoint=`cat $viewpointmenu | awk -v ind="$viewpoint_index" -F"," '{ if($1 == ind){print $2} }'`
+    return 0
+  else
+    echo index $ans out of bounds
+  fi
+done
+}
+
+#---------------------------------------------
 #                   select_slice_file
 #---------------------------------------------
 
@@ -136,7 +247,7 @@ while true; do
     img_basename=${input}_slice_${slice_index}
     smv_scriptname=${img_basename}.ssf
     img_scriptname=${img_basename}.sh
-    slice_quantity=`cat $slcffile | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $2} }'`
+    slice_quantity=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $2} }'`
     return 0
   else
     echo index $ans out of bounds
@@ -155,10 +266,18 @@ GENERATE_SCRIPTS ()
 RENDERDIR
   $RENDERDIR
 UNLOADALL
+EOF
+if [ "$viewpoint" != "" ]; then
+  cat << EOF >> ${smv_scriptname}
+SETVIEWPOINT
+  $viewpoint
+EOF
+fi
+  cat << EOF >> ${smv_scriptname}
 LOADSLICERENDER
 EOF
-  slice_quantity=`cat $slcffile | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2} }'`
-  cat $slcffile | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2"\n" $3 $4} }' >> $smv_scriptname
+  slice_quantity=`cat $slicefilemenu | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2} }'`
+  cat $slicefilemenu | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2"\n" $3 $4} }' >> $smv_scriptname
   cat << EOF >> $smv_scriptname
   $img_basename 
   0 1
@@ -178,9 +297,12 @@ chmod +x $img_scriptname
 #*** initialize variables
 
 RENDERDIR=.
-OUTDIR=.
-NPROCS=1
-QUEUE=batch
+MOVIEDIR=/var/www/html/`whoami`
+if [ ! -e $MOVIEDIR ]; then
+  MOVIEDIR=.
+fi
+NPROCS=20
+QUEUE=batch4
 slice_index=
 USE_INSTALLED=
 HELP_ALL=
@@ -205,7 +327,7 @@ MAKEMOVIE=$SMVREPO/Utilities/Scripts/make_movie.sh
 #                  parse command line options 
 #---------------------------------------------
 
-while getopts 'e:hHio:p:q:r:' OPTION
+while getopts 'e:hio:p:q:r:' OPTION
 do
 case $OPTION  in
   e)
@@ -215,16 +337,11 @@ case $OPTION  in
    Usage
    exit
    ;;
-  H)
-   HELP_ALL=1
-   Usage
-   exit
-   ;;
   i)
    USE_INSTALLED=1
    ;;
   o)
-   OUTDIR="$OPTARG"
+   MOVIEDIR="$OPTARG"
    ;;
   p)
    NPROCS="$OPTARG"
@@ -240,9 +357,16 @@ done
 shift $(($OPTIND-1))
 
 input=$1
+restore_state
 
 smvfile=$1.smv
-slcffile=$1.slcf
+slicefilemenu=$1.slcf
+
+nviewpoints=0
+viewpointmenu=$1.viewpoints
+if [ -e $viewpointmenu ]; then
+  nviewpoints=`cat $viewpointmenu | wc -l`
+fi
 
 get_smokeview || exit 1
 
@@ -251,16 +375,14 @@ if [ ! -e $smvfile ]; then
   exit
 fi
 
-if [ ! -e $slcffile ]; then
-  $SMOKEVIEW -slice_info $input >& /dev/null
-fi
+$SMOKEVIEW -info $input >& /dev/null
 
-if [ ! -e $slcffile ]; then
-  echo "*** error: $slcffile does not exist"
+if [ ! -e $slicefilemenu ]; then
+  echo "*** error: $slicefilemenu does not exist"
   exit
 fi
 
-nslices=`cat $slcffile | wc -l`
+nslices=`cat $slicefilemenu | wc -l`
 if [ "$nslices" == "0" ]; then
   echo "*** error:  No slice files found in $smvfile"
   exit
@@ -270,11 +392,13 @@ select_slice_file
 
 generate_images_movie
 
+save_state
+
 if [ "$GENERATE_IMAGES" == "1" ]; then
   bash $img_scriptname
   if [ "$MAKE_MOVIE" == "1" ]; then
     wait_cases_end
-    $MAKEMOVIE -o $OUTDIR $img_basename $img_basename
+    $MAKEMOVIE -i $RENDERDIR -o $MOVIEDIR $img_basename $img_basename
   fi
 else
   echo ""

@@ -1631,6 +1631,50 @@ void ScriptLoadSlice(scriptdata *scripti){
   }
 }
 
+/* ------------------ SetSliceGlobalBounds ------------------------ */
+
+void SetSliceGlobalBounds(char *type){
+  int slice_index;
+
+  slice_index = GetSliceBoundsIndexFromLabel(type);
+  if(slice_index>=0&&
+    (slicebounds[slice_index].dlg_setvalmin!=SET_MIN||slicebounds[slice_index].dlg_setvalmax!=SET_MAX)
+    ){
+    int i;
+    float valmin = 1000000000.0, valmax = -1000000000.0;
+
+    for(i = 0; i<nsliceinfo; i++){
+      slicedata *slicei;
+      char *slice_type;
+      FILE *stream;
+
+      slicei = sliceinfo+i;
+      slice_type = slicei->label.shortlabel;
+      if(strcmp(type, slice_type)!=0)continue;
+      stream = fopen(slicei->bound_file, "r");
+      if(stream==NULL)continue;
+      for(;;){
+        char buffer[255];
+        float time, smin, smax;
+
+        if(fgets(buffer, 255, stream)==NULL)break;
+        sscanf(buffer, "%f %f %f", &time, &smin, &smax);
+        valmin = MIN(smin, valmin);
+        valmax = MAX(smax, valmax);
+      }
+      fclose(stream);
+    }
+    if(slicebounds[slice_index].dlg_setvalmin!=SET_MIN){
+      slicebounds[slice_index].dlg_setvalmin = SET_MIN;
+      slicebounds[slice_index].dlg_valmin = valmin;
+    }
+    if(slicebounds[slice_index].dlg_setvalmax!=SET_MAX){
+      slicebounds[slice_index].dlg_setvalmax = SET_MAX;
+      slicebounds[slice_index].dlg_valmax = valmax;
+    }
+  }
+}
+
 /* ------------------ ScriptLoadSliceRender ------------------------ */
 
 void ScriptLoadSliceRender(scriptdata *scripti){
@@ -1643,11 +1687,25 @@ void ScriptLoadSliceRender(scriptdata *scripti){
   frame_skip = scripti->ival3;
 
   if(scripti->first==1){
+    char *shortlabel = NULL;
+
     PRINTF("script: loading slice files of type: %s\n", scripti->cval);
     PRINTF("  frames: %i,%i,%i,... \n\n", frame_start, frame_start+frame_skip, frame_start+2*frame_skip);
     scripti->first = 0;
     scripti->exit = 0;
     frame_current = frame_start;
+    for(i = 0; i<nsliceinfo; i++){
+      slicedata *slicei;
+
+      slicei = sliceinfo+i;
+      if(strcmp(slicei->label.longlabel, scripti->cval)==0){
+        shortlabel = slicei->label.shortlabel;
+        break;
+      }
+    }
+    if(shortlabel!=NULL){
+      SetSliceGlobalBounds(shortlabel);
+    }
   }
   else{
     frame_current = scripti->ival4;
