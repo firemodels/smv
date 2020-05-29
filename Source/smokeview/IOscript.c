@@ -1645,7 +1645,6 @@ void SetSliceGlobalBounds(char *type){
       slicedata *slicei;
       char *slice_type;
       FILE *stream;
-      int j;
 
       slicei = sliceinfo+i;
       slice_type = slicei->label.shortlabel;
