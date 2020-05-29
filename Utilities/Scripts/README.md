@@ -4,9 +4,9 @@ This directory contains scripts for generating images and animations of FDS case
 
 ## fds2html.sh
 
-This script is used to generate an HTML page from a casename.smv, slice and boundary files. To use, add an alias to your startup file, typically .bashrc (change the first part to match your repo location):
+This script is used to generate an HTML page from a casename.smv, slice and boundary files. To use, add an alias to your startup file, typically .bashrc (change the ... in the first part of the path to match your repo location):
 
-```alias fds2html.sh="/home/gforney/FireModels_fork/smv/Utilities/Scripts/fds2html.sh"```
+```alias fds2html.sh=".../smv/Utilities/Scripts/fds2html.sh"```
 
 Then type `fds2html casename` at a command line. (add more description)
 
@@ -14,9 +14,9 @@ Then type `fds2html casename` at a command line. (add more description)
 
 This script is used to generate an MP4 animation file from an FDS slice file.  For now, it uses smokeview built at smv/Build/smokeview/intel_linux_64 .  To use, add the alias
 
-```alias fds2mov.sh="/home/gforney/FireModels_fork/smv/Utilities/Scripts/fds2mov.sh"```
+```alias fds2mov.sh=".../smv/Utilities/Scripts/fds2mov.sh"```
 
-to your startup file, typically .bashrc (change the first part to match your repo location).
+to your startup file, typically .bashrc (change the ... in the first part to match your repo location).
 
 cd to a directory containing your case and type `fds2mov casename` .  You will see a list of slice files for this case such as
 ```
@@ -62,10 +62,10 @@ To generate an animation, select option 2.
 
 This script is used to run smokeview on a Linux cluster with a PBS or Slurm queuing system in order to generate images for creating an animation. qsmv.sh speeds up the rendering prrocess by running multiple instances of smokeview. Each instance renders a subset of the simulation time frames. By running multiple instances, the total time required to render simulation image frames is reduced.
 
-To get started, add the following line to your startup file, typically .bashrc 
-(change the first part of the following alias command to match where your repo is located):
+To get started, add the following alias to your startup file, typically .bashrc 
+(change the ... in the first part of the path to match where your repo is located):
 
-```alias qsmv.sh="/home/gforney/FireModels_fork/smv/Utilities/Scripts/qsmv.sh"```
+```alias qsmv.sh=".../smv/Utilities/Scripts/qsmv.sh"```
 
 To use qsmv.sh type:
 
