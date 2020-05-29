@@ -100,7 +100,7 @@ runs smokeview on the case casename.smv using the script casename.ssf
 
 options:
  -e exe - full path of smokeview used to run case
-    [default: /home/gforney/FireModels_fork/smv/Build/smokeview/intel_linux_64/smokeview_intel_linux_64]
+    [default: .../smv/Build/smokeview/intel_linux_64/smokeview_intel_linux_64]
  -h   - show commonly used options
  -H   - show all options
  -p n - run n instances of smokeview each instance rendering 1/n'th of the total images
