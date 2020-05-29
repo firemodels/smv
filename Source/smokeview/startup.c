@@ -363,6 +363,20 @@ void SetupGlut(int argc, char **argv){
           FREEMEMORY(smoketempdir);
         }
       }
+
+      // only needed if -info option is used
+
+      if(generate_info_from_commandline == 1){
+        NewMemory((void **)&fds2mp4dir, strlen(homedir)+strlen(dirseparator)+strlen(".fds2mp4")+1);
+        strcpy(fds2mp4dir, homedir);
+        strcat(fds2mp4dir, dirseparator);
+        strcat(fds2mp4dir, ".fds2mp4");
+        if(FileExistsOrig(fds2mp4dir)==NO){
+          if(MKDIR(fds2mp4dir)!=0){
+            FREEMEMORY(fds2mp4dir);
+          }
+        }
+      }
     }
   }
 

@@ -8596,7 +8596,12 @@ void GenerateSliceMenu(void){
 
   if(nsliceinfo==0)return;
 
-  strcpy(slicemenu_filename, fdsprefix);
+  strcpy(slicemenu_filename, "");
+  if(fds2mp4dir!=NULL){
+    strcat(slicemenu_filename, fds2mp4dir);
+    strcat(slicemenu_filename, dirseparator);
+  }
+  strcat(slicemenu_filename, fdsprefix);
   strcat(slicemenu_filename, ".slcf");
 
   // if we can't write out to the slice menu file then abort

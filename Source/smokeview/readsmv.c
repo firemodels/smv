@@ -5435,6 +5435,11 @@ void GenerateViewpointMenu(void){
   int nviewpoints;
   char casenameini[256];
 
+  strcpy(viewpiontemenu_filename, "");
+  if(fds2mp4dir!=NULL){
+    strcat(viewpiontemenu_filename, fds2mp4dir);
+    strcat(viewpiontemenu_filename, dirseparator);
+  }
   strcpy(viewpiontemenu_filename, fdsprefix);
   strcat(viewpiontemenu_filename, ".viewpoints");
   strcpy(casenameini, fdsprefix);
