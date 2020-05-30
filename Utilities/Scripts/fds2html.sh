@@ -1,14 +1,4 @@
 #!/bin/bash
-input=$1
-
-
-smvfile=$1.smv
-slcffile=$1.slcf
-
-HTMLDIR=/var/www/html/`whoami`
-if [ ! -e $HTMLDIR ]; then
-  HTMLDIR=.
-fi
 
 #---------------------------------------------
 #                   is_file_installed
@@ -29,11 +19,18 @@ is_file_installed()
   return 0
 }
 
+#---------------------------------------------
+#                   OUTPUT_SLICES
+#---------------------------------------------
 
 OUTPUT_SLICES ()
 {
   cat $slcffile | awk -F"," '{ print $1" ",$2," ",$3," ",$4}'
 }
+
+#---------------------------------------------
+#                   GENERATE_SCRIPT
+#---------------------------------------------
 
 GENERATE_SCRIPT ()
 {
@@ -54,6 +51,18 @@ RENDERHTMLALL
   $htmlbase
 EOF
 }
+
+#----------------------------- script begins ---------------------------------------
+
+input=$1
+
+smvfile=$1.smv
+slcffile=$1.slcf
+
+HTMLDIR=/var/www/html/`whoami`
+if [ ! -e $HTMLDIR ]; then
+  HTMLDIR=.
+fi
 
 is_file_installed smokeview || exit 1
 
