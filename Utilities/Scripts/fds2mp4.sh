@@ -21,28 +21,19 @@ function Usage {
 #                   is_file_installed
 #---------------------------------------------
 
-get_smokeview ()
+is_smokeview_installed()
 {
-  if [ "$USE_INSTALLED" == "" ]; then
-    if [ -e $SMOKEVIEW ]; then
-      return 0
-    fi
-    echo "***error: The smokeview file, $SMOKEVIEW, does not exist."
+  out=/tmp/program.out.$$
+  smokeview -v >& $out
+  notfound=`cat $out | tail -1 | grep "not found" | wc -l`
+  rm $out
+  if [ "$notfound" == "1" ] ; then
+    echo "***error: $program not installed"
     return 1
-  else
-    out=/tmp/program.out.$$
-    smokeview -v >& $out
-    notfound=`cat $out | tail -1 | grep "not found" | wc -l`
-    rm $out
-    if [ "$notfound" == "1" ] ; then
-      echo "***error: smokeview is not installed. Install smokeview"
-      echo "          and/or add smokeview to your PATH" 
-      return 1
-    fi
-    SMOKEVIEW=`which smokeview`
   fi
   return 0
 }
+
 #---------------------------------------------
 #                   OUTPUT_VIEWPOINTS
 #---------------------------------------------
@@ -305,6 +296,8 @@ EOF
 chmod +x $img_scriptname
 }
 
+#----------------------- beginning of script --------------------------------------
+
 #*** initialize variables
 
 RENDERDIR=.
@@ -315,7 +308,6 @@ fi
 NPROCS=20
 QUEUE=batch4
 slice_index=
-USE_INSTALLED=
 HELP_ALL=
 JOBPREFIX=SV_
 GENERATE_IMAGES=
@@ -350,26 +342,32 @@ do
 case $OPTION  in
   e)
    SMOKEVIEW="$OPTARG"
+   if [ ! -e $SMOKEVIEW ]; then
+     echo "***error: smokeview not found at $SMOKEVIEW"
+   fi
    ;;
   h)
    Usage
    exit
    ;;
   i)
-   USE_INSTALLED=1
+   is_smokeview_installed || exit 1
+   SMOKEVIEW=`which smokeview`
    ;;
 esac
 done
 shift $(($OPTIND-1))
+
+if [ ! -e $SMOKEVIEW ]; then
+  echo "***error: smokeview not found at $SMOKEVIEW"
+  exit 1
+fi
 
 input=$1
 restore_state
 
 smvfile=$1.smv
 slicefilemenu=$HOME/.fds2mp4/$1.slcf
-
-
-get_smokeview || exit 1
 
 if [ ! -e $smvfile ]; then
   echo "***error: $smvfile does not exist"
