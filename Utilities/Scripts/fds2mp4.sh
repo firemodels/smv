@@ -10,15 +10,10 @@ function Usage {
   echo ""
   echo "This script generates image frames for a specified slice file"
   echo ""
-  echo "-a - directory containing animation [default: $MOVIEDIR]"
-  echo "-e - full path of smokeview executable."
+  echo "-e path - full path of smokeview executable."
   echo "     [default: $SMOKEVIEW]"
-  echo "-h - show commonly used options"
-  echo "-i - use installed smokeview"
-  echo "-p - number of processes [default $NPROCS]"
-  echo "-q - queue  [default: $QUEUE]"
-  echo "-r - directory containing rendered images. [default: $RENDERDIR]"
-  echo ""
+  echo "-h - show this mesage"
+#  echo "-i - use installed smokeview"
   exit
 }
 
@@ -114,6 +109,7 @@ restore_state()
     QUEUE=${FDS2MOV_QUEUE}
     RENDERDIR=${FDS2MOV_RENDERDIR}
     MOVIEDIR=${FDS2MOV_MOVIEDIR}
+    EMAIL=${FDS2MOV_EMAIL}
   fi
   LOCALCONFIG=$CONFIGDIR/fds2mp4_${input}
   if [ -e $LOCALCONFIG ]; then
@@ -133,6 +129,7 @@ save_state()
   echo "export FDS2MOV_QUEUE=$QUEUE"          >> $GLOBALCONFIG
   echo "export FDS2MOV_RENDERDIR=$RENDERDIR"  >> $GLOBALCONFIG
   echo "export FDS2MOV_MOVIEDIR=$MOVIEDIR"    >> $GLOBALCONFIG
+  echo "export FDS2MOV_EMAIL=$EMAIL"          >> $GLOBALCONFIG
   
   LOCALCONFIG=$CONFIGDIR/fds2mp4_${input}
   echo "#/bin/bash"                               >  $LOCALCONFIG
@@ -156,12 +153,14 @@ while true; do
   echo "       qsmv.sh: $QSMV"
   echo "     viewpoint: $viewpoint"
   echo "  image script: $img_scriptname"
+  echo "         email: $EMAIL"
   echo ""
   echo "a - define directory containing animation"
   echo "p - define number of processes"
   echo "q - define queue"
   echo "r - define directory containing rendered images"
   echo "v - select viewpoint"
+  echo "m - select emaail address"
   echo "1 - generate PNG images"
   echo "2 - generate PNG images and an MP4 animation"
   echo "x - exit"
@@ -174,6 +173,10 @@ while true; do
   if [ "$ans" == "i" ]; then
     read -p "   enter image frame directory: " RENDERDIR
     CHECK_WRITE $RENDERDIR
+    continue
+  fi
+  if [ "$ans" == "m" ]; then
+    read -p "   enter email address: " EMAIL
     continue
   fi
   if [ "$ans" == "p" ]; then
@@ -221,6 +224,11 @@ while true; do
     viewpoint=
     return 0
   fi
+  re='^[0-9]+$'
+  if ! [[ $ans =~ $re ]]; then
+    echo "***error: $ans is an invalid selection"
+    continue
+  fi
   if [[ $ans -ge 1 ]] && [[ $ans -le $nviewpoints ]]; then
     viewpoint_index=$ans
     viewpoint=`cat $viewpointmenu | awk -v ind="$viewpoint_index" -F"," '{ if($1 == ind){print $2} }'`
@@ -239,7 +247,12 @@ select_slice_file ()
 {
 while true; do
   OUTPUT_SLICES
+  re='^[0-9]+$'
   read -p "Select slice file: " ans
+  if ! [[ $ans =~ $re ]]; then
+    echo "***error: $ans is an invalid selection"
+    continue
+  fi
   if [[ "$ans" -ge 1 ]] && [[ "$ans" -le "$nslices" ]]; then
     slice_index=$ans
     img_basename=${input}_slice_${slice_index}
@@ -325,13 +338,14 @@ cd $CURDIR
 SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_64
 QSMV=$SMVREPO/Utilities/Scripts/qsmv.sh
 MAKEMOVIE=$SMVREPO/Utilities/Scripts/make_movie.sh
+EMAIL=
 
 
 #---------------------------------------------
 #                  parse command line options 
 #---------------------------------------------
 
-while getopts 'e:hio:p:q:r:' OPTION
+while getopts 'e:hi' OPTION
 do
 case $OPTION  in
   e)
@@ -343,18 +357,6 @@ case $OPTION  in
    ;;
   i)
    USE_INSTALLED=1
-   ;;
-  o)
-   MOVIEDIR="$OPTARG"
-   ;;
-  p)
-   NPROCS="$OPTARG"
-   ;;
-  q)
-   QUEUE="$OPTARG"
-   ;;
-  r)
-   RENDERDIR="$OPTARG"
    ;;
 esac
 done
@@ -404,7 +406,14 @@ if [ "$GENERATE_IMAGES" == "1" ]; then
   bash $img_scriptname
   if [ "$MAKE_MOVIE" == "1" ]; then
     wait_cases_end
+    animation_file=$MOVIEDIR/${img_basename}.mp4
     $MAKEMOVIE -i $RENDERDIR -o $MOVIEDIR $img_basename $img_basename
+    if [ "$EMAIL" != "" ]; then
+      if [ -e $animation_file ]; then
+        echo "animation file, $animation_file, sent to $EMAIL"
+        echo "" | mail -s "animation of $slice_quantity" -a $animation_file $EMAIL
+      fi
+    fi
   fi
 else
   echo ""
