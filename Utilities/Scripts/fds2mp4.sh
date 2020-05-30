@@ -108,17 +108,16 @@ wait_cases_end()
 
 restore_state()
 {
-  FILE=$HOME/.fds2mp4
-  if [ -e $FILE ]; then
-    source $FILE
+  if [ -e $GLOBALCONFIG ]; then
+    source $GLOBALCONFIG
     NPROCS=${FDS2MOV_NPROCS}
     QUEUE=${FDS2MOV_QUEUE}
     RENDERDIR=${FDS2MOV_RENDERDIR}
     MOVIEDIR=${FDS2MOV_MOVIEDIR}
   fi
-  LOCALFILE=$HOME/.fds2mp4_${input}
-  if [ -e $LOCALFILE ]; then
-    source $LOCALFILE
+  LOCALCONFIG=$CONFIGDIR/fds2mp4_${input}
+  if [ -e $LOCALCONFIG ]; then
+    source $LOCALCONFIG
     viewpoint=$FDS2MOV_VIEWPOINT
   fi
 }
@@ -129,16 +128,15 @@ restore_state()
 
 save_state()
 {
-  FILE=$HOME/.fds2mp4
-  echo "#/bin/bash"                           >  $FILE
-  echo "export FDS2MOV_NPROCS=$NPROCS"        >> $FILE
-  echo "export FDS2MOV_QUEUE=$QUEUE"          >> $FILE
-  echo "export FDS2MOV_RENDERDIR=$RENDERDIR"  >> $FILE
-  echo "export FDS2MOV_MOVIEDIR=$MOVIEDIR"    >> $FILE
+  echo "#/bin/bash"                           >  $GLOBALCONFIG
+  echo "export FDS2MOV_NPROCS=$NPROCS"        >> $GLOBALCONFIG
+  echo "export FDS2MOV_QUEUE=$QUEUE"          >> $GLOBALCONFIG
+  echo "export FDS2MOV_RENDERDIR=$RENDERDIR"  >> $GLOBALCONFIG
+  echo "export FDS2MOV_MOVIEDIR=$MOVIEDIR"    >> $GLOBALCONFIG
   
-  LOCALFILE=$HOME/.fds2mp4_${input}
-  echo "#/bin/bash"                               >  $LOCALFILE
-  echo "export FDS2MOV_VIEWPOINT=\"$viewpoint\""  >> $LOCALFILE
+  LOCALCONFIG=$CONFIGDIR/fds2mp4_${input}
+  echo "#/bin/bash"                               >  $LOCALCONFIG
+  echo "export FDS2MOV_VIEWPOINT=\"$viewpoint\""  >> $LOCALCONFIG
 }
 
 #---------------------------------------------
@@ -310,6 +308,12 @@ JOBPREFIX=SV_
 GENERATE_IMAGES=
 MAKE_MOVIE=
 
+CONFIGDIR=$HOME/.fds2mp4
+if [ ! -e $CONFIGDIR ]; then
+  mkdir $CONFIGDIR
+fi
+GLOBALCONFIG=$CONFIGDIR/fds2mp4_global
+
 # define repo variables
 
 CURDIR=`pwd`
@@ -360,12 +364,13 @@ input=$1
 restore_state
 
 smvfile=$1.smv
-slicefilemenu=$1.slcf
+slicefilemenu=$HOME/.fds2mp4/$1.slcf
 
 nviewpoints=0
-viewpointmenu=$1.viewpoints
+viewpointmenu=$HOME/.fds2mp4/$1.viewpoints
 if [ -e $viewpointmenu ]; then
   nviewpoints=`cat $viewpointmenu | wc -l`
+  (( nviewpoints -= 3 ))
 fi
 
 get_smokeview || exit 1
@@ -383,8 +388,9 @@ if [ ! -e $slicefilemenu ]; then
 fi
 
 nslices=`cat $slicefilemenu | wc -l`
-if [ "$nslices" == "0" ]; then
-  echo "*** error:  No slice files found in $smvfile"
+(( nslices -= 2 ))
+if [ $nslices  -eq 0 ]; then
+  echo "*** error:  No slice files were found in $smvfile"
   exit
 fi
 
