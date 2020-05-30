@@ -368,12 +368,6 @@ restore_state
 smvfile=$1.smv
 slicefilemenu=$HOME/.fds2mp4/$1.slcf
 
-nviewpoints=0
-viewpointmenu=$HOME/.fds2mp4/$1.viewpoints
-if [ -e $viewpointmenu ]; then
-  nviewpoints=`cat $viewpointmenu | wc -l`
-  (( nviewpoints -= 3 ))
-fi
 
 get_smokeview || exit 1
 
@@ -383,6 +377,17 @@ if [ ! -e $smvfile ]; then
 fi
 
 $SMOKEVIEW -info $input >& /dev/null
+
+# get viewpoint menu (optional)
+
+nviewpoints=0
+viewpointmenu=$HOME/.fds2mp4/$1.viewpoints
+if [ -e $viewpointmenu ]; then
+  nviewpoints=`cat $viewpointmenu | wc -l`
+  (( nviewpoints -= 3 ))
+fi
+
+# get slice file menu (required)
 
 if [ ! -e $slicefilemenu ]; then
   echo "*** error: $slicefilemenu does not exist"
