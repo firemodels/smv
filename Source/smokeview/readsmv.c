@@ -5440,7 +5440,7 @@ void GenerateViewpointMenu(void){
     strcat(viewpiontemenu_filename, fds2mp4dir);
     strcat(viewpiontemenu_filename, dirseparator);
   }
-  strcpy(viewpiontemenu_filename, fdsprefix);
+  strcat(viewpiontemenu_filename, fdsprefix);
   strcat(viewpiontemenu_filename, ".viewpoints");
   strcpy(casenameini, fdsprefix);
   strcat(casenameini, ".ini");
