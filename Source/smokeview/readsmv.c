@@ -5436,8 +5436,8 @@ void GenerateViewpointMenu(void){
   char casenameini[256];
 
   strcpy(viewpiontemenu_filename, "");
-  if(fds2mp4dir!=NULL){
-    strcat(viewpiontemenu_filename, fds2mp4dir);
+  if(smokeview_cachedir!=NULL){
+    strcat(viewpiontemenu_filename, smokeview_cachedir);
     strcat(viewpiontemenu_filename, dirseparator);
   }
   strcat(viewpiontemenu_filename, fdsprefix);

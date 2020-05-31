@@ -8597,8 +8597,8 @@ void GenerateSliceMenu(void){
   if(nsliceinfo==0)return;
 
   strcpy(slicemenu_filename, "");
-  if(fds2mp4dir!=NULL){
-    strcat(slicemenu_filename, fds2mp4dir);
+  if(smokeview_cachedir!=NULL){
+    strcat(slicemenu_filename, smokeview_cachedir);
     strcat(slicemenu_filename, dirseparator);
   }
   strcat(slicemenu_filename, fdsprefix);

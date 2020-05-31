@@ -367,13 +367,13 @@ void SetupGlut(int argc, char **argv){
       // only needed if -info option is used
 
       if(generate_info_from_commandline == 1){
-        NewMemory((void **)&fds2mp4dir, strlen(homedir)+strlen(dirseparator)+strlen(".fds2mp4")+1);
-        strcpy(fds2mp4dir, homedir);
-        strcat(fds2mp4dir, dirseparator);
-        strcat(fds2mp4dir, ".fds2mp4");
-        if(FileExistsOrig(fds2mp4dir)==NO){
-          if(MKDIR(fds2mp4dir)!=0){
-            FREEMEMORY(fds2mp4dir);
+        NewMemory((void **)&smokeview_cachedir, strlen(homedir)+strlen(dirseparator)+strlen(".smokeview")+1);
+        strcpy(smokeview_cachedir, homedir);
+        strcat(smokeview_cachedir, dirseparator);
+        strcat(smokeview_cachedir, ".smokeview");
+        if(FileExistsOrig(smokeview_cachedir)==NO){
+          if(MKDIR(smokeview_cachedir)!=0){
+            FREEMEMORY(smokeview_cachedir);
           }
         }
       }
