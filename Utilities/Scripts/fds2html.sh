@@ -1,19 +1,34 @@
 #!/bin/bash
 
 #---------------------------------------------
-#                   is_file_installed
+#                   Usge
 #---------------------------------------------
 
-is_file_installed()
-{
-  local program=$1
+function Usage {
+  scriptname=`basename $0`
+  echo "Usage: $scriptname [options] casename"
+  echo ""
+  echo "This script generates image frames for a specified slice file"
+  echo ""
+  echo "-e path - full path of smokeview executable."
+  echo "     [default: $SMOKEVIEW]"
+  echo "-h - show this mesage"
+#  echo "-i - use installed smokeview"
+  exit
+}
 
+#---------------------------------------------
+#                   is_smokeview_installed
+#---------------------------------------------
+
+is_smokeview_installed()
+{
   out=/tmp/program.out.$$
-  $program -v >& $out
+  smokeview -v >& $out
   notfound=`cat $out | tail -1 | grep "not found" | wc -l`
   rm $out
   if [ "$notfound" == "1" ] ; then
-    echo "***error: $program not installed" 
+    echo "***error: $program not installed"
     return 1
   fi
   return 0
@@ -25,7 +40,7 @@ is_file_installed()
 
 OUTPUT_SLICES ()
 {
-  cat $slcffile | awk -F"," '{ print $1" ",$2," ",$3," ",$4}'
+  cat $slicefilemenu | awk -F"," '{ print $1" ",$2," ",$3," ",$4}'
 }
 
 #---------------------------------------------
@@ -45,7 +60,7 @@ RENDERHTMLDIR
 UNLOADALL
 LOADSLICE
 EOF
-  cat $slcffile | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2"\n" $3 $4"\n"} }' >> $scriptname
+  cat $slicefilemenu | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2"\n" $3 $4"\n"} }' >> $scriptname
   cat << EOF >> $scriptname
 RENDERHTMLALL
   $htmlbase
@@ -54,24 +69,63 @@ EOF
 
 #----------------------------- script begins ---------------------------------------
 
+# define repo variables
+
+CURDIR=`pwd`
+SCRIPTDIR=`dirname "$0"`
+cd $SCRIPTDIR/../../..
+ROOTDIR=`pwd`
+SMVREPO=$ROOTDIR/smv
+cd $CURDIR
+SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_64
+
+#---------------------------------------------
+#                  parse command line options 
+#---------------------------------------------
+
+while getopts 'e:hi' OPTION
+do
+case $OPTION  in
+  e)
+   SMOKEVIEW="$OPTARG"
+   if [ ! -e $SMOKEVIEW ]; then
+     echo "***error: smokeview not found at $SMOKEVIEW"
+   fi
+   ;;
+  h)
+   Usage
+   exit
+   ;;
+  i)
+   is_smokeview_installed || exit 1
+   SMOKEVIEW=`which smokeview`
+   ;;
+esac
+done
+shift $(($OPTIND-1))
+
+
+if [ ! -e $SMOKEVIEW ]; then
+  echo "***error: smokeview not found at $SMOKEVIEW"
+  exit 1
+fi
+
 input=$1
 
 smvfile=$1.smv
-slcffile=$1.slcf
+slcffile=$HOME/.smokeview/$1.slcf
 
 HTMLDIR=/var/www/html/`whoami`
 if [ ! -e $HTMLDIR ]; then
   HTMLDIR=.
 fi
 
-is_file_installed smokeview || exit 1
-
 if [ ! -e $smvfile ]; then
   echo "***error: $smvfile does not exist"
 fi
 
 if [ ! -e $slcffile ]; then
-  smokeview -slice_info $input >& /dev/null
+  $SMOKEVIEW -slice_info $input >& /dev/null
 fi
 
 if [ ! -e $slcffile ]; then
@@ -101,9 +155,9 @@ while true; do
     rm -f $scriptname
     GENERATE_SCRIPT $ans $scriptname
     if [ -e $scriptname ]; then
-      echo "***ceating html file"
+      echo "***creating html file"
       rm -f $htmlfile
-      smokeview -htmlscript $scriptname $input
+      $SMOKEVIEW -htmlscript $scriptname $input
       if [ -e $htmlfile ]; then
         filesize=`ls -lk $htmlfile | awk '{print $5}'`
         echo "*** The html file, $htmlfile(${filesize}K), has been created."
