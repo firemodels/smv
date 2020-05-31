@@ -18,7 +18,7 @@ function Usage {
 }
 
 #---------------------------------------------
-#                   is_file_installed
+#                   is_smokeview_installed
 #---------------------------------------------
 
 is_smokeview_installed()
@@ -313,7 +313,7 @@ JOBPREFIX=SV_
 GENERATE_IMAGES=
 MAKE_MOVIE=
 
-CONFIGDIR=$HOME/.fds2mp4
+CONFIGDIR=$HOME/.smokeview
 if [ ! -e $CONFIGDIR ]; then
   mkdir $CONFIGDIR
 fi
@@ -367,7 +367,7 @@ input=$1
 restore_state
 
 smvfile=$1.smv
-slicefilemenu=$HOME/.fds2mp4/$1.slcf
+slicefilemenu=$HOME/.smokeview/$1.slcf
 
 if [ ! -e $smvfile ]; then
   echo "***error: $smvfile does not exist"
@@ -379,7 +379,7 @@ $SMOKEVIEW -info $input >& /dev/null
 # get viewpoint menu (optional)
 
 nviewpoints=0
-viewpointmenu=$HOME/.fds2mp4/$1.viewpoints
+viewpointmenu=$HOME/.smokeview/$1.viewpoints
 if [ -e $viewpointmenu ]; then
   nviewpoints=`cat $viewpointmenu | wc -l`
   (( nviewpoints -= 3 ))
