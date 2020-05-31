@@ -1380,6 +1380,7 @@ SVEXTERN float redcolor[4];
 SVEXTERN int loadfiles_at_startup;
 
 SVEXTERN char SVDECL(*smokeviewtempdir,NULL);
+SVEXTERN char SVDECL(*smokeview_cachedir, NULL);
 
 SVEXTERN int nmenus;
 SVEXTERN menudata menuinfo[10000];

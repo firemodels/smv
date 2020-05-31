@@ -363,6 +363,20 @@ void SetupGlut(int argc, char **argv){
           FREEMEMORY(smoketempdir);
         }
       }
+
+      // only needed if -info option is used
+
+      if(generate_info_from_commandline == 1){
+        NewMemory((void **)&smokeview_cachedir, strlen(homedir)+strlen(dirseparator)+strlen(".smokeview")+1);
+        strcpy(smokeview_cachedir, homedir);
+        strcat(smokeview_cachedir, dirseparator);
+        strcat(smokeview_cachedir, ".smokeview");
+        if(FileExistsOrig(smokeview_cachedir)==NO){
+          if(MKDIR(smokeview_cachedir)!=0){
+            FREEMEMORY(smokeview_cachedir);
+          }
+        }
+      }
     }
   }
 

@@ -5435,7 +5435,12 @@ void GenerateViewpointMenu(void){
   int nviewpoints;
   char casenameini[256];
 
-  strcpy(viewpiontemenu_filename, fdsprefix);
+  strcpy(viewpiontemenu_filename, "");
+  if(smokeview_cachedir!=NULL){
+    strcat(viewpiontemenu_filename, smokeview_cachedir);
+    strcat(viewpiontemenu_filename, dirseparator);
+  }
+  strcat(viewpiontemenu_filename, fdsprefix);
   strcat(viewpiontemenu_filename, ".viewpoints");
   strcpy(casenameini, fdsprefix);
   strcat(casenameini, ".ini");
