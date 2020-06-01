@@ -12,13 +12,17 @@ Then type `fds2html casename` at a command line. (add more description)
 
 ## fds2mp4.sh
 
-This script is used to generate an MP4 animation file from an FDS slice file.  For now, it uses smokeview built at smv/Build/smokeview/intel_linux_64 .  To use, add the alias
+This script is used to generate an MP4 animation file from an FDS slice file.  To use, 
+
+1.  add the alias
 
 ```alias fds2mp4=".../smv/Utilities/Scripts/fds2mp4.sh"```
 
 to your startup file, typically .bashrc (change the ... in the first part to match your repo location).
 
-cd to a directory containing your case and type `fds2mp4 casename` .  You will see a list of slice files for this case such as
+2.  Either use smokeview you built at smv/Build/smokeview/intel_linux_64 or use fds2mp4 with the -i option to use the installed smokeview  
+
+3.  cd to a directory containing your case and type `fds2mp4 casename` .  You will see a list of slice files for this case such as
 ```
 index   quantity                      dir       position
     1   U-VELOCITY                      3     255.249954
@@ -51,7 +55,7 @@ p - define number of processes
 q - define queue
 r - define directory containing rendered images
 v - select viewpoint
-m - select emaail address
+m - select email address
 1 - generate PNG images
 2 - generate PNG images and an MP4 animation
 x - exit
