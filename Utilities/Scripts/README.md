@@ -20,7 +20,7 @@ This script is used to generate an MP4 animation file from an FDS slice file.  T
 
 to your startup file, typically .bashrc (change the ... in the first part to match your repo location).
 
-2.  Either use smokeview you built at smv/Build/smokeview/intel_linux_64 or use fds2mp4 with the -i option to use the installed smokeview  
+2.  Either use smokeview you built at smv/Build/smokeview/intel_linux_64 or use fds2mp4 with the -i option to use the (installed smokeview)[https://drive.google.com/drive/folders/0B_wB1pJL2bFQc1F4cjJWY2duWTA?usp=sharing]  
 
 3.  cd to a directory containing your case and type `fds2mp4 casename` .  You will see a list of slice files for this case such as
 ```
