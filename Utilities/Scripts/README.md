@@ -32,7 +32,7 @@ index   quantity                      dir       position
     9   VELOCITY(terrain)               3           25.0
    ```
 
-After selecting a slice such as `9`, LEVEL SET in this caes, you will see a menu for selecting various options such as scene viewpoints,  how images are generated (number of processes, what queue to use) and whether to generate images and an animation or just images. `fds2mp4` creates a script (casename_slice_9.sh in this case) which may be customized and run later.
+After selecting a slice, index 9 in this case, you will see a menu for selecting various options such as scene viewpoints,  how images are generated (number of processes, what queue to use) and whether to generate images and an animation or just images. `fds2mp4` creates a script (casename_slice_9.sh in this case) which may be customized and run later.
 
 ```
 slice quantity:  LEVEL SET VALUE(terrain)
