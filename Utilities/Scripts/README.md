@@ -1,6 +1,6 @@
 # Utilities/Scripts
 
-This directory contains scripts for generating images and animations of FDS cases.  It also contains utility scripts used by other scripts in the repo such as setting up the graphics environment for the image generating scripts,  identifying Git and compiler versions . These notes are preliminary, a work in progress.
+This directory contains scripts for generating images and animations of FDS cases.  It also contains utility scripts used by other scripts in this repo, scripts for setting up the graphics environment for the image generating scripts and for identifying Git and compiler versions when building smoke iew. These notes are preliminary, a work in progress.
 
 ## fds2html.sh
 
@@ -35,28 +35,30 @@ index   quantity                      dir       position
 After selecting a slice such as `9`, LEVEL SET in this caes, you will see a menu for selecting various options such as scene viewpoints,  how images are generated (number of processes, what queue to use) and whether to generate images and an animation or just images. `fds2mp4` creates a script (casename_slice_9.sh in this case) which may be customized and run later.
 
 ```
-slice quantity:  VELOCITY(terrain)
+slice quantity:  LEVEL SET VALUE(terrain)
      processes: 20
-         queue: batch4
-       mp4 dir: /var/www/html/user
-       PNG dir: frames
-     smokeview: /..../smv/Build/smokeview/intel_linux_64/smokeview_linux_64
-       qsmv.sh: /..../smv/Utilities/Scripts/qsmv.sh
+         queue: batch2
+       mp4 dir: /var/www/html/gforney
+       PNG dir: .
+     smokeview: /home/gforney/FireModels_fork/smv/Build/smokeview/intel_linux_64/smokeview_linux_64
+       qsmv.sh: /home/gforney/FireModels_fork/smv/Utilities/Scripts/qsmv.sh
      viewpoint:  view 1
-  image script: casename_slice_9.sh
+  image script: cogoleto_fire_2019_01_slice_6.sh
+         email: gforney@gmail.com
 
 a - define directory containing animation
 p - define number of processes
 q - define queue
 r - define directory containing rendered images
 v - select viewpoint
+m - select emaail address
 1 - generate PNG images
 2 - generate PNG images and an MP4 animation
 x - exit
 option:
 ```
 
-To generate an animation, select option 2.
+Select the queue, number of processes and an email address to send the animation.  Then to generate an animation, select option 2.
 
 ## qsmv.sh
 
