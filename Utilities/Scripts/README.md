@@ -12,7 +12,7 @@ Then type `fds2html casename` at a command line. (add more description)
 
 ## fds2mp4.sh
 
-This script is used to generate an MP4 animation file from an FDS slice file.  To use, 
+This script is used to generate an MP4 animation file from an FDS slice file.  To use:
 
 1.  add the alias
 
