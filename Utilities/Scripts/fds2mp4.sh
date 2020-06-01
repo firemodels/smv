@@ -13,7 +13,7 @@ function Usage {
   echo "-e path - full path of smokeview executable."
   echo "     [default: $SMOKEVIEW]"
   echo "-h - show this mesage"
-#  echo "-i - use installed smokeview"
+  echo "-i - use installed smokeview"
   exit
 }
 
@@ -28,7 +28,8 @@ is_smokeview_installed()
   notfound=`cat $out | tail -1 | grep "not found" | wc -l`
   rm $out
   if [ "$notfound" == "1" ] ; then
-    echo "***error: $program not installed"
+    echo "***error: smokeview is not installed.  Add it to your PATH or"
+    echo "          build the smv repo version of smokeview and use it"
     return 1
   fi
   return 0
@@ -342,9 +343,6 @@ do
 case $OPTION  in
   e)
    SMOKEVIEW="$OPTARG"
-   if [ ! -e $SMOKEVIEW ]; then
-     echo "***error: smokeview not found at $SMOKEVIEW"
-   fi
    ;;
   h)
    Usage
