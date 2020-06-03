@@ -4856,6 +4856,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   size_t len;
   int read_slice_header = 0;
   char zlib_file[255], rle_file[255];
+  int multi_res = 0;
 
   char *bufferptr, *bufferptr2;
   int nslicefiles, nn_slice;
@@ -4887,7 +4888,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   if(char_slcf_index!=NULL){
     *char_slcf_index = 0;
     char_slcf_index++;
-    sscanf(char_slcf_index, "%i", &slcf_index);
+    sscanf(char_slcf_index, "%i %i", &slcf_index, &multi_res);
   }
 
   sliceparms = strchr(buffer, '&');
@@ -4958,6 +4959,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 
   sd = sliceinfo+nn_slice-1;
 
+  sd->multi_res = multi_res;
   sd->slcf_index = slcf_index;
   sd->finalize = 1;
   sd->ntimes = 0;
