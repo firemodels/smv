@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+#define pp_MULTI_RES          // read in multi-resolution slice files
 //#define pp_HTML_VR           // output VR html code
 //#define pp_PART_HIST            // compute particle histograms
 //#define pp_SKIP_TERRAIN_DATA  // skip reading in terrain data if case is using immersed geometry

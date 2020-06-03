@@ -1226,7 +1226,9 @@ typedef struct _slicedata {
   float valmin, valmax;
   float globalmin, globalmax;
   float valmin_data, valmax_data;
+#ifdef pp_MULTI_RES
   int multi_res;
+#endif
 #ifdef pp_NEWBOUND_DIALOG
   float file_min, file_max;
 #endif
