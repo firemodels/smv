@@ -128,7 +128,6 @@ int GetResolutionLevels(int ni, int nj, int nk){
 /* ------------------ FreeMultiResData ------------------------ */
 
 void FreeMultiResData(multiresdata *multiresinfo){
-  int *val_indices;
   int i;
 
   FREEMEMORY(multiresinfo->val_indices);
