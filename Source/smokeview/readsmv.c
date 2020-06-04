@@ -4965,9 +4965,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 
   sd = sliceinfo+nn_slice-1;
 
-#ifdef pp_MULTI_RES
-  sd->multi_res = multi_res;
-#endif
   sd->slcf_index = slcf_index;
   sd->finalize = 1;
   sd->ntimes = 0;
@@ -5217,6 +5214,13 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 
     return RETURN_CONTINUE;
   }
+
+#ifdef pp_MULTI_RES
+  sd->multi_res = multi_res;
+  if(sd->multi_res==1){
+    InitMultiRes(sd);
+  }
+#endif
 
   sliceinfo_copy++;
   *sliceinfo_copy_in = sliceinfo_copy;

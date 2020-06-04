@@ -77,6 +77,266 @@ slicedata *gslice;
          }                                                                         \
          DU *= SCALE2FDS(.05*vecfactor/vel_max)
 
+#ifdef pp_MULTI_RES
+
+/* ------------------ SubdivideIndices ------------------------ */
+
+void SubdivideIndices(int *i_ind, int *i_ind_copy, int *ni, int ni_all){
+  int count=0, i;
+
+  i_ind_copy[count] = i_ind[count];
+  count++;
+  for(i = 1; i<*ni; i++){
+    if(i_ind[i]-i_ind[i-1]>1){
+      int index;
+
+      index = (i_ind[i]+i_ind[i-1])/2;
+      i_ind_copy[count++] = index;
+    }
+    i_ind_copy[count++] = i_ind[i];
+  }
+  for(i = 0; i<count; i++){
+    i_ind[i] = i_ind_copy[i];
+  }
+  *ni = count;
+}
+
+/* ------------------ GetResolutionLevels ------------------------ */
+
+int GetResolutionLevels(int ni, int nj, int nk){
+  int min, max, nlevels;
+
+  nlevels = 1;
+  min = 0;
+  max = MAX(MAX(ni, nj), nk);
+
+  while(max-min>1){
+    int mid;
+
+    mid = (min+max)/2;
+    if(max-mid>mid-min){
+      min = mid;
+    }
+    else{
+      max = mid;
+    }
+    nlevels++;
+  }
+  return nlevels;
+}
+
+/* ------------------ FreeMultiResData ------------------------ */
+
+void FreeMultiResData(multiresdata *multiresinfo){
+  int *val_indices;
+  int i;
+
+  FREEMEMORY(multiresinfo->val_indices);
+  for(i = 0; i<multiresinfo->nresinfo; i++){
+    resdata *resi;
+
+    resi = multiresinfo->resinfo+i;
+    FREEMEMORY(resi->xplt);
+    FREEMEMORY(resi->yplt);
+    FREEMEMORY(resi->zplt);
+  }
+  FREEMEMORY(multiresinfo->resinfo);
+}
+
+/* ------------------ ReorderSliceVals ------------------------ */
+
+void InitMultiRes(slicedata *sd){
+  int ni, nj, nk;
+  int ni_level, nj_level, nk_level;
+  int finish;
+  int *ni_list, *nj_list, *nk_list;
+  int *ni_list_copy, *nj_list_copy, *nk_list_copy;
+  int ii, jj, kk;
+  int i, j, k;
+  int count;
+  int nlevels;
+  resdata *resinfo;
+  int *sliceval_indices;
+  int level;
+  meshdata *slicemesh;
+  float *xplt, *yplt, *zplt;
+
+  if(sd->multi_res==0)return;
+  slicemesh = meshinfo+sd->blocknumber;
+
+  ni = sd->is2+1-sd->is1;
+  nj = sd->js2+1-sd->js1;
+  nk = sd->ks2+1-sd->ks1;
+  nlevels = GetResolutionLevels(ni,nj,nk);
+  
+  NewMemory((void **)&resinfo, nlevels*sizeof(resdata));
+  sd->multiresinfo.resinfo = resinfo;
+  for(i = 0; i<nlevels; i++){
+    resdata *resi;
+
+    resi = resinfo+i;
+    NewMemory((void **)&xplt, MAX(ni, 2)*sizeof(float));
+    NewMemory((void **)&yplt, MAX(nj, 2)*sizeof(float));
+    NewMemory((void **)&zplt, MAX(nk, 2)*sizeof(float));
+    resi->xplt = xplt;
+    resi->yplt = yplt;
+    resi->zplt = zplt;
+  }
+  CheckMemory;
+
+  NewMemory((void **)&sliceval_indices, ni*nj*nk*sizeof(int));
+  sd->multiresinfo.val_indices = sliceval_indices;
+  sd->multiresinfo.nresinfo = nlevels;
+  sd->multiresinfo.iresinfo = 0;
+
+  xplt = slicemesh->xplt;
+  yplt = slicemesh->yplt;
+  zplt = slicemesh->zplt;
+
+  for(i = 0; i<ni*nj*nk; i++){
+    sliceval_indices[i] = -1;
+  }
+  CheckMemory;
+  ni_level = 2;
+  nj_level = 2;
+  nk_level = 2;
+  NewMemory((void **)&ni_list, MAX(ni,2)*sizeof(int));
+  NewMemory((void **)&nj_list, MAX(nj, 2)*sizeof(int));
+  NewMemory((void **)&nk_list, MAX(nk, 2)*sizeof(int));
+  NewMemory((void **)&ni_list_copy, MAX(ni, 2)*sizeof(int));
+  NewMemory((void **)&nj_list_copy, MAX(nj, 2)*sizeof(int));
+  NewMemory((void **)&nk_list_copy, MAX(nk, 2)*sizeof(int));
+  ni_list[0] = 0;
+  ni_list[1] = ni-1;
+  nj_list[0] = 0;
+  nj_list[1] = nj-1;
+  nk_list[0] = 0;
+  nk_list[1] = nk-1;
+  finish = 0;
+  CheckMemory;
+
+  count = 0;
+  level = 0;
+  if(ni==1){
+    while(finish==0){
+      resdata *resi;
+
+      resi = resinfo+level;
+      resi->ni = ni_level;
+      resi->nj = nj_level;
+      resi->nk = nk_level;
+      for(j = 0; j<nj_level; j++){
+        resi->yplt[j] = yplt[nj_list[j]];
+      }
+      for(k = 0; k<nk_level; k++){
+        resi->zplt[k] = zplt[nk_list[k]];
+      }
+      for(kk = 0; kk<nk_level; kk++){
+        k = nk_list[kk];
+        for(jj = 0; jj<nj_level; jj++){
+          int index;
+
+          j = nj_list[jj];
+          index = k*nj+j;
+          if(sliceval_indices[index]==-1){
+            sliceval_indices[index] = count++;
+          }
+        }
+      }
+
+      if(nk_level==nk&&nj==nj_level){
+        finish = 1;
+      }
+      else{
+        if(nj!=nj_level)SubdivideIndices(nj_list, nj_list_copy, &nj_level, nj);
+        if(nk!=nk_level)SubdivideIndices(nk_list, nk_list_copy, &nk_level, nk);
+      }
+    }
+    level++;
+  }
+  else if(nj==1){
+    while(finish==0){
+      resdata *resi;
+
+      resi = resinfo+level;
+      resi->ni = ni_level;
+      resi->nj = nj_level;
+      resi->nk = nk_level;
+      for(i = 0; i<ni_level; i++){
+        resi->xplt[i] = xplt[ni_list[i]];
+      }
+      CheckMemory;
+      for(k = 0; k<nk_level; k++){
+        resi->zplt[k] = zplt[nk_list[k]];
+      }
+      CheckMemory;
+      for(kk = 0; kk<nk_level; kk++){
+        k = nk_list[kk];
+        for(ii = 0; ii<ni_level; ii++){
+          int index;
+
+          i = ni_list[ii];
+          index = k*ni+i;
+          if(sliceval_indices[index]==-1){
+            sliceval_indices[index] = count++;
+            CheckMemory;
+          }
+        }
+      }
+      if(nk_level==nk&&ni==ni_level){
+        finish = 1;
+      }
+      else{
+        if(ni!=ni_level)SubdivideIndices(ni_list, ni_list_copy, &ni_level, ni);
+        if(nk!=nk_level)SubdivideIndices(nk_list, nk_list_copy, &nk_level, nk);
+      }
+    }
+  }
+  else if(nk==1){
+    while(finish==0){
+      resdata *resi;
+
+      resi = resinfo+level;
+      resi->ni = ni;
+      resi->nj = nj;
+      resi->nk = nk;
+      for(i = 0; i<ni_level; i++){
+        resi->xplt[i] = xplt[ni_list[i]];
+      }
+      for(j = 0; j<nj_level; j++){
+        resi->yplt[j] = yplt[nj_list[j]];
+      }
+      for(jj = 0; jj<nj_level; jj++){
+        j = nj_list[jj];
+
+        for(ii = 0; ii<ni_level; ii++){
+          int index;
+
+          i = ni_list[ii];
+          index = j*ni+i;
+          if(sliceval_indices[index]==-1){
+            sliceval_indices[index] = count++;
+          }
+        }
+      }
+      if(ni_level==ni&&nj==nj_level){
+        finish = 1;
+      }
+      else{
+        if(nj!=nj_level)SubdivideIndices(nj_list, nj_list_copy, &nj_level, nj);
+        if(ni!=ni_level)SubdivideIndices(ni_list, ni_list_copy, &ni_level, ni);
+      }
+    }
+  }
+  FREEMEMORY(ni_list);
+  FREEMEMORY(nj_list);
+  FREEMEMORY(nk_list);
+  FREEMEMORY(ni_list_copy);
+  FREEMEMORY(nj_list_copy);
+  FREEMEMORY(nk_list_copy);
+}
+#endif
+
 /* ------------------ Get3DSliceVal ------------------------ */
 
 float Get3DSliceVal(slicedata *sd, float *xyz){

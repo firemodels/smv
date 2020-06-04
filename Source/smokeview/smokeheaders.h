@@ -5,6 +5,9 @@
 #include "gd.h"
 #endif
 
+#ifdef pp_MULTI_RES
+void InitMultiRes(slicedata *sd);
+#endif
 EXTERNCPP void ScriptLoadSliceRender(scriptdata *scripti);
 EXTERNCPP int GetNSliceFrames(char *file, float *stime_min, float *stime_max);
 EXTERNCPP void GenerateSliceMenu(void);
