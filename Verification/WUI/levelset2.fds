@@ -4,7 +4,7 @@
 &MULT ID='mesh', DX=100, DY=100, DZ=75, I_UPPER=2, J_UPPER=2, K_UPPER=0 /
 
 &TIME T_END=300 /
-&MISC TERRAIN_CASE=.TRUE., LEVEL_SET_ELLIPSE=F /
+&MISC LEVEL_SET_MODE=4, LEVEL_SET_ELLIPSE=F /
 &WIND SPEED=5  /
 
 &BNDF QUANTITY='LEVEL SET', CELL_CENTERED=.FALSE. /
@@ -24,11 +24,7 @@
             VEG_LSET_WIND_EXP = 1
             RGB=122,117,48
             HRRPUA=200.
-            RAMP_Q='fire' /
-&RAMP ID='fire', T= 0., F=0. /
-&RAMP ID='fire', T= 5., F=1. /
-&RAMP ID='fire', T=25., F=1. /
-&RAMP ID='fire', T=26., F=0. /
+            DURATION=25. /
 
 &VENT MB='XMIN', SURF_ID='OPEN' /
 &VENT MB='XMAX', SURF_ID='OPEN' /
