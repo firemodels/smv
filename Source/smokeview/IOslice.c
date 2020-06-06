@@ -340,7 +340,6 @@ void InitMultiRes(slicedata *sd){
         }
       }
       if(nk_level==nk&&ni==ni_level){
-        int kkk = 0;
         finish = 1;
       }
       else{
@@ -6381,7 +6380,6 @@ void DrawVolSliceTexture(const slicedata *sd){
   char *iblank_embed;
   int plotx, ploty, plotz;
 #ifdef pp_MULTI_RES
-  int resolution_level;
   resdata *resinfo;
   int *ni_list, *nk_list;
   int *sliceval_indices;
@@ -6522,7 +6520,6 @@ void DrawVolSliceTexture(const slicedata *sd){
   if((sd->volslice==1&&ploty>=0&&visy_all==1)||(sd->volslice==0&&sd->idir==YDIR)){
     int maxi;
     int istart, iend;
-    int kstart, kend;
 
 #ifdef pp_MULTI_RES
     yplt = meshi->yplt;
