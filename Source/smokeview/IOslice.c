@@ -6383,8 +6383,7 @@ void DrawVolSliceTexture(const slicedata *sd){
 #ifdef pp_MULTI_RES
   int resolution_level;
   resdata *resinfo;
-  int *ni_list, *nj_list, *nk_list;
-  int ni_level, nj_level, nk_level;
+  int *ni_list, *nk_list;
   int *sliceval_indices;
 #endif
 
@@ -6404,11 +6403,7 @@ void DrawVolSliceTexture(const slicedata *sd){
     yplt = resinfo->yplt;
     zplt = resinfo->zplt;
     ni_list = resinfo->ni_list;
-    nj_list = resinfo->nj_list;
     nk_list = resinfo->nk_list;
-    ni_level = resinfo->ni;
-    nj_level = resinfo->nj;
-    nk_level = resinfo->nk;
     sliceval_indices = sd->multiresinfo.val_indices;
   }
   else{
@@ -9026,14 +9021,14 @@ void SliceData2Hist(slicedata *sd, float *xyz, float *dxyz, float time, float dt
 
 /* ------------------ ISSliceMenuDup ------------------------ */
 
-int IsSliceMenuDup(slicemenudata *slicemenuinfo, int nslicemenuinfo, char *label, int slcf_index, float position_arg){
+int IsSliceMenuDup(slicemenudata *slicemenu_arg, int nslicemenuinfo, char *label, int slcf_index, float position_arg){
   int i;
 
   for(i = 0; i<nslicemenuinfo; i++){
     slicemenudata *slicemi;
     slicedata *slicei;
 
-    slicemi = slicemenuinfo+i;
+    slicemi = slicemenu_arg+i;
     slicei = slicemi->sliceinfo;
     if(
       slicei->slcf_index==slcf_index&&
