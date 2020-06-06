@@ -669,13 +669,13 @@ extern "C" void VolumeCB(int var){
 
       surfi = surfinfo+sorted_surfidlist[i];
       if(surfi->in_geom_list==geom_surf_index){
-        int *rgb;
+        int *rgb_local;
         float *axis;
 
-        rgb = surfi->glui_color;
-        glui_surf_rgb[0] = CLAMP(rgb[0],0,255);
-        glui_surf_rgb[1] = CLAMP(rgb[1],0,255);
-        glui_surf_rgb[2] = CLAMP(rgb[2],0,255);
+        rgb_local = surfi->glui_color;
+        glui_surf_rgb[0] = CLAMP(rgb_local[0],0,255);
+        glui_surf_rgb[1] = CLAMP(rgb_local[1],0,255);
+        glui_surf_rgb[2] = CLAMP(rgb_local[2],0,255);
         SPINNER_surf_rgb[0]->set_int_val(glui_surf_rgb[0]);
         SPINNER_surf_rgb[1]->set_int_val(glui_surf_rgb[1]);
         SPINNER_surf_rgb[2]->set_int_val(glui_surf_rgb[2]);
@@ -698,13 +698,13 @@ extern "C" void VolumeCB(int var){
 
       surfi = surfinfo+sorted_surfidlist[i];
       if(surfi->in_geom_list==geom_surf_index){
-        int *rgb;
+        int *rgb_local;
         float *axis;
 
-        rgb = surfi->glui_color;
-        rgb[0] = glui_surf_rgb[0];
-        rgb[1] = glui_surf_rgb[1];
-        rgb[2] = glui_surf_rgb[2];
+        rgb_local = surfi->glui_color;
+        rgb_local[0] = glui_surf_rgb[0];
+        rgb_local[1] = glui_surf_rgb[1];
+        rgb_local[2] = glui_surf_rgb[2];
 
         axis = surfi->axis;
         axis[0] = glui_surf_axis[0];
