@@ -1197,6 +1197,7 @@ typedef struct _hrrdata {
 
 typedef struct _resdata {
   float *xplt, *yplt, *zplt;
+  int *ni_list, *nj_list, *nk_list;
   int ni, nj, nk;
 } resdata;
   

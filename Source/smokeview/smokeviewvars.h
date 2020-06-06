@@ -33,6 +33,11 @@ SVEXTERN int render_skips[NRENDER_SKIPS];
 SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
+#ifdef pp_MULTI_RES
+SVEXTERN int SVDECL(slice_resolution_level, -1);
+SVEXTERN int SVDECL(max_slice_resolution, 0);
+#endif
+
 SVEXTERN slicemenudata SVDECL(*slicemenuinfo, NULL);
 SVEXTERN int SVDECL(generate_info_from_commandline, 0);
 #ifdef pp_PART_HIST

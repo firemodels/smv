@@ -2626,6 +2626,11 @@ void UpdateMeshCoords(void){
     zplts[nn]=NORMALIZE_Z(zplts[nn]);
   }
 
+#ifdef pp_MULTI_RES
+// normalize multi resolution grid slice locations
+  NormalizeXYZRes();
+#endif
+
   /* rescale both global and local xbar, ybar and zbar */
 
   xbar0ORIG = xbar0;
