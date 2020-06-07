@@ -24,7 +24,7 @@
             VEG_LSET_WIND_EXP = 1
             RGB=122,117,48
             HRRPUA=200.
-            DURATION=25. /
+            BURN_DURATION=25. /
 
 &VENT MB='XMIN', SURF_ID='OPEN' /
 &VENT MB='XMAX', SURF_ID='OPEN' /
