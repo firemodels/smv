@@ -106,7 +106,7 @@ void SubdivideIndices(int *i_ind, int *i_ind_copy, int *ni, int ni_all){
 int GetResolutionLevels(int ni, int nj, int nk){
   int min, max, nlevels;
 
-  nlevels = 0;
+  nlevels = 1;
   min = 0;
   max = MAX(MAX(ni, nj), nk);
 
