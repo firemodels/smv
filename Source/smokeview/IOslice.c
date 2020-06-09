@@ -6599,15 +6599,23 @@ void DrawVolSliceTexture(const slicedata *sd){
 #endif
 #ifdef pp_MULTI_RES
 #define IJRES(i,k) ((i)*(sd->ks2+1)+(k))
-        i11 = sliceval_indices[IJRES(ni_list[i],   nk_list[k])];
-        i31 = sliceval_indices[IJRES(ni_list[i+1], nk_list[k])];
-        i13 = sliceval_indices[IJRES(ni_list[i],   nk_list[k+1])];
-        i33 = sliceval_indices[IJRES(ni_list[i+1], nk_list[k+1])];
+        if(sd->multi_res==1){
+          i11 = sliceval_indices[IJRES(ni_list[i], nk_list[k])];
+          i31 = sliceval_indices[IJRES(ni_list[i+1], nk_list[k])];
+          i13 = sliceval_indices[IJRES(ni_list[i], nk_list[k+1])];
+          i33 = sliceval_indices[IJRES(ni_list[i+1], nk_list[k+1])];
 
-        r11 = (float)sd->iqsliceframe[i11]/255.0;
-        r31 = (float)sd->iqsliceframe[i31]/255.0;
-        r13 = (float)sd->iqsliceframe[i13]/255.0;
-        r33 = (float)sd->iqsliceframe[i33]/255.0;
+          r11 = (float)sd->iqsliceframe[i11]/255.0;
+          r31 = (float)sd->iqsliceframe[i31]/255.0;
+          r13 = (float)sd->iqsliceframe[i13]/255.0;
+          r33 = (float)sd->iqsliceframe[i33]/255.0;
+        }
+        else{
+          r11 = (float)sd->iqsliceframe[n]/255.0;
+          r31 = (float)sd->iqsliceframe[n2]/255.0;
+          r13 = (float)sd->iqsliceframe[n+1]/255.0;
+          r33 = (float)sd->iqsliceframe[n2+1]/255.0;
+        }
 #else
         r11 = (float)sd->iqsliceframe[n] / 255.0;
         r31 = (float)sd->iqsliceframe[n2] / 255.0;
