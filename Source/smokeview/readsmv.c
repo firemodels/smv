@@ -2626,6 +2626,11 @@ void UpdateMeshCoords(void){
     zplts[nn]=NORMALIZE_Z(zplts[nn]);
   }
 
+#ifdef pp_MULTI_RES
+// normalize multi resolution grid slice locations
+  NormalizeXYZRes();
+#endif
+
   /* rescale both global and local xbar, ybar and zbar */
 
   xbar0ORIG = xbar0;
@@ -4856,6 +4861,9 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   size_t len;
   int read_slice_header = 0;
   char zlib_file[255], rle_file[255];
+#ifdef pp_MULTI_RES
+  int multi_res = 0;
+#endif
 
   char *bufferptr, *bufferptr2;
   int nslicefiles, nn_slice;
@@ -4887,7 +4895,11 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   if(char_slcf_index!=NULL){
     *char_slcf_index = 0;
     char_slcf_index++;
+#ifdef pp_MULTI_RES
+    sscanf(char_slcf_index, "%i %i", &slcf_index, &multi_res);
+#else
     sscanf(char_slcf_index, "%i", &slcf_index);
+#endif
   }
 
   sliceparms = strchr(buffer, '&');
@@ -5207,6 +5219,13 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 
     return RETURN_CONTINUE;
   }
+
+#ifdef pp_MULTI_RES
+  sd->multi_res = multi_res;
+  if(sd->multi_res==1){
+    InitMultiRes(sd);
+  }
+#endif
 
   sliceinfo_copy++;
   *sliceinfo_copy_in = sliceinfo_copy;

@@ -2312,6 +2312,12 @@ void Keyboard(unsigned char key, int flag){
         return;
       }
       break;
+#ifdef pp_MULTI_RES
+    case '`':
+      slice_resolution_level++;
+      if(slice_resolution_level>max_slice_resolution)slice_resolution_level = 0;
+      break;
+#endif
     case '~':
       LevelScene(1,1,quat_general);
       Quat2Rot(quat_general,quat_rotation);

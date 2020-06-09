@@ -1192,6 +1192,24 @@ typedef struct _hrrdata {
   int ntimes, ntimes_csv;
 } hrrdata;
 
+#ifdef pp_MULTI_RES
+/* --------------------------  _resdata ------------------------------------ */
+
+typedef struct _resdata {
+  float *xplt, *yplt, *zplt;
+  int *ni_list, *nj_list, *nk_list;
+  int ni, nj, nk;
+} resdata;
+  
+  /* --------------------------  _multiresdata ------------------------------------ */
+
+typedef struct _multiresdata {
+  resdata *resinfo;
+  int nresinfo, iresinfo;
+  int *val_indices;
+} multiresdata;
+#endif
+
 /* --------------------------  slicedata ------------------------------------ */
 
 typedef struct _slicedata {
@@ -1226,6 +1244,9 @@ typedef struct _slicedata {
   float valmin, valmax;
   float globalmin, globalmax;
   float valmin_data, valmax_data;
+#ifdef pp_MULTI_RES
+  int multi_res;
+#endif
 #ifdef pp_NEWBOUND_DIALOG
   float file_min, file_max;
 #endif
@@ -1266,6 +1287,10 @@ typedef struct _slicedata {
   histogramdata *histograms;
   int nhistograms;
   struct _patchdata *patchgeom;
+#ifdef pp_MULTI_RES
+  multiresdata multiresinfo;
+  int mult_res;
+#endif
 #ifdef pp_NEWBOUND_DIALOG
   struct _boundsdata *bounds;
 #endif

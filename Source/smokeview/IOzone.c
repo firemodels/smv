@@ -858,7 +858,11 @@ void GetSliceTempBounds(void){
     if(use_cslice==1){
       GetSliceData(slicei->file, ALL_SLICE_FRAMES, &slicei->is1, &slicei->is2, &slicei->js1, &slicei->js2, &slicei->ks1, &slicei->ks2, &slicei->idir,
         &qmin, &qmax, slicei->qslicedata, slicei->times, ntimes_slice_old, &slicei->ntimes,
-        sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s);
+        sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s
+#ifdef pp_MULTI_RES
+        , slicei->multi_res
+#endif
+      );
     }
     else{
       FORTgetslicedata(slicei->file,
