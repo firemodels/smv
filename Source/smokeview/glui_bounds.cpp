@@ -4410,8 +4410,14 @@ extern "C" void ShowGluiBounds(int menu_id){
     BoundRolloutCB(SMOKE3D_ROLLOUT);
   }
   glui_bounds->show();
+  refresh_bounds_dialog = 1;
 }
 
+/* ------------------ RefreshBoundsDialog ------------------------ */
+
+extern "C" void RefreshBoundsDialog(void){
+  glui_bounds->refresh_dialog();
+}
 
 /* ------------------ ShowBoundsDialog ------------------------ */
 

@@ -1762,6 +1762,10 @@ void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo){
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
+  if(refresh_bounds_dialog==1){
+    refresh_bounds_dialog = 0;
+    RefreshBoundsDialog();
+  }
   if(update_times==1){
     update_times = 0;
     UpdateTimes();
