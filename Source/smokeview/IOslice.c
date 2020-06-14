@@ -5913,10 +5913,10 @@ void DrawVolSliceTerrain(const slicedata *sd){
   float constval, x1, x3, yy1, y3, z1, z3;
 
   float *xplt, *yplt, *zplt;
-  int plotx, ploty, plotz;
+  int plotz;
   int ibar, jbar;
   int nx, ny, nxy;
-  char *iblank_x, *iblank_y, *iblank_z;
+  char *iblank_z;
   terraindata *terri;
   int nycell;
   char *iblank_embed;
@@ -5934,19 +5934,13 @@ void DrawVolSliceTerrain(const slicedata *sd){
   zplt = meshi->zplt_orig;
 
   if(sd->volslice == 1){
-    plotx = meshi->iplotx_all[iplotx_all];
-    ploty = meshi->iploty_all[iploty_all];
     plotz = meshi->iplotz_all[iplotz_all];
   }
   else{
-    plotx = sd->is1;
-    ploty = sd->js1;
     plotz = sd->ks1;
   }
   ibar = meshi->ibar;
   jbar = meshi->jbar;
-  iblank_x = meshi->c_iblank_x;
-  iblank_y = meshi->c_iblank_y;
   iblank_z = meshi->c_iblank_z;
   iblank_embed = meshi->c_iblank_embed;
   nx = ibar + 1;
