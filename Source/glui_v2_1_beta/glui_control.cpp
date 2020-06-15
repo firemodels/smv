@@ -377,12 +377,11 @@ int          GLUI_Control::char_width( char c )
 void    *GLUI_Control::get_font( void )
 {
 #define USE_SPECIAL
-
 #ifndef pp_OSX
 #undef USE_SPECIAL
 #endif
 
-#ifdef pp_QUARTZ
+#ifndef pp_QUART
 #undef USE_SPECIAL
 #endif
 

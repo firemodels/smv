@@ -14402,12 +14402,11 @@ void WriteIni(int flag,char *filename){
   }
   else{
 #define USE_SPECIAL
-
 #ifndef pp_OSX
 #undef USE_SPECIAL
 #endif
 
-#ifdef pp_QUARTZ
+#ifndef pp_QUART
 #undef USE_SPECIAL
 #endif
 
