@@ -44,7 +44,7 @@ cp libglui.a $LIBDIR/.
 fi
 
 # GLUT
-if [[ "$arg" == "all" ]] || [[ "$arg" == "freeglut" ]]; then
+if [[ "$arg" == "all" ]] || [[ "$arg" == "freeglut" ]] || [[ "$arg" == "glut" ]]; then
 if [ "$GLUT" == "freeglut" ]; then
   cd $BUILDDIR/freeglut3.0.0/intel_osx_64
   ./make_freeglut.sh $OPTS 
