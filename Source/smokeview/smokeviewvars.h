@@ -33,7 +33,6 @@ SVEXTERN int render_skips[NRENDER_SKIPS];
 SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
-SVEXTERN int SVDECL(refresh_bounds_dialog, 0);
 #ifdef pp_MULTI_RES
 SVEXTERN int SVDECL(slice_resolution_level, -1);
 SVEXTERN int SVDECL(max_slice_resolution, 0);
