@@ -1782,11 +1782,6 @@ void  GLUI_Master_Object::set_left_button_glut_menu_control(
   curr_left_button_glut_menu = control;
 }
 
-/******************************* GLUI_Main::refresh_dialog **********/
-
-void  GLUI_Main::refresh_dialog( void ){
-  glui_reshape_func(w, h);
-}
 
 /******************************* GLUI_Main::set_ortho_projection() **********/
 
