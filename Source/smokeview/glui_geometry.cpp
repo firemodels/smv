@@ -806,6 +806,9 @@ extern "C" void VolumeCB(int var){
     // face_vis
     // face_vis_old
   case VOL_SHOWHIDE:
+    terrain_show_geometry_outline = show_faces_outline;
+    terrain_show_geometry_points  = show_geom_verts;
+    terrain_show_geometry_surface = show_faces_shaded;
     updatemenu=1;
     break;
   default:

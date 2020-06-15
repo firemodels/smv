@@ -354,6 +354,9 @@ void DrawTerrainGeom(int option){
     //*** edges
 
     if(terrain_show_geometry_outline==1){
+      glPushMatrix();
+      glTranslatef(geom_delx, geom_dely, geom_delz);
+      glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
 
       // lines
@@ -392,12 +395,15 @@ void DrawTerrainGeom(int option){
         glVertex3fv(v1o);
       }
       glEnd();
+      glPopMatrix();
     }
 
     //*** vertices
 
     if(terrain_show_geometry_points==1){
-      glPointSize(6.0);
+      glPushMatrix();
+      glTranslatef(geom_delx, geom_dely, geom_delz);
+      glPointSize(geom_pointsize);
       glBegin(GL_POINTS);
 
       // points
@@ -431,6 +437,7 @@ void DrawTerrainGeom(int option){
         glVertex3fv(v3o);
       }
       glEnd();
+      glPopMatrix();
     }
 
     //*** bottom side of top surface
