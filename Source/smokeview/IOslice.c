@@ -5905,9 +5905,9 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
 /* ------------------ DrawVolSliceTerrain ------------------------ */
 
 void DrawVolSliceTerrain(const slicedata *sd){
-  int i, j, k, n, n2;
+  int i, j;
   float r11, r31, r13, r33;
-  float constval, x1, x3, yy1, y3, z1, z3;
+  float x1, x3, yy1, y3;
 
   float *xplt, *yplt, *zplt;
   int plotz;
