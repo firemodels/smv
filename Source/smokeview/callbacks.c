@@ -2312,6 +2312,7 @@ void Keyboard(unsigned char key, int flag){
     case '`':
       slice_resolution_level++;
       if(slice_resolution_level>max_slice_resolution)slice_resolution_level = 0;
+      printf("slice resolution level: %i\n", slice_resolution_level);
       break;
 #endif
     case '~':

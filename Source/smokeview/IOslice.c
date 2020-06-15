@@ -130,7 +130,7 @@ int GetResolutionLevels(int ni, int nj, int nk){
 void FreeMultiResData(multiresdata *multiresinfo){
   int i;
 
-  FREEMEMORY(multiresinfo->val_indices);
+  FREEMEMORY(multiresinfo->kji_to_reorder);
   for(i = 0; i<multiresinfo->nresinfo; i++){
     resdata *resi;
 
@@ -201,7 +201,7 @@ void InitMultiRes(slicedata *sd){
   int count;
   int nlevels;
   resdata *resinfo;
-  int *sliceval_indices;
+  int *kji_to_reorder;
   int level;
   meshdata *slicemesh;
   float *xplt, *yplt, *zplt;
@@ -229,8 +229,8 @@ void InitMultiRes(slicedata *sd){
   }
   CheckMemory;
 
-  NewMemory((void **)&sliceval_indices, ni*nj*nk*sizeof(int));
-  sd->multiresinfo.val_indices = sliceval_indices;
+  NewMemory((void **)&kji_to_reorder, ni*nj*nk*sizeof(int));
+  sd->multiresinfo.kji_to_reorder = kji_to_reorder;
   sd->multiresinfo.nresinfo = nlevels;
   sd->multiresinfo.iresinfo = 0;
 
@@ -239,7 +239,7 @@ void InitMultiRes(slicedata *sd){
   zplt = slicemesh->zplt;
 
   for(i = 0; i<ni*nj*nk; i++){
-    sliceval_indices[i] = -1;
+    kji_to_reorder[i] = -1;
   }
   CheckMemory;
   ni_level = 2;
@@ -287,8 +287,8 @@ void InitMultiRes(slicedata *sd){
           
           k = nk_list[kk];
           index = k*nj + j;
-          if(sliceval_indices[index]==-1){
-            sliceval_indices[index] = count++;
+          if(kji_to_reorder[index]==-1){
+            kji_to_reorder[index] = count++;
           }
         }
       }
@@ -333,8 +333,8 @@ void InitMultiRes(slicedata *sd){
         for(ii = 0; ii<ni_level; ii++){
           i = ni_list[ii];
           index = i*nk+k;
-          if(sliceval_indices[index]==-1){
-            sliceval_indices[index] = count++;
+          if(kji_to_reorder[index]==-1){
+            kji_to_reorder[index] = count++;
             CheckMemory;
           }
         }
@@ -377,8 +377,8 @@ void InitMultiRes(slicedata *sd){
 
           i = ni_list[ii];
           index = j*ni+i;
-          if(sliceval_indices[index]==-1){
-            sliceval_indices[index] = count++;
+          if(kji_to_reorder[index]==-1){
+            kji_to_reorder[index] = count++;
           }
         }
       }
@@ -6253,7 +6253,7 @@ void DrawVolSliceTexture(const slicedata *sd){
 #ifdef pp_MULTI_RES
   resdata *resinfo;
   int *ni_list, *nk_list;
-  int *sliceval_indices;
+  int *kji_to_reorder;
 #endif
 
   meshdata *meshi;
@@ -6273,7 +6273,7 @@ void DrawVolSliceTexture(const slicedata *sd){
     zplt = resinfo->zplt;
     ni_list = resinfo->ni_list;
     nk_list = resinfo->nk_list;
-    sliceval_indices = sd->multiresinfo.val_indices;
+    kji_to_reorder = sd->multiresinfo.kji_to_reorder;
   }
   else{
     xplt = meshi->xplt;
@@ -6471,10 +6471,10 @@ void DrawVolSliceTexture(const slicedata *sd){
 #ifdef pp_MULTI_RES
 #define IJRES(i,k) ((i)*(sd->ks2+1)+(k))
         if(sd->multi_res==1){
-          i11 = sliceval_indices[IJRES(ni_list[i], nk_list[k])];
-          i31 = sliceval_indices[IJRES(ni_list[i+1], nk_list[k])];
-          i13 = sliceval_indices[IJRES(ni_list[i], nk_list[k+1])];
-          i33 = sliceval_indices[IJRES(ni_list[i+1], nk_list[k+1])];
+          i11 = kji_to_reorder[IJRES(ni_list[i],   nk_list[k])];
+          i31 = kji_to_reorder[IJRES(ni_list[i+1], nk_list[k])];
+          i13 = kji_to_reorder[IJRES(ni_list[i],   nk_list[k+1])];
+          i33 = kji_to_reorder[IJRES(ni_list[i+1], nk_list[k+1])];
 
           r11 = (float)sd->iqsliceframe[i11]/255.0;
           r31 = (float)sd->iqsliceframe[i31]/255.0;
