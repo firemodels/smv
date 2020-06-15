@@ -2211,10 +2211,6 @@ void Keyboard(unsigned char key, int flag){
         UpdateRenderListSkip();
       }
       break;
-    case 'T':
-      usetexturebar=1-usetexturebar;
-      PRINTF("usetexturebar=%i\n",usetexturebar);
-      break;
     case 'u':
     case 'U':
       switch(keystate){

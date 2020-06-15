@@ -497,7 +497,7 @@ void DrawGeom(int flag, int timestate){
       TransparentOn();
     }
 
-    if(usetexturebar==1&&texture_state==OFF){
+    if(texture_state==OFF){
       texture_state=TextureOn(texture_iso_colorbar_id,&texture_first);
     }
 
@@ -675,7 +675,7 @@ void DrawGeom(int flag, int timestate){
               factor = ABS(DOT3(v1, v2));
               transparent_level_local_new = CLAMP(transparent_level_local, 0.0, 1.0);
               if(factor!=0.0&&transparent_level_local<1.0)transparent_level_local_new = 1.0-pow(1.0-transparent_level_local, 1.0/factor);
-              if(usetexturebar==1&&show_iso_color==1&&vertvals!=NULL&&trianglei->geomtype!=GEOM_GEOM){
+              if(show_iso_color==1&&vertvals!=NULL&&trianglei->geomtype!=GEOM_GEOM){
                 if(texture_state==OFF){
                   glEnd();
                   texture_state = TextureOn(texture_iso_colorbar_id, &texture_first);
@@ -699,7 +699,7 @@ void DrawGeom(int flag, int timestate){
       }
     }
     glEnd();
-    if(usetexturebar==1&&texture_state==ON){
+    if(texture_state==ON){
       texture_state=TextureOff();
     }
 
