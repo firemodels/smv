@@ -1206,7 +1206,7 @@ typedef struct _resdata {
 typedef struct _multiresdata {
   resdata *resinfo;
   int nresinfo, iresinfo;
-  int *val_indices;
+  int *kji_to_reorder;
 } multiresdata;
 #endif
 

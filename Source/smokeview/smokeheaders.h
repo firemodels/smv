@@ -5,8 +5,6 @@
 #include "gd.h"
 #endif
 
-EXTERNCPP void RefreshBoundsDialog(void);
-
 #ifdef pp_MULTI_RES
 void InitMultiRes(slicedata *sd);
 void NormalizeXYZRes(void);

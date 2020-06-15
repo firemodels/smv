@@ -21,11 +21,11 @@
 #define _GLUI_H_
 
 #ifdef pp_OSX
-#ifdef pp_QUARTZ
-#include <GL/glut.h>
-#else
+//#ifdef pp_QUARTZ
+//#include <GL/glut.h>
+//#else
 #include <GLUT/glut.h>
-#endif
+//#endif
 #else
 #include <GL/glut.h>
 #endif
@@ -644,9 +644,7 @@ public:
   int              curr_modifiers;
 
   void         adjust_glut_xy( int &x, int &y ) { y = h-y; };
-  void         get_wh( int *wptr, int *hptr ) { *hptr=h; *wptr=w; };
   void         activate_control( GLUI_Control *control, int how );
-  void         refresh_dialog(void);
   void         align_controls( GLUI_Control *control );
   void         restore_draw_buffer( int buffer_state );
   void         disactivate_current_control( void );
