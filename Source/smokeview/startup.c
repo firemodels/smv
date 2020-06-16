@@ -214,7 +214,9 @@ int SetupCase(int argc, char **argv){
     PRINTF(" %s\n", input_file);
     smv_streaminfo = GetSMVBuffer(input_file, iso_filename);
     return_code = ReadSMV(smv_streaminfo);
-    FCLOSE(smv_streaminfo);
+    if(smv_streaminfo!=NULL){
+      FCLOSE(smv_streaminfo);
+    }
   }
   if(return_code==0&&trainer_mode==1){
     ShowGluiTrainer();

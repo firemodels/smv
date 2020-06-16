@@ -8083,11 +8083,13 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   if((vd->volslice == 1 && plotz >= 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
     int maxi;
     float agl_smv;
+    float z_cutoff;
 
     constval = zplttemp[plotz] + offset_slice*sd->sliceoffset - znode[0]+SCALE2SMV(sliceoffset_all);
     xplttemp = meshi->xplt_orig;
     yplttemp = meshi->yplt_orig;
     znode = terri->znode;
+    z_cutoff = terri->zmin_cutoff;
     agl_smv = sd->above_ground_level;
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
@@ -8105,6 +8107,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           float z11;
 
           z11 = znode[IJ2(i, j)];
+          if(z11<z_cutoff)continue;
           n11 = (i-sd->is1)*sd->nslicej*sd->nslicek + (j-sd->js1)*sd->nslicek;
           if(color_vector_black==0&&show_node_slices_and_vectors==0){
             rgb_ptr = rgb_slice+4*sd->iqsliceframe[n11];
@@ -8138,6 +8141,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
 
           z11 = znode[IJ2(i, j)];
           z22 = znode[IJ2(i, j+1)];
+          if(z11<z_cutoff||z22<z_cutoff)continue;
           n11 = i*sd->nslicej*sd->nslicek+j*sd->nslicek;
           if(color_vector_black==0&&show_node_slices_and_vectors==0){
             rgb_ptr = rgb_slice+4*sd->iqsliceframe[n11];
@@ -8162,6 +8166,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
 
           z11 = znode[IJ2(i, j)];
           z22 = znode[IJ2(i+1, j)];
+          if(z11<z_cutoff||z22<z_cutoff)continue;
           rgb_ptr = foregroundcolor;
           if(rgb_ptr[3]>0.5){
             float x2;
@@ -8187,6 +8192,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
         float z11;
 
         z11 = znode[IJ2(i, j)];
+        if(z11<z_cutoff)continue;
         n11 = (i-sd->is1)*sd->nslicej*sd->nslicek+(j-sd->js1)*sd->nslicek;
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           rgb_ptr = rgb_slice + 4*sd->iqsliceframe[n11];

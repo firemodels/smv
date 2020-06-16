@@ -54,7 +54,10 @@ bufferstreamdata *GetSMVBuffer(char *file, char *file2){
   NewMemory((void **)&stream, sizeof(bufferstreamdata));
 
   stream->fileinfo = File2Buffer(file);
-  if(stream->fileinfo!=NULL&&file2!=NULL){
+  if(stream->fileinfo==NULL){
+    FREEMEMORY(stream);
+  }
+  if(stream!=NULL&&stream->fileinfo!=NULL&&file2!=NULL){
     bufferstreamdata streaminfo2, *stream2 = &streaminfo2;
 
     stream2->fileinfo = File2Buffer(file2);
