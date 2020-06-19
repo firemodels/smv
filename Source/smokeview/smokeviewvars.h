@@ -739,7 +739,6 @@ SVEXTERN int SVDECL(ngeominfo,0);
 SVEXTERN int npartframes_max;
 SVEXTERN int force_isometric;
 SVEXTERN int SVDECL(update_startup_view,0);
-SVEXTERN int SVDECL(usetexturebar,1);
 SVEXTERN int show_smokelighting;
 SVEXTERN int SVDECL(cullgeom_portsize,16);
 SVEXTERN int SVDECL(update_initcullgeom,1),SVDECL(cullgeom,1);

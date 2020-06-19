@@ -4412,7 +4412,6 @@ extern "C" void ShowGluiBounds(int menu_id){
   glui_bounds->show();
 }
 
-
 /* ------------------ ShowBoundsDialog ------------------------ */
 
 extern "C" void ShowBoundsDialog(int type){

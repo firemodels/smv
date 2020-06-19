@@ -55,6 +55,7 @@ if "%platform%" == "gnuosx" (
 if "%platform%" == "osx" (
   title building libraries for osx
   start "cleaning osx libraries" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh clean
+  start "building osx glut library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh glut
   start "building osx glui library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh glui
   start "building osx zlib library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh zlib
   start "building osx jpeg library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh jpeg

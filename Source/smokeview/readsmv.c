@@ -11832,7 +11832,10 @@ int ReadIni2(char *inifile, int localfile){
 
       CheckMemory;
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i %i", &nrgb_ini, &usetexturebar, &colorbar_select_index, &colorbar_selection_width);
+      {
+        int dummy;
+        sscanf(buffer, "%i %i %i %i", &nrgb_ini, &dummy, &colorbar_select_index, &colorbar_selection_width);
+      }
       colorbar_selection_width = CLAMP(colorbar_selection_width, COLORBAR_SELECTION_WIDTH_MIN, COLORBAR_SELECTION_WIDTH_MAX);
       FREEMEMORY(rgb_ini);
       if(NewMemory((void **)&rgb_ini, 4 * nrgb_ini*sizeof(float)) == 0)return 2;
@@ -14220,7 +14223,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "BOUNDCOLOR\n");
   fprintf(fileout, " %f %f %f\n", boundcolor[0], boundcolor[1], boundcolor[2]);
   fprintf(fileout, "COLORBAR\n");
-  fprintf(fileout," %i %i %i %i\n",nrgb,usetexturebar,colorbar_select_index, colorbar_selection_width);
+  {
+    int usetexturebar = 1; //for older smokeviews
+    fprintf(fileout, " %i %i %i %i\n", nrgb, usetexturebar, colorbar_select_index, colorbar_selection_width);
+  }
   for(i=0;i<nrgb;i++){
     fprintf(fileout," %f %f %f\n",rgb[i][0],rgb[i][1],rgb[i][2]);
   }
