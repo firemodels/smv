@@ -1351,8 +1351,6 @@ typedef struct _boundsdata {
   char  colorlabels[12][11];
   float colorvalues[12];
   float levels256[256];
-  float fscale;
-  char scale[31];
   flowlabels *label;
 } boundsdata;
 

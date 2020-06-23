@@ -971,7 +971,7 @@ void MakeColorLabels(char colorlabels[12][11], float colorvalues[12], float tmin
 void GetSliceColors(const float *t, int nt, unsigned char *it,
               float local_tmin, float local_tmax,
               int ndatalevel, int nlevel,
-              char colorlabels[12][11], float colorvalues[12], char **scale, float *fscale, float *tlevels256,
+              char colorlabels[12][11], float colorvalues[12], float *tlevels256,
               int *extreme_min, int *extreme_max
               ){
   int n;
@@ -1009,30 +1009,6 @@ void GetSliceColors(const float *t, int nt, unsigned char *it,
     t++;
   }
 
-  STRCPY(*scale,"");
-  FrExp10(local_tmax, &expmax);
-  FrExp10(local_tmin, &expmin);
-  expmin = MAX(expmin, 0);
-  *fscale=1.0;
-  if(expmin!=0&&expmax!=0&&expmax-expmin<=2&&(expmin<EXPMIN||expmin>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmin);
-    local_tmax *= pow((double)10.0,(double)-expmin);
-    sprintf(*scale,"*10^%i",expmin);
-    *fscale=pow(10.0,(float)expmin);
-  }
-  if(expmin==0&&(expmax<EXPMIN||expmax>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmax);
-    local_tmax *= pow((double)10.0,(double)-expmax);
-    sprintf(*scale,"*10^%i",expmax);
-    *fscale=pow(10.0,(float)expmax);
-  }
-  if(expmax==0&&(expmin<EXPMIN||expmin>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmin);
-    local_tmax *= pow((double)10.0,(double)-expmin);
-    sprintf(*scale,"*10^%i",expmin);
-    *fscale=pow(10.0,(float)expmin);
-  }
-
   MakeColorLabels(colorlabels, colorvalues, local_tmin, local_tmax, nlevel);
 
   for(n=0;n<256;n++){
@@ -1046,36 +1022,13 @@ void GetSliceColors(const float *t, int nt, unsigned char *it,
 /* ------------------ getSliceLabelels ------------------------ */
 
 void GetSliceLabels(float local_tmin, float local_tmax, int nlevel,
-              char labels[12][11],char **scale, float *fscale, float *tlevels256){
+              char labels[12][11],float *tlevels256){
   int n;
   float dt, tval;
   float range;
   int expmax,expmin;
 
   range = local_tmax-local_tmin;
-
-  STRCPY(*scale,"");
-  *fscale=1.0;
-  FrExp10(local_tmax, &expmax);
-  FrExp10(local_tmin, &expmin);
-  if(expmin!=0&&expmax!=0&&expmax-expmin<=2&&(expmin<EXPMIN||expmin>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmin);
-    local_tmax *= pow((double)10.0,(double)-expmin);
-    sprintf(*scale,"*10^%i",expmin);
-    *fscale=pow(10.0,(float)expmin);
-  }
-  if(expmin==0&&(expmax<EXPMIN||expmax>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmax);
-    local_tmax *= pow((double)10.0,(double)-expmax);
-    sprintf(*scale,"*10^%i",expmax);
-    *fscale=pow(10.0,(float)expmax);
-  }
-  if(expmax==0&&(expmin<EXPMIN||expmin>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmin);
-    local_tmax *= pow((double)10.0,(double)-expmin);
-    sprintf(*scale,"*10^%i",expmin);
-    *fscale=pow(10.0,(float)expmin);
-  }
 
   range = local_tmax-local_tmin;
   dt = range/(float)(nlevel-2);
@@ -1093,33 +1046,13 @@ void GetSliceLabels(float local_tmin, float local_tmax, int nlevel,
 
 /* ------------------ GetIsoLabels ------------------------ */
 
-void GetIsoLabels(float local_tmin, float local_tmax, int nlevel,
-              char labels[12][11],char **scale, float *tlevels256){
+void GetIsoLabels(float local_tmin, float local_tmax, int nlevel,char labels[12][11],float *tlevels256){
   int n;
   float dt, tval;
   float range;
   int expmax,expmin;
 
   range = local_tmax-local_tmin;
-
-  STRCPY(*scale,"");
-  FrExp10(local_tmax, &expmax);
-  FrExp10(local_tmin, &expmin);
-  if(expmin!=0&&expmax!=0&&expmax-expmin<=2&&(expmin<EXPMIN||expmin>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmin);
-    local_tmax *= pow((double)10.0,(double)-expmin);
-    sprintf(*scale,"*10^%i",expmin);
-  }
-  if(expmin==0&&(expmax<EXPMIN||expmax>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmax);
-    local_tmax *= pow((double)10.0,(double)-expmax);
-    sprintf(*scale,"*10^%i",expmax);
-  }
-  if(expmax==0&&(expmin<EXPMIN||expmin>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmin);
-    local_tmax *= pow((double)10.0,(double)-expmin);
-    sprintf(*scale,"*10^%i",expmin);
-  }
 
   range = local_tmax-local_tmin;
   dt = range/(float)(nlevel-2);

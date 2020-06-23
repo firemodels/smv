@@ -930,19 +930,18 @@ EXTERNCPP void GetPlot3DColors(int iplot, int settmin, float *ttmin, int settmax
               int *extreme_min, int *extreme_max
               );
 EXTERNCPP void GetSliceLabels(float tmin, float tmax, int nlevel,
-              char labels[12][11],char **scale, float *fscale, float *tlevels256);
+              char labels[12][11],float *tlevels256);
 EXTERNCPP void UpdatePart5Extremes(void);
 EXTERNCPP void GetSliceColors(const float *t, int nt, unsigned char *it,
               float tmin, float tmax,
               int ndatalevel, int nlevel,
-              char colorlabels[12][11],float colorvalues[12], char **scale, float *fscale, float *tlevels2,
+              char colorlabels[12][11],float colorvalues[12], float *tlevels2,
               int *extreme_min, int *extreme_max
               );
 EXTERNCPP meshdata *GetLoadedIsoMesh(void);
 EXTERNCPP void SetIsoLabels(float smin, float smax,
                     isodata *sd, int *errorcode);
-EXTERNCPP void GetIsoLabels(float tmin, float tmax, int nlevel,
-               char labels[12][11],char **scale, float *tlevels256);
+EXTERNCPP void GetIsoLabels(float tmin, float tmax, int nlevel,char labels[12][11],float *tlevels256);
 EXTERNCPP int  SmokeviewImage2File(char *directory, char *GIFfilename, int rendertype, int woffset, int width, int hoffset, int height);
 #ifdef pp_LUA
 EXTERNCPP int SVimage2var(int rendertype, int woffset, int width, int hoffset, int height, gdImagePtr *RENDERimage);

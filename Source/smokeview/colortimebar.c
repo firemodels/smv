@@ -1843,12 +1843,9 @@ void DrawHorizontalColorbarRegLabels(void) {
     OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, sb->label->shortlabel);
     OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
     if (strcmp(unitlabel, "ppm") == 0 && slicefactor != NULL) {
-      slicefactor2[0] = *slicefactor*sb->fscale;
+      slicefactor2[0] = *slicefactor;
       slicefactor2[1] = 0.0;
       slicefactor = slicefactor2;
-    }
-    else {
-      OutputBarText(0.0, 0.0, foreground_color, sb->scale);
     }
     glPopMatrix();
   }
@@ -1866,7 +1863,6 @@ void DrawHorizontalColorbarRegLabels(void) {
     OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Iso");
     OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, sb->label->shortlabel);
     OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
-    OutputBarText(0.0, 0.0, foreground_color, sb->scale);
     glPopMatrix();
   }
 
@@ -2534,12 +2530,9 @@ void DrawVerticalColorbarRegLabels(void){
     OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, sb->label->shortlabel);
     OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
     if(strcmp(unitlabel, "ppm") == 0 && slicefactor != NULL){
-      slicefactor2[0] = *slicefactor*sb->fscale;
+      slicefactor2[0] = *slicefactor;
       slicefactor2[1] = 0.0;
       slicefactor = slicefactor2;
-    }
-    else{
-      if(strlen(sb->scale)>0)OutputBarText(0.0, 0.0, foreground_color, sb->scale);
     }
     glPopMatrix();
     ilabel++;
@@ -2562,7 +2555,6 @@ void DrawVerticalColorbarRegLabels(void){
     OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Iso");
     OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, sb->label->shortlabel);
     OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
-    OutputBarText(0.0, 0.0, foreground_color, sb->scale);
     glPopMatrix();
   }
 

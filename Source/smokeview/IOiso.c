@@ -1604,7 +1604,6 @@ void UpdateIsoShowLevels(void){
 
 void SetIsoLabels(float smin, float smax,
                     isodata *sd, int *errorcode){
-  char *scale;
   int isotype;
   boundsdata *sb;
 
@@ -1615,9 +1614,7 @@ void SetIsoLabels(float smin, float smax,
 
   *errorcode=0;
   PRINTF("setting up iso labels \n");
-  scale=sb->scale;
-  GetIsoLabels(smin,smax,nrgb,
-                sb->colorlabels,&scale,sb->levels256);
+  GetIsoLabels(smin,smax,nrgb,sb->colorlabels,sb->levels256);
 }
 
 /* ------------------ CompareIsoTriangles ------------------------ */

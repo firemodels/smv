@@ -2230,15 +2230,13 @@ void SetSliceLabels(float smin, float smax,
   if(pd != NULL)slicetype = GetSliceBoundsIndexFromLabel(pd->label.shortlabel);
   if(slicetype!=-1){
     boundsdata *sb;
-    char *scale;
 
     sb = slicebounds+slicetype;
     if(sd!=NULL)sb->label = &(sd->label);
     if(pd!=NULL)sb->label = &(pd->label);
 
     *errorcode = 0;
-    scale = sb->scale;
-    GetSliceLabels(smin, smax, nrgb, sb->colorlabels, &scale, &sb->fscale, sb->levels256);
+    GetSliceLabels(smin, smax, nrgb, sb->colorlabels, sb->levels256);
   }
 }
 
@@ -2284,7 +2282,6 @@ void UpdateAllSliceLabels(int slicetype, int *errorcode){
 /* ------------------ SetSliceColors ------------------------ */
 
 void SetSliceColors(float smin, float smax, slicedata *sd, int *errorcode){
-  char *scale;
   int slicetype;
   boundsdata *sb;
 
@@ -2294,7 +2291,6 @@ void SetSliceColors(float smin, float smax, slicedata *sd, int *errorcode){
 
 
   *errorcode = 0;
-  scale = sb->scale;
   if(sd->slice_filetype == SLICE_GEOM){
     patchdata *patchgeom;
 
@@ -2302,7 +2298,7 @@ void SetSliceColors(float smin, float smax, slicedata *sd, int *errorcode){
     GetSliceColors(patchgeom->geom_vals, patchgeom->geom_nvals, patchgeom->geom_ivals,
       smin, smax,
       nrgb_full, nrgb,
-      sb->colorlabels, sb->colorvalues, &scale, &sb->fscale, sb->levels256,
+      sb->colorlabels, sb->colorvalues, sb->levels256,
       &sd->extreme_min, &sd->extreme_max
     );
   }
@@ -2311,7 +2307,7 @@ void SetSliceColors(float smin, float smax, slicedata *sd, int *errorcode){
     GetSliceColors(sd->qslicedata, sd->nslicetotal, sd->slicelevel,
       smin, smax,
       nrgb_full, nrgb,
-      sb->colorlabels, sb->colorvalues, &scale, &sb->fscale, sb->levels256,
+      sb->colorlabels, sb->colorvalues, sb->levels256,
       &sd->extreme_min, &sd->extreme_max
     );
   }
@@ -5547,8 +5543,8 @@ void DrawGSliceDataGpu(slicedata *slicei){
 
 
   sb = slicebounds + slicefile_labelindex;
-  valmin = sb->levels256[0] * sb->fscale;
-  valmax = sb->levels256[255] * sb->fscale;
+  valmin = sb->levels256[0];
+  valmax = sb->levels256[255];
   boxmin = meshi->boxmin;
   boxmax = meshi->boxmax;
 
@@ -8202,8 +8198,8 @@ void DrawGSliceData(slicedata *slicei){
   if(use_transparency_data==1)TransparentOn();
 
   sb=slicebounds+slicefile_labelindex;
-  valmin = sb->levels256[0]*sb->fscale;
-  valmax = sb->levels256[255]*sb->fscale;
+  valmin = sb->levels256[0];
+  valmax = sb->levels256[255];
 
   gslicedata=slicei->qsliceframe;
   gslice_valmin=valmin;
@@ -8262,8 +8258,8 @@ void DrawVGSliceData(vslicedata *vslicei){
   if(use_transparency_data==1)TransparentOn();
 
   sb=slicebounds+slicefile_labelindex;
-  valmin = sb->levels256[0]*sb->fscale;
-  valmax = sb->levels256[255]*sb->fscale;
+  valmin = sb->levels256[0];
+  valmax = sb->levels256[255];
 
   gslicedata=slicei->qsliceframe;
   gslice_valmin=valmin;
