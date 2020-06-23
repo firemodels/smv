@@ -676,7 +676,7 @@ int GetZoneColor(float t, float local_tmin, float local_tmax, int nlevel){
 
 void GetZoneColors(const float *t, int nt, unsigned char *it,
                float ttmin, float ttmax, int nlevel, int nlevel_full,
-               char **zonelabels, float zonevalues[12], char *scale, float *tvals256
+               char **zonelabels, float zonevalues[12], float *tvals256
                ){
   int n;
   float dt, factor;
@@ -710,25 +710,6 @@ void GetZoneColors(const float *t, int nt, unsigned char *it,
     t++;
   }
 
-  STRCPY(scale,"");
-
-  FrExp10(local_tmax, &expmax);
-  FrExp10(local_tmin, &expmin);
-  if(expmin!=0&&expmax!=0&&expmax-expmin<=2&&(expmin<-2||expmin>2)){
-    local_tmin *= pow((double)10.0,(double)-expmin);
-    local_tmax *= pow((double)10.0,(double)-expmin);
-    sprintf(scale,"*10^%i",expmin);
-  }
-  if(expmin==0&&(expmax<EXPMIN||expmax>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmax);
-    local_tmax *= pow((double)10.0,(double)-expmax);
-    sprintf(scale,"*10^%i",expmax);
-  }
-  if(expmax==0&&(expmin<EXPMIN||expmin>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmin);
-    local_tmax *= pow((double)10.0,(double)-expmin);
-    sprintf(scale,"*10^%i",expmin);
-  }
   range = local_tmax - local_tmin;
   factor = range/(nlevel-2);
   for(n=1;n<nlevel-2;n++){

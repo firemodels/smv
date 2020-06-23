@@ -1944,7 +1944,6 @@ void DrawHorizontalColorbarRegLabels(void) {
     OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Zone");
     OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, "Temp");
     OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
-    OutputBarText(0.0, 0.0, foreground_color, zonescale);
     glPopMatrix();
     SNIFF_ERRORS("After ZONE labels");
   }
@@ -2643,7 +2642,6 @@ void DrawVerticalColorbarRegLabels(void){
     OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Zone");
     OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, "Temp");
     OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
-    OutputBarText(0.0, 0.0, foreground_color, zonescale);
     glPopMatrix();
     SNIFF_ERRORS("After ZONE labels");
   }

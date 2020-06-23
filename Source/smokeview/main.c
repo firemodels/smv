@@ -180,7 +180,6 @@ void ParseCommandline(int argc, char **argv){
   int smv_parse;
 
   CheckMemory;
-  zonescale = a_zonescale;
 
   if(argc == 1){
     SMV_EXIT(1);

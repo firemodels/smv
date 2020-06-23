@@ -921,7 +921,7 @@ EXTERNCPP void GetBoundaryLabels(
               char **labels, float *boundaryvaluespatch, float *tvals256, int nlevel);
 EXTERNCPP void GetZoneColors(const float *t, int nt, unsigned char *it,
                float tmin, float tmax, int nlevel, int nlevel_full,
-               char **zonelabels, float zonevalues[12], char *scale, float *tvals256
+               char **zonelabels, float zonevalues[12], float *tvals256
                );
 
 EXTERNCPP void GetPlot3DColors(int iplot, int settmin, float *ttmin, int settmax, float *ttmax,
