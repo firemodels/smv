@@ -1492,7 +1492,6 @@ typedef struct _zonedata {
   flowlabels label[4];
   int setvalmin, setvalmax;
   float valmin, valmax;
-  char scale[31];
 } zonedata;
 
 /* --------------------------  roomdata ------------------------------------ */
