@@ -262,7 +262,7 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
               int settmin, float *ttmin, int settmax, float *ttmax,
               float *tmin_arg, float *tmax_arg,
               int nlevel,
-              char **patchlabels, float *patchvalues, char *scale, float *tvals256,
+              char **patchlabels, float *patchvalues, float *tvals256,
               int *extreme_min, int *extreme_max
               ){
   int n;
@@ -328,24 +328,6 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
     *it++=CLAMP(itt,colorbar_offset,255-colorbar_offset);
   }
   CheckMemory;
-  STRCPY(scale,"");
-  FrExp10(new_tmax, &expmax);
-  FrExp10(new_tmin, &expmin);
-  if(expmin!=0&&expmax!=0&&expmax-expmin<=2&&(expmin<-2||expmin>2)){
-    new_tmin *= pow((double)10.0,(double)-expmin);
-    new_tmax *= pow((double)10.0,(double)-expmin);
-    sprintf(scale,"*10^%i",expmin);
-  }
-  if(expmin==0&&(expmax<EXPMIN||expmax>EXPMAX)){
-    new_tmin *= pow((double)10.0,(double)-expmax);
-    new_tmax *= pow((double)10.0,(double)-expmax);
-    sprintf(scale,"*10^%i",expmax);
-  }
-  if(expmax==0&&(expmin<EXPMIN||expmin>EXPMAX)){
-    new_tmin *= pow((double)10.0,(double)-expmin);
-    new_tmax *= pow((double)10.0,(double)-expmin);
-    sprintf(scale,"*10^%i",expmin);
-  }
   range = new_tmax - new_tmin;
   factor = range/(nlevel-2);
   for(n=1;n<nlevel-2;n++){
@@ -385,7 +367,7 @@ void UpdateAllBoundaryColors(void){
     GetBoundaryColors3(patchi,meshi->patchval, 0, npatchvals, meshi->cpatchval,
     setpatchmin,&patchmin, setpatchmax,&patchmax,
     &patchmin_global, &patchmax_global,
-    nrgb, colorlabelpatch, colorvaluespatch, patchi->scale,boundarylevels256,
+    nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
     &patchi->extreme_min,&patchi->extreme_max);
   }
 }
@@ -394,30 +376,11 @@ void UpdateAllBoundaryColors(void){
 
 void GetBoundaryLabels(
               float local_tmin, float local_tmax,
-              char **boundarylabels, float *boundaryvalues, char *scale, float *tvals256, int nlevel){
+              char **boundarylabels, float *boundaryvalues, float *tvals256, int nlevel){
   int n;
   float factor, tval, range;
   int expmin, expmax;
 
-  STRCPY(scale,"");
-
-  FrExp10(local_tmax, &expmax);
-  FrExp10(local_tmin, &expmin);
-  if(expmin!=0&&expmax!=0&&expmax-expmin<=2&&(expmin<-2||expmin>2)){
-    local_tmin *= pow((double)10.0,(double)-expmin);
-    local_tmax *= pow((double)10.0,(double)-expmin);
-    sprintf(scale,"*10^%i",expmin);
-  }
-  if(expmin==0&&(expmax<EXPMIN||expmax>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmax);
-    local_tmax *= pow((double)10.0,(double)-expmax);
-    sprintf(scale,"*10^%i",expmax);
-  }
-  if(expmax==0&&(expmin<EXPMIN||expmin>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmin);
-    local_tmax *= pow((double)10.0,(double)-expmin);
-    sprintf(scale,"*10^%i",expmin);
-  }
   range = local_tmax - local_tmin;
   factor = range/(nlevel-2);
   for(n=1;n<nlevel-2;n++){

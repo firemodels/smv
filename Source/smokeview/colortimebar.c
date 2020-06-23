@@ -1893,7 +1893,6 @@ void DrawHorizontalColorbarRegLabels(void) {
     OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Bndry");
     OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, patchi->label.shortlabel);
     OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
-    OutputBarText(0.0, 0.0, foreground_color, patchi->scale);
     glPopMatrix();
   }
 
@@ -2595,7 +2594,6 @@ void DrawVerticalColorbarRegLabels(void){
     OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Bndry");
     OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, patchi->label.shortlabel);
     OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
-    OutputBarText(0.0, 0.0, foreground_color, patchi->scale);
     glPopMatrix();
   }
 

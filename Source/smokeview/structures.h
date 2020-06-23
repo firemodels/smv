@@ -1460,7 +1460,6 @@ typedef struct _patchdata {
   int *geom_nstatics, *geom_ndynamics;
   int geom_nvals, ngeom_times;
   flowlabels label;
-  char scale[31];
   char menulabel[128], menulabel_base[128], menulabel_suffix[128], gslicedir[50];
   int ijk[6];
   int extreme_min, extreme_max;

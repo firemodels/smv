@@ -1322,7 +1322,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
   int nn;
   int filenum;
-  char *patchscale;
   int ncompressed_buffer;
   char *file;
   float read_time, total_time;
@@ -2285,7 +2284,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       return 0;
     }
   }
-  patchscale = patchi->scale;
   patchbase = patchinfo + GetBoundaryIndex(patchi);
   patchi->loaded=1;
   iboundarytype=GetBoundaryType(patchi);
@@ -2298,25 +2296,24 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     GetBoundaryColors3(patchi, meshi->patchval, patchstart, npatchvals, meshi->cpatchval,
       setpatchmin, &patchmin, setpatchmax, &patchmax,
       &patchmin_global, &patchmax_global,
-      nrgb, colorlabelpatch, colorvaluespatch, patchscale, boundarylevels256,
+      nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
       &patchi->extreme_min, &patchi->extreme_max);
   }
     break;
   case UNCOMPRESSED_BYFRAME:
     GetBoundaryLabels(
       patchmin, patchmax,
-      colorlabelpatch,colorvaluespatch,patchscale,boundarylevels256,nrgb);
+      colorlabelpatch,colorvaluespatch,boundarylevels256,nrgb);
     break;
   case COMPRESSED_ALLFRAMES:
     GetBoundaryLabels(
       patchmin, patchmax,
-      colorlabelpatch,colorvaluespatch,patchscale,boundarylevels256,nrgb);
+      colorlabelpatch,colorvaluespatch,boundarylevels256,nrgb);
     break;
   default:
     ASSERT(FFALSE);
     break;
   }
-  strcpy(patchbase->scale,patchi->scale);
   if(do_threshold==1){
     meshi->surface_tempmax=patchmax_global;
     meshi->surface_tempmin=patchmin_global;
@@ -2616,7 +2613,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
       setpatchmin, &patchmin, setpatchmax, &patchmax,
       &patchmin_global, &patchmax_global,
-      nrgb, colorlabelpatch, colorvaluespatch, patchi->scale, boundarylevels256,
+      nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
       &patchi->extreme_min, &patchi->extreme_max);
     FREEMEMORY(patchi->geom_vals);  // slice files keep data loaded
   }

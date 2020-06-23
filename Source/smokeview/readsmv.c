@@ -4425,7 +4425,6 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->version = version;
   patchi->ntimes = 0;
   patchi->ntimes_old = 0;
-  strcpy(patchi->scale, "");
   patchi->filetype_label = NULL;
   patchi->patch_filetype = PATCH_STRUCTURED_NODE_CENTER;
   patchi->structured = YES;
