@@ -414,7 +414,7 @@ void SliceNum2String(char *string, float tval, int ndecimals){
   char format[20];
 
   tval2 = ABS(tval);
-  if(0.01-.001<=tval2&&tval2<0.1){
+  if(0.01<=tval2&&tval2<0.1){
     sprintf(string, GetFormat(3,ndecimals+1,format), tval);
   }
   else if(0.1<=tval2&&tval2<1.0){
@@ -435,7 +435,7 @@ void SliceNum2String(char *string, float tval, int ndecimals){
   else if(10000.0<=tval2&&tval2<100000.0){
     sprintf(string, GetFormat(5,ndecimals-1,format), tval);
   }
-  else if(tval2==0.0){
+  else if(tval2<0.01){
     STRCPY(string, "0.00");
   }
   else{
