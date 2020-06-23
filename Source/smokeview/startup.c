@@ -1082,7 +1082,7 @@ void InitOpenGL(void){
 #ifdef pp_NEWBOUND_DIALOG
           ReadSliceUseGluiBounds(slicei->file, i, ALL_SLICE_FRAMES, NULL, LOAD, set_slicecolor, &errorcode);
 #else
-          ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, LOAD, set_slicecolor, &errorcode);
+                       ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, LOAD, set_slicecolor, &errorcode);
 #endif
         }
       }

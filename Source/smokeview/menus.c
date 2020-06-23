@@ -2975,9 +2975,9 @@ void ReloadAllSliceFiles(void){
     }
     else{
 #ifdef pp_NEWBOUND_DIALOG
-      load_size+=ReadSliceUseGluiBounds(slicei->file,i, ALL_SLICE_FRAMES,LOAD,set_slicecolor,&errorcode);
+      load_size+=ReadSliceUseGluiBounds(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #else
-      load_size+=ReadSlice(slicei->file,i,ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
+      load_size+=ReadSlice(             slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #endif
     }
     file_count++;
@@ -3094,9 +3094,9 @@ void LoadUnloadMenu(int value){
         }
         else{
 #ifdef pp_NEWBOUND_DIALOG
-          ReadSliceUseGluiBounds(slicei->file, i, ALL_SLICE_FRAMES, load_mode, set_slicecolor, &errorcode);
+          ReadSliceUseGluiBounds(slicei->file, i, ALL_SLICE_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
 #else
-          ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
+                       ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
 #endif
         }
       }
@@ -4461,7 +4461,7 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_
 #ifdef pp_NEWBOUND_DIALOG
         return_filesize=ReadSliceUseGluiBounds(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
 #else
-        return_filesize=ReadSlice(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
+        return_filesize=             ReadSlice(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
 #endif
       }
       if(reset_colorbar == 1)ColorbarMenu(colorbartype_save);
@@ -4563,9 +4563,9 @@ void LoadSliceMenu(int value){
           }
           else{
 #ifdef pp_NEWBOUND_DIALOG
-            load_size+=ReadSliceUseGluiBounds(slicei->file,i, ALL_SLICE_FRAMES, LOAD,set_slicecolor,&errorcode);
+            load_size+=ReadSliceUseGluiBounds(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #else
-            load_size+=ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
+            load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #endif
           }
           file_count++;
@@ -4936,9 +4936,9 @@ void LoadMultiSliceMenu(int value){
       }
       else{
 #ifdef pp_NEWBOUND_DIALOG
-        load_size+=ReadSliceUseGluiBounds(slicei->file,i, ALL_SLICE_FRAMES, LOAD,set_slicecolor,&errorcode);
+        load_size+=ReadSliceUseGluiBounds(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #else
-        load_size+=ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
+        load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #endif
       }
       file_count++;
