@@ -1095,7 +1095,7 @@ typedef struct _partclassdata {
 
 typedef struct _partpropdata {
   flowlabels *label;
-  char **partlabels, *scale;
+  char **partlabels;
   unsigned char *class_present, *class_vis;
   unsigned int *class_types;
   int human_property, particle_property;

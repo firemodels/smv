@@ -3475,7 +3475,6 @@ void ParticlePropShowMenu(int value){
     global_prop_index = iprop;
     partshortlabel=propi->label->shortlabel;
     partunitlabel=propi->label->unit;
-    partscale=propi->scale;
   }
   else if(value==MENU_PROP_SHOWALL){
     if(current_property!=NULL){

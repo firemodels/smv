@@ -613,7 +613,7 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
     float local_tmin, local_tmax;
     int expmin, expmax;
     float factor,range,tval;
-    char *scale,**labels;
+    char **labels;
     float *ppartlevels256;
 
     propi = part5propinfo + i;
@@ -636,29 +636,9 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
     else{
       local_tmax = propi->global_max;
     }
-    scale = propi->scale;
     labels=propi->partlabels;
     ppartlevels256=propi->ppartlevels256;
 
-    strcpy(scale,"");
-
-    FrExp10(local_tmax, &expmax);
-    FrExp10(local_tmin, &expmin);
-    if(expmin!=0&&expmax!=0&&expmax-expmin<=2&&(expmin<EXPMIN||expmin>EXPMAX)){
-      local_tmin *= pow((double)10.0,(double)-expmin);
-      local_tmax *= pow((double)10.0,(double)-expmin);
-      sprintf(scale,"*10^%i",expmin);
-    }
-    if(expmin==0&&(expmax<EXPMIN||expmax>EXPMAX)){
-      local_tmin *= pow((double)10.0,(double)-expmax);
-      local_tmax *= pow((double)10.0,(double)-expmax);
-      sprintf(scale,"*10^%i",expmax);
-    }
-    if(expmax==0&&(expmin<EXPMIN||expmin>EXPMAX)){
-      local_tmin *= pow((double)10.0,(double)-expmin);
-      local_tmax *= pow((double)10.0,(double)-expmin);
-      sprintf(scale,"*10^%i",expmin);
-    }
     range = local_tmax - local_tmin;
 
     factor = range/(nlevel-2);

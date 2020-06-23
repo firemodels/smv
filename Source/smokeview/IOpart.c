@@ -1754,7 +1754,6 @@ void InitPartProp(void){
             NewMemory((void **)&labeli,11);
             propi->partlabels[ii]=labeli;
           }
-          NewMemory((void **)&propi->scale,256);
           InitHistogram(&propi->histogram, NHIST_BUCKETS, NULL, NULL);
 
           npart5prop++;
