@@ -733,7 +733,7 @@ void GetZoneColors(const float *t, int nt, unsigned char *it,
 
 void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, float *ttmax,
               int ndatalevel, int nlevel,
-              char **labels,char **labelsiso,char **scale, float *fscale, float *tlevels, float *tlevels256,
+              char **labels,char **labelsiso,float *tlevels, float *tlevels256,
               int *extreme_min, int *extreme_max
               ){
   int n;
@@ -842,28 +842,6 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
         q++;
       }
     }
-  }
-
-  STRCPY(*scale,"");
-  FrExp10(local_tmax, &expmax);
-  FrExp10(local_tmin, &expmin);
-  if(expmin!=0&&expmax!=0&&expmax-expmin<=2&&(expmin<EXPMIN||expmin>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmin);
-    local_tmax *= pow((double)10.0,(double)-expmin);
-    sprintf(*scale,"*10^%i",expmin);
-    *fscale=pow(10.0,(float)expmin);
-  }
-  if(expmin==0&&(expmax<EXPMIN||expmax>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmax);
-    local_tmax *= pow((double)10.0,(double)-expmax);
-    sprintf(*scale,"*10^%i",expmax);
-    *fscale=pow(10.0,(float)expmax);
-  }
-  if(expmax==0&&(expmin<EXPMIN||expmin>EXPMAX)){
-    local_tmin *= pow((double)10.0,(double)-expmin);
-    local_tmax *= pow((double)10.0,(double)-expmin);
-    sprintf(*scale,"*10^%i",expmin);
-    *fscale=pow(10.0,(float)expmin);
   }
 
   range = local_tmax-local_tmin;

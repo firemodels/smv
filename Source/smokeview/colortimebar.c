@@ -1916,12 +1916,9 @@ void DrawHorizontalColorbarRegLabels(void) {
     OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, p3label);
     OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
     if (strcmp(unitlabel, "ppm") == 0 && plot3dfactor != NULL) {
-      plot3dfactor2[0] = *plot3dfactor*fscalep3[plotn - 1];
+      plot3dfactor2[0] = *plot3dfactor;
       plot3dfactor2[1] = 0.0;
       plot3dfactor = plot3dfactor2;
-    }
-    else {
-      OutputBarText(0.0, 0.0, foreground_color, scalep3[plotn - 1]);
     }
     glPopMatrix();
   }
@@ -2614,12 +2611,9 @@ void DrawVerticalColorbarRegLabels(void){
     OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, p3label);
     OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
     if(strcmp(unitlabel, "ppm") == 0 && plot3dfactor != NULL){
-      plot3dfactor2[0] = *plot3dfactor*fscalep3[plotn - 1];
+      plot3dfactor2[0] = *plot3dfactor;
       plot3dfactor2[1] = 0.0;
       plot3dfactor = plot3dfactor2;
-    }
-    else{
-      OutputBarText(0.0, 0.0, foreground_color, scalep3[plotn - 1]);
     }
     glPopMatrix();
   }

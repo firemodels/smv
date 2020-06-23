@@ -110,15 +110,6 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       }
       FREEMEMORY(colorlabeliso);
     }
-    if(scalep3 != NULL){
-      for(nn=0;nn<MAXPLOT3DVARS;nn++){
-        FREEMEMORY(scalep3[nn]);
-      }
-      FREEMEMORY(scalep3);
-    }
-    if(fscalep3!=NULL){
-      FREEMEMORY(fscalep3);
-    }
     if(p3levels!=NULL){
       for(nn=0;nn<MAXPLOT3DVARS;nn++){
         FREEMEMORY(p3levels[nn]);
@@ -242,9 +233,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   }
 
   if(NewMemory((void **)&colorlabelp3, MAXPLOT3DVARS*sizeof(char **))==0||
-     NewMemory((void **)&colorlabeliso, MAXPLOT3DVARS*sizeof(char **))==0||
-     NewMemory((void **)&fscalep3     , MAXPLOT3DVARS*sizeof(float))==0||
-     NewMemory((void **)&scalep3     , MAXPLOT3DVARS*sizeof(char *))==0){
+     NewMemory((void **)&colorlabeliso, MAXPLOT3DVARS*sizeof(char **))==0){
     *errorcode=1;
     ReadPlot3D("",ifile,UNLOAD,&error);
     return;
@@ -252,20 +241,16 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   for(nn=0;nn<MAXPLOT3DVARS;nn++){
     colorlabelp3[nn]=NULL;
     colorlabeliso[nn]=NULL;
-    scalep3[nn]=NULL;
-    fscalep3[nn]=1.0;
   }
   for(nn=0;nn<MAXPLOT3DVARS;nn++){
     if(NewMemory((void **)&colorlabelp3[nn],MAXRGB*sizeof(char *))==0||
-       NewMemory((void **)&colorlabeliso[nn],MAXRGB*sizeof(char *))==0||
-       NewMemory((void **)&scalep3[nn],30*sizeof(char))==0){
+       NewMemory((void **)&colorlabeliso[nn],MAXRGB*sizeof(char *))==0){
       *errorcode=1;
       ReadPlot3D("",ifile,UNLOAD,&error);
       return;
     }
   }
 
-  scalep3copy = scalep3;
   if(NewMemory((void **)&p3levels, MAXPLOT3DVARS*sizeof(float *))==0||
      NewMemory((void **)&p3levels256, MAXPLOT3DVARS*sizeof(float *))==0){
     *errorcode=1;
@@ -325,9 +310,8 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     }
     GetPlot3DColors(nn,
                   setp3min[nn],p3min+nn, setp3max[nn],p3max+nn,
-                  nrgb_full, nrgb-1, *(colorlabelp3+nn),*(colorlabeliso+nn),scalep3copy,fscalep3+nn,p3levels[nn],p3levels256[nn],
+                  nrgb_full, nrgb-1, *(colorlabelp3+nn),*(colorlabeliso+nn),p3levels[nn],p3levels256[nn],
                   plot3dinfo[ifile].extreme_min+nn,plot3dinfo[ifile].extreme_max+nn);
-    scalep3copy++;
   }
   if(meshi->plotx==-1)meshi->plotx=ibar/2;
   if(meshi->ploty==-1)meshi->ploty=jbar/2;

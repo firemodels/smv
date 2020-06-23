@@ -1600,8 +1600,6 @@ SVEXTERN char framelabel[30];
 SVEXTERN float SVDECL(**p3levels,NULL), SVDECL(*zonelevels,NULL);
 SVEXTERN float SVDECL(**p3levels256,NULL);
 SVEXTERN char SVDECL(***colorlabelp3,NULL),SVDECL(***colorlabeliso,NULL);
-SVEXTERN char SVDECL(**scalep3,NULL), SVDECL(**scalep3copy,NULL);
-SVEXTERN float SVDECL(*fscalep3,NULL);
 SVEXTERN int slicefile_labelindex,slicefile_labelindex_save,iboundarytype;
 SVEXTERN int iisotype,iisottype;
 SVEXTERN char SVDECL(**colorlabelpart,NULL), SVDECL(**colorlabelpatch,NULL),  SVDECL(**colorlabelzone,NULL);
