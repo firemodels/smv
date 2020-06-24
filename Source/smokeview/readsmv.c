@@ -14447,10 +14447,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i\n", partfast, part_multithread, npartthread_ids);
   fprintf(fileout, "RESEARCHMODE\n");
   // if colorbars are hidden then research mode needs to be off
-  if(visColorbarVertical_val==0&&visColorbarHorizontal_val==0){
-    research_mode = 0;
-    update_research_mode = 1;
-  }
   fprintf(fileout, " %i %i %f\n", research_mode, ncolorlabel_decimals, colorbar_shift);
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
