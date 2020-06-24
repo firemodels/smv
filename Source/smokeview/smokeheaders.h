@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateColorLabelDigits(void);
+
 #ifdef pp_MULTI_RES
 void InitMultiRes(slicedata *sd);
 void NormalizeXYZRes(void);

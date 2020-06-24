@@ -265,6 +265,7 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define COLOR_SPEC_RGB 120
 #define COLOR_SPEC_GREY 121
 #define LIGHT_POSITION 122
+#define COLORLABEL_DIGITS 123
 
 #define COLORBAR_LIST2 112
 #define DATA_transparent 26
@@ -283,6 +284,12 @@ int cb_up_rgb[3],cb_down_rgb[3];
 
 procdata displayprocinfo[6];
 int ndisplayprocinfo = 0;
+
+/* ------------------ UpdateColorLabelDigits ------------------------ */
+
+extern "C" void UpdateColorLabelDigits(void){
+  SPINNER_ncolorlabel_digits->set_int_val(ncolorlabel_digits);
+}
 
 /* ------------------ UpdateBackgroundFlip ------------------------ */
 
@@ -764,7 +771,7 @@ extern "C" void GluiLabelsSetup(int main_window){
 
   SPINNER_colorbar_selection_width =glui_labels->add_spinner_to_panel(PANEL_colorbar_properties,_("Selection width:"),GLUI_SPINNER_INT,&colorbar_selection_width,COLORBAND,SliceBoundCB);
   SPINNER_colorbar_selection_width->set_int_limits(COLORBAR_SELECTION_WIDTH_MIN,COLORBAR_SELECTION_WIDTH_MAX);
-  SPINNER_ncolorlabel_digits = glui_labels->add_spinner_to_panel(PANEL_colorbar_properties, _("digits:"), GLUI_SPINNER_INT, &ncolorlabel_digits);
+  SPINNER_ncolorlabel_digits = glui_labels->add_spinner_to_panel(PANEL_colorbar_properties, _("digits:"), GLUI_SPINNER_INT, &ncolorlabel_digits, COLORLABEL_DIGITS, SliceBoundCB);
   SPINNER_ncolorlabel_digits->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
   CHECKBOX_axislabels_smooth = glui_labels->add_checkbox_to_panel(PANEL_colorbar_properties, _("Smooth labels"), &axislabels_smooth, COLORBAR_SMOOTH, SliceBoundCB);
 

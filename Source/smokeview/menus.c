@@ -883,7 +883,15 @@ void SmokeColorbarMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
-/* ------------------ ColorbarMenu ------------------------ */
+/* ------------------ ColorbarDigitMenu ------------------------ */
+
+void ColorbarDigitMenu(int value){
+  ncolorlabel_digits = value;
+  UpdateColorLabelDigits();
+  updatemenu=1;
+}
+
+  /* ------------------ ColorbarMenu ------------------------ */
 
 void ColorbarMenu(int value){
   if(value==MENU_DUMMY)return;
@@ -6189,7 +6197,7 @@ void InitMenus(int unload){
 
 
 static int filesdialogmenu = 0, viewdialogmenu = 0, datadialogmenu = 0, windowdialogmenu=0;
-static int labelmenu=0, titlemenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0;
+static int labelmenu=0, titlemenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0,colorbardigitmenu=0;
 static int optionmenu=0, rotatetypemenu=0;
 static int resetmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
 static int terrain_geom_showmenu = 0;
@@ -8118,7 +8126,22 @@ updatemenu=0;
     }
   }
 
-/* -------------------------------- colorbarmenu -------------------------- */
+  /* -------------------------------- colorbarmenu -------------------------- */
+
+  CREATEMENU(colorbardigitmenu, ColorbarDigitMenu);
+  for(i = COLORBAR_NDECIMALS_MIN; i<=COLORBAR_NDECIMALS_MAX; i++){
+    char label[10];
+
+    if(i==ncolorlabel_digits){
+      sprintf(label, "%s%i", "*", i);
+    }
+    else{
+      sprintf(label, "%i",  i);
+    }
+    glutAddMenuEntry(label, i);
+  }
+  
+  /* -------------------------------- colorbarmenu -------------------------- */
 
   CREATEMENU(colorbarshademenu,ColorbarMenu);
   if(visColorbarVertical==1)glutAddMenuEntry(_("*Vertical"),COLORBAR_VERTICAL);
@@ -8191,6 +8214,7 @@ updatemenu=0;
   CREATEMENU(colorbarmenu,ColorbarMenu);
   GLUTADDSUBMENU(_("Colorbar"),colorbarsmenu);
   GLUTADDSUBMENU(_("Colorbar type"), colorbarshademenu);
+  GLUTADDSUBMENU(_("Colorbar digits"), colorbardigitmenu);
   if(use_transparency_data==1){
     glutAddMenuEntry(_("  *Transparent (data)"),COLORBAR_TRANSPARENT);
   }

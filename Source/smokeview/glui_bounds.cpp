@@ -3950,6 +3950,9 @@ extern "C" void SliceBoundCB(int var){
     case COLORBAND:
       UpdateRGBColors(colorbar_select_index);
       break;
+    case COLORLABEL_DIGITS:
+      updatemenu = 1;
+      break;
     case TRANSPARENTLEVEL:
       for(i=nsurfinfo;i<nsurfinfo+MAX_ISO_COLORS+1;i++){
         surfdata *surfi;
