@@ -1157,10 +1157,10 @@ void BoundBoundCB(int var){
     switch(setpatchmin){
     case PERCENTILE_MIN:
     case GLOBAL_MIN:
-      EDIT_patch_min->disable();
+      if(EDIT_patch_min!=NULL)EDIT_patch_min->disable();
       break;
     case SET_MIN:
-      EDIT_patch_min->enable();
+      if(EDIT_patch_min!=NULL)EDIT_patch_min->enable();
       break;
     default:
       ASSERT(FFALSE);
@@ -1172,10 +1172,10 @@ void BoundBoundCB(int var){
     switch(setpatchmax){
     case PERCENTILE_MAX:
     case GLOBAL_MAX:
-      EDIT_patch_max->disable();
+      if(EDIT_patch_max!=NULL)EDIT_patch_max->disable();
       break;
     case SET_MAX:
-      EDIT_patch_max->enable();
+      if(EDIT_patch_max!=NULL)EDIT_patch_max->enable();
       break;
     default:
       ASSERT(FFALSE);
@@ -1184,7 +1184,7 @@ void BoundBoundCB(int var){
     BoundBoundCB(FILEUPDATE);
     break;
   case FILEUPDATE:
-    Local2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
+    if(patchlabellist!=NULL)Local2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
     break;
   case FILEUPDATEDATA:
     UpdateAllBoundaryColors();
