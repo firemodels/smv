@@ -3803,8 +3803,6 @@ extern "C" void SliceBoundCB(int var){
 
           glui_setslicemax_save = glui_setslicemax;
           glui_setslicemax = GLOBAL_MAX;
-#endif
-#ifndef pp_NEWBOUND_DIALOG
           glui_setslicemin_save = glui_setslicemin;
 #endif
           glui_slicemin_save = glui_slicemin;
@@ -3819,18 +3817,17 @@ extern "C" void SliceBoundCB(int var){
 
         // boundary files
 
-        if(npatchloaded > 0){
-          setpatchmin_save = setpatchmin;
-          patchmin_save = patchmin;
-          setpatchmin = GLOBAL_MIN;
-          BoundBoundCB(SETVALMIN);
+        setpatchmin_save = setpatchmin;
+        patchmin_save = patchmin;
+        setpatchmin = GLOBAL_MIN;
+        BoundBoundCB(SETVALMIN);
 
-          setpatchmax_save = setpatchmax;
-          patchmax_save = patchmax;
-          setpatchmax = GLOBAL_MAX;
-          BoundBoundCB(SETVALMAX);
-          BoundBoundCB(FILERELOAD);
-        }
+        setpatchmax_save = setpatchmax;
+        patchmax_save = patchmax;
+        setpatchmax = GLOBAL_MAX;
+        BoundBoundCB(SETVALMAX);
+        if(RADIO_patch_setmin != NULL)RADIO_patch_setmin->set_int_val(setpatchmin);
+        if(RADIO_patch_setmax != NULL)RADIO_patch_setmax->set_int_val(setpatchmax);
 
         // particle files
 
@@ -3881,18 +3878,15 @@ extern "C" void SliceBoundCB(int var){
 
         // boundary files
 
-        if(npatchloaded > 0){
-          setpatchmin = setpatchmin_save;
-          BoundBoundCB(SETVALMIN);
-          patchmin = patchmin_save;
-          BoundBoundCB(VALMIN);
+        setpatchmin = setpatchmin_save;
+        BoundBoundCB(SETVALMIN);
+        patchmin = patchmin_save;
+        BoundBoundCB(VALMIN);
 
-          setpatchmax = setpatchmax_save;
-          BoundBoundCB(SETVALMAX);
-          patchmax = patchmax_save;
-          BoundBoundCB(VALMAX);
-          BoundBoundCB(FILERELOAD);
-        }
+        setpatchmax = setpatchmax_save;
+        BoundBoundCB(SETVALMAX);
+        patchmax = patchmax_save;
+        BoundBoundCB(VALMAX);
 
         // particle files
 

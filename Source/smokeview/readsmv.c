@@ -2226,8 +2226,14 @@ void UpdateBoundInfo(void){
       patchi->firstshort=1;
       patchi->valmin=1.0;
       patchi->valmax=0.0;
-      patchi->setvalmin=0;
-      patchi->setvalmax=0;
+      if(research_mode==1){
+        patchi->setvalmin = GLOBAL_MIN;
+        patchi->setvalmax = GLOBAL_MAX;
+      }
+      else{
+        patchi->setvalmin = PERCENTILE_MIN;
+        patchi->setvalmax = PERCENTILE_MAX;
+      }
       if(strncmp(patchi->label.shortlabel,"temp",4)==0||
          strncmp(patchi->label.shortlabel,"TEMP",4)==0){
         canshow_threshold=1;

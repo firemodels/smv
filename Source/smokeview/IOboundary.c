@@ -2320,7 +2320,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   }
 
   Local2GlobalBoundaryBounds(patchi->label.shortlabel);
-  UpdateBoundaryListIndex(patchfilenum);
+  if(patchi->finalize==1){
+    UpdateBoundaryListIndex(patchfilenum);
+  }
 
   if(wallcenter==1){
     int i;
@@ -2748,10 +2750,16 @@ void Global2LocalBoundaryBounds(const char *key){
 
     patchi = patchinfo + i;
     if(strcmp(patchi->label.shortlabel,key)==0){
-      patchmin=patchi->valmin;
-      patchmax=patchi->valmax;
-      setpatchmin=patchi->setvalmin;
-      setpatchmax=patchi->setvalmax;
+      if(research_mode==1){
+        setpatchmin = GLOBAL_MIN;;
+        setpatchmax = GLOBAL_MAX;
+      }
+      else{
+        setpatchmin = patchi->setvalmin;
+        setpatchmax = patchi->setvalmax;
+      }
+      patchmin = patchi->valmin;
+      patchmax = patchi->valmax;
 
       patchchopmin=patchi->chopmin;
       patchchopmax=patchi->chopmax;
