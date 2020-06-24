@@ -3796,24 +3796,22 @@ extern "C" void SliceBoundCB(int var){
 
         // slice files
 
-        if(nsliceloaded > 0){
 #ifndef pp_NEWBOUND_DIALOG
-          glui_setslicemin_save = glui_setslicemin;
-          glui_setslicemin = GLOBAL_MIN;
+        glui_setslicemin_save = glui_setslicemin;
+        glui_setslicemin = GLOBAL_MIN;
 
-          glui_setslicemax_save = glui_setslicemax;
-          glui_setslicemax = GLOBAL_MAX;
-          glui_setslicemin_save = glui_setslicemin;
+        glui_setslicemax_save = glui_setslicemax;
+        glui_setslicemax = GLOBAL_MAX;
+        glui_setslicemin_save = glui_setslicemin;
 #endif
-          glui_slicemin_save = glui_slicemin;
-          SliceBoundCB(SETVALMIN);
+        glui_slicemin_save = glui_slicemin;
+        SliceBoundCB(SETVALMIN);
 
 #ifndef pp_NEWBOUND_DIALOG
-          glui_setslicemax_save = glui_setslicemax;
+        glui_setslicemax_save = glui_setslicemax;
 #endif
-          glui_slicemax_save = glui_slicemax;
-          SliceBoundCB(SETVALMAX);
-        }
+        glui_slicemax_save = glui_slicemax;
+        SliceBoundCB(SETVALMAX);
 
         // boundary files
 

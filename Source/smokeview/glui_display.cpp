@@ -34,7 +34,7 @@ GLUI_Spinner *SPINNER_light_elev1=NULL;
 
 GLUI_Spinner *SPINNER_colorbar_shift = NULL;
 
-GLUI_Spinner *SPINNER_ncolorlabel_decimals =NULL;
+GLUI_Spinner *SPINNER_ncolorlabel_digits =NULL;
 GLUI_Spinner *SPINNER_ntick_decimals=NULL;
 GLUI_Spinner *SPINNER_down_red=NULL,*SPINNER_down_green=NULL,*SPINNER_down_blue=NULL;
 GLUI_Spinner *SPINNER_up_red=NULL,*SPINNER_up_green=NULL,*SPINNER_up_blue=NULL;
@@ -764,8 +764,8 @@ extern "C" void GluiLabelsSetup(int main_window){
 
   SPINNER_colorbar_selection_width =glui_labels->add_spinner_to_panel(PANEL_colorbar_properties,_("Selection width:"),GLUI_SPINNER_INT,&colorbar_selection_width,COLORBAND,SliceBoundCB);
   SPINNER_colorbar_selection_width->set_int_limits(COLORBAR_SELECTION_WIDTH_MIN,COLORBAR_SELECTION_WIDTH_MAX);
-  SPINNER_ncolorlabel_decimals = glui_labels->add_spinner_to_panel(PANEL_colorbar_properties, _("max decimals:"), GLUI_SPINNER_INT, &ncolorlabel_decimals);
-  SPINNER_ncolorlabel_decimals->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
+  SPINNER_ncolorlabel_digits = glui_labels->add_spinner_to_panel(PANEL_colorbar_properties, _("digits:"), GLUI_SPINNER_INT, &ncolorlabel_digits);
+  SPINNER_ncolorlabel_digits->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
   CHECKBOX_axislabels_smooth = glui_labels->add_checkbox_to_panel(PANEL_colorbar_properties, _("Smooth labels"), &axislabels_smooth, COLORBAR_SMOOTH, SliceBoundCB);
 
   glui_labels->add_column_to_panel(PANEL_cb11,false);

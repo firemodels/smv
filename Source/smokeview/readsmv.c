@@ -10527,11 +10527,13 @@ int ReadIni2(char *inifile, int localfile){
     if(fgets(buffer, 255, stream) == NULL)break;
 
     if(Match(buffer, "RESEARCHMODE") == 1){
+      int dummy;
+
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %f", &research_mode, &ncolorlabel_decimals, &colorbar_shift);
+      sscanf(buffer, " %i %i %f %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits);
       colorbar_shift = CLAMP(colorbar_shift, COLORBAR_SHIFT_MIN, COLORBAR_SHIFT_MAX);
       if(research_mode==1&&research_mode_override==0)research_mode=0;
-      ncolorlabel_decimals = CLAMP(ncolorlabel_decimals, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
+      ncolorlabel_digits = CLAMP(ncolorlabel_digits, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
       ONEORZERO(research_mode);
       update_research_mode=1;
       continue;
@@ -14447,7 +14449,11 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i\n", partfast, part_multithread, npartthread_ids);
   fprintf(fileout, "RESEARCHMODE\n");
   // if colorbars are hidden then research mode needs to be off
-  fprintf(fileout, " %i %i %f\n", research_mode, ncolorlabel_decimals, colorbar_shift);
+  {
+    int ncolorlabel_digits_old=1;
+
+    fprintf(fileout, " %i %i %f %i\n", research_mode, ncolorlabel_digits_old, colorbar_shift, ncolorlabel_digits_old);
+  }
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
   fprintf(fileout, "SLICEAVERAGE\n");

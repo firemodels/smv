@@ -4014,8 +4014,14 @@ void SliceBounds2Glui(int slicetype){
     glui_slicemin=slicebounds[slicetype].dlg_valmin;
     glui_slicemax=slicebounds[slicetype].dlg_valmax;
 #ifndef pp_NEWBOUND_DIALOG
-    glui_setslicemin=slicebounds[slicetype].dlg_setvalmin;
-    glui_setslicemax=slicebounds[slicetype].dlg_setvalmax;
+    if(research_mode==1){
+      glui_setslicemin = GLOBAL_MIN;
+      glui_setslicemax = GLOBAL_MAX;
+    }
+    else{
+      glui_setslicemin = slicebounds[slicetype].dlg_setvalmin;
+      glui_setslicemax = slicebounds[slicetype].dlg_setvalmax;
+    }
 #endif
     glui_slicechopmin=slicebounds[slicetype].chopmin;
     glui_slicechopmax=slicebounds[slicetype].chopmax;
