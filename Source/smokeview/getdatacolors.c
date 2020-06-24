@@ -267,7 +267,6 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
               ){
   int n;
   float factor, tval, range;
-  int expmin, expmax;
   int itt;
   float new_tmin, new_tmax, tmin2, tmax2;
 
@@ -379,7 +378,6 @@ void GetBoundaryLabels(
               char **boundarylabels, float *boundaryvalues, float *tvals256, int nlevel){
   int n;
   float factor, tval, range;
-  int expmin, expmax;
 
   range = local_tmax - local_tmin;
   factor = range/(nlevel-2);
@@ -611,7 +609,6 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
     int n;
     partpropdata *propi;
     float local_tmin, local_tmax;
-    int expmin, expmax;
     float factor,range,tval;
     char **labels;
     float *ppartlevels256;
@@ -681,7 +678,6 @@ void GetZoneColors(const float *t, int nt, unsigned char *it,
   int n;
   float dt, factor;
   int itt;
-  int expmin, expmax;
   float local_tmin, local_tmax;
   float range;
   float tval;
@@ -740,7 +736,6 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
   float dt, factor, tval;
   float local_tmin, local_tmax, tmin2, tmax2;
   float range;
-  int expmax,expmin;
   float tminorig, tmaxorig, dtorig;
   int itt;
   float *q;
@@ -916,7 +911,6 @@ void GetSliceColors(const float *t, int nt, unsigned char *it,
   int n;
   float factor, tval;
   float range;
-  int expmax,expmin;
   int itt;
 
   range = local_tmax-local_tmin;
@@ -965,7 +959,6 @@ void GetSliceLabels(float local_tmin, float local_tmax, int nlevel,
   int n;
   float dt, tval;
   float range;
-  int expmax,expmin;
 
   range = local_tmax-local_tmin;
 
@@ -989,7 +982,6 @@ void GetIsoLabels(float local_tmin, float local_tmax, int nlevel,char labels[12]
   int n;
   float dt, tval;
   float range;
-  int expmax,expmin;
 
   range = local_tmax-local_tmin;
 

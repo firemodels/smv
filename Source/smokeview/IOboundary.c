@@ -1311,7 +1311,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int ibartemp,jbartemp,kbartemp;
   float *xplttemp,*yplttemp,*zplttemp;
   int blocknumber;
-  patchdata *patchi,*patchbase;
+  patchdata *patchi;
   meshdata *meshi;
   float patchmin_global, patchmax_global;
   int local_first,nsize,iblock;
@@ -2284,7 +2284,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       return 0;
     }
   }
-  patchbase = patchinfo + GetBoundaryIndex(patchi);
   patchi->loaded=1;
   iboundarytype=GetBoundaryType(patchi);
   switch(loadpatchbysteps){
