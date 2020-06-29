@@ -283,13 +283,13 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"PARTCLASSCOLOR") == MATCH)return SCRIPT_PARTCLASSCOLOR;         // documented
   if(MatchUpper(keyword,"PARTCLASSTYPE") == MATCH)return SCRIPT_PARTCLASSTYPE;           // documented
   if(MatchUpper(keyword,"PLOT3DPROPS") == MATCH)return SCRIPT_PLOT3DPROPS;               // documented
-  if(MatchUpper(keyword,"XYZVIEW")==MATCH)return SCRIPT_XYZVIEW;
-  if(MatchUpper(keyword,"VIEWXMIN")==MATCH)return SCRIPT_VIEWXMIN;
-  if(MatchUpper(keyword,"VIEWXMAX")==MATCH)return SCRIPT_VIEWXMAX;
-  if(MatchUpper(keyword,"VIEWYMIN")==MATCH)return SCRIPT_VIEWYMIN;
-  if(MatchUpper(keyword,"VIEWYMAX")==MATCH)return SCRIPT_VIEWYMAX;
-  if(MatchUpper(keyword,"VIEWZMIN")==MATCH)return SCRIPT_VIEWZMIN;
-  if(MatchUpper(keyword,"VIEWZMAX")==MATCH)return SCRIPT_VIEWZMAX;
+  if(MatchUpper(keyword,"XYZVIEW")==MATCH)return SCRIPT_XYZVIEW;                         // documented
+  if(MatchUpper(keyword,"VIEWXMIN")==MATCH)return SCRIPT_VIEWXMIN;                       // documented
+  if(MatchUpper(keyword,"VIEWXMAX")==MATCH)return SCRIPT_VIEWXMAX;                       // documented
+  if(MatchUpper(keyword,"VIEWYMIN")==MATCH)return SCRIPT_VIEWYMIN;                       // documenged
+  if(MatchUpper(keyword,"VIEWYMAX")==MATCH)return SCRIPT_VIEWYMAX;                       // documented
+  if(MatchUpper(keyword,"VIEWZMIN")==MATCH)return SCRIPT_VIEWZMIN;                       // documented
+  if(MatchUpper(keyword,"VIEWZMAX")==MATCH)return SCRIPT_VIEWZMAX;                       // documented
   if(MatchUpper(keyword,"RENDER360ALL") == MATCH)return SCRIPT_RENDER360ALL;
   if(MatchUpper(keyword,"RENDERALL") == MATCH)return SCRIPT_RENDERALL;                   // documented
   if(MatchUpper(keyword,"RENDERCLIP") == MATCH)return SCRIPT_RENDERCLIP;                 // documented
