@@ -3647,6 +3647,39 @@ SETVIEWPOINT
 UNLOADTOUR
 \end{lstlisting}
 
+\hitem{XYZVIEW}Sets the position (x, y and z location) and view direction (azimuth and elevation angle in degrees).
+Usge:
+\begin{lstlisting}
+XYZVIEW
+ xpos ypos zpos az elev
+\end{lstlisting}
+
+\hitem{VIEWXMIN,VIEWYMIN,VIEWZMIN}The {\tt VIEWXMIN}\ script keyword sets the view so that the scene
+is viewed towards the XMIN direction.  It sets
+the scene view location to (x,ymid,zmid)
+and the scene view direction to $(-1.0,0.0,0.0)$ where
+x is chosen so that the entire scene is in view and ymid, zmid
+are the middle of the scene along y and z directions.  The {\tt VIEWYMIN}\ and {\tt VIEWZMIN}\ script
+keywords are defined similarly.  Usage:
+\begin{lstlisting}
+VIEWXMIN
+VIEWYMIN
+VIEWZMIN
+\end{lstlisting}
+
+\hitem{VIEWXMAX,VIEWYMAX,VIEWZMAX}The {\tt VIEWXMAX}\ script keyword sets the view so that the scene
+is viewed towards the XMAX direction.  It sets
+the scene view location to (x,ymid,zmid)
+and the scene view direction to $(+1.0,0.0,0.0)$ where
+x is chosen so that the entire scene is in view and ymid, zmid
+are the middle of the scene along y and z directions.  The {\tt VIEWYMAX}\ and {\tt VIEWZMAX}\ script
+keywords are defined similarly.  Usage:
+\begin{lstlisting}
+VIEWXMAX
+VIEWYMAX
+VIEWZMAX
+\end{lstlisting}
+
 \hitem{XSCENECLIP}\ Sets clipping planes along the X axis.
 Portions of the scene before {\tt xmin}\
 or after {\tt xmax}\ are hidden if setxmin or setxmax are set to 1 respectively.
