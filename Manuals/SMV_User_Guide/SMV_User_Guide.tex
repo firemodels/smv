@@ -3449,8 +3449,8 @@ LOADBOUNDARY
 
 \hitem{LOAD3DSMOKE}
 Load a 3D smoke file.  The types supported are
-SOOT DENSITY}, HRRPUV,\\
-TEMPERATURE and CARBON DIOXIDE DENSITY. 
+SOOT DENSITY, HRRPUV,\\
+TEMPERATURE and CARBON DIOXIDE DENSITY.
 Usage:
 \begin{lstlisting}
 LOAD3DSMOKE
@@ -3645,6 +3645,39 @@ SETVIEWPOINT
 \hitem{UNLOADTOUR}Unload a tour.
 \begin{lstlisting}
 UNLOADTOUR
+\end{lstlisting}
+
+\hitem{XYZVIEW}Sets the position (x, y and z location) and view direction (azimuth and elevation angle in degrees).
+Usge:
+\begin{lstlisting}
+XYZVIEW
+ xpos ypos zpos az elev
+\end{lstlisting}
+
+\hitem{VIEWXMIN,VIEWYMIN,VIEWZMIN}The {\tt VIEWXMIN}\ script keyword sets the view so that the scene
+is viewed towards the XMIN direction.  It sets
+the scene view location to (x,ymid,zmid)
+and the scene view direction to $(-1.0,0.0,0.0)$ where
+x is chosen so that the entire scene is in view and ymid, zmid
+are the middle of the scene along y and z directions.  The {\tt VIEWYMIN}\ and {\tt VIEWZMIN}\ script
+keywords are defined similarly.  Usage:
+\begin{lstlisting}
+VIEWXMIN
+VIEWYMIN
+VIEWZMIN
+\end{lstlisting}
+
+\hitem{VIEWXMAX,VIEWYMAX,VIEWZMAX}The {\tt VIEWXMAX}\ script keyword sets the view so that the scene
+is viewed towards the XMAX direction.  It sets
+the scene view location to (x,ymid,zmid)
+and the scene view direction to $(+1.0,0.0,0.0)$ where
+x is chosen so that the entire scene is in view and ymid, zmid
+are the middle of the scene along y and z directions.  The {\tt VIEWYMAX}\ and {\tt VIEWZMAX}\ script
+keywords are defined similarly.  Usage:
+\begin{lstlisting}
+VIEWXMAX
+VIEWYMAX
+VIEWZMAX
 \end{lstlisting}
 
 \hitem{XSCENECLIP}\ Sets clipping planes along the X axis.
@@ -4873,8 +4906,8 @@ as {\tt d}\ and {\tt f}\ are used for {\tt CTRL}\ and
 4) outline only and
 5) hidden
 
-\kitem{ALT r}Toggle research mode (research mode uses global min
-and max bounds for coloring data and turns off smoothing when displaying axis labels.}
+\kitem{ALT r}Toggle research mode.  Research mode uses global min
+and max bounds for coloring data and turns off smoothing when displaying colorbar labels.
 
 \kitem{ALT R}Display scene in 360$^\circ$ view mode - all view directions of the scene are displayed in a $1024\times 512$ image.
 
