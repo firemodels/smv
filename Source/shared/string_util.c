@@ -406,88 +406,57 @@ char *GetFormat(int bef, int aft, char *format){
   return format;
 }
 
-/* ------------------ SliceNum2String ------------------------ */
+/* ------------------ Truncate ------------------------ */
 
-void SliceNum2String(char *string_arg, float tval, int ndigits){
-  float tval2;
-  char format[20], string[32], *stringptr;
-  int ndecimals, nstring;
+void Truncate(float val, char *cval, int ndigits){
+  int i, count=0, have_period=0;
 
-  tval2 = ABS(tval);
-  if(0.0<=tval2&&tval2<0.1){
-    ndecimals = MAX(0,ndigits - 2);
-    sprintf(string, GetFormat(ndigits,ndecimals,format), tval);
-  }
-  else if(0.1<=tval2&&tval2<1.0){
-    ndecimals = MAX(0,ndigits - 2);
-    sprintf(string, GetFormat(ndigits,ndecimals,format), tval);
-  }
-  else if(1.0<=tval2&&tval2<10.0){
-    ndecimals = MAX(0,ndigits - 3);
-    sprintf(string, GetFormat(ndigits,ndecimals,format), tval);
-  }
-  else if(10.0<=tval2&&tval2<100.0){
-    ndecimals = MAX(0,ndigits - 4);
-    sprintf(string, GetFormat(ndigits,ndecimals,format), tval);
-  }
-  else if(100.0<=tval2&&tval2<1000.0){
-    ndecimals = MAX(0,ndigits - 5);
-    sprintf(string, GetFormat(ndigits,ndecimals,format), tval);
-  }
-  else if(1000.0<=tval2&&tval2<10000.0){
-    ndecimals = MAX(0,ndigits - 6);
-    sprintf(string, GetFormat(ndigits,ndecimals,format), tval);
-  }
-  else if(10000.0<=tval2&&tval2<100000.0){
-    ndecimals = MAX(0,ndigits - 7);
-    sprintf(string, GetFormat(ndigits,ndecimals,format), tval);
-  }
-  else{
-    float mant10;
-    int exp10;
-
-    mant10 = FrExp10(tval, &exp10);
-    mant10 = (float)((int)(10.0f*mant10+0.5f))/10.0f;
-    if(mant10>=10.0f){
-      mant10 /= 10.0f;
-      exp10++;
-    }
-    if(exp10<-99){
-      STRCPY(string, "0.00");
-    }
-    else if(exp10>=-99&&exp10<-9){
-      sprintf(string, "%2.1f%i", mant10, exp10);
-    }
-    else if(exp10>99){
-      STRCPY(string, "***");
-    }
-    else{
-      if(exp10==0){
-        sprintf(string, "%2.1f", mant10);
+  sprintf(cval,"%f",val);
+  for(i = 0; i<strlen(cval); i++){
+    if(cval[i]=='.')have_period = 1;
+    if(cval[i]=='.'||cval[i]=='-'||cval[i]=='+')continue;
+    count++;
+    if(count>ndigits){
+      if(have_period==1){
+        cval[i] = 0;
+        break;
       }
       else{
-        sprintf(string, "%2.1fE%i", mant10, exp10);
+        cval[i] = '0';
       }
     }
-
-    /*sprintf(string,"%1.1e",tval); */
   }
+}
 
-  stringptr = TrimFrontBack(string);
-  nstring = strlen(stringptr);
-  if(nstring>9)fprintf(stderr, "***fatal error - overwriting string\n");
+/* ------------------ ColorbarFloat2String ------------------------ */
 
-  if(nstring<8){
-    int i;
+void ColorbarFloat2String(char *c_val, float val, int ndigits){
+  float mantissa;
+  int exponent;
+  
+  mantissa = GetMantissaExponent(ABS(val), &exponent);
+  mantissa += 5.0*pow(10.0,-ndigits);
+  if(exponent>=0&&exponent<5){
+    char c_abs_val[32];
 
-    strcpy(string_arg, "");
-    for(i = 0; i<8-nstring; i++){
-      strcat(string_arg, " ");
-    }
-    strcat(string_arg, stringptr);
+    val = SIGN(val)*mantissa*pow(10.0,exponent);
+    Truncate(ABS(val), c_abs_val, ndigits);
+    TrimZeros(c_abs_val);
+    strcpy(c_val,"");
+    if(val<0.0)strcat(c_val,"-");
+    strcat(c_val,c_abs_val);
   }
   else{
-    strcpy(string_arg, stringptr);
+    char c_mantissa[32], c_exponent[32];
+
+    Truncate(mantissa, c_mantissa, ndigits);
+    TrimZeros(c_mantissa);
+    sprintf(c_exponent, "%i", exponent);
+    strcpy(c_val, "");
+    if(val<0.0)strcat(c_val, "-");
+    strcat(c_val, c_mantissa);
+    strcat(c_val, "E");
+    strcat(c_val, c_exponent);
   }
 }
 
@@ -523,7 +492,7 @@ void Num2String(char *string, float tval){
     STRCPY(string,"0.00");
   }
   else{
-    mant10 = FrExp10(tval,&exp10);
+    mant10 = GetMantissaExponent(tval,&exp10);
     mant10 = (float)((int)(10.0f*mant10+0.5f))/10.0f;
     if(mant10>=10.0f){
       mant10/=10.0f;
@@ -652,9 +621,9 @@ void Array2String(float *vals, int nvals, char *string){
   strcat(string,cval);
 }
 
-/* ------------------ FrExp10 ------------------------ */
+/* ------------------ GetMantissaExponent ------------------------ */
 
-float FrExp10(float x, int *exp10){
+float GetMantissaExponent(float x, int *exp10){
   float xabs, mantissa;
 
   xabs = ABS((double)x);

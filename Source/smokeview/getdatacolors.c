@@ -72,8 +72,8 @@ void GetBoundaryColors(float *t, int nt, unsigned char *it,
     *it++ = CLAMP(itt, colorbar_offset, ndatalevel - 1 - colorbar_offset);
     t++;
   }
-  FrExp10(local_tmax, &expmax);
-  FrExp10(local_tmin, &expmin);
+  GetMantissaExponent(local_tmax, &expmax);
+  GetMantissaExponent(local_tmin, &expmin);
   if(expmin!=0&&expmax!=0&&expmax-expmin<=2&&(expmin<-2||expmin>2)){
     local_tmin *= pow((double)10.0,(double)-expmin);
     local_tmax *= pow((double)10.0,(double)-expmin);
@@ -896,7 +896,7 @@ void MakeColorLabels(char colorlabels[12][11], float colorvalues[12], float tmin
 
     tval = tmin_arg + (n-1)*dt;
     colorvalues[n] = tval;
-    SliceNum2String(&colorlabels[n][0], tval, ncolorlabel_digits);
+    ColorbarFloat2String(&colorlabels[n][0], tval, ncolorlabel_digits);
   }
 }
 
@@ -949,7 +949,7 @@ void GetSliceColors(const float *t, int nt, unsigned char *it,
   }
   tval = local_tmax;
   colorvalues[nlevel-1] = tval;
-  SliceNum2String(&colorlabels[nlevel-1][0], tval, ncolorlabel_digits);
+  ColorbarFloat2String(&colorlabels[nlevel-1][0], tval, ncolorlabel_digits);
 }
 
 /* ------------------ getSliceLabelels ------------------------ */

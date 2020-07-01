@@ -69,7 +69,17 @@ void GetViewportInfo(void){
   }
 
   info_width = GetStringWidth("y: 115, 11.5 m");
-  colorbar_label_width = GetStringWidth("*10^-02");
+  {
+    char sample_label[32];
+    int i;
+
+    strcpy(sample_label,"-.E+99");
+    for(i=0;i<MAX(5,ncolorlabel_digits);i++){
+      strcat(sample_label,"1");
+    }
+
+    colorbar_label_width = GetStringWidth(sample_label);
+  }
 
   v_space = 2;
   text_height=18;
@@ -186,7 +196,7 @@ void GetViewportInfo(void){
 
   if(show_vertical_colorbar==0||num_colorbars==0)doit=0;
   vis_colorbar = GetColorbarState();
-  VP_vcolorbar.left = screenWidth-vcolorbar_delta - num_colorbars*(colorbar_label_width+2*h_space)-titlesafe_offset;
+  VP_vcolorbar.left = screenWidth-vcolorbar_delta - num_colorbars*(colorbar_label_width+h_space)-titlesafe_offset;
   if(dohist==1){
     VP_vcolorbar.left -= colorbar_label_width;
   }

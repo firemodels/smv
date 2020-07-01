@@ -104,7 +104,8 @@ EXTERNCPP char          *STRSTR(char *c, const char *key);
 EXTERNCPP void           ScaleString(const char *stringfrom, char *stringto, const float *scale);
 EXTERNCPP void           ScaleFloat2String(float floatfrom, char *stringto, const float *scale);
 EXTERNCPP void           Num2String(char *string, float tval);
-EXTERNCPP void           SliceNum2String(char *string, float tval, int ndecimals);
+EXTERNCPP void           ColorbarFloat2String(char *string, float tval, int ndecimals);
+EXTERNCPP void           ColorbarFloat2String2(char *string, float tval, int exponent_max, int ndecimals);
 EXTERNCPP char          *TrimFrontBack(char *buffer);
 EXTERNCPP int            STRCMP(const char *s1, const char *s2);
 EXTERNCPP char          *GetChid(char *file, char *buffer);
@@ -112,7 +113,7 @@ EXTERNCPP char          *GetChid(char *file, char *buffer);
 EXTERNCPP int            LogBase2(float xx);
 #endif
 EXTERNCPP void           Array2String(float *vals, int nvals, char *string);
-EXTERNCPP float          FrExp10(float x, int *exp10);
+EXTERNCPP float          GetMantissaExponent(float x, int *exp10);
 EXTERNCPP void           GetGitInfo(char *githash, char *gitdate);
 EXTERNCPP char          *GetString(char *buffer);
 EXTERNCPP char          *Time2TimeLabel(float time, float dt, char *timelabel);
