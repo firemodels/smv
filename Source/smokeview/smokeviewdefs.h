@@ -747,6 +747,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 
 #define ShowEXTERIORwallmenu -1
 #define HideEXTERIORwallmenu -19
+#define INI_EXTERIORwallmenu -20
 #define INTERIORwallmenu -2
 #define FRONTwallmenu -3
 #define BACKwallmenu -4

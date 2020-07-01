@@ -5409,6 +5409,24 @@ void ShowBoundaryMenu(int value){
         }
       }
     }
+    if(value==INI_EXTERIORwallmenu){
+      int i,ii,val;
+
+      for(ii = 0;ii < npatch_loaded;ii++){
+        int n;
+
+        patchdata *patchi;
+        meshdata *meshi;
+
+        patchi = patchinfo + patch_loaded_list[ii];
+        meshi = meshinfo + patchi->blocknumber;
+        for(n = 0;n < meshi->npatches;n++){
+          if(meshi->boundarytype[n] != INTERIORwall){
+            meshi->vis_boundaries[n] = vis_boundary_type[meshi->boundarytype[n]];
+          }
+        }
+      }
+    }
     else if(value != DUMMYwallmenu){
       int ii;
 

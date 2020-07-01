@@ -10572,6 +10572,14 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, " %f %f %f %i", &geom_delx, &geom_dely, &geom_delz, &show_geom_bndf);
       continue;
     }
+    if(Match(buffer, "VISBOUNDARYTYPE")==1){
+      int *vbt = vis_boundary_type;
+
+      update_ini_boundary_type = 1;
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i %i %i %i %i", vbt,vbt+1,vbt+2,vbt+3,vbt+4,vbt+5,vbt+6);
+      continue;
+    }
     if(Match(buffer, "GEOMBOUNDARYPROPS")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %f %f %i", &show_boundary_shaded, &show_boundary_outline, &show_boundary_points, &geomboundary_linewidth, &geomboundary_pointsize, &boundary_edgetype);
@@ -14726,6 +14734,11 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", show_bothsides_int, show_bothsides_ext);
   fprintf(fileout, "VECTORSKIP\n");
   fprintf(fileout, " %i\n", vectorskip);
+  fprintf(fileout, "VISBOUNDARYTYPE\n");
+  for(i = 0; i<7; i++){
+    fprintf(fileout, " %i ", vis_boundary_type[i]);
+  }
+  fprintf(fileout, "\n");
   fprintf(fileout, "WINDROSEDEVICE\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n",
     viswindrose, showref_windrose, windrose_xy_vis, windrose_xz_vis, windrose_yz_vis, windstate_windrose, showlabels_windrose,

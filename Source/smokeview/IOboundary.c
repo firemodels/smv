@@ -2342,7 +2342,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   patchi->loaded=1;
   patchi->display=1;
   iboundarytype=GetBoundaryType(patchi);
-  ShowBoundaryMenu(ShowEXTERIORwallmenu);
+  ShowBoundaryMenu(INI_EXTERIORwallmenu);
   for(n = 0;n<meshi->npatches;n++){
     meshi->vis_boundaries[n] = vis_boundary_type[meshi->boundarytype[n]];
   }

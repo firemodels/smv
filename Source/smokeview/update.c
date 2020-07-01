@@ -1901,6 +1901,10 @@ int GetColorbarState(void){
 void UpdateDisplay(void){
 
   LOCK_IBLANK;
+  if(update_ini_boundary_type==1){
+    update_ini_boundary_type = 0;
+    ShowBoundaryMenu(INI_EXTERIORwallmenu);
+  }
   if(update_fire_alpha==1){
     update_fire_alpha=0;
     UpdateFireAlpha();
