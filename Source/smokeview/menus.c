@@ -5410,7 +5410,7 @@ void ShowBoundaryMenu(int value){
       }
     }
     if(value==INI_EXTERIORwallmenu){
-      int i,ii,val;
+      int ii;
 
       for(ii = 0;ii < npatch_loaded;ii++){
         int n;
