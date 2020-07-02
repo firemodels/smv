@@ -672,12 +672,12 @@ int GetElevations(char *input_file, char *image_file, char *image_file_type, ele
       sscanf(buffer, "%f %f", &longref, &latref);
       longlatref_mode = LONGLATREF_ORIG;
 
-      xref = xmax;
-      yref = ymax;
-      dlat = yref / EARTH_RADIUS;
+      xref = 0.0;
+      yref = 0.0;
+      dlat = ymax / EARTH_RADIUS;
       fds_lat_max = latref + RAD2DEG*dlat;
       fds_lat_min = latref;
-      dlong = ABS(2.0*asin(sin(xref / (2.0*EARTH_RADIUS)) / cos(DEG2RAD*latref)));
+      dlong = ABS(2.0*asin(sin(xmax / (2.0*EARTH_RADIUS)) / cos(DEG2RAD*latref)));
       fds_long_max = longref + RAD2DEG*dlong;
       fds_long_min = longref;
       continue;
@@ -1064,25 +1064,37 @@ void GetSurfsFromXY(wuigriddata *wuifireinfo, struct _elevdata *fds_elevs, float
 
 /* ------------------ GetSurfsFromFaces ------------------------ */
 
+void GetFaceCenter(int iface, int *faces, float *verts, float *xy){
+  float *v1, *v2, *v3;
+  int f1, f2, f3;
+
+  f1 = faces[3*iface+0]-1;
+  f2 = faces[3*iface+1]-1;
+  f3 = faces[3*iface+2]-1;
+  v1 = verts+3*f1;
+  v2 = verts+3*f2;
+  v3 = verts+3*f3;
+  xy[0] = (v1[0]+v2[0]+v3[0])/3.0;
+  xy[1] = (v1[1]+v2[1]+v3[1])/3.0;
+}
+
+/* ------------------ GetSurfsFromFaces ------------------------ */
+
 void GetSurfsFromFaces(wuigriddata *wuifireinfo, struct _elevdata *fds_elevs, float *verts, int nverts, int *faces, int *surfs, int nfaces){
   int i;
   float *xy;
 
   NewMemory((void **)&xy, 2*sizeof(float)*nfaces);
 
-  for(i = 0; i<nfaces; i++){
-    int f1, f2, f3;
-    float *v1, *v2, *v3, xavg, yavg;
-    int firetype_index;
+  for(i = 0; i<nfaces; i+=2){
+    float xy1[2], xy2[2];
 
-    f1 = faces[3*i+0]-1;
-    f2 = faces[3*i+1]-1;
-    f3 = faces[3*i+2]-1;
-    v1 = verts+3*f1;
-    v2 = verts+3*f2;
-    v3 = verts+3*f3;
-    xy[2*i+0] = (v1[0]+v2[0]+v3[0])/3.0;
-    xy[2*i+1] = (v1[1]+v2[1]+v3[1])/3.0;
+    GetFaceCenter(  i, faces, verts, xy1);
+    GetFaceCenter(i+1, faces, verts, xy2);
+    xy[2*i+0] = (xy1[0]+xy2[0])/2.;
+    xy[2*i+1] = (xy1[1]+xy2[1])/2.;
+    xy[2*i+2] = xy[2*i+0];
+    xy[2*i+3] = xy[2*i+1];
   }
   GetSurfsFromXY(wuifireinfo, fds_elevs, xy, surfs, nfaces);
   FREEMEMORY(xy);
@@ -1232,6 +1244,9 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, char *casename_bin
       }
     }
 
+    fprintf(streamout, " LONGMIN=%f LONGMAX=%f \n", fds_elevs->long_min, fds_elevs->long_max);
+    fprintf(streamout, " LATMIN=%f LATMAX=%f\n", fds_elevs->lat_min, fds_elevs->lat_max);
+    fprintf(streamout, " ZMIN=%f ZMAX=%f\n", fds_elevs->val_min, fds_elevs->val_max);
     if(wuifireinfo==NULL){
       for(i = 0; i<nfaces; i++){
         surfs[i] = 1;
@@ -1245,7 +1260,6 @@ void GenerateFDSInputFile(char *casename, char *casename_fds, char *casename_bin
       }
       GetSurfsFromFaces(wuifireinfo, fds_elevs, verts, nverts, faces, surfs, nfaces);
 
-      fprintf(streamout, " LONG/LAT bounds: %f %f %f %f\n",fds_elevs->long_min,fds_elevs->long_max,fds_elevs->lat_min,fds_elevs->lat_max);
       fprintf(streamout, "&GEOM ID='terrain', IS_TERRAIN=T, SURF_ID=\n");
       for(i = 0; i<NFIRETYPES; i++){
         fprintf(streamout, " '%s', ",firetypes[i]);

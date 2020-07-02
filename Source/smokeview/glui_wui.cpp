@@ -122,7 +122,9 @@ extern "C" void GluiWuiSetup(int main_window){
 
     BUTTON_wui_1=glui_wui->add_button("Save settings",SAVE_SETTINGS_WUI,WuiCB);
     BUTTON_wui_2=glui_wui->add_button("Close",WUI_CLOSE,WuiCB);
-
+#ifdef pp_CLOSEOFF
+    BUTTON_wui_2->disable();
+#endif
   }
 
   glui_wui->set_main_gfx_window( main_window );

@@ -12,7 +12,7 @@ if [ "`uname`" == "Darwin" ]; then
 else
   GLUT=glut
 fi
-QUARTZ=framework
+QUARTZSMV=framework
 inc=
 while getopts 'fhimpqrt' OPTION
 do
@@ -38,7 +38,8 @@ case $OPTION in
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_PROFILESTRING=\"p\" "
   ;;
   q)
-   QUARTZ=use_quartz
+   QUARTZSMV=use_quartz
+ #  SMV_MAKE_OPTS=$SMV_MAKE_OPTS"-I /opt/X11/include -Wno-unknown-pragmas"
   ;;
   r)
   ;;
@@ -58,8 +59,8 @@ if [ "$TESTFLAG" != "" ]; then
 fi
 # this parameter is only for the mac
 if [ "`uname`" == "Darwin" ]; then
-  export QUARTZ
+  export QUARTZSMV
   export GLIBDIROPT
 else
-  QUARTZ=
+  QUARTZSMV=
 fi

@@ -536,6 +536,15 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
   }
 
   if(terri==NULL)return;
+
+  terri->xmin = xmin;
+  terri->xmax = xmax;
+  terri->ymin = ymin;
+  terri->ymax = ymax;
+  terri->jbar = ny;
+  nx = ABS(nx);
+  terri->ibar = nx;
+
   if(allocate_memory==1){
     terri->xplt=NULL;
     terri->yplt=NULL;
@@ -543,17 +552,7 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
     terri->znode=NULL;
     terri->uc_znormal=NULL;
     terri->ter_texture=NULL;
-  }
 
-  terri->xmin=xmin;
-  terri->xmax=xmax;
-  terri->ymin=ymin;
-  terri->ymax=ymax;
-  terri->jbar=ny;
-  nx=ABS(nx);
-  terri->ibar=nx;
-
-  if(allocate_memory==1){
     NewMemory((void **)&terri->xplt,(nx+1)*sizeof(float));
     NewMemory((void **)&terri->yplt,(ny+1)*sizeof(float));
     NewMemory((void **)&terri->zcell,nx*ny*sizeof(float));
@@ -593,7 +592,20 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
       }
     }
   }
-  if(terri->file!=NULL)GetTerrainData(terri->file, terri);
+  // don't read in terrain files if this is case uses immersive geometry for the terrain
+#ifdef pp_SKIP_TERRAIN_DATA
+  if(auto_terrain==0||ngeominfo==0){
+    if(terri->file!=NULL&&terri->defined==0){
+      GetTerrainData(terri->file, terri);
+      terri->defined = 1;
+    }
+  }
+#else
+  if(terri->file!=NULL&&terri->defined==0){
+    GetTerrainData(terri->file, terri);
+    terri->defined = 1;
+  }
+#endif
 }
 
 /* ------------------ DrawTerrain ------------------------ */
@@ -961,6 +973,12 @@ void UpdateTerrain(int allocate_memory, float vertical_factor_local){
       nterraininfo = nmeshes;
       if(allocate_memory==1&&manual_terrain==0){
         NewMemory((void **)&terraininfo, nterraininfo*sizeof(terraindata));
+        for(i = 0; i<nterraininfo; i++){
+          terraindata *terri;
+
+          terri = terraininfo+i;
+          terri->defined = 0;
+        }
       }
     }
 

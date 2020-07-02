@@ -17,6 +17,8 @@
 
 //*** options: all platforms
 
+//#define pp_SKIP_TERRAIN_DATA  // skip reading in terrain data if case is using immersed geometry
+#define pp_SKIP_BOUNDARY_GEOMS // skips reading of boundary geometry files
 #define pp_GPU                // support the GPU
 #define pp_THREAD             // turn on multi-threading
 #define pp_GPUSMOKE           // code to speed up 3d smoke using the gpu
@@ -67,6 +69,7 @@
 
 #ifdef pp_OSX
 #define pp_GLUTGET      // use d and f key in place of CTRL and ALT key
+#define pp_CLOSEOFF     // turn off and disable close buttons in dialog box
 #endif
 
 //*** options: options being tested on all platforms

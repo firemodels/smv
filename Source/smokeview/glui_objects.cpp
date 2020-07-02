@@ -651,6 +651,9 @@ extern "C" void GluiDeviceSetup(int main_window){
   glui_device->add_column_to_panel(PANEL_label3,false);
 
   BUTTON_device_2=glui_device->add_button_to_panel(PANEL_label3,_("Close"),DEVICE_close,DeviceCB);
+#ifdef pp_CLOSEOFF
+  BUTTON_device_2->disable();
+#endif
 
   glui_device->set_main_gfx_window( main_window );
 }
