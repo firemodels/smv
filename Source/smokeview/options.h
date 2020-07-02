@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+//#define pp_SHOW_BOUND_MIRROR  // add menu for showing boundary files on mirror/open vents
 #define pp_MULTI_RES          // read in multi-resolution slice files
 //#define pp_HTML_VR           // output VR html code
 //#define pp_PART_HIST            // compute particle histograms

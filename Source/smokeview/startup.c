@@ -2102,7 +2102,7 @@ void InitVars(void){
     int iii;
 
     for(iii=0;iii<7;iii++){
-      vis_boundary_type[iii]=0;
+      vis_boundary_type[iii]=1;
     }
     vis_boundary_type[0]=1;
     for(iii=0;iii<MAXPLOT3DVARS;iii++){

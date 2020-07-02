@@ -10750,6 +10750,22 @@ updatemenu=0;
       int ii;
       int npatchloaded2=0;
 
+      if(nmeshes>1||n_mirrorvents>0||n_openvents>0){
+        CREATEMENU(includepatchmenu, LoadBoundaryMenu);
+        if(nmeshes>1){
+          if(show_bndf_mesh_interface==1)glutAddMenuEntry("*Mesh interface", MENU_BNDF_SHOW_MESH_INTERFACE);
+          if(show_bndf_mesh_interface==0)glutAddMenuEntry("Mesh interface", MENU_BNDF_SHOW_MESH_INTERFACE);
+        }
+        if(n_mirrorvents>0){
+          if(show_mirror_boundary==1)glutAddMenuEntry("*Mirror surface", MENU_BNDF_MIRROR);
+          if(show_mirror_boundary==0)glutAddMenuEntry("Mirror surface", MENU_BNDF_MIRROR);
+        }
+        if(n_openvents>0){
+          if(show_open_boundary==1)glutAddMenuEntry("*Open vent", MENU_BNDF_OPEN);
+          if(show_open_boundary==0)glutAddMenuEntry("Open vent", MENU_BNDF_OPEN);
+        }
+      }
+
       nloadpatchsubmenus=0;
 
       CREATEMENU(unloadpatchmenu,UnloadBoundaryMenu);
@@ -10803,6 +10819,25 @@ updatemenu=0;
         }
       }
 
+//*** these same lines also appear below
+      glutAddMenuEntry("-",MENU_DUMMY3);
+
+#ifdef pp_SHOW_BOUND_MIRROR
+      if(nmeshes>1||n_mirrorvents>0||n_openvents>0){
+        GLUTADDSUBMENU(_("Include"),includepatchmenu);
+      }
+#endif
+      glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
+      if(nboundaryslicedups>0){
+        GLUTADDSUBMENU(_("Duplicate boundary slices"),duplicateboundaryslicemenu);
+      }
+      glutAddMenuEntry(_("Settings..."), MENU_BOUNDARY_SETTINGS);
+      if(npatchloaded2>1){
+        GLUTADDSUBMENU(_("Unload"),unloadpatchmenu);
+      }
+      else{
+       glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
+      }
       if(nmeshes>1){
         char menulabel[1024];
 
@@ -10906,20 +10941,6 @@ updatemenu=0;
 
 // call patch submenus from main patch menu
 
-        CREATEMENU(includepatchmenu, LoadBoundaryMenu);
-        if(nmeshes>1){
-          if(show_bndf_mesh_interface==1)glutAddMenuEntry("*Mesh interface", MENU_BNDF_SHOW_MESH_INTERFACE);
-          if(show_bndf_mesh_interface==0)glutAddMenuEntry("Mesh interface", MENU_BNDF_SHOW_MESH_INTERFACE);
-        }
-        if(n_mirrorvents>0){
-          if(show_mirror_boundary==1)glutAddMenuEntry("*Mirror surface", MENU_BNDF_MIRROR);
-          if(show_mirror_boundary==0)glutAddMenuEntry("Mirror surface", MENU_BNDF_MIRROR);
-        }
-        if(n_openvents>0){
-          if(show_open_boundary==1)glutAddMenuEntry("*Open vent", MENU_BNDF_OPEN);
-          if(show_open_boundary==0)glutAddMenuEntry("Open vent", MENU_BNDF_OPEN);
-        }
-
         CREATEMENU(loadpatchmenu,LoadBoundaryMenu);
         iloadsubpatchmenu_b=0;
         for(ii=0;ii<npatchinfo;ii++){
@@ -10946,11 +10967,13 @@ updatemenu=0;
           }
         }
       }
-
+//*** these same lines also appear above (except for nmeshes>1 line)
       glutAddMenuEntry("-",MENU_DUMMY3);
+#ifdef pp_SHOW_BOUND_MIRROR
       if(nmeshes>1||n_mirrorvents>0||n_openvents>0){
         GLUTADDSUBMENU(_("Include"),includepatchmenu);
       }
+#endif
 
       glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
       if(nboundaryslicedups>0){
