@@ -1657,8 +1657,9 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
 
     eye = camera_current->eye;
     GetMinMaxDepth(eye, &min_depth, &max_depth);
-    fnear = MAX(min_depth-1.0, 0.001);
+    fnear = MAX(min_depth-1.0, 0.00001);
     ffar  = MAX(    max_depth+1.0, farclip);
+    ffar = max_depth+1.0;
   }
 
   aperture_temp = Zoom2Aperture(zoom);

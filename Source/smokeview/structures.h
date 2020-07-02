@@ -307,7 +307,7 @@ typedef struct _labeldata {
 
 typedef struct _texturedata {
   char *file;
-  int loaded, display, used;
+  int loaded, display, used, is_transparent;
   GLuint name;
 } texturedata;
 
@@ -1154,7 +1154,10 @@ typedef struct _partdata {
   int nclasses;
   partclassdata **partclassptr;
   part5data *data5;
-  histogramdata **histograms;
+#ifdef pp_PART_HIST
+  histogramdata **histograms; 
+  histogramdata *histogram_all;
+#endif
   int bounds_set;
   float *global_min, *global_max;
   unsigned char *vis_part;
@@ -1189,6 +1192,24 @@ typedef struct _hrrdata {
   int ntimes, ntimes_csv;
 } hrrdata;
 
+#ifdef pp_MULTI_RES
+/* --------------------------  _resdata ------------------------------------ */
+
+typedef struct _resdata {
+  float *xplt, *yplt, *zplt;
+  int *ni_list, *nj_list, *nk_list;
+  int ni, nj, nk;
+} resdata;
+  
+  /* --------------------------  _multiresdata ------------------------------------ */
+
+typedef struct _multiresdata {
+  resdata *resinfo;
+  int nresinfo, iresinfo;
+  int *kji_to_reorder;
+} multiresdata;
+#endif
+
 /* --------------------------  slicedata ------------------------------------ */
 
 typedef struct _slicedata {
@@ -1197,6 +1218,7 @@ typedef struct _slicedata {
   char *file, *size_file, *bound_file;
   char *comp_file, *reg_file, *vol_file;
   char *geom_file;
+  int nframes;
   int finalize;
   int slcf_index;
   char *slicelabel;
@@ -1222,6 +1244,9 @@ typedef struct _slicedata {
   float valmin, valmax;
   float globalmin, globalmax;
   float valmin_data, valmax_data;
+#ifdef pp_MULTI_RES
+  int multi_res;
+#endif
 #ifdef pp_NEWBOUND_DIALOG
   float file_min, file_max;
 #endif
@@ -1262,6 +1287,10 @@ typedef struct _slicedata {
   histogramdata *histograms;
   int nhistograms;
   struct _patchdata *patchgeom;
+#ifdef pp_MULTI_RES
+  multiresdata multiresinfo;
+  int mult_res;
+#endif
 #ifdef pp_NEWBOUND_DIALOG
   struct _boundsdata *bounds;
 #endif
@@ -1270,6 +1299,12 @@ typedef struct _slicedata {
   int skipload, loadstatus, boundstatus;
 #endif
 } slicedata;
+
+/* --------------------------  slicemenudata ------------------------------------ */
+
+typedef struct _slicemenudata {
+  slicedata *sliceinfo;
+} slicemenudata;
 
 /* --------------------------  multislicedata ------------------------------------ */
 

@@ -214,7 +214,9 @@ int SetupCase(int argc, char **argv){
     PRINTF(" %s\n", input_file);
     smv_streaminfo = GetSMVBuffer(input_file, iso_filename);
     return_code = ReadSMV(smv_streaminfo);
-    FCLOSE(smv_streaminfo);
+    if(smv_streaminfo!=NULL){
+      FCLOSE(smv_streaminfo);
+    }
   }
   if(return_code==0&&trainer_mode==1){
     ShowGluiTrainer();
@@ -361,6 +363,20 @@ void SetupGlut(int argc, char **argv){
       if(FileExistsOrig(smoketempdir)==NO){
         if(MKDIR(smoketempdir)!=0){
           FREEMEMORY(smoketempdir);
+        }
+      }
+
+      // only needed if -info option is used
+
+      if(generate_info_from_commandline == 1){
+        NewMemory((void **)&smokeview_cachedir, strlen(homedir)+strlen(dirseparator)+strlen(".smokeview")+1);
+        strcpy(smokeview_cachedir, homedir);
+        strcat(smokeview_cachedir, dirseparator);
+        strcat(smokeview_cachedir, ".smokeview");
+        if(FileExistsOrig(smokeview_cachedir)==NO){
+          if(MKDIR(smokeview_cachedir)!=0){
+            FREEMEMORY(smokeview_cachedir);
+          }
         }
       }
     }
@@ -1035,9 +1051,9 @@ void InitOpenGL(void){
       vslicedata *vslicei;
 
       vslicei = vsliceinfo + i;
-      if(vslicei->autoload==0&&vslicei->loaded==1)ReadVSlice(i,UNLOAD,&errorcode);
+      if(vslicei->autoload==0&&vslicei->loaded==1)ReadVSlice(i,ALL_SLICE_FRAMES, NULL, UNLOAD,&errorcode);
       if(vslicei->autoload==1){
-        ReadVSlice(i,LOAD,&errorcode);
+        ReadVSlice(i,ALL_SLICE_FRAMES, NULL, LOAD,&errorcode);
       }
     }
     // note:  only slices that are NOT a part of a vector slice will be loaded here
@@ -1061,12 +1077,12 @@ void InitOpenGL(void){
         slicei = sliceinfo + i;
         set_slicecolor = DEFER_SLICECOLOR;
         if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-        if(slicei->autoload == 0 && slicei->loaded == 1)ReadSlice(slicei->file, i, UNLOAD, set_slicecolor,&errorcode);
+        if(slicei->autoload == 0 && slicei->loaded == 1)ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, UNLOAD, set_slicecolor,&errorcode);
         if(slicei->autoload == 1 && slicei->loaded == 0){
 #ifdef pp_NEWBOUND_DIALOG
-          ReadSliceUseGluiBounds(slicei->file, i, LOAD, set_slicecolor, &errorcode);
+          ReadSliceUseGluiBounds(slicei->file, i, ALL_SLICE_FRAMES, NULL, LOAD, set_slicecolor, &errorcode);
 #else
-          ReadSlice(slicei->file, i, LOAD, set_slicecolor, &errorcode);
+          ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, LOAD, set_slicecolor, &errorcode);
 #endif
         }
       }
@@ -1075,8 +1091,8 @@ void InitOpenGL(void){
       smoke3ddata *smoke3di;
 
       smoke3di = smoke3dinfo + i;
-      if(smoke3di->autoload==0&&smoke3di->loaded==1)ReadSmoke3D(ALL_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
-      if(smoke3di->autoload==1)ReadSmoke3D(ALL_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
+      if(smoke3di->autoload==0&&smoke3di->loaded==1)ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
+      if(smoke3di->autoload==1)ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
     }
     for(i=0;i<npatchinfo;i++){
       patchdata *patchi;

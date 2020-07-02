@@ -39,13 +39,13 @@ case $OPTION in
   ;;
   q)
    QUARTZSMV=use_quartz
- #  SMV_MAKE_OPTS=$SMV_MAKE_OPTS"-I /opt/X11/include -Wno-unknown-pragmas"
+   SMV_MAKE_OPTS=$SMV_MAKE_OPTS"-I /opt/X11/include -Wno-unknown-pragmas"
   ;;
   r)
   ;;
   t)
    TESTFLAG=$TESTFLAG" -D pp_BETA"
-   SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_TESTSTRING=\"test_\" "
+   SMV_MAKE_OPTS="$SMV_MAKE_OPTS SMV_TESTSTRING=\"test_\" "
    TEST=test_
   ;;
 esac
@@ -55,7 +55,7 @@ export GLUT
 export TEST
 export SMV_MPI
 if [ "$TESTFLAG" != "" ]; then
-   SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_TESTFLAG=\"$TESTFLAG\" "
+   SMV_MAKE_OPTS="$SMV_MAKE_OPTS SMV_TESTFLAG=\"$TESTFLAG\" "
 fi
 # this parameter is only for the mac
 if [ "`uname`" == "Darwin" ]; then

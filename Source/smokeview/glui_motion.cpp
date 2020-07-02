@@ -1692,11 +1692,11 @@ extern "C" void SceneMotionCB(int var){
   }
   if(var == NEARFARCLIP){
     if(nearclip<0.0){
-      nearclip=0.001;
+      nearclip=0.00001;
       SPINNER_nearclip->set_float_val(nearclip);
     }
     if(farclip<0.0){
-      farclip=0.001;
+      farclip=0.00001;
       SPINNER_farclip->set_float_val(farclip);
     }
     return;
@@ -2253,7 +2253,9 @@ void RenderCB(int var){
       break;
     case RENDER_HTML:
       Smv2Html(html_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_NO);
+#ifdef pp_HTML_VR
       Smv2Html(htmlvr_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_YES);
+#endif
       break;
 #ifdef pp_RENDER360_DEBUG
     case RENDER_DEBUG_360:

@@ -628,8 +628,9 @@ void CheckTimeBound(void){
     itimes=first_frame_index;
     if(render_status==RENDER_ON){
       RenderMenu(RenderCancel);
-      // following exits render command, do this a better way
-      if(current_script_command!=NULL)current_script_command->exit=1;
+      if(current_script_command!=NULL&&current_script_command->command!=SCRIPT_LOADSLICERENDER){
+        current_script_command->exit=1;
+      }
     }
     frame_index=first_frame_index;
     for(i=0;i<nsliceinfo;i++){
@@ -2210,10 +2211,6 @@ void Keyboard(unsigned char key, int flag){
         UpdateRenderListSkip();
       }
       break;
-    case 'T':
-      usetexturebar=1-usetexturebar;
-      PRINTF("usetexturebar=%i\n",usetexturebar);
-      break;
     case 'u':
     case 'U':
       switch(keystate){
@@ -2311,6 +2308,13 @@ void Keyboard(unsigned char key, int flag){
         return;
       }
       break;
+#ifdef pp_MULTI_RES
+    case '`':
+      slice_resolution_level++;
+      if(slice_resolution_level>max_slice_resolution)slice_resolution_level = 0;
+      printf("slice resolution level: %i\n", slice_resolution_level);
+      break;
+#endif
     case '~':
       LevelScene(1,1,quat_general);
       Quat2Rot(quat_general,quat_rotation);
@@ -2335,6 +2339,9 @@ void Keyboard(unsigned char key, int flag){
       break;
     case '.':
       lock_mouse_aperture = 1 - lock_mouse_aperture;
+      break;
+    case '?':
+      vector_debug = 1 - vector_debug;
       break;
     case ':':
       timebar_overlap++;
@@ -3035,9 +3042,20 @@ void SetScreenSize(int *width, int *height){
     screenWidth=MAX(*width,1);
     screenWidth = MAX(screenWidth, 1);
     if(screenWidth%2==1)screenWidth++;
+
+#ifdef pp_OSX
+#ifndef pp_QUARTZ
+    screenWidth*=2;
+#endif
+#endif
   }
   if(height!=NULL){
     screenHeight=MAX(*height,1);
+#ifdef pp_OSX
+#ifndef pp_QUARTZ
+    screenHeight*=2;
+#endif
+#endif
   }
   {
     int width_low, height_low, width_high, height_high;
@@ -3347,7 +3365,7 @@ void DoScript(void){
           current_script_command->exit = 0;
         }
       }
-      if(current_script_command->command==SCRIPT_ISORENDERALL){
+      else if(current_script_command->command==SCRIPT_ISORENDERALL){
           if(current_script_command->exit==0){
             RenderState(RENDER_ON);
           }
@@ -3356,6 +3374,17 @@ void DoScript(void){
             current_script_command->first = 1;
             current_script_command->exit = 0;
           }
+      }
+      else if(current_script_command->command==SCRIPT_LOADSLICERENDER){
+        if(current_script_command->exit==0){
+          RenderState(RENDER_ON);
+          ScriptLoadSliceRender(current_script_command);
+        }
+        else{
+          RenderState(RENDER_OFF);
+          current_script_command->first = 1;
+          current_script_command->exit = 0;
+        }
       }
     }
     if(render_status==RENDER_OFF){   // don't advance command if Smokeview is executing a RENDERALL command
@@ -3378,7 +3407,7 @@ void DoScript(void){
           UnloadVolsmokeFrameAllMeshes(remove_frame);
         }
       }
-      if(current_script_command->command==SCRIPT_ISORENDERALL){
+      else if(current_script_command->command==SCRIPT_ISORENDERALL){
         int remove_frame;
 
         ScriptLoadIsoFrame2(current_script_command);

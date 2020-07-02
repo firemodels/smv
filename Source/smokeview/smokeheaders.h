@@ -5,6 +5,23 @@
 #include "gd.h"
 #endif
 
+#ifdef pp_MULTI_RES
+void InitMultiRes(slicedata *sd);
+void NormalizeXYZRes(void);
+#endif
+EXTERNCPP void ScriptLoadSliceRender(scriptdata *scripti);
+EXTERNCPP int GetNSliceFrames(char *file, float *stime_min, float *stime_max);
+EXTERNCPP void GenerateSliceMenu(void);
+#ifdef pp_PART_HIST
+EXTERNCPP void ComputePartHistograms(void);
+#endif
+#ifdef pp_WUI_VAO
+int InitTerrainVAO(int sizeof_vertices, int sizeof_indices);
+void DrawTerrainGeomGPU(void);
+#endif
+void DrawTerrainGeom(int option);
+void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigned int **indices_arg, int *sizeof_indices_arg, int *nindices_arg);
+
 #ifdef pp_C_SLICE
 EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error);
 #endif
@@ -17,7 +34,7 @@ EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float
 boundsdata *GetBoundsInfo(char *shortlabel);
 #ifdef pp_NEWBOUND_DIALOG
 void GetGlobalSliceBounds(void);
-FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int flag, int set_slicecolor, int *errorcode);
+FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
 #endif
 EXTERNCPP void ShiftColorbars(void);
 EXTERNCPP int GetColorbarState(void);
@@ -29,10 +46,14 @@ EXTERNCPP void UpdateTriangleInfo(surfdata *tri_surf, float tri_area);
 EXTERNCPP void DrawSelectGeom(void);
 EXTERNCPP void UpdateGeomAreas(void);
 EXTERNCPP void GetZoneTempBounds(void);
-EXTERNCPP FILE_SIZE GetSliceData(char *slicefilename, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
+EXTERNCPP FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
   float *qminptr, float *qmaxptr, float *qdataptr, float *timesptr, int ntimes_old_arg, int *ntimesptr,
-  int sliceframestep_arg, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg);
-EXTERNCPP void GetSliceSizes(char *slicefilenameptr, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int sliceframestep_arg,
+  int sliceframestep_arg, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg
+#ifdef pp_MULTI_RES
+  , int multi_res
+#endif
+);
+EXTERNCPP void GetSliceSizes(char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int sliceframestep_arg,
   int *errorptr, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg, int *headersizeptr, int *framesizeptr);
 EXTERNCPP void PrintPartLoadSummary(int option, int type);
 EXTERNCPP void CreatePartSizeFile(partdata *parti, int angle_flag_arg);
@@ -437,8 +458,8 @@ EXTERNCPP void WuiCB(int var);
 EXTERNCPP void CompressOnOff(int flag);
 EXTERNCPP void CompressSVZip2(void);
 EXTERNCPP void UpdateTerrainColors(void);
-EXTERNCPP void DrawTerrain(terraindata *terri);
-EXTERNCPP void DrawTerrainTexture(terraindata *terri);
+EXTERNCPP void DrawTerrainOBST(terraindata *terri);
+EXTERNCPP void DrawTerrainOBSTTexture(terraindata *terri);
 EXTERNCPP void DrawTrees(void);
 EXTERNCPP void InitCullGeom(int cullflag);
 EXTERNCPP void GetCullSkips(meshdata *meshi, int cullflag, int cull_portsize, int *iiskip, int *jjskip, int *kkskip);
@@ -677,9 +698,9 @@ EXTERNCPP void HandleRotationType(int flag);
 
 EXTERNCPP void InitTextureDir(void);
 EXTERNCPP void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned char *bb);
-EXTERNCPP unsigned char *ReadPicture(char *filename, int *width, int *height, int printflag);
-EXTERNCPP unsigned char *ReadJPEG(const char *filename,int *width, int *height);
-EXTERNCPP unsigned char *ReadPNG(const char *filename,int *width, int *height);
+EXTERNCPP unsigned char *ReadPicture(char *filename, int *width, int *height, int *is_transparent, int printflag);
+EXTERNCPP unsigned char *ReadJPEG(const char *filename,int *width, int *height, int *is_transparent);
+EXTERNCPP unsigned char *ReadPNG(const char *filename,int *width, int *height, int *is_transparent);
 
 EXTERNCPP void UpdateBlockVals(int flag);
 
@@ -736,7 +757,6 @@ EXTERNCPP int  InBlockage(const meshdata *gb,float x, float y, float z);
 EXTERNCPP void UpdateGlui(void);
 EXTERNCPP void UpdateSliceList(int index);
 EXTERNCPP void DrawIso(int tranflag);
-EXTERNCPP void DrawPlot3D(meshdata *gb);
 EXTERNCPP void DrawPlot3dTexture(meshdata *gb);
 EXTERNCPP void UpdateShowStep(int val, int slicedir);
 EXTERNCPP void ClearBuffers(int mode);
@@ -851,15 +871,15 @@ EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode);
 
 EXTERNCPP void ReadZone(int ifile, int flag, int *errorcode);
-EXTERNCPP FILE_SIZE ReadVSlice(int ivslice, int flag, int *errorcode);
+EXTERNCPP FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, int *errorcode);
 
 EXTERNCPP void FreeSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *ntimes_found, int *ntimes_full);
 EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode);
 EXTERNCPP void ReadSmoke3DAllMeshesAllTimes(int smoketype2, int *errorcode);
 EXTERNCPP FILE_SIZE ReadSmoke3D(int iframe, int ifile, int flag, int first_time, int *errorcode);
-EXTERNCPP void ReadFed(int ifile, int flag, int file_type, int *errorcode);
-EXTERNCPP FILE_SIZE ReadSlice(char *file, int ifile, int flag, int set_slicecolor, int *errorcode);
+EXTERNCPP void ReadFed(int ifile, int time_frame, float *time_value, int flag, int file_type, int *errorcode);
+EXTERNCPP FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
 EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);
 
 EXTERNCPP void InitMenus(int unload);

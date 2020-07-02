@@ -95,6 +95,9 @@
 #define PARTICLE_BOUND             0
 #define PARTICLE_CHOP              1
 #define PARTICLE_SETTINGS          2
+#ifdef pp_PART_HIST
+#define PARTICLE_HISTOGRAM         3
+#endif
 
 #define BOUNDARY_BOUND             0
 #define BOUNDARY_CHOP              1

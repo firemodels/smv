@@ -14,6 +14,7 @@ void LoadSkyTexture(char *filebase, texturedata *texti){
   int texwid, texht;
   int errorcode;
   unsigned char *floortex;
+  int is_transparent;
 
   TrimBack(filebase);
   texti->name=0;
@@ -24,7 +25,8 @@ void LoadSkyTexture(char *filebase, texturedata *texti){
 
   glGenTextures(1,&texti->name);
   glBindTexture(GL_TEXTURE_2D,texti->name);
-  floortex=ReadPicture(filebuffer,&texwid,&texht,0);
+  floortex=ReadPicture(filebuffer,&texwid,&texht,&is_transparent,0);
+  texti->is_transparent = is_transparent;
   if(floortex==NULL){
     FREEMEMORY(filebuffer);
     return;

@@ -6020,7 +6020,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
     UpdateSmoke3dMenuLabels();
   }
 
-  if(iframe_arg==ALL_FRAMES)PRINTF("loading %s(%s) ", smoke3di->file, smoketype_local);
+  if(iframe_arg==ALL_SMOKE_FRAMES)PRINTF("loading %s(%s) ", smoke3di->file, smoketype_local);
   CheckMemory;
   smoke3di->request_load = 1;
   smoke3di->ntimes_old = smoke3di->ntimes;
@@ -6042,7 +6042,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
     if(smoke3di->type==HRRPUV&&smoke3di->maxval<=load_hrrpuv_cutoff){
       SetupSmoke3D(smoke3di, UNLOAD, iframe_arg, &error_local);
       *errorcode_arg = 0;
-      if(iframe_arg==ALL_FRAMES){
+      if(iframe_arg==ALL_SMOKE_FRAMES){
         PRINTF(" - skipped (hrrpuv<%0.f)\n", load_hrrpuv_cutoff);
       }
       return_flag_local = 1;
@@ -6169,7 +6169,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   // read smoke data
 
   START_TIMER(read_time_local);
-  if(iframe_arg== ALL_FRAMES){
+  if(iframe_arg==ALL_SMOKE_FRAMES){
     if(flag_arg== RELOAD&&smoke3di->ntimes_old > 0){
       SkipSmokeFrames(SMOKE3DFILE, smoke3di, smoke3di->ntimes_old, fortran_skip);
       frame_start_local = smoke3di->ntimes_old;
@@ -6247,7 +6247,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   }
   STOP_TIMER(total_time_local);
 
-  if(iframe_arg==ALL_FRAMES){
+  if(iframe_arg==ALL_SMOKE_FRAMES){
     if(file_size_local>1000000){
       PRINTF(" - %.1f MB/%.1f s\n", (float)file_size_local/1000000., total_time_local);
     }

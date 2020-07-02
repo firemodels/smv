@@ -106,7 +106,6 @@ EXTERNCPP void           ScaleFloat2String(float floatfrom, char *stringto, cons
 EXTERNCPP void           Num2String(char *string, float tval);
 EXTERNCPP void           SliceNum2String(char *string, float tval, int ndecimals);
 EXTERNCPP char          *TrimFrontBack(char *buffer);
-EXTERNCPP int            STRNCMP(const char *s1, const char *s2, const int n);
 EXTERNCPP int            STRCMP(const char *s1, const char *s2);
 EXTERNCPP char          *GetChid(char *file, char *buffer);
 #ifdef pp_GPU

@@ -972,7 +972,7 @@ FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, 
     isoi = isoinfo+ifile;
     if(flag==LOAD)PRINTF("Loading %s(%s)", file,isoi->surface_label.shortlabel);
     if(isoi->is_fed==1){
-      ReadFed(ifile, flag, FED_ISO, errorcode);
+      ReadFed(ifile, ALL_SLICE_FRAMES, NULL,  flag, FED_ISO, errorcode);
     }
     else{
       if(isoi->geomflag==1){
@@ -1015,7 +1015,7 @@ void DrawIsoOrig(int tranflag){
     iso_specular[3] = 1.0;
     if(tranflag==DRAW_TRANSPARENT)TransparentOn();
 
-    if(usetexturebar==1&&isoi->dataflag==1){
+    if(isoi->dataflag==1){
       glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
       glEnable(GL_TEXTURE_1D);
       glBindTexture(GL_TEXTURE_1D,texture_iso_colorbar_id);
@@ -1039,7 +1039,7 @@ void DrawIsoOrig(int tranflag){
       niso_list_start=niso_opaques;
     }
     CheckMemory;
-    if(usetexturebar==1&&isoi->dataflag==1){
+    if(isoi->dataflag==1){
       for(i=0;i<niso_list_start;i++){
         isotri *tri;
         isovert *v1, *v2, *v3;
@@ -1090,7 +1090,7 @@ void DrawIsoOrig(int tranflag){
     glEnd();
 
     glPopAttrib();
-    if(usetexturebar==1&&isoi->dataflag==1)glDisable(GL_TEXTURE_1D);
+    if(isoi->dataflag==1)glDisable(GL_TEXTURE_1D);
 
 
     if(tranflag==DRAW_TRANSPARENT)TransparentOff();

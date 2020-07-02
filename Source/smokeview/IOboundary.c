@@ -1217,7 +1217,6 @@ void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
 
     strcpy(sizefile, patchi->size_file);
     strcat(sizefile, ".sz");
-    streamsize = fopen(sizefile, "r");
 
     stream = fopen(patchi->file, "rb");
     if(stream==NULL){
@@ -2380,7 +2379,7 @@ void GetGeomDataSize(char *filename,int *ntimes,int *nvars,int *error){
   int one, version;
   int nvert_s, nvert_d, nface_s, nface_d;
   FILE *stream=NULL;
-  int returncode;
+  int returncode=0;
   int nvars_local, ntimes_local;
 
   *error=1;
@@ -2427,7 +2426,7 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
   int i, one, nvars;
   int nvert_s, ntri_s, nvert_d, ntri_d;
   int version;
-  int returncode;
+  int returncode=0;
   float time;
 
   FILE *stream;
@@ -3947,424 +3946,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   if((use_transparency_data==1&&contour_type==LINE_CONTOURS)||setpatchchopmin==1||setpatchchopmax==1)TransparentOff();
 }
 
-/* ------------------ DrawBoundary ------------------------ */
-
-void DrawBoundary(const meshdata *meshi){
-  int n, nn, nn1, nn2;
-  int nrow, ncol, irow, icol;
-  unsigned char *cpatchval1, *cpatchval2;
-  unsigned char *cpatchval_iframe_copy;
-  float *xyzpatchcopy;
-  int *patchblankcopy;
-  float *patch_times;
-  int *vis_boundaries;
-  float *xyzpatch;
-  int *patchdir, *boundary_row, *boundary_col, *boundarytype;
-  int *blockstart;
-  int *patchblank;
-  unsigned char *cpatchval_iframe;
-  int iblock;
-  blockagedata *bc;
-  patchdata *patchi;
-  float *color11, *color12, *color21, *color22;
-  meshdata *meshblock;
-  float dboundx, dboundy, dboundz;
-  float *xplt, *yplt, *zplt;
-
-  if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)return;
-
-  if(hidepatchsurface==0){
-    xplt = meshi->xplt;
-    yplt = meshi->yplt;
-    zplt = meshi->zplt;
-
-    dboundx = (xplt[1]-xplt[0])/10.0;
-    dboundy = (yplt[1]-yplt[0])/10.0;
-    dboundz = (zplt[1]-zplt[0])/10.0;
-  }
-
-  patch_times = meshi->patch_times;
-  vis_boundaries = meshi->vis_boundaries;
-  xyzpatch = meshi->xyzpatch;
-  patchdir = meshi->patchdir;
-  boundarytype = meshi->boundarytype;
-  boundary_row = meshi->boundary_row;
-  boundary_col = meshi->boundary_col;
-  blockstart = meshi->blockstart;
-  patchblank = meshi->patchblank;
-  patchi = patchinfo+meshi->patchfilenum;
-  switch(patchi->compression_type){
-  case UNCOMPRESSED:
-    ASSERT(meshi->cpatchval_iframe!=NULL);
-    cpatchval_iframe = meshi->cpatchval_iframe;
-    break;
-  case COMPRESSED_ZLIB:
-    ASSERT(meshi->cpatchval_iframe_zlib!=NULL);
-    cpatchval_iframe = meshi->cpatchval_iframe_zlib;
-    break;
-  default:
-    ASSERT(FFALSE);
-  }
-  patchi = patchinfo+meshi->patchfilenum;
-
-  if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
-  if(cullfaces==1)glDisable(GL_CULL_FACE);
-
-  /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */
-
-  if((use_transparency_data==1&&contour_type==LINE_CONTOURS)||setpatchchopmin==1||setpatchchopmax==1)TransparentOn();
-  nn = 0;
-  glBegin(GL_TRIANGLES);
-  for(n = 0;n<meshi->npatches;n++){
-    int drawit;
-
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
-    if(iblock!=-1&&meshblock!=NULL){
-      bc = meshblock->blockageinfoptrs[iblock];
-      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += boundary_row[n]*boundary_col[n];
-        continue;
-      }
-    }
-    drawit = 0;
-    if(vis_boundaries[n]==1&&patchdir[n]==0)drawit = 1;
-    if(boundarytype[n]!=INTERIORwall&&showpatch_both==1)drawit = 1;
-    if(drawit==1){
-      nrow = boundary_row[n];
-      ncol = boundary_col[n];
-      xyzpatchcopy = xyzpatch+3*blockstart[n];
-      patchblankcopy = patchblank+blockstart[n];
-      cpatchval_iframe_copy = cpatchval_iframe+blockstart[n];
-      for(irow = 0;irow<nrow-1;irow++){
-        int *patchblank1, *patchblank2;
-        float *xyzp1, *xyzp2;
-
-        xyzp1 = xyzpatchcopy+3*irow*ncol;
-        patchblank1 = patchblankcopy+irow*ncol;
-        nn1 = nn+irow*ncol;
-        xyzp2 = xyzp1+3*ncol;
-        cpatchval1 = cpatchval_iframe_copy+irow*ncol;
-        cpatchval2 = cpatchval1+ncol;
-        patchblank2 = patchblank1+ncol;
-        nn2 = nn1+ncol;
-
-        for(icol = 0;icol<ncol-1;icol++){
-          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            color11 = rgb_patch+4*(*cpatchval1);
-            color12 = rgb_patch+4*(*(cpatchval1+1));
-            color21 = rgb_patch+4*(*cpatchval2);
-            color22 = rgb_patch+4*(*(cpatchval2+1));
-            if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
-              if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
-              if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1])color12 = &char_color[0];
-              if(meshi->thresholdtime[nn2+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol])color21 = &char_color[0];
-              if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1])color22 = &char_color[0];
-            }
-            if(ABS(*cpatchval1-*(cpatchval2+1))<ABS(*(cpatchval1+1)-*cpatchval2)){
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-            }
-            else{
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-            }
-          }
-          cpatchval1++; cpatchval2++; patchblank1++; patchblank2++;
-          xyzp1 += 3;
-          xyzp2 += 3;
-        }
-      }
-    }
-    nn += boundary_row[n]*boundary_col[n];
-  }
-  glEnd();
-  if(cullfaces==1)glEnable(GL_CULL_FACE);
-
-  /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
-
-  nn = 0;
-  if(hidepatchsurface==1){
-    glBegin(GL_TRIANGLES);
-  }
-  for(n = 0;n<meshi->npatches;n++){
-    int drawit;
-
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
-    if(iblock!=-1){
-      bc = meshblock->blockageinfoptrs[iblock];
-      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += boundary_row[n]*boundary_col[n];
-        continue;
-      }
-    }
-    drawit = 0;
-    if(meshi->vis_boundaries[n]==1&&meshi->patchdir[n]>0){
-      if(boundarytype[n]==INTERIORwall||showpatch_both==0){
-        drawit = 1;
-      }
-    }
-    if(drawit==1){
-      nrow = boundary_row[n];
-      ncol = boundary_col[n];
-      xyzpatchcopy = xyzpatch+3*blockstart[n];
-      patchblankcopy = patchblank+blockstart[n];
-      cpatchval_iframe_copy = cpatchval_iframe+blockstart[n];
-      if(hidepatchsurface==0){
-        glPushMatrix();
-        switch(meshi->patchdir[n]){
-        case XDIR:
-          glTranslatef(dboundx, 0.0, 0.0);
-          break;
-        case YDIR:
-          glTranslatef(0.0, -dboundy, 0.0);
-          break;
-        case ZDIR:
-          glTranslatef(0.00, 0.0, dboundz);
-          break;
-        default:
-          ASSERT(FFALSE);
-          break;
-        }
-        glBegin(GL_TRIANGLES);
-      }
-      for(irow = 0;irow<nrow-1;irow++){
-        int *patchblank1, *patchblank2;
-        float *xyzp1, *xyzp2;
-
-        xyzp1 = xyzpatchcopy+3*irow*ncol;
-        cpatchval1 = cpatchval_iframe_copy+irow*ncol;
-        patchblank1 = patchblankcopy+irow*ncol;
-        nn1 = nn+irow*ncol;
-
-        xyzp2 = xyzp1+3*ncol;
-        cpatchval2 = cpatchval1+ncol;
-        patchblank2 = patchblank1+ncol;
-        nn2 = nn1+ncol;
-
-        for(icol = 0;icol<ncol-1;icol++){
-          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            color11 = rgb_patch+4*(*cpatchval1);
-            color12 = rgb_patch+4*(*(cpatchval1+1));
-            color21 = rgb_patch+4*(*cpatchval2);
-            color22 = rgb_patch+4*(*(cpatchval2+1));
-            if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
-              if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
-              if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1])color12 = &char_color[0];
-              if(meshi->thresholdtime[nn2+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol])color21 = &char_color[0];
-              if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1])color22 = &char_color[0];
-            }
-            if(ABS(*cpatchval1-*(cpatchval2+1))<ABS(*(cpatchval1+1)-*cpatchval2)){
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-            }
-            else{
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-            }
-          }
-          cpatchval1++; cpatchval2++; patchblank1++; patchblank2++;
-          xyzp1 += 3;
-          xyzp2 += 3;
-        }
-      }
-      if(hidepatchsurface==0){
-        glEnd();
-        glPopMatrix();
-      }
-    }
-    nn += boundary_row[n]*boundary_col[n];
-  }
-
-  /* if a contour boundary DOES match a blockage face then draw "one sides" of boundary */
-  nn = 0;
-  for(n = 0;n<meshi->npatches;n++){
-    int drawit;
-
-    iblock = meshi->blockonpatch[n];
-    meshblock = meshi->meshonpatch[n];
-    ASSERT((iblock!=-1&&meshblock!=NULL)||(iblock==-1&&meshblock==NULL));
-    if(iblock!=-1&&meshblock!=NULL){
-      bc = meshblock->blockageinfoptrs[iblock];
-      if(bc->showtimelist!=NULL&&bc->showtimelist[itimes]==0){
-        nn += boundary_row[n]*boundary_col[n];
-        continue;
-      }
-    }
-    drawit = 0;
-    if(vis_boundaries[n]==1&&patchdir[n]<0){
-      if(boundarytype[n]==INTERIORwall||showpatch_both==0){
-        drawit = 1;
-      }
-    }
-    if(drawit==1){
-      nrow = boundary_row[n];
-      ncol = boundary_col[n];
-      xyzpatchcopy = xyzpatch+3*blockstart[n];
-      patchblankcopy = patchblank+blockstart[n];
-      cpatchval_iframe_copy = cpatchval_iframe+blockstart[n];
-      if(hidepatchsurface==0){
-        glPushMatrix();
-        switch(meshi->patchdir[n]){
-        case XDIRNEG:
-          glTranslatef(-dboundx, 0.0, 0.0);
-          break;
-        case YDIRNEG:
-          glTranslatef(0.0, dboundy, 0.0);
-          break;
-        case ZDIRNEG:
-          glTranslatef(0.00, 0.0, -dboundz);
-          break;
-        default:
-          ASSERT(FFALSE);
-          break;
-        }
-        glBegin(GL_TRIANGLES);
-      }
-      for(irow = 0;irow<nrow-1;irow++){
-        int *patchblank1, *patchblank2;
-        float *xyzp1, *xyzp2;
-
-        xyzp1 = xyzpatchcopy+3*irow*ncol;
-        patchblank1 = patchblankcopy+irow*ncol;
-        nn1 = nn+irow*ncol;
-        xyzp2 = xyzp1+3*ncol;
-        cpatchval1 = cpatchval_iframe_copy+irow*ncol;
-        cpatchval2 = cpatchval1+ncol;
-        patchblank2 = patchblank1+ncol;
-        nn2 = nn1+ncol;
-
-        for(icol = 0;icol<ncol-1;icol++){
-          if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            color11 = rgb_patch+4*(*cpatchval1);
-            color12 = rgb_patch+4*(*(cpatchval1+1));
-            color21 = rgb_patch+4*(*cpatchval2);
-            color22 = rgb_patch+4*(*(cpatchval2+1));
-            if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
-              if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
-              if(meshi->thresholdtime[nn1+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol+1])color12 = &char_color[0];
-              if(meshi->thresholdtime[nn2+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol])color21 = &char_color[0];
-              if(meshi->thresholdtime[nn2+icol+1]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn2+icol+1])color22 = &char_color[0];
-            }
-            if(ABS(*cpatchval1-*(cpatchval2+1))<ABS(*(cpatchval1+1)-*cpatchval2)){
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-            }
-            else{
-              glColor4fv(color11);
-              glVertex3fv(xyzp1);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color12);
-              glVertex3fv(xyzp1+3);
-
-              glColor4fv(color21);
-              glVertex3fv(xyzp2);
-
-              glColor4fv(color22);
-              glVertex3fv(xyzp2+3);
-            }
-          }
-          cpatchval1++; cpatchval2++; patchblank1++; patchblank2++;
-          xyzp1 += 3;
-          xyzp2 += 3;
-        }
-      }
-      if(hidepatchsurface==0){
-        glEnd();
-        glPopMatrix();
-      }
-    }
-    nn += boundary_row[n]*boundary_col[n];
-  }
-  if(hidepatchsurface==1){
-    glEnd();
-  }
-  if((use_transparency_data==1&&contour_type==LINE_CONTOURS)||setpatchchopmin==1||setpatchchopmax==1)TransparentOff();
-}
-
 /* ------------------ DrawBoundaryFrame ------------------------ */
 
 void DrawBoundaryFrame(int flag){
@@ -4402,22 +3983,12 @@ void DrawBoundaryFrame(int flag){
 
         patchi = patchinfo + filenum;
         if(patchi->loaded==0||patchi->display==0||patchi->shortlabel_index!=iboundarytype)continue;
-        if(usetexturebar!=0){
-          if(vis_threshold==1&&do_threshold==1){
-            if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
-              DrawBoundaryThresholdCellcenter(meshi);
-            }
-            else if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
-              DrawBoundaryTextureThreshold(meshi);
-            }
+        if(vis_threshold==1&&do_threshold==1){
+          if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
+            DrawBoundaryThresholdCellcenter(meshi);
           }
-          else{
-            if(patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
-              DrawBoundaryCellCenter(meshi);
-            }
-            else if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
-              DrawBoundaryTexture(meshi);
-            }
+          else if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
+            DrawBoundaryTextureThreshold(meshi);
           }
         }
         else{
@@ -4425,7 +3996,7 @@ void DrawBoundaryFrame(int flag){
             DrawBoundaryCellCenter(meshi);
           }
           else if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER){
-            DrawBoundary(meshi);
+            DrawBoundaryTexture(meshi);
           }
         }
         if(vis_threshold==1&&vis_onlythreshold==1&&do_threshold==1)DrawOnlyThreshold(meshi);

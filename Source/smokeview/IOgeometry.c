@@ -473,7 +473,7 @@ void DrawGeom(int flag, int timestate){
   float skinny_color[]={1.0,0.0,0.0,1.0};
   float *last_color=NULL;
   float last_transparent_level=-1.0;
-  int ntris;
+  int ntris=0;
   tridata **tris;
   int texture_state = OFF, texture_first=1;
 
@@ -485,6 +485,7 @@ void DrawGeom(int flag, int timestate){
     ntris=ntransparent_triangles;
     tris=transparent_triangles;
   }
+  if(ntris==0)return;
 
   if(ntris>0&&timestate==GEOM_STATIC){
     float *color;
@@ -492,9 +493,11 @@ void DrawGeom(int flag, int timestate){
 
   // draw geometry surface
 
-    if(flag==DRAW_TRANSPARENT&&use_transparency_data==1)TransparentOn();
+    if(flag==DRAW_TRANSPARENT&&use_transparency_data==1){
+      TransparentOn();
+    }
 
-    if(usetexturebar==1&&texture_state==OFF){
+    if(texture_state==OFF){
       texture_state=TextureOn(texture_iso_colorbar_id,&texture_first);
     }
 
@@ -672,7 +675,7 @@ void DrawGeom(int flag, int timestate){
               factor = ABS(DOT3(v1, v2));
               transparent_level_local_new = CLAMP(transparent_level_local, 0.0, 1.0);
               if(factor!=0.0&&transparent_level_local<1.0)transparent_level_local_new = 1.0-pow(1.0-transparent_level_local, 1.0/factor);
-              if(usetexturebar==1&&show_iso_color==1&&vertvals!=NULL&&trianglei->geomtype!=GEOM_GEOM){
+              if(show_iso_color==1&&vertvals!=NULL&&trianglei->geomtype!=GEOM_GEOM){
                 if(texture_state==OFF){
                   glEnd();
                   texture_state = TextureOn(texture_iso_colorbar_id, &texture_first);
@@ -696,7 +699,7 @@ void DrawGeom(int flag, int timestate){
       }
     }
     glEnd();
-    if(usetexturebar==1&&texture_state==ON){
+    if(texture_state==ON){
       texture_state=TextureOff();
     }
 
@@ -782,10 +785,14 @@ void DrawGeom(int flag, int timestate){
     glDisable(GL_COLOR_MATERIAL);
     DISABLE_LIGHTING;
     glPopMatrix();
+#ifdef _FORCE_TRANSPARENCY
+    TransparentOff();
+#else
     if(flag==DRAW_TRANSPARENT){
       if(use_transparency_data==1)TransparentOff();
       return;
     }
+#endif
     if(cullfaces==1)glEnable(GL_CULL_FACE);
   }
 
@@ -1853,7 +1860,7 @@ void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
   int nvertfaces[2];
   float times_local[2];
   int nt;
-  int returncode;
+  int returncode=0;
   int version;
   int nfloat_vals, nint_vals;
   int *int_vals;
@@ -1948,7 +1955,7 @@ void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
   int one=0;
   int nvertfacesvolumes[3];
   int nt;
-  int returncode;
+  int returncode=0;
   int version;
   int nverts=0, ntris=0, nvolumes=0;
   int first_frame_static;
@@ -2006,7 +2013,7 @@ void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
 void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
   FILE *stream;
   int version;
-  int returncode;
+  int returncode=0;
   int one=0;
 
   stream = fopen(geomi->file,"rb");
@@ -2034,7 +2041,7 @@ void GetGeomDataHeader(char *file, int *ntimes_local, int *nvals){
   int nface_static,nface_dynamic;
   float time_local;
   int nt,nv;
-  int returncode;
+  int returncode=0;
 
   stream = fopen(file,"r");
   if(stream==NULL){
@@ -2100,7 +2107,7 @@ void InitGeomlist(geomlistdata *geomlisti){
 FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode){
   FILE *stream;
   int one=1;
-  int returncode;
+  int returncode=0;
   int ntimes_local;
   int version;
   int nvertfacesvolumes[3];
@@ -2304,7 +2311,7 @@ int OutSideDomain(vertdata **verts){
 FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
   FILE *stream;
   int one=1;
-  int returncode;
+  int returncode=0;
   int ntimes_local;
   int i;
   vertdata *verts;
@@ -2422,7 +2429,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
 
       // compute texture coordinates
 
-      if(terrain_texture!=NULL&&geomi->is_terrain==1){
+      if(terrain_textures!=NULL&&geomi->is_terrain==1){
         float xmin, xmax, ymin, ymax, xfactor, yfactor;
         int ii;
 
@@ -2503,8 +2510,8 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
         }
         if(geomi->geomtype==GEOM_GEOM)surfi->used_by_geom = 1;
         triangles[ii].geomsurf=surfi;
-        if(terrain_texture!=NULL&&geomi->is_terrain==1){
-          triangles[ii].textureinfo = terrain_texture;
+        if(terrain_textures!=NULL&&geomi->is_terrain==1){
+          triangles[ii].textureinfo = terrain_textures;
         }
         else{
           triangles[ii].textureinfo = surfi->textureinfo;
@@ -3056,7 +3063,7 @@ void ReadGeomFile2(geomdata *geomi){
 FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode){
   FILE *stream;
   int version;
-  int returncode;
+  int returncode=0;
   int one=0;
   FILE_SIZE return_filesize=0;
 #ifdef pp_ISOTIME
@@ -3356,6 +3363,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
+      if(auto_terrain==1)glTranslatef(-0.0, 0.0, SCALE2FDS(0.01));
       glBegin(GL_TRIANGLES);
       if((patchi->patch_filetype!=PATCH_GEOMETRY_BOUNDARY&&smooth_iso_normal == 0)
        ||(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&geomdata_smoothnormals==0)
@@ -3701,6 +3709,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
         int draw_foreground;
 
         trianglei = geomlisti->triangles + j;
+        draw_foreground = 0;
 
         if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
           int insolid;
@@ -3863,6 +3872,7 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
 
       // reject unwanted geometry
 
+      if(auto_terrain==1&&i==0)continue;
       if( (geomi->fdsblock == NOT_FDSBLOCK && geomi->geomtype!=GEOM_ISO)|| geomi->patchactive == 1)continue;
       for(itime = 0; itime < 2; itime++){
         geomlistdata *geomlisti;

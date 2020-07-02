@@ -25,7 +25,11 @@ FILE_m *fopen_mo(char *file, FILE_SIZE offset, FILE_SIZE size, char *mode){
     return NULL;
   }
 
-  if(NewMemory((void **)&stream_m, sizeof(FILE_m))==0)return NULL;
+  if(NewMemory((void **)&stream_m, sizeof(FILE_m))==0){
+    FREEMEMORY(m_file);
+    fclose(stream);
+    return NULL;
+  }
   stream_m->buffer = NULL;
   stream_m->buffer_beg = NULL;
   strcpy(m_file, file);

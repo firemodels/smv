@@ -268,8 +268,17 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(ngeominfoptrs>0){
     CLIP_GEOMETRY;
+#ifndef WUI_NEW
+#ifdef pp_WUI_VAO
+    if(have_terrain_vao==0){
+      DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
+      DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
+    }
+#else
     DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
     DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
+#endif
+#endif
     SNIFF_ERRORS("DrawGeom");
   }
 
@@ -291,6 +300,20 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw terrain +++++++++++++++++++++++++ */
 
+#ifdef pp_WUI_VAO
+  if(have_terrain_vao==1&&usegpu==1){
+    CLIP_GEOMETRY;
+    DrawTerrainGeomGPU(DRAW_OPAQUE);
+  }
+  else{
+    CLIP_GEOMETRY;
+    DrawTerrainGeom(DRAW_OPAQUE);
+  }
+#else
+  CLIP_GEOMETRY;
+  DrawTerrainGeom(DRAW_OPAQUE);
+#endif
+
   if(visTerrainType != TERRAIN_HIDDEN&&nterraininfo>0&&ngeominfo==0){
     int i;
 
@@ -307,17 +330,17 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
       terri = terraininfo + i;
       switch(visTerrainType){
       case TERRAIN_3D:
-        DrawTerrain(terri);
+        DrawTerrainOBST(terri);
         break;
       case TERRAIN_2D_STEPPED:
       case TERRAIN_2D_LINE:
         break;
       case TERRAIN_3D_MAP:
-        if(terrain_texture != NULL&&terrain_texture->loaded == 1){
-          DrawTerrainTexture(terri);
+        if(terrain_textures != NULL&&terrain_textures[iterrain_textures].loaded == 1){
+          DrawTerrainOBSTTexture(terri);
         }
         else{
-          DrawTerrain(terri);
+          DrawTerrainOBST(terri);
         }
         break;
       default:
@@ -398,6 +421,22 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   //**********************************************************************************
   //**********************************************************************************
   //**********************************************************************************
+
+  /* ++++++++++++++++++++++++ draw terrain +++++++++++++++++++++++++ */
+
+#ifdef pp_WUI_VAO
+  if(have_terrain_vao==1&&usegpu==1){
+    CLIP_GEOMETRY;
+    DrawTerrainGeomGPU(DRAW_TRANSPARENT);
+  }
+  else{
+    CLIP_GEOMETRY;
+    DrawTerrainGeom(DRAW_TRANSPARENT);
+  }
+#else
+  CLIP_GEOMETRY;
+  DrawTerrainGeom(DRAW_TRANSPARENT);
+#endif
 
   /* ++++++++++++++++++++++++ draw triangles +++++++++++++++++++++++++ */
 

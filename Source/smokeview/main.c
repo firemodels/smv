@@ -39,6 +39,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -fed           - pre-calculate all FED slice files"));
     PRINTF("%s\n", _(" -geominfo      - output information about geometry triangles"));
     PRINTF("%s\n", _(" -html          - output html version of smokeview scene"));
+    PRINTF("%s\n", _(" -info            generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info"));
     PRINTF("%s\n", _(" -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian"));
     PRINTF("%s\n", _(" -ng_ini        - non-graphics version of -ini."));
     PRINTF("%s\n", _(" -scriptrenderdir dir - directory containing script rendered images"));
@@ -50,7 +51,9 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", " -luascript scriptfile - run the Lua script file scriptfile");
     PRINTF("%s\n", " -killscript    - exit smokeview (with an error code) if the script fails");
 #endif
-    PRINTF("%s\n", _(" -runhtmlscript - run the script file casename.ssf without using graphics"));
+    PRINTF("%s\n", _(" -htmlscript scriptfile - run the script file scriptfile without using the video card"));
+    PRINTF("%s\n", _(" -runhtmlscript - run the script file casename.ssf without using the video card"));
+    PRINTF("%s\n", _("     the -htmlscript and -runhtmlscript keywords are used to generate JSON files"));
     PRINTF("%s\n", _(" -sizes         - output files sizes then exit"));
     PRINTF("%s\n", _(" -skipframe n   - render every n frames"));
     PRINTF("%s\n", _(" -smoke3d       - only show 3d smoke"));
@@ -207,6 +210,7 @@ void ParseCommandline(int argc, char **argv){
         strncmp(argi, "-frames", 7) == 0 ||
         strncmp(argi, "-lang", 5) == 0 ||
         strncmp(argi, "-script", 7) == 0 ||
+        strncmp(argi, "-htmlscript", 11)==0||
 #ifdef pp_LUA
         strncmp(argi, "-luascript", 10) == 0 ||
 #endif
@@ -439,6 +443,10 @@ void ParseCommandline(int argc, char **argv){
     else if(strncmp(argv[i], "-demo", 5) == 0){
       demo_option = 1;
     }
+    else if(strncmp(argv[i], "-info", 5)==0){
+      generate_info_from_commandline = 1;
+      use_graphics = 0;
+    }
     else if(strncmp(argv[1], "-sizes", 6)==0){
       update_filesizes = 1;
       use_graphics = 0;
@@ -616,7 +624,14 @@ void ParseCommandline(int argc, char **argv){
       from_commandline = 1;
       make_volrender_script = 1;
     }
-    else if(strncmp(argv[i], "-script", 7) == 0){
+    else if(strncmp(argv[i], "-script", 7)==0||strncmp(argv[i], "-htmlscript", 11)==0){
+      int is_htmlscript;
+
+      is_htmlscript = strncmp(argv[i], "-htmlscript", 11);
+      if(is_htmlscript==0){
+        use_graphics = 0;
+        runhtmlscript = 1;
+      }
       from_commandline = 1;
       iso_multithread=0;
       ++i;
@@ -627,7 +642,9 @@ void ParseCommandline(int argc, char **argv){
         strcpy(scriptbuffer, argv[i]);
         sfd = InsertScriptFile(scriptbuffer);
         if(sfd != NULL)default_script = sfd;
-        runscript = 1;
+        if(is_htmlscript!=0){
+          runscript = 1;
+        }
       }
     }
 #ifdef pp_LUA

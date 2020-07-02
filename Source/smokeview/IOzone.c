@@ -843,7 +843,7 @@ void GetSliceTempBounds(void){
     slicei = sliceinfo + i;
     if(strcmp(slicei->label.shortlabel, "TEMP")!=0)continue;
     if(use_cslice==1){
-      GetSliceSizes(slicei->file, &slicei->nslicei, &slicei->nslicej, &slicei->nslicek, &slicei->ntimes, sliceframestep, &error,
+      GetSliceSizes(slicei->file, ALL_SLICE_FRAMES, &slicei->nslicei, &slicei->nslicej, &slicei->nslicek, &slicei->ntimes, sliceframestep, &error,
         settmin_s, settmax_s, tmin_s, tmax_s, &headersize, &framesize);
     }
     else{
@@ -856,9 +856,13 @@ void GetSliceTempBounds(void){
     qmin = 1.0e30;
     qmax = -1.0e30;
     if(use_cslice==1){
-      GetSliceData(slicei->file, &slicei->is1, &slicei->is2, &slicei->js1, &slicei->js2, &slicei->ks1, &slicei->ks2, &slicei->idir,
+      GetSliceData(slicei->file, ALL_SLICE_FRAMES, &slicei->is1, &slicei->is2, &slicei->js1, &slicei->js2, &slicei->ks1, &slicei->ks2, &slicei->idir,
         &qmin, &qmax, slicei->qslicedata, slicei->times, ntimes_slice_old, &slicei->ntimes,
-        sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s);
+        sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s
+#ifdef pp_MULTI_RES
+        , slicei->multi_res
+#endif
+      );
     }
     else{
       FORTgetslicedata(slicei->file,
@@ -1794,7 +1798,7 @@ float GetZoneThick(int dir, roomdata *roomi, float xyz[3]){
   float dx, dy, dz, L;
   float alpha, alpha_min, alpha_ylay;
   float x0, x1, yy0, yy1, z0, z1;
-  float factor_L, factor_U, factor;
+  float factor_L=0.0, factor_U=0.0, factor;
   float ylay;
   float thick;
   float odl, odu;
