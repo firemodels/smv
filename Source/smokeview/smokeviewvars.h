@@ -998,6 +998,9 @@ SVEXTERN char SVDECL(*camera_label,NULL), SVDECL(*colorbar_label,NULL);
 
 SVEXTERN int vis_boundary_type[7], SVDECL(update_ini_boundary_type,0);
 SVEXTERN int p3_extreme_min[MAXPLOT3DVARS], p3_extreme_max[MAXPLOT3DVARS];
+SVEXTERN int SVDECL(show_mirror_boundary,0), SVDECL(show_open_boundary, 0);
+SVEXTERN int SVDECL(n_mirrorvents,0), SVDECL(n_openvents,0);
+
 
 SVEXTERN int setp3min[MAXPLOT3DVARS], setp3min_save[MAXPLOT3DVARS];
 SVEXTERN float p3min[MAXPLOT3DVARS], p3min_save[MAXPLOT3DVARS];

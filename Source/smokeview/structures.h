@@ -513,7 +513,7 @@ typedef struct _ventdata {
   int hideboundary;
   int dir,dir2,vent_id;
   int useventcolor;
-  int isOpenvent;
+  int isOpenvent, isMirrorvent;
   float xvent1_orig, xvent2_orig;
   float yvent1_orig, yvent2_orig;
   float zvent1_orig, zvent2_orig;

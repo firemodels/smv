@@ -580,13 +580,21 @@ void NodeInExternalVent(int ipatch, int *patchblank, const meshdata *meshi,
   if(j1 == j2)dir = 2;
   if(k1 == k2)dir = 3;
 
-  for(ii = 0; ii < meshi->nvents; ii++){
+  for(ii = 0; ii<meshi->nvents; ii++){
     ventdata *vi;
     int imin, jmin, kmin, imax, jmax, kmax;
+    int doit;
 
-    vi = meshi->ventinfo + ii;
-    if(vi->hideboundary == 1 && option == 0)continue;
+    vi = meshi->ventinfo+ii;
+
     if(vi->dir2 != dir)continue;
+
+    doit = 0;
+    if(show_open_boundary==1&&vi->isOpenvent==1)doit = 1;
+    if(show_mirror_boundary==1&&vi->isMirrorvent==1)doit = 1;
+    if(vi->hideboundary!=1||option!=0)doit = 1;
+    if(doit==0)continue;
+
     switch(dir){
       int i, j, k;
 

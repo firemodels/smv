@@ -9264,6 +9264,7 @@ typedef struct {
         vi->usecolorindex=0;
         vi->nshowtime=0;
         vi->isOpenvent=0;
+        vi->isMirrorvent = 0;
         vi->hideboundary=0;
         vi->surf[0]=vent_surfacedefault;
         vi->textureinfo[0]=NULL;
@@ -9340,9 +9341,8 @@ typedef struct {
         }
         if(surfinfo!=NULL&&s_num[0]>=0&&s_num[0]<nsurfinfo){
           vi->surf[0]=surfinfo+s_num[0];
-          if(vi->surf[0]!=NULL&&strncmp(vi->surf[0]->surfacelabel,"OPEN",4)==0){
-            vi->isOpenvent=1;
-          }
+          if(strncmp(vi->surf[0]->surfacelabel,"OPEN",4)==0)vi->isOpenvent=1;
+          if(strncmp(vi->surf[0]->surfacelabel, "MIRROR", 6)==0)vi->isMirrorvent = 1;
           vi->surf[0]->used_by_vent=1;
         }
         vi->color_bak=surfinfo[0].color;
@@ -10383,7 +10383,7 @@ int ReadIni2(char *inifile, int localfile){
 
       update_ini_boundary_type = 1;
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %i %i %i %i", vbt,vbt+1,vbt+2,vbt+3,vbt+4,vbt+5,vbt+6);
+      sscanf(buffer, " %i %i %i %i %i %i %i %i %i", vbt,vbt+1,vbt+2,vbt+3,vbt+4,vbt+5,vbt+6, &show_mirror_boundary, &show_mirror_boundary);
       continue;
     }
     if(Match(buffer, "GEOMBOUNDARYPROPS")==1){
@@ -14544,7 +14544,7 @@ void WriteIni(int flag,char *filename){
   for(i = 0; i<7; i++){
     fprintf(fileout, " %i ", vis_boundary_type[i]);
   }
-  fprintf(fileout, "\n");
+  fprintf(fileout, " %i %i \n", show_mirror_boundary, show_mirror_boundary);
   fprintf(fileout, "WINDROSEDEVICE\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n",
     viswindrose, showref_windrose, windrose_xy_vis, windrose_xz_vis, windrose_yz_vis, windstate_windrose, showlabels_windrose,

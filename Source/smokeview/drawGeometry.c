@@ -1111,6 +1111,8 @@ void SetCVentDirs(void){
 void SetVentDirs(void){
   int ii;
 
+  n_mirrorvents = 0;
+  n_openvents = 0;
   for(ii=0;ii<nmeshes;ii++){
     meshdata *meshi;
     float *xplttemp;
@@ -1141,6 +1143,8 @@ void SetVentDirs(void){
 
       vi=meshi->ventinfo+iv;
 
+      if(vi->isMirrorvent==1)n_mirrorvents++; // count number of mirror and open vents
+      if(vi->isOpenvent==1)n_openvents++;
       dir=0;
       if(vi->imin==vi->imax)dir=XDIR;
       if(vi->jmin==vi->jmax)dir=YDIR;

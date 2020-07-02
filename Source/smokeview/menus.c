@@ -60,7 +60,8 @@ float     slice_load_time;
 
 #define MENU_UPDATEBOUNDS             -6
 #define MENU_BNDF_SHOW_MESH_INTERFACE -8
-
+#define MENU_BNDF_MIRROR              -5
+#define MENU_BNDF_OPEN                -9
 
 #define MENU_DUMMY3 -2
 
@@ -5264,6 +5265,14 @@ void LoadBoundaryMenu(int value){
   }
   else{
     switch(value){
+    case MENU_BNDF_MIRROR:
+      show_mirror_boundary = 1 - show_mirror_boundary;
+      updatemenu = 1;
+      break;
+    case MENU_BNDF_OPEN:
+      show_open_boundary = 1 - show_open_boundary;
+      updatemenu = 1;
+     break;
     case MENU_BNDF_SHOW_MESH_INTERFACE:
       show_bndf_mesh_interface = 1-show_bndf_mesh_interface;
       updatemenu = 1;
@@ -6230,7 +6239,7 @@ static int vectorskipmenu=0,unitsmenu=0;
 static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
 static int gridslicemenu=0, blockagemenu=0, immersedmenu=0, immersedinteriormenu=0, immersedsurfacemenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
-static int loadpatchsinglemenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=0,unloadsmoke3dsinglemenu=0, showvolsmokesinglemenu=0;
+static int loadpatchsinglemenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=0,unloadsmoke3dsinglemenu=0, showvolsmokesinglemenu=0, includepatchmenu=0;
 static int plot3dshowsinglemeshmenu=0;
 static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
 static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchsinglemenu=0,showpatchextmenu=0;
@@ -10897,6 +10906,20 @@ updatemenu=0;
 
 // call patch submenus from main patch menu
 
+        CREATEMENU(includepatchmenu, LoadBoundaryMenu);
+        if(nmeshes>1){
+          if(show_bndf_mesh_interface==1)glutAddMenuEntry("*Mesh interface", MENU_BNDF_SHOW_MESH_INTERFACE);
+          if(show_bndf_mesh_interface==0)glutAddMenuEntry("Mesh interface", MENU_BNDF_SHOW_MESH_INTERFACE);
+        }
+        if(n_mirrorvents>0){
+          if(show_mirror_boundary==1)glutAddMenuEntry("*Mirror surface", MENU_BNDF_MIRROR);
+          if(show_mirror_boundary==0)glutAddMenuEntry("Mirror surface", MENU_BNDF_MIRROR);
+        }
+        if(n_openvents>0){
+          if(show_open_boundary==1)glutAddMenuEntry("*Open vent", MENU_BNDF_OPEN);
+          if(show_open_boundary==0)glutAddMenuEntry("Open vent", MENU_BNDF_OPEN);
+        }
+
         CREATEMENU(loadpatchmenu,LoadBoundaryMenu);
         iloadsubpatchmenu_b=0;
         for(ii=0;ii<npatchinfo;ii++){
@@ -10925,10 +10948,10 @@ updatemenu=0;
       }
 
       glutAddMenuEntry("-",MENU_DUMMY3);
-      if(nmeshes>1){
-        if(show_bndf_mesh_interface==1)glutAddMenuEntry("*show on mesh interface", MENU_BNDF_SHOW_MESH_INTERFACE);
-        if(show_bndf_mesh_interface==0)glutAddMenuEntry("show on mesh interface",  MENU_BNDF_SHOW_MESH_INTERFACE);
+      if(nmeshes>1||n_mirrorvents>0||n_openvents>0){
+        GLUTADDSUBMENU(_("Include"),includepatchmenu);
       }
+
       glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
       if(nboundaryslicedups>0){
         GLUTADDSUBMENU(_("Duplicate boundary slices"),duplicateboundaryslicemenu);
