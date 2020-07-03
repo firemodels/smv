@@ -2418,7 +2418,7 @@ void GetGeomDataSize(char *filename,int *ntimes,int *nvars,int *error){
   fclose(stream);
 }
 
-/* ------------------ ReadGeomData ------------------------ */
+/* ------------------ GetGeomData------------------------ */
 
 FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *nstatics, int *ndynamics, float *vals, int *error){
   FILE_SIZE file_size;
@@ -2550,16 +2550,14 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 
   GetGeomDataSize(file, &ntimes_local, &nvals, &error);
 
-  if(nvals==0){
-    if(load_flag!=UPDATE_HIST)PRINTF(" - no data\n");
-    return 0;
-  }
-  if(nvals>0&&ntimes_local>0){
+  if(ntimes_local>0){
     NewMemory((void **)&patchi->geom_nstatics, ntimes_local*sizeof(int));
     NewMemory((void **)&patchi->geom_ndynamics, ntimes_local*sizeof(int));
     NewMemory((void **)&patchi->geom_times, ntimes_local*sizeof(float));
     NewMemory((void **)&patchi->geom_ivals_static, ntimes_local*sizeof(int *));
     NewMemory((void **)&patchi->geom_ivals_dynamic, ntimes_local*sizeof(int *));
+  }
+  if(nvals>0){
     NewMemory((void **)&patchi->geom_vals, nvals*sizeof(float));
     NewMemory((void **)&patchi->geom_ivals, nvals*sizeof(char));
   }
