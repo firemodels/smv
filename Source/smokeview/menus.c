@@ -9712,6 +9712,27 @@ updatemenu=0;
           }
         }
 
+    if(nslicedups > 0){
+      CREATEMENU(duplicatevectorslicemenu,LoadMultiVSliceMenu);
+      if(vectorslicedup_option == SLICEDUP_KEEPALL){
+        glutAddMenuEntry(_("  *keep all"), MENU_KEEP_ALL);
+      }
+      else{
+        glutAddMenuEntry(_("  keep all"), MENU_KEEP_ALL);
+      }
+      if(vectorslicedup_option == SLICEDUP_KEEPFINE){
+        glutAddMenuEntry(_("  *keep fine"), MENU_KEEP_FINE);
+      }
+      else{
+        glutAddMenuEntry(_("  keep fine"), MENU_KEEP_FINE);
+      }
+      if(vectorslicedup_option == SLICEDUP_KEEPCOARSE){
+        glutAddMenuEntry(_("  *keep coarse"), MENU_KEEP_COARSE);
+      }
+      else{
+        glutAddMenuEntry(_("  keep coarse"), MENU_KEEP_COARSE);
+      }
+    }
     if(nmultivsliceinfo<nvsliceinfo){
       CREATEMENU(unloadmultivslicemenu,UnloadMultiVSliceMenu);
       for(i=0;i<nmultivsliceinfo;i++){
@@ -9805,27 +9826,6 @@ updatemenu=0;
         }
       }
 
-      if(nslicedups > 0){
-        CREATEMENU(duplicatevectorslicemenu,LoadMultiVSliceMenu);
-        if(vectorslicedup_option == SLICEDUP_KEEPALL){
-          glutAddMenuEntry(_("  *keep all"), MENU_KEEP_ALL);
-        }
-        else{
-          glutAddMenuEntry(_("  keep all"), MENU_KEEP_ALL);
-        }
-        if(vectorslicedup_option == SLICEDUP_KEEPFINE){
-          glutAddMenuEntry(_("  *keep fine"), MENU_KEEP_FINE);
-        }
-        else{
-          glutAddMenuEntry(_("  keep fine"), MENU_KEEP_FINE);
-        }
-        if(vectorslicedup_option == SLICEDUP_KEEPCOARSE){
-          glutAddMenuEntry(_("  *keep coarse"), MENU_KEEP_COARSE);
-        }
-        else{
-          glutAddMenuEntry(_("  keep coarse"), MENU_KEEP_COARSE);
-        }
-      }
       nloadsubmvslicemenu=0;
       CREATEMENU(loadmultivslicemenu,LoadMultiVSliceMenu);
       for(i=0;i<nmultivsliceinfo;i++){
@@ -9865,6 +9865,7 @@ updatemenu=0;
       }
       GLUTADDSUBMENU(loadmenulabel, vsliceloadmenu);
     }
+
     if(nslicedups > 0){
       GLUTADDSUBMENU(_("Duplicate vector slices"), duplicatevectorslicemenu);
     }
