@@ -4137,15 +4137,6 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   FREEMEMORY(slice_mask0);
 }
 
-/* ------------------ AdjustBoundsNoSet ------------------------ */
-#ifdef pp_NEWBOUND_DIALOG
-void AdjustBoundsNoSet(float *pdata, int ndata, float *pmin, float *pmax){
-  if(axislabels_smooth==1){
-    SmoothLabel(pmin, pmax, nrgb);
-  }
-}
-#endif
-
 /* ------------------ AdjustBounds ------------------------ */
 
 void AdjustBounds(int setmin, int setmax, float *pdata, int ndata, float *pmin, float *pmax){
@@ -4212,9 +4203,6 @@ void AdjustBounds(int setmin, int setmax, float *pdata, int ndata, float *pmin, 
     if(setmax==PERCENTILE_MAX)*pmax = ppmin+(nbig+1)*dp;
 
   }
-  if(axislabels_smooth==1){
-    SmoothLabel(pmin, pmax, nrgb);
-  }
 }
 
 /* ------------------ AdjustSliceBounds ------------------------ */
@@ -4231,9 +4219,7 @@ void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax){
     pdata = sd->qslicedata;
     ndata = sd->nslicetotal;
   }
-#ifdef pp_NEWBOUND_DIALOG
-  AdjustBoundsNoSet(pdata, ndata, pmin, pmax);
-#else
+#ifndef pp_NEWBOUND_DIALOG
   AdjustBounds(glui_setslicemin, glui_setslicemax, pdata, ndata, pmin, pmax);
 #endif
 }

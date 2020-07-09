@@ -103,7 +103,7 @@ GLUI_Checkbox *CHECKBOX_colorbar_autoflip = NULL;
 #ifdef pp_BETA
 GLUI_Checkbox *CHECKBOX_cullgeom=NULL;
 #endif
-GLUI_Checkbox *CHECKBOX_axislabels_smooth=NULL, *CHECKBOX_transparentflag=NULL;
+GLUI_Checkbox *CHECKBOX_transparentflag=NULL;
 GLUI_Checkbox *CHECKBOX_LB_visLabels=NULL;
 GLUI_Checkbox *CHECKBOX_LB_label_use_foreground=NULL;
 GLUI_Checkbox *CHECKBOX_LB_label_show_always=NULL;
@@ -255,7 +255,6 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LABELS_HMS 18
 #define SAVE_SETTINGS_DISPLAY 99
 
-#define COLORBAR_SMOOTH 113
 #define COLORBAND 115
 #define CB_USE_LIGHTING 120
 #define COLOR_AMB_GREY 116
@@ -773,7 +772,6 @@ extern "C" void GluiLabelsSetup(int main_window){
   SPINNER_colorbar_selection_width->set_int_limits(COLORBAR_SELECTION_WIDTH_MIN,COLORBAR_SELECTION_WIDTH_MAX);
   SPINNER_ncolorlabel_digits = glui_labels->add_spinner_to_panel(PANEL_colorbar_properties, _("digits:"), GLUI_SPINNER_INT, &ncolorlabel_digits, COLORLABEL_DIGITS, SliceBoundCB);
   SPINNER_ncolorlabel_digits->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
-  CHECKBOX_axislabels_smooth = glui_labels->add_checkbox_to_panel(PANEL_colorbar_properties, _("Smooth labels"), &axislabels_smooth, COLORBAR_SMOOTH, SliceBoundCB);
 
   glui_labels->add_column_to_panel(PANEL_cb11,false);
 
@@ -1396,12 +1394,6 @@ extern "C" void SetColorbarListIndex(int val){
 
 extern "C" int GetColorbarListIndex(void){
   return LIST_colorbar2->get_int_val();
-}
-
-/* ------------------ UpdateAxisLabelsSmooth ------------------------ */
-
-extern "C" void UpdateAxisLabelsSmooth(void){
-  if(CHECKBOX_axislabels_smooth!=NULL)CHECKBOX_axislabels_smooth->set_int_val(axislabels_smooth);
 }
 
 /* ------------------ UpdateTransparency ------------------------ */

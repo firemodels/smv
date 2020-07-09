@@ -104,9 +104,6 @@ EXTERNCPP int IsSmokeInMesh(meshdata *meshi);
 #endif
 EXTERNCPP void GetFileSizes(void);
 EXTERNCPP int IsSmokeComponentPresent(smoke3ddata *smoke3di);
-#ifdef pp_NEWBOUND_DIALOG
-EXTERNCPP void AdjustBoundsNoSet(float *pdata, int ndata, float *pmin, float *pmax);
-#endif
 EXTERNCPP void AdjustBounds(int setmin, int setmax, float *pdata, int ndata, float *pmin, float *pmax);
 EXTERNCPP void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax);
 EXTERNCPP void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax);
@@ -410,7 +407,6 @@ EXTERNCPP int  UpdateBoundaryHist(patchdata *patchi);
 EXTERNCPP void UpdateHideBoundarySurface(void);
 EXTERNCPP int  LastSliceLoadstack(void);
 EXTERNCPP int  LastVSliceLoadstack(void);
-EXTERNCPP void UpdateAxisLabelsSmooth(void);
 EXTERNCPP void UpdateTransparency(void);
 EXTERNCPP void UpdateScriptStart(void);
 EXTERNCPP void UpdateResearchMode(void);
@@ -883,7 +879,6 @@ EXTERNCPP FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time
 EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);
 
 EXTERNCPP void InitMenus(int unload);
-EXTERNCPP void SmoothLabel(float *min, float *max, int n);
 int ReadSMV(bufferstreamdata *stream);
 EXTERNCPP void ReadSMVDynamic(char *file);
 EXTERNCPP int  STRCMP(const char *s1, const char *s2);

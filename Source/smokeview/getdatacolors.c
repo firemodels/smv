@@ -286,9 +286,6 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
   if(settmax==PERCENTILE_MAX){
     tmax2=patchi->bounds.percentile_max;
   }
-  if(axislabels_smooth==1){
-    SmoothLabel(&tmin2,&tmax2,nrgb);
-  }
   if(settmin!=SET_MIN){
     *ttmin=tmin2;
   }

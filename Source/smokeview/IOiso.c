@@ -139,9 +139,6 @@ void GetIsoSizes(const char *isofile, int dataflag, FILE **isostreamptr, int *nv
     *niso_times += 1;
   }
   FSEEK(*isostreamptr,beg,SEEK_SET);
-  if(dataflag==1&&axislabels_smooth==1){
-    SmoothLabel(tmin_local,tmax_local,nrgb);
-  }
 }
 
 /* ------------------ ReadIsoGeomWrapup ------------------------ */

@@ -11784,11 +11784,6 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%f ", &ventoffset_factor);
       continue;
     }
-    if(Match(buffer, "AXISSMOOTH") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i ", &axislabels_smooth);
-      continue;
-    }
     if(Match(buffer, "SHOWBLOCKS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i ", &visBlocks);
@@ -14286,8 +14281,6 @@ void WriteIni(int flag,char *filename){
   GetGeomDialogState();
   fprintf(fileout, "APERTURE\n");
   fprintf(fileout, " %i\n", apertureindex);
-  fprintf(fileout, "AXISSMOOTH\n");
-  fprintf(fileout, " %i\n", axislabels_smooth);
   fprintf(fileout, "BLOCKLOCATION\n");
   fprintf(fileout, " %i\n", blocklocation);
   fprintf(fileout, "BEAM\n");

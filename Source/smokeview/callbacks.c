@@ -1627,10 +1627,6 @@ void Keyboard(unsigned char key, int flag){
         UpdateCurrentMesh(gbsave);
       }
       break;
-    case 'A':
-      axislabels_smooth=1-axislabels_smooth;
-      UpdateAxisLabelsSmooth();
-      break;
     case 'b':
     case 'B':
       switch(keystate){

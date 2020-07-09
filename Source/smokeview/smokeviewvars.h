@@ -1137,7 +1137,6 @@ SVEXTERN float SVDECL(partmin_save, 1.0), SVDECL(partmax_save, 0.0);
 
 SVEXTERN float SVDECL(zonemin,1.0), SVDECL(zonemax,0.0);
 SVEXTERN float speedmax;
-SVEXTERN int SVDECL(axislabels_smooth,1);
 SVEXTERN propdata SVDECL(*prop_evacdefault,NULL);
 SVEXTERN float hrrpuv_max_smv;
 SVEXTERN int FlowDir,ClipDir;

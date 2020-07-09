@@ -3710,10 +3710,6 @@ extern "C" void SliceBoundCB(int var){
       ColorbarMenu(selectedcolorbar_index);
       ColorbarGlobal2Local();
   }
-  if(var==COLORBAR_SMOOTH){
-    updatemenu=1;
-    return;
-  }
   switch(var){
     case UPDATE_SLICEDUPS:
     updatemenu = 1;
@@ -3789,7 +3785,6 @@ extern "C" void SliceBoundCB(int var){
         break;
       }
       if(research_mode==1){
-        axislabels_smooth=0;
         visColorbarVertical_save=visColorbarVertical;
         visColorbarVertical=1;
 
@@ -3919,7 +3914,6 @@ extern "C" void SliceBoundCB(int var){
 
         PRINTF("research mode off\n");
       }
-      UpdateAxisLabelsSmooth();
       SliceBoundCB(FILEUPDATE);
       break;
     case SMOOTH_SURFACES:
