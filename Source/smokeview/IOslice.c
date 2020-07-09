@@ -4137,93 +4137,6 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   FREEMEMORY(slice_mask0);
 }
 
-/* ------------------ AdjustBounds ------------------------ */
-
-void AdjustBounds(int setmin, int setmax, float *pdata, int ndata, float *pmin, float *pmax){
-  int nsmall, nbig, *buckets = NULL, n, level, total, alpha05;
-  float dp;
-  float ppmin;
-
-#define EPS_BUCKET 0.0001
-  if(setmin==PERCENTILE_MIN||setmax==PERCENTILE_MAX){
-    float abs_diff, denom;
-
-    abs_diff = ABS(*pmax-*pmin);
-    denom = MAX(ABS(*pmax), ABS(*pmin));
-    if(abs_diff<EPS_BUCKET||abs_diff<EPS_BUCKET*denom)abs_diff = 0.0;
-    dp = abs_diff/(float)NBUCKETS;
-    nsmall=0;
-    nbig = NBUCKETS;
-    if(NewMemory((void **)&buckets, NBUCKETS*sizeof(int))==0){
-      fprintf(stderr, "*** Error: Unable to allocate memory in getdatabounds\n");
-      return;
-    }
-
-    for(n = 0; n<NBUCKETS; n++){
-      buckets[n] = 0;
-    }
-    for(n = 0; n<ndata; n++){
-      if(pdata[n]<=*pmin){
-        level = 0;
-      }
-      else if(pdata[n]>=*pmax){
-        level = NBUCKETS-1;
-      }
-      else{
-        if(dp!=0.0f){
-          level = (int)((pdata[n]-*pmin)/dp);
-        }
-        else{
-          level = 0;
-        }
-      }
-      level = CLAMP(level,0,NBUCKETS-1);
-      buckets[level]++;
-    }
-    alpha05 = (int)(.01f*ndata);
-    total = 0;
-    for(n = 0; n<NBUCKETS; n++){
-      total += buckets[n];
-      if(total>alpha05){
-        nsmall = n;
-        break;
-      }
-    }
-    total = 0;
-    for(n = NBUCKETS; n>0; n--){
-      total += buckets[n-1];
-      if(total>alpha05){
-        nbig = n;
-        break;
-      }
-    }
-    FreeMemory(buckets);
-    ppmin = *pmin;
-    if(setmin==PERCENTILE_MIN)*pmin = ppmin+nsmall*dp;
-    if(setmax==PERCENTILE_MAX)*pmax = ppmin+(nbig+1)*dp;
-
-  }
-}
-
-/* ------------------ AdjustSliceBounds ------------------------ */
-
-void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax){
-  float *pdata;
-  int ndata;
-
-  if(sd->slice_filetype==SLICE_GEOM){
-    pdata = sd->patchgeom->geom_vals;
-    ndata = sd->patchgeom->geom_nvals;
-  }
-  else {
-    pdata = sd->qslicedata;
-    ndata = sd->nslicetotal;
-  }
-#ifndef pp_NEWBOUND_DIALOG
-  AdjustBounds(glui_setslicemin, glui_setslicemax, pdata, ndata, pmin, pmax);
-#endif
-}
-
   /* ------------------ TimeAverageData ------------------------ */
 
 int TimeAverageData(float *data_out, float *data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time){
@@ -5281,11 +5194,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   }
   sd->globalmin = qmin;
   sd->globalmax = qmax;
-  if(sd->compression_type == UNCOMPRESSED){
-    if(nzoneinfo==0||strcmp(sd->label.shortlabel, "TEMP")!=0){
-      if(research_mode==0)AdjustSliceBounds(sd, &qmin, &qmax);
-    }
-  }
   sd->valmin = qmin;
   sd->valmax = qmax;
   sd->valmin_data = qmin;

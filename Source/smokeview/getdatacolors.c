@@ -40,7 +40,6 @@ void GetBoundaryColors(float *t, int nt, unsigned char *it,
   *extreme_min=0;
   *extreme_max=0;
   local_skip=0;
-  AdjustDataBounds(t,local_skip,nt,settmin,&tmin2,settmax,&tmax2);
   if(settmin!=SET_MIN){
     *ttmin=tmin2;
   }
@@ -130,7 +129,6 @@ void GetBoundaryColors2(float *t, int nt, unsigned char *it,
   *tmin_arg = tmin2;
   *tmax_arg = tmax2;
   local_skip=0;
-  AdjustDataBounds(t,local_skip,nt,settmin,&tmin2,settmax,&tmax2);
   if(settmin!=SET_MIN){
     *ttmin=tmin2;
   }
@@ -792,7 +790,6 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
   else{
     local_tmax=*ttmax;
   }
-  AdjustPlot3DBounds(plot3dvar,settmin,&local_tmin,settmax,&local_tmax);
 
   *ttmin=local_tmin;
   *ttmax=local_tmax;

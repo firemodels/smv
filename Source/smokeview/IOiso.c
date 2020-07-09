@@ -384,7 +384,6 @@ FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_fram
     GetIsoDataBounds(isoi, &iso_valmin, &iso_valmax);
     isoi->geom_globalmin = iso_valmin;
     isoi->geom_globalmax = iso_valmax;
-    AdjustBounds(PERCENTILE_MIN, PERCENTILE_MAX, isoi->geom_vals, isoi->geom_nvals, &iso_valmin, &iso_valmax);
     isoi->geom_percentilemin = iso_valmin;
     isoi->geom_percentilemax = iso_valmax;
     if(setisomin == GLOBAL_MIN)iso_valmin = isoi->geom_globalmin;
