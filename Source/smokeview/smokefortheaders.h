@@ -16,9 +16,6 @@
                            if(returncode!=count)returncode=0;\
                            FSEEK(STREAM,TRAILER_SIZE,SEEK_CUR)
 
-#ifndef pp_C_SLICE
-#define FORTgetsliceheader        _F(getsliceheader)
-#endif
 #define FORTgetslicefiledirection _F(getslicefiledirection)
 #define FORTgetgeomdatasize      _F(getgeomdatasize)
 #define FORTgetgeomdata          _F(getgeomdata)
@@ -33,7 +30,6 @@
 #define FORTgetslicesizes         _F(getslicesizes)
 #define FORTwriteslicedata        _F(writeslicedata)
 #define FORTwriteslicedata2       _F(writeslicedata2)
-#define FORTgetslicedata          _F(getslicedata)
 #define FORTgetplot3dq            _F(getplot3dq)
 #define FORTgetsliceparms         _F(getsliceparms)
 #define FORTcolor2rgb             _F(color2rgb)
@@ -67,7 +63,6 @@ STDCALLF FORTgetpatchdata(int *lunit, int *npatch,int *pi1,int *pi2,int *pj1,int
 STDCALLF FORTskipdata(int *lunit, int *size);
 STDCALLF FORTgetdata1(int *file_unit, int *ipart, int *error);
 
-STDCALLF FORTgetsliceheader(char *slicefilename, int *is1, int *is2, int *js1, int *js2, int *ks1, int *ks2, int *error, FILE_SIZE slicefilelen);
 STDCALLF FORTgetslicesizes(char *slicefilename, int *nslicei, int *nslicej, int *nslicek,
                           int *nsteps,int *sliceframestep, int *error,
                           int *settime_p, int *settmax_p, float *tmin_p, float *tmax_p,
@@ -78,11 +73,5 @@ STDCALLF FORTwriteslicedata(char *slicefilename,
 STDCALLF FORTwriteslicedata2(char *slicefilename, char *longlabel, char *shortlabel, char *unitlabel,
                           int *is1, int *is2, int *js1, int *js2, int *ks1, int *ks2,
                           float *qdata, float *times, int *ntimes, FILE_SIZE slicefilelen, FILE_SIZE longfilelen, FILE_SIZE shortfilelen, FILE_SIZE unitfilelen);
-STDCALLF FORTgetslicedata(char *slicefilename,
-                          int *is1,int *is2,int *js1,int *js2, int *ks1,int *ks2,
-                          int *idir, float *qslicemin,float *qslicemax,
-                          float *qslicedata,float *times, int *ntimes_old, int *ntimes, int *sliceframestep,
-                          int *settime_p, int *settmax_p, float *tmin_p, float *tmax_p, int *file_size,
-                          FILE_SIZE slicefilelen);
 STDCALLF FORTgetplot3dq(char *qfilename, int *nx, int *ny, int *nz, float *qq, int *error, int *isotest, FILE_SIZE filelen);
 #endif

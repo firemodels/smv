@@ -4588,7 +4588,6 @@ void GetSliceSizes(char *slicefilenameptr, int time_frame, int *nsliceiptr, int 
   fclose(SLICEFILE);
 }
 
-#ifdef pp_C_SLICE
 /* ------------------ GetSliceFileHeader ------------------------ */
 
 void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error){
@@ -4615,7 +4614,6 @@ void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int 
   *error = 0;
   fclose(stream);
 }
-#endif
 
 /* ------------------ GetSliceData ------------------------ */
 
@@ -5066,15 +5064,8 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
 
     if(sd->compression_type == UNCOMPRESSED){
       sd->ntimes_old = sd->ntimes;
-      if(use_cslice==1){
         GetSliceSizes(file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, sliceframestep, &error,
           settmin_s, settmax_s, tmin_s, tmax_s, &headersize, &framesize);
-      }
-      else{
-        FORTgetslicesizes(file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sliceframestep, &error,
-          &settmin_s, &settmax_s, &tmin_s, &tmax_s, &headersize, &framesize,
-          strlen(file));
-      }
     }
     else if(sd->compression_type != UNCOMPRESSED){
       if(
@@ -5165,24 +5156,15 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
         qmax = -1.0e30;
       }
       if(sd->ntimes > ntimes_slice_old){
-        if(use_cslice==1){
-          return_filesize =
-            GetSliceData(file, time_frame, &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
-              &qmin, &qmax, sd->qslicedata, sd->times, ntimes_slice_old, &sd->ntimes,
-              sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s
+        return_filesize =
+          GetSliceData(file, time_frame, &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
+            &qmin, &qmax, sd->qslicedata, sd->times, ntimes_slice_old, &sd->ntimes,
+            sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s
 #ifdef pp_MULTI_RES
               , sd->multi_res
 #endif
-            );
-          file_size = (int)return_filesize;
-        }
-        else{
-          FORTgetslicedata(file,
-            &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
-            &qmin, &qmax, sd->qslicedata, sd->times, &ntimes_slice_old, &sd->ntimes, &sliceframestep,
-            &settmin_s, &settmax_s, &tmin_s, &tmax_s, &file_size, strlen(file));
-          return_filesize = (FILE_SIZE)file_size;
-        }
+          );
+        file_size = (int)return_filesize;
       }
 #ifdef pp_MEMDEBUG
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));

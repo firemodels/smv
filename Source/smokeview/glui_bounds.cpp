@@ -2530,7 +2530,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("incremental data loading"), &load_incremental, SLICE_LOAD_INCREMENTAL, LoadIncrementalCB);
     LoadIncrementalCB(SLICE_LOAD_INCREMENTAL);
 #endif
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("Use C for slice input"), &use_cslice);
     glui_bounds->add_spinner_to_panel(ROLLOUT_boundimmersed,"slice offset",GLUI_SPINNER_FLOAT,&sliceoffset_all);
 
     if(nterraininfo>0){

@@ -24,9 +24,7 @@ void DrawTerrainGeomGPU(void);
 void DrawTerrainGeom(int option);
 void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigned int **indices_arg, int *sizeof_indices_arg, int *nindices_arg);
 
-#ifdef pp_C_SLICE
 EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error);
-#endif
 EXTERNCPP int TimeAverageData(float *data_out, float *data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time);
 bufferstreamdata *GetSMVBuffer(char *file, char *file2);
 EXTERNCPP void UpdateBlockType(void);

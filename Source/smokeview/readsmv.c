@@ -4954,11 +4954,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   if(read_slice_header==1){
     int error;
 
-#ifdef pp_C_SLICE
     GetSliceFileHeader(sd->file, &ii1, &ii2, &jj1, &jj2, &kk1, &kk2, &error);
-#else
-    FORTgetsliceheader(sd->file, &ii1, &ii2, &jj1, &jj2, &kk1, &kk2, &error, strlen(sd->file));
-#endif
   }
   sd->is1 = ii1;
   sd->is2 = ii2;
@@ -11578,7 +11574,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "LOADINC") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i", &load_incremental,&use_cslice);
+      sscanf(buffer, "%i", &load_incremental);
       continue;
     }
     if(Match(buffer, "MSCALE") == 1){
@@ -14256,7 +14252,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "ISOZIPSTEP\n");
   fprintf(fileout, " %i\n", isozipstep);
   fprintf(fileout, "LOADINC\n");
-  fprintf(fileout, " %i %i\n", load_incremental,use_cslice);
+  fprintf(fileout, " %i\n", load_incremental);
   fprintf(fileout, "NOPART\n");
   fprintf(fileout, " %i\n", nopart);
   fprintf(fileout, "PARTFAST\n");
