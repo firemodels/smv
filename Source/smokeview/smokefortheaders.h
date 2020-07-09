@@ -27,6 +27,7 @@
 #define FORTgetpatchdata          _F(getpatchdata)
 #define FORTskipdata              _F(skipdata)
 #define FORTgetdata1              _F(getdata1)
+#define FORTgetslicesizes         _F(getslicesizes)
 #define FORTwriteslicedata        _F(writeslicedata)
 #define FORTwriteslicedata2       _F(writeslicedata2)
 #define FORTgetplot3dq            _F(getplot3dq)
@@ -62,6 +63,10 @@ STDCALLF FORTgetpatchdata(int *lunit, int *npatch,int *pi1,int *pi2,int *pj1,int
 STDCALLF FORTskipdata(int *lunit, int *size);
 STDCALLF FORTgetdata1(int *file_unit, int *ipart, int *error);
 
+STDCALLF FORTgetslicesizes(char *slicefilename, int *nslicei, int *nslicej, int *nslicek,
+                          int *nsteps,int *sliceframestep, int *error,
+                          int *settime_p, int *settmax_p, float *tmin_p, float *tmax_p,
+                          int *headersize, int *framesize,FILE_SIZE slicefilelen);
 STDCALLF FORTwriteslicedata(char *slicefilename,
                             int *is1,int *is2,int *js1,int *js2,int *ks1,int *ks2,
                             float *qdata,float *times,int *ntimes, int *redirect,FILE_SIZE slicefilelen);
