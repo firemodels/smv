@@ -837,7 +837,7 @@ void GetSliceTempBounds(void){
   for(i=0; i<nsliceinfo; i++){
     slicedata *slicei;
     int framesize, headersize, return_val, error;
-    int ntimes_slice_old=0, file_size;
+    int ntimes_slice_old=0;
     float qmin, qmax;
 
     slicei = sliceinfo + i;

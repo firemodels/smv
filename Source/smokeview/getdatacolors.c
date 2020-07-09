@@ -23,7 +23,6 @@ void GetBoundaryColors(float *t, int nt, unsigned char *it,
   int expmin, expmax;
   int itt;
   float local_tmin, local_tmax, tmin2, tmax2;
-  int local_skip;
 
   tmin2 = *t;
   tmax2 = *t;
@@ -39,7 +38,6 @@ void GetBoundaryColors(float *t, int nt, unsigned char *it,
   *tmax_arg = tmax2;
   *extreme_min=0;
   *extreme_max=0;
-  local_skip=0;
   if(settmin!=SET_MIN){
     *ttmin=tmin2;
   }
@@ -115,7 +113,6 @@ void GetBoundaryColors2(float *t, int nt, unsigned char *it,
   float *tcopy, factor, range;
   int itt;
   float local_tmin, local_tmax, tmin2, tmax2;
-  int local_skip;
 
   tmin2 = *t;
   tmax2 = *t;
@@ -128,7 +125,6 @@ void GetBoundaryColors2(float *t, int nt, unsigned char *it,
   }
   *tmin_arg = tmin2;
   *tmax_arg = tmax2;
-  local_skip=0;
   if(settmin!=SET_MIN){
     *ttmin=tmin2;
   }
