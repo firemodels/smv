@@ -1755,8 +1755,8 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
 void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max){
   int iii, ntotal, *buckets;
   int ii;
-  float factor, p01, p99;
-  int i01, i99, sum;
+  float factor;
+  int i01, sum;
   int have_min, have_max;
   int some_compressed = 0;
   int some_loaded = 0;
@@ -1775,7 +1775,6 @@ void GetSlicePercentileBounds(char *slicetype, float global_min, float global_ma
     slicedata *slicei;
     int nn;
     meshdata *meshi;
-    float *xplt, *yplt, *zplt;
     char *iblank_node, *iblank_cell;
     int ibar, jbar, nx, ny, nxy;
     int itime;
@@ -1791,9 +1790,6 @@ void GetSlicePercentileBounds(char *slicetype, float global_min, float global_ma
     meshi = meshinfo+slicei->blocknumber;
     iblank_node = meshi->c_iblank_node;
     iblank_cell = meshi->c_iblank_cell;
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    zplt = meshi->zplt_orig;
 
     ibar = meshi->ibar;
     jbar = meshi->jbar;
@@ -1806,25 +1802,13 @@ void GetSlicePercentileBounds(char *slicetype, float global_min, float global_ma
     for(itime = 0; itime<slicei->ntimes; itime++){
       for(ii = 0; ii<slicei->nslicei; ii++){
         int j;
-        int i1, i1p1;
-
-        i1 = MIN(slicei->is1+ii, slicei->is2-2);
-        i1p1 = i1+1;
 
         for(j = 0; j<slicei->nslicej; j++){
           int k;
-          int j1, j1p1;
-
-          j1 = MIN(slicei->js1+j, slicei->js2-2);
-          j1p1 = j1+1;
 
           for(k = 0; k<slicei->nslicek; k++){
-            int k1, k1p1;
             float val;
             int ival;
-
-            k1 = MIN(slicei->ks1+k, slicei->ks2-2);
-            k1p1 = k1+1;
 
             nn++;
             if(slicei->slice_filetype==SLICE_CELL_CENTER&&((k==0&&slicei->nslicek!=1)||(j==0&&slicei->nslicej!=1)||(ii==0&&slicei->nslicei!=1)))continue;
