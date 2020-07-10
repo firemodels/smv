@@ -73,6 +73,7 @@ SVEXTERN int GetTerrainData(char *file, terraindata *terri);
 
 #ifdef pp_NEWBOUND_DIALOG
 SVEXTERN int SVDECL(slice_loaded_only, 0), SVDECL(slice_loaded,0), SVDECL(update_slice_loaded,0);
+SVEXTERN int SVDECL(patch_loaded_only, 0);
 #endif
 
 SVEXTERN int SVDECL(use_slice_glui_bounds, 0);

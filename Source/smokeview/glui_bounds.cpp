@@ -52,6 +52,7 @@ GLUI_Button *BUTTON_ISO = NULL;
 #ifdef pp_NEWBOUND_DIALOG
 GLUI_Button *BUTTON_slice_global_bounds_loaded = NULL;
 GLUI_Button *BUTTON_slice_percentile_bounds = NULL;
+GLUI_Button *BUTTON_patch_percentile_bounds = NULL;
 #endif
 
 GLUI_Listbox *LIST_colortable = NULL;
@@ -1006,6 +1007,39 @@ void BoundBoundCB(int var){
   int i;
 
   switch(var){
+#ifdef pp_NEWBOUND_DIALOG
+  case FILE_LOADED_ONLY:
+    if(patch_loaded_only==1){
+      BUTTON_patch_percentile_bounds->enable();
+    }
+    else{
+      BUTTON_patch_percentile_bounds->disable();
+    }
+    return;
+    break;
+  case PERCENTILE_BOUNDS_LOADED:
+    return;
+    break;
+  case GLOBAL_BOUNDS_MIN:
+    return;
+    break;
+  case GLOBAL_BOUNDS_MAX:
+    return;
+    break;
+  case GLOBAL_BOUNDS:
+    return;
+    break;
+  case GLOBAL_BOUNDS_MIN_LOADED:
+    return;
+    break;
+  case GLOBAL_BOUNDS_MAX_LOADED:
+    return;
+    break;
+  case GLOBAL_BOUNDS_LOADED:
+    BoundBoundCB(GLOBAL_BOUNDS_MIN_LOADED);
+    BoundBoundCB(GLOBAL_BOUNDS_MAX_LOADED);
+    return;
+#endif
   case SHOW_BOUNDARY_OUTLINE:
     if(ngeom_data==0)break;
     if(show_boundary_outline==1&&boundary_edgetype==IMMERSED_HIDDEN)boundary_edgetype = IMMERSED_POLYGON;
@@ -1114,8 +1148,10 @@ void BoundBoundCB(int var){
 
     BoundBoundCB(SETVALMIN);
     BoundBoundCB(SETVALMAX);
-    if(RADIO_patch_setmin != NULL)RADIO_patch_setmin->set_int_val(setpatchmin);
-    if(RADIO_patch_setmax != NULL)RADIO_patch_setmax->set_int_val(setpatchmax);
+#ifndef pp_NEWBOUND_DIALOG
+    RADIO_patch_setmin->set_int_val(setpatchmin);
+    RADIO_patch_setmax->set_int_val(setpatchmax);
+#endif
     if(CHECKBOX_patch_setchopmin != NULL)CHECKBOX_patch_setchopmin->set_int_val(setpatchchopmin);
     if(CHECKBOX_patch_setchopmax != NULL)CHECKBOX_patch_setchopmax->set_int_val(setpatchchopmax);
 
@@ -1457,18 +1493,19 @@ void ScriptCB(int var){
   }
 }
 
-/* ------------------ SliceBoundMenu ------------------------ */
+/* ------------------ GenerateBoundDialog ------------------------ */
 
 #ifdef pp_NEWBOUND_DIALOG
-void GenerateSliceBoundDialog(
+void GenerateBoundDialog(
   GLUI_Rollout *ROLLOUT_dialog, GLUI_Rollout **ROLLOUT_bound,
   GLUI_StaticText **STATIC_min_unit,  GLUI_StaticText **STATIC_max_unit,
   GLUI_StaticText **STATIC_cmin_unit, GLUI_StaticText **STATIC_cmax_unit,
   GLUI_EditText **EDIT_min,     GLUI_EditText **EDIT_max,
   GLUI_EditText **EDIT_chopmin, GLUI_EditText **EDIT_chopmax,
   GLUI_Checkbox **CHECKBOX_setchopmin, GLUI_Checkbox **CHECKBOX_setchopmax,
-  GLUI_Button **BUTTON_percentile_bounds,
+  GLUI_Button **BUTTON_update, GLUI_Button **BUTTON_percentile_bounds,
   GLUI_Rollout **ROLLOUT_chop,
+  char *file_type,
 
   float *glui_min, float *glui_max,
   float *glui_chopmin, float *glui_chopmax,
@@ -1487,17 +1524,6 @@ void GenerateSliceBoundDialog(
   INSERT_ROLLOUT(*ROLLOUT_bound, glui_bounds);
   ADDPROCINFO(procinfo, *nprocinfo, *ROLLOUT_bound, 0, glui_bounds);
 
-  PANEL_a = glui_bounds->add_panel_to_panel(*ROLLOUT_bound, "", GLUI_PANEL_NONE);
-
-  *EDIT_min = glui_bounds->add_edittext_to_panel(PANEL_a, "", GLUI_EDITTEXT_FLOAT, glui_min, VALMIN, FILE_CB);
-  glui_bounds->add_column_to_panel(PANEL_a, false);
-
-  *STATIC_min_unit = glui_bounds->add_statictext_to_panel(PANEL_a, "xx");
-  (*STATIC_min_unit)->set_w(10);
-
-  STATIC_min = glui_bounds->add_statictext_to_panel(PANEL_a, "min");
-  STATIC_min->set_w(4);
-
   PANEL_b = glui_bounds->add_panel_to_panel(*ROLLOUT_bound, "", GLUI_PANEL_NONE);
 
   *EDIT_max = glui_bounds->add_edittext_to_panel(PANEL_b, "", GLUI_EDITTEXT_FLOAT, glui_max, VALMAX, FILE_CB);
@@ -1509,31 +1535,52 @@ void GenerateSliceBoundDialog(
   STATIC_max = glui_bounds->add_statictext_to_panel(PANEL_b, "max");
   STATIC_max->set_w(4);
 
-  PANEL_c = glui_bounds->add_panel_to_panel(*ROLLOUT_bound, "Set/Show Bounds");
+  PANEL_a = glui_bounds->add_panel_to_panel(*ROLLOUT_bound, "", GLUI_PANEL_NONE);
 
-  *BUTTON_percentile_bounds = glui_bounds->add_button_to_panel(PANEL_c, _("Percentile"), PERCENTILE_BOUNDS_LOADED, FILE_CB);
-  glui_bounds->add_button_to_panel(PANEL_c, _("Global"), GLOBAL_BOUNDS, FILE_CB);
+  *EDIT_min = glui_bounds->add_edittext_to_panel(PANEL_a, "", GLUI_EDITTEXT_FLOAT, glui_min, VALMIN, FILE_CB);
+  glui_bounds->add_column_to_panel(PANEL_a, false);
 
-  RADIO_loaded_only = glui_bounds->add_radiogroup_to_panel(PANEL_c,  file_loaded_only, SLICE_LOADED_ONLY, FILE_CB);
-  glui_bounds->add_radiobutton_to_group(RADIO_loaded_only, "all");
-  glui_bounds->add_radiobutton_to_group(RADIO_loaded_only, "loaded");
-  FILE_CB(SLICE_LOADED_ONLY);
+  *STATIC_min_unit = glui_bounds->add_statictext_to_panel(PANEL_a, "xx");
+  (*STATIC_min_unit)->set_w(10);
 
-  glui_bounds->add_button_to_panel(*ROLLOUT_bound, _("Update"), FILEUPDATE, FILE_CB);
+  STATIC_min = glui_bounds->add_statictext_to_panel(PANEL_a, "min");
+  STATIC_min->set_w(4);
+
+  PANEL_c = glui_bounds->add_panel_to_panel(*ROLLOUT_bound, "");
+  *BUTTON_percentile_bounds = glui_bounds->add_button_to_panel(PANEL_c, _("Set Percentile Bounds"), PERCENTILE_BOUNDS_LOADED, FILE_CB);
+  glui_bounds->add_button_to_panel(PANEL_c, _("Set Global Bounds"), GLOBAL_BOUNDS, FILE_CB);
+
+  RADIO_loaded_only = glui_bounds->add_radiogroup_to_panel(PANEL_c,  file_loaded_only, FILE_LOADED_ONLY, FILE_CB);
+  {
+    char label1[100], label2[100];
+
+    if(file_type==NULL||strlen(file_type)==0){
+      strcpy(label1,"using all files");
+      strcpy(label2,"using all loaded files");
+    }
+    else{
+      strcpy(label1,"using all ");
+      strcat(label1,file_type);
+      strcat(label1," files");
+      strcpy(label2,"using all loaded ");
+      strcat(label2,file_type);
+      strcat(label2," files");
+    }
+    glui_bounds->add_radiobutton_to_group(RADIO_loaded_only, label1);
+    glui_bounds->add_radiobutton_to_group(RADIO_loaded_only, label2);
+  }
+  FILE_CB(FILE_LOADED_ONLY);
+
+  {
+    GLUI_Button *button;
+
+    button = glui_bounds->add_button_to_panel(*ROLLOUT_bound, _("Update data colors"), FILEUPDATE, FILE_CB);
+    if(BUTTON_update!=NULL)*BUTTON_update = button;
+  }
 
   *ROLLOUT_chop = glui_bounds->add_rollout_to_panel(ROLLOUT_dialog, _("Truncate data"), false, 1, PROC_CB);
   INSERT_ROLLOUT(*ROLLOUT_chop, glui_bounds);
   ADDPROCINFO(procinfo, *nprocinfo, *ROLLOUT_chop, 1, glui_bounds);
-
-  PANEL_d = glui_bounds->add_panel_to_panel(*ROLLOUT_chop, "", GLUI_PANEL_NONE);
-
-  *EDIT_chopmin = glui_bounds->add_edittext_to_panel(PANEL_d, "", GLUI_EDITTEXT_FLOAT, glui_chopmin, CHOPVALMIN, FILE_CB);
-  glui_bounds->add_column_to_panel(PANEL_d, false);
-
-  *STATIC_cmin_unit = glui_bounds->add_statictext_to_panel(PANEL_d, "xx");
-  (*STATIC_cmin_unit)->set_w(10);
-  glui_bounds->add_column_to_panel(PANEL_d, false);
-  *CHECKBOX_setchopmin = glui_bounds->add_checkbox_to_panel(PANEL_d, _("Below"), glui_setchopmin, SETCHOPMINVAL, FILE_CB);
 
   PANEL_e = glui_bounds->add_panel_to_panel(*ROLLOUT_chop, "", GLUI_PANEL_NONE);
 
@@ -1544,6 +1591,16 @@ void GenerateSliceBoundDialog(
   glui_bounds->add_column_to_panel(PANEL_e, false);
   (*STATIC_cmax_unit)->set_w(10);
   *CHECKBOX_setchopmax = glui_bounds->add_checkbox_to_panel(PANEL_e, _("Above"), glui_setchopmax, SETCHOPMAXVAL, FILE_CB);
+
+  PANEL_d = glui_bounds->add_panel_to_panel(*ROLLOUT_chop, "", GLUI_PANEL_NONE);
+
+  *EDIT_chopmin = glui_bounds->add_edittext_to_panel(PANEL_d, "", GLUI_EDITTEXT_FLOAT, glui_chopmin, CHOPVALMIN, FILE_CB);
+  glui_bounds->add_column_to_panel(PANEL_d, false);
+
+  *STATIC_cmin_unit = glui_bounds->add_statictext_to_panel(PANEL_d, "xx");
+  (*STATIC_cmin_unit)->set_w(10);
+  glui_bounds->add_column_to_panel(PANEL_d, false);
+  *CHECKBOX_setchopmin = glui_bounds->add_checkbox_to_panel(PANEL_d, _("Below"), glui_setchopmin, SETCHOPMINVAL, FILE_CB);
 }
 #endif
 
@@ -1941,6 +1998,24 @@ extern "C" void GluiBoundsSetup(int main_window){
       glui_bounds->add_column_to_panel(ROLLOUT_bound,false);
     }
 
+#ifdef pp_NEWBOUND_DIALOG
+    GenerateBoundDialog(ROLLOUT_bound, &ROLLOUT_boundary_bound,
+      &STATIC_bound_min_unit, &STATIC_bound_max_unit,
+      &STATIC_bound_cmin_unit, &STATIC_bound_cmax_unit,
+      &EDIT_patch_min, &EDIT_patch_max,
+      &EDIT_patch_chopmin, &EDIT_patch_chopmax,
+      &CHECKBOX_patch_setchopmin, &CHECKBOX_patch_setchopmax,
+      &BUTTON_updatebound, &BUTTON_patch_percentile_bounds,
+      &ROLLOUT_boundary_chop,
+      "boundary",
+      &patchmin, &patchmax,
+      &patchchopmin, &patchchopmax,
+      &setpatchchopmin, &setpatchchopmax,
+      &patch_loaded_only,
+      subboundprocinfo, &nsubboundprocinfo,
+      BoundBoundCB, SubBoundRolloutCB
+    );
+#else
     GenerateBoundDialogs(&ROLLOUT_boundary_bound,&ROLLOUT_boundary_chop,ROLLOUT_bound,_("Reload Boundary File(s)"),
       &EDIT_patch_min,&EDIT_patch_max,&RADIO_patch_setmin,&RADIO_patch_setmax,NULL,NULL,
       &CHECKBOX_patch_setchopmin, &CHECKBOX_patch_setchopmax,
@@ -1955,6 +2030,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       UPDATERELOAD_BOUNDS,DONT_TRUNCATE_BOUNDS,
       BoundBoundCB,
       SubBoundRolloutCB,subboundprocinfo,&nsubboundprocinfo);
+#endif
 
     UpdateBoundaryListIndex2(patchinfo->label.shortlabel);
     UpdateHideBoundarySurface();
@@ -2386,14 +2462,15 @@ extern "C" void GluiBoundsSetup(int main_window){
 #ifdef pp_NEWBOUND_DIALOG
     glui_slicemin = slicebounds[list_slice_index].dlg_valmin;
     glui_slicemax = slicebounds[list_slice_index].dlg_valmax;
-    GenerateSliceBoundDialog(ROLLOUT_slice, &ROLLOUT_slice_bound,
+    GenerateBoundDialog(ROLLOUT_slice, &ROLLOUT_slice_bound,
       &STATIC_slice_min_unit, &STATIC_slice_max_unit,
       &STATIC_slice_cmin_unit, &STATIC_slice_cmax_unit,
       &EDIT_slice_min, &EDIT_slice_max,
       &EDIT_slice_chopmin, &EDIT_slice_chopmax,
       &CHECKBOX_slice_setchopmin, &CHECKBOX_slice_setchopmax,
-      &BUTTON_slice_percentile_bounds,
+      NULL, &BUTTON_slice_percentile_bounds,
       &ROLLOUT_slice_chop,
+      "slice",
       &glui_slicemin, &glui_slicemax,
       &glui_slicechopmin, &glui_slicechopmax,
       &glui_setslicechopmin, &glui_setslicechopmax,
@@ -3192,8 +3269,10 @@ extern "C" void UpdateBoundaryListIndex(int patchfilenum){
       }
       list_patch_index_old=list_patch_index;
       Global2LocalBoundaryBounds(patchlabellist[i]);
-      RADIO_patch_setmin->set_int_val(setpatchmin);
-      RADIO_patch_setmax->set_int_val(setpatchmax);
+#ifndef pp_NEWBOUND_DIALOG
+      if(RADIO_patch_setmin!=NULL)RADIO_patch_setmin->set_int_val(setpatchmin);
+      if(RADIO_patch_setmax!=NULL)RADIO_patch_setmax->set_int_val(setpatchmax);
+#endif
       EDIT_patch_min->set_float_val(patchmin);
       EDIT_patch_max->set_float_val(patchmax);
 
@@ -3594,7 +3673,7 @@ extern "C" void SliceBoundCB(int var){
 
   updatemenu=1;
 #ifdef pp_NEWBOUND_DIALOG
-  if(var==SLICE_LOADED_ONLY){
+  if(var==FILE_LOADED_ONLY){
     if(slice_loaded_only==1){
       BUTTON_slice_percentile_bounds->enable();
     }
@@ -3844,8 +3923,10 @@ extern "C" void SliceBoundCB(int var){
         patchmax_save = patchmax;
         setpatchmax = GLOBAL_MAX;
         BoundBoundCB(SETVALMAX);
+#ifndef pp_NEWBOUND_DIALOG
         if(RADIO_patch_setmin != NULL)RADIO_patch_setmin->set_int_val(setpatchmin);
         if(RADIO_patch_setmax != NULL)RADIO_patch_setmax->set_int_val(setpatchmax);
+#endif
 
         // particle files
 
