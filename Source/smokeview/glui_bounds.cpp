@@ -26,6 +26,7 @@ GLUI *glui_bounds=NULL;
 
 #ifdef pp_NEWBOUND_DIALOG
 GLUI_Button *BUTTON_slice_percentile = NULL;
+GLUI_Button *BUTTON_reloadpart = NULL;
 #endif
 GLUI_Button *BUTTON_globalalpha = NULL;
 GLUI_Button *BUTTON_updatebound = NULL;
@@ -1010,9 +1011,6 @@ void BoundBoundCB(int var){
   switch(var){
 #ifdef pp_NEWBOUND_DIALOG
   case FILE_LOADED_ONLY:
-    return;
-    break;
-  case PERCENTILE_BOUNDS_LOADED:
     return;
     break;
   case GLOBAL_BOUNDS_MIN:
@@ -2264,6 +2262,25 @@ extern "C" void GluiBoundsSetup(int main_window){
       strcat(boundmenulabel, label);
       strcat(boundmenulabel, " File");
       if(npartinfo > 1)strcat(boundmenulabel, "s");
+
+#ifdef pp_NEWBOUND_DIALOG
+    GenerateBoundDialog(ROLLOUT_part, &ROLLOUT_part_bound,
+      &STATIC_part_min_unit,&STATIC_part_max_unit,
+      &STATIC_part_cmin_unit, &STATIC_part_cmax_unit,
+      &EDIT_part_min,&EDIT_part_max,
+      &EDIT_part_chopmin, &EDIT_part_chopmax,
+      &CHECKBOX_part_setchopmin, &CHECKBOX_part_setchopmax,
+      &BUTTON_reloadpart, NULL, NULL,
+      &ROLLOUT_part_chop,
+      "particle",
+      &partmin,&partmax,
+      &partchopmin,&partchopmax,
+      &setpartmin,&setpartmax,
+      &part_loaded_only,
+      particleprocinfo,&nparticleprocinfo,
+      PartBoundCB, ParticleRolloutCB
+    );
+#else
       GenerateBoundDialogs(&ROLLOUT_part_bound,&ROLLOUT_part_chop,ROLLOUT_part,boundmenulabel,
         &EDIT_part_min,&EDIT_part_max,&RADIO_part_setmin,&RADIO_part_setmax,
         &RADIO_part_setmin_percentile,&RADIO_part_setmax_percentile,
@@ -2281,6 +2298,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       );
       RADIO_part_setmin_percentile->disable();
       RADIO_part_setmax_percentile->disable();
+#endif
       PartBoundCB(FILETYPEINDEX);
 
 #ifdef pp_PART_HIST
@@ -3329,6 +3347,30 @@ void PartBoundCB(int var){
   prop_new = part5propinfo + ipart5prop;
   prop_old = part5propinfo + ipart5prop_old;
   switch(var){
+#ifdef pp_NEWBOUND_DIALOG
+  case FILE_LOADED_ONLY:
+    return;
+    break;
+  case GLOBAL_BOUNDS_MIN:
+    return;
+    break;
+  case GLOBAL_BOUNDS_MAX:
+    return;
+    break;
+  case GLOBAL_BOUNDS:
+    return;
+    break;
+  case GLOBAL_BOUNDS_MIN_LOADED:
+    return;
+    break;
+  case GLOBAL_BOUNDS_MAX_LOADED:
+    return;
+    break;
+  case GLOBAL_BOUNDS_LOADED:
+    PartBoundCB(GLOBAL_BOUNDS_MIN_LOADED);
+    PartBoundCB(GLOBAL_BOUNDS_MAX_LOADED);
+    return;
+#endif
   case VALMIN:
     if(setpartmin==SET_MIN)prop_new->user_min=partmin;
     break;
