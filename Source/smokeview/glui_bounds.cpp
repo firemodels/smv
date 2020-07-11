@@ -27,6 +27,7 @@ GLUI *glui_bounds=NULL;
 #ifdef pp_NEWBOUND_DIALOG
 GLUI_Button *BUTTON_slice_percentile = NULL;
 GLUI_Button *BUTTON_reloadpart = NULL;
+GLUI_Button *BUTTON_reloadplot3d = NULL;
 #endif
 GLUI_Button *BUTTON_globalalpha = NULL;
 GLUI_Button *BUTTON_updatebound = NULL;
@@ -2365,6 +2366,24 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_column_to_panel(ROLLOUT_plot3d,false);
 
 
+#ifdef pp_NEWBOUND_DIALOG
+    GenerateBoundDialog(ROLLOUT_plot3d, &ROLLOUT_plot3d_bound,
+      &STATIC_plot3d_min_unit, &STATIC_plot3d_max_unit,
+      &STATIC_plot3d_cmin_unit, &STATIC_plot3d_cmax_unit,
+      &EDIT_p3_min, &EDIT_p3_max, 
+      &EDIT_p3_chopmin, &EDIT_p3_chopmax,
+      &CHECKBOX_p3_setchopmin, &CHECKBOX_p3_setchopmax,
+      &BUTTON_reloadplot3d, NULL, NULL,
+      &ROLLOUT_plot3d_chop,
+      "plot3d",
+      &p3min_temp, &p3max_temp,
+      &p3chopmin_temp, &p3chopmax_temp,
+      &setp3min_temp, &setp3max_temp,
+      &plot3d_loaded_only,
+      plot3dprocinfo,&nplot3dprocinfo,
+      Plot3DBoundCB, Plot3dRolloutCB
+    );
+#else
     GenerateBoundDialogs(&ROLLOUT_plot3d_bound, &ROLLOUT_plot3d_chop, ROLLOUT_plot3d, "Reload Plot3D file(s)",
       &EDIT_p3_min, &EDIT_p3_max, &RADIO_p3_setmin, &RADIO_p3_setmax, NULL, NULL,
       &CHECKBOX_p3_setchopmin, &CHECKBOX_p3_setchopmax,
@@ -2379,6 +2398,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       Plot3DBoundCB,
       Plot3dRolloutCB,plot3dprocinfo,&nplot3dprocinfo
     );
+#endif
 
     ROLLOUT_vector = glui_bounds->add_rollout_to_panel(ROLLOUT_plot3d,_("Vector"),false,PLOT3D_VECTOR_ROLLOUT, Plot3dRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_vector, glui_bounds);
@@ -2760,6 +2780,30 @@ extern "C" void Plot3DBoundCB(int var){
   int i;
 
   switch(var){
+#ifdef pp_NEWBOUND_DIALOG
+  case FILE_LOADED_ONLY:
+    return;
+    break;
+  case GLOBAL_BOUNDS_MIN:
+    return;
+    break;
+  case GLOBAL_BOUNDS_MAX:
+    return;
+    break;
+  case GLOBAL_BOUNDS:
+    return;
+    break;
+  case GLOBAL_BOUNDS_MIN_LOADED:
+    return;
+    break;
+  case GLOBAL_BOUNDS_MAX_LOADED:
+    return;
+    break;
+  case GLOBAL_BOUNDS_LOADED:
+    BoundBoundCB(GLOBAL_BOUNDS_MIN_LOADED);
+    BoundBoundCB(GLOBAL_BOUNDS_MAX_LOADED);
+    return;
+#endif
   case UNLOAD_QDATA:
     if(cache_qdata==0){
      ROLLOUT_isosurface->disable();
@@ -2887,8 +2931,10 @@ extern "C" void Plot3DBoundCB(int var){
    EDIT_p3_chopmax->set_float_val(p3chopmax_temp);
 
    list_p3_index_old=list_p3_index;
+#ifndef pp_NEWBOUND_DIALOG
    RADIO_p3_setmin->set_int_val(setp3min_temp);
    RADIO_p3_setmax->set_int_val(setp3max_temp);
+#endif
    CHECKBOX_p3_setchopmin->set_int_val(setp3chopmin_temp);
    CHECKBOX_p3_setchopmax->set_int_val(setp3chopmax_temp);
    Plot3DBoundCB(SETCHOPMINVAL);
