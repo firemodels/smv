@@ -52,7 +52,8 @@ GLUI_Button *BUTTON_ISO = NULL;
 #ifdef pp_NEWBOUND_DIALOG
 GLUI_Button *BUTTON_slice_global_bounds_loaded = NULL;
 GLUI_Button *BUTTON_slice_percentile_bounds = NULL;
-GLUI_Button *BUTTON_patch_percentile_bounds = NULL;
+GLUI_Button *BUTTON_slice_update = NULL;
+GLUI_Button *BUTTON_slice_reload = NULL;
 #endif
 
 GLUI_Listbox *LIST_colortable = NULL;
@@ -1009,12 +1010,6 @@ void BoundBoundCB(int var){
   switch(var){
 #ifdef pp_NEWBOUND_DIALOG
   case FILE_LOADED_ONLY:
-    if(patch_loaded_only==1){
-      BUTTON_patch_percentile_bounds->enable();
-    }
-    else{
-      BUTTON_patch_percentile_bounds->disable();
-    }
     return;
     break;
   case PERCENTILE_BOUNDS_LOADED:
@@ -1060,11 +1055,13 @@ void BoundBoundCB(int var){
     updatehiddenfaces = 1;
     break;
   case CACHE_BOUNDARYDATA:
-    if(cache_boundarydata == 0){
-      BUTTON_updatebound->disable();
-    }
-    else{
-      BUTTON_updatebound->enable();
+    if(BUTTON_updatebound!=NULL){
+      if(cache_boundarydata==0){
+        BUTTON_updatebound->disable();
+      }
+      else{
+        BUTTON_updatebound->enable();
+      }
     }
     break;
   case VALMAX:
@@ -1503,7 +1500,7 @@ void GenerateBoundDialog(
   GLUI_EditText **EDIT_min,     GLUI_EditText **EDIT_max,
   GLUI_EditText **EDIT_chopmin, GLUI_EditText **EDIT_chopmax,
   GLUI_Checkbox **CHECKBOX_setchopmin, GLUI_Checkbox **CHECKBOX_setchopmax,
-  GLUI_Button **BUTTON_update, GLUI_Button **BUTTON_percentile_bounds,
+  GLUI_Button **BUTTON_reload, GLUI_Button **BUTTON_update, GLUI_Button **BUTTON_percentile_bounds,
   GLUI_Rollout **ROLLOUT_chop,
   char *file_type,
 
@@ -1547,35 +1544,26 @@ void GenerateBoundDialog(
   STATIC_min->set_w(4);
 
   PANEL_c = glui_bounds->add_panel_to_panel(*ROLLOUT_bound, "");
-  *BUTTON_percentile_bounds = glui_bounds->add_button_to_panel(PANEL_c, _("Set Percentile Bounds"), PERCENTILE_BOUNDS_LOADED, FILE_CB);
+  if(BUTTON_percentile_bounds!=NULL)*BUTTON_percentile_bounds = glui_bounds->add_button_to_panel(PANEL_c, _("Set Percentile Bounds"), PERCENTILE_BOUNDS_LOADED, FILE_CB);
   glui_bounds->add_button_to_panel(PANEL_c, _("Set Global Bounds"), GLOBAL_BOUNDS, FILE_CB);
 
   RADIO_loaded_only = glui_bounds->add_radiogroup_to_panel(PANEL_c,  file_loaded_only, FILE_LOADED_ONLY, FILE_CB);
   {
-    char label1[100], label2[100];
+    char label1[100], label2[100], label3[100], label4[100];
 
-    if(file_type==NULL||strlen(file_type)==0){
-      strcpy(label1,"using all files");
-      strcpy(label2,"using all loaded files");
-    }
-    else{
-      strcpy(label1,"using all ");
-      strcat(label1,file_type);
-      strcat(label1," files");
-      strcpy(label2,"using all loaded ");
-      strcat(label2,file_type);
-      strcat(label2," files");
-    }
+    ASSERT(file_type!=NULL&&strlen(file_type)>0);
+
+    sprintf(label1,"using all %s files",file_type);
+    sprintf(label2,"using all loaded %s files",file_type);
+    sprintf(label3,"Update %s file colors",file_type);
+    sprintf(label4,"Reload %s files",file_type);
+
     glui_bounds->add_radiobutton_to_group(RADIO_loaded_only, label1);
     glui_bounds->add_radiobutton_to_group(RADIO_loaded_only, label2);
-  }
-  FILE_CB(FILE_LOADED_ONLY);
+    FILE_CB(FILE_LOADED_ONLY);
 
-  {
-    GLUI_Button *button;
-
-    button = glui_bounds->add_button_to_panel(*ROLLOUT_bound, _("Update data colors"), FILEUPDATE, FILE_CB);
-    if(BUTTON_update!=NULL)*BUTTON_update = button;
+    if(BUTTON_update!=NULL)*BUTTON_update = glui_bounds->add_button_to_panel(*ROLLOUT_bound, label3, FILEUPDATE, FILE_CB);
+    if(BUTTON_reload!=NULL)*BUTTON_reload = glui_bounds->add_button_to_panel(*ROLLOUT_bound, label4, FILERELOAD, FILE_CB);
   }
 
   *ROLLOUT_chop = glui_bounds->add_rollout_to_panel(ROLLOUT_dialog, _("Truncate data"), false, 1, PROC_CB);
@@ -2005,7 +1993,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       &EDIT_patch_min, &EDIT_patch_max,
       &EDIT_patch_chopmin, &EDIT_patch_chopmax,
       &CHECKBOX_patch_setchopmin, &CHECKBOX_patch_setchopmax,
-      &BUTTON_updatebound, &BUTTON_patch_percentile_bounds,
+      &BUTTON_reloadbound, NULL, NULL,
       &ROLLOUT_boundary_chop,
       "boundary",
       &patchmin, &patchmax,
@@ -2468,7 +2456,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       &EDIT_slice_min, &EDIT_slice_max,
       &EDIT_slice_chopmin, &EDIT_slice_chopmax,
       &CHECKBOX_slice_setchopmin, &CHECKBOX_slice_setchopmax,
-      NULL, &BUTTON_slice_percentile_bounds,
+      &BUTTON_slice_reload, &BUTTON_slice_update, &BUTTON_slice_percentile_bounds,
       &ROLLOUT_slice_chop,
       "slice",
       &glui_slicemin, &glui_slicemax,
