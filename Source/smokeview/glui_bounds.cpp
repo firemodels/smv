@@ -1529,7 +1529,6 @@ void GenerateBoundDialog(
 
   GLUI_Panel *PANEL_a=NULL, *PANEL_b=NULL, *PANEL_d = NULL, *PANEL_e = NULL;
   GLUI_StaticText *STATIC_min=NULL, *STATIC_max = NULL;
-  GLUI_RadioGroup *RADIO_loaded_only = NULL;
 
   *ROLLOUT_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_dialog, _("Bound data"), false, 0, PROC_CB);
   INSERT_ROLLOUT(*ROLLOUT_bound, glui_bounds);
