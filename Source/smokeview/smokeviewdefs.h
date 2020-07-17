@@ -910,7 +910,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define DIALOG_LABELS 37
 #define DIALOG_AUTOLOAD 38
 #define DIALOG_TIME 39
-#define DIALOG_COLORING 40
 #define DIALOG_SCALING 41
 #define DIALOG_WINDOW 42
 #define DIALOG_MOVIE 43

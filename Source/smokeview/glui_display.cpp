@@ -960,9 +960,6 @@ extern "C" void ShowGluiDisplay(int menu_id){
   case DIALOG_TICKS:
     DisplayRolloutCB(TICKS_ROLLOUT);
     break;
-  case DIALOG_COLORING:
-    DisplayRolloutCB(COLORING_ROLLOUT);
-    break;
   case DIALOG_LABELS:
     DisplayRolloutCB(LABELS_ROLLOUT);
     break;

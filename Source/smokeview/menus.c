@@ -900,9 +900,6 @@ void ColorbarMenu(int value){
   GLUTPOSTREDISPLAY;
   if(value<0){
     switch(value){
-    case MENU_COLORBAR_SETTINGS:
-      ShowGluiDisplay(DIALOG_COLORING);
-      break;
     case COLORBAR_AUTOFLIP:
       colorbar_autoflip = 1 - colorbar_autoflip;
       update_flipped_colorbar = 1;
@@ -1492,7 +1489,6 @@ void DialogMenu(int value){
     ShowGluiMotion(value);
     break;
   case DIALOG_TICKS:
-  case DIALOG_COLORING:
   case DIALOG_FONTS:
   case DIALOG_LABELS:
   case DIALOG_DISPLAY:
@@ -9129,6 +9125,7 @@ updatemenu=0;
   /* --------------------------------viewdialog menu -------------------------- */
 
   CREATEMENU(viewdialogmenu, DialogMenu);
+  glutAddMenuEntry(_("Clip scene...  ALT c"), DIALOG_CLIP);
   if(showtour_dialog==1)glutAddMenuEntry(_("*Create/edit tours...  ALT t"), DIALOG_TOUR_HIDE);
   if(showtour_dialog==0)glutAddMenuEntry(_("Create/edit tours...  ALT t"), DIALOG_TOUR_SHOW);
   glutAddMenuEntry(_("Edit colorbar...  ALT C"), DIALOG_COLORBAR);
@@ -9148,13 +9145,11 @@ updatemenu=0;
   /* --------------------------------datadialog menu -------------------------- */
 
   CREATEMENU(datadialogmenu, DialogMenu);
-  glutAddMenuEntry(_("Coloring..."), DIALOG_COLORING);
   if(ndeviceinfo>0&&GetNumActiveDevices()>0){
     glutAddMenuEntry(_("Devices/Objects..."), DIALOG_DEVICE);
   }
   glutAddMenuEntry(_("Show/Hide..."), DIALOG_SHOWFILES);
   glutAddMenuEntry(_("Particle tracking..."), DIALOG_SHOOTER);
-  glutAddMenuEntry(_("Time bounds..."), DIALOG_TIME);
   if(nterraininfo>0){
     glutAddMenuEntry(_("WUI display... ALT w..."), DIALOG_WUI);
   }
@@ -9172,13 +9167,12 @@ updatemenu=0;
 
   CREATEMENU(dialogmenu,DialogMenu);
 
-  glutAddMenuEntry(_("Clip scene...  ALT c"), DIALOG_CLIP);
-  glutAddMenuEntry(_("Files/Data... ALT b"), DIALOG_BOUNDS);
 #ifdef pp_GLUTGET
   glutAddMenuEntry(_("Display...  ALT D"), DIALOG_DISPLAY);
 #else
   glutAddMenuEntry(_("Display...  ALT d"), DIALOG_DISPLAY);
 #endif
+  glutAddMenuEntry(_("Files/Data/Color... ALT b"), DIALOG_BOUNDS);
   glutAddMenuEntry(_("Motion/View/Render...  ALT m"),DIALOG_MOTION);
   glutAddMenuEntry(_("Viewpoints... ALT g"),DIALOG_VIEW);
 
