@@ -285,6 +285,7 @@ EXTERNCPP void ShowGluiDisplay(int menu_id);
 EXTERNCPP void ShowGluiDevice(void);
 EXTERNCPP void HideGluiDevice(void);
 EXTERNCPP void SetLabelControls(void);
+EXTERNCPP void SetLabelControls2(void);
 EXTERNCPP void SetColorControls(void);
 EXTERNCPP void HideGluiDisplay(void);
 EXTERNCPP void ShowGluiTour(void);

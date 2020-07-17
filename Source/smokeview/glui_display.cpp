@@ -11,13 +11,10 @@ GLUI *glui_labels=NULL;
 
 GLUI_EditText *EDIT_LB_label_string=NULL;
 
-GLUI_Spinner *SPINNER_colorbar_selection_width=NULL;
-GLUI_Spinner *SPINNER_labels_transparency_data=NULL;
 #ifdef pp_BETA
 GLUI_Spinner *SPINNER_cullgeom_portsize=NULL;
 #endif
 
-GLUI_Listbox *LIST_colorbar2=NULL;
 GLUI_Listbox *LIST_LB_labels=NULL;
 
 GLUI_Spinner *SPINNER_LB_tick_xbeg=NULL;
@@ -26,20 +23,14 @@ GLUI_Spinner *SPINNER_LB_tick_zbeg=NULL;
 GLUI_Spinner *SPINNER_LB_tick_xdir=NULL;
 GLUI_Spinner *SPINNER_LB_tick_ydir=NULL;
 GLUI_Spinner *SPINNER_LB_tick_zdir=NULL;
+GLUI_Spinner *SPINNER_ntick_decimals = NULL;
+
 
 GLUI_Spinner *SPINNER_light_az0=NULL;
 GLUI_Spinner *SPINNER_light_az1=NULL;
 GLUI_Spinner *SPINNER_light_elev0=NULL;
 GLUI_Spinner *SPINNER_light_elev1=NULL;
 
-GLUI_Spinner *SPINNER_colorbar_shift = NULL;
-
-GLUI_Spinner *SPINNER_ncolorlabel_digits =NULL;
-GLUI_Spinner *SPINNER_ntick_decimals=NULL;
-GLUI_Spinner *SPINNER_down_red=NULL,*SPINNER_down_green=NULL,*SPINNER_down_blue=NULL;
-GLUI_Spinner *SPINNER_up_red=NULL,*SPINNER_up_green=NULL,*SPINNER_up_blue=NULL;
-GLUI_Spinner *SPINNER_colorsplit[12];
-GLUI_Spinner *SPINNER_valsplit[3];
 GLUI_Spinner *SPINNER_LB_time_start=NULL;
 GLUI_Spinner *SPINNER_LB_time_stop=NULL;
 GLUI_Spinner *SPINNER_LB_red=NULL;
@@ -90,20 +81,14 @@ GLUI_Spinner *SPINNER_spec_green = NULL;
 GLUI_Spinner *SPINNER_spec_blue = NULL;
 GLUI_Spinner *SPINNER_spec_grey = NULL;
 
-GLUI_Checkbox *CHECKBOX_use_lighting=NULL;
 GLUI_Checkbox *CHECKBOX_labels_showtick = NULL;
 GLUI_Checkbox *CHECKBOX_labels_meshlabel = NULL;
 GLUI_Checkbox *CHECKBOX_labels_version=NULL;
 GLUI_Checkbox *CHECKBOX_visUSERticks=NULL;
 GLUI_Checkbox *CHECKBOX_visUSERticks2=NULL;
-GLUI_Checkbox *CHECKBOX_show_extreme_mindata=NULL;
-GLUI_Checkbox *CHECKBOX_show_extreme_maxdata=NULL;
-GLUI_Checkbox *CHECKBOX_colorbar_flip=NULL;
-GLUI_Checkbox *CHECKBOX_colorbar_autoflip = NULL;
 #ifdef pp_BETA
 GLUI_Checkbox *CHECKBOX_cullgeom=NULL;
 #endif
-GLUI_Checkbox *CHECKBOX_transparentflag=NULL;
 GLUI_Checkbox *CHECKBOX_LB_visLabels=NULL;
 GLUI_Checkbox *CHECKBOX_LB_label_use_foreground=NULL;
 GLUI_Checkbox *CHECKBOX_LB_label_show_always=NULL;
@@ -132,8 +117,6 @@ GLUI_Checkbox *CHECKBOX_label_1=NULL;
 GLUI_Checkbox *CHECKBOX_label_2=NULL;
 GLUI_Checkbox *CHECKBOX_label_3=NULL;
 GLUI_Checkbox *CHECKBOX_labels_flip=NULL;
-GLUI_Checkbox *CHECKBOX_labels_shade=NULL;
-GLUI_Checkbox *CHECKBOX_labels_shadedata=NULL;
 GLUI_Checkbox *CHECKBOX_labels_transparent_override=NULL;
 GLUI_Checkbox *CHECKBOX_shownorth = NULL;
 GLUI_Checkbox *CHECKBOX_ticks_inside = NULL;
@@ -141,18 +124,14 @@ GLUI_Checkbox *CHECKBOX_ticks_outside = NULL;
 GLUI_Checkbox *CHECKBOX_labels_fds_title = NULL;
 
 GLUI_Rollout *ROLLOUT_LB_tick0 = NULL;
-GLUI_Rollout *ROLLOUT_coloring=NULL;
 GLUI_Rollout *ROLLOUT_font=NULL;
 GLUI_Rollout *ROLLOUT_user_labels=NULL;
 GLUI_Rollout *ROLLOUT_user_tick=NULL;
 GLUI_Rollout *ROLLOUT_general=NULL;
 GLUI_Rollout *ROLLOUT_north = NULL;
-GLUI_Rollout *ROLLOUT_extreme2 = NULL;
-GLUI_Rollout *ROLLOUT_split = NULL;
 GLUI_Rollout *ROLLOUT_light2 = NULL;
 
 GLUI_Panel *PANEL_titles=NULL;
-GLUI_Panel *PANEL_coloring=NULL;
 GLUI_Panel *PANEL_light=NULL;
 GLUI_Panel *PANEL_position0=NULL;
 GLUI_Panel *PANEL_position1 = NULL;
@@ -162,13 +141,6 @@ GLUI_Panel *PANEL_specular = NULL;
 GLUI_Panel *PANEL_positional = NULL;
 GLUI_Panel *PANEL_positional2 = NULL;
 GLUI_Panel *PANEL_timebar_overlap = NULL;
-GLUI_Panel *PANEL_split1L = NULL, *PANEL_split1H = NULL;
-GLUI_Panel *PANEL_split2L = NULL, *PANEL_split2H = NULL;
-GLUI_Panel *PANEL_split3 = NULL;
-GLUI_Panel *PANEL_extreme=NULL,*PANEL_cb8=NULL,*PANEL_cb7=NULL;
-GLUI_Panel *PANEL_extreme_min=NULL, *PANEL_extreme_max=NULL;
-GLUI_Panel *PANEL_cb11=NULL;
-GLUI_Panel *PANEL_colorbar_properties=NULL;
 GLUI_Panel *PANEL_gen1=NULL, *PANEL_gen2=NULL, *PANEL_gen3=NULL;
 GLUI_Panel *PANEL_LB_panel1=NULL, *PANEL_LB_panel2=NULL, *PANEL_LB_panel3=NULL;
 GLUI_Panel *PANEL_LB_panel4=NULL, *PANEL_LB_panel5=NULL, *PANEL_LB_panel6=NULL;
@@ -187,7 +159,6 @@ GLUI_Panel *PANEL_linewidth = NULL;
 GLUI_Panel *PANEL_offset = NULL;
 
 GLUI_RadioGroup *RADIO_timebar_overlap = NULL;
-GLUI_RadioGroup *RADIO2_plot3d_display=NULL;
 GLUI_RadioGroup *RADIO_fontsize = NULL;
 GLUI_RadioButton *RADIOBUTTON_label_1a=NULL;
 GLUI_RadioButton *RADIOBUTTON_label_1b=NULL;
@@ -272,7 +243,6 @@ GLUI_Button *BUTTON_label_4=NULL;
 
 #define UPDATEPLOT 10
 
-int cb_up_rgb[3],cb_down_rgb[3];
 
 #define GENERAL_ROLLOUT 0
 #define COLORING_ROLLOUT 1
@@ -284,22 +254,10 @@ int cb_up_rgb[3],cb_down_rgb[3];
 procdata displayprocinfo[6];
 int ndisplayprocinfo = 0;
 
-/* ------------------ UpdateColorLabelDigits ------------------------ */
-
-extern "C" void UpdateColorLabelDigits(void){
-  SPINNER_ncolorlabel_digits->set_int_val(ncolorlabel_digits);
-}
-
 /* ------------------ UpdateBackgroundFlip ------------------------ */
 
 extern "C" void UpdateBackgroundFlip(int flip) {
   CHECKBOX_labels_flip->set_int_val(flip);
-}
-
-/* ------------------ UpdateUseLighting ------------------------ */
-
-extern "C" void UpdateUseLighting(void) {
-  CHECKBOX_use_lighting->set_int_val(use_lighting);
 }
 
 /* ------------------ UpdateTimebarOverlap ------------------------ */
@@ -588,30 +546,6 @@ extern "C" void ColorCB(int var){
   }
 }
 
-/* ------------------ SplitCB ------------------------ */
-
-extern "C" void SplitCB(int var){
-  int isplit, i;
-  float denom;
-
-  switch(var){
-  case SPLIT_COLORBAR:
-    denom = splitvals[2] - splitvals[0];
-    if(denom == 0.0)denom = 1.0;
-    isplit = CLAMP(255 * (splitvals[1] - splitvals[0]) / denom, 0, 254);
-    split_colorbar->index_node[1] = isplit;
-    split_colorbar->index_node[2] = isplit + 1;
-
-    for(i = 0; i < 12; i++){
-      split_colorbar->rgb_node[i] = colorsplit[i] & 0xFF;
-    }
-    RemapColorbar(split_colorbar);
-    UpdateColorbarSplits(split_colorbar);
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
-    break;
-  }
-}
-
 /* ------------------ GluiLabelsSetup ------------------------ */
 
 extern "C" void GluiLabelsSetup(int main_window){
@@ -731,148 +665,6 @@ extern "C" void GluiLabelsSetup(int main_window){
     LabelsCB(LABELS_transparent);
   }
 
-  // -------------- Data coloring -------------------
-
-  ROLLOUT_coloring = glui_labels->add_rollout("Color",false,COLORING_ROLLOUT,DisplayRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_coloring, glui_labels);
-  ADDPROCINFO(displayprocinfo, ndisplayprocinfo, ROLLOUT_coloring,COLORING_ROLLOUT, glui_labels);
-
-  if(ncolorbars>0){
-    int i;
-
-    selectedcolorbar_index2=-1;
-    LIST_colorbar2=glui_labels->add_listbox_to_panel(ROLLOUT_coloring,_("Colorbar:"),&selectedcolorbar_index2,COLORBAR_LIST2,SliceBoundCB);
-
-    for(i=0;i<ncolorbars;i++){
-      colorbardata *cbi;
-
-      cbi = colorbarinfo + i;
-      cbi->label_ptr=cbi->label;
-      LIST_colorbar2->add_item(i,cbi->label_ptr);
-    }
-    LIST_colorbar2->set_int_val(colorbartype);
-  }
-
-  PANEL_cb11=glui_labels->add_panel_to_panel(ROLLOUT_coloring,"",GLUI_PANEL_NONE);
-
-  PANEL_colorbar_properties = glui_labels->add_panel_to_panel(PANEL_cb11,_("Colorbar properties"));
-  RADIO2_plot3d_display=glui_labels->add_radiogroup_to_panel(PANEL_colorbar_properties,&contour_type,UPDATEPLOT,Plot3DBoundCB);
-  glui_labels->add_radiobutton_to_group(RADIO2_plot3d_display,_("Continuous"));
-  glui_labels->add_radiobutton_to_group(RADIO2_plot3d_display,_("Stepped"));
-  glui_labels->add_radiobutton_to_group(RADIO2_plot3d_display,_("Line"));
-  CHECKBOX_colorbar_flip = glui_labels->add_checkbox_to_panel(PANEL_colorbar_properties, _("flip"), &colorbar_flip, FLIP, LabelsCB);
-  CHECKBOX_colorbar_autoflip = glui_labels->add_checkbox_to_panel(PANEL_colorbar_properties, _("Auto flip"), &colorbar_autoflip, FLIP, LabelsCB);
-  SPINNER_colorbar_shift = glui_labels->add_spinner_to_panel(PANEL_colorbar_properties, _("shift:"), GLUI_SPINNER_FLOAT, &colorbar_shift, LABELS_colorbar_shift, LabelsCB);
-  SPINNER_colorbar_shift->set_float_limits(COLORBAR_SHIFT_MIN, COLORBAR_SHIFT_MAX);
-
-  glui_labels->add_separator_to_panel(PANEL_colorbar_properties);
-
-
-  SPINNER_colorbar_selection_width =glui_labels->add_spinner_to_panel(PANEL_colorbar_properties,_("Selection width:"),GLUI_SPINNER_INT,&colorbar_selection_width,COLORBAND,SliceBoundCB);
-  SPINNER_colorbar_selection_width->set_int_limits(COLORBAR_SELECTION_WIDTH_MIN,COLORBAR_SELECTION_WIDTH_MAX);
-  SPINNER_ncolorlabel_digits = glui_labels->add_spinner_to_panel(PANEL_colorbar_properties, _("digits:"), GLUI_SPINNER_INT, &ncolorlabel_digits, COLORLABEL_DIGITS, SliceBoundCB);
-  SPINNER_ncolorlabel_digits->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
-
-  glui_labels->add_column_to_panel(PANEL_cb11,false);
-
-  PANEL_coloring = glui_labels->add_panel_to_panel(PANEL_cb11,_("Coloring"));
-  CHECKBOX_labels_shade=glui_labels->add_checkbox_to_panel(PANEL_coloring,_("Black/White (geometry)"),&setbw,LABELS_shade,LabelsCB);
-  CHECKBOX_labels_shadedata=glui_labels->add_checkbox_to_panel(PANEL_coloring,_("Black/White (data)"),&setbwdata,LABELS_shadedata,LabelsCB);
-  CHECKBOX_transparentflag = glui_labels->add_checkbox_to_panel(PANEL_coloring, _("Transparent (data)"),
-    &use_transparency_data, DATA_transparent, SliceBoundCB);
-  SPINNER_labels_transparency_data = glui_labels->add_spinner_to_panel(PANEL_coloring, _("level"),
-    GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, SliceBoundCB);
-  SPINNER_labels_transparency_data->set_w(0);
-  SPINNER_labels_transparency_data->set_float_limits(0.0, 1.0, GLUI_LIMIT_CLAMP);
-  CHECKBOX_use_lighting = glui_labels->add_checkbox_to_panel(PANEL_coloring, _("Lighting"), &use_lighting, CB_USE_LIGHTING, LabelsCB);
-
-
-  PANEL_extreme = glui_labels->add_panel_to_panel(ROLLOUT_coloring,"",GLUI_PANEL_NONE);
-
-  if(use_data_extremes==1){
-    ROLLOUT_extreme2 = glui_labels->add_rollout_to_panel(PANEL_extreme,"Highlight extreme data",false);
-    INSERT_ROLLOUT(ROLLOUT_extreme2, glui_labels);
-  }
-  else{
-    ROLLOUT_extreme2 = glui_labels->add_rollout_to_panel(PANEL_extreme,"Highlight extreme data (not supported with OpenGL 1.x)",false);
-    INSERT_ROLLOUT(ROLLOUT_extreme2, glui_labels);
-  }
-
-  PANEL_extreme_min = glui_labels->add_panel_to_panel(ROLLOUT_extreme2,"",GLUI_PANEL_NONE);
-  CHECKBOX_show_extreme_mindata=glui_labels->add_checkbox_to_panel(PANEL_extreme_min,_("Color below min"),&show_extreme_mindata,COLORBAR_EXTREME,ExtremeCB);
-
-  SPINNER_down_red=  glui_labels->add_spinner_to_panel(PANEL_extreme_min,_("red"),  GLUI_SPINNER_INT,cb_down_rgb,COLORBAR_EXTREME_RGB,ExtremeCB);
-  SPINNER_down_green=glui_labels->add_spinner_to_panel(PANEL_extreme_min,_("green"),GLUI_SPINNER_INT,cb_down_rgb+1,COLORBAR_EXTREME_RGB,ExtremeCB);
-  SPINNER_down_blue= glui_labels->add_spinner_to_panel(PANEL_extreme_min,_("blue"), GLUI_SPINNER_INT,cb_down_rgb+2,COLORBAR_EXTREME_RGB,ExtremeCB);
-  SPINNER_down_red->set_int_limits(0,255);
-  SPINNER_down_green->set_int_limits(0,255);
-  SPINNER_down_blue->set_int_limits(0,255);
-
-  glui_labels->add_column_to_panel(ROLLOUT_extreme2,false);
-
-  PANEL_extreme_max = glui_labels->add_panel_to_panel(ROLLOUT_extreme2,"",GLUI_PANEL_NONE);
-
-  CHECKBOX_show_extreme_maxdata=glui_labels->add_checkbox_to_panel(PANEL_extreme_max,_("Color above max"),&show_extreme_maxdata,COLORBAR_EXTREME,ExtremeCB);
-
-  SPINNER_up_red=  glui_labels->add_spinner_to_panel(PANEL_extreme_max,_("red"),  GLUI_SPINNER_INT,cb_up_rgb,COLORBAR_EXTREME_RGB,ExtremeCB);
-  SPINNER_up_green=glui_labels->add_spinner_to_panel(PANEL_extreme_max,_("green"),GLUI_SPINNER_INT,cb_up_rgb+1,COLORBAR_EXTREME_RGB,ExtremeCB);
-  SPINNER_up_blue= glui_labels->add_spinner_to_panel(PANEL_extreme_max,_("blue"), GLUI_SPINNER_INT,cb_up_rgb+2,COLORBAR_EXTREME_RGB,ExtremeCB);
-  SPINNER_up_red->set_int_limits(0,255);
-  SPINNER_up_green->set_int_limits(0,255);
-  SPINNER_up_blue->set_int_limits(0,255);
-
-  if(use_data_extremes == 0){
-    ROLLOUT_extreme2->disable();
-    CHECKBOX_show_extreme_maxdata->set_int_val(0);
-    CHECKBOX_show_extreme_mindata->set_int_val(0);
-    ExtremeCB(COLORBAR_EXTREME_RGB);
-  }
-  ColorbarGlobal2Local();
-
-  ROLLOUT_split = glui_labels->add_rollout_to_panel(ROLLOUT_coloring, "Define split colorbar",false);
-  INSERT_ROLLOUT(ROLLOUT_split, glui_labels);
-  PANEL_split1H = glui_labels->add_panel_to_panel(ROLLOUT_split, "color below split");
-
-  SPINNER_colorsplit[3] = glui_labels->add_spinner_to_panel(PANEL_split1H, _("red"), GLUI_SPINNER_INT, colorsplit+3, SPLIT_COLORBAR, SplitCB);
-  SPINNER_colorsplit[4] = glui_labels->add_spinner_to_panel(PANEL_split1H, _("green"), GLUI_SPINNER_INT, colorsplit + 4, SPLIT_COLORBAR, SplitCB);
-  SPINNER_colorsplit[5] = glui_labels->add_spinner_to_panel(PANEL_split1H, _("blue"), GLUI_SPINNER_INT, colorsplit + 5, SPLIT_COLORBAR, SplitCB);
-
-  PANEL_split1L = glui_labels->add_panel_to_panel(ROLLOUT_split, "min color");
-
-  SPINNER_colorsplit[0] = glui_labels->add_spinner_to_panel(PANEL_split1L,_("red"),  GLUI_SPINNER_INT,colorsplit, SPLIT_COLORBAR, SplitCB);
-  SPINNER_colorsplit[1] = glui_labels->add_spinner_to_panel(PANEL_split1L,_("green"),  GLUI_SPINNER_INT,colorsplit+1, SPLIT_COLORBAR, SplitCB);
-  SPINNER_colorsplit[2] = glui_labels->add_spinner_to_panel(PANEL_split1L,_("blue"),  GLUI_SPINNER_INT,colorsplit+2, SPLIT_COLORBAR, SplitCB);
-
-  glui_labels->add_column_to_panel(ROLLOUT_split, false);
-
-  PANEL_split2H = glui_labels->add_panel_to_panel(ROLLOUT_split, "max color");
-
-  SPINNER_colorsplit[9] =  glui_labels->add_spinner_to_panel(PANEL_split2H,_("red"),  GLUI_SPINNER_INT,colorsplit+9, SPLIT_COLORBAR, SplitCB);
-  SPINNER_colorsplit[10] =  glui_labels->add_spinner_to_panel(PANEL_split2H,_("green"),  GLUI_SPINNER_INT,colorsplit+10, SPLIT_COLORBAR, SplitCB);
-  SPINNER_colorsplit[11] =  glui_labels->add_spinner_to_panel(PANEL_split2H,_("blue"),  GLUI_SPINNER_INT,colorsplit+11, SPLIT_COLORBAR, SplitCB);
-
-  PANEL_split2L = glui_labels->add_panel_to_panel(ROLLOUT_split, "color above split");
-
-  SPINNER_colorsplit[6] = glui_labels->add_spinner_to_panel(PANEL_split2L, _("red"), GLUI_SPINNER_INT, colorsplit+6, SPLIT_COLORBAR, SplitCB);
-  SPINNER_colorsplit[7] = glui_labels->add_spinner_to_panel(PANEL_split2L, _("green"), GLUI_SPINNER_INT, colorsplit + 7, SPLIT_COLORBAR, SplitCB);
-  SPINNER_colorsplit[8] = glui_labels->add_spinner_to_panel(PANEL_split2L, _("blue"), GLUI_SPINNER_INT, colorsplit + 8, SPLIT_COLORBAR, SplitCB);
-
-  glui_labels->add_column_to_panel(ROLLOUT_split, false);
-
-  PANEL_split3 = glui_labels->add_panel_to_panel(ROLLOUT_split, "vals");
-
-  glui_labels->add_spinner_to_panel(PANEL_split3,_("max"),  GLUI_SPINNER_FLOAT,splitvals+2, SPLIT_COLORBAR, SplitCB);
-  glui_labels->add_spinner_to_panel(PANEL_split3,_("split"),  GLUI_SPINNER_FLOAT,splitvals+1, SPLIT_COLORBAR, SplitCB);
-  glui_labels->add_spinner_to_panel(PANEL_split3,_("min"),  GLUI_SPINNER_FLOAT,splitvals, SPLIT_COLORBAR, SplitCB);
-
-  {
-    int i;
-
-    for(i = 0; i < 12; i++){
-      SPINNER_colorsplit[i]->set_int_limits(0, 255);
-    }
-  }
-  SplitCB(SPLIT_COLORBAR);
 
   ROLLOUT_light2 = glui_labels->add_rollout("Light",false,LIGHT_ROLLOUT,DisplayRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_light2, glui_labels);
@@ -1354,133 +1146,15 @@ extern "C" void LabelsCB(int var){
   if(CHECKBOX_labels_labels!=NULL)CHECKBOX_labels_labels->set_int_val(visLabels);
 
   if(CHECKBOX_labels_flip!=NULL)CHECKBOX_labels_flip->set_int_val(background_flip);
-  if(CHECKBOX_labels_shade!=NULL)CHECKBOX_labels_shade->set_int_val(setbw);
-  if(CHECKBOX_labels_shadedata != NULL)CHECKBOX_labels_shadedata->set_int_val(setbwdata);
   if(RADIO_fontsize != NULL)RADIO_fontsize->set_int_val(fontindex);
   if(CHECKBOX_labels_hms!=NULL)CHECKBOX_labels_hms->set_int_val(vishmsTimelabel);
   if(CHECKBOX_labels_gridloc!=NULL)CHECKBOX_labels_gridloc->set_int_val(visgridloc);
   if(CHECKBOX_labels_version!=NULL)CHECKBOX_labels_version->set_int_val(vis_title_gversion);
   if(CHECKBOX_labels_meshlabel!=NULL)CHECKBOX_labels_meshlabel->set_int_val(visMeshlabel);
   if(CHECKBOX_visUSERticks2!=NULL)CHECKBOX_visUSERticks2->set_int_val(visUSERticks);
+  SetLabelControls2();
+
 }
 
 
-/* ------------------ UpdateColorbarFlip ------------------------ */
 
-extern "C" void UpdateColorbarFlip(void){
-  CHECKBOX_colorbar_flip->set_int_val(colorbar_flip);
-  CHECKBOX_colorbar_autoflip->set_int_val(colorbar_autoflip);
-}
-
-/* ------------------ UpdateColorbarList2 ------------------------ */
-
-extern "C" void UpdateColorbarList2(void){
-  if(LIST_colorbar2!=NULL)LIST_colorbar2->set_int_val(selectedcolorbar_index2);
-}
-
-/* ------------------ AddColorbarList2 ------------------------ */
-
-extern "C" void AddColorbarList2(int index, char *label){
-  LIST_colorbar2->add_item(index,label);
-}
-
-/* ------------------ SetColorbarListIndex ------------------------ */
-
-extern "C" void SetColorbarListIndex(int val){
-  if(LIST_colorbar2!=NULL)LIST_colorbar2->set_int_val(val);
-}
-
-/* ------------------ GetColorbarListIndex ------------------------ */
-
-extern "C" int GetColorbarListIndex(void){
-  return LIST_colorbar2->get_int_val();
-}
-
-/* ------------------ UpdateTransparency ------------------------ */
-
-extern "C" void UpdateTransparency(void){
-  if(CHECKBOX_transparentflag!=NULL)CHECKBOX_transparentflag->set_int_val(use_transparency_data);
-}
-
-/* ------------------ ExtremeCB ------------------------ */
-
-extern "C" void ExtremeCB(int var){
-  colorbardata *cbi;
-  unsigned char *rgb_nodes;
-  int i;
-
-  switch(var){
-    case COLORBAR_EXTREME:
-      if(show_extreme_mindata==1){
-        if(SPINNER_down_red!=NULL)SPINNER_down_red->enable();
-        if(SPINNER_down_green!=NULL)SPINNER_down_green->enable();
-        if(SPINNER_down_blue!=NULL)SPINNER_down_blue->enable();
-      }
-      else{
-        if(SPINNER_down_red!=NULL)SPINNER_down_red->disable();
-        if(SPINNER_down_green!=NULL)SPINNER_down_green->disable();
-        if(SPINNER_down_blue!=NULL)SPINNER_down_blue->disable();
-      }
-      if(show_extreme_maxdata==1){
-        if(SPINNER_up_red!=NULL)SPINNER_up_red->enable();
-        if(SPINNER_up_green!=NULL)SPINNER_up_green->enable();
-        if(SPINNER_up_blue!=NULL)SPINNER_up_blue->enable();
-      }
-      else{
-        if(SPINNER_up_red!=NULL)SPINNER_up_red->disable();
-        if(SPINNER_up_green!=NULL)SPINNER_up_green->disable();
-        if(SPINNER_up_blue!=NULL)SPINNER_up_blue->disable();
-      }
-      if(colorbartype<0||colorbartype>=ncolorbars)return;
-      cbi = colorbarinfo + colorbartype;
-      RemapColorbar(cbi);
-      UpdateRGBColors(COLORBAR_INDEX_NONE);
-      updatemenu=1;
-      break;
-    case COLORBAR_EXTREME_RGB:
-      if(colorbartype<0||colorbartype>=ncolorbars)return;
-      cbi = colorbarinfo + colorbartype;
-
-      rgb_nodes=rgb_above_max;
-      for(i=0;i<3;i++){
-        rgb_nodes[i]=cb_up_rgb[i];
-      }
-      rgb_nodes=rgb_below_min;
-      for(i=0;i<3;i++){
-        rgb_nodes[i]=cb_down_rgb[i];
-      }
-      RemapColorbar(cbi);
-      UpdateRGBColors(COLORBAR_INDEX_NONE);
-      break;
-    default:
-      break;
-  }
-}
-
-/* ------------------ UpdateExtremeVals ------------------------ */
-
-extern "C" void UpdateExtremeVals(void){
-  unsigned char *rgb_local;
-
-  rgb_local = rgb_below_min;
-  if(SPINNER_down_red!=NULL)SPINNER_down_red->set_int_val(  (int)(rgb_local[0]));
-  if(SPINNER_down_green!=NULL)SPINNER_down_green->set_int_val(  (int)(rgb_local[1]));
-  if(SPINNER_down_blue!=NULL)SPINNER_down_blue->set_int_val(  (int)(rgb_local[2]));
-
-  rgb_local = rgb_above_max;
-  if(SPINNER_up_red!=NULL)SPINNER_up_red->set_int_val(  (int)(rgb_local[0]));
-  if(SPINNER_up_green!=NULL)SPINNER_up_green->set_int_val(  (int)(rgb_local[1]));
-  if(SPINNER_up_blue!=NULL)SPINNER_up_blue->set_int_val(  (int)(rgb_local[2]));
-}
-
-/* ------------------ UpdateExtreme ------------------------ */
-
-extern "C" void UpdateExtreme(void){
-  if(CHECKBOX_show_extreme_mindata!=NULL){
-    CHECKBOX_show_extreme_mindata->set_int_val(show_extreme_mindata);
-  }
-  if(CHECKBOX_show_extreme_maxdata!=NULL){
-    CHECKBOX_show_extreme_maxdata->set_int_val(show_extreme_maxdata);
-  }
-  ExtremeCB(COLORBAR_EXTREME);
-}
