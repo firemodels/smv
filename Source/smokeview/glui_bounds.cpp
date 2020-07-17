@@ -106,6 +106,7 @@ GLUI_Panel *PANEL_slice_bound = NULL;
 #endif
 GLUI_Rollout *ROLLOUT_extreme2 = NULL;
 GLUI_Rollout *ROLLOUT_split = NULL;
+GLUI_Rollout *ROLLOUT_files = NULL;
 
 
 GLUI_Panel *PANEL_partread = NULL;
@@ -127,7 +128,6 @@ GLUI_Panel *PANEL_slicedup = NULL;
 GLUI_Panel *PANEL_vectorslicedup = NULL;
 GLUI_Panel *PANEL_iso_eachlevel = NULL;
 GLUI_Panel *PANEL_iso_alllevels = NULL;
-GLUI_Panel *PANEL_files = NULL;
 GLUI_Panel *PANEL_bounds = NULL;
 GLUI_Panel *PANEL_zone_a=NULL, *PANEL_zone_b=NULL;
 GLUI_Panel *PANEL_evac_direction=NULL;
@@ -1941,9 +1941,9 @@ extern "C" void GluiBoundsSetup(int main_window){
   glui_bounds = GLUI_Master.create_glui( "Files/Data",0,0,0 );
   glui_bounds->hide();
 
-  PANEL_files = glui_bounds->add_panel("Files", true);
+  ROLLOUT_files = glui_bounds->add_rollout("Files", false);
 
-  ROLLOUT_autoload = glui_bounds->add_rollout_to_panel(PANEL_files,_("Auto load"), false, LOAD_ROLLOUT, FileRolloutCB);
+  ROLLOUT_autoload = glui_bounds->add_rollout_to_panel(ROLLOUT_files,_("Auto load"), false, LOAD_ROLLOUT, FileRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_autoload, glui_bounds);
   ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_autoload, LOAD_ROLLOUT, glui_bounds);
 
@@ -1955,7 +1955,7 @@ extern "C" void GluiBoundsSetup(int main_window){
   // -------------- Show/Hide Loaded files -------------------
 
   if(npartinfo > 0 || nsliceinfo > 0 || nvsliceinfo > 0 || nisoinfo > 0 || npatchinfo || nsmoke3dinfo > 0 || nplot3dinfo > 0){
-    ROLLOUT_showhide = glui_bounds->add_rollout_to_panel(PANEL_files,_("Show/Hide"), false, SHOWHIDE_ROLLOUT, FileRolloutCB);
+    ROLLOUT_showhide = glui_bounds->add_rollout_to_panel(ROLLOUT_files,_("Show/Hide"), false, SHOWHIDE_ROLLOUT, FileRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_showhide, glui_bounds);
     ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_showhide, SHOWHIDE_ROLLOUT, glui_bounds);
 
@@ -1984,7 +1984,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
 #ifdef pp_COMPRESS
   if(smokezippath != NULL && (npatchinfo > 0 || nsmoke3dinfo > 0 || nsliceinfo > 0)){
-    ROLLOUT_compress = glui_bounds->add_rollout_to_panel(PANEL_files,_("Compress"), false, COMPRESS_ROLLOUT, FileRolloutCB);
+    ROLLOUT_compress = glui_bounds->add_rollout_to_panel(ROLLOUT_files,_("Compress"), false, COMPRESS_ROLLOUT, FileRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_compress, glui_bounds);
     ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_compress, COMPRESS_ROLLOUT, glui_bounds);
 
@@ -2018,7 +2018,7 @@ extern "C" void GluiBoundsSetup(int main_window){
   }
 #endif
 
-  ROLLOUT_script = glui_bounds->add_rollout_to_panel(PANEL_files,_("Scripts"), false, SCRIPT_ROLLOUT, FileRolloutCB);
+  ROLLOUT_script = glui_bounds->add_rollout_to_panel(ROLLOUT_files,_("Scripts"), false, SCRIPT_ROLLOUT, FileRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_script, glui_bounds);
   ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_script, SCRIPT_ROLLOUT, glui_bounds);
 
@@ -2059,7 +2059,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     ScriptCB(SCRIPT_LIST);
   }
 
-  ROLLOUT_config = glui_bounds->add_rollout_to_panel(PANEL_files, "Config", false, CONFIG_ROLLOUT, FileRolloutCB);
+  ROLLOUT_config = glui_bounds->add_rollout_to_panel(ROLLOUT_files, "Config", false, CONFIG_ROLLOUT, FileRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_config, glui_bounds);
   ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_config, CONFIG_ROLLOUT, glui_bounds);
 
@@ -2101,8 +2101,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
 // ----------------------------------- Bounds ----------------------------------------
 
-  PANEL_bounds = glui_bounds->add_panel("Data",true);
-  ROLLOUT_filebounds = glui_bounds->add_rollout_to_panel(PANEL_bounds,_("Type"), false, FILEBOUNDS_ROLLOUT, FileRolloutCB);
+  ROLLOUT_filebounds = glui_bounds->add_rollout(_("Data bounds"), false, FILEBOUNDS_ROLLOUT, FileRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_filebounds, glui_bounds);
   ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_filebounds, FILEBOUNDS_ROLLOUT, glui_bounds);
 
@@ -2890,17 +2889,58 @@ extern "C" void GluiBoundsSetup(int main_window){
     SliceBoundCB(FILETYPEINDEX);
   }
 
+  // ----------------------------------- Time ----------------------------------------
+
+  ROLLOUT_time = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "Time", false, TIME_ROLLOUT, FileRolloutCB);
+  INSERT_ROLLOUT(ROLLOUT_time, glui_bounds);
+  ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_time, TIME_ROLLOUT, glui_bounds);
+
+  PANEL_time1a = glui_bounds->add_panel_to_panel(ROLLOUT_time, "", false);
+  SPINNER_timebounds = glui_bounds->add_spinner_to_panel(PANEL_time1a, _("Time:"), GLUI_SPINNER_FLOAT, &glui_time);
+  glui_bounds->add_spinner_to_panel(PANEL_time1a, _("Offset:"), GLUI_SPINNER_FLOAT, &timeoffset);
+  glui_bounds->add_column_to_panel(PANEL_time1a, false);
+  SPINNER_timebounds->set_float_limits(0.0, 3600.0*24);
+  BUTTON_SETTIME = glui_bounds->add_button_to_panel(PANEL_time1a, _("Set"), SET_TIME, TimeBoundCB);
+
+  PANEL_time2 = glui_bounds->add_panel_to_panel(ROLLOUT_time, _("Data loading"), true);
+
+  PANEL_time2a = glui_bounds->add_panel_to_panel(PANEL_time2, "", false);
+  SPINNER_tload_begin = glui_bounds->add_spinner_to_panel(PANEL_time2a, _("min time"), GLUI_SPINNER_FLOAT, &tload_begin, TBOUNDS, TimeBoundCB);
+  glui_bounds->add_column_to_panel(PANEL_time2a, false);
+  CHECKBOX_use_tload_begin = glui_bounds->add_checkbox_to_panel(PANEL_time2a, "", &use_tload_begin, TBOUNDS_USE, TimeBoundCB);
+
+  PANEL_time2b = glui_bounds->add_panel_to_panel(PANEL_time2, "", false);
+  SPINNER_tload_end = glui_bounds->add_spinner_to_panel(PANEL_time2b, _("max time"), GLUI_SPINNER_FLOAT, &tload_end, TBOUNDS, TimeBoundCB);
+  glui_bounds->add_column_to_panel(PANEL_time2b, false);
+  CHECKBOX_use_tload_end = glui_bounds->add_checkbox_to_panel(PANEL_time2b, "", &use_tload_end, TBOUNDS_USE, TimeBoundCB);
+
+  PANEL_time2c = glui_bounds->add_panel_to_panel(PANEL_time2, "", false);
+  SPINNER_tload_skip = glui_bounds->add_spinner_to_panel(PANEL_time2c, _("frame skip"), GLUI_SPINNER_INT, &tload_skip, TBOUNDS, TimeBoundCB);
+  glui_bounds->add_column_to_panel(PANEL_time2c, false);
+  CHECKBOX_use_tload_skip = glui_bounds->add_checkbox_to_panel(PANEL_time2c, "", &use_tload_skip, TBOUNDS_USE, TimeBoundCB);
+  SPINNER_tload_skip->set_int_limits(0, 1000);
+
+  glui_bounds->add_button_to_panel(PANEL_time2, _("Reload all data"), RELOAD_ALL_DATA, TimeBoundCB);
+  glui_bounds->add_button_to_panel(PANEL_time2, _("Reload new data"), RELOAD_INCREMENTAL_DATA, TimeBoundCB);
+
+  TimeBoundCB(TBOUNDS_USE);
+
   // -------------- Data coloring -------------------
 
-  ROLLOUT_coloring = glui_bounds->add_rollout_to_panel(PANEL_bounds,"Color", false, COLORING_ROLLOUT, FileRolloutCB);
+  ROLLOUT_coloring = glui_bounds->add_rollout("Color", false, COLORING_ROLLOUT, FileRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_coloring, glui_bounds);
   ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_coloring, COLORING_ROLLOUT, glui_bounds);
+
+  PANEL_cb11 = glui_bounds->add_panel_to_panel(ROLLOUT_coloring, "", GLUI_PANEL_NONE);
+
+  PANEL_colorbar_properties = glui_bounds->add_panel_to_panel(PANEL_cb11, _("Colorbar"));
+
 
   if(ncolorbars>0){
     int i;
 
     selectedcolorbar_index2 = -1;
-    LIST_colorbar2 = glui_bounds->add_listbox_to_panel(ROLLOUT_coloring, _("Colorbar:"), &selectedcolorbar_index2, COLORBAR_LIST2, SliceBoundCB);
+    LIST_colorbar2 = glui_bounds->add_listbox_to_panel(PANEL_colorbar_properties, "", &selectedcolorbar_index2, COLORBAR_LIST2, SliceBoundCB);
 
     for(i = 0; i<ncolorbars; i++){
       colorbardata *cbi;
@@ -2912,9 +2952,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     LIST_colorbar2->set_int_val(colorbartype);
   }
 
-  PANEL_cb11 = glui_bounds->add_panel_to_panel(ROLLOUT_coloring, "", GLUI_PANEL_NONE);
-
-  PANEL_colorbar_properties = glui_bounds->add_panel_to_panel(PANEL_cb11, _("Colorbar properties"));
   RADIO2_plot3d_display = glui_bounds->add_radiogroup_to_panel(PANEL_colorbar_properties, &contour_type, UPDATEPLOT, Plot3DBoundCB);
   glui_bounds->add_radiobutton_to_group(RADIO2_plot3d_display, _("Continuous"));
   glui_bounds->add_radiobutton_to_group(RADIO2_plot3d_display, _("Stepped"));
@@ -3032,43 +3069,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     }
   }
   SplitCB(SPLIT_COLORBAR);
-
-
-  // ----------------------------------- Time ----------------------------------------
-
-  ROLLOUT_time = glui_bounds->add_rollout_to_panel(PANEL_bounds,"Time", false, TIME_ROLLOUT, FileRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_time, glui_bounds);
-  ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_time, TIME_ROLLOUT, glui_bounds);
-
-  PANEL_time1a = glui_bounds->add_panel_to_panel(ROLLOUT_time,"",false);
-  SPINNER_timebounds=glui_bounds->add_spinner_to_panel(PANEL_time1a,_("Time:"),GLUI_SPINNER_FLOAT,&glui_time);
-  glui_bounds->add_spinner_to_panel(PANEL_time1a, _("Offset:"), GLUI_SPINNER_FLOAT, &timeoffset);
-  glui_bounds->add_column_to_panel(PANEL_time1a,false);
-  SPINNER_timebounds->set_float_limits(0.0,3600.0*24);
-  BUTTON_SETTIME=glui_bounds->add_button_to_panel(PANEL_time1a,_("Set"),SET_TIME,TimeBoundCB);
-
-  PANEL_time2 = glui_bounds->add_panel_to_panel(ROLLOUT_time,_("Data loading"),true);
-
-  PANEL_time2a = glui_bounds->add_panel_to_panel(PANEL_time2,"",false);
-  SPINNER_tload_begin=glui_bounds->add_spinner_to_panel(PANEL_time2a,_("min time"),GLUI_SPINNER_FLOAT,&tload_begin,TBOUNDS,TimeBoundCB);
-  glui_bounds->add_column_to_panel(PANEL_time2a,false);
-  CHECKBOX_use_tload_begin=glui_bounds->add_checkbox_to_panel(PANEL_time2a,"",&use_tload_begin,TBOUNDS_USE,TimeBoundCB);
-
-  PANEL_time2b = glui_bounds->add_panel_to_panel(PANEL_time2,"",false);
-  SPINNER_tload_end=glui_bounds->add_spinner_to_panel(PANEL_time2b,_("max time"),GLUI_SPINNER_FLOAT,&tload_end,TBOUNDS,TimeBoundCB);
-  glui_bounds->add_column_to_panel(PANEL_time2b,false);
-  CHECKBOX_use_tload_end=glui_bounds->add_checkbox_to_panel(PANEL_time2b,"",&use_tload_end,TBOUNDS_USE,TimeBoundCB);
-
-  PANEL_time2c = glui_bounds->add_panel_to_panel(PANEL_time2,"",false);
-  SPINNER_tload_skip=glui_bounds->add_spinner_to_panel(PANEL_time2c,_("frame skip"),GLUI_SPINNER_INT,&tload_skip,TBOUNDS,TimeBoundCB);
-  glui_bounds->add_column_to_panel(PANEL_time2c,false);
-  CHECKBOX_use_tload_skip=glui_bounds->add_checkbox_to_panel(PANEL_time2c,"",&use_tload_skip,TBOUNDS_USE,TimeBoundCB);
-  SPINNER_tload_skip->set_int_limits(0,1000);
-
-  glui_bounds->add_button_to_panel(PANEL_time2,_("Reload all data"), RELOAD_ALL_DATA,TimeBoundCB);
-  glui_bounds->add_button_to_panel(PANEL_time2, _("Reload new data"), RELOAD_INCREMENTAL_DATA, TimeBoundCB);
-
-  TimeBoundCB(TBOUNDS_USE);
 
   // ----------------------------------- Memory check ----------------------------------------
 
