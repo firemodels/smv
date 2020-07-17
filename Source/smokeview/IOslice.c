@@ -3991,6 +3991,54 @@ void UpdateSliceBoundLabels(){
 /* ------------------ SliceBounds2Glui ------------------------ */
 
 void SliceBounds2Glui(int slicetype){
+#ifdef pp_NEWBOUND_DIALOG
+  if(slicetype>=0&&slicetype<nslicebounds){
+    int compute_bounds = 0, i;
+
+    for(i = 0; i<nsliceinfo; i++){
+      slicedata *slicei;
+
+      slicei = sliceinfo+i;
+      if(strcmp(slicei->label.shortlabel, slicebounds[slicetype].shortlabel)==0){
+        if(slicei->valmin>slicei->valmax){
+          compute_bounds = 1;
+          break;
+        }
+      }
+    }
+    if(compute_bounds==1){
+      float vmin = 1.0, vmax = 0.0;
+
+      for(i = 0; i<nsliceinfo; i++){
+        slicedata *slicei;
+
+        slicei = sliceinfo+i;
+        if(strcmp(slicei->label.shortlabel, slicebounds[slicetype].shortlabel)==0){
+          if(vmin>vmax){
+            vmin = slicei->file_min;
+            vmax = slicei->file_max;
+          }
+          else{
+            vmin = MIN(vmin, slicei->file_min);
+            vmax = MAX(vmax, slicei->file_max);
+          }
+        }
+      }
+      for(i = 0; i<nsliceinfo; i++){
+        slicedata *slicei;
+
+        slicei = sliceinfo+i;
+        if(strcmp(slicei->label.shortlabel, slicebounds[slicetype].shortlabel)==0){
+          slicei->valmin = vmin;;
+          slicei->valmax = vmax;;
+        }
+      }
+      slicebounds[slicetype].dlg_valmin = vmin;
+      slicebounds[slicetype].dlg_valmax = vmax;
+    }
+  }
+#endif
+
   if(slicetype>=0&&slicetype<nslicebounds){
     slice_line_contour_min=slicebounds[slicetype].line_contour_min;
     slice_line_contour_max=slicebounds[slicetype].line_contour_max;
@@ -4014,7 +4062,6 @@ void SliceBounds2Glui(int slicetype){
     glui_slicemin_unit = (unsigned char *)slicebounds[slicetype].label->unit;
     glui_slicemax_unit = glui_slicemin_unit;
 
-    memcpy(&glui_slicebounds, slicebounds + slicetype, sizeof(bounddata));
     UpdateGluiSliceUnits();
   }
 }

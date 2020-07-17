@@ -28,12 +28,13 @@ EXTERNCPP void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int 
 EXTERNCPP int TimeAverageData(float *data_out, float *data_in, int ndata, int data_per_timestep, float *times_local, int ntimes_local, float average_time);
 bufferstreamdata *GetSMVBuffer(char *file, char *file2);
 EXTERNCPP void UpdateBlockType(void);
+boundsdata *GetSliceBoundsInfo(char *shortlabel);
+boundsdata *GetPatchBoundsInfo(char *shortlabel);
 #ifdef pp_NEWBOUND_DIALOG
 EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max);
-#endif
-boundsdata *GetBoundsInfo(char *shortlabel);
-#ifdef pp_NEWBOUND_DIALOG
-void GetGlobalSliceBounds(void);
+EXTERNCPP void GetGlobalSliceBounds(void);
+EXTERNCPP void GetGlobalPatchBounds(void);
+EXTERNCPP void GetLoadedPatchBounds(char *label, float *loaded_min, float *loaded_max);
 FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
 #endif
 EXTERNCPP void ShiftColorbars(void);
@@ -738,8 +739,8 @@ EXTERNCPP void UpdateUseTextures(void);
 EXTERNCPP void AntiAliasLine(int flag);
 EXTERNCPP void AntiAliasSurface(int flag);
 EXTERNCPP void SliceBounds2Glui(int slicefile_labelindex);
-EXTERNCPP void Local2GlobalBoundaryBounds(const char *key);
-EXTERNCPP void Global2LocalBoundaryBounds(const char *key);
+EXTERNCPP void GLUI2GlobalBoundaryBounds(const char *key);
+EXTERNCPP void Global2GLUIBoundaryBounds(const char *key);
 EXTERNCPP void UpdateLoadedLists(void);
 EXTERNCPP void UpdateLights(float *pos1, float *pos2);
 EXTERNCPP int  MergeRenderScreenBuffers(int nscreen_rows, GLubyte **screenbuffers);

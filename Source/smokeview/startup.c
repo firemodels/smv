@@ -1487,7 +1487,8 @@ void InitVars(void){
   setpartmin=PERCENTILE_MIN, setpartmax=PERCENTILE_MAX;
   setpartmin_old=setpartmin;
   setpartmax_old=setpartmax;
-  setpatchmin=GLOBAL_MIN, setpatchmax=GLOBAL_MAX;
+  glui_setpatchmin = GLOBAL_MIN;
+  glui_setpatchmax = GLOBAL_MAX;
   settargetmin=0, settargetmax=0;
   setpartchopmin=0, setpartchopmax=0;
   partchopmin=1.0,  partchopmax=0.;

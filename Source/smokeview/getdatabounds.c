@@ -7,7 +7,10 @@
 #include "smokeviewvars.h"
 
 #ifdef pp_NEWBOUND_DIALOG
-void GetSliceFileBounds(char *file, float *valmin, float *valmax){
+
+/* ------------------ GetFileBounds ------------------------ */
+
+void GetFileBounds(char *file, float *valmin, float *valmax){
   FILE *stream;
   char buffer[255];
   float t, vmin, vmax;
@@ -31,9 +34,9 @@ void GetSliceFileBounds(char *file, float *valmin, float *valmax){
   fclose(stream);
 }
 
-/* ------------------ GetBoundsInfo ------------------------ */
+/* ------------------ GetSliceBoundsInfo ------------------------ */
 
-boundsdata *GetBoundsInfo(char *shortlabel){
+boundsdata *GetSliceBoundsInfo(char *shortlabel){
   int i;
 
   for(i = 0; i<nslicebounds; i++){
@@ -64,11 +67,11 @@ void GetGlobalSliceBounds(void){
 
     slicei = sliceinfo+i;
     if(slicei->is_fed==1)continue;
-    GetSliceFileBounds(slicei->bound_file, &valmin, &valmax);
+    GetFileBounds(slicei->bound_file, &valmin, &valmax);
     if(valmin>valmax)continue;
     slicei->file_min = valmin;
     slicei->file_max = valmax;
-    boundi = GetBoundsInfo(slicei->label.shortlabel);
+    boundi = GetSliceBoundsInfo(slicei->label.shortlabel);
     if(boundi==NULL)continue;
     if(boundi->global_valmin>boundi->global_valmax){
       boundi->global_valmin = valmin;
@@ -87,6 +90,85 @@ void GetGlobalSliceBounds(void){
     boundi->dlg_valmax = boundi->global_valmax;
   }
 
+}
+
+/* ------------------ GetPatchBoundsInfo ------------------------ */
+
+boundsdata *GetPatchBoundsInfo(char *shortlabel){
+  int i;
+
+  for(i = 0; i<npatchbounds; i++){
+    boundsdata *boundi;
+
+    boundi = patchbounds+i;
+    if(strcmp(boundi->shortlabel, shortlabel)==0)return boundi;
+  }
+  return NULL;
+}
+
+/* ------------------ GetGlobalPatchBounds ------------------------ */
+
+void GetGlobalPatchBounds(void){
+  int i;
+
+  for(i = 0;i<npatchbounds;i++){
+    boundsdata *boundi;
+
+    boundi = patchbounds+i;
+    boundi->global_valmin = 1.0;
+    boundi->global_valmax = 0.0;
+  }
+  for(i = 0;i<npatchinfo;i++){
+    patchdata *patchi;
+    float valmin, valmax;
+    boundsdata *boundi;
+
+    patchi = patchinfo+i;
+    GetFileBounds(patchi->bound_file, &valmin, &valmax);
+    if(valmin>valmax)continue;
+    patchi->file_min = valmin;
+    patchi->file_max = valmax;
+    boundi = GetPatchBoundsInfo(patchi->label.shortlabel);
+    if(boundi==NULL)continue;
+    if(boundi->global_valmin>boundi->global_valmax){
+      boundi->global_valmin = valmin;
+      boundi->global_valmax = valmax;
+    }
+    else{
+      boundi->global_valmin = MIN(boundi->global_valmin,valmin);
+      boundi->global_valmax = MAX(boundi->global_valmax, valmax);
+    }
+  }
+  for(i = 0; i<npatchbounds; i++){
+    boundsdata *boundi;
+
+    boundi = patchbounds+i;
+    boundi->dlg_valmin = boundi->global_valmin;
+    boundi->dlg_valmax = boundi->global_valmax;
+  }
+
+}
+/* ------------------ GetLoadedPatchBounds ------------------------ */
+
+void GetLoadedPatchBounds(char *label, float *loaded_min, float *loaded_max){
+  int i;
+
+  *loaded_min = 1.0;
+  *loaded_max = 0.0;
+  for(i = 0; i<npatchinfo; i++){
+    patchdata *patchi;
+
+    patchi = patchinfo+i;
+    if(patchi->loaded==0||strcmp(patchi->label.shortlabel, label)!=0)continue;
+    if(*loaded_min>*loaded_max){
+      *loaded_min = patchi->file_min;
+      *loaded_max = patchi->file_max;
+    }
+    else{
+      *loaded_min = MIN(*loaded_min,patchi->file_min);
+      *loaded_max = MAX(*loaded_max,patchi->file_max);
+    }
+  }
 }
 #endif
 

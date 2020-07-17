@@ -1892,7 +1892,9 @@ int GetColorbarState(void){
   visColorbarHorizontal = 0;
   visColorbarVertical_save = 0;
   visColorbarHorizontal_save = 0;
+#ifndef pp_NEWBOUND_DIALOG
   research_mode = 0;
+#endif
   return COLORBAR_HIDDEN;
 }
 
@@ -1999,11 +2001,13 @@ void UpdateDisplay(void){
     visColorbarVertical = visColorbarVertical_val;
     visColorbarHorizontal = visColorbarHorizontal_val;
     vis_colorbar = GetColorbarState();
+#ifndef pp_NEWBOUND_DIALOG
     if(visColorbarHorizontal==0&&visColorbarVertical==0){
       research_mode = 0;
      // update_research_mode = 1;
       SliceBoundCB(RESEARCH_MODE);
     }
+#endif
     updatemenu = 1;
   }
   if(update_windrose==1){

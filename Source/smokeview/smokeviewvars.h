@@ -72,10 +72,7 @@ SVEXTERN int SVDECL(terrain_slice_overlap, 0);
 SVEXTERN int GetTerrainData(char *file, terraindata *terri);
 
 #ifdef pp_NEWBOUND_DIALOG
-SVEXTERN int SVDECL(slice_loaded_only, 0), SVDECL(slice_loaded,0), SVDECL(update_slice_loaded,0);
-SVEXTERN int SVDECL(patch_loaded_only, 0);
-SVEXTERN int SVDECL(part_loaded_only, 0); 
-SVEXTERN int SVDECL(plot3d_loaded_only, 0);
+SVEXTERN int SVDECL(slice_loaded,0), SVDECL(update_slice_loaded,0);
 #endif
 
 SVEXTERN int SVDECL(use_slice_glui_bounds, 0);
@@ -1109,7 +1106,7 @@ SVEXTERN float slice_line_contour_min;
 SVEXTERN float slice_line_contour_max;
 SVEXTERN int slice_line_contour_num;
 SVEXTERN int setpartmin_old, setpartmax_old;
-SVEXTERN int setpatchmin, setpatchmax, SVDECL(setzonemin,GLOBAL_MIN), SVDECL(setzonemax,GLOBAL_MAX);
+SVEXTERN int glui_setpatchmin, glui_setpatchmax, SVDECL(setzonemin,GLOBAL_MIN), SVDECL(setzonemax,GLOBAL_MAX);
 SVEXTERN int SVDECL(loadpatchbysteps,UNCOMPRESSED );
 SVEXTERN int settargetmin, settargetmax;
 SVEXTERN int setpartchopmin, setpartchopmax;
@@ -1128,7 +1125,7 @@ SVEXTERN int settmin_p, settmin_b, settmin_s, settmin_z, settmin_i;
 SVEXTERN int settmax_p, settmax_b, settmax_s, settmax_z, settmax_i;
 SVEXTERN float tmin_p, tmin_b, tmin_s, tmin_z, tmin_i;
 SVEXTERN float tmax_p, tmax_b, tmax_s, tmax_z, tmax_i;
-SVEXTERN float SVDECL(patchmin,1.0),SVDECL(patchmax,0.0);
+SVEXTERN float SVDECL(glui_patchmin,1.0),SVDECL(glui_patchmax,0.0);
 SVEXTERN float SVDECL(targetmin, 1.0), SVDECL(targetmax, 0.0);
 SVEXTERN float SVDECL(partmin,1.0), SVDECL(partmax,0.0);
 SVEXTERN float SVDECL(glui_slicemin,1.0),       SVDECL(glui_slicemax,0.0);
@@ -1189,7 +1186,7 @@ SVEXTERN int ntc_total, nspr_total, nheat_total;
 SVEXTERN int n_devices;
 
 SVEXTERN int npartinfo, nsliceinfo, nvsliceinfo, nplot3dinfo, npatchinfo;
-SVEXTERN int SVDECL(nslicebounds, 0), npatch2;
+SVEXTERN int SVDECL(nslicebounds, 0), SVDECL(npatchbounds,0), npatch2;
 SVEXTERN int nfedinfo;
 SVEXTERN int nevac;
 SVEXTERN int SVDECL(nsmoke3dinfo,0);
@@ -1757,7 +1754,7 @@ SVEXTERN int nmultivsliceinfo;
 SVEXTERN int SVDECL(*sliceorderindex,NULL),SVDECL(*vsliceorderindex,NULL),SVDECL(*partorderindex,NULL);
 SVEXTERN int SVDECL(*patchorderindex,NULL),SVDECL(*isoorderindex,NULL),SVDECL(*plot3dorderindex,NULL);
 SVEXTERN int showfiles;
-SVEXTERN boundsdata SVDECL(*slicebounds,NULL), SVDECL(*isobounds,NULL), glui_slicebounds;
+SVEXTERN boundsdata SVDECL(*slicebounds,NULL), SVDECL(*isobounds,NULL), SVDECL(*patchbounds,NULL);
 SVEXTERN boundsdata SVDECL(*slicebounds_temp, NULL);
 SVEXTERN vslicedata SVDECL(*vsliceinfo,NULL);
 SVEXTERN int force_redisplay;

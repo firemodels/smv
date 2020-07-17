@@ -1444,6 +1444,9 @@ typedef struct _patchdata {
   int firstshort;
   int compression_type;
   int setvalmin, setvalmax;
+#ifdef pp_NEWBOUND_DIALOG
+  float file_min, file_max;
+#endif
   float valmin, valmax;
   int setchopmin, setchopmax;
   float chopmin, chopmax;
@@ -1465,6 +1468,7 @@ typedef struct _patchdata {
   int finalize;
   histogramdata *histogram;
   bounddata bounds;
+  boundsdata *bounds2;
 } patchdata;
 
 /* --------------------------  plot3ddata ------------------------------------ */

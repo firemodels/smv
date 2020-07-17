@@ -355,7 +355,7 @@ void UpdateAllBoundaryColors(void){
     npatchvals = meshi->npatch_times*meshi->npatchsize;
 
     GetBoundaryColors3(patchi,meshi->patchval, 0, npatchvals, meshi->cpatchval,
-    setpatchmin,&patchmin, setpatchmax,&patchmax,
+    glui_setpatchmin,&glui_patchmin, glui_setpatchmax,&glui_patchmax,
     &patchmin_global, &patchmax_global,
     nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
     &patchi->extreme_min,&patchi->extreme_max);

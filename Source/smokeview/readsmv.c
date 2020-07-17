@@ -2207,13 +2207,16 @@ void UpdateBoundInfo(void){
       slicedata *slicei;
 
       slicei = sliceinfo+i;
-      slicei->bounds = GetBoundsInfo(slicei->label.shortlabel);
+      slicei->bounds = GetSliceBoundsInfo(slicei->label.shortlabel);
     }
 #endif
   }
 
   canshow_threshold=0;
   if(npatchinfo>0){
+    FREEMEMORY(patchbounds);
+    NewMemory((void*)&patchbounds, npatchinfo*sizeof(boundsdata));
+    npatchbounds = 0;
     npatch2=0;
     FREEMEMORY(patchlabellist);
     FREEMEMORY(patchlabellist_index);
@@ -2221,9 +2224,11 @@ void UpdateBoundInfo(void){
     NewMemory((void **)&patchlabellist_index,npatchinfo*sizeof(int));
     for(i=0;i<npatchinfo;i++){
       patchdata *patchi;
+      boundsdata *sbi;
 
       patchi = patchinfo + i;
       patchi->firstshort=1;
+#ifndef pp_NEWBOUND_DIALOG
       patchi->valmin=1.0;
       patchi->valmax=0.0;
       if(research_mode==1){
@@ -2234,6 +2239,7 @@ void UpdateBoundInfo(void){
         patchi->setvalmin = PERCENTILE_MIN;
         patchi->setvalmax = PERCENTILE_MAX;
       }
+#endif
       if(strncmp(patchi->label.shortlabel,"temp",4)==0||
          strncmp(patchi->label.shortlabel,"TEMP",4)==0){
         canshow_threshold=1;
@@ -2251,11 +2257,49 @@ void UpdateBoundInfo(void){
           break;
         }
       }
+      sbi = patchbounds+npatchbounds;
+      sbi->shortlabel = patchi->label.shortlabel;
+      sbi->dlg_setvalmin = 0;
+      sbi->dlg_setvalmax = 0;
+      sbi->dlg_valmin = 1.0;
+      sbi->dlg_valmax = 0.0;
+#ifdef pp_NEWBOUND_DIALOG
+      sbi->percentile_valmin = 1.0;
+      sbi->percentile_valmax = 0.0;
+#endif
+      sbi->chopmax = 0.0;
+      sbi->chopmin = 1.0;
+      sbi->setchopmax = 0;
+      sbi->setchopmin = 0;
+      sbi->line_contour_min = 0.0;
+      sbi->line_contour_max = 1.0;
+      sbi->line_contour_num = 1;
+      sbi->label = &(patchi->label);
+      npatchbounds++;
+      for(n = 0; n<i; n++){
+        patchdata *patchn;
+
+        patchn = patchinfo+n;
+        if(strcmp(patchi->label.shortlabel, patchn->label.shortlabel)==0){
+          patchi->firstshort = 0;
+          npatchbounds--;
+          break;
+        }
+      }
     }
+#ifdef pp_NEWBOUND_DIALOG
+    for(i = 0; i<npatchinfo; i++){
+      patchdata *patchi;
+
+      patchi = patchinfo+i;
+      patchi->bounds2 = GetPatchBoundsInfo(patchi->label.shortlabel);
+    }
+#endif
   }
   UpdateChar();
 #ifdef pp_NEWBOUND_DIALOG
   GetGlobalSliceBounds();
+  GetGlobalPatchBounds();
 #endif
 }
 
@@ -4233,6 +4277,10 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     patchi->ijk[i] = -1;
   }
   patchi->finalize = 1;
+#ifdef pp_NEWBOUND_DIALOG
+  patchi->file_min = 1.0;
+  patchi->file_max = 0.0;
+#endif
   patchi->skip = 0;
   patchi->version = version;
   patchi->ntimes = 0;
@@ -10337,6 +10385,9 @@ int ReadIni2(char *inifile, int localfile){
       if(research_mode==1&&research_mode_override==0)research_mode=0;
       ncolorlabel_digits = CLAMP(ncolorlabel_digits, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
       ONEORZERO(research_mode);
+#ifdef pp_NEWBOUND_DIALOG
+      research_mode = 1;
+#endif
       update_research_mode=1;
       continue;
     }
@@ -11343,11 +11394,13 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       strcpy(buffer2, "");
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
+#ifndef pp_NEWBOUND_DIALOG
       if(setvalmin==1||setvalmax==1){
         research_mode = 0;
         research_mode_override = 0;
         update_research_mode = 1;
       }
+#endif
       {
         char *colon;
 
@@ -11479,8 +11532,8 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "V_BOUNDARY") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %f %i %f %s", &setpatchmin, &patchmin, &setpatchmax, &patchmax, buffer2);
-      if(strcmp(buffer2, "") != 0)Local2GlobalBoundaryBounds(buffer2);
+      sscanf(buffer, "%i %f %i %f %s", &glui_setpatchmin, &glui_patchmin, &glui_setpatchmax, &glui_patchmax, buffer2);
+      if(strcmp(buffer2, "") != 0)GLUI2GlobalBoundaryBounds(buffer2);
       continue;
     }
     if(Match(buffer, "C_BOUNDARY") == 1){
@@ -12357,10 +12410,12 @@ int ReadIni2(char *inifile, int localfile){
       if(visColorbarVertical_val==1)visColorbarHorizontal_val=0;
       if(visColorbarHorizontal_val==1)visColorbarVertical_val=0;
   // if colorbars are hidden then research mode needs to be off
+#ifndef pp_NEWBOUND_DIALOG
       if(visColorbarVertical_val==0&&visColorbarHorizontal_val==0){
         research_mode = 0;
 //        update_research_mode = 1;
       }
+#endif
       update_visColorbars=1;
       continue;
     }
