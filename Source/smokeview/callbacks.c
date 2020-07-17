@@ -2211,6 +2211,10 @@ void Keyboard(unsigned char key, int flag){
         UpdateRenderListSkip();
       }
       break;
+    case 'T':
+      vishmsTimelabel = 1-vishmsTimelabel;
+      SetLabelControls();
+      break;
     case 'u':
     case 'U':
       switch(keystate){
