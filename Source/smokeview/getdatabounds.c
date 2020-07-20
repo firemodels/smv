@@ -8,6 +8,73 @@
 
 #ifdef pp_NEWBOUND_DIALOG
 
+/* ------------------ GetPartFileBounds ------------------------ */
+
+void GetPartFileBounds(char *file, float **valminptr, float **valmaxptr, int *nfileboundsptr){
+  FILE *stream;
+  int nfilebounds = 0, nfilebounds_alloc = 0;
+  float *valmin = NULL, *valmax = NULL;
+  int i;
+
+  if(file==NULL||strlen(file)==0)return;
+  stream = fopen(file, "r");
+  if(stream==NULL)return;
+
+  while(!feof(stream)){
+    char buffer[255], *buffptr;
+    float time;
+
+    CheckMemory;
+    if(fgets(buffer, 255, stream)==NULL)break;
+    sscanf(buffer, "%f", &time);
+
+    if(fgets(buffer, 255, stream)==NULL)break;
+    sscanf(buffer, "%i", &nfilebounds);
+    if(nfilebounds>0&&valmin==NULL){
+      NewMemory((void **)&valmin, nfilebounds*sizeof(float));
+      NewMemory((void **)&valmax, nfilebounds*sizeof(float));
+      nfilebounds_alloc = nfilebounds;
+      for(i = 0; i<nfilebounds; i++){
+        valmin[i] = 1.0;
+        valmax[i] = 0.0;
+      }
+    }
+    for(i = 0; i<nfilebounds; i++){
+      float vmin, vmax;
+
+      if(fgets(buffer, 255, stream)==NULL)break;
+      sscanf(buffer, "%f %f", &vmin, &vmax);
+      if(i<nfilebounds_alloc&&vmin<=vmax){
+        if(valmin[i]>valmax[i]){
+          valmin[i] = vmin;
+          valmax[i] = vmax;
+        }
+        else{
+          valmin[i] = MIN(vmin, valmin[i]);
+          valmax[i] = MAX(vmax, valmax[i]);
+        }
+      }
+    }
+  }
+  fclose(stream);
+  *valminptr = valmin;
+  *valmaxptr = valmax;
+  *nfileboundsptr = nfilebounds_alloc;
+}
+
+/* ------------------ GetGlobalPartBounds ------------------------ */
+
+void GetGlobalPartBounds(void){
+  int i;
+
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+
+    parti = partinfo+i;
+    GetPartFileBounds(parti->bound_file, &(parti->file_min), &(parti->file_max), &(parti->nfilebounds));
+  }
+}
+
 /* ------------------ GetFileBounds ------------------------ */
 
 void GetFileBounds(char *file, float *valmin, float *valmax){

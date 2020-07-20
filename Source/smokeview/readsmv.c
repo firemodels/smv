@@ -2300,6 +2300,7 @@ void UpdateBoundInfo(void){
 #ifdef pp_NEWBOUND_DIALOG
   GetGlobalSliceBounds();
   GetGlobalPatchBounds();
+  GetGlobalPartBounds();
 #endif
 }
 
@@ -4164,6 +4165,11 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->sy = NULL;
   parti->sz = NULL;
   parti->irvals = NULL;
+#ifdef pp_NEWBOUND_DIALOG
+  parti->file_min = NULL;
+  parti->file_max = NULL;
+  parti->nfilebounds = 0;
+#endif
 
   parti->data5 = NULL;
   parti->partclassptr = NULL;

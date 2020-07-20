@@ -1160,6 +1160,10 @@ typedef struct _partdata {
 #endif
   int bounds_set;
   float *global_min, *global_max;
+#ifdef pp_NEWBOUND_DIALOG
+  float *file_min, *file_max;
+  int nfilebounds;
+#endif
   unsigned char *vis_part;
   int *tags;
   int *sort_tags;
