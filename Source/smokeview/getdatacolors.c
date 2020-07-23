@@ -449,6 +449,10 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
           int prop_id_index;
           float partimin, partimax;
 
+#ifdef pp_NEWBOUND_DIALOG
+          valmin = prop_id->user_min;
+          valmax = prop_id->user_max;
+#else
           if(prop_id->setvalmin==PERCENTILE_MIN){
             valmin = prop_id->percentile_min;
           }
@@ -467,6 +471,7 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
           else{
             valmax = prop_id->global_max;
           }
+#endif
           dval = valmax - valmin;
           if(dval<=0.0)dval=1.0;
           prop_id_index = prop_id-part5propinfo;
@@ -606,6 +611,10 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
 
     propi = part5propinfo + i;
 
+#ifdef pp_NEWBOUND_DIALOG
+    local_tmin = propi->user_min;
+    local_tmax = propi->user_max;
+#else
     if(propi->setvalmin==PERCENTILE_MIN){
       local_tmin = propi->percentile_min;
     }
@@ -624,6 +633,7 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
     else{
       local_tmax = propi->global_max;
     }
+#endif
     labels=propi->partlabels;
     ppartlevels256=propi->ppartlevels256;
 
@@ -1695,9 +1705,9 @@ void UpdateChopColors(void){
     }
   }
 
-  if(partmax>partmin){
+  if(glui_partmax>glui_partmin){
     if(setpartchopmin==1){
-      ichopmin=nrgb_full*(partchopmin-partmin)/(partmax-partmin);
+      ichopmin=nrgb_full*(partchopmin - glui_partmin)/(glui_partmax-glui_partmin);
       if(ichopmin<0)ichopmin=0;
       if(ichopmin>nrgb_full-1)ichopmin=nrgb_full-1;
       for(i=0;i<ichopmin;i++){
@@ -1712,7 +1722,7 @@ void UpdateChopColors(void){
       }
     }
     if(setpartchopmax==1){
-      ichopmax=nrgb_full*(partchopmax - partmin)/(partmax-partmin);
+      ichopmax=nrgb_full*(partchopmax - glui_partmin)/(glui_partmax - glui_partmin);
       if(ichopmax<0)ichopmax=0;
       if(ichopmax>nrgb_full-1)ichopmax=nrgb_full-1;
       for(i=ichopmax;i<nrgb_full;i++){

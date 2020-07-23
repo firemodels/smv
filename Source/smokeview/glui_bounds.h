@@ -23,6 +23,10 @@
 #define SETVALMAX 2
 #define VALMIN 3
 #define VALMAX 4
+#ifdef pp_NEWBOUND_DIALOG
+#define GLUI_VALMIN 103
+#define GLUI_VALMAX 104
+#endif
 #define FILETYPEINDEX 5
 #define FILEUPDATE 6
 #define FILERELOAD 7

@@ -398,6 +398,12 @@ procdata particleprocinfo[3];
 #endif
 int      nisoprocinfo=0, nsubboundprocinfo=0, nsliceprocinfo=0, nparticleprocinfo=0;
 
+/* ------------------ UpdatePartType ------------------------ */
+
+extern "C" void UpdatePartType(void){
+  if(RADIO_part5!=NULL)RADIO_part5->set_int_val(ipart5prop);
+}
+
 /* ------------------ UpdateTransparency ------------------------ */
 
 extern "C" void UpdateTransparency(void){
@@ -1283,6 +1289,12 @@ extern "C" void BoundBoundCB(int var){
       }
     }
     break;
+#ifdef pp_NEWBOUND_DIALOG
+  case GLUI_VALMAX:
+  case GLUI_VALMIN:
+    BoundBoundCB(VALMAX);
+    break;
+#endif
   case VALMAX:
   case VALMIN:
     GLUI2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
@@ -1399,41 +1411,37 @@ extern "C" void BoundBoundCB(int var){
     UpdateHideBoundarySurface();
     break;
   case SETVALMIN:
+#ifndef pp_NEWBOUND_DIALOG
     switch(glui_setpatchmin){
     case PERCENTILE_MIN:
     case GLOBAL_MIN:
-#ifndef pp_NEWBOUND_DIALOG
       if(EDIT_patch_min!=NULL)EDIT_patch_min->disable();
-#endif
       break;
     case SET_MIN:
-#ifndef pp_NEWBOUND_DIALOG
       if(EDIT_patch_min!=NULL)EDIT_patch_min->enable();
-#endif
       break;
     default:
       ASSERT(FFALSE);
       break;
     }
+#endif
     BoundBoundCB(FILEUPDATE);
     break;
   case SETVALMAX:
+#ifndef pp_NEWBOUND_DIALOG
     switch(glui_setpatchmax){
     case PERCENTILE_MAX:
     case GLOBAL_MAX:
-#ifndef pp_NEWBOUND_DIALOG
       if(EDIT_patch_max!=NULL)EDIT_patch_max->disable();
-#endif
       break;
     case SET_MAX:
-#ifndef pp_NEWBOUND_DIALOG
       if(EDIT_patch_max!=NULL)EDIT_patch_max->enable();
-#endif
       break;
     default:
       ASSERT(FFALSE);
       break;
     }
+#endif
     BoundBoundCB(FILEUPDATE);
     break;
   case FILEUPDATE:
@@ -1747,7 +1755,7 @@ void GenerateBoundDialog(
 
   PANEL_b = glui_bounds->add_panel_to_panel(*ROLLOUT_bound, "", GLUI_PANEL_NONE);
 
-  *EDIT_max = glui_bounds->add_edittext_to_panel(PANEL_b, "", GLUI_EDITTEXT_FLOAT, glui_max, VALMAX, FILE_CB);
+  *EDIT_max = glui_bounds->add_edittext_to_panel(PANEL_b, "", GLUI_EDITTEXT_FLOAT, glui_max, GLUI_VALMAX, FILE_CB);
   glui_bounds->add_column_to_panel(PANEL_b, false);
 
   *STATIC_max_unit = glui_bounds->add_statictext_to_panel(PANEL_b, "yy");
@@ -1758,7 +1766,7 @@ void GenerateBoundDialog(
 
   PANEL_a = glui_bounds->add_panel_to_panel(*ROLLOUT_bound, "", GLUI_PANEL_NONE);
 
-  *EDIT_min = glui_bounds->add_edittext_to_panel(PANEL_a, "", GLUI_EDITTEXT_FLOAT, glui_min, VALMIN, FILE_CB);
+  *EDIT_min = glui_bounds->add_edittext_to_panel(PANEL_a, "", GLUI_EDITTEXT_FLOAT, glui_min, GLUI_VALMIN, FILE_CB);
   glui_bounds->add_column_to_panel(PANEL_a, false);
 
   *STATIC_min_unit = glui_bounds->add_statictext_to_panel(PANEL_a, "xx");
@@ -2176,7 +2184,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       if(patchi->firstshort==1)nradio++;
     }
 
-    if(nradio>1){
+    if(nradio>0){
       RADIO_bf = glui_bounds->add_radiogroup_to_panel(ROLLOUT_bound, &list_patch_index, FILETYPEINDEX, BoundBoundCB);
       for(i=0;i<npatchinfo;i++){
         patchdata *patchi;
@@ -2192,6 +2200,8 @@ extern "C" void GluiBoundsSetup(int main_window){
     }
 
 #ifdef pp_NEWBOUND_DIALOG
+    glui_patchmin = patchbounds[list_patch_index].global_valmin;
+    glui_patchmax = patchbounds[list_patch_index].global_valmax;
     GenerateBoundDialog(ROLLOUT_bound, &ROLLOUT_boundary_bound, &STATIC_bound_min_unit, &STATIC_bound_max_unit,
       &STATIC_bound_cmin_unit, &STATIC_bound_cmax_unit,
       &EDIT_patch_min, &EDIT_patch_max, &EDIT_patch_chopmin, &EDIT_patch_chopmax,
@@ -2205,6 +2215,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       subboundprocinfo, &nsubboundprocinfo,
       BoundBoundCB, SubBoundRolloutCB
     );
+    BoundBoundCB(FILEUPDATE);
 #else
     GenerateBoundDialogs(&ROLLOUT_boundary_bound,&ROLLOUT_boundary_chop,ROLLOUT_bound,_("Reload Boundary File(s)"),
       &EDIT_patch_min,&EDIT_patch_max,&RADIO_patch_setmin,&RADIO_patch_setmax,NULL,NULL,
@@ -2475,7 +2486,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       &BUTTON_reloadpart, NULL,
       &ROLLOUT_part_chop,
       "particle",
-      &partmin,&partmax,
+      &glui_partmin,&glui_partmax,
       &partchopmin,&partchopmax,
       &setpartmin,&setpartmax,
       particleprocinfo,&nparticleprocinfo,
@@ -2491,7 +2502,7 @@ extern "C" void GluiBoundsSetup(int main_window){
         NULL,NULL,
         NULL,NULL,
         NULL,
-        &setpartmin,&setpartmax,&partmin,&partmax,
+        &setpartmin,&setpartmax,&glui_partmin,&glui_partmax,
         &setpartchopmin,&setpartchopmax,&partchopmin,&partchopmax,
         RELOAD_BOUNDS,DONT_TRUNCATE_BOUNDS,
         PartBoundCB,
@@ -2566,7 +2577,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_column_to_panel(ROLLOUT_plot3d,false);
 
 
-#ifdef pp_NEWBOUND_DIALOG
+#ifdef pp_NEWPLOT3D_DIALOG
     GenerateBoundDialog(ROLLOUT_plot3d, &ROLLOUT_plot3d_bound, 
       &STATIC_plot3d_min_unit, &STATIC_plot3d_max_unit, &STATIC_plot3d_cmin_unit, &STATIC_plot3d_cmax_unit,
       &EDIT_p3_min, &EDIT_p3_max, &EDIT_p3_chopmin, &EDIT_p3_chopmax,
@@ -3340,7 +3351,16 @@ extern "C" void Plot3DBoundCB(int var){
    }
    UpdateGlui();
    break;
+#ifdef pp_NEWBOUND_DIALOG
+  case GLUI_VALMIN:
+    Plot3DBoundCB(VALMIN);
+    break;
+  case GLUI_VALMAX:
+    Plot3DBoundCB(VALMAX);
+    break;
+#endif
   case VALMIN:
+    break;
   case VALMAX:
     break;
   default:
@@ -3760,6 +3780,12 @@ void PartBoundCB(int var){
     return;
     break;
   case GLOBAL_BOUNDS:
+    if(ipart5prop>0){
+      glui_partmin = part5propinfo[ipart5prop].global_min;
+      glui_partmax = part5propinfo[ipart5prop].global_max;
+      EDIT_part_min->set_float_val(glui_partmin);
+      EDIT_part_max->set_float_val(glui_partmax);
+    }
     return;
     break;
   case GLOBAL_BOUNDS_MIN_LOADED:
@@ -3772,12 +3798,21 @@ void PartBoundCB(int var){
     PartBoundCB(GLOBAL_BOUNDS_MIN_LOADED);
     PartBoundCB(GLOBAL_BOUNDS_MAX_LOADED);
     return;
+    break;
+#endif
+#ifdef pp_NEWBOUND_DIALOG
+  case GLUI_VALMAX:
+    PartBoundCB(VALMAX);
+    break;
+  case GLUI_VALMIN:
+    PartBoundCB(VALMIN);
+    break;
 #endif
   case VALMIN:
-    if(setpartmin==SET_MIN)prop_new->user_min=partmin;
+    if(setpartmin==SET_MIN)prop_new->user_min = glui_partmin;
     break;
   case VALMAX:
-    if(setpartmax==SET_MAX)prop_new->user_max = partmax;
+    if(setpartmax==SET_MAX)prop_new->user_max = glui_partmax;
     break;
   case FILETYPEINDEX:
 
@@ -3786,10 +3821,10 @@ void PartBoundCB(int var){
     prop_old->setvalmin=setpartmin;
     prop_old->setvalmax=setpartmax;
     if(setpartmin==SET_MIN){
-      prop_old->user_min=partmin;
+      prop_old->user_min = glui_partmin;
     }
     if(setpartmax==SET_MAX){
-      prop_old->user_max=partmax;
+      prop_old->user_max = glui_partmax;
     }
     prop_old->setchopmin=setpartchopmin;
     prop_old->setchopmax=setpartchopmax;
@@ -3804,8 +3839,28 @@ void PartBoundCB(int var){
     setpartmax = prop_new->setvalmax;
     if(setpartmax==PERCENTILE_MAX)setpartmax = GLOBAL_MAX;
 
+#ifdef pp_NEWBOUND_DIALOG
+    setpartmin = SET_MIN;
+    setpartmax = SET_MAX;
+#endif
+    if(ipart5prop==0){
+      if(EDIT_part_min!=NULL)EDIT_part_min->disable();
+      if(EDIT_part_max!=NULL)EDIT_part_max->disable();
+    }
+    else{
+      if(EDIT_part_min!=NULL)EDIT_part_min->enable();
+      if(EDIT_part_max!=NULL)EDIT_part_max->enable();
+    }
     PartBoundCB(SETVALMIN);
     PartBoundCB(SETVALMAX);
+    if(ipart5prop>0&&glui_partmin>glui_partmax){
+      glui_partmin = part5propinfo[ipart5prop].global_min;
+      glui_partmax = part5propinfo[ipart5prop].global_max;
+      EDIT_part_min->set_float_val(glui_partmin);
+      EDIT_part_max->set_float_val(glui_partmax);
+      part5propinfo[ipart5prop].user_min = glui_partmin;
+      part5propinfo[ipart5prop].user_max = glui_partmax;
+    }
 
     setpartchopmin=prop_new->setchopmin;
     setpartchopmax=prop_new->setchopmax;
@@ -3911,67 +3966,63 @@ void PartBoundCB(int var){
     break;
   case SETVALMIN:
     if(setpartmin_old==SET_MIN){
-      if(prop_old!=NULL)prop_old->user_min=partmin;
+      if(prop_old!=NULL)prop_old->user_min = glui_partmin;
     }
     setpartmin_old=setpartmin;
     if(prop_new!=NULL)prop_new->setvalmin = setpartmin;
+#ifdef pp_NEWBOUND_DIALOG
+      if(prop_new!=NULL)glui_partmin = prop_new->user_min;
+#else
     switch(setpartmin){
     case PERCENTILE_MIN:
-      if(prop_new!=NULL)partmin=prop_new->percentile_min;
-#ifndef pp_NEWBOUND_DIALOG
+      if(prop_new!=NULL)glui_partmin=prop_new->percentile_min;
       if(EDIT_part_min!=NULL)EDIT_part_min->disable();
-#endif
       break;
     case GLOBAL_MIN:
-      if(prop_new!=NULL)partmin=prop_new->global_min;
-#ifndef pp_NEWBOUND_DIALOG
+      if(prop_new!=NULL)glui_partmin=prop_new->global_min;
       if(EDIT_part_min!=NULL)EDIT_part_min->disable();
-#endif
       break;
     case SET_MIN:
-      if(prop_new!=NULL)partmin=prop_new->user_min;
-#ifndef pp_NEWBOUND_DIALOG
+      if(prop_new!=NULL)glui_partmin = prop_new->user_min;
       if(EDIT_part_min!=NULL)EDIT_part_min->enable();
-#endif
       break;
     default:
       ASSERT(FFALSE);
       break;
     }
-    if(prop_new!=NULL)prop_new->valmin=partmin;
-    if(EDIT_part_min!=NULL)EDIT_part_min->set_float_val(partmin);
+#endif
+    if(prop_new!=NULL)prop_new->valmin= glui_partmin;
+    if(EDIT_part_min!=NULL)EDIT_part_min->set_float_val(glui_partmin);
    break;
   case SETVALMAX:
     if(setpartmax_old==SET_MAX){
-      if(prop_old!=NULL)prop_old->user_max=partmax;
+      if(prop_old!=NULL)prop_old->user_max= glui_partmax;
     }
     setpartmax_old=setpartmax;
     if(prop_new!=NULL)prop_new->setvalmax = setpartmax;
+#ifdef pp_NEWBOUND_DIALOG
+      if(prop_new!=NULL)glui_partmax = prop_new->user_max;
+#else
     switch(setpartmax){
     case PERCENTILE_MAX:
-      if(prop_new!=NULL)partmax=prop_new->percentile_max;
-#ifndef pp_NEWBOUND_DIALOG
+      if(prop_new!=NULL)glui_partmax = prop_new->percentile_max;
       if(EDIT_part_max!=NULL)EDIT_part_max->disable();
-#endif
       break;
     case GLOBAL_MAX:
-      if(prop_new!=NULL)partmax=prop_new->global_max;
-#ifndef pp_NEWBOUND_DIALOG
+      if(prop_new!=NULL)glui_partmax = prop_new->global_max;
       if(EDIT_part_max!=NULL)EDIT_part_max->disable();
-#endif
       break;
     case SET_MAX:
-      if(prop_new!=NULL)partmax=prop_new->user_max;
-#ifndef pp_NEWBOUND_DIALOG
+      if(prop_new!=NULL)glui_partmax = prop_new->user_max;
       if(EDIT_part_max!=NULL)EDIT_part_max->enable();
-#endif
       break;
     default:
       ASSERT(FFALSE);
       break;
     }
-    if(prop_new!=NULL)prop_new->valmax=partmax;
-    if(EDIT_part_max!=NULL)EDIT_part_max->set_float_val(partmax);
+#endif
+    if(prop_new!=NULL)prop_new->valmax = glui_partmax;
+    if(EDIT_part_max!=NULL)EDIT_part_max->set_float_val(glui_partmax);
    break;
   case FILERELOAD:
     {
@@ -4067,19 +4118,105 @@ void UpdateSliceTempBounds(int setvalmin, float valmin, int setvalmax, float val
   SliceBounds2Glui(temp_index);
 }
 
+/* ------------------ SliceBounds2Glui ------------------------ */
+
+void SliceBounds2Glui(int slicetype) {
+#ifdef pp_NEWBOUND_DIALOG
+  if (slicetype >= 0 && slicetype < nslicebounds) {
+    int compute_bounds = 0, i;
+
+    for (i = 0; i < nsliceinfo; i++) {
+      slicedata* slicei;
+
+      slicei = sliceinfo + i;
+      if (strcmp(slicei->label.shortlabel, slicebounds[slicetype].shortlabel) == 0) {
+        if (slicei->valmin > slicei->valmax) {
+          compute_bounds = 1;
+          break;
+        }
+      }
+    }
+    if (compute_bounds == 1) {
+      float vmin = 1.0, vmax = 0.0;
+
+      for (i = 0; i < nsliceinfo; i++) {
+        slicedata* slicei;
+
+        slicei = sliceinfo + i;
+        if (strcmp(slicei->label.shortlabel, slicebounds[slicetype].shortlabel) == 0) {
+          if (vmin > vmax) {
+            vmin = slicei->file_min;
+            vmax = slicei->file_max;
+          }
+          else {
+            vmin = MIN(vmin, slicei->file_min);
+            vmax = MAX(vmax, slicei->file_max);
+          }
+        }
+      }
+      for (i = 0; i < nsliceinfo; i++) {
+        slicedata* slicei;
+
+        slicei = sliceinfo + i;
+        if (strcmp(slicei->label.shortlabel, slicebounds[slicetype].shortlabel) == 0) {
+          slicei->valmin = vmin;;
+          slicei->valmax = vmax;;
+        }
+      }
+      slicebounds[slicetype].dlg_valmin = vmin;
+      slicebounds[slicetype].dlg_valmax = vmax;
+    }
+  }
+#endif
+
+  if (slicetype >= 0 && slicetype < nslicebounds) {
+    slice_line_contour_min = slicebounds[slicetype].line_contour_min;
+    slice_line_contour_max = slicebounds[slicetype].line_contour_max;
+    slice_line_contour_num = slicebounds[slicetype].line_contour_num;
+    glui_slicemin = slicebounds[slicetype].dlg_valmin;
+    glui_slicemax = slicebounds[slicetype].dlg_valmax;
+#ifdef pp_NEWBOUND_DIALOG
+    glui_setslicemin    = slicebounds[slicetype].dlg_setvalmin;
+    glui_setslicemax    = slicebounds[slicetype].dlg_setvalmax;
+    glui_slicemin_dirty = slicebounds[slicetype].dlg_valmin_dirty;
+    glui_slicemax_dirty = slicebounds[slicetype].dlg_valmax_dirty;
+#else
+    if (research_mode == 1) {
+      glui_setslicemin = GLOBAL_MIN;
+      glui_setslicemax = GLOBAL_MAX;
+    }
+    else {
+      glui_setslicemin = slicebounds[slicetype].dlg_setvalmin;
+      glui_setslicemax = slicebounds[slicetype].dlg_setvalmax;
+    }
+#endif
+    glui_slicechopmin = slicebounds[slicetype].chopmin;
+    glui_slicechopmax = slicebounds[slicetype].chopmax;
+    glui_setslicechopmin = slicebounds[slicetype].setchopmin;
+    glui_setslicechopmax = slicebounds[slicetype].setchopmax;
+    glui_slicemin_unit = (unsigned char*)slicebounds[slicetype].label->unit;
+    glui_slicemax_unit = glui_slicemin_unit;
+
+    UpdateGluiSliceUnits();
+  }
+}
+
 #ifdef pp_NEWBOUND_DIALOG
 
 /* ------------------ Glui2SliceBounds ------------------------ */
 
 void Glui2SliceBounds(void){
   if(slicebounds==NULL)return;
-  slicebounds[list_slice_index].dlg_valmin    = glui_slicemin;
-  slicebounds[list_slice_index].setchopmin    = glui_setslicechopmin;
-  slicebounds[list_slice_index].chopmin       = glui_slicechopmin;
+  slicebounds[list_slice_index].dlg_valmin       = glui_slicemin;
+  slicebounds[list_slice_index].dlg_valmin_dirty = glui_slicemin_dirty;
+  slicebounds[list_slice_index].setchopmin       = glui_setslicechopmin;
+  slicebounds[list_slice_index].chopmin          = glui_slicechopmin;
 
-  slicebounds[list_slice_index].dlg_valmax    = glui_slicemax;
-  slicebounds[list_slice_index].setchopmax    = glui_setslicechopmax;
-  slicebounds[list_slice_index].chopmax       = glui_slicechopmax;
+  slicebounds[list_slice_index].dlg_valmax       = glui_slicemax;
+  slicebounds[list_slice_index].dlg_valmax_dirty = glui_slicemax_dirty;
+  slicebounds[list_slice_index].dlg_setvalmax    = glui_setslicemax;
+  slicebounds[list_slice_index].setchopmax       = glui_setslicechopmax;
+  slicebounds[list_slice_index].chopmax          = glui_slicechopmax;
 }
 #else
 
@@ -4130,6 +4267,8 @@ extern "C" void SliceBoundCB(int var){
   if(var==GLOBAL_BOUNDS){
     SliceBoundCB(GLOBAL_BOUNDS_MIN);
     SliceBoundCB(GLOBAL_BOUNDS_MAX);
+    glui_slicemin_dirty = 0;
+    glui_slicemax_dirty = 0;
     return;
   }
   if(var==GLOBAL_BOUNDS_MAX_LOADED){
@@ -4320,12 +4459,12 @@ extern "C" void SliceBoundCB(int var){
 
         if(npartloaded>0){
           setpartmin_save = setpartmin;
-          partmin_save = partmin;
+          partmin_save = glui_partmin;
           setpartmin = GLOBAL_MIN;
           PartBoundCB(SETVALMIN);
 
           setpartmax_save = setpartmax;
-          partmax_save = partmax;
+          partmax_save = glui_partmax;
           setpartmax = GLOBAL_MAX;
           PartBoundCB(SETVALMAX);
           PartBoundCB(FILERELOAD);
@@ -4380,12 +4519,12 @@ extern "C" void SliceBoundCB(int var){
         if(npartloaded > 0){
           setpartmin = setpartmin_save;
           PartBoundCB(SETVALMIN);
-          partmin = partmin_save;
+          glui_partmin = partmin_save;
           PartBoundCB(VALMIN);
 
           setpartmax = setpartmax_save;
           PartBoundCB(SETVALMAX);
-          partmax = partmax_save;
+          glui_partmax = partmax_save;
           PartBoundCB(VALMAX);
           PartBoundCB(FILERELOAD);
         }
@@ -4593,6 +4732,12 @@ extern "C" void SliceBoundCB(int var){
     UpdateZoneTempBounds(glui_setslicemin, glui_slicemin, glui_setslicemax, glui_slicemax);
 #endif
     break;
+#ifdef pp_NEWBOUND_DIALOG
+  case GLUI_VALMIN:
+    glui_slicemin_dirty = 1;
+    SliceBoundCB(VALMIN);
+    break;
+#endif
   case VALMIN:
 #ifdef pp_NEWBOUND_DIALOG
     if(is_fed_colorbar==1&&ABS(glui_slicemin)>0.001){
@@ -4612,6 +4757,12 @@ extern "C" void SliceBoundCB(int var){
     UpdateZoneTempBounds(glui_setslicemin, glui_slicemin, glui_setslicemax, glui_slicemax);
 #endif
     break;
+#ifdef pp_NEWBOUND_DIALOG
+  case GLUI_VALMAX:
+    glui_slicemax_dirty = 1;
+    SliceBoundCB(VALMAX);
+    break;
+#endif
   case VALMAX:
 #ifdef pp_NEWBOUND_DIALOG
     if(is_fed_colorbar==1&&ABS(glui_slicemax-3.0)>0.001){

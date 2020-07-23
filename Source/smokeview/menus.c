@@ -3466,6 +3466,7 @@ void ParticlePropShowMenu(int value){
 
     propi = part5propinfo + iprop;
     last_prop_display=iprop;
+    ipart5prop = iprop;
     propi->display=1;
     part5colorindex=iprop;
 
@@ -3480,6 +3481,9 @@ void ParticlePropShowMenu(int value){
     global_prop_index = iprop;
     partshortlabel=propi->label->shortlabel;
     partunitlabel=propi->label->unit;
+#define FILETYPEINDEX 5
+    PartBoundCB(FILETYPEINDEX);
+    UpdatePartType();
   }
   else if(value==MENU_PROP_SHOWALL){
     if(current_property!=NULL){

@@ -1347,6 +1347,7 @@ typedef struct _boundsdata {
   float data_valmin,data_valmax;
   float global_valmin, global_valmax;
 #ifdef pp_NEWBOUND_DIALOG
+  int dlg_valmin_dirty, dlg_valmax_dirty;
   float percentile_valmin, percentile_valmax;
 #endif
   float line_contour_min;

@@ -66,13 +66,64 @@ void GetPartFileBounds(char *file, float **valminptr, float **valmaxptr, int *nf
 
 void GetGlobalPartBounds(void){
   int i;
+  float *partmins=NULL, *partmaxs=NULL;
+  int npartbounds=0;
 
+  npartbounds = -1;
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
 
     parti = partinfo+i;
     GetPartFileBounds(parti->bound_file, &(parti->file_min), &(parti->file_max), &(parti->nfilebounds));
+    if(parti->nfilebounds>0){
+      if(npartbounds==-1){
+        npartbounds = parti->nfilebounds;
+      }
+      else{
+        npartbounds = MIN(npartbounds,parti->nfilebounds);
+      }
+    }
   }
+  if(npartbounds<0)npartbounds = 0;
+  if(npartbounds>0){
+    NewMemory((void **)&partmins, npartbounds*sizeof(float));
+    NewMemory((void **)&partmaxs, npartbounds*sizeof(float));
+    for(i = 0; i<npartbounds; i++){
+      partmins[i] = 1.0;
+      partmaxs[i] = 0.0;
+    }
+    for(i = 0; i<npartinfo; i++){
+      partdata *parti;
+      int j;
+      float *fmin, *fmax;
+       
+
+      parti = partinfo+i;
+      fmin = parti->file_min;
+      fmax = parti->file_max;
+      for(j = 0; j<npartbounds; j++){
+        if(fmin[j]<=fmax[j]){
+          if(partmins[j]>partmaxs[j]){
+            partmins[j] = fmin[j];
+            partmaxs[j] = fmax[j];
+          }
+          else{
+            partmins[j] = MIN(fmin[j],partmins[j]);
+            partmaxs[j] = MAX(fmax[j],partmaxs[j]);
+          }
+        }
+      }
+    }
+  }
+  for(i=1; i<npart5prop; i++){
+    if(i-1>npartbounds)break;
+    part5propinfo[i].user_min = partmins[i-1];
+    part5propinfo[i].user_max = partmaxs[i-1];
+    part5propinfo[i].global_min = partmins[i-1];
+    part5propinfo[i].global_max = partmaxs[i-1];
+  }
+  FREEMEMORY(partmins);
+  FREEMEMORY(partmaxs);
 }
 
 /* ------------------ GetFileBounds ------------------------ */
@@ -208,10 +259,20 @@ void GetGlobalPatchBounds(void){
   }
   for(i = 0; i<npatchbounds; i++){
     boundsdata *boundi;
+    int j;
 
     boundi = patchbounds+i;
     boundi->dlg_valmin = boundi->global_valmin;
     boundi->dlg_valmax = boundi->global_valmax;
+    for(j = 0; j<npatchinfo; j++){
+      patchdata *patchj;
+
+      patchj = patchinfo+j;
+      if(strcmp(patchj->label.shortlabel, boundi->shortlabel)==0){
+        patchj->valmin = boundi->global_valmin;
+        patchj->valmax = boundi->global_valmax;
+      }
+    }
   }
 
 }

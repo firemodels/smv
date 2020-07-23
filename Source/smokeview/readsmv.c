@@ -2174,11 +2174,18 @@ void UpdateBoundInfo(void){
       sbi = slicebounds + nslicebounds;
       sbi->shortlabel=slicei->label.shortlabel;
       if(strcmp(sbi->shortlabel, "TEMP")==0)slicebounds_temp = sbi;
-      sbi->dlg_setvalmin=0;
-      sbi->dlg_setvalmax=0;
+#ifdef pp_NEWBOUND_DIALOG
+      sbi->dlg_setvalmin = SET_MIN;
+      sbi->dlg_setvalmax = SET_MAX;
+#else
+      sbi->dlg_setvalmin=PERCENTILE_MIN;
+      sbi->dlg_setvalmax=PERCENTILE_MAX;
+#endif
       sbi->dlg_valmin=1.0;
       sbi->dlg_valmax=0.0;
 #ifdef pp_NEWBOUND_DIALOG
+      sbi->dlg_valmin_dirty = 0;
+      sbi->dlg_valmax_dirty = 0;
       sbi->percentile_valmin = 1.0;
       sbi->percentile_valmax = 0.0;
 #endif
@@ -11295,7 +11302,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "V_PARTICLES") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %f %i %f", &setpartmin, &partmin, &setpartmax, &partmax);
+      sscanf(buffer, "%i %f %i %f", &setpartmin, &glui_partmin, &setpartmax, &glui_partmax);
       if(setpartmin==PERCENTILE_MIN){
         setpartmin = GLOBAL_MIN;
       }
@@ -11427,6 +11434,17 @@ int ReadIni2(char *inifile, int localfile){
       if(strcmp(buffer2, "TEMP")==0&&nzoneinfo>0)continue;
       if(strcmp(buffer2, "") != 0){
         TrimBack(buffer2);
+#ifdef pp_NEWBOUND_DIALOG
+        for(i = 0; i<nsliceinfo; i++){
+          slicedata* slicei;
+
+          slicei = sliceinfo+i;
+          if(strcmp(slicei->label.shortlabel, buffer2)==0){
+            slicei->valmin = valmin;
+            slicei->valmax = valmax;
+          }
+        }
+#endif
         for(i = 0; i<nslicebounds; i++){
           if(strcmp(slicebounds[i].shortlabel, buffer2)==0){
             slicebounds[i].dlg_setvalmin = setvalmin;
@@ -13992,7 +14010,7 @@ void WriteIniLocal(FILE *fileout){
     }
   }
   fprintf(fileout, "V_PARTICLES\n");
-  fprintf(fileout, " %i %f %i %f\n", setpartmin, partmin, setpartmax, partmax);
+  fprintf(fileout, " %i %f %i %f\n", setpartmin, glui_partmin, setpartmax, glui_partmax);
   if(npart5prop > 0){
     for(i = 0; i < npart5prop; i++){
       partpropdata *propi;
@@ -14019,8 +14037,13 @@ void WriteIniLocal(FILE *fileout){
     for(i = 0; i < nslicebounds; i++){
       fprintf(fileout, "V_SLICE\n");
       fprintf(fileout, " %i %f %i %f %s : %f %f %i\n",
+#ifdef pp_NEWBOUND_DIALOG
+        SET_MIN, slicebounds[i].dlg_valmin,
+        SET_MAX, slicebounds[i].dlg_valmax,
+#else
         slicebounds[i].dlg_setvalmin, slicebounds[i].dlg_valmin,
         slicebounds[i].dlg_setvalmax, slicebounds[i].dlg_valmax,
+#endif
         slicebounds[i].label->shortlabel
         , slicebounds[i].line_contour_min, slicebounds[i].line_contour_max, slicebounds[i].line_contour_num
         );
