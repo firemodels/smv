@@ -21,7 +21,7 @@ void GetPartFileBounds(char *file, float **valminptr, float **valmaxptr, int *nf
   if(stream==NULL)return;
 
   while(!feof(stream)){
-    char buffer[255], *buffptr;
+    char buffer[255];
     float time;
 
     CheckMemory;
