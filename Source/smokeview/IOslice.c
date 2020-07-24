@@ -1848,7 +1848,7 @@ void GetSlicePercentileBounds(char *slicetype, float global_min, float global_ma
     }
     sum += buckets[iii];
   }
-  if(have_min = 0)*per_min = global_max;
+  if(have_min == 0)*per_min = global_max;
 
   sum = 0;
   have_max = 0;
@@ -1860,7 +1860,7 @@ void GetSlicePercentileBounds(char *slicetype, float global_min, float global_ma
     }
     sum += buckets[iii];
   }
-  if(have_max = 0)*per_max = global_min;
+  if(have_max == 0)*per_max = global_min;
   FREEMEMORY(buckets);
 }
 #endif

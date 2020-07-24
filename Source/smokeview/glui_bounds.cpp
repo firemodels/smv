@@ -403,8 +403,6 @@ int      nisoprocinfo=0, nsubboundprocinfo=0, nsliceprocinfo=0, nparticleprocinf
 /* ------------------ UpdateColorbarControls2 ------------------------ */
 
 extern "C" void UpdateColorbarControls2(void) {
-  int current_state;
-
   if (CHECKBOX_visColorbarVertical2 != NULL && CHECKBOX_visColorbarVertical2->get_int_val() != visColorbarVertical)CHECKBOX_visColorbarVertical2->set_int_val(visColorbarVertical);
   if (CHECKBOX_visColorbarHorizontal2 != NULL && CHECKBOX_visColorbarHorizontal2->get_int_val() != visColorbarHorizontal)CHECKBOX_visColorbarHorizontal2->set_int_val(visColorbarHorizontal);
 }
