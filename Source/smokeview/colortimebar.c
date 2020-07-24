@@ -2120,6 +2120,11 @@ void DrawHorizontalColorbarRegLabels(void) {
           val = tttmin + i*slicerange / (nrgb - 2);
           ScaleFloat2String(val, slicecolorlabel, slicefactor);
           slicecolorlabel_ptr = slicecolorlabel;
+          ColorbarFloat2String(slicecolorlabel_ptr, val, ncolorlabel_digits);
+        }
+        else {
+          slicecolorlabel_ptr = slicecolorlabel;
+          ColorbarFloat2String(slicecolorlabel_ptr, sb->colorvalues[i+1], ncolorlabel_digits);
         }
         OutputBarText(horiz_position, 0.0, foreground_color, slicecolorlabel_ptr);
       }
@@ -2258,17 +2263,19 @@ void DrawHorizontalColorbarRegLabels(void) {
       for (i = 0; i < nrgb - 1; i++) {
         char plot3dcolorlabel[256];
         char *plot3dcolorlabel_ptr = NULL;
+        float val;
 
         horiz_position = MIX2(i, nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
         if (iposition == i)continue;
-        plot3dcolorlabel_ptr = &colorlabelp3[plotn - 1][i][0];
-        if (plot3dflag == 1) {
-          float val;
-
+        if(plot3dflag == 1){
           val = tttmin + i*plot3drange / (nrgb - 2);
-          ScaleFloat2String(val, plot3dcolorlabel, plot3dfactor);
-          plot3dcolorlabel_ptr = plot3dcolorlabel;
         }
+        else{
+          val = colorvaluesp3[plotn - 1][i];
+        }
+        plot3dcolorlabel_ptr = plot3dcolorlabel;
+        ScaleFloat2String(val, plot3dcolorlabel, plot3dfactor);
+        ColorbarFloat2String(plot3dcolorlabel, val, ncolorlabel_digits);
         OutputBarText(horiz_position, 0.0, foreground_color, plot3dcolorlabel_ptr);
       }
     }
