@@ -969,6 +969,14 @@ extern "C" void ShowGluiDisplay(int menu_id){
   }
 }
 
+/* ------------------ UpdateColorbarControls ------------------------ */
+
+extern "C" void UpdateColorbarControls(void){
+  int current_state;
+
+  if(CHECKBOX_visColorbarVertical!=NULL&&CHECKBOX_visColorbarVertical->get_int_val() != visColorbarVertical)CHECKBOX_visColorbarVertical->set_int_val(visColorbarVertical);
+  if(CHECKBOX_visColorbarHorizontal!=NULL&&CHECKBOX_visColorbarHorizontal->get_int_val() != visColorbarHorizontal)CHECKBOX_visColorbarHorizontal->set_int_val(visColorbarHorizontal);
+}
 /* ------------------ LabelsCB ------------------------ */
 
 extern "C" void LabelsCB(int var){
@@ -977,23 +985,20 @@ extern "C" void LabelsCB(int var){
   case LABELS_colorbar_shift:
     UpdateRGBColors(colorbar_select_index);
     break;
-  case LABELS_vcolorbar:
-    if(visColorbarVertical==1){
-      visColorbarHorizontal=0;
-      CHECKBOX_visColorbarHorizontal->set_int_val(visColorbarHorizontal);
-    }
  // vis_colorbar      state
  //    0/COLORBAR_HIDDEN               hidden
  //    1/COLORBAR_SHOW_VERTICAL        vertical
  //    2->max/COLORBAR_SHOW_HORIZONTAL horizontal
-
-    vis_colorbar = GetColorbarState();
-    break;
+  case LABELS_vcolorbar:
   case LABELS_hcolorbar:
-    if(visColorbarHorizontal==1){
-      visColorbarVertical = 0;
-      CHECKBOX_visColorbarVertical->set_int_val(visColorbarVertical);
+    if(var==LABELS_vcolorbar){
+      if (visColorbarVertical == 1)visColorbarHorizontal = 0;
     }
+    else{
+      if (visColorbarHorizontal == 1)visColorbarVertical = 0;
+    }
+    UpdateColorbarControls();
+    UpdateColorbarControls2();
     vis_colorbar = GetColorbarState();
     break;
   case LABELS_tick_inside:

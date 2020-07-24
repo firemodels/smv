@@ -725,20 +725,22 @@ void LabelMenu(int value){
   case MENU_LABEL_SETTINGS:
     ShowGluiDisplay(DIALOG_DISPLAY);
     break;
-  case MENU_LABEL_colorbar_vertical:
-    visColorbarVertical   = 1 - visColorbarVertical;
-    if(visColorbarVertical==1)visColorbarHorizontal=0;
-
     // vis_colorbar                        state
     //    0/COLORBAR_HIDDEN                hidden
     //    1/COLORBAR_SHOW_VERTICAL         vertical
     //    2->max/COLORBAR_SHOW_HORIZONTAL  horizontal
-
-    vis_colorbar = GetColorbarState();
-    break;
+  case MENU_LABEL_colorbar_vertical:
   case MENU_LABEL_colorbar_horizontal:
-    visColorbarHorizontal = 1 - visColorbarHorizontal;
-    if(visColorbarHorizontal==1)visColorbarVertical = 0;
+    if(value == MENU_LABEL_colorbar_vertical){
+      visColorbarVertical = 1 - visColorbarVertical;
+      if(visColorbarVertical == 1)visColorbarHorizontal = 0;
+    }
+    else {
+      visColorbarHorizontal = 1 - visColorbarHorizontal;
+      if (visColorbarHorizontal == 1)visColorbarVertical = 0;
+    }
+    UpdateColorbarControls();
+    UpdateColorbarControls2();
     vis_colorbar = GetColorbarState();
     break;
   case MENU_LABEL_timebar:

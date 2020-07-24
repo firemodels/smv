@@ -222,6 +222,8 @@ GLUI_EditText *EDIT_part_min=NULL, *EDIT_part_max=NULL;
 GLUI_EditText *EDIT_p3_min=NULL, *EDIT_p3_max=NULL;
 GLUI_EditText *EDIT_p3_chopmin=NULL, *EDIT_p3_chopmax=NULL;
 
+GLUI_Checkbox* CHECKBOX_visColorbarHorizontal2 = NULL;
+GLUI_Checkbox* CHECKBOX_visColorbarVertical2 = NULL;
 GLUI_Checkbox *CHECKBOX_show_boundary_outline=NULL;
 #ifdef pp_SLICETHREAD
 GLUI_Checkbox *CHECKBOX_slice_multithread = NULL;
@@ -397,6 +399,15 @@ procdata particleprocinfo[4];
 procdata particleprocinfo[3];
 #endif
 int      nisoprocinfo=0, nsubboundprocinfo=0, nsliceprocinfo=0, nparticleprocinfo=0;
+
+/* ------------------ UpdateColorbarControls2 ------------------------ */
+
+extern "C" void UpdateColorbarControls2(void) {
+  int current_state;
+
+  if (CHECKBOX_visColorbarVertical2 != NULL && CHECKBOX_visColorbarVertical2->get_int_val() != visColorbarVertical)CHECKBOX_visColorbarVertical2->set_int_val(visColorbarVertical);
+  if (CHECKBOX_visColorbarHorizontal2 != NULL && CHECKBOX_visColorbarHorizontal2->get_int_val() != visColorbarHorizontal)CHECKBOX_visColorbarHorizontal2->set_int_val(visColorbarHorizontal);
+}
 
 /* ------------------ UpdatePartType ------------------------ */
 
@@ -2963,6 +2974,11 @@ extern "C" void GluiBoundsSetup(int main_window){
     LIST_colorbar2->set_int_val(colorbartype);
   }
 
+#define LABELS_vcolorbar 34
+#define LABELS_hcolorbar 35
+
+  CHECKBOX_visColorbarVertical2   = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, "vertical",   &visColorbarVertical,   LABELS_vcolorbar, LabelsCB);
+  CHECKBOX_visColorbarHorizontal2 = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, "horizontal", &visColorbarHorizontal, LABELS_hcolorbar, LabelsCB);
   RADIO2_plot3d_display = glui_bounds->add_radiogroup_to_panel(PANEL_colorbar_properties, &contour_type, UPDATEPLOT, Plot3DBoundCB);
   glui_bounds->add_radiobutton_to_group(RADIO2_plot3d_display, _("Continuous"));
   glui_bounds->add_radiobutton_to_group(RADIO2_plot3d_display, _("Stepped"));

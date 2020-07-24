@@ -5,6 +5,9 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateColorbarControls(void);
+EXTERNCPP void UpdateColorbarControls2(void);
+  
 EXTERNCPP void UpdateColorLabelDigits(void);
 
 #ifdef pp_MULTI_RES
