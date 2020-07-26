@@ -39,7 +39,7 @@ void GetPlot3DFileBounds(char* file, float *valmin, float *valmax) {
 void GetGlobalPlot3DBounds(void) {
   int i;
 
-  for(i = 0; i < npartinfo; i++){
+  for(i = 0; i < nplot3dinfo; i++){
     plot3ddata *plot3di;
 
     plot3di = plot3dinfo + i;
