@@ -39,6 +39,7 @@ EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float
 EXTERNCPP void GetGlobalSliceBounds(void);
 EXTERNCPP void GetGlobalPatchBounds(void);
 EXTERNCPP void GetGlobalPartBounds(void);
+EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetLoadedPatchBounds(char *label, float *loaded_min, float *loaded_max);
 FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
 #endif

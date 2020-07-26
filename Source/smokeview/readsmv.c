@@ -1017,7 +1017,13 @@ void ReadSMVDynamic(char *file){
       len=strlen(bufferptr);
 
       plot3di=plot3dinfo+iplot3d;
-      plot3di->blocknumber=blocknumber;
+#ifdef pp_NEWBOUND_DIALOG
+      for(i = 0; i < 5; i++){
+        plot3di->file_min[i] = 1.0;
+        plot3di->file_max[i] = 0.0;
+      }
+#endif
+      plot3di->blocknumber = blocknumber;
       plot3di->seq_id=nn_plot3d;
       plot3di->autoload=0;
       plot3di->time=time_local;
@@ -1028,6 +1034,12 @@ void ReadSMVDynamic(char *file){
 
       NewMemory((void **)&plot3di->reg_file,(unsigned int)(len+1));
       STRCPY(plot3di->reg_file,bufferptr);
+
+#ifdef pp_NEWBOUND_DIALOG
+      NewMemory((void **)&plot3di->bound_file, (unsigned int)(len+4+1));
+      STRCPY(plot3di->bound_file, bufferptr);
+      STRCAT(plot3di->bound_file, ".bnd");
+#endif
 
       NewMemory((void **)&plot3di->comp_file,(unsigned int)(len+4+1));
       STRCPY(plot3di->comp_file,bufferptr);
@@ -2308,6 +2320,7 @@ void UpdateBoundInfo(void){
   GetGlobalSliceBounds();
   GetGlobalPatchBounds();
   GetGlobalPartBounds();
+  GetGlobalPlot3DBounds();
 #endif
 }
 

@@ -33,6 +33,10 @@ SVEXTERN int render_skips[NRENDER_SKIPS];
 SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
+#ifdef pp_NEWBOUND_DIALOG
+SVEXTERN float plot3dmins[5], plot3dmaxs[5];
+#endif
+
 #ifdef pp_MULTI_RES
 SVEXTERN int SVDECL(slice_resolution_level, -1);
 SVEXTERN int SVDECL(max_slice_resolution, 0);
