@@ -12,9 +12,16 @@
 
 void GetPlot3DFileBounds(char* file, float *valmin, float *valmax) {
   FILE* stream;
-  int i;
+  int i, doit=0;
 
-  if (file == NULL || strlen(file) == 0)return;
+  for(i = 0; i < 5; i++){
+    if(valmin[i] <= valmax[i]){
+      doit = 1;
+      break;
+    }
+  }
+  if(doit == 0)return;
+  if(file == NULL || strlen(file) == 0)return;
   stream = fopen(file, "r");
   if (stream == NULL)return;
 

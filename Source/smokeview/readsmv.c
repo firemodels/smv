@@ -1358,6 +1358,9 @@ void ReadSMVDynamic(char *file){
   UpdatePlot3dMenuLabels();
   InitPlot3dTimeList();
   UpdateTimes();
+#ifdef pp_NEWBOUND_DIALOG
+  GetGlobalPlot3DBounds();
+#endif
 }
 
 
@@ -2320,7 +2323,6 @@ void UpdateBoundInfo(void){
   GetGlobalSliceBounds();
   GetGlobalPatchBounds();
   GetGlobalPartBounds();
-  GetGlobalPlot3DBounds();
 #endif
 }
 
