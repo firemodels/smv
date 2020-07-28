@@ -735,7 +735,7 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
               ){
   int n;
   float dt, factor, tval;
-  float local_tmin, local_tmax, tmin2, tmax2;
+  float local_tmin, local_tmax;
   float range;
   float tminorig, tmaxorig, dtorig;
   int itt;
@@ -743,9 +743,11 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
   unsigned char *iq;
   plot3ddata *p;
   meshdata *meshi;
-  char *iblank;
   int i;
   int ntotal;
+#ifndef pp_NEWBOUND_DIALOG
+  float tmin2, tmax2;
+#endif
 
 #ifdef pp_NEWBOUND_DIALOG
   local_tmin = *ttmin;
@@ -756,6 +758,9 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
   *extreme_min=0;
   *extreme_max=0;
   for(i=0;i<nplot3dinfo;i++){
+#ifndef pp_NEWBOUND_DIALOG
+  char *iblank;
+#endif
     p = plot3dinfo+i;
     if(p->loaded==0||p->display==0)continue;
     meshi = meshinfo+p->blocknumber;
