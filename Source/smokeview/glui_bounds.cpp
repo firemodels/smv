@@ -341,31 +341,39 @@ GLUI_StaticText *STATIC_part_cmax_unit=NULL;
 GLUI_StaticText *STATIC_plot3d_cmin_unit=NULL;
 GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 
-#define ZONE_ROLLOUT 0
-#define SMOKE3D_ROLLOUT 1
-#define BOUNDARY_ROLLOUT 2
-#define ISO_ROLLOUT 3
-#define PART_ROLLOUT 4
-#define EVAC_ROLLOUT 5
-#define PLOT3D_ROLLOUT 6
-#define SLICE_ROLLOUT 7
-
-#define LABELS_shade 5
+#define LABELS_shade      5
 #define LABELS_shadedata 30
 
-
-#define FLIP 19
+#define FLIP                  19
 #define LABELS_colorbar_shift 36
-#define CB_USE_LIGHTING 120
-#define COLORBAR_EXTREME_RGB 15
-#define COLORBAR_EXTREME 16
-#define SPLIT_COLORBAR 1
+#define CB_USE_LIGHTING      120
+#define COLORBAR_EXTREME_RGB  15
+#define COLORBAR_EXTREME      16
+#define SPLIT_COLORBAR         1
 
+//*** boundprocinfo entries
+#define ZONE_ROLLOUT     0
+#define SMOKE3D_ROLLOUT  1
+#define BOUNDARY_ROLLOUT 2
+#define ISO_ROLLOUT      3
+#define PART_ROLLOUT     4
+#define EVAC_ROLLOUT     5
+#define PLOT3D_ROLLOUT   6
+#define SLICE_ROLLOUT    7
+#define TIME_ROLLOUT     8
 
-#define ISO_ROLLOUT_BOUNDS 0
+procdata  boundprocinfo[9];
+int      nboundprocinfo = 0;
+
+//*** isoprocinfo entries
+#define ISO_ROLLOUT_BOUNDS   0
 #define ISO_ROLLOUT_SETTINGS 1
-#define ISO_ROLLOUT_COLOR 2
+#define ISO_ROLLOUT_COLOR    2
+procdata  isoprocinfo[3];
+int      nisoprocinfo=0;
 
+
+//*** sliceprocinfo entries
 #define SLICE_BOUND             0
 #define SLICE_CHOP              1
 #define SLICE_AVERAGE_ROLLOUT   2
@@ -374,31 +382,50 @@ GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 #define SLICE_HISTOGRAM_ROLLOUT 5
 #define SLICE_DUP_ROLLOUT       6
 #define SLICE_SETTINGS_ROLLOUT  7
+procdata  sliceprocinfo[8];
+int      nsliceprocinfo=0;
 
+//*** plot3dprocinfo entries
 #define PLOT3D_BOUND              0
 #define PLOT3D_CHOP               1
 #define PLOT3D_VECTOR_ROLLOUT     2
 #define PLOT3D_ISOSURFACE_ROLLOUT 3
 
-#define LOAD_ROLLOUT 0
-#define SHOWHIDE_ROLLOUT 1
-#define COMPRESS_ROLLOUT 2
-#define SCRIPT_ROLLOUT 3
-#define CONFIG_ROLLOUT 4
-#define FILEBOUNDS_ROLLOUT 5
-#define TIME_ROLLOUT 6
-#define COLORING_ROLLOUT 7
-#define MEMCHECK_ROLLOUT 8
+procdata  plot3dprocinfo[4];
+int      nplot3dprocinfo=0;
 
-procdata  boundprocinfo[8],   fileprocinfo[9],   plot3dprocinfo[4];
-int      nboundprocinfo = 0, nfileprocinfo = 0, nplot3dprocinfo=0;
-procdata  isoprocinfo[3], subboundprocinfo[6], sliceprocinfo[8];
-#ifdef pp_PART_HIST
+
+//*** fileprocinfo entries
+#define LOAD_ROLLOUT       0
+#define SHOWHIDE_ROLLOUT   1
+#define COMPRESS_ROLLOUT   2
+#define SCRIPT_ROLLOUT     3
+#define CONFIG_ROLLOUT     4
+#define FILEBOUNDS_ROLLOUT 5
+#define COLORING_ROLLOUT   6
+#define MEMCHECK_ROLLOUT   7
+
+procdata  fileprocinfo[8];
+int      nfileprocinfo = 0;
+
+//*** particleprocinfo entries
+#define PARTICLE_BOUND             0
+#define PARTICLE_CHOP              1
+#define PARTICLE_SETTINGS          2
+#define PARTICLE_HISTOGRAM         3
 procdata particleprocinfo[4];
-#else
-procdata particleprocinfo[3];
-#endif
-int      nisoprocinfo=0, nsubboundprocinfo=0, nsliceprocinfo=0, nparticleprocinfo=0;
+int      nparticleprocinfo=0;
+
+//*** subboundprocinfo entries
+#define BOUNDARY_BOUND             0
+#define BOUNDARY_CHOP              1
+#define BOUNDARY_OUTPUT_ROLLOUT    2
+#define BOUNDARY_THRESHOLD_ROLLOUT 3
+#define BOUNDARY_DUPLICATE_ROLLOUT 4
+#define BOUNDARY_SETTINGS_ROLLOUT  5
+
+procdata  subboundprocinfo[6];
+int       nsubboundprocinfo=0;
 
 /* ------------------ UpdateColorbarControls2 ------------------------ */
 
@@ -2911,9 +2938,9 @@ extern "C" void GluiBoundsSetup(int main_window){
 
   // ----------------------------------- Time ----------------------------------------
 
-  ROLLOUT_time = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "Time", false, TIME_ROLLOUT, FileRolloutCB);
+  ROLLOUT_time = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "Time", false, TIME_ROLLOUT, BoundRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_time, glui_bounds);
-  ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_time, TIME_ROLLOUT, glui_bounds);
+  ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_time, TIME_ROLLOUT, glui_bounds);
 
   PANEL_time1a = glui_bounds->add_panel_to_panel(ROLLOUT_time, "", false);
   SPINNER_timebounds = glui_bounds->add_spinner_to_panel(PANEL_time1a, _("Time:"), GLUI_SPINNER_FLOAT, &glui_time);

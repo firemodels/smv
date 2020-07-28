@@ -95,20 +95,6 @@
 #define SCRIPT_RENDER_DIR 43
 #define SCRIPT_STEP_NOW 44
 
-#define PARTICLE_BOUND             0
-#define PARTICLE_CHOP              1
-#define PARTICLE_SETTINGS          2
-#ifdef pp_PART_HIST
-#define PARTICLE_HISTOGRAM         3
-#endif
-
-#define BOUNDARY_BOUND             0
-#define BOUNDARY_CHOP              1
-#define BOUNDARY_OUTPUT_ROLLOUT    2
-#define BOUNDARY_THRESHOLD_ROLLOUT 3
-#define BOUNDARY_DUPLICATE_ROLLOUT 4
-#define BOUNDARY_SETTINGS_ROLLOUT  5
-
 #define ZONEVALMINMAX    50
 #define SETZONEVALMINMAX 52
 
