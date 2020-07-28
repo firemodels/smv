@@ -2107,12 +2107,17 @@ void InitVars(void){
     }
     vis_boundary_type[0]=1;
     for(iii=0;iii<MAXPLOT3DVARS;iii++){
-      setp3min[iii]=PERCENTILE_MIN;
-      p3min[iii]=1.0f;
-      p3chopmin[iii]=1.0f;
-      setp3max[iii]=PERCENTILE_MAX;
-      p3max[iii]=1.0f;
-      p3chopmax[iii]=0.0f;
+#ifdef pp_NEWBOUND_DIALOG
+      setp3min_all[iii] = SET_MIN;
+      setp3max_all[iii] = SET_MAX;
+#else
+      setp3min_all[iii] = PERCENTILE_MIN;
+      setp3max_all[iii] = PERCENTILE_MAX;
+#endif
+      p3min_all[iii]    = 1.0f;
+      p3chopmin[iii]    = 1.0f;
+      p3max_all[iii]    = 1.0f;
+      p3chopmax[iii]    = 0.0f;
     }
   }
 }

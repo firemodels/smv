@@ -1487,13 +1487,13 @@ typedef struct _plot3ddata {
   int compression_type;
   float time;
   int u, v, w, nvars;
-  float diff_valmin[5], diff_valmax[5];
-  int extreme_min[6], extreme_max[6];
+  float diff_valmin[MAXPLOT3DVARS], diff_valmax[MAXPLOT3DVARS];
+  int extreme_min[MAXPLOT3DVARS], extreme_max[MAXPLOT3DVARS];
   int blocknumber,loaded,display;
 #ifdef pp_NEWBOUND_DIALOG
-  float file_min[5], file_max[5];
+  float file_min[MAXPLOT3DVARS], file_max[MAXPLOT3DVARS];
 #endif
-  flowlabels label[6];
+  flowlabels label[MAXPLOT3DVARS];
   char menulabel[256], longlabel[256], timelabel[256];
 } plot3ddata;
 

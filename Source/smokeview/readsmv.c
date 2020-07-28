@@ -10934,10 +10934,20 @@ int ReadIni2(char *inifile, int localfile){
         sscanf(buffer, "%i %i %f %i %f", &iplot3d, &isetmin, &p3mintemp, &isetmax, &p3maxtemp);
         iplot3d--;
         if(iplot3d >= 0 && iplot3d<MAXPLOT3DVARS){
-          setp3min[iplot3d] = isetmin;
-          setp3max[iplot3d] = isetmax;
-          p3min[iplot3d] = p3mintemp;
-          p3max[iplot3d] = p3maxtemp;
+#ifdef pp_NEWBOUND_DIALOG
+          if(isetmin!=SET_MIN){
+            p3mintemp = p3min_global[iplot3d];
+            isetmin = SET_MIN;
+          }
+          if(isetmax!=SET_MAX){
+            p3maxtemp = p3max_global[iplot3d];
+            isetmax = SET_MAX;
+          }
+#endif
+          setp3min_all[iplot3d] = isetmin;
+          setp3max_all[iplot3d] = isetmax;
+          p3min_all[iplot3d]    = p3mintemp;
+          p3max_all[iplot3d]    = p3maxtemp;
         }
       }
       continue;
@@ -14039,13 +14049,17 @@ void WriteIniLocal(FILE *fileout){
   {
     int n3d;
 
-    n3d = 5;
+    n3d = MAXPLOT3DVARS;
     if(n3d<numplot3dvars)n3d = numplot3dvars;
     if(n3d>MAXPLOT3DVARS)n3d = MAXPLOT3DVARS;
     fprintf(fileout, "V_PLOT3D\n");
     fprintf(fileout, " %i\n", n3d);
     for(i = 0; i < n3d; i++){
-      fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3min[i], p3min[i], setp3max[i], p3max[i]);
+#ifdef pp_NEWBOUND_DIALOG
+      fprintf(fileout, " %i %i %f %i %f\n", i + 1, SET_MIN, p3min_all[i], SET_MAX, p3max_all[i]);
+#else
+      fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3min_all[i], p3min_all[i], setp3max_all[i], p3max_all[i]);
+#endif
     }
   }
   if(nslicebounds > 0){

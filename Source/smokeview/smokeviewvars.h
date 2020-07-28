@@ -33,10 +33,6 @@ SVEXTERN int render_skips[NRENDER_SKIPS];
 SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
-#ifdef pp_NEWBOUND_DIALOG
-SVEXTERN float plot3dmins[5], plot3dmaxs[5];
-#endif
-
 #ifdef pp_MULTI_RES
 SVEXTERN int SVDECL(slice_resolution_level, -1);
 SVEXTERN int SVDECL(max_slice_resolution, 0);
@@ -1005,11 +1001,11 @@ SVEXTERN int SVDECL(show_mirror_boundary,0), SVDECL(show_open_boundary, 0);
 SVEXTERN int SVDECL(n_mirrorvents,0), SVDECL(n_openvents,0);
 
 
-SVEXTERN int setp3min[MAXPLOT3DVARS], setp3min_save[MAXPLOT3DVARS];
-SVEXTERN float p3min[MAXPLOT3DVARS], p3min_save[MAXPLOT3DVARS];
+SVEXTERN int setp3min_all[MAXPLOT3DVARS], setp3min_save[MAXPLOT3DVARS];
+SVEXTERN float p3min_all[MAXPLOT3DVARS], p3min_global[MAXPLOT3DVARS], p3min_save[MAXPLOT3DVARS];
 
-SVEXTERN int setp3max[MAXPLOT3DVARS], setp3max_save[MAXPLOT3DVARS];
-SVEXTERN float p3max[MAXPLOT3DVARS], p3max_save[MAXPLOT3DVARS];
+SVEXTERN int setp3max_all[MAXPLOT3DVARS], setp3max_save[MAXPLOT3DVARS];
+SVEXTERN float p3max_all[MAXPLOT3DVARS], p3max_global[MAXPLOT3DVARS], p3max_save[MAXPLOT3DVARS];
 
 SVEXTERN int setp3chopmin[MAXPLOT3DVARS], setp3chopmax[MAXPLOT3DVARS];
 SVEXTERN float p3chopmin[MAXPLOT3DVARS], p3chopmax[MAXPLOT3DVARS];
@@ -1763,10 +1759,14 @@ SVEXTERN boundsdata SVDECL(*slicebounds,NULL), SVDECL(*isobounds,NULL), SVDECL(*
 SVEXTERN boundsdata SVDECL(*slicebounds_temp, NULL);
 SVEXTERN vslicedata SVDECL(*vsliceinfo,NULL);
 SVEXTERN int force_redisplay;
-SVEXTERN int setp3min_temp, setp3max_temp;
+#ifdef pp_NEWBOUND_DIALOG
+SVEXTERN int SVDECL(glui_setp3min, SET_MIN), SVDECL(glui_setp3max, SET_MAX);
+#else
+SVEXTERN int glui_setp3min, glui_setp3max;
+#endif
 SVEXTERN int setp3chopmin_temp, setp3chopmax_temp;
 SVEXTERN float p3chopmin_temp, p3chopmax_temp;
-SVEXTERN float p3min_temp, p3max_temp;
+SVEXTERN float glui_p3min, glui_p3max;
 
 SVEXTERN smoke3ddata SVDECL(*smoke3dinfo,NULL);
 

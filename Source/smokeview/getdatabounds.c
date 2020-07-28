@@ -8,42 +8,36 @@
 
 #ifdef pp_NEWBOUND_DIALOG
 
-/* ------------------ GetPartFileBounds ------------------------ */
+/* ------------------ GetPlot3DFileBounds ------------------------ */
 
-void GetPlot3DFileBounds(char* file, float *valmin, float *valmax) {
+void GetPlot3DFileBounds(char* file, float *valmin, float *valmax){
   FILE* stream;
-  int i, doit=0;
+  int i, compute_bounds=0;
+  char buffer[255];
 
-  for(i = 0; i < 5; i++){
-    if(valmin[i] <= valmax[i]){
-      doit = 1;
+  for(i = 0; i < MAXPLOT3DVARS; i++){
+    if(valmin[i] > valmax[i]){
+      compute_bounds = 1;
       break;
     }
   }
-  if(doit == 0)return;
+  if(compute_bounds == 0)return;
   if(file == NULL || strlen(file) == 0)return;
   stream = fopen(file, "r");
-  if (stream == NULL)return;
+  if(stream == NULL)return;
 
-  while (!feof(stream)) {
-    char buffer[255];
-    float time;
+  CheckMemory;
 
-    CheckMemory;
-    if (fgets(buffer, 255, stream) == NULL)break;
-    sscanf(buffer, "%f", &time);
-
-    for (i = 0; i < 5; i++) {
-      if (fgets(buffer, 255, stream) == NULL)break;
-      sscanf(buffer, "%f %f", valmin+i, valmax+i);
-    }
+  for(i = 0; i < MAXPLOT3DVARS; i++){
+    if(fgets(buffer, 255, stream) == NULL)break;
+    sscanf(buffer, "%f %f", valmin+i, valmax+i);
   }
   fclose(stream);
 }
 
 /* ------------------ GetGlobalPlot3DBounds ------------------------ */
 
-void GetGlobalPlot3DBounds(void) {
+void GetGlobalPlot3DBounds(void){
   int i;
 
   for(i = 0; i < nplot3dinfo; i++){
@@ -52,33 +46,36 @@ void GetGlobalPlot3DBounds(void) {
     plot3di = plot3dinfo + i;
     GetPlot3DFileBounds(plot3di->bound_file, plot3di->file_min, plot3di->file_max);
   }
-  for (i = 0; i < 5; i++) {
-    plot3dmins[i] = 1.0;
-    plot3dmaxs[i] = 0.0;
+  for(i = 0; i < MAXPLOT3DVARS; i++){
+    p3min_all[i] = 1.0;
+    p3max_all[i] = 0.0;
   }
   for(i = 0; i < nplot3dinfo; i++){
     plot3ddata *plot3di;
     int j;
-    float *fmin, *fmax;
+    float *file_min, *file_max;
 
     plot3di = plot3dinfo + i;
-    fmin = plot3di->file_min;
-    fmax = plot3di->file_max;
-    for (j = 0; j < 5; j++) {
-      if (fmin[j] <= fmax[j]) {
-        if (plot3dmins[j] > plot3dmaxs[j]) {
-          plot3dmins[j] = fmin[j];
-          plot3dmaxs[j] = fmax[j];
+    file_min = plot3di->file_min;
+    file_max = plot3di->file_max;
+    for(j = 0; j < MAXPLOT3DVARS; j++){
+      if(file_min[j] <= file_max[j]){
+        if(p3min_all[j] > p3max_all[j]){
+          p3min_all[j] = file_min[j];
+          p3max_all[j] = file_max[j];
         }
         else {
-          plot3dmins[j] = MIN(fmin[j], plot3dmins[j]);
-          plot3dmaxs[j] = MAX(fmax[j], plot3dmaxs[j]);
+          p3min_all[j] = MIN(file_min[j], p3min_all[j]);
+          p3max_all[j] = MAX(file_max[j], p3max_all[j]);
         }
       }
     }
   }
+  for(i = 0; i < MAXPLOT3DVARS; i++){
+    p3min_global[i] = p3min_all[i];
+    p3max_global[i] = p3max_all[i];
+  }
 }
-
 
 /* ------------------ GetPartFileBounds ------------------------ */
 

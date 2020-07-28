@@ -219,7 +219,7 @@ GLUI_EditText *EDIT_patch_chopmin=NULL, *EDIT_patch_chopmax=NULL;
 GLUI_EditText *EDIT_part_chopmin=NULL, *EDIT_part_chopmax=NULL;
 GLUI_EditText *EDIT_patch_min=NULL, *EDIT_patch_max=NULL;
 GLUI_EditText *EDIT_part_min=NULL, *EDIT_part_max=NULL;
-GLUI_EditText *EDIT_p3_min=NULL, *EDIT_p3_max=NULL;
+GLUI_EditText *EDIT_glui_p3min=NULL, *EDIT_glui_p3max=NULL;
 GLUI_EditText *EDIT_p3_chopmin=NULL, *EDIT_p3_chopmax=NULL;
 
 GLUI_Checkbox* CHECKBOX_visColorbarHorizontal2 = NULL;
@@ -2586,30 +2586,30 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_column_to_panel(ROLLOUT_plot3d,false);
 
 
-#ifdef pp_NEWPLOT3D_DIALOG
+#ifdef pp_NEWBOUND_DIALOG
     GenerateBoundDialog(ROLLOUT_plot3d, &ROLLOUT_plot3d_bound, 
       &STATIC_plot3d_min_unit, &STATIC_plot3d_max_unit, &STATIC_plot3d_cmin_unit, &STATIC_plot3d_cmax_unit,
-      &EDIT_p3_min, &EDIT_p3_max, &EDIT_p3_chopmin, &EDIT_p3_chopmax,
+      &EDIT_glui_p3min, &EDIT_glui_p3max, &EDIT_p3_chopmin, &EDIT_p3_chopmax,
       &CHECKBOX_p3_setchopmin, &CHECKBOX_p3_setchopmax,
       &BUTTON_reloadplot3d, NULL,
       &ROLLOUT_plot3d_chop,
       "plot3d",
-      &p3min_temp, &p3max_temp,
+      &glui_p3min, &glui_p3max,
       &p3chopmin_temp, &p3chopmax_temp,
-      &setp3min_temp, &setp3max_temp,
+      &glui_setp3min, &glui_setp3max,
       plot3dprocinfo,&nplot3dprocinfo,
       Plot3DBoundCB, Plot3dRolloutCB
     );
 #else
     GenerateBoundDialogs(&ROLLOUT_plot3d_bound, &ROLLOUT_plot3d_chop, ROLLOUT_plot3d, "Reload Plot3D file(s)",
-      &EDIT_p3_min, &EDIT_p3_max, &RADIO_p3_setmin, &RADIO_p3_setmax, NULL, NULL,
+      &EDIT_glui_p3min, &EDIT_glui_p3max, &RADIO_p3_setmin, &RADIO_p3_setmax, NULL, NULL,
       &CHECKBOX_p3_setchopmin, &CHECKBOX_p3_setchopmax,
       &EDIT_p3_chopmin, &EDIT_p3_chopmax,
       &STATIC_plot3d_min_unit, &STATIC_plot3d_max_unit,
       &STATIC_plot3d_cmin_unit, &STATIC_plot3d_cmax_unit,
       NULL, NULL,
       NULL,
-      &setp3min_temp, &setp3max_temp, &p3min_temp, &p3max_temp,
+      &glui_setp3min, &glui_setp3max, &glui_p3min, &glui_p3max,
       &setp3chopmin_temp, &setp3chopmax_temp, &p3chopmin_temp, &p3chopmax_temp,
       RELOAD_BOUNDS, TRUNCATE_BOUNDS,
       Plot3DBoundCB,
@@ -2655,8 +2655,8 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_radiobutton_to_group(RADIO_plot3d_isotype,_("points"));
     RADIOBUTTON_plot3d_iso_hidden->disable();
 
-    p3min_temp=p3min[0];
-    p3max_temp=p3max[0];
+    glui_p3min=p3min_all[0];
+    glui_p3max=p3max_all[0];
     p3chopmin_temp=p3chopmin[0];
     p3chopmax_temp=p3chopmax[0];
     glui_bounds->add_column_to_panel(ROLLOUT_plot3d,false);
@@ -3161,6 +3161,14 @@ extern "C" void Plot3DBoundCB(int var){
     return;
     break;
   case GLOBAL_BOUNDS:
+    for(i = 0; i < MAXPLOT3DVARS; i++){
+      p3min_all[i] = p3min_global[i];
+      p3max_all[i] = p3max_global[i];
+    }
+    glui_p3min=p3min_all[list_p3_index];
+    glui_p3max=p3max_all[list_p3_index];
+    EDIT_glui_p3min->set_float_val(glui_p3min);
+    EDIT_glui_p3max->set_float_val(glui_p3max);
     return;
     break;
   case GLOBAL_BOUNDS_MIN_LOADED:
@@ -3272,19 +3280,19 @@ extern "C" void Plot3DBoundCB(int var){
     glutPostRedisplay();
     break;
   case FILETYPEINDEX:
-   p3min[list_p3_index_old]=p3min_temp;
-   p3max[list_p3_index_old]=p3max_temp;
-   setp3min[list_p3_index_old]=setp3min_temp;
-   setp3max[list_p3_index_old]=setp3max_temp;
+   p3min_all[list_p3_index_old]=glui_p3min;
+   p3max_all[list_p3_index_old]=glui_p3max;
+   setp3min_all[list_p3_index_old]=glui_setp3min;
+   setp3max_all[list_p3_index_old]=glui_setp3max;
    p3chopmin[list_p3_index_old]=p3chopmin_temp;
    p3chopmax[list_p3_index_old]=p3chopmax_temp;
    setp3chopmin[list_p3_index_old]=setp3chopmin_temp;
    setp3chopmax[list_p3_index_old]=setp3chopmax_temp;
 
-   p3min_temp=p3min[list_p3_index];
-   p3max_temp=p3max[list_p3_index];
-   setp3min_temp=setp3min[list_p3_index];
-   setp3max_temp=setp3max[list_p3_index];
+   glui_p3min=p3min_all[list_p3_index];
+   glui_p3max=p3max_all[list_p3_index];
+   glui_setp3min=setp3min_all[list_p3_index];
+   glui_setp3max=setp3max_all[list_p3_index];
    p3chopmin_temp=p3chopmin[list_p3_index];
    p3chopmax_temp=p3chopmax[list_p3_index];
    setp3chopmin_temp=setp3chopmin[list_p3_index];
@@ -3295,15 +3303,15 @@ extern "C" void Plot3DBoundCB(int var){
      UpdateGluiPlot3D_units();
    }
 
-   EDIT_p3_min->set_float_val(p3min_temp);
-   EDIT_p3_max->set_float_val(p3max_temp);
+   EDIT_glui_p3min->set_float_val(glui_p3min);
+   EDIT_glui_p3max->set_float_val(glui_p3max);
    EDIT_p3_chopmin->set_float_val(p3chopmin_temp);
    EDIT_p3_chopmax->set_float_val(p3chopmax_temp);
 
    list_p3_index_old=list_p3_index;
 #ifndef pp_NEWBOUND_DIALOG
-   RADIO_p3_setmin->set_int_val(setp3min_temp);
-   RADIO_p3_setmax->set_int_val(setp3max_temp);
+   RADIO_p3_setmin->set_int_val(glui_setp3min);
+   RADIO_p3_setmax->set_int_val(glui_setp3max);
 #endif
    CHECKBOX_p3_setchopmin->set_int_val(setp3chopmin_temp);
    CHECKBOX_p3_setchopmax->set_int_val(setp3chopmax_temp);
@@ -3313,17 +3321,17 @@ extern "C" void Plot3DBoundCB(int var){
    Plot3DBoundCB(SETVALMAX);
    break;
   case SETVALMIN:
-   switch(setp3min_temp){
+   switch(glui_setp3min){
     case PERCENTILE_MIN:
     case GLOBAL_MIN:
 #ifndef pp_NEWBOUND_DIALOG
-      EDIT_p3_min->disable();
+      EDIT_glui_p3min->disable();
 #endif
       break;
     case SET_MIN:
     case CHOP_MIN:
 #ifndef pp_NEWBOUND_DIALOG
-      EDIT_p3_min->enable();
+      EDIT_glui_p3min->enable();
 #endif
       break;
     default:
@@ -3332,18 +3340,18 @@ extern "C" void Plot3DBoundCB(int var){
    }
    break;
   case SETVALMAX:
-     switch(setp3max_temp){
+     switch(glui_setp3max){
       case PERCENTILE_MIN:
       case GLOBAL_MIN:
 #ifndef pp_NEWBOUND_DIALOG
-        if(EDIT_p3_max!=NULL)EDIT_p3_max->disable();
+        if(EDIT_glui_p3max!=NULL)EDIT_glui_p3max->disable();
 #endif
         break;
       case SET_MIN:
       case CHOP_MIN:
 #ifndef pp_NEWBOUND_DIALOG
-        if(EDIT_p3_min!=NULL)EDIT_p3_min->disable();
-        if(EDIT_p3_max!=NULL)EDIT_p3_max->enable();
+        if(EDIT_glui_p3min!=NULL)EDIT_glui_p3min->disable();
+        if(EDIT_glui_p3max!=NULL)EDIT_glui_p3max->enable();
 #endif
         break;
       default:
@@ -3352,10 +3360,10 @@ extern "C" void Plot3DBoundCB(int var){
      }
    break;
   case FILEUPDATE:
-   p3min[list_p3_index] =    p3min_temp;
-   p3max[list_p3_index] =    p3max_temp;
-   setp3min[list_p3_index] = setp3min_temp;
-   setp3max[list_p3_index] = setp3max_temp;
+   p3min_all[list_p3_index] =    glui_p3min;
+   p3max_all[list_p3_index] =    glui_p3max;
+   setp3min_all[list_p3_index] = glui_setp3min;
+   setp3max_all[list_p3_index] = glui_setp3max;
    break;
   case FILERELOAD:
    Plot3DBoundCB(FILEUPDATE);
@@ -3427,10 +3435,10 @@ extern "C" void UpdatePlot3dListIndex(void){
   if(RADIO_p3==NULL)return;
   i = RADIO_p3->get_int_val();
   if(i!=plotn-1){
-    p3min[i]=p3min_temp;
-    p3max[i]=p3max_temp;
-    setp3min[i]=setp3min_temp;
-    setp3max[i]=setp3max_temp;
+    p3min_all[i]=glui_p3min;
+    p3max_all[i]=glui_p3max;
+    setp3min_all[i]=glui_setp3min;
+    setp3max_all[i]=glui_setp3max;
 
     p3chopmin[i]=p3chopmin_temp;
     p3chopmax[i]=p3chopmax_temp;
@@ -3443,10 +3451,10 @@ extern "C" void UpdatePlot3dListIndex(void){
   if(i<0)i=0;
   if(i>MAXPLOT3DVARS-1)i= MAXPLOT3DVARS-1;
   RADIO_p3->set_int_val(i);
-  p3min_temp = p3min[i];
-  p3max_temp = p3max[i];
-  setp3min_temp = setp3min[i];
-  setp3max_temp = setp3max[i];
+  glui_p3min = p3min_all[i];
+  glui_p3max = p3max_all[i];
+  glui_setp3min = setp3min_all[i];
+  glui_setp3max = setp3max_all[i];
 
   p3chopmin_temp = p3chopmin[i];
   p3chopmax_temp = p3chopmax[i];
@@ -4488,13 +4496,21 @@ extern "C" void SliceBoundCB(int var){
 
         if(nplot3dloaded>0){
           for(i = 0; i < MAXPLOT3DVARS; i++){
-            setp3min_save[i] = setp3min[i];
-            p3min_save[i] = p3min[i];
-            setp3min[i] = GLOBAL_MIN;
+            setp3min_save[i] = setp3min_all[i];
+            p3min_save[i] = p3min_all[i];
+#ifdef pp_NEWBOUND_DIALOG
+            setp3min_all[i] = SET_MIN;
+#else
+            setp3min_all[i] = GLOBAL_MIN;
+#endif
 
-            setp3max_save[i] = setp3max[i];
-            p3max_save[i] = p3max[i];
-            setp3max[i] = GLOBAL_MAX;
+            setp3max_save[i] = setp3max_all[i];
+            p3max_save[i] = p3max_all[i];
+#ifdef pp_NEWBOUND_DIALOG
+            setp3max_all[i] = SET_MAX;
+#else
+            setp3max_all[i] = GLOBAL_MAX;
+#endif
           }
           Plot3DBoundCB(SETVALMIN);
           Plot3DBoundCB(SETVALMAX);
@@ -4547,11 +4563,11 @@ extern "C" void SliceBoundCB(int var){
 
         if(nplot3dloaded > 0){
           for(i = 0; i < MAXPLOT3DVARS; i++){
-            setp3min[i] = setp3min_save[i];
-            p3min[i] = p3min_save[i];
+            setp3min_all[i] = setp3min_save[i];
+            p3min_all[i] = p3min_save[i];
 
-            setp3max[i] = setp3max_save[i];
-            p3max[i] = p3max_save[i];
+            setp3max_all[i] = setp3max_save[i];
+            p3max_all[i] = p3max_save[i];
           }
           Plot3DBoundCB(SETVALMIN);
           Plot3DBoundCB(VALMIN);

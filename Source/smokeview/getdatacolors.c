@@ -747,9 +747,10 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
   int i;
   int ntotal;
 
-  tmin2=*ttmin;
-  tmax2=*ttmax;
-
+#ifdef pp_NEWBOUND_DIALOG
+  local_tmin = *ttmin;
+  local_tmax = *ttmax;
+#else
   tmin2= 1000000000.;
   tmax2=-1000000000.;
   *extreme_min=0;
@@ -796,9 +797,10 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
   else{
     local_tmax=*ttmax;
   }
-
   *ttmin=local_tmin;
   *ttmax=local_tmax;
+#endif
+
   range = local_tmax-local_tmin;
   tminorig=local_tmin;
   tmaxorig=local_tmax;
@@ -1737,9 +1739,9 @@ void UpdateChopColors(void){
       }
     }
   }
-  if(p3max_temp>p3min_temp){
+  if(glui_p3max> glui_p3min){
     if(setp3chopmin_temp==1){
-      ichopmin=nrgb_full*(p3chopmin_temp-p3min_temp)/(p3max_temp-p3min_temp);
+      ichopmin=nrgb_full*(p3chopmin_temp- glui_p3min)/(glui_p3max - glui_p3min);
       if(ichopmin<0)ichopmin=0;
       if(ichopmin>nrgb_full-1)ichopmin=nrgb_full-1;
       for(i=0;i<ichopmin;i++){
@@ -1754,7 +1756,7 @@ void UpdateChopColors(void){
       }
     }
     if(setp3chopmax_temp==1){
-      ichopmax=nrgb_full*(p3chopmax_temp - p3min_temp)/(p3max_temp-p3min_temp);
+      ichopmax=nrgb_full*(p3chopmax_temp - glui_p3min)/(glui_p3max - glui_p3min);
       if(ichopmax<0)ichopmax=0;
       if(ichopmax>nrgb_full-1)ichopmax=nrgb_full-1;
       for(i=ichopmax;i<nrgb_full;i++){
