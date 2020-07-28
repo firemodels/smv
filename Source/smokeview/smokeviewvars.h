@@ -72,7 +72,7 @@ SVEXTERN int SVDECL(terrain_slice_overlap, 0);
 SVEXTERN int GetTerrainData(char *file, terraindata *terri);
 
 #ifdef pp_NEWBOUND_DIALOG
-SVEXTERN int SVDECL(slice_loaded,0), SVDECL(update_slice_loaded,0);
+SVEXTERN int SVDECL(use_slice_loaded,0), SVDECL(use_plot3d_loaded,0);
 #endif
 
 SVEXTERN int SVDECL(use_slice_glui_bounds, 0);
@@ -1096,9 +1096,6 @@ SVEXTERN int setpartmin, setpartmax;
 SVEXTERN int SVDECL(setisomin, PERCENTILE_MIN), SVDECL(setisomax, PERCENTILE_MAX);
 SVEXTERN int SVDECL(setisomin_save, PERCENTILE_MIN), SVDECL(setisoemax_save, PERCENTILE_MAX);
 SVEXTERN int SVDECL(glui_setslicemin,GLOBAL_MIN),      SVDECL(glui_setslicemax,GLOBAL_MAX);
-#ifdef pp_NEWBOUND_DIALOG
-SVEXTERN int SVDECL(glui_slicemin_dirty,0),            SVDECL(glui_slicemax_dirty,0);
-#endif
 SVEXTERN int SVDECL(glui_setslicemin_save,GLOBAL_MIN), SVDECL(glui_setslicemax_save,GLOBAL_MAX);
 SVEXTERN int SVDECL(setpatchmin_save, PERCENTILE_MIN), SVDECL(setpatchmax_save, PERCENTILE_MAX);
 SVEXTERN int SVDECL(setpartmin_save, PERCENTILE_MIN),  SVDECL(setpartmax_save, PERCENTILE_MAX);

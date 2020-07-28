@@ -345,25 +345,55 @@ void GetGlobalPatchBounds(void){
   }
 
 }
-/* ------------------ GetLoadedPatchBounds ------------------------ */
 
-void GetLoadedPatchBounds(char *label, float *loaded_min, float *loaded_max){
+/* ------------------ GetLoadedPlot3dBounds ------------------------ */
+
+void GetLoadedPlot3dBounds(float *loaded_min, float *loaded_max){
+  int i;
+
+  for(i=0;i<6;i++){
+    loaded_min[i] = 1.0;
+    loaded_max[i] = 0.0;
+  }
+  for(i = 0; i < nplot3dinfo; i++){
+    plot3ddata *plot3di;
+    int j;
+
+    plot3di = plot3dinfo + i;
+    if(plot3di->loaded == 0)continue;
+    for(j=0;j<6;j++){
+
+      if(loaded_min[j] > loaded_max[j]){
+        loaded_min[j] = plot3di->file_min[j];
+        loaded_max[j] = plot3di->file_max[j];
+      }
+      else{
+        loaded_min[j] = MIN(plot3di->file_min[j],loaded_min[j]);
+        loaded_max[j] = MAX(plot3di->file_max[j],loaded_max[j]);
+      }
+    }
+  }
+}
+
+/* ------------------ GetLoadedSliceBounds ------------------------ */
+
+void GetLoadedSliceBounds(char *label, float *loaded_min, float *loaded_max){
   int i;
 
   *loaded_min = 1.0;
   *loaded_max = 0.0;
-  for(i = 0; i<npatchinfo; i++){
-    patchdata *patchi;
+  for(i = 0; i < nsliceinfo; i++){
+    slicedata *slicei;
 
-    patchi = patchinfo+i;
-    if(patchi->loaded==0||strcmp(patchi->label.shortlabel, label)!=0)continue;
-    if(*loaded_min>*loaded_max){
-      *loaded_min = patchi->file_min;
-      *loaded_max = patchi->file_max;
+    slicei = sliceinfo + i;
+    if(slicei->loaded == 0 || strcmp(slicei->label.shortlabel, label) != 0)continue;
+    if(*loaded_min > * loaded_max){
+      *loaded_min = slicei->file_min;
+      *loaded_max = slicei->file_max;
     }
     else{
-      *loaded_min = MIN(*loaded_min,patchi->file_min);
-      *loaded_max = MAX(*loaded_max,patchi->file_max);
+      *loaded_min = MIN(*loaded_min, slicei->file_min);
+      *loaded_max = MAX(*loaded_max, slicei->file_max);
     }
   }
 }
