@@ -8,9 +8,6 @@
 
 #include "infoheader.h"
 #include "update.h"
-#ifdef pp_OPENVR
-#include "vr.h"
-#endif
 #ifdef pp_LUA
 #include "lua_api.h"
 #endif
@@ -254,9 +251,6 @@ int SetupCase(int argc, char **argv){
   glui_defined = 1;
   InitTranslate(smokeview_bindir, tr_name);
 
-#ifdef pp_OPENVR
-  have_vr = HaveVR();
-#endif
   if(ntourinfo==0)SetupTour();
   InitRolloutList();
   GluiColorbarSetup(mainwindow_id);
