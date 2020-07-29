@@ -1812,15 +1812,15 @@ void GenerateBoundDialog(
   STATIC_min->set_w(4);
 
   if(use_loaded==NULL){
-    glui_bounds->add_button_to_panel(*ROLLOUT_bound, _("Set Global Bounds"), GLOBAL_BOUNDS, FILE_CB);
+    glui_bounds->add_button_to_panel(*ROLLOUT_bound, _("Set using global bounds"), GLOBAL_BOUNDS, FILE_CB);
   }
   else{
     GLUI_RadioGroup *RADIO_use_loaded=NULL;
 
-    glui_bounds->add_button_to_panel(*ROLLOUT_bound, _("Set Bounds"), GLOBAL_BOUNDS, FILE_CB);
+    glui_bounds->add_button_to_panel(*ROLLOUT_bound, "Set using", GLOBAL_BOUNDS, FILE_CB);
     RADIO_use_loaded = glui_bounds->add_radiogroup_to_panel(*ROLLOUT_bound, use_loaded);
     glui_bounds->add_radiobutton_to_group(RADIO_use_loaded, "all data");
-    glui_bounds->add_radiobutton_to_group(RADIO_use_loaded, "only loaded data");
+    glui_bounds->add_radiobutton_to_group(RADIO_use_loaded, "loaded data");
   }
 
   if(BUTTON_update!=NULL)*BUTTON_update = glui_bounds->add_button_to_panel(*ROLLOUT_bound, "Update colors", FILEUPDATE, FILE_CB);
