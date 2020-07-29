@@ -1992,7 +1992,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds=NULL;
   }
   overwrite_all=0;
-  glui_bounds = GLUI_Master.create_glui( "Files/Data",0,0,0 );
+  glui_bounds = GLUI_Master.create_glui( "Files/Data/Color",0,0,0 );
   glui_bounds->hide();
 
   ROLLOUT_files = glui_bounds->add_rollout("Files", false);
@@ -2155,7 +2155,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
 // ----------------------------------- Bounds ----------------------------------------
 
-  ROLLOUT_filebounds = glui_bounds->add_rollout(_("Data bounds"), false, FILEBOUNDS_ROLLOUT, FileRolloutCB);
+  ROLLOUT_filebounds = glui_bounds->add_rollout(_("Data"), false, FILEBOUNDS_ROLLOUT, FileRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_filebounds, glui_bounds);
   ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_filebounds, FILEBOUNDS_ROLLOUT, glui_bounds);
 
