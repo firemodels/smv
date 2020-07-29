@@ -86,7 +86,6 @@
 #define pp_DEBUG_TERRAIN       // output spreadsheet version of terrain elevation file
 //#define pp_SLICE_DEBUG         // slice debug output
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
-//#define pp_SMOKEALPHA        // experimental smoke alpha settings
 #define pp_TIMINGS
 //#define pp_SMOKETEST         // experimental smoke dialog box entries
 #endif
