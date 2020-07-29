@@ -138,7 +138,6 @@ GLUI_Panel *PANEL_color = NULL;
 GLUI_Panel *PANEL_smoke = NULL;
 GLUI_Panel *PANEL_loadcutoff = NULL;
 GLUI_Panel *PANEL_loadframe = NULL;
-GLUI_Panel *PANEL_alpha = NULL;
 
 GLUI_Rollout *ROLLOUT_light_color = NULL;
 GLUI_Rollout *ROLLOUT_scatter = NULL;
@@ -599,15 +598,6 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     }
   }
 
-#ifdef pp_SMOKEALPHA
-  PANEL_alpha = glui_3dsmoke->add_panel_to_panel(PANEL_colormap,"experimental");
-  SPINNER_smoke3d_fire_alpha = glui_3dsmoke->add_spinner_to_panel(PANEL_alpha, _("50% fire alpha"), GLUI_SPINNER_INT, &glui_fire_alpha, UPDATE_FIRE_ALPHA, Smoke3dCB);
-  SPINNER_smoke3d_fire_alpha->set_int_limits(1,254);
-  if(nco2files>0){
-    SPINNER_smoke3d_co2_alpha = glui_3dsmoke->add_spinner_to_panel(PANEL_alpha, _("50% CO2 alpha"), GLUI_SPINNER_INT, &glui_co2_alpha, UPDATE_CO2_ALPHA, Smoke3dCB);
-    SPINNER_smoke3d_co2_alpha->set_int_limits(1, 254);
-  }
-#endif
   Smoke3dCB(UPDATE_SMOKEFIRE_COLORS);
   Smoke3dCB(UPDATE_SMOKEFIRE_COLORS2);
 
@@ -1076,14 +1066,6 @@ extern "C" void Smoke3dCB(int var){
       SPINNER_smoke3d_skip->set_int_val(smoke3d_skip);
     }
     break;
-  case UPDATE_FIRE_ALPHA:
-    fire_halfdepth2 = meshinfo->dx*log(0.5)/log(1.0-glui_fire_alpha/255.0);
-    SPINNER_smoke3d_fire_halfdepth2->set_float_val(fire_halfdepth2);
-    break;
-  case UPDATE_CO2_ALPHA:
-    co2_halfdepth = meshinfo->dx*log(0.5)/log(1.0-glui_co2_alpha/255.0);
-    SPINNER_smoke3d_co2_halfdepth->set_float_val(co2_halfdepth);
-    break;
   case CO2SMOKE:
     UpdateCO2Colormap();
     Smoke3dCB(CO2COLORMAP_TYPE);
@@ -1357,10 +1339,6 @@ extern "C" void Smoke3dCB(int var){
     fire_halfdepth2 = MAX(fire_halfdepth2, 0.001);
     SPINNER_smoke3d_fire_halfdepth->set_float_val(fire_halfdepth2);
     Smoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
-
-    glui_fire_alpha = 255*(1.0-pow(0.5,meshinfo->dx/fire_halfdepth2));
-    glui_fire_alpha = CLAMP(glui_fire_alpha,1,254);
-    if(SPINNER_smoke3d_fire_alpha!=NULL)SPINNER_smoke3d_fire_alpha->set_int_val(glui_fire_alpha);
     break;
   case UPDATE_SMOKEFIRE_COLORS:
     co2_halfdepth = MAX(co2_halfdepth, 0.001);
@@ -1368,10 +1346,6 @@ extern "C" void Smoke3dCB(int var){
 
     if(SPINNER_smoke3d_fire_halfdepth2!=NULL)SPINNER_smoke3d_fire_halfdepth2->set_float_val(fire_halfdepth);
     Smoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
-
-    glui_co2_alpha = 255*(1.0-pow(0.5,meshinfo->dx/co2_halfdepth));
-    glui_co2_alpha = CLAMP(glui_co2_alpha,1,254);
-    if(SPINNER_smoke3d_co2_alpha!=NULL)SPINNER_smoke3d_co2_alpha->set_int_val(glui_co2_alpha);
     break;
   case CO2_COLOR:
     Smoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
