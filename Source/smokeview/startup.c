@@ -1885,7 +1885,6 @@ void InitVars(void){
 
   smokecullflag=1;
   visMAINmenus=0;
-  smoke3d_thick=0;
 #ifdef pp_GPU
   smoke3d_rthick=1.0;
   usegpu=0;

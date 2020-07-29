@@ -65,9 +65,6 @@ GLUI_Spinner *SPINNER_smoke3d_delta_par = NULL;
 #ifdef pp_GPU
 GLUI_Spinner *SPINNER_smoke3d_rthick=NULL;
 GLUI_Spinner *SPINNER_smoke3d_rthick2=NULL;
-#else
-GLUI_Spinner *SPINNER_smoke3d_thick=NULL;
-GLUI_Spinner *SPINNER_smoke3d_thick2=NULL;
 #endif
 GLUI_Spinner *SPINNER_smoke3d_fire_red=NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_green=NULL;
@@ -219,9 +216,6 @@ extern "C" void UpdateSmokeThickness(void){
 #ifdef pp_GPU
     if(SPINNER_smoke3d_rthick!=NULL)SPINNER_smoke3d_rthick->set_float_val(smoke3d_rthick);
     if(SPINNER_smoke3d_rthick2!=NULL)SPINNER_smoke3d_rthick2->set_float_val(smoke3d_rthick);
-#else
-    if(SPINNER_smoke3d_thick!=NULL)SPINNER_smoke3d_thick->set_int_val(smoke3d_thick);
-    if(SPINNER_smoke3d_thick2!=NULL)SPINNER_smoke3d_thick2->set_int_val(smoke3d_thick);
 #endif
 }
 
@@ -494,11 +488,6 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     SPINNER_smoke3d_rthick2=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor,_("Thickness"),
       GLUI_SPINNER_FLOAT,&smoke3d_rthick,SMOKE_RTHICK,Smoke3dCB);
     SPINNER_smoke3d_rthick2->set_float_limits(1.0,255.0);
-    smoke3d_thick = LogBase2(smoke3d_rthick);
-#else
-    SPINNER_smoke3d_thick2=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor,"Thickness",
-    GLUI_SPINNER_INT,&smoke3d_thick,SMOKE_THICK,Smoke3dCB);
-    SPINNER_smoke3d_thick2->set_int_limits(0,7);
 #endif
   UpdateSmokeThickness();
 
@@ -701,11 +690,6 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     SPINNER_smoke3d_rthick=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_display,_("Thickness"),
       GLUI_SPINNER_FLOAT,&smoke3d_rthick,SMOKE_RTHICK,Smoke3dCB);
     SPINNER_smoke3d_rthick->set_float_limits(1.0,255.0);
-    smoke3d_thick = LogBase2(smoke3d_rthick);
-#else
-    SPINNER_smoke3d_thick=glui_3dsmoke->add_spinner_to_panel(PANEL_colormap,"Thickness",
-    GLUI_SPINNER_INT,&smoke3d_thick,SMOKE_THICK,Smoke3dCB);
-    SPINNER_smoke3d_thick->set_int_limits(0,7);
 #endif
     UpdateSmokeThickness();
 
@@ -1438,16 +1422,8 @@ extern "C" void Smoke3dCB(int var){
 #ifdef pp_GPU
   case SMOKE_RTHICK:
 
-    smoke3d_thick = LogBase2(smoke3d_rthick);
     UpdateSmokeThickness();
     glutPostRedisplay();
-    force_redisplay=1;
-    IdleCB();
-    break;
-#else
-  case SMOKE_THICK:
-    glutPostRedisplay();
-    UpdateSmokeThickness();
     force_redisplay=1;
     IdleCB();
     break;
@@ -1468,9 +1444,6 @@ extern "C" void Smoke3dCB(int var){
         SPINNER_smoke3d_rthick2->disable();
       }
     }
-#else
-    SPINNER_smoke3d_thick->disable();
-    SPINNER_smoke3d_thick2->disable();
 #endif
     {
       volrenderdata *vr;

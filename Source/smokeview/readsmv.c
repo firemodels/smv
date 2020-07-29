@@ -12782,17 +12782,11 @@ int ReadIni2(char *inifile, int localfile){
         smoke_albedo = CLAMP(smoke_albedo, 0.0, 1.0);
         continue;
       }
-      if(Match(buffer, "SMOKETHICK") == 1){
-        if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i", &smoke3d_thick);
-        continue;
-      }
 #ifdef pp_GPU
       if(Match(buffer, "SMOKERTHICK") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%f", &smoke3d_rthick);
         smoke3d_rthick = CLAMP(smoke3d_rthick, 1.0, 255.0);
-        smoke3d_thick = LogBase2(smoke3d_rthick);
         continue;
       }
 #endif
@@ -14790,9 +14784,6 @@ void WriteIni(int flag,char *filename){
 #ifdef pp_GPU
   fprintf(fileout,"SMOKERTHICK\n");
   fprintf(fileout," %f\n",smoke3d_rthick);
-#else
-  fprintf(fileout,"SMOKETHICK\n");
-  fprintf(fileout," %i\n",smoke3d_thick);
 #endif
 #ifdef pp_GPU
   fprintf(fileout, "USEGPU\n");

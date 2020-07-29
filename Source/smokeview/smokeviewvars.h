@@ -1786,7 +1786,6 @@ SVEXTERN int SVDECL(fire_colormap_type, FIRECOLORMAP_CONSTRAINT);
 SVEXTERN int SVDECL(fire_colormap_type_save, FIRECOLORMAP_CONSTRAINT);
 SVEXTERN int smokecullflag;
 SVEXTERN int visMAINmenus;
-SVEXTERN int smoke3d_thick;
 #ifdef pp_GPU
 SVEXTERN float smoke3d_rthick;
 #endif

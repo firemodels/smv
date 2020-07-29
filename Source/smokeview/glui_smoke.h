@@ -26,8 +26,6 @@
 #define SHOW_FIRECOLORMAP 25
 #ifdef pp_GPU
 #define SMOKE_RTHICK 8
-#else
-#define SMOKE_THICK 8
 #endif
 #define SAVE_SETTINGS_SMOKE 9
 #define FRAMELOADING_SMOKE 10
