@@ -4331,6 +4331,7 @@ extern "C" void SliceBoundCB(int var){
     }
     else {
       float valmin=1.0, valmax=0.0;
+
       GetLoadedSliceBounds(slicebounds[list_slice_index].shortlabel, &valmin, &valmax);
       if(valmin <= valmax){
         slicebounds[list_slice_index].dlg_valmin = valmin;
