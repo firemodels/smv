@@ -1801,8 +1801,6 @@ void GenerateBoundDialog(
     glui_bounds->add_button_to_panel(PANEL_g, _("Set min/max using global bounds"), GLOBAL_BOUNDS, FILE_CB);
   }
   else{
-    GLUI_RadioGroup *RADIO_compute_loaded = NULL;
-
     PANEL_g = glui_bounds->add_panel_to_panel(*ROLLOUT_bound, "min/max bounds");
     glui_bounds->add_button_to_panel(PANEL_g, "Set using", GLOBAL_BOUNDS, FILE_CB);
     *RADIO_compute = glui_bounds->add_radiogroup_to_panel(PANEL_g, compute_loaded, GLUI_RADIO_COMPUTE, FILE_CB);
@@ -1843,8 +1841,6 @@ void GenerateBoundDialog(
     if(BUTTON_update!=NULL)*BUTTON_update = glui_bounds->add_button_to_panel(PANEL_f, "Update colors", FILEUPDATE, FILE_CB);
     if(BUTTON_reload!=NULL)*BUTTON_reload = glui_bounds->add_button_to_panel(PANEL_f, "Reload data", FILERELOAD, FILE_CB);
     if(reset_loaded != NULL){
-      GLUI_RadioGroup *RADIO_reset_loaded = NULL;
-
       *RADIO_reset = glui_bounds->add_radiogroup_to_panel(PANEL_f, reset_loaded, GLUI_RADIO_RESET, FILE_CB);
       glui_bounds->add_radiobutton_to_group(*RADIO_reset, "using specified min/max bounds");
       glui_bounds->add_radiobutton_to_group(*RADIO_reset, "using loaded data bounds");
