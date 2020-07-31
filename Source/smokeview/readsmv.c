@@ -2188,6 +2188,8 @@ void UpdateBoundInfo(void){
 #ifdef pp_NEWBOUND_DIALOG
       sbi->dlg_setvalmin = SET_MIN;
       sbi->dlg_setvalmax = SET_MAX;
+      sbi->reset_loaded = 0;
+      sbi->compute_loaded = 0;
 #else
       sbi->dlg_setvalmin=PERCENTILE_MIN;
       sbi->dlg_setvalmax=PERCENTILE_MAX;
