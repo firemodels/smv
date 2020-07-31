@@ -72,7 +72,8 @@ SVEXTERN int SVDECL(terrain_slice_overlap, 0);
 SVEXTERN int GetTerrainData(char *file, terraindata *terri);
 
 #ifdef pp_NEWBOUND_DIALOG
-SVEXTERN int SVDECL(use_slice_loaded,0), SVDECL(use_plot3d_loaded,0);
+SVEXTERN int SVDECL(glui_slice_compute_loaded,0), SVDECL(glui_plot3d_compute_loaded,0);
+SVEXTERN int SVDECL(glui_slice_reset_loaded, 0),  SVDECL(glui_plot3d_reset_loaded, 0);
 #endif
 
 SVEXTERN int SVDECL(use_slice_glui_bounds, 0);
@@ -260,7 +261,6 @@ SVEXTERN int SVDECL(windrose_xy_active, 0), SVDECL(windrose_xz_active, 0), SVDEC
 
 SVEXTERN int SVDECL(showgeom_inside_domain, 1);
 SVEXTERN int SVDECL(showgeom_outside_domain, 1);
-SVEXTERN int glui_fire_alpha, glui_co2_alpha;
 SVEXTERN int nsootloaded, nhrrpuvloaded, ntemploaded, nco2loaded;
 SVEXTERN int nsootfiles, nhrrpuvfiles, ntempfiles, nco2files;
 SVEXTERN int SVDECL(have_fire, 0);
@@ -1786,7 +1786,6 @@ SVEXTERN int SVDECL(fire_colormap_type, FIRECOLORMAP_CONSTRAINT);
 SVEXTERN int SVDECL(fire_colormap_type_save, FIRECOLORMAP_CONSTRAINT);
 SVEXTERN int smokecullflag;
 SVEXTERN int visMAINmenus;
-SVEXTERN int smoke3d_thick;
 #ifdef pp_GPU
 SVEXTERN float smoke3d_rthick;
 #endif

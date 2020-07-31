@@ -9,9 +9,6 @@
 #include "update.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
-#ifdef pp_OPENVR
-#include "vr.h"
-#endif
 
 #ifdef pp_LUA
 #include "lua_api.h"
@@ -3537,40 +3534,6 @@ void DoNonStereo(void){
   }
 }
 
-#ifdef pp_OPENVR
-
-/* ------------------ DoVR ------------------------ */
-
-void DoVR(void){
-  float view_projection[16];
-  int i;
-
-  printf("left view_projection:\n");
-  GetCurrentViewProjectionMatrix(LEFT_EYE, view_projection);
-  for(i = 0; i<16; i++){
-    printf("%f ", view_projection[i]);
-    if(i%4==3)printf("\n");
-  }
-  printf("\n\n");
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadMatrixf(view_projection);
-  ShowScene(DRAWSCENE,VIEW_LEFT,0,0,0,NULL);
-
-  printf("right view_projection:\n");
-  GetCurrentViewProjectionMatrix(RIGHT_EYE, view_projection);
-  for(i = 0; i<16; i++){
-    printf("%f ", view_projection[i]);
-    if(i%4==3)printf("\n");
-  }
-  printf("\n\n");
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadMatrixf(view_projection);
-  ShowScene(DRAWSCENE,VIEW_LEFT,0,0,0,NULL);
-}
-#endif
-
 /* ------------------ DisplayCB ------------------------ */
 
 void DisplayCB(void){
@@ -3584,11 +3547,6 @@ void DisplayCB(void){
     if(use_vr==0){
       DoNonStereo();
     }
-#ifdef pp_OPENVR
-    else{
-      DoVR();
-    }
-#endif
   }
   else{
     DoStereo();
