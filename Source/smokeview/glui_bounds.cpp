@@ -4319,6 +4319,18 @@ void Glui2SliceBounds(void){
   slicebounds[list_slice_index].setchopmax       = glui_setslicechopmax;
   slicebounds[list_slice_index].chopmax          = glui_slicechopmax;
 }
+
+/* ------------------ ResetSliceData ------------------------ */
+
+extern "C" void ResetSliceData(void){
+  if(glui_slice_reset_loaded != 0){
+    SliceBoundCB(FILEUPDATE);
+    if (glui_slice_reset_loaded == 1)glui_slice_compute_loaded = 0;
+    if (glui_slice_reset_loaded == 2)glui_slice_compute_loaded = 1;
+    RADIO_slice_compute->set_int_val(glui_slice_compute_loaded);
+    Glui2SliceBounds();
+  }
+}
 #else
 
 /* ------------------ SetSliceMin ------------------------ */

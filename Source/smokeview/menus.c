@@ -4502,6 +4502,11 @@ void LoadSliceMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
     LoadSlicei(SET_SLICECOLOR,value, ALL_SLICE_FRAMES, NULL);
+#ifdef pp_NEWBOUND_DIALOG
+    if (glui_slice_reset_loaded != 0) {
+      ResetSliceData();
+    }
+#endif
   }
   else{
     switch (value){
@@ -4747,6 +4752,11 @@ FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
       file_count++;
     }
   }
+#ifdef pp_NEWBOUND_DIALOG
+  if (glui_slice_reset_loaded != 0) {
+    ResetSliceData();
+  }
+#endif
   STOP_TIMER(load_time);
   PRINT_LOADTIMES(file_count,(float)file_size,load_time);
   return file_size;
