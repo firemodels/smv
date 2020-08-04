@@ -450,6 +450,15 @@ extern "C" void UpdateTransparency(void){
   if(CHECKBOX_transparentflag!=NULL)CHECKBOX_transparentflag->set_int_val(use_transparency_data);
 }
 
+/* ------------------ Plot3DBounds2Glui ------------------------ */
+
+extern "C" void Plot3DBounds2Glui(void) {
+  glui_p3min = p3min_all[list_p3_index];
+  glui_p3max = p3max_all[list_p3_index];
+  EDIT_glui_p3min->set_float_val(glui_p3min);
+  EDIT_glui_p3max->set_float_val(glui_p3max);
+}
+
 /* ------------------ UpdateUseLighting ------------------------ */
 
 extern "C" void UpdateUseLighting(void){
@@ -1837,7 +1846,13 @@ void GenerateBoundDialog(
       PANEL_f = *ROLLOUT_bound;
     }
     if(BUTTON_update!=NULL)*BUTTON_update = glui_bounds->add_button_to_panel(PANEL_f, "Update data coloring using", FILEUPDATE, FILE_CB);
-    if(BUTTON_reload!=NULL)*BUTTON_reload = glui_bounds->add_button_to_panel(PANEL_f, "Reload data using",          FILERELOAD, FILE_CB);
+    if(BUTTON_reload != NULL){
+      char reload_label[100];
+
+      strcpy(reload_label, "Reload data");
+      if(reset_loaded != NULL)strcat(reload_label, " using");
+      *BUTTON_reload = glui_bounds->add_button_to_panel(PANEL_f, reload_label, FILERELOAD, FILE_CB);
+    }
     if(reset_loaded != NULL){
       *RADIO_reset = glui_bounds->add_radiogroup_to_panel(PANEL_f, reset_loaded, GLUI_RADIO_RESET, FILE_CB);
       glui_bounds->add_radiobutton_to_group(*RADIO_reset, "specified min/max");
@@ -3457,10 +3472,12 @@ extern "C" void Plot3DBoundCB(int var){
    }
 #endif
    Plot3DBoundCB(FILEUPDATE);
+   p3bounds_defined = 1;
    for(i=0;i<nplot3dinfo;i++){
      if(plot3dinfo[i].loaded==0)continue;
      LoadPlot3dMenu(i);
    }
+   p3bounds_defined = 0;
    UpdateGlui();
    break;
 #ifdef pp_NEWBOUND_DIALOG
@@ -4285,13 +4302,13 @@ void SliceBounds2Glui(int slicetype){
     slice_line_contour_min = slicebounds[slicetype].line_contour_min;
     slice_line_contour_max = slicebounds[slicetype].line_contour_max;
     slice_line_contour_num = slicebounds[slicetype].line_contour_num;
-    glui_slicemin = slicebounds[slicetype].dlg_valmin;
-    glui_slicemax = slicebounds[slicetype].dlg_valmax;
+    glui_slicemin          = slicebounds[slicetype].dlg_valmin;
+    glui_slicemax          = slicebounds[slicetype].dlg_valmax;
 #ifdef pp_NEWBOUND_DIALOG
-    glui_setslicemin    = slicebounds[slicetype].dlg_setvalmin;
-    glui_setslicemax    = slicebounds[slicetype].dlg_setvalmax;
-    glui_slice_compute_loaded = slicebounds[slicetype].compute_loaded;
-    glui_slice_reset_loaded = slicebounds[slicetype].reset_loaded;
+    glui_setslicemin          = slicebounds[slicetype].dlg_setvalmin;
+    glui_setslicemax          = slicebounds[slicetype].dlg_setvalmax;
+    glui_slice_compute_loaded = slicebounds[slicetype].dlg_compute_loaded;
+    glui_slice_reset_loaded   = slicebounds[slicetype].dlg_reset_loaded;
 #else
     if(research_mode == 1){
       glui_setslicemin = GLOBAL_MIN;
@@ -4319,11 +4336,11 @@ void SliceBounds2Glui(int slicetype){
 
 void Glui2SliceBounds(void){
   if(slicebounds==NULL)return;
-  slicebounds[list_slice_index].dlg_valmin       = glui_slicemin;
-  slicebounds[list_slice_index].setchopmin       = glui_setslicechopmin;
-  slicebounds[list_slice_index].chopmin          = glui_slicechopmin;
-  slicebounds[list_slice_index].compute_loaded   = glui_slice_compute_loaded;
-  slicebounds[list_slice_index].reset_loaded     = glui_slice_reset_loaded;
+  slicebounds[list_slice_index].dlg_valmin           = glui_slicemin;
+  slicebounds[list_slice_index].setchopmin           = glui_setslicechopmin;
+  slicebounds[list_slice_index].chopmin              = glui_slicechopmin;
+  slicebounds[list_slice_index].dlg_compute_loaded   = glui_slice_compute_loaded;
+  slicebounds[list_slice_index].dlg_reset_loaded     = glui_slice_reset_loaded;
 
   slicebounds[list_slice_index].dlg_valmax       = glui_slicemax;
   slicebounds[list_slice_index].dlg_setvalmax    = glui_setslicemax;

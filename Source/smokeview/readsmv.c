@@ -2188,8 +2188,8 @@ void UpdateBoundInfo(void){
 #ifdef pp_NEWBOUND_DIALOG
       sbi->dlg_setvalmin = SET_MIN;
       sbi->dlg_setvalmax = SET_MAX;
-      sbi->reset_loaded = 0;
-      sbi->compute_loaded = 0;
+      sbi->dlg_reset_loaded = glui_slice_reset_loaded;
+      sbi->dlg_compute_loaded = glui_slice_compute_loaded;
 #else
       sbi->dlg_setvalmin=PERCENTILE_MIN;
       sbi->dlg_setvalmax=PERCENTILE_MAX;

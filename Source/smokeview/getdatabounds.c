@@ -343,7 +343,6 @@ void GetGlobalPatchBounds(void){
       }
     }
   }
-
 }
 
 /* ------------------ GetLoadedPlot3dBounds ------------------------ */

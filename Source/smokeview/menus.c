@@ -5018,11 +5018,44 @@ void LoadMultiSliceMenu(int value){
   }
 }
 
+#ifdef pp_NEWBOUND_DIALOG
+/* ------------------ GetListPlot3dBounds ------------------------ */
+
+void GetListPlot3dBounds(int* list, int nlist, float* loaded_min, float* loaded_max) {
+  int i;
+
+  for (i = 0; i < 6; i++) {
+    loaded_min[i] = 1.0;
+    loaded_max[i] = 0.0;
+  }
+  for (i = 0; i < nlist; i++) {
+    plot3ddata* plot3di;
+    int j;
+
+    plot3di = plot3dinfo + list[i];
+    for (j = 0; j < 6; j++) {
+
+      if (loaded_min[j] > loaded_max[j]) {
+        loaded_min[j] = plot3di->file_min[j];
+        loaded_max[j] = plot3di->file_max[j];
+      }
+      else {
+        loaded_min[j] = MIN(plot3di->file_min[j], loaded_min[j]);
+        loaded_max[j] = MAX(plot3di->file_max[j], loaded_max[j]);
+      }
+    }
+  }
+}
+#endif
+
 /* ------------------ Plot3DListMenu ------------------------ */
 
 void Plot3DListMenu(int value){
   int i;
   plot3ddata *plot3di;
+#ifdef pp_NEWBOUND_DIALOG
+  int *list, nlist;
+#endif
 
   value = CLAMP(value, 0, nplot3dtimelist-1);
   iplot3dtimelist = value;
@@ -5031,12 +5064,30 @@ void Plot3DListMenu(int value){
     fprintf(scriptoutstream,"LOADPLOT3D\n");
     fprintf(scriptoutstream," %f\n",plot3dtimelist[value]);
   }
+
+#ifdef pp_NEWBOUND_DIALOG
+  if(glui_plot3d_reset_loaded==2){
+    NewMemory((void **)&list,nplot3dinfo*sizeof(int));
+    nlist=0;
+    for(i=0;i<nplot3dinfo;i++){
+      plot3di = plot3dinfo + i;
+      if(ABS(plot3di->time-plot3dtimelist[value])<0.5){
+        list[nlist++] = i;
+      }
+    }
+    GetListPlot3dBounds(list, nlist, p3min_all, p3max_all);
+    Plot3DBounds2Glui();
+  }
+#endif
+
+  if(glui_plot3d_reset_loaded==2)p3bounds_defined = 1;
   for(i=0;i<nplot3dinfo;i++){
     plot3di = plot3dinfo + i;
     if(ABS(plot3di->time-plot3dtimelist[value])<0.5){
       LoadPlot3dMenu(i);
     }
   }
+  if(glui_plot3d_reset_loaded==2)p3bounds_defined = 0;
 }
 
 /* ------------------ UpdateMenu ------------------------ */
@@ -5057,6 +5108,16 @@ void LoadPlot3dMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
     char *plot3dfile;
+
+#ifdef pp_NEWBOUND_DIALOG
+    if(glui_plot3d_reset_loaded==2&&p3bounds_defined==0){
+      int list[1], nlist;
+
+      list[0] = value;
+      nlist = 1;
+      GetListPlot3dBounds(list, nlist, p3min_all, p3max_all);
+    }
+#endif
 
     ReadPlot3dFile=1;
     plot3dfile = plot3dinfo[value].file;

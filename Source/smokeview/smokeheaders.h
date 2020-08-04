@@ -44,6 +44,7 @@ EXTERNCPP void GetLoadedSliceBounds(char *label, float *loaded_min, float *loade
 EXTERNCPP void GetLoadedPlot3dBounds(float *loaded_min, float *loaded_max);
 FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
 EXTERNCPP void ResetSliceData(void);
+EXTERNCPP void Plot3DBounds2Glui(void);
 #endif
 EXTERNCPP void ShiftColorbars(void);
 EXTERNCPP int GetColorbarState(void);
