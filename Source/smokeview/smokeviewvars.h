@@ -1009,6 +1009,9 @@ SVEXTERN int SVDECL(n_mirrorvents,0), SVDECL(n_openvents,0);
 
 SVEXTERN int setp3min_all[MAXPLOT3DVARS], setp3min_save[MAXPLOT3DVARS];
 SVEXTERN float p3min_all[MAXPLOT3DVARS], p3min_global[MAXPLOT3DVARS], p3min_save[MAXPLOT3DVARS];
+#ifdef pp_NEWBOUND_DIALOG
+SVEXTERN float p3min_ini[MAXPLOT3DVARS], p3max_ini[MAXPLOT3DVARS];
+#endif
 
 SVEXTERN int setp3max_all[MAXPLOT3DVARS], setp3max_save[MAXPLOT3DVARS];
 SVEXTERN float p3max_all[MAXPLOT3DVARS], p3max_global[MAXPLOT3DVARS], p3max_save[MAXPLOT3DVARS];

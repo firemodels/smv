@@ -452,7 +452,7 @@ extern "C" void UpdateTransparency(void){
 
 /* ------------------ Plot3DBounds2Glui ------------------------ */
 
-extern "C" void Plot3DBounds2Glui(void) {
+extern "C" void Plot3DBounds2Glui(void){
   glui_p3min = p3min_all[list_p3_index];
   glui_p3max = p3max_all[list_p3_index];
   EDIT_glui_p3min->set_float_val(glui_p3min);
@@ -1813,6 +1813,7 @@ void GenerateBoundDialog(
     *RADIO_compute = glui_bounds->add_radiogroup_to_panel(PANEL_g, compute_loaded, GLUI_RADIO_COMPUTE, FILE_CB);
     glui_bounds->add_radiobutton_to_group(*RADIO_compute, "all data");
     glui_bounds->add_radiobutton_to_group(*RADIO_compute, "loaded data");
+    glui_bounds->add_radiobutton_to_group(*RADIO_compute, "ini data");
   }
 
   PANEL_b = glui_bounds->add_panel_to_panel(PANEL_g, "", GLUI_PANEL_NONE);
@@ -1856,8 +1857,9 @@ void GenerateBoundDialog(
     if(reset_loaded != NULL){
       *RADIO_reset = glui_bounds->add_radiogroup_to_panel(PANEL_f, reset_loaded, GLUI_RADIO_RESET, FILE_CB);
       glui_bounds->add_radiobutton_to_group(*RADIO_reset, "specified min/max");
-      glui_bounds->add_radiobutton_to_group(*RADIO_reset, "min/max of all data");
-      glui_bounds->add_radiobutton_to_group(*RADIO_reset, "min/max of loaded data");
+      glui_bounds->add_radiobutton_to_group(*RADIO_reset, "global min/max");
+      glui_bounds->add_radiobutton_to_group(*RADIO_reset, "loaded data min/max");
+      glui_bounds->add_radiobutton_to_group(*RADIO_reset, "ini min/max");
     }
   }
 
@@ -3244,10 +3246,16 @@ extern "C" void Plot3DBoundCB(int var){
     return;
     break;
   case GLOBAL_BOUNDS:
-    if(glui_plot3d_compute_loaded ==0){
+    if(glui_plot3d_compute_loaded==0){
       for(i = 0; i < MAXPLOT3DVARS; i++){
         p3min_all[i] = p3min_global[i];
         p3max_all[i] = p3max_global[i];
+      }
+    }
+    else if(glui_plot3d_compute_loaded == 2){
+      for (i = 0; i < MAXPLOT3DVARS; i++){
+        p3min_all[i] = p3min_ini[i];
+        p3max_all[i] = p3max_ini[i];
       }
     }
     else{
@@ -3465,9 +3473,8 @@ extern "C" void Plot3DBoundCB(int var){
   case FILERELOAD:
 #ifdef pp_NEWBOUND_DIALOG
     if(glui_plot3d_reset_loaded != 0){
-      if(glui_plot3d_reset_loaded == 1)glui_plot3d_compute_loaded = 0;
-      if(glui_plot3d_reset_loaded == 2)glui_plot3d_compute_loaded = 1;
-     RADIO_plot3d_compute->set_int_val(glui_plot3d_compute_loaded);
+      glui_plot3d_compute_loaded = glui_plot3d_reset_loaded - 1;
+      RADIO_plot3d_compute->set_int_val(glui_plot3d_compute_loaded);
      Plot3DBoundCB(GLOBAL_BOUNDS);
    }
 #endif
@@ -4353,8 +4360,7 @@ void Glui2SliceBounds(void){
 extern "C" void ResetSliceData(void){
   if(glui_slice_reset_loaded != 0){
     SliceBoundCB(FILEUPDATE);
-    if (glui_slice_reset_loaded == 1)glui_slice_compute_loaded = 0;
-    if (glui_slice_reset_loaded == 2)glui_slice_compute_loaded = 1;
+    glui_slice_compute_loaded = glui_slice_reset_loaded - 1;
     RADIO_slice_compute->set_int_val(glui_slice_compute_loaded);
     Glui2SliceBounds();
   }
@@ -4419,7 +4425,7 @@ extern "C" void SliceBoundCB(int var){
         SliceBoundCB(GLOBAL_BOUNDS_MIN);
         SliceBoundCB(GLOBAL_BOUNDS_MAX);
       }
-      else{
+      else if(glui_slice_compute_loaded==1){
         float valmin=1.0, valmax=0.0;
 
         GetLoadedSliceBounds(slicebounds[list_slice_index].shortlabel, &valmin, &valmax);
@@ -4430,8 +4436,21 @@ extern "C" void SliceBoundCB(int var){
           EDIT_slice_max->set_float_val(slicebounds[list_slice_index].dlg_valmax);
         }
       }
+      else{
+        float valmin = 1.0, valmax = 0.0;
+
+        valmin = slicebounds[list_slice_index].dlg_inivalmin;
+        valmax = slicebounds[list_slice_index].dlg_inivalmax;
+        if(valmin <= valmax){
+          slicebounds[list_slice_index].dlg_valmin = valmin;
+          EDIT_slice_min->set_float_val(slicebounds[list_slice_index].dlg_valmin);
+          
+          slicebounds[list_slice_index].dlg_valmax = valmax;
+          EDIT_slice_max->set_float_val(slicebounds[list_slice_index].dlg_valmax);
+        }
+      }
     //SliceBoundCB(FILEUPDATE); // update colors
-        break;
+      break;
 #endif
     case UPDATE_HISTOGRAM:
       update_slice_hists = 1;
@@ -4997,8 +5016,7 @@ extern "C" void SliceBoundCB(int var){
     use_slice_glui_bounds = 1;
 #ifdef pp_NEWBOUND_DIALOG
     if(glui_slice_reset_loaded!=0){
-      if(glui_slice_reset_loaded==1)glui_slice_compute_loaded = 0;
-      if(glui_slice_reset_loaded == 2)glui_slice_compute_loaded = 1;
+      glui_slice_compute_loaded = glui_slice_reset_loaded-1;
       RADIO_slice_compute->set_int_val(glui_slice_compute_loaded);
       SliceBoundCB(GLOBAL_BOUNDS);
     }

@@ -2103,6 +2103,8 @@ void InitVars(void){
 #ifdef pp_NEWBOUND_DIALOG
       setp3min_all[iii] = SET_MIN;
       setp3max_all[iii] = SET_MAX;
+      p3min_ini[iii] = 1.0;
+      p3max_ini[iii] = 0.0;
 #else
       setp3min_all[iii] = PERCENTILE_MIN;
       setp3max_all[iii] = PERCENTILE_MAX;

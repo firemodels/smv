@@ -1343,6 +1343,7 @@ typedef struct _boundsdata {
   int dlg_setvalmin, dlg_setvalmax;
 #ifdef pp_NEWBOUND_DIALOG
   int dlg_compute_loaded, dlg_reset_loaded;
+  float dlg_inivalmin, dlg_inivalmax;
 #endif
   int setchopmin, setchopmax;
   float chopmin, chopmax;

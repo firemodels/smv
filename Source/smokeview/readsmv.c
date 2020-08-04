@@ -2190,6 +2190,8 @@ void UpdateBoundInfo(void){
       sbi->dlg_setvalmax = SET_MAX;
       sbi->dlg_reset_loaded = glui_slice_reset_loaded;
       sbi->dlg_compute_loaded = glui_slice_compute_loaded;
+      sbi->dlg_inivalmin=1.0;
+      sbi->dlg_inivalmax=0.0;
 #else
       sbi->dlg_setvalmin=PERCENTILE_MIN;
       sbi->dlg_setvalmax=PERCENTILE_MAX;
@@ -10937,6 +10939,8 @@ int ReadIni2(char *inifile, int localfile){
           setp3max_all[iplot3d] = isetmax;
           p3min_all[iplot3d]    = p3mintemp;
           p3max_all[iplot3d]    = p3maxtemp;
+          p3min_ini[iplot3d]    = p3mintemp;
+          p3max_ini[iplot3d]    = p3maxtemp;
         }
       }
       continue;
@@ -11465,6 +11469,11 @@ int ReadIni2(char *inifile, int localfile){
             slicebounds[i].dlg_setvalmax = setvalmax;
             slicebounds[i].dlg_valmin = valmin;
             slicebounds[i].dlg_valmax = valmax;
+#ifdef pp_NEWBOUND_DIALOG
+            slicebounds[i].dlg_inivalmin = valmin;
+            slicebounds[i].dlg_inivalmax = valmax;
+            slicebounds[i].dlg_reset_loaded = 0;
+#endif
             if(level_val!=NULL){
               slicebounds[i].line_contour_min = slice_line_contour_min;
               slicebounds[i].line_contour_max = slice_line_contour_max;
