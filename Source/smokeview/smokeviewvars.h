@@ -73,7 +73,12 @@ SVEXTERN int GetTerrainData(char *file, terraindata *terri);
 
 #ifdef pp_NEWBOUND_DIALOG
 SVEXTERN int SVDECL(glui_slice_compute_loaded,0), SVDECL(glui_plot3d_compute_loaded,0);
-SVEXTERN int SVDECL(glui_slice_reset_loaded, 0),  SVDECL(glui_plot3d_reset_loaded, 0);
+SVEXTERN int SVDECL(glui_slice_reset_loaded, 0), SVDECL(glui_plot3d_reset_loaded, 0);
+#ifdef INMAIN
+SVEXTERN int plot3d_compute_loaded[MAXPLOT3DVARS]={0,0,0,0,0,0}, plot3d_reset_loaded[MAXPLOT3DVARS]={0,0,0,0,0,0};
+#else
+SVEXTERN int plot3d_compute_loaded[MAXPLOT3DVARS], plot3d_reset_loaded[MAXPLOT3DVARS];
+#endif
 #endif
 
 SVEXTERN int SVDECL(use_slice_glui_bounds, 0);

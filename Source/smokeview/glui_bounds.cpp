@@ -3362,6 +3362,15 @@ extern "C" void Plot3DBoundCB(int var){
    setp3chopmin[list_p3_index_old]=setp3chopmin_temp;
    setp3chopmax[list_p3_index_old]=setp3chopmax_temp;
 
+#ifdef pp_NEWBOUND_DIALOG
+   plot3d_reset_loaded[list_p3_index_old] = glui_plot3d_reset_loaded;
+   plot3d_compute_loaded[list_p3_index_old] = glui_plot3d_compute_loaded;
+   glui_plot3d_reset_loaded = plot3d_reset_loaded[list_p3_index];
+   glui_plot3d_compute_loaded = plot3d_compute_loaded[list_p3_index];
+   RADIO_plot3d_compute->set_int_val(glui_plot3d_compute_loaded);
+   RADIO_plot3d_reset->set_int_val(glui_plot3d_reset_loaded);
+#endif
+
    glui_p3min=p3min_all[list_p3_index];
    glui_p3max=p3max_all[list_p3_index];
    glui_setp3min=setp3min_all[list_p3_index];
