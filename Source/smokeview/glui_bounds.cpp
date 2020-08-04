@@ -246,7 +246,6 @@ GLUI_Checkbox *CHECKBOX_histogram_show_outline=NULL;
 GLUI_Checkbox *CHECKBOX_color_vector_black = NULL;
 GLUI_Checkbox *CHECKBOX_show_node_slices_and_vectors=NULL;
 GLUI_Checkbox *CHECKBOX_show_cell_slices_and_vectors=NULL;
-GLUI_Checkbox *CHECKBOX_cache_boundarydata=NULL;
 GLUI_Checkbox *CHECKBOX_showpatch_both=NULL;
 GLUI_Checkbox *CHECKBOX_showchar=NULL, *CHECKBOX_showonlychar;
 GLUI_Checkbox *CHECKBOX_script_step=NULL;
@@ -270,7 +269,6 @@ GLUI_Checkbox *CHECKBOX_cellcenter_slice_interp=NULL;
 GLUI_Checkbox *CHECKBOX_skip_subslice=NULL;
 GLUI_Checkbox *CHECKBOX_turb_slice=NULL;
 GLUI_Checkbox *CHECKBOX_average_slice=NULL;
-GLUI_Checkbox *CHECKBOX_cache_qdata=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_begin=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_end=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_skip=NULL;
@@ -2371,7 +2369,9 @@ extern "C" void GluiBoundsSetup(int main_window){
       glui_bounds->add_spinner_to_panel(ROLLOUT_boundary_settings, "point size", GLUI_SPINNER_FLOAT, &geomboundary_pointsize);
       glui_bounds->add_separator_to_panel(ROLLOUT_boundary_settings);
     }
-    CHECKBOX_cache_boundarydata = glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("Cache boundary data"), &cache_boundarydata, CACHE_BOUNDARYDATA, BoundBoundCB);
+#ifndef pp_NEWBOUND_DIALOG
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("Cache boundary data"), &cache_boundarydata, CACHE_BOUNDARYDATA, BoundBoundCB);
+#endif
     CHECKBOX_showpatch_both = glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("Display exterior data"), &showpatch_both, SHOWPATCH_BOTH, BoundBoundCB);
 
 
@@ -2643,7 +2643,9 @@ extern "C" void GluiBoundsSetup(int main_window){
     for(i=0;i<MAXPLOT3DVARS;i++){
       glui_bounds->add_radiobutton_to_group(RADIO_p3,plot3dinfo[0].label[i].shortlabel);
     }
-    CHECKBOX_cache_qdata = glui_bounds->add_checkbox_to_panel(ROLLOUT_plot3d, _("Cache Plot3D data"), &cache_qdata, UNLOAD_QDATA, Plot3DBoundCB);
+#ifndef pp_NEWBOUND_DIALOG
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_plot3d, _("Cache Plot3D data"), &cache_qdata, UNLOAD_QDATA, Plot3DBoundCB);
+#endif
     glui_bounds->add_column_to_panel(ROLLOUT_plot3d,false);
 
 
