@@ -11358,6 +11358,16 @@ int ReadIni2(char *inifile, int localfile){
           propi->setvalmax = ivmax;
           propi->valmin = vmin;
           propi->valmax = vmax;
+#ifdef pp_NEWBOUND_DIALOG
+          if(ivmin==SET_MIN&&ivmax==SET_MAX&&vmin<=vmax){
+            propi->ini_min = vmin;
+            propi->ini_max = vmax;
+          }
+          else {
+            propi->ini_min = 1.0;
+            propi->ini_max = 0.0;
+          }
+#endif
           switch(ivmin){
           case PERCENTILE_MIN:
             propi->percentile_min = vmin;

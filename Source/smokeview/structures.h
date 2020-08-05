@@ -1104,6 +1104,9 @@ typedef struct _partpropdata {
   float valmin, valmax;
   int imin, imax;
   float global_min, global_max;
+#ifdef pp_NEWBOUND_DIALOG
+  float ini_min, ini_max;
+#endif
   int set_global_bounds;
   float percentile_min, percentile_max;
   float user_min, user_max;
