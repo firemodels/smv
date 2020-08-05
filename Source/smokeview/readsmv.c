@@ -11446,6 +11446,9 @@ int ReadIni2(char *inifile, int localfile){
       if(vmax > MAXVAL)vmax = 1.0;
       if(vmin < MINVAL)vmin = 0.0;
 
+      if (ivmin == PERCENTILE_MIN && vmin > vmax)continue;
+      if (ivmax == PERCENTILE_MAX && vmin > vmax)continue;
+
       if(npart5prop>0){
         int label_index = 0;
 
