@@ -2005,7 +2005,7 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'P':
- //     IncrementPartPropIndex();
+      IncrementPartPropIndex();
       break;
     case 'Q':
       showhide_textures = 1-showhide_textures;
