@@ -3472,12 +3472,16 @@ extern "C" void Plot3DBoundCB(int var){
    }
 #endif
    Plot3DBoundCB(FILEUPDATE);
+#ifdef pp_NEWBOUND_DIALOG
    p3bounds_defined = 1;
+#endif
    for(i=0;i<nplot3dinfo;i++){
      if(plot3dinfo[i].loaded==0)continue;
      LoadPlot3dMenu(i);
    }
+#ifdef pp_NEWBOUND_DIALOG
    p3bounds_defined = 0;
+#endif
    UpdateGlui();
    break;
 #ifdef pp_NEWBOUND_DIALOG
@@ -4972,10 +4976,10 @@ extern "C" void SliceBoundCB(int var){
     SliceBounds2Glui(list_slice_index);
     if(EDIT_slice_min!=NULL)EDIT_slice_min->set_float_val(glui_slicemin);
     if(EDIT_slice_max!=NULL)EDIT_slice_max->set_float_val(glui_slicemax);
+#ifdef pp_NEWBOUND_DIALOG
     if(RADIO_slice_reset != NULL)RADIO_slice_reset->set_int_val(glui_slice_reset_loaded);
     if(RADIO_slice_compute != NULL)RADIO_slice_compute->set_int_val(glui_slice_compute_loaded);
-
-#ifndef pp_NEWBOUND_DIALOG
+#else
     RADIO_slice_setmin->set_int_val(glui_setslicemin);
     RADIO_slice_setmax->set_int_val(glui_setslicemax);
 #endif

@@ -10939,8 +10939,10 @@ int ReadIni2(char *inifile, int localfile){
           setp3max_all[iplot3d] = isetmax;
           p3min_all[iplot3d]    = p3mintemp;
           p3max_all[iplot3d]    = p3maxtemp;
+#ifdef pp_NEWBOUND_DIALOG
           p3min_ini[iplot3d]    = p3mintemp;
           p3max_ini[iplot3d]    = p3maxtemp;
+#endif
         }
       }
       continue;
