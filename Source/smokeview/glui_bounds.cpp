@@ -3897,6 +3897,18 @@ extern "C" void UpdateGluiStreakValue(float rvalue){
   }
 }
 
+/* ------------------ IncrementPartPropIndex ------------------------ */
+
+extern "C" void IncrementPartPropIndex(void){
+  if (npart5prop > 0) {
+    ipart5prop++;
+    if (ipart5prop > npart5prop-1)ipart5prop = 0;
+    PartBoundCB(FILETYPEINDEX);
+    ParticlePropShowMenu(ipart5prop);    
+    if(RADIO_part5!=NULL)RADIO_part5->set_int_val(ipart5prop);
+  }
+}
+
 /* ------------------ PartBoundCB ------------------------ */
 
 void PartBoundCB(int var){

@@ -10,6 +10,8 @@ EXTERNCPP void UpdateColorbarControls2(void);
   
 EXTERNCPP void UpdateColorLabelDigits(void);
 
+EXTERNCPP void IncrementPartPropIndex(void);
+
 #ifdef pp_MULTI_RES
 void InitMultiRes(slicedata *sd);
 void NormalizeXYZRes(void);
