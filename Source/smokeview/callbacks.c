@@ -1974,6 +1974,9 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'p':
+      IncrementPartPropIndex();
+      break;
+    case 'P':
       plotn += FlowDir;
       if(plotn<1){
         plotn=numplot3dvars;
@@ -2003,9 +2006,6 @@ void Keyboard(unsigned char key, int flag){
         }
         ObjectCB(BLOCKAGE_AS_INPUT2);
       }
-      break;
-    case 'P':
-      IncrementPartPropIndex();
       break;
     case 'Q':
       showhide_textures = 1-showhide_textures;
