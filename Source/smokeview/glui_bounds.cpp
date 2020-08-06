@@ -4459,7 +4459,7 @@ extern "C" void SliceBoundCB(int var){
       else if(glui_slice_compute_loaded==1){
         float valmin=1.0, valmax=0.0;
 
-        GetLoadedSliceBounds(slicebounds[list_slice_index].shortlabel, &valmin, &valmax);
+        if(slicebounds!=NULL)GetLoadedSliceBounds(slicebounds[list_slice_index].shortlabel, &valmin, &valmax);
         if(valmin <= valmax){
           slicebounds[list_slice_index].dlg_valmin = valmin;
           EDIT_slice_min->set_float_val(slicebounds[list_slice_index].dlg_valmin);
@@ -5048,7 +5048,7 @@ extern "C" void SliceBoundCB(int var){
 #ifdef pp_NEWBOUND_DIALOG
     if(glui_slice_reset_loaded!=0){
       glui_slice_compute_loaded = glui_slice_reset_loaded-1;
-      RADIO_slice_compute->set_int_val(glui_slice_compute_loaded);
+      if(RADIO_slice_compute!=NULL)RADIO_slice_compute->set_int_val(glui_slice_compute_loaded);
       SliceBoundCB(GLOBAL_BOUNDS);
     }
 #else
