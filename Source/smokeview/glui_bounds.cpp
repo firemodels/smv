@@ -1350,7 +1350,7 @@ extern "C" void BoundBoundCB(int var){
 #endif
   case VALMAX:
   case VALMIN:
-    GLUI2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
+    if(patchlabellist!=NULL)GLUI2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
     break;
   case HIDEPATCHSURFACE:
     updatefacelists = 1;
@@ -1365,7 +1365,7 @@ extern "C" void BoundBoundCB(int var){
     break;
   case SETCHOPMINVAL:
     UpdateChopColors();
-    GLUI2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
+    if (patchlabellist != NULL)GLUI2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
     switch(setpatchchopmin){
     case DISABLE:
       EDIT_patch_chopmin->disable();
