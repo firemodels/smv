@@ -1042,34 +1042,9 @@ data that has a special property, for example a tenability temperature criteria 
 Figure \ref{figslicesplit} illustrates a scene using a colorbar with a split at 0.0~m/s. Velocities greater than 0.0~m/s are colored with shades of red.
 Velocities less than 0.0~m/s are colored with shades of blue.
 
-Fig. \ref{fignewslice}\ illustrates how interpolating color within the colorbar
-improves the visualization.
-Colors are crisper and sharper, more
-accurately representing the underlying data. This is most
-noticeable when selecting the colorbar with the mouse.
-This causes a portion of the colorbar to turn black and the
-corresponding region in the scene to also turn black.  The
-black color is accurate to the pixel so this feature may be used
-to highlight regions of interest. The improved accuracy is a
-result of the way color interpolations are performed.  Colors
-are interpolated within the colorbar using a 1D texture map.  Color interpolations with
-the former method occurred within the color cube.
-
 Note, due to the way that transparent objects are drawn (from back to front),
 3D Smoke/Fire and transparent slices may not display
 properly when shown at the same time.
-
-\begin{figure}[bph]
-\begin{center}
-\begin{tabular}{ccc}
-\includegraphics[height=3.5in]{../SMV_Verification_Guide/SCRIPT_FIGURES/plume5c_notexturebar}&
-\includegraphics[height=3.5in]{../SMV_Verification_Guide/SCRIPT_FIGURES/plume5c_texturebar}\\
-colors interpolated using a 3D color cube&colors interpolated using a 1D texture colorbar\\
-\end{tabular}
-\caption [Slice file snapshots illustrating two methods for mapping data to color.] {Slice file snapshots illustrating two methods for mapping data to color.}
-\label{fignewslice}%
-\end{center}
-\end{figure}
 
 \section{2D Shaded Contours and Vector Slices - Slice Files}
 \label{section:slices}
