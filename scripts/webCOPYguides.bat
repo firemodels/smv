@@ -38,9 +38,9 @@ if "%whichguides%" == "from_smv_linux" (
     mkdir !todir!
   )
 
-  pscp %linux_logon%:!fromdir!/SMV_User_Guide.pdf                !todir!\.
-  pscp %linux_logon%:!fromdir!/SMV_Verification_Guide.pdf        !todir!\.
-  pscp %linux_logon%:!fromdir!/SMV_Technical_Reference_Guide.pdf !todir!\.
+  pscp -P 22 %linux_logon%:!fromdir!/SMV_User_Guide.pdf                !todir!\.
+  pscp -P 22 %linux_logon%:!fromdir!/SMV_Verification_Guide.pdf        !todir!\.
+  pscp -P 22 %linux_logon%:!fromdir!/SMV_Technical_Reference_Guide.pdf !todir!\.
   goto eof
 )
 if "%whichguides%" == "from_fds_linux" (
@@ -55,11 +55,11 @@ if "%whichguides%" == "from_fds_linux" (
   echo from directory: !fromdir!
   echo   to directory: !todir!
 
-  pscp %linux_logon%:!fromdir!/FDS_Config_Management_Plan.pdf    !todir!\.
-  pscp %linux_logon%:!fromdir!/FDS_Technical_Reference_Guide.pdf !todir!\.
-  pscp %linux_logon%:!fromdir!/FDS_User_Guide.pdf                !todir!\.
-  pscp %linux_logon%:!fromdir!/FDS_Verification_Guide.pdf        !todir!\.
-  pscp %linux_logon%:!fromdir!/FDS_Validation_Guide.pdf          !todir!\.
+  pscp -P 22 %linux_logon%:!fromdir!/FDS_Config_Management_Plan.pdf    !todir!\.
+  pscp -P 22 %linux_logon%:!fromdir!/FDS_Technical_Reference_Guide.pdf !todir!\.
+  pscp -P 22 %linux_logon%:!fromdir!/FDS_User_Guide.pdf                !todir!\.
+  pscp -P 22 %linux_logon%:!fromdir!/FDS_Verification_Guide.pdf        !todir!\.
+  pscp -P 22 %linux_logon%:!fromdir!/FDS_Validation_Guide.pdf          !todir!\.
   goto eof
 )
 if "%whichguides%" == "to_linux" (
@@ -71,7 +71,7 @@ if "%whichguides%" == "to_linux" (
   echo from directory: !fromdir!
   echo   to directory: !todir!
 
-  pscp !fromdir!\*.pdf %linux_logon%:!todir!/.
+  pscp -P 22 !fromdir!\*.pdf %linux_logon%:!todir!/.
   goto eof
 )
 if "%whichguides%" == "to_osx" (
@@ -83,7 +83,7 @@ if "%whichguides%" == "to_osx" (
   echo from directory: !fromdir!
   echo   to directory: !todir!
 
-  pscp !fromdir!\*.pdf %osx_logon%:!todir!/.
+  pscp -P 22 !fromdir!\*.pdf %osx_logon%:!todir!/.
   goto eof
 )
 goto eof
