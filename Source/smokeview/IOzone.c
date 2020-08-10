@@ -837,39 +837,24 @@ void GetSliceTempBounds(void){
   for(i=0; i<nsliceinfo; i++){
     slicedata *slicei;
     int framesize, headersize, return_val, error;
-    int ntimes_slice_old=0, file_size;
+    int ntimes_slice_old=0;
     float qmin, qmax;
 
     slicei = sliceinfo + i;
     if(strcmp(slicei->label.shortlabel, "TEMP")!=0)continue;
-    if(use_cslice==1){
-      GetSliceSizes(slicei->file, ALL_SLICE_FRAMES, &slicei->nslicei, &slicei->nslicej, &slicei->nslicek, &slicei->ntimes, sliceframestep, &error,
-        settmin_s, settmax_s, tmin_s, tmax_s, &headersize, &framesize);
-    }
-    else{
-      FORTgetslicesizes(slicei->file, &slicei->nslicei, &slicei->nslicej, &slicei->nslicek, &slicei->ntimes, &sliceframestep, &error,
-        &settmin_s, &settmax_s, &tmin_s, &tmax_s, &headersize, &framesize,
-        strlen(slicei->file));
-    }
+    GetSliceSizes(slicei->file, ALL_SLICE_FRAMES, &slicei->nslicei, &slicei->nslicej, &slicei->nslicek, &slicei->ntimes, sliceframestep, &error,
+      settmin_s, settmax_s, tmin_s, tmax_s, &headersize, &framesize);
     return_val = NewResizeMemory(slicei->qslicedata, sizeof(float)*(slicei->nslicei+1)*(slicei->nslicej+1)*(slicei->nslicek+1)*slicei->ntimes);
     if(return_val!=0)return_val = NewResizeMemory(slicei->times, sizeof(float)*slicei->ntimes);
     qmin = 1.0e30;
     qmax = -1.0e30;
-    if(use_cslice==1){
-      GetSliceData(slicei->file, ALL_SLICE_FRAMES, &slicei->is1, &slicei->is2, &slicei->js1, &slicei->js2, &slicei->ks1, &slicei->ks2, &slicei->idir,
-        &qmin, &qmax, slicei->qslicedata, slicei->times, ntimes_slice_old, &slicei->ntimes,
-        sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s
+    GetSliceData(slicei->file, ALL_SLICE_FRAMES, &slicei->is1, &slicei->is2, &slicei->js1, &slicei->js2, &slicei->ks1, &slicei->ks2, &slicei->idir,
+      &qmin, &qmax, slicei->qslicedata, slicei->times, ntimes_slice_old, &slicei->ntimes,
+      sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s
 #ifdef pp_MULTI_RES
-        , slicei->multi_res
+      , slicei->multi_res
 #endif
-      );
-    }
-    else{
-      FORTgetslicedata(slicei->file,
-        &slicei->is1, &slicei->is2, &slicei->js1, &slicei->js2, &slicei->ks1, &slicei->ks2, &slicei->idir,
-        &qmin, &qmax, slicei->qslicedata, slicei->times, &ntimes_slice_old, &slicei->ntimes, &sliceframestep,
-        &settmin_s, &settmax_s, &tmin_s, &tmax_s, &file_size, strlen(slicei->file));
-    }
+    );
     slicei->globalmin = qmin;
     slicei->globalmax = qmax;
     slicei->valmin = qmin;
@@ -1210,13 +1195,13 @@ void ReadZone(int ifile, int flag, int *errorcode){
   if(setzonemin==SET_MIN)zonemin = zoneusermin;
   if(setzonemax==SET_MAX)zonemax = zoneusermax;
   UpdateGluiZoneBounds();
-  GetZoneColors(zonetu, ntotal_rooms, izonetu, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
-  GetZoneColors(zonetl, ntotal_rooms, izonetl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
-  if(have_zonefl==1)GetZoneColors(zonefl, ntotal_rooms, izonefl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
-  if(have_zonelw==1)GetZoneColors(zonelw, ntotal_rooms, izonelw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
-  if(have_zoneuw==1)GetZoneColors(zoneuw, ntotal_rooms, izoneuw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
-  if(have_zonecl==1)GetZoneColors(zonecl, ntotal_rooms, izonecl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
-  if(have_target_data==1)GetZoneColors(zonetargets, ntotal_targets, izonetargets, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonescale, zonelevels256);
+  GetZoneColors(zonetu, ntotal_rooms, izonetu, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
+  GetZoneColors(zonetl, ntotal_rooms, izonetl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
+  if(have_zonefl==1)GetZoneColors(zonefl, ntotal_rooms, izonefl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
+  if(have_zonelw==1)GetZoneColors(zonelw, ntotal_rooms, izonelw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
+  if(have_zoneuw==1)GetZoneColors(zoneuw, ntotal_rooms, izoneuw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
+  if(have_zonecl==1)GetZoneColors(zonecl, ntotal_rooms, izonecl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
+  if(have_target_data==1)GetZoneColors(zonetargets, ntotal_targets, izonetargets, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
 
   ReadZoneFile=1;
   visZone=1;

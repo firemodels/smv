@@ -9,9 +9,6 @@
 #include "update.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
-#ifdef pp_OPENVR
-#include "vr.h"
-#endif
 
 #ifdef pp_LUA
 #include "lua_api.h"
@@ -1627,10 +1624,6 @@ void Keyboard(unsigned char key, int flag){
         UpdateCurrentMesh(gbsave);
       }
       break;
-    case 'A':
-      axislabels_smooth=1-axislabels_smooth;
-      UpdateAxisLabelsSmooth();
-      break;
     case 'b':
     case 'B':
       switch(keystate){
@@ -2039,7 +2032,11 @@ void Keyboard(unsigned char key, int flag){
         int rflag=0;
 
         if(keystate==GLUT_ACTIVE_ALT&&strncmp((const char *)&key2, "r", 1) == 0){
-          research_mode=1-research_mode;
+#ifdef pp_NEWBOUND_DIALOG
+          research_mode = 1;
+#else
+          research_mode = 1-research_mode;
+#endif
           update_research_mode=1;
           return;
         }
@@ -3540,40 +3537,6 @@ void DoNonStereo(void){
   }
 }
 
-#ifdef pp_OPENVR
-
-/* ------------------ DoVR ------------------------ */
-
-void DoVR(void){
-  float view_projection[16];
-  int i;
-
-  printf("left view_projection:\n");
-  GetCurrentViewProjectionMatrix(LEFT_EYE, view_projection);
-  for(i = 0; i<16; i++){
-    printf("%f ", view_projection[i]);
-    if(i%4==3)printf("\n");
-  }
-  printf("\n\n");
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadMatrixf(view_projection);
-  ShowScene(DRAWSCENE,VIEW_LEFT,0,0,0,NULL);
-
-  printf("right view_projection:\n");
-  GetCurrentViewProjectionMatrix(RIGHT_EYE, view_projection);
-  for(i = 0; i<16; i++){
-    printf("%f ", view_projection[i]);
-    if(i%4==3)printf("\n");
-  }
-  printf("\n\n");
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadMatrixf(view_projection);
-  ShowScene(DRAWSCENE,VIEW_LEFT,0,0,0,NULL);
-}
-#endif
-
 /* ------------------ DisplayCB ------------------------ */
 
 void DisplayCB(void){
@@ -3587,11 +3550,6 @@ void DisplayCB(void){
     if(use_vr==0){
       DoNonStereo();
     }
-#ifdef pp_OPENVR
-    else{
-      DoVR();
-    }
-#endif
   }
   else{
     DoStereo();

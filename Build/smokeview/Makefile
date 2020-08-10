@@ -49,7 +49,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # The variable VPATH defines the source code directory relative to the current directory
 
-VPATH = $(SOURCE_DIR)/smokeview:$(SOURCE_DIR)/shared:$(SOURCE_DIR)/matrix:$(SOURCE_DIR)/glew
+VPATH = $(SOURCE_DIR)/smokeview:$(SOURCE_DIR)/shared:$(SOURCE_DIR)/glew
 bin = .
 
 # Definition of the object variables
@@ -64,7 +64,7 @@ obj = main.o menus.o IOscript.o IOshooter.o glui_objects.o glui_shooter.o glui_w
       IOpart.o IOzone.o IOiso.o callbacks.o drawGeometry.o\
       glui_colorbar.o skybox.o file_util.o string_util.o startup.o glui_trainer.o\
       shaders.o unit.o threader.o histogram.o translate.o update.o viewports.o\
-      smv_geometry.o showscene.o glew.o infoheader.o  md5.o sha1.o sha256.o vr.o stdio_m.o Matrices.o\
+      smv_geometry.o showscene.o glew.o infoheader.o  md5.o sha1.o sha256.o stdio_m.o\
       fdsmodules.o gsmv.o getdata.o
 
 ifeq ($(ICON),icon)
@@ -87,7 +87,6 @@ else
   WININC = -I $(SOURCE_DIR)/glut_gl
 endif
 WININC += -I $(SOURCE_DIR)/pthreads
-WININC += -I $(SOURCE_DIR)/openvr/headers
 
 ifeq ($(LUA_SCRIPTING),true)
 INC += -I $(SOURCE_DIR)/lua-5.3.1/src
@@ -147,8 +146,6 @@ else
   GLUT_WIN_LIB = $(SMV_WIN_LIBDIR)\glut32.lib
 endif
 SMV_LIBS_WIN = $(SMV_WIN_LIBDIR)\glui.lib $(GLUT_WIN_LIB) $(SMV_WIN_LIBDIR)\gd.lib $(SMV_WIN_LIBDIR)\jpeg.lib $(SMV_WIN_LIBDIR)\png.lib $(SMV_WIN_LIBDIR)\zlib.lib $(SMV_WIN_LIBDIR)\pthreads.lib
-#SMV_LIBS_WIN += $(SMV_WIN_LIBDIR)\openvr.lib  
-SMV_LIBS_WIN += $(SOURCE_DIR)\openvr\win_64\openvr_api.lib
 
 #--- gnu
 

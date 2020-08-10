@@ -7,7 +7,197 @@
 #include "smokeviewvars.h"
 
 #ifdef pp_NEWBOUND_DIALOG
-void GetSliceFileBounds(char *file, float *valmin, float *valmax){
+
+/* ------------------ GetPlot3DFileBounds ------------------------ */
+
+void GetPlot3DFileBounds(char* file, float *valmin, float *valmax){
+  FILE* stream;
+  int i, compute_bounds=0;
+  char buffer[255];
+
+  for(i = 0; i < MAXPLOT3DVARS; i++){
+    if(valmin[i] > valmax[i]){
+      compute_bounds = 1;
+      break;
+    }
+  }
+  if(compute_bounds == 0)return;
+  if(file == NULL || strlen(file) == 0)return;
+  stream = fopen(file, "r");
+  if(stream == NULL)return;
+
+  CheckMemory;
+
+  for(i = 0; i < MAXPLOT3DVARS; i++){
+    if(fgets(buffer, 255, stream) == NULL)break;
+    sscanf(buffer, "%f %f", valmin+i, valmax+i);
+  }
+  fclose(stream);
+}
+
+/* ------------------ GetGlobalPlot3DBounds ------------------------ */
+
+void GetGlobalPlot3DBounds(void){
+  int i;
+
+  for(i = 0; i < nplot3dinfo; i++){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo + i;
+    GetPlot3DFileBounds(plot3di->bound_file, plot3di->file_min, plot3di->file_max);
+  }
+  for(i = 0; i < MAXPLOT3DVARS; i++){
+    p3min_all[i] = 1.0;
+    p3max_all[i] = 0.0;
+  }
+  for(i = 0; i < nplot3dinfo; i++){
+    plot3ddata *plot3di;
+    int j;
+    float *file_min, *file_max;
+
+    plot3di = plot3dinfo + i;
+    file_min = plot3di->file_min;
+    file_max = plot3di->file_max;
+    for(j = 0; j < MAXPLOT3DVARS; j++){
+      if(file_min[j] <= file_max[j]){
+        if(p3min_all[j] > p3max_all[j]){
+          p3min_all[j] = file_min[j];
+          p3max_all[j] = file_max[j];
+        }
+        else {
+          p3min_all[j] = MIN(file_min[j], p3min_all[j]);
+          p3max_all[j] = MAX(file_max[j], p3max_all[j]);
+        }
+      }
+    }
+  }
+  for(i = 0; i < MAXPLOT3DVARS; i++){
+    p3min_global[i] = p3min_all[i];
+    p3max_global[i] = p3max_all[i];
+  }
+}
+
+/* ------------------ GetPartFileBounds ------------------------ */
+
+void GetPartFileBounds(char *file, float **valminptr, float **valmaxptr, int *nfileboundsptr){
+  FILE *stream;
+  int nfilebounds = 0, nfilebounds_alloc = 0;
+  float *valmin = NULL, *valmax = NULL;
+  int i;
+
+  if(file==NULL||strlen(file)==0)return;
+  stream = fopen(file, "r");
+  if(stream==NULL)return;
+
+  while(!feof(stream)){
+    char buffer[255];
+    float time;
+
+    CheckMemory;
+    if(fgets(buffer, 255, stream)==NULL)break;
+    sscanf(buffer, "%f", &time);
+
+    if(fgets(buffer, 255, stream)==NULL)break;
+    sscanf(buffer, "%i", &nfilebounds);
+    if(nfilebounds>0&&valmin==NULL){
+      NewMemory((void **)&valmin, nfilebounds*sizeof(float));
+      NewMemory((void **)&valmax, nfilebounds*sizeof(float));
+      nfilebounds_alloc = nfilebounds;
+      for(i = 0; i<nfilebounds; i++){
+        valmin[i] = 1.0;
+        valmax[i] = 0.0;
+      }
+    }
+    for(i = 0; i<nfilebounds; i++){
+      float vmin, vmax;
+
+      if(fgets(buffer, 255, stream)==NULL)break;
+      sscanf(buffer, "%f %f", &vmin, &vmax);
+      if(i<nfilebounds_alloc&&vmin<=vmax){
+        if(valmin[i]>valmax[i]){
+          valmin[i] = vmin;
+          valmax[i] = vmax;
+        }
+        else{
+          valmin[i] = MIN(vmin, valmin[i]);
+          valmax[i] = MAX(vmax, valmax[i]);
+        }
+      }
+    }
+  }
+  fclose(stream);
+  *valminptr = valmin;
+  *valmaxptr = valmax;
+  *nfileboundsptr = nfilebounds_alloc;
+}
+
+/* ------------------ GetGlobalPartBounds ------------------------ */
+
+void GetGlobalPartBounds(void){
+  int i;
+  float *partmins=NULL, *partmaxs=NULL;
+  int npartbounds=0;
+
+  npartbounds = -1;
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+
+    parti = partinfo+i;
+    GetPartFileBounds(parti->bound_file, &(parti->file_min), &(parti->file_max), &(parti->nfilebounds));
+    if(parti->nfilebounds>0){
+      if(npartbounds==-1){
+        npartbounds = parti->nfilebounds;
+      }
+      else{
+        npartbounds = MIN(npartbounds,parti->nfilebounds);
+      }
+    }
+  }
+  if(npartbounds<0)npartbounds = 0;
+  if(npartbounds>0){
+    NewMemory((void **)&partmins, npartbounds*sizeof(float));
+    NewMemory((void **)&partmaxs, npartbounds*sizeof(float));
+    for(i = 0; i<npartbounds; i++){
+      partmins[i] = 1.0;
+      partmaxs[i] = 0.0;
+    }
+    for(i = 0; i<npartinfo; i++){
+      partdata *parti;
+      int j;
+      float *fmin, *fmax;
+       
+
+      parti = partinfo+i;
+      fmin = parti->file_min;
+      fmax = parti->file_max;
+      for(j = 0; j<npartbounds; j++){
+        if(fmin[j]<=fmax[j]){
+          if(partmins[j]>partmaxs[j]){
+            partmins[j] = fmin[j];
+            partmaxs[j] = fmax[j];
+          }
+          else{
+            partmins[j] = MIN(fmin[j],partmins[j]);
+            partmaxs[j] = MAX(fmax[j],partmaxs[j]);
+          }
+        }
+      }
+    }
+  }
+  for(i=1; i<npart5prop; i++){
+    if(i-1>npartbounds)break;
+    part5propinfo[i].user_min = partmins[i-1];
+    part5propinfo[i].user_max = partmaxs[i-1];
+    part5propinfo[i].global_min = partmins[i-1];
+    part5propinfo[i].global_max = partmaxs[i-1];
+  }
+  FREEMEMORY(partmins);
+  FREEMEMORY(partmaxs);
+}
+
+/* ------------------ GetFileBounds ------------------------ */
+
+void GetFileBounds(char *file, float *valmin, float *valmax){
   FILE *stream;
   char buffer[255];
   float t, vmin, vmax;
@@ -31,9 +221,9 @@ void GetSliceFileBounds(char *file, float *valmin, float *valmax){
   fclose(stream);
 }
 
-/* ------------------ GetBoundsInfo ------------------------ */
+/* ------------------ GetSliceBoundsInfo ------------------------ */
 
-boundsdata *GetBoundsInfo(char *shortlabel){
+boundsdata *GetSliceBoundsInfo(char *shortlabel){
   int i;
 
   for(i = 0; i<nslicebounds; i++){
@@ -64,11 +254,11 @@ void GetGlobalSliceBounds(void){
 
     slicei = sliceinfo+i;
     if(slicei->is_fed==1)continue;
-    GetSliceFileBounds(slicei->bound_file, &valmin, &valmax);
+    GetFileBounds(slicei->bound_file, &valmin, &valmax);
     if(valmin>valmax)continue;
     slicei->file_min = valmin;
     slicei->file_max = valmax;
-    boundi = GetBoundsInfo(slicei->label.shortlabel);
+    boundi = GetSliceBoundsInfo(slicei->label.shortlabel);
     if(boundi==NULL)continue;
     if(boundi->global_valmin>boundi->global_valmax){
       boundi->global_valmin = valmin;
@@ -88,61 +278,125 @@ void GetGlobalSliceBounds(void){
   }
 
 }
-#endif
 
-/* ------------------ AdjustDataBounds ------------------------ */
+/* ------------------ GetPatchBoundsInfo ------------------------ */
 
-void AdjustDataBounds(const float *pdata, int local_skip, int ndata,
-                   int setpmin, float *pmin, int setpmax, float *pmax)
-{
-    int nsmall, nbig, *buckets=NULL, n, level, total, alpha05;
-    float dp, pmin2, pmax2;
+boundsdata *GetPatchBoundsInfo(char *shortlabel){
+  int i;
 
-    if(setpmin==PERCENTILE_MIN||setpmax==PERCENTILE_MAX){
-      dp = (*pmax - *pmin)/NBUCKETS;
-      nsmall=0;
-      nbig=NBUCKETS;
-      if(NewMemory((void **)&buckets,NBUCKETS*sizeof(int))==0){
-        fprintf(stderr,"*** Error: Unable to allocate memory in getdatabounds\n");
-        return;
-      }
+  for(i = 0; i<npatchbounds; i++){
+    boundsdata *boundi;
 
-      for(n=0;n<NBUCKETS;n++){
-        buckets[n]=0;
-      }
-      for(n=local_skip;n<ndata;n++){
-        level=0;
-        if(dp!=0.0f)level = CLAMP((int)((pdata[n] - *pmin)/dp),0,NBUCKETS-1);
-        buckets[level]++;
-      }
-      alpha05 = (int)(percentile_level*ndata);
-      total = 0;
-      for(n=0;n<NBUCKETS;n++){
-        total += buckets[n];
-        if(total>alpha05){
-          nsmall=n;
-          break;
-        }
-      }
-      total = 0;
-      for(n=NBUCKETS;n>0;n--){
-        total += buckets[n-1];
-        if(total>alpha05){
-          nbig=n;
-          break;
-        }
-      }
-      pmin2 = *pmin + (nsmall-1)*dp;
-      pmax2 = *pmin + (nbig+1)*dp;
-      if(setpmin==PERCENTILE_MIN)*pmin = pmin2;
-      if(setpmax==PERCENTILE_MAX)*pmax = pmax2;
-      FreeMemory(buckets);
-    }
-    if(axislabels_smooth==1){
-      SmoothLabel(pmin,pmax,nrgb);
-    }
+    boundi = patchbounds+i;
+    if(strcmp(boundi->shortlabel, shortlabel)==0)return boundi;
+  }
+  return NULL;
 }
 
+/* ------------------ GetGlobalPatchBounds ------------------------ */
+
+void GetGlobalPatchBounds(void){
+  int i;
+
+  for(i = 0;i<npatchbounds;i++){
+    boundsdata *boundi;
+
+    boundi = patchbounds+i;
+    boundi->global_valmin = 1.0;
+    boundi->global_valmax = 0.0;
+  }
+  for(i = 0;i<npatchinfo;i++){
+    patchdata *patchi;
+    float valmin, valmax;
+    boundsdata *boundi;
+
+    patchi = patchinfo+i;
+    GetFileBounds(patchi->bound_file, &valmin, &valmax);
+    if(valmin>valmax)continue;
+    patchi->file_min = valmin;
+    patchi->file_max = valmax;
+    boundi = GetPatchBoundsInfo(patchi->label.shortlabel);
+    if(boundi==NULL)continue;
+    if(boundi->global_valmin>boundi->global_valmax){
+      boundi->global_valmin = valmin;
+      boundi->global_valmax = valmax;
+    }
+    else{
+      boundi->global_valmin = MIN(boundi->global_valmin,valmin);
+      boundi->global_valmax = MAX(boundi->global_valmax, valmax);
+    }
+  }
+  for(i = 0; i<npatchbounds; i++){
+    boundsdata *boundi;
+    int j;
+
+    boundi = patchbounds+i;
+    boundi->dlg_valmin = boundi->global_valmin;
+    boundi->dlg_valmax = boundi->global_valmax;
+    for(j = 0; j<npatchinfo; j++){
+      patchdata *patchj;
+
+      patchj = patchinfo+j;
+      if(strcmp(patchj->label.shortlabel, boundi->shortlabel)==0){
+        patchj->valmin = boundi->global_valmin;
+        patchj->valmax = boundi->global_valmax;
+      }
+    }
+  }
+}
+
+/* ------------------ GetLoadedPlot3dBounds ------------------------ */
+
+void GetLoadedPlot3dBounds(float *loaded_min, float *loaded_max){
+  int i;
+
+  for(i=0;i<6;i++){
+    loaded_min[i] = 1.0;
+    loaded_max[i] = 0.0;
+  }
+  for(i = 0; i < nplot3dinfo; i++){
+    plot3ddata *plot3di;
+    int j;
+
+    plot3di = plot3dinfo + i;
+    if(plot3di->loaded == 0)continue;
+    for(j=0;j<6;j++){
+
+      if(loaded_min[j] > loaded_max[j]){
+        loaded_min[j] = plot3di->file_min[j];
+        loaded_max[j] = plot3di->file_max[j];
+      }
+      else{
+        loaded_min[j] = MIN(plot3di->file_min[j],loaded_min[j]);
+        loaded_max[j] = MAX(plot3di->file_max[j],loaded_max[j]);
+      }
+    }
+  }
+}
+
+/* ------------------ GetLoadedSliceBounds ------------------------ */
+
+void GetLoadedSliceBounds(char *label, float *loaded_min, float *loaded_max){
+  int i;
+
+  *loaded_min = 1.0;
+  *loaded_max = 0.0;
+  for(i = 0; i < nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo + i;
+    if(slicei->loaded == 0 || strcmp(slicei->label.shortlabel, label) != 0)continue;
+    if(*loaded_min > * loaded_max){
+      *loaded_min = slicei->file_min;
+      *loaded_max = slicei->file_max;
+    }
+    else{
+      *loaded_min = MIN(*loaded_min, slicei->file_min);
+      *loaded_max = MAX(*loaded_max, slicei->file_max);
+    }
+  }
+}
+#endif
 
 /* ------------------ AdjustPart5Chops ------------------------ */
 
@@ -445,95 +699,4 @@ void GetAllPartBounds(void){
     parti->boundstatus = PART_BOUND_DEFINED;
     UNLOCK_PART_LOAD;
   }
-}
-
-/* ------------------ AdjustPlot3DBounds ------------------------ */
-
-void AdjustPlot3DBounds(int plot3dvar, int setpmin, float *pmin, int setpmax, float *pmax)
-{
-    int nsmall, nbig, *buckets=NULL, n, level, total, alpha05;
-    float dp, pmin2, pmax2;
-    plot3ddata *p;
-    meshdata *meshi;
-    int i;
-    char *iblank;
-    float *q;
-    int ndata=0;
-    int ntotal;
-
-    if(setpmin==PERCENTILE_MIN||setpmax==PERCENTILE_MAX){
-      dp = (*pmax - *pmin)/NBUCKETS;
-      nsmall=0;
-      nbig=NBUCKETS;
-      if(NewMemory((void **)&buckets,NBUCKETS*sizeof(int))==0){
-        fprintf(stderr,"*** Error: Unable to allocate memory in getdatabounds\n");
-        return;
-      }
-
-      for(n=0;n<NBUCKETS;n++){
-        buckets[n]=0;
-      }
-      for(i=0;i<nplot3dinfo;i++){
-        p = plot3dinfo+i;
-        if(p->loaded==0||p->display==0)continue;
-        meshi=meshinfo+p->blocknumber;
-        ntotal=(meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
-        ndata += ntotal;
-        iblank=meshi->c_iblank_node;
-        q=meshi->qdata+plot3dvar*ntotal;
-        for(n=0;n<ntotal;n++){
-          if(iblank==NULL||*iblank++==GAS){
-            level=0;
-            if(dp!=0.0f)level = CLAMP((int)((q[n] - *pmin)/dp),0,NBUCKETS-1);
-            buckets[level]++;
-          }
-        }
-      }
-      alpha05 = (int)(percentile_level*ndata);
-      total = 0;
-      for(n=0;n<NBUCKETS;n++){
-        total += buckets[n];
-        if(total>alpha05){
-          nsmall=n;
-          break;
-        }
-      }
-      total = 0;
-      for(n=NBUCKETS;n>0;n--){
-        total += buckets[n-1];
-        if(total>alpha05){
-          nbig=n;
-          break;
-        }
-      }
-      pmin2 = *pmin + (nsmall-1)*dp;
-      pmax2 = *pmin + (nbig+1)*dp;
-      if(setpmin==PERCENTILE_MIN)*pmin = pmin2;
-      if(setpmax==PERCENTILE_MAX)*pmax = pmax2;
-      FreeMemory(buckets);
-    }
-    if(axislabels_smooth==1&&setpmin!=SET_MIN&&setpmax!=SET_MAX){
-      SmoothLabel(pmin,pmax,nrgb);
-    }
-}
-
-/* ------------------ SmoothLabel ------------------------ */
-
-void SmoothLabel(float *a, float *b, int n){
-  double delta, factor, logdelta;
-  int ndigits;
-  double half;
-
-  half=0.5;
-
-  delta = ((double)*b-(double)*a)/(double)(n-2);
-  if(delta==0.0)return;
-  logdelta = log10((double)delta);
-  ndigits=logdelta-1;
-  if(logdelta<=1)ndigits--;
-  factor = 5*pow(10,ndigits);
-  delta = (int)(delta/factor + half)*factor;
-
-  *a = factor*(int)(*a/factor+half);
-  *b = *a + (n-2)*delta;
 }

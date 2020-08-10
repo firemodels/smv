@@ -12,8 +12,8 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define COLORBAR_SHIFT_MIN          0.1
 #define COLORBAR_SHIFT_MAX         10.0
 
-#define COLORBAR_NDECIMALS_MIN        1
-#define COLORBAR_NDECIMALS_MAX        3
+#define COLORBAR_NDECIMALS_MIN        2
+#define COLORBAR_NDECIMALS_MAX        8
 
 #define COLORBAR_SELECTION_WIDTH_MIN  1
 #define COLORBAR_SELECTION_WIDTH_MAX 10
@@ -747,6 +747,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 
 #define ShowEXTERIORwallmenu -1
 #define HideEXTERIORwallmenu -19
+#define INI_EXTERIORwallmenu -20
 #define INTERIORwallmenu -2
 #define FRONTwallmenu -3
 #define BACKwallmenu -4
@@ -909,7 +910,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define DIALOG_LABELS 37
 #define DIALOG_AUTOLOAD 38
 #define DIALOG_TIME 39
-#define DIALOG_COLORING 40
 #define DIALOG_SCALING 41
 #define DIALOG_WINDOW 42
 #define DIALOG_MOVIE 43

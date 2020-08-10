@@ -110,15 +110,6 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       }
       FREEMEMORY(colorlabeliso);
     }
-    if(scalep3 != NULL){
-      for(nn=0;nn<MAXPLOT3DVARS;nn++){
-        FREEMEMORY(scalep3[nn]);
-      }
-      FREEMEMORY(scalep3);
-    }
-    if(fscalep3!=NULL){
-      FREEMEMORY(fscalep3);
-    }
     if(p3levels!=NULL){
       for(nn=0;nn<MAXPLOT3DVARS;nn++){
         FREEMEMORY(p3levels[nn]);
@@ -223,17 +214,16 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     if(uindex!=-1||vindex!=-1||windex!=-1){
       vectorspresent=1;
       p->nvars= MAXPLOT3DVARS;
-      udata = meshi->qdata + ntotal*uindex;
-      vdata = meshi->qdata + ntotal*vindex;
-      wdata = meshi->qdata + ntotal*windex;
+      if(uindex!=-1)udata = meshi->qdata + ntotal*uindex;
+      if(vindex!=-1)vdata = meshi->qdata + ntotal*vindex;
+      if(windex!=-1)wdata = meshi->qdata + ntotal*windex;
       sdata = meshi->qdata + ntotal*5;
       for(i=0;i<ntotal;i++){
         sum=0.0f;
-        if(uindex!=-1){sum += *udata*(*udata);udata++;}
-        if(vindex!=-1){sum += *vdata*(*vdata);vdata++;}
-        if(windex!=-1){sum += *wdata*(*wdata);wdata++;}
-        *sdata=sqrt((double)sum);
-        sdata++;
+        if(uindex!=-1)sum += udata[i]*udata[i];
+        if(vindex!=-1)sum += vdata[i]*vdata[i];
+        if(windex!=-1)sum += wdata[i]*wdata[i];
+        sdata[i] = sqrt((double)sum);
       }
     }
     if(uindex!=-1)meshi->udata=meshi->qdata + ntotal*uindex;
@@ -242,9 +232,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   }
 
   if(NewMemory((void **)&colorlabelp3, MAXPLOT3DVARS*sizeof(char **))==0||
-     NewMemory((void **)&colorlabeliso, MAXPLOT3DVARS*sizeof(char **))==0||
-     NewMemory((void **)&fscalep3     , MAXPLOT3DVARS*sizeof(float))==0||
-     NewMemory((void **)&scalep3     , MAXPLOT3DVARS*sizeof(char *))==0){
+     NewMemory((void **)&colorlabeliso, MAXPLOT3DVARS*sizeof(char **))==0){
     *errorcode=1;
     ReadPlot3D("",ifile,UNLOAD,&error);
     return;
@@ -252,20 +240,16 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   for(nn=0;nn<MAXPLOT3DVARS;nn++){
     colorlabelp3[nn]=NULL;
     colorlabeliso[nn]=NULL;
-    scalep3[nn]=NULL;
-    fscalep3[nn]=1.0;
   }
   for(nn=0;nn<MAXPLOT3DVARS;nn++){
     if(NewMemory((void **)&colorlabelp3[nn],MAXRGB*sizeof(char *))==0||
-       NewMemory((void **)&colorlabeliso[nn],MAXRGB*sizeof(char *))==0||
-       NewMemory((void **)&scalep3[nn],30*sizeof(char))==0){
+       NewMemory((void **)&colorlabeliso[nn],MAXRGB*sizeof(char *))==0){
       *errorcode=1;
       ReadPlot3D("",ifile,UNLOAD,&error);
       return;
     }
   }
 
-  scalep3copy = scalep3;
   if(NewMemory((void **)&p3levels, MAXPLOT3DVARS*sizeof(float *))==0||
      NewMemory((void **)&p3levels256, MAXPLOT3DVARS*sizeof(float *))==0){
     *errorcode=1;
@@ -278,12 +262,8 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   }
   if(nloaded>1){
     for(nn=0;nn<numplot3dvars;nn++){
-      if(setp3min[nn]!=SET_MIN&&setp3min[nn]!=CHOP_MIN){
-        setp3min[nn]=SET_MIN;
-      }
-      if(setp3max[nn]!=SET_MAX&&setp3max[nn]!=CHOP_MAX){
-        setp3max[nn]=SET_MAX;
-      }
+      if(setp3min_all[nn]!=SET_MIN&&setp3min_all[nn]!=CHOP_MIN)setp3min_all[nn]=SET_MIN;
+      if(setp3max_all[nn]!=SET_MAX&&setp3max_all[nn]!=CHOP_MAX)setp3max_all[nn]=SET_MAX;
     }
     UpdateGlui();
   }
@@ -324,16 +304,15 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       }
     }
     GetPlot3DColors(nn,
-                  setp3min[nn],p3min+nn, setp3max[nn],p3max+nn,
-                  nrgb_full, nrgb-1, *(colorlabelp3+nn),*(colorlabeliso+nn),scalep3copy,fscalep3+nn,p3levels[nn],p3levels256[nn],
+                  setp3min_all[nn],p3min_all+nn, setp3max_all[nn],p3max_all+nn,
+                  nrgb_full, nrgb-1, *(colorlabelp3+nn),*(colorlabeliso+nn),p3levels[nn],p3levels256[nn],
                   plot3dinfo[ifile].extreme_min+nn,plot3dinfo[ifile].extreme_max+nn);
-    scalep3copy++;
   }
   if(meshi->plotx==-1)meshi->plotx=ibar/2;
   if(meshi->ploty==-1)meshi->ploty=jbar/2;
   if(meshi->plotz==-1)meshi->plotz=kbar/2;
   meshi->plot3d_speedmax=0.0f;
-  if(uindex!=-1||vindex!=-1||windex!=-1||numplot3dvars>5)meshi->plot3d_speedmax=p3max[5];
+  if(uindex!=-1||vindex!=-1||windex!=-1||numplot3dvars>5)meshi->plot3d_speedmax=p3max_all[5];
   speedmax=-1000000.;
   for(i=0;i<nmeshes;i++){
     gbi=meshinfo+i;
@@ -880,7 +859,7 @@ void UpdateSurface(void){
       plotiso[plotn-1]=0;
     }
     colorindex=plotiso[plotn-1];
-    level = p3min[plotn-1] + (colorindex+0.5)*(p3max[plotn-1]-p3min[plotn-1])/((float)nrgb-2.0f);
+    level = p3min_all[plotn-1] + (colorindex+0.5)*(p3max_all[plotn-1]-p3min_all[plotn-1])/((float)nrgb-2.0f);
     isolevelindex=colorindex;
     isolevelindex2=colorindex;
     FreeSurface(currentsurfptr);
@@ -898,7 +877,7 @@ void UpdateSurface(void){
       colorindex2=colorindex+surfincrement;
       if(colorindex2<0)colorindex2=nrgb-2;
       if(colorindex2>nrgb-2)colorindex2=0;
-      level2 = p3min[plotn-1] + colorindex2*(p3max[plotn-1]-p3min[plotn-1])/((float)nrgb-2.0f);
+      level2 = p3min_all[plotn-1] + colorindex2*(p3max_all[plotn-1]-p3min_all[plotn-1])/((float)nrgb-2.0f);
       FreeSurface(currentsurf2ptr);
       InitIsoSurface(currentsurf2ptr, level2, rgb_plot3d_contour[colorindex2],-999);
       GetIsoSurface(currentsurf2ptr,qdata+(plotn-1)*plot3dsize,NULL,iblank_cell,level2,dlevel,
@@ -1133,8 +1112,8 @@ void UpdatePlotSliceMesh(meshdata *mesh_in, int slicedir){
 
   minfill = 1;
   maxfill = 1;
-  if(setp3min[plotn - 1] == CHOP_MIN)minfill = 0;
-  if(setp3max[plotn - 1] == CHOP_MAX)maxfill = 0;
+  if(setp3min_all[plotn - 1] == CHOP_MIN)minfill = 0;
+  if(setp3max_all[plotn - 1] == CHOP_MAX)maxfill = 0;
 
   if(ReadPlot3dFile != 1)return;
   if(plotx >= 0 && slicedir == XDIR){

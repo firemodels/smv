@@ -1755,8 +1755,8 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
 void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max){
   int iii, ntotal, *buckets;
   int ii;
-  float factor, p01, p99;
-  int i01, i99, sum;
+  float factor;
+  int i01, sum;
   int have_min, have_max;
   int some_compressed = 0;
   int some_loaded = 0;
@@ -1775,7 +1775,6 @@ void GetSlicePercentileBounds(char *slicetype, float global_min, float global_ma
     slicedata *slicei;
     int nn;
     meshdata *meshi;
-    float *xplt, *yplt, *zplt;
     char *iblank_node, *iblank_cell;
     int ibar, jbar, nx, ny, nxy;
     int itime;
@@ -1791,9 +1790,6 @@ void GetSlicePercentileBounds(char *slicetype, float global_min, float global_ma
     meshi = meshinfo+slicei->blocknumber;
     iblank_node = meshi->c_iblank_node;
     iblank_cell = meshi->c_iblank_cell;
-    xplt = meshi->xplt_orig;
-    yplt = meshi->yplt_orig;
-    zplt = meshi->zplt_orig;
 
     ibar = meshi->ibar;
     jbar = meshi->jbar;
@@ -1806,25 +1802,13 @@ void GetSlicePercentileBounds(char *slicetype, float global_min, float global_ma
     for(itime = 0; itime<slicei->ntimes; itime++){
       for(ii = 0; ii<slicei->nslicei; ii++){
         int j;
-        int i1, i1p1;
-
-        i1 = MIN(slicei->is1+ii, slicei->is2-2);
-        i1p1 = i1+1;
 
         for(j = 0; j<slicei->nslicej; j++){
           int k;
-          int j1, j1p1;
-
-          j1 = MIN(slicei->js1+j, slicei->js2-2);
-          j1p1 = j1+1;
 
           for(k = 0; k<slicei->nslicek; k++){
-            int k1, k1p1;
             float val;
             int ival;
-
-            k1 = MIN(slicei->ks1+k, slicei->ks2-2);
-            k1p1 = k1+1;
 
             nn++;
             if(slicei->slice_filetype==SLICE_CELL_CENTER&&((k==0&&slicei->nslicek!=1)||(j==0&&slicei->nslicej!=1)||(ii==0&&slicei->nslicei!=1)))continue;
@@ -1864,7 +1848,7 @@ void GetSlicePercentileBounds(char *slicetype, float global_min, float global_ma
     }
     sum += buckets[iii];
   }
-  if(have_min = 0)*per_min = global_max;
+  if(have_min == 0)*per_min = global_max;
 
   sum = 0;
   have_max = 0;
@@ -1876,7 +1860,7 @@ void GetSlicePercentileBounds(char *slicetype, float global_min, float global_ma
     }
     sum += buckets[iii];
   }
-  if(have_max = 0)*per_max = global_min;
+  if(have_max == 0)*per_max = global_min;
   FREEMEMORY(buckets);
 }
 #endif
@@ -2230,15 +2214,13 @@ void SetSliceLabels(float smin, float smax,
   if(pd != NULL)slicetype = GetSliceBoundsIndexFromLabel(pd->label.shortlabel);
   if(slicetype!=-1){
     boundsdata *sb;
-    char *scale;
 
     sb = slicebounds+slicetype;
     if(sd!=NULL)sb->label = &(sd->label);
     if(pd!=NULL)sb->label = &(pd->label);
 
     *errorcode = 0;
-    scale = sb->scale;
-    GetSliceLabels(smin, smax, nrgb, sb->colorlabels, &scale, &sb->fscale, sb->levels256);
+    GetSliceLabels(smin, smax, nrgb, sb->colorlabels, sb->levels256);
   }
 }
 
@@ -2284,7 +2266,6 @@ void UpdateAllSliceLabels(int slicetype, int *errorcode){
 /* ------------------ SetSliceColors ------------------------ */
 
 void SetSliceColors(float smin, float smax, slicedata *sd, int *errorcode){
-  char *scale;
   int slicetype;
   boundsdata *sb;
 
@@ -2294,7 +2275,6 @@ void SetSliceColors(float smin, float smax, slicedata *sd, int *errorcode){
 
 
   *errorcode = 0;
-  scale = sb->scale;
   if(sd->slice_filetype == SLICE_GEOM){
     patchdata *patchgeom;
 
@@ -2302,7 +2282,7 @@ void SetSliceColors(float smin, float smax, slicedata *sd, int *errorcode){
     GetSliceColors(patchgeom->geom_vals, patchgeom->geom_nvals, patchgeom->geom_ivals,
       smin, smax,
       nrgb_full, nrgb,
-      sb->colorlabels, sb->colorvalues, &scale, &sb->fscale, sb->levels256,
+      sb->colorlabels, sb->colorvalues, sb->levels256,
       &sd->extreme_min, &sd->extreme_max
     );
   }
@@ -2311,7 +2291,7 @@ void SetSliceColors(float smin, float smax, slicedata *sd, int *errorcode){
     GetSliceColors(sd->qslicedata, sd->nslicetotal, sd->slicelevel,
       smin, smax,
       nrgb_full, nrgb,
-      sb->colorlabels, sb->colorvalues, &scale, &sb->fscale, sb->levels256,
+      sb->colorlabels, sb->colorvalues, sb->levels256,
       &sd->extreme_min, &sd->extreme_max
     );
   }
@@ -4008,31 +3988,6 @@ void UpdateSliceBoundLabels(){
   }
 }
 
-/* ------------------ SliceBounds2Glui ------------------------ */
-
-void SliceBounds2Glui(int slicetype){
-  if(slicetype>=0&&slicetype<nslicebounds){
-    slice_line_contour_min=slicebounds[slicetype].line_contour_min;
-    slice_line_contour_max=slicebounds[slicetype].line_contour_max;
-    slice_line_contour_num=slicebounds[slicetype].line_contour_num;
-    glui_slicemin=slicebounds[slicetype].dlg_valmin;
-    glui_slicemax=slicebounds[slicetype].dlg_valmax;
-#ifndef pp_NEWBOUND_DIALOG
-    glui_setslicemin=slicebounds[slicetype].dlg_setvalmin;
-    glui_setslicemax=slicebounds[slicetype].dlg_setvalmax;
-#endif
-    glui_slicechopmin=slicebounds[slicetype].chopmin;
-    glui_slicechopmax=slicebounds[slicetype].chopmax;
-    glui_setslicechopmin=slicebounds[slicetype].setchopmin;
-    glui_setslicechopmax=slicebounds[slicetype].setchopmax;
-    glui_slicemin_unit = (unsigned char *)slicebounds[slicetype].label->unit;
-    glui_slicemax_unit = glui_slicemin_unit;
-
-    memcpy(&glui_slicebounds, slicebounds + slicetype, sizeof(bounddata));
-    UpdateGluiSliceUnits();
-  }
-}
-
 /* ------------------ GetSliceDataBounds ------------------------ */
 
 void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
@@ -4059,10 +4014,12 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     return;
   }
 #ifdef pp_NEWBOUND_DIALOG
-  if(use_slice_glui_bounds==1&&sd->bounds!=NULL&&sd->bounds->dlg_valmin<sd->bounds->dlg_valmax){
-    *pmin = sd->bounds->dlg_valmin;
-    *pmax = sd->bounds->dlg_valmax;
-    return;
+  if(use_slice_glui_bounds == 1 && sd->bounds != NULL){
+    if(sd->bounds->dlg_valmin < sd->bounds->dlg_valmax){
+      *pmin = sd->bounds->dlg_valmin;
+      *pmax = sd->bounds->dlg_valmax;
+      return;
+    }
   }
 #endif
   meshi = meshinfo + sd->blocknumber;
@@ -4136,107 +4093,6 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     }
   }
   FREEMEMORY(slice_mask0);
-}
-
-/* ------------------ AdjustBoundsNoSet ------------------------ */
-#ifdef pp_NEWBOUND_DIALOG
-void AdjustBoundsNoSet(float *pdata, int ndata, float *pmin, float *pmax){
-  if(axislabels_smooth==1){
-    SmoothLabel(pmin, pmax, nrgb);
-  }
-}
-#endif
-
-/* ------------------ AdjustBounds ------------------------ */
-
-void AdjustBounds(int setmin, int setmax, float *pdata, int ndata, float *pmin, float *pmax){
-  int nsmall, nbig, *buckets = NULL, n, level, total, alpha05;
-  float dp;
-  float ppmin;
-
-#define EPS_BUCKET 0.0001
-  if(setmin==PERCENTILE_MIN||setmax==PERCENTILE_MAX){
-    float abs_diff, denom;
-
-    abs_diff = ABS(*pmax-*pmin);
-    denom = MAX(ABS(*pmax), ABS(*pmin));
-    if(abs_diff<EPS_BUCKET||abs_diff<EPS_BUCKET*denom)abs_diff = 0.0;
-    dp = abs_diff/(float)NBUCKETS;
-    nsmall=0;
-    nbig = NBUCKETS;
-    if(NewMemory((void **)&buckets, NBUCKETS*sizeof(int))==0){
-      fprintf(stderr, "*** Error: Unable to allocate memory in getdatabounds\n");
-      return;
-    }
-
-    for(n = 0; n<NBUCKETS; n++){
-      buckets[n] = 0;
-    }
-    for(n = 0; n<ndata; n++){
-      if(pdata[n]<=*pmin){
-        level = 0;
-      }
-      else if(pdata[n]>=*pmax){
-        level = NBUCKETS-1;
-      }
-      else{
-        if(dp!=0.0f){
-          level = (int)((pdata[n]-*pmin)/dp);
-        }
-        else{
-          level = 0;
-        }
-      }
-      level = CLAMP(level,0,NBUCKETS-1);
-      buckets[level]++;
-    }
-    alpha05 = (int)(.01f*ndata);
-    total = 0;
-    for(n = 0; n<NBUCKETS; n++){
-      total += buckets[n];
-      if(total>alpha05){
-        nsmall = n;
-        break;
-      }
-    }
-    total = 0;
-    for(n = NBUCKETS; n>0; n--){
-      total += buckets[n-1];
-      if(total>alpha05){
-        nbig = n;
-        break;
-      }
-    }
-    FreeMemory(buckets);
-    ppmin = *pmin;
-    if(setmin==PERCENTILE_MIN)*pmin = ppmin+nsmall*dp;
-    if(setmax==PERCENTILE_MAX)*pmax = ppmin+(nbig+1)*dp;
-
-  }
-  if(axislabels_smooth==1){
-    SmoothLabel(pmin, pmax, nrgb);
-  }
-}
-
-/* ------------------ AdjustSliceBounds ------------------------ */
-
-void AdjustSliceBounds(const slicedata *sd, float *pmin, float *pmax){
-  float *pdata;
-  int ndata;
-
-  if(sd->slice_filetype==SLICE_GEOM){
-    pdata = sd->patchgeom->geom_vals;
-    ndata = sd->patchgeom->geom_nvals;
-  }
-  else {
-    pdata = sd->qslicedata;
-    ndata = sd->nslicetotal;
-  }
-#ifdef pp_NEWBOUND_DIALOG
-  AdjustBoundsNoSet(pdata, ndata, pmin, pmax);
-#else
-  AdjustBounds(glui_setslicemin, glui_setslicemax, pdata, ndata, pmin, pmax);
-#endif
 }
 
   /* ------------------ TimeAverageData ------------------------ */
@@ -4586,7 +4442,6 @@ void GetSliceSizes(char *slicefilenameptr, int time_frame, int *nsliceiptr, int 
   fclose(SLICEFILE);
 }
 
-#ifdef pp_C_SLICE
 /* ------------------ GetSliceFileHeader ------------------------ */
 
 void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int *kp1, int *kp2, int *error){
@@ -4613,7 +4468,6 @@ void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int 
   *error = 0;
   fclose(stream);
 }
-#endif
 
 /* ------------------ GetSliceData ------------------------ */
 
@@ -5064,15 +4918,8 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
 
     if(sd->compression_type == UNCOMPRESSED){
       sd->ntimes_old = sd->ntimes;
-      if(use_cslice==1){
         GetSliceSizes(file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, sliceframestep, &error,
           settmin_s, settmax_s, tmin_s, tmax_s, &headersize, &framesize);
-      }
-      else{
-        FORTgetslicesizes(file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sliceframestep, &error,
-          &settmin_s, &settmax_s, &tmin_s, &tmax_s, &headersize, &framesize,
-          strlen(file));
-      }
     }
     else if(sd->compression_type != UNCOMPRESSED){
       if(
@@ -5163,24 +5010,15 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
         qmax = -1.0e30;
       }
       if(sd->ntimes > ntimes_slice_old){
-        if(use_cslice==1){
-          return_filesize =
-            GetSliceData(file, time_frame, &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
-              &qmin, &qmax, sd->qslicedata, sd->times, ntimes_slice_old, &sd->ntimes,
-              sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s
+        return_filesize =
+          GetSliceData(file, time_frame, &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
+            &qmin, &qmax, sd->qslicedata, sd->times, ntimes_slice_old, &sd->ntimes,
+            sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s
 #ifdef pp_MULTI_RES
               , sd->multi_res
 #endif
-            );
-          file_size = (int)return_filesize;
-        }
-        else{
-          FORTgetslicedata(file,
-            &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
-            &qmin, &qmax, sd->qslicedata, sd->times, &ntimes_slice_old, &sd->ntimes, &sliceframestep,
-            &settmin_s, &settmax_s, &tmin_s, &tmax_s, &file_size, strlen(file));
-          return_filesize = (FILE_SIZE)file_size;
-        }
+          );
+        file_size = (int)return_filesize;
       }
 #ifdef pp_MEMDEBUG
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
@@ -5314,11 +5152,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   }
   sd->globalmin = qmin;
   sd->globalmax = qmax;
-  if(sd->compression_type == UNCOMPRESSED){
-    if(nzoneinfo==0||strcmp(sd->label.shortlabel, "TEMP")!=0){
-      if(research_mode==0)AdjustSliceBounds(sd, &qmin, &qmax);
-    }
-  }
   sd->valmin = qmin;
   sd->valmax = qmax;
   sd->valmin_data = qmin;
@@ -5547,8 +5380,8 @@ void DrawGSliceDataGpu(slicedata *slicei){
 
 
   sb = slicebounds + slicefile_labelindex;
-  valmin = sb->levels256[0] * sb->fscale;
-  valmax = sb->levels256[255] * sb->fscale;
+  valmin = sb->levels256[0];
+  valmax = sb->levels256[255];
   boxmin = meshi->boxmin;
   boxmax = meshi->boxmax;
 
@@ -8202,8 +8035,8 @@ void DrawGSliceData(slicedata *slicei){
   if(use_transparency_data==1)TransparentOn();
 
   sb=slicebounds+slicefile_labelindex;
-  valmin = sb->levels256[0]*sb->fscale;
-  valmax = sb->levels256[255]*sb->fscale;
+  valmin = sb->levels256[0];
+  valmax = sb->levels256[255];
 
   gslicedata=slicei->qsliceframe;
   gslice_valmin=valmin;
@@ -8262,8 +8095,8 @@ void DrawVGSliceData(vslicedata *vslicei){
   if(use_transparency_data==1)TransparentOn();
 
   sb=slicebounds+slicefile_labelindex;
-  valmin = sb->levels256[0]*sb->fscale;
-  valmax = sb->levels256[255]*sb->fscale;
+  valmin = sb->levels256[0];
+  valmax = sb->levels256[255];
 
   gslicedata=slicei->qsliceframe;
   gslice_valmin=valmin;

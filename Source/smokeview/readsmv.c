@@ -1017,7 +1017,13 @@ void ReadSMVDynamic(char *file){
       len=strlen(bufferptr);
 
       plot3di=plot3dinfo+iplot3d;
-      plot3di->blocknumber=blocknumber;
+#ifdef pp_NEWBOUND_DIALOG
+      for(i = 0; i < 5; i++){
+        plot3di->file_min[i] = 1.0;
+        plot3di->file_max[i] = 0.0;
+      }
+#endif
+      plot3di->blocknumber = blocknumber;
       plot3di->seq_id=nn_plot3d;
       plot3di->autoload=0;
       plot3di->time=time_local;
@@ -1028,6 +1034,12 @@ void ReadSMVDynamic(char *file){
 
       NewMemory((void **)&plot3di->reg_file,(unsigned int)(len+1));
       STRCPY(plot3di->reg_file,bufferptr);
+
+#ifdef pp_NEWBOUND_DIALOG
+      NewMemory((void **)&plot3di->bound_file, (unsigned int)(len+4+1));
+      STRCPY(plot3di->bound_file, bufferptr);
+      STRCAT(plot3di->bound_file, ".bnd");
+#endif
 
       NewMemory((void **)&plot3di->comp_file,(unsigned int)(len+4+1));
       STRCPY(plot3di->comp_file,bufferptr);
@@ -1346,6 +1358,9 @@ void ReadSMVDynamic(char *file){
   UpdatePlot3dMenuLabels();
   InitPlot3dTimeList();
   UpdateTimes();
+#ifdef pp_NEWBOUND_DIALOG
+  GetGlobalPlot3DBounds();
+#endif
 }
 
 
@@ -2132,10 +2147,6 @@ void UpdateBoundInfo(void){
       isobounds[niso_bounds].dlg_setvalmax=0;
       isobounds[niso_bounds].dlg_valmin=1.0;
       isobounds[niso_bounds].dlg_valmax=0.0;
-#ifdef pp_NEWBOUND_DIALOG
-      isobounds[niso_bounds].percentile_valmin = 1.0;
-      isobounds[niso_bounds].percentile_valmax = 0.0;
-#endif
       isobounds[niso_bounds].setchopmax=0;
       isobounds[niso_bounds].setchopmin=0;
       isobounds[niso_bounds].chopmax=0.0;
@@ -2174,14 +2185,19 @@ void UpdateBoundInfo(void){
       sbi = slicebounds + nslicebounds;
       sbi->shortlabel=slicei->label.shortlabel;
       if(strcmp(sbi->shortlabel, "TEMP")==0)slicebounds_temp = sbi;
-      sbi->dlg_setvalmin=0;
-      sbi->dlg_setvalmax=0;
+#ifdef pp_NEWBOUND_DIALOG
+      sbi->dlg_setvalmin = SET_MIN;
+      sbi->dlg_setvalmax = SET_MAX;
+      sbi->dlg_reset_loaded = glui_slice_reset_loaded;
+      sbi->dlg_compute_loaded = glui_slice_compute_loaded;
+      sbi->dlg_inivalmin=1.0;
+      sbi->dlg_inivalmax=0.0;
+#else
+      sbi->dlg_setvalmin=PERCENTILE_MIN;
+      sbi->dlg_setvalmax=PERCENTILE_MAX;
+#endif
       sbi->dlg_valmin=1.0;
       sbi->dlg_valmax=0.0;
-#ifdef pp_NEWBOUND_DIALOG
-      sbi->percentile_valmin = 1.0;
-      sbi->percentile_valmax = 0.0;
-#endif
       sbi->chopmax=0.0;
       sbi->chopmin=1.0;
       sbi->setchopmax=0;
@@ -2207,13 +2223,16 @@ void UpdateBoundInfo(void){
       slicedata *slicei;
 
       slicei = sliceinfo+i;
-      slicei->bounds = GetBoundsInfo(slicei->label.shortlabel);
+      slicei->bounds = GetSliceBoundsInfo(slicei->label.shortlabel);
     }
 #endif
   }
 
   canshow_threshold=0;
   if(npatchinfo>0){
+    FREEMEMORY(patchbounds);
+    NewMemory((void*)&patchbounds, npatchinfo*sizeof(boundsdata));
+    npatchbounds = 0;
     npatch2=0;
     FREEMEMORY(patchlabellist);
     FREEMEMORY(patchlabellist_index);
@@ -2221,13 +2240,22 @@ void UpdateBoundInfo(void){
     NewMemory((void **)&patchlabellist_index,npatchinfo*sizeof(int));
     for(i=0;i<npatchinfo;i++){
       patchdata *patchi;
+      boundsdata *sbi;
 
       patchi = patchinfo + i;
       patchi->firstshort=1;
+#ifndef pp_NEWBOUND_DIALOG
       patchi->valmin=1.0;
       patchi->valmax=0.0;
-      patchi->setvalmin=0;
-      patchi->setvalmax=0;
+      if(research_mode==1){
+        patchi->setvalmin = GLOBAL_MIN;
+        patchi->setvalmax = GLOBAL_MAX;
+      }
+      else{
+        patchi->setvalmin = PERCENTILE_MIN;
+        patchi->setvalmax = PERCENTILE_MAX;
+      }
+#endif
       if(strncmp(patchi->label.shortlabel,"temp",4)==0||
          strncmp(patchi->label.shortlabel,"TEMP",4)==0){
         canshow_threshold=1;
@@ -2245,11 +2273,46 @@ void UpdateBoundInfo(void){
           break;
         }
       }
+      sbi = patchbounds+npatchbounds;
+      sbi->shortlabel = patchi->label.shortlabel;
+      sbi->dlg_setvalmin = 0;
+      sbi->dlg_setvalmax = 0;
+      sbi->dlg_valmin = 1.0;
+      sbi->dlg_valmax = 0.0;
+      sbi->chopmax = 0.0;
+      sbi->chopmin = 1.0;
+      sbi->setchopmax = 0;
+      sbi->setchopmin = 0;
+      sbi->line_contour_min = 0.0;
+      sbi->line_contour_max = 1.0;
+      sbi->line_contour_num = 1;
+      sbi->label = &(patchi->label);
+      npatchbounds++;
+      for(n = 0; n<i; n++){
+        patchdata *patchn;
+
+        patchn = patchinfo+n;
+        if(strcmp(patchi->label.shortlabel, patchn->label.shortlabel)==0){
+          patchi->firstshort = 0;
+          npatchbounds--;
+          break;
+        }
+      }
     }
+#ifdef pp_NEWBOUND_DIALOG
+    for(i = 0; i<npatchinfo; i++){
+      patchdata *patchi;
+
+      patchi = patchinfo+i;
+      patchi->bounds2 = GetPatchBoundsInfo(patchi->label.shortlabel);
+    }
+#endif
   }
   UpdateChar();
 #ifdef pp_NEWBOUND_DIALOG
   GetGlobalSliceBounds();
+  GetGlobalPatchBounds();
+  GetGlobalPartBounds();
 #endif
 }
 
@@ -3614,7 +3677,6 @@ void ReadZVentData(zventdata *zvi, char *buffer, int flag){
 
 void SetupMeshWalls(void){
   int i;
-  int ncount = 0;
 
   for(i = 0; i < nmeshes; i++){
     meshdata *meshi;
@@ -3636,7 +3698,6 @@ void SetupMeshWalls(void){
     xyz[2] = bmid[2];
     if(GetMesh(xyz,NULL) != NULL){
       is_extface[0] = MESH_INT;
-      ncount++;
     }
 
     xyz[0] = bmax[0] + EPSMESH;
@@ -3644,7 +3705,6 @@ void SetupMeshWalls(void){
     xyz[2] = bmid[2];
     if(GetMesh(xyz,NULL) != NULL){
       is_extface[1] = 0;
-      ncount++;
     }
 
     xyz[0] = bmid[0];
@@ -3652,7 +3712,6 @@ void SetupMeshWalls(void){
     xyz[2] = bmid[2];
     if(GetMesh(xyz,NULL) != NULL){
       is_extface[2] = MESH_INT;
-      ncount++;
     }
 
     xyz[0] = bmid[0];
@@ -3660,7 +3719,6 @@ void SetupMeshWalls(void){
     xyz[2] = bmid[2];
     if(GetMesh(xyz,NULL) != NULL){
       is_extface[3] = MESH_INT;
-      ncount++;
     }
 
     xyz[0] = bmid[0];
@@ -3668,7 +3726,6 @@ void SetupMeshWalls(void){
     xyz[2] = bmin[2] - EPSMESH;
     if(GetMesh(xyz,NULL) != NULL){
       is_extface[4] = MESH_INT;
-      ncount++;
     }
 
     xyz[0] = bmid[0];
@@ -3676,198 +3733,10 @@ void SetupMeshWalls(void){
     xyz[2] = bmax[2] + EPSMESH;
     if(GetMesh(xyz,NULL) != NULL){
       is_extface[5] = MESH_INT;
-      ncount++;
     }
   }
 }
 
-/* ------------------ SetupMeshWalls ------------------------ */
-
-void SetupMeshWallsNew(void){
-  int i;
-
-  for(i = 0; i<nmeshes; i++){
-    meshdata *meshi;
-    float xyz[3], *bmin, *bmax;
-    int *is_extface;
-    int ii, jj, kk;
-    float dx, dy, dz;
-    int n_int, n_ext;
-
-    meshi = meshinfo+i;
-    bmin = meshi->boxmin;
-    bmax = meshi->boxmax;
-    is_extface = meshi->is_extface;
-
-    dx = (bmax[0]-bmin[0])/(float)meshi->ibar;
-    dy = (bmax[1]-bmin[1])/(float)meshi->jbar;
-    dz = (bmax[2]-bmin[2])/(float)meshi->kbar;
-
-#define EPSMESH 0.001
-
-    // face: xmin
-
-    xyz[0] = bmin[0]-EPSMESH;
-    n_int = 0;
-    n_ext = 0;
-    for(jj = 0; jj<meshi->jbar; jj++){
-      xyz[1] = bmin[1]+dy/2.0+(float)jj*dy;
-      for(kk = 0; kk<meshi->kbar; kk++){
-        xyz[2] = bmin[2]+dz/2.0+(float)kk*dz;
-        if(GetMesh(xyz, NULL)!=NULL){
-          n_int++;
-        }
-        else{
-          n_ext++;
-        }
-      }
-    }
-    if(n_int==0){
-      is_extface[0] = MESH_EXT;
-    }
-    else if(n_ext==0){
-      is_extface[0] = MESH_INT;
-    }
-    else{
-      is_extface[0] = MESH_BOTH;
-    }
-
-    // face: xmax
-
-    xyz[0] = bmax[0]+EPSMESH;
-    n_int = 0;
-    n_ext = 0;
-    for(jj = 0; jj<meshi->jbar; jj++){
-      xyz[1] = bmin[1]+dy/2.0+(float)jj*dy;
-      for(kk = 0; kk<meshi->kbar; kk++){
-        xyz[2] = bmin[2]+dz/2.0+(float)kk*dz;
-        if(GetMesh(xyz, NULL)!=NULL){
-          n_int++;
-        }
-        else{
-          n_ext++;
-        }
-      }
-    }
-    if(n_int==0){
-      is_extface[1] = MESH_EXT;
-    }
-    else if(n_ext==0){
-      is_extface[1] = MESH_INT;
-    }
-    else{
-      is_extface[1] = MESH_BOTH;
-    }
-
-    // face: ymin
-
-    xyz[1] = bmin[1]-EPSMESH;
-    n_int = 0;
-    n_ext = 0;
-    for(ii = 0; ii<meshi->ibar; ii++){
-      xyz[0] = bmin[0]+dx/2.0+(float)ii*dx;
-      for(kk = 0; kk<meshi->kbar; kk++){
-        xyz[2] = bmin[2]+dz/2.0+(float)kk*dz;
-        if(GetMesh(xyz, NULL)!=NULL){
-          n_int++;
-        }
-        else{
-          n_ext++;
-        }
-      }
-    }
-    if(n_int==0){
-      is_extface[2] = MESH_EXT;
-    }
-    else if(n_ext==0){
-      is_extface[2] = MESH_INT;
-    }
-    else{
-      is_extface[2] = MESH_BOTH;
-    }
-
-    // face: ymax
-
-    xyz[1] = bmax[1]+EPSMESH;
-    n_int = 0;
-    n_ext = 0;
-    for(ii = 0; ii<meshi->ibar; ii++){
-      xyz[0] = bmin[0]+dx/2.0+(float)ii*dx;
-      for(kk = 0; kk<meshi->kbar; kk++){
-        xyz[2] = bmin[2]+dz/2.0+(float)kk*dz;
-        if(GetMesh(xyz, NULL)!=NULL){
-          n_int++;
-        }
-        else{
-          n_ext++;
-        }
-      }
-    }
-    if(n_int==0){
-      is_extface[3] = MESH_EXT;
-    }
-    else if(n_ext==0){
-      is_extface[3] = MESH_INT;
-    }
-    else{
-      is_extface[3] = MESH_BOTH;
-    }
-
-    // face: zmin
-
-    xyz[2] = bmin[2]-EPSMESH;
-    n_int = 0;
-    n_ext = 0;
-    for(ii = 0; ii<meshi->ibar; ii++){
-      xyz[0] = bmin[0]+dx/2.0+(float)ii*dx;
-      for(jj = 0; jj<meshi->jbar; jj++){
-        xyz[1] = bmin[1]+dy/2.0+(float)jj*dy;
-        if(GetMesh(xyz, NULL)!=NULL){
-          n_int++;
-        }
-        else{
-          n_ext++;
-        }
-      }
-    }
-    if(n_int==0){
-      is_extface[4] = MESH_EXT;
-    }
-    else if(n_ext==0){
-      is_extface[4] = MESH_INT;
-    }
-    else{
-      is_extface[4] = MESH_BOTH;
-    }
-
-    // face: zmax
-
-    xyz[2] = bmax[2]+EPSMESH;
-    n_int = 0;
-    n_ext = 0;
-    for(ii = 0; ii<meshi->ibar; ii++){
-      xyz[0] = bmin[0]+dx/2.0+(float)ii*dx;
-      for(jj = 0; jj<meshi->jbar; jj++){
-        xyz[1] = bmin[1]+dy/2.0+(float)jj*dy;
-        if(GetMesh(xyz, NULL)!=NULL){
-          n_int++;
-        }
-        else{
-          n_ext++;
-        }
-      }
-    }
-    if(n_int==0){
-      is_extface[5] = MESH_EXT;
-    }
-    else if(n_ext==0){
-      is_extface[5] = MESH_INT;
-    }
-    else{
-      is_extface[5] = MESH_BOTH;
-    }
-  }
-}
 /* ------------------ MakeFileLists ------------------------ */
 
 void MakeFileLists(void){
@@ -4308,6 +4177,11 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->sy = NULL;
   parti->sz = NULL;
   parti->irvals = NULL;
+#ifdef pp_NEWBOUND_DIALOG
+  parti->file_min = NULL;
+  parti->file_max = NULL;
+  parti->nfilebounds = 0;
+#endif
 
   parti->data5 = NULL;
   parti->partclassptr = NULL;
@@ -4421,11 +4295,14 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     patchi->ijk[i] = -1;
   }
   patchi->finalize = 1;
+#ifdef pp_NEWBOUND_DIALOG
+  patchi->file_min = 1.0;
+  patchi->file_max = 0.0;
+#endif
   patchi->skip = 0;
   patchi->version = version;
   patchi->ntimes = 0;
   patchi->ntimes_old = 0;
-  strcpy(patchi->scale, "");
   patchi->filetype_label = NULL;
   patchi->patch_filetype = PATCH_STRUCTURED_NODE_CENTER;
   patchi->structured = YES;
@@ -5143,11 +5020,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   if(read_slice_header==1){
     int error;
 
-#ifdef pp_C_SLICE
     GetSliceFileHeader(sd->file, &ii1, &ii2, &jj1, &jj2, &kk1, &kk2, &error);
-#else
-    FORTgetsliceheader(sd->file, &ii1, &ii2, &jj1, &jj2, &kk1, &kk2, &error, strlen(sd->file));
-#endif
   }
   sd->is1 = ii1;
   sd->is2 = ii2;
@@ -9454,6 +9327,7 @@ typedef struct {
         vi->usecolorindex=0;
         vi->nshowtime=0;
         vi->isOpenvent=0;
+        vi->isMirrorvent = 0;
         vi->hideboundary=0;
         vi->surf[0]=vent_surfacedefault;
         vi->textureinfo[0]=NULL;
@@ -9530,9 +9404,8 @@ typedef struct {
         }
         if(surfinfo!=NULL&&s_num[0]>=0&&s_num[0]<nsurfinfo){
           vi->surf[0]=surfinfo+s_num[0];
-          if(vi->surf[0]!=NULL&&strncmp(vi->surf[0]->surfacelabel,"OPEN",4)==0){
-            vi->isOpenvent=1;
-          }
+          if(strncmp(vi->surf[0]->surfacelabel,"OPEN",4)==0)vi->isOpenvent=1;
+          if(strncmp(vi->surf[0]->surfacelabel, "MIRROR", 6)==0)vi->isMirrorvent = 1;
           vi->surf[0]->used_by_vent=1;
         }
         vi->color_bak=surfinfo[0].color;
@@ -10523,12 +10396,17 @@ int ReadIni2(char *inifile, int localfile){
     if(fgets(buffer, 255, stream) == NULL)break;
 
     if(Match(buffer, "RESEARCHMODE") == 1){
+      int dummy;
+
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %f", &research_mode, &ncolorlabel_decimals, &colorbar_shift);
+      sscanf(buffer, " %i %i %f %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits);
       colorbar_shift = CLAMP(colorbar_shift, COLORBAR_SHIFT_MIN, COLORBAR_SHIFT_MAX);
       if(research_mode==1&&research_mode_override==0)research_mode=0;
-      ncolorlabel_decimals = CLAMP(ncolorlabel_decimals, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
+      ncolorlabel_digits = CLAMP(ncolorlabel_digits, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
       ONEORZERO(research_mode);
+#ifdef pp_NEWBOUND_DIALOG
+      research_mode = 1;
+#endif
       update_research_mode=1;
       continue;
     }
@@ -10564,6 +10442,14 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "GEOMOFFSET")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %f %f %f %i", &geom_delx, &geom_dely, &geom_delz, &show_geom_bndf);
+      continue;
+    }
+    if(Match(buffer, "VISBOUNDARYTYPE")==1){
+      int *vbt = vis_boundary_type;
+
+      update_ini_boundary_type = 1;
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i %i %i %i %i %i %i", vbt,vbt+1,vbt+2,vbt+3,vbt+4,vbt+5,vbt+6, &show_mirror_boundary, &show_mirror_boundary);
       continue;
     }
     if(Match(buffer, "GEOMBOUNDARYPROPS")==1){
@@ -11039,10 +10925,24 @@ int ReadIni2(char *inifile, int localfile){
         sscanf(buffer, "%i %i %f %i %f", &iplot3d, &isetmin, &p3mintemp, &isetmax, &p3maxtemp);
         iplot3d--;
         if(iplot3d >= 0 && iplot3d<MAXPLOT3DVARS){
-          setp3min[iplot3d] = isetmin;
-          setp3max[iplot3d] = isetmax;
-          p3min[iplot3d] = p3mintemp;
-          p3max[iplot3d] = p3maxtemp;
+#ifdef pp_NEWBOUND_DIALOG
+          if(isetmin!=SET_MIN){
+            p3mintemp = p3min_global[iplot3d];
+            isetmin = SET_MIN;
+          }
+          if(isetmax!=SET_MAX){
+            p3maxtemp = p3max_global[iplot3d];
+            isetmax = SET_MAX;
+          }
+#endif
+          setp3min_all[iplot3d] = isetmin;
+          setp3max_all[iplot3d] = isetmax;
+          p3min_all[iplot3d]    = p3mintemp;
+          p3max_all[iplot3d]    = p3maxtemp;
+#ifdef pp_NEWBOUND_DIALOG
+          p3min_ini[iplot3d]    = p3mintemp;
+          p3max_ini[iplot3d]    = p3maxtemp;
+#endif
         }
       }
       continue;
@@ -11422,7 +11322,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "V_PARTICLES") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %f %i %f", &setpartmin, &partmin, &setpartmax, &partmax);
+      sscanf(buffer, "%i %f %i %f", &setpartmin, &glui_partmin, &setpartmax, &glui_partmax);
       if(setpartmin==PERCENTILE_MIN){
         setpartmin = GLOBAL_MIN;
       }
@@ -11463,6 +11363,16 @@ int ReadIni2(char *inifile, int localfile){
           propi->setvalmax = ivmax;
           propi->valmin = vmin;
           propi->valmax = vmax;
+#ifdef pp_NEWBOUND_DIALOG
+          if(ivmin==SET_MIN&&ivmax==SET_MAX&&vmin<=vmax){
+            propi->ini_min = vmin;
+            propi->ini_max = vmax;
+          }
+          else {
+            propi->ini_min = 1.0;
+            propi->ini_max = 0.0;
+          }
+#endif
           switch(ivmin){
           case PERCENTILE_MIN:
             propi->percentile_min = vmin;
@@ -11530,11 +11440,13 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       strcpy(buffer2, "");
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
+#ifndef pp_NEWBOUND_DIALOG
       if(setvalmin==1||setvalmax==1){
         research_mode = 0;
         research_mode_override = 0;
         update_research_mode = 1;
       }
+#endif
       {
         char *colon;
 
@@ -11555,12 +11467,28 @@ int ReadIni2(char *inifile, int localfile){
       if(strcmp(buffer2, "TEMP")==0&&nzoneinfo>0)continue;
       if(strcmp(buffer2, "") != 0){
         TrimBack(buffer2);
+#ifdef pp_NEWBOUND_DIALOG
+        for(i = 0; i<nsliceinfo; i++){
+          slicedata* slicei;
+
+          slicei = sliceinfo+i;
+          if(strcmp(slicei->label.shortlabel, buffer2)==0){
+            slicei->valmin = valmin;
+            slicei->valmax = valmax;
+          }
+        }
+#endif
         for(i = 0; i<nslicebounds; i++){
           if(strcmp(slicebounds[i].shortlabel, buffer2)==0){
             slicebounds[i].dlg_setvalmin = setvalmin;
             slicebounds[i].dlg_setvalmax = setvalmax;
             slicebounds[i].dlg_valmin = valmin;
             slicebounds[i].dlg_valmax = valmax;
+#ifdef pp_NEWBOUND_DIALOG
+            slicebounds[i].dlg_inivalmin = valmin;
+            slicebounds[i].dlg_inivalmax = valmax;
+            slicebounds[i].dlg_reset_loaded = 0;
+#endif
             if(level_val!=NULL){
               slicebounds[i].line_contour_min = slice_line_contour_min;
               slicebounds[i].line_contour_max = slice_line_contour_max;
@@ -11666,8 +11594,8 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "V_BOUNDARY") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %f %i %f %s", &setpatchmin, &patchmin, &setpatchmax, &patchmax, buffer2);
-      if(strcmp(buffer2, "") != 0)Local2GlobalBoundaryBounds(buffer2);
+      sscanf(buffer, "%i %f %i %f %s", &glui_setpatchmin, &glui_patchmin, &glui_setpatchmax, &glui_patchmax, buffer2);
+      if(strcmp(buffer2, "") != 0)GLUI2GlobalBoundaryBounds(buffer2);
       continue;
     }
     if(Match(buffer, "C_BOUNDARY") == 1){
@@ -11761,7 +11689,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "LOADINC") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i", &load_incremental,&use_cslice);
+      sscanf(buffer, "%i", &load_incremental);
       continue;
     }
     if(Match(buffer, "MSCALE") == 1){
@@ -11969,11 +11897,6 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "VENTOFFSET") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f ", &ventoffset_factor);
-      continue;
-    }
-    if(Match(buffer, "AXISSMOOTH") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i ", &axislabels_smooth);
       continue;
     }
     if(Match(buffer, "SHOWBLOCKS") == 1){
@@ -12549,10 +12472,12 @@ int ReadIni2(char *inifile, int localfile){
       if(visColorbarVertical_val==1)visColorbarHorizontal_val=0;
       if(visColorbarHorizontal_val==1)visColorbarVertical_val=0;
   // if colorbars are hidden then research mode needs to be off
+#ifndef pp_NEWBOUND_DIALOG
       if(visColorbarVertical_val==0&&visColorbarHorizontal_val==0){
         research_mode = 0;
 //        update_research_mode = 1;
       }
+#endif
       update_visColorbars=1;
       continue;
     }
@@ -12884,17 +12809,11 @@ int ReadIni2(char *inifile, int localfile){
         smoke_albedo = CLAMP(smoke_albedo, 0.0, 1.0);
         continue;
       }
-      if(Match(buffer, "SMOKETHICK") == 1){
-        if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i", &smoke3d_thick);
-        continue;
-      }
 #ifdef pp_GPU
       if(Match(buffer, "SMOKERTHICK") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%f", &smoke3d_rthick);
         smoke3d_rthick = CLAMP(smoke3d_rthick, 1.0, 255.0);
-        smoke3d_thick = LogBase2(smoke3d_rthick);
         continue;
       }
 #endif
@@ -14123,7 +14042,7 @@ void WriteIniLocal(FILE *fileout){
     }
   }
   fprintf(fileout, "V_PARTICLES\n");
-  fprintf(fileout, " %i %f %i %f\n", setpartmin, partmin, setpartmax, partmax);
+  fprintf(fileout, " %i %f %i %f\n", setpartmin, glui_partmin, setpartmax, glui_partmax);
   if(npart5prop > 0){
     for(i = 0; i < npart5prop; i++){
       partpropdata *propi;
@@ -14137,21 +14056,30 @@ void WriteIniLocal(FILE *fileout){
   {
     int n3d;
 
-    n3d = 5;
+    n3d = MAXPLOT3DVARS;
     if(n3d<numplot3dvars)n3d = numplot3dvars;
     if(n3d>MAXPLOT3DVARS)n3d = MAXPLOT3DVARS;
     fprintf(fileout, "V_PLOT3D\n");
     fprintf(fileout, " %i\n", n3d);
     for(i = 0; i < n3d; i++){
-      fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3min[i], p3min[i], setp3max[i], p3max[i]);
+#ifdef pp_NEWBOUND_DIALOG
+      fprintf(fileout, " %i %i %f %i %f\n", i + 1, SET_MIN, p3min_all[i], SET_MAX, p3max_all[i]);
+#else
+      fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3min_all[i], p3min_all[i], setp3max_all[i], p3max_all[i]);
+#endif
     }
   }
   if(nslicebounds > 0){
     for(i = 0; i < nslicebounds; i++){
       fprintf(fileout, "V_SLICE\n");
       fprintf(fileout, " %i %f %i %f %s : %f %f %i\n",
+#ifdef pp_NEWBOUND_DIALOG
+        SET_MIN, slicebounds[i].dlg_valmin,
+        SET_MAX, slicebounds[i].dlg_valmax,
+#else
         slicebounds[i].dlg_setvalmin, slicebounds[i].dlg_valmin,
         slicebounds[i].dlg_setvalmax, slicebounds[i].dlg_valmax,
+#endif
         slicebounds[i].label->shortlabel
         , slicebounds[i].line_contour_min, slicebounds[i].line_contour_max, slicebounds[i].line_contour_num
         );
@@ -14439,18 +14367,18 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "ISOZIPSTEP\n");
   fprintf(fileout, " %i\n", isozipstep);
   fprintf(fileout, "LOADINC\n");
-  fprintf(fileout, " %i %i\n", load_incremental,use_cslice);
+  fprintf(fileout, " %i\n", load_incremental);
   fprintf(fileout, "NOPART\n");
   fprintf(fileout, " %i\n", nopart);
   fprintf(fileout, "PARTFAST\n");
   fprintf(fileout, " %i %i %i\n", partfast, part_multithread, npartthread_ids);
   fprintf(fileout, "RESEARCHMODE\n");
   // if colorbars are hidden then research mode needs to be off
-  if(visColorbarVertical_val==0&&visColorbarHorizontal_val==0){
-    research_mode = 0;
-    update_research_mode = 1;
+  {
+    int ncolorlabel_digits_old=1;
+
+    fprintf(fileout, " %i %i %f %i\n", research_mode, ncolorlabel_digits_old, colorbar_shift, ncolorlabel_digits_old);
   }
-  fprintf(fileout, " %i %i %f\n", research_mode, ncolorlabel_decimals, colorbar_shift);
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
   fprintf(fileout, "SLICEAVERAGE\n");
@@ -14473,8 +14401,6 @@ void WriteIni(int flag,char *filename){
   GetGeomDialogState();
   fprintf(fileout, "APERTURE\n");
   fprintf(fileout, " %i\n", apertureindex);
-  fprintf(fileout, "AXISSMOOTH\n");
-  fprintf(fileout, " %i\n", axislabels_smooth);
   fprintf(fileout, "BLOCKLOCATION\n");
   fprintf(fileout, " %i\n", blocklocation);
   fprintf(fileout, "BEAM\n");
@@ -14723,6 +14649,11 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", show_bothsides_int, show_bothsides_ext);
   fprintf(fileout, "VECTORSKIP\n");
   fprintf(fileout, " %i\n", vectorskip);
+  fprintf(fileout, "VISBOUNDARYTYPE\n");
+  for(i = 0; i<7; i++){
+    fprintf(fileout, " %i ", vis_boundary_type[i]);
+  }
+  fprintf(fileout, " %i %i \n", show_mirror_boundary, show_mirror_boundary);
   fprintf(fileout, "WINDROSEDEVICE\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n",
     viswindrose, showref_windrose, windrose_xy_vis, windrose_xz_vis, windrose_yz_vis, windstate_windrose, showlabels_windrose,
@@ -14880,9 +14811,6 @@ void WriteIni(int flag,char *filename){
 #ifdef pp_GPU
   fprintf(fileout,"SMOKERTHICK\n");
   fprintf(fileout," %f\n",smoke3d_rthick);
-#else
-  fprintf(fileout,"SMOKETHICK\n");
-  fprintf(fileout," %i\n",smoke3d_thick);
 #endif
 #ifdef pp_GPU
   fprintf(fileout, "USEGPU\n");

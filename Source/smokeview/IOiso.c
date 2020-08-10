@@ -139,9 +139,6 @@ void GetIsoSizes(const char *isofile, int dataflag, FILE **isostreamptr, int *nv
     *niso_times += 1;
   }
   FSEEK(*isostreamptr,beg,SEEK_SET);
-  if(dataflag==1&&axislabels_smooth==1){
-    SmoothLabel(tmin_local,tmax_local,nrgb);
-  }
 }
 
 /* ------------------ ReadIsoGeomWrapup ------------------------ */
@@ -387,7 +384,6 @@ FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_fram
     GetIsoDataBounds(isoi, &iso_valmin, &iso_valmax);
     isoi->geom_globalmin = iso_valmin;
     isoi->geom_globalmax = iso_valmax;
-    AdjustBounds(PERCENTILE_MIN, PERCENTILE_MAX, isoi->geom_vals, isoi->geom_nvals, &iso_valmin, &iso_valmax);
     isoi->geom_percentilemin = iso_valmin;
     isoi->geom_percentilemax = iso_valmax;
     if(setisomin == GLOBAL_MIN)iso_valmin = isoi->geom_globalmin;
@@ -1604,7 +1600,6 @@ void UpdateIsoShowLevels(void){
 
 void SetIsoLabels(float smin, float smax,
                     isodata *sd, int *errorcode){
-  char *scale;
   int isotype;
   boundsdata *sb;
 
@@ -1615,9 +1610,7 @@ void SetIsoLabels(float smin, float smax,
 
   *errorcode=0;
   PRINTF("setting up iso labels \n");
-  scale=sb->scale;
-  GetIsoLabels(smin,smax,nrgb,
-                sb->colorlabels,&scale,sb->levels256);
+  GetIsoLabels(smin,smax,nrgb,sb->colorlabels,sb->levels256);
 }
 
 /* ------------------ CompareIsoTriangles ------------------------ */

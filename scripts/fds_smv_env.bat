@@ -2,13 +2,13 @@
 
 :: ---- FDS and smokeview version ----
 
-set fds_version=FDS6.7.4
-set fds_tag=FDS6.7.4
-set fds_versionbase=6.7.4
+set fds_version=FDS6.7.5test
+set fds_tag=FDS6.7.5test
+set fds_versionbase=6.7.5test
 
-set smv_version=SMV6.7.14
-set smv_tag=SMV6.7.14
-set smv_versionbase=6.7.14
+set smv_version=SMV6.7.15test
+set smv_tag=SMV6.7.15test
+set smv_versionbase=6.7.15test
 
 set fds_edition=FDS6
 set fds_debug=0
@@ -26,7 +26,7 @@ if exist %userprofile%\.bundle\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="5-Mar-2020"
+set smvlogdate="19-Jun-2020"
 
 :: ---- repo locations ----
 
@@ -45,18 +45,18 @@ set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 
 :: set to INTEL if using Intel MPI library
 set linux_mpi_version=INTEL
-set linux_intel_mpi_version=19u4
+set linux_intel_mpi_version=20u1
 
 
-set osx_mpi_version=4.0.2
+set osx_mpi_version=3.1.2
 ::set osx_mpi_version=1.8.4
 
-set linux_comp_version=19u4
-set osx_comp_version=19u4
+set linux_comp_version=20u1
+set osx_comp_version=20u1
 
 :: ---- INTEL compiler version ----
 
-set INTELVERSION=INTEL19U4
+set INTELVERSION=INTEL20U1
 
 :: ---- Guide locations ----
 
@@ -84,7 +84,7 @@ set plink_options=-no-antispoof
 :: ---- hostnames ----
 
 ::*** linux
-set linux_hostname=burn.el.nist.gov
+set linux_hostname=blaze.el.nist.gov
 ::set linux_hostname=192.168.1.14
 set linux_username=%username%
 set linux_logon=%linux_username%@%linux_hostname%

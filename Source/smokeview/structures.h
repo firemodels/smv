@@ -513,7 +513,7 @@ typedef struct _ventdata {
   int hideboundary;
   int dir,dir2,vent_id;
   int useventcolor;
-  int isOpenvent;
+  int isOpenvent, isMirrorvent;
   float xvent1_orig, xvent2_orig;
   float yvent1_orig, yvent2_orig;
   float zvent1_orig, zvent2_orig;
@@ -1095,7 +1095,7 @@ typedef struct _partclassdata {
 
 typedef struct _partpropdata {
   flowlabels *label;
-  char **partlabels, *scale;
+  char **partlabels;
   unsigned char *class_present, *class_vis;
   unsigned int *class_types;
   int human_property, particle_property;
@@ -1104,6 +1104,9 @@ typedef struct _partpropdata {
   float valmin, valmax;
   int imin, imax;
   float global_min, global_max;
+#ifdef pp_NEWBOUND_DIALOG
+  float ini_min, ini_max;
+#endif
   int set_global_bounds;
   float percentile_min, percentile_max;
   float user_min, user_max;
@@ -1160,6 +1163,10 @@ typedef struct _partdata {
 #endif
   int bounds_set;
   float *global_min, *global_max;
+#ifdef pp_NEWBOUND_DIALOG
+  float *file_min, *file_max;
+  int nfilebounds;
+#endif
   unsigned char *vis_part;
   int *tags;
   int *sort_tags;
@@ -1337,22 +1344,21 @@ typedef struct _multivslicedata {
 typedef struct _boundsdata {
   char *shortlabel;
   int dlg_setvalmin, dlg_setvalmax;
+#ifdef pp_NEWBOUND_DIALOG
+  int dlg_compute_loaded, dlg_reset_loaded;
+  float dlg_inivalmin, dlg_inivalmax;
+#endif
   int setchopmin, setchopmax;
   float chopmin, chopmax;
   float dlg_valmin, dlg_valmax;
   float data_valmin,data_valmax;
   float global_valmin, global_valmax;
-#ifdef pp_NEWBOUND_DIALOG
-  float percentile_valmin, percentile_valmax;
-#endif
   float line_contour_min;
   float line_contour_max;
   int line_contour_num;
   char  colorlabels[12][11];
   float colorvalues[12];
   float levels256[256];
-  float fscale;
-  char scale[31];
   flowlabels *label;
 } boundsdata;
 
@@ -1446,6 +1452,9 @@ typedef struct _patchdata {
   int firstshort;
   int compression_type;
   int setvalmin, setvalmax;
+#ifdef pp_NEWBOUND_DIALOG
+  float file_min, file_max;
+#endif
   float valmin, valmax;
   int setchopmin, setchopmax;
   float chopmin, chopmax;
@@ -1460,7 +1469,6 @@ typedef struct _patchdata {
   int *geom_nstatics, *geom_ndynamics;
   int geom_nvals, ngeom_times;
   flowlabels label;
-  char scale[31];
   char menulabel[128], menulabel_base[128], menulabel_suffix[128], gslicedir[50];
   int ijk[6];
   int extreme_min, extreme_max;
@@ -1468,6 +1476,7 @@ typedef struct _patchdata {
   int finalize;
   histogramdata *histogram;
   bounddata bounds;
+  boundsdata *bounds2;
 } patchdata;
 
 /* --------------------------  plot3ddata ------------------------------------ */
@@ -1475,13 +1484,19 @@ typedef struct _patchdata {
 typedef struct _plot3ddata {
   int seq_id, autoload;
   char *file,*reg_file,*comp_file;
+#ifdef pp_NEWBOUND_DIALOG
+  char *bound_file;
+#endif
   int compression_type;
   float time;
   int u, v, w, nvars;
-  float diff_valmin[5], diff_valmax[5];
-  int extreme_min[6], extreme_max[6];
+  float diff_valmin[MAXPLOT3DVARS], diff_valmax[MAXPLOT3DVARS];
+  int extreme_min[MAXPLOT3DVARS], extreme_max[MAXPLOT3DVARS];
   int blocknumber,loaded,display;
-  flowlabels label[6];
+#ifdef pp_NEWBOUND_DIALOG
+  float file_min[MAXPLOT3DVARS], file_max[MAXPLOT3DVARS];
+#endif
+  flowlabels label[MAXPLOT3DVARS];
   char menulabel[256], longlabel[256], timelabel[256];
 } plot3ddata;
 
@@ -1495,7 +1510,6 @@ typedef struct _zonedata {
   flowlabels label[4];
   int setvalmin, setvalmax;
   float valmin, valmax;
-  char scale[31];
 } zonedata;
 
 /* --------------------------  roomdata ------------------------------------ */

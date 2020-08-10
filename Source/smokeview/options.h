@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+//#define pp_SHOW_BOUND_MIRROR  // add menu for showing boundary files on mirror/open vents
 #define pp_MULTI_RES          // read in multi-resolution slice files
 //#define pp_HTML_VR           // output VR html code
 //#define pp_PART_HIST            // compute particle histograms
@@ -36,7 +37,6 @@
 //#define pp_PART_TEST        // for debugging, set particle values to 100*parti->seq_id + small random number
 
 //*** in development: all platforms
-#define pp_C_SLICE              // use C to read in slice file headers
 #define pp_SMOKE_FAST           // load 3d smoke in parallel
 //#define pp_SMOKETEST          // max blending for fire, regular blending for smoke
 //#define pp_SPECTRAL           // use black body colors - not fully implemented
@@ -58,7 +58,6 @@
 //*** options: windows
 
 #ifdef WIN32
-//#define pp_OPENVR       // implement virtual reality using openvr library
 #define pp_DEG          // output degree symbol
 #define pp_memstatus
 #define pp_COMPRESS     // support for smokezip
@@ -87,7 +86,6 @@
 #define pp_DEBUG_TERRAIN       // output spreadsheet version of terrain elevation file
 //#define pp_SLICE_DEBUG         // slice debug output
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
-//#define pp_SMOKEALPHA        // experimental smoke alpha settings
 #define pp_TIMINGS
 //#define pp_SMOKETEST         // experimental smoke dialog box entries
 #endif

@@ -8,9 +8,6 @@
 
 #include "infoheader.h"
 #include "update.h"
-#ifdef pp_OPENVR
-#include "vr.h"
-#endif
 #ifdef pp_LUA
 #include "lua_api.h"
 #endif
@@ -254,9 +251,6 @@ int SetupCase(int argc, char **argv){
   glui_defined = 1;
   InitTranslate(smokeview_bindir, tr_name);
 
-#ifdef pp_OPENVR
-  have_vr = HaveVR();
-#endif
   if(ntourinfo==0)SetupTour();
   InitRolloutList();
   GluiColorbarSetup(mainwindow_id);
@@ -1082,7 +1076,7 @@ void InitOpenGL(void){
 #ifdef pp_NEWBOUND_DIALOG
           ReadSliceUseGluiBounds(slicei->file, i, ALL_SLICE_FRAMES, NULL, LOAD, set_slicecolor, &errorcode);
 #else
-          ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, LOAD, set_slicecolor, &errorcode);
+                       ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, LOAD, set_slicecolor, &errorcode);
 #endif
         }
       }
@@ -1487,7 +1481,8 @@ void InitVars(void){
   setpartmin=PERCENTILE_MIN, setpartmax=PERCENTILE_MAX;
   setpartmin_old=setpartmin;
   setpartmax_old=setpartmax;
-  setpatchmin=GLOBAL_MIN, setpatchmax=GLOBAL_MAX;
+  glui_setpatchmin = GLOBAL_MIN;
+  glui_setpatchmax = GLOBAL_MAX;
   settargetmin=0, settargetmax=0;
   setpartchopmin=0, setpartchopmax=0;
   partchopmin=1.0,  partchopmax=0.;
@@ -1884,7 +1879,6 @@ void InitVars(void){
 
   smokecullflag=1;
   visMAINmenus=0;
-  smoke3d_thick=0;
 #ifdef pp_GPU
   smoke3d_rthick=1.0;
   usegpu=0;
@@ -2102,16 +2096,23 @@ void InitVars(void){
     int iii;
 
     for(iii=0;iii<7;iii++){
-      vis_boundary_type[iii]=0;
+      vis_boundary_type[iii]=1;
     }
     vis_boundary_type[0]=1;
     for(iii=0;iii<MAXPLOT3DVARS;iii++){
-      setp3min[iii]=PERCENTILE_MIN;
-      p3min[iii]=1.0f;
-      p3chopmin[iii]=1.0f;
-      setp3max[iii]=PERCENTILE_MAX;
-      p3max[iii]=1.0f;
-      p3chopmax[iii]=0.0f;
+#ifdef pp_NEWBOUND_DIALOG
+      setp3min_all[iii] = SET_MIN;
+      setp3max_all[iii] = SET_MAX;
+      p3min_ini[iii] = 1.0;
+      p3max_ini[iii] = 0.0;
+#else
+      setp3min_all[iii] = PERCENTILE_MIN;
+      setp3max_all[iii] = PERCENTILE_MAX;
+#endif
+      p3min_all[iii]    = 1.0f;
+      p3chopmin[iii]    = 1.0f;
+      p3max_all[iii]    = 1.0f;
+      p3chopmax[iii]    = 0.0f;
     }
   }
 }
