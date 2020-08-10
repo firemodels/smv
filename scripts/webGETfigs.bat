@@ -27,37 +27,37 @@ if "%whichguides%" == "websummary" (
   Title Download web summary images
 
   cd %svn_root%\smv\Manuals\SMV_Summary\images
-  pscp %linux_logon%:%smokebothome%/.smokebot/Manuals/SMV_Summary/images/*  .
+  pscp -P 22 %linux_logon%:%smokebothome%/.smokebot/Manuals/SMV_Summary/images/*  .
 
   cd %svn_root%\smv\Manuals\SMV_Summary\images2
-  pscp %linux_logon%:%smokebothome%/.smokebot/Manuals/SMV_Summary/images2/* .
+  pscp -P 22 %linux_logon%:%smokebothome%/.smokebot/Manuals/SMV_Summary/images2/* .
 
   cd %svn_root%\smv\Manuals\SMV_Summary\movies
-  pscp %linux_logon%:%smokebothome%/.smokebot/MovieManuals/SMV_Summary/movies/*  .
+  pscp -P 22 %linux_logon%:%smokebothome%/.smokebot/MovieManuals/SMV_Summary/movies/*  .
 
   cd %svn_root%\smv\Manuals\SMV_Summary\manuals
-  pscp %linux_logon%:%smokebothome%/.smokebot/pubs/*.pdf .
+  pscp -P 22 %linux_logon%:%smokebothome%/.smokebot/pubs/*.pdf .
   goto eof
 )
 if "%whichguides%" == "smvug" (
   Title Download smokeview user guide images
 
   cd %svn_root%\smv\Manuals\SMV_User_Guide\SCRIPT_FIGURES
-  pscp %linux_logon%:%smokebothome%/.smokebot/images/SMV_User_Guide/SCRIPT_FIGURES/* .
+  pscp -P 22 %linux_logon%:%smokebothome%/.smokebot/images/SMV_User_Guide/SCRIPT_FIGURES/* .
   goto eof
 )
 if "%whichguides%" == "smvvg" (
   Title Download smokeview verification guide images
 
   cd %svn_root%\smv\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
-  pscp %linux_logon%:%smokebothome%/.smokebot/images/SMV_Verification_Guide/SCRIPT_FIGURES/* .
+  pscp -P 22 %linux_logon%:%smokebothome%/.smokebot/images/SMV_Verification_Guide/SCRIPT_FIGURES/* .
   goto eof
 )
 if "%whichguides%" == "fdsug" (
   Title Download FDS user guide images
 
   cd %svn_root%\fds\Manuals\FDS_User_Guide\SCRIPT_FIGURES
-  pscp %linux_logon%:%firebothome%/.firebot/Manuals/FDS_User_Guide/SCRIPT_FIGURES/* .
+  pscp -P 22 %linux_logon%:%firebothome%/.firebot/Manuals/FDS_User_Guide/SCRIPT_FIGURES/* .
   goto eof
 )
 if "%whichguides%" == "fdsvalg" (
@@ -69,7 +69,7 @@ if "%whichguides%" == "fdsvalg" (
 
       Title Download FDS validation guide %%d images
 
-      pscp %linux_logon%:%firebothome%/.firebot/Manuals/FDS_Validation_Guide/SCRIPT_FIGURES/%%d/* .
+      pscp -P 22 %linux_logon%:%firebothome%/.firebot/Manuals/FDS_Validation_Guide/SCRIPT_FIGURES/%%d/* .
       cd ..
   )
   goto eof
@@ -78,12 +78,12 @@ if "%whichguides%" == "fdsverg" (
   Title Download FDS verification guide images
 
   cd %svn_root%\fds\Manuals\FDS_Verification_Guide\SCRIPT_FIGURES
-  pscp %linux_logon%:%firebothome%/.firebot/Manuals/FDS_Verification_Guide/SCRIPT_FIGURES/* .
+  pscp -P 22 %linux_logon%:%firebothome%/.firebot/Manuals/FDS_Verification_Guide/SCRIPT_FIGURES/* .
 
   Title Download FDS verification guide scatterplot images
 
   cd %svn_root%\fds\Manuals\fds/FDS_Verification_Guide\SCRIPT_FIGURES\Scatterplots
-  pscp %linux_logon%:%firebothome%/.firebot/Manuals/FDS_Verification_Guide/SCRIPT_FIGURES/Scatterplots/* .
+  pscp -P 22 %linux_logon%:%firebothome%/.firebot/Manuals/FDS_Verification_Guide/SCRIPT_FIGURES/Scatterplots/* .
   goto eof
 )
 
