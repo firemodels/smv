@@ -35,7 +35,7 @@ plink %plink_options% %linux_logon% %scriptdir%/showrevision.sh  %linux_svn_root
 echo.
 
 echo | set /p=OSX:     
-plink %plink_options% %osx_logon% %scriptdir%/showrevision_onhost.sh  %linux_svn_root%/fds %osx_hostname%
+plink %plink_options% %osx_logon% %scriptdir%/showrevision.sh  %linux_svn_root%/fds %osx_hostname%
 echo.
 
 
@@ -52,7 +52,7 @@ plink %plink_options% %linux_logon% %scriptdir%/showrevision.sh  %linux_svn_root
 
 echo.
 echo | set /p=OSX:     
-plink %plink_options% %osx_logon% %scriptdir%/showrevision_onhost.sh  %linux_svn_root%/smv %osx_hostname%
+plink %plink_options% %osx_logon% %scriptdir%/showrevision.sh  %linux_svn_root%/smv %osx_hostname%
 echo.
 
 pause
