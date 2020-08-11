@@ -18,14 +18,6 @@ goto:eof
 
 call %envfile%
 
-if x"%fds_tags_name%" == "x" goto skip_fds_name_tag
-set fds_tag_arg=-b %fds_tag_name%
-:skip_fds_tag_name
-
-if x"%smv_tags_name%" == "x" goto skip_smv_name_tag
-set smv_tag_arg=-b %smv_tag_name%
-:skip_smv_tag_name
-
 echo.
 echo ---------------------------*** fds ***--------------------------------
 %svn_drive%
@@ -34,7 +26,8 @@ echo Windows
 git checkout master
 if x"%fds_tags%" == "x" goto skip_fds_tag
 if "%fds_tags%" == "latest" goto skip_fds_tag
-git checkout %fds_tag% %fds_tag_arg%
+git branch -d release > Nul 2> Nul
+git checkout %fds_tag% -b release
 :skip_fds_tag
 
 set scriptdir=%linux_svn_root%/smv/scripts/
@@ -42,11 +35,11 @@ set linux_fdsdir=%linux_svn_root%
 
 echo.
 echo Linux
-plink %plink_options% %linux_logon% %scriptdir%/settag.sh  %linux_svn_root%/fds %fds_tag% %fds_tag_name%
+plink %plink_options% %linux_logon% %scriptdir%/set_releasetag.sh  %linux_svn_root%/fds %fds_tag%
 echo.
 
 echo OSX
-plink %plink_options% %osx_logon% %scriptdir%/settag.sh  %linux_svn_root%/fds %fds_tag% %fds_tag_name%
+plink %plink_options% %osx_logon% %scriptdir%/set_releasetag.sh  %linux_svn_root%/fds %fds_tag%
 
 
 echo.
@@ -57,16 +50,17 @@ git checkout master
 
 if x"%smv_tags%" == "x" goto skip_smv_tag
 if "%smv_tags%" == "latest" goto skip_smv_tag
-git checkout %smv_tag% %smv_tag_arg%
+git branch -d release  > Nul 2> Nul
+git checkout %smv_tag% -b release
 :skip_smv_tag
 
 echo.
 echo Linux
-plink %plink_options% %linux_logon% %scriptdir%/settag.sh  %linux_svn_root%/smv %smv_tag% %smv_tag_name%
+plink %plink_options% %linux_logon% %scriptdir%/set_releasetag.sh  %linux_svn_root%/smv %smv_tag%
 
 echo.
 echo OSX
-plink %plink_options% %osx_logon% %scriptdir%/settag.sh  %linux_svn_root%/smv %smv_tag% %smv_tag_name%
+plink %plink_options% %osx_logon% %scriptdir%/set_releasetag.sh  %linux_svn_root%/smv %smv_tag%
 
 echo.
 pause
