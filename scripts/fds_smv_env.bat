@@ -2,13 +2,13 @@
 
 :: ---- FDS and smokeview version ----
 
-set fds_version=FDS6.7.5test
-set fds_tag=FDS6.7.5test
-set fds_versionbase=6.7.5test
+set fds_version=FDS6.7.5
+set fds_tag=FDS6.7.5
+set fds_versionbase=6.7.5
 
-set smv_version=SMV6.7.15test
-set smv_tag=SMV6.7.15test
-set smv_versionbase=6.7.15test
+set smv_version=SMV6.7.15
+set smv_tag=SMV6.7.15
+set smv_versionbase=6.7.15
 
 set fds_edition=FDS6
 set fds_debug=0
@@ -26,7 +26,7 @@ if exist %userprofile%\.bundle\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="19-Jun-2020"
+set smvlogdate="10-Augl-2020"
 
 :: ---- repo locations ----
 
@@ -75,7 +75,7 @@ set OPENMPI_DIR=.bundle/OPENMPI
 set firebotrepo=/home2/smokevis2/firebot/FireModels_clone
 set firebothome=/home2/smokevis2/firebot
 
-set smokebotrepo=/home2/smokevis2/smokebot/FireModels_central
+set smokebotrepo=/home2/smokevis2/smokebot/FireModels_clone
 set smokebothome=/home2/smokevis2/smokebot
 
 :: plink options
