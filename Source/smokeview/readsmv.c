@@ -14948,7 +14948,14 @@ void WriteIni(int flag,char *filename){
     }
   }
 
-  if(fileout!=stdout)fclose(fileout);
+  if(fileout!=stdout){
+    fclose(fileout);
+#ifdef pp_NEWBOUND_DIALOG
+    if(flag == LOCAL_INI&&caseini_filename!=NULL){
+      ReadIni2(caseini_filename, 1);
+    }
+#endif
+  }
 }
 
 /* ------------------ UpdateLoadedLists ------------------------ */
