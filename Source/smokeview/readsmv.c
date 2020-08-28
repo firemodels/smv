@@ -2188,7 +2188,6 @@ void UpdateBoundInfo(void){
 #ifdef pp_NEWBOUND_DIALOG
       sbi->dlg_setvalmin = SET_MIN;
       sbi->dlg_setvalmax = SET_MAX;
-      sbi->dlg_reset_loaded = glui_slice_reset_loaded;
       sbi->dlg_compute_loaded = glui_slice_compute_loaded;
       sbi->dlg_ini_valmin=1.0;
       sbi->dlg_ini_valmax=0.0;
@@ -11500,7 +11499,6 @@ int ReadIni2(char *inifile, int localfile){
               slicebounds[i].dlg_ini_valmin = valmin;
               slicebounds[i].dlg_ini_valmax = valmax;
             }
-            slicebounds[i].dlg_reset_loaded = 0;
 #endif
             if(level_val!=NULL){
               slicebounds[i].line_contour_min = slice_line_contour_min;
