@@ -460,7 +460,7 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
             valmin = prop_id->user_min;
           }
           else{
-            valmin = prop_id->global_min;
+            valmin = prop_id->dlg_global_valmin;
           }
           if(prop_id->setvalmax==PERCENTILE_MAX){
             valmax = prop_id->percentile_max;
@@ -469,7 +469,7 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
             valmax = prop_id->user_max;
           }
           else{
-            valmax = prop_id->global_max;
+            valmax = prop_id->dlg_global_valmax;
           }
 #endif
           dval = valmax - valmin;
@@ -622,7 +622,7 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
       local_tmin = propi->user_min;
     }
     else{
-      local_tmin = propi->global_min;
+      local_tmin = propi->dlg_global_valmin;
     }
     if(propi->setvalmax==PERCENTILE_MAX){
       local_tmax = propi->percentile_max;
@@ -631,7 +631,7 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
       local_tmax = propi->user_max;
     }
     else{
-      local_tmax = propi->global_max;
+      local_tmax = propi->dlg_global_valmax;
     }
 #endif
     labels=propi->partlabels;

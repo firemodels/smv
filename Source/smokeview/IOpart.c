@@ -1604,7 +1604,7 @@ void PrintPartProp(void){
     }
     else{
       PRINTF("label=%s min=%f max=%f\n", propi->label->longlabel, propi->valmin, propi->valmax);
-      PRINTF("   glbmin=%f glbmax=%f\n", propi->global_min, propi->global_max);
+      PRINTF("   glbmin=%f glbmax=%f\n", propi->dlg_global_valmin, propi->dlg_global_valmax);
       PRINTF("   permin=%f permax=%f\n", propi->percentile_min, propi->percentile_max);
     }
     PRINTF("\n");
@@ -1728,8 +1728,12 @@ void InitPartProp(void){
           propi->setvalmin=GLOBAL_MIN;
           propi->setvalmax=GLOBAL_MAX;
           propi->set_global_bounds=1;
-          propi->global_min=100000000.0;
-          propi->global_max=-propi->global_min;
+          propi->dlg_global_valmin=100000000.0;
+          propi->dlg_global_valmax=-propi->dlg_global_valmin;
+#ifdef pp_NEWBOUND_DIALOG
+          propi->dlg_ini_valmin = 100000000.0;
+          propi->dlg_ini_valmax = -propi->dlg_ini_valmin;
+#endif
           propi->valmin=1.0;
           propi->valmax=0.0;
           propi->percentile_min=1.0;

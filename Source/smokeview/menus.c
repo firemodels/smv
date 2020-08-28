@@ -3483,8 +3483,8 @@ void ParticlePropShowMenu(int value){
     global_prop_index = iprop;
     partshortlabel=propi->label->shortlabel;
     partunitlabel=propi->label->unit;
-#define FILETYPEINDEX 5
-    PartBoundCB(FILETYPEINDEX);
+#define FILETYPE_INDEX 5
+    PartBoundCB(FILETYPE_INDEX);
     UpdatePartType();
   }
   else if(value==MENU_PROP_SHOWALL){

@@ -43,7 +43,9 @@ EXTERNCPP void GetGlobalPatchBounds(void);
 EXTERNCPP void GetGlobalPartBounds(void);
 EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetLoadedSliceBounds(char *label, float *loaded_min, float *loaded_max);
-EXTERNCPP void GetLoadedPlot3dBounds(float *loaded_min, float *loaded_max);
+#ifdef pp_NEWBOUND_DIALOG
+EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded_max);
+#endif
 FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
 EXTERNCPP void ResetSliceData(void);
 EXTERNCPP void Plot3DBounds2Glui(void);
@@ -267,7 +269,6 @@ EXTERNCPP void UpdateGluiKeyframe(void);
 EXTERNCPP void UpdateGluiBoundaryUnits(void);
 EXTERNCPP void UpdateGluiSliceUnits(void);
 EXTERNCPP void UpdateGluiPlot3D(void);
-EXTERNCPP void UpdateGluiPlot3D_units(void);
 EXTERNCPP void UpdateGluiPlot3Dtype(void);
 EXTERNCPP void UpdateGluiIsotype(void);
 EXTERNCPP void SetGLuiViewListManual(void);

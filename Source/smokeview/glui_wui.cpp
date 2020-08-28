@@ -157,7 +157,7 @@ extern "C" void WuiCB(int var){
       list_slice_index=fire_line_type;
       UpdateSliceList(list_slice_index);
 
-      SliceBoundCB(FILETYPEINDEX);
+      SliceBoundCB(FILETYPE_INDEX);
 
 #ifndef pp_NEWBOUND_DIALOG
       glui_setslicemin = SET_MIN;
@@ -179,7 +179,7 @@ extern "C" void WuiCB(int var){
       SliceBoundCB(CHOPVALMIN);
       SliceBoundCB(CHOPVALMAX);
 
-      SliceBoundCB(FILEUPDATE);
+      SliceBoundCB(FILE_UPDATE);
       SliceBoundCB(CHOPUPDATE);
       break;
     case TERRAIN_COLORS:

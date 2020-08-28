@@ -1103,9 +1103,9 @@ typedef struct _partpropdata {
   float ppartlevels256[256];
   float valmin, valmax;
   int imin, imax;
-  float global_min, global_max;
+  float dlg_global_valmin, dlg_global_valmax;
 #ifdef pp_NEWBOUND_DIALOG
-  float ini_min, ini_max;
+  float dlg_ini_valmin, dlg_ini_valmax;
 #endif
   int set_global_bounds;
   float percentile_min, percentile_max;
@@ -1346,13 +1346,13 @@ typedef struct _boundsdata {
   int dlg_setvalmin, dlg_setvalmax;
 #ifdef pp_NEWBOUND_DIALOG
   int dlg_compute_loaded, dlg_reset_loaded;
-  float dlg_inivalmin, dlg_inivalmax;
+  float dlg_ini_valmin, dlg_ini_valmax;
 #endif
   int setchopmin, setchopmax;
   float chopmin, chopmax;
   float dlg_valmin, dlg_valmax;
   float data_valmin,data_valmax;
-  float global_valmin, global_valmax;
+  float dlg_global_valmin, dlg_global_valmax;
   float line_contour_min;
   float line_contour_max;
   int line_contour_num;

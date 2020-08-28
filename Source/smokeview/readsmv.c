@@ -2190,8 +2190,8 @@ void UpdateBoundInfo(void){
       sbi->dlg_setvalmax = SET_MAX;
       sbi->dlg_reset_loaded = glui_slice_reset_loaded;
       sbi->dlg_compute_loaded = glui_slice_compute_loaded;
-      sbi->dlg_inivalmin=1.0;
-      sbi->dlg_inivalmax=0.0;
+      sbi->dlg_ini_valmin=1.0;
+      sbi->dlg_ini_valmax=0.0;
 #else
       sbi->dlg_setvalmin=PERCENTILE_MIN;
       sbi->dlg_setvalmax=PERCENTILE_MAX;
@@ -2279,6 +2279,12 @@ void UpdateBoundInfo(void){
       sbi->dlg_setvalmax = 0;
       sbi->dlg_valmin = 1.0;
       sbi->dlg_valmax = 0.0;
+#ifdef pp_NEWBOUND_DIALOG
+      sbi->dlg_ini_valmin = 1.0;
+      sbi->dlg_ini_valmax = 0.0;
+#endif
+      sbi->dlg_global_valmin = 1.0;
+      sbi->dlg_global_valmax = 0.0;
       sbi->chopmax = 0.0;
       sbi->chopmin = 1.0;
       sbi->setchopmax = 0;
@@ -10920,9 +10926,10 @@ int ReadIni2(char *inifile, int localfile){
       for(i = 0; i<n3d; i++){
         int iplot3d, isetmin, isetmax;
         float p3mintemp, p3maxtemp;
+        int ival=0;
 
         fgets(buffer, 255, stream);
-        sscanf(buffer, "%i %i %f %i %f", &iplot3d, &isetmin, &p3mintemp, &isetmax, &p3maxtemp);
+        sscanf(buffer, "%i %i %f %i %f %i", &iplot3d, &isetmin, &p3mintemp, &isetmax, &p3maxtemp, &ival);
         iplot3d--;
         if(iplot3d >= 0 && iplot3d<MAXPLOT3DVARS){
 #ifdef pp_NEWBOUND_DIALOG
@@ -10942,9 +10949,13 @@ int ReadIni2(char *inifile, int localfile){
 #ifdef pp_NEWBOUND_DIALOG
           p3min_ini[iplot3d]    = p3mintemp;
           p3max_ini[iplot3d]    = p3maxtemp;
+          plot3d_compute_loaded[iplot3d] = ival;
 #endif
         }
       }
+#ifdef pp_NEWBOUND_DIALOG
+      glui_plot3d_compute_loaded = plot3d_compute_loaded[0];
+#endif
       continue;
     }
     if(Match(buffer, "CACHE_QDATA") == 1){
@@ -11365,12 +11376,12 @@ int ReadIni2(char *inifile, int localfile){
           propi->valmax = vmax;
 #ifdef pp_NEWBOUND_DIALOG
           if(ivmin==SET_MIN&&ivmax==SET_MAX&&vmin<=vmax){
-            propi->ini_min = vmin;
-            propi->ini_max = vmax;
+            propi->dlg_ini_valmin = vmin;
+            propi->dlg_ini_valmax = vmax;
           }
           else {
-            propi->ini_min = 1.0;
-            propi->ini_max = 0.0;
+            propi->dlg_ini_valmin = 1.0;
+            propi->dlg_ini_valmax = 0.0;
           }
 #endif
           switch(ivmin){
@@ -11378,7 +11389,7 @@ int ReadIni2(char *inifile, int localfile){
             propi->percentile_min = vmin;
             break;
           case GLOBAL_MIN:
-            propi->global_min = vmin;
+            propi->dlg_global_valmin = vmin;
             break;
           case SET_MIN:
             propi->user_min = vmin;
@@ -11392,7 +11403,7 @@ int ReadIni2(char *inifile, int localfile){
             propi->percentile_max = vmax;
             break;
           case GLOBAL_MAX:
-            propi->global_max = vmax;
+            propi->dlg_global_valmax = vmax;
             break;
           case SET_MAX:
             propi->user_max = vmax;
@@ -11485,8 +11496,10 @@ int ReadIni2(char *inifile, int localfile){
             slicebounds[i].dlg_valmin = valmin;
             slicebounds[i].dlg_valmax = valmax;
 #ifdef pp_NEWBOUND_DIALOG
-            slicebounds[i].dlg_inivalmin = valmin;
-            slicebounds[i].dlg_inivalmax = valmax;
+            if(valmin<=valmax&&setvalmin==SET_MIN&&setvalmax==SET_MAX){
+              slicebounds[i].dlg_ini_valmin = valmin;
+              slicebounds[i].dlg_ini_valmax = valmax;
+            }
             slicebounds[i].dlg_reset_loaded = 0;
 #endif
             if(level_val!=NULL){
@@ -11595,7 +11608,20 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "V_BOUNDARY") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i %f %s", &glui_setpatchmin, &glui_patchmin, &glui_setpatchmax, &glui_patchmax, buffer2);
-      if(strcmp(buffer2, "") != 0)GLUI2GlobalBoundaryBounds(buffer2);
+      if(strcmp(buffer2, "") != 0){
+        GLUI2GlobalBoundaryBounds(buffer2);
+#ifdef pp_NEWBOUND_DIALOG
+        if(glui_setpatchmin==SET_MIN&&glui_setpatchmax==SET_MAX&&glui_patchmin <= glui_patchmax){
+          boundsdata* patchbounds;
+
+          patchbounds = GetPatchBoundsInfo(buffer2);
+          if(patchbounds != NULL){
+            patchbounds->dlg_ini_valmin = glui_patchmin;
+            patchbounds->dlg_ini_valmax = glui_patchmax;
+          }
+        }
+#endif
+      }
       continue;
     }
     if(Match(buffer, "C_BOUNDARY") == 1){
@@ -14049,8 +14075,13 @@ void WriteIniLocal(FILE *fileout){
 
       propi = part5propinfo + i;
       fprintf(fileout, "V5_PARTICLES\n");
+#ifdef pp_NEWBOUND_DIALOG
+      fprintf(fileout, " %i %f %i %f %s\n",
+        SET_MIN, propi->user_min, SET_MAX, propi->user_max, propi->label->shortlabel);
+#else
       fprintf(fileout, " %i %f %i %f %s\n",
         propi->setvalmin, propi->valmin, propi->setvalmax, propi->valmax, propi->label->shortlabel);
+#endif
     }
   }
   {
@@ -14063,7 +14094,7 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, " %i\n", n3d);
     for(i = 0; i < n3d; i++){
 #ifdef pp_NEWBOUND_DIALOG
-      fprintf(fileout, " %i %i %f %i %f\n", i + 1, SET_MIN, p3min_all[i], SET_MAX, p3max_all[i]);
+      fprintf(fileout, " %i %i %f %i %f %i\n", i + 1, SET_MIN,         p3min_all[i], SET_MAX,         p3max_all[i], plot3d_compute_loaded[i]);
 #else
       fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3min_all[i], p3min_all[i], setp3max_all[i], p3max_all[i]);
 #endif

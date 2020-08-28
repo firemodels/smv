@@ -27,11 +27,11 @@
 #define GLUI_VALMIN 103
 #define GLUI_VALMAX 104
 #endif
-#define FILETYPEINDEX 5
-#define FILEUPDATE 6
-#define FILERELOAD 7
+#define FILETYPE_INDEX      5
+#define FILE_UPDATE         6
+#define FILE_RELOAD         7
 #ifdef pp_NEWBOUND_DIALOG
-#define GLUI_RADIO_RESET 28
+#define GLUI_RADIO_RESET   28
 #define GLUI_RADIO_COMPUTE 29
 #endif
 #define FILEUPDATEDATA 8
@@ -52,7 +52,7 @@
 #define SHOWPATCH_BOTH 24
 #define HIDEPATCHSURFACE 25
 #define DATA_transparent 26
-#define ALLFILERELOAD 27
+#define ALLFILE_RELOAD 27
 #define UNLOAD_QDATA 203
 #define SET_TIME 204
 #define TBOUNDS 205
