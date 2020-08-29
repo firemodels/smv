@@ -1106,6 +1106,7 @@ typedef struct _partpropdata {
   float dlg_global_valmin, dlg_global_valmax;
 #ifdef pp_NEWBOUND_DIALOG
   float dlg_ini_valmin, dlg_ini_valmax;
+  float dlg_loaded_valmin, dlg_loaded_valmax;
 #endif
   int set_global_bounds;
   float percentile_min, percentile_max;

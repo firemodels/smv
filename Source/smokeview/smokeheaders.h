@@ -40,12 +40,12 @@ boundsdata *GetPatchBoundsInfo(char *shortlabel);
 EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max);
 EXTERNCPP void GetGlobalSliceBounds(void);
 EXTERNCPP void GetGlobalPatchBounds(void);
-EXTERNCPP void GetGlobalPartBounds(void);
+EXTERNCPP int GetGlobalPartBounds(int flag);
+EXTERNCPP void GetLoadedPartBounds(void);
 EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetLoadedSliceBounds(char *label, float *loaded_min, float *loaded_max);
-#ifdef pp_NEWBOUND_DIALOG
+EXTERNCPP void GetLoadedPatchBounds(char* label, float* loaded_min, float* loaded_max);
 EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded_max);
-#endif
 FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
 EXTERNCPP void Plot3DBounds2Glui(void);
 #endif

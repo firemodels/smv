@@ -133,16 +133,18 @@ void GetPartFileBounds(char *file, float **valminptr, float **valmaxptr, int *nf
 
 /* ------------------ GetGlobalPartBounds ------------------------ */
 
-void GetGlobalPartBounds(void){
+int GetGlobalPartBounds(int flag){
   int i;
   float *partmins=NULL, *partmaxs=NULL;
   int npartbounds=0;
+  int nloaded_files=0;
 
   npartbounds = -1;
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
 
     parti = partinfo+i;
+    if(parti->loaded==1)nloaded_files++;
     GetPartFileBounds(parti->bound_file, &(parti->file_min), &(parti->file_max), &(parti->nfilebounds));
     if(parti->nfilebounds>0){
       if(npartbounds==-1){
@@ -168,6 +170,7 @@ void GetGlobalPartBounds(void){
        
 
       parti = partinfo+i;
+      if(flag==1&&parti->loaded==0)continue;
       fmin = parti->file_min;
       fmax = parti->file_max;
       for(j = 0; j<npartbounds; j++){
@@ -186,13 +189,35 @@ void GetGlobalPartBounds(void){
   }
   for(i=1; i<npart5prop; i++){
     if(i-1>npartbounds)break;
-    part5propinfo[i].user_min = partmins[i-1];
-    part5propinfo[i].user_max = partmaxs[i-1];
-    part5propinfo[i].dlg_global_valmin = partmins[i-1];
-    part5propinfo[i].dlg_global_valmax = partmaxs[i-1];
+    if(flag==0){
+      part5propinfo[i].user_min = partmins[i-1];
+      part5propinfo[i].user_max = partmaxs[i-1];
+      part5propinfo[i].dlg_global_valmin = partmins[i-1];
+      part5propinfo[i].dlg_global_valmax = partmaxs[i-1];
+    }
+    else{
+      part5propinfo[i].dlg_loaded_valmin = partmins[i-1];
+      part5propinfo[i].dlg_loaded_valmax = partmaxs[i-1];
+    }
   }
   FREEMEMORY(partmins);
   FREEMEMORY(partmaxs);
+  return nloaded_files;
+}
+
+/* ------------------ GetLoadedPartBounds ------------------------ */
+
+void GetLoadedPartBounds(void){
+  if(GetGlobalPartBounds(1)==0){
+    int i;
+
+    printf("***warning: loaded particle file bounds not available, using global bounds\n");
+    GetGlobalPartBounds(0);
+    for(i=1; i<npart5prop; i++){
+      part5propinfo[i].dlg_loaded_valmin = part5propinfo[i].dlg_global_valmin;
+      part5propinfo[i].dlg_loaded_valmax = part5propinfo[i].dlg_global_valmax;
+    }
+  }
 }
 
 /* ------------------ GetFileBounds ------------------------ */
@@ -347,12 +372,30 @@ void GetGlobalPatchBounds(void){
 
 /* ------------------ GetLoadedPlot3dBounds ------------------------ */
 
-#ifdef pp_NEWBOUND_DIALOG
 void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded_max){
   int i;
+  int plot3d_loaded = 0;
 
-  for(i=0;i<6;i++){
-    if(compute_loaded[i] != 1)continue;
+#define BOUNDS_LOADED 1
+  for (i = 0; i < nplot3dinfo; i++) {
+    plot3ddata* plot3di;
+    int j;
+
+    plot3di = plot3dinfo + i;
+    if (plot3di->loaded == 0)continue;
+    plot3d_loaded = 1;
+    break;
+  }
+  if(plot3d_loaded == 0){
+    printf("***warning: loaded plot3d file bounds not available, using global bounds\n");
+    for (i = 0; i < 6; i++) {
+      loaded_min[i] = p3min_global[i];
+      loaded_max[i] = p3max_global[i];
+    }
+    return;
+  }
+  for (i = 0; i < 6; i++) {
+    if(compute_loaded[i] != BOUNDS_LOADED)continue;
     loaded_min[i] = 1.0;
     loaded_max[i] = 0.0;
   }
@@ -363,8 +406,7 @@ void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded
     plot3di = plot3dinfo + i;
     if(plot3di->loaded == 0)continue;
     for(j=0;j<6;j++){
-
-      if(compute_loaded[j] != 1)continue;
+      if(compute_loaded[j] != BOUNDS_LOADED)continue;
       if(loaded_min[j] > loaded_max[j]){
         loaded_min[j] = plot3di->file_min[j];
         loaded_max[j] = plot3di->file_max[j];
@@ -376,7 +418,6 @@ void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded
     }
   }
 }
-#endif
 
 /* ------------------ GetLoadedSliceBounds ------------------------ */
 
@@ -397,6 +438,29 @@ void GetLoadedSliceBounds(char *label, float *loaded_min, float *loaded_max){
     else{
       *loaded_min = MIN(*loaded_min, slicei->file_min);
       *loaded_max = MAX(*loaded_max, slicei->file_max);
+    }
+  }
+}
+
+/* ------------------ GetLoadedPatchBounds ------------------------ */
+
+void GetLoadedPatchBounds(char* label, float* loaded_min, float* loaded_max) {
+  int i;
+
+  *loaded_min = 1.0;
+  *loaded_max = 0.0;
+  for (i = 0; i < npatchinfo; i++) {
+    patchdata* patchi;
+
+    patchi = patchinfo + i;
+    if (patchi->loaded == 0 || strcmp(patchi->label.shortlabel, label) != 0)continue;
+    if (*loaded_min > * loaded_max) {
+      *loaded_min = patchi->file_min;
+      *loaded_max = patchi->file_max;
+    }
+    else {
+      *loaded_min = MIN(*loaded_min, patchi->file_min);
+      *loaded_max = MAX(*loaded_max, patchi->file_max);
     }
   }
 }

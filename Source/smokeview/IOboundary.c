@@ -2294,11 +2294,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   }
 
 #ifdef pp_NEWBOUND_DIALOG
-#define GLOBAL_BOUNDS 219
+#define COMPUTE_BOUNDS 219
   void BoundBoundCB(int var);
   if(glui_patchmin>glui_patchmax){
     UpdateBoundaryListIndex(patchfilenum);
-    BoundBoundCB(GLOBAL_BOUNDS);
+    BoundBoundCB(COMPUTE_BOUNDS);
   }
 #endif
 

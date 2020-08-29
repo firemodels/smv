@@ -1277,45 +1277,44 @@ extern "C" void BoundBoundCB(int var){
   switch(var){
 #ifdef pp_NEWBOUND_DIALOG
   case FILE_LOADED_ONLY:
-    return;
-    break;
   case GLOBAL_BOUNDS_MIN:
-    return;
-    break;
   case GLOBAL_BOUNDS_MAX:
+  case GLOBAL_BOUNDS_MIN_LOADED:
+  case GLOBAL_BOUNDS_MAX_LOADED:
+  case GLOBAL_BOUNDS_LOADED:
+  case GLUI_RADIO_COMPUTE:
     return;
     break;
-  case GLOBAL_BOUNDS:
+  case COMPUTE_BOUNDS:
     {
       float vmin, vmax;
 
-      if(glui_patch_compute_loaded == 0){
+      switch(glui_patch_compute_loaded){
+      case BOUNDS_GLOBAL:
         vmin = patchbounds[list_patch_index].dlg_global_valmin;
         vmax = patchbounds[list_patch_index].dlg_global_valmax;
-      }
-      else {
+        break;
+      case BOUNDS_LOADED:
+        GetLoadedPatchBounds(patchlabellist[list_patch_index], &vmin, &vmax);
+        if (vmin > vmax) {
+          printf("***warning: loaded boundary file bounds not available, using global bounds\n");
+          vmin = patchbounds[list_patch_index].dlg_global_valmin;
+          vmax = patchbounds[list_patch_index].dlg_global_valmax;
+        }
+        break;
+      case BOUNDS_INI:
         vmin = patchbounds[list_patch_index].dlg_ini_valmin;
         vmax = patchbounds[list_patch_index].dlg_ini_valmax;
+        break;
+      default:
+        ASSERT(FFALSE);
+        break;
       }
       EDIT_patch_min->set_float_val(vmin);
       EDIT_patch_max->set_float_val(vmax);
       BoundBoundCB(VALMIN);
       BoundBoundCB(VALMAX);
     }
-    return;
-    break;
-  case GLOBAL_BOUNDS_MIN_LOADED:
-    return;
-    break;
-  case GLOBAL_BOUNDS_MAX_LOADED:
-    return;
-    break;
-  case GLOBAL_BOUNDS_LOADED:
-    BoundBoundCB(GLOBAL_BOUNDS_MIN_LOADED);
-    BoundBoundCB(GLOBAL_BOUNDS_MAX_LOADED);
-    return;
-  case GLUI_RADIO_RESET:
-  case GLUI_RADIO_COMPUTE:
     return;
     break;
 #endif
@@ -1793,7 +1792,7 @@ void GenerateBoundDialogBox(
   GLUI_StaticText **STATIC_min_unit,  GLUI_StaticText **STATIC_max_unit, GLUI_StaticText **STATIC_cmin_unit, GLUI_StaticText **STATIC_cmax_unit,
   GLUI_EditText **EDIT_min,     GLUI_EditText **EDIT_max, GLUI_EditText **EDIT_chopmin, GLUI_EditText **EDIT_chopmax,
   GLUI_Checkbox **CHECKBOX_setchopmin, GLUI_Checkbox **CHECKBOX_setchopmax,
-  GLUI_Button **BUTTON_reload, GLUI_Button **BUTTON_update, int use_loaded_data,
+  GLUI_Button **BUTTON_reload, GLUI_Button **BUTTON_update, 
   GLUI_Rollout **ROLLOUT_chop, GLUI_RadioGroup **RADIO_compute,
   char *file_type, int *compute_loaded,
 
@@ -1812,10 +1811,10 @@ void GenerateBoundDialogBox(
   INSERT_ROLLOUT(*ROLLOUT_bound, glui_bounds);
   ADDPROCINFO(procinfo, *nprocinfo, *ROLLOUT_bound, 0, glui_bounds);
 
-  glui_bounds->add_button_to_panel(*ROLLOUT_bound, "Set min/max using", GLOBAL_BOUNDS, FILE_CB);
+  glui_bounds->add_button_to_panel(*ROLLOUT_bound, "Set min/max using", COMPUTE_BOUNDS, FILE_CB);
   *RADIO_compute = glui_bounds->add_radiogroup_to_panel(*ROLLOUT_bound, compute_loaded, GLUI_RADIO_COMPUTE, FILE_CB);
   glui_bounds->add_radiobutton_to_group(*RADIO_compute, "all data");
-  if(use_loaded_data==1)glui_bounds->add_radiobutton_to_group(*RADIO_compute, "loaded data");
+  glui_bounds->add_radiobutton_to_group(*RADIO_compute, "loaded data");
   glui_bounds->add_radiobutton_to_group(*RADIO_compute, "ini data");
 
   PANEL_b = glui_bounds->add_panel_to_panel(*ROLLOUT_bound, "", GLUI_PANEL_NONE);
@@ -2273,8 +2272,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       &STATIC_bound_cmin_unit, &STATIC_bound_cmax_unit,
       &EDIT_patch_min, &EDIT_patch_max, &EDIT_patch_chopmin, &EDIT_patch_chopmax,
       &CHECKBOX_patch_setchopmin, &CHECKBOX_patch_setchopmax,
-      &BUTTON_reloadbound, NULL, LOADED_DATA_NO,
-      &ROLLOUT_boundary_chop, &RADIO_patch_compute,
+      &BUTTON_reloadbound, NULL, &ROLLOUT_boundary_chop, &RADIO_patch_compute,
       "boundary", &glui_patch_compute_loaded,
       &glui_patchmin, &glui_patchmax,
       &patchchopmin, &patchchopmax,
@@ -2552,8 +2550,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       &STATIC_part_cmin_unit, &STATIC_part_cmax_unit,
       &EDIT_part_min,&EDIT_part_max, &EDIT_part_chopmin, &EDIT_part_chopmax,
       &CHECKBOX_part_setchopmin, &CHECKBOX_part_setchopmax,
-      &BUTTON_reloadpart, NULL, LOADED_DATA_NO,
-      &ROLLOUT_part_chop, &RADIO_part_compute,
+      &BUTTON_reloadpart, NULL, &ROLLOUT_part_chop, &RADIO_part_compute,
       "particle", &glui_part_compute_loaded,
       &glui_partmin,&glui_partmax,
       &partchopmin,&partchopmax,
@@ -2653,8 +2650,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       &STATIC_plot3d_min_unit, &STATIC_plot3d_max_unit, &STATIC_plot3d_cmin_unit, &STATIC_plot3d_cmax_unit,
       &EDIT_glui_p3min, &EDIT_glui_p3max, &EDIT_p3_chopmin, &EDIT_p3_chopmax,
       &CHECKBOX_p3_setchopmin, &CHECKBOX_p3_setchopmax,
-      &BUTTON_reloadplot3d, NULL, LOADED_DATA_YES,
-      &ROLLOUT_plot3d_chop, &RADIO_plot3d_compute,
+      &BUTTON_reloadplot3d, NULL, &ROLLOUT_plot3d_chop, &RADIO_plot3d_compute,
       "plot3d", &glui_plot3d_compute_loaded,
       &glui_p3min, &glui_p3max,
       &p3chopmin_temp, &p3chopmax_temp,
@@ -2771,8 +2767,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       &STATIC_slice_min_unit, &STATIC_slice_max_unit, &STATIC_slice_cmin_unit, &STATIC_slice_cmax_unit,
       &EDIT_slice_min, &EDIT_slice_max, &EDIT_slice_chopmin, &EDIT_slice_chopmax,
       &CHECKBOX_slice_setchopmin, &CHECKBOX_slice_setchopmax,
-      &BUTTON_slice_reload, &BUTTON_slice_update, LOADED_DATA_YES,
-      &ROLLOUT_slice_chop, &RADIO_slice_compute,
+      &BUTTON_slice_reload, &BUTTON_slice_update, &ROLLOUT_slice_chop, &RADIO_slice_compute,
       "slice", &glui_slice_compute_loaded,
       &glui_slicemin, &glui_slicemax,
       &glui_slicechopmin, &glui_slicechopmax,
@@ -3216,8 +3211,6 @@ extern "C" void Plot3DBoundCB(int var){
   case GLUI_RADIO_COMPUTE:
     plot3d_compute_loaded[list_p3_index] = glui_plot3d_compute_loaded;
     break;
-  case GLUI_RADIO_RESET:
-    break;
   case FILE_LOADED_ONLY:
     return;
     break;
@@ -3227,13 +3220,13 @@ extern "C" void Plot3DBoundCB(int var){
   case GLOBAL_BOUNDS_MAX:
     return;
     break;
-  case GLOBAL_BOUNDS:
+  case COMPUTE_BOUNDS:
     for(i = 0; i < MAXPLOT3DVARS; i++){
-      if(plot3d_compute_loaded[i] == 0){
+      if(plot3d_compute_loaded[i] == BOUNDS_GLOBAL){
         p3min_all[i] = p3min_global[i];
         p3max_all[i] = p3max_global[i];
       }
-      else if(plot3d_compute_loaded[i] == 2){
+      else if(plot3d_compute_loaded[i] == BOUNDS_INI){
         p3min_all[i] = p3min_ini[i];
         p3max_all[i] = p3max_ini[i];
       }
@@ -3887,7 +3880,6 @@ void PartBoundCB(int var){
   switch(var){
 #ifdef pp_NEWBOUND_DIALOG
   case GLUI_RADIO_COMPUTE:
-  case GLUI_RADIO_RESET:
     return;
   case FILE_LOADED_ONLY:
     return;
@@ -3898,17 +3890,27 @@ void PartBoundCB(int var){
   case GLOBAL_BOUNDS_MAX:
     return;
     break;
-  case GLOBAL_BOUNDS:
+  case COMPUTE_BOUNDS:
     if(ipart5prop > 0){
       float valmin_local, valmax_local;
 
-      if (glui_part_compute_loaded == 0) {
+      switch (glui_part_compute_loaded){
+      case BOUNDS_GLOBAL:
         valmin_local = part5propinfo[ipart5prop].dlg_global_valmin;
         valmax_local = part5propinfo[ipart5prop].dlg_global_valmax;
-      }
-      else if (glui_part_compute_loaded == 1) {
+        break;
+      case BOUNDS_INI:
         valmin_local = part5propinfo[ipart5prop].dlg_ini_valmin;
         valmax_local = part5propinfo[ipart5prop].dlg_ini_valmax;
+        break;
+      case BOUNDS_LOADED:
+        GetLoadedPartBounds();
+        valmin_local = part5propinfo[ipart5prop].dlg_loaded_valmin;
+        valmax_local = part5propinfo[ipart5prop].dlg_loaded_valmax;
+        break;
+      default:
+        ASSERT(FFALSE);
+        break;
       }
       if (valmin_local <= valmax_local) {
         glui_partmin = valmin_local;
@@ -4400,10 +4402,9 @@ extern "C" void SliceBoundCB(int var){
       EDIT_slice_max->set_float_val(slicebounds[list_slice_index].dlg_valmax);
       break;
     case GLUI_RADIO_COMPUTE:
-    case GLUI_RADIO_RESET:
       Glui2SliceBounds();
       break;
-    case GLOBAL_BOUNDS:
+    case COMPUTE_BOUNDS:
       if(glui_slice_compute_loaded == 0){
         SliceBoundCB(GLOBAL_BOUNDS_MIN);
         SliceBoundCB(GLOBAL_BOUNDS_MAX);
