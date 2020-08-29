@@ -379,7 +379,6 @@ void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded
 #define BOUNDS_LOADED 1
   for (i = 0; i < nplot3dinfo; i++) {
     plot3ddata* plot3di;
-    int j;
 
     plot3di = plot3dinfo + i;
     if (plot3di->loaded == 0)continue;
