@@ -4534,6 +4534,10 @@ extern "C" void SliceBoundCB(int var){
         break;
       }
       if(research_mode==1){
+        ncolorlabel_digits_save = ncolorlabel_digits;
+        ncolorlabel_digits =6;
+        if(SPINNER_ncolorlabel_digits!=NULL)SPINNER_ncolorlabel_digits->set_int_val(ncolorlabel_digits);
+
         visColorbarVertical_save=visColorbarVertical;
         visColorbarVertical=1;
 
@@ -4555,6 +4559,7 @@ extern "C" void SliceBoundCB(int var){
 #endif
         glui_slicemax_save = glui_slicemax;
         SliceBoundCB(SETVALMAX);
+        SliceBoundCB(FILE_UPDATE);
 
         // boundary files
 
@@ -4571,6 +4576,7 @@ extern "C" void SliceBoundCB(int var){
         if(RADIO_patch_setmin != NULL)RADIO_patch_setmin->set_int_val(glui_setpatchmin);
         if(RADIO_patch_setmax != NULL)RADIO_patch_setmax->set_int_val(glui_setpatchmax);
 #endif
+        BoundBoundCB(FILE_RELOAD);
 
         // particle files
 
@@ -4616,6 +4622,8 @@ extern "C" void SliceBoundCB(int var){
       }
       else{
         visColorbarVertical=visColorbarVertical_save;
+        ncolorlabel_digits = ncolorlabel_digits_save;
+        if(SPINNER_ncolorlabel_digits!=NULL)SPINNER_ncolorlabel_digits->set_int_val(ncolorlabel_digits);
 
         // slice files
 
