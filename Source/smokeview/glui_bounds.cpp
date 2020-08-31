@@ -238,7 +238,9 @@ GLUI_Checkbox *CHECKBOX_show_iso_shaded=NULL;
 GLUI_Checkbox *CHECKBOX_show_iso_outline=NULL;
 GLUI_Checkbox *CHECKBOX_show_iso_points=NULL;
 
+#ifdef pp_LOAD_INCREMENTAL
 GLUI_Checkbox *CHECKBOX_boundary_load_incremental=NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_slice_load_incremental=NULL;
 GLUI_Checkbox *CHECKBOX_histogram_show_numbers=NULL;
 GLUI_Checkbox *CHECKBOX_histogram_show_graph=NULL;
@@ -649,10 +651,12 @@ extern "C" void UpdateGluiIsoBounds(void){
 
 /* ------------------ LoadIncrementalCB1 ------------------------ */
 
+#ifdef pp_LOAD_INCREMENTAL
 extern "C" void LoadIncrementalCB1(int var){
   if(CHECKBOX_boundary_load_incremental!=NULL)CHECKBOX_boundary_load_incremental->set_int_val(load_incremental);
   if(CHECKBOX_slice_load_incremental!=NULL)CHECKBOX_slice_load_incremental->set_int_val(load_incremental);
 }
+#endif
 
 /* ------------------ UpdateVectorpointsize ------------------------ */
 
@@ -2257,8 +2261,10 @@ extern "C" void GluiBoundsSetup(int main_window){
         if(patchi->firstshort==1)glui_bounds->add_radiobutton_to_group(RADIO_bf,patchi->label.shortlabel);
       }
 #ifdef pp_FSEEK
+#ifdef pp_LOAD_INCREMENTAL
       CHECKBOX_boundary_load_incremental=glui_bounds->add_checkbox_to_panel(ROLLOUT_bound, _("incremental data loading"), &load_incremental, BOUNDARY_LOAD_INCREMENTAL, LoadIncrementalCB);
       LoadIncrementalCB(BOUNDARY_LOAD_INCREMENTAL);
+#endif
 #endif
       glui_bounds->add_column_to_panel(ROLLOUT_bound,false);
     }
@@ -2933,8 +2939,10 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("Output data to file"), &output_slicedata);
 
 #ifdef pp_FSEEK
+#ifdef pp_LOAD_INCREMENTAL
     glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("incremental data loading"), &load_incremental, SLICE_LOAD_INCREMENTAL, LoadIncrementalCB);
     LoadIncrementalCB(SLICE_LOAD_INCREMENTAL);
+#endif
 #endif
     glui_bounds->add_spinner_to_panel(ROLLOUT_boundimmersed,"slice offset",GLUI_SPINNER_FLOAT,&sliceoffset_all);
 
