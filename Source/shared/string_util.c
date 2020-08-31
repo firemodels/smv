@@ -1682,7 +1682,7 @@ void PRINTversion(char *progname){
 #endif
 #ifdef WIN32
   PRINTF("Platform         : WIN64 ");
-#ifdef pp_INTEL
+#ifdef __INTEL_COMPILER
   PRINTF(" (Intel C/C++)");
 #endif
   PRINTF("\n");

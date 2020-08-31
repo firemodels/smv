@@ -50,7 +50,7 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -D WIN32 -O2 -D pp_INTEL /nologo $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -D WIN32 -O2 /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
 intel_win_64 : CPP       = icl
 intel_win_64 : exe       = sh2bat_win_64.exe

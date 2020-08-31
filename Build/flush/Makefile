@@ -65,7 +65,7 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od -D WIN32 -D pp_INTEL /nologo $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -Od -D WIN32 /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
 intel_win_64 : FC        = ifort
 intel_win_64 : exe       = flush_win_64.exe
@@ -113,8 +113,8 @@ gnu_linux_64: $(obj)
 LINUXFORTLIBS_64=$(IFORT_COMPILER_LIB)/libifcore.a
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
-intel_linux_64 : FFLAGS    = -O0 -traceback -m64 -static-intel -D pp_INTEL  -fpp
+intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64 : FFLAGS    = -O0 -traceback -m64 -static-intel  -fpp
 intel_linux_64 : LFLAGS    = -lifport $(LINUXFORTLIBS_64)
 intel_linux_64 : CC        = icc
 intel_linux_64 : FC        = ifort
@@ -127,8 +127,8 @@ OSXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libifport.
 
 # ------------- intel osx 64 ----------------
 
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
-intel_osx_64 : FFLAGS    = -O0 -m64 -fpp -traceback -static-intel -D pp_INTEL -D pp_OSX -mmacosx-version-min=10.7
+intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64 : FFLAGS    = -O0 -m64 -fpp -traceback -static-intel -D pp_OSX -mmacosx-version-min=10.7
 intel_osx_64 : CC        = icc
 intel_osx_64 : FC        = ifort
 intel_osx_64 : exe       = flush_osx_64

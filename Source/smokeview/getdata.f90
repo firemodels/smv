@@ -10,7 +10,7 @@
 !  IF (N_FACE_D>0)  WRITE(LU_GEOM) (SURF_D(I),I=1,N_FACE_D)
 
 
-#ifdef pp_INTEL
+#ifdef __INTEL_COMPILER
 #define pp_FSEEK
 #endif
 #ifdef pp_GCC
@@ -20,7 +20,7 @@
 !  ------------------ module cio ------------------------
 
 module cio
-#ifdef pp_INTEL
+#ifdef __INTEL_COMPILER
 use ifport, only: seek_set, seek_cur
 #else
 integer, parameter :: seek_set=0, seek_cur=1
@@ -32,7 +32,7 @@ contains
 !  ------------------ ffseek ------------------------
 
 subroutine ffseek(unit,sizes,nsizes,mode,error)
-#ifdef pp_INTEL
+#ifdef __INTEL_COMPILER
 use ifport, only: fseek
 #endif
 implicit none
@@ -52,7 +52,7 @@ do i = 1, nsizes
 end do
 #endif
 
-#ifdef pp_INTEL
+#ifdef __INTEL_COMPILER
 error = fseek(unit,size,mode)
 #endif
 
