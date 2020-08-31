@@ -1958,6 +1958,7 @@ void GenerateBoundDialogs(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_roll
     glui_bounds->add_button_to_panel(PANEL_c, button_title, FILE_RELOAD, FILE_CB);
   }
   else{
+    glui_bounds->add_checkbox_to_panel(PANEL_c, _("Cache boundary data"), &cache_boundarydata, CACHE_BOUNDARYDATA, BoundBoundCB);
     BUTTON_updatebound = glui_bounds->add_button_to_panel(PANEL_c, _("Update using cached data"), FILEUPDATEDATA, FILE_CB);
     BUTTON_reloadbound = glui_bounds->add_button_to_panel(PANEL_c, button_title, FILE_RELOAD, FILE_CB);
   }
@@ -2373,9 +2374,6 @@ extern "C" void GluiBoundsSetup(int main_window){
       glui_bounds->add_spinner_to_panel(ROLLOUT_boundary_settings, "point size", GLUI_SPINNER_FLOAT, &geomboundary_pointsize);
       glui_bounds->add_separator_to_panel(ROLLOUT_boundary_settings);
     }
-#ifndef pp_NEWBOUND_DIALOG
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("Cache boundary data"), &cache_boundarydata, CACHE_BOUNDARYDATA, BoundBoundCB);
-#endif
     CHECKBOX_showpatch_both = glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("Display exterior data"), &showpatch_both, SHOWPATCH_BOTH, BoundBoundCB);
 
 
@@ -4584,7 +4582,11 @@ extern "C" void SliceBoundCB(int var){
         if(RADIO_patch_setmin != NULL)RADIO_patch_setmin->set_int_val(glui_setpatchmin);
         if(RADIO_patch_setmax != NULL)RADIO_patch_setmax->set_int_val(glui_setpatchmax);
 #endif
-        BoundBoundCB(FILE_RELOAD);
+        if(UpdateAllBoundaryColors()==0){
+          printf("***warning: boundary file data not loaded\n");
+          printf("            reloading boundary data files\n");
+          BoundBoundCB(FILE_RELOAD);
+        }
 
         // particle files
 

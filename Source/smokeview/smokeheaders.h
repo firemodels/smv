@@ -314,7 +314,7 @@ EXTERNCPP void HideGluiBounds(void);
 EXTERNCPP void ShowGluiGeometry(void);
 EXTERNCPP void HideGluiGeometry(void);
 
-EXTERNCPP void UpdateAllBoundaryColors(void);
+EXTERNCPP int UpdateAllBoundaryColors(void);
 EXTERNCPP void UpdateSliceListIndex(int sfn);
 EXTERNCPP void UpdateBoundaryListIndex(int patchfilenum);
 EXTERNCPP void UpdateBoundaryListIndex2(char *label);
