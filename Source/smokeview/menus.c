@@ -7072,7 +7072,7 @@ updatemenu=0;
       }
     }
     GLUTADDSUBMENU(_("2D contours"),staticslicemenu);
-    if(cache_qdata==1){
+    if(cache_plot3d_data==1){
       GLUTADDSUBMENU(_("3D contours"),isosurfacemenu);
     }
     if(nplot3dloaded>1)GLUTADDSUBMENU(_("Mesh"),plot3dshowsinglemeshmenu);

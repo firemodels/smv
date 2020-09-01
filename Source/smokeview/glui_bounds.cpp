@@ -102,6 +102,7 @@ GLUI_Rollout *ROLLOUT_particle_settings=NULL;
 GLUI_Rollout *ROLLOUT_particle_histogram = NULL;
 #endif
 GLUI_Panel *PANEL_keep_bound_data = NULL;
+GLUI_Panel *PANEL_keep_plot3d_data = NULL;
 #ifndef pp_NEWBOUND_DIALOG
 GLUI_Panel *PANEL_slice_bound = NULL;
 #endif
@@ -924,12 +925,6 @@ extern "C" void UpdateEvacParms(void){
   if(CHECKBOX_show_evac_color!=NULL)CHECKBOX_show_evac_color->set_int_val(show_evac_colorbar);
 }
 
-/* ------------------ UpdateGluiPlot3D ------------------------ */
-
-extern "C" void UpdateGluiPlot3D(void){
-  Plot3DBoundCB(UNLOAD_QDATA);
-}
-
 /* ------------------ PartBoundCBInit ------------------------ */
 
 extern "C" void PartBoundCBInit(void){
@@ -1343,7 +1338,7 @@ extern "C" void BoundBoundCB(int var){
     break;
   case CACHE_DATA:
     if(PANEL_keep_bound_data !=NULL){
-      if(cache_boundarydata==0){
+      if(cache_boundary_data==0){
         PANEL_keep_bound_data->disable();
       }
       else{
@@ -1508,9 +1503,9 @@ extern "C" void BoundBoundCB(int var){
     break;
   case FILE_UPDATE:
     if(patchlabellist!=NULL)GLUI2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
-    BoundBoundCB(FILE_UPDATE_DATA);
+    BoundBoundCB(UPDATE_DATA_COLORS);
     break;
-  case FILE_UPDATE_DATA:
+  case UPDATE_DATA_COLORS:
     UpdateAllBoundaryColors();
     break;
   case FILE_RELOAD:
@@ -1895,7 +1890,7 @@ void GenerateBoundDialogs(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_roll
   GLUI_StaticText **STATIC_con_min_unit, GLUI_StaticText **STATIC_con_max_unit,
   GLUI_StaticText **STATIC_con_cmin_unit, GLUI_StaticText **STATIC_con_cmax_unit,
   GLUI_Button **BUTTON_update, GLUI_Button **BUTTON_reload,
-  GLUI_Panel **PANEL_bound, GLUI_Panel **PANEL_keep_data,
+  GLUI_Panel **PANEL_bound, GLUI_Panel **PANEL_keep_data, int *cache_data,
 
   int *setminval, int *setmaxval,
   float *minval, float *maxval,
@@ -1970,13 +1965,14 @@ void GenerateBoundDialogs(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_roll
   }
   else{
     if(PANEL_keep_data!=NULL){
-      glui_bounds->add_checkbox_to_panel(PANEL_c, _("Keep data after loading"), &cache_boundarydata, CACHE_DATA, BoundBoundCB);
+      glui_bounds->add_checkbox_to_panel(PANEL_c, _("Keep data after loading"), cache_data, CACHE_DATA, FILE_CB);
       BoundBoundCB(CACHE_DATA);
       *PANEL_keep_data = glui_bounds->add_panel_to_panel(PANEL_c, "", GLUI_PANEL_NONE);
-      BUTTON_updatebound = glui_bounds->add_button_to_panel(*PANEL_keep_data, _("Update coloring"), FILE_UPDATE_DATA, FILE_CB);
+      BUTTON_updatebound = glui_bounds->add_button_to_panel(*PANEL_keep_data, _("Update coloring"), UPDATE_DATA_COLORS, FILE_CB);
+      FILE_CB(CACHE_DATA);
     }
     else{
-      BUTTON_updatebound = glui_bounds->add_button_to_panel(PANEL_c, _("Update coloring"), FILE_UPDATE_DATA, FILE_CB);
+      BUTTON_updatebound = glui_bounds->add_button_to_panel(PANEL_c, _("Update coloring"), UPDATE_DATA_COLORS, FILE_CB);
     }
     BUTTON_reloadbound = glui_bounds->add_button_to_panel(PANEL_c, button_title, FILE_RELOAD, FILE_CB);
   }
@@ -2298,7 +2294,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       &EDIT_patch_min, &EDIT_patch_max, &EDIT_patch_chopmin, &EDIT_patch_chopmax,
       &CHECKBOX_patch_setchopmin, &CHECKBOX_patch_setchopmax,
       &BUTTON_reloadbound, &BUTTON_updatebound, &ROLLOUT_boundary_chop, &RADIO_patch_compute,
-      "boundary", &glui_patch_compute_loaded, &cache_boundarydata, &PANEL_keep_bound_data,
+      "boundary", &glui_patch_compute_loaded, &cache_boundary_data, &PANEL_keep_bound_data,
       &glui_patchmin, &glui_patchmax,
       &patchchopmin, &patchchopmax,
       &setpatchchopmin, &setpatchchopmax,
@@ -2314,7 +2310,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       &STATIC_bound_min_unit,&STATIC_bound_max_unit,
       &STATIC_bound_cmin_unit,&STATIC_bound_cmax_unit,
       &BUTTON_updatebound, &BUTTON_reloadbound,
-      NULL, &PANEL_keep_bound_data,
+      NULL, &PANEL_keep_bound_data, &cache_boundary_data,
       &glui_setpatchmin,&glui_setpatchmax,&glui_patchmin,&glui_patchmax,
       &setpatchchopmin, &setpatchchopmax,
       &patchchopmin, &patchchopmax,
@@ -2589,7 +2585,7 @@ extern "C" void GluiBoundsSetup(int main_window){
         &STATIC_part_min_unit,&STATIC_part_max_unit,
         NULL,NULL,
         NULL,NULL,
-        NULL, NULL,
+        NULL, NULL, NULL,
         &setpartmin,&setpartmax,&glui_partmin,&glui_partmax,
         &setpartchopmin,&setpartchopmax,&partchopmin,&partchopmax,
         RELOAD_BOUNDS,DONT_TRUNCATE_BOUNDS,
@@ -2661,9 +2657,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     for(i=0;i<MAXPLOT3DVARS;i++){
       glui_bounds->add_radiobutton_to_group(RADIO_p3,plot3dinfo[0].label[i].shortlabel);
     }
-#ifndef pp_NEWBOUND_DIALOG
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_plot3d, _("Cache Plot3D data"), &cache_qdata, UNLOAD_QDATA, Plot3DBoundCB);
-#endif
     glui_bounds->add_column_to_panel(ROLLOUT_plot3d,false);
 
 
@@ -2673,7 +2666,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       &EDIT_glui_p3min, &EDIT_glui_p3max, &EDIT_p3_chopmin, &EDIT_p3_chopmax,
       &CHECKBOX_p3_setchopmin, &CHECKBOX_p3_setchopmax,
       &BUTTON_reloadplot3d, NULL, &ROLLOUT_plot3d_chop, &RADIO_plot3d_compute,
-      "plot3d", &glui_plot3d_compute_loaded, NULL, NULL,
+      "plot3d", &glui_plot3d_compute_loaded,  &cache_plot3d_data, &PANEL_keep_plot3d_data,
       &glui_p3min, &glui_p3max,
       &p3chopmin_temp, &p3chopmax_temp,
       &glui_setp3min, &glui_setp3max,
@@ -2688,10 +2681,10 @@ extern "C" void GluiBoundsSetup(int main_window){
       &STATIC_plot3d_min_unit, &STATIC_plot3d_max_unit,
       &STATIC_plot3d_cmin_unit, &STATIC_plot3d_cmax_unit,
       NULL, NULL,
-      NULL, NULL,
+      NULL, &PANEL_keep_plot3d_data, &cache_plot3d_data,
       &glui_setp3min, &glui_setp3max, &glui_p3min, &glui_p3max,
       &setp3chopmin_temp, &setp3chopmax_temp, &p3chopmin_temp, &p3chopmax_temp,
-      RELOAD_BOUNDS, TRUNCATE_BOUNDS,
+      UPDATERELOAD_BOUNDS, TRUNCATE_BOUNDS,
       Plot3DBoundCB,
       Plot3dRolloutCB,plot3dprocinfo,&nplot3dprocinfo
     );
@@ -2742,7 +2735,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_column_to_panel(ROLLOUT_plot3d,false);
 
     Plot3DBoundCB(FILETYPE_INDEX);
-    Plot3DBoundCB(UNLOAD_QDATA);
   }
 
   // ----------------------------------- Slice ----------------------------------------
@@ -2805,7 +2797,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       &STATIC_slice_min_unit,&STATIC_slice_max_unit,
       &STATIC_slice_cmin_unit,&STATIC_slice_cmax_unit,
       NULL,NULL,
-      &PANEL_slice_bound, NULL,
+      &PANEL_slice_bound, NULL, NULL,
       &glui_setslicemin,&glui_setslicemax,&glui_slicemin,&glui_slicemax,
       &glui_setslicechopmin, &glui_setslicechopmax,
       &glui_slicechopmin, &glui_slicechopmax,
@@ -3275,30 +3267,6 @@ extern "C" void Plot3DBoundCB(int var){
     BoundBoundCB(GLOBAL_BOUNDS_MAX_LOADED);
     return;
 #endif
-  case UNLOAD_QDATA:
-    if(cache_qdata==0){
-     ROLLOUT_isosurface->disable();
-    }
-    else{
-      int enable_isosurface;
-
-      enable_isosurface=1;
-      for(i=0;i<nmeshes;i++){
-        meshdata *meshi;
-        plot3ddata *plot3di;
-
-        meshi = meshinfo + i;
-        if(meshi->plot3dfilenum==-1)continue;
-        plot3di = plot3dinfo + meshi->plot3dfilenum;
-        if(plot3di->loaded==0||plot3di->display==0)continue;
-        if(meshi->qdata==NULL){
-          enable_isosurface=0;
-          break;
-        }
-      }
-      if(enable_isosurface==1)ROLLOUT_isosurface->enable();
-      if(enable_isosurface==0)ROLLOUT_isosurface->disable();
-    }
     break;
   case PLOT3D_VECTORSKIP:
     if(SPINNER_slicevectorskip!=NULL)SPINNER_slicevectorskip->set_int_val(vectorskip);
@@ -3460,12 +3428,26 @@ extern "C" void Plot3DBoundCB(int var){
         break;
      }
    break;
+  case CACHE_DATA:
+    if(PANEL_keep_plot3d_data !=NULL){
+      if(cache_plot3d_data==0){
+        PANEL_keep_plot3d_data->disable();
+      }
+      else{
+        PANEL_keep_plot3d_data->enable();
+      }
+    }
+    break;
   case FILE_UPDATE:
    p3min_all[list_p3_index] =    glui_p3min;
    p3max_all[list_p3_index] =    glui_p3max;
    setp3min_all[list_p3_index] = glui_setp3min;
    setp3max_all[list_p3_index] = glui_setp3max;
    break;
+  case UPDATE_DATA_COLORS:
+    Plot3DBoundCB(FILE_UPDATE);
+    UpdateAllPlot3DColors();
+    break;
   case FILE_RELOAD:
    Plot3DBoundCB(FILE_UPDATE);
    for(i=0;i<nplot3dinfo;i++){
@@ -5033,7 +5015,7 @@ extern "C" void SliceBoundCB(int var){
     }
 #endif
     break;
-  case FILE_UPDATE_DATA:
+  case UPDATE_DATA_COLORS:
   case FILE_UPDATE:
     use_slice_glui_bounds = 1;
 #ifndef pp_NEWBOUND_DIALOG

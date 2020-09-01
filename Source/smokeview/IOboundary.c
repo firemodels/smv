@@ -1552,7 +1552,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   one time step at a time rather than for all time steps.
   */
 
-      if(statfile==0&&(glui_setpatchmin==SET_MIN||glui_setpatchmax==SET_MAX)&&cache_boundarydata==0)loadpatchbysteps=UNCOMPRESSED_BYFRAME;
+      if(statfile==0&&(glui_setpatchmin==SET_MIN||glui_setpatchmax==SET_MAX)&&cache_boundary_data==0)loadpatchbysteps=UNCOMPRESSED_BYFRAME;
     }
   }
   else{
@@ -2354,7 +2354,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       meshi->patchventcolors[i]=ventcolors[vent_index];
     }
   }
-  if(cache_boundarydata==0){
+  if(cache_boundary_data==0){
     FREEMEMORY(meshi->patchval);
   }
   patchi->loaded=1;

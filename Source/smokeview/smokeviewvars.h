@@ -552,7 +552,7 @@ SVEXTERN int SVDECL(update_ssf,0);
 SVEXTERN char SVDECL(*ini_from,NULL), SVDECL(*ini_to,NULL);
 SVEXTERN char SVDECL(*ssf_from, NULL), SVDECL(*ssf_to, NULL);
 
-SVEXTERN int SVDECL(cache_boundarydata, 1);
+SVEXTERN int SVDECL(cache_boundary_data, 1);
 SVEXTERN int SVDECL(tour_antialias,0);
 SVEXTERN int SVDECL(tour_drag,0);
 
@@ -1086,7 +1086,7 @@ SVEXTERN float xbar0ORIG, ybar0ORIG, zbar0ORIG;
 SVEXTERN int ReadPlot3dFile, ReadIsoFile;
 SVEXTERN int ReadVolSlice;
 SVEXTERN int ReadZoneFile, SVDECL(ReadPartFile,0);
-SVEXTERN int SVDECL(cache_qdata,1);
+SVEXTERN int SVDECL(cache_plot3d_data,1);
 
 SVEXTERN int editwindow_status;
 SVEXTERN int startup_pass;

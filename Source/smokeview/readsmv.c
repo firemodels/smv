@@ -10960,8 +10960,8 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "CACHE_QDATA") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &cache_qdata);
-      ONEORZERO(cache_qdata);
+      sscanf(buffer, "%i", &cache_plot3d_data);
+      ONEORZERO(cache_plot3d_data);
       continue;
     }
     if(Match(buffer, "UNLOAD_QDATA") == 1){
@@ -10969,13 +10969,13 @@ int ReadIni2(char *inifile, int localfile){
 
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &unload_qdata);
-      cache_qdata = 1 - unload_qdata;
-      ONEORZERO(cache_qdata);
+      cache_plot3d_data = 1 - unload_qdata;
+      ONEORZERO(cache_plot3d_data);
       continue;
     }
     if(Match(buffer, "CACHE_BOUNDARYDATA") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &cache_boundarydata);
+      sscanf(buffer, "%i", &cache_boundary_data);
       continue;
     }
     if(Match(buffer, "TREECOLORS") == 1){
@@ -14027,9 +14027,9 @@ void WriteIniLocal(FILE *fileout){
     }
   }
   fprintf(fileout, "CACHE_BOUNDARYDATA\n");
-  fprintf(fileout, " %i \n", cache_boundarydata);
+  fprintf(fileout, " %i \n", cache_boundary_data);
   fprintf(fileout, "CACHE_QDATA\n");
-  fprintf(fileout, " %i\n", cache_qdata);
+  fprintf(fileout, " %i\n", cache_plot3d_data);
   fprintf(fileout, "PATCHDATAOUT\n");
   fprintf(fileout, " %i %f %f %f %f %f %f %f %f\n", output_patchdata,
     patchout_tmin, patchout_tmax,

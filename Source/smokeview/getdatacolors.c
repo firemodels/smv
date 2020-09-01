@@ -769,7 +769,7 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
     meshi = meshinfo+p->blocknumber;
     ntotal=(meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
     iblank=meshi->c_iblank_node;
-    if(cache_qdata==1||meshi->qdata!=NULL){
+    if(cache_plot3d_data==1||meshi->qdata!=NULL){
       q=meshi->qdata+plot3dvar*ntotal;
       for(n=0;n<ntotal;n++){
         if(iblank==NULL||*iblank++==GAS){
@@ -825,7 +825,7 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
     meshi = meshinfo+p->blocknumber;
     ntotal=(meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
 
-    if(cache_qdata==1||meshi->qdata!=NULL){
+    if(cache_plot3d_data==1||meshi->qdata!=NULL){
       q=meshi->qdata+plot3dvar*ntotal;
       iq=meshi->iqdata+plot3dvar*ntotal;
       for(n=0;n<ntotal;n++){
@@ -876,7 +876,7 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
     meshi = meshinfo+p->blocknumber;
     ntotal=(meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
 
-    if(cache_qdata==0&&meshi->qdata==NULL){
+    if(cache_plot3d_data==0&&meshi->qdata==NULL){
       float qval, *qvals;
 
       qvals=p3levels256[plot3dvar];
@@ -889,6 +889,28 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
         *iq++=itt;
       }
     }
+  }
+}
+
+/* ------------------ UpdateAllPlot3DColors ------------------------ */
+
+void UpdateAllPlot3DColors(void){
+  int i, updated=0;
+
+  for(i = 0; i < nplot3dinfo; i++){
+    plot3ddata *plot3di;
+    int errorcode;
+
+    plot3di = plot3dinfo + i;
+    if(plot3di->loaded == 1){
+      UpdatePlot3DColors(i, &errorcode);
+      updated = 1;
+    }
+  }
+  if(updated==1){
+    UpdatePlotSlice(XDIR);
+    UpdatePlotSlice(YDIR);
+    UpdatePlotSlice(ZDIR);
   }
 }
 

@@ -1857,7 +1857,7 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'i':
-      if(cache_qdata==1){
+      if(cache_plot3d_data==1){
         HandleIso();
         return;
       }
@@ -1985,7 +1985,7 @@ void Keyboard(unsigned char key, int flag){
         plotn=1;
       }
       UpdateAllPlotSlices();
-      if(visiso==1&&cache_qdata==1)UpdateSurface();
+      if(visiso==1&& cache_plot3d_data==1)UpdateSurface();
       UpdatePlot3dListIndex();
       break;
     case 'q':

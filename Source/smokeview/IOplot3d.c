@@ -26,6 +26,57 @@ int Plot3dCompare( const void *arg1, const void *arg2 ){
   return 0;
 }
 
+/* ------------------ UpdatePlot3DColors  ------------------------ */
+
+void  UpdatePlot3DColors(int ifile, int *errorcode){
+  int nn, error;
+
+  for(nn = 0; nn < numplot3dvars; nn++){
+    int n;
+
+    if(nplot3dinfo > 0){
+      shortp3label[nn] = plot3dinfo[ifile].label[nn].shortlabel;
+      unitp3label[nn] = plot3dinfo[ifile].label[nn].unit;
+    }
+    else{
+      char numstring[4];
+
+      sprintf(numstring, "%i", nn);
+      strcpy(shortp3label[nn], numstring);
+      unitp3label[nn] = 
+        blank_global;
+    }
+
+    for(n = 0; n < MAXRGB; n++){
+      (*(colorlabelp3 + nn))[n] = NULL;
+      (*(colorlabeliso + nn))[n] = NULL;
+    }
+
+    if(NewMemory((void **)&p3levels[nn], (nrgb + 1) * sizeof(float)) == 0 ||
+       NewMemory((void **)&p3levels256[nn], 256 * sizeof(float)) == 0){
+      ReadPlot3D("", ifile, UNLOAD, &error);
+      *errorcode = 1;
+      return;
+    }
+    for(n = 0; n < nrgb; n++){
+      if(NewMemory((void **)&(*(colorlabelp3 + nn))[n], 11) == 0){
+        *errorcode = 1;
+        ReadPlot3D("", ifile, UNLOAD, &error);
+        return;
+      }
+      if(NewMemory((void **)&(*(colorlabeliso + nn))[n], 11) == 0){
+        *errorcode = 1;
+        ReadPlot3D("", ifile, UNLOAD, &error);
+        return;
+      }
+    }
+    GetPlot3DColors(nn,
+                    setp3min_all[nn], p3min_all + nn, setp3max_all[nn], p3max_all + nn,
+                    nrgb_full, nrgb - 1, *(colorlabelp3 + nn), *(colorlabeliso + nn), p3levels[nn], p3levels256[nn],
+                    plot3dinfo[ifile].extreme_min + nn, plot3dinfo[ifile].extreme_max + nn);
+  }
+}
+
 /* ------------------ ReadPlot3d  ------------------------ */
 
 void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
@@ -138,7 +189,6 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     PrintMemoryInfo;
     UpdateTimes();
     UpdateUnitDefs();
-    UpdateGluiPlot3D();
     return;
   }
   if(ReadPlot3dFile==0){
@@ -149,7 +199,9 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   ibar=meshi->ibar;
   jbar=meshi->jbar;
   kbar=meshi->kbar;
-  nx = ibar+1; ny = jbar+1; nz = kbar+1;
+  nx = ibar+1;
+  ny = jbar+1;
+  nz = kbar+1;
   ntotal = nx*ny*nz;
   numplot3dvars=5;
 
@@ -267,47 +319,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     }
     UpdateGlui();
   }
-  for(nn=0;nn<numplot3dvars;nn++){
-    if(nplot3dinfo>0){
-      shortp3label[nn] = plot3dinfo[ifile].label[nn].shortlabel;
-      unitp3label[nn] = plot3dinfo[ifile].label[nn].unit;
-    }
-    else{
-      char numstring[4];
-
-      sprintf(numstring,"%i",nn);
-      strcpy(shortp3label[nn],numstring);
-      unitp3label[nn] = blank_global;
-    }
-
-    for(n=0;n<MAXRGB;n++){
-      (*(colorlabelp3+nn))[n]=NULL;
-      (*(colorlabeliso+nn))[n]=NULL;
-    }
-
-    if(NewMemory((void **)&p3levels[nn],(nrgb+1)*sizeof(float))==0||
-       NewMemory((void **)&p3levels256[nn],256*sizeof(float))==0){
-      ReadPlot3D("",ifile,UNLOAD,&error);
-      *errorcode=1;
-      return;
-    }
-    for(n=0;n<nrgb;n++){
-      if(NewMemory((void **)&(*(colorlabelp3+nn))[n],11)==0){
-        *errorcode=1;
-        ReadPlot3D("",ifile,UNLOAD,&error);
-        return;
-      }
-      if(NewMemory((void **)&(*(colorlabeliso+nn))[n],11)==0){
-        *errorcode=1;
-        ReadPlot3D("",ifile,UNLOAD,&error);
-        return;
-      }
-    }
-    GetPlot3DColors(nn,
-                  setp3min_all[nn],p3min_all+nn, setp3max_all[nn],p3max_all+nn,
-                  nrgb_full, nrgb-1, *(colorlabelp3+nn),*(colorlabeliso+nn),p3levels[nn],p3levels256[nn],
-                  plot3dinfo[ifile].extreme_min+nn,plot3dinfo[ifile].extreme_max+nn);
-  }
+  UpdatePlot3DColors(ifile,errorcode);
   if(meshi->plotx==-1)meshi->plotx=ibar/2;
   if(meshi->ploty==-1)meshi->ploty=jbar/2;
   if(meshi->plotz==-1)meshi->plotz=kbar/2;
@@ -355,11 +367,10 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     PRINTF(" %.1f MB downloaded in %.2f s (overhead: %.2f s)",
     (float)file_size/1000000.,read_time,total_time-read_time);
   }
-  if(p->compression_type==COMPRESSED_ZLIB||cache_qdata==0){
-    cache_qdata=0;
+  if(p->compression_type==COMPRESSED_ZLIB|| cache_plot3d_data==0){
+    cache_plot3d_data=0;
     FREEMEMORY(meshi->qdata);
   }
-  UpdateGluiPlot3D();
   UpdatePlot3dTitle();
   if(p->time>=0.0){
     char label[256];
@@ -830,7 +841,7 @@ void UpdateSurface(void){
   int plot3dsize;
   int i;
 
-  if(cache_qdata==0)return;
+  if(cache_plot3d_data==0)return;
   for(i=0;i<nmeshes;i++){
     float dlevel=-1.0;
     meshdata *meshi;

@@ -269,7 +269,6 @@ EXTERNCPP void UpdateGluiVecFactor(void);
 EXTERNCPP void UpdateGluiKeyframe(void);
 EXTERNCPP void UpdateGluiBoundaryUnits(void);
 EXTERNCPP void UpdateGluiSliceUnits(void);
-EXTERNCPP void UpdateGluiPlot3D(void);
 EXTERNCPP void UpdateGluiPlot3Dtype(void);
 EXTERNCPP void UpdateGluiIsotype(void);
 EXTERNCPP void SetGLuiViewListManual(void);
@@ -930,6 +929,8 @@ EXTERNCPP void GetZoneColors(const float *t, int nt, unsigned char *it,
                char **zonelabels, float zonevalues[12], float *tvals256
                );
 
+EXTERNCPP void UpdatePlot3DColors(int file, int *errorcode);
+EXTERNCPP void UpdateAllPlot3DColors(void);
 EXTERNCPP void GetPlot3DColors(int iplot, int settmin, float *ttmin, int settmax, float *ttmax,
               int ndatalevel, int nlevel,
               char **labels,char **labelsiso, float *tlevels, float *tlevels256,

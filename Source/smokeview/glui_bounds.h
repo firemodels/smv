@@ -33,7 +33,7 @@
 #ifdef pp_NEWBOUND_DIALOG
 #define GLUI_RADIO_COMPUTE 29
 #endif
-#define FILE_UPDATE_DATA 8
+#define UPDATE_DATA_COLORS 8
 #define UPDATEPLOT 10
 #define PLOTISO 11
 #define SHOWCHAR 12
