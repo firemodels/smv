@@ -33,7 +33,7 @@
 #ifdef pp_NEWBOUND_DIALOG
 #define GLUI_RADIO_COMPUTE 29
 #endif
-#define FILEUPDATEDATA 8
+#define FILE_UPDATE_DATA 8
 #define UPDATEPLOT 10
 #define PLOTISO 11
 #define SHOWCHAR 12
@@ -47,11 +47,10 @@
 #define TRACERS 21
 #define PARTFAST 22
 #define PLOTISOTYPE 22
-#define CACHE_BOUNDARYDATA 23
+#define CACHE_DATA 23
 #define SHOWPATCH_BOTH 24
 #define HIDEPATCHSURFACE 25
 #define DATA_transparent 26
-#define ALLFILE_RELOAD 27
 #define UNLOAD_QDATA 203
 #define SET_TIME 204
 #define TBOUNDS 205
