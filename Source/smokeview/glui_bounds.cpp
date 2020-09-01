@@ -1509,16 +1509,18 @@ extern "C" void BoundBoundCB(int var){
     UpdateAllBoundaryColors();
     break;
   case FILE_RELOAD:
-    BoundBoundCB(FILE_UPDATE);
-    for(i = 0;i < npatchinfo;i++){
-      patchdata *patchi;
+    if(npatchinfo>0){
+      BoundBoundCB(FILE_UPDATE);
+      for(i = 0;i < npatchinfo;i++){
+        patchdata *patchi;
 
-      patchi = patchinfo + i;
-      if(patchi->loaded == 0)continue;
-      LoadBoundaryMenu(i);
+        patchi = patchinfo + i;
+        if(patchi->loaded == 0)continue;
+        LoadBoundaryMenu(i);
+      }
+     if(EDIT_patch_min!=NULL)EDIT_patch_min->set_float_val(glui_patchmin);
+     if(EDIT_patch_max!=NULL)EDIT_patch_max->set_float_val(glui_patchmax);
     }
-    EDIT_patch_min->set_float_val(glui_patchmin);
-    EDIT_patch_max->set_float_val(glui_patchmax);
     break;
   case COMPRESS_FILES:
     CompressSVZip();
