@@ -339,10 +339,28 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
 /* ------------------ UpdateAllBoundaryColors ------------------------ */
 
 int UpdateAllBoundaryColors(void){
-  int i, return_val=0;
+  int i, return_val;
 
+  // return_val=-1   no boundary files are loded
+  // return_val= 0   some boundarey files are loaded but no data in mesh data structures
+  // return_val= 1   data in mesh datea structures
 
-  for(i=0;i<nmeshes;i++){
+  return_val = -1;
+  for(i = 0; i < nmeshes; i++){
+    meshdata *meshi;
+    patchdata *patchi;
+    int npatchvals;
+    float patchmin_global, patchmax_global;
+
+    meshi = meshinfo + i;
+    patchi = patchinfo + meshi->patchfilenum;
+    if(patchi->loaded == 0)continue;
+    return_val = 0;
+    break;
+  }
+  if(return_val == -1)return return_val;
+
+  for(i = 0; i < nmeshes; i++){
     meshdata *meshi;
     patchdata *patchi;
     int npatchvals;

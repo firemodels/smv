@@ -5017,9 +5017,29 @@ extern "C" void SliceBoundCB(int var){
     }
 #endif
     break;
+  case SET_GLOBAL_BOUNDS:
+#ifndef pp_NEWBOUND_DIALOG
+      glui_setslicemin_save = glui_setslicemin;
+      glui_setslicemin = GLOBAL_MIN;
+
+      glui_setslicemax_save = glui_setslicemax;
+      glui_setslicemax = GLOBAL_MAX;
+      glui_setslicemin_save = glui_setslicemin;
+#endif
+      glui_slicemin_save = glui_slicemin;
+      SliceBoundCB(SETVALMIN);
+
+#ifndef pp_NEWBOUND_DIALOG
+      glui_setslicemax_save = glui_setslicemax;
+#endif
+      glui_slicemax_save = glui_slicemax;
+      SliceBoundCB(SETVALMAX);
+    break;
   case UPDATE_DATA_COLORS:
   case FILE_UPDATE:
-    use_slice_glui_bounds = 1;
+    if(research_mode==1){
+      SliceBoundCB(SET_GLOBAL_BOUNDS);
+    }
 #ifndef pp_NEWBOUND_DIALOG
     glui_setslicemin_save = glui_setslicemin;
     glui_setslicemax_save = glui_setslicemax;
@@ -5054,9 +5074,18 @@ extern "C" void SliceBoundCB(int var){
     glui_setslicemin = glui_setslicemin_save;
     glui_setslicemax = glui_setslicemax_save;
 #endif
+    if(research_mode==1){
+      printf("\n*** in research mode, using global bounds\n");
+    }
     break;
   case FILE_RELOAD:
+    if(research_mode==1){
+      SliceBoundCB(SET_GLOBAL_BOUNDS);
+    }
     ReloadAllSliceFiles();
+    if(research_mode==1){
+      printf("*** in research mode, using global bounds\n\n");
+    }
     break;
   default:
     ASSERT(FFALSE);
