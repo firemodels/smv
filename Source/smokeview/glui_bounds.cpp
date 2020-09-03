@@ -37,6 +37,10 @@ GLUI_Button *BUTTON_reloadplot3d = NULL;
 GLUI_Button *BUTTON_globalalpha = NULL;
 GLUI_Button *BUTTON_updatebound = NULL;
 GLUI_Button *BUTTON_reloadbound=NULL;
+GLUI_Button *BUTTON_update_plot3d = NULL;
+GLUI_Button *BUTTON_reload_plot3d=NULL;
+GLUI_Button *BUTTON_update_slice = NULL;
+GLUI_Button *BUTTON_reload_slice =NULL;
 GLUI_Button *BUTTON_compress=NULL;
 GLUI_Button *BUTTON_step=NULL;
 GLUI_Button *BUTTON_script_stop=NULL;
@@ -1968,15 +1972,14 @@ void GenerateBoundDialogs(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_roll
   else{
     if(PANEL_keep_data!=NULL){
       glui_bounds->add_checkbox_to_panel(PANEL_c, _("Keep data after loading"), cache_data, CACHE_DATA, FILE_CB);
-      BoundBoundCB(CACHE_DATA);
       *PANEL_keep_data = glui_bounds->add_panel_to_panel(PANEL_c, "", GLUI_PANEL_NONE);
-      BUTTON_updatebound = glui_bounds->add_button_to_panel(*PANEL_keep_data, _("Update coloring"), UPDATE_DATA_COLORS, FILE_CB);
+      *BUTTON_update = glui_bounds->add_button_to_panel(*PANEL_keep_data, _("Update coloring"), UPDATE_DATA_COLORS, FILE_CB);
       FILE_CB(CACHE_DATA);
     }
     else{
-      BUTTON_updatebound = glui_bounds->add_button_to_panel(PANEL_c, _("Update coloring"), UPDATE_DATA_COLORS, FILE_CB);
+      *BUTTON_update = glui_bounds->add_button_to_panel(PANEL_c, _("Update coloring"), UPDATE_DATA_COLORS, FILE_CB);
     }
-    BUTTON_reloadbound = glui_bounds->add_button_to_panel(PANEL_c, button_title, FILE_RELOAD, FILE_CB);
+    *BUTTON_reload = glui_bounds->add_button_to_panel(PANEL_c, button_title, FILE_RELOAD, FILE_CB);
   }
 
   if(EDIT_con_chopmin!=NULL&&EDIT_con_chopmax!=NULL&&CHECKBOX_con_setchopmin!=NULL&&CHECKBOX_con_setchopmax!=NULL){
@@ -2472,7 +2475,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     PANEL_iso_alllevels = glui_bounds->add_panel_to_panel(ROLLOUT_iso_color, "All levels", true);
 
     SPINNER_iso_transparency = glui_bounds->add_spinner_to_panel(PANEL_iso_alllevels, "alpha", GLUI_SPINNER_INT, &glui_iso_transparency, ISO_TRANSPARENCY, IsoBoundCB);
-    BUTTON_updatebound = glui_bounds->add_button_to_panel(PANEL_iso_alllevels, _("Apply"), GLOBAL_ALPHA, IsoBoundCB);
+    glui_bounds->add_button_to_panel(PANEL_iso_alllevels, _("Apply"), GLOBAL_ALPHA, IsoBoundCB);
 
     PANEL_iso_eachlevel = glui_bounds->add_panel_to_panel(ROLLOUT_iso_color, "Each level", true);
     SPINNER_iso_level = glui_bounds->add_spinner_to_panel(PANEL_iso_eachlevel, "level:", GLUI_SPINNER_INT, &glui_iso_level, ISO_LEVEL, IsoBoundCB);
@@ -2682,7 +2685,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       &EDIT_p3_chopmin, &EDIT_p3_chopmax,
       &STATIC_plot3d_min_unit, &STATIC_plot3d_max_unit,
       &STATIC_plot3d_cmin_unit, &STATIC_plot3d_cmax_unit,
-      NULL, NULL,
+      &BUTTON_update_plot3d, &BUTTON_reload_plot3d,
       NULL, &PANEL_keep_plot3d_data, &cache_plot3d_data,
       &glui_setp3min, &glui_setp3max, &glui_p3min, &glui_p3max,
       &setp3chopmin_temp, &setp3chopmax_temp, &p3chopmin_temp, &p3chopmax_temp,
@@ -2798,7 +2801,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       &EDIT_slice_chopmin, &EDIT_slice_chopmax,
       &STATIC_slice_min_unit,&STATIC_slice_max_unit,
       &STATIC_slice_cmin_unit,&STATIC_slice_cmax_unit,
-      NULL,NULL,
+      &BUTTON_update_slice, &BUTTON_reload_slice,
       &PANEL_slice_bound, NULL, NULL,
       &glui_setslicemin,&glui_setslicemax,&glui_slicemin,&glui_slicemax,
       &glui_setslicechopmin, &glui_setslicechopmax,
@@ -4168,6 +4171,19 @@ void PartBoundCB(int var){
     if(EDIT_part_max!=NULL)EDIT_part_max->set_float_val(glui_partmax);
    break;
   case FILE_RELOAD:
+
+    if(research_mode==1&&npartloaded>0){
+      setpartmin_save = setpartmin;
+      partmin_save = glui_partmin;
+      setpartmin = GLOBAL_MIN;
+      PartBoundCB(SETVALMIN);
+
+      setpartmax_save = setpartmax;
+      partmax_save = glui_partmax;
+      setpartmax = GLOBAL_MAX;
+      PartBoundCB(SETVALMAX);
+    }
+
     {
       int prop_index_SAVE;
 
@@ -4595,15 +4611,6 @@ extern "C" void SliceBoundCB(int var){
         // particle files
 
         if(npartloaded>0){
-          setpartmin_save = setpartmin;
-          partmin_save = glui_partmin;
-          setpartmin = GLOBAL_MIN;
-          PartBoundCB(SETVALMIN);
-
-          setpartmax_save = setpartmax;
-          partmax_save = glui_partmax;
-          setpartmax = GLOBAL_MAX;
-          PartBoundCB(SETVALMAX);
           PartBoundCB(FILE_RELOAD);
         }
 
@@ -5236,18 +5243,6 @@ extern "C" void ShowBoundsDialog(int type){
       if(ROLLOUT_iso!=NULL)ROLLOUT_iso->open();
       break;
   }
-}
-
-/* ------------------ EnableBoundaryGlui ------------------------ */
-
-extern "C" void EnableBoundaryGlui(void){
-  ROLLOUT_boundary_bound->enable();
-}
-
-/* ------------------ DisableBoundaryGlui ------------------------ */
-
-extern "C" void DisableBoundaryGlui(void){
-  ROLLOUT_boundary_bound->disable();
 }
 
 /* ------------------ UpdateOverwrite ------------------------ */

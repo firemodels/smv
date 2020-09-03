@@ -3652,6 +3652,19 @@ void LoadAllPartFiles(int partnum){
 void SetupPart(int value, int option){
   int i;
 
+#define SETVALMIN 1
+#define SETVALMAX 2
+  if(research_mode == 1 && npartloaded > 0){
+    setpartmin_save = setpartmin;
+    partmin_save = glui_partmin;
+    setpartmin = GLOBAL_MIN;
+    PartBoundCB(SETVALMIN);
+
+    setpartmax_save = setpartmax;
+    partmax_save = glui_partmax;
+    setpartmax = GLOBAL_MAX;
+    PartBoundCB(SETVALMAX);
+  }
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
 

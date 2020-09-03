@@ -1425,23 +1425,12 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   }
 
   if(flag==UNLOAD){
-    int enableflag=1;
     int i;
 
     UpdateBoundaryType();
     UpdateUnitDefs();
     UpdateTimes();
     meshi->npatches=0;
-    for(i=0;i<npatchinfo;i++){
-      patchdata *patchii;
-
-      patchii = patchinfo + i;
-      if(patchii->loaded==1&&patchii->compression_type==COMPRESSED_ZLIB){
-        enableflag=0;
-        break;
-      }
-    }
-    if(enableflag==1)EnableBoundaryGlui();
     patchi->ntimes_old=0;
     patchi->ntimes=0;
     updatemenu=1;
@@ -2365,7 +2354,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     meshi->vis_boundaries[n] = vis_boundary_type[meshi->boundarytype[n]];
   }
   plotstate=GetPlotState(DYNAMIC_PLOTS);
-  if(patchi->compression_type==COMPRESSED_ZLIB)DisableBoundaryGlui();
   UpdateTimes();
   UpdateUnitDefs();
   UpdateChopColors();
