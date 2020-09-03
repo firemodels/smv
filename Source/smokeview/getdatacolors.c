@@ -349,10 +349,9 @@ int UpdateAllBoundaryColors(void){
   for(i = 0; i < nmeshes; i++){
     meshdata *meshi;
     patchdata *patchi;
-    int npatchvals;
-    float patchmin_global, patchmax_global;
 
     meshi = meshinfo + i;
+    if(meshi->patchfilenum < 0)continue;
     patchi = patchinfo + meshi->patchfilenum;
     if(patchi->loaded == 0)continue;
     return_val = 0;
