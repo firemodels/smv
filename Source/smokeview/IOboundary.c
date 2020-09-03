@@ -1425,8 +1425,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   }
 
   if(flag==UNLOAD){
-    int i;
-
     UpdateBoundaryType();
     UpdateUnitDefs();
     UpdateTimes();
