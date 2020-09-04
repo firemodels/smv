@@ -119,6 +119,12 @@ GLUI_Panel *PANEL_partread = NULL;
 #ifdef pp_SLICETHREAD
 GLUI_Panel *PANEL_sliceread = NULL;
 #endif
+
+GLUI_Panel *PANEL_slice_minmax = NULL;
+GLUI_Panel *PANEL_patch_minmax = NULL;
+GLUI_Panel *PANEL_part_minmax = NULL;
+GLUI_Panel *PANEL_plot3d_minmax = NULL;
+
 GLUI_Panel *PANEL_boundary_outline_type = NULL;
 GLUI_Panel *PANEL_iso1 = NULL;
 GLUI_Panel *PANEL_iso2 = NULL;
@@ -338,6 +344,10 @@ GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
 GLUI_RadioButton *RADIO_part_setmin_percentile=NULL;
 GLUI_RadioButton *RADIO_part_setmax_percentile=NULL;
 
+GLUI_StaticText *STATIC_slice_research=NULL;
+GLUI_StaticText *STATIC_part_research=NULL;
+GLUI_StaticText *STATIC_plot3d_research=NULL;
+GLUI_StaticText *STATIC_patch_research=NULL;
 GLUI_StaticText *STATIC_bound_min_unit=NULL;
 GLUI_StaticText *STATIC_bound_max_unit=NULL;
 GLUI_StaticText *STATIC_slice_min_unit=NULL;
@@ -890,6 +900,28 @@ extern "C" void UpdateGluiBoundaryUnits(void){
 
 extern "C" void UpdateResearchMode(void){
   SliceBoundCB(RESEARCH_MODE);
+  if(research_mode==1){
+    char *message="Turn off research mode to enable (press ALT r)";
+
+    if(PANEL_slice_minmax!=NULL)PANEL_slice_minmax->disable();
+    if(PANEL_part_minmax!=NULL)PANEL_part_minmax->disable();
+    if(PANEL_patch_minmax!=NULL)PANEL_patch_minmax->disable();
+    if(PANEL_plot3d_minmax!=NULL)PANEL_plot3d_minmax->disable();
+    if(STATIC_slice_research!=NULL)STATIC_slice_research->set_name(message);
+    if(STATIC_plot3d_research!=NULL)STATIC_plot3d_research->set_name(message);
+    if(STATIC_part_research!=NULL)STATIC_part_research->set_name(message);
+    if(STATIC_patch_research!=NULL)STATIC_patch_research->set_name(message);
+  }
+  else{
+    if(PANEL_slice_minmax!=NULL)PANEL_slice_minmax->enable();
+    if(PANEL_part_minmax!=NULL)PANEL_part_minmax->enable();
+    if(PANEL_patch_minmax!=NULL)PANEL_patch_minmax->enable();
+    if(PANEL_plot3d_minmax!=NULL)PANEL_plot3d_minmax->enable();
+    if(STATIC_slice_research!=NULL)STATIC_slice_research->set_name("");
+    if(STATIC_plot3d_research!=NULL)STATIC_plot3d_research->set_name("");
+    if(STATIC_part_research!=NULL)STATIC_part_research->set_name("");
+    if(STATIC_patch_research!=NULL)STATIC_patch_research->set_name("");
+  }
   if(CHECKBOX_research_mode!=NULL)CHECKBOX_research_mode->set_int_val(research_mode);
 }
 /* ------------------ UpdateScriptStop ------------------------ */
@@ -1492,10 +1524,8 @@ extern "C" void BoundBoundCB(int var){
     switch(glui_setpatchmax){
     case PERCENTILE_MAX:
     case GLOBAL_MAX:
-      if(EDIT_patch_max!=NULL)EDIT_patch_max->disable();
       break;
     case SET_MAX:
-      if(EDIT_patch_max!=NULL)EDIT_patch_max->enable();
       break;
     default:
       ASSERT(FFALSE);
@@ -1891,6 +1921,7 @@ void GenerateBoundDialogBox(
 /* ------------------ GenerateBoundDialogs ------------------------ */
 
 void GenerateBoundDialogs(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, GLUI_Panel *PANEL_panel, char *button_title,
+  GLUI_Panel **PANEL_minmax, GLUI_StaticText **STATIC_research,
   GLUI_EditText **EDIT_con_min, GLUI_EditText **EDIT_con_max,
   GLUI_RadioGroup **RADIO_con_setmin, GLUI_RadioGroup **RADIO_con_setmax,
   GLUI_RadioButton **RADIO_CON_setmin_percentile, GLUI_RadioButton **RADIO_CON_setmax_percentile,
@@ -1924,7 +1955,9 @@ void GenerateBoundDialogs(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_roll
     ADDPROCINFO(procinfo, *nprocinfo, PANEL_g, 0, glui_bounds);
   }
 
-  PANEL_a = glui_bounds->add_panel_to_panel(PANEL_g, "", GLUI_PANEL_NONE);
+  *STATIC_research = glui_bounds->add_statictext_to_panel(PANEL_g, "");
+  *PANEL_minmax = glui_bounds->add_panel_to_panel(PANEL_g, "", GLUI_PANEL_NONE);
+  PANEL_a = glui_bounds->add_panel_to_panel(*PANEL_minmax, "", GLUI_PANEL_NONE);
 
   *EDIT_con_min = glui_bounds->add_edittext_to_panel(PANEL_a, "", GLUI_EDITTEXT_FLOAT, minval, VALMIN, FILE_CB);
   if(*setminval==0){
@@ -1944,7 +1977,7 @@ void GenerateBoundDialogs(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_roll
   glui_bounds->add_radiobutton_to_group(*RADIO_con_setmin, _("set min"));
   glui_bounds->add_radiobutton_to_group(*RADIO_con_setmin, _("global min"));
 
-  PANEL_b = glui_bounds->add_panel_to_panel(PANEL_g, "", GLUI_PANEL_NONE);
+  PANEL_b = glui_bounds->add_panel_to_panel(*PANEL_minmax, "", GLUI_PANEL_NONE);
 
   *EDIT_con_max = glui_bounds->add_edittext_to_panel(PANEL_b, "", GLUI_EDITTEXT_FLOAT, maxval, VALMAX, FILE_CB);
   if(*setminval==0){
@@ -2021,6 +2054,7 @@ void GenerateBoundDialogs(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_roll
       glui_bounds->add_button_to_panel(PANEL_e, _("Update"), CHOPUPDATE, FILE_CB);
     }
   }
+  update_research_mode = 1;
 }
 #endif
 
@@ -2223,14 +2257,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     PANEL_zone_b = glui_bounds->add_panel_to_panel(ROLLOUT_zone_bound,"",GLUI_PANEL_NONE);
 
     EDIT_zone_max = glui_bounds->add_edittext_to_panel(PANEL_zone_b,"",GLUI_EDITTEXT_FLOAT,&zonemax,ZONEVALMINMAX,SliceBoundCB);
-    if(setzonemax==0){
-      EDIT_zone_max->disable();
-      if(EDIT_slice_max!=NULL)EDIT_slice_max->disable();
-    }
-    else{
-      EDIT_zone_max->enable();
-      if(EDIT_slice_max!=NULL)EDIT_slice_max->enable();
-    }
     glui_bounds->add_column_to_panel(PANEL_zone_b,false);
 
     RADIO_zone_setmax = glui_bounds->add_radiogroup_to_panel(PANEL_zone_b,&setzonemax,SETZONEVALMINMAX,SliceBoundCB);
@@ -2304,6 +2330,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     BoundBoundCB(FILE_UPDATE);
 #else
     GenerateBoundDialogs(&ROLLOUT_boundary_bound,&ROLLOUT_boundary_chop,ROLLOUT_bound,_("Reload Boundary Files"),
+      &PANEL_patch_minmax, &STATIC_patch_research,
       &EDIT_patch_min,&EDIT_patch_max,&RADIO_patch_setmin,&RADIO_patch_setmax,NULL,NULL,
       &CHECKBOX_patch_setchopmin, &CHECKBOX_patch_setchopmax,
       &EDIT_patch_chopmin, &EDIT_patch_chopmax,
@@ -2578,6 +2605,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     );
 #else
       GenerateBoundDialogs(&ROLLOUT_part_bound,&ROLLOUT_part_chop,ROLLOUT_part,boundmenulabel,
+        &PANEL_part_minmax, &STATIC_part_research,
         &EDIT_part_min,&EDIT_part_max,&RADIO_part_setmin,&RADIO_part_setmax,
         &RADIO_part_setmin_percentile,&RADIO_part_setmax_percentile,
         &CHECKBOX_part_setchopmin, &CHECKBOX_part_setchopmax,
@@ -2675,6 +2703,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     );
 #else
     GenerateBoundDialogs(&ROLLOUT_plot3d_bound, &ROLLOUT_plot3d_chop, ROLLOUT_plot3d, "Reload Plot3D Files",
+      &PANEL_plot3d_minmax, &STATIC_plot3d_research,
       &EDIT_plot3d_min, &EDIT_plot3d_max, &RADIO_p3_setmin, &RADIO_p3_setmax, NULL, NULL,
       &CHECKBOX_p3_setchopmin, &CHECKBOX_p3_setchopmax,
       &EDIT_plot3d_chopmin, &EDIT_plot3d_chopmax,
@@ -2791,6 +2820,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     );
 #else
     GenerateBoundDialogs(&ROLLOUT_slice_bound,&ROLLOUT_slice_chop,ROLLOUT_slice,"Reload Slice Files",
+      &PANEL_slice_minmax, &STATIC_slice_research,
       &EDIT_slice_min,&EDIT_slice_max,&RADIO_slice_setmin,&RADIO_slice_setmax,NULL,NULL,
       &CHECKBOX_slice_setchopmin, &CHECKBOX_slice_setchopmax,
       &EDIT_slice_chopmin, &EDIT_slice_chopmax,
@@ -3406,16 +3436,9 @@ extern "C" void Plot3DBoundCB(int var){
      switch(glui_setp3max){
       case PERCENTILE_MIN:
       case GLOBAL_MIN:
-#ifndef pp_NEWBOUND_DIALOG
-        if(EDIT_plot3d_max!=NULL)EDIT_plot3d_max->disable();
-#endif
         break;
       case SET_MIN:
       case CHOP_MIN:
-#ifndef pp_NEWBOUND_DIALOG
-        if(EDIT_plot3d_min!=NULL)EDIT_plot3d_min->disable();
-        if(EDIT_plot3d_max!=NULL)EDIT_plot3d_max->enable();
-#endif
         break;
       default:
         ASSERT(FFALSE);
@@ -3806,21 +3829,6 @@ extern "C" void UpdateBoundaryListIndex(int patchfilenum){
       EDIT_patch_chopmin->set_float_val(patchchopmin);
       EDIT_patch_chopmax->set_float_val(patchchopmax);
 
-#ifndef pp_NEWBOUND_DIALOG
-      if(glui_setpatchmin==SET_MIN){
-        EDIT_patch_min->enable();
-      }
-      else{
-        EDIT_patch_min->disable();
-      }
-      if(glui_setpatchmax==SET_MAX){
-        EDIT_patch_max->enable();
-      }
-      else{
-        EDIT_patch_max->disable();
-      }
-#endif
-
       if(setpatchchopmin==SET_MIN){
         EDIT_patch_chopmin->enable();
       }
@@ -4130,15 +4138,12 @@ void PartBoundCB(int var){
     switch(setpartmax){
     case PERCENTILE_MAX:
       if(prop_new!=NULL)glui_partmax = prop_new->percentile_max;
-      if(EDIT_part_max!=NULL)EDIT_part_max->disable();
       break;
     case GLOBAL_MAX:
       if(prop_new!=NULL)glui_partmax = prop_new->dlg_global_valmax;
-      if(EDIT_part_max!=NULL)EDIT_part_max->disable();
       break;
     case SET_MAX:
       if(prop_new!=NULL)glui_partmax = prop_new->user_max;
-      if(EDIT_part_max!=NULL)EDIT_part_max->enable();
       break;
     default:
       ASSERT(FFALSE);
@@ -4729,12 +4734,8 @@ extern "C" void SliceBoundCB(int var){
     switch(glui_setslicemin){
     case PERCENTILE_MIN:
     case GLOBAL_MIN:
-      if(EDIT_slice_min!=NULL)EDIT_slice_min->disable();
-      if(EDIT_zone_min!=NULL)EDIT_zone_min->disable();
       break;
     case SET_MIN:
-      if(EDIT_slice_min!=NULL)EDIT_slice_min->enable();
-      if(EDIT_zone_min!=NULL)EDIT_zone_min->enable();
       break;
     default:
       ASSERT(FFALSE);
@@ -4755,12 +4756,8 @@ extern "C" void SliceBoundCB(int var){
     switch(glui_setslicemax){
       case PERCENTILE_MAX:
       case GLOBAL_MAX:
-        if(EDIT_slice_max!=NULL)EDIT_slice_max->disable();
-        if(EDIT_zone_max!=NULL)EDIT_zone_max->disable();
         break;
       case SET_MAX:
-        if(EDIT_slice_max!=NULL)EDIT_slice_max->enable();
-        if(EDIT_zone_max!=NULL)EDIT_zone_max->enable();
         break;
       default:
         ASSERT(FFALSE);
