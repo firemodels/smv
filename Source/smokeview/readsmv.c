@@ -10404,11 +10404,10 @@ int ReadIni2(char *inifile, int localfile){
       int dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %f %i %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits, &ncolorlabel_digits_research);
+      sscanf(buffer, " %i %i %f %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits);
       colorbar_shift = CLAMP(colorbar_shift, COLORBAR_SHIFT_MIN, COLORBAR_SHIFT_MAX);
       if(research_mode==1&&research_mode_override==0)research_mode=0;
       ncolorlabel_digits = CLAMP(ncolorlabel_digits, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
-      ncolorlabel_digits_research = CLAMP(ncolorlabel_digits_research, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
       ONEORZERO(research_mode);
 #ifdef pp_NEWBOUND_DIALOG
       research_mode = 1;
@@ -14403,7 +14402,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "PARTFAST\n");
   fprintf(fileout, " %i %i %i\n", partfast, part_multithread, npartthread_ids);
   fprintf(fileout, "RESEARCHMODE\n");
-  fprintf(fileout, " %i %i %f %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, ncolorlabel_digits_research);
+  fprintf(fileout, " %i %i %f %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits);
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
   fprintf(fileout, "SLICEAVERAGE\n");
