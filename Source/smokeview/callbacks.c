@@ -2032,11 +2032,7 @@ void Keyboard(unsigned char key, int flag){
         int rflag=0;
 
         if(keystate==GLUT_ACTIVE_ALT&&strncmp((const char *)&key2, "r", 1) == 0){
-#ifdef pp_NEWBOUND_DIALOG
-          research_mode = 1;
-#else
           research_mode = 1-research_mode;
-#endif
           update_research_mode=1;
           return;
         }

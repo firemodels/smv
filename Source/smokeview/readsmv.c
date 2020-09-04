@@ -10409,9 +10409,6 @@ int ReadIni2(char *inifile, int localfile){
       if(research_mode==1&&research_mode_override==0)research_mode=0;
       ncolorlabel_digits = CLAMP(ncolorlabel_digits, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
       ONEORZERO(research_mode);
-#ifdef pp_NEWBOUND_DIALOG
-      research_mode = 1;
-#endif
       update_research_mode=1;
       continue;
     }

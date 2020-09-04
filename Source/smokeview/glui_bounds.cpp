@@ -1828,6 +1828,7 @@ void ScriptCB(int var){
 void GenerateBoundDialogBox(
   GLUI_Rollout *ROLLOUT_dialog, GLUI_Rollout **ROLLOUT_bound,
   GLUI_StaticText **STATIC_min_unit,  GLUI_StaticText **STATIC_max_unit, GLUI_StaticText **STATIC_cmin_unit, GLUI_StaticText **STATIC_cmax_unit,
+  GLUI_Panel **PANEL_minmax, GLUI_StaticText **STATIC_research,
   GLUI_EditText **EDIT_min,     GLUI_EditText **EDIT_max, GLUI_EditText **EDIT_chopmin, GLUI_EditText **EDIT_chopmax,
   GLUI_Checkbox **CHECKBOX_setchopmin, GLUI_Checkbox **CHECKBOX_setchopmax,
   GLUI_Button **BUTTON_reload, GLUI_Button **BUTTON_update, 
@@ -1849,13 +1850,15 @@ void GenerateBoundDialogBox(
   INSERT_ROLLOUT(*ROLLOUT_bound, glui_bounds);
   ADDPROCINFO(procinfo, *nprocinfo, *ROLLOUT_bound, 0, glui_bounds);
 
-  glui_bounds->add_button_to_panel(*ROLLOUT_bound, "Set min/max using", COMPUTE_BOUNDS, FILE_CB);
-  *RADIO_compute = glui_bounds->add_radiogroup_to_panel(*ROLLOUT_bound, compute_loaded, GLUI_RADIO_COMPUTE, FILE_CB);
+  *STATIC_research = glui_bounds->add_statictext_to_panel(*ROLLOUT_bound, "");
+  *PANEL_minmax = glui_bounds->add_panel_to_panel(*ROLLOUT_bound, "", GLUI_PANEL_NONE);
+  glui_bounds->add_button_to_panel(*PANEL_minmax, "Set min/max using", COMPUTE_BOUNDS, FILE_CB);
+  *RADIO_compute = glui_bounds->add_radiogroup_to_panel(*PANEL_minmax, compute_loaded, GLUI_RADIO_COMPUTE, FILE_CB);
   glui_bounds->add_radiobutton_to_group(*RADIO_compute, "all data");
   glui_bounds->add_radiobutton_to_group(*RADIO_compute, "loaded data");
   glui_bounds->add_radiobutton_to_group(*RADIO_compute, "ini data");
 
-  PANEL_b = glui_bounds->add_panel_to_panel(*ROLLOUT_bound, "", GLUI_PANEL_NONE);
+  PANEL_b = glui_bounds->add_panel_to_panel(*PANEL_minmax, "", GLUI_PANEL_NONE);
   *EDIT_max = glui_bounds->add_edittext_to_panel(PANEL_b, "", GLUI_EDITTEXT_FLOAT, glui_max, GLUI_VALMAX, FILE_CB);
   glui_bounds->add_column_to_panel(PANEL_b, false);
 
@@ -1865,7 +1868,7 @@ void GenerateBoundDialogBox(
   STATIC_max = glui_bounds->add_statictext_to_panel(PANEL_b, "max");
   STATIC_max->set_w(4);
 
-  PANEL_a = glui_bounds->add_panel_to_panel(*ROLLOUT_bound, "", GLUI_PANEL_NONE);
+  PANEL_a = glui_bounds->add_panel_to_panel(*PANEL_minmax, "", GLUI_PANEL_NONE);
 
   *EDIT_min = glui_bounds->add_edittext_to_panel(PANEL_a, "", GLUI_EDITTEXT_FLOAT, glui_min, GLUI_VALMIN, FILE_CB);
   glui_bounds->add_column_to_panel(PANEL_a, false);
@@ -2316,6 +2319,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_patchmax = patchbounds[list_patch_index].dlg_global_valmax;
     GenerateBoundDialogBox(ROLLOUT_bound, &ROLLOUT_boundary_bound, &STATIC_bound_min_unit, &STATIC_bound_max_unit,
       &STATIC_bound_cmin_unit, &STATIC_bound_cmax_unit,
+      &PANEL_patch_minmax, &STATIC_patch_research,
       &EDIT_patch_min, &EDIT_patch_max, &EDIT_patch_chopmin, &EDIT_patch_chopmax,
       &CHECKBOX_patch_setchopmin, &CHECKBOX_patch_setchopmax,
       &BUTTON_reloadbound, &BUTTON_updatebound, &ROLLOUT_boundary_chop, &RADIO_patch_compute,
@@ -2592,6 +2596,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #ifdef pp_NEWBOUND_DIALOG
     GenerateBoundDialogBox(ROLLOUT_part, &ROLLOUT_part_bound, &STATIC_part_min_unit,&STATIC_part_max_unit,
       &STATIC_part_cmin_unit, &STATIC_part_cmax_unit,
+      &PANEL_part_minmax, &STATIC_part_research,
       &EDIT_part_min,&EDIT_part_max, &EDIT_part_chopmin, &EDIT_part_chopmax,
       &CHECKBOX_part_setchopmin, &CHECKBOX_part_setchopmax,
       &BUTTON_reloadpart, NULL, &ROLLOUT_part_chop, &RADIO_part_compute,
@@ -2690,6 +2695,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #ifdef pp_NEWBOUND_DIALOG
     GenerateBoundDialogBox(ROLLOUT_plot3d, &ROLLOUT_plot3d_bound,
       &STATIC_plot3d_min_unit, &STATIC_plot3d_max_unit, &STATIC_plot3d_cmin_unit, &STATIC_plot3d_cmax_unit,
+      &PANEL_plot3d_minmax, &STATIC_plot3d_research,
       &EDIT_plot3d_min, &EDIT_plot3d_max, &EDIT_plot3d_chopmin, &EDIT_plot3d_chopmax,
       &CHECKBOX_p3_setchopmin, &CHECKBOX_p3_setchopmax,
       &BUTTON_reloadplot3d, NULL, &ROLLOUT_plot3d_chop, &RADIO_plot3d_compute,
@@ -2807,6 +2813,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_slicemax = slicebounds[list_slice_index].dlg_valmax;
     GenerateBoundDialogBox(ROLLOUT_slice, &ROLLOUT_slice_bound,
       &STATIC_slice_min_unit, &STATIC_slice_max_unit, &STATIC_slice_cmin_unit, &STATIC_slice_cmax_unit,
+      &PANEL_slice_minmax, &STATIC_slice_research,
       &EDIT_slice_min, &EDIT_slice_max, &EDIT_slice_chopmin, &EDIT_slice_chopmax,
       &CHECKBOX_slice_setchopmin, &CHECKBOX_slice_setchopmax,
       &BUTTON_slice_reload, &BUTTON_slice_update, &ROLLOUT_slice_chop, &RADIO_slice_compute,
@@ -2967,7 +2974,6 @@ extern "C" void GluiBoundsSetup(int main_window){
       glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, "Regenerate FED data", &regenerate_fed);
     }
 #ifdef pp_NEWBOUND_DIALOG
-    research_mode = 1;
     CHECKBOX_research_mode = glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("Research display mode"), &research_mode, RESEARCH_MODE, SliceBoundCB);
     CHECKBOX_research_mode->disable();
 #else
