@@ -220,14 +220,16 @@ GLUI_EditText *EDIT_zone_min=NULL, *EDIT_zone_max=NULL;
 GLUI_EditText *EDIT_ini=NULL;
 GLUI_EditText *EDIT_renderdir=NULL;
 GLUI_EditText *EDIT_rendersuffix=NULL;
-GLUI_EditText *EDIT_slice_min=NULL, *EDIT_slice_max=NULL;
+
+GLUI_EditText *EDIT_slice_min=NULL,    *EDIT_slice_max=NULL;
+GLUI_EditText *EDIT_patch_min = NULL,  *EDIT_patch_max = NULL;
+GLUI_EditText *EDIT_part_min = NULL,   *EDIT_part_max = NULL;
+GLUI_EditText *EDIT_plot3d_min = NULL, *EDIT_plot3d_max = NULL;
+
 GLUI_EditText *EDIT_slice_chopmin=NULL, *EDIT_slice_chopmax=NULL;
 GLUI_EditText *EDIT_patch_chopmin=NULL, *EDIT_patch_chopmax=NULL;
-GLUI_EditText *EDIT_part_chopmin=NULL, *EDIT_part_chopmax=NULL;
-GLUI_EditText *EDIT_patch_min=NULL, *EDIT_patch_max=NULL;
-GLUI_EditText *EDIT_part_min=NULL, *EDIT_part_max=NULL;
-GLUI_EditText *EDIT_glui_p3min=NULL, *EDIT_glui_p3max=NULL;
-GLUI_EditText *EDIT_p3_chopmin=NULL, *EDIT_p3_chopmax=NULL;
+GLUI_EditText *EDIT_part_chopmin=NULL,  *EDIT_part_chopmax=NULL;
+GLUI_EditText *EDIT_plot3d_chopmin=NULL,    *EDIT_plot3d_chopmax=NULL;
 
 GLUI_Checkbox* CHECKBOX_visColorbarHorizontal2 = NULL;
 GLUI_Checkbox* CHECKBOX_visColorbarVertical2 = NULL;
@@ -464,8 +466,8 @@ extern "C" void UpdateTransparency(void){
 extern "C" void Plot3DBounds2Glui(void){
   glui_p3min = p3min_all[list_p3_index];
   glui_p3max = p3max_all[list_p3_index];
-  EDIT_glui_p3min->set_float_val(glui_p3min);
-  EDIT_glui_p3max->set_float_val(glui_p3max);
+  EDIT_plot3d_min->set_float_val(glui_p3min);
+  EDIT_plot3d_max->set_float_val(glui_p3max);
 }
 
 /* ------------------ UpdateUseLighting ------------------------ */
@@ -1475,10 +1477,8 @@ extern "C" void BoundBoundCB(int var){
     switch(glui_setpatchmin){
     case PERCENTILE_MIN:
     case GLOBAL_MIN:
-      if(EDIT_patch_min!=NULL)EDIT_patch_min->disable();
       break;
     case SET_MIN:
-      if(EDIT_patch_min!=NULL)EDIT_patch_min->enable();
       break;
     default:
       ASSERT(FFALSE);
@@ -2213,14 +2213,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     PANEL_zone_a = glui_bounds->add_panel_to_panel(ROLLOUT_zone_bound,"",GLUI_PANEL_NONE);
 
     EDIT_zone_min = glui_bounds->add_edittext_to_panel(PANEL_zone_a,"",GLUI_EDITTEXT_FLOAT,&zonemin,ZONEVALMINMAX,SliceBoundCB);
-    if(setzonemin==0){
-      EDIT_zone_min->disable();
-      if(EDIT_slice_min!=NULL)EDIT_slice_min->disable();
-    }
-    else{
-      EDIT_zone_min->enable();
-      if(EDIT_slice_min!=NULL)EDIT_slice_min->enable();
-    }
     glui_bounds->add_column_to_panel(PANEL_zone_a,false);
 
     RADIO_zone_setmin = glui_bounds->add_radiogroup_to_panel(PANEL_zone_a,&setzonemin,SETZONEVALMINMAX,SliceBoundCB);
@@ -2671,7 +2663,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #ifdef pp_NEWBOUND_DIALOG
     GenerateBoundDialogBox(ROLLOUT_plot3d, &ROLLOUT_plot3d_bound,
       &STATIC_plot3d_min_unit, &STATIC_plot3d_max_unit, &STATIC_plot3d_cmin_unit, &STATIC_plot3d_cmax_unit,
-      &EDIT_glui_p3min, &EDIT_glui_p3max, &EDIT_p3_chopmin, &EDIT_p3_chopmax,
+      &EDIT_plot3d_min, &EDIT_plot3d_max, &EDIT_plot3d_chopmin, &EDIT_plot3d_chopmax,
       &CHECKBOX_p3_setchopmin, &CHECKBOX_p3_setchopmax,
       &BUTTON_reloadplot3d, NULL, &ROLLOUT_plot3d_chop, &RADIO_plot3d_compute,
       "plot3d", &glui_plot3d_compute_loaded,  &cache_plot3d_data, &PANEL_keep_plot3d_data,
@@ -2683,9 +2675,9 @@ extern "C" void GluiBoundsSetup(int main_window){
     );
 #else
     GenerateBoundDialogs(&ROLLOUT_plot3d_bound, &ROLLOUT_plot3d_chop, ROLLOUT_plot3d, "Reload Plot3D Files",
-      &EDIT_glui_p3min, &EDIT_glui_p3max, &RADIO_p3_setmin, &RADIO_p3_setmax, NULL, NULL,
+      &EDIT_plot3d_min, &EDIT_plot3d_max, &RADIO_p3_setmin, &RADIO_p3_setmax, NULL, NULL,
       &CHECKBOX_p3_setchopmin, &CHECKBOX_p3_setchopmax,
-      &EDIT_p3_chopmin, &EDIT_p3_chopmax,
+      &EDIT_plot3d_chopmin, &EDIT_plot3d_chopmax,
       &STATIC_plot3d_min_unit, &STATIC_plot3d_max_unit,
       &STATIC_plot3d_cmin_unit, &STATIC_plot3d_cmax_unit,
       &BUTTON_update_plot3d, &BUTTON_reload_plot3d,
@@ -3260,8 +3252,8 @@ extern "C" void Plot3DBoundCB(int var){
     GetLoadedPlot3dBounds(plot3d_compute_loaded, p3min_all, p3max_all);
     glui_p3min=p3min_all[list_p3_index];
     glui_p3max=p3max_all[list_p3_index];
-    EDIT_glui_p3min->set_float_val(glui_p3min);
-    EDIT_glui_p3max->set_float_val(glui_p3max);
+    EDIT_plot3d_min->set_float_val(glui_p3min);
+    EDIT_plot3d_max->set_float_val(glui_p3max);
     return;
     break;
   case GLOBAL_BOUNDS_MIN_LOADED:
@@ -3299,10 +3291,10 @@ extern "C" void Plot3DBoundCB(int var){
     UpdateChopColors();
     switch(setp3chopmin_temp){
       case DISABLE:
-        EDIT_p3_chopmin->disable();
+        EDIT_plot3d_chopmin->disable();
         break;
       case ENABLE:
-        EDIT_p3_chopmin->enable();
+        EDIT_plot3d_chopmin->enable();
         break;
       default:
         ASSERT(FFALSE);
@@ -3313,10 +3305,10 @@ extern "C" void Plot3DBoundCB(int var){
     UpdateChopColors();
     switch(setp3chopmax_temp){
       case DISABLE:
-        EDIT_p3_chopmax->disable();
+        EDIT_plot3d_chopmax->disable();
         break;
       case ENABLE:
-        EDIT_p3_chopmax->enable();
+        EDIT_plot3d_chopmax->enable();
         break;
       default:
         ASSERT(FFALSE);
@@ -3380,10 +3372,10 @@ extern "C" void Plot3DBoundCB(int var){
      UpdateGluiPlot3D_units();
    }
 
-   EDIT_glui_p3min->set_float_val(glui_p3min);
-   EDIT_glui_p3max->set_float_val(glui_p3max);
-   EDIT_p3_chopmin->set_float_val(p3chopmin_temp);
-   EDIT_p3_chopmax->set_float_val(p3chopmax_temp);
+   EDIT_plot3d_min->set_float_val(glui_p3min);
+   EDIT_plot3d_max->set_float_val(glui_p3max);
+   EDIT_plot3d_chopmin->set_float_val(p3chopmin_temp);
+   EDIT_plot3d_chopmax->set_float_val(p3chopmax_temp);
 
    list_p3_index_old=list_p3_index;
 #ifndef pp_NEWBOUND_DIALOG
@@ -3401,15 +3393,9 @@ extern "C" void Plot3DBoundCB(int var){
    switch(glui_setp3min){
     case PERCENTILE_MIN:
     case GLOBAL_MIN:
-#ifndef pp_NEWBOUND_DIALOG
-      EDIT_glui_p3min->disable();
-#endif
       break;
     case SET_MIN:
     case CHOP_MIN:
-#ifndef pp_NEWBOUND_DIALOG
-      EDIT_glui_p3min->enable();
-#endif
       break;
     default:
       ASSERT(FFALSE);
@@ -3421,14 +3407,14 @@ extern "C" void Plot3DBoundCB(int var){
       case PERCENTILE_MIN:
       case GLOBAL_MIN:
 #ifndef pp_NEWBOUND_DIALOG
-        if(EDIT_glui_p3max!=NULL)EDIT_glui_p3max->disable();
+        if(EDIT_plot3d_max!=NULL)EDIT_plot3d_max->disable();
 #endif
         break;
       case SET_MIN:
       case CHOP_MIN:
 #ifndef pp_NEWBOUND_DIALOG
-        if(EDIT_glui_p3min!=NULL)EDIT_glui_p3min->disable();
-        if(EDIT_glui_p3max!=NULL)EDIT_glui_p3max->enable();
+        if(EDIT_plot3d_min!=NULL)EDIT_plot3d_min->disable();
+        if(EDIT_plot3d_max!=NULL)EDIT_plot3d_max->enable();
 #endif
         break;
       default:
@@ -3992,14 +3978,6 @@ void PartBoundCB(int var){
     setpartmin = SET_MIN;
     setpartmax = SET_MAX;
 #endif
-    if(ipart5prop==0){
-      if(EDIT_part_min!=NULL)EDIT_part_min->disable();
-      if(EDIT_part_max!=NULL)EDIT_part_max->disable();
-    }
-    else{
-      if(EDIT_part_min!=NULL)EDIT_part_min->enable();
-      if(EDIT_part_max!=NULL)EDIT_part_max->enable();
-    }
     PartBoundCB(SETVALMIN);
     PartBoundCB(SETVALMAX);
     if(ipart5prop>0&&glui_partmin>glui_partmax){
@@ -4125,15 +4103,12 @@ void PartBoundCB(int var){
     switch(setpartmin){
     case PERCENTILE_MIN:
       if(prop_new!=NULL)glui_partmin=prop_new->percentile_min;
-      if(EDIT_part_min!=NULL)EDIT_part_min->disable();
       break;
     case GLOBAL_MIN:
       if(prop_new!=NULL)glui_partmin=prop_new->dlg_global_valmin;
-      if(EDIT_part_min!=NULL)EDIT_part_min->disable();
       break;
     case SET_MIN:
       if(prop_new!=NULL)glui_partmin = prop_new->user_min;
-      if(EDIT_part_min!=NULL)EDIT_part_min->enable();
       break;
     default:
       ASSERT(FFALSE);
@@ -4509,25 +4484,17 @@ extern "C" void SliceBoundCB(int var){
       break;
     case SETZONEVALMINMAX:
       if(setzonemin==SET_MIN){
-        EDIT_zone_min->enable();
-        if(EDIT_slice_min!=NULL)EDIT_slice_min->enable();
         zonemin=zoneusermin;
         EDIT_zone_min->set_float_val(zonemin);
       }
       else{
-        EDIT_zone_min->disable();
-        if(EDIT_slice_min!=NULL)EDIT_slice_min->disable();
         EDIT_zone_min->set_float_val(zoneglobalmin);
       }
       if(setzonemax==SET_MAX){
-        EDIT_zone_max->enable();
-        if(EDIT_slice_max!=NULL)EDIT_slice_max->enable();
         zonemax = zoneusermax;
         EDIT_zone_max->set_float_val(zonemax);
       }
       else{
-        EDIT_zone_max->disable();
-        if(EDIT_slice_max!=NULL)EDIT_slice_max->disable();
         EDIT_zone_max->set_float_val(zoneglobalmax);
       }
       GetZoneColors(zonetu, nzonetotal, izonetu,zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
@@ -4924,10 +4891,8 @@ extern "C" void SliceBoundCB(int var){
     switch(glui_setslicemin){
     case PERCENTILE_MIN:
     case GLOBAL_MIN:
-      if(EDIT_slice_min!=NULL)EDIT_slice_min->disable();
       break;
     case SET_MIN:
-      if(EDIT_slice_min!=NULL)EDIT_slice_min->enable();
       break;
     default:
       ASSERT(FFALSE);
@@ -4936,10 +4901,8 @@ extern "C" void SliceBoundCB(int var){
     switch(glui_setslicemax){
     case PERCENTILE_MIN:
     case GLOBAL_MAX:
-      if(EDIT_slice_max!=NULL)EDIT_slice_max->disable();
       break;
     case SET_MAX:
-      if(EDIT_slice_max!=NULL)EDIT_slice_max->enable();
       break;
     default:
       ASSERT(FFALSE);
