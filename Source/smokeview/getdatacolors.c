@@ -289,9 +289,6 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
   new_tmin = *ttmin;
   new_tmax = *ttmax;
 
-  patchi->local_valmin=new_tmin;
-  patchi->local_valmax=new_tmax;
-
   CheckMemory;
   range = new_tmax - new_tmin;
   factor = 0.0f;

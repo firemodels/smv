@@ -3654,14 +3654,11 @@ void SetupPart(int value, int option){
 
 #define SETVALMIN 1
 #define SETVALMAX 2
-  if(research_mode == 1 && npartloaded > 0){
-    setpartmin_save = setpartmin;
-    partmin_save = glui_partmin;
+  if(research_mode == 1 && npartinfo> 0){
+    GetGlobalPartBounds(0);
     setpartmin = GLOBAL_MIN;
     PartBoundCB(SETVALMIN);
 
-    setpartmax_save = setpartmax;
-    partmax_save = glui_partmax;
     setpartmax = GLOBAL_MAX;
     PartBoundCB(SETVALMAX);
   }

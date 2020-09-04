@@ -36,11 +36,11 @@ bufferstreamdata *GetSMVBuffer(char *file, char *file2);
 EXTERNCPP void UpdateBlockType(void);
 boundsdata *GetSliceBoundsInfo(char *shortlabel);
 boundsdata *GetPatchBoundsInfo(char *shortlabel);
+EXTERNCPP int GetGlobalPartBounds(int flag);
+EXTERNCPP void GetGlobalPatchBounds(void);
 #ifdef pp_NEWBOUND_DIALOG
 EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max);
 EXTERNCPP void GetGlobalSliceBounds(void);
-EXTERNCPP void GetGlobalPatchBounds(void);
-EXTERNCPP int GetGlobalPartBounds(int flag);
 EXTERNCPP void GetLoadedPartBounds(void);
 EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetLoadedSliceBounds(char *label, float *loaded_min, float *loaded_max);

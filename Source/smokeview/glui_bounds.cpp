@@ -1300,7 +1300,6 @@ extern "C" void BoundBoundCB(int var){
       case BOUNDS_LOADED:
         GetLoadedPatchBounds(patchlabellist[list_patch_index], &vmin, &vmax);
         if (vmin > vmax) {
-          printf("***warning: loaded boundary file bounds not available, using global bounds\n");
           vmin = patchbounds[list_patch_index].dlg_global_valmin;
           vmax = patchbounds[list_patch_index].dlg_global_valmax;
         }
@@ -1510,6 +1509,10 @@ extern "C" void BoundBoundCB(int var){
     BoundBoundCB(UPDATE_DATA_COLORS);
     break;
   case UPDATE_DATA_COLORS:
+    GetGlobalPatchBounds();
+    if(patchlabellist != NULL)Global2GLUIBoundaryBounds(patchlabellist[list_patch_index]);
+    if(EDIT_patch_min != NULL)EDIT_patch_min->set_float_val(glui_patchmin);
+    if(EDIT_patch_max != NULL)EDIT_patch_max->set_float_val(glui_patchmax);
     UpdateAllBoundaryColors();
     break;
   case FILE_RELOAD:
@@ -4173,13 +4176,9 @@ void PartBoundCB(int var){
   case FILE_RELOAD:
 
     if(research_mode==1&&npartloaded>0){
-      setpartmin_save = setpartmin;
-      partmin_save = glui_partmin;
       setpartmin = GLOBAL_MIN;
       PartBoundCB(SETVALMIN);
 
-      setpartmax_save = setpartmax;
-      partmax_save = glui_partmax;
       setpartmax = GLOBAL_MAX;
       PartBoundCB(SETVALMAX);
     }
@@ -4570,34 +4569,20 @@ extern "C" void SliceBoundCB(int var){
         // slice files
 
 #ifndef pp_NEWBOUND_DIALOG
-        glui_setslicemin_save = glui_setslicemin;
         glui_setslicemin = GLOBAL_MIN;
-
-        glui_setslicemax_save = glui_setslicemax;
         glui_setslicemax = GLOBAL_MAX;
-        glui_setslicemin_save = glui_setslicemin;
 #endif
-        glui_slicemin_save = glui_slicemin;
         SliceBoundCB(SETVALMIN);
-
-#ifndef pp_NEWBOUND_DIALOG
-        glui_setslicemax_save = glui_setslicemax;
-#endif
-        glui_slicemax_save = glui_slicemax;
         SliceBoundCB(SETVALMAX);
         SliceBoundCB(FILE_UPDATE);
 
         // boundary files
 
-        setpatchmin_save = glui_setpatchmin;
-        patchmin_save = glui_patchmin;
         glui_setpatchmin = GLOBAL_MIN;
         BoundBoundCB(SETVALMIN);
-
-        setpatchmax_save = glui_setpatchmax;
-        patchmax_save = glui_patchmax;
         glui_setpatchmax = GLOBAL_MAX;
         BoundBoundCB(SETVALMAX);
+
 #ifndef pp_NEWBOUND_DIALOG
         if(RADIO_patch_setmin != NULL)RADIO_patch_setmin->set_int_val(glui_setpatchmin);
         if(RADIO_patch_setmax != NULL)RADIO_patch_setmax->set_int_val(glui_setpatchmax);
@@ -4618,16 +4603,12 @@ extern "C" void SliceBoundCB(int var){
 
         if(nplot3dloaded>0){
           for(i = 0; i < MAXPLOT3DVARS; i++){
-            setp3min_save[i] = setp3min_all[i];
-            p3min_save[i] = p3min_all[i];
 #ifdef pp_NEWBOUND_DIALOG
             setp3min_all[i] = SET_MIN;
 #else
             setp3min_all[i] = GLOBAL_MIN;
 #endif
 
-            setp3max_save[i] = setp3max_all[i];
-            p3max_save[i] = p3max_all[i];
 #ifdef pp_NEWBOUND_DIALOG
             setp3max_all[i] = SET_MAX;
 #else
@@ -4639,67 +4620,9 @@ extern "C" void SliceBoundCB(int var){
           Plot3DBoundCB(FILE_RELOAD);
         }
 
-        PRINTF("research mode on\n");
+        PRINTF("\nresearch mode on, using global bounds\n\n");
       }
       else{
-        visColorbarVertical=visColorbarVertical_save;
-        ncolorlabel_digits = ncolorlabel_digits_save;
-        if(SPINNER_ncolorlabel_digits!=NULL)SPINNER_ncolorlabel_digits->set_int_val(ncolorlabel_digits);
-
-        // slice files
-
-        if(nsliceloaded > 0){
-          SliceBoundCB(SETVALMIN);
-          SliceBoundCB(VALMIN);
-
-          SliceBoundCB(SETVALMAX);
-          SliceBoundCB(VALMAX);
-        }
-
-        // boundary files
-
-        glui_setpatchmin = setpatchmin_save;
-        BoundBoundCB(SETVALMIN);
-        glui_patchmin = patchmin_save;
-        BoundBoundCB(VALMIN);
-
-        glui_setpatchmax = setpatchmax_save;
-        BoundBoundCB(SETVALMAX);
-        glui_patchmax = patchmax_save;
-        BoundBoundCB(VALMAX);
-
-        // particle files
-
-        if(npartloaded > 0){
-          setpartmin = setpartmin_save;
-          PartBoundCB(SETVALMIN);
-          glui_partmin = partmin_save;
-          PartBoundCB(VALMIN);
-
-          setpartmax = setpartmax_save;
-          PartBoundCB(SETVALMAX);
-          glui_partmax = partmax_save;
-          PartBoundCB(VALMAX);
-          PartBoundCB(FILE_RELOAD);
-        }
-
-        // Plot3D files
-
-        if(nplot3dloaded > 0){
-          for(i = 0; i < MAXPLOT3DVARS; i++){
-            setp3min_all[i] = setp3min_save[i];
-            p3min_all[i] = p3min_save[i];
-
-            setp3max_all[i] = setp3max_save[i];
-            p3max_all[i] = p3max_save[i];
-          }
-          Plot3DBoundCB(SETVALMIN);
-          Plot3DBoundCB(VALMIN);
-          Plot3DBoundCB(SETVALMAX);
-          Plot3DBoundCB(VALMAX);
-          Plot3DBoundCB(FILE_RELOAD);
-        }
-
         PRINTF("research mode off\n");
       }
       SliceBoundCB(FILE_UPDATE);
@@ -5026,20 +4949,12 @@ extern "C" void SliceBoundCB(int var){
     break;
   case SET_GLOBAL_BOUNDS:
 #ifndef pp_NEWBOUND_DIALOG
-      glui_setslicemin_save = glui_setslicemin;
       glui_setslicemin = GLOBAL_MIN;
 
-      glui_setslicemax_save = glui_setslicemax;
       glui_setslicemax = GLOBAL_MAX;
-      glui_setslicemin_save = glui_setslicemin;
 #endif
-      glui_slicemin_save = glui_slicemin;
       SliceBoundCB(SETVALMIN);
 
-#ifndef pp_NEWBOUND_DIALOG
-      glui_setslicemax_save = glui_setslicemax;
-#endif
-      glui_slicemax_save = glui_slicemax;
       SliceBoundCB(SETVALMAX);
     break;
   case UPDATE_DATA_COLORS:
@@ -5047,10 +4962,6 @@ extern "C" void SliceBoundCB(int var){
     if(research_mode==1){
       SliceBoundCB(SET_GLOBAL_BOUNDS);
     }
-#ifndef pp_NEWBOUND_DIALOG
-    glui_setslicemin_save = glui_setslicemin;
-    glui_setslicemax_save = glui_setslicemax;
-#endif
     slice_fileupdate++;
     if(slice_fileupdate>1){
       slice_fileupdate--;
@@ -5077,22 +4988,12 @@ extern "C" void SliceBoundCB(int var){
     }
     slice_fileupdate--;
     use_slice_glui_bounds = 0;
-#ifndef pp_NEWBOUND_DIALOG
-    glui_setslicemin = glui_setslicemin_save;
-    glui_setslicemax = glui_setslicemax_save;
-#endif
-    if(research_mode==1){
-      printf("\n*** in research mode, using global bounds\n");
-    }
     break;
   case FILE_RELOAD:
     if(research_mode==1){
       SliceBoundCB(SET_GLOBAL_BOUNDS);
     }
     ReloadAllSliceFiles();
-    if(research_mode==1){
-      printf("*** in research mode, using global bounds\n\n");
-    }
     break;
   default:
     ASSERT(FFALSE);
