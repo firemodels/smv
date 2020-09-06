@@ -591,7 +591,7 @@ void ReadSMVDynamic(char *file){
   int nplot3dinfo_old;
   bufferstreamdata streaminfo, *stream=&streaminfo;
 
-  stream->fileinfo = File2Buffer(file);
+  stream->fileinfo = fopen_buffer(file,"r");
 
   nplot3dinfo_old=nplot3dinfo;
 
