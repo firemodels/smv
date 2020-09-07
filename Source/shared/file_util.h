@@ -29,7 +29,11 @@ typedef struct {
 
 /* --------------------------  _filedata ------------------------------------ */
 
+#define FILE_ASCII  0
+#define FILE_BINARY 1
 typedef struct _filedata {
+  int mode;
+  unsigned int pos;
   char *buffer, **lines;
   int iline, nlines;
   FILE_SIZE filesize;

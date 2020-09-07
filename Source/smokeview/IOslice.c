@@ -15,6 +15,25 @@
 #include "smokeviewvars.h"
 #include "IOscript.h"
 
+#define SLICE_HEADER_SIZE 4
+#define SLICE_TRAILER_SIZE 4
+
+#ifdef X64
+#define FSEEK_SLICE(a,b,c) _fseeki64(a,b,c)
+#define FTELL_SLICE(a)     _ftelli64(a)
+#else
+#define FSEEK_SLICE(a,b,c) fseeko(a,b,c)
+#define FTELL_SLICE(a)     ftello(a)
+#endif
+
+#define FCLOSE_SLICE(a) fclose(a)
+
+#define FORT_SLICEREAD(var,count,STREAM) \
+                           FSEEK_SLICE(STREAM,SLICE_HEADER_SIZE,SEEK_CUR);\
+                           returncode=fread(var,4,count,STREAM);\
+                           if(returncode!=count)returncode=0;\
+                           FSEEK_SLICE(STREAM,SLICE_TRAILER_SIZE,SEEK_CUR)
+
 void DrawQuadSlice(float *v1, float *v2, float *v3, float *v4, float t1, float t2, float t3, float t4, float del, int level);
 void DrawQuadVectorSlice(float *v1, float *v2, float *v3, float *v4, float del, int level);
 void DrawTriangleOutlineSlice(float *v1, float *v2, float *v3, float del, int level);
@@ -1174,9 +1193,9 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   }
   time_local=sd->times;
 
-  FORTREAD(time_local,1,SLICEFILE);
-  FORTREAD(slicevals,frame_size,SLICEFILE);
-  fclose(SLICEFILE);
+  FORT_SLICEREAD(time_local,1,SLICEFILE);
+  FORT_SLICEREAD(slicevals,frame_size,SLICEFILE);
+  FCLOSE_SLICE(SLICEFILE);
   return 0;
 }
 
@@ -4384,7 +4403,7 @@ void GetSliceSizes(char *slicefilenameptr, int time_frame, int *nsliceiptr, int 
   *headersizeptr = 3*(4+30+4);
   fseek(SLICEFILE, *headersizeptr, SEEK_CUR);
 
-  FORTREAD(ijk, 6, SLICEFILE);
+  FORT_SLICEREAD(ijk, 6, SLICEFILE);
   ip1 = ijk[0];
   ip2 = ijk[1];
   jp1 = ijk[2];
@@ -4411,7 +4430,7 @@ void GetSliceSizes(char *slicefilenameptr, int time_frame, int *nsliceiptr, int 
     int loadframe;
 
     loadframe = 0;
-    FORTREAD(&timeval, 1, SLICEFILE);
+    FORT_SLICEREAD(&timeval, 1, SLICEFILE);
     if(returncode==0)break;
     if((settmin_s_arg!=0&&timeval<tmin_s_arg)||timeval<=time_max){
     }
@@ -4512,7 +4531,7 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
   nsteps = 0;
   fseek(stream, 3*(4+30+4), SEEK_CUR);
 
-  FORTREAD(ijk, 6, stream);
+  FORT_SLICEREAD(ijk, 6, stream);
   if(returncode==0){
     fclose(stream);
     return file_size;
@@ -4573,7 +4592,7 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
       count_timeframe = 1;
       break;
     }
-    FORTREAD(&timeval, 1, stream);
+    FORT_SLICEREAD(&timeval, 1, stream);
     if(returncode==0)break;
     file_size = file_size+4;
     if((settmin_s_arg!=0&&timeval<tmin_s_arg)||timeval<=time_max){
@@ -4585,7 +4604,7 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
     }
     if(settmax_s_arg!=0&&timeval>tmax_s_arg)break;
     //    read(lu11, iostat = error)(((qq(i, j, k), i = 1, nxsp), j = 1, nysp), k = 1, nzsp)
-    FORTREAD(qq, nxsp*nysp*nzsp, stream);
+    FORT_SLICEREAD(qq, nxsp*nysp*nzsp, stream);
     if(returncode==0||nsteps>=*ntimesptr)break;
     count++;
     if(count%sliceframestep_arg!=0)loadframe = 0;
