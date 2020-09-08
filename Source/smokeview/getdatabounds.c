@@ -228,30 +228,28 @@ void GetGlobalPatchBounds(void){
   }
 }
 
-#ifdef pp_NEWBOUND_DIALOG
-
 /* ------------------ GetPlot3DFileBounds ------------------------ */
 
-void GetPlot3DFileBounds(char* file, float *valmin, float *valmax){
-  FILE* stream;
-  int i, compute_bounds=0;
+void GetPlot3DFileBounds(char *file, float *valmin, float *valmax){
+  FILE *stream;
+  int i, compute_bounds = 0;
   char buffer[255];
 
-  for(i = 0; i < MAXPLOT3DVARS; i++){
-    if(valmin[i] > valmax[i]){
+  for(i = 0; i<MAXPLOT3DVARS; i++){
+    if(valmin[i]>valmax[i]){
       compute_bounds = 1;
       break;
     }
   }
-  if(compute_bounds == 0)return;
-  if(file == NULL || strlen(file) == 0)return;
+  if(compute_bounds==0)return;
+  if(file==NULL||strlen(file)==0)return;
   stream = fopen(file, "r");
-  if(stream == NULL)return;
+  if(stream==NULL)return;
 
   CheckMemory;
 
-  for(i = 0; i < MAXPLOT3DVARS; i++){
-    if(fgets(buffer, 255, stream) == NULL)break;
+  for(i = 0; i<MAXPLOT3DVARS; i++){
+    if(fgets(buffer, 255, stream)==NULL)break;
     sscanf(buffer, "%f %f", valmin+i, valmax+i);
   }
   fclose(stream);
@@ -262,27 +260,27 @@ void GetPlot3DFileBounds(char* file, float *valmin, float *valmax){
 void GetGlobalPlot3DBounds(void){
   int i;
 
-  for(i = 0; i < nplot3dinfo; i++){
+  for(i = 0; i<nplot3dinfo; i++){
     plot3ddata *plot3di;
 
-    plot3di = plot3dinfo + i;
+    plot3di = plot3dinfo+i;
     GetPlot3DFileBounds(plot3di->bound_file, plot3di->file_min, plot3di->file_max);
   }
-  for(i = 0; i < MAXPLOT3DVARS; i++){
+  for(i = 0; i<MAXPLOT3DVARS; i++){
     p3min_all[i] = 1.0;
     p3max_all[i] = 0.0;
   }
-  for(i = 0; i < nplot3dinfo; i++){
+  for(i = 0; i<nplot3dinfo; i++){
     plot3ddata *plot3di;
     int j;
     float *file_min, *file_max;
 
-    plot3di = plot3dinfo + i;
+    plot3di = plot3dinfo+i;
     file_min = plot3di->file_min;
     file_max = plot3di->file_max;
-    for(j = 0; j < MAXPLOT3DVARS; j++){
-      if(file_min[j] <= file_max[j]){
-        if(p3min_all[j] > p3max_all[j]){
+    for(j = 0; j<MAXPLOT3DVARS; j++){
+      if(file_min[j]<=file_max[j]){
+        if(p3min_all[j]>p3max_all[j]){
           p3min_all[j] = file_min[j];
           p3max_all[j] = file_max[j];
         }
@@ -293,11 +291,62 @@ void GetGlobalPlot3DBounds(void){
       }
     }
   }
-  for(i = 0; i < MAXPLOT3DVARS; i++){
+  for(i = 0; i<MAXPLOT3DVARS; i++){
     p3min_global[i] = p3min_all[i];
     p3max_global[i] = p3max_all[i];
   }
 }
+
+/* ------------------ GetLoadedPlot3dBounds ------------------------ */
+
+void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded_max){
+  int i;
+  int plot3d_loaded = 0;
+
+#define BOUNDS_LOADED 1
+  for(i = 0; i<nplot3dinfo; i++) {
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo+i;
+    if(plot3di->loaded==0)continue;
+    plot3d_loaded = 1;
+    break;
+  }
+  if(plot3d_loaded==0){
+    printf("***loaded plot3d bounds not available, using global bounds\n");
+    for(i = 0; i<6; i++) {
+      loaded_min[i] = p3min_global[i];
+      loaded_max[i] = p3max_global[i];
+    }
+    return;
+  }
+  for(i = 0; i<6; i++) {
+    if(compute_loaded!=NULL&&compute_loaded[i]!=BOUNDS_LOADED)continue;
+    loaded_min[i] = 1.0;
+    loaded_max[i] = 0.0;
+  }
+  for(i = 0; i<nplot3dinfo; i++){
+    plot3ddata *plot3di;
+    int j;
+
+    plot3di = plot3dinfo+i;
+    if(plot3di->loaded==0)continue;
+    for(j = 0; j<6; j++){
+      if(compute_loaded!=NULL&&compute_loaded[j]!=BOUNDS_LOADED)continue;
+      if(loaded_min[j]>loaded_max[j]){
+        loaded_min[j] = plot3di->file_min[j];
+        loaded_max[j] = plot3di->file_max[j];
+      }
+      else{
+        loaded_min[j] = MIN(plot3di->file_min[j], loaded_min[j]);
+        loaded_max[j] = MAX(plot3di->file_max[j], loaded_max[j]);
+      }
+    }
+  }
+}
+
+
+#ifdef pp_NEWBOUND_DIALOG
 
 /* ------------------ GetLoadedPartBounds ------------------------ */
 
@@ -370,54 +419,6 @@ void GetGlobalSliceBounds(void){
     boundi->dlg_valmax = boundi->dlg_global_valmax;
   }
 
-}
-
-/* ------------------ GetLoadedPlot3dBounds ------------------------ */
-
-void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded_max){
-  int i;
-  int plot3d_loaded = 0;
-
-#define BOUNDS_LOADED 1
-  for (i = 0; i < nplot3dinfo; i++) {
-    plot3ddata* plot3di;
-
-    plot3di = plot3dinfo + i;
-    if (plot3di->loaded == 0)continue;
-    plot3d_loaded = 1;
-    break;
-  }
-  if(plot3d_loaded == 0){
-    printf("***loaded plot3d bounds not available, using global bounds\n");
-    for (i = 0; i < 6; i++) {
-      loaded_min[i] = p3min_global[i];
-      loaded_max[i] = p3max_global[i];
-    }
-    return;
-  }
-  for (i = 0; i < 6; i++) {
-    if(compute_loaded[i] != BOUNDS_LOADED)continue;
-    loaded_min[i] = 1.0;
-    loaded_max[i] = 0.0;
-  }
-  for(i = 0; i < nplot3dinfo; i++){
-    plot3ddata *plot3di;
-    int j;
-
-    plot3di = plot3dinfo + i;
-    if(plot3di->loaded == 0)continue;
-    for(j=0;j<6;j++){
-      if(compute_loaded[j] != BOUNDS_LOADED)continue;
-      if(loaded_min[j] > loaded_max[j]){
-        loaded_min[j] = plot3di->file_min[j];
-        loaded_max[j] = plot3di->file_max[j];
-      }
-      else{
-        loaded_min[j] = MIN(plot3di->file_min[j],loaded_min[j]);
-        loaded_max[j] = MAX(plot3di->file_max[j],loaded_max[j]);
-      }
-    }
-  }
 }
 
 /* ------------------ GetLoadedSliceBounds ------------------------ */

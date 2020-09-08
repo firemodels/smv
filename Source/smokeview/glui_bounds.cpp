@@ -3425,7 +3425,11 @@ extern "C" void Plot3DBoundCB(int var){
   case SETVALMIN:
    switch(glui_setp3min){
     case PERCENTILE_MIN:
+      break;
     case GLOBAL_MIN:
+      GetLoadedPlot3dBounds(NULL, p3min_loaded, p3max_loaded);
+      glui_p3min = p3min_loaded[list_p3_index];
+      EDIT_plot3d_min->set_float_val(glui_p3min);
       break;
     case SET_MIN:
     case CHOP_MIN:
@@ -3437,11 +3441,15 @@ extern "C" void Plot3DBoundCB(int var){
    break;
   case SETVALMAX:
      switch(glui_setp3max){
-      case PERCENTILE_MIN:
-      case GLOBAL_MIN:
+      case PERCENTILE_MAX:
         break;
-      case SET_MIN:
-      case CHOP_MIN:
+      case GLOBAL_MAX:
+        GetLoadedPlot3dBounds(NULL, p3min_loaded, p3max_loaded);
+        glui_p3max = p3max_loaded[list_p3_index];
+        EDIT_plot3d_max->set_float_val(glui_p3max);
+        break;
+      case SET_MAX:
+      case CHOP_MAX:
         break;
       default:
         ASSERT(FFALSE);
@@ -4586,6 +4594,11 @@ extern "C" void SliceBoundCB(int var){
             setp3max_all[i] = GLOBAL_MAX;
 #endif
           }
+          GetLoadedPlot3dBounds(NULL, p3min_loaded, p3max_loaded);
+          glui_p3min = p3min_loaded[list_p3_index];
+          glui_p3max = p3max_loaded[list_p3_index];
+          EDIT_plot3d_min->set_float_val(glui_p3min);
+          EDIT_plot3d_max->set_float_val(glui_p3max);
           Plot3DBoundCB(SETVALMIN);
           Plot3DBoundCB(SETVALMAX);
           Plot3DBoundCB(FILE_RELOAD);

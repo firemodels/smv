@@ -1480,18 +1480,14 @@ typedef struct _patchdata {
 typedef struct _plot3ddata {
   int seq_id, autoload;
   char *file,*reg_file,*comp_file;
-#ifdef pp_NEWBOUND_DIALOG
   char *bound_file;
-#endif
   int compression_type;
   float time;
   int u, v, w, nvars;
   float diff_valmin[MAXPLOT3DVARS], diff_valmax[MAXPLOT3DVARS];
   int extreme_min[MAXPLOT3DVARS], extreme_max[MAXPLOT3DVARS];
   int blocknumber,loaded,display;
-#ifdef pp_NEWBOUND_DIALOG
   float file_min[MAXPLOT3DVARS], file_max[MAXPLOT3DVARS];
-#endif
   flowlabels label[MAXPLOT3DVARS];
   char menulabel[256], longlabel[256], timelabel[256];
 } plot3ddata;
