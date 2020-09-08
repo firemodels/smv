@@ -72,15 +72,14 @@ SVEXTERN int SVDECL(terrain_slice_overlap, 0);
 SVEXTERN int GetTerrainData(char *file, terraindata *terri);
 
 #ifdef pp_NEWBOUND_DIALOG
-SVEXTERN int SVDECL(glui_slice_compute_loaded, 1),  SVDECL(glui_slice_reset_loaded, 2);
-SVEXTERN int SVDECL(glui_plot3d_compute_loaded, 1), SVDECL(glui_plot3d_reset_loaded, 2);
-SVEXTERN int SVDECL(glui_part_compute_loaded, 0), SVDECL(glui_part_reset_loaded, 1);
-SVEXTERN int SVDECL(glui_patch_compute_loaded, 0), SVDECL(glui_patch_reset_loaded, 1);
-SVEXTERN int SVDECL(p3bounds_defined, 0);
+SVEXTERN int SVDECL(glui_slice_compute_loaded,  1);
+SVEXTERN int SVDECL(glui_plot3d_compute_loaded, 1);
+SVEXTERN int SVDECL(glui_part_compute_loaded,   0);
+SVEXTERN int SVDECL(glui_patch_compute_loaded,  0);
 #ifdef INMAIN
-SVEXTERN int plot3d_compute_loaded[MAXPLOT3DVARS]={1,1,1,1,1,1,}, plot3d_reset_loaded[MAXPLOT3DVARS]={2,2,2,2,2,2};
+SVEXTERN int plot3d_compute_loaded[MAXPLOT3DVARS]={1,1,1,1,1,1,};
 #else
-SVEXTERN int plot3d_compute_loaded[MAXPLOT3DVARS], plot3d_reset_loaded[MAXPLOT3DVARS];
+SVEXTERN int plot3d_compute_loaded[MAXPLOT3DVARS];
 #endif
 #endif
 
@@ -551,7 +550,7 @@ SVEXTERN int SVDECL(update_ssf,0);
 SVEXTERN char SVDECL(*ini_from,NULL), SVDECL(*ini_to,NULL);
 SVEXTERN char SVDECL(*ssf_from, NULL), SVDECL(*ssf_to, NULL);
 
-SVEXTERN int SVDECL(cache_boundarydata, 0);
+SVEXTERN int SVDECL(cache_boundary_data, 1);
 SVEXTERN int SVDECL(tour_antialias,0);
 SVEXTERN int SVDECL(tour_drag,0);
 
@@ -1009,14 +1008,15 @@ SVEXTERN int SVDECL(show_mirror_boundary,0), SVDECL(show_open_boundary, 0);
 SVEXTERN int SVDECL(n_mirrorvents,0), SVDECL(n_openvents,0);
 
 
-SVEXTERN int setp3min_all[MAXPLOT3DVARS], setp3min_save[MAXPLOT3DVARS];
-SVEXTERN float p3min_all[MAXPLOT3DVARS], p3min_global[MAXPLOT3DVARS], p3min_save[MAXPLOT3DVARS];
+SVEXTERN int setp3min_all[MAXPLOT3DVARS];
+SVEXTERN float p3min_all[MAXPLOT3DVARS], p3min_global[MAXPLOT3DVARS];
 #ifdef pp_NEWBOUND_DIALOG
 SVEXTERN float p3min_ini[MAXPLOT3DVARS], p3max_ini[MAXPLOT3DVARS];
 #endif
 
-SVEXTERN int setp3max_all[MAXPLOT3DVARS], setp3max_save[MAXPLOT3DVARS];
-SVEXTERN float p3max_all[MAXPLOT3DVARS], p3max_global[MAXPLOT3DVARS], p3max_save[MAXPLOT3DVARS];
+SVEXTERN int setp3max_all[MAXPLOT3DVARS];
+SVEXTERN float p3max_all[MAXPLOT3DVARS], p3max_global[MAXPLOT3DVARS];
+SVEXTERN float p3min_loaded[MAXPLOT3DVARS], p3max_loaded[MAXPLOT3DVARS];
 
 SVEXTERN int setp3chopmin[MAXPLOT3DVARS], setp3chopmax[MAXPLOT3DVARS];
 SVEXTERN float p3chopmin[MAXPLOT3DVARS], p3chopmax[MAXPLOT3DVARS];
@@ -1085,7 +1085,7 @@ SVEXTERN float xbar0ORIG, ybar0ORIG, zbar0ORIG;
 SVEXTERN int ReadPlot3dFile, ReadIsoFile;
 SVEXTERN int ReadVolSlice;
 SVEXTERN int ReadZoneFile, SVDECL(ReadPartFile,0);
-SVEXTERN int SVDECL(cache_qdata,1);
+SVEXTERN int SVDECL(cache_plot3d_data,1);
 
 SVEXTERN int editwindow_status;
 SVEXTERN int startup_pass;
@@ -1105,11 +1105,7 @@ SVEXTERN int rotation_type_old,eyeview_SAVE,eyeview_last;
 SVEXTERN int frameratevalue;
 SVEXTERN int setpartmin, setpartmax;
 SVEXTERN int SVDECL(setisomin, PERCENTILE_MIN), SVDECL(setisomax, PERCENTILE_MAX);
-SVEXTERN int SVDECL(setisomin_save, PERCENTILE_MIN), SVDECL(setisoemax_save, PERCENTILE_MAX);
 SVEXTERN int SVDECL(glui_setslicemin,GLOBAL_MIN),      SVDECL(glui_setslicemax,GLOBAL_MAX);
-SVEXTERN int SVDECL(glui_setslicemin_save,GLOBAL_MIN), SVDECL(glui_setslicemax_save,GLOBAL_MAX);
-SVEXTERN int SVDECL(setpatchmin_save, PERCENTILE_MIN), SVDECL(setpatchmax_save, PERCENTILE_MAX);
-SVEXTERN int SVDECL(setpartmin_save, PERCENTILE_MIN),  SVDECL(setpartmax_save, PERCENTILE_MAX);
 
 SVEXTERN float slice_line_contour_min;
 SVEXTERN float slice_line_contour_max;
@@ -1138,9 +1134,6 @@ SVEXTERN float SVDECL(glui_patchmin,1.0),SVDECL(glui_patchmax,0.0);
 SVEXTERN float SVDECL(targetmin, 1.0), SVDECL(targetmax, 0.0);
 SVEXTERN float SVDECL(glui_partmin,1.0), SVDECL(glui_partmax,0.0);
 SVEXTERN float SVDECL(glui_slicemin,1.0),       SVDECL(glui_slicemax,0.0);
-SVEXTERN float SVDECL(glui_slicemin_save, 1.0), SVDECL(glui_slicemax_save, 0.0);
-SVEXTERN float SVDECL(patchmin_save, 1.0), SVDECL(patchmax_save, 0.0);
-SVEXTERN float SVDECL(partmin_save, 1.0), SVDECL(partmax_save, 0.0);
 
 SVEXTERN float SVDECL(zonemin,1.0), SVDECL(zonemax,0.0);
 SVEXTERN float speedmax;

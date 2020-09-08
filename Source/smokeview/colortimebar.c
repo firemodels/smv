@@ -387,7 +387,7 @@ colorbardata *GetColorbar(char *label){
 }
 
 /* ------------------ UpdateCurrentColorbar ------------------------ */
-#define FILEUPDATE 6
+#define FILE_UPDATE 6
 void UpdateCurrentColorbar(colorbardata *cb){
   int jj=0,fed_loaded=0;
 
@@ -410,7 +410,7 @@ void UpdateCurrentColorbar(colorbardata *cb){
       break;
     }
   }
-  if(is_fed_colorbar==1&&fed_loaded==1)SliceBoundCB(FILEUPDATE);
+  if(is_fed_colorbar==1&&fed_loaded==1)SliceBoundCB(FILE_UPDATE);
 }
 
 /* ------------------ RemapColorbar ------------------------ */

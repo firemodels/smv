@@ -27,14 +27,13 @@
 #define GLUI_VALMIN 103
 #define GLUI_VALMAX 104
 #endif
-#define FILETYPEINDEX 5
-#define FILEUPDATE 6
-#define FILERELOAD 7
+#define FILETYPE_INDEX      5
+#define FILE_UPDATE         6
+#define FILE_RELOAD         7
 #ifdef pp_NEWBOUND_DIALOG
-#define GLUI_RADIO_RESET 28
 #define GLUI_RADIO_COMPUTE 29
 #endif
-#define FILEUPDATEDATA 8
+#define UPDATE_DATA_COLORS 8
 #define UPDATEPLOT 10
 #define PLOTISO 11
 #define SHOWCHAR 12
@@ -48,11 +47,11 @@
 #define TRACERS 21
 #define PARTFAST 22
 #define PLOTISOTYPE 22
-#define CACHE_BOUNDARYDATA 23
+#define CACHE_DATA 23
 #define SHOWPATCH_BOTH 24
 #define HIDEPATCHSURFACE 25
 #define DATA_transparent 26
-#define ALLFILERELOAD 27
+#define SET_GLOBAL_BOUNDS 27
 #define UNLOAD_QDATA 203
 #define SET_TIME 204
 #define TBOUNDS 205
@@ -73,13 +72,16 @@
 #define ISO_COLORBAR_LIST        217
 #define ISO_OUTLINE_IOFFSET      218
 #ifdef pp_NEWBOUND_DIALOG
-#define GLOBAL_BOUNDS            219
+#define COMPUTE_BOUNDS           219
 #define GLOBAL_BOUNDS_MIN        220
 #define GLOBAL_BOUNDS_MAX        221
 #define GLOBAL_BOUNDS_LOADED     222
 #define GLOBAL_BOUNDS_MIN_LOADED 223
 #define GLOBAL_BOUNDS_MAX_LOADED 224
 #define FILE_LOADED_ONLY         226
+#define BOUNDS_GLOBAL 0
+#define BOUNDS_LOADED 1
+#define BOUNDS_INI    2
 #endif
 
 #define ISO_TRANSPARENT_CONSTANT 0

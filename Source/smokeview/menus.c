@@ -3483,8 +3483,8 @@ void ParticlePropShowMenu(int value){
     global_prop_index = iprop;
     partshortlabel=propi->label->shortlabel;
     partunitlabel=propi->label->unit;
-#define FILETYPEINDEX 5
-    PartBoundCB(FILETYPEINDEX);
+#define FILETYPE_INDEX 5
+    PartBoundCB(FILETYPE_INDEX);
     UpdatePartType();
   }
   else if(value==MENU_PROP_SHOWALL){
@@ -3652,6 +3652,16 @@ void LoadAllPartFiles(int partnum){
 void SetupPart(int value, int option){
   int i;
 
+#define SETVALMIN 1
+#define SETVALMAX 2
+  if(research_mode == 1 && npartinfo> 0){
+    GetGlobalPartBounds(0);
+    setpartmin = GLOBAL_MIN;
+    PartBoundCB(SETVALMIN);
+
+    setpartmax = GLOBAL_MAX;
+    PartBoundCB(SETVALMAX);
+  }
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
 
@@ -4502,11 +4512,6 @@ void LoadSliceMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
     LoadSlicei(SET_SLICECOLOR,value, ALL_SLICE_FRAMES, NULL);
-#ifdef pp_NEWBOUND_DIALOG
-    if (glui_slice_reset_loaded != 0) {
-      ResetSliceData();
-    }
-#endif
   }
   else{
     switch (value){
@@ -4752,11 +4757,6 @@ FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
       file_count++;
     }
   }
-#ifdef pp_NEWBOUND_DIALOG
-  if (glui_slice_reset_loaded != 0) {
-    ResetSliceData();
-  }
-#endif
   STOP_TIMER(load_time);
   PRINT_LOADTIMES(file_count,(float)file_size,load_time);
   return file_size;
@@ -5053,9 +5053,6 @@ void GetListPlot3dBounds(int* list, int nlist, float* loaded_min, float* loaded_
 void Plot3DListMenu(int value){
   int i;
   plot3ddata *plot3di;
-#ifdef pp_NEWBOUND_DIALOG
-  int *list, nlist;
-#endif
 
   value = CLAMP(value, 0, nplot3dtimelist-1);
   iplot3dtimelist = value;
@@ -5064,34 +5061,12 @@ void Plot3DListMenu(int value){
     fprintf(scriptoutstream,"LOADPLOT3D\n");
     fprintf(scriptoutstream," %f\n",plot3dtimelist[value]);
   }
-
-#ifdef pp_NEWBOUND_DIALOG
-  if(glui_plot3d_reset_loaded==2){
-    NewMemory((void **)&list,nplot3dinfo*sizeof(int));
-    nlist=0;
-    for(i=0;i<nplot3dinfo;i++){
-      plot3di = plot3dinfo + i;
-      if(ABS(plot3di->time-plot3dtimelist[value])<0.5){
-        list[nlist++] = i;
-      }
-    }
-    GetListPlot3dBounds(list, nlist, p3min_all, p3max_all);
-    Plot3DBounds2Glui();
-  }
-#endif
-
-#ifdef pp_NEWBOUND_DIALOG
-  if(glui_plot3d_reset_loaded==2)p3bounds_defined = 1;
-#endif
   for(i=0;i<nplot3dinfo;i++){
     plot3di = plot3dinfo + i;
     if(ABS(plot3di->time-plot3dtimelist[value])<0.5){
       LoadPlot3dMenu(i);
     }
   }
-#ifdef pp_NEWBOUND_DIALOG
-  if(glui_plot3d_reset_loaded==2)p3bounds_defined = 0;
-#endif
 }
 
 /* ------------------ UpdateMenu ------------------------ */
@@ -5112,16 +5087,6 @@ void LoadPlot3dMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
     char *plot3dfile;
-
-#ifdef pp_NEWBOUND_DIALOG
-    if(glui_plot3d_reset_loaded==2&&p3bounds_defined==0){
-      int list[1], nlist;
-
-      list[0] = value;
-      nlist = 1;
-      GetListPlot3dBounds(list, nlist, p3min_all, p3max_all);
-    }
-#endif
 
     ReadPlot3dFile=1;
     plot3dfile = plot3dinfo[value].file;
@@ -7117,7 +7082,7 @@ updatemenu=0;
       }
     }
     GLUTADDSUBMENU(_("2D contours"),staticslicemenu);
-    if(cache_qdata==1){
+    if(cache_plot3d_data==1){
       GLUTADDSUBMENU(_("3D contours"),isosurfacemenu);
     }
     if(nplot3dloaded>1)GLUTADDSUBMENU(_("Mesh"),plot3dshowsinglemeshmenu);

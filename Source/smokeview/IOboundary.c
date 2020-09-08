@@ -1425,23 +1425,10 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   }
 
   if(flag==UNLOAD){
-    int enableflag=1;
-    int i;
-
     UpdateBoundaryType();
     UpdateUnitDefs();
     UpdateTimes();
     meshi->npatches=0;
-    for(i=0;i<npatchinfo;i++){
-      patchdata *patchii;
-
-      patchii = patchinfo + i;
-      if(patchii->loaded==1&&patchii->compression_type==COMPRESSED_ZLIB){
-        enableflag=0;
-        break;
-      }
-    }
-    if(enableflag==1)EnableBoundaryGlui();
     patchi->ntimes_old=0;
     patchi->ntimes=0;
     updatemenu=1;
@@ -1552,7 +1539,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   one time step at a time rather than for all time steps.
   */
 
-      if(statfile==0&&(glui_setpatchmin==SET_MIN||glui_setpatchmax==SET_MAX)&&cache_boundarydata==0)loadpatchbysteps=UNCOMPRESSED_BYFRAME;
+      if(statfile==0&&(glui_setpatchmin==SET_MIN||glui_setpatchmax==SET_MAX)&&cache_boundary_data==0)loadpatchbysteps=UNCOMPRESSED_BYFRAME;
     }
   }
   else{
@@ -2294,11 +2281,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   }
 
 #ifdef pp_NEWBOUND_DIALOG
-#define GLOBAL_BOUNDS 219
+#define COMPUTE_BOUNDS 219
   void BoundBoundCB(int var);
   if(glui_patchmin>glui_patchmax){
     UpdateBoundaryListIndex(patchfilenum);
-    BoundBoundCB(GLOBAL_BOUNDS);
+    BoundBoundCB(COMPUTE_BOUNDS);
   }
 #endif
 
@@ -2354,7 +2341,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       meshi->patchventcolors[i]=ventcolors[vent_index];
     }
   }
-  if(cache_boundarydata==0){
+  if(cache_boundary_data==0){
     FREEMEMORY(meshi->patchval);
   }
   patchi->loaded=1;
@@ -2365,7 +2352,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     meshi->vis_boundaries[n] = vis_boundary_type[meshi->boundarytype[n]];
   }
   plotstate=GetPlotState(DYNAMIC_PLOTS);
-  if(patchi->compression_type==COMPRESSED_ZLIB)DisableBoundaryGlui();
   UpdateTimes();
   UpdateUnitDefs();
   UpdateChopColors();
@@ -2827,8 +2813,12 @@ void Global2GLUIBoundaryBounds(const char *key){
         glui_setpatchmax = patchi->setvalmax;
       }
 #endif
-      glui_patchmin = patchi->valmin;
-      glui_patchmax = patchi->valmax;
+      if(glui_setpatchmin!=SET_MIN){
+        glui_patchmin = patchi->valmin;
+      }
+      if(glui_setpatchmax!=SET_MAX){
+        glui_patchmax = patchi->valmax;
+      }
 
       patchchopmin=patchi->chopmin;
       patchchopmax=patchi->chopmax;

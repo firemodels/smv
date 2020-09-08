@@ -17,8 +17,8 @@
                            FSEEK(STREAM,TRAILER_SIZE,SEEK_CUR)
 
 #define FORTgetslicefiledirection _F(getslicefiledirection)
-#define FORTgetgeomdatasize      _F(getgeomdatasize)
-#define FORTgetgeomdata          _F(getgeomdata)
+#define FORTgetgeomdatasize       _F(getgeomdatasize)
+#define FORTgetgeomdata           _F(getgeomdata)
 #define FORTgetzonesize           _F(getzonesize)
 #define FORTgetzonedata           _F(getzonedata)
 #define FORTgetxyzdata            _F(getxyzdata)

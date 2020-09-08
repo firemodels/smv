@@ -1103,9 +1103,10 @@ typedef struct _partpropdata {
   float ppartlevels256[256];
   float valmin, valmax;
   int imin, imax;
-  float global_min, global_max;
+  float dlg_global_valmin, dlg_global_valmax;
 #ifdef pp_NEWBOUND_DIALOG
-  float ini_min, ini_max;
+  float dlg_ini_valmin, dlg_ini_valmax;
+  float dlg_loaded_valmin, dlg_loaded_valmax;
 #endif
   int set_global_bounds;
   float percentile_min, percentile_max;
@@ -1163,10 +1164,8 @@ typedef struct _partdata {
 #endif
   int bounds_set;
   float *global_min, *global_max;
-#ifdef pp_NEWBOUND_DIALOG
   float *file_min, *file_max;
   int nfilebounds;
-#endif
   unsigned char *vis_part;
   int *tags;
   int *sort_tags;
@@ -1345,14 +1344,14 @@ typedef struct _boundsdata {
   char *shortlabel;
   int dlg_setvalmin, dlg_setvalmax;
 #ifdef pp_NEWBOUND_DIALOG
-  int dlg_compute_loaded, dlg_reset_loaded;
-  float dlg_inivalmin, dlg_inivalmax;
+  int dlg_compute_loaded;
+  float dlg_ini_valmin, dlg_ini_valmax;
 #endif
   int setchopmin, setchopmax;
   float chopmin, chopmax;
   float dlg_valmin, dlg_valmax;
   float data_valmin,data_valmax;
-  float global_valmin, global_valmax;
+  float dlg_global_valmin, dlg_global_valmax;
   float line_contour_min;
   float line_contour_max;
   int line_contour_num;
@@ -1452,13 +1451,10 @@ typedef struct _patchdata {
   int firstshort;
   int compression_type;
   int setvalmin, setvalmax;
-#ifdef pp_NEWBOUND_DIALOG
   float file_min, file_max;
-#endif
   float valmin, valmax;
   int setchopmin, setchopmax;
   float chopmin, chopmax;
-  float local_valmin, local_valmax;
   float diff_valmin, diff_valmax;
   int blocknumber,loaded,display;
   float *geom_times, *geom_vals;
@@ -1484,18 +1480,14 @@ typedef struct _patchdata {
 typedef struct _plot3ddata {
   int seq_id, autoload;
   char *file,*reg_file,*comp_file;
-#ifdef pp_NEWBOUND_DIALOG
   char *bound_file;
-#endif
   int compression_type;
   float time;
   int u, v, w, nvars;
   float diff_valmin[MAXPLOT3DVARS], diff_valmax[MAXPLOT3DVARS];
   int extreme_min[MAXPLOT3DVARS], extreme_max[MAXPLOT3DVARS];
   int blocknumber,loaded,display;
-#ifdef pp_NEWBOUND_DIALOG
   float file_min[MAXPLOT3DVARS], file_max[MAXPLOT3DVARS];
-#endif
   flowlabels label[MAXPLOT3DVARS];
   char menulabel[256], longlabel[256], timelabel[256];
 } plot3ddata;

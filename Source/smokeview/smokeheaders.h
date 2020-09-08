@@ -36,16 +36,17 @@ bufferstreamdata *GetSMVBuffer(char *file, char *file2);
 EXTERNCPP void UpdateBlockType(void);
 boundsdata *GetSliceBoundsInfo(char *shortlabel);
 boundsdata *GetPatchBoundsInfo(char *shortlabel);
+EXTERNCPP int GetGlobalPartBounds(int flag);
+EXTERNCPP void GetGlobalPatchBounds(void);
+EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded_max);
+EXTERNCPP void GetGlobalPlot3DBounds(void);
 #ifdef pp_NEWBOUND_DIALOG
 EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max);
 EXTERNCPP void GetGlobalSliceBounds(void);
-EXTERNCPP void GetGlobalPatchBounds(void);
-EXTERNCPP void GetGlobalPartBounds(void);
-EXTERNCPP void GetGlobalPlot3DBounds(void);
+EXTERNCPP void GetLoadedPartBounds(void);
 EXTERNCPP void GetLoadedSliceBounds(char *label, float *loaded_min, float *loaded_max);
-EXTERNCPP void GetLoadedPlot3dBounds(float *loaded_min, float *loaded_max);
+EXTERNCPP void GetLoadedPatchBounds(char* label, float* loaded_min, float* loaded_max);
 FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
-EXTERNCPP void ResetSliceData(void);
 EXTERNCPP void Plot3DBounds2Glui(void);
 #endif
 EXTERNCPP void ShiftColorbars(void);
@@ -136,9 +137,11 @@ EXTERNCPP void InitScriptErrorFiles(void);
 EXTERNCPP void UpdateRenderListSkip(void);
 EXTERNCPP void UpdateFrameNumber(int changetime);
 EXTERNCPP void UpdateVentOffset(void);
+#ifdef pp_LOAD_INCREMENTAL
 EXTERNCPP void LoadIncrementalCB(int var);
 EXTERNCPP void LoadIncrementalCB1(int var);
 EXTERNCPP void LoadIncrementalCB2(int var);
+#endif
 EXTERNCPP void ColorbarCB(int var);
 EXTERNCPP void UpdateOpacityMap(void);
 EXTERNCPP void ShowBoundsDialog(int type);
@@ -266,8 +269,6 @@ EXTERNCPP void UpdateGluiVecFactor(void);
 EXTERNCPP void UpdateGluiKeyframe(void);
 EXTERNCPP void UpdateGluiBoundaryUnits(void);
 EXTERNCPP void UpdateGluiSliceUnits(void);
-EXTERNCPP void UpdateGluiPlot3D(void);
-EXTERNCPP void UpdateGluiPlot3D_units(void);
 EXTERNCPP void UpdateGluiPlot3Dtype(void);
 EXTERNCPP void UpdateGluiIsotype(void);
 EXTERNCPP void SetGLuiViewListManual(void);
@@ -304,15 +305,13 @@ EXTERNCPP void HideGluiTour(void);
 EXTERNCPP void ShowGluiStereo(void);
 EXTERNCPP void HideGluiStereo(void);
 
-EXTERNCPP void EnableBoundaryGlui(void);
-EXTERNCPP void DisableBoundaryGlui(void);
 EXTERNCPP void UpdateClipPlanes(void);
 EXTERNCPP void ShowGluiBounds(int menu_id);
 EXTERNCPP void HideGluiBounds(void);
 EXTERNCPP void ShowGluiGeometry(void);
 EXTERNCPP void HideGluiGeometry(void);
 
-EXTERNCPP void UpdateAllBoundaryColors(void);
+EXTERNCPP int UpdateAllBoundaryColors(void);
 EXTERNCPP void UpdateSliceListIndex(int sfn);
 EXTERNCPP void UpdateBoundaryListIndex(int patchfilenum);
 EXTERNCPP void UpdateBoundaryListIndex2(char *label);
@@ -928,6 +927,8 @@ EXTERNCPP void GetZoneColors(const float *t, int nt, unsigned char *it,
                char **zonelabels, float zonevalues[12], float *tvals256
                );
 
+EXTERNCPP void UpdatePlot3DColors(int file, int *errorcode);
+EXTERNCPP void UpdateAllPlot3DColors(void);
 EXTERNCPP void GetPlot3DColors(int iplot, int settmin, float *ttmin, int settmax, float *ttmax,
               int ndatalevel, int nlevel,
               char **labels,char **labelsiso, float *tlevels, float *tlevels256,

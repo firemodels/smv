@@ -50,7 +50,7 @@ no_target:
 
 # ------------- intel osx 64 ----------------
 
-intel_win_64 : CFLAGS    = -D WIN32 -D pp_INTEL -O2 /nologo $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -D WIN32 -O2 /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
 intel_win_64 : CPP       = icl
 intel_win_64 : FC        = ifort

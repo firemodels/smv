@@ -1892,9 +1892,6 @@ int GetColorbarState(void){
   visColorbarHorizontal = 0;
   visColorbarVertical_save = 0;
   visColorbarHorizontal_save = 0;
-#ifndef pp_NEWBOUND_DIALOG
-  research_mode = 0;
-#endif
   return COLORBAR_HIDDEN;
 }
 

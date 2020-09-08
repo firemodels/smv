@@ -28,47 +28,6 @@
 
 FILE *alt_stdout=NULL;
 
-/* ------------------ CopySMVBuffer ------------------------ */
-
-bufferstreamdata *CopySMVBuffer(bufferstreamdata *stream_in){
-  bufferstreamdata *stream_out;
-  filedata *fileinfo;
-
-  if(stream_in==NULL)return NULL;
-
-  NewMemory((void **)&stream_out, sizeof(bufferstreamdata));
-  memcpy(stream_out, stream_in, sizeof(bufferstreamdata));
-
-  NewMemory((void **)&fileinfo, sizeof(filedata));
-  stream_out->fileinfo = fileinfo;
-
-  memcpy(fileinfo, stream_in->fileinfo, sizeof(filedata));
-  return stream_out;
-}
-
-/* ------------------ GetSMVBuffer ------------------------ */
-
-bufferstreamdata *GetSMVBuffer(char *file, char *file2){
-  bufferstreamdata *stream;
-
-  NewMemory((void **)&stream, sizeof(bufferstreamdata));
-
-  stream->fileinfo = File2Buffer(file);
-  if(stream->fileinfo==NULL){
-    FREEMEMORY(stream);
-  }
-  if(stream!=NULL&&stream->fileinfo!=NULL&&file2!=NULL){
-    bufferstreamdata streaminfo2, *stream2 = &streaminfo2;
-
-    stream2->fileinfo = File2Buffer(file2);
-    if(stream2->fileinfo!=NULL){
-      AppendFileBuffer(stream->fileinfo, stream2->fileinfo);
-    }
-    FreeFileBuffer(stream2->fileinfo);
-  }
-  return stream;
-}
-
 /* ------------------ FFLUSH ------------------------ */
 
 int FFLUSH(void){
@@ -496,6 +455,8 @@ FILE_SIZE GetFileSizeSMV(const char *filename){
   return return_val;
 }
 
+//VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV file buffer routines VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+
 /* ------------------ FeofBuffer ------------------------ */
 
 int FeofBuffer(filedata *fileinfo){
@@ -528,7 +489,8 @@ char *FgetsBuffer(filedata *fileinfo,char *buffer,int size){
 
 void RewindFileBuffer(filedata *fileinfo){
   if(fileinfo==NULL)return;
-  fileinfo->iline=0;
+  fileinfo->iline = 0;
+  fileinfo->pos   = 0;
 }
 
 /* ------------------ FreeFileBuffer ------------------------ */
@@ -594,20 +556,67 @@ int AppendFileBuffer(filedata *file1, filedata *file2){
   return 0;
 }
 
-  /* ------------------ File2Buffer ------------------------ */
+/* ------------------ CopySMVBuffer ------------------------ */
 
-filedata *File2Buffer(char *filename){
+bufferstreamdata *CopySMVBuffer(bufferstreamdata *stream_in){
+  bufferstreamdata *stream_out;
+  filedata *fileinfo;
+
+  if(stream_in==NULL)return NULL;
+
+  NewMemory((void **)&stream_out, sizeof(bufferstreamdata));
+  memcpy(stream_out, stream_in, sizeof(bufferstreamdata));
+
+  NewMemory((void **)&fileinfo, sizeof(filedata));
+  stream_out->fileinfo = fileinfo;
+
+  memcpy(fileinfo, stream_in->fileinfo, sizeof(filedata));
+  return stream_out;
+}
+
+/* ------------------ GetSMVBuffer ------------------------ */
+
+bufferstreamdata *GetSMVBuffer(char *file, char *file2){
+  bufferstreamdata *stream;
+
+  NewMemory((void **)&stream, sizeof(bufferstreamdata));
+
+  stream->fileinfo = fopen_buffer(file,"r");
+  if(stream->fileinfo==NULL){
+    FREEMEMORY(stream);
+  }
+  if(stream!=NULL&&stream->fileinfo!=NULL&&file2!=NULL){
+    bufferstreamdata streaminfo2, *stream2 = &streaminfo2;
+
+    stream2->fileinfo = fopen_buffer(file2,"r");
+    if(stream2->fileinfo!=NULL){
+      AppendFileBuffer(stream->fileinfo, stream2->fileinfo);
+    }
+    FreeFileBuffer(stream2->fileinfo);
+  }
+  return stream;
+}
+
+  /* ------------------ fopen_buffer ------------------------ */
+
+filedata *fopen_buffer(char *filename, char *mode){
   FILE_SIZE i,filesize;
   filedata *fileinfo;
   char *buffer, **lines;
   int nlines;
   FILE *stream;
 
+  // only support r and rb modes (ascii and binary)
+
+  if(mode==NULL)return NULL;
+  if( strcmp(mode, "r")!=0 && strcmp(mode, "rb")!=0 )return NULL;
+
   if(FILE_EXISTS(filename)==NO)return NULL;
   filesize = GetFileSizeSMV(filename);
   if(filesize==0)return NULL;
   stream = fopen(filename,"rb");
   if(stream==NULL)return NULL;
+
   NewMemory((void **)&fileinfo, sizeof(filedata));
   if(NewMemory((void **)&buffer, filesize+1)==0){
     FREEMEMORY(fileinfo);
@@ -620,47 +629,63 @@ filedata *File2Buffer(char *filename){
   filesize++;           // add an extra character to file and set it to the end of string character
   buffer[filesize-1]=0;
 
-  fileinfo->buffer = buffer;
+  fileinfo->buffer   = buffer;
   fileinfo->filesize = filesize;
-  fileinfo->iline = 0;
+  fileinfo->lines    = NULL;
+  fileinfo->iline    = 0;
+  fileinfo->nlines   = 0;
+  fileinfo->pos      = 0;
   CheckMemory;
 
-  // count number of lines
-
-  nlines = 0;
-  for(i = 0;i<filesize;i++){
-    int ch;
-
-    ch = buffer[i];
-    if(ch=='\r'){      // end of line is \r\n or \n
-      buffer[i]=' ';   //  if a \r is found set it to a blank character
-      continue;
-    }
-    if(ch=='\n'||ch==EOF||ch==0){
-      buffer[i]=0;
-      nlines++;
-    }
+  if(strcmp(mode, "r")==0){
+    fileinfo->mode=FILE_ASCII;
   }
-  CheckMemory;
-  NewMemory((void **)&lines, (nlines+1)*sizeof(char *));
-  fileinfo->lines = lines;
-
-  nlines = 0;
-  lines[0] = buffer;
-  for(i = 0;i<filesize;i++){
-    int ch;
-
-    ch = buffer[i];
-    if(ch!=0)continue;
-    if(i+1<filesize){
-      nlines++;
-      lines[nlines] = buffer+i+1;
-    }
+  if(strcmp(mode, "rb")==0){
+    fileinfo->mode = FILE_BINARY;
   }
-  fileinfo->nlines = nlines;
+
+  if(fileinfo->mode==FILE_ASCII){
+
+    // count number of lines
+
+    nlines = 0;
+    for(i = 0; i<filesize; i++){
+      int ch;
+
+      ch = buffer[i];
+      if(ch=='\r'){      // end of line is \r\n or \n
+        buffer[i] = ' ';   //  if a \r is found set it to a blank character
+        continue;
+      }
+      if(ch=='\n'||ch==EOF||ch==0){
+        buffer[i] = 0;
+        nlines++;
+      }
+    }
+    CheckMemory;
+    NewMemory((void **)&lines, (nlines+1)*sizeof(char *));
+    fileinfo->lines = lines;
+
+    nlines = 0;
+    lines[0] = buffer;
+    for(i = 0; i<filesize; i++){
+      int ch;
+
+      ch = buffer[i];
+      if(ch!=0)continue;
+      if(i+1<filesize){
+        nlines++;
+        lines[nlines] = buffer+i+1;
+      }
+    }
+    fileinfo->nlines = nlines;
+  }
   CheckMemory;
   return fileinfo;
 }
+
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ file buffer routines ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 
 /* ------------------ FileExistsOrig ------------------------ */
 
@@ -1037,7 +1062,7 @@ char *GetZoneFileName(char *bufptr){
   return filename;
 }
 
-/* ------------------ file_modtime ------------------------ */
+/* ------------------ FileModtime ------------------------ */
 
 time_t FileModtime(char *filename){
 

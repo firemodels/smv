@@ -1857,7 +1857,7 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'i':
-      if(cache_qdata==1){
+      if(cache_plot3d_data==1){
         HandleIso();
         return;
       }
@@ -1985,7 +1985,7 @@ void Keyboard(unsigned char key, int flag){
         plotn=1;
       }
       UpdateAllPlotSlices();
-      if(visiso==1&&cache_qdata==1)UpdateSurface();
+      if(visiso==1&& cache_plot3d_data==1)UpdateSurface();
       UpdatePlot3dListIndex();
       break;
     case 'q':
@@ -2032,11 +2032,7 @@ void Keyboard(unsigned char key, int flag){
         int rflag=0;
 
         if(keystate==GLUT_ACTIVE_ALT&&strncmp((const char *)&key2, "r", 1) == 0){
-#ifdef pp_NEWBOUND_DIALOG
-          research_mode = 1;
-#else
           research_mode = 1-research_mode;
-#endif
           update_research_mode=1;
           return;
         }
