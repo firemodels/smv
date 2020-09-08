@@ -900,7 +900,7 @@ extern "C" void UpdateGluiBoundaryUnits(void){
 extern "C" void UpdateResearchMode(void){
   SliceBoundCB(RESEARCH_MODE);
   if(research_mode==1){
-    char *message="Turn off research mode to enable (press ALT r)";
+    char *message="To enable controls, turn off research mode (press ALT r)";
 
     if(PANEL_slice_minmax!=NULL)PANEL_slice_minmax->disable();
     if(PANEL_part_minmax!=NULL)PANEL_part_minmax->disable();
