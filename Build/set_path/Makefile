@@ -30,7 +30,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # Definition of the object variables
 
-obj = main.o string_util.o dmalloc.o file_util.o  md5.o sha1.o sha256.o
+obj = main.o string_util.o dmalloc.o file_util.o  md5.o sha1.o sha256.o stdio_buffer.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***
