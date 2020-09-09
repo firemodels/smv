@@ -16,6 +16,7 @@
 #include "update.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
+#include "stdio_buffer.h"
 
 #define BREAK break
 #define BREAK2 \

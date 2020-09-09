@@ -7,6 +7,7 @@
 #include "svdiff.h"
 #include "string_util.h"
 #include "MALLOCC.h"
+#include "stdio_buffer.h"
 
 //dummy change to bump version number to 1.0.10
 //dummy change to force githash change

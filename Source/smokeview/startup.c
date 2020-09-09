@@ -11,6 +11,7 @@
 #ifdef pp_LUA
 #include "lua_api.h"
 #endif
+#include "stdio_buffer.h"
 
 /* ------------------ Init ------------------------ */
 

@@ -8,6 +8,7 @@
 #define STREXTERN extern CCC
 #define STRDECL(var,val)  var
 #endif
+#include "stdio_buffer.h"
 
 // vvvvvvvvvvvvvvvvvvvvvvvv header files vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 

@@ -27,31 +27,7 @@ typedef struct {
   int type;
 } filelistdata;
 
-/* --------------------------  _filedata ------------------------------------ */
-
-#define FILE_ASCII  0
-#define FILE_BINARY 1
-typedef struct _filedata {
-  int mode;
-  char *buffer, **lines;
-  int iline, nlines;
-  FILE_SIZE pos, filesize;
-} filedata;
-
-/* --------------------------  bufferstreamdata ------------------------------------ */
-
-typedef struct bufferstreamdata{
-  FILE *stream,*stream1,*stream2;
-  filedata *fileinfo;
-} bufferstreamdata;
-
 // vvvvvvvvvvvvvvvvvvvvvvvv preprocessing directives vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-
-#ifdef pp_SLICE_BUFFER
-#define FILEBUFFER               filedata
-#else
-#define FILEBUFFER               FILE
-#endif
 
 #ifdef WIN32
 #define UNLINK _unlink
@@ -109,21 +85,7 @@ int FileExistsOrig(char *filename);
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 EXTERNCPP FILE *fopen_indir(char *dir, char *file, char *mode);
-EXTERNCPP bufferstreamdata *GetSMVBuffer(char *file, char *file2);
-EXTERNCPP bufferstreamdata *CopySMVBuffer(bufferstreamdata *stream_in);
-EXTERNCPP int AppendFileBuffer(filedata *file1, filedata *file2);
-EXTERNCPP int feof_buffer(filedata *fileinfo);
-EXTERNCPP char *fgets_buffer(filedata *fileinfo,char *buffer,int size);
-EXTERNCPP void rewind_buffer(filedata *fileinfo);
-EXTERNCPP void OutputFileBuffer(filedata *fileinfo);
-EXTERNCPP void fclose_buffer(filedata *fileinfo);
-EXTERNCPP FILE_SIZE ftell_buffer(filedata *stream);
-EXTERNCPP int fseek_buffer(filedata *stream, FILE_SIZE offset, int origin);
-FILE_SIZE fread_buffer(void *ptr, FILE_SIZE size, FILE_SIZE count, filedata *stream);
-FILE_SIZE freadptr_buffer(void **ptr, FILE_SIZE size, FILE_SIZE count, filedata *stream);
 
-
-EXTERNCPP filedata *fopen_buffer(char *filename, char *mode);
 EXTERNCPP int FFLUSH(void);
 EXTERNCPP int PRINTF(const char * format, ...);
 EXTERNCPP void SetStdOut(FILE *stream);

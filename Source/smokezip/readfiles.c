@@ -6,6 +6,7 @@
 #include <math.h>
 #include "svzip.h"
 #include "MALLOCC.h"
+#include "stdio_buffer.h"
 
 int ReadSMV(char *smvfile){
   FILE *stream = NULL;

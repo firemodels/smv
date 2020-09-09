@@ -33,8 +33,8 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 # Definition of the object variables
 
 obj =    main.o CNV3dsmoke.o CNVboundary.o CNVpart.o CNVplot3d.o CNVslice.o assert.o \
-         csphere.o dmalloc.o lightsmoke.o histogram.o readfiles.o utilities.o \
-         isobox.o file_util.o string_util.o threader.o compress.o md5.o sha1.o sha256.o \
+         csphere.o dmalloc.o lightsmoke.o histogram.o readfiles.o utilities.o isobox.o\
+         file_util.o string_util.o threader.o compress.o md5.o sha1.o sha256.o stdio_buffer.o\
          fdsmodules.o gsmv.o getdata.o
 objwin = $(obj:.o=.obj)
 
