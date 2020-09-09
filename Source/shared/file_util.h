@@ -33,10 +33,9 @@ typedef struct {
 #define FILE_BINARY 1
 typedef struct _filedata {
   int mode;
-  unsigned int pos;
   char *buffer, **lines;
   int iline, nlines;
-  FILE_SIZE filesize;
+  FILE_SIZE pos, filesize;
 } filedata;
 
 /* --------------------------  bufferstreamdata ------------------------------------ */
@@ -112,6 +111,12 @@ EXTERNCPP char *FgetsBuffer(filedata *fileinfo,char *buffer,int size);
 EXTERNCPP void RewindFileBuffer(filedata *fileinfo);
 EXTERNCPP void OutputFileBuffer(filedata *fileinfo);
 EXTERNCPP void FreeFileBuffer(filedata *fileinfo);
+EXTERNCPP FILE_SIZE ftell_buffer(filedata *stream);
+EXTERNCPP int fseek_buffer(filedata *stream, FILE_SIZE offset, int origin);
+FILE_SIZE fread_buffer(void *ptr, FILE_SIZE size, FILE_SIZE count, filedata *stream);
+FILE_SIZE freadptr_buffer(void **ptr, FILE_SIZE size, FILE_SIZE count, filedata *stream);
+
+
 EXTERNCPP filedata *fopen_buffer(char *filename, char *mode);
 EXTERNCPP int FFLUSH(void);
 EXTERNCPP int PRINTF(const char * format, ...);

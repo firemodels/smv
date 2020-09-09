@@ -461,6 +461,7 @@ FILE_SIZE GetFileSizeSMV(const char *filename){
 
 int FeofBuffer(filedata *fileinfo){
   if(fileinfo->iline>=fileinfo->nlines)return 1;
+  if(fileinfo->pos>=fileinfo->filesize)return 1;
   return 0;
 }
 
@@ -595,6 +596,59 @@ bufferstreamdata *GetSMVBuffer(char *file, char *file2){
     FreeFileBuffer(stream2->fileinfo);
   }
   return stream;
+}
+
+/* ------------------ fseek_buffer ------------------------ */
+
+int fseek_buffer(filedata *stream, FILE_SIZE offset, int origin){
+  if(origin==SEEK_SET){
+    if(offset>stream->filesize)return 1;
+    stream->pos = offset;
+    return 0;
+  }
+  else if(origin==SEEK_CUR){
+    FILE_SIZE new_pos;
+
+    new_pos = stream->pos+offset;
+    if(new_pos>stream->filesize)return 1;
+    stream->pos = new_pos;
+    return 0;
+  }
+  else{
+    return 1;
+  }
+}
+
+/* ------------------ ftell_buffer ------------------------ */
+
+FILE_SIZE ftell_buffer(filedata *stream){
+  return stream->pos;
+}
+
+/* ------------------ fread_buffer ------------------------ */
+
+FILE_SIZE fread_buffer(void *ptr, FILE_SIZE size, FILE_SIZE count, filedata *stream){
+  FILE_SIZE last_pos, copy_count;
+
+  last_pos = stream->pos+count*size;
+  if(last_pos>stream->filesize)last_pos = stream->filesize;
+  copy_count = last_pos - stream->pos;
+  memcpy(ptr, stream->buffer, copy_count);
+  stream->pos += copy_count;
+  return copy_count;
+}
+
+/* ------------------ freadptr_buffer ------------------------ */
+
+FILE_SIZE freadptr_buffer(void **ptr, FILE_SIZE size, FILE_SIZE count, filedata *stream){
+  FILE_SIZE last_pos, copy_count;
+
+  last_pos = stream->pos+count*size;
+  if(last_pos>stream->filesize)last_pos = stream->filesize;
+  copy_count = last_pos - stream->pos;
+  *ptr, stream->buffer;
+  stream->pos += copy_count;
+  return copy_count;
 }
 
   /* ------------------ fopen_buffer ------------------------ */
