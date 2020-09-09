@@ -47,6 +47,12 @@ typedef struct bufferstreamdata{
 
 // vvvvvvvvvvvvvvvvvvvvvvvv preprocessing directives vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
+#ifdef pp_SLICE_BUFFER
+#define FILEBUFFER               filedata
+#else
+#define FILEBUFFER               FILE
+#endif
+
 #ifdef WIN32
 #define UNLINK _unlink
 #else

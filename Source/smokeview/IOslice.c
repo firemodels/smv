@@ -21,7 +21,6 @@
 #ifdef pp_SLICE_BUFFER
 
 #define FOPEN_SLICE(a,b)         fopen_buffer(a,b)
-#define FILEBUFFER               filedata
 #define FSEEK_SLICE(a,b,c)       fseek_buffer(a,b,c)
 #define FTELL_SLICE(a)           ftell_buffer(a)
 #define FREAD_SLICE(a,b,c,d)     fread_buffer(a,b,c,d)
@@ -30,16 +29,15 @@
 #else
 
 #define FOPEN_SLICE(a,b)         fopen(a,b)
-#define FILEBUFFER         FILE
 #ifdef X64
-#define FSEEK_SLICE(a,b,c)   _fseeki64(a,b,c)
-#define FTELL_SLICE(a)       _ftelli64(a)
+#define FSEEK_SLICE(a,b,c)       _fseeki64(a,b,c)
+#define FTELL_SLICE(a)           _ftelli64(a)
 #else
-#define FSEEK_SLICE(a,b,c)   fseeko(a,b,c)
-#define FTELL_SLICE(a)       ftello(a)
+#define FSEEK_SLICE(a,b,c)       fseeko(a,b,c)
+#define FTELL_SLICE(a)           ftello(a)
 #endif
-#define FREAD_SLICE(a,b,c,d) fread(a,b,c,d)
-#define FCLOSE_SLICE(a)      fclose(a)
+#define FREAD_SLICE(a,b,c,d)     fread(a,b,c,d)
+#define FCLOSE_SLICE(a)          fclose(a)
 
 #endif
 

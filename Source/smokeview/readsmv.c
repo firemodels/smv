@@ -4866,6 +4866,9 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 #ifdef pp_NEWBOUND_DIALOG
   sd->bounds = NULL;
 #endif
+#ifdef pp_SLICE_BUFFER
+  sd->stream_slice = NULL;
+#endif
   sd->file_size = 0;
   sd->slice_filetype = SLICE_NODE_CENTER;
   sd->patchgeom = NULL;

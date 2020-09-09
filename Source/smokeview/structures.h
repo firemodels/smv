@@ -1304,6 +1304,9 @@ typedef struct _slicedata {
 #ifdef pp_SLICETHREAD
   int skipload, loadstatus, boundstatus;
 #endif
+#ifdef pp_SLICE_BUFFER
+  FILEBUFFER *stream_slice;
+#endif
 } slicedata;
 
 /* --------------------------  slicemenudata ------------------------------------ */
