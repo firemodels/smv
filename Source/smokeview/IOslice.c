@@ -18,19 +18,34 @@
 #define SLICE_HEADER_SIZE 4
 #define SLICE_TRAILER_SIZE 4
 
-#ifdef X64
-#define FSEEK_SLICE(a,b,c) _fseeki64(a,b,c)
-#define FTELL_SLICE(a)     _ftelli64(a)
-#else
-#define FSEEK_SLICE(a,b,c) fseeko(a,b,c)
-#define FTELL_SLICE(a)     ftello(a)
-#endif
+#ifdef pp_SLICE_BUFFER
 
-#define FCLOSE_SLICE(a) fclose(a)
+#define FOPEN_SLICE(a,b)         fopen_buffer(a,b)
+#define FILEBUFFER               filedata
+#define FSEEK_SLICE(a,b,c)       fseek_buffer(a,b,c)
+#define FTELL_SLICE(a)           ftell_buffer(a)
+#define FREAD_SLICE(a,b,c,d)     fread_buffer(a,b,c,d)
+#define FCLOSE_SLICE(a)          fclose_buffer(a)
+
+#else
+
+#define FOPEN_SLICE(a,b)         fopen(a,b)
+#define FILEBUFFER         FILE
+#ifdef X64
+#define FSEEK_SLICE(a,b,c)   _fseeki64(a,b,c)
+#define FTELL_SLICE(a)       _ftelli64(a)
+#else
+#define FSEEK_SLICE(a,b,c)   fseeko(a,b,c)
+#define FTELL_SLICE(a)       ftello(a)
+#endif
+#define FREAD_SLICE(a,b,c,d) fread(a,b,c,d)
+#define FCLOSE_SLICE(a)      fclose(a)
+
+#endif
 
 #define FORT_SLICEREAD(var,count,STREAM) \
                            FSEEK_SLICE(STREAM,SLICE_HEADER_SIZE,SEEK_CUR);\
-                           returncode=fread(var,4,count,STREAM);\
+                           returncode=FREAD_SLICE(var,4,count,STREAM);\
                            if(returncode!=count)returncode=0;\
                            FSEEK_SLICE(STREAM,SLICE_TRAILER_SIZE,SEEK_CUR)
 
@@ -1135,7 +1150,7 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   int headersize,framesize;
   int frame_size;
   long int skip_local;
-  FILE *SLICEFILE;
+  FILEBUFFER *SLICEFILE;
   float *time_local,*slicevals;
   int error;
   int returncode=0;
@@ -1174,12 +1189,12 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   skip_local += frame_index_local*(HEADER_SIZE + 4 + TRAILER_SIZE); //
   skip_local += frame_index_local*(HEADER_SIZE + frame_size*4 + TRAILER_SIZE); //
 
-  SLICEFILE=fopen(sd->file,"rb");
+  SLICEFILE=FOPEN_SLICE(sd->file,"rb");
   if(SLICEFILE==NULL){
     return -1;
   }
 
-  FSEEK(SLICEFILE,skip_local,SEEK_SET); // skip from beginning of file
+  FSEEK_SLICE(SLICEFILE,skip_local,SEEK_SET); // skip from beginning of file
 
   if(frame_index_local==first_frame_index){
     if(NewMemory((void **)&sd->qslicedata,2*frame_size*sizeof(float))==0||
@@ -4387,21 +4402,21 @@ void GetSliceSizes(char *slicefilenameptr, int time_frame, int *nsliceiptr, int 
   float timeval, time_max;
   int idir, joff, koff, volslice;
   int count,countskip;
-  FILE *SLICEFILE;
+  FILEBUFFER *SLICEFILE;
   int ijk[6];
   int returncode=0;
 
   *errorptr = 0;
   *ntimesptr = 0;
 
-  SLICEFILE = fopen(slicefilenameptr, "rb");
+  SLICEFILE = FOPEN_SLICE(slicefilenameptr, "rb");
   if(SLICEFILE==NULL){
     *errorptr = 1;
     return;
   }
 
   *headersizeptr = 3*(4+30+4);
-  fseek(SLICEFILE, *headersizeptr, SEEK_CUR);
+  FSEEK_SLICE(SLICEFILE, *headersizeptr, SEEK_CUR);
 
   FORT_SLICEREAD(ijk, 6, SLICEFILE);
   ip1 = ijk[0];
@@ -4439,15 +4454,15 @@ void GetSliceSizes(char *slicefilenameptr, int time_frame, int *nsliceiptr, int 
       time_max = timeval;
     }
     if(settmax_s_arg!=0&&timeval>tmax_s_arg){
-      fclose(SLICEFILE);
+      FCLOSE_SLICE(SLICEFILE);
       return;
     }
-    fseek(SLICEFILE, *framesizeptr-12, SEEK_CUR);
+    FSEEK_SLICE(SLICEFILE, *framesizeptr-12, SEEK_CUR);
     if(count%sliceframestep_arg==0){
       countskip++;
       if(time_frame>=0&&time_frame==countskip){
         *ntimesptr = *ntimesptr+1;
-        fclose(SLICEFILE);
+        FCLOSE_SLICE(SLICEFILE);
         *errorptr = 0;
         return;
       }
@@ -4458,7 +4473,7 @@ void GetSliceSizes(char *slicefilenameptr, int time_frame, int *nsliceiptr, int 
     if(loadframe==1)*ntimesptr = *ntimesptr+1;
   }
   *errorptr = 0;
-  fclose(SLICEFILE);
+  FCLOSE_SLICE(SLICEFILE);
 }
 
 /* ------------------ GetSliceFileHeader ------------------------ */
@@ -4511,7 +4526,7 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
   int iis1, iis2;
   int ijk[6];
   int file_size;
-  FILE *stream;
+  FILEBUFFER *stream;
   int returncode=0;
   float *qq;
   int nx, ny, nxy;
@@ -4521,7 +4536,7 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
   koff = 0;
   file_size = 0;
 
-  stream = fopen(slicefilename, "rb");
+  stream = FOPEN_SLICE(slicefilename, "rb");
   if(stream==NULL){
     printf(" the slice file %s does not exist\n", slicefilename);
     nsteps = 0;
@@ -4529,11 +4544,11 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
   }
 
   nsteps = 0;
-  fseek(stream, 3*(4+30+4), SEEK_CUR);
+  FSEEK_SLICE(stream, 3*(4+30+4), SEEK_CUR);
 
   FORT_SLICEREAD(ijk, 6, stream);
   if(returncode==0){
-    fclose(stream);
+    FCLOSE_SLICE(stream);
     return file_size;
   }
   ip1 = ijk[0];
@@ -4571,7 +4586,7 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
     size = 4+4+4;                     // time
     size += (4+4*nxsp*nysp*nzsp+4);   // slice data
     size *= time_frame;               // number of steps to skip over
-    fseek(stream, size, SEEK_CUR);
+    FSEEK_SLICE(stream, size, SEEK_CUR);
   }
   else{
     if(*ntimesptr!=ntimes_old_arg&&ntimes_old_arg>0){
@@ -4582,7 +4597,7 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
         size += 4+4+4;
         size += 4+4*nxsp*nysp*nzsp+4;
       }
-      fseek(stream, size, SEEK_CUR);
+      FSEEK_SLICE(stream, size, SEEK_CUR);
       nsteps = ntimes_old_arg;
     }
   }
@@ -4743,7 +4758,7 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
       qq++;
     }
   }
-  fclose(stream);
+  FCLOSE_SLICE(stream);
   FREEMEMORY(qq);
   return file_size;
 }
@@ -5029,8 +5044,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
         qmax = -1.0e30;
       }
       if(sd->ntimes > ntimes_slice_old){
-        return_filesize =
-          GetSliceData(file, time_frame, &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
+        return_filesize = GetSliceData(file, time_frame, &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
             &qmin, &qmax, sd->qslicedata, sd->times, ntimes_slice_old, &sd->ntimes,
             sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s
 #ifdef pp_MULTI_RES

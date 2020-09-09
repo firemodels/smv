@@ -457,17 +457,17 @@ FILE_SIZE GetFileSizeSMV(const char *filename){
 
 //VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV file buffer routines VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
-/* ------------------ FeofBuffer ------------------------ */
+/* ------------------ feof_buffer ------------------------ */
 
-int FeofBuffer(filedata *fileinfo){
+int feof_buffer(filedata *fileinfo){
   if(fileinfo->iline>=fileinfo->nlines)return 1;
   if(fileinfo->pos>=fileinfo->filesize)return 1;
   return 0;
 }
 
-/* ------------------ FgetsBuffer ------------------------ */
+/* ------------------ fgets_buffer ------------------------ */
 
-char *FgetsBuffer(filedata *fileinfo,char *buffer,int size){
+char *fgets_buffer(filedata *fileinfo,char *buffer,int size){
   char *file_buffer, *from, *to;
   int iline, i;
 
@@ -486,17 +486,17 @@ char *FgetsBuffer(filedata *fileinfo,char *buffer,int size){
   return buffer;
 }
 
-/* ------------------ RewindFileBuffer ------------------------ */
+/* ------------------ rewind_buffer ------------------------ */
 
-void RewindFileBuffer(filedata *fileinfo){
+void rewind_buffer(filedata *fileinfo){
   if(fileinfo==NULL)return;
   fileinfo->iline = 0;
   fileinfo->pos   = 0;
 }
 
-/* ------------------ FreeFileBuffer ------------------------ */
+/* ------------------ fclose_buffer ------------------------ */
 
-void FreeFileBuffer(filedata *fileinfo){
+void fclose_buffer(filedata *fileinfo){
   char *buffer;
 
   if(fileinfo==NULL)return;
@@ -593,7 +593,7 @@ bufferstreamdata *GetSMVBuffer(char *file, char *file2){
     if(stream2->fileinfo!=NULL){
       AppendFileBuffer(stream->fileinfo, stream2->fileinfo);
     }
-    FreeFileBuffer(stream2->fileinfo);
+    fclose_buffer(stream2->fileinfo);
   }
   return stream;
 }
@@ -628,14 +628,14 @@ FILE_SIZE ftell_buffer(filedata *stream){
 /* ------------------ fread_buffer ------------------------ */
 
 FILE_SIZE fread_buffer(void *ptr, FILE_SIZE size, FILE_SIZE count, filedata *stream){
-  FILE_SIZE last_pos, copy_count;
+  FILE_SIZE next_pos, copy_count;
 
-  last_pos = stream->pos+count*size;
-  if(last_pos>stream->filesize)last_pos = stream->filesize;
-  copy_count = last_pos - stream->pos;
-  memcpy(ptr, stream->buffer, copy_count);
+  next_pos = stream->pos+count*size;
+  if(next_pos>stream->filesize)next_pos = stream->filesize;
+  copy_count = next_pos - stream->pos;
+  memcpy(ptr, stream->buffer+stream->pos, copy_count);
   stream->pos += copy_count;
-  return copy_count;
+  return copy_count/size;
 }
 
 /* ------------------ freadptr_buffer ------------------------ */
@@ -646,9 +646,9 @@ FILE_SIZE freadptr_buffer(void **ptr, FILE_SIZE size, FILE_SIZE count, filedata 
   last_pos = stream->pos+count*size;
   if(last_pos>stream->filesize)last_pos = stream->filesize;
   copy_count = last_pos - stream->pos;
-  *ptr, stream->buffer;
+  *ptr, stream->buffer+stream->pos;
   stream->pos += copy_count;
-  return copy_count;
+  return copy_count/size;
 }
 
   /* ------------------ fopen_buffer ------------------------ */

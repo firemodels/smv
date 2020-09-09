@@ -67,10 +67,10 @@ typedef struct bufferstreamdata{
 #define NOT_FORCE_IN_DIR 0
 #define FORCE_IN_DIR 1
 
-#define FEOF(stream)              FeofBuffer(stream->fileinfo)
-#define FGETS(buffer,size,stream) FgetsBuffer(stream->fileinfo,buffer,size)
-#define REWIND(stream)            RewindFileBuffer(stream->fileinfo)
-#define FCLOSE(stream)            FreeFileBuffer(stream->fileinfo)
+#define FEOF(stream)              feof_buffer(stream->fileinfo)
+#define FGETS(buffer,size,stream) fgets_buffer(stream->fileinfo,buffer,size)
+#define REWIND(stream)            rewind_buffer(stream->fileinfo)
+#define FCLOSE(stream)            fclose_buffer(stream->fileinfo)
 
 #define BFILE bufferstreamdata
 
@@ -106,11 +106,11 @@ EXTERNCPP FILE *fopen_indir(char *dir, char *file, char *mode);
 EXTERNCPP bufferstreamdata *GetSMVBuffer(char *file, char *file2);
 EXTERNCPP bufferstreamdata *CopySMVBuffer(bufferstreamdata *stream_in);
 EXTERNCPP int AppendFileBuffer(filedata *file1, filedata *file2);
-EXTERNCPP int FeofBuffer(filedata *fileinfo);
-EXTERNCPP char *FgetsBuffer(filedata *fileinfo,char *buffer,int size);
-EXTERNCPP void RewindFileBuffer(filedata *fileinfo);
+EXTERNCPP int feof_buffer(filedata *fileinfo);
+EXTERNCPP char *fgets_buffer(filedata *fileinfo,char *buffer,int size);
+EXTERNCPP void rewind_buffer(filedata *fileinfo);
 EXTERNCPP void OutputFileBuffer(filedata *fileinfo);
-EXTERNCPP void FreeFileBuffer(filedata *fileinfo);
+EXTERNCPP void fclose_buffer(filedata *fileinfo);
 EXTERNCPP FILE_SIZE ftell_buffer(filedata *stream);
 EXTERNCPP int fseek_buffer(filedata *stream, FILE_SIZE offset, int origin);
 FILE_SIZE fread_buffer(void *ptr, FILE_SIZE size, FILE_SIZE count, filedata *stream);
