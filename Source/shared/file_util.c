@@ -646,7 +646,7 @@ FILE_SIZE freadptr_buffer(void **ptr, FILE_SIZE size, FILE_SIZE count, filedata 
   last_pos = stream->pos+count*size;
   if(last_pos>stream->filesize)last_pos = stream->filesize;
   copy_count = last_pos - stream->pos;
-  *ptr, stream->buffer+stream->pos;
+  *ptr = stream->buffer+stream->pos;
   stream->pos += copy_count;
   return copy_count/size;
 }
