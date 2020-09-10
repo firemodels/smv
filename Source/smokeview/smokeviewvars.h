@@ -20,7 +20,9 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
-SVEXTERN int SVDECL(vec_uniform, 0);
+SVEXTERN float max_dx, max_dy, max_dz;
+SVEXTERN int SVDECL(vec_uniform_length, 0);
+SVEXTERN int SVDECL(vec_uniform_spacing, 0);
 #define NRENDER_SKIPS 8
 #ifdef INMAIN
 SVEXTERN int render_skips[NRENDER_SKIPS] = {RENDER_CURRENT_SINGLE, 1, 2, 3, 4, 5, 10, 20};

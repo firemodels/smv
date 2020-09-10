@@ -2876,7 +2876,8 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_vectorpointsize->set_float_limits(1.0,20.0);
     SPINNER_vectorlinewidth=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_vector,_("Vector width"),GLUI_SPINNER_FLOAT,&vectorlinewidth,UPDATE_VECTOR,SliceBoundCB);
     SPINNER_vectorlinewidth->set_float_limits(1.0,20.0);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_vector, "uniform length", &vec_uniform);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_vector, "uniform spacing", &vec_uniform_spacing);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_vector, "uniform length", &vec_uniform_length);
     SPINNER_vectorlinelength=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_vector,_("Vector length"),GLUI_SPINNER_FLOAT,&vecfactor,UPDATE_VECTOR,SliceBoundCB);
     SPINNER_vectorlinelength->set_float_limits(0.0, MAX_VECTOR_FACTOR);
     SPINNER_slicevectorskip=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_vector,_("Vector skip"),GLUI_SPINNER_INT,&vectorskip,SLICE_VECTORSKIP,SliceBoundCB);
