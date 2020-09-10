@@ -46,7 +46,7 @@
 //#define pp_PLOT3D_REDUCEMENUS // eliminate plot3d sub-menus
 //#define pp_PLOT3D_STATIC      // use static memory for plot3d labels
 //#define pp_LOAD_INCREMENTAL   // load data incrementally
-//#define pp_SLICE_BUFFER       // read entire slice file into a buffer first before processing
+//#define pp_SLICE_BUFFER       // read  slice file into a buffer before processing
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set

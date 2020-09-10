@@ -1148,7 +1148,7 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   int headersize,framesize;
   int frame_size;
   long int skip_local;
-  FILEBUFFER *SLICEFILE;
+  FILEBUFFER *SLICEFILE=NULL;
   float *time_local,*slicevals;
   int error;
   int returncode=0;
@@ -1187,7 +1187,12 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   skip_local += frame_index_local*(HEADER_SIZE + 4 + TRAILER_SIZE); //
   skip_local += frame_index_local*(HEADER_SIZE + frame_size*4 + TRAILER_SIZE); //
 
-  SLICEFILE=FOPEN_SLICE(sd->file,"rb");
+#ifdef pp_SLICE_BUFFER
+  SLICEFILE = sd->stream_slice;
+#endif
+  if(SLICEFILE==NULL){
+    SLICEFILE=FOPEN_SLICE(sd->file,"rb");
+  }
   if(SLICEFILE==NULL){
     return -1;
   }
@@ -4390,7 +4395,7 @@ void GetSliceFileDirection(int is1, int *is2ptr, int *iis1ptr, int *iis2ptr, int
 
 /* ------------------ GetSliceSizes ------------------------ */
 
-void GetSliceSizes(char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int sliceframestep_arg,
+void GetSliceSizes(slicedata *sd, char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int sliceframestep_arg,
   int *errorptr, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg, int *headersizeptr, int *framesizeptr){
 
   int ip1, ip2, jp1, jp2, kp1, kp2;
@@ -4400,14 +4405,19 @@ void GetSliceSizes(char *slicefilenameptr, int time_frame, int *nsliceiptr, int 
   float timeval, time_max;
   int idir, joff, koff, volslice;
   int count,countskip;
-  FILEBUFFER *SLICEFILE;
+  FILEBUFFER *SLICEFILE=NULL;
   int ijk[6];
   int returncode=0;
 
   *errorptr = 0;
   *ntimesptr = 0;
 
-  SLICEFILE = FOPEN_SLICE(slicefilenameptr, "rb");
+#ifdef pp_SLICE_BUFFER
+  SLICEFILE = sd->stream_slice;
+#endif
+  if(SLICEFILE==NULL){
+    SLICEFILE = FOPEN_SLICE(slicefilenameptr, "rb");
+  }
   if(SLICEFILE==NULL){
     *errorptr = 1;
     return;
@@ -4471,7 +4481,11 @@ void GetSliceSizes(char *slicefilenameptr, int time_frame, int *nsliceiptr, int 
     if(loadframe==1)*ntimesptr = *ntimesptr+1;
   }
   *errorptr = 0;
+#ifdef pp_SLICE_BUFFER
+  rewind_buffer(SLICEFILE);
+#else
   FCLOSE_SLICE(SLICEFILE);
+#endif
 }
 
 /* ------------------ GetSliceFileHeader ------------------------ */
@@ -4503,7 +4517,7 @@ void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int 
 
 /* ------------------ GetSliceData ------------------------ */
 
-FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
+FILE_SIZE GetSliceData(slicedata *sd, char *slicefilename, int time_frame, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
   float *qminptr, float *qmaxptr, float *qdataptr, float *timesptr, int ntimes_old_arg, int *ntimesptr,
   int sliceframestep_arg, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg
 #ifdef pp_MULTI_RES
@@ -4524,7 +4538,7 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
   int iis1, iis2;
   int ijk[6];
   int file_size;
-  FILEBUFFER *stream;
+  FILEBUFFER *stream=NULL;
   int returncode=0;
   float *qq;
   int nx, ny, nxy;
@@ -4534,7 +4548,12 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
   koff = 0;
   file_size = 0;
 
-  stream = FOPEN_SLICE(slicefilename, "rb");
+#ifdef pp_SLICE_BUFFER
+  stream = sd->stream_slice;
+#endif
+  if(stream==NULL){
+    stream = FOPEN_SLICE(slicefilename,"rb");
+  }
   if(stream==NULL){
     printf(" the slice file %s does not exist\n", slicefilename);
     nsteps = 0;
@@ -4816,7 +4835,13 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   *errorcode = 0;
   error = 0;
   show_slice_average = 0;
-  blocknumber = sliceinfo[ifile].blocknumber;
+  slicefilenumber = ifile;
+  ASSERT(slicefilenumber>=0&&slicefilenumber<nsliceinfo);
+  slicefilenum = ifile;
+  histograms_defined = 0;
+  sd = sliceinfo+slicefilenumber;
+
+  blocknumber = sd->blocknumber;
   meshi = meshinfo + blocknumber;
   if(meshi->terrain!=NULL&&meshi->terrain->nvalues==0){
     if(flag==LOAD){
@@ -4825,12 +4850,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     return 0;
   }
 
-  slicefilenumber = ifile;
-  slicefilenum = ifile;
-  histograms_defined = 0;
-
-  ASSERT(slicefilenumber >= 0 && slicefilenumber<nsliceinfo);
-  sd = sliceinfo + slicefilenumber;
   if(flag != RESETBOUNDS){
     if(sd->loaded == 0 && flag == UNLOAD)return 0;
     sd->display = 0;
@@ -4950,7 +4969,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
 
     if(sd->compression_type == UNCOMPRESSED){
       sd->ntimes_old = sd->ntimes;
-        GetSliceSizes(file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, sliceframestep, &error,
+        GetSliceSizes(sd, file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, sliceframestep, &error,
           settmin_s, settmax_s, tmin_s, tmax_s, &headersize, &framesize);
     }
     else if(sd->compression_type != UNCOMPRESSED){
@@ -5042,7 +5061,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
         qmax = -1.0e30;
       }
       if(sd->ntimes > ntimes_slice_old){
-        return_filesize = GetSliceData(file, time_frame, &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
+        return_filesize = GetSliceData(sd, file, time_frame, &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
             &qmin, &qmax, sd->qslicedata, sd->times, ntimes_slice_old, &sd->ntimes,
             sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s
 #ifdef pp_MULTI_RES
