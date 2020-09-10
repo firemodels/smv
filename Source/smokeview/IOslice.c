@@ -91,9 +91,33 @@ slicedata *gslice;
            else{                                   \
              DU = U->qval256[U->iqsliceframe[(n)]];\
            }                                       \
-         }                                         \
-         DU *= 0.05*vecfactor/vel_max
+         }                                         
 
+#define ADJUST_VEC_DX(dx)                       \
+         if(vec_uniform==1){                              \
+           float vecnorm; \
+           vecnorm = ABS(dx);\
+           if(vecnorm==0.0)vecnorm=1.0;\
+           dx *= vecfactor*0.05/(vel_max*vecnorm);\
+         }                                         \
+         else{                                     \
+           dx *= 0.05*vecfactor/vel_max;\
+         }                                         \
+
+#define ADJUST_VEC_DXYZ(dx,dy,dz)                       \
+         if(vec_uniform==1){                              \
+           float vecnorm; \
+           vecnorm = sqrt(dx*dx+dy*dy+dz*dz);\
+           if(vecnorm==0.0)vecnorm=1.0;\
+           dx *= vecfactor*0.05/(vel_max*vecnorm);\
+           dy *= vecfactor*0.05/(vel_max*vecnorm);\
+           dz *= vecfactor*0.05/(vel_max*vecnorm);\
+         }                                         \
+         else{                                     \
+           dx *= 0.05*vecfactor/vel_max;\
+           dy *= 0.05*vecfactor/vel_max;\
+           dz *= 0.05*vecfactor/vel_max;\
+         }                                         \
 
 #define GET_VEC_DXYZ_TERRAIN(U,DU,n)                                                 \
          if(U==NULL){                                                              \
@@ -6856,6 +6880,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_v = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
           GET_VEC_DXYZ(v, dy, index_v);
+          ADJUST_VEC_DX(dy);
           glVertex3f(constval, yy1 - dy, zhalf);
           glVertex3f(constval, yy1 + dy, zhalf);
         }
@@ -6865,6 +6890,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_w = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1 + 1)*sd->nslicek + k - sd->ks1;
           GET_VEC_DXYZ(w, dz, index_w);
+          ADJUST_VEC_DX(dz);
           glVertex3f(constval, yhalf, z1 - dz);
           glVertex3f(constval, yhalf, z1 + dz);
         }
@@ -6894,6 +6920,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_v = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek + k - sd->ks1 + 1;
           GET_VEC_DXYZ(v, dy, index_v);
+          ADJUST_VEC_DX(dy);
           glVertex3f(constval, yy1 + dy, zhalf);
         }
         if(j != maxj){
@@ -6902,6 +6929,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_w = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1 + 1)*sd->nslicek + k - sd->ks1;
           GET_VEC_DXYZ(w, dz, index_w);
+          ADJUST_VEC_DX(dz);
           glVertex3f(constval, yhalf, z1 + dz);
         }
       }
@@ -6982,6 +7010,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
           GET_VEC_DXYZ(u, dx, index_u);
+          ADJUST_VEC_DX(dx);
           glVertex3f(x1 - dx, constval, zhalf);
           glVertex3f(x1 + dx, constval, zhalf);
         }
@@ -6991,6 +7020,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_w = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k - sd->ks1;
           GET_VEC_DXYZ(w, dz, index_w);
+          ADJUST_VEC_DX(dz);
           glVertex3f(xhalf, constval, z1 - dz);
           glVertex3f(xhalf, constval, z1 + dz);
         }
@@ -7023,6 +7053,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
           GET_VEC_DXYZ(u, dx, index_u);
+          ADJUST_VEC_DX(dx);
           glVertex3f(x1 + dx, constval, zhalf);
         }
         if(i + 1 != sd->nslicei){
@@ -7031,6 +7062,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_w = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k - sd->ks1;
           GET_VEC_DXYZ(w, dz, index_w);
+          ADJUST_VEC_DX(dz);
           glVertex3f(xhalf, constval, z1 + dz);
         }
       }
@@ -7115,6 +7147,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j + 1 - sd->js1)*sd->nslicek;
           GET_VEC_DXYZ(u, dx, index_u);
+          ADJUST_VEC_DX(dx);
           glVertex3f(x1 - dx, yhalf, constval);
           glVertex3f(x1 + dx, yhalf, constval);
         }
@@ -7124,6 +7157,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_v = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j - sd->js1)*sd->nslicek;
           GET_VEC_DXYZ(v, dy, index_v);
+          ADJUST_VEC_DX(dy);
           glVertex3f(xhalf, yy1 - dy, constval);
           glVertex3f(xhalf, yy1 + dy, constval);
         }
@@ -7158,6 +7192,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j + 1 - sd->js1)*sd->nslicek;
           GET_VEC_DXYZ(u, dx, index_u);
+          ADJUST_VEC_DX(dx);
           glVertex3f(x1 + dx, yhalf, constval);
         }
         if(i + 1 != sd->nslicei){
@@ -7166,6 +7201,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_v = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j - sd->js1)*sd->nslicek;
           GET_VEC_DXYZ(v, dy, index_v);
+          ADJUST_VEC_DX(dy);
           glVertex3f(xhalf, yy1 + dy, constval);
         }
       }
@@ -7288,6 +7324,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(constval - dx, yy1 - dy, z1 - dz);
           glVertex3f(constval + dx, yy1 + dy, z1 + dz);
@@ -7317,6 +7354,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(constval + dx, yy1 + dy, z1 + dz);
         }
@@ -7354,6 +7392,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(x1 - dx, constval - dy, z1 - dz);
           glVertex3f(x1 + dx, constval + dy, z1 + dz);
@@ -7384,6 +7423,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(x1 + dx, constval + dy, z1 + dz);
         }
@@ -7433,6 +7473,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
             GET_VEC_DXYZ_TERRAIN(u, dx, n11);
             GET_VEC_DXYZ_TERRAIN(v, dy, n11);
             GET_VEC_DXYZ_TERRAIN(w, dz, n11);
+            ADJUST_VEC_DXYZ(dx,dy,dz);
 
             glColor4fv(rgb_ptr);
             glVertex3f(x1 - dx, yy1 - dy, z11 - dz);
@@ -7518,6 +7559,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           GET_VEC_DXYZ_TERRAIN(u, dx, n11);
           GET_VEC_DXYZ_TERRAIN(v, dy, n11);
           GET_VEC_DXYZ_TERRAIN(w, dz, n11);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(x1 + dx, yy1 + dy, z11 + dz);
         }
@@ -7605,6 +7647,7 @@ void DrawVVolSlice(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(constval - dx, yy1 - dy, z1 - dz);
           glVertex3f(constval + dx, yy1 + dy, z1 + dz);
@@ -7644,6 +7687,7 @@ void DrawVVolSlice(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(constval + dx, yy1 + dy, z1 + dz);
         }
@@ -7688,6 +7732,7 @@ void DrawVVolSlice(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(x1 - dx, constval - dy, z1 - dz);
           glVertex3f(x1 + dx, constval + dy, z1 + dz);
@@ -7726,6 +7771,7 @@ void DrawVVolSlice(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(x1 + dx, constval + dy, z1 + dz);
         }
@@ -7769,6 +7815,7 @@ void DrawVVolSlice(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(x1 - dx, yy1 - dy, constval - dz);
           glVertex3f(x1 + dx, yy1 + dy, constval + dz);
@@ -7807,6 +7854,7 @@ void DrawVVolSlice(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(x1 + dx, yy1 + dy, constval + dz);
         }

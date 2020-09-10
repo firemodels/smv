@@ -10800,10 +10800,11 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "VECLENGTH") == 1){
       float vf = 1.0;
-      int dummy;
+      int idummy;
+      float dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %f", &dummy, &vf);
+      sscanf(buffer, "%i %f", &idummy, &vf, &dummy, &vec_uniform);
       vecfactor = vf;
       continue;
     }
@@ -14335,7 +14336,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "VECCONTOURS\n");
   fprintf(fileout, " %i %i\n", show_node_slices_and_vectors,show_cell_slices_and_vectors);
   fprintf(fileout, "VECLENGTH\n");
-  fprintf(fileout, " %i %f 1.0\n", 4, vecfactor);
+  fprintf(fileout, " %i %f %f %i\n", 4, vecfactor, 1.0, vec_uniform);
   fprintf(fileout, "VECTORCOLOR\n");
   fprintf(fileout, " %i\n", color_vector_black);
   fprintf(fileout, "VECTORLINEWIDTH\n");
