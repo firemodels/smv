@@ -2227,6 +2227,10 @@ void Keyboard(unsigned char key, int flag){
           break;
       }
       break;
+    case '|':
+      projection_type = 1-projection_type;
+      SceneMotionCB(PROJECTION);
+      break;
     case 'v':
       switch(keystate){
         case GLUT_ACTIVE_ALT:
