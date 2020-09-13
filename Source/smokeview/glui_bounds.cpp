@@ -1318,7 +1318,9 @@ extern "C" void BoundBoundCB(int var){
   case GLOBAL_BOUNDS_MIN_LOADED:
   case GLOBAL_BOUNDS_MAX_LOADED:
   case GLOBAL_BOUNDS_LOADED:
+    break;
   case GLUI_RADIO_COMPUTE:
+    BoundBoundCB(COMPUTE_BOUNDS);
     return;
     break;
   case COMPUTE_BOUNDS:
@@ -1852,7 +1854,6 @@ void GenerateBoundDialogBox(
 
   *STATIC_research = glui_bounds->add_statictext_to_panel(*ROLLOUT_bound, "");
   *PANEL_minmax = glui_bounds->add_panel_to_panel(*ROLLOUT_bound, "", GLUI_PANEL_NONE);
-  glui_bounds->add_button_to_panel(*PANEL_minmax, "Set min/max using", COMPUTE_BOUNDS, FILE_CB);
   *RADIO_compute = glui_bounds->add_radiogroup_to_panel(*PANEL_minmax, compute_loaded, GLUI_RADIO_COMPUTE, FILE_CB);
   glui_bounds->add_radiobutton_to_group(*RADIO_compute, "all data");
   glui_bounds->add_radiobutton_to_group(*RADIO_compute, "loaded data");
@@ -3263,6 +3264,7 @@ extern "C" void Plot3DBoundCB(int var){
 #ifdef pp_NEWBOUND_DIALOG
   case GLUI_RADIO_COMPUTE:
     plot3d_compute_loaded[list_p3_index] = glui_plot3d_compute_loaded;
+    Plot3DBoundCB(COMPUTE_BOUNDS);
     break;
   case FILE_LOADED_ONLY:
     return;
@@ -3903,6 +3905,7 @@ void PartBoundCB(int var){
   switch(var){
 #ifdef pp_NEWBOUND_DIALOG
   case GLUI_RADIO_COMPUTE:
+    PartBoundCB(COMPUTE_BOUNDS);
     return;
   case FILE_LOADED_ONLY:
     return;
@@ -3974,6 +3977,11 @@ void PartBoundCB(int var){
 
     // save data from controls
 
+#ifdef pp_NEWBOUND_DIALOG
+    setpartmin = SET_MIN;
+    setpartmax = SET_MAX;
+#endif
+
     prop_old->setvalmin=setpartmin;
     prop_old->setvalmax=setpartmax;
     if(setpartmin==SET_MIN){
@@ -3995,10 +4003,6 @@ void PartBoundCB(int var){
     setpartmax = prop_new->setvalmax;
     if(setpartmax==PERCENTILE_MAX)setpartmax = GLOBAL_MAX;
 
-#ifdef pp_NEWBOUND_DIALOG
-    setpartmin = SET_MIN;
-    setpartmax = SET_MAX;
-#endif
     PartBoundCB(SETVALMIN);
     PartBoundCB(SETVALMAX);
     if(ipart5prop>0&&glui_partmin>glui_partmax){
@@ -4035,6 +4039,9 @@ void PartBoundCB(int var){
     if(CHECKBOX_part_setchopmin!=NULL)PartBoundCB(SETCHOPMINVAL);
     if(CHECKBOX_part_setchopmax!=NULL)PartBoundCB(SETCHOPMAXVAL);
 
+#ifdef pp_NEWBOUND_DIALOG
+    PartBoundCB(GLUI_RADIO_COMPUTE);
+#endif
     break;
   case STREAKLENGTH:
     UpdateStreakValue(float_streak5value-0.001);
@@ -4421,6 +4428,7 @@ extern "C" void SliceBoundCB(int var){
       break;
     case GLUI_RADIO_COMPUTE:
       Glui2SliceBounds();
+      SliceBoundCB(COMPUTE_BOUNDS);
       break;
     case COMPUTE_BOUNDS:
       if(glui_slice_compute_loaded == 0){
@@ -4546,6 +4554,29 @@ extern "C" void SliceBoundCB(int var){
       if(research_mode==1){
         visColorbarVertical_save=visColorbarVertical;
         visColorbarVertical=1;
+
+#ifdef pp_NEWBOUND_DIALOG
+        if(glui_patch_compute_loaded != MINMAX_LOADED){
+          glui_patch_compute_loaded = MINMAX_LOADED;
+          BoundBoundCB(COMPUTE_BOUNDS);
+          RADIO_patch_compute->set_int_val(glui_patch_compute_loaded);
+        }
+        if(glui_slice_compute_loaded != MINMAX_LOADED){
+          glui_slice_compute_loaded = MINMAX_LOADED;
+          SliceBoundCB(COMPUTE_BOUNDS);
+          RADIO_slice_compute->set_int_val(glui_slice_compute_loaded);
+        }
+        if(glui_part_compute_loaded != MINMAX_LOADED){
+          glui_part_compute_loaded = MINMAX_LOADED;
+          PartBoundCB(COMPUTE_BOUNDS);
+          RADIO_part_compute->set_int_val(glui_part_compute_loaded);
+        }
+        if(glui_plot3d_compute_loaded != MINMAX_LOADED){
+          glui_plot3d_compute_loaded = MINMAX_LOADED;
+          Plot3DBoundCB(COMPUTE_BOUNDS);
+          RADIO_plot3d_compute->set_int_val(glui_plot3d_compute_loaded);
+        }
+#endif
 
         // slice files
 
