@@ -4431,11 +4431,12 @@ extern "C" void SliceBoundCB(int var){
       SliceBoundCB(COMPUTE_BOUNDS);
       break;
     case COMPUTE_BOUNDS:
-      if(glui_slice_compute_loaded == 0){
+
+      if(glui_slice_compute_loaded == MINMAX_ALL){
         SliceBoundCB(GLOBAL_BOUNDS_MIN);
         SliceBoundCB(GLOBAL_BOUNDS_MAX);
       }
-      else if(glui_slice_compute_loaded==1){
+      else if(glui_slice_compute_loaded==MINMAX_INI){
         float valmin=1.0, valmax=0.0;
 
         if(slicebounds!=NULL)GetLoadedSliceBounds(slicebounds[list_slice_index].shortlabel, &valmin, &valmax);
@@ -4560,6 +4561,10 @@ extern "C" void SliceBoundCB(int var){
           glui_patch_compute_loaded = MINMAX_LOADED;
           BoundBoundCB(COMPUTE_BOUNDS);
           RADIO_patch_compute->set_int_val(glui_patch_compute_loaded);
+        }
+        for(i = 0; i<nslicebounds; i++){
+          slicebounds[i].dlg_setvalmin = MINMAX_LOADED;
+          slicebounds[i].dlg_setvalmax = MINMAX_LOADED;
         }
         if(glui_slice_compute_loaded != MINMAX_LOADED){
           glui_slice_compute_loaded = MINMAX_LOADED;
