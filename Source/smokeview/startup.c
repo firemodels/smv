@@ -1076,7 +1076,8 @@ void InitOpenGL(void){
         if(slicei->autoload == 1 && slicei->loaded == 0){
 #ifdef pp_NEWBOUND_DIALOG
           ReadSliceUseGluiBounds(slicei->file, i, ALL_SLICE_FRAMES, NULL, LOAD, set_slicecolor, &errorcode);
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
                        ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, LOAD, set_slicecolor, &errorcode);
 #endif
         }
@@ -2106,7 +2107,8 @@ void InitVars(void){
       setp3max_all[iii] = SET_MAX;
       p3min_ini[iii] = 1.0;
       p3max_ini[iii] = 0.0;
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
       setp3min_all[iii] = PERCENTILE_MIN;
       setp3max_all[iii] = PERCENTILE_MAX;
 #endif

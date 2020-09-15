@@ -2732,7 +2732,8 @@ void GLUI2GlobalBoundaryBounds(const char *key){
 #ifdef pp_NEWBOUND_DIALOG
       patchi->setvalmin = SET_MIN;
       patchi->setvalmax = SET_MAX;
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
       patchi->setvalmin=glui_setpatchmin;
       patchi->setvalmax=glui_setpatchmax;
 #endif
@@ -2803,7 +2804,8 @@ void Global2GLUIBoundaryBounds(const char *key){
 #ifdef pp_NEWBOUND_DIALOG
       glui_setpatchmin = SET_MIN;;
       glui_setpatchmax = SET_MAX;
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
       if(research_mode==1){
         glui_setpatchmin = GLOBAL_MIN;;
         glui_setpatchmax = GLOBAL_MAX;

@@ -1765,7 +1765,8 @@ SVEXTERN vslicedata SVDECL(*vsliceinfo,NULL);
 SVEXTERN int force_redisplay;
 #ifdef pp_NEWBOUND_DIALOG
 SVEXTERN int SVDECL(glui_setp3min, SET_MIN), SVDECL(glui_setp3max, SET_MAX);
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
 SVEXTERN int glui_setp3min, glui_setp3max;
 #endif
 SVEXTERN int setp3chopmin_temp, setp3chopmax_temp;

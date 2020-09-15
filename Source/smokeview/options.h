@@ -43,10 +43,21 @@
 //#define pp_SLICETHREAD        // parallel slice file loading
 //#define pp_BLOCK_COLOR        //  new algorithm for assigning obst colors
 //#define pp_NEWBOUND_DIALOG    // redo bound dialog
+//#define pp_CPPBOUND_DIALOG    // redo bound dialog using c++
 //#define pp_PLOT3D_REDUCEMENUS // eliminate plot3d sub-menus
 //#define pp_PLOT3D_STATIC      // use static memory for plot3d labels
 //#define pp_LOAD_INCREMENTAL   // load data incrementally
 //#define pp_SLICE_BUFFER       // read  slice file into a buffer before processing
+
+
+// turn off old bound dialog directive if either of the new bound directives are set
+#define pp_OLDBOUND_DIALOG
+#ifdef pp_NEWBOUND_DIALOG
+#undef pp_OLDBOUND_DIALOG
+#endif
+#ifdef pp_CPPBOUND_DIALOG
+#undef pp_OLDBOUND_DIALOG
+#endif
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set

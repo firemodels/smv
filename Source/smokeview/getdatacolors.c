@@ -469,7 +469,8 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
 #ifdef pp_NEWBOUND_DIALOG
           valmin = prop_id->user_min;
           valmax = prop_id->user_max;
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
           if(prop_id->setvalmin==PERCENTILE_MIN){
             valmin = prop_id->percentile_min;
           }
@@ -762,22 +763,21 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
   meshdata *meshi;
   int i;
   int ntotal;
-#ifndef pp_NEWBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
   float tmin2, tmax2;
 #endif
 
 #ifdef pp_NEWBOUND_DIALOG
   local_tmin = *ttmin;
   local_tmax = *ttmax;
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   tmin2= 1000000000.;
   tmax2=-1000000000.;
   *extreme_min=0;
   *extreme_max=0;
   for(i=0;i<nplot3dinfo;i++){
-#ifndef pp_NEWBOUND_DIALOG
   char *iblank;
-#endif
     p = plot3dinfo+i;
     if(p->loaded==0||p->display==0)continue;
     meshi = meshinfo+p->blocknumber;

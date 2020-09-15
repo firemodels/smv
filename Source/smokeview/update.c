@@ -1998,7 +1998,7 @@ void UpdateDisplay(void){
     visColorbarVertical = visColorbarVertical_val;
     visColorbarHorizontal = visColorbarHorizontal_val;
     vis_colorbar = GetColorbarState();
-#ifndef pp_NEWBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
     if(visColorbarHorizontal==0&&visColorbarVertical==0){
       research_mode = 0;
      // update_research_mode = 1;

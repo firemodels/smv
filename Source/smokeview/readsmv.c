@@ -2238,7 +2238,7 @@ void UpdateBoundInfo(void){
 
       patchi = patchinfo + i;
       patchi->firstshort=1;
-#ifndef pp_NEWBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
       patchi->valmin=1.0;
       patchi->valmax=0.0;
       if(research_mode==1){
@@ -11446,7 +11446,7 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       strcpy(buffer2, "");
       sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
-#ifndef pp_NEWBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
       if(setvalmin==1||setvalmax==1){
         research_mode = 0;
         research_mode_override = 0;
@@ -12492,7 +12492,7 @@ int ReadIni2(char *inifile, int localfile){
       if(visColorbarVertical_val==1)visColorbarHorizontal_val=0;
       if(visColorbarHorizontal_val==1)visColorbarVertical_val=0;
   // if colorbars are hidden then research mode needs to be off
-#ifndef pp_NEWBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
       if(visColorbarVertical_val==0&&visColorbarHorizontal_val==0){
         research_mode = 0;
 //        update_research_mode = 1;
@@ -14072,7 +14072,8 @@ void WriteIniLocal(FILE *fileout){
 #ifdef pp_NEWBOUND_DIALOG
       fprintf(fileout, " %i %f %i %f %s\n",
         SET_MIN, propi->user_min, SET_MAX, propi->user_max, propi->label->shortlabel);
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
       fprintf(fileout, " %i %f %i %f %s\n",
         propi->setvalmin, propi->valmin, propi->setvalmax, propi->valmax, propi->label->shortlabel);
 #endif
@@ -14101,7 +14102,8 @@ void WriteIniLocal(FILE *fileout){
 #ifdef pp_NEWBOUND_DIALOG
         SET_MIN, slicebounds[i].dlg_valmin,
         SET_MAX, slicebounds[i].dlg_valmax,
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
         slicebounds[i].dlg_setvalmin, slicebounds[i].dlg_valmin,
         slicebounds[i].dlg_setvalmax, slicebounds[i].dlg_valmax,
 #endif
