@@ -2815,12 +2815,8 @@ void Global2GLUIBoundaryBounds(const char *key){
         glui_setpatchmax = patchi->setvalmax;
       }
 #endif
-      if(glui_setpatchmin!=SET_MIN){
-        glui_patchmin = patchi->valmin;
-      }
-      if(glui_setpatchmax!=SET_MAX){
-        glui_patchmax = patchi->valmax;
-      }
+      glui_patchmin = patchi->valmin;
+      glui_patchmax = patchi->valmax;
 
       patchchopmin=patchi->chopmin;
       patchchopmax=patchi->chopmax;
