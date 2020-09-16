@@ -226,6 +226,51 @@ void GetGlobalPatchBounds(void){
       }
     }
   }
+
+#ifdef pp_CPPBOUND_DIALOG
+  npatchbounds_cpp = npatchbounds;
+  if(npatchbounds_cpp>0){
+    NewMemory((void **)&patchbounds_cpp, npatchbounds_cpp*sizeof(cpp_boundsdata));
+    for(i = 0; i<npatchbounds_cpp; i++){
+      cpp_boundsdata *boundscppi;
+      boundsdata *boundi;
+
+      boundscppi = patchbounds_cpp+i;
+      boundi = patchbounds+i;
+      boundscppi->chopmax = boundi->chopmax;
+      boundscppi->chopmin = boundi->chopmin;
+      boundscppi->set_chopmin = boundi->setchopmin;
+      boundscppi->set_chopmax = boundi->setchopmax;
+      strcpy(boundscppi->label, boundi->shortlabel);
+      
+      boundscppi->keep_data = 0;
+      boundscppi->set_valmin = 0;
+      boundscppi->valmin[0] = boundi->dlg_global_valmin;
+      boundscppi->valmin[1] = boundi->dlg_global_valmin;
+      boundscppi->valmin[2] = boundi->dlg_global_valmin;
+      boundscppi->valmin[3] = boundi->dlg_global_valmin;
+
+      boundscppi->valmax[0] = boundi->dlg_global_valmax;
+      boundscppi->valmax[1] = boundi->dlg_global_valmax;
+      boundscppi->valmax[2] = boundi->dlg_global_valmax;
+      boundscppi->valmax[3] = boundi->dlg_global_valmax;
+      boundscppi->set_valmax = 0;
+
+      boundscppi->set_valtype = 0;
+
+      boundscppi->valmin[0] = 8*i+0;
+      boundscppi->valmin[1] = 8*i+2;
+      boundscppi->valmin[2] = 8*i+4;
+      boundscppi->valmin[3] = 8*i+6;
+
+      boundscppi->valmax[0] = 8*i+1;
+      boundscppi->valmax[1] = 8*i+3;
+      boundscppi->valmax[2] = 8*i+5;
+      boundscppi->valmax[3] = 8*i+7;
+      boundscppi->keep_data = 0;
+    }
+  }
+#endif
 }
 
 /* ------------------ GetPlot3DFileBounds ------------------------ */

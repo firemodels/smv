@@ -2309,6 +2309,9 @@ void UpdateBoundInfo(void){
 #endif
   }
   UpdateChar();
+#ifdef pp_CPPBOUND_DIALOG
+  GetGlobalPatchBounds();
+#endif
 #ifdef pp_NEWBOUND_DIALOG
   GetGlobalSliceBounds();
   GetGlobalPatchBounds();
@@ -14104,6 +14107,10 @@ void WriteIniLocal(FILE *fileout){
         SET_MAX, slicebounds[i].dlg_valmax,
 #endif
 #ifdef pp_OLDBOUND_DIALOG
+        slicebounds[i].dlg_setvalmin, slicebounds[i].dlg_valmin,
+        slicebounds[i].dlg_setvalmax, slicebounds[i].dlg_valmax,
+#endif
+#ifdef pp_CPPBOUND_DIALOG
         slicebounds[i].dlg_setvalmin, slicebounds[i].dlg_valmin,
         slicebounds[i].dlg_setvalmax, slicebounds[i].dlg_valmax,
 #endif

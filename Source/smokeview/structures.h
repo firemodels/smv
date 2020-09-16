@@ -1341,6 +1341,16 @@ typedef struct _multivslicedata {
   char menulabel2[128];
 } multivslicedata;
 
+#ifdef pp_CPPBOUND_DIALOG
+/* --------------------------  cpp_boundsdata ------------------------------------ */
+
+typedef struct _cpp_boundsdata {
+  char label[32];
+  int set_valmin, set_valmax, set_chopmin, set_chopmax;
+  float valmin[4], valmax[4], chopmin, chopmax;
+  int set_valtype, keep_data;
+} cpp_boundsdata;
+#endif
 /* --------------------------  boundsdata ------------------------------------ */
 
 typedef struct _boundsdata {

@@ -1759,6 +1759,10 @@ SVEXTERN int nmultivsliceinfo;
 SVEXTERN int SVDECL(*sliceorderindex,NULL),SVDECL(*vsliceorderindex,NULL),SVDECL(*partorderindex,NULL);
 SVEXTERN int SVDECL(*patchorderindex,NULL),SVDECL(*isoorderindex,NULL),SVDECL(*plot3dorderindex,NULL);
 SVEXTERN int showfiles;
+#ifdef pp_CPPBOUND_DIALOG
+SVEXTERN cpp_boundsdata SVDECL(*slicebounds_cpp, NULL), SVDECL(*partbounds_cpp, NULL), SVDECL(*patchbounds_cpp, NULL), SVDECL(*plot3dbounds_cpp, NULL);
+SVEXTERN int SVDECL(nslicebounds_cpp, 0), SVDECL(npartbounds_cpp, 0), SVDECL(npatchbounds_cpp, 0), SVDECL(nplot3dbounds_cpp, 0);
+#endif
 SVEXTERN boundsdata SVDECL(*slicebounds,NULL), SVDECL(*isobounds,NULL), SVDECL(*patchbounds,NULL);
 SVEXTERN boundsdata SVDECL(*slicebounds_temp, NULL);
 SVEXTERN vslicedata SVDECL(*vsliceinfo,NULL);
@@ -1767,6 +1771,9 @@ SVEXTERN int force_redisplay;
 SVEXTERN int SVDECL(glui_setp3min, SET_MIN), SVDECL(glui_setp3max, SET_MAX);
 #endif
 #ifdef pp_OLDBOUND_DIALOG
+SVEXTERN int glui_setp3min, glui_setp3max;
+#endif
+#ifdef pp_CPPBOUND_DIALOG
 SVEXTERN int glui_setp3min, glui_setp3max;
 #endif
 SVEXTERN int setp3chopmin_temp, setp3chopmax_temp;
