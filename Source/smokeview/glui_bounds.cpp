@@ -1812,7 +1812,7 @@ extern "C" void BoundBoundCB(int var){
     break;
   case FILE_RELOAD:
     if(npatchinfo>0){
-      BoundBoundCB(FILE_UPDATE);
+//      BoundBoundCB(FILE_UPDATE);
       for(i = 0;i < npatchinfo;i++){
         patchdata *patchi;
 
@@ -2287,11 +2287,13 @@ void GenerateBoundDialogs(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_roll
     if(PANEL_keep_data!=NULL){
       glui_bounds->add_checkbox_to_panel(PANEL_c, _("Keep data after loading"), cache_data, CACHE_DATA, FILE_CB);
       *PANEL_keep_data = glui_bounds->add_panel_to_panel(PANEL_c, "", GLUI_PANEL_NONE);
-      *BUTTON_update = glui_bounds->add_button_to_panel(*PANEL_keep_data, _("Update coloring"), UPDATE_DATA_COLORS, FILE_CB);
-      FILE_CB(CACHE_DATA);
+      if(BUTTON_update!=NULL){
+        *BUTTON_update = glui_bounds->add_button_to_panel(*PANEL_keep_data, _("Update coloring"), UPDATE_DATA_COLORS, FILE_CB);
+        FILE_CB(CACHE_DATA);
+      }
     }
     else{
-      *BUTTON_update = glui_bounds->add_button_to_panel(PANEL_c, _("Update coloring"), UPDATE_DATA_COLORS, FILE_CB);
+      if(BUTTON_update!=NULL)*BUTTON_update = glui_bounds->add_button_to_panel(PANEL_c, _("Update coloring"), UPDATE_DATA_COLORS, FILE_CB);
     }
     *BUTTON_reload = glui_bounds->add_button_to_panel(PANEL_c, button_title, FILE_RELOAD, FILE_CB);
   }
@@ -2622,8 +2624,10 @@ extern "C" void GluiBoundsSetup(int main_window){
       &EDIT_patch_chopmin, &EDIT_patch_chopmax,
       &STATIC_bound_min_unit,&STATIC_bound_max_unit,
       &STATIC_bound_cmin_unit,&STATIC_bound_cmax_unit,
-      &BUTTON_updatebound, &BUTTON_reloadbound,
-      NULL, &PANEL_keep_bound_data, &cache_boundary_data,
+//      &BUTTON_updatebound, &BUTTON_reloadbound,
+//      NULL, &PANEL_keep_bound_data, &cache_boundary_data,
+      NULL, &BUTTON_reloadbound,
+      NULL, NULL, NULL,
       &glui_setpatchmin,&glui_setpatchmax,&glui_patchmin,&glui_patchmax,
       &setpatchchopmin, &setpatchchopmax,
       &patchchopmin, &patchchopmax,
