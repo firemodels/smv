@@ -1345,7 +1345,7 @@ typedef struct _multivslicedata {
 /* --------------------------  cpp_boundsdata ------------------------------------ */
 
 typedef struct _cpp_boundsdata {
-  char label[32];
+  char label[32], *unit;
   int set_valmin, set_valmax, set_chopmin, set_chopmax;
   float valmin[4], valmax[4], chopmin, chopmax;
   int set_valtype, keep_data;

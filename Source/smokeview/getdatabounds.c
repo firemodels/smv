@@ -131,6 +131,62 @@ int GetGlobalPartBounds(int flag){
     }
 #endif
   }
+#ifdef pp_CPPBOUND_DIALOG
+  npartbounds_cpp = npart5prop;
+  if(npartbounds_cpp>0){
+    NewMemory((void **)&partbounds_cpp, npartbounds_cpp*sizeof(cpp_boundsdata));
+    for(i = 0; i<npartbounds_cpp; i++){
+      cpp_boundsdata *boundscppi;
+      float valmin, valmax;
+
+      boundscppi = partbounds_cpp+i;
+      boundscppi->chopmax = 1.0;
+      boundscppi->chopmin = 0.0;
+      boundscppi->set_chopmin = 0;
+      boundscppi->set_chopmax = 0;
+      strcpy(boundscppi->label, part5propinfo[i].label->shortlabel);
+      {
+        char *unit;
+
+        unit = part5propinfo[i].label->unit;
+        if(unit!=NULL){
+          int len;
+
+          len = strlen(unit);
+          NewMemory((void **)&boundscppi->unit, len+1);
+          strcpy(boundscppi->unit, unit);
+        }
+        else{
+          NewMemory((void **)&boundscppi->unit, 2);
+          strcpy(boundscppi->unit, "");
+        }
+      }
+      
+      boundscppi->keep_data = 0;
+      boundscppi->set_valtype = 0;
+      if(i==0){
+        valmin = 0.0;
+        valmax = 1.0;
+      }
+      else{
+        valmin = part5propinfo[i].dlg_global_valmin;
+        valmax = part5propinfo[i].dlg_global_valmax;
+      }
+
+      boundscppi->set_valmin = 0;
+      boundscppi->valmin[0] = valmin;
+      boundscppi->valmin[1] = valmin;
+      boundscppi->valmin[2] = valmin;
+      boundscppi->valmin[3] = valmin;
+
+      boundscppi->valmax[0] = valmax;
+      boundscppi->valmax[1] = valmax;
+      boundscppi->valmax[2] = valmax;
+      boundscppi->valmax[3] = valmax;
+      boundscppi->set_valmax = 0;
+    }
+  }
+#endif
   FREEMEMORY(partmins);
   FREEMEMORY(partmaxs);
   return nloaded_files;
@@ -242,8 +298,17 @@ void GetGlobalPatchBounds(void){
       boundscppi->set_chopmin = boundi->setchopmin;
       boundscppi->set_chopmax = boundi->setchopmax;
       strcpy(boundscppi->label, boundi->shortlabel);
+      {
+        int len;
+
+        len = strlen(boundi->label->unit);
+        NewMemory((void **)&boundscppi->unit, len+1);
+        strcpy(boundscppi->unit, boundi->label->unit);
+      }
       
       boundscppi->keep_data = 0;
+      boundscppi->set_valtype = 0;
+
       boundscppi->set_valmin = 0;
       boundscppi->valmin[0] = boundi->dlg_global_valmin;
       boundscppi->valmin[1] = boundi->dlg_global_valmin;
@@ -255,19 +320,6 @@ void GetGlobalPatchBounds(void){
       boundscppi->valmax[2] = boundi->dlg_global_valmax;
       boundscppi->valmax[3] = boundi->dlg_global_valmax;
       boundscppi->set_valmax = 0;
-
-      boundscppi->set_valtype = 0;
-
-      boundscppi->valmin[0] = 8*i+0;
-      boundscppi->valmin[1] = 8*i+2;
-      boundscppi->valmin[2] = 8*i+4;
-      boundscppi->valmin[3] = 8*i+6;
-
-      boundscppi->valmax[0] = 8*i+1;
-      boundscppi->valmax[1] = 8*i+3;
-      boundscppi->valmax[2] = 8*i+5;
-      boundscppi->valmax[3] = 8*i+7;
-      boundscppi->keep_data = 0;
     }
   }
 #endif
