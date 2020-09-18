@@ -478,38 +478,6 @@ void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded
   }
 }
 
-
-#ifdef pp_NEWBOUND_DIALOG
-
-/* ------------------ GetLoadedPartBounds ------------------------ */
-
-void GetLoadedPartBounds(void){
-  if(GetGlobalPartBounds(1)==0){
-    int i;
-
-    printf("*** loaded particle bounds not available, using global bounds\n");
-    GetGlobalPartBounds(0);
-    for(i=1; i<npart5prop; i++){
-      part5propinfo[i].dlg_loaded_valmin = part5propinfo[i].dlg_global_valmin;
-      part5propinfo[i].dlg_loaded_valmax = part5propinfo[i].dlg_global_valmax;
-    }
-  }
-}
-
-/* ------------------ GetSliceBoundsInfo ------------------------ */
-
-boundsdata *GetSliceBoundsInfo(char *shortlabel){
-  int i;
-
-  for(i = 0; i<nslicebounds; i++){
-    boundsdata *boundi;
-
-    boundi = slicebounds+i;
-    if(strcmp(boundi->shortlabel, shortlabel)==0)return boundi;
-  }
-  return NULL;
-}
-
 /* ------------------ GetGlobalSliceBounds ------------------------ */
 
 void GetGlobalSliceBounds(void){
@@ -551,7 +519,77 @@ void GetGlobalSliceBounds(void){
     boundi->dlg_valmin = boundi->dlg_global_valmin;
     boundi->dlg_valmax = boundi->dlg_global_valmax;
   }
+#ifdef pp_CPPBOUND_DIALOG
+  nslicebounds_cpp = nslicebounds;
+  if(nslicebounds_cpp>0){
+    NewMemory((void **)&slicebounds_cpp, nslicebounds_cpp*sizeof(cpp_boundsdata));
+    for(i = 0; i<nslicebounds_cpp; i++){
+      cpp_boundsdata *boundscppi;
+      boundsdata *boundi;
 
+      boundscppi = slicebounds_cpp+i;
+      boundi = slicebounds+i;
+      boundscppi->chopmax = boundi->chopmax;
+      boundscppi->chopmin = boundi->chopmin;
+      boundscppi->set_chopmin = boundi->setchopmin;
+      boundscppi->set_chopmax = boundi->setchopmax;
+      strcpy(boundscppi->label, boundi->shortlabel);
+      {
+        int len;
+
+        len = strlen(boundi->label->unit);
+        NewMemory((void **)&boundscppi->unit, len+1);
+        strcpy(boundscppi->unit, boundi->label->unit);
+      }
+      
+      boundscppi->keep_data = 0;
+      boundscppi->set_valtype = 0;
+
+      boundscppi->set_valmin = 0;
+      boundscppi->valmin[0] = boundi->dlg_global_valmin;
+      boundscppi->valmin[1] = boundi->dlg_global_valmin;
+      boundscppi->valmin[2] = boundi->dlg_global_valmin;
+      boundscppi->valmin[3] = boundi->dlg_global_valmin;
+
+      boundscppi->valmax[0] = boundi->dlg_global_valmax;
+      boundscppi->valmax[1] = boundi->dlg_global_valmax;
+      boundscppi->valmax[2] = boundi->dlg_global_valmax;
+      boundscppi->valmax[3] = boundi->dlg_global_valmax;
+      boundscppi->set_valmax = 0;
+    }
+  }
+#endif
+}
+
+/* ------------------ GetSliceBoundsInfo ------------------------ */
+
+boundsdata *GetSliceBoundsInfo(char *shortlabel){
+  int i;
+
+  for(i = 0; i<nslicebounds; i++){
+    boundsdata *boundi;
+
+    boundi = slicebounds+i;
+    if(strcmp(boundi->shortlabel, shortlabel)==0)return boundi;
+  }
+  return NULL;
+}
+
+#ifdef pp_NEWBOUND_DIALOG
+
+/* ------------------ GetLoadedPartBounds ------------------------ */
+
+void GetLoadedPartBounds(void){
+  if(GetGlobalPartBounds(1)==0){
+    int i;
+
+    printf("*** loaded particle bounds not available, using global bounds\n");
+    GetGlobalPartBounds(0);
+    for(i=1; i<npart5prop; i++){
+      part5propinfo[i].dlg_loaded_valmin = part5propinfo[i].dlg_global_valmin;
+      part5propinfo[i].dlg_loaded_valmax = part5propinfo[i].dlg_global_valmax;
+    }
+  }
 }
 
 /* ------------------ GetLoadedSliceBounds ------------------------ */

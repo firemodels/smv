@@ -1253,9 +1253,7 @@ typedef struct _slicedata {
 #ifdef pp_MULTI_RES
   int multi_res;
 #endif
-#ifdef pp_NEWBOUND_DIALOG
   float file_min, file_max;
-#endif
   float diff_valmin,  diff_valmax;
   flowlabels label;
   float *qslicedata, *qsliceframe, *times, *qslice;

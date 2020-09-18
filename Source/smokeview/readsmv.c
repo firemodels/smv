@@ -2312,6 +2312,7 @@ void UpdateBoundInfo(void){
 #ifdef pp_CPPBOUND_DIALOG
   GetGlobalPatchBounds();
   GetGlobalPartBounds(0);
+  GetGlobalSliceBounds();
 #endif
 #ifdef pp_NEWBOUND_DIALOG
   GetGlobalSliceBounds();

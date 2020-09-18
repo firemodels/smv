@@ -288,11 +288,36 @@ void bounds_dialog::CB(int var){
   }
 };
 
-bounds_dialog patchboundsCPP, partboundsCPP, plot3dboundsCPP;
+bounds_dialog patchboundsCPP, partboundsCPP, plot3dboundsCPP, sliceboundsCPP;
 
-/* ------------------ Plot3dBoundsCPP_CB ------------------------ */
+/* ------------------ SliceBoundsCPP_CB ------------------------ */
 
-void Plot3dBoundsCPP_CB(int var){
+void SliceBoundsCPP_CB(int var){
+  sliceboundsCPP.CB(var);
+  switch(var){
+    case BOUND_VAL_TYPE:
+    case BOUND_VALMIN:
+    case BOUND_VALMAX:
+    case BOUND_SETVALMIN:
+    case BOUND_SETVALMAX:
+    case BOUND_CHOPMIN:
+    case BOUND_CHOPMAX:
+    case BOUND_SETCHOPMIN:
+    case BOUND_SETCHOPMAX:
+    case BOUND_KEEP_DATA:
+    case BOUND_DISABLE:
+    case BOUND_ENABLE:
+      break;
+    case BOUND_UPDATE_COLORS:
+      break;
+    case BOUND_RELOAD_DATA:
+      break;
+  }
+}
+
+/* ------------------ Plot3DBoundsCPP_CB ------------------------ */
+
+void Plot3DBoundsCPP_CB(int var){
   plot3dboundsCPP.CB(var);
   switch(var){
     case BOUND_VAL_TYPE:
@@ -3119,7 +3144,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
-    plot3dboundsCPP.setup(ROLLOUT_plot3d, plot3dbounds_cpp, nplot3dbounds_cpp, Plot3dBoundsCPP_CB);
+    plot3dboundsCPP.setup(ROLLOUT_plot3d, plot3dbounds_cpp, nplot3dbounds_cpp, Plot3DBoundsCPP_CB);
 #endif
 
     ROLLOUT_vector = glui_bounds->add_rollout_to_panel(ROLLOUT_plot3d,_("Vector"),false,PLOT3D_VECTOR_ROLLOUT, Plot3dRolloutCB);
@@ -3174,7 +3199,9 @@ extern "C" void GluiBoundsSetup(int main_window){
   // ----------------------------------- Slice ----------------------------------------
 
   if(nsliceinfo>0){
+#ifndef pp_CPPBOUND_DIALOG
     int index;
+#endif
 
     glui_active=1;
     ROLLOUT_slice = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,"Slice",false,SLICE_ROLLOUT,BoundRolloutCB);
@@ -3183,6 +3210,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
     RADIO_slice = glui_bounds->add_radiogroup_to_panel(ROLLOUT_slice,&list_slice_index, FILETYPE_INDEX,SliceBoundCB);
 
+#ifndef pp_CPPBOUND_DIALOG
     index=0;
     for(i=0;i<nsliceinfo;i++){
       if(sliceinfo[i].firstshort_slice==1){
@@ -3207,6 +3235,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     nlist_slice_index = index;
 
     glui_bounds->add_column_to_panel(ROLLOUT_slice,false);
+#endif
 
 #ifdef pp_NEWBOUND_DIALOG
     glui_slicemin = slicebounds[list_slice_index].dlg_valmin;
@@ -3244,22 +3273,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     );
 #endif
 #ifdef pp_CPPBOUND_DIALOG
-    GenerateBoundDialogs(&ROLLOUT_slice_bound,&ROLLOUT_slice_chop,ROLLOUT_slice,"Reload Slice Files",
-      &PANEL_slice_minmax, &STATIC_slice_research,
-      &EDIT_slice_min,&EDIT_slice_max,&RADIO_slice_setmin,&RADIO_slice_setmax,NULL,NULL,
-      &CHECKBOX_slice_setchopmin, &CHECKBOX_slice_setchopmax,
-      &EDIT_slice_chopmin, &EDIT_slice_chopmax,
-      &STATIC_slice_min_unit,&STATIC_slice_max_unit,
-      &STATIC_slice_cmin_unit,&STATIC_slice_cmax_unit,
-      &BUTTON_update_slice, &BUTTON_reload_slice,
-      &PANEL_slice_bound, NULL, NULL,
-      &glui_setslicemin,&glui_setslicemax,&glui_slicemin,&glui_slicemax,
-      &glui_setslicechopmin, &glui_setslicechopmax,
-      &glui_slicechopmin, &glui_slicechopmax,
-      UPDATERELOAD_BOUNDS,DONT_TRUNCATE_BOUNDS,
-      SliceBoundCB,
-      SliceRolloutCB, sliceprocinfo, &nsliceprocinfo
-    );
+    sliceboundsCPP.setup(ROLLOUT_slice, slicebounds_cpp, nslicebounds_cpp, SliceBoundsCPP_CB);
 #endif
 
     ROLLOUT_slice_histogram = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _("Histogram"), false, SLICE_HISTOGRAM_ROLLOUT, SliceRolloutCB);
@@ -3435,8 +3449,9 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("sort slices"), &sort_slices);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("show sorted slice labels"), &show_sort_labels);
 #endif
-
+#ifndef pp_CPPBOUND_DIALOG
     SliceBoundCB(FILETYPE_INDEX);
+#endif
   }
 
   // ----------------------------------- Time ----------------------------------------
