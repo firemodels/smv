@@ -14133,9 +14133,7 @@ void WriteIniLocal(FILE *fileout){
         );
     }
   }
-#ifdef pp_CPPBOUND_DIALOG
-  fprintf(fileout, "V2_PARTICLES\n");
-#else
+#ifndef pp_CPPBOUND_DIALOG
   fprintf(fileout, "V_PARTICLES\n");
   fprintf(fileout, " %i %f %i %f\n", setpartmin, glui_partmin, setpartmax, glui_partmax);
 #endif
@@ -14144,7 +14142,11 @@ void WriteIniLocal(FILE *fileout){
       partpropdata *propi;
 
       propi = part5propinfo + i;
+#ifdef pp_CPPBOUND_DIALOG
+      fprintf(fileout, "V2_PARTICLES\n");
+#else
       fprintf(fileout, "V5_PARTICLES\n");
+#endif
 #ifdef pp_NEWBOUND_DIALOG
       fprintf(fileout, " %i %f %i %f %s\n",
         SET_MIN, propi->user_min, SET_MAX, propi->user_max, propi->label->shortlabel);

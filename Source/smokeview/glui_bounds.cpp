@@ -52,8 +52,6 @@ class bounds_dialog{
   int set_max(char *label, int set_valmax, float valmax);
   int set_user_min(char *label, float valmin);
   int set_user_max(char *label, float valmax);
-  int set_ini_min(char *label, float valmin);
-  int set_ini_max(char *label, float valmax);
   int set_chopmin(char *label, int set_valmin, float valmin);
   int set_chopmax(char *label, int set_valmax, float valmax);
   void CB(int var);
@@ -101,7 +99,6 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   glui_bounds->add_column_to_panel(PANEL_max, false);
   RADIO_set_valmax = glui_bounds->add_radiogroup_to_panel(PANEL_max, &(bounds.set_valmax), BOUND_SETVALMAX, Callback);
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "set max");
-  glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "ini max");
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "loaded max");
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "global max");
 
@@ -113,7 +110,6 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   glui_bounds->add_column_to_panel(PANEL_min, false);
   RADIO_set_valmin = glui_bounds->add_radiogroup_to_panel(PANEL_min, &(bounds.set_valmin), BOUND_SETVALMIN, Callback);
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "set min");
-  glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "ini min");
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "loaded min");
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "global min");
 
@@ -165,23 +161,6 @@ int bounds_dialog::set_user_min(char *label, float valmin){
   return 0;
 }
 
-/* ------------------ set_ini_min ------------------------ */
-
-int bounds_dialog::set_ini_min(char *label, float valmin){
-  int i;
-
-  for(i = 0; i<nall_bounds; i++){
-    cpp_boundsdata *boundi;
-
-    boundi = all_bounds+i;
-    if(strcmp(boundi->label, label)==0){
-      boundi->valmin[BOUND_INI_MIN] = valmin;
-      return 1;
-    }
-  }
-  return 0;
-}
-
 /* ------------------ set_chopmin ------------------------ */
 
 int bounds_dialog::set_chopmin(char *label, int set_valmin, float valmin){
@@ -211,23 +190,6 @@ int bounds_dialog::set_user_max(char *label, float valmax){
     boundi = all_bounds+i;
     if(strcmp(boundi->label, label)==0){
       boundi->valmax[BOUND_SET_MAX] = valmax;
-      return 1;
-    }
-  }
-  return 0;
-}
-
-/* ------------------ set_ini_max ------------------------ */
-
-int bounds_dialog::set_ini_max(char *label, float valmax){
-  int i;
-
-  for(i = 0; i<nall_bounds; i++){
-    cpp_boundsdata *boundi;
-
-    boundi = all_bounds+i;
-    if(strcmp(boundi->label, label)==0){
-      boundi->valmax[BOUND_INI_MAX] = valmax;
       return 1;
     }
   }
@@ -368,7 +330,7 @@ void bounds_dialog::CB(int var){
       RADIO_set_valmin->set_int_val(BOUND_SET_MIN);
       break;
     case BOUND_VALMAX:
-      bounds.valmin[BOUND_SET_MAX] = bounds.glui_valmax;
+      bounds.valmax[BOUND_SET_MAX] = bounds.glui_valmax;
       bounds.set_valmax = BOUND_SET_MAX;
       memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
       RADIO_set_valmax->set_int_val(BOUND_SET_MAX);
@@ -548,44 +510,6 @@ extern "C" void SetUserMax(int type, char *label, float valmax){
       break;
     case BOUND_SLICE:
       sliceboundsCPP.set_user_max(label, valmax);
-      break;
-  }
-}
-
-/* ------------------ SetIniMin ------------------------ */
-
-extern "C" void SetIniMin(int type, char *label, float valmin){
-  switch(type){
-    case BOUND_PATCH:
-      patchboundsCPP.set_ini_min(label, valmin);
-      break;
-    case BOUND_PART:
-      partboundsCPP.set_ini_min(label, valmin);
-      break;
-    case BOUND_PLOT3D:
-      plot3dboundsCPP.set_ini_min(label, valmin);
-      break;
-    case BOUND_SLICE:
-      sliceboundsCPP.set_ini_min(label, valmin);
-      break;
-  }
-}
-
-/* ------------------ SetIniMax ------------------------ */
-
-extern "C" void SetIniMax(int type, char *label, float valmax){
-  switch(type){
-    case BOUND_PATCH:
-      patchboundsCPP.set_ini_max(label, valmax);
-      break;
-    case BOUND_PART:
-      partboundsCPP.set_ini_max(label, valmax);
-      break;
-    case BOUND_PLOT3D:
-      plot3dboundsCPP.set_ini_max(label, valmax);
-      break;
-    case BOUND_SLICE:
-      sliceboundsCPP.set_ini_max(label, valmax);
       break;
   }
 }

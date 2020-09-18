@@ -46,8 +46,6 @@ EXTERNCPP void GetMinMax(int type, char *label, int *set_valmin, float *valmin, 
 EXTERNCPP void SetMinMax(int type, char *label, int set_valmin, float valmin, int set_valmax, float valmax);
 EXTERNCPP void SetUserMin(int type, char *label, float valmin);
 EXTERNCPP void SetUserMax(int type, char *label, float valmax);
-EXTERNCPP void SetIniMin(int type, char *label, float valmin);
-EXTERNCPP void SetIniMax(int type, char *label, float valmax);
 EXTERNCPP void SetChopMin(int type, char *label, int set_valmin, float valmin);
 EXTERNCPP void SetChopMax(int type, char *label, int set_valmax, float valmax);
 EXTERNCPP void UpdateGluiBounds(void);

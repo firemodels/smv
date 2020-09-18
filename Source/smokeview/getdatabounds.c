@@ -175,12 +175,10 @@ int GetGlobalPartBounds(int flag){
 
       boundscppi->set_valmin = 0;
       boundscppi->valmin[BOUND_SET_MIN]    = valmin;
-      boundscppi->valmin[BOUND_INI_MIN]    = valmin;
       boundscppi->valmin[BOUND_LOADED_MIN] = valmin;
       boundscppi->valmin[BOUND_GLOBAL_MIN] = valmin;
 
       boundscppi->valmax[BOUND_SET_MAX]    = valmax;
-      boundscppi->valmax[BOUND_INI_MAX]    = valmax;
       boundscppi->valmax[BOUND_LOADED_MAX] = valmax;
       boundscppi->valmax[BOUND_GLOBAL_MAX] = valmax;
       boundscppi->set_valmax = 0;
@@ -311,12 +309,10 @@ void GetGlobalPatchBounds(void){
 
       boundscppi->set_valmin = 0;
       boundscppi->valmin[BOUND_SET_MIN]    = boundi->dlg_global_valmin;
-      boundscppi->valmin[BOUND_INI_MIN]    = boundi->dlg_global_valmin;
       boundscppi->valmin[BOUND_LOADED_MIN] = boundi->dlg_global_valmin;
       boundscppi->valmin[BOUND_GLOBAL_MIN] = boundi->dlg_global_valmin;
 
       boundscppi->valmax[BOUND_SET_MAX]    = boundi->dlg_global_valmax;
-      boundscppi->valmax[BOUND_INI_MAX]    = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_LOADED_MAX] = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_GLOBAL_MAX] = boundi->dlg_global_valmax;
       boundscppi->set_valmax = 0;
@@ -416,13 +412,11 @@ void GetGlobalPlot3DBounds(void){
 
       boundscppi->set_valmin = 0;
       boundscppi->valmin[BOUND_SET_MIN]    = p3min_global[i];
-      boundscppi->valmin[BOUND_INI_MIN]    = p3min_global[i];
       boundscppi->valmin[BOUND_LOADED_MIN] = p3min_global[i];
       boundscppi->valmin[BOUND_GLOBAL_MIN] = p3min_global[i];
 
       boundscppi->set_valmax = 0;
       boundscppi->valmax[BOUND_SET_MAX]    = p3max_global[i];
-      boundscppi->valmax[BOUND_INI_MAX]    = p3max_global[i];
       boundscppi->valmax[BOUND_LOADED_MAX] = p3max_global[i];
       boundscppi->valmax[BOUND_GLOBAL_MAX] = p3max_global[i];
     }
@@ -547,15 +541,13 @@ void GetGlobalSliceBounds(void){
 
       boundscppi->set_valmin = 0;
       boundscppi->valmin[BOUND_SET_MIN]    = boundi->dlg_global_valmin;
-      boundscppi->valmin[BOUND_INI_MIN]    = boundi->dlg_global_valmin;
       boundscppi->valmin[BOUND_LOADED_MIN] = boundi->dlg_global_valmin;
       boundscppi->valmin[BOUND_GLOBAL_MIN] = boundi->dlg_global_valmin;
 
+      boundscppi->set_valmax = 0;
       boundscppi->valmax[BOUND_SET_MAX]    = boundi->dlg_global_valmax;
-      boundscppi->valmax[BOUND_INI_MAX]    = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_LOADED_MAX] = boundi->dlg_global_valmax;
       boundscppi->valmax[BOUND_GLOBAL_MAX] = boundi->dlg_global_valmax;
-      boundscppi->set_valmax = 0;
     }
   }
 #endif

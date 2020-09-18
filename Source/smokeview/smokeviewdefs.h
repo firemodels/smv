@@ -9,14 +9,12 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 
 #ifdef pp_CPPBOUND_DIALOG
 #define BOUND_SET_MAX    0
-#define BOUND_INI_MAX    1
-#define BOUND_LOADED_MAX 2
-#define BOUND_GLOBAL_MAX 3
+#define BOUND_LOADED_MAX 1
+#define BOUND_GLOBAL_MAX 2
 
 #define BOUND_SET_MIN    0
-#define BOUND_INI_MIN    1
-#define BOUND_LOADED_MIN 2
-#define BOUND_GLOBAL_MIN 3
+#define BOUND_LOADED_MIN 1
+#define BOUND_GLOBAL_MIN 2
 
 #define BOUND_PART   0
 #define BOUND_SLICE  1
