@@ -17,9 +17,6 @@ GLUI *glui_bounds=NULL;
 
 #ifdef pp_CPPBOUND_DIALOG
 
-void PatchBoundsCPP_CB(int var);
-void PartBoundsCPP_CB(int var);
-
 #define BOUND_VAL_TYPE      101
 #define BOUND_VALMIN        102
 #define BOUND_VALMAX        103
