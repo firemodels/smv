@@ -136,7 +136,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   STATIC_chopmax = glui_bounds->add_statictext_to_panel(PANEL_truncate_max, "");
   STATIC_chopmax->set_w(10);
   glui_bounds->add_column_to_panel(PANEL_truncate_max, false);
-  CHECKBOX_set_chopmax = glui_bounds->add_checkbox_to_panel(PANEL_truncate_max, _("Above"), &(bounds.set_chopmin), BOUND_SETCHOPMAX, Callback);
+  CHECKBOX_set_chopmax = glui_bounds->add_checkbox_to_panel(PANEL_truncate_max, _("Above"), &(bounds.set_chopmax), BOUND_SETCHOPMAX, Callback);
 
   PANEL_truncate_min = glui_bounds->add_panel_to_panel(PANEL_truncate, "", GLUI_PANEL_NONE);
   EDIT_chopmin = glui_bounds->add_edittext_to_panel(PANEL_truncate_min, "", GLUI_EDITTEXT_FLOAT, &(bounds.chopmin), BOUND_CHOPMAX, Callback);
@@ -147,7 +147,8 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   CHECKBOX_set_chopmin = glui_bounds->add_checkbox_to_panel(PANEL_truncate_min, _("Below"), &(bounds.set_chopmin), BOUND_SETCHOPMIN, Callback);
 
   Callback(BOUND_VAL_TYPE);
-
+  Callback(BOUND_SETCHOPMIN);
+  Callback(BOUND_SETCHOPMAX);
 }
 
 /* ------------------ get_minmax ------------------------ */
@@ -287,8 +288,82 @@ void bounds_dialog::CB(int var){
   }
 };
 
-bounds_dialog patchboundsCPP, partboundsCPP;
+bounds_dialog patchboundsCPP, partboundsCPP, plot3dboundsCPP;
 
+/* ------------------ Plot3dBoundsCPP_CB ------------------------ */
+
+void Plot3dBoundsCPP_CB(int var){
+  plot3dboundsCPP.CB(var);
+  switch(var){
+    case BOUND_VAL_TYPE:
+    case BOUND_VALMIN:
+    case BOUND_VALMAX:
+    case BOUND_SETVALMIN:
+    case BOUND_SETVALMAX:
+    case BOUND_CHOPMIN:
+    case BOUND_CHOPMAX:
+    case BOUND_SETCHOPMIN:
+    case BOUND_SETCHOPMAX:
+    case BOUND_KEEP_DATA:
+    case BOUND_DISABLE:
+    case BOUND_ENABLE:
+      break;
+    case BOUND_UPDATE_COLORS:
+      break;
+    case BOUND_RELOAD_DATA:
+      break;
+  }
+}
+
+/* ------------------ PartBoundsCPP_CB ------------------------ */
+
+void PartBoundsCPP_CB(int var){
+  partboundsCPP.CB(var);
+  switch(var){
+    case BOUND_VAL_TYPE:
+    case BOUND_VALMIN:
+    case BOUND_VALMAX:
+    case BOUND_SETVALMIN:
+    case BOUND_SETVALMAX:
+    case BOUND_CHOPMIN:
+    case BOUND_CHOPMAX:
+    case BOUND_SETCHOPMIN:
+    case BOUND_SETCHOPMAX:
+    case BOUND_KEEP_DATA:
+    case BOUND_DISABLE:
+    case BOUND_ENABLE:
+      break;
+    case BOUND_UPDATE_COLORS:
+      break;
+    case BOUND_RELOAD_DATA:
+      break;
+  }
+}
+
+/* ------------------ PatchBoundsCPP_CB ------------------------ */
+
+void PatchBoundsCPP_CB(int var){
+  patchboundsCPP.CB(var);
+  switch(var){
+    case BOUND_VAL_TYPE:
+    case BOUND_VALMIN:
+    case BOUND_VALMAX:
+    case BOUND_SETVALMIN:
+    case BOUND_SETVALMAX:
+    case BOUND_CHOPMIN:
+    case BOUND_CHOPMAX:
+    case BOUND_SETCHOPMIN:
+    case BOUND_SETCHOPMAX:
+    case BOUND_KEEP_DATA:
+    case BOUND_DISABLE:
+    case BOUND_ENABLE:
+      break;
+    case BOUND_UPDATE_COLORS:
+      break;
+    case BOUND_RELOAD_DATA:
+      break;
+  }
+}
 #endif
 
 int cb_up_rgb[3], cb_down_rgb[3];
@@ -3001,11 +3076,13 @@ extern "C" void GluiBoundsSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_plot3d, glui_bounds);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_plot3d, PLOT3D_ROLLOUT, glui_bounds);
 
+#ifndef pp_CPPBOUND_DIALOG
     RADIO_p3 = glui_bounds->add_radiogroup_to_panel(ROLLOUT_plot3d,&list_p3_index, FILETYPE_INDEX,Plot3DBoundCB);
     for(i=0;i<MAXPLOT3DVARS;i++){
       glui_bounds->add_radiobutton_to_group(RADIO_p3,plot3dinfo[0].label[i].shortlabel);
     }
     glui_bounds->add_column_to_panel(ROLLOUT_plot3d,false);
+#endif
 
 
 #ifdef pp_NEWBOUND_DIALOG
@@ -3040,22 +3117,9 @@ extern "C" void GluiBoundsSetup(int main_window){
       Plot3dRolloutCB,plot3dprocinfo,&nplot3dprocinfo
     );
 #endif
+
 #ifdef pp_CPPBOUND_DIALOG
-    GenerateBoundDialogs(&ROLLOUT_plot3d_bound, &ROLLOUT_plot3d_chop, ROLLOUT_plot3d, "Reload Plot3D Files",
-      &PANEL_plot3d_minmax, &STATIC_plot3d_research,
-      &EDIT_plot3d_min, &EDIT_plot3d_max, &RADIO_p3_setmin, &RADIO_p3_setmax, NULL, NULL,
-      &CHECKBOX_p3_setchopmin, &CHECKBOX_p3_setchopmax,
-      &EDIT_plot3d_chopmin, &EDIT_plot3d_chopmax,
-      &STATIC_plot3d_min_unit, &STATIC_plot3d_max_unit,
-      &STATIC_plot3d_cmin_unit, &STATIC_plot3d_cmax_unit,
-      &BUTTON_update_plot3d, &BUTTON_reload_plot3d,
-      NULL, &PANEL_keep_plot3d_data, &cache_plot3d_data,
-      &glui_setp3min, &glui_setp3max, &glui_p3min, &glui_p3max,
-      &setp3chopmin_temp, &setp3chopmax_temp, &p3chopmin_temp, &p3chopmax_temp,
-      UPDATERELOAD_BOUNDS, TRUNCATE_BOUNDS,
-      Plot3DBoundCB,
-      Plot3dRolloutCB,plot3dprocinfo,&nplot3dprocinfo
-    );
+    plot3dboundsCPP.setup(ROLLOUT_plot3d, plot3dbounds_cpp, nplot3dbounds_cpp, Plot3dBoundsCPP_CB);
 #endif
 
     ROLLOUT_vector = glui_bounds->add_rollout_to_panel(ROLLOUT_plot3d,_("Vector"),false,PLOT3D_VECTOR_ROLLOUT, Plot3dRolloutCB);
@@ -3102,7 +3166,9 @@ extern "C" void GluiBoundsSetup(int main_window){
     p3chopmax_temp=p3chopmax[0];
     glui_bounds->add_column_to_panel(ROLLOUT_plot3d,false);
 
+#ifndef pp_CPPBOUND_DIALOG
     Plot3DBoundCB(FILETYPE_INDEX);
+#endif
   }
 
   // ----------------------------------- Slice ----------------------------------------
@@ -3585,58 +3651,6 @@ extern "C" void GluiBoundsSetup(int main_window){
 
   glui_bounds->set_main_gfx_window( main_window );
 }
-
-#ifdef pp_CPPBOUND_DIALOG
-/* ------------------ PartBoundsCPP_CB ------------------------ */
-
-void PartBoundsCPP_CB(int var){
-  partboundsCPP.CB(var);
-  switch(var){
-    case BOUND_VAL_TYPE:
-    case BOUND_VALMIN:
-    case BOUND_VALMAX:
-    case BOUND_SETVALMIN:
-    case BOUND_SETVALMAX:
-    case BOUND_CHOPMIN:
-    case BOUND_CHOPMAX:
-    case BOUND_SETCHOPMIN:
-    case BOUND_SETCHOPMAX:
-    case BOUND_KEEP_DATA:
-    case BOUND_DISABLE:
-    case BOUND_ENABLE:
-      break;
-    case BOUND_UPDATE_COLORS:
-      break;
-    case BOUND_RELOAD_DATA:
-      break;
-  }
-}
-
-/* ------------------ PatchBoundsCPP_CB ------------------------ */
-
-void PatchBoundsCPP_CB(int var){
-  patchboundsCPP.CB(var);
-  switch(var){
-    case BOUND_VAL_TYPE:
-    case BOUND_VALMIN:
-    case BOUND_VALMAX:
-    case BOUND_SETVALMIN:
-    case BOUND_SETVALMAX:
-    case BOUND_CHOPMIN:
-    case BOUND_CHOPMAX:
-    case BOUND_SETCHOPMIN:
-    case BOUND_SETCHOPMAX:
-    case BOUND_KEEP_DATA:
-    case BOUND_DISABLE:
-    case BOUND_ENABLE:
-      break;
-    case BOUND_UPDATE_COLORS:
-      break;
-    case BOUND_RELOAD_DATA:
-      break;
-  }
-}
-#endif
 
 /* ------------------ CompressOnOff ------------------------ */
 

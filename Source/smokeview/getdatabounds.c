@@ -392,6 +392,42 @@ void GetGlobalPlot3DBounds(void){
     p3min_global[i] = p3min_all[i];
     p3max_global[i] = p3max_all[i];
   }
+
+#ifdef pp_CPPBOUND_DIALOG
+  nplot3dbounds_cpp = 0;
+  if(nplot3dinfo>0){
+    int i;
+
+    nplot3dbounds_cpp = MAXPLOT3DVARS;
+    if(plot3dbounds_cpp==NULL)NewMemory((void **)&plot3dbounds_cpp, nplot3dbounds_cpp*sizeof(cpp_boundsdata));
+    for(i = 0; i<nplot3dbounds_cpp; i++){
+      cpp_boundsdata *boundscppi;
+
+      boundscppi = plot3dbounds_cpp+i;
+      boundscppi->chopmax = 0.0;;
+      boundscppi->chopmin = 0.0;
+      boundscppi->set_chopmin = 0;
+      boundscppi->set_chopmax = 0;
+      strcpy(boundscppi->label, plot3dinfo->label[i].shortlabel);
+      strcpy(boundscppi->unit, plot3dinfo->label[i].unit);
+
+      boundscppi->keep_data = 0;
+      boundscppi->set_valtype = 0;
+
+      boundscppi->set_valmin = 0;
+      boundscppi->valmin[0] = p3min_global[i];
+      boundscppi->valmin[1] = p3min_global[i];
+      boundscppi->valmin[2] = p3min_global[i];
+      boundscppi->valmin[3] = p3min_global[i];
+
+      boundscppi->set_valmax = 0;
+      boundscppi->valmax[0] = p3max_global[i];
+      boundscppi->valmax[1] = p3max_global[i];
+      boundscppi->valmax[2] = p3max_global[i];
+      boundscppi->valmax[3] = p3max_global[i];
+    }
+  }
+#endif
 }
 
 /* ------------------ GetLoadedPlot3dBounds ------------------------ */
