@@ -5290,7 +5290,9 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
 
     UpdateSliceList(list_slice_index);
     CheckMemory;
+#ifndef pp_CPPBOUND_DIALOG
     UpdateSliceListIndex(slicefilenum);
+#endif
     CheckMemory;
     UpdateGlui();
     CheckMemory;

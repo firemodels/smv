@@ -4505,6 +4505,9 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_
 #ifdef pp_OLDBOUND_DIALOG
         return_filesize=             ReadSlice(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
 #endif
+#ifdef pp_CPPBOUND_DIALOG
+        return_filesize = ReadSlice(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
+#endif
       }
       if(reset_colorbar == 1)ColorbarMenu(colorbartype_save);
     }

@@ -10914,7 +10914,11 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
 #endif
+#ifdef pp_CPPBOUND_DIALOG
+    if(Match(buffer, "V2_PLOT3D") == 1){
+#else
     if(Match(buffer, "V_PLOT3D") == 1){
+#endif
       int tempval;
       int n3d;
 
@@ -10953,9 +10957,8 @@ int ReadIni2(char *inifile, int localfile){
 #endif
 #ifdef pp_CPPBOUND_DIALOG
           if(plot3dinfo!=NULL){
-            if(isetmin==1)SetIniMin(BOUND_PLOT3D, plot3dinfo[0].label[iplot3d].shortlabel, p3mintemp);
-            if(isetmax==1)SetIniMax(BOUND_PLOT3D, plot3dinfo[0].label[iplot3d].shortlabel, p3maxtemp);
-            if(isetmin==1||isetmax==1)update_glui_bounds=1;
+            SetMinMax(BOUND_PLOT3D, plot3dinfo[0].label[iplot3d].shortlabel, isetmin, p3mintemp, isetmax, p3maxtemp);
+            update_glui_bounds = 1;
           }
 #endif
         }
@@ -11356,7 +11359,11 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
+#ifdef pp_CPPBOUND_DIALOG
+    if(Match(buffer, "V2_PARTICLES") == 1){
+#else
     if(Match(buffer, "V5_PARTICLES") == 1){
+#endif
       int ivmin, ivmax;
       float vmin, vmax;
       char short_label[256], *s1;
@@ -11407,10 +11414,6 @@ int ReadIni2(char *inifile, int localfile){
             break;
           case SET_MIN:
             propi->user_min = vmin;
-#ifdef pp_CPPBOUND_DIALOG
-            SetIniMin(BOUND_PART, short_label, vmin);
-            update_glui_bounds=1;
-#endif
             break;
           default:
             ASSERT(FFALSE);
@@ -11425,15 +11428,15 @@ int ReadIni2(char *inifile, int localfile){
             break;
           case SET_MAX:
             propi->user_max = vmax;
-#ifdef pp_CPPBOUND_DIALOG
-            SetIniMax(BOUND_PART, short_label, vmax);
-            update_glui_bounds=1;
-#endif
             break;
           default:
             ASSERT(FFALSE);
             break;
           }
+#ifdef pp_CPPBOUND_DIALOG
+          SetMinMax(BOUND_PART, short_label, ivmin, vmin, ivmax, vmax);
+          update_glui_bounds=1;
+#endif
         }
       }
       continue;
@@ -11470,14 +11473,18 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
+#ifdef pp_CPPBOUND_DIALOG
+    if(Match(buffer, "V2_SLICE")==1){
+#else
     if(Match(buffer, "V_SLICE") == 1){
+#endif
       float valmin, valmax;
-      int setvalmin, setvalmax;
+      int set_valmin, set_valmax;
       char *level_val;
 
       fgets(buffer, 255, stream);
       strcpy(buffer2, "");
-      sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
+      sscanf(buffer, "%i %f %i %f %s", &set_valmin, &valmin, &set_valmax, &valmax, buffer2);
 #ifdef pp_OLDBOUND_DIALOG
       if(setvalmin==1||setvalmax==1){
         research_mode = 0;
@@ -11518,8 +11525,8 @@ int ReadIni2(char *inifile, int localfile){
 #endif
         for(i = 0; i<nslicebounds; i++){
           if(strcmp(slicebounds[i].shortlabel, buffer2)==0){
-            slicebounds[i].dlg_setvalmin = setvalmin;
-            slicebounds[i].dlg_setvalmax = setvalmax;
+            slicebounds[i].dlg_setvalmin = set_valmin;
+            slicebounds[i].dlg_setvalmax = set_valmax;
             slicebounds[i].dlg_valmin = valmin;
             slicebounds[i].dlg_valmax = valmax;
 #ifdef pp_NEWBOUND_DIALOG
@@ -11529,9 +11536,8 @@ int ReadIni2(char *inifile, int localfile){
             }
 #endif
 #ifdef pp_CPPBOUND_DIALOG
-            if(setvalmin==1)SetIniMin(BOUND_SLICE, buffer2, valmin);
-            if(setvalmax==1)SetIniMax(BOUND_SLICE, buffer2, valmax);
-            if(setvalmin==1||setvalmax==1)update_glui_bounds=1;
+            SetMinMax(BOUND_SLICE, buffer2, set_valmin, valmin, set_valmax, valmax);
+            update_glui_bounds = 1;
 #endif
             if(level_val!=NULL){
               slicebounds[i].line_contour_min = slice_line_contour_min;
@@ -11544,8 +11550,8 @@ int ReadIni2(char *inifile, int localfile){
       }
       else{
         for(i = 0; i<nslicebounds; i++){
-          slicebounds[i].dlg_setvalmin = setvalmin;
-          slicebounds[i].dlg_setvalmax = setvalmax;
+          slicebounds[i].dlg_setvalmin = set_valmin;
+          slicebounds[i].dlg_setvalmax = set_valmax;
           slicebounds[i].dlg_valmin = valmin;
           slicebounds[i].dlg_valmax = valmax;
           slicebounds[i].line_contour_min = slice_line_contour_min;
@@ -11641,7 +11647,11 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
+#ifdef pp_CPPBOUND_DIALOG
+    if(Match(buffer, "V2_BOUNDARY") == 1){
+#else
     if(Match(buffer, "V_BOUNDARY") == 1){
+#endif
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i %f %s", &glui_setpatchmin, &glui_patchmin, &glui_setpatchmax, &glui_patchmax, buffer2);
       if(strcmp(buffer2, "") != 0){
@@ -11658,9 +11668,8 @@ int ReadIni2(char *inifile, int localfile){
         }
 #endif
 #ifdef pp_CPPBOUND_DIALOG
-        if(glui_setpatchmin==1)SetIniMin(BOUND_PATCH, buffer2, glui_patchmin);
-        if(glui_setpatchmax==1)SetIniMax(BOUND_PATCH, buffer2, glui_patchmax);
-        if(glui_setpatchmin==1||glui_setpatchmax==1)update_glui_bounds = 1;
+        SetMinMax(BOUND_PATCH, buffer2, glui_setpatchmin, glui_patchmin, glui_setpatchmax, glui_patchmax);
+        update_glui_bounds = 1;
 #endif
       }
       continue;
@@ -13596,7 +13605,6 @@ int ReadIni2(char *inifile, int localfile){
   }
   fclose(stream);
   return 0;
-
 }
 
 /* ------------------ ReadIni ------------------------ */
@@ -14095,12 +14103,24 @@ void WriteIniLocal(FILE *fileout){
 
     patchi = patchinfo + i;
     if(patchi->firstshort == 1){
+#ifdef pp_CPPBOUND_DIALOG
+      int set_valmin=0, set_valmax=0;
+      float valmin=1.0, valmax=0.0;
+      char *label;
+
+      label = patchi->label.shortlabel;
+        
+      GetMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      fprintf(fileout, "V2_BOUNDARY\n");
+      fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
+#else
       fprintf(fileout, "V_BOUNDARY\n");
       fprintf(fileout, " %i %f %i %f %s\n",
         patchi->setvalmin, patchi->valmin,
         patchi->setvalmax, patchi->valmax,
         patchi->label.shortlabel
         );
+#endif
     }
   }
   if(niso_bounds > 0){
@@ -14113,8 +14133,12 @@ void WriteIniLocal(FILE *fileout){
         );
     }
   }
+#ifdef pp_CPPBOUND_DIALOG
+  fprintf(fileout, "V2_PARTICLES\n");
+#else
   fprintf(fileout, "V_PARTICLES\n");
   fprintf(fileout, " %i %f %i %f\n", setpartmin, glui_partmin, setpartmax, glui_partmax);
+#endif
   if(npart5prop > 0){
     for(i = 0; i < npart5prop; i++){
       partpropdata *propi;
@@ -14130,8 +14154,14 @@ void WriteIniLocal(FILE *fileout){
         propi->setvalmin, propi->valmin, propi->setvalmax, propi->valmax, propi->label->shortlabel);
 #endif
 #ifdef pp_CPPBOUND_DIALOG
-      fprintf(fileout, " %i %f %i %f %s\n",
-        propi->setvalmin, propi->valmin, propi->setvalmax, propi->valmax, propi->label->shortlabel);
+      int set_valmin=0, set_valmax=0;
+      float valmin=1.0, valmax=0.0;
+      char *label;
+
+      label = propi->label->shortlabel;
+        
+      GetMinMax(BOUND_PART, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
 #endif
     }
   }
@@ -14141,8 +14171,15 @@ void WriteIniLocal(FILE *fileout){
     n3d = MAXPLOT3DVARS;
     if(n3d<numplot3dvars)n3d = numplot3dvars;
     if(n3d>MAXPLOT3DVARS)n3d = MAXPLOT3DVARS;
+#ifdef pp_CPPBOUND_DIALOG
+    if(plot3dinfo!=NULL){
+      fprintf(fileout, "V2_PLOT3D\n");
+      fprintf(fileout, " %i\n", n3d);
+    }
+#else
     fprintf(fileout, "V_PLOT3D\n");
     fprintf(fileout, " %i\n", n3d);
+#endif
     for(i = 0; i < n3d; i++){
 #ifdef pp_NEWBOUND_DIALOG
       fprintf(fileout, " %i %i %f %i %f %i\n", i + 1, SET_MIN,         p3min_all[i], SET_MAX,         p3max_all[i], plot3d_compute_loaded[i]);
@@ -14151,29 +14188,52 @@ void WriteIniLocal(FILE *fileout){
       fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3min_all[i], p3min_all[i], setp3max_all[i], p3max_all[i]);
 #endif
 #ifdef pp_CPPBOUND_DIALOG
-      fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3min_all[i], p3min_all[i], setp3max_all[i], p3max_all[i]);
+    if(plot3dinfo!=NULL){
+      int set_valmin=0, set_valmax=0;
+      float valmin=1.0, valmax=0.0;
+      char *label;
+
+      label = plot3dinfo[0].label->shortlabel;
+      GetMinMax(BOUND_PLOT3D, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
+    }
 #endif
     }
   }
   if(nslicebounds > 0){
     for(i = 0; i < nslicebounds; i++){
+#ifdef pp_CPPBOUND_DIALOG
+      fprintf(fileout, "V2_SLICE\n");
+#else
       fprintf(fileout, "V_SLICE\n");
-      fprintf(fileout, " %i %f %i %f %s : %f %f %i\n",
+#endif
 #ifdef pp_NEWBOUND_DIALOG
+      fprintf(fileout, " %i %f %i %f %s : %f %f %i\n",
         SET_MIN, slicebounds[i].dlg_valmin,
         SET_MAX, slicebounds[i].dlg_valmax,
-#endif
-#ifdef pp_OLDBOUND_DIALOG
-        slicebounds[i].dlg_setvalmin, slicebounds[i].dlg_valmin,
-        slicebounds[i].dlg_setvalmax, slicebounds[i].dlg_valmax,
-#endif
-#ifdef pp_CPPBOUND_DIALOG
-        slicebounds[i].dlg_setvalmin, slicebounds[i].dlg_valmin,
-        slicebounds[i].dlg_setvalmax, slicebounds[i].dlg_valmax,
-#endif
         slicebounds[i].label->shortlabel
         , slicebounds[i].line_contour_min, slicebounds[i].line_contour_max, slicebounds[i].line_contour_num
         );
+#endif
+#ifdef pp_OLDBOUND_DIALOG
+      fprintf(fileout, " %i %f %i %f %s : %f %f %i\n",
+        slicebounds[i].dlg_setvalmin, slicebounds[i].dlg_valmin,
+        slicebounds[i].dlg_setvalmax, slicebounds[i].dlg_valmax,
+        slicebounds[i].label->shortlabel
+        , slicebounds[i].line_contour_min, slicebounds[i].line_contour_max, slicebounds[i].line_contour_num
+        );
+#endif
+#ifdef pp_CPPBOUND_DIALOG
+      int set_valmin=0, set_valmax=0;
+      float valmin=1.0, valmax=0.0;
+      char *label;
+
+      label = slicebounds[i].label->shortlabel;
+      GetMinMax(BOUND_SLICE, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      fprintf(fileout, " %i %f %i %f %s : %f %f %i\n", set_valmin, valmin, set_valmax, valmax, label,
+        slicebounds[i].line_contour_min, slicebounds[i].line_contour_max, slicebounds[i].line_contour_num
+        );
+#endif
     }
   }
   fprintf(fileout, "V_TARGET\n");
