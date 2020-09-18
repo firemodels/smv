@@ -105,7 +105,6 @@ void StereoCB(int var){
 /* ------------------ GluiStereoSetup ------------------------ */
 
 extern "C" void GluiStereoSetup(int main_window){
-  update_glui_stereo = 0;
   if(glui_stereo!=NULL){
     glui_stereo->close();
     glui_stereo = NULL;

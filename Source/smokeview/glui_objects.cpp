@@ -416,7 +416,6 @@ extern "C" void UpdateGluiDevices(void){
 
 extern "C" void GluiDeviceSetup(int main_window){
 
-  update_glui_device=0;
   if(glui_device!=NULL){
     glui_device->close();
     glui_device=NULL;

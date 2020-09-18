@@ -901,7 +901,6 @@ extern "C" void GluiMotionSetup(int main_window){
 
   eye_xyz=camera_current->eye;
 
-  update_glui_motion=0;
   if(glui_motion!=NULL){
     glui_motion->close();
     glui_motion=NULL;

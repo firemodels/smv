@@ -2067,7 +2067,6 @@ extern "C" void GluiBoundsSetup(int main_window){
   int nradio;
   int have_part, have_evac;
 
-  update_glui_bounds=0;
   if(glui_bounds!=NULL){
     glui_bounds->close();
     glui_bounds=NULL;

@@ -629,22 +629,7 @@ SVEXTERN int SVDECL(regenerate_fed,0);
 SVEXTERN int SVDECL(debug_count,0);
 SVEXTERN geomdata SVDECL(**geominfoptrs,NULL);
 SVEXTERN int SVDECL(ngeominfoptrs,0);
-SVEXTERN int SVDECL(update_glui_wui,0);
-SVEXTERN int SVDECL(update_glui_stereo,0);
-SVEXTERN int SVDECL(update_glui_trainer,0);
-SVEXTERN int SVDECL(update_glui_alert,0);
-SVEXTERN int SVDECL(update_glui_tour,0);
-SVEXTERN int SVDECL(update_glui_motion,0);
-SVEXTERN int SVDECL(update_glui_message,0);
-SVEXTERN int SVDECL(update_glui_labels,0);
-SVEXTERN int SVDECL(update_glui_device,0);
-SVEXTERN int SVDECL(update_glui_clip,0);
-SVEXTERN int SVDECL(update_glui_geometry,0);
-SVEXTERN int SVDECL(update_glui_colorbar,0);
-SVEXTERN int SVDECL(update_glui_bounds,0);
-SVEXTERN int SVDECL(update_glui_shooter,0);
 
-SVEXTERN int SVDECL(update_glui_dialogs,0);
 SVEXTERN char startup_lang_code[3];
 
 #ifdef pp_GPUTHROTTLE
