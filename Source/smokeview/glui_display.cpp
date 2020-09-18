@@ -551,7 +551,6 @@ extern "C" void ColorCB(int var){
 extern "C" void GluiLabelsSetup(int main_window){
   labeldata *gl;
 
-  update_glui_labels=0;
   if(glui_labels!=NULL){
     glui_labels->close();
     glui_labels=NULL;

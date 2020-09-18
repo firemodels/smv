@@ -57,7 +57,6 @@ extern "C" void UpdateGluiWui(void){
 /* ------------------ GluiWuiSetup ------------------------ */
 
 extern "C" void GluiWuiSetup(int main_window){
-  update_glui_wui=0;
   if(glui_wui!=NULL){
     glui_wui->close();
     glui_wui=NULL;
