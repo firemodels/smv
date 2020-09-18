@@ -94,7 +94,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
 
   PANEL_bound = glui_bounds->add_panel_to_panel(PANEL_bound2, "Bound");
   PANEL_max = glui_bounds->add_panel_to_panel(PANEL_bound, "", GLUI_PANEL_NONE);
-  EDIT_valmax = glui_bounds->add_edittext_to_panel(PANEL_max, "", GLUI_EDITTEXT_FLOAT, &(bounds.valmax), BOUND_VALMAX, Callback);
+  EDIT_valmax = glui_bounds->add_edittext_to_panel(PANEL_max, "", GLUI_EDITTEXT_FLOAT, &(bounds.glui_valmax), BOUND_VALMAX, Callback);
   glui_bounds->add_column_to_panel(PANEL_max, false);
   STATIC_max = glui_bounds->add_statictext_to_panel(PANEL_max, "");
   STATIC_max->set_w(10);
@@ -106,7 +106,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "global max");
 
   PANEL_min = glui_bounds->add_panel_to_panel(PANEL_bound, "", GLUI_PANEL_NONE);
-  EDIT_valmin = glui_bounds->add_edittext_to_panel(PANEL_min, "", GLUI_EDITTEXT_FLOAT, &(bounds.valmin), BOUND_VALMIN, Callback);
+  EDIT_valmin = glui_bounds->add_edittext_to_panel(PANEL_min, "", GLUI_EDITTEXT_FLOAT, &(bounds.glui_valmin), BOUND_VALMIN, Callback);
   glui_bounds->add_column_to_panel(PANEL_min, false);
   STATIC_min = glui_bounds->add_statictext_to_panel(PANEL_min, "");
   STATIC_min->set_w(10);
@@ -340,32 +340,35 @@ void bounds_dialog::CB(int var){
       valtype_save = bounds.set_valtype;
       memcpy(&bounds, all_boundsi, sizeof(cpp_boundsdata));
       bounds.set_valtype = valtype_save;
-      EDIT_valmin->set_float_val(bounds.valmin[bounds.set_valmin]);
-      EDIT_valmax->set_float_val(bounds.valmax[bounds.set_valmax]);
-      RADIO_set_valmin->set_int_val(bounds.set_valmin);
-      RADIO_set_valmax->set_int_val(bounds.set_valmax);
 
+      bounds.glui_valmin = bounds.valmin[bounds.set_valmin];
+      EDIT_valmin->set_float_val(bounds.glui_valmin);
+      RADIO_set_valmin->set_int_val(bounds.set_valmin);
       EDIT_chopmin->set_float_val(bounds.chopmin);
-      EDIT_chopmax->set_float_val(bounds.chopmax);
       CHECKBOX_set_chopmin->set_int_val(bounds.set_chopmin);
-      CHECKBOX_set_chopmax->set_int_val(bounds.set_chopmax);
-
-      RADIO_set_valmin->set_int_val(bounds.set_valmin);
-      RADIO_set_valmax->set_int_val(bounds.set_valmax);
-      CHECKBOX_keep_data->set_int_val(bounds.keep_data);
       STATIC_min->set_name(bounds.unit);
-      STATIC_max->set_name(bounds.unit);
       STATIC_chopmin->set_name(bounds.unit);
+
+      bounds.glui_valmax = bounds.valmax[bounds.set_valmax];
+      EDIT_valmax->set_float_val(bounds.glui_valmax);
+      RADIO_set_valmax->set_int_val(bounds.set_valmax);
+      EDIT_chopmax->set_float_val(bounds.chopmax);
+      CHECKBOX_set_chopmax->set_int_val(bounds.set_chopmax);
+      STATIC_max->set_name(bounds.unit);
       STATIC_chopmax->set_name(bounds.unit);
+
+      CHECKBOX_keep_data->set_int_val(bounds.keep_data);
       break;
 
       // min/max edit boxes
     case BOUND_VALMIN:
-      bounds.set_valmin = BOUND_SET_MIN;
+      bounds.valmin[BOUND_SET_MIN] = bounds.glui_valmin;
+      bounds.set_valmin            = BOUND_SET_MIN;
       memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
       RADIO_set_valmin->set_int_val(BOUND_SET_MIN);
       break;
     case BOUND_VALMAX:
+      bounds.valmin[BOUND_SET_MAX] = bounds.glui_valmax;
       bounds.set_valmax = BOUND_SET_MAX;
       memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
       RADIO_set_valmax->set_int_val(BOUND_SET_MAX);
@@ -373,13 +376,13 @@ void bounds_dialog::CB(int var){
 
       // min/max radio buttons
     case BOUND_SETVALMIN:
-      bounds.valmin[BOUND_SET_MIN] = all_boundsi->valmin[bounds.set_valmin];
-      EDIT_valmin->set_float_val(bounds.valmin[BOUND_SET_MIN]);
+      bounds.glui_valmin = all_boundsi->valmin[bounds.set_valmin];
+      EDIT_valmin->set_float_val(bounds.glui_valmin);
       memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
       break;
     case BOUND_SETVALMAX:
-      bounds.valmax[BOUND_SET_MAX] = all_boundsi->valmax[bounds.set_valmax];
-      EDIT_valmax->set_float_val(bounds.valmax[BOUND_SET_MAX]);
+      bounds.glui_valmax = all_boundsi->valmax[bounds.set_valmax];
+      EDIT_valmax->set_float_val(bounds.glui_valmax);
       memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
       break;
 
@@ -416,15 +419,15 @@ void bounds_dialog::CB(int var){
 
       // enable/disable controls
     case BOUND_DISABLE: // research mode on
-      bounds.set_valmax = BOUND_LOADED_MAX;
+      bounds.set_valmax  = BOUND_LOADED_MAX;
+      bounds.glui_valmax = all_boundsi->valmax[BOUND_LOADED_MAX];
       RADIO_set_valmax->set_int_val(BOUND_LOADED_MAX);
-      bounds.valmax[BOUND_SET_MAX] = all_boundsi->valmax[BOUND_LOADED_MAX];
-      EDIT_valmax->set_float_val(bounds.valmax[BOUND_SET_MAX]);
+      EDIT_valmax->set_float_val(bounds.glui_valmax);
 
-      bounds.set_valmin = BOUND_LOADED_MIN;
+      bounds.set_valmin  = BOUND_LOADED_MIN;
+      bounds.glui_valmin = all_boundsi->valmin[BOUND_LOADED_MIN];
       RADIO_set_valmin->set_int_val(BOUND_LOADED_MIN);
-      bounds.valmin[BOUND_SET_MIN] = all_boundsi->valmin[BOUND_LOADED_MIN];
-      EDIT_valmax->set_float_val(bounds.valmax[BOUND_SET_MIN]);
+      EDIT_valmin->set_float_val(bounds.glui_valmin);
 
       memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
       PANEL_min->disable();
