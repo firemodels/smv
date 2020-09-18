@@ -349,7 +349,6 @@ extern "C" void GluiColorbarSetup(int main_window){
   NewMemory((void **)&colorbar_label,sizeof(GLUI_String));
   strcpy(colorbar_label,_("New colorbar"));
 
-  update_glui_colorbar=0;
   if(glui_colorbar!=NULL){
     glui_colorbar->close();
     glui_colorbar=NULL;

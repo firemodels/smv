@@ -314,7 +314,6 @@ extern "C" void GluiGeometrySetup(int main_window){
   yplt_orig=current_mesh->yplt_orig;
   zplt_orig=current_mesh->zplt_orig;
 
-  update_glui_geometry=0;
   if(glui_geometry!=NULL){
     glui_geometry->close();
     glui_geometry=NULL;

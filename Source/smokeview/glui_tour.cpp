@@ -126,7 +126,6 @@ extern "C" void GluiTourSetup(int main_window){
 
   int i;
 
-  update_glui_tour=0;
   if(glui_tour!=NULL){
     glui_tour->close();
     glui_tour=NULL;
