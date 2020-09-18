@@ -41,6 +41,13 @@ EXTERNCPP void GetGlobalPatchBounds(void);
 EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded_max);
 EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(void);
+#ifdef pp_CPPBOUND_DIALOG
+EXTERNCPP void SetIniMin(int type, char *label, float valmin);
+EXTERNCPP void SetIniMax(int type, char *label, float valmax);
+EXTERNCPP void SetChopMin(int type, char *label, int set_valmin, float valmin);
+EXTERNCPP void SetChopMax(int type, char *label, int set_valmax, float valmax);
+EXTERNCPP void UpdateGluiBounds(void);
+#endif
 #ifdef pp_NEWBOUND_DIALOG
 EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max);
 EXTERNCPP void GetLoadedPartBounds(void);

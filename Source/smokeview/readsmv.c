@@ -10951,6 +10951,13 @@ int ReadIni2(char *inifile, int localfile){
           p3max_ini[iplot3d]    = p3maxtemp;
           plot3d_compute_loaded[iplot3d] = ival;
 #endif
+#ifdef pp_CPPBOUND_DIALOG
+          if(plot3dinfo!=NULL){
+            if(isetmin==1)SetIniMin(BOUND_PLOT3D, plot3dinfo[0].label[iplot3d].shortlabel, p3mintemp);
+            if(isetmax==1)SetIniMax(BOUND_PLOT3D, plot3dinfo[0].label[iplot3d].shortlabel, p3maxtemp);
+            if(isetmin==1||isetmax==1)update_glui_bounds=1;
+          }
+#endif
         }
       }
 #ifdef pp_NEWBOUND_DIALOG
@@ -11122,6 +11129,13 @@ int ReadIni2(char *inifile, int localfile){
           setp3chopmax[iplot3d] = isetmax;
           p3chopmin[iplot3d] = p3mintemp;
           p3chopmax[iplot3d] = p3maxtemp;
+#ifdef pp_CPPBOUND_DIALOG
+          if(plot3dinfo!=NULL){
+            SetChopMin(BOUND_PLOT3D, plot3dinfo[0].label[iplot3d].shortlabel, isetmin, p3mintemp);
+            SetChopMax(BOUND_PLOT3D, plot3dinfo[0].label[iplot3d].shortlabel, isetmax, p3maxtemp);
+            update_glui_bounds = 1;
+          }
+#endif
         }
       }
       continue;
@@ -11393,6 +11407,10 @@ int ReadIni2(char *inifile, int localfile){
             break;
           case SET_MIN:
             propi->user_min = vmin;
+#ifdef pp_CPPBOUND_DIALOG
+            SetIniMin(BOUND_PART, short_label, vmin);
+            update_glui_bounds=1;
+#endif
             break;
           default:
             ASSERT(FFALSE);
@@ -11407,6 +11425,10 @@ int ReadIni2(char *inifile, int localfile){
             break;
           case SET_MAX:
             propi->user_max = vmax;
+#ifdef pp_CPPBOUND_DIALOG
+            SetIniMax(BOUND_PART, short_label, vmax);
+            update_glui_bounds=1;
+#endif
             break;
           default:
             ASSERT(FFALSE);
@@ -11439,6 +11461,11 @@ int ReadIni2(char *inifile, int localfile){
           propi->setchopmax = icmax;
           propi->chopmin = cmin;
           propi->chopmax = cmax;
+#ifdef pp_CPPBOUND_DIALOG
+          SetChopMin(BOUND_PART, short_label, icmin, cmin);
+          SetChopMax(BOUND_PART, short_label, icmax, cmax);
+          update_glui_bounds = 1;
+#endif
         }
       }
       continue;
@@ -11501,6 +11528,11 @@ int ReadIni2(char *inifile, int localfile){
               slicebounds[i].dlg_ini_valmax = valmax;
             }
 #endif
+#ifdef pp_CPPBOUND_DIALOG
+            if(setvalmin==1)SetIniMin(BOUND_SLICE, buffer2, valmin);
+            if(setvalmax==1)SetIniMax(BOUND_SLICE, buffer2, valmax);
+            if(setvalmin==1||setvalmax==1)update_glui_bounds=1;
+#endif
             if(level_val!=NULL){
               slicebounds[i].line_contour_min = slice_line_contour_min;
               slicebounds[i].line_contour_max = slice_line_contour_max;
@@ -11537,6 +11569,11 @@ int ReadIni2(char *inifile, int localfile){
           slicebounds[i].setchopmax = setvalmax;
           slicebounds[i].chopmin = valmin;
           slicebounds[i].chopmax = valmax;
+#ifdef pp_CPPBOUND_DIALOG
+          SetChopMin(BOUND_SLICE, buffer2, setvalmin, valmin);
+          SetChopMax(BOUND_SLICE, buffer2, setvalmax, valmax);
+          update_glui_bounds = 1;
+#endif
           break;
         }
       }
@@ -11620,6 +11657,11 @@ int ReadIni2(char *inifile, int localfile){
           }
         }
 #endif
+#ifdef pp_CPPBOUND_DIALOG
+        if(glui_setpatchmin==1)SetIniMin(BOUND_PATCH, buffer2, glui_patchmin);
+        if(glui_setpatchmax==1)SetIniMax(BOUND_PATCH, buffer2, glui_patchmax);
+        if(glui_setpatchmin==1||glui_setpatchmax==1)update_glui_bounds = 1;
+#endif
       }
       continue;
     }
@@ -11644,6 +11686,11 @@ int ReadIni2(char *inifile, int localfile){
           patchi->chopmax = valmax;
           patchi->setchopmin = setvalmin;
           patchi->setchopmax = setvalmax;
+#ifdef pp_CPPBOUND_DIALOG
+          SetChopMin(BOUND_PATCH, buffer2ptr, setvalmin, valmin);
+          SetChopMax(BOUND_PATCH, buffer2ptr, setvalmax, valmax);
+          update_glui_bounds = 1;
+#endif
         }
       }
       UpdateBoundaryListIndex2(buffer2ptr);

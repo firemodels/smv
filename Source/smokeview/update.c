@@ -1916,7 +1916,20 @@ void UpdateDisplay(void){
     SetVentDirs();
     update_setvents=0;
   }
-  UNLOCK_IBLANK
+  UNLOCK_IBLANK;
+#ifdef pp_CPPBOUND_DIALOG
+  if(update_ini==1){
+    update_ini = 0;
+    ReadIni(NULL);
+
+    update_glui_bounds = 0;
+    UpdateGluiBounds();
+  }
+  if(update_glui_bounds==1){
+    update_glui_bounds = 0;
+    UpdateGluiBounds();
+  }
+#endif
   if(update_zaxis_custom == 1){
     update_zaxis_custom = 0;
     UpdateZAxisCustom();

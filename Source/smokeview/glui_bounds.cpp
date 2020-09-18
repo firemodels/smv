@@ -32,16 +32,6 @@ GLUI *glui_bounds=NULL;
 #define BOUND_DISABLE       113
 #define BOUND_ENABLE        114
 
-#define BOUND_SET_MAX    0
-#define BOUND_INI_MAX    1
-#define BOUND_LOADED_MAX 2
-#define BOUND_GLOBAL_MAX 3
-
-#define BOUND_SET_MIN    0
-#define BOUND_INI_MIN    1
-#define BOUND_LOADED_MIN 2
-#define BOUND_GLOBAL_MIN 3
-
 //*** bounds class
 
 class bounds_dialog{
@@ -56,7 +46,12 @@ class bounds_dialog{
   GLUI_Panel *PANEL_min, *PANEL_max;
   GLUI_StaticText *STATIC_min, *STATIC_max, *STATIC_chopmin, *STATIC_chopmax;
 
-  int get_minmax(char *label, float *valmin, float *valmax);
+  int get_min(char *label, float *valmin);
+  int get_max(char *label, float *valmax);
+  int set_ini_min(char *label, float valmin);
+  int set_ini_max(char *label, float valmax);
+  int set_chopmin(char *label, int set_valmin, float valmin);
+  int set_chopmax(char *label, int set_valmax, float valmax);
   void CB(int var);
   void setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds, int nbounds, void Callback(int var));
   bounds_dialog(void);
@@ -125,7 +120,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
 
 //*** chop above/below
 
-  PANEL_truncate = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "Truncate");
+  PANEL_truncate = glui_bounds->add_panel_to_panel(PANEL_bound2, "Truncate");
 
   PANEL_truncate_max = glui_bounds->add_panel_to_panel(PANEL_truncate, "", GLUI_PANEL_NONE);
   EDIT_chopmax = glui_bounds->add_edittext_to_panel(PANEL_truncate_max, "", GLUI_EDITTEXT_FLOAT, &(bounds.chopmax), BOUND_CHOPMAX, Callback);
@@ -146,11 +141,82 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   Callback(BOUND_VAL_TYPE);
   Callback(BOUND_SETCHOPMIN);
   Callback(BOUND_SETCHOPMAX);
+  update_ini = 1;
 }
 
-/* ------------------ get_minmax ------------------------ */
+/* ------------------ set_ini_min ------------------------ */
 
-int bounds_dialog::get_minmax(char *label, float *valmin, float *valmax){
+int bounds_dialog::set_ini_min(char *label, float valmin){
+  int i;
+
+  for(i = 0; i<nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds+i;
+    if(strcmp(boundi->label, label)==0){
+      boundi->valmin[BOUND_INI_MIN] = valmin;
+      return 1;
+    }
+  }
+  return 0;
+}
+
+/* ------------------ set_chopmin ------------------------ */
+
+int bounds_dialog::set_chopmin(char *label, int set_valmin, float valmin){
+  int i;
+
+  for(i = 0; i<nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds+i;
+    if(strcmp(boundi->label, label)==0){
+      boundi->set_chopmin = set_valmin;
+      boundi->chopmin     = valmin;
+      return 1;
+    }
+  }
+  return 0;
+}
+
+/* ------------------ set_ini_max ------------------------ */
+
+int bounds_dialog::set_ini_max(char *label, float valmax){
+  int i;
+
+  for(i = 0; i<nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds+i;
+    if(strcmp(boundi->label, label)==0){
+      boundi->valmax[BOUND_INI_MAX] = valmax;
+      return 1;
+    }
+  }
+  return 0;
+}
+
+/* ------------------ set_chopmax ------------------------ */
+
+int bounds_dialog::set_chopmax(char *label, int set_valmax, float valmax){
+  int i;
+
+  for(i = 0; i<nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds+i;
+    if(strcmp(boundi->label, label)==0){
+      boundi->set_chopmax = set_valmax;
+      boundi->chopmax     = valmax;
+      return 1;
+    }
+  }
+  return 0;
+}
+
+/* ------------------ get_min ------------------------ */
+
+int bounds_dialog::get_min(char *label, float *valmin){
   int i;
 
   for(i = 0; i<nall_bounds; i++){
@@ -159,11 +225,27 @@ int bounds_dialog::get_minmax(char *label, float *valmin, float *valmax){
     boundi = all_bounds+i;
     if(strcmp(boundi->label, label)==0){
       *valmin = boundi->valmin[BOUND_SET_MIN];
-      *valmax = boundi->valmax[BOUND_SET_MAX];
       return 1;
     }
   }
   *valmin = 1.0;
+  return 0;
+}
+
+/* ------------------ get_max ------------------------ */
+
+int bounds_dialog::get_max(char *label, float *valmax){
+  int i;
+
+  for(i = 0; i<nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds+i;
+    if(strcmp(boundi->label, label)==0){
+      *valmax = boundi->valmax[BOUND_SET_MAX];
+      return 1;
+    }
+  }
   *valmax = 0.0;
   return 0;
 }
@@ -286,6 +368,102 @@ void bounds_dialog::CB(int var){
 };
 
 bounds_dialog patchboundsCPP, partboundsCPP, plot3dboundsCPP, sliceboundsCPP;
+
+/* ------------------ UpdateGluiBounds ------------------------ */
+
+extern "C" void UpdateGluiBounds(void){
+  patchboundsCPP.CB(BOUND_VAL_TYPE);
+  patchboundsCPP.CB(BOUND_SETCHOPMIN);
+  patchboundsCPP.CB(BOUND_SETCHOPMAX);
+
+  partboundsCPP.CB(BOUND_VAL_TYPE);
+  partboundsCPP.CB(BOUND_SETCHOPMIN);
+  partboundsCPP.CB(BOUND_SETCHOPMAX);
+
+  plot3dboundsCPP.CB(BOUND_VAL_TYPE);
+  plot3dboundsCPP.CB(BOUND_SETCHOPMIN);
+  plot3dboundsCPP.CB(BOUND_SETCHOPMAX);
+
+  sliceboundsCPP.CB(BOUND_VAL_TYPE);
+  sliceboundsCPP.CB(BOUND_SETCHOPMIN);
+  sliceboundsCPP.CB(BOUND_SETCHOPMAX);
+}
+
+/* ------------------ SetIniMin ------------------------ */
+
+extern "C" void SetIniMin(int type, char *label, float valmin){
+  switch(type){
+    case BOUND_PATCH:
+      patchboundsCPP.set_ini_min(label, valmin);
+      break;
+    case BOUND_PART:
+      partboundsCPP.set_ini_min(label, valmin);
+      break;
+    case BOUND_PLOT3D:
+      plot3dboundsCPP.set_ini_min(label, valmin);
+      break;
+    case BOUND_SLICE:
+      sliceboundsCPP.set_ini_min(label, valmin);
+      break;
+  }
+}
+
+/* ------------------ SetIniMax ------------------------ */
+
+extern "C" void SetIniMax(int type, char *label, float valmax){
+  switch(type){
+    case BOUND_PATCH:
+      patchboundsCPP.set_ini_max(label, valmax);
+      break;
+    case BOUND_PART:
+      partboundsCPP.set_ini_max(label, valmax);
+      break;
+    case BOUND_PLOT3D:
+      plot3dboundsCPP.set_ini_max(label, valmax);
+      break;
+    case BOUND_SLICE:
+      sliceboundsCPP.set_ini_max(label, valmax);
+      break;
+  }
+}
+
+/* ------------------ SetChopMin ------------------------ */
+
+extern "C" void SetChopMin(int type, char *label, int set_valmin, float valmin){
+  switch(type){
+    case BOUND_PATCH:
+      patchboundsCPP.set_chopmin(label, set_valmin, valmin);
+      break;
+    case BOUND_PART:
+      partboundsCPP.set_chopmin(label, set_valmin, valmin);
+      break;
+    case BOUND_PLOT3D:
+      plot3dboundsCPP.set_chopmin(label, set_valmin, valmin);
+      break;
+    case BOUND_SLICE:
+      sliceboundsCPP.set_chopmin(label, set_valmin, valmin);
+      break;
+  }
+}
+
+/* ------------------ SetChopMax ------------------------ */
+
+extern "C" void SetChopMax(int type, char *label, int set_valmax, float valmax){
+  switch(type){
+    case BOUND_PATCH:
+      patchboundsCPP.set_chopmax(label, set_valmax, valmax);
+      break;
+    case BOUND_PART:
+      partboundsCPP.set_chopmax(label, set_valmax, valmax);
+      break;
+    case BOUND_PLOT3D:
+      plot3dboundsCPP.set_chopmax(label, set_valmax, valmax);
+      break;
+    case BOUND_SLICE:
+      sliceboundsCPP.set_chopmax(label, set_valmax, valmax);
+      break;
+  }
+}
 
 /* ------------------ SliceBoundsCPP_CB ------------------------ */
 
