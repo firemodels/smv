@@ -490,6 +490,26 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
             valmax = prop_id->dlg_global_valmax;
           }
 #endif
+#ifdef pp_CPPBOUND_DIALOG
+          if(prop_id->setvalmin==PERCENTILE_MIN){
+            valmin = prop_id->percentile_min;
+          }
+          else if(prop_id->setvalmin==SET_MIN){
+            valmin = prop_id->user_min;
+          }
+          else{
+            valmin = prop_id->dlg_global_valmin;
+          }
+          if(prop_id->setvalmax==PERCENTILE_MAX){
+            valmax = prop_id->percentile_max;
+          }
+          else if(prop_id->setvalmax==SET_MAX){
+            valmax = prop_id->user_max;
+          }
+          else{
+            valmax = prop_id->dlg_global_valmax;
+          }
+#endif
           dval = valmax - valmin;
           if(dval<=0.0)dval=1.0;
           prop_id_index = prop_id-part5propinfo;
@@ -764,6 +784,12 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
   int i;
   int ntotal;
 #ifdef pp_OLDBOUND_DIALOG
+#define DOIT
+#endif
+#ifdef pp_CPPBOUND_DIALOG
+#define DOIT
+#endif
+#ifdef DOIT
   float tmin2, tmax2;
 #endif
 
@@ -771,7 +797,7 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
   local_tmin = *ttmin;
   local_tmax = *ttmax;
 #endif
-#ifdef pp_OLDBOUND_DIALOG
+#ifdef DOIT
   tmin2= 1000000000.;
   tmax2=-1000000000.;
   *extreme_min=0;

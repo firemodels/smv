@@ -14082,6 +14082,10 @@ void WriteIniLocal(FILE *fileout){
       fprintf(fileout, " %i %f %i %f %s\n",
         propi->setvalmin, propi->valmin, propi->setvalmax, propi->valmax, propi->label->shortlabel);
 #endif
+#ifdef pp_CPPBOUND_DIALOG
+      fprintf(fileout, " %i %f %i %f %s\n",
+        propi->setvalmin, propi->valmin, propi->setvalmax, propi->valmax, propi->label->shortlabel);
+#endif
     }
   }
   {
@@ -14095,7 +14099,11 @@ void WriteIniLocal(FILE *fileout){
     for(i = 0; i < n3d; i++){
 #ifdef pp_NEWBOUND_DIALOG
       fprintf(fileout, " %i %i %f %i %f %i\n", i + 1, SET_MIN,         p3min_all[i], SET_MAX,         p3max_all[i], plot3d_compute_loaded[i]);
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
+      fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3min_all[i], p3min_all[i], setp3max_all[i], p3max_all[i]);
+#endif
+#ifdef pp_CPPBOUND_DIALOG
       fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3min_all[i], p3min_all[i], setp3max_all[i], p3max_all[i]);
 #endif
     }

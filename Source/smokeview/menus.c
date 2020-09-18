@@ -3000,6 +3000,9 @@ void ReloadAllSliceFiles(void){
 #ifdef pp_OLDBOUND_DIALOG
       load_size+=ReadSlice(             slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #endif
+#ifdef pp_CPPBOUND_DIALOG
+      load_size+=ReadSlice(             slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
+#endif
     }
     file_count++;
   }
@@ -3118,6 +3121,9 @@ void LoadUnloadMenu(int value){
           ReadSliceUseGluiBounds(slicei->file, i, ALL_SLICE_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
 #endif
 #ifdef pp_OLDBOUND_DIALOG
+                       ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
+#endif
+#ifdef pp_CPPBOUND_DIALOG
                        ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
 #endif
         }
@@ -4604,6 +4610,9 @@ void LoadSliceMenu(int value){
 #ifdef pp_OLDBOUND_DIALOG
             load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #endif
+#ifdef pp_CPPBOUND_DIALOG
+            load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
+#endif
           }
           file_count++;
         }
@@ -5001,6 +5010,9 @@ void LoadMultiSliceMenu(int value){
         load_size+=ReadSliceUseGluiBounds(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #endif
 #ifdef pp_OLDBOUND_DIALOG
+        load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
+#endif
+#ifdef pp_CPPBOUND_DIALOG
         load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #endif
       }

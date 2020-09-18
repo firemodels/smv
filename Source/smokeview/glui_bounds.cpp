@@ -73,8 +73,8 @@ bounds_dialog::bounds_dialog(void){
 /* ------------------ setup ------------------------ */
 
 void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_arg, int nbounds_arg, void Callback(int var)){
-  GLUI_Rollout *ROLLOUT_bound, *ROLLOUT_chop;
-  GLUI_Panel *PANEL_chopmin, *PANEL_chopmax, *PANEL_buttons, *PANEL_bound, *PANEL_bound2;
+  GLUI_Rollout *ROLLOUT_bound;
+  GLUI_Panel *PANEL_buttons, *PANEL_bound, *PANEL_bound2;
   GLUI_Panel *PANEL_truncate, *PANEL_truncate_min, *PANEL_truncate_max;
   int i;
 
@@ -2461,7 +2461,6 @@ void GenerateBoundDialogs(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_roll
 
 extern "C" void GluiBoundsSetup(int main_window){
   int i;
-  int nradio;
   int have_part, have_evac;
 
   update_glui_bounds=0;
@@ -2679,6 +2678,10 @@ extern "C" void GluiBoundsSetup(int main_window){
   // ----------------------------------- Boundary ----------------------------------------
 
   if(npatchinfo>0){
+#ifndef pp_CPPBOUND_DIALOG
+    int nradio;
+#endif
+
     glui_active=1;
     ROLLOUT_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,_("Boundary"),false,BOUNDARY_ROLLOUT,BoundRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_bound, glui_bounds);
