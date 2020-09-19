@@ -49,6 +49,7 @@ EXTERNCPP void SetUserMax(int type, char *label, float valmax);
 EXTERNCPP void SetChopMin(int type, char *label, int set_valmin, float valmin);
 EXTERNCPP void SetChopMax(int type, char *label, int set_valmax, float valmax);
 EXTERNCPP void UpdateGluiBounds(void);
+EXTERNCPP void SetLoadedSliceBounds(int *list, int nlist);
 #endif
 #ifdef pp_NEWBOUND_DIALOG
 EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max);

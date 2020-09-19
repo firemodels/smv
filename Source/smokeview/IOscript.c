@@ -1735,6 +1735,10 @@ void ScriptLoadSliceRender(scriptdata *scripti){
     float slice_load_time = 0.0;
     FILE_SIZE total_slice_size = 0.0;
 
+#ifdef pp_CPPBOUND_DIALOG
+    SetLoadedSliceBounds(mslicei->islices, mslicei->nslices);
+#endif
+
     START_TIMER(slice_load_time);
     GLUTSETCURSOR(GLUT_CURSOR_WAIT);
     for(j = 0; j<mslicei->nslices; j++){

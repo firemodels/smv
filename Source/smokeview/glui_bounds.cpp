@@ -243,8 +243,12 @@ int bounds_dialog::set_min(char *label, int set_valmin, float valmin){
 
     boundi = all_bounds+i;
     if(strcmp(boundi->label, label)==0){
-      boundi->set_valmin = set_valmin;
+      boundi->set_valmin                 = set_valmin;
       boundi->valmin[boundi->set_valmin] = valmin;
+      bounds.set_valmin                  = set_valmin;
+      bounds.valmin[boundi->set_valmin]  = valmin;
+      EDIT_valmin->set_float_val(valmin);
+      RADIO_set_valmax->set_int_val(set_valmin);
       return 1;
     }
   }
@@ -280,8 +284,12 @@ int bounds_dialog::set_max(char *label, int set_valmax, float valmax){
 
     boundi = all_bounds+i;
     if(strcmp(boundi->label, label)==0){
-      boundi->set_valmax = set_valmax;
+      boundi->set_valmax                 = set_valmax;
       boundi->valmax[boundi->set_valmax] = valmax;
+      bounds.set_valmax                  = set_valmax;
+      bounds.valmax[boundi->set_valmax]  = valmax;
+      EDIT_valmax->set_float_val(valmax);
+      RADIO_set_valmax->set_int_val(set_valmax);
       return 1;
     }
   }
@@ -555,6 +563,8 @@ extern "C" void SetChopMax(int type, char *label, int set_valmax, float valmax){
 /* ------------------ SliceBoundsCPP_CB ------------------------ */
 
 void SliceBoundsCPP_CB(int var){
+  int ii, last_slice, error;
+
   sliceboundsCPP.CB(var);
   switch(var){
     case BOUND_VAL_TYPE:
@@ -571,8 +581,34 @@ void SliceBoundsCPP_CB(int var){
     case BOUND_ENABLE:
       break;
     case BOUND_UPDATE_COLORS:
+      for(ii = nslice_loaded - 1; ii >= 0; ii--){
+        int i;
+        slicedata *sd;
+
+        i = slice_loaded_list[ii];
+        sd = sliceinfo + i;
+        if(sd->slicefile_labelindex == slicefile_labelindex){
+          last_slice = i;
+          break;
+        }
+      }
+      for(ii = 0; ii < nslice_loaded; ii++){
+        int i;
+        slicedata *sd;
+
+        i = slice_loaded_list[ii];
+        sd = sliceinfo + i;
+        if(sd->slicefile_labelindex == slicefile_labelindex){
+          int set_slicecolor;
+  
+          set_slicecolor = DEFER_SLICECOLOR;
+          if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
+          ReadSlice("", i, ALL_SLICE_FRAMES, NULL, RESETBOUNDS, set_slicecolor, &error);
+        }
+      }
       break;
     case BOUND_RELOAD_DATA:
+      ReloadAllSliceFiles();
       break;
   }
 }

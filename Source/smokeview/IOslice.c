@@ -5232,7 +5232,13 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
      // convert slice data into color indices
 
   if(sd->compression_type == UNCOMPRESSED){
+#ifdef pp_CPPBOUND_DIALOG
+    int set_valmin, set_valmax;
+
+    GetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
+#else
     GetSliceDataBounds(sd, &qmin, &qmax);
+#endif
     if(nzoneinfo>0&&strcmp(sd->label.shortlabel, "TEMP")==0){
       slice_temp_bounds_defined = 1;
       if(zone_temp_bounds_defined==0){

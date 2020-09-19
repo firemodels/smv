@@ -2639,7 +2639,6 @@ void CompressMenu(int value){
 }
 #endif
 
-
 /* ------------------ IniSubMenu ------------------------ */
 
 void IniSubMenu(int value){
@@ -4536,6 +4535,14 @@ void LoadSliceMenu(int value){
   if(value==MENU_DUMMY)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
+#ifdef pp_CPPBOUND_DIALOG
+    {
+      int list[1], nlist=1;
+
+      list[0] = value;
+      SetLoadedSliceBounds(list, nlist);
+    }
+#endif
     LoadSlicei(SET_SLICECOLOR,value, ALL_SLICE_FRAMES, NULL);
   }
   else{
@@ -4760,6 +4767,64 @@ void LoadMultiVSliceMenu(int value){
   }
 }
 
+/* ------------------ SetLoadedSliceBounds ------------------------ */
+
+#ifdef pp_CPPBOUND_DIALOG
+void SetLoadedSliceBounds(int *list, int nlist){
+  int set_valmin, set_valmax;
+  float valmin_dlg, valmax_dlg;
+  float valmin, valmax;
+  char *label;
+  slicedata *slicei;
+  int i;
+
+  slicei = sliceinfo+list[0];
+  label = slicei->label.shortlabel;
+
+  valmin = 1.0;
+  valmax = 0.0;
+  if(list==NULL)nlist=0;
+  for(i = 0; i<nlist; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+list[i];
+    if(valmin>valmax){
+      valmin = slicei->file_min;
+      valmax = slicei->file_max;
+    }
+    else{
+      valmin = MIN(valmin, slicei->file_min);
+      valmax = MAX(valmax, slicei->file_max);
+    }
+  }
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    if(slicei->loaded==0)continue;
+    if(strcmp(slicei->label.shortlabel,label)!=0)continue;
+    if(valmin>valmax){
+      valmin = slicei->file_min;
+      valmax = slicei->file_max;
+    }
+    else{
+      valmin = MIN(valmin, slicei->file_min);
+      valmax = MAX(valmax, slicei->file_max);
+    }
+  }
+  if(valmin<=valmax){
+    GetMinMax(BOUND_SLICE, label, &set_valmin, &valmin_dlg, &set_valmax, &valmax_dlg);
+    if(set_valmin!=BOUND_LOADED_MIN){
+      valmin = valmin_dlg;
+    }
+    if(set_valmax!=BOUND_LOADED_MAX){
+      valmax = valmax_dlg;
+    }
+    SetMinMax(BOUND_SLICE, label, set_valmin, valmin, set_valmax, valmax);
+  }
+}
+#endif
+
 /* ------------------ LoadAllMSlices ------------------------ */
 
 FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
@@ -4770,6 +4835,7 @@ FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
 #endif
   FILE_SIZE file_size = 0;
   int file_count=0;
+  float valmin, valmax;
 
   START_TIMER(load_time);
 #ifdef pp_SLICE_BUFFER
@@ -4787,6 +4853,11 @@ FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
   PRINT_LOADTIMES(file_count, (float)file_size, load_time);
   START_TIMER(process_time);
 #endif
+
+#ifdef pp_CPPBOUND_DIALOG
+  SetLoadedSliceBounds(mslicei->islices, mslicei->nslices);
+#endif
+
   file_count = 0;
   file_size = 0;
   for(i = 0; i < mslicei->nslices; i++){
