@@ -11486,7 +11486,7 @@ int ReadIni2(char *inifile, int localfile){
       strcpy(buffer2, "");
       sscanf(buffer, "%i %f %i %f %s", &set_valmin, &valmin, &set_valmax, &valmax, buffer2);
 #ifdef pp_OLDBOUND_DIALOG
-      if(setvalmin==1||setvalmax==1){
+      if(set_valmin==1||set_valmax==1){
         research_mode = 0;
         research_mode_override = 0;
         update_research_mode = 1;
