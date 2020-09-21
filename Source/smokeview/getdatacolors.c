@@ -836,20 +836,18 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
   int i;
   int ntotal;
 #ifdef pp_OLDBOUND_DIALOG
-#define DOIT
-#endif
-#ifdef pp_CPPBOUND_DIALOG
-#define DOIT
-#endif
-#ifdef DOIT
   float tmin2, tmax2;
 #endif
 
+#ifdef pp_CPPBOUND_DIALOG
+  local_tmin = *ttmin;
+  local_tmax = *ttmax;
+#endif
 #ifdef pp_NEWBOUND_DIALOG
   local_tmin = *ttmin;
   local_tmax = *ttmax;
 #endif
-#ifdef DOIT
+#ifdef pp_OLDBOUND_DIALOG
   tmin2= 1000000000.;
   tmax2=-1000000000.;
   *extreme_min=0;

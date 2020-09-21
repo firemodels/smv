@@ -31,6 +31,10 @@ int Plot3dCompare( const void *arg1, const void *arg2 ){
 void  UpdatePlot3DColors(int ifile, int *errorcode){
   int nn, error;
 
+#ifdef pp_CPPBOUND_DIALOG
+  int num;
+  GetMinMaxAll(BOUND_PLOT3D, setp3min_all, p3min_all, setp3max_all, p3max_all, &num);
+#endif
   for(nn = 0; nn < numplot3dvars; nn++){
     int n;
 

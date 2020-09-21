@@ -5127,12 +5127,33 @@ void Plot3DListMenu(int value){
     fprintf(scriptoutstream,"LOADPLOT3D\n");
     fprintf(scriptoutstream," %f\n",plot3dtimelist[value]);
   }
+
+#ifdef pp_CPPBOUND_DIALOG
+  int *list=NULL, nlist = 0;
+  NewMemory((void **)&list, nplot3dinfo*sizeof(int));
+  for(i = 0; i<nplot3dinfo; i++){
+    plot3di = plot3dinfo+i;
+    if(ABS(plot3di->time-plot3dtimelist[value])<0.5){
+      list[nlist++] = i;
+    }
+  }
+  SetLoadedPlot3DBounds(list, nlist);
+#endif
   for(i=0;i<nplot3dinfo;i++){
     plot3di = plot3dinfo + i;
     if(ABS(plot3di->time-plot3dtimelist[value])<0.5){
+#ifdef pp_CPPBOUND_DIALOG
+      int errorcode;
+
+      ReadPlot3D(plot3di->file, i, LOAD, &errorcode);
+#else
       LoadPlot3dMenu(i);
+#endif
     }
   }
+#ifdef pp_CPPBOUND_DIALOG
+  FREEMEMORY(list);
+#endif
 }
 
 /* ------------------ UpdateMenu ------------------------ */
@@ -5162,6 +5183,9 @@ void LoadPlot3dMenu(int value){
         plot3dinfo[value].blocknumber+1,plot3dinfo[value].time);
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
+#ifdef pp_CPPBOUND_DIALOG
+      SetLoadedPlot3DBounds(&value, 1);
+#endif
       ReadPlot3D(plot3dfile,value,LOAD,&errorcode);
     }
   }
@@ -5331,9 +5355,6 @@ void LoadBoundaryMenu(int value){
       fprintf(scriptoutstream," %s\n",patchj->label.longlabel);
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
-#ifdef pp_CPPBOUND_DIALOG
-      int *list=NULL, nlist=0;
-#endif
       int file_count=0;
       float load_time=0.0, load_size=0.0;
 
@@ -5347,28 +5368,19 @@ void LoadBoundaryMenu(int value){
         patchi->finalize = 0;
       }
 #ifdef pp_CPPBOUND_DIALOG
+      int *list=NULL, nlist=0;
+      NewMemory((void **)&list,npatchinfo*sizeof(int));
+      nlist=0;
       for(i = 0; i<npatchinfo;i++){
         patchdata *patchi;
 
         patchi = patchinfo+i;
         if(strcmp(patchi->label.longlabel, patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
-          nlist++;
+          list[nlist++]=i;
         }
       }
-      if(nlist>0){
-        NewMemory((void **)&list,nlist*sizeof(int));
-        nlist=0;
-        for(i = 0; i<npatchinfo;i++){
-          patchdata *patchi;
-
-          patchi = patchinfo+i;
-          if(strcmp(patchi->label.longlabel, patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
-            list[nlist++]=i;
-          }
-        }
-        SetLoadedPatchBounds(list, nlist);
-        FREEMEMORY(list);
-      }
+      SetLoadedPatchBounds(list, nlist);
+      FREEMEMORY(list);
 #endif
       for(i = npatchinfo-1; i>=0; i--){
         patchdata *patchi;

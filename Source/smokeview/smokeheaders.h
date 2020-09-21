@@ -42,8 +42,12 @@ EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, flo
 EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(void);
 #ifdef pp_CPPBOUND_DIALOG
+EXTERNCPP void SetValTypeIndex(int type, int valtype_index);
+EXTERNCPP int GetValType(int type);
 EXTERNCPP void GetMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax);
+EXTERNCPP void GetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int *nall);
 EXTERNCPP void SetMinMax(int type, char *label, int set_valmin, float valmin, int set_valmax, float valmax);
+EXTERNCPP void SetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int nall);
 EXTERNCPP void SetUserMin(int type, char *label, float valmin);
 EXTERNCPP void SetUserMax(int type, char *label, float valmax);
 EXTERNCPP void SetChopMin(int type, char *label, int set_valmin, float valmin);
@@ -51,6 +55,7 @@ EXTERNCPP void SetChopMax(int type, char *label, int set_valmax, float valmax);
 EXTERNCPP void UpdateGluiBounds(void);
 EXTERNCPP void SetLoadedSliceBounds(int *list, int nlist);
 EXTERNCPP void SetLoadedPatchBounds(int *list, int nlist);
+EXTERNCPP void SetLoadedPlot3DBounds(int *list, int nlist);
 #endif
 #ifdef pp_NEWBOUND_DIALOG
 EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max);

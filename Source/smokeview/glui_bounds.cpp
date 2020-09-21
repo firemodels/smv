@@ -48,9 +48,15 @@ class bounds_dialog{
 
   int get_min(char *label, int *set_valmin, float *valmin);
   int get_max(char *label, int *set_valmax, float *valmax);
+  void get_min_all(int *set_valmin, float *valmin, int *nvals);
+  void get_max_all(int *set_valmax, float *valmax, int *nvals);
   int set_min(char *label, int set_valmin, float valmin);
   int set_max(char *label, int set_valmax, float valmax);
+  void set_min_all(int *set_valmin, float *valmin, int nvals);
+  void set_max_all(int *set_valmax, float *valmax, int nvals);
   int set_valtype(char *label);
+  void set_valtype_index(int index);
+  int get_valtype(void);
   int set_user_min(char *label, float valmin);
   int set_user_max(char *label, float valmax);
   int set_chopmin(char *label, int set_valmin, float valmin);
@@ -164,6 +170,29 @@ int bounds_dialog::set_valtype(char *label){
   return 0;
 }
 
+/* ------------------ set_valtype_index ------------------------ */
+
+void bounds_dialog::set_valtype_index(int index){
+  int i;
+  cpp_boundsdata *boundi;
+
+  i = CLAMP(index, 0, nall_bounds-1);
+
+  boundi = all_bounds+i;
+  boundi->set_valtype = i;
+  RADIO_set_valtype->set_int_val(i);
+  CB(BOUND_VAL_TYPE);
+}
+
+/* ------------------ get_valtype ------------------------ */
+
+int bounds_dialog::get_valtype(void){
+  cpp_boundsdata *boundi;
+
+    boundi = all_bounds+bounds.set_valtype;
+    return bounds.set_valtype;
+}
+
 /* ------------------ set_user_min ------------------------ */
 
 int bounds_dialog::set_user_min(char *label, float valmin){
@@ -251,6 +280,66 @@ int bounds_dialog::get_min(char *label, int *set_valmin, float *valmin){
   }
   *valmin = 1.0;
   return 0;
+}
+
+/* ------------------ get_min_all ------------------------ */
+
+void bounds_dialog::get_min_all(int *set_valmin, float *valmin, int *nvals){
+  int i;
+
+  *nvals = nall_bounds;
+  for(i = 0; i<nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds+i;
+    set_valmin[i] = boundi->set_valmin;
+    valmin[i] = boundi->valmin[boundi->set_valmin];
+  }
+}
+
+/* ------------------ get_max_all ------------------------ */
+
+void bounds_dialog::get_max_all(int *set_valmax, float *valmax, int *nvals){
+  int i;
+
+  *nvals = nall_bounds;
+  for(i = 0; i<nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds+i;
+    set_valmax[i] = boundi->set_valmax;
+    valmax[i] = boundi->valmax[boundi->set_valmax];
+  }
+}
+
+/* ------------------ set_min_all ------------------------ */
+
+void bounds_dialog::set_min_all(int *set_valmin, float *valmin, int nvals){
+  int i;
+
+  nvals = MIN(nall_bounds, nvals);
+  for(i = 0; i<nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds+i;
+    boundi->set_valmin = set_valmin[i];
+    boundi->valmin[boundi->set_valmin] = valmin[i];
+  }
+}
+
+/* ------------------ set_max_all ------------------------ */
+
+void bounds_dialog::set_max_all(int *set_valmax, float *valmax, int nvals){
+  int i;
+
+  nvals = MIN(nall_bounds, nvals);
+  for(i = 0; i<nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds+i;
+    boundi->set_valmax = set_valmax[i];
+    boundi->valmax[boundi->set_valmax] = valmax[i];
+  }
 }
 
 /* ------------------ set_min ------------------------ */
@@ -458,6 +547,45 @@ extern "C" void UpdateGluiBounds(void){
   sliceboundsCPP.CB(BOUND_SETCHOPMAX);
 }
 
+/* ------------------ GetValtype ------------------------ */
+
+extern "C" int GetValType(int type){
+  switch(type){
+    case BOUND_PATCH:
+      return patchboundsCPP.get_valtype();
+      break;
+    case BOUND_PART:
+      return partboundsCPP.get_valtype();
+      break;
+    case BOUND_PLOT3D:
+      return plot3dboundsCPP.get_valtype();
+      break;
+    case BOUND_SLICE:
+      return sliceboundsCPP.get_valtype();
+      break;
+  }
+  return 0;
+}
+
+/* ------------------ SetValTypeIndex ------------------------ */
+
+extern "C" void SetValTypeIndex(int type, int valtype_index){
+  switch(type){
+    case BOUND_PATCH:
+      patchboundsCPP.set_valtype_index(valtype_index);
+      break;
+    case BOUND_PART:
+      partboundsCPP.set_valtype_index(valtype_index);
+      break;
+    case BOUND_PLOT3D:
+      plot3dboundsCPP.set_valtype_index(valtype_index);
+      break;
+    case BOUND_SLICE:
+      sliceboundsCPP.set_valtype_index(valtype_index);
+      break;
+  }
+}
+
 /* ------------------ GetMinMax ------------------------ */
 
 extern "C" void GetMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax){
@@ -485,6 +613,29 @@ extern "C" void GetMinMax(int type, char *label, int *set_valmin, float *valmin,
   }
 }
 
+/* ------------------ GetMinMaxAll ------------------------ */
+
+extern "C" void GetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int *nall){
+  switch(type){
+    case BOUND_PATCH:
+      patchboundsCPP.get_min_all(set_valmin, valmin, nall);
+      patchboundsCPP.get_max_all(set_valmax, valmax, nall);
+      break;
+    case BOUND_PART:
+      partboundsCPP.get_min_all(set_valmin, valmin, nall);
+      partboundsCPP.get_max_all(set_valmax, valmax, nall);
+      break;
+    case BOUND_PLOT3D:
+      plot3dboundsCPP.get_min_all(set_valmin, valmin, nall);
+      plot3dboundsCPP.get_max_all(set_valmax, valmax, nall);
+      break;
+    case BOUND_SLICE:
+      sliceboundsCPP.get_min_all(set_valmin, valmin, nall);
+      sliceboundsCPP.get_max_all(set_valmax, valmax, nall);
+      break;
+  }
+}
+
 /* ------------------ SetMinMax ------------------------ */
 
 extern "C" void SetMinMax(int type, char *label, int set_valmin, float valmin, int set_valmax, float valmax){
@@ -504,6 +655,29 @@ extern "C" void SetMinMax(int type, char *label, int set_valmin, float valmin, i
     case BOUND_SLICE:
       sliceboundsCPP.set_min(label, set_valmin, valmin);
       sliceboundsCPP.set_max(label, set_valmax, valmax);
+      break;
+  }
+}
+
+/* ------------------ SetMinMaxAll ------------------------ */
+
+extern "C" void SetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int nall){
+  switch(type){
+    case BOUND_PATCH:
+      patchboundsCPP.set_min_all(set_valmin, valmin, nall);
+      patchboundsCPP.set_max_all(set_valmax, valmax, nall);
+      break;
+    case BOUND_PART:
+      partboundsCPP.set_min_all(set_valmin, valmin, nall);
+      partboundsCPP.set_max_all(set_valmax, valmax, nall);
+      break;
+    case BOUND_PLOT3D:
+      plot3dboundsCPP.set_min_all(set_valmin, valmin, nall);
+      plot3dboundsCPP.set_max_all(set_valmax, valmax, nall);
+      break;
+    case BOUND_SLICE:
+      sliceboundsCPP.set_min_all(set_valmin, valmin, nall);
+      sliceboundsCPP.set_max_all(set_valmax, valmax, nall);
       break;
   }
 }
@@ -642,9 +816,14 @@ void SliceBoundsCPP_CB(int var){
 /* ------------------ Plot3DBoundsCPP_CB ------------------------ */
 
 void Plot3DBoundsCPP_CB(int var){
+  int i;
+
   plot3dboundsCPP.CB(var);
   switch(var){
     case BOUND_VAL_TYPE:
+      plotn = GetValType(BOUND_PLOT3D)+1;
+      UpdateAllPlotSlices();
+      break;
     case BOUND_VALMIN:
     case BOUND_VALMAX:
     case BOUND_SETVALMIN:
@@ -658,8 +837,13 @@ void Plot3DBoundsCPP_CB(int var){
     case BOUND_ENABLE:
       break;
     case BOUND_UPDATE_COLORS:
+      UpdateAllPlot3DColors();
       break;
     case BOUND_RELOAD_DATA:
+      for(i=0;i<nplot3dinfo;i++){
+        if(plot3dinfo[i].loaded==0)continue;
+        LoadPlot3dMenu(i);
+      }
       break;
   }
 }
@@ -862,6 +1046,77 @@ void SetLoadedPatchBounds(int *list, int nlist){
   }
 }
 
+/* ------------------ SetLoadedPlot3DBounds ------------------------ */
+
+void SetLoadedPlot3DBounds(int *list, int nlist){
+  float *valmin_dlg, *valmax_dlg, *valmin, *valmax;
+  int *set_valmin, *set_valmax, nall;
+  int i,j;
+
+  NewMemory((void **)&valmin,     MAXPLOT3DVARS*sizeof(float));
+  NewMemory((void **)&valmax,     MAXPLOT3DVARS*sizeof(float));
+  NewMemory((void **)&valmin_dlg, MAXPLOT3DVARS*sizeof(float));
+  NewMemory((void **)&valmax_dlg, MAXPLOT3DVARS*sizeof(float));
+  NewMemory((void **)&set_valmin, MAXPLOT3DVARS*sizeof(int));
+  NewMemory((void **)&set_valmax, MAXPLOT3DVARS*sizeof(int));
+
+  for(j = 0; j<MAXPLOT3DVARS; j++){
+    valmin[j] = 1.0;
+    valmax[j] = 0.0;
+    if(list==NULL)nlist = 0;
+    for(i = 0; i<nlist; i++){
+      float *file_min, *file_max;
+      plot3ddata *plot3di;
+
+      plot3di = plot3dinfo+list[i];
+      file_min = plot3di->file_min;
+      file_max = plot3di->file_max;
+      if(valmin[j]>valmax[j]){
+        valmin[j] = file_min[j];
+        valmax[j] = file_max[j];
+      }
+      else{
+        valmin[j] = MIN(valmin[j], file_min[j]);
+        valmax[j] = MAX(valmax[j], file_max[j]);
+      }
+    }
+
+    for(i = 0; i<nplot3dinfo; i++){
+      float *file_min, *file_max;
+      plot3ddata *plot3di;
+
+      plot3di = plot3dinfo+i;
+      if(plot3di->loaded==0)continue;
+      file_min = plot3di->file_min;
+      file_max = plot3di->file_max;
+      if(valmin[j]>valmax[j]){
+        valmin[j] = file_min[j];
+        valmax[j] = file_max[j];
+      }
+      else{
+        valmin[j] = MIN(valmin[j], file_min[j]);
+        valmax[j] = MAX(valmax[j], file_max[j]);
+      }
+    }
+  }
+
+  GetMinMaxAll(BOUND_PLOT3D, set_valmin, valmin_dlg, set_valmax, valmax_dlg, &nall);
+  for(i=0;i<nall;i++){
+    if(set_valmin[i]!=BOUND_LOADED_MIN){
+      valmin[i] = valmin_dlg[i];
+    }
+    if(set_valmax[i]!=BOUND_LOADED_MAX){
+      valmax[i] = valmax_dlg[i];
+    }
+  }
+  SetMinMaxAll(BOUND_PLOT3D, set_valmin, valmin, set_valmax, valmax, nall);
+  FREEMEMORY(valmin);
+  FREEMEMORY(valmax);
+  FREEMEMORY(set_valmin);
+  FREEMEMORY(set_valmax);
+  FREEMEMORY(valmin_dlg);
+  FREEMEMORY(valmax_dlg);
+}
 #endif
 
 int cb_up_rgb[3], cb_down_rgb[3];
@@ -4456,6 +4711,9 @@ extern "C" void UpdateChar(void){
 extern "C" void UpdatePlot3dListIndex(void){
   int i;
 
+#ifdef pp_CPPBOUND_DIALOG
+  SetValTypeIndex(BOUND_PLOT3D, plotn-1);
+#else
   if(RADIO_p3==NULL)return;
   i = RADIO_p3->get_int_val();
   if(i!=plotn-1){
@@ -4492,6 +4750,7 @@ extern "C" void UpdatePlot3dListIndex(void){
   }
   UpdateChopColors();
   UpdateGlui();
+#endif
 }
 
 /* ------------------ GetColorTableIndex ------------------------ */
@@ -4795,13 +5054,16 @@ extern "C" void UpdateGluiStreakValue(float rvalue){
 /* ------------------ IncrementPartPropIndex ------------------------ */
 
 extern "C" void IncrementPartPropIndex(void){
-  if (npart5prop > 0) {
+#ifdef pp_CPPBOUND_DIALOG
+#else
+  if(npart5prop > 0){
     ipart5prop++;
     if (ipart5prop > npart5prop-1)ipart5prop = 0;
     PartBoundCB(FILETYPE_INDEX);
     ParticlePropShowMenu(ipart5prop);    
     if(RADIO_part5!=NULL)RADIO_part5->set_int_val(ipart5prop);
   }
+#endif
 }
 
 /* ------------------ PartBoundCB ------------------------ */
