@@ -50,6 +50,7 @@ class bounds_dialog{
   int get_max(char *label, int *set_valmax, float *valmax);
   int set_min(char *label, int set_valmin, float valmin);
   int set_max(char *label, int set_valmax, float valmax);
+  int set_valtype(char *label);
   int set_user_min(char *label, float valmin);
   int set_user_max(char *label, float valmax);
   int set_chopmin(char *label, int set_valmin, float valmin);
@@ -142,6 +143,25 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   Callback(BOUND_SETCHOPMIN);
   Callback(BOUND_SETCHOPMAX);
   update_ini = 1;
+}
+
+/* ------------------ set_valtype ------------------------ */
+
+int bounds_dialog::set_valtype(char *label){
+  int i;
+
+  for(i = 0; i<nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds+i;
+    if(strcmp(boundi->label, label)==0){
+      boundi->set_valtype = i;
+      RADIO_set_valtype->set_int_val(i);
+      CB(BOUND_VAL_TYPE);
+      return 1;
+    }
+  }
+  return 0;
 }
 
 /* ------------------ set_user_min ------------------------ */
@@ -443,18 +463,22 @@ extern "C" void UpdateGluiBounds(void){
 extern "C" void GetMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax){
   switch(type){
     case BOUND_PATCH:
+      patchboundsCPP.set_valtype(label);
       patchboundsCPP.get_min(label, set_valmin, valmin);
       patchboundsCPP.get_max(label, set_valmax, valmax);
       break;
     case BOUND_PART:
+      partboundsCPP.set_valtype(label);
       partboundsCPP.get_min(label, set_valmin, valmin);
       partboundsCPP.get_max(label, set_valmax, valmax);
       break;
     case BOUND_PLOT3D:
+      plot3dboundsCPP.set_valtype(label);
       plot3dboundsCPP.get_min(label, set_valmin, valmin);
       plot3dboundsCPP.get_max(label, set_valmax, valmax);
       break;
     case BOUND_SLICE:
+      sliceboundsCPP.set_valtype(label);
       sliceboundsCPP.get_min(label, set_valmin, valmin);
       sliceboundsCPP.get_max(label, set_valmax, valmax);
       break;
@@ -581,6 +605,7 @@ void SliceBoundsCPP_CB(int var){
     case BOUND_ENABLE:
       break;
     case BOUND_UPDATE_COLORS:
+      SetLoadedSliceBounds(NULL, 0);
       for(ii = nslice_loaded - 1; ii >= 0; ii--){
         int i;
         slicedata *sd;
@@ -608,6 +633,7 @@ void SliceBoundsCPP_CB(int var){
       }
       break;
     case BOUND_RELOAD_DATA:
+      SetLoadedSliceBounds(NULL, 0);
       ReloadAllSliceFiles();
       break;
   }
@@ -666,6 +692,11 @@ void PartBoundsCPP_CB(int var){
 /* ------------------ PatchBoundsCPP_CB ------------------------ */
 
 void PatchBoundsCPP_CB(int var){
+#ifdef pp_CPPBOUND_DIALOG
+  int i, *list=NULL, nlist=0;
+  char *label=NULL;
+#endif
+
   patchboundsCPP.CB(var);
   switch(var){
     case BOUND_VAL_TYPE:
@@ -682,11 +713,155 @@ void PatchBoundsCPP_CB(int var){
     case BOUND_ENABLE:
       break;
     case BOUND_UPDATE_COLORS:
+      SetLoadedPatchBounds(NULL, 0);
+      UpdateAllBoundaryColors();
       break;
     case BOUND_RELOAD_DATA:
+      SetLoadedPatchBounds(NULL, 0);
+      for(i = 0;i < npatchinfo;i++){
+        patchdata *patchi;
+        int errorcode;
+
+        patchi = patchinfo + i;
+        if(patchi->loaded == 0)continue;
+        ReadBoundary(i,LOAD,&errorcode);
+      }
       break;
   }
 }
+
+/* ------------------ SetLoadedSliceBounds ------------------------ */
+
+void SetLoadedSliceBounds(int *list, int nlist){
+  int set_valmin, set_valmax;
+  float valmin_dlg, valmax_dlg;
+  float valmin, valmax;
+  char *label;
+  slicedata *slicei;
+  int i;
+
+  if(list==NULL){
+    for(i = 0; i<nsliceinfo; i++){
+      slicei = sliceinfo+i;
+      if(slicei->loaded==1&&slicei->display==1){
+        label = slicei->label.shortlabel;
+        break;
+      }
+    }
+  }
+  else{
+    slicei = sliceinfo+list[0];
+    label = slicei->label.shortlabel;
+  }
+  if(label==NULL)return;
+
+  valmin = 1.0;
+  valmax = 0.0;
+  if(list==NULL)nlist = 0;
+  for(i = 0; i<nlist; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+list[i];
+    if(valmin>valmax){
+      valmin = slicei->file_min;
+      valmax = slicei->file_max;
+    }
+    else{
+      valmin = MIN(valmin, slicei->file_min);
+      valmax = MAX(valmax, slicei->file_max);
+    }
+  }
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    if(slicei->loaded==0)continue;
+    if(strcmp(slicei->label.shortlabel, label)!=0)continue;
+    if(valmin>valmax){
+      valmin = slicei->file_min;
+      valmax = slicei->file_max;
+    }
+    else{
+      valmin = MIN(valmin, slicei->file_min);
+      valmax = MAX(valmax, slicei->file_max);
+    }
+  }
+  if(valmin<=valmax){
+    GetMinMax(BOUND_SLICE, label, &set_valmin, &valmin_dlg, &set_valmax, &valmax_dlg);
+    if(set_valmin!=BOUND_LOADED_MIN){
+      valmin = valmin_dlg;
+    }
+    if(set_valmax!=BOUND_LOADED_MAX){
+      valmax = valmax_dlg;
+    }
+    SetMinMax(BOUND_SLICE, label, set_valmin, valmin, set_valmax, valmax);
+  }
+}
+
+/* ------------------ SetLoadedPatchBounds ------------------------ */
+
+void SetLoadedPatchBounds(int *list, int nlist){
+  int set_valmin, set_valmax;
+  float valmin_dlg, valmax_dlg;
+  float valmin, valmax;
+  char *label=NULL;
+  patchdata *patchi;
+  int i;
+
+  if(list==NULL){
+    for(i = 0; i<npatchinfo; i++){
+      patchi = patchinfo+i;
+      if(patchi->loaded==1&&patchi->display==1){
+        label = patchi->label.shortlabel;
+        break;
+      }
+    }
+  }
+  else{
+    patchi = patchinfo+list[0];
+    label = patchi->label.shortlabel;
+  }
+  if(label==NULL)return;
+
+  valmin = 1.0;
+  valmax = 0.0;
+  if(list==NULL)nlist = 0;
+  for(i = 0; i<nlist; i++){
+    patchi = patchinfo+list[i];
+    if(valmin>valmax){
+      valmin = patchi->file_min;
+      valmax = patchi->file_max;
+    }
+    else{
+      valmin = MIN(valmin, patchi->file_min);
+      valmax = MAX(valmax, patchi->file_max);
+    }
+  }
+  for(i = 0; i<npatchinfo; i++){
+    patchi = patchinfo+i;
+    if(patchi->loaded==0)continue;
+    if(strcmp(patchi->label.shortlabel, label)!=0)continue;
+    if(valmin>valmax){
+      valmin = patchi->file_min;
+      valmax = patchi->file_max;
+    }
+    else{
+      valmin = MIN(valmin, patchi->file_min);
+      valmax = MAX(valmax, patchi->file_max);
+    }
+  }
+  if(valmin<=valmax){
+    GetMinMax(BOUND_PATCH, label, &set_valmin, &valmin_dlg, &set_valmax, &valmax_dlg);
+    if(set_valmin!=BOUND_LOADED_MIN){
+      valmin = valmin_dlg;
+    }
+    if(set_valmax!=BOUND_LOADED_MAX){
+      valmax = valmax_dlg;
+    }
+    SetMinMax(BOUND_PATCH, label, set_valmin, valmin, set_valmax, valmax);
+  }
+}
+
 #endif
 
 int cb_up_rgb[3], cb_down_rgb[3];

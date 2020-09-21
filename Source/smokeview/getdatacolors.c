@@ -103,7 +103,7 @@ void GetBoundaryColors(float *t, int nt, unsigned char *it,
 
 /* ------------------ GetBoundaryColors2 ------------------------ */
 
-void GetBoundaryColors2(float *t, int nt, unsigned char *it,
+void GetBoundaryColors2(patchdata *patchi, float *t, int nt, unsigned char *it,
               int settmin, float *ttmin, int settmax, float *ttmax,
               float *tmin_arg, float *tmax_arg,
               int ndatalevel,
@@ -114,6 +114,14 @@ void GetBoundaryColors2(float *t, int nt, unsigned char *it,
   int itt;
   float local_tmin, local_tmax, tmin2, tmax2;
 
+
+#ifdef pp_CPPBOUND_DIALOG
+  int set_valmin, set_valmax;
+  char *label;
+
+  label = patchi->label.shortlabel;
+  GetMinMax(BOUND_PATCH, label, &set_valmin, ttmin, &set_valmax, ttmax);
+#else
   tmin2 = *t;
   tmax2 = *t;
 
@@ -131,6 +139,7 @@ void GetBoundaryColors2(float *t, int nt, unsigned char *it,
   if(settmax!=SET_MAX){
     *ttmax=tmax2;
   }
+#endif
   local_tmin = *ttmin;
   local_tmax = *ttmax;
 
@@ -264,6 +273,13 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
   int itt;
   float new_tmin, new_tmax, tmin2, tmax2;
 
+#ifdef pp_CPPBOUND_DIALOG
+  int set_valmin, set_valmax;
+  char *label;
+
+  label = patchi->label.shortlabel;
+  GetMinMax(BOUND_PATCH, label, &set_valmin, ttmin, &set_valmax, ttmax);
+#else
   UpdateBoundaryBounds(patchi);
 
   CheckMemory;
@@ -286,6 +302,7 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
   if(settmax!=SET_MAX){
     *ttmax=tmax2;
   }
+#endif
   new_tmin = *ttmin;
   new_tmax = *ttmax;
 
@@ -338,9 +355,9 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
 int UpdateAllBoundaryColors(void){
   int i, return_val;
 
-  // return_val=-1   no boundary files are loded
-  // return_val= 0   some boundarey files are loaded but no data in mesh data structures
-  // return_val= 1   data in mesh datea structures
+  // return_val=-1   no boundary files are loaded
+  // return_val= 0   some boundary files are loaded but no data in mesh data structures
+  // return_val= 1   data in mesh data structures
 
   return_val = -1;
   for(i = 0; i < nmeshes; i++){
@@ -355,6 +372,41 @@ int UpdateAllBoundaryColors(void){
     break;
   }
   if(return_val == -1)return return_val;
+
+
+#ifdef pp_CPPBOUND_DIALOG
+  int *list = NULL, nlist = 0;
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+    patchdata *patchi;
+    int npatchvals;
+    float patchmin_global, patchmax_global;
+
+    meshi = meshinfo+i;
+    if(meshi->patchval==NULL||meshi->cpatchval==NULL||meshi->patchfilenum<0)continue;
+    patchi = patchinfo+meshi->patchfilenum;
+    if(patchi->loaded==0)continue;
+    nlist++;
+  }
+  if(nlist>0){
+    NewMemory((void **)&list, nlist*sizeof(int));
+    nlist = 0;
+    for(i = 0; i<nmeshes; i++){
+      meshdata *meshi;
+      patchdata *patchi;
+      int npatchvals;
+      float patchmin_global, patchmax_global;
+
+      meshi = meshinfo+i;
+      if(meshi->patchval==NULL||meshi->cpatchval==NULL||meshi->patchfilenum<0)continue;
+      patchi = patchinfo+meshi->patchfilenum;
+      if(patchi->loaded==0)continue;
+      list[nlist++]=i;
+    }
+    SetLoadedPatchBounds(list, nlist);
+    FREEMEMORY(list);
+  }
+#endif
 
   for(i = 0; i < nmeshes; i++){
     meshdata *meshi;

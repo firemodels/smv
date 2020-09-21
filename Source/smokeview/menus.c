@@ -4536,12 +4536,7 @@ void LoadSliceMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
 #ifdef pp_CPPBOUND_DIALOG
-    {
-      int list[1], nlist=1;
-
-      list[0] = value;
-      SetLoadedSliceBounds(list, nlist);
-    }
+    SetLoadedSliceBounds(&value, 1);
 #endif
     LoadSlicei(SET_SLICECOLOR,value, ALL_SLICE_FRAMES, NULL);
   }
@@ -4766,64 +4761,6 @@ void LoadMultiVSliceMenu(int value){
     }
   }
 }
-
-/* ------------------ SetLoadedSliceBounds ------------------------ */
-
-#ifdef pp_CPPBOUND_DIALOG
-void SetLoadedSliceBounds(int *list, int nlist){
-  int set_valmin, set_valmax;
-  float valmin_dlg, valmax_dlg;
-  float valmin, valmax;
-  char *label;
-  slicedata *slicei;
-  int i;
-
-  slicei = sliceinfo+list[0];
-  label = slicei->label.shortlabel;
-
-  valmin = 1.0;
-  valmax = 0.0;
-  if(list==NULL)nlist=0;
-  for(i = 0; i<nlist; i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo+list[i];
-    if(valmin>valmax){
-      valmin = slicei->file_min;
-      valmax = slicei->file_max;
-    }
-    else{
-      valmin = MIN(valmin, slicei->file_min);
-      valmax = MAX(valmax, slicei->file_max);
-    }
-  }
-  for(i = 0; i<nsliceinfo; i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo+i;
-    if(slicei->loaded==0)continue;
-    if(strcmp(slicei->label.shortlabel,label)!=0)continue;
-    if(valmin>valmax){
-      valmin = slicei->file_min;
-      valmax = slicei->file_max;
-    }
-    else{
-      valmin = MIN(valmin, slicei->file_min);
-      valmax = MAX(valmax, slicei->file_max);
-    }
-  }
-  if(valmin<=valmax){
-    GetMinMax(BOUND_SLICE, label, &set_valmin, &valmin_dlg, &set_valmax, &valmax_dlg);
-    if(set_valmin!=BOUND_LOADED_MIN){
-      valmin = valmin_dlg;
-    }
-    if(set_valmax!=BOUND_LOADED_MAX){
-      valmax = valmax_dlg;
-    }
-    SetMinMax(BOUND_SLICE, label, set_valmin, valmin, set_valmax, valmax);
-  }
-}
-#endif
 
 /* ------------------ LoadAllMSlices ------------------------ */
 
@@ -5376,9 +5313,12 @@ void LoadBoundaryMenu(int value){
       fprintf(scriptoutstream, " %i\n", patchi->blocknumber+1);
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
-      LOCK_COMPRESS
+      LOCK_COMPRESS;
+#ifdef pp_CPPBOUND_DIALOG
+      SetLoadedPatchBounds(&value, 1);
+#endif
       ReadBoundary(value,LOAD,&errorcode);
-      UNLOCK_COMPRESS
+      UNLOCK_COMPRESS;
     }
   }
   else if(value<=-10){
@@ -5391,6 +5331,9 @@ void LoadBoundaryMenu(int value){
       fprintf(scriptoutstream," %s\n",patchj->label.longlabel);
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
+#ifdef pp_CPPBOUND_DIALOG
+      int *list=NULL, nlist=0;
+#endif
       int file_count=0;
       float load_time=0.0, load_size=0.0;
 
@@ -5403,6 +5346,30 @@ void LoadBoundaryMenu(int value){
         patchi = patchinfo+i;
         patchi->finalize = 0;
       }
+#ifdef pp_CPPBOUND_DIALOG
+      for(i = 0; i<npatchinfo;i++){
+        patchdata *patchi;
+
+        patchi = patchinfo+i;
+        if(strcmp(patchi->label.longlabel, patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
+          nlist++;
+        }
+      }
+      if(nlist>0){
+        NewMemory((void **)&list,nlist*sizeof(int));
+        nlist=0;
+        for(i = 0; i<npatchinfo;i++){
+          patchdata *patchi;
+
+          patchi = patchinfo+i;
+          if(strcmp(patchi->label.longlabel, patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
+            list[nlist++]=i;
+          }
+        }
+        SetLoadedPatchBounds(list, nlist);
+        FREEMEMORY(list);
+      }
+#endif
       for(i = npatchinfo-1; i>=0; i--){
         patchdata *patchi;
 

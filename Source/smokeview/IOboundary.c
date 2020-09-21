@@ -2200,8 +2200,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         OutputBoundaryData(patchcsvfile,patchi->file,meshi,first_time,meshi->patch_timesi);
         first_time=0;
       }
-      GetBoundaryColors2(
-        meshi->patchval_iframe, meshi->npatchsize, meshi->cpatchval_iframe,
+      GetBoundaryColors2(patchi, meshi->patchval_iframe, meshi->npatchsize, meshi->cpatchval_iframe,
                  glui_setpatchmin,&glui_patchmin, glui_setpatchmax,&glui_patchmax,
                  &patchmin_global, &patchmax_global,
                  nrgb_full,

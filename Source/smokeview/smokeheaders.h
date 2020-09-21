@@ -50,6 +50,7 @@ EXTERNCPP void SetChopMin(int type, char *label, int set_valmin, float valmin);
 EXTERNCPP void SetChopMax(int type, char *label, int set_valmax, float valmax);
 EXTERNCPP void UpdateGluiBounds(void);
 EXTERNCPP void SetLoadedSliceBounds(int *list, int nlist);
+EXTERNCPP void SetLoadedPatchBounds(int *list, int nlist);
 #endif
 #ifdef pp_NEWBOUND_DIALOG
 EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max);
@@ -917,7 +918,7 @@ EXTERNCPP void GetBoundaryColors(float *t, int nt, unsigned char *it,
               int ndatalevel, int nlevel,
               char **labels, char *scale, float *tvals256,
               int *extreme_min, int *extreme_max);
-EXTERNCPP void GetBoundaryColors2(float *t, int nt, unsigned char *it,
+EXTERNCPP void GetBoundaryColors2(patchdata *patchi, float *t, int nt, unsigned char *it,
               int settmin, float *ttmin, int settmax, float *ttmax,
               float *tmin_global, float *tmax_global,
               int ndatalevel,
