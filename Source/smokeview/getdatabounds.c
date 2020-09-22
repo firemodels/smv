@@ -124,12 +124,6 @@ int GetGlobalPartBounds(int flag){
       part5propinfo[i].dlg_global_valmin = partmins[i-1];
       part5propinfo[i].dlg_global_valmax = partmaxs[i-1];
     }
-#ifdef pp_NEWBOUND_DIALOG
-    else{
-      part5propinfo[i].dlg_loaded_valmin = partmins[i-1];
-      part5propinfo[i].dlg_loaded_valmax = partmaxs[i-1];
-    }
-#endif
   }
 #ifdef pp_CPPBOUND_DIALOG
   npartbounds_cpp = npart5prop;
@@ -566,70 +560,6 @@ boundsdata *GetSliceBoundsInfo(char *shortlabel){
   }
   return NULL;
 }
-
-#ifdef pp_NEWBOUND_DIALOG
-
-/* ------------------ GetLoadedPartBounds ------------------------ */
-
-void GetLoadedPartBounds(void){
-  if(GetGlobalPartBounds(1)==0){
-    int i;
-
-    printf("*** loaded particle bounds not available, using global bounds\n");
-    GetGlobalPartBounds(0);
-    for(i=1; i<npart5prop; i++){
-      part5propinfo[i].dlg_loaded_valmin = part5propinfo[i].dlg_global_valmin;
-      part5propinfo[i].dlg_loaded_valmax = part5propinfo[i].dlg_global_valmax;
-    }
-  }
-}
-
-/* ------------------ GetLoadedSliceBounds ------------------------ */
-
-void GetLoadedSliceBounds(char *label, float *loaded_min, float *loaded_max){
-  int i;
-
-  *loaded_min = 1.0;
-  *loaded_max = 0.0;
-  for(i = 0; i < nsliceinfo; i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo + i;
-    if(slicei->loaded == 0 || strcmp(slicei->label.shortlabel, label) != 0)continue;
-    if(*loaded_min > * loaded_max){
-      *loaded_min = slicei->file_min;
-      *loaded_max = slicei->file_max;
-    }
-    else{
-      *loaded_min = MIN(*loaded_min, slicei->file_min);
-      *loaded_max = MAX(*loaded_max, slicei->file_max);
-    }
-  }
-}
-
-/* ------------------ GetLoadedPatchBounds ------------------------ */
-
-void GetLoadedPatchBounds(char* label, float* loaded_min, float* loaded_max) {
-  int i;
-
-  *loaded_min = 1.0;
-  *loaded_max = 0.0;
-  for (i = 0; i < npatchinfo; i++) {
-    patchdata* patchi;
-
-    patchi = patchinfo + i;
-    if (patchi->loaded == 0 || strcmp(patchi->label.shortlabel, label) != 0)continue;
-    if (*loaded_min > * loaded_max) {
-      *loaded_min = patchi->file_min;
-      *loaded_max = patchi->file_max;
-    }
-    else {
-      *loaded_min = MIN(*loaded_min, patchi->file_min);
-      *loaded_max = MAX(*loaded_max, patchi->file_max);
-    }
-  }
-}
-#endif
 
 /* ------------------ AdjustPart5Chops ------------------------ */
 

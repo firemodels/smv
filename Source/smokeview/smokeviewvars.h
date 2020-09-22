@@ -74,18 +74,6 @@ SVEXTERN int SVDECL(show_terrain_normals, 0), SVDECL(show_terrain_grid,0);
 SVEXTERN int SVDECL(terrain_slice_overlap, 0);
 SVEXTERN int GetTerrainData(char *file, terraindata *terri);
 
-#ifdef pp_NEWBOUND_DIALOG
-SVEXTERN int SVDECL(glui_slice_compute_loaded,  1);
-SVEXTERN int SVDECL(glui_plot3d_compute_loaded, 1);
-SVEXTERN int SVDECL(glui_part_compute_loaded,   0);
-SVEXTERN int SVDECL(glui_patch_compute_loaded,  0);
-#ifdef INMAIN
-SVEXTERN int plot3d_compute_loaded[MAXPLOT3DVARS]={1,1,1,1,1,1,};
-#else
-SVEXTERN int plot3d_compute_loaded[MAXPLOT3DVARS];
-#endif
-#endif
-
 SVEXTERN int SVDECL(use_slice_glui_bounds, 0);
 SVEXTERN char SVDECL(*fds_title, NULL);
 SVEXTERN int SVDECL(vis_title_gversion,0);
@@ -998,9 +986,6 @@ SVEXTERN int SVDECL(n_mirrorvents,0), SVDECL(n_openvents,0);
 
 SVEXTERN int setp3min_all[MAXPLOT3DVARS];
 SVEXTERN float p3min_all[MAXPLOT3DVARS], p3min_global[MAXPLOT3DVARS];
-#ifdef pp_NEWBOUND_DIALOG
-SVEXTERN float p3min_ini[MAXPLOT3DVARS], p3max_ini[MAXPLOT3DVARS];
-#endif
 
 SVEXTERN int setp3max_all[MAXPLOT3DVARS];
 SVEXTERN float p3max_all[MAXPLOT3DVARS], p3max_global[MAXPLOT3DVARS];
@@ -1753,9 +1738,6 @@ SVEXTERN boundsdata SVDECL(*slicebounds,NULL), SVDECL(*isobounds,NULL), SVDECL(*
 SVEXTERN boundsdata SVDECL(*slicebounds_temp, NULL);
 SVEXTERN vslicedata SVDECL(*vsliceinfo,NULL);
 SVEXTERN int force_redisplay;
-#ifdef pp_NEWBOUND_DIALOG
-SVEXTERN int SVDECL(glui_setp3min, SET_MIN), SVDECL(glui_setp3max, SET_MAX);
-#endif
 #ifdef pp_OLDBOUND_DIALOG
 SVEXTERN int glui_setp3min, glui_setp3max;
 #endif

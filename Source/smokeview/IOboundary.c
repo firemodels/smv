@@ -2279,15 +2279,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     }
   }
 
-#ifdef pp_NEWBOUND_DIALOG
-#define COMPUTE_BOUNDS 219
-  void BoundBoundCB(int var);
-  if(glui_patchmin>glui_patchmax){
-    UpdateBoundaryListIndex(patchfilenum);
-    BoundBoundCB(COMPUTE_BOUNDS);
-  }
-#endif
-
   patchi->loaded=1;
   iboundarytype=GetBoundaryType(patchi);
   switch(loadpatchbysteps){
@@ -2728,10 +2719,6 @@ void GLUI2GlobalBoundaryBounds(const char *key){
     if(strcmp(patchi->label.shortlabel,key)==0){
       patchi->valmin = glui_patchmin;
       patchi->valmax = glui_patchmax;
-#ifdef pp_NEWBOUND_DIALOG
-      patchi->setvalmin = SET_MIN;
-      patchi->setvalmax = SET_MAX;
-#endif
 #ifdef pp_OLDBOUND_DIALOG
       patchi->setvalmin=glui_setpatchmin;
       patchi->setvalmax=glui_setpatchmax;
@@ -2750,60 +2737,11 @@ void GLUI2GlobalBoundaryBounds(const char *key){
 void Global2GLUIBoundaryBounds(const char *key){
   int i;
 
-#ifdef pp_NEWBOUND_DIALOG
-  {
-    int compute_bounds = 0;
-
-    for(i = 0; i<npatchinfo; i++){
-      patchdata *patchi;
-
-      patchi = patchinfo+i;
-      if(strcmp(patchi->label.shortlabel, key)==0){
-        if(patchi->valmin>patchi->valmax){
-          compute_bounds = 1;
-          break;
-        }
-      }
-    }
-    if(compute_bounds==1){
-      float vmin = 1.0, vmax = 0.0;
-
-      for(i = 0; i<npatchinfo; i++){
-        patchdata *patchi;
-
-        patchi = patchinfo+i;
-        if(strcmp(patchi->label.shortlabel, key)==0&&patchi->file_min<=patchi->file_max){
-          if(vmin>vmax){
-            vmin = patchi->file_min;
-            vmax = patchi->file_max;
-          }
-          else{
-            vmin = MIN(vmin, patchi->file_min);
-            vmax = MAX(vmax, patchi->file_max);
-          }
-        }
-      }
-      for(i = 0; i<npatchinfo; i++){
-        patchdata *patchi;
-
-        patchi = patchinfo+i;
-        if(strcmp(patchi->label.shortlabel, key)==0){
-          patchi->valmin = vmin;;
-          patchi->valmax = vmax;;
-        }
-      }
-    }
-  }
-#endif
   for(i=0;i<npatchinfo;i++){
     patchdata *patchi;
 
     patchi = patchinfo + i;
     if(strcmp(patchi->label.shortlabel,key)==0){
-#ifdef pp_NEWBOUND_DIALOG
-      glui_setpatchmin = SET_MIN;;
-      glui_setpatchmax = SET_MAX;
-#endif
 #ifdef pp_OLDBOUND_DIALOG
       if(research_mode==1){
         glui_setpatchmin = GLOBAL_MIN;;

@@ -1810,122 +1810,6 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
   CheckMemory;
 }
 
-#ifdef pp_NEWBOUND_DIALOG
-/* ------------------ GetSlicePercentileBounds ------------------------ */
-
-void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max){
-  int iii, ntotal, *buckets;
-  int ii;
-  float factor;
-  int i01, sum;
-  int have_min, have_max;
-  int some_compressed = 0;
-  int some_loaded = 0;
-
-  *per_min = 1.0;
-  *per_max = 0.0;
-  if(global_min>global_max)return;
-  if(NewMemory((void **)&buckets, NBUCKETS*sizeof(int))==0)return;
-  for(iii=0;iii<NBUCKETS;iii++){
-    buckets[iii] = 0;
-  }
-  factor = (float)NBUCKETS/(global_max-global_min);
-
-  ntotal = 0;
-  for(iii = 0; iii<nsliceinfo; iii++){
-    slicedata *slicei;
-    int nn;
-    meshdata *meshi;
-    char *iblank_node, *iblank_cell;
-    int ibar, jbar, nx, ny, nxy;
-    int itime;
-
-    slicei = sliceinfo+iii;
-    if(strcmp(slicei->label.shortlabel, slicetype)!= 0||slicei->loaded==0)continue;
-    if(slicei->compression_type!=UNCOMPRESSED){
-      some_compressed = 1;
-      continue;
-    }
-    some_loaded = 1;
-
-    meshi = meshinfo+slicei->blocknumber;
-    iblank_node = meshi->c_iblank_node;
-    iblank_cell = meshi->c_iblank_cell;
-
-    ibar = meshi->ibar;
-    jbar = meshi->jbar;
-    nx = ibar+1;
-    ny = jbar+1;
-    nxy = nx*ny;
-
-
-    nn = -1;
-    for(itime = 0; itime<slicei->ntimes; itime++){
-      for(ii = 0; ii<slicei->nslicei; ii++){
-        int j;
-
-        for(j = 0; j<slicei->nslicej; j++){
-          int k;
-
-          for(k = 0; k<slicei->nslicek; k++){
-            float val;
-            int ival;
-
-            nn++;
-            if(slicei->slice_filetype==SLICE_CELL_CENTER&&((k==0&&slicei->nslicek!=1)||(j==0&&slicei->nslicej!=1)||(ii==0&&slicei->nslicei!=1)))continue;
-            if(show_slice_in_obst==ONLY_IN_GAS){
-              if(slicei->slice_filetype!=SLICE_CELL_CENTER&& iblank_node!=NULL&&iblank_node[IJKNODE(slicei->is1+ii, slicei->js1+j, slicei->ks1+k)]==SOLID)continue;
-              if(slicei->slice_filetype==SLICE_CELL_CENTER&& iblank_cell!=NULL&&iblank_cell[IJKCELL(slicei->is1+ii-1, slicei->js1+j-1, slicei->ks1+k-1)]==EMBED_YES)continue;
-            }
-            val = slicei->qslicedata[nn];
-            ival = (int)(factor*(val-global_min)+0.5);
-            ival = CLAMP(ival, 0, NBUCKETS-1);
-            buckets[ival]++;
-            ntotal++;
-          }
-        }
-      }
-    }
-  }
-  if(ntotal==0){
-    if(some_loaded==0&&some_compressed==1){
-      printf("***warning: percentile bounds not computed - all loaded slice files are compressed\n");
-    }
-    if(some_loaded==1){
-      printf("***warning: percentile bounds not computed - no data in files\n");
-    }
-    FREEMEMORY(buckets);
-    return;
-  }
-
-  i01 =   (int)(percentile_level*(float)ntotal);
-  sum = 0;
-  have_min = 0;
-  for(iii = 0; iii<NBUCKETS; iii++){
-    if(sum>i01){
-      *per_min = global_min+(float)iii*(global_max-global_min)/(float)NBUCKETS;
-      have_min = 1;
-      break;
-    }
-    sum += buckets[iii];
-  }
-  if(have_min == 0)*per_min = global_max;
-
-  sum = 0;
-  have_max = 0;
-  for(iii = NBUCKETS-1; iii>=0; iii--){
-    if(sum>i01){
-      *per_max = global_min+(float)iii*(global_max-global_min)/(float)NBUCKETS;
-      have_max = 1;
-      break;
-    }
-    sum += buckets[iii];
-  }
-  if(have_max == 0)*per_max = global_min;
-  FREEMEMORY(buckets);
-}
-#endif
-
 /* ------------------ GetSliceHists ------------------------ */
 
 void GetSliceHists(slicedata *sd){
@@ -4096,15 +3980,6 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     }
     return;
   }
-#ifdef pp_NEWBOUND_DIALOG
-  if(use_slice_glui_bounds == 1 && sd->bounds != NULL){
-    if(sd->bounds->dlg_valmin < sd->bounds->dlg_valmax){
-      *pmin = sd->bounds->dlg_valmin;
-      *pmax = sd->bounds->dlg_valmax;
-      return;
-    }
-  }
-#endif
   meshi = meshinfo + sd->blocknumber;
   iblank_node = meshi->c_iblank_node;
   iblank_cell = meshi->c_iblank_cell;
@@ -5392,17 +5267,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   GLUTPOSTREDISPLAY;
   return return_filesize;
 }
-
-#ifdef pp_NEWBOUND_DIALOG
-FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int time_frame, float *time_val, int flag, int set_slicecolor, int *errorcode){
-  FILE_SIZE file_size;
-
-  use_slice_glui_bounds = 1;
-  file_size = ReadSlice(file, ifile, time_frame, time_val, flag, set_slicecolor, errorcode);
-  use_slice_glui_bounds = 0;
-  return file_size;
-}
-#endif
 
 #ifdef pp_SLICETHREAD
 /* ------------------ FinalizeSliceLoad ------------------------ */

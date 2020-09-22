@@ -2993,9 +2993,6 @@ void ReloadAllSliceFiles(void){
       load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
     }
     else{
-#ifdef pp_NEWBOUND_DIALOG
-      load_size+=ReadSliceUseGluiBounds(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
-#endif
 #ifdef pp_OLDBOUND_DIALOG
       load_size+=ReadSlice(             slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #endif
@@ -3116,9 +3113,6 @@ void LoadUnloadMenu(int value){
           ReadGeomData(slicei->patchgeom, slicei, load_mode, &errorcode);
         }
         else{
-#ifdef pp_NEWBOUND_DIALOG
-          ReadSliceUseGluiBounds(slicei->file, i, ALL_SLICE_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
-#endif
 #ifdef pp_OLDBOUND_DIALOG
                        ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
 #endif
@@ -4517,9 +4511,6 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_
         return_filesize = ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
       }
       else {
-#ifdef pp_NEWBOUND_DIALOG
-        return_filesize=ReadSliceUseGluiBounds(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
-#endif
 #ifdef pp_OLDBOUND_DIALOG
         return_filesize=             ReadSlice(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
 #endif
@@ -4628,9 +4619,6 @@ void LoadSliceMenu(int value){
             load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
           }
           else{
-#ifdef pp_NEWBOUND_DIALOG
-            load_size+=ReadSliceUseGluiBounds(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
-#endif
 #ifdef pp_OLDBOUND_DIALOG
             load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #endif
@@ -5036,9 +5024,6 @@ void LoadMultiSliceMenu(int value){
         load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
       }
       else{
-#ifdef pp_NEWBOUND_DIALOG
-        load_size+=ReadSliceUseGluiBounds(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
-#endif
 #ifdef pp_OLDBOUND_DIALOG
         load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #endif
@@ -5102,36 +5087,6 @@ void LoadMultiSliceMenu(int value){
     }
   }
 }
-
-#ifdef pp_NEWBOUND_DIALOG
-/* ------------------ GetListPlot3dBounds ------------------------ */
-
-void GetListPlot3dBounds(int* list, int nlist, float* loaded_min, float* loaded_max) {
-  int i;
-
-  for (i = 0; i < 6; i++) {
-    loaded_min[i] = 1.0;
-    loaded_max[i] = 0.0;
-  }
-  for (i = 0; i < nlist; i++) {
-    plot3ddata* plot3di;
-    int j;
-
-    plot3di = plot3dinfo + list[i];
-    for (j = 0; j < 6; j++) {
-
-      if (loaded_min[j] > loaded_max[j]) {
-        loaded_min[j] = plot3di->file_min[j];
-        loaded_max[j] = plot3di->file_max[j];
-      }
-      else {
-        loaded_min[j] = MIN(plot3di->file_min[j], loaded_min[j]);
-        loaded_max[j] = MAX(plot3di->file_max[j], loaded_max[j]);
-      }
-    }
-  }
-}
-#endif
 
 /* ------------------ Plot3DListMenu ------------------------ */
 

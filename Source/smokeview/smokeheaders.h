@@ -58,14 +58,6 @@ EXTERNCPP void SetLoadedPlot3DBounds(int *list, int nlist);
 EXTERNCPP void SetLoadedPartBounds(int *list, int nlist);
 EXTERNCPP void SetResearchMode(int flag);
 #endif
-#ifdef pp_NEWBOUND_DIALOG
-EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max);
-EXTERNCPP void GetLoadedPartBounds(void);
-EXTERNCPP void GetLoadedSliceBounds(char *label, float *loaded_min, float *loaded_max);
-EXTERNCPP void GetLoadedPatchBounds(char* label, float* loaded_min, float* loaded_max);
-FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
-EXTERNCPP void Plot3DBounds2Glui(void);
-#endif
 EXTERNCPP void ShiftColorbars(void);
 EXTERNCPP int GetColorbarState(void);
 EXTERNCPP void ViewpointCB(int val);

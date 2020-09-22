@@ -1730,10 +1730,6 @@ void InitPartProp(void){
           propi->set_global_bounds=1;
           propi->dlg_global_valmin=100000000.0;
           propi->dlg_global_valmax=-propi->dlg_global_valmin;
-#ifdef pp_NEWBOUND_DIALOG
-          propi->dlg_ini_valmin = 100000000.0;
-          propi->dlg_ini_valmax = -propi->dlg_ini_valmin;
-#endif
           propi->valmin=1.0;
           propi->valmax=0.0;
           propi->percentile_min=1.0;

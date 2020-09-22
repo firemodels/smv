@@ -532,10 +532,6 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
           int prop_id_index;
           float partimin, partimax;
 
-#ifdef pp_NEWBOUND_DIALOG
-          valmin = prop_id->user_min;
-          valmax = prop_id->user_max;
-#endif
 #ifdef pp_OLDBOUND_DIALOG
           if(prop_id->setvalmin==PERCENTILE_MIN){
             valmin = prop_id->percentile_min;
@@ -700,10 +696,6 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
 
     propi = part5propinfo + i;
 
-#ifdef pp_NEWBOUND_DIALOG
-    local_tmin = propi->user_min;
-    local_tmax = propi->user_max;
-#endif
 #ifdef pp_OLDBOUND_DIALOG
     if(propi->setvalmin==PERCENTILE_MIN){
       local_tmin = propi->percentile_min;
@@ -850,10 +842,6 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
-  local_tmin = *ttmin;
-  local_tmax = *ttmax;
-#endif
-#ifdef pp_NEWBOUND_DIALOG
   local_tmin = *ttmin;
   local_tmax = *ttmax;
 #endif

@@ -1104,10 +1104,6 @@ typedef struct _partpropdata {
   float valmin, valmax;
   int imin, imax;
   float dlg_global_valmin, dlg_global_valmax;
-#ifdef pp_NEWBOUND_DIALOG
-  float dlg_ini_valmin, dlg_ini_valmax;
-  float dlg_loaded_valmin, dlg_loaded_valmax;
-#endif
   int set_global_bounds;
   float percentile_min, percentile_max;
   float user_min, user_max;
@@ -1295,9 +1291,6 @@ typedef struct _slicedata {
   multiresdata multiresinfo;
   int mult_res;
 #endif
-#ifdef pp_NEWBOUND_DIALOG
-  struct _boundsdata *bounds;
-#endif
   FILE_SIZE file_size;
 #ifdef pp_SLICETHREAD
   int skipload, loadstatus, boundstatus;
@@ -1355,10 +1348,6 @@ typedef struct _cpp_boundsdata {
 typedef struct _boundsdata {
   char *shortlabel;
   int dlg_setvalmin, dlg_setvalmax;
-#ifdef pp_NEWBOUND_DIALOG
-  int dlg_compute_loaded;
-  float dlg_ini_valmin, dlg_ini_valmax;
-#endif
   int setchopmin, setchopmax;
   float chopmin, chopmax;
   float dlg_valmin, dlg_valmax;
