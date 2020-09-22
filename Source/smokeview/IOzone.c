@@ -12,7 +12,7 @@
 
 /* ------------------ GetZoneSizeCSV ------------------------ */
 
-void GetZoneSizeCSV(int *nzone_times_local, int *nroom, int *nfires_local, int *nhvents, int *nvvents, int *nmvents, int *ntargets, int *error){
+void GetZoneSizeCSV(int *nzone_times_local, int *nroom, int *nfires_local, int *nhvents, int *nvvents, int *nmvents, int *ntargets_arg, int *error){
    devicedata *dev;
    int nr,nf,nv,nt;
    int i;
@@ -27,7 +27,7 @@ void GetZoneSizeCSV(int *nzone_times_local, int *nroom, int *nfires_local, int *
      if(GetCSVDeviceFromLabel(label, -1)==NULL)break;
      nt++;
    }
-   *ntargets = nt;
+   *ntargets_arg = nt;
 
    nr=0;
    for(i=0;i<ndeviceinfo;i++){
@@ -883,7 +883,7 @@ void GetZoneTempBounds(void){
 
 void ReadZone(int ifile, int flag, int *errorcode){
   int error,ntotal_rooms,ntotal_targets,i,j,ii;
-  int nrooms2,nfires2,nzhvents2,nzvvents2,nzmvents2=0,ntargets=0;
+  int nrooms2,nfires2,nzhvents2,nzvvents2,nzmvents2=0,ntargets_local=0;
   size_t zonefilelen;
   zonedata *zonei;
   char *file;
@@ -946,7 +946,7 @@ void ReadZone(int ifile, int flag, int *errorcode){
   if(zonei->csv==1){
     ReadDeviceData(zonei->file,CSV_CFAST,UNLOAD);
     ReadDeviceData(zonei->file,CSV_CFAST,LOAD);
-    GetZoneSizeCSV(&nzone_times,&nrooms2,&nfires2,&nzhvents2,&nzvvents2,&nzmvents2,&ntargets, &error);
+    GetZoneSizeCSV(&nzone_times,&nrooms2,&nfires2,&nzhvents2,&nzvvents2,&nzmvents2,&ntargets_local, &error);
   }
   else{
     FORTgetzonesize(file,&nzone_times,&nrooms2,&nfires2,&error,zonefilelen);
@@ -1097,9 +1097,9 @@ void ReadZone(int ifile, int flag, int *errorcode){
   else{
     return;
   }
-  ntotal_targets = ntargets*nzone_times;
+  ntotal_targets = ntargets_local*nzone_times;
   nzonetotal_targets = ntotal_targets;
-  nzone_targets = ntargets;
+  nzone_targets = ntargets_local;
 
   if(ntotal_targets>0){
     FREEMEMORY(zonetargets);
@@ -1115,7 +1115,7 @@ void ReadZone(int ifile, int flag, int *errorcode){
   }
   CheckMemory;
   if(zonei->csv==1){
-    GetZoneDataCSV(nzone_times,nrooms,  nfires, ntargets,
+    GetZoneDataCSV(nzone_times,nrooms,  nfires, ntargets_local,
                    zone_times,zoneqfire, zonefheight, zonefbase, zonefdiam,
                    zonepr,zoneylay,zonetl,zonetu,zonerhol,zonerhou,&zoneodl,&zoneodu, zonevents,
                    zoneslab_n, zoneslab_T, zoneslab_F, zoneslab_YB, zoneslab_YT,
