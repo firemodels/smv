@@ -44,8 +44,9 @@ class bounds_dialog{
   GLUI_RadioGroup *RADIO_set_valtype,  *RADIO_set_valmin, *RADIO_set_valmax;
   GLUI_Button *BUTTON_update_colors, *BUTTON_reload_data;
   GLUI_Panel *PANEL_min, *PANEL_max;
-  GLUI_StaticText *STATIC_min, *STATIC_max, *STATIC_chopmin, *STATIC_chopmax;
+  GLUI_StaticText *STATIC_min, *STATIC_max, *STATIC_chopmin, *STATIC_chopmax, *STATIC_research;
 
+  void set_research_mode(int flag);
   int get_min(char *label, int *set_valmin, float *valmin);
   int get_max(char *label, int *set_valmax, float *valmax);
   void get_min_all(int *set_valmin, float *valmin, int *nvals);
@@ -58,8 +59,6 @@ class bounds_dialog{
   int get_nvaltypes(void);
   void set_valtype_index(int index);
   int get_valtype(void);
-  int set_user_min(char *label, float valmin);
-  int set_user_max(char *label, float valmax);
   int set_chopmin(char *label, int set_valmin, float valmin);
   int set_chopmax(char *label, int set_valmax, float valmax);
   void CB(int var);
@@ -70,6 +69,27 @@ class bounds_dialog{
 /* ------------------ bounds_dialog ------------------------ */
 
 bounds_dialog::bounds_dialog(void){
+}
+
+/* ------------------ set_research_mode ------------------------ */
+
+void bounds_dialog::set_research_mode(int flag){
+  int i;
+
+  if(flag==1){
+    for(i = 0; i<nall_bounds; i++){
+      cpp_boundsdata *boundi;
+
+      boundi = all_bounds+i;
+      boundi->set_valmin = BOUND_LOADED_MIN;
+      boundi->set_valmax = BOUND_LOADED_MAX;
+    }
+    CB(BOUND_VAL_TYPE);
+    CB(BOUND_DISABLE);
+  }
+  else{
+    CB(BOUND_ENABLE);
+  }
 }
 
 /* ------------------ setup ------------------------ */
@@ -99,6 +119,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   glui_bounds->add_column_to_panel(PANEL_bound2, false);
 
   PANEL_bound = glui_bounds->add_panel_to_panel(PANEL_bound2, "Bound");
+  STATIC_research = glui_bounds->add_statictext_to_panel(PANEL_bound, "");
   PANEL_max = glui_bounds->add_panel_to_panel(PANEL_bound, "", GLUI_PANEL_NONE);
   EDIT_valmax = glui_bounds->add_edittext_to_panel(PANEL_max, "", GLUI_EDITTEXT_FLOAT, &(bounds.glui_valmax), BOUND_VALMAX, Callback);
   glui_bounds->add_column_to_panel(PANEL_max, false);
@@ -194,27 +215,7 @@ void bounds_dialog::set_valtype_index(int index){
 /* ------------------ get_valtype ------------------------ */
 
 int bounds_dialog::get_valtype(void){
-  cpp_boundsdata *boundi;
-
-    boundi = all_bounds+bounds.set_valtype;
-    return bounds.set_valtype;
-}
-
-/* ------------------ set_user_min ------------------------ */
-
-int bounds_dialog::set_user_min(char *label, float valmin){
-  int i;
-
-  for(i = 0; i<nall_bounds; i++){
-    cpp_boundsdata *boundi;
-
-    boundi = all_bounds+i;
-    if(strcmp(boundi->label, label)==0){
-      boundi->valmin[BOUND_SET_MIN] = valmin;
-      return 1;
-    }
-  }
-  return 0;
+  return bounds.set_valtype;
 }
 
 /* ------------------ set_chopmin ------------------------ */
@@ -229,23 +230,6 @@ int bounds_dialog::set_chopmin(char *label, int set_valmin, float valmin){
     if(strcmp(boundi->label, label)==0){
       boundi->set_chopmin = set_valmin;
       boundi->chopmin     = valmin;
-      return 1;
-    }
-  }
-  return 0;
-}
-
-/* ------------------ set_user_max ------------------------ */
-
-int bounds_dialog::set_user_max(char *label, float valmax){
-  int i;
-
-  for(i = 0; i<nall_bounds; i++){
-    cpp_boundsdata *boundi;
-
-    boundi = all_bounds+i;
-    if(strcmp(boundi->label, label)==0){
-      boundi->valmax[BOUND_SET_MAX] = valmax;
       return 1;
     }
   }
@@ -505,23 +489,14 @@ void bounds_dialog::CB(int var){
 
       // enable/disable controls
     case BOUND_DISABLE: // research mode on
-      bounds.set_valmax  = BOUND_LOADED_MAX;
-      bounds.glui_valmax = all_boundsi->valmax[BOUND_LOADED_MAX];
-      RADIO_set_valmax->set_int_val(BOUND_LOADED_MAX);
-      EDIT_valmax->set_float_val(bounds.glui_valmax);
-
-      bounds.set_valmin  = BOUND_LOADED_MIN;
-      bounds.glui_valmin = all_boundsi->valmin[BOUND_LOADED_MIN];
-      RADIO_set_valmin->set_int_val(BOUND_LOADED_MIN);
-      EDIT_valmin->set_float_val(bounds.glui_valmin);
-
-      memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
       PANEL_min->disable();
       PANEL_max->disable();
+      STATIC_research->set_name("To enable, turn off research mode (press ALT r)");
       break;
     case BOUND_ENABLE: // research mode off
       PANEL_min->enable();
       PANEL_max->enable();
+      STATIC_research->set_name("");
       break;
 
       // update colors, reload data buttons - handle in calling routine
@@ -533,6 +508,15 @@ void bounds_dialog::CB(int var){
 };
 
 bounds_dialog patchboundsCPP, partboundsCPP, plot3dboundsCPP, sliceboundsCPP;
+
+/* ------------------ SetResearchMode ------------------------ */
+
+extern "C" void SetResearchMode(int flag){
+  patchboundsCPP.set_research_mode(flag);
+  sliceboundsCPP.set_research_mode(flag);
+  partboundsCPP.set_research_mode(flag);
+  plot3dboundsCPP.set_research_mode(flag);
+}
 
 /* ------------------ UpdateGluiBounds ------------------------ */
 
@@ -705,44 +689,6 @@ extern "C" void SetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_
     case BOUND_SLICE:
       sliceboundsCPP.set_min_all(set_valmin, valmin, nall);
       sliceboundsCPP.set_max_all(set_valmax, valmax, nall);
-      break;
-  }
-}
-
-/* ------------------ SetUserMin ------------------------ */
-
-extern "C" void SetUserMin(int type, char *label, float valmin){
-  switch(type){
-    case BOUND_PATCH:
-      patchboundsCPP.set_user_min(label, valmin);
-      break;
-    case BOUND_PART:
-      partboundsCPP.set_user_min(label, valmin);
-      break;
-    case BOUND_PLOT3D:
-      plot3dboundsCPP.set_user_min(label, valmin);
-      break;
-    case BOUND_SLICE:
-      sliceboundsCPP.set_user_min(label, valmin);
-      break;
-  }
-}
-
-/* ------------------ SetUserMax ------------------------ */
-
-extern "C" void SetUserMax(int type, char *label, float valmax){
-  switch(type){
-    case BOUND_PATCH:
-      patchboundsCPP.set_user_max(label, valmax);
-      break;
-    case BOUND_PART:
-      partboundsCPP.set_user_max(label, valmax);
-      break;
-    case BOUND_PLOT3D:
-      plot3dboundsCPP.set_user_max(label, valmax);
-      break;
-    case BOUND_SLICE:
-      sliceboundsCPP.set_user_max(label, valmax);
       break;
   }
 }
@@ -952,7 +898,7 @@ void SetLoadedSliceBounds(int *list, int nlist){
   int set_valmin, set_valmax;
   float valmin_dlg, valmax_dlg;
   float valmin, valmax;
-  char *label;
+  char *label=NULL;
   slicedata *slicei;
   int i;
 
@@ -5853,6 +5799,9 @@ extern "C" void SliceBoundCB(int var){
       SetLabelControls();
       break;
     case RESEARCH_MODE:
+#ifdef pp_CPPBOUND_DIALOG
+     SetResearchMode(research_mode);
+#else
       for(i=0;i<nsliceinfo;i++){
         slicedata *slicei;
 
@@ -5861,6 +5810,7 @@ extern "C" void SliceBoundCB(int var){
         UpdateSliceList(GetSliceBoundsIndex(slicei));
         break;
       }
+#endif
       if(research_mode==1){
         visColorbarVertical_save=visColorbarVertical;
         visColorbarVertical=1;
@@ -5894,6 +5844,9 @@ extern "C" void SliceBoundCB(int var){
 
         // slice files
 
+#ifdef pp_CPPBOUND_DIALOG
+        SliceBoundsCPP_CB(BOUND_RELOAD_DATA);
+#else
 #ifdef pp_OLDBOUND_DIALOG
         glui_setslicemin = GLOBAL_MIN;
         glui_setslicemax = GLOBAL_MAX;
@@ -5901,9 +5854,14 @@ extern "C" void SliceBoundCB(int var){
         SliceBoundCB(SETVALMIN);
         SliceBoundCB(SETVALMAX);
         SliceBoundCB(FILE_UPDATE);
+#endif
+
 
         // boundary files
 
+#ifdef pp_CPPBOUND_DIALOG
+        PatchBoundsCPP_CB(BOUND_RELOAD_DATA);
+#else
         glui_setpatchmin = GLOBAL_MIN;
         BoundBoundCB(SETVALMIN);
         glui_setpatchmax = GLOBAL_MAX;
@@ -5918,12 +5876,17 @@ extern "C" void SliceBoundCB(int var){
           printf("            reloading boundary data files\n");
           BoundBoundCB(FILE_RELOAD);
         }
+#endif
 
         // particle files
 
+#ifdef pp_CPPBOUND_DIALOG
+        PartBoundsCPP_CB(BOUND_RELOAD_DATA);
+#else
         if(npartloaded>0){
           PartBoundCB(FILE_RELOAD);
         }
+#endif
 
         // plot3d files
 
@@ -5943,6 +5906,9 @@ extern "C" void SliceBoundCB(int var){
             setp3max_all[i] = GLOBAL_MAX;
 #endif
           }
+#ifdef pp_CPPBOUND_DIALOG
+          Plot3DBoundsCPP_CB(BOUND_RELOAD_DATA);
+#else
           GetLoadedPlot3dBounds(NULL, p3min_loaded, p3max_loaded);
           glui_p3min = p3min_loaded[list_p3_index];
           glui_p3max = p3max_loaded[list_p3_index];
@@ -5951,6 +5917,7 @@ extern "C" void SliceBoundCB(int var){
           Plot3DBoundCB(SETVALMIN);
           Plot3DBoundCB(SETVALMAX);
           Plot3DBoundCB(FILE_RELOAD);
+#endif
         }
 
         PRINTF("\nresearch mode on, using global bounds\n\n");
