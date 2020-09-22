@@ -110,9 +110,12 @@ void GetBoundaryColors2(patchdata *patchi, float *t, int nt, unsigned char *it,
               int *extreme_min, int *extreme_max
               ){
   int n;
-  float *tcopy, factor, range;
+  float factor, range;
   int itt;
-  float local_tmin, local_tmax, tmin2, tmax2;
+  float local_tmin, local_tmax;
+#ifndef pp_CPPBOUND_DIALOG
+  float *tcopy, tmin2, tmax2;
+#endif
 
 
 #ifdef pp_CPPBOUND_DIALOG
@@ -271,7 +274,10 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
   int n;
   float factor, tval, range;
   int itt;
-  float new_tmin, new_tmax, tmin2, tmax2;
+  float new_tmin, new_tmax;
+#ifndef pp_CPPBOUND_DIALOG
+  float tmin2, tmax2;
+#endif
 
 #ifdef pp_CPPBOUND_DIALOG
   int set_valmin, set_valmax;
@@ -379,8 +385,6 @@ int UpdateAllBoundaryColors(void){
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;
     patchdata *patchi;
-    int npatchvals;
-    float patchmin_global, patchmax_global;
 
     meshi = meshinfo+i;
     if(meshi->patchval==NULL||meshi->cpatchval==NULL||meshi->patchfilenum<0)continue;
@@ -394,8 +398,6 @@ int UpdateAllBoundaryColors(void){
     for(i = 0; i<nmeshes; i++){
       meshdata *meshi;
       patchdata *patchi;
-      int npatchvals;
-      float patchmin_global, patchmax_global;
 
       meshi = meshinfo+i;
       if(meshi->patchval==NULL||meshi->cpatchval==NULL||meshi->patchfilenum<0)continue;

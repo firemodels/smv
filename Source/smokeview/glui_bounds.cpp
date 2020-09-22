@@ -855,8 +855,7 @@ void PartBoundsCPP_CB(int var){
 
 void PatchBoundsCPP_CB(int var){
 #ifdef pp_CPPBOUND_DIALOG
-  int i, *list=NULL, nlist=0;
-  char *label=NULL;
+  int i;
 #endif
 
   patchboundsCPP.CB(var);
