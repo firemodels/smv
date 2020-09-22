@@ -43,6 +43,7 @@ EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(void);
 #ifdef pp_CPPBOUND_DIALOG
 EXTERNCPP void SetValTypeIndex(int type, int valtype_index);
+EXTERNCPP int GetNValtypes(int type);
 EXTERNCPP int GetValType(int type);
 EXTERNCPP void GetMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax);
 EXTERNCPP void GetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int *nall);
@@ -56,6 +57,7 @@ EXTERNCPP void UpdateGluiBounds(void);
 EXTERNCPP void SetLoadedSliceBounds(int *list, int nlist);
 EXTERNCPP void SetLoadedPatchBounds(int *list, int nlist);
 EXTERNCPP void SetLoadedPlot3DBounds(int *list, int nlist);
+EXTERNCPP void SetLoadedPartBounds(int *list, int nlist);
 #endif
 #ifdef pp_NEWBOUND_DIALOG
 EXTERNCPP void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max);
@@ -826,7 +828,9 @@ EXTERNCPP void SetViewPoint(int option);
 EXTERNCPP void UpdateTimeLabels(void);
 EXTERNCPP void RenderFrame(int view_mode);
 EXTERNCPP void UpdateTerrain(int allocate_memory, float vertical_factor);
+#ifndef pp_CPPBOUND_DIALOG
 EXTERNCPP void PartBoundCBInit(void);
+#endif
 EXTERNCPP void SliceBoundCB(int var);
 EXTERNCPP void RenderMenu(int value);
 EXTERNCPP void LoadSmoke3DMenu(int value);

@@ -2168,7 +2168,9 @@ void FinalizePartLoad(partdata *parti){
   }
 #endif
   parttype = 0;
+#ifndef pp_CPPBOUND_DIALOG
   PartBoundCBInit();
+#endif
   ParticlePropShowMenu(part5colorindex);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   UpdateTimes();

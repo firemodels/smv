@@ -481,6 +481,20 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
   float *u_vel_data, *v_vel_data, *w_vel_data;
 
   datacopy = parti->data5;
+
+#ifdef pp_CPPBOUND_DIALOG
+  int num, num2;
+  int *part_set_valmin, *part_set_valmax;
+  float *part_valmin, *part_valmax;
+
+  num = GetNValtypes(BOUND_PART);
+  NewMemory((void **)&part_set_valmin, num*sizeof(float));
+  NewMemory((void **)&part_valmin,     num*sizeof(float));
+  NewMemory((void **)&part_set_valmax, num*sizeof(float));
+  NewMemory((void **)&part_valmax,     num*sizeof(float));
+  GetMinMaxAll(BOUND_PART, part_set_valmin, part_valmin, part_set_valmax, part_valmax, &num2);
+#endif
+
   for(i=0;i<parti->ntimes;i++){
     int j;
 
@@ -542,29 +556,13 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
             valmax = prop_id->dlg_global_valmax;
           }
 #endif
+          prop_id_index = prop_id-part5propinfo;
 #ifdef pp_CPPBOUND_DIALOG
-          if(prop_id->setvalmin==PERCENTILE_MIN){
-            valmin = prop_id->percentile_min;
-          }
-          else if(prop_id->setvalmin==SET_MIN){
-            valmin = prop_id->user_min;
-          }
-          else{
-            valmin = prop_id->dlg_global_valmin;
-          }
-          if(prop_id->setvalmax==PERCENTILE_MAX){
-            valmax = prop_id->percentile_max;
-          }
-          else if(prop_id->setvalmax==SET_MAX){
-            valmax = prop_id->user_max;
-          }
-          else{
-            valmax = prop_id->dlg_global_valmax;
-          }
+          valmin = part_valmin[prop_id_index];
+          valmax = part_valmax[prop_id_index];
 #endif
           dval = valmax - valmin;
           if(dval<=0.0)dval=1.0;
-          prop_id_index = prop_id-part5propinfo;
           partimin = parti->global_min[prop_id_index];
           partimax = parti->global_max[prop_id_index];
 
@@ -689,6 +687,7 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
       datacopy++;
     }
   }
+
   // erase data memory in a separate loop (so all "columns" are available when doing any conversions)
 
   for(i=0;i<npart5prop;i++){
@@ -704,7 +703,8 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
 #ifdef pp_NEWBOUND_DIALOG
     local_tmin = propi->user_min;
     local_tmax = propi->user_max;
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     if(propi->setvalmin==PERCENTILE_MIN){
       local_tmin = propi->percentile_min;
     }
@@ -723,6 +723,10 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
     else{
       local_tmax = propi->dlg_global_valmax;
     }
+#endif
+#ifdef pp_CPPBOUND_DIALOG
+      local_tmin = part_valmin[i];
+      local_tmax = part_valmax[i];
 #endif
     labels=propi->partlabels;
     ppartlevels256=propi->ppartlevels256;
@@ -743,6 +747,12 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
     Num2String(&labels[nlevel-1][0],tval);
     CheckMemory;
   }
+#ifdef pp_CPPBOUND_DIALOG
+  FREEMEMORY(part_set_valmin);
+  FREEMEMORY(part_valmin);
+  FREEMEMORY(part_set_valmax);
+  FREEMEMORY(part_valmax);
+#endif
 }
 
 /* ------------------ GetZoneColor ------------------------ */

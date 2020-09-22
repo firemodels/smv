@@ -55,6 +55,7 @@ class bounds_dialog{
   void set_min_all(int *set_valmin, float *valmin, int nvals);
   void set_max_all(int *set_valmax, float *valmax, int nvals);
   int set_valtype(char *label);
+  int get_nvaltypes(void);
   void set_valtype_index(int index);
   int get_valtype(void);
   int set_user_min(char *label, float valmin);
@@ -168,6 +169,12 @@ int bounds_dialog::set_valtype(char *label){
     }
   }
   return 0;
+}
+
+/* ------------------ get_nvaltypes ------------------------ */
+
+int bounds_dialog::get_nvaltypes(void){
+  return nall_bounds;
 }
 
 /* ------------------ set_valtype_index ------------------------ */
@@ -567,6 +574,26 @@ extern "C" int GetValType(int type){
   return 0;
 }
 
+/* ------------------ GetNValtypes ------------------------ */
+
+extern "C" int GetNValtypes(int type){
+  switch(type){
+    case BOUND_PATCH:
+      return patchboundsCPP.get_nvaltypes();
+      break;
+    case BOUND_PART:
+      return partboundsCPP.get_nvaltypes();
+      break;
+    case BOUND_PLOT3D:
+      return plot3dboundsCPP.get_nvaltypes();
+      break;
+    case BOUND_SLICE:
+      return sliceboundsCPP.get_nvaltypes();
+      break;
+  }
+  return 0;
+}
+
 /* ------------------ SetValTypeIndex ------------------------ */
 
 extern "C" void SetValTypeIndex(int type, int valtype_index){
@@ -854,6 +881,9 @@ void PartBoundsCPP_CB(int var){
   partboundsCPP.CB(var);
   switch(var){
     case BOUND_VAL_TYPE:
+      ipart5prop = GetValType(BOUND_PART);
+      ParticlePropShowMenu(ipart5prop);
+      break;
     case BOUND_VALMIN:
     case BOUND_VALMAX:
     case BOUND_SETVALMIN:
@@ -869,6 +899,8 @@ void PartBoundsCPP_CB(int var){
     case BOUND_UPDATE_COLORS:
       break;
     case BOUND_RELOAD_DATA:
+      LoadParticleMenu(PARTFILE_RELOADALL);
+      LoadEvacMenu(EVACFILE_RELOADALL);
       break;
   }
 }
@@ -1117,6 +1149,90 @@ void SetLoadedPlot3DBounds(int *list, int nlist){
   FREEMEMORY(valmin_dlg);
   FREEMEMORY(valmax_dlg);
 }
+
+/* ------------------ SetLoadedPartBounds ------------------------ */
+
+void SetLoadedPartBounds(int *list, int nlist){
+  float *valmin_dlg, *valmax_dlg, *valmin, *valmax;
+  int *set_valmin, *set_valmax, nall;
+  int i, j;
+  int npart_types;
+  
+
+  npart_types = GetNValtypes(BOUND_PART);
+
+  NewMemory((void **)&valmin,     npart_types*sizeof(float));
+  NewMemory((void **)&valmax,     npart_types*sizeof(float));
+  NewMemory((void **)&valmin_dlg, npart_types*sizeof(float));
+  NewMemory((void **)&valmax_dlg, npart_types*sizeof(float));
+  NewMemory((void **)&set_valmin, npart_types*sizeof(int));
+  NewMemory((void **)&set_valmax, npart_types*sizeof(int));
+
+  for(j = 0; j<npart_types; j++){
+    if(j==0){
+      valmin[j] = 0.0;
+      valmax[j] = 1.0;
+      continue;
+    }
+    else{
+      valmin[j] = 1.0;
+      valmax[j] = 0.0;
+    }
+    if(list==NULL)nlist = 0;
+    for(i = 0; i<nlist; i++){
+      float *file_min, *file_max;
+      partdata *parti;
+
+      parti = partinfo+list[i];
+      file_min = parti->file_min;
+      file_max = parti->file_max;
+      if(valmin[j]>valmax[j]){
+        valmin[j] = file_min[j-1];
+        valmax[j] = file_max[j-1];
+      }
+      else{
+        valmin[j] = MIN(valmin[j], file_min[j-1]);
+        valmax[j] = MAX(valmax[j], file_max[j-1]);
+      }
+    }
+
+    for(i = 0; i<npartinfo; i++){
+      float *file_min, *file_max;
+      partdata *parti;
+
+      parti = partinfo+i;
+      if(parti->loaded==0)continue;
+      file_min = parti->file_min;
+      file_max = parti->file_max;
+      if(valmin[j]>valmax[j]){
+        valmin[j] = file_min[j-1];
+        valmax[j] = file_max[j-1];
+      }
+      else{
+        valmin[j] = MIN(valmin[j], file_min[j-1]);
+        valmax[j] = MAX(valmax[j], file_max[j-1]);
+      }
+    }
+  }
+
+  GetMinMaxAll(BOUND_PART, set_valmin, valmin_dlg, set_valmax, valmax_dlg, &nall);
+  for(i = 0; i<nall; i++){
+    if(set_valmin[i]!=BOUND_LOADED_MIN){
+      valmin[i] = valmin_dlg[i];
+    }
+    if(set_valmax[i]!=BOUND_LOADED_MAX){
+      valmax[i] = valmax_dlg[i];
+    }
+  }
+  SetMinMaxAll(BOUND_PART, set_valmin, valmin, set_valmax, valmax, nall);
+  FREEMEMORY(valmin);
+  FREEMEMORY(valmax);
+  FREEMEMORY(set_valmin);
+  FREEMEMORY(set_valmax);
+  FREEMEMORY(valmin_dlg);
+  FREEMEMORY(valmax_dlg);
+}
+
 #endif
 
 int cb_up_rgb[3], cb_down_rgb[3];
@@ -2075,9 +2191,11 @@ extern "C" void UpdateEvacParms(void){
 
 /* ------------------ PartBoundCBInit ------------------------ */
 
+#ifndef pp_CPPBOUND_DIALOG
 extern "C" void PartBoundCBInit(void){
   PartBoundCB(FILETYPE_INDEX);
 }
+#endif
 
 
 /* ------------------ ColorTableCompare ------------------------ */
@@ -5055,6 +5173,12 @@ extern "C" void UpdateGluiStreakValue(float rvalue){
 
 extern "C" void IncrementPartPropIndex(void){
 #ifdef pp_CPPBOUND_DIALOG
+  if(npart5prop>0){
+    ipart5prop++;
+    if(ipart5prop>npart5prop-1)ipart5prop = 0;
+    ParticlePropShowMenu(ipart5prop);
+    SetValTypeIndex(BOUND_PART, ipart5prop);
+}
 #else
   if(npart5prop > 0){
     ipart5prop++;

@@ -3504,8 +3504,10 @@ void ParticlePropShowMenu(int value){
     partshortlabel=propi->label->shortlabel;
     partunitlabel=propi->label->unit;
 #define FILETYPE_INDEX 5
+#ifndef pp_CPPBOUND_DIALOG
     PartBoundCB(FILETYPE_INDEX);
     UpdatePartType();
+#endif
   }
   else if(value==MENU_PROP_SHOWALL){
     if(current_property!=NULL){
@@ -3674,6 +3676,22 @@ void SetupPart(int value, int option){
 
 #define SETVALMIN 1
 #define SETVALMAX 2
+#ifdef pp_CPPBOUND_DIALOG
+  int *list = NULL, nlist = 0;
+
+  NewMemory((void **)&list, npartinfo*sizeof(int));
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+
+    parti = partinfo+i;
+    if(option==PART&&parti->evac==1)continue;                 // don't load an evac file if part files are loaded
+    if(option==EVAC&&parti->evac==0)continue;                 // don't load a part file if evac files are loaded
+    if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
+    list[nlist++] = i;
+  }
+  SetLoadedPartBounds(list, nlist);
+  FREEMEMORY(list);
+#else
   if(research_mode == 1 && npartinfo> 0){
     GetGlobalPartBounds(0);
     setpartmin = GLOBAL_MIN;
@@ -3682,6 +3700,7 @@ void SetupPart(int value, int option){
     setpartmax = GLOBAL_MAX;
     PartBoundCB(SETVALMAX);
   }
+#endif
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
 
