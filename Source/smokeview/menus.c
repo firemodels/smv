@@ -4779,7 +4779,6 @@ FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
 #endif
   FILE_SIZE file_size = 0;
   int file_count=0;
-  float valmin, valmax;
 
   START_TIMER(load_time);
 #ifdef pp_SLICE_BUFFER
