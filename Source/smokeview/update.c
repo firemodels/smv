@@ -1936,6 +1936,10 @@ void UpdateDisplay(void){
     SetCacheFlag(BOUND_PATCH, cache_boundary_data);
     SetCacheFlag(BOUND_SLICE, cache_slice_data);
   }
+  if(update_chop_colors==1){
+    update_chop_colors = 1;
+    UpdateChopColors();
+  }
 #endif
   if(update_zaxis_custom == 1){
     update_zaxis_custom = 0;

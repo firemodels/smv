@@ -2023,6 +2023,9 @@ void Keyboard(unsigned char key, int flag){
         if(visiso==1&&cache_plot3d_data==1)UpdateSurface();
         UpdatePlot3dListIndex();
       }
+#ifdef pp_CPPBOUND_DIALOG
+      update_chop_colors = 1;
+#endif
       break;
     case 'q':
       blocklocation++;

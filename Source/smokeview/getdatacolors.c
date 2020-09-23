@@ -1673,6 +1673,79 @@ void UpdateChopColors(void){
   int ii;
   float transparent_level_local=1.0;
 
+  int   setpatchchopmin_local, setpatchchopmax_local;
+  float patchchopmin_local, patchchopmax_local;
+
+  int   glui_setslicechopmin_local, glui_setslicechopmax_local;
+  float glui_slicechopmin_local, glui_slicechopmax_local;
+
+  int setpartchopmin_local, setpartchopmax_local;
+  float glui_partmin_local, glui_partmax_local;
+  float partchopmin_local,  partchopmax_local;
+
+  int setp3chopmin_temp_local, setp3chopmax_temp_local;
+  float p3chopmin_temp_local, p3chopmax_temp_local;
+  float glui_p3min_local, glui_p3max_local;
+
+
+#ifdef pp_CPPBOUND_DIALOG
+  cpp_boundsdata *bounds;
+
+  bounds                = GetBoundsData(BOUND_PATCH);
+  setpatchchopmin_local = bounds->set_chopmin;
+  setpatchchopmax_local = bounds->set_chopmax;
+  patchchopmin_local    = bounds->chopmin;
+  patchchopmax_local    = bounds->chopmax;
+
+  bounds                     = GetBoundsData(BOUND_SLICE);
+  glui_setslicechopmin_local = bounds->set_chopmin;
+  glui_setslicechopmax_local = bounds->set_chopmax;
+  glui_slicechopmin_local    = bounds->chopmin;
+  glui_slicechopmax_local    = bounds->chopmax;
+
+  bounds               = GetBoundsData(BOUND_PART);
+  setpartchopmin_local = bounds->set_chopmin;
+  setpartchopmax_local = bounds->set_chopmin;
+  partchopmin_local    = bounds->chopmin;
+  partchopmax_local    = bounds->chopmin;
+  glui_partmin_local   = bounds->valmin[bounds->set_valmin];
+  glui_partmax_local   = bounds->valmax[bounds->set_valmax];
+
+  bounds                  = GetBoundsData(BOUND_PLOT3D);
+  setp3chopmin_temp_local = bounds->set_chopmin;
+  setp3chopmax_temp_local = bounds->set_chopmax;
+  p3chopmin_temp_local    = bounds->chopmin;
+  p3chopmax_temp_local    = bounds->chopmax;
+  glui_p3min_local        = bounds->valmin[bounds->set_valmin];
+  glui_p3max_local        = bounds->valmax[bounds->set_valmax];
+#else
+  setpatchchopmin_local = setpatchchopmin;
+  setpatchchopmax_local = setpatchchopmax;
+  setpatchmin_local     = setpatchmin;
+  setpatchmax_local     = setpatchmax;
+  patchchopmin_local    = patchchopmin;
+  patchchopmax_local    = patchchopmax;
+
+  glui_setslicechopmin_local = glui_setslicechopmin;
+  glui_slicechopmin_local    = glui_slicechopmin;
+  glui_setslicechopmax_local = glui_setslicechopmax;
+  glui_slicechopmax_local    = glui_slicechopmax;
+
+  setpartchopmin_local = setpartchopmin;
+  setpartchopmax_local = setpartchopmax;
+  glui_partmin_local   = glui_partmin;
+  glui_partmax_local   = glui_partmax;
+  partchopmin_local    = partchopmin;
+  partchopmax_local    = partchopmax;
+
+  setp3chopmin_temp_local = setp3chopmin_temp;
+  setp3chopmax_temp_local = setp3chopmax_temp;
+  glui_p3min_local = glui_p3min;
+  glui_p3max_local = glui_p3max;
+  p3chopmin_temp_local = p3chopmin_temp;
+  p3chopmax_temp_local = p3chopmax_temp;
+#endif
+
   if(use_transparency_data==1)transparent_level_local=transparent_level;
 
   for(i=0;i<nrgb_full;i++){
@@ -1758,8 +1831,8 @@ void UpdateChopColors(void){
     smin = boundarylevels256[0];
     smax = boundarylevels256[255];
 
-    if(setpatchchopmin==1){
-      ichopmin=nrgb_full*(patchchopmin-smin)/(smax-smin);
+    if(setpatchchopmin_local==1){
+      ichopmin=nrgb_full*(patchchopmin_local-smin)/(smax-smin);
       if(ichopmin<0)ichopmin=0;
       if(ichopmin>nrgb_full-1)ichopmin=nrgb_full-1;
       for(i=0;i<ichopmin;i++){
@@ -1773,8 +1846,8 @@ void UpdateChopColors(void){
         rgb_patch[4*i+3]=transparent_level_local*(float)ii/(float)(NCHOP-1);
       }
     }
-    if(setpatchchopmax==1){
-      ichopmax=nrgb_full*(patchchopmax - smin)/(smax-smin);
+    if(setpatchchopmax_local==1){
+      ichopmax=nrgb_full*(patchchopmax_local - smin)/(smax-smin);
       if(ichopmax<0)ichopmax=0;
       if(ichopmax>nrgb_full-1)ichopmax=nrgb_full-1;
       for(i=ichopmax;i<nrgb_full;i++){
@@ -1795,8 +1868,8 @@ void UpdateChopColors(void){
     smin=slicebounds[slicefile_labelindex].dlg_valmin;
     smax=slicebounds[slicefile_labelindex].dlg_valmax;
 
-    if(glui_setslicechopmin==1){
-      ichopmin=nrgb_full*(glui_slicechopmin-smin)/(smax-smin);
+    if(glui_setslicechopmin_local==1){
+      ichopmin=nrgb_full*(glui_slicechopmin_local-smin)/(smax-smin);
       if(ichopmin<0)ichopmin=0;
       if(ichopmin>nrgb_full-1)ichopmin=nrgb_full-1;
       for(i=0;i<ichopmin;i++){
@@ -1810,8 +1883,8 @@ void UpdateChopColors(void){
         rgb_slice[4*i+3]=transparent_level_local*(float)ii/(float)(NCHOP-1);
       }
     }
-    if(glui_setslicechopmax==1){
-      ichopmax=nrgb_full*(glui_slicechopmax - smin)/(smax-smin);
+    if(glui_setslicechopmax_local==1){
+      ichopmax=nrgb_full*(glui_slicechopmax_local - smin)/(smax-smin);
       if(ichopmax<0)ichopmax=0;
       if(ichopmax>nrgb_full-1)ichopmax=nrgb_full-1;
       for(i=ichopmax;i<nrgb_full;i++){
@@ -1827,9 +1900,9 @@ void UpdateChopColors(void){
     }
   }
 
-  if(glui_partmax>glui_partmin){
-    if(setpartchopmin==1){
-      ichopmin=nrgb_full*(partchopmin - glui_partmin)/(glui_partmax-glui_partmin);
+  if(glui_partmax_local>glui_partmin_local){
+    if(setpartchopmin_local==1){
+      ichopmin=nrgb_full*(partchopmin_local - glui_partmin_local)/(glui_partmax_local-glui_partmin_local);
       if(ichopmin<0)ichopmin=0;
       if(ichopmin>nrgb_full-1)ichopmin=nrgb_full-1;
       for(i=0;i<ichopmin;i++){
@@ -1843,8 +1916,8 @@ void UpdateChopColors(void){
         rgb_part[4*i+3]=transparent_level_local*(float)ii/(float)(NCHOP-1);
       }
     }
-    if(setpartchopmax==1){
-      ichopmax=nrgb_full*(partchopmax - glui_partmin)/(glui_partmax - glui_partmin);
+    if(setpartchopmax_local==1){
+      ichopmax=nrgb_full*(partchopmax_local - glui_partmin_local)/(glui_partmax_local - glui_partmin_local);
       if(ichopmax<0)ichopmax=0;
       if(ichopmax>nrgb_full-1)ichopmax=nrgb_full-1;
       for(i=ichopmax;i<nrgb_full;i++){
@@ -1859,9 +1932,10 @@ void UpdateChopColors(void){
       }
     }
   }
-  if(glui_p3max> glui_p3min){
-    if(setp3chopmin_temp==1){
-      ichopmin=nrgb_full*(p3chopmin_temp- glui_p3min)/(glui_p3max - glui_p3min);
+
+  if(glui_p3max_local> glui_p3min_local){
+    if(setp3chopmin_temp_local==1){
+      ichopmin=nrgb_full*(p3chopmin_temp_local - glui_p3min_local)/(glui_p3max_local - glui_p3min_local);
       if(ichopmin<0)ichopmin=0;
       if(ichopmin>nrgb_full-1)ichopmin=nrgb_full-1;
       for(i=0;i<ichopmin;i++){
@@ -1875,8 +1949,8 @@ void UpdateChopColors(void){
         rgb_plot3d[4*i+3]=transparent_level_local*(float)ii/(float)(NCHOP-1);
       }
     }
-    if(setp3chopmax_temp==1){
-      ichopmax=nrgb_full*(p3chopmax_temp - glui_p3min)/(glui_p3max - glui_p3min);
+    if(setp3chopmax_temp_local==1){
+      ichopmax=nrgb_full*(p3chopmax_temp_local - glui_p3min_local)/(glui_p3max_local - glui_p3min_local);
       if(ichopmax<0)ichopmax=0;
       if(ichopmax>nrgb_full-1)ichopmax=nrgb_full-1;
       for(i=ichopmax;i<nrgb_full;i++){
