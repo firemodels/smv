@@ -1721,8 +1721,6 @@ void UpdateChopColors(void){
 #else
   setpatchchopmin_local = setpatchchopmin;
   setpatchchopmax_local = setpatchchopmax;
-  setpatchmin_local     = setpatchmin;
-  setpatchmax_local     = setpatchmax;
   patchchopmin_local    = patchchopmin;
   patchchopmax_local    = patchchopmax;
 
