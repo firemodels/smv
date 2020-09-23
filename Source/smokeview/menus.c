@@ -6969,7 +6969,7 @@ updatemenu=0;
       else{
         char chari[4];
 
-        if(plotiso[plotn]==i&&visiso==1){
+        if(plotiso[plotn-1]==i&&visiso==1){
           sprintf(chari,"*%i",i+1);
         }
         else{
