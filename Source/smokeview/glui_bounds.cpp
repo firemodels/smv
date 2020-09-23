@@ -4604,7 +4604,9 @@ extern "C" void UpdateChar(void){
 /* ------------------ UpdatePlot3dListIndex ------------------------ */
 
 extern "C" void UpdatePlot3dListIndex(void){
+#ifndef pp_CPPBOUND_DIALOG
   int i;
+#endif
 
 #ifdef pp_CPPBOUND_DIALOG
   SetValTypeIndex(BOUND_PLOT3D, plotn-1);
