@@ -1542,6 +1542,36 @@ void PrintGPUState(void){
 }
 #endif
 
+/* ------------------ IsPartLoaded ------------------------ */
+
+int IsPartLoaded(void){
+  int i;
+
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+
+    parti = partinfo+i;
+    if(parti->loaded==0||parti->display==0)continue;
+    return 1;
+  }
+  return 0;
+}
+
+/* ------------------ IsPlot3DLoaded ------------------------ */
+
+int IsPlot3DLoaded(void){
+  int i;
+
+  for(i = 0; i<nplot3dinfo; i++){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo+i;
+    if(plot3di->loaded==0||plot3di->display==0)continue;
+    return 1;
+  }
+  return 0;
+}
+
 /* ------------------ Keyboard ------------------------ */
 
 void Keyboard(unsigned char key, int flag){
@@ -1977,19 +2007,22 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'p':
-      IncrementPartPropIndex();
-      break;
     case 'P':
-      plotn += FlowDir;
-      if(plotn<1){
-        plotn=numplot3dvars;
+      if(IsPartLoaded()==1){
+        IncrementPartPropIndex();
       }
-      if(plotn>numplot3dvars){
-        plotn=1;
+      if(IsPlot3DLoaded()==1){
+        plotn += FlowDir;
+        if(plotn<1){
+          plotn = numplot3dvars;
+        }
+        if(plotn>numplot3dvars){
+          plotn = 1;
+        }
+        UpdateAllPlotSlices();
+        if(visiso==1&&cache_plot3d_data==1)UpdateSurface();
+        UpdatePlot3dListIndex();
       }
-      UpdateAllPlotSlices();
-      if(visiso==1&& cache_plot3d_data==1)UpdateSurface();
-      UpdatePlot3dListIndex();
       break;
     case 'q':
       blocklocation++;
