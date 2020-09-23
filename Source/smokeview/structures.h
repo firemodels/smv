@@ -1340,7 +1340,7 @@ typedef struct _cpp_boundsdata {
   int set_valmin, set_valmax, set_chopmin, set_chopmax;
   float valmin[3], valmax[3], chopmin, chopmax;
   float glui_valmin, glui_valmax;
-  int set_valtype, keep_data;
+  int set_valtype, cache;
 } cpp_boundsdata;
 #endif
 /* --------------------------  boundsdata ------------------------------------ */

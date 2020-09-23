@@ -5151,10 +5151,22 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     //if(flag!=RESETBOUNDS)update_research_mode=1;
     if(use_set_slicecolor==0||set_slicecolor==SET_SLICECOLOR){
       if(sd->compression_type==UNCOMPRESSED){
+#ifdef pp_CPPBOUND_DIALOG
+        for(i = 0; i<nsliceinfo; i++){
+          int errorcode;
+          slicedata *slicei;
+
+          slicei = sliceinfo+i;
+          if(slicei->loaded==0)continue;
+          if(slicei->slicefile_labelindex!=slicefile_labelindex)continue;
+          SetSliceColors(qmin, qmax, slicei, &errorcode);
+        }
+#else
         UpdateSliceBounds();
         UpdateAllSliceColors(slicefile_labelindex, errorcode);
         list_slice_index = slicefile_labelindex;
         SliceBounds2Glui(slicefile_labelindex);
+#endif
       }
       else{
         boundsdata *sb;
@@ -5186,13 +5198,11 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     IdleCB();
   }
 
-  exportdata = 1;
-  if(exportdata == 0){
+  if(cache_slice_data == 0){
     FREEMEMORY(sd->qslicedata);
   }
 
   STOP_TIMER(total_time);
-
 
   if(time_frame==ALL_SLICE_FRAMES&&flag != RESETBOUNDS){
     if(file_size>1000000000){
@@ -6532,7 +6542,7 @@ void DrawSliceFrame(){
       }
       sd->qsliceframe=NULL;
 #ifdef pp_MEMDEBUG
-      if(sd->compression_type==UNCOMPRESSED){
+      if(sd->compression_type==UNCOMPRESSED&&sd->qslicedata!=NULL){
         ASSERT(ValidPointer(sd->qslicedata,sizeof(float)*sd->nslicetotal));
       }
 #endif

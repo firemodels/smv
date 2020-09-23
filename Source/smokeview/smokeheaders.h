@@ -42,6 +42,8 @@ EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, flo
 EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(void);
 #ifdef pp_CPPBOUND_DIALOG
+EXTERNCPP void SetCacheFlag(int type, int cache_flag);
+EXTERNCPP int GetCacheFlag(int type);
 EXTERNCPP void SetValTypeIndex(int type, int valtype_index);
 EXTERNCPP int GetNValtypes(int type);
 EXTERNCPP int GetValType(int type);

@@ -1468,7 +1468,6 @@ void InitVars(void){
   startup_pass=1;
 
   slicefilenumber=0;
-  exportdata=0;
   nspr=0;
   smoke3dframestep=1;
   smoke3dframeskip=0;

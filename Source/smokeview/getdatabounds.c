@@ -156,7 +156,7 @@ int GetGlobalPartBounds(int flag){
         }
       }
       
-      boundscppi->keep_data = 0;
+      boundscppi->cache = cache_part_data;
       boundscppi->set_valtype = 0;
       if(i==0){
         valmin = 0.0;
@@ -298,7 +298,7 @@ void GetGlobalPatchBounds(void){
         strcpy(boundscppi->unit, boundi->label->unit);
       }
       
-      boundscppi->keep_data = 0;
+      boundscppi->cache = cache_boundary_data;
       boundscppi->set_valtype = 0;
 
       boundscppi->set_valmin = 0;
@@ -401,7 +401,7 @@ void GetGlobalPlot3DBounds(void){
       strcpy(boundscppi->label, plot3dinfo->label[i].shortlabel);
       strcpy(boundscppi->unit, plot3dinfo->label[i].unit);
 
-      boundscppi->keep_data = 0;
+      boundscppi->cache = cache_plot3d_data;
       boundscppi->set_valtype = 0;
 
       boundscppi->set_valmin = 0;
@@ -530,7 +530,7 @@ void GetGlobalSliceBounds(void){
         strcpy(boundscppi->unit, boundi->label->unit);
       }
       
-      boundscppi->keep_data = 0;
+      boundscppi->cache = cache_slice_data;
       boundscppi->set_valtype = 0;
 
       boundscppi->set_valmin = 0;

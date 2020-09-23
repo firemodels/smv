@@ -1929,6 +1929,13 @@ void UpdateDisplay(void){
     update_glui_bounds = 0;
     UpdateGluiBounds();
   }
+  if(update_cache_data==1){
+    update_cache_data = 0;
+    SetCacheFlag(BOUND_PLOT3D, cache_plot3d_data);
+    SetCacheFlag(BOUND_PART, cache_part_data);
+    SetCacheFlag(BOUND_PATCH, cache_boundary_data);
+    SetCacheFlag(BOUND_SLICE, cache_slice_data);
+  }
 #endif
   if(update_zaxis_custom == 1){
     update_zaxis_custom = 0;

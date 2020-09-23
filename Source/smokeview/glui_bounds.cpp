@@ -40,12 +40,14 @@ class bounds_dialog{
   int nall_bounds;
   
   GLUI_EditText *EDIT_valmin, *EDIT_valmax, *EDIT_chopmin, *EDIT_chopmax;
-  GLUI_Checkbox *CHECKBOX_set_chopmin, *CHECKBOX_set_chopmax, *CHECKBOX_keep_data;
+  GLUI_Checkbox *CHECKBOX_set_chopmin, *CHECKBOX_set_chopmax, *CHECKBOX_cache;
   GLUI_RadioGroup *RADIO_set_valtype,  *RADIO_set_valmin, *RADIO_set_valmax;
   GLUI_Button *BUTTON_update_colors, *BUTTON_reload_data;
   GLUI_Panel *PANEL_min, *PANEL_max;
   GLUI_StaticText *STATIC_min, *STATIC_max, *STATIC_chopmin, *STATIC_chopmax, *STATIC_research;
 
+  void set_cache_flag(int cache_flag);
+  int get_cache_flag(void);
   void set_research_mode(int flag);
   int get_min(char *label, int *set_valmin, float *valmin);
   int get_max(char *label, int *set_valmax, float *valmax);
@@ -62,7 +64,7 @@ class bounds_dialog{
   int set_chopmin(char *label, int set_valmin, float valmin);
   int set_chopmax(char *label, int set_valmax, float valmax);
   void CB(int var);
-  void setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds, int nbounds, void Callback(int var));
+  void setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds, int nbounds, int *cache_flag, int cache_enable, void Callback(int var));
   bounds_dialog(void);
 };
 
@@ -71,7 +73,24 @@ class bounds_dialog{
 bounds_dialog::bounds_dialog(void){
 }
 
-/* ------------------ set_research_mode ------------------------ */
+/* ------------------ set_cache_flag ------------------------ */
+
+void bounds_dialog::set_cache_flag(int cache_flag){
+  if(cache_flag!=1)cache_flag = 0;
+  bounds.cache = cache_flag;
+  if(CHECKBOX_cache!=NULL){
+    CHECKBOX_cache->set_int_val(cache_flag);
+    CB(BOUND_KEEP_DATA);
+  }
+}
+
+/* ------------------ get_cache_flag ------------------------ */
+
+int bounds_dialog::get_cache_flag(void){
+  return bounds.cache;
+}
+
+  /* ------------------ set_research_mode ------------------------ */
 
 void bounds_dialog::set_research_mode(int flag){
   int i;
@@ -94,7 +113,7 @@ void bounds_dialog::set_research_mode(int flag){
 
 /* ------------------ setup ------------------------ */
 
-void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_arg, int nbounds_arg, void Callback(int var)){
+void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_arg, int nbounds_arg, int *cache_flag, int cache_enable, void Callback(int var)){
   GLUI_Rollout *ROLLOUT_bound;
   GLUI_Panel *PANEL_buttons, *PANEL_bound, *PANEL_bound2;
   GLUI_Panel *PANEL_truncate, *PANEL_truncate_min, *PANEL_truncate_max;
@@ -143,8 +162,13 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "global min");
 
   PANEL_buttons        = glui_bounds->add_panel_to_panel(PANEL_bound, "", GLUI_PANEL_NONE);
-  CHECKBOX_keep_data   = glui_bounds->add_checkbox_to_panel(PANEL_buttons, "Cache data", &(bounds.keep_data), BOUND_KEEP_DATA, Callback);
-  BUTTON_update_colors = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
+  if(cache_flag!=NULL){
+    bounds.cache = *cache_flag;
+    if(cache_enable==1){
+      CHECKBOX_cache = glui_bounds->add_checkbox_to_panel(PANEL_buttons, "Cache data", &(bounds.cache), BOUND_KEEP_DATA, Callback);
+    }
+    BUTTON_update_colors = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
+  }
   BUTTON_reload_data   = glui_bounds->add_button_to_panel(PANEL_buttons, "Reload data", BOUND_RELOAD_DATA, Callback);
 
 //*** chop above/below
@@ -170,6 +194,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   Callback(BOUND_VAL_TYPE);
   Callback(BOUND_SETCHOPMIN);
   Callback(BOUND_SETCHOPMAX);
+  Callback(BOUND_KEEP_DATA);
   update_ini = 1;
 }
 
@@ -427,7 +452,7 @@ void bounds_dialog::CB(int var){
       STATIC_max->set_name(bounds.unit);
       STATIC_chopmax->set_name(bounds.unit);
 
-      CHECKBOX_keep_data->set_int_val(bounds.keep_data);
+      if(CHECKBOX_cache!=NULL)CHECKBOX_cache->set_int_val(bounds.cache);
       break;
 
       // min/max edit boxes
@@ -484,7 +509,16 @@ void bounds_dialog::CB(int var){
 
       // keep data checkbox
     case BOUND_KEEP_DATA:
-      memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
+      {
+        int i;
+      
+        for(i = 0; i<nall_bounds; i++){
+          cpp_boundsdata *boundi;
+
+          boundi = all_bounds+i;
+          boundi->cache = bounds.cache;
+        }
+      }
       break;
 
       // enable/disable controls
@@ -516,6 +550,45 @@ extern "C" void SetResearchMode(int flag){
   sliceboundsCPP.set_research_mode(flag);
   partboundsCPP.set_research_mode(flag);
   plot3dboundsCPP.set_research_mode(flag);
+}
+
+/* ------------------ SetCacheFlag ------------------------ */
+
+extern "C" void SetCacheFlag(int type, int cache_flag){
+  switch(type){
+    case BOUND_PATCH:
+      patchboundsCPP.set_cache_flag(cache_flag);
+      break;
+    case BOUND_PART:
+      partboundsCPP.set_cache_flag(cache_flag);
+      break;
+    case BOUND_PLOT3D:
+      plot3dboundsCPP.set_cache_flag(cache_flag);
+      break;
+    case BOUND_SLICE:
+      sliceboundsCPP.set_cache_flag(cache_flag);
+      break;
+  }
+}
+
+/* ------------------ GetCacheFlag ------------------------ */
+
+extern "C" int GetCacheFlag(int type){
+  switch(type){
+    case BOUND_PATCH:
+      return patchboundsCPP.get_cache_flag();
+      break;
+    case BOUND_PART:
+      return partboundsCPP.get_cache_flag();
+      break;
+    case BOUND_PLOT3D:
+      return plot3dboundsCPP.get_cache_flag();
+      break;
+    case BOUND_SLICE:
+      return sliceboundsCPP.get_cache_flag();
+      break;
+  }
+  return 0;
 }
 
 /* ------------------ UpdateGluiBounds ------------------------ */
@@ -747,9 +820,11 @@ void SliceBoundsCPP_CB(int var){
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
-    case BOUND_KEEP_DATA:
     case BOUND_DISABLE:
     case BOUND_ENABLE:
+      break;
+    case BOUND_KEEP_DATA:
+      cache_slice_data = GetCacheFlag(BOUND_SLICE);
       break;
     case BOUND_UPDATE_COLORS:
       SetLoadedSliceBounds(NULL, 0);
@@ -805,9 +880,11 @@ void Plot3DBoundsCPP_CB(int var){
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
-    case BOUND_KEEP_DATA:
     case BOUND_DISABLE:
     case BOUND_ENABLE:
+      break;
+    case BOUND_KEEP_DATA:
+      cache_plot3d_data = GetCacheFlag(BOUND_PLOT3D);
       break;
     case BOUND_UPDATE_COLORS:
       UpdateAllPlot3DColors();
@@ -838,9 +915,12 @@ void PartBoundsCPP_CB(int var){
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
-    case BOUND_KEEP_DATA:
     case BOUND_DISABLE:
     case BOUND_ENABLE:
+      break;
+    case BOUND_KEEP_DATA:
+   // not implemented yet
+   //   cache_oart_data = GetCacheFlag(BOUND_PART);
       break;
     case BOUND_UPDATE_COLORS:
       break;
@@ -870,9 +950,11 @@ void PatchBoundsCPP_CB(int var){
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
-    case BOUND_KEEP_DATA:
     case BOUND_DISABLE:
     case BOUND_ENABLE:
+      break;
+    case BOUND_KEEP_DATA:
+      cache_boundary_data = GetCacheFlag(BOUND_PATCH);
       break;
     case BOUND_UPDATE_COLORS:
       SetLoadedPatchBounds(NULL, 0);
@@ -2958,7 +3040,7 @@ void GenerateBoundDialogs(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_roll
   GLUI_StaticText **STATIC_con_min_unit, GLUI_StaticText **STATIC_con_max_unit,
   GLUI_StaticText **STATIC_con_cmin_unit, GLUI_StaticText **STATIC_con_cmax_unit,
   GLUI_Button **BUTTON_update, GLUI_Button **BUTTON_reload,
-  GLUI_Panel **PANEL_bound, GLUI_Panel **PANEL_keep_data, int *cache_data,
+  GLUI_Panel **PANEL_bound, GLUI_Panel **PANEL_cache, int *cache_data,
 
   int *setminval, int *setmaxval,
   float *minval, float *maxval,
@@ -3034,11 +3116,11 @@ void GenerateBoundDialogs(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_roll
     glui_bounds->add_button_to_panel(PANEL_c, button_title, FILE_RELOAD, FILE_CB);
   }
   else{
-    if(PANEL_keep_data!=NULL){
+    if(PANEL_cache!=NULL){
       glui_bounds->add_checkbox_to_panel(PANEL_c, _("Keep data after loading"), cache_data, CACHE_DATA, FILE_CB);
-      *PANEL_keep_data = glui_bounds->add_panel_to_panel(PANEL_c, "", GLUI_PANEL_NONE);
+      *PANEL_cache = glui_bounds->add_panel_to_panel(PANEL_c, "", GLUI_PANEL_NONE);
       if(BUTTON_update!=NULL){
-        *BUTTON_update = glui_bounds->add_button_to_panel(*PANEL_keep_data, _("Update coloring"), UPDATE_DATA_COLORS, FILE_CB);
+        *BUTTON_update = glui_bounds->add_button_to_panel(*PANEL_cache, _("Update coloring"), UPDATE_DATA_COLORS, FILE_CB);
         FILE_CB(CACHE_DATA);
       }
     }
@@ -3345,7 +3427,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
-  patchboundsCPP.setup(ROLLOUT_bound, patchbounds_cpp, npatchbounds_cpp, PatchBoundsCPP_CB);
+    patchboundsCPP.setup(ROLLOUT_bound, patchbounds_cpp, npatchbounds_cpp, &cache_boundary_data, 1, PatchBoundsCPP_CB);
 #endif
 
 #ifdef pp_OLDBOUND_DIALOG
@@ -3639,7 +3721,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
-      partboundsCPP.setup(ROLLOUT_part, partbounds_cpp, npartbounds_cpp, PartBoundsCPP_CB);
+      partboundsCPP.setup(ROLLOUT_part, partbounds_cpp, npartbounds_cpp, NULL, 1, PartBoundsCPP_CB);
 #endif
 
 
@@ -3727,7 +3809,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
-    plot3dboundsCPP.setup(ROLLOUT_plot3d, plot3dbounds_cpp, nplot3dbounds_cpp, Plot3DBoundsCPP_CB);
+    plot3dboundsCPP.setup(ROLLOUT_plot3d, plot3dbounds_cpp, nplot3dbounds_cpp, &cache_plot3d_data, 1, Plot3DBoundsCPP_CB);
 #endif
 
     ROLLOUT_vector = glui_bounds->add_rollout_to_panel(ROLLOUT_plot3d,_("Vector"),false,PLOT3D_VECTOR_ROLLOUT, Plot3dRolloutCB);
@@ -3839,7 +3921,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     );
 #endif
 #ifdef pp_CPPBOUND_DIALOG
-    sliceboundsCPP.setup(ROLLOUT_slice, slicebounds_cpp, nslicebounds_cpp, SliceBoundsCPP_CB);
+    sliceboundsCPP.setup(ROLLOUT_slice, slicebounds_cpp, nslicebounds_cpp, &cache_slice_data, 0, SliceBoundsCPP_CB);
 #endif
 
     ROLLOUT_slice_histogram = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _("Histogram"), false, SLICE_HISTOGRAM_ROLLOUT, SliceRolloutCB);

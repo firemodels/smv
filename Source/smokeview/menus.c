@@ -5100,7 +5100,6 @@ void Plot3DListMenu(int value){
     fprintf(scriptoutstream,"LOADPLOT3D\n");
     fprintf(scriptoutstream," %f\n",plot3dtimelist[value]);
   }
-
 #ifdef pp_CPPBOUND_DIALOG
   int *list=NULL, nlist = 0;
   NewMemory((void **)&list, nplot3dinfo*sizeof(int));
@@ -5111,21 +5110,21 @@ void Plot3DListMenu(int value){
     }
   }
   SetLoadedPlot3DBounds(list, nlist);
-#endif
+  ReadPlot3dFile = 1;
+  for(i=0;i<nlist;i++){
+    int errorcode;
+
+    plot3di = plot3dinfo + list[i];
+    ReadPlot3D(plot3di->file, i, LOAD, &errorcode);
+  }
+  FREEMEMORY(list);
+#else
   for(i=0;i<nplot3dinfo;i++){
     plot3di = plot3dinfo + i;
     if(ABS(plot3di->time-plot3dtimelist[value])<0.5){
-#ifdef pp_CPPBOUND_DIALOG
-      int errorcode;
-
-      ReadPlot3D(plot3di->file, i, LOAD, &errorcode);
-#else
       LoadPlot3dMenu(i);
-#endif
     }
   }
-#ifdef pp_CPPBOUND_DIALOG
-  FREEMEMORY(list);
 #endif
 }
 
