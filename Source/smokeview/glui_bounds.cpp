@@ -31,20 +31,21 @@ GLUI *glui_bounds=NULL;
 #define BOUND_KEEP_DATA     112
 #define BOUND_DISABLE       113
 #define BOUND_ENABLE        114
+#define BOUND_RESEARCH_MODE 115
 
 //*** bounds class
 
 class bounds_dialog{
   public:
   cpp_boundsdata bounds, *all_bounds;
-  int nall_bounds;
+  int nall_bounds, research_mode_cpp;
   
   GLUI_EditText *EDIT_valmin, *EDIT_valmax, *EDIT_chopmin, *EDIT_chopmax;
-  GLUI_Checkbox *CHECKBOX_set_chopmin, *CHECKBOX_set_chopmax, *CHECKBOX_cache;
+  GLUI_Checkbox *CHECKBOX_set_chopmin, *CHECKBOX_set_chopmax, *CHECKBOX_cache, *CHECKBOX_research_mode;
   GLUI_RadioGroup *RADIO_set_valtype,  *RADIO_set_valmin, *RADIO_set_valmax;
   GLUI_Button *BUTTON_update_colors, *BUTTON_reload_data;
   GLUI_Panel *PANEL_min, *PANEL_max;
-  GLUI_StaticText *STATIC_min_unit, *STATIC_max_unit, *STATIC_chopmin_unit, *STATIC_chopmax_unit, *STATIC_research;
+  GLUI_StaticText *STATIC_min_unit, *STATIC_max_unit, *STATIC_chopmin_unit, *STATIC_chopmax_unit;
 
   void set_cache_flag(int cache_flag);
   int get_cache_flag(void);
@@ -116,23 +117,27 @@ void bounds_dialog::set_research_mode(int flag){
   else{
     CB(BOUND_ENABLE);
   }
+  research_mode = flag;
+  research_mode_cpp = flag;
+  CHECKBOX_research_mode->set_int_val(research_mode_cpp);
 }
 
 /* ------------------ setup ------------------------ */
 
 void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_arg, int nbounds_arg, int *cache_flag, int cache_enable, void Callback(int var)){
-  GLUI_Rollout *ROLLOUT_bound;
-  GLUI_Panel *PANEL_buttons, *PANEL_bound, *PANEL_bound2;
-  GLUI_Panel *PANEL_truncate, *PANEL_truncate_min, *PANEL_truncate_max;
+  GLUI_Rollout *ROLLOUT_main_bound, *ROLLOUT_bound, *ROLLOUT_truncate;
+  GLUI_Panel *PANEL_buttons, *PANEL_bound2;
+  GLUI_Panel *PANEL_truncate_min, *PANEL_truncate_max;
   int i;
 
   all_bounds = bounds_arg;
   nall_bounds = nbounds_arg;
+  research_mode_cpp = research_mode;
 
 // bound min/max
-  ROLLOUT_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_dialog, _("Bound/Truncate data"), false);
+  ROLLOUT_main_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_dialog, _("Bound/Truncate data"), false);
 
-  PANEL_bound2 = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
+  PANEL_bound2 = glui_bounds->add_panel_to_panel(ROLLOUT_main_bound, "", GLUI_PANEL_NONE);
 
   RADIO_set_valtype = glui_bounds->add_radiogroup_to_panel(PANEL_bound2, &(bounds.set_valtype), BOUND_VAL_TYPE, Callback);
   for(i = 0; i<nall_bounds; i++){
@@ -141,12 +146,12 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
     boundi = all_bounds+i;
     glui_bounds->add_radiobutton_to_group(RADIO_set_valtype, boundi->label);
   }
+  CHECKBOX_research_mode = glui_bounds->add_checkbox_to_panel(PANEL_bound2, _("research mode"), &research_mode, BOUND_RESEARCH_MODE, Callback);
 
   glui_bounds->add_column_to_panel(PANEL_bound2, false);
 
-  PANEL_bound = glui_bounds->add_panel_to_panel(PANEL_bound2, "Bound");
-  STATIC_research = glui_bounds->add_statictext_to_panel(PANEL_bound, "");
-  PANEL_max = glui_bounds->add_panel_to_panel(PANEL_bound, "", GLUI_PANEL_NONE);
+  ROLLOUT_bound = glui_bounds->add_rollout_to_panel(PANEL_bound2, "Bound");
+  PANEL_max = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
   EDIT_valmax = glui_bounds->add_edittext_to_panel(PANEL_max, "", GLUI_EDITTEXT_FLOAT, &(bounds.glui_valmax), BOUND_VALMAX, Callback);
   glui_bounds->add_column_to_panel(PANEL_max, false);
   STATIC_max_unit = glui_bounds->add_statictext_to_panel(PANEL_max, "");
@@ -157,7 +162,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "loaded max");
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "global max");
 
-  PANEL_min = glui_bounds->add_panel_to_panel(PANEL_bound, "", GLUI_PANEL_NONE);
+  PANEL_min = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
   EDIT_valmin = glui_bounds->add_edittext_to_panel(PANEL_min, "", GLUI_EDITTEXT_FLOAT, &(bounds.glui_valmin), BOUND_VALMIN, Callback);
   glui_bounds->add_column_to_panel(PANEL_min, false);
   STATIC_min_unit = glui_bounds->add_statictext_to_panel(PANEL_min, "");
@@ -168,7 +173,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "loaded min");
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "global min");
 
-  PANEL_buttons        = glui_bounds->add_panel_to_panel(PANEL_bound, "", GLUI_PANEL_NONE);
+  PANEL_buttons        = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
   if(cache_flag!=NULL){
     bounds.cache = *cache_flag;
     if(cache_enable==1){
@@ -180,9 +185,9 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
 
 //*** chop above/below
 
-  PANEL_truncate = glui_bounds->add_panel_to_panel(PANEL_bound2, "Truncate");
+  ROLLOUT_truncate = glui_bounds->add_rollout_to_panel(PANEL_bound2, "Truncate",false);
 
-  PANEL_truncate_max = glui_bounds->add_panel_to_panel(PANEL_truncate, "", GLUI_PANEL_NONE);
+  PANEL_truncate_max = glui_bounds->add_panel_to_panel(ROLLOUT_truncate, "", GLUI_PANEL_NONE);
   EDIT_chopmax = glui_bounds->add_edittext_to_panel(PANEL_truncate_max, "", GLUI_EDITTEXT_FLOAT, &(bounds.chopmax), BOUND_CHOPMAX, Callback);
   glui_bounds->add_column_to_panel(PANEL_truncate_max, false);
   STATIC_chopmax_unit = glui_bounds->add_statictext_to_panel(PANEL_truncate_max, "");
@@ -190,7 +195,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   glui_bounds->add_column_to_panel(PANEL_truncate_max, false);
   CHECKBOX_set_chopmax = glui_bounds->add_checkbox_to_panel(PANEL_truncate_max, _("Above"), &(bounds.set_chopmax), BOUND_SETCHOPMAX, Callback);
 
-  PANEL_truncate_min = glui_bounds->add_panel_to_panel(PANEL_truncate, "", GLUI_PANEL_NONE);
+  PANEL_truncate_min = glui_bounds->add_panel_to_panel(ROLLOUT_truncate, "", GLUI_PANEL_NONE);
   EDIT_chopmin = glui_bounds->add_edittext_to_panel(PANEL_truncate_min, "", GLUI_EDITTEXT_FLOAT, &(bounds.chopmin), BOUND_CHOPMIN, Callback);
   glui_bounds->add_column_to_panel(PANEL_truncate_min, false);
   STATIC_chopmin_unit = glui_bounds->add_statictext_to_panel(PANEL_truncate_min, "");
@@ -542,18 +547,20 @@ void bounds_dialog::CB(int var){
     case BOUND_DISABLE: // research mode on
       PANEL_min->disable();
       PANEL_max->disable();
-      STATIC_research->set_name("To enable, turn off research mode (press ALT r)");
       break;
     case BOUND_ENABLE: // research mode off
       PANEL_min->enable();
       PANEL_max->enable();
-      STATIC_research->set_name("");
       break;
 
       // update colors, reload data buttons - handle in calling routine
     case BOUND_UPDATE_COLORS:
       break;
     case BOUND_RELOAD_DATA:
+      break;
+    case BOUND_RESEARCH_MODE:
+      update_research_mode = 1;
+      SliceBoundCB(RESEARCH_MODE);
       break;
   }
 };
@@ -4092,9 +4099,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     if(nfedinfo>0){
       glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, "Regenerate FED data", &regenerate_fed);
     }
-#ifdef pp_OLDBOUND_DIALOG
-    CHECKBOX_research_mode = glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("Research display mode"), &research_mode, RESEARCH_MODE, SliceBoundCB);
-#endif
+    CHECKBOX_research_mode = glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("Research mode"), &research_mode, RESEARCH_MODE, SliceBoundCB);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("Output data to file"), &output_slicedata);
 
 #ifdef pp_FSEEK
