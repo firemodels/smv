@@ -2763,7 +2763,9 @@ void Global2GLUIBoundaryBounds(const char *key){
       patchmin_unit = (unsigned char *)patchi->label.unit;
       patchmax_unit = patchmin_unit;
 
+#ifdef pp_OLDBOUND_DIALOG
       UpdateGluiBoundaryUnits();
+#endif
       UpdateHideBoundarySurface();
 
       GLUI2GlobalBoundaryBounds(key);

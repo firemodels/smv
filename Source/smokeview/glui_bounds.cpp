@@ -1413,7 +1413,9 @@ GLUI_Rollout *ROLLOUT_coloring=NULL;
 
 GLUI_Button *BUTTON_globalalpha = NULL;
 GLUI_Button *BUTTON_updatebound = NULL;
+#ifdef pp_OLDBOUND_DIALOG
 GLUI_Button *BUTTON_reloadbound=NULL;
+#endif
 GLUI_Button *BUTTON_update_plot3d = NULL;
 GLUI_Button *BUTTON_reload_plot3d=NULL;
 GLUI_Button *BUTTON_update_slice = NULL;
@@ -1451,8 +1453,10 @@ GLUI_Rollout *ROLLOUT_iso_bounds;
 GLUI_Rollout *ROLLOUT_iso_color;
 GLUI_Rollout *ROLLOUT_script = NULL;
 GLUI_Rollout *ROLLOUT_config = NULL;
+#ifdef pp_OLDBOUND_DIALOG
 GLUI_Rollout *ROLLOUT_boundary_bound = NULL;
 GLUI_Rollout *ROLLOUT_boundary_chop = NULL;
+#endif
 GLUI_Rollout *ROLLOUT_plot3d_bound = NULL;
 GLUI_Rollout *ROLLOUT_plot3d_chop = NULL;
 GLUI_Rollout *ROLLOUT_autoload=NULL;
@@ -1496,7 +1500,9 @@ GLUI_Panel *PANEL_sliceread = NULL;
 #endif
 
 GLUI_Panel *PANEL_slice_minmax = NULL;
+#ifdef pp_OLDBOUND_DIALOG
 GLUI_Panel *PANEL_patch_minmax = NULL;
+#endif
 GLUI_Panel *PANEL_part_minmax = NULL;
 GLUI_Panel *PANEL_plot3d_minmax = NULL;
 
@@ -1602,12 +1608,16 @@ GLUI_EditText *EDIT_renderdir=NULL;
 GLUI_EditText *EDIT_rendersuffix=NULL;
 
 GLUI_EditText *EDIT_slice_min=NULL,    *EDIT_slice_max=NULL;
+#ifdef pp_OLDBOUND_DIALOG
 GLUI_EditText *EDIT_patch_min = NULL,  *EDIT_patch_max = NULL;
+#endif
 GLUI_EditText *EDIT_part_min = NULL,   *EDIT_part_max = NULL;
 GLUI_EditText *EDIT_plot3d_min = NULL, *EDIT_plot3d_max = NULL;
 
 GLUI_EditText *EDIT_slice_chopmin=NULL, *EDIT_slice_chopmax=NULL;
+#ifdef pp_OLDBOUND_DIALOG
 GLUI_EditText *EDIT_patch_chopmin=NULL, *EDIT_patch_chopmax=NULL;
+#endif
 GLUI_EditText *EDIT_part_chopmin=NULL,  *EDIT_part_chopmax=NULL;
 GLUI_EditText *EDIT_plot3d_chopmin=NULL,    *EDIT_plot3d_chopmax=NULL;
 
@@ -1653,7 +1663,9 @@ GLUI_Checkbox *CHECKBOX_multi_task=NULL;
 GLUI_Checkbox *CHECKBOX_slice_setchopmin=NULL;
 GLUI_Checkbox *CHECKBOX_slice_setchopmax=NULL;
 GLUI_Checkbox *CHECKBOX_p3_setchopmin=NULL, *CHECKBOX_p3_setchopmax=NULL;
+#ifdef pp_OLDBOUND_DIALOG
 GLUI_Checkbox *CHECKBOX_patch_setchopmin=NULL, *CHECKBOX_patch_setchopmax=NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_part_setchopmin=NULL, *CHECKBOX_part_setchopmax=NULL;
 GLUI_Checkbox *CHECKBOX_showtracer=NULL;
 GLUI_Checkbox *CHECKBOX_cellcenter_slice_interp=NULL;
@@ -1702,7 +1714,9 @@ GLUI_RadioGroup *RADIO_slice_setmin=NULL, *RADIO_slice_setmax=NULL;
 #ifdef pp_CPPBOUND_DIALOG
 GLUI_RadioGroup *RADIO_slice_setmin = NULL, *RADIO_slice_setmax = NULL;
 #endif
+#ifdef pp_OLDBOUND_DIALOG
 GLUI_RadioGroup *RADIO_patch_setmin=NULL, *RADIO_patch_setmax=NULL;
+#endif
 GLUI_RadioGroup *RADIO_part_setmin=NULL, *RADIO_part_setmax=NULL;
 #ifdef pp_MEMDEBUG
 GLUI_RadioGroup *RADIO_memcheck=NULL;
@@ -1718,9 +1732,11 @@ GLUI_RadioButton *RADIO_part_setmax_percentile=NULL;
 GLUI_StaticText *STATIC_slice_research=NULL;
 GLUI_StaticText *STATIC_part_research=NULL;
 GLUI_StaticText *STATIC_plot3d_research=NULL;
+#ifdef pp_OLDBOUND_DIALOG
 GLUI_StaticText *STATIC_patch_research=NULL;
 GLUI_StaticText *STATIC_bound_min_unit=NULL;
 GLUI_StaticText *STATIC_bound_max_unit=NULL;
+#endif
 GLUI_StaticText *STATIC_slice_min_unit=NULL;
 GLUI_StaticText *STATIC_slice_max_unit=NULL;
 
@@ -1728,8 +1744,10 @@ GLUI_StaticText *STATIC_part_min_unit=NULL;
 GLUI_StaticText *STATIC_part_max_unit=NULL;
 GLUI_StaticText *STATIC_plot3d_min_unit=NULL;
 GLUI_StaticText *STATIC_plot3d_max_unit=NULL;
+#ifdef pp_OLDBOUND_DIALOG
 GLUI_StaticText *STATIC_bound_cmin_unit=NULL;
 GLUI_StaticText *STATIC_bound_cmax_unit=NULL;
+#endif
 GLUI_StaticText *STATIC_slice_cmin_unit=NULL;
 GLUI_StaticText *STATIC_slice_cmax_unit=NULL;
 GLUI_StaticText *STATIC_part_cmin_unit=NULL;
@@ -2252,6 +2270,7 @@ extern "C" void UpdateGluiSliceUnits(void){
 
 /* ------------------ UpdateGluiBoundaryUnits ------------------------ */
 
+#ifdef pp_OLDBOUND_DIALOG
 extern "C" void UpdateGluiBoundaryUnits(void){
   if(STATIC_bound_min_unit!=NULL&&patchmin_unit!=NULL){
     STATIC_bound_min_unit->set_name((char *)patchmin_unit);
@@ -2266,6 +2285,7 @@ extern "C" void UpdateGluiBoundaryUnits(void){
     STATIC_bound_cmax_unit->set_name((char *)patchmax_unit);
   }
 }
+#endif
 
 /* ------------------ UpdateResearchMode ------------------------ */
 
@@ -2276,22 +2296,30 @@ extern "C" void UpdateResearchMode(void){
 
     if(PANEL_slice_minmax!=NULL)PANEL_slice_minmax->disable();
     if(PANEL_part_minmax!=NULL)PANEL_part_minmax->disable();
+#ifdef pp_OLDBOUND_DIALOG
     if(PANEL_patch_minmax!=NULL)PANEL_patch_minmax->disable();
+#endif
     if(PANEL_plot3d_minmax!=NULL)PANEL_plot3d_minmax->disable();
     if(STATIC_slice_research!=NULL)STATIC_slice_research->set_name(message);
     if(STATIC_plot3d_research!=NULL)STATIC_plot3d_research->set_name(message);
     if(STATIC_part_research!=NULL)STATIC_part_research->set_name(message);
+#ifdef pp_OLDBOUND_DIALOG
     if(STATIC_patch_research!=NULL)STATIC_patch_research->set_name(message);
+#endif
   }
   else{
     if(PANEL_slice_minmax!=NULL)PANEL_slice_minmax->enable();
     if(PANEL_part_minmax!=NULL)PANEL_part_minmax->enable();
+#ifdef pp_OLDBOUND_DIALOG
     if(PANEL_patch_minmax!=NULL)PANEL_patch_minmax->enable();
+#endif
     if(PANEL_plot3d_minmax!=NULL)PANEL_plot3d_minmax->enable();
     if(STATIC_slice_research!=NULL)STATIC_slice_research->set_name("");
     if(STATIC_plot3d_research!=NULL)STATIC_plot3d_research->set_name("");
     if(STATIC_part_research!=NULL)STATIC_part_research->set_name("");
+#ifdef pp_OLDBOUND_DIALOG
     if(STATIC_patch_research!=NULL)STATIC_patch_research->set_name("");
+#endif
   }
   if(CHECKBOX_research_mode!=NULL)CHECKBOX_research_mode->set_int_val(research_mode);
 }
@@ -2734,10 +2762,14 @@ extern "C" void BoundBoundCB(int var){
     if (patchlabellist != NULL)GLUI2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
     switch(setpatchchopmin){
     case DISABLE:
+#ifdef pp_OLDBOUND_DIALOG
       EDIT_patch_chopmin->disable();
+#endif
       break;
     case ENABLE:
+#ifdef pp_OLDBOUND_DIALOG
       EDIT_patch_chopmin->enable();
+#endif
       break;
     default:
       ASSERT(FFALSE);
@@ -2750,10 +2782,14 @@ extern "C" void BoundBoundCB(int var){
     GLUI2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
     switch(setpatchchopmax){
     case DISABLE:
+#ifdef pp_OLDBOUND_DIALOG
       EDIT_patch_chopmax->disable();
+#endif
       break;
     case ENABLE:
+#ifdef pp_OLDBOUND_DIALOG
       EDIT_patch_chopmax->enable();
+#endif
       break;
     default:
       ASSERT(FFALSE);
@@ -2762,14 +2798,18 @@ extern "C" void BoundBoundCB(int var){
     UpdateHideBoundarySurface();
     break;
   case CHOPVALMIN:
+#ifdef pp_OLDBOUND_DIALOG
     ASSERT(EDIT_patch_min != NULL);
     EDIT_patch_min->set_float_val(glui_patchmin);
+#endif
     GLUI2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
     UpdateChopColors();
     break;
   case CHOPVALMAX:
+#ifdef pp_OLDBOUND_DIALOG
     ASSERT(EDIT_patch_max != NULL);
     EDIT_patch_max->set_float_val(glui_patchmax);
+#endif
     GLUI2GlobalBoundaryBounds(patchlabellist[list_patch_index]);
     UpdateChopColors();
     break;
@@ -2789,17 +2829,18 @@ extern "C" void BoundBoundCB(int var){
     GLUI2GlobalBoundaryBounds(patchlabellist[list_patch_index_old]);
     Global2GLUIBoundaryBounds(patchlabellist[list_patch_index]);
 
+#ifdef pp_OLDBOUND_DIALOG
     EDIT_patch_min->set_float_val(glui_patchmin);
     EDIT_patch_max->set_float_val(glui_patchmax);
     EDIT_patch_chopmin->set_float_val(patchchopmin);
     EDIT_patch_chopmax->set_float_val(patchchopmax);
+#endif
 
     BoundBoundCB(SETVALMIN);
     BoundBoundCB(SETVALMAX);
 #ifdef pp_OLDBOUND_DIALOG
     RADIO_patch_setmin->set_int_val(glui_setpatchmin);
     RADIO_patch_setmax->set_int_val(glui_setpatchmax);
-#endif
     if(CHECKBOX_patch_setchopmin != NULL)CHECKBOX_patch_setchopmin->set_int_val(setpatchchopmin);
     if(CHECKBOX_patch_setchopmax != NULL)CHECKBOX_patch_setchopmax->set_int_val(setpatchchopmax);
 
@@ -2825,6 +2866,7 @@ extern "C" void BoundBoundCB(int var){
       ASSERT(FFALSE);
       break;
     }
+#endif
 
     list_patch_index_old = list_patch_index;
     UpdateHideBoundarySurface();
@@ -2866,8 +2908,10 @@ extern "C" void BoundBoundCB(int var){
   case UPDATE_DATA_COLORS:
     GetGlobalPatchBounds();
     if(patchlabellist != NULL)Global2GLUIBoundaryBounds(patchlabellist[list_patch_index]);
+#ifdef pp_OLDBOUND_DIALOG
     if(EDIT_patch_min != NULL)EDIT_patch_min->set_float_val(glui_patchmin);
     if(EDIT_patch_max != NULL)EDIT_patch_max->set_float_val(glui_patchmax);
+#endif
     UpdateAllBoundaryColors();
     break;
   case FILE_RELOAD:
@@ -2880,8 +2924,10 @@ extern "C" void BoundBoundCB(int var){
         if(patchi->loaded == 0)continue;
         LoadBoundaryMenu(i);
       }
+#ifdef pp_OLDBOUND_DIALOG
      if(EDIT_patch_min!=NULL)EDIT_patch_min->set_float_val(glui_patchmin);
      if(EDIT_patch_max!=NULL)EDIT_patch_max->set_float_val(glui_patchmax);
+#endif
     }
     break;
   case COMPRESS_FILES:
@@ -3147,8 +3193,6 @@ void ScriptCB(int var){
     break;
   }
 }
-
-/* ------------------ GenerateBoundDialogBox ------------------------ */
 
 #ifdef pp_OLDBOUND_DIALOG
 /* ------------------ GenerateBoundDialogs ------------------------ */
@@ -4979,7 +5023,6 @@ extern "C" void UpdateBoundaryListIndex(int patchfilenum){
 #ifdef pp_OLDBOUND_DIALOG
       if(RADIO_patch_setmin!=NULL)RADIO_patch_setmin->set_int_val(glui_setpatchmin);
       if(RADIO_patch_setmax!=NULL)RADIO_patch_setmax->set_int_val(glui_setpatchmax);
-#endif
       EDIT_patch_min->set_float_val(glui_patchmin);
       EDIT_patch_max->set_float_val(glui_patchmax);
 
@@ -5000,6 +5043,7 @@ extern "C" void UpdateBoundaryListIndex(int patchfilenum){
       else{
         EDIT_patch_chopmax->disable();
       }
+#endif
       return;
     }
   }
