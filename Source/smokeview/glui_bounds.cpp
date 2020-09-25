@@ -1417,9 +1417,9 @@ GLUI_Button *BUTTON_globalalpha = NULL;
 GLUI_Button *BUTTON_updatebound = NULL;
 #ifdef pp_OLDBOUND_DIALOG
 GLUI_Button *BUTTON_reloadbound=NULL;
-#endif
 GLUI_Button *BUTTON_update_plot3d = NULL;
-GLUI_Button *BUTTON_reload_plot3d=NULL;
+GLUI_Button *BUTTON_reload_plot3d = NULL;
+#endif
 GLUI_Button *BUTTON_update_slice = NULL;
 GLUI_Button *BUTTON_reload_slice =NULL;
 GLUI_Button *BUTTON_compress=NULL;
@@ -1458,9 +1458,9 @@ GLUI_Rollout *ROLLOUT_config = NULL;
 #ifdef pp_OLDBOUND_DIALOG
 GLUI_Rollout *ROLLOUT_boundary_bound = NULL;
 GLUI_Rollout *ROLLOUT_boundary_chop = NULL;
-#endif
 GLUI_Rollout *ROLLOUT_plot3d_bound = NULL;
 GLUI_Rollout *ROLLOUT_plot3d_chop = NULL;
+#endif
 GLUI_Rollout *ROLLOUT_autoload=NULL;
 GLUI_Rollout *ROLLOUT_compress=NULL;
 GLUI_Rollout *ROLLOUT_plot3d=NULL,*ROLLOUT_part=NULL,*ROLLOUT_slice=NULL,*ROLLOUT_bound=NULL,*ROLLOUT_iso=NULL;
@@ -1505,8 +1505,8 @@ GLUI_Panel *PANEL_slice_minmax = NULL;
 #ifdef pp_OLDBOUND_DIALOG
 GLUI_Panel *PANEL_patch_minmax = NULL;
 GLUI_Panel *PANEL_part_minmax = NULL;
-#endif
 GLUI_Panel *PANEL_plot3d_minmax = NULL;
+#endif
 
 GLUI_Panel *PANEL_boundary_outline_type = NULL;
 GLUI_Panel *PANEL_iso1 = NULL;
@@ -1613,15 +1613,15 @@ GLUI_EditText *EDIT_slice_min=NULL,    *EDIT_slice_max=NULL;
 #ifdef pp_OLDBOUND_DIALOG
 GLUI_EditText *EDIT_patch_min = NULL,  *EDIT_patch_max = NULL;
 GLUI_EditText *EDIT_part_min = NULL, *EDIT_part_max = NULL;
-#endif
 GLUI_EditText *EDIT_plot3d_min = NULL, *EDIT_plot3d_max = NULL;
+#endif
 
 GLUI_EditText *EDIT_slice_chopmin=NULL, *EDIT_slice_chopmax=NULL;
 #ifdef pp_OLDBOUND_DIALOG
 GLUI_EditText *EDIT_patch_chopmin=NULL, *EDIT_patch_chopmax=NULL;
 GLUI_EditText *EDIT_part_chopmin = NULL, *EDIT_part_chopmax = NULL;
+GLUI_EditText *EDIT_plot3d_chopmin = NULL, *EDIT_plot3d_chopmax = NULL;
 #endif
-GLUI_EditText *EDIT_plot3d_chopmin=NULL,    *EDIT_plot3d_chopmax=NULL;
 
 GLUI_Checkbox* CHECKBOX_visColorbarHorizontal2 = NULL;
 GLUI_Checkbox* CHECKBOX_visColorbarVertical2 = NULL;
@@ -1664,8 +1664,8 @@ GLUI_Checkbox *CHECKBOX_erase_all=NULL;
 GLUI_Checkbox *CHECKBOX_multi_task=NULL;
 GLUI_Checkbox *CHECKBOX_slice_setchopmin=NULL;
 GLUI_Checkbox *CHECKBOX_slice_setchopmax=NULL;
-GLUI_Checkbox *CHECKBOX_p3_setchopmin=NULL, *CHECKBOX_p3_setchopmax=NULL;
 #ifdef pp_OLDBOUND_DIALOG
+GLUI_Checkbox *CHECKBOX_p3_setchopmin = NULL, *CHECKBOX_p3_setchopmax = NULL;
 GLUI_Checkbox *CHECKBOX_patch_setchopmin=NULL, *CHECKBOX_patch_setchopmax=NULL;
 GLUI_Checkbox *CHECKBOX_part_setchopmin = NULL, *CHECKBOX_part_setchopmax = NULL;
 #endif
@@ -1722,8 +1722,8 @@ GLUI_RadioGroup *RADIO_part_setmin = NULL, *RADIO_part_setmax = NULL;
 #endif
 #ifdef pp_MEMDEBUG
 GLUI_RadioGroup *RADIO_memcheck=NULL;
+GLUI_RadioGroup *RADIO_p3_setmin = NULL, *RADIO_p3_setmax = NULL;
 #endif
-GLUI_RadioGroup *RADIO_p3_setmin=NULL, *RADIO_p3_setmax=NULL;
 
 GLUI_RadioButton *RADIOBUTTON_plot3d_iso_hidden=NULL;
 GLUI_RadioButton *RADIOBUTTON_zone_permin=NULL;
@@ -1734,8 +1734,8 @@ GLUI_RadioButton *RADIO_part_setmax_percentile=NULL;
 #endif
 
 GLUI_StaticText *STATIC_slice_research=NULL;
-GLUI_StaticText *STATIC_plot3d_research=NULL;
 #ifdef pp_OLDBOUND_DIALOG
+GLUI_StaticText *STATIC_plot3d_research = NULL;
 GLUI_StaticText *STATIC_part_research = NULL;
 GLUI_StaticText *STATIC_patch_research=NULL;
 GLUI_StaticText *STATIC_bound_min_unit=NULL;
@@ -1747,19 +1747,17 @@ GLUI_StaticText *STATIC_slice_max_unit=NULL;
 #ifdef pp_OLDBOUND_DIALOG
 GLUI_StaticText *STATIC_part_min_unit=NULL;
 GLUI_StaticText *STATIC_part_max_unit=NULL;
-#endif
-GLUI_StaticText *STATIC_plot3d_min_unit=NULL;
-GLUI_StaticText *STATIC_plot3d_max_unit=NULL;
-#ifdef pp_OLDBOUND_DIALOG
+GLUI_StaticText *STATIC_plot3d_min_unit = NULL;
+GLUI_StaticText *STATIC_plot3d_max_unit = NULL;
 GLUI_StaticText *STATIC_bound_cmin_unit=NULL;
 GLUI_StaticText *STATIC_bound_cmax_unit=NULL;
+GLUI_StaticText *STATIC_plot3d_cmin_unit = NULL;
+GLUI_StaticText *STATIC_plot3d_cmax_unit = NULL;
 #endif
 GLUI_StaticText *STATIC_slice_cmin_unit=NULL;
 GLUI_StaticText *STATIC_slice_cmax_unit=NULL;
 GLUI_StaticText *STATIC_part_cmin_unit=NULL;
 GLUI_StaticText *STATIC_part_cmax_unit=NULL;
-GLUI_StaticText *STATIC_plot3d_cmin_unit=NULL;
-GLUI_StaticText *STATIC_plot3d_cmax_unit=NULL;
 
 #define LABELS_shade      5
 #define LABELS_shadedata 30
@@ -1871,8 +1869,10 @@ extern "C" void UpdateTransparency(void){
 extern "C" void Plot3DBounds2Glui(void){
   glui_p3min = p3min_all[list_p3_index];
   glui_p3max = p3max_all[list_p3_index];
+#ifdef pp_OLDBOUND_DIALOG
   EDIT_plot3d_min->set_float_val(glui_p3min);
   EDIT_plot3d_max->set_float_val(glui_p3max);
+#endif
 }
 
 /* ------------------ UpdateUseLighting ------------------------ */
@@ -2236,6 +2236,7 @@ extern "C" void UpdateGluiPartUnits(void){
 
 /* ------------------ UpdateGluiPlot3D_units ------------------------ */
 
+#ifdef pp_OLDBOUND_DIALOG
 extern "C" void UpdateGluiPlot3D_units(void){
   if(STATIC_plot3d_min_unit!=NULL&&plot3dmin_unit!=NULL){
     STATIC_plot3d_min_unit->set_name((char *)plot3dmin_unit);
@@ -2250,6 +2251,7 @@ extern "C" void UpdateGluiPlot3D_units(void){
     STATIC_plot3d_cmax_unit->set_name((char *)plot3dmax_unit);
   }
 }
+#endif
 
 /* ------------------ UpdateGluiSliceUnits ------------------------ */
 
@@ -2298,11 +2300,11 @@ extern "C" void UpdateResearchMode(void){
 #ifdef pp_OLDBOUND_DIALOG
     if(PANEL_part_minmax!=NULL)PANEL_part_minmax->disable();
     if(PANEL_patch_minmax!=NULL)PANEL_patch_minmax->disable();
-#endif
     if(PANEL_plot3d_minmax!=NULL)PANEL_plot3d_minmax->disable();
+#endif
     if(STATIC_slice_research!=NULL)STATIC_slice_research->set_name(message);
-    if(STATIC_plot3d_research!=NULL)STATIC_plot3d_research->set_name(message);
 #ifdef pp_OLDBOUND_DIALOG
+    if(STATIC_plot3d_research!=NULL)STATIC_plot3d_research->set_name(message);
     if(STATIC_part_research!=NULL)STATIC_part_research->set_name(message);
     if(STATIC_patch_research!=NULL)STATIC_patch_research->set_name(message);
 #endif
@@ -2312,11 +2314,11 @@ extern "C" void UpdateResearchMode(void){
 #ifdef pp_OLDBOUND_DIALOG
     if(PANEL_part_minmax!=NULL)PANEL_part_minmax->enable();
     if(PANEL_patch_minmax!=NULL)PANEL_patch_minmax->enable();
-#endif
     if(PANEL_plot3d_minmax!=NULL)PANEL_plot3d_minmax->enable();
+#endif
     if(STATIC_slice_research!=NULL)STATIC_slice_research->set_name("");
-    if(STATIC_plot3d_research!=NULL)STATIC_plot3d_research->set_name("");
 #ifdef pp_OLDBOUND_DIALOG
+    if(STATIC_plot3d_research!=NULL)STATIC_plot3d_research->set_name("");
     if(STATIC_part_research!=NULL)STATIC_part_research->set_name("");
     if(STATIC_patch_research!=NULL)STATIC_patch_research->set_name("");
 #endif
@@ -4524,6 +4526,7 @@ extern "C" void Plot3DBoundCB(int var){
     break;
   case SETCHOPMINVAL:
     UpdateChopColors();
+#ifdef pp_OLDBOUND_DIALOG
     switch(setp3chopmin_temp){
       case DISABLE:
         EDIT_plot3d_chopmin->disable();
@@ -4535,9 +4538,11 @@ extern "C" void Plot3DBoundCB(int var){
         ASSERT(FFALSE);
         break;
     }
+#endif
     break;
   case SETCHOPMAXVAL:
     UpdateChopColors();
+#ifdef pp_OLDBOUND_DIALOG
     switch(setp3chopmax_temp){
       case DISABLE:
         EDIT_plot3d_chopmax->disable();
@@ -4549,6 +4554,7 @@ extern "C" void Plot3DBoundCB(int var){
         ASSERT(FFALSE);
         break;
     }
+#endif
     break;
   case CHOPVALMIN:
     p3chopmin[list_p3_index]=p3chopmin_temp;
@@ -4596,21 +4602,25 @@ extern "C" void Plot3DBoundCB(int var){
    if(plot3dinfo!=NULL){
      plot3dmin_unit = (unsigned char *)plot3dinfo->label[list_p3_index].unit;
      plot3dmax_unit = plot3dmin_unit;
+#ifdef pp_OLDBOUND_DIALOG
      UpdateGluiPlot3D_units();
+#endif
    }
 
+#ifdef pp_OLDBOUND_DIALOG
    EDIT_plot3d_min->set_float_val(glui_p3min);
    EDIT_plot3d_max->set_float_val(glui_p3max);
    EDIT_plot3d_chopmin->set_float_val(p3chopmin_temp);
    EDIT_plot3d_chopmax->set_float_val(p3chopmax_temp);
+#endif
 
    list_p3_index_old=list_p3_index;
 #ifdef pp_OLDBOUND_DIALOG
    RADIO_p3_setmin->set_int_val(glui_setp3min);
    RADIO_p3_setmax->set_int_val(glui_setp3max);
-#endif
    CHECKBOX_p3_setchopmin->set_int_val(setp3chopmin_temp);
    CHECKBOX_p3_setchopmax->set_int_val(setp3chopmax_temp);
+#endif
    Plot3DBoundCB(SETCHOPMINVAL);
    Plot3DBoundCB(SETCHOPMAXVAL);
    Plot3DBoundCB(SETVALMIN);
@@ -4623,7 +4633,9 @@ extern "C" void Plot3DBoundCB(int var){
     case GLOBAL_MIN:
       GetLoadedPlot3dBounds(NULL, p3min_loaded, p3max_loaded);
       glui_p3min = p3min_loaded[list_p3_index];
+#ifdef pp_OLDBOUND_DIALOG
       EDIT_plot3d_min->set_float_val(glui_p3min);
+#endif
       break;
     case SET_MIN:
     case CHOP_MIN:
@@ -4640,7 +4652,9 @@ extern "C" void Plot3DBoundCB(int var){
       case GLOBAL_MAX:
         GetLoadedPlot3dBounds(NULL, p3min_loaded, p3max_loaded);
         glui_p3max = p3max_loaded[list_p3_index];
+#ifdef pp_OLDBOUND_DIALOG
         EDIT_plot3d_max->set_float_val(glui_p3max);
+#endif
         break;
       case SET_MAX:
       case CHOP_MAX:
