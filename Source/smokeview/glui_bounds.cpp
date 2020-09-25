@@ -1400,9 +1400,9 @@ int cb_up_rgb[3], cb_down_rgb[3];
 
 GLUI_Listbox *LIST_colorbar2 = NULL;
 
-GLUI_Rollout *ROLLOUT_slice_bound=NULL;
-GLUI_Rollout *ROLLOUT_slice_chop=NULL;
 #ifdef pp_OLDBOUND_DIALOG
+GLUI_Rollout *ROLLOUT_slice_bound = NULL;
+GLUI_Rollout *ROLLOUT_slice_chop = NULL;
 GLUI_Rollout *ROLLOUT_part_bound=NULL;
 GLUI_Rollout *ROLLOUT_part_chop=NULL;
 #endif
@@ -1419,9 +1419,9 @@ GLUI_Button *BUTTON_updatebound = NULL;
 GLUI_Button *BUTTON_reloadbound=NULL;
 GLUI_Button *BUTTON_update_plot3d = NULL;
 GLUI_Button *BUTTON_reload_plot3d = NULL;
-#endif
 GLUI_Button *BUTTON_update_slice = NULL;
-GLUI_Button *BUTTON_reload_slice =NULL;
+GLUI_Button *BUTTON_reload_slice = NULL;
+#endif
 GLUI_Button *BUTTON_compress=NULL;
 GLUI_Button *BUTTON_step=NULL;
 GLUI_Button *BUTTON_script_stop=NULL;
@@ -1488,9 +1488,6 @@ GLUI_Panel *PANEL_keep_plot3d_data = NULL;
 #ifdef pp_OLDBOUND_DIALOG
 GLUI_Panel *PANEL_slice_bound = NULL;
 #endif
-#ifdef pp_CPPBOUND_DIALOG
-GLUI_Panel *PANEL_slice_bound = NULL;
-#endif
 GLUI_Rollout *ROLLOUT_extreme2 = NULL;
 GLUI_Rollout *ROLLOUT_split = NULL;
 GLUI_Rollout *ROLLOUT_files = NULL;
@@ -1501,8 +1498,8 @@ GLUI_Panel *PANEL_partread = NULL;
 GLUI_Panel *PANEL_sliceread = NULL;
 #endif
 
-GLUI_Panel *PANEL_slice_minmax = NULL;
 #ifdef pp_OLDBOUND_DIALOG
+GLUI_Panel *PANEL_slice_minmax = NULL;
 GLUI_Panel *PANEL_patch_minmax = NULL;
 GLUI_Panel *PANEL_part_minmax = NULL;
 GLUI_Panel *PANEL_plot3d_minmax = NULL;
@@ -1609,15 +1606,12 @@ GLUI_EditText *EDIT_ini=NULL;
 GLUI_EditText *EDIT_renderdir=NULL;
 GLUI_EditText *EDIT_rendersuffix=NULL;
 
-GLUI_EditText *EDIT_slice_min=NULL,    *EDIT_slice_max=NULL;
 #ifdef pp_OLDBOUND_DIALOG
+GLUI_EditText *EDIT_slice_min = NULL, *EDIT_slice_max = NULL;
 GLUI_EditText *EDIT_patch_min = NULL,  *EDIT_patch_max = NULL;
 GLUI_EditText *EDIT_part_min = NULL, *EDIT_part_max = NULL;
 GLUI_EditText *EDIT_plot3d_min = NULL, *EDIT_plot3d_max = NULL;
-#endif
-
-GLUI_EditText *EDIT_slice_chopmin=NULL, *EDIT_slice_chopmax=NULL;
-#ifdef pp_OLDBOUND_DIALOG
+GLUI_EditText *EDIT_slice_chopmin = NULL, *EDIT_slice_chopmax = NULL;
 GLUI_EditText *EDIT_patch_chopmin=NULL, *EDIT_patch_chopmax=NULL;
 GLUI_EditText *EDIT_part_chopmin = NULL, *EDIT_part_chopmax = NULL;
 GLUI_EditText *EDIT_plot3d_chopmin = NULL, *EDIT_plot3d_chopmax = NULL;
@@ -1662,9 +1656,9 @@ GLUI_Checkbox *CHECKBOX_overwrite_all=NULL;
 GLUI_Checkbox *CHECKBOX_compress_autoloaded=NULL;
 GLUI_Checkbox *CHECKBOX_erase_all=NULL;
 GLUI_Checkbox *CHECKBOX_multi_task=NULL;
-GLUI_Checkbox *CHECKBOX_slice_setchopmin=NULL;
-GLUI_Checkbox *CHECKBOX_slice_setchopmax=NULL;
 #ifdef pp_OLDBOUND_DIALOG
+GLUI_Checkbox *CHECKBOX_slice_setchopmin = NULL;
+GLUI_Checkbox *CHECKBOX_slice_setchopmax = NULL;
 GLUI_Checkbox *CHECKBOX_p3_setchopmin = NULL, *CHECKBOX_p3_setchopmax = NULL;
 GLUI_Checkbox *CHECKBOX_patch_setchopmin=NULL, *CHECKBOX_patch_setchopmax=NULL;
 GLUI_Checkbox *CHECKBOX_part_setchopmin = NULL, *CHECKBOX_part_setchopmax = NULL;
@@ -1677,7 +1671,9 @@ GLUI_Checkbox *CHECKBOX_average_slice=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_begin=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_end=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_skip=NULL;
+#ifdef pp_OLDBOUND_DIALOG
 GLUI_Checkbox *CHECKBOX_research_mode=NULL;
+#endif
 #ifdef pp_PART_HIST
 GLUI_Checkbox *CHECKBOX_part_histogram=NULL;
 #endif
@@ -1712,11 +1708,6 @@ GLUI_RadioGroup *RADIO2_plot3d_display = NULL;
 
 #ifdef pp_OLDBOUND_DIALOG
 GLUI_RadioGroup *RADIO_slice_setmin=NULL, *RADIO_slice_setmax=NULL;
-#endif
-#ifdef pp_CPPBOUND_DIALOG
-GLUI_RadioGroup *RADIO_slice_setmin = NULL, *RADIO_slice_setmax = NULL;
-#endif
-#ifdef pp_OLDBOUND_DIALOG
 GLUI_RadioGroup *RADIO_patch_setmin=NULL, *RADIO_patch_setmax=NULL;
 GLUI_RadioGroup *RADIO_part_setmin = NULL, *RADIO_part_setmax = NULL;
 #endif
@@ -1733,18 +1724,15 @@ GLUI_RadioButton *RADIO_part_setmin_percentile=NULL;
 GLUI_RadioButton *RADIO_part_setmax_percentile=NULL;
 #endif
 
-GLUI_StaticText *STATIC_slice_research=NULL;
 #ifdef pp_OLDBOUND_DIALOG
+GLUI_StaticText *STATIC_slice_research = NULL;
 GLUI_StaticText *STATIC_plot3d_research = NULL;
 GLUI_StaticText *STATIC_part_research = NULL;
 GLUI_StaticText *STATIC_patch_research=NULL;
 GLUI_StaticText *STATIC_bound_min_unit=NULL;
 GLUI_StaticText *STATIC_bound_max_unit=NULL;
-#endif
-GLUI_StaticText *STATIC_slice_min_unit=NULL;
-GLUI_StaticText *STATIC_slice_max_unit=NULL;
-
-#ifdef pp_OLDBOUND_DIALOG
+GLUI_StaticText *STATIC_slice_min_unit = NULL;
+GLUI_StaticText *STATIC_slice_max_unit = NULL;
 GLUI_StaticText *STATIC_part_min_unit=NULL;
 GLUI_StaticText *STATIC_part_max_unit=NULL;
 GLUI_StaticText *STATIC_plot3d_min_unit = NULL;
@@ -1753,11 +1741,11 @@ GLUI_StaticText *STATIC_bound_cmin_unit=NULL;
 GLUI_StaticText *STATIC_bound_cmax_unit=NULL;
 GLUI_StaticText *STATIC_plot3d_cmin_unit = NULL;
 GLUI_StaticText *STATIC_plot3d_cmax_unit = NULL;
+GLUI_StaticText *STATIC_slice_cmin_unit = NULL;
+GLUI_StaticText *STATIC_slice_cmax_unit = NULL;
+GLUI_StaticText *STATIC_part_cmin_unit = NULL;
+GLUI_StaticText *STATIC_part_cmax_unit = NULL;
 #endif
-GLUI_StaticText *STATIC_slice_cmin_unit=NULL;
-GLUI_StaticText *STATIC_slice_cmax_unit=NULL;
-GLUI_StaticText *STATIC_part_cmin_unit=NULL;
-GLUI_StaticText *STATIC_part_cmax_unit=NULL;
 
 #define LABELS_shade      5
 #define LABELS_shadedata 30
@@ -2254,7 +2242,7 @@ extern "C" void UpdateGluiPlot3D_units(void){
 #endif
 
 /* ------------------ UpdateGluiSliceUnits ------------------------ */
-
+#ifdef pp_OLDBOUND_DIALOG
 extern "C" void UpdateGluiSliceUnits(void){
   if(STATIC_slice_min_unit!=NULL&&glui_slicemin_unit!=NULL){
     STATIC_slice_min_unit->set_name((char *)glui_slicemin_unit);
@@ -2269,6 +2257,7 @@ extern "C" void UpdateGluiSliceUnits(void){
     STATIC_slice_cmax_unit->set_name((char *)glui_slicemax_unit);
   }
 }
+#endif
 
 /* ------------------ UpdateGluiBoundaryUnits ------------------------ */
 
@@ -2293,37 +2282,31 @@ extern "C" void UpdateGluiBoundaryUnits(void){
 
 extern "C" void UpdateResearchMode(void){
   SliceBoundCB(RESEARCH_MODE);
+#ifdef pp_OLDBOUND_DIALOG
   if(research_mode==1){
     char *message="To enable, turn off research mode (press ALT r)";
 
     if(PANEL_slice_minmax!=NULL)PANEL_slice_minmax->disable();
-#ifdef pp_OLDBOUND_DIALOG
     if(PANEL_part_minmax!=NULL)PANEL_part_minmax->disable();
     if(PANEL_patch_minmax!=NULL)PANEL_patch_minmax->disable();
     if(PANEL_plot3d_minmax!=NULL)PANEL_plot3d_minmax->disable();
-#endif
     if(STATIC_slice_research!=NULL)STATIC_slice_research->set_name(message);
-#ifdef pp_OLDBOUND_DIALOG
     if(STATIC_plot3d_research!=NULL)STATIC_plot3d_research->set_name(message);
     if(STATIC_part_research!=NULL)STATIC_part_research->set_name(message);
     if(STATIC_patch_research!=NULL)STATIC_patch_research->set_name(message);
-#endif
   }
   else{
     if(PANEL_slice_minmax!=NULL)PANEL_slice_minmax->enable();
-#ifdef pp_OLDBOUND_DIALOG
     if(PANEL_part_minmax!=NULL)PANEL_part_minmax->enable();
     if(PANEL_patch_minmax!=NULL)PANEL_patch_minmax->enable();
     if(PANEL_plot3d_minmax!=NULL)PANEL_plot3d_minmax->enable();
-#endif
     if(STATIC_slice_research!=NULL)STATIC_slice_research->set_name("");
-#ifdef pp_OLDBOUND_DIALOG
     if(STATIC_plot3d_research!=NULL)STATIC_plot3d_research->set_name("");
     if(STATIC_part_research!=NULL)STATIC_part_research->set_name("");
     if(STATIC_patch_research!=NULL)STATIC_patch_research->set_name("");
-#endif
   }
   if(CHECKBOX_research_mode!=NULL)CHECKBOX_research_mode->set_int_val(research_mode);
+#endif
 }
 /* ------------------ UpdateScriptStop ------------------------ */
 
@@ -4224,7 +4207,9 @@ extern "C" void GluiBoundsSetup(int main_window){
     if(nfedinfo>0){
       glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, "Regenerate FED data", &regenerate_fed);
     }
+#ifdef pp_OLDBOUND_DIALOG
     CHECKBOX_research_mode = glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("Research mode"), &research_mode, RESEARCH_MODE, SliceBoundCB);
+#endif
     glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("Output data to file"), &output_slicedata);
 
 #ifdef pp_FSEEK
@@ -5417,11 +5402,11 @@ void UpdateSliceTempBounds(int setvalmin, float valmin, int setvalmax, float val
   slicebounds_temp->dlg_setvalmax = setvalmax;
 #endif
 
+#ifdef pp_OLDBOUND_DIALOG
   if(RADIO_slice==NULL)return;
   RADIO_slice->set_int_val(temp_index);
   EDIT_slice_min->set_float_val(valmin);
   EDIT_slice_max->set_float_val(valmax);
-#ifdef pp_OLDBOUND_DIALOG
   RADIO_slice_setmin->set_int_val(setvalmin);
   RADIO_slice_setmax->set_int_val(setvalmax);
 #endif
@@ -5454,7 +5439,9 @@ void SliceBounds2Glui(int slicetype){
     glui_slicemin_unit = (unsigned char*)slicebounds[slicetype].label->unit;
     glui_slicemax_unit = glui_slicemin_unit;
 
+#ifdef pp_OLDBOUND_DIALOG
     UpdateGluiSliceUnits();
+#endif
   }
 }
 
@@ -5749,7 +5736,6 @@ extern "C" void SliceBoundCB(int var){
     UpdateChopColors();
 #ifdef pp_OLDBOUND_DIALOG
     SetSliceMin(glui_setslicemin, glui_slicemin, glui_setslicechopmin, glui_slicechopmin);
-#endif
     switch(glui_setslicechopmin){
       case DISABLE:
         EDIT_slice_chopmin->disable();
@@ -5761,12 +5747,12 @@ extern "C" void SliceBoundCB(int var){
         ASSERT(FFALSE);
         break;
     }
+#endif
     break;
   case SETCHOPMAXVAL:
     UpdateChopColors();
 #ifdef pp_OLDBOUND_DIALOG
     SetSliceMax(glui_setslicemax, glui_slicemax, glui_setslicechopmax, glui_slicechopmax);
-#endif
     switch(glui_setslicechopmax){
       case DISABLE:
       EDIT_slice_chopmax->disable();
@@ -5778,17 +5764,18 @@ extern "C" void SliceBoundCB(int var){
       ASSERT(FFALSE);
       break;
     }
+#endif
     break;
   case CHOPVALMIN:
-    if(EDIT_slice_min!=NULL)EDIT_slice_min->set_float_val(glui_slicemin);
 #ifdef pp_OLDBOUND_DIALOG
+    if(EDIT_slice_min!=NULL)EDIT_slice_min->set_float_val(glui_slicemin);
     SetSliceMin(glui_setslicemin, glui_slicemin, glui_setslicechopmin, glui_slicechopmin);
 #endif
     UpdateChopColors();
     break;
   case CHOPVALMAX:
-    if(EDIT_slice_max!=NULL)EDIT_slice_max->set_float_val(glui_slicemax);
 #ifdef pp_OLDBOUND_DIALOG
+    if(EDIT_slice_max!=NULL)EDIT_slice_max->set_float_val(glui_slicemax);
     SetSliceMax(glui_setslicemax,glui_slicemax,glui_setslicechopmax,glui_slicechopmax);
 #endif
     UpdateChopColors();
@@ -5806,8 +5793,6 @@ extern "C" void SliceBoundCB(int var){
       break;
     }
     if(RADIO_slice_setmin!=NULL)RADIO_slice_setmin->set_int_val(glui_setslicemin);
-#endif
-#ifdef pp_OLDBOUND_DIALOG
     SetSliceMin(glui_setslicemin, glui_slicemin, glui_setslicechopmin, glui_slicechopmin);
     UpdateZoneTempBounds(glui_setslicemin, glui_slicemin, glui_setslicemax, glui_slicemax);
 #endif
@@ -5825,8 +5810,6 @@ extern "C" void SliceBoundCB(int var){
         break;
     }
     if(RADIO_slice_setmax!=NULL)RADIO_slice_setmax->set_int_val(glui_setslicemax);
-#endif
-#ifdef pp_OLDBOUND_DIALOG
     SetSliceMax(glui_setslicemax, glui_slicemax, glui_setslicechopmax, glui_slicechopmax);
     UpdateZoneTempBounds(glui_setslicemin, glui_slicemin, glui_setslicemax, glui_slicemax);
 #endif
@@ -5842,8 +5825,8 @@ extern "C" void SliceBoundCB(int var){
       printf("   To use different min/max bounds, change the colorbar.\n");
       glui_slicemin = 0.0;
     }
-    if(EDIT_slice_min!=NULL)EDIT_slice_min->set_float_val(glui_slicemin);
 #ifdef pp_OLDBOUND_DIALOG
+    if(EDIT_slice_min!=NULL)EDIT_slice_min->set_float_val(glui_slicemin);
     SetSliceMin(glui_setslicemin, glui_slicemin, glui_setslicechopmin, glui_slicechopmin);
     UpdateZoneTempBounds(glui_setslicemin, glui_slicemin, glui_setslicemax, glui_slicemax);
 #endif
@@ -5859,8 +5842,8 @@ extern "C" void SliceBoundCB(int var){
       printf("   To use different min/max bounds, change the colorbar.\n");
       glui_slicemax = 3.0;
     }
-    if(EDIT_slice_max!=NULL)EDIT_slice_max->set_float_val(glui_slicemax);
 #ifdef pp_OLDBOUND_DIALOG
+    if(EDIT_slice_max!=NULL)EDIT_slice_max->set_float_val(glui_slicemax);
     SetSliceMax(glui_setslicemax,glui_slicemax,glui_setslicechopmax,glui_slicechopmax);
     UpdateZoneTempBounds(glui_setslicemin, glui_slicemin, glui_setslicemax, glui_slicemax);
 #endif
@@ -5868,6 +5851,7 @@ extern "C" void SliceBoundCB(int var){
   case FILETYPE_INDEX:
     if(slice_bounds_dialog==1&&list_slice_index==fire_line_index){
       slice_bounds_dialog=0;
+#ifdef pp_OLDBOUND_DIALOG
       if(ROLLOUT_slice_bound!=NULL){
         ROLLOUT_slice_bound->close();
         ROLLOUT_slice_bound->disable();
@@ -5876,23 +5860,25 @@ extern "C" void SliceBoundCB(int var){
         ROLLOUT_slice_chop->close();
         ROLLOUT_slice_chop->disable();
       }
+#endif
     }
     if(slice_bounds_dialog==0&&list_slice_index!=fire_line_index){
       slice_bounds_dialog=1;
+#ifdef pp_OLDBOUND_DIALOG
       if(ROLLOUT_slice_bound!=NULL){
         ROLLOUT_slice_bound->enable();
       }
       if(ROLLOUT_slice_chop!=NULL){
         ROLLOUT_slice_chop->enable();
       }
+#endif
     }
     SliceBounds2Glui(list_slice_index);
+#ifdef pp_OLDBOUND_DIALOG
     if(EDIT_slice_min!=NULL)EDIT_slice_min->set_float_val(glui_slicemin);
     if(EDIT_slice_max!=NULL)EDIT_slice_max->set_float_val(glui_slicemax);
-#ifdef pp_OLDBOUND_DIALOG
     RADIO_slice_setmin->set_int_val(glui_setslicemin);
     RADIO_slice_setmax->set_int_val(glui_setslicemax);
-#endif
 
     EDIT_slice_chopmin->set_float_val(glui_slicechopmin);
     EDIT_slice_chopmax->set_float_val(glui_slicechopmax);
@@ -5911,6 +5897,7 @@ extern "C" void SliceBoundCB(int var){
     else{
       EDIT_slice_chopmax->disable();
     }
+#endif
     SPINNER_line_contour_min->set_float_val(slice_line_contour_min);
     SPINNER_line_contour_max->set_float_val(slice_line_contour_max);
     SPINNER_line_contour_num->set_int_val(slice_line_contour_num);
@@ -5920,10 +5907,14 @@ extern "C" void SliceBoundCB(int var){
       slice_index = RADIO_slice->get_int_val();
       if(strcmp(slicebounds[slice_index].shortlabel, "TEMP")==0){
         BoundRolloutCB(ZONE_ROLLOUT);
+#ifdef pp_OLDBOUND_DIALOG
         if(ROLLOUT_slice_bound!=NULL)ROLLOUT_slice_bound->disable();
+#endif
       }
       else{
+#ifdef pp_OLDBOUND_DIALOG
         if(ROLLOUT_slice_bound!=NULL)ROLLOUT_slice_bound->enable();
+#endif
       }
     }
 #ifdef pp_OLDBOUND_DIALOG
@@ -6041,10 +6032,14 @@ extern "C" void UpdateSliceListIndex(int sfn){
     if(nzoneinfo>0){
       if(strcmp(slicebounds[i].shortlabel, "TEMP")==0){
         BoundRolloutCB(ZONE_ROLLOUT);
+#ifdef pp_OLDBOUND_DIALOG
         if(ROLLOUT_slice_bound!=NULL)ROLLOUT_slice_bound->disable();
+#endif
       }
       else{
+#ifdef pp_OLDBOUND_DIALOG
         if(ROLLOUT_slice_bound!=NULL)ROLLOUT_slice_bound->enable();
+#endif
       }
     }
   }
