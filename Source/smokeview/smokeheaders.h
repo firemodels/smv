@@ -611,7 +611,7 @@ EXTERNCPP int  GetZoneColor(float t, float tmin, float tmax, int nlevel);
 EXTERNCPP void UpdateOverwrite(void);
 EXTERNCPP void CompressSVZip(void);
 EXTERNCPP void DrawBlockages(int mode, int flag);
-EXTERNCPP void DrawLabels(void);
+EXTERNCPP void DrawLabels(labeldata *first_label);
 EXTERNCPP void UpdateTourList(void);
 EXTERNCPP void GetNewPos(float *oldpos, float dx, float dy, float dz, float speed_factor);
 EXTERNCPP void FreeSkybox(void);

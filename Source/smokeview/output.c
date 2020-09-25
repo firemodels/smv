@@ -212,13 +212,13 @@ void OutputBarText(float x, float y, const GLfloat *color, char *string){
 
 /* ------------------ DrawLabels ------------------------ */
 
-void DrawLabels(void){
+void DrawLabels(labeldata *first_label){
   labeldata *thislabel;
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
   glTranslatef(-xbar0,-ybar0,-zbar0);
-  for(thislabel=label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
+  for(thislabel=first_label->next;thislabel->next!=NULL;thislabel=thislabel->next){
     float *labelcolor,*tstart_stop,*xyz;
     int drawlabel;
 
