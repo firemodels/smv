@@ -106,7 +106,6 @@ EXTERNCPP void GetAllPartBoundsMT(void);
 EXTERNCPP void LoadAllPartFiles(int partnum);
 EXTERNCPP void CreatePartBoundFile(partdata *parti);
 EXTERNCPP void UpdateGluiPartFast(void);
-EXTERNCPP void UpdateGluiPartSetBounds(int minbound_type, int max_boundtype);
 EXTERNCPP void InitRolloutList(void);
 EXTERNCPP void UpdateFireCutoffs(void);
 EXTERNCPP void UpdateCO2ColorbarList(int value);
