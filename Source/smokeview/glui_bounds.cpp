@@ -604,10 +604,10 @@ bounds_dialog patchboundsCPP, partboundsCPP, plot3dboundsCPP, sliceboundsCPP;
 /* ------------------ SetResearchMode ------------------------ */
 
 extern "C" void SetResearchMode(int flag){
-  patchboundsCPP.set_research_mode(flag);
-  sliceboundsCPP.set_research_mode(flag);
-  partboundsCPP.set_research_mode(flag);
-  plot3dboundsCPP.set_research_mode(flag);
+  if(npatchinfo>0)patchboundsCPP.set_research_mode(flag);
+  if(nsliceinfo>0)sliceboundsCPP.set_research_mode(flag);
+  if(npartinfo>0)partboundsCPP.set_research_mode(flag);
+  if(nplot3dinfo>0)plot3dboundsCPP.set_research_mode(flag);
 }
 
 /* ------------------ GetBoundsData ------------------------ */
@@ -615,16 +615,16 @@ extern "C" void SetResearchMode(int flag){
 extern "C" cpp_boundsdata *GetBoundsData(int type){
   switch(type){
     case BOUND_PATCH:
-      return patchboundsCPP.get_bounds_data();
+      if(npatchinfo>0)return patchboundsCPP.get_bounds_data();
       break;
     case BOUND_PART:
-      return partboundsCPP.get_bounds_data();
+      if(npartinfo>0)return partboundsCPP.get_bounds_data();
       break;
     case BOUND_PLOT3D:
-      return plot3dboundsCPP.get_bounds_data();
+      if(nplot3dinfo>0)return plot3dboundsCPP.get_bounds_data();
       break;
     case BOUND_SLICE:
-      return sliceboundsCPP.get_bounds_data();
+      if(nsliceinfo>0)return sliceboundsCPP.get_bounds_data();
       break;
   }
   return NULL;
@@ -635,16 +635,16 @@ extern "C" cpp_boundsdata *GetBoundsData(int type){
 extern "C" void SetCacheFlag(int type, int cache_flag){
   switch(type){
     case BOUND_PATCH:
-      patchboundsCPP.set_cache_flag(cache_flag);
+      if(npatchinfo>0)patchboundsCPP.set_cache_flag(cache_flag);
       break;
     case BOUND_PART:
-      partboundsCPP.set_cache_flag(cache_flag);
+      if(npartinfo>0)partboundsCPP.set_cache_flag(cache_flag);
       break;
     case BOUND_PLOT3D:
-      plot3dboundsCPP.set_cache_flag(cache_flag);
+      if(nplot3dinfo>0)plot3dboundsCPP.set_cache_flag(cache_flag);
       break;
     case BOUND_SLICE:
-      sliceboundsCPP.set_cache_flag(cache_flag);
+      if(nsliceinfo>0)sliceboundsCPP.set_cache_flag(cache_flag);
       break;
   }
 }
@@ -654,16 +654,16 @@ extern "C" void SetCacheFlag(int type, int cache_flag){
 extern "C" int GetCacheFlag(int type){
   switch(type){
     case BOUND_PATCH:
-      return patchboundsCPP.get_cache_flag();
+      if(npatchinfo>0)return patchboundsCPP.get_cache_flag();
       break;
     case BOUND_PART:
-      return partboundsCPP.get_cache_flag();
+      if(npartinfo>0)return partboundsCPP.get_cache_flag();
       break;
     case BOUND_PLOT3D:
-      return plot3dboundsCPP.get_cache_flag();
+      if(nplot3dinfo>0)return plot3dboundsCPP.get_cache_flag();
       break;
     case BOUND_SLICE:
-      return sliceboundsCPP.get_cache_flag();
+      if(nsliceinfo>0)return sliceboundsCPP.get_cache_flag();
       break;
   }
   return 0;
@@ -672,21 +672,29 @@ extern "C" int GetCacheFlag(int type){
 /* ------------------ UpdateGluiBounds ------------------------ */
 
 extern "C" void UpdateGluiBounds(void){
-  patchboundsCPP.CB(BOUND_VAL_TYPE);
-  patchboundsCPP.CB(BOUND_SETCHOPMIN);
-  patchboundsCPP.CB(BOUND_SETCHOPMAX);
+  if(npatchinfo>0){
+    patchboundsCPP.CB(BOUND_VAL_TYPE);
+    patchboundsCPP.CB(BOUND_SETCHOPMIN);
+    patchboundsCPP.CB(BOUND_SETCHOPMAX);
+  }
 
-  partboundsCPP.CB(BOUND_VAL_TYPE);
-  partboundsCPP.CB(BOUND_SETCHOPMIN);
-  partboundsCPP.CB(BOUND_SETCHOPMAX);
+  if(npartinfo>0){
+    partboundsCPP.CB(BOUND_VAL_TYPE);
+    partboundsCPP.CB(BOUND_SETCHOPMIN);
+    partboundsCPP.CB(BOUND_SETCHOPMAX);
+  }
 
-  plot3dboundsCPP.CB(BOUND_VAL_TYPE);
-  plot3dboundsCPP.CB(BOUND_SETCHOPMIN);
-  plot3dboundsCPP.CB(BOUND_SETCHOPMAX);
+  if(nplot3dinfo>0){
+    plot3dboundsCPP.CB(BOUND_VAL_TYPE);
+    plot3dboundsCPP.CB(BOUND_SETCHOPMIN);
+    plot3dboundsCPP.CB(BOUND_SETCHOPMAX);
+  }
 
-  sliceboundsCPP.CB(BOUND_VAL_TYPE);
-  sliceboundsCPP.CB(BOUND_SETCHOPMIN);
-  sliceboundsCPP.CB(BOUND_SETCHOPMAX);
+  if(nsliceinfo>0){
+    sliceboundsCPP.CB(BOUND_VAL_TYPE);
+    sliceboundsCPP.CB(BOUND_SETCHOPMIN);
+    sliceboundsCPP.CB(BOUND_SETCHOPMAX);
+  }
 }
 
 /* ------------------ GetValtype ------------------------ */
@@ -694,16 +702,16 @@ extern "C" void UpdateGluiBounds(void){
 extern "C" int GetValType(int type){
   switch(type){
     case BOUND_PATCH:
-      return patchboundsCPP.get_valtype();
+      if(npatchinfo>0)return patchboundsCPP.get_valtype();
       break;
     case BOUND_PART:
-      return partboundsCPP.get_valtype();
+      if(npartinfo>0)return partboundsCPP.get_valtype();
       break;
     case BOUND_PLOT3D:
-      return plot3dboundsCPP.get_valtype();
+      if(nplot3dinfo>0)return plot3dboundsCPP.get_valtype();
       break;
     case BOUND_SLICE:
-      return sliceboundsCPP.get_valtype();
+      if(npatchinfo>0)return sliceboundsCPP.get_valtype();
       break;
   }
   return 0;
@@ -714,16 +722,16 @@ extern "C" int GetValType(int type){
 extern "C" int GetNValtypes(int type){
   switch(type){
     case BOUND_PATCH:
-      return patchboundsCPP.get_nvaltypes();
+      if(npatchinfo>0)return patchboundsCPP.get_nvaltypes();
       break;
     case BOUND_PART:
-      return partboundsCPP.get_nvaltypes();
+      if(npartinfo>0)return partboundsCPP.get_nvaltypes();
       break;
     case BOUND_PLOT3D:
-      return plot3dboundsCPP.get_nvaltypes();
+      if(nplot3dinfo>0)return plot3dboundsCPP.get_nvaltypes();
       break;
     case BOUND_SLICE:
-      return sliceboundsCPP.get_nvaltypes();
+      if(nsliceinfo>0)return sliceboundsCPP.get_nvaltypes();
       break;
   }
   return 0;
@@ -734,16 +742,16 @@ extern "C" int GetNValtypes(int type){
 extern "C" void SetValTypeIndex(int type, int valtype_index){
   switch(type){
     case BOUND_PATCH:
-      patchboundsCPP.set_valtype_index(valtype_index);
+      if(npatchinfo>0)patchboundsCPP.set_valtype_index(valtype_index);
       break;
     case BOUND_PART:
-      partboundsCPP.set_valtype_index(valtype_index);
+      if(npartinfo>0)partboundsCPP.set_valtype_index(valtype_index);
       break;
     case BOUND_PLOT3D:
-      plot3dboundsCPP.set_valtype_index(valtype_index);
+      if(nplot3dinfo>0)plot3dboundsCPP.set_valtype_index(valtype_index);
       break;
     case BOUND_SLICE:
-      sliceboundsCPP.set_valtype_index(valtype_index);
+      if(nsliceinfo>0)sliceboundsCPP.set_valtype_index(valtype_index);
       break;
   }
 }
@@ -753,24 +761,32 @@ extern "C" void SetValTypeIndex(int type, int valtype_index){
 extern "C" void GetMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax){
   switch(type){
     case BOUND_PATCH:
-      patchboundsCPP.set_valtype(label);
-      patchboundsCPP.get_min(label, set_valmin, valmin);
-      patchboundsCPP.get_max(label, set_valmax, valmax);
+      if(npatchinfo>0){
+        patchboundsCPP.set_valtype(label);
+        patchboundsCPP.get_min(label, set_valmin, valmin);
+        patchboundsCPP.get_max(label, set_valmax, valmax);
+      }
       break;
     case BOUND_PART:
-      partboundsCPP.set_valtype(label);
-      partboundsCPP.get_min(label, set_valmin, valmin);
-      partboundsCPP.get_max(label, set_valmax, valmax);
+      if(npartinfo>0){
+        partboundsCPP.set_valtype(label);
+        partboundsCPP.get_min(label, set_valmin, valmin);
+        partboundsCPP.get_max(label, set_valmax, valmax);
+      }
       break;
     case BOUND_PLOT3D:
-      plot3dboundsCPP.set_valtype(label);
-      plot3dboundsCPP.get_min(label, set_valmin, valmin);
-      plot3dboundsCPP.get_max(label, set_valmax, valmax);
+      if(nplot3dinfo>0){
+        plot3dboundsCPP.set_valtype(label);
+        plot3dboundsCPP.get_min(label, set_valmin, valmin);
+        plot3dboundsCPP.get_max(label, set_valmax, valmax);
+      }
       break;
     case BOUND_SLICE:
-      sliceboundsCPP.set_valtype(label);
-      sliceboundsCPP.get_min(label, set_valmin, valmin);
-      sliceboundsCPP.get_max(label, set_valmax, valmax);
+      if(nsliceinfo>0){
+        sliceboundsCPP.set_valtype(label);
+        sliceboundsCPP.get_min(label, set_valmin, valmin);
+        sliceboundsCPP.get_max(label, set_valmax, valmax);
+      }
       break;
   }
 }
@@ -1057,8 +1073,10 @@ void PartBoundsCPP_CB(int var){
     case BOUND_UPDATE_COLORS:
       break;
     case BOUND_RELOAD_DATA:
-      LoadParticleMenu(PARTFILE_RELOADALL);
-      LoadEvacMenu(EVACFILE_RELOADALL);
+      if(npartinfo>0){
+        LoadParticleMenu(PARTFILE_RELOADALL);
+        LoadEvacMenu(EVACFILE_RELOADALL);
+      }
       break;
   }
 }
@@ -1710,10 +1728,10 @@ GLUI_RadioGroup *RADIO2_plot3d_display = NULL;
 GLUI_RadioGroup *RADIO_slice_setmin=NULL, *RADIO_slice_setmax=NULL;
 GLUI_RadioGroup *RADIO_patch_setmin=NULL, *RADIO_patch_setmax=NULL;
 GLUI_RadioGroup *RADIO_part_setmin = NULL, *RADIO_part_setmax = NULL;
+GLUI_RadioGroup *RADIO_p3_setmin = NULL, *RADIO_p3_setmax = NULL;
 #endif
 #ifdef pp_MEMDEBUG
 GLUI_RadioGroup *RADIO_memcheck=NULL;
-GLUI_RadioGroup *RADIO_p3_setmin = NULL, *RADIO_p3_setmax = NULL;
 #endif
 
 GLUI_RadioButton *RADIOBUTTON_plot3d_iso_hidden=NULL;

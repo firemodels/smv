@@ -1673,51 +1673,59 @@ void UpdateChopColors(void){
   int ii;
   float transparent_level_local=1.0;
 
-  int   setpatchchopmin_local, setpatchchopmax_local;
-  float patchchopmin_local, patchchopmax_local;
+  int   setpatchchopmin_local=0, setpatchchopmax_local=0;
+  float patchchopmin_local=1.0, patchchopmax_local=0.0;
 
-  int   glui_setslicechopmin_local, glui_setslicechopmax_local;
-  float glui_slicechopmin_local, glui_slicechopmax_local;
+  int   glui_setslicechopmin_local=0, glui_setslicechopmax_local=0;
+  float glui_slicechopmin_local=1.0, glui_slicechopmax_local=0.0;
 
-  int setpartchopmin_local, setpartchopmax_local;
-  float glui_partmin_local, glui_partmax_local;
-  float partchopmin_local,  partchopmax_local;
+  int setpartchopmin_local=0, setpartchopmax_local=0;
+  float glui_partmin_local=1.0, glui_partmax_local=0.0;
+  float partchopmin_local=1.0,  partchopmax_local=0.0;
 
-  int setp3chopmin_temp_local, setp3chopmax_temp_local;
-  float p3chopmin_temp_local, p3chopmax_temp_local;
-  float glui_p3min_local, glui_p3max_local;
+  int setp3chopmin_temp_local=0, setp3chopmax_temp_local=0;
+  float p3chopmin_temp_local=1.0, p3chopmax_temp_local=0.0;
+  float glui_p3min_local=1.0, glui_p3max_local=0.0;
 
 
 #ifdef pp_CPPBOUND_DIALOG
   cpp_boundsdata *bounds;
 
   bounds                = GetBoundsData(BOUND_PATCH);
-  setpatchchopmin_local = bounds->set_chopmin;
-  setpatchchopmax_local = bounds->set_chopmax;
-  patchchopmin_local    = bounds->chopmin;
-  patchchopmax_local    = bounds->chopmax;
+  if(bounds!=NULL){
+    setpatchchopmin_local = bounds->set_chopmin;
+    setpatchchopmax_local = bounds->set_chopmax;
+    patchchopmin_local = bounds->chopmin;
+    patchchopmax_local = bounds->chopmax;
+  }
 
   bounds                     = GetBoundsData(BOUND_SLICE);
-  glui_setslicechopmin_local = bounds->set_chopmin;
-  glui_setslicechopmax_local = bounds->set_chopmax;
-  glui_slicechopmin_local    = bounds->chopmin;
-  glui_slicechopmax_local    = bounds->chopmax;
+  if(bounds!=NULL){
+    glui_setslicechopmin_local = bounds->set_chopmin;
+    glui_setslicechopmax_local = bounds->set_chopmax;
+    glui_slicechopmin_local = bounds->chopmin;
+    glui_slicechopmax_local = bounds->chopmax;
+  }
 
   bounds               = GetBoundsData(BOUND_PART);
-  setpartchopmin_local = bounds->set_chopmin;
-  setpartchopmax_local = bounds->set_chopmin;
-  partchopmin_local    = bounds->chopmin;
-  partchopmax_local    = bounds->chopmin;
-  glui_partmin_local   = bounds->valmin[bounds->set_valmin];
-  glui_partmax_local   = bounds->valmax[bounds->set_valmax];
+  if(bounds!=NULL){
+    setpartchopmin_local = bounds->set_chopmin;
+    setpartchopmax_local = bounds->set_chopmin;
+    partchopmin_local = bounds->chopmin;
+    partchopmax_local = bounds->chopmin;
+    glui_partmin_local = bounds->valmin[bounds->set_valmin];
+    glui_partmax_local = bounds->valmax[bounds->set_valmax];
+  }
 
   bounds                  = GetBoundsData(BOUND_PLOT3D);
-  setp3chopmin_temp_local = bounds->set_chopmin;
-  setp3chopmax_temp_local = bounds->set_chopmax;
-  p3chopmin_temp_local    = bounds->chopmin;
-  p3chopmax_temp_local    = bounds->chopmax;
-  glui_p3min_local        = bounds->valmin[bounds->set_valmin];
-  glui_p3max_local        = bounds->valmax[bounds->set_valmax];
+  if(bounds!=NULL){
+    setp3chopmin_temp_local = bounds->set_chopmin;
+    setp3chopmax_temp_local = bounds->set_chopmax;
+    p3chopmin_temp_local = bounds->chopmin;
+    p3chopmax_temp_local = bounds->chopmax;
+    glui_p3min_local = bounds->valmin[bounds->set_valmin];
+    glui_p3max_local = bounds->valmax[bounds->set_valmax];
+  }
 #else
   setpatchchopmin_local = setpatchchopmin;
   setpatchchopmax_local = setpatchchopmax;

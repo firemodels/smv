@@ -119,10 +119,14 @@ int GetGlobalPartBounds(int flag){
   for(i = 1; i<npart5prop; i++){
     if(i-1>npartbounds)break;
     if(flag==0){
-      part5propinfo[i].user_min = partmins[i-1];
-      part5propinfo[i].user_max = partmaxs[i-1];
-      part5propinfo[i].dlg_global_valmin = partmins[i-1];
-      part5propinfo[i].dlg_global_valmax = partmaxs[i-1];
+      if(partmins!=NULL){
+        part5propinfo[i].user_min = partmins[i-1];
+        part5propinfo[i].dlg_global_valmin = partmins[i-1];
+      }
+      if(partmaxs!=NULL){
+        part5propinfo[i].user_max = partmaxs[i-1];
+        part5propinfo[i].dlg_global_valmax = partmaxs[i-1];
+      }
     }
   }
 #ifdef pp_CPPBOUND_DIALOG
