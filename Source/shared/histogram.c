@@ -27,7 +27,7 @@ float GetHistogramCDF(histogramdata *histogram, float val){
   return (float)sum / (float)histogram->ntotal;
 }
 
-  /* ------------------ GetHistogramVal ------------------------ */
+/* ------------------ GetHistogramVal ------------------------ */
 
 float GetHistogramVal(histogramdata *histogram, float cdf){
 

@@ -11,39 +11,48 @@
 #include "MALLOCC.h"
 #include "glui_smoke.h"
 #include "glui_bounds.h"
+#include "histogram.h"
 
 GLUI *glui_bounds=NULL;
 
 
 #ifdef pp_CPPBOUND_DIALOG
 
-#define BOUND_VAL_TYPE      101
-#define BOUND_VALMIN        102
-#define BOUND_VALMAX        103
-#define BOUND_SETVALMIN     104
-#define BOUND_SETVALMAX     105
-#define BOUND_CHOPMIN       106
-#define BOUND_CHOPMAX       107
-#define BOUND_SETCHOPMIN    108
-#define BOUND_SETCHOPMAX    109
-#define BOUND_UPDATE_COLORS 110
-#define BOUND_RELOAD_DATA   111
-#define BOUND_KEEP_DATA     112
-#define BOUND_DISABLE       113
-#define BOUND_ENABLE        114
-#define BOUND_RESEARCH_MODE 115
+#define BOUND_VAL_TYPE            101
+#define BOUND_VALMIN              102
+#define BOUND_VALMAX              103
+#define BOUND_SETVALMIN           104
+#define BOUND_SETVALMAX           105
+#define BOUND_CHOPMIN             106
+#define BOUND_CHOPMAX             107
+#define BOUND_SETCHOPMIN          108
+#define BOUND_SETCHOPMAX          109
+#define BOUND_UPDATE_COLORS       110
+#define BOUND_RELOAD_DATA         111
+#define BOUND_KEEP_DATA           112
+#define BOUND_DISABLE             113
+#define BOUND_ENABLE              114
+#define BOUND_RESEARCH_MODE       115
+#define BOUND_COMPUTE_PERCENTILES 116
+
+#define PERCENTILE_DISABLED 0
+#define PERCENTILE_ENABLED  1
+
+#define HIDE_CACHE_CHECKBOX 0
+#define SHOW_CACHE_CHECKBOX 1
 
 //*** bounds class
 
 class bounds_dialog{
   public:
   cpp_boundsdata bounds, *all_bounds;
-  int nall_bounds, research_mode_cpp;
+  int nall_bounds, research_mode_cpp, percentile_enabled;
   
   GLUI_EditText *EDIT_valmin, *EDIT_valmax, *EDIT_chopmin, *EDIT_chopmax;
   GLUI_Checkbox *CHECKBOX_set_chopmin, *CHECKBOX_set_chopmax, *CHECKBOX_cache, *CHECKBOX_research_mode;
   GLUI_RadioGroup *RADIO_set_valtype,  *RADIO_set_valmin, *RADIO_set_valmax;
-  GLUI_Button *BUTTON_update_colors, *BUTTON_reload_data;
+  GLUI_RadioButton *RADIO_BUTTON_percentile_min, *RADIO_BUTTON_percentile_max;
+  GLUI_Button *BUTTON_update_colors, *BUTTON_reload_data, *BUTTON_compute_percentiles;
   GLUI_Panel *PANEL_min, *PANEL_max;
   GLUI_StaticText *STATIC_min_unit, *STATIC_max_unit, *STATIC_chopmin_unit, *STATIC_chopmax_unit;
 
@@ -66,7 +75,7 @@ class bounds_dialog{
   int set_chopmin(char *label, int set_valmin, float valmin);
   int set_chopmax(char *label, int set_valmax, float valmax);
   void CB(int var);
-  void setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds, int nbounds, int *cache_flag, int cache_enable, void Callback(int var));
+  void setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds, int nbounds, int *cache_flag, int cache_enable, int percentile_enable, void Callback(int var));
   bounds_dialog(void);
 };
 
@@ -124,7 +133,7 @@ void bounds_dialog::set_research_mode(int flag){
 
 /* ------------------ setup ------------------------ */
 
-void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_arg, int nbounds_arg, int *cache_flag, int cache_enable, void Callback(int var)){
+void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_arg, int nbounds_arg, int *cache_flag, int cache_enable, int percentile_enabled_arg,  void Callback(int var)){
   GLUI_Rollout *ROLLOUT_main_bound, *ROLLOUT_bound, *ROLLOUT_truncate;
   GLUI_Panel *PANEL_buttons, *PANEL_bound2;
   GLUI_Panel *PANEL_truncate_min, *PANEL_truncate_max;
@@ -133,6 +142,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   all_bounds = bounds_arg;
   nall_bounds = nbounds_arg;
   research_mode_cpp = research_mode;
+  percentile_enabled = percentile_enabled_arg;
 
 // bound min/max
   ROLLOUT_main_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_dialog, _("Bound/Truncate data"), false);
@@ -161,6 +171,9 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "set max");
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "loaded max");
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "global max");
+  if(cache_flag!=NULL){
+    RADIO_BUTTON_percentile_max = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "percentile max");
+  }
 
   PANEL_min = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
   EDIT_valmin = glui_bounds->add_edittext_to_panel(PANEL_min, "", GLUI_EDITTEXT_FLOAT, &(bounds.glui_valmin), BOUND_VALMIN, Callback);
@@ -172,14 +185,17 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "set min");
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "loaded min");
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "global min");
-
+  if(cache_flag!=NULL){
+    RADIO_BUTTON_percentile_min = glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "percentile min");
+  }
   PANEL_buttons        = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
   if(cache_flag!=NULL){
     bounds.cache = *cache_flag;
     if(cache_enable==1){
       CHECKBOX_cache = glui_bounds->add_checkbox_to_panel(PANEL_buttons, "Cache data", &(bounds.cache), BOUND_KEEP_DATA, Callback);
     }
-    BUTTON_update_colors = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
+    BUTTON_compute_percentiles = glui_bounds->add_button_to_panel(PANEL_buttons, "Compute percentiles", BOUND_COMPUTE_PERCENTILES, Callback);
+    BUTTON_update_colors      = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
   }
   BUTTON_reload_data   = glui_bounds->add_button_to_panel(PANEL_buttons, "Reload data", BOUND_RELOAD_DATA, Callback);
 
@@ -380,12 +396,12 @@ int bounds_dialog::set_min(char *label, int set_valmin, float valmin){
 
     boundi = all_bounds+i;
     if(strcmp(boundi->label, label)==0){
-      boundi->set_valmin                 = set_valmin;
-      boundi->valmin[boundi->set_valmin] = valmin;
-      bounds.set_valmin                  = set_valmin;
-      bounds.valmin[boundi->set_valmin]  = valmin;
+      boundi->set_valmin         = set_valmin;
+      boundi->valmin[set_valmin] = valmin;
+      bounds.set_valmin          = set_valmin;
+      bounds.valmin[set_valmin]  = valmin;
       EDIT_valmin->set_float_val(valmin);
-      RADIO_set_valmax->set_int_val(set_valmin);
+      RADIO_set_valmin->set_int_val(set_valmin);
       return 1;
     }
   }
@@ -421,10 +437,10 @@ int bounds_dialog::set_max(char *label, int set_valmax, float valmax){
 
     boundi = all_bounds+i;
     if(strcmp(boundi->label, label)==0){
-      boundi->set_valmax                 = set_valmax;
-      boundi->valmax[boundi->set_valmax] = valmax;
-      bounds.set_valmax                  = set_valmax;
-      bounds.valmax[boundi->set_valmax]  = valmax;
+      boundi->set_valmax         = set_valmax;
+      boundi->valmax[set_valmax] = valmax;
+      bounds.set_valmax          = set_valmax;
+      bounds.valmax[set_valmax]  = valmax;
       EDIT_valmax->set_float_val(valmax);
       RADIO_set_valmax->set_int_val(set_valmax);
       return 1;
@@ -547,10 +563,26 @@ void bounds_dialog::CB(int var){
     case BOUND_DISABLE: // research mode on
       PANEL_min->disable();
       PANEL_max->disable();
+      if(percentile_enabled==1){
+        if(BUTTON_compute_percentiles!=NULL)BUTTON_compute_percentiles->disable();
+      }
+      if(percentile_enabled==0){
+        if(BUTTON_compute_percentiles!=NULL)BUTTON_compute_percentiles->disable();
+        if(RADIO_BUTTON_percentile_min!=NULL)RADIO_BUTTON_percentile_min->disable();
+        if(RADIO_BUTTON_percentile_max!=NULL)RADIO_BUTTON_percentile_max->disable();
+      }
       break;
     case BOUND_ENABLE: // research mode off
       PANEL_min->enable();
       PANEL_max->enable();
+      if(percentile_enabled==1){
+        if(BUTTON_compute_percentiles!=NULL)BUTTON_compute_percentiles->enable();
+      }
+      if(percentile_enabled==0){
+        if(BUTTON_compute_percentiles!=NULL)BUTTON_compute_percentiles->disable();
+        if(RADIO_BUTTON_percentile_min!=NULL)RADIO_BUTTON_percentile_min->disable();
+        if(RADIO_BUTTON_percentile_max!=NULL)RADIO_BUTTON_percentile_max->disable();
+      }
       break;
 
       // update colors, reload data buttons - handle in calling routine
@@ -561,6 +593,8 @@ void bounds_dialog::CB(int var){
     case BOUND_RESEARCH_MODE:
       update_research_mode = 1;
       SliceBoundCB(RESEARCH_MODE);
+      break;
+    case BOUND_COMPUTE_PERCENTILES:
       break;
   }
 };
@@ -787,6 +821,44 @@ extern "C" void SetMinMax(int type, char *label, int set_valmin, float valmin, i
   }
 }
 
+/* ------------------ SetMin ------------------------ */
+
+extern "C" void SetMin(int type, char *label, int set_valmin, float valmin){
+  switch(type){
+    case BOUND_PATCH:
+      patchboundsCPP.set_min(label, set_valmin, valmin);
+      break;
+    case BOUND_PART:
+      partboundsCPP.set_min(label, set_valmin, valmin);
+      break;
+    case BOUND_PLOT3D:
+      plot3dboundsCPP.set_min(label, set_valmin, valmin);
+      break;
+    case BOUND_SLICE:
+      sliceboundsCPP.set_min(label, set_valmin, valmin);
+      break;
+  }
+}
+
+/* ------------------ SetMax ------------------------ */
+
+extern "C" void SetMax(int type, char *label, int set_valmax, float valmax){
+  switch(type){
+    case BOUND_PATCH:
+      patchboundsCPP.set_max(label, set_valmax, valmax);
+      break;
+    case BOUND_PART:
+      partboundsCPP.set_max(label, set_valmax, valmax);
+      break;
+    case BOUND_PLOT3D:
+      plot3dboundsCPP.set_max(label, set_valmax, valmax);
+      break;
+    case BOUND_SLICE:
+      sliceboundsCPP.set_max(label, set_valmax, valmax);
+      break;
+  }
+}
+
 /* ------------------ SetMinMaxAll ------------------------ */
 
 extern "C" void SetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int nall){
@@ -852,6 +924,8 @@ extern "C" void SetChopMax(int type, char *label, int set_valmax, float valmax){
 
 void SliceBoundsCPP_CB(int var){
   int ii, last_slice, error;
+  cpp_boundsdata *bounds;
+  float per_valmin, per_valmax;
 
   sliceboundsCPP.CB(var);
   switch(var){
@@ -866,6 +940,16 @@ void SliceBoundsCPP_CB(int var){
     case BOUND_SETCHOPMAX:
     case BOUND_DISABLE:
     case BOUND_ENABLE:
+      break;
+    case BOUND_COMPUTE_PERCENTILES:
+      bounds = GetBoundsData(BOUND_SLICE);
+      ComputeLoadedSliceHist(bounds->label,&(bounds->hist));
+      if(bounds->hist->defined==1){
+        GetHistogramValProc(bounds->hist, 0.05, &per_valmin);
+        GetHistogramValProc(bounds->hist, 0.95, &per_valmax);
+        SetMin(BOUND_SLICE, bounds->label, 3, per_valmin);
+        SetMax(BOUND_SLICE, bounds->label, 3, per_valmax);
+      }
       break;
     case BOUND_KEEP_DATA:
       cache_slice_data = GetCacheFlag(BOUND_SLICE);
@@ -927,6 +1011,8 @@ void Plot3DBoundsCPP_CB(int var){
     case BOUND_DISABLE:
     case BOUND_ENABLE:
       break;
+    case BOUND_COMPUTE_PERCENTILES:
+      break;
     case BOUND_KEEP_DATA:
       cache_plot3d_data = GetCacheFlag(BOUND_PLOT3D);
       break;
@@ -962,6 +1048,8 @@ void PartBoundsCPP_CB(int var){
     case BOUND_DISABLE:
     case BOUND_ENABLE:
       break;
+    case BOUND_COMPUTE_PERCENTILES:
+      break;
     case BOUND_KEEP_DATA:
    // not implemented yet
    //   cache_oart_data = GetCacheFlag(BOUND_PART);
@@ -995,6 +1083,8 @@ void PatchBoundsCPP_CB(int var){
     case BOUND_SETCHOPMAX:
     case BOUND_DISABLE:
     case BOUND_ENABLE:
+      break;
+    case BOUND_COMPUTE_PERCENTILES:
       break;
     case BOUND_KEEP_DATA:
       cache_boundary_data = GetCacheFlag(BOUND_PATCH);
@@ -3061,16 +3151,6 @@ void ScriptCB(int var){
 /* ------------------ GenerateBoundDialogBox ------------------------ */
 
 #ifdef pp_OLDBOUND_DIALOG
-#define DOIT
-#endif
-
-#ifdef pp_CPPBOUND_DIALOG
-#ifndef DOIT
-#define DOIT
-#endif
-#endif
-
-#ifdef DOIT
 /* ------------------ GenerateBoundDialogs ------------------------ */
 
 void GenerateBoundDialogs(GLUI_Rollout **bound_rollout, GLUI_Rollout **chop_rollout, GLUI_Panel *PANEL_panel, char *button_title,
@@ -3470,7 +3550,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
-    patchboundsCPP.setup(ROLLOUT_bound, patchbounds_cpp, npatchbounds_cpp, &cache_boundary_data, 1, PatchBoundsCPP_CB);
+    patchboundsCPP.setup(ROLLOUT_bound, patchbounds_cpp, npatchbounds_cpp, &cache_boundary_data, SHOW_CACHE_CHECKBOX, PERCENTILE_DISABLED, PatchBoundsCPP_CB);
 #endif
 
 #ifdef pp_OLDBOUND_DIALOG
@@ -3764,7 +3844,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
-      partboundsCPP.setup(ROLLOUT_part, partbounds_cpp, npartbounds_cpp, NULL, 1, PartBoundsCPP_CB);
+      partboundsCPP.setup(ROLLOUT_part, partbounds_cpp, npartbounds_cpp, NULL, SHOW_CACHE_CHECKBOX, PERCENTILE_DISABLED, PartBoundsCPP_CB);
 #endif
 
 
@@ -3852,7 +3932,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
-    plot3dboundsCPP.setup(ROLLOUT_plot3d, plot3dbounds_cpp, nplot3dbounds_cpp, &cache_plot3d_data, 1, Plot3DBoundsCPP_CB);
+    plot3dboundsCPP.setup(ROLLOUT_plot3d, plot3dbounds_cpp, nplot3dbounds_cpp, &cache_plot3d_data, SHOW_CACHE_CHECKBOX, PERCENTILE_DISABLED, Plot3DBoundsCPP_CB);
 #endif
 
     ROLLOUT_vector = glui_bounds->add_rollout_to_panel(ROLLOUT_plot3d,_("Vector"),false,PLOT3D_VECTOR_ROLLOUT, Plot3dRolloutCB);
@@ -3916,9 +3996,8 @@ extern "C" void GluiBoundsSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_slice, glui_bounds);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_slice, SLICE_ROLLOUT, glui_bounds);
 
-    RADIO_slice = glui_bounds->add_radiogroup_to_panel(ROLLOUT_slice,&list_slice_index, FILETYPE_INDEX,SliceBoundCB);
-
 #ifndef pp_CPPBOUND_DIALOG
+    RADIO_slice = glui_bounds->add_radiogroup_to_panel(ROLLOUT_slice, &list_slice_index, FILETYPE_INDEX, SliceBoundCB);
     index=0;
     for(i=0;i<nsliceinfo;i++){
       if(sliceinfo[i].firstshort_slice==1){
@@ -3964,7 +4043,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     );
 #endif
 #ifdef pp_CPPBOUND_DIALOG
-    sliceboundsCPP.setup(ROLLOUT_slice, slicebounds_cpp, nslicebounds_cpp, &cache_slice_data, 0, SliceBoundsCPP_CB);
+    sliceboundsCPP.setup(ROLLOUT_slice, slicebounds_cpp, nslicebounds_cpp, &cache_slice_data, HIDE_CACHE_CHECKBOX, PERCENTILE_ENABLED, SliceBoundsCPP_CB);
 #endif
 
     ROLLOUT_slice_histogram = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _("Histogram"), false, SLICE_HISTOGRAM_ROLLOUT, SliceRolloutCB);
@@ -5904,6 +5983,7 @@ extern "C" void UpdateGlui(void){
 
 extern "C" void ShowGluiBounds(int menu_id){
   if(menu_id==DIALOG_BOUNDS){
+#ifndef pp_CPPBOUND_DIALOG
     if(nsliceinfo>0){
       int islice;
 
@@ -5937,6 +6017,7 @@ extern "C" void ShowGluiBounds(int menu_id){
     }
 
     if(nsliceinfo>0||npatchinfo>0)UpdateGlui();
+#endif
 
     UpdateChar();
     FileRolloutCB(FILEBOUNDS_ROLLOUT);

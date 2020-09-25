@@ -134,10 +134,6 @@ int GetGlobalPartBounds(int flag){
       float valmin, valmax;
 
       boundscppi = partbounds_cpp+i;
-      boundscppi->chopmax     = 1.0;
-      boundscppi->chopmin     = 0.0;
-      boundscppi->set_chopmin = 0;
-      boundscppi->set_chopmax = 0;
       strcpy(boundscppi->label, part5propinfo[i].label->shortlabel);
       {
         char *unit;
@@ -168,14 +164,23 @@ int GetGlobalPartBounds(int flag){
       }
 
       boundscppi->set_valmin = 0;
-      boundscppi->valmin[BOUND_SET_MIN]    = valmin;
-      boundscppi->valmin[BOUND_LOADED_MIN] = valmin;
-      boundscppi->valmin[BOUND_GLOBAL_MIN] = valmin;
+      boundscppi->valmin[BOUND_SET_MIN]        = valmin;
+      boundscppi->valmin[BOUND_LOADED_MIN]     = valmin;
+      boundscppi->valmin[BOUND_GLOBAL_MIN]     = valmin;
+      boundscppi->valmin[BOUND_PERCENTILE_MIN] = valmin;
 
-      boundscppi->valmax[BOUND_SET_MAX]    = valmax;
-      boundscppi->valmax[BOUND_LOADED_MAX] = valmax;
-      boundscppi->valmax[BOUND_GLOBAL_MAX] = valmax;
+      boundscppi->valmax[BOUND_SET_MAX]        = valmax;
+      boundscppi->valmax[BOUND_LOADED_MAX]     = valmax;
+      boundscppi->valmax[BOUND_GLOBAL_MAX]     = valmax;
+      boundscppi->valmax[BOUND_PERCENTILE_MAX] = valmax;
       boundscppi->set_valmax = 0;
+
+      boundscppi->set_chopmin = 0;
+      boundscppi->set_chopmax = 0;
+      boundscppi->chopmin     = valmin;
+      boundscppi->chopmax     = valmax;
+
+      boundscppi->hist = NULL;
     }
   }
 #endif
@@ -285,10 +290,6 @@ void GetGlobalPatchBounds(void){
 
       boundscppi = patchbounds_cpp+i;
       boundi = patchbounds+i;
-      boundscppi->chopmax     = boundi->chopmax;
-      boundscppi->chopmin     = boundi->chopmin;
-      boundscppi->set_chopmin = boundi->setchopmin;
-      boundscppi->set_chopmax = boundi->setchopmax;
       strcpy(boundscppi->label, boundi->shortlabel);
       {
         int len;
@@ -302,14 +303,23 @@ void GetGlobalPatchBounds(void){
       boundscppi->set_valtype = 0;
 
       boundscppi->set_valmin = 0;
-      boundscppi->valmin[BOUND_SET_MIN]    = boundi->dlg_global_valmin;
-      boundscppi->valmin[BOUND_LOADED_MIN] = boundi->dlg_global_valmin;
-      boundscppi->valmin[BOUND_GLOBAL_MIN] = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_SET_MIN]        = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_LOADED_MIN]     = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_GLOBAL_MIN]     = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_PERCENTILE_MIN] = boundi->dlg_global_valmin;
 
-      boundscppi->valmax[BOUND_SET_MAX]    = boundi->dlg_global_valmax;
-      boundscppi->valmax[BOUND_LOADED_MAX] = boundi->dlg_global_valmax;
-      boundscppi->valmax[BOUND_GLOBAL_MAX] = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_SET_MAX]        = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_LOADED_MAX]     = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_GLOBAL_MAX]     = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
       boundscppi->set_valmax = 0;
+
+      boundscppi->set_chopmin = boundi->setchopmin;
+      boundscppi->set_chopmax = boundi->setchopmax;
+      boundscppi->chopmin     = boundi->chopmin;
+      boundscppi->chopmax     = boundi->chopmax;
+
+      boundscppi->hist = NULL;
     }
   }
 #endif
@@ -394,10 +404,6 @@ void GetGlobalPlot3DBounds(void){
       cpp_boundsdata *boundscppi;
 
       boundscppi = plot3dbounds_cpp+i;
-      boundscppi->chopmax     = 0.0;;
-      boundscppi->chopmin     = 0.0;
-      boundscppi->set_chopmin = 0;
-      boundscppi->set_chopmax = 0;
       strcpy(boundscppi->label, plot3dinfo->label[i].shortlabel);
       strcpy(boundscppi->unit, plot3dinfo->label[i].unit);
 
@@ -405,14 +411,23 @@ void GetGlobalPlot3DBounds(void){
       boundscppi->set_valtype = 0;
 
       boundscppi->set_valmin = 0;
-      boundscppi->valmin[BOUND_SET_MIN]    = p3min_global[i];
-      boundscppi->valmin[BOUND_LOADED_MIN] = p3min_global[i];
-      boundscppi->valmin[BOUND_GLOBAL_MIN] = p3min_global[i];
+      boundscppi->valmin[BOUND_SET_MIN]        = p3min_global[i];
+      boundscppi->valmin[BOUND_LOADED_MIN]     = p3min_global[i];
+      boundscppi->valmin[BOUND_GLOBAL_MIN]     = p3min_global[i];
+      boundscppi->valmin[BOUND_PERCENTILE_MIN] = p3min_global[i];
 
       boundscppi->set_valmax = 0;
-      boundscppi->valmax[BOUND_SET_MAX]    = p3max_global[i];
-      boundscppi->valmax[BOUND_LOADED_MAX] = p3max_global[i];
-      boundscppi->valmax[BOUND_GLOBAL_MAX] = p3max_global[i];
+      boundscppi->valmax[BOUND_SET_MAX]        = p3max_global[i];
+      boundscppi->valmax[BOUND_LOADED_MAX]     = p3max_global[i];
+      boundscppi->valmax[BOUND_GLOBAL_MAX]     = p3max_global[i];
+      boundscppi->valmax[BOUND_PERCENTILE_MAX] = p3max_global[i];
+
+      boundscppi->set_chopmin = 0;
+      boundscppi->set_chopmax = 0;
+      boundscppi->chopmin = p3max_global[0];
+      boundscppi->chopmax = p3max_global[0];
+
+      boundscppi->hist = NULL;
     }
   }
 #endif
@@ -517,10 +532,6 @@ void GetGlobalSliceBounds(void){
 
       boundscppi = slicebounds_cpp+i;
       boundi = slicebounds+i;
-      boundscppi->chopmax     = boundi->chopmax;
-      boundscppi->chopmin     = boundi->chopmin;
-      boundscppi->set_chopmin = boundi->setchopmin;
-      boundscppi->set_chopmax = boundi->setchopmax;
       strcpy(boundscppi->label, boundi->shortlabel);
       {
         int len;
@@ -534,14 +545,23 @@ void GetGlobalSliceBounds(void){
       boundscppi->set_valtype = 0;
 
       boundscppi->set_valmin = 0;
-      boundscppi->valmin[BOUND_SET_MIN]    = boundi->dlg_global_valmin;
-      boundscppi->valmin[BOUND_LOADED_MIN] = boundi->dlg_global_valmin;
-      boundscppi->valmin[BOUND_GLOBAL_MIN] = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_SET_MIN]        = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_LOADED_MIN]     = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_GLOBAL_MIN]     = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_PERCENTILE_MIN] = boundi->dlg_global_valmin;
 
       boundscppi->set_valmax = 0;
-      boundscppi->valmax[BOUND_SET_MAX]    = boundi->dlg_global_valmax;
-      boundscppi->valmax[BOUND_LOADED_MAX] = boundi->dlg_global_valmax;
-      boundscppi->valmax[BOUND_GLOBAL_MAX] = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_SET_MAX]        = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_LOADED_MAX]     = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_GLOBAL_MAX]     = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
+
+      boundscppi->set_chopmin = boundi->setchopmin;
+      boundscppi->set_chopmax = boundi->setchopmax;
+      boundscppi->chopmin     = boundi->chopmin;
+      boundscppi->chopmax     = boundi->chopmax;
+
+      boundscppi->hist = NULL;
     }
   }
 #endif

@@ -1285,6 +1285,9 @@ typedef struct _slicedata {
   float delta_orig, dplane_min, dplane_max;
   int extreme_min, extreme_max;
   histogramdata *histograms;
+#ifdef pp_CPPBOUND_DIALOG
+  histogramdata *histogram;
+#endif
   int nhistograms;
   struct _patchdata *patchgeom;
 #ifdef pp_MULTI_RES
@@ -1338,9 +1341,10 @@ typedef struct _multivslicedata {
 typedef struct _cpp_boundsdata {
   char label[32], unit[32];
   int set_valmin, set_valmax, set_chopmin, set_chopmax;
-  float valmin[3], valmax[3], chopmin, chopmax;
+  float valmin[4], valmax[4], chopmin, chopmax;
   float glui_valmin, glui_valmax;
   int set_valtype, cache;
+  histogramdata *hist;
 } cpp_boundsdata;
 #endif
 /* --------------------------  boundsdata ------------------------------------ */

@@ -1810,6 +1810,12 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
   CheckMemory;
 }
 
+/* ------------------ GetHistogramValProc ------------------------ */
+
+void GetHistogramValProc(histogramdata *histogram, float cdf, float *val){
+  *val = GetHistogramVal(histogram, cdf);
+}
+
 /* ------------------ GetSliceHists ------------------------ */
 
 void GetSliceHists(slicedata *sd){
@@ -1944,6 +1950,30 @@ void GetAllSliceHists(void){
     if(sdi->histograms == NULL)GetSliceHists(sdi);
   }
 }
+
+#ifdef pp_CPPBOUND_DIALOG
+/* ------------------ ComputeLoadedSliceHist ------------------------ */
+
+void ComputeLoadedSliceHist(char *label, histogramdata **histptr){
+  histogramdata *hist;
+  int i;
+
+  hist = *histptr;
+  if(*histptr!=NULL)FreeHistogram(*histptr);
+  NewMemory((void **)&hist, sizeof(histogramdata));
+  *histptr = hist;
+  
+  InitHistogram(hist, NHIST_BUCKETS, NULL, NULL);
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    if(slicei->loaded==0||strcmp(slicei->label.shortlabel, label)!=0)continue;
+    if(slicei->histograms==NULL)GetSliceHists(slicei);
+    MergeHistogram(hist, slicei->histograms, MERGE_BOUNDS);
+  }
+}
+#endif
 
 /* ------------------ UpdateSliceHist ------------------------ */
 
@@ -5107,13 +5137,8 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
      // convert slice data into color indices
 
   if(sd->compression_type == UNCOMPRESSED){
-#ifdef pp_CPPBOUND_DIALOG
-    int set_valmin, set_valmax;
-
-    GetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
-#else
+#ifndef pp_CPPBOUND_DIALOG
     GetSliceDataBounds(sd, &qmin, &qmax);
-#endif
     if(nzoneinfo>0&&strcmp(sd->label.shortlabel, "TEMP")==0){
       slice_temp_bounds_defined = 1;
       if(zone_temp_bounds_defined==0){
@@ -5122,11 +5147,13 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
       qmin = MIN(qmin,zoneglobalmin);
       qmax = MAX(qmax,zoneglobalmax);
     }
+#endif
   }
   else{
     qmin = sd->valmin;
     qmax = sd->valmax;
   }
+#ifndef pp_CPPBOUND_DIALOG
   sd->globalmin = qmin;
   sd->globalmax = qmax;
   sd->valmin = qmin;
@@ -5136,6 +5163,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   for(i = 0; i<256; i++){
     sd->qval256[i] = (qmin*(255 - i) + qmax*i) / 255;
   }
+#endif
   CheckMemory;
 
   sd->loaded = 1;
@@ -5143,6 +5171,27 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   slicefile_labelindex = GetSliceBoundsIndex(sd);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   if(sd->finalize==1){
+#ifdef pp_CPPBOUND_DIALOG
+    int set_valmin, set_valmax;
+
+    GetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
+    if(set_valmin==3||set_valmax==3){
+      cpp_boundsdata *bounds;
+
+      bounds = GetBoundsData(BOUND_SLICE);
+      ComputeLoadedSliceHist(bounds->label, &(bounds->hist));
+      if(bounds->hist->defined==1){
+        if(set_valmin==3){
+          GetHistogramValProc(bounds->hist, 0.05, &qmin);
+          SetMin(BOUND_SLICE, bounds->label, 3, qmin);
+        }
+        if(set_valmax==3){
+          GetHistogramValProc(bounds->hist, 0.95, &qmax);
+          SetMax(BOUND_SLICE, bounds->label, 3, qmax);
+        }
+      }
+    }
+#endif
     UpdateUnitDefs();
     UpdateTimes();
     CheckMemory;
@@ -5153,12 +5202,21 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
       if(sd->compression_type==UNCOMPRESSED){
 #ifdef pp_CPPBOUND_DIALOG
         for(i = 0; i<nsliceinfo; i++){
-          int errorcode;
+          int ii, errorcode;
           slicedata *slicei;
 
           slicei = sliceinfo+i;
           if(slicei->loaded==0)continue;
           if(slicei->slicefile_labelindex!=slicefile_labelindex)continue;
+          slicei->globalmin = qmin;
+          slicei->globalmax = qmax;
+          slicei->valmin = qmin;
+          slicei->valmax = qmax;
+          slicei->valmin_data = qmin;
+          sd->valmax_data = qmax;
+          for(ii = 0; ii<256; ii++){
+            slicei->qval256[ii] = (qmin*(255 - ii) + qmax*ii) / 255;
+          }
           SetSliceColors(qmin, qmax, slicei, &errorcode);
         }
 #else
@@ -5181,9 +5239,9 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     }
     CheckMemory;
 
-    UpdateSliceList(list_slice_index);
     CheckMemory;
 #ifndef pp_CPPBOUND_DIALOG
+    UpdateSliceList(list_slice_index);
     UpdateSliceListIndex(slicefilenum);
 #endif
     CheckMemory;

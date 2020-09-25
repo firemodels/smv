@@ -42,6 +42,8 @@ EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, flo
 EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(void);
 #ifdef pp_CPPBOUND_DIALOG
+EXTERNCPP void GetHistogramValProc(histogramdata *histogram, float cdf, float *val);
+EXTERNCPP void ComputeLoadedSliceHist(char *label, histogramdata **histptr);
 EXTERNCPP cpp_boundsdata *GetBoundsData(int type);
 EXTERNCPP void SetCacheFlag(int type, int cache_flag);
 EXTERNCPP int GetCacheFlag(int type);
@@ -50,6 +52,8 @@ EXTERNCPP int GetNValtypes(int type);
 EXTERNCPP int GetValType(int type);
 EXTERNCPP void GetMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax);
 EXTERNCPP void GetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int *nall);
+EXTERNCPP void SetMin(int type, char *label, int set_valmin, float valmin);
+EXTERNCPP void SetMax(int type, char *label, int set_valmax, float valmax);
 EXTERNCPP void SetMinMax(int type, char *label, int set_valmin, float valmin, int set_valmax, float valmax);
 EXTERNCPP void SetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int nall);
 EXTERNCPP void SetChopMin(int type, char *label, int set_valmin, float valmin);
