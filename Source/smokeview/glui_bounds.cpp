@@ -135,7 +135,7 @@ void bounds_dialog::set_research_mode(int flag){
 
 void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_arg, int nbounds_arg, int *cache_flag, int cache_enable, int percentile_enabled_arg,  void Callback(int var)){
   GLUI_Rollout *ROLLOUT_main_bound, *ROLLOUT_bound, *ROLLOUT_truncate;
-  GLUI_Panel *PANEL_buttons, *PANEL_bound2;
+  GLUI_Panel *PANEL_buttons, *PANEL_bound2, *PANEL_minmax;
   GLUI_Panel *PANEL_truncate_min, *PANEL_truncate_max;
   int i;
 
@@ -161,32 +161,33 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   glui_bounds->add_column_to_panel(PANEL_bound2, false);
 
   ROLLOUT_bound = glui_bounds->add_rollout_to_panel(PANEL_bound2, "Bound");
-  PANEL_max = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
+  PANEL_minmax = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
+  PANEL_max = glui_bounds->add_panel_to_panel(PANEL_minmax, "max");
   EDIT_valmax = glui_bounds->add_edittext_to_panel(PANEL_max, "", GLUI_EDITTEXT_FLOAT, &(bounds.glui_valmax), BOUND_VALMAX, Callback);
   glui_bounds->add_column_to_panel(PANEL_max, false);
   STATIC_max_unit = glui_bounds->add_statictext_to_panel(PANEL_max, "");
   STATIC_max_unit->set_w(10);
   glui_bounds->add_column_to_panel(PANEL_max, false);
   RADIO_set_valmax = glui_bounds->add_radiogroup_to_panel(PANEL_max, &(bounds.set_valmax), BOUND_SETVALMAX, Callback);
-  glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "set max");
-  glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "loaded max");
-  glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "global max");
+  glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "specify");
+  glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "loaded files");
+  glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "all files");
   if(cache_flag!=NULL){
-    RADIO_BUTTON_percentile_max = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "percentile max");
+    RADIO_BUTTON_percentile_max = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "percentile");
   }
 
-  PANEL_min = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
+  PANEL_min = glui_bounds->add_panel_to_panel(PANEL_minmax, "min");
   EDIT_valmin = glui_bounds->add_edittext_to_panel(PANEL_min, "", GLUI_EDITTEXT_FLOAT, &(bounds.glui_valmin), BOUND_VALMIN, Callback);
   glui_bounds->add_column_to_panel(PANEL_min, false);
   STATIC_min_unit = glui_bounds->add_statictext_to_panel(PANEL_min, "");
   STATIC_min_unit->set_w(10);
   glui_bounds->add_column_to_panel(PANEL_min, false);
   RADIO_set_valmin = glui_bounds->add_radiogroup_to_panel(PANEL_min, &(bounds.set_valmin), BOUND_SETVALMIN, Callback);
-  glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "set min");
-  glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "loaded min");
-  glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "global min");
+  glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "specify");
+  glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "loaded files");
+  glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "all files");
   if(cache_flag!=NULL){
-    RADIO_BUTTON_percentile_min = glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "percentile min");
+    RADIO_BUTTON_percentile_min = glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "percentile");
   }
   PANEL_buttons        = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
   if(cache_flag!=NULL){
