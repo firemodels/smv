@@ -1515,8 +1515,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
     // loadpatchbysteps
     //  0 - load entire uncompressed data set
-    //  1 - load uncompressed data set one frame at a time
-    //  2 - load compressed data set
+    //  1 - load compressed data set
 
     loadpatchbysteps=UNCOMPRESSED_ALLFRAMES;
     if(flag==LOAD||flag==RELOAD){
@@ -1531,15 +1530,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         if(file_frames<maxtimes_boundary)maxtimes_boundary=file_frames;
       }
       meshi->maxtimes_boundary=maxtimes_boundary;
-
-
-  /*
-  If the min and max boundary file values are specified then we don't have
-  to read in the whole file to determine the bounds.  In this case, memory is allocated
-  one time step at a time rather than for all time steps.
-  */
-
-      if(statfile==0&&(glui_setpatchmin==SET_MIN||glui_setpatchmax==SET_MAX)&&cache_boundary_data==0)loadpatchbysteps=UNCOMPRESSED_BYFRAME;
     }
   }
   else{
@@ -2055,17 +2045,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       NewResizeMemory(meshi->patchval,sizeof(float)*maxtimes_boundary*meshi->npatchsize);
     }
     break;
-  case UNCOMPRESSED_BYFRAME:
-    npatchvals = meshi->npatchsize*meshi->maxtimes_boundary;
-    if(
-      NewResizeMemory(meshi->patchval, sizeof(float)*meshi->npatchsize)==0||
-      NewResizeMemory(meshi->cpatchval,sizeof(unsigned char)*npatchvals)==0){
-      *errorcode=1;
-      FORTclosefortranfile(&file_unit);
-      ReadBoundary(ifile,UNLOAD,&error);
-      return 0;
-    }
-    break;
   case COMPRESSED_ALLFRAMES:
     GetBoundarySizeInfo(patchi, &maxtimes_boundary, &ncompressed_buffer);
     NewResizeMemory(meshi->cpatchval_zlib,       sizeof(unsigned char)*ncompressed_buffer);
@@ -2109,17 +2088,13 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   }
   START_TIMER(read_time);
   for(ii=framestart;ii<maxtimes_boundary;){
-    if(loadpatchbysteps==UNCOMPRESSED_BYFRAME){
-      meshi->patchval_iframe = meshi->patchval;
-      meshi->cpatchval_iframe = meshi->cpatchval + ii*meshi->npatchsize;
-    }
-    else if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES){
+    if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES){
       meshi->patchval_iframe = meshi->patchval + ii*meshi->npatchsize;
     }
     meshi->patch_timesi = meshi->patch_times + ii;
 
     error=0;
-    if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES||loadpatchbysteps==UNCOMPRESSED_BYFRAME){
+    if(loadpatchbysteps==UNCOMPRESSED_ALLFRAMES){
       if(ii==framestart&&framestart>0){
         int framesizes;
 
@@ -2166,7 +2141,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
           if(iblock!=-1&&meshblock!=NULL){
             switch(loadpatchbysteps){
             case UNCOMPRESSED_ALLFRAMES:
-            case UNCOMPRESSED_BYFRAME:
               for(j=0;j<nsize;j++){
                 if(meshi->thresholdtime[nn+j]<0.0&&meshi->patchval_iframe[nn+j]>=temp_threshold){
                   meshi->thresholdtime[nn+j]=meshi->patch_times[ii];
@@ -2195,24 +2169,12 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         }
       }
     }
-    if(loadpatchbysteps==UNCOMPRESSED_BYFRAME){
-      if(output_patchdata==1){
-        OutputBoundaryData(patchcsvfile,patchi->file,meshi,first_time,meshi->patch_timesi);
-        first_time=0;
-      }
-      GetBoundaryColors2(patchi, meshi->patchval_iframe, meshi->npatchsize, meshi->cpatchval_iframe,
-                 glui_setpatchmin,&glui_patchmin, glui_setpatchmax,&glui_patchmax,
-                 &patchmin_global, &patchmax_global,
-                 nrgb_full,
-                 &patchi->extreme_min,&patchi->extreme_max);
-    }
     CheckMemory;
     if(error!=0)break;
     if(settmax_b!=0&&*meshi->patch_timesi>tmax_b)break;
 
     switch(loadpatchbysteps){
       case UNCOMPRESSED_ALLFRAMES:
-      case UNCOMPRESSED_BYFRAME:
         if(!(settmin_b!=0&&*meshi->patch_timesi<tmin_b)){
            meshi->npatch_times++;
           patchi->ntimes=meshi->npatch_times;
@@ -2293,11 +2255,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
       &patchi->extreme_min, &patchi->extreme_max);
   }
-    break;
-  case UNCOMPRESSED_BYFRAME:
-    GetBoundaryLabels(
-      glui_patchmin, glui_patchmax,
-      colorlabelpatch,colorvaluespatch,boundarylevels256,nrgb);
     break;
   case COMPRESSED_ALLFRAMES:
     GetBoundaryLabels(

@@ -924,12 +924,6 @@ EXTERNCPP void GetBoundaryColors(float *t, int nt, unsigned char *it,
               int ndatalevel, int nlevel,
               char **labels, char *scale, float *tvals256,
               int *extreme_min, int *extreme_max);
-EXTERNCPP void GetBoundaryColors2(patchdata *patchi, float *t, int nt, unsigned char *it,
-              int settmin, float *ttmin, int settmax, float *ttmax,
-              float *tmin_global, float *tmax_global,
-              int ndatalevel,
-              int *extreme_min, int *extreme_max
-              );
 EXTERNCPP void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned char *it,
               int settmin, float *tmin, int settmax, float *tmax,
               float *tmin_global, float *tmax_global,
