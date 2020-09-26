@@ -3892,7 +3892,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
-      partboundsCPP.setup(ROLLOUT_part, partbounds_cpp, npartbounds_cpp, NULL, SHOW_CACHE_CHECKBOX, PERCENTILE_DISABLED, PartBoundsCPP_CB);
+      partboundsCPP.setup(ROLLOUT_part, partbounds_cpp, npartbounds_cpp, NULL, HIDE_CACHE_CHECKBOX, PERCENTILE_DISABLED, PartBoundsCPP_CB);
 #endif
 
 

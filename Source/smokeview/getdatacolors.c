@@ -490,9 +490,9 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
   float *part_valmin, *part_valmax;
 
   num = GetNValtypes(BOUND_PART);
-  NewMemory((void **)&part_set_valmin, num*sizeof(float));
+  NewMemory((void **)&part_set_valmin, num*sizeof(int));
   NewMemory((void **)&part_valmin,     num*sizeof(float));
-  NewMemory((void **)&part_set_valmax, num*sizeof(float));
+  NewMemory((void **)&part_set_valmax, num*sizeof(int));
   NewMemory((void **)&part_valmax,     num*sizeof(float));
   GetMinMaxAll(BOUND_PART, part_set_valmin, part_valmin, part_set_valmax, part_valmax, &num2);
 #endif
