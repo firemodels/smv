@@ -1326,7 +1326,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int npatchvals;
   char patchcsvfile[1024];
   int framestart;
-  int first_time=1;
 
   int nn;
   int filenum;
