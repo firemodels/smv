@@ -5324,6 +5324,73 @@ void GenerateViewpointMenu(void){
   fclose(stream);
 }
 
+/* ------------------ UpdateVents ------------------------ */
+
+void UpdateEvents(void){
+  FILE *stream = NULL;
+  int nrows, ncols, buffer_len;
+  char **tokens;
+  int i;
+
+  stream = fopen(event_filename, "r");
+  if(stream==NULL)return;
+
+  buffer_len = GetRowCols(stream, &nrows, &ncols);
+  if(nrows<=0||ncols<=0||buffer_len<=0){
+    fclose(stream);
+    return;
+  }
+  rewind(stream);
+
+  NewMemory((void **)&tokens, ncols*sizeof(char *));
+
+  for(i = 0; i<ncols; i++){
+    tokens[i] = NULL;
+  }
+
+  while(!feof(stream)){
+    char buffer[255], buffer2[255], *message;
+    int ntokens;
+    float tminmax[2], xyz[3], frgb[3];
+    int rgblabel[3], useforegroundcolor;
+    labeldata label;
+
+    CheckMemory;
+    if(fgets(buffer, 255, stream)==NULL)break;
+    if(buffer[0]=='#')continue;
+    // tmin, tmax, x, y, z, r, g, b, 1/0 (foreground color) ! message
+    ParseCSV(buffer, tokens, &ntokens);
+    if(ntokens>=9){
+      sscanf(tokens[0], "%f", tminmax);
+      sscanf(tokens[1], "%f", tminmax+1);
+      sscanf(tokens[2], "%f", xyz);
+      sscanf(tokens[3], "%f", xyz+1);
+      sscanf(tokens[4], "%f", xyz+2);
+      sscanf(tokens[5], "%i", rgblabel);
+      sscanf(tokens[6], "%i", rgblabel+1);
+      sscanf(tokens[7], "%i", rgblabel+2);
+      message = TrimFrontBack(tokens[8]);
+      memcpy(&label, &LABEL_default, sizeof(labeldata));
+      memcpy(label.tstart_stop, tminmax, 2*sizeof(float));
+      memcpy(label.xyz, xyz, 3*sizeof(float));
+      memcpy(label.rgb, rgb, 3*sizeof(int));
+      frgb[0] = (float)rgblabel[0]/255.0;
+      frgb[1] = (float)rgblabel[1]/255.0;
+      frgb[2] = (float)rgblabel[2]/255.0;
+      memcpy(label.frgb, frgb, 3*sizeof(int));
+      label.useforegroundcolor = 0;
+      label.show_always = 0;
+      if(strlen(message)>0){
+        strcpy(label.name, message);
+        strcpy(label.name, message);
+      }
+      LabelInsert(&label);
+      event_file_exists = 1;
+    }
+  }
+  fclose(stream);
+}
+
 /* ------------------ ReadSMV ------------------------ */
 
 int ReadSMV(bufferstreamdata *stream){
@@ -10153,7 +10220,7 @@ typedef struct {
   InitVolRenderSurface(FIRSTCALL);
   radius_windrose = 0.2*xyzmaxdiff;
 
-  UpdateMeshTerrain(); // xxslow
+  UpdateMeshTerrain(); // slow
 
   ReadAllGeom();
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
@@ -10175,7 +10242,9 @@ typedef struct {
     have_terrain_vao = 0;
   }
 #endif
-  
+
+  // update event labels
+  UpdateEvents();
 
   SetupMeshWalls();
   update_windrose = 1;
@@ -13137,7 +13206,7 @@ int ReadIni2(char *inifile, int localfile){
       +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       */
 
-      if(Match(buffer, "LABEL") == 1 || Match(buffer, "TICKLABEL") == 1){
+      if(Match(buffer, "LABEL") == 1 || (event_file_exists==0&&Match(buffer, "TICKLABEL") == 1)){
 
         /*
         LABEL
@@ -14275,6 +14344,8 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, " %f\n", zone_hvac_diam);
   }
 
+  // write out labels to casename.evt if this file exsits
+  WriteLabels();
 }
 
   /* ------------------ WriteIni ------------------------ */

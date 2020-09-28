@@ -318,6 +318,11 @@ void ParseCommandline(int argc, char **argv){
   STRCPY(boundinfo_filename, fdsprefix);
   STRCAT(boundinfo_filename, ".binfo");
 
+  FREEMEMORY(event_filename);
+  NewMemory((void **)&event_filename, len_casename+strlen(".evt")+1);
+  STRCPY(event_filename, fdsprefix);
+  STRCAT(event_filename, ".evt");
+
   if(smv_filename == NULL){
     NewMemory((void **)&smv_filename, (unsigned int)(len_casename + 6));
     STRCPY(smv_filename, fdsprefix);

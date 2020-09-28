@@ -210,10 +210,43 @@ void OutputBarText(float x, float y, const GLfloat *color, char *string){
   }
 }
 
+/* ------------------ WriteLabels ------------------------ */
+
+void WriteLabels(void){
+  labeldata *first_label, *thislabel;
+  FILE *stream = NULL;
+  char quote[2];
+
+  if(event_file_exists==0)return;
+  stream = fopen(event_filename, "w");
+  if(stream==NULL)return;
+
+  first_label = label_first_ptr;
+  strcpy(quote,"\"");
+
+  for(thislabel = first_label->next; thislabel->next!=NULL; thislabel = thislabel->next){
+    float *tstart_stop, *xyz;
+    int *rgblabel;
+
+    tstart_stop = thislabel->tstart_stop;
+    xyz = thislabel->xyz;
+    rgblabel = thislabel->rgb;
+    fprintf(stream, "%f, %f, %f, %f, %f, %i, %i, %i, %s%s%s\n", 
+            tstart_stop[0], tstart_stop[1], 
+            xyz[0], xyz[1], xyz[2], 
+            rgblabel[0], rgblabel[1], rgblabel[2], 
+            quote,TrimFrontBack(thislabel->name),quote
+    );
+  }
+  fclose(stream);
+}
+
 /* ------------------ DrawLabels ------------------------ */
 
-void DrawLabels(labeldata *first_label){
-  labeldata *thislabel;
+void DrawLabels(void){
+  labeldata *first_label, *thislabel;
+
+  first_label = label_first_ptr;
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
@@ -334,12 +367,12 @@ labeldata *LabelGet(char *name){
 void LabelInsertBefore(labeldata *listlabel, labeldata *label){
   labeldata *prev, *next;
 
-  next = listlabel;
-  prev = listlabel->prev;
-  prev->next = label;
+  prev        = listlabel->prev;
+  next        = listlabel;
+  prev->next  = label;
+  next->prev  = label;
   label->prev = prev;
-  next->prev=label;
-  label->next=next;
+  label->next = next;
 }
 
 /* ------------------ LabelDelete ------------------------ */
@@ -385,12 +418,12 @@ void LabelResort(labeldata *label){
 void LabelInsertAfter(labeldata *listlabel, labeldata *label){
   labeldata *prev, *next;
 
-  prev = listlabel;
-  next = listlabel->next;
-  prev->next = label;
+  prev        = listlabel;
+  next        = listlabel->next;
+  prev->next  = label;
+  next->prev  = label;
   label->prev = prev;
-  next->prev=label;
-  label->next=next;
+  label->next = next;
 }
 
 /* ------------------ LabelPrint ------------------------ */
