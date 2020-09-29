@@ -5349,10 +5349,10 @@ void UpdateEvents(void){
   }
 
   while(!feof(stream)){
-    char buffer[255], buffer2[255], *message;
+    char buffer[255], *message;
     int ntokens;
     float tminmax[2], xyz[3], frgb[3];
-    int rgblabel[3], useforegroundcolor;
+    int rgblabel[3];
     labeldata label;
 
     CheckMemory;
