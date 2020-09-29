@@ -1221,23 +1221,79 @@ void ReadZone(int ifile, int flag, int *errorcode){
 
 }
 
-#define DRAWZONEVENT \
-          glVertex3fv(xyz); glVertex3fv(xyz+3); glVertex3fv(xyz+6);\
-          glVertex3fv(xyz); glVertex3fv(xyz+6); glVertex3fv(xyz+9);\
-          glVertex3fv(xyz); glVertex3fv(xyz+6); glVertex3fv(xyz+3);\
-          glVertex3fv(xyz); glVertex3fv(xyz+9); glVertex3fv(xyz+6)
+/* ------------------ DrawZoneVent ------------------------ */
 
-#define DRAWZONEVENT2 \
-        if(zvi->area_fraction < 0.0001){\
-          glVertex3fv(xyz+6);\
-          glVertex3fv(xyz+9);\
-          glVertex3fv(xyz+3);\
-        }\
-        glVertex3fv(xyz);\
-        glVertex3fv(xyz+3);\
-        glVertex3fv(xyz+6);\
-        glVertex3fv(xyz+9);\
-        glVertex3fv(xyz)
+void DrawZoneVent(float area_fraction, float x1, float x2, float y1, float y2, float z1, float z2){
+  if(area_fraction < 0.0001){
+    if(ABS(x1-x2)>0.0001&&ABS(y1-y2)>0.0001){
+      glVertex3f(x1,y1,z1);
+      glVertex3f(x2,y2,z1);
+      glVertex3f(x1,y2,z1);
+      glVertex3f(x2,y1,z1);
+
+      glVertex3f(x1,y1,z2);
+      glVertex3f(x2,y2,z2);
+      glVertex3f(x1,y2,z2);
+      glVertex3f(x2,y1,z2);
+    }
+    if(ABS(x1-x2)>0.0001&&ABS(z1-z2)>0.0001){
+      glVertex3f(x1,y1,z1);
+      glVertex3f(x2,y1,z2);
+      glVertex3f(x1,y1,z2);
+      glVertex3f(x2,y1,z1);
+
+      glVertex3f(x1,y2,z1);
+      glVertex3f(x2,y2,z2);
+      glVertex3f(x1,y2,z2);
+      glVertex3f(x2,y2,z1);
+    }
+    if(ABS(y1-y2)>0.0001&&ABS(y1-y2)>0.0001){
+      glVertex3f(x1,y1,z1);
+      glVertex3f(x1,y2,z2);
+      glVertex3f(x1,y1,z2);
+      glVertex3f(x1,y2,z1);
+
+      glVertex3f(x2,y1,z1);
+      glVertex3f(x2,y2,z2);
+      glVertex3f(x2,y1,z2);
+      glVertex3f(x2,y2,z1);
+    }
+  }
+  if(ABS(x1-x2)>0.0001){
+    glVertex3f(x1,y1,z1);
+    glVertex3f(x2,y1,z1);
+    glVertex3f(x1,y2,z1);
+    glVertex3f(x2,y2,z1);
+    glVertex3f(x1,y1,z2);
+    glVertex3f(x2,y1,z2);
+    glVertex3f(x1,y2,z2);
+    glVertex3f(x2,y2,z2);
+    if(area_fraction < 0.0001){
+    }
+  }
+
+  if(ABS(y1-y2)>0.0001){
+    glVertex3f(x1,y1,z1);
+    glVertex3f(x1,y2,z1);
+    glVertex3f(x2,y1,z1);
+    glVertex3f(x2,y2,z1);
+    glVertex3f(x1,y1,z2);
+    glVertex3f(x1,y2,z2);
+    glVertex3f(x2,y1,z2);
+    glVertex3f(x2,y2,z2);
+  }
+
+  if(ABS(z1-z2)>0.0001){
+    glVertex3f(x1,y1,z1);
+    glVertex3f(x1,y1,z2);
+    glVertex3f(x2,y1,z1);
+    glVertex3f(x2,y1,z2);
+    glVertex3f(x1,y2,z1);
+    glVertex3f(x1,y2,z2);
+    glVertex3f(x2,y2,z1);
+    glVertex3f(x2,y2,z2);
+  }
+}
 
 /* ------------------ DrawZoneRoomGeom ------------------------ */
 
@@ -1380,45 +1436,33 @@ void DrawZoneRoomGeom(void){
         glPopMatrix();
       }
       else{
-        glBegin(GL_LINE_LOOP);
+        float delta;
+
+        delta = 0.1/xyzmaxdiff;
+        glBegin(GL_LINES);
         switch(zvi->wall){
         case LEFT_WALL:
-        case RIGHT_WALL:
-          xx = x1;
-          if(zvi->wall==RIGHT_WALL)xx = x2;
+          DrawZoneVent(zvi->area_fraction, x1-delta, x1+delta, y1, y2, z1, z2);
+          break;
 
-          p = xyz;
-          *p++ = xx, *p++ = y1, *p++ = z1;
-          *p++ = xx, *p++ = y2, *p++ = z1;
-          *p++ = xx, *p++ = y2, *p++ = z2;
-          *p++ = xx, *p++ = y1, *p++ = z2;
-          DRAWZONEVENT2;
+        case RIGHT_WALL:
+          DrawZoneVent(zvi->area_fraction, x2-delta, x2+delta, y1, y2, z1, z2);
           break;
 
         case FRONT_WALL:
-        case BACK_WALL:
-          yy = y1;
-          if(zvi->wall==BACK_WALL)yy = y2;
+          DrawZoneVent(zvi->area_fraction, x1, x2, y1-delta, y1+delta, z1, z2);
+          break;
 
-          p = xyz;
-          *p++ = x1, *p++ = yy, *p++ = z1;
-          *p++ = x2, *p++ = yy, *p++ = z1;
-          *p++ = x2, *p++ = yy, *p++ = z2;
-          *p++ = x1, *p++ = yy, *p++ = z2;
-          DRAWZONEVENT2;
+        case BACK_WALL:
+          DrawZoneVent(zvi->area_fraction, x1, x2, y2-delta, y2+delta, z1, z2);
           break;
 
         case BOTTOM_WALL:
-        case TOP_WALL:
-          zz = z1;
-          if(zvi->wall==TOP_WALL)zz = z2;
+          DrawZoneVent(zvi->area_fraction, x1, x2, y1, y2, z1-delta, z1+delta);
+          break;
 
-          p = xyz;
-          *p++ = x1, *p++ = y1, *p++ = zz;
-          *p++ = x2, *p++ = y1, *p++ = zz;
-          *p++ = x2, *p++ = y2, *p++ = zz;
-          *p++ = x1, *p++ = y2, *p++ = zz;
-          DRAWZONEVENT2;
+        case TOP_WALL:
+          DrawZoneVent(zvi->area_fraction, x1, x2, y1, y2, z2-delta, z2+delta);
           break;
 
         default:
