@@ -1378,11 +1378,8 @@ void DrawZoneRoomGeom(void){
     for(i=0;i<nzvents;i++){
       zventdata *zvi;
       float x1, x2, y1, y2, z1, z2;
-      float xx, yy, zz;
-      float xyz[12], *p;
 
       zvi = zventinfo + i;
-
       x1 = zvi->x0;
       x2 = zvi->x1;
       y1 = zvi->y0;
@@ -1410,11 +1407,13 @@ void DrawZoneRoomGeom(void){
       if(zvi->vent_type==VFLOW_VENT&&zvi->vertical_vent_type==ZONEVENT_CIRCLE){
         unsigned char uc_color[4];
 
-        zz = z1;
-        if(zvi->wall==TOP_WALL)zz = z2;
-
         glPushMatrix();
-        glTranslatef(NORMALIZE_X(zvi->xcen), NORMALIZE_Y(zvi->ycen), zz);
+        if(zvi->wall==TOP_WALL){
+          glTranslatef(NORMALIZE_X(zvi->xcen), NORMALIZE_Y(zvi->ycen), z2);
+	}
+	else{
+          glTranslatef(NORMALIZE_X(zvi->xcen), NORMALIZE_Y(zvi->ycen), z1);
+	}
         uc_color[0] = zvi->color[0]*255;
         uc_color[1] = zvi->color[1]*255;
         uc_color[2] = zvi->color[2]*255;
