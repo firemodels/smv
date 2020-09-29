@@ -1903,7 +1903,7 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'j':
     case 'J':
-      if(keystate==GLUT_ACTIVE_ALT){
+      if(keystate==GLUT_ACTIVE_ALT||key2=='J'){
         sensorrelsize /= 1.5;
       }
       else{
