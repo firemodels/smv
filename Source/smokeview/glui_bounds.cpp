@@ -156,6 +156,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
     boundi = all_bounds+i;
     glui_bounds->add_radiobutton_to_group(RADIO_set_valtype, boundi->label);
   }
+  glui_bounds->add_separator_to_panel(PANEL_bound2);
   CHECKBOX_research_mode = glui_bounds->add_checkbox_to_panel(PANEL_bound2, _("research mode"), &research_mode, BOUND_RESEARCH_MODE, Callback);
 
   glui_bounds->add_column_to_panel(PANEL_bound2, false);
@@ -972,8 +973,8 @@ void SliceBoundsCPP_CB(int var){
       if(bounds->hist->defined==1){
         GetHistogramValProc(bounds->hist, 0.05, &per_valmin);
         GetHistogramValProc(bounds->hist, 0.95, &per_valmax);
-        SetMin(BOUND_SLICE, bounds->label, 3, per_valmin);
-        SetMax(BOUND_SLICE, bounds->label, 3, per_valmax);
+        SetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+        SetMax(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
       }
       break;
     case BOUND_CACHE_DATA:
