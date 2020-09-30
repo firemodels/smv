@@ -29,7 +29,7 @@ GLUI *glui_bounds=NULL;
 #define BOUND_SETCHOPMAX          109
 #define BOUND_UPDATE_COLORS       110
 #define BOUND_RELOAD_DATA         111
-#define BOUND_KEEP_DATA           112
+#define BOUND_CACHE_DATA          112
 #define BOUND_DISABLE             113
 #define BOUND_ENABLE              114
 #define BOUND_RESEARCH_MODE       115
@@ -52,7 +52,7 @@ class bounds_dialog{
   GLUI_Checkbox *CHECKBOX_set_chopmin, *CHECKBOX_set_chopmax, *CHECKBOX_cache, *CHECKBOX_research_mode;
   GLUI_RadioGroup *RADIO_set_valtype,  *RADIO_set_valmin, *RADIO_set_valmax;
   GLUI_RadioButton *RADIO_BUTTON_percentile_min, *RADIO_BUTTON_percentile_max;
-  GLUI_Button *BUTTON_update_colors, *BUTTON_reload_data, *BUTTON_compute_percentiles;
+  GLUI_Button *BUTTON_update_colors=NULL, *BUTTON_reload_data, *BUTTON_compute_percentiles;
   GLUI_Panel *PANEL_min, *PANEL_max;
   GLUI_StaticText *STATIC_min_unit, *STATIC_max_unit, *STATIC_chopmin_unit, *STATIC_chopmax_unit;
 
@@ -91,7 +91,7 @@ void bounds_dialog::set_cache_flag(int cache_flag){
   bounds.cache = cache_flag;
   if(CHECKBOX_cache!=NULL){
     CHECKBOX_cache->set_int_val(cache_flag);
-    CB(BOUND_KEEP_DATA);
+    CB(BOUND_CACHE_DATA);
   }
 }
 
@@ -193,7 +193,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   if(cache_flag!=NULL){
     bounds.cache = *cache_flag;
     if(cache_enable==1){
-      CHECKBOX_cache = glui_bounds->add_checkbox_to_panel(PANEL_buttons, "Cache data", &(bounds.cache), BOUND_KEEP_DATA, Callback);
+      CHECKBOX_cache = glui_bounds->add_checkbox_to_panel(PANEL_buttons, "Cache data", &(bounds.cache), BOUND_CACHE_DATA, Callback);
     }
     BUTTON_compute_percentiles = glui_bounds->add_button_to_panel(PANEL_buttons, "Compute percentiles", BOUND_COMPUTE_PERCENTILES, Callback);
     BUTTON_update_colors      = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
@@ -223,7 +223,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   Callback(BOUND_VAL_TYPE);
   Callback(BOUND_SETCHOPMIN);
   Callback(BOUND_SETCHOPMAX);
-  Callback(BOUND_KEEP_DATA);
+  Callback(BOUND_CACHE_DATA);
   update_ini = 1;
 }
 
@@ -547,7 +547,7 @@ void bounds_dialog::CB(int var){
       break;
 
       // keep data checkbox
-    case BOUND_KEEP_DATA:
+    case BOUND_CACHE_DATA:
       {
         int i;
 
@@ -556,6 +556,14 @@ void bounds_dialog::CB(int var){
 
           boundi = all_bounds+i;
           boundi->cache = bounds.cache;
+        }
+        if(BUTTON_update_colors!=NULL){
+          if(bounds.cache==1){
+            BUTTON_update_colors->enable();
+          }
+          else{
+            BUTTON_update_colors->disable();
+          }
         }
       }
       break;
@@ -968,7 +976,7 @@ void SliceBoundsCPP_CB(int var){
         SetMax(BOUND_SLICE, bounds->label, 3, per_valmax);
       }
       break;
-    case BOUND_KEEP_DATA:
+    case BOUND_CACHE_DATA:
       cache_slice_data = GetCacheFlag(BOUND_SLICE);
       break;
     case BOUND_UPDATE_COLORS:
@@ -1030,7 +1038,7 @@ void Plot3DBoundsCPP_CB(int var){
       break;
     case BOUND_COMPUTE_PERCENTILES:
       break;
-    case BOUND_KEEP_DATA:
+    case BOUND_CACHE_DATA:
       cache_plot3d_data = GetCacheFlag(BOUND_PLOT3D);
       break;
     case BOUND_UPDATE_COLORS:
@@ -1067,7 +1075,7 @@ void PartBoundsCPP_CB(int var){
       break;
     case BOUND_COMPUTE_PERCENTILES:
       break;
-    case BOUND_KEEP_DATA:
+    case BOUND_CACHE_DATA:
    // not implemented yet
    //   cache_oart_data = GetCacheFlag(BOUND_PART);
       break;
@@ -1105,7 +1113,7 @@ void PatchBoundsCPP_CB(int var){
       break;
     case BOUND_COMPUTE_PERCENTILES:
       break;
-    case BOUND_KEEP_DATA:
+    case BOUND_CACHE_DATA:
       cache_boundary_data = GetCacheFlag(BOUND_PATCH);
       break;
     case BOUND_UPDATE_COLORS:
