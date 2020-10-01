@@ -2559,12 +2559,30 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
         return 0;
       }
     }
+#ifdef pp_CPPBOUND_DIALOG
+    int set_valmin, set_valmax;
+    float valmin, valmax;
+    char *label;
+
+    label = patchi->label.shortlabel;
+
+    GetMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
+    GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
+      set_valmin, &valmin, set_valmax, &valmax,
+      &patchmin_global, &patchmax_global,
+      nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
+      &patchi->extreme_min, &patchi->extreme_max);
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
       glui_setpatchmin, &glui_patchmin, glui_setpatchmax, &glui_patchmax,
       &patchmin_global, &patchmax_global,
       nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
       &patchi->extreme_min, &patchi->extreme_max);
-    FREEMEMORY(patchi->geom_vals);  // slice files keep data loaded
+#endif
+    if(cache_boundary_data==0){
+      FREEMEMORY(patchi->geom_vals);
+    }
   }
   else {
     int slicetype;

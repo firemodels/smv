@@ -4754,13 +4754,14 @@ extern "C" void UpdateChar(void){
 /* ------------------ UpdatePlot3dListIndex ------------------------ */
 
 extern "C" void UpdatePlot3dListIndex(void){
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
   int i;
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
   SetValTypeIndex(BOUND_PLOT3D, plotn-1);
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   if(RADIO_p3==NULL)return;
   i = RADIO_p3->get_int_val();
   if(i!=plotn-1){
@@ -5108,7 +5109,8 @@ extern "C" void IncrementPartPropIndex(void){
     ParticlePropShowMenu(ipart5prop);
     SetValTypeIndex(BOUND_PART, ipart5prop);
 }
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   if(npart5prop > 0){
     ipart5prop++;
     if (ipart5prop > npart5prop-1)ipart5prop = 0;
@@ -5593,7 +5595,8 @@ extern "C" void SliceBoundCB(int var){
     case RESEARCH_MODE:
 #ifdef pp_CPPBOUND_DIALOG
      SetResearchMode(research_mode);
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
       for(i=0;i<nsliceinfo;i++){
         slicedata *slicei;
 
@@ -5611,11 +5614,10 @@ extern "C" void SliceBoundCB(int var){
 
 #ifdef pp_CPPBOUND_DIALOG
         SliceBoundsCPP_CB(BOUND_RELOAD_DATA);
-#else
+#endif
 #ifdef pp_OLDBOUND_DIALOG
         glui_setslicemin = GLOBAL_MIN;
         glui_setslicemax = GLOBAL_MAX;
-#endif
         SliceBoundCB(SETVALMIN);
         SliceBoundCB(SETVALMAX);
         SliceBoundCB(FILE_UPDATE);
@@ -5626,16 +5628,15 @@ extern "C" void SliceBoundCB(int var){
 
 #ifdef pp_CPPBOUND_DIALOG
         PatchBoundsCPP_CB(BOUND_RELOAD_DATA);
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
         glui_setpatchmin = GLOBAL_MIN;
         BoundBoundCB(SETVALMIN);
         glui_setpatchmax = GLOBAL_MAX;
         BoundBoundCB(SETVALMAX);
 
-#ifdef pp_OLDBOUND_DIALOG
         if(RADIO_patch_setmin != NULL)RADIO_patch_setmin->set_int_val(glui_setpatchmin);
         if(RADIO_patch_setmax != NULL)RADIO_patch_setmax->set_int_val(glui_setpatchmax);
-#endif
         if(UpdateAllBoundaryColors()==0){
           printf("***warning: boundary file data not loaded\n");
           printf("            reloading boundary data files\n");
@@ -5647,7 +5648,8 @@ extern "C" void SliceBoundCB(int var){
 
 #ifdef pp_CPPBOUND_DIALOG
         PartBoundsCPP_CB(BOUND_RELOAD_DATA);
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
         if(npartloaded>0){
           PartBoundCB(FILE_RELOAD);
         }
@@ -5667,7 +5669,8 @@ extern "C" void SliceBoundCB(int var){
           }
 #ifdef pp_CPPBOUND_DIALOG
           Plot3DBoundsCPP_CB(BOUND_RELOAD_DATA);
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
           GetLoadedPlot3dBounds(NULL, p3min_loaded, p3max_loaded);
           glui_p3min = p3min_loaded[list_p3_index];
           glui_p3max = p3max_loaded[list_p3_index];
@@ -6076,7 +6079,7 @@ extern "C" void UpdateSliceListIndex(int sfn){
 /* ------------------ UpdateGlui ------------------------ */
 
 extern "C" void UpdateGlui(void){
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
   GLUI_Master.sync_live_all();
 #endif
 }
@@ -6085,7 +6088,7 @@ extern "C" void UpdateGlui(void){
 
 extern "C" void ShowGluiBounds(int menu_id){
   if(menu_id==DIALOG_BOUNDS){
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
     if(nsliceinfo>0){
       int islice;
 

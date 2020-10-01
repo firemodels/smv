@@ -205,7 +205,7 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
   float factor, tval, range;
   int itt;
   float new_tmin, new_tmax;
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
   float tmin2, tmax2;
 #endif
 
@@ -215,7 +215,8 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
 
   label = patchi->label.shortlabel;
   GetMinMax(BOUND_PATCH, label, &set_valmin, ttmin, &set_valmax, ttmax);
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   UpdateBoundaryBounds(patchi);
 
   CheckMemory;
@@ -288,6 +289,66 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
 
 /* ------------------ UpdateAllBoundaryColors ------------------------ */
 
+#ifdef pp_CPPBOUND_DIALOG
+void UpdateAllBoundaryColors(void){
+  int i, *list = NULL, nlist = 0;
+  int count = 0;
+
+  NewMemory((void **)&list, npatchinfo*sizeof(int));
+  nlist = 0;
+  for(i = 0; i<npatchinfo; i++){
+    meshdata *meshi;
+    patchdata *patchi;
+
+    patchi = patchinfo+i;
+    if(patchi->loaded==0)continue;
+    switch(patchi->patch_filetype){
+      case PATCH_STRUCTURED_NODE_CENTER:
+      case PATCH_STRUCTURED_CELL_CENTER:
+        meshi = meshinfo+patchi->blocknumber;
+        if(meshi->patchval==NULL||meshi->cpatchval==NULL)continue;
+        list[nlist++] = i;
+        break;
+      case PATCH_GEOMETRY_BOUNDARY:
+        if(patchi->geom_vals==NULL)continue;
+        list[nlist++] = i;
+        break;
+      case PATCH_GEOMETRY_SLICE:
+        break;
+    }
+  }
+  if(nlist>0){
+    SetLoadedPatchBounds(list, nlist);
+    for(i = 0; i<nlist; i++){
+      meshdata *meshi;
+      patchdata *patchi;
+
+      patchi = patchinfo+list[i];
+      if(patchi->loaded==1){
+        int set_valmin, set_valmax;
+        float valmin, valmax;
+        float patchmin_global, patchmax_global;
+        char *label;
+
+        label = patchi->label.shortlabel;
+        GetMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
+        GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
+                           set_valmin, &valmin, set_valmax, &valmax,
+                           &patchmin_global, &patchmax_global,
+                           nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
+                           &patchi->extreme_min, &patchi->extreme_max);
+      }
+    }
+  }
+  FREEMEMORY(list);
+}
+#endif
+
+
+
+#ifdef pp_OLDBOUND_DIALOG
+/* ------------------ UpdateAllBoundaryColors ------------------------ */
+
 int UpdateAllBoundaryColors(void){
   int i, return_val;
 
@@ -309,36 +370,6 @@ int UpdateAllBoundaryColors(void){
   }
   if(return_val == -1)return return_val;
 
-
-#ifdef pp_CPPBOUND_DIALOG
-  int *list = NULL, nlist = 0;
-  for(i = 0; i<nmeshes; i++){
-    meshdata *meshi;
-    patchdata *patchi;
-
-    meshi = meshinfo+i;
-    if(meshi->patchval==NULL||meshi->cpatchval==NULL||meshi->patchfilenum<0)continue;
-    patchi = patchinfo+meshi->patchfilenum;
-    if(patchi->loaded==0)continue;
-    nlist++;
-  }
-  if(nlist>0){
-    NewMemory((void **)&list, nlist*sizeof(int));
-    nlist = 0;
-    for(i = 0; i<nmeshes; i++){
-      meshdata *meshi;
-      patchdata *patchi;
-
-      meshi = meshinfo+i;
-      if(meshi->patchval==NULL||meshi->cpatchval==NULL||meshi->patchfilenum<0)continue;
-      patchi = patchinfo+meshi->patchfilenum;
-      if(patchi->loaded==0)continue;
-      list[nlist++]=i;
-    }
-    SetLoadedPatchBounds(list, nlist);
-    FREEMEMORY(list);
-  }
-#endif
 
   for(i = 0; i < nmeshes; i++){
     meshdata *meshi;
@@ -362,6 +393,7 @@ int UpdateAllBoundaryColors(void){
   }
   return return_val;
 }
+#endif
 
 /* ------------------ GetBoundaryLabels ------------------------ */
 
@@ -1656,7 +1688,8 @@ void UpdateChopColors(void){
     glui_p3min_local = bounds->valmin[bounds->set_valmin];
     glui_p3max_local = bounds->valmax[bounds->set_valmax];
   }
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   setpatchchopmin_local = setpatchchopmin;
   setpatchchopmax_local = setpatchchopmax;
   patchchopmin_local    = patchchopmin;
