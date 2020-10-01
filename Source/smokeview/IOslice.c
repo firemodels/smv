@@ -1939,7 +1939,6 @@ void GetSliceHists(slicedata *sd){
 /* ------------------ GetSliceGeomHists ------------------------ */
 
 void GetSliceGeomHists(slicedata *sd){
-  int ndata;
   int n, i;
   int nframe;
   float *pdata0;
