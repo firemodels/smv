@@ -292,7 +292,6 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
 #ifdef pp_CPPBOUND_DIALOG
 void UpdateAllBoundaryColors(void){
   int i, *list = NULL, nlist = 0;
-  int count = 0;
 
   NewMemory((void **)&list, npatchinfo*sizeof(int));
   nlist = 0;
@@ -320,7 +319,6 @@ void UpdateAllBoundaryColors(void){
   if(nlist>0){
     SetLoadedPatchBounds(list, nlist);
     for(i = 0; i<nlist; i++){
-      meshdata *meshi;
       patchdata *patchi;
 
       patchi = patchinfo+list[i];
