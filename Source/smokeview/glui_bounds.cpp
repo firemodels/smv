@@ -1015,6 +1015,24 @@ void SliceBoundsCPP_CB(int var){
   }
 }
 
+/* ------------------ HavePlot3DData ------------------------ */
+
+int HavePlot3DData(void){
+  int i;
+
+  for(i = 0; i<nplot3dinfo; i++){
+    meshdata *meshi;
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo+i;
+    if(plot3di->loaded==0)continue;
+    if(plot3di->blocknumber<0)return 0;
+    meshi = meshinfo+plot3di->blocknumber;
+    if(meshi->qdata==NULL)return 0;
+  }
+  return 1;
+}
+
 /* ------------------ Plot3DBoundsCPP_CB ------------------------ */
 
 void Plot3DBoundsCPP_CB(int var){
@@ -1043,7 +1061,12 @@ void Plot3DBoundsCPP_CB(int var){
       cache_plot3d_data = GetCacheFlag(BOUND_PLOT3D);
       break;
     case BOUND_UPDATE_COLORS:
-      UpdateAllPlot3DColors();
+      if(HavePlot3DData()==1){
+        UpdateAllPlot3DColors();
+      }
+      else{
+        printf("***warning: colors not updated (PLOT3D file data was not cached when it was loaded). \n");
+      }
       break;
     case BOUND_RELOAD_DATA:
       for(i=0;i<nplot3dinfo;i++){
@@ -1091,6 +1114,33 @@ void PartBoundsCPP_CB(int var){
   }
 }
 
+/* ------------------ HavePatchData ------------------------ */
+
+int HavePatchData(void){
+  int i;
+
+  for(i = 0; i<npatchinfo; i++){
+    patchdata *patchi;
+    meshdata *meshi;
+
+    patchi = patchinfo+i;
+    if(patchi->loaded==0)continue;
+    switch(patchi->patch_filetype){
+      case PATCH_STRUCTURED_NODE_CENTER:
+      case PATCH_STRUCTURED_CELL_CENTER:
+        meshi = meshinfo+patchi->blocknumber;
+        if(meshi->patchval==NULL||meshi->cpatchval==NULL)return 0;
+        break;
+      case PATCH_GEOMETRY_BOUNDARY:
+        if(patchi->geom_vals==NULL)return 0;
+        break;
+      case PATCH_GEOMETRY_SLICE:
+        break;
+    }
+  }
+  return 1;
+}
+
 /* ------------------ PatchBoundsCPP_CB ------------------------ */
 
 void PatchBoundsCPP_CB(int var){
@@ -1118,8 +1168,13 @@ void PatchBoundsCPP_CB(int var){
       cache_boundary_data = GetCacheFlag(BOUND_PATCH);
       break;
     case BOUND_UPDATE_COLORS:
-      SetLoadedPatchBounds(NULL, 0);
-      UpdateAllBoundaryColors();
+      if(HavePatchData()==1){
+        SetLoadedPatchBounds(NULL, 0);
+        UpdateAllBoundaryColors();
+      }
+      else{
+        printf("***warning: colors not updated (boundary file data was not cached when it was loaded). \n");
+      }
       break;
     case BOUND_RELOAD_DATA:
       SetLoadedPatchBounds(NULL, 0);

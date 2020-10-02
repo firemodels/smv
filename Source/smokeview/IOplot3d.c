@@ -867,7 +867,7 @@ void UpdateSurface(void){
   int plot3dsize;
   int i;
 
-  if(cache_plot3d_data==0)return;
+  if(ReadPlot3dFile!=1)return;
   for(i=0;i<nmeshes;i++){
     float dlevel=-1.0;
     meshdata *meshi;
@@ -887,8 +887,6 @@ void UpdateSurface(void){
     currentsurfptr = &meshi->currentsurf;
     currentsurf2ptr = &meshi->currentsurf2;
     qdata=meshi->qdata;
-
-    if(ReadPlot3dFile!=1)return;
     if(plotiso[plotn-1]<0){
       plotiso[plotn-1]=nrgb-3;
     }

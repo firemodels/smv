@@ -283,7 +283,7 @@
 
 #ifndef GET_QVAL
 #define GET_QVAL(i,j,k,n) \
-  if(cache_plot3d_data==1){\
+  if(qdata!=NULL){\
     qval=qdata[IJKN(i,j,k,n)];\
   }\
   else{\

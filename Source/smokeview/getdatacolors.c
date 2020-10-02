@@ -330,11 +330,31 @@ void UpdateAllBoundaryColors(void){
 
         label = patchi->label.shortlabel;
         GetMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
-        GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
-                           set_valmin, &valmin, set_valmax, &valmax,
-                           &patchmin_global, &patchmax_global,
-                           nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
-                           &patchi->extreme_min, &patchi->extreme_max);
+        switch(patchi->patch_filetype){
+          case PATCH_STRUCTURED_NODE_CENTER:
+          case PATCH_STRUCTURED_CELL_CENTER:
+            if(patchi->blocknumber>=0){
+              meshdata *meshi;
+              int npatchvals;
+
+              meshi = meshinfo+patchi->blocknumber;
+              npatchvals = meshi->npatch_times*meshi->npatchsize;
+              GetBoundaryColors3(patchi, meshi->patchval, 0, npatchvals, meshi->cpatchval,
+                                 glui_setpatchmin, &glui_patchmin, glui_setpatchmax, &glui_patchmax,
+                                 &patchmin_global, &patchmax_global,
+                                 nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
+                                 &patchi->extreme_min, &patchi->extreme_max);
+            }
+            break;
+          case PATCH_GEOMETRY_BOUNDARY:
+          case PATCH_GEOMETRY_SLICE:
+            GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
+                               set_valmin, &valmin, set_valmax, &valmax,
+                               &patchmin_global, &patchmax_global,
+                               nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
+                               &patchi->extreme_min, &patchi->extreme_max);
+            break;
+        }
       }
     }
   }
@@ -819,7 +839,7 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
     meshi = meshinfo+p->blocknumber;
     ntotal=(meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
     iblank=meshi->c_iblank_node;
-    if(cache_plot3d_data==1||meshi->qdata!=NULL){
+    if(meshi->qdata!=NULL){
       q=meshi->qdata+plot3dvar*ntotal;
       for(n=0;n<ntotal;n++){
         if(iblank==NULL||*iblank++==GAS){
@@ -875,7 +895,7 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
     meshi = meshinfo+p->blocknumber;
     ntotal=(meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
 
-    if(cache_plot3d_data==1||meshi->qdata!=NULL){
+    if(meshi->qdata!=NULL){
       q=meshi->qdata+plot3dvar*ntotal;
       iq=meshi->iqdata+plot3dvar*ntotal;
       for(n=0;n<ntotal;n++){
@@ -926,7 +946,7 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
     meshi = meshinfo+p->blocknumber;
     ntotal=(meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
 
-    if(cache_plot3d_data==0&&meshi->qdata==NULL){
+    if(meshi->qdata==NULL){
       float qval, *qvals;
 
       qvals=p3levels256[plot3dvar];
