@@ -1300,6 +1300,49 @@ void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
   fclose(streamsize);
 }
 
+/* ------------------ GetPatchHist ------------------------ */
+#ifdef pp_CPPBOUND_DIALOG
+
+/* ------------------ ComputeLoadedPatchHist ------------------------ */
+
+void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *global_min, float *global_max){
+  histogramdata *hist;
+  int i;
+
+  hist = *histptr;
+  if(*histptr!=NULL)FreeHistogram(*histptr);
+  NewMemory((void **)&hist, sizeof(histogramdata));
+  *histptr = hist;
+
+  InitHistogram(hist, NHIST_BUCKETS, global_min, global_max);
+  for(i = 0; i<npatchinfo; i++){
+    patchdata *patchi;
+
+    patchi = patchinfo+i;
+    if(patchi->loaded==0||strcmp(patchi->label.shortlabel, label)!=0)continue;
+    switch(patchi->patch_filetype){
+      case PATCH_STRUCTURED_NODE_CENTER:
+      case PATCH_STRUCTURED_CELL_CENTER:
+        if(patchi->blocknumber>=0){
+          int npatchvals;
+          meshdata *meshi;
+
+          meshi = meshinfo+patchi->blocknumber;
+          npatchvals = meshi->npatch_times*meshi->npatchsize;
+          MergeVals2Histogram(meshi->patchval, NULL, NULL, npatchvals, hist);
+        }
+        break;
+      case PATCH_GEOMETRY_BOUNDARY:
+        MergeVals2Histogram(patchi->geom_vals, NULL, NULL, patchi->geom_nvals, hist);
+        break;
+      case PATCH_GEOMETRY_SLICE:
+        continue;
+        break;
+    }
+  }
+}
+#endif
+
 /* ------------------ ReadBoundaryBndf ------------------------ */
 
 FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
@@ -2272,6 +2315,34 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   GLUI2GlobalBoundaryBounds(patchi->label.shortlabel);
   if(patchi->finalize==1){
     UpdateBoundaryListIndex(patchfilenum);
+#ifdef pp_CPPBOUND_DIALOG
+#define BOUND_UPDATE_COLORS       110
+#define BOUND_COMPUTE_PERCENTILES 116
+    cpp_boundsdata *bounds;
+
+    bounds = GetBoundsData(BOUND_PATCH);
+    if(bounds->set_valmin==BOUND_PERCENTILE_MIN||bounds->set_valmax==BOUND_PERCENTILE_MAX){
+      float global_min=0.0, global_max=1.0;
+
+      GetGlobalBoundsMinMax(BOUND_PATCH, bounds->label, &global_min, &global_max);
+      ComputeLoadedPatchHist(bounds->label, &(bounds->hist), &global_min, &global_max);
+      if(bounds->hist->defined==1){
+        if(bounds->set_valmin==BOUND_PERCENTILE_MIN){
+          float per_valmin;
+
+          GetHistogramValProc(bounds->hist, percentile_level, &per_valmin);
+          SetMin(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+        }
+        if(bounds->set_valmax==BOUND_PERCENTILE_MAX){
+          float per_valmax;
+
+          GetHistogramValProc(bounds->hist,1.0-percentile_level, &per_valmax);
+          SetMax(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
+        }
+      }
+      PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
+    }
+#endif
   }
 
   if(wallcenter==1){
@@ -2645,6 +2716,32 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   if(patchi->finalize==1){
     plotstate = GetPlotState(DYNAMIC_PLOTS);
     if(patchi->boundary==1)UpdateBoundaryType();
+#ifdef pp_CPPBOUND_DIALOG
+    cpp_boundsdata *bounds;
+
+    bounds = GetBoundsData(BOUND_PATCH);
+    if(bounds->set_valmin==BOUND_PERCENTILE_MIN||bounds->set_valmax==BOUND_PERCENTILE_MAX){
+      float global_min = 0.0, global_max = 1.0;
+
+      GetGlobalBoundsMinMax(BOUND_PATCH, bounds->label, &global_min, &global_max);
+      ComputeLoadedPatchHist(bounds->label, &(bounds->hist), &global_min, &global_max);
+      if(bounds->hist->defined==1){
+        if(bounds->set_valmin==BOUND_PERCENTILE_MIN){
+          float per_valmin;
+
+          GetHistogramValProc(bounds->hist, percentile_level, &per_valmin);
+          SetMin(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+        }
+        if(bounds->set_valmax==BOUND_PERCENTILE_MAX){
+          float per_valmax;
+
+          GetHistogramValProc(bounds->hist, 1.0-percentile_level, &per_valmax);
+          SetMax(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
+        }
+      }
+      PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
+    }
+#endif
     UpdateUnitDefs();
     UpdateTimes();
     force_redisplay = 1;

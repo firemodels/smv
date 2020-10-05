@@ -5242,18 +5242,18 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     int set_valmin, set_valmax;
 
     GetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
-    if(set_valmin==3||set_valmax==3){
+    if(set_valmin==BOUND_PERCENTILE_MIN||set_valmax==BOUND_PERCENTILE_MAX){
       cpp_boundsdata *bounds;
 
       bounds = GetBoundsData(BOUND_SLICE);
       ComputeLoadedSliceHist(bounds->label, &(bounds->hist));
       if(bounds->hist->defined==1){
         if(set_valmin==BOUND_PERCENTILE_MIN){
-          GetHistogramValProc(bounds->hist, 0.05, &qmin);
+          GetHistogramValProc(bounds->hist, percentile_level, &qmin);
           SetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, qmin);
         }
         if(set_valmax==BOUND_PERCENTILE_MAX){
-          GetHistogramValProc(bounds->hist, 0.95, &qmax);
+          GetHistogramValProc(bounds->hist, 1.0-percentile_level, &qmax);
           SetMax(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MAX, qmax);
         }
       }

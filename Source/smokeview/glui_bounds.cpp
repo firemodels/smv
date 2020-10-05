@@ -64,6 +64,7 @@ class bounds_dialog{
   int get_max(char *label, int *set_valmax, float *valmax);
   void get_min_all(int *set_valmin, float *valmin, int *nvals);
   void get_max_all(int *set_valmax, float *valmax, int *nvals);
+  void get_global_minmax(char *label, float *valmin, float *valmax);
   int set_min(char *label, int set_valmin, float valmin);
   int set_max(char *label, int set_valmax, float valmax);
   void set_min_all(int *set_valmin, float *valmin, int nvals);
@@ -358,6 +359,23 @@ void bounds_dialog::get_max_all(int *set_valmax, float *valmax, int *nvals){
   }
 }
 
+/* ------------------ get_global_minmax ------------------------ */
+
+void bounds_dialog::get_global_minmax(char *label, float *valmin, float *valmax){
+  int i;
+
+  for(i = 0; i<nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds+i;
+    if(strcmp(boundi->label, label)==0){
+      *valmin = boundi->valmin[BOUND_GLOBAL_MIN];
+      *valmax = boundi->valmax[BOUND_GLOBAL_MAX];
+      return;
+    }
+  }
+}
+
 /* ------------------ set_min_all ------------------------ */
 
 void bounds_dialog::set_min_all(int *set_valmin, float *valmin, int nvals){
@@ -638,6 +656,25 @@ extern "C" cpp_boundsdata *GetBoundsData(int type){
       break;
   }
   return NULL;
+}
+
+/* ------------------ GetGlobalBoundsMinMax ------------------------ */
+
+extern "C" void GetGlobalBoundsMinMax(int type, char *label, float *valmin, float *valmax){
+  switch(type){
+    case BOUND_PATCH:
+      if(npatchinfo>0)patchboundsCPP.get_global_minmax(label, valmin, valmax);
+      break;
+    case BOUND_PART:
+      if(npartinfo>0)partboundsCPP.get_global_minmax(label, valmin, valmax);
+      break;
+    case BOUND_PLOT3D:
+      if(nplot3dinfo>0)plot3dboundsCPP.get_global_minmax(label, valmin, valmax);
+      break;
+    case BOUND_SLICE:
+      if(nsliceinfo>0)sliceboundsCPP.get_global_minmax(label, valmin, valmax);
+      break;
+  }
 }
 
 /* ------------------ SetCacheFlag ------------------------ */
@@ -971,8 +1008,8 @@ void SliceBoundsCPP_CB(int var){
       bounds = GetBoundsData(BOUND_SLICE);
       ComputeLoadedSliceHist(bounds->label,&(bounds->hist));
       if(bounds->hist->defined==1){
-        GetHistogramValProc(bounds->hist, 0.05, &per_valmin);
-        GetHistogramValProc(bounds->hist, 0.95, &per_valmax);
+        GetHistogramValProc(bounds->hist, percentile_level, &per_valmin);
+        GetHistogramValProc(bounds->hist, 1.0 - percentile_level, &per_valmax);
         SetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
         SetMax(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
       }
@@ -1143,10 +1180,11 @@ int HavePatchData(void){
 
 /* ------------------ PatchBoundsCPP_CB ------------------------ */
 
-void PatchBoundsCPP_CB(int var){
 #ifdef pp_CPPBOUND_DIALOG
+extern "C" void PatchBoundsCPP_CB(int var){
   int i;
-#endif
+  cpp_boundsdata *bounds;
+  float per_valmin, per_valmax;
 
   patchboundsCPP.CB(var);
   switch(var){
@@ -1163,6 +1201,19 @@ void PatchBoundsCPP_CB(int var){
     case BOUND_ENABLE:
       break;
     case BOUND_COMPUTE_PERCENTILES:
+      float per_valmin, per_valmax;
+      float global_min, global_max;
+
+      bounds = GetBoundsData(BOUND_PATCH);
+
+      GetGlobalBoundsMinMax(BOUND_PATCH, bounds->label, &global_min, &global_max);
+      ComputeLoadedPatchHist(bounds->label, &(bounds->hist), &global_min, &global_max);
+      if(bounds->hist->defined==1){
+        GetHistogramValProc(bounds->hist, percentile_level, &per_valmin);
+        GetHistogramValProc(bounds->hist, 1.- percentile_level, &per_valmax);
+        SetMin(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+        SetMax(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
+      }
       break;
     case BOUND_CACHE_DATA:
       cache_boundary_data = GetCacheFlag(BOUND_PATCH);
@@ -1189,6 +1240,7 @@ void PatchBoundsCPP_CB(int var){
       break;
   }
 }
+#endif
 
 /* ------------------ SetLoadedSliceBounds ------------------------ */
 
@@ -3662,7 +3714,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
-    patchboundsCPP.setup(ROLLOUT_bound, patchbounds_cpp, npatchbounds_cpp, &cache_boundary_data, SHOW_CACHE_CHECKBOX, PERCENTILE_DISABLED, PatchBoundsCPP_CB);
+    patchboundsCPP.setup(ROLLOUT_bound, patchbounds_cpp, npatchbounds_cpp, &cache_boundary_data, SHOW_CACHE_CHECKBOX, PERCENTILE_ENABLED, PatchBoundsCPP_CB);
 #endif
 
 #ifdef pp_OLDBOUND_DIALOG

@@ -44,6 +44,9 @@ EXTERNCPP void GetGlobalSliceBounds(void);
 #ifdef pp_CPPBOUND_DIALOG
 EXTERNCPP void GetHistogramValProc(histogramdata *histogram, float cdf, float *val);
 EXTERNCPP void ComputeLoadedSliceHist(char *label, histogramdata **histptr);
+EXTERNCPP void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *valmin, float *valmax);
+EXTERNCPP void GetGlobalBoundsMinMax(int type, char *label, float *valmin, float *valmax);
+EXTERNCPP void PatchBoundsCPP_CB(int var);
 EXTERNCPP cpp_boundsdata *GetBoundsData(int type);
 EXTERNCPP void SetCacheFlag(int type, int cache_flag);
 EXTERNCPP int GetCacheFlag(int type);
