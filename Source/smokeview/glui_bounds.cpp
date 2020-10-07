@@ -2538,7 +2538,7 @@ extern "C" void UpdateEvacParms(void){
 
 /* ------------------ PartBoundCBInit ------------------------ */
 
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
 extern "C" void PartBoundCBInit(void){
   PartBoundCB(FILETYPE_INDEX);
 }
@@ -3731,7 +3731,7 @@ extern "C" void GluiBoundsSetup(int main_window){
   // ----------------------------------- Boundary ----------------------------------------
 
   if(npatchinfo>0){
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
     int nradio;
 #endif
 
@@ -3740,7 +3740,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_bound, glui_bounds);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_bound, BOUNDARY_ROLLOUT, glui_bounds);
 
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
     nradio=0;
     for(i=0;i<npatchinfo;i++){
       patchdata *patchi;
@@ -3789,9 +3789,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       UPDATERELOAD_BOUNDS,DONT_TRUNCATE_BOUNDS,
       BoundBoundCB,
       SubBoundRolloutCB,subboundprocinfo,&nsubboundprocinfo);
-#endif
 
-#ifndef pp_CPPBOUND_DIALOG
     UpdateBoundaryListIndex2(patchinfo->label.shortlabel);
     UpdateHideBoundarySurface();
     BoundBoundCB(CACHE_DATA);
@@ -4000,7 +3998,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_part, glui_bounds);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_part, PART_ROLLOUT, glui_bounds);
 
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
     if(npart5prop>0){
       ipart5prop=0;
       ipart5prop_old=0;
@@ -4122,16 +4120,13 @@ extern "C" void GluiBoundsSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_plot3d, glui_bounds);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_plot3d, PLOT3D_ROLLOUT, glui_bounds);
 
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
     RADIO_p3 = glui_bounds->add_radiogroup_to_panel(ROLLOUT_plot3d,&list_p3_index, FILETYPE_INDEX,Plot3DBoundCB);
     for(i=0;i<MAXPLOT3DVARS;i++){
       glui_bounds->add_radiobutton_to_group(RADIO_p3,plot3dinfo[0].label[i].shortlabel);
     }
     glui_bounds->add_column_to_panel(ROLLOUT_plot3d,false);
-#endif
 
-
-#ifdef pp_OLDBOUND_DIALOG
     GenerateBoundDialogs(&ROLLOUT_plot3d_bound, &ROLLOUT_plot3d_chop, ROLLOUT_plot3d, "Reload Plot3D Files",
       &PANEL_plot3d_minmax, &STATIC_plot3d_research,
       &EDIT_plot3d_min, &EDIT_plot3d_max, &RADIO_p3_setmin, &RADIO_p3_setmax, NULL, NULL,
@@ -4197,7 +4192,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     p3chopmax_temp=p3chopmax[0];
     glui_bounds->add_column_to_panel(ROLLOUT_plot3d,false);
 
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
     Plot3DBoundCB(FILETYPE_INDEX);
 #endif
   }
@@ -4205,7 +4200,7 @@ extern "C" void GluiBoundsSetup(int main_window){
   // ----------------------------------- Slice ----------------------------------------
 
   if(nsliceinfo>0){
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
     int index;
 #endif
 
@@ -4214,7 +4209,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_slice, glui_bounds);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_slice, SLICE_ROLLOUT, glui_bounds);
 
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
     RADIO_slice = glui_bounds->add_radiogroup_to_panel(ROLLOUT_slice, &list_slice_index, FILETYPE_INDEX, SliceBoundCB);
     index=0;
     for(i=0;i<nsliceinfo;i++){
@@ -4229,10 +4224,8 @@ extern "C" void GluiBoundsSetup(int main_window){
         if(nzoneinfo>0&&strcmp(sliceinfo[i].label.shortlabel, _("TEMP"))==0){
           slicebounds[index].dlg_valmin = zonemin;
           slicebounds[index].dlg_valmax = zonemax;
-#ifdef pp_OLDBOUND_DIALOG
           slicebounds[index].dlg_setvalmin = setzonemin;
           slicebounds[index].dlg_setvalmax = setzonemax;
-#endif
         }
         index++;
       }
@@ -4240,9 +4233,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     nlist_slice_index = index;
 
     glui_bounds->add_column_to_panel(ROLLOUT_slice,false);
-#endif
 
-#ifdef pp_OLDBOUND_DIALOG
     GenerateBoundDialogs(&ROLLOUT_slice_bound,&ROLLOUT_slice_chop,ROLLOUT_slice,"Reload Slice Files",
       &PANEL_slice_minmax, &STATIC_slice_research,
       &EDIT_slice_min,&EDIT_slice_max,&RADIO_slice_setmin,&RADIO_slice_setmax,NULL,NULL,
@@ -4433,7 +4424,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("sort slices"), &sort_slices);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("show sorted slice labels"), &show_sort_labels);
 #endif
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
     SliceBoundCB(FILETYPE_INDEX);
 #endif
   }

@@ -3498,7 +3498,7 @@ void ParticlePropShowMenu(int value){
     partshortlabel=propi->label->shortlabel;
     partunitlabel=propi->label->unit;
 #define FILETYPE_INDEX 5
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
     PartBoundCB(FILETYPE_INDEX);
     UpdatePartType();
 #endif

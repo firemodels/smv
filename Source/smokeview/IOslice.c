@@ -5166,7 +5166,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
      // convert slice data into color indices
 
   if(sd->compression_type == UNCOMPRESSED){
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
     GetSliceDataBounds(sd, &qmin, &qmax);
     if(nzoneinfo>0&&strcmp(sd->label.shortlabel, "TEMP")==0){
       slice_temp_bounds_defined = 1;
@@ -5182,7 +5182,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     qmin = sd->valmin;
     qmax = sd->valmax;
   }
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
   sd->globalmin = qmin;
   sd->globalmax = qmax;
   sd->valmin = qmin;
@@ -5269,7 +5269,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     CheckMemory;
 
     CheckMemory;
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
     UpdateSliceList(list_slice_index);
     UpdateSliceListIndex(slicefilenum);
 #endif

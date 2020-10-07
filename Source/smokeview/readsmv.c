@@ -14245,7 +14245,7 @@ void WriteIniLocal(FILE *fileout){
         );
     }
   }
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
   fprintf(fileout, "V_PARTICLES\n");
   fprintf(fileout, " %i %f %i %f\n", setpartmin, glui_partmin, setpartmax, glui_partmax);
 #endif

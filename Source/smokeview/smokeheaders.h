@@ -836,7 +836,7 @@ EXTERNCPP void SetViewPoint(int option);
 EXTERNCPP void UpdateTimeLabels(void);
 EXTERNCPP void RenderFrame(int view_mode);
 EXTERNCPP void UpdateTerrain(int allocate_memory, float vertical_factor);
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
 EXTERNCPP void PartBoundCBInit(void);
 #endif
 EXTERNCPP void SliceBoundCB(int var);

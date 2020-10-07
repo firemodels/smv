@@ -2164,7 +2164,7 @@ void FinalizePartLoad(partdata *parti){
   }
 #endif
   parttype = 0;
-#ifndef pp_CPPBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
   PartBoundCBInit();
 #endif
   ParticlePropShowMenu(part5colorindex);
