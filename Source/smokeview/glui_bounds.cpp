@@ -88,6 +88,8 @@ class bounds_dialog{
 /* ------------------ set_percentile_minmax ------------------------ */
 
 void bounds_dialog::set_percentile_minmax(float p_min, float p_max){
+  p_min = SMV_ROUND(p_min, 5);
+  p_max = SMV_ROUND(p_max, 5);
   if(SPINNER_percentile_min!=NULL)SPINNER_percentile_min->set_float_val(p_min);
   if(SPINNER_percentile_max!=NULL)SPINNER_percentile_max->set_float_val(p_max);
 }
