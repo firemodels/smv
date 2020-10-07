@@ -1939,55 +1939,17 @@ void GetSliceHists(slicedata *sd){
 /* ------------------ GetSliceGeomHists ------------------------ */
 
 void GetSliceGeomHists(slicedata *sd){
-  int n, i;
-  int nframe;
-  float *pdata0;
-
-  int istep;
-  int ntimes;
-  char *slice_mask0;
-  float *slice_weight0;
-
   if(sd->histograms != NULL)return;
-
-  ntimes = 1;
-  nframe = sd->patchgeom->geom_nvals;
 
   // initialize histograms
 
-  sd->nhistograms = ntimes + 1;
-  NewMemory((void **)&slice_mask0, nframe);
-  NewMemory((void **)&slice_weight0, nframe*sizeof(float));
-  NewMemory((void **)&sd->histograms, sd->nhistograms * sizeof(histogramdata));
-  for(i = 0; i<nframe;i++){
-    slice_mask0[i] = 1;
-    slice_weight0[i] = 1.0;
-  }
-  NewMemory((void **)&pdata0, nframe* sizeof(float));
-  for(i = 0; i < sd->nhistograms; i++){
-    InitHistogram(sd->histograms + i, NHIST_BUCKETS, NULL, NULL);
-  }
+  sd->nhistograms = 1;
+  NewMemory((void **)&sd->histograms, sizeof(histogramdata));
+  InitHistogram(sd->histograms, NHIST_BUCKETS, NULL, NULL);
 
-  n = 0;
-  for(istep = 0; istep < ntimes; istep++){
-    histogramdata *histi, *histall;
-    int nn;
+  // compute histogram for each timestep, histi and all time steps, histall
 
-    for(nn = 0; nn <nframe; nn++){
-      pdata0[nn] = sd->patchgeom->geom_vals[nn];
-    }
-    n += sd->patchgeom->geom_nvals;
-
-    // compute histogram for each timestep, histi and all time steps, histall
-
-    histi = sd->histograms + istep + 1;
-    histall = sd->histograms;
-    CopyVals2Histogram(pdata0, slice_mask0, slice_weight0, nframe, histi);
-    MergeHistogram(histall, histi, MERGE_BOUNDS);
-  }
-  FREEMEMORY(pdata0);
-  FREEMEMORY(slice_mask0);
-  FREEMEMORY(slice_weight0);
+  CopyVals2Histogram(sd->patchgeom->geom_vals, NULL, NULL, sd->patchgeom->geom_nvals, sd->histograms);
 }
 /* ------------------ GetAllSliceHists ------------------------ */
 

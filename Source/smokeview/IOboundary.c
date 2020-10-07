@@ -2323,20 +2323,22 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     bounds = GetBoundsData(BOUND_PATCH);
     if(bounds->set_valmin==BOUND_PERCENTILE_MIN||bounds->set_valmax==BOUND_PERCENTILE_MAX){
       float global_min=0.0, global_max=1.0;
+      histogramdata *bound_hist;
 
+      bound_hist = bounds->hist;
       GetGlobalBoundsMinMax(BOUND_PATCH, bounds->label, &global_min, &global_max);
-      ComputeLoadedPatchHist(bounds->label, &(bounds->hist), &global_min, &global_max);
-      if(bounds->hist->defined==1){
+      ComputeLoadedPatchHist(bounds->label, &bound_hist, &global_min, &global_max);
+      if(bound_hist->defined==1){
         if(bounds->set_valmin==BOUND_PERCENTILE_MIN){
           float per_valmin;
 
-          GetHistogramValProc(bounds->hist, percentile_level, &per_valmin);
+          GetHistogramValProc(bound_hist, percentile_level, &per_valmin);
           SetMin(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
         }
         if(bounds->set_valmax==BOUND_PERCENTILE_MAX){
           float per_valmax;
 
-          GetHistogramValProc(bounds->hist,1.0-percentile_level, &per_valmax);
+          GetHistogramValProc(bound_hist,1.0-percentile_level, &per_valmax);
           SetMax(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
         }
       }
@@ -2718,28 +2720,46 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     if(patchi->boundary==1)UpdateBoundaryType();
 #ifdef pp_CPPBOUND_DIALOG
     cpp_boundsdata *bounds;
+    int bound_type;
 
-    bounds = GetBoundsData(BOUND_PATCH);
+    if(patchi->boundary==1){
+      bound_type = BOUND_PATCH;
+    }
+    else{
+      bound_type = BOUND_SLICE;
+    }
+
+    bounds = GetBoundsData(bound_type);
     if(bounds->set_valmin==BOUND_PERCENTILE_MIN||bounds->set_valmax==BOUND_PERCENTILE_MAX){
       float global_min = 0.0, global_max = 1.0;
 
-      GetGlobalBoundsMinMax(BOUND_PATCH, bounds->label, &global_min, &global_max);
-      ComputeLoadedPatchHist(bounds->label, &(bounds->hist), &global_min, &global_max);
+      if(patchi->boundary==1){
+        GetGlobalBoundsMinMax(BOUND_PATCH, bounds->label, &global_min, &global_max);
+        ComputeLoadedPatchHist(bounds->label, &(bounds->hist), &global_min, &global_max);
+      }
+      else{
+        ComputeLoadedSliceHist(bounds->label, &(bounds->hist));
+      }
       if(bounds->hist->defined==1){
         if(bounds->set_valmin==BOUND_PERCENTILE_MIN){
           float per_valmin;
 
           GetHistogramValProc(bounds->hist, percentile_level, &per_valmin);
-          SetMin(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+          SetMin(bound_type, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
         }
         if(bounds->set_valmax==BOUND_PERCENTILE_MAX){
           float per_valmax;
 
           GetHistogramValProc(bounds->hist, 1.0-percentile_level, &per_valmax);
-          SetMax(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
+          SetMax(bound_type, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
         }
       }
-      PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
+      if(patchi->boundary==1){
+        PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
+      }
+      else{
+        SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
+      }
     }
 #endif
     UpdateUnitDefs();

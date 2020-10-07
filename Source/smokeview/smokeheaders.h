@@ -46,6 +46,7 @@ EXTERNCPP void GetHistogramValProc(histogramdata *histogram, float cdf, float *v
 EXTERNCPP void ComputeLoadedSliceHist(char *label, histogramdata **histptr);
 EXTERNCPP void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *valmin, float *valmax);
 EXTERNCPP void GetGlobalBoundsMinMax(int type, char *label, float *valmin, float *valmax);
+EXTERNCPP void SliceBoundsCPP_CB(int var);
 EXTERNCPP void PatchBoundsCPP_CB(int var);
 EXTERNCPP cpp_boundsdata *GetBoundsData(int type);
 EXTERNCPP void SetCacheFlag(int type, int cache_flag);
@@ -67,6 +68,7 @@ EXTERNCPP void SetLoadedPatchBounds(int *list, int nlist);
 EXTERNCPP void SetLoadedPlot3DBounds(int *list, int nlist);
 EXTERNCPP void SetLoadedPartBounds(int *list, int nlist);
 EXTERNCPP void SetResearchMode(int flag);
+EXTERNCPP void SetPercentileMinMax(float p_min, float p_max);
 #endif
 EXTERNCPP void ShiftColorbars(void);
 EXTERNCPP int GetColorbarState(void);
