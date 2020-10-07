@@ -3685,7 +3685,8 @@ void SetupPart(int value, int option){
   }
   SetLoadedPartBounds(list, nlist);
   FREEMEMORY(list);
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   if(research_mode == 1 && npartinfo> 0){
     GetGlobalPartBounds(0);
     setpartmin = GLOBAL_MIN;
@@ -5118,7 +5119,8 @@ void Plot3DListMenu(int value){
     ReadPlot3D(plot3di->file, i, LOAD, &errorcode);
   }
   FREEMEMORY(list);
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   for(i=0;i<nplot3dinfo;i++){
     plot3di = plot3dinfo + i;
     if(ABS(plot3di->time-plot3dtimelist[value])<0.5){

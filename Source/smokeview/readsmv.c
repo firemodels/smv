@@ -10936,7 +10936,8 @@ int ReadIni2(char *inifile, int localfile){
 #endif
 #ifdef pp_CPPBOUND_DIALOG
     if(Match(buffer, "V2_PLOT3D") == 1){
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "V_PLOT3D") == 1){
 #endif
       int tempval;
@@ -11155,7 +11156,8 @@ int ReadIni2(char *inifile, int localfile){
       update_chop_colors = 1;
       continue;
     }
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "C_PLOT3D") == 1){
       int tempval;
       int n3d;
@@ -11400,7 +11402,8 @@ int ReadIni2(char *inifile, int localfile){
     }
 #ifdef pp_CPPBOUND_DIALOG
     if(Match(buffer, "V2_PARTICLES") == 1){
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "V5_PARTICLES") == 1){
 #endif
       int ivmin, ivmax;
@@ -11495,7 +11498,8 @@ int ReadIni2(char *inifile, int localfile){
       update_chop_colors = 1;
       continue;
     }
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "C_PARTICLES") == 1){
       int icmin, icmax;
       float cmin, cmax;
@@ -11526,7 +11530,8 @@ int ReadIni2(char *inifile, int localfile){
 #endif
 #ifdef pp_CPPBOUND_DIALOG
     if(Match(buffer, "V2_SLICE")==1){
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "V_SLICE") == 1){
 #endif
       float valmin, valmax;
@@ -11620,7 +11625,8 @@ int ReadIni2(char *inifile, int localfile){
       update_chop_colors = 1;
       continue;
     }
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "C_SLICE") == 1){
       float valmin, valmax;
       int setvalmin, setvalmax;
@@ -11705,7 +11711,8 @@ int ReadIni2(char *inifile, int localfile){
     }
 #ifdef pp_CPPBOUND_DIALOG
     if(Match(buffer, "V2_BOUNDARY") == 1){
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "V_BOUNDARY") == 1){
 #endif
       fgets(buffer, 255, stream);
@@ -11744,7 +11751,8 @@ int ReadIni2(char *inifile, int localfile){
       update_chop_colors = 1;
       continue;
     }
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "C_BOUNDARY") == 1){
       float valmin, valmax;
       int setvalmin, setvalmax;
@@ -14099,7 +14107,8 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, "C_BOUNDARY\n");
     fprintf(fileout, " %i %f %i %f %s\n", boundi->set_chopmin, boundi->chopmin, boundi->set_chopmax, boundi->chopmax, boundi->label);
   }
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   for(i = 0; i < npatch2; i++){
     int ii;
     patchdata *patchi;
@@ -14133,7 +14142,8 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, "C_PARTICLES\n");
     fprintf(fileout, " %i %f %i %f %s\n", boundi->set_chopmin, boundi->chopmin, boundi->set_chopmax, boundi->chopmax, boundi->label);
   }
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   for(i = 0; i < npart5prop; i++){
     partpropdata *propi;
 
@@ -14152,7 +14162,8 @@ void WriteIniLocal(FILE *fileout){
     boundi = plot3dbounds_cpp+i;
     fprintf(fileout, " %i %i %f %i %f\n", i+1, boundi->set_chopmin, boundi->chopmin, boundi->set_chopmax, boundi->chopmax);
   }
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   {
     int n3d;
 
@@ -14178,7 +14189,8 @@ void WriteIniLocal(FILE *fileout){
       fprintf(fileout, " %i %f %i %f %s\n", boundi->set_chopmin, boundi->chopmin, boundi->set_chopmax, boundi->chopmax, boundi->label);
     }
   }
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   if(nslicebounds > 0){
     for(i = 0; i < nslicebounds; i++){
       fprintf(fileout, "C_SLICE\n");
@@ -14225,7 +14237,8 @@ void WriteIniLocal(FILE *fileout){
       GetMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, "V2_BOUNDARY\n");
       fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
       fprintf(fileout, "V_BOUNDARY\n");
       fprintf(fileout, " %i %f %i %f %s\n",
         patchi->setvalmin, patchi->valmin,
@@ -14256,10 +14269,9 @@ void WriteIniLocal(FILE *fileout){
       propi = part5propinfo + i;
 #ifdef pp_CPPBOUND_DIALOG
       fprintf(fileout, "V2_PARTICLES\n");
-#else
-      fprintf(fileout, "V5_PARTICLES\n");
 #endif
 #ifdef pp_OLDBOUND_DIALOG
+      fprintf(fileout, "V5_PARTICLES\n");
       fprintf(fileout, " %i %f %i %f %s\n",
         propi->setvalmin, propi->valmin, propi->setvalmax, propi->valmax, propi->label->shortlabel);
 #endif
@@ -14286,7 +14298,8 @@ void WriteIniLocal(FILE *fileout){
       fprintf(fileout, "V2_PLOT3D\n");
       fprintf(fileout, " %i\n", n3d);
     }
-#else
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     fprintf(fileout, "V_PLOT3D\n");
     fprintf(fileout, " %i\n", n3d);
 #endif
@@ -14311,10 +14324,9 @@ void WriteIniLocal(FILE *fileout){
     for(i = 0; i < nslicebounds; i++){
 #ifdef pp_CPPBOUND_DIALOG
       fprintf(fileout, "V2_SLICE\n");
-#else
-      fprintf(fileout, "V_SLICE\n");
 #endif
 #ifdef pp_OLDBOUND_DIALOG
+      fprintf(fileout, "V_SLICE\n");
       fprintf(fileout, " %i %f %i %f %s : %f %f %i\n",
         slicebounds[i].dlg_setvalmin, slicebounds[i].dlg_valmin,
         slicebounds[i].dlg_setvalmax, slicebounds[i].dlg_valmax,
