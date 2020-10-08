@@ -58,10 +58,10 @@ class bounds_dialog{
   GLUI_Checkbox    *CHECKBOX_set_chopmin, *CHECKBOX_set_chopmax, *CHECKBOX_cache, *CHECKBOX_research_mode;
   GLUI_RadioGroup  *RADIO_set_valtype,  *RADIO_set_valmin, *RADIO_set_valmax;
   GLUI_RadioButton *RADIO_button_loaded_min, *RADIO_button_loaded_max, *RADIO_button_all_min, *RADIO_button_all_max;
-  GLUI_Button      *BUTTON_update_colors=NULL, *BUTTON_reload_data;
+  GLUI_Button      *BUTTON_update_colors, *BUTTON_reload_data;
   GLUI_Panel       *PANEL_min, *PANEL_max, *PANEL_percentiles;
   GLUI_StaticText  *STATIC_min_unit, *STATIC_max_unit, *STATIC_chopmin_unit, *STATIC_chopmax_unit;
-  GLUI_Spinner     *SPINNER_percentile_min = NULL, *SPINNER_percentile_max = NULL;
+  GLUI_Spinner     *SPINNER_percentile_min, *SPINNER_percentile_max;
   GLUI_Rollout     *ROLLOUT_main_bound, *ROLLOUT_truncate;
 
   // routines
@@ -228,6 +228,10 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   if(cache_flag!=NULL&&percentile_enabled==1){
     glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "percentile");
   }
+
+  BUTTON_update_colors = NULL;
+  SPINNER_percentile_min = NULL;
+  SPINNER_percentile_max = NULL;
   if(cache_flag!=NULL){
     if(percentile_enabled==1){
       PANEL_percentiles = glui_bounds->add_panel_to_panel(PANEL_minmax, "percentiles");
