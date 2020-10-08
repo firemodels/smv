@@ -254,7 +254,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   Callback(BOUND_VAL_TYPE);
   Callback(BOUND_SETCHOPMIN);
   Callback(BOUND_SETCHOPMAX);
-  if(cache_flag!=NULL){
+  if(cache_flag!=NULL&&percentile_enabled==1){
     Callback(BOUND_CACHE_DATA);
     Callback(BOUND_PERCENTILE_MINVAL);
     Callback(BOUND_PERCENTILE_MAXVAL);
