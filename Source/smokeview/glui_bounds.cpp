@@ -48,41 +48,50 @@ GLUI *glui_bounds=NULL;
 
 class bounds_dialog{
   public:
+  // variables
   cpp_boundsdata bounds, *all_bounds;
-  int nall_bounds, research_mode_cpp, percentile_enabled;
+  int   nall_bounds, research_mode_cpp, percentile_enabled;
   float percentile_min_cpp, percentile_max_cpp;
 
-  GLUI_EditText *EDIT_valmin, *EDIT_valmax, *EDIT_chopmin, *EDIT_chopmax;
-  GLUI_Checkbox *CHECKBOX_set_chopmin, *CHECKBOX_set_chopmax, *CHECKBOX_cache=NULL, *CHECKBOX_research_mode=NULL;
+  // widgets
+  GLUI_EditText   *EDIT_valmin, *EDIT_valmax, *EDIT_chopmin, *EDIT_chopmax;
+  GLUI_Checkbox   *CHECKBOX_set_chopmin, *CHECKBOX_set_chopmax, *CHECKBOX_cache=NULL, *CHECKBOX_research_mode=NULL;
   GLUI_RadioGroup *RADIO_set_valtype,  *RADIO_set_valmin, *RADIO_set_valmax;
-  GLUI_Button *BUTTON_update_colors=NULL, *BUTTON_reload_data;
-  GLUI_Panel *PANEL_min, *PANEL_max, *PANEL_percentiles;
+  GLUI_Button     *BUTTON_update_colors=NULL, *BUTTON_reload_data;
+  GLUI_Panel      *PANEL_min, *PANEL_max, *PANEL_percentiles;
   GLUI_StaticText *STATIC_min_unit, *STATIC_max_unit, *STATIC_chopmin_unit, *STATIC_chopmax_unit;
-  GLUI_Spinner *SPINNER_percentile_min = NULL, *SPINNER_percentile_max = NULL;
+  GLUI_Spinner    *SPINNER_percentile_min = NULL, *SPINNER_percentile_max = NULL;
+  GLUI_Rollout    *ROLLOUT_main_bound, *ROLLOUT_truncate;
 
-  void set_cache_flag(int cache_flag);
-  int get_cache_flag(void);
-  void set_research_mode(int flag);
-  void set_percentile_minmax(float p_min, float p_max);
-  cpp_boundsdata *get_bounds_data(void);
-  int get_min(char *label, int *set_valmin, float *valmin);
-  int get_max(char *label, int *set_valmax, float *valmax);
-  void get_min_all(int *set_valmin, float *valmin, int *nvals);
-  void get_max_all(int *set_valmax, float *valmax, int *nvals);
-  void get_global_minmax(char *label, float *valmin, float *valmax);
-  int set_min(char *label, int set_valmin, float valmin);
-  int set_max(char *label, int set_valmax, float valmax);
-  void set_min_all(int *set_valmin, float *valmin, int nvals);
-  void set_max_all(int *set_valmax, float *valmax, int nvals);
-  int set_valtype(char *label);
-  int get_nvaltypes(void);
-  void set_valtype_index(int index);
-  int get_valtype(void);
-  int set_chopmin(char *label, int set_valmin, float valmin);
-  int set_chopmax(char *label, int set_valmax, float valmax);
-  void CB(int var);
-  void setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds, int nbounds, int *cache_flag, int cache_enable, int percentile_enable, void Callback(int var));
+  // routines
   bounds_dialog(void);
+
+  cpp_boundsdata *get_bounds_data(void);
+  void CB(int var);
+  int  get_cache_flag(void);
+  void get_global_minmax(char *label, float *valmin, float *valmax);
+  int  get_min(char *label, int *set_valmin, float *valmin);
+  void get_min_all(int *set_valmin, float *valmin, int *nvals);
+  int  get_max(char *label, int *set_valmax, float *valmax);
+  void get_max_all(int *set_valmax, float *valmax, int *nvals);
+  int  get_nvaltypes(void);
+  int  get_valtype(void);
+
+  void setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds, int nbounds,
+             int *cache_flag, int cache_enable, int percentile_enable,
+             void Callback(int var), GLUI_Update_CB PROC_CB, procdata *procinfo, int *nprocinfo);
+  void set_cache_flag(int cache_flag);
+  int  set_chopmin(char *label, int set_valmin, float valmin);
+  int  set_chopmax(char *label, int set_valmax, float valmax);
+  int  set_min(char *label, int set_valmin, float valmin);
+  void set_min_all(int *set_valmin, float *valmin, int nvals);
+  int  set_max(char *label, int set_valmax, float valmax);
+  void set_max_all(int *set_valmax, float *valmax, int nvals);
+  void set_percentile_minmax(float p_min, float p_max);
+  void set_research_mode(int flag);
+  int  set_valtype(char *label);
+  void set_valtype_index(int index);
+
 };
 
 /* ------------------ set_percentile_minmax ------------------------ */
@@ -148,8 +157,11 @@ void bounds_dialog::set_research_mode(int flag){
 
 /* ------------------ setup ------------------------ */
 
-void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_arg, int nbounds_arg, int *cache_flag, int cache_enable, int percentile_enabled_arg,  void Callback(int var)){
-  GLUI_Rollout *ROLLOUT_main_bound, *ROLLOUT_bound, *ROLLOUT_truncate;
+
+void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_arg, int nbounds_arg, int *cache_flag, int cache_enable, int percentile_enabled_arg, 
+                          void Callback(int var),
+                          GLUI_Update_CB PROC_CB, procdata *procinfo, int *nprocinfo){
+  GLUI_Rollout *ROLLOUT_bound;
   GLUI_Panel *PANEL_buttons, *PANEL_bound2, *PANEL_minmax;
   GLUI_Panel *PANEL_truncate_min, *PANEL_truncate_max;
   int i;
@@ -160,7 +172,9 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   percentile_enabled = percentile_enabled_arg;
 
 // bound min/max
-  ROLLOUT_main_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_dialog, _("Bound/Truncate data"), false);
+  ROLLOUT_main_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_dialog, _("Bound/Truncate data"), false, 0, PROC_CB);
+  INSERT_ROLLOUT(ROLLOUT_main_bound, glui_bounds);
+  ADDPROCINFO(procinfo, *nprocinfo, ROLLOUT_main_bound, 0, glui_bounds);
 
   PANEL_bound2 = glui_bounds->add_panel_to_panel(ROLLOUT_main_bound, "", GLUI_PANEL_NONE);
 
@@ -3770,7 +3784,8 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
-    patchboundsCPP.setup(ROLLOUT_bound, patchbounds_cpp, npatchbounds_cpp, &cache_boundary_data, SHOW_CACHE_CHECKBOX, PERCENTILE_ENABLED, PatchBoundsCPP_CB);
+    patchboundsCPP.setup(ROLLOUT_bound, patchbounds_cpp, npatchbounds_cpp, &cache_boundary_data, SHOW_CACHE_CHECKBOX, PERCENTILE_ENABLED, PatchBoundsCPP_CB,
+                         SubBoundRolloutCB, subboundprocinfo, &nsubboundprocinfo);
 #endif
 
 #ifdef pp_OLDBOUND_DIALOG
@@ -4062,7 +4077,8 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
-      partboundsCPP.setup(ROLLOUT_part, partbounds_cpp, npartbounds_cpp, NULL, HIDE_CACHE_CHECKBOX, PERCENTILE_DISABLED, PartBoundsCPP_CB);
+      partboundsCPP.setup(ROLLOUT_part, partbounds_cpp, npartbounds_cpp, NULL, HIDE_CACHE_CHECKBOX, PERCENTILE_DISABLED, PartBoundsCPP_CB,
+                          ParticleRolloutCB, particleprocinfo, &nparticleprocinfo);
 #endif
 
 
@@ -4147,7 +4163,8 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
-    plot3dboundsCPP.setup(ROLLOUT_plot3d, plot3dbounds_cpp, nplot3dbounds_cpp, &cache_plot3d_data, SHOW_CACHE_CHECKBOX, PERCENTILE_DISABLED, Plot3DBoundsCPP_CB);
+    plot3dboundsCPP.setup(ROLLOUT_plot3d, plot3dbounds_cpp, nplot3dbounds_cpp, &cache_plot3d_data, SHOW_CACHE_CHECKBOX, PERCENTILE_DISABLED, Plot3DBoundsCPP_CB,
+                          Plot3dRolloutCB, plot3dprocinfo, &nplot3dprocinfo);
 #endif
 
     ROLLOUT_vector = glui_bounds->add_rollout_to_panel(ROLLOUT_plot3d,_("Vector"),false,PLOT3D_VECTOR_ROLLOUT, Plot3dRolloutCB);
@@ -4254,7 +4271,8 @@ extern "C" void GluiBoundsSetup(int main_window){
     );
 #endif
 #ifdef pp_CPPBOUND_DIALOG
-    sliceboundsCPP.setup(ROLLOUT_slice, slicebounds_cpp, nslicebounds_cpp, &cache_slice_data, HIDE_CACHE_CHECKBOX, PERCENTILE_ENABLED, SliceBoundsCPP_CB);
+    sliceboundsCPP.setup(ROLLOUT_slice, slicebounds_cpp, nslicebounds_cpp, &cache_slice_data, HIDE_CACHE_CHECKBOX, PERCENTILE_ENABLED, SliceBoundsCPP_CB,
+                         SliceRolloutCB, sliceprocinfo, &nsliceprocinfo);
 #endif
 
     ROLLOUT_slice_histogram = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _("Histogram"), false, SLICE_HISTOGRAM_ROLLOUT, SliceRolloutCB);
