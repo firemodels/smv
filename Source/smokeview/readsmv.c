@@ -5348,6 +5348,8 @@ void UpdateEvents(void){
     tokens[i] = NULL;
   }
 
+  char temp_buffer[255];
+  if(fgets(temp_buffer, 255, stream)==NULL)return;
   while(!feof(stream)){
     char buffer[255], *message;
     int ntokens;
@@ -5361,29 +5363,51 @@ void UpdateEvents(void){
     // tmin, tmax, x, y, z, r, g, b, 1/0 (foreground color) ! message
     ParseCSV(buffer, tokens, &ntokens);
     if(ntokens>=9){
-      sscanf(tokens[0], "%f", tminmax);
-      sscanf(tokens[1], "%f", tminmax+1);
-      sscanf(tokens[2], "%f", xyz);
-      sscanf(tokens[3], "%f", xyz+1);
-      sscanf(tokens[4], "%f", xyz+2);
-      sscanf(tokens[5], "%i", rgblabel);
-      sscanf(tokens[6], "%i", rgblabel+1);
-      sscanf(tokens[7], "%i", rgblabel+2);
-      message = TrimFrontBack(tokens[8]);
+      char *c_id, *c_tstart, *c_tend, *c_x, *c_y, *c_type;
+
+      c_id     = tokens[0];
+      c_tstart = tokens[10];
+      c_tend   = tokens[11];
+      c_x      = tokens[13];
+      c_y      = tokens[14];
+      c_type   = tokens[9];
+
+      sscanf(c_tstart, "%f", tminmax);
+      sscanf(c_tend,   "%f", tminmax+1);
+      sscanf(c_x,      "%f", xyz);
+      sscanf(c_y,      "%f", xyz+1);
+      xyz[2] = 1700.0;
+
       memcpy(&label, &LABEL_default, sizeof(labeldata));
+
+      message = TrimFrontBack(c_type);
+      strcpy(label.name, "");
+      if(strlen(message)>0){
+        strcat(label.name, message);
+      }
+ //     message = TrimFrontBack(c_id);
+ //     if(strlen(message)>0){
+ //       strcat(label.name, "-");
+ //       strcat(label.name, message);
+ //     }
+
+      tminmax[0] *= 60.0;
+      tminmax[1] *= 60.0;
       memcpy(label.tstart_stop, tminmax, 2*sizeof(float));
+
       memcpy(label.xyz, xyz, 3*sizeof(float));
+
+      rgblabel[0] = 255;
+      rgblabel[1] = 255;
+      rgblabel[2] = 255;
       memcpy(label.rgb, rgb, 3*sizeof(int));
       frgb[0] = (float)rgblabel[0]/255.0;
       frgb[1] = (float)rgblabel[1]/255.0;
       frgb[2] = (float)rgblabel[2]/255.0;
       memcpy(label.frgb, frgb, 3*sizeof(int));
+
       label.useforegroundcolor = 0;
       label.show_always = 0;
-      if(strlen(message)>0){
-        strcpy(label.name, message);
-        strcpy(label.name, message);
-      }
       LabelInsert(&label);
       event_file_exists = 1;
     }
@@ -14357,7 +14381,7 @@ void WriteIniLocal(FILE *fileout){
   }
 
   // write out labels to casename.evt if this file exsits
-  WriteLabels();
+  //WriteLabels();
 }
 
   /* ------------------ WriteIni ------------------------ */
