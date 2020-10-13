@@ -275,10 +275,6 @@ if [ ! -e $smvfile ]; then
   echo "***error: $smvfile does not exist"
   abort=1
 fi
-if [ ! -e $smv_scriptname ]; then
-  echo "***error: $smv_scriptname does not exist"
-  abort=1
-fi
 if [ "$abort" == "1" ]; then
   exit
 fi
