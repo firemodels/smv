@@ -55,7 +55,9 @@ class bounds_dialog{
   GLUI_EditText    *EDIT_valmin, *EDIT_valmax, *EDIT_chopmin, *EDIT_chopmax;
   GLUI_Checkbox    *CHECKBOX_set_chopmin, *CHECKBOX_set_chopmax, *CHECKBOX_cache, *CHECKBOX_research_mode;
   GLUI_RadioGroup  *RADIO_set_valtype,  *RADIO_set_valmin, *RADIO_set_valmax;
-  GLUI_RadioButton *RADIO_button_loaded_min, *RADIO_button_loaded_max, *RADIO_button_all_min, *RADIO_button_all_max;
+  GLUI_RadioButton *RADIO_button_loaded_min, *RADIO_button_loaded_max;
+  GLUI_RadioButton *RADIO_button_all_min, *RADIO_button_all_max;
+  GLUI_RadioButton *RADIO_button_percentile_min, *RADIO_button_percentile_max;
   GLUI_Button      *BUTTON_update_colors, *BUTTON_reload_data;
   GLUI_Panel       *PANEL_min, *PANEL_max, *PANEL_percentiles;
   GLUI_StaticText  *STATIC_min_unit, *STATIC_max_unit, *STATIC_chopmin_unit, *STATIC_chopmax_unit;
@@ -196,6 +198,8 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
       CHECKBOX_cache->disable();
     }
   }
+
+  RADIO_button_percentile_max = NULL;
   PANEL_max = glui_bounds->add_panel_to_panel(PANEL_minmax, "max");
   EDIT_valmax = glui_bounds->add_edittext_to_panel(PANEL_max, "", GLUI_EDITTEXT_FLOAT, &(bounds.glui_valmax), BOUND_VALMAX, Callback);
   glui_bounds->add_column_to_panel(PANEL_max, false);
@@ -207,9 +211,10 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   RADIO_button_loaded_max = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "loaded files");
   RADIO_button_all_max    = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "all files");
   if(cache_flag!=NULL&&percentile_enabled==1){
-    glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "percentile");
+    RADIO_button_percentile_max = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "percentile");
   }
 
+  RADIO_button_percentile_min = NULL;
   PANEL_min = glui_bounds->add_panel_to_panel(PANEL_minmax, "min");
   EDIT_valmin = glui_bounds->add_edittext_to_panel(PANEL_min, "", GLUI_EDITTEXT_FLOAT, &(bounds.glui_valmin), BOUND_VALMIN, Callback);
   glui_bounds->add_column_to_panel(PANEL_min, false);
@@ -221,7 +226,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   RADIO_button_loaded_min = glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "loaded files");
   RADIO_button_all_min    = glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "all files");
   if(cache_flag!=NULL&&percentile_enabled==1){
-    glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "percentile");
+    RADIO_button_percentile_min = glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "percentile");
   }
 
   BUTTON_update_colors = NULL;
@@ -617,9 +622,11 @@ void bounds_dialog::CB(int var){
       // keep data checkbox
     case BOUND_CACHE_DATA:
       {
-        int i, research_val = -1;
+        int i, research_val = 0, cache_val = 0;
 
         if(CHECKBOX_research_mode!=NULL)research_val = CHECKBOX_research_mode->get_int_val();
+        if(CHECKBOX_cache!=NULL)cache_val = CHECKBOX_cache->get_int_val();
+
         for(i = 0; i<nall_bounds; i++){
           cpp_boundsdata *boundi;
 
@@ -627,9 +634,6 @@ void bounds_dialog::CB(int var){
           boundi->cache = bounds.cache;
         }
         if(PANEL_percentiles!=NULL){
-          int cache_val = -1;
-
-          if(CHECKBOX_cache!=NULL)cache_val = CHECKBOX_cache->get_int_val();
           if(cache_val==1&&research_val==0&&percentile_enabled==1){
             PANEL_percentiles->enable();
           }
@@ -648,6 +652,10 @@ void bounds_dialog::CB(int var){
         if(research_val==0){
           PANEL_min->enable();
           PANEL_max->enable();
+          if(cache_val==0){
+            if(RADIO_button_percentile_min!=NULL)RADIO_button_percentile_min->disable();
+            if(RADIO_button_percentile_max!=NULL)RADIO_button_percentile_max->disable();
+          }
         }
         if(BUTTON_update_colors!=NULL){
           if(CHECKBOX_cache!=NULL&&CHECKBOX_cache->get_int_val()==1&&
