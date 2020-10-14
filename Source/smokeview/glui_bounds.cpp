@@ -42,10 +42,11 @@ GLUI *glui_bounds=NULL;
 #define HIDE_CACHE_CHECKBOX 0
 #define SHOW_CACHE_CHECKBOX 1
 
-//*** bounds class
+/* ------------------ bounds_dialog class ------------------------ */
 
 class bounds_dialog{
   public:
+
   // variables
   cpp_boundsdata bounds, *all_bounds;
   int   nall_bounds, research_mode_cpp, percentile_enabled;
