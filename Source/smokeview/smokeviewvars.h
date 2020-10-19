@@ -1727,8 +1727,6 @@ SVEXTERN multislicedata SVDECL(*multisliceinfo,NULL);
 SVEXTERN multivslicedata SVDECL(*multivsliceinfo,NULL);
 SVEXTERN outlinedata SVDECL(*outlineinfo,NULL);
 SVEXTERN int noutlineinfo;
-SVEXTERN rampdata SVDECL(*rampinfo,NULL);
-SVEXTERN int SVDECL(nrampinfo,0);
 SVEXTERN int nmultisliceinfo;
 SVEXTERN int nmultivsliceinfo;
 SVEXTERN int SVDECL(*sliceorderindex,NULL),SVDECL(*vsliceorderindex,NULL),SVDECL(*partorderindex,NULL);

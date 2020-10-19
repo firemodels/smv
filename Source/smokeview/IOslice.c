@@ -4949,7 +4949,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
 
     if(sd->compression_type == UNCOMPRESSED){
       sd->ntimes_old = sd->ntimes;
-        GetSliceSizes(sd, file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, sliceframestep, &error,
+      GetSliceSizes(sd, file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, sliceframestep, &error,
           settmin_s, settmax_s, tmin_s, tmax_s, &headersize, &framesize);
     }
     else if(sd->compression_type != UNCOMPRESSED){

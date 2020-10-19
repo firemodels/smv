@@ -30,8 +30,6 @@ GLUI *glui_bounds=NULL;
 #define BOUND_UPDATE_COLORS            110
 #define BOUND_RELOAD_DATA              111
 #define BOUND_CACHE_DATA               112
-#define BOUND_DISABLE                  113
-#define BOUND_ENABLE                   114
 #define BOUND_RESEARCH_MODE            115
 #define BOUND_COMPUTE_PERCENTILES      116
 #define BOUND_PERCENTILE_MINVAL        117
@@ -44,10 +42,11 @@ GLUI *glui_bounds=NULL;
 #define HIDE_CACHE_CHECKBOX 0
 #define SHOW_CACHE_CHECKBOX 1
 
-//*** bounds class
+/* ------------------ bounds_dialog class ------------------------ */
 
 class bounds_dialog{
   public:
+
   // variables
   cpp_boundsdata bounds, *all_bounds;
   int   nall_bounds, research_mode_cpp, percentile_enabled;
@@ -57,7 +56,9 @@ class bounds_dialog{
   GLUI_EditText    *EDIT_valmin, *EDIT_valmax, *EDIT_chopmin, *EDIT_chopmax;
   GLUI_Checkbox    *CHECKBOX_set_chopmin, *CHECKBOX_set_chopmax, *CHECKBOX_cache, *CHECKBOX_research_mode;
   GLUI_RadioGroup  *RADIO_set_valtype,  *RADIO_set_valmin, *RADIO_set_valmax;
-  GLUI_RadioButton *RADIO_button_loaded_min, *RADIO_button_loaded_max, *RADIO_button_all_min, *RADIO_button_all_max;
+  GLUI_RadioButton *RADIO_button_loaded_min, *RADIO_button_loaded_max;
+  GLUI_RadioButton *RADIO_button_all_min, *RADIO_button_all_max;
+  GLUI_RadioButton *RADIO_button_percentile_min, *RADIO_button_percentile_max;
   GLUI_Button      *BUTTON_update_colors, *BUTTON_reload_data;
   GLUI_Panel       *PANEL_min, *PANEL_max, *PANEL_percentiles;
   GLUI_StaticText  *STATIC_min_unit, *STATIC_max_unit, *STATIC_chopmin_unit, *STATIC_chopmax_unit;
@@ -146,14 +147,11 @@ void bounds_dialog::set_research_mode(int flag){
       boundi->set_valmax = BOUND_LOADED_MAX;
     }
     CB(BOUND_VAL_TYPE);
-    CB(BOUND_DISABLE);
   }
-  else{
-    CB(BOUND_ENABLE);
-  }
-  research_mode = flag;
+  research_mode     = flag;
   research_mode_cpp = flag;
   CHECKBOX_research_mode->set_int_val(research_mode_cpp);
+  CB(BOUND_CACHE_DATA);
 }
 
 /* ------------------ setup ------------------------ */
@@ -191,7 +189,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
 
   ROLLOUT_bound = glui_bounds->add_rollout_to_panel(PANEL_bound2, "Bound");
   PANEL_minmax = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
-  CHECKBOX_research_mode = glui_bounds->add_checkbox_to_panel(PANEL_minmax, _("research mode (loaded, all file bounds only)"), &research_mode, BOUND_RESEARCH_MODE, Callback);
+  CHECKBOX_research_mode = glui_bounds->add_checkbox_to_panel(PANEL_minmax, _("research mode (loaded files, all files only)"), &research_mode, BOUND_RESEARCH_MODE, Callback);
 
   CHECKBOX_cache = NULL;
   if(cache_flag!=NULL){
@@ -201,6 +199,8 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
       CHECKBOX_cache->disable();
     }
   }
+
+  RADIO_button_percentile_max = NULL;
   PANEL_max = glui_bounds->add_panel_to_panel(PANEL_minmax, "max");
   EDIT_valmax = glui_bounds->add_edittext_to_panel(PANEL_max, "", GLUI_EDITTEXT_FLOAT, &(bounds.glui_valmax), BOUND_VALMAX, Callback);
   glui_bounds->add_column_to_panel(PANEL_max, false);
@@ -208,13 +208,14 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   STATIC_max_unit->set_w(10);
   glui_bounds->add_column_to_panel(PANEL_max, false);
   RADIO_set_valmax = glui_bounds->add_radiogroup_to_panel(PANEL_max, &(bounds.set_valmax), BOUND_SETVALMAX, Callback);
-  glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "specify");
+  glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "set");
   RADIO_button_loaded_max = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "loaded files");
   RADIO_button_all_max    = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "all files");
   if(cache_flag!=NULL&&percentile_enabled==1){
-    glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "percentile");
+    RADIO_button_percentile_max = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "percentile");
   }
 
+  RADIO_button_percentile_min = NULL;
   PANEL_min = glui_bounds->add_panel_to_panel(PANEL_minmax, "min");
   EDIT_valmin = glui_bounds->add_edittext_to_panel(PANEL_min, "", GLUI_EDITTEXT_FLOAT, &(bounds.glui_valmin), BOUND_VALMIN, Callback);
   glui_bounds->add_column_to_panel(PANEL_min, false);
@@ -222,11 +223,11 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   STATIC_min_unit->set_w(10);
   glui_bounds->add_column_to_panel(PANEL_min, false);
   RADIO_set_valmin = glui_bounds->add_radiogroup_to_panel(PANEL_min, &(bounds.set_valmin), BOUND_SETVALMIN, Callback);
-  glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "specify");
+  glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "set");
   RADIO_button_loaded_min = glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "loaded files");
   RADIO_button_all_min    = glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "all files");
   if(cache_flag!=NULL&&percentile_enabled==1){
-    glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "percentile");
+    RADIO_button_percentile_min = glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "percentile");
   }
 
   BUTTON_update_colors = NULL;
@@ -622,7 +623,10 @@ void bounds_dialog::CB(int var){
       // keep data checkbox
     case BOUND_CACHE_DATA:
       {
-        int i;
+        int i, research_val = 0, cache_val = 0;
+
+        if(CHECKBOX_research_mode!=NULL)research_val = CHECKBOX_research_mode->get_int_val();
+        if(CHECKBOX_cache!=NULL)cache_val = CHECKBOX_cache->get_int_val();
 
         for(i = 0; i<nall_bounds; i++){
           cpp_boundsdata *boundi;
@@ -631,13 +635,27 @@ void bounds_dialog::CB(int var){
           boundi->cache = bounds.cache;
         }
         if(PANEL_percentiles!=NULL){
-          if(CHECKBOX_cache!=NULL&&CHECKBOX_cache->get_int_val()==1&&
-             CHECKBOX_research_mode!=NULL&&CHECKBOX_research_mode->get_int_val()==0&&
-             percentile_enabled==1){
+          if(cache_val==1&&research_val==0&&percentile_enabled==1){
             PANEL_percentiles->enable();
           }
           else{
             PANEL_percentiles->disable();
+          }
+        }
+        if(research_val==1){
+          PANEL_min->disable();
+          PANEL_max->disable();
+          RADIO_button_loaded_min->enable();
+          RADIO_button_all_min->enable();
+          RADIO_button_loaded_max->enable();
+          RADIO_button_all_max->enable();
+        }
+        if(research_val==0){
+          PANEL_min->enable();
+          PANEL_max->enable();
+          if(cache_val==0){
+            if(RADIO_button_percentile_min!=NULL)RADIO_button_percentile_min->disable();
+            if(RADIO_button_percentile_max!=NULL)RADIO_button_percentile_max->disable();
           }
         }
         if(BUTTON_update_colors!=NULL){
@@ -650,20 +668,6 @@ void bounds_dialog::CB(int var){
           }
         }
       }
-      break;
-
-      // enable/disable controls
-    case BOUND_DISABLE: // research mode on
-      PANEL_min->disable();
-      PANEL_max->disable();
-      RADIO_button_loaded_min->enable();
-      RADIO_button_all_min->enable();
-      RADIO_button_loaded_max->enable();
-      RADIO_button_all_max->enable();
-      break;
-    case BOUND_ENABLE: // research mode off
-      PANEL_min->enable();
-      PANEL_max->enable();
       break;
 
       // update colors, reload data buttons - handle in calling routine
@@ -1070,8 +1074,6 @@ extern "C" void SliceBoundsCPP_CB(int var){
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
-    case BOUND_DISABLE:
-    case BOUND_ENABLE:
       break;
     case BOUND_COMPUTE_PERCENTILES:
     case BOUND_COMPUTE_ONLY_PERCENTILES:
@@ -1165,8 +1167,6 @@ void Plot3DBoundsCPP_CB(int var){
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
-    case BOUND_DISABLE:
-    case BOUND_ENABLE:
       break;
     case BOUND_COMPUTE_PERCENTILES:
       break;
@@ -1207,8 +1207,6 @@ void PartBoundsCPP_CB(int var){
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
-    case BOUND_DISABLE:
-    case BOUND_ENABLE:
       break;
     case BOUND_COMPUTE_PERCENTILES:
       break;
@@ -1274,8 +1272,6 @@ extern "C" void PatchBoundsCPP_CB(int var){
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
-    case BOUND_DISABLE:
-    case BOUND_ENABLE:
       break;
     case BOUND_COMPUTE_PERCENTILES:
     case BOUND_COMPUTE_ONLY_PERCENTILES:

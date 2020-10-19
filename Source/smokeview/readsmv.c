@@ -7367,50 +7367,6 @@ int ReadSMV(bufferstreamdata *stream){
     }
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ RAMP +++++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-
-    if(Match(buffer,"RAMP") == 1){
-      if(FGETS(buffer,255,stream)==NULL){
-        BREAK;
-      }
-      sscanf(buffer,"%i",&nrampinfo);
-      if(nrampinfo>0)NewMemory((void **)&rampinfo,nrampinfo*sizeof(rampdata));
-      for (i = 0; i < nrampinfo; i++) {
-        rampdata *rampi;
-
-        rampi = rampinfo+i;
-        // Allocate space for the ramp name
-        NewMemory((void **)&rampi->name,256*sizeof(char));
-        // First get a new line, which should be in the format:
-        //  RAMP: RampName
-        if(FGETS(buffer,255,stream)==NULL){
-          BREAK;
-        }
-        // " RAMP: " is 7 characters, so we will simply drop them and trim the
-        // whitespace.
-        strncpy(rampi->name, TrimFrontBack(buffer+7), 256);
-        // The next line is the number of entries in the ramp
-        if(FGETS(buffer,255,stream)==NULL){
-          BREAK;
-        }
-        sscanf(buffer,"%i",&rampi->nentries);
-        // Allocate space for the values
-        NewMemory((void **)&rampi->values,2*(rampi->nentries)*sizeof(float));
-        // Next we want to read in all the entries
-        int j;
-        for (j = 0; j < rampi->nentries; j++) {
-          if(FGETS(buffer,255,stream)==NULL){
-            BREAK;
-          }
-          sscanf(buffer, "%f %f", &rampi->values[2*j], &rampi->values[2*j+1]);
-        }
-      }
-      continue;
-    }
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ CADGEOM ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
