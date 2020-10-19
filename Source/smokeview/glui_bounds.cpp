@@ -208,7 +208,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   STATIC_max_unit->set_w(10);
   glui_bounds->add_column_to_panel(PANEL_max, false);
   RADIO_set_valmax = glui_bounds->add_radiogroup_to_panel(PANEL_max, &(bounds.set_valmax), BOUND_SETVALMAX, Callback);
-  glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "specify");
+  glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "set");
   RADIO_button_loaded_max = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "loaded files");
   RADIO_button_all_max    = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "all files");
   if(cache_flag!=NULL&&percentile_enabled==1){
@@ -223,7 +223,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   STATIC_min_unit->set_w(10);
   glui_bounds->add_column_to_panel(PANEL_min, false);
   RADIO_set_valmin = glui_bounds->add_radiogroup_to_panel(PANEL_min, &(bounds.set_valmin), BOUND_SETVALMIN, Callback);
-  glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "specify");
+  glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "set");
   RADIO_button_loaded_min = glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "loaded files");
   RADIO_button_all_min    = glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "all files");
   if(cache_flag!=NULL&&percentile_enabled==1){
