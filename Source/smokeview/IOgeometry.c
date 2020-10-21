@@ -2429,14 +2429,18 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
 
       // compute texture coordinates
 
-      if(terrain_textures!=NULL&&geomi->is_terrain==1){
-        float xmin, xmax, ymin, ymax, xfactor, yfactor;
+
+      if(geomi->is_terrain==1){
+        float xmin, xmax, ymin, ymax, zmin, zmax, asp;
         int ii;
 
         xmin = verts[0].xyz[0];
         xmax = xmin;
         ymin = verts[0].xyz[1];
         ymax = ymin;
+        zmin = verts[0].xyz[2];
+        zmax = zmin;
+
         for(ii=1;ii<nverts;ii++){
           float *xyz;
 
@@ -2445,34 +2449,51 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           xmax = MAX(xmax,xyz[0]);
           ymin = MIN(ymin,xyz[1]);
           ymax = MAX(ymax,xyz[1]);
+          zmin = MIN(zmin,xyz[2]);
+          zmax = MAX(zmax,xyz[2]);
         }
-        xfactor = 1.0;
-        yfactor = 1.0;
-        if(ABS(xmax-xmin)>0.0001)xfactor = 1.0/(xmax-xmin);
-        if(ABS(ymax-ymin)>0.0001)yfactor = 1.0/(ymax-ymin);
-        for(ii=0;ii<ntris;ii++){
-          float *text_coords;
-          int *tri_ind;
-          float *xy;
-          vertdata *vert;
+        if(zmax>zmin&&xmax>xmin){
+          float xratio,zratio;
 
-          text_coords = texture_coords + 6*ii;
-          tri_ind = ijk + 3*ii;
+          xratio = (xmax-xmin)/(xbarORIG-xbar0ORIG);
+          zratio = (zmax-zmin)/(zbarORIG-zbar0ORIG);
+          geomfactor = MAX(xratio,zratio);
+          geomfactor = MAX(1.0,geomfactor);
+          geom_xmid = (xmax+xmin)/2.0;
+          geom_use_xmid = 1;
+        }
 
-          vert = verts+tri_ind[0]-1;
-          xy = vert->xyz;
-          text_coords[0] = (xy[0]-xmin)*xfactor;
-          text_coords[1] = (xy[1]-ymin)*yfactor;
+        if(terrain_textures!=NULL){
+          float xfactor, yfactor;
 
-          vert = verts+tri_ind[1]-1;
-          xy = vert->xyz;
-          text_coords[2] = (xy[0]-xmin)*xfactor;
-          text_coords[3] = (xy[1]-ymin)*yfactor;
+          xfactor = 1.0;
+          yfactor = 1.0;
+          if(ABS(xmax-xmin)>0.0001)xfactor = 1.0/(xmax-xmin);
+          if(ABS(ymax-ymin)>0.0001)yfactor = 1.0/(ymax-ymin);
+          for(ii=0;ii<ntris;ii++){
+            float *text_coords;
+            int *tri_ind;
+            float *xy;
+            vertdata *vert;
 
-          vert = verts+tri_ind[2]-1;
-          xy = vert->xyz;
-          text_coords[4] = (xy[0]-xmin)*xfactor;
-          text_coords[5] = (xy[1]-ymin)*yfactor;
+            text_coords = texture_coords + 6*ii;
+            tri_ind = ijk + 3*ii;
+
+            vert = verts+tri_ind[0]-1;
+            xy = vert->xyz;
+            text_coords[0] = (xy[0]-xmin)*xfactor;
+            text_coords[1] = (xy[1]-ymin)*yfactor;
+
+            vert = verts+tri_ind[1]-1;
+            xy = vert->xyz;
+            text_coords[2] = (xy[0]-xmin)*xfactor;
+            text_coords[3] = (xy[1]-ymin)*yfactor;
+
+            vert = verts+tri_ind[2]-1;
+            xy = vert->xyz;
+            text_coords[4] = (xy[0]-xmin)*xfactor;
+            text_coords[5] = (xy[1]-ymin)*yfactor;
+          }
         }
       }
 
