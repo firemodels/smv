@@ -10193,7 +10193,9 @@ typedef struct {
   InitVolRenderSurface(FIRSTCALL);
   radius_windrose = 0.2*xyzmaxdiff;
 
+#ifndef pp_IGNORE_TER
   UpdateMeshTerrain(); // xxslow
+#endif
 
   ReadAllGeom();
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
