@@ -1687,11 +1687,10 @@ float GetMeshZCell(meshdata *meshi, float xval, float yval, int *valid){
 }
 
 /* ------------------ UpdateMeshTerrain ------------------------ */
-#ifndef pp_IGNORE_TER
 void UpdateMeshTerrain(void){
   int i;
 
-  if(nterraininfo<=0)return;
+  if(nterraininfo<=0||ngeominfo>0)return;
   for(i = 0; i<nmeshes; i++){
     int j;
     meshdata *meshi;
@@ -1772,4 +1771,3 @@ void UpdateMeshTerrain(void){
     }
   }
 }
-#endif
