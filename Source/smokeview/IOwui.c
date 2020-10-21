@@ -1687,7 +1687,7 @@ float GetMeshZCell(meshdata *meshi, float xval, float yval, int *valid){
 }
 
 /* ------------------ UpdateMeshTerrain ------------------------ */
-
+#ifndef pp_IGNORE_TER
 void UpdateMeshTerrain(void){
   int i;
 
@@ -1772,3 +1772,4 @@ void UpdateMeshTerrain(void){
     }
   }
 }
+#endif
