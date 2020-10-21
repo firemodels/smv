@@ -29,7 +29,6 @@
 #define pp_DRAWISO            // turn on drawing routines
 //#define pp_UPDATE_FILELOAD  // updates fileload variables when a file has been loaded or unloaded
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
-#define pp_IGNORE_TER         // ignore .ter terrain files (when terrain is built by &GEOM's - temporary work around)
 
 //#define pp_WUI_VAO            // use opengl vao objects for drawing terrain
 

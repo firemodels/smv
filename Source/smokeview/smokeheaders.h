@@ -808,9 +808,7 @@ EXTERNCPP int  GetBoundaryType(const patchdata *patchi);
 EXTERNCPP void UpdateBoundaryType(void);
 EXTERNCPP void UpdateBoundaryTypes(void);
 
-#ifndef pp_IGNORE_TER
 EXTERNCPP void UpdateMeshTerrain(void);
-#endif
 EXTERNCPP void UpdateTerrainOptions(void);
 EXTERNCPP void UpdatePlot3dTitle(void);
 EXTERNCPP void LoadPlot3dMenu(int value);
