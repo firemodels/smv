@@ -60,9 +60,12 @@ class bounds_dialog{
   GLUI_RadioButton *RADIO_button_all_min, *RADIO_button_all_max;
   GLUI_RadioButton *RADIO_button_percentile_min, *RADIO_button_percentile_max;
   GLUI_Button      *BUTTON_update_colors, *BUTTON_reload_data;
-  GLUI_Panel       *PANEL_min, *PANEL_max, *PANEL_percentiles;
+  GLUI_Panel *PANEL_min, *PANEL_max;
+#ifdef pp_PERCENTILES
+  GLUI_Panel *PANEL_percentiles;
+  GLUI_Spinner *SPINNER_percentile_min, *SPINNER_percentile_max;
+#endif
   GLUI_StaticText  *STATIC_min_unit, *STATIC_max_unit, *STATIC_chopmin_unit, *STATIC_chopmax_unit;
-  GLUI_Spinner     *SPINNER_percentile_min, *SPINNER_percentile_max;
   GLUI_Rollout     *ROLLOUT_main_bound, *ROLLOUT_truncate;
 
   // routines
@@ -89,7 +92,9 @@ class bounds_dialog{
   void set_min_all(int *set_valmin, float *valmin, int nvals);
   int  set_max(char *label, int set_valmax, float valmax);
   void set_max_all(int *set_valmax, float *valmax, int nvals);
+#ifdef pp_PERCENTILES
   void set_percentile_minmax(float p_min, float p_max);
+#endif
   void set_research_mode(int flag);
   int  set_valtype(char *label);
   void set_valtype_index(int index);
@@ -98,12 +103,14 @@ class bounds_dialog{
 
 /* ------------------ set_percentile_minmax ------------------------ */
 
+#ifdef pp_PERCENTILES
 void bounds_dialog::set_percentile_minmax(float p_min, float p_max){
   p_min = SMV_ROUND(p_min, 5);
   p_max = SMV_ROUND(p_max, 5);
   if(SPINNER_percentile_min!=NULL)SPINNER_percentile_min->set_float_val(p_min);
   if(SPINNER_percentile_max!=NULL)SPINNER_percentile_max->set_float_val(p_max);
 }
+#endif
 
 /* ------------------ bounds_dialog ------------------------ */
 
@@ -189,7 +196,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
 
   ROLLOUT_bound = glui_bounds->add_rollout_to_panel(PANEL_bound2, "Bound");
   PANEL_minmax = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
-  CHECKBOX_research_mode = glui_bounds->add_checkbox_to_panel(PANEL_minmax, _("research mode (loaded files, all files only)"), &research_mode, BOUND_RESEARCH_MODE, Callback);
+  CHECKBOX_research_mode = glui_bounds->add_checkbox_to_panel(PANEL_minmax, _("research mode (ony use loaded files, all files bounds)"), &research_mode, BOUND_RESEARCH_MODE, Callback);
 
   CHECKBOX_cache = NULL;
   if(cache_flag!=NULL){
@@ -231,10 +238,13 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
   }
 
   BUTTON_update_colors = NULL;
+#ifdef pp_PERCENTILES
   SPINNER_percentile_min = NULL;
   SPINNER_percentile_max = NULL;
+#endif
   if(cache_flag!=NULL){
     if(percentile_enabled==1){
+#ifdef pp_PERCENTILES
       PANEL_percentiles = glui_bounds->add_panel_to_panel(PANEL_minmax, "percentiles");
 
       percentile_level = CLAMP(percentile_level,0.0,0.5);
@@ -248,6 +258,7 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
                                                                  BOUND_PERCENTILE_MINVAL, Callback);
       SPINNER_percentile_min->set_float_limits(0.0, 0.5);
       glui_bounds->add_button_to_panel(PANEL_percentiles, "Compute min/max bounds", BOUND_COMPUTE_PERCENTILES, Callback);
+#endif
     }
     BUTTON_update_colors      = glui_bounds->add_button_to_panel(PANEL_minmax, "Update colors", BOUND_UPDATE_COLORS, Callback);
   }
@@ -634,6 +645,7 @@ void bounds_dialog::CB(int var){
           boundi = all_bounds+i;
           boundi->cache = bounds.cache;
         }
+#ifdef pp_PERCENTILES
         if(PANEL_percentiles!=NULL){
           if(cache_val==1&&research_val==0&&percentile_enabled==1){
             PANEL_percentiles->enable();
@@ -642,6 +654,7 @@ void bounds_dialog::CB(int var){
             PANEL_percentiles->disable();
           }
         }
+#endif
         if(research_val==1){
           PANEL_min->disable();
           PANEL_max->disable();
@@ -686,7 +699,9 @@ void bounds_dialog::CB(int var){
       if(var==BOUND_PERCENTILE_MINVAL)percentile_max_cpp = 1.0 - percentile_min_cpp;
       if(var==BOUND_PERCENTILE_MAXVAL)percentile_min_cpp = 1.0 - percentile_max_cpp;
       percentile_level = percentile_min_cpp;
+#ifdef pp_PERCENTILES
       SetPercentileMinMax(percentile_min_cpp,percentile_max_cpp);
+#endif
       break;
   }
 };
@@ -704,12 +719,14 @@ extern "C" void SetResearchMode(int flag){
 
 /* ------------------ SetPercentileMinMax ------------------------ */
 
+#ifdef pp_PERCENTILES
 extern "C" void SetPercentileMinMax(float p_min, float p_max){
   if(npatchinfo>0)patchboundsCPP.set_percentile_minmax(p_min, p_max);
   if(nsliceinfo>0)sliceboundsCPP.set_percentile_minmax(p_min, p_max);
   if(npartinfo>0)partboundsCPP.set_percentile_minmax(p_min, p_max);
   if(nplot3dinfo>0)plot3dboundsCPP.set_percentile_minmax(p_min, p_max);
 }
+#endif
 
 /* ------------------ GetBoundsData ------------------------ */
 

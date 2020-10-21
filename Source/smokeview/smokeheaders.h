@@ -68,7 +68,9 @@ EXTERNCPP void SetLoadedPatchBounds(int *list, int nlist);
 EXTERNCPP void SetLoadedPlot3DBounds(int *list, int nlist);
 EXTERNCPP void SetLoadedPartBounds(int *list, int nlist);
 EXTERNCPP void SetResearchMode(int flag);
+#ifdef pp_PERCENTILES
 EXTERNCPP void SetPercentileMinMax(float p_min, float p_max);
+#endif
 #endif
 EXTERNCPP void ShiftColorbars(void);
 EXTERNCPP int GetColorbarState(void);
