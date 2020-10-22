@@ -48,7 +48,7 @@ class bounds_dialog{
   public:
 
   // variables
-  cpp_boundsdata bounds, *all_bounds;
+  cpp_boundsdata bounds, *all_bounds, *all_bounds_save;
   int   nall_bounds, research_mode_cpp, percentile_enabled;
   float percentile_min_cpp, percentile_max_cpp;
 
@@ -98,6 +98,8 @@ class bounds_dialog{
   void set_research_mode(int flag);
   int  set_valtype(char *label);
   void set_valtype_index(int index);
+  void SaveBounds(void);
+  void RestoreBounds(void);
 
 };
 
@@ -161,8 +163,19 @@ void bounds_dialog::set_research_mode(int flag){
   CB(BOUND_CACHE_DATA);
 }
 
-/* ------------------ setup ------------------------ */
+/* ------------------ SaveBounds ------------------------ */
 
+void bounds_dialog::SaveBounds(void){
+  memcpy(all_bounds_save, all_bounds, nall_bounds*sizeof(cpp_boundsdata));
+}
+
+/* ------------------ RestoreBounds ------------------------ */
+
+void bounds_dialog::RestoreBounds(void){
+  memcpy(all_bounds, all_bounds_save, nall_bounds*sizeof(cpp_boundsdata));
+}
+
+/* ------------------ setup ------------------------ */
 
 void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_arg, int nbounds_arg, int *cache_flag, int cache_enable, int percentile_enabled_arg, 
                           void Callback(int var),
@@ -174,6 +187,10 @@ void bounds_dialog::setup(GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_a
 
   all_bounds = bounds_arg;
   nall_bounds = nbounds_arg;
+
+  NewMemory((void **)&all_bounds_save, nall_bounds*sizeof(cpp_boundsdata));
+  SaveBounds();
+  
   research_mode_cpp = research_mode;
   percentile_enabled = percentile_enabled_arg;
 
@@ -689,6 +706,13 @@ void bounds_dialog::CB(int var){
     case BOUND_RELOAD_DATA:
       break;
     case BOUND_RESEARCH_MODE:
+      if(research_mode==1){
+        SaveBounds();
+      }
+      else{
+        RestoreBounds();
+        CB(BOUND_VAL_TYPE);
+      }
       update_research_mode = 1;
       CB(BOUND_CACHE_DATA);
       break;
@@ -1144,6 +1168,11 @@ extern "C" void SliceBoundsCPP_CB(int var){
       SetLoadedSliceBounds(NULL, 0);
       ReloadAllSliceFiles();
       break;
+    case BOUND_RESEARCH_MODE:
+      if(npartinfo>0)partboundsCPP.CB(BOUND_RESEARCH_MODE);
+      if(npatchinfo>0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
+      if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
+      break;
   }
 }
 
@@ -1204,6 +1233,11 @@ void Plot3DBoundsCPP_CB(int var){
         LoadPlot3dMenu(i);
       }
       break;
+    case BOUND_RESEARCH_MODE:
+      if(npartinfo>0)partboundsCPP.CB(BOUND_RESEARCH_MODE);
+      if(npatchinfo>0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
+      if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
+      break;
   }
 }
 
@@ -1238,6 +1272,11 @@ void PartBoundsCPP_CB(int var){
         LoadParticleMenu(PARTFILE_RELOADALL);
         LoadEvacMenu(EVACFILE_RELOADALL);
       }
+      break;
+    case BOUND_RESEARCH_MODE:
+      if(npatchinfo>0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
+      if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
+      if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
       break;
   }
 }
@@ -1332,7 +1371,21 @@ extern "C" void PatchBoundsCPP_CB(int var){
         ReadBoundary(i,LOAD,&errorcode);
       }
       break;
+    case BOUND_RESEARCH_MODE:
+      if(npartinfo>0)partboundsCPP.CB(BOUND_RESEARCH_MODE);
+      if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
+      if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
+      break;
   }
+}
+
+/* ------------------ UpdatdateResearchModeCPP ------------------------ */
+
+extern "C" void UpdatdateResearchModeCPP(void){
+  if(npatchinfo>0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
+  if(npartinfo>0)partboundsCPP.CB(BOUND_RESEARCH_MODE);
+  if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
+  if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
 }
 #endif
 
@@ -5802,9 +5855,21 @@ extern "C" void SliceBoundCB(int var){
         break;
       }
 #endif
+#ifdef pp_OLDBOUND_DIALOG
       if(research_mode==1){
         visColorbarVertical_save=visColorbarVertical;
         visColorbarVertical=1;
+#endif
+#ifdef pp_CPPBOUND_DIALOG
+      {
+        if(research_mode == 1){
+          visColorbarVertical_save=visColorbarVertical;
+          visColorbarVertical=1;
+        }
+        else{
+          visColorbarVertical = visColorbarVertical_save;
+        }
+#endif
 
         // slice files
 
@@ -5857,9 +5922,6 @@ extern "C" void SliceBoundCB(int var){
           for(i = 0; i < MAXPLOT3DVARS; i++){
 #ifdef pp_OLDBOUND_DIALOG
             setp3min_all[i] = GLOBAL_MIN;
-#endif
-
-#ifdef pp_OLDBOUND_DIALOG
             setp3max_all[i] = GLOBAL_MAX;
 #endif
           }
@@ -5877,10 +5939,14 @@ extern "C" void SliceBoundCB(int var){
           Plot3DBoundCB(FILE_RELOAD);
 #endif
         }
-
+#ifdef pp_CPPBOUND_DIALOG
+        if(research_mode==1)PRINTF("\nresearch mode on, using global bounds\n\n");
+#endif
+#ifdef pp_OLDBOUND_DIALOG
         PRINTF("\nresearch mode on, using global bounds\n\n");
+#endif
       }
-      else{
+      if(research_mode==0){
         PRINTF("research mode off\n");
       }
       SliceBoundCB(FILE_UPDATE);

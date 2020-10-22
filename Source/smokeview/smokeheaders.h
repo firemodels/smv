@@ -808,6 +808,10 @@ EXTERNCPP int  GetBoundaryType(const patchdata *patchi);
 EXTERNCPP void UpdateBoundaryType(void);
 EXTERNCPP void UpdateBoundaryTypes(void);
 
+#ifdef pp_CPPBOUND_DIALOG
+EXTERNCPP void UpdatdateResearchModeCPP(void);
+#endif
+
 EXTERNCPP void SetViewZMAXPersp(void);
 EXTERNCPP void UpdateMeshTerrain(void);
 EXTERNCPP void UpdateTerrainOptions(void);
