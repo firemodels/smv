@@ -48,6 +48,7 @@
 //#define pp_PLOT3D_STATIC      // use static memory for plot3d labels
 //#define pp_LOAD_INCREMENTAL   // load data incrementally
 //#define pp_SLICE_BUFFER       // read  slice file into a buffer before processing
+//#define pp_RESEARCH_DEBUG     // output whether data is reloaded or colors reemapped when toggling to/from research mode
 
 
 // define old dialog if not using new dialogs
@@ -102,6 +103,9 @@
 //*** options: for debugging
 
 #ifdef _DEBUG
+#ifndef pp_RESEARCH_DEBUG
+#define pp_RESEARCH_DEBUG
+#endif
 #define pp_RENDER360_DEBUG
 #define pp_SNIFF_ERROR
 #endif

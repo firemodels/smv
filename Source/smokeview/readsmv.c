@@ -10950,23 +10950,6 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
-    if(Match(buffer, "CACHE_QDATA") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &cache_plot3d_data);
-      ONEORZERO(cache_plot3d_data);
-      update_cache_data = 1;
-      continue;
-    }
-    if(Match(buffer, "CACHE_DATA") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i %i", &cache_boundary_data, &cache_part_data, &cache_plot3d_data, &cache_slice_data);
-      ONEORZERO(cache_boundary_data);
-      ONEORZERO(cache_part_data);
-      ONEORZERO(cache_plot3d_data);
-      ONEORZERO(cache_slice_data);
-      update_cache_data = 1;
-      continue;
-    }
     if(Match(buffer, "UNLOAD_QDATA") == 1){
       int unload_qdata;
 
@@ -10977,12 +10960,33 @@ int ReadIni2(char *inifile, int localfile){
       update_cache_data = 1;
       continue;
     }
+#ifdef pp_CPPBOUND_DIALOG
+    if(Match(buffer, "CACHE_DATA") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %i %i %i", &cache_boundary_data, &cache_part_data, &cache_plot3d_data, &cache_slice_data);
+      ONEORZERO(cache_boundary_data);
+      ONEORZERO(cache_part_data);
+      ONEORZERO(cache_plot3d_data);
+      ONEORZERO(cache_slice_data);
+      update_cache_data = 1;
+      continue;
+    }
+#endif
+#if pp_OLDBOUND_DIALOG
+    if(Match(buffer, "CACHE_QDATA") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &cache_plot3d_data);
+      ONEORZERO(cache_plot3d_data);
+      update_cache_data = 1;
+      continue;
+    }
     if(Match(buffer, "CACHE_BOUNDARYDATA") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &cache_boundary_data);
       update_cache_data = 1;
       continue;
     }
+#endif
     if(Match(buffer, "TREECOLORS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", trunccolor, trunccolor + 1, trunccolor + 2);
@@ -14182,12 +14186,16 @@ void WriteIniLocal(FILE *fileout){
   }
 #endif
 
+#ifdef pp_OLDBOUND_DIALOG
   fprintf(fileout, "CACHE_BOUNDARYDATA\n");
   fprintf(fileout, " %i \n", cache_boundary_data);
   fprintf(fileout, "CACHE_QDATA\n");
   fprintf(fileout, " %i\n", cache_plot3d_data);
+#endif
+#ifdef pp_CPPBOUND_DIALOG
   fprintf(fileout, "CACHE_DATA\n");
   fprintf(fileout, " %i %i %i %i \n", cache_boundary_data, cache_part_data, cache_plot3d_data, cache_slice_data);
+#endif
   fprintf(fileout, "PATCHDATAOUT\n");
   fprintf(fileout, " %i %f %f %f %f %f %f %f %f\n", output_patchdata,
     patchout_tmin, patchout_tmax,

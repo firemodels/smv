@@ -1137,6 +1137,9 @@ extern "C" void SliceBoundsCPP_CB(int var){
       cache_slice_data = GetCacheFlag(BOUND_SLICE);
       break;
     case BOUND_UPDATE_COLORS:
+#ifdef pp_RESEARCH_DEBUG
+      printf("*** updating slice file colors\n");
+#endif
       SetLoadedSliceBounds(NULL, 0);
       for(ii = nslice_loaded - 1; ii >= 0; ii--){
         int i;
@@ -1221,13 +1224,19 @@ void Plot3DBoundsCPP_CB(int var){
       break;
     case BOUND_UPDATE_COLORS:
       if(HavePlot3DData()==1){
+#ifdef pp_RESEARCH_DEBUG
+        printf("*** updating plot3d colors\n");
+#endif
         UpdateAllPlot3DColors();
       }
       else{
-        printf("***warning: colors not updated (PLOT3D file data was not cached when it was loaded). \n");
+        Plot3DBoundsCPP_CB(BOUND_RELOAD_DATA);
       }
       break;
     case BOUND_RELOAD_DATA:
+#ifdef pp_RESEARCH_DEBUG
+      printf("*** reloading plot3d data\n");
+#endif
       for(i=0;i<nplot3dinfo;i++){
         if(plot3dinfo[i].loaded==0)continue;
         LoadPlot3dMenu(i);
@@ -1269,6 +1278,9 @@ void PartBoundsCPP_CB(int var){
       break;
     case BOUND_RELOAD_DATA:
       if(npartinfo>0){
+#ifdef pp_RESEARCH_DEBUG
+        printf("*** reloading particle file data\n");
+#endif
         LoadParticleMenu(PARTFILE_RELOADALL);
         LoadEvacMenu(EVACFILE_RELOADALL);
       }
@@ -1353,14 +1365,20 @@ extern "C" void PatchBoundsCPP_CB(int var){
       break;
     case BOUND_UPDATE_COLORS:
       if(HavePatchData()==1){
+#ifdef pp_RESEARCH_DEBUG
+        printf("*** updating boundary file colors\n");
+#endif
         SetLoadedPatchBounds(NULL, 0);
         UpdateAllBoundaryColors();
       }
       else{
-        printf("***warning: colors not updated (boundary file data was not cached when it was loaded). \n");
+        PatchBoundsCPP_CB(BOUND_RELOAD_DATA);
       }
       break;
     case BOUND_RELOAD_DATA:
+#ifdef pp_RESEARCH_DEBUG
+      printf("*** reloading boundary file data\n");
+#endif
       SetLoadedPatchBounds(NULL, 0);
       for(i = 0;i < npatchinfo;i++){
         patchdata *patchi;
@@ -5874,7 +5892,7 @@ extern "C" void SliceBoundCB(int var){
         // slice files
 
 #ifdef pp_CPPBOUND_DIALOG
-        SliceBoundsCPP_CB(BOUND_RELOAD_DATA);
+        SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
 #endif
 #ifdef pp_OLDBOUND_DIALOG
         glui_setslicemin = GLOBAL_MIN;
@@ -5888,7 +5906,7 @@ extern "C" void SliceBoundCB(int var){
         // boundary files
 
 #ifdef pp_CPPBOUND_DIALOG
-        PatchBoundsCPP_CB(BOUND_RELOAD_DATA);
+        PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
 #endif
 #ifdef pp_OLDBOUND_DIALOG
         glui_setpatchmin = GLOBAL_MIN;
@@ -5919,16 +5937,11 @@ extern "C" void SliceBoundCB(int var){
         // plot3d files
 
         if(nplot3dloaded>0){
-          for(i = 0; i < MAXPLOT3DVARS; i++){
 #ifdef pp_OLDBOUND_DIALOG
+          for(i = 0; i < MAXPLOT3DVARS; i++){
             setp3min_all[i] = GLOBAL_MIN;
             setp3max_all[i] = GLOBAL_MAX;
-#endif
           }
-#ifdef pp_CPPBOUND_DIALOG
-          Plot3DBoundsCPP_CB(BOUND_RELOAD_DATA);
-#endif
-#ifdef pp_OLDBOUND_DIALOG
           GetLoadedPlot3dBounds(NULL, p3min_loaded, p3max_loaded);
           glui_p3min = p3min_loaded[list_p3_index];
           glui_p3max = p3max_loaded[list_p3_index];
@@ -5937,6 +5950,9 @@ extern "C" void SliceBoundCB(int var){
           Plot3DBoundCB(SETVALMIN);
           Plot3DBoundCB(SETVALMAX);
           Plot3DBoundCB(FILE_RELOAD);
+#endif
+#ifdef pp_CPPBOUND_DIALOG
+          Plot3DBoundsCPP_CB(BOUND_UPDATE_COLORS);
 #endif
         }
 #ifdef pp_CPPBOUND_DIALOG
