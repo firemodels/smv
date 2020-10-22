@@ -214,13 +214,14 @@ float     slice_load_time;
 #define MENU_VENT_CIRCLEHIDE 25
 #define MENU_VENT_CIRCLEOUTLINE 26
 
-#define MENU_TIMEVIEW -103
-#define SAVE_VIEWPOINT -101
+#define MENU_TIMEVIEW             -103
+#define SAVE_VIEWPOINT            -101
 #define SAVE_VIEWPOINT_AS_STARTUP -106
-#define MENU_STARTUPVIEW -102
-#define MENU_OUTLINEVIEW -104
-#define MENU_SIZEPRESERVING -105
-#define MENU_VIEWPOINT_SETTINGS -107
+#define MENU_STARTUPVIEW          -102
+#define MENU_OUTLINEVIEW          -104
+#define MENU_SIZEPRESERVING       -105
+#define MENU_VIEWPOINT_SETTINGS   -107
+#define MENU_VIEWPOINT_TOPVIEW    -108
 #define MENU_DUMMY -999
 
 #define MENU_SHOWHIDE_EVAC 13
@@ -1755,6 +1756,9 @@ void ResetMenu(int value){
     ResetMenu(SAVE_VIEWPOINT);
     ResetMenu(MENU_STARTUPVIEW);
     update_startup_view = 1;
+    break;
+  case MENU_VIEWPOINT_TOPVIEW:
+    SetViewZMAXPersp();
     break;
   case SAVE_VIEWPOINT:
     {
@@ -8868,6 +8872,8 @@ updatemenu=0;
       if(projection_type == PROJECTION_PERSPECTIVE)glutAddMenuEntry(_("Switch to size preserving view   ALT v"),MENU_SIZEPRESERVING);
       glutAddMenuEntry("-",MENU_DUMMY);
     }
+
+    glutAddMenuEntry("Top view", MENU_VIEWPOINT_TOPVIEW);
     SortCameras();
     for(i = 0; i < ncameras_sorted;i++){
       ca = cameras_sorted[i];

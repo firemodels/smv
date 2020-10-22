@@ -2453,14 +2453,23 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           zmax = MAX(zmax,xyz[2]);
         }
         if(zmax>zmin&&xmax>xmin){
-          float xratio,zratio;
+          float xratio, yratio, zratio;
 
           xratio = (xmax-xmin)/(xbarORIG-xbar0ORIG);
+          yratio = (ymax-ymin)/(ybarORIG-ybar0ORIG);
           zratio = (zmax-zmin)/(zbarORIG-zbar0ORIG);
-          geomfactor = MAX(xratio,zratio);
-          geomfactor = MAX(1.0,geomfactor);
-          geom_xmid = (xmax+xmin)/2.0;
-          geom_use_xmid = 1;
+
+          geomyfactor = MAX(xratio,zratio);
+          geomyfactor = MAX(1.0,geomyfactor);
+
+          geomzfactor = MAX(xratio, yratio);
+          geomzfactor = MAX(1.0, geomzfactor);
+
+          geom_xmin = xmin;
+          geom_xmax = xmax;
+          geom_ymin = ymin;
+          geom_ymax = ymax;
+          geom_use_factors = 1;
         }
 
         if(terrain_textures!=NULL){
