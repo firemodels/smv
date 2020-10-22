@@ -5363,9 +5363,8 @@ void UpdateEvents(void){
     // tmin, tmax, x, y, z, r, g, b, 1/0 (foreground color) ! message
     ParseCSV(buffer, tokens, &ntokens);
     if(ntokens>=9){
-      char *c_id, *c_tstart, *c_tend, *c_x, *c_y, *c_type;
+      char *c_tstart, *c_tend, *c_x, *c_y, *c_type;
 
-      c_id     = tokens[0];
       c_tstart = tokens[10];
       c_tend   = tokens[11];
       c_x      = tokens[13];
