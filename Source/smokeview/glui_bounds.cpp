@@ -5875,18 +5875,9 @@ extern "C" void SliceBoundCB(int var){
 #endif
 #ifdef pp_OLDBOUND_DIALOG
       if(research_mode==1){
-        visColorbarVertical_save=visColorbarVertical;
-        visColorbarVertical=1;
 #endif
 #ifdef pp_CPPBOUND_DIALOG
       {
-        if(research_mode == 1){
-          visColorbarVertical_save=visColorbarVertical;
-          visColorbarVertical=1;
-        }
-        else{
-          visColorbarVertical = visColorbarVertical_save;
-        }
 #endif
 
         // slice files
@@ -5901,7 +5892,6 @@ extern "C" void SliceBoundCB(int var){
         SliceBoundCB(SETVALMAX);
         SliceBoundCB(FILE_UPDATE);
 #endif
-
 
         // boundary files
 
