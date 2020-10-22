@@ -2808,6 +2808,55 @@ void ScriptViewXYZMINMAXPersp(scriptdata *scripti, int command){
   ScriptXYZView(scripti);
 }
 
+/* ------------------ SetViewZMAXPersp ------------------------ */
+
+void SetViewZMAXPersp(void){
+  float aperture_temp1, aperture_temp2;
+  float azimuth, elevation;
+  float DL;
+  float DL1, DL2;
+  float width, height;
+  float xcen, ycen, zcen;
+
+  aperture_temp1 = Zoom2Aperture(zoom);
+  aperture_temp2 = 2.0*RAD2DEG*atan(scene_aspect_ratio*tan(DEG2RAD*aperture_temp1/2.0));
+
+  if(geom_use_factors==1){
+    xcen   = (geom_xmin+geom_xmax)/2.0;
+    ycen   = (geom_ymin+geom_ymax)/2.0;
+    width  = geom_xmax - geom_xmin;
+    height = geom_ymax - geom_ymin;
+  }
+  else{
+    xcen = (xbar0ORIG+xbarORIG)/2.0;
+    ycen = (ybar0ORIG+ybarORIG)/2.0;
+    width = xbarORIG-xbar0ORIG;
+    height = ybarORIG-ybar0ORIG;
+  }
+
+  DL1 = (width/2.0)/tan(DEG2RAD*aperture_temp1/2.0);
+  DL2 = (height/2.0)/tan(DEG2RAD*aperture_temp2/2.0);
+  DL = 1.05*MAX(DL1, DL2);
+
+  zcen = zbarORIG+DL;
+  elevation = -89.9;
+  azimuth = 0.0;
+  ResetGluiView(EXTERNAL_VIEW);
+
+  use_customview = 0;
+  SceneMotionCB(CUSTOM_VIEW);
+  ViewpointCB(RESTORE_VIEW);
+  set_view_xyz[0]      = xcen;
+  set_view_xyz[1]      = ycen;
+  set_view_xyz[2]      = zcen;
+  customview_azimuth   = azimuth;
+  customview_elevation = elevation;
+  use_customview       = 1;
+  SceneMotionCB(CUSTOM_VIEW);
+  SceneMotionCB(SET_VIEW_XYZ);
+  UpdatePosView();
+}
+
 /* ------------------ RunScriptCommand ------------------------ */
 
 int RunScriptCommand(scriptdata *script_command){

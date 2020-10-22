@@ -77,8 +77,8 @@ void UpdateCameraYpos(cameradata *ci){
     width=zbar/asp;
   }
   eyeyfactor = -1.10*width/2.0/tan(local_aperture_default*DEG2RAD/2.0);
-  ci->eye[1]=eyeyfactor*xyzbox*geomfactor;
-  if(geom_use_xmid == 1)ci->eye[0]=NORMALIZE_X(geom_xmid);
+  ci->eye[1]=eyeyfactor*xyzbox*geomyfactor;
+  if(geom_use_factors == 1)ci->eye[0]=NORMALIZE_X((geom_xmin+geom_xmax)/2.0);
   if(viscolorbarpath==1){
     ci->eye[0]=0.7;
     ci->eye[1]=-2.25;
