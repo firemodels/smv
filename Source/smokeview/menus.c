@@ -8791,7 +8791,7 @@ updatemenu=0;
       glutAddMenuEntry("-",MENU_DUMMY);
     }
 
-    glutAddMenuEntry("Top view", MENU_VIEWPOINT_TOPVIEW);
+//    glutAddMenuEntry("Top view", MENU_VIEWPOINT_TOPVIEW);
     SortCameras();
     for(i = 0; i < ncameras_sorted;i++){
       ca = cameras_sorted[i];
