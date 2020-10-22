@@ -2431,7 +2431,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
 
 
       if(geomi->is_terrain==1){
-        float xmin, xmax, ymin, ymax, zmin, zmax, asp;
+        float xmin, xmax, ymin, ymax, zmin, zmax;
         int ii;
 
         xmin = verts[0].xyz[0];
