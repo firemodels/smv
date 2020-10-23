@@ -2120,7 +2120,7 @@ void UpdatePartColors(partdata *parti){
   }
   if(parti!=NULL){
     if(parti->loaded==1&&parti->display==1){
-      GetPartColors(parti, nrgb, PARTFILE_MAP);
+      GetPartColors(parti, nrgb);
     }
   }
   else{
@@ -2129,7 +2129,7 @@ void UpdatePartColors(partdata *parti){
 
       partj = partinfo+j;
       if(partj->loaded==1&&partj->display==1){
-        GetPartColors(partj, nrgb, PARTFILE_MAP);
+        GetPartColors(partj, nrgb);
       }
     }
   }

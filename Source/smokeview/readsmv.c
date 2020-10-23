@@ -10978,7 +10978,7 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
 #endif
-#if pp_OLDBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "CACHE_QDATA") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &cache_plot3d_data);

@@ -455,7 +455,7 @@ void UpdatePart5Extremes(void){
 
 /* ------------------ GetPartColors ------------------------ */
 
-void GetPartColors(partdata *parti, int nlevel, int convert_flag){
+void GetPartColors(partdata *parti, int nlevel){
   int i;
   part5data *datacopy;
   // float *diameter_data;
@@ -499,20 +499,19 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
         if(prop_id==NULL)continue;
 
         if(strcmp(partclassi->labels[k].longlabel,"HUMAN_COLOR")==0){
-          if(convert_flag==PARTFILE_MAP){
-            int m;
+          int m;
 
-            for(m = 0; m<datacopy->npoints; m++){
-              float val;
+          for(m = 0; m<datacopy->npoints; m++){
+            float val;
 
-              val = *rvals++;
-              *irvals++ = CLAMP(val+0.5, 0, navatar_colors-1);
-            }
+            val = *rvals++;
+            *irvals++ = CLAMP(val+0.5, 0, navatar_colors-1);
           }
         }
         else{
           int prop_id_index;
           float partimin, partimax;
+          int m;
 
 #ifdef pp_OLDBOUND_DIALOG
           if(prop_id->setvalmin==PERCENTILE_MIN){
@@ -544,33 +543,13 @@ void GetPartColors(partdata *parti, int nlevel, int convert_flag){
           partimin = parti->global_min[prop_id_index];
           partimax = parti->global_max[prop_id_index];
 
-          if(convert_flag==PARTFILE_MAP){
-            int m;
+          for(m = 0; m<datacopy->npoints; m++){
+            float val;
+            int irval;
 
-            for(m = 0; m<datacopy->npoints; m++){
-              float val;
-              int irval;
-
-              val = *rvals++;
-              irval = extreme_data_offset+(float)(255-2*extreme_data_offset)*(val-valmin)/dval;
-              *irvals++ = CLAMP(irval, 0, 255);
-            }
-          }
-          else if(convert_flag==PARTFILE_REMAP){
-            int m;
-
-            for(m = 0; m<datacopy->npoints; m++){
-              float val;
-              int irval;
-
-              irval = *irvals;
-              val = partimin+(float)(irval-extreme_data_offset)*(partimax-partimin)/(255.0-2.0*extreme_data_offset);
-              irval = extreme_data_offset+(float)(255-2*extreme_data_offset)*(val-valmin)/dval;
-              *irvals++ = CLAMP(irval, 0, 255);
-            }
-          }
-          else{
-            ASSERT(FFALSE);
+            val = *rvals++;
+            irval = extreme_data_offset+(float)(255-2*extreme_data_offset)*(val-valmin)/dval;
+            *irvals++ = CLAMP(irval, 0, 255);
           }
         }
       }

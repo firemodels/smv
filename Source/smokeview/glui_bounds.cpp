@@ -1276,6 +1276,7 @@ void PartBoundsCPP_CB(int var){
    //   cache_oart_data = GetCacheFlag(BOUND_PART);
       break;
     case BOUND_UPDATE_COLORS:
+      UpdatePartColors(NULL);
       break;
     case BOUND_RELOAD_DATA:
       if(npartinfo>0){
@@ -4174,6 +4175,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
+//      partboundsCPP.setup(ROLLOUT_part, partbounds_cpp, npartbounds_cpp, &cache_part_data, HIDE_CACHE_CHECKBOX, PERCENTILE_DISABLED, PartBoundsCPP_CB,
       partboundsCPP.setup(ROLLOUT_part, partbounds_cpp, npartbounds_cpp, NULL, HIDE_CACHE_CHECKBOX, PERCENTILE_DISABLED, PartBoundsCPP_CB,
                           ParticleRolloutCB, particleprocinfo, &nparticleprocinfo);
 #endif

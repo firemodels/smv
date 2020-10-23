@@ -810,6 +810,7 @@ EXTERNCPP void UpdateBoundaryTypes(void);
 
 #ifdef pp_CPPBOUND_DIALOG
 EXTERNCPP void UpdatdateResearchModeCPP(void);
+EXTERNCPP void UpdatePartColors(partdata *parti);
 #endif
 
 EXTERNCPP int WriteFileBounds(char *file, float valmin, float valmax);
@@ -936,7 +937,7 @@ EXTERNCPP void UpdateChar(void);
 EXTERNCPP void UpdateTracers(void);
 EXTERNCPP void UpdateGslicePlanes(void);
 
-EXTERNCPP void GetPartColors(partdata *parti, int nlevels, int convert_flag);
+EXTERNCPP void GetPartColors(partdata *parti, int nlevels);
 EXTERNCPP void GetBoundaryColors(float *t, int nt, unsigned char *it,
               int settmin, float *tmin, int settmax, float *tmax,
               float *tmin_global, float *tmax_global,
