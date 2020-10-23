@@ -1137,6 +1137,7 @@ extern "C" void SliceBoundsCPP_CB(int var){
       cache_slice_data = GetCacheFlag(BOUND_SLICE);
       break;
     case BOUND_UPDATE_COLORS:
+      if(nslice_loaded==0)break;
 #ifdef pp_RESEARCH_DEBUG
       printf("*** updating slice file colors\n");
 #endif
@@ -1366,7 +1367,7 @@ extern "C" void PatchBoundsCPP_CB(int var){
     case BOUND_UPDATE_COLORS:
       if(HavePatchData()==1){
 #ifdef pp_RESEARCH_DEBUG
-        printf("*** updating boundary file colors\n");
+        if(npatchloaded>0)printf("*** updating boundary file colors\n");
 #endif
         SetLoadedPatchBounds(NULL, 0);
         UpdateAllBoundaryColors();
@@ -1645,6 +1646,7 @@ void SetLoadedPartBounds(int *list, int nlist){
       partdata *parti;
 
       parti = partinfo+list[i];
+      if(parti->have_bound_file==NO)continue;
       file_min = parti->file_min;
       file_max = parti->file_max;
       if(valmin[j]>valmax[j]){
@@ -1662,7 +1664,7 @@ void SetLoadedPartBounds(int *list, int nlist){
       partdata *parti;
 
       parti = partinfo+i;
-      if(parti->loaded==0)continue;
+      if(parti->loaded==0||parti->have_bound_file==NO)continue;
       file_min = parti->file_min;
       file_max = parti->file_max;
       if(valmin[j]>valmax[j]){

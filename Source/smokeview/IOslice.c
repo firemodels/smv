@@ -5049,6 +5049,12 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
 #endif
           );
         file_size = (int)return_filesize;
+        if(sd->have_bound_file==NO){
+          if(WriteFileBounds(sd->bound_file, qmin, qmax)==1){
+            sd->have_bound_file = YES;
+            update_slicefile_bounds = 1;
+          }
+        }
       }
 #ifdef pp_MEMDEBUG
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
@@ -5203,6 +5209,11 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
 #ifdef pp_CPPBOUND_DIALOG
     int set_valmin, set_valmax;
 
+    if(update_slicefile_bounds==1){
+      update_slicefile_bounds = 0;
+      GetGlobalSliceBounds();
+      SetLoadedSliceBounds(NULL, 0);
+    }
     GetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
     if(set_valmin==BOUND_PERCENTILE_MIN||set_valmax==BOUND_PERCENTILE_MAX){
       cpp_boundsdata *bounds;

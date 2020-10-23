@@ -207,9 +207,21 @@ boundsdata *GetPatchBoundsInfo(char *shortlabel){
   return NULL;
 }
 
+/* ------------------ WriteFileBounds ------------------------ */
+
+int WriteFileBounds(char *file, float valmin, float valmax){
+  FILE *stream;
+
+  stream = fopen(file, "w");
+  if(stream==NULL)return 0;
+  fprintf(stream," %f %f %f", 0.0, valmin, valmax);
+  fclose(stream);
+  return 1;
+}
+
 /* ------------------ GetFileBounds ------------------------ */
 
-void GetFileBounds(char *file, float *valmin, float *valmax){
+int GetFileBounds(char *file, float *valmin, float *valmax){
   FILE *stream;
   char buffer[255];
   float t, vmin, vmax;
@@ -219,7 +231,7 @@ void GetFileBounds(char *file, float *valmin, float *valmax){
     *valmin = 1.0;
     *valmax = 0.0;
     if(stream!=NULL)fclose(stream);
-    return;
+    return 0;
   }
   sscanf(buffer, " %f %f %f", &t, &vmin, &vmax);
   *valmin = vmin;
@@ -231,6 +243,7 @@ void GetFileBounds(char *file, float *valmin, float *valmax){
     *valmax = MAX(*valmax, vmax);
   }
   fclose(stream);
+  return 1;
 }
 
 /* ------------------ GetGlobalPatchBounds ------------------------ */
@@ -251,7 +264,9 @@ void GetGlobalPatchBounds(void){
     boundsdata *boundi;
 
     patchi = patchinfo + i;
-    GetFileBounds(patchi->bound_file, &valmin, &valmax);
+    if(GetFileBounds(patchi->bound_file, &valmin, &valmax)==1){
+      patchi->have_bound_file = YES;
+    }
     if(valmin > valmax)continue;
     patchi->file_min = valmin;
     patchi->file_max = valmax;
@@ -504,7 +519,9 @@ void GetGlobalSliceBounds(void){
 
     slicei = sliceinfo+i;
     if(slicei->is_fed==1)continue;
-    GetFileBounds(slicei->bound_file, &valmin, &valmax);
+    if(GetFileBounds(slicei->bound_file, &valmin, &valmax)==1){
+      slicei->have_bound_file = YES;
+    }
     if(valmin>valmax)continue;
     slicei->file_min = valmin;
     slicei->file_max = valmax;

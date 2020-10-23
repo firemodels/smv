@@ -1037,6 +1037,7 @@ void ReadSMVDynamic(char *file){
       NewMemory((void **)&plot3di->bound_file, (unsigned int)(len+4+1));
       STRCPY(plot3di->bound_file, bufferptr);
       STRCAT(plot3di->bound_file, ".bnd");
+      plot3di->have_bound_file = NO;
 
       NewMemory((void **)&plot3di->comp_file,(unsigned int)(len+4+1));
       STRCPY(plot3di->comp_file,bufferptr);
@@ -4057,6 +4058,8 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->seq_id = nn_part;
   parti->autoload = 0;
   parti->finalize = 1;
+  parti->file_min = NULL;
+  parti->file_max = NULL;
   if(FGETS(buffer, 255, stream)==NULL){
     npartinfo--;
     return RETURN_BREAK;
@@ -4072,6 +4075,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   if(NewMemory((void **)&parti->bound_file, (unsigned int)(len+4+1))==0)return RETURN_TWO;
   STRCPY(parti->bound_file, bufferptr);
   STRCAT(parti->bound_file, ".bnd");
+  parti->have_bound_file = NO;
 
   parti->size_file = NULL;
   if(NewMemory((void **)&parti->size_file, (unsigned int)(len+1+3))==0)return RETURN_TWO;
@@ -4333,6 +4337,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   NewMemory((void **)&patchi->bound_file, (unsigned int)(len+4+1));
   STRCPY(patchi->bound_file, bufferptr);
   strcat(patchi->bound_file, ".bnd");
+  patchi->have_bound_file = NO;
 
   NewMemory((void **)&patchi->comp_file, (unsigned int)(len+4+1));
   STRCPY(patchi->comp_file, bufferptr);
@@ -4967,6 +4972,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   NewMemory((void **)&sd->bound_file, (unsigned int)(len+4+1));
   STRCPY(sd->bound_file, bufferptr);
   STRCAT(sd->bound_file, ".bnd");
+  sd->have_bound_file = NO;
 
   sd->slicelabel = NULL;
   if(slicelabelptr!=NULL){

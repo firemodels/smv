@@ -1129,6 +1129,7 @@ typedef struct _partdata {
   FILE_m *stream;
 
   char *file, *comp_file, *size_file, *reg_file, *hist_file, *bound_file;
+  int have_bound_file;
   int seq_id, autoload, loaded, skipload, request_load, display, reload, finalize;
   int loadstatus, boundstatus;
   int compression_type, evac;
@@ -1209,6 +1210,7 @@ typedef struct _slicedata {
   int mesh_type;
   int seq_id, autoload;
   char *file, *size_file, *bound_file;
+  int have_bound_file;
   char *comp_file, *reg_file, *vol_file;
   char *geom_file;
   int nframes;
@@ -1432,6 +1434,7 @@ typedef struct _smoke3ddata {
 typedef struct _patchdata {
   int seq_id, autoload;
   char *file,*size_file,*bound_file;
+  int have_bound_file;
   char *comp_file, *reg_file;
   char *geomfile, *filetype_label;
   geomdata *geominfo;
@@ -1477,6 +1480,7 @@ typedef struct _plot3ddata {
   int seq_id, autoload;
   char *file,*reg_file,*comp_file;
   char *bound_file;
+  int have_bound_file;
   int compression_type;
   float time;
   int u, v, w, nvars;

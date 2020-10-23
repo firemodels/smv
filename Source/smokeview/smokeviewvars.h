@@ -41,6 +41,9 @@ SVEXTERN int SVDECL(slice_resolution_level, -1);
 SVEXTERN int SVDECL(max_slice_resolution, 0);
 #endif
 
+SVEXTERN int SVDECL(update_slicefile_bounds, 0);
+SVEXTERN int SVDECL(update_patchfile_bounds, 0);
+
 SVEXTERN slicemenudata SVDECL(*slicemenuinfo, NULL);
 SVEXTERN int SVDECL(generate_info_from_commandline, 0);
 #ifdef pp_PART_HIST

@@ -2286,17 +2286,30 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   patchi->loaded=1;
   iboundarytype=GetBoundaryType(patchi);
   switch(loadpatchbysteps){
-  case UNCOMPRESSED_ALLFRAMES:
-  {
     int patchstart;
 
+    case UNCOMPRESSED_ALLFRAMES:
+
     patchstart = patchi->ntimes_old*meshi->npatchsize;
+    if(patchi->have_bound_file==NO){
+      int i;
+
+      patchmin_global = 10000000000000.0;
+      patchmax_global = -patchmin_global;
+      for(i = 0; i<npatchvals; i++){
+        patchmin_global = MIN(patchmin_global, meshi->patchval[i]);
+        patchmax_global = MAX(patchmax_global, meshi->patchval[i]);
+      }
+      if(WriteFileBounds(patchi->bound_file, patchmin_global, patchmax_global)==1){
+        patchi->have_bound_file = YES;
+        update_patchfile_bounds = 1;
+      }
+    }
     GetBoundaryColors3(patchi, meshi->patchval, patchstart, npatchvals, meshi->cpatchval,
       glui_setpatchmin, &glui_patchmin, glui_setpatchmax, &glui_patchmax,
       &patchmin_global, &patchmax_global,
       nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
       &patchi->extreme_min, &patchi->extreme_max);
-  }
     break;
   case COMPRESSED_ALLFRAMES:
     GetBoundaryLabels(
@@ -2313,6 +2326,10 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   }
 
   GLUI2GlobalBoundaryBounds(patchi->label.shortlabel);
+
+  patchi->loaded = 1;
+  patchi->display = 1;
+
   if(patchi->finalize==1){
     UpdateBoundaryListIndex(patchfilenum);
 #ifdef pp_CPPBOUND_DIALOG
@@ -2320,29 +2337,37 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 #define BOUND_COMPUTE_PERCENTILES 116
     cpp_boundsdata *bounds;
 
-    bounds = GetBoundsData(BOUND_PATCH);
-    if(bounds->set_valmin==BOUND_PERCENTILE_MIN||bounds->set_valmax==BOUND_PERCENTILE_MAX){
-      float global_min=0.0, global_max=1.0;
-      histogramdata *bound_hist;
-
-      bound_hist = bounds->hist;
-      GetGlobalBoundsMinMax(BOUND_PATCH, bounds->label, &global_min, &global_max);
-      ComputeLoadedPatchHist(bounds->label, &bound_hist, &global_min, &global_max);
-      if(bound_hist->defined==1){
-        if(bounds->set_valmin==BOUND_PERCENTILE_MIN){
-          float per_valmin;
-
-          GetHistogramValProc(bound_hist, percentile_level, &per_valmin);
-          SetMin(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
-        }
-        if(bounds->set_valmax==BOUND_PERCENTILE_MAX){
-          float per_valmax;
-
-          GetHistogramValProc(bound_hist,1.0-percentile_level, &per_valmax);
-          SetMax(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
-        }
-      }
+    if(update_patchfile_bounds==1){
+      update_patchfile_bounds = 0;
+      GetGlobalPatchBounds();
+      SetLoadedPatchBounds(NULL, 0);
       PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
+    }
+    else{
+      bounds = GetBoundsData(BOUND_PATCH);
+      if(bounds->set_valmin==BOUND_PERCENTILE_MIN||bounds->set_valmax==BOUND_PERCENTILE_MAX){
+        float global_min=0.0, global_max=1.0;
+        histogramdata *bound_hist;
+
+        bound_hist = bounds->hist;
+        GetGlobalBoundsMinMax(BOUND_PATCH, bounds->label, &global_min, &global_max);
+        ComputeLoadedPatchHist(bounds->label, &bound_hist, &global_min, &global_max);
+        if(bound_hist->defined==1){
+          if(bounds->set_valmin==BOUND_PERCENTILE_MIN){
+           float per_valmin;
+
+            GetHistogramValProc(bound_hist, percentile_level, &per_valmin);
+            SetMin(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+          }
+          if(bounds->set_valmax==BOUND_PERCENTILE_MAX){
+            float per_valmax;
+
+            GetHistogramValProc(bound_hist,1.0-percentile_level, &per_valmax);
+            SetMax(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
+          }
+        }
+        PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
+      }
     }
 #endif
   }
@@ -2363,8 +2388,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   if(cache_boundary_data==0){
     FREEMEMORY(meshi->patchval);
   }
-  patchi->loaded=1;
-  patchi->display=1;
   iboundarytype=GetBoundaryType(patchi);
   ShowBoundaryMenu(INI_EXTERIORwallmenu);
   for(n = 0;n<meshi->npatches;n++){

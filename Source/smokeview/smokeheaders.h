@@ -812,6 +812,7 @@ EXTERNCPP void UpdateBoundaryTypes(void);
 EXTERNCPP void UpdatdateResearchModeCPP(void);
 #endif
 
+EXTERNCPP int WriteFileBounds(char *file, float valmin, float valmax);
 EXTERNCPP void SetViewZMAXPersp(void);
 EXTERNCPP void UpdateMeshTerrain(void);
 EXTERNCPP void UpdateTerrainOptions(void);
