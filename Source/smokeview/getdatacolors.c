@@ -509,8 +509,9 @@ void GetPartColors(partdata *parti, int nlevel){
           }
         }
         else{
+#ifdef pp_CPPBOUND_DIALOG
           int prop_id_index;
-          float partimin, partimax;
+#endif
           int m;
 
 #ifdef pp_OLDBOUND_DIALOG
@@ -533,15 +534,13 @@ void GetPartColors(partdata *parti, int nlevel){
             valmax = prop_id->dlg_global_valmax;
           }
 #endif
-          prop_id_index = prop_id-part5propinfo;
 #ifdef pp_CPPBOUND_DIALOG
+          prop_id_index = prop_id-part5propinfo;
           valmin = part_valmin[prop_id_index];
           valmax = part_valmax[prop_id_index];
 #endif
           dval = valmax - valmin;
           if(dval<=0.0)dval=1.0;
-          partimin = parti->global_min[prop_id_index];
-          partimax = parti->global_max[prop_id_index];
 
           for(m = 0; m<datacopy->npoints; m++){
             float val;
