@@ -49,6 +49,7 @@
 //#define pp_LOAD_INCREMENTAL   // load data incrementally
 //#define pp_SLICE_BUFFER       // read  slice file into a buffer before processing
 //#define pp_RESEARCH_DEBUG     // output whether data is reloaded or colors reemapped when toggling to/from research mode
+//#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
 
 
 // define old dialog if not using new dialogs

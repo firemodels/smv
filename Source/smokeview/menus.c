@@ -5364,7 +5364,11 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo+i;
+#ifdef pp_MERGE_GEOMS
+        if(strcmp(patchi->label.longlabel, patchj->label.longlabel)==0){
+#else
         if(strcmp(patchi->label.longlabel, patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
+#endif
           LOCK_COMPRESS;
           patchi->finalize = 1;
           UNLOCK_COMPRESS;
@@ -5375,7 +5379,11 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo + i;
+#ifdef pp_MERGE_GEOMS
+        if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0){
+#else
         if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
+#endif
           LOCK_COMPRESS;
           if(patchi->structured == YES){
             PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
