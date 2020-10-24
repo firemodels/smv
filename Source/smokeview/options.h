@@ -46,6 +46,7 @@
 //#define pp_PLOT3D_REDUCEMENUS // eliminate plot3d sub-menus
 //#define pp_PLOT3D_STATIC      // use static memory for plot3d labels
 //#define pp_LOAD_INCREMENTAL   // load data incrementally
+//#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
