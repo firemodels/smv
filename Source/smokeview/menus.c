@@ -9254,7 +9254,11 @@ updatemenu=0;
   glutAddMenuEntry(_("Auto load data files..."), DIALOG_AUTOLOAD);
 #ifdef pp_COMPRESS
   if(smokezippath!=NULL&&(npatchinfo>0||nsmoke3dinfo>0||nsliceinfo>0)){
+#ifdef pp_DIALOG_SHORTCUTS
     glutAddMenuEntry(_("Compress data files...  ALT z"), DIALOG_SMOKEZIP);
+#else
+    glutAddMenuEntry(_("Compress data files..."), DIALOG_SMOKEZIP);
+#endif
   }
 #endif
   glutAddMenuEntry(_("Save/load configuration files..."), DIALOG_CONFIG);
@@ -9267,6 +9271,7 @@ updatemenu=0;
   /* --------------------------------viewdialog menu -------------------------- */
 
   CREATEMENU(viewdialogmenu, DialogMenu);
+#ifdef pp_DIALOG_SHORTCUTS
   glutAddMenuEntry(_("Clip scene...  ALT c"), DIALOG_CLIP);
   if(showtour_dialog==1)glutAddMenuEntry(_("*Create/edit tours...  ALT t"), DIALOG_TOUR_HIDE);
   if(showtour_dialog==0)glutAddMenuEntry(_("Create/edit tours...  ALT t"), DIALOG_TOUR_SHOW);
@@ -9274,6 +9279,15 @@ updatemenu=0;
   if(isZoneFireModel==0){
     glutAddMenuEntry(_("Examine geometry...  ALT e"), DIALOG_GEOMETRY);
   }
+#else
+  glutAddMenuEntry(_("Clip scene..."), DIALOG_CLIP);
+  if(showtour_dialog==1)glutAddMenuEntry(_("*Create/edit tours..."), DIALOG_TOUR_HIDE);
+  if(showtour_dialog==0)glutAddMenuEntry(_("Create/edit tours..."), DIALOG_TOUR_SHOW);
+  glutAddMenuEntry(_("Edit colorbar...  "), DIALOG_COLORBAR);
+  if(isZoneFireModel==0){
+    glutAddMenuEntry(_("Examine geometry...  "), DIALOG_GEOMETRY);
+  }
+#endif
   if(have_vr==1){
     glutAddMenuEntry(_("Stereo/VR settings..."), DIALOG_STEREO);
   }
@@ -9293,7 +9307,11 @@ updatemenu=0;
   glutAddMenuEntry(_("Show/Hide..."), DIALOG_SHOWFILES);
   glutAddMenuEntry(_("Particle tracking..."), DIALOG_SHOOTER);
   if(nterraininfo>0){
+#ifdef pp_DIALOG_SHORTCUTS
     glutAddMenuEntry(_("WUI display... ALT w..."), DIALOG_WUI);
+#else
+    glutAddMenuEntry(_("WUI display..."), DIALOG_WUI);
+#endif
   }
 
   /* --------------------------------window menu -------------------------- */
@@ -9309,6 +9327,7 @@ updatemenu=0;
 
   CREATEMENU(dialogmenu,DialogMenu);
 
+#ifdef pp_DIALOG_SHORTCUTS
 #ifdef pp_GLUTGET
   glutAddMenuEntry(_("Display...  ALT D"), DIALOG_DISPLAY);
 #else
@@ -9317,6 +9336,16 @@ updatemenu=0;
   glutAddMenuEntry(_("Files/Data/Color... ALT b"), DIALOG_BOUNDS);
   glutAddMenuEntry(_("Motion/View/Render...  ALT m"),DIALOG_MOTION);
   glutAddMenuEntry(_("Viewpoints... ALT g"),DIALOG_VIEW);
+#else
+#ifdef pp_GLUTGET
+  glutAddMenuEntry(_("Display..."), DIALOG_DISPLAY);
+#else
+  glutAddMenuEntry(_("Display..."), DIALOG_DISPLAY);
+#endif
+  glutAddMenuEntry(_("Files/Data/Color..."), DIALOG_BOUNDS);
+  glutAddMenuEntry(_("Motion/View/Render..."), DIALOG_MOTION);
+  glutAddMenuEntry(_("Viewpoints..."), DIALOG_VIEW);
+#endif
 
   glutAddMenuEntry("-",MENU_DUMMY2);
 
@@ -9326,8 +9355,13 @@ updatemenu=0;
   GLUTADDSUBMENU(_("Window"), windowdialogmenu);
 
   glutAddMenuEntry("-",MENU_DUMMY2);
+#ifdef pp_DIALOG_SHORTCUTS
   glutAddMenuEntry(_("Shrink all dialogs ALT X"), DIALOG_SHRINKALL);
   glutAddMenuEntry(_("Close all dialogs  ALT x"), DIALOG_HIDEALL);
+#else
+  glutAddMenuEntry(_("Shrink all dialogs "), DIALOG_SHRINKALL);
+  glutAddMenuEntry(_("Close all dialogs  "), DIALOG_HIDEALL);
+#endif
 
   /* -------------------------------- font menu -------------------------- */
 
