@@ -305,12 +305,23 @@ TITLE="$infile"
 cd $dir
 fulldir=`pwd`
 
+touch test.$$ >& /dev/null
+if [ -e test.$$ ]; then
+  rm test.$$
+  logdir=`pwd`
+else
+  logdir=$HOME/.smokeview
+  if [ ! -e $fulldir ]; then
+    mkdir $fulldir
+  fi
+fi
+
 #*** define files
 
 basefile=${infile}_f${first}_s${skip}
-outerr=$fulldir/$basefile.err
-outlog=$fulldir/$basefile.log
-scriptlog=$fulldir/$basefile.slog
+outerr=$logdir/$basefile.err
+outlog=$logdir/$basefile.log
+scriptlog=$logdir/$basefile.slog
 in_full_file=$fulldir/$infile
 smvfile=${infile}.smv
 in_full_smvfile=$fulldir/$smvfile

@@ -162,7 +162,7 @@ while true; do
     CHECK_WRITE $MOVIEDIR
     continue
   fi
-  if [ "$ans" == "i" ]; then
+  if [ "$ans" == "r" ]; then
     read -p "   enter image frame directory: " RENDERDIR
     CHECK_WRITE $RENDERDIR
     continue
@@ -248,8 +248,8 @@ while true; do
   if [[ "$ans" -ge 1 ]] && [[ "$ans" -le "$nslices" ]]; then
     slice_index=$ans
     img_basename=${input}_slice_${slice_index}
-    smv_scriptname=${img_basename}.ssf
-    img_scriptname=${img_basename}.sh
+    smv_scriptname=$SMVSCRIPTDIR${img_basename}.ssf
+    img_scriptname=$SMVSCRIPTDIR${img_basename}.sh
     slice_quantity=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $2} }'`
     return 0
   else
@@ -320,6 +320,15 @@ if [ ! -e $CONFIGDIR ]; then
 fi
 GLOBALCONFIG=$CONFIGDIR/fds2mp4_global
 
+SMVSCRIPTDIR=
+touch test.$$ >& /dev/null
+if [ -e test.$$ ]; then
+  rm test.$$
+else
+  SMVSCRIPTDIR=${CONFIGDIR}/
+fi
+
+
 # define repo variables
 
 CURDIR=`pwd`
@@ -365,7 +374,7 @@ input=$1
 restore_state
 
 smvfile=$1.smv
-slicefilemenu=$$CONFIGDIR/$1.slcf
+slicefilemenu=$CONFIGDIR/$1.slcf
 
 if [ ! -e $smvfile ]; then
   echo "***error: $smvfile does not exist"

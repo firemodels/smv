@@ -51,7 +51,6 @@ GENERATE_SCRIPT ()
 {
   ind=$1
   scriptname=$2
-  scriptname=${input}_slice_${ind}.ssf
   htmlbase=${input}_slice_${ind}
   htmlfile=$HTMLDIR/${htmlbase}.html
   cat << EOF > $scriptname
@@ -81,6 +80,14 @@ cd $CURDIR
 SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_64
 SMVBINDIR=$BOTREPO/Bundle/smv/for_bundle
 CONFIGDIR=$HOME/.smokeview
+
+SMVSCRIPTDIR=
+touch test.$$ >& /dev/null
+if [ -e test.$$ ]; then
+  rm test.$$
+else
+  SMVSCRIPTDIR=${CONFIGDIR}/
+fi
 
 #---------------------------------------------
 #                  parse command line options 
@@ -154,7 +161,7 @@ while true; do
   fi
   if [[ "$ans" -ge 1 ]] && [[ "$ans" -le "$nslices" ]]; then
     echo converting index $ans
-    scriptname=${input}_slice_${ans}.ssf
+    scriptname=${SMVSCRIPTDIR}${input}_slice_${ans}.ssf
     rm -f $scriptname
     GENERATE_SCRIPT $ans $scriptname
     if [ -e $scriptname ]; then
