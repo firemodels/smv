@@ -365,7 +365,7 @@ input=$1
 restore_state
 
 smvfile=$1.smv
-slicefilemenu=$HOME/.smokeview/$1.slcf
+slicefilemenu=$$CONFIGDIR/$1.slcf
 
 if [ ! -e $smvfile ]; then
   echo "***error: $smvfile does not exist"
@@ -377,7 +377,7 @@ $SMOKEVIEW -info $input >& /dev/null
 # get viewpoint menu (optional)
 
 nviewpoints=0
-viewpointmenu=$HOME/.smokeview/$1.viewpoints
+viewpointmenu=$CONFIGDIR/$1.viewpoints
 if [ -e $viewpointmenu ]; then
   nviewpoints=`cat $viewpointmenu | wc -l`
   (( nviewpoints -= 3 ))

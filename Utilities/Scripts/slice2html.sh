@@ -76,8 +76,11 @@ SCRIPTDIR=`dirname "$0"`
 cd $SCRIPTDIR/../../..
 ROOTDIR=`pwd`
 SMVREPO=$ROOTDIR/smv
+BOTREPO=$ROOTDIR/bot
 cd $CURDIR
 SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_64
+SMVBINDIR=$BOTREPO/Bundle/smv/for_bundle
+CONFIGDIR=$HOME/.smokeview
 
 #---------------------------------------------
 #                  parse command line options 
@@ -113,7 +116,7 @@ fi
 input=$1
 
 smvfile=$1.smv
-slcffile=$HOME/.smokeview/$1.slcf
+slicefilemenu=$CONFIGDIR/$1.slcf
 
 HTMLDIR=/var/www/html/`whoami`
 if [ ! -e $HTMLDIR ]; then
@@ -121,19 +124,19 @@ if [ ! -e $HTMLDIR ]; then
 fi
 
 if [ ! -e $smvfile ]; then
-  echo "***error: $smvfile does not exist"
+  echo "***error: The .smv file, $smvfile, does not exist"
 fi
 
-if [ ! -e $slcffile ]; then
-  $SMOKEVIEW -slice_info $input >& /dev/null
+if [ ! -e $slicefilemenu ]; then
+  $SMOKEVIEW -bindir $SMVBINDIR -info $input >& /dev/null
 fi
 
-if [ ! -e $slcffile ]; then
-  echo "*** error: $slicffile does not exist"
+if [ ! -e $slicefilemenu ]; then
+  echo "*** error: The slice menu file, $slicefilemenu, does not exist"
   exit 1
 fi
 
-nslices=`cat $slcffile | wc -l`
+nslices=`cat $slicefilemenu | wc -l`
 if [ "$nslices" == "0" ]; then
   echo "*** No slice files exist in the smokeview file $smvfile"
   exit
@@ -157,7 +160,9 @@ while true; do
     if [ -e $scriptname ]; then
       echo "***creating html file"
       rm -f $htmlfile
-      $SMOKEVIEW -htmlscript $scriptname $input
+      echo dir=`pwd`
+      echo "$SMOKEVIEW -htmlscript $scriptname -bindir $SMVBINDIR  $input"
+            $SMOKEVIEW -htmlscript $scriptname -bindir $SMVBINDIR  $input
       if [ -e $htmlfile ]; then
         filesize=`ls -lk $htmlfile | awk '{print $5}'`
         echo "*** The html file, $htmlfile(${filesize}K), has been created."
