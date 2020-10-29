@@ -107,6 +107,7 @@ restore_state()
   if [ -e $LOCALCONFIG ]; then
     source $LOCALCONFIG
     viewpoint=$FDS2MOV_VIEWPOINT
+    viewpointd=$FDS2MOV_VIEWPOINTD
   fi
 }
 
@@ -124,8 +125,9 @@ save_state()
   echo "export FDS2MOV_EMAIL=$EMAIL"          >> $GLOBALCONFIG
   
   LOCALCONFIG=$CONFIGDIR/fds2mp4_${input}
-  echo "#/bin/bash"                               >  $LOCALCONFIG
-  echo "export FDS2MOV_VIEWPOINT=\"$viewpoint\""  >> $LOCALCONFIG
+  echo "#/bin/bash"                                  >  $LOCALCONFIG
+  echo "export FDS2MOV_VIEWPOINT=\"$viewpoint\""    >> $LOCALCONFIG
+  echo "export FDS2MOV_VIEWPOINTD=\"$viewpointd\""  >> $LOCALCONFIG
 }
 
 #---------------------------------------------
@@ -143,7 +145,11 @@ while true; do
   echo "       PNG dir: $RENDERDIR"
   echo "     smokeview: $SMOKEVIEW"
   echo "       qsmv.sh: $QSMV"
+if [ "$viewpointd" != "" ]; then
+  echo "     viewpoint: $viewpointd"
+else
   echo "     viewpoint: $viewpoint"
+fi
   echo "  image script: $img_scriptname"
   echo "         email: $EMAIL"
   echo ""
@@ -216,6 +222,36 @@ while true; do
     viewpoint=
     return 0
   fi
+  if [ "$ans" == "x" ]; then
+    viewpoint=
+    viewpointd="VIEWXMIN"
+    return 0
+  fi
+  if [ "$ans" == "X" ]; then
+    viewpoint=
+    viewpointd="VIEWXMAX"
+    return 0
+  fi
+  if [ "$ans" == "y" ]; then
+    viewpoint=
+    viewpointd="VIEWYMIN"
+    return 0
+  fi
+  if [ "$ans" == "Y" ]; then
+    viewpoint=
+    viewpointd="VIEWYMAX"
+    return 0
+  fi
+  if [ "$ans" == "z" ]; then
+    viewpoint=
+    viewpointd="VIEWZMIN"
+    return 0
+  fi
+  if [ "$ans" == "Z" ]; then
+    viewpoint=
+    viewpointd="VIEWZMAX"
+    return 0
+  fi
   re='^[0-9]+$'
   if ! [[ $ans =~ $re ]]; then
     echo "***error: $ans is an invalid selection"
@@ -270,6 +306,12 @@ RENDERDIR
   $RENDERDIR
 UNLOADALL
 EOF
+if [ "$viewpointd" != "" ]; then
+  cat << EOF >> ${smv_scriptname}
+  $viewpointd
+
+EOF
+fi
 if [ "$viewpoint" != "" ]; then
   cat << EOF >> ${smv_scriptname}
 SETVIEWPOINT
@@ -390,7 +432,17 @@ viewpointmenu=$CONFIGDIR/$1.viewpoints
 if [ -e $viewpointmenu ]; then
   nviewpoints=`cat $viewpointmenu | wc -l`
   (( nviewpoints -= 3 ))
+else
+  echo "index   viewpoint"        > $viewpointmenu
+  echo "d   delete"              >> $viewpointmenu
 fi
+echo "    x   left  (VIEWXMIN)"  >> $viewpointmenu
+echo "    X   right (VIEWXMAX)"  >> $viewpointmenu
+echo "    y   front (VIEWYMIN)"  >> $viewpointmenu
+echo "    Y   back  (VIEWYMAX)"  >> $viewpointmenu
+echo "    z   down  (VIEWZMIN)"  >> $viewpointmenu
+echo "    Z   up    (VIEWZMAX)"  >> $viewpointmenu
+
 
 # get slice file menu (required)
 
