@@ -360,7 +360,7 @@ CONFIGDIR=$HOME/.smokeview
 if [ ! -e $CONFIGDIR ]; then
   mkdir $CONFIGDIR
 fi
-GLOBALCONFIG=$CONFIGDIR/fds2mp4_global
+GLOBALCONFIG=$CONFIGDIR/slice2mp4_global
 
 SMVSCRIPTDIR=
 touch test.$$ >& /dev/null
