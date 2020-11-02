@@ -2011,6 +2011,10 @@ void UpdateDisplay(void){
     update_windrose = 0;
     DeviceData2WindRose(nr_windrose, ntheta_windrose);
   }
+  if(refresh_glui_dialogs==1){
+    refresh_glui_dialogs = 0;
+    RefreshGluiDialogs();
+  }
 }
 
 /* ------------------ ShiftColorbars ------------------------ */

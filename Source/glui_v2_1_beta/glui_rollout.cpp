@@ -19,6 +19,8 @@
 #include "glui.h"
 #include "stdinc.h"
 
+extern "C" int refresh_glui_dialogs;
+
 /****************************** GLUI_Rollout::open() **********/
 
 void    GLUI_Rollout::open( void )
@@ -52,6 +54,7 @@ void    GLUI_Rollout::open( void )
 #endif
 
   restore_window(orig);
+  refresh_glui_dialogs = 1;
 }
 
 
@@ -86,6 +89,7 @@ void    GLUI_Rollout::close( void )
   is_open = false;
 
   glui->refresh();
+  refresh_glui_dialogs = 1;
 }
 
 
