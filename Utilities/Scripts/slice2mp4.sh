@@ -305,6 +305,8 @@ GENERATE_SCRIPTS ()
 RENDERDIR
   $RENDERDIR
 UNLOADALL
+LOADINIFILE
+ ${input}.ini
 EOF
 if [ "$viewpointd" != "" ]; then
   cat << EOF >> ${smv_scriptname}

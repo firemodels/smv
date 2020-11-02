@@ -148,6 +148,7 @@ UNLOADALL
 LOADSLICE
 EOF
   cat $slicefilemenu | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2"\n" $3 $4"\n"} }' >> $scriptname
+  slice_quantity=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $2} }'`
   cat << EOF >> $scriptname
 RENDERHTMLALL
   $htmlbase
@@ -169,7 +170,7 @@ SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_64
 SMVBINDIR=$BOTREPO/Bundle/smv/for_bundle
 
 CONFIGDIR=$HOME/.smokeview
-if [ ! -e $CONFIGDIR ] then
+if [ ! -e $CONFIGDIR ]; then
   mkdir $CONFIGDIR
 fi
 
@@ -248,6 +249,8 @@ while true; do
   OUTPUT_SLICES
   read -p "Select slice index to generate an html file: " ans
   if [[ "$ans" -ge 1 ]] && [[ "$ans" -le "$nslices" ]]; then
+    slice_index=$ans
+    slice_quantity=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $2} }'`
     generate_html $ans
     if [ "$EXIT_SCRIPT" != "" ]; then
       exit
