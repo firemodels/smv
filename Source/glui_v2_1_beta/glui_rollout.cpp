@@ -47,11 +47,11 @@ void    GLUI_Rollout::open( void )
     ((GLUI_Control*) child_head)->unhide_internal( true );
   }
 
-  glui->refresh();
-
 #ifndef pp_GLUI_ORIG  
   execute_callback();
 #endif
+
+  glui->refresh();
 
   restore_window(orig);
   refresh_glui_dialogs = 1;
