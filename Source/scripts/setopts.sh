@@ -59,6 +59,7 @@ if [ "`uname`" == "Darwin" ]; then
   PLATFORM="-D pp_OSX"
   export QUARTZ
 else
+  PLATFORM="-D pp_LINUX"
   QUARTZ=
 fi
 export COMPILER

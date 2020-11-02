@@ -272,7 +272,7 @@ int SetupCase(int argc, char **argv){
 
   glutReshapeWindow(screenWidth,screenHeight);
 
-  glutSetWindow(mainwindow_id);
+  SetMainWindow();
   glutShowWindow();
   glutSetWindowTitle(fdsprefix);
   InitMisc();
