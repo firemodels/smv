@@ -12,8 +12,10 @@
 #include "glui_smoke.h"
 #include "glui_bounds.h"
 
-extern GLUI *glui_clip, *glui_colorbar, *glui_motion, *glui_shooter, *glui_tour, *glui_trainer, *glui_wui;
-//extern GLUI *glui_stero, *glui_objects, *glui_geometry_cpp, *glui_display;
+#ifdef pp_REFRESH
+extern GLUI *glui_clip, *glui_colorbar, *glui_labels, *glui_geometry, *glui_motion, *glui_device;
+extern GLUI *glui_shooter, *glui_tour, *glui_stereo, *glui_trainer, *glui_wui;
+#endif
 
 int cb_up_rgb[3], cb_down_rgb[3];
 
@@ -454,23 +456,24 @@ int      nparticleprocinfo=0;
 procdata  subboundprocinfo[6];
 int       nsubboundprocinfo=0;
 
+#ifdef pp_REFRESH
 /* ------------------ RefreshGluiDialogs ------------------------ */
 
 extern "C" void RefreshGluiDialogs(void){
   if(glui_bounds!=NULL)glui_bounds->refresh();
   if(glui_clip!=NULL)glui_clip->refresh();
   if(glui_colorbar!=NULL)glui_colorbar->refresh();
-//  if(glui_display!=NULL)glui_display->refresh();
-//  if(glui_geometry_cpp!=NULL)glui_geometry_cpp->refresh();
+  if(glui_labels!=NULL)glui_labels->refresh();
+  if(glui_geometry!=NULL)glui_geometry->refresh();
   if(glui_motion!=NULL)glui_motion->refresh();
-//  if(glui_objects!=NULL)glui_objects->refresh();
+  if(glui_device!=NULL)glui_device->refresh();
   if(glui_shooter!=NULL)glui_shooter->refresh();
-//  if(glui_stero!=NULL)glui_stero->refresh();
+  if(glui_stereo!=NULL)glui_stereo->refresh();
   if(glui_tour!=NULL)glui_tour->refresh();
   if(glui_trainer!=NULL)glui_trainer->refresh();
   if(glui_wui!=NULL)glui_wui->refresh();
-  glutPostRedisplay();
 }
+#endif
 
 /* ------------------ UpdateColorbarControls2 ------------------------ */
 

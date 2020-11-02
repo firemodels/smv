@@ -2499,9 +2499,11 @@ void Keyboard(unsigned char key, int flag){
     case ';':
       ColorbarMenu(COLORBAR_FLIP);
       break;
+#ifdef pp_REFRESH
     case '_':
       RefreshGluiDialogs();
       break;
+#endif
     case '{':
       iplot3dtimelist--;
       if(iplot3dtimelist<0)iplot3dtimelist=nplot3dtimelist-1;
@@ -3053,7 +3055,7 @@ void IdleCB(void){
 
   if(render_status == RENDER_ON && from_DisplayCB==0)return;
   CheckMemory;
-  if(use_graphics==1)glutSetWindow(mainwindow_id);
+  if(use_graphics==1)SetMainWindow();
   UpdateShow();
   START_TICKS(thistime);
   thisinterval = thistime - lasttime;
@@ -3591,13 +3593,20 @@ void DisplayCB(void){
   }
 }
 
+/* ------------------ SetMainWindow ------------------------ */
+
+void SetMainWindow(void){
+  glutSetWindow(mainwindow_id);
+  GLUTPOSTREDISPLAY;
+}
+
 /* ------------------ ResizeWindow ------------------------ */
 
 void ResizeWindow(int width, int height){
   float wscaled, hscaled;
 
   if(render_mode == RENDER_360&&render_status==RENDER_ON)return;
-  glutSetWindow(mainwindow_id);
+  SetMainWindow();
   wscaled = (float)width/(float)max_screenWidth;
   hscaled = (float)height/(float)max_screenHeight;
   if(wscaled>1.0||hscaled>1.0){

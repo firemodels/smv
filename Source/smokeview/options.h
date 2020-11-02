@@ -69,6 +69,7 @@
 
 #ifdef pp_LINUX
 #define pp_DEG          // output degree symbol
+#define pp_REFRESH      // refresh glui dialogs when they change size
 #endif
 
 //*** options: Mac
@@ -76,6 +77,7 @@
 #ifdef pp_OSX
 #define pp_GLUTGET      // use d and f key in place of CTRL and ALT key
 #define pp_QUARTZ         // use Quartz
+#define pp_REFRESH      // refresh glui dialogs when they change size
 #endif
 
 #ifdef pp_QUARTZ

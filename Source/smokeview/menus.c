@@ -1563,7 +1563,10 @@ void DialogMenu(int value){
     break;
   }
   updatemenu=1;
+#ifdef pp_REFRESH
   refresh_glui_dialogs = 1;
+  SetMainWindow();
+#endif
 }
 
 /* ------------------ ZoomMenu ------------------------ */
