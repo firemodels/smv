@@ -67,6 +67,7 @@ void    GLUI_Rollout::open( void )
 #ifdef pp_REFRESH
   refresh_glui_dialogs = 1;
   SetMainWindow();
+  glutPostRedisplay();
 #endif
 }
 
@@ -105,6 +106,7 @@ void    GLUI_Rollout::close( void )
 #ifdef pp_REFRESH
   refresh_glui_dialogs = 1;
   SetMainWindow();
+  glutPostRedisplay();
 #endif
 }
 
