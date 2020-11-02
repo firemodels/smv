@@ -2499,6 +2499,9 @@ void Keyboard(unsigned char key, int flag){
     case ';':
       ColorbarMenu(COLORBAR_FLIP);
       break;
+    case '_':
+      RefreshGluiDialogs();
+      break;
     case '{':
       iplot3dtimelist--;
       if(iplot3dtimelist<0)iplot3dtimelist=nplot3dtimelist-1;

@@ -469,6 +469,7 @@ extern "C" void RefreshGluiDialogs(void){
   if(glui_tour!=NULL)glui_tour->refresh();
   if(glui_trainer!=NULL)glui_trainer->refresh();
   if(glui_wui!=NULL)glui_wui->refresh();
+  glutPostRedisplay();
 }
 
 /* ------------------ UpdateColorbarControls2 ------------------------ */

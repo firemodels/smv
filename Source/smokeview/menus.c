@@ -1563,6 +1563,7 @@ void DialogMenu(int value){
     break;
   }
   updatemenu=1;
+  refresh_glui_dialogs = 1;
 }
 
 /* ------------------ ZoomMenu ------------------------ */
