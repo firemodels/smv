@@ -19,9 +19,6 @@
 #include "glui.h"
 #include "stdinc.h"
 
-#ifdef pp_OSX
-#define pp_REFRESH
-#endif
 #ifdef pp_LINUX
 #define pp_REFRESH
 #endif
