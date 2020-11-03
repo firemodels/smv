@@ -428,9 +428,9 @@ void Truncate(float val, char *cval, int ndigits){
   }
 }
 
-/* ------------------ ColorbarFloat2String ------------------------ */
+/* ------------------ Float2String ------------------------ */
 
-void ColorbarFloat2String(char *c_val, float val, int ndigits){
+void Float2String(char *c_val, float val, int ndigits){
   float mantissa;
   int exponent;
   
