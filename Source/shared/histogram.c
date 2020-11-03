@@ -4,11 +4,49 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include "histogram.h"
 #include "pragmas.h"
 #include "MALLOCC.h"
 #include "datadefs.h"
+
+  /* ------------------ PrintHistogramInfo ------------------------ */
+
+void PrintHistogramInfo(histogramdata *histogram, int n){
+  int i;
+  float valmin, valmax;
+  char cval[20], cdfval[20], *cvalptr, *cdfvalptr, percen[2];
+
+  if(histogram==NULL||histogram->val_max<=histogram->val_min){
+    printf("***warning: histogram empty\n");
+    return;
+  }
+
+  cvalptr = cval;
+  cdfvalptr = cdfval;
+  strcpy(percen,"%");
+
+  Float2String(cvalptr, histogram->val_min, 4);
+  printf("min=%s ", cvalptr);
+
+  Float2String(cvalptr, histogram->val_max, 4);
+  printf("max=%s\n", cvalptr);
+
+  valmin = histogram->val_min;
+  valmax = histogram->val_max;
+  for(i = 0; i<n; i++){
+    float val, cdf;
+
+    val = ((float)i*valmax + (n-1-i)*valmin)/(float)(n-1);
+    cdf = 100.0*GetHistogramCDF(histogram, val);
+
+    Float2String(cvalptr, val, 4);
+    Float2String(cdfvalptr, cdf, 3);
+
+    printf("%s: %s %s\n", cval, cdfval, percen);
+  }
+}
 
 /* ------------------ GetHistogramCDF ------------------------ */
 

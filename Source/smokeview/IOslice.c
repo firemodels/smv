@@ -1810,6 +1810,12 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
   CheckMemory;
 }
 
+/* ------------------ PrintHistogramInfoPROC ------------------------ */
+
+void PrintHistogramInfoProc(histogramdata *histogram, int n){
+  PrintHistogramInfo(histogram, n);
+}
+
 /* ------------------ GetHistogramValProc ------------------------ */
 
 void GetHistogramValProc(histogramdata *histogram, float cdf, float *val){

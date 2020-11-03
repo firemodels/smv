@@ -29,6 +29,7 @@ void DrawTerrainGeomGPU(void);
 void DrawTerrainGeom(int option);
 void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigned int **indices_arg, int *sizeof_indices_arg, int *nindices_arg);
 
+EXTERNCPP void PrintHistogramInfoProc(histogramdata *histogram, int n);
 
 #ifdef pp_REFRESH
 EXTERNCPP void RefreshGluiDialogs(void);

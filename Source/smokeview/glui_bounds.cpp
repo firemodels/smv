@@ -35,6 +35,7 @@ GLUI *glui_bounds=NULL;
 #define BOUND_PERCENTILE_MINVAL        117
 #define BOUND_PERCENTILE_MAXVAL        118
 #define BOUND_COMPUTE_ONLY_PERCENTILES 119
+#define BOUND_PRINT_HISTOGRAM          120
 
 #define PERCENTILE_DISABLED 0
 #define PERCENTILE_ENABLED  1
@@ -302,6 +303,7 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
                                                                  BOUND_PERCENTILE_MINVAL, Callback);
       SPINNER_percentile_min->set_float_limits(0.0, 0.5);
       glui_bounds->add_button_to_panel(PANEL_percentiles, "Compute min/max bounds", BOUND_COMPUTE_PERCENTILES, Callback);
+      glui_bounds->add_button_to_panel(PANEL_percentiles, "Output info",  BOUND_PRINT_HISTOGRAM, Callback);
 #endif
     }
     BUTTON_update_colors      = glui_bounds->add_button_to_panel(PANEL_minmax, "Update colors", BOUND_UPDATE_COLORS, Callback);
@@ -1171,6 +1173,11 @@ extern "C" void SliceBoundsCPP_CB(int var){
         SetMax(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
       }
       break;
+    case BOUND_PRINT_HISTOGRAM:
+      bounds = GetBoundsData(BOUND_SLICE);
+      if(bounds->hist==NULL)SliceBoundsCPP_CB(BOUND_COMPUTE_PERCENTILES);
+      PrintHistogramInfoProc(bounds->hist, 21);
+      break;
     case BOUND_PERCENTILE_MINVAL:
     case BOUND_PERCENTILE_MAXVAL:
       SliceBoundsCPP_CB(BOUND_COMPUTE_ONLY_PERCENTILES);
@@ -1399,6 +1406,11 @@ extern "C" void PatchBoundsCPP_CB(int var){
         SetMin(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
         SetMax(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
       }
+      break;
+    case BOUND_PRINT_HISTOGRAM:
+      bounds = GetBoundsData(BOUND_PATCH);
+      if(bounds->hist==NULL)PatchBoundsCPP_CB(BOUND_PERCENTILE_MINVAL);
+      PrintHistogramInfoProc(bounds->hist, 21);
       break;
     case BOUND_PERCENTILE_MINVAL:
     case BOUND_PERCENTILE_MAXVAL:
