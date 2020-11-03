@@ -1984,7 +1984,16 @@ void GetAllSliceHists(void){
 
 void ComputeLoadedSliceHist(char *label, histogramdata **histptr){
   histogramdata *hist;
-  int i;
+  int i, have_data=0;
+
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    if(slicei->loaded==0||strcmp(slicei->label.shortlabel, label)!=0)continue;
+    have_data = 1;
+  }
+  if(have_data==0)return;
 
   hist = *histptr;
   if(*histptr!=NULL)FreeHistogram(*histptr);

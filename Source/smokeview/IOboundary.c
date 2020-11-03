@@ -1307,7 +1307,26 @@ void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
 
 void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *global_min, float *global_max){
   histogramdata *hist;
-  int i;
+  int i, have_data=0;
+
+
+  for(i = 0; i<npatchinfo; i++){
+    patchdata *patchi;
+
+    patchi = patchinfo+i;
+    if(patchi->loaded==0||strcmp(patchi->label.shortlabel, label)!=0)continue;
+    if(patchi->blocknumber>=0){
+      if(patchi->patch_filetype==PATCH_STRUCTURED_NODE_CENTER||patchi->patch_filetype==PATCH_STRUCTURED_CELL_CENTER){
+        have_data = 1;
+        break;
+      }
+    }
+    if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
+      have_data = 1;
+      break;
+    }
+  }
+  if(have_data==0)return;
 
   hist = *histptr;
   if(*histptr!=NULL)FreeHistogram(*histptr);

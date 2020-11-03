@@ -19,7 +19,7 @@ void PrintHistogramInfo(histogramdata *histogram, int n){
   char cval[20], cdfval[20], *cvalptr, *cdfvalptr, percen[2];
 
   if(histogram==NULL||histogram->val_max<=histogram->val_min){
-    printf("***warning: histogram empty\n");
+    printf("***warning: histogram data not available\n");
     return;
   }
 

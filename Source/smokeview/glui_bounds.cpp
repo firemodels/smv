@@ -1409,7 +1409,7 @@ extern "C" void PatchBoundsCPP_CB(int var){
       break;
     case BOUND_PRINT_HISTOGRAM:
       bounds = GetBoundsData(BOUND_PATCH);
-      if(bounds->hist==NULL)PatchBoundsCPP_CB(BOUND_PERCENTILE_MINVAL);
+      if(bounds->hist==NULL)PatchBoundsCPP_CB(BOUND_COMPUTE_PERCENTILES);
       PrintHistogramInfoProc(bounds->hist, 21);
       break;
     case BOUND_PERCENTILE_MINVAL:
