@@ -389,7 +389,9 @@ if [ "$queue" != "none" ]; then
 #SBATCH -e $outerr
 #SBATCH -o $outlog
 #SBATCH -p $queue
-#SBATCH --nodes=$nodes
+#SBATCH --nodes=1
+
+
 $SLURM_MEM
 EOF
     if [ "$walltimestring_slurm" != "" ]; then
