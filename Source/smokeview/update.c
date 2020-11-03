@@ -2036,8 +2036,8 @@ void UpdateDisplay(void){
     DeviceData2WindRose(nr_windrose, ntheta_windrose);
   }
 #ifdef pp_REFRESH
-  if(refresh_glui_dialogs==1){
-    refresh_glui_dialogs = 0;
+  if(refresh_glui_dialogs>=-1){
+    refresh_glui_dialogs--;
     RefreshGluiDialogs();
   }
 #endif

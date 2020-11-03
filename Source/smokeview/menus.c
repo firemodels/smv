@@ -1578,6 +1578,7 @@ void DialogMenu(int value){
   updatemenu=1;
 #ifdef pp_REFRESH
   refresh_glui_dialogs = 1;
+  SetMainWindow();
   RefreshGluiDialogs();
   glutPostRedisplay();
 #endif
