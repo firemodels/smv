@@ -692,9 +692,8 @@ void bounds_dialog::CB(int var){
       // keep data checkbox
     case BOUND_CACHE_DATA:
       {
-        int i, research_val = 0, cache_val = 0;
+        int i, cache_val = 0;
 
-        if(CHECKBOX_research_mode!=NULL)research_val = CHECKBOX_research_mode->get_int_val();
         if(CHECKBOX_cache!=NULL)cache_val = CHECKBOX_cache->get_int_val();
 
         for(i = 0; i<nall_bounds; i++){
@@ -776,8 +775,6 @@ extern "C" void SetResearchMode(int flag){
   /* ------------------ InResearchMode ------------------------ */
 
 int InResearchMode(void){
-  int return_val = 1;
-
   if(npatchinfo>0&&patchboundsCPP.in_research_mode()==0)return 0;
   if(npartinfo>0&&partboundsCPP.in_research_mode()==0)return 0;
   if(nplot3dinfo>0&&plot3dboundsCPP.in_research_mode()==0)return 0;
