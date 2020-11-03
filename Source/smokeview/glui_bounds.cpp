@@ -703,7 +703,7 @@ void bounds_dialog::CB(int var){
         }
 #ifdef pp_PERCENTILES
         if(PANEL_percentiles!=NULL){
-          if(cache_val==1&&research_val==0&&percentile_enabled==1){
+          if(cache_val==1&&percentile_enabled==1){
             PANEL_percentiles->enable();
           }
           else{
