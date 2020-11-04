@@ -114,6 +114,7 @@ q_arg=
 r_arg=
 T_arg=
 v_arg=
+one_frame=
 
 if [ $# -lt 1 ]; then
   usage
@@ -123,7 +124,7 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'Ab:c:C:d:e:fhHij:n:N:p:P:q:rs:S:tTv' OPTION
+while getopts 'Ab:c:C:d:e:fFhHij:n:N:Op:P:q:rs:S:tTv' OPTION
 do
 case $OPTION  in
   A)
@@ -174,6 +175,9 @@ case $OPTION  in
    ;;
   N)
    NRESERVE="${OPTARG}"
+   ;;
+  O)
+   one_frame=1
    ;;
   p)
    dummy="${OPTARG}"
@@ -228,9 +232,13 @@ fi
 N_ARG="-N $NRESERVE"
 
 if [ $nprocs != 1 ]; then
-  for i in $(seq 1 $nprocs); do
-    $QSMV $b_arg $c_arg $d_arg $e_arg $f_arg $i_arg $j_arg $N_ARG $q_arg $r_arg $v_arg $T_arg -s $i -S $nprocs $in
-  done
+  if [ "$one_frame" == "" ]; then
+    for i in $(seq 1 $nprocs); do
+      $QSMV $b_arg $c_arg $d_arg $e_arg $f_arg $i_arg $j_arg $N_ARG $q_arg $r_arg $v_arg $T_arg -s $i -S $nprocs $in
+    done
+  else
+    $QSMV $b_arg $c_arg $d_arg $e_arg $f_arg $i_arg $j_arg $N_ARG $q_arg $r_arg $v_arg $T_arg -s $nprocs -S $nprocs $in
+  fi
   exit
 fi
 

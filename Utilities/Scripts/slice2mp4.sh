@@ -14,6 +14,8 @@ function Usage {
   echo "     [default: $SMOKEVIEW]"
   echo "-h - show this mesage"
   echo "-i - use installed smokeview"
+  echo "-O - debug optin - only output frames from the last smokeview intance"
+  echo "-S - share nodes when runn instances of smokeview"
   exit
 }
 
@@ -335,7 +337,7 @@ EOF
 NPROCS=$NPROCS
 QUEUE=$QUEUE
 SMOKEVIEW=$SMOKEVIEW
-QSMV="$FIREMODELS/smv/Utilities/Scripts/qsmv.sh $SHARE $v_opt"
+QSMV="$FIREMODELS/smv/Utilities/Scripts/qsmv.sh $SHARE $O_opt $v_opt"
 \$QSMV -j $JOBPREFIX -P \$NPROCS -q \$QUEUE -e \$SMOKEVIEW -c $smv_scriptname $input
 EOF
 chmod +x $img_scriptname
@@ -390,13 +392,13 @@ MAKEMOVIE=$SMVREPO/Utilities/Scripts/make_movie.sh
 EMAIL=
 SHARE=
 v_opt=
-
+O_opt=
 
 #---------------------------------------------
 #                  parse command line options 
 #---------------------------------------------
 
-while getopts 'e:hiSv' OPTION
+while getopts 'e:FhiOSv' OPTION
 do
 case $OPTION  in
   e)
@@ -409,6 +411,9 @@ case $OPTION  in
   i)
    is_smokeview_installed || exit 1
    SMOKEVIEW=`which smokeview`
+   ;;
+  O)
+   O_opt="-O"
    ;;
   S)
    SHARE="-T"
@@ -481,12 +486,17 @@ if [ "$GENERATE_IMAGES" == "1" ]; then
   bash $img_scriptname
   if [[ "$MAKE_MOVIE" == "1" ]] && [[ "$v_opt" == "" ]]; then
     wait_cases_end
-    animation_file=$MOVIEDIR/${img_basename}.mp4
-    $MAKEMOVIE -i $RENDERDIR -o $MOVIEDIR $img_basename $img_basename
-    if [ "$EMAIL" != "" ]; then
-      if [ -e $animation_file ]; then
-        echo "animation file, $animation_file, sent to $EMAIL"
-        echo "" | mail -s "animation of $slice_quantity" -a $animation_file $EMAIL
+    nerrs=`grep Error ${input}_f*_s*.err | wc -l` 
+    if [ "$nerrs" != "0" ]; then 
+      grep Error ${input}_f*_s*.err | tail
+    else
+      animation_file=$MOVIEDIR/${img_basename}.mp4
+      $MAKEMOVIE -i $RENDERDIR -o $MOVIEDIR $img_basename $img_basename
+      if [ "$EMAIL" != "" ]; then
+        if [ -e $animation_file ]; then
+          echo "animation file, $animation_file, sent to $EMAIL"
+          echo "" | mail -s "animation of $slice_quantity" -a $animation_file $EMAIL
+        fi
       fi
     fi
   fi
