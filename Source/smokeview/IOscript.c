@@ -1818,6 +1818,9 @@ void ScriptLoadSliceRender(scriptdata *scripti){
   if(valid_frame==1&&count==0){
     fprintf(stderr,  "*** Error: Slice files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
     if(stderr2!=NULL)fprintf(stderr2, "*** Error: Slice files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
+    scripti->exit = 1;
+    valid_frame = 0;
+    RenderState(RENDER_OFF);
   }
 }
 
