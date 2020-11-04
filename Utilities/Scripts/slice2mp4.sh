@@ -335,7 +335,7 @@ EOF
 NPROCS=$NPROCS
 QUEUE=$QUEUE
 SMOKEVIEW=$SMOKEVIEW
-QSMV=$FIREMODELS/smv/Utilities/Scripts/qsmv.sh
+QSMV="$FIREMODELS/smv/Utilities/Scripts/qsmv.sh $SHARE $v_opt"
 \$QSMV -j $JOBPREFIX -P \$NPROCS -q \$QUEUE -e \$SMOKEVIEW -c $smv_scriptname $input
 EOF
 chmod +x $img_scriptname
@@ -382,16 +382,21 @@ ROOTDIR=`pwd`
 SMVREPO=$ROOTDIR/smv
 cd $CURDIR
 SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_64
+if [ ! -e $SMOKEVIEW ]; then
+  SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_test_64
+fi
 QSMV=$SMVREPO/Utilities/Scripts/qsmv.sh
 MAKEMOVIE=$SMVREPO/Utilities/Scripts/make_movie.sh
 EMAIL=
+SHARE=
+v_opt=
 
 
 #---------------------------------------------
 #                  parse command line options 
 #---------------------------------------------
 
-while getopts 'e:hi' OPTION
+while getopts 'e:hiSv' OPTION
 do
 case $OPTION  in
   e)
@@ -404,6 +409,12 @@ case $OPTION  in
   i)
    is_smokeview_installed || exit 1
    SMOKEVIEW=`which smokeview`
+   ;;
+  S)
+   SHARE="-T"
+   ;;
+  v)
+   v_opt="-v"
    ;;
 esac
 done
@@ -435,15 +446,15 @@ if [ -e $viewpointmenu ]; then
   nviewpoints=`cat $viewpointmenu | wc -l`
   (( nviewpoints -= 3 ))
 else
-  echo "index   viewpoint"        > $viewpointmenu
-  echo "d   delete"              >> $viewpointmenu
+  echo "index   viewpoint"  > $viewpointmenu
+  echo "d   delete"        >> $viewpointmenu
 fi
-echo "    x   left  (VIEWXMIN)"  >> $viewpointmenu
-echo "    X   right (VIEWXMAX)"  >> $viewpointmenu
-echo "    y   front (VIEWYMIN)"  >> $viewpointmenu
-echo "    Y   back  (VIEWYMAX)"  >> $viewpointmenu
-echo "    z   down  (VIEWZMIN)"  >> $viewpointmenu
-echo "    Z   up    (VIEWZMAX)"  >> $viewpointmenu
+echo "    x   VIEWXMIN"    >> $viewpointmenu
+echo "    X   VIEWXMAX"    >> $viewpointmenu
+echo "    y   VIEWYMIN"    >> $viewpointmenu
+echo "    Y   VIEWYMAX"    >> $viewpointmenu
+echo "    z   VIEWZMIN"    >> $viewpointmenu
+echo "    Z   VIEWZMAX"    >> $viewpointmenu
 
 
 # get slice file menu (required)
@@ -468,7 +479,7 @@ save_state
 
 if [ "$GENERATE_IMAGES" == "1" ]; then
   bash $img_scriptname
-  if [ "$MAKE_MOVIE" == "1" ]; then
+  if [[ "$MAKE_MOVIE" == "1" ]] && [[ "$v_opt" == "" ]]; then
     wait_cases_end
     animation_file=$MOVIEDIR/${img_basename}.mp4
     $MAKEMOVIE -i $RENDERDIR -o $MOVIEDIR $img_basename $img_basename
