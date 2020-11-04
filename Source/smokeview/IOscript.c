@@ -1746,6 +1746,7 @@ void ScriptLoadSliceRender(scriptdata *scripti){
       int finalize_save;
       slicedata *slicei;
       float time_value;
+      FILE_SIZE slicefile_size;
 
       slicei = sliceinfo+mslicei->islices[j];
       finalize_save = slicei->finalize;
@@ -1775,7 +1776,15 @@ void ScriptLoadSliceRender(scriptdata *scripti){
       }
 
       FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_value);
-      total_slice_size += LoadSlicei(SET_SLICECOLOR, mslicei->islices[j], frame_current, &time_value);
+      slicefile_size = LoadSlicei(SET_SLICECOLOR, mslicei->islices[j], frame_current, &time_value);
+
+      if(slicefile_size==0){
+        scripti->exit = 1;
+        valid_frame = 0;
+        RenderState(RENDER_OFF);
+        break;
+      }
+      total_slice_size += slicefile_size;
       scripti->fval4 = time_value;
       CheckMemory;
 
