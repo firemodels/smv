@@ -385,6 +385,7 @@ scriptfile=`mktemp /tmp/script.$$.XXXXXX`
 
 cat << EOF > $scriptfile
 #!/bin/bash
+# $QSUB  $scriptfile
 # $0 $commandline
 EOF
 
