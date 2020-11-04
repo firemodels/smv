@@ -335,7 +335,7 @@ EOF
 NPROCS=$NPROCS
 QUEUE=$QUEUE
 SMOKEVIEW=$SMOKEVIEW
-QSMV=$FIREMODELS/smv/Utilities/Scripts/qsmv.sh
+QSMV="$FIREMODELS/smv/Utilities/Scripts/qsmv.sh $SHARE"
 \$QSMV -j $JOBPREFIX -P \$NPROCS -q \$QUEUE -e \$SMOKEVIEW -c $smv_scriptname $input
 EOF
 chmod +x $img_scriptname
@@ -382,16 +382,21 @@ ROOTDIR=`pwd`
 SMVREPO=$ROOTDIR/smv
 cd $CURDIR
 SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_64
+echo SMOKEVIEW=$SMOKEVIEW
+if [ ! -e $SMOKEVIEW ]; then
+  SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_test_64
+fi
 QSMV=$SMVREPO/Utilities/Scripts/qsmv.sh
 MAKEMOVIE=$SMVREPO/Utilities/Scripts/make_movie.sh
 EMAIL=
+SHARE=
 
 
 #---------------------------------------------
 #                  parse command line options 
 #---------------------------------------------
 
-while getopts 'e:hi' OPTION
+while getopts 'e:hiS' OPTION
 do
 case $OPTION  in
   e)
@@ -404,6 +409,9 @@ case $OPTION  in
   i)
    is_smokeview_installed || exit 1
    SMOKEVIEW=`which smokeview`
+   ;;
+  S)
+   SHARE="-T"
    ;;
 esac
 done
