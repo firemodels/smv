@@ -15,7 +15,7 @@ function Usage {
   echo "-h - show this mesage"
   echo "-i - use installed smokeview"
   echo "-O - debug optin - only output frames from the last smokeview intance"
-  echo "-S - share nodes when runn instances of smokeview"
+  echo "-S - sharing on - allow multiple smokeview's to run on a node"
   exit
 }
 
@@ -104,6 +104,7 @@ restore_state()
     RENDERDIR=${FDS2MOV_RENDERDIR}
     MOVIEDIR=${FDS2MOV_MOVIEDIR}
     EMAIL=${FDS2MOV_EMAIL}
+    SHARE=${FDS2MOV_SHARE}
   fi
   LOCALCONFIG=$CONFIGDIR/fds2mp4_${input}
   if [ -e $LOCALCONFIG ]; then
@@ -125,6 +126,7 @@ save_state()
   echo "export FDS2MOV_RENDERDIR=$RENDERDIR"  >> $GLOBALCONFIG
   echo "export FDS2MOV_MOVIEDIR=$MOVIEDIR"    >> $GLOBALCONFIG
   echo "export FDS2MOV_EMAIL=$EMAIL"          >> $GLOBALCONFIG
+  echo "export FDS2MOV_SHARE=$SHARE"          >> $GLOBALCONFIG
   
   LOCALCONFIG=$CONFIGDIR/fds2mp4_${input}
   echo "#/bin/bash"                                  >  $LOCALCONFIG
@@ -136,13 +138,11 @@ save_state()
 #                  generate_images
 #---------------------------------------------
 
-generate_images_movie ()
+select_options ()
 {
 while true; do
   echo ""
-  echo "slice quantity: $slice_quantity "
-  echo "     processes: $NPROCS"
-  echo "         queue: $QUEUE"
+  echo "slice quantity: $slice_quantity/$slice_dir=$slice_pos "
   echo "       mp4 dir: $MOVIEDIR"
   echo "       PNG dir: $RENDERDIR"
   echo "     smokeview: $SMOKEVIEW"
@@ -152,17 +152,27 @@ if [ "$viewpointd" != "" ]; then
 else
   echo "     viewpoint: $viewpoint"
 fi
+  echo "     processes: $NPROCS"
+  if [ "$SHARE" == "" ]; then
+    echo "  node sharing: off"
+  else
+    echo "  node sharing: on"
+  fi
+  echo "         queue: $QUEUE"
   echo "  image script: $img_scriptname"
   echo "         email: $EMAIL"
   echo ""
-  echo "a - define directory containing animation"
-  echo "p - define number of processes"
-  echo "q - define queue"
-  echo "r - define directory containing rendered images"
+  echo "s - select slice"
+  echo "a - set animation directory"
+  echo "r - set rendered iamge directory "
   echo "v - select viewpoint"
-  echo "m - select emaail address"
-  echo "1 - generate PNG images"
-  echo "2 - generate PNG images and an MP4 animation"
+  echo "m - set email address"
+  echo ""
+  echo "p - set number of processes"
+  echo "S - turn on/off node sharing"
+  echo "q - set queue"
+  echo ""
+  echo "1 - generate MP4 animation"
   echo "x - exit"
   read -p "option: " ans
   if [ "$ans" == "a" ]; then
@@ -173,6 +183,18 @@ fi
   if [ "$ans" == "r" ]; then
     read -p "   enter image frame directory: " RENDERDIR
     CHECK_WRITE $RENDERDIR
+    continue
+  fi
+  if [ "$ans" == "s" ]; then
+    select_slice_file
+    continue
+  fi
+  if [ "$ans" == "S" ]; then
+    if [ "$SHARE" == "" ]; then
+      SHARE="-T"
+    else
+      SHARE=""
+    fi
     continue
   fi
   if [ "$ans" == "m" ]; then
@@ -195,18 +217,10 @@ fi
     save_state
     exit
   fi
-  if [[ "$ans" -ge 1 ]] && [[ "$ans" -le "2" ]]; then
-    if [ "$ans" == "1" ]; then
-      GENERATE_IMAGES=1
-      GENERATE_SCRIPTS $slice_index
-      return
-    fi
-    if [ "$ans" == "2" ]; then
-      GENERATE_IMAGES=1
-      MAKE_MOVIE=1
-      GENERATE_SCRIPTS $slice_index
-      return
-    fi
+  if [ "$ans" == "1" ]; then
+    GENERATE_IMAGES=1
+    MAKE_MOVIE=1
+    GENERATE_SCRIPTS $slice_index
   fi
 done
 }
@@ -289,11 +303,38 @@ while true; do
     smv_scriptname=$SMVSCRIPTDIR${img_basename}.ssf
     img_scriptname=$SMVSCRIPTDIR${img_basename}.sh
     slice_quantity=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $2} }'`
+    slice_quantity=`trim "$slice_quantity"`
+    slice_dir=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $3} }'`
+    slice_pos=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $4} }'`
+    slice_dir=$(echo $slice_dir | tr -d ' ')
+    slice_pos=$(echo $slice_pos | tr -d ' ')
+    if [ "$slice_dir" == "1" ]; then
+      slice_dir="X"
+    fi
+    if [ "$slice_dir" == "2" ]; then
+      slice_dir="Y"
+    fi
+    if [ "$slice_dir" == "3" ]; then
+      slice_dir="Z"
+    fi
     return 0
   else
     echo index $ans out of bounds
   fi
 done
+}
+
+#---------------------------------------------
+#                   trim
+#---------------------------------------------
+
+trim() {
+    local var="$*"
+    # remove leading whitespace characters
+    var="${var#"${var%%[![:space:]]*}"}"
+    # remove trailing whitespace characters
+    var="${var%"${var##*[![:space:]]}"}"   
+    printf '%s' "$var"
 }
 
 #---------------------------------------------
@@ -478,7 +519,7 @@ fi
 
 select_slice_file
 
-generate_images_movie
+select_options
 
 save_state
 
