@@ -8,14 +8,14 @@ function Usage {
   scriptname=`basename $0`
   echo "Usage: $scriptname [options] casename"
   echo ""
-  echo "This script generates image frames for a specified slice file"
+  echo "This script generates image frames and an mp4 animation for a slice file"
   echo ""
   echo "-e path - full path of smokeview executable."
   echo "     [default: $SMOKEVIEW]"
-  echo "-h - show this mesage"
+  echo "-h - show this message"
   echo "-i - use installed smokeview"
-  echo "-O - debug optin - only output frames from the last smokeview intance"
-  echo "-S - sharing on - allow multiple smokeview's to run on a node"
+  echo "-O - only output frame from the last smokeview intance (debug option)"
+  echo "-v - show but do not run image movie generating scripts"
   exit
 }
 
@@ -218,9 +218,8 @@ fi
     exit
   fi
   if [ "$ans" == "1" ]; then
-    GENERATE_IMAGES=1
-    MAKE_MOVIE=1
     GENERATE_SCRIPTS $slice_index
+    make_movie
   fi
 done
 }
@@ -328,13 +327,46 @@ done
 #                   trim
 #---------------------------------------------
 
-trim() {
-    local var="$*"
-    # remove leading whitespace characters
-    var="${var#"${var%%[![:space:]]*}"}"
-    # remove trailing whitespace characters
-    var="${var%"${var##*[![:space:]]}"}"   
-    printf '%s' "$var"
+trim()
+{
+  local var="$*"
+# remove leading whitespace characters
+  var="${var#"${var%%[![:space:]]*}"}"
+# remove trailing whitespace characters
+  var="${var%"${var##*[![:space:]]}"}"   
+  printf '%s' "$var"
+}
+
+#---------------------------------------------
+#                   make_movie
+#---------------------------------------------
+
+make_movie() {
+
+
+  if [ "$v_opt" != "" ]; then
+    echo ""
+    echo "image generatingscript: $img_scriptnme"
+    cat $img_scriptname
+    return
+  fi
+
+  bash $img_scriptname
+  wait_cases_end
+
+  nerrs=`grep Error ${input}_f*_s*.err | wc -l`
+  if [ "$nerrs" != "0" ]; then 
+    grep Error ${input}_f*_s*.err | tail
+  else
+    animation_file=$MOVIEDIR/${img_basename}.mp4
+    $MAKEMOVIE -i $RENDERDIR -o $MOVIEDIR $img_basename $img_basename
+    if [ "$EMAIL" != "" ]; then
+      if [ -e $animation_file ]; then
+        echo "animation file, $animation_file, sent to $EMAIL"
+        echo "" | mail -s "animation of $slice_quantity" -a $animation_file $EMAIL
+      fi
+    fi
+  fi
 }
 
 #---------------------------------------------
@@ -439,7 +471,7 @@ O_opt=
 #                  parse command line options 
 #---------------------------------------------
 
-while getopts 'e:FhiOSv' OPTION
+while getopts 'e:hiOv' OPTION
 do
 case $OPTION  in
   e)
@@ -455,9 +487,6 @@ case $OPTION  in
    ;;
   O)
    O_opt="-O"
-   ;;
-  S)
-   SHARE="-T"
    ;;
   v)
    v_opt="-v"
@@ -498,7 +527,7 @@ fi
 echo "    x   VIEWXMIN"    >> $viewpointmenu
 echo "    X   VIEWXMAX"    >> $viewpointmenu
 echo "    y   VIEWYMIN"    >> $viewpointmenu
-echo "    Y   VIEWYMAX"    >> $viewpointmenu
+echo "    Y   VIEWYMAX (not working)"    >> $viewpointmenu
 echo "    z   VIEWZMIN"    >> $viewpointmenu
 echo "    Z   VIEWZMAX"    >> $viewpointmenu
 
@@ -523,27 +552,4 @@ select_options
 
 save_state
 
-if [ "$GENERATE_IMAGES" == "1" ]; then
-  bash $img_scriptname
-  if [[ "$MAKE_MOVIE" == "1" ]] && [[ "$v_opt" == "" ]]; then
-    wait_cases_end
-    nerrs=`grep Error ${input}_f*_s*.err | wc -l` 
-    if [ "$nerrs" != "0" ]; then 
-      grep Error ${input}_f*_s*.err | tail
-    else
-      animation_file=$MOVIEDIR/${img_basename}.mp4
-      $MAKEMOVIE -i $RENDERDIR -o $MOVIEDIR $img_basename $img_basename
-      if [ "$EMAIL" != "" ]; then
-        if [ -e $animation_file ]; then
-          echo "animation file, $animation_file, sent to $EMAIL"
-          echo "" | mail -s "animation of $slice_quantity" -a $animation_file $EMAIL
-        fi
-      fi
-    fi
-  fi
-else
-  echo ""
-  echo "image generatingscript: $img_scriptnme"
-  cat $img_scriptname
-fi
 
