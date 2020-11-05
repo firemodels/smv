@@ -219,7 +219,12 @@ fi
   fi
   if [ "$ans" == "1" ]; then
     GENERATE_SCRIPTS $slice_index
+    start_time="$(date -u +%s.%N)"
     make_movie
+    end_time="$(date -u +%s.%N)"
+    elapsed="$(bc <<<"$end_time-$start_time")"
+    echo ""
+    echo "time=$elapsed"
   fi
 done
 }
