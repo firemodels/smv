@@ -2544,11 +2544,13 @@ void Keyboard(unsigned char key, int flag){
       iplot3dtimelist--;
       if(iplot3dtimelist<0)iplot3dtimelist=nplot3dtimelist-1;
       Plot3DListMenu(iplot3dtimelist);
+      updatemenu = 1;
       break;
     case '}':
       iplot3dtimelist++;
       if(iplot3dtimelist>=nplot3dtimelist)iplot3dtimelist=0;
       Plot3DListMenu(iplot3dtimelist);
+      updatemenu = 1;
       break;
   }
 

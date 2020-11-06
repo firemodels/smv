@@ -5138,6 +5138,14 @@ void Plot3DListMenu(int value){
     }
   }
 #endif
+#ifdef pp_CPPBOUND_DIALOG
+  for(i = 0; i<nplot3dinfo; i++){
+    plot3di = plot3dinfo+i;
+    if(ABS(plot3di->time-plot3dtimelist[value])<0.5){
+      LoadPlot3dMenu(i);
+    }
+  }
+#endif
 }
 
 /* ------------------ UpdateMenu ------------------------ */
