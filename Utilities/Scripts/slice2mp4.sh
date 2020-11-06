@@ -87,7 +87,7 @@ wait_cases_end()
   while [[ `qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep ${JOBPREFIX} | grep -v 'C$'` != '' ]]; do
      JOBS_REMAINING=`qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep ${JOBPREFIX} | grep -v 'C$' | wc -l`
      echo "Waiting for ${JOBS_REMAINING} cases to complete."
-     sleep 15
+     sleep 1
   done
 }
 
@@ -343,7 +343,6 @@ trim()
 
 make_movie() {
 
-
   if [ "$v_opt" != "" ]; then
     echo ""
     echo "image generatingscript: $img_scriptnme"
@@ -351,9 +350,17 @@ make_movie() {
     return
   fi
 
-  bash $img_scriptname
-  wait_cases_end
+# render images
 
+  bash $img_scriptname
+  start_time="$(date -u +%s.%N)"
+  wait_cases_end
+  end_time="$(date -u +%s.%N)"
+  render_time="$(bc <<<"$end_time-$start_time")"
+
+# make movie
+
+  start_time="$(date -u +%s.%N)"
   nerrs=`grep Error ${input}_f*_s*.err | wc -l`
   if [ "$nerrs" != "0" ]; then 
     grep Error ${input}_f*_s*.err | tail
@@ -367,6 +374,11 @@ make_movie() {
       fi
     fi
   fi
+  end_time="$(date -u +%s.%N)"
+  movie_time="$(bc <<<"$end_time-$start_time")"
+  echo ""
+  echo render time=$render_time
+  echo mp4 time=$movie_time
 }
 
 #---------------------------------------------
