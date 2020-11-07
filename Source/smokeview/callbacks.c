@@ -1574,9 +1574,10 @@ int IsPlot3DLoaded(void){
 
 /* ------------------ Plot3DListMenu ------------------------ */
 
-int GetPlot3DTimeList(void){
+int GetPlot3DTimeList(int inc){
   float time;
   int have_plot3d = 0, i;
+  int return_val=-1;
 
   for(i = 0; i<nplot3dinfo; i++){
     plot3ddata *plot3di;
@@ -1588,12 +1589,17 @@ int GetPlot3DTimeList(void){
       break;
     }
   }
-  if(have_plot3d==0)return -1;
+  if(have_plot3d==0)return 0;
 
   for(i = 0; i<nplot3dtimelist; i++){
-    if(ABS(time-plot3dtimelist[i])<0.5)return i;
+    if(ABS(time-plot3dtimelist[i])<0.5){
+      return_val = i+inc;
+      break;
+    }
   }
-  return -1;
+  if(return_val<0)return_val = nplot3dtimelist-1;
+  if(return_val>nplot3dtimelist-1)return_val = 0;
+  return return_val;
 }
 
 /* ------------------ Keyboard ------------------------ */
@@ -2565,14 +2571,9 @@ void Keyboard(unsigned char key, int flag){
       break;
 #endif
     case '{':
-      iplot3dtimelist = GetPlot3DTimeList() - 1;
-      if(iplot3dtimelist<0)iplot3dtimelist=nplot3dtimelist-1;
-      Plot3DListMenu(iplot3dtimelist);
-      updatemenu = 1;
-      break;
     case '}':
-      iplot3dtimelist = GetPlot3DTimeList() + 1;
-      if(iplot3dtimelist>=nplot3dtimelist)iplot3dtimelist=0;
+      if(key2=='{')iplot3dtimelist = GetPlot3DTimeList(-1);
+      if(key2=='}')iplot3dtimelist = GetPlot3DTimeList(1);
       Plot3DListMenu(iplot3dtimelist);
       updatemenu = 1;
       break;
