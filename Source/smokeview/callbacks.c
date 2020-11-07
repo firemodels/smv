@@ -1572,6 +1572,30 @@ int IsPlot3DLoaded(void){
   return 0;
 }
 
+/* ------------------ Plot3DListMenu ------------------------ */
+
+int GetPlot3DTimeList(void){
+  float time;
+  int have_plot3d = 0, i;
+
+  for(i = 0; i<nplot3dinfo; i++){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo+i;
+    if(plot3di->loaded==1){
+      time = plot3di->time;
+      have_plot3d = 1;
+      break;
+    }
+  }
+  if(have_plot3d==0)return -1;
+
+  for(i = 0; i<nplot3dtimelist; i++){
+    if(ABS(time-plot3dtimelist[i])<0.5)return i;
+  }
+  return -1;
+}
+
 /* ------------------ Keyboard ------------------------ */
 
 void Keyboard(unsigned char key, int flag){
@@ -2505,12 +2529,12 @@ void Keyboard(unsigned char key, int flag){
       break;
 #endif
     case '{':
-      iplot3dtimelist--;
+      iplot3dtimelist = GetPlot3DTimeList() - 1;
       if(iplot3dtimelist<0)iplot3dtimelist=nplot3dtimelist-1;
       Plot3DListMenu(iplot3dtimelist);
       break;
     case '}':
-      iplot3dtimelist++;
+      iplot3dtimelist = GetPlot3DTimeList() + 1;
       if(iplot3dtimelist>=nplot3dtimelist)iplot3dtimelist=0;
       Plot3DListMenu(iplot3dtimelist);
       break;
