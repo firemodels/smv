@@ -142,21 +142,24 @@ select_options ()
 {
 while true; do
   echo ""
-  echo "slice quantity: $slice_quantity/$slice_dir=$slice_pos "
+  echo "      quantity: $slice_quantity/$slice_dir=$slice_pos "
+if [ "$have_bounds" == "1" ]; then
+  echo "      min, max: $valmin $slice_quantity_unit, $valmax $slice_quantity_unit"
+else
+  echo "        bounds: default"
+fi
   echo "       mp4 dir: $MOVIEDIR"
   echo "       PNG dir: $RENDERDIR"
   echo "     smokeview: $SMOKEVIEW"
-  echo "       qsmv.sh: $QSMV"
 if [ "$viewpointd" != "" ]; then
   echo "     viewpoint: $viewpointd"
 else
   echo "     viewpoint: $viewpoint"
 fi
-  echo "     processes: $NPROCS"
   if [ "$SHARE" == "" ]; then
-    echo "  node sharing: off"
+    echo "     processes: $NPROCS/node sharing off"
   else
-    echo "  node sharing: on"
+    echo "     processes: $NPROCS/node sharing on"
   fi
   echo "         queue: $QUEUE"
   echo "  image script: $img_scriptname"
@@ -164,6 +167,7 @@ fi
   echo ""
   echo "s - select slice"
   echo "a - set animation directory"
+  echo "b - set bounds"
   echo "r - set rendered iamge directory "
   echo "v - select viewpoint"
   echo "m - set email address"
@@ -178,6 +182,18 @@ fi
   if [ "$ans" == "a" ]; then
     read -p "   enter animation directory: " MOVIEDIR
     CHECK_WRITE $MOVIEDIR
+    continue
+  fi
+  if [ "$ans" == "b" ]; then
+    read -p "   enter $slice_quantity_short min: " valmin
+    read -p "   enter $slice_quantity_short max: " valmax
+    have_inifile=1
+    have_bounds=1
+cat << EOF > $smv_inifilename
+V2_SLICE
+ 0 $valmin 0 $valmax $slice_quantity_short
+
+EOF
     continue
   fi
   if [ "$ans" == "r" ]; then
@@ -288,6 +304,8 @@ done
 
 select_slice_file ()
 {
+have_inifile=
+have_bounds=
 while true; do
   OUTPUT_SLICES
   re='^[0-9]+$'
@@ -301,8 +319,17 @@ while true; do
     img_basename=${input}_slice_${slice_index}
     smv_scriptname=$SMVSCRIPTDIR${img_basename}.ssf
     img_scriptname=$SMVSCRIPTDIR${img_basename}.sh
+    smv_inifilename=$SMVSCRIPTDIR${img_basename}.ini
+
     slice_quantity=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $2} }'`
     slice_quantity=`trim "$slice_quantity"`
+
+    slice_quantity_short=`grep -A 4 SLCF $smvfile | grep $slice_quantity -A 1 | head -2 | tail -1`
+    slice_quantity_short=`trim "$slice_quantity_short"`
+
+    slice_quantity_unit=`grep -A 4 SLCF $smvfile | grep $slice_quantity -A 2 | tail -1`
+    slice_quantity_unit=`trim "$slice_quantity_unit"`
+
     slice_dir=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $3} }'`
     slice_pos=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $4} }'`
     slice_dir=$(echo $slice_dir | tr -d ' ')
@@ -392,9 +419,13 @@ GENERATE_SCRIPTS ()
 RENDERDIR
   $RENDERDIR
 UNLOADALL
-LOADINIFILE
- ${input}.ini
 EOF
+if [ "$have_inifile" == "1" ]; then
+cat << EOF >> ${smv_scriptname}
+LOADINIFILE
+ $smv_inifilename
+EOF
+fi
 if [ "$viewpointd" != "" ]; then
   cat << EOF >> ${smv_scriptname}
   $viewpointd
