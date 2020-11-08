@@ -118,21 +118,24 @@ runs smokeview on the case casename.smv using the script casename.ssf
 
 options:
  -e exe - full path of smokeview used to run case
-    [default: .../smv/Build/smokeview/intel_linux_64/smokeview_intel_linux_64]
+    [default: /home/gforney/FireModels_fork/smv/Build/smokeview/intel_linux_64/smokeview_intel_linux_64]
  -h   - show commonly used options
  -H   - show all options
- -p n - run n instances of smokeview each instance rendering 1/n'th of the total images
+ -P n - run n instances of smokeview each instance rendering 1/n'th of the total images
         only use this option if you have a RENDERALL keyword in your .ssf smokeview script
  -q q - name of queue. [default: batch]
- -v   - output generated script
+ -v   - output generated script (do not run)
 Other options:
  -b     - bin directory
  -c     - smokeview script file [default: casename.ssf]
  -C com - execute the command com
  -d dir - specify directory where the case is found [default: .]
+ -e exe - execute the program exe
  -i     - use installed smokeview
  -j p   - job prefix
+ -N n   - reserve n cores [default: 8]
  -r     - redirect output
  -s     - first frame rendered [default: 1]
  -S     - interval between frames [default: 1]
+ -T     - share nodes
 ```
