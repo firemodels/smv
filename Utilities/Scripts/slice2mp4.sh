@@ -420,10 +420,10 @@ while true; do
     slice_quantity=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $2} }'`
     slice_quantity=`trim "$slice_quantity"`
 
-    slice_quantity_short=`grep -A 4 SLCF $smvfile | grep $slice_quantity -A 1 | head -2 | tail -1`
+    slice_quantity_short=`grep -A 4 SLCF $smvfile | grep "$slice_quantity" -A 1 | head -2 | tail -1`
     slice_quantity_short=`trim "$slice_quantity_short"`
 
-    slice_quantity_unit=`grep -A 4 SLCF $smvfile | grep $slice_quantity -A 2 | tail -1`
+    slice_quantity_unit=`grep -A 4 SLCF $smvfile | grep "$slice_quantity" -A 2 | tail -1`
     slice_quantity_unit=`trim "$slice_quantity_unit"`
 
     slice_dir=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $3} }'`
