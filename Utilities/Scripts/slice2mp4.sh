@@ -111,6 +111,18 @@ restore_state()
     source $LOCALCONFIG
     viewpoint=$FDS2MOV_VIEWPOINT
     viewpointd=$FDS2MOV_VIEWPOINTD
+    COLORBAR=${FDS2MOV_COLORBAR}
+    if [ "$COLORBAR" == "" ]; then
+      COLORBAR="0"
+    fi
+    TIMEBAR=${FDS2MOV_TIMEBAR}
+    if [ "$TIMEBAR" == "" ]; then
+      TIMEBAR="0"
+    fi
+    FONTSIZE=${FDS2MOV_FONTSIZE}
+    if [ "$FONTIZE" == "" ]; then
+      FONTSIZE="0"
+    fi
   fi
 }
 
@@ -132,6 +144,38 @@ save_state()
   echo "#/bin/bash"                                  >  $LOCALCONFIG
   echo "export FDS2MOV_VIEWPOINT=\"$viewpoint\""    >> $LOCALCONFIG
   echo "export FDS2MOV_VIEWPOINTD=\"$viewpointd\""  >> $LOCALCONFIG
+  echo "export FDS2MOV_COLORBAR=$COLORBAR"          >> $LOCALCONFIG
+  echo "export FDS2MOV_FONTIZE=$FONTSIZE"           >> $LOCALCONFIG
+  echo "export FDS2MOV_TIMEBAR=$TIMEBAR"            >> $LOCALCONFIG
+}
+
+#---------------------------------------------
+#                  writeini
+#---------------------------------------------
+
+writeini ()
+{
+cat << EOF > $smv_inifilename
+SHOWFRAMELABEL
+ 0
+EOF
+if [ "$valmin" != "" ]; then
+cat << EOF >> $smv_inifilename
+V2_SLICE
+ 0 $valmin 0 $valmax $slice_quantity_short
+
+EOF
+fi
+cat << EOF >> $smv_inifilename
+SHOWCOLORBARS 
+  $COLORBAR
+SHOWTIMEBAR
+  $TIMEBAR
+SHOWTIMELABEL
+  $TIMEBAR
+FONTSIZE
+  $FONTSIZE
+EOF
 }
 
 #---------------------------------------------
@@ -141,42 +185,73 @@ save_state()
 select_options ()
 {
 while true; do
-  echo ""
-  echo "      quantity: $slice_quantity/$slice_dir=$slice_pos "
+echo ""
+slice_quantity=`trim "$slice_quantity"`
+slice_dir=`trim "$slice_dir"`
+slice_pos=`trim "$slice_pos"`
+echo "          slice: $slice_quantity/$slice_dir=$slice_pos "
 if [ "$have_bounds" == "1" ]; then
-  echo "      min, max: $valmin $slice_quantity_unit, $valmax $slice_quantity_unit"
+  echo "       min, max: $valmin $slice_quantity_unit, $valmax $slice_quantity_unit"
 else
-  echo "        bounds: default"
+  echo "         bounds: default"
 fi
-  echo "       mp4 dir: $MOVIEDIR"
-  echo "       PNG dir: $RENDERDIR"
-  echo "     smokeview: $SMOKEVIEW"
+if [ "$COLORBAR" == "1" ]; then
+  echo "      color bar: show"
+else
+  echo "      color bar: hide"
+fi
+if [ "$TIMEBAR" == "1" ]; then
+  echo "       time bar: show"
+else
+  echo "       time bar: hide"
+fi
+if [ "$FONTSIZE" == "0" ]; then
+  echo "      font size: small"
+else
+  echo "      font size: large"
+fi
 if [ "$viewpointd" != "" ]; then
-  echo "     viewpoint: $viewpointd"
+  echo "      viewpoint: $viewpointd"
 else
-  echo "     viewpoint: $viewpoint"
+  echo "      viewpoint: $viewpoint"
 fi
-  if [ "$SHARE" == "" ]; then
-    echo "     processes: $NPROCS/node sharing off"
-  else
-    echo "     processes: $NPROCS/node sharing on"
-  fi
-  echo "         queue: $QUEUE"
-  echo "  image script: $img_scriptname"
-  echo "         email: $EMAIL"
+echo ""
+echo "        PNG dir: $RENDERDIR"
+echo "        mp4 dir: $MOVIEDIR"
+echo "      smokeview: $SMOKEVIEW"
+if [ "$SHARE" == "" ]; then
+  echo "      processes: $NPROCS, node sharing off"
+else
+  echo "      processes: $NPROCS, node sharing on"
+fi
+echo "          queue: $QUEUE"
+echo "          email: $EMAIL"
+echo ""
+echo "s - select slice"
+echo "b - set bounds"
+if [ "$COLORBAR" == "0" ]; then
+  echo "C - show color bar"
+else
+  echo "C - hide color bar"
+fi
+if [ "$TIMEBAR" == "0" ]; then
+  echo "T - show time bar"
+else
+  echo "T - hide time bar"
+fi
+  echo "F - toggle font size"
+  echo "v - set viewpoint"
+
   echo ""
-  echo "s - select slice"
-  echo "a - set animation directory"
-  echo "b - set bounds"
-  echo "r - set rendered iamge directory "
-  echo "v - select viewpoint"
+  echo "r - set PNG dir "
+  echo "a - set mp4 dir"
   echo "m - set email address"
   echo ""
   echo "p - set number of processes"
-  echo "S - turn on/off node sharing"
+  echo "S - toggle node sharing"
   echo "q - set queue"
   echo ""
-  echo "1 - generate MP4 animation"
+  echo "1 - create MP4 animation"
   echo "x - exit"
   read -p "option: " ans
   if [ "$ans" == "a" ]; then
@@ -187,13 +262,35 @@ fi
   if [ "$ans" == "b" ]; then
     read -p "   enter $slice_quantity_short min: " valmin
     read -p "   enter $slice_quantity_short max: " valmax
-    have_inifile=1
     have_bounds=1
-cat << EOF > $smv_inifilename
-V2_SLICE
- 0 $valmin 0 $valmax $slice_quantity_short
-
-EOF
+    writeini
+    continue;
+  fi
+  if [ "$ans" == "C" ]; then
+    if [ "$COLORBAR" == "0" ]; then
+      COLORBAR="1"
+    else
+      COLORBAR="0"
+    fi
+    writeini
+    continue
+  fi
+  if [ "$ans" == "F" ]; then
+    if [ "$FONTSIZE" == "0" ]; then
+      FONTSIZE="1"
+    else
+      FONTSIZE="0"
+    fi
+    writeini
+    continue
+  fi
+  if [ "$ans" == "T" ]; then
+    if [ "$TIMEBAR" == "0" ]; then
+      TIMEBAR="1"
+    else
+      TIMEBAR="0"
+    fi
+    writeini
     continue
   fi
   if [ "$ans" == "r" ]; then
@@ -202,7 +299,7 @@ EOF
     continue
   fi
   if [ "$ans" == "s" ]; then
-    select_slice_file
+    select_slicefile
     continue
   fi
   if [ "$ans" == "S" ]; then
@@ -299,12 +396,11 @@ done
 }
 
 #---------------------------------------------
-#                   select_slice_file
+#                   select_slicefile
 #---------------------------------------------
 
-select_slice_file ()
+select_slicefile ()
 {
-have_inifile=
 have_bounds=
 while true; do
   OUTPUT_SLICES
@@ -384,6 +480,12 @@ make_movie() {
   wait_cases_end
   end_time="$(date -u +%s.%N)"
   render_time="$(bc <<<"$end_time-$start_time")"
+  nimages=`ls -l $RENDERDIR/${img_basename}*.png | wc -l`
+  echo ""
+  echo "images generated: $nimages"
+  last=`ls -l $RENDERDIR/${img_basename}*.png | tail -1 | awk '{print $9}'`
+  echo "      last image: $last"
+  echo ""
 
 # make movie
 
@@ -393,7 +495,8 @@ make_movie() {
     grep Error ${input}_f*_s*.err | tail
   else
     animation_file=$MOVIEDIR/${img_basename}.mp4
-    $MAKEMOVIE -i $RENDERDIR -o $MOVIEDIR $img_basename $img_basename
+    echo Creating $animation_file
+    $MAKEMOVIE -i $RENDERDIR -o $MOVIEDIR $img_basename $img_basename >& /dev/null
     if [ "$EMAIL" != "" ]; then
       if [ -e $animation_file ]; then
         echo "animation file, $animation_file, sent to $EMAIL"
@@ -420,12 +523,10 @@ RENDERDIR
   $RENDERDIR
 UNLOADALL
 EOF
-if [ "$have_inifile" == "1" ]; then
 cat << EOF >> ${smv_scriptname}
 LOADINIFILE
  $smv_inifilename
 EOF
-fi
 if [ "$viewpointd" != "" ]; then
   cat << EOF >> ${smv_scriptname}
   $viewpointd
@@ -475,6 +576,9 @@ HELP_ALL=
 JOBPREFIX=SV_
 GENERATE_IMAGES=
 MAKE_MOVIE=
+COLORBAR="0"
+TIMEBAR="0"
+FONTSIZE="1"
 
 CONFIGDIR=$HOME/.smokeview
 if [ ! -e $CONFIGDIR ]; then
@@ -589,7 +693,8 @@ if [ $nslices  -eq 0 ]; then
   exit
 fi
 
-select_slice_file
+select_slicefile
+writeini
 
 select_options
 
