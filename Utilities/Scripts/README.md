@@ -10,7 +10,7 @@ This script is used to generate an HTML page from a smv file. To use, add an ali
 
 Then type `slice2html casename` in a command shell.
 
-## fslice2mp4.sh
+## slice2mp4.sh
 
 This script is used to generate an MP4 animation file from a slice file.  It is run on a Linux system with a queing system. To use:
 
