@@ -261,8 +261,8 @@ fi
     continue
   fi
   if [ "$ans" == "b" ]; then
-    read -p "   enter $slice_quantity_short min: " valmin
-    read -p "   enter $slice_quantity_short max: " valmax
+    read -p "   set $slice_quantity_short min: " valmin
+    read -p "   set $slice_quantity_short max: " valmax
     have_bounds=1
     writeini
     continue;
@@ -523,8 +523,6 @@ GENERATE_SCRIPTS ()
 RENDERDIR
   $RENDERDIR
 UNLOADALL
-EOF
-cat << EOF >> ${smv_scriptname}
 LOADINIFILE
  $smv_inifilename
 EOF
