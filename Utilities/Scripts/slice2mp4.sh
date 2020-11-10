@@ -219,11 +219,12 @@ echo ""
 echo "        PNG dir: $RENDERDIR"
 echo "        mp4 dir: $MOVIEDIR"
 echo "      smokeview: $SMOKEVIEW"
-if [ "$SHARE" == "" ]; then
-  echo "      processes: $NPROCS, node sharing off"
-else
-  echo "      processes: $NPROCS, node sharing on"
-fi
+#if [ "$SHARE" == "" ]; then
+#  echo "      processes: $NPROCS, node sharing off"
+#else
+#  echo "      processes: $NPROCS, node sharing on"
+#fi
+echo "      processes: $NPROCS"
 echo "          queue: $QUEUE"
 echo "          email: $EMAIL"
 echo ""
@@ -248,7 +249,7 @@ fi
   echo "m - set email address"
   echo ""
   echo "p - set number of processes"
-  echo "S - toggle node sharing"
+#  echo "S - toggle node sharing"
   echo "q - set queue"
   echo ""
   echo "1 - create MP4 animation"
@@ -420,10 +421,10 @@ while true; do
     slice_quantity=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $2} }'`
     slice_quantity=`trim "$slice_quantity"`
 
-    slice_quantity_short=`grep -A 4 SLCF $smvfile | grep $slice_quantity -A 1 | head -2 | tail -1`
+    slice_quantity_short=`grep -A 4 SLCF $smvfile | grep "$slice_quantity" -A 1 | head -2 | tail -1`
     slice_quantity_short=`trim "$slice_quantity_short"`
 
-    slice_quantity_unit=`grep -A 4 SLCF $smvfile | grep $slice_quantity -A 2 | tail -1`
+    slice_quantity_unit=`grep -A 4 SLCF $smvfile | grep "$slice_quantity" -A 2 | tail -1`
     slice_quantity_unit=`trim "$slice_quantity_unit"`
 
     slice_dir=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $3} }'`
@@ -549,6 +550,10 @@ EOF
   0 1
 EOF
   echo ""
+
+# turn off node sharing for now
+SHARE=
+
   cat << EOF > $img_scriptname
 #!/bin/bash
 NPROCS=$NPROCS
