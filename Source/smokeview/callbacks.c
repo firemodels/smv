@@ -1612,9 +1612,10 @@ void Keyboard(unsigned char key, int flag){
   int keystate=0;
 
   if(flag==FROM_CALLBACK){
-    keystate = (GLUT_ACTIVE_ALT|GLUT_ACTIVE_CTRL)&GLUTGETMODIFIERS();
 #ifdef pp_OSX
-    if(keystate==0)keystate=GLUT_ACTIVE_ALT;
+    keystate = GLUTGETMODIFIERS();
+#else
+    keystate = (GLUT_ACTIVE_ALT|GLUT_ACTIVE_CTRL)&GLUTGETMODIFIERS();
 #endif
     if(scriptoutstream!=NULL&&key!='t'&&key!='r'&&key!='R'&&key!=' '&&key!='-'){
       fprintf(scriptoutstream,"KEYBOARD\n");
