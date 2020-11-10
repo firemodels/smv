@@ -35,15 +35,6 @@ is_smokeview_installed()
 }
 
 #---------------------------------------------
-#                   OUTPUT_SLICES
-#---------------------------------------------
-
-OUTPUT_SLICES ()
-{
-  cat $slicefilemenu | awk -F"," '{ print $1" ",$2," ",$3," ",$4}'
-}
-
-#---------------------------------------------
 #                   restore_state
 #---------------------------------------------
 
@@ -72,28 +63,54 @@ save_state()
 }
 
 #---------------------------------------------
+#                   select_slice
+#---------------------------------------------
+
+select_slice()
+{
+    cat $slicefilemenu | awk -F"," '{ print $1" ",$2," ",$3," ",$4}'
+    read -p "Select slice index to generate an html file: " ans
+    if [[ "$ans" -ge 1 ]] && [[ "$ans" -le "$nslices" ]]; then
+      slice_index=$ans
+      slice_quantity=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $2} }'`
+    else
+      echo slice index, $ans, is out of bounds
+    fi
+}
+
+#---------------------------------------------
 #                  generate_html
 #---------------------------------------------
 
 generate_html ()
 {
-script_index=$1
 while true; do
   echo ""
   echo "slice quantity: $slice_quantity "
+  if [ "$TIMEFRAME" == "-1" ]; then
+    echo " time frame(s):  all"
+  else
+    echo " time frame(s):  $TIMEFRAME"
+  fi
+  echo "      html dir: $HTMLDIR"
   echo "     smokeview: $SMOKEVIEW"
   echo "         email: $EMAIL"
   echo ""
-  echo "h - define directory containing html page"
-  echo "m - select email address"
-  echo "t - select time frame (-1 for all time frames)"
+  echo "s - select slice file"
+  echo "h - set html directory"
+  echo "m - set email address"
+  echo "t - set time frame (-1 for all time frames)"
   echo "1 - generate html page"
   echo "x - exit"
-  EXIT_SCRIPT=
+
   read -p "option: " ans
   if [ "$ans" == "h" ]; then
     read -p "   enter html directory: " HTMLDIR
     CHECK_WRITE $HTMLDIR
+    continue
+  fi
+  if [ "$ans" == "s" ]; then
+    select_slice
     continue
   fi
   if [ "$ans" == "m" ]; then
@@ -105,7 +122,6 @@ while true; do
     continue
   fi
   if [ "$ans" == "x" ]; then
-    EXIT_SCRIPT=1
     save_state
     exit
   fi
@@ -115,18 +131,22 @@ while true; do
       echo "***creating html file"
       scriptname=${SMVSCRIPTDIR}${input}_slice_${ans}.ssf
       rm -f $scriptname
-      GENERATE_SCRIPT $script_index $scriptname
+      GENERATE_SCRIPT $slice_index $scriptname
       echo dir=`pwd`
       echo "$SMOKEVIEW -htmlscript $scriptname -bindir $SMVBINDIR  $input"
             $SMOKEVIEW -htmlscript $scriptname -bindir $SMVBINDIR  $input
       if [ -e $htmlfile ]; then
         filesize=`ls -lk $htmlfile | awk '{print $5}'`
         echo "*** The html file, $htmlfile(${filesize}K), has been created."
+        if [[ "$EMAIL" != "" ]] && [[ -e $htmlfile ]]; then
+          echo "html file, $htmlfile, sent to $EMAIL"
+          echo "" | mail -s "html page for of $slice_quantity" -a $htmlfile $EMAIL
+        fi
       else
         echo "*** Creation of the html file $htmlfile failed."
       fi
     fi
-    return
+    continue
   fi
 done
 }
@@ -228,6 +248,7 @@ fi
 
 if [ ! -e $smvfile ]; then
   echo "***error: The .smv file, $smvfile, does not exist"
+  exit 1
 fi
 
 if [ ! -e $slicefilemenu ]; then
@@ -241,27 +262,9 @@ fi
 
 nslices=`cat $slicefilemenu | wc -l`
 if [ "$nslices" == "0" ]; then
-  echo "*** No slice files exist in the smokeview file $smvfile"
+  echo "*** No slice files found in the smokeview file $smvfile"
   exit
 fi
 
-while true; do
-  OUTPUT_SLICES
-  read -p "Select slice index to generate an html file: " ans
-  if [[ "$ans" -ge 1 ]] && [[ "$ans" -le "$nslices" ]]; then
-    slice_index=$ans
-    slice_quantity=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $2} }'`
-    generate_html $ans
-    if [ "$EXIT_SCRIPT" != "" ]; then
-      exit
-    fi
-    if [ "$EMAIL" != "" ]; then
-      if [ -e $htmlfile ]; then
-        echo "html file, $htmlfile, sent to $EMAIL"
-        echo "" | mail -s "html page for of $slice_quantity" -a $htmlfile $EMAIL
-      fi
-    fi
-  else
-    echo index $ans out of bounds
-  fi
-done
+select_slice
+generate_html
