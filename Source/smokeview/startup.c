@@ -248,7 +248,15 @@ int SetupCase(int argc, char **argv){
 
   UpdateRGBColors(COLORBAR_INDEX_NONE);
 
+#ifdef pp_CPPBOUND_DIALOG
+  if(use_graphics==0){
+    SliceBoundsSetupNoGraphics();
+    return 0;
+  }
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   if(use_graphics==0)return 0;
+#endif
   glui_defined = 1;
   InitTranslate(smokeview_bindir, tr_name);
 

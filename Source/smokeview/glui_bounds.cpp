@@ -87,6 +87,7 @@ class bounds_dialog{
   void setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds, int nbounds,
              int *cache_flag, int cache_enable, int percentile_enable,
              void Callback(int var), GLUI_Update_CB PROC_CB, procdata *procinfo, int *nprocinfo);
+  void setupNoGraphics(char *file_type, cpp_boundsdata *bounds, int nbounds);
   void set_cache_flag(int cache_flag);
   int  set_chopmin(char *label, int set_valmin, float valmin);
   int  set_chopmax(char *label, int set_valmax, float valmax);
@@ -192,6 +193,15 @@ void bounds_dialog::SaveBounds(void){
 
 void bounds_dialog::RestoreBounds(void){
   memcpy(all_bounds, all_bounds_save, nall_bounds*sizeof(cpp_boundsdata));
+}
+
+void bounds_dialog::setupNoGraphics(char *file_type, cpp_boundsdata *bounds_arg, int nbounds_arg){
+
+  all_bounds = bounds_arg;
+  nall_bounds = nbounds_arg;
+
+  NewMemory((void **)&all_bounds_save, nall_bounds*sizeof(cpp_boundsdata));
+  SaveBounds();
 }
 
 /* ------------------ setup ------------------------ */
@@ -352,7 +362,7 @@ int bounds_dialog::set_valtype(char *label){
     boundi = all_bounds+i;
     if(strcmp(boundi->label, label)==0){
       boundi->set_valtype = i;
-      RADIO_set_valtype->set_int_val(i);
+      if(RADIO_set_valtype!=NULL)RADIO_set_valtype->set_int_val(i);
       CB(BOUND_VAL_TYPE);
       return 1;
     }
@@ -532,8 +542,8 @@ int bounds_dialog::set_min(char *label, int set_valmin, float valmin){
       boundi->valmin[set_valmin] = valmin;
       bounds.set_valmin          = set_valmin;
       bounds.valmin[set_valmin]  = valmin;
-      EDIT_valmin->set_float_val(valmin);
-      RADIO_set_valmin->set_int_val(set_valmin);
+      if(EDIT_valmin!=NULL)EDIT_valmin->set_float_val(valmin);
+      if(RADIO_set_valmin!=NULL)RADIO_set_valmin->set_int_val(set_valmin);
       return 1;
     }
   }
@@ -573,8 +583,8 @@ int bounds_dialog::set_max(char *label, int set_valmax, float valmax){
       boundi->valmax[set_valmax] = valmax;
       bounds.set_valmax          = set_valmax;
       bounds.valmax[set_valmax]  = valmax;
-      EDIT_valmax->set_float_val(valmax);
-      RADIO_set_valmax->set_int_val(set_valmax);
+      if(EDIT_valmax!=NULL)EDIT_valmax->set_float_val(valmax);
+      if(RADIO_set_valmax!=NULL)RADIO_set_valmax->set_int_val(set_valmax);
       return 1;
     }
   }
@@ -597,22 +607,22 @@ void bounds_dialog::CB(int var){
       bounds.set_valtype = valtype_save;
 
       bounds.glui_valmin = bounds.valmin[bounds.set_valmin];
-      EDIT_valmin->set_float_val(bounds.glui_valmin);
-      STATIC_min_unit->set_name(bounds.unit);
-      RADIO_set_valmin->set_int_val(bounds.set_valmin);
+      if(EDIT_valmin!=NULL)EDIT_valmin->set_float_val(bounds.glui_valmin);
+      if(STATIC_min_unit!=NULL)STATIC_min_unit->set_name(bounds.unit);
+      if(RADIO_set_valmin!=NULL)RADIO_set_valmin->set_int_val(bounds.set_valmin);
 
       bounds.glui_valmax = bounds.valmax[bounds.set_valmax];
-      EDIT_valmax->set_float_val(bounds.glui_valmax);
-      STATIC_max_unit->set_name(bounds.unit);
-      RADIO_set_valmax->set_int_val(bounds.set_valmax);
+      if(EDIT_valmax!=NULL)EDIT_valmax->set_float_val(bounds.glui_valmax);
+      if(STATIC_max_unit!=NULL)STATIC_max_unit->set_name(bounds.unit);
+      if(RADIO_set_valmax!=NULL)RADIO_set_valmax->set_int_val(bounds.set_valmax);
 
-      EDIT_chopmin->set_float_val(bounds.chopmin);
-      CHECKBOX_set_chopmin->set_int_val(bounds.set_chopmin);
-      STATIC_chopmin_unit->set_name(bounds.unit);
+      if(EDIT_chopmin!=NULL)EDIT_chopmin->set_float_val(bounds.chopmin);
+      if(CHECKBOX_set_chopmin!=NULL)CHECKBOX_set_chopmin->set_int_val(bounds.set_chopmin);
+      if(STATIC_chopmin_unit!=NULL)STATIC_chopmin_unit->set_name(bounds.unit);
 
-      EDIT_chopmax->set_float_val(bounds.chopmax);
-      CHECKBOX_set_chopmax->set_int_val(bounds.set_chopmax);
-      STATIC_chopmax_unit->set_name(bounds.unit);
+      if(EDIT_chopmax!=NULL)EDIT_chopmax->set_float_val(bounds.chopmax);
+      if(CHECKBOX_set_chopmax!=NULL)CHECKBOX_set_chopmax->set_int_val(bounds.set_chopmax);
+      if(STATIC_chopmax_unit!=NULL)STATIC_chopmax_unit->set_name(bounds.unit);
 
       CB(BOUND_SETCHOPMIN);
       CB(BOUND_SETCHOPMAX);
@@ -626,7 +636,7 @@ void bounds_dialog::CB(int var){
       bounds.valmin[BOUND_SET_MIN] = bounds.glui_valmin;
       bounds.set_valmin            = BOUND_SET_MIN;
       memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
-      RADIO_set_valmin->set_int_val(BOUND_SET_MIN);
+      if(RADIO_set_valmin!=NULL)RADIO_set_valmin->set_int_val(BOUND_SET_MIN);
       if(InResearchMode()!=research_mode_cpp){
         SetResearchMode(1-research_mode_cpp);
       }
@@ -635,7 +645,7 @@ void bounds_dialog::CB(int var){
       bounds.valmax[BOUND_SET_MAX] = bounds.glui_valmax;
       bounds.set_valmax = BOUND_SET_MAX;
       memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
-      RADIO_set_valmax->set_int_val(BOUND_SET_MAX);
+      if(RADIO_set_valmax!=NULL)RADIO_set_valmax->set_int_val(BOUND_SET_MAX);
       if(InResearchMode()!=research_mode_cpp){
         SetResearchMode(1-research_mode_cpp);
       }
@@ -644,7 +654,7 @@ void bounds_dialog::CB(int var){
       // min/max radio buttons
     case BOUND_SETVALMIN:
       bounds.glui_valmin = all_boundsi->valmin[bounds.set_valmin];
-      EDIT_valmin->set_float_val(bounds.glui_valmin);
+      if(EDIT_valmin!=NULL)EDIT_valmin->set_float_val(bounds.glui_valmin);
       memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
       if(InResearchMode()!=research_mode_cpp){
         SetResearchMode(1-research_mode_cpp);
@@ -652,7 +662,7 @@ void bounds_dialog::CB(int var){
       break;
     case BOUND_SETVALMAX:
       bounds.glui_valmax = all_boundsi->valmax[bounds.set_valmax];
-      EDIT_valmax->set_float_val(bounds.glui_valmax);
+      if(EDIT_valmax!=NULL)EDIT_valmax->set_float_val(bounds.glui_valmax);
       memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
       if(InResearchMode()!=research_mode_cpp){
         SetResearchMode(1-research_mode_cpp);
@@ -670,21 +680,25 @@ void bounds_dialog::CB(int var){
       break;
     case BOUND_SETCHOPMIN:
       all_boundsi->set_chopmin = bounds.set_chopmin;
-      if(bounds.set_chopmin==1){
-        EDIT_chopmin->enable();
-      }
-      else{
-        EDIT_chopmin->disable();
+      if(EDIT_chopmin!=NULL){
+        if(bounds.set_chopmin==1){
+          EDIT_chopmin->enable();
+        }
+        else{
+          EDIT_chopmin->disable();
+        }
       }
       update_chop_colors = 1;
       break;
     case BOUND_SETCHOPMAX:
       all_boundsi->set_chopmax = bounds.set_chopmax;
-      if(bounds.set_chopmax==1){
-        EDIT_chopmax->enable();
-      }
-      else{
-        EDIT_chopmax->disable();
+      if(EDIT_chopmax!=NULL){
+        if(bounds.set_chopmax==1){
+          EDIT_chopmax->enable();
+        }
+        else{
+          EDIT_chopmax->disable();
+        }
       }
       update_chop_colors = 1;
       break;
@@ -762,6 +776,12 @@ void bounds_dialog::CB(int var){
 };
 
 bounds_dialog patchboundsCPP, partboundsCPP, plot3dboundsCPP, sliceboundsCPP;
+
+/* ------------------ SliceBoundsCPPSetupNoGraphics ------------------------ */
+
+extern "C" void SliceBoundsSetupNoGraphics(void){
+  sliceboundsCPP.setupNoGraphics("slice", slicebounds_cpp, nslicebounds_cpp);
+}
 
 /* ------------------ SetResearchMode ------------------------ */
 

@@ -48,7 +48,8 @@ EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, flo
 EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(void);
 #ifdef pp_CPPBOUND_DIALOG
-EXTERNCPP void GetHistogramValProc(histogramdata *histogram, float cdf, float *val);
+EXTERNCPP void SliceBoundsSetupNoGraphics(void);
+EXTERNCPP void GetHistogramValProc(histogramdata*histogram, float cdf, float *val);
 EXTERNCPP void ComputeLoadedSliceHist(char *label, histogramdata **histptr);
 EXTERNCPP void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *valmin, float *valmax);
 EXTERNCPP void GetGlobalBoundsMinMax(int type, char *label, float *valmin, float *valmax);
