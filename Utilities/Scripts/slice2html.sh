@@ -42,9 +42,9 @@ restore_state()
 {
   if [ -e $GLOBALCONFIG ]; then
     source $GLOBALCONFIG
-    HTMLDIR=$SLICE2HTML_HTMLDIR
-    TIMEFRAME=$SLICE2HTML_TIMEFRAME
-    EMAIL=$SLICE2HTML_EMAIL
+    HTMLDIR=${SLICE2HTML_HTMLDIR}
+    TIMEFRAME=${SLICE2HTML_TIMEFRAME}
+    EMAIL=${SLICE2HTML_EMAIL}
   fi
 }
 
@@ -54,12 +54,10 @@ restore_state()
 
 save_state()
 {
-  if [ -e $GLOBALCONFIG ]; then
-    echo "#/bin/bash"                             >  $GLOBALCONFIG
-    echo "export SLICE2HTML_HTMLDIR=$HTMLDIRDIR"  >> $GLOBALCONFIG
-    echo "export SLICE2HTML_TIMEFRAME=$TIMEFRAME" >> $GLOBALCONFIG
-    echo "export SLICE2HTML_EMAIL=$EMAIL"         >> $GLOBALCONFIG
-  fi
+  echo "#/bin/bash"                      >  $GLOBALCONFIG
+  echo "SLICE2HTML_HTMLDIR=$HTMLDIRDIR"  >> $GLOBALCONFIG
+  echo "SLICE2HTML_TIMEFRAME=$TIMEFRAME" >> $GLOBALCONFIG
+  echo "SLICE2HTML_EMAIL=$EMAIL"         >> $GLOBALCONFIG
 }
 
 #---------------------------------------------
@@ -137,10 +135,11 @@ while true; do
             $SMOKEVIEW -htmlscript $scriptname -bindir $SMVBINDIR  $input
       if [ -e $htmlfile ]; then
         filesize=`ls -lk $htmlfile | awk '{print $5}'`
+        filesize=$((filesize/1000))
         echo "*** The html file, $htmlfile(${filesize}K), has been created."
         if [[ "$EMAIL" != "" ]] && [[ -e $htmlfile ]]; then
-          echo "html file, $htmlfile, sent to $EMAIL"
-          echo "" | mail -s "html page for of $slice_quantity" -a $htmlfile $EMAIL
+          echo "*** The html file, $htmlfile(${filesize}K), has been emailed to $EMAIL"
+          echo "" | mail -s "html page for $slice_quantity(${filesize}K)" -a $htmlfile $EMAIL
         fi
       else
         echo "*** Creation of the html file $htmlfile failed."
@@ -228,6 +227,7 @@ case $OPTION  in
 esac
 done
 shift $(($OPTIND-1))
+
 restore_state
 
 
