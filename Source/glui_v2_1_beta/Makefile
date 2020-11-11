@@ -14,11 +14,11 @@ else
 endif
 
 .c.obj:
-	$(CC)  $(CFLAGS) $(FILTERC) -c $<
+	$(CC)  $(CFLAGS) $(INCS) $(FILTERC) -c $<
 .c.o:
 	$(CC)  $(CFLAGS) $(FILTERC) -c $<
 .cpp.obj:
-	$(CPP) $(CFLAGS) $(FILTERC) -c $<
+	$(CPP) $(CFLAGS) $(INCS) $(FILTERC) -c $<
 .cpp.o:
 	$(CPP) $(CFLAGS) $(FILTERC) -c $<
 
