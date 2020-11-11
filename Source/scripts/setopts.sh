@@ -6,8 +6,9 @@ GLUT=glut
 LUA=
 FOREC_g=
 FOREC_i=
-QUARTZ=framework
-while getopts 'fgGhiIlq' OPTION
+target=all
+QUARTZ="-I /opt/X11/include -Wno-unknown-pragmas"
+while getopts 'fgGhiIlqQt:' OPTION
 do
 case $OPTION in
   f)
@@ -31,6 +32,7 @@ case $OPTION in
   echo "-i - use the Intel icc compiler"
   echo "-l - use lua 
   echo "-q - on the Mac use the X11 include files and libraries supplied by Quartz"
+  echo "-t target - makefile target"
   exit
   ;;
   i)
@@ -50,13 +52,24 @@ case $OPTION in
   q)
    QUARTZ="-I /opt/X11/include -Wno-unknown-pragmas"
   ;;
+  Q)
+   QUARTZ=framework
+  ;;
+  t)
+   target="$OPTARG"
+   echo target=$target
+  ;;
 esac
 done
 shift $(($OPTIND-1))
 
 # the parameter QUARTZ is only for the mac
 if [ "`uname`" == "Darwin" ]; then
-  PLATFORM="-D pp_OSX"
+  if [ "$QUARTZ" == "framework" ]; then
+    PLATFORM="-D pp_OSX"
+  else
+    PLATFORM="-D pp_OSX -D pp_QUARTZ $QUARTZ"
+  fi
   export QUARTZ
 else
   PLATFORM="-D pp_LINUX"
@@ -66,3 +79,4 @@ export COMPILER
 export PLATFORM
 export GLUT
 export LUA
+export target

@@ -38,7 +38,7 @@ case $OPTION in
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_PROFILESTRING=\"p\" "
   ;;
   q)
-   QUARTZSMV=use_quartz
+   QUARTZSMV="use_quartz"
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"-I /opt/X11/include -Wno-unknown-pragmas"
   ;;
   r)

@@ -1,2 +1,2 @@
 #!/bin/bash
-./make_LIBS.sh NOQUARTZ
+./make_LIBS.sh -Q

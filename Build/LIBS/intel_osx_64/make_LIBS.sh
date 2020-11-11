@@ -1,34 +1,13 @@
 #!/bin/bash
-arg=$1
-noquartz=$2
-
-if [ "$arg" == "" ]; then
-  arg=all
-fi
-if [ "$arg" == "NOQUARTZ" ]; then
-  arg=all
-  noquartz=1
-fi
-use_quartz=1
-if [ "$noquartz" != "" ]; then
-  use_quartz=
-fi
-
-# use -I to force use of the Intel compiler
-if [ "$use_quartz" == "" ]; then
-  echo building not using Quartz
-  OPTS="-I $*"
-else
-  echo building using Quartz
-  OPTS="-I -q $*"
-fi
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
+OPTS="-I -q $*"
+
 source ../../../Source/scripts/setopts.sh $OPTS
 
 LIBDIR=`pwd`
-if [[ "$arg" == "all" ]] || [[ "$arg" == "clean" ]]; then
+if [[ "$target" == "all" ]] || [[ "$target" == "clean" ]]; then
   rm *.a
 fi
 
@@ -39,7 +18,7 @@ SRCDIR=`pwd`
 cd ../Build
 BUILDDIR=`pwd`
 
-if [[ "$arg" == "all" ]] || [[ "$arg" == "gd" ]]; then
+if [[ "$target" == "all" ]] || [[ "$target" == "gd" ]]; then
 # GD
 echo
 echo "********** building GD" 
@@ -49,18 +28,19 @@ cd $SRCDIR/gd-2.0.15
 cp libgd.a $LIBDIR/.
 fi
 
-if [[ "$arg" == "all" ]] || [[ "$arg" == "glui" ]]; then
+if [[ "$target" == "all" ]] || [[ "$target" == "glui" ]]; then
 # GLUI
 echo
 echo "********** building glui"
 echo
 cd $SRCDIR/glui_v2_1_beta
-./makelib.sh $OPTS
+echo ./makelib.sh $OPTS 
+./makelib.sh $OPTS 
 cp libglui.a $LIBDIR/.
 fi
 
 # GLUT
-if [[ "$arg" == "all" ]] || [[ "$arg" == "freeglut" ]] || [[ "$arg" == "glut" ]]; then
+if [[ "$target" == "all" ]] || [[ "$target" == "freeglut" ]] || [[ "$target" == "glut" ]]; then
 if [ "$GLUT" == "freeglut" ]; then
   cd $BUILDDIR/freeglut3.0.0/intel_osx_64
   ./make_freeglut.sh $OPTS 
@@ -74,7 +54,7 @@ else
 fi
 fi
 
-if [[ "$arg" == "all" ]] || [[ "$arg" == "jpeg" ]]; then
+if [[ "$target" == "all" ]] || [[ "$target" == "jpeg" ]]; then
 # JPEG
 echo
 echo "********** building jpeg"
@@ -84,7 +64,7 @@ cd $SRCDIR/jpeg-9b
 cp libjpeg.a $LIBDIR/.
 fi
 
-if [[ "$arg" == "all" ]] || [[ "$arg" == "png" ]]; then
+if [[ "$target" == "all" ]] || [[ "$target" == "png" ]]; then
 # PNG
 echo
 echo "********** building png"
@@ -94,7 +74,7 @@ cd $SRCDIR/png-1.6.21
 cp libpng.a $LIBDIR/.
 fi
 
-if [[ "$arg" == "all" ]] || [[ "$arg" == "zlib" ]]; then
+if [[ "$target" == "all" ]] || [[ "$target" == "zlib" ]]; then
 # ZLIB
 echo
 echo "********** building zlib"
@@ -104,7 +84,7 @@ cd $SRCDIR/zlib128
 cp libz.a $LIBDIR/.
 fi
 
-if [[ "$arg" == "all" ]] || [[ "$arg" == "lua" ]]; then
+if [[ "$target" == "all" ]] || [[ "$target" == "lua" ]]; then
 if [ "$LUA" == "lua" ]; then
 
 # Lua # Lua interpreter
