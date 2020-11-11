@@ -14,13 +14,13 @@ else
 endif
 
 .c.obj:
-	$(CC)  $(CFLAGS) $(INCS) $(FILTERC) -c $<
+	$(CC)  $(CFLAGS) $(FILTERC) -c $<
 .c.o:
-	$(CC)  $(CFLAGS) $(INCS) $(FILTERC) -c $<
+	$(CC)  $(CFLAGS) $(FILTERC) -c $<
 .cpp.obj:
-	$(CPP) $(CFLAGS) $(INCS) $(FILTERC) -c $<
+	$(CPP) $(CFLAGS) $(FILTERC) -c $<
 .cpp.o:
-	$(CPP) $(CFLAGS) $(INCS) $(FILTERC) -c $<
+	$(CPP) $(CFLAGS) $(FILTERC) -c $<
 
 
 GLUI_OBJS = glui_add_controls.o glui.o glui_bitmap_img_data.o glui_bitmaps.o \
@@ -31,7 +31,7 @@ GLUI_OBJS = glui_add_controls.o glui.o glui_bitmap_img_data.o glui_bitmaps.o \
             arcball.o algebra3.o quaternion.o
 GLUI_OBJSWIN = $(GLUI_OBJS:.o=.obj)
 
-default: CFLAGS=-m64 $(PLATFORM) $(NOCLOSE) $(CFLAGOPT)
+default: CFLAGS=-m64 $(INCS) $(PLATFORM) $(NOCLOSE) $(CFLAGOPT)
 default: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
 

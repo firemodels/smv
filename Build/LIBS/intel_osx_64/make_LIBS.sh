@@ -34,7 +34,6 @@ echo
 echo "********** building glui"
 echo
 cd $SRCDIR/glui_v2_1_beta
-echo ./makelib.sh $OPTS 
 ./makelib.sh $OPTS 
 cp libglui.a $LIBDIR/.
 fi
@@ -42,6 +41,9 @@ fi
 # GLUT
 if [[ "$target" == "all" ]] || [[ "$target" == "freeglut" ]] || [[ "$target" == "glut" ]]; then
 if [ "$GLUT" == "freeglut" ]; then
+echo
+echo "********** building glut"
+echo
   cd $BUILDDIR/freeglut3.0.0/intel_osx_64
   ./make_freeglut.sh $OPTS 
   cp libglut.a $LIBDIR/.
@@ -86,14 +88,19 @@ fi
 
 if [[ "$target" == "all" ]] || [[ "$target" == "lua" ]]; then
 if [ "$LUA" == "lua" ]; then
-
 # Lua # Lua interpreter
+echo
+echo "********** building Lua"
+echo
 cd $SRCDIR/lua-5.3.1/src
 export TARGET=liblua.a
 ./makelib.sh $OPTS
 cp liblua.a $LIBDIR/.
 
 # LPEG # Lua parsing libarary to parse SSF files
+echo
+echo "********** building lpeg"
+echo
 cd $SRCDIR/lpeg-1.0.0
 export TARGET=macosx
 ./makelib.sh $OPTS

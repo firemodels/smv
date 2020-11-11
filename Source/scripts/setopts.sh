@@ -57,7 +57,6 @@ case $OPTION in
   ;;
   t)
    target="$OPTARG"
-   echo target=$target
   ;;
 esac
 done
