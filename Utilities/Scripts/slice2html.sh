@@ -49,6 +49,24 @@ is_smokeview_installed()
 }
 
 #---------------------------------------------
+#                   restore_localstate
+#---------------------------------------------
+
+restore_localstate()
+{
+  index=$1
+  LOCALCONFIG=$CONFIGDIR/slice2html_${input}_${index}
+  if [ -e $LOCALCONFIG ]; then
+    source $LOCALCONFIG
+    var="SLICE2HTML_${input}_${index}_min"
+    valmin=${!var}
+    var="SLICE2HTML_${input}_${index}_max"
+    valmax=${!var}
+    have_bounds=1
+  fi
+}
+
+#---------------------------------------------
 #                   restore_state
 #---------------------------------------------
 
@@ -60,6 +78,19 @@ restore_state()
     TIMEFRAME=${SLICE2HTML_TIMEFRAME}
     EMAIL=${SLICE2HTML_EMAIL}
   fi
+}
+
+#---------------------------------------------
+#                   save_localstate
+#---------------------------------------------
+
+save_localstate()
+{
+  index=$1
+  LOCALCONFIG=$CONFIGDIR/slice2html_${input}_${index}
+  echo "#/bin/bash"                                 > $LOCALCONFIG
+  echo "SLICE2HTML_${input}_${index}_min=$valmin"  >> $LOCALCONFIG
+  echo "SLICE2HTML_${input}_${index}_max=$valmax"  >> $LOCALCONFIG
 }
 
 #---------------------------------------------
@@ -112,6 +143,7 @@ select_slice()
 
       slice_quantity_unit=`grep -A 4 SLCF $smvfile | grep "$slice_quantity" -A 2 | tail -1`
       slice_quantity_unit=`trim "$slice_quantity_unit"`
+      restore_localstate $ans
 
     else
       echo slice index, $ans, is out of bounds
@@ -160,6 +192,7 @@ fi
     have_bounds=1
     read -p "   set $slice_quantity_short min: " valmin
     read -p "   set $slice_quantity_short max: " valmax
+    save_localstate $slice_index
     continue
   fi
   if [ "$ans" == "s" ]; then
@@ -222,22 +255,8 @@ GENERATE_SCRIPT ()
 RENDERHTMLDIR
   $HTMLDIR
 UNLOADALL
-
-LOADINIFILE
- $ini_filename
-
-LOADINIFILE
- $ini_filename
-
-LOADINIFILE
- xxx
-
-RENDERHTMLDIR
-  .
-
-RENDERHTMLDIR
-  yyy
-
+LOADINIFILE  
+ $ini_filename  
 LOADSLICE
 EOF
   cat $slicefilemenu | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2"\n" $3 $4"\n"} }' >> $scriptname
