@@ -3542,7 +3542,10 @@ void DoScriptHtml(void){
     scriptdata *scripti;
 
     scripti = scriptinfo + i;
-    if(scripti->need_graphics==1)continue;
+    if(scripti->need_graphics==1){
+      printf("***warning: script command, %s, requires graphics\n", scripti->command_label);
+      continue;
+    }
     RunScriptCommand(scripti);
   }
 }

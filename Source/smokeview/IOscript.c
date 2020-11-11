@@ -754,6 +754,9 @@ int CompileScript(char *scriptfile){
 // LOADINIFILE
 //  file (char)
       case SCRIPT_LOADINIFILE:
+        scripti->need_graphics = 0;
+        SETcval;
+        break;
 
  // LOADFILE
 //  file (char)
