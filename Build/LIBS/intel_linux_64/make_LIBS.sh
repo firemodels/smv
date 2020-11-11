@@ -1,17 +1,14 @@
 #!/bin/bash
-arg=$1
-if [ "$arg" == "" ]; then
-  arg=all
-fi
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
-if [[ "$arg" == "all" ]] || [[ "$arg" == "clean" ]]; then
-rm *.a
-fi
 
 # use -I to force use of the gnu compiler
 OPTS="-I $*"
 source ../../../Source/scripts/setopts.sh $OPTS
+
+if [[ "$target" == "all" ]] || [[ "$target" == "clean" ]]; then
+rm *.a
+fi
 
 LIBDIR=`pwd`
 
@@ -24,7 +21,7 @@ BUILDDIR=`pwd`
 
 # GLUT
 
-if [[ "$arg" == "all" ]] || [[ "$arg" == "glut" ]]; then
+if [[ "$target" == "all" ]] || [[ "$target" == "glut" ]]; then
 if [ "$GLUT" == "freeglut" ]; then
   echo
   echo "********** building freeglut"
@@ -41,7 +38,7 @@ fi
 cp libglut.a $LIBDIR/.
 fi
 
-if [[ "$arg" == "all" ]] || [[ "$arg" == "glui" ]]; then
+if [[ "$target" == "all" ]] || [[ "$target" == "glui" ]]; then
 # GLUI
 echo
 echo "********** building glui"
@@ -51,7 +48,7 @@ cd $SRCDIR/glui_v2_1_beta
 cp libglui.a $LIBDIR/.
 fi
 
-if [[ "$arg" == "all" ]] || [[ "$arg" == "zlib" ]]; then
+if [[ "$target" == "all" ]] || [[ "$target" == "zlib" ]]; then
 # ZLIB
 echo
 echo "********** building zlib"
@@ -61,7 +58,7 @@ cd $SRCDIR/zlib128
 cp libz.a $LIBDIR/.
 fi
 
-if [[ "$arg" == "all" ]] || [[ "$arg" == "jpeg" ]]; then
+if [[ "$target" == "all" ]] || [[ "$target" == "jpeg" ]]; then
 # JPEG
 echo
 echo "********** building jpeg"
@@ -71,7 +68,7 @@ cd $SRCDIR/jpeg-9b
 cp libjpeg.a $LIBDIR/.
 fi
 
-if [[ "$arg" == "all" ]] || [[ "$arg" == "png" ]]; then
+if [[ "$target" == "all" ]] || [[ "$target" == "png" ]]; then
 # PNG
 echo
 echo "********** building png"
@@ -81,7 +78,7 @@ cd $SRCDIR/png-1.6.21
 cp libpng.a $LIBDIR/.
 fi
 
-if [[ "$arg" == "all" ]] || [[ "$arg" == "gd" ]]; then
+if [[ "$target" == "all" ]] || [[ "$target" == "gd" ]]; then
 # GD
 echo
 echo "********** building gd"
@@ -91,7 +88,7 @@ cd $SRCDIR/gd-2.0.15
 cp libgd.a $LIBDIR/.
 fi
 
-if [[ "$arg" == "all" ]] || [[ "$arg" == "lua" ]]; then
+if [[ "$target" == "all" ]] || [[ "$arg" == "lua" ]]; then
 # LUA variable is set by passing -l to this script (lower case L)
 if [ "$LUA" == "lua" ]; then
 
