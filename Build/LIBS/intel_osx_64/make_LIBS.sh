@@ -1,11 +1,27 @@
 #!/bin/bash
 arg=$1
+noquartz=$2
+
 if [ "$arg" == "" ]; then
   arg=all
 fi
-# use -I to force use of the gnu compiler
-OPTS="-I $*"
-OPTS="-I -q $*"
+if [ "$arg" == "NOQUARTZ" ]; then
+  arg=all
+  noquartz=1
+fi
+use_quartz=1
+if [ "$noquartz" != "" ]; then
+  use_quartz=
+fi
+
+# use -I to force use of the Intel compiler
+if [ "$use_quartz" == "" ]; then
+  echo building not using Quartz
+  OPTS="-I $*"
+else
+  echo building using Quartz
+  OPTS="-I -q $*"
+fi
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR

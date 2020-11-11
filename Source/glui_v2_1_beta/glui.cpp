@@ -1021,6 +1021,11 @@ GLUI_Main::GLUI_Main( void )
   GLUI_Master.glui_id_counter++;
 
   font                    = GLUT_BITMAP_HELVETICA_12;
+#ifdef pp_OSX
+#ifndef pp_QUARTZ
+  font                    = GLUT_BITMAP_HELVETICA_18;
+#endif
+#endif
   curr_cursor             = GLUT_CURSOR_LEFT_ARROW;
 
   bkgd_color.set( 200, 200, 200 );

@@ -1,6 +1,11 @@
 #!/bin/bash
-OPTS="$*"
-OPTS="-q $*"
+if [ "$NOQUARTZ" == "" ]; then
+  echo building smokeview not using Quartz
+  OPTS="$*"
+else
+  echo building smokeview using Quartz
+  OPTS="-q $*"
+fi
 source ../../scripts/setopts.sh $OPTS
 
 LIBDIR=../../LIBS/intel_osx_64
