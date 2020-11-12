@@ -1027,7 +1027,7 @@ GLUI_Main::GLUI_Main( void )
   font                    = GLUT_BITMAP_HELVETICA_12;
 #ifdef pp_OSX
 #ifndef pp_QUARTZ
-  font                    = GLUT_BITMAP_HELVETICA_18;
+  font                    = GLUT_BITMAP_TIMES_ROMAN_24;
 #endif
 #endif
   curr_cursor             = GLUT_CURSOR_LEFT_ARROW;
