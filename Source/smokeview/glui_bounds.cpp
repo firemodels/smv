@@ -1884,6 +1884,8 @@ GLUI_Panel *PANEL_part_minmax = NULL;
 GLUI_Panel *PANEL_plot3d_minmax = NULL;
 #endif
 
+GLUI_Panel *PANEL_slice_buttonsA = NULL;
+GLUI_Panel *PANEL_slice_buttonsB = NULL;
 GLUI_Panel *PANEL_boundary_outline_type = NULL;
 GLUI_Panel *PANEL_iso1 = NULL;
 GLUI_Panel *PANEL_iso2 = NULL;
@@ -4469,7 +4471,9 @@ extern "C" void GluiBoundsSetup(int main_window){
                          SliceRolloutCB, sliceprocinfo, &nsliceprocinfo);
 #endif
 
-    ROLLOUT_slice_histogram = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _("Histogram"), false, SLICE_HISTOGRAM_ROLLOUT, SliceRolloutCB);
+    PANEL_slice_buttonsA = glui_bounds->add_panel_to_panel(ROLLOUT_slice,"",false);
+
+    ROLLOUT_slice_histogram = glui_bounds->add_rollout_to_panel(PANEL_slice_buttonsA, _("Histogram"), false, SLICE_HISTOGRAM_ROLLOUT, SliceRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_slice_histogram, glui_bounds);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_histogram, SLICE_HISTOGRAM_ROLLOUT, glui_bounds);
 
@@ -4484,7 +4488,8 @@ extern "C" void GluiBoundsSetup(int main_window){
     CHECKBOX_histogram_show_graph=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _("graph"), &histogram_show_graph, INIT_HISTOGRAM, SliceBoundCB);
     CHECKBOX_histogram_show_outline=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _("outline"), &histogram_show_outline);
 
-    ROLLOUT_slice_average=glui_bounds->add_rollout_to_panel(ROLLOUT_slice,_("Average data"),false,SLICE_AVERAGE_ROLLOUT,SliceRolloutCB);
+    glui_bounds->add_column_to_panel(PANEL_slice_buttonsA, false);
+    ROLLOUT_slice_average=glui_bounds->add_rollout_to_panel(PANEL_slice_buttonsA,_("Average data"),false,SLICE_AVERAGE_ROLLOUT,SliceRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_slice_average, glui_bounds);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_average, SLICE_AVERAGE_ROLLOUT, glui_bounds);
 
@@ -4493,7 +4498,10 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_sliceaverage->set_float_limits(0.0,MAX(120.0,tour_tstop));
     glui_bounds->add_button_to_panel(ROLLOUT_slice_average,_("Reload"),FILE_RELOAD,SliceBoundCB);
 
-    ROLLOUT_slice_vector = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _("Vector"), false, SLICE_VECTOR_ROLLOUT, SliceRolloutCB);
+
+    glui_bounds->add_column_to_panel(PANEL_slice_buttonsA, false);
+    ROLLOUT_slice_vector = glui_bounds->add_rollout_to_panel(PANEL_slice_buttonsA, _("Vector"), false, SLICE_VECTOR_ROLLOUT, SliceRolloutCB);
+
     INSERT_ROLLOUT(ROLLOUT_slice_vector, glui_bounds);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_vector, SLICE_VECTOR_ROLLOUT, glui_bounds);
 
@@ -4512,7 +4520,9 @@ extern "C" void GluiBoundsSetup(int main_window){
 
     CHECKBOX_show_node_slices_and_vectors=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_vector,_("Show vectors and node centered slices"),&show_node_slices_and_vectors);
     CHECKBOX_show_node_slices_and_vectors=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_vector,_("Show vectors and cell centered slices"),&show_cell_slices_and_vectors);
-    ROLLOUT_line_contour = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _("Line contours"), false, LINE_CONTOUR_ROLLOUT, SliceRolloutCB);
+
+    PANEL_slice_buttonsB = glui_bounds->add_panel_to_panel(ROLLOUT_slice,"",false);
+    ROLLOUT_line_contour = glui_bounds->add_rollout_to_panel(PANEL_slice_buttonsB, _("Line contours"), false, LINE_CONTOUR_ROLLOUT, SliceRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_line_contour, glui_bounds);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_line_contour, LINE_CONTOUR_ROLLOUT, glui_bounds);
 
@@ -4537,10 +4547,12 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_checkbox_to_panel(ROLLOUT_line_contour,_("Show contours"),&vis_slice_contours);
 
     if(n_embedded_meshes>0){
-      CHECKBOX_skip_subslice=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice,_("Skip coarse sub-slice"),&skip_slice_in_embedded_mesh);
+      glui_bounds->add_column_to_panel(PANEL_slice_buttonsB, false);
+      CHECKBOX_skip_subslice=glui_bounds->add_checkbox_to_panel(PANEL_slice_buttonsB,_("Skip coarse sub-slice"),&skip_slice_in_embedded_mesh);
     }
     if(nslicedups > 0){
-      ROLLOUT_slicedups = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, _("Duplicates"), false, SLICE_DUP_ROLLOUT, SliceRolloutCB);
+      glui_bounds->add_column_to_panel(PANEL_slice_buttonsB, false);
+      ROLLOUT_slicedups = glui_bounds->add_rollout_to_panel(PANEL_slice_buttonsB, _("Duplicates"), false, SLICE_DUP_ROLLOUT, SliceRolloutCB);
       INSERT_ROLLOUT(ROLLOUT_slicedups, glui_bounds);
       ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slicedups, SLICE_DUP_ROLLOUT, glui_bounds);
 
@@ -4558,7 +4570,8 @@ extern "C" void GluiBoundsSetup(int main_window){
     }
 
 
-    ROLLOUT_boundimmersed = glui_bounds->add_rollout_to_panel(ROLLOUT_slice, "Settings",false,SLICE_SETTINGS_ROLLOUT,SliceRolloutCB);
+    glui_bounds->add_column_to_panel(PANEL_slice_buttonsB, false);
+    ROLLOUT_boundimmersed = glui_bounds->add_rollout_to_panel(PANEL_slice_buttonsB, "Settings",false,SLICE_SETTINGS_ROLLOUT,SliceRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_boundimmersed, glui_bounds);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_boundimmersed, SLICE_SETTINGS_ROLLOUT, glui_bounds);
 

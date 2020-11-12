@@ -43,7 +43,7 @@
 //#define pp_SLICETHREAD        // parallel slice file loading
 //#define pp_BLOCK_COLOR        //  new algorithm for assigning obst colors
 #define pp_CPPBOUND_DIALOG    // redo bound dialog using c++
-#define pp_PERCENTILES        // add percentile widget to new bounds dialog box
+//#define pp_PERCENTILES        // add percentile widget to new bounds dialog box
 //#define pp_PLOT3D_REDUCEMENUS // eliminate plot3d sub-menus
 //#define pp_PLOT3D_STATIC      // use static memory for plot3d labels
 //#define pp_LOAD_INCREMENTAL   // load data incrementally
@@ -88,12 +88,17 @@
 #ifdef pp_OSX
 #define pp_GLUTGET      // use d and f key in addition to CTRL and ALT key
 #define pp_QUARTZ       // use Quartz
-// no dialog short cuts on the mac
 #endif
 
 #ifdef pp_QUARTZ
 #define pp_CLOSEOFF     // turn off and disable close buttons in dialog box
 #endif
+#ifdef pp_OSX
+#ifndef pp_QUARTZ
+#define pp_REFRESH      // refresh glui dialogs when they change size
+#endif
+#endif
+
 
 //*** options: options being tested on all platforms
 
