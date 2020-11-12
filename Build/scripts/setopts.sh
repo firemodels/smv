@@ -54,6 +54,9 @@ export SMV_MAKE_OPTS
 export GLUT
 export TEST
 export SMV_MPI
+if [ "$NOQUARTZ" != "" ]; then
+  TESTFLAG="$TESTFLAG -D pp_NOQUARTZ"
+fi
 if [ "$TESTFLAG" != "" ]; then
    SMV_MAKE_OPTS="$SMV_MAKE_OPTS SMV_TESTFLAG=\"$TESTFLAG\" "
 fi
