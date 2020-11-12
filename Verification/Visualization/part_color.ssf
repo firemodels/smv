@@ -10,13 +10,13 @@ ZSCENECLIP
 SCENECLIP
  0
 LOADFILE
- part_color_0001.prt5
+ part_color_1.prt5
 LOADFILE
- part_color_0002.prt5
+ part_color_2.prt5
 LOADFILE
- part_color_0003.prt5
+ part_color_3.prt5
 LOADFILE
- part_color_0004.prt5
+ part_color_4.prt5
 PARTCLASSCOLOR
  PARTICLE TEMPERATURE
 SETTIMEVAL
