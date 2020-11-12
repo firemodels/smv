@@ -551,7 +551,11 @@ int _glutBitmapWidthString( void *font, char *s )
     width += glutBitmapWidth( font, *p );
     p++;
   }
-
+#ifdef pp_OSX
+#ifndef pp_QUARTZ
+  width /=2;
+#endif
+#endif
   return width;
 }
 
