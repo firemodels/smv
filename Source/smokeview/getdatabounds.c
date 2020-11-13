@@ -8,15 +8,15 @@
 
 /* ------------------ GetPartFileBounds ------------------------ */
 
-void GetPartFileBounds(char *file, float **valminptr, float **valmaxptr, int *nfileboundsptr){
+int GetPartFileBounds(char *file, float **valminptr, float **valmaxptr, int *nfileboundsptr){
   FILE *stream;
   int nfilebounds = 0, nfilebounds_alloc = 0;
   float *valmin = NULL, *valmax = NULL;
   int i;
 
-  if(file==NULL||strlen(file)==0)return;
+  if(file==NULL||strlen(file)==0)return 0;
   stream = fopen(file, "r");
-  if(stream==NULL)return;
+  if(stream==NULL)return 0;
 
   while(!feof(stream)){
     char buffer[255];
@@ -58,6 +58,7 @@ void GetPartFileBounds(char *file, float **valminptr, float **valmaxptr, int *nf
   *valminptr = valmin;
   *valmaxptr = valmax;
   *nfileboundsptr = nfilebounds_alloc;
+  return 1;
 }
 
 /* ------------------ GetGlobalPartBounds ------------------------ */
@@ -74,7 +75,7 @@ int GetGlobalPartBounds(int flag){
 
     parti = partinfo+i;
     if(parti->loaded==1)nloaded_files++;
-    GetPartFileBounds(parti->bound_file, &(parti->file_min), &(parti->file_max), &(parti->nfilebounds));
+    parti->have_bound_file = GetPartFileBounds(parti->bound_file, &(parti->file_min), &(parti->file_max), &(parti->nfilebounds));
     if(parti->nfilebounds>0){
       if(npartbounds==-1){
         npartbounds = parti->nfilebounds;

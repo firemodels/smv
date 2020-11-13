@@ -1711,7 +1711,7 @@ void SetLoadedPartBounds(int *list, int nlist){
   NewMemory((void **)&set_valmax, npart_types*sizeof(int));
 
   for(j = 0; j<npart_types; j++){
-    if(j==0){
+    if(j==0){ // skip over 'uniform'
       valmin[j] = 0.0;
       valmax[j] = 1.0;
       continue;
