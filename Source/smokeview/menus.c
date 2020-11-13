@@ -9353,7 +9353,7 @@ updatemenu=0;
 #else
   glutAddMenuEntry(_("Display...  ALT d"), DIALOG_DISPLAY);
 #endif
-  glutAddMenuEntry(_("Files/Data/Color... ALT b"), DIALOG_BOUNDS);
+  glutAddMenuEntry(_("Files/Data/Coloring... ALT b"), DIALOG_BOUNDS);
   glutAddMenuEntry(_("Motion/View/Render...  ALT m"),DIALOG_MOTION);
   glutAddMenuEntry(_("Viewpoints... ALT g"),DIALOG_VIEW);
 #else
@@ -9362,7 +9362,7 @@ updatemenu=0;
 #else
   glutAddMenuEntry(_("Display..."), DIALOG_DISPLAY);
 #endif
-  glutAddMenuEntry(_("Files/Data/Color..."), DIALOG_BOUNDS);
+  glutAddMenuEntry(_("Files/Data/Coloring..."), DIALOG_BOUNDS);
   glutAddMenuEntry(_("Motion/View/Render..."), DIALOG_MOTION);
   glutAddMenuEntry(_("Viewpoints..."), DIALOG_VIEW);
 #endif
