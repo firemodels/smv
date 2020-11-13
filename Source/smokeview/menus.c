@@ -3691,6 +3691,7 @@ void SetupPart(int value, int option){
     if(option==PART&&parti->evac==1)continue;                 // don't load an evac file if part files are loaded
     if(option==EVAC&&parti->evac==0)continue;                 // don't load a part file if evac files are loaded
     if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
+    if(parti->loaded==0&&value>=0&&value!=i)continue;         // if value>0 only load file with index  value
     list[nlist++] = i;
   }
   SetLoadedPartBounds(list, nlist);
@@ -3717,6 +3718,7 @@ void SetupPart(int value, int option){
     if(option==PART&&parti->evac==1)continue;                 // don't load an evac file if part files are loaded
     if(option==EVAC&&parti->evac==0)continue;                 // don't load a part file if evac files are loaded
     if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
+    if(parti->loaded==0&&value>=0&&value!=i)continue;         // if value>0 only load file with index  value
     parti->skipload = 0;
   }
 
