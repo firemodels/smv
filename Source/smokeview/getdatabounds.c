@@ -8,9 +8,8 @@
 
 /* ------------------ GetPartFileBounds ------------------------ */
 
-int GetPartFileBounds(char *file, float **valminptr, float **valmaxptr){
+int GetPartFileBounds(char *file, float *valmin, float *valmax){
   FILE *stream;
-  float *valmin = NULL, *valmax = NULL;
   int i;
 
   if(file==NULL||strlen(file)==0)return 0;
@@ -25,15 +24,6 @@ int GetPartFileBounds(char *file, float **valminptr, float **valmaxptr){
     CheckMemory;
     if(fgets(buffer, 255, stream)==NULL)break;
     sscanf(buffer, "%f %i", &time, &nclasses);
-
-    if(npart5prop>0&&valmin==NULL){
-      NewMemory((void **)&valmin, npart5prop*sizeof(float));
-      NewMemory((void **)&valmax, npart5prop*sizeof(float));
-      for(i = 0; i<npart5prop; i++){
-        valmin[i] = 1.0;
-        valmax[i] = 0.0;
-      }
-    }
 
     for(class_index = 0; class_index<nclasses; class_index++){
       int nfilebounds;
@@ -63,8 +53,6 @@ int GetPartFileBounds(char *file, float **valminptr, float **valmaxptr){
     }
   }
   fclose(stream);
-  *valminptr = valmin;
-  *valmaxptr = valmax;
   return 1;
 }
 
@@ -80,7 +68,20 @@ int GetGlobalPartBounds(int flag){
 
     parti = partinfo+i;
     if(parti->loaded==1)nloaded_files++;
-    parti->have_bound_file = GetPartFileBounds(parti->bound_file, &(parti->valmin_fds), &(parti->valmax_fds));
+
+    if(npart5prop>0){
+      if(parti->valmin_fds==NULL)NewMemory((void **)&parti->valmin_fds, npart5prop*sizeof(float));
+      if(parti->valmax_fds==NULL)NewMemory((void **)&parti->valmax_fds, npart5prop*sizeof(float));
+      if(parti->valmin_smv==NULL)NewMemory((void **)&parti->valmin_smv, npart5prop*sizeof(float));
+      if(parti->valmax_smv==NULL)NewMemory((void **)&parti->valmax_smv, npart5prop*sizeof(float));
+      for(i = 0; i<npart5prop; i++){
+        parti->valmin_fds[i] = 1.0;
+        parti->valmax_fds[i] = 0.0;
+        parti->valmin_smv[i] = 1.0;
+        parti->valmax_smv[i] = 0.0;
+      }
+    }
+    parti->have_bound_file = GetPartFileBounds(parti->bound_file, parti->valmin_fds, parti->valmax_fds);
   }
   if(npart5prop>0){
     NewMemory((void **)&partmins, npart5prop*sizeof(float));
@@ -96,7 +97,7 @@ int GetGlobalPartBounds(int flag){
     float *valmin_fds, *valmax_fds;
 
     parti = partinfo+i;
-    if(flag==1&&parti->loaded==0)continue;
+    if(flag==LOADED_FILES&&parti->loaded==0)continue;
     valmin_fds = parti->valmin_fds;
     valmax_fds = parti->valmax_fds;
     for(j = 0; j<npart5prop; j++){
@@ -113,7 +114,7 @@ int GetGlobalPartBounds(int flag){
     }
   }
   for(i = 1; i<npart5prop; i++){
-    if(flag==0){
+    if(flag==ALL_FILES){
       part5propinfo[i].user_min          = partmins[i];
       part5propinfo[i].dlg_global_valmin = partmins[i];
       part5propinfo[i].user_max          = partmaxs[i];

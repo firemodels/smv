@@ -1258,7 +1258,7 @@ void MergePartHistograms(void){
 
 void GetPartData(partdata *parti, int partframestep_arg, int nf_all_arg, FILE_SIZE *file_size_arg){
   FILE_m *PART5FILE;
-  int i;
+  int class_index;
   int one_local, version_local, nclasses_local;
   int skip_local, nparts_local;
   int *numtypes_local = NULL, *numtypescopy_local, *numpoints_local = NULL;
@@ -1290,7 +1290,7 @@ void GetPartData(partdata *parti, int partframestep_arg, int nf_all_arg, FILE_SI
   numtypes_temp_local[0]=0;
   numtypes_temp_local[1]=0;
   CheckMemory;
-  for(i=0;i<nclasses_local;i++){
+  for(class_index=0;class_index<nclasses_local;class_index++){
     FORTPART5READ_m(numtypes_temp_local,2);
     if(returncode==FAIL_m)goto wrapup;
     *numtypescopy_local++=numtypes_temp_local[0];
@@ -1326,10 +1326,10 @@ void GetPartData(partdata *parti, int partframestep_arg, int nf_all_arg, FILE_SI
     if(doit_local==1){
       parti->times[count2_local]=time_local;
     }
-    for(i=0;i<nclasses_local;i++){
+    for(class_index=0;class_index<nclasses_local;class_index++){
       FORTPART5READ_m(&nparts_local,1);
       if(returncode==FAIL_m)goto wrapup;
-      numpoints_local[i] = nparts_local;
+      numpoints_local[class_index] = nparts_local;
       skip_local=0;
       CheckMemory;
       if(doit_local==1){
@@ -1412,12 +1412,40 @@ void GetPartData(partdata *parti, int partframestep_arg, int nf_all_arg, FILE_SI
       }
       CheckMemory;
       if(doit_local==1){
-        if(numtypes_local[2 * i] > 0){
+        int part_type;
+        if(numtypes_local[2*class_index]>0){
+          float *valmin_smv, *valmax_smv;
 #ifdef pp_PART_TEST
           int iii, jjj;
 #endif
 
-          FORTPART5READ_mv((void **)&(datacopy_local->rvals), nparts_local*numtypes_local[2 * i]);
+          FORTPART5READ_mv((void **)&(datacopy_local->rvals), nparts_local*numtypes_local[2*class_index]);
+
+          if(compute_smv_bounds==1){
+            valmin_smv = parti->valmin_smv;
+            valmax_smv = parti->valmax_smv;
+            for(part_type = 0; part_type<numtypes_local[2*class_index]; part_type++){
+              int prop_index, k;
+              float *vals;
+
+              prop_index = GetPartPropIndex(class_index, part_type+2);
+              vals = datacopy_local->rvals+part_type*nparts_local;
+              for(k = 0; k<nparts_local; k++){
+                float val;
+
+                val = *vals++;
+                if(valmin_smv[prop_index]>valmax_smv[prop_index]){
+                  valmin_smv[prop_index] = val;
+                  valmax_smv[prop_index] = val;
+                }
+                else{
+                  valmin_smv[prop_index] = MIN(val, valmin_smv[prop_index]);
+                  valmax_smv[prop_index] = MAX(val, valmax_smv[prop_index]);
+                }
+              }
+            }
+          }
+
 
 #ifdef pp_PART_TEST
           for(jjj = 0; jjj < numtypes[2 * i]; jjj++){
@@ -1430,8 +1458,8 @@ void GetPartData(partdata *parti, int partframestep_arg, int nf_all_arg, FILE_SI
         }
       }
       else{
-        if(numtypes_local[2*i]>0){
-          skip_local += 4 + nparts_local*numtypes_local[2*i]*sizeof(float) + 4;  // skip over vals for now
+        if(numtypes_local[2*class_index]>0){
+          skip_local += 4 + nparts_local*numtypes_local[2*class_index]*sizeof(float) + 4;  // skip over vals for now
         }
       }
       CheckMemory;
@@ -2269,6 +2297,21 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
     }
     else{
       PRINTF(" - %.0f kB/%.1f s\n", (float)file_size_local/1000., load_time_local);
+    }
+    if(compute_smv_bounds==1){
+      int i;
+
+      for(i = 0; i<npart5prop; i++){
+        char *label;
+        partpropdata *propi;
+
+        propi = part5propinfo+i;
+        label = propi->label->longlabel;
+        if(i==0)continue;
+        printf("%s(fds): min=%f max=%f\n", label, parti->valmin_fds[i], parti->valmax_fds[i]);
+        printf("%s(smv): min=%f max=%f\n", label, parti->valmin_smv[i], parti->valmax_smv[i]);
+        printf("\n");
+      }
     }
   }
   return file_size_local;

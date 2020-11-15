@@ -7,6 +7,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define    ALL_FILES 0
+#define LOADED_FILES 1
+
 #ifdef pp_CPPBOUND_DIALOG
 #define BOUND_SET_MAX        0
 #define BOUND_LOADED_MAX     1

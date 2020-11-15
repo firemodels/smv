@@ -3699,7 +3699,7 @@ void SetupPart(int value, int option){
 #endif
 #ifdef pp_OLDBOUND_DIALOG
   if(research_mode == 1 && npartinfo> 0){
-    GetGlobalPartBounds(0);
+    GetGlobalPartBounds(ALL_FILES);
     setpartmin = GLOBAL_MIN;
     PartBoundCB(SETVALMIN);
 

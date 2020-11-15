@@ -1021,6 +1021,8 @@ void ReadSMVDynamic(char *file){
       for(i = 0; i < 5; i++){
         plot3di->valmin_fds[i] = 1.0;
         plot3di->valmin_fds[i] = 0.0;
+        plot3di->valmin_smv[i] = 1.0;
+        plot3di->valmin_smv[i] = 0.0;
       }
       plot3di->blocknumber = blocknumber;
       plot3di->seq_id=nn_plot3d;
@@ -2284,7 +2286,7 @@ void UpdateBoundInfo(void){
   UpdateChar();
 #ifdef pp_CPPBOUND_DIALOG
   GetGlobalPatchBounds();
-  GetGlobalPartBounds(0);
+  GetGlobalPartBounds(ALL_FILES);
   GetGlobalSliceBounds();
 #endif
 }
@@ -4060,6 +4062,8 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->finalize = 1;
   parti->valmin_fds = NULL;
   parti->valmax_fds = NULL;
+  parti->valmin_smv = NULL;
+  parti->valmax_smv = NULL;
   if(FGETS(buffer, 255, stream)==NULL){
     npartinfo--;
     return RETURN_BREAK;
@@ -4266,6 +4270,10 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     patchi->ijk[i] = -1;
   }
   patchi->finalize = 1;
+  patchi->valmin_fds = 1.0;
+  patchi->valmax_fds = 0.0;
+  patchi->valmin_smv = 1.0;
+  patchi->valmax_smv = 0.0;
   patchi->skip = 0;
   patchi->version = version;
   patchi->ntimes = 0;
