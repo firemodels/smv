@@ -3200,6 +3200,10 @@ void LoadUnloadMenu(int value){
     UpdateTourMenuLabels();
     UpdatePlot3dMenuLabels();
   }
+  if(value==COMPUTE_SMV_BOUNDS){
+    compute_smv_bounds = 1-compute_smv_bounds;
+    updatemenu = 1;
+  }
   if(value==REDIRECT){
     updatemenu=1;
     GLUTPOSTREDISPLAY;
@@ -11696,6 +11700,8 @@ updatemenu=0;
 #endif
       if(showfiles==1)glutAddMenuEntry(_("*Show file names"),SHOWFILES);
       if(showfiles==0)glutAddMenuEntry(_("Show file names"),SHOWFILES);
+      if(compute_smv_bounds==1)glutAddMenuEntry(_("*Compute and show file bounds"), COMPUTE_SMV_BOUNDS);
+      if(compute_smv_bounds==0)glutAddMenuEntry(_("*Compute and show file bounds"), COMPUTE_SMV_BOUNDS);
       {
         char menulabel[1024];
 

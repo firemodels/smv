@@ -775,7 +775,6 @@ void GetZoneColors(const float *t, int nt, unsigned char *it,
   tval = local_tmax;
   zonevalues[nlevel-1] = tval;
   Num2String(&zonelabels[nlevel-1][0],tval);
-
 }
 
 /* ------------------ GetPlot3DColors ------------------------ */
@@ -811,7 +810,8 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
   *extreme_min=0;
   *extreme_max=0;
   for(i=0;i<nplot3dinfo;i++){
-  char *iblank;
+    char *iblank;
+
     p = plot3dinfo+i;
     if(p->loaded==0||p->display==0)continue;
     meshi = meshinfo+p->blocknumber;

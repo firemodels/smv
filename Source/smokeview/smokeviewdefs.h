@@ -657,6 +657,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SHOWFILES              5
 #define REDIRECT               6
 #define SHOWMESHMENUS          7
+#define COMPUTE_SMV_BOUNDS    10
 
 #define SCRIPT_START_RECORDING2 -6
 #define SCRIPT_START_RECORDING  -2

@@ -81,6 +81,42 @@ void  UpdatePlot3DColors(int ifile, int *errorcode){
   }
 }
 
+/* ------------------ GetPlot3DBounds  ------------------------ */
+
+int GetPlot3DBounds(plot3ddata *plot3di){
+  float valmin, valmax, *vals;
+  plot3ddata *p;
+  char *iblank;
+  meshdata *meshi;
+  int i, ntotal;
+
+  meshi = meshinfo+plot3di->blocknumber;
+  if(meshi->qdata==NULL)return 0;
+  ntotal = (meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
+  iblank = meshi->c_iblank_node;
+
+  for(i = 0; i<MAXPLOT3DVARS; i++){
+    int n;
+
+    valmin = 1000000000.;
+    valmax = -valmin;
+    vals = meshi->qdata+i*ntotal;
+    iblank = meshi->c_iblank_node;
+    for(n = 0; n<ntotal; n++){
+      float val;
+
+      val = *vals++;
+      if(iblank==NULL||*iblank++==GAS){
+        valmin = MIN(val, valmin);
+        valmax = MAX(val, valmax);
+      }
+    }
+    plot3di->valmin_smv[i] = valmin;
+    plot3di->valmax_smv[i] = valmax;
+  }
+  return 1;
+}
+
 /* ------------------ ReadPlot3d  ------------------------ */
 
 void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
@@ -392,6 +428,16 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   else{
     PRINTF(" %.1f MB downloaded in %.2f s (overhead: %.2f s)",
     (float)file_size/1000000.,read_time,total_time-read_time);
+  }
+  if(compute_smv_bounds==1&&GetPlot3DBounds(p)==1){
+    for(i=0;i<MAXPLOT3DVARS;i++){
+      char *label;
+
+      label = p->label[i].longlabel;
+      printf("%s(fds): min=%f max=%f\n", label, p->valmin_fds[i], p->valmax_fds[i]);
+      printf("%s(smv): min=%f max=%f\n", label, p->valmin_smv[i], p->valmax_smv[i]);
+      printf("\n");
+    }
   }
   if(p->compression_type==COMPRESSED_ZLIB|| cache_plot3d_data==0){
     cache_plot3d_data=0;
