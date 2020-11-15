@@ -1019,8 +1019,8 @@ void ReadSMVDynamic(char *file){
 
       plot3di=plot3dinfo+iplot3d;
       for(i = 0; i < 5; i++){
-        plot3di->file_min[i] = 1.0;
-        plot3di->file_max[i] = 0.0;
+        plot3di->valmin_fds[i] = 1.0;
+        plot3di->valmin_fds[i] = 0.0;
       }
       plot3di->blocknumber = blocknumber;
       plot3di->seq_id=nn_plot3d;
@@ -4058,8 +4058,8 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->seq_id = nn_part;
   parti->autoload = 0;
   parti->finalize = 1;
-  parti->file_min = NULL;
-  parti->file_max = NULL;
+  parti->valmin_fds = NULL;
+  parti->valmax_fds = NULL;
   if(FGETS(buffer, 255, stream)==NULL){
     npartinfo--;
     return RETURN_BREAK;
@@ -4826,6 +4826,10 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->ntimes_old = 0;
   sd->globalmax = -1.0e30;
   sd->globalmin = -sd->globalmax;
+  sd->valmin_smv = 1.0;
+  sd->valmax_smv = 0.0;
+  sd->valmin_fds = 1.0;
+  sd->valmax_fds = 0.0;
  // sd->file_size = 0;
   sd->nframes = 0;
   sd->reg_file = NULL;

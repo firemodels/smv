@@ -1521,12 +1521,12 @@ void SetLoadedSliceBounds(int *list, int nlist){
 
     slicei = sliceinfo+list[i];
     if(valmin>valmax){
-      valmin = slicei->file_min;
-      valmax = slicei->file_max;
+      valmin = slicei->valmin_fds;
+      valmax = slicei->valmax_fds;
     }
     else{
-      valmin = MIN(valmin, slicei->file_min);
-      valmax = MAX(valmax, slicei->file_max);
+      valmin = MIN(valmin, slicei->valmin_fds);
+      valmax = MAX(valmax, slicei->valmax_fds);
     }
   }
   for(i = 0; i<nsliceinfo; i++){
@@ -1536,12 +1536,12 @@ void SetLoadedSliceBounds(int *list, int nlist){
     if(slicei->loaded==0)continue;
     if(strcmp(slicei->label.shortlabel, label)!=0)continue;
     if(valmin>valmax){
-      valmin = slicei->file_min;
-      valmax = slicei->file_max;
+      valmin = slicei->valmin_fds;
+      valmax = slicei->valmax_fds;
     }
     else{
-      valmin = MIN(valmin, slicei->file_min);
-      valmax = MAX(valmax, slicei->file_max);
+      valmin = MIN(valmin, slicei->valmin_fds);
+      valmax = MAX(valmax, slicei->valmax_fds);
     }
   }
   if(valmin<=valmax){
@@ -1587,12 +1587,12 @@ void SetLoadedPatchBounds(int *list, int nlist){
   for(i = 0; i<nlist; i++){
     patchi = patchinfo+list[i];
     if(valmin>valmax){
-      valmin = patchi->file_min;
-      valmax = patchi->file_max;
+      valmin = patchi->valmin_fds;
+      valmax = patchi->valmax_fds;
     }
     else{
-      valmin = MIN(valmin, patchi->file_min);
-      valmax = MAX(valmax, patchi->file_max);
+      valmin = MIN(valmin, patchi->valmin_fds);
+      valmax = MAX(valmax, patchi->valmax_fds);
     }
   }
   for(i = 0; i<npatchinfo; i++){
@@ -1600,12 +1600,12 @@ void SetLoadedPatchBounds(int *list, int nlist){
     if(patchi->loaded==0)continue;
     if(strcmp(patchi->label.shortlabel, label)!=0)continue;
     if(valmin>valmax){
-      valmin = patchi->file_min;
-      valmax = patchi->file_max;
+      valmin = patchi->valmin_fds;
+      valmax = patchi->valmax_fds;
     }
     else{
-      valmin = MIN(valmin, patchi->file_min);
-      valmax = MAX(valmax, patchi->file_max);
+      valmin = MIN(valmin, patchi->valmin_fds);
+      valmax = MAX(valmax, patchi->valmax_fds);
     }
   }
   if(valmin<=valmax){
@@ -1639,37 +1639,37 @@ void SetLoadedPlot3DBounds(int *list, int nlist){
     valmax[j] = 0.0;
     if(list==NULL)nlist = 0;
     for(i = 0; i<nlist; i++){
-      float *file_min, *file_max;
+      float *valmin_fds, *valmax_fds;
       plot3ddata *plot3di;
 
       plot3di = plot3dinfo+list[i];
-      file_min = plot3di->file_min;
-      file_max = plot3di->file_max;
+      valmin_fds = plot3di->valmin_fds;
+      valmax_fds = plot3di->valmax_fds;
       if(valmin[j]>valmax[j]){
-        valmin[j] = file_min[j];
-        valmax[j] = file_max[j];
+        valmin[j] = valmin_fds[j];
+        valmax[j] = valmax_fds[j];
       }
       else{
-        valmin[j] = MIN(valmin[j], file_min[j]);
-        valmax[j] = MAX(valmax[j], file_max[j]);
+        valmin[j] = MIN(valmin[j], valmin_fds[j]);
+        valmax[j] = MAX(valmax[j], valmax_fds[j]);
       }
     }
 
     for(i = 0; i<nplot3dinfo; i++){
-      float *file_min, *file_max;
+      float *valmin_fds, *valmax_fds;
       plot3ddata *plot3di;
 
       plot3di = plot3dinfo+i;
       if(plot3di->loaded==0)continue;
-      file_min = plot3di->file_min;
-      file_max = plot3di->file_max;
+      valmin_fds = plot3di->valmin_fds;
+      valmax_fds = plot3di->valmax_fds;
       if(valmin[j]>valmax[j]){
-        valmin[j] = file_min[j];
-        valmax[j] = file_max[j];
+        valmin[j] = valmin_fds[j];
+        valmax[j] = valmax_fds[j];
       }
       else{
-        valmin[j] = MIN(valmin[j], file_min[j]);
-        valmax[j] = MAX(valmax[j], file_max[j]);
+        valmin[j] = MIN(valmin[j], valmin_fds[j]);
+        valmax[j] = MAX(valmax[j], valmax_fds[j]);
       }
     }
   }
@@ -1722,38 +1722,38 @@ void SetLoadedPartBounds(int *list, int nlist){
     }
     if(list==NULL)nlist = 0;
     for(i = 0; i<nlist; i++){
-      float *file_min, *file_max;
+      float *valmin_fds, *valmax_fds;
       partdata *parti;
 
       parti = partinfo+list[i];
       if(parti->have_bound_file==NO)continue;
-      file_min = parti->file_min;
-      file_max = parti->file_max;
+      valmin_fds = parti->valmin_fds;
+      valmax_fds = parti->valmax_fds;
       if(valmin[j]>valmax[j]){
-        valmin[j] = file_min[j-1];
-        valmax[j] = file_max[j-1];
+        valmin[j] = valmin_fds[j];
+        valmax[j] = valmax_fds[j];
       }
       else{
-        valmin[j] = MIN(valmin[j], file_min[j-1]);
-        valmax[j] = MAX(valmax[j], file_max[j-1]);
+        valmin[j] = MIN(valmin[j], valmin_fds[j]);
+        valmax[j] = MAX(valmax[j], valmax_fds[j]);
       }
     }
 
     for(i = 0; i<npartinfo; i++){
-      float *file_min, *file_max;
+      float *valmin_fds, *valmax_fds;
       partdata *parti;
 
       parti = partinfo+i;
       if(parti->loaded==0||parti->have_bound_file==NO)continue;
-      file_min = parti->file_min;
-      file_max = parti->file_max;
+      valmin_fds = parti->valmin_fds;
+      valmax_fds = parti->valmax_fds;
       if(valmin[j]>valmax[j]){
-        valmin[j] = file_min[j-1];
-        valmax[j] = file_max[j-1];
+        valmin[j] = valmin_fds[j];
+        valmax[j] = valmax_fds[j];
       }
       else{
-        valmin[j] = MIN(valmin[j], file_min[j-1]);
-        valmax[j] = MAX(valmax[j], file_max[j-1]);
+        valmin[j] = MIN(valmin[j], valmin_fds[j]);
+        valmax[j] = MAX(valmax[j], valmax_fds[j]);
       }
     }
   }

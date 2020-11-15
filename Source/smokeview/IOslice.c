@@ -5064,6 +5064,8 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
 #endif
           );
         file_size = (int)return_filesize;
+        sd->valmin_smv = qmin;
+        sd->valmax_smv = qmax;
         if(sd->have_bound_file==NO){
           if(WriteFileBounds(sd->bound_file, qmin, qmax)==1){
             sd->have_bound_file = YES;

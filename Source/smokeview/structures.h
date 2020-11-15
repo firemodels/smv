@@ -1152,7 +1152,8 @@ typedef struct _partdata {
 #endif
   int bounds_set;
   float *global_min, *global_max;
-  float *file_min, *file_max;
+  float *valmin_fds, *valmax_fds;   // read in from .bnd files
+  float *valmin_smv, *valmax_smv;   // computed by smokeview
   int nfilebounds;
   unsigned char *vis_part;
   int *tags;
@@ -1239,10 +1240,11 @@ typedef struct _slicedata {
   float valmin, valmax;
   float globalmin, globalmax;
   float valmin_data, valmax_data;
+  float valmin_fds, valmax_fds;   // read in from .bnd files
+  float valmin_smv, valmax_smv;   // computed by smokeview
 #ifdef pp_MULTI_RES
   int multi_res;
 #endif
-  float file_min, file_max;
   float diff_valmin,  diff_valmax;
   flowlabels label;
   float *qslicedata, *qsliceframe, *times, *qslice;
@@ -1450,7 +1452,8 @@ typedef struct _patchdata {
   int firstshort;
   int compression_type;
   int setvalmin, setvalmax;
-  float file_min, file_max;
+  float valmin_fds, valmax_fds;   // read in from .bnd files
+  float valmin_smv, valmax_smv;   // computed by smokeview
   float valmin, valmax;
   int setchopmin, setchopmax;
   float chopmin, chopmax;
@@ -1487,7 +1490,8 @@ typedef struct _plot3ddata {
   float diff_valmin[MAXPLOT3DVARS], diff_valmax[MAXPLOT3DVARS];
   int extreme_min[MAXPLOT3DVARS], extreme_max[MAXPLOT3DVARS];
   int blocknumber,loaded,display;
-  float file_min[MAXPLOT3DVARS], file_max[MAXPLOT3DVARS];
+  float valmin_fds[MAXPLOT3DVARS], valmax_fds[MAXPLOT3DVARS];   // read in from .bnd files
+  float valmin_smv[MAXPLOT3DVARS], valmax_smv[MAXPLOT3DVARS];   // computed by smokeview
   flowlabels label[MAXPLOT3DVARS];
   char menulabel[256], longlabel[256], timelabel[256];
 } plot3ddata;
