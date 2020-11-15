@@ -2310,7 +2310,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     case UNCOMPRESSED_ALLFRAMES:
 
     patchstart = patchi->ntimes_old*meshi->npatchsize;
-    if(patchi->have_bound_file==NO){
+    if(patchi->have_bound_file==NO||compute_smv_bounds==1){
       int i;
 
       patchmin_global = 10000000000000.0;
@@ -2319,9 +2319,13 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         patchmin_global = MIN(patchmin_global, meshi->patchval[i]);
         patchmax_global = MAX(patchmax_global, meshi->patchval[i]);
       }
-      if(WriteFileBounds(patchi->bound_file, patchmin_global, patchmax_global)==1){
-        patchi->have_bound_file = YES;
-        update_patchfile_bounds = 1;
+      patchi->valmin_smv = patchmin_global;
+      patchi->valmax_smv = patchmax_global;
+      if(patchi->have_bound_file==NO){
+        if(WriteFileBounds(patchi->bound_file, patchmin_global, patchmax_global)==1){
+          patchi->have_bound_file = YES;
+          update_patchfile_bounds = 1;
+        }
       }
     }
     GetBoundaryColors3(patchi, meshi->patchval, patchstart, npatchvals, meshi->cpatchval,
@@ -2430,6 +2434,15 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
  else{
    PRINTF(" - %.0f kB in %.1f s\n", (float)return_filesize / 1000., total_time);
   }
+  if(compute_smv_bounds==1){
+    char *label;
+
+    label = patchi->label.longlabel;
+    printf("%s(fds): min=%f max=%f\n", label, patchi->valmin_fds, patchi->valmax_fds);
+    printf("%s(smv): min=%f max=%f\n", label, patchi->valmin_smv, patchi->valmax_smv);
+    printf("\n");
+  }
+
   GLUTPOSTREDISPLAY;
   return return_filesize;
 }
