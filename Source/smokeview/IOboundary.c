@@ -2438,9 +2438,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     char *label;
 
     label = patchi->label.longlabel;
-    printf("%s(fds): min=%f max=%f\n", label, patchi->valmin_fds, patchi->valmax_fds);
-    printf("%s(smv): min=%f max=%f\n", label, patchi->valmin_smv, patchi->valmax_smv);
-    printf("\n");
+    printf("%20.20s(fds): min(diff)=%f(%f) max(diff)=%f(%f)\n", label,
+           patchi->valmin_fds, patchi->valmin_fds-patchi->valmin_smv,
+           patchi->valmax_fds, patchi->valmax_fds-patchi->valmax_smv);
   }
 
   GLUTPOSTREDISPLAY;

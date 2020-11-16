@@ -65,6 +65,7 @@ int GetGlobalPartBounds(int flag){
 
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
+    int j;
 
     parti = partinfo+i;
     if(parti->loaded==1)nloaded_files++;
@@ -74,11 +75,11 @@ int GetGlobalPartBounds(int flag){
       if(parti->valmax_fds==NULL)NewMemory((void **)&parti->valmax_fds, npart5prop*sizeof(float));
       if(parti->valmin_smv==NULL)NewMemory((void **)&parti->valmin_smv, npart5prop*sizeof(float));
       if(parti->valmax_smv==NULL)NewMemory((void **)&parti->valmax_smv, npart5prop*sizeof(float));
-      for(i = 0; i<npart5prop; i++){
-        parti->valmin_fds[i] = 1.0;
-        parti->valmax_fds[i] = 0.0;
-        parti->valmin_smv[i] = 1.0;
-        parti->valmax_smv[i] = 0.0;
+      for(j = 0; j<npart5prop; j++){
+        parti->valmin_fds[j] = 1.0;
+        parti->valmax_fds[j] = 0.0;
+        parti->valmin_smv[j] = 1.0;
+        parti->valmax_smv[j] = 0.0;
       }
     }
     parti->have_bound_file = GetPartFileBounds(parti->bound_file, parti->valmin_fds, parti->valmax_fds);

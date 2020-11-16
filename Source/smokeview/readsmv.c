@@ -1020,9 +1020,9 @@ void ReadSMVDynamic(char *file){
       plot3di=plot3dinfo+iplot3d;
       for(i = 0; i < 5; i++){
         plot3di->valmin_fds[i] = 1.0;
-        plot3di->valmin_fds[i] = 0.0;
+        plot3di->valmax_fds[i] = 0.0;
         plot3di->valmin_smv[i] = 1.0;
-        plot3di->valmin_smv[i] = 0.0;
+        plot3di->valmax_smv[i] = 0.0;
       }
       plot3di->blocknumber = blocknumber;
       plot3di->seq_id=nn_plot3d;
@@ -10448,6 +10448,11 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, " %i %i %i", &slicedup_option, &vectorslicedup_option,&boundaryslicedup_option);
       continue;
     }
+    if(Match(buffer, "SHOWBOUNDS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i", &compute_smv_bounds);
+      continue;
+    }
     if(Match(buffer, "BLENDMODE")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i,%i", &slices3d_max_blending, &hrrpuv_max_blending,&showall_3dslices);
@@ -14786,6 +14791,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", visMeshlabel);
   fprintf(fileout, "SHOWBLOCKS\n");
   fprintf(fileout, " %i\n", visBlocks);
+  fprintf(fileout, "SHOWBOUNDS\n");
+  fprintf(fileout, " %i\n", compute_smv_bounds);
   fprintf(fileout, "SHOWCADANDGRID\n");
   fprintf(fileout, " %i\n", show_cad_and_grid);
   fprintf(fileout, "SHOWCADOPAQUE\n");

@@ -434,9 +434,9 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       char *label;
 
       label = p->label[i].longlabel;
-      printf("%s(fds): min=%f max=%f\n", label, p->valmin_fds[i], p->valmax_fds[i]);
-      printf("%s(smv): min=%f max=%f\n", label, p->valmin_smv[i], p->valmax_smv[i]);
-      printf("\n");
+      printf("%20.20s(fds): min(diff)=%f(%f) max(diff)=%f(%f)\n", label,
+             p->valmin_fds[i], p->valmin_fds[i]-p->valmin_smv[i],
+             p->valmax_fds[i], p->valmax_fds[i]-p->valmax_smv[i]);
     }
   }
   if(p->compression_type==COMPRESSED_ZLIB|| cache_plot3d_data==0){

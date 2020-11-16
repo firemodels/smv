@@ -5394,9 +5394,9 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     char *label;
 
     label = sd->label.longlabel;
-    printf("%s(fds): min=%f max=%f\n", label, sd->valmin_fds, sd->valmax_fds);
-    printf("%s(smv): min=%f max=%f\n", label, sd->valmin_smv, sd->valmax_smv);
-    printf("\n");
+    printf("%20.20s(fds): min(diff)=%f(%f) max(diff)=%f(%f)\n", label,
+           sd->valmin_fds, sd->valmin_fds-sd->valmin_smv,
+           sd->valmax_fds, sd->valmax_fds-sd->valmax_smv);
   }
   return return_filesize;
 }

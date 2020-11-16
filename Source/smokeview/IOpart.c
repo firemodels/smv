@@ -2308,9 +2308,9 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
         propi = part5propinfo+i;
         label = propi->label->longlabel;
         if(i==0)continue;
-        printf("%s(fds): min=%f max=%f\n", label, parti->valmin_fds[i], parti->valmax_fds[i]);
-        printf("%s(smv): min=%f max=%f\n", label, parti->valmin_smv[i], parti->valmax_smv[i]);
-        printf("\n");
+        printf("%20.20s(fds): min(diff)=%f(%f) max(diff)=%f(%f)\n", label,
+               parti->valmin_fds[i], parti->valmin_fds[i] - parti->valmin_smv[i],
+               parti->valmin_fds[i], parti->valmin_fds[i] - parti->valmin_smv[i]);
       }
     }
   }
