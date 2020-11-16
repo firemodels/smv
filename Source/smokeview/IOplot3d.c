@@ -85,7 +85,6 @@ void  UpdatePlot3DColors(int ifile, int *errorcode){
 
 int GetPlot3DBounds(plot3ddata *plot3di){
   float valmin, valmax, *vals;
-  plot3ddata *p;
   char *iblank;
   meshdata *meshi;
   int i, ntotal;
