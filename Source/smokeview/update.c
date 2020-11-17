@@ -2059,7 +2059,6 @@ void OutputBounds(void){
       valmax_smv = 0.0;
       for(i = 0; i<npartinfo; i++){
         partdata *parti;
-        char *labeli;
 
         parti = partinfo+i;
         if(parti->loaded==0)continue;
@@ -2124,7 +2123,6 @@ void OutputBounds(void){
       valmax_smv = 0.0;
       for(i = 0; i<nplot3dinfo; i++){
         plot3ddata *plot3di;
-        char *labeli;
 
         plot3di = plot3dinfo+i;
         if(plot3di->loaded==0)continue;
