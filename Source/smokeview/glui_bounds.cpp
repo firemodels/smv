@@ -4714,7 +4714,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
   // -------------- Data coloring -------------------
 
-  ROLLOUT_coloring = glui_bounds->add_rollout("Colorbar/Coloring", false, COLORING_ROLLOUT, FileRolloutCB);
+  ROLLOUT_coloring = glui_bounds->add_rollout("Coloring", false, COLORING_ROLLOUT, FileRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_coloring, glui_bounds);
   ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_coloring, COLORING_ROLLOUT, glui_bounds);
 
