@@ -112,8 +112,8 @@ int InResearchMode(void);
 
 #ifdef pp_PERCENTILES
 void bounds_dialog::set_percentile_minmax(float p_min, float p_max){
-  p_min = SMV_ROUND(p_min, 5);
-  p_max = SMV_ROUND(p_max, 5);
+  p_min = SMV_ROUND(p_min, 4);
+  p_max = SMV_ROUND(p_max, 4);
   if(SPINNER_percentile_min!=NULL)SPINNER_percentile_min->set_float_val(p_min);
   if(SPINNER_percentile_max!=NULL)SPINNER_percentile_max->set_float_val(p_max);
 }
@@ -310,16 +310,15 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
 #ifdef pp_PERCENTILES
       PANEL_percentiles = glui_bounds->add_panel_to_panel(PANEL_minmax, "percentiles");
 
-      percentile_level = CLAMP(percentile_level,0.0,0.5);
-      percentile_max_cpp = CLAMP(1.0-percentile_level,0.5,1.0);
-      SPINNER_percentile_max = glui_bounds->add_spinner_to_panel(PANEL_percentiles, _("max:"), GLUI_SPINNER_FLOAT, &percentile_max_cpp,
-                                                                 BOUND_PERCENTILE_MAXVAL, Callback);
-      SPINNER_percentile_max->set_float_limits(0.5, 1.0);
+      percentile_min_cpp = CLAMP(percentile_level_min, 0.0, 1.0);
+      percentile_max_cpp = CLAMP(percentile_level_max, percentile_level_min,1.0);
 
-      percentile_min_cpp = percentile_level;
-      SPINNER_percentile_min = glui_bounds->add_spinner_to_panel(PANEL_percentiles, _("min:"), GLUI_SPINNER_FLOAT, &percentile_min_cpp,
-                                                                 BOUND_PERCENTILE_MINVAL, Callback);
-      SPINNER_percentile_min->set_float_limits(0.0, 0.5);
+      SPINNER_percentile_max = glui_bounds->add_spinner_to_panel(PANEL_percentiles, _("max:"), GLUI_SPINNER_FLOAT, &percentile_max_cpp, BOUND_PERCENTILE_MAXVAL, Callback);
+      SPINNER_percentile_min = glui_bounds->add_spinner_to_panel(PANEL_percentiles, _("min:"), GLUI_SPINNER_FLOAT, &percentile_min_cpp, BOUND_PERCENTILE_MINVAL, Callback);
+
+      SPINNER_percentile_max->set_float_limits(percentile_min_cpp, 1.0);
+      SPINNER_percentile_min->set_float_limits(0.0, percentile_max_cpp);
+
       glui_bounds->add_button_to_panel(PANEL_percentiles, "Compute min/max bounds", BOUND_COMPUTE_PERCENTILES, Callback);
       glui_bounds->add_button_to_panel(PANEL_percentiles, "Output info",  BOUND_PRINT_HISTOGRAM, Callback);
 #endif
@@ -779,10 +778,13 @@ void bounds_dialog::CB(int var){
     case BOUND_COMPUTE_PERCENTILES:
       break;
     case BOUND_PERCENTILE_MINVAL:
+      SPINNER_percentile_max->set_float_limits(percentile_min_cpp+0.0001, 1.0);
+      percentile_level_max = percentile_max_cpp;
+      SetPercentileMinMax(percentile_min_cpp,percentile_max_cpp);
+      break;
     case BOUND_PERCENTILE_MAXVAL:
-      if(var==BOUND_PERCENTILE_MINVAL)percentile_max_cpp = 1.0 - percentile_min_cpp;
-      if(var==BOUND_PERCENTILE_MAXVAL)percentile_min_cpp = 1.0 - percentile_max_cpp;
-      percentile_level = percentile_min_cpp;
+      SPINNER_percentile_min->set_float_limits(0.0,percentile_max_cpp-0.0001);
+      percentile_level_max = percentile_max_cpp;
 #ifdef pp_PERCENTILES
       SetPercentileMinMax(percentile_min_cpp,percentile_max_cpp);
 #endif
@@ -1199,8 +1201,8 @@ extern "C" void SliceBoundsCPP_CB(int var){
         ComputeLoadedSliceHist(bounds->label,&(bounds->hist));
       }
       if(bounds->hist!=NULL&&bounds->hist->defined==1){
-        GetHistogramValProc(bounds->hist, percentile_level, &per_valmin);
-        GetHistogramValProc(bounds->hist, 1.0 - percentile_level, &per_valmax);
+        GetHistogramValProc(bounds->hist, percentile_level_min, &per_valmin);
+        GetHistogramValProc(bounds->hist, percentile_level_max, &per_valmax);
         SetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
         SetMax(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
       }
@@ -1433,8 +1435,8 @@ extern "C" void PatchBoundsCPP_CB(int var){
         ComputeLoadedPatchHist(bounds->label, &(bounds->hist), &global_min, &global_max);
       }
       if(bounds->hist!=NULL&&bounds->hist->defined==1){
-        GetHistogramValProc(bounds->hist, percentile_level,       &per_valmin);
-        GetHistogramValProc(bounds->hist, 1.0 - percentile_level, &per_valmax);
+        GetHistogramValProc(bounds->hist, percentile_level_min, &per_valmin);
+        GetHistogramValProc(bounds->hist, percentile_level_max, &per_valmax);
         SetMin(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
         SetMax(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
       }

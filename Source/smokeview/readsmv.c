@@ -11242,9 +11242,19 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "PERCENTILELEVEL") == 1){
       fgets(buffer, 255, stream);
+#ifdef pp_CPPBOUND_DIALOG
+      float p_level_max=-1.0;
+
+      sscanf(buffer, "%f %f", &percentile_level_min, &p_level_max);
+      percentile_level_min = CLAMP(percentile_level_min,0.0,1.0);
+      if(p_level_max<0.0)p_level_max = 1.0 - percentile_level_min;
+      percentile_level_max = CLAMP(p_level_max, percentile_level_min+0.0001,1.0);
+#endif
+#ifdef pp_OLDBOUND_DIALOG
       sscanf(buffer, "%f", &percentile_level);
       if(percentile_level<0.0)percentile_level = 0.01;
       if(percentile_level>0.5)percentile_level = 0.01;
+#endif
       continue;
     }
     if(Match(buffer, "TRAINERMODE") == 1){
@@ -14215,7 +14225,12 @@ void WriteIniLocal(FILE *fileout){
     patchout_zmin, patchout_zmax
     );
   fprintf(fileout, "PERCENTILELEVEL\n");
+#ifdef pp_CPPBOUND_DIALOG
+  fprintf(fileout, " %f %f\n", percentile_level_min, percentile_level_max);
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   fprintf(fileout, " %f\n", percentile_level);
+#endif
   fprintf(fileout, "TIMEOFFSET\n");
   fprintf(fileout, " %f\n", timeoffset);
   fprintf(fileout, "TLOAD\n");

@@ -800,7 +800,13 @@ SVEXTERN float vertical_factor;
 
 SVEXTERN char input_filename_ext[5];
 
+#ifdef pp_CPPBOUND_DIALOG
+SVEXTERN float SVDECL(percentile_level_min,0.01);
+SVEXTERN float SVDECL(percentile_level_max, 0.99);
+#endif
+#ifdef pp_OLDBOUND_DIALOG
 SVEXTERN float SVDECL(percentile_level,0.01);
+#endif
 SVEXTERN float SVDECL(fire_line_min,150.0), SVDECL(fire_line_max,200.0);
 SVEXTERN int SVDECL(update_fire_line,0);
 SVEXTERN int SVDECL(fire_line_index,-1);

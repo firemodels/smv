@@ -5239,11 +5239,11 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
       ComputeLoadedSliceHist(bounds->label, &(bounds->hist));
       if(bounds->hist->defined==1){
         if(set_valmin==BOUND_PERCENTILE_MIN){
-          GetHistogramValProc(bounds->hist, percentile_level, &qmin);
+          GetHistogramValProc(bounds->hist, percentile_level_min, &qmin);
           SetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, qmin);
         }
         if(set_valmax==BOUND_PERCENTILE_MAX){
-          GetHistogramValProc(bounds->hist, 1.0-percentile_level, &qmax);
+          GetHistogramValProc(bounds->hist, percentile_level_max, &qmax);
           SetMax(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MAX, qmax);
         }
       }

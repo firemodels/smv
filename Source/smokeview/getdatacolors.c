@@ -171,8 +171,15 @@ void UpdateBoundaryBounds(patchdata *patchi){
 
   boundi->global_min = GetHistogramVal(&full_histogram, 0.0);
   boundi->global_max = GetHistogramVal(&full_histogram, 1.0);
+
+#ifdef pp_CPPBOUND_DIALOG  
+  boundi->percentile_min = GetHistogramVal(&full_histogram, percentile_level_min);
+  boundi->percentile_max = GetHistogramVal(&full_histogram, percentile_level_max);
+#endif
+#ifdef pp_OLDBOUND_DIALOG  
   boundi->percentile_min = GetHistogramVal(&full_histogram, percentile_level);
   boundi->percentile_max = GetHistogramVal(&full_histogram, 1.0-percentile_level);
+#endif
   boundi->defined=1;
 
   for(j=0;j<npatchinfo;j++){

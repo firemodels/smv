@@ -2376,13 +2376,13 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
           if(bounds->set_valmin==BOUND_PERCENTILE_MIN){
            float per_valmin;
 
-            GetHistogramValProc(bound_hist, percentile_level, &per_valmin);
+            GetHistogramValProc(bound_hist, percentile_level_min, &per_valmin);
             SetMin(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
           }
           if(bounds->set_valmax==BOUND_PERCENTILE_MAX){
             float per_valmax;
 
-            GetHistogramValProc(bound_hist,1.0-percentile_level, &per_valmax);
+            GetHistogramValProc(bound_hist,percentile_level_max, &per_valmax);
             SetMax(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
           }
         }
@@ -2791,13 +2791,13 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
         if(bounds->set_valmin==BOUND_PERCENTILE_MIN){
           float per_valmin;
 
-          GetHistogramValProc(bounds->hist, percentile_level, &per_valmin);
+          GetHistogramValProc(bounds->hist, percentile_level_min, &per_valmin);
           SetMin(bound_type, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
         }
         if(bounds->set_valmax==BOUND_PERCENTILE_MAX){
           float per_valmax;
 
-          GetHistogramValProc(bounds->hist, 1.0-percentile_level, &per_valmax);
+          GetHistogramValProc(bounds->hist, percentile_level_max, &per_valmax);
           SetMax(bound_type, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
         }
       }
