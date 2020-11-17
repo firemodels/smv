@@ -10397,7 +10397,7 @@ int ReadIni2(char *inifile, int localfile){
 
   if((stream = fopen(inifile, "r")) == NULL)return 1;
   PRINTF("%s", _("processing config file: "));
-  PRINTF("%s\n", inifile);
+  PRINTF("%s ", inifile);
 
   for(i = 0; i<nunitclasses_ini; i++){
     f_units *uc;
@@ -13733,8 +13733,7 @@ int ReadIni(char *inifile){
     returnval = ReadIni2(smvprogini_ptr, 0);
     if(returnval==2)return 2;
     if(returnval == 0){
-      PRINTF("complete");
-      PRINTF("\n");
+      PRINTF("- complete\n");
     }
     UpdateTerrainOptions();
   }
@@ -13747,8 +13746,7 @@ int ReadIni(char *inifile){
     returnval = ReadIni2(INIfile, 0);
     if(returnval==2)return 2;
     if(returnval == 0){
-      PRINTF("complete");
-      PRINTF("\n");
+      PRINTF("- complete\n");
     }
   }
 
@@ -13760,8 +13758,7 @@ int ReadIni(char *inifile){
     returnval = ReadIni2(caseini_filename, 1);
     if(returnval==2)return 2;
     if(returnval == 0){
-      PRINTF("complete");
-      PRINTF("\n");
+      PRINTF("- complete\n");
     }
   }
 
@@ -13772,8 +13769,7 @@ int ReadIni(char *inifile){
 
     return_code = ReadIni2(inifile,1);
     if(return_code == 0){
-      PRINTF("complete");
-      PRINTF("\n");
+      PRINTF("- complete\n");
     }
 
     if(return_code==1||return_code==2){

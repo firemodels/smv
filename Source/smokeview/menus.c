@@ -54,7 +54,9 @@ float     slice_load_time;
     else{\
       PRINTF("Loaded %.0f kB in %.1f s\n",(float)load_size/1000.,load_time);\
     }\
+    printf("\n");\
   }
+
 
 #define MENU_TERRAIN_SHOW_SURFACE -1
 #define MENU_TERRAIN_SHOW_LINES   -2
@@ -5136,6 +5138,7 @@ void Plot3DListMenu(int value){
     plot3di = plot3dinfo + list[i];
     ReadPlot3D(plot3di->file, i, LOAD, &errorcode);
   }
+  printf("\n");
   FREEMEMORY(list);
 #endif
 #ifdef pp_OLDBOUND_DIALOG
