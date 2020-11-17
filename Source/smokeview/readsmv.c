@@ -13711,19 +13711,7 @@ int ReadIni(char *inifile){
 #endif
   }
 
-  // check if config files read in earlier were modifed later
-
-  if(IsFileNewer(smvprogini_ptr,INIfile)==1){
-    PRINTF("*** Warning: The configuration file,\n   %s,\n   is newer than %s \n\n",smvprogini_ptr,INIfile);
-  }
-  if(IsFileNewer(smvprogini_ptr,caseini_filename)==1){
-    PRINTF("*** Warning: The configuration file,\n   %s,\n   is newer than %s \n\n",smvprogini_ptr,caseini_filename);
-  }
-  if(IsFileNewer(INIfile,caseini_filename)==1){
-    PRINTF("*** Warning: The configuration file,\n   %s,\n   is newer than %s \n\n",INIfile,caseini_filename);
-  }
-
-  // read in config files if they exist
+  //*** read in config files if they exist
 
   // smokeview.ini ini in install directory
 
@@ -13750,7 +13738,7 @@ int ReadIni(char *inifile){
     }
   }
 
-  // read in casename.ini
+  // casename.ini
 
   if(caseini_filename!=NULL){
     int returnval;
@@ -13762,7 +13750,7 @@ int ReadIni(char *inifile){
     }
   }
 
-  // read in ini file specified in script
+  // ini file specified in script
 
   if(inifile!=NULL){
     int return_code;
