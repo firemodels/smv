@@ -97,12 +97,12 @@ enum GLUI_Control_Types {
 
 
 /********* Constants for window placement **********/
-#ifdef pp_OSX
-#define GLUI_XOFF                     3 // 6 original sizes
-#define GLUI_YOFF                     2 // 6
-#else
-#define GLUI_XOFF                     6
+#ifdef pp_XXX
+#define GLUI_XOFF                     6 // original values
 #define GLUI_YOFF                     6
+#else
+#define GLUI_XOFF                     3
+#define GLUI_YOFF                     3
 #endif
 #define GLUI_ITEMSPACING              3
 #define GLUI_CHECKBOX_SIZE           13
