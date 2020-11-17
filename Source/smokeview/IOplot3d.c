@@ -295,7 +295,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
 
   file_size= GetFileSizeSMV(file);
   plot3dfilelen = strlen(file);
-  PRINTF("Loading plot3d data: %s\n",file);
+  PRINTF("Loading plot3d data: %s",file);
   START_TIMER(read_time);
   if(p->compression_type==UNCOMPRESSED){
     FORTgetplot3dq(file,&nx,&ny,&nz,meshi->qdata,&error,&isotest,plot3dfilelen);
@@ -426,19 +426,11 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     (float)file_size/1000000.,read_time,loadrate,total_time-read_time);
   }
   else{
-    PRINTF(" %.1f MB downloaded in %.2f s (overhead: %.2f s)",
+    PRINTF(" %.1f MB downloaded in %.2f s (overhead: %.2f s)\n",
     (float)file_size/1000000.,read_time,total_time-read_time);
   }
-  if(compute_smv_bounds==1&&GetPlot3DBounds(p)==1){
-    for(i=0;i<MAXPLOT3DVARS;i++){
-      char *label;
-
-      label = p->label[i].longlabel;
-      printf("%20.20s(fds): min(diff)=%f(%f) max(diff)=%f(%f)\n", label,
-             p->valmin_fds[i], p->valmin_fds[i]-p->valmin_smv[i],
-             p->valmax_fds[i], p->valmax_fds[i]-p->valmax_smv[i]);
-    }
-  }
+  update_plot3d_bounds = ifile;
+  GetPlot3DBounds(p);
   if(p->compression_type==COMPRESSED_ZLIB|| cache_plot3d_data==0){
     cache_plot3d_data=0;
     FREEMEMORY(meshi->qdata);

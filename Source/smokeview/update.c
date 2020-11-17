@@ -1895,6 +1895,288 @@ int GetColorbarState(void){
   return COLORBAR_HIDDEN;
 }
 
+
+/* ------------------ OutputMinMax  ------------------------ */
+
+#ifdef pp_BOUND_DIFFS
+void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, float valmax_fds, float valmin_smv, float valmax_smv){
+  char cvalmin_smv[20], cvalmax_smv[20];
+  char cdiff_min[20], cdiff_max[20];
+  char cmin[100], cmax[100];
+  char labelunit[50];
+
+  Float2String(cvalmin_smv, valmin_smv, 6);
+  Float2String(cvalmax_smv, valmax_smv, 6);
+
+  Float2String(cdiff_min, valmin_smv-valmin_fds, 3);
+  Float2String(cdiff_max, valmax_smv-valmax_fds, 3);
+
+  strcpy(cmin,cvalmin_smv);
+  strcat(cmin,"(");
+  strcat(cmin,cdiff_min);
+  strcat(cmin,")");
+
+  strcpy(cmax,cvalmax_smv);
+  strcat(cmax,"(");
+  strcat(cmax,cdiff_max);
+  strcat(cmax,")");
+
+  strcpy(labelunit, label);
+  strcat(labelunit," ");
+  strcat(labelunit,unit);
+
+  if(meshlabel==NULL){
+    printf("%21.21s: min(smv-fds)=%22.22s max(smv-fds)=%22.22s\n", labelunit, cmin, cmax);
+  }
+  else{
+    printf("%s %21.21s: min(smv-fds)=%22.22s max(smv-fds)=%22.22s\n", meshlabel, labelunit, cmin, cmax);
+  }
+}
+#else
+void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_smv, float valmax_smv){
+  char cvalmin_smv[20], cvalmax_smv[20];
+  char labelunit[50];
+
+  Float2String(cvalmin_smv, valmin_smv, 7);
+  Float2String(cvalmax_smv, valmax_smv, 7);
+  strcpy(labelunit, label);
+  strcat(labelunit," ");
+  strcat(labelunit,unit);
+
+  printf("%21.21s: min=%12.12s max=%12.12s\n", labelunit, cvalmin_smv, cvalmax_smv);
+}
+#endif
+
+/* ------------------ UpdateBounds ------------------------ */
+
+void OutputBounds(void){
+// slice bounds
+  if(update_slice_bounds != -1){
+    float valmin_fds=1.0, valmax_fds=0.0, valmin_smv=1.0, valmax_smv=0.0;
+    char *label, *unit;
+    int i;
+
+    label = sliceinfo[update_slice_bounds].label.longlabel;
+    unit = sliceinfo[update_slice_bounds].label.unit;
+    printf("\n");
+    for(i=0;i<nsliceinfo;i++){
+      slicedata *slicei;
+      char *labeli;
+      meshdata *meshi;
+
+      slicei = sliceinfo + i;
+      if(slicei->loaded==0)continue;
+      meshi = meshinfo+slicei->blocknumber;
+      labeli = slicei->label.longlabel;
+      if(strcmp(label,labeli)!=0)continue;
+      if(nmeshes>1&&bounds_each_mesh==1){
+        OUTPUTMINMAX(meshi->label, label, unit, slicei->valmin_fds, slicei->valmax_fds, slicei->valmin_smv, slicei->valmax_smv);
+      }
+      if(valmin_fds>valmax_fds){
+        valmin_fds = slicei->valmin_fds;
+        valmax_fds = slicei->valmax_fds;
+      }
+      else{
+        valmin_fds = MIN(slicei->valmin_fds, valmin_fds);
+        valmax_fds = MAX(slicei->valmax_fds, valmax_fds);
+      }
+      if(valmin_smv>valmax_smv){
+        valmin_smv = slicei->valmin_smv;
+        valmax_smv = slicei->valmax_smv;
+      }
+      else{
+        valmin_smv = MIN(slicei->valmin_smv, valmin_smv);
+        valmax_smv = MAX(slicei->valmax_smv, valmax_smv);
+      }
+    }
+
+    printf("\n");
+    OUTPUTMINMAX("global", label, unit, valmin_fds, valmax_fds, valmin_smv, valmax_smv);
+  }
+
+// boundary file bounds
+  if(update_patch_bounds != -1){
+    float valmin_fds=1.0, valmax_fds=0.0, valmin_smv=1.0, valmax_smv=0.0;
+    char *label, *unit;
+    int i;
+
+    label = patchinfo[update_patch_bounds].label.longlabel;
+    unit = patchinfo[update_patch_bounds].label.unit;
+    printf("\n");
+    for(i=0;i<npatchinfo;i++){
+      patchdata *patchi;
+      char *labeli;
+      meshdata *meshi;
+
+      patchi = patchinfo + i;
+      if(patchi->loaded==0)continue;
+      meshi = meshinfo+patchi->blocknumber;
+      labeli = patchi->label.longlabel;
+      if(strcmp(label,labeli)!=0)continue;
+      if(nmeshes>1&&bounds_each_mesh==1){
+        OUTPUTMINMAX(meshi->label, label, unit, patchi->valmin_fds, patchi->valmax_fds, patchi->valmin_smv, patchi->valmax_smv);
+      }
+      if(valmin_fds>valmax_fds){
+        valmin_fds = patchi->valmin_fds;
+        valmax_fds = patchi->valmax_fds;
+      }
+      else{
+        valmin_fds = MIN(patchi->valmin_fds, valmin_fds);
+        valmax_fds = MAX(patchi->valmax_fds, valmax_fds);
+      }
+      if(valmin_smv>valmax_smv){
+        valmin_smv = patchi->valmin_smv;
+        valmax_smv = patchi->valmax_smv;
+      }
+      else{
+        valmin_smv = MIN(patchi->valmin_smv, valmin_smv);
+        valmax_smv = MAX(patchi->valmax_smv, valmax_smv);
+      }
+    }
+
+    printf("\n");
+    OUTPUTMINMAX("global", label, unit, valmin_fds, valmax_fds, valmin_smv, valmax_smv);
+  }
+
+// particle file bounds
+  if(update_part_bounds!=-1){
+    float valmin_fds = 1.0, valmax_fds = 0.0, valmin_smv = 1.0, valmax_smv = 0.0;
+    char *label, *unit;
+    int i, j;
+
+    if(nmeshes>1&&nmeshes>1&&bounds_each_mesh==1){
+      printf("\n");
+      for(i = 0; i<npartinfo; i++){
+        partdata *parti;
+        meshdata *meshi;
+
+        parti = partinfo+i;
+        if(parti->loaded==0)continue;
+        meshi = meshinfo + parti->blocknumber;
+        printf("%s\n", meshi->label);
+        for(j = 0; j<npart5prop; j++){
+          partpropdata *propj;
+
+          if(j==0)continue;
+          propj = part5propinfo+j;
+
+          label = propj->label->longlabel;
+          unit = propj->label->unit;
+          OUTPUTMINMAX(NULL, label, unit, parti->valmin_fds[j], parti->valmax_fds[j], parti->valmin_smv[j], parti->valmax_smv[j]);
+        }
+      }
+    }
+
+    printf("\n");
+    printf("global\n");
+    for(j = 0; j<npart5prop; j++){
+      partpropdata *propj;
+
+      if(j==0)continue;
+      propj = part5propinfo+j;
+
+      label = propj->label->longlabel;
+      unit = propj->label->unit;
+      valmin_fds = 1.0;
+      valmax_fds = 0.0;
+      valmin_smv = 1.0;
+      valmax_smv = 0.0;
+      for(i = 0; i<npartinfo; i++){
+        partdata *parti;
+        char *labeli;
+
+        parti = partinfo+i;
+        if(parti->loaded==0)continue;
+        if(valmin_fds>valmax_fds){
+          valmin_fds = parti->valmin_fds[j];
+          valmax_fds = parti->valmax_fds[j];
+        }
+        else{
+          valmin_fds = MIN(parti->valmin_fds[j], valmin_fds);
+          valmax_fds = MAX(parti->valmax_fds[j], valmax_fds);
+        }
+        if(valmin_smv>valmax_smv){
+          valmin_smv = parti->valmin_smv[j];
+          valmax_smv = parti->valmax_smv[j];
+        }
+        else{
+          valmin_smv = MIN(parti->valmin_smv[j], valmin_smv);
+          valmax_smv = MAX(parti->valmax_smv[j], valmax_smv);
+        }
+      }
+      OUTPUTMINMAX(NULL, label, unit, valmin_fds, valmax_fds, valmin_smv, valmax_smv);
+    }
+  }
+
+// plot3d file bounds
+  if(update_plot3d_bounds!=-1){
+    float valmin_fds = 1.0, valmax_fds = 0.0, valmin_smv = 1.0, valmax_smv = 0.0;
+    char *label, *unit;
+    int i, j;
+    plot3ddata *p;
+
+    p = plot3dinfo+update_plot3d_bounds;
+
+    if(nmeshes>1&&bounds_each_mesh==1){
+      printf("\n");
+      for(i = 0; i<nplot3dinfo; i++){
+        plot3ddata *plot3di;
+        meshdata *meshi;
+
+        plot3di = plot3dinfo+i;
+        if(plot3di->loaded==0)continue;
+        meshi = meshinfo+plot3di->blocknumber;
+        printf("%s\n", meshi->label);
+        for(j = 0; j<MAXPLOT3DVARS; j++){
+
+          label = p->label[j].longlabel;
+          unit = p->label[j].unit;
+
+          OUTPUTMINMAX(NULL, label, unit, plot3di->valmin_fds[j], plot3di->valmax_fds[j], plot3di->valmin_smv[j], plot3di->valmax_smv[j]);
+        }
+      }
+    }
+
+    printf("\n");
+    printf("global\n");
+    p = plot3dinfo+update_plot3d_bounds;
+    for(j=0;j<MAXPLOT3DVARS;j++){
+
+      label = plot3dinfo[update_plot3d_bounds].label[j].longlabel;
+      unit = plot3dinfo[update_plot3d_bounds].label[j].unit;
+      valmin_fds = 1.0;
+      valmax_fds = 0.0;
+      valmin_smv = 1.0;
+      valmax_smv = 0.0;
+      for(i = 0; i<nplot3dinfo; i++){
+        plot3ddata *plot3di;
+        char *labeli;
+
+        plot3di = plot3dinfo+i;
+        if(plot3di->loaded==0)continue;
+        if(valmin_fds>valmax_fds){
+          valmin_fds = plot3di->valmin_fds[j];
+          valmax_fds = plot3di->valmax_fds[j];
+        }
+        else{
+          valmin_fds = MIN(plot3di->valmin_fds[j], valmin_fds);
+          valmax_fds = MAX(plot3di->valmax_fds[j], valmax_fds);
+        }
+        if(valmin_smv>valmax_smv){
+          valmin_smv = plot3di->valmin_smv[j];
+          valmax_smv = plot3di->valmax_smv[j];
+        }
+        else{
+          valmin_smv = MIN(plot3di->valmin_smv[j], valmin_smv);
+          valmax_smv = MAX(plot3di->valmax_smv[j], valmax_smv);
+        }
+      }
+      OUTPUTMINMAX(NULL, label, unit, valmin_fds, valmax_fds, valmin_smv, valmax_smv);
+    }
+  }
+  printf("\n");
+}
+
 /* ------------------ UpdateDisplay ------------------------ */
 
 void UpdateDisplay(void){
@@ -1989,6 +2271,13 @@ void UpdateDisplay(void){
     InitMenus(LOAD);
     glutAttachMenu(GLUT_RIGHT_BUTTON);
     updatemenu = 0;
+  }
+  if(update_patch_bounds!=-1||update_slice_bounds!=-1||update_part_bounds!=-1||update_plot3d_bounds!=-1){
+    OutputBounds();
+    update_patch_bounds = -1;
+    update_slice_bounds = -1;
+    update_part_bounds = -1;
+    update_plot3d_bounds = -1;
   }
   if(update_fire_colorbar_index == 1){
     SmokeColorbarMenu(fire_colorbar_index_ini);

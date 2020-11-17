@@ -12,6 +12,13 @@ EXTERNCPP void UpdateColorLabelDigits(void);
 
 EXTERNCPP void IncrementPartPropIndex(void);
 
+#ifdef pp_BOUND_DIFFS
+EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, float valmax_fds, float valmin_smv, float valmax_smv);
+#else
+EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_smv, float valmax_smv);
+#endif
+
+
 #ifdef pp_MULTI_RES
 void InitMultiRes(slicedata *sd);
 void NormalizeXYZRes(void);

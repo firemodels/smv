@@ -5390,13 +5390,8 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   CheckMemory;
   showall_slices=1;
   GLUTPOSTREDISPLAY;
-  if(compute_smv_bounds==1){
-    char *label;
-
-    label = sd->label.longlabel;
-    printf("%20.20s(fds): min(diff)=%f(%f) max(diff)=%f(%f)\n", label,
-           sd->valmin_fds, sd->valmin_fds-sd->valmin_smv,
-           sd->valmax_fds, sd->valmax_fds-sd->valmax_smv);
+  if(sd->finalize==1){
+    update_slice_bounds = slicefilenumber;
   }
   return return_filesize;
 }

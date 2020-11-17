@@ -1421,32 +1421,6 @@ void GetPartData(partdata *parti, int partframestep_arg, int nf_all_arg, FILE_SI
 
           FORTPART5READ_mv((void **)&(datacopy_local->rvals), nparts_local*numtypes_local[2*class_index]);
 
-          if(compute_smv_bounds==1){
-            valmin_smv = parti->valmin_smv;
-            valmax_smv = parti->valmax_smv;
-            for(part_type = 0; part_type<numtypes_local[2*class_index]; part_type++){
-              int prop_index, k;
-              float *vals;
-
-              prop_index = GetPartPropIndex(class_index, part_type+2);
-              vals = datacopy_local->rvals+part_type*nparts_local;
-              for(k = 0; k<nparts_local; k++){
-                float val;
-
-                val = *vals++;
-                if(valmin_smv[prop_index]>valmax_smv[prop_index]){
-                  valmin_smv[prop_index] = val;
-                  valmax_smv[prop_index] = val;
-                }
-                else{
-                  valmin_smv[prop_index] = MIN(val, valmin_smv[prop_index]);
-                  valmax_smv[prop_index] = MAX(val, valmax_smv[prop_index]);
-                }
-              }
-            }
-          }
-
-
 #ifdef pp_PART_TEST
           for(jjj = 0; jjj < numtypes[2 * i]; jjj++){
             for(iii = 0; iii < nparts; iii++){
@@ -1454,6 +1428,29 @@ void GetPartData(partdata *parti, int partframestep_arg, int nf_all_arg, FILE_SI
             }
           }
 #endif
+
+          valmin_smv = parti->valmin_smv;
+          valmax_smv = parti->valmax_smv;
+          for(part_type = 0; part_type<numtypes_local[2*class_index]; part_type++){
+            int prop_index, k;
+            float *vals;
+
+            prop_index = GetPartPropIndex(class_index, part_type+2);
+            vals = datacopy_local->rvals+part_type*nparts_local;
+            for(k = 0; k<nparts_local; k++){
+              float val;
+
+              val = *vals++;
+              if(valmin_smv[prop_index]>valmax_smv[prop_index]){
+                valmin_smv[prop_index] = val;
+                valmax_smv[prop_index] = val;
+              }
+              else{
+                valmin_smv[prop_index] = MIN(val, valmin_smv[prop_index]);
+                valmax_smv[prop_index] = MAX(val, valmax_smv[prop_index]);
+              }
+            }
+          }
           if(returncode==FAIL_m)goto wrapup;
         }
       }
@@ -2298,21 +2295,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
     else{
       PRINTF(" - %.0f kB/%.1f s\n", (float)file_size_local/1000., load_time_local);
     }
-    if(compute_smv_bounds==1){
-      int i;
-
-      for(i = 0; i<npart5prop; i++){
-        char *label;
-        partpropdata *propi;
-
-        propi = part5propinfo+i;
-        label = propi->label->longlabel;
-        if(i==0)continue;
-        printf("%20.20s(fds): min(diff)=%f(%f) max(diff)=%f(%f)\n", label,
-               parti->valmin_fds[i], parti->valmin_fds[i] - parti->valmin_smv[i],
-               parti->valmin_fds[i], parti->valmin_fds[i] - parti->valmin_smv[i]);
-      }
-    }
+    update_part_bounds = 1;
   }
   return file_size_local;
 }

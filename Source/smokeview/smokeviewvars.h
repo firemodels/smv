@@ -20,6 +20,7 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+SVEXTERN int SVDECL(update_patch_bounds, -1), SVDECL(update_slice_bounds, -1), SVDECL(update_part_bounds, -1), SVDECL(update_plot3d_bounds, -1);
 SVEXTERN float max_dx, max_dy, max_dz;
 SVEXTERN int SVDECL(vec_uniform_length, 0);
 SVEXTERN int SVDECL(vec_uniform_spacing, 0);
@@ -36,7 +37,7 @@ SVEXTERN int render_skips[NRENDER_SKIPS];
 SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
-SVEXTERN int SVDECL(compute_smv_bounds, 1);
+SVEXTERN int SVDECL(bounds_each_mesh, 0);
 
 #ifdef pp_MULTI_RES
 SVEXTERN int SVDECL(slice_resolution_level, -1);

@@ -3201,7 +3201,7 @@ void LoadUnloadMenu(int value){
     UpdatePlot3dMenuLabels();
   }
   if(value==COMPUTE_SMV_BOUNDS){
-    compute_smv_bounds = 1-compute_smv_bounds;
+    bounds_each_mesh = 1-bounds_each_mesh;
     updatemenu = 1;
   }
   if(value==REDIRECT){
@@ -5143,16 +5143,6 @@ void Plot3DListMenu(int value){
     plot3ddata *plot3di;
 
     plot3di = plot3dinfo + i;
-    if(ABS(plot3di->time-plot3dtimelist[value])<0.5){
-      LoadPlot3dMenu(i);
-    }
-  }
-#endif
-#ifdef pp_CPPBOUND_DIALOG
-  for(i = 0; i<nplot3dinfo; i++){
-    plot3ddata *plot3di;
-
-    plot3di = plot3dinfo+i;
     if(ABS(plot3di->time-plot3dtimelist[value])<0.5){
       LoadPlot3dMenu(i);
     }
@@ -11700,8 +11690,8 @@ updatemenu=0;
 #endif
       if(showfiles==1)glutAddMenuEntry(_("*Show file names"),SHOWFILES);
       if(showfiles==0)glutAddMenuEntry(_("Show file names"),SHOWFILES);
-      if(compute_smv_bounds==1)glutAddMenuEntry(_("*Compute and show file bounds"), COMPUTE_SMV_BOUNDS);
-      if(compute_smv_bounds==0)glutAddMenuEntry(_("*Compute and show file bounds"), COMPUTE_SMV_BOUNDS);
+      if(bounds_each_mesh==1)glutAddMenuEntry(_("*Show file bounds for each mesh"), COMPUTE_SMV_BOUNDS);
+      if(bounds_each_mesh==0)glutAddMenuEntry(_("Show file bounds for each mesh"), COMPUTE_SMV_BOUNDS);
       {
         char menulabel[1024];
 
