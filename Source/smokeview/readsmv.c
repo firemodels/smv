@@ -10450,7 +10450,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWBOUNDS")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i", &bounds_each_mesh);
+      sscanf(buffer, " %i %i", &bounds_each_mesh, &show_bound_diffs);
       continue;
     }
     if(Match(buffer, "BLENDMODE")==1){
@@ -14788,7 +14788,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWBLOCKS\n");
   fprintf(fileout, " %i\n", visBlocks);
   fprintf(fileout, "SHOWBOUNDS\n");
-  fprintf(fileout, " %i\n", bounds_each_mesh);
+  fprintf(fileout, " %i %i\n", bounds_each_mesh, show_bound_diffs);
   fprintf(fileout, "SHOWCADANDGRID\n");
   fprintf(fileout, " %i\n", show_cad_and_grid);
   fprintf(fileout, "SHOWCADOPAQUE\n");

@@ -3206,6 +3206,10 @@ void LoadUnloadMenu(int value){
     bounds_each_mesh = 1-bounds_each_mesh;
     updatemenu = 1;
   }
+  if(value==SHOW_BOUND_DIFFS){
+    show_bound_diffs = 1-show_bound_diffs;
+    updatemenu = 1;
+  }
   if(value==REDIRECT){
     updatemenu=1;
     GLUTPOSTREDISPLAY;
@@ -11695,6 +11699,8 @@ updatemenu=0;
       if(showfiles==0)glutAddMenuEntry(_("Show file names"),SHOWFILES);
       if(bounds_each_mesh==1)glutAddMenuEntry(_("*Show file bounds for each mesh"), COMPUTE_SMV_BOUNDS);
       if(bounds_each_mesh==0)glutAddMenuEntry(_("Show file bounds for each mesh"), COMPUTE_SMV_BOUNDS);
+      if(show_bound_diffs==1)glutAddMenuEntry(_("*Show bound differences"), SHOW_BOUND_DIFFS);
+      if(show_bound_diffs==0)glutAddMenuEntry(_("Show bound differences"), SHOW_BOUND_DIFFS);
       {
         char menulabel[1024];
 

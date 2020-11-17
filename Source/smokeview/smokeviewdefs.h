@@ -10,12 +10,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define    ALL_FILES 0
 #define LOADED_FILES 1
 
-#ifdef pp_BOUND_DIFFS
-#define OUTPUTMINMAX(l,s,u,a,b,c,d) OutputMinMax(l,s,u,a,b,c,d)
-#else
-#define OUTPUTMINMAX(l,s,u,a,b,c,d) OutputMinMax(l,s,u,c,d)
-#endif
-
 #ifdef pp_CPPBOUND_DIALOG
 #define BOUND_SET_MAX        0
 #define BOUND_LOADED_MAX     1
@@ -664,6 +658,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define REDIRECT               6
 #define SHOWMESHMENUS          7
 #define COMPUTE_SMV_BOUNDS    10
+#define SHOW_BOUND_DIFFS      11
 
 #define SCRIPT_START_RECORDING2 -6
 #define SCRIPT_START_RECORDING  -2

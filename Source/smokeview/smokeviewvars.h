@@ -38,6 +38,7 @@ SVEXTERN char *crender_skips[NRENDER_SKIPS];
 #endif
 
 SVEXTERN int SVDECL(bounds_each_mesh, 0);
+SVEXTERN int SVDECL(show_bound_diffs, 0);
 
 #ifdef pp_MULTI_RES
 SVEXTERN int SVDECL(slice_resolution_level, -1);

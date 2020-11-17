@@ -50,7 +50,6 @@
 //#define pp_SLICE_BUFFER       // read  slice file into a buffer before processing
 //#define pp_RESEARCH_DEBUG     // output whether data is reloaded or colors reemapped when toggling to/from research mode
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
-#define pp_BOUND_DIFFS        // output difference between fds and smv computed bound
 
 // define old dialog if not using new dialogs
 #ifndef pp_CPPBOUND_DIALOG
