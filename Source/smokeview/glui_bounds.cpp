@@ -1293,6 +1293,7 @@ extern "C" void SliceBoundsCPP_CB(int var){
         if(bounds->hist!=NULL&&bounds->hist->defined==1){
           GetHistogramValProc(bounds->hist, percentile_level_min, &per_valmin);
           GetHistogramValProc(bounds->hist, percentile_level_max, &per_valmax);
+          GetHistogramValProc(bounds->hist, 0.5,                  &(bounds->hist->median));
           SetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
           SetMax(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
           histogram_draw = bounds->hist;
@@ -1553,6 +1554,7 @@ extern "C" void PatchBoundsCPP_CB(int var){
         if(bounds->hist!=NULL&&bounds->hist->defined==1){
           GetHistogramValProc(bounds->hist, percentile_level_min, &per_valmin);
           GetHistogramValProc(bounds->hist, percentile_level_max, &per_valmax);
+          GetHistogramValProc(bounds->hist, 0.5,                  &(bounds->hist->median));
           SetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
           SetMax(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
           histogram_draw = bounds->hist;

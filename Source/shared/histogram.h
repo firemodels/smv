@@ -31,6 +31,7 @@ typedef struct {
   float val_mean, val_stdev;
   float time;
   int time_defined;
+  float median;
   int complete;
 } histogramdata;
 

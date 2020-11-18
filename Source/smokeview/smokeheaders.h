@@ -12,6 +12,7 @@ EXTERNCPP void UpdateColorLabelDigits(void);
 
 EXTERNCPP void IncrementPartPropIndex(void);
 
+EXTERNCPP int GetStringWidth(char *string);
 EXTERNCPP void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax);
 EXTERNCPP int GetPercentileDraw(int type);
 

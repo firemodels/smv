@@ -7273,17 +7273,31 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
   /* ------------------ DrawHistogram ------------------------ */
 
-#define MAXN 101
-void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax){
-  float dx, x[MAXN], y[MAXN], ymax, *buckets;
+#define MAXN 201
+void DrawHistogram(histogramdata *histogram, float valmin, float valmax){
+  float dx, x[MAXN], y[MAXN], ymax, *buckets, valmin_normalized, valmax_normalized;
   int index[MAXN+1], i, n = MAXN;
-  float black[]={0.0,0.0,0.0}, blue[]={0.0,0.0,1.0}, *color;
+  float black[]={0.0,0.0,0.0}, blue[]={0.0,0.0,1.0}, *color, *color_old=NULL, median, median_normalized;
+  char cmin[20], cmedian[20], cmax[20], cvalmin[20], cvalmax[20];
+  float cmin_width, cmax_width, median_width, cvalmin_width, cvalmax_width;
 
   if(histogram==NULL||histogram->buckets==NULL||histogram->defined==0)return;
+  median = histogram->median;
   if(histogram->val_max>histogram->val_min){
-    xxmin = (xxmin-histogram->val_min)/(histogram->val_max-histogram->val_min);
-    xxmax = (xxmax-histogram->val_min)/(histogram->val_max-histogram->val_min);
+    valmin_normalized = (valmin-histogram->val_min)/(histogram->val_max-histogram->val_min);
+    valmax_normalized = (valmax-histogram->val_min)/(histogram->val_max-histogram->val_min);
+    median_normalized = (median-histogram->val_min)/(histogram->val_max-histogram->val_min);
   }
+  Float2String(cmin, histogram->val_min, 4);
+  Float2String(cmedian, median, 4);
+  Float2String(cmax, histogram->val_max, 4);
+  Float2String(cvalmin, valmin, 4);
+  Float2String(cvalmax, valmax, 4);
+  cmin_width = (float)GetStringWidth(cmin)/screenWidth;;
+  cmax_width = (float)GetStringWidth(cmax)/screenWidth;;
+  median_width = (float)GetStringWidth(cmedian)/screenWidth;;
+  cvalmin_width = (float)GetStringWidth(cvalmin)/screenWidth;;
+  cvalmax_width = (float)GetStringWidth(cvalmax)/screenWidth;;
 
   dx = 1.0/(float)(n-1);
   for(i = 0; i<n; i++){
@@ -7308,31 +7322,27 @@ void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax){
     y[i]/=ymax;
   }
 
-  color = blue;
   glPushMatrix();
   glScalef(1.0, 1.0, 0.8);
   glTranslatef(xbar/2.0-0.5, -0.05, 0.0);
   glBegin(GL_TRIANGLES);
-  glColor3fv(color);
   for(i = 0; i<n-1; i++){
     float x1, x2;
 
     x1 = x[i];
     x2 = x[i+1];
 
-    if(xxmin<=xxmax&&(x1<xxmin||x2>xxmax)){
-      if(color!=blue){
-        color = blue;
-        glColor3fv(color);
-      }
+    if(valmin_normalized<=valmax_normalized&&(x1<valmin_normalized||x2>valmax_normalized)){
+      color = blue;
     }
     else{
-      if(color!=black){
-        color = black;
-        glColor3fv(color);
-      }
+      color = black;
     }
- 
+    if(color_old!=color){
+      glColor3fv(color);
+      color_old = color;
+    }
+
     glVertex3f(x1, 0.0, 0.0);
     glVertex3f(x2, 0.0, 0.0);
     glVertex3f(x2, 0.0, y[i+1]);
@@ -7350,6 +7360,31 @@ void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax){
     glVertex3f(x2, 0.0, y[i+1]);
   }
   glEnd();
+#define DZHIST1 0.025
+#define DZHIST2 0.050
+#define DZHIST3 0.075
+  glColor3fv(black);
+  glBegin(GL_LINES);
+  glVertex3f(0.0, 0.0, 0.0);
+  glVertex3f(0.0, 0.0, -0.02);
+  glVertex3f(median_normalized, 0.0, 0.0);
+  glVertex3f(median_normalized, 0.0, -DZHIST1);
+  glVertex3f(1.0, 0.0, 0.0);
+  glVertex3f(1.0, 0.0, -DZHIST1);
+
+  glColor3fv(blue);
+  glVertex3f(valmin_normalized, 0.0, 0.0);
+  glVertex3f(valmin_normalized, 0.0, -DZHIST1);
+  glVertex3f(valmax_normalized, 0.0, 0.0);
+  glVertex3f(valmax_normalized, 0.0, -DZHIST1);
+  glEnd();
+
+  Output3Text(black, -cmin_width/2.0,                                               0.0, -DZHIST2, cmin);
+  Output3Text(black, 0.001+MAX(median_normalized-median_width/2.0, cmin_width/2.0), 0.0, -DZHIST2, cmedian);
+  Output3Text(black, 1.0-cmax_width/2.0,                                            0.0, -DZHIST2, cmax);
+
+  Output3Text(blue,  valmin_normalized-cvalmin_width/2.0,                           0.0, -DZHIST3, cvalmin);
+  Output3Text(blue,  valmax_normalized-cvalmax_width/2.0,                           0.0, -DZHIST3, cvalmax);
   glPopMatrix();
 }
 
