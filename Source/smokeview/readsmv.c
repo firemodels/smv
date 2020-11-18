@@ -2284,11 +2284,9 @@ void UpdateBoundInfo(void){
     }
   }
   UpdateChar();
-#ifdef pp_CPPBOUND_DIALOG
-  GetGlobalPatchBounds();
   GetGlobalPartBounds(ALL_FILES);
   GetGlobalSliceBounds();
-#endif
+  GetGlobalPatchBounds();
 }
 
 /* ------------------ UpdateEndianInfo ------------------------ */

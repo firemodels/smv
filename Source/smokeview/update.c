@@ -1899,23 +1899,23 @@ int GetColorbarState(void){
 /* ------------------ OutputMinMax  ------------------------ */
 
 void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, float valmax_fds, float valmin_smv, float valmax_smv){
-  char cvalmin_smv[20], cvalmax_smv[20];
+  char cvalmin_fds[20], cvalmax_fds[20];
   char cdiff_min[20], cdiff_max[20];
   char cmin[100], cmax[100];
   char labelunit[50];
 
-  Float2String(cvalmin_smv, valmin_smv, 6);
-  Float2String(cvalmax_smv, valmax_smv, 6);
+  Float2String(cvalmin_fds, valmin_fds, 6);
+  Float2String(cvalmax_fds, valmax_fds, 6);
 
-  Float2String(cdiff_min, valmin_smv-valmin_fds, 3);
-  Float2String(cdiff_max, valmax_smv-valmax_fds, 3);
+  Float2String(cdiff_min, valmin_fds-valmin_smv, 3);
+  Float2String(cdiff_max, valmax_fds-valmax_smv, 3);
 
-  strcpy(cmin,cvalmin_smv);
+  strcpy(cmin,cvalmin_fds);
   strcat(cmin,"(");
   strcat(cmin,cdiff_min);
   strcat(cmin,")");
 
-  strcpy(cmax,cvalmax_smv);
+  strcpy(cmax,cvalmax_fds);
   strcat(cmax,"(");
   strcat(cmax,cdiff_max);
   strcat(cmax,")");
@@ -1928,7 +1928,7 @@ void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, fl
     printf("%s: %23.23s, min(delta)=%22.22s, max(delta)=%22.22s\n", meshlabel, labelunit, cmin, cmax);
   }
   else{
-    printf("%s %s, min=%12.12s, max=%12.12s\n", meshlabel, labelunit, cvalmin_smv, cvalmax_smv);
+    printf("%s %s, min=%12.12s, max=%12.12s\n", meshlabel, labelunit, cvalmin_fds, cvalmax_fds);
   }
 }
 
