@@ -375,6 +375,11 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     DrawLabels();
   }
 
+  /* ++++++++++++++++++++++++ DrawHistogram +++++++++++++++++++++++++ */
+  if(histogram_draw!=NULL){
+    DrawHistogram(histogram_draw, xmin_draw, xmax_draw);
+  }
+
   /* ++++++++++++++++++++++++ draw animated isosurfaces +++++++++++++++++++++++++ */
 
   if(showiso == 1){

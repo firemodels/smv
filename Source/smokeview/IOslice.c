@@ -7271,6 +7271,88 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   }
 }
 
+  /* ------------------ DrawHistogram ------------------------ */
+
+#define MAXN 101
+void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax){
+  float dx, x[MAXN], y[MAXN], ymax, *buckets;
+  int index[MAXN+1], i, n = MAXN;
+  float black[]={0.0,0.0,0.0}, blue[]={0.0,0.0,1.0}, *color;
+
+  if(histogram==NULL||histogram->buckets==NULL||histogram->defined==0)return;
+  if(histogram->val_max>histogram->val_min){
+    xxmin = (xxmin-histogram->val_min)/(histogram->val_max-histogram->val_min);
+    xxmax = (xxmax-histogram->val_min)/(histogram->val_max-histogram->val_min);
+  }
+
+  dx = 1.0/(float)(n-1);
+  for(i = 0; i<n; i++){
+    x[i] = (float)i*dx;
+    index[i] = (float)i*(float)histogram->nbuckets/(float)n;
+  }
+  index[n] = histogram->nbuckets;
+  x[n-1] = 1.0;
+
+  buckets = histogram->buckets;
+  ymax = 0.0;
+  for(i = 0; i<n; i++){
+    int j;
+
+    y[i] = 0.0;
+    for(j = index[i]; j<index[i+1]; j++){
+      y[i] += buckets[j];
+    }
+    ymax = MAX(ymax, y[i]);
+  }
+  for(i = 0; i<n; i++){
+    y[i]/=ymax;
+  }
+
+  color = blue;
+  glPushMatrix();
+  glScalef(1.0, 1.0, 0.8);
+  glTranslatef(xbar/2.0-0.5, -0.05, 0.0);
+  glBegin(GL_TRIANGLES);
+  glColor3fv(color);
+  for(i = 0; i<n-1; i++){
+    float x1, x2;
+
+    x1 = x[i];
+    x2 = x[i+1];
+
+    if(xxmin<=xxmax&&(x1<xxmin||x2>xxmax)){
+      if(color!=blue){
+        color = blue;
+        glColor3fv(color);
+      }
+    }
+    else{
+      if(color!=black){
+        color = black;
+        glColor3fv(color);
+      }
+    }
+ 
+    glVertex3f(x1, 0.0, 0.0);
+    glVertex3f(x2, 0.0, 0.0);
+    glVertex3f(x2, 0.0, y[i+1]);
+
+    glVertex3f(x1, 0.0, 0.0);
+    glVertex3f(x2, 0.0, y[i+1]);
+    glVertex3f(x2, 0.0, 0.0);
+
+    glVertex3f(x1, 0.0, 0.0);
+    glVertex3f(x2, 0.0, y[i+1]);
+    glVertex3f(x1, 0.0, y[i]);
+
+    glVertex3f(x1, 0.0, 0.0);
+    glVertex3f(x1, 0.0, y[i]);
+    glVertex3f(x2, 0.0, y[i+1]);
+  }
+  glEnd();
+  glPopMatrix();
+}
+
 /* ------------------ DrawVVolSliceTerrain ------------------------ */
 
 void DrawVVolSliceTerrain(const vslicedata *vd){
