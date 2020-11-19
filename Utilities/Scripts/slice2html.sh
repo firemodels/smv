@@ -18,6 +18,20 @@ function Usage {
 }
 
 #---------------------------------------------
+#                   trim
+#---------------------------------------------
+
+trim()
+{
+  local var="$*"
+# remove leading whitespace characters
+  var="${var#"${var%%[![:space:]]*}"}"
+# remove trailing whitespace characters
+  var="${var%"${var##*[![:space:]]}"}"
+  printf '%s' "$var"
+}
+
+#---------------------------------------------
 #                   is_smokeview_installed
 #---------------------------------------------
 
@@ -35,12 +49,21 @@ is_smokeview_installed()
 }
 
 #---------------------------------------------
-#                   OUTPUT_SLICES
+#                   restore_localstate
 #---------------------------------------------
 
-OUTPUT_SLICES ()
+restore_localstate()
 {
-  cat $slicefilemenu | awk -F"," '{ print $1" ",$2," ",$3," ",$4}'
+  index=$1
+  LOCALCONFIG=$CONFIGDIR/slice2html_${input}_${index}
+  if [ -e $LOCALCONFIG ]; then
+    source $LOCALCONFIG
+    var="SLICE2HTML_${input}_${index}_min"
+    valmin=${!var}
+    var="SLICE2HTML_${input}_${index}_max"
+    valmax=${!var}
+    have_bounds=1
+  fi
 }
 
 #---------------------------------------------
@@ -51,10 +74,23 @@ restore_state()
 {
   if [ -e $GLOBALCONFIG ]; then
     source $GLOBALCONFIG
-    HTMLDIR=$SLICE2HTML_HTMLDIR
-    TIMEFRAME=$SLICE2HTML_TIMEFRAME
-    EMAIL=$SLICE2HTML_EMAIL
+    HTMLDIR=${SLICE2HTML_HTMLDIR}
+    TIMEFRAME=${SLICE2HTML_TIMEFRAME}
+    EMAIL=${SLICE2HTML_EMAIL}
   fi
+}
+
+#---------------------------------------------
+#                   save_localstate
+#---------------------------------------------
+
+save_localstate()
+{
+  index=$1
+  LOCALCONFIG=$CONFIGDIR/slice2html_${input}_${index}
+  echo "#/bin/bash"                                 > $LOCALCONFIG
+  echo "SLICE2HTML_${input}_${index}_min=$valmin"  >> $LOCALCONFIG
+  echo "SLICE2HTML_${input}_${index}_max=$valmax"  >> $LOCALCONFIG
 }
 
 #---------------------------------------------
@@ -63,12 +99,55 @@ restore_state()
 
 save_state()
 {
-  if [ -e $GLOBALCONFIG ]; then
-    echo "#/bin/bash"                             >  $GLOBALCONFIG
-    echo "export SLICE2HTML_HTMLDIR=$HTMLDIRDIR"  >> $GLOBALCONFIG
-    echo "export SLICE2HTML_TIMEFRAME=$TIMEFRAME" >> $GLOBALCONFIG
-    echo "export SLICE2HTML_EMAIL=$EMAIL"         >> $GLOBALCONFIG
-  fi
+  echo "#/bin/bash"                      >  $GLOBALCONFIG
+  echo "SLICE2HTML_HTMLDIR=$HTMLDIRDIR"  >> $GLOBALCONFIG
+  echo "SLICE2HTML_TIMEFRAME=$TIMEFRAME" >> $GLOBALCONFIG
+  echo "SLICE2HTML_EMAIL=$EMAIL"         >> $GLOBALCONFIG
+}
+
+#---------------------------------------------
+#                   writeini
+#---------------------------------------------
+
+
+writeini ()
+{
+ini_filename=$1
+echo "valmin=$valmin"
+if [ "$valmin" != "" ]; then
+cat << EOF > $ini_filename
+V2_SLICE
+ 0 $valmin 0 $valmax $slice_quantity_short
+
+EOF
+fi
+}
+
+
+#---------------------------------------------
+#                   select_slice
+#---------------------------------------------
+
+select_slice()
+{
+    have_bounds=
+    cat $slicefilemenu | awk -F"," '{ print $1" ",$2," ",$3," ",$4}'
+    read -p "Select slice index to generate an html file: " ans
+    if [[ "$ans" -ge 1 ]] && [[ "$ans" -le "$nslices" ]]; then
+      slice_index=$ans
+      slice_quantity=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $2} }'`
+      slice_quantity=`trim "$slice_quantity"`
+
+      slice_quantity_short=`grep -A 4 SLCF $smvfile | grep "$slice_quantity" -A 1 | head -2 | tail -1`
+      slice_quantity_short=`trim "$slice_quantity_short"`
+
+      slice_quantity_unit=`grep -A 4 SLCF $smvfile | grep "$slice_quantity" -A 2 | tail -1`
+      slice_quantity_unit=`trim "$slice_quantity_unit"`
+      restore_localstate $ans
+
+    else
+      echo slice index, $ans, is out of bounds
+    fi
 }
 
 #---------------------------------------------
@@ -77,27 +156,51 @@ save_state()
 
 generate_html ()
 {
-script_index=$1
 while true; do
   echo ""
   echo "slice quantity: $slice_quantity "
+  if [ "$TIMEFRAME" == "-1" ]; then
+    echo " time frame(s):  all"
+  else
+    echo " time frame(s):  $TIMEFRAME"
+  fi
+if [ "$have_bounds" == "1" ]; then
+  echo "      min, max: $valmin $slice_quantity_unit, $valmax $slice_quantity_unit"
+else
+  echo "        bounds: default"
+fi
+
+  echo "      html dir: $HTMLDIR"
   echo "     smokeview: $SMOKEVIEW"
   echo "         email: $EMAIL"
   echo ""
-  echo "h - define directory containing html page"
-  echo "m - select email address"
-  echo "t - select time frame (-1 for all time frames)"
+  echo "s - select slice"
+  echo "b - set bounds"
+  echo "h - set html directory"
+  echo "m - set email address"
+  echo "t - set time frame (-1 for all time frames)"
   echo "1 - generate html page"
   echo "x - exit"
-  EXIT_SCRIPT=
+
   read -p "option: " ans
   if [ "$ans" == "h" ]; then
-    read -p "   enter html directory: " HTMLDIR
+    read -p "   enter html dir: " HTMLDIR
     CHECK_WRITE $HTMLDIR
     continue
   fi
+  if [ "$ans" == "b" ]; then
+    have_bounds=1
+    read -p "   set $slice_quantity_short min: " valmin
+    read -p "   set $slice_quantity_short max: " valmax
+    save_localstate $slice_index
+    continue
+  fi
+  if [ "$ans" == "s" ]; then
+    select_slice
+    continue
+  fi
   if [ "$ans" == "m" ]; then
-    read -p "   enter email address: " EMAIL
+    read -p "   set email address: " EMAIL
     continue
   fi
   if [ "$ans" == "t" ]; then
@@ -105,7 +208,6 @@ while true; do
     continue
   fi
   if [ "$ans" == "x" ]; then
-    EXIT_SCRIPT=1
     save_state
     exit
   fi
@@ -113,20 +215,27 @@ while true; do
     save_state
     if [ -e $scriptname ]; then
       echo "***creating html file"
-      scriptname=${SMVSCRIPTDIR}${input}_slice_${ans}.ssf
+      scriptname=${SMVSCRIPTDIR}${input}_slice_${slice_index}.ssf
+      smv_inifilename=${SMVSCRIPTDIR}${input}_slice_${slice_index}.ini
+      writeini $smv_inifilename
       rm -f $scriptname
-      GENERATE_SCRIPT $script_index $scriptname
+      GENERATE_SCRIPT $slice_index $scriptname $smv_inifilename
       echo dir=`pwd`
       echo "$SMOKEVIEW -htmlscript $scriptname -bindir $SMVBINDIR  $input"
             $SMOKEVIEW -htmlscript $scriptname -bindir $SMVBINDIR  $input
       if [ -e $htmlfile ]; then
         filesize=`ls -lk $htmlfile | awk '{print $5}'`
+        filesize=$((filesize/1000))
         echo "*** The html file, $htmlfile(${filesize}K), has been created."
+        if [[ "$EMAIL" != "" ]] && [[ -e $htmlfile ]]; then
+          echo "*** The html file, $htmlfile(${filesize}K), has been emailed to $EMAIL"
+          echo "" | mail -s "html page for $slice_quantity(${filesize}K)" -a $htmlfile $EMAIL
+        fi
       else
         echo "*** Creation of the html file $htmlfile failed."
       fi
     fi
-    return
+    continue
   fi
 done
 }
@@ -139,16 +248,28 @@ GENERATE_SCRIPT ()
 {
   ind=$1
   scriptname=$2
+  ini_filename=$3
   htmlbase=${input}_slice_${ind}
   htmlfile=$HTMLDIR/${htmlbase}.html
   cat << EOF > $scriptname
 RENDERHTMLDIR
   $HTMLDIR
 UNLOADALL
+LOADINIFILE  
+ $ini_filename  
 LOADSLICE
 EOF
   cat $slicefilemenu | awk -v ind="$ind" -F"," '{ if($1 == ind){print $2"\n" $3 $4"\n"} }' >> $scriptname
+
   slice_quantity=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $2} }'`
+  slice_quantity=`trim "$slice_quantity"`
+
+  slice_quantity_short=`grep -A 4 SLCF $slicefilemenu | grep "$slice_quantity" -A 1 | head -2 | tail -1`
+  slice_quantity_short=`trim "$slice_quantity_short"`
+
+  slice_quantity_unit=`grep -A 4 SLCF $slicefilemenu | grep "$slice_quantity" -A 2 | tail -1`
+  slice_quantity_unit=`trim "$slice_quantity_unit"`
+
   cat << EOF >> $scriptname
 RENDERHTMLALL
   $htmlbase
@@ -167,6 +288,10 @@ SMVREPO=$ROOTDIR/smv
 BOTREPO=$ROOTDIR/bot
 cd $CURDIR
 SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_64
+if [ ! -e $SMOKEVIEW ]; then
+  SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_test_64
+fi
+
 SMVBINDIR=$BOTREPO/Bundle/smv/for_bundle
 
 CONFIGDIR=$HOME/.smokeview
@@ -208,6 +333,7 @@ case $OPTION  in
 esac
 done
 shift $(($OPTIND-1))
+
 restore_state
 
 
@@ -228,6 +354,7 @@ fi
 
 if [ ! -e $smvfile ]; then
   echo "***error: The .smv file, $smvfile, does not exist"
+  exit 1
 fi
 
 if [ ! -e $slicefilemenu ]; then
@@ -241,27 +368,9 @@ fi
 
 nslices=`cat $slicefilemenu | wc -l`
 if [ "$nslices" == "0" ]; then
-  echo "*** No slice files exist in the smokeview file $smvfile"
+  echo "*** No slice files found in the smokeview file $smvfile"
   exit
 fi
 
-while true; do
-  OUTPUT_SLICES
-  read -p "Select slice index to generate an html file: " ans
-  if [[ "$ans" -ge 1 ]] && [[ "$ans" -le "$nslices" ]]; then
-    slice_index=$ans
-    slice_quantity=`cat $slicefilemenu | awk -v ind="$slice_index" -F"," '{ if($1 == ind){print $2} }'`
-    generate_html $ans
-    if [ "$EXIT_SCRIPT" != "" ]; then
-      exit
-    fi
-    if [ "$EMAIL" != "" ]; then
-      if [ -e $htmlfile ]; then
-        echo "html file, $htmlfile, sent to $EMAIL"
-        echo "" | mail -s "html page for of $slice_quantity" -a $htmlfile $EMAIL
-      fi
-    fi
-  else
-    echo index $ans out of bounds
-  fi
-done
+select_slice
+generate_html
