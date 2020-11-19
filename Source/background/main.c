@@ -111,7 +111,7 @@ int main(int argc, char **argv){
   int itime;
   char *arg;
 #ifdef WIN32
-  char *command;
+  char *command, *base;
 #endif
 
   SetStdOut(stdout);
@@ -271,11 +271,19 @@ int main(int argc, char **argv){
 #ifdef WIN32
   GetSystemTimesAddress();
   command=argv[argstart];
+  base = strrchr(command,'\\');
+  if(base!=NULL){
+    base++;
+  }
+  else{
+    base=command;
+  }
+
   if(nprocs_max>0){
-    nprocs = getnprocs(command);
+    nprocs = getnprocs(base);
     while(nprocs>=nprocs_max){
       Sleep(1000);
-      nprocs = getnprocs(command);
+      nprocs = getnprocs(base);
     }
   }
   else{
