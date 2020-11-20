@@ -60,23 +60,26 @@
 //*** options: windows
 
 #ifdef WIN32
-#define pp_DEG          // output degree symbol
+#define pp_DEG              // output degree symbol
 #define pp_memstatus
-#define pp_COMPRESS     // support for smokezip
+#define pp_COMPRESS         // support for smokezip
+#define pp_DIALOG_SHORTCUTS // dialog shortcuts
 #endif
 
 //*** options: Linux
 
 #ifdef pp_LINUX
-#define pp_DEG          // output degree symbol
-#define pp_REFRESH      // refresh glui dialogs when they change size
+#define pp_DEG              // output degree symbol
+#define pp_DIALOG_SHORTCUTS // dialog shortcuts
+#define pp_REFRESH          // refresh glui dialogs when they change size
 #endif
 
 //*** options: Mac
 
 #ifdef pp_OSX
-#define pp_GLUTGET      // use d and f key in addition to CTRL and ALT key
-#define pp_QUARTZ       // use Quartz
+#define pp_GLUTGET      // use d and f key in place of CTRL and ALT key
+#define pp_QUARTZ         // use Quartz
+// no dialog short cuts on the mac
 #endif
 
 #ifdef pp_QUARTZ
