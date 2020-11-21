@@ -469,6 +469,11 @@ void GetPartColors(partdata *parti, int nlevel){
   float *length_data, *azimuth_data, *elevation_data;
   float *u_vel_data, *v_vel_data, *w_vel_data;
 
+  if(parti->stream==NULL){
+    printf("***warning: particle data in %s was unloaded, colors not updated\n",parti->file);
+    return;
+  }
+
   datacopy = parti->data5;
 
 #ifdef pp_CPPBOUND_DIALOG

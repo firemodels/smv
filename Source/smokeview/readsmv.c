@@ -4062,6 +4062,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->valmax_fds = NULL;
   parti->valmin_smv = NULL;
   parti->valmax_smv = NULL;
+  parti->stream     = NULL;
   if(FGETS(buffer, 255, stream)==NULL){
     npartinfo--;
     return RETURN_BREAK;

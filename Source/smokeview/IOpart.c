@@ -48,6 +48,22 @@ if(returncode==PASS_m){\
   if(ferror(PART5FILE)==1||feof(PART5FILE)==1)returncode=FAIL_m;\
 }
 
+/* ------------------ ClosePartFiles ------------------------ */
+
+void ClosePartFiles(void){
+  int i;
+
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+
+    parti = partinfo+i;
+    if(parti->loaded==1&&parti->stream!=NULL){
+      FCLOSE_m(parti->stream);
+      parti->stream = NULL;
+    }
+  }
+}
+
 /* ------------------ GetEvacPartColor ------------------------ */
 
 int GetEvacPartColor(float **color_handle, part5data *datacopy, int show_default, int j, int itype){
@@ -1247,7 +1263,7 @@ void MergePartHistograms(void){
         if(prop_id==NULL)continue;
 
         partprop_index = prop_id-part5propinfo;
-        MergeHistogram(full_part_histogram+partprop_index, parti->histogram_all+partprop_index, MERGE_BOUNDS);
+        MergeHistogram(full_part_histogram+partprop_index, parti->histograms[partprop_index], MERGE_BOUNDS);
       }
     }
   }
@@ -1270,6 +1286,10 @@ void GetPartData(partdata *parti, int partframestep_arg, int nf_all_arg, FILE_SI
 
   *file_size_arg = GetFileSizeSMV(parti->reg_file);
 
+  if(parti->stream!=NULL){
+    FCLOSE_m(parti->stream);
+    parti->stream = NULL;
+  }
   PART5FILE = fopen_m(parti->reg_file, "rbm");
   parti->stream = PART5FILE;
   if(PART5FILE==NULL)return;
@@ -1478,140 +1498,6 @@ wrapup:
   CheckMemory;
   FREEMEMORY(numtypes_local);
   FREEMEMORY(numpoints_local);
-}
-
-  /* ------------------ GetHistFileData ------------------------ */
-
-void GetHistFileData(partdata *parti, int partframestep_local, int nf_all){
-  FILE *PART5FILE;
-  int one;
-  int version;
-  int nclasses;
-  int i;
-  int skip_local;
-  size_t returncode;
-  float time_local;
-  int nparts;
-  int *numtypes = NULL, *numtypescopy, *numpoints = NULL;
-  int numtypes_temp[2];
-  char *reg_file;
-  int count;
-  float *rvals;
-  int nrvals;
-
-  reg_file = parti->reg_file;
-
-  nrvals = 100;
-  NewMemory((void **)&rvals, nrvals*sizeof(float));
-
-  PART5FILE = fopen(reg_file, "rb");
-  if(PART5FILE == NULL)return;
-
-  FSEEK(PART5FILE, 4, SEEK_CUR); fread(&one, 4, 1, PART5FILE); FSEEK(PART5FILE, 4, SEEK_CUR);
-
-  FORTPART5READ(&version, 1); if(returncode == FAIL_m)goto wrapup;
-  FORTPART5READ(&nclasses, 1); if(returncode == FAIL_m)goto wrapup;
-  NewMemory((void **)&numtypes, 2 * nclasses*sizeof(int));
-  NewMemory((void **)&numpoints, nclasses*sizeof(int));
-  numtypescopy = numtypes;
-  numtypes_temp[0] = 0;
-  numtypes_temp[1] = 0;
-  CheckMemory;
-  for(i = 0; i < nclasses; i++){
-    FORTPART5READ(numtypes_temp, 2);
-    if(returncode == FAIL_m)goto wrapup;
-    *numtypescopy++ = numtypes_temp[0];
-    *numtypescopy++ = numtypes_temp[1];
-    skip_local = 2 * (numtypes_temp[0] + numtypes_temp[1])*(8 + 30);
-    returncode = FSEEK(PART5FILE, skip_local, SEEK_CUR);
-    if(returncode == FAIL_m)goto wrapup;
-  }
-  CheckMemory;
-
-  count=0;
-  for(;;){
-    int doit;
-
-    CheckMemory;
-    if(count >= nf_all)break;
-    FORTPART5READ(&time_local, 1);
-    if(returncode == FAIL_m)break;
-
-    if(count%partframestep_local != 0 || (settmin_p == 1 && time_local<tmin_p - TEPS) || (settmax_p == 1 && time_local>tmax_p + TEPS)){
-      doit = 0;
-    }
-    else{
-      doit = 1;
-    }
-    count++;
-
-    for(i = 0; i < nclasses; i++){
-      FORTPART5READ(&nparts, 1);
-      if(returncode == FAIL_m)goto wrapup;
-      numpoints[i] = nparts;
-      skip_local = 0;
-      CheckMemory;
-      if(parti->evac == 1){
-        skip_local += 4 + NXYZ_COMP_EVAC*4*nparts + 4;
-      }
-      else{
-        skip_local += 4 + NXYZ_COMP_PART*4*nparts + 4;
-      }
-      skip_local += 4 + 4 * nparts + 4;  // skip over tag for now
-      if(skip_local > 0){
-        returncode = FSEEK(PART5FILE, skip_local, SEEK_CUR);
-        if(returncode == FAIL_m)goto wrapup;
-      }
-      CheckMemory;
-
-      skip_local = 0;
-      if(doit == 1){
-        if(numtypes[2 * i] > 0){
-#ifdef pp_PART_TEST
-          int iii, jjj;
-#endif
-
-          if(nparts*numtypes[2 * i] > nrvals){
-            nrvals = nparts*numtypes[2 * i];
-            NewMemory((void **)&rvals, nrvals*sizeof(float));
-          }
-          FORTPART5READ(rvals, nparts*numtypes[2 * i]);
-          if(returncode == FAIL_m)goto wrapup;
-
-#ifdef pp_PART_TEST
-          for(jjj = 0; jjj < numtypes[2 * i]; jjj++){
-            for(iii = 0; iii < nparts; iii++){
-              rvals[iii + jjj*nparts] = 1000.0*parti->seq_id + 200 * jjj + (float)RandInt(-1000, 1000) / 1000.0;
-            }
-          }
-#endif
-        }
-      }
-      else{
-        if(numtypes[2 * i]>0){
-          skip_local += 4 + 4 * nparts*numtypes[2 * i] + 4;  // skip over vals for now
-        }
-      }
-      CheckMemory;
-      if(numtypes[2 * i + 1] > 0){
-        skip_local += 4 + 4 * nparts*numtypes[2 * i + 1] + 4;
-      }
-
-      returncode = PASS_m;
-      if(skip_local > 0){
-        returncode = FSEEK(PART5FILE, skip_local, SEEK_CUR);
-        if(returncode == FAIL_m)goto wrapup;
-      }
-      CheckMemory;
-    }
-    CheckMemory;
-  }
-wrapup:
-  CheckMemory;
-  FREEMEMORY(numtypes);
-  FREEMEMORY(numpoints);
-  FREEMEMORY(rvals);
-  fclose(PART5FILE);
 }
 
 /* ------------------ PrintPartProp ------------------------ */
@@ -2145,10 +2031,26 @@ void UpdatePartColors(partdata *parti){
   }
   if(parti!=NULL){
     if(parti->loaded==1&&parti->display==1){
-      GetPartColors(parti, nrgb);
+      if(parti->stream!=NULL){
+        GetPartColors(parti, nrgb);
+      }
+      else{
+        printf("***warning: particle data in %s was unloaded, colors not updated\n",parti->file);
+      }
     }
   }
   else{
+    for(j = 0; j<npartinfo; j++){
+      partdata *partj;
+
+      partj = partinfo+j;
+      if(partj->loaded==1&&partj->display==1){
+        if(partj->stream==NULL){
+          printf("***warning: particle data in one or more particle files was unloaded, colors not updated\n");
+          return;
+        }
+      }
+    }
     for(j = 0; j<npartinfo; j++){
       partdata *partj;
 
@@ -2188,6 +2090,17 @@ void FinalizePartLoad(partdata *parti){
     MergePartHistograms();
   }
 #endif
+  if(cache_part_data==1){
+    SetPercentilePartBounds();
+    for(j = 0; j<npartinfo; j++){
+      partdata *partj;
+
+      partj = partinfo+j;
+      if(partj->loaded==1){
+        UpdatePartColors(partj);
+      }
+    }
+  }
   parttype = 0;
 #ifdef pp_OLDBOUND_DIALOG
   PartBoundCBInit();
@@ -2269,9 +2182,14 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
     GetPartHistogramFile(parti);
   }
 #endif
-  UpdatePartColors(parti);
+  if(cache_part_data==0){
+    UpdatePartColors(parti);
+  }
   UNLOCK_PART_LOAD;
-  FCLOSE_m(parti->stream);
+  if(cache_part_data==0){
+    FCLOSE_m(parti->stream);
+    parti->stream = NULL;
+  }
 
   PrintMemoryInfo;
 

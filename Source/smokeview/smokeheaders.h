@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void MergePartHistograms(void);
+
 EXTERNCPP void UpdateColorbarControls(void);
 EXTERNCPP void UpdateColorbarControls2(void);
   
@@ -23,12 +25,10 @@ EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valm
 void InitMultiRes(slicedata *sd);
 void NormalizeXYZRes(void);
 #endif
+EXTERNCPP void SetPercentilePartBounds(void);
 EXTERNCPP void ScriptLoadSliceRender(scriptdata *scripti);
 EXTERNCPP int GetNSliceFrames(char *file, float *stime_min, float *stime_max);
 EXTERNCPP void GenerateSliceMenu(void);
-#ifdef pp_PART_HIST
-EXTERNCPP void ComputePartHistograms(void);
-#endif
 #ifdef pp_WUI_VAO
 int InitTerrainVAO(int sizeof_vertices, int sizeof_indices);
 void DrawTerrainGeomGPU(void);
@@ -36,7 +36,10 @@ void DrawTerrainGeomGPU(void);
 void DrawTerrainGeom(int option);
 void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigned int **indices_arg, int *sizeof_indices_arg, int *nindices_arg);
 
-EXTERNCPP void PrintHistogramInfoProc(histogramdata *histogram, int n);
+EXTERNCPP void ClosePartFiles(void);
+#ifdef pp_CPPBOUND_DIALOG
+EXTERNCPP void PartBoundsCPP_CB(int var);
+#endif
 
 #ifdef pp_REFRESH
 EXTERNCPP void RefreshGluiDialogs(void);
@@ -82,9 +85,7 @@ EXTERNCPP void SetLoadedPatchBounds(int *list, int nlist);
 EXTERNCPP void SetLoadedPlot3DBounds(int *list, int nlist);
 EXTERNCPP void SetLoadedPartBounds(int *list, int nlist);
 EXTERNCPP void SetResearchMode(int flag);
-#ifdef pp_PERCENTILES
 EXTERNCPP void SetPercentileMinMax(float p_min, float p_max);
-#endif
 #endif
 EXTERNCPP void ShiftColorbars(void);
 EXTERNCPP int GetColorbarState(void);
