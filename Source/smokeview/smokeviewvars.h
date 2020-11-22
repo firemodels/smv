@@ -836,8 +836,7 @@ SVEXTERN float set_view_xyz[3],user_zaxis[3];
   SVEXTERN float zaxis_angles_orig[3];
 #endif
 
-SVEXTERN char INIfile[1024];
-SVEXTERN char WRITEINIfile[1024];
+SVEXTERN char SVDECL(*smokeviewini_filename, NULL);
 
 SVEXTERN spherepoints SVDECL(*sphereinfo,NULL), SVDECL(*wui_sphereinfo,NULL);
 
@@ -1394,8 +1393,7 @@ SVEXTERN float redcolor[4];
 
 SVEXTERN int loadfiles_at_startup;
 
-SVEXTERN char SVDECL(*smokeviewtempdir,NULL);
-SVEXTERN char SVDECL(*smokeview_cachedir, NULL);
+SVEXTERN char SVDECL(*smokeview_scratchdir,NULL);
 
 SVEXTERN int nmenus;
 SVEXTERN menudata menuinfo[10000];

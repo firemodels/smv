@@ -109,7 +109,7 @@ void WriteBoundIni(void){
   int i;
 
   if(boundinfo_filename == NULL)return;
-  fullfilename = GetFileName(smokeviewtempdir, boundinfo_filename, NOT_FORCE_IN_DIR);
+  fullfilename = GetFileName(smokeview_scratchdir, boundinfo_filename, NOT_FORCE_IN_DIR);
 
   if(fullfilename == NULL)return;
 

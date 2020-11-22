@@ -4092,11 +4092,11 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
 
   // parti->size_file can't be written to, then put it in a world writable temp directory
 
-  if(FILE_EXISTS_CASEDIR(parti->size_file)==NO&&curdir_writable==NO&&smokeviewtempdir!=NULL){
-    len = strlen(smokeviewtempdir)+strlen(bufferptr)+1+3+1;
+  if(FILE_EXISTS_CASEDIR(parti->size_file)==NO&&curdir_writable==NO&&smokeview_scratchdir!=NULL){
+    len = strlen(smokeview_scratchdir)+strlen(bufferptr)+1+3+1;
     FREEMEMORY(parti->size_file);
     if(NewMemory((void **)&parti->size_file, (unsigned int)len)==0)return RETURN_TWO;
-    STRCPY(parti->size_file, smokeviewtempdir);
+    STRCPY(parti->size_file, smokeview_scratchdir);
     STRCAT(parti->size_file, dirseparator);
     STRCAT(parti->size_file, bufferptr);
     STRCAT(parti->size_file, ".sz");
@@ -4104,11 +4104,11 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
 
   // parti->hist_file can't be written to, then put it in a world writable temp directory
 
-  if(FILE_EXISTS_CASEDIR(parti->hist_file)==NO && curdir_writable==NO && smokeviewtempdir!=NULL){
-    len = strlen(smokeviewtempdir)+strlen(bufferptr)+1+5+1;
+  if(FILE_EXISTS_CASEDIR(parti->hist_file)==NO && curdir_writable==NO && smokeview_scratchdir!=NULL){
+    len = strlen(smokeview_scratchdir)+strlen(bufferptr)+1+5+1;
     FREEMEMORY(parti->hist_file);
     if(NewMemory((void **)&parti->hist_file, (unsigned int)len)==0)return RETURN_TWO;
-    STRCPY(parti->hist_file, smokeviewtempdir);
+    STRCPY(parti->hist_file, smokeview_scratchdir);
     STRCAT(parti->hist_file, dirseparator);
     STRCAT(parti->hist_file, bufferptr);
     STRCAT(parti->hist_file, ".hist");
@@ -5308,8 +5308,8 @@ void GenerateViewpointMenu(void){
   char casenameini[256];
 
   strcpy(viewpiontemenu_filename, "");
-  if(smokeview_cachedir!=NULL){
-    strcat(viewpiontemenu_filename, smokeview_cachedir);
+  if(smokeview_scratchdir!=NULL){
+    strcat(viewpiontemenu_filename, smokeview_scratchdir);
     strcat(viewpiontemenu_filename, dirseparator);
   }
   strcat(viewpiontemenu_filename, fdsprefix);
@@ -13735,12 +13735,12 @@ int ReadIni(char *inifile){
     UpdateTerrainOptions();
   }
 
-  // smokeview.ini in case directory
+  // smokeview.ini in $HOME/.smokeview (Linux, OSX) or %userprofile%\.smokeview (Windows)
 
   {
     int returnval;
 
-    returnval = ReadIni2(INIfile, 0);
+    returnval = ReadIni2(smokeviewini_filename, 0);
     if(returnval==2)return 2;
     if(returnval == 0){
       PRINTF("- complete\n");
@@ -14384,8 +14384,8 @@ void WriteIni(int flag,char *filename){
 
     switch(flag){
     case GLOBAL_INI:
-      fileout=fopen(INIfile,"w");
-      outfilename=INIfile;
+      fileout=fopen(smokeviewini_filename,"w");
+      outfilename= smokeviewini_filename;
       break;
     case STDOUT_INI:
       fileout=stdout;

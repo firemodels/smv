@@ -3079,7 +3079,7 @@ void UpdateFedinfo(void){
     ext = strrchr(filename_base, '.');
     *ext = 0;
     strcat(filename_base, "_fed.sf");
-    filename = GetFileName(smokeviewtempdir, filename_base, NOT_FORCE_IN_DIR);
+    filename = GetFileName(smokeview_scratchdir, filename_base, NOT_FORCE_IN_DIR);
 
     NewMemory((void **)&fedi->fed_slice->reg_file, strlen(filename) + 1);
     strcpy(fedi->fed_slice->reg_file, filename);
@@ -3138,7 +3138,7 @@ void UpdateFedinfo(void){
       ext = strrchr(filename_base, '.');
       *ext = 0;
       strcat(filename_base, "_fed.iso");
-      filename = GetFileName(smokeviewtempdir, filename_base, NOT_FORCE_IN_DIR);
+      filename = GetFileName(smokeview_scratchdir, filename_base, NOT_FORCE_IN_DIR);
       NewMemory((void **)&isoi->reg_file, strlen(filename) + 1);
       strcpy(isoi->reg_file, filename);
       FREEMEMORY(filename);
@@ -8671,8 +8671,8 @@ void GenerateSliceMenu(void){
   if(nsliceinfo==0)return;
 
   strcpy(slicemenu_filename, "");
-  if(smokeview_cachedir!=NULL){
-    strcat(slicemenu_filename, smokeview_cachedir);
+  if(smokeview_scratchdir!=NULL){
+    strcat(slicemenu_filename, smokeview_scratchdir);
     strcat(slicemenu_filename, dirseparator);
   }
   strcat(slicemenu_filename, fdsprefix);
