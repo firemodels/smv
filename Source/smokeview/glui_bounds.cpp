@@ -1249,7 +1249,7 @@ extern "C" void SetChopMax(int type, char *label, int set_valmax, float valmax){
   }
 }
 
-/* ------------------ SliceBoundsCPP_CB ------------------------ */
+/* ------------------ slice callback: SliceBoundsCPP_CB ------------------------ */
 
 extern "C" void SliceBoundsCPP_CB(int var){
   int ii, last_slice, error;
@@ -1377,16 +1377,21 @@ int HavePlot3DData(void){
   return 1;
 }
 
-/* ------------------ Plot3DBoundsCPP_CB ------------------------ */
+/* ------------------ plot3d callback: Plot3DBoundsCPP_CB ------------------------ */
 
 void Plot3DBoundsCPP_CB(int var){
-  int i;
+  int i, iplot3d;
+  cpp_boundsdata *all_bounds, *bounds;
 
   plot3dboundsCPP.CB(var);
+  all_bounds = plot3dboundsCPP.all_bounds;
+  iplot3d = GetValType(BOUND_PLOT3D);
+  bounds = all_bounds+iplot3d;
   switch(var){
     case BOUND_VAL_TYPE:
       plotn = GetValType(BOUND_PLOT3D)+1;
       UpdateAllPlotSlices();
+      Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
       break;
     case BOUND_VALMIN:
     case BOUND_VALMAX:
@@ -1396,8 +1401,6 @@ void Plot3DBoundsCPP_CB(int var){
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
-      break;
-    case BOUND_COMPUTE_PERCENTILES:
       break;
     case BOUND_CACHE_DATA:
       cache_plot3d_data = GetCacheFlag(BOUND_PLOT3D);
@@ -1411,6 +1414,46 @@ void Plot3DBoundsCPP_CB(int var){
       }
       else{
         Plot3DBoundsCPP_CB(BOUND_RELOAD_DATA);
+      }
+      break;
+    case BOUND_PERCENTILE_MINVAL:
+    case BOUND_PERCENTILE_MAXVAL:
+    case BOUND_COMPUTE_PERCENTILES:
+    case BOUND_COMPUTE_ONLY_PERCENTILES:
+      if(var==BOUND_COMPUTE_PERCENTILES||bounds->hist==NULL){
+        MergePlot3DHistograms();
+      }
+      if(bounds->hist!=NULL&&bounds->hist->defined==1){
+        SetPercentilePlot3DBounds();
+      }
+      Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+      break;
+    case BOUND_PERCENTILE_DRAW:
+      if(bounds->hist!=NULL&&bounds->hist->defined==1){
+        float per_valmin, per_valmax;
+
+        GetHistogramValProc(bounds->hist, percentile_level_min, &per_valmin);
+        GetHistogramValProc(bounds->hist, percentile_level_max, &per_valmax);
+        GetHistogramValProc(bounds->hist, 0.5, &(bounds->hist->median));
+        SetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+        SetMax(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
+        if(GetPercentileDraw(BOUND_PLOT3D)==1){
+          histogram_draw = bounds->hist;
+          histogram_label1 = cplot3d_label;
+          histogram_label2 = bounds->label;
+          xmin_draw = per_valmin;
+          xmax_draw = per_valmax;
+          SetPercentileDraw(BOUND_PART, 0);
+          SetPercentileDraw(BOUND_PATCH, 0);
+          SetPercentileDraw(BOUND_SLICE, 0);
+        }
+        else{
+          histogram_draw = NULL;
+          histogram_label1 = NULL;
+          histogram_label2 = NULL;
+        }
+        SetMin(BOUND_PLOT3D, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+        SetMax(BOUND_PLOT3D, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
       }
       break;
     case BOUND_RELOAD_DATA:
@@ -1430,7 +1473,7 @@ void Plot3DBoundsCPP_CB(int var){
   }
 }
 
-/* ------------------ PartBoundsCPP_CB ------------------------ */
+/* ------------------ part callback: PartBoundsCPP_CB ------------------------ */
 
 extern "C" void PartBoundsCPP_CB(int var){
   cpp_boundsdata *all_bounds, *bounds;
@@ -1547,7 +1590,7 @@ int HavePatchData(void){
   return 1;
 }
 
-/* ------------------ PatchBoundsCPP_CB ------------------------ */
+/* ------------------ patch callback: PatchBoundsCPP_CB ------------------------ */
 
 #ifdef pp_CPPBOUND_DIALOG
 extern "C" void PatchBoundsCPP_CB(int var){
@@ -1866,6 +1909,30 @@ void SetLoadedPlot3DBounds(int *list, int nlist){
   FREEMEMORY(valmax_dlg);
 }
 
+/* ------------------ SetPercentilePlot3DBounds ------------------------ */
+
+ void SetPercentilePlot3DBounds(void){
+  int nall, i;
+  cpp_boundsdata *all_bounds;
+
+  if(full_plot3D_histograms==NULL)return;
+
+  all_bounds = plot3dboundsCPP.all_bounds;
+
+  for(i = 0; i<MAXPLOT3DVARS; i++){
+    float vmin, vmax;
+    cpp_boundsdata *boundsi;
+
+    boundsi = all_bounds+i;
+    boundsi->hist = full_plot3D_histograms+i;
+
+    GetHistogramValProc(boundsi->hist, percentile_level_min, &vmin);
+    GetHistogramValProc(boundsi->hist, percentile_level_max, &vmax);
+    boundsi->valmin[BOUND_PERCENTILE_MIN] = vmin;
+    boundsi->valmax[BOUND_PERCENTILE_MAX] = vmax;
+  }
+}
+
 /* ------------------ SetPercentilePartBounds ------------------------ */
 
 void SetPercentilePartBounds(void){
@@ -1899,7 +1966,6 @@ void SetPercentilePartBounds(void){
     boundsi->valmax[BOUND_PERCENTILE_MAX] = vmax;
     valmin[i] = vmin;
     valmax[i] = vmax;
-   //xx if(i==ipart5prop)SetPercentileMinMax(BOUND_PART,vmin, vmax);
   }
   FREEMEMORY(set_valmin);
   FREEMEMORY(set_valmax);
@@ -4584,7 +4650,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
-    plot3dboundsCPP.setup("PLOT3D", ROLLOUT_plot3d, plot3dbounds_cpp, nplot3dbounds_cpp, &cache_plot3d_data, SHOW_CACHE_CHECKBOX, PERCENTILE_DISABLED, Plot3DBoundsCPP_CB,
+    plot3dboundsCPP.setup("PLOT3D", ROLLOUT_plot3d, plot3dbounds_cpp, nplot3dbounds_cpp, &cache_plot3d_data, SHOW_CACHE_CHECKBOX, PERCENTILE_ENABLED, Plot3DBoundsCPP_CB,
                           Plot3dRolloutCB, plot3dprocinfo, &nplot3dprocinfo);
 #endif
 

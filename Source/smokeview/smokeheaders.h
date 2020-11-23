@@ -6,6 +6,7 @@
 #endif
 
 EXTERNCPP void MergePartHistograms(void);
+EXTERNCPP void MergePlot3DHistograms(void);
 
 EXTERNCPP void UpdateColorbarControls(void);
 EXTERNCPP void UpdateColorbarControls2(void);
@@ -26,7 +27,8 @@ void InitMultiRes(slicedata *sd);
 void NormalizeXYZRes(void);
 #endif
 EXTERNCPP void SetPercentilePartBounds(void);
-EXTERNCPP void ScriptLoadSliceRender(scriptdata *scripti);
+EXTERNCPP void SetPercentilePlot3DBounds(void);
+EXTERNCPP void ScriptLoadSliceRender(scriptdata*scripti);
 EXTERNCPP int GetNSliceFrames(char *file, float *stime_min, float *stime_max);
 EXTERNCPP void GenerateSliceMenu(void);
 #ifdef pp_WUI_VAO

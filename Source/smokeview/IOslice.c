@@ -1951,6 +1951,7 @@ void GetSliceGeomHists(slicedata *sd){
 
   CopyVals2Histogram(sd->patchgeom->geom_vals, NULL, NULL, sd->patchgeom->geom_nvals, sd->histograms);
 }
+
 /* ------------------ GetAllSliceHists ------------------------ */
 
 void GetAllSliceHists(void){

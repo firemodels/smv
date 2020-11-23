@@ -300,6 +300,7 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
 void UpdateAllBoundaryColors(void){
   int i, *list = NULL, nlist = 0;
 
+  if(npatchinfo==0)return;
   NewMemory((void **)&list, npatchinfo*sizeof(int));
   nlist = 0;
   for(i = 0; i<npatchinfo; i++){

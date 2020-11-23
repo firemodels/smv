@@ -996,6 +996,21 @@ void InitOpenGL(void){
     int errorcode;
 
 //    ShowGluiAlert();
+    for(i = 0; i<nplot3dinfo; i++){
+      plot3ddata *plot3di;
+
+      plot3di = plot3dinfo+i;
+      plot3di->finalize = 0;
+    }
+    for(i = nplot3dinfo-1;i>=0; i--){
+      plot3ddata *plot3di;
+
+      plot3di = plot3dinfo+i;
+      if(plot3di->autoload==1){
+        plot3di->finalize = 1;
+        break;
+      }
+    }
     for(i=0;i<nplot3dinfo;i++){
       plot3ddata *plot3di;
 

@@ -9,6 +9,61 @@
 #include "smokeviewvars.h"
 #include "IOobjects.h"
 
+/* ------------------ GetPlot3DHists ------------------------ */
+
+void GetPlot3DHists(plot3ddata *p){
+  int i;
+
+  for(i = 0; i<MAXPLOT3DVARS; i++){
+    histogramdata *histi;
+    float *vals;
+    int nvals;
+    meshdata *plot3d_mesh;
+
+    histi = p->histograms[i];
+    if(histi!=NULL)FreeHistogram(histi);
+
+    NewMemory((void **)&histi, sizeof(histogramdata));
+    p->histograms[i] = histi;
+    InitHistogram(histi, NHIST_BUCKETS, NULL, NULL);
+
+    plot3d_mesh = meshinfo+p->blocknumber;
+    nvals = (plot3d_mesh->ibar+1)*(plot3d_mesh->jbar+1)*(plot3d_mesh->kbar+1);
+    vals = plot3d_mesh->qdata+i*nvals;
+    CopyVals2Histogram(vals, NULL, NULL, nvals, histi);
+  }
+}
+
+/* ------------------ MergePlot3DHistograms ------------------------ */
+
+void MergePlot3DHistograms(void){
+  int i;
+
+  if(full_plot3D_histograms==NULL){
+    NewMemory((void **)&full_plot3D_histograms, MAXPLOT3DVARS*sizeof(histogramdata));
+    for(i = 0; i<MAXPLOT3DVARS; i++){
+      InitHistogram(full_plot3D_histograms+i, NHIST_BUCKETS, NULL, NULL);
+    }
+  }
+  else{
+    for(i = 0; i<MAXPLOT3DVARS; i++){
+      FreeHistogram(full_plot3D_histograms+i);
+      InitHistogram(full_plot3D_histograms+i, NHIST_BUCKETS, NULL, NULL);
+    }
+  }
+  for(i = 0; i<nplot3dinfo; i++){
+    plot3ddata *plot3di;
+    int k;
+
+    plot3di = plot3dinfo+i;
+    if(plot3di->loaded==0)continue;
+    for(k = 0; k<MAXPLOT3DVARS; k++){
+      MergeHistogram(full_plot3D_histograms+k, plot3di->histograms[k], MERGE_BOUNDS);
+    }
+  }
+}
+
+
 /* ------------------ Plot3dCompare  ------------------------ */
 
 int Plot3dCompare( const void *arg1, const void *arg2 ){
@@ -33,6 +88,7 @@ void  UpdatePlot3DColors(int ifile, int *errorcode){
 
 #ifdef pp_CPPBOUND_DIALOG
   int num;
+
   GetMinMaxAll(BOUND_PLOT3D, setp3min_all, p3min_all, setp3max_all, p3max_all, &num);
 #endif
   for(nn = 0; nn < numplot3dvars; nn++){
@@ -380,7 +436,19 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     }
     UpdateGlui();
   }
-  UpdatePlot3DColors(ifile,errorcode);
+
+  GetPlot3DHists(p);
+  if(cache_plot3d_data==1){
+    if(p->finalize==1){
+      MergePlot3DHistograms();
+      SetPercentilePlot3DBounds();
+      UpdateAllPlot3DColors();
+    }
+  }
+  else{
+    UpdatePlot3DColors(ifile,errorcode);
+  }
+
   if(meshi->plotx==-1)meshi->plotx=ibar/2;
   if(meshi->ploty==-1)meshi->ploty=jbar/2;
   if(meshi->plotz==-1)meshi->plotz=kbar/2;
@@ -430,7 +498,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   }
   update_plot3d_bounds = ifile;
   GetPlot3DBounds(p);
-  if(p->compression_type==COMPRESSED_ZLIB|| cache_plot3d_data==0){
+  if(p->compression_type==COMPRESSED_ZLIB || cache_plot3d_data==0){
     cache_plot3d_data=0;
     FREEMEMORY(meshi->qdata);
   }

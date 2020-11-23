@@ -3137,6 +3137,16 @@ void LoadUnloadMenu(int value){
     STOP_TIMER(load_time);
     PRINT_LOADTIMES(file_count,load_size,load_time);
     slicefile_labelindex=slicefile_labelindex_save;
+
+    for(i = 0; i<nplot3dinfo; i++){
+      plot3dinfo[i].finalize=0;
+    }
+    for(i = nplot3dinfo-1; i>=0; i--){
+      if(plot3dinfo[i].loaded==1){
+        plot3dinfo[i].finalize = 1;
+        break;
+      }
+    }
     for(i=0;i<nplot3dinfo;i++){
       if(plot3dinfo[i].loaded==1){
         ReadPlot3D(plot3dinfo[i].file,i,LOAD,&errorcode);
@@ -5135,6 +5145,20 @@ void Plot3DListMenu(int value){
   }
   SetLoadedPlot3DBounds(list, nlist);
   ReadPlot3dFile = 1;
+  for(i = 0; i<nlist; i++){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo+list[i];
+    plot3di->finalize = 0;
+  }
+  for(i = nlist-1; i>=0; i--){
+    int errorcode;
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo+list[i];
+    plot3di->finalize = 1;
+    break;;
+  }
   for(i=0;i<nlist;i++){
     int errorcode;
     plot3ddata *plot3di;
@@ -5187,6 +5211,7 @@ void LoadPlot3dMenu(int value){
 #ifdef pp_CPPBOUND_DIALOG
       SetLoadedPlot3DBounds(&value, 1);
 #endif
+      plot3dinfo[value].finalize = 1;
       ReadPlot3D(plot3dfile,value,LOAD,&errorcode);
     }
   }
