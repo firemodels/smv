@@ -547,6 +547,7 @@ void DrawGeom(int flag, int timestate){
           if(trianglei->exterior==1&&show_faces_exterior==0)continue;
           if(trianglei->exterior==0&&show_faces_interior==0)continue;
           if(trianglei->geomtype==GEOM_GEOM&&show_faces_shaded==0)continue;
+          if(trianglei->geomsurf->invisible==1)continue;
         }
         else{
           if(show_iso_shaded==0)continue;

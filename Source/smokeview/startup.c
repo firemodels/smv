@@ -123,7 +123,7 @@ void ReadBoundINI(void){
   char *fullfilename = NULL;
 
   if(boundinfo_filename == NULL)return;
-  fullfilename = GetFileName(smokeviewtempdir, boundinfo_filename, NOT_FORCE_IN_DIR);
+  fullfilename = GetFileName(smokeview_scratchdir, boundinfo_filename, NOT_FORCE_IN_DIR);
   if(fullfilename != NULL)stream = fopen(fullfilename, "r");
   if(stream == NULL || IsFileNewer(smv_filename, fullfilename) == 1){
     if(stream != NULL)fclose(stream);
@@ -190,7 +190,7 @@ int SetupCase(int argc, char **argv){
   NewMemory((void **)&part_globalbound_filename, strlen(fdsprefix)+strlen(".prt5.gbnd")+1);
   STRCPY(part_globalbound_filename, fdsprefix);
   STRCAT(part_globalbound_filename, ".prt5.gbnd");
-  part_globalbound_filename = GetFileName(smokeviewtempdir, part_globalbound_filename, NOT_FORCE_IN_DIR);
+  part_globalbound_filename = GetFileName(smokeview_scratchdir, part_globalbound_filename, NOT_FORCE_IN_DIR);
 
   // setup input files names
 
@@ -308,7 +308,7 @@ int GetScreenHeight(void){
   strcpy(command,"system_profiler SPDisplaysDataType | grep Resolution | awk '{print $4}' >& ");
   strcpy(height_file, fdsprefix);
   strcat(height_file, ".hgt");
-  full_height_file = GetFileName(smokeviewtempdir, height_file, NOT_FORCE_IN_DIR);
+  full_height_file = GetFileName(smokeview_scratchdir, height_file, NOT_FORCE_IN_DIR);
   strcat(command,full_height_file);
   system(command);
   stream = fopen(full_height_file,"r");
@@ -326,11 +326,11 @@ int GetScreenHeight(void){
 
 void SetupGlut(int argc, char **argv){
   int i;
-  char *smoketempdir;
-  size_t lensmoketempdir;
 #ifdef pp_OSX
   char workingdir[1000];
 #endif
+  char *homedir=NULL, *smoketempdir=NULL;
+  int freehome = 0;
 
 // get smokeview bin directory from argv[0] which contains the full path of the smokeview binary
 
@@ -352,58 +352,44 @@ void SetupGlut(int argc, char **argv){
 
   startup_pass=2;
 
-  smoketempdir=getenv("SVTEMPDIR");
-  if(smoketempdir==NULL)smoketempdir=getenv("svtempdir");
-  if(smoketempdir == NULL){
-    char *homedir;
-
-    homedir = getenv("HOME");
-    if(homedir != NULL){
-      NewMemory((void **)&smoketempdir, strlen(homedir) + strlen(dirseparator) + strlen(".smokeview") + 1);
-      strcpy(smoketempdir, homedir);
-      strcat(smoketempdir, dirseparator);
-      strcat(smoketempdir, ".smokeview");
-      if(FileExistsOrig(smoketempdir)==NO){
-        if(MKDIR(smoketempdir)!=0){
-          FREEMEMORY(smoketempdir);
-        }
-      }
-
-      // only needed if -info option is used
-
-      if(generate_info_from_commandline == 1){
-        NewMemory((void **)&smokeview_cachedir, strlen(homedir)+strlen(dirseparator)+strlen(".smokeview")+1);
-        strcpy(smokeview_cachedir, homedir);
-        strcat(smokeview_cachedir, dirseparator);
-        strcat(smokeview_cachedir, ".smokeview");
-        if(FileExistsOrig(smokeview_cachedir)==NO){
-          if(MKDIR(smokeview_cachedir)!=0){
-            FREEMEMORY(smokeview_cachedir);
-          }
-        }
-      }
-    }
-  }
-
-  if(smoketempdir == NULL){
-    NewMemory((void **)&smoketempdir,8);
 #ifdef WIN32
-    strcpy(smoketempdir,"c:\\temp");
+  homedir = getenv("userprofile");
 #else
-    strcpy(smoketempdir, "/tmp");
+  homedir = getenv("HOME");
 #endif
+
+  if(homedir==NULL){
+    NewMemory((void **)&homedir, 2);
+    freehome = 1;
+    strcpy(homedir, ".");
   }
 
-  if(smoketempdir != NULL){
-    lensmoketempdir = strlen(smoketempdir);
-    if(NewMemory((void **)&smokeviewtempdir,(unsigned int)(lensmoketempdir+2))!=0){
-      STRCPY(smokeviewtempdir,smoketempdir);
-      if(smokeviewtempdir[lensmoketempdir-1]!=dirseparator[0]){
-        STRCAT(smokeviewtempdir,dirseparator);
-      }
-      PRINTF("%s",_("Scratch directory:"));
-      PRINTF(" %s\n",smokeviewtempdir);
-    }
+  NewMemory((void **)&smoketempdir, strlen(homedir) + strlen(dirseparator) + strlen(".smokeview") + 1);
+  strcpy(smoketempdir, homedir);
+  strcat(smoketempdir, dirseparator);
+  strcat(smoketempdir, ".smokeview");
+  if(FileExistsOrig(smoketempdir)==NO){
+    MKDIR(smoketempdir);
+  }
+
+  NewMemory((void **)&smokeview_scratchdir,strlen(smoketempdir)+2);
+  STRCPY(smokeview_scratchdir,smoketempdir);
+  if(smokeview_scratchdir[strlen(smoketempdir)-1]!=dirseparator[0]){
+    STRCAT(smokeview_scratchdir,dirseparator);
+  }
+
+  NewMemory((void **)&smokeviewini_filename, strlen(smoketempdir)+1+strlen("smokeview.ini")+2);
+  strcpy(smokeviewini_filename, "");
+  strcat(smokeviewini_filename, smoketempdir);
+  strcat(smokeviewini_filename, dirseparator);
+  strcat(smokeviewini_filename, "smokeview.ini");
+
+  PRINTF("Scratch directory: %s\n",   smokeview_scratchdir);
+  PRINTF("    smokeview.ini: %s\n",   smokeviewini_filename);
+
+  FREEMEMORY(smoketempdir);
+  if(freehome==1){
+    FREEMEMORY(homedir);
   }
 
 #ifdef pp_OSX
@@ -1899,9 +1885,6 @@ void InitVars(void){
 
   GetTitle("Smokeview ", release_title);
   GetTitle("Smokeview ", plot3d_title);
-
-  strcpy(INIfile,"smokeview.ini");
-  strcpy(WRITEINIfile,"Write smokeview.ini");
 
   tourcol_selectedpathline[0]=1.0;
   tourcol_selectedpathline[1]=0.0;

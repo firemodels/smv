@@ -5478,8 +5478,8 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
   strcpy(smoke_sizefilename, smokefile);
   strcat(smoke_sizefilename, ".sz");
   SMOKE_SIZE = fopen(smoke_sizefilename, "w");
-  if(SMOKE_SIZE == NULL&&smokeviewtempdir != NULL){
-    strcpy(smoke_sizefilename2, smokeviewtempdir);
+  if(SMOKE_SIZE == NULL&&smokeview_scratchdir != NULL){
+    strcpy(smoke_sizefilename2, smokeview_scratchdir);
     strcat(smoke_sizefilename2, smoke_sizefilename);
     strcpy(smoke_sizefilename, smoke_sizefilename2);
     SMOKE_SIZE = fopen(smoke_sizefilename, "w");

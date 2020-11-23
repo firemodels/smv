@@ -35,8 +35,7 @@ GLUI *glui_bounds=NULL;
 #define BOUND_PERCENTILE_MINVAL        117
 #define BOUND_PERCENTILE_MAXVAL        118
 #define BOUND_COMPUTE_ONLY_PERCENTILES 119
-#define BOUND_PRINT_HISTOGRAM          120
-#define BOUND_PERCENTILE_DRAW          121
+#define BOUND_PERCENTILE_DRAW          120
 
 #define PERCENTILE_DISABLED 0
 #define PERCENTILE_ENABLED  1
@@ -64,10 +63,8 @@ class bounds_dialog{
   GLUI_RadioButton *RADIO_button_percentile_min, *RADIO_button_percentile_max;
   GLUI_Button      *BUTTON_update_colors, *BUTTON_reload_data;
   GLUI_Panel *PANEL_min, *PANEL_max;
-#ifdef pp_PERCENTILES
   GLUI_Panel *PANEL_percentiles;
   GLUI_Spinner *SPINNER_percentile_min, *SPINNER_percentile_max;
-#endif
   GLUI_StaticText  *STATIC_min_unit, *STATIC_max_unit, *STATIC_chopmin_unit, *STATIC_chopmax_unit;
   GLUI_Rollout     *ROLLOUT_main_bound, *ROLLOUT_truncate;
 
@@ -99,9 +96,7 @@ class bounds_dialog{
   void set_min_all(int *set_valmin, float *valmin, int nvals);
   int  set_max(char *label, int set_valmax, float valmax);
   void set_max_all(int *set_valmax, float *valmax, int nvals);
-#ifdef pp_PERCENTILES
   void set_percentile_minmax(float p_min, float p_max);
-#endif
   void set_research_mode(int flag);
   int  set_valtype(char *label);
   void set_valtype_index(int index);
@@ -114,14 +109,12 @@ int InResearchMode(void);
 
 /* ------------------ set_percentile_minmax ------------------------ */
 
-#ifdef pp_PERCENTILES
 void bounds_dialog::set_percentile_minmax(float p_min, float p_max){
   p_min = SMV_ROUND(p_min, 4);
   p_max = SMV_ROUND(p_max, 4);
   if(SPINNER_percentile_min!=NULL)SPINNER_percentile_min->set_float_val(p_min);
   if(SPINNER_percentile_max!=NULL)SPINNER_percentile_max->set_float_val(p_max);
 }
-#endif
 
 /* ------------------ bounds_dialog ------------------------ */
 
@@ -161,7 +154,7 @@ int bounds_dialog::get_percentile_draw(void){
 
 void bounds_dialog::set_percentile_draw(int val){
   percentile_draw = val;
-  CHECKBOX_percentile_draw->set_int_val(percentile_draw);
+  if(CHECKBOX_percentile_draw!=NULL)CHECKBOX_percentile_draw->set_int_val(percentile_draw);
 }
 
   /* ------------------ in_research_mode ------------------------ */
@@ -317,14 +310,12 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
   }
 
   BUTTON_update_colors = NULL;
-#ifdef pp_PERCENTILES
   SPINNER_percentile_min = NULL;
   SPINNER_percentile_max = NULL;
-#endif
   PANEL_buttons = NULL;
+  CHECKBOX_percentile_draw = NULL;
   if(cache_flag!=NULL){
     if(percentile_enabled==1){
-#ifdef pp_PERCENTILES
       percentile_draw = 0;
       PANEL_percentiles = glui_bounds->add_panel_to_panel(PANEL_minmax, "percentiles");
 
@@ -337,10 +328,8 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
       SPINNER_percentile_max->set_float_limits(percentile_min_cpp, 1.0);
       SPINNER_percentile_min->set_float_limits(0.0, percentile_max_cpp);
 
-      CHECKBOX_percentile_draw = glui_bounds->add_checkbox_to_panel(PANEL_percentiles, _("draw"), &percentile_draw, BOUND_PERCENTILE_DRAW, Callback);
+      CHECKBOX_percentile_draw = glui_bounds->add_checkbox_to_panel(PANEL_percentiles, _("show distribution"), &percentile_draw, BOUND_PERCENTILE_DRAW, Callback);
       glui_bounds->add_button_to_panel(PANEL_percentiles, "Compute min/max bounds", BOUND_COMPUTE_PERCENTILES, Callback);
-      glui_bounds->add_button_to_panel(PANEL_percentiles, "Output info",  BOUND_PRINT_HISTOGRAM, Callback);
-#endif
     }
     PANEL_buttons = glui_bounds->add_panel_to_panel(PANEL_minmax, "", GLUI_PANEL_NONE);
     BUTTON_update_colors      = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
@@ -749,7 +738,6 @@ void bounds_dialog::CB(int var){
           boundi = all_bounds+i;
           boundi->cache = bounds.cache;
         }
-#ifdef pp_PERCENTILES
         if(PANEL_percentiles!=NULL){
           if(cache_val==1&&percentile_enabled==1){
             PANEL_percentiles->enable();
@@ -758,7 +746,6 @@ void bounds_dialog::CB(int var){
             PANEL_percentiles->disable();
           }
         }
-#endif
         if(cache_val==1){
           if(RADIO_button_percentile_min!=NULL)RADIO_button_percentile_min->enable();
           if(RADIO_button_percentile_max!=NULL)RADIO_button_percentile_max->enable();
@@ -797,18 +784,19 @@ void bounds_dialog::CB(int var){
     case BOUND_COMPUTE_PERCENTILES:
       break;
     case BOUND_PERCENTILE_MINVAL:
-#ifdef pp_PERCENTILES
       SPINNER_percentile_max->set_float_limits(percentile_min_cpp+0.0001, 1.0);
       SetPercentileMinMax(percentile_min_cpp, percentile_max_cpp);
-#endif
       percentile_level_min = percentile_min_cpp;
       break;
     case BOUND_PERCENTILE_MAXVAL:
-#ifdef pp_PERCENTILES
       SPINNER_percentile_min->set_float_limits(0.0,percentile_max_cpp-0.0001);
       SetPercentileMinMax(percentile_min_cpp, percentile_max_cpp);
-#endif
       percentile_level_max = percentile_max_cpp;
+      break;
+    case BOUND_PERCENTILE_DRAW:
+      if(CHECKBOX_percentile_draw!=NULL&&CHECKBOX_percentile_draw->get_int_val()!=percentile_draw){
+        CHECKBOX_percentile_draw->set_int_val(percentile_draw);
+      }
       break;
   }
 };
@@ -842,14 +830,12 @@ int InResearchMode(void){
 
 /* ------------------ SetPercentileMinMax ------------------------ */
 
-#ifdef pp_PERCENTILES
 extern "C" void SetPercentileMinMax(float p_min, float p_max){
   if(npatchinfo>0)patchboundsCPP.set_percentile_minmax(p_min, p_max);
   if(nsliceinfo>0)sliceboundsCPP.set_percentile_minmax(p_min, p_max);
   if(npartinfo>0)partboundsCPP.set_percentile_minmax(p_min, p_max);
   if(nplot3dinfo>0)plot3dboundsCPP.set_percentile_minmax(p_min, p_max);
 }
-#endif
 
 /* ------------------ GetBoundsData ------------------------ */
 
@@ -957,20 +943,41 @@ extern "C" void SetPercentileDraw(int type, int val){
       if(npatchinfo>0){
         patchboundsCPP.set_percentile_draw(val);
         if(val==1){
-          sliceboundsCPP.set_percentile_draw(0);
-        }
-        else{
+          if(npartinfo>0)partboundsCPP.set_percentile_draw(0);
+          if(nplot3dinfo>0)plot3dboundsCPP.set_percentile_draw(0);
+          if(nsliceinfo>0)sliceboundsCPP.set_percentile_draw(0);
         }
       }
       break;
     case BOUND_PART:
-      if(npartinfo>0)partboundsCPP.set_percentile_draw(val);
+      if(npartinfo>0){
+        partboundsCPP.set_percentile_draw(val);
+        if(val==1){
+          if(npatchinfo>0)patchboundsCPP.set_percentile_draw(0);
+          if(nplot3dinfo>0)plot3dboundsCPP.set_percentile_draw(0);
+          if(nsliceinfo>0)sliceboundsCPP.set_percentile_draw(0);
+        }
+      }
       break;
     case BOUND_PLOT3D:
-      if(nplot3dinfo>0)plot3dboundsCPP.set_percentile_draw(val);
+      if(nplot3dinfo>0){
+        plot3dboundsCPP.set_percentile_draw(val);
+        if(val==1){
+          if(npartinfo>0)partboundsCPP.set_percentile_draw(0);
+          if(npatchinfo>0)patchboundsCPP.set_percentile_draw(0);
+          if(nsliceinfo>0)sliceboundsCPP.set_percentile_draw(0);
+        }
+      }
       break;
     case BOUND_SLICE:
-      if(nsliceinfo>0)sliceboundsCPP.set_percentile_draw(val);
+      if(nsliceinfo>0){
+        sliceboundsCPP.set_percentile_draw(val);
+        if(val==1){
+          if(npartinfo>0)partboundsCPP.set_percentile_draw(0);
+          if(npatchinfo>0)patchboundsCPP.set_percentile_draw(0);
+          if(nplot3dinfo>0)plot3dboundsCPP.set_percentile_draw(0);
+        }
+      }
       break;
   }
 }
@@ -1261,6 +1268,8 @@ extern "C" void SliceBoundsCPP_CB(int var){
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
       break;
+    case BOUND_PERCENTILE_MINVAL:
+    case BOUND_PERCENTILE_MAXVAL:
     case BOUND_COMPUTE_PERCENTILES:
     case BOUND_COMPUTE_ONLY_PERCENTILES:
       bounds = GetBoundsData(BOUND_SLICE);
@@ -1275,15 +1284,6 @@ extern "C" void SliceBoundsCPP_CB(int var){
       }
       SliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
       break;
-    case BOUND_PRINT_HISTOGRAM:
-      bounds = GetBoundsData(BOUND_SLICE);
-      if(bounds->hist==NULL)SliceBoundsCPP_CB(BOUND_COMPUTE_PERCENTILES);
-      PrintHistogramInfoProc(bounds->hist, 21);
-      break;
-    case BOUND_PERCENTILE_MINVAL:
-    case BOUND_PERCENTILE_MAXVAL:
-      SliceBoundsCPP_CB(BOUND_COMPUTE_ONLY_PERCENTILES);
-      break;
     case BOUND_PERCENTILE_DRAW:
       if(GetPercentileDraw(BOUND_SLICE)==1){
         bounds = GetBoundsData(BOUND_SLICE);
@@ -1297,13 +1297,19 @@ extern "C" void SliceBoundsCPP_CB(int var){
           SetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
           SetMax(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
           histogram_draw = bounds->hist;
+          histogram_label1 = cslice_label;
+          histogram_label2 = bounds->label;
           xmin_draw = per_valmin;
           xmax_draw = per_valmax;
           SetPercentileDraw(BOUND_PATCH, 0);
+          SetPercentileDraw(BOUND_PART, 0);
+          SetPercentileDraw(BOUND_PLOT3D, 0);
         }
       }
       else{
         histogram_draw = NULL;
+        histogram_label1 = NULL;
+        histogram_label2 = NULL;
       }
       break;
     case BOUND_CACHE_DATA:
@@ -1426,12 +1432,19 @@ void Plot3DBoundsCPP_CB(int var){
 
 /* ------------------ PartBoundsCPP_CB ------------------------ */
 
-void PartBoundsCPP_CB(int var){
+extern "C" void PartBoundsCPP_CB(int var){
+  cpp_boundsdata *all_bounds, *bounds;
+
   partboundsCPP.CB(var);
+  all_bounds = partboundsCPP.all_bounds;
+  ipart5prop = GetValType(BOUND_PART);
+  bounds = all_bounds+ipart5prop;
+
   switch(var){
     case BOUND_VAL_TYPE:
       ipart5prop = GetValType(BOUND_PART);
       ParticlePropShowMenu(ipart5prop);
+      PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
       break;
     case BOUND_VALMIN:
     case BOUND_VALMAX:
@@ -1442,11 +1455,50 @@ void PartBoundsCPP_CB(int var){
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
       break;
+    case BOUND_PERCENTILE_MINVAL:
+    case BOUND_PERCENTILE_MAXVAL:
     case BOUND_COMPUTE_PERCENTILES:
+    case BOUND_COMPUTE_ONLY_PERCENTILES:
+      if(var==BOUND_COMPUTE_PERCENTILES||bounds->hist==NULL){
+        MergePartHistograms();
+      }
+      if(bounds->hist!=NULL&&bounds->hist->defined==1){
+        SetPercentilePartBounds();
+      }
+      PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+      break;
+    case BOUND_PERCENTILE_DRAW:
+      if(bounds->hist!=NULL&&bounds->hist->defined==1){
+        float per_valmin, per_valmax;
+
+        GetHistogramValProc(bounds->hist, percentile_level_min, &per_valmin);
+        GetHistogramValProc(bounds->hist, percentile_level_max, &per_valmax);
+        GetHistogramValProc(bounds->hist, 0.5, &(bounds->hist->median));
+        SetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+        SetMax(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
+        if(GetPercentileDraw(BOUND_PART)==1&&ipart5prop!=0){
+          histogram_draw = bounds->hist;
+          histogram_label1 = cpart_label;
+          histogram_label2 = bounds->label;
+          xmin_draw = per_valmin;
+          xmax_draw = per_valmax;
+          SetPercentileDraw(BOUND_SLICE,  0);
+          SetPercentileDraw(BOUND_PATCH,  0);
+          SetPercentileDraw(BOUND_PLOT3D, 0);
+        }
+        else{
+          histogram_draw   = NULL;
+          histogram_label1 = NULL;
+          histogram_label2 = NULL;
+        }
+        SetMin(BOUND_PART, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+        SetMax(BOUND_PART, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
+      }
       break;
     case BOUND_CACHE_DATA:
-   // not implemented yet
-   //   cache_oart_data = GetCacheFlag(BOUND_PART);
+      if(GetCacheFlag(BOUND_PART)==0){
+        ClosePartFiles();
+      }
       break;
     case BOUND_UPDATE_COLORS:
       UpdatePartColors(NULL);
@@ -1516,6 +1568,8 @@ extern "C" void PatchBoundsCPP_CB(int var){
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
       break;
+    case BOUND_PERCENTILE_MINVAL:
+    case BOUND_PERCENTILE_MAXVAL:
     case BOUND_COMPUTE_PERCENTILES:
     case BOUND_COMPUTE_ONLY_PERCENTILES:
       bounds = GetBoundsData(BOUND_PATCH);
@@ -1531,15 +1585,6 @@ extern "C" void PatchBoundsCPP_CB(int var){
         SetMax(BOUND_PATCH, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
       }
       PatchBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
-      break;
-    case BOUND_PRINT_HISTOGRAM:
-      bounds = GetBoundsData(BOUND_PATCH);
-      if(bounds->hist==NULL)PatchBoundsCPP_CB(BOUND_COMPUTE_PERCENTILES);
-      PrintHistogramInfoProc(bounds->hist, 21);
-      break;
-    case BOUND_PERCENTILE_MINVAL:
-    case BOUND_PERCENTILE_MAXVAL:
-      PatchBoundsCPP_CB(BOUND_COMPUTE_ONLY_PERCENTILES);
       break;
     case BOUND_CACHE_DATA:
       cache_boundary_data = GetCacheFlag(BOUND_PATCH);
@@ -1558,13 +1603,19 @@ extern "C" void PatchBoundsCPP_CB(int var){
           SetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
           SetMax(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
           histogram_draw = bounds->hist;
+          histogram_label1 = cbound_label;
+          histogram_label2 = bounds->label;
           xmin_draw = per_valmin;
           xmax_draw = per_valmax;
-          SetPercentileDraw(BOUND_SLICE, 0);
+          SetPercentileDraw(BOUND_SLICE,  0);
+          SetPercentileDraw(BOUND_PART,   0);
+          SetPercentileDraw(BOUND_PLOT3D, 0);
         }
       }
       else{
-        histogram_draw = NULL;
+        histogram_draw   = NULL;
+        histogram_label1 = NULL;
+        histogram_label2 = NULL;
       }
       break;
     case BOUND_UPDATE_COLORS:
@@ -1815,6 +1866,47 @@ void SetLoadedPlot3DBounds(int *list, int nlist){
   FREEMEMORY(valmax_dlg);
 }
 
+/* ------------------ SetPercentilePartBounds ------------------------ */
+
+void SetPercentilePartBounds(void){
+  int *set_valmin, *set_valmax, nall;
+  float *valmin_dlg, *valmax_dlg, *valmin, *valmax;
+  int i;
+  cpp_boundsdata *all_bounds;
+
+  if(full_part_histogram==NULL)return;
+
+  all_bounds = partboundsCPP.all_bounds;
+
+  NewMemory((void **)&set_valmin, npart5prop*sizeof(int));
+  NewMemory((void **)&set_valmax, npart5prop*sizeof(int));
+  NewMemory((void **)&valmin, npart5prop*sizeof(float));
+  NewMemory((void **)&valmax, npart5prop*sizeof(float));
+
+  GetMinMaxAll(BOUND_PART, set_valmin, valmin, set_valmax, valmax, &nall);
+  valmin[0] = 0.0;
+  valmax[0] = 1.0;
+  for(i = 1; i<npart5prop; i++){
+    float vmin, vmax;
+    cpp_boundsdata *boundsi;
+
+    boundsi = all_bounds+i;
+    boundsi->hist = full_part_histogram+i;
+
+    GetHistogramValProc(boundsi->hist, percentile_level_min, &vmin);
+    GetHistogramValProc(boundsi->hist, percentile_level_max, &vmax);
+    boundsi->valmin[BOUND_PERCENTILE_MIN] = vmin;
+    boundsi->valmax[BOUND_PERCENTILE_MAX] = vmax;
+    valmin[i] = vmin;
+    valmax[i] = vmax;
+   //xx if(i==ipart5prop)SetPercentileMinMax(BOUND_PART,vmin, vmax);
+  }
+  FREEMEMORY(set_valmin);
+  FREEMEMORY(set_valmax);
+  FREEMEMORY(valmin);
+  FREEMEMORY(valmax);
+}
+
 /* ------------------ SetLoadedPartBounds ------------------------ */
 
 void SetLoadedPartBounds(int *list, int nlist){
@@ -1900,6 +1992,9 @@ void SetLoadedPartBounds(int *list, int nlist){
 }
 
 #endif
+
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
 
 #ifdef pp_REFRESH
 extern GLUI *glui_clip, *glui_colorbar, *glui_labels, *glui_geometry, *glui_motion, *glui_device;
@@ -4403,8 +4498,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
-//      partboundsCPP.setup("particle", ROLLOUT_part, partbounds_cpp, npartbounds_cpp, &cache_part_data, HIDE_CACHE_CHECKBOX, PERCENTILE_DISABLED, PartBoundsCPP_CB,
-      partboundsCPP.setup("particle", ROLLOUT_part, partbounds_cpp, npartbounds_cpp, NULL, HIDE_CACHE_CHECKBOX, PERCENTILE_DISABLED, PartBoundsCPP_CB,
+      partboundsCPP.setup("particle", ROLLOUT_part, partbounds_cpp, npartbounds_cpp, &cache_part_data, SHOW_CACHE_CHECKBOX, PERCENTILE_ENABLED, PartBoundsCPP_CB,
                           ParticleRolloutCB, particleprocinfo, &nparticleprocinfo);
 #endif
 

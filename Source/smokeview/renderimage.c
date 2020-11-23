@@ -272,13 +272,13 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
   // directory
 
   if(Writable(renderfile_dir) == NO){
-    if(Writable(smokeviewtempdir) == YES){
-      strcpy(renderfile_dir, smokeviewtempdir);
+    if(Writable(smokeview_scratchdir) == YES){
+      strcpy(renderfile_dir, smokeview_scratchdir);
     }
     else{
-      if(smokeviewtempdir!=NULL&&strlen(smokeviewtempdir)>0){
+      if(smokeview_scratchdir!=NULL&&strlen(smokeview_scratchdir)>0){
         fprintf(stderr, "*** Error: unable to render screen image to either directories %s or %s\n",
-        renderfile_dir,smokeviewtempdir);
+        renderfile_dir,smokeview_scratchdir);
       }
       else{
         fprintf(stderr, "*** Error: unable to render screen image to directory %s \n",renderfile_dir);
@@ -1153,7 +1153,7 @@ int SmokeviewImage2File(char *directory, char *RENDERfilename, int rendertype, i
   height2 = height_end-height_beg;
 
   if(directory==NULL){
-    renderfile= GetFileName(smokeviewtempdir,RENDERfilename,NOT_FORCE_IN_DIR);
+    renderfile= GetFileName(smokeview_scratchdir,RENDERfilename,NOT_FORCE_IN_DIR);
   }
   else{
     renderfile= GetFileName(directory,RENDERfilename,FORCE_IN_DIR); //force

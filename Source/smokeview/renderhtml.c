@@ -1629,13 +1629,13 @@ int GetHtmlFileName(char *htmlfile_full, int option, int vr_flag){
   // directory - put files in '.' or smokevewtempdir
 
   if(Writable(htmlfile_dir)==NO){
-    if(Writable(smokeviewtempdir)==YES){
-      strcpy(htmlfile_dir, smokeviewtempdir);
+    if(Writable(smokeview_scratchdir)==YES){
+      strcpy(htmlfile_dir, smokeview_scratchdir);
     }
     else{
-      if(smokeviewtempdir!=NULL&&strlen(smokeviewtempdir)>0){
+      if(smokeview_scratchdir!=NULL&&strlen(smokeview_scratchdir)>0){
         fprintf(stderr, "*** Error: unable to output html file to either directories %s or %s\n",
-          htmlfile_dir, smokeviewtempdir);
+          htmlfile_dir, smokeview_scratchdir);
       }
       else{
         fprintf(stderr, "*** Error: unable to output html file to directory %s \n", htmlfile_dir);

@@ -2049,6 +2049,10 @@ void Keyboard(unsigned char key, int flag){
     case 'P':
       if(IsPartLoaded()==1){
         IncrementPartPropIndex();
+#ifdef pp_CPPBOUND_DIALOG
+#define BOUND_PERCENTILE_DRAW          120
+        PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+#endif
       }
       if(IsPlot3DLoaded()==1){
         plotn += FlowDir;

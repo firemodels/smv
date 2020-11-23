@@ -1810,12 +1810,6 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
   CheckMemory;
 }
 
-/* ------------------ PrintHistogramInfoPROC ------------------------ */
-
-void PrintHistogramInfoProc(histogramdata *histogram, int n){
-  PrintHistogramInfo(histogram, n);
-}
-
 /* ------------------ GetHistogramValProc ------------------------ */
 
 void GetHistogramValProc(histogramdata *histogram, float cdf, float *val){
@@ -3085,7 +3079,7 @@ void UpdateFedinfo(void){
     ext = strrchr(filename_base, '.');
     *ext = 0;
     strcat(filename_base, "_fed.sf");
-    filename = GetFileName(smokeviewtempdir, filename_base, NOT_FORCE_IN_DIR);
+    filename = GetFileName(smokeview_scratchdir, filename_base, NOT_FORCE_IN_DIR);
 
     NewMemory((void **)&fedi->fed_slice->reg_file, strlen(filename) + 1);
     strcpy(fedi->fed_slice->reg_file, filename);
@@ -3144,7 +3138,7 @@ void UpdateFedinfo(void){
       ext = strrchr(filename_base, '.');
       *ext = 0;
       strcat(filename_base, "_fed.iso");
-      filename = GetFileName(smokeviewtempdir, filename_base, NOT_FORCE_IN_DIR);
+      filename = GetFileName(smokeview_scratchdir, filename_base, NOT_FORCE_IN_DIR);
       NewMemory((void **)&isoi->reg_file, strlen(filename) + 1);
       strcpy(isoi->reg_file, filename);
       FREEMEMORY(filename);
@@ -7277,7 +7271,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 void DrawHistogram(histogramdata *histogram, float valmin, float valmax){
   float dx, x[MAXN], y[MAXN], ymax, *buckets, valmin_normalized, valmax_normalized;
   int index[MAXN+1], i, n = MAXN;
-  float black[]={0.0,0.0,0.0}, blue[]={0.0,0.0,1.0}, *color, *color_old=NULL, median, median_normalized;
+  float blue[]={0.0,0.0,1.0}, *color, *color_old=NULL, median, median_normalized;
   char cmin[20], cmedian[20], cmax[20], cvalmin[20], cvalmax[20];
   float cmin_width, cmax_width, median_width, cvalmin_width, cvalmax_width;
 
@@ -7336,7 +7330,7 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax){
       color = blue;
     }
     else{
-      color = black;
+      color = foregroundcolor;
     }
     if(color_old!=color){
       glColor3fv(color);
@@ -7360,10 +7354,10 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax){
     glVertex3f(x2, 0.0, y[i+1]);
   }
   glEnd();
+
 #define DZHIST1 0.025
-#define DZHIST2 0.050
-#define DZHIST3 0.075
-  glColor3fv(black);
+
+  glColor3fv(foregroundcolor);
   glBegin(GL_LINES);
   glVertex3f(0.0, 0.0, 0.0);
   glVertex3f(0.0, 0.0, -0.02);
@@ -7379,12 +7373,35 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax){
   glVertex3f(valmax_normalized, 0.0, -DZHIST1);
   glEnd();
 
-  Output3Text(black, -cmin_width/2.0,                                               0.0, -DZHIST2, cmin);
-  Output3Text(black, 0.001+MAX(median_normalized-median_width/2.0, cmin_width/2.0), 0.0, -DZHIST2, cmedian);
-  Output3Text(black, 1.0-cmax_width/2.0,                                            0.0, -DZHIST2, cmax);
+  float text_height = 18;
+  if(fontindex==SCALED_FONT){
+    scale_2d_y = ((float)scaled_font2d_height/(float)152.38);
 
-  Output3Text(blue,  valmin_normalized-cvalmin_width/2.0,                           0.0, -DZHIST3, cvalmin);
-  Output3Text(blue,  valmax_normalized-cvalmax_width/2.0,                           0.0, -DZHIST3, cvalmax);
+    text_height = MAX(18, (int)((12.0/18.0)*(25.0/18.0)*(float)scaled_font2d_height));
+  }
+  text_height += 6.0;
+  text_height /= screenHeight;
+
+  float offset = -2.0*text_height;
+
+  Output3Text(foregroundcolor, -cmin_width/2.0,                                               0.0, offset, cmin);
+  Output3Text(foregroundcolor, 0.001+MAX(median_normalized-median_width/2.0, cmin_width/2.0), 0.0, offset, cmedian);
+  Output3Text(foregroundcolor, 1.0-cmax_width/2.0,                                            0.0, offset, cmax);
+
+  offset -= text_height;
+  Output3Text(blue,  valmin_normalized-cvalmin_width/2.0,                           0.0, offset, cvalmin);
+  Output3Text(blue,  valmax_normalized-cvalmax_width/2.0,                           0.0, offset, cvalmax);
+
+
+
+  if(histogram_label1!=NULL){
+    offset -= text_height;
+    Output3Text(foregroundcolor, -cvalmin_width/2.0, 0.0, offset, histogram_label1);
+  }
+  if(histogram_label2!=NULL){
+    offset -= text_height;
+    Output3Text(foregroundcolor, -cvalmin_width/2.0, 0.0, offset, histogram_label2);
+  }
   glPopMatrix();
 }
 
@@ -8654,8 +8671,8 @@ void GenerateSliceMenu(void){
   if(nsliceinfo==0)return;
 
   strcpy(slicemenu_filename, "");
-  if(smokeview_cachedir!=NULL){
-    strcat(slicemenu_filename, smokeview_cachedir);
+  if(smokeview_scratchdir!=NULL){
+    strcat(slicemenu_filename, smokeview_scratchdir);
     strcat(slicemenu_filename, dirseparator);
   }
   strcat(slicemenu_filename, fdsprefix);

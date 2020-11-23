@@ -22,6 +22,13 @@
 
 SVEXTERN histogramdata SVDECL(*histogram_draw, NULL);
 SVEXTERN float SVDECL(xmin_draw, 1.0), SVDECL(xmax_draw, 0.0);
+SVEXTERN char SVDECL(*histogram_label1, NULL), SVDECL(*histogram_label2, NULL);
+#ifdef INMAIN
+SVEXTERN char *cslice_label = "Slice",  *cpart_label = "Part", *cbound_label = "Bndry", *cplot3d_label = "Plot3D";
+#else
+SVEXTERN char *cslice_label, *cpart_label, *cbound_label, *cplot3d_label;
+#endif
+
 SVEXTERN int SVDECL(update_patch_bounds, -1), SVDECL(update_slice_bounds, -1), SVDECL(update_part_bounds, -1), SVDECL(update_plot3d_bounds, -1);
 SVEXTERN float max_dx, max_dy, max_dz;
 SVEXTERN int SVDECL(vec_uniform_length, 0);
@@ -53,7 +60,11 @@ SVEXTERN int SVDECL(update_patchfile_bounds, 0);
 SVEXTERN slicemenudata SVDECL(*slicemenuinfo, NULL);
 SVEXTERN int SVDECL(generate_info_from_commandline, 0);
 #ifdef pp_PART_HIST
+#ifdef pp_CPPBOUND_DIALOG
+SVEXTERN int SVDECL(generate_part_histograms, 1);
+#else
 SVEXTERN int SVDECL(generate_part_histograms, 0);
+#endif
 #endif
 SVEXTERN int SVDECL(vector_debug, 0);
 #ifdef pp_WUI_VAO
@@ -825,8 +836,7 @@ SVEXTERN float set_view_xyz[3],user_zaxis[3];
   SVEXTERN float zaxis_angles_orig[3];
 #endif
 
-SVEXTERN char INIfile[1024];
-SVEXTERN char WRITEINIfile[1024];
+SVEXTERN char SVDECL(*smokeviewini_filename, NULL);
 
 SVEXTERN spherepoints SVDECL(*sphereinfo,NULL), SVDECL(*wui_sphereinfo,NULL);
 
@@ -1383,8 +1393,7 @@ SVEXTERN float redcolor[4];
 
 SVEXTERN int loadfiles_at_startup;
 
-SVEXTERN char SVDECL(*smokeviewtempdir,NULL);
-SVEXTERN char SVDECL(*smokeview_cachedir, NULL);
+SVEXTERN char SVDECL(*smokeview_scratchdir,NULL);
 
 SVEXTERN int nmenus;
 SVEXTERN menudata menuinfo[10000];

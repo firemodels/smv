@@ -20,7 +20,7 @@
 //#define pp_SHOW_BOUND_MIRROR  // add menu for showing boundary files on mirror/open vents
 #define pp_MULTI_RES          // read in multi-resolution slice files
 //#define pp_HTML_VR           // output VR html code
-//#define pp_PART_HIST            // compute particle histograms
+#define pp_PART_HIST            // compute particle histograms
 //#define pp_SKIP_TERRAIN_DATA  // skip reading in terrain data if case is using immersed geometry
 //#define pp_SKIP_BOUNDARY_GEOMS // skips reading of boundary geometry files
 #define pp_GPU                // support the GPU
@@ -43,7 +43,6 @@
 //#define pp_SLICETHREAD        // parallel slice file loading
 //#define pp_BLOCK_COLOR        //  new algorithm for assigning obst colors
 #define pp_CPPBOUND_DIALOG    // redo bound dialog using c++
-#define pp_PERCENTILES        // add percentile widget to new bounds dialog box
 //#define pp_PLOT3D_REDUCEMENUS // eliminate plot3d sub-menus
 //#define pp_PLOT3D_STATIC      // use static memory for plot3d labels
 //#define pp_LOAD_INCREMENTAL   // load data incrementally

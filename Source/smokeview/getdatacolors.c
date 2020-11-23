@@ -109,7 +109,7 @@ void WriteBoundIni(void){
   int i;
 
   if(boundinfo_filename == NULL)return;
-  fullfilename = GetFileName(smokeviewtempdir, boundinfo_filename, NOT_FORCE_IN_DIR);
+  fullfilename = GetFileName(smokeview_scratchdir, boundinfo_filename, NOT_FORCE_IN_DIR);
 
   if(fullfilename == NULL)return;
 
@@ -468,6 +468,11 @@ void GetPartColors(partdata *parti, int nlevel){
   // float *diameter_data;
   float *length_data, *azimuth_data, *elevation_data;
   float *u_vel_data, *v_vel_data, *w_vel_data;
+
+  if(parti->stream==NULL){
+    printf("***warning: particle data in %s was unloaded, colors not updated\n",parti->file);
+    return;
+  }
 
   datacopy = parti->data5;
 

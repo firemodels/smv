@@ -370,7 +370,7 @@ void ParseCommandline(int argc, char **argv){
   if(fed_filename == NULL){
     STRCPY(fed_filename_base, fdsprefix);
     STRCAT(fed_filename_base, ".fed_smv");
-    fed_filename = GetFileName(smokeviewtempdir, fed_filename_base, NOT_FORCE_IN_DIR);
+    fed_filename = GetFileName(smokeview_scratchdir, fed_filename_base, NOT_FORCE_IN_DIR);
   }
   if(stop_filename == NULL){
     NewMemory((void **)&stop_filename, (unsigned int)(len_casename + strlen(".stop") + 1));
