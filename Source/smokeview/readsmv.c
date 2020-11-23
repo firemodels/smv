@@ -7491,6 +7491,10 @@ int ReadSMV(bufferstreamdata *stream){
           s_color[2]=-s_color[2];
         }
       }
+      if(s_color[3]<=0.001){
+        surfi->invisible = 1;
+        surfi->type = BLOCK_hidden;
+      }
       surfi->color = GetColorPtr(s_color);
       if(s_color[3]<0.99){
         surfi->transparent=1;
