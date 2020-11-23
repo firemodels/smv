@@ -2091,7 +2091,9 @@ void FinalizePartLoad(partdata *parti){
   }
 #endif
   if(cache_part_data==1){
+#ifdef pp_CPPBOUND_DIALOG
     SetPercentilePartBounds();
+#endif
     for(j = 0; j<npartinfo; j++){
       partdata *partj;
 

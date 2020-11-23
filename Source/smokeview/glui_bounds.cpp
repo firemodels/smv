@@ -1870,7 +1870,7 @@ void SetLoadedPlot3DBounds(int *list, int nlist){
 
 void SetPercentilePartBounds(void){
   int *set_valmin, *set_valmax, nall;
-  float *valmin_dlg, *valmax_dlg, *valmin, *valmax;
+  float *valmin, *valmax;
   int i;
   cpp_boundsdata *all_bounds;
 
