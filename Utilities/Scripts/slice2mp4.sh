@@ -332,6 +332,7 @@ fi
     exit
   fi
   if [ "$ans" == "1" ]; then
+    writeini
     GENERATE_SCRIPTS $slice_index
     make_movie
   fi
@@ -491,9 +492,9 @@ make_movie() {
 # make movie
 
   start_time="$(date -u +%s.%N)"
-  nerrs=`grep Error ${input}_f*_s*.err | wc -l`
+  nerrs=`grep Error ${input}_f*_s$NPROCS.err | wc -l`
   if [ "$nerrs" != "0" ]; then 
-    grep Error ${input}_f*_s*.err | tail
+    grep Error ${input}_f*_s$NPROCS.err | tail
   else
     animation_file=$MOVIEDIR/${img_basename}.mp4
     echo Creating $animation_file
