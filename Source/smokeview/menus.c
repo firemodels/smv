@@ -5168,7 +5168,6 @@ void Plot3DListMenu(int value){
     plot3di->finalize = 0;
   }
   for(i = nlist-1; i>=0; i--){
-    int errorcode;
     plot3ddata *plot3di;
 
     plot3di = plot3dinfo+list[i];

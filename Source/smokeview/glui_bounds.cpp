@@ -1955,7 +1955,7 @@ void SetLoadedPlot3DBounds(int *list, int nlist){
 /* ------------------ SetPercentilePlot3DBounds ------------------------ */
 
  void SetPercentilePlot3DBounds(void){
-  int nall, i;
+  int i;
   cpp_boundsdata *all_bounds;
 
   if(full_plot3D_histograms==NULL)return;
