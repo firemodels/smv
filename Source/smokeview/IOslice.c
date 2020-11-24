@@ -7266,41 +7266,56 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   }
 }
 
+#define DENORMAL(x,i, n, min,max) ((min) + (i)*((max)-(min))/(n))
+#define NORMALH(x,min,max) (((x)-(min))/((max)-(min))   )
   /* ------------------ DrawHistogram ------------------------ */
 
 #define MAXN 201
-void DrawHistogram(histogramdata *histogram, float valmin, float valmax){
+void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float gmin, float gmax){
   float dx, x[MAXN], y[MAXN], ymax, *buckets, valmin_normalized, valmax_normalized;
   int index[MAXN+1], i, n = MAXN;
-  float blue[]={0.0,0.0,1.0}, *color, *color_old=NULL, median, median_normalized;
+  float blue[]={0.0,0.0,1.0}, *color, *color_old=NULL, median_normalized;
   char cmin[20], cmedian[20], cmax[20], cvalmin[20], cvalmax[20];
   float cmin_width, cmax_width, median_width, cvalmin_width, cvalmax_width;
+  float x0_normalized, x1_normalized;
+
+  float nmin, nmax, hmin, hmax;
+
+  if(gmin<gmax){
+    nmin = gmin;
+    nmax = gmax;
+  }
+  else{
+    nmin = histogram->val_min;
+    nmax = histogram->val_max;
+  }
+  hmin = histogram->val_min;
+  hmax = histogram->val_max;
 
   if(histogram==NULL||histogram->buckets==NULL||histogram->defined==0)return;
-  median = histogram->median;
   if(histogram->val_max>histogram->val_min){
-    valmin_normalized = (valmin-histogram->val_min)/(histogram->val_max-histogram->val_min);
-    valmax_normalized = (valmax-histogram->val_min)/(histogram->val_max-histogram->val_min);
-    median_normalized = (median-histogram->val_min)/(histogram->val_max-histogram->val_min);
+    valmin_normalized = NORMALH(valmin,            nmin, nmax);
+    valmax_normalized = NORMALH(valmax,            nmin, nmax);
+    median_normalized = NORMALH(histogram->median, nmin, nmax);
   }
-  Float2String(cmin, histogram->val_min, 4);
-  Float2String(cmedian, median, 4);
-  Float2String(cmax, histogram->val_max, 4);
+  Float2String(cmin,    histogram->val_min, 4);
+  Float2String(cmedian, histogram->median,  4);
+  Float2String(cmax,    histogram->val_max, 4);
   Float2String(cvalmin, valmin, 4);
   Float2String(cvalmax, valmax, 4);
-  cmin_width = (float)GetStringWidth(cmin)/screenWidth;;
-  cmax_width = (float)GetStringWidth(cmax)/screenWidth;;
-  median_width = (float)GetStringWidth(cmedian)/screenWidth;;
-  cvalmin_width = (float)GetStringWidth(cvalmin)/screenWidth;;
-  cvalmax_width = (float)GetStringWidth(cvalmax)/screenWidth;;
+  cmin_width    = (float)GetStringWidth(cmin)/screenWidth;
+  cmax_width    = (float)GetStringWidth(cmax)/screenWidth;
+  median_width  = (float)GetStringWidth(cmedian)/screenWidth;
+  cvalmin_width = (float)GetStringWidth(cvalmin)/screenWidth;
+  cvalmax_width = (float)GetStringWidth(cvalmax)/screenWidth;
 
   dx = 1.0/(float)(n-1);
   for(i = 0; i<n; i++){
-    x[i] = (float)i*dx;
+    x[i] = DENORMAL((float)i*dx,i,n-1,hmin,hmax);
+    x[i] = NORMALH(x[i], nmin, nmax);
     index[i] = (float)i*(float)histogram->nbuckets/(float)n;
   }
   index[n] = histogram->nbuckets;
-  x[n-1] = 1.0;
 
   buckets = histogram->buckets;
   ymax = 0.0;
@@ -7328,7 +7343,7 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax){
     x2 = x[i+1];
 
     if(valmin_normalized<=valmax_normalized&&(x1<valmin_normalized||x2>valmax_normalized)){
-      color = blue;
+      color = blue; 
     }
     else{
       color = foregroundcolor;
@@ -7360,12 +7375,12 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax){
 
   glColor3fv(foregroundcolor);
   glBegin(GL_LINES);
-  glVertex3f(0.0, 0.0, 0.0);
-  glVertex3f(0.0, 0.0, -0.02);
+  glVertex3f(x[0], 0.0, 0.0);
+  glVertex3f(x[0], 0.0, -0.02);
   glVertex3f(median_normalized, 0.0, 0.0);
   glVertex3f(median_normalized, 0.0, -DZHIST1);
-  glVertex3f(1.0, 0.0, 0.0);
-  glVertex3f(1.0, 0.0, -DZHIST1);
+  glVertex3f(x[n-1], 0.0, 0.0);
+  glVertex3f(x[n-1], 0.0, -DZHIST1);
 
   glColor3fv(blue);
   glVertex3f(valmin_normalized, 0.0, 0.0);
@@ -7383,11 +7398,11 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax){
   text_height += 6.0;
   text_height /= screenHeight;
 
-  float offset = -2.0*text_height;
+  float offset = -2.5*text_height;
 
-  Output3Text(foregroundcolor, -cmin_width/2.0,                                               0.0, offset, cmin);
+  Output3Text(foregroundcolor, x[0]-cmin_width/2.0,                                                0.0, offset, cmin);
   Output3Text(foregroundcolor, 0.001+MAX(median_normalized-median_width/2.0, cmin_width/2.0), 0.0, offset, cmedian);
-  Output3Text(foregroundcolor, 1.0-cmax_width/2.0,                                            0.0, offset, cmax);
+  Output3Text(foregroundcolor, x[n-1]-cmax_width/2.0,                                              0.0, offset, cmax);
 
   offset -= text_height;
   Output3Text(blue,  valmin_normalized-cvalmin_width/2.0,                           0.0, offset, cvalmin);
@@ -7397,11 +7412,11 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax){
 
   if(histogram_label1!=NULL){
     offset -= text_height;
-    Output3Text(foregroundcolor, -cvalmin_width/2.0, 0.0, offset, histogram_label1);
+    Output3Text(foregroundcolor, x[0]-cmin_width/2.0, 0.0, offset, histogram_label1);
   }
   if(histogram_label2!=NULL){
     offset -= text_height;
-    Output3Text(foregroundcolor, -cvalmin_width/2.0, 0.0, offset, histogram_label2);
+    Output3Text(foregroundcolor, x[0]-cmin_width/2.0, 0.0, offset, histogram_label2);
   }
   glPopMatrix();
 }

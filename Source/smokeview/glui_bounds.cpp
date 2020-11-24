@@ -1304,6 +1304,8 @@ extern "C" void SliceBoundsCPP_CB(int var){
           SetPercentileDraw(BOUND_PATCH, 0);
           SetPercentileDraw(BOUND_PART, 0);
           SetPercentileDraw(BOUND_PLOT3D, 0);
+          gmin_draw = 1.0;
+          gmax_draw = 0.0;
         }
       }
       else{
@@ -1443,6 +1445,17 @@ void Plot3DBoundsCPP_CB(int var){
           histogram_label2 = bounds->label;
           xmin_draw = per_valmin;
           xmax_draw = per_valmax;
+          gmin_draw = bounds->hist->val_min;
+          gmax_draw = bounds->hist->val_max;
+          for(i = 0; i<plot3dboundsCPP.nall_bounds; i++){
+            cpp_boundsdata *boundi;
+
+            boundi = plot3dboundsCPP.all_bounds+i;
+            if(strcmp(boundi->unit, bounds->unit)==0){
+              gmin_draw = MIN(gmin_draw, boundi->hist->val_min);
+              gmax_draw = MAX(gmax_draw, boundi->hist->val_max);
+            }
+          }
           SetPercentileDraw(BOUND_PART, 0);
           SetPercentileDraw(BOUND_PATCH, 0);
           SetPercentileDraw(BOUND_SLICE, 0);
@@ -1513,6 +1526,7 @@ extern "C" void PartBoundsCPP_CB(int var){
     case BOUND_PERCENTILE_DRAW:
       if(bounds->hist!=NULL&&bounds->hist->defined==1){
         float per_valmin, per_valmax;
+        int i;
 
         GetHistogramValProc(bounds->hist, percentile_level_min, &per_valmin);
         GetHistogramValProc(bounds->hist, percentile_level_max, &per_valmax);
@@ -1528,6 +1542,17 @@ extern "C" void PartBoundsCPP_CB(int var){
           SetPercentileDraw(BOUND_SLICE,  0);
           SetPercentileDraw(BOUND_PATCH,  0);
           SetPercentileDraw(BOUND_PLOT3D, 0);
+          gmin_draw = bounds->hist->val_min;
+          gmax_draw = bounds->hist->val_max;
+          for(i = 0; i<partboundsCPP.nall_bounds; i++){
+            cpp_boundsdata *boundi;
+
+            boundi = partboundsCPP.all_bounds+i;
+            if(strcmp(boundi->unit, bounds->unit)==0){
+              gmin_draw = MIN(gmin_draw, boundi->hist->val_min);
+              gmax_draw = MAX(gmax_draw, boundi->hist->val_max);
+            }
+          }
         }
         else{
           histogram_draw   = NULL;
@@ -1653,6 +1678,8 @@ extern "C" void PatchBoundsCPP_CB(int var){
           SetPercentileDraw(BOUND_SLICE,  0);
           SetPercentileDraw(BOUND_PART,   0);
           SetPercentileDraw(BOUND_PLOT3D, 0);
+          gmin_draw = 1.0;
+          gmax_draw = 0.0;
         }
       }
       else{
