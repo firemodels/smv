@@ -3220,6 +3220,22 @@ void LoadUnloadMenu(int value){
     show_bound_diffs = 1-show_bound_diffs;
     updatemenu = 1;
   }
+#ifdef pp_CPPBOUND_DIALOG
+  if(value==CACHE_FILE_DATA){
+    cache_file_data = 1-cache_file_data;
+    cache_plot3d_data = cache_file_data;
+    cache_boundary_data = cache_file_data;
+    cache_part_data = cache_file_data;
+    SetCacheFlag(BOUND_PATCH, cache_file_data);
+    SetCacheFlag(BOUND_PLOT3D, cache_file_data);
+    SetCacheFlag(BOUND_PART, cache_file_data);
+#define BOUND_CACHE_DATA               112
+    PatchBoundsCPP_CB(BOUND_CACHE_DATA);
+    SliceBoundsCPP_CB(BOUND_CACHE_DATA);
+    PartBoundsCPP_CB(BOUND_CACHE_DATA);
+    updatemenu = 1;
+  }
+#endif
   if(value==REDIRECT){
     updatemenu=1;
     GLUTPOSTREDISPLAY;
@@ -6427,7 +6443,7 @@ static int loadpatchsinglemenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=
 static int plot3dshowsinglemeshmenu=0;
 static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
 static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchsinglemenu=0,showpatchextmenu=0;
-static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
+static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, fileinfomenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
 static int scriptmenu=0;
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
 #ifdef pp_LUA
@@ -11579,7 +11595,20 @@ updatemenu=0;
       glutAddMenuEntry(_("Settings..."), MENU_SCRIPT_SETTINGS);
     }
 
-  /* --------------------------------loadunload menu -------------------------- */
+    CREATEMENU(fileinfomenu, LoadUnloadMenu);
+#ifdef pp_CPPBOUND_DIALOG
+    if(cache_file_data==1)glutAddMenuEntry(_("*Cache file data"), CACHE_FILE_DATA);
+    if(cache_file_data==0)glutAddMenuEntry(_("Cache file data"), CACHE_FILE_DATA);
+#endif
+    if(showfiles==1)glutAddMenuEntry("*Show file names", SHOWFILES);
+    if(showfiles==0)glutAddMenuEntry("Show file names", SHOWFILES);
+    glutAddMenuEntry(                       "Show file bounds:", MENU_DUMMY);
+    if(bounds_each_mesh==1)glutAddMenuEntry("  *for each mesh", COMPUTE_SMV_BOUNDS);
+    if(bounds_each_mesh==0)glutAddMenuEntry("   for each mesh", COMPUTE_SMV_BOUNDS);
+    if(show_bound_diffs==1)glutAddMenuEntry("  *differences (fds - smokeview)", SHOW_BOUND_DIFFS);
+    if(show_bound_diffs==0)glutAddMenuEntry("   differences (fds - smokeview)", SHOW_BOUND_DIFFS);
+
+/* --------------------------------loadunload menu -------------------------- */
     {
       char loadmenulabel[100];
       char steplabel[100];
@@ -11720,12 +11749,7 @@ updatemenu=0;
         GLUTADDSUBMENU(_("Compression"),compressmenu);
       }
 #endif
-      if(showfiles==1)glutAddMenuEntry(_("*Show file names"),SHOWFILES);
-      if(showfiles==0)glutAddMenuEntry(_("Show file names"),SHOWFILES);
-      if(bounds_each_mesh==1)glutAddMenuEntry(_("*Show file bounds for each mesh"), COMPUTE_SMV_BOUNDS);
-      if(bounds_each_mesh==0)glutAddMenuEntry(_("Show file bounds for each mesh"), COMPUTE_SMV_BOUNDS);
-      if(show_bound_diffs==1)glutAddMenuEntry(_("*Show bound differences"), SHOW_BOUND_DIFFS);
-      if(show_bound_diffs==0)glutAddMenuEntry(_("Show bound differences"), SHOW_BOUND_DIFFS);
+      GLUTADDSUBMENU(_("Misc"),fileinfomenu);
       {
         char menulabel[1024];
 

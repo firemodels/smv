@@ -734,10 +734,10 @@ void bounds_dialog::CB(int var){
       // keep data checkbox
     case BOUND_CACHE_DATA:
       {
-        int i, cache_val = 0;
+        int i, cache_val = 0, enable_update_colors;
 
 #ifndef pp_SHOW_CACHE
-        cache_val = 1;
+        cache_val = cache_file_data;
 #endif
 
         if(CHECKBOX_cache!=NULL)cache_val = CHECKBOX_cache->get_int_val();
@@ -765,14 +765,18 @@ void bounds_dialog::CB(int var){
           if(RADIO_button_percentile_max!=NULL)RADIO_button_percentile_max->disable();
         }
         if(BUTTON_update_colors!=NULL){
+          enable_update_colors = 0;
 #ifdef pp_SHOW_CACHE
-          if(CHECKBOX_cache!=NULL&&CHECKBOX_cache->get_int_val()==1){
+          if(CHECKBOX_cache!=NULL&&CHECKBOX_cache->get_int_val()==1)enable_update_colors = 1;
+#else
+          if(cache_val==1)enable_update_colors = 1;
+#endif
+          if(enable_update_colors==1){
             BUTTON_update_colors->enable();
           }
           else{
             BUTTON_update_colors->disable();
           }
-#endif
         }
       }
       break;

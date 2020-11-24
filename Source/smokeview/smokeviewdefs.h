@@ -659,6 +659,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SHOWMESHMENUS          7
 #define COMPUTE_SMV_BOUNDS    10
 #define SHOW_BOUND_DIFFS      11
+#define CACHE_FILE_DATA       12
 
 #define SCRIPT_START_RECORDING2 -6
 #define SCRIPT_START_RECORDING  -2

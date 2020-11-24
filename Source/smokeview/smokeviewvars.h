@@ -1093,6 +1093,8 @@ SVEXTERN int SVDECL(cache_plot3d_data,1);
 SVEXTERN int SVDECL(cache_boundary_data, 1);
 SVEXTERN int SVDECL(cache_slice_data, 1);
 SVEXTERN int SVDECL(cache_part_data, 1);
+SVEXTERN int SVDECL(cache_file_data, 1);
+
 SVEXTERN int SVDECL(update_cache_data, 0);
 
 SVEXTERN int editwindow_status;
