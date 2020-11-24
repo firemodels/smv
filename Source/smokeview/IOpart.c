@@ -2103,6 +2103,10 @@ void FinalizePartLoad(partdata *parti){
       }
     }
   }
+#ifdef pp_CPPBOUND_DIALOG
+#define BOUND_PERCENTILE_DRAW          120
+  PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+#endif
   parttype = 0;
 #ifdef pp_OLDBOUND_DIALOG
   PartBoundCBInit();

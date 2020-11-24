@@ -43,6 +43,7 @@
 //#define pp_SLICETHREAD        // parallel slice file loading
 //#define pp_BLOCK_COLOR        //  new algorithm for assigning obst colors
 #define pp_CPPBOUND_DIALOG    // redo bound dialog using c++
+#define pp_SHOW_CACHE         // show file cache checkbox
 //#define pp_PLOT3D_REDUCEMENUS // eliminate plot3d sub-menus
 //#define pp_PLOT3D_STATIC      // use static memory for plot3d labels
 //#define pp_LOAD_INCREMENTAL   // load data incrementally

@@ -443,6 +443,10 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       MergePlot3DHistograms();
       SetPercentilePlot3DBounds();
       UpdateAllPlot3DColors();
+#ifdef pp_CPPBOUND_DIALOG
+#define BOUND_PERCENTILE_DRAW          120
+      Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+#endif
     }
   }
   else{

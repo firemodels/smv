@@ -126,10 +126,14 @@ bounds_dialog::bounds_dialog(void){
 void bounds_dialog::set_cache_flag(int cache_flag){
   if(cache_flag!=1)cache_flag = 0;
   bounds.cache = cache_flag;
+#ifdef pp_SHOW_CACHE
   if(CHECKBOX_cache!=NULL){
     CHECKBOX_cache->set_int_val(cache_flag);
     CB(BOUND_CACHE_DATA);
   }
+#else
+  CB(BOUND_CACHE_DATA);
+#endif
 }
 
   /* ------------------ get_bounds_data ------------------------ */
@@ -258,10 +262,12 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
   CHECKBOX_cache = NULL;
   if(cache_flag!=NULL){
     bounds.cache = *cache_flag;
+#ifdef pp_SHOW_CACHE
     CHECKBOX_cache = glui_bounds->add_checkbox_to_panel(PANEL_minmax, "Cache data", &(bounds.cache), BOUND_CACHE_DATA, Callback);
     if(cache_enable==0){
       CHECKBOX_cache->disable();
     }
+#endif
   }
 
   strcpy(label1, "global(loaded ");
@@ -730,6 +736,10 @@ void bounds_dialog::CB(int var){
       {
         int i, cache_val = 0;
 
+#ifndef pp_SHOW_CACHE
+        cache_val = 1;
+#endif
+
         if(CHECKBOX_cache!=NULL)cache_val = CHECKBOX_cache->get_int_val();
 
         for(i = 0; i<nall_bounds; i++){
@@ -755,12 +765,14 @@ void bounds_dialog::CB(int var){
           if(RADIO_button_percentile_max!=NULL)RADIO_button_percentile_max->disable();
         }
         if(BUTTON_update_colors!=NULL){
+#ifdef pp_SHOW_CACHE
           if(CHECKBOX_cache!=NULL&&CHECKBOX_cache->get_int_val()==1){
             BUTTON_update_colors->enable();
           }
           else{
             BUTTON_update_colors->disable();
           }
+#endif
         }
       }
       break;
@@ -1381,7 +1393,7 @@ int HavePlot3DData(void){
 
 /* ------------------ plot3d callback: Plot3DBoundsCPP_CB ------------------------ */
 
-void Plot3DBoundsCPP_CB(int var){
+extern "C" void Plot3DBoundsCPP_CB(int var){
   int i, iplot3d;
   cpp_boundsdata *all_bounds, *bounds;
 

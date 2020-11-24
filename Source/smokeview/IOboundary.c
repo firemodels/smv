@@ -2389,6 +2389,8 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
       }
     }
+#define BOUND_PERCENTILE_DRAW          120
+    PatchBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
 #endif
   }
 

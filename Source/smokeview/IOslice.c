@@ -5243,6 +5243,8 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
         }
       }
     }
+#define BOUND_PERCENTILE_DRAW          120
+    SliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
 #endif
     UpdateUnitDefs();
     UpdateTimes();
