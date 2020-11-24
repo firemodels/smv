@@ -7274,13 +7274,11 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
 #define MAXN 201
 void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float gmin, float gmax){
-  float dx, x[MAXN], y[MAXN], ymax, *buckets, valmin_normalized, valmax_normalized;
+  float x[MAXN], y[MAXN], ymax, *buckets, valmin_normalized, valmax_normalized;
   int index[MAXN+1], i, n = MAXN;
   float blue[]={0.0,0.0,1.0}, *color, *color_old=NULL, median_normalized;
   char cmin[20], cmedian[20], cmax[20], cvalmin[20], cvalmax[20];
   float cmin_width, cmax_width, median_width, cvalmin_width, cvalmax_width;
-  float x0_normalized, x1_normalized;
-
   float nmin, nmax, hmin, hmax;
 
   if(gmin<gmax){
@@ -7311,9 +7309,8 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
   cvalmin_width = (float)GetStringWidth(cvalmin)/screenWidth;
   cvalmax_width = (float)GetStringWidth(cvalmax)/screenWidth;
 
-  dx = 1.0/(float)(n-1);
   for(i = 0; i<n; i++){
-    x[i] = DENORMAL((float)i*dx,i,n-1,hmin,hmax);
+    x[i] = DENORMAL((float)i*(float)(n-1),i,n-1,hmin,hmax);
     x[i] = NORMALH(x[i], nmin, nmax);
     index[i] = (float)i*(float)histogram->nbuckets/(float)n;
   }
