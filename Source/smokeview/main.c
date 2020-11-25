@@ -31,7 +31,7 @@ void Usage(char *prog,int option){
   UsageCommon(HELP_SUMMARY);
   if(option==HELP_ALL){
     PRINTF("\n%s\n", _("Other options:"));
-    PRINTF("%s\n", _(" -build         - show directives used in this build of Smokeview"));
+    PRINTF("%s\n", _(" -build         - show pre-processing directives used in this build of Smokeview"));
     PRINTF("%s\n", _(" -convert_ini case1.ini case2.ini - update case1.ini to the current format"));
     PRINTF("%s\n", _("                  and save results into case2.ini"));
     PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
