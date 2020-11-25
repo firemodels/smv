@@ -421,10 +421,6 @@ typedef struct _blockagedata {
   int nshowtime, show;
   char *label;
   float *color;
-#ifdef pp_BLOCK_COLOR
-  float transparency;
-  int use_block_transparency;
-#endif
   int colorindex;
   int useblockcolor;
   facedata *faceinfo[6];

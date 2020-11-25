@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+//#define pp_CRASH_TEST         // test detection of division by zero or use of undefined pointer
 //#define pp_SHOW_BOUND_MIRROR  // add menu for showing boundary files on mirror/open vents
 #define pp_MULTI_RES          // read in multi-resolution slice files
 //#define pp_HTML_VR           // output VR html code
@@ -40,7 +41,6 @@
 //#define pp_SMOKETEST          // max blending for fire, regular blending for smoke
 //#define pp_SPECTRAL           // use black body colors - not fully implemented
 //#define pp_SLICETHREAD        // parallel slice file loading
-//#define pp_BLOCK_COLOR        //  new algorithm for assigning obst colors
 #define pp_CPPBOUND_DIALOG    // redo bound dialog using c++
 //#define pp_SHOW_CACHE         // show file cache checkbox
 //#define pp_PLOT3D_REDUCEMENUS // eliminate plot3d sub-menus
