@@ -1146,9 +1146,7 @@ typedef struct _partdata {
   int nclasses;
   partclassdata **partclassptr;
   part5data *data5;
-#ifdef pp_PART_HIST
   histogramdata **histograms; 
-#endif
   int bounds_set;
   float *global_min, *global_max;
   float *valmin_fds, *valmax_fds;   // read in from .bnd files

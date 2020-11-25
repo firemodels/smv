@@ -1181,7 +1181,6 @@ void CreatePartSizeFile(partdata *parti, int angle_flag_arg){
 }
 
   /* ------------------ GetPartHistogramFile ------------------------ */
-#ifdef pp_PART_HIST
 void GetPartHistogramFile(partdata *parti){
   int i;
   part5data *datacopy;
@@ -1268,7 +1267,6 @@ void MergePartHistograms(void){
     }
   }
 }
-#endif
 
 /* ------------------ GetPartData ------------------------ */
 
@@ -2085,11 +2083,9 @@ void FinalizePartLoad(partdata *parti){
     visEvac = 1;
   }
 
-#ifdef pp_PART_HIST
   if(generate_part_histograms==1){
     MergePartHistograms();
   }
-#endif
   if(cache_part_data==1){
 #ifdef pp_CPPBOUND_DIALOG
     SetPercentilePartBounds();
@@ -2183,11 +2179,9 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   LOCK_PART_LOAD;
   parti->loaded = 1;
   parti->display = 1;
-#ifdef pp_PART_HIST
   if(generate_part_histograms==1){
     GetPartHistogramFile(parti);
   }
-#endif
   if(cache_part_data==0){
     UpdatePartColors(parti);
   }

@@ -2194,9 +2194,7 @@ GLUI_Rollout *ROLLOUT_vector = NULL;
 GLUI_Rollout *ROLLOUT_isosurface = NULL;
 GLUI_Rollout *ROLLOUT_boundary_settings = NULL;
 GLUI_Rollout *ROLLOUT_particle_settings=NULL;
-#ifdef pp_PART_HIST
 GLUI_Rollout *ROLLOUT_particle_histogram = NULL;
-#endif
 GLUI_Panel *PANEL_keep_bound_data = NULL;
 GLUI_Panel *PANEL_keep_plot3d_data = NULL;
 #ifdef pp_OLDBOUND_DIALOG
@@ -2390,9 +2388,7 @@ GLUI_Checkbox *CHECKBOX_use_tload_skip=NULL;
 #ifdef pp_OLDBOUND_DIALOG
 GLUI_Checkbox *CHECKBOX_research_mode=NULL;
 #endif
-#ifdef pp_PART_HIST
 GLUI_Checkbox *CHECKBOX_part_histogram=NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_colorbar_flip = NULL;
 GLUI_Checkbox *CHECKBOX_colorbar_autoflip = NULL;
 GLUI_Checkbox *CHECKBOX_labels_shadedata = NULL;
@@ -4612,12 +4608,10 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
 
-#ifdef pp_PART_HIST
       ROLLOUT_particle_histogram = glui_bounds->add_rollout_to_panel(ROLLOUT_part, "Histogram", false, PARTICLE_HISTOGRAM, ParticleRolloutCB);
       INSERT_ROLLOUT(ROLLOUT_particle_histogram, glui_bounds);
       ADDPROCINFO(particleprocinfo, nparticleprocinfo, ROLLOUT_particle_histogram, PARTICLE_HISTOGRAM, glui_bounds);
       CHECKBOX_part_histogram=glui_bounds->add_checkbox_to_panel(ROLLOUT_particle_histogram,_("Generate"),&generate_part_histograms);
-#endif
 
       ROLLOUT_particle_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_part,"Settings",false,PARTICLE_SETTINGS, ParticleRolloutCB);
       INSERT_ROLLOUT(ROLLOUT_particle_settings, glui_bounds);

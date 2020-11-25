@@ -20,7 +20,6 @@
 //#define pp_SHOW_BOUND_MIRROR  // add menu for showing boundary files on mirror/open vents
 #define pp_MULTI_RES          // read in multi-resolution slice files
 //#define pp_HTML_VR           // output VR html code
-#define pp_PART_HIST            // compute particle histograms
 //#define pp_SKIP_TERRAIN_DATA  // skip reading in terrain data if case is using immersed geometry
 //#define pp_SKIP_BOUNDARY_GEOMS // skips reading of boundary geometry files
 #define pp_GPU                // support the GPU

@@ -60,12 +60,10 @@ SVEXTERN int SVDECL(update_patchfile_bounds, 0);
 
 SVEXTERN slicemenudata SVDECL(*slicemenuinfo, NULL);
 SVEXTERN int SVDECL(generate_info_from_commandline, 0);
-#ifdef pp_PART_HIST
 #ifdef pp_CPPBOUND_DIALOG
 SVEXTERN int SVDECL(generate_part_histograms, 1);
 #else
 SVEXTERN int SVDECL(generate_part_histograms, 0);
-#endif
 #endif
 SVEXTERN int SVDECL(vector_debug, 0);
 #ifdef pp_WUI_VAO
@@ -395,9 +393,7 @@ SVEXTERN int SVDECL(histogram_show_graph, 0), SVDECL(histogram_show_numbers, 0);
 SVEXTERN int SVDECL(histogram_nbuckets,10), SVDECL(histogram_static, 0), SVDECL(histogram_show_outline, 0);
 SVEXTERN int SVDECL(histograms_defined,0), SVDECL(update_slice_hists, 0), SVDECL(nhists256_slice, 0);
 SVEXTERN histogramdata SVDECL(*hists256_slice, NULL), SVDECL(*hists12_slice, NULL);
-#ifdef pp_PART_HIST
 SVEXTERN histogramdata SVDECL(*full_part_histogram, NULL);
-#endif
 SVEXTERN histogramdata SVDECL(*full_plot3D_histograms, NULL);
 
 SVEXTERN int SVDECL(color_vector_black, 0);
