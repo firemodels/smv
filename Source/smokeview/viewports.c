@@ -384,6 +384,42 @@ int SubPortOrtho(int quad,
   return 1;
 }
 
+/* ------------------------ SubPortOrtho2custom ------------------------- */
+
+#define WINDOW_MARGIN 3
+int SubPortOrtho2Custom( portdata *p, GLint screen_left, GLint screen_down, int left_percen, int down_percen, int length_percen){
+
+  GLint x0, y0;;
+  GLsizei dx, dy, dxy;
+
+  GLdouble portx_left, portx_right, portx_down, portx_top;
+
+  portx_left = p->left;
+  portx_right = p->left + p->width;
+  portx_down = p->down;
+  portx_top = p->down + p->height;
+  port_pixel_width = p->width;
+  port_pixel_height = p->height;
+  port_unit_width = portx_right-portx_left;
+  port_unit_height = portx_top-portx_down;
+
+  dx = ((float)length_percen/100.0)*p->width;
+  dy = ((float)length_percen/100.0)*p->height;
+  dxy = MIN(dx, dy);
+
+  x0 = WINDOW_MARGIN + p->left + ((float)left_percen/100.0)*(p->width-p->left);
+  y0 = WINDOW_MARGIN + p->down+((float)down_percen/100.0)*(p->height-p->down);
+
+  if(x0+dxy>p->right-WINDOW_MARGIN)x0 = p->right - WINDOW_MARGIN - dxy;
+  if(y0+dxy>p->top-WINDOW_MARGIN)  y0 = p->top   - WINDOW_MARGIN - dxy;
+
+  glViewport(x0, y0, dxy, dxy);
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluOrtho2D(-0.05, 1.1, -0.2, 1.1);
+  return 1;
+}
 
 /* ------------------------ SubPortOrtho2 ------------------------- */
 
@@ -415,7 +451,7 @@ int SubPortOrtho2(int quad,
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(portx_left,portx_right,portx_down,portx_top);
-    return 1;
+    break;
   case 1:
     icol = screen_left/screenWidth;
     irow = screen_down/screenHeight;
@@ -459,7 +495,7 @@ int SubPortOrtho2(int quad,
   default:
     ASSERT(FFALSE);
     break;
-                    }
+  }
   return 1;
 }
 
@@ -881,6 +917,17 @@ void ViewportTitle(int quad, GLint screen_left, GLint screen_down){
 
   renderInfoHeader(&titleinfo);
 
+}
+
+    /* -------------------------- ViewportHistogram -------------------------- */
+
+void ViewportHistogram(int quad, GLint screen_left, GLint screen_down){
+  if(SubPortOrtho2Custom(&VP_scene, screen_left, screen_down, hist_left_percen, hist_down_percen, hist_length_percen)==0)return;
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  DrawHistogram(histogram_draw, xmin_draw, xmax_draw, gmin_draw, gmax_draw);
 }
 
 /* ----------------------- CompareMeshes ----------------------------- */

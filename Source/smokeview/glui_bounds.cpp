@@ -36,6 +36,10 @@ GLUI *glui_bounds=NULL;
 #define BOUND_PERCENTILE_MAXVAL        118
 #define BOUND_COMPUTE_ONLY_PERCENTILES 119
 #define BOUND_PERCENTILE_DRAW          120
+#define BOUND_LEFT_PERCEN              121
+#define BOUND_DOWN_PERCEN              122
+#define BOUND_LENGTH_PERCEN            123
+#define BOUND_HIST_LABELS              124
 
 #define PERCENTILE_DISABLED 0
 #define PERCENTILE_ENABLED  1
@@ -53,10 +57,12 @@ class bounds_dialog{
   int   nall_bounds, research_mode_cpp, percentile_enabled;
   int percentile_draw;
   float percentile_min_cpp, percentile_max_cpp;
+  int hist_left_percen_cpp, hist_down_percen_cpp, hist_length_percen_cpp, hist_show_labels_cpp;
 
   // widgets
   GLUI_EditText    *EDIT_valmin, *EDIT_valmax, *EDIT_chopmin, *EDIT_chopmax;
   GLUI_Checkbox    *CHECKBOX_set_chopmin, *CHECKBOX_set_chopmax, *CHECKBOX_cache, *CHECKBOX_research_mode, *CHECKBOX_percentile_draw;
+  GLUI_Checkbox    *CHECKBOX_hist_show_labels;
   GLUI_RadioGroup  *RADIO_set_valtype,  *RADIO_set_valmin, *RADIO_set_valmax;
   GLUI_RadioButton *RADIO_button_loaded_min, *RADIO_button_loaded_max;
   GLUI_RadioButton *RADIO_button_all_min, *RADIO_button_all_max;
@@ -65,6 +71,7 @@ class bounds_dialog{
   GLUI_Panel *PANEL_min, *PANEL_max;
   GLUI_Panel *PANEL_percentiles;
   GLUI_Spinner *SPINNER_percentile_min, *SPINNER_percentile_max;
+  GLUI_Spinner *SPINNER_hist_left_percen, *SPINNER_hist_down_percen, *SPINNER_hist_length_percen;
   GLUI_StaticText  *STATIC_min_unit, *STATIC_max_unit, *STATIC_chopmin_unit, *STATIC_chopmax_unit;
   GLUI_Rollout     *ROLLOUT_main_bound, *ROLLOUT_truncate;
 
@@ -232,6 +239,11 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
   all_bounds = bounds_arg;
   nall_bounds = nbounds_arg;
 
+  hist_left_percen_cpp   = hist_left_percen;
+  hist_down_percen_cpp   = hist_down_percen;
+  hist_length_percen_cpp = hist_length_percen;
+  hist_show_labels_cpp   = hist_show_labels;
+
   NewMemory((void **)&all_bounds_save, nall_bounds*sizeof(cpp_boundsdata));
   SaveBounds();
   
@@ -323,7 +335,7 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
   if(cache_flag!=NULL){
     if(percentile_enabled==1){
       percentile_draw = 0;
-      PANEL_percentiles = glui_bounds->add_panel_to_panel(PANEL_minmax, "percentiles");
+      PANEL_percentiles = glui_bounds->add_panel_to_panel(PANEL_minmax, "data distribution");
 
       percentile_min_cpp = CLAMP(percentile_level_min, 0.0, 1.0);
       percentile_max_cpp = CLAMP(percentile_level_max, percentile_level_min,1.0);
@@ -334,7 +346,15 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
       SPINNER_percentile_max->set_float_limits(percentile_min_cpp, 1.0);
       SPINNER_percentile_min->set_float_limits(0.0, percentile_max_cpp);
 
-      CHECKBOX_percentile_draw = glui_bounds->add_checkbox_to_panel(PANEL_percentiles, _("show distribution"), &percentile_draw, BOUND_PERCENTILE_DRAW, Callback);
+      SPINNER_hist_left_percen   = glui_bounds->add_spinner_to_panel(PANEL_percentiles, _("left:"),   GLUI_SPINNER_INT, &hist_left_percen_cpp,   BOUND_LEFT_PERCEN,   Callback);
+      SPINNER_hist_down_percen   = glui_bounds->add_spinner_to_panel(PANEL_percentiles, _("down:"),   GLUI_SPINNER_INT, &hist_down_percen_cpp,   BOUND_DOWN_PERCEN,   Callback);
+      SPINNER_hist_length_percen = glui_bounds->add_spinner_to_panel(PANEL_percentiles, _("length:"), GLUI_SPINNER_INT, &hist_length_percen_cpp, BOUND_LENGTH_PERCEN, Callback);
+      SPINNER_hist_left_percen->set_int_limits(0, 100);
+      SPINNER_hist_down_percen->set_int_limits(0, 100);
+      SPINNER_hist_length_percen->set_int_limits(0, 100);
+
+      CHECKBOX_percentile_draw  = glui_bounds->add_checkbox_to_panel(PANEL_percentiles, _("show"), &percentile_draw, BOUND_PERCENTILE_DRAW, Callback);
+      CHECKBOX_hist_show_labels = glui_bounds->add_checkbox_to_panel(PANEL_percentiles, _("show labels"), &hist_show_labels_cpp, BOUND_HIST_LABELS, Callback);
       glui_bounds->add_button_to_panel(PANEL_percentiles, "Compute min/max bounds", BOUND_COMPUTE_PERCENTILES, Callback);
     }
     PANEL_buttons = glui_bounds->add_panel_to_panel(PANEL_minmax, "", GLUI_PANEL_NONE);
@@ -813,6 +833,18 @@ void bounds_dialog::CB(int var){
       if(CHECKBOX_percentile_draw!=NULL&&CHECKBOX_percentile_draw->get_int_val()!=percentile_draw){
         CHECKBOX_percentile_draw->set_int_val(percentile_draw);
       }
+      break;
+    case BOUND_LEFT_PERCEN:
+      hist_left_percen = hist_left_percen_cpp;
+      break;
+    case BOUND_DOWN_PERCEN:
+      hist_down_percen = hist_down_percen_cpp;
+      break;
+    case BOUND_LENGTH_PERCEN:
+      hist_length_percen = hist_length_percen_cpp;
+      break;
+    case BOUND_HIST_LABELS:
+      hist_show_labels       = hist_show_labels_cpp;
       break;
   }
 };

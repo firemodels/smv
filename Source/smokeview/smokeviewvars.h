@@ -814,6 +814,8 @@ SVEXTERN char input_filename_ext[5];
 #ifdef pp_CPPBOUND_DIALOG
 SVEXTERN float SVDECL(percentile_level_min,0.01);
 SVEXTERN float SVDECL(percentile_level_max, 0.99);
+SVEXTERN int SVDECL(hist_left_percen, 0), SVDECL(hist_down_percen,0), SVDECL(hist_length_percen,100), SVDECL(hist_show_labels, 1);
+
 #endif
 #ifdef pp_OLDBOUND_DIALOG
 SVEXTERN float SVDECL(percentile_level,0.01);

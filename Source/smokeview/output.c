@@ -170,6 +170,35 @@ void OutputLargeText(float x, float y, char *string){
   }
 }
 
+/* ------------------ OutputTextColor ------------------------ */
+
+void OutputTextColor(float *fontcolor, float x, float y, char *string){
+  char *c;
+  float *fcolor;
+
+  fcolor = foregroundcolor;
+  if(fontcolor==NULL){
+    fcolor = foregroundcolor;
+  }
+  else{
+    fcolor = fontcolor;
+  }
+
+  if(string==NULL)return;
+  glColor3fv(fcolor);
+  if(fontindex==SCALED_FONT){
+    ScaleFont2D();
+    OutputSText2(x, y, 0.0, string);
+    return;
+  }
+  else{
+    glRasterPos2f(x, y);
+    for(c = string; *c!='\0'; c++){
+      glutBitmapCharacter(large_font, (unsigned char)*c);
+    }
+  }
+}
+
 /* ------------------ OutputText ------------------------ */
 
 void OutputText(float x, float y, char *string){

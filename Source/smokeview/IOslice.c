@@ -7320,8 +7320,6 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
   }
 
   glPushMatrix();
-  glScalef(1.0, 1.0, 0.8);
-  glTranslatef(xbar/2.0-0.5, -0.05, 0.0);
   glBegin(GL_TRIANGLES);
   for(i = 0; i<n-1; i++){
     float x1, x2;
@@ -7340,21 +7338,21 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
       color_old = color;
     }
 
-    glVertex3f(x1, 0.0, 0.0);
-    glVertex3f(x2, 0.0, 0.0);
-    glVertex3f(x2, 0.0, y[i+1]);
+    glVertex2f(x1, 0.0);
+    glVertex2f(x2, 0.0);
+    glVertex2f(x2, y[i+1]);
 
-    glVertex3f(x1, 0.0, 0.0);
-    glVertex3f(x2, 0.0, y[i+1]);
-    glVertex3f(x2, 0.0, 0.0);
+    glVertex2f(x1, 0.0);
+    glVertex2f(x2, y[i+1]);
+    glVertex2f(x2, 0.0);
 
-    glVertex3f(x1, 0.0, 0.0);
-    glVertex3f(x2, 0.0, y[i+1]);
-    glVertex3f(x1, 0.0, y[i]);
+    glVertex2f(x1, 0.0);
+    glVertex2f(x2, y[i+1]);
+    glVertex2f(x1, y[i]);
 
-    glVertex3f(x1, 0.0, 0.0);
-    glVertex3f(x1, 0.0, y[i]);
-    glVertex3f(x2, 0.0, y[i+1]);
+    glVertex2f(x1, 0.0);
+    glVertex2f(x1, y[i]);
+    glVertex2f(x2, y[i+1]);
   }
   glEnd();
 
@@ -7362,48 +7360,65 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
 
   glColor3fv(foregroundcolor);
   glBegin(GL_LINES);
-  glVertex3f(x[0], 0.0, 0.0);
-  glVertex3f(x[0], 0.0, -0.02);
-  glVertex3f(median_normalized, 0.0, 0.0);
-  glVertex3f(median_normalized, 0.0, -DZHIST1);
-  glVertex3f(x[n-1], 0.0, 0.0);
-  glVertex3f(x[n-1], 0.0, -DZHIST1);
+  glVertex2f(x[0], 0.0);
+  glVertex2f(x[0], -0.02);
+  glVertex2f(median_normalized, 0.0);
+  glVertex2f(median_normalized, -DZHIST1);
+  glVertex2f(x[n-1], 0.0);
+  glVertex2f(x[n-1], -DZHIST1);
 
   glColor3fv(blue);
-  glVertex3f(valmin_normalized, 0.0, 0.0);
-  glVertex3f(valmin_normalized, 0.0, -DZHIST1);
-  glVertex3f(valmax_normalized, 0.0, 0.0);
-  glVertex3f(valmax_normalized, 0.0, -DZHIST1);
+  glVertex2f(valmin_normalized, 0.0);
+  glVertex2f(valmin_normalized, -DZHIST1);
+  glVertex2f(valmax_normalized, 0.0);
+  glVertex2f(valmax_normalized, -DZHIST1);
   glEnd();
 
-  float text_height = 18;
-  if(fontindex==SCALED_FONT){
-    scale_2d_y = ((float)scaled_font2d_height/(float)152.38);
+  // draw frame around histogram
 
-    text_height = MAX(18, (int)((12.0/18.0)*(25.0/18.0)*(float)scaled_font2d_height));
-  }
-  text_height += 6.0;
-  text_height /= screenHeight;
+  glColor3fv(foregroundcolor);
+  glBegin(GL_LINES);
+  glVertex2f(-0.05, -0.2);
+  glVertex2f( 1.1,  -0.2);
 
-  float offset = -2.5*text_height;
+  glVertex2f( 1.1,  -0.2);
+  glVertex2f( 1.1,   1.1);
 
-  Output3Text(foregroundcolor, x[0]-cmin_width/2.0,                                                0.0, offset, cmin);
-  Output3Text(foregroundcolor, 0.001+MAX(median_normalized-median_width/2.0, cmin_width/2.0), 0.0, offset, cmedian);
-  Output3Text(foregroundcolor, x[n-1]-cmax_width/2.0,                                              0.0, offset, cmax);
+  glVertex2f( 1.1,   1.1);
+  glVertex2f(-0.05,  1.1);
 
-  offset -= text_height;
-  Output3Text(blue,  valmin_normalized-cvalmin_width/2.0,                           0.0, offset, cvalmin);
-  Output3Text(blue,  valmax_normalized-cvalmax_width/2.0,                           0.0, offset, cvalmax);
+  glVertex2f(-0.05,  1.1);
+  glVertex2f(-0.05, -0.2);
+  glEnd();
 
+  if(hist_show_labels==1){
+    float text_height = 18;
+    if(fontindex==SCALED_FONT){
+      scale_2d_y = ((float)scaled_font2d_height/(float)152.38);
 
+      text_height = MAX(18, (int)((12.0/18.0)*(25.0/18.0)*(float)scaled_font2d_height));
+    }
+    text_height += 6.0;
+    text_height /= screenHeight;
 
-  if(histogram_label1!=NULL){
+    float offset = -2.5*text_height;
+
+    OutputTextColor(foregroundcolor, x[0]-cmin_width/2.0, offset, cmin);
+    OutputTextColor(foregroundcolor, 0.001+MAX(median_normalized-median_width/2.0, cmin_width/2.0), offset, cmedian);
+    OutputTextColor(foregroundcolor, x[n-1]-cmax_width/2.0, offset, cmax);
+
     offset -= text_height;
-    Output3Text(foregroundcolor, x[0]-cmin_width/2.0, 0.0, offset, histogram_label1);
-  }
-  if(histogram_label2!=NULL){
-    offset -= text_height;
-    Output3Text(foregroundcolor, x[0]-cmin_width/2.0, 0.0, offset, histogram_label2);
+    OutputTextColor(blue, valmin_normalized-cvalmin_width/2.0, offset, cvalmin);
+    OutputTextColor(blue, valmax_normalized-cvalmax_width/2.0, offset, cvalmax);
+
+    if(histogram_label1!=NULL){
+      offset -= text_height;
+      OutputTextColor(foregroundcolor, x[0]-cmin_width/2.0, offset, histogram_label1);
+    }
+    if(histogram_label2!=NULL){
+      offset -= text_height;
+      OutputTextColor(foregroundcolor, x[0]-cmin_width/2.0, offset, histogram_label2);
+    }
   }
   glPopMatrix();
 }
