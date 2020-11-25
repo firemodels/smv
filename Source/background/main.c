@@ -208,8 +208,7 @@ int main(int argc, char **argv){
             if(i<argc){
               arg=argv[i];
               sscanf(arg,"%i",&nprocs_max);
-              if(nprocs_max<1)nprocs_max=1;
-              if(nprocs_max>100)nprocs_max=100;
+              nprocs_max = CLAMP(nprocs_max, 1, 100);
             }
             break;
           default:
@@ -406,7 +405,7 @@ int getnprocs(char *command){
 
     ext = strchr(buffer,'.');
     if(ext!=NULL)*ext=0;
-    if(strcmp(buffer,com_copy)==0)count++;
+    if(STRCMP(buffer,com_copy)==0)count++;
   }
   fclose(stream);
   return count;
