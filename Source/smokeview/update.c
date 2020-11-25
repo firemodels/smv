@@ -754,18 +754,6 @@ void SynchTimes(void){
 
   /* synchronize smooth blockage times */
 
-#ifdef pp_SLICE_DEBUG
-// debug output
-  printf("SynchTimes ntimes: ");
-  for(i=0;i<nslice_loaded;i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo + slice_loaded_list[i];
-    printf("%i ", slicei->ntimes);
-  }
-  printf("\n");
-#endif
-
   for(n=0;n<nglobal_times;n++){
     int j,jj;
 
