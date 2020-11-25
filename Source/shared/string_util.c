@@ -1348,14 +1348,6 @@ unsigned int DiffDate(char *token, char *tokenbase){
   return difft;
 }
 
-#ifdef pp_BETA
-  #define SET_VERSIONTITLE
-#else
-#ifndef pp_OFFICIAL_RELEASE
-  #define SET_VERSIONTITLE
-#endif
-#endif
-
 /* ------------------ GetBaseTitle ------------------------ */
 
 void GetBaseTitle(char *progname, char *title_base){
@@ -1375,11 +1367,6 @@ void GetBaseTitle(char *progname, char *title_base){
   strcat(title_base, " ");
   strcat(title_base, version);
 
-#ifdef SET_VERSIONTITLE
-  if(strcmp(version,"")!=0)strcat(title_base, "(");
-  strcat(title_base, git_version);
-  if(strcmp(version,"")!=0)strcat(title_base, ")");
-#endif
   strcat(title_base, " - ");
 }
 

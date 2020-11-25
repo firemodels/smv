@@ -123,9 +123,6 @@ void Usage(char *prog,int option){
 #ifdef pp_memstatus
     strcat(label, ", pp_memstatus");
 #endif
-#ifdef pp_OFFICIAL_RELEASE
-    strcat(label, ", pp_OFFICIAL_RELEASE");
-#endif
 #ifdef pp_OSX
     strcat(label, ", pp_OSX");
 #endif
