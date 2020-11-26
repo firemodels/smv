@@ -109,6 +109,7 @@ class bounds_dialog{
   void set_valtype_index(int index);
   void SaveBounds(void);
   void RestoreBounds(void);
+  void update_plot_parms(void);
 
 };
 
@@ -202,6 +203,28 @@ void bounds_dialog::set_research_mode(int flag){
   research_mode_cpp = flag;
   CHECKBOX_research_mode->set_int_val(research_mode_cpp);
   CB(BOUND_CACHE_DATA);
+}
+
+
+  /* ------------------ set_plot_parms ------------------------ */
+
+void bounds_dialog::update_plot_parms(void){
+  if(hist_left_percen != hist_left_percen_cpp){
+    hist_left_percen_cpp = hist_left_percen;
+    SPINNER_hist_left_percen->set_int_val(hist_left_percen);
+  }
+  if(hist_down_percen != hist_down_percen_cpp){
+    hist_down_percen_cpp = hist_down_percen;
+    SPINNER_hist_down_percen->set_int_val(hist_down_percen);
+  }
+  if(hist_length_percen != hist_length_percen_cpp){
+    hist_length_percen_cpp = hist_length_percen;
+    SPINNER_hist_length_percen->set_int_val(hist_length_percen);
+  }
+  if(hist_show_labels != hist_show_labels_cpp){
+    hist_show_labels_cpp = hist_show_labels;
+    CHECKBOX_hist_show_labels->set_int_val(hist_show_labels);
+  }
 }
 
 /* ------------------ SaveBounds ------------------------ */
@@ -334,28 +357,33 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
   CHECKBOX_percentile_draw = NULL;
   if(cache_flag!=NULL){
     if(percentile_enabled==1){
+      GLUI_Panel *PANEL_drawA;
+      GLUI_Rollout *PANEL_drawB;
+
       percentile_draw = 0;
       PANEL_percentiles = glui_bounds->add_panel_to_panel(PANEL_minmax, "data distribution");
 
       percentile_min_cpp = CLAMP(percentile_level_min, 0.0, 1.0);
       percentile_max_cpp = CLAMP(percentile_level_max, percentile_level_min,1.0);
 
-      SPINNER_percentile_max = glui_bounds->add_spinner_to_panel(PANEL_percentiles, _("max:"), GLUI_SPINNER_FLOAT, &percentile_max_cpp, BOUND_PERCENTILE_MAXVAL, Callback);
-      SPINNER_percentile_min = glui_bounds->add_spinner_to_panel(PANEL_percentiles, _("min:"), GLUI_SPINNER_FLOAT, &percentile_min_cpp, BOUND_PERCENTILE_MINVAL, Callback);
+      PANEL_drawA              = glui_bounds->add_panel_to_panel(PANEL_percentiles, "", GLUI_PANEL_NONE);
+      SPINNER_percentile_max   = glui_bounds->add_spinner_to_panel(PANEL_drawA, _("max:"), GLUI_SPINNER_FLOAT, &percentile_max_cpp, BOUND_PERCENTILE_MAXVAL, Callback);
+      SPINNER_percentile_min   = glui_bounds->add_spinner_to_panel(PANEL_drawA, _("min:"), GLUI_SPINNER_FLOAT, &percentile_min_cpp, BOUND_PERCENTILE_MINVAL, Callback);
+      CHECKBOX_percentile_draw = glui_bounds->add_checkbox_to_panel(PANEL_drawA, _("show plot"),               &percentile_draw,    BOUND_PERCENTILE_DRAW,   Callback);
 
       SPINNER_percentile_max->set_float_limits(percentile_min_cpp, 1.0);
       SPINNER_percentile_min->set_float_limits(0.0, percentile_max_cpp);
 
-      SPINNER_hist_left_percen   = glui_bounds->add_spinner_to_panel(PANEL_percentiles, _("left:"),   GLUI_SPINNER_INT, &hist_left_percen_cpp,   BOUND_LEFT_PERCEN,   Callback);
-      SPINNER_hist_down_percen   = glui_bounds->add_spinner_to_panel(PANEL_percentiles, _("down:"),   GLUI_SPINNER_INT, &hist_down_percen_cpp,   BOUND_DOWN_PERCEN,   Callback);
-      SPINNER_hist_length_percen = glui_bounds->add_spinner_to_panel(PANEL_percentiles, _("length:"), GLUI_SPINNER_INT, &hist_length_percen_cpp, BOUND_LENGTH_PERCEN, Callback);
+      PANEL_drawB = glui_bounds->add_rollout_to_panel(PANEL_percentiles, "plot position", 0);
+      SPINNER_hist_left_percen   = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("left:"),   GLUI_SPINNER_INT, &hist_left_percen_cpp,   BOUND_LEFT_PERCEN,   Callback);
+      SPINNER_hist_down_percen   = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("bottom:"), GLUI_SPINNER_INT, &hist_down_percen_cpp,   BOUND_DOWN_PERCEN,   Callback);
+      SPINNER_hist_length_percen = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("width:"),  GLUI_SPINNER_INT, &hist_length_percen_cpp, BOUND_LENGTH_PERCEN, Callback);
+      CHECKBOX_hist_show_labels  = glui_bounds->add_checkbox_to_panel(PANEL_drawB, _("show labels"),              &hist_show_labels_cpp,   BOUND_HIST_LABELS,   Callback);
       SPINNER_hist_left_percen->set_int_limits(0, 100);
       SPINNER_hist_down_percen->set_int_limits(0, 100);
       SPINNER_hist_length_percen->set_int_limits(0, 100);
 
-      CHECKBOX_percentile_draw  = glui_bounds->add_checkbox_to_panel(PANEL_percentiles, _("show"), &percentile_draw, BOUND_PERCENTILE_DRAW, Callback);
-      CHECKBOX_hist_show_labels = glui_bounds->add_checkbox_to_panel(PANEL_percentiles, _("show labels"), &hist_show_labels_cpp, BOUND_HIST_LABELS, Callback);
-      glui_bounds->add_button_to_panel(PANEL_percentiles, "Compute min/max bounds", BOUND_COMPUTE_PERCENTILES, Callback);
+      glui_bounds->add_button_to_panel(PANEL_percentiles, "Update", BOUND_COMPUTE_PERCENTILES, Callback);
     }
     PANEL_buttons = glui_bounds->add_panel_to_panel(PANEL_minmax, "", GLUI_PANEL_NONE);
     BUTTON_update_colors      = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
@@ -835,15 +863,12 @@ void bounds_dialog::CB(int var){
       }
       break;
     case BOUND_LEFT_PERCEN:
-      hist_left_percen = hist_left_percen_cpp;
-      break;
     case BOUND_DOWN_PERCEN:
-      hist_down_percen = hist_down_percen_cpp;
-      break;
     case BOUND_LENGTH_PERCEN:
-      hist_length_percen = hist_length_percen_cpp;
-      break;
     case BOUND_HIST_LABELS:
+      hist_left_percen = hist_left_percen_cpp;
+      hist_down_percen = hist_down_percen_cpp;
+      hist_length_percen = hist_length_percen_cpp;
       hist_show_labels       = hist_show_labels_cpp;
       break;
   }
@@ -1406,6 +1431,15 @@ extern "C" void SliceBoundsCPP_CB(int var){
       if(npatchinfo>0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
       break;
+    case BOUND_LEFT_PERCEN:
+    case BOUND_DOWN_PERCEN:
+    case BOUND_LENGTH_PERCEN:
+    case BOUND_HIST_LABELS:
+      if(npartinfo>0)partboundsCPP.update_plot_parms();
+      if(npatchinfo>0)patchboundsCPP.update_plot_parms();
+      if(nplot3dinfo>0)plot3dboundsCPP.update_plot_parms();
+      if(nsliceinfo>0)sliceboundsCPP.update_plot_parms();
+      break;
   }
 }
 
@@ -1531,6 +1565,15 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
       if(npatchinfo>0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
       break;
+    case BOUND_LEFT_PERCEN:
+    case BOUND_DOWN_PERCEN:
+    case BOUND_LENGTH_PERCEN:
+    case BOUND_HIST_LABELS:
+      if(npartinfo>0)partboundsCPP.update_plot_parms();
+      if(npatchinfo>0)patchboundsCPP.update_plot_parms();
+      if(nplot3dinfo>0)plot3dboundsCPP.update_plot_parms();
+      if(nsliceinfo>0)sliceboundsCPP.update_plot_parms();
+      break;
   }
 }
 
@@ -1632,6 +1675,15 @@ extern "C" void PartBoundsCPP_CB(int var){
       if(npatchinfo>0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
+      break;
+    case BOUND_LEFT_PERCEN:
+    case BOUND_DOWN_PERCEN:
+    case BOUND_LENGTH_PERCEN:
+    case BOUND_HIST_LABELS:
+      if(npartinfo>0)partboundsCPP.update_plot_parms();
+      if(npatchinfo>0)patchboundsCPP.update_plot_parms();
+      if(nplot3dinfo>0)plot3dboundsCPP.update_plot_parms();
+      if(nsliceinfo>0)sliceboundsCPP.update_plot_parms();
       break;
   }
 }
@@ -1766,6 +1818,15 @@ extern "C" void PatchBoundsCPP_CB(int var){
       if(npartinfo>0)partboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
+      break;
+    case BOUND_LEFT_PERCEN:
+    case BOUND_DOWN_PERCEN:
+    case BOUND_LENGTH_PERCEN:
+    case BOUND_HIST_LABELS:
+      if(npartinfo>0)partboundsCPP.update_plot_parms();
+      if(npatchinfo>0)patchboundsCPP.update_plot_parms();
+      if(nplot3dinfo>0)plot3dboundsCPP.update_plot_parms();
+      if(nsliceinfo>0)sliceboundsCPP.update_plot_parms();
       break;
   }
 }
