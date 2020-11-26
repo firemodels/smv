@@ -368,7 +368,7 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
       PANEL_drawA              = glui_bounds->add_panel_to_panel(PANEL_percentiles, "", GLUI_PANEL_NONE);
       SPINNER_percentile_max   = glui_bounds->add_spinner_to_panel(PANEL_drawA, _("max:"), GLUI_SPINNER_FLOAT, &percentile_max_cpp, BOUND_PERCENTILE_MAXVAL, Callback);
       SPINNER_percentile_min   = glui_bounds->add_spinner_to_panel(PANEL_drawA, _("min:"), GLUI_SPINNER_FLOAT, &percentile_min_cpp, BOUND_PERCENTILE_MINVAL, Callback);
-      CHECKBOX_percentile_draw = glui_bounds->add_checkbox_to_panel(PANEL_drawA, _("show plot"),               &percentile_draw,    BOUND_PERCENTILE_DRAW,   Callback);
+      CHECKBOX_percentile_draw = glui_bounds->add_checkbox_to_panel(PANEL_drawA, _("show"),               &percentile_draw,    BOUND_PERCENTILE_DRAW,   Callback);
       glui_bounds->add_button_to_panel(PANEL_drawA, "Update", BOUND_COMPUTE_PERCENTILES, Callback);
 
       SPINNER_percentile_max->set_float_limits(percentile_min_cpp, 1.0);
@@ -1374,11 +1374,20 @@ extern "C" void SliceBoundsCPP_CB(int var){
           histogram_label2 = bounds->label;
           xmin_draw = per_valmin;
           xmax_draw = per_valmax;
+          gmin_draw = bounds->hist->val_min;
+          gmax_draw = bounds->hist->val_max;
+          for(ii = 0; ii<nsliceinfo; ii++){
+            slicedata *slicei;
+
+            slicei = sliceinfo+ii;
+            if(strcmp(slicei->label.unit, bounds->unit)==0&&slicei->valmin_fds<=slicei->valmax_fds){
+              gmin_draw = MIN(gmin_draw, slicei->valmin_fds);
+              gmax_draw = MAX(gmax_draw, slicei->valmax_fds);
+            }
+          }
           SetPercentileDraw(BOUND_PATCH, 0);
           SetPercentileDraw(BOUND_PART, 0);
           SetPercentileDraw(BOUND_PLOT3D, 0);
-          gmin_draw = 1.0;
-          gmax_draw = 0.0;
         }
       }
       else{
@@ -1775,11 +1784,20 @@ extern "C" void PatchBoundsCPP_CB(int var){
           histogram_label2 = bounds->label;
           xmin_draw = per_valmin;
           xmax_draw = per_valmax;
+          gmin_draw = bounds->hist->val_min;
+          gmax_draw = bounds->hist->val_max;
+          for(i = 0; i<npatchinfo; i++){
+            patchdata *patchi;
+
+            patchi = patchinfo+i;
+            if(strcmp(patchi->label.unit, bounds->unit)==0&&patchi->valmin_fds<=patchi->valmax_fds){
+              gmin_draw = MIN(gmin_draw, patchi->valmin_fds);
+              gmax_draw = MAX(gmax_draw, patchi->valmax_fds);
+            }
+          }
           SetPercentileDraw(BOUND_SLICE,  0);
           SetPercentileDraw(BOUND_PART,   0);
           SetPercentileDraw(BOUND_PLOT3D, 0);
-          gmin_draw = 1.0;
-          gmax_draw = 0.0;
         }
       }
       else{

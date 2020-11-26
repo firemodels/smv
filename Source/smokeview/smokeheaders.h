@@ -16,7 +16,7 @@ EXTERNCPP void UpdateColorLabelDigits(void);
 EXTERNCPP void IncrementPartPropIndex(void);
 
 EXTERNCPP int GetStringWidth(char *string);
-EXTERNCPP void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax, float gmin, float gmax);
+EXTERNCPP void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax, float gmin, float gmax, int ndigits);
 EXTERNCPP int GetPercentileDraw(int type);
 
 EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, float valmax_fds, float valmin_smv, float valmax_smv);

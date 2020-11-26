@@ -927,7 +927,7 @@ void ViewportHistogram(int quad, GLint screen_left, GLint screen_down){
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  DrawHistogram(histogram_draw, xmin_draw, xmax_draw, gmin_draw, gmax_draw);
+  DrawHistogram(histogram_draw, xmin_draw, xmax_draw, gmin_draw, gmax_draw, ncolorlabel_digits);
 }
 
 /* ----------------------- CompareMeshes ----------------------------- */
