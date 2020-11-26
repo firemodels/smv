@@ -357,8 +357,7 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
   CHECKBOX_percentile_draw = NULL;
   if(cache_flag!=NULL){
     if(percentile_enabled==1){
-      GLUI_Panel *PANEL_drawA;
-      GLUI_Rollout *PANEL_drawB;
+      GLUI_Panel *PANEL_drawA, *PANEL_drawB;
 
       percentile_draw = 0;
       PANEL_percentiles = glui_bounds->add_panel_to_panel(PANEL_minmax, "data distribution");
@@ -370,11 +369,13 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
       SPINNER_percentile_max   = glui_bounds->add_spinner_to_panel(PANEL_drawA, _("max:"), GLUI_SPINNER_FLOAT, &percentile_max_cpp, BOUND_PERCENTILE_MAXVAL, Callback);
       SPINNER_percentile_min   = glui_bounds->add_spinner_to_panel(PANEL_drawA, _("min:"), GLUI_SPINNER_FLOAT, &percentile_min_cpp, BOUND_PERCENTILE_MINVAL, Callback);
       CHECKBOX_percentile_draw = glui_bounds->add_checkbox_to_panel(PANEL_drawA, _("show plot"),               &percentile_draw,    BOUND_PERCENTILE_DRAW,   Callback);
+      glui_bounds->add_button_to_panel(PANEL_drawA, "Update", BOUND_COMPUTE_PERCENTILES, Callback);
 
       SPINNER_percentile_max->set_float_limits(percentile_min_cpp, 1.0);
       SPINNER_percentile_min->set_float_limits(0.0, percentile_max_cpp);
 
-      PANEL_drawB = glui_bounds->add_rollout_to_panel(PANEL_percentiles, "plot position", 0);
+      glui_bounds->add_column_to_panel(PANEL_percentiles, false);
+      PANEL_drawB = glui_bounds->add_panel_to_panel(PANEL_percentiles, "position", GLUI_PANEL_NONE);
       SPINNER_hist_left_percen   = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("left:"),   GLUI_SPINNER_INT, &hist_left_percen_cpp,   BOUND_LEFT_PERCEN,   Callback);
       SPINNER_hist_down_percen   = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("bottom:"), GLUI_SPINNER_INT, &hist_down_percen_cpp,   BOUND_DOWN_PERCEN,   Callback);
       SPINNER_hist_length_percen = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("width:"),  GLUI_SPINNER_INT, &hist_length_percen_cpp, BOUND_LENGTH_PERCEN, Callback);
@@ -383,7 +384,6 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
       SPINNER_hist_down_percen->set_int_limits(0, 100);
       SPINNER_hist_length_percen->set_int_limits(0, 100);
 
-      glui_bounds->add_button_to_panel(PANEL_percentiles, "Update", BOUND_COMPUTE_PERCENTILES, Callback);
     }
     PANEL_buttons = glui_bounds->add_panel_to_panel(PANEL_minmax, "", GLUI_PANEL_NONE);
     BUTTON_update_colors      = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
