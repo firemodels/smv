@@ -97,9 +97,11 @@ enum GLUI_Control_Types {
 
 
 /********* Constants for window placement **********/
-#ifdef pp_XXX
-#define GLUI_XOFF                     6 // original values
-#define GLUI_YOFF                     6
+//#define GLUI_XOFF                     6 // original values
+//#define GLUI_YOFF                     6
+#ifdef pp_OSX
+#define GLUI_XOFF                     3
+#define GLUI_YOFF                     1
 #else
 #define GLUI_XOFF                     3
 #define GLUI_YOFF                     3
