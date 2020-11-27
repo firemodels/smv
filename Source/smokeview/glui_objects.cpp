@@ -77,6 +77,7 @@ GLUI_Panel *PANEL_vectors=NULL;
 GLUI_Panel *PANEL_arrow_base=NULL;
 GLUI_Panel *PANEL_arrow_height=NULL;
 GLUI_Panel *PANEL_devicevis=NULL;
+GLUI_Panel *PANEL_plots = NULL;
 GLUI_Panel *PANEL_label3=NULL;
 GLUI_Panel *PANEL_vector_type=NULL;
 GLUI_Panel *PANEL_beam=NULL;
@@ -375,15 +376,6 @@ void DeviceCB(int var){
     break;
   case SHOWDEVICEVALS:
   case COLORDEVICEVALS:
-    if(PANEL_devicevis != NULL){
-      if(colordevice_val == 1 || showdevice_val == 1){
-        PANEL_devicevis->enable();
-      }
-      else{
-        PANEL_devicevis->disable();
-      }
-    }
-
     break;
   case DEVICE_sensorsize:
     if(sensorrelsize < sensorrelsizeMIN){
@@ -624,6 +616,12 @@ extern "C" void GluiDeviceSetup(int main_window){
       INSERT_ROLLOUT(ROLLOUT_devicevalues, glui_device);
       ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_devicevalues, DEVICE_ROLLOUT, glui_device);
 
+
+      PANEL_plots = glui_device->add_panel_to_panel(ROLLOUT_devicevalues, "plots");
+      glui_device->add_checkbox_to_panel(PANEL_plots, _("show"), &showdevice_plots);
+      glui_device->add_spinner_to_panel(PANEL_plots,  _("size"), GLUI_SPINNER_FLOAT, &device_plot_factor);
+      glui_device->add_spinner_to_panel(PANEL_plots,  _("line width"), GLUI_SPINNER_FLOAT, &device_plot_line_width);
+      glui_device->add_spinner_to_panel(PANEL_plots, _("point size"), GLUI_SPINNER_FLOAT, &device_plot_point_size);
 
       CHECKBOX_device_2 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _("Values"), &showdevice_val, SHOWDEVICEVALS, DeviceCB);
       CHECKBOX_device_1 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _("Id"), &showdevice_id, SHOWDEVICEVALS, DeviceCB);

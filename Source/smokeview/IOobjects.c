@@ -3151,6 +3151,31 @@ void InitSphere(int nlat, int nlong){
   sin_long[nlong]=sin_long[0];
 }
 
+/* ----------------------- DrawDevicePlots ----------------------------- */
+
+void DrawDevicePlots(void){
+  int i;
+
+  for(i = 0; i<ndeviceinfo; i++){
+    devicedata *devicei;
+
+    devicei = deviceinfo+i;
+    if(devicei->times!=NULL&&devicei->vals!=NULL&&devicei->nvals>1&&devicei->type2==devicetypes_index){
+      int valid;
+      float highlight_time=0.0, highlight_val=0.0;
+
+      valid = 0;
+      float show_plot_val = 1;
+      if(show_plot_val==1&&global_times!=NULL){
+        highlight_time = global_times[itimes];
+        highlight_val= GetDeviceVal(global_times[itimes],devicei,&valid);
+      }
+      DrawPlot(devicei->xyz, device_plot_factor, devicei->times, devicei->vals, devicei->nvals, highlight_time, highlight_val, valid);
+    }
+    
+  }
+}
+
 /* ----------------------- DrawDevices ----------------------------- */
 
 void DrawDevices(void){

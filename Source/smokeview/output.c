@@ -162,6 +162,65 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
   glPopMatrix();
 }
 
+  /* ------------------ DrawPlot ------------------------ */
+
+void DrawPlot(float *xyz0, float factor, float *x, float *z, int n, float highlight_x, float highlight_y, int valid){
+  float xmin, xmax, zmin, zmax;
+  float xscale=1.0, zscale=1.0;
+  float u[3] = {0.0,1.0,0.0}, v[3];
+  float axis[3], angle, origin[3];
+  int i;
+
+  origin[0] = xyz0[0];
+  origin[1] = xyz0[1];
+  origin[2] = xyz0[2];
+
+  v[0] = xyz0[0]-fds_eyepos[0];
+  v[1] = xyz0[1]-fds_eyepos[1];
+  v[2] = xyz0[2]-fds_eyepos[2];
+  RotateU2V(u, v, axis, &angle);
+
+  xmin = x[0];
+  xmax = xmin;
+  zmin = z[0];
+  zmax = zmin;
+  for(i = 1; i<n; i++){
+    xmin = MIN(xmin, x[i]);
+    xmax = MAX(xmax, x[i]);
+    zmin = MIN(zmin, z[i]);
+    zmax = MAX(zmax, z[i]);
+  }
+  if(xmax>xmin)xscale = 1.0/(xmax-xmin);
+  if(zmax>zmin)zscale = 1.0/(zmax-zmin);
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(-xbar0, -ybar0, -zbar0);
+
+  glTranslatef(origin[0], origin[1], origin[2]);
+  //glRotatef(RAD2DEG*angle, axis[0], axis[1], axis[2]);
+  glScalef(factor, factor, factor);
+  glScalef(xscale, 1.0, zscale);
+  glTranslatef(-xmin, 0.0, -zmin);
+  glColor3fv(foregroundcolor);
+  glLineWidth(device_plot_line_width);
+  glBegin(GL_LINES);
+  for(i = 0; i<n-1; i++){
+    glVertex3f(x[i],   0.0, z[i]);
+    glVertex3f(x[i+1], 0.0, z[i+1]);
+  }
+  glEnd();
+  if(valid==1){
+    glColor3f(1.0,0.0,0.0);
+    glPointSize(device_plot_point_size);
+    glBegin(GL_POINTS);
+    glVertex3f(highlight_x, 0.0, highlight_y);
+    glEnd();
+  }
+
+  glPopMatrix();
+}
+
 /* ------------------ OutputAxisLabels ------------------------ */
 
 void OutputAxisLabels(){
