@@ -47,6 +47,7 @@ if(returncode==PASS_m){\
   if(ferror(PART5FILE)==1||feof(PART5FILE)==1)returncode=FAIL_m;\
 }
 
+#ifdef pp_CPPBOUND_DIALOG
 /* ------------------ ClosePartFiles ------------------------ */
 
 void ClosePartFiles(void){
@@ -62,6 +63,7 @@ void ClosePartFiles(void){
     }
   }
 }
+#endif
 
 /* ------------------ GetEvacPartColor ------------------------ */
 

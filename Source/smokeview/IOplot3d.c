@@ -440,7 +440,9 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   if(cache_plot3d_data==1){
     if(p->finalize==1){
       MergePlot3DHistograms();
+#ifdef pp_CPPBOUND_DIALOG
       SetPercentilePlot3DBounds();
+#endif
       UpdateAllPlot3DColors();
 #ifdef pp_CPPBOUND_DIALOG
 #define BOUND_PERCENTILE_DRAW          120

@@ -20,10 +20,12 @@
 #include "smokeheaders.h"
 #include "threader.h"
 
+#ifdef pp_CPPBOUND_DIALOG
 SVEXTERN histogramdata SVDECL(*histogram_draw, NULL);
 SVEXTERN float SVDECL(xmin_draw, 1.0), SVDECL(xmax_draw, 0.0);
 SVEXTERN float SVDECL(gmin_draw, 1.0), SVDECL(gmax_draw, 0.0);
 SVEXTERN char SVDECL(*histogram_label1, NULL), SVDECL(*histogram_label2, NULL);
+#endif
 #ifdef INMAIN
 SVEXTERN char *cslice_label = "Slice",  *cpart_label = "Part", *cbound_label = "Bndry", *cplot3d_label = "Plot3D";
 #else
