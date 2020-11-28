@@ -8,16 +8,17 @@
 
 #include "smokeviewvars.h"
 
-#define DEVICE_sensorsize 20
-#define SHOWDEVICEVALS 26
-#define COLORDEVICEVALS 27
-#define DEVICE_devicetypes 28
-#define SAVE_SETTINGS_OBJECTS 99
-#define DEVICE_close 3
+#define DEVICE_sensorsize      20
+#define SHOWDEVICEVALS         26
+#define SHOWDEVICEPLOT         29
+#define COLORDEVICEVALS        27
+#define DEVICE_devicetypes     28
+#define SAVE_SETTINGS_OBJECTS  99
+#define DEVICE_close            3
 #define DEVICE_show_orientation 4
-#define DEVICE_NBUCKETS 5
-#define DEVICE_SHOWBEAM 6
-#define DEVICE_RADIUS 7
+#define DEVICE_NBUCKETS         5
+#define DEVICE_SHOWBEAM         6
+#define DEVICE_RADIUS           7
 
 #define WINDROSE_SHOW_FIRST   996
 #define WINDROSE_SHOW_NEXT    997
@@ -55,7 +56,7 @@ GLUI_Button *BUTTON_device_2=NULL;
 GLUI_Button *BUTTON_update_windrose = NULL;
 
 GLUI_Checkbox *CHECKBOX_device_1=NULL;
-GLUI_Checkbox *CHECKBOX_device_2=NULL;
+GLUI_Checkbox *CHECKBOX_showdevice_val=NULL;
 GLUI_Checkbox *CHECKBOX_device_3=NULL;
 GLUI_Checkbox *CHECKBOX_device_4=NULL;
 GLUI_Checkbox *CHECKBOX_device_5=NULL;
@@ -67,6 +68,7 @@ GLUI_Checkbox *CHECKBOX_vis_ztree = NULL;
 GLUI_Checkbox *CHECKBOX_showbeam_as_line = NULL;
 GLUI_Checkbox *CHECKBOX_use_beamcolor = NULL;
 GLUI_Checkbox **CHECKBOX_showz_windrose;
+GLUI_Checkbox *CHECKBOX_showdevice_plot = NULL;
 
 GLUI_EditText *EDIT_filter=NULL;
 
@@ -132,6 +134,13 @@ int ndeviceprocinfo = 0;
 
 void Device_Rollout_CB(int var){
   ToggleRollout(deviceprocinfo, ndeviceprocinfo, var);
+}
+
+/* ------------------ UpdateDeviceShow ------------------------ */
+
+extern "C" void UpdateDeviceShow(void){
+  CHECKBOX_showdevice_val->set_int_val(showdevice_val);
+  CHECKBOX_showdevice_plot->set_int_val(showdevice_plot);
 }
 
 /* ------------------ UpdateWindRoseDevices ------------------------ */
@@ -374,8 +383,12 @@ void DeviceCB(int var){
       UpdateColorDevices();
     }
     break;
+  case SHOWDEVICEPLOT:
   case SHOWDEVICEVALS:
   case COLORDEVICEVALS:
+    update_times=1;
+    plotstate=GetPlotState(DYNAMIC_PLOTS);
+    updatemenu=1;
     break;
   case DEVICE_sensorsize:
     if(sensorrelsize < sensorrelsizeMIN){
@@ -618,12 +631,12 @@ extern "C" void GluiDeviceSetup(int main_window){
 
 
       PANEL_plots = glui_device->add_panel_to_panel(ROLLOUT_devicevalues, "plots");
-      glui_device->add_checkbox_to_panel(PANEL_plots, _("show"), &showdevice_plots);
+      CHECKBOX_showdevice_plot = glui_device->add_checkbox_to_panel(PANEL_plots, _("show"), &showdevice_plot, SHOWDEVICEPLOT, DeviceCB);
       glui_device->add_spinner_to_panel(PANEL_plots,  _("size"), GLUI_SPINNER_FLOAT, &device_plot_factor);
       glui_device->add_spinner_to_panel(PANEL_plots,  _("line width"), GLUI_SPINNER_FLOAT, &device_plot_line_width);
       glui_device->add_spinner_to_panel(PANEL_plots, _("point size"), GLUI_SPINNER_FLOAT, &device_plot_point_size);
 
-      CHECKBOX_device_2 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _("Values"), &showdevice_val, SHOWDEVICEVALS, DeviceCB);
+      CHECKBOX_showdevice_val = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _("Values"), &showdevice_val, SHOWDEVICEVALS, DeviceCB);
       CHECKBOX_device_1 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _("Id"), &showdevice_id, SHOWDEVICEVALS, DeviceCB);
       CHECKBOX_device_5 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _("Type"), &showdevice_type, SHOWDEVICEVALS, DeviceCB);
       CHECKBOX_device_6 = glui_device->add_checkbox_to_panel(ROLLOUT_devicevalues, _("Unit"), &showdevice_unit, SHOWDEVICEVALS, DeviceCB);

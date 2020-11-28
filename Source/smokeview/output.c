@@ -164,8 +164,9 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
 
   /* ------------------ DrawPlot ------------------------ */
 
-void DrawPlot(float *xyz0, float factor, float *x, float *z, int n, float highlight_x, float highlight_y, int valid){
+void DrawPlot(float *xyz0, float factor, float *x, float *z, int n, float highlight_x, float highlight_y, int valid, float global_valmin, float global_valmax){
   float xmin, xmax, zmin, zmax;
+  float xxmin, xxmax, zzmin, zzmax;
   float xscale=1.0, zscale=1.0;
   float u[3] = {0.0,1.0,0.0}, v[3];
   float axis[3], angle, origin[3];
@@ -191,7 +192,16 @@ void DrawPlot(float *xyz0, float factor, float *x, float *z, int n, float highli
     zmax = MAX(zmax, z[i]);
   }
   if(xmax>xmin)xscale = 1.0/(xmax-xmin);
+  if(global_valmin<global_valmax){
+    zmin = global_valmin;
+    zmax = global_valmax;
+  }
   if(zmax>zmin)zscale = 1.0/(zmax-zmin);
+
+  xxmin = xmin-(xmax-xmin)/20.0;
+  xxmax = xmax+(xmax-xmin)/20.0;
+  zzmin = zmin-(zmax-zmin)/20.0;
+  zzmax = zmax+(zmax-zmin)/20.0;
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
@@ -209,6 +219,18 @@ void DrawPlot(float *xyz0, float factor, float *x, float *z, int n, float highli
     glVertex3f(x[i],   0.0, z[i]);
     glVertex3f(x[i+1], 0.0, z[i+1]);
   }
+
+  glVertex3f(xxmin, 0.0, zzmin);
+  glVertex3f(xxmax, 0.0, zzmin);
+
+  glVertex3f(xxmax, 0.0, zzmin);
+  glVertex3f(xxmax, 0.0, zzmax);
+
+  glVertex3f(xxmax, 0.0, zzmax);
+  glVertex3f(xxmin, 0.0, zzmax);
+
+  glVertex3f(xxmin, 0.0, zzmax);
+  glVertex3f(xxmin, 0.0, zzmin);
   glEnd();
   if(valid==1){
     glColor3f(1.0,0.0,0.0);

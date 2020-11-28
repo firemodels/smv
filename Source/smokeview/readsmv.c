@@ -1556,6 +1556,8 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   devicei->times=NULL;
   devicei->vals=NULL;
   devicei->target_index = -1;
+  devicei->global_valmin = 1.0;
+  devicei->global_valmax = 0.0;
   FGETS(buffer,255,stream);
   TrimCommas(buffer);
 

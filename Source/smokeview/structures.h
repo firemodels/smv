@@ -948,6 +948,7 @@ typedef struct _device {
   float *color, line_width;
   int filetype;
   float *act_times;
+  float global_valmin, global_valmax;
   int *state_values;
   int nparams;
   float *params;

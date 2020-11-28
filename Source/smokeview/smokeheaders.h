@@ -17,9 +17,11 @@ EXTERNCPP void IncrementPartPropIndex(void);
 
 EXTERNCPP int GetStringWidth(char *string);
 EXTERNCPP void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax, float gmin, float gmax, int ndigits);
-EXTERNCPP void DrawPlot(float *xyz0, float factor, float *x, float *z, int n, float highlight_x, float highlight_y, int valid);
+EXTERNCPP void DrawPlot(float *xyz0, float factor, float *x, float *z, int n, float highlight_x, float highlight_y, int valid, float global_valmin, float global_valmax);
 EXTERNCPP void DrawDevicePlots(void);
 EXTERNCPP int GetPercentileDraw(int type);
+EXTERNCPP int GetPlotState(int choice);
+EXTERNCPP void UpdateDeviceShow(void);
 
 EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, float valmax_fds, float valmin_smv, float valmax_smv);
 

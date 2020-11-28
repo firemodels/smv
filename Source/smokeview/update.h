@@ -15,7 +15,6 @@ UPEXTERN void ResetItimes0(void);
 UPEXTERN void UpdateShow(void);
 UPEXTERN void SynchTimes(void);
 UPEXTERN void UpdateTimes(void);
-UPEXTERN int GetPlotState(int choice);
 UPEXTERN int GetIndex(float key, const float *list, int nlist);
 UPEXTERN int ISearch(float *list, int nlist, float key, int guess);
 #endif

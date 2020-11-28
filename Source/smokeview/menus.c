@@ -252,13 +252,15 @@ float     slice_load_time;
 #define GRID_grid 7
 #define GRID_probe 8
 
-#define OBJECT_SHOWALL -1
-#define OBJECT_HIDEALL -2
-#define OBJECT_SELECT -3
-#define OBJECT_OUTLINE -4
+#define OBJECT_SHOWALL     -1
+#define OBJECT_HIDEALL     -2
+#define OBJECT_SELECT      -3
+#define OBJECT_OUTLINE     -4
 #define OBJECT_ORIENTATION -5
-#define OBJECT_MISSING -6
-#define OBJECT_SHOWBEAM -7
+#define OBJECT_MISSING     -6
+#define OBJECT_SHOWBEAM    -7
+#define OBJECT_PLOTS       -8
+#define OBJECT_VALUES      -9
 
 #define ISO_COLORS 4
 
@@ -3074,6 +3076,11 @@ void LoadUnloadMenu(int value){
     }
     if(nvolrenderinfo>0){
       UnLoadVolsmoke3DMenu(UNLOAD_ALL);
+    }
+    if(showdevice_plot==1||showdevice_val==1){
+      showdevice_plot = 0;
+      showdevice_val = 0;
+      UpdateDeviceShow();
     }
     updatemenu=1;
     GLUTPOSTREDISPLAY;
@@ -6085,6 +6092,11 @@ void ShowObjectsMenu(int value){
   if(value>=0&&value<nobject_defs){
     objecti = object_defs[value];
     objecti->visible = 1 - objecti->visible;
+    if(showdevice_val==1||showdevice_plot==1){
+      update_times = 1;
+      plotstate = GetPlotState(DYNAMIC_PLOTS);
+      UpdateDeviceShow();
+    }
   }
   else if(value == OBJECT_MISSING){
     updatemenu = 1;
@@ -6104,6 +6116,18 @@ void ShowObjectsMenu(int value){
   }
   else if(value==OBJECT_SELECT){
     select_device=1-select_device;
+  }
+  else if(value==OBJECT_PLOTS){
+    update_times=1;
+    showdevice_plot = 1 - showdevice_plot;    
+    plotstate=GetPlotState(DYNAMIC_PLOTS);
+    UpdateDeviceShow();
+  }
+  else if(value==OBJECT_VALUES){
+    update_times=1;
+    showdevice_val = 1 - showdevice_val;    
+    plotstate=GetPlotState(DYNAMIC_PLOTS);
+    UpdateDeviceShow();
   }
   else if(value==OBJECT_OUTLINE){
     object_outlines=1-object_outlines;
@@ -7466,6 +7490,10 @@ updatemenu=0;
         glutAddMenuEntry(_("Select"),OBJECT_SELECT);
       }
     }
+    if(showdevice_plot==1)glutAddMenuEntry(_("*Plot data"),   OBJECT_PLOTS);
+    if(showdevice_plot==0)glutAddMenuEntry(_("Plot data"),    OBJECT_PLOTS);
+    if(showdevice_val==1)glutAddMenuEntry(_("*Show values"), OBJECT_VALUES);
+    if(showdevice_val==0)glutAddMenuEntry(_("Show values"),  OBJECT_VALUES);
     if(object_outlines==0)glutAddMenuEntry(_("Outline"),OBJECT_OUTLINE);
     if(object_outlines==1)glutAddMenuEntry(_("*Outline"),OBJECT_OUTLINE);
     glutAddMenuEntry(_("Show all"),OBJECT_SHOWALL);

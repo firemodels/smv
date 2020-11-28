@@ -351,7 +351,7 @@ void UpdateFileLoad(void){
 /* ------------------ UpdateShow ------------------------ */
 
 void UpdateShow(void){
-  int i,evacflag,sliceflag,vsliceflag,partflag,patchflag,isoflag,smoke3dflag,tisoflag;
+  int i,evacflag,sliceflag,vsliceflag,partflag,patchflag,isoflag,smoke3dflag,tisoflag,showdeviceflag;
   int slicecolorbarflag;
   int shooter_flag;
 
@@ -375,6 +375,7 @@ void UpdateShow(void){
   show3dsmoke=0;
   smoke3dflag=0;
   showtours=0;
+  showdeviceflag = 0;
   visTimeParticles=1; visTimeSlice=1; visTimeBoundary=1; visTimeZone=1; visTimeIso=1;
 
   RenderTime=0;
@@ -393,7 +394,18 @@ void UpdateShow(void){
 
     if(settmin_z==1&&global_times[itimes]<tmin_z)visTimeZone=0;
     if(settmax_z==1&&global_times[itimes]>tmax_z)visTimeZone=0;
+  }
 
+  if(showdevice_val==1||showdevice_plot==1){
+    for(i = 0; i<ndeviceinfo; i++){
+      devicedata *devicei;
+
+      devicei = deviceinfo+i;
+      if(devicei->type2==devicetypes_index&&devicei->object->visible==1){
+        showdeviceflag = 1;
+        break;
+      }
+    }
   }
 
   {
@@ -629,7 +641,7 @@ void UpdateShow(void){
   }
 
   if( plotstate==DYNAMIC_PLOTS &&
-    ( sliceflag==1 || vsliceflag==1 || partflag==1 || patchflag==1 ||
+    ( showdeviceflag==1 || sliceflag==1 || vsliceflag==1 || partflag==1 || patchflag==1 ||
     shooter_flag==1|| smoke3dflag==1 || showtours==1 || evacflag==1 ||
     (ReadZoneFile==1&&visZone==1&&visTimeZone==1)||showvolrender==1
     )
@@ -1071,6 +1083,20 @@ void UpdateTimes(void){
       nglobal_times = MAX(nglobal_times, 1);
       global_timemin = MIN(global_timemin, ss_tmin);
       global_timemax = MAX(global_timemax, ss_tmax);
+    }
+  }
+
+  if(showdevice_plot==1||showdevice_val==1){
+    for(i = 0; i<ndeviceinfo; i++){
+      devicedata *devicei;
+
+      devicei = deviceinfo+i;
+      if(devicei->object->visible==0)continue;
+      if(devicei->type2==devicetypes_index){
+        nglobal_times = MAX(nglobal_times, devicei->nvals);
+        global_timemin = MIN(global_timemin, devicei->times[0]);
+        global_timemax = MAX(global_timemax, devicei->times[devicei->nvals-1]);
+      }
     }
   }
 
@@ -1558,6 +1584,18 @@ int GetPlotState(int choice){
       break;
     case DYNAMIC_PLOTS:
     case DYNAMIC_PLOTS_NORECURSE:
+      if(showdevice_plot==1||showdevice_val==1){
+        for(i = 0; i<ndeviceinfo; i++){
+          devicedata *devicei;
+
+          devicei = deviceinfo+i;
+          if(devicei->object->visible==0)continue;
+          if(devicei->type2==devicetypes_index){
+            stept = 1;
+            return DYNAMIC_PLOTS;
+          }
+        }
+      }
       for(i=0;i<nslice_loaded;i++){
         slicedata *slicei;
 

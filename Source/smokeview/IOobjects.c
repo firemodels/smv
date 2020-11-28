@@ -3151,6 +3151,44 @@ void InitSphere(int nlat, int nlong){
   sin_long[nlong]=sin_long[0];
 }
 
+/* ----------------------- GetGlobalDeviceBounds ----------------------------- */
+
+void GetGlobalDeviceBounds(int type){
+  int i;
+  float valmin, valmax;
+
+  valmin = 1.0;
+  valmax = 0.0;
+  for(i = 0; i<ndeviceinfo; i++){
+    devicedata *devicei;
+    devicei = deviceinfo+i;
+    if(devicei->type2==type){
+      int j;
+      float *vals;
+
+      vals = devicei->vals;
+      for(j = 0; j<devicei->nvals; j++){
+        if(valmin>valmax){
+          valmin = vals[j];
+          valmax = valmin;
+        }
+        else{
+          valmin = MIN(valmin, vals[j]);
+          valmax = MAX(valmax, vals[j]);
+        }
+      }
+    }
+  }
+  for(i = 0; i<ndeviceinfo; i++){
+    devicedata *devicei;
+    devicei = deviceinfo+i;
+    if(devicei->type2==type){
+      devicei->global_valmin = valmin;
+      devicei->global_valmax = valmax;
+    }
+  }
+}
+
 /* ----------------------- DrawDevicePlots ----------------------------- */
 
 void DrawDevicePlots(void){
@@ -3160,7 +3198,9 @@ void DrawDevicePlots(void){
     devicedata *devicei;
 
     devicei = deviceinfo+i;
-    if(devicei->times!=NULL&&devicei->vals!=NULL&&devicei->nvals>1&&devicei->type2==devicetypes_index){
+    if(devicei->object->visible==0)continue;
+    if(devicei->times==NULL||devicei->vals==NULL)continue;
+    if(devicei->nvals>1&&devicei->type2==devicetypes_index){
       int valid;
       float highlight_time=0.0, highlight_val=0.0;
 
@@ -3170,7 +3210,10 @@ void DrawDevicePlots(void){
         highlight_time = global_times[itimes];
         highlight_val= GetDeviceVal(global_times[itimes],devicei,&valid);
       }
-      DrawPlot(devicei->xyz, device_plot_factor, devicei->times, devicei->vals, devicei->nvals, highlight_time, highlight_val, valid);
+      if(devicei->global_valmin>devicei->global_valmax){
+        GetGlobalDeviceBounds(devicei->type2);
+      }
+      DrawPlot(devicei->xyz, device_plot_factor, devicei->times, devicei->vals, devicei->nvals, highlight_time, highlight_val, valid, devicei->global_valmin, devicei->global_valmax);
     }
     
   }
