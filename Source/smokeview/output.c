@@ -164,15 +164,40 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
 }
 #endif
 
+/* ------------------------ GetFontHeight ------------------------- */
+
+int GetFontHeight(void){
+  int height = 0;
+
+  switch(fontindex){
+    case SMALL_FONT:
+      height = 10;
+      break;
+    case LARGE_FONT:
+      height = 18;
+      break;
+    case SCALED_FONT:
+        height = glutStrokeWidth(GLUT_STROKE_ROMAN, 'A');
+      break;
+    default:
+      ASSERT(FFALSE);
+      break;
+  }
+  return height;
+}
+
   /* ------------------ DrawPlot ------------------------ */
 
-void DrawPlot(float *xyz0, float factor, float *x, float *z, int n, float highlight_x, float highlight_y, int valid, float global_valmin, float global_valmax){
-  float xmin, xmax, zmin, zmax;
-  float xxmin, xxmax, zzmin, zzmax;
+void DrawPlot(float *xyz0, float factor, float *x, float *z, int n,
+              float highlight_x, float highlight_y, int valid,
+              float global_valmin, float global_valmax){
+  float xmin, xmax, zmin, zmax, dx, dz;
   float xscale=1.0, zscale=1.0;
   float u[3] = {0.0,1.0,0.0}, v[3];
   float axis[3], angle, origin[3];
   int i;
+  char cvalmin[20], cvalmax[20];
+  int ndigits = 3;
 
   origin[0] = xyz0[0];
   origin[1] = xyz0[1];
@@ -199,11 +224,11 @@ void DrawPlot(float *xyz0, float factor, float *x, float *z, int n, float highli
     zmax = global_valmax;
   }
   if(zmax>zmin)zscale = 1.0/(zmax-zmin);
+  Float2String(cvalmin, zmin, ndigits);
+  Float2String(cvalmax, zmax, ndigits);
 
-  xxmin = xmin-(xmax-xmin)/20.0;
-  xxmax = xmax+(xmax-xmin)/20.0;
-  zzmin = zmin-(zmax-zmin)/20.0;
-  zzmax = zmax+(zmax-zmin)/20.0;
+  dx = (xmax - xmin)/20.0;
+  dz = (zmax - zmin)/20.0;
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
@@ -222,18 +247,32 @@ void DrawPlot(float *xyz0, float factor, float *x, float *z, int n, float highli
     glVertex3f(x[i+1], 0.0, z[i+1]);
   }
 
-  glVertex3f(xxmin, 0.0, zzmin);
-  glVertex3f(xxmax, 0.0, zzmin);
+  glVertex3f(xmin - dx, 0.0, zmin - dz);
+  glVertex3f(xmax + dx, 0.0, zmin - dz);
 
-  glVertex3f(xxmax, 0.0, zzmin);
-  glVertex3f(xxmax, 0.0, zzmax);
+  glVertex3f(xmax + dx, 0.0, zmin - dz);
+  glVertex3f(xmax + dx, 0.0, zmax + dz);
 
-  glVertex3f(xxmax, 0.0, zzmax);
-  glVertex3f(xxmin, 0.0, zzmax);
+  glVertex3f(xmax + dx, 0.0, zmax + dz);
+  glVertex3f(xmin - dx, 0.0, zmax + dz);
 
-  glVertex3f(xxmin, 0.0, zzmax);
-  glVertex3f(xxmin, 0.0, zzmin);
+  glVertex3f(xmin - dx, 0.0, zmax + dz);
+  glVertex3f(xmin - dx, 0.0, zmin - dz);
+
+  glVertex3f(xmax,      0.0, zmax);
+  glVertex3f(xmax + dx, 0.0, zmax);
+
+  glVertex3f(xmax,      0.0, zmin);
+  glVertex3f(xmax + dx, 0.0, zmin);
   glEnd();
+
+  float dfont = (float)GetFontHeight()/((float)screenHeight*zscale*factor*SCALE2SMV(1.0));
+
+  if(showdevice_labels==1){
+    Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmin-0.5*dfont, cvalmin);
+    Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-0.5*dfont, cvalmax);
+  }
+
   if(valid==1){
     glColor3f(1.0,0.0,0.0);
     glPointSize(device_plot_point_size);

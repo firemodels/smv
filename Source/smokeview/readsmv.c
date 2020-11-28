@@ -10597,6 +10597,13 @@ int ReadIni2(char *inifile, int localfile){
       UpdateGluiDevices();
       continue;
     }
+    if(Match(buffer, "SHOWDEVICEPLOTS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %f %f %f",
+             &showdevice_plot, &showdevice_labels, &device_plot_factor, &device_plot_line_width, &device_plot_point_size);
+      UpdateGluiDevices();
+      continue;
+    }
     if(Match(buffer, "SHOWMISSINGOBJECTS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &show_missing_objects);
@@ -13973,6 +13980,8 @@ void WriteIniLocal(FILE *fileout){
       fprintf(fileout, " %s\n", obj_typei->label);
     }
   }
+  fprintf(fileout, "SHOWDEVICEPLOTS\n");
+  fprintf(fileout, " %i %i %f %f %f\n", showdevice_plot, showdevice_labels, device_plot_factor, device_plot_line_width, device_plot_point_size);
   fprintf(fileout, "SHOWDEVICEVALS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n", showdevice_val, showvdevice_val, devicetypes_index, colordevice_val, vectortype, viswindrose, showdevice_type,showdevice_unit,showdevice_id);
   fprintf(fileout, "SHOWMISSINGOBJECTS\n");

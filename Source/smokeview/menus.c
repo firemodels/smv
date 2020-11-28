@@ -251,15 +251,16 @@ float     slice_load_time;
 #define GRID_grid 7
 #define GRID_probe 8
 
-#define OBJECT_SHOWALL     -1
-#define OBJECT_HIDEALL     -2
-#define OBJECT_SELECT      -3
-#define OBJECT_OUTLINE     -4
-#define OBJECT_ORIENTATION -5
-#define OBJECT_MISSING     -6
-#define OBJECT_SHOWBEAM    -7
-#define OBJECT_PLOTS       -8
-#define OBJECT_VALUES      -9
+#define OBJECT_SHOWALL        -1
+#define OBJECT_HIDEALL        -2
+#define OBJECT_SELECT         -3
+#define OBJECT_OUTLINE        -4
+#define OBJECT_ORIENTATION    -5
+#define OBJECT_MISSING        -6
+#define OBJECT_SHOWBEAM       -7
+#define OBJECT_PLOTS          -8
+#define OBJECT_VALUES         -9
+#define MENU_DEVICE_SETTINGS -10
 
 #define ISO_COLORS 4
 
@@ -6122,6 +6123,9 @@ void ShowObjectsMenu(int value){
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     UpdateDeviceShow();
   }
+  else if(value==MENU_DEVICE_SETTINGS){
+    ShowGluiDevice();
+  }
   else if(value==OBJECT_VALUES){
     update_times=1;
     showdevice_val = 1 - showdevice_val;    
@@ -7513,6 +7517,7 @@ updatemenu=0;
     }
     glutAddMenuEntry("-",MENU_DUMMY);
     GLUTADDSUBMENU(_("Segments"),spheresegmentmenu);
+    glutAddMenuEntry(_("Settings..."), MENU_DEVICE_SETTINGS);
 
   }
 

@@ -699,7 +699,7 @@ SVEXTERN int SVDECL(*trainer_temp_indexes,NULL),SVDECL(*trainer_oxy_indexes,NULL
 SVEXTERN int SVDECL(trainer_showall_mslice,0),SVDECL(trainer_cycle_mslice,1);
 SVEXTERN int SVDECL(trainer_temp_n,0),SVDECL(trainer_oxy_n,0);
 SVEXTERN char SVDECL(*tr_name,NULL);
-SVEXTERN int SVDECL(showdevice_val,0), SVDECL(showdevice_plot, 0), SVDECL(showvdevice_val,0),SVDECL(colordevice_val,0),SVDECL(showdevice_id,0);
+SVEXTERN int SVDECL(showdevice_val,0), SVDECL(showdevice_plot, 0), SVDECL(showvdevice_val,0),SVDECL(showdevice_labels,1),SVDECL(colordevice_val,0),SVDECL(showdevice_id,0);
 SVEXTERN float SVDECL(device_plot_factor, 0.5), SVDECL(device_plot_line_width, 1.0), SVDECL(device_plot_point_size, 10.0);
 SVEXTERN int SVDECL(showdevice_type,1), SVDECL(showdevice_unit,1);
 SVEXTERN float SVDECL(device_valmin,0.0), SVDECL(device_valmax,1.0);
