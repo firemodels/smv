@@ -6,7 +6,6 @@
 #include "glew.h"
 
 #include "string_util.h"
-#include "update.h"
 #include "smokeviewvars.h"
 #include "IOobjects.h"
 

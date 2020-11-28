@@ -10,7 +10,6 @@
 #include GLUT_H
 
 #include "compress.h"
-#include "update.h"
 #include "interp.h"
 #include "smokeviewvars.h"
 #include "IOscript.h"

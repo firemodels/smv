@@ -7,7 +7,6 @@
 #include <sys/stat.h>
 #include GLUT_H
 
-#include "update.h"
 #include "smokeviewvars.h"
 #include "viewports.h"
 #include "IOobjects.h"

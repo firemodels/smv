@@ -5,7 +5,6 @@
 #include GLUT_H
 #include <math.h>
 
-#include "update.h"
 #include "smokeviewvars.h"
 
 /* ------------------ GetIsoLevels ------------------------ */

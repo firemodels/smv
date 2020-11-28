@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "update.h"
 #include "smokeviewvars.h"
 #ifdef pp_ISOTIME
 #include GLUT_H

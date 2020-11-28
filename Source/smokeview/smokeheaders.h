@@ -21,7 +21,22 @@ EXTERNCPP void DrawPlot(float *xyz0, float factor, float *x, float *z, int n, fl
 EXTERNCPP void DrawDevicePlots(void);
 EXTERNCPP int GetPercentileDraw(int type);
 EXTERNCPP int GetPlotState(int choice);
+
+#ifndef TERRAIN_FIRE_LINE_UPDATE
+#define TERRAIN_FIRE_LINE_UPDATE 39
+#endif
+
 EXTERNCPP void UpdateDeviceShow(void);
+EXTERNCPP void UpdateClipbounds(int set_i0, int *i0, int set_i1, int *i1, int maxi);
+EXTERNCPP int CompareFloat(const void *arg1, const void *arg2);
+EXTERNCPP void UpdateHrrinfo(int val);
+EXTERNCPP void ResetItimes0(void);
+EXTERNCPP void UpdateShow(void);
+EXTERNCPP void SynchTimes(void);
+EXTERNCPP void UpdateTimes(void);
+EXTERNCPP int GetIndex(float key, const float *list, int nlist);
+EXTERNCPP int ISearch(float *list, int nlist, float key, int guess);
+
 
 EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, float valmax_fds, float valmin_smv, float valmax_smv);
 

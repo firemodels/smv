@@ -11,7 +11,6 @@
 #include GLUT_H
 
 #include "string_util.h"
-#include "update.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 

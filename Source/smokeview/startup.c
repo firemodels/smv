@@ -7,7 +7,6 @@
 #include GLUT_H
 
 #include "infoheader.h"
-#include "update.h"
 #ifdef pp_LUA
 #include "lua_api.h"
 #endif
