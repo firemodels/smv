@@ -32,6 +32,7 @@ SVEXTERN char *cslice_label = "Slice",  *cpart_label = "Part", *cbound_label = "
 SVEXTERN char *cslice_label, *cpart_label, *cbound_label, *cplot3d_label;
 #endif
 
+SVEXTERN int SVDECL(update_glui_devices, 0);
 SVEXTERN int SVDECL(update_patch_bounds, -1), SVDECL(update_slice_bounds, -1), SVDECL(update_part_bounds, -1), SVDECL(update_plot3d_bounds, -1);
 SVEXTERN float max_dx, max_dy, max_dz;
 SVEXTERN int SVDECL(vec_uniform_length, 0);

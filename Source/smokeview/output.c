@@ -206,7 +206,6 @@ void DrawPlot(float *xyz0, float factor, float *x, float *z, int n,
   v[0] = xyz0[0]-fds_eyepos[0];
   v[1] = xyz0[1]-fds_eyepos[1];
   v[2] = xyz0[2]-fds_eyepos[2];
-  RotateU2V(u, v, axis, &angle);
 
   xmin = x[0];
   xmax = xmin;
@@ -235,7 +234,13 @@ void DrawPlot(float *xyz0, float factor, float *x, float *z, int n,
   glTranslatef(-xbar0, -ybar0, -zbar0);
 
   glTranslatef(origin[0], origin[1], origin[2]);
-  //glRotatef(RAD2DEG*angle, axis[0], axis[1], axis[2]);
+
+  float az = camera_current->az_elev[0];
+  glRotatef(-az, 0.0,0.0,1.0);
+
+  float elev = camera_current->az_elev[1];
+  glRotatef(-elev, 1.0, 0.0, 0.0);
+
   glScalef(factor, factor, factor);
   glScalef(xscale, 1.0, zscale);
   glTranslatef(-xmin, 0.0, -zmin);

@@ -1787,6 +1787,10 @@ void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo){
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
+  if(update_glui_devices==1){
+    update_glui_devices = 0;
+    UpdateGluiDevices();
+  }
   if(update_times==1){
     update_times = 0;
     UpdateTimes();

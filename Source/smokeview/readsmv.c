@@ -10594,14 +10594,14 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, " %i %i %i %i %i %i %i %i %i",
         &showdevice_val, &showvdevice_val, &devicetypes_index, &colordevice_val, &vectortype, &viswindrose, &showdevice_type, &showdevice_unit,&showdevice_id);
       devicetypes_index = CLAMP(devicetypes_index, 0, ndevicetypes - 1);
-      UpdateGluiDevices();
+      update_glui_devices = 1;
       continue;
     }
     if(Match(buffer, "SHOWDEVICEPLOTS")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %f %f %f",
              &showdevice_plot, &showdevice_labels, &device_plot_factor, &device_plot_line_width, &device_plot_point_size);
-      UpdateGluiDevices();
+      update_glui_devices = 1;
       continue;
     }
     if(Match(buffer, "SHOWMISSINGOBJECTS") == 1){
