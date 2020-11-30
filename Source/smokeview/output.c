@@ -193,8 +193,7 @@ void DrawPlot(float *xyz0, float factor, float *x, float *z, int n,
               float global_valmin, float global_valmax){
   float xmin, xmax, zmin, zmax, dx, dz;
   float xscale=1.0, zscale=1.0;
-  float u[3] = {0.0,1.0,0.0}, v[3];
-  float axis[3], angle, origin[3];
+  float origin[3];
   int i;
   char cvalmin[20], cvalmax[20];
   int ndigits = 3;
@@ -202,10 +201,6 @@ void DrawPlot(float *xyz0, float factor, float *x, float *z, int n,
   origin[0] = xyz0[0];
   origin[1] = xyz0[1];
   origin[2] = xyz0[2];
-
-  v[0] = xyz0[0]-fds_eyepos[0];
-  v[1] = xyz0[1]-fds_eyepos[1];
-  v[2] = xyz0[2]-fds_eyepos[2];
 
   xmin = x[0];
   xmax = xmin;
