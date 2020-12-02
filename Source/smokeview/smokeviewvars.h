@@ -246,6 +246,10 @@ SVEXTERN float SVDECL(smoke3d_delta_perp,0.5);
 #endif
 SVEXTERN int SVDECL(smoke3d_black, 0);
 SVEXTERN int SVDECL(smoke3d_skip, 1);
+SVEXTERN int SVDECL(smoke3d_skipx, 1);
+SVEXTERN int SVDECL(smoke3d_skipy, 1);
+SVEXTERN int SVDECL(smoke3d_skipz, 1);
+SVEXTERN int SVDECL(smoke3d_kmax, -1);
 
 SVEXTERN int SVDECL(update_research_mode, 1);
 SVEXTERN int SVDECL(research_mode, 1);

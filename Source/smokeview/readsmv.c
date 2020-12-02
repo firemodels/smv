@@ -12963,8 +12963,11 @@ int ReadIni2(char *inifile, int localfile){
       }
       if(Match(buffer, "SMOKESKIP") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i %i", &smokeskipm1, &smoke3d_skip);
+        sscanf(buffer, "%i %i %i %i %i", &smokeskipm1, &smoke3d_skip, &smoke3d_skipx, &smoke3d_skipy, &smoke3d_skipz);
         smoke3d_skip = CLAMP(smoke3d_skip,1,10);
+        smoke3d_skipx = CLAMP(smoke3d_skipx, 1, 10);
+        smoke3d_skipy = CLAMP(smoke3d_skipy, 1, 10);
+        smoke3d_skipz = CLAMP(smoke3d_skipz, 1, 10);
         continue;
       }
       if(Match(buffer, "SMOKEALBEDO") == 1){
@@ -15069,7 +15072,7 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, " %f\n", smoke_albedo);
   }
   fprintf(fileout, "SMOKESKIP\n");
-  fprintf(fileout," %i %i\n",smokeskipm1,smoke3d_skip);
+  fprintf(fileout," %i %i %i %i %i\n",smokeskipm1,smoke3d_skip, smoke3d_skipx, smoke3d_skipy, smoke3d_skipz);
 #ifdef pp_GPU
   fprintf(fileout,"SMOKERTHICK\n");
   fprintf(fileout," %f\n",smoke3d_rthick);
