@@ -38,10 +38,6 @@ EXTERNCPP int ISearch(float *list, int nlist, float key, int guess);
 
 EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, float valmax_fds, float valmin_smv, float valmax_smv);
 
-#ifdef pp_MULTI_RES
-void InitMultiRes(slicedata *sd);
-void NormalizeXYZRes(void);
-#endif
 EXTERNCPP void ScriptLoadSliceRender(scriptdata*scripti);
 EXTERNCPP int GetNSliceFrames(char *file, float *stime_min, float *stime_max);
 EXTERNCPP void GenerateSliceMenu(void);
@@ -120,9 +116,6 @@ EXTERNCPP void GetZoneTempBounds(void);
 EXTERNCPP FILE_SIZE GetSliceData(slicedata *sd, char *slicefilename, int time_frame, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
   float *qminptr, float *qmaxptr, float *qdataptr, float *timesptr, int ntimes_old_arg, int *ntimesptr,
   int sliceframestep_arg, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg
-#ifdef pp_MULTI_RES
-  , int multi_res
-#endif
 );
 EXTERNCPP void GetSliceSizes(slicedata *sd, char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int sliceframestep_arg,
   int *errorptr, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg, int *headersizeptr, int *framesizeptr);

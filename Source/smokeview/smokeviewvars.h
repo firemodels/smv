@@ -53,11 +53,6 @@ SVEXTERN char *crender_skips[NRENDER_SKIPS];
 SVEXTERN int SVDECL(bounds_each_mesh, 0);
 SVEXTERN int SVDECL(show_bound_diffs, 0);
 
-#ifdef pp_MULTI_RES
-SVEXTERN int SVDECL(slice_resolution_level, -1);
-SVEXTERN int SVDECL(max_slice_resolution, 0);
-#endif
-
 SVEXTERN int SVDECL(update_slicefile_bounds, 0);
 SVEXTERN int SVDECL(update_patchfile_bounds, 0);
 

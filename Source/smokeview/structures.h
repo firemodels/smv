@@ -1181,24 +1181,6 @@ typedef struct _hrrdata {
   int ntimes, ntimes_csv;
 } hrrdata;
 
-#ifdef pp_MULTI_RES
-/* --------------------------  _resdata ------------------------------------ */
-
-typedef struct _resdata {
-  float *xplt, *yplt, *zplt;
-  int *ni_list, *nj_list, *nk_list;
-  int ni, nj, nk;
-} resdata;
-  
-  /* --------------------------  _multiresdata ------------------------------------ */
-
-typedef struct _multiresdata {
-  resdata *resinfo;
-  int nresinfo, iresinfo;
-  int *kji_to_reorder;
-} multiresdata;
-#endif
-
 /* --------------------------  slicedata ------------------------------------ */
 
 typedef struct _slicedata {
@@ -1236,9 +1218,6 @@ typedef struct _slicedata {
   float valmin_data, valmax_data;
   float valmin_fds, valmax_fds;   // read in from .bnd files
   float valmin_smv, valmax_smv;   // computed by smokeview
-#ifdef pp_MULTI_RES
-  int multi_res;
-#endif
   float diff_valmin,  diff_valmax;
   flowlabels label;
   float *qslicedata, *qsliceframe, *times, *qslice;
@@ -1279,10 +1258,6 @@ typedef struct _slicedata {
 #endif
   int nhistograms;
   struct _patchdata *patchgeom;
-#ifdef pp_MULTI_RES
-  multiresdata multiresinfo;
-  int mult_res;
-#endif
   FILE_SIZE file_size;
 #ifdef pp_SLICETHREAD
   int skipload, loadstatus, boundstatus;
