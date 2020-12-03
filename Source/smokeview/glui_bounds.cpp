@@ -15,7 +15,6 @@
 
 GLUI *glui_bounds=NULL;
 
-
 #ifdef pp_CPPBOUND_DIALOG
 
 #define BOUND_VAL_TYPE                 101
@@ -2675,6 +2674,12 @@ extern "C" void RefreshGluiDialogs(void){
   if(glui_wui!=NULL)glui_wui->refresh();
 }
 #endif
+
+/* ------------------ UpdateSliceSkip ------------------------ */
+
+extern "C" void UpdateSliceSkip(void){
+  SliceBoundCB(SLICE_SKIP);
+}
 
 /* ------------------ UpdateColorbarControls2 ------------------------ */
 

@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateSliceSkip(void);
+
 EXTERNCPP void MergePartHistograms(void);
 EXTERNCPP void MergePlot3DHistograms(void);
 

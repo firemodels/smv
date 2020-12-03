@@ -1298,6 +1298,14 @@ void ShowVSliceMenu(int value){
   UpdateShow();
 }
 
+/* ------------------ SliceSKipMenu ------------------------ */
+
+void SliceSkipMenu(int value){
+  slice_skip = value;
+  UpdateSliceSkip();
+  updatemenu=1;
+}
+
 /* ------------------ ShowHideSliceMenu ------------------------ */
 
 void ShowHideSliceMenu(int value){
@@ -6463,7 +6471,7 @@ static int render_startmenu = 0;
 #ifdef pp_COMPRESS
 static int compressmenu=0;
 #endif
-static int showhideslicemenu=0,showvslicemenu=0;
+static int showhideslicemenu=0, sliceskipmenu=0, showvslicemenu=0;
 static int plot3dshowmenu=0, staticvariablemenu=0, helpmenu=0, webhelpmenu=0, keyboardhelpmenu=0, mousehelpmenu=0;
 static int vectorskipmenu=0,unitsmenu=0;
 static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
@@ -10363,6 +10371,56 @@ updatemenu=0;
       }
     }
 
+    CREATEMENU(sliceskipmenu, SliceSkipMenu);
+    for(i = 1; i<=4; i++){
+      char skiplabel[20];
+
+      if(max_slice_skip>0&&i>max_slice_skip)break;
+      if(slice_skip==i){
+        sprintf(skiplabel, "*%i", i);
+      }
+      else{
+        sprintf(skiplabel, "%i", i);
+      }
+      glutAddMenuEntry(skiplabel, i);
+    }
+    for(i =6; i<=8; i+=2){
+      char skiplabel[20];
+
+      if(max_slice_skip>0&&i>max_slice_skip)break;
+      if(slice_skip==i){
+        sprintf(skiplabel, "*%i", i);
+      }
+      else{
+        sprintf(skiplabel, "%i", i);
+      }
+      glutAddMenuEntry(skiplabel, i);
+    }
+    for(i = 10; i<=20; i+=5){
+      char skiplabel[20];
+
+      if(max_slice_skip>0&&i>max_slice_skip)break;
+      if(slice_skip==i){
+        sprintf(skiplabel, "*%i", i);
+      }
+      else{
+        sprintf(skiplabel, "%i", i);
+      }
+      glutAddMenuEntry(skiplabel, i);
+    }
+    for(i = 30; i<=max_slice_skip; i+=10){
+      char skiplabel[20];
+
+      if(max_slice_skip>0&&i>max_slice_skip)break;
+      if(slice_skip==i){
+        sprintf(skiplabel, "*%i", i);
+      }
+      else{
+        sprintf(skiplabel, "%i", i);
+      }
+      glutAddMenuEntry(skiplabel, i);
+    }
+
 // call slice submenus from main slice menu
 
     CREATEMENU(loadslicemenu,LoadSliceMenu);
@@ -10410,6 +10468,7 @@ updatemenu=0;
       }
     }
     glutAddMenuEntry("-", MENU_DUMMY);
+    GLUTADDSUBMENU(_("Skip"), sliceskipmenu);
     glutAddMenuEntry(_("Settings..."), MENU_SLICE_SETTINGS);
     if(nsliceloaded+geom_slice_loaded>1){
       GLUTADDSUBMENU(_("Unload"),unloadslicemenu);
@@ -10574,6 +10633,7 @@ updatemenu=0;
     }
 
     if(nmultisliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
+    GLUTADDSUBMENU(_("Skip"), sliceskipmenu);
     if(compute_slice_file_sizes==1){
       glutAddMenuEntry(_("  *compute size of slice files to be loaded"), MENU_SLICE_FILE_SIZES);
     }
