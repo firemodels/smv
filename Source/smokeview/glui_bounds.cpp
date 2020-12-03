@@ -2386,6 +2386,7 @@ GLUI_Spinner *SPINNER_iso_level = NULL;
 GLUI_Spinner *SPINNER_iso_colors[4];
 GLUI_Spinner *SPINNER_iso_transparency;
 GLUI_Spinner *SPINNER_transparent_level = NULL;
+GLUI_Spinner *SPINNER_slice_skip = NULL;
 GLUI_Spinner *SPINNER_line_contour_num=NULL;
 GLUI_Spinner *SPINNER_line_contour_width=NULL;
 GLUI_Spinner *SPINNER_line_contour_min=NULL;
@@ -5052,6 +5053,10 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_transparent_level = glui_bounds->add_spinner_to_panel(ROLLOUT_boundimmersed, _("Transparent level"), GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, SliceBoundCB);
     SPINNER_transparent_level->set_float_limits(0.0, 1.0);
     glui_bounds->add_spinner_to_panel(ROLLOUT_boundimmersed, "slice offset", GLUI_SPINNER_FLOAT, &sliceoffset_all);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("Output data to file"), &output_slicedata);
+    if(nfedinfo>0){
+      glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, "Regenerate FED data", &regenerate_fed);
+    }
 
     if(nterraininfo>0){
       glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("terrain slice overlap"), &terrain_slice_overlap);
@@ -5062,13 +5067,22 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_checkbox_to_panel(PANEL_slice_smoke, _("max blending"), &slices3d_max_blending);
     glui_bounds->add_checkbox_to_panel(PANEL_slice_smoke, _("show all 3D slices"), &showall_3dslices);
 
-    if(nfedinfo>0){
-      glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, "Regenerate FED data", &regenerate_fed);
+    for(i=0;i<nmeshes;i++){
+      meshdata *meshi;
+
+      meshi = meshinfo + i;
+      max_slice_skip = MAX(max_slice_skip, meshi->ibar/2);
+      max_slice_skip = MAX(max_slice_skip, meshi->jbar/2);
+      max_slice_skip = MAX(max_slice_skip, meshi->kbar/2);
+      
     }
+    SPINNER_slice_skip = glui_bounds->add_spinner_to_panel(ROLLOUT_boundimmersed, "skip", GLUI_SPINNER_INT, &slice_skip,  SLICE_SKIP, SliceBoundCB);
+    SliceBoundCB(SLICE_SKIP);
+
+
 #ifdef pp_OLDBOUND_DIALOG
     CHECKBOX_research_mode = glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("Research mode"), &research_mode, RESEARCH_MODE, SliceBoundCB);
 #endif
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("Output data to file"), &output_slicedata);
 
 #ifdef pp_FSEEK
 #ifdef pp_LOAD_INCREMENTAL
@@ -6543,6 +6557,13 @@ extern "C" void SliceBoundCB(int var){
     case COLORLABEL_DIGITS:
       updatemenu = 1;
       break;
+    case SLICE_SKIP:
+      slice_skip = CLAMP(slice_skip,1,max_slice_skip);
+      SPINNER_slice_skip->set_int_val(slice_skip);
+      slice_skipx = slice_skip;
+      slice_skipy = slice_skip;
+      slice_skipz = slice_skip;
+      break;
     case TRANSPARENTLEVEL:
       for(i=nsurfinfo;i<nsurfinfo+MAX_ISO_COLORS+1;i++){
         surfdata *surfi;
@@ -6857,6 +6878,7 @@ extern "C" void UpdateSliceList(int index){
 }
 
 /* ------------------ UpdateSliceListIndex ------------------------ */
+#ifdef pp_OLDBOUND_DIALOG
 
 extern "C" void UpdateSliceListIndex(int sfn){
   int i;
@@ -6887,18 +6909,15 @@ extern "C" void UpdateSliceListIndex(int sfn){
     if(nzoneinfo>0){
       if(strcmp(slicebounds[i].shortlabel, "TEMP")==0){
         BoundRolloutCB(ZONE_ROLLOUT);
-#ifdef pp_OLDBOUND_DIALOG
         if(ROLLOUT_slice_bound!=NULL)ROLLOUT_slice_bound->disable();
-#endif
       }
       else{
-#ifdef pp_OLDBOUND_DIALOG
         if(ROLLOUT_slice_bound!=NULL)ROLLOUT_slice_bound->enable();
-#endif
       }
     }
   }
 }
+#endif
 
 /* ------------------ UpdateGlui ------------------------ */
 

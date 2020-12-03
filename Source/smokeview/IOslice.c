@@ -6165,7 +6165,7 @@ void DrawVolAllSlicesTextureDiag(const slicedata *sd, int direction){
 /* ------------------ DrawVolSliceTexture ------------------------ */
 
 void DrawVolSliceTexture(const slicedata *sd){
-  int i, j, k, n, n2;
+  int i, j, k;
   float r11, r31, r13, r33;
   float constval, x1, x3, yy1, y3, z1, z3;
 
@@ -6182,6 +6182,8 @@ void DrawVolSliceTexture(const slicedata *sd){
 #endif
 
   meshdata *meshi;
+
+#define IJK_SLICE(i,j,k)  ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
 
   if(sd->volslice == 1 && visx_all == 0 && visy_all == 0 && visz_all == 0)return;
   meshi = meshinfo + sd->blocknumber;
@@ -6247,6 +6249,8 @@ void DrawVolSliceTexture(const slicedata *sd){
   glEnable(GL_TEXTURE_1D);
   glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
 
+  //*** x plane slices
+
   if((sd->volslice == 1 && plotx >= 0 && visx_all == 1) || (sd->volslice == 0 && sd->idir == XDIR)){
     int maxj;
 
@@ -6256,38 +6260,40 @@ void DrawVolSliceTexture(const slicedata *sd){
     if(sd->js1 + 1>maxj){
       maxj = sd->js1 + 1;
     }
-    for(j = sd->js1; j<maxj; j++){
+    for(j = sd->js1; j<maxj; j+=slice_skipy){
       float ymid;
+      int j2;
 
-      n = (j - sd->js1)*sd->nslicek - 1;
-      n += (plotx - sd->is1)*sd->nslicej*sd->nslicek;
-      n2 = n + sd->nslicek;
+      j2 = MIN(j+slice_skipy, sd->js2);
       yy1 = yplt[j];
-      y3 = yplt[j + 1];
+      y3 = yplt[j2];
       ymid = (yy1 + y3) / 2.0;
 
       // val(i,j,k) = di*nj*nk + dj*nk + dk
-      for(k = sd->ks1; k<sd->ks2; k++){
+      for(k = sd->ks1; k<sd->ks2; k+=slice_skipz){
         float rmid, zmid;
+        int k2;
 
-        n++; n2++;
+        k2 = MIN(k+slice_skipz, sd->ks2);
 #ifdef pp_MULTI_RES
         if(sd->multi_res==0){
 #endif
-          if(show_slice_in_obst==ONLY_IN_SOLID && c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]==GASGAS)continue;
-          if(show_slice_in_obst==ONLY_IN_GAS   && c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)continue;
-          if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
+          if(slice_skipz==1&&slice_skipy==1){
+            if(show_slice_in_obst==ONLY_IN_SOLID&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]==GASGAS)continue;
+            if(show_slice_in_obst==ONLY_IN_GAS&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)continue;
+            if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
+          }
 #ifdef pp_MULTI_RES
         }
 #endif
-        r11 = (float)sd->iqsliceframe[n] / 255.0;
-        r31 = (float)sd->iqsliceframe[n2] / 255.0;
-        r13 = (float)sd->iqsliceframe[n + 1] / 255.0;
-        r33 = (float)sd->iqsliceframe[n2 + 1] / 255.0;
+        r11 = (float)sd->iqsliceframe[ IJK_SLICE(plotx, j,  k)   ] / 255.0;
+        r31 = (float)sd->iqsliceframe[ IJK_SLICE(plotx, j2, k)  ] / 255.0;
+        r13 = (float)sd->iqsliceframe[ IJK_SLICE(plotx, j, k2)  ] / 255.0;
+        r33 = (float)sd->iqsliceframe[ IJK_SLICE(plotx, j2,k2) ] / 255.0;
         rmid = (r11 + r31 + r13 + r33) / 4.0;
 
         z1 = zplt[k];
-        z3 = zplt[k + 1];
+        z3 = zplt[k2];
         zmid = (z1 + z3) / 2.0;
 
         /*
@@ -6313,6 +6319,9 @@ void DrawVolSliceTexture(const slicedata *sd){
     }
     glEnd();
   }
+
+  //*** y plane slices
+
   if((sd->volslice==1&&ploty>=0&&visy_all==1)||(sd->volslice==0&&sd->idir==YDIR)){
     int maxi;
     int istart, iend;
@@ -6340,10 +6349,12 @@ void DrawVolSliceTexture(const slicedata *sd){
     iend = maxi;
 #endif
 
-    for(i = istart; i<iend; i++){
+    for(i = istart; i<iend; i+=slice_skipx){
       float xmid;
       int kmin, kmax;
+      int i2;
 
+      i2 = MIN(i+slice_skipx, iend);
 #ifdef pp_MULTI_RES
       if(sd->multi_res==1){
         n = i*resinfo->nk-1;
@@ -6355,13 +6366,10 @@ void DrawVolSliceTexture(const slicedata *sd){
         n2 = n+sd->nslicej*sd->nslicek;
       }
 #else
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - 1;
-      n += (ploty - sd->js1)*sd->nslicek;
-      n2 = n + sd->nslicej*sd->nslicek;
 #endif
 
       x1 = xplt[i];
-      x3 = xplt[i + 1];
+      x3 = xplt[i2];
       xmid = (x1 + x3) / 2.0;
 
 #ifdef pp_MULTI_RES
@@ -6377,19 +6385,22 @@ void DrawVolSliceTexture(const slicedata *sd){
       kmin = sd->ks1;
       kmax = sd->ks2;
 #endif
-      for(k = kmin; k<kmax; k++){
+      for(k = kmin; k<kmax; k+=slice_skipz){
         float rmid, zmid;
 #ifdef pp_MULTI_RES
         int i11, i13, i31, i33;
 #endif
+        int k2;
 
-        n++; n2++;
+        k2 = MIN(k + slice_skipz, sd->ks2);
 #ifdef pp_MULTI_RES
         if(sd->multi_res==0){
 #endif
-        if(show_slice_in_obst==ONLY_IN_SOLID && c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]==GASGAS)continue;
-        if(show_slice_in_obst == ONLY_IN_GAS   && c_iblank_y != NULL&&c_iblank_y[IJK(i, ploty, k)] != GASGAS)continue;
-        if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, ploty, k)] == EMBED_YES)continue;
+        if(slice_skipx==1&&slice_skipz==1){
+          if(show_slice_in_obst==ONLY_IN_SOLID && c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]==GASGAS)continue;
+          if(show_slice_in_obst == ONLY_IN_GAS   && c_iblank_y != NULL&&c_iblank_y[IJK(i, ploty, k)] != GASGAS)continue;
+          if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, ploty, k)] == EMBED_YES)continue;
+        }
 #ifdef pp_MULTI_RES
         }
 #endif
@@ -6407,21 +6418,21 @@ void DrawVolSliceTexture(const slicedata *sd){
           r33 = (float)sd->iqsliceframe[i33]/255.0;
         }
         else{
-          r11 = (float)sd->iqsliceframe[n]/255.0;
-          r31 = (float)sd->iqsliceframe[n2]/255.0;
-          r13 = (float)sd->iqsliceframe[n+1]/255.0;
-          r33 = (float)sd->iqsliceframe[n2+1]/255.0;
+          r11 = (float)sd->iqsliceframe[ IJK_SLICE(i,  ploty, k)   ] / 255.0;
+          r31 = (float)sd->iqsliceframe[ IJK_SLICE(i2, ploty, k)  ] / 255.0;
+          r13 = (float)sd->iqsliceframe[ IJK_SLICE(i,  ploty, k2)  ] / 255.0;
+          r33 = (float)sd->iqsliceframe[ IJK_SLICE(i2, ploty, k2) ] / 255.0;
         }
 #else
-        r11 = (float)sd->iqsliceframe[n] / 255.0;
-        r31 = (float)sd->iqsliceframe[n2] / 255.0;
-        r13 = (float)sd->iqsliceframe[n + 1] / 255.0;
-        r33 = (float)sd->iqsliceframe[n2 + 1] / 255.0;
+        r11 = (float)sd->iqsliceframe[IJK_SLICE(i,  ploty, k)]/255.0;
+        r31 = (float)sd->iqsliceframe[IJK_SLICE(i2, ploty, k)]/255.0;
+        r13 = (float)sd->iqsliceframe[IJK_SLICE(i,  ploty, k2)]/255.0;
+        r33 = (float)sd->iqsliceframe[IJK_SLICE(i2, ploty, k2)]/255.0;
 #endif
         rmid = (r11 + r31 + r13 + r33) / 4.0;
 
         z1 = zplt[k];
-        z3 = zplt[k + 1];
+        z3 = zplt[k2];
         zmid = (z1 + z3) / 2.0;
 
         /*
@@ -6449,48 +6460,53 @@ void DrawVolSliceTexture(const slicedata *sd){
     }
     glEnd();
   }
+
+  //*** z plane slices
+
   if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
     int maxi;
 
     constval = zplt[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glBegin(GL_TRIANGLES);
+
     maxi = sd->is1 + sd->nslicei - 1;
     if(sd->is1 + 1>maxi){
       maxi = sd->is1 + 1;
     }
-    for(i = sd->is1; i<maxi; i++){
+    for(i = sd->is1; i<maxi; i+=slice_skipx){
       float xmid;
+      int i2;
 
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - sd->nslicek;
-      n += (plotz - sd->ks1);
-      n2 = n + sd->nslicej*sd->nslicek;
+      i2 = MIN(i+slice_skipx, sd->is2);
 
       x1 = xplt[i];
-      x3 = xplt[i + 1];
+      x3 = xplt[i2];
       xmid = (x1 + x3) / 2.0;
 
-      for(j = sd->js1; j<sd->js2; j++){
+      for(j = sd->js1; j<sd->js2; j+=slice_skipy){
         float ymid, rmid;
+        int j2;
 
-        n += sd->nslicek;
-        n2 += sd->nslicek;
+        j2 = MIN(j+slice_skipy, sd->js2);
 #ifdef pp_MULTI_RES
         if(sd->multi_res==0){
 #endif
-        if(show_slice_in_obst==ONLY_IN_SOLID && c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]==GASGAS)continue;
-        if(show_slice_in_obst == ONLY_IN_GAS   && c_iblank_z != NULL&&c_iblank_z[IJK(i, j, plotz)] != GASGAS)continue;
-        if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
+        if(slice_skipy==1&&slice_skipx==1){
+          if(show_slice_in_obst==ONLY_IN_SOLID && c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]==GASGAS)continue;
+          if(show_slice_in_obst == ONLY_IN_GAS   && c_iblank_z != NULL&&c_iblank_z[IJK(i, j, plotz)] != GASGAS)continue;
+          if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
+        }
 #ifdef pp_MULTI_RES
         }
 #endif
-        r11 = (float)sd->iqsliceframe[n] / 255.0;
-        r31 = (float)sd->iqsliceframe[n2] / 255.0;
-        r13 = (float)sd->iqsliceframe[n + sd->nslicek] / 255.0;
-        r33 = (float)sd->iqsliceframe[n2 + sd->nslicek] / 255.0;
+        r11 = (float)sd->iqsliceframe[ IJK_SLICE(i,   j, plotz)   ] / 255.0;
+        r31 = (float)sd->iqsliceframe[ IJK_SLICE(i2,  j, plotz)  ] / 255.0;
+        r13 = (float)sd->iqsliceframe[ IJK_SLICE(i,  j2, plotz)  ] / 255.0;
+        r33 = (float)sd->iqsliceframe[ IJK_SLICE(i2, j2, plotz) ] / 255.0;
         rmid = (r11 + r31 + r13 + r33) / 4.0;
 
         yy1 = yplt[j];
-        y3 = yplt[j + 1];
+        y3 = yplt[j2];
         ymid = (yy1 + y3) / 2.0;
 
         /*

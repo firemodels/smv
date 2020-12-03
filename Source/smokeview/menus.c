@@ -572,7 +572,9 @@ void ShowMultiSliceMenu(int value){
   plotstate = GetPlotState(DYNAMIC_PLOTS);
 
   UpdateGlui();
+#ifdef pp_OLDBOUND_DIALOG
   UpdateSliceListIndex(slicefilenum);
+#endif
   UpdateShow();
 }
 
@@ -1391,7 +1393,9 @@ void ShowHideSliceMenu(int value){
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
   UpdateGlui();
+#ifdef pp_OLDBOUND_DIALOG
   UpdateSliceListIndex(slicefilenum);
+#endif
   UpdateShow();
 }
 

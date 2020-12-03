@@ -373,8 +373,8 @@ EXTERNCPP void UpdateAllBoundaryColors(void);
 #endif
 #ifdef pp_OLDBOUND_DIALOG
 EXTERNCPP int UpdateAllBoundaryColors(void);
-#endif
 EXTERNCPP void UpdateSliceListIndex(int sfn);
+#endif
 EXTERNCPP void UpdateBoundaryListIndex(int patchfilenum);
 EXTERNCPP void UpdateBoundaryListIndex2(char *label);
 EXTERNCPP void UpdatePlot3dListIndex(void);
