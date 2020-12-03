@@ -17,6 +17,8 @@
 #define SLICE_HEADER_SIZE 4
 #define SLICE_TRAILER_SIZE 4
 
+#define IJK_SLICE(i,j,k)  ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
+
 #ifdef pp_SLICE_BUFFER
 
 #define FOPEN_SLICE(a,b)         fopen_buffer(a,b)
@@ -5523,48 +5525,54 @@ void DrawVolSliceTerrain(const slicedata *sd){
     glTranslatef(-xbar0,-ybar0,-zbar0+agl_smv+sliceoffset_all);
 
     glBegin(GL_TRIANGLES);
-    maxi = MAX(sd->is1 + sd->nslicei - 1, sd->is1 + 1);
-    for(i = sd->is1; i<maxi; i++){
+    maxi = sd->is2;
+    for(i = sd->is1; i<maxi; i+=slice_skip){
       float xmid;
+      int i2;
 
+      i2 = MIN(i+slice_skip, maxi);
       if(plotz<sd->ks1)break;
       if(plotz >= sd->ks1 + sd->nslicek)break;
       x1 = xplt[i];
-      x3 = xplt[i + 1];
+      x3 = xplt[i2];
       xmid = (x1 + x3) / 2.0;
 
-      for(j = sd->js1; j<sd->js2; j++){
+      for(j = sd->js1; j<sd->js2; j += slice_skip){
         float ymid, rmid;
         int n11, n31, n13, n33;
+        int j2;
 
+        j2 = MIN(j+slice_skip, sd->js2);
         z11 = znode[IJ2(i, j)];
-        z31 = znode[IJ2(i + 1, j)];
-        z13 = znode[IJ2(i, j + 1)];
-        z33 = znode[IJ2(i + 1, j + 1)];
-        zmid = (z11 + z31 + z13 + z33)/4.0;
+        z31 = znode[IJ2(i2, j)];
+        z13 = znode[IJ2(i, j2)];
+        z33 = znode[IJ2(i2, j2)];
+        zmid = (z11+z31+z13+z33)/4.0;
 
         yy1 = yplt[j];
-        y3 = yplt[j+1];
+        y3 = yplt[j2];
         ymid = (yy1+y3)/2.0;
 
-        if(iblank_z != NULL&&iblank_z[IJK(i, j, plotz)] != GASGAS)continue;
-        if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
+        if(slice_skip==1){
+          if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
+          if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
+        }
 
         if(z11<z_cutoff||z31<z_cutoff||z13<z_cutoff||z33<z_cutoff)continue;
         if(terrain_slice_overlap==0){
           if(z11<zplt[0]||z31<zplt[0]||z13<zplt[0]||z33<zplt[0])continue;
         }
 
-        n11 = (i - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek;
+        n11 = IJK_SLICE(i,j,sd->ks1);
         r11 = (float)sd->iqsliceframe[n11]/255.0;
 
-        n31 = n11 + sd->nslicej*sd->nslicek;
+        n31 = IJK_SLICE(i2,j,sd->ks1);
         r31 = (float)sd->iqsliceframe[n31]/255.0;
 
-        n13 = n11 + sd->nslicek;
+        n13 = IJK_SLICE(i,j2,sd->ks1);
         r13 = (float)sd->iqsliceframe[n13]/255.0;
 
-        n33 = n13 + sd->nslicej*sd->nslicek;
+        n33 = IJK_SLICE(i2,j2,sd->ks1);
         r33 = (float)sd->iqsliceframe[n33]/255.0;
 
         rmid = (r11 + r31 + r13 + r33) / 4.0;
@@ -5812,8 +5820,6 @@ void DrawVolSliceTexture(const slicedata *sd){
   int plotx, ploty, plotz;
 
   meshdata *meshi;
-
-#define IJK_SLICE(i,j,k)  ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
 
   if(sd->volslice == 1 && visx_all == 0 && visy_all == 0 && visz_all == 0)return;
   meshi = meshinfo + sd->blocknumber;
