@@ -28,6 +28,7 @@
 #define pp_DRAWISO            // turn on drawing routines
 //#define pp_UPDATE_FILELOAD  // updates fileload variables when a file has been loaded or unloaded
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
+#define pp_GLUTGET            // use d and f key in addition to CTRL and ALT key
 
 //#define pp_WUI_VAO            // use opengl vao objects for drawing terrain
 
@@ -83,7 +84,6 @@
 //*** options: Mac
 
 #ifdef pp_OSX
-#define pp_GLUTGET      // use d and f key in addition to CTRL and ALT key
 #ifndef pp_NOQUARTZ     // if used, passed in from the command line so we don'thave to change source
 #define pp_QUARTZ       // use Quartz
 #endif
