@@ -7,6 +7,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define DEVICE_PLOT_HIDDEN        0
+#define DEVICE_PLOT_SHOW_SELECTED 1
+#define DEVICE_PLOT_SHOW_ALL      2
+
 #define    ALL_FILES 0
 #define LOADED_FILES 1
 

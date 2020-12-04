@@ -68,7 +68,6 @@ GLUI_Checkbox *CHECKBOX_vis_ztree = NULL;
 GLUI_Checkbox *CHECKBOX_showbeam_as_line = NULL;
 GLUI_Checkbox *CHECKBOX_use_beamcolor = NULL;
 GLUI_Checkbox **CHECKBOX_showz_windrose;
-GLUI_Checkbox *CHECKBOX_showdevice_plot = NULL;
 
 GLUI_EditText *EDIT_filter=NULL;
 
@@ -96,6 +95,8 @@ GLUI_RadioGroup *RADIO_devicetypes=NULL;
 GLUI_RadioGroup *RADIO_vectortype=NULL;
 GLUI_RadioGroup *RADIO_scale_windrose=NULL;
 GLUI_RadioGroup *RADIO_windstate_windrose = NULL;
+GLUI_RadioGroup *RADIO_showdevice_plot = NULL;
+
 
 GLUI_Rollout *ROLLOUT_showhide_windrose = NULL;
 GLUI_Rollout *ROLLOUT_properties = NULL;
@@ -140,7 +141,7 @@ void Device_Rollout_CB(int var){
 
 extern "C" void UpdateDeviceShow(void){
   CHECKBOX_showdevice_val->set_int_val(showdevice_val);
-  CHECKBOX_showdevice_plot->set_int_val(showdevice_plot);
+  RADIO_showdevice_plot->set_int_val(showdevice_plot);
 }
 
 /* ------------------ UpdateWindRoseDevices ------------------------ */
@@ -646,7 +647,11 @@ extern "C" void GluiDeviceSetup(int main_window){
       }
 
       PANEL_plots = glui_device->add_panel_to_panel(ROLLOUT_devicevalues, "plots");
-      CHECKBOX_showdevice_plot = glui_device->add_checkbox_to_panel(PANEL_plots, _("show"), &showdevice_plot, SHOWDEVICEPLOT, DeviceCB);
+      RADIO_showdevice_plot=glui_device->add_radiogroup_to_panel(PANEL_plots, &showdevice_plot, SHOWDEVICEPLOT, DeviceCB);
+      glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "hide");
+      glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show selected");
+      glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show all");
+
       glui_device->add_checkbox_to_panel(PANEL_plots, _("show labels"), &showdevice_labels);
       glui_device->add_spinner_to_panel(PANEL_plots, _("size"), GLUI_SPINNER_FLOAT, &device_plot_factor);
       glui_device->add_spinner_to_panel(PANEL_plots, _("line width"), GLUI_SPINNER_FLOAT, &device_plot_line_width);

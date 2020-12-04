@@ -960,6 +960,7 @@ typedef struct _device {
   sv_object *object;
   struct _vdevicedata *vdevice;
   int type, is_beam;
+  int selected;
 } devicedata;
 
 /* --------------------------  windrosedata ------------------------------------ */

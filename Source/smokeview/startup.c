@@ -1338,8 +1338,6 @@ void InitVars(void){
   partfacedir[1]=0.0;
   partfacedir[2]=1.0;
 
-  select_device=0;
-  selected_device_tag=-1;
   navatar_types=0;
   select_avatar=0;
   selected_avatar_tag=-1;

@@ -1420,6 +1420,7 @@ void InitDevice(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float
   float norm;
   int i;
 
+  devicei->selected = 0;
   devicei->nvals = 0;
   devicei->filetype = -1;
   devicei->in_zone_csv = 0;

@@ -463,24 +463,24 @@ void MouseSelectDevice(int button, int state, int x, int y){
 
   val = (r << (nbluebits+ngreenbits)) | (g << nbluebits) | b;
 
-  if(val>0){
+  if(val>0&&val<ndeviceinfo){
     devicedata *devicei;
     float *xyz;
 
-    selected_device_tag=val;
-    devicei = deviceinfo + val-1;
+    devicei = deviceinfo+val-1;
+    devicei->selected = 1-devicei->selected;
     xyz = devicei->xyz;
 
-    if(devicei->labelptr!=NULL&&strcmp(devicei->labelptr,"null")!=0){
-      PRINTF("Selected Device: index=%i location:(%f,%f,%f) label:%s\n",val,xyz[0],xyz[1],xyz[2],devicei->labelptr);
+    if(devicei->labelptr!=NULL&&strcmp(devicei->labelptr, "null")!=0){
+      PRINTF("Selected Device: index=%i location:(%f,%f,%f) label:%s\n", val, xyz[0], xyz[1], xyz[2], devicei->labelptr);
     }
     else{
-      PRINTF("Selected Device: index=%i location:(%f,%f,%f)\n",val,xyz[0],xyz[1],xyz[2]);
+      PRINTF("Selected Device: index=%i location:(%f,%f,%f)\n", val, xyz[0], xyz[1], xyz[2]);
     }
-    glShadeModel(GL_SMOOTH);
-    glEnable(GL_BLEND);
-    ENABLE_LIGHTING;
   }
+  glShadeModel(GL_SMOOTH);
+  glEnable(GL_BLEND);
+  ENABLE_LIGHTING;
 }
 
 /* ------------------ MouseSelectAvatar ------------------------ */
@@ -1939,13 +1939,76 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'j':
     case 'J':
-      if(keystate==GLUT_ACTIVE_ALT||key2=='J'){
-        sensorrelsize /= 1.5;
+      if(keystate==GLUT_ACTIVE_CTRL){
+        select_device = 1-select_device;
+        updatemenu = 1;
+        if(select_device==1){
+          printf("device selection on\n");
+        }
+        else{
+          printf("device selection off\n");
+        }
+      }
+      else if(keystate==GLUT_ACTIVE_ALT){
+        if(nobject_defs>0){
+          int vis;
+
+          vis = 1-object_defs[0]->visible;
+          for(i = 0; i<nobject_defs; i++){
+            sv_object *objecti;
+
+            objecti = object_defs[i];
+            objecti->visible = vis;
+          }
+          updatemenu = 1;
+        }
       }
       else{
-        sensorrelsize *= 1.5;
+        if(key2=='J'){
+          sensorrelsize /= 1.5;
+          UpdateDeviceSize();
+        }
+        else{
+          sensorrelsize *= 1.5;
+          UpdateDeviceSize();
+        }
       }
-      UpdateDeviceSize();
+      break;
+    case '`':
+      if(ndeviceinfo>0){
+        int selected;
+
+        selected = 1-deviceinfo[0].selected;
+        if(selected==1&&select_device==0)select_device = 1;
+        for(i = 0; i<ndeviceinfo; i++){
+          devicedata *devicei;
+
+          devicei = deviceinfo+i;
+          devicei->selected = selected;
+        }
+      }
+      if(nobject_defs>0){
+        int makevis=1;
+
+        for(i = 0; i<nobject_defs; i++){
+          sv_object *objecti;
+
+          objecti = object_defs[i];
+          if(objecti->visible==1){
+            makevis = 0;
+            break;
+          }
+        }
+        if(makevis==1){
+          for(i = 0; i<nobject_defs; i++){
+            sv_object *objecti;
+
+            objecti = object_defs[i];
+            objecti->visible = 1;
+          }
+        }
+        updatemenu = 1;
+      }
       break;
     case 'k':
     case 'K':

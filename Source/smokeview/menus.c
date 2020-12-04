@@ -251,16 +251,17 @@ float     slice_load_time;
 #define GRID_grid 7
 #define GRID_probe 8
 
-#define OBJECT_SHOWALL        -1
-#define OBJECT_HIDEALL        -2
-#define OBJECT_SELECT         -3
-#define OBJECT_OUTLINE        -4
-#define OBJECT_ORIENTATION    -5
-#define OBJECT_MISSING        -6
-#define OBJECT_SHOWBEAM       -7
-#define OBJECT_PLOTS          -8
-#define OBJECT_VALUES         -9
-#define MENU_DEVICE_SETTINGS -10
+#define OBJECT_SHOWALL              -1
+#define OBJECT_HIDEALL              -2
+#define OBJECT_SELECT               -3
+#define OBJECT_OUTLINE              -4
+#define OBJECT_ORIENTATION          -5
+#define OBJECT_MISSING              -6
+#define OBJECT_SHOWBEAM             -7
+#define OBJECT_PLOT_SHOW_ALL        -8
+#define OBJECT_PLOT_SHOW_SELECTED  -11
+#define OBJECT_VALUES               -9
+#define MENU_DEVICE_SETTINGS       -10
 
 #define ISO_COLORS 4
 
@@ -6129,10 +6130,26 @@ void ShowObjectsMenu(int value){
   else if(value==OBJECT_SELECT){
     select_device=1-select_device;
   }
-  else if(value==OBJECT_PLOTS){
+  else if(value==OBJECT_PLOT_SHOW_ALL){
     update_times=1;
-    showdevice_plot = 1 - showdevice_plot;    
+    if(showdevice_plot==DEVICE_PLOT_SHOW_ALL){
+      showdevice_plot = DEVICE_PLOT_HIDDEN;
+    }
+    else{
+      showdevice_plot = DEVICE_PLOT_SHOW_ALL;
+    }
     plotstate=GetPlotState(DYNAMIC_PLOTS);
+    UpdateDeviceShow();
+  }
+  else if(value==OBJECT_PLOT_SHOW_SELECTED){
+    update_times = 1;
+    if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED){
+      showdevice_plot = DEVICE_PLOT_HIDDEN;
+    }
+    else{
+      showdevice_plot = DEVICE_PLOT_SHOW_SELECTED;
+    }
+    plotstate = GetPlotState(DYNAMIC_PLOTS);
     UpdateDeviceShow();
   }
   else if(value==MENU_DEVICE_SETTINGS){
@@ -7505,8 +7522,10 @@ updatemenu=0;
         glutAddMenuEntry(_("Select"),OBJECT_SELECT);
       }
     }
-    if(showdevice_plot==1)glutAddMenuEntry(_("*Plot data"),   OBJECT_PLOTS);
-    if(showdevice_plot==0)glutAddMenuEntry(_("Plot data"),    OBJECT_PLOTS);
+    if(showdevice_plot==DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(_("*Plot data"),      OBJECT_PLOT_SHOW_ALL);
+    if(showdevice_plot!=DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(_("Plot data"),       OBJECT_PLOT_SHOW_ALL);
+    if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry(_("*Plot data"), OBJECT_PLOT_SHOW_SELECTED);
+    if(showdevice_plot!=DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry(_("Plot data"),  OBJECT_PLOT_SHOW_SELECTED);
     if(showdevice_val==1)glutAddMenuEntry(_("*Show values"), OBJECT_VALUES);
     if(showdevice_val==0)glutAddMenuEntry(_("Show values"),  OBJECT_VALUES);
     if(object_outlines==0)glutAddMenuEntry(_("Outline"),OBJECT_OUTLINE);

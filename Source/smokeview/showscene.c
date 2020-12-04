@@ -52,16 +52,16 @@ void DrawLights(float *position0, float *position1){
 /* ------------------ ShowScene2 ------------------------ */
 
 void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
-  if(rotation_type == EYE_CENTERED&&nskyboxinfo>0)DrawSkybox();
-  UpdateLights(light_position0, light_position1);
-  if(drawlights==1)DrawLights(light_position0, light_position1);
+  if(mode==DRAWSCENE){
+    if(rotation_type==EYE_CENTERED&&nskyboxinfo>0)DrawSkybox();
+    UpdateLights(light_position0, light_position1);
+    if(drawlights==1)DrawLights(light_position0, light_position1);
 
 
  // if(render_status==RENDER_ON&&render_mode==RENDER_360){
  //   UpdateLights(light_position0, light_position1);
  // }
 
-  if(mode == DRAWSCENE){
     glPointSize((float)1.0);
 
 
@@ -489,7 +489,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     DrawDevicesVal();
   }
 
-  if(showdevice_plot==1){
+  if(mode==DRAWSCENE){
     DrawDevicePlots();
   }
 

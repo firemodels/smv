@@ -3194,11 +3194,14 @@ void GetGlobalDeviceBounds(int type){
 void DrawDevicePlots(void){
   int i;
 
+  if(showdevice_plot==DEVICE_PLOT_HIDDEN)return;
   for(i = 0; i<ndeviceinfo; i++){
     devicedata *devicei;
 
     devicei = deviceinfo+i;
     if(devicei->object->visible==0)continue;
+
+    if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED&&devicei->selected==0)continue;
     if(devicei->times==NULL||devicei->vals==NULL)continue;
     if(devicei->nvals>1&&devicei->type2==devicetypes_index){
       int valid;
@@ -3625,7 +3628,7 @@ void DrawDevices(void){
       devicei->object->use_displaylist = 0;
     }
     else{
-      if(selected_device_tag > 0 && select_device == 1 && selected_device_tag == tagval){
+      if(devicei->selected==1 && select_device == 1){
         select_device_color_ptr = select_device_color;
         select_device_color[0] = 255;
         select_device_color[1] = 0;
@@ -3728,7 +3731,7 @@ void DrawDevices(void){
       }
     }
     if(drawobjects_as_vectors == 0){
-      if(showtime == 1 && itimes >= 0 && itimes < nglobal_times){
+      if(select_device==0 && showtime == 1 && itimes >= 0 && itimes < nglobal_times){
         int state;
 
         if(devicei->showstatelist == NULL){
