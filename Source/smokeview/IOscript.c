@@ -269,6 +269,7 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"LOADPARTICLES") == MATCH)return SCRIPT_LOADPARTICLES;           // documented
   if(MatchUpper(keyword,"LOADPLOT3D") == MATCH)return SCRIPT_LOADPLOT3D;                 // documented
   if(MatchUpper(keyword,"LOADSLICE") == MATCH)return SCRIPT_LOADSLICE;                   // documented
+  if(MatchUpper(keyword,"LOADSLCF")==MATCH)return SCRIPT_LOADSLCF;
   if(MatchUpper(keyword,"LOADSLICERENDER")==MATCH)return SCRIPT_LOADSLICERENDER;
   if(MatchUpper(keyword,"LOADSLICEM") == MATCH)return SCRIPT_LOADSLICEM;
   if(MatchUpper(keyword,"LOADTOUR") == MATCH)return SCRIPT_LOADTOUR;                     // documented
@@ -475,6 +476,9 @@ int CompileScript(char *scriptfile){
     char keyword[255];
     char buffer[1024], buffer2[1024], *buffptr;
     scriptdata *scripti;
+    int fatal_error;
+
+    fatal_error = 0;
 
     if(fgets(buffer2,255,stream)==NULL)break;
     buffptr = RemoveComment(buffer2);
@@ -881,7 +885,46 @@ int CompileScript(char *scriptfile){
         if(render_skipframe0>0)scripti->ival3=render_skipframe0;
         break;
 
-// LOADSLICE
+// LOADSLCF
+//  PBX=val QUANTITY='quantity'
+      case SCRIPT_LOADSLCF:
+        {
+          char *keyword1, *val1, *keyword2, *val2;
+
+          SETbuffer;
+          keyword1  = strtok(buffer, "=");
+          val1      = strtok(NULL,   " ");
+          keyword2  = strtok(NULL,   "=");
+          val2 = strtok(NULL, "'");
+
+          if(keyword1!=NULL){
+            keyword1 = TrimFrontBack(keyword1);
+            if(strcmp(keyword1,"PBX")==0){
+              scripti->ival = 1;
+            }
+            else if(strcmp(keyword1,"PBY")==0){
+              scripti->ival = 2;
+            }
+            else if(strcmp(keyword1,"PBZ")==0){
+              scripti->ival = 3;
+            }
+            else{
+              fatal_error = 1;
+            }
+          }
+          if(val1!=NULL){
+            sscanf(val1, "%f", &scripti->fval);
+          }
+          if(val2!=NULL){
+            val2 = TrimFrontBack(val2);
+            scripti->cval = GetPointer(val2);
+          }
+          scripti->need_graphics = 0;
+          if(keyword1==NULL||val1==NULL||val2==NULL)fatal_error = 1;
+        }
+        break;
+
+        // LOADSLICE
 //  (char)quantity
 //  1/2/3 (int)dir  (float)position
       case SCRIPT_LOADSLICE:
@@ -1000,7 +1043,7 @@ int CompileScript(char *scriptfile){
         break;
     }
     if(scriptEOF==1)break;
-    if(keyword_index!=SCRIPT_UNKNOWN)nscriptinfo++;
+    if(keyword_index!=SCRIPT_UNKNOWN&&fatal_error==0)nscriptinfo++;
   }
   fclose(stream);
   return return_val;
@@ -3147,6 +3190,7 @@ int RunScriptCommand(scriptdata *script_command){
       ScriptLoadParticles(scripti);
       break;
     case SCRIPT_LOADSLICE:
+    case SCRIPT_LOADSLCF:
       ScriptLoadSlice(scripti);
       break;
     case SCRIPT_LOADSLICERENDER:
