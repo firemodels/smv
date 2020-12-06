@@ -1761,7 +1761,7 @@ int SliceMatch(scriptdata *scripti, slicedata *slicei){
     }
     else{
     // if QUANTITY is specified then it has to match slice's quantity
-      if(strcmp(scripti->quantity, slicei->label.longlabel)!=0)return 0;
+      if(strncmp(scripti->quantity, slicei->label.longlabel,strlen(scripti->quantity))!=0)return 0;
     }
     return 1;
   }
@@ -1769,7 +1769,7 @@ int SliceMatch(scriptdata *scripti, slicedata *slicei){
   // ID was not specified so slice has to match QUANTITY, direction and position and type (cell or node cenetered)
   ASSERT(scripti->quantity!=NULL);
   if(scripti->quantity==NULL)return 0;  // should never happen
-  if(scripti->quantity!=NULL&&strcmp(scripti->quantity, slicei->label.longlabel)!=0)return 0;
+  if(scripti->quantity!=NULL&&strncmp(scripti->quantity, slicei->label.longlabel,strlen(scripti->quantity))!=0)return 0;
   if(slicei->idir != scripti->pbxyz_dir)return 0;
   if(ABS(slicei->position_orig - scripti->pbxyz_val) > slicei->delta_orig)return 0;
   if(scripti->cell_centered==1&&slicei->slice_filetype!=SLICE_CELL_CENTER)return 0;
