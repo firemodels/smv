@@ -226,6 +226,9 @@ typedef struct _scriptdata {
   char *cval,*cval2;
   float fval,fval2,fval3,fval4,fval5;
   int exit,first,remove_frame;
+  char *quantity, *id, *c_pbxyz;
+  float pbxyz_val;
+  int pbxyz_dir, cell_centered, vector;
 } scriptdata;
 
 /* --------------------------  treedata ------------------------------------ */
