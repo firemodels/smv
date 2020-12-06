@@ -3515,38 +3515,38 @@ LOADISO
   mesh number (int)
 \end{lstlisting}
 
-\hitem{LOADSLCF}Load a slice file of a given type.
-The syntax is similar to the \&SLCF\ FDS input keyword.  
-The plane orientation is specified by using PBX=val for slice at the x position val
-and PBY, and PBZ for slices specified at y and z positions.
-To specify a quantity use QUANTITY='quantity' 
-where quantity is the same as what Smokeview displays in the Load menus for slice files.
-Usage:
-\begin{lstlisting}
-LOADSLCF
- PBX=val QUANTITY='quantity' (or PBY=val or PBZ=val)
-\end{lstlisting}
+\hitem{LOADSLCF}Load a slice file.
+This script command uses one or more of the keywords ID, PBX, PBY, PBZ, QUANTITY, CELL\_CENTERED and VECTOR to specify slice files to load.
+These keywords are defined in the same way as when used with an \&SLCF namelist in an FDS input file.
 
-\hitem{LOADSLICE}Load a slice file of a given type.
-The type is the same as what Smokeview displays in the Load menus for slice files. 
- The plane orientation is specified by using 1 for x, 2 for y and 3 for z.
-Usage:
-\begin{lstlisting}
-LOADSLICE
-  type (char)
-  1/2/3 (int)  val (float)
-\end{lstlisting}
+You may use an ID value specified on an \&SLCF input file line to load slice files that were
+tagged with that value.
+Otherwise, you may use QUANTITY to specify the type of slice  (TEMPERATURE. U-VELOCITY, SOOT DENSITY {\em etc.}), and PBX, PBY or PBZ  to specify its position
+as you did when you created your FDS input file.
 
-\hitem{LOADVSLICE}Load a vector slice file of a given type.
-The type is the same as what Smokeview displays in the
-Load menus for slice files.  The plane orientation is
-specified by using 1 for x, 2 for y and 3 for z.
-Usage:
-\begin{lstlisting}
-LOADVSLICE
- type (char)
- 1/2/3 (int)  val (float)
-\end{lstlisting}
+In addition, you may use the CELL\_CENTERED to load a cell centered slice and/or VECTOR to load a vector slice.
+Note, that these files need to exist in order to be loaded.
+
+
+\\ \noindent Examples:\\
+
+\\ \noindent Loads slices with id 'Y slice':\\
+{\tt
+LOADSLCF \\
+ ID='Y slice' \\
+}
+
+\\ \noindent Loads vector slices with id 'Y slice':\\
+{\tt
+LOADSLCF \\
+ ID='Y slice' VECTOR=T \\
+}
+
+\\ \noindent Loads temperature slices located at $y=0.8$:\\
+{\tt
+LOADSLCF \\
+ QUANTITY='TEMPERATURE' PBY=0.8 \\
+}
 
 \hitem{LOADVOLSMOKE}\ Load files needed to view volume rendered
 smoke.  One may either load files for all meshes or for one
