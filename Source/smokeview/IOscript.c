@@ -1004,6 +1004,8 @@ int CompileScript(char *scriptfile){
 
           for(i=0;i<ntokens;i++){
             switch (tokens[i]){
+              char label[100];
+
               case KW_QUANTITY:
                 scripti->quantity = ctokens[i];
                 break;
@@ -1013,22 +1015,26 @@ int CompileScript(char *scriptfile){
               case KW_PBX:
                 scripti->pbxyz_val = ftokens[i];
                 scripti->pbxyz_dir = 1;
-                scripti->c_pbxyz   = GetPointer("PBX");
+                strcpy(label, "PBX");
+                scripti->c_pbxyz   = GetPointer(label);
                 break;
               case KW_PBY:
                 scripti->pbxyz_val = ftokens[i];
                 scripti->pbxyz_dir = 2;
-                scripti->c_pbxyz   = GetPointer("PBY");
+                strcpy(label, "PBY");
+                scripti->c_pbxyz   = GetPointer(label);
                 break;
               case KW_PBZ:
                 scripti->pbxyz_val = ftokens[i];
                 scripti->pbxyz_dir = 3;
-                scripti->c_pbxyz   = GetPointer("PBZ");
+                strcpy(label, "PBZ");
+                scripti->c_pbxyz   = GetPointer(label);
                 break;
               case KW_PB3D:
                 scripti->pbxyz_val = 0.0;
                 scripti->pbxyz_dir = 0;
-                scripti->c_pbxyz = GetPointer("PB3D");
+                strcpy(label, "PB3D");
+                scripti->c_pbxyz = GetPointer(label);
                 break;
               case KW_VECTOR:
                 scripti->vector = itokens[i];
@@ -1777,7 +1783,16 @@ int SliceMatch(scriptdata *scripti, slicedata *slicei){
   if(scripti->quantity==NULL)return 0;  // should never happen
   if(scripti->quantity!=NULL&&strncmp(scripti->quantity, slicei->label.longlabel,strlen(scripti->quantity))!=0)return 0;
   if(scripti->pbxyz_dir==0){
+    int *min, *max;
+    meshdata *meshi;
+
     if(slicei->volslice==0)return 0;                                              // need a 3d slice file but didn't find it
+
+    min = slicei->ijk_min;
+    max = slicei->ijk_max;
+    if(min[0]!=0||min[1]!=0||min[2]!=0)return 0;
+    meshi = meshinfo+slicei->blocknumber;
+    if(max[0]!=meshi->ibar||max[1]!=meshi->jbar||max[2]!=meshi->kbar)return 0;
   }
   else{
     if(slicei->idir!=scripti->pbxyz_dir)return 0;                                 // not a 3d slice file and directions don't match
@@ -1851,54 +1866,65 @@ void ScriptLoadVSLCF(scriptdata *scripti){
 void ScriptLoadSLCF(scriptdata *scripti){
   int i;
   int count = 0;
+  int count2=0;
 
   if(scripti->vector==1){
     ScriptLoadVSLCF(scripti);
     return;
   }
 
-  PRINTF("script: loading slice file with:");
-  if(scripti->id!=NULL)PRINTF(" ID=%s", scripti->id);
-  if(scripti->quantity!=NULL)PRINTF(" QUANTITY=%s", scripti->quantity);
-  if(scripti->c_pbxyz!=NULL)PRINTF(" %s=%f", scripti->c_pbxyz, scripti->pbxyz_val);
-  if(scripti->cell_centered==1)PRINTF(" CELL_CENTERED=T");
-  if(scripti->vector==1)PRINTF(" VECTOR=T");
+  PRINTF("script: loading slice file with: ");
+  if(scripti->id!=NULL){
+    if(count2++!=0)printf(", ");
+    PRINTF("ID=%s", scripti->id);
+  }
+  if(scripti->quantity!=NULL){
+    if(count2++!=0)printf(", ");
+    PRINTF("QUANTITY=%s", scripti->quantity);
+  }
+  if(scripti->c_pbxyz!=NULL){
+    if(count2++!=0)printf(", ");
+    if(strcmp(scripti->c_pbxyz,"PB3D")==0){
+      PRINTF("PB3D\n");
+    }
+    else{
+      PRINTF("%s=%f", scripti->c_pbxyz, scripti->pbxyz_val);
+    }
+  }
+  if(scripti->cell_centered==1){
+    if(count2++!=0)printf(", ");
+    PRINTF("CELL_CENTERED=T");
+  }
+  if(scripti->vector==1){
+    if(count2++!=0)printf(", ");
+    PRINTF("VECTOR=T");
+  }
   printf("\n");
 
-  for(i = 0; i<nmultisliceinfo; i++){
-    multislicedata *mslicei;
+  for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
-    int j;
 
-    mslicei = multisliceinfo+i;
-    if(mslicei->nslices<=0)continue;
-    slicei = sliceinfo+mslicei->islices[0];
+    slicei = sliceinfo+i;
+    slicei->finalize = 0;
+  }
+  for(i = nsliceinfo-1; i>=0; i--){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    if(SliceMatch(scripti, slicei)==0)continue;
+    slicei->finalize = 1;
+    break;
+  }
+
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
     if(SliceMatch(scripti, slicei)==0)continue;
     
-    for(j = 0; j<mslicei->nslices; j++){
-      slicedata *slicej;
-      int finalize_save;
-      slicedata *slicei;
-
-      slicei = sliceinfo+mslicei->islices[j];
-      finalize_save = slicei->finalize;
-      if(j==mslicei->nslices-1){
-        slicei->finalize = 1;
-      }
-      else{
-        slicei->finalize = 0;
-      }
-      LoadSliceMenu(mslicei->islices[j]);
-      slicei->finalize = finalize_save;
-      FREEMEMORY(loaded_file);
-      slicej = sliceinfo+mslicei->islices[j];
-      if(slicej->file!=NULL&&strlen(slicej->file)>0){
-        NewMemory((void **)&loaded_file, strlen(slicej->file)+1);
-        strcpy(loaded_file, slicej->file);
-      }
-      count++;
-    }
-    break;
+    LoadSliceMenu(i);
+    count++;
+    if(slicei->finalize==1)break;
   }
   if(count==0){
     fprintf(stderr, "*** Error: Slice files of type %s failed to load\n", scripti->cval);
