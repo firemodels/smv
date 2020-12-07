@@ -987,7 +987,7 @@ int CompileScript(char *scriptfile){
           char *ctokens[MAX_SLCF_TOKENS];
           char *keywords[]={"QUANTITY",   "ID",         "PBX",       "PBY",       "PBZ",      "PB3D",        "VECTOR",       "CELL_CENTERED"};
           int types[]={     TOKEN_STRING, TOKEN_STRING, TOKEN_FLOAT, TOKEN_FLOAT, TOKEN_FLOAT, TOKEN_LOGICAL, TOKEN_LOGICAL, TOKEN_LOGICAL};
-          int nkeywords=8, tokens[MAX_SLCF_TOKENS], itokens[MAX_SLCF_TOKENS], error_code, ntokens;
+          int nkeywords=8, tokens[MAX_SLCF_TOKENS], itokens[MAX_SLCF_TOKENS], ntokens;
           float ftokens[MAX_SLCF_TOKENS];
           int i;
 
