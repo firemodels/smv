@@ -427,7 +427,7 @@ void ParseCommandline(int argc, char **argv){
       use_graphics = 0;
       update_slice = 1;
     }
-    else if(strncmp(argv[i], "-update", 7)==0){
+    else if(strncmp(argv[i], "-update", 7)==0&&strncmp(argv[i], "-update_ini", 11)!=0){
       if(strncmp(argv[i], "-update_slice", 13)!=0&&strncmp(argv[i], "-update_bounds", 14)!=0){
         use_graphics = 0;
         update_slice = 1;
