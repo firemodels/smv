@@ -5,10 +5,8 @@ RENDERHTMLDIR
 
 // load slice files
 
-LOADSLICEM
- TEMPERATURE
- 2 0.800000
- 1
+LOADSLCF
+ QUANTITY='TEMPERATURE' PBY=0.8
 
  // output obst data to a text file
 RENDERHTMLOBST
