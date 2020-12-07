@@ -3528,25 +3528,25 @@ In addition, you may use the CELL\_CENTERED to load a cell centered slice and/or
 Note, that these files need to exist in order to be loaded.
 
 
-\\ \noindent Examples:\\
+\par \noindent Examples:
 
-\\ \noindent Loads slices with id 'Y slice':\\
-{\tt
-LOADSLCF \\
- ID='Y slice' \\
-}
+\noindent Loads slices with id 'Y slice':
+\begin{lstlisting}
+LOADSLCF
+ ID='Y slice'
+\end{lstlisting}
 
-\\ \noindent Loads vector slices with id 'Y slice':\\
-{\tt
+\noindent Loads vector slices with id 'Y slice':\\
+\begin{lstlisting}
 LOADSLCF \\
  ID='Y slice' VECTOR=T \\
-}
+\end<lstlisting}
 
-\\ \noindent Loads temperature slices located at $y=0.8$:\\
-{\tt
+\noindent Loads temperature slices located at $y=0.8$:\\
+\begin{lstlisting}
 LOADSLCF \\
  QUANTITY='TEMPERATURE' PBY=0.8 \\
-}
+\end{lstlisting}
 
 \hitem{LOADVOLSMOKE}\ Load files needed to view volume rendered
 smoke.  One may either load files for all meshes or for one
