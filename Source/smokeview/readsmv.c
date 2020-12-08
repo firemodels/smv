@@ -13833,8 +13833,22 @@ int ReadIni(char *inifile){
 
   if(caseini_filename!=NULL){
     int returnval;
+    char localdir[10];
 
     returnval = ReadIni2(caseini_filename, 1);
+
+    // if directory is not writable then look for another ini file in the scratch directory
+    strcpy(localdir, ".");
+    if(Writable(localdir)==0){
+      char *scratch_ini_filename;
+
+      NewMemory((void **)&scratch_ini_filename, strlen(smokeview_scratchdir)+1+strlen(caseini_filename)+1);
+      strcpy(scratch_ini_filename, smokeview_scratchdir);
+      strcat(scratch_ini_filename, dirseparator);
+      strcat(scratch_ini_filename, caseini_filename);
+      returnval = ReadIni2(scratch_ini_filename, 1);
+      FREEMEMORY(scratch_ini_filename);
+    }
     if(returnval==2)return 2;
     if(returnval == 0){
       PRINTF("- complete\n");
@@ -14461,40 +14475,46 @@ void WriteIniLocal(FILE *fileout){
 void WriteIni(int flag,char *filename){
   FILE *fileout=NULL;
   int i;
+  char *outfilename=NULL, *outfiledir=NULL;
 
-  {
-
-    char *outfilename=NULL;
-
-    switch(flag){
-    case GLOBAL_INI:
-      fileout=fopen(smokeviewini_filename,"w");
-      outfilename= smokeviewini_filename;
-      break;
-    case STDOUT_INI:
-      fileout=stdout;
-      break;
-    case SCRIPT_INI:
-      fileout=fopen(filename,"w");
-      outfilename=filename;
-      break;
-    case LOCAL_INI:
-      fileout=fopen(caseini_filename,"w");
-      outfilename=caseini_filename;
-      break;
-    default:
-      ASSERT(FFALSE);
-      break;
+  switch(flag){
+  case GLOBAL_INI:
+    fileout=fopen(smokeviewini_filename,"w");
+    outfilename= smokeviewini_filename;
+    break;
+  case STDOUT_INI:
+    fileout=stdout;
+    break;
+  case SCRIPT_INI:
+    fileout=fopen(filename,"w");
+    outfilename=filename;
+    break;
+  case LOCAL_INI:
+    fileout=fopen(caseini_filename,"w");
+    if(fileout==NULL&&smokeview_scratchdir!=NULL){
+      fileout = fopen_indir(smokeview_scratchdir, caseini_filename, "w");
+      outfiledir = smokeview_scratchdir;
+     }
+    outfilename=caseini_filename;
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
+  }
+  if(flag==SCRIPT_INI)flag=LOCAL_INI;
+  if(fileout==NULL){
+    if(outfilename!=NULL){
+      fprintf(stderr,"*** Error: unable to open %s for writing ",outfilename);
+      return;
     }
-    if(flag==SCRIPT_INI)flag=LOCAL_INI;
-    if(fileout==NULL){
-      if(outfilename!=NULL){
-        fprintf(stderr,"*** Error: unable to open %s for writing\n",outfilename);
-        return;
-      }
-      else{
-        fprintf(stderr,"*** Error: unable to open ini file for output\n");
-      }
+    else{
+      fprintf(stderr,"*** Error: unable to open ini file for output ");
+    }
+    if(outfiledir==NULL){
+      printf("in current directory\n");
+    }
+    else{
+      printf("in directory %s\n", outfiledir);
     }
   }
 

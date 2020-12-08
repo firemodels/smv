@@ -328,7 +328,7 @@ void SetupGlut(int argc, char **argv){
 #ifdef pp_OSX
   char workingdir[1000];
 #endif
-  char *homedir=NULL, *smoketempdir=NULL;
+  char *homedir=NULL;
   int freehome = 0;
 
 // get smokeview bin directory from argv[0] which contains the full path of the smokeview binary
@@ -363,31 +363,25 @@ void SetupGlut(int argc, char **argv){
     strcpy(homedir, ".");
   }
 
-  NewMemory((void **)&smoketempdir, strlen(homedir) + strlen(dirseparator) + strlen(".smokeview") + 1);
-  strcpy(smoketempdir, homedir);
-  strcat(smoketempdir, dirseparator);
-  strcat(smoketempdir, ".smokeview");
-  if(FileExistsOrig(smoketempdir)==NO){
-    MKDIR(smoketempdir);
+  NewMemory((void **)&smokeview_scratchdir, strlen(homedir)+strlen(dirseparator)+strlen(".smokeview")+strlen(dirseparator)+1);
+  strcpy(smokeview_scratchdir, homedir);
+  strcat(smokeview_scratchdir, dirseparator);
+  strcat(smokeview_scratchdir, ".smokeview");
+  strcat(smokeview_scratchdir,dirseparator);
+  if(FileExistsOrig(smokeview_scratchdir)==NO){
+    MKDIR(smokeview_scratchdir);
   }
 
-  NewMemory((void **)&smokeview_scratchdir,strlen(smoketempdir)+2);
-  STRCPY(smokeview_scratchdir,smoketempdir);
-  if(smokeview_scratchdir[strlen(smoketempdir)-1]!=dirseparator[0]){
-    STRCAT(smokeview_scratchdir,dirseparator);
-  }
-
-  NewMemory((void **)&smokeviewini_filename, strlen(smoketempdir)+1+strlen("smokeview.ini")+2);
-  strcpy(smokeviewini_filename, "");
-  strcat(smokeviewini_filename, smoketempdir);
+  NewMemory((void **)&smokeviewini_filename, strlen(smokeview_scratchdir)+strlen(dirseparator)+strlen("smokeview.ini")+2);
+  strcpy(smokeviewini_filename, smokeview_scratchdir);
   strcat(smokeviewini_filename, dirseparator);
   strcat(smokeviewini_filename, "smokeview.ini");
 
   PRINTF("Scratch directory: %s\n",   smokeview_scratchdir);
   PRINTF("    smokeview.ini: %s\n",   smokeviewini_filename);
 
-  FREEMEMORY(smoketempdir);
   if(freehome==1){
+  // don't free homedir if it is a pointer defined by getenv
     FREEMEMORY(homedir);
   }
 
