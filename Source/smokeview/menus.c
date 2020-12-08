@@ -8574,10 +8574,18 @@ updatemenu=0;
     CREATEMENU(showvslicemenu,ShowVSliceMenu);
     if(vd_shown!=NULL&&nvsliceloaded!=0){
       char menulabel[1024];
+      slicedata *slice_shown;
 
       STRCPY(menulabel, "");
       if(showall_slices==1)STRCAT(menulabel, "*");
-      STRCAT(menulabel, sliceinfo[vd_shown->ival].label.longlabel);
+      slice_shown = sliceinfo+vd_shown->ival;
+      STRCAT(menulabel, slice_shown->label.longlabel);
+      STRCAT(menulabel, ", ");
+      STRCAT(menulabel, slice_shown->slicedir);
+      if(slice_shown->slicelabel!=NULL){
+        STRCAT(menulabel, " - ");
+        STRCAT(menulabel, slice_shown->slicelabel);
+      }
       glutAddMenuEntry(menulabel,SHOW_ALL);
     }
     glutAddMenuEntry(_("  Show in:"), MENU_DUMMY);
@@ -10034,6 +10042,10 @@ updatemenu=0;
           }
           else{
             STRCPY(menulabel,sd->menulabel);
+          }
+          if(sd->slicelabel!=NULL){
+            STRCAT(menulabel, " - ");
+            STRCAT(menulabel, sd->slicelabel);
           }
           glutAddMenuEntry(menulabel,i);
           if(ii==nvsliceinfo-1||strcmp(sd->label.longlabel,sdp1->label.longlabel)!=0){
