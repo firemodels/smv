@@ -1672,8 +1672,19 @@ extern "C" void PartBoundsCPP_CB(int var){
       break;
     case BOUND_RELOAD_DATA:
       if(npartinfo>0){
+        int doit = 0, i;
+
 #ifdef pp_RESEARCH_DEBUG
-        printf("*** reloading particle file data\n");
+        for(i = 0; i<npartinfo; i++){
+          partdata *parti;
+
+          parti = partinfo+i;
+          if(parti->loaded==1){
+            doit = 1;
+            break;
+          }
+        }
+        if(doit==1)printf("*** reloading particle file data\n");
 #endif
         LoadParticleMenu(PARTFILE_RELOADALL);
         LoadEvacMenu(EVACFILE_RELOADALL);
