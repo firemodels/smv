@@ -789,7 +789,9 @@ void PrintPartLoadSummary(int option_arg,int type_arg){
   if(option_arg==1||(nsize_local<npartthread_ids&&nsize_local>0)){
     int isize_local;
 
+#ifdef pp_PART_SIZE
     if(type_arg==PART_SIZING)printf("sizing: ");
+#endif
     if(type_arg==PART_LOADING)printf("loading: ");
     isize_local = 0;
     for(j = 0; j<npartinfo; j++){
@@ -801,12 +803,16 @@ void PrintPartLoadSummary(int option_arg,int type_arg){
       if(type_arg==PART_SIZING&&partj->boundstatus==PART_BOUND_COMPUTING)doit = 1;
       if(type_arg==PART_LOADING&&partj->loadstatus==FILE_LOADING)doit = 1;
       if(doit==1){
+#ifdef pp_PART_SIZE
         printf("%s", partj->reg_file);
+#endif
         if(isize_local!=nsize_local-1)printf(", ");
         isize_local++;
       }
     }
+#ifdef pp_PART_SIZE
     printf("\n");
+#endif
   }
 }
 
