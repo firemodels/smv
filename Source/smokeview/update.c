@@ -395,7 +395,7 @@ void UpdateShow(void){
     if(settmax_z==1&&global_times[itimes]>tmax_z)visTimeZone=0;
   }
 
-  if(showdevice_val==1||showdevice_plot==1){
+  if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;
 
@@ -1085,7 +1085,7 @@ void UpdateTimes(void){
     }
   }
 
-  if(showdevice_plot==1||showdevice_val==1){
+  if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;
 
@@ -1583,7 +1583,7 @@ int GetPlotState(int choice){
       break;
     case DYNAMIC_PLOTS:
     case DYNAMIC_PLOTS_NORECURSE:
-      if(showdevice_plot==1||showdevice_val==1){
+      if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
         for(i = 0; i<ndeviceinfo; i++){
           devicedata *devicei;
 

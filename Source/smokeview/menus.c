@@ -3090,8 +3090,8 @@ void LoadUnloadMenu(int value){
     if(nvolrenderinfo>0){
       UnLoadVolsmoke3DMenu(UNLOAD_ALL);
     }
-    if(showdevice_plot==1||showdevice_val==1){
-      showdevice_plot = 0;
+    if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
+      showdevice_plot = DEVICE_PLOT_HIDDEN;
       showdevice_val = 0;
       UpdateDeviceShow();
     }
@@ -6096,6 +6096,28 @@ void TitleMenu(int value){
   SetLabelControls();
 }
 
+/* ------------------ ShowADeviceType ------------------------ */
+
+void ShowADeviceType(void){
+  int i;
+
+  for(i=0;i<nobject_defs;i++){
+    sv_object *obj_typei;
+
+    obj_typei = object_defs[i];
+    if(obj_typei->used_by_device==1&&obj_typei->visible==1)return;
+  }
+  for(i=0;i<nobject_defs;i++){
+    sv_object *obj_typei;
+
+    obj_typei = object_defs[i];
+    if(obj_typei->used_by_device==1){
+      obj_typei->visible=1;
+      return;
+    }
+  }
+}
+
 /* ------------------ ShowObjectsMenu ------------------------ */
 
 void ShowObjectsMenu(int value){
@@ -6105,7 +6127,7 @@ void ShowObjectsMenu(int value){
   if(value>=0&&value<nobject_defs){
     objecti = object_defs[value];
     objecti->visible = 1 - objecti->visible;
-    if(showdevice_val==1||showdevice_plot==1){
+    if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
       update_times = 1;
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       UpdateDeviceShow();
@@ -6137,6 +6159,8 @@ void ShowObjectsMenu(int value){
     }
     else{
       showdevice_plot = DEVICE_PLOT_SHOW_ALL;
+      select_device = 1;
+      ShowADeviceType();
     }
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     UpdateDeviceShow();
@@ -6148,6 +6172,8 @@ void ShowObjectsMenu(int value){
     }
     else{
       showdevice_plot = DEVICE_PLOT_SHOW_SELECTED;
+      select_device = 1;
+      ShowADeviceType();
     }
     plotstate = GetPlotState(DYNAMIC_PLOTS);
     UpdateDeviceShow();
@@ -7522,10 +7548,10 @@ updatemenu=0;
         glutAddMenuEntry(_("Select"),OBJECT_SELECT);
       }
     }
-    if(showdevice_plot==DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(_("*Plot data"),      OBJECT_PLOT_SHOW_ALL);
-    if(showdevice_plot!=DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(_("Plot data"),       OBJECT_PLOT_SHOW_ALL);
-    if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry(_("*Plot data"), OBJECT_PLOT_SHOW_SELECTED);
-    if(showdevice_plot!=DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry(_("Plot data"),  OBJECT_PLOT_SHOW_SELECTED);
+    if(showdevice_plot==DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "*Plot data for all devices",           OBJECT_PLOT_SHOW_ALL);
+    if(showdevice_plot!=DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "Plot data for all devices",            OBJECT_PLOT_SHOW_ALL);
+    if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "*Plot data for selected devices",      OBJECT_PLOT_SHOW_SELECTED);
+    if(showdevice_plot!=DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "Plot data for selected devices",       OBJECT_PLOT_SHOW_SELECTED);
     if(showdevice_val==1)glutAddMenuEntry(_("*Show values"), OBJECT_VALUES);
     if(showdevice_val==0)glutAddMenuEntry(_("Show values"),  OBJECT_VALUES);
     if(object_outlines==0)glutAddMenuEntry(_("Outline"),OBJECT_OUTLINE);
