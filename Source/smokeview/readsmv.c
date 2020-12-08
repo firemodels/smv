@@ -10349,6 +10349,27 @@ void UpdateUseTextures(void){
   }
 }
 
+#ifdef pp_CPPBOUND_DIALOG
+
+/* ------------------ GetNewBoundIndex ------------------------ */
+
+int GetNewBoundIndex(int old_index){
+#define OLD_PERCENTILE 0
+#define OLD_SET        1
+#define OLD_GLOBAL     2
+
+#define NEW_SET        0
+#define NEW_GLOBAL     1
+#define NEW_PERCENTILE 3
+
+  int bound_map[] = {NEW_PERCENTILE, NEW_SET, NEW_GLOBAL};
+
+  ASSERT(old_index>=0&&old_index<=2);
+  old_index=CLAMP(old_index,0, 2);
+  return bound_map[old_index];
+}
+#endif
+
 /* ------------------ ReadIni2 ------------------------ */
 
 int ReadIni2(char *inifile, int localfile){
@@ -10911,7 +10932,13 @@ int ReadIni2(char *inifile, int localfile){
     }
 #endif
 #ifdef pp_CPPBOUND_DIALOG
-    if(Match(buffer, "V2_PLOT3D") == 1){
+    if(Match(buffer, "V2_PLOT3D") == 1||Match(buffer, "V_PLOT3D")==1){
+      int is_old_bound;
+
+      is_old_bound=0;
+      if(Match(buffer, "V_PLOT3D")==1){
+        is_old_bound = 1;
+      }
 #endif
 #ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "V_PLOT3D") == 1){
@@ -10931,6 +10958,19 @@ int ReadIni2(char *inifile, int localfile){
 
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i %i %f %i %f %i", &iplot3d, &isetmin, &p3mintemp, &isetmax, &p3maxtemp, &ival);
+#ifdef pp_CPPBOUND_DIALOG
+        if(is_old_bound==1){
+          isetmin = GetNewBoundIndex(isetmin);
+          isetmax = GetNewBoundIndex(isetmax);
+        }
+        if(
+          isetmin==BOUND_SET_MIN||isetmin==BOUND_PERCENTILE_MIN||
+          isetmax==BOUND_SET_MAX||isetmax==BOUND_PERCENTILE_MAX
+        ){
+          research_mode = 0;
+          update_research_mode = 1;
+        }
+#endif
         iplot3d--;
         if(iplot3d >= 0 && iplot3d<MAXPLOT3DVARS){
           setp3min_all[iplot3d] = isetmin;
@@ -11391,7 +11431,13 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
 #ifdef pp_CPPBOUND_DIALOG
-    if(Match(buffer, "V2_PARTICLES") == 1){
+    if(Match(buffer, "V2_PARTICLES") == 1||Match(buffer, "V_PARTICLES")==1){
+      int is_old_bound;
+
+      is_old_bound=0;
+      if(Match(buffer, "V_PARTICLES")==1){
+        is_old_bound = 1;
+      }
 #endif
 #ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "V5_PARTICLES") == 1){
@@ -11403,6 +11449,19 @@ int ReadIni2(char *inifile, int localfile){
       strcpy(short_label, "");
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i %f %s", &ivmin, &vmin, &ivmax, &vmax, short_label);
+#ifdef pp_CPPBOUND_DIALOG
+      if(is_old_bound==1){
+        ivmin = GetNewBoundIndex(ivmin);
+        ivmax = GetNewBoundIndex(ivmax);
+      }
+      if(
+        ivmin==BOUND_SET_MIN||ivmin==BOUND_PERCENTILE_MIN||
+        ivmax==BOUND_SET_MAX||ivmax==BOUND_PERCENTILE_MAX
+      ){
+        research_mode = 0;
+        update_research_mode = 1;
+      }
+#endif
 
 #define MAXVAL 100000000.0
 #define MINVAL -100000000.0
@@ -11519,7 +11578,13 @@ int ReadIni2(char *inifile, int localfile){
     }
 #endif
 #ifdef pp_CPPBOUND_DIALOG
-    if(Match(buffer, "V2_SLICE")==1){
+    if(Match(buffer, "V2_SLICE")==1||Match(buffer, "V_SLICE")==1){
+      int is_old_bound;
+
+      is_old_bound=0;
+      if(Match(buffer, "V_SLICE")==1){
+        is_old_bound = 1;
+      }
 #endif
 #ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "V_SLICE") == 1){
@@ -11531,6 +11596,20 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       strcpy(buffer2, "");
       sscanf(buffer, "%i %f %i %f %s", &set_valmin, &valmin, &set_valmax, &valmax, buffer2);
+
+#ifdef pp_CPPBOUND_DIALOG
+    if(is_old_bound==1){
+      set_valmin = GetNewBoundIndex(set_valmin);
+      set_valmax = GetNewBoundIndex(set_valmax);
+    }
+    if(
+    set_valmin==BOUND_SET_MIN||set_valmin==BOUND_PERCENTILE_MIN||
+    set_valmax==BOUND_SET_MAX||set_valmax==BOUND_PERCENTILE_MAX
+    ){
+      research_mode = 0;
+      update_research_mode = 1;
+    }
+#endif
 #ifdef pp_OLDBOUND_DIALOG
       if(set_valmin==1||set_valmax==1){
         research_mode = 0;
@@ -11700,13 +11779,33 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
 #ifdef pp_CPPBOUND_DIALOG
-    if(Match(buffer, "V2_BOUNDARY") == 1){
+    if(Match(buffer, "V2_BOUNDARY") == 1||Match(buffer, "V_BOUNDARY")==1){
+      int is_old_bound;
+
+      is_old_bound=0;
+      if(Match(buffer, "V_BOUNDARY")==1){
+        is_old_bound = 1;
+      }
 #endif
 #ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "V_BOUNDARY") == 1){
 #endif
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i %f %s", &glui_setpatchmin, &glui_patchmin, &glui_setpatchmax, &glui_patchmax, buffer2);
+#ifdef pp_CPPBOUND_DIALOG
+      if(is_old_bound==1){
+
+        glui_setpatchmin = GetNewBoundIndex(glui_setpatchmin);
+        glui_setpatchmax = GetNewBoundIndex(glui_setpatchmax);
+      }
+      if(
+        glui_setpatchmin==BOUND_SET_MIN||glui_setpatchmin==BOUND_PERCENTILE_MIN||
+        glui_setpatchmax==BOUND_SET_MAX||glui_setpatchmax==BOUND_PERCENTILE_MAX
+      ){
+        research_mode = 0;
+        update_research_mode = 1;
+      }
+#endif
       if(strcmp(buffer2, "") != 0){
         GLUI2GlobalBoundaryBounds(buffer2);
 #ifdef pp_CPPBOUND_DIALOG

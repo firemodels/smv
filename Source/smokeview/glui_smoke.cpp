@@ -976,7 +976,6 @@ extern "C" void Smoke3dCB(int var){
   updatemenu=1;
   switch(var){
   float temp_min, temp_max;
-  int smoke3d_skipx_temp, smoke3d_skipy_temp, smoke3d_skipz_temp;
 
   case USE_FIRE_ALPHA:
     use_fire_alpha = 1-glui_use_fire_alpha;
@@ -1076,7 +1075,7 @@ extern "C" void Smoke3dCB(int var){
   case SMOKE_BLACK:
     break;
   case SMOKE_SKIP:
-    smoke3d_skip=CLAMP(smoke3d_skip,1,10);
+    if(smoke3d_skip<1)smoke3d_skip = 1;
     SPINNER_smoke3d_skip->set_int_val(smoke3d_skip);
     smoke3d_skipx = smoke3d_skip;
     smoke3d_skipy = smoke3d_skip;
@@ -1086,21 +1085,12 @@ extern "C" void Smoke3dCB(int var){
     SPINNER_smoke3d_skipz->set_int_val(smoke3d_skipz);
     break;
   case SMOKE_SKIP_XYZ:
-    smoke3d_skipx_temp=CLAMP(smoke3d_skipx,1,10);
-    smoke3d_skipy_temp=CLAMP(smoke3d_skipy,1,10);
-    smoke3d_skipz_temp=CLAMP(smoke3d_skipz,1,10);
-    if (smoke3d_skipx_temp!=smoke3d_skipx){
-      smoke3d_skipx = smoke3d_skipx_temp;
-      SPINNER_smoke3d_skipx->set_int_val(smoke3d_skipx);
-    }
-    if (smoke3d_skipy_temp!=smoke3d_skipy){
-      smoke3d_skipy = smoke3d_skipy_temp;
-      SPINNER_smoke3d_skipy->set_int_val(smoke3d_skipy);
-    }
-    if (smoke3d_skipz_temp!=smoke3d_skipz){
-      smoke3d_skipz = smoke3d_skipz_temp;
-      SPINNER_smoke3d_skipz->set_int_val(smoke3d_skipz);
-    }
+    if(smoke3d_skipx<1)smoke3d_skipx = 1;
+    if(smoke3d_skipy<1)smoke3d_skipy = 1;
+    if(smoke3d_skipz<1)smoke3d_skipz = 1;
+    SPINNER_smoke3d_skipx->set_int_val(smoke3d_skipx);
+    SPINNER_smoke3d_skipy->set_int_val(smoke3d_skipy);
+    SPINNER_smoke3d_skipz->set_int_val(smoke3d_skipz);
     if(smoke3d_skipx==smoke3d_skipy&&smoke3d_skipx==smoke3d_skipz){
       smoke3d_skip = smoke3d_skipx;
       SPINNER_smoke3d_skip->set_int_val(smoke3d_skip);
