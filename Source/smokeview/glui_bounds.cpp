@@ -2384,7 +2384,6 @@ GLUI_Listbox *LIST_iso_colorbar = NULL;
 #ifdef pp_MEMDEBUG
 GLUI_Rollout *ROLLOUT_memcheck=NULL;
 #endif
-GLUI_Rollout *ROLLOUT_boundary_temp_threshold;
 GLUI_Rollout *ROLLOUT_boundary_duplicates;
 GLUI_Rollout *ROLLOUT_iso_settings;
 GLUI_Rollout *ROLLOUT_iso_bounds;
@@ -2439,6 +2438,7 @@ GLUI_Panel *PANEL_part_minmax = NULL;
 GLUI_Panel *PANEL_plot3d_minmax = NULL;
 #endif
 
+GLUI_Panel *PANEL_boundary_temp_threshold=NULL;
 GLUI_Panel *PANEL_slice_buttonsA = NULL;
 GLUI_Panel *PANEL_slice_buttonsB = NULL;
 GLUI_Panel *PANEL_boundary_outline_type = NULL;
@@ -2611,7 +2611,6 @@ GLUI_Checkbox *CHECKBOX_use_tload_skip=NULL;
 #ifdef pp_OLDBOUND_DIALOG
 GLUI_Checkbox *CHECKBOX_research_mode=NULL;
 #endif
-GLUI_Checkbox *CHECKBOX_part_histogram=NULL;
 GLUI_Checkbox *CHECKBOX_colorbar_flip = NULL;
 GLUI_Checkbox *CHECKBOX_colorbar_autoflip = NULL;
 GLUI_Checkbox *CHECKBOX_labels_shadedata = NULL;
@@ -2753,19 +2752,17 @@ int      nfileprocinfo = 0;
 #define PARTICLE_BOUND             0
 #define PARTICLE_CHOP              1
 #define PARTICLE_SETTINGS          2
-#define PARTICLE_HISTOGRAM         3
-procdata particleprocinfo[4];
+procdata particleprocinfo[3];
 int      nparticleprocinfo=0;
 
 //*** subboundprocinfo entries
 #define BOUNDARY_BOUND             0
 #define BOUNDARY_CHOP              1
 #define BOUNDARY_OUTPUT_ROLLOUT    2
-#define BOUNDARY_THRESHOLD_ROLLOUT 3
-#define BOUNDARY_DUPLICATE_ROLLOUT 4
-#define BOUNDARY_SETTINGS_ROLLOUT  5
+#define BOUNDARY_DUPLICATE_ROLLOUT 3
+#define BOUNDARY_SETTINGS_ROLLOUT  4
 
-procdata  subboundprocinfo[6];
+procdata  subboundprocinfo[5];
 int       nsubboundprocinfo=0;
 
 #ifdef pp_REFRESH
@@ -4588,24 +4585,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"ymax",GLUI_SPINNER_FLOAT,&patchout_ymax);
     glui_bounds->add_spinner_to_panel(PANEL_outputpatchdata,"zmax",GLUI_SPINNER_FLOAT,&patchout_zmax);
 
-    if(activate_threshold==1){
-      ROLLOUT_boundary_temp_threshold = glui_bounds->add_rollout_to_panel(ROLLOUT_bound,_("Temperature threshold"),false,BOUNDARY_THRESHOLD_ROLLOUT,SubBoundRolloutCB);
-      INSERT_ROLLOUT(ROLLOUT_boundary_temp_threshold, glui_bounds);
-      ADDPROCINFO(subboundprocinfo, nsubboundprocinfo, ROLLOUT_boundary_temp_threshold, BOUNDARY_THRESHOLD_ROLLOUT, glui_bounds);
-
-      CHECKBOX_showchar=glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_temp_threshold,_("Show"),&vis_threshold,SHOWCHAR,BoundBoundCB);
-      CHECKBOX_showonlychar=glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_temp_threshold,_("Show only threshold"),&vis_onlythreshold,SHOWCHAR,BoundBoundCB);
-      {
-        char label[256];
-
-        strcpy(label,"Temperature (");
-        strcat(label,degC);
-        strcat(label,") ");
-        glui_bounds->add_spinner_to_panel(ROLLOUT_boundary_temp_threshold,label,GLUI_SPINNER_FLOAT,&temp_threshold);
-      }
-      BoundBoundCB(SHOWCHAR);
-    }
-
     ROLLOUT_boundary_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, _("Settings"),false, BOUNDARY_SETTINGS_ROLLOUT, SubBoundRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_boundary_settings, glui_bounds);
     ADDPROCINFO(subboundprocinfo, nsubboundprocinfo, ROLLOUT_boundary_settings, BOUNDARY_SETTINGS_ROLLOUT, glui_bounds);
@@ -4631,6 +4610,20 @@ extern "C" void GluiBoundsSetup(int main_window){
       glui_bounds->add_spinner_to_panel(ROLLOUT_boundary_settings, "line width", GLUI_SPINNER_FLOAT, &geomboundary_linewidth);
       glui_bounds->add_spinner_to_panel(ROLLOUT_boundary_settings, "point size", GLUI_SPINNER_FLOAT, &geomboundary_pointsize);
       glui_bounds->add_separator_to_panel(ROLLOUT_boundary_settings);
+    }
+    if(activate_threshold==1){
+      PANEL_boundary_temp_threshold = glui_bounds->add_panel_to_panel(ROLLOUT_boundary_settings, _("Temperature threshold"));
+      CHECKBOX_showchar = glui_bounds->add_checkbox_to_panel(PANEL_boundary_temp_threshold, _("Show"), &vis_threshold, SHOWCHAR, BoundBoundCB);
+      CHECKBOX_showonlychar = glui_bounds->add_checkbox_to_panel(PANEL_boundary_temp_threshold, _("Show only threshold"), &vis_onlythreshold, SHOWCHAR, BoundBoundCB);
+      {
+        char label[256];
+
+        strcpy(label, "Temperature (");
+        strcat(label, degC);
+        strcat(label, ") ");
+        glui_bounds->add_spinner_to_panel(PANEL_boundary_temp_threshold, label, GLUI_SPINNER_FLOAT, &temp_threshold);
+      }
+      BoundBoundCB(SHOWCHAR);
     }
     CHECKBOX_showpatch_both = glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("Display exterior data"), &showpatch_both, SHOWPATCH_BOTH, BoundBoundCB);
 
@@ -4676,30 +4669,6 @@ extern "C" void GluiBoundsSetup(int main_window){
       glui_bounds->add_radiobutton_to_group(RADIO_iso_setmax, _("global max"));
       IsoBoundCB(ISO_SETVALMAX);
     }
-
-    ROLLOUT_iso_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_iso, "Settings", true, ISO_ROLLOUT_SETTINGS, IsoRolloutCB);
-    INSERT_ROLLOUT(ROLLOUT_iso_settings, glui_bounds);
-    ADDPROCINFO(isoprocinfo, nisoprocinfo, ROLLOUT_iso_settings, ISO_ROLLOUT_SETTINGS, glui_bounds);
-
-    visAIso = show_iso_shaded*1+show_iso_outline*2+show_iso_points*4;
-    CHECKBOX_show_iso_shaded = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("shaded"), &show_iso_shaded, ISO_SURFACE, IsoBoundCB);
-    CHECKBOX_show_iso_outline = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("outline"), &show_iso_outline, ISO_OUTLINE, IsoBoundCB);
-    CHECKBOX_show_iso_points = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("points"), &show_iso_points, ISO_POINTS, IsoBoundCB);
-
-    SPINNER_isolinewidth = glui_bounds->add_spinner_to_panel(ROLLOUT_iso_settings, _("line width"), GLUI_SPINNER_FLOAT, &isolinewidth);
-    SPINNER_isolinewidth->set_float_limits(1.0, 10.0);
-    SPINNER_iso_outline_ioffset = glui_bounds->add_spinner_to_panel(ROLLOUT_iso_settings, "outline offset", GLUI_SPINNER_INT, &iso_outline_ioffset, ISO_OUTLINE_IOFFSET, IsoBoundCB);
-    SPINNER_iso_outline_ioffset->set_int_limits(0, 200);
-    SPINNER_isopointsize = glui_bounds->add_spinner_to_panel(ROLLOUT_iso_settings, _("point size"), GLUI_SPINNER_FLOAT, &isopointsize);
-    SPINNER_isopointsize->set_float_limits(1.0, 10.0);
-
-    glui_bounds->add_separator_to_panel(ROLLOUT_iso_settings);
-
-#ifdef pp_BETA
-    CHECKBOX_sort2 = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("Sort transparent surfaces:"), &sort_iso_triangles, SORT_SURFACES, SliceBoundCB);
-#endif
-    CHECKBOX_smooth2 = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("Smooth isosurfaces"), &smooth_iso_normal, SMOOTH_SURFACES, SliceBoundCB);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("wrapup in background"), &iso_multithread);
 
     ROLLOUT_iso_color = glui_bounds->add_rollout_to_panel(ROLLOUT_iso, "Color/transparency", false, ISO_ROLLOUT_COLOR, IsoRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_iso_color, glui_bounds);
@@ -4749,6 +4718,30 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_spinner_to_panel(ROLLOUT_iso_color, "min:", GLUI_SPINNER_FLOAT, &iso_valmin);
     glui_bounds->add_spinner_to_panel(ROLLOUT_iso_color, "max:", GLUI_SPINNER_FLOAT, &iso_valmax);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_color,_("Show"),&show_iso_color);
+
+    ROLLOUT_iso_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_iso, "Settings", true, ISO_ROLLOUT_SETTINGS, IsoRolloutCB);
+    INSERT_ROLLOUT(ROLLOUT_iso_settings, glui_bounds);
+    ADDPROCINFO(isoprocinfo, nisoprocinfo, ROLLOUT_iso_settings, ISO_ROLLOUT_SETTINGS, glui_bounds);
+
+    visAIso = show_iso_shaded*1+show_iso_outline*2+show_iso_points*4;
+    CHECKBOX_show_iso_shaded = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("shaded"), &show_iso_shaded, ISO_SURFACE, IsoBoundCB);
+    CHECKBOX_show_iso_outline = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("outline"), &show_iso_outline, ISO_OUTLINE, IsoBoundCB);
+    CHECKBOX_show_iso_points = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("points"), &show_iso_points, ISO_POINTS, IsoBoundCB);
+
+    SPINNER_isolinewidth = glui_bounds->add_spinner_to_panel(ROLLOUT_iso_settings, _("line width"), GLUI_SPINNER_FLOAT, &isolinewidth);
+    SPINNER_isolinewidth->set_float_limits(1.0, 10.0);
+    SPINNER_iso_outline_ioffset = glui_bounds->add_spinner_to_panel(ROLLOUT_iso_settings, "outline offset", GLUI_SPINNER_INT, &iso_outline_ioffset, ISO_OUTLINE_IOFFSET, IsoBoundCB);
+    SPINNER_iso_outline_ioffset->set_int_limits(0, 200);
+    SPINNER_isopointsize = glui_bounds->add_spinner_to_panel(ROLLOUT_iso_settings, _("point size"), GLUI_SPINNER_FLOAT, &isopointsize);
+    SPINNER_isopointsize->set_float_limits(1.0, 10.0);
+
+    glui_bounds->add_separator_to_panel(ROLLOUT_iso_settings);
+
+#ifdef pp_BETA
+    CHECKBOX_sort2 = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("Sort transparent surfaces:"), &sort_iso_triangles, SORT_SURFACES, SliceBoundCB);
+#endif
+    CHECKBOX_smooth2 = glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("Smooth isosurfaces"), &smooth_iso_normal, SMOOTH_SURFACES, SliceBoundCB);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_iso_settings, _("wrapup in background"), &iso_multithread);
   }
 
   /* Particle File Bounds  */
@@ -4836,11 +4829,6 @@ extern "C" void GluiBoundsSetup(int main_window){
                           ParticleRolloutCB, particleprocinfo, &nparticleprocinfo);
 #endif
 
-
-      ROLLOUT_particle_histogram = glui_bounds->add_rollout_to_panel(ROLLOUT_part, "Histogram", false, PARTICLE_HISTOGRAM, ParticleRolloutCB);
-      INSERT_ROLLOUT(ROLLOUT_particle_histogram, glui_bounds);
-      ADDPROCINFO(particleprocinfo, nparticleprocinfo, ROLLOUT_particle_histogram, PARTICLE_HISTOGRAM, glui_bounds);
-      CHECKBOX_part_histogram=glui_bounds->add_checkbox_to_panel(ROLLOUT_particle_histogram,_("Generate"),&generate_part_histograms);
 
       ROLLOUT_particle_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_part,"Settings",false,PARTICLE_SETTINGS, ParticleRolloutCB);
       INSERT_ROLLOUT(ROLLOUT_particle_settings, glui_bounds);
