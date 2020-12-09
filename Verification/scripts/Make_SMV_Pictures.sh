@@ -212,23 +212,21 @@ if [ "$RUN_SMV" == "1" ]; then
 
   cd $SVNROOT/smv/Verification/Visualization
   echo Converting particles to isosurfaces in case plumeiso
-  $QFDS -C "$SMOKEZIP -part2iso plumeiso"
+  $SMOKEZIP -part2iso plumeiso
 
   cd $SVNROOT/smv/Verification/WUI
   echo Converting particles to isosurfaces in case pine_tree
   if  [ -e pine_tree.smv ]; then
-    $QFDS -C "$SMOKEZIP -part2iso pine_tree"
+    $SMOKEZIP -part2iso pine_tree
   fi
 
 # difference plume5c and thouse5
 
   cd $SVNROOT/smv/Verification/Visualization
   echo Differencing cases plume5c and plume5cdelta
-  $QFDS -C "$SMOKEDIFF -w -r plume5c plume5cdelta"
+  $SMOKEDIFF -w -r plume5c plume5cdelta
   echo Differencing cases thouse5 and thouse5delta
-  $QFDS -C "$SMOKEDIFF -w -r thouse5 thouse5delta"
-
-  wait_cases_end
+  $SMOKEDIFF -w -r thouse5 thouse5delta
 
   echo Generating images
 
