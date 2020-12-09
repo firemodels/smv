@@ -10408,6 +10408,18 @@ int ReadIni2(char *inifile, int localfile){
     CheckMemory;
     if(fgets(buffer, 255, stream) == NULL)break;
 
+    if(Match(buffer, "PERCENTILEMODE")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i", &percentile_mode);
+      ONEORZERO(research_mode);
+      if(research_mode==1&&percentile_mode==1){
+        research_mode = 0;
+        update_research_mode = 1;
+      }
+      update_percentile_mode = 1;
+      continue;
+    }
+
     if(Match(buffer, "RESEARCHMODE") == 1){
       int dummy;
 
@@ -10417,6 +10429,10 @@ int ReadIni2(char *inifile, int localfile){
       if(research_mode==1&&research_mode_override==0)research_mode=0;
       ncolorlabel_digits = CLAMP(ncolorlabel_digits, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
       ONEORZERO(research_mode);
+      if(research_mode==1&&percentile_mode==1){
+        percentile_mode = 0;
+        update_percentile_mode = 1;
+      }
       update_research_mode=1;
       continue;
     }
@@ -11432,15 +11448,15 @@ int ReadIni2(char *inifile, int localfile){
     }
 #ifdef pp_CPPBOUND_DIALOG
     if(Match(buffer, "V2_PARTICLES") == 1||Match(buffer, "V_PARTICLES")==1){
-      int is_old_bound;
+      int is_old_bound = 0;
 
-      is_old_bound=0;
       if(Match(buffer, "V_PARTICLES")==1){
         is_old_bound = 1;
       }
 #endif
 #ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "V5_PARTICLES") == 1){
+      int is_old_bound = 1;
 #endif
       int ivmin, ivmax;
       float vmin, vmax;
@@ -11486,34 +11502,70 @@ int ReadIni2(char *inifile, int localfile){
           propi->setvalmax = ivmax;
           propi->valmin = vmin;
           propi->valmax = vmax;
-          switch(ivmin){
-          case PERCENTILE_MIN:
-            propi->percentile_min = vmin;
-            break;
-          case GLOBAL_MIN:
-            propi->dlg_global_valmin = vmin;
-            break;
-          case SET_MIN:
-            propi->user_min = vmin;
-            break;
-          default:
-            ASSERT(FFALSE);
-            break;
+          if(is_old_bound==1){
+            switch(ivmin){
+              case PERCENTILE_MIN:
+                propi->percentile_min = vmin;
+                break;
+              case GLOBAL_MIN:
+                propi->dlg_global_valmin = vmin;
+                break;
+              case SET_MIN:
+                propi->user_min = vmin;
+                break;
+              default:
+                ASSERT(FFALSE);
+                break;
+            }
+            switch(ivmax){
+              case PERCENTILE_MAX:
+                propi->percentile_max = vmax;
+                break;
+              case GLOBAL_MAX:
+                propi->dlg_global_valmax = vmax;
+                break;
+              case SET_MAX:
+                propi->user_max = vmax;
+                break;
+              default:
+                ASSERT(FFALSE);
+                break;
+            }
           }
-          switch(ivmax){
-          case PERCENTILE_MAX:
-            propi->percentile_max = vmax;
-            break;
-          case GLOBAL_MAX:
-            propi->dlg_global_valmax = vmax;
-            break;
-          case SET_MAX:
-            propi->user_max = vmax;
-            break;
-          default:
-            ASSERT(FFALSE);
-            break;
+#ifdef pp_CPPBOUND_DIALOG
+          else{
+            switch(ivmin){
+              case BOUND_PERCENTILE_MIN:
+                propi->percentile_min = vmin;
+                break;
+              case BOUND_LOADED_MIN:
+              case BOUND_GLOBAL_MIN:
+                propi->dlg_global_valmin = vmin;
+                break;
+              case BOUND_SET_MIN:
+                propi->user_min = vmin;
+                break;
+              default:
+                ASSERT(FFALSE);
+                break;
+            }
+            switch(ivmax){
+              case BOUND_PERCENTILE_MAX:
+                propi->percentile_max = vmax;
+                break;
+              case BOUND_LOADED_MAX:
+              case BOUND_GLOBAL_MAX:
+                propi->dlg_global_valmax = vmax;
+                break;
+              case BOUND_SET_MAX:
+                propi->user_max = vmax;
+                break;
+              default:
+                ASSERT(FFALSE);
+                break;
+            }
           }
+#endif
 #ifdef pp_CPPBOUND_DIALOG
           SetMinMax(BOUND_PART, short_label, ivmin, vmin, ivmax, vmax);
           update_glui_bounds=1;
@@ -14750,6 +14802,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", nopart);
   fprintf(fileout, "PARTFAST\n");
   fprintf(fileout, " %i %i %i\n", partfast, part_multithread, npartthread_ids);
+  fprintf(fileout, "PERCENTILEMODE\n");
+  fprintf(fileout, " %i\n", percentile_mode);
   fprintf(fileout, "RESEARCHMODE\n");
   fprintf(fileout, " %i %i %f %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits);
   fprintf(fileout, "SHOWFEDAREA\n");
