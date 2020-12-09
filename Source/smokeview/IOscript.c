@@ -979,15 +979,16 @@ int CompileScript(char *scriptfile){
 #define KW_PBY           3
 #define KW_PBZ           4
 #define KW_PB3D          5
-#define KW_VECTOR        6
-#define KW_CELL_CENTERED 7
+#define KW_AGL_SLICE     6
+#define KW_VECTOR        7
+#define KW_CELL_CENTERED 8
       case SCRIPT_LOADSLCF:
         {
 #define MAX_SLCF_TOKENS 10
           char *ctokens[MAX_SLCF_TOKENS];
-          char *keywords[]={"QUANTITY",   "ID",         "PBX",       "PBY",       "PBZ",      "PB3D",        "VECTOR",       "CELL_CENTERED"};
-          int types[]={     TOKEN_STRING, TOKEN_STRING, TOKEN_FLOAT, TOKEN_FLOAT, TOKEN_FLOAT, TOKEN_LOGICAL, TOKEN_LOGICAL, TOKEN_LOGICAL};
-          int nkeywords=8, tokens[MAX_SLCF_TOKENS], itokens[MAX_SLCF_TOKENS], ntokens;
+          char *keywords[]={"QUANTITY",   "ID",         "PBX",       "PBY",       "PBZ",      "PB3D",        "AGL_SLICE",  "VECTOR",       "CELL_CENTERED"};
+          int types[]={     TOKEN_STRING, TOKEN_STRING, TOKEN_FLOAT, TOKEN_FLOAT, TOKEN_FLOAT, TOKEN_LOGICAL, TOKEN_FLOAT, TOKEN_LOGICAL,   TOKEN_LOGICAL};
+          int nkeywords=9, tokens[MAX_SLCF_TOKENS], itokens[MAX_SLCF_TOKENS], ntokens;
           float ftokens[MAX_SLCF_TOKENS];
           int i;
 
@@ -1034,6 +1035,12 @@ int CompileScript(char *scriptfile){
                 scripti->pbxyz_val = 0.0;
                 scripti->pbxyz_dir = 0;
                 strcpy(label, "PB3D");
+                scripti->c_pbxyz = GetPointer(label);
+                break;
+              case KW_AGL_SLICE:
+                scripti->pbxyz_val = ftokens[i];
+                scripti->pbxyz_dir = 3;
+                strcpy(label, "AGL_SLICE");
                 scripti->c_pbxyz = GetPointer(label);
                 break;
               case KW_VECTOR:
@@ -1795,11 +1802,17 @@ int SliceMatch(scriptdata *scripti, slicedata *slicei){
     if(max[0]!=meshi->ibar||max[1]!=meshi->jbar||max[2]!=meshi->kbar)return 0;
   }
   else{
-    if(slicei->idir!=scripti->pbxyz_dir)return 0;                                 // not a 3d slice file and directions don't match
-    if(ABS(slicei->position_orig-scripti->pbxyz_val)>slicei->delta_orig)return 0; // not a 3d slice and positions don't match
+    if(slicei->slice_filetype==SLICE_TERRAIN){
+      if(strcmp(scripti->c_pbxyz, "AGL_SLICE")!=0)return 0;
+      if(ABS(slicei->above_ground_level-scripti->pbxyz_val)>slicei->delta_orig)return 0;
+    }
+    else{
+      if(slicei->idir!=scripti->pbxyz_dir)return 0;                                 // not a 3d slice and directions don't match
+      if(ABS(slicei->position_orig-scripti->pbxyz_val)>slicei->delta_orig)return 0; // not a 3d slice and positions don't match
+      if(scripti->cell_centered==1&&slicei->slice_filetype!=SLICE_CELL_CENTER)return 0;
+      if(scripti->cell_centered==0&&slicei->slice_filetype!=SLICE_NODE_CENTER)return 0;
+    }
   }
-  if(scripti->cell_centered==1&&slicei->slice_filetype!=SLICE_CELL_CENTER)return 0;
-  if(scripti->cell_centered==0&&slicei->slice_filetype!=SLICE_NODE_CENTER)return 0;
   // passed all the test so draw this lice
   return 1;
 }
