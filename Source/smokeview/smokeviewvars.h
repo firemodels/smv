@@ -247,6 +247,11 @@ SVEXTERN int SVDECL(update_research_mode, 1);
 SVEXTERN int SVDECL(research_mode, 1);
 SVEXTERN int SVDECL(research_mode_override, -1);
 
+#ifdef pp_CPPBOUND_DIALOG
+SVEXTERN int SVDECL(update_percentile_mode, 0);
+SVEXTERN int SVDECL(percentile_mode, 0);
+#endif
+
 SVEXTERN float SVDECL(geomslice_pointsize, 5.0);
 SVEXTERN float SVDECL(geomboundary_pointsize, 5.0);
 SVEXTERN float SVDECL(geomslice_linewidth, 5.0);

@@ -39,6 +39,7 @@ GLUI *glui_bounds=NULL;
 #define BOUND_DOWN_PERCEN              122
 #define BOUND_LENGTH_PERCEN            123
 #define BOUND_HIST_LABELS              124
+#define BOUND_PERCENTILE_MODE          125
 
 #define PERCENTILE_DISABLED 0
 #define PERCENTILE_ENABLED  1
@@ -53,14 +54,15 @@ class bounds_dialog{
 
   // variables
   cpp_boundsdata bounds, *all_bounds, *all_bounds_save;
-  int   nall_bounds, research_mode_cpp, percentile_enabled;
+  int   nall_bounds, research_mode_cpp, percentile_mode_cpp, percentile_enabled;
   int percentile_draw;
   float percentile_min_cpp, percentile_max_cpp;
   int hist_left_percen_cpp, hist_down_percen_cpp, hist_length_percen_cpp, hist_show_labels_cpp;
 
   // widgets
   GLUI_EditText    *EDIT_valmin, *EDIT_valmax, *EDIT_chopmin, *EDIT_chopmax;
-  GLUI_Checkbox    *CHECKBOX_set_chopmin, *CHECKBOX_set_chopmax, *CHECKBOX_cache, *CHECKBOX_research_mode, *CHECKBOX_percentile_draw;
+  GLUI_Checkbox    *CHECKBOX_set_chopmin, *CHECKBOX_set_chopmax, *CHECKBOX_cache;
+  GLUI_Checkbox    *CHECKBOX_research_mode, *CHECKBOX_percentile_mode, *CHECKBOX_percentile_draw;
   GLUI_Checkbox    *CHECKBOX_hist_show_labels;
   GLUI_RadioGroup  *RADIO_set_valtype,  *RADIO_set_valmin, *RADIO_set_valmax;
   GLUI_RadioButton *RADIO_button_loaded_min, *RADIO_button_loaded_max;
@@ -89,6 +91,7 @@ class bounds_dialog{
   int  get_nvaltypes(void);
   int  get_valtype(void);
   int  in_research_mode(void);
+  int  in_percentile_mode(void);
 
   void setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds, int nbounds,
              int *cache_flag, int cache_enable, int percentile_enable,
@@ -103,6 +106,7 @@ class bounds_dialog{
   void set_max_all(int *set_valmax, float *valmax, int nvals);
   void set_percentile_minmax(float p_min, float p_max);
   void set_research_mode(int flag);
+  void set_percentile_mode(int flag);
   int  set_valtype(char *label);
   void set_valtype_index(int index);
   void SaveBounds(void);
@@ -112,6 +116,7 @@ class bounds_dialog{
 };
 
 int InResearchMode(void);
+int InPercentileMode(void);
 
 /* ------------------ set_percentile_minmax ------------------------ */
 
@@ -182,6 +187,20 @@ int bounds_dialog::in_research_mode(void){
   return 1;
 }
 
+  /* ------------------ in_percentile_mode ------------------------ */
+
+int bounds_dialog::in_percentile_mode(void){
+  int i;
+
+  for(i = 0; i<nall_bounds; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = all_bounds+i;
+    if(boundi->set_valmin!=BOUND_PERCENTILE_MIN&&boundi->set_valmax!=BOUND_LOADED_MAX)return 0;
+  }
+  return 1;
+}
+
   /* ------------------ set_research_mode ------------------------ */
 
 void bounds_dialog::set_research_mode(int flag){
@@ -199,10 +218,36 @@ void bounds_dialog::set_research_mode(int flag){
   }
   research_mode     = flag;
   research_mode_cpp = flag;
+  if(research_mode_cpp==1){
+    set_percentile_mode(0);
+  }
   CHECKBOX_research_mode->set_int_val(research_mode_cpp);
   CB(BOUND_CACHE_DATA);
 }
 
+  /* ------------------ set_percentile_mode ------------------------ */
+
+void bounds_dialog::set_percentile_mode(int flag){
+  int i;
+
+  if(flag==1){
+    for(i = 0; i<nall_bounds; i++){
+      cpp_boundsdata *boundi;
+
+      boundi = all_bounds+i;
+      boundi->set_valmin = BOUND_PERCENTILE_MIN;
+      boundi->set_valmax = BOUND_PERCENTILE_MAX;
+    }
+    CB(BOUND_VAL_TYPE);
+  }
+  percentile_mode = flag;
+  percentile_mode_cpp = flag;
+  if(percentile_mode_cpp==1){
+    set_research_mode(0);
+  }
+  CHECKBOX_percentile_mode->set_int_val(percentile_mode_cpp);
+  CB(BOUND_CACHE_DATA);
+}
 
   /* ------------------ set_plot_parms ------------------------ */
 
@@ -290,7 +335,8 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
 
   ROLLOUT_bound = glui_bounds->add_rollout_to_panel(PANEL_bound2, "Bound");
   PANEL_minmax = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
-  CHECKBOX_research_mode = glui_bounds->add_checkbox_to_panel(PANEL_minmax, _("global bounds for all data (research mode)"), &research_mode, BOUND_RESEARCH_MODE, Callback);
+  CHECKBOX_research_mode   = glui_bounds->add_checkbox_to_panel(PANEL_minmax, _("global bounds for all data (research mode)"), &research_mode, BOUND_RESEARCH_MODE, Callback);
+  CHECKBOX_percentile_mode = glui_bounds->add_checkbox_to_panel(PANEL_minmax, _("percentile bounds for all data)"), &percentile_mode, BOUND_PERCENTILE_MODE, Callback);
 
   CHECKBOX_cache = NULL;
   if(cache_flag!=NULL){
@@ -714,6 +760,9 @@ void bounds_dialog::CB(int var){
       if(InResearchMode()!=research_mode_cpp){
         SetResearchMode(1-research_mode_cpp);
       }
+      if(InPercentileMode()!=percentile_mode_cpp){
+        SetPercentileMode(1-percentile_mode_cpp);
+      }
       break;
     case BOUND_VALMAX:
       bounds.valmax[BOUND_SET_MAX] = bounds.glui_valmax;
@@ -722,6 +771,9 @@ void bounds_dialog::CB(int var){
       if(RADIO_set_valmax!=NULL)RADIO_set_valmax->set_int_val(BOUND_SET_MAX);
       if(InResearchMode()!=research_mode_cpp){
         SetResearchMode(1-research_mode_cpp);
+      }
+      if(InPercentileMode()!=percentile_mode_cpp){
+        SetPercentileMode(1-percentile_mode_cpp);
       }
       break;
 
@@ -733,6 +785,9 @@ void bounds_dialog::CB(int var){
       if(InResearchMode()!=research_mode_cpp){
         SetResearchMode(1-research_mode_cpp);
       }
+      if(InPercentileMode()!=percentile_mode_cpp){
+        SetPercentileMode(1-percentile_mode_cpp);
+      }
       break;
     case BOUND_SETVALMAX:
       bounds.glui_valmax = all_boundsi->valmax[bounds.set_valmax];
@@ -740,6 +795,9 @@ void bounds_dialog::CB(int var){
       memcpy(all_boundsi, &bounds, sizeof(cpp_boundsdata));
       if(InResearchMode()!=research_mode_cpp){
         SetResearchMode(1-research_mode_cpp);
+      }
+      if(InPercentileMode()!=percentile_mode_cpp){
+        SetPercentileMode(1-percentile_mode_cpp);
       }
       break;
 
@@ -844,6 +902,10 @@ void bounds_dialog::CB(int var){
       update_research_mode = 1;
       CB(BOUND_CACHE_DATA);
       break;
+    case BOUND_PERCENTILE_MODE:
+      update_percentile_mode = 1;
+      CB(BOUND_CACHE_DATA);
+      break;
     case BOUND_COMPUTE_PERCENTILES:
       break;
     case BOUND_PERCENTILE_MINVAL:
@@ -888,6 +950,25 @@ extern "C" void SetResearchMode(int flag){
   if(nsliceinfo>0)sliceboundsCPP.set_research_mode(flag);
   if(npartinfo>0)partboundsCPP.set_research_mode(flag);
   if(nplot3dinfo>0)plot3dboundsCPP.set_research_mode(flag);
+}
+
+/* ------------------ SetPercentileMode ------------------------ */
+
+extern "C" void SetPercentileMode(int flag){
+  if(npatchinfo>0)patchboundsCPP.set_percentile_mode(flag);
+  if(nsliceinfo>0)sliceboundsCPP.set_percentile_mode(flag);
+  if(npartinfo>0)partboundsCPP.set_percentile_mode(flag);
+  if(nplot3dinfo>0)plot3dboundsCPP.set_percentile_mode(flag);
+}
+
+  /* ------------------ InPercentilehMode ------------------------ */
+
+int InPercentileMode(void){
+  if(npatchinfo>0&&patchboundsCPP.in_percentile_mode()==0)return 0;
+  if(npartinfo>0&&partboundsCPP.in_percentile_mode()==0)return 0;
+  if(nplot3dinfo>0&&plot3dboundsCPP.in_percentile_mode()==0)return 0;
+  if(nsliceinfo>0&&sliceboundsCPP.in_percentile_mode()==0)return 0;
+  return 1;
 }
 
   /* ------------------ InResearchMode ------------------------ */
@@ -1439,6 +1520,11 @@ extern "C" void SliceBoundsCPP_CB(int var){
       if(npatchinfo>0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
       break;
+    case BOUND_PERCENTILE_MODE:
+      if(npartinfo>0)partboundsCPP.CB(BOUND_PERCENTILE_MODE);
+      if(npatchinfo>0)patchboundsCPP.CB(BOUND_PERCENTILE_MODE);
+      if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_PERCENTILE_MODE);
+      break;
     case BOUND_LEFT_PERCEN:
     case BOUND_DOWN_PERCEN:
     case BOUND_LENGTH_PERCEN:
@@ -1573,6 +1659,11 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
       if(npatchinfo>0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
       break;
+    case BOUND_PERCENTILE_MODE:
+      if(npartinfo>0)partboundsCPP.CB(BOUND_PERCENTILE_MODE);
+      if(npatchinfo>0)patchboundsCPP.CB(BOUND_PERCENTILE_MODE);
+      if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_PERCENTILE_MODE);
+      break;
     case BOUND_LEFT_PERCEN:
     case BOUND_DOWN_PERCEN:
     case BOUND_LENGTH_PERCEN:
@@ -1694,6 +1785,11 @@ extern "C" void PartBoundsCPP_CB(int var){
       if(npatchinfo>0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
+      break;
+    case BOUND_PERCENTILE_MODE:
+      if(npatchinfo>0)patchboundsCPP.CB(BOUND_PERCENTILE_MODE);
+      if(npatchinfo>0)patchboundsCPP.CB(BOUND_PERCENTILE_MODE);
+      if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_PERCENTILE_MODE);
       break;
     case BOUND_LEFT_PERCEN:
     case BOUND_DOWN_PERCEN:
@@ -1846,6 +1942,11 @@ extern "C" void PatchBoundsCPP_CB(int var){
       if(npartinfo>0)partboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
+      break;
+    case BOUND_PERCENTILE_MODE:
+      if(npartinfo>0)partboundsCPP.CB(BOUND_PERCENTILE_MODE);
+      if(npatchinfo>0)patchboundsCPP.CB(BOUND_PERCENTILE_MODE);
+      if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_PERCENTILE_MODE);
       break;
     case BOUND_LEFT_PERCEN:
     case BOUND_DOWN_PERCEN:

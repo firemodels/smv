@@ -2307,6 +2307,12 @@ void UpdateDisplay(void){
     update_research_mode = 0;
     UpdateResearchMode();
   }
+#ifdef pp_CPPBOUND_DIALOG
+  if(update_percentile_mode==1){
+    update_percentile_mode = 0;
+    SetPercentileMode(percentile_mode);
+  }
+#endif
   if(update_visColorbars==1){
     update_visColorbars = 0;
     visColorbarVertical = visColorbarVertical_val;
