@@ -285,31 +285,6 @@ int ReadSMV(char *smvfile){
     if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
     CheckMemory;
     if(strncmp(buffer," ",1)==0)continue;
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ ENDF ++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    if(Match(buffer,"ENDF") == 1){
-      GLOBendf=1;
-      if(FGETS(buffer,BUFFERSIZE,streamsmv)==NULL)break;
-      TrimBack(buffer);
-      strcpy(GLOBendianfilebase,buffer);
-      FREEMEMORY(GLOBendianfile);
-      if(GLOBsourcedir==NULL){
-        NewMemory((void **)&GLOBendianfile,strlen(buffer)+1);
-        strcpy(GLOBendianfile,buffer);
-      }
-      else{
-        int lendir=0;
-
-        if(GLOBsourcedir!=NULL)lendir=strlen(GLOBsourcedir);
-        NewMemory((void **)&GLOBendianfile,strlen(buffer)+lendir+1);
-        strcpy(GLOBendianfile,GLOBsourcedir);
-        strcat(GLOBendianfile,buffer);
-      }
-      continue;
-    }
 
     if(Match(buffer,"GRID") == 1){
       meshdata *meshi;
