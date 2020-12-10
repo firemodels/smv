@@ -997,7 +997,7 @@ int CompileScript(char *scriptfile){
 
           ntokens = ParseTokens(buffer, keywords, types, nkeywords, tokens, itokens, ftokens, &(ctokens[0]), MAX_SLCF_TOKENS);
           if(ntokens==0){
-            printf("***error: problems were found parsing LOADSLCF keyword\n");
+            printf("***error: problems were found parsing LOADSLCF\n");
             printf(" %s\n",buffer2);
             fatal_error = 1;
             break;
