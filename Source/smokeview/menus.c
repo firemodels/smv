@@ -18,13 +18,6 @@ int       part_file_count;
 FILE_SIZE part_load_size;
 float     part_load_time;
 
-#ifdef pp_SLICETHREAD
-int       slice_file_count;
-FILE_SIZE slice_load_size;
-float     slice_load_time;
-#endif
-
-
 #ifdef WIN32
 #include <direct.h>
 #endif
@@ -3670,35 +3663,6 @@ void UnloadAllPartFiles(void){
   }
 }
 
-#ifdef pp_SLICETHREAD
-/* ------------------ LoadAllSliceFiles ------------------------ */
-
-void LoadAllSliceFiles(int slicenum){
-  int i;
-
-  for(i = 0; i<nsliceinfo; i++){
-    slicedata *slicei;
-    int errorcode;
-    FILE_SIZE file_size;
-
-    slicei = sliceinfo+i;
-    if(slicei->skipload==1)continue;
-    if(slicenum>=0&&i!=slicenum)continue;  //  load only slice file with file index slicenum
-    LOCK_SLICE_LOAD;                       //  or load all slice files
-    if(slicei->loadstatus==FILE_UNLOADED){
-      slicei->loadstatus = FILE_LOADING;
-      UNLOCK_SLICE_LOAD;
-      file_size = ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, LOAD, SET_SLICECOLOR, &errorcode);
-      LOCK_SLICE_LOAD;
-      slicei->loadstatus = FILE_LOADED;
-      slice_load_size += file_size;
-      slice_file_count++;
-    }
-    UNLOCK_SLICE_LOAD;
-  }
-}
-#endif
-
 /* ------------------ LoadAllPartFiles ------------------------ */
 
 void LoadAllPartFiles(int partnum){
@@ -4899,81 +4863,6 @@ FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
   return file_size;
 }
 
-#ifdef pp_SLICETHREAD
-/* ------------------ SetupSlice ------------------------ */
-
-int SetupSlice(int value){
-  int i, return_val;
-
-  return_val = 0;
-  for(i = 0; i<nsliceinfo; i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo+i;
-    slicei->finalize = 0;
-    slicei->loadstatus = FILE_UNLOADED;
-    slicei->boundstatus = 0;
-    slicei->skipload = 1;
-  }
-
-  if(value>=0){
-    multislicedata *mslicei;
-
-    mslicei = multisliceinfo + value;
-    for(i = 0; i<mslicei->nslices; i++){
-      slicedata *slicei;
-
-      slicei = sliceinfo+mslicei->islices[i];
-      if(slicei->skipdup==0)slicei->skipload = 0;
-    }
-    for(i = mslicei->nslices-1; i >=0; i--){
-      slicedata *slicei;
-
-      slicei = sliceinfo + mslicei->islices[i];
-      if(slicei->skipdup== 0 && slicei->loaded == 0){
-        return_val = mslicei->islices[i];
-        slicei->finalize = 1;
-        break;
-      }
-    }
-  }
-  else if(value<=-1000){
-    int submenutype, dir;
-    char *submenulabel;
-    slicedata *slicei;
-
-    value = -(1000 + value);
-    submenutype=value/4;
-    dir=value%4;
-    submenutype=msubslice_menuindex[submenutype];
-    slicei = sliceinfo + submenutype;
-    submenulabel = slicei->label.longlabel;
-    for(i = 0; i<nsliceinfo; i++){
-      slicedata *slicei;
-      char *longlabel;
-
-      slicei = sliceinfo + i;
-      if(slicei->skipdup==1)continue;
-      longlabel = slicei->label.longlabel;
-      if(strcmp(longlabel, submenulabel) != 0)continue;
-      if(dir != 0 && dir != slicei->idir)continue;
-      if(dir !=0 && slicei->volslice == 1)continue;
-      slicei->skipload = 0;
-    }
-    for(i = nsliceinfo-1; i>=0; i--){
-      slicedata *slicei;
-
-      slicei = sliceinfo + i;
-      if(slicei->skipdup==0&&slicei->skipload==0){
-        slicei->finalize = 1;
-        return_val = i;
-        break;
-      }
-    }
-  }
-  return return_val;
-}
-#endif
 /* ------------------ LoadMultiSliceMenu ------------------------ */
 
 void LoadMultiSliceMenu(int value){
@@ -4999,9 +4888,6 @@ void LoadMultiSliceMenu(int value){
       int last_slice;
       FILE_SIZE total_size=0;
 
-#ifdef pp_SLICETHREAD
-      last_slice = SetupSlice(value);
-#else
       last_slice = mslicei->nslices - 1;
       for(i = mslicei->nslices-1; i >=0; i--){
         slicedata *slicei;
@@ -5012,7 +4898,6 @@ void LoadMultiSliceMenu(int value){
           break;
         }
       }
-#endif
       for(i = 0; i < mslicei->nslices; i++){
         slicedata *slicei;
 
@@ -5052,9 +4937,6 @@ void LoadMultiSliceMenu(int value){
     submenutype=msubslice_menuindex[submenutype];
     slicei = sliceinfo + submenutype;
     submenulabel = slicei->label.longlabel;
-#ifdef pp_SLICETHREAD
-    last_slice = SetupSlice(value);
-#else
     last_slice = nsliceinfo - 1;
     for(i = nsliceinfo-1; i>=0; i--){
       char *longlabel;
@@ -5068,24 +4950,17 @@ void LoadMultiSliceMenu(int value){
       last_slice = i;
       break;
     }
-#endif
     START_TIMER(load_time);
     for(i = 0; i<nsliceinfo; i++){
       int set_slicecolor;
-#ifndef pp_SLICETHREAD
       char *longlabel;
-#endif
 
       slicei = sliceinfo + i;
-#ifdef pp_SLICETHREAD
-      if(slicei->skipload==1)continue;
-#else
       if(slicei->skipdup== 1)continue;
       longlabel = slicei->label.longlabel;
       if(strcmp(longlabel,submenulabel)!=0)continue;
       if(dir!=0&&dir!=slicei->idir)continue;
       if(dir!=0&&slicei->volslice==1)continue;
-#endif
       set_slicecolor = DEFER_SLICECOLOR;
       if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
       if(slicei->slice_filetype == SLICE_GEOM){

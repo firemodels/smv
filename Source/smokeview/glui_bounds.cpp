@@ -2427,9 +2427,6 @@ GLUI_Rollout *ROLLOUT_files = NULL;
 GLUI_Panel *PANEL_vector1=NULL, *PANEL_vector2=NULL;
 
 GLUI_Panel *PANEL_partread = NULL;
-#ifdef pp_SLICETHREAD
-GLUI_Panel *PANEL_sliceread = NULL;
-#endif
 
 #ifdef pp_OLDBOUND_DIALOG
 GLUI_Panel *PANEL_slice_minmax = NULL;
@@ -2486,9 +2483,6 @@ GLUI_Panel *PANEL_split3 = NULL;
 GLUI_Panel *PANEL_extreme = NULL, *PANEL_cb8 = NULL, *PANEL_cb7 = NULL;
 GLUI_Panel *PANEL_extreme_min = NULL, *PANEL_extreme_max = NULL;
 
-#ifdef pp_SLICETHREAD
-GLUI_Spinner *SPINNER_nslicethread_ids = NULL;
-#endif
 GLUI_Spinner *SPINNER_npartthread_ids = NULL;
 GLUI_Spinner *SPINNER_iso_outline_ioffset = NULL;
 GLUI_Spinner *SPINNER_histogram_width_factor = NULL;
@@ -2557,9 +2551,6 @@ GLUI_EditText *EDIT_plot3d_chopmin = NULL, *EDIT_plot3d_chopmax = NULL;
 GLUI_Checkbox* CHECKBOX_visColorbarHorizontal2 = NULL;
 GLUI_Checkbox* CHECKBOX_visColorbarVertical2 = NULL;
 GLUI_Checkbox *CHECKBOX_show_boundary_outline=NULL;
-#ifdef pp_SLICETHREAD
-GLUI_Checkbox *CHECKBOX_slice_multithread = NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_part_multithread = NULL;
 GLUI_Checkbox *CHECKBOX_partfast = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_shaded = NULL;
@@ -5196,18 +5187,6 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 #endif
 
-
-#ifdef pp_SLICETHREAD
-    PANEL_sliceread = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "Slice file loading", true);
-    CHECKBOX_slice_multithread = glui_bounds->add_checkbox_to_panel(PANEL_sliceread, _("Parallel loading"), &slice_multithread);
-    SPINNER_nslicethread_ids = glui_bounds->add_spinner_to_panel(PANEL_sliceread, _("Files loaded at once"), GLUI_SPINNER_INT, &nslicethread_ids);
-    if(nsliceinfo>1){
-      SPINNER_nslicethread_ids->set_int_limits(1, MIN(nsliceinfo, MAX_SLICE_THREADS));
-    }
-    else{
-      SPINNER_nslicethread_ids->set_int_limits(1, 1);
-    }
-#endif
 
 #ifdef pp_SMOKETEST
     glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("opacity adjustment"), &slice_opacity_adjustment);

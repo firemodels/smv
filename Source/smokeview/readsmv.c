@@ -12730,13 +12730,6 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &nopart);
       continue;
     }
-#ifdef pp_SLICETHREAD
-    if(Match(buffer, "SLICEFAST")==1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i", &slice_multithread, &nslicethread_ids);
-      continue;
-    }
-#endif
     if(Match(buffer, "PARTFAST")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i %i", &partfast, &part_multithread, &npartthread_ids);

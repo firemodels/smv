@@ -5029,13 +5029,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   return return_filesize;
 }
 
-#ifdef pp_SLICETHREAD
-/* ------------------ FinalizeSliceLoad ------------------------ */
-
-void FinalizeSliceLoad(slicedata *slicei){
-}
-#endif
-
 /* ------------------ UpdateSlice3DTexture ------------------------ */
 
 void UpdateSlice3DTexture(meshdata *meshi, slicedata *slicei, float *valdata){
