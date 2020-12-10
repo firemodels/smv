@@ -1351,7 +1351,6 @@ SVEXTERN int blockages_dirty;
 SVEXTERN int usetextures;
 SVEXTERN int canrestorelastview;
 SVEXTERN int ntargets;
-SVEXTERN int endian_fds, endian_smv;
 
 SVEXTERN int mainwindow_id;
 SVEXTERN int rendertourcount;

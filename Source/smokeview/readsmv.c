@@ -2295,27 +2295,6 @@ void UpdateBoundInfo(void){
   GetGlobalPatchBounds();
 }
 
-/* ------------------ UpdateEndianInfo ------------------------ */
-
-void UpdateEndianInfo(void){
-  if(endian_fds!=endian_smv){
-    fprintf(stderr,"*** Warning: Smokeview is running on a ");
-    if(endian_smv==ENDIAN_LITTLE){
-      fprintf(stderr," little endian computer\n");
-    }
-    else{
-      fprintf(stderr," big endian computer\n");
-    }
-    fprintf(stderr,"    but the data being visualized was generated on a ");
-    if(endian_fds==ENDIAN_LITTLE){
-      fprintf(stderr," little endian computer\n");
-    }
-    else{
-      fprintf(stderr," big endian computer\n");
-    }
-  }
-}
-
 /*
 new OBST format:
 i1 i2 j1 j2 k1 k2 colorindex blocktype       : if blocktype!=1&&colorindex!=-3
@@ -5710,8 +5689,6 @@ int ReadSMV(bufferstreamdata *stream){
 
   nvents=0;
   setPDIM=0;
-  endian_smv = GetEndian();
-  endian_fds = endian_smv;
 
   FREEMEMORY(database_filename);
 
@@ -9556,39 +9533,6 @@ typedef struct {
     }
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ ENDF ++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    /* ENDF supercedes ENDIAN */
-    if(Match(buffer,"ENDF") == 1){
-      FILE *ENDIANfile;
-      size_t len;
-      char *bufferptr;
-
-      if(FGETS(buffer,255,stream)==NULL){
-        BREAK;
-      }
-      bufferptr=TrimFrontBack(buffer);
-      len=strlen(bufferptr);
-      NewMemory((void **)&endian_filename,(unsigned int)(len+1));
-      strcpy(endian_filename,bufferptr);
-      ENDIANfile = fopen(endian_filename,"rb");
-      if(ENDIANfile!=NULL){
-        endian_smv = GetEndian();
-        FSEEK(ENDIANfile,4,SEEK_SET);
-        fread(&endian_fds,4,1,ENDIANfile);
-        fclose(ENDIANfile);
-        if(endian_fds==1){// fds and smokeview were run on same type of computer
-          endian_fds = endian_smv;
-        }
-        else{
-          endian_fds = 1-endian_smv;
-        }
-      }
-      continue;
-    }
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ CHID +++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
@@ -10112,8 +10056,6 @@ typedef struct {
   xcenGLOBAL=xbar/2.0;  ycenGLOBAL=ybar/2.0; zcenGLOBAL=zbar/2.0;
   xcenCUSTOM=xbar/2.0;  ycenCUSTOM=ybar/2.0; zcenCUSTOM=zbar/2.0;
   glui_rotation_index = nmeshes;
-
-  UpdateEndianInfo();
 
   UpdateBoundInfo();
 
