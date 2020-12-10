@@ -1,7 +1,7 @@
 #!/bin/bash
 # this script assumes it is being run in Verification
 is_benchmark="no"
-while getopts 'Ad:n:po:t' OPTION
+while getopts 'Ad:n:p:o:t' OPTION
 do
 case $OPTION  in
   A)
@@ -14,7 +14,7 @@ case $OPTION  in
    dummy="$OPTARG"
    ;;
   p)
-   dummy=1
+   dummy="$OPTARG"
    ;;
   o)
    dummy="$OPTARG"
