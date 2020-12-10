@@ -53,7 +53,7 @@ fi
 
    # grab time from 1st row after header, last column
    TOTAL_CPU_TIME=0.0
-   CPU_TIME=`head -2  "$cpufile" | tail -1 | awk '{if(NR>1)print}' | awk -F',' '{print $(NF)}'`
+   CPU_TIME=`tail -1 "$cpufile" | awk -F',' '{print $17}'`
    for j in $CPU_TIME
    do
       jafter=`echo ${j} | sed -e 's/[eE]+*/\\*10\\^/'`
