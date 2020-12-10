@@ -3577,7 +3577,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
   value[2] = 255;
   value[3] = 255;
 
-  if(nterraininfo>0){
+  if(nterraininfo>0&&meshi->terrain!=NULL){
     znode_offset = meshi->terrain->znode_offset;
   }
 
