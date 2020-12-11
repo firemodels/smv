@@ -399,7 +399,7 @@ endif
 intel_osx_64 : CC        = icc
 intel_osx_64 : CPP       = icpc
 intel_osx_64 : FC        = ifort
-intel_osx_64 : exe       = smokeview_osx_$(SMV_TESTSTRING)64
+intel_osx_64 : exe       = smokeview_osx_$(SMV_TESTSTRING)$(NOQUARTZ)64
 
 intel_osx_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 	icpc -o $(bin)/$(exe) $(obj) $(LFLAGS) $(INTEL_LIBS_OSX) $(LIBLUA)
@@ -421,7 +421,7 @@ endif
 intel_osx_64_db : CC        = icc
 intel_osx_64_db : CPP       = icpc
 intel_osx_64_db : FC        = ifort
-intel_osx_64_db : exe       = smokeview_osx_$(SMV_TESTSTRING)64_db
+intel_osx_64_db : exe       = smokeview_osx_$(SMV_TESTSTRING)$(NOQUARTZ)64_db
 
 intel_osx_64_db : $(obj)
 	icpc -o $(bin)/$(exe) $(obj) $(LFLAGS) $(INTEL_LIBS_OSX)

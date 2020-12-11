@@ -56,6 +56,7 @@ export TEST
 export SMV_MPI
 if [ "$NOQUARTZ" != "" ]; then
   TESTFLAG="$TESTFLAG -D pp_NOQUARTZ"
+   SMV_MAKE_OPTS="$SMV_MAKE_OPTS NOQUARTZ=\"noq_\" "
 fi
 if [ "$TESTFLAG" != "" ]; then
    SMV_MAKE_OPTS="$SMV_MAKE_OPTS SMV_TESTFLAG=\"$TESTFLAG\" "
