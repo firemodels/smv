@@ -381,12 +381,12 @@ intel_osx_64 : CFLAGS    = -O0 -m64 -traceback -static-intel -D pp_OSX $(SMV_TES
 intel_osx_64 : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)
 intel_osx_64 : CFLAGS    += -D pp_LUA
-intel_osx_64 : SMVLUACORE_FILES += $(LIB_DIR)/intel_osx_64/lpeg.so
-intel_osx_64 : LIBLUA    += $(LIB_DIR)/intel_osx_64/liblua.a -ldl
+intel_osx_64 : SMVLUACORE_FILES += $(LIB_DIR)/intel_osx_$(NOQUARTZ)64/lpeg.so
+intel_osx_64 : LIBLUA    += $(LIB_DIR)/intel_osx_$(NOQUARTZ)64/liblua.a -ldl
 endif
 # remove following from LFLAGS line
 # -L $(GLIBDIR) -lgfortran
-intel_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_64 $(SMV_LIBS_OSX) -traceback -static-intel  -mmacosx-version-min=10.9
+intel_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_$(NOQUARTZ)64 $(SMV_LIBS_OSX) -traceback -static-intel  -mmacosx-version-min=10.9
 ifeq ($(GLUT),freeglut)
 intel_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 else
@@ -408,7 +408,7 @@ intel_osx_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 
 intel_osx_64_db : FFLAGS    = -O0 -g -m64 -traceback -static-intel -fpp     -D pp_OSX  -mmacosx-version-min=10.9 -stand:f08
 intel_osx_64_db : CFLAGS    = -O0 -g -m64 -traceback -static-intel -D _DEBUG -D pp_OSX $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO) -mmacosx-version-min=10.9
-intel_osx_64_db : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_64 $(SMV_LIBS_OSX) -traceback -static-intel -mmacosx-version-min=10.9
+intel_osx_64_db : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_$(NOQUARTZ)64 $(SMV_LIBS_OSX) -traceback -static-intel -mmacosx-version-min=10.9
 ifeq ($(GLUT),freeglut)
 intel_osx_64_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 else
