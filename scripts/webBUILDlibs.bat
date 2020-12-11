@@ -66,7 +66,6 @@ if "%platform%" == "osx" (
 
 :: osx
 
-pause
 if "%platform%" == "osxnoquartz" (
   title building libraries for osx - no Quartz
   start /wait "cleaning osx libraries" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_noq_64/make_LIBS.sh -t clean
