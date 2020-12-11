@@ -1763,9 +1763,9 @@ extern "C" void PartBoundsCPP_CB(int var){
       break;
     case BOUND_RELOAD_DATA:
       if(npartinfo>0){
-        int doit = 0, i;
-
 #ifdef pp_RESEARCH_DEBUG
+        int doit=0, i;
+
         for(i = 0; i<npartinfo; i++){
           partdata *parti;
 
