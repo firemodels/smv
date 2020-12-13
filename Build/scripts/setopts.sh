@@ -23,6 +23,8 @@ case $OPTION in
   ;;
   h)
   echo "options:"
+  echo "-i - an incremental build"
+  echo "-L - build all libraries"
   echo "-p - build a profiling version of smokeview"
   echo "-t - build a test version of smokeview"
   exit
