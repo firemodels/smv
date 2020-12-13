@@ -14,7 +14,8 @@ else
 fi
 QUARTZSMV=framework
 inc=
-while getopts 'fhimpqrt' OPTION
+BUILD_LIBS=
+while getopts 'fhiLmpqrt' OPTION
 do
 case $OPTION in
   f)
@@ -28,6 +29,9 @@ case $OPTION in
   ;;
   i)
    inc=1
+  ;;
+  L)
+   BUILD_LIBS=1
   ;;
   m)
    SMV_MPI=1

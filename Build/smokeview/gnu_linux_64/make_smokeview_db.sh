@@ -1,8 +1,18 @@
 #!/bin/bash
 source ../../scripts/setopts.sh $*
 
+# Exit immediately if any of the build steps fail
+set -e
+
+curdir=`pwd`
 LIBDIR=../../LIBS/gnu_linux_64/
-source ../../scripts/test_libs.sh
+if [ "$BUILD_LIBS" == "1" ]; then
+  cd $LIBDIR
+  ./make_LIBS.sh
+  cd $curdir
+else
+  eval make -C ${LIBDIR} ${SMV_MAKE_OPTS} ${LUA_SCRIPTING} -f make_LIBS.make all
+fi
 
 if [ "$inc" == "" ]; then
   make -f ../Makefile clean

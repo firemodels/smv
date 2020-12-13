@@ -20,12 +20,16 @@ do
     build_libs=1
   fi
 done
+if [ "$BUILD_LIBS" == "1" ]; then
+  build_libs=1
+fi
 if [ "$build_libs" == "1" ]; then
-  cd $LIBDIR
   echo building $LIBS
   eval ./make_LIBS.sh $OPTS
 fi
 cd $CURDIR
 
-rm *.o *.mod smokeview_osx_64*
+if [ "$inc" == "" ]; then
+  rm *.o *.mod smokeview_osx_64*
+fi
 eval make QUARTZ="$QUARTZSMV" GLUT="$GLUT" ${SMV_MAKE_OPTS} -f ../Makefile gnu_osx_64
