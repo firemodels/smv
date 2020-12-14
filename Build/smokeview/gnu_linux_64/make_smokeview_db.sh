@@ -14,7 +14,7 @@ else
   eval make -C ${LIBDIR} ${SMV_MAKE_OPTS} ${LUA_SCRIPTING} -f make_LIBS.make all
 fi
 
-if [ "$inc" == "" ]; then
+if [ "$BUILD_ALL" == "1" ]; then
   make -f ../Makefile clean
 fi
 eval make -j 4 ${SMV_MAKE_OPTS} -f ../Makefile gnu_linux_64_db
