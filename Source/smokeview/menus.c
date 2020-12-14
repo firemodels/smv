@@ -7495,7 +7495,7 @@ updatemenu=0;
 
   CREATEMENU(geometrymenu,GeometryMenu);
   if(ntotal_blockages>0)GLUTADDSUBMENU(_("Obstacles"),blockagemenu);
-  if((auto_terrain==0&ngeominfo>0)||(auto_terrain==1&&ngeominfo>1)){
+  if((auto_terrain==0&&ngeominfo>0)||(auto_terrain==1&&ngeominfo>1)){
     GLUTADDSUBMENU(_("Immersed"), immersedmenu);
   }
   if(GetNumActiveDevices()>0||ncvents>0){
