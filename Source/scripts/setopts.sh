@@ -8,7 +8,7 @@ FOREC_g=
 FOREC_i=
 target=all
 QUARTZ="-I /opt/X11/include -Wno-unknown-pragmas"
-while getopts 'fgGhiIlqQt:' OPTION
+while getopts 'fgGhiILlqQt:' OPTION
 do
 case $OPTION in
   f)
@@ -48,6 +48,9 @@ case $OPTION in
   ;;
   l)
    LUA=lua
+  ;;
+  L)
+   dummy=1
   ;;
   q)
    QUARTZ="-I /opt/X11/include -Wno-unknown-pragmas"
