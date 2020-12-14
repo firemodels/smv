@@ -15,7 +15,7 @@ fi
 QUARTZSMV=framework
 inc=
 BUILD_LIBS=
-BUILD_ALL=
+BUILD_ALL=1
 while getopts 'AfhiLmpqrt' OPTION
 do
 case $OPTION in
@@ -36,6 +36,7 @@ case $OPTION in
   ;;
   i)
    inc=1
+   BUILD_ALL=
   ;;
   L)
    BUILD_LIBS=1
