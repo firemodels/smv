@@ -29,7 +29,7 @@ if [ "$build_libs" == "1" ]; then
 fi
 cd $CURDIR
 
-if [ "$inc" == "" ]; then
+if [ "$BUILD_ALL" == "1" ]; then
   rm *.o *.mod smokeview_osx_64*
 fi
 eval make QUARTZ="$QUARTZSMV" GLUT="$GLUT" ${SMV_MAKE_OPTS} -f ../Makefile gnu_osx_64_db

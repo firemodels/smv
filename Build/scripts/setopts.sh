@@ -15,14 +15,19 @@ fi
 QUARTZSMV=framework
 inc=
 BUILD_LIBS=
-while getopts 'fhiLmpqrt' OPTION
+BUILD_ALL=
+while getopts 'AfhiLmpqrt' OPTION
 do
 case $OPTION in
+  A)
+   BUILD_ALL=1
+  ;;
   f)
    GLUT=freeglut
   ;;
   h)
   echo "options:"
+  echo "-a - full build"
   echo "-i - an incremental build"
   echo "-L - build all libraries"
   echo "-p - build a profiling version of smokeview"

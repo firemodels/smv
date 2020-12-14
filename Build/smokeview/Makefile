@@ -66,12 +66,19 @@ obj = main.o menus.o IOscript.o IOshooter.o glui_objects.o glui_shooter.o glui_w
       stdio_m.o stdio_buffer.o\
       fdsmodules.o gsmv.o getdata.o
 
+incs = contourdefs.h glui_bounds.h glui_motion.h glui_smoke.h glui_tour.h glui_wui.h infoheader.h \
+       IOobjects.h IOscript.h IOvolsmoke.h lua_api.h options.h smokefortheaders.h smokeheaders.h smokeviewdefs.h \
+       smokeviewvars.h structures.h threader.h viewports.h ASSERT.h csphere.h dirent_win.h histogram.h isodefs.h \
+       MALLOCC.h pragmas.h stdio_buffer.h string_util.h compress.h datadefs.h file_util.h interp.h lint.h options_common.h \
+       smv_endian.h stdio_m.h translate.h
+
 ifeq ($(ICON),icon)
 obj += resource.o
 endif
 
 ifeq ($(LUA_SCRIPTING),true)
 obj += c_api.o lua_api.o
+incs += c_api.h
 endif
 
 objwin = $(obj:.o=.obj)
@@ -489,6 +496,12 @@ string_util.obj:	.FORCE
 
 gsmv.o : fdsmodules.o
 getdata.o : gsmv.o fdsmodules.o
+
+# *** do a full rebuild if any header file has changed
+#
+$(obj) : $(incs)
+
+$(objwin) : $(incs)
 
 gsmv.obj : fdsmodules.obj
 getdata.obj : gsmv.obj fdsmodules.obj
