@@ -40,9 +40,9 @@ INTEL_COMPINFO=-Dpp_COMPVER=\"$(INTEL_COMPVERSION)\"
 GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 .rc.obj:
-	windres $^ -o $@
+	windres $< -o $@
 %.obj : %.rc
-	windres $^ -o $@
+	windres $< -o $@
 
 #----------------------------------------------------------------------------
 # Should not need to edit lines below except to add or 'debug' target entries
