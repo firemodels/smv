@@ -51,6 +51,6 @@ intel_win_64: CFLAGS= $(NOCLOSE)
 intel_win_64 : $(GLUI_OBJSWIN)
 	lib $(GLUI_OBJSWIN) -OUT:libglui.lib 
 
-gnu_win_64: CFLAGS=$(NOCLOSE) -fpermissive -Wno-write-strings -Wno-int-to-pointer-cast 
+gnu_win_64: CFLAGS=$(NOCLOSE) $(INCS) -fpermissive -Wno-write-strings -Wno-int-to-pointer-cast 
 gnu_win_64: $(GLUI_OBJS)
 	ar rcs libglui.a $(GLUI_OBJS)
