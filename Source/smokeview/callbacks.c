@@ -1577,6 +1577,10 @@ int GetPlot3DTimeList(int inc){
   float time;
   int have_plot3d = 0, i;
   int return_val=-1;
+  float delta_time;
+
+  if(nplot3dtimelist<=1)return 0;
+  delta_time = (plot3dtimelist[1]-plot3dtimelist[0])/2.0;
 
   for(i = 0; i<nplot3dinfo; i++){
     plot3ddata *plot3di;
@@ -1591,7 +1595,7 @@ int GetPlot3DTimeList(int inc){
   if(have_plot3d==0)return 0;
 
   for(i = 0; i<nplot3dtimelist; i++){
-    if(ABS(time-plot3dtimelist[i])<0.5){
+    if(ABS(time-plot3dtimelist[i])<delta_time){
       return_val = i+inc;
       break;
     }

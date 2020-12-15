@@ -5035,6 +5035,7 @@ void LoadMultiSliceMenu(int value){
 
 void Plot3DListMenu(int value){
   int i;
+  float delta_time=0.5;
 
   value = CLAMP(value, 0, nplot3dtimelist-1);
   iplot3dtimelist = value;
@@ -5043,14 +5044,16 @@ void Plot3DListMenu(int value){
     fprintf(scriptoutstream,"LOADPLOT3D\n");
     fprintf(scriptoutstream," %f\n",plot3dtimelist[value]);
   }
+  if(nplot3dtimelist>1)delta_time = (plot3dtimelist[1]-plot3dtimelist[0])/2.0;
 #ifdef pp_CPPBOUND_DIALOG
   int *list=NULL, nlist = 0;
+
   NewMemory((void **)&list, nplot3dinfo*sizeof(int));
   for(i = 0; i<nplot3dinfo; i++){
     plot3ddata *plot3di;
 
     plot3di = plot3dinfo+i;
-    if(ABS(plot3di->time-plot3dtimelist[value])<0.5){
+    if(ABS(plot3di->time-plot3dtimelist[value])<delta_time){
       list[nlist++] = i;
     }
   }
@@ -5074,7 +5077,7 @@ void Plot3DListMenu(int value){
     plot3ddata *plot3di;
 
     plot3di = plot3dinfo + list[i];
-    ReadPlot3D(plot3di->file, i, LOAD, &errorcode);
+    ReadPlot3D(plot3di->file, list[i], LOAD, &errorcode);
   }
   printf("\n");
   FREEMEMORY(list);
@@ -5084,7 +5087,7 @@ void Plot3DListMenu(int value){
     plot3ddata *plot3di;
 
     plot3di = plot3dinfo + i;
-    if(ABS(plot3di->time-plot3dtimelist[value])<0.5){
+    if(ABS(plot3di->time-plot3dtimelist[value])<delta_time){
       LoadPlot3dMenu(i);
     }
   }
@@ -5122,6 +5125,11 @@ void LoadPlot3dMenu(int value){
       SetLoadedPlot3DBounds(&value, 1);
 #endif
       plot3dinfo[value].finalize = 1;
+      for(i = 0; i<nplot3dinfo; i++){
+        if(plot3dinfo[i].loaded==1){
+          ReadPlot3D("", i, UNLOAD, &errorcode);
+        }
+      }
       ReadPlot3D(plot3dfile,value,LOAD,&errorcode);
     }
   }
@@ -5135,6 +5143,11 @@ void LoadPlot3dMenu(int value){
   }
   else{
     value+=100000;
+    for(i = 0; i<nplot3dinfo; i++){
+      if(plot3dinfo[i].loaded==1){
+        ReadPlot3D("", i, UNLOAD, &errorcode);
+      }
+    }
     loadplot3dall=1;
     Plot3DListMenu(value);
     loadplot3dall=0;

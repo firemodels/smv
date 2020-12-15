@@ -80,6 +80,49 @@ int Plot3dCompare( const void *arg1, const void *arg2 ){
   return 0;
 }
 
+/* ------------------ AllocatePlot3DColorLabels  ------------------------ */
+
+int AllocatePlot3DColorLabels(int ifile){
+  int nn, error;
+
+  for(nn = 0; nn<numplot3dvars; nn++){
+    int n;
+
+    for(n = 0; n<MAXRGB; n++){
+      (*(colorlabelp3+nn))[n] = NULL;
+      (*(colorlabeliso+nn))[n] = NULL;
+    }
+
+    if(p3levels[nn]==NULL){
+      if(NewMemory((void **)&p3levels[nn], (nrgb+1)*sizeof(float))==0){
+        ReadPlot3D("", ifile, UNLOAD, &error);
+        if(error==1)return 1;
+      }
+    }
+    if(p3levels256[nn]==NULL){
+      if(NewMemory((void **)&p3levels256[nn], 256*sizeof(float))==0){
+        ReadPlot3D("", ifile, UNLOAD, &error);
+        if(error==1)return 1;
+      }
+    }
+    for(n = 0; n<nrgb; n++){
+      if(colorlabelp3[nn][n]==NULL){
+        if(NewMemory((void **)&(*(colorlabelp3+nn))[n], 11)==0){
+          ReadPlot3D("", ifile, UNLOAD, &error);
+          if(error==1)return 1;
+        }
+      }
+      if(colorlabeliso[nn][n]==NULL){
+        if(NewMemory((void **)&(*(colorlabeliso+nn))[n], 11)==0){
+          ReadPlot3D("", ifile, UNLOAD, &error);
+          if(error==1)return 1;
+        }
+      }
+    }
+  }
+  return 0;
+}
+
 /* ------------------ UpdatePlot3DColors  ------------------------ */
 
 void  UpdatePlot3DColors(int ifile, int *errorcode){
@@ -90,6 +133,8 @@ void  UpdatePlot3DColors(int ifile, int *errorcode){
 
   GetMinMaxAll(BOUND_PLOT3D, setp3min_all, p3min_all, setp3max_all, p3max_all, &num);
 #endif
+  *errorcode=AllocatePlot3DColorLabels(ifile);
+  if(*errorcode==1)return;
   for(nn = 0; nn < numplot3dvars; nn++){
     int n;
 
@@ -106,29 +151,6 @@ void  UpdatePlot3DColors(int ifile, int *errorcode){
         blank_global;
     }
 
-    for(n = 0; n < MAXRGB; n++){
-      (*(colorlabelp3 + nn))[n] = NULL;
-      (*(colorlabeliso + nn))[n] = NULL;
-    }
-
-    if(NewMemory((void **)&p3levels[nn], (nrgb + 1) * sizeof(float)) == 0 ||
-       NewMemory((void **)&p3levels256[nn], 256 * sizeof(float)) == 0){
-      ReadPlot3D("", ifile, UNLOAD, &error);
-      *errorcode = 1;
-      return;
-    }
-    for(n = 0; n < nrgb; n++){
-      if(NewMemory((void **)&(*(colorlabelp3 + nn))[n], 11) == 0){
-        *errorcode = 1;
-        ReadPlot3D("", ifile, UNLOAD, &error);
-        return;
-      }
-      if(NewMemory((void **)&(*(colorlabeliso + nn))[n], 11) == 0){
-        *errorcode = 1;
-        ReadPlot3D("", ifile, UNLOAD, &error);
-        return;
-      }
-    }
     GetPlot3DColors(nn,
                     setp3min_all[nn], p3min_all + nn, setp3max_all[nn], p3max_all + nn,
                     nrgb_full, nrgb - 1, *(colorlabelp3 + nn), *(colorlabeliso + nn), p3levels[nn], p3levels256[nn],
@@ -241,7 +263,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       int nn;
 
       for(nn=0;nn<MAXPLOT3DVARS;nn++){
-	int nnn;
+	    int nnn;
 
         for(nnn=0;nnn<MAXRGB;nnn++){
           FREEMEMORY((*(colorlabelp3+nn))[nnn]);
@@ -254,7 +276,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       int nn;
 
       for(nn=0;nn<MAXPLOT3DVARS;nn++){
-	int nnn;
+	    int nnn;
 
         for(nnn=0;nnn<MAXRGB;nnn++){
           FREEMEMORY((*(colorlabeliso+nn))[nnn]);
@@ -437,6 +459,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   }
 
   GetPlot3DHists(p);
+  AllocatePlot3DColorLabels(ifile);
   if(cache_plot3d_data==1){
     if(p->finalize==1){
       MergePlot3DHistograms();
