@@ -8,7 +8,11 @@ else
 fi
 source ../../scripts/setopts.sh $OPTS
 
-LIBDIR=../../LIBS/intel_osx_64
+if [ "$QUARTZSMV" == "use_quartz" ]; then
+  LIBDIR=../../LIBS/intel_osx_64
+else
+  LIBDIR=../../LIBS/intel_osx_noq_64
+fi
 
 CURDIR=`pwd`
 cd $LIBDIR
