@@ -126,7 +126,7 @@ int AllocatePlot3DColorLabels(int ifile){
 /* ------------------ UpdatePlot3DColors  ------------------------ */
 
 void  UpdatePlot3DColors(int ifile, int *errorcode){
-  int nn, error;
+  int nn;
 
 #ifdef pp_CPPBOUND_DIALOG
   int num;
@@ -136,8 +136,6 @@ void  UpdatePlot3DColors(int ifile, int *errorcode){
   *errorcode=AllocatePlot3DColorLabels(ifile);
   if(*errorcode==1)return;
   for(nn = 0; nn < numplot3dvars; nn++){
-    int n;
-
     if(nplot3dinfo > 0){
       shortp3label[nn] = plot3dinfo[ifile].label[nn].shortlabel;
       unitp3label[nn] = plot3dinfo[ifile].label[nn].unit;
