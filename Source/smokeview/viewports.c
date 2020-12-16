@@ -182,6 +182,11 @@ void GetViewportInfo(void){
     VP_timebar.width = 0;
     VP_timebar.height = 0;
   }
+#ifdef pp_OSX
+#ifdef pp_NOQUARTZ
+  VP_timebar.height *= 2;
+#endif
+#endif
   VP_timebar.right = VP_timebar.left + VP_timebar.width;
   VP_timebar.top   = VP_timebar.down + VP_timebar.height;
 
@@ -791,7 +796,17 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
     if(visHRRlabel==1&&hrrinfo!=NULL){
       OutputText(VP_timebar.left,v_space+VP_timebar.text_height+v_space, hrrinfo->hrrlabel);
     }
-    if(visTimebar==1)DrawTimebar(timebar_left_pos,timebar_right_pos,v_space+VP_timebar.down,v_space+(VP_timebar.down+20));
+    if(visTimebar==1){
+      int timebar_height;
+
+      timebar_height = 20;
+#ifdef pp_OSX
+#ifdef pp_NOQUARTZ
+      timebar_height *= 2;
+#endif
+#endif
+      DrawTimebar(timebar_left_pos, timebar_right_pos, v_space+VP_timebar.down, v_space+(VP_timebar.down+timebar_height));
+    }
   }
 
   if(visFramerate==1&&showtime==1){

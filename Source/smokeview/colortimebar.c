@@ -1355,12 +1355,9 @@ void DrawVerticalColorbarReg(void){
   for(i = 0; i < nrgb_full - 1; i++){
     float *rgb_cb, *rgb_cb2;
     float yy, yy2;
-    int cbl;
     int i3;
 
     rgb_cb = rgb_full[i];
-
-    cbl = vcolorbar_left_pos;
 
     yy = MIX2(i, 255, vcolorbar_top_pos, vcolorbar_down_pos);
     yy2 = MIX2(i + 1, 255, vcolorbar_top_pos, vcolorbar_down_pos);
@@ -1369,12 +1366,12 @@ void DrawVerticalColorbarReg(void){
     rgb_cb2 = rgb_full[i3];
 
     glColor4fv(rgb_cb);
-    glVertex2f(cbl, yy);
+    glVertex2f(vcolorbar_left_pos,  yy);
     glVertex2f(vcolorbar_right_pos, yy);
 
     glColor4fv(rgb_cb2);
     glVertex2f(vcolorbar_right_pos, yy2);
-    glVertex2f(cbl, yy2);
+    glVertex2f(vcolorbar_left_pos,  yy2);
   }
   glEnd();
 }
