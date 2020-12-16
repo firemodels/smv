@@ -9413,36 +9413,28 @@ updatemenu=0;
 
   /* -------------------------------- font menu -------------------------- */
 
-  if(showfontmenu==1){
-    CREATEMENU(fontmenu,FontMenu);
-    switch(fontindex){
-    case SMALL_FONT:
-      glutAddMenuEntry(_("*Normal"),SMALL_FONT);
-      glutAddMenuEntry(_("Large"),LARGE_FONT);
-#ifdef pp_BETA
-      glutAddMenuEntry(_("Scaled"),SCALED_FONT);
-#endif
-      break;
-    case LARGE_FONT:
-      glutAddMenuEntry(_("Normal"),SMALL_FONT);
-      glutAddMenuEntry(_("*Large"),LARGE_FONT);
-#ifdef pp_BETA
-      glutAddMenuEntry(_("Scaled"),SCALED_FONT);
-#endif
-      break;
-#ifdef pp_BETA
-    case SCALED_FONT:
-      glutAddMenuEntry(_("Normal"),SMALL_FONT);
-      glutAddMenuEntry(_("Large"),LARGE_FONT);
-      glutAddMenuEntry(_("*Scaled"),SCALED_FONT);
-#endif
-      break;
-    default:
-      ASSERT(FFALSE);
-      break;
-    }
-    glutAddMenuEntry(_("Settings..."), MENU_FONT_SETTINGS);
+  CREATEMENU(fontmenu,FontMenu);
+  switch(fontindex){
+  case SMALL_FONT:
+    glutAddMenuEntry(_("*Normal"),SMALL_FONT);
+    glutAddMenuEntry(_("Large"),LARGE_FONT);
+    glutAddMenuEntry(_("Scaled"),SCALED_FONT);
+    break;
+  case LARGE_FONT:
+    glutAddMenuEntry(_("Normal"),SMALL_FONT);
+    glutAddMenuEntry(_("*Large"),LARGE_FONT);
+    glutAddMenuEntry(_("Scaled"),SCALED_FONT);
+    break;
+  case SCALED_FONT:
+    glutAddMenuEntry(_("Normal"),SMALL_FONT);
+    glutAddMenuEntry(_("Large"),LARGE_FONT);
+    glutAddMenuEntry(_("*Scaled"),SCALED_FONT);
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
   }
+  glutAddMenuEntry(_("Settings..."), MENU_FONT_SETTINGS);
 
   /* -------------------------------- units menu -------------------------- */
 
@@ -9501,7 +9493,7 @@ updatemenu=0;
   GLUTADDSUBMENU(_("Max frame rate"),frameratemenu);
   GLUTADDSUBMENU(_("Render"),rendermenu);
   GLUTADDSUBMENU(_("Tours"),tourmenu);
-  if(showfontmenu==1)GLUTADDSUBMENU(_("Font"),fontmenu);
+  GLUTADDSUBMENU(_("Font"),fontmenu);
   if(trainer_active==1)glutAddMenuEntry(_("Trainer menu"),MENU_OPTION_TRAINERMENU);
 
 /* -------------------------------- about menu -------------------------- */

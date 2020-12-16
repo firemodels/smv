@@ -1441,7 +1441,6 @@ void InitVars(void){
 
   xyz_dir=0;
   which_face=2;
-  showfontmenu=1;
 
   glui_active=0;
 
