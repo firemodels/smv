@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ "$NOQUARTZ" != "" ]; then
   echo building smokeview not using Quartz
-  OPTS="$*"
+  OPTS="-Q $*"
 else
   echo building smokeview using Quartz
   OPTS="-q $*"

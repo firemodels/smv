@@ -16,7 +16,7 @@ QUARTZSMV=framework
 inc=
 BUILD_LIBS=
 BUILD_ALL=1
-while getopts 'AfhiLmpqrt' OPTION
+while getopts 'AfhiLmpqQrt' OPTION
 do
 case $OPTION in
   A)
@@ -52,6 +52,9 @@ case $OPTION in
   q)
    QUARTZSMV="use_quartz"
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"-I /opt/X11/include -Wno-unknown-pragmas"
+  ;;
+  Q)
+   DUMMY=1
   ;;
   r)
   ;;

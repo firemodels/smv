@@ -2,7 +2,7 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
-OPTS="-I -q $*"
+OPTS="-I -Q $*"
 
 source ../../../Source/scripts/setopts.sh $OPTS
 

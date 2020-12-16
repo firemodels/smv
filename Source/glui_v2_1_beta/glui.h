@@ -21,11 +21,11 @@
 #define _GLUI_H_
 
 #ifdef pp_OSX
-//#ifdef pp_QUARTZ
-//#include <GL/glut.h>
-//#else
+#ifdef pp_QUARTZ
+#include <GL/glut.h>
+#else
 #include <GLUT/glut.h>
-//#endif
+#endif
 #else
 #include <GL/glut.h>
 #endif
