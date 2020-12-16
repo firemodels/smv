@@ -1453,7 +1453,6 @@ void InitVars(void){
   nfires=0;
 
   windowsize_pointer=0;
-  fontindex=0;
 
   xbar=1.0, ybar=1.0, zbar=1.0;
   xbar0=0.0, ybar0=0.0, zbar0=0.0;

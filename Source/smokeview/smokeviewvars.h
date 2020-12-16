@@ -609,10 +609,7 @@ SVEXTERN labeldata LABEL_local, SVDECL(*LABEL_global_ptr,NULL), LABEL_default;
 
 SVEXTERN int port_pixel_width, port_pixel_height;
 SVEXTERN float port_unit_width, port_unit_height;
-SVEXTERN int SVDECL(scaled_font2d_height,12);
-SVEXTERN float SVDECL(scaled_font2d_height2width,1.0);
-SVEXTERN int SVDECL(scaled_font3d_height,32);
-SVEXTERN float SVDECL(scaled_font3d_height2width,1.0);
+
 SVEXTERN float quat_general[4], quat_rotation[16];
 
 SVEXTERN float modelview_identity[16];
@@ -1071,7 +1068,27 @@ SVEXTERN int SVDECL(zonecolortype, ZONETEMP_COLOR);
 SVEXTERN int mxframepoints;
 SVEXTERN int SVDECL(timebar_drag,0),SVDECL(colorbar_drag,0),SVDECL(colorbar_splitdrag,0),SVDECL(colorbaredit_drag,0);
 SVEXTERN int SVDECL(global_colorbar_index,-1);
-SVEXTERN int fontindex;
+
+#ifdef pp_OSX
+#ifdef pp_NOQUARTZ
+#define DEFINE_NOQUARTZ
+#endif
+#endif
+
+#ifdef DEFINE_NOQUARTZ
+#undef DEFINE_NOQUARTZ
+SVEXTERN int SVDECL(fontindex,SCALED_FONT);
+SVEXTERN int SVDECL(scaled_font2d_height,36);
+SVEXTERN int SVDECL(scaled_font3d_height,32);
+SVEXTERN float SVDECL(scaled_font2d_height2width,4.0);
+SVEXTERN float SVDECL(scaled_font3d_height2width,1.0);
+#else
+SVEXTERN int SVDECL(fontindex,SMALL_FONT);
+SVEXTERN int SVDECL(scaled_font2d_height,12);
+SVEXTERN float SVDECL(scaled_font2d_height2width,1.0);
+SVEXTERN int SVDECL(scaled_font3d_height,32);
+SVEXTERN float SVDECL(scaled_font3d_height2width,1.0);
+#endif
 
 SVEXTERN int SVDECL(custom_worldcenter,0),SVDECL(show_rotation_center,0);
 SVEXTERN float SVDECL(xcenGLOBAL,0.5), SVDECL(ycenGLOBAL,0.5), SVDECL(zcenGLOBAL,0.5);
