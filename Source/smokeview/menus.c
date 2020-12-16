@@ -9562,6 +9562,19 @@ updatemenu=0;
     }
     glutAddMenuEntry(menulabel,1);
 #endif
+#ifdef WIN32
+    glutAddMenuEntry("  Platform: WIN64", 1);
+#endif
+#ifdef pp_OSX
+#ifdef pp_QUARTZ
+    glutAddMenuEntry("  Platform: OSX64/QUARTZ", 1);
+#else
+    glutAddMenuEntry("  Platform: OSX64", 1);
+#endif
+#endif
+#ifdef pp_LINUX
+    glutAddMenuEntry("  Platform: LINUX64/QUARTZ", 1);
+#endif
     GLUTADDSUBMENU(_("Disclaimer"),disclaimermenu);
   }
 
