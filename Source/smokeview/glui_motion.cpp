@@ -928,7 +928,7 @@ extern "C" void GluiMotionSetup(int main_window){
   INSERT_ROLLOUT(ROLLOUT_motion, glui_motion);
   ADDPROCINFO(mvrprocinfo, nmvrprocinfo, ROLLOUT_motion, MOTION_ROLLOUT, glui_motion);
 
-#ifdef TRANSLATE_ROTATE
+#ifdef ROTATE_TRANSLATE
   ROLLOUT_translaterotate=glui_motion->add_rollout_to_panel(ROLLOUT_motion, _("Translate/Rotate"), true, TRANSLATEROTATE_ROLLOUT, MotionRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_translaterotate, glui_motion);
   ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_translaterotate, TRANSLATEROTATE_ROLLOUT, glui_motion);
