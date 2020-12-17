@@ -472,10 +472,10 @@ options =
         local a = opt.argLines[1][1]
         return function () set_aperture(a) end
         end
-    , AXISSMOOTH = function(opt)
-        local a = opt.argLines[1][1]
-        return function () set_axissmooth(a) end
-        end
+    -- , AXISSMOOTH = function(opt)
+    --     local a = opt.argLines[1][1]
+    --     return function () set_axissmooth(a) end
+    --     end
     , BLOCKLOCATION = function(opt)
         local a = opt.argLines[1][1]
         return function () set_blocklocation(a) end
