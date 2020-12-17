@@ -363,11 +363,6 @@ int          GLUI_Control::string_width( char *text )
   int width;
 
   width = _glutBitmapWidthString( get_font(), text );
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
-  width /= 2;
-#endif
-#endif
   return width;
 }
 
