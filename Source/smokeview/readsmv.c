@@ -14698,13 +14698,12 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout," %i\n",-1);
   }
   else{
-#define USE_SPECIAL
-#ifndef pp_OSX
-#undef USE_SPECIAL
-#endif
 
-#ifndef pp_QUART
 #undef USE_SPECIAL
+#ifdef pp_OSX
+#ifndef pp_QUARTZ
+#define USE_SPECIAL
+#endif
 #endif
 
 #ifdef USE_SPECIAL
