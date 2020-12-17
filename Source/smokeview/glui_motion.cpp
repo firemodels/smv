@@ -13,6 +13,12 @@
 #include "IOvolsmoke.h"
 #include "glui_motion.h"
 
+#define TRANSLATE_ROTATE
+#ifdef pp_OSX
+#ifndef pp_QUARTZ
+#undef TRANSLATE_ROTATE
+#endif
+#endif
 
 #ifdef pp_DEG
 unsigned char deg360[] = { '3','6','0',DEG_SYMBOL,0 };
@@ -31,7 +37,10 @@ GLUI_Panel *PANEL_render_file = NULL;
 GLUI_Panel *PANEL_render_format = NULL;
 GLUI_Panel *PANEL_movie_type = NULL;
 GLUI_Panel *PANEL_user_center = NULL;
-GLUI_Panel *PANEL_rotate=NULL, *PANEL_translate=NULL,*PANEL_close=NULL;
+#ifdef ROTATE_TRANSLATE
+GLUI_Panel *PANEL_rotate = NULL;
+#endif
+GLUI_Panel *PANEL_close = NULL;
 GLUI_Panel *PANEL_file_suffix=NULL, *PANEL_file_type=NULL;
 GLUI_Panel *PANEL_radiorotate=NULL;
 GLUI_Panel *PANEL_gslice_center=NULL;
@@ -39,7 +48,10 @@ GLUI_Panel *PANEL_gslice_normal=NULL;
 GLUI_Panel *PANEL_gslice_show=NULL;
 GLUI_Panel *PANEL_speed=NULL;
 GLUI_Panel *PANEL_height=NULL;
-GLUI_Panel *PANEL_translate2=NULL,*PANEL_translate3=NULL;
+#ifdef ROTATE_TRANSLATE
+GLUI_Panel *PANEL_translate2 = NULL;
+#endif
+GLUI_Panel *PANEL_translate3 = NULL;
 GLUI_Panel *PANEL_anglebuttons=NULL;
 GLUI_Panel *PANEL_reset1=NULL;
 GLUI_Panel *PANEL_reset2=NULL;
@@ -62,7 +74,9 @@ GLUI_Rollout *ROLLOUT_render=NULL;
 GLUI_Rollout *ROLLOUT_viewpoints=NULL;
 GLUI_Rollout *ROLLOUT_make_movie = NULL;
 GLUI_Rollout *ROLLOUT_gslice = NULL;
+#ifdef ROTATE_TRANSLATE
 GLUI_Rollout *ROLLOUT_translaterotate=NULL;
+#endif
 #ifdef pp_RENDER360_DEBUG
 GLUI_Rollout *ROLLOUT_screenvis = NULL;
 GLUI_Rollout *ROLLOUT_lower = NULL;
@@ -129,8 +143,10 @@ GLUI_Checkbox *CHECKBOX_overwrite_movie = NULL;
 GLUI_Checkbox **CHECKBOX_screenvis = NULL;
 #endif
 
-GLUI_Translation *ROTATE_2axis=NULL,*ROTATE_eye_z=NULL;
-GLUI_Translation *TRANSLATE_z=NULL,*TRANSLATE_xy=NULL;
+#ifdef ROTATE_TRANSLATE
+GLUI_Translation *ROTATE_2axis = NULL;
+GLUI_Translation *TRANSLATE_z=NULL,*TRANSLATE_xy=NULL, *ROTATE_eye_z = NULL;
+#endif
 
 GLUI_RadioGroup *RADIO_render_resolution = NULL;
 GLUI_RadioGroup *RADIO_projection=NULL,*RADIO_rotation_type=NULL;
@@ -912,6 +928,7 @@ extern "C" void GluiMotionSetup(int main_window){
   INSERT_ROLLOUT(ROLLOUT_motion, glui_motion);
   ADDPROCINFO(mvrprocinfo, nmvrprocinfo, ROLLOUT_motion, MOTION_ROLLOUT, glui_motion);
 
+#ifdef TRANSLATE_ROTATE
   ROLLOUT_translaterotate=glui_motion->add_rollout_to_panel(ROLLOUT_motion, _("Translate/Rotate"), true, TRANSLATEROTATE_ROLLOUT, MotionRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_translaterotate, glui_motion);
   ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_translaterotate, TRANSLATEROTATE_ROLLOUT, glui_motion);
@@ -940,6 +957,7 @@ extern "C" void GluiMotionSetup(int main_window){
   ROTATE_eye_z=glui_motion->add_translation_to_panel(PANEL_rotate,_("View"),GLUI_TRANSLATION_X,motion_dir,EYE_ROTATE,SceneMotionCB);
   ROTATE_eye_z->set_speed(180.0/(float)screenWidth);
   ROTATE_eye_z->disable();
+#endif
 
   ROLLOUT_view = glui_motion->add_rollout_to_panel(ROLLOUT_motion, _("Position/View"), false, POSITION_VIEW_ROLLOUT, MotionRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_view, glui_motion);
@@ -1428,18 +1446,24 @@ extern "C" void UpdateTranslate(void){
   d_eye_xyz[1]=eye_xyz[1]-eye_xyz0[1];
   d_eye_xyz[2]=eye_xyz[2]-eye_xyz0[2];
 
+#ifdef ROTATE_TRANSLATE
   TRANSLATE_xy->set_x(d_eye_xyz[0]);
+#endif
   if(rotation_type==ROTATION_1AXIS){
     d_eye_xyz[1]=0.0;
   }
+#ifdef ROTATE_TRANSLATE
   TRANSLATE_xy->set_y(d_eye_xyz[1]);
   TRANSLATE_z->set_y(eye_xyz[2]);
+#endif
   if(rotation_type==ROTATION_3AXIS){
   }
   else{
+#ifdef ROTATE_TRANSLATE
     ROTATE_2axis->set_x(az_elev[0]);
     ROTATE_2axis->set_y(az_elev[1]);
     ROTATE_eye_z->set_x(camera_current->azimuth);
+#endif
   }
   UpdateGluiSetViewXYZ(camera_current->eye);
 }
@@ -1539,9 +1563,10 @@ extern "C" void ShowHideTranslate(int var){
   d_eye_xyz[1]=0.0;
   switch(var){
   case ROTATION_3AXIS:
-    if(PANEL_translate!=NULL)PANEL_translate->enable();
+#ifdef ROTATE_TRANSLATE
     if(ROTATE_2axis!=NULL)ROTATE_2axis->disable();
     if(ROTATE_eye_z!=NULL)ROTATE_eye_z->disable();
+#endif
     if(BUTTON_90_z!=NULL)BUTTON_90_z->disable();
     if(CHECKBOX_blockpath!=NULL)CHECKBOX_blockpath->disable();
     if(PANEL_speed!=NULL)PANEL_speed->disable();
@@ -1554,9 +1579,10 @@ extern "C" void ShowHideTranslate(int var){
     if(BUTTON_snap!=NULL)BUTTON_snap->enable();
     break;
   case ROTATION_2AXIS:
-    if(PANEL_translate!=NULL)PANEL_translate->enable();
+#ifdef ROTATE_TRANSLATE
     if(ROTATE_2axis!=NULL)ROTATE_2axis->enable();
     if(ROTATE_eye_z!=NULL)ROTATE_eye_z->disable();
+#endif
     if(BUTTON_90_z!=NULL)BUTTON_90_z->disable();
     if(CHECKBOX_blockpath!=NULL)CHECKBOX_blockpath->disable();
     if(PANEL_speed!=NULL)PANEL_speed->disable();
@@ -1569,9 +1595,10 @@ extern "C" void ShowHideTranslate(int var){
     if(BUTTON_snap!=NULL)BUTTON_snap->enable();
     break;
   case EYE_CENTERED:
-    if(PANEL_translate!=NULL)PANEL_translate->enable();
+#ifdef ROTATE_TRANSLATE
     if(ROTATE_2axis!=NULL)ROTATE_2axis->disable();
     if(ROTATE_eye_z!=NULL)ROTATE_eye_z->enable();
+#endif
     if(BUTTON_90_z!=NULL)BUTTON_90_z->enable();
     if(CHECKBOX_blockpath!=NULL)CHECKBOX_blockpath->enable();
     if(PANEL_speed!=NULL)PANEL_speed->enable();
@@ -1584,9 +1611,10 @@ extern "C" void ShowHideTranslate(int var){
     if(BUTTON_snap!=NULL)BUTTON_snap->disable();
     break;
   case ROTATION_1AXIS:
-    if(PANEL_translate!=NULL)PANEL_translate->enable();
+#ifdef ROTATE_TRANSLATE
     if(ROTATE_2axis!=NULL)ROTATE_2axis->enable();
     if(ROTATE_eye_z!=NULL)ROTATE_eye_z->disable();
+#endif
     if(BUTTON_90_z!=NULL)BUTTON_90_z->disable();
     if(CHECKBOX_blockpath!=NULL)CHECKBOX_blockpath->disable();
     if(PANEL_speed!=NULL)PANEL_speed->disable();
@@ -1783,9 +1811,11 @@ extern "C" void SceneMotionCB(int var){
       if(rotation_type==ROTATION_2AXIS){
         float *az_elev;
 
+#ifdef ROTATE_TRANSLATE
         az_elev = camera_current->az_elev;
         az_elev[0] = ROTATE_2axis->get_x();
         az_elev[1] = -ROTATE_2axis->get_y();
+#endif
       }
       break;
     case WINDOWSIZE_LIST:
@@ -2054,10 +2084,12 @@ extern "C" void SceneMotionCB(int var){
         eye_xyz0[0]=eye_xyz[0];
         eye_xyz0[1]=eye_xyz[1];
       }
+#ifdef ROTATE_TRANSLATE
       if(TRANSLATE_xy!=NULL){
         TRANSLATE_xy->set_x(d_eye_xyz[0]);
         TRANSLATE_xy->set_y(d_eye_xyz[1]);
       }
+#endif
       glui_move_mode=TRANSLATE_XY;
       UpdateTranslate();
       break;
@@ -2118,7 +2150,9 @@ extern "C" void ShowGluiMotion(int menu_id){
       break;
     case DIALOG_MOTION:
       MVRRolloutCB(RENDER_ROLLOUT);
+#ifdef ROTATE_TRANSLATE
       MotionRolloutCB(TRANSLATEROTATE_ROLLOUT);
+#endif
       break;
     case DIALOG_RENDER:
       MVRRolloutCB(RENDER_ROLLOUT);
