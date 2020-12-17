@@ -360,7 +360,15 @@ void         GLUI_Control::draw_char( char c )
 
 int          GLUI_Control::string_width( char *text )
 {
-  return _glutBitmapWidthString( get_font(), text );
+  int width;
+
+  width = _glutBitmapWidthString( get_font(), text );
+#ifdef pp_OSX
+#ifndef pp_QUARTZ
+  width /= 2;
+#endif
+#endif
+  return width;
 }
 
 
@@ -368,7 +376,14 @@ int          GLUI_Control::string_width( char *text )
 
 int          GLUI_Control::char_width( char c )
 {
-  return glutBitmapWidth( get_font(), c );
+  int width;
+  width = glutBitmapWidth( get_font(), c );
+#ifdef pp_OSX
+#ifndef pp_QUARTZ
+  width /= 2;
+#endif
+#endif
+  return width;
 }
 
 
