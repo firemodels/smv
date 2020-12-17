@@ -13,10 +13,10 @@
 #include "IOvolsmoke.h"
 #include "glui_motion.h"
 
-#define TRANSLATE_ROTATE
+#define ROTATE_TRANSLATE
 #ifdef pp_OSX
 #ifndef pp_QUARTZ
-#undef TRANSLATE_ROTATE
+#undef ROTATE_TRANSLATE
 #endif
 #endif
 
