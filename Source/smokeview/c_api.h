@@ -324,7 +324,6 @@ int set_eyey(float v); // EYEY
 int set_eyez(float v); // EYEZ
 int set_fontsize(int v); // FONTSIZE
 int set_frameratevalue(int v); // FRAMERATEVALUE
-int set_geomdiags(int structured, int unstructured, int diagnostics); // GEOMDIAGS
 // GEOMSHOW
 int set_showfaces_interior(int v);
 int set_showfaces_exterior(int v);
@@ -508,7 +507,7 @@ int set_c_slice(int minFlag, float minValue, int maxFlag, float maxValue,
                     const char *label); // C_SLICE
 int set_cache_boundarydata(int setting); // CACHE_BOUNDARYDATA
 int set_cache_qdata(int setting); // CACHE_QDATA
-int set_percentilelevel(int setting); // PERCENTILELEVEL
+int set_percentilelevel(float percentile_level_min, float p_level_max); // PERCENTILELEVEL
 int set_timeoffset(int setting); // TIMEOFFSET
 int set_patchdataout(int outputFlag, float tmin, float tmax, float xmin,
                      float xmax, float ymin, float ymax, float zmin,
