@@ -7,6 +7,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#ifdef pp_GLUT_FONTS
+#define GLUT_BITMAP_HELVETICA_36	(&glutBitmapHelvetica36)
+#endif
+
 #define DEVICE_PLOT_HIDDEN        0
 #define DEVICE_PLOT_SHOW_SELECTED 1
 #define DEVICE_PLOT_SHOW_ALL      2

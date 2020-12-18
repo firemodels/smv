@@ -19,6 +19,13 @@
 #endif
 #include "smokeheaders.h"
 #include "threader.h"
+#ifdef pp_GLUT_FONTS
+#include "glutbitmap.h"
+#endif
+
+#ifdef pp_GLUT_FONTS
+GLUTEXTERN const BitmapFontRec glutBitmapHelvetica36;
+#endif
 
 #ifdef pp_CPPBOUND_DIALOG
 SVEXTERN histogramdata SVDECL(*histogram_draw, NULL);
