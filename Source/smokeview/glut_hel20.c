@@ -4,9 +4,9 @@
 #ifdef pp_GLUT_FONTS
 /* GENERATED FILE -- DO NOT MODIFY */
 
-#define glutBitmapHelvetica36 XXX
+#define glutBitmapHelvetica20 XXX
 #include "glutbitmap.h"
-#undef glutBitmapHelvetica36
+#undef glutBitmapHelvetica20
 
 /* char: 0xff */
 
@@ -1891,7 +1891,7 @@ static const BitmapCharRec * const chars[] = {
 &ch255,
 };
 
-GLUTEXTERN const BitmapFontRec glutBitmapHelvetica36 = {
+GLUTEXTERN const BitmapFontRec glutBitmapHelvetica20 = {
 "2x -adobe-helvetica-medium-r-normal--18-180-75-75-p-98-iso8859-1",
 224,
 32,

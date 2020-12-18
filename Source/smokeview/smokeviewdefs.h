@@ -8,6 +8,8 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #endif
 
 #ifdef pp_GLUT_FONTS
+#define GLUT_BITMAP_HELVETICA_20	(&glutBitmapHelvetica20)
+#define GLUT_BITMAP_HELVETICA_24	(&glutBitmapHelvetica24)
 #define GLUT_BITMAP_HELVETICA_36	(&glutBitmapHelvetica36)
 #endif
 

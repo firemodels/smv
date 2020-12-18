@@ -24,6 +24,8 @@
 #endif
 
 #ifdef pp_GLUT_FONTS
+GLUTEXTERN const BitmapFontRec glutBitmapHelvetica20;
+GLUTEXTERN const BitmapFontRec glutBitmapHelvetica24;
 GLUTEXTERN const BitmapFontRec glutBitmapHelvetica36;
 #endif
 
