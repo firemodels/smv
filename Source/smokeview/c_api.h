@@ -311,7 +311,7 @@ int set_userrotate(int index, int show_center, float x, float y, float z); // US
 // --  *** VIEW PARAMETERS ***
 
 int set_aperture(int v); // APERTURE
-int set_axissmooth(int v); // AXISSMOOTH
+// int set_axissmooth(int v); // AXISSMOOTH
 int set_blocklocation(int v); // BLOCKLOCATION
 int set_boundarytwoside(int v); // BOUNDARYTWOSIDE
 int set_clip(float near, float far); // CLIP
@@ -442,7 +442,7 @@ int set_smokecull(int v); // SMOKECULL
 int set_smokeskip(int v); // SMOKESKIP
 int set_smokealbedo(float v); // SMOKEALBEDO
 int set_smokerthick(float v); // SMOKERTHICK
-int set_smokethick(float v); // SMOKETHICK
+// int set_smokethick(float v); // SMOKETHICK
 int set_usegpu(int v); // USEGPU
 
 // --  *** ZONE FIRE PARAMETRES ***
