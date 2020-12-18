@@ -11,6 +11,7 @@
 #include "smokeviewvars.h"
 #include "smokeheaders.h"
 #include "IOvolsmoke.h"
+#include "infoheader.h"
 
 #include "c_api.h"
 #include "gd.h"
@@ -39,8 +40,8 @@ int set_slice_bound_min(const char *slice_type, int set, float value) {
       if(set) {printf("ON");} else {printf("OFF");}
       printf(" with value of %f\n", value);
       if(!strcmp(slice_type, slicebounds[i].shortlabel)) {
-          slicebounds[i].setvalmin=set;
-          slicebounds[i].valmin=value;
+          slicebounds[i].dlg_setvalmin=set;
+          slicebounds[i].dlg_valmin=value;
       }
   }
   UpdateSliceBounds();
@@ -52,8 +53,8 @@ float get_slice_bound_min(const char *slice_type) {
   float min, max;
   for(i = 0; i < nslicebounds; i++) {
       if(!strcmp(slice_type, slicebounds[i].shortlabel)) {
-          min=slicebounds[i].valmin;
-          // max=slicebounds[i].valmax;
+          min=slicebounds[i].dlg_valmin;
+          // max=slicebounds[i].dlg_valmax;
       }
   }
   return min;
@@ -64,8 +65,8 @@ float get_slice_bound_max(const char *slice_type) {
   float min, max;
   for(i = 0; i < nslicebounds; i++) {
       if(!strcmp(slice_type, slicebounds[i].shortlabel)) {
-          // min=slicebounds[i].valmin;
-          max=slicebounds[i].valmax;
+          // min=slicebounds[i].dlg_valmin;
+          max=slicebounds[i].dlg_valmax;
       }
   }
   return max;
@@ -78,8 +79,8 @@ int set_slice_bound_max(const char *slice_type, int set, float value) {
       if(set) {printf("ON");} else {printf("OFF");}
       printf(" with value of %f\n", value);
       if(!strcmp(slice_type, slicebounds[i].shortlabel)) {
-          slicebounds[i].setvalmax=set;
-          slicebounds[i].valmax=value;
+          slicebounds[i].dlg_setvalmax=set;
+          slicebounds[i].dlg_valmax=value;
       }
   }
   UpdateSliceBounds();
@@ -151,22 +152,18 @@ int parse_smv_filepath(const char *smv_filepath, char *fdsprefix,
 int loadsmv(char *input_filename, char *input_filename_ext){
   int return_code;
   char *input_file;
-  if(input_filename==NULL){
-      printf("ERROR: input_filename is NULL\n");
-  }
-  if(input_filename_ext==NULL){
-      printf("ERROR: input_filename_ext is NULL\n");
-  }
-  fflush(stdout);
-  printf("loading smv: %s\n", input_filename);
-  printf("ext: %s\n", input_filename_ext);
-  fflush(stdout);
-  /*
-  warning: the following line was commented out!! (perhaps it broke something)
-     this line is necessary in order to define smv_filename and trainer_filename
-  */
- // parse_commandlines(argc, argv);
+
   return_code=-1;
+
+  FREEMEMORY(part_globalbound_filename);
+  NewMemory((void **)&part_globalbound_filename, strlen(fdsprefix)+strlen(".prt5.gbnd")+1);
+  STRCPY(part_globalbound_filename, fdsprefix);
+  STRCAT(part_globalbound_filename, ".prt5.gbnd");
+  part_globalbound_filename = GetFileName(smokeviewtempdir, part_globalbound_filename, NOT_FORCE_IN_DIR);
+
+  // setup input files names
+
+  input_file = smv_filename;
   if(strcmp(input_filename_ext,".svd")==0||demo_option==1){
     trainer_mode=1;
     trainer_active=1;
@@ -176,30 +173,34 @@ int loadsmv(char *input_filename, char *input_filename_ext){
     else if(strcmp(input_filename_ext,".smt")==0){
       input_file=test_filename;
     }
-    else{
-      input_file=smv_filename;
-    }
-    return_code=ReadSMV(input_file,iso_filename);
-    if(return_code==0){
-      ShowGluiTrainer();
-      ShowGluiAlert();
+  }
+  {
+    bufferstreamdata *smv_streaminfo = NULL;
+
+    PRINTF(_("processing smokeview file:"));
+    PRINTF(" %s\n", input_file);
+    smv_streaminfo = GetSMVBuffer(input_file, iso_filename);
+    return_code = ReadSMV(smv_streaminfo);
+    if(smv_streaminfo!=NULL){
+      FCLOSE(smv_streaminfo);
     }
   }
-  else{
-    input_file=smv_filename;
-    return_code=ReadSMV(input_file,iso_filename);
+  if(return_code==0&&trainer_mode==1){
+    ShowGluiTrainer();
+    ShowGluiAlert();
   }
   switch(return_code){
     case 1:
       fprintf(stderr,"*** Error: Smokeview file, %s, not found\n",input_file);
       return 1;
     case 2:
-      fprintf(stderr,"*** Error: problem reading Smokeview file, %s\n",
-              input_file);
+      fprintf(stderr,"*** Error: problem reading Smokeview file, %s\n",input_file);
       return 2;
     case 0:
       ReadSMVDynamic(input_file);
       break;
+    case 3:
+      return 3;
     default:
       ASSERT(FFALSE);
   }
@@ -213,19 +214,21 @@ int loadsmv(char *input_filename, char *input_filename_ext){
   CheckMemory;
   ReadIni(NULL);
   ReadBoundINI();
+
+  UpdateRGBColors(COLORBAR_INDEX_NONE);
+
   if(use_graphics==0)return 0;
-#ifdef pp_LANG
+  glui_defined = 1;
   InitTranslate(smokeview_bindir, tr_name);
-#endif
 
   if(ntourinfo==0)SetupTour();
+  InitRolloutList();
   GluiColorbarSetup(mainwindow_id);
   GluiMotionSetup(mainwindow_id);
   GluiBoundsSetup(mainwindow_id);
   GluiShooterSetup(mainwindow_id);
   GluiGeometrySetup(mainwindow_id);
   GluiClipSetup(mainwindow_id);
-  // glui_console_setup(mainwindow_id);
   GluiWuiSetup(mainwindow_id);
   GluiLabelsSetup(mainwindow_id);
   GluiDeviceSetup(mainwindow_id);
@@ -235,12 +238,10 @@ int loadsmv(char *input_filename, char *input_filename_ext){
   Glui3dSmokeSetup(mainwindow_id);
 
   UpdateLights(light_position0, light_position1);
-  NORMALIZE_XYZ(light_position0, light_position0);
-  NORMALIZE_XYZ(light_position1, light_position1);
 
   glutReshapeWindow(screenWidth,screenHeight);
 
-  glutSetWindow(mainwindow_id);
+  SetMainWindow();
   glutShowWindow();
   glutSetWindowTitle(fdsprefix);
   InitMisc();
@@ -252,6 +253,8 @@ int loadsmv(char *input_filename, char *input_filename_ext){
     ShowGluiTrainer();
     ShowGluiAlert();
   }
+  // initialize info header
+  initialiseInfoHeader(&titleinfo, release_title, smv_githash, fds_githash, chidfilebase, fds_title);
   return 0;
 }
 
@@ -262,7 +265,7 @@ int loadfile(const char *filename) {
   int errorcode;
 
   FREEMEMORY(loaded_file);
-  PRINTF("loading file %s\n\n",filename);
+  PRINTF("script: loading file %s\n\n",filename);
   if(filename!=NULL&&strlen(filename)>0){
     NewMemory((void **)&loaded_file,strlen(filename)+1);
     strcpy(loaded_file,filename);
@@ -273,10 +276,10 @@ int loadfile(const char *filename) {
     sd = sliceinfo + i;
     if(strcmp(sd->file,filename)==0){
       if(i<nsliceinfo-nfedinfo){
-        ReadSlice(sd->file,i,LOAD,SET_SLICECOLOR,&errorcode);
+        ReadSlice(sd->file,i, ALL_SLICE_FRAMES, NULL, LOAD, SET_SLICECOLOR,&errorcode);
       }
       else{
-        ReadFed(i,LOAD,FED_SLICE,&errorcode);
+        ReadFed(i, ALL_SLICE_FRAMES, NULL, LOAD,FED_SLICE,&errorcode);
       }
       return errorcode;
     }
@@ -296,16 +299,18 @@ int loadfile(const char *filename) {
 
     parti = partinfo + i;
     if(strcmp(parti->file,filename)==0){
-      ReadPart(parti->file,i,LOAD,&errorcode);
+      LoadParticleMenu(i);
       return errorcode;
     }
   }
+  CancelUpdateTriangles();
   for(i=0;i<nisoinfo;i++){
     isodata *isoi;
 
     isoi = isoinfo + i;
     if(strcmp(isoi->file,filename)==0){
       ReadIso(isoi->file,i,LOAD,NULL,&errorcode);
+      if(update_readiso_geom_wrapup == UPDATE_ISO_ONE_NOW)ReadIsoGeomWrapup(FOREGROUND);
       return errorcode;
     }
   }
@@ -314,9 +319,8 @@ int loadfile(const char *filename) {
 
     smoke3di = smoke3dinfo + i;
     if(strcmp(smoke3di->file,filename)==0){
-      PRINTF("loading smoke3d file:  %s\n", filename);
-      ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
-      PRINTF("loading complete:  %d\n", errorcode);
+      smoke3di->finalize = 1;
+      ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
       return errorcode;
     }
   }
@@ -341,8 +345,8 @@ int loadfile(const char *filename) {
     }
   }
 
-  fprintf(stderr,"*** Error: file %s is not listed in .smv file\n",filename);
-  return 1;
+  fprintf(stderr,"*** Error: file %s failed to load\n",filename);
+  if(stderr2!=NULL)fprintf(stderr2, "*** Error: file %s failed to load\n", filename);
 }
 
 /* ------------------ loadinifile ------------------------ */
@@ -675,7 +679,7 @@ void gsliceorien(float az, float elev) {
 void settourview(int edittourArg, int mode, int show_tourlocusArg,
                  float tour_global_tensionArg) {
   edittour=edittourArg;
-  show_tourlocus=show_tourlocusArg;
+  show_avatar = show_tourlocusArg;
   tour_global_tension_flag=1;
   tour_global_tension=tour_global_tensionArg;
   switch(mode){
@@ -782,13 +786,13 @@ void set_colorbar_visibility_vertical(int setting) {
   if(visColorbarVertical==0)PRINTF("Vertical Colorbar hidden\n");
   if(visColorbarVertical==1)PRINTF("Vertical Colorbar visible\n");
   if (visColorbarVertical == 1 && visColorbarHorizontal == 0) {
-    toggle_colorbar = 1;
+    vis_colorbar = 1;
   }
   else if (visColorbarVertical == 0 && visColorbarHorizontal == 1) {
-    toggle_colorbar = 2;
+    vis_colorbar = 2;
   }
   else {
-    toggle_colorbar = 0;
+    vis_colorbar = 0;
   }
 }
 
@@ -801,13 +805,13 @@ void toggle_colorbar_visibility_vertical() {
   if(visColorbarVertical==0)PRINTF("Vertical Colorbar hidden\n");
   if(visColorbarVertical==1)PRINTF("Vertical Colorbar visible\n");
   if (visColorbarVertical == 1 && visColorbarHorizontal == 0) {
-    toggle_colorbar = 1;
+    vis_colorbar = 1;
   }
   else if (visColorbarVertical == 0 && visColorbarHorizontal == 1) {
-    toggle_colorbar = 2;
+    vis_colorbar = 2;
   }
   else {
-    toggle_colorbar = 0;
+    vis_colorbar = 0;
   }
 }
 
@@ -816,13 +820,13 @@ void set_colorbar_visibility_horizontal(int setting) {
   if(visColorbarHorizontal==0)PRINTF("Horizontal Colorbar hidden\n");
   if(visColorbarHorizontal==1)PRINTF("Horizontal Colorbar visible\n");
   if (visColorbarVertical == 1 && visColorbarHorizontal == 0) {
-    toggle_colorbar = 1;
+    vis_colorbar = 1;
   }
   else if (visColorbarVertical == 0 && visColorbarHorizontal == 1) {
-    toggle_colorbar = 2;
+    vis_colorbar = 2;
   }
   else {
-    toggle_colorbar = 0;
+    vis_colorbar = 0;
   }
 }
 
@@ -835,13 +839,13 @@ void toggle_colorbar_visibility_horizontal() {
   if(visColorbarHorizontal==0)PRINTF("Horizontal Colorbar hidden\n");
   if(visColorbarHorizontal==1)PRINTF("Horizontal Colorbar visible\n");
   if (visColorbarVertical == 1 && visColorbarHorizontal == 0) {
-    toggle_colorbar = 1;
+    vis_colorbar = 1;
   }
   else if (visColorbarVertical == 0 && visColorbarHorizontal == 1) {
-    toggle_colorbar = 2;
+    vis_colorbar = 2;
   }
   else {
-    toggle_colorbar = 0;
+    vis_colorbar = 0;
   }
 }
 
@@ -876,36 +880,36 @@ void toggle_timebar_visibility() {
 
 // title visibility
 void set_title_visibility(int setting) {
-  visTitle = setting;
-  if(visTitle==0)PRINTF("Title hidden\n");
-  if(visTitle==1)PRINTF("Title visible\n");
+  vis_title_fds= setting;
+  if(vis_title_fds==0)PRINTF("Title hidden\n");
+  if(vis_title_fds==1)PRINTF("Title visible\n");
 }
 
 int get_title_visibility() {
-  return visTitle;
+  return vis_title_fds;
 }
 
 void toggle_title_visibility() {
-  visTitle = 1 - visTitle;
-  if(visTitle==0)PRINTF("Title hidden\n");
-  if(visTitle==1)PRINTF("Title visible\n");
+  vis_title_fds = 1 - vis_title_fds;
+  if(vis_title_fds==0)PRINTF("Title hidden\n");
+  if(vis_title_fds==1)PRINTF("Title visible\n");
 }
 
 // CHID visibility
 void set_chid_visibility(int setting) {
-  visCHID = setting;
-  if(visCHID==0)PRINTF("CHID hidden\n");
-  if(visCHID==1)PRINTF("CHID visible\n");
+  vis_title_CHID = setting;
+  if(vis_title_CHID==0)PRINTF("CHID hidden\n");
+  if(vis_title_CHID==1)PRINTF("CHID visible\n");
 }
 
 int get_chid_visibility() {
-  return visCHID;
+  return vis_title_CHID;
 }
 
 void toggle_chid_visibility() {
-  visCHID = 1 - visCHID;
-  if(visCHID==0)PRINTF("CHID hidden\n");
-  if(visCHID==1)PRINTF("CHIDe visible\n");
+  vis_title_CHID = 1 - vis_title_CHID;
+  if(vis_title_CHID==0)PRINTF("CHID hidden\n");
+  if(vis_title_CHID==1)PRINTF("CHIDe visible\n");
 }
 
 // axis visibility
@@ -1123,19 +1127,19 @@ void toggle_user_ticks_visibility() {
 
 //version info
 void set_version_info_visibility(int setting) {
-  gversion = setting;
-  if(gversion==0)PRINTF("Version info hidden\n");
-  if(gversion==1)PRINTF("Version info visible\n");
+  vis_title_gversion = setting;
+  if(vis_title_gversion==0)PRINTF("Version info hidden\n");
+  if(vis_title_gversion==1)PRINTF("Version info visible\n");
 }
 
 int get_version_info_visibility() {
-  return gversion;
+  return vis_title_gversion;
 }
 
 void toggle_version_info_visibility() {
-  gversion = 1 - gversion;
-  if(gversion==0)PRINTF("Version info hidden\n");
-  if(gversion==1)PRINTF("Version info visible\n");
+  vis_title_gversion = 1 - vis_title_gversion;
+  if(vis_title_gversion==0)PRINTF("Version info hidden\n");
+  if(vis_title_gversion==1)PRINTF("Version info visible\n");
 }
 
 void set_all_label_visibility(int setting) {
@@ -1371,16 +1375,29 @@ void load3dsmoke(const char *smoke_type){
   int i;
   int errorcode;
   int count=0;
+  int lastsmoke;
 
   FREEMEMORY(loaded_file);
-  PRINTF("script: loading smoke3d files of type: %s\n\n",smoke_type);
+  // PRINTF("script: loading smoke3d files of type: %s\n\n",scripti->cval);
+
+  for(i = nsmoke3dinfo-1;i >=0;i--){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo + i;
+    if(MatchUpper(smoke3di->label.longlabel, smoke_type) == MATCH){
+      lastsmoke = i;
+      break;
+    }
+  }
 
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo + i;
-    if(MatchUpper(smoke3di->label.longlabel,smoke_type)==1){
-      ReadSmoke3D(ALL_FRAMES,i,LOAD,&errorcode);
+    if(MatchUpper(smoke3di->label.longlabel,smoke_type) == MATCH){
+      smoke3di->finalize = 0;
+      if(lastsmoke == i)smoke3di->finalize = 1;
+      ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
       if(smoke_type!=NULL&&strlen(smoke_type)>0){
         FREEMEMORY(loaded_file);
         NewMemory((void **)&loaded_file,strlen(smoke_type)+1);
@@ -1389,8 +1406,10 @@ void load3dsmoke(const char *smoke_type){
       count++;
     }
   }
-  if(count==0)fprintf(stderr,"*** Error: Smoke3d files of type %s failed to "
-                      "load\n",smoke_type);
+  if(count == 0){
+    fprintf(stderr, "*** Error: Smoke3d files of type %s failed to load\n", smoke_type);
+    if(stderr2!=NULL)fprintf(stderr2, "*** Error: Smoke3d files of type %s failed to load\n", smoke_type);
+  }
   force_redisplay=1;
   updatemenu=1;
 
@@ -1798,14 +1817,42 @@ void unloadslice(int value){
   int errorcode,i;
 
   updatemenu=1;
-  glutPostRedisplay();
+  GLUTPOSTREDISPLAY;
   if(value>=0){
-    ReadSlice("",value,UNLOAD,SET_SLICECOLOR,&errorcode);
+    slicedata *slicei;
+
+    slicei = sliceinfo+value;
+
+    if(slicei->slice_filetype==SLICE_GEOM){
+      ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+    }
+    else{
+      ReadSlice("", value, ALL_SLICE_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
+    }
+  }
+  if(value<=-3){
+    UnloadBoundaryMenu(-3-value);
   }
   else{
     if(value==UNLOAD_ALL){
       for(i=0;i<nsliceinfo;i++){
-        ReadSlice("",i,UNLOAD,SET_SLICECOLOR,&errorcode);
+        slicedata *slicei;
+
+        slicei = sliceinfo+i;
+        if(slicei->slice_filetype == SLICE_GEOM){
+          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+        }
+        else{
+          ReadSlice("",i, ALL_SLICE_FRAMES, NULL, UNLOAD,DEFER_SLICECOLOR,&errorcode);
+        }
+      }
+      for(i=0;i<npatchinfo;i++){
+        patchdata *patchi;
+
+        patchi = patchinfo + i;
+        if(patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0){
+          UnloadBoundaryMenu(i);
+        }
       }
     }
     else if(value==UNLOAD_LAST){
@@ -1813,7 +1860,15 @@ void unloadslice(int value){
 
       unload_index=LastSliceLoadstack();
       if(unload_index>=0&&unload_index<nsliceinfo){
-        ReadSlice("",unload_index,UNLOAD,SET_SLICECOLOR,&errorcode);
+        slicedata *slicei;
+
+        slicei = sliceinfo+unload_index;
+        if(slicei->slice_filetype==SLICE_GEOM){
+          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+        }
+        else{
+          ReadSlice("", unload_index, ALL_SLICE_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
+        }
       }
     }
   }
@@ -1826,45 +1881,51 @@ void unloadall() {
   int i;
   int ii;
 
-   // leaving code here commented in case I later decide to unload terrain files
-   // for(i=0;i<nterraininfo;i++){
-   //   readterrain("",i,UNLOAD,&errorcode);
-   // }
-#ifdef pp_DEVICE
-    if(devc_csv_filename!=NULL){
-      read_device_data(devc_csv_filename,CSV_FDS,UNLOAD);
+  if(scriptoutstream!=NULL){
+    fprintf(scriptoutstream,"UNLOADALL\n");
+  }
+  if(hrr_csv_filename!=NULL){
+    ReadHRR(UNLOAD, &errorcode);
+  }
+  if(nvolrenderinfo>0){
+    LoadVolsmoke3DMenu(UNLOAD_ALL);
+  }
+  for(i = 0; i < nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo + i;
+    if(slicei->loaded == 1){
+      if(slicei->slice_filetype == SLICE_GEOM){
+        ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+      }
+      else{
+        ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR,&errorcode);
+      }
     }
-    if(exp_csv_filename!=NULL){
-      read_device_data(exp_csv_filename,CSV_EXP,UNLOAD);
-    }
-#endif
-    if(nvolrenderinfo>0){
-      LoadVolsmoke3DMenu(UNLOAD_ALL);
-    }
-    for(i=0;i<nsliceinfo;i++){
-      ReadSlice("",i,UNLOAD,SET_SLICECOLOR,&errorcode);
-    }
-    for(i=0;i<nplot3dinfo;i++){
-      ReadPlot3D("",i,UNLOAD,&errorcode);
-    }
-    for(i=0;i<npatchinfo;i++){
-      ReadBoundary(i,UNLOAD,&errorcode);
-    }
-    for(i=0;i<npartinfo;i++){
-      ReadPart("",i,UNLOAD,&errorcode);
-    }
-    for(i=0;i<nisoinfo;i++){
-      ReadIso("",i,UNLOAD,NULL,&errorcode);
-    }
-    for(i=0;i<nzoneinfo;i++){
-      ReadZone(i,UNLOAD,&errorcode);
-    }
-    for(i=0;i<nsmoke3dinfo;i++){
-      ReadSmoke3D(ALL_FRAMES,i,UNLOAD,&errorcode);
-    }
-    if(nvolrenderinfo>0){
-      UnLoadVolsmoke3DMenu(UNLOAD_ALL);
-    }
+  }
+  for(i = 0; i<nplot3dinfo; i++){
+    ReadPlot3D("",i,UNLOAD,&errorcode);
+  }
+  for(i=0;i<npatchinfo;i++){
+    ReadBoundary(i,UNLOAD,&errorcode);
+  }
+  for(i=0;i<npartinfo;i++){
+    ReadPart("",i,UNLOAD,&errorcode);
+  }
+  for(i=0;i<nisoinfo;i++){
+    ReadIso("",i,UNLOAD,NULL,&errorcode);
+  }
+  for(i=0;i<nzoneinfo;i++){
+    ReadZone(i,UNLOAD,&errorcode);
+  }
+  for(i=0;i<nsmoke3dinfo;i++){
+    ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
+  }
+  if(nvolrenderinfo>0){
+    UnLoadVolsmoke3DMenu(UNLOAD_ALL);
+  }
+  updatemenu=1;
+  GLUTPOSTREDISPLAY;
 }
 
 void unloadtour() {
@@ -2271,13 +2332,13 @@ int set_boundcolor(float r, float g, float b) {
   return 0;
 } // BOUNDCOLOR
 
-int set_colorbar_textureflag(int v)  {
-  usetexturebar = v;
-  return 0;
-}
-int get_colorbar_textureflag() {
-  return usetexturebar;
-}
+// int set_colorbar_textureflag(int v)  {
+//   usetexturebar = v;
+//   return 0;
+// }
+// int get_colorbar_textureflag() {
+//   return usetexturebar;
+// }
 
 int set_colorbar_colors(int ncolors, float colors[][3]) {
   int i;
@@ -2688,10 +2749,10 @@ int set_aperture(int v) {
   return 0;
 } // APERTURE
 
-int set_axissmooth(int v) {
-  axislabels_smooth = v;
-  return 0;
-} // AXISSMOOTH
+// int set_axissmooth(int v) {
+//   axislabels_smooth = v;
+//   return 0;
+// } // AXISSMOOTH
 
 // provided above
 int set_blocklocation(int v) {
@@ -2810,7 +2871,7 @@ int set_geommaxangle(int v) {
 }
 
 int set_gversion(int v) {
-  gversion = v;
+  vis_title_gversion = v;
   return 0;
 } // GVERSION
 
@@ -3082,7 +3143,7 @@ int set_showtimelabel(int v){
 } // SHOWTIMELABEL
 
 int set_showtitle(int v){
-  visTitle = v;
+  vis_title_fds = v;
   return 0;
 } // SHOWTITLE
 
@@ -3492,15 +3553,15 @@ int set_smokealbedo(float v) {
 int set_smokerthick(float v) {
   smoke3d_rthick = v;
   smoke3d_rthick = CLAMP(smoke3d_rthick, 1.0, 255.0);
-  smoke3d_thick = LogBase2(smoke3d_rthick);
+  // smoke3d_thick = LogBase2(smoke3d_rthick);
   return 0;
 } // SMOKERTHICK
 #endif
 
-int set_smokethick(float v) {
-  smoke3d_thick = v;
-  return 0;
-} // SMOKETHICK
+// int set_smokethick(float v) {
+//   smoke3d_thick = v;
+//   return 0;
+// } // SMOKETHICK
 
 #ifdef pp_GPU
 int set_usegpu(int v) {
@@ -3954,12 +4015,12 @@ int set_c_slice(int minFlag, float minValue, int maxFlag, float maxValue,
 }
 
 int set_cache_boundarydata(int setting) {
-  cache_boundarydata = setting;
+  cache_boundary_data = setting;
   return 0;
 } // CACHE_BOUNDARYDATA
 
 int set_cache_qdata(int setting) {
-  cache_qdata = setting;
+  cache_plot3d_data = setting;
   return 0;
 } // CACHE_QDATA
 
@@ -3994,7 +4055,7 @@ int set_patchdataout(int outputFlag, float tmin, float tmax, float xmin,
 int set_c_plot3d(int n3d, int minFlags[], int minVals[], int maxFlags[],
                  int maxVals[]) {
   int i;
-  if(n3d>mxplot3dvars)n3d = mxplot3dvars;
+  if(n3d>MAXPLOT3DVARS)n3d = MAXPLOT3DVARS;
   for(i = 0; i<n3d; i++){
     setp3chopmin[i] = minFlags[i];
     setp3chopmax[i] = maxFlags[i];
@@ -4007,12 +4068,12 @@ int set_c_plot3d(int n3d, int minFlags[], int minVals[], int maxFlags[],
 int set_v_plot3d(int n3d, int minFlags[], int minVals[], int maxFlags[],
                  int maxVals[]) {
   int i;
-  if(n3d>mxplot3dvars)n3d = mxplot3dvars;
+  if(n3d>MAXPLOT3DVARS)n3d = MAXPLOT3DVARS;
   for(i = 0; i<n3d; i++){
-    setp3min[i] = minFlags[i];
-    setp3max[i] = maxFlags[i];
-    p3min[i] = minVals[i];
-    p3max[i] = maxVals[i];
+    setp3min_all[i] = minFlags[i];
+    setp3max_all[i] = maxFlags[i];
+    p3min_global[i] = minVals[i];
+    p3max_global[i] = maxVals[i];
   }
   return 0;
 } // V_PLOT3D
@@ -4054,7 +4115,7 @@ int set_v5_particles(int minFlag, float minValue, int maxFlag, float maxValue,
           propi->percentile_min = minValue;
           break;
         case GLOBAL_MIN:
-          propi->global_min = minValue;
+          propi->dlg_global_valmin = minValue;
           break;
         case SET_MIN:
           propi->user_min = minValue;
@@ -4068,7 +4129,7 @@ int set_v5_particles(int minFlag, float minValue, int maxFlag, float maxValue,
           propi->percentile_max = maxValue;
           break;
         case GLOBAL_MAX:
-          propi->global_max = maxValue;
+          propi->dlg_global_valmax = maxValue;
           break;
         case SET_MAX:
           propi->user_max = maxValue;
@@ -4084,9 +4145,9 @@ int set_v5_particles(int minFlag, float minValue, int maxFlag, float maxValue,
 
 int set_v_particles(int minFlag, float minValue, int maxFlag, float maxValue) {
   setpartmin = minFlag;
-  partmin = minValue;
+  glui_partmin = minValue;
   setpartmax = maxFlag;
-  partmax = maxValue;
+  glui_partmax = maxValue;
   return 0;
 } // V_PARTICLES
 
@@ -4106,10 +4167,10 @@ int set_v_slice(int minFlag, float minValue, int maxFlag, float maxValue,
   if(strcmp(label, "") != 0){
     for(i = 0; i<nslicebounds; i++){
       if(strcmp(slicebounds[i].shortlabel, label) != 0)continue;
-      slicebounds[i].setvalmin = minFlag;
-      slicebounds[i].setvalmax = maxFlag;
-      slicebounds[i].valmin = minValue;
-      slicebounds[i].valmax = maxValue;
+      slicebounds[i].dlg_setvalmin = minFlag;
+      slicebounds[i].dlg_setvalmax = maxFlag;
+      slicebounds[i].dlg_valmin = minValue;
+      slicebounds[i].dlg_valmax = maxValue;
 
       slicebounds[i].line_contour_min = lineMin;
       slicebounds[i].line_contour_max = lineMax;
@@ -4119,10 +4180,10 @@ int set_v_slice(int minFlag, float minValue, int maxFlag, float maxValue,
   // if there is no label apply values to all slice types
   } else{
     for(i = 0; i<nslicebounds; i++){
-      slicebounds[i].setvalmin = minFlag;
-      slicebounds[i].setvalmax = maxFlag;
-      slicebounds[i].valmin = minValue;
-      slicebounds[i].valmax = maxValue;
+      slicebounds[i].dlg_setvalmin = minFlag;
+      slicebounds[i].dlg_setvalmax = maxFlag;
+      slicebounds[i].dlg_valmin = minValue;
+      slicebounds[i].dlg_valmax = maxValue;
 
       slicebounds[i].line_contour_min = lineMin;
       slicebounds[i].line_contour_max = lineMax;
