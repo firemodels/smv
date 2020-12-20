@@ -2520,6 +2520,7 @@ GLUI_Spinner *SPINNER_slicevectorskip=NULL;
 GLUI_Spinner *SPINNER_plot3dvectorskip=NULL;
 GLUI_Spinner *SPINNER_colorbar_shift = NULL;
 GLUI_Spinner *SPINNER_ncolorlabel_digits = NULL;
+GLUI_Spinner *SPINNER_ncolorlabel_padding = NULL;
 GLUI_Spinner *SPINNER_colorbar_selection_width = NULL;
 GLUI_Spinner *SPINNER_labels_transparency_data = NULL;
 GLUI_Spinner *SPINNER_down_red = NULL, *SPINNER_down_green = NULL, *SPINNER_down_blue = NULL;
@@ -5282,6 +5283,8 @@ extern "C" void GluiBoundsSetup(int main_window){
   SPINNER_colorbar_selection_width->set_int_limits(COLORBAR_SELECTION_WIDTH_MIN, COLORBAR_SELECTION_WIDTH_MAX);
   SPINNER_ncolorlabel_digits = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("digits:"), GLUI_SPINNER_INT, &ncolorlabel_digits, COLORLABEL_DIGITS, SliceBoundCB);
   SPINNER_ncolorlabel_digits->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
+  SPINNER_ncolorlabel_padding = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("padding:"), GLUI_SPINNER_INT, &ncolorlabel_padding, COLORLABEL_DIGITS, SliceBoundCB);
+  SPINNER_ncolorlabel_padding->set_int_limits(0, 8, GLUI_LIMIT_CLAMP);
 
   glui_bounds->add_column_to_panel(PANEL_cb11, false);
 
