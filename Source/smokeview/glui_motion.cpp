@@ -1864,9 +1864,17 @@ extern "C" void SceneMotionCB(int var){
           break;
       }
       if(windowsize_pointer>=2){
-        SPINNER_window_width->set_int_val(glui_screenWidth);
-        SPINNER_window_height->set_int_val(glui_screenHeight);
-        SetScreenSize(&glui_screenWidth,&glui_screenHeight);
+#ifdef pp_OSX
+#ifndef pp_QUARTZ
+        glui_screenWidth  /= 2;
+        glui_screenHeight /= 2;
+#endif
+#endif
+        SetScreenSize(&glui_screenWidth, &glui_screenHeight);
+        screenWidth  = glui_screenWidth;
+        screenHeight = glui_screenHeight;
+        SPINNER_window_width->set_int_val(screenWidth);
+        SPINNER_window_height->set_int_val(screenHeight);
         ResizeWindow(screenWidth,screenHeight);
       }
       {
@@ -1880,7 +1888,17 @@ extern "C" void SceneMotionCB(int var){
       SnapScene();
       break;
     case WINDOW_RESIZE:
-      SetScreenSize(&glui_screenWidth,&glui_screenHeight);
+#ifdef pp_OSX
+#ifndef pp_QUART
+      glui_screenWidth  /= 2;
+      glui_screenHeight /=2;
+#endif
+#endif
+      SetScreenSize(&glui_screenWidth, &glui_screenHeight);
+      screenWidth = glui_screenWidth;
+      screenHeight = glui_screenHeight;
+      SPINNER_window_width->set_int_val(screenWidth);
+      SPINNER_window_height->set_int_val(screenHeight);
       UpdateWindowSizeList();
       ResizeWindow(screenWidth,screenHeight);
       break;

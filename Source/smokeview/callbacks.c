@@ -3220,7 +3220,7 @@ void IdleCB(void){
 
 void SetScreenSize(int *width, int *height){
   if(width!=NULL){
-    screenWidth=MAX(*width,1);
+    screenWidth = MAX(*width,1);
     screenWidth = MAX(screenWidth, 1);
     if(screenWidth%2==1)screenWidth++;
 
