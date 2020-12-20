@@ -1432,6 +1432,7 @@ extern "C" void UpdateWindowSizeList(void){
     windowsize_pointer=9;
   }
   if(LIST_windowsize!=NULL)LIST_windowsize->set_int_val(windowsize_pointer);
+   windowsize_pointer_old = windowsize_pointer;  
 }
 
 /* ------------------ UpdateTranslate ------------------------ */
@@ -1864,6 +1865,8 @@ extern "C" void SceneMotionCB(int var){
           break;
       }
       if(windowsize_pointer>=2){
+        if(windowsize_pointer==windowsize_pointer_old)break;
+        windowsize_pointer_old = windowsize_pointer;
 #ifdef pp_OSX
 #ifndef pp_QUARTZ
         glui_screenWidth  /= 2;

@@ -2265,6 +2265,12 @@ void UpdateDisplay(void){
   if(update_screensize == 1){
     update_screensize = 0;
     UpdateWindowSizeList();
+#ifdef pp_OSX
+#ifndef pp_QUARTZ
+    screenWidthINI /= 2;
+    screenHeightINI /= 2;
+#endif
+#endif
     ResizeWindow(screenWidthINI, screenHeightINI);
   }
   if(updatemenu == 1 && usemenu == 1 && menustatus == GLUT_MENU_NOT_IN_USE){

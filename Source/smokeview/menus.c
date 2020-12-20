@@ -1821,7 +1821,19 @@ void ResetMenu(int value){
 
 /* ------------------ RenderState ------------------------ */
 
+#undef HIGH_RES  
+#ifdef pp_OSX
+#ifndef pp_QUARTZ
+#define HIGH_RES
+#endif
+#endif
 void RenderState(int onoff){
+#ifdef HIGH_RES
+  int scale = 2;
+#else
+  int scale = 1;
+#endif
+
   if(onoff==RENDER_ON){
     if(render_status == RENDER_ON)return;
     render_status = RENDER_ON;
@@ -1830,14 +1842,14 @@ void RenderState(int onoff){
     saveW=screenWidth;
     saveH=screenHeight;
     if(renderW==0||renderH==0){
-      ResizeWindow(screenWidth,screenHeight);
+      ResizeWindow(screenWidth/scale, screenHeight/scale);
     }
     else{
       if(renderW>max_screenWidth){
-        ResizeWindow(max_screenWidth,max_screenHeight);
+        ResizeWindow(max_screenWidth/scale, max_screenHeight/scale);
       }
       else{
-        ResizeWindow(renderW,renderH);
+        ResizeWindow(renderW/scale, renderH/scale);
       }
     }
   }
@@ -1848,8 +1860,10 @@ void RenderState(int onoff){
     render_status = RENDER_OFF;
     render_firsttime = NO;
     Enable360Zoom();
-    SetScreenSize(&saveW,&saveH);
-    ResizeWindow(screenWidth,screenHeight);
+    screenWidth  = saveW/scale;
+    screenHeight = saveH/scale;
+    SetScreenSize(&screenWidth, &screenHeight);
+    ResizeWindow(saveW/scale, saveH/scale);
     ResetRenderResolution(&width_low, &height_low, &width_high, &height_high);
     UpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
   }

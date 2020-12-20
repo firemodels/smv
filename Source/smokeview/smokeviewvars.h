@@ -23,6 +23,7 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(windowsize_pointer_old, -999);
 #ifdef pp_GLUT_FONTS
 GLUTEXTERN const BitmapFontRec glutBitmapHelvetica20;
 GLUTEXTERN const BitmapFontRec glutBitmapHelvetica24;
