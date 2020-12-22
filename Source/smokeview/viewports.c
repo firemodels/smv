@@ -189,7 +189,9 @@ void GetViewportInfo(void){
   }
 #ifdef pp_OSX
 #ifdef pp_NOQUARTZ
-  VP_timebar.height *= 2;
+  if(double_scale==1){
+    VP_timebar.height *= 2;
+  }
 #endif
 #endif
   VP_timebar.right = VP_timebar.left + VP_timebar.width;
@@ -807,7 +809,9 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
       timebar_height = 20;
 #ifdef pp_OSX
 #ifdef pp_NOQUARTZ
-      timebar_height *= 2;
+      if(double_scale==1){
+        timebar_height *= 2;
+      }
 #endif
 #endif
       DrawTimebar(timebar_left_pos, timebar_right_pos, v_space+VP_timebar.down, v_space+(VP_timebar.down+timebar_height));

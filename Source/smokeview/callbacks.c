@@ -961,8 +961,10 @@ void MouseCB(int button, int state, int xm, int ym){
 
 #ifdef pp_OSX
 #ifdef pp_NOQUARTZ
-  xm *= 2;
-  ym *= 2;
+  if(double_scale==1){
+    xm *= 2;
+    ym *= 2;
+  }
 #endif
 #endif
 
@@ -1471,8 +1473,10 @@ int ThrottleGpu(void){
 void MouseDragCB(int xm, int ym){
 #ifdef pp_OSX
 #ifdef pp_NOQUARTZ
-  xm *= 2;
-  ym *= 2;
+  if(double_scale==1){
+    xm *= 2;
+    ym *= 2;
+  }
 #endif
 #endif
 
@@ -2565,6 +2569,15 @@ void Keyboard(unsigned char key, int flag){
       }
       updatemenu = 1;
       break;
+#ifdef pp_OSX
+#ifndef pp_QUARTZ
+    case '"':
+      double_scale = 1 - double_scale;
+      update_reshape = 1;
+      GLUTPOSTREDISPLAY;
+      break;
+#endif
+#endif
     case '<':
       vectorpointsize+=2;
       if(vectorpointsize>20.0)vectorpointsize = 1.0;
@@ -3226,7 +3239,9 @@ void SetScreenSize(int *width, int *height){
 
 #ifdef pp_OSX
 #ifndef pp_QUARTZ
-    screenWidth*=2;
+    if(double_scale==1){
+      screenWidth*=2;
+    }
 #endif
 #endif
   }
@@ -3234,7 +3249,9 @@ void SetScreenSize(int *width, int *height){
     screenHeight=MAX(*height,1);
 #ifdef pp_OSX
 #ifndef pp_QUARTZ
-    screenHeight*=2;
+    if(double_scale==1){
+      screenHeight*=2;
+    }
 #endif
 #endif
   }

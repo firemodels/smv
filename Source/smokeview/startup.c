@@ -419,8 +419,10 @@ void SetupGlut(int argc, char **argv){
     max_screenHeight = glutGet(GLUT_SCREEN_HEIGHT);
 #ifdef pp_OSX
 #ifndef pp_QUARTZ
-    max_screenWidth  *= 2;
-    max_screenHeight *= 2;
+    if(double_scale==1){
+      max_screenWidth  *= 2;
+      max_screenHeight *= 2;
+    }
 #endif
 #endif
     if(trainer_mode==1){
@@ -432,8 +434,10 @@ void SetupGlut(int argc, char **argv){
       TRAINER_HEIGHT=50;
 #ifdef pp_OSX
 #ifndef pp_QUARTZ
-      TRAINER_WIDTH  *= 2;
-      TRAINER_HEIGHT *= 2;
+      if(double_scale==1){
+        TRAINER_WIDTH  *= 2;
+        TRAINER_HEIGHT *= 2;
+      }
 #endif
 #endif
       scrW = max_screenWidth  - TRAINER_WIDTH;

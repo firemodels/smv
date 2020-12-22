@@ -1098,6 +1098,11 @@ SVEXTERN float SVDECL(scaled_font2d_height2width,1.0);
 SVEXTERN int SVDECL(scaled_font3d_height,32);
 SVEXTERN float SVDECL(scaled_font3d_height2width,1.0);
 #endif
+#ifdef pp_OSX
+#ifndef pp_QUARTZ
+SVEXTERN int SVDECL(double_scale,1), SVDECL(update_reshape, 0);
+#endif
+#endif
 
 SVEXTERN int SVDECL(custom_worldcenter,0),SVDECL(show_rotation_center,0);
 SVEXTERN float SVDECL(xcenGLOBAL,0.5), SVDECL(ycenGLOBAL,0.5), SVDECL(zcenGLOBAL,0.5);

@@ -1828,11 +1828,7 @@ void ResetMenu(int value){
 #endif
 #endif
 void RenderState(int onoff){
-#ifdef HIGH_RES
-  int scale = 2;
-#else
   int scale = 1;
-#endif
 
   if(onoff==RENDER_ON){
     if(render_status == RENDER_ON)return;
@@ -1841,6 +1837,9 @@ void RenderState(int onoff){
     update_screeninfo = 1;
     saveW=screenWidth;
     saveH=screenHeight;
+#ifdef HIGH_RES
+    if(double_scale==1)scale = 2;
+#endif
     if(renderW==0||renderH==0){
       ResizeWindow(screenWidth/scale, screenHeight/scale);
     }
