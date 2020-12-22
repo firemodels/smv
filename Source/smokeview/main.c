@@ -41,6 +41,11 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -html          - output html version of smokeview scene"));
     PRINTF("%s\n", _(" -info            generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info"));
     PRINTF("%s\n", _(" -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian"));
+#ifdef pp_OSX
+#ifndef pp_QUARTZ
+    PRINTF("%s\n", _(" -noscale       - do not double scene size"));
+#endif
+#endif
     PRINTF("%s\n", _(" -ng_ini        - non-graphics version of -ini."));
     PRINTF("%s\n", _(" -scriptrenderdir dir - directory containing script rendered images"));
     PRINTF("%s\n", _("                  (override directory specified by RENDERDIR script keyword)"));
@@ -444,6 +449,13 @@ void ParseCommandline(int argc, char **argv){
       generate_info_from_commandline = 1;
       use_graphics = 0;
     }
+#ifdef pp_OSX
+#ifndef pp_QUARTZ
+    else if(strncmp(argv[i], "-noscale", 8)==0){
+      double_scale = 0;
+    }
+#endif
+#endif
     else if(strncmp(argv[1], "-sizes", 6)==0){
       update_filesizes = 1;
       use_graphics = 0;
