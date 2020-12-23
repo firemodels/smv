@@ -2,8 +2,8 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
-#undef LOWRES
 OPTS="-I -Q $*"
+export LOWRES=1
 
 source ../../../Source/scripts/setopts.sh $OPTS
 

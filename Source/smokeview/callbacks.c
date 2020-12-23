@@ -959,13 +959,9 @@ void UpdateMouseInfo(int flag, int xm, int ym){
 void MouseCB(int button, int state, int xm, int ym){
   float *eye_xyz;
 
-#ifdef pp_OSX
-#ifdef pp_NOQUARTZ
-  if(double_scale==1){
-    xm *= 2;
-    ym *= 2;
-  }
-#endif
+#ifdef pp_OSX_HIGHRES
+  xm *= 2;
+  ym *= 2;
 #endif
 
   {
@@ -1471,15 +1467,10 @@ int ThrottleGpu(void){
 /* ------------------ MouseDragCB ------------------------ */
 
 void MouseDragCB(int xm, int ym){
-#ifdef pp_OSX
-#ifdef pp_NOQUARTZ
-  if(double_scale==1){
-    xm *= 2;
-    ym *= 2;
-  }
+#ifdef pp_OSX_HIGHRES
+  xm *= 2;
+  ym *= 2;
 #endif
-#endif
-
   {
     float delta_time;
 
