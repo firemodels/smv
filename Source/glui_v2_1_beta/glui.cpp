@@ -1,3 +1,4 @@
+#define IN_GLUICPP
 /****************************************************************************
   
   GLUI User Interface Toolkit
@@ -556,7 +557,9 @@ int _glutBitmapWidthString( void *font, char *s )
     p++;
   }
 #ifdef pp_OSX_HIGHRES
-  width /=2;
+  if(double_scale==1){
+    width /=2;
+  }
 #endif
   return width;
 }
@@ -1028,7 +1031,9 @@ GLUI_Main::GLUI_Main( void )
 
   font                    = GLUT_BITMAP_HELVETICA_12;
 #ifdef pp_OSX_HIGHRES
-  font                    = GLUT_BITMAP_TIMES_ROMAN_24;
+  if(double_scale==1){
+    font                    = GLUT_BITMAP_TIMES_ROMAN_24;
+  }
 #endif
   curr_cursor             = GLUT_CURSOR_LEFT_ARROW;
 

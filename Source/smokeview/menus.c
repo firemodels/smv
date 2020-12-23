@@ -1665,8 +1665,14 @@ void FontMenu(int value){
   case SMALL_FONT:
     fontindex=SMALL_FONT;
 #ifdef pp_OSX_HIGHRES
-    large_font=(void *)GLUT_BITMAP_HELVETICA_24;
-    small_font=(void *)GLUT_BITMAP_HELVETICA_20;
+    if(double_scale==1){
+      large_font=(void *)GLUT_BITMAP_HELVETICA_24;
+      small_font=(void *)GLUT_BITMAP_HELVETICA_20;
+    }
+    else{
+      large_font=GLUT_BITMAP_HELVETICA_12;
+      small_font=GLUT_BITMAP_HELVETICA_10;
+    }
 #else
     large_font=GLUT_BITMAP_HELVETICA_12;
     small_font=GLUT_BITMAP_HELVETICA_10;
@@ -1677,8 +1683,14 @@ void FontMenu(int value){
   case LARGE_FONT:
     fontindex=LARGE_FONT;
 #ifdef pp_OSX_HIGHRES
-    large_font=(void *)GLUT_BITMAP_HELVETICA_36;
-    small_font=(void *)GLUT_BITMAP_HELVETICA_36;
+    if(double_scale==1){
+      large_font=(void *)GLUT_BITMAP_HELVETICA_36;
+      small_font=(void *)GLUT_BITMAP_HELVETICA_36;
+    }
+    else{
+      large_font=GLUT_BITMAP_HELVETICA_18;
+      small_font=GLUT_BITMAP_HELVETICA_18;
+    }
 #else
     large_font=GLUT_BITMAP_HELVETICA_18;
     small_font=GLUT_BITMAP_HELVETICA_18;
@@ -1832,7 +1844,9 @@ void RenderState(int onoff){
     saveW=screenWidth;
     saveH=screenHeight;
 #ifdef pp_OSX_HIGHRES
-    scale = 2;
+    if(double_scale==1){
+      scale = 2;
+    }
 #endif
     if(renderW==0||renderH==0){
       ResizeWindow(screenWidth/scale, screenHeight/scale);
@@ -9587,9 +9601,14 @@ updatemenu=0;
     glutAddMenuEntry("  Platform: OSX64/QUARTZ", 1);
 #else
 #ifdef pp_OSX_HIGHRES
-    glutAddMenuEntry("  Platform: OSX64(high res fonts)", 1);
+    if(double_scale==1){
+      glutAddMenuEntry("  Platform: OSX64(high res fonts)", 1);
+    }
+    else{
+      glutAddMenuEntry("  Platform: OSX64", 1);
+    }
 #else
-    glutAddMenuEntry("  Platform: OSX64(low res fonts)", 1);
+    glutAddMenuEntry("  Platform: OSX64", 1);
 #endif
 #endif
 #endif

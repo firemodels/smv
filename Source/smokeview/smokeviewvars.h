@@ -23,6 +23,12 @@
 #include "glutbitmap.h"
 #endif
 
+#ifndef _GLUI_H_
+#ifdef pp_OSX_HIGHRES
+extern int double_scale;
+#endif
+#endif
+
 SVEXTERN int SVDECL(windowsize_pointer_old, -999);
 #ifdef pp_OSX_HIGHRES
 GLUTEXTERN const BitmapFontRec glutBitmapHelvetica20;

@@ -31,6 +31,9 @@ void Usage(char *prog,int option){
   UsageCommon(HELP_SUMMARY);
   if(option==HELP_ALL){
     PRINTF("\n%s\n", _("Other options:"));
+#ifdef pp_OSX_HIGHRES
+    PRINTF("%s\n", _(" -1x            - turn off 2x scene scaling."));
+#endif
     PRINTF("%s\n", _(" -build         - show pre-processing directives used in this build of Smokeview"));
     PRINTF("%s\n", _(" -convert_ini case1.ini case2.ini - update case1.ini to the current format"));
     PRINTF("%s\n", _("                  and save results into case2.ini"));
@@ -416,7 +419,10 @@ void ParseCommandline(int argc, char **argv){
 
   for(i = 1; i < argc; i++){
     if(strncmp(argv[i], "-", 1) != 0)continue;
-    if(strncmp(argv[i], "-update_bounds", 14) == 0){
+    if(strncmp(argv[1], "-1x", 3) == 0){
+      double_scale=0;
+    }
+    else if(strncmp(argv[i], "-update_bounds", 14) == 0){
       use_graphics = 0;
       update_bounds = 1;
     }
@@ -679,7 +685,7 @@ void ParseCommandline(int argc, char **argv){
     }
     else{
       fprintf(stderr, "*** Error: unknown option: %s\n", argv[i]);
-      Usage(argv[0],HELP_ALL);
+      printf("Use -help_all to see a list of valid options\n");
       SMV_EXIT(1);
     }
   }

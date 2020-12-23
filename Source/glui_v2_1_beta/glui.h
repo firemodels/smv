@@ -1710,6 +1710,14 @@ void glui_parent_window_keyboard_func(unsigned char key, int x, int y);
 void glui_parent_window_mouse_func(int, int, int, int );
 void glui_parent_window_special_func(int key, int x, int y);
 
+#ifdef pp_OSX_HIGHRES
+#ifdef IN_GLUICPP
+int double_scale=1;
+#else
+extern "C" int double_scale;
+#endif
+#endif
+
 
 
 #endif

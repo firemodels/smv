@@ -124,8 +124,14 @@ void GLUI_StdBitmaps::draw( int bitmap_num, int x, int y )
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 
 #ifdef pp_OSX_HIGHRES
+    if(double_scale==1){
     glDrawPixels(2*bitmaps[bitmap_num].w, 2*bitmaps[bitmap_num].h,
                  GL_RGB, GL_UNSIGNED_BYTE, bitmaps[bitmap_num].pixels_highres);
+    }
+    else{
+      glDrawPixels(bitmaps[bitmap_num].w, bitmaps[bitmap_num].h,
+                   GL_RGB, GL_UNSIGNED_BYTE, bitmaps[bitmap_num].pixels ); 
+    }
 #else
     glDrawPixels( bitmaps[bitmap_num].w, bitmaps[bitmap_num].h,
 		  GL_RGB, GL_UNSIGNED_BYTE, bitmaps[bitmap_num].pixels ); 

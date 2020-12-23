@@ -23,10 +23,8 @@
 #define pp_REFRESH
 #endif
 
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
+#ifdef pp_OSX_HIGHRES
 #define pp_REFRESH
-#endif
 #endif
 
 #ifdef pp_REFRESH

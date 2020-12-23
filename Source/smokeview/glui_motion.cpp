@@ -1866,8 +1866,10 @@ extern "C" void SceneMotionCB(int var){
         if(windowsize_pointer==windowsize_pointer_old)break;
         windowsize_pointer_old = windowsize_pointer;
 #ifdef pp_OSX_HIGHRES
-        glui_screenWidth  /= 2;
-        glui_screenHeight /= 2;
+        if(double_scale==1){
+          glui_screenWidth  /= 2;
+          glui_screenHeight /= 2;
+        }
 #endif
         SetScreenSize(&glui_screenWidth, &glui_screenHeight);
         screenWidth  = glui_screenWidth;

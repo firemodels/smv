@@ -14700,10 +14700,18 @@ void WriteIni(int flag,char *filename){
   else{
 
 #ifdef pp_OSX_HIGHRES
-    fprintf(fileout,"WINDOWWIDTH\n");
-    fprintf(fileout," %i\n",screenWidth/2);
-    fprintf(fileout,"WINDOWHEIGHT\n");
-    fprintf(fileout," %i\n",screenHeight/2);
+    if(double_scale==1){
+      fprintf(fileout,"WINDOWWIDTH\n");
+      fprintf(fileout," %i\n",screenWidth/2);
+      fprintf(fileout,"WINDOWHEIGHT\n");
+      fprintf(fileout," %i\n",screenHeight/2);
+    }
+    else{
+      fprintf(fileout,"WINDOWWIDTH\n");
+      fprintf(fileout," %i\n",screenWidth);
+      fprintf(fileout,"WINDOWHEIGHT\n");
+      fprintf(fileout," %i\n",screenHeight);
+    }
 #else
     fprintf(fileout,"WINDOWWIDTH\n");
     fprintf(fileout," %i\n",screenWidth);

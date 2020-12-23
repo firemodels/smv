@@ -2266,8 +2266,10 @@ void UpdateDisplay(void){
     update_screensize = 0;
     UpdateWindowSizeList();
 #ifdef pp_OSX_HIGHRES
-    screenWidthINI  /= 2;
-    screenHeightINI /= 2;
+    if(double_scale==1){
+      screenWidthINI  /= 2;
+      screenHeightINI /= 2;
+    }
 #endif
     ResizeWindow(screenWidthINI, screenHeightINI);
   }
