@@ -2569,15 +2569,6 @@ void Keyboard(unsigned char key, int flag){
       }
       updatemenu = 1;
       break;
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
-    case '"':
-      double_scale = 1 - double_scale;
-      update_reshape = 1;
-      GLUTPOSTREDISPLAY;
-      break;
-#endif
-#endif
     case '<':
       vectorpointsize+=2;
       if(vectorpointsize>20.0)vectorpointsize = 1.0;
@@ -3237,22 +3228,14 @@ void SetScreenSize(int *width, int *height){
     screenWidth = MAX(screenWidth, 1);
     if(screenWidth%2==1)screenWidth++;
 
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
-    if(double_scale==1){
-      screenWidth*=2;
-    }
-#endif
+#ifdef pp_OSX_HIGHRES
+    screenWidth *= 2;
 #endif
   }
   if(height!=NULL){
     screenHeight=MAX(*height,1);
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
-    if(double_scale==1){
-      screenHeight*=2;
-    }
-#endif
+#ifdef pp_OSX_HGHRES
+    screenHeight *= 2;
 #endif
   }
   {

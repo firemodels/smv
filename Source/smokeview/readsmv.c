@@ -14699,14 +14699,7 @@ void WriteIni(int flag,char *filename){
   }
   else{
 
-#undef USE_SPECIAL
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
-#define USE_SPECIAL
-#endif
-#endif
-
-#ifdef USE_SPECIAL
+#ifdef pp_OSX_HIGHRES
     fprintf(fileout,"WINDOWWIDTH\n");
     fprintf(fileout," %i\n",screenWidth/2);
     fprintf(fileout,"WINDOWHEIGHT\n");
@@ -14720,7 +14713,6 @@ void WriteIni(int flag,char *filename){
   }
 
   fprintf(fileout, "\n *** DATA LOADING ***\n\n");
-
 
   fprintf(fileout, "BOUNDZIPSTEP\n");
   fprintf(fileout, " %i\n", boundzipstep);

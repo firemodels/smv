@@ -1787,15 +1787,6 @@ void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo){
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
-  if(update_reshape==1){
-    update_reshape = 0;
-    ReshapeCB(screenWidth,screenHeight);
-    GLUTPOSTREDISPLAY;
-  }
-#endif
-#endif
   if(update_glui_devices==1){
     update_glui_devices = 0;
     UpdateGluiDevices();
@@ -2274,13 +2265,9 @@ void UpdateDisplay(void){
   if(update_screensize == 1){
     update_screensize = 0;
     UpdateWindowSizeList();
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
-    if(double_scale==1){
-      screenWidthINI /= 2;
-      screenHeightINI /= 2;
-    }
-#endif
+#ifdef pp_OSX_HIGHRES
+    screenWidthINI  /= 2;
+    screenHeightINI /= 2;
 #endif
     ResizeWindow(screenWidthINI, screenHeightINI);
   }

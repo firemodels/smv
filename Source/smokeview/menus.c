@@ -1664,7 +1664,7 @@ void FontMenu(int value){
     break;
   case SMALL_FONT:
     fontindex=SMALL_FONT;
-#ifdef pp_GLUT_FONTS
+#ifdef pp_OSX_HIGHRES
     large_font=(void *)GLUT_BITMAP_HELVETICA_24;
     small_font=(void *)GLUT_BITMAP_HELVETICA_20;
 #else
@@ -1676,7 +1676,7 @@ void FontMenu(int value){
     break;
   case LARGE_FONT:
     fontindex=LARGE_FONT;
-#ifdef pp_GLUT_FONTS
+#ifdef pp_OSX_HIGHRES
     large_font=(void *)GLUT_BITMAP_HELVETICA_36;
     small_font=(void *)GLUT_BITMAP_HELVETICA_36;
 #else
@@ -1821,12 +1821,6 @@ void ResetMenu(int value){
 
 /* ------------------ RenderState ------------------------ */
 
-#undef HIGH_RES  
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
-#define HIGH_RES
-#endif
-#endif
 void RenderState(int onoff){
   int scale = 1;
 
@@ -1837,8 +1831,8 @@ void RenderState(int onoff){
     update_screeninfo = 1;
     saveW=screenWidth;
     saveH=screenHeight;
-#ifdef HIGH_RES
-    if(double_scale==1)scale = 2;
+#ifdef pp_OSX_HIGHRES
+    scale = 2;
 #endif
     if(renderW==0||renderH==0){
       ResizeWindow(screenWidth/scale, screenHeight/scale);

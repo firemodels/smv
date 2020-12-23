@@ -93,13 +93,15 @@
 #define pp_CLOSEOFF     // turn off and disable close buttons in dialog box
 #endif
 
+#undef pp_OSX_HIGHRES
 #ifdef pp_OSX
 #ifndef pp_QUARTZ
 #define pp_REFRESH      // refresh glui dialogs when they change size
-#define pp_GLUT_FONTS
+#ifndef pp_OSX_LOWRES
+#define pp_OSX_HIGHRES
 #endif
 #endif
-
+#endif
 
 //*** options: options being tested on all platforms
 

@@ -555,10 +555,8 @@ int _glutBitmapWidthString( void *font, char *s )
     width += glutBitmapWidth( font, *p );
     p++;
   }
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
+#ifdef pp_OSX_HIGHRES
   width /=2;
-#endif
 #endif
   return width;
 }
@@ -1029,10 +1027,8 @@ GLUI_Main::GLUI_Main( void )
   GLUI_Master.glui_id_counter++;
 
   font                    = GLUT_BITMAP_HELVETICA_12;
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
+#ifdef pp_OSX_HIGHRES
   font                    = GLUT_BITMAP_TIMES_ROMAN_24;
-#endif
 #endif
   curr_cursor             = GLUT_CURSOR_LEFT_ARROW;
 

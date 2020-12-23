@@ -1,7 +1,7 @@
 #include "options.h"
 #define INGLUT
 
-#ifdef pp_GLUT_FONTS
+#ifdef pp_OSX_HIGHRES
 /* GENERATED FILE -- DO NOT MODIFY */
 
 #define glutBitmapHelvetica36 XXX
