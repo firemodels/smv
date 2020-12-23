@@ -9586,11 +9586,15 @@ updatemenu=0;
 #ifdef pp_QUARTZ
     glutAddMenuEntry("  Platform: OSX64/QUARTZ", 1);
 #else
-    glutAddMenuEntry("  Platform: OSX64", 1);
+#ifdef pp_OSX_HIGHRES
+    glutAddMenuEntry("  Platform: OSX64(high res fonts)", 1);
+#else
+    glutAddMenuEntry("  Platform: OSX64(low res fonts)", 1);
+#endif
 #endif
 #endif
 #ifdef pp_LINUX
-    glutAddMenuEntry("  Platform: LINUX64/QUARTZ", 1);
+    glutAddMenuEntry("  Platform: LINUX64", 1);
 #endif
     GLUTADDSUBMENU(_("Disclaimer"),disclaimermenu);
   }
