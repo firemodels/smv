@@ -1471,12 +1471,9 @@ int ThrottleGpu(void){
 /* ------------------ MouseDragCB ------------------------ */
 
 void MouseDragCB(int xm, int ym){
-#ifdef pp_OSX
-#ifdef pp_NOQUARTZ
-  if(double_scale==1){
-    xm *= 2;
-    ym *= 2;
-  }
+#ifdef pp_OSX_HIGHRES
+  xm *= 2;
+  ym *= 2;
 #endif
 #endif
 
