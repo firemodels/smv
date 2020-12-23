@@ -71,11 +71,17 @@ export TEST
 export SMV_MPI
 if [ "$NOQUARTZ" != "" ]; then
   TESTFLAG="$TESTFLAG -D pp_NOQUARTZ"
-   SMV_MAKE_OPTS="$SMV_MAKE_OPTS NOQUARTZ=\"noq_\" "
+  if [ "$LOWRES" == "" ]; then
+    SMV_MAKE_OPTS="$SMV_MAKE_OPTS NOQUARTZ=\"noq_\" "
+  else
+    SMV_MAKE_OPTS="$SMV_MAKE_OPTS NOQUARTZ=\"noql_\" "
+    TESTFLAG="$TESTFLAG -D pp_OSX_LOWRES"
+  fi
 fi
 if [ "$TESTFLAG" != "" ]; then
    SMV_MAKE_OPTS="$SMV_MAKE_OPTS SMV_TESTFLAG=\"$TESTFLAG\" "
 fi
+
 # this parameter is only for the mac
 if [ "`uname`" == "Darwin" ]; then
   export QUARTZSMV

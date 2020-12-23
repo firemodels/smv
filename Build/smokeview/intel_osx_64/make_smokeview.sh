@@ -1,7 +1,11 @@
 #!/bin/bash
 if [ "$NOQUARTZ" != "" ]; then
-  echo building smokeview not using Quartz
   OPTS="-Q $*"
+  if [ "$LOWRES" != "" ]; then
+    echo building smokeview no Quartz, low res
+  else
+    echo building smokeview no Quartz, high res
+  fi
 else
   echo building smokeview using Quartz
   OPTS="-q $*"
@@ -11,7 +15,11 @@ source ../../scripts/setopts.sh $OPTS
 if [ "$QUARTZSMV" == "use_quartz" ]; then
   LIBDIR=../../LIBS/intel_osx_64
 else
-  LIBDIR=../../LIBS/intel_osx_noq_64
+  if [ "$LOWRES" == "" ]; then
+    LIBDIR=../../LIBS/intel_osx_noq_64
+  else
+    LIBDIR=../../LIBS/intel_osx_noql_64
+  fi
 fi
 
 CURDIR=`pwd`

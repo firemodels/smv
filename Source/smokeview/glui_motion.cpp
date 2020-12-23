@@ -14,10 +14,8 @@
 #include "glui_motion.h"
 
 #define ROTATE_TRANSLATE
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
+#ifdef pp_OSX_HIGHRES
 #undef ROTATE_TRANSLATE
-#endif
 #endif
 
 #ifdef pp_DEG
@@ -1867,13 +1865,9 @@ extern "C" void SceneMotionCB(int var){
       if(windowsize_pointer>=2){
         if(windowsize_pointer==windowsize_pointer_old)break;
         windowsize_pointer_old = windowsize_pointer;
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
-        if(double_scale==1){
-          glui_screenWidth  /= 2;
-          glui_screenHeight /= 2;
-        }
-#endif
+#ifdef pp_OSX_HIGHRES
+        glui_screenWidth  /= 2;
+        glui_screenHeight /= 2;
 #endif
         SetScreenSize(&glui_screenWidth, &glui_screenHeight);
         screenWidth  = glui_screenWidth;

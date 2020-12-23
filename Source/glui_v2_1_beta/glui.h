@@ -378,10 +378,12 @@ extern int glui_img_listbox_up_dis[];
 
 extern int *bitmap_arrays[];
 
-#undef USE_HIGHRES
+#undef pp_OSX_HIGHRES
 #ifdef pp_OSX
 #ifndef pp_QUARTZ
-#define USE_HIGHRES
+#ifndef pp_OSX_LOWRES
+#define pp_OSX_HIGHRES
+#endif
 #endif
 #endif
 
@@ -394,7 +396,7 @@ class GLUI_Bitmap
 {
 public:
   unsigned char *pixels;
-#ifdef USE_HIGHRES
+#ifdef pp_OSX_HIGHRES
   unsigned char *pixels_highres;
 #endif
   int            w, h;
@@ -403,7 +405,7 @@ public:
 
   GLUI_Bitmap( void ) {
     pixels = NULL;
-#ifdef USE_HIGHRES
+#ifdef pp_OSX_HIGHRES
     pixels_highres = NULL;
 #endif
     w      = 0;

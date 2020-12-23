@@ -19,12 +19,12 @@
 #endif
 #include "smokeheaders.h"
 #include "threader.h"
-#ifdef pp_GLUT_FONTS
+#ifdef pp_OSX_HIGHRES
 #include "glutbitmap.h"
 #endif
 
 SVEXTERN int SVDECL(windowsize_pointer_old, -999);
-#ifdef pp_GLUT_FONTS
+#ifdef pp_OSX_HIGHRES
 GLUTEXTERN const BitmapFontRec glutBitmapHelvetica20;
 GLUTEXTERN const BitmapFontRec glutBitmapHelvetica24;
 GLUTEXTERN const BitmapFontRec glutBitmapHelvetica36;
@@ -1097,11 +1097,6 @@ SVEXTERN int SVDECL(scaled_font2d_height,12);
 SVEXTERN float SVDECL(scaled_font2d_height2width,1.0);
 SVEXTERN int SVDECL(scaled_font3d_height,32);
 SVEXTERN float SVDECL(scaled_font3d_height2width,1.0);
-#endif
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
-SVEXTERN int SVDECL(double_scale,1), SVDECL(update_reshape, 0);
-#endif
 #endif
 
 SVEXTERN int SVDECL(custom_worldcenter,0),SVDECL(show_rotation_center,0);

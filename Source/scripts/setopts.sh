@@ -69,6 +69,9 @@ shift $(($OPTIND-1))
 if [ "`uname`" == "Darwin" ]; then
   if [ "$QUARTZ" == "framework" ]; then
     PLATFORM="-D pp_OSX"
+    if [ "$LOWRES" != "" ]; then
+      PLATFORM="$PLATFORM -D pp_OSX_LOWRES"
+    fi
   else
     PLATFORM="-D pp_OSX -D pp_QUARTZ $QUARTZ"
   fi

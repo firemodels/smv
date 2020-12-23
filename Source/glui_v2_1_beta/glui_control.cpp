@@ -373,10 +373,8 @@ int          GLUI_Control::char_width( char c )
 {
   int width;
   width = glutBitmapWidth( get_font(), c );
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
+#ifdef pp_OSX_HIGHRES
   width /= 2;
-#endif
 #endif
   return width;
 }
