@@ -80,7 +80,7 @@ if "%platform%" == "osx" (
   plink %plink_options% %osx_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/smokeview/intel_osx_64 make_smokeview.sh %type%
   goto eof
 )
-if "%platform%" == "osxnoq" (
+if "%platform%" == "osxnoqh" (
   plink %plink_options% %osx_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/smokeview/intel_osx_noq_64 make_smokeview.sh %type%
   goto eof
 )
