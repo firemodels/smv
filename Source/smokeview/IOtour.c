@@ -1105,7 +1105,7 @@ void SetupCircularTourNodes(void){
 
 void InitCircularTour(tourdata *touri, int nkeyframes, int option){
   int j;
-  float key_az_path, elev_path, key_view[3], key_xyz[3], zoom_local;
+  float key_az_path, elev_path, key_view[3], key_xyz[3];
   int viewtype=0;
   float key_time;
   float angle_local;
@@ -1162,8 +1162,8 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
     key_time = tour_tstart*(1.0-f1) + tour_tstop*f1;
 
     viewtype=1;
-    zoom_local=1.0;
-    addedframe=AddFrame(thisframe, key_time, key_xyz, key_az_path, elev_path, viewtype, zoom_local, key_view);
+
+    addedframe=AddFrame(thisframe, key_time, key_xyz, key_az_path, elev_path, viewtype, tourzoom_circular, key_view);
     thisframe=addedframe;
     touri->keyframe_times[j]=key_time;
   }
@@ -1247,7 +1247,6 @@ void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth){
     dx = box_corners[i][0] - eye[0];
     dy = box_corners[i][1] - eye[1];
     dz = box_corners[i][2] - eye[2];
-    if(dy<0.0)continue;
     depth = sqrt(dx*dx + dy*dy + dz*dz);
     if(first == 1){
       first = 0;
