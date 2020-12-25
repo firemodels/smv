@@ -1105,7 +1105,7 @@ void SetupCircularTourNodes(void){
 
 void InitCircularTour(tourdata *touri, int nkeyframes, int option){
   int j;
-  float key_az_path, elev_path, key_view[3], key_xyz[3], zoom_local;
+  float key_az_path, elev_path, key_view[3], key_xyz[3];
   int viewtype=0;
   float key_time;
   float angle_local;
@@ -1162,8 +1162,8 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
     key_time = tour_tstart*(1.0-f1) + tour_tstop*f1;
 
     viewtype=1;
-    zoom_local=1.0;
-    addedframe=AddFrame(thisframe, key_time, key_xyz, key_az_path, elev_path, viewtype, zoom_local, key_view);
+
+    addedframe=AddFrame(thisframe, key_time, key_xyz, key_az_path, elev_path, viewtype, tourzoom_circular, key_view);
     thisframe=addedframe;
     touri->keyframe_times[j]=key_time;
   }
@@ -1229,89 +1229,6 @@ void ReverseTour(char *label){
   CreateTourPaths();
   UpdateTimes();
   return;
-}
-
-/* ------------------ GetMinMaxDepth  ------------------------ */
-
-void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth){
-  int i,first=1;
-
-  *min_depth = -1.0;
-  *max_depth = -1.0;
-  
-  // get distance to each corner of the domain
-  
-  for(i=0;i<8;i++){
-    float depth, dx, dy, dz;
-
-    dx = box_corners[i][0] - eye[0];
-    dy = box_corners[i][1] - eye[1];
-    dz = box_corners[i][2] - eye[2];
-    if(dy<0.0)continue;
-    depth = sqrt(dx*dx + dy*dy + dz*dz);
-    if(first == 1){
-      first = 0;
-      *max_depth = depth;
-      *min_depth = depth;
-    }
-    else{
-      *min_depth = MIN(*min_depth, depth);
-      *max_depth = MAX(*max_depth, depth);
-    }
-  }
-
-  // get distance to each corner of the terrain (if it exists)
-
-  if(have_box_geom_corners==1){
-    for(i = 0; i<8; i++){
-      float depth, dx, dy, dz;
-
-      dx = box_geom_corners[i][0]-eye[0];
-      dy = box_geom_corners[i][1]-eye[1];
-      dz = box_geom_corners[i][2]-eye[2];
-      if(dy<0.0)continue;
-      depth = sqrt(dx*dx+dy*dy+dz*dz);
-      if(first==1){
-        first = 0;
-        *max_depth = depth;
-        *min_depth = depth;
-      }
-      else{
-        *min_depth = MIN(*min_depth, depth);
-        *max_depth = MAX(*max_depth, depth);
-      }
-    }
-  }
-
-  // get distance to each tour node
-
-  if(edittour==1){
-    for(i = 0;i < ntourinfo;i++){
-      tourdata *touri;
-      keyframe *keyj;
-
-      touri = tourinfo + i;
-      for(keyj = (touri->first_frame).next;keyj->next != NULL;keyj = keyj->next){
-        float depth;
-        float dx, dy, dz;
-
-        dx = NORMALIZE_X(keyj->eye[0]) - eye[0];
-        dy = NORMALIZE_Y(keyj->eye[1]) - eye[1];
-        dz = NORMALIZE_Z(keyj->eye[2]) - eye[2];
-        depth = sqrt(dx*dx + dy*dy + dz*dz);
-        if(dy<0.0)continue;
-        if(first == 1){
-          first = 0;
-          *min_depth = depth;
-          *max_depth = depth;
-        }
-        else{
-          *min_depth = MIN(*min_depth, depth);
-          *max_depth = MAX(*max_depth, depth);
-        }
-      }
-    }
-  }
 }
 
 /* ------------------ AddTour  ------------------------ */

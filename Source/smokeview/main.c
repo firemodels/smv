@@ -419,9 +419,11 @@ void ParseCommandline(int argc, char **argv){
 
   for(i = 1; i < argc; i++){
     if(strncmp(argv[i], "-", 1) != 0)continue;
+#ifdef pp_OSX_HIGHRES
     if(strncmp(argv[1], "-1x", 3) == 0){
       double_scale=0;
     }
+#endif
     else if(strncmp(argv[i], "-update_bounds", 14) == 0){
       use_graphics = 0;
       update_bounds = 1;

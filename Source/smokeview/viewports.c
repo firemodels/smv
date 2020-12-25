@@ -1677,6 +1677,63 @@ void GetZoneSmokeDir(float *mm){
   }
 }
 
+/* ------------------ GetMinMaxDepth  ------------------------ */
+
+void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth){
+  int i;
+  float depth, dx, dy, dz;
+
+  // get distance to each corner of the domain
+
+  dx = box_corners[0][0]  - eye[0];
+  dy = box_corners[0][1]  - eye[1];
+  dz = box_corners[0][2] - eye[2];
+  depth = sqrt(dx*dx+dy*dy+dz*dz);
+  *min_depth = depth;
+  *max_depth = depth;
+
+  for(i = 1; i<8; i++){
+    dx = box_corners[i][0]-eye[0];
+    dy = box_corners[i][1]-eye[1];
+    dz = box_corners[i][2]-eye[2];
+    depth = sqrt(dx*dx+dy*dy+dz*dz);
+    *min_depth = MIN(*min_depth, depth);
+    *max_depth = MAX(*max_depth, depth);
+  }
+
+  // get distance to each corner of the geometry (if it exists)
+
+  if(have_box_geom_corners==1){
+    for(i = 0; i<8; i++){
+      dx = box_geom_corners[i][0]-eye[0];
+      dy = box_geom_corners[i][1]-eye[1];
+      dz = box_geom_corners[i][2]-eye[2];
+      depth = sqrt(dx*dx+dy*dy+dz*dz);
+      *min_depth = MIN(*min_depth, depth);
+      *max_depth = MAX(*max_depth, depth);
+    }
+  }
+
+  // get distance to each tour node
+
+  if(edittour==1){
+    for(i = 0; i<ntourinfo; i++){
+      tourdata *touri;
+      keyframe *keyj;
+
+      touri = tourinfo+i;
+      for(keyj = (touri->first_frame).next; keyj->next!=NULL; keyj = keyj->next){
+        dx = NORMALIZE_X(keyj->eye[0])-eye[0];
+        dy = NORMALIZE_Y(keyj->eye[1])-eye[1];
+        dz = NORMALIZE_Z(keyj->eye[2])-eye[2];
+        depth = sqrt(dx*dx+dy*dy+dz*dz);
+        *min_depth = MIN(*min_depth, depth);
+        *max_depth = MAX(*max_depth, depth);
+      }
+    }
+  }
+}
+
 /* ----------------------- ViewportScene ----------------------------- */
 
 void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down, screendata *screen){

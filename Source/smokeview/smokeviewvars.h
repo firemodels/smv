@@ -23,6 +23,7 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN float SVDECL(tourzoom_circular, 1.0);
 #ifndef _GLUI_H_
 #ifdef pp_OSX_HIGHRES
 extern int double_scale;
