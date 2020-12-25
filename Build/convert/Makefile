@@ -32,7 +32,7 @@ FORTLIBDIR = /opt/intel/composerxe/lib
 
 # Definition of the object variables
 
-obj = assert.o dmalloc.o main.o md5.o sha1.o\
+obj = assert.o dmalloc.o main.o md5.o sha1.o sha256.o\
       file_util.o string_util.o stdio_buffer.o
 objwin = $(obj:.o=.obj)
 
