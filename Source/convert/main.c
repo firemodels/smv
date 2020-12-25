@@ -121,13 +121,13 @@ void ConvertPixelData(unsigned char *bytes_in, int nbytes_in, unsigned char *byt
       unsigned char valLout, valRout;
 
       val = bytes_in[ IJ_IN(row, col) ];
-      valL = val&maskL;
-      valR = (val&maskR)>>4;
+      valL = (val&maskL)>>4;
+      valR =  val&maskR;
       valLout = high[valL];
       valRout = high[valR];
-      bytes_out[IJ_OUT(2*row, 2*col)] = valLout;
-      bytes_out[IJ_OUT(2*row, 2*col)+1] = valRout;
-      bytes_out[IJ_OUT(2*row+1, 2*col)] = valLout;
+      bytes_out[IJ_OUT(2*row, 2*col)]     = valLout;
+      bytes_out[IJ_OUT(2*row, 2*col)+1]   = valRout;
+      bytes_out[IJ_OUT(2*row+1, 2*col)]   = valLout;
       bytes_out[IJ_OUT(2*row+1, 2*col)+1] = valRout;
     }
   }
