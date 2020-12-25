@@ -777,15 +777,7 @@ static const BitmapCharRec ch161 = {1,10,-1,3,3,ch161data};
 
 /* char: 0xa0 */
 
-#ifdef _WIN32
-/* XXX Work around Microsoft OpenGL 1.1 bug where glBitmap with
-   a height or width of zero does not advance the raster position
-   as specified by OpenGL. (Cosmo OpenGL does not have this bug.) */
-static const GLubyte ch160data[] = { 0x0 };
-static const BitmapCharRec ch160 = {1,1,0,0,4,ch160data};
-#else
 static const BitmapCharRec ch160 = {0,0,0,0,4,0};
-#endif
 
 /* char: 0x7e '~' */
 
@@ -1545,15 +1537,7 @@ static const BitmapCharRec ch33 = {1,9,-1,0,3,ch33data};
 
 /* char: 0x20 ' ' */
 
-#ifdef _WIN32
-/* XXX Work around Microsoft OpenGL 1.1 bug where glBitmap with
-   a height or width of zero does not advance the raster position
-   as specified by OpenGL. (Cosmo OpenGL does not have this bug.) */
-static const GLubyte ch32data[] = { 0x0 };
-static const BitmapCharRec ch32 = {1,1,0,0,4,ch32data};
-#else
 static const BitmapCharRec ch32 = {0,0,0,0,4,0};
-#endif
 
 static const BitmapCharRec * const chars[] = {
 &ch32,
