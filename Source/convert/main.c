@@ -99,42 +99,44 @@ int GetPixelInfo(FILE *stream, int *byte_types, char *label_prefix, char *label_
 /* ------------------ ConvertPixelData ------------------------ */
 
 #define IJ_IN(row,col)  ((row)*ncols_data + (col))
-#define IJ_OUT(row,col) ((row)*(2*ncols_data) + (col))
+#define IJ_OUT(row,col) ((row)*ncols_data_out + (col))
 
 void ConvertPixelData(unsigned char *bytes_in, int nbytes_in, unsigned char *bytes_out, int *nbytes_out, int *types_in, int *types_out){
   int row, nrows_font, ncols_font, i;
-  int nrows_data, ncols_data;
+  int nrows_data, ncols_data, ncols_data_out;
   unsigned char high[] = {0x0, 0x03, 0x0c, 0x0f, 0x30, 0x33, 0x3c, 0x3f, 0xc0, 0xc3, 0xcc, 0xcf, 0xf0, 0xf3, 0xfc, 0xff};
 
   nrows_font = types_in[1];
   ncols_font = types_in[0];
   nrows_data = nrows_font;
   ncols_data = ((ncols_font-1)/8+1);
+  ncols_data_out = ((2*ncols_font-1)/8+1);
 
   for(row = 0; row<nrows_data; row++){
     int col;
 
     for(col = 0; col<ncols_data; col++){
       unsigned char val;
-      unsigned char maskL = 0xF0, maskR = 0x0F;
       unsigned char valL, valR;
       unsigned char valLout, valRout;
 
       val = bytes_in[ IJ_IN(row, col) ];
-      valL = (val&maskL)>>4;
-      valR =  val&maskR;
+      valL =  (val&0xf0)>>4;
+      valR =  val&0x0f;
       valLout = high[valL];
       valRout = high[valR];
-      bytes_out[IJ_OUT(2*row, 2*col)]     = valLout;
-      bytes_out[IJ_OUT(2*row, 2*col)+1]   = valRout;
+      bytes_out[IJ_OUT(2*row,   2*col)]   = valLout;
+      bytes_out[IJ_OUT(2*row,   2*col+1)] = valRout;
       bytes_out[IJ_OUT(2*row+1, 2*col)]   = valLout;
-      bytes_out[IJ_OUT(2*row+1, 2*col)+1] = valRout;
+      bytes_out[IJ_OUT(2*row+1, 2*col+1)] = valRout;
     }
   }
-  *nbytes_out = 4*nbytes_in;
-  for(i = 0; i<5; i++){
-    types_out[i] = 2*types_in[i];
-  }
+  *nbytes_out = 2*nrows_data*ncols_data_out;
+  types_out[0] = 2*types_in[0];
+  types_out[1] = 2*types_in[1];
+  types_out[2] = 2*types_in[2];
+  types_out[3] = 2*types_in[3];
+  types_out[4] = 2*types_in[4];
 }
 
 /* ------------------ OutputPixelDataInfo ------------------------ */
