@@ -1746,6 +1746,12 @@ void InitVars(void){
   strcpy(emptylabel,"");
   large_font=GLUT_BITMAP_HELVETICA_12;
   small_font=GLUT_BITMAP_HELVETICA_10;
+#ifdef pp_OSX_HIGHRES
+    if(double_scale==1){
+      large_font=(void *)GLUT_BITMAP_HELVETICA_24;
+      small_font=(void *)GLUT_BITMAP_HELVETICA_20;
+    }
+#endif
 
   texture_origin[0]=0.0;
   texture_origin[1]=0.0;

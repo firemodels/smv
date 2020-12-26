@@ -24,10 +24,20 @@ int GetStringWidth(char *string){
     case SMALL_FONT:
       length = strlen(string);
       length *= (288.0/235.0)*glutBitmapWidth(GLUT_BITMAP_HELVETICA_10, 'a');
+#ifdef pp_OSX_HIGHRES
+      if(double_scale==1){
+        length *= 2;
+      }
+#endif
       break;
     case LARGE_FONT:
       length = strlen(string);
       length *= (416.0/423.0)*glutBitmapWidth(GLUT_BITMAP_HELVETICA_18, 'a');
+#ifdef pp_OSX_HIGHRES
+      if(double_scale==1){
+        length *= 2;
+      }
+#endif
       break;
     case SCALED_FONT:
       for(c=string;*c!='\0';c++){
@@ -89,6 +99,12 @@ void GetViewportInfo(void){
   v_space = 2;
   text_height=18;
   text_width=18;
+#ifdef pp_OSX_HIGHRES
+  if(double_scale==1){
+    text_height *= 2;
+    text_width  *= 2;
+  }
+#endif
   if(fontindex==SCALED_FONT){
     scale_2d_x = (scaled_font2d_height2width*(float)scaled_font2d_height/(float)104.76);
     scale_2d_y = ((float)scaled_font2d_height/(float)152.38);
@@ -776,7 +792,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
 
   if (SubPortOrtho2(quad, &VP_timebar, screen_left, screen_down) == 0)return;
 
-  timebar_left_width = GetStringWidth("Time: 1234.11");
+  timebar_left_width =  GetStringWidth("Time: 1234.11");
   timebar_right_width = GetStringWidth("Frame rate: 99.99");
 
   timebar_left_pos = VP_timebar.left + timebar_left_width;

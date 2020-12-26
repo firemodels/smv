@@ -127,7 +127,7 @@ SVEXTERN int SVDECL(compute_smoke3d_file_sizes, 0);
 SVEXTERN int SVDECL(update_fileload, 1);
 
 SVEXTERN int SVDECL(show_bndf_mesh_interface, 0);
-SVEXTERN int SVDECL(ncolorlabel_digits, 4), SVDECL(ncolorlabel_padding, 4);
+SVEXTERN int SVDECL(ncolorlabel_digits, 4), SVDECL(ncolorlabel_padding, 8);
 SVEXTERN int SVDECL(ntick_decimals, 1);
 SVEXTERN int SVDECL(mpi_nprocesses, -1), SVDECL(mpi_iprocess,-1);
 
@@ -1085,26 +1085,11 @@ SVEXTERN int mxframepoints;
 SVEXTERN int SVDECL(timebar_drag,0),SVDECL(colorbar_drag,0),SVDECL(colorbar_splitdrag,0),SVDECL(colorbaredit_drag,0);
 SVEXTERN int SVDECL(global_colorbar_index,-1);
 
-#ifdef pp_OSX
-#ifdef pp_NOQUARTZ
-#define DEFINE_NOQUARTZ
-#endif
-#endif
-
-#ifdef DEFINE_NOQUARTZ
-#undef DEFINE_NOQUARTZ
-SVEXTERN int SVDECL(fontindex,SCALED_FONT);
-SVEXTERN int SVDECL(scaled_font2d_height,36);
-SVEXTERN int SVDECL(scaled_font3d_height,32);
-SVEXTERN float SVDECL(scaled_font2d_height2width,4.0);
-SVEXTERN float SVDECL(scaled_font3d_height2width,1.0);
-#else
 SVEXTERN int SVDECL(fontindex,SMALL_FONT);
 SVEXTERN int SVDECL(scaled_font2d_height,12);
 SVEXTERN float SVDECL(scaled_font2d_height2width,1.0);
 SVEXTERN int SVDECL(scaled_font3d_height,32);
 SVEXTERN float SVDECL(scaled_font3d_height2width,1.0);
-#endif
 
 SVEXTERN int SVDECL(custom_worldcenter,0),SVDECL(show_rotation_center,0);
 SVEXTERN float SVDECL(xcenGLOBAL,0.5), SVDECL(ycenGLOBAL,0.5), SVDECL(zcenGLOBAL,0.5);
