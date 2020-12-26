@@ -99,18 +99,20 @@ int GetPixelInfo(FILE *stream, int *byte_types, char *label_prefix, char *label_
 /* ------------------ ConvertPixelData ------------------------ */
 
 #define IJ_IN(row,col)  ((row)*ncols_data + (col))
-#define IJ_OUT(row,col) ((row)*ncols_data_out + (col))
+#define IJ_OUT(row,col) ((row)*(2*ncols_data) + (col))
 
-void ConvertPixelData(unsigned char *bytes_in, int nbytes_in, unsigned char *bytes_out, int *nbytes_out, int *types_in, int *types_out){
+void ConvertPixelData(unsigned char *bytes_in, int nbytes_in, unsigned char *bytes_out, int *nbytes_out, int *types_in, int *types_out, int *ncols_data_in, int *nrows_data_out, int *ncols_data_out){
   int row, nrows_font, ncols_font, i;
-  int nrows_data, ncols_data, ncols_data_out;
+  int nrows_data, ncols_data;
   unsigned char high[] = {0x0, 0x03, 0x0c, 0x0f, 0x30, 0x33, 0x3c, 0x3f, 0xc0, 0xc3, 0xcc, 0xcf, 0xf0, 0xf3, 0xfc, 0xff};
 
   nrows_font = types_in[1];
   ncols_font = types_in[0];
   nrows_data = nrows_font;
   ncols_data = ((ncols_font-1)/8+1);
-  ncols_data_out = ((2*ncols_font-1)/8+1);
+  *ncols_data_in = ncols_data;
+  *ncols_data_out = ((2*ncols_font-1)/8+1);
+  *nrows_data_out = 2*nrows_font;
 
   for(row = 0; row<nrows_data; row++){
     int col;
@@ -131,7 +133,7 @@ void ConvertPixelData(unsigned char *bytes_in, int nbytes_in, unsigned char *byt
       bytes_out[IJ_OUT(2*row+1, 2*col+1)] = valRout;
     }
   }
-  *nbytes_out = 2*nrows_data*ncols_data_out;
+  *nbytes_out = 4*nrows_data*ncols_data;
   types_out[0] = 2*types_in[0];
   types_out[1] = 2*types_in[1];
   types_out[2] = 2*types_in[2];
@@ -141,17 +143,25 @@ void ConvertPixelData(unsigned char *bytes_in, int nbytes_in, unsigned char *byt
 
 /* ------------------ OutputPixelDataInfo ------------------------ */
 
-void OutputPixelDataInfo(unsigned char *bytes, int nbytes, int *byte_types, char *label_prefix, char *label_suffix){
-  int i;
+void OutputPixelDataInfo(unsigned char *bytes, int nbytes, int *byte_types, char *label_prefix, char *label_suffix, int ncols_data, int nrows_out, int ncols_out){
+  int i, count=0;
 
-  for(i = 0; i<nbytes; i++){
-    if(bytes[i]==0){
-      printf("0x00,");
+  for(i = 0; i<nrows_out; i++){
+    int j;
+
+    for(j = 0; j<ncols_out; j++){
+      int ii;
+
+      ii = IJ_OUT(i, j);
+      if(bytes[ii]==0){
+        printf("0x00,");
+      }
+      else{
+        printf("%#x,", bytes[ii]);
+      }
+      if(count%16==15)printf("\n");
+      count++;
     }
-    else{
-      printf("%#x,", bytes[i]);
-    }
-    if(i%16==15)printf("\n");
   }
   printf("\n};\n");
 
@@ -179,7 +189,7 @@ int main(int argc, char **argv){
       continue;
     }
     if(strstr(buffer, "GLubyte")!=NULL){
-      int nbytes, nbytes2;
+      int nbytes, nbytes2, nrows_out, ncols_out, ncols_data_in;
       char *brace, label_prefix[100], label_suffix[100];
 
       strcpy(buffcopy, buffer);
@@ -189,8 +199,8 @@ int main(int argc, char **argv){
       GetPixelData(stdin, bytes, &nbytes);
       if(GetPixelInfo(stdin, byte_types, label_prefix, label_suffix)==0)continue;
       printf("%s\n", buffcopy);
-      ConvertPixelData(bytes, nbytes, bytes2, &nbytes2, byte_types, byte_types2);
-      OutputPixelDataInfo(bytes2, nbytes2, byte_types2, label_prefix, label_suffix);
+      ConvertPixelData(bytes, nbytes, bytes2, &nbytes2, byte_types, byte_types2, &ncols_data_in, &nrows_out, &ncols_out);
+      OutputPixelDataInfo(bytes2, nbytes2, byte_types2, label_prefix, label_suffix, ncols_data_in, nrows_out, ncols_out);
     }
     else{
       printf("%s\n", buffer);
