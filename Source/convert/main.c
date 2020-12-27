@@ -21,17 +21,17 @@ int GetTokens(unsigned char *tokens){
   int ntokens=0;
 
   if(strstr(buffer, "0x")==NULL)return ntokens;
-  token = strtok(buffer, ",");
+  token = (unsigned char *)strtok(buffer, ",");
   for(;;){
     int val;
 
     if(token==NULL)return ntokens;
-    token = TrimFrontBack(token);
-    if(strlen(token)==0)return ntokens;
+    token = (unsigned char *)TrimFrontBack((char *)token);
+    if(strlen((char *)token)==0)return ntokens;
     sscanf(token, "%i", &val);
     tokens[ntokens] = val;
     ntokens++;
-    token = strtok(NULL, ",");
+    token = (unsigned char *)strtok(NULL, ",");
   }
 }
 
@@ -43,8 +43,8 @@ int GetTokens(unsigned char *tokens){
 //};
 
 void GetPixelData(FILE *stream, unsigned char *bytes, int *nbytes){
-  int ntokens, i;
   unsigned char tokens[100];
+  int ntokens;
 
   ntokens = GetTokens(tokens);
   if(ntokens>0)memcpy(bytes, tokens, ntokens);
@@ -65,7 +65,7 @@ void GetPixelData(FILE *stream, unsigned char *bytes, int *nbytes){
 int GetPixelInfo(FILE *stream, int *byte_types){
   for(;;){
     char *dataptr, *token, *brace, buffer_copy[100];
-    int vals[5], i;
+    int i;
 
     if(fgets(buffer, LENBUFFER, stdin)==NULL)return 0;
 
@@ -103,7 +103,7 @@ int GetPixelInfo(FILE *stream, int *byte_types){
 #define IJ_OUT(row,col) ((row)*(2*ncols_data) + (col))
 
 void ConvertPixelData(unsigned char *bytes_in, int nbytes_in, unsigned char *bytes_out, int *nbytes_out, int *types_in, int *ncols_data_in, int *nrows_data_out, int *ncols_data_out){
-  int row, nrows_font, ncols_font, i;
+  int row, nrows_font, ncols_font;
   int nrows_data, ncols_data;
   unsigned char high[] = {0x0, 0x03, 0x0c, 0x0f, 0x30, 0x33, 0x3c, 0x3f, 0xc0, 0xc3, 0xcc, 0xcf, 0xf0, 0xf3, 0xfc, 0xff};
 
@@ -139,7 +139,7 @@ void ConvertPixelData(unsigned char *bytes_in, int nbytes_in, unsigned char *byt
 
 /* ------------------ testbit ------------------------ */
 
-int testbit(int x, int y){
+int testbit(unsigned char x, unsigned char y){
   if(x!=0&&y==1||x==0&&y==0)return 1;
   return 0;
 }
@@ -147,68 +147,68 @@ int testbit(int x, int y){
 /* ------------------ OutputPixelDataInfo ------------------------ */
 
 void AdjustBytes(unsigned char *bytes, int i11, int i21, int i31, int i41){
-  int i, doit;
-  int val1, val2, val3, val4;
-  int v11, v12, v21, v22;
+  int i;
+  unsigned char val1, val2, val3, val4;
   unsigned char mask[] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
-  unsigned check1[] = {0,0,1,1}, check2[] = {1,1,0,0};
-
+  unsigned char check1[] = {0,0,1,1}, check2[] = {1,1,0,0};
 
   val1 = bytes[i11];
   val2 = bytes[i21];
   val3 = bytes[i31];
   val4 = bytes[i41];
 
-
-  doit = 1;
   // 0011xxxx
   // 0011xxxx
   // 1100xxxx
   // 1100xxxx
 
   for(i = 0; i<5; i += 2){
-    int j;
+    int j, doit;
 
+    doit = 1;
     for(j = 0; j<4; j++){
-      int jj;
-
-      jj = i+j;
-      if(testbit(val1&mask[jj], check1[jj])==0||testbit(val2&mask[jj], check1[jj])==0||testbit(val3&mask[jj], check2[jj])==0||testbit(val4&mask[jj], check2[jj])==0){
+      if(testbit(val1&mask[i+j], check1[j])==1&&
+         testbit(val2&mask[i+j], check1[j])==1&&
+         testbit(val3&mask[i+j], check2[j])==1&&
+         testbit(val4&mask[i+j], check2[j])==1){
+      }
+      else{
         doit = 0;
         break;
       }
     }
-    if(doit==0)break;
-  }
-  if(doit==1){
+    if(doit==1){
     // set val2 i+1 and val3 i+2
-    bytes[i21] |= mask[i+1];
-    bytes[i31] |= mask[i+2];
-    return;
+      bytes[i21] |= mask[i+1];
+      bytes[i31] |= mask[i+2];
+      return;
+    }
   }
   // 1100xxxx
   // 1100xxxx
   // 0011xxxx
   // 0011xxxx
   for(i = 0; i<5; i += 2){
-    int j;
+    int j, doit;
 
+    doit = 1;
     for(j = 0; j<4; j++){
-      int jj;
-
-      jj = i+j;
-      if(testbit(val1&mask[jj], check2[jj])==0||testbit(val2&mask[jj], check2[jj])==0||testbit(val3&mask[jj], check1[jj])==0||testbit(val4&mask[jj], check1[jj])==0){
+      if(testbit(val1&mask[i+j], check2[j])==1&&
+         testbit(val2&mask[i+j], check2[j])==1&&
+         testbit(val3&mask[i+j], check1[j])==1&&
+         testbit(val4&mask[i+j], check1[j])==1){
+      }
+      else{
         doit = 0;
         break;
       }
     }
-    if(doit==0)break;
-  }
-  if(doit==1){
+    if(doit==1){
     // set val2 i+2 and val3 i+1
-    bytes[i21] |= mask[i+2];
-    bytes[i31] |= mask[i+1];
-    return;
+      bytes[i21] |= mask[i+2];
+      bytes[i31] |= mask[i+1];
+      return;
+    }
   }
 }
 

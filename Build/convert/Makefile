@@ -28,8 +28,6 @@ endif
 INTEL_COMPINFO=-Dpp_COMPVER=\"$(INTEL_COMPVERSION)\"
 GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
-FORTLIBDIR = /opt/intel/composerxe/lib
-
 # Definition of the object variables
 
 obj = assert.o dmalloc.o main.o md5.o sha1.o sha256.o\
@@ -63,7 +61,6 @@ intel_win_64_db : FFLAGS    = /Od /iface:stdref /fpp -D WIN32 /nologo /debug:ful
 intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64_db : CC        = icl
 intel_win_64_db : CPP       = icl
-intel_win_64_db : FC        = ifort
 intel_win_64_db : exe       = convert_win_64_db.exe
 
 intel_win_64_db : $(objwin)
@@ -75,7 +72,6 @@ intel_win_64 : FFLAGS    = /O2 -fpp -D WIN32 /nologo /iface:stdref /fpscomp:gene
 intel_win_64 : CFLAGS    = /O2 /nologo -D X64 -D WIN32 $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
 intel_win_64 : CPP       = icl
-intel_win_64 : FC        = ifort
 intel_win_64 : exe       = convert_win_64.exe
 
 intel_win_64 : $(objwin)
@@ -88,13 +84,10 @@ gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
 gnu_win_64 : LFLAGS    = -m64
 gnu_win_64 : CC        = gcc
 gnu_win_64 : CPP       = g++
-gnu_win_64 : FC        = gfortran
 gnu_win_64 : exe       = convert_win_64.exe
 
 gnu_win_64 : $(obj) 
 	$(FC) -o $(bin)/$(exe) $(LFLAGS) $(obj)
-
-LINUXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcore.a
 
 # ------------- gnu linux 64 ----------------
 
@@ -103,11 +96,10 @@ gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPI
 gnu_linux_64 : LFLAGS    = -m64
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : CPP       = g++
-gnu_linux_64 : FC        = gfortran
 gnu_linux_64 : exe       = convert_linux_64
 
 gnu_linux_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -lgfortran
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- gnu linux 64 db ----------------
 
@@ -116,11 +108,10 @@ gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown
 gnu_linux_64_db : LFLAGS    = -m64
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : CPP       = g++
-gnu_linux_64_db : FC        = gfortran
 gnu_linux_64_db : exe       = convert_linux_64_db
 
 gnu_linux_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -lgfortran
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) 
 
 
 # ------------- gnu osx 64 ----------------
@@ -130,11 +121,10 @@ gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D  pp_OSX $(GITINFO) $(GNU_COMPINFO
 gnu_osx_64 : LFLAGS    = -m64
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : CPP       = g++
-gnu_osx_64 : FC        = gfortran
 gnu_osx_64 : exe       = convert_osx_64
 
 gnu_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(GLIBDIR) -lgfortran
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(GLIBDIR)
 
 # ------------- gnu osx 64 db ----------------
 
@@ -143,11 +133,10 @@ gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-de
 gnu_osx_64_db : LFLAGS    = -m64
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : CPP       = g++
-gnu_osx_64_db : FC        = gfortran
 gnu_osx_64_db : exe       = convert_osx_64_db
 
 gnu_osx_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(GLIBDIR) -lgfortran
+	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS) -L $(GLIBDIR)
 
 # ------------- intel linux 64 ----------------
 
@@ -155,11 +144,10 @@ intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_LINUX
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = icc
 intel_linux_64 : CPP       = icc
-intel_linux_64 : FC        = ifort
 intel_linux_64 : exe       = convert_linux_64
 
 intel_linux_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) -lifport $(LINUXFORTLIBS)
+	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) 
 
 # ------------- intel linux 64 db ----------------
 
@@ -167,14 +155,11 @@ intel_linux_64_db : FFLAGS    = -O0 -m64 -fpp -D pp_LINUX
 intel_linux_64_db : CFLAGS    = -O0 -m64 -D pp_LINUX -g -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64_db : CC        = icc
 intel_linux_64_db : CPP       = icc
-intel_linux_64_db : FC        = ifort
 intel_linux_64_db : exe       = convert_linux_64_db
 
 intel_linux_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) -lifport $(LINUXFORTLIBS)
+	$(CPP) -o $(bin)/$(exe) -static-intel $(obj)
 	
-
-MACFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libifport.a
 
 # ------------- intel osx 64 ----------------
 
@@ -182,11 +167,10 @@ intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_OSX -mmacosx-version-min=10.9  -s
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO) -mmacosx-version-min=10.9 
 intel_osx_64 : CC        = icc
 intel_osx_64 : CPP       = icc
-intel_osx_64 : FC        = ifort
 intel_osx_64 : exe       = convert_osx_64
 
 intel_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.9 $(MACFORTLIBS)
+	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.9 
 
 # ------------- intel osx 64 db ----------------
 
@@ -194,11 +178,10 @@ intel_osx_64_db : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_OSX -mmacosx-ver
 intel_osx_64_db : CFLAGS    = -O0 -g -m64 -static-intel -D _DEBUG -D pp_OSX -mmacosx-version-min=10.7 $(SMV_TESTFLAG) -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64_db : CC        = icc
 intel_osx_64_db : CPP       = icc
-intel_osx_64_db : FC        = ifort
 intel_osx_64_db : exe       = convert_osx_64_db
 
 intel_osx_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.9 $(MACFORTLIBS)
+	$(CPP) -o $(bin)/$(exe) -m64 -static-intel $(obj) -mmacosx-version-min=10.9
 
 #-------------- compile sring_util.c so revision strings are updated -----------
 
