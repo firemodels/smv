@@ -137,11 +137,95 @@ void ConvertPixelData(unsigned char *bytes_in, int nbytes_in, unsigned char *byt
   *nbytes_out = 4*nrows_data*ncols_data;
 }
 
+/* ------------------ testbit ------------------------ */
+
+int testbit(int x, int y){
+  if(x!=0&&y==1||x==0&&y==0)return 1;
+  return 0;
+}
+
+/* ------------------ OutputPixelDataInfo ------------------------ */
+
+void AdjustBytes(unsigned char *bytes, int i11, int i21, int i31, int i41){
+  int i, doit;
+  int val1, val2, val3, val4;
+  int v11, v12, v21, v22;
+  unsigned char mask[] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
+  unsigned check1[] = {0,0,1,1}, check2[] = {1,1,0,0};
+
+
+  val1 = bytes[i11];
+  val2 = bytes[i21];
+  val3 = bytes[i31];
+  val4 = bytes[i41];
+
+
+  doit = 1;
+  // 0011xxxx
+  // 0011xxxx
+  // 1100xxxx
+  // 1100xxxx
+
+  for(i = 0; i<5; i += 2){
+    int j;
+
+    for(j = 0; j<4; j++){
+      int jj;
+
+      jj = i+j;
+      if(testbit(val1&mask[jj], check1[jj])==0||testbit(val2&mask[jj], check1[jj])==0||testbit(val3&mask[jj], check2[jj])==0||testbit(val4&mask[jj], check2[jj])==0){
+        doit = 0;
+        break;
+      }
+    }
+    if(doit==0)break;
+  }
+  if(doit==1){
+    // set val2 i+1 and val3 i+2
+    bytes[i21] |= mask[i+1];
+    bytes[i31] |= mask[i+2];
+    return;
+  }
+  // 1100xxxx
+  // 1100xxxx
+  // 0011xxxx
+  // 0011xxxx
+  for(i = 0; i<5; i += 2){
+    int j;
+
+    for(j = 0; j<4; j++){
+      int jj;
+
+      jj = i+j;
+      if(testbit(val1&mask[jj], check2[jj])==0||testbit(val2&mask[jj], check2[jj])==0||testbit(val3&mask[jj], check1[jj])==0||testbit(val4&mask[jj], check1[jj])==0){
+        doit = 0;
+        break;
+      }
+    }
+    if(doit==0)break;
+  }
+  if(doit==1){
+    // set val2 i+2 and val3 i+1
+    bytes[i21] |= mask[i+2];
+    bytes[i31] |= mask[i+1];
+    return;
+  }
+}
+
 /* ------------------ OutputPixelDataInfo ------------------------ */
 
 void OutputPixelDataInfo(unsigned char *bytes, int nbytes, int *byte_types, int ncols_data, int nrows_out, int ncols_out){
   int i, count=0;
 
+  if(1==1){ 
+    for(i = 0; i<nrows_out-4; i+=2){
+      int j;
+
+      for(j = 0; j<ncols_out; j++){
+        AdjustBytes(bytes, IJ_OUT(i, j), IJ_OUT(i+1, j), IJ_OUT(i+2, j), IJ_OUT(i+3, j));
+      }
+    }
+  }
   for(i = 0; i<nrows_out; i++){
     int j;
 
