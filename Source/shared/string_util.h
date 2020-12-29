@@ -37,7 +37,11 @@ typedef struct {
 #define LABEL_EOF 1
 #define LABEL_ERR 2
 
+#ifdef pp_OSX_HIGHRES
+#define DEG_SYMBOL 96
+#else
 #define DEG_SYMBOL 176
+#endif
 
 #ifdef pp_HASH
 #define HASH_NONE   0

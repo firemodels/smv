@@ -1108,13 +1108,19 @@ static const GLubyte ch97data[] = {
 
 static const BitmapCharRec ch97 = {7,10,-1,0,9,ch97data};
 
-/* char: 0x60 '`' */
+/* char: 0x60 'deg symbol' */
 
 static const GLubyte ch96data[] = {
-0xc0,0xc0,0x80,0x80,0x40,
+0x70,0xd8,0x88,0xd8,0x70,
 };
 
-static const BitmapCharRec ch96 = {2,5,-1,-9,4,ch96data};
+static const BitmapCharRec ch96 = {5,5,-1,-8,7,ch96data};
+
+//static const GLubyte ch96data[] = {
+//0xc0,0xc0,0x80,0x80,0x40,
+//};
+
+//static const BitmapCharRec ch96 = {2,5,-1,-9,4,ch96data};
 
 /* char: 0x5f '_' */
 
