@@ -26,11 +26,11 @@
 #include <GL/glut.h>
 #else
 #include <GLUT/glut.h>
+#include "glutbitmap.h"  // only needed on non-quartz osx platforms
 #endif
 #else
 #include <GL/glut.h>
 #endif
-#include "glutbitmap.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
