@@ -1,3 +1,4 @@
+#include "option_glui.h"
 /****************************************************************************
   
   GLUI User Interface Toolkit
@@ -29,6 +30,7 @@
 #else
 #include <GL/glut.h>
 #endif
+#include "glutbitmap.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -378,13 +380,10 @@ extern int glui_img_listbox_up_dis[];
 
 extern int *bitmap_arrays[];
 
-#undef pp_OSX_HIGHRES
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
-#ifndef pp_OSX_LOWRES
-#define pp_OSX_HIGHRES
-#endif
-#endif
+#ifdef pp_OSX_HIGHRES
+#define GLUT_BITMAP_HELVETICA_20        (&glutBitmapHelvetica20)
+#define GLUT_BITMAP_HELVETICA_24        (&glutBitmapHelvetica24)
+#define GLUT_BITMAP_HELVETICA_36        (&glutBitmapHelvetica36)
 #endif
 
 /************************************************************/
@@ -1718,6 +1717,23 @@ extern "C" int double_scale;
 #endif
 #endif
 
+#ifdef CPP
+#define CCCC "C"
+#else
+#define CCCC
+#endif
 
+
+#ifdef INGLUT
+#define GLUTEXTERN
+#else
+#define GLUTEXTERN extern CCCC
+#endif
+
+#ifdef pp_OSX_HIGHRES
+GLUTEXTERN const BitmapFontRec glutBitmapHelvetica20;
+GLUTEXTERN const BitmapFontRec glutBitmapHelvetica24;
+GLUTEXTERN const BitmapFontRec glutBitmapHelvetica36;
+#endif
 
 #endif

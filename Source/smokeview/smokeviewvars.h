@@ -32,9 +32,9 @@ extern int double_scale;
 
 SVEXTERN int SVDECL(windowsize_pointer_old, -999);
 #ifdef pp_OSX_HIGHRES
-GLUTEXTERN const BitmapFontRec glutBitmapHelvetica20;
-GLUTEXTERN const BitmapFontRec glutBitmapHelvetica24;
-GLUTEXTERN const BitmapFontRec glutBitmapHelvetica36;
+extern CCC const BitmapFontRec glutBitmapHelvetica20;
+extern CCC const BitmapFontRec glutBitmapHelvetica24;
+extern CCC const BitmapFontRec glutBitmapHelvetica36;
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG

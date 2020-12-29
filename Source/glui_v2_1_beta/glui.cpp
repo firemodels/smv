@@ -1032,7 +1032,7 @@ GLUI_Main::GLUI_Main( void )
   font                    = GLUT_BITMAP_HELVETICA_12;
 #ifdef pp_OSX_HIGHRES
   if(double_scale==1){
-    font                    = GLUT_BITMAP_TIMES_ROMAN_24;
+    font                    = (void *)GLUT_BITMAP_HELVETICA_24;
   }
 #endif
   curr_cursor             = GLUT_CURSOR_LEFT_ARROW;

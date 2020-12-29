@@ -138,12 +138,6 @@
 #define SVDECL(var,val)  var
 #endif
 
-#ifdef INGLUT
-#define GLUTEXTERN
-#else
-#define GLUTEXTERN extern CCC
-#endif
-
 #define GLUT_H <GL/glut.h>
 #ifdef pp_OSX
 #undef  GLUT_H
