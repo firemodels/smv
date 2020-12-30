@@ -1190,13 +1190,6 @@ static const GLubyte ch96data[] = {
 
 static const BitmapCharRec ch96 =  {8,8,0,-6,8,ch96data};
 
-//static const GLubyte ch96data[] = {
-0x3c,0x3c,0xc0,0xc0,0x30,0x30,
-};
-
-//static const BitmapCharRec ch96 =  {4,6,0,-10,6,ch96data};
-
-
 /* char: 0x5f '_' */
 
 static const GLubyte ch95data[] = {
