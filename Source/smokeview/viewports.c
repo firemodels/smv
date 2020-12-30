@@ -60,7 +60,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int *slice_label_width
   *part_label_width     = 0;
 
   if(show_slice_colorbar_local==1){
-    float tttval, tttmin, tttmax;
+    float tttmin, tttmax;
     boundsdata *sb;
     float slicerange;
     int i;
@@ -69,11 +69,6 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int *slice_label_width
     tttmin = sb->levels256[0];
     tttmax = sb->levels256[255];
     slicerange = tttmax - tttmin;
-
-    float valmin, valmax;
-
-    valmin = tttmin;
-    valmax = tttmax;
 
     for(i = 0; i < nrgb - 1; i++){
       float val;
