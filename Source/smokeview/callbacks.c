@@ -1666,7 +1666,7 @@ void Keyboard(unsigned char key, int flag){
         HandleMoveKeys(256+key2);
         break;
       }
-      if((visVector==1&&ReadPlot3dFile==1)||showvslice==1||isZoneFireModel==1){
+      if((visVector==1&&nplot3dloaded>0)||showvslice==1||isZoneFireModel==1){
       }
       else{
         break;
@@ -1690,7 +1690,7 @@ void Keyboard(unsigned char key, int flag){
         PRINTF("vector length factor: %f\n",vecfactor);
         UpdateGluiVecFactor();
       }
-      if(visVector==1&&ReadPlot3dFile==1){
+      if(visVector==1&&nplot3dloaded>0){
         gbsave=current_mesh;
         for(i=0;i<nmeshes;i++){
           gbi = meshinfo + i;
@@ -2718,7 +2718,7 @@ void Keyboard(unsigned char key, int flag){
       ASSERT(FFALSE);
       break;
   }
-  if(ReadPlot3dFile==1){
+  if(nplot3dloaded>0){
     plotstate = GetPlotState(STATIC_PLOTS);
     if(visiso!=0&&current_mesh->slicedir==ISO){
       plotiso[plotn-1] += FlowDir;
@@ -2802,7 +2802,7 @@ void UpdateClipPlanes(void){
 /* ------------------ HandleIso ------------------------ */
 
 void HandleIso(void){
-    if(ReadPlot3dFile==1){
+    if(nplot3dloaded>0){
       UpdateShowStep(1-visiso,ISO);
       if(visiso==1){
         UpdateSurface();

@@ -1026,7 +1026,6 @@ void InitOpenGL(void){
         ReadPlot3D(plot3di->file,i,UNLOAD,&errorcode);
       }
       if(plot3di->autoload==1){
-        ReadPlot3dFile=1;
         ReadPlot3D(plot3di->file,i,LOAD,&errorcode);
       }
     }
@@ -1474,7 +1473,7 @@ void InitVars(void){
   xbar0=0.0, ybar0=0.0, zbar0=0.0;
   xbarORIG=1.0, ybarORIG=1.0, zbarORIG=1.0;
   xbar0ORIG=0.0, ybar0ORIG=0.0, zbar0ORIG=0.0;
-  ReadPlot3dFile=0, ReadIsoFile=0;
+  ReadIsoFile=0;
 
   ReadVolSlice=0;
   ReadZoneFile=0;

@@ -2438,7 +2438,7 @@ void ScriptPlot3dProps(scriptdata *scripti){
   contour_type=CLAMP(scripti->ival4,0,2);
   UpdatePlot3dDisplay();
 
-  if(visVector==1&&ReadPlot3dFile==1){
+  if(visVector==1&&nplot3dloaded>0){
     meshdata *gbsave,*gbi;
 
     gbsave=current_mesh;
@@ -2720,7 +2720,6 @@ void ScriptLoadFile(scriptdata *scripti){
 
     plot3di = plot3dinfo + i;
     if(strcmp(plot3di->file,scripti->cval)==0){
-      ReadPlot3dFile=1;
       plot3di->finalize = 1;
       ReadPlot3D(plot3di->file,i,LOAD,&errorcode);
       UpdateMenu();

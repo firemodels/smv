@@ -191,6 +191,20 @@ int GetPlot3DBounds(plot3ddata *plot3di){
   return 1;
 }
 
+/* ------------------ UpdatePlot3DFileLoad  ------------------------ */
+
+void UpdatePlot3DFileLoad(void){
+  int i;
+
+  nplot3dloaded = 0;
+  for(i = 0; i<nplot3dinfo; i++){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo+i;
+    if(plot3di->loaded==1)nplot3dloaded++;
+  }
+}
+
 /* ------------------ ReadPlot3d  ------------------------ */
 
 void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
@@ -304,21 +318,17 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   if(flag==UNLOAD){
     p->loaded=0;
     p->display=0;
-    plotstate=GetPlotState(STATIC_PLOTS);
+    UpdatePlot3DFileLoad();
+    plotstate = GetPlotState(STATIC_PLOTS);
     meshi=meshinfo+p->blocknumber;
     meshi->plot3dfilenum=-1;
     if(nloaded==0){
-      ReadPlot3dFile=0;
       numplot3dvars=0;
     }
     updatemenu=1;
     PrintMemoryInfo;
     UpdateTimes();
     UpdateUnitDefs();
-    return;
-  }
-  if(ReadPlot3dFile==0){
-    plotstate=GetPlotState(STATIC_PLOTS);
     return;
   }
 
@@ -384,6 +394,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   }
   p->loaded=1;
   p->display=1;
+  if(nplot3dloaded==0)UpdatePlot3DFileLoad();
   speedmax = -1.;
   meshi->udata=NULL;
   meshi->vdata=NULL;
@@ -998,7 +1009,7 @@ void UpdateSurface(void){
   int plot3dsize;
   int i;
 
-  if(ReadPlot3dFile!=1)return;
+  if(nplot3dloaded==0)return;
   for(i=0;i<nmeshes;i++){
     float dlevel=-1.0;
     meshdata *meshi;
@@ -1281,7 +1292,7 @@ void UpdatePlotSliceMesh(meshdata *mesh_in, int slicedir){
   if(setp3min_all[plotn - 1] == CHOP_MIN)minfill = 0;
   if(setp3max_all[plotn - 1] == CHOP_MAX)maxfill = 0;
 
-  if(ReadPlot3dFile != 1)return;
+  if(nplot3dloaded==0)return;
   if(plotx >= 0 && slicedir == XDIR){
     float *yzcolorf;
     float *yzcolort;
@@ -1450,7 +1461,7 @@ void UpdatePlotSlice(int slicedir){
 
 void UpdateShowStep(int val, int slicedir){
 
-  if(ReadPlot3dFile==0&&visGrid==0&&ReadVolSlice==0)return;
+  if(nplot3dloaded==0&&visGrid==0&&ReadVolSlice==0)return;
   current_mesh->slicedir=slicedir;
   switch(slicedir){
   case XDIR:
@@ -1463,7 +1474,7 @@ void UpdateShowStep(int val, int slicedir){
     if(visz_all!=val)updatemenu=1;
     break;
   case ISO:
-    if(ReadPlot3dFile==1){
+    if(nplot3dloaded>0){
       if(visiso!=val)updatemenu=1;
       visiso = val;
     }

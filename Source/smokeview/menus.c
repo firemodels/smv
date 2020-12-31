@@ -706,7 +706,7 @@ void StaticVariableMenu(int value){
 /* ------------------ IsoVariableMenu ------------------------ */
 
 void IsoVariableMenu(int value){
-  if(ReadPlot3dFile==1){
+  if(nplot3dloaded>0){
     plotn=value;
     if(visx_all==1){
       UpdateShowStep(1,XDIR);
@@ -2293,7 +2293,7 @@ void FrameRateMenu(int value){
 /* ------------------ IsoSurfaceTypeMenu ------------------------ */
 
 void IsoSurfaceTypeMenu(int value){
-  if(ReadPlot3dFile==1){
+  if(nplot3dloaded>0){
     switch(value){
     case MENU_SURFACE_SMOOTH:
       p3dsurfacesmooth=1;
@@ -2322,7 +2322,7 @@ void IsoSurfaceTypeMenu(int value){
 /* ------------------ IsoSurfaceMenu ------------------------ */
 
 void IsoSurfaceMenu(int value){
-  if(ReadPlot3dFile==1){
+  if(nplot3dloaded>0){
     updatemenu=1;
     GLUTPOSTREDISPLAY;
     if(value==1){
@@ -2337,7 +2337,7 @@ void IsoSurfaceMenu(int value){
 /* ------------------ LevelMenu ------------------------ */
 
 void LevelMenu(int value){
-  if(ReadPlot3dFile==1){
+  if(nplot3dloaded>0){
     plotiso[plotn-1]=value;
     UpdateShowStep(1,ISO);
     UpdateSurface();
@@ -5089,7 +5089,6 @@ void Plot3DListMenu(int value){
     }
   }
   SetLoadedPlot3DBounds(list, nlist);
-  ReadPlot3dFile = 1;
   for(i = 0; i<nlist; i++){
     plot3ddata *plot3di;
 
@@ -5144,7 +5143,6 @@ void LoadPlot3dMenu(int value){
   if(value>=0){
     char *plot3dfile;
 
-    ReadPlot3dFile=1;
     plot3dfile = plot3dinfo[value].file;
     if(scriptoutstream!=NULL&&loadplot3dall==0){
       fprintf(scriptoutstream,"LOADPLOT3D\n");
@@ -5161,7 +5159,6 @@ void LoadPlot3dMenu(int value){
           ReadPlot3D("", i, UNLOAD, &errorcode);
         }
       }
-      ReadPlot3dFile = 1;
       ReadPlot3D(plot3dfile,value,LOAD,&errorcode);
     }
   }
@@ -9052,7 +9049,7 @@ updatemenu=0;
     }
     showhide_data = 1;
   }
-  if(ReadPlot3dFile==1){
+  if(nplot3dloaded>0){
     showhide_data = 1;
     GLUTADDSUBMENU(_("Plot3D"), plot3dshowmenu);
   }
