@@ -60,19 +60,31 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int *slice_label_width
   *part_label_width     = 0;
 
   if(show_slice_colorbar_local==1){
+    char slicecolorlabel[256];
     float tttmin, tttmax;
     boundsdata *sb;
     float slicerange;
     int i;
 
     sb = slicebounds + slicefile_labelindex;
+
     tttmin = sb->levels256[0];
     tttmax = sb->levels256[255];
     slicerange = tttmax - tttmin;
 
+    strcpy(slicecolorlabel, "SLICEAA");
+    *slice_label_width = MAX(*slice_label_width, GetStringWidth(slicecolorlabel));
+
+    strcpy(slicecolorlabel, sb->label->unit);
+    strcat(slicecolorlabel, "AA");
+    *slice_label_width = MAX(*slice_label_width, GetStringWidth(slicecolorlabel));
+
+    strcpy(slicecolorlabel, sb->label->shortlabel);
+    strcat(slicecolorlabel, "AA");
+    *slice_label_width = MAX(*slice_label_width, GetStringWidth(slicecolorlabel));
+
     for(i = 0; i < nrgb - 1; i++){
       float val;
-      char slicecolorlabel[256];
 
       val = tttmin+i*slicerange/(nrgb-2);
       Float2String(slicecolorlabel, val, ncolorlabel_digits);
@@ -84,14 +96,27 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int *slice_label_width
   if(showpatch == 1 && wall_cell_color_flag == 0){
     float patchrange, tttmin, tttmax;
     int i;
+    patchdata *patchi;
+    char boundary_colorlabel[256];
 
     tttmin = boundarylevels256[0];
     tttmax = boundarylevels256[255];
     patchrange = tttmax-tttmin;
 
+    patchi = patchinfo+boundarytypes[iboundarytype];
+
+    strcpy(boundary_colorlabel, "BNDRYAA");
+    *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
+
+    strcpy(boundary_colorlabel, patchi->label.unit);
+    strcat(boundary_colorlabel, "AA");
+    *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
+
+    strcpy(boundary_colorlabel, patchi->label.shortlabel);
+    strcat(boundary_colorlabel, "AA");
+    *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
 
     for(i = 0; i<nrgb-1; i++){
-      char boundary_colorlabel[256];
       float val;
 
       val = tttmin+i*patchrange/(nrgb-2);
@@ -105,18 +130,32 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int *slice_label_width
     int i;
     float *partlevels256_ptr;
     float tttmin, tttmax, partrange;
+    char partcolorlabel[256];
 
     partlevels256_ptr = partlevels256;
     if(global_prop_index>= 0 &&global_prop_index < npart5prop){
       partlevels256_ptr = part5propinfo[global_prop_index].ppartlevels256;
     }
 
+    if(parttype!=0){
+      strcpy(partcolorlabel, "PARTAA");
+      *part_label_width = MAX(*part_label_width, GetStringWidth(partcolorlabel));
+
+      strcpy(partcolorlabel, partshortlabel);
+      strcat(partcolorlabel, "AA");
+      *part_label_width = MAX(*part_label_width, GetStringWidth(partcolorlabel));
+
+      strcpy(partcolorlabel, partunitlabel);
+      strcat(partcolorlabel, "AA");
+      *part_label_width = MAX(*part_label_width, GetStringWidth(partcolorlabel));
+    }
+
+
     tttmin = partlevels256_ptr[0];
     tttmax = partlevels256_ptr[255];
     partrange = tttmax - tttmin;
 
     for(i = 0; i < nrgb - 1; i++){
-      char partcolorlabel[256];
       float val;
 
       val = tttmin + i*partrange / (nrgb - 2);
