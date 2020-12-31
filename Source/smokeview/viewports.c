@@ -54,10 +54,14 @@ int GetStringWidth(char *string){
 
 /* ------------------ GetColorbarLabelWidth ------------------------ */
 
-void GetColorbarLabelWidth(int show_slice_colorbar_local, int *slice_label_width, int *boundary_label_width, int *part_label_width){
+void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local, 
+                           int *slice_label_width, int *boundary_label_width, int *part_label_width, int *plot3d_label_width,
+                           int *zone_label_width){
   *slice_label_width    = 0;
   *boundary_label_width = 0;
   *part_label_width     = 0;
+  *plot3d_label_width   = 0;
+  *zone_label_width    = 0;
 
   if(show_slice_colorbar_local==1){
     char slicecolorlabel[256];
@@ -72,15 +76,15 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int *slice_label_width
     tttmax = sb->levels256[255];
     slicerange = tttmax - tttmin;
 
-    strcpy(slicecolorlabel, "SLICEAA");
+    strcpy(slicecolorlabel, "SLICEA");
     *slice_label_width = MAX(*slice_label_width, GetStringWidth(slicecolorlabel));
 
     strcpy(slicecolorlabel, sb->label->unit);
-    strcat(slicecolorlabel, "AA");
+    strcat(slicecolorlabel, "A");
     *slice_label_width = MAX(*slice_label_width, GetStringWidth(slicecolorlabel));
 
     strcpy(slicecolorlabel, sb->label->shortlabel);
-    strcat(slicecolorlabel, "AA");
+    strcat(slicecolorlabel, "A");
     *slice_label_width = MAX(*slice_label_width, GetStringWidth(slicecolorlabel));
 
     for(i = 0; i < nrgb - 1; i++){
@@ -88,7 +92,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int *slice_label_width
 
       val = tttmin+i*slicerange/(nrgb-2);
       Float2String(slicecolorlabel, val, ncolorlabel_digits);
-      strcat(slicecolorlabel,"AA");
+      strcat(slicecolorlabel,"A");
       *slice_label_width = MAX(*slice_label_width, GetStringWidth(slicecolorlabel));
     }
   }
@@ -105,15 +109,15 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int *slice_label_width
 
     patchi = patchinfo+boundarytypes[iboundarytype];
 
-    strcpy(boundary_colorlabel, "BNDRYAA");
+    strcpy(boundary_colorlabel, "BNDRYA");
     *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
 
     strcpy(boundary_colorlabel, patchi->label.unit);
-    strcat(boundary_colorlabel, "AA");
+    strcat(boundary_colorlabel, "A");
     *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
 
     strcpy(boundary_colorlabel, patchi->label.shortlabel);
-    strcat(boundary_colorlabel, "AA");
+    strcat(boundary_colorlabel, "A");
     *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
 
     for(i = 0; i<nrgb-1; i++){
@@ -121,7 +125,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int *slice_label_width
 
       val = tttmin+i*patchrange/(nrgb-2);
       Float2String(boundary_colorlabel, val, ncolorlabel_digits);
-      strcat(boundary_colorlabel,"AA");
+      strcat(boundary_colorlabel,"A");
       *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
     }
   }
@@ -138,15 +142,15 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int *slice_label_width
     }
 
     if(parttype!=0){
-      strcpy(partcolorlabel, "PARTAA");
+      strcpy(partcolorlabel, "PARTA");
       *part_label_width = MAX(*part_label_width, GetStringWidth(partcolorlabel));
 
       strcpy(partcolorlabel, partshortlabel);
-      strcat(partcolorlabel, "AA");
+      strcat(partcolorlabel, "A");
       *part_label_width = MAX(*part_label_width, GetStringWidth(partcolorlabel));
 
       strcpy(partcolorlabel, partunitlabel);
-      strcat(partcolorlabel, "AA");
+      strcat(partcolorlabel, "A");
       *part_label_width = MAX(*part_label_width, GetStringWidth(partcolorlabel));
     }
 
@@ -160,8 +164,69 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int *slice_label_width
 
       val = tttmin + i*partrange / (nrgb - 2);
       Float2String(partcolorlabel, val, ncolorlabel_digits);
-      strcat(partcolorlabel,"AA");
+      strcat(partcolorlabel,"A");
       *part_label_width = MAX(*part_label_width, GetStringWidth(partcolorlabel));
+    }
+  }
+
+  if(showcfast_local==1){
+    char zonecolorlabel[256];
+    float zonerange, tttmin, tttmax;
+    int i;
+
+    tttmin = zonelevels256[0];
+    tttmax = zonelevels256[255];
+    zonerange = tttmax-tttmin;
+
+    strcpy(zonecolorlabel, "ZoneA");
+    *zone_label_width = MAX(*zone_label_width, GetStringWidth(zonecolorlabel));
+
+    strcpy(zonecolorlabel, "TempA");
+    *zone_label_width = MAX(*zone_label_width, GetStringWidth(zonecolorlabel));
+
+    for(i = 0; i<nrgb-1; i++){
+      float val;
+
+      val = tttmin+(i-1)*zonerange/(nrgb-2);
+      Float2String(zonecolorlabel, val, ncolorlabel_digits);
+      strcat(zonecolorlabel, "A");
+      *zone_label_width = MAX(*zone_label_width, GetStringWidth(zonecolorlabel));
+    }
+    SNIFF_ERRORS("after zone left labels");
+    glPopMatrix();
+  }
+
+  if(showplot3d==1){
+    char plot3dcolorlabel[256];
+    int i;
+
+    strcpy(plot3dcolorlabel, "Plot3DA");
+    *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
+
+    strcpy(plot3dcolorlabel, "SpeedA");
+    *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
+
+    strcpy(plot3dcolorlabel, "hrrpuvA");
+    *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
+
+    strcpy(plot3dcolorlabel, "U-VELA");
+    *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
+
+    float *p3lev;
+    float plot3drange, tttval, tttmin, tttmax;
+
+    p3lev = p3levels256[plotn-1];
+    tttmin = p3lev[0];
+    tttmax = p3lev[255];
+    plot3drange = tttmax-tttmin;
+
+    for(i = 0; i<nrgb-1; i++){
+      float val;
+
+      val = tttmin+i*plot3drange/(nrgb-2);
+      Float2String(plot3dcolorlabel, val, ncolorlabel_digits);
+      strcat(plot3dcolorlabel, "A");
+      *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
     }
   }
 }
@@ -171,7 +236,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int *slice_label_width
   int MaxColorbarLabelWidth(int nextra){
     int i, max_width;    
     char sample_label[32];
-    int show_slice_colorbar_local, showcfast_local, slice_label_width, boundary_label_width, part_label_width;
+    int show_slice_colorbar_local, showcfast_local, slice_label_width, boundary_label_width, part_label_width, plot3d_label_width, zone_label_width;
 
     strcpy(sample_label, "");
     for(i=0;i<MAX(5,ncolorlabel_digits+nextra);i++){
@@ -180,10 +245,13 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int *slice_label_width
     max_width = GetStringWidth(sample_label);
 
     UpdateShowSliceColorbar(&showcfast_local, &show_slice_colorbar_local);
-    GetColorbarLabelWidth(show_slice_colorbar_local, &slice_label_width, &boundary_label_width, &part_label_width);
+    GetColorbarLabelWidth(show_slice_colorbar_local, showcfast_local,
+                          &slice_label_width, &boundary_label_width, &part_label_width, &plot3d_label_width, &zone_label_width);
     max_width = MAX(max_width, slice_label_width);
     max_width = MAX(max_width, part_label_width);
     max_width = MAX(max_width, boundary_label_width);
+    max_width = MAX(max_width, plot3d_label_width);
+    max_width = MAX(max_width, zone_label_width);
     return max_width;
   }
 
