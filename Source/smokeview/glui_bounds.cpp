@@ -1633,6 +1633,8 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
               gmax_draw = MAX(gmax_draw, boundi->hist->val_max);
             }
           }
+          SetMin(BOUND_PLOT3D, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+          SetMax(BOUND_PLOT3D, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
           SetPercentileDraw(BOUND_PART, 0);
           SetPercentileDraw(BOUND_PATCH, 0);
           SetPercentileDraw(BOUND_SLICE, 0);
@@ -1642,8 +1644,6 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
           histogram_label1 = NULL;
           histogram_label2 = NULL;
         }
-        SetMin(BOUND_PLOT3D, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
-        SetMax(BOUND_PLOT3D, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
       }
       break;
     case BOUND_RELOAD_DATA:

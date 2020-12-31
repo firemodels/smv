@@ -5161,6 +5161,7 @@ void LoadPlot3dMenu(int value){
           ReadPlot3D("", i, UNLOAD, &errorcode);
         }
       }
+      ReadPlot3dFile = 1;
       ReadPlot3D(plot3dfile,value,LOAD,&errorcode);
     }
   }
