@@ -196,7 +196,8 @@ int bounds_dialog::in_percentile_mode(void){
     cpp_boundsdata *boundi;
 
     boundi = all_bounds+i;
-    if(boundi->set_valmin!=BOUND_PERCENTILE_MIN&&boundi->set_valmax!=BOUND_LOADED_MAX)return 0;
+    if(boundi->set_valmin!=BOUND_PERCENTILE_MIN)return 0;
+    if(boundi->set_valmax!=BOUND_PERCENTILE_MAX)return 0;
   }
   return 1;
 }
