@@ -213,7 +213,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
     *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
 
     float *p3lev;
-    float plot3drange, tttval, tttmin, tttmax;
+    float plot3drange, tttmin, tttmax;
 
     p3lev = p3levels256[plotn-1];
     tttmin = p3lev[0];
