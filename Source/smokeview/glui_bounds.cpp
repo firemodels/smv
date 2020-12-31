@@ -1744,14 +1744,14 @@ extern "C" void PartBoundsCPP_CB(int var){
               gmax_draw = MAX(gmax_draw, boundi->hist->val_max);
             }
           }
+          SetMin(BOUND_PART, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+          SetMax(BOUND_PART, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
         }
         else{
           histogram_draw   = NULL;
           histogram_label1 = NULL;
           histogram_label2 = NULL;
         }
-        SetMin(BOUND_PART, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
-        SetMax(BOUND_PART, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
       }
       break;
     case BOUND_CACHE_DATA:
