@@ -1650,10 +1650,7 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
 #ifdef pp_RESEARCH_DEBUG
       printf("*** reloading plot3d data\n");
 #endif
-      for(i=0;i<nplot3dinfo;i++){
-        if(plot3dinfo[i].loaded==0)continue;
-        LoadPlot3dMenu(i);
-      }
+      LoadPlot3dMenu(RELOAD_ALL);
       break;
     case BOUND_RESEARCH_MODE:
       if(npartinfo>0)partboundsCPP.CB(BOUND_RESEARCH_MODE);

@@ -5162,6 +5162,38 @@ void LoadPlot3dMenu(int value){
       ReadPlot3D(plot3dfile,value,LOAD,&errorcode);
     }
   }
+  else if(value==RELOAD_ALL){
+    plot3ddata **plot3d_list;
+    int nlist=0, i;
+
+    NewMemory((void **)&plot3d_list, nplot3dinfo*sizeof(plot3ddata *));
+    for(i = 0; i<nplot3dinfo; i++){
+      plot3ddata *plot3di;
+
+      plot3di = plot3dinfo+i;
+      if(plot3di->loaded==0)continue;
+      plot3di->finalize = 0;
+      plot3d_list[nlist++] = plot3di;
+    }
+
+#ifdef pp_CPPBOUND_DIALOG
+    if(nlist>0)SetLoadedPlot3DBounds(&value, 1);
+#endif
+    if(nlist>0)plot3d_list[nlist-1]->finalize = 1;
+    for(i = 0; i<nlist; i++){
+      int errorcode;
+
+      ReadPlot3D("", plot3d_list[i]-plot3dinfo, UNLOAD, &errorcode);
+    }
+    for(i = 0; i<nlist; i++){
+      int errorcode;
+      plot3ddata *plot3di;
+
+      plot3di = plot3d_list[i];
+      ReadPlot3D(plot3di->file, plot3di-plot3dinfo, LOAD, &errorcode);
+    }
+    FREEMEMORY(plot3d_list);
+  }
   else if(value==UNLOAD_ALL){
     for(i=0;i<nplot3dinfo;i++){
       ReadPlot3D("",i,UNLOAD,&errorcode);
@@ -5347,6 +5379,7 @@ void LoadBoundaryMenu(int value){
       }
 #ifdef pp_CPPBOUND_DIALOG
       int *list=NULL, nlist=0;
+
       NewMemory((void **)&list,npatchinfo*sizeof(int));
       nlist=0;
       for(i = 0; i<npatchinfo;i++){
