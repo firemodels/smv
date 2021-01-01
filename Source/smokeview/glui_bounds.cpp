@@ -1930,7 +1930,21 @@ extern "C" void PatchBoundsCPP_CB(int var){
       printf("*** reloading boundary file data\n");
 #endif
       SetLoadedPatchBounds(NULL, 0);
-      for(i = 0;i < npatchinfo;i++){
+      for(i = 0; i<npatchinfo; i++){
+        patchdata *patchi;
+
+        patchi = patchinfo+i;
+        patchi->finalize = 0;
+      }
+      for(i = npatchinfo-1; i>=0;  i--){
+        patchdata *patchi;
+
+        patchi = patchinfo+i;
+        if(patchi->loaded==0)continue;
+        patchi->finalize = 1;
+        break;
+      }
+      for(i = 0; i<npatchinfo; i++){
         patchdata *patchi;
         int errorcode;
 
