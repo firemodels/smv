@@ -2802,12 +2802,22 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
           SetMax(bound_type, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
         }
       }
+    }
+    if(bounds->set_valmin==BOUND_SET_MIN||bounds->set_valmax==BOUND_SET_MAX){
       if(patchi->boundary==1){
-        PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
       }
       else{
-        SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
+        int set_valmin, set_valmax;
+        float valmin_dlg, valmax_dlg;
+
+        GetMinMax(BOUND_SLICE, bounds->label, &set_valmin, &valmin_dlg, &set_valmax, &valmax_dlg);
       }
+    }
+    if(patchi->boundary==1){
+      PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
+    }
+    else{
+      SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
     }
 #endif
     UpdateUnitDefs();
