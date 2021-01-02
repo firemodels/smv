@@ -43,14 +43,28 @@ if "%whichguides%" == "smvug" (
   Title Download smokeview user guide images
 
   cd %svn_root%\smv\Manuals\SMV_User_Guide\SCRIPT_FIGURES
-  pscp -P 22 %linux_logon%:%smokebothome%/.smokebot/images/SMV_User_Guide/SCRIPT_FIGURES/* .
+  pscp -P 22 %linux_logon%:%smokebothome%/.smokebot/Manuals/SMV_User_Guide/SCRIPT_FIGURES/* .
+  goto eof
+)
+if "%whichguides%" == "smvugfork" (
+  Title Download smokeview user guide images
+
+  cd %svn_root%\smv\Manuals\SMV_User_Guide\SCRIPT_FIGURES
+  pscp -P 22 %linux_logon%:%userhome%/.smokebot/Manuals/SMV_User_Guide/SCRIPT_FIGURES/* .
   goto eof
 )
 if "%whichguides%" == "smvvg" (
   Title Download smokeview verification guide images
 
   cd %svn_root%\smv\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
-  pscp -P 22 %linux_logon%:%smokebothome%/.smokebot/images/SMV_Verification_Guide/SCRIPT_FIGURES/* .
+  pscp -P 22 %linux_logon%:%smokebothome%/.smokebot/Manuals/SMV_Verification_Guide/SCRIPT_FIGURES/* .
+  goto eof
+)
+if "%whichguides%" == "smvvgfork" (
+  Title Download smokeview verification guide images
+
+  cd %svn_root%\smv\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+  pscp -P 22 %linux_logon%:%userhome%/.smokebot/Manuals/SMV_Verification_Guide/SCRIPT_FIGURES/* .
   goto eof
 )
 if "%whichguides%" == "fdsug" (
