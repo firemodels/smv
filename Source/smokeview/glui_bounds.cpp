@@ -449,7 +449,7 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
       percentile_min_cpp = CLAMP(percentile_level_min, 0.0, 1.0);
       percentile_max_cpp = CLAMP(percentile_level_max, percentile_level_min,1.0);
 
-      PANEL_drawA              = glui_bounds->add_panel_to_panel(ROLLOUT_percentiles, "values:     percentiles/100");
+      PANEL_drawA              = glui_bounds->add_panel_to_panel(ROLLOUT_percentiles, "values:   percentiles/100");
       STATIC_percentile_100 = glui_bounds->add_statictext_to_panel(PANEL_drawA, "");
       SPINNER_percentile_max   = glui_bounds->add_spinner_to_panel(PANEL_drawA, _("max:"), GLUI_SPINNER_FLOAT, &percentile_max_cpp, BOUND_PERCENTILE_MAXVAL, Callback);
       STATIC_percentile_50 = glui_bounds->add_statictext_to_panel(PANEL_drawA, "");
@@ -460,7 +460,7 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
       PANEL_drawB = glui_bounds->add_panel_to_panel(ROLLOUT_percentiles, "plot position/bounds");
       SPINNER_hist_left_percen   = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("left:"),   GLUI_SPINNER_INT, &hist_left_percen_cpp,   BOUND_LEFT_PERCEN,   Callback);
       SPINNER_hist_down_percen   = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("bottom:"), GLUI_SPINNER_INT, &hist_down_percen_cpp,   BOUND_DOWN_PERCEN,   Callback);
-      SPINNER_hist_length_percen = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("width:"),  GLUI_SPINNER_INT, &hist_length_percen_cpp, BOUND_LENGTH_PERCEN, Callback);
+      SPINNER_hist_length_percen = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("size:"),  GLUI_SPINNER_INT, &hist_length_percen_cpp, BOUND_LENGTH_PERCEN, Callback);
       SPINNER_hist_left_percen->set_int_limits(0, 100);
       SPINNER_hist_down_percen->set_int_limits(0, 100);
       SPINNER_hist_length_percen->set_int_limits(0, 100);
@@ -518,29 +518,47 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
   update_ini = 1;
 }
 
+/* ------------------ PadString ------------------------ */
+
+void PadString(char *label1, char *label2, int length){
+  int i;
+
+  TrimBack(label1);
+  for(i=strlen(label1);i<length;i++){
+    strcat(label1, " ");
+  }
+  strcat(label1,label2);
+}
+
 /* ------------------ set_percentiles ------------------------ */
 
 void bounds_dialog::set_percentiles(float val_00, float per_valmin, float val_50, float per_valmax, float val_100){
   char val_label[sizeof(GLUI_String)];
+#define PAD_LENGTH 12
 
   Float2String(val_label, val_00, 4);
-  sprintf(val_label, "%s:      0.0", val_label);
+  strcat(val_label,":");
+  PadString(val_label,"0.0", PAD_LENGTH);
   STATIC_percentile_00->set_name(val_label);
 
   Float2String(val_label, per_valmin, 4);
-  strcat(val_label,":    ");
+  strcat(val_label,":");
+  PadString(val_label,"", PAD_LENGTH);
   SPINNER_percentile_min->edittext->set_name(val_label);
 
   Float2String(val_label, val_50, 4);
-  sprintf(val_label, "%s:      0.5", val_label);
+  strcat(val_label,":");
+  PadString(val_label,"0.5", PAD_LENGTH);
   STATIC_percentile_50->set_name(val_label);
 
   Float2String(val_label, per_valmax, 4);
-  strcat(val_label,":    ");
+  strcat(val_label,":");
+  PadString(val_label,"", PAD_LENGTH);
   SPINNER_percentile_max->edittext->set_name(val_label);
 
   Float2String(val_label, val_100, 4);
-  sprintf(val_label, "%s:      1.0", val_label);
+  strcat(val_label,":");
+  PadString(val_label,"1.0", PAD_LENGTH);
   STATIC_percentile_100->set_name(val_label);
 }
 
