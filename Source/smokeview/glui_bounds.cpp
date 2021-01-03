@@ -441,7 +441,7 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
   CHECKBOX_percentile_draw = NULL;
   if(cache_flag!=NULL){
     if(percentile_enabled==1){
-      GLUI_Panel *PANEL_drawA, *PANEL_drawB, *PANEL_drawC;
+      GLUI_Panel *PANEL_drawA, *PANEL_drawB;
 
       percentile_draw = 0;
       ROLLOUT_percentiles = glui_bounds->add_rollout_to_panel(PANEL_minmax, "data distribution", false);
