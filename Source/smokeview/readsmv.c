@@ -10350,6 +10350,7 @@ int ReadIni2(char *inifile, int localfile){
     CheckMemory;
     if(fgets(buffer, 255, stream) == NULL)break;
 
+#ifdef    pp_CPPBOUND_DIALOG
     if(Match(buffer, "PERCENTILEMODE")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &percentile_mode);
@@ -10361,6 +10362,7 @@ int ReadIni2(char *inifile, int localfile){
       update_percentile_mode = 1;
       continue;
     }
+#endif
 
     if(Match(buffer, "RESEARCHMODE") == 1){
       int dummy;
@@ -10371,10 +10373,12 @@ int ReadIni2(char *inifile, int localfile){
       if(research_mode==1&&research_mode_override==0)research_mode=0;
       ncolorlabel_digits = CLAMP(ncolorlabel_digits, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
       ONEORZERO(research_mode);
+#ifdef pp_CPPBOUND_DIALOG
       if(research_mode==1&&percentile_mode==1){
         percentile_mode = 0;
         update_percentile_mode = 1;
       }
+#endif
       update_research_mode=1;
       continue;
     }
@@ -14736,8 +14740,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", nopart);
   fprintf(fileout, "PARTFAST\n");
   fprintf(fileout, " %i %i %i\n", partfast, part_multithread, npartthread_ids);
+#ifdef pp_CPPBOUND_DIALOG
   fprintf(fileout, "PERCENTILEMODE\n");
   fprintf(fileout, " %i\n", percentile_mode);
+#endif
   fprintf(fileout, "RESEARCHMODE\n");
   fprintf(fileout, " %i %i %f %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits);
   fprintf(fileout, "SHOWFEDAREA\n");

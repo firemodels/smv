@@ -1883,12 +1883,12 @@ void UpdateShowScene(void){
   if(global_times!=NULL&&updateUpdateFrameRateMenu==1)FrameRateMenu(frameratevalue);
   if(updatefaces==1)UpdateFaces();
   if(updatefacelists==1)UpdateFaceLists();
+#ifdef pp_CPPBOUND_DIALOG
   if(update_draw_hist==1){
     update_draw_hist = 0;
-#ifdef pp_CPPBOUND_DIALOG
     SetPercentileDrawOff();
-#endif
   }
+#endif
 }
 
 /* ------------------ UpdateFlippedColorbar ------------------------ */
