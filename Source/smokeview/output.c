@@ -43,9 +43,9 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
     valmax_normalized = NORMALH(valmax, nmin, nmax);
     median_normalized = NORMALH(histogram->median, nmin, nmax);
   }
-  Float2String(cmin, histogram->val_min, ndigits);
+  Float2String(cmin, gmin, ndigits);
   Float2String(cmedian, histogram->median, ndigits);
-  Float2String(cmax, histogram->val_max, ndigits);
+  Float2String(cmax, gmax, ndigits);
   Float2String(cvalmin, valmin, ndigits);
   Float2String(cvalmax, valmax, ndigits);
   cmin_width = (float)GetStringWidth(cmin)/screenWidth;
@@ -83,6 +83,7 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
 
     x1 = x[i];
     x2 = x[i+1];
+    if(x1<0.0||x2>1.0)continue;
 
     if(valmin_normalized<=valmax_normalized&&(x1<valmin_normalized||x2>valmax_normalized)){
       color = blue;
@@ -117,12 +118,12 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
 
   glColor3fv(foregroundcolor);
   glBegin(GL_LINES);
-  glVertex2f(x[0], 0.0);
-  glVertex2f(x[0], -0.02);
+  glVertex2f(0.0, 0.0);
+  glVertex2f(0.0, -0.02);
   glVertex2f(median_normalized, 0.0);
   glVertex2f(median_normalized, -DZHIST1);
-  glVertex2f(x[n-1], 0.0);
-  glVertex2f(x[n-1], -DZHIST1);
+  glVertex2f(1.0, 0.0);
+  glVertex2f(1.0, -DZHIST1);
 
   glColor3fv(blue);
   glVertex2f(valmin_normalized, 0.0);
@@ -143,9 +144,9 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
 
     float offset = -2.5*text_height;
 
-    OutputTextColor(foregroundcolor, x[0]-cmin_width/2.0, offset, cmin);
+    OutputTextColor(foregroundcolor, -cmin_width/2.0, offset, cmin);
     OutputTextColor(foregroundcolor, 0.001+MAX(median_normalized-median_width/2.0, cmin_width/2.0), offset, cmedian);
-    OutputTextColor(foregroundcolor, x[n-1]-cmax_width/2.0, offset, cmax);
+    OutputTextColor(foregroundcolor, 1.0-cmax_width/2.0, offset, cmax);
 
     offset -= text_height;
     OutputTextColor(blue, valmin_normalized-cvalmin_width/2.0, offset, cvalmin);
@@ -153,11 +154,11 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
 
     if(histogram_label1!=NULL){
       offset -= text_height;
-      OutputTextColor(foregroundcolor, x[0]-cmin_width/2.0, offset, histogram_label1);
+      OutputTextColor(foregroundcolor, -cmin_width/2.0, offset, histogram_label1);
     }
     if(histogram_label2!=NULL){
       offset -= text_height;
-      OutputTextColor(foregroundcolor, x[0]-cmin_width/2.0, offset, histogram_label2);
+      OutputTextColor(foregroundcolor, -cmin_width/2.0, offset, histogram_label2);
     }
   }
   glPopMatrix();

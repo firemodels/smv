@@ -1009,7 +1009,12 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     ReadIsoOrig(fed_iso->file,file_index,UNLOAD,&error_local);
   }
 
-  if(flag==UNLOAD)return;
+  if(flag==UNLOAD){
+#ifdef pp_CPPBOUND_DIALOG
+    update_draw_hist = 1;
+#endif
+    return;
+  }
 
   // regenerate if either the FED slice or isosurface file does not exist or is older than
   // either the CO, CO2 or O2 slice files
@@ -1297,6 +1302,9 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     showvslice=0;
     updatemenu=1;
     plotstate=GetPlotState(DYNAMIC_PLOTS);
+#ifdef pp_CPPBOUND_DIALOG
+    update_draw_hist = 1;
+#endif
     return return_filesize;
   }
   if(vd->finalize==0)set_slicecolor = DEFER_SLICECOLOR;
@@ -4590,6 +4598,9 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
       UpdateUnitDefs();
       UpdateTimes();
       RemoveSliceLoadstack(slicefilenumber);
+#ifdef pp_CPPBOUND_DIALOG
+      update_draw_hist = 1;
+#endif
       return 0;
     }
 

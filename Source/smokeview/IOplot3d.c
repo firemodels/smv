@@ -238,6 +238,9 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
 
   if(flag==UNLOAD){
     meshi->plot3dfilenum=-1;
+#ifdef pp_CPPBOUND_DIALOG
+    update_draw_hist = 1;
+#endif
   }
   else{
     pn = meshi->plot3dfilenum;

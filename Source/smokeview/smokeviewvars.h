@@ -38,6 +38,7 @@ extern CCC const BitmapFontRec glutBitmapHelvetica36;
 #endif
 
 #ifdef pp_CPPBOUND_DIALOG
+SVEXTERN int SVDECL(update_draw_hist, 0);
 SVEXTERN histogramdata SVDECL(*histogram_draw, NULL);
 SVEXTERN float SVDECL(xmin_draw, 1.0), SVDECL(xmax_draw, 0.0);
 SVEXTERN float SVDECL(gmin_draw, 1.0), SVDECL(gmax_draw, 0.0);

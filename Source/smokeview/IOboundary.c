@@ -1485,6 +1485,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   }
 
   if(flag==UNLOAD){
+#ifdef pp_CPPBOUND_DIALOG
+    update_draw_hist = 1;
+#endif
     UpdateBoundaryType();
     UpdateUnitDefs();
     UpdateTimes();
@@ -2609,6 +2612,9 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     if(patchi->boundary==1)UpdateBoundaryType();
     UpdateUnitDefs();
     UpdateTimes();
+#ifdef pp_CPPBOUND_DIALOG
+    update_draw_hist = 1;
+#endif
     return 0;
   }
   if(patchi->skip == 1)return 0;
@@ -2850,8 +2856,10 @@ FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
     ASSERT(ifile>=0&&ifile<npatchinfo);
     return_filesize=ReadBoundaryBndf(ifile,load_flag,errorcode);
   }
-  if(load_flag==LOAD){
-
+  if(load_flag==UNLOAD){
+#ifdef pp_CPPBOUND_DIALOG
+    update_draw_hist = 1;
+#endif
   }
   return return_filesize;
 }

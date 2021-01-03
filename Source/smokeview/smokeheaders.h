@@ -70,6 +70,7 @@ EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(void);
 
 #ifdef pp_CPPBOUND_DIALOG
+EXTERNCPP void SetPercentileDrawOff(void);
 EXTERNCPP void ClosePartFiles(void);
 EXTERNCPP void PartBoundsCPP_CB(int var);
 EXTERNCPP void UpdatdateResearchModeCPP(void);

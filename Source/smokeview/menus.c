@@ -701,6 +701,10 @@ void StaticVariableMenu(int value){
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   UpdatePlot3dListIndex();
+#ifdef pp_CPPBOUND_DIALOG
+#define BOUND_PERCENTILE_DRAW          120
+  Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+#endif
 }
 
 /* ------------------ IsoVariableMenu ------------------------ */
@@ -3573,6 +3577,10 @@ void ParticlePropShowMenu(int value){
     propi = part5propinfo + iprop;
     last_prop_display=iprop;
     ipart5prop = iprop;
+#ifdef pp_CPPBOUND_DIALOG
+    SetValTypeIndex(BOUND_PART, ipart5prop);
+#endif
+
     propi->display=1;
     part5colorindex=iprop;
 
@@ -3591,6 +3599,10 @@ void ParticlePropShowMenu(int value){
 #ifdef pp_OLDBOUND_DIALOG
     PartBoundCB(FILETYPE_INDEX);
     UpdatePartType();
+#endif
+#ifdef pp_CPPBOUND_DIALOG
+#define BOUND_PERCENTILE_DRAW          120
+    PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
 #endif
   }
   else if(value==MENU_PROP_SHOWALL){

@@ -2155,6 +2155,9 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
       UpdatePart5Extremes();
       PrintMemoryInfo;
     }
+#ifdef pp_CPPBOUND_DIALOG
+    update_draw_hist = 1;
+#endif
     return 0.0;
   }
 
