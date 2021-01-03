@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP int GetFontHeight(void);
+
 EXTERNCPP void UpdateShowSliceColorbar(int *showcfast_arg, int *show_slice_colorbar_arg);
 
 EXTERNCPP void UpdateSliceSkip(void);

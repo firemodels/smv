@@ -125,28 +125,37 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
   glVertex2f(1.0, 0.0);
   glVertex2f(1.0, -DZHIST1);
 
+  glVertex2f(0.0, 0.0);
+  glVertex2f(1.0, 0.0);
+
+  glVertex2f(1.0, 0.0);
+  glVertex2f(1.0, 1.0);
+
+  glVertex2f(1.0, 1.0);
+  glVertex2f(0.0, 1.0);
+
+  glVertex2f(0.0, 1.0);
+  glVertex2f(0.0, 0.0);
+
   glColor3fv(blue);
   glVertex2f(valmin_normalized, 0.0);
   glVertex2f(valmin_normalized, -DZHIST1);
   glVertex2f(valmax_normalized, 0.0);
   glVertex2f(valmax_normalized, -DZHIST1);
-  glEnd();
+ glEnd();
 
   if(hist_show_labels==1){
-    float text_height = 18;
-    if(fontindex==SCALED_FONT){
-      scale_2d_y = ((float)scaled_font2d_height/(float)152.38);
+    float text_height;
 
-      text_height = MAX(18, (int)((12.0/18.0)*(25.0/18.0)*(float)scaled_font2d_height));
-    }
-    text_height += 6.0;
-    text_height /= screenHeight;
+    text_height = (float)GetFontHeight();
+    text_height += 3.0;
+    text_height /= pixel_dens;
 
-    float offset = -2.5*text_height;
+    float offset = -2.0*text_height;
 
-    OutputTextColor(foregroundcolor, -cmin_width/2.0, offset, cmin);
+    OutputTextColor(foregroundcolor, -cmin_width/2.0,                                               offset, cmin);
     OutputTextColor(foregroundcolor, 0.001+MAX(median_normalized-median_width/2.0, cmin_width/2.0), offset, cmedian);
-    OutputTextColor(foregroundcolor, 1.0-cmax_width/2.0, offset, cmax);
+    OutputTextColor(foregroundcolor, 1.0-cmax_width/2.0,                                            offset, cmax);
 
     offset -= text_height;
     OutputTextColor(blue, valmin_normalized-cvalmin_width/2.0, offset, cvalmin);

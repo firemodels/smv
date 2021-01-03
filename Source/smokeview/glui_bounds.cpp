@@ -462,7 +462,7 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
       SPINNER_percentile_min->set_float_limits(0.0, percentile_max_cpp);
 
       glui_bounds->add_column_to_panel(ROLLOUT_percentiles, false);
-      PANEL_drawB = glui_bounds->add_panel_to_panel(ROLLOUT_percentiles, "position");
+      PANEL_drawB = glui_bounds->add_panel_to_panel(ROLLOUT_percentiles, "plot position");
       SPINNER_hist_left_percen   = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("left:"),   GLUI_SPINNER_INT, &hist_left_percen_cpp,   BOUND_LEFT_PERCEN,   Callback);
       SPINNER_hist_down_percen   = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("bottom:"), GLUI_SPINNER_INT, &hist_down_percen_cpp,   BOUND_DOWN_PERCEN,   Callback);
       SPINNER_hist_length_percen = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("width:"),  GLUI_SPINNER_INT, &hist_length_percen_cpp, BOUND_LENGTH_PERCEN, Callback);
@@ -975,12 +975,34 @@ void bounds_dialog::CB(int var){
       }
       break;
     case BOUND_LEFT_PERCEN:
-    case BOUND_DOWN_PERCEN:
-    case BOUND_LENGTH_PERCEN:
-    case BOUND_HIST_LABELS:
       hist_left_percen = hist_left_percen_cpp;
+
+      hist_length_percen = MIN(MIN(100-hist_left_percen_cpp, hist_length_percen_cpp), 100-hist_down_percen_cpp);
+      hist_length_percen_cpp = hist_length_percen;
+      SPINNER_hist_length_percen->set_int_val(hist_length_percen);
+      printf("left=%i bottom=%i width=%i\n", hist_left_percen, hist_down_percen, hist_length_percen);
+      break;
+    case BOUND_DOWN_PERCEN:
       hist_down_percen = hist_down_percen_cpp;
+
+      hist_length_percen = MIN(MIN(100-hist_left_percen_cpp, hist_length_percen_cpp), 100-hist_down_percen_cpp);
+      hist_length_percen_cpp = hist_length_percen;
+      SPINNER_hist_length_percen->set_int_val(hist_length_percen);
+      printf("left=%i bottom=%i width=%i\n", hist_left_percen, hist_down_percen, hist_length_percen);
+      break;
+    case BOUND_LENGTH_PERCEN:
       hist_length_percen = hist_length_percen_cpp;
+
+      hist_left_percen = MIN(hist_left_percen, 100 - hist_length_percen);
+      hist_left_percen_cpp = hist_left_percen;
+      SPINNER_hist_left_percen->set_int_val(hist_left_percen);
+
+      hist_down_percen = MIN(hist_down_percen, 100 - hist_length_percen);
+      hist_down_percen_cpp = hist_down_percen;
+      SPINNER_hist_down_percen->set_int_val(hist_down_percen);
+      printf("left=%i bottom=%i width=%i\n", hist_left_percen, hist_down_percen, hist_length_percen);
+      break;
+    case BOUND_HIST_LABELS:
       hist_show_labels       = hist_show_labels_cpp;
       break;
   }

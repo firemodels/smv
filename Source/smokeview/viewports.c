@@ -601,11 +601,12 @@ int SubPortOrtho(int quad,
 
 /* ------------------------ SubPortOrtho2custom ------------------------- */
 
-#define WINDOW_MARGIN 3
+#define WINDOW_MARGIN 0
 int SubPortOrtho2Custom( portdata *p, GLint screen_left, GLint screen_down, int left_percen, int down_percen, int length_percen){
 
   GLint x0, y0;;
-  GLsizei dx, dy, dxy;
+  GLsizei dxy;
+  float df;
 
   GLdouble portx_left, portx_right, portx_down, portx_top;
 
@@ -618,21 +619,30 @@ int SubPortOrtho2Custom( portdata *p, GLint screen_left, GLint screen_down, int 
   port_unit_width = portx_right-portx_left;
   port_unit_height = portx_top-portx_down;
 
-  dx = ((float)length_percen/100.0)*p->width;
-  dy = ((float)length_percen/100.0)*p->height;
-  dxy = MIN(dx, dy);
+  dxy = ((float)length_percen/100.0)*MIN(p->width, p->height);
+  {
+    float text_height;
 
-  x0 = WINDOW_MARGIN + p->left + ((float)left_percen/100.0)*(p->width-p->left);
-  y0 = WINDOW_MARGIN + p->down+((float)down_percen/100.0)*(p->height-p->down);
+    text_height = (float)GetFontHeight();
+    text_height += 3.0;
+    text_height *= 6.0;
+    if(dxy>text_height){
+      df = text_height/(dxy - text_height);
+    }
+    else{
+      df = 0.25;
+    }
+  }
 
-  if(x0+dxy>p->right-WINDOW_MARGIN)x0 = p->right - WINDOW_MARGIN - dxy;
-  if(y0+dxy>p->top-WINDOW_MARGIN)  y0 = p->top   - WINDOW_MARGIN - dxy;
+  x0 = p->left + MIN( (float)left_percen/100.0*p->width,  p->width  - dxy);
+  y0 = p->down + MIN( (float)down_percen/100.0*p->height, p->height - dxy);
 
   glViewport(x0, y0, dxy, dxy);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluOrtho2D(-0.05, 1.1, -0.2, 1.1);
+  gluOrtho2D(-0.25, 1.1, -df, 1.1);
+  pixel_dens = dxy/(1.1+df);
   return 1;
 }
 
