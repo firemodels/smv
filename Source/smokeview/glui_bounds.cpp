@@ -374,7 +374,7 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
   ROLLOUT_bound = glui_bounds->add_rollout_to_panel(PANEL_bound2, "Bound");
   PANEL_minmax = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
   CHECKBOX_research_mode   = glui_bounds->add_checkbox_to_panel(PANEL_minmax, _("global bounds for all data (research mode)"), &research_mode, BOUND_RESEARCH_MODE, Callback);
-  CHECKBOX_percentile_mode = glui_bounds->add_checkbox_to_panel(PANEL_minmax, _("percentile bounds for all data)"), &percentile_mode, BOUND_PERCENTILE_MODE, Callback);
+  CHECKBOX_percentile_mode = glui_bounds->add_checkbox_to_panel(PANEL_minmax, _("percentile bounds for all data"), &percentile_mode, BOUND_PERCENTILE_MODE, Callback);
 
   CHECKBOX_cache = NULL;
   if(cache_flag!=NULL){
@@ -457,19 +457,20 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
       STATIC_percentile_00 = glui_bounds->add_statictext_to_panel(PANEL_drawA, "");
 
       glui_bounds->add_column_to_panel(ROLLOUT_percentiles, false);
-      PANEL_drawB = glui_bounds->add_panel_to_panel(ROLLOUT_percentiles, "plot position/bounds");
-      SPINNER_hist_left_percen   = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("left:"),   GLUI_SPINNER_INT, &hist_left_percen_cpp,   BOUND_LEFT_PERCEN,   Callback);
-      SPINNER_hist_down_percen   = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("bottom:"), GLUI_SPINNER_INT, &hist_down_percen_cpp,   BOUND_DOWN_PERCEN,   Callback);
-      SPINNER_hist_length_percen = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("size:"),  GLUI_SPINNER_INT, &hist_length_percen_cpp, BOUND_LENGTH_PERCEN, Callback);
+      PANEL_drawB = glui_bounds->add_panel_to_panel(ROLLOUT_percentiles, "plot bounds/position");
+
+      CHECKBOX_hist_show_labels = glui_bounds->add_checkbox_to_panel(PANEL_drawB, _("show labels"), &hist_show_labels_cpp, BOUND_HIST_LABELS, Callback);
+      CHECKBOX_percentile_draw = glui_bounds->add_checkbox_to_panel(PANEL_drawB, _("show plot"), &percentile_draw, BOUND_PERCENTILE_DRAW, Callback);
+      SPINNER_plot_max = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("max:"), GLUI_SPINNER_FLOAT, &plot_max_cpp, BOUND_PLOT_MINMAX, Callback);
+      SPINNER_plot_min = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("min:"), GLUI_SPINNER_FLOAT, &plot_min_cpp, BOUND_PLOT_MINMAX, Callback);
+
+      glui_bounds->add_column_to_panel(PANEL_drawB, false);
+      SPINNER_hist_length_percen = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("size:"), GLUI_SPINNER_INT, &hist_length_percen_cpp, BOUND_LENGTH_PERCEN, Callback);
+      SPINNER_hist_left_percen = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("left:"), GLUI_SPINNER_INT, &hist_left_percen_cpp, BOUND_LEFT_PERCEN, Callback);
+      SPINNER_hist_down_percen = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("bottom:"), GLUI_SPINNER_INT, &hist_down_percen_cpp, BOUND_DOWN_PERCEN, Callback);
       SPINNER_hist_left_percen->set_int_limits(0, 100);
       SPINNER_hist_down_percen->set_int_limits(0, 100);
       SPINNER_hist_length_percen->set_int_limits(0, 100);
-
-      glui_bounds->add_column_to_panel(PANEL_drawB, false);
-      SPINNER_plot_max = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("max:"), GLUI_SPINNER_FLOAT, &plot_max_cpp, BOUND_PLOT_MINMAX, Callback);
-      SPINNER_plot_min = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("min:"), GLUI_SPINNER_FLOAT, &plot_min_cpp, BOUND_PLOT_MINMAX, Callback);
-      CHECKBOX_hist_show_labels = glui_bounds->add_checkbox_to_panel(PANEL_drawB, _("show labels"), &hist_show_labels_cpp, BOUND_HIST_LABELS, Callback);
-      CHECKBOX_percentile_draw = glui_bounds->add_checkbox_to_panel(PANEL_drawB, _("show plot"), &percentile_draw, BOUND_PERCENTILE_DRAW, Callback);
 
       SPINNER_percentile_max->set_float_limits(percentile_min_cpp, 1.0);
       SPINNER_percentile_min->set_float_limits(0.0, percentile_max_cpp);
@@ -1029,7 +1030,6 @@ void bounds_dialog::CB(int var){
       hist_length_percen = MIN(MIN(100-hist_left_percen_cpp, hist_length_percen_cpp), 100-hist_down_percen_cpp);
       hist_length_percen_cpp = hist_length_percen;
       SPINNER_hist_length_percen->set_int_val(hist_length_percen);
-      printf("left=%i bottom=%i width=%i\n", hist_left_percen, hist_down_percen, hist_length_percen);
       break;
     case BOUND_DOWN_PERCEN:
       hist_down_percen = hist_down_percen_cpp;
@@ -1037,7 +1037,6 @@ void bounds_dialog::CB(int var){
       hist_length_percen = MIN(MIN(100-hist_left_percen_cpp, hist_length_percen_cpp), 100-hist_down_percen_cpp);
       hist_length_percen_cpp = hist_length_percen;
       SPINNER_hist_length_percen->set_int_val(hist_length_percen);
-      printf("left=%i bottom=%i width=%i\n", hist_left_percen, hist_down_percen, hist_length_percen);
       break;
     case BOUND_LENGTH_PERCEN:
       hist_length_percen = hist_length_percen_cpp;
@@ -1049,7 +1048,6 @@ void bounds_dialog::CB(int var){
       hist_down_percen = MIN(hist_down_percen, 100 - hist_length_percen);
       hist_down_percen_cpp = hist_down_percen;
       SPINNER_hist_down_percen->set_int_val(hist_down_percen);
-      printf("left=%i bottom=%i width=%i\n", hist_left_percen, hist_down_percen, hist_length_percen);
       break;
     case BOUND_HIST_LABELS:
       hist_show_labels       = hist_show_labels_cpp;
