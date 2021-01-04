@@ -9490,17 +9490,17 @@ updatemenu=0;
   CREATEMENU(fontmenu,FontMenu);
   switch(fontindex){
   case SMALL_FONT:
-    glutAddMenuEntry(_("*Normal"),SMALL_FONT);
+    glutAddMenuEntry(_("*Small"),SMALL_FONT);
     glutAddMenuEntry(_("Large"),LARGE_FONT);
     glutAddMenuEntry(_("Scaled"),SCALED_FONT);
     break;
   case LARGE_FONT:
-    glutAddMenuEntry(_("Normal"),SMALL_FONT);
+    glutAddMenuEntry(_("Small"),SMALL_FONT);
     glutAddMenuEntry(_("*Large"),LARGE_FONT);
     glutAddMenuEntry(_("Scaled"),SCALED_FONT);
     break;
   case SCALED_FONT:
-    glutAddMenuEntry(_("Normal"),SMALL_FONT);
+    glutAddMenuEntry(_("Small"),SMALL_FONT);
     glutAddMenuEntry(_("Large"),LARGE_FONT);
     glutAddMenuEntry(_("*Scaled"),SCALED_FONT);
     break;
