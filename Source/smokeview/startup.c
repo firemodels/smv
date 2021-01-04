@@ -324,23 +324,22 @@ int GetScreenHeight(void){
 }
 #endif
 
-/* ------------------ SetupGlut ------------------------ */
+/* ------------------ InitStartupDirs ------------------------ */
 
-void SetupGlut(int argc, char **argv){
-  int i;
+void InitStartupDirs(void){
 #ifdef pp_OSX
   char workingdir[1000];
 #endif
-  char *homedir=NULL;
+  char *homedir = NULL;
   int freehome = 0;
 
 // get smokeview bin directory from argv[0] which contains the full path of the smokeview binary
 
   // create full path for smokeview.ini file
 
-  NewMemory((void **)&smokeviewini,    (unsigned int)(strlen(smokeview_bindir)+14));
-  STRCPY(smokeviewini,smokeview_bindir);
-  STRCAT(smokeviewini,"smokeview.ini");
+  NewMemory((void **)&smokeviewini, (unsigned int)(strlen(smokeview_bindir)+14));
+  STRCPY(smokeviewini, smokeview_bindir);
+  STRCAT(smokeviewini, "smokeview.ini");
 
   // create full path for html template file
 
@@ -352,7 +351,7 @@ void SetupGlut(int argc, char **argv){
   STRCPY(smokeviewvr_html, smokeview_bindir);
   STRCAT(smokeviewvr_html, "smokeview_vr.html");
 
-  startup_pass=2;
+  startup_pass = 2;
 
 #ifdef WIN32
   homedir = getenv("userprofile");
@@ -370,7 +369,7 @@ void SetupGlut(int argc, char **argv){
   strcpy(smokeview_scratchdir, homedir);
   strcat(smokeview_scratchdir, dirseparator);
   strcat(smokeview_scratchdir, ".smokeview");
-  strcat(smokeview_scratchdir,dirseparator);
+  strcat(smokeview_scratchdir, dirseparator);
   if(FileExistsOrig(smokeview_scratchdir)==NO){
     MKDIR(smokeview_scratchdir);
   }
@@ -380,8 +379,8 @@ void SetupGlut(int argc, char **argv){
   strcat(smokeviewini_filename, dirseparator);
   strcat(smokeviewini_filename, "smokeview.ini");
 
-  PRINTF("Scratch directory: %s\n",   smokeview_scratchdir);
-  PRINTF("    smokeview.ini: %s\n",   smokeviewini_filename);
+  PRINTF("Scratch directory: %s\n", smokeview_scratchdir);
+  PRINTF("    smokeview.ini: %s\n", smokeviewini_filename);
 
   if(freehome==1){
   // don't free homedir if it is a pointer defined by getenv
@@ -393,12 +392,22 @@ void SetupGlut(int argc, char **argv){
 #endif
 
 #ifdef pp_BETA
-  fprintf(stderr,"%s\n","\n*** This version of Smokeview is intended for review and testing ONLY. ***");
+  fprintf(stderr, "%s\n", "\n*** This version of Smokeview is intended for review and testing ONLY. ***");
 #endif
 
 #ifdef pp_OSX
-  getcwd(workingdir,1000);
+  getcwd(workingdir, 1000);
 #endif
+
+}
+
+/* ------------------ SetupGlut ------------------------ */
+
+void SetupGlut(int argc, char **argv){
+  int i;
+
+  InitStartupDirs();
+
   if(use_graphics==1){
     PRINTF("\n");
     PRINTF("%s\n",_("initializing Glut"));
@@ -445,7 +454,7 @@ void SetupGlut(int argc, char **argv){
       max_screenWidth = screenWidth;
       max_screenHeight = screenHeight;
     }
-    InitOpenGL();
+    InitOpenGL(PRINT);
   }
 
   NewMemory((void **)&rgbptr,MAXRGB*sizeof(float *));
@@ -496,11 +505,11 @@ int GetOpenGLVersion(char *version_label){
 
 /* ------------------ InitOpenGL ------------------------ */
 
-void InitOpenGL(void){
+void InitOpenGL(int option){
   int type;
   int err;
 
-  PRINTF("%s\n",_("initializing OpenGL"));
+  if(option==PRINT)PRINTF("%s\n",_("initializing OpenGL"));
 
   type = GLUT_RGB|GLUT_DEPTH;
   if(buffertype==GLUT_DOUBLE){
@@ -523,24 +532,24 @@ void InitOpenGL(void){
   }
 
 #ifdef _DEBUG
-  PRINTF("%s",_("   Initializing Glut display mode - "));
+  if(option==PRINT)PRINTF("%s",_("   Initializing Glut display mode - "));
 #endif
   glutInitDisplayMode(type);
 #ifdef _DEBUG
-  PRINTF("%s\n",_("initialized"));
+  if(option==PRINT)PRINTF("%s\n",_("initialized"));
 #endif
 
   CheckMemory;
 #ifdef _DEBUG
-  PRINTF("%s\n",_("   creating window"));
+  if(option==PRINT)PRINTF("%s\n",_("   creating window"));
 #endif
   mainwindow_id = glutCreateWindow("");
 #ifdef _DEBUG
-  PRINTF("%s\n",_("   window created"));
+  if(option==PRINT)PRINTF("%s\n",_("   window created"));
 #endif
 
 #ifdef _DEBUG
-  PRINTF("%s",_("   Initializing callbacks - "));
+  if(option==PRINT)PRINTF("%s",_("   Initializing callbacks - "));
 #endif
   glutSpecialUpFunc(SpecialKeyboardUpCB);
   glutKeyboardUpFunc(KeyboardUpCB);
@@ -553,7 +562,7 @@ void InitOpenGL(void){
   glutVisibilityFunc(NULL);
   glutMenuStatusFunc(MenuStatus_CB);
 #ifdef _DEBUG
-  PRINTF("%s\n",_("initialized"));
+  if(option==PRINT)PRINTF("%s\n",_("initialized"));
 #endif
 
   opengl_version = GetOpenGLVersion(opengl_version_label);
@@ -573,14 +582,14 @@ void InitOpenGL(void){
       err=1;
     }
     else{
-      err= InitShaders();
+      if(option==PRINT)err= InitShaders();
     }
 #ifdef _DEBUG
-    if(err==0){
+    if(err==0&&option==PRINT){
       PRINTF("%s\n",_("  GPU shader initialization succeeded"));
     }
 #endif
-    if(err!=0){
+    if(err!=0&&option==PRINT){
       PRINTF("%s\n",_("  GPU shader initialization failed"));
     }
   }
@@ -609,7 +618,7 @@ void InitOpenGL(void){
     if(nblueshift<0)nblueshift=0;
   }
   opengldefined=1;
-  PRINTF("%s\n\n",_("complete"));
+  if(option==PRINT)PRINTF("%s\n\n",_("complete"));
 }
 
 /* ------------------ Set3DSmokeStartup ------------------------ */

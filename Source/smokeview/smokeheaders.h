@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void InitStartupDirs(void);
+
 EXTERNCPP int GetFontHeight(void);
 
 EXTERNCPP void UpdateShowSliceColorbar(int *showcfast_arg, int *show_slice_colorbar_arg);
@@ -572,7 +574,7 @@ EXTERNCPP void UpdateColorbarNodes(colorbardata *cbi);
 EXTERNCPP void RemapColorbar(colorbardata *cbi);
 EXTERNCPP colorbardata *GetColorbar(char *label);
 EXTERNCPP void RemapColorbarType(int cb_oldtype, char *cb_newname);
-EXTERNCPP void InitOpenGL(void);
+EXTERNCPP void InitOpenGL(int option);
 EXTERNCPP void TextureShowMenu(int value);
 EXTERNCPP void CopyArgs(int *argc, char **aargv, char ***argv_sv);
 EXTERNCPP void InitUserTicks(void);

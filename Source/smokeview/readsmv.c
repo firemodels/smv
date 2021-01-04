@@ -14471,7 +14471,7 @@ void WriteIni(int flag,char *filename){
 
   switch(flag){
   case GLOBAL_INI:
-    fileout=fopen(smokeviewini_filename,"w");
+    if(smokeviewini_filename!=NULL)fileout=fopen(smokeviewini_filename,"w");
     outfilename= smokeviewini_filename;
     break;
   case STDOUT_INI:

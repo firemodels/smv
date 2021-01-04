@@ -99,6 +99,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define INIT   0
 #define UPDATE 1
 
+#define PRINT    1
+#define NO_PRINT 0
+
 #define TIMEBAR_OVERLAP_ALWAYS 0
 #define TIMEBAR_OVERLAP_NEVER  1
 #define TIMEBAR_OVERLAP_AUTO   2

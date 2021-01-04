@@ -179,19 +179,23 @@ void ParseCommandline(int argc, char **argv){
   if(argc == 1){
     SMV_EXIT(1);
   }
-  if(strncmp(argv[1], "-ini", 4) == 0){
-    InitCameraList();
-    InitOpenGL();
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
-    WriteIni(GLOBAL_INI, NULL);
-    SMV_EXIT(0);
-  }
-  if(strncmp(argv[1], "-ng_ini", 7) == 0){
-    InitCameraList();
-    use_graphics = 0;
-    UpdateRGBColors(COLORBAR_INDEX_NONE);
-    WriteIni(GLOBAL_INI, NULL);
-    SMV_EXIT(0);
+  for(iarg = 1; iarg < argc; iarg++){
+    if(strncmp(argv[iarg], "-ini", 4)==0){
+      InitCameraList();
+      InitOpenGL(NO_PRINT);
+      UpdateRGBColors(COLORBAR_INDEX_NONE);
+      InitStartupDirs();
+      WriteIni(GLOBAL_INI, NULL);
+      SMV_EXIT(0);
+    }
+    if(strncmp(argv[iarg], "-ng_ini", 7)==0){
+      InitCameraList();
+      use_graphics = 0;
+      UpdateRGBColors(COLORBAR_INDEX_NONE);
+      InitStartupDirs();
+      WriteIni(GLOBAL_INI, NULL);
+      SMV_EXIT(0);
+    }
   }
   strcpy(SMVFILENAME, "");
   smv_parse = 0;
@@ -773,6 +777,9 @@ int main(int argc, char **argv){
 #ifdef pp_LUA
   smokeview_bindir_abs=getprogdirabs(progname,&smokeviewpath);
 #endif
+  if(smokeview_bindir==NULL){
+    smokeview_bindir = GetProgDir(progname, &smokeviewpath);
+  }
   ParseCommandline(argc, argv_sv);
 
   if(show_version==1){
@@ -780,9 +787,6 @@ int main(int argc, char **argv){
     return 1;
   }
 
-  if(smokeview_bindir==NULL){
-    smokeview_bindir= GetProgDir(progname,&smokeviewpath);
-  }
   InitTextureDir();
   InitScriptErrorFiles();
   smokezippath= GetSmokeZipPath(smokeview_bindir);
