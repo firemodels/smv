@@ -6811,7 +6811,7 @@ int ReadObjectDefs(char *file){
 
   stream=fopen(file,"r");
   if(stream==NULL)return 0;
-  PRINTF("processing object file: %s\n",file);
+  PRINTF("reading %s ",file);
 
   firstdef=-1;
   buffer_ptr=NULL;
@@ -6974,7 +6974,7 @@ int ReadObjectDefs(char *file){
       objecti=objecti->next;
     }
   }
-  PRINTF("complete");
+  PRINTF("- complete");
   PRINTF("\n\n");
   return ndevices;
 }

@@ -10160,28 +10160,24 @@ typedef struct {
   PrintMemoryInfo;
 
   STOP_TIMER(wrapup_time);
-  PRINTF("\n");
-  PRINTF(".smv Processing Times\n");
-  PRINTF("---------------------\n");
+  if(show_startup_timings==1){
+    PRINTF(".smv Processing Times\n");
+    PRINTF("---------------------\n");
 
-#ifdef pp_TIMINGS
-#define ALWAYS (1==1)||
-#else
-#define ALWAYS
-#endif
 
-  if(ALWAYS read_time>1.0)         PRINTF(".smv file(net): %.1f s\n", read_time);
-  if(ALWAYS getfilelist_time>1.0)  PRINTF("      filelist: %.1f s\n", getfilelist_time);
-  if(ALWAYS read_time_elapsed>1.0) PRINTF(".smv file(cum): %.1f s\n", read_time_elapsed);
-  if(ALWAYS pass0_time>1.0)        PRINTF("         setup: %.1f s\n", pass0_time);
-  if(ALWAYS pass1_time>1.0)        PRINTF("        pass 1: %.1f s\n", pass1_time);
-  if(ALWAYS pass2_time>1.0)        PRINTF("        pass 2: %.1f s\n", pass2_time);
-  if(ALWAYS pass3_time>1.0)        PRINTF("        pass 3: %.1f s\n", pass3_time);
-  if(ALWAYS pass4_time>1.0)        PRINTF("        pass 4: %.1f s\n", pass4_time);
-  if(ALWAYS pass5_time>1.0)        PRINTF("        pass 5: %.1f s\n", pass5_time);
-                         PRINTF("all passes: %.1f s\n", processing_time);
-  if(ALWAYS wrapup_time>1.0)    PRINTF("   wrap up: %.1f s\n", wrapup_time);
-  PRINTF("\n");
+    PRINTF(".smv file(net): %.1f s\n", read_time);
+    PRINTF("      filelist: %.1f s\n", getfilelist_time);
+    PRINTF(".smv file(cum): %.1f s\n", read_time_elapsed);
+    PRINTF("         setup: %.1f s\n", pass0_time);
+    PRINTF("        pass 1: %.1f s\n", pass1_time);
+    PRINTF("        pass 2: %.1f s\n", pass2_time);
+    PRINTF("        pass 3: %.1f s\n", pass3_time);
+    PRINTF("        pass 4: %.1f s\n", pass4_time);
+    PRINTF("        pass 5: %.1f s\n", pass5_time);
+    PRINTF("all passes: %.1f s\n", processing_time);
+    PRINTF("   wrap up: %.1f s\n", wrapup_time);
+    PRINTF("\n");
+  }
   return 0;
 }
 
@@ -10322,8 +10318,7 @@ int ReadIni2(char *inifile, int localfile){
   updatefacelists = 1;
 
   if((stream = fopen(inifile, "r")) == NULL)return 1;
-  PRINTF("%s", _("processing config file: "));
-  PRINTF("%s ", inifile);
+  if(readini_output==1)PRINTF("reading %s ", inifile);
 
   for(i = 0; i<nunitclasses_ini; i++){
     f_units *uc;
@@ -10364,6 +10359,12 @@ int ReadIni2(char *inifile, int localfile){
     }
 #endif
 
+    if(Match(buffer, "TIMINGS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i", &show_startup_timings);
+      ONEORZERO(show_startup_timings);
+      continue;
+    }
     if(Match(buffer, "RESEARCHMODE") == 1){
       int dummy;
 
@@ -13802,7 +13803,7 @@ int ReadIni(char *inifile){
 
     returnval = ReadIni2(smvprogini_ptr, 0);
     if(returnval==2)return 2;
-    if(returnval == 0){
+    if(returnval == 0 && readini_output==1){
       PRINTF("- complete\n");
     }
     UpdateTerrainOptions();
@@ -13815,7 +13816,7 @@ int ReadIni(char *inifile){
 
     returnval = ReadIni2(smokeviewini_filename, 0);
     if(returnval==2)return 2;
-    if(returnval == 0){
+    if(returnval == 0 && readini_output==1){
       PRINTF("- complete\n");
     }
   }
@@ -13841,7 +13842,7 @@ int ReadIni(char *inifile){
       FREEMEMORY(scratch_ini_filename);
     }
     if(returnval==2)return 2;
-    if(returnval == 0){
+    if(returnval == 0 && readini_output==1){
       PRINTF("- complete\n");
     }
   }
@@ -13852,7 +13853,7 @@ int ReadIni(char *inifile){
     int return_code;
 
     return_code = ReadIni2(inifile,1);
-    if(return_code == 0){
+    if(return_code == 0 && readini_output==1){
       PRINTF("- complete\n");
     }
 
@@ -15099,6 +15100,8 @@ void WriteIni(int flag,char *filename){
   }
   fprintf(fileout, "RENDEROPTION\n");
   fprintf(fileout, " %i %i %i\n", render_window_size, resolution_multiplier, nheight360);
+  fprintf(fileout, "TIMINGS\n");
+  fprintf(fileout, " %i\n", show_startup_timings);
   fprintf(fileout, "UNITCLASSES\n");
   fprintf(fileout, " %i\n", nunitclasses);
   for(i = 0; i<nunitclasses; i++){

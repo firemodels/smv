@@ -207,8 +207,7 @@ int SetupCase(int argc, char **argv){
   {
     bufferstreamdata *smv_streaminfo = NULL;
 
-    PRINTF(_("processing smokeview file:"));
-    PRINTF(" %s\n", input_file);
+    PRINTF("reading  %s\n", input_file);
     smv_streaminfo = GetSMVBuffer(iso_filename, input_file);
 
     return_code = ReadSMV(smv_streaminfo);
@@ -243,7 +242,10 @@ int SetupCase(int argc, char **argv){
   SetUnitVis();
 
   CheckMemory;
+  readini_output = 0;
   ReadIni(NULL);
+  readini_output = 1;
+
   ReadBoundINI();
 
   UpdateRGBColors(COLORBAR_INDEX_NONE);

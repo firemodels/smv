@@ -62,6 +62,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -smoke3d       - only show 3d smoke"));
     PRINTF("%s\n", _(" -startframe n  - start rendering at frame n"));
     PRINTF("%s\n", _(" -stereo        - activate stereo mode"));
+    PRINTF("%s\n", _(" -timings       - show startup timings"));
     PRINTF("%s\n", _(" -update_bounds - calculate boundary file bounds and save to casename.binfo"));
     PRINTF("%s\n", _(" -update_slice  - calculate slice file parameters"));
     PRINTF("%s\n", _(" -update        - equivalent to -update_bounds and -update_slice"));
@@ -149,9 +150,6 @@ void Usage(char *prog,int option){
 #endif
 #ifdef pp_THREADIBLANK
     strcat(label, ", pp_THREADIBLANK");
-#endif
-#ifdef pp_TIMINGS
-    strcat(label, ", pp_TIMINGS");
 #endif
 #ifdef WIN32
     strcat(label, ", WIN32");
@@ -460,6 +458,9 @@ void ParseCommandline(int argc, char **argv){
       stereoactive = 1;
       stereotype = STEREO_TIME;
       PRINTF("stereo option activated\n");
+    }
+    else if(strncmp(argv[i], "-timings", 8)==0){
+      show_startup_timings = 1;
     }
     else if(strncmp(argv[i], "-lang", 5) == 0){
       ++i;
