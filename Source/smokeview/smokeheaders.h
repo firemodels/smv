@@ -22,7 +22,6 @@ EXTERNCPP void UpdateColorLabelDigits(void);
 EXTERNCPP void IncrementPartPropIndex(void);
 
 EXTERNCPP int GetStringWidth(char *string);
-EXTERNCPP void DrawPlot(float *xyz0, float factor, float *x, float *z, int n, float highlight_x, float highlight_y, int valid, float global_valmin, float global_valmax);
 EXTERNCPP void DrawDevicePlots(void);
 EXTERNCPP int GetPercentileDraw(int type);
 EXTERNCPP int GetPlotState(int choice);
