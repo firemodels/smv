@@ -150,11 +150,11 @@ extern "C" void UpdateWindRoseDevices(int option){
   int i,icheckboxes;
 
   icheckboxes = 0;
-  for(i = 0; i<nztreedeviceinfo; i++){
+  for(i = 0; i<nzwindtreeinfo; i++){
     treedevicedata *treei;
     int j;
 
-    treei = ztreedeviceinfo[i];
+    treei = zwindtreeinfo[i];
     for(j = treei->first; j<=treei->last; j++){
       vdevicesortdata *vdevsorti;
       vdevicedata *vd;
@@ -219,12 +219,12 @@ void UpdateShowWindRoses(void) {
   int icheckbox;
 
   icheckbox=0;
-  for (i = 0; i < nztreedeviceinfo; i++) {
+  for (i = 0; i < nzwindtreeinfo; i++) {
     treedevicedata *treei;
     int j;
     int idev;
 
-    treei = ztreedeviceinfo[i];
+    treei = zwindtreeinfo[i];
 
     idev = 0;
     for (j = treei->first; j <= treei->last; j++) {
@@ -318,12 +318,12 @@ void DeviceCB(int var){
     UpdateShowWindRoses();
     return;
   }
-  if(var>=WINDROSE_SHOWHIDEALL&&var<WINDROSE_SHOWHIDEALL+nztreedeviceinfo){
+  if(var>=WINDROSE_SHOWHIDEALL&&var<WINDROSE_SHOWHIDEALL+nzwindtreeinfo){
     int iztree, j;
     treedevicedata *treei;
 
     iztree = var-WINDROSE_SHOWHIDEALL;
-    treei = ztreedeviceinfo[iztree];
+    treei = zwindtreeinfo[iztree];
     for(j = treei->first; j<=treei->last; j++){
       vdevicesortdata *vdevsorti;
 
@@ -339,12 +339,12 @@ void DeviceCB(int var){
     UpdateWindRoseDevices(UPDATE_WINDROSE_CHECKBOX);
     return;
   }
-  if(var>=WINDROSE_SHOWHIDEALL+nztreedeviceinfo&&var<WINDROSE_SHOWHIDEALL+2*nztreedeviceinfo){
+  if(var>=WINDROSE_SHOWHIDEALL+nzwindtreeinfo&&var<WINDROSE_SHOWHIDEALL+2*nzwindtreeinfo){
     int iztree, j;
     treedevicedata *treei;
 
-    iztree = var-WINDROSE_SHOWHIDEALL - nztreedeviceinfo;
-    treei = ztreedeviceinfo[iztree];
+    iztree = var-WINDROSE_SHOWHIDEALL - nzwindtreeinfo;
+    treei = zwindtreeinfo[iztree];
     for(j = treei->first; j<=treei->last; j++){
       vdevicesortdata *vdevsorti;
 
@@ -527,7 +527,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       if(windrose_xz_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, "xz", &windrose_xz_vis);
       if(windrose_yz_active == 1)glui_device->add_checkbox_to_panel(PANEL_orientation, "yz", &windrose_yz_vis);
 
-      if(nztreedeviceinfo>0){
+      if(nzwindtreeinfo>0){
         int icheckboxes;
 
         ROLLOUT_showhide_windrose = glui_device->add_rollout_to_panel(ROLLOUT_windrose, "trees", false);
@@ -536,14 +536,14 @@ extern "C" void GluiDeviceSetup(int main_window){
         SPINNER_windrose_first = glui_device->add_spinner_to_panel(ROLLOUT_showhide_windrose, _("first"), GLUI_SPINNER_INT, &windrose_first, WINDROSE_SHOW_FIRST, DeviceCB);
         SPINNER_windrose_next = glui_device->add_spinner_to_panel(ROLLOUT_showhide_windrose, _("skip"), GLUI_SPINNER_INT, &windrose_next, WINDROSE_SHOW_NEXT, DeviceCB);
 
-        NewMemory((void **)&ROLLOUT_showz_windrose, nztreedeviceinfo*sizeof(GLUI_Rollout *));
+        NewMemory((void **)&ROLLOUT_showz_windrose, nzwindtreeinfo*sizeof(GLUI_Rollout *));
 
         nwindrosez_checkboxes=0;
-        for(i = 0; i<nztreedeviceinfo; i++){
+        for(i = 0; i<nzwindtreeinfo; i++){
           treedevicedata *treei;
           int j;
 
-          treei = ztreedeviceinfo[i];
+          treei = zwindtreeinfo[i];
           for(j = treei->first; j <= treei->last; j++){
             vdevicesortdata *vdevsorti;
             vdevicedata *vd;
@@ -562,13 +562,13 @@ extern "C" void GluiDeviceSetup(int main_window){
         UpdateWindRoseDevices(UPDATE_WINDROSE_DEVICE);
 
         icheckboxes = 0;
-        for(i = 0; i<nztreedeviceinfo; i++){
+        for(i = 0; i<nzwindtreeinfo; i++){
           char roselabel[256], xlabel[256], ylabel[256];
           float *xyz;
           treedevicedata *treei;
           int j;
 
-          treei = ztreedeviceinfo[i];
+          treei = zwindtreeinfo[i];
           xyz = treei->xyz;
 
           sprintf(xlabel, "%f", xyz[0]);
@@ -579,7 +579,7 @@ extern "C" void GluiDeviceSetup(int main_window){
           ROLLOUT_showz_windrose[i] = glui_device->add_rollout_to_panel(ROLLOUT_showhide_windrose, roselabel, false);
           INSERT_ROLLOUT(ROLLOUT_showz_windrose[i], glui_device);
           glui_device->add_button_to_panel(ROLLOUT_showz_windrose[i],_("Show all"),WINDROSE_SHOWHIDEALL+i,DeviceCB);
-          glui_device->add_button_to_panel(ROLLOUT_showz_windrose[i],_("Hide all"),WINDROSE_SHOWHIDEALL+nztreedeviceinfo+i,DeviceCB);
+          glui_device->add_button_to_panel(ROLLOUT_showz_windrose[i],_("Hide all"),WINDROSE_SHOWHIDEALL+nzwindtreeinfo+i,DeviceCB);
 
           for(j = treei->first; j<=treei->last; j++){
             vdevicesortdata *vdevsorti;

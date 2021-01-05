@@ -5872,9 +5872,103 @@ int CompareV3Devices( const void *arg1, const void *arg2 ){
   return 0;
 }
 
-/* ----------------------- SetupTreeDevices ----------------------------- */
+#ifdef pp_ZTREE
+/* ------------------ CompareV3Devices ------------------------ */
 
-void SetupTreeDevices(void){
+int CompareZ3Devices(const void *arg1, const void *arg2){
+  devicedata *devi, *devj;
+  float *xyzi, *xyzj;
+  int diri, dirj;
+  char *quanti, *quantj;
+  int iquant;
+
+  devi = *(devicedata **)arg1;
+  devj = *(devicedata **)arg2;
+  xyzi = devi->xyz;
+  xyzj = devj->xyz;
+  quanti = devi->quantity;
+  quantj = devj->quantity;
+
+  iquant = strcmp(quanti, quantj);
+  if(iquant<0)return -1;
+  if(iquant>0)return 1;
+  if(xyzi[0]-xyzj[0]<-EPSDEV)return -1;
+  if(xyzi[0]-xyzj[0]>EPSDEV)return 1;
+  if(xyzi[1]-xyzj[1]<-EPSDEV)return -1;
+  if(xyzi[1]-xyzj[1]>+EPSDEV)return 1;
+  if(xyzi[2]-xyzj[2]<-EPSDEV)return -1;
+  if(xyzi[2]-xyzj[2]>+EPSDEV)return 1;
+  return 0;
+}
+
+/* ------------------ CompareV3Devices ------------------------ */
+
+int CompareZ2Devices(const void *arg1, const void *arg2){
+  devicedata *devi, *devj;
+  float *xyzi, *xyzj;
+  int diri, dirj;
+  char *quanti, *quantj;
+  int iquant;
+
+  devi = *(devicedata **)arg1;
+  devj = *(devicedata **)arg2;
+  xyzi = devi->xyz;
+  xyzj = devj->xyz;
+  quanti = devi->quantity;
+  quantj = devj->quantity;
+
+  iquant = strcmp(quanti, quantj);
+  if(iquant<0)return -1;
+  if(iquant>0)return 1;
+  if(xyzi[0]-xyzj[0]<-EPSDEV)return -1;
+  if(xyzi[0]-xyzj[0]>EPSDEV)return 1;
+  if(xyzi[1]-xyzj[1]<-EPSDEV)return -1;
+  if(xyzi[1]-xyzj[1]>+EPSDEV)return 1;
+  return 0;
+}
+
+/* ----------------------- SetupZTreeDevices ----------------------------- */
+
+void SetupZTreeDevices(void){
+  int i;
+
+  if(nztreedeviceinfo>0){
+    FREEMEMORY(ztreedeviceinfo);
+    FREEMEMORY(deviceinfo_sortedz);
+    nztreedeviceinfo=0;
+  }
+  NewMemory((void **)&deviceinfo_sortedz, ndeviceinfo*sizeof(devicedata *));
+  for(i = 0; i<ndeviceinfo; i++){
+    deviceinfo_sortedz[i] = deviceinfo+i;
+  }
+  qsort((devicedata **)deviceinfo_sortedz, (size_t)ndeviceinfo, sizeof(devicedata *), CompareZ3Devices);
+
+  nztreedeviceinfo = 1;
+  ztreedeviceinfo->first = 0;
+  for(i = 1; i<ndeviceinfo; i++){
+    if(CompareZ2Devices(deviceinfo_sortedz+i, deviceinfo_sortedz+i-1)!=0){
+      ztreedevicedata *ztreei;
+
+      ztreei = ztreedeviceinfo+i;
+      ztreei->last = i-1;
+      ztreei->n = ztreei->last+1-ztreei->first;
+      nztreedeviceinfo++;
+    }
+  }
+  {
+    ztreedevicedata *ztreei;
+
+    ztreei = ztreedeviceinfo+nztreedeviceinfo-1;
+    ztreei->last = ndeviceinfo-1;
+    ztreei->n = ztreei->last+1-ztreei->first;
+  }
+  ResizeMemory((void **)&ztreedeviceinfo, nztreedeviceinfo*sizeof(ztreedevicedata));
+}
+#endif
+
+/* ----------------------- SetupWindTreeDevices ----------------------------- */
+
+void SetupWindTreeDevices(void){
   int i;
   treedevicedata *treei;
 
@@ -5884,9 +5978,9 @@ void SetupTreeDevices(void){
     ntreedeviceinfo=0;
   }
 
-  if(nztreedeviceinfo>0){
-    FREEMEMORY(ztreedeviceinfo);
-    nztreedeviceinfo = 0;
+  if(nzwindtreeinfo>0){
+    FREEMEMORY(zwindtreeinfo);
+    nzwindtreeinfo = 0;
   }
 
   qsort((vdevicedata **)vdevices_sorted,3*(size_t)nvdeviceinfo,sizeof(vdevicesortdata), CompareV3Devices);
@@ -5955,13 +6049,13 @@ void SetupTreeDevices(void){
         }
       }
     }
-    if(nz>1)nztreedeviceinfo++;
+    if(nz>1)nzwindtreeinfo++;
     treei->nz = nz;
   }
 
-  if(nztreedeviceinfo>0)NewMemory((void **)&ztreedeviceinfo, nztreedeviceinfo*sizeof(treedevicedata *));
+  if(nzwindtreeinfo>0)NewMemory((void **)&zwindtreeinfo, nzwindtreeinfo*sizeof(treedevicedata *));
 
-  nztreedeviceinfo=0;
+  nzwindtreeinfo=0;
   for(i = 0; i<ntreedeviceinfo; i++){
     int j, nz;
     vdevicedata *vd;
@@ -5980,7 +6074,7 @@ void SetupTreeDevices(void){
         nz++;
       }
     }
-    if(nz>1)ztreedeviceinfo[nztreedeviceinfo++] = treei;
+    if(nz>1)zwindtreeinfo[nzwindtreeinfo++] = treei;
   }
 }
 
@@ -6740,7 +6834,10 @@ void SetupDeviceData(void){
     vdevicei->windroseinfo = NULL;
   }
 
-  SetupTreeDevices();
+  SetupWindTreeDevices();
+#ifdef pp_ZTREE
+  SetupZTreeDevices();
+#endif
   UpdateColorDevices();
 
   DeviceData2WindRose(nr_windrose,ntheta_windrose);

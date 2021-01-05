@@ -23,6 +23,12 @@
 #include "glutbitmap.h"
 #endif
 
+#ifdef pp_ZTREE
+SVEXTERN ztreedevicedata SVDECL(*ztreedeviceinfo, NULL);
+SVEXTERN devicedata SVDECL(**deviceinfo_sortedz, NULL);
+SVEXTERN int SVDECL(nztreedeviceinfo, 0);
+#endif
+
 SVEXTERN int SVDECL(readini_output, 0);
 SVEXTERN int SVDECL(show_startup_timings, 0);
 
@@ -1466,9 +1472,9 @@ SVEXTERN vdevicedata SVDECL(*vdeviceinfo, NULL);
 SVEXTERN vdevicesortdata SVDECL(*vdevices_sorted, NULL);
 
 SVEXTERN int SVDECL(ntreedeviceinfo, 0), SVDECL(mintreesize, 3);
-SVEXTERN int SVDECL(nztreedeviceinfo, 0);
+SVEXTERN int SVDECL(nzwindtreeinfo, 0);
 SVEXTERN treedevicedata SVDECL(*treedeviceinfo,NULL);
-SVEXTERN treedevicedata SVDECL(**ztreedeviceinfo, NULL);
+SVEXTERN treedevicedata SVDECL(**zwindtreeinfo, NULL);
 
 SVEXTERN int SVDECL(show_smokesensors,SMOKESENSORS_0255),active_smokesensors,test_smokesensors;
 SVEXTERN float smoke3d_cvis;

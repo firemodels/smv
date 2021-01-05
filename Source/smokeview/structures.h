@@ -997,6 +997,15 @@ typedef struct _treedevicedata {
   float *xyz;
 } treedevicedata;
 
+#ifdef pp_ZTREE
+/* --------------------------  ztreedevicedata ------------------------------------ */
+
+typedef struct _ztreedevicedata {
+  char *quantity, *unit;
+  int first, last, n;
+} ztreedevicedata;
+#endif
+
 /* --------------------------  camviewdata ------------------------------------ */
 
 typedef struct _camviewdata {
