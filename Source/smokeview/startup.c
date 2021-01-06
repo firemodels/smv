@@ -322,9 +322,6 @@ int GetScreenHeight(void){
 /* ------------------ InitStartupDirs ------------------------ */
 
 void InitStartupDirs(void){
-#ifdef pp_OSX
-  char workingdir[1000];
-#endif
   char *homedir = NULL;
   int freehome = 0;
 
@@ -389,20 +386,21 @@ void InitStartupDirs(void){
 #ifdef pp_BETA
   fprintf(stderr, "%s\n", "\n*** This version of Smokeview is intended for review and testing ONLY. ***");
 #endif
-
-#ifdef pp_OSX
-  getcwd(workingdir, 1000);
-#endif
-
 }
 
 /* ------------------ SetupGlut ------------------------ */
 
 void SetupGlut(int argc, char **argv){
   int i;
+#ifdef pp_OSX
+  char workingdir[1000];
+#endif
 
   InitStartupDirs();
 
+#ifdef pp_OSX
+  getcwd(workingdir, 1000);
+#endif
   if(use_graphics==1){
     PRINTF("\n");
     PRINTF("%s\n",_("initializing Glut"));
