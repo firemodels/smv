@@ -10545,8 +10545,10 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWDEVICEPLOTS")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %f %f %f",
-             &showdevice_plot, &showdevice_labels, &device_plot_factor, &device_plot_line_width, &device_plot_point_size);
+      sscanf(buffer, " %i %i %f %f %f %f %f %f",
+             &showdevice_plot, &showdevice_labels, &device_plot_factor, &device_plot_line_width, &device_plot_point_size,
+             device_xyz_offset, device_xyz_offset+1, device_xyz_offset+2
+      );
       update_glui_devices = 1;
       continue;
     }
@@ -13863,7 +13865,10 @@ void WriteIniLocal(FILE *fileout){
     }
   }
   fprintf(fileout, "SHOWDEVICEPLOTS\n");
-  fprintf(fileout, " %i %i %f %f %f\n", showdevice_plot, showdevice_labels, device_plot_factor, device_plot_line_width, device_plot_point_size);
+  fprintf(fileout, " %i %i %f %f %f %f %f %f\n", 
+          showdevice_plot, showdevice_labels, device_plot_factor, device_plot_line_width, device_plot_point_size,
+          device_xyz_offset[0], device_xyz_offset[1], device_xyz_offset[2]
+  );
   fprintf(fileout, "SHOWDEVICEVALS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n", showdevice_val, showvdevice_val, devicetypes_index, colordevice_val, vectortype, viswindrose, showdevice_type,showdevice_unit,showdevice_id);
   fprintf(fileout, "SHOWMISSINGOBJECTS\n");
