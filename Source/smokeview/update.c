@@ -2330,13 +2330,6 @@ void UpdateDisplay(void){
     visColorbarVertical = visColorbarVertical_val;
     visColorbarHorizontal = visColorbarHorizontal_val;
     vis_colorbar = GetColorbarState();
-#ifdef pp_OLDBOUND_DIALOG
-    if(visColorbarHorizontal==0&&visColorbarVertical==0){
-      research_mode = 0;
-     // update_research_mode = 1;
-      SliceBoundCB(RESEARCH_MODE);
-    }
-#endif
     updatemenu = 1;
   }
   if(update_windrose==1){

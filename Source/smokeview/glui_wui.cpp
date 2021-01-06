@@ -158,10 +158,6 @@ extern "C" void WuiCB(int var){
 
       SliceBoundCB(FILETYPE_INDEX);
 
-#ifdef pp_OLDBOUND_DIALOG
-      glui_setslicemin = SET_MIN;
-      glui_setslicemax = SET_MAX;
-#endif
       glui_slicemin=20.0;
       glui_slicemax=fire_line_max;
       glui_setslicechopmin = 1;

@@ -367,10 +367,6 @@ EXTERNCPP void HideGluiGeometry(void);
 #ifdef pp_CPPBOUND_DIALOG
 EXTERNCPP void UpdateAllBoundaryColors(void);
 #endif
-#ifdef pp_OLDBOUND_DIALOG
-EXTERNCPP int UpdateAllBoundaryColors(void);
-EXTERNCPP void UpdateSliceListIndex(int sfn);
-#endif
 EXTERNCPP void UpdateBoundaryListIndex(int patchfilenum);
 EXTERNCPP void UpdateBoundaryListIndex2(char *label);
 EXTERNCPP void UpdatePlot3dListIndex(void);
@@ -871,9 +867,6 @@ EXTERNCPP void SetViewPoint(int option);
 EXTERNCPP void UpdateTimeLabels(void);
 EXTERNCPP void RenderFrame(int view_mode);
 EXTERNCPP void UpdateTerrain(int allocate_memory, float vertical_factor);
-#ifdef pp_OLDBOUND_DIALOG
-EXTERNCPP void PartBoundCBInit(void);
-#endif
 EXTERNCPP void SliceBoundCB(int var);
 EXTERNCPP void RenderMenu(int value);
 EXTERNCPP void LoadSmoke3DMenu(int value);

@@ -843,9 +843,6 @@ SVEXTERN float SVDECL(percentile_level_max, 0.99);
 SVEXTERN int SVDECL(hist_left_percen, 0), SVDECL(hist_down_percen,0), SVDECL(hist_length_percen,100), SVDECL(hist_show_labels, 1);
 
 #endif
-#ifdef pp_OLDBOUND_DIALOG
-SVEXTERN float SVDECL(percentile_level,0.01);
-#endif
 SVEXTERN float SVDECL(fire_line_min,150.0), SVDECL(fire_line_max,200.0);
 SVEXTERN int SVDECL(update_fire_line,0);
 SVEXTERN int SVDECL(fire_line_index,-1);
@@ -1804,9 +1801,6 @@ SVEXTERN boundsdata SVDECL(*slicebounds,NULL), SVDECL(*isobounds,NULL), SVDECL(*
 SVEXTERN boundsdata SVDECL(*slicebounds_temp, NULL);
 SVEXTERN vslicedata SVDECL(*vsliceinfo,NULL);
 SVEXTERN int force_redisplay;
-#ifdef pp_OLDBOUND_DIALOG
-SVEXTERN int glui_setp3min, glui_setp3max;
-#endif
 #ifdef pp_CPPBOUND_DIALOG
 SVEXTERN int glui_setp3min, glui_setp3max;
 #endif

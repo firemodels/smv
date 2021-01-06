@@ -566,9 +566,6 @@ void ShowMultiSliceMenu(int value){
   plotstate = GetPlotState(DYNAMIC_PLOTS);
 
   UpdateGlui();
-#ifdef pp_OLDBOUND_DIALOG
-  UpdateSliceListIndex(slicefilenum);
-#endif
   UpdateShow();
 }
 
@@ -1399,9 +1396,6 @@ void ShowHideSliceMenu(int value){
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
   UpdateGlui();
-#ifdef pp_OLDBOUND_DIALOG
-  UpdateSliceListIndex(slicefilenum);
-#endif
   UpdateShow();
 }
 
@@ -3048,9 +3042,6 @@ void ReloadAllSliceFiles(void){
       load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
     }
     else{
-#ifdef pp_OLDBOUND_DIALOG
-      load_size+=ReadSlice(             slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
-#endif
 #ifdef pp_CPPBOUND_DIALOG
       load_size+=ReadSlice(             slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #endif
@@ -3173,9 +3164,6 @@ void LoadUnloadMenu(int value){
           ReadGeomData(slicei->patchgeom, slicei, load_mode, &errorcode);
         }
         else{
-#ifdef pp_OLDBOUND_DIALOG
-                       ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
-#endif
 #ifdef pp_CPPBOUND_DIALOG
                        ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
 #endif
@@ -3596,10 +3584,6 @@ void ParticlePropShowMenu(int value){
     partshortlabel=propi->label->shortlabel;
     partunitlabel=propi->label->unit;
 #define FILETYPE_INDEX 5
-#ifdef pp_OLDBOUND_DIALOG
-    PartBoundCB(FILETYPE_INDEX);
-    UpdatePartType();
-#endif
 #ifdef pp_CPPBOUND_DIALOG
 #define BOUND_PERCENTILE_DRAW          120
     PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
@@ -3759,16 +3743,6 @@ void SetupPart(int value, int option){
   }
   SetLoadedPartBounds(list, nlist);
   FREEMEMORY(list);
-#endif
-#ifdef pp_OLDBOUND_DIALOG
-  if(research_mode == 1 && npartinfo> 0){
-    GetGlobalPartBounds(ALL_FILES);
-    setpartmin = GLOBAL_MIN;
-    PartBoundCB(SETVALMIN);
-
-    setpartmax = GLOBAL_MAX;
-    PartBoundCB(SETVALMAX);
-  }
 #endif
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
@@ -4587,9 +4561,6 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_
         return_filesize = ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
       }
       else {
-#ifdef pp_OLDBOUND_DIALOG
-        return_filesize=             ReadSlice(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
-#endif
 #ifdef pp_CPPBOUND_DIALOG
         return_filesize = ReadSlice(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
 #endif
@@ -4695,9 +4666,6 @@ void LoadSliceMenu(int value){
             load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
           }
           else{
-#ifdef pp_OLDBOUND_DIALOG
-            load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
-#endif
 #ifdef pp_CPPBOUND_DIALOG
             load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #endif
@@ -5010,9 +4978,6 @@ void LoadMultiSliceMenu(int value){
         load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
       }
       else{
-#ifdef pp_OLDBOUND_DIALOG
-        load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
-#endif
 #ifdef pp_CPPBOUND_DIALOG
         load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #endif
@@ -5123,16 +5088,6 @@ void Plot3DListMenu(int value){
   }
   printf("\n");
   FREEMEMORY(list);
-#endif
-#ifdef pp_OLDBOUND_DIALOG
-  for(i=0;i<nplot3dinfo;i++){
-    plot3ddata *plot3di;
-
-    plot3di = plot3dinfo + i;
-    if(ABS(plot3di->time-plot3dtimelist[value])<delta_time){
-      LoadPlot3dMenu(i);
-    }
-  }
 #endif
 }
 

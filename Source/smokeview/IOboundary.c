@@ -2698,13 +2698,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
       &patchi->extreme_min, &patchi->extreme_max);
 #endif
-#ifdef pp_OLDBOUND_DIALOG
-    GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
-      glui_setpatchmin, &glui_patchmin, glui_setpatchmax, &glui_patchmax,
-      &patchmin_global, &patchmax_global,
-      nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
-      &patchi->extreme_min, &patchi->extreme_max);
-#endif
     if(cache_boundary_data==0){
       FREEMEMORY(patchi->geom_vals);
     }
@@ -2876,10 +2869,6 @@ void GLUI2GlobalBoundaryBounds(const char *key){
     if(strcmp(patchi->label.shortlabel,key)==0){
       patchi->valmin = glui_patchmin;
       patchi->valmax = glui_patchmax;
-#ifdef pp_OLDBOUND_DIALOG
-      patchi->setvalmin=glui_setpatchmin;
-      patchi->setvalmax=glui_setpatchmax;
-#endif
 
       patchi->chopmin=patchchopmin;
       patchi->chopmax=patchchopmax;
@@ -2899,16 +2888,6 @@ void Global2GLUIBoundaryBounds(const char *key){
 
     patchi = patchinfo + i;
     if(strcmp(patchi->label.shortlabel,key)==0){
-#ifdef pp_OLDBOUND_DIALOG
-      if(research_mode==1){
-        glui_setpatchmin = GLOBAL_MIN;;
-        glui_setpatchmax = GLOBAL_MAX;
-      }
-      else{
-        glui_setpatchmin = patchi->setvalmin;
-        glui_setpatchmax = patchi->setvalmax;
-      }
-#endif
       glui_patchmin = patchi->valmin;
       glui_patchmax = patchi->valmax;
 
@@ -2920,9 +2899,6 @@ void Global2GLUIBoundaryBounds(const char *key){
       patchmin_unit = (unsigned char *)patchi->label.unit;
       patchmax_unit = patchmin_unit;
 
-#ifdef pp_OLDBOUND_DIALOG
-      UpdateGluiBoundaryUnits();
-#endif
       UpdateHideBoundarySurface();
 
       GLUI2GlobalBoundaryBounds(key);

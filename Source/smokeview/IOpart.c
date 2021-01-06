@@ -2105,9 +2105,6 @@ void FinalizePartLoad(partdata *parti){
   PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
 #endif
   parttype = 0;
-#ifdef pp_OLDBOUND_DIALOG
-  PartBoundCBInit();
-#endif
   ParticlePropShowMenu(part5colorindex);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   UpdateTimes();

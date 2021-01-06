@@ -51,11 +51,6 @@
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
 //#define pp_ZTREE                // setup vertical device trees
 
-// define old dialog if not using new dialogs
-#ifndef pp_CPPBOUND_DIALOG
-#define pp_OLDBOUND_DIALOG
-#endif
-
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
 #endif
