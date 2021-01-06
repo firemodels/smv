@@ -5934,7 +5934,6 @@ int CompareV3Devices( const void *arg1, const void *arg2 ){
 int CompareZ3Devices(const void *arg1, const void *arg2){
   devicedata *devi, *devj;
   float *xyzi, *xyzj;
-  int diri, dirj;
   char *quanti, *quantj;
   int iquant;
 
@@ -5962,7 +5961,6 @@ int CompareZ3Devices(const void *arg1, const void *arg2){
 int CompareZ2Devices(const void *arg1, const void *arg2){
   devicedata *devi, *devj;
   float *xyzi, *xyzj;
-  int diri, dirj;
   char *quanti, *quantj;
   int iquant;
 
