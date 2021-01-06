@@ -1,16 +1,29 @@
 #!/bin/bash
 if [ "$NOQUARTZ" != "" ]; then
-  echo building smokeview not using Quartz
-  OPTS="$*"
+  OPTS="-Q $*"
+  if [ "$LOWRES" != "" ]; then
+    echo building smokeview no Quartz, low res
+  else
+    echo building smokeview no Quartz, high res
+  fi
 else
   echo building smokeview using Quartz
   OPTS="-q $*"
 fi
 source ../../scripts/setopts.sh $OPTS
 
-LIBDIR=../../LIBS/intel_osx_64
+if [ "$QUARTZSMV" == "use_quartz" ]; then
+  LIBDIR=../../LIBS/intel_osx_64
+else
+  if [ "$LOWRES" == "" ]; then
+    LIBDIR=../../LIBS/intel_osx_noq_64
+  else
+    LIBDIR=../../LIBS/intel_osx_noql_64
+  fi
+fi
 
 CURDIR=`pwd`
+cd $LIBDIR
 build_libs=
 LIBS="libgd.a libglui.a libjpeg.a libpng.a libz.a"
 
@@ -19,7 +32,6 @@ if [ "$QUARTZSMV" == "use_quartz" ]; then
   LIBS="$LIBS libglut.a"
 fi
 
-cd $LIBDIR
 for f in $LIBS
 do 
   if [ ! -e $f ]; then
