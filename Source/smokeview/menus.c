@@ -6035,6 +6035,7 @@ void ShowObjectsMenu(int value){
   else if(value==OBJECT_SELECT){
     select_device=1-select_device;
   }
+#ifdef pp_ZTREE
   else if(value==OBJECT_PLOT_SHOW_TREE_ALL){
     update_times=1;
     if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL){
@@ -6048,6 +6049,7 @@ void ShowObjectsMenu(int value){
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     UpdateDeviceShow();
   }
+#endif
   else if(value==OBJECT_PLOT_SHOW_ALL){
     update_times=1;
     if(showdevice_plot==DEVICE_PLOT_SHOW_ALL){
@@ -7448,9 +7450,10 @@ updatemenu=0;
     if(showdevice_plot!=DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "Plot data for all devices",            OBJECT_PLOT_SHOW_ALL);
     if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "*Plot data for selected devices",      OBJECT_PLOT_SHOW_SELECTED);
     if(showdevice_plot!=DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "Plot data for selected devices",       OBJECT_PLOT_SHOW_SELECTED);
+#ifdef pp_ZTREE
     if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "*Plot data for all device trees",      OBJECT_PLOT_SHOW_TREE_ALL);
     if(showdevice_plot!=DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "Plot data for all device trees",       OBJECT_PLOT_SHOW_TREE_ALL);
-
+#endif
     if(showdevice_val==1)glutAddMenuEntry(_("*Show values"), OBJECT_VALUES);
     if(showdevice_val==0)glutAddMenuEntry(_("Show values"),  OBJECT_VALUES);
     if(object_outlines==0)glutAddMenuEntry(_("Outline"),OBJECT_OUTLINE);
