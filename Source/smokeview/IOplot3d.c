@@ -5,9 +5,63 @@
 #include <math.h>
 #include GLUT_H
 
-#include "update.h"
 #include "smokeviewvars.h"
 #include "IOobjects.h"
+
+/* ------------------ GetPlot3DHists ------------------------ */
+
+void GetPlot3DHists(plot3ddata *p){
+  int i;
+
+  for(i = 0; i<MAXPLOT3DVARS; i++){
+    histogramdata *histi;
+    float *vals;
+    int nvals;
+    meshdata *plot3d_mesh;
+
+    histi = p->histograms[i];
+    if(histi!=NULL)FreeHistogram(histi);
+
+    NewMemory((void **)&histi, sizeof(histogramdata));
+    p->histograms[i] = histi;
+    InitHistogram(histi, NHIST_BUCKETS, NULL, NULL);
+
+    plot3d_mesh = meshinfo+p->blocknumber;
+    nvals = (plot3d_mesh->ibar+1)*(plot3d_mesh->jbar+1)*(plot3d_mesh->kbar+1);
+    vals = plot3d_mesh->qdata+i*nvals;
+    CopyVals2Histogram(vals, NULL, NULL, nvals, histi);
+  }
+}
+
+/* ------------------ MergePlot3DHistograms ------------------------ */
+
+void MergePlot3DHistograms(void){
+  int i;
+
+  if(full_plot3D_histograms==NULL){
+    NewMemory((void **)&full_plot3D_histograms, MAXPLOT3DVARS*sizeof(histogramdata));
+    for(i = 0; i<MAXPLOT3DVARS; i++){
+      InitHistogram(full_plot3D_histograms+i, NHIST_BUCKETS, NULL, NULL);
+    }
+  }
+  else{
+    for(i = 0; i<MAXPLOT3DVARS; i++){
+      FreeHistogram(full_plot3D_histograms+i);
+      InitHistogram(full_plot3D_histograms+i, NHIST_BUCKETS, NULL, NULL);
+    }
+  }
+  for(i = 0; i<nplot3dinfo; i++){
+    plot3ddata *plot3di;
+    int k;
+
+    plot3di = plot3dinfo+i;
+    if(plot3di->loaded==0)continue;
+    for(k = 0; k<MAXPLOT3DVARS; k++){
+      MergeHistogram(full_plot3D_histograms+k, plot3di->histograms[k], MERGE_BOUNDS);
+    }
+  }
+}
+
 
 /* ------------------ Plot3dCompare  ------------------------ */
 
@@ -26,14 +80,62 @@ int Plot3dCompare( const void *arg1, const void *arg2 ){
   return 0;
 }
 
+/* ------------------ AllocatePlot3DColorLabels  ------------------------ */
+
+int AllocatePlot3DColorLabels(int ifile){
+  int nn, error;
+
+  for(nn = 0; nn<numplot3dvars; nn++){
+    int n;
+
+    for(n = 0; n<MAXRGB; n++){
+      (*(colorlabelp3+nn))[n] = NULL;
+      (*(colorlabeliso+nn))[n] = NULL;
+    }
+
+    if(p3levels[nn]==NULL){
+      if(NewMemory((void **)&p3levels[nn], (nrgb+1)*sizeof(float))==0){
+        ReadPlot3D("", ifile, UNLOAD, &error);
+        if(error==1)return 1;
+      }
+    }
+    if(p3levels256[nn]==NULL){
+      if(NewMemory((void **)&p3levels256[nn], 256*sizeof(float))==0){
+        ReadPlot3D("", ifile, UNLOAD, &error);
+        if(error==1)return 1;
+      }
+    }
+    for(n = 0; n<nrgb; n++){
+      if(colorlabelp3[nn][n]==NULL){
+        if(NewMemory((void **)&(*(colorlabelp3+nn))[n], 11)==0){
+          ReadPlot3D("", ifile, UNLOAD, &error);
+          if(error==1)return 1;
+        }
+      }
+      if(colorlabeliso[nn][n]==NULL){
+        if(NewMemory((void **)&(*(colorlabeliso+nn))[n], 11)==0){
+          ReadPlot3D("", ifile, UNLOAD, &error);
+          if(error==1)return 1;
+        }
+      }
+    }
+  }
+  return 0;
+}
+
 /* ------------------ UpdatePlot3DColors  ------------------------ */
 
 void  UpdatePlot3DColors(int ifile, int *errorcode){
-  int nn, error;
+  int nn;
 
+#ifdef pp_CPPBOUND_DIALOG
+  int num;
+
+  GetMinMaxAll(BOUND_PLOT3D, setp3min_all, p3min_all, setp3max_all, p3max_all, &num);
+#endif
+  *errorcode=AllocatePlot3DColorLabels(ifile);
+  if(*errorcode==1)return;
   for(nn = 0; nn < numplot3dvars; nn++){
-    int n;
-
     if(nplot3dinfo > 0){
       shortp3label[nn] = plot3dinfo[ifile].label[nn].shortlabel;
       unitp3label[nn] = plot3dinfo[ifile].label[nn].unit;
@@ -47,33 +149,59 @@ void  UpdatePlot3DColors(int ifile, int *errorcode){
         blank_global;
     }
 
-    for(n = 0; n < MAXRGB; n++){
-      (*(colorlabelp3 + nn))[n] = NULL;
-      (*(colorlabeliso + nn))[n] = NULL;
-    }
-
-    if(NewMemory((void **)&p3levels[nn], (nrgb + 1) * sizeof(float)) == 0 ||
-       NewMemory((void **)&p3levels256[nn], 256 * sizeof(float)) == 0){
-      ReadPlot3D("", ifile, UNLOAD, &error);
-      *errorcode = 1;
-      return;
-    }
-    for(n = 0; n < nrgb; n++){
-      if(NewMemory((void **)&(*(colorlabelp3 + nn))[n], 11) == 0){
-        *errorcode = 1;
-        ReadPlot3D("", ifile, UNLOAD, &error);
-        return;
-      }
-      if(NewMemory((void **)&(*(colorlabeliso + nn))[n], 11) == 0){
-        *errorcode = 1;
-        ReadPlot3D("", ifile, UNLOAD, &error);
-        return;
-      }
-    }
     GetPlot3DColors(nn,
                     setp3min_all[nn], p3min_all + nn, setp3max_all[nn], p3max_all + nn,
                     nrgb_full, nrgb - 1, *(colorlabelp3 + nn), *(colorlabeliso + nn), p3levels[nn], p3levels256[nn],
                     plot3dinfo[ifile].extreme_min + nn, plot3dinfo[ifile].extreme_max + nn);
+  }
+}
+
+/* ------------------ GetPlot3DBounds  ------------------------ */
+
+int GetPlot3DBounds(plot3ddata *plot3di){
+  float valmin, valmax, *vals;
+  char *iblank;
+  meshdata *meshi;
+  int i, ntotal;
+
+  meshi = meshinfo+plot3di->blocknumber;
+  if(meshi->qdata==NULL)return 0;
+  ntotal = (meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
+  iblank = meshi->c_iblank_node;
+
+  for(i = 0; i<MAXPLOT3DVARS; i++){
+    int n;
+
+    valmin = 1000000000.;
+    valmax = -valmin;
+    vals = meshi->qdata+i*ntotal;
+    iblank = meshi->c_iblank_node;
+    for(n = 0; n<ntotal; n++){
+      float val;
+
+      val = *vals++;
+      if(iblank==NULL||*iblank++==GAS){
+        valmin = MIN(val, valmin);
+        valmax = MAX(val, valmax);
+      }
+    }
+    plot3di->valmin_smv[i] = valmin;
+    plot3di->valmax_smv[i] = valmax;
+  }
+  return 1;
+}
+
+/* ------------------ UpdatePlot3DFileLoad  ------------------------ */
+
+void UpdatePlot3DFileLoad(void){
+  int i;
+
+  nplot3dloaded = 0;
+  for(i = 0; i<nplot3dinfo; i++){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo+i;
+    if(plot3di->loaded==1)nplot3dloaded++;
   }
 }
 
@@ -110,6 +238,9 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
 
   if(flag==UNLOAD){
     meshi->plot3dfilenum=-1;
+#ifdef pp_CPPBOUND_DIALOG
+    update_draw_hist = 1;
+#endif
   }
   else{
     pn = meshi->plot3dfilenum;
@@ -147,7 +278,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       int nn;
 
       for(nn=0;nn<MAXPLOT3DVARS;nn++){
-	int nnn;
+	    int nnn;
 
         for(nnn=0;nnn<MAXRGB;nnn++){
           FREEMEMORY((*(colorlabelp3+nn))[nnn]);
@@ -160,7 +291,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       int nn;
 
       for(nn=0;nn<MAXPLOT3DVARS;nn++){
-	int nnn;
+	    int nnn;
 
         for(nnn=0;nnn<MAXRGB;nnn++){
           FREEMEMORY((*(colorlabeliso+nn))[nnn]);
@@ -190,21 +321,17 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   if(flag==UNLOAD){
     p->loaded=0;
     p->display=0;
-    plotstate=GetPlotState(STATIC_PLOTS);
+    UpdatePlot3DFileLoad();
+    plotstate = GetPlotState(STATIC_PLOTS);
     meshi=meshinfo+p->blocknumber;
     meshi->plot3dfilenum=-1;
     if(nloaded==0){
-      ReadPlot3dFile=0;
       numplot3dvars=0;
     }
     updatemenu=1;
     PrintMemoryInfo;
     UpdateTimes();
     UpdateUnitDefs();
-    return;
-  }
-  if(ReadPlot3dFile==0){
-    plotstate=GetPlotState(STATIC_PLOTS);
     return;
   }
 
@@ -255,7 +382,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
 
   file_size= GetFileSizeSMV(file);
   plot3dfilelen = strlen(file);
-  PRINTF("Loading plot3d data: %s\n",file);
+  PRINTF("Loading plot3d data: %s",file);
   START_TIMER(read_time);
   if(p->compression_type==UNCOMPRESSED){
     FORTgetplot3dq(file,&nx,&ny,&nz,meshi->qdata,&error,&isotest,plot3dfilelen);
@@ -270,6 +397,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   }
   p->loaded=1;
   p->display=1;
+  if(nplot3dloaded==0)UpdatePlot3DFileLoad();
   speedmax = -1.;
   meshi->udata=NULL;
   meshi->vdata=NULL;
@@ -341,7 +469,26 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     }
     UpdateGlui();
   }
-  UpdatePlot3DColors(ifile,errorcode);
+
+  GetPlot3DHists(p);
+  AllocatePlot3DColorLabels(ifile);
+  if(cache_plot3d_data==1){
+    if(p->finalize==1){
+      MergePlot3DHistograms();
+#ifdef pp_CPPBOUND_DIALOG
+      SetPercentilePlot3DBounds();
+#endif
+      UpdateAllPlot3DColors();
+#ifdef pp_CPPBOUND_DIALOG
+#define BOUND_PERCENTILE_DRAW          120
+      Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+#endif
+    }
+  }
+  else{
+    UpdatePlot3DColors(ifile,errorcode);
+  }
+
   if(meshi->plotx==-1)meshi->plotx=ibar/2;
   if(meshi->ploty==-1)meshi->ploty=jbar/2;
   if(meshi->plotz==-1)meshi->plotz=kbar/2;
@@ -386,10 +533,12 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
     (float)file_size/1000000.,read_time,loadrate,total_time-read_time);
   }
   else{
-    PRINTF(" %.1f MB downloaded in %.2f s (overhead: %.2f s)",
+    PRINTF(" %.1f MB downloaded in %.2f s (overhead: %.2f s)\n",
     (float)file_size/1000000.,read_time,total_time-read_time);
   }
-  if(p->compression_type==COMPRESSED_ZLIB|| cache_plot3d_data==0){
+  update_plot3d_bounds = ifile;
+  GetPlot3DBounds(p);
+  if(p->compression_type==COMPRESSED_ZLIB || cache_plot3d_data==0){
     cache_plot3d_data=0;
     FREEMEMORY(meshi->qdata);
   }
@@ -863,7 +1012,7 @@ void UpdateSurface(void){
   int plot3dsize;
   int i;
 
-  if(cache_plot3d_data==0)return;
+  if(nplot3dloaded==0)return;
   for(i=0;i<nmeshes;i++){
     float dlevel=-1.0;
     meshdata *meshi;
@@ -883,8 +1032,6 @@ void UpdateSurface(void){
     currentsurfptr = &meshi->currentsurf;
     currentsurf2ptr = &meshi->currentsurf2;
     qdata=meshi->qdata;
-
-    if(ReadPlot3dFile!=1)return;
     if(plotiso[plotn-1]<0){
       plotiso[plotn-1]=nrgb-3;
     }
@@ -1148,7 +1295,7 @@ void UpdatePlotSliceMesh(meshdata *mesh_in, int slicedir){
   if(setp3min_all[plotn - 1] == CHOP_MIN)minfill = 0;
   if(setp3max_all[plotn - 1] == CHOP_MAX)maxfill = 0;
 
-  if(ReadPlot3dFile != 1)return;
+  if(nplot3dloaded==0)return;
   if(plotx >= 0 && slicedir == XDIR){
     float *yzcolorf;
     float *yzcolort;
@@ -1317,7 +1464,7 @@ void UpdatePlotSlice(int slicedir){
 
 void UpdateShowStep(int val, int slicedir){
 
-  if(ReadPlot3dFile==0&&visGrid==0&&ReadVolSlice==0)return;
+  if(nplot3dloaded==0&&visGrid==0&&ReadVolSlice==0)return;
   current_mesh->slicedir=slicedir;
   switch(slicedir){
   case XDIR:
@@ -1330,7 +1477,7 @@ void UpdateShowStep(int val, int slicedir){
     if(visz_all!=val)updatemenu=1;
     break;
   case ISO:
-    if(ReadPlot3dFile==1){
+    if(nplot3dloaded>0){
       if(visiso!=val)updatemenu=1;
       visiso = val;
     }

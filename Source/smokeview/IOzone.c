@@ -6,13 +6,12 @@
 #include "glew.h"
 
 #include "string_util.h"
-#include "update.h"
 #include "smokeviewvars.h"
 #include "IOobjects.h"
 
 /* ------------------ GetZoneSizeCSV ------------------------ */
 
-void GetZoneSizeCSV(int *nzone_times_local, int *nroom, int *nfires_local, int *nhvents, int *nvvents, int *nmvents, int *ntargets, int *error){
+void GetZoneSizeCSV(int *nzone_times_local, int *nroom, int *nfires_local, int *nhvents, int *nvvents, int *nmvents, int *ntargets_arg, int *error){
    devicedata *dev;
    int nr,nf,nv,nt;
    int i;
@@ -27,7 +26,7 @@ void GetZoneSizeCSV(int *nzone_times_local, int *nroom, int *nfires_local, int *
      if(GetCSVDeviceFromLabel(label, -1)==NULL)break;
      nt++;
    }
-   *ntargets = nt;
+   *ntargets_arg = nt;
 
    nr=0;
    for(i=0;i<ndeviceinfo;i++){
@@ -842,18 +841,15 @@ void GetSliceTempBounds(void){
 
     slicei = sliceinfo + i;
     if(strcmp(slicei->label.shortlabel, "TEMP")!=0)continue;
-    GetSliceSizes(slicei->file, ALL_SLICE_FRAMES, &slicei->nslicei, &slicei->nslicej, &slicei->nslicek, &slicei->ntimes, sliceframestep, &error,
+    GetSliceSizes(slicei, slicei->file, ALL_SLICE_FRAMES, &slicei->nslicei, &slicei->nslicej, &slicei->nslicek, &slicei->ntimes, sliceframestep, &error,
       settmin_s, settmax_s, tmin_s, tmax_s, &headersize, &framesize);
     return_val = NewResizeMemory(slicei->qslicedata, sizeof(float)*(slicei->nslicei+1)*(slicei->nslicej+1)*(slicei->nslicek+1)*slicei->ntimes);
     if(return_val!=0)return_val = NewResizeMemory(slicei->times, sizeof(float)*slicei->ntimes);
     qmin = 1.0e30;
     qmax = -1.0e30;
-    GetSliceData(slicei->file, ALL_SLICE_FRAMES, &slicei->is1, &slicei->is2, &slicei->js1, &slicei->js2, &slicei->ks1, &slicei->ks2, &slicei->idir,
+    GetSliceData(slicei, slicei->file, ALL_SLICE_FRAMES, &slicei->is1, &slicei->is2, &slicei->js1, &slicei->js2, &slicei->ks1, &slicei->ks2, &slicei->idir,
       &qmin, &qmax, slicei->qslicedata, slicei->times, ntimes_slice_old, &slicei->ntimes,
       sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s
-#ifdef pp_MULTI_RES
-      , slicei->multi_res
-#endif
     );
     slicei->globalmin = qmin;
     slicei->globalmax = qmax;
@@ -883,7 +879,7 @@ void GetZoneTempBounds(void){
 
 void ReadZone(int ifile, int flag, int *errorcode){
   int error,ntotal_rooms,ntotal_targets,i,j,ii;
-  int nrooms2,nfires2,nzhvents2,nzvvents2,nzmvents2=0,ntargets=0;
+  int nrooms2,nfires2,nzhvents2,nzvvents2,nzmvents2=0,ntargets_local=0;
   size_t zonefilelen;
   zonedata *zonei;
   char *file;
@@ -946,7 +942,7 @@ void ReadZone(int ifile, int flag, int *errorcode){
   if(zonei->csv==1){
     ReadDeviceData(zonei->file,CSV_CFAST,UNLOAD);
     ReadDeviceData(zonei->file,CSV_CFAST,LOAD);
-    GetZoneSizeCSV(&nzone_times,&nrooms2,&nfires2,&nzhvents2,&nzvvents2,&nzmvents2,&ntargets, &error);
+    GetZoneSizeCSV(&nzone_times,&nrooms2,&nfires2,&nzhvents2,&nzvvents2,&nzmvents2,&ntargets_local, &error);
   }
   else{
     FORTgetzonesize(file,&nzone_times,&nrooms2,&nfires2,&error,zonefilelen);
@@ -1097,9 +1093,9 @@ void ReadZone(int ifile, int flag, int *errorcode){
   else{
     return;
   }
-  ntotal_targets = ntargets*nzone_times;
+  ntotal_targets = ntargets_local*nzone_times;
   nzonetotal_targets = ntotal_targets;
-  nzone_targets = ntargets;
+  nzone_targets = ntargets_local;
 
   if(ntotal_targets>0){
     FREEMEMORY(zonetargets);
@@ -1115,7 +1111,7 @@ void ReadZone(int ifile, int flag, int *errorcode){
   }
   CheckMemory;
   if(zonei->csv==1){
-    GetZoneDataCSV(nzone_times,nrooms,  nfires, ntargets,
+    GetZoneDataCSV(nzone_times,nrooms,  nfires, ntargets_local,
                    zone_times,zoneqfire, zonefheight, zonefbase, zonefdiam,
                    zonepr,zoneylay,zonetl,zonetu,zonerhol,zonerhou,&zoneodl,&zoneodu, zonevents,
                    zoneslab_n, zoneslab_T, zoneslab_F, zoneslab_YB, zoneslab_YT,
@@ -1221,23 +1217,79 @@ void ReadZone(int ifile, int flag, int *errorcode){
 
 }
 
-#define DRAWZONEVENT \
-          glVertex3fv(xyz); glVertex3fv(xyz+3); glVertex3fv(xyz+6);\
-          glVertex3fv(xyz); glVertex3fv(xyz+6); glVertex3fv(xyz+9);\
-          glVertex3fv(xyz); glVertex3fv(xyz+6); glVertex3fv(xyz+3);\
-          glVertex3fv(xyz); glVertex3fv(xyz+9); glVertex3fv(xyz+6)
+/* ------------------ DrawZoneVent ------------------------ */
 
-#define DRAWZONEVENT2 \
-        if(zvi->area_fraction < 0.0001){\
-          glVertex3fv(xyz+6);\
-          glVertex3fv(xyz+9);\
-          glVertex3fv(xyz+3);\
-        }\
-        glVertex3fv(xyz);\
-        glVertex3fv(xyz+3);\
-        glVertex3fv(xyz+6);\
-        glVertex3fv(xyz+9);\
-        glVertex3fv(xyz)
+void DrawZoneVent(float area_fraction, float x1, float x2, float y1, float y2, float z1, float z2){
+  if(area_fraction < 0.0001){
+    if(ABS(x1-x2)>0.0001&&ABS(y1-y2)>0.0001){
+      glVertex3f(x1,y1,z1);
+      glVertex3f(x2,y2,z1);
+      glVertex3f(x1,y2,z1);
+      glVertex3f(x2,y1,z1);
+
+      glVertex3f(x1,y1,z2);
+      glVertex3f(x2,y2,z2);
+      glVertex3f(x1,y2,z2);
+      glVertex3f(x2,y1,z2);
+    }
+    if(ABS(x1-x2)>0.0001&&ABS(z1-z2)>0.0001){
+      glVertex3f(x1,y1,z1);
+      glVertex3f(x2,y1,z2);
+      glVertex3f(x1,y1,z2);
+      glVertex3f(x2,y1,z1);
+
+      glVertex3f(x1,y2,z1);
+      glVertex3f(x2,y2,z2);
+      glVertex3f(x1,y2,z2);
+      glVertex3f(x2,y2,z1);
+    }
+    if(ABS(y1-y2)>0.0001&&ABS(y1-y2)>0.0001){
+      glVertex3f(x1,y1,z1);
+      glVertex3f(x1,y2,z2);
+      glVertex3f(x1,y1,z2);
+      glVertex3f(x1,y2,z1);
+
+      glVertex3f(x2,y1,z1);
+      glVertex3f(x2,y2,z2);
+      glVertex3f(x2,y1,z2);
+      glVertex3f(x2,y2,z1);
+    }
+  }
+  if(ABS(x1-x2)>0.0001){
+    glVertex3f(x1,y1,z1);
+    glVertex3f(x2,y1,z1);
+    glVertex3f(x1,y2,z1);
+    glVertex3f(x2,y2,z1);
+    glVertex3f(x1,y1,z2);
+    glVertex3f(x2,y1,z2);
+    glVertex3f(x1,y2,z2);
+    glVertex3f(x2,y2,z2);
+    if(area_fraction < 0.0001){
+    }
+  }
+
+  if(ABS(y1-y2)>0.0001){
+    glVertex3f(x1,y1,z1);
+    glVertex3f(x1,y2,z1);
+    glVertex3f(x2,y1,z1);
+    glVertex3f(x2,y2,z1);
+    glVertex3f(x1,y1,z2);
+    glVertex3f(x1,y2,z2);
+    glVertex3f(x2,y1,z2);
+    glVertex3f(x2,y2,z2);
+  }
+
+  if(ABS(z1-z2)>0.0001){
+    glVertex3f(x1,y1,z1);
+    glVertex3f(x1,y1,z2);
+    glVertex3f(x2,y1,z1);
+    glVertex3f(x2,y1,z2);
+    glVertex3f(x1,y2,z1);
+    glVertex3f(x1,y2,z2);
+    glVertex3f(x2,y2,z1);
+    glVertex3f(x2,y2,z2);
+  }
+}
 
 /* ------------------ DrawZoneRoomGeom ------------------------ */
 
@@ -1322,11 +1374,8 @@ void DrawZoneRoomGeom(void){
     for(i=0;i<nzvents;i++){
       zventdata *zvi;
       float x1, x2, y1, y2, z1, z2;
-      float xx, yy, zz;
-      float xyz[12], *p;
 
       zvi = zventinfo + i;
-
       x1 = zvi->x0;
       x2 = zvi->x1;
       y1 = zvi->y0;
@@ -1354,11 +1403,13 @@ void DrawZoneRoomGeom(void){
       if(zvi->vent_type==VFLOW_VENT&&zvi->vertical_vent_type==ZONEVENT_CIRCLE){
         unsigned char uc_color[4];
 
-        zz = z1;
-        if(zvi->wall==TOP_WALL)zz = z2;
-
         glPushMatrix();
-        glTranslatef(NORMALIZE_X(zvi->xcen), NORMALIZE_Y(zvi->ycen), zz);
+        if(zvi->wall==TOP_WALL){
+          glTranslatef(NORMALIZE_X(zvi->xcen), NORMALIZE_Y(zvi->ycen), z2);
+	}
+	else{
+          glTranslatef(NORMALIZE_X(zvi->xcen), NORMALIZE_Y(zvi->ycen), z1);
+	}
         uc_color[0] = zvi->color[0]*255;
         uc_color[1] = zvi->color[1]*255;
         uc_color[2] = zvi->color[2]*255;
@@ -1380,45 +1431,33 @@ void DrawZoneRoomGeom(void){
         glPopMatrix();
       }
       else{
-        glBegin(GL_LINE_LOOP);
+        float delta;
+
+        delta = 0.1/xyzmaxdiff;
+        glBegin(GL_LINES);
         switch(zvi->wall){
         case LEFT_WALL:
-        case RIGHT_WALL:
-          xx = x1;
-          if(zvi->wall==RIGHT_WALL)xx = x2;
+          DrawZoneVent(zvi->area_fraction, x1-delta, x1+delta, y1, y2, z1, z2);
+          break;
 
-          p = xyz;
-          *p++ = xx, *p++ = y1, *p++ = z1;
-          *p++ = xx, *p++ = y2, *p++ = z1;
-          *p++ = xx, *p++ = y2, *p++ = z2;
-          *p++ = xx, *p++ = y1, *p++ = z2;
-          DRAWZONEVENT2;
+        case RIGHT_WALL:
+          DrawZoneVent(zvi->area_fraction, x2-delta, x2+delta, y1, y2, z1, z2);
           break;
 
         case FRONT_WALL:
-        case BACK_WALL:
-          yy = y1;
-          if(zvi->wall==BACK_WALL)yy = y2;
+          DrawZoneVent(zvi->area_fraction, x1, x2, y1-delta, y1+delta, z1, z2);
+          break;
 
-          p = xyz;
-          *p++ = x1, *p++ = yy, *p++ = z1;
-          *p++ = x2, *p++ = yy, *p++ = z1;
-          *p++ = x2, *p++ = yy, *p++ = z2;
-          *p++ = x1, *p++ = yy, *p++ = z2;
-          DRAWZONEVENT2;
+        case BACK_WALL:
+          DrawZoneVent(zvi->area_fraction, x1, x2, y2-delta, y2+delta, z1, z2);
           break;
 
         case BOTTOM_WALL:
-        case TOP_WALL:
-          zz = z1;
-          if(zvi->wall==TOP_WALL)zz = z2;
+          DrawZoneVent(zvi->area_fraction, x1, x2, y1, y2, z1-delta, z1+delta);
+          break;
 
-          p = xyz;
-          *p++ = x1, *p++ = y1, *p++ = zz;
-          *p++ = x2, *p++ = y1, *p++ = zz;
-          *p++ = x2, *p++ = y2, *p++ = zz;
-          *p++ = x1, *p++ = y2, *p++ = zz;
-          DRAWZONEVENT2;
+        case TOP_WALL:
+          DrawZoneVent(zvi->area_fraction, x1, x2, y1, y2, z2-delta, z2+delta);
           break;
 
         default:

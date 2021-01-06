@@ -6,7 +6,6 @@
 #include <math.h>
 #include GLUT_H
 
-#include "update.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 
@@ -464,24 +463,24 @@ void MouseSelectDevice(int button, int state, int x, int y){
 
   val = (r << (nbluebits+ngreenbits)) | (g << nbluebits) | b;
 
-  if(val>0){
+  if(val>0&&val<ndeviceinfo){
     devicedata *devicei;
     float *xyz;
 
-    selected_device_tag=val;
-    devicei = deviceinfo + val-1;
+    devicei = deviceinfo+val-1;
+    devicei->selected = 1-devicei->selected;
     xyz = devicei->xyz;
 
-    if(devicei->labelptr!=NULL&&strcmp(devicei->labelptr,"null")!=0){
-      PRINTF("Selected Device: index=%i location:(%f,%f,%f) label:%s\n",val,xyz[0],xyz[1],xyz[2],devicei->labelptr);
+    if(devicei->labelptr!=NULL&&strcmp(devicei->labelptr, "null")!=0){
+      PRINTF("Selected Device: index=%i location:(%f,%f,%f) label:%s\n", val, xyz[0], xyz[1], xyz[2], devicei->labelptr);
     }
     else{
-      PRINTF("Selected Device: index=%i location:(%f,%f,%f)\n",val,xyz[0],xyz[1],xyz[2]);
+      PRINTF("Selected Device: index=%i location:(%f,%f,%f)\n", val, xyz[0], xyz[1], xyz[2]);
     }
-    glShadeModel(GL_SMOOTH);
-    glEnable(GL_BLEND);
-    ENABLE_LIGHTING;
   }
+  glShadeModel(GL_SMOOTH);
+  glEnable(GL_BLEND);
+  ENABLE_LIGHTING;
 }
 
 /* ------------------ MouseSelectAvatar ------------------------ */
@@ -959,6 +958,13 @@ void UpdateMouseInfo(int flag, int xm, int ym){
 
 void MouseCB(int button, int state, int xm, int ym){
   float *eye_xyz;
+
+#ifdef pp_OSX_HIGHRES
+  if(double_scale==1){
+    xm *= 2;
+    ym *= 2;
+  }
+#endif
 
   {
     float delta_time;
@@ -1463,7 +1469,12 @@ int ThrottleGpu(void){
 /* ------------------ MouseDragCB ------------------------ */
 
 void MouseDragCB(int xm, int ym){
-
+#ifdef pp_OSX_HIGHRES
+  if(double_scale==1){
+    xm *= 2;
+    ym *= 2;
+  }
+#endif
   {
     float delta_time;
 
@@ -1574,9 +1585,14 @@ int IsPlot3DLoaded(void){
 
 /* ------------------ Plot3DListMenu ------------------------ */
 
-int GetPlot3DTimeList(void){
+int GetPlot3DTimeList(int inc){
   float time;
   int have_plot3d = 0, i;
+  int return_val=-1;
+  float delta_time;
+
+  if(nplot3dtimelist<=1)return 0;
+  delta_time = (plot3dtimelist[1]-plot3dtimelist[0])/2.0;
 
   for(i = 0; i<nplot3dinfo; i++){
     plot3ddata *plot3di;
@@ -1588,12 +1604,17 @@ int GetPlot3DTimeList(void){
       break;
     }
   }
-  if(have_plot3d==0)return -1;
+  if(have_plot3d==0)return 0;
 
   for(i = 0; i<nplot3dtimelist; i++){
-    if(ABS(time-plot3dtimelist[i])<0.5)return i;
+    if(ABS(time-plot3dtimelist[i])<delta_time){
+      return_val = i+inc;
+      break;
+    }
   }
-  return -1;
+  if(return_val<0)return_val = nplot3dtimelist-1;
+  if(return_val>nplot3dtimelist-1)return_val = 0;
+  return return_val;
 }
 
 /* ------------------ Keyboard ------------------------ */
@@ -1606,9 +1627,10 @@ void Keyboard(unsigned char key, int flag){
   int keystate=0;
 
   if(flag==FROM_CALLBACK){
-    keystate = (GLUT_ACTIVE_ALT|GLUT_ACTIVE_CTRL)&GLUTGETMODIFIERS();
 #ifdef pp_OSX
-    if(keystate==0)keystate=GLUT_ACTIVE_ALT;
+    keystate = GLUTGETMODIFIERS();
+#else
+    keystate = (GLUT_ACTIVE_ALT|GLUT_ACTIVE_CTRL)&GLUTGETMODIFIERS();
 #endif
     if(scriptoutstream!=NULL&&key!='t'&&key!='r'&&key!='R'&&key!=' '&&key!='-'){
       fprintf(scriptoutstream,"KEYBOARD\n");
@@ -1644,7 +1666,7 @@ void Keyboard(unsigned char key, int flag){
         HandleMoveKeys(256+key2);
         break;
       }
-      if((visVector==1&&ReadPlot3dFile==1)||showvslice==1||isZoneFireModel==1){
+      if((visVector==1&&nplot3dloaded>0)||showvslice==1||isZoneFireModel==1){
       }
       else{
         break;
@@ -1668,7 +1690,7 @@ void Keyboard(unsigned char key, int flag){
         PRINTF("vector length factor: %f\n",vecfactor);
         UpdateGluiVecFactor();
       }
-      if(visVector==1&&ReadPlot3dFile==1){
+      if(visVector==1&&nplot3dloaded>0){
         gbsave=current_mesh;
         for(i=0;i<nmeshes;i++){
           gbi = meshinfo + i;
@@ -1933,13 +1955,76 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'j':
     case 'J':
-      if(keystate==GLUT_ACTIVE_ALT){
-        sensorrelsize /= 1.5;
+      if(keystate==GLUT_ACTIVE_CTRL){
+        select_device = 1-select_device;
+        updatemenu = 1;
+        if(select_device==1){
+          printf("device selection on\n");
+        }
+        else{
+          printf("device selection off\n");
+        }
+      }
+      else if(keystate==GLUT_ACTIVE_ALT){
+        if(nobject_defs>0){
+          int vis;
+
+          vis = 1-object_defs[0]->visible;
+          for(i = 0; i<nobject_defs; i++){
+            sv_object *objecti;
+
+            objecti = object_defs[i];
+            objecti->visible = vis;
+          }
+          updatemenu = 1;
+        }
       }
       else{
-        sensorrelsize *= 1.5;
+        if(key2=='J'){
+          sensorrelsize /= 1.5;
+          UpdateDeviceSize();
+        }
+        else{
+          sensorrelsize *= 1.5;
+          UpdateDeviceSize();
+        }
       }
-      UpdateDeviceSize();
+      break;
+    case '`':
+      if(ndeviceinfo>0){
+        int selected;
+
+        selected = 1-deviceinfo[0].selected;
+        if(selected==1&&select_device==0)select_device = 1;
+        for(i = 0; i<ndeviceinfo; i++){
+          devicedata *devicei;
+
+          devicei = deviceinfo+i;
+          devicei->selected = selected;
+        }
+      }
+      if(nobject_defs>0){
+        int makevis=1;
+
+        for(i = 0; i<nobject_defs; i++){
+          sv_object *objecti;
+
+          objecti = object_defs[i];
+          if(objecti->visible==1){
+            makevis = 0;
+            break;
+          }
+        }
+        if(makevis==1){
+          for(i = 0; i<nobject_defs; i++){
+            sv_object *objecti;
+
+            objecti = object_defs[i];
+            objecti->visible = 1;
+          }
+        }
+        updatemenu = 1;
+      }
       break;
     case 'k':
     case 'K':
@@ -2042,6 +2127,10 @@ void Keyboard(unsigned char key, int flag){
     case 'P':
       if(IsPartLoaded()==1){
         IncrementPartPropIndex();
+#ifdef pp_CPPBOUND_DIALOG
+#define BOUND_PERCENTILE_DRAW          120
+        PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+#endif
       }
       if(IsPlot3DLoaded()==1){
         plotn += FlowDir;
@@ -2054,7 +2143,13 @@ void Keyboard(unsigned char key, int flag){
         UpdateAllPlotSlices();
         if(visiso==1&&cache_plot3d_data==1)UpdateSurface();
         UpdatePlot3dListIndex();
+#ifdef pp_CPPBOUND_DIALOG
+        Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+#endif
       }
+#ifdef pp_CPPBOUND_DIALOG
+      update_chop_colors = 1;
+#endif
       break;
     case 'q':
       blocklocation++;
@@ -2101,7 +2196,10 @@ void Keyboard(unsigned char key, int flag){
 
         if(keystate==GLUT_ACTIVE_ALT&&strncmp((const char *)&key2, "r", 1) == 0){
           research_mode = 1-research_mode;
-          update_research_mode=1;
+#ifdef pp_CPPBOUND_DIALOG
+          UpdatdateResearchModeCPP();
+#endif
+          update_research_mode = 1;
           return;
         }
 
@@ -2299,6 +2397,10 @@ void Keyboard(unsigned char key, int flag){
           break;
       }
       break;
+    case '|':
+      projection_type = 1-projection_type;
+      SceneMotionCB(PROJECTION);
+      break;
     case 'v':
       switch(keystate){
         case GLUT_ACTIVE_ALT:
@@ -2394,13 +2496,6 @@ void Keyboard(unsigned char key, int flag){
         return;
       }
       break;
-#ifdef pp_MULTI_RES
-    case '`':
-      slice_resolution_level++;
-      if(slice_resolution_level>max_slice_resolution)slice_resolution_level = 0;
-      printf("slice resolution level: %i\n", slice_resolution_level);
-      break;
-#endif
     case '~':
       LevelScene(1,1,quat_general);
       Quat2Rot(quat_general,quat_rotation);
@@ -2555,14 +2650,11 @@ void Keyboard(unsigned char key, int flag){
       break;
 #endif
     case '{':
-      iplot3dtimelist = GetPlot3DTimeList() - 1;
-      if(iplot3dtimelist<0)iplot3dtimelist=nplot3dtimelist-1;
-      Plot3DListMenu(iplot3dtimelist);
-      break;
     case '}':
-      iplot3dtimelist = GetPlot3DTimeList() + 1;
-      if(iplot3dtimelist>=nplot3dtimelist)iplot3dtimelist=0;
+      if(key2=='{')iplot3dtimelist = GetPlot3DTimeList(-1);
+      if(key2=='}')iplot3dtimelist = GetPlot3DTimeList(1);
       Plot3DListMenu(iplot3dtimelist);
+      updatemenu = 1;
       break;
   }
 
@@ -2629,7 +2721,7 @@ void Keyboard(unsigned char key, int flag){
       ASSERT(FFALSE);
       break;
   }
-  if(ReadPlot3dFile==1){
+  if(nplot3dloaded>0){
     plotstate = GetPlotState(STATIC_PLOTS);
     if(visiso!=0&&current_mesh->slicedir==ISO){
       plotiso[plotn-1] += FlowDir;
@@ -2713,7 +2805,7 @@ void UpdateClipPlanes(void){
 /* ------------------ HandleIso ------------------------ */
 
 void HandleIso(void){
-    if(ReadPlot3dFile==1){
+    if(nplot3dloaded>0){
       UpdateShowStep(1-visiso,ISO);
       if(visiso==1){
         UpdateSurface();
@@ -3130,22 +3222,22 @@ void IdleCB(void){
 
 void SetScreenSize(int *width, int *height){
   if(width!=NULL){
-    screenWidth=MAX(*width,1);
+    screenWidth = MAX(*width,1);
     screenWidth = MAX(screenWidth, 1);
     if(screenWidth%2==1)screenWidth++;
 
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
-    screenWidth*=2;
-#endif
+#ifdef pp_OSX_HIGHRES
+    if(double_scale==1){
+      screenWidth *= 2;
+    }
 #endif
   }
   if(height!=NULL){
     screenHeight=MAX(*height,1);
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
-    screenHeight*=2;
-#endif
+#ifdef pp_OSX_HIGHRES
+    if(double_scale==1){
+      screenHeight *= 2;
+    }
 #endif
   }
   {
@@ -3176,6 +3268,7 @@ void ReshapeCB(int width, int height){
   else{
     CopyCamera(camera_current,camera_save);
   }
+  windowsize_pointer_old = -1;
   UpdateWindowSizeList();
 }
 
@@ -3528,7 +3621,10 @@ void DoScriptHtml(void){
     scriptdata *scripti;
 
     scripti = scriptinfo + i;
-    if(scripti->need_graphics==1)continue;
+    if(scripti->need_graphics==1){
+      printf("***warning: script command, %s, requires graphics\n", scripti->command_label);
+      continue;
+    }
     RunScriptCommand(scripti);
   }
 }

@@ -428,9 +428,9 @@ void Truncate(float val, char *cval, int ndigits){
   }
 }
 
-/* ------------------ ColorbarFloat2String ------------------------ */
+/* ------------------ Float2String ------------------------ */
 
-void ColorbarFloat2String(char *c_val, float val, int ndigits){
+void Float2String(char *c_val, float val, int ndigits){
   float mantissa;
   int exponent;
   
@@ -1348,14 +1348,6 @@ unsigned int DiffDate(char *token, char *tokenbase){
   return difft;
 }
 
-#ifdef pp_BETA
-  #define SET_VERSIONTITLE
-#else
-#ifndef pp_OFFICIAL_RELEASE
-  #define SET_VERSIONTITLE
-#endif
-#endif
-
 /* ------------------ GetBaseTitle ------------------------ */
 
 void GetBaseTitle(char *progname, char *title_base){
@@ -1375,11 +1367,6 @@ void GetBaseTitle(char *progname, char *title_base){
   strcat(title_base, " ");
   strcat(title_base, version);
 
-#ifdef SET_VERSIONTITLE
-  if(strcmp(version,"")!=0)strcat(title_base, "(");
-  strcat(title_base, git_version);
-  if(strcmp(version,"")!=0)strcat(title_base, ")");
-#endif
   strcat(title_base, " - ");
 }
 
@@ -1688,7 +1675,11 @@ void PRINTversion(char *progname){
   PRINTF("\n");
 #endif
 #ifdef pp_OSX
+#ifdef pp_QUARTZ
+  PRINTF("Platform         : OSX64/QUARTZ\n");
+#else
   PRINTF("Platform         : OSX64\n");
+#endif
 #endif
 #ifdef pp_LINUX
   PRINTF("Platform         : LINUX64\n");

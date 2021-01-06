@@ -16,7 +16,7 @@ FILTERC=
 	$(CC) -c $(CFLAGS) $(INC) $(FILTERC) $<
 
 
-CFLAGS= -O2 $(PLATFORM) -I ../glut_gl $(QUARTZ)
+CFLAGS= -O2 -I ../glut_gl $(PLATFORM) 
 
 RANLIB=ranlib
 

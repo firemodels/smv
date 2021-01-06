@@ -7,7 +7,6 @@
 #include <sys/stat.h>
 #include GLUT_H
 
-#include "update.h"
 #include "smokeviewvars.h"
 #include "viewports.h"
 #include "IOobjects.h"
@@ -53,16 +52,16 @@ void DrawLights(float *position0, float *position1){
 /* ------------------ ShowScene2 ------------------------ */
 
 void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
-  if(rotation_type == EYE_CENTERED&&nskyboxinfo>0)DrawSkybox();
-  UpdateLights(light_position0, light_position1);
-  if(drawlights==1)DrawLights(light_position0, light_position1);
+  if(mode==DRAWSCENE){
+    if(rotation_type==EYE_CENTERED&&nskyboxinfo>0)DrawSkybox();
+    UpdateLights(light_position0, light_position1);
+    if(drawlights==1)DrawLights(light_position0, light_position1);
 
 
  // if(render_status==RENDER_ON&&render_mode==RENDER_360){
  //   UpdateLights(light_position0, light_position1);
  // }
 
-  if(mode == DRAWSCENE){
     glPointSize((float)1.0);
 
 
@@ -490,6 +489,10 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     DrawDevicesVal();
   }
 
+  if(mode==DRAWSCENE){
+    DrawDevicePlots();
+  }
+
   /* ++++++++++++++++++++++++ draw zone fire modeling info +++++++++++++++++++++++++ */
 
   if(nrooms>0 && showzone == 1){
@@ -584,6 +587,13 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
       ViewportTitle(quad, s_left, s_down);
       SNIFF_ERRORS("after ViewportTitle");
     }
+
+#ifdef pp_CPPBOUND_DIALOG
+    if(histogram_draw!=NULL){
+      ViewportHistogram(quad, s_left, s_down);
+      SNIFF_ERRORS("after ViewportHistogram");
+    }
+#endif
 
     ViewportScene(quad, view_mode, s_left, s_down, screen);
     SNIFF_ERRORS("after ViewportScene");

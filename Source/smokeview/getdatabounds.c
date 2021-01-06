@@ -8,56 +8,52 @@
 
 /* ------------------ GetPartFileBounds ------------------------ */
 
-void GetPartFileBounds(char *file, float **valminptr, float **valmaxptr, int *nfileboundsptr){
+int GetPartFileBounds(char *file, float *valmin, float *valmax){
   FILE *stream;
-  int nfilebounds = 0, nfilebounds_alloc = 0;
-  float *valmin = NULL, *valmax = NULL;
   int i;
 
-  if(file==NULL||strlen(file)==0)return;
+  if(file==NULL||strlen(file)==0)return 0;
   stream = fopen(file, "r");
-  if(stream==NULL)return;
+  if(stream==NULL)return 0;
 
   while(!feof(stream)){
     char buffer[255];
     float time;
+    int class_index, nclasses;
 
     CheckMemory;
     if(fgets(buffer, 255, stream)==NULL)break;
-    sscanf(buffer, "%f", &time);
+    sscanf(buffer, "%f %i", &time, &nclasses);
 
-    if(fgets(buffer, 255, stream)==NULL)break;
-    sscanf(buffer, "%i", &nfilebounds);
-    if(nfilebounds>0&&valmin==NULL){
-      NewMemory((void **)&valmin, nfilebounds*sizeof(float));
-      NewMemory((void **)&valmax, nfilebounds*sizeof(float));
-      nfilebounds_alloc = nfilebounds;
-      for(i = 0; i<nfilebounds; i++){
-        valmin[i] = 1.0;
-        valmax[i] = 0.0;
-      }
-    }
-    for(i = 0; i<nfilebounds; i++){
-      float vmin, vmax;
+    for(class_index = 0; class_index<nclasses; class_index++){
+      int nfilebounds;
 
       if(fgets(buffer, 255, stream)==NULL)break;
-      sscanf(buffer, "%f %f", &vmin, &vmax);
-      if(i<nfilebounds_alloc&&vmin<=vmax){
-        if(valmin[i]>valmax[i]){
-          valmin[i] = vmin;
-          valmax[i] = vmax;
-        }
-        else{
-          valmin[i] = MIN(vmin, valmin[i]);
-          valmax[i] = MAX(vmax, valmax[i]);
+      sscanf(buffer, "%i", &nfilebounds);
+
+      for(i = 0; i<nfilebounds; i++){
+        float vmin, vmax;
+        int prop_index;
+
+        if(fgets(buffer, 255, stream)==NULL)break;
+        sscanf(buffer, "%f %f", &vmin, &vmax);
+
+        prop_index = GetPartPropIndex(class_index, i+2);
+        if(vmin<=vmax){
+          if(valmin[prop_index]>valmax[prop_index]){
+            valmin[prop_index] = vmin;
+            valmax[prop_index] = vmax;
+          }
+          else{
+            valmin[prop_index] = MIN(vmin, valmin[prop_index]);
+            valmax[prop_index] = MAX(vmax, valmax[prop_index]);
+          }
         }
       }
     }
   }
   fclose(stream);
-  *valminptr = valmin;
-  *valmaxptr = valmax;
-  *nfileboundsptr = nfilebounds_alloc;
+  return 1;
 }
 
 /* ------------------ GetGlobalPartBounds ------------------------ */
@@ -65,72 +61,126 @@ void GetPartFileBounds(char *file, float **valminptr, float **valmaxptr, int *nf
 int GetGlobalPartBounds(int flag){
   int i;
   float *partmins = NULL, *partmaxs = NULL;
-  int npartbounds = 0;
   int nloaded_files = 0;
 
-  npartbounds = -1;
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
+    int j;
 
     parti = partinfo+i;
     if(parti->loaded==1)nloaded_files++;
-    GetPartFileBounds(parti->bound_file, &(parti->file_min), &(parti->file_max), &(parti->nfilebounds));
-    if(parti->nfilebounds>0){
-      if(npartbounds==-1){
-        npartbounds = parti->nfilebounds;
-      }
-      else{
-        npartbounds = MIN(npartbounds, parti->nfilebounds);
+
+    if(npart5prop>0){
+      if(parti->valmin_fds==NULL)NewMemory((void **)&parti->valmin_fds, npart5prop*sizeof(float));
+      if(parti->valmax_fds==NULL)NewMemory((void **)&parti->valmax_fds, npart5prop*sizeof(float));
+      if(parti->valmin_smv==NULL)NewMemory((void **)&parti->valmin_smv, npart5prop*sizeof(float));
+      if(parti->valmax_smv==NULL)NewMemory((void **)&parti->valmax_smv, npart5prop*sizeof(float));
+      for(j = 0; j<npart5prop; j++){
+        parti->valmin_fds[j] = 1.0;
+        parti->valmax_fds[j] = 0.0;
+        parti->valmin_smv[j] = 1.0;
+        parti->valmax_smv[j] = 0.0;
       }
     }
+    parti->have_bound_file = GetPartFileBounds(parti->bound_file, parti->valmin_fds, parti->valmax_fds);
   }
-  if(npartbounds<0)npartbounds = 0;
-  if(npartbounds>0){
-    NewMemory((void **)&partmins, npartbounds*sizeof(float));
-    NewMemory((void **)&partmaxs, npartbounds*sizeof(float));
-    for(i = 0; i<npartbounds; i++){
-      partmins[i] = 1.0;
-      partmaxs[i] = 0.0;
-    }
-    for(i = 0; i<npartinfo; i++){
-      partdata *parti;
-      int j;
-      float *fmin, *fmax;
+  if(npart5prop>0){
+    NewMemory((void **)&partmins, npart5prop*sizeof(float));
+    NewMemory((void **)&partmaxs, npart5prop*sizeof(float));
+  }
+  for(i = 0; i<npart5prop; i++){
+    partmins[i] = 1.0;
+    partmaxs[i] = 0.0;
+  }
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+    int j;
+    float *valmin_fds, *valmax_fds;
 
-
-      parti = partinfo+i;
-      if(flag==1&&parti->loaded==0)continue;
-      fmin = parti->file_min;
-      fmax = parti->file_max;
-      for(j = 0; j<npartbounds; j++){
-        if(fmin[j]<=fmax[j]){
-          if(partmins[j]>partmaxs[j]){
-            partmins[j] = fmin[j];
-            partmaxs[j] = fmax[j];
-          }
-          else{
-            partmins[j] = MIN(fmin[j], partmins[j]);
-            partmaxs[j] = MAX(fmax[j], partmaxs[j]);
-          }
+    parti = partinfo+i;
+    if(flag==LOADED_FILES&&parti->loaded==0)continue;
+    valmin_fds = parti->valmin_fds;
+    valmax_fds = parti->valmax_fds;
+    for(j = 0; j<npart5prop; j++){
+      if(valmin_fds[j]<=valmax_fds[j]){
+        if(partmins[j]>partmaxs[j]){
+          partmins[j] = valmin_fds[j];
+          partmaxs[j] = valmax_fds[j];
+        }
+        else{
+          partmins[j] = MIN(valmin_fds[j], partmins[j]);
+          partmaxs[j] = MAX(valmax_fds[j], partmaxs[j]);
         }
       }
     }
   }
   for(i = 1; i<npart5prop; i++){
-    if(i-1>npartbounds)break;
-    if(flag==0){
-      part5propinfo[i].user_min = partmins[i-1];
-      part5propinfo[i].user_max = partmaxs[i-1];
-      part5propinfo[i].dlg_global_valmin = partmins[i-1];
-      part5propinfo[i].dlg_global_valmax = partmaxs[i-1];
+    if(flag==ALL_FILES){
+      part5propinfo[i].user_min          = partmins[i];
+      part5propinfo[i].dlg_global_valmin = partmins[i];
+      part5propinfo[i].user_max          = partmaxs[i];
+      part5propinfo[i].dlg_global_valmax = partmaxs[i];
     }
-#ifdef pp_NEWBOUND_DIALOG
-    else{
-      part5propinfo[i].dlg_loaded_valmin = partmins[i-1];
-      part5propinfo[i].dlg_loaded_valmax = partmaxs[i-1];
-    }
-#endif
   }
+#ifdef pp_CPPBOUND_DIALOG
+  npartbounds_cpp = npart5prop;
+  if(npartbounds_cpp>0){
+    NewMemory((void **)&partbounds_cpp, npartbounds_cpp*sizeof(cpp_boundsdata));
+    for(i = 0; i<npartbounds_cpp; i++){
+      cpp_boundsdata *boundscppi;
+      float valmin, valmax;
+
+      boundscppi = partbounds_cpp+i;
+      strcpy(boundscppi->label, part5propinfo[i].label->shortlabel);
+      {
+        char *unit;
+
+        unit = part5propinfo[i].label->unit;
+        if(unit!=NULL){
+          int len;
+
+          len = strlen(unit);
+          NewMemory((void **)&boundscppi->unit, len+1);
+          strcpy(boundscppi->unit, unit);
+        }
+        else{
+          NewMemory((void **)&boundscppi->unit, 2);
+          strcpy(boundscppi->unit, "");
+        }
+      }
+      
+      boundscppi->cache = cache_part_data;
+      boundscppi->set_valtype = 0;
+      if(i==0){
+        valmin = 0.0;
+        valmax = 1.0;
+      }
+      else{
+        valmin = part5propinfo[i].dlg_global_valmin;
+        valmax = part5propinfo[i].dlg_global_valmax;
+      }
+
+      boundscppi->set_valmin = 0;
+      boundscppi->valmin[BOUND_SET_MIN]        = valmin;
+      boundscppi->valmin[BOUND_LOADED_MIN]     = valmin;
+      boundscppi->valmin[BOUND_GLOBAL_MIN]     = valmin;
+      boundscppi->valmin[BOUND_PERCENTILE_MIN] = valmin;
+
+      boundscppi->valmax[BOUND_SET_MAX]        = valmax;
+      boundscppi->valmax[BOUND_LOADED_MAX]     = valmax;
+      boundscppi->valmax[BOUND_GLOBAL_MAX]     = valmax;
+      boundscppi->valmax[BOUND_PERCENTILE_MAX] = valmax;
+      boundscppi->set_valmax = 0;
+
+      boundscppi->set_chopmin = 0;
+      boundscppi->set_chopmax = 0;
+      boundscppi->chopmin     = valmin;
+      boundscppi->chopmax     = valmax;
+
+      boundscppi->hist = NULL;
+    }
+  }
+#endif
   FREEMEMORY(partmins);
   FREEMEMORY(partmaxs);
   return nloaded_files;
@@ -150,9 +200,21 @@ boundsdata *GetPatchBoundsInfo(char *shortlabel){
   return NULL;
 }
 
+/* ------------------ WriteFileBounds ------------------------ */
+
+int WriteFileBounds(char *file, float valmin, float valmax){
+  FILE *stream;
+
+  stream = fopen(file, "w");
+  if(stream==NULL)return 0;
+  fprintf(stream," %f %f %f", 0.0, valmin, valmax);
+  fclose(stream);
+  return 1;
+}
+
 /* ------------------ GetFileBounds ------------------------ */
 
-void GetFileBounds(char *file, float *valmin, float *valmax){
+int GetFileBounds(char *file, float *valmin, float *valmax){
   FILE *stream;
   char buffer[255];
   float t, vmin, vmax;
@@ -162,7 +224,7 @@ void GetFileBounds(char *file, float *valmin, float *valmax){
     *valmin = 1.0;
     *valmax = 0.0;
     if(stream!=NULL)fclose(stream);
-    return;
+    return 0;
   }
   sscanf(buffer, " %f %f %f", &t, &vmin, &vmax);
   *valmin = vmin;
@@ -174,6 +236,7 @@ void GetFileBounds(char *file, float *valmin, float *valmax){
     *valmax = MAX(*valmax, vmax);
   }
   fclose(stream);
+  return 1;
 }
 
 /* ------------------ GetGlobalPatchBounds ------------------------ */
@@ -194,10 +257,12 @@ void GetGlobalPatchBounds(void){
     boundsdata *boundi;
 
     patchi = patchinfo + i;
-    GetFileBounds(patchi->bound_file, &valmin, &valmax);
+    if(GetFileBounds(patchi->bound_file, &valmin, &valmax)==1){
+      patchi->have_bound_file = YES;
+    }
     if(valmin > valmax)continue;
-    patchi->file_min = valmin;
-    patchi->file_max = valmax;
+    patchi->valmin_fds = valmin;
+    patchi->valmax_fds = valmax;
     boundi = GetPatchBoundsInfo(patchi->label.shortlabel);
     if(boundi == NULL)continue;
     if(boundi->dlg_global_valmin > boundi->dlg_global_valmax){
@@ -226,6 +291,50 @@ void GetGlobalPatchBounds(void){
       }
     }
   }
+
+#ifdef pp_CPPBOUND_DIALOG
+  npatchbounds_cpp = npatchbounds;
+  if(npatchbounds_cpp>0){
+    NewMemory((void **)&patchbounds_cpp, npatchbounds_cpp*sizeof(cpp_boundsdata));
+    for(i = 0; i<npatchbounds_cpp; i++){
+      cpp_boundsdata *boundscppi;
+      boundsdata *boundi;
+
+      boundscppi = patchbounds_cpp+i;
+      boundi = patchbounds+i;
+      strcpy(boundscppi->label, boundi->shortlabel);
+      {
+        int len;
+
+        len = strlen(boundi->label->unit);
+        NewMemory((void **)&boundscppi->unit, len+1);
+        strcpy(boundscppi->unit, boundi->label->unit);
+      }
+      
+      boundscppi->cache = cache_boundary_data;
+      boundscppi->set_valtype = 0;
+
+      boundscppi->set_valmin = 0;
+      boundscppi->valmin[BOUND_SET_MIN]        = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_LOADED_MIN]     = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_GLOBAL_MIN]     = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_PERCENTILE_MIN] = boundi->dlg_global_valmin;
+
+      boundscppi->valmax[BOUND_SET_MAX]        = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_LOADED_MAX]     = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_GLOBAL_MAX]     = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
+      boundscppi->set_valmax = 0;
+
+      boundscppi->set_chopmin = boundi->setchopmin;
+      boundscppi->set_chopmax = boundi->setchopmax;
+      boundscppi->chopmin     = boundi->chopmin;
+      boundscppi->chopmax     = boundi->chopmax;
+
+      boundscppi->hist = NULL;
+    }
+  }
+#endif
 }
 
 /* ------------------ GetPlot3DFileBounds ------------------------ */
@@ -264,7 +373,7 @@ void GetGlobalPlot3DBounds(void){
     plot3ddata *plot3di;
 
     plot3di = plot3dinfo+i;
-    GetPlot3DFileBounds(plot3di->bound_file, plot3di->file_min, plot3di->file_max);
+    GetPlot3DFileBounds(plot3di->bound_file, plot3di->valmin_fds, plot3di->valmax_fds);
   }
   for(i = 0; i<MAXPLOT3DVARS; i++){
     p3min_all[i] = 1.0;
@@ -273,20 +382,20 @@ void GetGlobalPlot3DBounds(void){
   for(i = 0; i<nplot3dinfo; i++){
     plot3ddata *plot3di;
     int j;
-    float *file_min, *file_max;
+    float *valmin_fds, *valmax_fds;
 
     plot3di = plot3dinfo+i;
-    file_min = plot3di->file_min;
-    file_max = plot3di->file_max;
+    valmin_fds = plot3di->valmin_fds;
+    valmax_fds = plot3di->valmax_fds;
     for(j = 0; j<MAXPLOT3DVARS; j++){
-      if(file_min[j]<=file_max[j]){
+      if(valmin_fds[j]<=valmax_fds[j]){
         if(p3min_all[j]>p3max_all[j]){
-          p3min_all[j] = file_min[j];
-          p3max_all[j] = file_max[j];
+          p3min_all[j] = valmin_fds[j];
+          p3max_all[j] = valmax_fds[j];
         }
         else {
-          p3min_all[j] = MIN(file_min[j], p3min_all[j]);
-          p3max_all[j] = MAX(file_max[j], p3max_all[j]);
+          p3min_all[j] = MIN(valmin_fds[j], p3min_all[j]);
+          p3max_all[j] = MAX(valmax_fds[j], p3max_all[j]);
         }
       }
     }
@@ -295,6 +404,45 @@ void GetGlobalPlot3DBounds(void){
     p3min_global[i] = p3min_all[i];
     p3max_global[i] = p3max_all[i];
   }
+
+#ifdef pp_CPPBOUND_DIALOG
+  nplot3dbounds_cpp = 0;
+  if(nplot3dinfo>0){
+    int i;
+
+    nplot3dbounds_cpp = MAXPLOT3DVARS;
+    if(plot3dbounds_cpp==NULL)NewMemory((void **)&plot3dbounds_cpp, nplot3dbounds_cpp*sizeof(cpp_boundsdata));
+    for(i = 0; i<nplot3dbounds_cpp; i++){
+      cpp_boundsdata *boundscppi;
+
+      boundscppi = plot3dbounds_cpp+i;
+      strcpy(boundscppi->label, plot3dinfo->label[i].shortlabel);
+      strcpy(boundscppi->unit, plot3dinfo->label[i].unit);
+
+      boundscppi->cache = cache_plot3d_data;
+      boundscppi->set_valtype = 0;
+
+      boundscppi->set_valmin = 0;
+      boundscppi->valmin[BOUND_SET_MIN]        = p3min_global[i];
+      boundscppi->valmin[BOUND_LOADED_MIN]     = p3min_global[i];
+      boundscppi->valmin[BOUND_GLOBAL_MIN]     = p3min_global[i];
+      boundscppi->valmin[BOUND_PERCENTILE_MIN] = p3min_global[i];
+
+      boundscppi->set_valmax = 0;
+      boundscppi->valmax[BOUND_SET_MAX]        = p3max_global[i];
+      boundscppi->valmax[BOUND_LOADED_MAX]     = p3max_global[i];
+      boundscppi->valmax[BOUND_GLOBAL_MAX]     = p3max_global[i];
+      boundscppi->valmax[BOUND_PERCENTILE_MAX] = p3max_global[i];
+
+      boundscppi->set_chopmin = 0;
+      boundscppi->set_chopmax = 0;
+      boundscppi->chopmin = p3max_global[0];
+      boundscppi->chopmax = p3max_global[0];
+
+      boundscppi->hist = NULL;
+    }
+  }
+#endif
 }
 
 /* ------------------ GetLoadedPlot3dBounds ------------------------ */
@@ -334,47 +482,15 @@ void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded
     for(j = 0; j<6; j++){
       if(compute_loaded!=NULL&&compute_loaded[j]!=BOUNDS_LOADED)continue;
       if(loaded_min[j]>loaded_max[j]){
-        loaded_min[j] = plot3di->file_min[j];
-        loaded_max[j] = plot3di->file_max[j];
+        loaded_min[j] = plot3di->valmin_fds[j];
+        loaded_max[j] = plot3di->valmax_fds[j];
       }
       else{
-        loaded_min[j] = MIN(plot3di->file_min[j], loaded_min[j]);
-        loaded_max[j] = MAX(plot3di->file_max[j], loaded_max[j]);
+        loaded_min[j] = MIN(plot3di->valmin_fds[j], loaded_min[j]);
+        loaded_max[j] = MAX(plot3di->valmax_fds[j], loaded_max[j]);
       }
     }
   }
-}
-
-
-#ifdef pp_NEWBOUND_DIALOG
-
-/* ------------------ GetLoadedPartBounds ------------------------ */
-
-void GetLoadedPartBounds(void){
-  if(GetGlobalPartBounds(1)==0){
-    int i;
-
-    printf("*** loaded particle bounds not available, using global bounds\n");
-    GetGlobalPartBounds(0);
-    for(i=1; i<npart5prop; i++){
-      part5propinfo[i].dlg_loaded_valmin = part5propinfo[i].dlg_global_valmin;
-      part5propinfo[i].dlg_loaded_valmax = part5propinfo[i].dlg_global_valmax;
-    }
-  }
-}
-
-/* ------------------ GetSliceBoundsInfo ------------------------ */
-
-boundsdata *GetSliceBoundsInfo(char *shortlabel){
-  int i;
-
-  for(i = 0; i<nslicebounds; i++){
-    boundsdata *boundi;
-
-    boundi = slicebounds+i;
-    if(strcmp(boundi->shortlabel, shortlabel)==0)return boundi;
-  }
-  return NULL;
 }
 
 /* ------------------ GetGlobalSliceBounds ------------------------ */
@@ -396,10 +512,12 @@ void GetGlobalSliceBounds(void){
 
     slicei = sliceinfo+i;
     if(slicei->is_fed==1)continue;
-    GetFileBounds(slicei->bound_file, &valmin, &valmax);
+    if(GetFileBounds(slicei->bound_file, &valmin, &valmax)==1){
+      slicei->have_bound_file = YES;
+    }
     if(valmin>valmax)continue;
-    slicei->file_min = valmin;
-    slicei->file_max = valmax;
+    slicei->valmin_fds = valmin;
+    slicei->valmax_fds = valmax;
     boundi = GetSliceBoundsInfo(slicei->label.shortlabel);
     if(boundi==NULL)continue;
     if(boundi->dlg_global_valmin>boundi->dlg_global_valmax){
@@ -418,55 +536,64 @@ void GetGlobalSliceBounds(void){
     boundi->dlg_valmin = boundi->dlg_global_valmin;
     boundi->dlg_valmax = boundi->dlg_global_valmax;
   }
+#ifdef pp_CPPBOUND_DIALOG
+  nslicebounds_cpp = nslicebounds;
+  if(nslicebounds_cpp>0){
+    NewMemory((void **)&slicebounds_cpp, nslicebounds_cpp*sizeof(cpp_boundsdata));
+    for(i = 0; i<nslicebounds_cpp; i++){
+      cpp_boundsdata *boundscppi;
+      boundsdata *boundi;
 
-}
+      boundscppi = slicebounds_cpp+i;
+      boundi = slicebounds+i;
+      strcpy(boundscppi->label, boundi->shortlabel);
+      {
+        int len;
 
-/* ------------------ GetLoadedSliceBounds ------------------------ */
+        len = strlen(boundi->label->unit);
+        NewMemory((void **)&boundscppi->unit, len+1);
+        strcpy(boundscppi->unit, boundi->label->unit);
+      }
+      
+      boundscppi->cache = cache_slice_data;
+      boundscppi->set_valtype = 0;
 
-void GetLoadedSliceBounds(char *label, float *loaded_min, float *loaded_max){
-  int i;
+      boundscppi->set_valmin = 0;
+      boundscppi->valmin[BOUND_SET_MIN]        = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_LOADED_MIN]     = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_GLOBAL_MIN]     = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_PERCENTILE_MIN] = boundi->dlg_global_valmin;
 
-  *loaded_min = 1.0;
-  *loaded_max = 0.0;
-  for(i = 0; i < nsliceinfo; i++){
-    slicedata *slicei;
+      boundscppi->set_valmax = 0;
+      boundscppi->valmax[BOUND_SET_MAX]        = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_LOADED_MAX]     = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_GLOBAL_MAX]     = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
 
-    slicei = sliceinfo + i;
-    if(slicei->loaded == 0 || strcmp(slicei->label.shortlabel, label) != 0)continue;
-    if(*loaded_min > * loaded_max){
-      *loaded_min = slicei->file_min;
-      *loaded_max = slicei->file_max;
-    }
-    else{
-      *loaded_min = MIN(*loaded_min, slicei->file_min);
-      *loaded_max = MAX(*loaded_max, slicei->file_max);
-    }
-  }
-}
+      boundscppi->set_chopmin = boundi->setchopmin;
+      boundscppi->set_chopmax = boundi->setchopmax;
+      boundscppi->chopmin     = boundi->chopmin;
+      boundscppi->chopmax     = boundi->chopmax;
 
-/* ------------------ GetLoadedPatchBounds ------------------------ */
-
-void GetLoadedPatchBounds(char* label, float* loaded_min, float* loaded_max) {
-  int i;
-
-  *loaded_min = 1.0;
-  *loaded_max = 0.0;
-  for (i = 0; i < npatchinfo; i++) {
-    patchdata* patchi;
-
-    patchi = patchinfo + i;
-    if (patchi->loaded == 0 || strcmp(patchi->label.shortlabel, label) != 0)continue;
-    if (*loaded_min > * loaded_max) {
-      *loaded_min = patchi->file_min;
-      *loaded_max = patchi->file_max;
-    }
-    else {
-      *loaded_min = MIN(*loaded_min, patchi->file_min);
-      *loaded_max = MAX(*loaded_max, patchi->file_max);
+      boundscppi->hist = NULL;
     }
   }
-}
 #endif
+}
+
+/* ------------------ GetSliceBoundsInfo ------------------------ */
+
+boundsdata *GetSliceBoundsInfo(char *shortlabel){
+  int i;
+
+  for(i = 0; i<nslicebounds; i++){
+    boundsdata *boundi;
+
+    boundi = slicebounds+i;
+    if(strcmp(boundi->shortlabel, shortlabel)==0)return boundi;
+  }
+  return NULL;
+}
 
 /* ------------------ AdjustPart5Chops ------------------------ */
 
@@ -662,7 +789,9 @@ void PrintPartLoadSummary(int option_arg,int type_arg){
   if(option_arg==1||(nsize_local<npartthread_ids&&nsize_local>0)){
     int isize_local;
 
+#ifdef pp_PART_SIZE
     if(type_arg==PART_SIZING)printf("sizing: ");
+#endif
     if(type_arg==PART_LOADING)printf("loading: ");
     isize_local = 0;
     for(j = 0; j<npartinfo; j++){
@@ -674,16 +803,20 @@ void PrintPartLoadSummary(int option_arg,int type_arg){
       if(type_arg==PART_SIZING&&partj->boundstatus==PART_BOUND_COMPUTING)doit = 1;
       if(type_arg==PART_LOADING&&partj->loadstatus==FILE_LOADING)doit = 1;
       if(doit==1){
+#ifdef pp_PART_SIZE
         printf("%s", partj->reg_file);
+#endif
         if(isize_local!=nsize_local-1)printf(", ");
         isize_local++;
       }
     }
+#ifdef pp_PART_SIZE
     printf("\n");
+#endif
   }
 }
 
-/* ------------------ GetPartBounds ------------------------ */
+/* ------------------ GetAllPartBounds ------------------------ */
 
 void GetAllPartBounds(void){
   int i;

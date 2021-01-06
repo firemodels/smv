@@ -172,6 +172,10 @@ void   GLUI_Panel::update_size( void )
   if ( name[0] != '\0' AND int_val == GLUI_PANEL_EMBOSSED ) {
     this->y_off_top = GLUI_YOFF + 8;
   }
+  else if(int_val==GLUI_PANEL_NONE) {
+    this->y_off_top = 0;
+    this->y_off_bot = 0;
+  }
   else {
     this->y_off_top = GLUI_YOFF;
   }

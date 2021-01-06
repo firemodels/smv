@@ -2,27 +2,27 @@
 
 This directory contains scripts for generating images and animations of FDS cases.  It also contains utility scripts used by other scripts in this repo, scripts for setting up the graphics environment for the image generating scripts and for identifying Git and compiler versions when building smoke iew. These notes are preliminary, a work in progress.
 
-## fds2html.sh
+## slice2html.sh
 
-This script is used to generate an HTML page from a casename.smv, slice and boundary files. To use, add an alias to your startup file, typically .bashrc (change the ... in the first part of the path to match your repo location):
+This script is used to generate an HTML page from a smv file. To use, add an alias to your startup file, typically .bashrc (change the ... in the first part of the path to match your repo location):
 
-```alias fds2html.sh=".../smv/Utilities/Scripts/fds2html.sh"```
+```alias slice2html.sh=".../smv/Utilities/Scripts/slice2html.sh"```
 
-Then type `fds2html casename` at a command line. (add more description)
+Then type `slice2html casename` in a command shell.
 
-## fds2mp4.sh
+## slice2mp4.sh
 
-This script is used to generate an MP4 animation file from an FDS slice file.  It is run on a Linux system with a queing system. To use:
+This script is used to generate an MP4 animation file from a slice file.  It is run on a Linux system with a queing system. To use:
 
 1.  add the alias
 
-```alias fds2mp4=".../smv/Utilities/Scripts/fds2mp4.sh"```
+```alias slice2mp4=".../smv/Utilities/Scripts/slice2mp4.sh"```
 
-to your startup file, typically .bashrc (change the ... in the first part to match your repo location).
+to your startup file, typically .bashrc .  Change the "..." in the first part to match your repo location.
 
-2.  Either use smokeview you built at smv/Build/smokeview/intel_linux_64 or use fds2mp4 with the -i option to use the Linux Smokeview installed with the latest [Smokeview Linux installer](https://drive.google.com/drive/folders/0B_wB1pJL2bFQc1F4cjJWY2duWTA?usp=sharing)
+2.  Either use smokeview you built at smv/Build/smokeview/intel_linux_64 or use slice2mp4 with the -i option to use the smokeview installed on  your system.
 
-3.  cd to a directory containing your case and type `fds2mp4 casename` .  You will see a list of slice files for this case such as
+3.  cd to a directory containing your case and type `slice2mp4 casename` .  You will see a list of slice files for this case such as
 ```
 index   quantity                      dir       position
     1   U-VELOCITY                      3     255.249954
@@ -36,30 +36,42 @@ index   quantity                      dir       position
     9   VELOCITY(terrain)               3           25.0
    ```
 
-After selecting a slice, index 9 in this case, you will see a menu for selecting various options such as scene viewpoints,  how images are generated (number of processes, what queue to use) and whether to generate images and an animation or just images. `fds2mp4` creates a script (casename_slice_9.sh in this case) which may be customized and run later.
+After selecting a slice, index 9 in this example, you will see a menu for selecting various options such as scene viewpoints,  
+how images are generated (number of processes, what queue to use) and an option to generate the animation.
+`slice2mp4` creates a bash script and a smokeview script used by to generate the mp4 animation.
 
 ```
-slice quantity:  LEVEL SET VALUE(terrain)
-     processes: 20
-         queue: batch2
-       mp4 dir: /var/www/html/gforney
-       PNG dir: .
-     smokeview: /home/gforney/FireModels_fork/smv/Build/smokeview/intel_linux_64/smokeview_linux_64
-       qsmv.sh: /home/gforney/FireModels_fork/smv/Utilities/Scripts/qsmv.sh
-     viewpoint:  view 1
-  image script: cogoleto_fire_2019_01_slice_6.sh
-         email: gforney@gmail.com
+          slice: TEMPERATURE/Y=1.6
+         bounds: default
+      color bar: show
+       time bar: show
+      font size: small
+      viewpoint: VIEWYMIN
 
-a - define directory containing animation
-p - define number of processes
-q - define queue
-r - define directory containing rendered images
-v - select viewpoint
-m - select email address
-1 - generate PNG images
-2 - generate PNG images and an MP4 animation
+        PNG dir: .
+        mp4 dir: /var/www/html/gforney
+      smokeview: /home/gforney/FireModels_fork/smv/Build/smokeview/intel_linux_64/smokeview_linux_64
+      processes: 32, node sharing on
+          queue: batch
+          email: gforney@gmail.com
+
+s - select slice
+b - set bounds
+C - hide color bar
+T - hide time bar
+F - toggle font size
+v - set viewpoint
+
+r - set PNG dir
+a - set mp4 dir
+m - set email address
+
+p - set number of processes
+S - toggle node sharing
+q - set queue
+
+1 - create MP4 animation
 x - exit
-option:
 ```
 
 Select the queue, number of processes and an email address to send the animation.  Then to generate an animation, select option 2.
@@ -106,21 +118,24 @@ runs smokeview on the case casename.smv using the script casename.ssf
 
 options:
  -e exe - full path of smokeview used to run case
-    [default: .../smv/Build/smokeview/intel_linux_64/smokeview_intel_linux_64]
+    [default: /home/gforney/FireModels_fork/smv/Build/smokeview/intel_linux_64/smokeview_intel_linux_64]
  -h   - show commonly used options
  -H   - show all options
- -p n - run n instances of smokeview each instance rendering 1/n'th of the total images
+ -P n - run n instances of smokeview each instance rendering 1/n'th of the total images
         only use this option if you have a RENDERALL keyword in your .ssf smokeview script
  -q q - name of queue. [default: batch]
- -v   - output generated script
+ -v   - output generated script (do not run)
 Other options:
  -b     - bin directory
  -c     - smokeview script file [default: casename.ssf]
  -C com - execute the command com
  -d dir - specify directory where the case is found [default: .]
+ -e exe - execute the program exe
  -i     - use installed smokeview
  -j p   - job prefix
+ -N n   - reserve n cores [default: 8]
  -r     - redirect output
  -s     - first frame rendered [default: 1]
  -S     - interval between frames [default: 1]
+ -T     - share nodes
 ```

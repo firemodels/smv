@@ -1680,7 +1680,7 @@ real :: dummy
 error3 = 0
 
 dummy = 0.0
-open(newunit=u_out,file=trim(outfile),form="unformatted",action="write",iostat=error3)
+open(newunit=u_out,file=outfile,form="unformatted",action="write",iostat=error3)
 if(error3.ne.0)return
 
 write(u_out,iostat=error3)nx, ny, nz

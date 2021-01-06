@@ -12,6 +12,190 @@
 
 #include "smokeviewvars.h"
 
+#ifdef pp_CPPBOUND_DIALOG
+#define DENORMAL(x,i, n, min,max) ((min) + (i)*((max)-(min))/(n))
+#define NORMALH(x,min,max) (((x)-(min))/((max)-(min))   )
+  /* ------------------ DrawHistogram ------------------------ */
+
+#define MAXN 201
+void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float gmin, float gmax, int ndigits){
+  float x[MAXN], y[MAXN], ymax, *buckets, valmin_normalized, valmax_normalized;
+  int index[MAXN+1], i, n = MAXN;
+  float blue[] = {0.0,0.0,1.0}, *color, *color_old = NULL, median_normalized;
+  char cmin[20], cmedian[20], cmax[20], cvalmin[20], cvalmax[20];
+  float cmin_width, cmax_width, median_width, cvalmin_width, cvalmax_width;
+  float nmin, nmax, hmin, hmax;
+
+  if(gmin<gmax){
+    nmin = gmin;
+    nmax = gmax;
+  }
+  else{
+    nmin = histogram->val_min;
+    nmax = histogram->val_max;
+  }
+  hmin = histogram->val_min;
+  hmax = histogram->val_max;
+
+  if(histogram==NULL||histogram->buckets==NULL||histogram->defined==0)return;
+  if(histogram->val_max>histogram->val_min){
+    valmin_normalized = NORMALH(valmin, nmin, nmax);
+    valmax_normalized = NORMALH(valmax, nmin, nmax);
+    median_normalized = NORMALH(histogram->median, nmin, nmax);
+  }
+  Float2String(cmin, gmin, ndigits);
+  Float2String(cmedian, histogram->median, ndigits);
+  Float2String(cmax, gmax, ndigits);
+  Float2String(cvalmin, valmin, ndigits);
+  Float2String(cvalmax, valmax, ndigits);
+  cmin_width = (float)GetStringWidth(cmin)/screenWidth;
+  cmax_width = (float)GetStringWidth(cmax)/screenWidth;
+  median_width = (float)GetStringWidth(cmedian)/screenWidth;
+  cvalmin_width = (float)GetStringWidth(cvalmin)/screenWidth;
+  cvalmax_width = (float)GetStringWidth(cvalmax)/screenWidth;
+
+  for(i = 0; i<n; i++){
+    x[i] = DENORMAL((float)i*(float)(n-1), i, n-1, hmin, hmax);
+    x[i] = NORMALH(x[i], nmin, nmax);
+    index[i] = (float)i*(float)histogram->nbuckets/(float)n;
+  }
+  index[n] = histogram->nbuckets;
+
+  buckets = histogram->buckets;
+  ymax = 0.0;
+  for(i = 0; i<n; i++){
+    int j;
+
+    y[i] = 0.0;
+    for(j = index[i]; j<index[i+1]; j++){
+      y[i] += buckets[j];
+    }
+    ymax = MAX(ymax, y[i]);
+  }
+  for(i = 0; i<n; i++){
+    y[i] /= ymax;
+  }
+
+  glPushMatrix();
+  glBegin(GL_TRIANGLES);
+  for(i = 0; i<n-1; i++){
+    float x1, x2;
+
+    x1 = x[i];
+    x2 = x[i+1];
+    if(x1<0.0||x2>1.0)continue;
+
+    if(valmin_normalized<=valmax_normalized&&(x1<valmin_normalized||x2>valmax_normalized)){
+      color = blue;
+    }
+    else{
+      color = foregroundcolor;
+    }
+    if(color_old!=color){
+      glColor3fv(color);
+      color_old = color;
+    }
+
+    glVertex2f(x1, 0.0);
+    glVertex2f(x2, 0.0);
+    glVertex2f(x2, y[i+1]);
+
+    glVertex2f(x1, 0.0);
+    glVertex2f(x2, y[i+1]);
+    glVertex2f(x2, 0.0);
+
+    glVertex2f(x1, 0.0);
+    glVertex2f(x2, y[i+1]);
+    glVertex2f(x1, y[i]);
+
+    glVertex2f(x1, 0.0);
+    glVertex2f(x1, y[i]);
+    glVertex2f(x2, y[i+1]);
+  }
+  glEnd();
+
+#define DZHIST1 0.025
+
+  glColor3fv(foregroundcolor);
+  glBegin(GL_LINES);
+  glVertex2f(0.0, 0.0);
+  glVertex2f(0.0, -0.02);
+  glVertex2f(median_normalized, 0.0);
+  glVertex2f(median_normalized, -DZHIST1);
+  glVertex2f(1.0, 0.0);
+  glVertex2f(1.0, -DZHIST1);
+
+  glVertex2f(0.0, 0.0);
+  glVertex2f(1.0, 0.0);
+
+  glVertex2f(1.0, 0.0);
+  glVertex2f(1.0, 1.0);
+
+  glVertex2f(1.0, 1.0);
+  glVertex2f(0.0, 1.0);
+
+  glVertex2f(0.0, 1.0);
+  glVertex2f(0.0, 0.0);
+
+  glColor3fv(blue);
+  glVertex2f(valmin_normalized, 0.0);
+  glVertex2f(valmin_normalized, -DZHIST1);
+  glVertex2f(valmax_normalized, 0.0);
+  glVertex2f(valmax_normalized, -DZHIST1);
+ glEnd();
+
+  if(hist_show_labels==1){
+    float text_height;
+
+    text_height = (float)GetFontHeight();
+    text_height += 3.0;
+    text_height /= pixel_dens;
+
+    float offset = -2.0*text_height;
+
+    OutputTextColor(foregroundcolor, -cmin_width/2.0,                                               offset, cmin);
+    OutputTextColor(foregroundcolor, 0.001+MAX(median_normalized-median_width/2.0, cmin_width/2.0), offset, cmedian);
+    OutputTextColor(foregroundcolor, 1.0-cmax_width/2.0,                                            offset, cmax);
+
+    offset -= text_height;
+    OutputTextColor(blue, valmin_normalized-cvalmin_width/2.0, offset, cvalmin);
+    OutputTextColor(blue, valmax_normalized-cvalmax_width/2.0, offset, cvalmax);
+
+    if(histogram_label1!=NULL){
+      offset -= text_height;
+      OutputTextColor(foregroundcolor, -cmin_width/2.0, offset, histogram_label1);
+    }
+    if(histogram_label2!=NULL){
+      offset -= text_height;
+      OutputTextColor(foregroundcolor, -cmin_width/2.0, offset, histogram_label2);
+    }
+  }
+  glPopMatrix();
+}
+#endif
+
+/* ------------------------ GetFontHeight ------------------------- */
+
+int GetFontHeight(void){
+  int height = 0;
+
+  switch(fontindex){
+    case SMALL_FONT:
+      height = 10;
+      break;
+    case LARGE_FONT:
+      height = 18;
+      break;
+    case SCALED_FONT:
+        height = glutStrokeWidth(GLUT_STROKE_ROMAN, 'A');
+      break;
+    default:
+      ASSERT(FFALSE);
+      break;
+  }
+  return height;
+}
+
 /* ------------------ OutputAxisLabels ------------------------ */
 
 void OutputAxisLabels(){
@@ -170,6 +354,35 @@ void OutputLargeText(float x, float y, char *string){
   }
 }
 
+/* ------------------ OutputTextColor ------------------------ */
+
+void OutputTextColor(float *fontcolor, float x, float y, char *string){
+  char *c;
+  float *fcolor;
+
+  fcolor = foregroundcolor;
+  if(fontcolor==NULL){
+    fcolor = foregroundcolor;
+  }
+  else{
+    fcolor = fontcolor;
+  }
+
+  if(string==NULL)return;
+  glColor3fv(fcolor);
+  if(fontindex==SCALED_FONT){
+    ScaleFont2D();
+    OutputSText2(x, y, 0.0, string);
+    return;
+  }
+  else{
+    glRasterPos2f(x, y);
+    for(c = string; *c!='\0'; c++){
+      glutBitmapCharacter(large_font, (unsigned char)*c);
+    }
+  }
+}
+
 /* ------------------ OutputText ------------------------ */
 
 void OutputText(float x, float y, char *string){
@@ -210,15 +423,48 @@ void OutputBarText(float x, float y, const GLfloat *color, char *string){
   }
 }
 
+/* ------------------ WriteLabels ------------------------ */
+
+void WriteLabels(void){
+  labeldata *first_label, *thislabel;
+  FILE *stream = NULL;
+  char quote[2];
+
+  if(event_file_exists==0)return;
+  stream = fopen(event_filename, "w");
+  if(stream==NULL)return;
+
+  first_label = label_first_ptr;
+  strcpy(quote,"\"");
+
+  for(thislabel = first_label->next; thislabel->next!=NULL; thislabel = thislabel->next){
+    float *tstart_stop, *xyz;
+    int *rgblabel;
+
+    tstart_stop = thislabel->tstart_stop;
+    xyz = thislabel->xyz;
+    rgblabel = thislabel->rgb;
+    fprintf(stream, "%f, %f, %f, %f, %f, %i, %i, %i, %s%s%s\n", 
+            tstart_stop[0], tstart_stop[1], 
+            xyz[0], xyz[1], xyz[2], 
+            rgblabel[0], rgblabel[1], rgblabel[2], 
+            quote,TrimFrontBack(thislabel->name),quote
+    );
+  }
+  fclose(stream);
+}
+
 /* ------------------ DrawLabels ------------------------ */
 
 void DrawLabels(void){
-  labeldata *thislabel;
+  labeldata *first_label, *thislabel;
+
+  first_label = label_first_ptr;
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
   glTranslatef(-xbar0,-ybar0,-zbar0);
-  for(thislabel=label_first_ptr->next;thislabel->next!=NULL;thislabel=thislabel->next){
+  for(thislabel=first_label->next;thislabel->next!=NULL;thislabel=thislabel->next){
     float *labelcolor,*tstart_stop,*xyz;
     int drawlabel;
 
@@ -334,12 +580,12 @@ labeldata *LabelGet(char *name){
 void LabelInsertBefore(labeldata *listlabel, labeldata *label){
   labeldata *prev, *next;
 
-  next = listlabel;
-  prev = listlabel->prev;
-  prev->next = label;
+  prev        = listlabel->prev;
+  next        = listlabel;
+  prev->next  = label;
+  next->prev  = label;
   label->prev = prev;
-  next->prev=label;
-  label->next=next;
+  label->next = next;
 }
 
 /* ------------------ LabelDelete ------------------------ */
@@ -385,12 +631,12 @@ void LabelResort(labeldata *label){
 void LabelInsertAfter(labeldata *listlabel, labeldata *label){
   labeldata *prev, *next;
 
-  prev = listlabel;
-  next = listlabel->next;
-  prev->next = label;
+  prev        = listlabel;
+  next        = listlabel->next;
+  prev->next  = label;
+  next->prev  = label;
   label->prev = prev;
-  next->prev=label;
-  label->next=next;
+  label->next = next;
 }
 
 /* ------------------ LabelPrint ------------------------ */

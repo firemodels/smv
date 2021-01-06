@@ -24,10 +24,20 @@ int GetStringWidth(char *string){
     case SMALL_FONT:
       length = strlen(string);
       length *= (288.0/235.0)*glutBitmapWidth(GLUT_BITMAP_HELVETICA_10, 'a');
+#ifdef pp_OSX_HIGHRES
+      if(double_scale==1){
+        length *= 2;
+      }
+#endif
       break;
     case LARGE_FONT:
       length = strlen(string);
       length *= (416.0/423.0)*glutBitmapWidth(GLUT_BITMAP_HELVETICA_18, 'a');
+#ifdef pp_OSX_HIGHRES
+      if(double_scale==1){
+        length *= 2;
+      }
+#endif
       break;
     case SCALED_FONT:
       for(c=string;*c!='\0';c++){
@@ -41,6 +51,209 @@ int GetStringWidth(char *string){
   }
   return length;
 }
+
+/* ------------------ GetColorbarLabelWidth ------------------------ */
+
+void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local, 
+                           int *slice_label_width, int *boundary_label_width, int *part_label_width, int *plot3d_label_width,
+                           int *zone_label_width){
+  *slice_label_width    = 0;
+  *boundary_label_width = 0;
+  *part_label_width     = 0;
+  *plot3d_label_width   = 0;
+  *zone_label_width    = 0;
+
+  if(show_slice_colorbar_local==1){
+    char slicecolorlabel[256];
+    float tttmin, tttmax;
+    boundsdata *sb;
+    float slicerange;
+    int i;
+
+    sb = slicebounds + slicefile_labelindex;
+
+    tttmin = sb->levels256[0];
+    tttmax = sb->levels256[255];
+    slicerange = tttmax - tttmin;
+
+    strcpy(slicecolorlabel, "SLICEA");
+    *slice_label_width = MAX(*slice_label_width, GetStringWidth(slicecolorlabel));
+
+    strcpy(slicecolorlabel, sb->label->unit);
+    strcat(slicecolorlabel, "A");
+    *slice_label_width = MAX(*slice_label_width, GetStringWidth(slicecolorlabel));
+
+    strcpy(slicecolorlabel, sb->label->shortlabel);
+    strcat(slicecolorlabel, "A");
+    *slice_label_width = MAX(*slice_label_width, GetStringWidth(slicecolorlabel));
+
+    for(i = 0; i < nrgb - 1; i++){
+      float val;
+
+      val = tttmin+i*slicerange/(nrgb-2);
+      Float2String(slicecolorlabel, val, ncolorlabel_digits);
+      strcat(slicecolorlabel,"A");
+      *slice_label_width = MAX(*slice_label_width, GetStringWidth(slicecolorlabel));
+    }
+  }
+
+  if(showpatch == 1 && wall_cell_color_flag == 0){
+    float patchrange, tttmin, tttmax;
+    int i;
+    patchdata *patchi;
+    char boundary_colorlabel[256];
+
+    tttmin = boundarylevels256[0];
+    tttmax = boundarylevels256[255];
+    patchrange = tttmax-tttmin;
+
+    patchi = patchinfo+boundarytypes[iboundarytype];
+
+    strcpy(boundary_colorlabel, "BNDRYA");
+    *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
+
+    strcpy(boundary_colorlabel, patchi->label.unit);
+    strcat(boundary_colorlabel, "A");
+    *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
+
+    strcpy(boundary_colorlabel, patchi->label.shortlabel);
+    strcat(boundary_colorlabel, "A");
+    *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
+
+    for(i = 0; i<nrgb-1; i++){
+      float val;
+
+      val = tttmin+i*patchrange/(nrgb-2);
+      Float2String(boundary_colorlabel, val, ncolorlabel_digits);
+      strcat(boundary_colorlabel,"A");
+      *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
+    }
+  }
+
+  if(showevac_colorbar == 1 || (showsmoke == 1 && parttype != 0)){
+    int i;
+    float *partlevels256_ptr;
+    float tttmin, tttmax, partrange;
+    char partcolorlabel[256];
+
+    partlevels256_ptr = partlevels256;
+    if(global_prop_index>= 0 &&global_prop_index < npart5prop){
+      partlevels256_ptr = part5propinfo[global_prop_index].ppartlevels256;
+    }
+
+    if(parttype!=0){
+      strcpy(partcolorlabel, "PARTA");
+      *part_label_width = MAX(*part_label_width, GetStringWidth(partcolorlabel));
+
+      strcpy(partcolorlabel, partshortlabel);
+      strcat(partcolorlabel, "A");
+      *part_label_width = MAX(*part_label_width, GetStringWidth(partcolorlabel));
+
+      strcpy(partcolorlabel, partunitlabel);
+      strcat(partcolorlabel, "A");
+      *part_label_width = MAX(*part_label_width, GetStringWidth(partcolorlabel));
+    }
+
+
+    tttmin = partlevels256_ptr[0];
+    tttmax = partlevels256_ptr[255];
+    partrange = tttmax - tttmin;
+
+    for(i = 0; i < nrgb - 1; i++){
+      float val;
+
+      val = tttmin + i*partrange / (nrgb - 2);
+      Float2String(partcolorlabel, val, ncolorlabel_digits);
+      strcat(partcolorlabel,"A");
+      *part_label_width = MAX(*part_label_width, GetStringWidth(partcolorlabel));
+    }
+  }
+
+  if(showcfast_local==1){
+    char zonecolorlabel[256];
+    float zonerange, tttmin, tttmax;
+    int i;
+
+    tttmin = zonelevels256[0];
+    tttmax = zonelevels256[255];
+    zonerange = tttmax-tttmin;
+
+    strcpy(zonecolorlabel, "ZoneA");
+    *zone_label_width = MAX(*zone_label_width, GetStringWidth(zonecolorlabel));
+
+    strcpy(zonecolorlabel, "TempA");
+    *zone_label_width = MAX(*zone_label_width, GetStringWidth(zonecolorlabel));
+
+    for(i = 0; i<nrgb-1; i++){
+      float val;
+
+      val = tttmin+(i-1)*zonerange/(nrgb-2);
+      Float2String(zonecolorlabel, val, ncolorlabel_digits);
+      strcat(zonecolorlabel, "A");
+      *zone_label_width = MAX(*zone_label_width, GetStringWidth(zonecolorlabel));
+    }
+    SNIFF_ERRORS("after zone left labels");
+    glPopMatrix();
+  }
+
+  if(showplot3d==1){
+    char plot3dcolorlabel[256];
+    int i;
+
+    strcpy(plot3dcolorlabel, "Plot3DA");
+    *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
+
+    strcpy(plot3dcolorlabel, "SpeedA");
+    *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
+
+    strcpy(plot3dcolorlabel, "hrrpuvA");
+    *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
+
+    strcpy(plot3dcolorlabel, "U-VELA");
+    *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
+
+    float *p3lev;
+    float plot3drange, tttmin, tttmax;
+
+    p3lev = p3levels256[plotn-1];
+    tttmin = p3lev[0];
+    tttmax = p3lev[255];
+    plot3drange = tttmax-tttmin;
+
+    for(i = 0; i<nrgb-1; i++){
+      float val;
+
+      val = tttmin+i*plot3drange/(nrgb-2);
+      Float2String(plot3dcolorlabel, val, ncolorlabel_digits);
+      strcat(plot3dcolorlabel, "A");
+      *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
+    }
+  }
+}
+
+/* ------------------------ MaxColorLabelWidth ------------------------- */
+
+  int MaxColorbarLabelWidth(int nextra){
+    int i, max_width;    
+    char sample_label[32];
+    int show_slice_colorbar_local, showcfast_local, slice_label_width, boundary_label_width, part_label_width, plot3d_label_width, zone_label_width;
+
+    strcpy(sample_label, "");
+    for(i=0;i<MAX(5,ncolorlabel_digits+nextra);i++){
+      strcat(sample_label,"1");
+    }
+    max_width = GetStringWidth(sample_label);
+
+    UpdateShowSliceColorbar(&showcfast_local, &show_slice_colorbar_local);
+    GetColorbarLabelWidth(show_slice_colorbar_local, showcfast_local,
+                          &slice_label_width, &boundary_label_width, &part_label_width, &plot3d_label_width, &zone_label_width);
+    max_width = MAX(max_width, slice_label_width);
+    max_width = MAX(max_width, part_label_width);
+    max_width = MAX(max_width, boundary_label_width);
+    max_width = MAX(max_width, plot3d_label_width);
+    max_width = MAX(max_width, zone_label_width);
+    return max_width;
+  }
 
 /* ------------------------ GetViewportInfo ------------------------- */
 
@@ -69,21 +282,18 @@ void GetViewportInfo(void){
   }
 
   info_width = GetStringWidth("y: 115, 11.5 m");
-  {
-    char sample_label[32];
-    int i;
 
-    strcpy(sample_label,"-.E+99");
-    for(i=0;i<MAX(5,ncolorlabel_digits);i++){
-      strcat(sample_label,"1");
-    }
-
-    colorbar_label_width = GetStringWidth(sample_label);
-  }
+  colorbar_label_width = MaxColorbarLabelWidth(ncolorlabel_padding);
 
   v_space = 2;
   text_height=18;
   text_width=18;
+#ifdef pp_OSX_HIGHRES
+  if(double_scale==1){
+    text_height *= 2;
+    text_width  *= 2;
+  }
+#endif
   if(fontindex==SCALED_FONT){
     scale_2d_x = (scaled_font2d_height2width*(float)scaled_font2d_height/(float)104.76);
     scale_2d_y = ((float)scaled_font2d_height/(float)152.38);
@@ -182,6 +392,11 @@ void GetViewportInfo(void){
     VP_timebar.width = 0;
     VP_timebar.height = 0;
   }
+#ifdef pp_OSX_HIGHRES
+  if(double_scale==1){
+    VP_timebar.height *= 2;
+  }
+#endif
   VP_timebar.right = VP_timebar.left + VP_timebar.width;
   VP_timebar.top   = VP_timebar.down + VP_timebar.height;
 
@@ -384,6 +599,52 @@ int SubPortOrtho(int quad,
   return 1;
 }
 
+/* ------------------------ SubPortOrtho2custom ------------------------- */
+
+#define WINDOW_MARGIN 0
+int SubPortOrtho2Custom( portdata *p, GLint screen_left, GLint screen_down, int left_percen, int down_percen, int length_percen){
+
+  GLint x0, y0;;
+  GLsizei dxy;
+  float df;
+
+  GLdouble portx_left, portx_right, portx_down, portx_top;
+
+  portx_left = p->left;
+  portx_right = p->left + p->width;
+  portx_down = p->down;
+  portx_top = p->down + p->height;
+  port_pixel_width = p->width;
+  port_pixel_height = p->height;
+  port_unit_width = portx_right-portx_left;
+  port_unit_height = portx_top-portx_down;
+
+  dxy = ((float)length_percen/100.0)*MIN(p->width, p->height);
+  {
+    float text_height;
+
+    text_height = (float)GetFontHeight();
+    text_height += 3.0;
+    text_height *= 6.0;
+    if(dxy>text_height){
+      df = text_height/(dxy - text_height);
+    }
+    else{
+      df = 0.25;
+    }
+  }
+
+  x0 = p->left + MIN( (float)left_percen/100.0*p->width,  p->width  - dxy);
+  y0 = p->down + MIN( (float)down_percen/100.0*p->height, p->height - dxy);
+
+  glViewport(x0, y0, dxy, dxy);
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluOrtho2D(-0.25, 1.1, -df, 1.1);
+  pixel_dens = dxy/(1.1+df);
+  return 1;
+}
 
 /* ------------------------ SubPortOrtho2 ------------------------- */
 
@@ -415,7 +676,7 @@ int SubPortOrtho2(int quad,
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(portx_left,portx_right,portx_down,portx_top);
-    return 1;
+    break;
   case 1:
     icol = screen_left/screenWidth;
     irow = screen_down/screenHeight;
@@ -459,7 +720,7 @@ int SubPortOrtho2(int quad,
   default:
     ASSERT(FFALSE);
     break;
-                    }
+  }
   return 1;
 }
 
@@ -730,7 +991,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
 
   if (SubPortOrtho2(quad, &VP_timebar, screen_left, screen_down) == 0)return;
 
-  timebar_left_width = GetStringWidth("Time: 1234.11");
+  timebar_left_width =  GetStringWidth("Time: 1234.11");
   timebar_right_width = GetStringWidth("Frame rate: 99.99");
 
   timebar_left_pos = VP_timebar.left + timebar_left_width;
@@ -755,7 +1016,17 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
     if(visHRRlabel==1&&hrrinfo!=NULL){
       OutputText(VP_timebar.left,v_space+VP_timebar.text_height+v_space, hrrinfo->hrrlabel);
     }
-    if(visTimebar==1)DrawTimebar(timebar_left_pos,timebar_right_pos,v_space+VP_timebar.down,v_space+(VP_timebar.down+20));
+    if(visTimebar==1){
+      int timebar_height;
+
+      timebar_height = 20;
+#ifdef pp_OSX_HIGHRES
+      if(double_scale==1){
+        timebar_height *= 2;
+      }
+#endif
+      DrawTimebar(timebar_left_pos, timebar_right_pos, v_space+VP_timebar.down, v_space+(VP_timebar.down+timebar_height));
+    }
   }
 
   if(visFramerate==1&&showtime==1){
@@ -882,6 +1153,19 @@ void ViewportTitle(int quad, GLint screen_left, GLint screen_down){
   renderInfoHeader(&titleinfo);
 
 }
+
+    /* -------------------------- ViewportHistogram -------------------------- */
+
+#ifdef pp_CPPBOUND_DIALOG
+void ViewportHistogram(int quad, GLint screen_left, GLint screen_down){
+  if(SubPortOrtho2Custom(&VP_scene, screen_left, screen_down, hist_left_percen, hist_down_percen, hist_length_percen)==0)return;
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  DrawHistogram(histogram_draw, xmin_draw, xmax_draw, gmin_draw, gmax_draw, ncolorlabel_digits);
+}
+#endif
 
 /* ----------------------- CompareMeshes ----------------------------- */
 
@@ -1603,6 +1887,63 @@ void GetZoneSmokeDir(float *mm){
       }
       else{
         roomj->drawsides[i + 3] = 0;
+      }
+    }
+  }
+}
+
+/* ------------------ GetMinMaxDepth  ------------------------ */
+
+void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth){
+  int i;
+  float depth, dx, dy, dz;
+
+  // get distance to each corner of the domain
+
+  dx = box_corners[0][0]  - eye[0];
+  dy = box_corners[0][1]  - eye[1];
+  dz = box_corners[0][2] - eye[2];
+  depth = sqrt(dx*dx+dy*dy+dz*dz);
+  *min_depth = depth;
+  *max_depth = depth;
+
+  for(i = 1; i<8; i++){
+    dx = box_corners[i][0]-eye[0];
+    dy = box_corners[i][1]-eye[1];
+    dz = box_corners[i][2]-eye[2];
+    depth = sqrt(dx*dx+dy*dy+dz*dz);
+    *min_depth = MIN(*min_depth, depth);
+    *max_depth = MAX(*max_depth, depth);
+  }
+
+  // get distance to each corner of the geometry (if it exists)
+
+  if(have_box_geom_corners==1){
+    for(i = 0; i<8; i++){
+      dx = box_geom_corners[i][0]-eye[0];
+      dy = box_geom_corners[i][1]-eye[1];
+      dz = box_geom_corners[i][2]-eye[2];
+      depth = sqrt(dx*dx+dy*dy+dz*dz);
+      *min_depth = MIN(*min_depth, depth);
+      *max_depth = MAX(*max_depth, depth);
+    }
+  }
+
+  // get distance to each tour node
+
+  if(edittour==1){
+    for(i = 0; i<ntourinfo; i++){
+      tourdata *touri;
+      keyframe *keyj;
+
+      touri = tourinfo+i;
+      for(keyj = (touri->first_frame).next; keyj->next!=NULL; keyj = keyj->next){
+        dx = NORMALIZE_X(keyj->eye[0])-eye[0];
+        dy = NORMALIZE_Y(keyj->eye[1])-eye[1];
+        dz = NORMALIZE_Z(keyj->eye[2])-eye[2];
+        depth = sqrt(dx*dx+dy*dy+dz*dz);
+        *min_depth = MIN(*min_depth, depth);
+        *max_depth = MAX(*max_depth, depth);
       }
     }
   }

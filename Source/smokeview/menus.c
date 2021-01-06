@@ -11,7 +11,6 @@
 #include GLUT_H
 
 #include "string_util.h"
-#include "update.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 
@@ -19,16 +18,22 @@ int       part_file_count;
 FILE_SIZE part_load_size;
 float     part_load_time;
 
-#ifdef pp_SLICETHREAD
-int       slice_file_count;
-FILE_SIZE slice_load_size;
-float     slice_load_time;
-#endif
-
-
 #ifdef WIN32
 #include <direct.h>
 #endif
+
+#define PRINT_PROCESSTIMES(file_count,load_size,load_time) \
+  if(file_count>1){\
+    if(load_size>1000000000){\
+      PRINTF("Processed %.1f GB in %.1f s\n",(float)load_size/1000000000.,load_time);\
+    }\
+    else if(load_size>1000000){\
+      PRINTF("Processed %.1f MB in %.1f s\n",(float)load_size/1000000.,load_time);\
+    }\
+    else{\
+      PRINTF("Processed %.0f kB in %.1f s\n",(float)load_size/1000.,load_time);\
+    }\
+  }
 
 #define PRINT_LOADTIMES(file_count,load_size,load_time) \
   if(file_count>1){\
@@ -41,7 +46,9 @@ float     slice_load_time;
     else{\
       PRINTF("Loaded %.0f kB in %.1f s\n",(float)load_size/1000.,load_time);\
     }\
+    printf("\n");\
   }
+
 
 #define MENU_TERRAIN_SHOW_SURFACE -1
 #define MENU_TERRAIN_SHOW_LINES   -2
@@ -237,13 +244,17 @@ float     slice_load_time;
 #define GRID_grid 7
 #define GRID_probe 8
 
-#define OBJECT_SHOWALL -1
-#define OBJECT_HIDEALL -2
-#define OBJECT_SELECT -3
-#define OBJECT_OUTLINE -4
-#define OBJECT_ORIENTATION -5
-#define OBJECT_MISSING -6
-#define OBJECT_SHOWBEAM -7
+#define OBJECT_SHOWALL              -1
+#define OBJECT_HIDEALL              -2
+#define OBJECT_SELECT               -3
+#define OBJECT_OUTLINE              -4
+#define OBJECT_ORIENTATION          -5
+#define OBJECT_MISSING              -6
+#define OBJECT_SHOWBEAM             -7
+#define OBJECT_PLOT_SHOW_ALL        -8
+#define OBJECT_PLOT_SHOW_SELECTED  -11
+#define OBJECT_VALUES               -9
+#define MENU_DEVICE_SETTINGS       -10
 
 #define ISO_COLORS 4
 
@@ -555,7 +566,9 @@ void ShowMultiSliceMenu(int value){
   plotstate = GetPlotState(DYNAMIC_PLOTS);
 
   UpdateGlui();
+#ifdef pp_OLDBOUND_DIALOG
   UpdateSliceListIndex(slicefilenum);
+#endif
   UpdateShow();
 }
 
@@ -688,12 +701,16 @@ void StaticVariableMenu(int value){
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   UpdatePlot3dListIndex();
+#ifdef pp_CPPBOUND_DIALOG
+#define BOUND_PERCENTILE_DRAW          120
+  Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+#endif
 }
 
 /* ------------------ IsoVariableMenu ------------------------ */
 
 void IsoVariableMenu(int value){
-  if(ReadPlot3dFile==1){
+  if(nplot3dloaded>0){
     plotn=value;
     if(visx_all==1){
       UpdateShowStep(1,XDIR);
@@ -1279,6 +1296,14 @@ void ShowVSliceMenu(int value){
   UpdateShow();
 }
 
+/* ------------------ SliceSKipMenu ------------------------ */
+
+void SliceSkipMenu(int value){
+  slice_skip = value;
+  UpdateSliceSkip();
+  updatemenu=1;
+}
+
 /* ------------------ ShowHideSliceMenu ------------------------ */
 
 void ShowHideSliceMenu(int value){
@@ -1374,7 +1399,9 @@ void ShowHideSliceMenu(int value){
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
   UpdateGlui();
+#ifdef pp_OLDBOUND_DIALOG
   UpdateSliceListIndex(slicefilenum);
+#endif
   UpdateShow();
 }
 
@@ -1641,15 +1668,37 @@ void FontMenu(int value){
     break;
   case SMALL_FONT:
     fontindex=SMALL_FONT;
+#ifdef pp_OSX_HIGHRES
+    if(double_scale==1){
+      large_font=(void *)GLUT_BITMAP_HELVETICA_24;
+      small_font=(void *)GLUT_BITMAP_HELVETICA_20;
+    }
+    else{
+      large_font=GLUT_BITMAP_HELVETICA_12;
+      small_font=GLUT_BITMAP_HELVETICA_10;
+    }
+#else
     large_font=GLUT_BITMAP_HELVETICA_12;
     small_font=GLUT_BITMAP_HELVETICA_10;
+#endif
     large_font_height=12;
     small_font_height=10;
     break;
   case LARGE_FONT:
     fontindex=LARGE_FONT;
+#ifdef pp_OSX_HIGHRES
+    if(double_scale==1){
+      large_font=(void *)GLUT_BITMAP_HELVETICA_36;
+      small_font=(void *)GLUT_BITMAP_HELVETICA_36;
+    }
+    else{
+      large_font=GLUT_BITMAP_HELVETICA_18;
+      small_font=GLUT_BITMAP_HELVETICA_18;
+    }
+#else
     large_font=GLUT_BITMAP_HELVETICA_18;
     small_font=GLUT_BITMAP_HELVETICA_18;
+#endif
     large_font_height=18;
     small_font_height=18;
     break;
@@ -1789,6 +1838,8 @@ void ResetMenu(int value){
 /* ------------------ RenderState ------------------------ */
 
 void RenderState(int onoff){
+  int scale = 1;
+
   if(onoff==RENDER_ON){
     if(render_status == RENDER_ON)return;
     render_status = RENDER_ON;
@@ -1796,15 +1847,20 @@ void RenderState(int onoff){
     update_screeninfo = 1;
     saveW=screenWidth;
     saveH=screenHeight;
+#ifdef pp_OSX_HIGHRES
+    if(double_scale==1){
+      scale = 2;
+    }
+#endif
     if(renderW==0||renderH==0){
-      ResizeWindow(screenWidth,screenHeight);
+      ResizeWindow(screenWidth/scale, screenHeight/scale);
     }
     else{
       if(renderW>max_screenWidth){
-        ResizeWindow(max_screenWidth,max_screenHeight);
+        ResizeWindow(max_screenWidth/scale, max_screenHeight/scale);
       }
       else{
-        ResizeWindow(renderW,renderH);
+        ResizeWindow(renderW/scale, renderH/scale);
       }
     }
   }
@@ -1815,8 +1871,10 @@ void RenderState(int onoff){
     render_status = RENDER_OFF;
     render_firsttime = NO;
     Enable360Zoom();
-    SetScreenSize(&saveW,&saveH);
-    ResizeWindow(screenWidth,screenHeight);
+    screenWidth  = saveW/scale;
+    screenHeight = saveH/scale;
+    SetScreenSize(&screenWidth, &screenHeight);
+    ResizeWindow(saveW/scale, saveH/scale);
     ResetRenderResolution(&width_low, &height_low, &width_high, &height_high);
     UpdateRenderRadioButtons(width_low, height_low, width_high, height_high);
   }
@@ -2239,7 +2297,7 @@ void FrameRateMenu(int value){
 /* ------------------ IsoSurfaceTypeMenu ------------------------ */
 
 void IsoSurfaceTypeMenu(int value){
-  if(ReadPlot3dFile==1){
+  if(nplot3dloaded>0){
     switch(value){
     case MENU_SURFACE_SMOOTH:
       p3dsurfacesmooth=1;
@@ -2268,7 +2326,7 @@ void IsoSurfaceTypeMenu(int value){
 /* ------------------ IsoSurfaceMenu ------------------------ */
 
 void IsoSurfaceMenu(int value){
-  if(ReadPlot3dFile==1){
+  if(nplot3dloaded>0){
     updatemenu=1;
     GLUTPOSTREDISPLAY;
     if(value==1){
@@ -2283,7 +2341,7 @@ void IsoSurfaceMenu(int value){
 /* ------------------ LevelMenu ------------------------ */
 
 void LevelMenu(int value){
-  if(ReadPlot3dFile==1){
+  if(nplot3dloaded>0){
     plotiso[plotn-1]=value;
     UpdateShowStep(1,ISO);
     UpdateSurface();
@@ -2635,7 +2693,6 @@ void CompressMenu(int value){
   updatemenu=1;
 }
 #endif
-
 
 /* ------------------ IniSubMenu ------------------------ */
 
@@ -2991,9 +3048,10 @@ void ReloadAllSliceFiles(void){
       load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
     }
     else{
-#ifdef pp_NEWBOUND_DIALOG
-      load_size+=ReadSliceUseGluiBounds(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
-#else
+#ifdef pp_OLDBOUND_DIALOG
+      load_size+=ReadSlice(             slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
+#endif
+#ifdef pp_CPPBOUND_DIALOG
       load_size+=ReadSlice(             slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #endif
     }
@@ -3060,6 +3118,11 @@ void LoadUnloadMenu(int value){
     if(nvolrenderinfo>0){
       UnLoadVolsmoke3DMenu(UNLOAD_ALL);
     }
+    if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
+      showdevice_plot = DEVICE_PLOT_HIDDEN;
+      showdevice_val = 0;
+      UpdateDeviceShow();
+    }
     updatemenu=1;
     GLUTPOSTREDISPLAY;
   }
@@ -3110,9 +3173,10 @@ void LoadUnloadMenu(int value){
           ReadGeomData(slicei->patchgeom, slicei, load_mode, &errorcode);
         }
         else{
-#ifdef pp_NEWBOUND_DIALOG
-          ReadSliceUseGluiBounds(slicei->file, i, ALL_SLICE_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
-#else
+#ifdef pp_OLDBOUND_DIALOG
+                       ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
+#endif
+#ifdef pp_CPPBOUND_DIALOG
                        ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
 #endif
         }
@@ -3121,6 +3185,16 @@ void LoadUnloadMenu(int value){
     STOP_TIMER(load_time);
     PRINT_LOADTIMES(file_count,load_size,load_time);
     slicefile_labelindex=slicefile_labelindex_save;
+
+    for(i = 0; i<nplot3dinfo; i++){
+      plot3dinfo[i].finalize=0;
+    }
+    for(i = nplot3dinfo-1; i>=0; i--){
+      if(plot3dinfo[i].loaded==1){
+        plot3dinfo[i].finalize = 1;
+        break;
+      }
+    }
     for(i=0;i<nplot3dinfo;i++){
       if(plot3dinfo[i].loaded==1){
         ReadPlot3D(plot3dinfo[i].file,i,LOAD,&errorcode);
@@ -3186,6 +3260,30 @@ void LoadUnloadMenu(int value){
     UpdateTourMenuLabels();
     UpdatePlot3dMenuLabels();
   }
+  if(value==COMPUTE_SMV_BOUNDS){
+    bounds_each_mesh = 1-bounds_each_mesh;
+    updatemenu = 1;
+  }
+  if(value==SHOW_BOUND_DIFFS){
+    show_bound_diffs = 1-show_bound_diffs;
+    updatemenu = 1;
+  }
+#ifdef pp_CPPBOUND_DIALOG
+  if(value==CACHE_FILE_DATA){
+    cache_file_data = 1-cache_file_data;
+    cache_plot3d_data = cache_file_data;
+    cache_boundary_data = cache_file_data;
+    cache_part_data = cache_file_data;
+    SetCacheFlag(BOUND_PATCH, cache_file_data);
+    SetCacheFlag(BOUND_PLOT3D, cache_file_data);
+    SetCacheFlag(BOUND_PART, cache_file_data);
+#define BOUND_CACHE_DATA               112
+    PatchBoundsCPP_CB(BOUND_CACHE_DATA);
+    SliceBoundsCPP_CB(BOUND_CACHE_DATA);
+    PartBoundsCPP_CB(BOUND_CACHE_DATA);
+    updatemenu = 1;
+  }
+#endif
   if(value==REDIRECT){
     updatemenu=1;
     GLUTPOSTREDISPLAY;
@@ -3479,6 +3577,10 @@ void ParticlePropShowMenu(int value){
     propi = part5propinfo + iprop;
     last_prop_display=iprop;
     ipart5prop = iprop;
+#ifdef pp_CPPBOUND_DIALOG
+    SetValTypeIndex(BOUND_PART, ipart5prop);
+#endif
+
     propi->display=1;
     part5colorindex=iprop;
 
@@ -3494,8 +3596,14 @@ void ParticlePropShowMenu(int value){
     partshortlabel=propi->label->shortlabel;
     partunitlabel=propi->label->unit;
 #define FILETYPE_INDEX 5
+#ifdef pp_OLDBOUND_DIALOG
     PartBoundCB(FILETYPE_INDEX);
     UpdatePartType();
+#endif
+#ifdef pp_CPPBOUND_DIALOG
+#define BOUND_PERCENTILE_DRAW          120
+    PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+#endif
   }
   else if(value==MENU_PROP_SHOWALL){
     if(current_property!=NULL){
@@ -3598,35 +3706,6 @@ void UnloadAllPartFiles(void){
   }
 }
 
-#ifdef pp_SLICETHREAD
-/* ------------------ LoadAllSliceFiles ------------------------ */
-
-void LoadAllSliceFiles(int slicenum){
-  int i;
-
-  for(i = 0; i<nsliceinfo; i++){
-    slicedata *slicei;
-    int errorcode;
-    FILE_SIZE file_size;
-
-    slicei = sliceinfo+i;
-    if(slicei->skipload==1)continue;
-    if(slicenum>=0&&i!=slicenum)continue;  //  load only slice file with file index slicenum
-    LOCK_SLICE_LOAD;                       //  or load all slice files
-    if(slicei->loadstatus==FILE_UNLOADED){
-      slicei->loadstatus = FILE_LOADING;
-      UNLOCK_SLICE_LOAD;
-      file_size = ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, LOAD, SET_SLICECOLOR, &errorcode);
-      LOCK_SLICE_LOAD;
-      slicei->loadstatus = FILE_LOADED;
-      slice_load_size += file_size;
-      slice_file_count++;
-    }
-    UNLOCK_SLICE_LOAD;
-  }
-}
-#endif
-
 /* ------------------ LoadAllPartFiles ------------------------ */
 
 void LoadAllPartFiles(int partnum){
@@ -3664,14 +3743,33 @@ void SetupPart(int value, int option){
 
 #define SETVALMIN 1
 #define SETVALMAX 2
+#ifdef pp_CPPBOUND_DIALOG
+  int *list = NULL, nlist = 0;
+
+  NewMemory((void **)&list, npartinfo*sizeof(int));
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+
+    parti = partinfo+i;
+    if(option==PART&&parti->evac==1)continue;                 // don't load an evac file if part files are loaded
+    if(option==EVAC&&parti->evac==0)continue;                 // don't load a part file if evac files are loaded
+    if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
+    if(parti->loaded==0&&value>=0&&value!=i)continue;         // if value>0 only load file with index  value
+    list[nlist++] = i;
+  }
+  SetLoadedPartBounds(list, nlist);
+  FREEMEMORY(list);
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   if(research_mode == 1 && npartinfo> 0){
-    GetGlobalPartBounds(0);
+    GetGlobalPartBounds(ALL_FILES);
     setpartmin = GLOBAL_MIN;
     PartBoundCB(SETVALMIN);
 
     setpartmax = GLOBAL_MAX;
     PartBoundCB(SETVALMAX);
   }
+#endif
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
 
@@ -3683,6 +3781,7 @@ void SetupPart(int value, int option){
     if(option==PART&&parti->evac==1)continue;                 // don't load an evac file if part files are loaded
     if(option==EVAC&&parti->evac==0)continue;                 // don't load a part file if evac files are loaded
     if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
+    if(parti->loaded==0&&value>=0&&value!=i)continue;         // if value>0 only load file with index  value
     parti->skipload = 0;
   }
 
@@ -4488,10 +4587,11 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_
         return_filesize = ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
       }
       else {
-#ifdef pp_NEWBOUND_DIALOG
-        return_filesize=ReadSliceUseGluiBounds(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
-#else
+#ifdef pp_OLDBOUND_DIALOG
         return_filesize=             ReadSlice(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
+#endif
+#ifdef pp_CPPBOUND_DIALOG
+        return_filesize = ReadSlice(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
 #endif
       }
       if(reset_colorbar == 1)ColorbarMenu(colorbartype_save);
@@ -4521,6 +4621,9 @@ void LoadSliceMenu(int value){
   if(value==MENU_DUMMY)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
+#ifdef pp_CPPBOUND_DIALOG
+    SetLoadedSliceBounds(&value, 1);
+#endif
     LoadSlicei(SET_SLICECOLOR,value, ALL_SLICE_FRAMES, NULL);
   }
   else{
@@ -4592,9 +4695,10 @@ void LoadSliceMenu(int value){
             load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
           }
           else{
-#ifdef pp_NEWBOUND_DIALOG
-            load_size+=ReadSliceUseGluiBounds(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
-#else
+#ifdef pp_OLDBOUND_DIALOG
+            load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
+#endif
+#ifdef pp_CPPBOUND_DIALOG
             load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #endif
           }
@@ -4746,10 +4850,35 @@ void LoadMultiVSliceMenu(int value){
 FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
   int i;
   float load_time;
+#ifdef pp_SLICE_BUFFER
+  float process_time;
+#endif
   FILE_SIZE file_size = 0;
   int file_count=0;
 
   START_TIMER(load_time);
+#ifdef pp_SLICE_BUFFER
+  for(i = 0; i<mslicei->nslices; i++){
+    slicedata *slicei;
+    int set_slicecolor;
+
+    slicei = sliceinfo+mslicei->islices[i];
+    printf("reading %s\n",slicei->file);
+    slicei->stream_slice = fopen_buffer(slicei->file,"rb");
+    file_size += slicei->stream_slice->filesize;
+    file_count++;
+  }
+  STOP_TIMER(load_time);
+  PRINT_LOADTIMES(file_count, (float)file_size, load_time);
+  START_TIMER(process_time);
+#endif
+
+#ifdef pp_CPPBOUND_DIALOG
+  SetLoadedSliceBounds(mslicei->islices, mslicei->nslices);
+#endif
+
+  file_count = 0;
+  file_size = 0;
   for(i = 0; i < mslicei->nslices; i++){
     slicedata *slicei;
     int set_slicecolor;
@@ -4767,86 +4896,16 @@ FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
       file_count++;
     }
   }
+#ifdef pp_SLICE_BUFFER
+  STOP_TIMER(process_time);
+  PRINT_PROCESSTIMES(file_count, (float)file_size, process_time);
+#else
   STOP_TIMER(load_time);
   PRINT_LOADTIMES(file_count,(float)file_size,load_time);
+#endif
   return file_size;
 }
 
-#ifdef pp_SLICETHREAD
-/* ------------------ SetupSlice ------------------------ */
-
-int SetupSlice(int value){
-  int i, return_val;
-
-  return_val = 0;
-  for(i = 0; i<nsliceinfo; i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo+i;
-    slicei->finalize = 0;
-    slicei->loadstatus = FILE_UNLOADED;
-    slicei->boundstatus = 0;
-    slicei->skipload = 1;
-  }
-
-  if(value>=0){
-    multislicedata *mslicei;
-
-    mslicei = multisliceinfo + value;
-    for(i = 0; i<mslicei->nslices; i++){
-      slicedata *slicei;
-
-      slicei = sliceinfo+mslicei->islices[i];
-      if(slicei->skipdup==0)slicei->skipload = 0;
-    }
-    for(i = mslicei->nslices-1; i >=0; i--){
-      slicedata *slicei;
-
-      slicei = sliceinfo + mslicei->islices[i];
-      if(slicei->skipdup== 0 && slicei->loaded == 0){
-        return_val = mslicei->islices[i];
-        slicei->finalize = 1;
-        break;
-      }
-    }
-  }
-  else if(value<=-1000){
-    int submenutype, dir;
-    char *submenulabel;
-    slicedata *slicei;
-
-    value = -(1000 + value);
-    submenutype=value/4;
-    dir=value%4;
-    submenutype=msubslice_menuindex[submenutype];
-    slicei = sliceinfo + submenutype;
-    submenulabel = slicei->label.longlabel;
-    for(i = 0; i<nsliceinfo; i++){
-      slicedata *slicei;
-      char *longlabel;
-
-      slicei = sliceinfo + i;
-      if(slicei->skipdup==1)continue;
-      longlabel = slicei->label.longlabel;
-      if(strcmp(longlabel, submenulabel) != 0)continue;
-      if(dir != 0 && dir != slicei->idir)continue;
-      if(dir !=0 && slicei->volslice == 1)continue;
-      slicei->skipload = 0;
-    }
-    for(i = nsliceinfo-1; i>=0; i--){
-      slicedata *slicei;
-
-      slicei = sliceinfo + i;
-      if(slicei->skipdup==0&&slicei->skipload==0){
-        slicei->finalize = 1;
-        return_val = i;
-        break;
-      }
-    }
-  }
-  return return_val;
-}
-#endif
 /* ------------------ LoadMultiSliceMenu ------------------------ */
 
 void LoadMultiSliceMenu(int value){
@@ -4872,9 +4931,6 @@ void LoadMultiSliceMenu(int value){
       int last_slice;
       FILE_SIZE total_size=0;
 
-#ifdef pp_SLICETHREAD
-      last_slice = SetupSlice(value);
-#else
       last_slice = mslicei->nslices - 1;
       for(i = mslicei->nslices-1; i >=0; i--){
         slicedata *slicei;
@@ -4885,7 +4941,6 @@ void LoadMultiSliceMenu(int value){
           break;
         }
       }
-#endif
       for(i = 0; i < mslicei->nslices; i++){
         slicedata *slicei;
 
@@ -4925,9 +4980,6 @@ void LoadMultiSliceMenu(int value){
     submenutype=msubslice_menuindex[submenutype];
     slicei = sliceinfo + submenutype;
     submenulabel = slicei->label.longlabel;
-#ifdef pp_SLICETHREAD
-    last_slice = SetupSlice(value);
-#else
     last_slice = nsliceinfo - 1;
     for(i = nsliceinfo-1; i>=0; i--){
       char *longlabel;
@@ -4941,33 +4993,27 @@ void LoadMultiSliceMenu(int value){
       last_slice = i;
       break;
     }
-#endif
     START_TIMER(load_time);
     for(i = 0; i<nsliceinfo; i++){
       int set_slicecolor;
-#ifndef pp_SLICETHREAD
       char *longlabel;
-#endif
 
       slicei = sliceinfo + i;
-#ifdef pp_SLICETHREAD
-      if(slicei->skipload==1)continue;
-#else
       if(slicei->skipdup== 1)continue;
       longlabel = slicei->label.longlabel;
       if(strcmp(longlabel,submenulabel)!=0)continue;
       if(dir!=0&&dir!=slicei->idir)continue;
       if(dir!=0&&slicei->volslice==1)continue;
-#endif
       set_slicecolor = DEFER_SLICECOLOR;
       if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
       if(slicei->slice_filetype == SLICE_GEOM){
         load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
       }
       else{
-#ifdef pp_NEWBOUND_DIALOG
-        load_size+=ReadSliceUseGluiBounds(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
-#else
+#ifdef pp_OLDBOUND_DIALOG
+        load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
+#endif
+#ifdef pp_CPPBOUND_DIALOG
         load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
 #endif
       }
@@ -5028,41 +5074,11 @@ void LoadMultiSliceMenu(int value){
   }
 }
 
-#ifdef pp_NEWBOUND_DIALOG
-/* ------------------ GetListPlot3dBounds ------------------------ */
-
-void GetListPlot3dBounds(int* list, int nlist, float* loaded_min, float* loaded_max) {
-  int i;
-
-  for (i = 0; i < 6; i++) {
-    loaded_min[i] = 1.0;
-    loaded_max[i] = 0.0;
-  }
-  for (i = 0; i < nlist; i++) {
-    plot3ddata* plot3di;
-    int j;
-
-    plot3di = plot3dinfo + list[i];
-    for (j = 0; j < 6; j++) {
-
-      if (loaded_min[j] > loaded_max[j]) {
-        loaded_min[j] = plot3di->file_min[j];
-        loaded_max[j] = plot3di->file_max[j];
-      }
-      else {
-        loaded_min[j] = MIN(plot3di->file_min[j], loaded_min[j]);
-        loaded_max[j] = MAX(plot3di->file_max[j], loaded_max[j]);
-      }
-    }
-  }
-}
-#endif
-
 /* ------------------ Plot3DListMenu ------------------------ */
 
 void Plot3DListMenu(int value){
   int i;
-  plot3ddata *plot3di;
+  float delta_time=0.5;
 
   value = CLAMP(value, 0, nplot3dtimelist-1);
   iplot3dtimelist = value;
@@ -5071,12 +5087,53 @@ void Plot3DListMenu(int value){
     fprintf(scriptoutstream,"LOADPLOT3D\n");
     fprintf(scriptoutstream," %f\n",plot3dtimelist[value]);
   }
+  if(nplot3dtimelist>1)delta_time = (plot3dtimelist[1]-plot3dtimelist[0])/2.0;
+#ifdef pp_CPPBOUND_DIALOG
+  int *list=NULL, nlist = 0;
+
+  NewMemory((void **)&list, nplot3dinfo*sizeof(int));
+  for(i = 0; i<nplot3dinfo; i++){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo+i;
+    if(ABS(plot3di->time-plot3dtimelist[value])<delta_time){
+      list[nlist++] = i;
+    }
+  }
+  SetLoadedPlot3DBounds(list, nlist);
+  for(i = 0; i<nlist; i++){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo+list[i];
+    plot3di->finalize = 0;
+  }
+  for(i = nlist-1; i>=0; i--){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo+list[i];
+    plot3di->finalize = 1;
+    break;;
+  }
+  for(i=0;i<nlist;i++){
+    int errorcode;
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo + list[i];
+    ReadPlot3D(plot3di->file, list[i], LOAD, &errorcode);
+  }
+  printf("\n");
+  FREEMEMORY(list);
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   for(i=0;i<nplot3dinfo;i++){
+    plot3ddata *plot3di;
+
     plot3di = plot3dinfo + i;
-    if(ABS(plot3di->time-plot3dtimelist[value])<0.5){
+    if(ABS(plot3di->time-plot3dtimelist[value])<delta_time){
       LoadPlot3dMenu(i);
     }
   }
+#endif
 }
 
 /* ------------------ UpdateMenu ------------------------ */
@@ -5098,7 +5155,6 @@ void LoadPlot3dMenu(int value){
   if(value>=0){
     char *plot3dfile;
 
-    ReadPlot3dFile=1;
     plot3dfile = plot3dinfo[value].file;
     if(scriptoutstream!=NULL&&loadplot3dall==0){
       fprintf(scriptoutstream,"LOADPLOT3D\n");
@@ -5106,8 +5162,49 @@ void LoadPlot3dMenu(int value){
         plot3dinfo[value].blocknumber+1,plot3dinfo[value].time);
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
+#ifdef pp_CPPBOUND_DIALOG
+      SetLoadedPlot3DBounds(&value, 1);
+#endif
+      plot3dinfo[value].finalize = 1;
+      for(i = 0; i<nplot3dinfo; i++){
+        if(plot3dinfo[i].loaded==1){
+          ReadPlot3D("", i, UNLOAD, &errorcode);
+        }
+      }
       ReadPlot3D(plot3dfile,value,LOAD,&errorcode);
     }
+  }
+  else if(value==RELOAD_ALL){
+    plot3ddata **plot3d_list;
+    int nlist=0, i;
+
+    NewMemory((void **)&plot3d_list, nplot3dinfo*sizeof(plot3ddata *));
+    for(i = 0; i<nplot3dinfo; i++){
+      plot3ddata *plot3di;
+
+      plot3di = plot3dinfo+i;
+      if(plot3di->loaded==0)continue;
+      plot3di->finalize = 0;
+      plot3d_list[nlist++] = plot3di;
+    }
+
+#ifdef pp_CPPBOUND_DIALOG
+    if(nlist>0)SetLoadedPlot3DBounds(&value, 1);
+#endif
+    if(nlist>0)plot3d_list[nlist-1]->finalize = 1;
+    for(i = 0; i<nlist; i++){
+      int errorcode;
+
+      ReadPlot3D("", plot3d_list[i]-plot3dinfo, UNLOAD, &errorcode);
+    }
+    for(i = 0; i<nlist; i++){
+      int errorcode;
+      plot3ddata *plot3di;
+
+      plot3di = plot3d_list[i];
+      ReadPlot3D(plot3di->file, plot3di-plot3dinfo, LOAD, &errorcode);
+    }
+    FREEMEMORY(plot3d_list);
   }
   else if(value==UNLOAD_ALL){
     for(i=0;i<nplot3dinfo;i++){
@@ -5119,6 +5216,11 @@ void LoadPlot3dMenu(int value){
   }
   else{
     value+=100000;
+    for(i = 0; i<nplot3dinfo; i++){
+      if(plot3dinfo[i].loaded==1){
+        ReadPlot3D("", i, UNLOAD, &errorcode);
+      }
+    }
     loadplot3dall=1;
     Plot3DListMenu(value);
     loadplot3dall=0;
@@ -5257,9 +5359,12 @@ void LoadBoundaryMenu(int value){
       fprintf(scriptoutstream, " %i\n", patchi->blocknumber+1);
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
-      LOCK_COMPRESS
+      LOCK_COMPRESS;
+#ifdef pp_CPPBOUND_DIALOG
+      SetLoadedPatchBounds(&value, 1);
+#endif
       ReadBoundary(value,LOAD,&errorcode);
-      UNLOCK_COMPRESS
+      UNLOCK_COMPRESS;
     }
   }
   else if(value<=-10){
@@ -5284,6 +5389,22 @@ void LoadBoundaryMenu(int value){
         patchi = patchinfo+i;
         patchi->finalize = 0;
       }
+#ifdef pp_CPPBOUND_DIALOG
+      int *list=NULL, nlist=0;
+
+      NewMemory((void **)&list,npatchinfo*sizeof(int));
+      nlist=0;
+      for(i = 0; i<npatchinfo;i++){
+        patchdata *patchi;
+
+        patchi = patchinfo+i;
+        if(strcmp(patchi->label.longlabel, patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
+          list[nlist++]=i;
+        }
+      }
+      SetLoadedPatchBounds(list, nlist);
+      FREEMEMORY(list);
+#endif
       for(i = npatchinfo-1; i>=0; i--){
         patchdata *patchi;
 
@@ -5937,6 +6058,28 @@ void TitleMenu(int value){
   SetLabelControls();
 }
 
+/* ------------------ ShowADeviceType ------------------------ */
+
+void ShowADeviceType(void){
+  int i;
+
+  for(i=0;i<nobject_defs;i++){
+    sv_object *obj_typei;
+
+    obj_typei = object_defs[i];
+    if(obj_typei->used_by_device==1&&obj_typei->visible==1)return;
+  }
+  for(i=0;i<nobject_defs;i++){
+    sv_object *obj_typei;
+
+    obj_typei = object_defs[i];
+    if(obj_typei->used_by_device==1){
+      obj_typei->visible=1;
+      return;
+    }
+  }
+}
+
 /* ------------------ ShowObjectsMenu ------------------------ */
 
 void ShowObjectsMenu(int value){
@@ -5946,6 +6089,11 @@ void ShowObjectsMenu(int value){
   if(value>=0&&value<nobject_defs){
     objecti = object_defs[value];
     objecti->visible = 1 - objecti->visible;
+    if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
+      update_times = 1;
+      plotstate = GetPlotState(DYNAMIC_PLOTS);
+      UpdateDeviceShow();
+    }
   }
   else if(value == OBJECT_MISSING){
     updatemenu = 1;
@@ -5965,6 +6113,41 @@ void ShowObjectsMenu(int value){
   }
   else if(value==OBJECT_SELECT){
     select_device=1-select_device;
+  }
+  else if(value==OBJECT_PLOT_SHOW_ALL){
+    update_times=1;
+    if(showdevice_plot==DEVICE_PLOT_SHOW_ALL){
+      showdevice_plot = DEVICE_PLOT_HIDDEN;
+    }
+    else{
+      showdevice_plot = DEVICE_PLOT_SHOW_ALL;
+      select_device = 1;
+      ShowADeviceType();
+    }
+    plotstate=GetPlotState(DYNAMIC_PLOTS);
+    UpdateDeviceShow();
+  }
+  else if(value==OBJECT_PLOT_SHOW_SELECTED){
+    update_times = 1;
+    if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED){
+      showdevice_plot = DEVICE_PLOT_HIDDEN;
+    }
+    else{
+      showdevice_plot = DEVICE_PLOT_SHOW_SELECTED;
+      select_device = 1;
+      ShowADeviceType();
+    }
+    plotstate = GetPlotState(DYNAMIC_PLOTS);
+    UpdateDeviceShow();
+  }
+  else if(value==MENU_DEVICE_SETTINGS){
+    ShowGluiDevice();
+  }
+  else if(value==OBJECT_VALUES){
+    update_times=1;
+    showdevice_val = 1 - showdevice_val;    
+    plotstate=GetPlotState(DYNAMIC_PLOTS);
+    UpdateDeviceShow();
   }
   else if(value==OBJECT_OUTLINE){
     object_outlines=1-object_outlines;
@@ -6293,7 +6476,7 @@ static int render_startmenu = 0;
 #ifdef pp_COMPRESS
 static int compressmenu=0;
 #endif
-static int showhideslicemenu=0,showvslicemenu=0;
+static int showhideslicemenu=0, sliceskipmenu=0, showvslicemenu=0;
 static int plot3dshowmenu=0, staticvariablemenu=0, helpmenu=0, webhelpmenu=0, keyboardhelpmenu=0, mousehelpmenu=0;
 static int vectorskipmenu=0,unitsmenu=0;
 static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
@@ -6303,7 +6486,7 @@ static int loadpatchsinglemenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=
 static int plot3dshowsinglemeshmenu=0;
 static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
 static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchsinglemenu=0,showpatchextmenu=0;
-static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
+static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, fileinfomenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
 static int scriptmenu=0;
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
 #ifdef pp_LUA
@@ -6907,7 +7090,7 @@ updatemenu=0;
       else{
         char chari[4];
 
-        if(plotiso[plotn]==i&&visiso==1){
+        if(plotiso[plotn-1]==i&&visiso==1){
           sprintf(chari,"*%i",i+1);
         }
         else{
@@ -7327,6 +7510,12 @@ updatemenu=0;
         glutAddMenuEntry(_("Select"),OBJECT_SELECT);
       }
     }
+    if(showdevice_plot==DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "*Plot data for all devices",           OBJECT_PLOT_SHOW_ALL);
+    if(showdevice_plot!=DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "Plot data for all devices",            OBJECT_PLOT_SHOW_ALL);
+    if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "*Plot data for selected devices",      OBJECT_PLOT_SHOW_SELECTED);
+    if(showdevice_plot!=DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "Plot data for selected devices",       OBJECT_PLOT_SHOW_SELECTED);
+    if(showdevice_val==1)glutAddMenuEntry(_("*Show values"), OBJECT_VALUES);
+    if(showdevice_val==0)glutAddMenuEntry(_("Show values"),  OBJECT_VALUES);
     if(object_outlines==0)glutAddMenuEntry(_("Outline"),OBJECT_OUTLINE);
     if(object_outlines==1)glutAddMenuEntry(_("*Outline"),OBJECT_OUTLINE);
     glutAddMenuEntry(_("Show all"),OBJECT_SHOWALL);
@@ -7347,6 +7536,7 @@ updatemenu=0;
     }
     glutAddMenuEntry("-",MENU_DUMMY);
     GLUTADDSUBMENU(_("Segments"),spheresegmentmenu);
+    glutAddMenuEntry(_("Settings..."), MENU_DEVICE_SETTINGS);
 
   }
 
@@ -7392,7 +7582,7 @@ updatemenu=0;
 
   CREATEMENU(geometrymenu,GeometryMenu);
   if(ntotal_blockages>0)GLUTADDSUBMENU(_("Obstacles"),blockagemenu);
-  if((auto_terrain==0&ngeominfo>0)||(auto_terrain==1&&ngeominfo>1)){
+  if((auto_terrain==0&&ngeominfo>0)||(auto_terrain==1&&ngeominfo>1)){
     GLUTADDSUBMENU(_("Immersed"), immersedmenu);
   }
   if(GetNumActiveDevices()>0||ncvents>0){
@@ -8346,10 +8536,18 @@ updatemenu=0;
     CREATEMENU(showvslicemenu,ShowVSliceMenu);
     if(vd_shown!=NULL&&nvsliceloaded!=0){
       char menulabel[1024];
+      slicedata *slice_shown;
 
       STRCPY(menulabel, "");
       if(showall_slices==1)STRCAT(menulabel, "*");
-      STRCAT(menulabel, sliceinfo[vd_shown->ival].label.longlabel);
+      slice_shown = sliceinfo+vd_shown->ival;
+      STRCAT(menulabel, slice_shown->label.longlabel);
+      STRCAT(menulabel, ", ");
+      STRCAT(menulabel, slice_shown->slicedir);
+      if(slice_shown->slicelabel!=NULL){
+        STRCAT(menulabel, " - ");
+        STRCAT(menulabel, slice_shown->slicelabel);
+      }
       glutAddMenuEntry(menulabel,SHOW_ALL);
     }
     glutAddMenuEntry(_("  Show in:"), MENU_DUMMY);
@@ -8896,7 +9094,7 @@ updatemenu=0;
     }
     showhide_data = 1;
   }
-  if(ReadPlot3dFile==1){
+  if(nplot3dloaded>0){
     showhide_data = 1;
     GLUTADDSUBMENU(_("Plot3D"), plot3dshowmenu);
   }
@@ -9257,7 +9455,7 @@ updatemenu=0;
 #else
   glutAddMenuEntry(_("Display...  ALT d"), DIALOG_DISPLAY);
 #endif
-  glutAddMenuEntry(_("Files/Data/Color... ALT b"), DIALOG_BOUNDS);
+  glutAddMenuEntry(_("Files/Data/Coloring... ALT b"), DIALOG_BOUNDS);
   glutAddMenuEntry(_("Motion/View/Render...  ALT m"),DIALOG_MOTION);
   glutAddMenuEntry(_("Viewpoints... ALT g"),DIALOG_VIEW);
 #else
@@ -9266,7 +9464,7 @@ updatemenu=0;
 #else
   glutAddMenuEntry(_("Display..."), DIALOG_DISPLAY);
 #endif
-  glutAddMenuEntry(_("Files/Data/Color..."), DIALOG_BOUNDS);
+  glutAddMenuEntry(_("Files/Data/Coloring..."), DIALOG_BOUNDS);
   glutAddMenuEntry(_("Motion/View/Render..."), DIALOG_MOTION);
   glutAddMenuEntry(_("Viewpoints..."), DIALOG_VIEW);
 #endif
@@ -9289,36 +9487,28 @@ updatemenu=0;
 
   /* -------------------------------- font menu -------------------------- */
 
-  if(showfontmenu==1){
-    CREATEMENU(fontmenu,FontMenu);
-    switch(fontindex){
-    case SMALL_FONT:
-      glutAddMenuEntry(_("*Normal"),SMALL_FONT);
-      glutAddMenuEntry(_("Large"),LARGE_FONT);
-#ifdef pp_BETA
-      glutAddMenuEntry(_("Scaled"),SCALED_FONT);
-#endif
-      break;
-    case LARGE_FONT:
-      glutAddMenuEntry(_("Normal"),SMALL_FONT);
-      glutAddMenuEntry(_("*Large"),LARGE_FONT);
-#ifdef pp_BETA
-      glutAddMenuEntry(_("Scaled"),SCALED_FONT);
-#endif
-      break;
-#ifdef pp_BETA
-    case SCALED_FONT:
-      glutAddMenuEntry(_("Normal"),SMALL_FONT);
-      glutAddMenuEntry(_("Large"),LARGE_FONT);
-      glutAddMenuEntry(_("*Scaled"),SCALED_FONT);
-#endif
-      break;
-    default:
-      ASSERT(FFALSE);
-      break;
-    }
-    glutAddMenuEntry(_("Settings..."), MENU_FONT_SETTINGS);
+  CREATEMENU(fontmenu,FontMenu);
+  switch(fontindex){
+  case SMALL_FONT:
+    glutAddMenuEntry(_("*Small"),SMALL_FONT);
+    glutAddMenuEntry(_("Large"),LARGE_FONT);
+    glutAddMenuEntry(_("Scaled"),SCALED_FONT);
+    break;
+  case LARGE_FONT:
+    glutAddMenuEntry(_("Small"),SMALL_FONT);
+    glutAddMenuEntry(_("*Large"),LARGE_FONT);
+    glutAddMenuEntry(_("Scaled"),SCALED_FONT);
+    break;
+  case SCALED_FONT:
+    glutAddMenuEntry(_("Small"),SMALL_FONT);
+    glutAddMenuEntry(_("Large"),LARGE_FONT);
+    glutAddMenuEntry(_("*Scaled"),SCALED_FONT);
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
   }
+  glutAddMenuEntry(_("Settings..."), MENU_FONT_SETTINGS);
 
   /* -------------------------------- units menu -------------------------- */
 
@@ -9377,7 +9567,7 @@ updatemenu=0;
   GLUTADDSUBMENU(_("Max frame rate"),frameratemenu);
   GLUTADDSUBMENU(_("Render"),rendermenu);
   GLUTADDSUBMENU(_("Tours"),tourmenu);
-  if(showfontmenu==1)GLUTADDSUBMENU(_("Font"),fontmenu);
+  GLUTADDSUBMENU(_("Font"),fontmenu);
   if(trainer_active==1)glutAddMenuEntry(_("Trainer menu"),MENU_OPTION_TRAINERMENU);
 
 /* -------------------------------- about menu -------------------------- */
@@ -9445,6 +9635,28 @@ updatemenu=0;
       strcpy(menulabel,_("  GPU not available"));
     }
     glutAddMenuEntry(menulabel,1);
+#endif
+#ifdef WIN32
+    glutAddMenuEntry("  Platform: WIN64", 1);
+#endif
+#ifdef pp_OSX
+#ifdef pp_QUARTZ
+    glutAddMenuEntry("  Platform: OSX64/QUARTZ", 1);
+#else
+#ifdef pp_OSX_HIGHRES
+    if(double_scale==1){
+      glutAddMenuEntry("  Platform: OSX64(high res fonts)", 1);
+    }
+    else{
+      glutAddMenuEntry("  Platform: OSX64", 1);
+    }
+#else
+    glutAddMenuEntry("  Platform: OSX64", 1);
+#endif
+#endif
+#endif
+#ifdef pp_LINUX
+    glutAddMenuEntry("  Platform: LINUX64", 1);
 #endif
     GLUTADDSUBMENU(_("Disclaimer"),disclaimermenu);
   }
@@ -9806,6 +10018,10 @@ updatemenu=0;
           }
           else{
             STRCPY(menulabel,sd->menulabel);
+          }
+          if(sd->slicelabel!=NULL){
+            STRCAT(menulabel, " - ");
+            STRCAT(menulabel, sd->slicelabel);
           }
           glutAddMenuEntry(menulabel,i);
           if(ii==nvsliceinfo-1||strcmp(sd->label.longlabel,sdp1->label.longlabel)!=0){
@@ -10188,6 +10404,56 @@ updatemenu=0;
       }
     }
 
+    CREATEMENU(sliceskipmenu, SliceSkipMenu);
+    for(i = 1; i<=4; i++){
+      char skiplabel[20];
+
+      if(max_slice_skip>0&&i>max_slice_skip)break;
+      if(slice_skip==i){
+        sprintf(skiplabel, "*%i", i);
+      }
+      else{
+        sprintf(skiplabel, "%i", i);
+      }
+      glutAddMenuEntry(skiplabel, i);
+    }
+    for(i =6; i<=8; i+=2){
+      char skiplabel[20];
+
+      if(max_slice_skip>0&&i>max_slice_skip)break;
+      if(slice_skip==i){
+        sprintf(skiplabel, "*%i", i);
+      }
+      else{
+        sprintf(skiplabel, "%i", i);
+      }
+      glutAddMenuEntry(skiplabel, i);
+    }
+    for(i = 10; i<=20; i+=5){
+      char skiplabel[20];
+
+      if(max_slice_skip>0&&i>max_slice_skip)break;
+      if(slice_skip==i){
+        sprintf(skiplabel, "*%i", i);
+      }
+      else{
+        sprintf(skiplabel, "%i", i);
+      }
+      glutAddMenuEntry(skiplabel, i);
+    }
+    for(i = 30; i<=max_slice_skip; i+=10){
+      char skiplabel[20];
+
+      if(max_slice_skip>0&&i>max_slice_skip)break;
+      if(slice_skip==i){
+        sprintf(skiplabel, "*%i", i);
+      }
+      else{
+        sprintf(skiplabel, "%i", i);
+      }
+      glutAddMenuEntry(skiplabel, i);
+    }
+
 // call slice submenus from main slice menu
 
     CREATEMENU(loadslicemenu,LoadSliceMenu);
@@ -10235,6 +10501,7 @@ updatemenu=0;
       }
     }
     glutAddMenuEntry("-", MENU_DUMMY);
+    GLUTADDSUBMENU(_("Skip"), sliceskipmenu);
     glutAddMenuEntry(_("Settings..."), MENU_SLICE_SETTINGS);
     if(nsliceloaded+geom_slice_loaded>1){
       GLUTADDSUBMENU(_("Unload"),unloadslicemenu);
@@ -10399,6 +10666,7 @@ updatemenu=0;
     }
 
     if(nmultisliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
+    GLUTADDSUBMENU(_("Skip"), sliceskipmenu);
     if(compute_slice_file_sizes==1){
       glutAddMenuEntry(_("  *compute size of slice files to be loaded"), MENU_SLICE_FILE_SIZES);
     }
@@ -11285,7 +11553,7 @@ updatemenu=0;
         n_inifiles++;
       }
     }
-    if( n_inifiles>0||FILE_EXISTS(INIfile)==YES||FILE_EXISTS(caseini_filename)==YES||FILE_EXISTS(smokeviewini)==YES){
+    if( n_inifiles>0||FILE_EXISTS(smokeviewini_filename)==YES||FILE_EXISTS(caseini_filename)==YES||FILE_EXISTS(smokeviewini)==YES){
       if(n_inifiles==0){
         glutAddMenuEntry(_("Read ini files"),MENU_READINI);
       }
@@ -11295,7 +11563,7 @@ updatemenu=0;
     }
   }
 
-    glutAddMenuEntry(_(WRITEINIfile),MENU_WRITEINI);
+    glutAddMenuEntry("Write smokeview.ini",MENU_WRITEINI);
 
     {
       char caselabel[255];
@@ -11455,7 +11723,20 @@ updatemenu=0;
       glutAddMenuEntry(_("Settings..."), MENU_SCRIPT_SETTINGS);
     }
 
-  /* --------------------------------loadunload menu -------------------------- */
+    CREATEMENU(fileinfomenu, LoadUnloadMenu);
+#ifdef pp_CPPBOUND_DIALOG
+    if(cache_file_data==1)glutAddMenuEntry(_("*Cache file data"), CACHE_FILE_DATA);
+    if(cache_file_data==0)glutAddMenuEntry(_("Cache file data"), CACHE_FILE_DATA);
+#endif
+    if(showfiles==1)glutAddMenuEntry("*Show file names", SHOWFILES);
+    if(showfiles==0)glutAddMenuEntry("Show file names", SHOWFILES);
+    glutAddMenuEntry(                       "Show file bounds:", MENU_DUMMY);
+    if(bounds_each_mesh==1)glutAddMenuEntry("  *for each mesh", COMPUTE_SMV_BOUNDS);
+    if(bounds_each_mesh==0)glutAddMenuEntry("   for each mesh", COMPUTE_SMV_BOUNDS);
+    if(show_bound_diffs==1)glutAddMenuEntry("  *differences (fds - smokeview)", SHOW_BOUND_DIFFS);
+    if(show_bound_diffs==0)glutAddMenuEntry("   differences (fds - smokeview)", SHOW_BOUND_DIFFS);
+
+/* --------------------------------loadunload menu -------------------------- */
     {
       char loadmenulabel[100];
       char steplabel[100];
@@ -11596,8 +11877,7 @@ updatemenu=0;
         GLUTADDSUBMENU(_("Compression"),compressmenu);
       }
 #endif
-      if(showfiles==1)glutAddMenuEntry(_("*Show file names"),SHOWFILES);
-      if(showfiles==0)glutAddMenuEntry(_("Show file names"),SHOWFILES);
+      GLUTADDSUBMENU(_("Misc"),fileinfomenu);
       {
         char menulabel[1024];
 

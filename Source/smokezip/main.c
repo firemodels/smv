@@ -152,7 +152,6 @@ int main(int argc, char **argv){
   GLOBno_chop=0;
   GLOBautozip=0;
   GLOBmake_demo=0;
-  GLOBendf=0;
   GLOBsyst=0;
   GLOBendianfile=NULL;
   GLOBdestdir=NULL;
@@ -452,8 +451,6 @@ int main(int argc, char **argv){
   strcpy(inifilebase,filebase);
   strcat(inifilebase,".ini");
 
-  strcpy(GLOBendianfilebase,"");
-
   // make sure smv file name exists
 
   if(GetFileInfo(smvfile,NULL,NULL)!=0){
@@ -512,7 +509,6 @@ int main(int argc, char **argv){
     PRINTF("Copying .smv, .ini and .end files to %s directory\n",GLOBdestdir);
     CopyFILE(GLOBdestdir,smvfile,smvfilebase,REPLACE_FILE);
     CopyFILE(GLOBdestdir,inifile,inifilebase,REPLACE_FILE);
-    CopyFILE(GLOBdestdir,GLOBendianfile,GLOBendianfilebase,REPLACE_FILE);
   }
   if(GLOBcleanfiles==1&&GLOBfilesremoved==0){
     PRINTF("No compressed files were removed\n");

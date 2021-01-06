@@ -7,7 +7,6 @@
 #include <float.h>
 #include GLUT_H
 
-#include "update.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 #include "compress.h"

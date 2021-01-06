@@ -6,7 +6,6 @@
 #include <math.h>
 #include GLUT_H
 
-#include "update.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 #include "smokeviewdefs.h"
@@ -233,16 +232,24 @@ void InitScriptI(scriptdata *scripti, int command,char *label){
   TrimBack(label);
   label2 = TrimFront(label);
   strcpy(scripti->command_label,label2);
-  scripti->command=command;
-  scripti->cval=NULL;
-  scripti->cval2=NULL;
-  scripti->fval=0.0;
-  scripti->ival=0;
-  scripti->ival2=0;
-  scripti->ival3=0;
-  scripti->ival4=0;
-  scripti->ival5=0;
+  scripti->command       = command;
+  scripti->cval          = NULL;
+  scripti->cval2         = NULL;
+  scripti->fval          = 0.0;
+  scripti->ival          = 0;
+  scripti->ival2         = 0;
+  scripti->ival3         = 0;
+  scripti->ival4         = 0;
+  scripti->ival5         = 0;
   scripti->need_graphics = 1;
+
+  scripti->id            = NULL;
+  scripti->quantity      = NULL;
+  scripti->c_pbxyz       = NULL;
+  scripti->pbxyz_val     = 0.0;
+  scripti->pbxyz_dir     = 0;
+  scripti->cell_centered = 0;
+  scripti->vector        = 0;
 }
 
 /* ------------------ GetScriptKeywordIndex ------------------------ */
@@ -270,6 +277,7 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"LOADPARTICLES") == MATCH)return SCRIPT_LOADPARTICLES;           // documented
   if(MatchUpper(keyword,"LOADPLOT3D") == MATCH)return SCRIPT_LOADPLOT3D;                 // documented
   if(MatchUpper(keyword,"LOADSLICE") == MATCH)return SCRIPT_LOADSLICE;                   // documented
+  if(MatchUpper(keyword,"LOADSLCF")==MATCH)return SCRIPT_LOADSLCF;
   if(MatchUpper(keyword,"LOADSLICERENDER")==MATCH)return SCRIPT_LOADSLICERENDER;
   if(MatchUpper(keyword,"LOADSLICEM") == MATCH)return SCRIPT_LOADSLICEM;
   if(MatchUpper(keyword,"LOADTOUR") == MATCH)return SCRIPT_LOADTOUR;                     // documented
@@ -286,7 +294,7 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"XYZVIEW")==MATCH)return SCRIPT_XYZVIEW;                         // documented
   if(MatchUpper(keyword,"VIEWXMIN")==MATCH)return SCRIPT_VIEWXMIN;                       // documented
   if(MatchUpper(keyword,"VIEWXMAX")==MATCH)return SCRIPT_VIEWXMAX;                       // documented
-  if(MatchUpper(keyword,"VIEWYMIN")==MATCH)return SCRIPT_VIEWYMIN;                       // documenged
+  if(MatchUpper(keyword,"VIEWYMIN")==MATCH)return SCRIPT_VIEWYMIN;                       // documented
   if(MatchUpper(keyword,"VIEWYMAX")==MATCH)return SCRIPT_VIEWYMAX;                       // documented
   if(MatchUpper(keyword,"VIEWZMIN")==MATCH)return SCRIPT_VIEWZMIN;                       // documented
   if(MatchUpper(keyword,"VIEWZMAX")==MATCH)return SCRIPT_VIEWZMAX;                       // documented
@@ -416,6 +424,84 @@ void RemoveDeg(char *string){
 }
 #endif
 
+#define TOKEN_UNKNOWN -1
+#define TOKEN_INT      0
+#define TOKEN_FLOAT    1
+#define TOKEN_STRING   2
+#define TOKEN_LOGICAL  3
+
+/* ------------------ GetScriptKeyWord ------------------------ */
+
+int GetScriptKeyWord(char *token, char **keywords, int nkeywords){
+  int i;
+
+  for(i = 0; i<nkeywords; i++){
+    char *kw;
+
+    kw = keywords[i];
+    if(strcmp(token, kw)==0)return i;
+  }
+  return TOKEN_UNKNOWN;
+}
+
+/* ------------------ ParseTokens ------------------------ */
+
+int ParseTokens(char *buffer, char **keywords, int *type, int nkeywords, int *tokens, int *itokens, float *ftokens, char **ctokens, int max_tokens){
+  int i;
+  char *kw;
+
+  StripCommas(buffer);
+  kw = strtok(buffer, "=");
+  for(i = 0; i<max_tokens; i++){
+    char *val;
+    int keyword_index;
+
+    if(i!=0)kw = strtok(NULL, "=");
+    if(kw==NULL)return i;
+    kw = TrimFrontBack(kw);
+    keyword_index = GetScriptKeyWord(kw, keywords, nkeywords);
+    if(keyword_index==TOKEN_UNKNOWN||type[keyword_index]==TOKEN_UNKNOWN){
+      printf("***error: script keyword %s unknown\n", kw);
+      return 0;
+    }
+    tokens[i] = keyword_index;
+    if(type[keyword_index]==TOKEN_STRING){
+      val = strtok(NULL, "'");
+    }
+    else{
+      val = strtok(NULL, " ");
+    }
+    if(val==NULL)return i;
+    val = TrimFrontBack(val);
+    switch (type[keyword_index]){
+      case TOKEN_INT:
+        sscanf(val, "%i", itokens+i);
+        break;
+      case TOKEN_FLOAT:
+        sscanf(val, "%f", ftokens+i);
+        break;
+      case TOKEN_STRING:
+        ctokens[i] = GetPointer(val);
+        break;
+      case TOKEN_LOGICAL:
+        if(val[0]=='.')val++;
+        if(val[0]=='T'||val[0]=='t'){
+          itokens[i] = 1;
+        }
+        else if(val[0]=='F'||val[0]=='f'){
+          itokens[i] = 0;
+        }
+        else{
+          printf("***error: expected true or false for keyword: %s\n", kw);
+          return 0;
+        }
+        break;
+    }
+  }
+  return i;
+
+}
+
 /* ------------------ CompileScript ------------------------ */
 
 int CompileScript(char *scriptfile){
@@ -476,6 +562,9 @@ int CompileScript(char *scriptfile){
     char keyword[255];
     char buffer[1024], buffer2[1024], *buffptr;
     scriptdata *scripti;
+    int fatal_error;
+
+    fatal_error = 0;
 
     if(fgets(buffer2,255,stream)==NULL)break;
     buffptr = RemoveComment(buffer2);
@@ -754,6 +843,9 @@ int CompileScript(char *scriptfile){
 // LOADINIFILE
 //  file (char)
       case SCRIPT_LOADINIFILE:
+        scripti->need_graphics = 0;
+        SETcval;
+        break;
 
  // LOADFILE
 //  file (char)
@@ -879,7 +971,100 @@ int CompileScript(char *scriptfile){
         if(render_skipframe0>0)scripti->ival3=render_skipframe0;
         break;
 
-// LOADSLICE
+// LOADSLCF
+//  PBX=val QUANTITY='quantity'
+#define KW_QUANTITY      0
+#define KW_ID            1
+#define KW_PBX           2
+#define KW_PBY           3
+#define KW_PBZ           4
+#define KW_PB3D          5
+#define KW_AGL_SLICE     6
+#define KW_VECTOR        7
+#define KW_CELL_CENTERED 8
+      case SCRIPT_LOADSLCF:
+        {
+#define MAX_SLCF_TOKENS 10
+          char *ctokens[MAX_SLCF_TOKENS];
+          char *keywords[]={"QUANTITY",   "ID",         "PBX",       "PBY",       "PBZ",      "PB3D",        "AGL_SLICE",  "VECTOR",       "CELL_CENTERED"};
+          int types[]={     TOKEN_STRING, TOKEN_STRING, TOKEN_FLOAT, TOKEN_FLOAT, TOKEN_FLOAT, TOKEN_LOGICAL, TOKEN_FLOAT, TOKEN_LOGICAL,   TOKEN_LOGICAL};
+          int nkeywords=9, tokens[MAX_SLCF_TOKENS], itokens[MAX_SLCF_TOKENS], ntokens;
+          float ftokens[MAX_SLCF_TOKENS];
+          int i;
+
+          SETbuffer;
+          strcpy(buffer2, buffer);
+
+          ntokens = ParseTokens(buffer, keywords, types, nkeywords, tokens, itokens, ftokens, &(ctokens[0]), MAX_SLCF_TOKENS);
+          if(ntokens==0){
+            printf("***error: problems were found parsing LOADSLCF\n");
+            printf(" %s\n",buffer2);
+            fatal_error = 1;
+            break;
+          }
+
+          for(i=0;i<ntokens;i++){
+            switch (tokens[i]){
+              char label[100];
+
+              case KW_QUANTITY:
+                scripti->quantity = ctokens[i];
+                break;
+              case KW_ID:
+                scripti->id = ctokens[i];
+                break;
+              case KW_PBX:
+                scripti->pbxyz_val = ftokens[i];
+                scripti->pbxyz_dir = 1;
+                strcpy(label, "PBX");
+                scripti->c_pbxyz   = GetPointer(label);
+                break;
+              case KW_PBY:
+                scripti->pbxyz_val = ftokens[i];
+                scripti->pbxyz_dir = 2;
+                strcpy(label, "PBY");
+                scripti->c_pbxyz   = GetPointer(label);
+                break;
+              case KW_PBZ:
+                scripti->pbxyz_val = ftokens[i];
+                scripti->pbxyz_dir = 3;
+                strcpy(label, "PBZ");
+                scripti->c_pbxyz   = GetPointer(label);
+                break;
+              case KW_PB3D:
+                scripti->pbxyz_val = 0.0;
+                scripti->pbxyz_dir = 0;
+                strcpy(label, "PB3D");
+                scripti->c_pbxyz = GetPointer(label);
+                break;
+              case KW_AGL_SLICE:
+                scripti->pbxyz_val = ftokens[i];
+                scripti->pbxyz_dir = 3;
+                strcpy(label, "AGL_SLICE");
+                scripti->c_pbxyz = GetPointer(label);
+                break;
+              case KW_VECTOR:
+                scripti->vector = itokens[i];
+                break;
+              case KW_CELL_CENTERED:
+                scripti->cell_centered = itokens[i];
+                break;
+            }
+          }
+          if(scripti->id==NULL){
+            if(scripti->quantity==NULL){
+              printf("***error: The keyword QUANTITY is required if ID is not used\n");
+              fatal_error = 1;
+            }
+            if(scripti->c_pbxyz==NULL){
+              printf("***error: One of the keywords PBX, PBY or PBZ is required if ID is not used\n");
+              fatal_error = 1;
+            }
+          }
+        }
+        break;
+
+        // LOADSLICE
 //  (char)quantity
 //  1/2/3 (int)dir  (float)position
       case SCRIPT_LOADSLICE:
@@ -998,7 +1183,7 @@ int CompileScript(char *scriptfile){
         break;
     }
     if(scriptEOF==1)break;
-    if(keyword_index!=SCRIPT_UNKNOWN)nscriptinfo++;
+    if(keyword_index!=SCRIPT_UNKNOWN&&fatal_error==0)nscriptinfo++;
   }
   fclose(stream);
   return return_val;
@@ -1576,6 +1761,190 @@ void ScriptLoad3dSmoke(scriptdata *scripti){
 
 }
 
+/* ------------------ SliceMatch ------------------------ */
+
+int SliceMatch(scriptdata *scripti, slicedata *slicei){
+
+  if(scripti->id!=NULL){
+    // not a valid slice if there is no slicelabel or it does not match ID
+    if(slicei->slicelabel==NULL||MatchUpper(slicei->slicelabel, scripti->id)==NOTMATCH)return 0;
+
+    // if QUANTITY is not specified it CANNOT be a velocity slice 
+    if(scripti->quantity==NULL){
+      if(
+        strcmp(slicei->label.shortlabel, "U_VEL")==0||
+        strcmp(slicei->label.shortlabel, "V_VEL")==0||
+        strcmp(slicei->label.shortlabel, "W_VEL")==0){
+        return 0;
+      }
+    }
+    else{
+    // if QUANTITY is specified then it has to match slice's quantity
+      if(strncmp(scripti->quantity, slicei->label.longlabel,strlen(scripti->quantity))!=0)return 0;
+    }
+    return 1;
+  }
+
+  // ID was not specified so slice has to match QUANTITY, direction and position and type (cell or node cenetered)
+  ASSERT(scripti->quantity!=NULL);
+  if(scripti->quantity==NULL)return 0;  // should never happen
+  if(scripti->quantity!=NULL&&strncmp(scripti->quantity, slicei->label.longlabel,strlen(scripti->quantity))!=0)return 0;
+  if(scripti->pbxyz_dir==0){
+    int *min, *max;
+    meshdata *meshi;
+
+    if(slicei->volslice==0)return 0;                                              // need a 3d slice file but didn't find it
+
+    min = slicei->ijk_min;
+    max = slicei->ijk_max;
+    if(min[0]!=0||min[1]!=0||min[2]!=0)return 0;
+    meshi = meshinfo+slicei->blocknumber;
+    if(max[0]!=meshi->ibar||max[1]!=meshi->jbar||max[2]!=meshi->kbar)return 0;
+  }
+  else{
+    if(slicei->slice_filetype==SLICE_TERRAIN){
+      if(strcmp(scripti->c_pbxyz, "AGL_SLICE")!=0)return 0;
+      if(ABS(slicei->above_ground_level-scripti->pbxyz_val)>slicei->delta_orig)return 0;
+    }
+    else{
+      if(slicei->idir!=scripti->pbxyz_dir)return 0;                                 // not a 3d slice and directions don't match
+      if(ABS(slicei->position_orig-scripti->pbxyz_val)>slicei->delta_orig)return 0; // not a 3d slice and positions don't match
+      if(scripti->cell_centered==1&&slicei->slice_filetype!=SLICE_CELL_CENTER)return 0;
+      if(scripti->cell_centered==0&&slicei->slice_filetype!=SLICE_NODE_CENTER)return 0;
+    }
+  }
+  // passed all the test so draw this lice
+  return 1;
+}
+
+/* ------------------ ScriptLoadVSLCF ------------------------ */
+
+void ScriptLoadVSLCF(scriptdata *scripti){
+  int i;
+  int count=0;
+
+  PRINTF("script: loading vector slice file with:");
+  if(scripti->id!=NULL)PRINTF(" ID=%s", scripti->id);
+  if(scripti->quantity!=NULL)PRINTF(" QUANTITY=%s", scripti->quantity);
+  if(scripti->c_pbxyz!=NULL){
+    PRINTF(" %s=%f", scripti->c_pbxyz, scripti->pbxyz_val);
+  }
+  if(scripti->cell_centered==1){
+    PRINTF(" CELL_CENTERED=T");
+  }
+  if(scripti->vector==1){
+    PRINTF(" VECTOR=T");
+  }
+  printf("\n");
+
+  for(i=0;i<nmultivsliceinfo;i++){
+    multivslicedata *mvslicei;
+    vslicedata *vslicei;
+    int j;
+    slicedata *slicei;
+
+    mvslicei = multivsliceinfo + i;
+    if(mvslicei->nvslices<=0)continue;
+    vslicei = vsliceinfo + mvslicei->ivslices[0];
+    slicei = sliceinfo + vslicei->ival;
+
+    if(SliceMatch(scripti, slicei)==0)continue;
+
+    for(j=0;j<mvslicei->nvslices;j++){
+      vslicedata *vslicei;
+      int finalize_save;
+
+      vslicei = vsliceinfo+mvslicei->ivslices[j];
+      finalize_save = vslicei->finalize;
+      if(j==mvslicei->nvslices-1){
+        vslicei->finalize = 1;
+      }
+      else{
+        vslicei->finalize = 0;
+      }
+      LoadVSliceMenu(mvslicei->ivslices[j]);
+      vslicei->finalize = finalize_save;
+      count++;
+    }
+    break;
+  }
+  if(count == 0){
+    fprintf(stderr, "*** Error: Vector slice files of type %s failed to load\n", scripti->cval);
+    if(stderr2!=NULL)fprintf(stderr2, "*** Error: Vector slice files of type %s failed to load\n", scripti->cval);
+  }
+}
+
+/* ------------------ ScriptLoadSLCF ------------------------ */
+
+void ScriptLoadSLCF(scriptdata *scripti){
+  int i;
+  int count = 0;
+  int count2=0;
+
+  if(scripti->vector==1){
+    ScriptLoadVSLCF(scripti);
+    return;
+  }
+
+  PRINTF("script: loading slice file with: ");
+  if(scripti->id!=NULL){
+    if(count2++!=0)printf(", ");
+    PRINTF("ID=%s", scripti->id);
+  }
+  if(scripti->quantity!=NULL){
+    if(count2++!=0)printf(", ");
+    PRINTF("QUANTITY=%s", scripti->quantity);
+  }
+  if(scripti->c_pbxyz!=NULL){
+    if(count2++!=0)printf(", ");
+    if(strcmp(scripti->c_pbxyz,"PB3D")==0){
+      PRINTF("PB3D=T\n");
+    }
+    else{
+      PRINTF("%s=%f", scripti->c_pbxyz, scripti->pbxyz_val);
+    }
+  }
+  if(scripti->cell_centered==1){
+    if(count2++!=0)printf(", ");
+    PRINTF("CELL_CENTERED=T");
+  }
+  if(scripti->vector==1){
+    if(count2++!=0)printf(", ");
+    PRINTF("VECTOR=T");
+  }
+  printf("\n");
+
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    slicei->finalize = 0;
+  }
+  for(i = nsliceinfo-1; i>=0; i--){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    if(SliceMatch(scripti, slicei)==0)continue;
+    slicei->finalize = 1;
+    break;
+  }
+
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    if(SliceMatch(scripti, slicei)==0)continue;
+    
+    LoadSliceMenu(i);
+    count++;
+    if(slicei->finalize==1)break;
+  }
+  if(count==0){
+    fprintf(stderr, "*** Error: Slice files of type %s failed to load\n", scripti->cval);
+    if(stderr2!=NULL)fprintf(stderr2, "*** Error: Slice files of type %s failed to load\n", scripti->cval);
+  }
+}
+
 /* ------------------ ScriptLoadSlice ------------------------ */
 
 void ScriptLoadSlice(scriptdata *scripti){
@@ -1735,6 +2104,10 @@ void ScriptLoadSliceRender(scriptdata *scripti){
     float slice_load_time = 0.0;
     FILE_SIZE total_slice_size = 0.0;
 
+#ifdef pp_CPPBOUND_DIALOG
+    SetLoadedSliceBounds(mslicei->islices, mslicei->nslices);
+#endif
+
     START_TIMER(slice_load_time);
     GLUTSETCURSOR(GLUT_CURSOR_WAIT);
     for(j = 0; j<mslicei->nslices; j++){
@@ -1742,6 +2115,7 @@ void ScriptLoadSliceRender(scriptdata *scripti){
       int finalize_save;
       slicedata *slicei;
       float time_value;
+      FILE_SIZE slicefile_size;
 
       slicei = sliceinfo+mslicei->islices[j];
       finalize_save = slicei->finalize;
@@ -1771,7 +2145,15 @@ void ScriptLoadSliceRender(scriptdata *scripti){
       }
 
       FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_value);
-      total_slice_size += LoadSlicei(SET_SLICECOLOR, mslicei->islices[j], frame_current, &time_value);
+      slicefile_size = LoadSlicei(SET_SLICECOLOR, mslicei->islices[j], frame_current, &time_value);
+
+      if(slicefile_size==0){
+        scripti->exit = 1;
+        valid_frame = 0;
+        RenderState(RENDER_OFF);
+        break;
+      }
+      total_slice_size += slicefile_size;
       scripti->fval4 = time_value;
       CheckMemory;
 
@@ -1805,6 +2187,9 @@ void ScriptLoadSliceRender(scriptdata *scripti){
   if(valid_frame==1&&count==0){
     fprintf(stderr,  "*** Error: Slice files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
     if(stderr2!=NULL)fprintf(stderr2, "*** Error: Slice files of type %s, frame %i failed to load\n", scripti->cval, frame_current);
+    scripti->exit = 1;
+    valid_frame = 0;
+    RenderState(RENDER_OFF);
   }
 }
 
@@ -2053,7 +2438,7 @@ void ScriptPlot3dProps(scriptdata *scripti){
   contour_type=CLAMP(scripti->ival4,0,2);
   UpdatePlot3dDisplay();
 
-  if(visVector==1&&ReadPlot3dFile==1){
+  if(visVector==1&&nplot3dloaded>0){
     meshdata *gbsave,*gbi;
 
     gbsave=current_mesh;
@@ -2335,7 +2720,7 @@ void ScriptLoadFile(scriptdata *scripti){
 
     plot3di = plot3dinfo + i;
     if(strcmp(plot3di->file,scripti->cval)==0){
-      ReadPlot3dFile=1;
+      plot3di->finalize = 1;
       ReadPlot3D(plot3di->file,i,LOAD,&errorcode);
       UpdateMenu();
       return;
@@ -3126,6 +3511,9 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_LOADPARTICLES:
       ScriptLoadParticles(scripti);
+      break;
+    case SCRIPT_LOADSLCF:
+      ScriptLoadSLCF(scripti);
       break;
     case SCRIPT_LOADSLICE:
       ScriptLoadSlice(scripti);

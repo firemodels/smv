@@ -73,7 +73,7 @@ void diff_slices(FILE *stream_out){
   for(j=0;j<caseinfo->nsliceinfo;j++){
     float valmin, valmax;
     char *file1, *file2;
-    char fullfile1[1024], fullfile2[1024], outfile[1024],  outfile2[1024];
+    char fullfile1[1024], fullfile2[1024], outfile[1024], outfile_bnd[1024], outfile2[1024];
     slice *slicei, *slice1;//, *slice2;
     FILE *stream;
     int unit1, unit2, unit3;
@@ -116,6 +116,9 @@ void diff_slices(FILE *stream_out){
 
     MakeOutFile(outfile,destdir,file1,".sf");
     if(strlen(outfile)==0)continue;
+    strcpy(outfile_bnd, outfile);
+    strcat(outfile_bnd, ".bnd");
+
     stream=fopen(outfile,"w");
     if(stream==NULL)continue;
     fclose(stream);
@@ -254,6 +257,16 @@ void diff_slices(FILE *stream_out){
     fprintf(stream_out,"MINMAXSLCF\n");
     fprintf(stream_out,"  %s\n",outfile2);
     fprintf(stream_out,"  %f %f %f %f\n",valmin,valmax,valmin_percentile,valmax_percentile);
+
+    {
+      FILE *stream_bnd=NULL;
+
+      stream_bnd = fopen(outfile_bnd, "w");
+      if(stream_bnd!=NULL){
+        fprintf(stream_bnd, "%f %f %f", 0.0, valmin, valmax);
+        fclose(stream_bnd);
+      }
+    }
 
     FORTclosefortranfile(&unit1);
     FORTclosefortranfile(&unit2);

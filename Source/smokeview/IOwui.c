@@ -8,7 +8,6 @@
 #include <string.h>
 #include GLUT_H
 
-#include "update.h"
 #include "smokeviewvars.h"
 #include "IOobjects.h"
 
@@ -22,7 +21,7 @@
 
 void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigned int **indices_arg, int *sizeof_indices_arg, int *nindices_arg){
   geomlistdata *terrain;
-  int i, sizeof_indices, sizeof_vertices, sizeof_tvertices, terrain_nindices;
+  int i, sizeof_indices, sizeof_vertices, sizeof_tvertices, terrain_nindices_local;
   float terrain_xmin, terrain_xmax, terrain_ymin, terrain_ymax;
   int first = 1;
 
@@ -112,13 +111,13 @@ void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigne
       terrain_colors[3*i+2] = 1.0;
     }
   }
-  terrain_nindices = 3*terrain->ntriangles;
+  terrain_nindices_local = 3*terrain->ntriangles;
   terrain_nfaces = terrain->ntriangles;
   *vertices_arg = terrain_vertices;
   *sizeof_vertices_arg = sizeof_vertices;
   *indices_arg = terrain_indices;
   *sizeof_indices_arg = sizeof_indices;
-  *nindices_arg = terrain_nindices;
+  *nindices_arg = terrain_nindices_local;
 }
 
 #ifdef pp_WUI_VAO
@@ -1429,10 +1428,6 @@ int GetTerrainData(char *file, terraindata *terri){
   float *xplt, *yplt, *z_terrain;
   int returncode=1;
   int nvalues,i;
-#ifdef pp_DEBUG_TERRAIN
-  FILE *stream = NULL;
-  char fileout[255];
-#endif
 
 #ifdef _DEBUG
   printf("reading terrain data mesh: %i\n",(int)(terri-terraininfo));
@@ -1472,27 +1467,6 @@ int GetTerrainData(char *file, terraindata *terri){
   for(i = 0, nvalues=0; i<ibp1*jbp1; i++){
     if(z_terrain[i]>zmin_cutoff)nvalues++;
   }
-#ifdef pp_DEBUG_TERRAIN
-  strcpy(fileout, file);
-  strcat(fileout, ".csv");
-  stream = fopen(fileout, "w");
-  if(stream!=NULL){
-    int j;
-
-    fprintf(stream, "%s\n", file);
-    fprintf(stream, " ibar+1,jbar+1,xmin,xmax,ymin,ymax,z cutoff\n");
-    fprintf(stream, " %i,%i,%f,%f,%f,%f,%f\n", ibp1, jbp1,xplt[0], xplt[ibp1-1], yplt[0], yplt[jbp1-1],zmin_cutoff);
-    fprintf(stream, "\nelevations\n");
-    for(j = jbp1-1; j>=0; j--){
-      for(i = 0; i<ibp1-1; i++){
-        fprintf(stream, " %f,", z_terrain[i*jbp1+j]);
-      }
-      i = ibp1-1;
-      fprintf(stream, " %f\n", z_terrain[i*jbp1+j]);
-    }
-    fclose(stream);
-  }
-#endif
   terri->nvalues = nvalues;
   if(returncode!=0)returncode=0;
   fclose(WUIFILE);

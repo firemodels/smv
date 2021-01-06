@@ -245,6 +245,11 @@
 #define ABS(a) ((a)>=0 ? (a) : (-(a)))
 #endif
 
+#ifndef SMV_ROUND
+#define SMV_ROUND(x,n) ( (float)((int)(pow(10.0,n)*x+0.5))/(float)pow(10.0,n) )
+#endif
+
+
 #ifndef SIGN
 #define SIGN(x) ((x)>=0 ?  1  :  -1)
 #endif
@@ -283,7 +288,7 @@
 
 #ifndef GET_QVAL
 #define GET_QVAL(i,j,k,n) \
-  if(cache_plot3d_data==1){\
+  if(qdata!=NULL){\
     qval=qdata[IJKN(i,j,k,n)];\
   }\
   else{\

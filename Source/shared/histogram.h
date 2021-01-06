@@ -31,6 +31,7 @@ typedef struct {
   float val_mean, val_stdev;
   float time;
   int time_defined;
+  float median;
   int complete;
 } histogramdata;
 
@@ -40,6 +41,7 @@ void CompleteHistogram(histogramdata *histogram);
 void CopyBuckets2Histogram(int *buckets, int nbuckets, float valmin, float valmax, histogramdata *histogram);
 void CopyPolar2Histogram(float *speed, float *angle, int nvals, float rmin, float rmax, histogramdata *histogram);
 void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histogramdata *histogram);
+void MergeVals2Histogram(float *vals, char *mask, float *weight, int nvals, histogramdata *histogram);
 void CopyUV2Histogram(float *times, float *uvals, float *vvals, int nvals, float tmin, float tmax, float rmin, float rmax, histogramdata *histogram);
 void FreeHistogram(histogramdata *histogram);
 int Get2DBounds(float *times, float *uvals, float *vvals, int nvals, float tmin, float tmax, float *rmin, float *rmax);

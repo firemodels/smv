@@ -69,6 +69,47 @@ void GLUI_Bitmap::load_from_array( int *array )
 
   for( i = 0; i<w*h*3; i++ )
     pixels[i] = (unsigned char) array[i+2];
+
+
+#ifdef pp_OSX_HIGHRES
+#define IJFROM(i,j) (3*((i)*w+(j)))
+#define IJTO(i,j) (3*((i)*(2*w)+(j)))
+
+  pixels_highres = (unsigned char *)malloc(sizeof(unsigned char)*(2*w)*(2*h)*3);
+  for(i = 0; i<h; i++){
+    int j;
+    
+    for(j = 0; j<w; j++){
+      unsigned char r, g, b;
+      int ijfrom, ijto;
+
+      ijfrom = IJFROM(i, j);
+      r = pixels[ijfrom];
+      g = pixels[ijfrom+1];
+      b = pixels[ijfrom+2];
+
+      ijto = IJTO(2*i, 2*j);
+      pixels_highres[ijto]   = r;
+      pixels_highres[ijto+1] = g;
+      pixels_highres[ijto+2] = b;
+
+      ijto = IJTO(2*i+1, 2*j);
+      pixels_highres[ijto]   = r;
+      pixels_highres[ijto+1] = g;
+      pixels_highres[ijto+2] = b;
+
+      ijto = IJTO(2*i, 2*j+1);
+      pixels_highres[ijto]   = r;
+      pixels_highres[ijto+1] = g;
+      pixels_highres[ijto+2] = b;
+
+      ijto = IJTO(2*i+1, 2*j+1);
+      pixels_highres[ijto]   = r;
+      pixels_highres[ijto+1] = g;
+      pixels_highres[ijto+2] = b;
+    }
+  }
+#endif
 }
 
 
@@ -82,8 +123,19 @@ void GLUI_StdBitmaps::draw( int bitmap_num, int x, int y )
     glRasterPos2f( (float)x+.5, (float)y + (float)bitmaps[bitmap_num].h + .5);
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 
+#ifdef pp_OSX_HIGHRES
+    if(double_scale==1){
+    glDrawPixels(2*bitmaps[bitmap_num].w, 2*bitmaps[bitmap_num].h,
+                 GL_RGB, GL_UNSIGNED_BYTE, bitmaps[bitmap_num].pixels_highres);
+    }
+    else{
+      glDrawPixels(bitmaps[bitmap_num].w, bitmaps[bitmap_num].h,
+                   GL_RGB, GL_UNSIGNED_BYTE, bitmaps[bitmap_num].pixels ); 
+    }
+#else
     glDrawPixels( bitmaps[bitmap_num].w, bitmaps[bitmap_num].h,
 		  GL_RGB, GL_UNSIGNED_BYTE, bitmaps[bitmap_num].pixels ); 
+#endif
 
     /*    printf( "%d %d %d %d %d %d %d\n", 
 	  bitmaps[bitmap_num].w, bitmaps[bitmap_num].h, 0, 0, 0, 0,

@@ -1,3 +1,4 @@
+#define IN_GLUICPP
 /****************************************************************************
   
   GLUI User Interface Toolkit
@@ -19,7 +20,11 @@
 #include "glui.h"
 #include "stdinc.h"
 #ifdef pp_OSX
+#ifdef pp_QUARTZ
+#include <GL/glut.h>
+#else
 #include <GLUT/glut.h>
+#endif
 #else
 #include <GL/glut.h>
 #endif
@@ -551,7 +556,11 @@ int _glutBitmapWidthString( void *font, char *s )
     width += glutBitmapWidth( font, *p );
     p++;
   }
-
+#ifdef pp_OSX_HIGHRES
+  if(double_scale==1){
+    width /=2;
+  }
+#endif
   return width;
 }
 
@@ -1021,6 +1030,11 @@ GLUI_Main::GLUI_Main( void )
   GLUI_Master.glui_id_counter++;
 
   font                    = GLUT_BITMAP_HELVETICA_12;
+#ifdef pp_OSX_HIGHRES
+  if(double_scale==1){
+    font                    = (void *)GLUT_BITMAP_HELVETICA_24;
+  }
+#endif
   curr_cursor             = GLUT_CURSOR_LEFT_ARROW;
 
   bkgd_color.set( 200, 200, 200 );

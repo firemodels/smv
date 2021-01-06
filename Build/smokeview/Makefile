@@ -23,6 +23,7 @@ ifeq ($(shell echo "check_quotes"),"check_quotes")
   GIT_DATE   := $(shell ..\..\..\Utilities\Scripts\gitlog)
   GIT_BRANCH := $(shell ..\..\..\Utilities\Scripts\gitbranch)
 else
+  GLIBVERS   := $(shell echo $(GLIBVERS))
   GIT_HASH   := $(shell git describe --long --dirty)
   GIT_DATE   := $(shell git log -1 --format=%cd)
   GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
@@ -40,9 +41,9 @@ INTEL_COMPINFO=-Dpp_COMPVER=\"$(INTEL_COMPVERSION)\"
 GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 .rc.obj:
-	windres $^ -o $@
+	windres $< -o $@
 %.obj : %.rc
-	windres $^ -o $@
+	windres $< -o $@
 
 #----------------------------------------------------------------------------
 # Should not need to edit lines below except to add or 'debug' target entries
@@ -55,17 +56,22 @@ bin = .
 # Definition of the object variables
 
 obj = main.o menus.o IOscript.o IOshooter.o glui_objects.o glui_shooter.o glui_wui.o\
-      csphere.o colortimebar.o smv_endian.o camera.o IOgeometry.o IOwui.o \
-      IOobjects.o IOtour.o glui_display.o glui_tour.o getdatacolors.o smokeview.o\
-      output.o renderimage.o renderhtml.o isobox.o getdatabounds.o readsmv.o scontour2d.o\
-      glui_smoke.o glui_clip.o glui_stereo.o glui_geometry.o glui_motion.o\
-      glui_bounds.o dmalloc.o assert.o \
-      compress.o IOvolsmoke.o IOsmoke.o IOplot3d.o IOslice.o IOboundary.o\
-      IOpart.o IOzone.o IOiso.o callbacks.o drawGeometry.o\
-      glui_colorbar.o skybox.o file_util.o string_util.o startup.o glui_trainer.o\
-      shaders.o unit.o threader.o histogram.o translate.o update.o viewports.o\
-      smv_geometry.o showscene.o glew.o infoheader.o  md5.o sha1.o sha256.o stdio_m.o\
+      csphere.o colortimebar.o smv_endian.o camera.o IOgeometry.o IOwui.o IOobjects.o\
+      IOtour.o glui_display.o glui_tour.o getdatacolors.o smokeview.o output.o renderimage.o\
+      renderhtml.o isobox.o getdatabounds.o readsmv.o scontour2d.o glui_smoke.o glui_clip.o\
+      glui_stereo.o glui_geometry.o glui_motion.o glui_bounds.o dmalloc.o assert.o\
+      compress.o IOvolsmoke.o IOsmoke.o IOplot3d.o IOslice.o IOboundary.o IOpart.o IOzone.o\
+      IOiso.o callbacks.o drawGeometry.o glui_colorbar.o skybox.o file_util.o string_util.o\
+      startup.o glui_trainer.o shaders.o unit.o threader.o histogram.o translate.o update.o\
+      viewports.o smv_geometry.o showscene.o glew.o infoheader.o  md5.o sha1.o sha256.o\
+      stdio_m.o stdio_buffer.o \
       fdsmodules.o gsmv.o getdata.o
+
+incs = contourdefs.h glui_bounds.h glui_motion.h glui_smoke.h glui_tour.h glui_wui.h infoheader.h \
+       IOobjects.h IOscript.h IOvolsmoke.h lua_api.h options.h smokefortheaders.h smokeheaders.h smokeviewdefs.h \
+       smokeviewvars.h structures.h threader.h viewports.h ASSERT.h csphere.h dirent_win.h histogram.h isodefs.h \
+       MALLOCC.h pragmas.h stdio_buffer.h string_util.h compress.h datadefs.h file_util.h interp.h lint.h options_common.h \
+       smv_endian.h stdio_m.h translate.h
 
 ifeq ($(ICON),icon)
 obj += resource.o
@@ -73,6 +79,7 @@ endif
 
 ifeq ($(LUA_SCRIPTING),true)
 obj += c_api.o lua_api.o
+incs += c_api.h
 endif
 
 objwin = $(obj:.o=.obj)
@@ -378,16 +385,16 @@ INTEL_LIBS_OSX = $(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libif
 # ------------- intel_osx_64 ----------------
 
 intel_osx_64 : FFLAGS    = -O0 -m64 -traceback -static-intel -fpp -D pp_OSX  -mmacosx-version-min=10.9 -stand:f08
-intel_osx_64 : CFLAGS    = -O0 -m64 -traceback -static-intel -D pp_OSX $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO) -mmacosx-version-min=10.9
+intel_osx_64 : CFLAGS    = -O0 -m64 -I $(SOURCE_DIR)/glui_gl -traceback -static-intel -D pp_OSX $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO) -mmacosx-version-min=10.9
 intel_osx_64 : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)
 intel_osx_64 : CFLAGS    += -D pp_LUA
-intel_osx_64 : SMVLUACORE_FILES += $(LIB_DIR)/intel_osx_64/lpeg.so
-intel_osx_64 : LIBLUA    += $(LIB_DIR)/intel_osx_64/liblua.a -ldl
+intel_osx_64 : SMVLUACORE_FILES += $(LIB_DIR)/intel_osx_$(NOQUARTZ)64/lpeg.so
+intel_osx_64 : LIBLUA    += $(LIB_DIR)/intel_osx_$(NOQUARTZ)64/liblua.a -ldl
 endif
 # remove following from LFLAGS line
 # -L $(GLIBDIR) -lgfortran
-intel_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_64 $(SMV_LIBS_OSX) -traceback -static-intel  -mmacosx-version-min=10.9
+intel_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_$(NOQUARTZ)64 $(SMV_LIBS_OSX) -traceback -static-intel  -mmacosx-version-min=10.9
 ifeq ($(GLUT),freeglut)
 intel_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 else
@@ -400,7 +407,7 @@ endif
 intel_osx_64 : CC        = icc
 intel_osx_64 : CPP       = icpc
 intel_osx_64 : FC        = ifort
-intel_osx_64 : exe       = smokeview_osx_$(SMV_TESTSTRING)64
+intel_osx_64 : exe       = smokeview_osx_$(SMV_TESTSTRING)$(NOQUARTZ)64
 
 intel_osx_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 	icpc -o $(bin)/$(exe) $(obj) $(LFLAGS) $(INTEL_LIBS_OSX) $(LIBLUA)
@@ -408,8 +415,8 @@ intel_osx_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 # ------------- intel_osx_64_db ----------------
 
 intel_osx_64_db : FFLAGS    = -O0 -g -m64 -traceback -static-intel -fpp     -D pp_OSX  -mmacosx-version-min=10.9 -stand:f08
-intel_osx_64_db : CFLAGS    = -O0 -g -m64 -traceback -static-intel -D _DEBUG -D pp_OSX $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO) -mmacosx-version-min=10.9
-intel_osx_64_db : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_64 $(SMV_LIBS_OSX) -traceback -static-intel -mmacosx-version-min=10.9
+intel_osx_64_db : CFLAGS    = -O0 -g -m64 $(SOURCE_DIR)/glui_gl -traceback -static-intel -D _DEBUG -D pp_OSX $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO) -mmacosx-version-min=10.9
+intel_osx_64_db : LFLAGS    = -m64 -L$(LIB_DIR)/intel_osx_$(NOQUARTZ)64 $(SMV_LIBS_OSX) -traceback -static-intel -mmacosx-version-min=10.9
 ifeq ($(GLUT),freeglut)
 intel_osx_64_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 else
@@ -422,7 +429,7 @@ endif
 intel_osx_64_db : CC        = icc
 intel_osx_64_db : CPP       = icpc
 intel_osx_64_db : FC        = ifort
-intel_osx_64_db : exe       = smokeview_osx_$(SMV_TESTSTRING)64_db
+intel_osx_64_db : exe       = smokeview_osx_$(SMV_TESTSTRING)$(NOQUARTZ)64_db
 
 intel_osx_64_db : $(obj)
 	icpc -o $(bin)/$(exe) $(obj) $(LFLAGS) $(INTEL_LIBS_OSX)
@@ -430,7 +437,7 @@ intel_osx_64_db : $(obj)
 # ------------- gnu_osx_64_db ----------------
 
 gnu_osx_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form $(SMV_PROFILEFLAG)
-gnu_osx_64_db : CFLAGS    = -O0 -ggdb -m64 -D _DEBUG -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wall -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
+gnu_osx_64_db : CFLAGS    = -O0 -ggdb -m64 -D _DEBUG -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
 gnu_osx_64_db : LFLAGS    = -m64 -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX) $(GLIBDIROPT) -lgfortran $(SMV_PROFILEFLAG)
 ifeq ($(GLUT),freeglut)
 gnu_osx_64_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
@@ -442,9 +449,9 @@ else
 gnu_osx_64_db : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 endif
 endif
-gnu_osx_64_db : CC        = gcc
-gnu_osx_64_db : CPP       = g++
-gnu_osx_64_db : FC        = gfortran
+gnu_osx_64_db : CC        = gcc$(GLIBVERS)
+gnu_osx_64_db : CPP       = g++$(GLIBVERS)
+gnu_osx_64_db : FC        = gfortran$(GLIBVERS)
 gnu_osx_64_db : exe       = smokeview_osx_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
 
 gnu_osx_64_db : $(obj)
@@ -453,7 +460,7 @@ gnu_osx_64_db : $(obj)
 # ------------- gnu_osx_64 ----------------
 
 gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form $(SMV_PROFILEFLAG)
-gnu_osx_64 : CFLAGS    = -O0 -m64              -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wall -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
+gnu_osx_64 : CFLAGS    = -O0 -m64              -D pp_OSX -D pp_GCC $(SMV_TESTFLAG) -Wall -Wno-comment -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
 gnu_osx_64 : LFLAGS    = -m64 -L$(LIB_DIR)/gnu_osx_64 $(SMV_LIBS_OSX) $(GLIBDIROPT) -lgfortran $(SMV_PROFILEFLAG)
 ifeq ($(GLUT),freeglut)
 gnu_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
@@ -465,9 +472,9 @@ else
 gnu_osx_64 : LFLAGS   += -L /opt/X11/lib -lX11 -lXmu -lGLU -lGL
 endif
 endif
-gnu_osx_64 : CC        = gcc
-gnu_osx_64 : CPP       = g++
-gnu_osx_64 : FC        = gfortran
+gnu_osx_64 : CC        = gcc$(GLIBVERS)
+gnu_osx_64 : CPP       = g++$(GLIBVERS)
+gnu_osx_64 : FC        = gfortran$(GLIBVERS)
 gnu_osx_64 : exe       = smokeview_osx_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
 gnu_osx_64 : $(obj)
@@ -490,6 +497,12 @@ string_util.obj:	.FORCE
 
 gsmv.o : fdsmodules.o
 getdata.o : gsmv.o fdsmodules.o
+
+# *** do a full rebuild if any header file has changed
+#
+$(obj) : $(incs)
+
+$(objwin) : $(incs)
 
 gsmv.obj : fdsmodules.obj
 getdata.obj : gsmv.obj fdsmodules.obj

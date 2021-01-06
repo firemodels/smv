@@ -23,16 +23,9 @@
 #define SETVALMAX 2
 #define VALMIN 3
 #define VALMAX 4
-#ifdef pp_NEWBOUND_DIALOG
-#define GLUI_VALMIN 103
-#define GLUI_VALMAX 104
-#endif
 #define FILETYPE_INDEX      5
 #define FILE_UPDATE         6
 #define FILE_RELOAD         7
-#ifdef pp_NEWBOUND_DIALOG
-#define GLUI_RADIO_COMPUTE 29
-#endif
 #define UPDATE_DATA_COLORS 8
 #define UPDATEPLOT 10
 #define PLOTISO 11
@@ -71,18 +64,6 @@
 #define ISO_TRANSPARENCY_OPTION  216
 #define ISO_COLORBAR_LIST        217
 #define ISO_OUTLINE_IOFFSET      218
-#ifdef pp_NEWBOUND_DIALOG
-#define COMPUTE_BOUNDS           219
-#define GLOBAL_BOUNDS_MIN        220
-#define GLOBAL_BOUNDS_MAX        221
-#define GLOBAL_BOUNDS_LOADED     222
-#define GLOBAL_BOUNDS_MIN_LOADED 223
-#define GLOBAL_BOUNDS_MAX_LOADED 224
-#define FILE_LOADED_ONLY         226
-#define BOUNDS_GLOBAL 0
-#define BOUNDS_LOADED 1
-#define BOUNDS_INI    2
-#endif
 
 #define ISO_TRANSPARENT_CONSTANT 0
 #define ISO_TRANSPARENT_VARYING  1
@@ -120,6 +101,7 @@
 #define COLORBAND 115
 #define SLICE_IN_OBST 116
 #define COLORLABEL_DIGITS 123
+#define SLICE_SKIP 124
 
 #define UPDATE_VECTOR 101
 #define UPDATE_VECTOR_FROM_SMV 102

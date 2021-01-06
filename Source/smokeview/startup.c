@@ -7,10 +7,10 @@
 #include GLUT_H
 
 #include "infoheader.h"
-#include "update.h"
 #ifdef pp_LUA
 #include "lua_api.h"
 #endif
+#include "stdio_buffer.h"
 
 /* ------------------ Init ------------------------ */
 
@@ -122,7 +122,7 @@ void ReadBoundINI(void){
   char *fullfilename = NULL;
 
   if(boundinfo_filename == NULL)return;
-  fullfilename = GetFileName(smokeviewtempdir, boundinfo_filename, NOT_FORCE_IN_DIR);
+  fullfilename = GetFileName(smokeview_scratchdir, boundinfo_filename, NOT_FORCE_IN_DIR);
   if(fullfilename != NULL)stream = fopen(fullfilename, "r");
   if(stream == NULL || IsFileNewer(smv_filename, fullfilename) == 1){
     if(stream != NULL)fclose(stream);
@@ -189,7 +189,7 @@ int SetupCase(int argc, char **argv){
   NewMemory((void **)&part_globalbound_filename, strlen(fdsprefix)+strlen(".prt5.gbnd")+1);
   STRCPY(part_globalbound_filename, fdsprefix);
   STRCAT(part_globalbound_filename, ".prt5.gbnd");
-  part_globalbound_filename = GetFileName(smokeviewtempdir, part_globalbound_filename, NOT_FORCE_IN_DIR);
+  part_globalbound_filename = GetFileName(smokeview_scratchdir, part_globalbound_filename, NOT_FORCE_IN_DIR);
 
   // setup input files names
 
@@ -207,9 +207,9 @@ int SetupCase(int argc, char **argv){
   {
     bufferstreamdata *smv_streaminfo = NULL;
 
-    PRINTF(_("processing smokeview file:"));
-    PRINTF(" %s\n", input_file);
-    smv_streaminfo = GetSMVBuffer(input_file, iso_filename);
+    PRINTF("reading  %s\n", input_file);
+    smv_streaminfo = GetSMVBuffer(iso_filename, input_file);
+
     return_code = ReadSMV(smv_streaminfo);
     if(smv_streaminfo!=NULL){
       FCLOSE(smv_streaminfo);
@@ -242,12 +242,23 @@ int SetupCase(int argc, char **argv){
   SetUnitVis();
 
   CheckMemory;
+  readini_output = 0;
   ReadIni(NULL);
+  readini_output = 1;
+
   ReadBoundINI();
 
   UpdateRGBColors(COLORBAR_INDEX_NONE);
 
+#ifdef pp_CPPBOUND_DIALOG
+  if(use_graphics==0){
+    SliceBoundsSetupNoGraphics();
+    return 0;
+  }
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   if(use_graphics==0)return 0;
+#endif
   glui_defined = 1;
   InitTranslate(smokeview_bindir, tr_name);
 
@@ -299,7 +310,7 @@ int GetScreenHeight(void){
   strcpy(command,"system_profiler SPDisplaysDataType | grep Resolution | awk '{print $4}' >& ");
   strcpy(height_file, fdsprefix);
   strcat(height_file, ".hgt");
-  full_height_file = GetFileName(smokeviewtempdir, height_file, NOT_FORCE_IN_DIR);
+  full_height_file = GetFileName(smokeview_scratchdir, height_file, NOT_FORCE_IN_DIR);
   strcat(command,full_height_file);
   system(command);
   stream = fopen(full_height_file,"r");
@@ -313,23 +324,22 @@ int GetScreenHeight(void){
 }
 #endif
 
-/* ------------------ SetupGlut ------------------------ */
+/* ------------------ InitStartupDirs ------------------------ */
 
-void SetupGlut(int argc, char **argv){
-  int i;
-  char *smoketempdir;
-  size_t lensmoketempdir;
+void InitStartupDirs(void){
 #ifdef pp_OSX
   char workingdir[1000];
 #endif
+  char *homedir = NULL;
+  int freehome = 0;
 
 // get smokeview bin directory from argv[0] which contains the full path of the smokeview binary
 
   // create full path for smokeview.ini file
 
-  NewMemory((void **)&smokeviewini,    (unsigned int)(strlen(smokeview_bindir)+14));
-  STRCPY(smokeviewini,smokeview_bindir);
-  STRCAT(smokeviewini,"smokeview.ini");
+  NewMemory((void **)&smokeviewini, (unsigned int)(strlen(smokeview_bindir)+14));
+  STRCPY(smokeviewini, smokeview_bindir);
+  STRCAT(smokeviewini, "smokeview.ini");
 
   // create full path for html template file
 
@@ -341,60 +351,40 @@ void SetupGlut(int argc, char **argv){
   STRCPY(smokeviewvr_html, smokeview_bindir);
   STRCAT(smokeviewvr_html, "smokeview_vr.html");
 
-  startup_pass=2;
+  startup_pass = 2;
 
-  smoketempdir=getenv("SVTEMPDIR");
-  if(smoketempdir==NULL)smoketempdir=getenv("svtempdir");
-  if(smoketempdir == NULL){
-    char *homedir;
-
-    homedir = getenv("HOME");
-    if(homedir != NULL){
-      NewMemory((void **)&smoketempdir, strlen(homedir) + strlen(dirseparator) + strlen(".smokeview") + 1);
-      strcpy(smoketempdir, homedir);
-      strcat(smoketempdir, dirseparator);
-      strcat(smoketempdir, ".smokeview");
-      if(FileExistsOrig(smoketempdir)==NO){
-        if(MKDIR(smoketempdir)!=0){
-          FREEMEMORY(smoketempdir);
-        }
-      }
-
-      // only needed if -info option is used
-
-      if(generate_info_from_commandline == 1){
-        NewMemory((void **)&smokeview_cachedir, strlen(homedir)+strlen(dirseparator)+strlen(".smokeview")+1);
-        strcpy(smokeview_cachedir, homedir);
-        strcat(smokeview_cachedir, dirseparator);
-        strcat(smokeview_cachedir, ".smokeview");
-        if(FileExistsOrig(smokeview_cachedir)==NO){
-          if(MKDIR(smokeview_cachedir)!=0){
-            FREEMEMORY(smokeview_cachedir);
-          }
-        }
-      }
-    }
-  }
-
-  if(smoketempdir == NULL){
-    NewMemory((void **)&smoketempdir,8);
 #ifdef WIN32
-    strcpy(smoketempdir,"c:\\temp");
+  homedir = getenv("userprofile");
 #else
-    strcpy(smoketempdir, "/tmp");
+  homedir = getenv("HOME");
 #endif
+
+  if(homedir==NULL){
+    NewMemory((void **)&homedir, 2);
+    freehome = 1;
+    strcpy(homedir, ".");
   }
 
-  if(smoketempdir != NULL){
-    lensmoketempdir = strlen(smoketempdir);
-    if(NewMemory((void **)&smokeviewtempdir,(unsigned int)(lensmoketempdir+2))!=0){
-      STRCPY(smokeviewtempdir,smoketempdir);
-      if(smokeviewtempdir[lensmoketempdir-1]!=dirseparator[0]){
-        STRCAT(smokeviewtempdir,dirseparator);
-      }
-      PRINTF("%s",_("Scratch directory:"));
-      PRINTF(" %s\n",smokeviewtempdir);
-    }
+  NewMemory((void **)&smokeview_scratchdir, strlen(homedir)+strlen(dirseparator)+strlen(".smokeview")+strlen(dirseparator)+1);
+  strcpy(smokeview_scratchdir, homedir);
+  strcat(smokeview_scratchdir, dirseparator);
+  strcat(smokeview_scratchdir, ".smokeview");
+  strcat(smokeview_scratchdir, dirseparator);
+  if(FileExistsOrig(smokeview_scratchdir)==NO){
+    MKDIR(smokeview_scratchdir);
+  }
+
+  NewMemory((void **)&smokeviewini_filename, strlen(smokeview_scratchdir)+strlen(dirseparator)+strlen("smokeview.ini")+2);
+  strcpy(smokeviewini_filename, smokeview_scratchdir);
+  strcat(smokeviewini_filename, dirseparator);
+  strcat(smokeviewini_filename, "smokeview.ini");
+
+  PRINTF("Scratch directory: %s\n", smokeview_scratchdir);
+  PRINTF("    smokeview.ini: %s\n", smokeviewini_filename);
+
+  if(freehome==1){
+  // don't free homedir if it is a pointer defined by getenv
+    FREEMEMORY(homedir);
   }
 
 #ifdef pp_OSX
@@ -402,12 +392,22 @@ void SetupGlut(int argc, char **argv){
 #endif
 
 #ifdef pp_BETA
-  fprintf(stderr,"%s\n","\n*** This version of Smokeview is intended for review and testing ONLY. ***");
+  fprintf(stderr, "%s\n", "\n*** This version of Smokeview is intended for review and testing ONLY. ***");
 #endif
 
 #ifdef pp_OSX
-  getcwd(workingdir,1000);
+  getcwd(workingdir, 1000);
 #endif
+
+}
+
+/* ------------------ SetupGlut ------------------------ */
+
+void SetupGlut(int argc, char **argv){
+  int i;
+
+  InitStartupDirs();
+
   if(use_graphics==1){
     PRINTF("\n");
     PRINTF("%s\n",_("initializing Glut"));
@@ -429,18 +429,32 @@ void SetupGlut(int argc, char **argv){
 
     max_screenWidth = glutGet(GLUT_SCREEN_WIDTH);
     max_screenHeight = glutGet(GLUT_SCREEN_HEIGHT);
+#ifdef pp_OSX_HIGHRES
+    if(double_scale==1){
+      max_screenWidth  *= 2;
+      max_screenHeight *= 2;
+    }
+#endif
     if(trainer_mode==1){
       int TRAINER_WIDTH;
+      int TRAINER_HEIGHT;
       int scrW, scrH;
 
       TRAINER_WIDTH=300;
-      scrW = glutGet(GLUT_SCREEN_WIDTH)-TRAINER_WIDTH;
-      scrH = glutGet(GLUT_SCREEN_HEIGHT)-50;
+      TRAINER_HEIGHT=50;
+#ifdef pp_OSX_HIGHRES
+      if(double_scale==1){
+        TRAINER_WIDTH  *= 2;
+        TRAINER_HEIGHT *= 2;
+      }
+#endif
+      scrW = max_screenWidth  - TRAINER_WIDTH;
+      scrH = max_screenHeight - TRAINER_HEIGHT;
       SetScreenSize(&scrW,&scrH);
       max_screenWidth = screenWidth;
       max_screenHeight = screenHeight;
     }
-    InitOpenGL();
+    InitOpenGL(PRINT);
   }
 
   NewMemory((void **)&rgbptr,MAXRGB*sizeof(float *));
@@ -491,11 +505,11 @@ int GetOpenGLVersion(char *version_label){
 
 /* ------------------ InitOpenGL ------------------------ */
 
-void InitOpenGL(void){
+void InitOpenGL(int option){
   int type;
   int err;
 
-  PRINTF("%s\n",_("initializing OpenGL"));
+  if(option==PRINT)PRINTF("%s\n",_("initializing OpenGL"));
 
   type = GLUT_RGB|GLUT_DEPTH;
   if(buffertype==GLUT_DOUBLE){
@@ -518,24 +532,24 @@ void InitOpenGL(void){
   }
 
 #ifdef _DEBUG
-  PRINTF("%s",_("   Initializing Glut display mode - "));
+  if(option==PRINT)PRINTF("%s",_("   Initializing Glut display mode - "));
 #endif
   glutInitDisplayMode(type);
 #ifdef _DEBUG
-  PRINTF("%s\n",_("initialized"));
+  if(option==PRINT)PRINTF("%s\n",_("initialized"));
 #endif
 
   CheckMemory;
 #ifdef _DEBUG
-  PRINTF("%s\n",_("   creating window"));
+  if(option==PRINT)PRINTF("%s\n",_("   creating window"));
 #endif
   mainwindow_id = glutCreateWindow("");
 #ifdef _DEBUG
-  PRINTF("%s\n",_("   window created"));
+  if(option==PRINT)PRINTF("%s\n",_("   window created"));
 #endif
 
 #ifdef _DEBUG
-  PRINTF("%s",_("   Initializing callbacks - "));
+  if(option==PRINT)PRINTF("%s",_("   Initializing callbacks - "));
 #endif
   glutSpecialUpFunc(SpecialKeyboardUpCB);
   glutKeyboardUpFunc(KeyboardUpCB);
@@ -548,7 +562,7 @@ void InitOpenGL(void){
   glutVisibilityFunc(NULL);
   glutMenuStatusFunc(MenuStatus_CB);
 #ifdef _DEBUG
-  PRINTF("%s\n",_("initialized"));
+  if(option==PRINT)PRINTF("%s\n",_("initialized"));
 #endif
 
   opengl_version = GetOpenGLVersion(opengl_version_label);
@@ -568,14 +582,14 @@ void InitOpenGL(void){
       err=1;
     }
     else{
-      err= InitShaders();
+      if(option==PRINT)err= InitShaders();
     }
 #ifdef _DEBUG
-    if(err==0){
+    if(err==0&&option==PRINT){
       PRINTF("%s\n",_("  GPU shader initialization succeeded"));
     }
 #endif
-    if(err!=0){
+    if(err!=0&&option==PRINT){
       PRINTF("%s\n",_("  GPU shader initialization failed"));
     }
   }
@@ -604,7 +618,7 @@ void InitOpenGL(void){
     if(nblueshift<0)nblueshift=0;
   }
   opengldefined=1;
-  PRINTF("%s\n\n",_("complete"));
+  if(option==PRINT)PRINTF("%s\n\n",_("complete"));
 }
 
 /* ------------------ Set3DSmokeStartup ------------------------ */
@@ -1001,6 +1015,21 @@ void InitOpenGL(void){
     int errorcode;
 
 //    ShowGluiAlert();
+    for(i = 0; i<nplot3dinfo; i++){
+      plot3ddata *plot3di;
+
+      plot3di = plot3dinfo+i;
+      plot3di->finalize = 0;
+    }
+    for(i = nplot3dinfo-1;i>=0; i--){
+      plot3ddata *plot3di;
+
+      plot3di = plot3dinfo+i;
+      if(plot3di->autoload==1){
+        plot3di->finalize = 1;
+        break;
+      }
+    }
     for(i=0;i<nplot3dinfo;i++){
       plot3ddata *plot3di;
 
@@ -1009,7 +1038,6 @@ void InitOpenGL(void){
         ReadPlot3D(plot3di->file,i,UNLOAD,&errorcode);
       }
       if(plot3di->autoload==1){
-        ReadPlot3dFile=1;
         ReadPlot3D(plot3di->file,i,LOAD,&errorcode);
       }
     }
@@ -1073,9 +1101,7 @@ void InitOpenGL(void){
         if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
         if(slicei->autoload == 0 && slicei->loaded == 1)ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, UNLOAD, set_slicecolor,&errorcode);
         if(slicei->autoload == 1 && slicei->loaded == 0){
-#ifdef pp_NEWBOUND_DIALOG
-          ReadSliceUseGluiBounds(slicei->file, i, ALL_SLICE_FRAMES, NULL, LOAD, set_slicecolor, &errorcode);
-#else
+#ifdef pp_OLDBOUND_DIALOG
                        ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, LOAD, set_slicecolor, &errorcode);
 #endif
         }
@@ -1140,6 +1166,9 @@ void InitScriptErrorFiles(void){
 void InitVars(void){
   int i;
 
+#ifdef pp_OSX_HIGHRES
+  double_scale = 1;
+#endif
   curdir_writable = Writable(".");
   windrose_circ.ncirc=0;
   InitCircle(180, &windrose_circ);
@@ -1331,8 +1360,6 @@ void InitVars(void){
   partfacedir[1]=0.0;
   partfacedir[2]=1.0;
 
-  select_device=0;
-  selected_device_tag=-1;
   navatar_types=0;
   select_avatar=0;
   selected_avatar_tag=-1;
@@ -1442,7 +1469,6 @@ void InitVars(void){
 
   xyz_dir=0;
   which_face=2;
-  showfontmenu=1;
 
   glui_active=0;
 
@@ -1454,13 +1480,12 @@ void InitVars(void){
   nfires=0;
 
   windowsize_pointer=0;
-  fontindex=0;
 
   xbar=1.0, ybar=1.0, zbar=1.0;
   xbar0=0.0, ybar0=0.0, zbar0=0.0;
   xbarORIG=1.0, ybarORIG=1.0, zbarORIG=1.0;
   xbar0ORIG=0.0, ybar0ORIG=0.0, zbar0ORIG=0.0;
-  ReadPlot3dFile=0, ReadIsoFile=0;
+  ReadIsoFile=0;
 
   ReadVolSlice=0;
   ReadZoneFile=0;
@@ -1469,7 +1494,6 @@ void InitVars(void){
   startup_pass=1;
 
   slicefilenumber=0;
-  exportdata=0;
   nspr=0;
   smoke3dframestep=1;
   smoke3dframeskip=0;
@@ -1733,6 +1757,12 @@ void InitVars(void){
   strcpy(emptylabel,"");
   large_font=GLUT_BITMAP_HELVETICA_12;
   small_font=GLUT_BITMAP_HELVETICA_10;
+#ifdef pp_OSX_HIGHRES
+    if(double_scale==1){
+      large_font=(void *)GLUT_BITMAP_HELVETICA_24;
+      small_font=(void *)GLUT_BITMAP_HELVETICA_20;
+    }
+#endif
 
   texture_origin[0]=0.0;
   texture_origin[1]=0.0;
@@ -1893,9 +1923,6 @@ void InitVars(void){
 
   GetTitle("Smokeview ", release_title);
   GetTitle("Smokeview ", plot3d_title);
-
-  strcpy(INIfile,"smokeview.ini");
-  strcpy(WRITEINIfile,"Write smokeview.ini");
 
   tourcol_selectedpathline[0]=1.0;
   tourcol_selectedpathline[1]=0.0;
@@ -2100,12 +2127,7 @@ void InitVars(void){
     }
     vis_boundary_type[0]=1;
     for(iii=0;iii<MAXPLOT3DVARS;iii++){
-#ifdef pp_NEWBOUND_DIALOG
-      setp3min_all[iii] = SET_MIN;
-      setp3max_all[iii] = SET_MAX;
-      p3min_ini[iii] = 1.0;
-      p3max_ini[iii] = 0.0;
-#else
+#ifdef pp_OLDBOUND_DIALOG
       setp3min_all[iii] = PERCENTILE_MIN;
       setp3max_all[iii] = PERCENTILE_MAX;
 #endif

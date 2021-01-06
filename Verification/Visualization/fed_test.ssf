@@ -12,10 +12,8 @@ RENDERCLIP
  1 175 175 95 95
 // LOADFILE
 //  fed_test_05_fed.sf
-LOADSLICEM
- Fractional effective dose(cell centered)
- 2 0.500000
- 1
+LOADSLCF
+ QUANTITY='Fractional effective dose' CELL_CENTERED=T PBY=0.5
 SETTIMEVAL
  30.000000
 RENDERONCE

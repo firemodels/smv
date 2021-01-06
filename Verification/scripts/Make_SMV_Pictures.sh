@@ -70,7 +70,6 @@ make_helpinfo_files()
   $SMOKEZIP   -help     > smokezip.help
   $SMOKEDIFF  -help     > smokediff.help
   $BACKGROUND -help     > background.help
-  $DEM2FDS    -help     > dem2fds.help
   $WIND2FDS   -help     > wind2fds.help
   $CFASTBOT   -H        > cfastbot.help
   $FIREBOT    -H        > firebot.help
@@ -80,7 +79,6 @@ make_helpinfo_files()
   $SMOKEZIP -v         > smokezip.version
   $SMOKEDIFF -v        > smokediff.version
   $BACKGROUND -version > background.version
-  $DEM2FDS -version    > dem2fds.version
   $WIND2FDS            > wind2fds.version
 }
 
@@ -156,14 +154,12 @@ if [ "$use_installed" == "1" ] ; then
   export SMOKEDIFF=smokediff
   export WIND2FDS=wind2fds
   export BACKGROUND=background
-  export DEM2FDS=dem2fds
 else
   export SMV=$SVNROOT/smv/Build/smokeview/${COMPILER}_$VERSION2/smokeview_$VERSION
   export SMOKEZIP=$SVNROOT/smv/Build/smokezip/${COMPILER}_$VERSION2/smokezip_$VERSION2
   export SMOKEDIFF=$SVNROOT/smv/Build/smokediff/${COMPILER}_$VERSION2/smokediff_$VERSION2
   export WIND2FDS=$SVNROOT/smv/Build/wind2fds/${COMPILER}_$VERSION2/wind2fds_$VERSION2
   export BACKGROUND=$SVNROOT/smv/Build/background/${COMPILER}_$VERSION2/background_$VERSION2
-  export DEM2FDS=$SVNROOT/smv/Build/dem2fds/${COMPILER}_$VERSION2/dem2fds_$VERSION2
 fi
 SMOKEBOT=$SVNROOT/bot/Smokebot/run_smokebot.sh
 FIREBOT=$SVNROOT/bot/Firebot/run_firebot.sh
@@ -171,7 +167,6 @@ CFASTBOT=$SVNROOT/bot/Cfastbot/run_cfastbot.sh
 
 echo Generating smokeview images using:
 echo background: $BACKGROUND
-echo    dem2fds: $DEM2FDS
 echo smokediff : $SMOKEDIFF
 echo smokeview : $SMV
 echo smokezip  : $SMOKEZIP
@@ -190,7 +185,6 @@ is_file_installed $SMV
 is_file_installed $SMOKEZIP
 is_file_installed $SMOKEDIFF
 is_file_installed $BACKGROUND
-is_file_installed $DEM2FDS
 is_file_installed $WIND2FDS
 
 make_helpinfo_files $SMVUG/SCRIPT_FIGURES
@@ -218,23 +212,21 @@ if [ "$RUN_SMV" == "1" ]; then
 
   cd $SVNROOT/smv/Verification/Visualization
   echo Converting particles to isosurfaces in case plumeiso
-  $QFDS -C "$SMOKEZIP -part2iso plumeiso"
+  $SMOKEZIP -part2iso plumeiso
 
   cd $SVNROOT/smv/Verification/WUI
   echo Converting particles to isosurfaces in case pine_tree
   if  [ -e pine_tree.smv ]; then
-    $QFDS -C "$SMOKEZIP -part2iso pine_tree"
+    $SMOKEZIP -part2iso pine_tree
   fi
 
 # difference plume5c and thouse5
 
   cd $SVNROOT/smv/Verification/Visualization
   echo Differencing cases plume5c and plume5cdelta
-  $QFDS -C "$SMOKEDIFF -w -r plume5c plume5cdelta"
+  $SMOKEDIFF -w -r plume5c plume5cdelta
   echo Differencing cases thouse5 and thouse5delta
-  $QFDS -C "$SMOKEDIFF -w -r thouse5 thouse5delta"
-
-  wait_cases_end
+  $SMOKEDIFF -w -r thouse5 thouse5delta
 
   echo Generating images
 

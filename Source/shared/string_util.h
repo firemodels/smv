@@ -8,6 +8,7 @@
 #define STREXTERN extern CCC
 #define STRDECL(var,val)  var
 #endif
+#include "stdio_buffer.h"
 
 // vvvvvvvvvvvvvvvvvvvvvvvv header files vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
@@ -36,7 +37,11 @@ typedef struct {
 #define LABEL_EOF 1
 #define LABEL_ERR 2
 
+#ifdef pp_OSX_HIGHRES
+#define DEG_SYMBOL 96
+#else
 #define DEG_SYMBOL 176
+#endif
 
 #ifdef pp_HASH
 #define HASH_NONE   0
@@ -104,8 +109,7 @@ EXTERNCPP char          *STRSTR(char *c, const char *key);
 EXTERNCPP void           ScaleString(const char *stringfrom, char *stringto, const float *scale);
 EXTERNCPP void           ScaleFloat2String(float floatfrom, char *stringto, const float *scale);
 EXTERNCPP void           Num2String(char *string, float tval);
-EXTERNCPP void           ColorbarFloat2String(char *string, float tval, int ndecimals);
-EXTERNCPP void           ColorbarFloat2String2(char *string, float tval, int exponent_max, int ndecimals);
+EXTERNCPP void           Float2String(char *string, float tval, int ndecimals);
 EXTERNCPP char          *TrimFrontBack(char *buffer);
 EXTERNCPP int            STRCMP(const char *s1, const char *s2);
 EXTERNCPP char          *GetChid(char *file, char *buffer);

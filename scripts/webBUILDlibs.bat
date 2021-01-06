@@ -41,12 +41,12 @@ if "%platform%" == "windowsgnu" (
 
 if "%platform%" == "gnuosx" (
   title building libraries for osx using gnu
-  start "cleaning osx libraries"    plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/gnu_osx_64/make_LIBS.sh clean
-  start "building osx glui library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/gnu_osx_64/make_LIBS.sh glui
-  start "building osx zlib library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/gnu_osx_64/make_LIBS.sh zlib
-  start "building osx jpeg library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/gnu_osx_64/make_LIBS.sh jpeg
-  start "building osx png library"  plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/gnu_osx_64/make_LIBS.sh png
-  start "building osx gd library"   plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/gnu_osx_64/make_LIBS.sh gd
+  start /wait "cleaning osx libraries"    plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/gnu_osx_64/make_LIBS.sh -t clean
+  start "building osx glui library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/gnu_osx_64/make_LIBS.sh -t glui
+  start "building osx zlib library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/gnu_osx_64/make_LIBS.sh -t zlib
+  start "building osx jpeg library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/gnu_osx_64/make_LIBS.sh -t jpeg
+  start "building osx png library"  plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/gnu_osx_64/make_LIBS.sh -t png
+  start "building osx gd library"   plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/gnu_osx_64/make_LIBS.sh -t gd
   goto eof
 )
 
@@ -54,13 +54,26 @@ if "%platform%" == "gnuosx" (
 
 if "%platform%" == "osx" (
   title building libraries for osx
-  start "cleaning osx libraries" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh clean
-  start "building osx glut library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh glut
-  start "building osx glui library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh glui
-  start "building osx zlib library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh zlib
-  start "building osx jpeg library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh jpeg
-  start "building osx png library"  plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh png
-  start "building osx gd library"   plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh gd
+  start /wait "cleaning osx libraries" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -t clean
+  start "building osx glut library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -t glut
+  start "building osx glui library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -t glui
+  start "building osx zlib library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -t zlib
+  start "building osx jpeg library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -t jpeg
+  start "building osx png library"  plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -t png
+  start "building osx gd library"   plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -t gd
+  goto eof
+)
+
+:: osx
+
+if "%platform%" == "osxnoquartzh" (
+  title building libraries for osx - no Quartz, high res fonts
+  start /wait "cleaning osx libraries" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_noq_64/make_LIBS.sh -t clean
+  start "building osx glui library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_noq_64/make_LIBS.sh -Q -t glui
+  start "building osx zlib library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_noq_64/make_LIBS.sh -Q -t zlib
+  start "building osx jpeg library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_noq_64/make_LIBS.sh -Q -t jpeg
+  start "building osx png library"  plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_noq_64/make_LIBS.sh -Q -t png
+  start "building osx gd library"   plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_noq_64/make_LIBS.sh -Q -t gd
   goto eof
 )
 
@@ -68,13 +81,13 @@ if "%platform%" == "osx" (
 
 if "%platform%" == "gnulinux" (
   title building libraries for linux using gnu
-  start "cleaning linux libraries" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/gnu_linux_64/make_LIBS.sh clean
-  start "building linux glut library" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/gnu_linux_64/make_LIBS.sh glut
-  start "building linux glui library" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/gnu_linux_64/make_LIBS.sh glui
-  start "building linux zlib library" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/gnu_linux_64/make_LIBS.sh zlib
-  start "building linux jpeg library" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/gnu_linux_64/make_LIBS.sh jpeg
-  start "building linux png library"  plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/gnu_linux_64/make_LIBS.sh png
-  start "building linux gd library"   plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/gnu_linux_64/make_LIBS.sh gd
+  start /wait "cleaning linux libraries" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/gnu_linux_64/make_LIBS.sh    -t clean
+  start "building linux glut library" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/gnu_linux_64/make_LIBS.sh -t glut
+  start "building linux glui library" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/gnu_linux_64/make_LIBS.sh -t glui
+  start "building linux zlib library" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/gnu_linux_64/make_LIBS.sh -t zlib
+  start "building linux jpeg library" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/gnu_linux_64/make_LIBS.sh -t jpeg
+  start "building linux png library"  plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/gnu_linux_64/make_LIBS.sh -t png
+  start "building linux gd library"   plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/gnu_linux_64/make_LIBS.sh -t gd
   goto eof
 )
 
@@ -82,13 +95,13 @@ if "%platform%" == "gnulinux" (
 
 if "%platform%" == "linux" (
   title building libraries for linux
-  start "cleaning linux libraries" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/make_LIBS.sh clean
-  start "building linux glut library" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/make_LIBS.sh glut
-  start "building linux glui library" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/make_LIBS.sh glui
-  start "building linux zlib library" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/make_LIBS.sh zlib
-  start "building linux jpeg library" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/make_LIBS.sh jpeg
-  start "building linux png library"  plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/make_LIBS.sh png
-  start "building linux gd library"   plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/make_LIBS.sh gd
+  start /wait "cleaning linux libraries" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/make_LIBS.sh    -t clean
+  start "building linux glut library" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/make_LIBS.sh -t glut
+  start "building linux glui library" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/make_LIBS.sh -t glui
+  start "building linux zlib library" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/make_LIBS.sh -t zlib
+  start "building linux jpeg library" plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/make_LIBS.sh -t jpeg
+  start "building linux png library"  plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/make_LIBS.sh -t png
+  start "building linux gd library"   plink %plink_options% %linux_logon% %linux_svn_root%/smv/Build/LIBS/intel_linux_64/make_LIBS.sh -t gd
   goto eof
 )
 

@@ -35,14 +35,12 @@ if %useinstalled% == 1 (
   set SMOKEZIP=smokezip
   set SMOKEVIEW=smokeview
   set WIND2FDS=wind2fds
-  set DEM2FDS=dem2fds
 ) else (
   set BACKGROUND=%SVNROOT%\smv\Build\background\intel_win%size%\background.exe
   set SMOKEDIFF=%SVNROOT%\smv\Build\smokediff\intel_win%size%\smokediff_win%size%.exe
   set SMOKEVIEW=%SVNROOT%\smv\Build\smokeview\intel_win%size%\smokeview_win%TEST%%size%%DEBUG%.exe -bindir %SVNROOT%\smv\for_bundle
   set  SMOKEZIP=%SVNROOT%\smv\Build\smokezip\intel_win%size%\smokezip_win%size%.exe
   set  WIND2FDS=%SVNROOT%\smv\Build\wind2fds\intel_win%size%\wind2fds_win%size%.exe
-  set  DEM2FDS=%SVNROOT%\smv\Build\dem2fds\intel_win%size%\dem2fds_win%size%.exe
 )
 
 call :is_file_installed %SMOKEVIEW%|| exit /b 1
@@ -78,14 +76,12 @@ erase smokediff.version 1> Nul 2>&1
 erase smokezip.version 1> Nul 2>&1
 erase background.version 1> Nul 2>&1
 erase wind2fds.version 1> Nul 2>&1
-erase dem2fds.version 1> Nul 2>&1
 
 erase smokeview.help 1> Nul 2>&1
 erase smokediff.help 1> Nul 2>&1
 erase smokezip.help 1> Nul 2>&1
 erase background.help 1> Nul 2>&1
 erase wind2fds.help 1> Nul 2>&1
-erase dem2fds.help 1> Nul 2>&1
 
 echo.
 echo Creating Smokeview User guide info files
@@ -95,14 +91,12 @@ echo Creating Smokeview User guide info files
 %SMOKEDIFF%  -help > smokediff.help
 %BACKGROUND% -help > background.help
 %WIND2FDS% -help > wind2fds.help
-%DEM2FDS% -help > dem2fds.help
 
 %SMOKEVIEW%  -v > smokeview.version
 %SMOKEZIP%   -v > smokezip.version
 %SMOKEDIFF%  -v > smokediff.version
 %BACKGROUND% -v > background.version
 %WIND2FDS% -v > wind2fds.version
-%DEM2FDS% -v > dem2fds.version
 
 :: --------------  verification guide ----------------
 

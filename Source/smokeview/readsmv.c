@@ -13,9 +13,9 @@
 #include <pthread.h>
 
 #include "smv_endian.h"
-#include "update.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
+#include "stdio_buffer.h"
 
 #define BREAK break
 #define BREAK2 \
@@ -1018,13 +1018,19 @@ void ReadSMVDynamic(char *file){
 
       plot3di=plot3dinfo+iplot3d;
       for(i = 0; i < 5; i++){
-        plot3di->file_min[i] = 1.0;
-        plot3di->file_max[i] = 0.0;
+        plot3di->valmin_fds[i] = 1.0;
+        plot3di->valmax_fds[i] = 0.0;
+        plot3di->valmin_smv[i] = 1.0;
+        plot3di->valmax_smv[i] = 0.0;
       }
       plot3di->blocknumber = blocknumber;
       plot3di->seq_id=nn_plot3d;
       plot3di->autoload=0;
       plot3di->time=time_local;
+      plot3di->finalize = 1;
+      for(i=0;i<MAXPLOT3DVARS;i++){
+        plot3di->histograms[i] = NULL;
+      }
       if(plot3di>plot3dinfo+nplot3dinfo_old-1){
         plot3di->loaded=0;
         plot3di->display=0;
@@ -1036,6 +1042,7 @@ void ReadSMVDynamic(char *file){
       NewMemory((void **)&plot3di->bound_file, (unsigned int)(len+4+1));
       STRCPY(plot3di->bound_file, bufferptr);
       STRCAT(plot3di->bound_file, ".bnd");
+      plot3di->have_bound_file = NO;
 
       NewMemory((void **)&plot3di->comp_file,(unsigned int)(len+4+1));
       STRCPY(plot3di->comp_file,bufferptr);
@@ -1413,6 +1420,7 @@ void InitDevice(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float
   float norm;
   int i;
 
+  devicei->selected = 0;
   devicei->nvals = 0;
   devicei->filetype = -1;
   devicei->in_zone_csv = 0;
@@ -1548,6 +1556,8 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   devicei->times=NULL;
   devicei->vals=NULL;
   devicei->target_index = -1;
+  devicei->global_valmin = 1.0;
+  devicei->global_valmax = 0.0;
   FGETS(buffer,255,stream);
   TrimCommas(buffer);
 
@@ -2179,16 +2189,8 @@ void UpdateBoundInfo(void){
       sbi = slicebounds + nslicebounds;
       sbi->shortlabel=slicei->label.shortlabel;
       if(strcmp(sbi->shortlabel, "TEMP")==0)slicebounds_temp = sbi;
-#ifdef pp_NEWBOUND_DIALOG
-      sbi->dlg_setvalmin = SET_MIN;
-      sbi->dlg_setvalmax = SET_MAX;
-      sbi->dlg_compute_loaded = glui_slice_compute_loaded;
-      sbi->dlg_ini_valmin=1.0;
-      sbi->dlg_ini_valmax=0.0;
-#else
       sbi->dlg_setvalmin=PERCENTILE_MIN;
       sbi->dlg_setvalmax=PERCENTILE_MAX;
-#endif
       sbi->dlg_valmin=1.0;
       sbi->dlg_valmax=0.0;
       sbi->chopmax=0.0;
@@ -2211,14 +2213,6 @@ void UpdateBoundInfo(void){
         }
       }
     }
-#ifdef pp_NEWBOUND_DIALOG
-    for(i = 0; i<nsliceinfo; i++){
-      slicedata *slicei;
-
-      slicei = sliceinfo+i;
-      slicei->bounds = GetSliceBoundsInfo(slicei->label.shortlabel);
-    }
-#endif
   }
 
   canshow_threshold=0;
@@ -2237,7 +2231,7 @@ void UpdateBoundInfo(void){
 
       patchi = patchinfo + i;
       patchi->firstshort=1;
-#ifndef pp_NEWBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
       patchi->valmin=1.0;
       patchi->valmax=0.0;
       if(research_mode==1){
@@ -2272,10 +2266,6 @@ void UpdateBoundInfo(void){
       sbi->dlg_setvalmax = 0;
       sbi->dlg_valmin = 1.0;
       sbi->dlg_valmax = 0.0;
-#ifdef pp_NEWBOUND_DIALOG
-      sbi->dlg_ini_valmin = 1.0;
-      sbi->dlg_ini_valmax = 0.0;
-#endif
       sbi->dlg_global_valmin = 1.0;
       sbi->dlg_global_valmax = 0.0;
       sbi->chopmax = 0.0;
@@ -2298,42 +2288,11 @@ void UpdateBoundInfo(void){
         }
       }
     }
-#ifdef pp_NEWBOUND_DIALOG
-    for(i = 0; i<npatchinfo; i++){
-      patchdata *patchi;
-
-      patchi = patchinfo+i;
-      patchi->bounds2 = GetPatchBoundsInfo(patchi->label.shortlabel);
-    }
-#endif
   }
   UpdateChar();
-#ifdef pp_NEWBOUND_DIALOG
+  GetGlobalPartBounds(ALL_FILES);
   GetGlobalSliceBounds();
   GetGlobalPatchBounds();
-  GetGlobalPartBounds(0);
-#endif
-}
-
-/* ------------------ UpdateEndianInfo ------------------------ */
-
-void UpdateEndianInfo(void){
-  if(endian_fds!=endian_smv){
-    fprintf(stderr,"*** Warning: Smokeview is running on a ");
-    if(endian_smv==ENDIAN_LITTLE){
-      fprintf(stderr," little endian computer\n");
-    }
-    else{
-      fprintf(stderr," big endian computer\n");
-    }
-    fprintf(stderr,"    but the data being visualized was generated on a ");
-    if(endian_fds==ENDIAN_LITTLE){
-      fprintf(stderr," little endian computer\n");
-    }
-    else{
-      fprintf(stderr," big endian computer\n");
-    }
-  }
 }
 
 /*
@@ -2687,11 +2646,6 @@ void UpdateMeshCoords(void){
   for(nn=0;nn<factor;nn++){
     zplts[nn]=NORMALIZE_Z(zplts[nn]);
   }
-
-#ifdef pp_MULTI_RES
-// normalize multi resolution grid slice locations
-  NormalizeXYZRes();
-#endif
 
   /* rescale both global and local xbar, ybar and zbar */
 
@@ -3224,9 +3178,6 @@ void InitObst(blockagedata *bc, surfdata *surf, int index, int meshindex){
 
   bc->color = surf->color;
   bc->useblockcolor = 0;
-#ifdef pp_BLOCK_COLOR
-  bc->use_block_transparency = 0;
-#endif
   for(i = 0; i<6; i++){
     bc->surf_index[i] = -1;
     bc->surf[i] = surf;
@@ -4084,6 +4035,11 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->seq_id = nn_part;
   parti->autoload = 0;
   parti->finalize = 1;
+  parti->valmin_fds = NULL;
+  parti->valmax_fds = NULL;
+  parti->valmin_smv = NULL;
+  parti->valmax_smv = NULL;
+  parti->stream     = NULL;
   if(FGETS(buffer, 255, stream)==NULL){
     npartinfo--;
     return RETURN_BREAK;
@@ -4099,6 +4055,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   if(NewMemory((void **)&parti->bound_file, (unsigned int)(len+4+1))==0)return RETURN_TWO;
   STRCPY(parti->bound_file, bufferptr);
   STRCAT(parti->bound_file, ".bnd");
+  parti->have_bound_file = NO;
 
   parti->size_file = NULL;
   if(NewMemory((void **)&parti->size_file, (unsigned int)(len+1+3))==0)return RETURN_TWO;
@@ -4112,11 +4069,11 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
 
   // parti->size_file can't be written to, then put it in a world writable temp directory
 
-  if(FILE_EXISTS_CASEDIR(parti->size_file)==NO&&curdir_writable==NO&&smokeviewtempdir!=NULL){
-    len = strlen(smokeviewtempdir)+strlen(bufferptr)+1+3+1;
+  if(FILE_EXISTS_CASEDIR(parti->size_file)==NO&&curdir_writable==NO&&smokeview_scratchdir!=NULL){
+    len = strlen(smokeview_scratchdir)+strlen(bufferptr)+1+3+1;
     FREEMEMORY(parti->size_file);
     if(NewMemory((void **)&parti->size_file, (unsigned int)len)==0)return RETURN_TWO;
-    STRCPY(parti->size_file, smokeviewtempdir);
+    STRCPY(parti->size_file, smokeview_scratchdir);
     STRCAT(parti->size_file, dirseparator);
     STRCAT(parti->size_file, bufferptr);
     STRCAT(parti->size_file, ".sz");
@@ -4124,11 +4081,11 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
 
   // parti->hist_file can't be written to, then put it in a world writable temp directory
 
-  if(FILE_EXISTS_CASEDIR(parti->hist_file)==NO && curdir_writable==NO && smokeviewtempdir!=NULL){
-    len = strlen(smokeviewtempdir)+strlen(bufferptr)+1+5+1;
+  if(FILE_EXISTS_CASEDIR(parti->hist_file)==NO && curdir_writable==NO && smokeview_scratchdir!=NULL){
+    len = strlen(smokeview_scratchdir)+strlen(bufferptr)+1+5+1;
     FREEMEMORY(parti->hist_file);
     if(NewMemory((void **)&parti->hist_file, (unsigned int)len)==0)return RETURN_TWO;
-    STRCPY(parti->hist_file, smokeviewtempdir);
+    STRCPY(parti->hist_file, smokeview_scratchdir);
     STRCAT(parti->hist_file, dirseparator);
     STRCAT(parti->hist_file, bufferptr);
     STRCAT(parti->hist_file, ".hist");
@@ -4162,9 +4119,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->display = 0;
   parti->times = NULL;
   parti->timeslist = NULL;
-#ifdef pp_PART_HIST
   parti->histograms = NULL;
-#endif
   parti->bounds_set = 0;
   parti->global_min = NULL;
   parti->global_max = NULL;
@@ -4176,11 +4131,6 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->sy = NULL;
   parti->sz = NULL;
   parti->irvals = NULL;
-#ifdef pp_NEWBOUND_DIALOG
-  parti->file_min = NULL;
-  parti->file_max = NULL;
-  parti->nfilebounds = 0;
-#endif
 
   parti->data5 = NULL;
   parti->partclassptr = NULL;
@@ -4294,10 +4244,10 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     patchi->ijk[i] = -1;
   }
   patchi->finalize = 1;
-#ifdef pp_NEWBOUND_DIALOG
-  patchi->file_min = 1.0;
-  patchi->file_max = 0.0;
-#endif
+  patchi->valmin_fds = 1.0;
+  patchi->valmax_fds = 0.0;
+  patchi->valmin_smv = 1.0;
+  patchi->valmax_smv = 0.0;
   patchi->skip = 0;
   patchi->version = version;
   patchi->ntimes = 0;
@@ -4369,6 +4319,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   NewMemory((void **)&patchi->bound_file, (unsigned int)(len+4+1));
   STRCPY(patchi->bound_file, bufferptr);
   strcat(patchi->bound_file, ".bnd");
+  patchi->have_bound_file = NO;
 
   NewMemory((void **)&patchi->comp_file, (unsigned int)(len+4+1));
   STRCPY(patchi->comp_file, bufferptr);
@@ -4741,9 +4692,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   size_t len;
   int read_slice_header = 0;
   char zlib_file[255], rle_file[255];
-#ifdef pp_MULTI_RES
-  int multi_res = 0;
-#endif
 
   char *bufferptr, *bufferptr2;
   int nslicefiles, nn_slice;
@@ -4775,11 +4723,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   if(char_slcf_index!=NULL){
     *char_slcf_index = 0;
     char_slcf_index++;
-#ifdef pp_MULTI_RES
-    sscanf(char_slcf_index, "%i %i", &slcf_index, &multi_res);
-#else
     sscanf(char_slcf_index, "%i", &slcf_index);
-#endif
   }
 
   sliceparms = strchr(buffer, '&');
@@ -4857,18 +4801,18 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->ntimes_old = 0;
   sd->globalmax = -1.0e30;
   sd->globalmin = -sd->globalmax;
+  sd->valmin_smv = 1.0;
+  sd->valmax_smv = 0.0;
+  sd->valmin_fds = 1.0;
+  sd->valmax_fds = 0.0;
  // sd->file_size = 0;
   sd->nframes = 0;
-#ifdef pp_NEWBOUND_DIALOG
-  sd->file_min = 1.0;
-  sd->file_max = 0.0;
-#endif
   sd->reg_file = NULL;
   sd->comp_file = NULL;
   sd->vol_file = NULL;
   sd->slicelabel = NULL;
-#ifdef pp_NEWBOUND_DIALOG
-  sd->bounds = NULL;
+#ifdef pp_SLICE_BUFFER
+  sd->stream_slice = NULL;
 #endif
   sd->file_size = 0;
   sd->slice_filetype = SLICE_NODE_CENTER;
@@ -5011,6 +4955,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   NewMemory((void **)&sd->bound_file, (unsigned int)(len+4+1));
   STRCPY(sd->bound_file, bufferptr);
   STRCAT(sd->bound_file, ".bnd");
+  sd->have_bound_file = NO;
 
   sd->slicelabel = NULL;
   if(slicelabelptr!=NULL){
@@ -5095,13 +5040,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 
     return RETURN_CONTINUE;
   }
-
-#ifdef pp_MULTI_RES
-  sd->multi_res = multi_res;
-  if(sd->multi_res==1){
-    InitMultiRes(sd);
-  }
-#endif
 
   sliceinfo_copy++;
   *sliceinfo_copy_in = sliceinfo_copy;
@@ -5331,8 +5269,8 @@ void GenerateViewpointMenu(void){
   char casenameini[256];
 
   strcpy(viewpiontemenu_filename, "");
-  if(smokeview_cachedir!=NULL){
-    strcat(viewpiontemenu_filename, smokeview_cachedir);
+  if(smokeview_scratchdir!=NULL){
+    strcat(viewpiontemenu_filename, smokeview_scratchdir);
     strcat(viewpiontemenu_filename, dirseparator);
   }
   strcat(viewpiontemenu_filename, fdsprefix);
@@ -5364,6 +5302,96 @@ void GenerateViewpointMenu(void){
 
     sprintf(index, "%i", count++);
     fprintf(stream, format, index, all_viewpoints[i]);
+  }
+  fclose(stream);
+}
+
+/* ------------------ UpdateVents ------------------------ */
+
+void UpdateEvents(void){
+  FILE *stream = NULL;
+  int nrows, ncols, buffer_len;
+  char **tokens;
+  int i;
+
+  stream = fopen(event_filename, "r");
+  if(stream==NULL)return;
+
+  buffer_len = GetRowCols(stream, &nrows, &ncols);
+  if(nrows<=0||ncols<=0||buffer_len<=0){
+    fclose(stream);
+    return;
+  }
+  rewind(stream);
+
+  NewMemory((void **)&tokens, ncols*sizeof(char *));
+
+  for(i = 0; i<ncols; i++){
+    tokens[i] = NULL;
+  }
+
+  char temp_buffer[255];
+  if(fgets(temp_buffer, 255, stream)==NULL)return;
+  while(!feof(stream)){
+    char buffer[255], *message;
+    int ntokens;
+    float tminmax[2], xyz[3], frgb[3];
+    int rgblabel[3];
+    labeldata label;
+
+    CheckMemory;
+    if(fgets(buffer, 255, stream)==NULL)break;
+    if(buffer[0]=='#')continue;
+    // tmin, tmax, x, y, z, r, g, b, 1/0 (foreground color) ! message
+    ParseCSV(buffer, tokens, &ntokens);
+    if(ntokens>=9){
+      char *c_tstart, *c_tend, *c_x, *c_y, *c_type;
+
+      c_tstart = tokens[10];
+      c_tend   = tokens[11];
+      c_x      = tokens[13];
+      c_y      = tokens[14];
+      c_type   = tokens[9];
+
+      sscanf(c_tstart, "%f", tminmax);
+      sscanf(c_tend,   "%f", tminmax+1);
+      sscanf(c_x,      "%f", xyz);
+      sscanf(c_y,      "%f", xyz+1);
+      xyz[2] = 1700.0;
+
+      memcpy(&label, &LABEL_default, sizeof(labeldata));
+
+      message = TrimFrontBack(c_type);
+      strcpy(label.name, "");
+      if(strlen(message)>0){
+        strcat(label.name, message);
+      }
+ //     message = TrimFrontBack(c_id);
+ //     if(strlen(message)>0){
+ //       strcat(label.name, "-");
+ //       strcat(label.name, message);
+ //     }
+
+      tminmax[0] *= 60.0;
+      tminmax[1] *= 60.0;
+      memcpy(label.tstart_stop, tminmax, 2*sizeof(float));
+
+      memcpy(label.xyz, xyz, 3*sizeof(float));
+
+      rgblabel[0] = 255;
+      rgblabel[1] = 255;
+      rgblabel[2] = 255;
+      memcpy(label.rgb, rgb, 3*sizeof(int));
+      frgb[0] = (float)rgblabel[0]/255.0;
+      frgb[1] = (float)rgblabel[1]/255.0;
+      frgb[2] = (float)rgblabel[2]/255.0;
+      memcpy(label.frgb, frgb, 3*sizeof(int));
+
+      label.useforegroundcolor = 0;
+      label.show_always = 0;
+      LabelInsert(&label);
+      event_file_exists = 1;
+    }
   }
   fclose(stream);
 }
@@ -5661,8 +5689,6 @@ int ReadSMV(bufferstreamdata *stream){
 
   nvents=0;
   setPDIM=0;
-  endian_smv = GetEndian();
-  endian_fds = endian_smv;
 
   FREEMEMORY(database_filename);
 
@@ -7320,50 +7346,6 @@ int ReadSMV(bufferstreamdata *stream){
     }
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ RAMP +++++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-
-    if(Match(buffer,"RAMP") == 1){
-      if(FGETS(buffer,255,stream)==NULL){
-        BREAK;
-      }
-      sscanf(buffer,"%i",&nrampinfo);
-      if(nrampinfo>0)NewMemory((void **)&rampinfo,nrampinfo*sizeof(rampdata));
-      for (i = 0; i < nrampinfo; i++) {
-        rampdata *rampi;
-
-        rampi = rampinfo+i;
-        // Allocate space for the ramp name
-        NewMemory((void **)&rampi->name,256*sizeof(char));
-        // First get a new line, which should be in the format:
-        //  RAMP: RampName
-        if(FGETS(buffer,255,stream)==NULL){
-          BREAK;
-        }
-        // " RAMP: " is 7 characters, so we will simply drop them and trim the
-        // whitespace.
-        strncpy(rampi->name, TrimFrontBack(buffer+7), 256);
-        // The next line is the number of entries in the ramp
-        if(FGETS(buffer,255,stream)==NULL){
-          BREAK;
-        }
-        sscanf(buffer,"%i",&rampi->nentries);
-        // Allocate space for the values
-        NewMemory((void **)&rampi->values,2*(rampi->nentries)*sizeof(float));
-        // Next we want to read in all the entries
-        int j;
-        for (j = 0; j < rampi->nentries; j++) {
-          if(FGETS(buffer,255,stream)==NULL){
-            BREAK;
-          }
-          sscanf(buffer, "%f %f", &rampi->values[2*j], &rampi->values[2*j+1]);
-        }
-      }
-      continue;
-    }
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ CADGEOM ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
@@ -9000,22 +8982,6 @@ typedef struct {
 
         if(colorindex==0||colorindex==7)colorindex=-3;
 
-#ifdef pp_BLOCK_COLOR
-        bc->transparency = -1.0;
-        if(colorindex==-1){
-          float s_color[3], transparent=-1.0, rdummy;
-          int dummy;
-
-          sscanf(buffer, "%i %i %i %i %i %i %i %i %f %f %f %f",
-            &dummy, &dummy, &dummy, &dummy, &dummy, &dummy,
-            &dummy, &dummy, &rdummy, &rdummy, &rdummy, &transparent);
-          bc->transparency = transparent;
-          if(transparent>=0.0){
-            bc->use_block_transparency = 1;
-            if(transparent<0.999)bc->transparent = 1;
-          }
-        }
-#endif
         if(colorindex==-3){
           float s_color[4];
 
@@ -9059,16 +9025,10 @@ typedef struct {
           }
           bc->nnodes=(ijk[1]+1-ijk[0])*(ijk[3]+1-ijk[2])*(ijk[5]+1-ijk[4]);
           bc->useblockcolor = 1;
-#ifdef pp_BLOCK_COLOR
-          bc->use_block_transparency = 1;
-#endif
         }
         else{
           if(colorindex>=0){
             bc->color = GetColorPtr(rgb[nrgb+colorindex]);
-#ifdef pp_BLOCK_COLOR
-            bc->useblockcolor =1;
-#endif
             bc->usecolorindex=1;
             bc->colorindex=colorindex;
             updateindexcolors=1;
@@ -9567,39 +9527,6 @@ typedef struct {
           if(vi->kmin!=vj->kmin&&vi->kmax!=vj->kmax)continue;
           vi->dummyptr=vj;
           vj->dummyptr=vi;
-        }
-      }
-      continue;
-    }
-  /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ++++++++++++++++++++++ ENDF ++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  */
-    /* ENDF supercedes ENDIAN */
-    if(Match(buffer,"ENDF") == 1){
-      FILE *ENDIANfile;
-      size_t len;
-      char *bufferptr;
-
-      if(FGETS(buffer,255,stream)==NULL){
-        BREAK;
-      }
-      bufferptr=TrimFrontBack(buffer);
-      len=strlen(bufferptr);
-      NewMemory((void **)&endian_filename,(unsigned int)(len+1));
-      strcpy(endian_filename,bufferptr);
-      ENDIANfile = fopen(endian_filename,"rb");
-      if(ENDIANfile!=NULL){
-        endian_smv = GetEndian();
-        FSEEK(ENDIANfile,4,SEEK_SET);
-        fread(&endian_fds,4,1,ENDIANfile);
-        fclose(ENDIANfile);
-        if(endian_fds==1){// fds and smokeview were run on same type of computer
-          endian_fds = endian_smv;
-        }
-        else{
-          endian_fds = 1-endian_smv;
         }
       }
       continue;
@@ -10130,8 +10057,6 @@ typedef struct {
   xcenCUSTOM=xbar/2.0;  ycenCUSTOM=ybar/2.0; zcenCUSTOM=zbar/2.0;
   glui_rotation_index = nmeshes;
 
-  UpdateEndianInfo();
-
   UpdateBoundInfo();
 
   UpdateObjectUsed();
@@ -10223,7 +10148,9 @@ typedef struct {
     have_terrain_vao = 0;
   }
 #endif
-  
+
+  // update event labels
+  UpdateEvents();
 
   SetupMeshWalls();
   update_windrose = 1;
@@ -10233,28 +10160,24 @@ typedef struct {
   PrintMemoryInfo;
 
   STOP_TIMER(wrapup_time);
-  PRINTF("\n");
-  PRINTF(".smv Processing Times\n");
-  PRINTF("---------------------\n");
+  if(show_startup_timings==1){
+    PRINTF(".smv Processing Times\n");
+    PRINTF("---------------------\n");
 
-#ifdef pp_TIMINGS
-#define ALWAYS (1==1)||
-#else
-#define ALWAYS
-#endif
 
-  if(ALWAYS read_time>1.0)         PRINTF(".smv file(net): %.1f s\n", read_time);
-  if(ALWAYS getfilelist_time>1.0)  PRINTF("      filelist: %.1f s\n", getfilelist_time);
-  if(ALWAYS read_time_elapsed>1.0) PRINTF(".smv file(cum): %.1f s\n", read_time_elapsed);
-  if(ALWAYS pass0_time>1.0)        PRINTF("         setup: %.1f s\n", pass0_time);
-  if(ALWAYS pass1_time>1.0)        PRINTF("        pass 1: %.1f s\n", pass1_time);
-  if(ALWAYS pass2_time>1.0)        PRINTF("        pass 2: %.1f s\n", pass2_time);
-  if(ALWAYS pass3_time>1.0)        PRINTF("        pass 3: %.1f s\n", pass3_time);
-  if(ALWAYS pass4_time>1.0)        PRINTF("        pass 4: %.1f s\n", pass4_time);
-  if(ALWAYS pass5_time>1.0)        PRINTF("        pass 5: %.1f s\n", pass5_time);
-                         PRINTF("all passes: %.1f s\n", processing_time);
-  if(ALWAYS wrapup_time>1.0)    PRINTF("   wrap up: %.1f s\n", wrapup_time);
-  PRINTF("\n");
+    PRINTF(".smv file(net): %.1f s\n", read_time);
+    PRINTF("      filelist: %.1f s\n", getfilelist_time);
+    PRINTF(".smv file(cum): %.1f s\n", read_time_elapsed);
+    PRINTF("         setup: %.1f s\n", pass0_time);
+    PRINTF("        pass 1: %.1f s\n", pass1_time);
+    PRINTF("        pass 2: %.1f s\n", pass2_time);
+    PRINTF("        pass 3: %.1f s\n", pass3_time);
+    PRINTF("        pass 4: %.1f s\n", pass4_time);
+    PRINTF("        pass 5: %.1f s\n", pass5_time);
+    PRINTF("all passes: %.1f s\n", processing_time);
+    PRINTF("   wrap up: %.1f s\n", wrapup_time);
+    PRINTF("\n");
+  }
   return 0;
 }
 
@@ -10364,6 +10287,27 @@ void UpdateUseTextures(void){
   }
 }
 
+#ifdef pp_CPPBOUND_DIALOG
+
+/* ------------------ GetNewBoundIndex ------------------------ */
+
+int GetNewBoundIndex(int old_index){
+#define OLD_PERCENTILE 0
+#define OLD_SET        1
+#define OLD_GLOBAL     2
+
+#define NEW_SET        0
+#define NEW_GLOBAL     1
+#define NEW_PERCENTILE 3
+
+  int bound_map[] = {NEW_PERCENTILE, NEW_SET, NEW_GLOBAL};
+
+  ASSERT(old_index>=0&&old_index<=2);
+  old_index=CLAMP(old_index,0, 2);
+  return bound_map[old_index];
+}
+#endif
+
 /* ------------------ ReadIni2 ------------------------ */
 
 int ReadIni2(char *inifile, int localfile){
@@ -10374,8 +10318,7 @@ int ReadIni2(char *inifile, int localfile){
   updatefacelists = 1;
 
   if((stream = fopen(inifile, "r")) == NULL)return 1;
-  PRINTF("%s", _("processing config file: "));
-  PRINTF("%s\n", inifile);
+  if(readini_output==1)PRINTF("reading %s ", inifile);
 
   for(i = 0; i<nunitclasses_ini; i++){
     f_units *uc;
@@ -10402,6 +10345,26 @@ int ReadIni2(char *inifile, int localfile){
     CheckMemory;
     if(fgets(buffer, 255, stream) == NULL)break;
 
+#ifdef    pp_CPPBOUND_DIALOG
+    if(Match(buffer, "PERCENTILEMODE")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i", &percentile_mode);
+      ONEORZERO(research_mode);
+      if(research_mode==1&&percentile_mode==1){
+        research_mode = 0;
+        update_research_mode = 1;
+      }
+      update_percentile_mode = 1;
+      continue;
+    }
+#endif
+
+    if(Match(buffer, "TIMINGS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i", &show_startup_timings);
+      ONEORZERO(show_startup_timings);
+      continue;
+    }
     if(Match(buffer, "RESEARCHMODE") == 1){
       int dummy;
 
@@ -10411,6 +10374,12 @@ int ReadIni2(char *inifile, int localfile){
       if(research_mode==1&&research_mode_override==0)research_mode=0;
       ncolorlabel_digits = CLAMP(ncolorlabel_digits, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
       ONEORZERO(research_mode);
+#ifdef pp_CPPBOUND_DIALOG
+      if(research_mode==1&&percentile_mode==1){
+        percentile_mode = 0;
+        update_percentile_mode = 1;
+      }
+#endif
       update_research_mode=1;
       continue;
     }
@@ -10424,6 +10393,11 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "SLICEDUP") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i", &slicedup_option, &vectorslicedup_option,&boundaryslicedup_option);
+      continue;
+    }
+    if(Match(buffer, "SHOWBOUNDS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i", &bounds_each_mesh, &show_bound_diffs);
       continue;
     }
     if(Match(buffer, "BLENDMODE")==1){
@@ -10586,7 +10560,14 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, " %i %i %i %i %i %i %i %i %i",
         &showdevice_val, &showvdevice_val, &devicetypes_index, &colordevice_val, &vectortype, &viswindrose, &showdevice_type, &showdevice_unit,&showdevice_id);
       devicetypes_index = CLAMP(devicetypes_index, 0, ndevicetypes - 1);
-      UpdateGluiDevices();
+      update_glui_devices = 1;
+      continue;
+    }
+    if(Match(buffer, "SHOWDEVICEPLOTS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %f %f %f",
+             &showdevice_plot, &showdevice_labels, &device_plot_factor, &device_plot_line_width, &device_plot_point_size);
+      update_glui_devices = 1;
       continue;
     }
     if(Match(buffer, "SHOWMISSINGOBJECTS") == 1){
@@ -10804,10 +10785,11 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "VECLENGTH") == 1){
       float vf = 1.0;
-      int dummy;
+      int idummy;
+      float dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %f", &dummy, &vf);
+      sscanf(buffer, "%i %f %f %i %i", &idummy, &vf, &dummy, &vec_uniform_length, &vec_uniform_spacing);
       vecfactor = vf;
       continue;
     }
@@ -10912,7 +10894,18 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
 #endif
+#ifdef pp_CPPBOUND_DIALOG
+    if(Match(buffer, "V2_PLOT3D") == 1||Match(buffer, "V_PLOT3D")==1){
+      int is_old_bound;
+
+      is_old_bound=0;
+      if(Match(buffer, "V_PLOT3D")==1){
+        is_old_bound = 1;
+      }
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "V_PLOT3D") == 1){
+#endif
       int tempval;
       int n3d;
 
@@ -10928,38 +10921,33 @@ int ReadIni2(char *inifile, int localfile){
 
         fgets(buffer, 255, stream);
         sscanf(buffer, "%i %i %f %i %f %i", &iplot3d, &isetmin, &p3mintemp, &isetmax, &p3maxtemp, &ival);
+#ifdef pp_CPPBOUND_DIALOG
+        if(is_old_bound==1){
+          isetmin = GetNewBoundIndex(isetmin);
+          isetmax = GetNewBoundIndex(isetmax);
+        }
+        if(
+          isetmin==BOUND_SET_MIN||isetmin==BOUND_PERCENTILE_MIN||
+          isetmax==BOUND_SET_MAX||isetmax==BOUND_PERCENTILE_MAX
+        ){
+          research_mode = 0;
+          update_research_mode = 1;
+        }
+#endif
         iplot3d--;
         if(iplot3d >= 0 && iplot3d<MAXPLOT3DVARS){
-#ifdef pp_NEWBOUND_DIALOG
-          if(isetmin!=SET_MIN){
-            p3mintemp = p3min_global[iplot3d];
-            isetmin = SET_MIN;
-          }
-          if(isetmax!=SET_MAX){
-            p3maxtemp = p3max_global[iplot3d];
-            isetmax = SET_MAX;
-          }
-#endif
           setp3min_all[iplot3d] = isetmin;
           setp3max_all[iplot3d] = isetmax;
           p3min_all[iplot3d]    = p3mintemp;
           p3max_all[iplot3d]    = p3maxtemp;
-#ifdef pp_NEWBOUND_DIALOG
-          p3min_ini[iplot3d]    = p3mintemp;
-          p3max_ini[iplot3d]    = p3maxtemp;
-          plot3d_compute_loaded[iplot3d] = ival;
+#ifdef pp_CPPBOUND_DIALOG
+          if(plot3dinfo!=NULL){
+            SetMinMax(BOUND_PLOT3D, plot3dinfo[0].label[iplot3d].shortlabel, isetmin, p3mintemp, isetmax, p3maxtemp);
+            update_glui_bounds = 1;
+          }
 #endif
         }
       }
-#ifdef pp_NEWBOUND_DIALOG
-      glui_plot3d_compute_loaded = plot3d_compute_loaded[0];
-#endif
-      continue;
-    }
-    if(Match(buffer, "CACHE_QDATA") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &cache_plot3d_data);
-      ONEORZERO(cache_plot3d_data);
       continue;
     }
     if(Match(buffer, "UNLOAD_QDATA") == 1){
@@ -10969,13 +10957,36 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &unload_qdata);
       cache_plot3d_data = 1 - unload_qdata;
       ONEORZERO(cache_plot3d_data);
+      update_cache_data = 1;
+      continue;
+    }
+#ifdef pp_CPPBOUND_DIALOG
+    if(Match(buffer, "CACHE_DATA") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %i %i %i", &cache_boundary_data, &cache_part_data, &cache_plot3d_data, &cache_slice_data);
+      ONEORZERO(cache_boundary_data);
+      ONEORZERO(cache_part_data);
+      ONEORZERO(cache_plot3d_data);
+      ONEORZERO(cache_slice_data);
+      update_cache_data = 1;
+      continue;
+    }
+#endif
+#ifdef pp_OLDBOUND_DIALOG
+    if(Match(buffer, "CACHE_QDATA") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &cache_plot3d_data);
+      ONEORZERO(cache_plot3d_data);
+      update_cache_data = 1;
       continue;
     }
     if(Match(buffer, "CACHE_BOUNDARYDATA") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &cache_boundary_data);
+      update_cache_data = 1;
       continue;
     }
+#endif
     if(Match(buffer, "TREECOLORS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f", trunccolor, trunccolor + 1, trunccolor + 2);
@@ -11099,6 +11110,37 @@ int ReadIni2(char *inifile, int localfile){
         LoadSkyTexture(buffer, skyi->face + i);
       }
     }
+#ifdef pp_CPPBOUND_DIALOG
+    if(Match(buffer, "C_PLOT3D")==1){
+      float valmin, valmax;
+      int setvalmin, setvalmax;
+      int tempval, j;
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &tempval);
+      tempval = MIN(tempval, nplot3dbounds_cpp);
+
+      for(j=0;j<tempval;j++){
+        int iplot3d;
+
+        cpp_boundsdata *boundi;
+
+        fgets(buffer, 255, stream);
+        sscanf(buffer, "%i %i %f %i %f", &iplot3d, &setvalmin, &valmin, &setvalmax, &valmax);
+        iplot3d--;
+        if(iplot3d>=0 && iplot3d<tempval){
+          boundi = plot3dbounds_cpp+iplot3d;
+          boundi->set_chopmin = setvalmin;
+          boundi->chopmin     = valmin;
+          boundi->set_chopmax = setvalmax;
+          boundi->chopmax     = valmax;
+        }
+      }
+      update_chop_colors = 1;
+      continue;
+    }
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "C_PLOT3D") == 1){
       int tempval;
       int n3d;
@@ -11124,6 +11166,7 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
+#endif
     if(Match(buffer, "DEVICENORMLENGTH") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f", &devicenorm_length);
@@ -11172,9 +11215,19 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "PERCENTILELEVEL") == 1){
       fgets(buffer, 255, stream);
+#ifdef pp_CPPBOUND_DIALOG
+      float p_level_max=-1.0;
+
+      sscanf(buffer, "%f %f", &percentile_level_min, &p_level_max);
+      percentile_level_min = CLAMP(percentile_level_min,0.0,1.0);
+      if(p_level_max<0.0)p_level_max = 1.0 - percentile_level_min;
+      percentile_level_max = CLAMP(p_level_max, percentile_level_min+0.0001,1.0);
+#endif
+#ifdef pp_OLDBOUND_DIALOG
       sscanf(buffer, "%f", &percentile_level);
       if(percentile_level<0.0)percentile_level = 0.01;
       if(percentile_level>0.5)percentile_level = 0.01;
+#endif
       continue;
     }
     if(Match(buffer, "TRAINERMODE") == 1){
@@ -11340,7 +11393,18 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
+#ifdef pp_CPPBOUND_DIALOG
+    if(Match(buffer, "V2_PARTICLES") == 1||Match(buffer, "V_PARTICLES")==1){
+      int is_old_bound = 0;
+
+      if(Match(buffer, "V_PARTICLES")==1){
+        is_old_bound = 1;
+      }
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "V5_PARTICLES") == 1){
+      int is_old_bound = 1;
+#endif
       int ivmin, ivmax;
       float vmin, vmax;
       char short_label[256], *s1;
@@ -11348,6 +11412,19 @@ int ReadIni2(char *inifile, int localfile){
       strcpy(short_label, "");
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i %f %s", &ivmin, &vmin, &ivmax, &vmax, short_label);
+#ifdef pp_CPPBOUND_DIALOG
+      if(is_old_bound==1){
+        ivmin = GetNewBoundIndex(ivmin);
+        ivmax = GetNewBoundIndex(ivmax);
+      }
+      if(
+        ivmin==BOUND_SET_MIN||ivmin==BOUND_PERCENTILE_MIN||
+        ivmax==BOUND_SET_MAX||ivmax==BOUND_PERCENTILE_MAX
+      ){
+        research_mode = 0;
+        update_research_mode = 1;
+      }
+#endif
 
 #define MAXVAL 100000000.0
 #define MINVAL -100000000.0
@@ -11372,48 +11449,105 @@ int ReadIni2(char *inifile, int localfile){
           propi->setvalmax = ivmax;
           propi->valmin = vmin;
           propi->valmax = vmax;
-#ifdef pp_NEWBOUND_DIALOG
-          if(ivmin==SET_MIN&&ivmax==SET_MAX&&vmin<=vmax){
-            propi->dlg_ini_valmin = vmin;
-            propi->dlg_ini_valmax = vmax;
+          if(is_old_bound==1){
+            switch(ivmin){
+              case PERCENTILE_MIN:
+                propi->percentile_min = vmin;
+                break;
+              case GLOBAL_MIN:
+                propi->dlg_global_valmin = vmin;
+                break;
+              case SET_MIN:
+                propi->user_min = vmin;
+                break;
+              default:
+                ASSERT(FFALSE);
+                break;
+            }
+            switch(ivmax){
+              case PERCENTILE_MAX:
+                propi->percentile_max = vmax;
+                break;
+              case GLOBAL_MAX:
+                propi->dlg_global_valmax = vmax;
+                break;
+              case SET_MAX:
+                propi->user_max = vmax;
+                break;
+              default:
+                ASSERT(FFALSE);
+                break;
+            }
           }
-          else {
-            propi->dlg_ini_valmin = 1.0;
-            propi->dlg_ini_valmax = 0.0;
+#ifdef pp_CPPBOUND_DIALOG
+          else{
+            switch(ivmin){
+              case BOUND_PERCENTILE_MIN:
+                propi->percentile_min = vmin;
+                break;
+              case BOUND_LOADED_MIN:
+              case BOUND_GLOBAL_MIN:
+                propi->dlg_global_valmin = vmin;
+                break;
+              case BOUND_SET_MIN:
+                propi->user_min = vmin;
+                break;
+              default:
+                ASSERT(FFALSE);
+                break;
+            }
+            switch(ivmax){
+              case BOUND_PERCENTILE_MAX:
+                propi->percentile_max = vmax;
+                break;
+              case BOUND_LOADED_MAX:
+              case BOUND_GLOBAL_MAX:
+                propi->dlg_global_valmax = vmax;
+                break;
+              case BOUND_SET_MAX:
+                propi->user_max = vmax;
+                break;
+              default:
+                ASSERT(FFALSE);
+                break;
+            }
           }
 #endif
-          switch(ivmin){
-          case PERCENTILE_MIN:
-            propi->percentile_min = vmin;
-            break;
-          case GLOBAL_MIN:
-            propi->dlg_global_valmin = vmin;
-            break;
-          case SET_MIN:
-            propi->user_min = vmin;
-            break;
-          default:
-            ASSERT(FFALSE);
-            break;
-          }
-          switch(ivmax){
-          case PERCENTILE_MAX:
-            propi->percentile_max = vmax;
-            break;
-          case GLOBAL_MAX:
-            propi->dlg_global_valmax = vmax;
-            break;
-          case SET_MAX:
-            propi->user_max = vmax;
-            break;
-          default:
-            ASSERT(FFALSE);
-            break;
-          }
+#ifdef pp_CPPBOUND_DIALOG
+          SetMinMax(BOUND_PART, short_label, ivmin, vmin, ivmax, vmax);
+          update_glui_bounds=1;
+#endif
         }
       }
       continue;
     }
+#ifdef pp_CPPBOUND_DIALOG
+    if(Match(buffer, "C_PARTICLES")==1){
+      float valmin, valmax;
+      int setvalmin, setvalmax;
+
+      fgets(buffer, 255, stream);
+      strcpy(buffer2, "");
+      sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
+      if(strcmp(buffer, "")!=0){
+        for(i = 0; i<npartbounds_cpp; i++){
+          cpp_boundsdata *boundi;
+
+          boundi = partbounds_cpp+i;
+          if(strcmp(buffer2,boundi->label)==0){
+            boundi->set_chopmin = setvalmin;
+            boundi->chopmin     = valmin;
+            boundi->set_chopmax = setvalmax;
+            boundi->chopmax     = valmax;
+            break;
+          }
+        }
+      }
+      update_chop_colors = 1;
+      continue;
+    }
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "C_PARTICLES") == 1){
       int icmin, icmax;
       float cmin, cmax;
@@ -11441,16 +11575,42 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
+#endif
+#ifdef pp_CPPBOUND_DIALOG
+    if(Match(buffer, "V2_SLICE")==1||Match(buffer, "V_SLICE")==1){
+      int is_old_bound;
+
+      is_old_bound=0;
+      if(Match(buffer, "V_SLICE")==1){
+        is_old_bound = 1;
+      }
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "V_SLICE") == 1){
+#endif
       float valmin, valmax;
-      int setvalmin, setvalmax;
+      int set_valmin, set_valmax;
       char *level_val;
 
       fgets(buffer, 255, stream);
       strcpy(buffer2, "");
-      sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
-#ifndef pp_NEWBOUND_DIALOG
-      if(setvalmin==1||setvalmax==1){
+      sscanf(buffer, "%i %f %i %f %s", &set_valmin, &valmin, &set_valmax, &valmax, buffer2);
+
+#ifdef pp_CPPBOUND_DIALOG
+    if(is_old_bound==1){
+      set_valmin = GetNewBoundIndex(set_valmin);
+      set_valmax = GetNewBoundIndex(set_valmax);
+    }
+    if(
+    set_valmin==BOUND_SET_MIN||set_valmin==BOUND_PERCENTILE_MIN||
+    set_valmax==BOUND_SET_MAX||set_valmax==BOUND_PERCENTILE_MAX
+    ){
+      research_mode = 0;
+      update_research_mode = 1;
+    }
+#endif
+#ifdef pp_OLDBOUND_DIALOG
+      if(set_valmin==1||set_valmax==1){
         research_mode = 0;
         research_mode_override = 0;
         update_research_mode = 1;
@@ -11476,28 +11636,15 @@ int ReadIni2(char *inifile, int localfile){
       if(strcmp(buffer2, "TEMP")==0&&nzoneinfo>0)continue;
       if(strcmp(buffer2, "") != 0){
         TrimBack(buffer2);
-#ifdef pp_NEWBOUND_DIALOG
-        for(i = 0; i<nsliceinfo; i++){
-          slicedata* slicei;
-
-          slicei = sliceinfo+i;
-          if(strcmp(slicei->label.shortlabel, buffer2)==0){
-            slicei->valmin = valmin;
-            slicei->valmax = valmax;
-          }
-        }
-#endif
         for(i = 0; i<nslicebounds; i++){
           if(strcmp(slicebounds[i].shortlabel, buffer2)==0){
-            slicebounds[i].dlg_setvalmin = setvalmin;
-            slicebounds[i].dlg_setvalmax = setvalmax;
+            slicebounds[i].dlg_setvalmin = set_valmin;
+            slicebounds[i].dlg_setvalmax = set_valmax;
             slicebounds[i].dlg_valmin = valmin;
             slicebounds[i].dlg_valmax = valmax;
-#ifdef pp_NEWBOUND_DIALOG
-            if(valmin<=valmax&&setvalmin==SET_MIN&&setvalmax==SET_MAX){
-              slicebounds[i].dlg_ini_valmin = valmin;
-              slicebounds[i].dlg_ini_valmax = valmax;
-            }
+#ifdef pp_CPPBOUND_DIALOG
+            SetMinMax(BOUND_SLICE, buffer2, set_valmin, valmin, set_valmax, valmax);
+            update_glui_bounds = 1;
 #endif
             if(level_val!=NULL){
               slicebounds[i].line_contour_min = slice_line_contour_min;
@@ -11510,8 +11657,8 @@ int ReadIni2(char *inifile, int localfile){
       }
       else{
         for(i = 0; i<nslicebounds; i++){
-          slicebounds[i].dlg_setvalmin = setvalmin;
-          slicebounds[i].dlg_setvalmax = setvalmax;
+          slicebounds[i].dlg_setvalmin = set_valmin;
+          slicebounds[i].dlg_setvalmax = set_valmax;
           slicebounds[i].dlg_valmin = valmin;
           slicebounds[i].dlg_valmax = valmax;
           slicebounds[i].line_contour_min = slice_line_contour_min;
@@ -11521,6 +11668,33 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
+#ifdef pp_CPPBOUND_DIALOG
+    if(Match(buffer, "C_SLICE")==1){
+      float valmin, valmax;
+      int setvalmin, setvalmax;
+
+      fgets(buffer, 255, stream);
+      strcpy(buffer2, "");
+      sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
+      if(strcmp(buffer, "")!=0){
+        for(i = 0; i<nslicebounds_cpp; i++){
+          cpp_boundsdata *boundi;
+
+          boundi = slicebounds_cpp+i;
+          if(strcmp(buffer2,boundi->label)==0){
+            boundi->set_chopmin = setvalmin;
+            boundi->chopmin     = valmin;
+            boundi->set_chopmax = setvalmax;
+            boundi->chopmax     = valmax;
+            break;
+          }
+        }
+      }
+      update_chop_colors = 1;
+      continue;
+    }
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "C_SLICE") == 1){
       float valmin, valmax;
       int setvalmin, setvalmax;
@@ -11548,6 +11722,7 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
+#endif
     if(Match(buffer, "V_ISO") == 1){
       float valmin, valmax;
       int setvalmin, setvalmax;
@@ -11602,25 +11777,70 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
+#ifdef pp_CPPBOUND_DIALOG
+    if(Match(buffer, "V2_BOUNDARY") == 1||Match(buffer, "V_BOUNDARY")==1){
+      int is_old_bound;
+
+      is_old_bound=0;
+      if(Match(buffer, "V_BOUNDARY")==1){
+        is_old_bound = 1;
+      }
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "V_BOUNDARY") == 1){
+#endif
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i %f %s", &glui_setpatchmin, &glui_patchmin, &glui_setpatchmax, &glui_patchmax, buffer2);
+#ifdef pp_CPPBOUND_DIALOG
+      if(is_old_bound==1){
+
+        glui_setpatchmin = GetNewBoundIndex(glui_setpatchmin);
+        glui_setpatchmax = GetNewBoundIndex(glui_setpatchmax);
+      }
+      if(
+        glui_setpatchmin==BOUND_SET_MIN||glui_setpatchmin==BOUND_PERCENTILE_MIN||
+        glui_setpatchmax==BOUND_SET_MAX||glui_setpatchmax==BOUND_PERCENTILE_MAX
+      ){
+        research_mode = 0;
+        update_research_mode = 1;
+      }
+#endif
       if(strcmp(buffer2, "") != 0){
         GLUI2GlobalBoundaryBounds(buffer2);
-#ifdef pp_NEWBOUND_DIALOG
-        if(glui_setpatchmin==SET_MIN&&glui_setpatchmax==SET_MAX&&glui_patchmin <= glui_patchmax){
-          boundsdata* patchbounds;
-
-          patchbounds = GetPatchBoundsInfo(buffer2);
-          if(patchbounds != NULL){
-            patchbounds->dlg_ini_valmin = glui_patchmin;
-            patchbounds->dlg_ini_valmax = glui_patchmax;
-          }
-        }
+#ifdef pp_CPPBOUND_DIALOG
+        SetMinMax(BOUND_PATCH, buffer2, glui_setpatchmin, glui_patchmin, glui_setpatchmax, glui_patchmax);
+        update_glui_bounds = 1;
 #endif
       }
       continue;
     }
+#ifdef pp_CPPBOUND_DIALOG
+    if(Match(buffer, "C_BOUNDARY")==1){
+      float valmin, valmax;
+      int setvalmin, setvalmax;
+
+      fgets(buffer, 255, stream);
+      strcpy(buffer2, "");
+      sscanf(buffer, "%i %f %i %f %s", &setvalmin, &valmin, &setvalmax, &valmax, buffer2);
+      if(strcmp(buffer, "")!=0){
+        for(i = 0; i<npatchbounds_cpp; i++){
+          cpp_boundsdata *boundi;
+
+          boundi = patchbounds_cpp+i;
+          if(strcmp(buffer2,boundi->label)==0){
+            boundi->set_chopmin = setvalmin;
+            boundi->chopmin     = valmin;
+            boundi->set_chopmax = setvalmax;
+            boundi->chopmax     = valmax;
+            break;
+          }
+        }
+      }
+      update_chop_colors = 1;
+      continue;
+    }
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     if(Match(buffer, "C_BOUNDARY") == 1){
       float valmin, valmax;
       int setvalmin, setvalmax;
@@ -11647,6 +11867,7 @@ int ReadIni2(char *inifile, int localfile){
       UpdateBoundaryListIndex2(buffer2ptr);
       continue;
     }
+#endif
     if(Match(buffer, "V_ZONE") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %f %i %f", &setzonemin, &zoneusermin, &setzonemax, &zoneusermax);
@@ -12204,11 +12425,11 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "GEOMSELECTCOLOR") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i",  geom_vertex1_rgb,  geom_vertex1_rgb+1,  geom_vertex1_rgb+2);
+      sscanf(buffer, "%u %u %u",  geom_vertex1_rgb,  geom_vertex1_rgb+1,  geom_vertex1_rgb+2);
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i",  geom_vertex2_rgb,  geom_vertex2_rgb+1,  geom_vertex2_rgb+2);
+      sscanf(buffer, "%u %u %u",  geom_vertex2_rgb,  geom_vertex2_rgb+1,  geom_vertex2_rgb+2);
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i", geom_triangle_rgb, geom_triangle_rgb+1, geom_triangle_rgb+2);
+      sscanf(buffer, "%u %u %u", geom_triangle_rgb, geom_triangle_rgb+1, geom_triangle_rgb+2);
       for(i = 0; i<3; i++){
         geom_vertex1_rgb[i]  = CLAMP(geom_vertex1_rgb[i], 0, 255);
         geom_vertex2_rgb[i]  = CLAMP(geom_vertex2_rgb[i], 0, 255);
@@ -12495,7 +12716,7 @@ int ReadIni2(char *inifile, int localfile){
       if(visColorbarVertical_val==1)visColorbarHorizontal_val=0;
       if(visColorbarHorizontal_val==1)visColorbarVertical_val=0;
   // if colorbars are hidden then research mode needs to be off
-#ifndef pp_NEWBOUND_DIALOG
+#ifdef pp_OLDBOUND_DIALOG
       if(visColorbarVertical_val==0&&visColorbarHorizontal_val==0){
         research_mode = 0;
 //        update_research_mode = 1;
@@ -12514,13 +12735,6 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &nopart);
       continue;
     }
-#ifdef pp_SLICETHREAD
-    if(Match(buffer, "SLICEFAST")==1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i", &slice_multithread, &nslicethread_ids);
-      continue;
-    }
-#endif
     if(Match(buffer, "PARTFAST")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i %i", &partfast, &part_multithread, &npartthread_ids);
@@ -12822,8 +13036,20 @@ int ReadIni2(char *inifile, int localfile){
       }
       if(Match(buffer, "SMOKESKIP") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i %i", &smokeskipm1, &smoke3d_skip);
+        sscanf(buffer, "%i %i %i %i %i", &smokeskipm1, &smoke3d_skip, &smoke3d_skipx, &smoke3d_skipy, &smoke3d_skipz);
         smoke3d_skip = CLAMP(smoke3d_skip,1,10);
+        smoke3d_skipx = CLAMP(smoke3d_skipx, 1, 10);
+        smoke3d_skipy = CLAMP(smoke3d_skipy, 1, 10);
+        smoke3d_skipz = CLAMP(smoke3d_skipz, 1, 10);
+        continue;
+      }
+      if(Match(buffer, "SLICESKIP")==1){
+        if(fgets(buffer, 255, stream)==NULL)break;
+        sscanf(buffer, "%i %i %i %i", &slice_skip, &slice_skipx, &slice_skipy, &slice_skipz);
+        if(slice_skip<1)slice_skip = 1;
+        slice_skipx = slice_skip;
+        slice_skipy = slice_skip;
+        slice_skipz = slice_skip;
         continue;
       }
       if(Match(buffer, "SMOKEALBEDO") == 1){
@@ -13081,7 +13307,7 @@ int ReadIni2(char *inifile, int localfile){
       +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       */
 
-      if(Match(buffer, "LABEL") == 1 || Match(buffer, "TICKLABEL") == 1){
+      if(Match(buffer, "LABEL") == 1 || (event_file_exists==0&&Match(buffer, "TICKLABEL") == 1)){
 
         /*
         LABEL
@@ -13547,7 +13773,6 @@ int ReadIni2(char *inifile, int localfile){
   }
   fclose(stream);
   return 0;
-
 }
 
 /* ------------------ ReadIni ------------------------ */
@@ -13569,19 +13794,7 @@ int ReadIni(char *inifile){
 #endif
   }
 
-  // check if config files read in earlier were modifed later
-
-  if(IsFileNewer(smvprogini_ptr,INIfile)==1){
-    PRINTF("*** Warning: The configuration file,\n   %s,\n   is newer than %s \n\n",smvprogini_ptr,INIfile);
-  }
-  if(IsFileNewer(smvprogini_ptr,caseini_filename)==1){
-    PRINTF("*** Warning: The configuration file,\n   %s,\n   is newer than %s \n\n",smvprogini_ptr,caseini_filename);
-  }
-  if(IsFileNewer(INIfile,caseini_filename)==1){
-    PRINTF("*** Warning: The configuration file,\n   %s,\n   is newer than %s \n\n",INIfile,caseini_filename);
-  }
-
-  // read in config files if they exist
+  //*** read in config files if they exist
 
   // smokeview.ini ini in install directory
 
@@ -13590,48 +13803,58 @@ int ReadIni(char *inifile){
 
     returnval = ReadIni2(smvprogini_ptr, 0);
     if(returnval==2)return 2;
-    if(returnval == 0){
-      PRINTF("complete");
-      PRINTF("\n");
+    if(returnval == 0 && readini_output==1){
+      PRINTF("- complete\n");
     }
     UpdateTerrainOptions();
   }
 
-  // smokeview.ini in case directory
+  // smokeview.ini in $HOME/.smokeview (Linux, OSX) or %userprofile%\.smokeview (Windows)
 
   {
     int returnval;
 
-    returnval = ReadIni2(INIfile, 0);
+    returnval = ReadIni2(smokeviewini_filename, 0);
     if(returnval==2)return 2;
-    if(returnval == 0){
-      PRINTF("complete");
-      PRINTF("\n");
+    if(returnval == 0 && readini_output==1){
+      PRINTF("- complete\n");
     }
   }
 
-  // read in casename.ini
+  // casename.ini
 
   if(caseini_filename!=NULL){
     int returnval;
+    char localdir[10];
 
     returnval = ReadIni2(caseini_filename, 1);
+
+    // if directory is not writable then look for another ini file in the scratch directory
+    strcpy(localdir, ".");
+    if(Writable(localdir)==0){
+      char *scratch_ini_filename;
+
+      NewMemory((void **)&scratch_ini_filename, strlen(smokeview_scratchdir)+1+strlen(caseini_filename)+1);
+      strcpy(scratch_ini_filename, smokeview_scratchdir);
+      strcat(scratch_ini_filename, dirseparator);
+      strcat(scratch_ini_filename, caseini_filename);
+      returnval = ReadIni2(scratch_ini_filename, 1);
+      FREEMEMORY(scratch_ini_filename);
+    }
     if(returnval==2)return 2;
-    if(returnval == 0){
-      PRINTF("complete");
-      PRINTF("\n");
+    if(returnval == 0 && readini_output==1){
+      PRINTF("- complete\n");
     }
   }
 
-  // read in ini file specified in script
+  // ini file specified in script
 
   if(inifile!=NULL){
     int return_code;
 
     return_code = ReadIni2(inifile,1);
-    if(return_code == 0){
-      PRINTF("complete");
-      PRINTF("\n");
+    if(return_code == 0 && readini_output==1){
+      PRINTF("- complete\n");
     }
 
     if(return_code==1||return_code==2){
@@ -13856,6 +14079,8 @@ void WriteIniLocal(FILE *fileout){
       fprintf(fileout, " %s\n", obj_typei->label);
     }
   }
+  fprintf(fileout, "SHOWDEVICEPLOTS\n");
+  fprintf(fileout, " %i %i %f %f %f\n", showdevice_plot, showdevice_labels, device_plot_factor, device_plot_line_width, device_plot_point_size);
   fprintf(fileout, "SHOWDEVICEVALS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n", showdevice_val, showvdevice_val, devicetypes_index, colordevice_val, vectortype, viswindrose, showdevice_type,showdevice_unit,showdevice_id);
   fprintf(fileout, "SHOWMISSINGOBJECTS\n");
@@ -13967,6 +14192,16 @@ void WriteIniLocal(FILE *fileout){
   fprintf(fileout, "\n *** TIME/DATA BOUNDS ***\n");
   fprintf(fileout, "  (0/1 min max skip (1=set, 0=unset)\n\n");
 
+#ifdef pp_CPPBOUND_DIALOG
+  for(i = 0; i<npatchbounds_cpp; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = patchbounds_cpp+i;
+    fprintf(fileout, "C_BOUNDARY\n");
+    fprintf(fileout, " %i %f %i %f %s\n", boundi->set_chopmin, boundi->chopmin, boundi->set_chopmax, boundi->chopmax, boundi->label);
+  }
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   for(i = 0; i < npatch2; i++){
     int ii;
     patchdata *patchi;
@@ -13980,6 +14215,7 @@ void WriteIniLocal(FILE *fileout){
       patchi->label.shortlabel
       );
   }
+#endif
   if(niso_bounds > 0){
     for(i = 0; i < niso_bounds; i++){
       fprintf(fileout, "C_ISO\n");
@@ -13990,8 +14226,17 @@ void WriteIniLocal(FILE *fileout){
         );
     }
   }
-  fprintf(fileout, "C_PARTICLES\n");
-  fprintf(fileout, " %i %f %i %f\n", setpartchopmin, partchopmin, setpartchopmax, partchopmax);
+
+#ifdef pp_CPPBOUND_DIALOG
+  for(i = 0; i<npartbounds_cpp; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = partbounds_cpp+i;
+    fprintf(fileout, "C_PARTICLES\n");
+    fprintf(fileout, " %i %f %i %f %s\n", boundi->set_chopmin, boundi->chopmin, boundi->set_chopmax, boundi->chopmax, boundi->label);
+  }
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   for(i = 0; i < npart5prop; i++){
     partpropdata *propi;
 
@@ -13999,6 +14244,19 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, "C_PARTICLES\n");
     fprintf(fileout, " %i %f %i %f %s\n", propi->setchopmin, propi->chopmin, propi->setchopmax, propi->chopmax, propi->label->shortlabel);
   }
+#endif
+
+#ifdef pp_CPPBOUND_DIALOG
+  fprintf(fileout, "C_PLOT3D\n");
+  fprintf(fileout, " %i\n", nplot3dbounds_cpp);
+  for(i = 0; i<nplot3dbounds_cpp; i++){
+    cpp_boundsdata *boundi;
+
+    boundi = plot3dbounds_cpp+i;
+    fprintf(fileout, " %i %i %f %i %f\n", i+1, boundi->set_chopmin, boundi->chopmin, boundi->set_chopmax, boundi->chopmax);
+  }
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   {
     int n3d;
 
@@ -14006,14 +14264,26 @@ void WriteIniLocal(FILE *fileout){
     if(n3d<numplot3dvars)n3d = numplot3dvars;
     if(n3d>MAXPLOT3DVARS)n3d = MAXPLOT3DVARS;
     fprintf(fileout, "C_PLOT3D\n");
-    n3d = 5;
-    if(n3d<numplot3dvars)n3d = numplot3dvars;
-    if(n3d>MAXPLOT3DVARS)n3d = MAXPLOT3DVARS;
     fprintf(fileout, " %i\n", n3d);
     for(i = 0; i<n3d; i++){
       fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3chopmin[i], p3chopmin[i], setp3chopmax[i], p3chopmax[i]);
     }
   }
+#endif
+
+
+#ifdef pp_CPPBOUND_DIALOG
+  if(nslicebounds_cpp>0){
+    for(i = 0; i<nslicebounds_cpp; i++){
+      cpp_boundsdata *boundi;
+
+      boundi = slicebounds_cpp+i;
+      fprintf(fileout, "C_SLICE\n");
+      fprintf(fileout, " %i %f %i %f %s\n", boundi->set_chopmin, boundi->chopmin, boundi->set_chopmax, boundi->chopmax, boundi->label);
+    }
+  }
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   if(nslicebounds > 0){
     for(i = 0; i < nslicebounds; i++){
       fprintf(fileout, "C_SLICE\n");
@@ -14024,10 +14294,18 @@ void WriteIniLocal(FILE *fileout){
         );
     }
   }
+#endif
+
+#ifdef pp_OLDBOUND_DIALOG
   fprintf(fileout, "CACHE_BOUNDARYDATA\n");
   fprintf(fileout, " %i \n", cache_boundary_data);
   fprintf(fileout, "CACHE_QDATA\n");
   fprintf(fileout, " %i\n", cache_plot3d_data);
+#endif
+#ifdef pp_CPPBOUND_DIALOG
+  fprintf(fileout, "CACHE_DATA\n");
+  fprintf(fileout, " %i %i %i %i \n", cache_boundary_data, cache_part_data, cache_plot3d_data, cache_slice_data);
+#endif
   fprintf(fileout, "PATCHDATAOUT\n");
   fprintf(fileout, " %i %f %f %f %f %f %f %f %f\n", output_patchdata,
     patchout_tmin, patchout_tmax,
@@ -14036,7 +14314,12 @@ void WriteIniLocal(FILE *fileout){
     patchout_zmin, patchout_zmax
     );
   fprintf(fileout, "PERCENTILELEVEL\n");
+#ifdef pp_CPPBOUND_DIALOG
+  fprintf(fileout, " %f %f\n", percentile_level_min, percentile_level_max);
+#endif
+#ifdef pp_OLDBOUND_DIALOG
   fprintf(fileout, " %f\n", percentile_level);
+#endif
   fprintf(fileout, "TIMEOFFSET\n");
   fprintf(fileout, " %f\n", timeoffset);
   fprintf(fileout, "TLOAD\n");
@@ -14046,12 +14329,25 @@ void WriteIniLocal(FILE *fileout){
 
     patchi = patchinfo + i;
     if(patchi->firstshort == 1){
+#ifdef pp_CPPBOUND_DIALOG
+      int set_valmin=0, set_valmax=0;
+      float valmin=1.0, valmax=0.0;
+      char *label;
+
+      label = patchi->label.shortlabel;
+        
+      GetMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      fprintf(fileout, "V2_BOUNDARY\n");
+      fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
+#endif
+#ifdef pp_OLDBOUND_DIALOG
       fprintf(fileout, "V_BOUNDARY\n");
       fprintf(fileout, " %i %f %i %f %s\n",
         patchi->setvalmin, patchi->valmin,
         patchi->setvalmax, patchi->valmax,
         patchi->label.shortlabel
         );
+#endif
     }
   }
   if(niso_bounds > 0){
@@ -14064,20 +14360,32 @@ void WriteIniLocal(FILE *fileout){
         );
     }
   }
+#ifdef pp_OLDBOUND_DIALOG
   fprintf(fileout, "V_PARTICLES\n");
   fprintf(fileout, " %i %f %i %f\n", setpartmin, glui_partmin, setpartmax, glui_partmax);
+#endif
   if(npart5prop > 0){
     for(i = 0; i < npart5prop; i++){
       partpropdata *propi;
 
       propi = part5propinfo + i;
+#ifdef pp_CPPBOUND_DIALOG
+      fprintf(fileout, "V2_PARTICLES\n");
+#endif
+#ifdef pp_OLDBOUND_DIALOG
       fprintf(fileout, "V5_PARTICLES\n");
-#ifdef pp_NEWBOUND_DIALOG
-      fprintf(fileout, " %i %f %i %f %s\n",
-        SET_MIN, propi->user_min, SET_MAX, propi->user_max, propi->label->shortlabel);
-#else
       fprintf(fileout, " %i %f %i %f %s\n",
         propi->setvalmin, propi->valmin, propi->setvalmax, propi->valmax, propi->label->shortlabel);
+#endif
+#ifdef pp_CPPBOUND_DIALOG
+      int set_valmin=0, set_valmax=0;
+      float valmin=1.0, valmax=0.0;
+      char *label;
+
+      label = propi->label->shortlabel;
+        
+      GetMinMax(BOUND_PART, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
 #endif
     }
   }
@@ -14087,30 +14395,58 @@ void WriteIniLocal(FILE *fileout){
     n3d = MAXPLOT3DVARS;
     if(n3d<numplot3dvars)n3d = numplot3dvars;
     if(n3d>MAXPLOT3DVARS)n3d = MAXPLOT3DVARS;
+#ifdef pp_CPPBOUND_DIALOG
+    if(plot3dinfo!=NULL){
+      fprintf(fileout, "V2_PLOT3D\n");
+      fprintf(fileout, " %i\n", n3d);
+    }
+#endif
+#ifdef pp_OLDBOUND_DIALOG
     fprintf(fileout, "V_PLOT3D\n");
     fprintf(fileout, " %i\n", n3d);
+#endif
     for(i = 0; i < n3d; i++){
-#ifdef pp_NEWBOUND_DIALOG
-      fprintf(fileout, " %i %i %f %i %f %i\n", i + 1, SET_MIN,         p3min_all[i], SET_MAX,         p3max_all[i], plot3d_compute_loaded[i]);
-#else
+#ifdef pp_OLDBOUND_DIALOG
       fprintf(fileout, " %i %i %f %i %f\n", i + 1, setp3min_all[i], p3min_all[i], setp3max_all[i], p3max_all[i]);
+#endif
+#ifdef pp_CPPBOUND_DIALOG
+    if(plot3dinfo!=NULL){
+      int set_valmin=0, set_valmax=0;
+      float valmin=1.0, valmax=0.0;
+      char *label;
+
+      label = plot3dinfo[0].label->shortlabel;
+      GetMinMax(BOUND_PLOT3D, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      fprintf(fileout, " %i %i %f %i %f %s\n", i+1, set_valmin, valmin, set_valmax, valmax, label);
+    }
 #endif
     }
   }
   if(nslicebounds > 0){
     for(i = 0; i < nslicebounds; i++){
+#ifdef pp_CPPBOUND_DIALOG
+      fprintf(fileout, "V2_SLICE\n");
+#endif
+#ifdef pp_OLDBOUND_DIALOG
       fprintf(fileout, "V_SLICE\n");
       fprintf(fileout, " %i %f %i %f %s : %f %f %i\n",
-#ifdef pp_NEWBOUND_DIALOG
-        SET_MIN, slicebounds[i].dlg_valmin,
-        SET_MAX, slicebounds[i].dlg_valmax,
-#else
         slicebounds[i].dlg_setvalmin, slicebounds[i].dlg_valmin,
         slicebounds[i].dlg_setvalmax, slicebounds[i].dlg_valmax,
-#endif
         slicebounds[i].label->shortlabel
         , slicebounds[i].line_contour_min, slicebounds[i].line_contour_max, slicebounds[i].line_contour_num
         );
+#endif
+#ifdef pp_CPPBOUND_DIALOG
+      int set_valmin=0, set_valmax=0;
+      float valmin=1.0, valmax=0.0;
+      char *label;
+
+      label = slicebounds[i].label->shortlabel;
+      GetMinMax(BOUND_SLICE, label, &set_valmin, &valmin, &set_valmax, &valmax);
+      fprintf(fileout, " %i %f %i %f %s : %f %f %i\n", set_valmin, valmin, set_valmax, valmax, label,
+        slicebounds[i].line_contour_min, slicebounds[i].line_contour_max, slicebounds[i].line_contour_num
+        );
+#endif
     }
   }
   fprintf(fileout, "V_TARGET\n");
@@ -14122,6 +14458,8 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, " %f\n", zone_hvac_diam);
   }
 
+  // write out labels to casename.evt if this file exsits
+  //WriteLabels();
 }
 
   /* ------------------ WriteIni ------------------------ */
@@ -14129,40 +14467,46 @@ void WriteIniLocal(FILE *fileout){
 void WriteIni(int flag,char *filename){
   FILE *fileout=NULL;
   int i;
+  char *outfilename=NULL, *outfiledir=NULL;
 
-  {
-
-    char *outfilename=NULL;
-
-    switch(flag){
-    case GLOBAL_INI:
-      fileout=fopen(INIfile,"w");
-      outfilename=INIfile;
-      break;
-    case STDOUT_INI:
-      fileout=stdout;
-      break;
-    case SCRIPT_INI:
-      fileout=fopen(filename,"w");
-      outfilename=filename;
-      break;
-    case LOCAL_INI:
-      fileout=fopen(caseini_filename,"w");
-      outfilename=caseini_filename;
-      break;
-    default:
-      ASSERT(FFALSE);
-      break;
+  switch(flag){
+  case GLOBAL_INI:
+    if(smokeviewini_filename!=NULL)fileout=fopen(smokeviewini_filename,"w");
+    outfilename= smokeviewini_filename;
+    break;
+  case STDOUT_INI:
+    fileout=stdout;
+    break;
+  case SCRIPT_INI:
+    fileout=fopen(filename,"w");
+    outfilename=filename;
+    break;
+  case LOCAL_INI:
+    fileout=fopen(caseini_filename,"w");
+    if(fileout==NULL&&smokeview_scratchdir!=NULL){
+      fileout = fopen_indir(smokeview_scratchdir, caseini_filename, "w");
+      outfiledir = smokeview_scratchdir;
+     }
+    outfilename=caseini_filename;
+    break;
+  default:
+    ASSERT(FFALSE);
+    break;
+  }
+  if(flag==SCRIPT_INI)flag=LOCAL_INI;
+  if(fileout==NULL){
+    if(outfilename!=NULL){
+      fprintf(stderr,"*** Error: unable to open %s for writing ",outfilename);
+      return;
     }
-    if(flag==SCRIPT_INI)flag=LOCAL_INI;
-    if(fileout==NULL){
-      if(outfilename!=NULL){
-        fprintf(stderr,"*** Error: unable to open %s for writing\n",outfilename);
-        return;
-      }
-      else{
-        fprintf(stderr,"*** Error: unable to open ini file for output\n");
-      }
+    else{
+      fprintf(stderr,"*** Error: unable to open ini file for output ");
+    }
+    if(outfiledir==NULL){
+      printf("in current directory\n");
+    }
+    else{
+      printf("in directory %s\n", outfiledir);
     }
   }
 
@@ -14215,9 +14559,9 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "FOREGROUNDCOLOR\n");
   fprintf(fileout, " %f %f %f\n", foregroundbasecolor[0], foregroundbasecolor[1], foregroundbasecolor[2]);
   fprintf(fileout, "GEOMSELECTCOLOR\n") ;
-  fprintf(fileout, " %i %i %i\n",  geom_vertex1_rgb[0],  geom_vertex1_rgb[1],  geom_vertex1_rgb[2]);
-  fprintf(fileout, " %i %i %i\n",  geom_vertex2_rgb[0],  geom_vertex2_rgb[1],  geom_vertex2_rgb[2]);
-  fprintf(fileout, " %i %i %i\n", geom_triangle_rgb[0], geom_triangle_rgb[1], geom_triangle_rgb[2]);
+  fprintf(fileout, " %u %u %u\n",  geom_vertex1_rgb[0],  geom_vertex1_rgb[1],  geom_vertex1_rgb[2]);
+  fprintf(fileout, " %u %u %u\n",  geom_vertex2_rgb[0],  geom_vertex2_rgb[1],  geom_vertex2_rgb[2]);
+  fprintf(fileout, " %u %u %u\n", geom_triangle_rgb[0], geom_triangle_rgb[1], geom_triangle_rgb[2]);
   fprintf(fileout, "HEATOFFCOLOR\n");
   fprintf(fileout, " %f %f %f\n", heatoffcolor[0], heatoffcolor[1], heatoffcolor[2]);
   fprintf(fileout, "HEATONCOLOR\n");
@@ -14339,9 +14683,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "VECCONTOURS\n");
   fprintf(fileout, " %i %i\n", show_node_slices_and_vectors,show_cell_slices_and_vectors);
   fprintf(fileout, "VECLENGTH\n");
-  fprintf(fileout, " %i %f 1.0\n", 4, vecfactor);
-  fprintf(fileout, "VECTORCOLOR\n");
-  fprintf(fileout, " %i\n", color_vector_black);
+  fprintf(fileout, " %i %f %f %i %i\n", 4, vecfactor, 1.0, vec_uniform_length, vec_uniform_spacing);
   fprintf(fileout, "VECTORLINEWIDTH\n");
   fprintf(fileout, " %f %f\n", vectorlinewidth, slice_line_contour_width);
   fprintf(fileout, "VECTORPOINTSIZE\n");
@@ -14361,20 +14703,20 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout," %i\n",-1);
   }
   else{
-#define USE_SPECIAL
-#ifndef pp_OSX
-#undef USE_SPECIAL
-#endif
 
-#ifndef pp_QUART
-#undef USE_SPECIAL
-#endif
-
-#ifdef USE_SPECIAL
-    fprintf(fileout,"WINDOWWIDTH\n");
-    fprintf(fileout," %i\n",screenWidth/2);
-    fprintf(fileout,"WINDOWHEIGHT\n");
-    fprintf(fileout," %i\n",screenHeight/2);
+#ifdef pp_OSX_HIGHRES
+    if(double_scale==1){
+      fprintf(fileout,"WINDOWWIDTH\n");
+      fprintf(fileout," %i\n",screenWidth/2);
+      fprintf(fileout,"WINDOWHEIGHT\n");
+      fprintf(fileout," %i\n",screenHeight/2);
+    }
+    else{
+      fprintf(fileout,"WINDOWWIDTH\n");
+      fprintf(fileout," %i\n",screenWidth);
+      fprintf(fileout,"WINDOWHEIGHT\n");
+      fprintf(fileout," %i\n",screenHeight);
+    }
 #else
     fprintf(fileout,"WINDOWWIDTH\n");
     fprintf(fileout," %i\n",screenWidth);
@@ -14384,7 +14726,6 @@ void WriteIni(int flag,char *filename){
   }
 
   fprintf(fileout, "\n *** DATA LOADING ***\n\n");
-
 
   fprintf(fileout, "BOUNDZIPSTEP\n");
   fprintf(fileout, " %i\n", boundzipstep);
@@ -14400,6 +14741,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", nopart);
   fprintf(fileout, "PARTFAST\n");
   fprintf(fileout, " %i %i %i\n", partfast, part_multithread, npartthread_ids);
+#ifdef pp_CPPBOUND_DIALOG
+  fprintf(fileout, "PERCENTILEMODE\n");
+  fprintf(fileout, " %i\n", percentile_mode);
+#endif
   fprintf(fileout, "RESEARCHMODE\n");
   fprintf(fileout, " %i %i %f %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits);
   fprintf(fileout, "SHOWFEDAREA\n");
@@ -14543,6 +14888,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", visMeshlabel);
   fprintf(fileout, "SHOWBLOCKS\n");
   fprintf(fileout, " %i\n", visBlocks);
+  fprintf(fileout, "SHOWBOUNDS\n");
+  fprintf(fileout, " %i %i\n", bounds_each_mesh, show_bound_diffs);
   fprintf(fileout, "SHOWCADANDGRID\n");
   fprintf(fileout, " %i\n", show_cad_and_grid);
   fprintf(fileout, "SHOWCADOPAQUE\n");
@@ -14753,6 +15100,8 @@ void WriteIni(int flag,char *filename){
   }
   fprintf(fileout, "RENDEROPTION\n");
   fprintf(fileout, " %i %i %i\n", render_window_size, resolution_multiplier, nheight360);
+  fprintf(fileout, "TIMINGS\n");
+  fprintf(fileout, " %i\n", show_startup_timings);
   fprintf(fileout, "UNITCLASSES\n");
   fprintf(fileout, " %i\n", nunitclasses);
   for(i = 0; i<nunitclasses; i++){
@@ -14829,8 +15178,10 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, "SMOKEALBEDO\n");
     fprintf(fileout, " %f\n", smoke_albedo);
   }
+  fprintf(fileout, "SLICESKIP\n");
+  fprintf(fileout, " %i %i %i %i\n", slice_skip, slice_skipx, slice_skipy, slice_skipz);
   fprintf(fileout, "SMOKESKIP\n");
-  fprintf(fileout," %i %i\n",smokeskipm1,smoke3d_skip);
+  fprintf(fileout," %i %i %i %i %i\n",smokeskipm1,smoke3d_skip, smoke3d_skipx, smoke3d_skipy, smoke3d_skipz);
 #ifdef pp_GPU
   fprintf(fileout,"SMOKERTHICK\n");
   fprintf(fileout," %f\n",smoke3d_rthick);
@@ -14973,11 +15324,6 @@ void WriteIni(int flag,char *filename){
 
   if(fileout!=stdout){
     fclose(fileout);
-#ifdef pp_NEWBOUND_DIALOG
-    if(flag == LOCAL_INI&&caseini_filename!=NULL){
-      ReadIni2(caseini_filename, 1);
-    }
-#endif
   }
 }
 

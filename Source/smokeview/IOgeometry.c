@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "update.h"
 #include "smokeviewvars.h"
 #ifdef pp_ISOTIME
 #include GLUT_H
@@ -4013,6 +4012,7 @@ void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
   geomi->file2_tris = NULL;
   geomi->nfile2_tris = 0;
 }
+
 /* ------------------ RotateU2V ------------------------ */
 
 void RotateU2V(float *u, float *v, float *axis, float *angle){

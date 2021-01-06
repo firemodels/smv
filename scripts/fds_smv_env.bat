@@ -13,6 +13,9 @@ set smv_versionbase=6.7.15
 set fds_edition=FDS6
 set fds_debug=0
 
+set fds_tag_name=release
+set smv_tag_name=release
+
 :: ---- FDS and smokeview revision ----
 
 set smv_revision=unknown
@@ -26,7 +29,7 @@ if exist %userprofile%\.bundle\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="10-Augl-2020"
+set smvlogdate="10-Aug-2020"
 
 :: ---- repo locations ----
 
@@ -36,6 +39,7 @@ set fdswikirepo=%svn_root%\wikis
 set svn_drive=c:
 
 ::*** Linux/OSX
+set userhome=/home/gforney
 set bot_home=/home4/gforney
 set linux_svn_root=FireModels_fork
 set compiler_dir=fire-notes/INSTALL/LINUX/INTEL_19u1
@@ -75,7 +79,7 @@ set OPENMPI_DIR=.bundle/OPENMPI
 set firebotrepo=/home2/smokevis2/firebot/FireModels_clone
 set firebothome=/home2/smokevis2/firebot
 
-set smokebotrepo=/home2/smokevis2/smokebot/FireModels_clone
+set smokebotrepo=/home2/smokevis2/smokebot/FireModels_central
 set smokebothome=/home2/smokevis2/smokebot
 
 :: plink options
@@ -90,7 +94,7 @@ set linux_username=%username%
 set linux_logon=%linux_username%@%linux_hostname%
 
 ::*** OSX
-::set osx_hostname=floga.el.nist.gov
-set osx_hostname=192.168.1.125
+set osx_hostname=bevo.el.nist.gov
+::set osx_hostname=192.168.1.134
 set osx_username=%username%
 set osx_logon=%osx_username%@%osx_hostname%

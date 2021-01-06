@@ -10,7 +10,6 @@
 #include GLUT_H
 
 #include "compress.h"
-#include "update.h"
 #include "interp.h"
 #include "smokeviewvars.h"
 #include "IOscript.h"
@@ -18,19 +17,34 @@
 #define SLICE_HEADER_SIZE 4
 #define SLICE_TRAILER_SIZE 4
 
-#ifdef X64
-#define FSEEK_SLICE(a,b,c) _fseeki64(a,b,c)
-#define FTELL_SLICE(a)     _ftelli64(a)
-#else
-#define FSEEK_SLICE(a,b,c) fseeko(a,b,c)
-#define FTELL_SLICE(a)     ftello(a)
-#endif
+#define IJK_SLICE(i,j,k)  ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
 
-#define FCLOSE_SLICE(a) fclose(a)
+#ifdef pp_SLICE_BUFFER
+
+#define FOPEN_SLICE(a,b)         fopen_buffer(a,b)
+#define FSEEK_SLICE(a,b,c)       fseek_buffer(a,b,c)
+#define FTELL_SLICE(a)           ftell_buffer(a)
+#define FREAD_SLICE(a,b,c,d)     fread_buffer(a,b,c,d)
+#define FCLOSE_SLICE(a)          fclose_buffer(a)
+
+#else
+
+#define FOPEN_SLICE(a,b)         fopen(a,b)
+#ifdef X64
+#define FSEEK_SLICE(a,b,c)       _fseeki64(a,b,c)
+#define FTELL_SLICE(a)           _ftelli64(a)
+#else
+#define FSEEK_SLICE(a,b,c)       fseeko(a,b,c)
+#define FTELL_SLICE(a)           ftello(a)
+#endif
+#define FREAD_SLICE(a,b,c,d)     fread(a,b,c,d)
+#define FCLOSE_SLICE(a)          fclose(a)
+
+#endif
 
 #define FORT_SLICEREAD(var,count,STREAM) \
                            FSEEK_SLICE(STREAM,SLICE_HEADER_SIZE,SEEK_CUR);\
-                           returncode=fread(var,4,count,STREAM);\
+                           returncode=FREAD_SLICE(var,4,count,STREAM);\
                            if(returncode!=count)returncode=0;\
                            FSEEK_SLICE(STREAM,SLICE_TRAILER_SIZE,SEEK_CUR)
 
@@ -78,9 +92,33 @@ slicedata *gslice;
            else{                                   \
              DU = U->qval256[U->iqsliceframe[(n)]];\
            }                                       \
-         }                                         \
-         DU *= 0.05*vecfactor/vel_max
+         }                                         
 
+#define ADJUST_VEC_DX(dx)                       \
+         if(vec_uniform_length==1){                              \
+           float vecnorm; \
+           vecnorm = ABS(dx);\
+           if(vecnorm==0.0)vecnorm=1.0;\
+           dx *= vecfactor*0.05/(vel_max*vecnorm);\
+         }                                         \
+         else{                                     \
+           dx *= 0.05*vecfactor/vel_max;\
+         }                                         \
+
+#define ADJUST_VEC_DXYZ(dx,dy,dz)                       \
+         if(vec_uniform_length==1){                              \
+           float vecnorm; \
+           vecnorm = sqrt(dx*dx+dy*dy+dz*dz);\
+           if(vecnorm==0.0)vecnorm=1.0;\
+           dx *= vecfactor*0.05/(vel_max*vecnorm);\
+           dy *= vecfactor*0.05/(vel_max*vecnorm);\
+           dz *= vecfactor*0.05/(vel_max*vecnorm);\
+         }                                         \
+         else{                                     \
+           dx *= 0.05*vecfactor/vel_max;\
+           dy *= 0.05*vecfactor/vel_max;\
+           dz *= 0.05*vecfactor/vel_max;\
+         }                                         \
 
 #define GET_VEC_DXYZ_TERRAIN(U,DU,n)                                                 \
          if(U==NULL){                                                              \
@@ -95,339 +133,6 @@ slicedata *gslice;
            }                                                                       \
          }                                                                         \
          DU *= SCALE2FDS(.05*vecfactor/vel_max)
-
-#ifdef pp_MULTI_RES
-
-/* ------------------ SubdivideIndices ------------------------ */
-
-void SubdivideIndices(int *i_ind, int *i_ind_copy, int *ni, int ni_all){
-  int count=0, i;
-
-  i_ind_copy[count] = i_ind[count];
-  count++;
-  for(i = 1; i<*ni; i++){
-    if(i_ind[i]-i_ind[i-1]>1){
-      int index;
-
-      index = (i_ind[i]+i_ind[i-1])/2;
-      i_ind_copy[count++] = index;
-    }
-    i_ind_copy[count++] = i_ind[i];
-  }
-  for(i = 0; i<count; i++){
-    i_ind[i] = i_ind_copy[i];
-  }
-  *ni = count;
-}
-
-/* ------------------ GetResolutionLevels ------------------------ */
-
-int GetResolutionLevels(int ni, int nj, int nk){
-  int min, max, nlevels;
-
-  nlevels = 1;
-  min = 0;
-  max = MAX(MAX(ni, nj), nk);
-
-  while(max-min>1){
-    int mid;
-
-    mid = (min+max)/2;
-    if(max-mid>mid-min){
-      min = mid;
-    }
-    else{
-      max = mid;
-    }
-    nlevels++;
-  }
-  return nlevels;
-}
-
-/* ------------------ FreeMultiResData ------------------------ */
-
-void FreeMultiResData(multiresdata *multiresinfo){
-  int i;
-
-  FREEMEMORY(multiresinfo->kji_to_reorder);
-  for(i = 0; i<multiresinfo->nresinfo; i++){
-    resdata *resi;
-
-    resi = multiresinfo->resinfo+i;
-    FREEMEMORY(resi->xplt);
-    FREEMEMORY(resi->yplt);
-    FREEMEMORY(resi->zplt);
-  }
-  FREEMEMORY(multiresinfo->resinfo);
-}
-
-/* ------------------ ReorderSliceVals ------------------------ */
-
-void NormalizeXYZRes(void){
-  int i;
-
-  for(i = 0; i<nsliceinfo; i++){
-    slicedata *slicei;
-    int j;
-
-    slicei = sliceinfo+i;
-
-    if(slicei->multi_res==0)continue;
-    for(j = 0; j<slicei->multiresinfo.nresinfo; j++){
-      resdata *resi;
-      float *xplt, *yplt, *zplt;
-      int ii, jj, kk;
-
-      resi = slicei->multiresinfo.resinfo+j;
-      xplt = resi->xplt;
-      yplt = resi->yplt;
-      zplt = resi->zplt;
-      for(ii = 0; ii<resi->ni;ii++){
-        xplt[ii] = NORMALIZE_X(xplt[ii]);
-      }
-      for(jj = 0; jj<resi->nj;jj++){
-        yplt[jj] = NORMALIZE_Y(yplt[jj]);
-      }
-      for(kk = 0; kk<resi->nk;kk++){
-        zplt[kk] = NORMALIZE_Z(zplt[kk]);
-      }
-    }
-  }
-}
-
-/* ------------------ CopyList ------------------------ */
-
-void CopyList(int **listptr, int *copy_list, int nlist, int maxlist){
-  int *list, i;
-
-  NewMemory((void **)&list, MAX(2,maxlist)*sizeof(int));
-  for(i = 0; i<nlist; i++){
-    list[i] = copy_list[i];
-  }
-  *listptr = list;
-}
-
-/* ------------------ InitMultiRes ------------------------ */
-
-void InitMultiRes(slicedata *sd){
-  int ni, nj, nk;
-  int ni_level, nj_level, nk_level;
-  int finish;
-  int *ni_list, *nj_list, *nk_list;
-  int *ni_list_copy, *nj_list_copy, *nk_list_copy;
-  int ii, jj, kk;
-  int i, j, k;
-  int count;
-  int nlevels;
-  resdata *resinfo;
-  int *kji_to_reorder;
-  int level;
-  meshdata *slicemesh;
-  float *xplt, *yplt, *zplt;
-
-  if(sd->multi_res==0)return;
-  slicemesh = meshinfo+sd->blocknumber;
-
-  ni = sd->is2+1-sd->is1;
-  nj = sd->js2+1-sd->js1;
-  nk = sd->ks2+1-sd->ks1;
-  nlevels = GetResolutionLevels(ni,nj,nk);
-  
-  NewMemory((void **)&resinfo, nlevels*sizeof(resdata));
-  sd->multiresinfo.resinfo = resinfo;
-  for(i = 0; i<nlevels; i++){
-    resdata *resi;
-
-    resi = resinfo+i;
-    NewMemory((void **)&xplt, MAX(ni, 2)*sizeof(float));
-    NewMemory((void **)&yplt, MAX(nj, 2)*sizeof(float));
-    NewMemory((void **)&zplt, MAX(nk, 2)*sizeof(float));
-    resi->xplt = xplt;
-    resi->yplt = yplt;
-    resi->zplt = zplt;
-  }
-  CheckMemory;
-
-  NewMemory((void **)&kji_to_reorder, ni*nj*nk*sizeof(int));
-  sd->multiresinfo.kji_to_reorder = kji_to_reorder;
-  sd->multiresinfo.nresinfo = nlevels;
-  sd->multiresinfo.iresinfo = 0;
-
-  xplt = slicemesh->xplt;
-  yplt = slicemesh->yplt;
-  zplt = slicemesh->zplt;
-
-  for(i = 0; i<ni*nj*nk; i++){
-    kji_to_reorder[i] = -1;
-  }
-  CheckMemory;
-  ni_level = 2;
-  nj_level = 2;
-  nk_level = 2;
-  NewMemory((void **)&ni_list, MAX(ni,2)*sizeof(int));
-  NewMemory((void **)&nj_list, MAX(nj, 2)*sizeof(int));
-  NewMemory((void **)&nk_list, MAX(nk, 2)*sizeof(int));
-  NewMemory((void **)&ni_list_copy, MAX(ni, 2)*sizeof(int));
-  NewMemory((void **)&nj_list_copy, MAX(nj, 2)*sizeof(int));
-  NewMemory((void **)&nk_list_copy, MAX(nk, 2)*sizeof(int));
-  ni_list[0] = 0;
-  ni_list[1] = ni-1;
-  nj_list[0] = 0;
-  nj_list[1] = nj-1;
-  nk_list[0] = 0;
-  nk_list[1] = nk-1;
-  finish = 0;
-  CheckMemory;
-
-  count = 0;
-  level = 0;
-  if(ni==1){
-    while(finish==0){
-      resdata *resi;
-
-      resi = resinfo+level;
-      resi->ni = ni_level;
-      resi->nj = nj_level;
-      resi->nk = nk_level;
-      resi->ni_list = ni_list;
-      resi->nj_list = nj_list;
-      resi->nk_list = nk_list;
-
-      for(j = 0; j<nj_level; j++){
-        resi->yplt[j] = yplt[nj_list[j]];
-      }
-      for(k = 0; k<nk_level; k++){
-        resi->zplt[k] = zplt[nk_list[k]];
-      }
-      for(jj = 0; jj<nj_level; jj++){
-        j = nj_list[jj];
-        for(kk = 0; kk<nk_level; kk++){
-          int index;
-          
-          k = nk_list[kk];
-          index = k*nj + j;
-          if(kji_to_reorder[index]==-1){
-            kji_to_reorder[index] = count++;
-          }
-        }
-      }
-
-      if(nk_level==nk&&nj==nj_level){
-        finish = 1;
-      }
-      else{
-        CopyList(&ni_list, ni_list, ni_level, ni);
-        CopyList(&nj_list, nj_list, nj_level, nj);
-        CopyList(&nk_list, nk_list, nk_level, nk);
-        if(nj!=nj_level)SubdivideIndices(nj_list, nj_list_copy, &nj_level, nj);
-        if(nk!=nk_level)SubdivideIndices(nk_list, nk_list_copy, &nk_level, nk);
-      }
-      level++;
-    }
-  }
-  else if(nj==1){
-    while(finish==0){
-      resdata *resi;
-
-      resi = resinfo+level;
-      resi->ni = ni_level;
-      resi->nj = nj_level;
-      resi->nk = nk_level;
-      resi->ni_list = ni_list;
-      resi->nj_list = nj_list;
-      resi->nk_list = nk_list;
-      for(i = 0; i<ni_level; i++){
-        resi->xplt[i] = xplt[ni_list[i]];
-      }
-      CheckMemory;
-      for(k = 0; k<nk_level; k++){
-        resi->zplt[k] = zplt[nk_list[k]];
-      }
-      CheckMemory;
-
-      for(kk = 0; kk<nk_level; kk++){
-        int index;
-        
-        k = nk_list[kk];
-        for(ii = 0; ii<ni_level; ii++){
-          i = ni_list[ii];
-          index = i*nk+k;
-          if(kji_to_reorder[index]==-1){
-            kji_to_reorder[index] = count++;
-            CheckMemory;
-          }
-        }
-      }
-      if(nk_level==nk&&ni==ni_level){
-        finish = 1;
-      }
-      else{
-        CopyList(&ni_list, ni_list, ni_level, ni);
-        CopyList(&nj_list, nj_list, nj_level, nj);
-        CopyList(&nk_list, nk_list, nk_level, nk);
-        if(ni!=ni_level)SubdivideIndices(ni_list, ni_list_copy, &ni_level, ni);
-        if(nk!=nk_level)SubdivideIndices(nk_list, nk_list_copy, &nk_level, nk);
-      }
-      level++;
-    }
-  }
-  else if(nk==1){
-    while(finish==0){
-      resdata *resi;
-
-      resi = resinfo+level;
-      resi->ni = ni_level;
-      resi->nj = nj_level;
-      resi->nk = nk_level;
-      resi->ni_list = ni_list;
-      resi->nj_list = nj_list;
-      resi->nk_list = nk_list;
-      for(i = 0; i<ni_level; i++){
-        resi->xplt[i] = xplt[ni_list[i]];
-      }
-      for(j = 0; j<nj_level; j++){
-        resi->yplt[j] = yplt[nj_list[j]];
-      }
-      for(jj = 0; jj<nj_level; jj++){
-        j = nj_list[jj];
-
-        for(ii = 0; ii<ni_level; ii++){
-          int index;
-
-          i = ni_list[ii];
-          index = j*ni+i;
-          if(kji_to_reorder[index]==-1){
-            kji_to_reorder[index] = count++;
-          }
-        }
-      }
-      if(ni_level==ni&&nj==nj_level){
-        finish = 1;
-      }
-      else{
-        CopyList(&ni_list, ni_list, ni_level, ni);
-        CopyList(&nj_list, nj_list, nj_level, nj);
-        CopyList(&nk_list, nk_list, nk_level, nk);
-        if(nj!=nj_level)SubdivideIndices(nj_list, nj_list_copy, &nj_level, nj);
-        if(ni!=ni_level)SubdivideIndices(ni_list, ni_list_copy, &ni_level, ni);
-      }
-      level++;
-    }
-  }
-  max_slice_resolution = 0;
-  for(i = 0; i<nsliceinfo; i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo+i;
-    if(slicei->multi_res==0)continue;
-    max_slice_resolution = MAX(slicei->multiresinfo.nresinfo-1, max_slice_resolution);
-  }
-
-  FREEMEMORY(ni_list_copy);
-  FREEMEMORY(nj_list_copy);
-  FREEMEMORY(nk_list_copy);
-}
-#endif
 
 /* ------------------ Get3DSliceVal ------------------------ */
 
@@ -1135,7 +840,7 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   int headersize,framesize;
   int frame_size;
   long int skip_local;
-  FILE *SLICEFILE;
+  FILEBUFFER *SLICEFILE=NULL;
   float *time_local,*slicevals;
   int error;
   int returncode=0;
@@ -1174,12 +879,17 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   skip_local += frame_index_local*(HEADER_SIZE + 4 + TRAILER_SIZE); //
   skip_local += frame_index_local*(HEADER_SIZE + frame_size*4 + TRAILER_SIZE); //
 
-  SLICEFILE=fopen(sd->file,"rb");
+#ifdef pp_SLICE_BUFFER
+  SLICEFILE = sd->stream_slice;
+#endif
+  if(SLICEFILE==NULL){
+    SLICEFILE=FOPEN_SLICE(sd->file,"rb");
+  }
   if(SLICEFILE==NULL){
     return -1;
   }
 
-  FSEEK(SLICEFILE,skip_local,SEEK_SET); // skip from beginning of file
+  FSEEK_SLICE(SLICEFILE,skip_local,SEEK_SET); // skip from beginning of file
 
   if(frame_index_local==first_frame_index){
     if(NewMemory((void **)&sd->qslicedata,2*frame_size*sizeof(float))==0||
@@ -1299,7 +1009,12 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     ReadIsoOrig(fed_iso->file,file_index,UNLOAD,&error_local);
   }
 
-  if(flag==UNLOAD)return;
+  if(flag==UNLOAD){
+#ifdef pp_CPPBOUND_DIALOG
+    update_draw_hist = 1;
+#endif
+    return;
+  }
 
   // regenerate if either the FED slice or isosurface file does not exist or is older than
   // either the CO, CO2 or O2 slice files
@@ -1587,6 +1302,9 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     showvslice=0;
     updatemenu=1;
     plotstate=GetPlotState(DYNAMIC_PLOTS);
+#ifdef pp_CPPBOUND_DIALOG
+    update_draw_hist = 1;
+#endif
     return return_filesize;
   }
   if(vd->finalize==0)set_slicecolor = DEFER_SLICECOLOR;
@@ -1768,121 +1486,11 @@ void UncompressSliceDataFrame(slicedata *sd, int iframe_local){
   CheckMemory;
 }
 
-#ifdef pp_NEWBOUND_DIALOG
-/* ------------------ GetSlicePercentileBounds ------------------------ */
+/* ------------------ GetHistogramValProc ------------------------ */
 
-void GetSlicePercentileBounds(char *slicetype, float global_min, float global_max, float *per_min, float *per_max){
-  int iii, ntotal, *buckets;
-  int ii;
-  float factor;
-  int i01, sum;
-  int have_min, have_max;
-  int some_compressed = 0;
-  int some_loaded = 0;
-
-  *per_min = 1.0;
-  *per_max = 0.0;
-  if(global_min>global_max)return;
-  if(NewMemory((void **)&buckets, NBUCKETS*sizeof(int))==0)return;
-  for(iii=0;iii<NBUCKETS;iii++){
-    buckets[iii] = 0;
-  }
-  factor = (float)NBUCKETS/(global_max-global_min);
-
-  ntotal = 0;
-  for(iii = 0; iii<nsliceinfo; iii++){
-    slicedata *slicei;
-    int nn;
-    meshdata *meshi;
-    char *iblank_node, *iblank_cell;
-    int ibar, jbar, nx, ny, nxy;
-    int itime;
-
-    slicei = sliceinfo+iii;
-    if(strcmp(slicei->label.shortlabel, slicetype)!= 0||slicei->loaded==0)continue;
-    if(slicei->compression_type!=UNCOMPRESSED){
-      some_compressed = 1;
-      continue;
-    }
-    some_loaded = 1;
-
-    meshi = meshinfo+slicei->blocknumber;
-    iblank_node = meshi->c_iblank_node;
-    iblank_cell = meshi->c_iblank_cell;
-
-    ibar = meshi->ibar;
-    jbar = meshi->jbar;
-    nx = ibar+1;
-    ny = jbar+1;
-    nxy = nx*ny;
-
-
-    nn = -1;
-    for(itime = 0; itime<slicei->ntimes; itime++){
-      for(ii = 0; ii<slicei->nslicei; ii++){
-        int j;
-
-        for(j = 0; j<slicei->nslicej; j++){
-          int k;
-
-          for(k = 0; k<slicei->nslicek; k++){
-            float val;
-            int ival;
-
-            nn++;
-            if(slicei->slice_filetype==SLICE_CELL_CENTER&&((k==0&&slicei->nslicek!=1)||(j==0&&slicei->nslicej!=1)||(ii==0&&slicei->nslicei!=1)))continue;
-            if(show_slice_in_obst==ONLY_IN_GAS){
-              if(slicei->slice_filetype!=SLICE_CELL_CENTER&& iblank_node!=NULL&&iblank_node[IJKNODE(slicei->is1+ii, slicei->js1+j, slicei->ks1+k)]==SOLID)continue;
-              if(slicei->slice_filetype==SLICE_CELL_CENTER&& iblank_cell!=NULL&&iblank_cell[IJKCELL(slicei->is1+ii-1, slicei->js1+j-1, slicei->ks1+k-1)]==EMBED_YES)continue;
-            }
-            val = slicei->qslicedata[nn];
-            ival = (int)(factor*(val-global_min)+0.5);
-            ival = CLAMP(ival, 0, NBUCKETS-1);
-            buckets[ival]++;
-            ntotal++;
-          }
-        }
-      }
-    }
-  }
-  if(ntotal==0){
-    if(some_loaded==0&&some_compressed==1){
-      printf("***warning: percentile bounds not computed - all loaded slice files are compressed\n");
-    }
-    if(some_loaded==1){
-      printf("***warning: percentile bounds not computed - no data in files\n");
-    }
-    FREEMEMORY(buckets);
-    return;
-  }
-
-  i01 =   (int)(percentile_level*(float)ntotal);
-  sum = 0;
-  have_min = 0;
-  for(iii = 0; iii<NBUCKETS; iii++){
-    if(sum>i01){
-      *per_min = global_min+(float)iii*(global_max-global_min)/(float)NBUCKETS;
-      have_min = 1;
-      break;
-    }
-    sum += buckets[iii];
-  }
-  if(have_min == 0)*per_min = global_max;
-
-  sum = 0;
-  have_max = 0;
-  for(iii = NBUCKETS-1; iii>=0; iii--){
-    if(sum>i01){
-      *per_max = global_min+(float)iii*(global_max-global_min)/(float)NBUCKETS;
-      have_max = 1;
-      break;
-    }
-    sum += buckets[iii];
-  }
-  if(have_max == 0)*per_max = global_min;
-  FREEMEMORY(buckets);
+void GetHistogramValProc(histogramdata *histogram, float cdf, float *val){
+  *val = GetHistogramVal(histogram, cdf);
 }
-#endif
 
 /* ------------------ GetSliceHists ------------------------ */
 
@@ -2004,6 +1612,22 @@ void GetSliceHists(slicedata *sd){
   FREEMEMORY(pdata0);
 }
 
+/* ------------------ GetSliceGeomHists ------------------------ */
+
+void GetSliceGeomHists(slicedata *sd){
+  if(sd->histograms != NULL)return;
+
+  // initialize histograms
+
+  sd->nhistograms = 1;
+  NewMemory((void **)&sd->histograms, sizeof(histogramdata));
+  InitHistogram(sd->histograms, NHIST_BUCKETS, NULL, NULL);
+
+  // compute histogram for each timestep, histi and all time steps, histall
+
+  CopyVals2Histogram(sd->patchgeom->geom_vals, NULL, NULL, sd->patchgeom->geom_nvals, sd->histograms);
+}
+
 /* ------------------ GetAllSliceHists ------------------------ */
 
 void GetAllSliceHists(void){
@@ -2015,9 +1639,56 @@ void GetAllSliceHists(void){
 
     i = slice_loaded_list[ii];
     sdi = sliceinfo + i;
-    if(sdi->histograms == NULL)GetSliceHists(sdi);
+    if(sdi->histograms==NULL){
+      if(sdi->slice_filetype==SLICE_GEOM){
+        GetSliceGeomHists(sdi);
+      }
+      else{
+        GetSliceHists(sdi);
+      }
+    }
   }
 }
+
+#ifdef pp_CPPBOUND_DIALOG
+/* ------------------ ComputeLoadedSliceHist ------------------------ */
+
+void ComputeLoadedSliceHist(char *label, histogramdata **histptr){
+  histogramdata *hist;
+  int i, have_data=0;
+
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    if(slicei->loaded==0||strcmp(slicei->label.shortlabel, label)!=0)continue;
+    have_data = 1;
+  }
+  if(have_data==0)return;
+
+  hist = *histptr;
+  if(*histptr!=NULL)FreeHistogram(*histptr);
+  NewMemory((void **)&hist, sizeof(histogramdata));
+  *histptr = hist;
+  
+  InitHistogram(hist, NHIST_BUCKETS, NULL, NULL);
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    if(slicei->loaded==0||strcmp(slicei->label.shortlabel, label)!=0)continue;
+    if(slicei->histograms==NULL){
+      if(slicei->slice_filetype==SLICE_GEOM){
+        GetSliceGeomHists(slicei);
+      }
+      else{
+        GetSliceHists(slicei);
+      }
+    }
+    MergeHistogram(hist, slicei->histograms, MERGE_BOUNDS);
+  }
+}
+#endif
 
 /* ------------------ UpdateSliceHist ------------------------ */
 
@@ -3085,7 +2756,7 @@ void UpdateFedinfo(void){
     ext = strrchr(filename_base, '.');
     *ext = 0;
     strcat(filename_base, "_fed.sf");
-    filename = GetFileName(smokeviewtempdir, filename_base, NOT_FORCE_IN_DIR);
+    filename = GetFileName(smokeview_scratchdir, filename_base, NOT_FORCE_IN_DIR);
 
     NewMemory((void **)&fedi->fed_slice->reg_file, strlen(filename) + 1);
     strcpy(fedi->fed_slice->reg_file, filename);
@@ -3144,7 +2815,7 @@ void UpdateFedinfo(void){
       ext = strrchr(filename_base, '.');
       *ext = 0;
       strcat(filename_base, "_fed.iso");
-      filename = GetFileName(smokeviewtempdir, filename_base, NOT_FORCE_IN_DIR);
+      filename = GetFileName(smokeview_scratchdir, filename_base, NOT_FORCE_IN_DIR);
       NewMemory((void **)&isoi->reg_file, strlen(filename) + 1);
       strcpy(isoi->reg_file, filename);
       FREEMEMORY(filename);
@@ -3591,6 +3262,28 @@ void GetSliceParams2(void){
 void UpdateVSlices(void){
   int i;
 
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+    float *xplt, *yplt, *zplt;
+
+    meshi = meshinfo+i;
+    xplt = meshi->xplt_orig;
+    yplt = meshi->yplt_orig;
+    zplt = meshi->zplt_orig;
+    if(i==0){
+      max_dx = xplt[1]-xplt[0];
+      max_dy = yplt[1]-yplt[0];
+      max_dz = zplt[1]-zplt[0];
+    }
+    else{
+      max_dx = MAX(max_dx, xplt[1]-xplt[0]);
+      max_dy = MAX(max_dy, yplt[1]-yplt[0]);
+      max_dz = MAX(max_dz, zplt[1]-zplt[0]);
+    }
+  }
+
+  max_dx = meshinfo[0].xplt_orig[1]-meshinfo[0].xplt_orig[0];
+
 #ifdef _DEBUG
   PRINTF("  updating vector slices\n");
 #endif
@@ -4032,15 +3725,6 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
     }
     return;
   }
-#ifdef pp_NEWBOUND_DIALOG
-  if(use_slice_glui_bounds == 1 && sd->bounds != NULL){
-    if(sd->bounds->dlg_valmin < sd->bounds->dlg_valmax){
-      *pmin = sd->bounds->dlg_valmin;
-      *pmax = sd->bounds->dlg_valmax;
-      return;
-    }
-  }
-#endif
   meshi = meshinfo + sd->blocknumber;
   iblank_node = meshi->c_iblank_node;
   iblank_cell = meshi->c_iblank_cell;
@@ -4377,7 +4061,7 @@ void GetSliceFileDirection(int is1, int *is2ptr, int *iis1ptr, int *iis2ptr, int
 
 /* ------------------ GetSliceSizes ------------------------ */
 
-void GetSliceSizes(char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int sliceframestep_arg,
+void GetSliceSizes(slicedata *sd, char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int sliceframestep_arg,
   int *errorptr, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg, int *headersizeptr, int *framesizeptr){
 
   int ip1, ip2, jp1, jp2, kp1, kp2;
@@ -4387,21 +4071,26 @@ void GetSliceSizes(char *slicefilenameptr, int time_frame, int *nsliceiptr, int 
   float timeval, time_max;
   int idir, joff, koff, volslice;
   int count,countskip;
-  FILE *SLICEFILE;
+  FILEBUFFER *SLICEFILE=NULL;
   int ijk[6];
   int returncode=0;
 
   *errorptr = 0;
   *ntimesptr = 0;
 
-  SLICEFILE = fopen(slicefilenameptr, "rb");
+#ifdef pp_SLICE_BUFFER
+  SLICEFILE = sd->stream_slice;
+#endif
+  if(SLICEFILE==NULL){
+    SLICEFILE = FOPEN_SLICE(slicefilenameptr, "rb");
+  }
   if(SLICEFILE==NULL){
     *errorptr = 1;
     return;
   }
 
   *headersizeptr = 3*(4+30+4);
-  fseek(SLICEFILE, *headersizeptr, SEEK_CUR);
+  FSEEK_SLICE(SLICEFILE, *headersizeptr, SEEK_CUR);
 
   FORT_SLICEREAD(ijk, 6, SLICEFILE);
   ip1 = ijk[0];
@@ -4439,15 +4128,15 @@ void GetSliceSizes(char *slicefilenameptr, int time_frame, int *nsliceiptr, int 
       time_max = timeval;
     }
     if(settmax_s_arg!=0&&timeval>tmax_s_arg){
-      fclose(SLICEFILE);
+      FCLOSE_SLICE(SLICEFILE);
       return;
     }
-    fseek(SLICEFILE, *framesizeptr-12, SEEK_CUR);
+    FSEEK_SLICE(SLICEFILE, *framesizeptr-12, SEEK_CUR);
     if(count%sliceframestep_arg==0){
       countskip++;
       if(time_frame>=0&&time_frame==countskip){
         *ntimesptr = *ntimesptr+1;
-        fclose(SLICEFILE);
+        FCLOSE_SLICE(SLICEFILE);
         *errorptr = 0;
         return;
       }
@@ -4458,7 +4147,11 @@ void GetSliceSizes(char *slicefilenameptr, int time_frame, int *nsliceiptr, int 
     if(loadframe==1)*ntimesptr = *ntimesptr+1;
   }
   *errorptr = 0;
-  fclose(SLICEFILE);
+#ifdef pp_SLICE_BUFFER
+  rewind_buffer(SLICEFILE);
+#else
+  FCLOSE_SLICE(SLICEFILE);
+#endif
 }
 
 /* ------------------ GetSliceFileHeader ------------------------ */
@@ -4490,12 +4183,9 @@ void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int 
 
 /* ------------------ GetSliceData ------------------------ */
 
-FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
+FILE_SIZE GetSliceData(slicedata *sd, char *slicefilename, int time_frame, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
   float *qminptr, float *qmaxptr, float *qdataptr, float *timesptr, int ntimes_old_arg, int *ntimesptr,
   int sliceframestep_arg, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg
-#ifdef pp_MULTI_RES
-  , int multi_res
-#endif
 ){
 
   int i, j, k;
@@ -4511,7 +4201,7 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
   int iis1, iis2;
   int ijk[6];
   int file_size;
-  FILE *stream;
+  FILEBUFFER *stream=NULL;
   int returncode=0;
   float *qq;
   int nx, ny, nxy;
@@ -4521,7 +4211,12 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
   koff = 0;
   file_size = 0;
 
-  stream = fopen(slicefilename, "rb");
+#ifdef pp_SLICE_BUFFER
+  stream = sd->stream_slice;
+#endif
+  if(stream==NULL){
+    stream = FOPEN_SLICE(slicefilename,"rb");
+  }
   if(stream==NULL){
     printf(" the slice file %s does not exist\n", slicefilename);
     nsteps = 0;
@@ -4529,11 +4224,11 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
   }
 
   nsteps = 0;
-  fseek(stream, 3*(4+30+4), SEEK_CUR);
+  FSEEK_SLICE(stream, 3*(4+30+4), SEEK_CUR);
 
   FORT_SLICEREAD(ijk, 6, stream);
   if(returncode==0){
-    fclose(stream);
+    FCLOSE_SLICE(stream);
     return file_size;
   }
   ip1 = ijk[0];
@@ -4571,7 +4266,7 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
     size = 4+4+4;                     // time
     size += (4+4*nxsp*nysp*nzsp+4);   // slice data
     size *= time_frame;               // number of steps to skip over
-    fseek(stream, size, SEEK_CUR);
+    FSEEK_SLICE(stream, size, SEEK_CUR);
   }
   else{
     if(*ntimesptr!=ntimes_old_arg&&ntimes_old_arg>0){
@@ -4582,7 +4277,7 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
         size += 4+4+4;
         size += 4+4*nxsp*nysp*nzsp+4;
       }
-      fseek(stream, size, SEEK_CUR);
+      FSEEK_SLICE(stream, size, SEEK_CUR);
       nsteps = ntimes_old_arg;
     }
   }
@@ -4660,31 +4355,6 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
       float *qqto, *qqfrom;
 
       istart = (nsteps-1)*nxsp*(nzsp+koff);
-#ifdef pp_MULTI_RES
-      if(multi_res==1){
-        qqto = qdataptr + istart;
-        qqfrom = qq;
-        for(i = 0; i<nxsp; i++){
-          for(k = 0;k<nzsp+koff;k++){
-            *qqto++ = *qqfrom++;
-          }
-        }
-      }
-      else{
-        for(i = 0; i<nxsp; i++){
-          irowstart = i*(nzsp+koff);
-          kk = istart+irowstart;
-//      qdata(kk+1:kk+nzsp+koff) = qq(i, 1, 1:nzsp+koff)
-          qqto = qdataptr+kk;
-          qqfrom = qq + IJKNODE(i, 0, 0);
-          for(k = 0;k<nzsp+koff;k++){
-//        qdataptr[kk+k] = qq[IJKNODE(i, 0, k)];
-            *qqto++ = *qqfrom;
-            qqfrom += nxy;
-          }
-        }
-      }
-#else
       for(i = 0; i<nxsp; i++){
         irowstart = i*(nzsp+koff);
         kk = istart+irowstart;
@@ -4697,7 +4367,6 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
           qqfrom += nxy;
         }
       }
-#endif
     }
     else{
       float *qqto, *qqfrom;
@@ -4743,7 +4412,7 @@ FILE_SIZE GetSliceData(char *slicefilename, int time_frame, int *is1ptr, int *is
       qq++;
     }
   }
-  fclose(stream);
+  FCLOSE_SLICE(stream);
   FREEMEMORY(qq);
   return file_size;
 }
@@ -4803,7 +4472,13 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   *errorcode = 0;
   error = 0;
   show_slice_average = 0;
-  blocknumber = sliceinfo[ifile].blocknumber;
+  slicefilenumber = ifile;
+  ASSERT(slicefilenumber>=0&&slicefilenumber<nsliceinfo);
+  slicefilenum = ifile;
+  histograms_defined = 0;
+  sd = sliceinfo+slicefilenumber;
+
+  blocknumber = sd->blocknumber;
   meshi = meshinfo + blocknumber;
   if(meshi->terrain!=NULL&&meshi->terrain->nvalues==0){
     if(flag==LOAD){
@@ -4812,12 +4487,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     return 0;
   }
 
-  slicefilenumber = ifile;
-  slicefilenum = ifile;
-  histograms_defined = 0;
-
-  ASSERT(slicefilenumber >= 0 && slicefilenumber<nsliceinfo);
-  sd = sliceinfo + slicefilenumber;
   if(flag != RESETBOUNDS){
     if(sd->loaded == 0 && flag == UNLOAD)return 0;
     sd->display = 0;
@@ -4929,6 +4598,9 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
       UpdateUnitDefs();
       UpdateTimes();
       RemoveSliceLoadstack(slicefilenumber);
+#ifdef pp_CPPBOUND_DIALOG
+      update_draw_hist = 1;
+#endif
       return 0;
     }
 
@@ -4937,7 +4609,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
 
     if(sd->compression_type == UNCOMPRESSED){
       sd->ntimes_old = sd->ntimes;
-        GetSliceSizes(file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, sliceframestep, &error,
+      GetSliceSizes(sd, file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, sliceframestep, &error,
           settmin_s, settmax_s, tmin_s, tmax_s, &headersize, &framesize);
     }
     else if(sd->compression_type != UNCOMPRESSED){
@@ -5029,15 +4701,19 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
         qmax = -1.0e30;
       }
       if(sd->ntimes > ntimes_slice_old){
-        return_filesize =
-          GetSliceData(file, time_frame, &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
+        return_filesize = GetSliceData(sd, file, time_frame, &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
             &qmin, &qmax, sd->qslicedata, sd->times, ntimes_slice_old, &sd->ntimes,
             sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s
-#ifdef pp_MULTI_RES
-              , sd->multi_res
-#endif
           );
         file_size = (int)return_filesize;
+        sd->valmin_smv = qmin;
+        sd->valmax_smv = qmax;
+        if(sd->have_bound_file==NO){
+          if(WriteFileBounds(sd->bound_file, qmin, qmax)==1){
+            sd->have_bound_file = YES;
+            update_slicefile_bounds = 1;
+          }
+        }
       }
 #ifdef pp_MEMDEBUG
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
@@ -5155,6 +4831,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
      // convert slice data into color indices
 
   if(sd->compression_type == UNCOMPRESSED){
+#ifdef pp_OLDBOUND_DIALOG
     GetSliceDataBounds(sd, &qmin, &qmax);
     if(nzoneinfo>0&&strcmp(sd->label.shortlabel, "TEMP")==0){
       slice_temp_bounds_defined = 1;
@@ -5164,11 +4841,13 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
       qmin = MIN(qmin,zoneglobalmin);
       qmax = MAX(qmax,zoneglobalmax);
     }
+#endif
   }
   else{
     qmin = sd->valmin;
     qmax = sd->valmax;
   }
+#ifdef pp_OLDBOUND_DIALOG
   sd->globalmin = qmin;
   sd->globalmax = qmax;
   sd->valmin = qmin;
@@ -5178,6 +4857,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   for(i = 0; i<256; i++){
     sd->qval256[i] = (qmin*(255 - i) + qmax*i) / 255;
   }
+#endif
   CheckMemory;
 
   sd->loaded = 1;
@@ -5185,6 +4865,34 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   slicefile_labelindex = GetSliceBoundsIndex(sd);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   if(sd->finalize==1){
+#ifdef pp_CPPBOUND_DIALOG
+    int set_valmin, set_valmax;
+
+    if(update_slicefile_bounds==1){
+      update_slicefile_bounds = 0;
+      GetGlobalSliceBounds();
+      SetLoadedSliceBounds(NULL, 0);
+    }
+    GetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
+    if(set_valmin==BOUND_PERCENTILE_MIN||set_valmax==BOUND_PERCENTILE_MAX){
+      cpp_boundsdata *bounds;
+
+      bounds = GetBoundsData(BOUND_SLICE);
+      ComputeLoadedSliceHist(bounds->label, &(bounds->hist));
+      if(bounds->hist->defined==1){
+        if(set_valmin==BOUND_PERCENTILE_MIN){
+          GetHistogramValProc(bounds->hist, percentile_level_min, &qmin);
+          SetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, qmin);
+        }
+        if(set_valmax==BOUND_PERCENTILE_MAX){
+          GetHistogramValProc(bounds->hist, percentile_level_max, &qmax);
+          SetMax(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MAX, qmax);
+        }
+      }
+    }
+#define BOUND_PERCENTILE_DRAW          120
+    SliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+#endif
     UpdateUnitDefs();
     UpdateTimes();
     CheckMemory;
@@ -5193,10 +4901,31 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     //if(flag!=RESETBOUNDS)update_research_mode=1;
     if(use_set_slicecolor==0||set_slicecolor==SET_SLICECOLOR){
       if(sd->compression_type==UNCOMPRESSED){
+#ifdef pp_CPPBOUND_DIALOG
+        for(i = 0; i<nsliceinfo; i++){
+          int ii, errorcode;
+          slicedata *slicei;
+
+          slicei = sliceinfo+i;
+          if(slicei->loaded==0)continue;
+          if(slicei->slicefile_labelindex!=slicefile_labelindex)continue;
+          slicei->globalmin = qmin;
+          slicei->globalmax = qmax;
+          slicei->valmin = qmin;
+          slicei->valmax = qmax;
+          slicei->valmin_data = qmin;
+          sd->valmax_data = qmax;
+          for(ii = 0; ii<256; ii++){
+            slicei->qval256[ii] = (qmin*(255 - ii) + qmax*ii) / 255;
+          }
+          SetSliceColors(qmin, qmax, slicei, &errorcode);
+        }
+#else
         UpdateSliceBounds();
         UpdateAllSliceColors(slicefile_labelindex, errorcode);
         list_slice_index = slicefile_labelindex;
         SliceBounds2Glui(slicefile_labelindex);
+#endif
       }
       else{
         boundsdata *sb;
@@ -5211,14 +4940,16 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     }
     CheckMemory;
 
-    UpdateSliceList(list_slice_index);
     CheckMemory;
+#ifdef pp_OLDBOUND_DIALOG
+    UpdateSliceList(list_slice_index);
     UpdateSliceListIndex(slicefilenum);
+#endif
     CheckMemory;
     UpdateGlui();
     CheckMemory;
 #ifdef pp_MEMDEBUG
-    if(sd->compression_type==UNCOMPRESSED){
+    if(sd->compression_type==UNCOMPRESSED&&sd->slice_filetype!=SLICE_GEOM){
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
     }
     CheckMemory;
@@ -5226,13 +4957,11 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     IdleCB();
   }
 
-  exportdata = 1;
-  if(exportdata == 0){
+  if(cache_slice_data == 0){
     FREEMEMORY(sd->qslicedata);
   }
 
   STOP_TIMER(total_time);
-
 
   if(time_frame==ALL_SLICE_FRAMES&&flag != RESETBOUNDS){
     if(file_size>1000000000){
@@ -5305,26 +5034,11 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   CheckMemory;
   showall_slices=1;
   GLUTPOSTREDISPLAY;
+  if(sd->finalize==1){
+    update_slice_bounds = slicefilenumber;
+  }
   return return_filesize;
 }
-
-#ifdef pp_NEWBOUND_DIALOG
-FILE_SIZE ReadSliceUseGluiBounds(char *file, int ifile, int time_frame, float *time_val, int flag, int set_slicecolor, int *errorcode){
-  FILE_SIZE file_size;
-
-  use_slice_glui_bounds = 1;
-  file_size = ReadSlice(file, ifile, time_frame, time_val, flag, set_slicecolor, errorcode);
-  use_slice_glui_bounds = 0;
-  return file_size;
-}
-#endif
-
-#ifdef pp_SLICETHREAD
-/* ------------------ FinalizeSliceLoad ------------------------ */
-
-void FinalizeSliceLoad(slicedata *slicei){
-}
-#endif
 
 /* ------------------ UpdateSlice3DTexture ------------------------ */
 
@@ -5815,48 +5529,54 @@ void DrawVolSliceTerrain(const slicedata *sd){
     glTranslatef(-xbar0,-ybar0,-zbar0+agl_smv+sliceoffset_all);
 
     glBegin(GL_TRIANGLES);
-    maxi = MAX(sd->is1 + sd->nslicei - 1, sd->is1 + 1);
-    for(i = sd->is1; i<maxi; i++){
+    maxi = sd->is2;
+    for(i = sd->is1; i<maxi; i+=slice_skip){
       float xmid;
+      int i2;
 
+      i2 = MIN(i+slice_skip, maxi);
       if(plotz<sd->ks1)break;
       if(plotz >= sd->ks1 + sd->nslicek)break;
       x1 = xplt[i];
-      x3 = xplt[i + 1];
+      x3 = xplt[i2];
       xmid = (x1 + x3) / 2.0;
 
-      for(j = sd->js1; j<sd->js2; j++){
+      for(j = sd->js1; j<sd->js2; j += slice_skip){
         float ymid, rmid;
         int n11, n31, n13, n33;
+        int j2;
 
+        j2 = MIN(j+slice_skip, sd->js2);
         z11 = znode[IJ2(i, j)];
-        z31 = znode[IJ2(i + 1, j)];
-        z13 = znode[IJ2(i, j + 1)];
-        z33 = znode[IJ2(i + 1, j + 1)];
-        zmid = (z11 + z31 + z13 + z33)/4.0;
+        z31 = znode[IJ2(i2, j)];
+        z13 = znode[IJ2(i, j2)];
+        z33 = znode[IJ2(i2, j2)];
+        zmid = (z11+z31+z13+z33)/4.0;
 
         yy1 = yplt[j];
-        y3 = yplt[j+1];
+        y3 = yplt[j2];
         ymid = (yy1+y3)/2.0;
 
-        if(iblank_z != NULL&&iblank_z[IJK(i, j, plotz)] != GASGAS)continue;
-        if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
+        if(slice_skip==1){
+          if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
+          if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
+        }
 
         if(z11<z_cutoff||z31<z_cutoff||z13<z_cutoff||z33<z_cutoff)continue;
         if(terrain_slice_overlap==0){
           if(z11<zplt[0]||z31<zplt[0]||z13<zplt[0]||z33<zplt[0])continue;
         }
 
-        n11 = (i - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek;
+        n11 = IJK_SLICE(i,j,sd->ks1);
         r11 = (float)sd->iqsliceframe[n11]/255.0;
 
-        n31 = n11 + sd->nslicej*sd->nslicek;
+        n31 = IJK_SLICE(i2,j,sd->ks1);
         r31 = (float)sd->iqsliceframe[n31]/255.0;
 
-        n13 = n11 + sd->nslicek;
+        n13 = IJK_SLICE(i,j2,sd->ks1);
         r13 = (float)sd->iqsliceframe[n13]/255.0;
 
-        n33 = n13 + sd->nslicej*sd->nslicek;
+        n33 = IJK_SLICE(i2,j2,sd->ks1);
         r33 = (float)sd->iqsliceframe[n33]/255.0;
 
         rmid = (r11 + r31 + r13 + r33) / 4.0;
@@ -6092,7 +5812,7 @@ void DrawVolAllSlicesTextureDiag(const slicedata *sd, int direction){
 /* ------------------ DrawVolSliceTexture ------------------------ */
 
 void DrawVolSliceTexture(const slicedata *sd){
-  int i, j, k, n, n2;
+  int i, j, k;
   float r11, r31, r13, r33;
   float constval, x1, x3, yy1, y3, z1, z3;
 
@@ -6102,41 +5822,15 @@ void DrawVolSliceTexture(const slicedata *sd){
   char *c_iblank_x, *c_iblank_y, *c_iblank_z;
   char *iblank_embed;
   int plotx, ploty, plotz;
-#ifdef pp_MULTI_RES
-  resdata *resinfo;
-  int *ni_list, *nk_list;
-  int *kji_to_reorder;
-#endif
 
   meshdata *meshi;
 
   if(sd->volslice == 1 && visx_all == 0 && visy_all == 0 && visz_all == 0)return;
   meshi = meshinfo + sd->blocknumber;
 
-#ifdef pp_MULTI_RES
-  if(sd->multi_res==1){
-    int resolution_level;
-
-    resolution_level = slice_resolution_level;
-    if(resolution_level<0||resolution_level>=sd->multiresinfo.nresinfo-1)resolution_level = sd->multiresinfo.nresinfo-1;
-    resinfo = sd->multiresinfo.resinfo+resolution_level;
-    xplt = resinfo->xplt;
-    yplt = resinfo->yplt;
-    zplt = resinfo->zplt;
-    ni_list = resinfo->ni_list;
-    nk_list = resinfo->nk_list;
-    kji_to_reorder = sd->multiresinfo.kji_to_reorder;
-  }
-  else{
-    xplt = meshi->xplt;
-    yplt = meshi->yplt;
-    zplt = meshi->zplt;
-  }
-#else
   xplt = meshi->xplt;
   yplt = meshi->yplt;
   zplt = meshi->zplt;
-#endif
   if(sd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
     ploty = meshi->iploty_all[iploty_all];
@@ -6153,26 +5847,17 @@ void DrawVolSliceTexture(const slicedata *sd){
   c_iblank_y = meshi->c_iblank_y;
   c_iblank_z = meshi->c_iblank_z;
   iblank_embed = meshi->c_iblank_embed;
-#ifdef pp_MULTI_RES
-  if(sd->multi_res==1){
-    nx = resinfo->ni;
-    ny = resinfo->nj;
-  }
-  else{
-    nx = ibar+1;
-    ny = jbar+1;
-  }
-#else
   nx = ibar + 1;
   ny = jbar + 1;
-#endif
- nxy = nx*ny;
+  nxy = nx*ny;
 
   if(cullfaces == 1)glDisable(GL_CULL_FACE);
   if(use_transparency_data == 1)TransparentOn();
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
   glEnable(GL_TEXTURE_1D);
   glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
+
+  //*** x plane slices
 
   if((sd->volslice == 1 && plotx >= 0 && visx_all == 1) || (sd->volslice == 0 && sd->idir == XDIR)){
     int maxj;
@@ -6183,38 +5868,34 @@ void DrawVolSliceTexture(const slicedata *sd){
     if(sd->js1 + 1>maxj){
       maxj = sd->js1 + 1;
     }
-    for(j = sd->js1; j<maxj; j++){
+    for(j = sd->js1; j<maxj; j+=slice_skipy){
       float ymid;
+      int j2;
 
-      n = (j - sd->js1)*sd->nslicek - 1;
-      n += (plotx - sd->is1)*sd->nslicej*sd->nslicek;
-      n2 = n + sd->nslicek;
+      j2 = MIN(j+slice_skipy, sd->js2);
       yy1 = yplt[j];
-      y3 = yplt[j + 1];
+      y3 = yplt[j2];
       ymid = (yy1 + y3) / 2.0;
 
       // val(i,j,k) = di*nj*nk + dj*nk + dk
-      for(k = sd->ks1; k<sd->ks2; k++){
+      for(k = sd->ks1; k<sd->ks2; k+=slice_skipz){
         float rmid, zmid;
+        int k2;
 
-        n++; n2++;
-#ifdef pp_MULTI_RES
-        if(sd->multi_res==0){
-#endif
-          if(show_slice_in_obst==ONLY_IN_SOLID && c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]==GASGAS)continue;
-          if(show_slice_in_obst==ONLY_IN_GAS   && c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)continue;
-          if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
-#ifdef pp_MULTI_RES
-        }
-#endif
-        r11 = (float)sd->iqsliceframe[n] / 255.0;
-        r31 = (float)sd->iqsliceframe[n2] / 255.0;
-        r13 = (float)sd->iqsliceframe[n + 1] / 255.0;
-        r33 = (float)sd->iqsliceframe[n2 + 1] / 255.0;
+        k2 = MIN(k+slice_skipz, sd->ks2);
+          if(slice_skipz==1&&slice_skipy==1){
+            if(show_slice_in_obst==ONLY_IN_SOLID&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]==GASGAS)continue;
+            if(show_slice_in_obst==ONLY_IN_GAS&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)continue;
+            if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
+          }
+        r11 = (float)sd->iqsliceframe[ IJK_SLICE(plotx, j,  k)   ] / 255.0;
+        r31 = (float)sd->iqsliceframe[ IJK_SLICE(plotx, j2, k)  ] / 255.0;
+        r13 = (float)sd->iqsliceframe[ IJK_SLICE(plotx, j, k2)  ] / 255.0;
+        r33 = (float)sd->iqsliceframe[ IJK_SLICE(plotx, j2,k2) ] / 255.0;
         rmid = (r11 + r31 + r13 + r33) / 4.0;
 
         z1 = zplt[k];
-        z3 = zplt[k + 1];
+        z3 = zplt[k2];
         zmid = (z1 + z3) / 2.0;
 
         /*
@@ -6240,115 +5921,53 @@ void DrawVolSliceTexture(const slicedata *sd){
     }
     glEnd();
   }
+
+  //*** y plane slices
+
   if((sd->volslice==1&&ploty>=0&&visy_all==1)||(sd->volslice==0&&sd->idir==YDIR)){
     int maxi;
     int istart, iend;
 
-#ifdef pp_MULTI_RES
-    yplt = meshi->yplt;
-#endif
     constval = yplt[ploty]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glBegin(GL_TRIANGLES);
     maxi = sd->is1+sd->nslicei-1;
     if(sd->is1+1>maxi){
       maxi = sd->is1+1;
     }
-#ifdef pp_MULTI_RES
-    if(sd->multi_res==1){
-      istart = 0;
-      iend = resinfo->ni-1;
-    }
-    else{
-      istart = sd->is1;
-      iend = maxi;
-    }
-#else
     istart = sd->is1;
     iend = maxi;
-#endif
 
-    for(i = istart; i<iend; i++){
+    for(i = istart; i<iend; i+=slice_skipx){
       float xmid;
       int kmin, kmax;
+      int i2;
 
-#ifdef pp_MULTI_RES
-      if(sd->multi_res==1){
-        n = i*resinfo->nk-1;
-        n2 = n+resinfo->nk;
-      }
-      else{
-        n = (i-sd->is1)*sd->nslicej*sd->nslicek-1;
-        n += (ploty-sd->js1)*sd->nslicek;
-        n2 = n+sd->nslicej*sd->nslicek;
-      }
-#else
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - 1;
-      n += (ploty - sd->js1)*sd->nslicek;
-      n2 = n + sd->nslicej*sd->nslicek;
-#endif
+      i2 = MIN(i+slice_skipx, iend);
 
       x1 = xplt[i];
-      x3 = xplt[i + 1];
+      x3 = xplt[i2];
       xmid = (x1 + x3) / 2.0;
 
-#ifdef pp_MULTI_RES
-      if(sd->multi_res==1){
-        kmin = 0;
-        kmax = resinfo->nk-1;
-      }
-      else{
-        kmin = sd->ks1;
-        kmax = sd->ks2;
-      }
-#else
       kmin = sd->ks1;
       kmax = sd->ks2;
-#endif
-      for(k = kmin; k<kmax; k++){
+      for(k = kmin; k<kmax; k+=slice_skipz){
         float rmid, zmid;
-#ifdef pp_MULTI_RES
-        int i11, i13, i31, i33;
-#endif
+        int k2;
 
-        n++; n2++;
-#ifdef pp_MULTI_RES
-        if(sd->multi_res==0){
-#endif
-        if(show_slice_in_obst==ONLY_IN_SOLID && c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]==GASGAS)continue;
-        if(show_slice_in_obst == ONLY_IN_GAS   && c_iblank_y != NULL&&c_iblank_y[IJK(i, ploty, k)] != GASGAS)continue;
-        if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, ploty, k)] == EMBED_YES)continue;
-#ifdef pp_MULTI_RES
+        k2 = MIN(k + slice_skipz, sd->ks2);
+        if(slice_skipx==1&&slice_skipz==1){
+          if(show_slice_in_obst==ONLY_IN_SOLID && c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]==GASGAS)continue;
+          if(show_slice_in_obst == ONLY_IN_GAS   && c_iblank_y != NULL&&c_iblank_y[IJK(i, ploty, k)] != GASGAS)continue;
+          if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, ploty, k)] == EMBED_YES)continue;
         }
-#endif
-#ifdef pp_MULTI_RES
-#define IJRES(i,k) ((i)*(sd->ks2+1)+(k))
-        if(sd->multi_res==1){
-          i11 = kji_to_reorder[IJRES(ni_list[i],   nk_list[k])];
-          i31 = kji_to_reorder[IJRES(ni_list[i+1], nk_list[k])];
-          i13 = kji_to_reorder[IJRES(ni_list[i],   nk_list[k+1])];
-          i33 = kji_to_reorder[IJRES(ni_list[i+1], nk_list[k+1])];
-
-          r11 = (float)sd->iqsliceframe[i11]/255.0;
-          r31 = (float)sd->iqsliceframe[i31]/255.0;
-          r13 = (float)sd->iqsliceframe[i13]/255.0;
-          r33 = (float)sd->iqsliceframe[i33]/255.0;
-        }
-        else{
-          r11 = (float)sd->iqsliceframe[n]/255.0;
-          r31 = (float)sd->iqsliceframe[n2]/255.0;
-          r13 = (float)sd->iqsliceframe[n+1]/255.0;
-          r33 = (float)sd->iqsliceframe[n2+1]/255.0;
-        }
-#else
-        r11 = (float)sd->iqsliceframe[n] / 255.0;
-        r31 = (float)sd->iqsliceframe[n2] / 255.0;
-        r13 = (float)sd->iqsliceframe[n + 1] / 255.0;
-        r33 = (float)sd->iqsliceframe[n2 + 1] / 255.0;
-#endif
+        r11 = (float)sd->iqsliceframe[IJK_SLICE(i,  ploty, k)]/255.0;
+        r31 = (float)sd->iqsliceframe[IJK_SLICE(i2, ploty, k)]/255.0;
+        r13 = (float)sd->iqsliceframe[IJK_SLICE(i,  ploty, k2)]/255.0;
+        r33 = (float)sd->iqsliceframe[IJK_SLICE(i2, ploty, k2)]/255.0;
         rmid = (r11 + r31 + r13 + r33) / 4.0;
 
         z1 = zplt[k];
-        z3 = zplt[k + 1];
+        z3 = zplt[k2];
         zmid = (z1 + z3) / 2.0;
 
         /*
@@ -6376,48 +5995,47 @@ void DrawVolSliceTexture(const slicedata *sd){
     }
     glEnd();
   }
+
+  //*** z plane slices
+
   if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
     int maxi;
 
     constval = zplt[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glBegin(GL_TRIANGLES);
+
     maxi = sd->is1 + sd->nslicei - 1;
     if(sd->is1 + 1>maxi){
       maxi = sd->is1 + 1;
     }
-    for(i = sd->is1; i<maxi; i++){
+    for(i = sd->is1; i<maxi; i+=slice_skipx){
       float xmid;
+      int i2;
 
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - sd->nslicek;
-      n += (plotz - sd->ks1);
-      n2 = n + sd->nslicej*sd->nslicek;
+      i2 = MIN(i+slice_skipx, sd->is2);
 
       x1 = xplt[i];
-      x3 = xplt[i + 1];
+      x3 = xplt[i2];
       xmid = (x1 + x3) / 2.0;
 
-      for(j = sd->js1; j<sd->js2; j++){
+      for(j = sd->js1; j<sd->js2; j+=slice_skipy){
         float ymid, rmid;
+        int j2;
 
-        n += sd->nslicek;
-        n2 += sd->nslicek;
-#ifdef pp_MULTI_RES
-        if(sd->multi_res==0){
-#endif
-        if(show_slice_in_obst==ONLY_IN_SOLID && c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]==GASGAS)continue;
-        if(show_slice_in_obst == ONLY_IN_GAS   && c_iblank_z != NULL&&c_iblank_z[IJK(i, j, plotz)] != GASGAS)continue;
-        if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
-#ifdef pp_MULTI_RES
+        j2 = MIN(j+slice_skipy, sd->js2);
+        if(slice_skipy==1&&slice_skipx==1){
+          if(show_slice_in_obst==ONLY_IN_SOLID && c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]==GASGAS)continue;
+          if(show_slice_in_obst == ONLY_IN_GAS   && c_iblank_z != NULL&&c_iblank_z[IJK(i, j, plotz)] != GASGAS)continue;
+          if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
         }
-#endif
-        r11 = (float)sd->iqsliceframe[n] / 255.0;
-        r31 = (float)sd->iqsliceframe[n2] / 255.0;
-        r13 = (float)sd->iqsliceframe[n + sd->nslicek] / 255.0;
-        r33 = (float)sd->iqsliceframe[n2 + sd->nslicek] / 255.0;
+        r11 = (float)sd->iqsliceframe[ IJK_SLICE(i,   j, plotz)   ] / 255.0;
+        r31 = (float)sd->iqsliceframe[ IJK_SLICE(i2,  j, plotz)  ] / 255.0;
+        r13 = (float)sd->iqsliceframe[ IJK_SLICE(i,  j2, plotz)  ] / 255.0;
+        r33 = (float)sd->iqsliceframe[ IJK_SLICE(i2, j2, plotz) ] / 255.0;
         rmid = (r11 + r31 + r13 + r33) / 4.0;
 
         yy1 = yplt[j];
-        y3 = yplt[j + 1];
+        y3 = yplt[j2];
         ymid = (yy1 + y3) / 2.0;
 
         /*
@@ -6539,18 +6157,6 @@ void DrawSliceFrame(){
 
   SortLoadedSliceList();
 
-#ifdef pp_SLICE_DEBUG
-// debug output
-  printf("DrawSliceFrame ntimes: ");
-  for(ii = 0; ii<nsliceinfo; ii++){
-    slicedata *slicei;
-
-    slicei = sliceinfo+ii;
-    if(slicei->loaded==0||slicei->display==0)continue;
-    printf("%i ", slicei->ntimes);
-  }
-  printf("\n");
-#endif
   for(ii = 0; ii<nslice_loaded; ii++){
     slicedata *sd;
     int i;
@@ -6583,7 +6189,7 @@ void DrawSliceFrame(){
       }
       sd->qsliceframe=NULL;
 #ifdef pp_MEMDEBUG
-      if(sd->compression_type==UNCOMPRESSED){
+      if(sd->compression_type==UNCOMPRESSED&&sd->qslicedata!=NULL){
         ASSERT(ValidPointer(sd->qslicedata,sizeof(float)*sd->nslicetotal));
       }
 #endif
@@ -6825,6 +6431,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_v = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
           GET_VEC_DXYZ(v, dy, index_v);
+          ADJUST_VEC_DX(dy);
           glVertex3f(constval, yy1 - dy, zhalf);
           glVertex3f(constval, yy1 + dy, zhalf);
         }
@@ -6834,6 +6441,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_w = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1 + 1)*sd->nslicek + k - sd->ks1;
           GET_VEC_DXYZ(w, dz, index_w);
+          ADJUST_VEC_DX(dz);
           glVertex3f(constval, yhalf, z1 - dz);
           glVertex3f(constval, yhalf, z1 + dz);
         }
@@ -6863,6 +6471,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_v = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek + k - sd->ks1 + 1;
           GET_VEC_DXYZ(v, dy, index_v);
+          ADJUST_VEC_DX(dy);
           glVertex3f(constval, yy1 + dy, zhalf);
         }
         if(j != maxj){
@@ -6871,6 +6480,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_w = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1 + 1)*sd->nslicek + k - sd->ks1;
           GET_VEC_DXYZ(w, dz, index_w);
+          ADJUST_VEC_DX(dz);
           glVertex3f(constval, yhalf, z1 + dz);
         }
       }
@@ -6951,6 +6561,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
           GET_VEC_DXYZ(u, dx, index_u);
+          ADJUST_VEC_DX(dx);
           glVertex3f(x1 - dx, constval, zhalf);
           glVertex3f(x1 + dx, constval, zhalf);
         }
@@ -6960,6 +6571,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_w = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k - sd->ks1;
           GET_VEC_DXYZ(w, dz, index_w);
+          ADJUST_VEC_DX(dz);
           glVertex3f(xhalf, constval, z1 - dz);
           glVertex3f(xhalf, constval, z1 + dz);
         }
@@ -6992,6 +6604,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k + 1 - sd->ks1;
           GET_VEC_DXYZ(u, dx, index_u);
+          ADJUST_VEC_DX(dx);
           glVertex3f(x1 + dx, constval, zhalf);
         }
         if(i + 1 != sd->nslicei){
@@ -7000,6 +6613,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_w = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek + k - sd->ks1;
           GET_VEC_DXYZ(w, dz, index_w);
+          ADJUST_VEC_DX(dz);
           glVertex3f(xhalf, constval, z1 + dz);
         }
       }
@@ -7084,6 +6698,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j + 1 - sd->js1)*sd->nslicek;
           GET_VEC_DXYZ(u, dx, index_u);
+          ADJUST_VEC_DX(dx);
           glVertex3f(x1 - dx, yhalf, constval);
           glVertex3f(x1 + dx, yhalf, constval);
         }
@@ -7093,6 +6708,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_v = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j - sd->js1)*sd->nslicek;
           GET_VEC_DXYZ(v, dy, index_v);
+          ADJUST_VEC_DX(dy);
           glVertex3f(xhalf, yy1 - dy, constval);
           glVertex3f(xhalf, yy1 + dy, constval);
         }
@@ -7127,6 +6743,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_u = (i - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j + 1 - sd->js1)*sd->nslicek;
           GET_VEC_DXYZ(u, dx, index_u);
+          ADJUST_VEC_DX(dx);
           glVertex3f(x1 + dx, yhalf, constval);
         }
         if(i + 1 != sd->nslicei){
@@ -7135,6 +6752,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
           index_v = (i + 1 - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) + (j - sd->js1)*sd->nslicek;
           GET_VEC_DXYZ(v, dy, index_v);
+          ADJUST_VEC_DX(dy);
           glVertex3f(xhalf, yy1 + dy, constval);
         }
       }
@@ -7200,12 +6818,20 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   float *znode;
   int nycell;
   int plotx, ploty, plotz;
+  float mesh_dx, mesh_dy, mesh_dz;
+  int factor_i, factor_j, factor_k;
 
   sd = sliceinfo + vd->ival;
   meshi = meshinfo + sd->blocknumber;
   xplttemp = meshi->xplt;
   yplttemp = meshi->yplt;
   zplttemp = meshi->zplt;
+  mesh_dx = meshi->xplt_orig[1]-meshi->xplt_orig[0];
+  mesh_dy = meshi->yplt_orig[1]-meshi->yplt_orig[0];
+  mesh_dz = meshi->zplt_orig[1]-meshi->zplt_orig[0];
+  factor_i = max_dx/mesh_dx+0.5;
+  factor_j = max_dy/mesh_dy+0.5;
+  factor_k = max_dz/mesh_dz+0.5;
   if(vd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
     ploty = meshi->iploty_all[iploty_all];
@@ -7233,18 +6859,26 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   w = vd->w;
   if((vd->volslice == 1 && plotx >= 0 && visx_all == 1) || (vd->volslice == 0 && sd->idir == XDIR)){
     int maxj, n;
+    int vectorskipj, vectorskipk;
+
+    vectorskipj = vectorskip;
+    vectorskipk = vectorskip;
+    if(vec_uniform_spacing==1){
+      if(factor_j!=1)vectorskipj *= factor_j;
+      if(factor_k!=1)vectorskipk *= factor_k;
+    }
 
     constval = xplttemp[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     maxj = sd->js2;
     if(sd->js1 + 1 > maxj)maxj = sd->js1 + 1;
-    for(j = sd->js1; j < maxj + 1; j += vectorskip){
-      n = (j - sd->js1)*sd->nslicek - vectorskip;
+    for(j = sd->js1; j < maxj + 1; j += vectorskipj){
+      n = (j - sd->js1)*sd->nslicek - vectorskipj;
       n += (plotx - sd->is1)*sd->nslicej*sd->nslicek;
       yy1 = yplttemp[j];
-      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskip){
-        n += vectorskip;
+      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
+        n += vectorskipk;
         i11 = sd->iqsliceframe[n];
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           rgb_ptr = rgb_slice + 4 * i11;
@@ -7257,6 +6891,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(constval - dx, yy1 - dy, z1 - dz);
           glVertex3f(constval + dx, yy1 + dy, z1 + dz);
@@ -7268,12 +6903,12 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
 
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
-    for(j = sd->js1; j < maxj + 1; j += vectorskip){
-      n = (j - sd->js1)*sd->nslicek - vectorskip;
+    for(j = sd->js1; j < maxj + 1; j += vectorskipj){
+      n = (j - sd->js1)*sd->nslicek - vectorskipj;
       n += (plotx - sd->is1)*sd->nslicej*sd->nslicek;
       yy1 = yplttemp[j];
-      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskip){
-        n += vectorskip;
+      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
+        n += vectorskipk;
         i11 = sd->iqsliceframe[n];
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           rgb_ptr = rgb_slice + 4 * i11;
@@ -7286,6 +6921,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(constval + dx, yy1 + dy, z1 + dz);
         }
@@ -7297,20 +6933,27 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   if((vd->volslice == 1 && ploty >= 0 && visy_all == 1) || (vd->volslice == 0 && sd->idir == YDIR)){
     int maxi;
     int n;
+    int vectorskipi, vectorskipk;
 
     constval = yplttemp[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     maxi = sd->is1 + sd->nslicei - 1;
+    vectorskipi = vectorskip;
+    vectorskipk = vectorskip;
+    if(vec_uniform_spacing==1){
+      if(factor_i!=1)vectorskipi *= factor_i;
+      if(factor_k!=1)vectorskipk *= factor_k;
+    }
     if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
-    for(i = sd->is1; i < maxi + 1; i += vectorskip){
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskip;
+    for(i = sd->is1; i < maxi + 1; i += vectorskipi){
+      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskipi;
       n += (ploty - sd->js1)*sd->nslicek;
 
       x1 = xplttemp[i];
 
-      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskip){
-        n += vectorskip;
+      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
+        n += vectorskipk;
         i11 = sd->iqsliceframe[n];
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           rgb_ptr = rgb_slice + 4 * i11;
@@ -7323,6 +6966,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(x1 - dx, constval - dy, z1 - dz);
           glVertex3f(x1 + dx, constval + dy, z1 + dz);
@@ -7333,14 +6977,14 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     SNIFF_ERRORS("after DrawVVolSliceTerrain:lines dir=2");
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
-    for(i = sd->is1; i < maxi + 1; i += vectorskip){
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskip;
+    for(i = sd->is1; i < maxi + 1; i += vectorskipi){
+      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskipi;
       n += (ploty - sd->js1)*sd->nslicek;
 
       x1 = xplttemp[i];
 
-      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskip){
-        n += vectorskip;
+      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
+        n += vectorskipk;
         i11 = sd->iqsliceframe[n];
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           rgb_ptr = rgb_slice + 4 * i11;
@@ -7353,6 +6997,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(x1 + dx, constval + dy, z1 + dz);
         }
@@ -7366,6 +7011,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     int maxi;
     float agl_smv;
     float z_cutoff;
+    int vectorskipi, vectorskipj;
 
     constval = zplttemp[plotz] + offset_slice*sd->sliceoffset - znode[0]+SCALE2SMV(sliceoffset_all);
     xplttemp = meshi->xplt_orig;
@@ -7379,12 +7025,18 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     glLineWidth(vectorlinewidth);
     maxi = sd->is1 + sd->nslicei - 1;
     if(sd->is1+1>maxi)maxi = sd->is1+1;
+    vectorskipi = vectorskip;
+    vectorskipj = vectorskip;
+    if(vec_uniform_spacing==1){
+      if(factor_i!=1)vectorskipi *= factor_i;
+      if(factor_j!=1)vectorskipj *= factor_j;
+    }
 
     if(vector_debug==0){
       glBegin(GL_LINES);
-      for(i = sd->is1; i<maxi+1; i += vectorskip){
+      for(i = sd->is1; i<maxi+1; i += vectorskipi){
         x1 = xplttemp[i];
-        for(j = sd->js1; j<sd->js2+1; j += vectorskip){
+        for(j = sd->js1; j<sd->js2+1; j += vectorskipj){
           int n11;
           float z11;
 
@@ -7402,6 +7054,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
             GET_VEC_DXYZ_TERRAIN(u, dx, n11);
             GET_VEC_DXYZ_TERRAIN(v, dy, n11);
             GET_VEC_DXYZ_TERRAIN(w, dz, n11);
+            ADJUST_VEC_DXYZ(dx,dy,dz);
 
             glColor4fv(rgb_ptr);
             glVertex3f(x1 - dx, yy1 - dy, z11 - dz);
@@ -7467,9 +7120,9 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
 
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
-    for(i = sd->is1; i < maxi + 1; i += vectorskip){
+    for(i = sd->is1; i < maxi + 1; i += vectorskipi){
       x1 = xplttemp[i];
-      for(j = sd->js1; j < sd->js2 + 1; j += vectorskip){
+      for(j = sd->js1; j < sd->js2 + 1; j += vectorskipj){
         int n11;
         float z11;
 
@@ -7487,6 +7140,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           GET_VEC_DXYZ_TERRAIN(u, dx, n11);
           GET_VEC_DXYZ_TERRAIN(v, dy, n11);
           GET_VEC_DXYZ_TERRAIN(w, dz, n11);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(x1 + dx, yy1 + dy, z11 + dz);
         }
@@ -7513,12 +7167,22 @@ void DrawVVolSlice(const vslicedata *vd){
   char *iblank;
   int nx, ny, nxy;
   float *rgb_ptr;
+  float mesh_dx, mesh_dy, mesh_dz;
+  int factor_i, factor_j, factor_k;
 
   sd = sliceinfo + vd->ival;
   meshi = meshinfo + sd->blocknumber;
   xplttemp = meshi->xplt;
   yplttemp = meshi->yplt;
   zplttemp = meshi->zplt;
+
+  mesh_dx = meshi->xplt_orig[1]-meshi->xplt_orig[0];
+  mesh_dy = meshi->yplt_orig[1]-meshi->yplt_orig[0];
+  mesh_dz = meshi->zplt_orig[1]-meshi->zplt_orig[0];
+  factor_i = max_dx/mesh_dx+0.5;
+  factor_j = max_dy/mesh_dy+0.5;
+  factor_k = max_dz/mesh_dz+0.5;
+
   if(vd->volslice == 1){
     plotx = meshi->iplotx_all[iplotx_all];
     ploty = meshi->iploty_all[iploty_all];
@@ -7542,18 +7206,25 @@ void DrawVVolSlice(const vslicedata *vd){
   w = vd->w;
   if((vd->volslice == 1 && plotx >= 0 && visx_all == 1) || (vd->volslice == 0 && sd->idir == XDIR)){
     int maxj;
+    int vectorskipj, vectorskipk;
 
     constval = xplttemp[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     maxj = sd->js2;
+    vectorskipj = vectorskip;
+    vectorskipk = vectorskip;
+    if(vec_uniform_spacing==1){
+      if(factor_j!=1)vectorskipj *= factor_j;
+      if(factor_k!=1)vectorskipk *= factor_k;
+    }
     if(sd->js1 + 1 > maxj)maxj = sd->js1 + 1;
-    for(j = sd->js1; j < maxj + 1; j += vectorskip){
-      n = (j - sd->js1)*sd->nslicek - vectorskip;
+    for(j = sd->js1; j < maxj + 1; j += vectorskipj){
+      n = (j - sd->js1)*sd->nslicek - vectorskipj;
       n += (plotx - sd->is1)*sd->nslicej*sd->nslicek;
       yy1 = yplttemp[j];
-      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskip){
-        n += vectorskip;
+      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
+        n += vectorskipk;
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
             i11 = sd->iqsliceframe[n];
@@ -7574,6 +7245,7 @@ void DrawVVolSlice(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(constval - dx, yy1 - dy, z1 - dz);
           glVertex3f(constval + dx, yy1 + dy, z1 + dz);
@@ -7587,12 +7259,12 @@ void DrawVVolSlice(const vslicedata *vd){
     glBegin(GL_POINTS);
     maxj = sd->js2;
     if(sd->js1 + 1 > maxj)maxj = sd->js1 + 1;
-    for(j = sd->js1; j < maxj + 1; j += vectorskip){
-      n = (j - sd->js1)*sd->nslicek - vectorskip;
+    for(j = sd->js1; j < maxj + 1; j += vectorskipj){
+      n = (j - sd->js1)*sd->nslicek - vectorskipj;
       n += (plotx - sd->is1)*sd->nslicej*sd->nslicek;
       yy1 = yplttemp[j];
-      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskip){
-        n += vectorskip;
+      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
+        n += vectorskipk;
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
             i11 = sd->iqsliceframe[n];
@@ -7613,6 +7285,7 @@ void DrawVVolSlice(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(constval + dx, yy1 + dy, z1 + dz);
         }
@@ -7623,20 +7296,27 @@ void DrawVVolSlice(const vslicedata *vd){
   }
   if((vd->volslice == 1 && ploty >= 0 && visy_all == 1) || (vd->volslice == 0 && sd->idir == YDIR)){
     int maxi;
+    int vectorskipi, vectorskipk;
 
     constval = yplttemp[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     maxi = sd->is1 + sd->nslicei - 1;
+    vectorskipi = vectorskip;
+    vectorskipk = vectorskip;
+    if(vec_uniform_spacing==1){
+      if(factor_i!=1)vectorskipi *= factor_i;
+      if(factor_k!=1)vectorskipk *= factor_k;
+    }
     if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
-    for(i = sd->is1; i < maxi + 1; i += vectorskip){
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskip;
+    for(i = sd->is1; i < maxi + 1; i += vectorskipi){
+      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskipi;
       n += (ploty - sd->js1)*sd->nslicek;
 
       x1 = xplttemp[i];
 
-      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskip){
-        n += vectorskip;
+      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
+        n += vectorskipk;
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
             i11 = sd->iqsliceframe[n];
@@ -7657,6 +7337,7 @@ void DrawVVolSlice(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(x1 - dx, constval - dy, z1 - dz);
           glVertex3f(x1 + dx, constval + dy, z1 + dz);
@@ -7667,14 +7348,14 @@ void DrawVVolSlice(const vslicedata *vd){
     SNIFF_ERRORS("after DrawVVolSlice:lines dir=2");
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
-    for(i = sd->is1; i < maxi + 1; i += vectorskip){
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskip;
+    for(i = sd->is1; i < maxi + 1; i += vectorskipi){
+      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskipi;
       n += (ploty - sd->js1)*sd->nslicek;
 
       x1 = xplttemp[i];
 
-      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskip){
-        n += vectorskip;
+      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
+        n += vectorskipk;
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
             i11 = sd->iqsliceframe[n];
@@ -7695,6 +7376,7 @@ void DrawVVolSlice(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(x1 + dx, constval + dy, z1 + dz);
         }
@@ -7705,19 +7387,26 @@ void DrawVVolSlice(const vslicedata *vd){
   }
   if((vd->volslice == 1 && plotz >= 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
     int maxi;
+    int vectorskipi, vectorskipj;
 
     constval = zplttemp[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    vectorskipi = vectorskip;
+    vectorskipj = vectorskip;
+    if(vec_uniform_spacing==1){
+      if(factor_i!=1)vectorskipi *= factor_i;
+      if(factor_j!=1)vectorskipj *= factor_j;
+    }
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     maxi = sd->is1 + sd->nslicei - 1;
     if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
-    for(i = sd->is1; i < maxi + 1; i += vectorskip){
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskip*sd->nslicek;
+    for(i = sd->is1; i < maxi + 1; i += vectorskipi){
+      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskipi*sd->nslicek;
       n += (plotz - sd->ks1);
 
       x1 = xplttemp[i];
-      for(j = sd->js1; j < sd->js2 + 1; j += vectorskip){
-        n += vectorskip*sd->nslicek;
+      for(j = sd->js1; j < sd->js2 + 1; j += vectorskipj){
+        n += vectorskipj*sd->nslicek;
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
             i11 = sd->iqsliceframe[n];
@@ -7738,6 +7427,7 @@ void DrawVVolSlice(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(x1 - dx, yy1 - dy, constval - dz);
           glVertex3f(x1 + dx, yy1 + dy, constval + dz);
@@ -7749,13 +7439,13 @@ void DrawVVolSlice(const vslicedata *vd){
 
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
-    for(i = sd->is1; i < sd->is1 + sd->nslicei; i += vectorskip){
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskip*sd->nslicek;
+    for(i = sd->is1; i < sd->is1 + sd->nslicei; i += vectorskipi){
+      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskipi*sd->nslicek;
       n += (plotz - sd->ks1);
 
       x1 = xplttemp[i];
-      for(j = sd->js1; j < sd->js2 + 1; j += vectorskip){
-        n += vectorskip*sd->nslicek;
+      for(j = sd->js1; j < sd->js2 + 1; j += vectorskipj){
+        n += vectorskipj*sd->nslicek;
         if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
           if(sd->constant_color == NULL){
             i11 = sd->iqsliceframe[n];
@@ -7776,6 +7466,7 @@ void DrawVVolSlice(const vslicedata *vd){
           GET_VEC_DXYZ(u, dx, n);
           GET_VEC_DXYZ(v, dy, n);
           GET_VEC_DXYZ(w, dz, n);
+          ADJUST_VEC_DXYZ(dx,dy,dz);
           glColor4fv(rgb_ptr);
           glVertex3f(x1 + dx, yy1 + dy, constval + dz);
         }
@@ -8375,8 +8066,8 @@ void GenerateSliceMenu(void){
   if(nsliceinfo==0)return;
 
   strcpy(slicemenu_filename, "");
-  if(smokeview_cachedir!=NULL){
-    strcat(slicemenu_filename, smokeview_cachedir);
+  if(smokeview_scratchdir!=NULL){
+    strcat(slicemenu_filename, smokeview_scratchdir);
     strcat(slicemenu_filename, dirseparator);
   }
   strcat(slicemenu_filename, fdsprefix);

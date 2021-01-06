@@ -3151,6 +3151,180 @@ void InitSphere(int nlat, int nlong){
   sin_long[nlong]=sin_long[0];
 }
 
+/* ----------------------- GetGlobalDeviceBounds ----------------------------- */
+
+void GetGlobalDeviceBounds(int type){
+  int i;
+  float valmin, valmax;
+
+  valmin = 1.0;
+  valmax = 0.0;
+  for(i = 0; i<ndeviceinfo; i++){
+    devicedata *devicei;
+    devicei = deviceinfo+i;
+    if(devicei->type2==type){
+      int j;
+      float *vals;
+
+      vals = devicei->vals;
+      for(j = 0; j<devicei->nvals; j++){
+        if(valmin>valmax){
+          valmin = vals[j];
+          valmax = valmin;
+        }
+        else{
+          valmin = MIN(valmin, vals[j]);
+          valmax = MAX(valmax, vals[j]);
+        }
+      }
+    }
+  }
+  for(i = 0; i<ndeviceinfo; i++){
+    devicedata *devicei;
+    devicei = deviceinfo+i;
+    if(devicei->type2==type){
+      devicei->global_valmin = valmin;
+      devicei->global_valmax = valmax;
+    }
+  }
+}
+
+  /* ------------------ DrawPlot ------------------------ */
+
+void DrawPlot(float *xyz0, float factor, float *x, float *z, int n,
+              float highlight_x, float highlight_y, int valid,
+              float global_valmin, float global_valmax, char *quantity, char *unit){
+  float xmin, xmax, zmin, zmax, dx, dz;
+  float xscale=1.0, zscale=1.0;
+  float origin[3];
+  int i;
+  char cvalmin[20], cvalmax[20];
+  int ndigits = 3;
+
+  origin[0] = xyz0[0];
+  origin[1] = xyz0[1];
+  origin[2] = xyz0[2];
+
+  xmin = x[0];
+  xmax = xmin;
+  zmin = z[0];
+  zmax = zmin;
+  for(i = 1; i<n; i++){
+    xmin = MIN(xmin, x[i]);
+    xmax = MAX(xmax, x[i]);
+    zmin = MIN(zmin, z[i]);
+    zmax = MAX(zmax, z[i]);
+  }
+  if(xmax>xmin)xscale = 1.0/(xmax-xmin);
+  if(global_valmin<global_valmax){
+    zmin = global_valmin;
+    zmax = global_valmax;
+  }
+  if(zmax>zmin)zscale = 1.0/(zmax-zmin);
+  Float2String(cvalmin, zmin, ndigits);
+  Float2String(cvalmax, zmax, ndigits);
+
+  dx = (xmax - xmin)/20.0;
+  dz = (zmax - zmin)/20.0;
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(-xbar0, -ybar0, -zbar0);
+
+  glTranslatef(origin[0], origin[1], origin[2]);
+
+  float az = camera_current->az_elev[0];
+  glRotatef(-az, 0.0,0.0,1.0);
+
+  float elev = camera_current->az_elev[1];
+  glRotatef(-elev, 1.0, 0.0, 0.0);
+
+  glScalef(factor, factor, factor);
+  glScalef(xscale, 1.0, zscale);
+  glTranslatef(-xmin, 0.0, -zmin);
+  glColor3fv(foregroundcolor);
+  glLineWidth(device_plot_line_width);
+  glBegin(GL_LINES);
+  for(i = 0; i<n-1; i++){
+    glVertex3f(x[i],   0.0, z[i]);
+    glVertex3f(x[i+1], 0.0, z[i+1]);
+  }
+
+  glVertex3f(xmin - dx, 0.0, zmin - dz);
+  glVertex3f(xmax + dx, 0.0, zmin - dz);
+
+  glVertex3f(xmax + dx, 0.0, zmin - dz);
+  glVertex3f(xmax + dx, 0.0, zmax + dz);
+
+  glVertex3f(xmax + dx, 0.0, zmax + dz);
+  glVertex3f(xmin - dx, 0.0, zmax + dz);
+
+  glVertex3f(xmin - dx, 0.0, zmax + dz);
+  glVertex3f(xmin - dx, 0.0, zmin - dz);
+
+  glVertex3f(xmax,      0.0, zmax);
+  glVertex3f(xmax + dx, 0.0, zmax);
+
+  glVertex3f(xmax,      0.0, zmin);
+  glVertex3f(xmax + dx, 0.0, zmin);
+  glEnd();
+
+  float dfont = (float)GetFontHeight()/((float)screenHeight*zscale*factor*SCALE2SMV(1.0));
+
+  if(showdevice_labels==1){
+    Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmin-0.5*dfont, cvalmin);
+    Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-0.5*dfont, cvalmax);
+    Output3Text(foregroundcolor, xmax+2.0*dx, 0.0, zmax-1.6*dfont, quantity);
+    Output3Text(foregroundcolor, xmax+2.0*dx, 0.0, zmax-2.7*dfont, unit);
+  }
+
+  if(valid==1){
+    glColor3f(1.0,0.0,0.0);
+    glPointSize(device_plot_point_size);
+    glBegin(GL_POINTS);
+    glVertex3f(highlight_x, 0.0, highlight_y);
+    glEnd();
+  }
+
+  glPopMatrix();
+}
+
+/* ----------------------- DrawDevicePlots ----------------------------- */
+
+void DrawDevicePlots(void){
+  int i;
+
+  if(showdevice_plot==DEVICE_PLOT_HIDDEN)return;
+  for(i = 0; i<ndeviceinfo; i++){
+    devicedata *devicei;
+
+    devicei = deviceinfo+i;
+    if(devicei->object->visible==0)continue;
+
+    if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED&&devicei->selected==0)continue;
+    if(devicei->times==NULL||devicei->vals==NULL)continue;
+    if(devicei->nvals>1&&devicei->type2==devicetypes_index){
+      int valid;
+      float highlight_time=0.0, highlight_val=0.0;
+
+      valid = 0;
+      float show_plot_val = 1;
+      if(show_plot_val==1&&global_times!=NULL){
+        highlight_time = global_times[itimes];
+        highlight_val= GetDeviceVal(global_times[itimes],devicei,&valid);
+      }
+      if(devicei->global_valmin>devicei->global_valmax){
+        GetGlobalDeviceBounds(devicei->type2);
+      }
+      DrawPlot(devicei->xyz, device_plot_factor, devicei->times, devicei->vals, devicei->nvals, 
+               highlight_time, highlight_val, valid, devicei->global_valmin, devicei->global_valmax,
+               devicei->quantity, devicei->unit
+      );
+    }
+    
+  }
+}
+
 /* ----------------------- DrawDevices ----------------------------- */
 
 void DrawDevices(void){
@@ -3557,7 +3731,7 @@ void DrawDevices(void){
       devicei->object->use_displaylist = 0;
     }
     else{
-      if(selected_device_tag > 0 && select_device == 1 && selected_device_tag == tagval){
+      if(devicei->selected==1 && select_device == 1){
         select_device_color_ptr = select_device_color;
         select_device_color[0] = 255;
         select_device_color[1] = 0;
@@ -3660,7 +3834,7 @@ void DrawDevices(void){
       }
     }
     if(drawobjects_as_vectors == 0){
-      if(showtime == 1 && itimes >= 0 && itimes < nglobal_times){
+      if(select_device==0 && showtime == 1 && itimes >= 0 && itimes < nglobal_times){
         int state;
 
         if(devicei->showstatelist == NULL){
@@ -5698,9 +5872,103 @@ int CompareV3Devices( const void *arg1, const void *arg2 ){
   return 0;
 }
 
-/* ----------------------- SetupTreeDevices ----------------------------- */
+#ifdef pp_ZTREE
+/* ------------------ CompareV3Devices ------------------------ */
 
-void SetupTreeDevices(void){
+int CompareZ3Devices(const void *arg1, const void *arg2){
+  devicedata *devi, *devj;
+  float *xyzi, *xyzj;
+  int diri, dirj;
+  char *quanti, *quantj;
+  int iquant;
+
+  devi = *(devicedata **)arg1;
+  devj = *(devicedata **)arg2;
+  xyzi = devi->xyz;
+  xyzj = devj->xyz;
+  quanti = devi->quantity;
+  quantj = devj->quantity;
+
+  iquant = strcmp(quanti, quantj);
+  if(iquant<0)return -1;
+  if(iquant>0)return 1;
+  if(xyzi[0]-xyzj[0]<-EPSDEV)return -1;
+  if(xyzi[0]-xyzj[0]>EPSDEV)return 1;
+  if(xyzi[1]-xyzj[1]<-EPSDEV)return -1;
+  if(xyzi[1]-xyzj[1]>+EPSDEV)return 1;
+  if(xyzi[2]-xyzj[2]<-EPSDEV)return -1;
+  if(xyzi[2]-xyzj[2]>+EPSDEV)return 1;
+  return 0;
+}
+
+/* ------------------ CompareV3Devices ------------------------ */
+
+int CompareZ2Devices(const void *arg1, const void *arg2){
+  devicedata *devi, *devj;
+  float *xyzi, *xyzj;
+  int diri, dirj;
+  char *quanti, *quantj;
+  int iquant;
+
+  devi = *(devicedata **)arg1;
+  devj = *(devicedata **)arg2;
+  xyzi = devi->xyz;
+  xyzj = devj->xyz;
+  quanti = devi->quantity;
+  quantj = devj->quantity;
+
+  iquant = strcmp(quanti, quantj);
+  if(iquant<0)return -1;
+  if(iquant>0)return 1;
+  if(xyzi[0]-xyzj[0]<-EPSDEV)return -1;
+  if(xyzi[0]-xyzj[0]>EPSDEV)return 1;
+  if(xyzi[1]-xyzj[1]<-EPSDEV)return -1;
+  if(xyzi[1]-xyzj[1]>+EPSDEV)return 1;
+  return 0;
+}
+
+/* ----------------------- SetupZTreeDevices ----------------------------- */
+
+void SetupZTreeDevices(void){
+  int i;
+
+  if(nztreedeviceinfo>0){
+    FREEMEMORY(ztreedeviceinfo);
+    FREEMEMORY(deviceinfo_sortedz);
+    nztreedeviceinfo=0;
+  }
+  NewMemory((void **)&deviceinfo_sortedz, ndeviceinfo*sizeof(devicedata *));
+  for(i = 0; i<ndeviceinfo; i++){
+    deviceinfo_sortedz[i] = deviceinfo+i;
+  }
+  qsort((devicedata **)deviceinfo_sortedz, (size_t)ndeviceinfo, sizeof(devicedata *), CompareZ3Devices);
+
+  nztreedeviceinfo = 1;
+  ztreedeviceinfo->first = 0;
+  for(i = 1; i<ndeviceinfo; i++){
+    if(CompareZ2Devices(deviceinfo_sortedz+i, deviceinfo_sortedz+i-1)!=0){
+      ztreedevicedata *ztreei;
+
+      ztreei = ztreedeviceinfo+i;
+      ztreei->last = i-1;
+      ztreei->n = ztreei->last+1-ztreei->first;
+      nztreedeviceinfo++;
+    }
+  }
+  {
+    ztreedevicedata *ztreei;
+
+    ztreei = ztreedeviceinfo+nztreedeviceinfo-1;
+    ztreei->last = ndeviceinfo-1;
+    ztreei->n = ztreei->last+1-ztreei->first;
+  }
+  ResizeMemory((void **)&ztreedeviceinfo, nztreedeviceinfo*sizeof(ztreedevicedata));
+}
+#endif
+
+/* ----------------------- SetupWindTreeDevices ----------------------------- */
+
+void SetupWindTreeDevices(void){
   int i;
   treedevicedata *treei;
 
@@ -5710,9 +5978,9 @@ void SetupTreeDevices(void){
     ntreedeviceinfo=0;
   }
 
-  if(nztreedeviceinfo>0){
-    FREEMEMORY(ztreedeviceinfo);
-    nztreedeviceinfo = 0;
+  if(nzwindtreeinfo>0){
+    FREEMEMORY(zwindtreeinfo);
+    nzwindtreeinfo = 0;
   }
 
   qsort((vdevicedata **)vdevices_sorted,3*(size_t)nvdeviceinfo,sizeof(vdevicesortdata), CompareV3Devices);
@@ -5781,13 +6049,13 @@ void SetupTreeDevices(void){
         }
       }
     }
-    if(nz>1)nztreedeviceinfo++;
+    if(nz>1)nzwindtreeinfo++;
     treei->nz = nz;
   }
 
-  if(nztreedeviceinfo>0)NewMemory((void **)&ztreedeviceinfo, nztreedeviceinfo*sizeof(treedevicedata *));
+  if(nzwindtreeinfo>0)NewMemory((void **)&zwindtreeinfo, nzwindtreeinfo*sizeof(treedevicedata *));
 
-  nztreedeviceinfo=0;
+  nzwindtreeinfo=0;
   for(i = 0; i<ntreedeviceinfo; i++){
     int j, nz;
     vdevicedata *vd;
@@ -5806,7 +6074,7 @@ void SetupTreeDevices(void){
         nz++;
       }
     }
-    if(nz>1)ztreedeviceinfo[nztreedeviceinfo++] = treei;
+    if(nz>1)zwindtreeinfo[nzwindtreeinfo++] = treei;
   }
 }
 
@@ -6566,7 +6834,10 @@ void SetupDeviceData(void){
     vdevicei->windroseinfo = NULL;
   }
 
-  SetupTreeDevices();
+  SetupWindTreeDevices();
+#ifdef pp_ZTREE
+  SetupZTreeDevices();
+#endif
   UpdateColorDevices();
 
   DeviceData2WindRose(nr_windrose,ntheta_windrose);
@@ -6637,7 +6908,7 @@ int ReadObjectDefs(char *file){
 
   stream=fopen(file,"r");
   if(stream==NULL)return 0;
-  PRINTF("processing object file: %s\n",file);
+  PRINTF("reading %s ",file);
 
   firstdef=-1;
   buffer_ptr=NULL;
@@ -6800,7 +7071,7 @@ int ReadObjectDefs(char *file){
       objecti=objecti->next;
     }
   }
-  PRINTF("complete");
+  PRINTF("- complete");
   PRINTF("\n\n");
   return ndevices;
 }
