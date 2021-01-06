@@ -651,6 +651,9 @@ extern "C" void GluiDeviceSetup(int main_window){
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "hide");
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show selected");
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show all");
+#ifdef pp_ZTREE
+      glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show all (trees)");
+#endif
 
       glui_device->add_checkbox_to_panel(PANEL_plots, _("show labels"), &showdevice_labels);
       glui_device->add_spinner_to_panel(PANEL_plots, _("size"), GLUI_SPINNER_FLOAT, &device_plot_factor);

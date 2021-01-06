@@ -16,6 +16,12 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define DEVICE_PLOT_HIDDEN        0
 #define DEVICE_PLOT_SHOW_SELECTED 1
 #define DEVICE_PLOT_SHOW_ALL      2
+#ifdef pp_ZTREE
+#define DEVICE_PLOT_SHOW_TREE_ALL 3
+#endif
+#define PLOT_ONLY_DATA 0
+#define PLOT_ALL       1
+
 
 #define    ALL_FILES 0
 #define LOADED_FILES 1
