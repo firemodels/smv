@@ -1002,7 +1002,7 @@ typedef struct _treedevicedata {
 
 typedef struct _ztreedevicedata {
   char *quantity, *unit;
-  int first, last, n;
+  int first, n;
 } ztreedevicedata;
 #endif
 

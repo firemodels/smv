@@ -3191,7 +3191,7 @@ void GetGlobalDeviceBounds(int type){
 
   /* ------------------ DrawPlot ------------------------ */
 
-void DrawPlot(float *xyz0, float factor, float *x, float *z, int n,
+void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
               float highlight_x, float highlight_y, int valid,
               float global_valmin, float global_valmax, char *quantity, char *unit){
   float xmin, xmax, zmin, zmax, dx, dz;
@@ -3250,28 +3250,30 @@ void DrawPlot(float *xyz0, float factor, float *x, float *z, int n,
     glVertex3f(x[i+1], 0.0, z[i+1]);
   }
 
-  glVertex3f(xmin - dx, 0.0, zmin - dz);
-  glVertex3f(xmax + dx, 0.0, zmin - dz);
+  if(option == PLOT_ALL){
+    glVertex3f(xmin - dx, 0.0, zmin - dz);
+    glVertex3f(xmax + dx, 0.0, zmin - dz);
 
-  glVertex3f(xmax + dx, 0.0, zmin - dz);
-  glVertex3f(xmax + dx, 0.0, zmax + dz);
+    glVertex3f(xmax + dx, 0.0, zmin - dz);
+    glVertex3f(xmax + dx, 0.0, zmax + dz);
 
-  glVertex3f(xmax + dx, 0.0, zmax + dz);
-  glVertex3f(xmin - dx, 0.0, zmax + dz);
+    glVertex3f(xmax + dx, 0.0, zmax + dz);
+    glVertex3f(xmin - dx, 0.0, zmax + dz);
 
-  glVertex3f(xmin - dx, 0.0, zmax + dz);
-  glVertex3f(xmin - dx, 0.0, zmin - dz);
+    glVertex3f(xmin - dx, 0.0, zmax + dz);
+    glVertex3f(xmin - dx, 0.0, zmin - dz);
 
-  glVertex3f(xmax,      0.0, zmax);
-  glVertex3f(xmax + dx, 0.0, zmax);
+    glVertex3f(xmax,      0.0, zmax);
+    glVertex3f(xmax + dx, 0.0, zmax);
 
-  glVertex3f(xmax,      0.0, zmin);
-  glVertex3f(xmax + dx, 0.0, zmin);
+    glVertex3f(xmax,      0.0, zmin);
+    glVertex3f(xmax + dx, 0.0, zmin);
+  }
   glEnd();
 
   float dfont = (float)GetFontHeight()/((float)screenHeight*zscale*factor*SCALE2SMV(1.0));
 
-  if(showdevice_labels==1){
+  if(option == PLOT_ALL && showdevice_labels==1){
     Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmin-0.5*dfont, cvalmin);
     Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-0.5*dfont, cvalmax);
     Output3Text(foregroundcolor, xmax+2.0*dx, 0.0, zmax-1.6*dfont, quantity);
@@ -3294,7 +3296,6 @@ void DrawPlot(float *xyz0, float factor, float *x, float *z, int n,
 void DrawDevicePlots(void){
   int i;
 
-  if(showdevice_plot==DEVICE_PLOT_HIDDEN)return;
   for(i = 0; i<ndeviceinfo; i++){
     devicedata *devicei;
 
@@ -3308,22 +3309,76 @@ void DrawDevicePlots(void){
       float highlight_time=0.0, highlight_val=0.0;
 
       valid = 0;
-      float show_plot_val = 1;
-      if(show_plot_val==1&&global_times!=NULL){
+      if(global_times!=NULL){
         highlight_time = global_times[itimes];
         highlight_val= GetDeviceVal(global_times[itimes],devicei,&valid);
       }
       if(devicei->global_valmin>devicei->global_valmax){
         GetGlobalDeviceBounds(devicei->type2);
       }
-      DrawPlot(devicei->xyz, device_plot_factor, devicei->times, devicei->vals, devicei->nvals, 
+      DrawPlot(PLOT_ALL, devicei->xyz, device_plot_factor, devicei->times, devicei->vals, devicei->nvals, 
                highlight_time, highlight_val, valid, devicei->global_valmin, devicei->global_valmax,
                devicei->quantity, devicei->unit
       );
     }
-    
   }
 }
+
+#ifdef pp_ZTREE
+
+/* ----------------------- DrawTreePlot ----------------------------- */
+
+void DrawTreePlot(int first, int n){
+  int j;
+  int drawplot = 0;
+  float *xyz = NULL;
+
+  for(j=0;j<n;j++){
+    devicedata *devicei;
+    int valid, option;
+    float highlight_time = 0.0, highlight_val = 0.0;
+
+    devicei = deviceinfo_sortedz[first+j];
+    if(devicei->object->visible==0)continue;
+    if(devicei->times==NULL||devicei->vals==NULL)continue;
+    if(devicei->nvals<=1||devicei->type2!=devicetypes_index)continue;
+    drawplot++;
+
+    if(drawplot==1){
+      option = PLOT_ALL;
+      xyz = devicei->xyz;
+    }
+    else{
+      option = PLOT_ONLY_DATA;
+    }
+    valid = 0;
+    if(global_times!=NULL){
+      highlight_time = global_times[itimes];
+      highlight_val = GetDeviceVal(global_times[itimes], devicei, &valid);
+    }
+    if(devicei->global_valmin>devicei->global_valmax){
+      GetGlobalDeviceBounds(devicei->type2);
+    }
+    DrawPlot(option, xyz, device_plot_factor, devicei->times, devicei->vals, devicei->nvals,
+             highlight_time, highlight_val, valid, devicei->global_valmin, devicei->global_valmax,
+             devicei->quantity, devicei->unit
+    );
+  }
+}
+
+/* ----------------------- DrawDevicePlots ----------------------------- */
+
+void DrawTreeDevicePlots(void){
+  int i;
+
+  for(i = 0; i<nztreedeviceinfo; i++){
+    ztreedevicedata *ztreei;
+
+    ztreei = ztreedeviceinfo+i;
+    DrawTreePlot(ztreei->first, ztreei->n);
+  }
+}
+#endif
 
 /* ----------------------- DrawDevices ----------------------------- */
 
@@ -5937,6 +5992,7 @@ void SetupZTreeDevices(void){
     FREEMEMORY(deviceinfo_sortedz);
     nztreedeviceinfo=0;
   }
+  NewMemory((void **)&ztreedeviceinfo, ndeviceinfo*sizeof(ztreedevicedata));
   NewMemory((void **)&deviceinfo_sortedz, ndeviceinfo*sizeof(devicedata *));
   for(i = 0; i<ndeviceinfo; i++){
     deviceinfo_sortedz[i] = deviceinfo+i;
@@ -5949,18 +6005,23 @@ void SetupZTreeDevices(void){
     if(CompareZ2Devices(deviceinfo_sortedz+i, deviceinfo_sortedz+i-1)!=0){
       ztreedevicedata *ztreei;
 
-      ztreei = ztreedeviceinfo+i;
-      ztreei->last = i-1;
-      ztreei->n = ztreei->last+1-ztreei->first;
+      ztreei           = ztreedeviceinfo+nztreedeviceinfo-1;
+      ztreei->n        = i-ztreei->first;
+      ztreei->quantity = deviceinfo_sortedz[i-1]->quantity;
+      ztreei->unit     = deviceinfo_sortedz[i-1]->unit;
+
+      ztreei++;
+      ztreei->first    = i;
       nztreedeviceinfo++;
     }
   }
   {
     ztreedevicedata *ztreei;
 
-    ztreei = ztreedeviceinfo+nztreedeviceinfo-1;
-    ztreei->last = ndeviceinfo-1;
-    ztreei->n = ztreei->last+1-ztreei->first;
+    ztreei           = ztreedeviceinfo+nztreedeviceinfo-1;
+    ztreei->quantity = deviceinfo_sortedz[ndeviceinfo-1]->quantity;
+    ztreei->unit     = deviceinfo_sortedz[ndeviceinfo-1]->unit;
+    ztreei->n        = ndeviceinfo-ztreei->first;
   }
   ResizeMemory((void **)&ztreedeviceinfo, nztreedeviceinfo*sizeof(ztreedevicedata));
 }
