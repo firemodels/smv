@@ -6366,13 +6366,13 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glColor4fv(foregroundcolor);
     maxj = sd->js2;
     if(sd->js1 + 1 > maxj)maxj = sd->js1 + 1;
-    for(j = sd->js1; j < maxj; j++){
+    for(j = sd->js1; j <= maxj; j++){
       float yy1, yhalf;
       int k;
 
       yy1 = yplttemp[j];
       if(j != maxj)yhalf = (yplttemp[j] + yplttemp[j + 1]) / 2.0;
-      for(k = sd->ks1; k < sd->ks2; k++){
+      for(k = sd->ks1; k <= sd->ks2; k++){
         float zhalf, z1;
 
         z1 = zplttemp[k];
@@ -6410,13 +6410,13 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
     glColor4fv(foregroundcolor);
-    for(j = sd->js1; j < maxj; j++){
+    for(j = sd->js1; j <= maxj; j++){
       float yy1, yhalf;
       int k;
 
       yy1 = yplttemp[j];
       if(j != maxj)yhalf = (yplttemp[j] + yplttemp[j + 1]) / 2.0;
-      for(k = sd->ks1; k < sd->ks2; k++){
+      for(k = sd->ks1; k <= sd->ks2; k++){
         float zhalf, z1;
 
         z1 = zplttemp[k];
@@ -6446,13 +6446,13 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     SNIFF_ERRORS("after DrawVVolSliceCellCenter:points dir=1");
 
     if(cell_center_text == 1){
-      for(j = sd->js1; j < maxj; j++){
+      for(j = sd->js1; j <= maxj; j++){
         float yy1, yhalf;
         int k;
 
         yy1 = yplttemp[j];
         if(j != maxj)yhalf = (yplttemp[j] + yplttemp[j + 1]) / 2.0;
-        for(k = sd->ks1; k < sd->ks2; k++){
+        for(k = sd->ks1; k <= sd->ks2; k++){
           float zhalf, z1;
 
           z1 = zplttemp[k];
@@ -6496,7 +6496,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
     glBegin(GL_LINES);
     glColor4fv(foregroundcolor);
-    for(i = sd->is1; i < maxi; i++){
+    for(i = sd->is1; i <= maxi; i++){
       float x1, xhalf;
       int k;
 
@@ -6506,7 +6506,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
 
-      for(k = sd->ks1; k < sd->ks2; k++){
+      for(k = sd->ks1; k <= sd->ks2; k++){
         float zhalf, z1;
 
         z1 = zplttemp[k];
@@ -6539,7 +6539,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
     glColor4fv(foregroundcolor);
-    for(i = sd->is1; i < maxi; i++){
+    for(i = sd->is1; i <= maxi; i++){
       float x1, xhalf;
       int k;
 
@@ -6549,7 +6549,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
 
-      for(k = sd->ks1; k < sd->ks2; k++){
+      for(k = sd->ks1; k <= sd->ks2; k++){
         float zhalf, z1;
 
         z1 = zplttemp[k];
@@ -6579,7 +6579,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     SNIFF_ERRORS("after DrawVVolSliceCellCenter:points dir=2");
 
     if(cell_center_text == 1){
-      for(i = sd->is1; i < maxi; i++){
+      for(i = sd->is1; i <= maxi; i++){
         float x1, xhalf;
         int k;
 
@@ -6589,7 +6589,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         x1 = xplttemp[i];
         if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
 
-        for(k = sd->ks1; k < sd->ks2 + 1; k++){
+        for(k = sd->ks1; k <= sd->ks2 + 1; k++){
           float zhalf, z1;
 
           z1 = zplttemp[k];
@@ -6632,7 +6632,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
     glBegin(GL_LINES);
     glColor4fv(foregroundcolor);
-    for(i = sd->is1; i < maxi; i++){
+    for(i = sd->is1; i <= maxi; i++){
       float xhalf;
       float x1;
       int j;
@@ -6642,7 +6642,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
-      for(j = sd->js1; j < sd->js2; j++){
+      for(j = sd->js1; j <= sd->js2; j++){
         float yhalf;
         float yy1;
 
@@ -6677,7 +6677,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
     glColor4fv(foregroundcolor);
-    for(i = sd->is1; i < maxi; i++){
+    for(i = sd->is1; i <= maxi; i++){
       float xhalf;
       float x1;
       int j;
@@ -6687,7 +6687,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
-      for(j = sd->js1; j < sd->js2; j++){
+      for(j = sd->js1; j <= sd->js2; j++){
         float yhalf;
         float yy1;
 
@@ -6718,7 +6718,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     SNIFF_ERRORS("after DrawVVolSliceCellCenter:points dir=3");
 
     if(cell_center_text == 1){
-      for(i = sd->is1; i < maxi + 1; i++){
+      for(i = sd->is1; i <= maxi + 1; i++){
         float xhalf;
         float x1;
         int j;
@@ -6728,7 +6728,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
         x1 = xplttemp[i];
         if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
-        for(j = sd->js1; j < sd->js2 + 1; j++){
+        for(j = sd->js1; j <= sd->js2 + 1; j++){
           float yhalf;
           float yy1;
 
