@@ -1010,9 +1010,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   }
 
   if(flag==UNLOAD){
-#ifdef pp_CPPBOUND_DIALOG
     update_draw_hist = 1;
-#endif
     return;
   }
 
@@ -1302,9 +1300,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     showvslice=0;
     updatemenu=1;
     plotstate=GetPlotState(DYNAMIC_PLOTS);
-#ifdef pp_CPPBOUND_DIALOG
     update_draw_hist = 1;
-#endif
     return return_filesize;
   }
   if(vd->finalize==0)set_slicecolor = DEFER_SLICECOLOR;
@@ -1650,7 +1646,6 @@ void GetAllSliceHists(void){
   }
 }
 
-#ifdef pp_CPPBOUND_DIALOG
 /* ------------------ ComputeLoadedSliceHist ------------------------ */
 
 void ComputeLoadedSliceHist(char *label, histogramdata **histptr){
@@ -1688,7 +1683,6 @@ void ComputeLoadedSliceHist(char *label, histogramdata **histptr){
     MergeHistogram(hist, slicei->histograms, MERGE_BOUNDS);
   }
 }
-#endif
 
 /* ------------------ UpdateSliceHist ------------------------ */
 
@@ -4598,9 +4592,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
       UpdateUnitDefs();
       UpdateTimes();
       RemoveSliceLoadstack(slicefilenumber);
-#ifdef pp_CPPBOUND_DIALOG
       update_draw_hist = 1;
-#endif
       return 0;
     }
 
@@ -4843,7 +4835,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   slicefile_labelindex = GetSliceBoundsIndex(sd);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   if(sd->finalize==1){
-#ifdef pp_CPPBOUND_DIALOG
     int set_valmin, set_valmax;
 
     if(update_slicefile_bounds==1){
@@ -4870,7 +4861,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     }
 #define BOUND_PERCENTILE_DRAW          120
     SliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
-#endif
     UpdateUnitDefs();
     UpdateTimes();
     CheckMemory;
@@ -4879,7 +4869,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     //if(flag!=RESETBOUNDS)update_research_mode=1;
     if(use_set_slicecolor==0||set_slicecolor==SET_SLICECOLOR){
       if(sd->compression_type==UNCOMPRESSED){
-#ifdef pp_CPPBOUND_DIALOG
         for(i = 0; i<nsliceinfo; i++){
           int ii, errorcode;
           slicedata *slicei;
@@ -4898,12 +4887,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
           }
           SetSliceColors(qmin, qmax, slicei, &errorcode);
         }
-#else
-        UpdateSliceBounds();
-        UpdateAllSliceColors(slicefile_labelindex, errorcode);
-        list_slice_index = slicefile_labelindex;
-        SliceBounds2Glui(slicefile_labelindex);
-#endif
       }
       else{
         boundsdata *sb;

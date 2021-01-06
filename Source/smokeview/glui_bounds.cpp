@@ -15,8 +15,6 @@
 
 GLUI *glui_bounds=NULL;
 
-#ifdef pp_CPPBOUND_DIALOG
-
 #define BOUND_VAL_TYPE                 101
 #define BOUND_VALMIN                   102
 #define BOUND_VALMAX                   103
@@ -2079,7 +2077,6 @@ int HavePatchData(void){
 
 /* ------------------ patch callback: PatchBoundsCPP_CB ------------------------ */
 
-#ifdef pp_CPPBOUND_DIALOG
 extern "C" void PatchBoundsCPP_CB(int var){
   int i;
   cpp_boundsdata *bounds;
@@ -2255,7 +2252,6 @@ extern "C" void UpdatdateResearchModeCPP(void){
   if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
   if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
 }
-#endif
 
 /* ------------------ SetLoadedSliceBounds ------------------------ */
 
@@ -2608,8 +2604,6 @@ void SetLoadedPartBounds(int *list, int nlist){
   FREEMEMORY(valmin_dlg);
   FREEMEMORY(valmax_dlg);
 }
-
-#endif
 
 //----------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
@@ -4336,10 +4330,8 @@ extern "C" void GluiBoundsSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_bound, glui_bounds);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_bound, BOUNDARY_ROLLOUT, glui_bounds);
 
-#ifdef pp_CPPBOUND_DIALOG
     patchboundsCPP.setup("boundary", ROLLOUT_bound, patchbounds_cpp, npatchbounds_cpp, &cache_boundary_data, SHOW_CACHE_CHECKBOX, PERCENTILE_ENABLED, PatchBoundsCPP_CB,
                          SubBoundRolloutCB, subboundprocinfo, &nsubboundprocinfo);
-#endif
 
     ROLLOUT_outputpatchdata = glui_bounds->add_rollout_to_panel(ROLLOUT_bound,_("Output data"),false,
              BOUNDARY_OUTPUT_ROLLOUT,SubBoundRolloutCB);
@@ -4548,11 +4540,8 @@ extern "C" void GluiBoundsSetup(int main_window){
       strcat(boundmenulabel, " File");
       if(npartinfo > 1)strcat(boundmenulabel, "s");
 
-#ifdef pp_CPPBOUND_DIALOG
       partboundsCPP.setup("particle", ROLLOUT_part, partbounds_cpp, npartbounds_cpp, &cache_part_data, SHOW_CACHE_CHECKBOX, PERCENTILE_ENABLED, PartBoundsCPP_CB,
                           ParticleRolloutCB, particleprocinfo, &nparticleprocinfo);
-#endif
-
 
       ROLLOUT_particle_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_part,"Settings",false,PARTICLE_SETTINGS, ParticleRolloutCB);
       INSERT_ROLLOUT(ROLLOUT_particle_settings, glui_bounds);
@@ -4603,10 +4592,8 @@ extern "C" void GluiBoundsSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_plot3d, glui_bounds);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_plot3d, PLOT3D_ROLLOUT, glui_bounds);
 
-#ifdef pp_CPPBOUND_DIALOG
     plot3dboundsCPP.setup("PLOT3D", ROLLOUT_plot3d, plot3dbounds_cpp, nplot3dbounds_cpp, &cache_plot3d_data, SHOW_CACHE_CHECKBOX, PERCENTILE_ENABLED, Plot3DBoundsCPP_CB,
                           Plot3dRolloutCB, plot3dprocinfo, &nplot3dprocinfo);
-#endif
 
     ROLLOUT_vector = glui_bounds->add_rollout_to_panel(ROLLOUT_plot3d,_("Vector"),false,PLOT3D_VECTOR_ROLLOUT, Plot3dRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_vector, glui_bounds);
@@ -4661,10 +4648,8 @@ extern "C" void GluiBoundsSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_slice, glui_bounds);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_slice, SLICE_ROLLOUT, glui_bounds);
 
-#ifdef pp_CPPBOUND_DIALOG
     sliceboundsCPP.setup("slice", ROLLOUT_slice, slicebounds_cpp, nslicebounds_cpp, &cache_slice_data, HIDE_CACHE_CHECKBOX, PERCENTILE_ENABLED, SliceBoundsCPP_CB,
                          SliceRolloutCB, sliceprocinfo, &nsliceprocinfo);
-#endif
 
     PANEL_slice_buttonsA = glui_bounds->add_panel_to_panel(ROLLOUT_slice,"",false);
 
@@ -5280,10 +5265,7 @@ extern "C" void UpdateChar(void){
 /* ------------------ UpdatePlot3dListIndex ------------------------ */
 
 extern "C" void UpdatePlot3dListIndex(void){
-
-#ifdef pp_CPPBOUND_DIALOG
   SetValTypeIndex(BOUND_PLOT3D, plotn-1);
-#endif
 }
 
 /* ------------------ GetColorTableIndex ------------------------ */
@@ -5563,14 +5545,12 @@ extern "C" void UpdateGluiStreakValue(float rvalue){
 /* ------------------ IncrementPartPropIndex ------------------------ */
 
 extern "C" void IncrementPartPropIndex(void){
-#ifdef pp_CPPBOUND_DIALOG
   if(npart5prop>0){
     ipart5prop++;
     if(ipart5prop>npart5prop-1)ipart5prop = 0;
     SetValTypeIndex(BOUND_PART, ipart5prop);
     ParticlePropShowMenu(ipart5prop);
-}
-#endif
+  }
 }
 
 /* ------------------ PartBoundCB ------------------------ */
@@ -5731,9 +5711,7 @@ void PartBoundCB(int var){
 
 /* ------------------ UpdateZoneTempBounds ------------------------ */
 
-#ifdef pp_CPPBOUND_DIALOG
   void UpdateZoneTempBounds(int setvalmin, float valmin, int setvalmax, float valmax){
-#endif
     int slice_index;
 
   if(nzoneinfo>0&&RADIO_slice!=NULL){
@@ -5750,9 +5728,7 @@ void PartBoundCB(int var){
 
 /* ------------------ UpdateSliceTempBounds ------------------------ */
 
-#ifdef pp_CPPBOUND_DIALOG
-  void UpdateSliceTempBounds(int setvalmin, float valmin, int setvalmax, float valmax){
-#endif
+void UpdateSliceTempBounds(int setvalmin, float valmin, int setvalmax, float valmax){
     int temp_index;
 
   if(slicebounds_temp==NULL||RADIO_slice==NULL)return;
@@ -5865,41 +5841,27 @@ extern "C" void SliceBoundCB(int var){
       SetLabelControls();
       break;
     case RESEARCH_MODE:
-#ifdef pp_CPPBOUND_DIALOG
      SetResearchMode(research_mode);
-#endif
-#ifdef pp_CPPBOUND_DIALOG
       {
-#endif
 
         // slice files
 
-#ifdef pp_CPPBOUND_DIALOG
         SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
-#endif
 
         // boundary files
 
-#ifdef pp_CPPBOUND_DIALOG
         PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
-#endif
 
         // particle files
 
-#ifdef pp_CPPBOUND_DIALOG
         PartBoundsCPP_CB(BOUND_RELOAD_DATA);
-#endif
 
         // plot3d files
 
         if(nplot3dloaded>0){
-#ifdef pp_CPPBOUND_DIALOG
           Plot3DBoundsCPP_CB(BOUND_UPDATE_COLORS);
-#endif
         }
-#ifdef pp_CPPBOUND_DIALOG
         if(research_mode==1)PRINTF("\nresearch mode on, using global bounds\n\n");
-#endif
       }
       if(research_mode==0){
         PRINTF("research mode off\n");
@@ -6004,18 +5966,14 @@ extern "C" void SliceBoundCB(int var){
   case SETVALMAX:
     break;
   case VALMIN:
-#ifdef pp_CPPBOUND_DIALOG
     if(is_fed_colorbar==1&&glui_setslicemin==1&&ABS(glui_slicemin)>0.001){
-#endif
         printf("***warning: min/max bounds for the FED colorbar are set to 0.0 and 3.0 respectively.\n");
       printf("   To use different min/max bounds, change the colorbar.\n");
       glui_slicemin = 0.0;
     }
     break;
   case VALMAX:
-#ifdef pp_CPPBOUND_DIALOG
     if(is_fed_colorbar==1&&glui_setslicemax==1&&ABS(glui_slicemax-3.0)>0.001){
-#endif
         printf("***warning: min/max bounds for the FED colorbar are set to 0.0 and 3.0 respectively.\n");
       printf("   To use different min/max bounds, change the colorbar.\n");
       glui_slicemax = 3.0;

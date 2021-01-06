@@ -172,10 +172,8 @@ void UpdateBoundaryBounds(patchdata *patchi){
   boundi->global_min = GetHistogramVal(&full_histogram, 0.0);
   boundi->global_max = GetHistogramVal(&full_histogram, 1.0);
 
-#ifdef pp_CPPBOUND_DIALOG  
   boundi->percentile_min = GetHistogramVal(&full_histogram, percentile_level_min);
   boundi->percentile_max = GetHistogramVal(&full_histogram, percentile_level_max);
-#endif
   boundi->defined=1;
 
   for(j=0;j<npatchinfo;j++){
@@ -209,13 +207,11 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
   int itt;
   float new_tmin, new_tmax;
 
-#ifdef pp_CPPBOUND_DIALOG
   int set_valmin, set_valmax;
   char *label;
 
   label = patchi->label.shortlabel;
   GetMinMax(BOUND_PATCH, label, &set_valmin, ttmin, &set_valmax, ttmax);
-#endif
   new_tmin = *ttmin;
   new_tmax = *ttmax;
 
@@ -265,7 +261,6 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
 
 /* ------------------ UpdateAllBoundaryColors ------------------------ */
 
-#ifdef pp_CPPBOUND_DIALOG
 void UpdateAllBoundaryColors(void){
   int i, *list = NULL, nlist = 0;
 
@@ -337,7 +332,6 @@ void UpdateAllBoundaryColors(void){
   }
   FREEMEMORY(list);
 }
-#endif
 
 /* ------------------ GetBoundaryLabels ------------------------ */
 
@@ -395,7 +389,6 @@ void GetPartColors(partdata *parti, int nlevel){
 
   datacopy = parti->data5;
 
-#ifdef pp_CPPBOUND_DIALOG
   int num, num2;
   int *part_set_valmin, *part_set_valmax;
   float *part_valmin, *part_valmax;
@@ -406,7 +399,6 @@ void GetPartColors(partdata *parti, int nlevel){
   NewMemory((void **)&part_set_valmax, num*sizeof(int));
   NewMemory((void **)&part_valmax,     num*sizeof(float));
   GetMinMaxAll(BOUND_PART, part_set_valmin, part_valmin, part_set_valmax, part_valmax, &num2);
-#endif
 
   for(i=0;i<parti->ntimes;i++){
     int j;
@@ -440,16 +432,12 @@ void GetPartColors(partdata *parti, int nlevel){
           }
         }
         else{
-#ifdef pp_CPPBOUND_DIALOG
           int prop_id_index;
-#endif
           int m;
 
-#ifdef pp_CPPBOUND_DIALOG
           prop_id_index = prop_id-part5propinfo;
           valmin = part_valmin[prop_id_index];
           valmax = part_valmax[prop_id_index];
-#endif
           dval = valmax - valmin;
           if(dval<=0.0)dval=1.0;
 
@@ -567,10 +555,8 @@ void GetPartColors(partdata *parti, int nlevel){
 
     propi = part5propinfo + i;
 
-#ifdef pp_CPPBOUND_DIALOG
-      local_tmin = part_valmin[i];
-      local_tmax = part_valmax[i];
-#endif
+    local_tmin = part_valmin[i];
+    local_tmax = part_valmax[i];
     labels=propi->partlabels;
     ppartlevels256=propi->ppartlevels256;
 
@@ -590,12 +576,10 @@ void GetPartColors(partdata *parti, int nlevel){
     Num2String(&labels[nlevel-1][0],tval);
     CheckMemory;
   }
-#ifdef pp_CPPBOUND_DIALOG
   FREEMEMORY(part_set_valmin);
   FREEMEMORY(part_valmin);
   FREEMEMORY(part_set_valmax);
   FREEMEMORY(part_valmax);
-#endif
 }
 
 /* ------------------ GetZoneColor ------------------------ */
@@ -688,10 +672,8 @@ void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, floa
   int i;
   int ntotal;
 
-#ifdef pp_CPPBOUND_DIALOG
   local_tmin = *ttmin;
   local_tmax = *ttmax;
-#endif
 
   range = local_tmax-local_tmin;
   tminorig=local_tmin;
@@ -1482,7 +1464,6 @@ void UpdateChopColors(void){
   float glui_p3min_local=1.0, glui_p3max_local=0.0;
 
 
-#ifdef pp_CPPBOUND_DIALOG
   cpp_boundsdata *bounds;
 
   bounds                = GetBoundsData(BOUND_PATCH);
@@ -1520,7 +1501,6 @@ void UpdateChopColors(void){
     glui_p3min_local = bounds->valmin[bounds->set_valmin];
     glui_p3max_local = bounds->valmax[bounds->set_valmax];
   }
-#endif
 
   if(use_transparency_data==1)transparent_level_local=transparent_level;
 

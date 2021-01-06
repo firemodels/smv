@@ -20,7 +20,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define    ALL_FILES 0
 #define LOADED_FILES 1
 
-#ifdef pp_CPPBOUND_DIALOG
 #define BOUND_SET_MAX        0
 #define BOUND_LOADED_MAX     1
 #define BOUND_GLOBAL_MAX     2
@@ -35,7 +34,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define BOUND_SLICE  1
 #define BOUND_PLOT3D 2
 #define BOUND_PATCH  3
-#endif
 
 #define MINMAX_ALL    0
 #define MINMAX_LOADED 1

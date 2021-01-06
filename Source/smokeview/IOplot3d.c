@@ -128,11 +128,9 @@ int AllocatePlot3DColorLabels(int ifile){
 void  UpdatePlot3DColors(int ifile, int *errorcode){
   int nn;
 
-#ifdef pp_CPPBOUND_DIALOG
   int num;
 
   GetMinMaxAll(BOUND_PLOT3D, setp3min_all, p3min_all, setp3max_all, p3max_all, &num);
-#endif
   *errorcode=AllocatePlot3DColorLabels(ifile);
   if(*errorcode==1)return;
   for(nn = 0; nn < numplot3dvars; nn++){
@@ -238,9 +236,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
 
   if(flag==UNLOAD){
     meshi->plot3dfilenum=-1;
-#ifdef pp_CPPBOUND_DIALOG
     update_draw_hist = 1;
-#endif
   }
   else{
     pn = meshi->plot3dfilenum;
@@ -475,14 +471,10 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   if(cache_plot3d_data==1){
     if(p->finalize==1){
       MergePlot3DHistograms();
-#ifdef pp_CPPBOUND_DIALOG
       SetPercentilePlot3DBounds();
-#endif
       UpdateAllPlot3DColors();
-#ifdef pp_CPPBOUND_DIALOG
 #define BOUND_PERCENTILE_DRAW          120
       Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
-#endif
     }
   }
   else{

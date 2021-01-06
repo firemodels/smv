@@ -588,12 +588,10 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
       SNIFF_ERRORS("after ViewportTitle");
     }
 
-#ifdef pp_CPPBOUND_DIALOG
     if(histogram_draw!=NULL){
       ViewportHistogram(quad, s_left, s_down);
       SNIFF_ERRORS("after ViewportHistogram");
     }
-#endif
 
     ViewportScene(quad, view_mode, s_left, s_down, screen);
     SNIFF_ERRORS("after ViewportScene");
