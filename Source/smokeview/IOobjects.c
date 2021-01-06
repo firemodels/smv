@@ -3230,6 +3230,7 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-xbar0, -ybar0, -zbar0);
+  glTranslatef(device_xyz_offset[0], device_xyz_offset[1], device_xyz_offset[2]);
 
   glTranslatef(origin[0], origin[1], origin[2]);
 

@@ -657,6 +657,9 @@ extern "C" void GluiDeviceSetup(int main_window){
 
       glui_device->add_checkbox_to_panel(PANEL_plots, _("show labels"), &showdevice_labels);
       glui_device->add_spinner_to_panel(PANEL_plots, _("size"), GLUI_SPINNER_FLOAT, &device_plot_factor);
+      glui_device->add_spinner_to_panel(PANEL_plots, _("x offset"), GLUI_SPINNER_FLOAT, device_xyz_offset);
+      glui_device->add_spinner_to_panel(PANEL_plots, _("y offset"), GLUI_SPINNER_FLOAT, device_xyz_offset+1);
+      glui_device->add_spinner_to_panel(PANEL_plots, _("z offset"), GLUI_SPINNER_FLOAT, device_xyz_offset+2);
       glui_device->add_spinner_to_panel(PANEL_plots, _("line width"), GLUI_SPINNER_FLOAT, &device_plot_line_width);
       glui_device->add_spinner_to_panel(PANEL_plots, _("point size"), GLUI_SPINNER_FLOAT, &device_plot_point_size);
 
