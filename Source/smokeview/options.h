@@ -41,7 +41,6 @@
 //#define pp_SMOKETEST          // max blending for fire, regular blending for smoke
 //#define pp_SPECTRAL           // use black body colors - not fully implemented
 #define pp_SLICETHREAD        // parallel slice file loading
-#define pp_CPPBOUND_DIALOG    // redo bound dialog using c++
 //#define pp_SHOW_CACHE         // show file cache checkbox
 //#define pp_PLOT3D_REDUCEMENUS // eliminate plot3d sub-menus
 //#define pp_PLOT3D_STATIC      // use static memory for plot3d labels
@@ -50,11 +49,6 @@
 //#define pp_RESEARCH_DEBUG     // output whether data is reloaded or colors reemapped when toggling to/from research mode
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
 //#define pp_ZTREE                // setup vertical device trees
-
-// define old dialog if not using new dialogs
-#ifndef pp_CPPBOUND_DIALOG
-#define pp_OLDBOUND_DIALOG
-#endif
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set

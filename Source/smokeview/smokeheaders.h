@@ -72,7 +72,6 @@ EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, flo
 EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(void);
 
-#ifdef pp_CPPBOUND_DIALOG
 EXTERNCPP void SetPercentileDrawOff(void);
 EXTERNCPP void ClosePartFiles(void);
 EXTERNCPP void PartBoundsCPP_CB(int var);
@@ -111,7 +110,7 @@ EXTERNCPP void SetResearchMode(int flag);
 EXTERNCPP void SetPercentileMode(int flag);
 EXTERNCPP void SetPercentileMinMax(float p_min, float p_max);
 EXTERNCPP void Plot3DBoundsCPP_CB(int var);
-#endif
+
 EXTERNCPP void ShiftColorbars(void);
 EXTERNCPP int GetColorbarState(void);
 EXTERNCPP void ViewpointCB(int val);
@@ -364,13 +363,7 @@ EXTERNCPP void HideGluiBounds(void);
 EXTERNCPP void ShowGluiGeometry(void);
 EXTERNCPP void HideGluiGeometry(void);
 
-#ifdef pp_CPPBOUND_DIALOG
 EXTERNCPP void UpdateAllBoundaryColors(void);
-#endif
-#ifdef pp_OLDBOUND_DIALOG
-EXTERNCPP int UpdateAllBoundaryColors(void);
-EXTERNCPP void UpdateSliceListIndex(int sfn);
-#endif
 EXTERNCPP void UpdateBoundaryListIndex(int patchfilenum);
 EXTERNCPP void UpdateBoundaryListIndex2(char *label);
 EXTERNCPP void UpdatePlot3dListIndex(void);
@@ -871,9 +864,6 @@ EXTERNCPP void SetViewPoint(int option);
 EXTERNCPP void UpdateTimeLabels(void);
 EXTERNCPP void RenderFrame(int view_mode);
 EXTERNCPP void UpdateTerrain(int allocate_memory, float vertical_factor);
-#ifdef pp_OLDBOUND_DIALOG
-EXTERNCPP void PartBoundCBInit(void);
-#endif
 EXTERNCPP void SliceBoundCB(int var);
 EXTERNCPP void RenderMenu(int value);
 EXTERNCPP void LoadSmoke3DMenu(int value);

@@ -1156,7 +1156,6 @@ void ViewportTitle(int quad, GLint screen_left, GLint screen_down){
 
     /* -------------------------- ViewportHistogram -------------------------- */
 
-#ifdef pp_CPPBOUND_DIALOG
 void ViewportHistogram(int quad, GLint screen_left, GLint screen_down){
   if(SubPortOrtho2Custom(&VP_scene, screen_left, screen_down, hist_left_percen, hist_down_percen, hist_length_percen)==0)return;
 
@@ -1165,7 +1164,6 @@ void ViewportHistogram(int quad, GLint screen_left, GLint screen_down){
 
   DrawHistogram(histogram_draw, xmin_draw, xmax_draw, gmin_draw, gmax_draw, ncolorlabel_digits);
 }
-#endif
 
 /* ----------------------- CompareMeshes ----------------------------- */
 

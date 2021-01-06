@@ -1883,12 +1883,10 @@ void UpdateShowScene(void){
   if(global_times!=NULL&&updateUpdateFrameRateMenu==1)FrameRateMenu(frameratevalue);
   if(updatefaces==1)UpdateFaces();
   if(updatefacelists==1)UpdateFaceLists();
-#ifdef pp_CPPBOUND_DIALOG
   if(update_draw_hist==1){
     update_draw_hist = 0;
     SetPercentileDrawOff();
   }
-#endif
 }
 
 /* ------------------ UpdateFlippedColorbar ------------------------ */
@@ -2206,7 +2204,6 @@ void UpdateDisplay(void){
     update_setvents=0;
   }
   UNLOCK_IBLANK;
-#ifdef pp_CPPBOUND_DIALOG
   if(update_ini==1){
     update_ini = 0;
     ReadIni(NULL);
@@ -2229,7 +2226,6 @@ void UpdateDisplay(void){
     update_chop_colors = 1;
     UpdateChopColors();
   }
-#endif
   if(update_zaxis_custom == 1){
     update_zaxis_custom = 0;
     UpdateZAxisCustom();
@@ -2319,24 +2315,15 @@ void UpdateDisplay(void){
     update_research_mode = 0;
     UpdateResearchMode();
   }
-#ifdef pp_CPPBOUND_DIALOG
   if(update_percentile_mode==1){
     update_percentile_mode = 0;
     SetPercentileMode(percentile_mode);
   }
-#endif
   if(update_visColorbars==1){
     update_visColorbars = 0;
     visColorbarVertical = visColorbarVertical_val;
     visColorbarHorizontal = visColorbarHorizontal_val;
     vis_colorbar = GetColorbarState();
-#ifdef pp_OLDBOUND_DIALOG
-    if(visColorbarHorizontal==0&&visColorbarVertical==0){
-      research_mode = 0;
-     // update_research_mode = 1;
-      SliceBoundCB(RESEARCH_MODE);
-    }
-#endif
     updatemenu = 1;
   }
   if(update_windrose==1){

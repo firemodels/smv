@@ -47,7 +47,6 @@ if(returncode==PASS_m){\
   if(ferror(PART5FILE)==1||feof(PART5FILE)==1)returncode=FAIL_m;\
 }
 
-#ifdef pp_CPPBOUND_DIALOG
 /* ------------------ ClosePartFiles ------------------------ */
 
 void ClosePartFiles(void){
@@ -63,7 +62,6 @@ void ClosePartFiles(void){
     }
   }
 }
-#endif
 
 /* ------------------ GetEvacPartColor ------------------------ */
 
@@ -2088,9 +2086,7 @@ void FinalizePartLoad(partdata *parti){
     MergePartHistograms();
   }
   if(cache_part_data==1){
-#ifdef pp_CPPBOUND_DIALOG
     SetPercentilePartBounds();
-#endif
     for(j = 0; j<npartinfo; j++){
       partdata *partj;
 
@@ -2100,14 +2096,9 @@ void FinalizePartLoad(partdata *parti){
       }
     }
   }
-#ifdef pp_CPPBOUND_DIALOG
 #define BOUND_PERCENTILE_DRAW          120
   PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
-#endif
   parttype = 0;
-#ifdef pp_OLDBOUND_DIALOG
-  PartBoundCBInit();
-#endif
   ParticlePropShowMenu(part5colorindex);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   UpdateTimes();
@@ -2155,9 +2146,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
       UpdatePart5Extremes();
       PrintMemoryInfo;
     }
-#ifdef pp_CPPBOUND_DIALOG
     update_draw_hist = 1;
-#endif
     return 0.0;
   }
 

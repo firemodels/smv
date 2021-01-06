@@ -2127,10 +2127,8 @@ void Keyboard(unsigned char key, int flag){
     case 'P':
       if(IsPartLoaded()==1){
         IncrementPartPropIndex();
-#ifdef pp_CPPBOUND_DIALOG
 #define BOUND_PERCENTILE_DRAW          120
         PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
-#endif
       }
       if(IsPlot3DLoaded()==1){
         plotn += FlowDir;
@@ -2143,13 +2141,9 @@ void Keyboard(unsigned char key, int flag){
         UpdateAllPlotSlices();
         if(visiso==1&&cache_plot3d_data==1)UpdateSurface();
         UpdatePlot3dListIndex();
-#ifdef pp_CPPBOUND_DIALOG
         Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
-#endif
       }
-#ifdef pp_CPPBOUND_DIALOG
       update_chop_colors = 1;
-#endif
       break;
     case 'q':
       blocklocation++;
@@ -2196,9 +2190,7 @@ void Keyboard(unsigned char key, int flag){
 
         if(keystate==GLUT_ACTIVE_ALT&&strncmp((const char *)&key2, "r", 1) == 0){
           research_mode = 1-research_mode;
-#ifdef pp_CPPBOUND_DIALOG
           UpdatdateResearchModeCPP();
-#endif
           update_research_mode = 1;
           return;
         }

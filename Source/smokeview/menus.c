@@ -566,9 +566,6 @@ void ShowMultiSliceMenu(int value){
   plotstate = GetPlotState(DYNAMIC_PLOTS);
 
   UpdateGlui();
-#ifdef pp_OLDBOUND_DIALOG
-  UpdateSliceListIndex(slicefilenum);
-#endif
   UpdateShow();
 }
 
@@ -701,10 +698,8 @@ void StaticVariableMenu(int value){
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   UpdatePlot3dListIndex();
-#ifdef pp_CPPBOUND_DIALOG
 #define BOUND_PERCENTILE_DRAW          120
   Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
-#endif
 }
 
 /* ------------------ IsoVariableMenu ------------------------ */
@@ -1399,9 +1394,6 @@ void ShowHideSliceMenu(int value){
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
   UpdateGlui();
-#ifdef pp_OLDBOUND_DIALOG
-  UpdateSliceListIndex(slicefilenum);
-#endif
   UpdateShow();
 }
 
@@ -3048,12 +3040,7 @@ void ReloadAllSliceFiles(void){
       load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
     }
     else{
-#ifdef pp_OLDBOUND_DIALOG
       load_size+=ReadSlice(             slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
-#endif
-#ifdef pp_CPPBOUND_DIALOG
-      load_size+=ReadSlice(             slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
-#endif
     }
     file_count++;
   }
@@ -3173,12 +3160,7 @@ void LoadUnloadMenu(int value){
           ReadGeomData(slicei->patchgeom, slicei, load_mode, &errorcode);
         }
         else{
-#ifdef pp_OLDBOUND_DIALOG
-                       ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
-#endif
-#ifdef pp_CPPBOUND_DIALOG
-                       ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
-#endif
+          ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
         }
       }
     }
@@ -3268,7 +3250,6 @@ void LoadUnloadMenu(int value){
     show_bound_diffs = 1-show_bound_diffs;
     updatemenu = 1;
   }
-#ifdef pp_CPPBOUND_DIALOG
   if(value==CACHE_FILE_DATA){
     cache_file_data = 1-cache_file_data;
     cache_plot3d_data = cache_file_data;
@@ -3283,7 +3264,6 @@ void LoadUnloadMenu(int value){
     PartBoundsCPP_CB(BOUND_CACHE_DATA);
     updatemenu = 1;
   }
-#endif
   if(value==REDIRECT){
     updatemenu=1;
     GLUTPOSTREDISPLAY;
@@ -3577,9 +3557,7 @@ void ParticlePropShowMenu(int value){
     propi = part5propinfo + iprop;
     last_prop_display=iprop;
     ipart5prop = iprop;
-#ifdef pp_CPPBOUND_DIALOG
     SetValTypeIndex(BOUND_PART, ipart5prop);
-#endif
 
     propi->display=1;
     part5colorindex=iprop;
@@ -3596,14 +3574,8 @@ void ParticlePropShowMenu(int value){
     partshortlabel=propi->label->shortlabel;
     partunitlabel=propi->label->unit;
 #define FILETYPE_INDEX 5
-#ifdef pp_OLDBOUND_DIALOG
-    PartBoundCB(FILETYPE_INDEX);
-    UpdatePartType();
-#endif
-#ifdef pp_CPPBOUND_DIALOG
 #define BOUND_PERCENTILE_DRAW          120
     PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
-#endif
   }
   else if(value==MENU_PROP_SHOWALL){
     if(current_property!=NULL){
@@ -3743,7 +3715,6 @@ void SetupPart(int value, int option){
 
 #define SETVALMIN 1
 #define SETVALMAX 2
-#ifdef pp_CPPBOUND_DIALOG
   int *list = NULL, nlist = 0;
 
   NewMemory((void **)&list, npartinfo*sizeof(int));
@@ -3759,17 +3730,6 @@ void SetupPart(int value, int option){
   }
   SetLoadedPartBounds(list, nlist);
   FREEMEMORY(list);
-#endif
-#ifdef pp_OLDBOUND_DIALOG
-  if(research_mode == 1 && npartinfo> 0){
-    GetGlobalPartBounds(ALL_FILES);
-    setpartmin = GLOBAL_MIN;
-    PartBoundCB(SETVALMIN);
-
-    setpartmax = GLOBAL_MAX;
-    PartBoundCB(SETVALMAX);
-  }
-#endif
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
 
@@ -4587,12 +4547,7 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_
         return_filesize = ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
       }
       else {
-#ifdef pp_OLDBOUND_DIALOG
-        return_filesize=             ReadSlice(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
-#endif
-#ifdef pp_CPPBOUND_DIALOG
         return_filesize = ReadSlice(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
-#endif
       }
       if(reset_colorbar == 1)ColorbarMenu(colorbartype_save);
     }
@@ -4621,9 +4576,7 @@ void LoadSliceMenu(int value){
   if(value==MENU_DUMMY)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
-#ifdef pp_CPPBOUND_DIALOG
     SetLoadedSliceBounds(&value, 1);
-#endif
     LoadSlicei(SET_SLICECOLOR,value, ALL_SLICE_FRAMES, NULL);
   }
   else{
@@ -4695,12 +4648,7 @@ void LoadSliceMenu(int value){
             load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
           }
           else{
-#ifdef pp_OLDBOUND_DIALOG
             load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
-#endif
-#ifdef pp_CPPBOUND_DIALOG
-            load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
-#endif
           }
           file_count++;
         }
@@ -4873,9 +4821,7 @@ FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
   START_TIMER(process_time);
 #endif
 
-#ifdef pp_CPPBOUND_DIALOG
   SetLoadedSliceBounds(mslicei->islices, mslicei->nslices);
-#endif
 
   file_count = 0;
   file_size = 0;
@@ -5010,12 +4956,7 @@ void LoadMultiSliceMenu(int value){
         load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
       }
       else{
-#ifdef pp_OLDBOUND_DIALOG
         load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
-#endif
-#ifdef pp_CPPBOUND_DIALOG
-        load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
-#endif
       }
       file_count++;
     }
@@ -5088,7 +5029,6 @@ void Plot3DListMenu(int value){
     fprintf(scriptoutstream," %f\n",plot3dtimelist[value]);
   }
   if(nplot3dtimelist>1)delta_time = (plot3dtimelist[1]-plot3dtimelist[0])/2.0;
-#ifdef pp_CPPBOUND_DIALOG
   int *list=NULL, nlist = 0;
 
   NewMemory((void **)&list, nplot3dinfo*sizeof(int));
@@ -5123,17 +5063,6 @@ void Plot3DListMenu(int value){
   }
   printf("\n");
   FREEMEMORY(list);
-#endif
-#ifdef pp_OLDBOUND_DIALOG
-  for(i=0;i<nplot3dinfo;i++){
-    plot3ddata *plot3di;
-
-    plot3di = plot3dinfo + i;
-    if(ABS(plot3di->time-plot3dtimelist[value])<delta_time){
-      LoadPlot3dMenu(i);
-    }
-  }
-#endif
 }
 
 /* ------------------ UpdateMenu ------------------------ */
@@ -5162,9 +5091,7 @@ void LoadPlot3dMenu(int value){
         plot3dinfo[value].blocknumber+1,plot3dinfo[value].time);
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
-#ifdef pp_CPPBOUND_DIALOG
       SetLoadedPlot3DBounds(&value, 1);
-#endif
       plot3dinfo[value].finalize = 1;
       for(i = 0; i<nplot3dinfo; i++){
         if(plot3dinfo[i].loaded==1){
@@ -5187,10 +5114,7 @@ void LoadPlot3dMenu(int value){
       plot3di->finalize = 0;
       plot3d_list[nlist++] = plot3di;
     }
-
-#ifdef pp_CPPBOUND_DIALOG
     if(nlist>0)SetLoadedPlot3DBounds(&value, 1);
-#endif
     if(nlist>0)plot3d_list[nlist-1]->finalize = 1;
     for(i = 0; i<nlist; i++){
       int errorcode;
@@ -5360,9 +5284,7 @@ void LoadBoundaryMenu(int value){
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
       LOCK_COMPRESS;
-#ifdef pp_CPPBOUND_DIALOG
       SetLoadedPatchBounds(&value, 1);
-#endif
       ReadBoundary(value,LOAD,&errorcode);
       UNLOCK_COMPRESS;
     }
@@ -5389,7 +5311,6 @@ void LoadBoundaryMenu(int value){
         patchi = patchinfo+i;
         patchi->finalize = 0;
       }
-#ifdef pp_CPPBOUND_DIALOG
       int *list=NULL, nlist=0;
 
       NewMemory((void **)&list,npatchinfo*sizeof(int));
@@ -5404,7 +5325,6 @@ void LoadBoundaryMenu(int value){
       }
       SetLoadedPatchBounds(list, nlist);
       FREEMEMORY(list);
-#endif
       for(i = npatchinfo-1; i>=0; i--){
         patchdata *patchi;
 
@@ -11724,10 +11644,8 @@ updatemenu=0;
     }
 
     CREATEMENU(fileinfomenu, LoadUnloadMenu);
-#ifdef pp_CPPBOUND_DIALOG
     if(cache_file_data==1)glutAddMenuEntry(_("*Cache file data"), CACHE_FILE_DATA);
     if(cache_file_data==0)glutAddMenuEntry(_("Cache file data"), CACHE_FILE_DATA);
-#endif
     if(showfiles==1)glutAddMenuEntry("*Show file names", SHOWFILES);
     if(showfiles==0)glutAddMenuEntry("Show file names", SHOWFILES);
     glutAddMenuEntry(                       "Show file bounds:", MENU_DUMMY);

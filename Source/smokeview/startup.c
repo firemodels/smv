@@ -250,15 +250,10 @@ int SetupCase(int argc, char **argv){
 
   UpdateRGBColors(COLORBAR_INDEX_NONE);
 
-#ifdef pp_CPPBOUND_DIALOG
   if(use_graphics==0){
     SliceBoundsSetupNoGraphics();
     return 0;
   }
-#endif
-#ifdef pp_OLDBOUND_DIALOG
-  if(use_graphics==0)return 0;
-#endif
   glui_defined = 1;
   InitTranslate(smokeview_bindir, tr_name);
 
@@ -327,9 +322,6 @@ int GetScreenHeight(void){
 /* ------------------ InitStartupDirs ------------------------ */
 
 void InitStartupDirs(void){
-#ifdef pp_OSX
-  char workingdir[1000];
-#endif
   char *homedir = NULL;
   int freehome = 0;
 
@@ -394,20 +386,21 @@ void InitStartupDirs(void){
 #ifdef pp_BETA
   fprintf(stderr, "%s\n", "\n*** This version of Smokeview is intended for review and testing ONLY. ***");
 #endif
-
-#ifdef pp_OSX
-  getcwd(workingdir, 1000);
-#endif
-
 }
 
 /* ------------------ SetupGlut ------------------------ */
 
 void SetupGlut(int argc, char **argv){
   int i;
+#ifdef pp_OSX
+  char workingdir[1000];
+#endif
 
   InitStartupDirs();
 
+#ifdef pp_OSX
+  getcwd(workingdir, 1000);
+#endif
   if(use_graphics==1){
     PRINTF("\n");
     PRINTF("%s\n",_("initializing Glut"));
@@ -1101,9 +1094,6 @@ void InitOpenGL(int option){
         if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
         if(slicei->autoload == 0 && slicei->loaded == 1)ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, UNLOAD, set_slicecolor,&errorcode);
         if(slicei->autoload == 1 && slicei->loaded == 0){
-#ifdef pp_OLDBOUND_DIALOG
-                       ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, LOAD, set_slicecolor, &errorcode);
-#endif
         }
       }
     }
@@ -2127,10 +2117,6 @@ void InitVars(void){
     }
     vis_boundary_type[0]=1;
     for(iii=0;iii<MAXPLOT3DVARS;iii++){
-#ifdef pp_OLDBOUND_DIALOG
-      setp3min_all[iii] = PERCENTILE_MIN;
-      setp3max_all[iii] = PERCENTILE_MAX;
-#endif
       p3min_all[iii]    = 1.0f;
       p3chopmin[iii]    = 1.0f;
       p3max_all[iii]    = 1.0f;

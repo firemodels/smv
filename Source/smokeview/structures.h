@@ -1266,9 +1266,7 @@ typedef struct _slicedata {
   float delta_orig, dplane_min, dplane_max;
   int extreme_min, extreme_max;
   histogramdata *histograms;
-#ifdef pp_CPPBOUND_DIALOG
   histogramdata *histogram;
-#endif
   int nhistograms;
   struct _patchdata *patchgeom;
   FILE_SIZE file_size;
@@ -1312,7 +1310,6 @@ typedef struct _multivslicedata {
   char menulabel2[128];
 } multivslicedata;
 
-#ifdef pp_CPPBOUND_DIALOG
 /* --------------------------  cpp_boundsdata ------------------------------------ */
 
 typedef struct _cpp_boundsdata {
@@ -1323,7 +1320,6 @@ typedef struct _cpp_boundsdata {
   int set_valtype, cache;
   histogramdata *hist;
 } cpp_boundsdata;
-#endif
 /* --------------------------  boundsdata ------------------------------------ */
 
 typedef struct _boundsdata {

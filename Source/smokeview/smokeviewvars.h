@@ -47,13 +47,12 @@ extern CCC const BitmapFontRec glutBitmapHelvetica24;
 extern CCC const BitmapFontRec glutBitmapHelvetica36;
 #endif
 
-#ifdef pp_CPPBOUND_DIALOG
 SVEXTERN int SVDECL(update_draw_hist, 0);
 SVEXTERN histogramdata SVDECL(*histogram_draw, NULL);
 SVEXTERN float SVDECL(xmin_draw, 1.0), SVDECL(xmax_draw, 0.0);
 SVEXTERN float SVDECL(gmin_draw, 1.0), SVDECL(gmax_draw, 0.0);
 SVEXTERN char SVDECL(*histogram_label1, NULL), SVDECL(*histogram_label2, NULL);
-#endif
+
 #ifdef INMAIN
 SVEXTERN char *cslice_label = "Slice",  *cpart_label = "Part", *cbound_label = "Bndry", *cplot3d_label = "Plot3D";
 #else
@@ -86,11 +85,7 @@ SVEXTERN int SVDECL(update_patchfile_bounds, 0);
 
 SVEXTERN slicemenudata SVDECL(*slicemenuinfo, NULL);
 SVEXTERN int SVDECL(generate_info_from_commandline, 0);
-#ifdef pp_CPPBOUND_DIALOG
 SVEXTERN int SVDECL(generate_part_histograms, 1);
-#else
-SVEXTERN int SVDECL(generate_part_histograms, 0);
-#endif
 SVEXTERN int SVDECL(vector_debug, 0);
 #ifdef pp_WUI_VAO
 SVEXTERN int SVDECL(have_terrain_vao, 0);
@@ -270,10 +265,8 @@ SVEXTERN int SVDECL(update_research_mode, 1);
 SVEXTERN int SVDECL(research_mode, 1);
 SVEXTERN int SVDECL(research_mode_override, -1);
 
-#ifdef pp_CPPBOUND_DIALOG
 SVEXTERN int SVDECL(update_percentile_mode, 0);
 SVEXTERN int SVDECL(percentile_mode, 0);
-#endif
 
 SVEXTERN float SVDECL(geomslice_pointsize, 5.0);
 SVEXTERN float SVDECL(geomboundary_pointsize, 5.0);
@@ -837,15 +830,10 @@ SVEXTERN float vertical_factor;
 
 SVEXTERN char input_filename_ext[5];
 
-#ifdef pp_CPPBOUND_DIALOG
 SVEXTERN float SVDECL(percentile_level_min,0.01);
 SVEXTERN float SVDECL(percentile_level_max, 0.99);
 SVEXTERN int SVDECL(hist_left_percen, 0), SVDECL(hist_down_percen,0), SVDECL(hist_length_percen,100), SVDECL(hist_show_labels, 1);
 
-#endif
-#ifdef pp_OLDBOUND_DIALOG
-SVEXTERN float SVDECL(percentile_level,0.01);
-#endif
 SVEXTERN float SVDECL(fire_line_min,150.0), SVDECL(fire_line_max,200.0);
 SVEXTERN int SVDECL(update_fire_line,0);
 SVEXTERN int SVDECL(fire_line_index,-1);
@@ -1795,21 +1783,14 @@ SVEXTERN int nmultivsliceinfo;
 SVEXTERN int SVDECL(*sliceorderindex,NULL),SVDECL(*vsliceorderindex,NULL),SVDECL(*partorderindex,NULL);
 SVEXTERN int SVDECL(*patchorderindex,NULL),SVDECL(*isoorderindex,NULL),SVDECL(*plot3dorderindex,NULL);
 SVEXTERN int showfiles;
-#ifdef pp_CPPBOUND_DIALOG
 SVEXTERN cpp_boundsdata SVDECL(*slicebounds_cpp, NULL), SVDECL(*partbounds_cpp, NULL), SVDECL(*patchbounds_cpp, NULL), SVDECL(*plot3dbounds_cpp, NULL);
 SVEXTERN int SVDECL(nslicebounds_cpp, 0), SVDECL(npartbounds_cpp, 0), SVDECL(npatchbounds_cpp, 0), SVDECL(nplot3dbounds_cpp, 0);
 SVEXTERN int SVDECL(update_glui_bounds, 0), SVDECL(update_ini, 0), SVDECL(update_chop_colors,0);
-#endif
 SVEXTERN boundsdata SVDECL(*slicebounds,NULL), SVDECL(*isobounds,NULL), SVDECL(*patchbounds,NULL);
 SVEXTERN boundsdata SVDECL(*slicebounds_temp, NULL);
 SVEXTERN vslicedata SVDECL(*vsliceinfo,NULL);
 SVEXTERN int force_redisplay;
-#ifdef pp_OLDBOUND_DIALOG
 SVEXTERN int glui_setp3min, glui_setp3max;
-#endif
-#ifdef pp_CPPBOUND_DIALOG
-SVEXTERN int glui_setp3min, glui_setp3max;
-#endif
 SVEXTERN int setp3chopmin_temp, setp3chopmax_temp;
 SVEXTERN float p3chopmin_temp, p3chopmax_temp;
 SVEXTERN float glui_p3min, glui_p3max;

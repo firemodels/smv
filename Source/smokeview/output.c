@@ -12,7 +12,6 @@
 
 #include "smokeviewvars.h"
 
-#ifdef pp_CPPBOUND_DIALOG
 #define DENORMAL(x,i, n, min,max) ((min) + (i)*((max)-(min))/(n))
 #define NORMALH(x,min,max) (((x)-(min))/((max)-(min))   )
   /* ------------------ DrawHistogram ------------------------ */
@@ -172,7 +171,6 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
   }
   glPopMatrix();
 }
-#endif
 
 /* ------------------------ GetFontHeight ------------------------- */
 

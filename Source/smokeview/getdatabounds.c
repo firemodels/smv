@@ -122,7 +122,6 @@ int GetGlobalPartBounds(int flag){
       part5propinfo[i].dlg_global_valmax = partmaxs[i];
     }
   }
-#ifdef pp_CPPBOUND_DIALOG
   npartbounds_cpp = npart5prop;
   if(npartbounds_cpp>0){
     NewMemory((void **)&partbounds_cpp, npartbounds_cpp*sizeof(cpp_boundsdata));
@@ -180,7 +179,6 @@ int GetGlobalPartBounds(int flag){
       boundscppi->hist = NULL;
     }
   }
-#endif
   FREEMEMORY(partmins);
   FREEMEMORY(partmaxs);
   return nloaded_files;
@@ -292,7 +290,6 @@ void GetGlobalPatchBounds(void){
     }
   }
 
-#ifdef pp_CPPBOUND_DIALOG
   npatchbounds_cpp = npatchbounds;
   if(npatchbounds_cpp>0){
     NewMemory((void **)&patchbounds_cpp, npatchbounds_cpp*sizeof(cpp_boundsdata));
@@ -334,7 +331,6 @@ void GetGlobalPatchBounds(void){
       boundscppi->hist = NULL;
     }
   }
-#endif
 }
 
 /* ------------------ GetPlot3DFileBounds ------------------------ */
@@ -405,7 +401,6 @@ void GetGlobalPlot3DBounds(void){
     p3max_global[i] = p3max_all[i];
   }
 
-#ifdef pp_CPPBOUND_DIALOG
   nplot3dbounds_cpp = 0;
   if(nplot3dinfo>0){
     int i;
@@ -442,7 +437,6 @@ void GetGlobalPlot3DBounds(void){
       boundscppi->hist = NULL;
     }
   }
-#endif
 }
 
 /* ------------------ GetLoadedPlot3dBounds ------------------------ */
@@ -536,7 +530,6 @@ void GetGlobalSliceBounds(void){
     boundi->dlg_valmin = boundi->dlg_global_valmin;
     boundi->dlg_valmax = boundi->dlg_global_valmax;
   }
-#ifdef pp_CPPBOUND_DIALOG
   nslicebounds_cpp = nslicebounds;
   if(nslicebounds_cpp>0){
     NewMemory((void **)&slicebounds_cpp, nslicebounds_cpp*sizeof(cpp_boundsdata));
@@ -578,7 +571,6 @@ void GetGlobalSliceBounds(void){
       boundscppi->hist = NULL;
     }
   }
-#endif
 }
 
 /* ------------------ GetSliceBoundsInfo ------------------------ */
