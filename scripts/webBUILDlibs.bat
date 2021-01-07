@@ -52,28 +52,27 @@ if "%platform%" == "gnuosx" (
 
 :: osx
 
-if "%platform%" == "osx" (
-  title building libraries for osx
-  start /wait "cleaning osx libraries" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -t clean
-  start "building osx glut library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -t glut
-  start "building osx glui library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -t glui
-  start "building osx zlib library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -t zlib
-  start "building osx jpeg library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -t jpeg
-  start "building osx png library"  plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -t png
-  start "building osx gd library"   plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -t gd
+if "%platform%" == "osxquartz" (
+  title building libraries for osx - Quartz
+  start /wait "cleaning osx libraries" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_q_64/make_LIBS.sh -t clean
+  start "building osx glui library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_q_64/make_LIBS.sh -t glui
+  start "building osx zlib library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_q_64/make_LIBS.sh -t zlib
+  start "building osx jpeg library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_q_64/make_LIBS.sh -t jpeg
+  start "building osx png library"  plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_q_64/make_LIBS.sh -t png
+  start "building osx gd library"   plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_q_64/make_LIBS.sh -t gd
   goto eof
 )
 
 :: osx
 
-if "%platform%" == "osxnoquartzh" (
-  title building libraries for osx - no Quartz, high res fonts
-  start /wait "cleaning osx libraries" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_noq_64/make_LIBS.sh -t clean
-  start "building osx glui library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_noq_64/make_LIBS.sh -Q -t glui
-  start "building osx zlib library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_noq_64/make_LIBS.sh -Q -t zlib
-  start "building osx jpeg library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_noq_64/make_LIBS.sh -Q -t jpeg
-  start "building osx png library"  plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_noq_64/make_LIBS.sh -Q -t png
-  start "building osx gd library"   plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_noq_64/make_LIBS.sh -Q -t gd
+if "%platform%" == "osx" (
+  title building libraries for osx - non Quartz
+  start /wait "cleaning osx libraries" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -t clean
+  start "building osx glui library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -Q -t glui
+  start "building osx zlib library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -Q -t zlib
+  start "building osx jpeg library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -Q -t jpeg
+  start "building osx png library"  plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -Q -t png
+  start "building osx gd library"   plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_64/make_LIBS.sh -Q -t gd
   goto eof
 )
 
