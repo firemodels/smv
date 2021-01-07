@@ -35,12 +35,12 @@ set inc=
 
 if "%buildtype%" == "test" (
    set wintype=-test
-   set type=-t
+   set type=-T
 )
 if "%buildtype%" == "testinc" (
    set wintype=-test
    set wininc=-inc
-   set type=-t
+   set type=-T
    set inc=-i
 )
 if "%buildtype%" == "release" (
@@ -70,22 +70,22 @@ if "%platform%" == "linux" (
   goto eof
 )
 if "%platform%" == "linuxgnu" (
-  plink %plink_options% %linux_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/smokeview/gnu_linux_64 make_smokeview.sh -p -t
+  plink %plink_options% %linux_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/smokeview/gnu_linux_64 make_smokeview.sh -p -T
   goto eof
 )
 
 :: ----------- osx -----------------
 
+if "%platform%" == "osxquartz" (
+  plink %plink_options% %osx_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/smokeview/intel_osx_q_64 make_smokeview.sh %type%
+  goto eof
+)
 if "%platform%" == "osx" (
   plink %plink_options% %osx_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/smokeview/intel_osx_64 make_smokeview.sh %type%
   goto eof
 )
-if "%platform%" == "osxnoqh" (
-  plink %plink_options% %osx_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/smokeview/intel_osx_noq_64 make_smokeview.sh %type%
-  goto eof
-)
 if "%platform%" == "osxgnu" (
-  plink %plink_options% %osx_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/smokeview/gnu_osx_64 make_smokeview.sh -p -t
+  plink %plink_options% %osx_logon% %linux_svn_root%/smv/scripts/run_command.sh smv/Build/smokeview/gnu_osx_64 make_smokeview.sh -p -T
   goto eof
 )
 
