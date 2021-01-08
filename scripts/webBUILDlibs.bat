@@ -55,6 +55,7 @@ if "%platform%" == "gnuosx" (
 if "%platform%" == "osxquartz" (
   title building libraries for osx - Quartz
   start /wait "cleaning osx libraries" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_q_64/make_LIBS.sh -t clean
+  start "building osx glut library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_q_64/make_LIBS.sh -t glut
   start "building osx glui library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_q_64/make_LIBS.sh -t glui
   start "building osx zlib library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_q_64/make_LIBS.sh -t zlib
   start "building osx jpeg library" plink %plink_options% %osx_logon% %linux_svn_root%/smv/Build/LIBS/intel_osx_q_64/make_LIBS.sh -t jpeg
