@@ -91,7 +91,6 @@ void UpdateCameraYpos(cameradata *ci){
 
 void SetCameraViewPersp(int option){
   float az = 0.0, elev = 0.0;
-  float xcen = 0.0, ycen = 0.0, zcen = 0.0;
 
   switch(option){
     case MENU_VIEW_XMIN:
