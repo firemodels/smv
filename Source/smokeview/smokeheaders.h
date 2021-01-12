@@ -5,10 +5,10 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void ScriptViewXYZMINMAXOrtho(int option);
+EXTERNCPP void SetCameraView(int option);
 EXTERNCPP void DeviceCB(int val);
 EXTERNCPP void UpdateDeviceTypes(int val);
-
-EXTERNCPP void ViewXYZMINMAX(int option);
 
 EXTERNCPP void InitStartupDirs(void);
 

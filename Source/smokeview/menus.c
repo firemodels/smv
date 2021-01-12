@@ -217,12 +217,12 @@ float     part_load_time;
 #define MENU_VIEWPOINT_SETTINGS   -107
 #define MENU_VIEWPOINT_TOPVIEW    -108
 #define MENU_DUMMY                -999
-#define MENU_VIEW_XMIN            -109
-#define MENU_VIEW_XMAX            -110
-#define MENU_VIEW_YMIN            -111
-#define MENU_VIEW_YMAX            -112
-#define MENU_VIEW_ZMIN            -113
-#define MENU_VIEW_ZMAX            -114
+//#define MENU_VIEW_XMIN            -109 moved to smokeviewdefs.h
+//#define MENU_VIEW_XMAX            -110
+//#define MENU_VIEW_YMIN            -111
+//#define MENU_VIEW_YMAX            -112
+//#define MENU_VIEW_ZMIN            -113
+//#define MENU_VIEW_ZMAX            -114
 
 #define MENU_SHOWHIDE_EVAC 13
 #define MENU_SHOWHIDE_PRINT 16
@@ -1799,7 +1799,7 @@ void ResetMenu(int value){
   case MENU_VIEW_YMAX:
   case MENU_VIEW_ZMIN:
   case MENU_VIEW_ZMAX:
-    ViewXYZMINMAX(value);
+    SetCameraView(value);
     break;
   case SAVE_VIEWPOINT_AS_STARTUP:
     ResetMenu(SAVE_VIEWPOINT);

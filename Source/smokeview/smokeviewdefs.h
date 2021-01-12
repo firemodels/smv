@@ -13,6 +13,13 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define GLUT_BITMAP_HELVETICA_36	(&glutBitmapHelvetica36)
 #endif
 
+#define MENU_VIEW_XMIN            -109
+#define MENU_VIEW_XMAX            -110
+#define MENU_VIEW_YMIN            -111
+#define MENU_VIEW_YMAX            -112
+#define MENU_VIEW_ZMIN            -113
+#define MENU_VIEW_ZMAX            -114
+
 #define DEVICE_devicetypes     28
 
 #define DEVICE_PLOT_HIDDEN        0

@@ -3064,33 +3064,39 @@ void ScriptSetViewpoint(scriptdata *scripti){
 void ScriptViewXYZMINMAXOrtho(int command){
   switch(command){
   case SCRIPT_VIEWXMIN:
+  case MENU_VIEW_XMIN:
     zaxis_angles[0] = 0.0;
     zaxis_angles[1] = 90.0;
     zaxis_angles[2] = 90.0;
     break;
   case SCRIPT_VIEWXMAX:
+  case MENU_VIEW_XMAX:
     zaxis_angles[0] =   0.0;
     zaxis_angles[1] =  90.0;
     zaxis_angles[2] = -90.0;
     break;
 
   case SCRIPT_VIEWYMIN:
+  case MENU_VIEW_YMIN:
     zaxis_angles[0] =  0.0;
     zaxis_angles[1] = 90.0;
     zaxis_angles[2] =  0.0;
     break;
   case SCRIPT_VIEWYMAX:
+  case MENU_VIEW_YMAX:
     zaxis_angles[0] =   0.0;
     zaxis_angles[1] =  90.0;
     zaxis_angles[2] = 180.0;
     break;
 
   case SCRIPT_VIEWZMIN:
+  case MENU_VIEW_ZMIN:
     zaxis_angles[0] = -90.0;
     zaxis_angles[1] =   0.0;
     zaxis_angles[2] =   0.0;
     break;
   case SCRIPT_VIEWZMAX:
+  case MENU_VIEW_ZMAX:
     zaxis_angles[0] =  90.0;
     zaxis_angles[1] =  0.0;
     zaxis_angles[2] =  0.0;
@@ -3184,50 +3190,6 @@ void ScriptViewXYZMINMAXPersp(int command){
     break;
   }
   ScriptXYZView(xcen, ycen, zcen, azimuth, elevation);
-}
-
-#define MENU_VIEW_XMIN            -109
-#define MENU_VIEW_XMAX            -110
-#define MENU_VIEW_YMIN            -111
-#define MENU_VIEW_YMAX            -112
-#define MENU_VIEW_ZMIN            -113
-#define MENU_VIEW_ZMAX            -114
-
-/* ------------------ ViewXYZMINMAX ------------------------ */
-
-void ViewXYZMINMAX(int option){
-  switch(option){
-    case MENU_VIEW_XMIN:
-      if(projection_type==PROJECTION_PERSPECTIVE)ScriptViewXYZMINMAXPersp(SCRIPT_VIEWXMIN);
-      if(projection_type==PROJECTION_ORTHOGRAPHIC)ScriptViewXYZMINMAXOrtho(SCRIPT_VIEWXMIN);
-      rotation_axis = -2;
-      break;
-    case MENU_VIEW_XMAX:
-      if(projection_type==PROJECTION_PERSPECTIVE)ScriptViewXYZMINMAXPersp(SCRIPT_VIEWXMAX);
-      if(projection_type==PROJECTION_ORTHOGRAPHIC)ScriptViewXYZMINMAXOrtho(SCRIPT_VIEWXMAX);
-      rotation_axis = 2;
-      break;
-    case MENU_VIEW_YMIN:
-      if(projection_type==PROJECTION_PERSPECTIVE)ScriptViewXYZMINMAXPersp(SCRIPT_VIEWYMIN);
-      if(projection_type==PROJECTION_ORTHOGRAPHIC)ScriptViewXYZMINMAXOrtho(SCRIPT_VIEWYMIN);
-      rotation_axis = 1;
-      break;
-    case MENU_VIEW_YMAX:
-      if(projection_type==PROJECTION_PERSPECTIVE)ScriptViewXYZMINMAXPersp(SCRIPT_VIEWYMAX);
-      if(projection_type==PROJECTION_ORTHOGRAPHIC)ScriptViewXYZMINMAXOrtho(SCRIPT_VIEWYMAX);
-      rotation_axis = -1;
-      break;
-    case MENU_VIEW_ZMIN:
-      if(projection_type==PROJECTION_PERSPECTIVE)ScriptViewXYZMINMAXPersp(SCRIPT_VIEWZMIN);
-      if(projection_type==PROJECTION_ORTHOGRAPHIC)ScriptViewXYZMINMAXOrtho(SCRIPT_VIEWZMIN);
-      rotation_axis = 1;
-      break;
-    case MENU_VIEW_ZMAX:
-      if(projection_type==PROJECTION_PERSPECTIVE)ScriptViewXYZMINMAXPersp(SCRIPT_VIEWZMAX);
-      if(projection_type==PROJECTION_ORTHOGRAPHIC)ScriptViewXYZMINMAXOrtho(SCRIPT_VIEWZMAX);
-      rotation_axis = 1;
-      break;
-  }
 }
 
 /* ------------------ SetViewZMAXPersp ------------------------ */

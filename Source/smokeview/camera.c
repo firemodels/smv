@@ -87,6 +87,52 @@ void UpdateCameraYpos(cameradata *ci){
   ci->isometric_y=(eyeyfactor-1.0)*xyzbox;
 }
 
+/* ------------------ SetCameraView ------------------------ */
+
+void SetCameraViewPersp(int option){
+  float az = 0.0, elev = 0.0;
+  float xcen = 0.0, ycen = 0.0, zcen = 0.0;
+
+  switch(option){
+    case MENU_VIEW_XMIN:
+      az = 90.0;
+      break;
+    case MENU_VIEW_XMAX:
+      az = -90.0;
+      break;
+    case MENU_VIEW_YMIN:
+      az = 0.0;
+      break;
+    case MENU_VIEW_YMAX:
+      az = 180.0;
+      break;
+    case MENU_VIEW_ZMIN:
+      elev = -89.0;
+      break;
+    case MENU_VIEW_ZMAX:
+      elev = 89.0;
+      break;
+  }
+  camera_current->az_elev[0] = az;
+  camera_current->az_elev[1] = elev;
+  camera_current->azimuth = az;
+  camera_current->elevation = elev;
+  camera_current->eye[0] = camera_current->xcen;
+  camera_current->eye[2] = camera_current->zcen;
+  UpdateCameraYpos(camera_current);
+}
+
+/* ------------------ SetCameraView ------------------------ */
+
+void SetCameraView(int option){
+  if(projection_type==PROJECTION_PERSPECTIVE){
+    SetCameraViewPersp(option);
+  }
+  else{
+    ScriptViewXYZMINMAXOrtho(option);
+  }
+}
+
 /* ------------------ InitCamera ------------------------ */
 
 void InitCamera(cameradata *ci,char *name){
@@ -121,7 +167,6 @@ void InitCamera(cameradata *ci,char *name){
   ci->rotation_type=rotation_type;
 
   ci->azimuth=0.0;
-
   ci->elevation=0.0;
 
   ci->view_angle=0.0;
