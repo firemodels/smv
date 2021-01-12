@@ -5,6 +5,9 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void DeviceCB(int val);
+EXTERNCPP void UpdateDeviceTypes(int val);
+
 EXTERNCPP void ViewXYZMINMAX(int option);
 
 EXTERNCPP void InitStartupDirs(void);
@@ -553,7 +556,7 @@ EXTERNCPP void InitObjectDefs(void);
 EXTERNCPP void UpdateDeviceTextures(void);
 EXTERNCPP char *GetDeviceLabel(char *buffer);
 EXTERNCPP void GetElevAz(float *xyznorm,float *dtheta, float *rotate_axis, float *dpsi);
-EXTERNCPP void DrawDevices(void);
+EXTERNCPP void DrawDevices(int mode);
 EXTERNCPP sv_object *InitSmvObject1(char *label, char *commands,int visible);
 EXTERNCPP sv_object *InitSmvObject2(char *label, char *commandson, char *commandsoff,int visible);
 EXTERNCPP sv_object *GetSmvObjectType(char *label, sv_object *default_object);

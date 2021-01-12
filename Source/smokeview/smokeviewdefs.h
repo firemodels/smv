@@ -13,6 +13,8 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define GLUT_BITMAP_HELVETICA_36	(&glutBitmapHelvetica36)
 #endif
 
+#define DEVICE_devicetypes     28
+
 #define DEVICE_PLOT_HIDDEN        0
 #define DEVICE_PLOT_SHOW_SELECTED 1
 #define DEVICE_PLOT_SHOW_ALL      2

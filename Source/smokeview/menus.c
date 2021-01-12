@@ -6015,6 +6015,13 @@ void ShowADeviceType(void){
   }
 }
 
+/* ------------------ DeviceTypeMenu ------------------------ */
+
+void DeviceTypeMenu(int val){
+  UpdateDeviceTypes(val);
+  DeviceCB(DEVICE_devicetypes);
+}
+
 /* ------------------ ShowObjectsMenu ------------------------ */
 
 void ShowObjectsMenu(int value){
@@ -6467,7 +6474,7 @@ static int particlestreakshowmenu=0;
 static int tourmenu=0,tourcopymenu=0;
 static int avatartourmenu=0,avatarevacmenu=0;
 static int trainerviewmenu=0,mainmenu=0,zoneshowmenu=0,particleshowmenu=0,evacshowmenu=0;
-static int showobjectsmenu=0,spheresegmentmenu=0,propmenu=0;
+static int showobjectsmenu=0,showobjectsplotmenu=0,devicetypemenu=0,spheresegmentmenu=0,propmenu=0;
 static int unloadplot3dmenu=0, unloadpatchmenu=0, unloadisomenu=0;
 static int showmultislicemenu=0;
 static int textureshowmenu=0;
@@ -7429,7 +7436,35 @@ updatemenu=0;
     }
   }
 
+  if(ndevicetypes>0){
+    CREATEMENU(devicetypemenu,DeviceTypeMenu);
+    for(i=0;i<ndevicetypes;i++){
+      char qlabel[64];
+
+      strcpy(qlabel, "");
+      if(devicetypes_index==i)strcat(qlabel,"*");
+      strcat(qlabel, devicetypes[i]->quantity);
+      glutAddMenuEntry(qlabel, i);
+    }
+  }
+  
+
   if(nobject_defs>0){
+    CREATEMENU(showobjectsplotmenu,ShowObjectsMenu);
+    if(ndevicetypes>0){
+      GLUTADDSUBMENU(_("quantity"),devicetypemenu);
+    }
+    if(showdevice_plot==DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "*Plot data for all devices",           OBJECT_PLOT_SHOW_ALL);
+    if(showdevice_plot!=DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "Plot data for all devices",            OBJECT_PLOT_SHOW_ALL);
+    if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "*Plot data for selected devices",      OBJECT_PLOT_SHOW_SELECTED);
+    if(showdevice_plot!=DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "Plot data for selected devices",       OBJECT_PLOT_SHOW_SELECTED);
+#ifdef pp_ZTREE
+    if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "*Plot data for all device trees",      OBJECT_PLOT_SHOW_TREE_ALL);
+    if(showdevice_plot!=DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "Plot data for all device trees",       OBJECT_PLOT_SHOW_TREE_ALL);
+#endif
+    if(showdevice_val==1)glutAddMenuEntry(_("*Show values"), OBJECT_VALUES);
+    if(showdevice_val==0)glutAddMenuEntry(_("Show values"),  OBJECT_VALUES);
+
     CREATEMENU(showobjectsmenu,ShowObjectsMenu);
     for(i=0;i<nobject_defs;i++){
       sv_object *obj_typei;
@@ -7447,12 +7482,12 @@ updatemenu=0;
       }
     }
     if(have_missing_objects == 1&&isZoneFireModel==0){
-      glutAddMenuEntry("-", MENU_DUMMY);
       if(show_missing_objects==1)glutAddMenuEntry(_("*undefined"),OBJECT_MISSING);
       if(show_missing_objects == 0)glutAddMenuEntry(_("undefined"),OBJECT_MISSING);
     }
-    glutAddMenuEntry("-",MENU_DUMMY);
     if(ndeviceinfo>0){
+      GLUTADDSUBMENU(_("plots/values"),showobjectsplotmenu);
+      glutAddMenuEntry("-",MENU_DUMMY);
       if(select_device==1){
         glutAddMenuEntry(_("*Select"),OBJECT_SELECT);
       }
@@ -7460,16 +7495,6 @@ updatemenu=0;
         glutAddMenuEntry(_("Select"),OBJECT_SELECT);
       }
     }
-    if(showdevice_plot==DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "*Plot data for all devices",           OBJECT_PLOT_SHOW_ALL);
-    if(showdevice_plot!=DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "Plot data for all devices",            OBJECT_PLOT_SHOW_ALL);
-    if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "*Plot data for selected devices",      OBJECT_PLOT_SHOW_SELECTED);
-    if(showdevice_plot!=DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "Plot data for selected devices",       OBJECT_PLOT_SHOW_SELECTED);
-#ifdef pp_ZTREE
-    if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "*Plot data for all device trees",      OBJECT_PLOT_SHOW_TREE_ALL);
-    if(showdevice_plot!=DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "Plot data for all device trees",       OBJECT_PLOT_SHOW_TREE_ALL);
-#endif
-    if(showdevice_val==1)glutAddMenuEntry(_("*Show values"), OBJECT_VALUES);
-    if(showdevice_val==0)glutAddMenuEntry(_("Show values"),  OBJECT_VALUES);
     if(object_outlines==0)glutAddMenuEntry(_("Outline"),OBJECT_OUTLINE);
     if(object_outlines==1)glutAddMenuEntry(_("*Outline"),OBJECT_OUTLINE);
     glutAddMenuEntry(_("Show all"),OBJECT_SHOWALL);
@@ -7538,9 +7563,6 @@ updatemenu=0;
   if(ntotal_blockages>0)GLUTADDSUBMENU(_("Obstacles"),blockagemenu);
   if((auto_terrain==0&&ngeominfo>0)||(auto_terrain==1&&ngeominfo>1)){
     GLUTADDSUBMENU(_("Immersed"), immersedmenu);
-  }
-  if(GetNumActiveDevices()>0||ncvents>0){
-    GLUTADDSUBMENU(_("Objects"),showobjectsmenu);
   }
   if(nterraininfo>0&&ngeominfo==0){
     GLUTADDSUBMENU(_("Terrain"),terrain_obst_showmenu);
@@ -9003,6 +9025,9 @@ updatemenu=0;
   CREATEMENU(showhidemenu,ShowHideMenu);
   GLUTADDSUBMENU(_("Color"), colorbarmenu);
   GLUTADDSUBMENU(_("Geometry"),geometrymenu);
+  if(GetNumActiveDevices()>0||ncvents>0){
+    GLUTADDSUBMENU(_("Devices"), showobjectsmenu);
+  }
   GLUTADDSUBMENU(_("Labels"),labelmenu);
   GLUTADDSUBMENU(_("Viewpoints"), resetmenu);
   glutAddMenuEntry("-", MENU_DUMMY);
