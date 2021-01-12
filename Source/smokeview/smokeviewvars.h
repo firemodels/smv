@@ -23,6 +23,7 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(rotation_axis, 1);
 #ifdef pp_ZTREE
 SVEXTERN ztreedevicedata SVDECL(*ztreedeviceinfo, NULL);
 SVEXTERN devicedata SVDECL(**deviceinfo_sortedz, NULL);

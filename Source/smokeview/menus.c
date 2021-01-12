@@ -216,7 +216,13 @@ float     part_load_time;
 #define MENU_SIZEPRESERVING       -105
 #define MENU_VIEWPOINT_SETTINGS   -107
 #define MENU_VIEWPOINT_TOPVIEW    -108
-#define MENU_DUMMY -999
+#define MENU_DUMMY                -999
+#define MENU_VIEW_XMIN            -109
+#define MENU_VIEW_XMAX            -110
+#define MENU_VIEW_YMIN            -111
+#define MENU_VIEW_YMAX            -112
+#define MENU_VIEW_ZMIN            -113
+#define MENU_VIEW_ZMAX            -114
 
 #define MENU_SHOWHIDE_EVAC 13
 #define MENU_SHOWHIDE_PRINT 16
@@ -1786,6 +1792,14 @@ void ResetMenu(int value){
     break;
   case MENU_TIMEVIEW:
     UpdateTimes();
+    break;
+  case MENU_VIEW_XMIN:
+  case MENU_VIEW_XMAX:
+  case MENU_VIEW_YMIN:
+  case MENU_VIEW_YMAX:
+  case MENU_VIEW_ZMIN:
+  case MENU_VIEW_ZMAX:
+    ViewXYZMINMAX(value);
     break;
   case SAVE_VIEWPOINT_AS_STARTUP:
     ResetMenu(SAVE_VIEWPOINT);
@@ -6405,7 +6419,7 @@ void InitMenus(int unload){
 static int filesdialogmenu = 0, viewdialogmenu = 0, datadialogmenu = 0, windowdialogmenu=0;
 static int labelmenu=0, titlemenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0,colorbardigitmenu=0;
 static int optionmenu=0, rotatetypemenu=0;
-static int resetmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
+static int resetmenu=0, defaultviewmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
 static int terrain_geom_showmenu = 0;
 static int render_resolutionmenu=0, render_filetypemenu=0, render_filesuffixmenu=0, render_skipmenu=0;
 static int render_startmenu = 0;
@@ -8887,6 +8901,16 @@ updatemenu=0;
     }
   }
 
+  /* --------------------------------default view menu -------------------------- */
+
+  CREATEMENU(defaultviewmenu, ResetMenu);
+  glutAddMenuEntry("xmin", MENU_VIEW_XMIN);
+  glutAddMenuEntry("xmax", MENU_VIEW_XMAX);
+  glutAddMenuEntry("ymin", MENU_VIEW_YMIN);
+  glutAddMenuEntry("ymax", MENU_VIEW_YMAX);
+  glutAddMenuEntry("zmin", MENU_VIEW_ZMIN);
+  glutAddMenuEntry("zmax", MENU_VIEW_ZMAX);
+
   /* --------------------------------reset menu -------------------------- */
 
   CREATEMENU(resetmenu,ResetMenu);
@@ -8942,6 +8966,9 @@ updatemenu=0;
       if(projection_type == PROJECTION_PERSPECTIVE)glutAddMenuEntry(_("Switch to size preserving view   ALT v"),MENU_SIZEPRESERVING);
       glutAddMenuEntry("-",MENU_DUMMY);
     }
+
+  glutAddMenuEntry("-", MENU_DUMMY);
+  GLUTADDSUBMENU(_("default views"), defaultviewmenu);
 
 //    glutAddMenuEntry("Top view", MENU_VIEWPOINT_TOPVIEW);
     SortCameras();

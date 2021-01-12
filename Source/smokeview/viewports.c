@@ -2199,7 +2199,10 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
         elevation = camera_current->az_elev[1];
         azimuth = camera_current->az_elev[0];
         if(rotation_type == ROTATION_2AXIS){
-          glRotatef(elevation, 1.0, 0.0, 0.0);  /* rotate about x axis */
+          if(rotation_axis==1)glRotatef(elevation, 1.0, 0.0, 0.0);  /* rotate about x axis */
+          if(rotation_axis==-1)glRotatef(elevation, -1.0, 0.0, 0.0);  /* rotate about x axis */
+          if(rotation_axis==2)glRotatef(elevation, 0.0, 1.0, 0.0);  /* rotate about y axis */
+          if(rotation_axis==-2)glRotatef(elevation, 0.0, -1.0, 0.0);  /* rotate about y axis */
         }
         glRotatef(azimuth, 0.0, 0.0, 1.0);      /* rotate about z axis */
       }

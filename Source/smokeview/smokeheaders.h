@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void ViewXYZMINMAX(int option);
+
 EXTERNCPP void InitStartupDirs(void);
 
 EXTERNCPP int GetFontHeight(void);
