@@ -1624,7 +1624,7 @@ void ZoomMenu(int value){
   else if(zoomindex==UPDATE_PROJECTION){
     camera_current->projection_type=projection_type;
     UpdateProjectionType();
-    UpdateCameraYpos(camera_current);
+    UpdateCameraYpos(camera_current, 2);
     if(projection_type== PROJECTION_ORTHOGRAPHIC){
       camera_current->eye[1]=camera_current->isometric_y;
     }

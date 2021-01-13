@@ -65,26 +65,45 @@ void AddDefaultViews(void){
 
 /* ------------------ UpdateCameraYpos ------------------------ */
 
-void UpdateCameraYpos(cameradata *ci){
+void UpdateCameraYpos(cameradata *ci, int option){
   float local_aperture_default;
-  float width;
-  float asp;
+  float width, asp;
 
-  local_aperture_default=Zoom2Aperture(1.0);
-  asp=(float)screenHeight/(float)screenWidth;
-  width=xbar;
-  if(zbar/asp>xbar){
-    width=zbar/asp;
+  local_aperture_default = Zoom2Aperture(1.0);
+  asp = (float)screenHeight/(float)screenWidth;
+
+  switch(option){
+    case 2:
+      width = xbar;
+      if(zbar/asp>xbar){
+        width = zbar/asp;
+      }
+      break;
+
+    case 1:
+      width = ybar;
+      if(zbar/asp>ybar){
+        width = zbar/asp;
+      }
+      break;
+
+    case 3:
+      width = xbar;
+      if(ybar/asp>xbar){
+        width = ybar/asp;
+      }
+      break;
   }
-  eyeyfactor = -1.10*width/2.0/tan(local_aperture_default*DEG2RAD/2.0);
-  ci->eye[1]=eyeyfactor*xyzbox*geomyfactor;
-  if(geom_use_factors == 1)ci->eye[0]=NORMALIZE_X((geom_xmin+geom_xmax)/2.0);
+  eyeyfactor = -1.05*width/2.0/tan(local_aperture_default*DEG2RAD/2.0);
+
+  ci->eye[1] = eyeyfactor*xyzbox*geomyfactor;
+  if(geom_use_factors==1)ci->eye[0] = NORMALIZE_X((geom_xmin+geom_xmax)/2.0);
   if(viscolorbarpath==1){
-    ci->eye[0]=0.7;
-    ci->eye[1]=-2.25;
-    ci->eye[2]=0.5;
+    ci->eye[0] = 0.7;
+    ci->eye[1] = -2.25;
+    ci->eye[2] = 0.5;
   }
-  ci->isometric_y=(eyeyfactor-1.0)*xyzbox;
+  ci->isometric_y = (eyeyfactor-1.0)*xyzbox;
 }
 
 /* ------------------ SetCameraView ------------------------ */
@@ -118,7 +137,21 @@ void SetCameraViewPersp(int option){
   camera_current->elevation = elev;
   camera_current->eye[0] = camera_current->xcen;
   camera_current->eye[2] = camera_current->zcen;
-  UpdateCameraYpos(camera_current);
+
+  switch(option){
+    case MENU_VIEW_XMIN:
+    case MENU_VIEW_XMAX:
+      UpdateCameraYpos(camera_current, 1);
+      break;
+    case MENU_VIEW_YMIN:
+    case MENU_VIEW_YMAX:
+      UpdateCameraYpos(camera_current, 2);
+      break;
+    case MENU_VIEW_ZMIN:
+    case MENU_VIEW_ZMAX:
+      UpdateCameraYpos(camera_current, 3);
+      break;
+  }
 }
 
 /* ------------------ SetCameraView ------------------------ */
@@ -141,7 +174,7 @@ void InitCamera(cameradata *ci,char *name){
   ci->azimuth=0.0;
   ci->view_angle=0.0;
   ci->eye[0]=eyexfactor*xbar;
-  UpdateCameraYpos(ci);
+  UpdateCameraYpos(ci, 2);
   ci->eye[2]=eyezfactor*zbar;
   ci->eye_save[0]=ci->eye[0];
   ci->eye_save[1]=ci->eye[1];

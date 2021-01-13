@@ -3253,7 +3253,7 @@ void ReshapeCB(int width, int height){
   }
   SetScreenSize(&width,&height);
   windowresized=1;
-  UpdateCameraYpos(camera_external);
+  UpdateCameraYpos(camera_external, 2);
   if(strcmp(camera_current->name,"external")==0&&in_external==1){
     SetViewPoint(RESTORE_EXTERIOR_VIEW);
   }
