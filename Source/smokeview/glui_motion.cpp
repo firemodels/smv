@@ -585,9 +585,8 @@ void EnableDisableViews(void){
     selected_view = ival;
 
     cex = &camera_list_first;
-    cex = cex->next;
-    cex = cex->next;
-    cex = cex->next;
+    cex = cex->next; // skip over first
+    cex = cex->next; // skip over external
     if(cex->next == NULL){
       BUTTON_cycle_views->disable();
     }
