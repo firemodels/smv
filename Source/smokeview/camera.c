@@ -49,18 +49,14 @@ void InitCameraList(void){
 /* ------------------ AddDefaultViews ------------------------ */
 
 void AddDefaultViews(void){
-  cameradata *cb, *ca;
+  cameradata *cfirst, *clast;
 
-  cb=&camera_list_first;
-  ca=cb->next;
-
-  cb->next=camera_external;
-  camera_external->next=camera_internal;
-  camera_internal->next=ca;
-
-  ca->prev=camera_internal;
-  camera_internal->prev=camera_external;
-  camera_external->prev=cb;
+  cfirst                = &camera_list_first;
+  clast                 = cfirst->next;
+  cfirst->next          = camera_external;
+  camera_external->prev = cfirst;
+  camera_external->next = clast;
+  clast->prev           = camera_external;
 }
 
 /* ------------------ UpdateCameraYpos ------------------------ */

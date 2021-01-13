@@ -32,13 +32,6 @@ void InitDefaultCameras(void){
   strcpy(camera_label, camera_current->name);
   UpdateCameraLabel();
 
-  strcpy(name_internal, "internal");
-  InitCamera(camera_internal, name_internal);
-
-  camera_internal->eye[0] = 0.5*xbar;
-  camera_internal->eye[1] = 0.5*ybar;
-  camera_internal->eye[2] = 0.5*zbar;
-  camera_internal->view_id = 0;
   CopyCamera(camera_save, camera_current);
   CopyCamera(camera_last, camera_current);
 

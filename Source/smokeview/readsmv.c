@@ -5503,9 +5503,6 @@ int ReadSMV(bufferstreamdata *stream){
   FREEMEMORY(camera_current);
   NewMemory((void **)&camera_current,sizeof(cameradata));
 
-  FREEMEMORY(camera_internal);
-  NewMemory((void **)&camera_internal,sizeof(cameradata));
-
   FREEMEMORY(camera_save);
   NewMemory((void **)&camera_save,sizeof(cameradata));
 

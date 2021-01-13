@@ -639,7 +639,6 @@ extern "C" void ViewpointCB(int var){
     break;
 #endif
   case RESTORE_EXTERIOR_VIEW:
-  case RESTORE_INTERIOR_VIEW:
     SetViewPoint(var);
     break;
   case SAVE_VIEW:
