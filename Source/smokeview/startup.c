@@ -12,7 +12,43 @@
 #endif
 #include "stdio_buffer.h"
 
-/* ------------------ Init ------------------------ */
+/* ------------------ InitDefaultCameras ------------------------ */
+
+void InitDefaultCameras(void){
+  char name_external[32];
+  char name_internal[32];
+
+  strcpy(name_external, "external");
+  InitCamera(camera_external, name_external);
+  camera_external->view_id = EXTERNAL_LIST_ID;
+
+  if(camera_ini!=NULL&&camera_ini->defined==1){
+    CopyCamera(camera_current, camera_ini);
+  }
+  else{
+    camera_external->zoom = zoom;
+    CopyCamera(camera_current, camera_external);
+  }
+  strcpy(camera_label, camera_current->name);
+  UpdateCameraLabel();
+
+  strcpy(name_internal, "internal");
+  InitCamera(camera_internal, name_internal);
+
+  camera_internal->eye[0] = 0.5*xbar;
+  camera_internal->eye[1] = 0.5*ybar;
+  camera_internal->eye[2] = 0.5*zbar;
+  camera_internal->view_id = 0;
+  CopyCamera(camera_save, camera_current);
+  CopyCamera(camera_last, camera_current);
+
+  InitCameraList();
+  AddDefaultViews();
+  CopyCamera(camera_external_save, camera_external);
+  UpdateGluiCameraViewList();
+}
+
+/* ------------------ InitMisc ------------------------ */
 
 void InitMisc(void){
   int i;
@@ -60,38 +96,8 @@ void InitMisc(void){
 
   xyzbox = MAX(MAX(xbar,ybar),zbar);
 
-  {
-    char name_external[32];
+  InitDefaultCameras();
 
-    strcpy(name_external,"external");
-    InitCamera(camera_external,name_external);
-    camera_external->view_id=EXTERNAL_LIST_ID;
-  }
-  if(camera_ini!=NULL&&camera_ini->defined==1){
-    CopyCamera(camera_current,camera_ini);
-  }
-  else{
-    camera_external->zoom=zoom;
-    CopyCamera(camera_current,camera_external);
-  }
-  strcpy(camera_label,camera_current->name);
-  UpdateCameraLabel();
-  {
-    char name_internal[32];
-    strcpy(name_internal,"internal");
-    InitCamera(camera_internal,name_internal);
-  }
-  camera_internal->eye[0]=0.5*xbar;
-  camera_internal->eye[1]=0.5*ybar;
-  camera_internal->eye[2]=0.5*zbar;
-  camera_internal->view_id=0;
-  CopyCamera(camera_save,camera_current);
-  CopyCamera(camera_last,camera_current);
-
-  InitCameraList();
-  AddDefaultViews();
-  CopyCamera(camera_external_save,camera_external);
-  UpdateGluiCameraViewList();
 
   //ResetGluiView(i_view_list);
 
