@@ -15,8 +15,16 @@
 /* ------------------ InitDefaultCameras ------------------------ */
 
 void InitDefaultCameras(void){
-  char name_external[32];
-  char name_internal[32];
+  char name_external[32], name_internal[32], temp_label[32];
+  char *labels[] = {"XMIN", "XMAX", "YMIN", "YMAX", "ZMIN", "ZMAX"};
+  int view_indices[] = {MENU_VIEW_XMIN, MENU_VIEW_XMAX, MENU_VIEW_YMIN, MENU_VIEW_YMAX, MENU_VIEW_ZMIN, MENU_VIEW_ZMAX};
+  int i;
+
+  for(i = 0; i<6; i++){
+    InitCamera(camera_defaults[i], labels[i]);
+    SetCameraViewPersp(camera_defaults[i], view_indices[i]);
+    camera_defaults[i]->view_id = -i;
+  }
 
   strcpy(name_external, "external");
   InitCamera(camera_external, name_external);
@@ -36,9 +44,9 @@ void InitDefaultCameras(void){
   CopyCamera(camera_last, camera_current);
 
   InitCameraList();
-  AddDefaultViews();
+  AddDefaultViewpoints();
   CopyCamera(camera_external_save, camera_external);
-  UpdateGluiCameraViewList();
+  UpdateGluiViewpointList();
 }
 
 /* ------------------ InitMisc ------------------------ */

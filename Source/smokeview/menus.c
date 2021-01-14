@@ -1799,7 +1799,7 @@ void ResetMenu(int value){
   case MENU_VIEW_YMAX:
   case MENU_VIEW_ZMIN:
   case MENU_VIEW_ZMAX:
-    SetCameraView(value);
+    SetCameraView(camera_current, value);
     break;
   case SAVE_VIEWPOINT_AS_STARTUP:
     ResetMenu(SAVE_VIEWPOINT);
@@ -1826,7 +1826,7 @@ void ResetMenu(int value){
     SetStartupView();
     break;
   default:
-    ASSERT(value>=0);
+    ASSERT(value>=-5);
     if(value<100000){
       ResetGluiView(value);
       if(scriptoutstream!=NULL){
@@ -8924,94 +8924,105 @@ updatemenu=0;
   }
 
   /* --------------------------------default view menu -------------------------- */
-
+  SortCameras();
   CREATEMENU(defaultviewmenu, ResetMenu);
-  glutAddMenuEntry("xmin", MENU_VIEW_XMIN);
-  glutAddMenuEntry("xmax", MENU_VIEW_XMAX);
-  glutAddMenuEntry("ymin", MENU_VIEW_YMIN);
-  glutAddMenuEntry("ymax", MENU_VIEW_YMAX);
-  glutAddMenuEntry("zmin", MENU_VIEW_ZMIN);
-  glutAddMenuEntry("zmax", MENU_VIEW_ZMAX);
+  for(i = 0; i<ncameras_sorted; i++){
+    cameradata *ca;
+    char line[256];
+
+    ca = cameras_sorted[i];
+    if(ca->view_id>1)continue;
+    strcpy(line, "");
+    if(ca->view_id==selected_view){
+      strcat(line, "*");
+    }
+    if(trainer_mode==1&&strcmp(ca->name, _("external"))==0){
+      strcat(line, _("Outside"));
+    }
+    else{
+      strcat(line, ca->name);
+      if(strcmp(ca->name, startup_view_label)==0){
+        strcat(line, " (startup view)");
+      }
+    }
+    glutAddMenuEntry(line, ca->view_id);
+  }
 
   /* --------------------------------reset menu -------------------------- */
 
   CREATEMENU(resetmenu,ResetMenu);
-  {
-    char line[256];
-    cameradata *ca;
-    char *current_view=NULL;
-
-    if(trainer_mode==1){
-      if(visBlocks==visBLOCKOutline){
-        glutAddMenuEntry(_("*Outline"),MENU_OUTLINEVIEW);
-      }
-      else{
-        glutAddMenuEntry(_("Outline"),MENU_OUTLINEVIEW);
-      }
-      glutAddMenuEntry("-",MENU_DUMMY);
+  if(trainer_mode==1){
+    if(visBlocks==visBLOCKOutline){
+      glutAddMenuEntry(_("*Outline"),MENU_OUTLINEVIEW);
     }
-    for(ca = camera_list_first.next; ca->next != NULL; ca = ca->next){
-      if(ca->view_id == selected_view){
+    else{
+      glutAddMenuEntry(_("Outline"),MENU_OUTLINEVIEW);
+    }
+    glutAddMenuEntry("-",MENU_DUMMY);
+  }
+  if(trainer_mode==0){
+    char view_label[255], menu_label[255];
+    char *current_view = NULL;
+    cameradata *ca;
+
+    for(ca = camera_list_first.next; ca->next!=NULL; ca = ca->next){
+      if(ca->view_id==selected_view){
         current_view = ca->name;
         break;
       }
     }
-    if(trainer_mode==0){
-      char view_label[255], menu_label[255];
+    GetNextViewLabel(view_label);
+    strcpy(menu_label, _("Save viewpoint as"));
+    strcat(menu_label, " ");
+    strcat(menu_label,view_label);
 
-      GetNextViewLabel(view_label);
+    glutAddMenuEntry(menu_label,SAVE_VIEWPOINT);
+    if(current_view != NULL){
+      if(strcmp(current_view,startup_view_label)!=0){
+        strcpy(menu_label, _("Apply"));
+        strcat(menu_label, " ");
+        strcat(menu_label, current_view);
+        strcat(menu_label, " ");
+        strcat(menu_label, _("at startup"));
+        glutAddMenuEntry(menu_label, MENU_STARTUPVIEW);
+      }
+    }
+    else{
       strcpy(menu_label, _("Save viewpoint as"));
       strcat(menu_label, " ");
-      strcat(menu_label,view_label);
-
-      glutAddMenuEntry(menu_label,SAVE_VIEWPOINT);
-      if(current_view != NULL){
-        if(strcmp(current_view,startup_view_label)!=0){
-          strcpy(menu_label, _("Apply"));
-          strcat(menu_label, " ");
-          strcat(menu_label, current_view);
-          strcat(menu_label, " ");
-          strcat(menu_label, _("at startup"));
-          glutAddMenuEntry(menu_label, MENU_STARTUPVIEW);
-        }
-      }
-      else{
-        strcpy(menu_label, _("Save viewpoint as"));
-        strcat(menu_label, " ");
-        strcat(menu_label, view_label);
-        strcat(menu_label, " ");
-        strcat(menu_label, _("and apply at startup"));
-        glutAddMenuEntry(menu_label, SAVE_VIEWPOINT_AS_STARTUP);
-      }
-      GLUTADDSUBMENU(_("Zoom"),zoommenu);
-      if(projection_type == PROJECTION_ORTHOGRAPHIC)glutAddMenuEntry(_("Switch to perspective view       ALT v"),MENU_SIZEPRESERVING);
-      if(projection_type == PROJECTION_PERSPECTIVE)glutAddMenuEntry(_("Switch to size preserving view   ALT v"),MENU_SIZEPRESERVING);
-      glutAddMenuEntry("-",MENU_DUMMY);
+      strcat(menu_label, view_label);
+      strcat(menu_label, " ");
+      strcat(menu_label, _("and apply at startup"));
+      glutAddMenuEntry(menu_label, SAVE_VIEWPOINT_AS_STARTUP);
     }
+    GLUTADDSUBMENU(_("Zoom"),zoommenu);
+    if(projection_type == PROJECTION_ORTHOGRAPHIC)glutAddMenuEntry(_("Switch to perspective view       ALT v"),MENU_SIZEPRESERVING);
+    if(projection_type == PROJECTION_PERSPECTIVE)glutAddMenuEntry(_("Switch to size preserving view   ALT v"),MENU_SIZEPRESERVING);
+    glutAddMenuEntry("-",MENU_DUMMY);
+  }
 
-  glutAddMenuEntry("-", MENU_DUMMY);
-  GLUTADDSUBMENU(_("default views"), defaultviewmenu);
+  GLUTADDSUBMENU(_("Default viewpoints"), defaultviewmenu);
 
-//    glutAddMenuEntry("Top view", MENU_VIEWPOINT_TOPVIEW);
-    SortCameras();
-    for(i = 0; i < ncameras_sorted;i++){
-      ca = cameras_sorted[i];
-      if(trainer_mode==1&&strcmp(ca->name,_("internal"))==0)continue;
-      strcpy(line,"");
-      if(ca->view_id==selected_view){
-        strcat(line,"*");
-      }
-      if(trainer_mode==1&&strcmp(ca->name,_("external"))==0){
-        strcat(line,_("Outside"));
-      }
-      else{
-        strcat(line,ca->name);
-        if(strcmp(ca->name,startup_view_label)==0){
-          strcat(line," (startup view)");
-        }
-      }
-      glutAddMenuEntry(line,ca->view_id);
+  for(i = 0; i < ncameras_sorted;i++){
+    cameradata *ca;
+    char line[256];
+
+    ca = cameras_sorted[i];
+    if(ca->view_id<=1)continue;
+    strcpy(line,"");
+    if(ca->view_id==selected_view){
+      strcat(line,"*");
     }
+    if(trainer_mode==1&&strcmp(ca->name,_("external"))==0){
+      strcat(line,_("Outside"));
+    }
+    else{
+      strcat(line,ca->name);
+      if(strcmp(ca->name,startup_view_label)==0){
+        strcat(line," (startup view)");
+      }
+    }
+    glutAddMenuEntry(line,ca->view_id);
   }
   if(trainer_mode==0&&showtime==1){
     glutAddMenuEntry("-",MENU_DUMMY);

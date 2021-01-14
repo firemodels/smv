@@ -6,7 +6,9 @@
 #endif
 
 EXTERNCPP void ScriptViewXYZMINMAXOrtho(int option);
-EXTERNCPP void SetCameraView(int option);
+EXTERNCPP void SetCameraView(cameradata *ca, int option);
+EXTERNCPP void SetCameraViewPersp(cameradata *ca, int option);
+
 EXTERNCPP void DeviceCB(int val);
 EXTERNCPP void UpdateDeviceTypes(int val);
 
@@ -711,8 +713,8 @@ EXTERNCPP void UpdateExtreme(void);
 EXTERNCPP void UpdateColorbarType(void);
 EXTERNCPP void InitCameraList(void);
 EXTERNCPP cameradata *InsertCamera(cameradata *cb,cameradata *source, char *name);
-EXTERNCPP void AddDefaultViews(void);
-EXTERNCPP void UpdateGluiCameraViewList(void);
+EXTERNCPP void AddDefaultViewpoints(void);
+EXTERNCPP void UpdateGluiViewpointList(void);
 EXTERNCPP void ResetGLTime(void);
 EXTERNCPP void EnableResetSavedView(void);
 EXTERNCPP void ResetGluiView(int ival);

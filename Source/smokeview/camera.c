@@ -46,17 +46,30 @@ void InitCameraList(void){
   ca->next=NULL;
 }
 
-/* ------------------ AddDefaultViews ------------------------ */
+/* ------------------ AddDefaultViewpoints ------------------------ */
 
-void AddDefaultViews(void){
-  cameradata *cfirst, *clast;
+void AddDefaultViewpoints(void){
+  cameradata *cfirst, *clast, *cnext;
+  int i;
 
   cfirst                = &camera_list_first;
   clast                 = cfirst->next;
+  cnext                 = cfirst->next;
   cfirst->next          = camera_external;
   camera_external->prev = cfirst;
   camera_external->next = clast;
   clast->prev           = camera_external;
+  for(i = 0; i<6; i++){
+    cameradata *ca;
+
+    ca           = camera_defaults[i];
+    cnext        = cfirst->next;
+
+    cfirst->next = ca;
+    cnext->prev  = ca;
+    ca->prev     = cfirst;
+    ca->next     = cnext;
+  }
 }
 
 /* ------------------ UpdateCameraYpos ------------------------ */
@@ -104,7 +117,7 @@ void UpdateCameraYpos(cameradata *ci, int option){
 
 /* ------------------ SetCameraView ------------------------ */
 
-void SetCameraViewPersp(int option){
+void SetCameraViewPersp(cameradata *ca, int option){
   float az = 0.0, elev = 0.0;
 
   switch(option){
@@ -127,34 +140,34 @@ void SetCameraViewPersp(int option){
       elev = 89.0;
       break;
   }
-  camera_current->az_elev[0] = az;
-  camera_current->az_elev[1] = elev;
-  camera_current->azimuth = az;
-  camera_current->elevation = elev;
-  camera_current->eye[0] = camera_current->xcen;
-  camera_current->eye[2] = camera_current->zcen;
+  ca->az_elev[0] = az;
+  ca->az_elev[1] = elev;
+  ca->azimuth = az;
+  ca->elevation = elev;
+  ca->eye[0] = ca->xcen;
+  ca->eye[2] = ca->zcen;
 
   switch(option){
     case MENU_VIEW_XMIN:
     case MENU_VIEW_XMAX:
-      UpdateCameraYpos(camera_current, 1);
+      UpdateCameraYpos(ca, 1);
       break;
     case MENU_VIEW_YMIN:
     case MENU_VIEW_YMAX:
-      UpdateCameraYpos(camera_current, 2);
+      UpdateCameraYpos(ca, 2);
       break;
     case MENU_VIEW_ZMIN:
     case MENU_VIEW_ZMAX:
-      UpdateCameraYpos(camera_current, 3);
+      UpdateCameraYpos(ca, 3);
       break;
   }
 }
 
 /* ------------------ SetCameraView ------------------------ */
 
-void SetCameraView(int option){
+void SetCameraView(cameradata *ca, int option){
   if(projection_type==PROJECTION_PERSPECTIVE){
-    SetCameraViewPersp(option);
+    SetCameraViewPersp(ca, option);
   }
   else{
     ScriptViewXYZMINMAXOrtho(option);
@@ -402,7 +415,7 @@ cameradata *InsertCamera(cameradata *cb,cameradata *source, char *name){
     cam->view_id = camera_max_id;
     camera_max_id++;
   }
-  UpdateGluiCameraViewList();
+  UpdateGluiViewpointList();
   updatemenu=1;
   return cam;
 }
