@@ -15,7 +15,7 @@
 /* ------------------ InitDefaultCameras ------------------------ */
 
 void InitDefaultCameras(void){
-  char name_external[32], name_internal[32], temp_label[32];
+  char name_external[32];
   char *labels[] = {"XMIN", "XMAX", "YMIN", "YMAX", "ZMIN", "ZMAX"};
   int view_indices[] = {MENU_VIEW_XMIN, MENU_VIEW_XMAX, MENU_VIEW_YMIN, MENU_VIEW_YMAX, MENU_VIEW_ZMIN, MENU_VIEW_ZMAX};
   int i;
