@@ -714,14 +714,15 @@ void UpdateShow(void){
   }
 
   num_colorbars=0;
-  if(evacflag==1)num_colorbars++;
-  if(ReadPartFile==1)num_colorbars++;
-  if(plotstate==DYNAMIC_PLOTS&&(slicecolorbarflag==1||vslicecolorbarflag==1))num_colorbars++;
-  if(plotstate==DYNAMIC_PLOTS&&patchflag==1&&wall_cell_color_flag==0)num_colorbars++;
-  if(plotstate==DYNAMIC_PLOTS&&ReadZoneFile==1)num_colorbars++;
-  if(plotstate==DYNAMIC_PLOTS&&tisoflag==1&&1==0){ // disable isosurface colorbar label for now
-    showiso_colorbar=1;
-    num_colorbars++;
+  if(plotstate==DYNAMIC_PLOTS){
+    if(evacflag==1||(partflag==1&&parttype!=0))num_colorbars++;
+    if(slicecolorbarflag==1||vslicecolorbarflag==1)num_colorbars++;
+    if(patchflag==1&&wall_cell_color_flag==0)num_colorbars++;
+    if(ReadZoneFile==1)num_colorbars++;
+    if(tisoflag==1&&1==0){ // disable isosurface colorbar label for now
+      showiso_colorbar = 1;
+      num_colorbars++;
+    }
   }
   if(nplot3dloaded>0&&num_colorbars==0)num_colorbars=1;
 

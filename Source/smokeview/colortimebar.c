@@ -2455,7 +2455,7 @@ void DrawVerticalColorbarRegLabels(void){
 
   // -------------- particle file top labels ------------
 
-  if(showevac_colorbar == 1 || showsmoke == 1){
+  if(showevac_colorbar==1||(showsmoke==1&&parttype!=0)){
     char partunitlabel2[256], partshortlabel2[256];
 
     strcpy(partshortlabel2, "");
