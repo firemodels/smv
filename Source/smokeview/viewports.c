@@ -377,12 +377,17 @@ void GetViewportInfo(void){
   hbar_height = text_height + v_space + hcolorbar_delta;
 
   if(doit==1){
-    int temp_height;
+    int temp_height, timebar_height = TIMEBAR_HEIGHT;
 
+#ifdef pp_OSX_HIGHRES
+  if(double_scale==1){
+    timebar_height *= 2;
+  }
+#endif
     VP_timebar.width  = screenWidth-VP_info.width-2*titlesafe_offset;
     temp_height = text_height + v_space;
     if(visFramelabel==1||visHRRlabel==1||visAvailmemory==1)temp_height += (text_height+v_space);
-    VP_timebar.height = MAX(TIMEBAR_HEIGHT + 2*v_space, temp_height);
+    VP_timebar.height = MAX(timebar_height + 2*v_space, temp_height);
     if(show_horizontal_colorbar==1)VP_timebar.height += hbar_height;
   }
   else{
