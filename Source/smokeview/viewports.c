@@ -389,11 +389,11 @@ void GetViewportInfo(void){
     VP_timebar.width = 0;
     VP_timebar.height = 0;
   }
-#ifdef pp_OSX_HIGHRES
-  if(double_scale==1){
-    VP_timebar.height *= 2;
-  }
-#endif
+//#ifdef pp_OSX_HIGHRES
+//  if(double_scale==1){
+//    VP_timebar.height *= 2;
+//  }
+//#endif
   VP_timebar.right = VP_timebar.left + VP_timebar.width;
   VP_timebar.top   = VP_timebar.down + VP_timebar.height;
 
