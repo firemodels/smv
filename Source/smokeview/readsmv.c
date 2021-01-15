@@ -13679,7 +13679,6 @@ void OutputViewpoints(FILE *fileout){
   cameradata *ca;
 
   for(ca = camera_list_first.next; ca->next != NULL; ca = ca->next){
-    if(strcmp(ca->name, "internal") == 0)continue;
     if(strcmp(ca->name, "external") == 0)continue;
     if(ca->view_id<=1)continue;
 

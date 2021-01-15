@@ -82,28 +82,34 @@ void UpdateCameraYpos(cameradata *ci, int option){
   asp = (float)screenHeight/(float)screenWidth;
 
   switch(option){
-    case 2:
-      width = xbar;
-      if(zbar/asp>xbar){
+    case 1:
+      if(asp>zbar/ybar){
+        width = ybar;
+      }
+      else{
         width = zbar/asp;
       }
       break;
 
-    case 1:
-      width = ybar;
-      if(zbar/asp>ybar){
+    case 2:
+      if(asp>zbar/xbar){
+        width = xbar;
+      }
+      else{
         width = zbar/asp;
       }
       break;
 
     case 3:
-      width = xbar;
-      if(ybar/asp>xbar){
+      if(asp>ybar/xbar){
+        width = xbar;
+      }
+      else{
         width = ybar/asp;
       }
       break;
   }
-  eyeyfactor = -1.05*width/2.0/tan(local_aperture_default*DEG2RAD/2.0);
+  eyeyfactor = -1.10*(width/2.0)/tan(local_aperture_default*DEG2RAD/2.0);
 
   ci->eye[1] = eyeyfactor*xyzbox*geomyfactor;
   if(geom_use_factors==1)ci->eye[0] = NORMALIZE_X((geom_xmin+geom_xmax)/2.0);
@@ -323,7 +329,6 @@ void UpdateCamera(cameradata *ca){
 /* ------------------ CompareCameras ------------------------ */
 
 #define IS_EXT 0
-#define IS_INT 1
 #define IS_OTHER 2
 int CompareCameras(const void *arg1, const void *arg2){
   cameradata *x, *y;
@@ -340,18 +345,11 @@ other  1    1    strcmp
   */
 
   if(strcmp(x->name, "external") == 0)x_state = IS_EXT;
-  if(strcmp(x->name, "internal") == 0)x_state = IS_INT;
 
   if(strcmp(y->name,"external") == 0)y_state = IS_EXT;
-  if(strcmp(y->name, "internal") == 0)y_state = IS_INT;
 
   if(x_state == IS_EXT){
     if(y_state == IS_EXT)return 0;
-    return -1;
-  }
-  else if(x_state == IS_INT){
-    if(y_state == IS_EXT)return 1;
-    if(y_state == IS_INT)return 0;
     return -1;
   }
   else{
