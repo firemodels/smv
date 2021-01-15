@@ -377,15 +377,12 @@ void GetViewportInfo(void){
   VP_timebar.text_width  = text_width;
 
   all_text_height = text_height + v_space;
-  if(visFramelabel==1||visHRRlabel==1||visAvailmemory==1)all_text_height += (text_height+v_space);
-  hbar_height = text_height + v_space+MAX(hcolorbar_delta, all_text_height);
+  hbar_height = text_height + v_space + MAX(hcolorbar_delta, all_text_height);
 
   if(doit==1){
     VP_timebar.width = screenWidth-VP_info.width-2*titlesafe_offset;
-    VP_timebar.height=2*(text_height+v_space);
-    if(show_firecutoff==1 && current_mesh != NULL){
-      if(hrrpuv_loaded == 1||temp_loaded == 1)VP_timebar.height += (text_height + v_space);
-    }
+    VP_timebar.height=text_height+v_space;
+    if(visFramelabel==1||visHRRlabel==1||visAvailmemory==1)VP_timebar.height += (text_height+v_space);
     if(show_horizontal_colorbar==1){
       VP_timebar.height += hbar_height;
     }
