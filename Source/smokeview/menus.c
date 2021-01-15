@@ -1669,29 +1669,37 @@ void FontMenu(int value){
     fontindex=SMALL_FONT;
 #ifdef pp_OSX_HIGHRES
     if(double_scale==1){
-      font_ptr = (void *)GLUT_BITMAP_HELVETICA_24;
+      font_ptr          = (void *)GLUT_BITMAP_HELVETICA_24;
+      colorbar_font_ptr = (void *)GLUT_BITMAP_HELVETICA_20;
     }
     else{
-      font_ptr = GLUT_BITMAP_HELVETICA_12;
-    }
+      font_ptr          = GLUT_BITMAP_HELVETICA_12;
+      colorbar_font_ptr = GLUT_BITMAP_HELVETICA_10;
+  }
 #else
-    font_ptr = GLUT_BITMAP_HELVETICA_12;
+    font_ptr          = GLUT_BITMAP_HELVETICA_12;
+    colorbar_font_ptr = GLUT_BITMAP_HELVETICA_12;
 #endif
-    font_height = 12;
+    font_height          = 12;
+    colorbar_font_height = 10;
     break;
   case LARGE_FONT:
     fontindex=LARGE_FONT;
 #ifdef pp_OSX_HIGHRES
     if(double_scale==1){
-      font_ptr = (void *)GLUT_BITMAP_HELVETICA_36;
+      font_ptr          = (void *)GLUT_BITMAP_HELVETICA_36;
+      colorbar_font_ptr = (void *)GLUT_BITMAP_HELVETICA_36;
     }
     else{
-      font_ptr = GLUT_BITMAP_HELVETICA_18;
+      font_ptr          = GLUT_BITMAP_HELVETICA_18;
+      colorbar_font_ptr = GLUT_BITMAP_HELVETICA_18;
     }
 #else
-    font_ptr = GLUT_BITMAP_HELVETICA_18;
+    font_ptr            = GLUT_BITMAP_HELVETICA_18;
+    colorbar_font_ptr   = GLUT_BITMAP_HELVETICA_18;
 #endif
-    font_height = 18;
+    font_height          = 18;
+    colorbar_font_height = 18;
     break;
   case SCALED_FONT:
     fontindex=SCALED_FONT;

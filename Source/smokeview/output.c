@@ -416,7 +416,7 @@ void OutputBarText(float x, float y, const GLfloat *color, char *string){
   else{
     glRasterPos2f(x, y);
     for(c=string; *c!='\0'; c++){
-      glutBitmapCharacter(font_ptr,(unsigned char)(*c));
+      glutBitmapCharacter(colorbar_font_ptr,(unsigned char)(*c));
     }
   }
 }

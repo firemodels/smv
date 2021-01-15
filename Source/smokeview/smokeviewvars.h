@@ -828,8 +828,8 @@ SVEXTERN float fnear, ffar;
 SVEXTERN float partfacedir[3];
 SVEXTERN int SVDECL(demo_option,0);
 
-SVEXTERN int font_height;
-SVEXTERN void SVDECL(*font_ptr,NULL);
+SVEXTERN int colorbar_font_height, font_height;
+SVEXTERN void SVDECL(*colorbar_font_ptr, NULL), SVDECL(*font_ptr,NULL);
 
 SVEXTERN float cb_valmin, cb_valmax, cb_val;
 SVEXTERN int cb_colorindex;
