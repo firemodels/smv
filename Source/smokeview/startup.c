@@ -1752,12 +1752,10 @@ void InitVars(void){
   showbuild=0;
 
   strcpy(emptylabel,"");
-  large_font=GLUT_BITMAP_HELVETICA_12;
-  small_font=GLUT_BITMAP_HELVETICA_10;
+  font_ptr = GLUT_BITMAP_HELVETICA_12;
 #ifdef pp_OSX_HIGHRES
     if(double_scale==1){
-      large_font=(void *)GLUT_BITMAP_HELVETICA_24;
-      small_font=(void *)GLUT_BITMAP_HELVETICA_20;
+      font_ptr = (void *)GLUT_BITMAP_HELVETICA_24;
     }
 #endif
 

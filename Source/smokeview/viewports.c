@@ -259,7 +259,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
 
 void GetViewportInfo(void){
   int doit;
-  float text_height;
+  float text_height, all_text_height;
   float text_width;
   int ninfo_lines=0;
   int info_width;
@@ -285,9 +285,9 @@ void GetViewportInfo(void){
 
   colorbar_label_width = MaxColorbarLabelWidth(ncolorlabel_padding);
 
-  v_space = 2;
-  text_height=18;
-  text_width=18;
+  v_space     = 2;
+  text_height = font_height;
+  text_width  = 18;
 #ifdef pp_OSX_HIGHRES
   if(double_scale==1){
     text_height *= 2;
@@ -368,16 +368,18 @@ void GetViewportInfo(void){
   if(show_horizontal_colorbar == 1){
     doit = 1;
   }
-#ifdef pp_memstatus
   if(doit==0&&visAvailmemory==1)doit=1;
-#endif
 
   VP_timebar.left = titlesafe_offset;
   VP_timebar.down = titlesafe_offset;
   VP_timebar.doit=doit;
   VP_timebar.text_height = text_height;
   VP_timebar.text_width  = text_width;
-  hbar_height = text_height + v_space+MAX(hcolorbar_delta, 3 * (text_height + v_space));
+
+  all_text_height = text_height + v_space;
+  if(visFramelabel==1||visHRRlabel==1||visAvailmemory==1)all_text_height += (text_height+v_space);
+  hbar_height = text_height + v_space+MAX(hcolorbar_delta, all_text_height);
+
   if(doit==1){
     VP_timebar.width = screenWidth-VP_info.width-2*titlesafe_offset;
     VP_timebar.height=2*(text_height+v_space);

@@ -827,7 +827,10 @@ SVEXTERN int smoke_render_option;
 SVEXTERN float fnear, ffar;
 SVEXTERN float partfacedir[3];
 SVEXTERN int SVDECL(demo_option,0);
-SVEXTERN int small_font_height, large_font_height;
+
+SVEXTERN int font_height;
+SVEXTERN void SVDECL(*font_ptr,NULL);
+
 SVEXTERN float cb_valmin, cb_valmax, cb_val;
 SVEXTERN int cb_colorindex;
 SVEXTERN float rgbterrain[4*MAXRGB];
@@ -1272,9 +1275,7 @@ SVEXTERN int SVDECL(visColorbarHorizontal, 0), SVDECL(visColorbarHorizontal_save
 SVEXTERN int SVDECL(visFullTitle, 1), SVDECL(visFramerate, 0);
 SVEXTERN int SVDECL(visFramelabel,1), SVDECL(visTimelabel,1);
 SVEXTERN int SVDECL(visHRRlabel,0);
-#ifdef pp_memstatus
-SVEXTERN int visAvailmemory;
-#endif
+SVEXTERN int SVDECL(visAvailmemory, 0);
 SVEXTERN int SVDECL(block_volsmoke,1),SVDECL(smoke3dVoldebug,0);
 SVEXTERN slicedata SVDECL(*sd_shown,NULL);
 SVEXTERN vslicedata SVDECL(*vd_shown,NULL);
@@ -1432,8 +1433,6 @@ SVEXTERN char release_title[1024];
 SVEXTERN char plot3d_title[1024];
 SVEXTERN char SVDECL(*partshortlabel,NULL),SVDECL(*partunitlabel,NULL);
 SVEXTERN char emptylabel[2];
-SVEXTERN void SVDECL(*large_font,NULL);
-SVEXTERN void SVDECL(*small_font,NULL);
 
 SVEXTERN int nopenvents,nopenvents_nonoutline,ndummyvents,ntransparentblocks,ntransparentvents;
 SVEXTERN int nventcolors;
