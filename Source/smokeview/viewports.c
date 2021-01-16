@@ -990,11 +990,26 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
 #endif
   int right_label_pos, timebar_right_pos;
   int timebar_left_pos;
+  int time_width=0, hrr_width=0, frame_width=0;
+  int delta = TIMEBAR_HEIGHT;
+
+#ifdef pp_OSX_HIGHRES
+  if(double_scale==1){
+    delta *= 2;
+  }
+#endif
 
   if (SubPortOrtho2(quad, &VP_timebar, screen_left, screen_down) == 0)return;
 
-  timebar_left_width =  GetStringWidth("Time: 1234.11");
-  timebar_right_width = GetStringWidth("Frame rate: 99.99");
+  timebar_right_width = 0;
+  if(visFramerate==1&&showtime==1)timebar_right_width = GetStringWidth("Frame rate: 99.99");
+  timebar_right_width = MAX(timebar_right_width, delta);
+
+  if(visHRRlabel==1)hrr_width = GetStringWidth("HRR: 1000.0kW");
+  if(visFramelabel==1)frame_width = GetStringWidth("Frame: 9999");
+  if(visTimelabel==1)time_width = GetStringWidth("Time: 1234.11");
+  timebar_left_width =  MAX(frame_width, MAX(time_width, hrr_width));
+  timebar_left_width = MAX(timebar_left_width, delta);
 
   timebar_left_pos = VP_timebar.left + timebar_left_width;
   timebar_right_pos = VP_timebar.right - timebar_right_width - h_space;
