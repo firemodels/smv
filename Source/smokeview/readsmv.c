@@ -11982,6 +11982,11 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i ", &vishmsTimelabel);
       continue;
     }
+    if(Match(buffer, "SHOWFRAMETIMELABEL") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i ", &visFrameTimelabel);
+      continue;
+    }
     if(Match(buffer, "SHOWFRAMELABEL") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i ", &visFramelabel);
@@ -14586,6 +14591,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", visFrame);
   fprintf(fileout, "SHOWFRAMELABEL\n");
   fprintf(fileout, " %i\n", visFramelabel);
+  fprintf(fileout, "SHOWFRAMETIMELABEL\n");
+  fprintf(fileout, " %i\n", visFrameTimelabel);
   fprintf(fileout, "SHOWFRAMERATE\n");
   fprintf(fileout, " %i\n", visFramerate);
   fprintf(fileout, "SHOWGRID\n");

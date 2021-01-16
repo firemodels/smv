@@ -991,6 +991,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
   int right_label_pos, timebar_right_pos;
   int timebar_left_pos;
   int time_width=0, hrr_width=0, frame_width=0;
+  int framerate_width=0, memusage_width=0, memavail_width=0;
   int delta = TIMEBAR_HEIGHT;
 
 #ifdef pp_OSX_HIGHRES
@@ -1002,12 +1003,21 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
   if (SubPortOrtho2(quad, &VP_timebar, screen_left, screen_down) == 0)return;
 
   timebar_right_width = 0;
-  if(visFramerate==1&&showtime==1)timebar_right_width = GetStringWidth("Frame rate: 99.99");
+  if(visFramerate==1&&showtime==1)framerate_width = GetStringWidth("Frame rate: 99.99");
+  if(visUsagememory == 1)memavail_width = GetStringWidth("9999 MBx");
+  if(visAvailmemory == 1)memusage_width = GetStringWidth("Mem Load: 100%x");
+  timebar_right_width = MAX(MAX(framerate_width, memavail_width), memusage_width);
   timebar_right_width = MAX(timebar_right_width, delta);
 
   if(visHRRlabel==1)hrr_width = GetStringWidth("HRR: 1000.0kW");
-  if(visFramelabel==1)frame_width = GetStringWidth("Frame: 9999");
-  if(visTimelabel==1)time_width = GetStringWidth("Time: 1234.11");
+  if(visFrameTimelabel==1){
+    if(visFramelabel==1)frame_width = GetStringWidth("Frame: 9999");
+    if(visTimelabel==1)time_width = GetStringWidth("Time: 1234.11");
+  }
+  else{
+    if(visFramelabel==1)frame_width = GetStringWidth("9999");
+    if(visTimelabel==1)time_width = GetStringWidth("1234.1");
+  }
   timebar_left_width =  MAX(frame_width, MAX(time_width, hrr_width));
   timebar_left_width = MAX(timebar_left_width, delta);
 

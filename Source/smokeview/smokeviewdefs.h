@@ -918,6 +918,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MENU_LABEL_hrr                 19
 #define MENU_LABEL_northangle          20
 #define MENU_LABEL_SETTINGS            21
+#define MENU_LABEL_frametimelabel      22
 
 #define MENU_TITLE_title_smv_version    0
 #define MENU_TITLE_title_fds            1

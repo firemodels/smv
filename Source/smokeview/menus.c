@@ -832,6 +832,9 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_timelabel:
      visTimelabel=1-visTimelabel;
+   case MENU_LABEL_frametimelabel:
+     visFrameTimelabel = 1-visFrameTimelabel;
+     UpdateFrameTimelabel();
      break;
    case MENU_LABEL_framelabel:
      visFramelabel=1-visFramelabel;
@@ -7626,6 +7629,12 @@ updatemenu=0;
   if(visColorbarHorizontal == 0)glutAddMenuEntry(_("Colorbar(horizontal)"), MENU_LABEL_colorbar_horizontal);
   if(visTimebar==1)glutAddMenuEntry(_("*Time bar"),MENU_LABEL_timebar);
   if(visTimebar==0)glutAddMenuEntry(_("Time bar"),MENU_LABEL_timebar);
+  if(visFramelabel == 1)glutAddMenuEntry(_("   *Frame"), MENU_LABEL_framelabel);
+  if(visFramelabel == 0)glutAddMenuEntry(_("   Frame"), MENU_LABEL_framelabel);
+  if(visTimelabel == 1)glutAddMenuEntry(_("   *Time"), MENU_LABEL_timelabel);
+  if(visTimelabel == 0)glutAddMenuEntry(_("   Time"), MENU_LABEL_timelabel);
+  if(visFrameTimelabel==1)glutAddMenuEntry(_("   *Frame/time label"), MENU_LABEL_frametimelabel);
+  if(visFrameTimelabel==0)glutAddMenuEntry(_("   Frame/time label"), MENU_LABEL_frametimelabel);
   GLUTADDSUBMENU(_("Titles"),titlemenu);
 
   glutAddMenuEntry("-", MENU_DUMMY);
@@ -7640,8 +7649,7 @@ updatemenu=0;
     if(visFDSticks == 0)glutAddMenuEntry(_("FDS generated ticks"), MENU_LABEL_fdsticks);
     if(visFDSticks == 1)glutAddMenuEntry(_("*FDS generated ticks"), MENU_LABEL_fdsticks);
   }
-  if(visFramelabel == 1)glutAddMenuEntry(_("*Frame"), MENU_LABEL_framelabel);
-  if(visFramelabel == 0)glutAddMenuEntry(_("Frame"), MENU_LABEL_framelabel);
+
   if(visFramerate == 1)glutAddMenuEntry(_("*Frame rate"), MENU_LABEL_framerate);
   if(visFramerate == 0)glutAddMenuEntry(_("Frame rate"), MENU_LABEL_framerate);
   if(visgridloc == 1)glutAddMenuEntry(_("*Grid locations"), MENU_LABEL_grid);
@@ -7680,8 +7688,7 @@ updatemenu=0;
     if(visLabels == 1)glutAddMenuEntry(_("*Text labels"), MENU_LABEL_textlabels);
     if(visLabels == 0)glutAddMenuEntry(_("Text labels"), MENU_LABEL_textlabels);
   }
-  if(visTimelabel == 1)glutAddMenuEntry(_("*Time"), MENU_LABEL_timelabel);
-  if(visTimelabel == 0)glutAddMenuEntry(_("Time"), MENU_LABEL_timelabel);
+
   if(visUSERticks == 1)glutAddMenuEntry(_("*User settable ticks"), MENU_LABEL_userticks);
   if(visUSERticks == 0)glutAddMenuEntry(_("User settable ticks"), MENU_LABEL_userticks);
 
