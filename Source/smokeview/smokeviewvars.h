@@ -1379,8 +1379,8 @@ SVEXTERN int rendertourcount;
 
 #ifdef pp_MEMDEBUG
 SVEXTERN int list_memcheck_index;
-SVEXTERN int SVDECL(visUsagememory,0);
 #endif
+SVEXTERN int SVDECL(visUsagememory,0);
 SVEXTERN float gslice_norm[3];
 #ifdef INMAIN
 SVEXTERN float tour_xyz[3]={0.0,0.0,0.0};
