@@ -121,6 +121,23 @@ int similar_grid(meshdata *mesh1, meshdata *mesh2, int *factor);
 int exact_grid(meshdata *mesh1, meshdata *mesh2, int *factor);
 int getpatchindex(int in1, boundary *boundaryin, boundary *boundaryout);
 
+#ifdef pp_WIN_ONEAPI
+#define FORTgetsliceparms      _F(GETSLICEPARMS)
+#define FORTclosefortranfile   _F(CLOSEFORTRANFILE)
+#define FORTopenslice          _F(OPENSLICE)
+#define FORTgetsliceframe      _F(GETSLICEFRAME)
+#define FORToutsliceframe      _F(OUTSLICEFRAME)
+#define FORToutsliceheader     _F(OUTSLICEHEADER)
+#define FORTgetplot3dq         _F(GETPLOT3DQ)
+#define FORTplot3dout          _F(PLOT3DOUT)
+#define FORTgetboundaryheader1 _F(GETBOUNDARYHEADER1)
+#define FORTgetboundaryheader2 _F(GETBOUNDARYHEADER2)
+#define FORTopenboundary       _F(OPENBOUNDARY)
+#define FORTgetpatchdata       _F(GETPATCHDATA)
+#define FORToutboundaryheader  _F(OUTBOUNDARYHEADER)
+#define FORToutpatchframe      _F(OUTPATCHFRAME)
+#define FORTendianout          _F(ENDIANOUT)
+#else
 #define FORTgetsliceparms      _F(getsliceparms)
 #define FORTclosefortranfile   _F(closefortranfile)
 #define FORTopenslice          _F(openslice)
@@ -136,6 +153,7 @@ int getpatchindex(int in1, boundary *boundaryin, boundary *boundaryout);
 #define FORToutboundaryheader  _F(outboundaryheader)
 #define FORToutpatchframe      _F(outpatchframe)
 #define FORTendianout          _F(endianout)
+#endif
 
 STDCALLF FORToutpatchframe(int *lunit, int *npatch,
                           int *pi1, int *pi2, int *pj1, int *pj2, int *pk1, int *pk2,

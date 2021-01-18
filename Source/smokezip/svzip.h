@@ -328,7 +328,20 @@ float atan3(float y, float x);
 void initvolrender(void);
 void GetSliceParmsC(char *file, int *ni, int *nj, int *nk);
 
-
+#ifdef pp_WIN_ONEAPI
+#define FORTgetpartheader1     _F(GETPARTHEADER1)
+#define FORTgetpartheader2     _F(GETPARTHEADER2)
+#define FORTgetpartdataframe   _F(GETPARTDATAFRAME)
+#define FORTclosefortranfile   _F(CLOSEFORTRANFILE)
+#define FORTgetboundaryheader1 _F(GETBOUNDARYHEADER1)
+#define FORTgetboundaryheader2 _F(GETBOUNDARYHEADER2)
+#define FORTopenboundary       _F(OPENBOUNDARY)
+#define FORTgetpatchdata       _F(GETPATCHDATA)
+#define FORTopenslice          _F(OPENSLICE)
+#define FORTopenpart           _F(OPENPART)
+#define FORTgetsliceframe      _F(GETSLICEFRAME)
+#define FORTgetplot3dq         _F(GETPLOT3DQ)
+#else
 #define FORTgetpartheader1     _F(getpartheader1)
 #define FORTgetpartheader2     _F(getpartheader2)
 #define FORTgetpartdataframe   _F(getpartdataframe)
@@ -340,6 +353,8 @@ void GetSliceParmsC(char *file, int *ni, int *nj, int *nk);
 #define FORTopenslice          _F(openslice)
 #define FORTopenpart           _F(openpart)
 #define FORTgetsliceframe      _F(getsliceframe)
+#define FORTgetplot3dq         _F(getplot3dq)
+#endif
 
 #ifdef WIN32
 #define STDCALLF extern void _stdcall
