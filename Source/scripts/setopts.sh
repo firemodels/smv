@@ -8,7 +8,7 @@ FOREC_g=
 FOREC_i=
 target=all
 QUARTZ="-I /opt/X11/include -Wno-unknown-pragmas"
-while getopts 'fgGhiILlqQt:' OPTION
+while getopts 'fgGhiILlqQt:T' OPTION
 do
 case $OPTION in
   f)
@@ -60,6 +60,9 @@ case $OPTION in
   ;;
   t)
    target="$OPTARG"
+  ;;
+  T)
+   dummy=1
   ;;
 esac
 done

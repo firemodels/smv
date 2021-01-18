@@ -1,8 +1,6 @@
 #!/bin/bash
-export NOQUARTZ=1
-
-OPTS="-Q $*"
-echo building smokeview non/Quartz
+echo building smokeview using Quartz
+OPTS="-q $*"
 
 source ../../scripts/setopts.sh $OPTS
 

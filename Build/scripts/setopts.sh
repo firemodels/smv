@@ -16,7 +16,7 @@ QUARTZSMV=framework
 inc=
 BUILD_LIBS=
 BUILD_ALL=1
-while getopts 'AfhiLmpqQrt' OPTION
+while getopts 'AfhiLmpqQrT' OPTION
 do
 case $OPTION in
   A)
@@ -58,7 +58,7 @@ case $OPTION in
   ;;
   r)
   ;;
-  t)
+  T)
    TESTFLAG=$TESTFLAG" -D pp_BETA"
    SMV_MAKE_OPTS="$SMV_MAKE_OPTS SMV_TESTSTRING=\"test_\" "
    TEST=test_
@@ -71,12 +71,9 @@ export TEST
 export SMV_MPI
 if [ "$NOQUARTZ" != "" ]; then
   TESTFLAG="$TESTFLAG -D pp_NOQUARTZ"
-  if [ "$LOWRES" == "" ]; then
-    SMV_MAKE_OPTS="$SMV_MAKE_OPTS NOQUARTZ=\"noq_\" "
-  else
-    SMV_MAKE_OPTS="$SMV_MAKE_OPTS NOQUARTZ=\"noql_\" "
-    TESTFLAG="$TESTFLAG -D pp_OSX_LOWRES"
-  fi
+  SMV_MAKE_OPTS="$SMV_MAKE_OPTS NOQUARTZ=\"\" "
+else
+  SMV_MAKE_OPTS="$SMV_MAKE_OPTS NOQUARTZ=\"q_\" "
 fi
 if [ "$TESTFLAG" != "" ]; then
    SMV_MAKE_OPTS="$SMV_MAKE_OPTS SMV_TESTFLAG=\"$TESTFLAG\" "
