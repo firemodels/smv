@@ -16,6 +16,6 @@ IF NOT DEFINED ONEAPI_ROOT goto skip_oneapi
   set SMV_TESTFLAG=%SMV_TESTFLAG% -D pp_WIN_ONEAPI
 :skip_oneapi
 
-erase *.exe
+erase *.exe 2> Nul
 make SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win_64
 pause

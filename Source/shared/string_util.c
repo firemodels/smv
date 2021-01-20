@@ -1402,7 +1402,13 @@ unsigned char *GetHashSHA1(char *file){
     char *pathentry, fullpath[1024];
 
     pathentry = Which(file);
-    strcpy(fullpath, pathentry);
+    if(pathentry==NULL){
+      strcpy(fullpath,".");
+      strcat(fullpath,dirseparator);
+    }
+    else{
+      strcpy(fullpath, pathentry);
+    }
     strcat(fullpath, file);
 #ifdef WIN32
     {
@@ -1459,7 +1465,13 @@ unsigned char *GetHashMD5(char *file){
     char *pathentry, fullpath[1024];
 
     pathentry = Which(file);
-    strcpy(fullpath, pathentry);
+    if(pathentry==NULL){
+      strcpy(fullpath,".");
+      strcat(fullpath,dirseparator);
+    }
+    else{
+      strcpy(fullpath, pathentry);
+    }
     strcat(fullpath, file);
 #ifdef WIN32
     {
@@ -1507,7 +1519,13 @@ unsigned char *GetHashSHA256(char *file){
     char *pathentry, fullpath[1024];
 
     pathentry = Which(file);
-    strcpy(fullpath, pathentry);
+    if(pathentry==NULL){
+      strcpy(fullpath,".");
+      strcat(fullpath,dirseparator);
+    }
+    else{
+      strcpy(fullpath, pathentry);
+    }
     strcat(fullpath, file);
 #ifdef WIN32
     {
