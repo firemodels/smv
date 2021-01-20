@@ -26,7 +26,7 @@ IF NOT DEFINED ONEAPI_ROOT goto skip_oneapi
 if NOT x%GLUT% == xfreeglut set GLUT=glut
 
 if x%inc% == xinc goto skip_inc
-erase *.obj *.mod *.exe
+erase *.obj *.mod *.exe 2> Nul
 :skip_inc
 
 make -j 4 ICON="%ICON%" GLUT="%GLUT%" SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win_64%debug%
