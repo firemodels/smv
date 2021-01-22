@@ -9029,8 +9029,6 @@ updatemenu=0;
     glutAddMenuEntry("-",MENU_DUMMY);
   }
 
-  GLUTADDSUBMENU(_("Default viewpoints"), defaultviewmenu);
-
   for(i = 0; i < ncameras_sorted;i++){
     cameradata *ca;
     char line[256];
@@ -9068,7 +9066,9 @@ updatemenu=0;
     GLUTADDSUBMENU(_("Devices"), showobjectsmenu);
   }
   GLUTADDSUBMENU(_("Labels"),labelmenu);
-  GLUTADDSUBMENU(_("Viewpoints"), resetmenu);
+
+  GLUTADDSUBMENU(_("Viewpoints (default)"), defaultviewmenu);
+  GLUTADDSUBMENU(_("Viewpoints (user)"), resetmenu);
   glutAddMenuEntry("-", MENU_DUMMY);
   if(nsmoke3dloaded>0){
     showhide_data = 1;

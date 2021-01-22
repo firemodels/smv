@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void AdjustY(cameradata *ca);
+
 EXTERNCPP void UpdateFrameTimelabel(void);
 
 EXTERNCPP void ScriptViewXYZMINMAXOrtho(int option);

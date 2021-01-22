@@ -2189,7 +2189,6 @@ void UpdateDisplay(void){
 
   LOCK_IBLANK;
   if(update_adjust_y>0){
-    void AdjustY(cameradata*ca);
     AdjustY(camera_current);
     update_adjust_y--;
   }
