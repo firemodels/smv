@@ -46,45 +46,146 @@ void InitCameraList(void){
   ca->next=NULL;
 }
 
-/* ------------------ AddDefaultViews ------------------------ */
+/* ------------------ AddDefaultViewpoints ------------------------ */
 
-void AddDefaultViews(void){
-  cameradata *cb, *ca;
+void AddDefaultViewpoints(void){
+  cameradata *cfirst, *clast, *cnext;
+  int i;
 
-  cb=&camera_list_first;
-  ca=cb->next;
+  cfirst                = &camera_list_first;
+  clast                 = cfirst->next;
+  cnext                 = cfirst->next;
+  cfirst->next          = camera_external;
+  camera_external->prev = cfirst;
+  camera_external->next = clast;
+  clast->prev           = camera_external;
+  for(i = 0; i<6; i++){
+    cameradata *ca;
 
-  cb->next=camera_external;
-  camera_external->next=camera_internal;
-  camera_internal->next=ca;
+    ca           = camera_defaults[i];
+    cnext        = cfirst->next;
 
-  ca->prev=camera_internal;
-  camera_internal->prev=camera_external;
-  camera_external->prev=cb;
+    cfirst->next = ca;
+    cnext->prev  = ca;
+    ca->prev     = cfirst;
+    ca->next     = cnext;
+  }
 }
 
 /* ------------------ UpdateCameraYpos ------------------------ */
 
-void UpdateCameraYpos(cameradata *ci){
+void UpdateCameraYpos(cameradata *ci, int option){
   float local_aperture_default;
-  float width;
-  float asp;
+  float width, height, asp=1.0, offset;
 
-  local_aperture_default=Zoom2Aperture(1.0);
-  asp=(float)screenHeight/(float)screenWidth;
-  width=xbar;
-  if(zbar/asp>xbar){
-    width=zbar/asp;
+  local_aperture_default = Zoom2Aperture(1.0);
+  if(VP_scene.width==0||VP_scene.height==0)GetViewportInfo();
+  if(VP_scene.height!=0)asp = (float)VP_scene.width/(float)VP_scene.height;
+
+
+  switch(option){
+    case 1:
+      if(asp>ybar/zbar){
+        height = zbar;
+        width  = height*asp;
+      }
+      else{
+        width = ybar;
+      }
+      offset = ci->xcen;
+      break;
+
+    case 2:
+      if(asp>xbar/zbar){
+        height = zbar;
+        width  = height*asp;
+      }
+      else{
+        width = xbar;
+      }
+      offset = ci->ycen;
+      break;
+
+    case 3:
+      if(asp>xbar/ybar){
+        height = ybar;
+        width  = height*asp;
+      }
+      else{
+        width = xbar;
+      }
+      offset = ci->zcen;
+      break;
   }
-  eyeyfactor = -1.10*width/2.0/tan(local_aperture_default*DEG2RAD/2.0);
-  ci->eye[1]=eyeyfactor*xyzbox*geomyfactor;
-  if(geom_use_factors == 1)ci->eye[0]=NORMALIZE_X((geom_xmin+geom_xmax)/2.0);
+  eyeyfactor = -(width/2.0)/tan(local_aperture_default*DEG2RAD/2.0) - offset;
+
+  ci->eye[1] = eyeyfactor*xyzbox*geomyfactor;
+  if(geom_use_factors==1)ci->eye[0] = NORMALIZE_X((geom_xmin+geom_xmax)/2.0);
   if(viscolorbarpath==1){
-    ci->eye[0]=0.7;
-    ci->eye[1]=-2.25;
-    ci->eye[2]=0.5;
+    ci->eye[0] = 0.7;
+    ci->eye[1] = -2.25;
+    ci->eye[2] = 0.5;
   }
-  ci->isometric_y=(eyeyfactor-1.0)*xyzbox;
+  ci->isometric_y = (eyeyfactor-1.0)*xyzbox;
+}
+
+/* ------------------ SetCameraView ------------------------ */
+
+void SetCameraViewPersp(cameradata *ca, int option){
+  float az = 0.0, elev = 0.0;
+
+  switch(option){
+    case MENU_VIEW_XMIN:
+      az = 90.0;
+      break;
+    case MENU_VIEW_XMAX:
+      az = -90.0;
+      break;
+    case MENU_VIEW_YMIN:
+      az = 0.0;
+      break;
+    case MENU_VIEW_YMAX:
+      az = 180.0;
+      break;
+    case MENU_VIEW_ZMIN:
+      elev = -89.0;
+      break;
+    case MENU_VIEW_ZMAX:
+      elev = 89.0;
+      break;
+  }
+  ca->az_elev[0] = az;
+  ca->az_elev[1] = elev;
+  ca->azimuth = az;
+  ca->elevation = elev;
+  ca->eye[0] = ca->xcen;
+  ca->eye[2] = ca->zcen;
+
+  switch(option){
+    case MENU_VIEW_XMIN:
+    case MENU_VIEW_XMAX:
+      UpdateCameraYpos(ca, 1);
+      break;
+    case MENU_VIEW_YMIN:
+    case MENU_VIEW_YMAX:
+      UpdateCameraYpos(ca, 2);
+      break;
+    case MENU_VIEW_ZMIN:
+    case MENU_VIEW_ZMAX:
+      UpdateCameraYpos(ca, 3);
+      break;
+  }
+}
+
+/* ------------------ SetCameraView ------------------------ */
+
+void SetCameraView(cameradata *ca, int option){
+  if(projection_type==PROJECTION_PERSPECTIVE){
+    SetCameraViewPersp(ca, option);
+  }
+  else{
+    ScriptViewXYZMINMAXOrtho(option);
+  }
 }
 
 /* ------------------ InitCamera ------------------------ */
@@ -96,7 +197,7 @@ void InitCamera(cameradata *ci,char *name){
   ci->azimuth=0.0;
   ci->view_angle=0.0;
   ci->eye[0]=eyexfactor*xbar;
-  UpdateCameraYpos(ci);
+  UpdateCameraYpos(ci, 2);
   ci->eye[2]=eyezfactor*zbar;
   ci->eye_save[0]=ci->eye[0];
   ci->eye_save[1]=ci->eye[1];
@@ -121,7 +222,6 @@ void InitCamera(cameradata *ci,char *name){
   ci->rotation_type=rotation_type;
 
   ci->azimuth=0.0;
-
   ci->elevation=0.0;
 
   ci->view_angle=0.0;
@@ -237,7 +337,6 @@ void UpdateCamera(cameradata *ca){
 /* ------------------ CompareCameras ------------------------ */
 
 #define IS_EXT 0
-#define IS_INT 1
 #define IS_OTHER 2
 int CompareCameras(const void *arg1, const void *arg2){
   cameradata *x, *y;
@@ -254,18 +353,11 @@ other  1    1    strcmp
   */
 
   if(strcmp(x->name, "external") == 0)x_state = IS_EXT;
-  if(strcmp(x->name, "internal") == 0)x_state = IS_INT;
 
   if(strcmp(y->name,"external") == 0)y_state = IS_EXT;
-  if(strcmp(y->name, "internal") == 0)y_state = IS_INT;
 
   if(x_state == IS_EXT){
     if(y_state == IS_EXT)return 0;
-    return -1;
-  }
-  else if(x_state == IS_INT){
-    if(y_state == IS_EXT)return 1;
-    if(y_state == IS_INT)return 0;
     return -1;
   }
   else{
@@ -329,7 +421,7 @@ cameradata *InsertCamera(cameradata *cb,cameradata *source, char *name){
     cam->view_id = camera_max_id;
     camera_max_id++;
   }
-  UpdateGluiCameraViewList();
+  UpdateGluiViewpointList();
   updatemenu=1;
   return cam;
 }

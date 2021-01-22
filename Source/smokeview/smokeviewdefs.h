@@ -13,6 +13,15 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define GLUT_BITMAP_HELVETICA_36	(&glutBitmapHelvetica36)
 #endif
 
+#define MENU_VIEW_XMIN            -109
+#define MENU_VIEW_XMAX            -110
+#define MENU_VIEW_YMIN            -111
+#define MENU_VIEW_YMAX            -112
+#define MENU_VIEW_ZMIN            -113
+#define MENU_VIEW_ZMAX            -114
+
+#define DEVICE_devicetypes     28
+
 #define DEVICE_PLOT_HIDDEN        0
 #define DEVICE_PLOT_SHOW_SELECTED 1
 #define DEVICE_PLOT_SHOW_ALL      2
@@ -461,7 +470,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SCRIPT_INI 3
 
 #define RESTORE_EXTERIOR_VIEW      0
-#define RESTORE_INTERIOR_VIEW      1
 #define SAVE_VIEW                  3
 #define TOGGLE_TITLE_SAFE          5
 #define RESTORE_EXTERIOR_VIEW_ZOOM 6
@@ -910,6 +918,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MENU_LABEL_hrr                 19
 #define MENU_LABEL_northangle          20
 #define MENU_LABEL_SETTINGS            21
+#define MENU_LABEL_frametimelabel      22
 
 #define MENU_TITLE_title_smv_version    0
 #define MENU_TITLE_title_fds            1

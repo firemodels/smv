@@ -12,6 +12,7 @@
 #include "infoheader.h"
 
 #define CONV(p,pl,pr,pxl,pxr) ( (pxl) + ((pxr)-(pxl))*((p)-(pl))/((pr)-(pl)) )
+#define TIMEBAR_HEIGHT 20
 
 /* ------------------------ GetStringWidth ------------------------- */
 
@@ -285,9 +286,9 @@ void GetViewportInfo(void){
 
   colorbar_label_width = MaxColorbarLabelWidth(ncolorlabel_padding);
 
-  v_space = 2;
-  text_height=18;
-  text_width=18;
+  v_space     = 2;
+  text_height = font_height;
+  text_width  = 18;
 #ifdef pp_OSX_HIGHRES
   if(double_scale==1){
     text_height *= 2;
@@ -365,38 +366,39 @@ void GetViewportInfo(void){
     if(doit==0&&visFramerate==1)doit=1;
     if(doit==0&&vis_slice_average==1&&show_slice_average&&slice_average_flag==1)doit=1;
   }
-  if(show_horizontal_colorbar == 1){
-    doit = 1;
-  }
-#ifdef pp_memstatus
-  if(doit==0&&visAvailmemory==1)doit=1;
-#endif
+  if(show_horizontal_colorbar == 1||visAvailmemory==1)doit=1;
 
   VP_timebar.left = titlesafe_offset;
   VP_timebar.down = titlesafe_offset;
   VP_timebar.doit=doit;
   VP_timebar.text_height = text_height;
   VP_timebar.text_width  = text_width;
-  hbar_height = text_height + v_space+MAX(hcolorbar_delta, 3 * (text_height + v_space));
+
+  hbar_height = text_height + v_space + hcolorbar_delta;
+
   if(doit==1){
-    VP_timebar.width = screenWidth-VP_info.width-2*titlesafe_offset;
-    VP_timebar.height=2*(text_height+v_space);
-    if(show_firecutoff==1 && current_mesh != NULL){
-      if(hrrpuv_loaded == 1||temp_loaded == 1)VP_timebar.height += (text_height + v_space);
-    }
-    if(show_horizontal_colorbar==1){
-      VP_timebar.height += hbar_height;
-    }
+    int temp_height, timebar_height = TIMEBAR_HEIGHT;
+
+#ifdef pp_OSX_HIGHRES
+  if(double_scale==1){
+    timebar_height *= 2;
+  }
+#endif
+    VP_timebar.width  = screenWidth-VP_info.width-2*titlesafe_offset;
+    temp_height = text_height + v_space;
+    if(visFramelabel==1||visHRRlabel==1||visAvailmemory==1)temp_height += (text_height+v_space);
+    VP_timebar.height = MAX(timebar_height + 2*v_space, temp_height);
+    if(show_horizontal_colorbar==1)VP_timebar.height += hbar_height;
   }
   else{
     VP_timebar.width = 0;
     VP_timebar.height = 0;
   }
-#ifdef pp_OSX_HIGHRES
-  if(double_scale==1){
-    VP_timebar.height *= 2;
-  }
-#endif
+//#ifdef pp_OSX_HIGHRES
+//  if(double_scale==1){
+//    VP_timebar.height *= 2;
+//  }
+//#endif
   VP_timebar.right = VP_timebar.left + VP_timebar.width;
   VP_timebar.top   = VP_timebar.down + VP_timebar.height;
 
@@ -988,11 +990,36 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
 #endif
   int right_label_pos, timebar_right_pos;
   int timebar_left_pos;
+  int time_width=0, hrr_width=0, frame_width=0;
+  int framerate_width=0, memusage_width=0, memavail_width=0;
+  int delta = TIMEBAR_HEIGHT;
+
+#ifdef pp_OSX_HIGHRES
+  if(double_scale==1){
+    delta *= 2;
+  }
+#endif
 
   if (SubPortOrtho2(quad, &VP_timebar, screen_left, screen_down) == 0)return;
 
-  timebar_left_width =  GetStringWidth("Time: 1234.11");
-  timebar_right_width = GetStringWidth("Frame rate: 99.99");
+  timebar_right_width = 0;
+  if(visFramerate==1&&showtime==1)framerate_width = GetStringWidth("Frame rate: 99.99");
+  if(visUsagememory == 1)memavail_width = GetStringWidth("9999 MBx");
+  if(visAvailmemory == 1)memusage_width = GetStringWidth("Mem Load: 100%x");
+  timebar_right_width = MAX(MAX(framerate_width, memavail_width), memusage_width);
+  timebar_right_width = MAX(timebar_right_width, delta);
+
+  if(visHRRlabel==1)hrr_width = GetStringWidth("HRR: 1000.0kW");
+  if(visFrameTimelabel==1){
+    if(visFramelabel==1)frame_width = GetStringWidth("Frame: 9999");
+    if(visTimelabel==1)time_width = GetStringWidth("Time: 1234.11");
+  }
+  else{
+    if(visFramelabel==1)frame_width = GetStringWidth("9999");
+    if(visTimelabel==1)time_width = GetStringWidth("1234.1");
+  }
+  timebar_left_width =  MAX(frame_width, MAX(time_width, hrr_width));
+  timebar_left_width = MAX(timebar_left_width, delta);
 
   timebar_left_pos = VP_timebar.left + timebar_left_width;
   timebar_right_pos = VP_timebar.right - timebar_right_width - h_space;
@@ -1019,7 +1046,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
     if(visTimebar==1){
       int timebar_height;
 
-      timebar_height = 20;
+      timebar_height = TIMEBAR_HEIGHT;
 #ifdef pp_OSX_HIGHRES
       if(double_scale==1){
         timebar_height *= 2;
@@ -2199,7 +2226,10 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
         elevation = camera_current->az_elev[1];
         azimuth = camera_current->az_elev[0];
         if(rotation_type == ROTATION_2AXIS){
-          glRotatef(elevation, 1.0, 0.0, 0.0);  /* rotate about x axis */
+          if(rotation_axis==1)glRotatef(elevation, 1.0, 0.0, 0.0);  /* rotate about x axis */
+          if(rotation_axis==-1)glRotatef(elevation, -1.0, 0.0, 0.0);  /* rotate about x axis */
+          if(rotation_axis==2)glRotatef(elevation, 0.0, 1.0, 0.0);  /* rotate about y axis */
+          if(rotation_axis==-2)glRotatef(elevation, 0.0, -1.0, 0.0);  /* rotate about y axis */
         }
         glRotatef(azimuth, 0.0, 0.0, 1.0);      /* rotate about z axis */
       }

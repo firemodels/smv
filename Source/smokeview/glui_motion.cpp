@@ -585,9 +585,8 @@ void EnableDisableViews(void){
     selected_view = ival;
 
     cex = &camera_list_first;
-    cex = cex->next;
-    cex = cex->next;
-    cex = cex->next;
+    cex = cex->next; // skip over first
+    cex = cex->next; // skip over external
     if(cex->next == NULL){
       BUTTON_cycle_views->disable();
     }
@@ -595,18 +594,13 @@ void EnableDisableViews(void){
       BUTTON_cycle_views->enable();
     }
   }
-
-  switch(ival){
-  case -1:
-  case 0:
-  case 1:
+  if(ival<=1){
     BUTTON_replace_view->disable();
     BUTTON_delete_view->disable();
-    break;
-  default:
+  }
+  else{
     BUTTON_replace_view->enable();
     BUTTON_delete_view->enable();
-    break;
   }
 }
 
@@ -639,7 +633,6 @@ extern "C" void ViewpointCB(int var){
     break;
 #endif
   case RESTORE_EXTERIOR_VIEW:
-  case RESTORE_INTERIOR_VIEW:
     SetViewPoint(var);
     break;
   case SAVE_VIEW:
@@ -729,7 +722,7 @@ extern "C" void ViewpointCB(int var){
     rotation_type_save = ca->rotation_type;
     CopyCamera(camera_current, ca);
     if(rotation_type == ROTATION_3AXIS)Camera2Quat(camera_current, quat_general, quat_rotation);
-    if(strcmp(ca->name, "external") == 0 || strcmp(ca->name, "internal") == 0)updatezoommenu = 1;
+    if(strcmp(ca->name, "external") == 0)updatezoommenu = 1;
     camera_current->rotation_type = rotation_type_save;
     EDIT_view_label->set_text(ca->name);
     break;
@@ -750,6 +743,7 @@ extern "C" void ViewpointCB(int var){
     ViewpointCB(RESTORE_VIEW);
     updatezoommenu = 1;
     EnableDisableViews();
+    AdjustY(camera_current);
     break;
   case STARTUP:
     startup_view_ini = LIST_viewpoints->get_int_val();
@@ -770,31 +764,27 @@ extern "C" void ViewpointCB(int var){
     cex = &camera_list_first;
     cex = cex->next;
     cex = cex->next;
-    switch(ival){
-    case -1:
-    case 0:
-    case 1:
+    if(ival<=1){
       cex = cex->next;
-      if(cex->next == NULL)return;
+      if(cex->next==NULL)return;
       ival = cex->view_id;
-      break;
-    default:
-      for(ca = cex;ca->next != NULL;ca = ca->next){
-        if(ca->view_id == ival)break;
+    }
+    else{
+      for(ca = cex; ca->next!=NULL; ca = ca->next){
+        if(ca->view_id==ival)break;
       }
       cex = ca->next;
-      if(cex->next == NULL){
+      if(cex->next==NULL){
         cex = &camera_list_first;
         cex = cex->next;
         cex = cex->next;
         cex = cex->next;
-        if(cex->next == NULL)return;
+        if(cex->next==NULL)return;
         ival = cex->view_id;
       }
       else{
         ival = cex->view_id;
       }
-      break;
     }
     LIST_viewpoints->set_int_val(ival);
     selected_view = ival;
@@ -809,11 +799,14 @@ extern "C" void ViewpointCB(int var){
 /* ------------------ ResetGluiView ------------------------ */
 
 extern "C" void ResetGluiView(int ival){
-  ASSERT(ival>=0);
+  ASSERT(ival>=-5);
 #ifdef pp_LUA
   LIST_viewpoints->set_int_val(ival);
 #else
-  if(ival!=old_listview)LIST_viewpoints->set_int_val(ival);
+  if(ival!=old_listview){
+    old_listview = ival;
+    LIST_viewpoints->set_int_val(ival);
+  }
 #endif
   selected_view=ival;
   BUTTON_replace_view->enable();
@@ -857,9 +850,9 @@ extern "C" void UpdateCameraLabel(void){
   EDIT_view_label->set_text(camera_label);
 }
 
-/* ------------------ UpdateGluiCameraViewList ------------------------ */
+/* ------------------ UpdateGluiViewpointList ------------------------ */
 
-extern "C" void UpdateGluiCameraViewList(void){
+extern "C" void UpdateGluiViewpointList(void){
   cameradata *ca;
   int i;
 

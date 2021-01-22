@@ -5493,6 +5493,15 @@ int ReadSMV(bufferstreamdata *stream){
   FREEMEMORY(camera_external);
   NewMemory((void **)&camera_external,sizeof(cameradata));
 
+  FREEMEMORY(camera_defaults);
+  NewMemory((void **)&camera_defaults, 6*sizeof(cameradata *));
+  NewMemory((void **)&(camera_defaults[0]), sizeof(cameradata));
+  NewMemory((void **)&(camera_defaults[1]), sizeof(cameradata));
+  NewMemory((void **)&(camera_defaults[2]), sizeof(cameradata));
+  NewMemory((void **)&(camera_defaults[3]), sizeof(cameradata));
+  NewMemory((void **)&(camera_defaults[4]), sizeof(cameradata));
+  NewMemory((void **)&(camera_defaults[5]), sizeof(cameradata));
+
   FREEMEMORY(camera_external_save);
   NewMemory((void **)&camera_external_save,sizeof(cameradata));
 
@@ -5502,9 +5511,6 @@ int ReadSMV(bufferstreamdata *stream){
 
   FREEMEMORY(camera_current);
   NewMemory((void **)&camera_current,sizeof(cameradata));
-
-  FREEMEMORY(camera_internal);
-  NewMemory((void **)&camera_internal,sizeof(cameradata));
 
   FREEMEMORY(camera_save);
   NewMemory((void **)&camera_save,sizeof(cameradata));
@@ -11976,6 +11982,11 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i ", &vishmsTimelabel);
       continue;
     }
+    if(Match(buffer, "SHOWFRAMETIMELABEL") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i ", &visFrameTimelabel);
+      continue;
+    }
     if(Match(buffer, "SHOWFRAMELABEL") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i ", &visFramelabel);
@@ -13673,8 +13684,8 @@ void OutputViewpoints(FILE *fileout){
   cameradata *ca;
 
   for(ca = camera_list_first.next; ca->next != NULL; ca = ca->next){
-    if(strcmp(ca->name, "internal") == 0)continue;
     if(strcmp(ca->name, "external") == 0)continue;
+    if(ca->view_id<=1)continue;
 
     if(ca->quat_defined == 1){
       fprintf(fileout, "VIEWPOINT6\n");
@@ -14580,6 +14591,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", visFrame);
   fprintf(fileout, "SHOWFRAMELABEL\n");
   fprintf(fileout, " %i\n", visFramelabel);
+  fprintf(fileout, "SHOWFRAMETIMELABEL\n");
+  fprintf(fileout, " %i\n", visFrameTimelabel);
   fprintf(fileout, "SHOWFRAMERATE\n");
   fprintf(fileout, " %i\n", visFramerate);
   fprintf(fileout, "SHOWGRID\n");

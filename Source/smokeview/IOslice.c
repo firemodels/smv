@@ -4837,6 +4837,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   if(sd->finalize==1){
     int set_valmin, set_valmax;
 
+    update_slicefile_bounds = 1; // temporary fix to make sure bounds are always up to date
     if(update_slicefile_bounds==1){
       update_slicefile_bounds = 0;
       GetGlobalSliceBounds();

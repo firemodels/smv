@@ -216,7 +216,13 @@ float     part_load_time;
 #define MENU_SIZEPRESERVING       -105
 #define MENU_VIEWPOINT_SETTINGS   -107
 #define MENU_VIEWPOINT_TOPVIEW    -108
-#define MENU_DUMMY -999
+#define MENU_DUMMY                -999
+//#define MENU_VIEW_XMIN            -109 moved to smokeviewdefs.h
+//#define MENU_VIEW_XMAX            -110
+//#define MENU_VIEW_YMIN            -111
+//#define MENU_VIEW_YMAX            -112
+//#define MENU_VIEW_ZMIN            -113
+//#define MENU_VIEW_ZMAX            -114
 
 #define MENU_SHOWHIDE_EVAC 13
 #define MENU_SHOWHIDE_PRINT 16
@@ -826,6 +832,9 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_timelabel:
      visTimelabel=1-visTimelabel;
+   case MENU_LABEL_frametimelabel:
+     visFrameTimelabel = 1-visFrameTimelabel;
+     UpdateFrameTimelabel();
      break;
    case MENU_LABEL_framelabel:
      visFramelabel=1-visFramelabel;
@@ -1618,7 +1627,7 @@ void ZoomMenu(int value){
   else if(zoomindex==UPDATE_PROJECTION){
     camera_current->projection_type=projection_type;
     UpdateProjectionType();
-    UpdateCameraYpos(camera_current);
+    UpdateCameraYpos(camera_current, 2);
     if(projection_type== PROJECTION_ORTHOGRAPHIC){
       camera_current->eye[1]=camera_current->isometric_y;
     }
@@ -1663,37 +1672,37 @@ void FontMenu(int value){
     fontindex=SMALL_FONT;
 #ifdef pp_OSX_HIGHRES
     if(double_scale==1){
-      large_font=(void *)GLUT_BITMAP_HELVETICA_24;
-      small_font=(void *)GLUT_BITMAP_HELVETICA_20;
+      font_ptr          = (void *)GLUT_BITMAP_HELVETICA_24;
+      colorbar_font_ptr = (void *)GLUT_BITMAP_HELVETICA_20;
     }
     else{
-      large_font=GLUT_BITMAP_HELVETICA_12;
-      small_font=GLUT_BITMAP_HELVETICA_10;
-    }
+      font_ptr          = GLUT_BITMAP_HELVETICA_12;
+      colorbar_font_ptr = GLUT_BITMAP_HELVETICA_10;
+  }
 #else
-    large_font=GLUT_BITMAP_HELVETICA_12;
-    small_font=GLUT_BITMAP_HELVETICA_10;
+    font_ptr          = GLUT_BITMAP_HELVETICA_12;
+    colorbar_font_ptr = GLUT_BITMAP_HELVETICA_12;
 #endif
-    large_font_height=12;
-    small_font_height=10;
+    font_height          = 12;
+    colorbar_font_height = 10;
     break;
   case LARGE_FONT:
     fontindex=LARGE_FONT;
 #ifdef pp_OSX_HIGHRES
     if(double_scale==1){
-      large_font=(void *)GLUT_BITMAP_HELVETICA_36;
-      small_font=(void *)GLUT_BITMAP_HELVETICA_36;
+      font_ptr          = (void *)GLUT_BITMAP_HELVETICA_36;
+      colorbar_font_ptr = (void *)GLUT_BITMAP_HELVETICA_36;
     }
     else{
-      large_font=GLUT_BITMAP_HELVETICA_18;
-      small_font=GLUT_BITMAP_HELVETICA_18;
+      font_ptr          = GLUT_BITMAP_HELVETICA_18;
+      colorbar_font_ptr = GLUT_BITMAP_HELVETICA_18;
     }
 #else
-    large_font=GLUT_BITMAP_HELVETICA_18;
-    small_font=GLUT_BITMAP_HELVETICA_18;
+    font_ptr            = GLUT_BITMAP_HELVETICA_18;
+    colorbar_font_ptr   = GLUT_BITMAP_HELVETICA_18;
 #endif
-    large_font_height=18;
-    small_font_height=18;
+    font_height          = 18;
+    colorbar_font_height = 18;
     break;
   case SCALED_FONT:
     fontindex=SCALED_FONT;
@@ -1787,6 +1796,14 @@ void ResetMenu(int value){
   case MENU_TIMEVIEW:
     UpdateTimes();
     break;
+  case MENU_VIEW_XMIN:
+  case MENU_VIEW_XMAX:
+  case MENU_VIEW_YMIN:
+  case MENU_VIEW_YMAX:
+  case MENU_VIEW_ZMIN:
+  case MENU_VIEW_ZMAX:
+    SetCameraView(camera_current, value);
+    break;
   case SAVE_VIEWPOINT_AS_STARTUP:
     ResetMenu(SAVE_VIEWPOINT);
     ResetMenu(MENU_STARTUPVIEW);
@@ -1812,7 +1829,7 @@ void ResetMenu(int value){
     SetStartupView();
     break;
   default:
-    ASSERT(value>=0);
+    ASSERT(value>=-5);
     if(value<100000){
       ResetGluiView(value);
       if(scriptoutstream!=NULL){
@@ -1826,6 +1843,27 @@ void ResetMenu(int value){
                       // kept commented code in for future reference
   updatemenu=1;
   GLUTPOSTREDISPLAY;
+}
+
+/* ------------------ ResetDefaultMenu ------------------------ */
+
+void ResetDefaultMenu(int var){
+  ResetMenu(var);
+  switch(var){
+    case 0:
+    case -1:
+      UpdateCameraYpos(camera_current, 1);
+      break;
+    case 1:
+    case -2:
+    case -3:
+      UpdateCameraYpos(camera_current, 2);
+      break;
+    case -4:
+    case -5:
+      UpdateCameraYpos(camera_current, 3);
+      break;
+  }
 }
 
 /* ------------------ RenderState ------------------------ */
@@ -6001,6 +6039,13 @@ void ShowADeviceType(void){
   }
 }
 
+/* ------------------ DeviceTypeMenu ------------------------ */
+
+void DeviceTypeMenu(int val){
+  UpdateDeviceTypes(val);
+  DeviceCB(DEVICE_devicetypes);
+}
+
 /* ------------------ ShowObjectsMenu ------------------------ */
 
 void ShowObjectsMenu(int value){
@@ -6405,7 +6450,7 @@ void InitMenus(int unload){
 static int filesdialogmenu = 0, viewdialogmenu = 0, datadialogmenu = 0, windowdialogmenu=0;
 static int labelmenu=0, titlemenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0,colorbardigitmenu=0;
 static int optionmenu=0, rotatetypemenu=0;
-static int resetmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
+static int resetmenu=0, defaultviewmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
 static int terrain_geom_showmenu = 0;
 static int render_resolutionmenu=0, render_filetypemenu=0, render_filesuffixmenu=0, render_skipmenu=0;
 static int render_startmenu = 0;
@@ -6453,7 +6498,7 @@ static int particlestreakshowmenu=0;
 static int tourmenu=0,tourcopymenu=0;
 static int avatartourmenu=0,avatarevacmenu=0;
 static int trainerviewmenu=0,mainmenu=0,zoneshowmenu=0,particleshowmenu=0,evacshowmenu=0;
-static int showobjectsmenu=0,spheresegmentmenu=0,propmenu=0;
+static int showobjectsmenu=0,showobjectsplotmenu=0,devicetypemenu=0,spheresegmentmenu=0,propmenu=0;
 static int unloadplot3dmenu=0, unloadpatchmenu=0, unloadisomenu=0;
 static int showmultislicemenu=0;
 static int textureshowmenu=0;
@@ -7415,7 +7460,35 @@ updatemenu=0;
     }
   }
 
+  if(ndevicetypes>0){
+    CREATEMENU(devicetypemenu,DeviceTypeMenu);
+    for(i=0;i<ndevicetypes;i++){
+      char qlabel[64];
+
+      strcpy(qlabel, "");
+      if(devicetypes_index==i)strcat(qlabel,"*");
+      strcat(qlabel, devicetypes[i]->quantity);
+      glutAddMenuEntry(qlabel, i);
+    }
+  }
+  
+
   if(nobject_defs>0){
+    CREATEMENU(showobjectsplotmenu,ShowObjectsMenu);
+    if(ndevicetypes>0){
+      GLUTADDSUBMENU(_("quantity"),devicetypemenu);
+    }
+    if(showdevice_plot==DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "*Plot data for all devices",           OBJECT_PLOT_SHOW_ALL);
+    if(showdevice_plot!=DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "Plot data for all devices",            OBJECT_PLOT_SHOW_ALL);
+    if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "*Plot data for selected devices",      OBJECT_PLOT_SHOW_SELECTED);
+    if(showdevice_plot!=DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "Plot data for selected devices",       OBJECT_PLOT_SHOW_SELECTED);
+#ifdef pp_ZTREE
+    if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "*Plot data for all device trees",      OBJECT_PLOT_SHOW_TREE_ALL);
+    if(showdevice_plot!=DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "Plot data for all device trees",       OBJECT_PLOT_SHOW_TREE_ALL);
+#endif
+    if(showdevice_val==1)glutAddMenuEntry(_("*Show values"), OBJECT_VALUES);
+    if(showdevice_val==0)glutAddMenuEntry(_("Show values"),  OBJECT_VALUES);
+
     CREATEMENU(showobjectsmenu,ShowObjectsMenu);
     for(i=0;i<nobject_defs;i++){
       sv_object *obj_typei;
@@ -7433,12 +7506,12 @@ updatemenu=0;
       }
     }
     if(have_missing_objects == 1&&isZoneFireModel==0){
-      glutAddMenuEntry("-", MENU_DUMMY);
       if(show_missing_objects==1)glutAddMenuEntry(_("*undefined"),OBJECT_MISSING);
       if(show_missing_objects == 0)glutAddMenuEntry(_("undefined"),OBJECT_MISSING);
     }
-    glutAddMenuEntry("-",MENU_DUMMY);
     if(ndeviceinfo>0){
+      GLUTADDSUBMENU(_("plots/values"),showobjectsplotmenu);
+      glutAddMenuEntry("-",MENU_DUMMY);
       if(select_device==1){
         glutAddMenuEntry(_("*Select"),OBJECT_SELECT);
       }
@@ -7446,16 +7519,6 @@ updatemenu=0;
         glutAddMenuEntry(_("Select"),OBJECT_SELECT);
       }
     }
-    if(showdevice_plot==DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "*Plot data for all devices",           OBJECT_PLOT_SHOW_ALL);
-    if(showdevice_plot!=DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "Plot data for all devices",            OBJECT_PLOT_SHOW_ALL);
-    if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "*Plot data for selected devices",      OBJECT_PLOT_SHOW_SELECTED);
-    if(showdevice_plot!=DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "Plot data for selected devices",       OBJECT_PLOT_SHOW_SELECTED);
-#ifdef pp_ZTREE
-    if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "*Plot data for all device trees",      OBJECT_PLOT_SHOW_TREE_ALL);
-    if(showdevice_plot!=DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "Plot data for all device trees",       OBJECT_PLOT_SHOW_TREE_ALL);
-#endif
-    if(showdevice_val==1)glutAddMenuEntry(_("*Show values"), OBJECT_VALUES);
-    if(showdevice_val==0)glutAddMenuEntry(_("Show values"),  OBJECT_VALUES);
     if(object_outlines==0)glutAddMenuEntry(_("Outline"),OBJECT_OUTLINE);
     if(object_outlines==1)glutAddMenuEntry(_("*Outline"),OBJECT_OUTLINE);
     glutAddMenuEntry(_("Show all"),OBJECT_SHOWALL);
@@ -7525,9 +7588,6 @@ updatemenu=0;
   if((auto_terrain==0&&ngeominfo>0)||(auto_terrain==1&&ngeominfo>1)){
     GLUTADDSUBMENU(_("Immersed"), immersedmenu);
   }
-  if(GetNumActiveDevices()>0||ncvents>0){
-    GLUTADDSUBMENU(_("Objects"),showobjectsmenu);
-  }
   if(nterraininfo>0&&ngeominfo==0){
     GLUTADDSUBMENU(_("Terrain"),terrain_obst_showmenu);
   }
@@ -7590,6 +7650,12 @@ updatemenu=0;
   if(visColorbarHorizontal == 0)glutAddMenuEntry(_("Colorbar(horizontal)"), MENU_LABEL_colorbar_horizontal);
   if(visTimebar==1)glutAddMenuEntry(_("*Time bar"),MENU_LABEL_timebar);
   if(visTimebar==0)glutAddMenuEntry(_("Time bar"),MENU_LABEL_timebar);
+  if(visFramelabel == 1)glutAddMenuEntry(_("   *Frame"), MENU_LABEL_framelabel);
+  if(visFramelabel == 0)glutAddMenuEntry(_("   Frame"), MENU_LABEL_framelabel);
+  if(visTimelabel == 1)glutAddMenuEntry(_("   *Time"), MENU_LABEL_timelabel);
+  if(visTimelabel == 0)glutAddMenuEntry(_("   Time"), MENU_LABEL_timelabel);
+  if(visFrameTimelabel==1)glutAddMenuEntry(_("   *Frame/time label"), MENU_LABEL_frametimelabel);
+  if(visFrameTimelabel==0)glutAddMenuEntry(_("   Frame/time label"), MENU_LABEL_frametimelabel);
   GLUTADDSUBMENU(_("Titles"),titlemenu);
 
   glutAddMenuEntry("-", MENU_DUMMY);
@@ -7604,8 +7670,7 @@ updatemenu=0;
     if(visFDSticks == 0)glutAddMenuEntry(_("FDS generated ticks"), MENU_LABEL_fdsticks);
     if(visFDSticks == 1)glutAddMenuEntry(_("*FDS generated ticks"), MENU_LABEL_fdsticks);
   }
-  if(visFramelabel == 1)glutAddMenuEntry(_("*Frame"), MENU_LABEL_framelabel);
-  if(visFramelabel == 0)glutAddMenuEntry(_("Frame"), MENU_LABEL_framelabel);
+
   if(visFramerate == 1)glutAddMenuEntry(_("*Frame rate"), MENU_LABEL_framerate);
   if(visFramerate == 0)glutAddMenuEntry(_("Frame rate"), MENU_LABEL_framerate);
   if(visgridloc == 1)glutAddMenuEntry(_("*Grid locations"), MENU_LABEL_grid);
@@ -7644,8 +7709,7 @@ updatemenu=0;
     if(visLabels == 1)glutAddMenuEntry(_("*Text labels"), MENU_LABEL_textlabels);
     if(visLabels == 0)glutAddMenuEntry(_("Text labels"), MENU_LABEL_textlabels);
   }
-  if(visTimelabel == 1)glutAddMenuEntry(_("*Time"), MENU_LABEL_timelabel);
-  if(visTimelabel == 0)glutAddMenuEntry(_("Time"), MENU_LABEL_timelabel);
+
   if(visUSERticks == 1)glutAddMenuEntry(_("*User settable ticks"), MENU_LABEL_userticks);
   if(visUSERticks == 0)glutAddMenuEntry(_("User settable ticks"), MENU_LABEL_userticks);
 
@@ -8887,82 +8951,104 @@ updatemenu=0;
     }
   }
 
+  /* --------------------------------default view menu -------------------------- */
+  SortCameras();
+  CREATEMENU(defaultviewmenu, ResetDefaultMenu);
+  for(i = 0; i<ncameras_sorted; i++){
+    cameradata *ca;
+    char line[256];
+
+    ca = cameras_sorted[i];
+    if(ca->view_id>1)continue;
+    strcpy(line, "");
+    if(ca->view_id==selected_view){
+      strcat(line, "*");
+    }
+    if(trainer_mode==1&&strcmp(ca->name, _("external"))==0){
+      strcat(line, _("Outside"));
+    }
+    else{
+      strcat(line, ca->name);
+      if(strcmp(ca->name, startup_view_label)==0){
+        strcat(line, " (startup view)");
+      }
+    }
+    glutAddMenuEntry(line, ca->view_id);
+  }
+
   /* --------------------------------reset menu -------------------------- */
 
   CREATEMENU(resetmenu,ResetMenu);
-  {
-    char line[256];
-    cameradata *ca;
-    char *current_view=NULL;
-
-    if(trainer_mode==1){
-      if(visBlocks==visBLOCKOutline){
-        glutAddMenuEntry(_("*Outline"),MENU_OUTLINEVIEW);
-      }
-      else{
-        glutAddMenuEntry(_("Outline"),MENU_OUTLINEVIEW);
-      }
-      glutAddMenuEntry("-",MENU_DUMMY);
+  if(trainer_mode==1){
+    if(visBlocks==visBLOCKOutline){
+      glutAddMenuEntry(_("*Outline"),MENU_OUTLINEVIEW);
     }
-    for(ca = camera_list_first.next; ca->next != NULL; ca = ca->next){
-      if(ca->view_id == selected_view){
+    else{
+      glutAddMenuEntry(_("Outline"),MENU_OUTLINEVIEW);
+    }
+    glutAddMenuEntry("-",MENU_DUMMY);
+  }
+  if(trainer_mode==0){
+    char view_label[255], menu_label[255];
+    char *current_view = NULL;
+    cameradata *ca;
+
+    for(ca = camera_list_first.next; ca->next!=NULL; ca = ca->next){
+      if(ca->view_id==selected_view){
         current_view = ca->name;
         break;
       }
     }
-    if(trainer_mode==0){
-      char view_label[255], menu_label[255];
+    GetNextViewLabel(view_label);
+    strcpy(menu_label, _("Save viewpoint as"));
+    strcat(menu_label, " ");
+    strcat(menu_label,view_label);
 
-      GetNextViewLabel(view_label);
+    glutAddMenuEntry(menu_label,SAVE_VIEWPOINT);
+    if(current_view != NULL){
+      if(strcmp(current_view,startup_view_label)!=0){
+        strcpy(menu_label, _("Apply"));
+        strcat(menu_label, " ");
+        strcat(menu_label, current_view);
+        strcat(menu_label, " ");
+        strcat(menu_label, _("at startup"));
+        glutAddMenuEntry(menu_label, MENU_STARTUPVIEW);
+      }
+    }
+    else{
       strcpy(menu_label, _("Save viewpoint as"));
       strcat(menu_label, " ");
-      strcat(menu_label,view_label);
-
-      glutAddMenuEntry(menu_label,SAVE_VIEWPOINT);
-      if(current_view != NULL){
-        if(strcmp(current_view,startup_view_label)!=0){
-          strcpy(menu_label, _("Apply"));
-          strcat(menu_label, " ");
-          strcat(menu_label, current_view);
-          strcat(menu_label, " ");
-          strcat(menu_label, _("at startup"));
-          glutAddMenuEntry(menu_label, MENU_STARTUPVIEW);
-        }
-      }
-      else{
-        strcpy(menu_label, _("Save viewpoint as"));
-        strcat(menu_label, " ");
-        strcat(menu_label, view_label);
-        strcat(menu_label, " ");
-        strcat(menu_label, _("and apply at startup"));
-        glutAddMenuEntry(menu_label, SAVE_VIEWPOINT_AS_STARTUP);
-      }
-      GLUTADDSUBMENU(_("Zoom"),zoommenu);
-      if(projection_type == PROJECTION_ORTHOGRAPHIC)glutAddMenuEntry(_("Switch to perspective view       ALT v"),MENU_SIZEPRESERVING);
-      if(projection_type == PROJECTION_PERSPECTIVE)glutAddMenuEntry(_("Switch to size preserving view   ALT v"),MENU_SIZEPRESERVING);
-      glutAddMenuEntry("-",MENU_DUMMY);
+      strcat(menu_label, view_label);
+      strcat(menu_label, " ");
+      strcat(menu_label, _("and apply at startup"));
+      glutAddMenuEntry(menu_label, SAVE_VIEWPOINT_AS_STARTUP);
     }
+    GLUTADDSUBMENU(_("Zoom"),zoommenu);
+    if(projection_type == PROJECTION_ORTHOGRAPHIC)glutAddMenuEntry(_("Switch to perspective view       ALT v"),MENU_SIZEPRESERVING);
+    if(projection_type == PROJECTION_PERSPECTIVE)glutAddMenuEntry(_("Switch to size preserving view   ALT v"),MENU_SIZEPRESERVING);
+    glutAddMenuEntry("-",MENU_DUMMY);
+  }
 
-//    glutAddMenuEntry("Top view", MENU_VIEWPOINT_TOPVIEW);
-    SortCameras();
-    for(i = 0; i < ncameras_sorted;i++){
-      ca = cameras_sorted[i];
-      if(trainer_mode==1&&strcmp(ca->name,_("internal"))==0)continue;
-      strcpy(line,"");
-      if(ca->view_id==selected_view){
-        strcat(line,"*");
-      }
-      if(trainer_mode==1&&strcmp(ca->name,_("external"))==0){
-        strcat(line,_("Outside"));
-      }
-      else{
-        strcat(line,ca->name);
-        if(strcmp(ca->name,startup_view_label)==0){
-          strcat(line," (startup view)");
-        }
-      }
-      glutAddMenuEntry(line,ca->view_id);
+  for(i = 0; i < ncameras_sorted;i++){
+    cameradata *ca;
+    char line[256];
+
+    ca = cameras_sorted[i];
+    if(ca->view_id<=1)continue;
+    strcpy(line,"");
+    if(ca->view_id==selected_view){
+      strcat(line,"*");
     }
+    if(trainer_mode==1&&strcmp(ca->name,_("external"))==0){
+      strcat(line,_("Outside"));
+    }
+    else{
+      strcat(line,ca->name);
+      if(strcmp(ca->name,startup_view_label)==0){
+        strcat(line," (startup view)");
+      }
+    }
+    glutAddMenuEntry(line,ca->view_id);
   }
   if(trainer_mode==0&&showtime==1){
     glutAddMenuEntry("-",MENU_DUMMY);
@@ -8976,8 +9062,13 @@ updatemenu=0;
   CREATEMENU(showhidemenu,ShowHideMenu);
   GLUTADDSUBMENU(_("Color"), colorbarmenu);
   GLUTADDSUBMENU(_("Geometry"),geometrymenu);
+  if(GetNumActiveDevices()>0||ncvents>0){
+    GLUTADDSUBMENU(_("Devices"), showobjectsmenu);
+  }
   GLUTADDSUBMENU(_("Labels"),labelmenu);
-  GLUTADDSUBMENU(_("Viewpoints"), resetmenu);
+
+  GLUTADDSUBMENU(_("Viewpoints (default)"), defaultviewmenu);
+  GLUTADDSUBMENU(_("Viewpoints (user)"), resetmenu);
   glutAddMenuEntry("-", MENU_DUMMY);
   if(nsmoke3dloaded>0){
     showhide_data = 1;

@@ -334,7 +334,7 @@ void Output3Text(float *color, float x, float y, float z, char *string){
   else{
     glRasterPos3f(x, y, z);
     for(c=string; *c!='\0'; c++){
-      glutBitmapCharacter(large_font,(unsigned char)*c);
+      glutBitmapCharacter(font_ptr,(unsigned char)*c);
     }
   }
 }
@@ -376,7 +376,7 @@ void OutputTextColor(float *fontcolor, float x, float y, char *string){
   else{
     glRasterPos2f(x, y);
     for(c = string; *c!='\0'; c++){
-      glutBitmapCharacter(large_font, (unsigned char)*c);
+      glutBitmapCharacter(font_ptr, (unsigned char)*c);
     }
   }
 }
@@ -396,7 +396,7 @@ void OutputText(float x, float y, char *string){
   else{
     glRasterPos2f(x, y);
     for(c=string; *c!='\0'; c++){
-      glutBitmapCharacter(large_font,(unsigned char)*c);
+      glutBitmapCharacter(font_ptr,(unsigned char)*c);
     }
   }
 }
@@ -416,7 +416,7 @@ void OutputBarText(float x, float y, const GLfloat *color, char *string){
   else{
     glRasterPos2f(x, y);
     for(c=string; *c!='\0'; c++){
-      glutBitmapCharacter(small_font,(unsigned char)(*c));
+      glutBitmapCharacter(colorbar_font_ptr,(unsigned char)(*c));
     }
   }
 }

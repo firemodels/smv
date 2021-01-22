@@ -12,7 +12,44 @@
 #endif
 #include "stdio_buffer.h"
 
-/* ------------------ Init ------------------------ */
+/* ------------------ InitDefaultCameras ------------------------ */
+
+void InitDefaultCameras(void){
+  char name_external[32];
+  char *labels[] = {"XMIN", "XMAX", "YMIN", "YMAX", "ZMIN", "ZMAX"};
+  int view_indices[] = {MENU_VIEW_XMIN, MENU_VIEW_XMAX, MENU_VIEW_YMIN, MENU_VIEW_YMAX, MENU_VIEW_ZMIN, MENU_VIEW_ZMAX};
+  int i;
+
+  for(i = 0; i<6; i++){
+    InitCamera(camera_defaults[i], labels[i]);
+    SetCameraViewPersp(camera_defaults[i], view_indices[i]);
+    camera_defaults[i]->view_id = -i;
+  }
+
+  strcpy(name_external, "external");
+  InitCamera(camera_external, name_external);
+  camera_external->view_id = EXTERNAL_LIST_ID;
+
+  if(camera_ini!=NULL&&camera_ini->defined==1){
+    CopyCamera(camera_current, camera_ini);
+  }
+  else{
+    camera_external->zoom = zoom;
+    CopyCamera(camera_current, camera_external);
+  }
+  strcpy(camera_label, camera_current->name);
+  UpdateCameraLabel();
+
+  CopyCamera(camera_save, camera_current);
+  CopyCamera(camera_last, camera_current);
+
+  InitCameraList();
+  AddDefaultViewpoints();
+  CopyCamera(camera_external_save, camera_external);
+  UpdateGluiViewpointList();
+}
+
+/* ------------------ InitMisc ------------------------ */
 
 void InitMisc(void){
   int i;
@@ -60,38 +97,8 @@ void InitMisc(void){
 
   xyzbox = MAX(MAX(xbar,ybar),zbar);
 
-  {
-    char name_external[32];
+  InitDefaultCameras();
 
-    strcpy(name_external,"external");
-    InitCamera(camera_external,name_external);
-    camera_external->view_id=EXTERNAL_LIST_ID;
-  }
-  if(camera_ini!=NULL&&camera_ini->defined==1){
-    CopyCamera(camera_current,camera_ini);
-  }
-  else{
-    camera_external->zoom=zoom;
-    CopyCamera(camera_current,camera_external);
-  }
-  strcpy(camera_label,camera_current->name);
-  UpdateCameraLabel();
-  {
-    char name_internal[32];
-    strcpy(name_internal,"internal");
-    InitCamera(camera_internal,name_internal);
-  }
-  camera_internal->eye[0]=0.5*xbar;
-  camera_internal->eye[1]=0.5*ybar;
-  camera_internal->eye[2]=0.5*zbar;
-  camera_internal->view_id=0;
-  CopyCamera(camera_save,camera_current);
-  CopyCamera(camera_last,camera_current);
-
-  InitCameraList();
-  AddDefaultViews();
-  CopyCamera(camera_external_save,camera_external);
-  UpdateGluiCameraViewList();
 
   //ResetGluiView(i_view_list);
 
@@ -1745,12 +1752,12 @@ void InitVars(void){
   showbuild=0;
 
   strcpy(emptylabel,"");
-  large_font=GLUT_BITMAP_HELVETICA_12;
-  small_font=GLUT_BITMAP_HELVETICA_10;
+  font_ptr          = GLUT_BITMAP_HELVETICA_12;
+  colorbar_font_ptr = GLUT_BITMAP_HELVETICA_10;
 #ifdef pp_OSX_HIGHRES
     if(double_scale==1){
-      large_font=(void *)GLUT_BITMAP_HELVETICA_24;
-      small_font=(void *)GLUT_BITMAP_HELVETICA_20;
+      font_ptr = (void *)GLUT_BITMAP_HELVETICA_24;
+      colorbar_font_ptr = (void *)GLUT_BITMAP_HELVETICA_20;
     }
 #endif
 

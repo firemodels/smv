@@ -103,6 +103,7 @@ GLUI_Checkbox *CHECKBOX_labels_hms=NULL;
 GLUI_Checkbox *CHECKBOX_labels_framerate=NULL;
 GLUI_Checkbox *CHECKBOX_labels_timelabel=NULL;
 GLUI_Checkbox *CHECKBOX_labels_framelabel=NULL;
+GLUI_Checkbox *CHECKBOX_labels_frametimelabel = NULL;
 GLUI_Checkbox *CHECKBOX_labels_hrrlabel=NULL;
 GLUI_Checkbox *CHECKBOX_labels_firecutoff=NULL;
 GLUI_Checkbox *CHECKBOX_labels_availmemory=NULL;
@@ -253,6 +254,12 @@ GLUI_Button *BUTTON_label_4=NULL;
 
 procdata displayprocinfo[6];
 int ndisplayprocinfo = 0;
+
+/* ------------------ UpdateFrameTimelabel ------------------------ */
+
+extern "C" void UpdateFrameTimelabel(void) {
+  CHECKBOX_labels_frametimelabel->set_int_val(visFrameTimelabel);
+}
 
 /* ------------------ UpdateBackgroundFlip ------------------------ */
 
@@ -570,9 +577,10 @@ extern "C" void GluiLabelsSetup(int main_window){
   CHECKBOX_labels_axis = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Axis"), &visaxislabels, LABELS_label, LabelsCB);
   CHECKBOX_visColorbarVertical   = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Colorbar(vertical)"),   &visColorbarVertical,   LABELS_vcolorbar, LabelsCB);
   CHECKBOX_visColorbarHorizontal = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Colorbar(horizontal)"), &visColorbarHorizontal, LABELS_hcolorbar, LabelsCB);
-  CHECKBOX_labels_timelabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Time label"), &visTimelabel, LABELS_label, LabelsCB);
-  CHECKBOX_labels_timebar = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Time bar"), &visTimebar, LABELS_label, LabelsCB);
-  CHECKBOX_labels_framelabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Frame label"), &visFramelabel, LABELS_label, LabelsCB);
+  CHECKBOX_labels_timebar = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Timebar"), &visTimebar, LABELS_label, LabelsCB);
+  CHECKBOX_labels_framelabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Frame"), &visFramelabel, LABELS_label, LabelsCB);
+  CHECKBOX_labels_timelabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Time"), &visTimelabel, LABELS_label, LabelsCB);
+  CHECKBOX_labels_frametimelabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Frame/time label"), &visFrameTimelabel, LABELS_label, LabelsCB);
   CHECKBOX_labels_framerate = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Frame rate"), &visFramerate, LABELS_label, LabelsCB);
   CHECKBOX_labels_gridloc = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Grid location"), &visgridloc, LABELS_label, LabelsCB);
   CHECKBOX_labels_hrrlabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("HRR"), &visHRRlabel, HRR_label, LabelsCB);

@@ -12,7 +12,7 @@
 #define SHOWDEVICEVALS         26
 #define SHOWDEVICEPLOT         29
 #define COLORDEVICEVALS        27
-#define DEVICE_devicetypes     28
+//#define DEVICE_devicetypes     28  put in smokeviewdefs.h
 #define SAVE_SETTINGS_OBJECTS  99
 #define DEVICE_close            3
 #define DEVICE_show_orientation 4
@@ -137,6 +137,13 @@ void Device_Rollout_CB(int var){
   ToggleRollout(deviceprocinfo, ndeviceprocinfo, var);
 }
 
+/* ------------------ UpdateDeviceTypes ------------------------ */
+
+extern "C" void UpdateDeviceTypes(int val){
+  devicetypes_index = val;
+  RADIO_devicetypes->set_int_val(val);
+}
+
 /* ------------------ UpdateDeviceShow ------------------------ */
 
 extern "C" void UpdateDeviceShow(void){
@@ -257,7 +264,7 @@ void UpdateShowWindRoses(void) {
 
 /* ------------------ DeviceCB ------------------------ */
 
-void DeviceCB(int var){
+extern "C" void DeviceCB(int var){
   int i;
 
   updatemenu = 1;

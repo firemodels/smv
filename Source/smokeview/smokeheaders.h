@@ -5,6 +5,17 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void AdjustY(cameradata *ca);
+
+EXTERNCPP void UpdateFrameTimelabel(void);
+
+EXTERNCPP void ScriptViewXYZMINMAXOrtho(int option);
+EXTERNCPP void SetCameraView(cameradata *ca, int option);
+EXTERNCPP void SetCameraViewPersp(cameradata *ca, int option);
+
+EXTERNCPP void DeviceCB(int val);
+EXTERNCPP void UpdateDeviceTypes(int val);
+
 EXTERNCPP void InitStartupDirs(void);
 
 EXTERNCPP int GetFontHeight(void);
@@ -541,7 +552,7 @@ EXTERNCPP void InitSphere(int nlat, int nlong);
 EXTERNCPP void InitCircle(unsigned int npoints, circdata *circinfo);
 EXTERNCPP int  HaveTerrainSlice(void);
 EXTERNCPP float GetZCellValOffset(meshdata *meshi,float xval, float yval, int *loc);
-EXTERNCPP void UpdateCameraYpos(cameradata *camera_data);
+EXTERNCPP void UpdateCameraYpos(cameradata *camera_data, int option);
 EXTERNCPP cameradata *GetCamera(char *name);
 EXTERNCPP void SortCameras(void);
 EXTERNCPP char *GetCameraLabel(int index);
@@ -551,7 +562,7 @@ EXTERNCPP void InitObjectDefs(void);
 EXTERNCPP void UpdateDeviceTextures(void);
 EXTERNCPP char *GetDeviceLabel(char *buffer);
 EXTERNCPP void GetElevAz(float *xyznorm,float *dtheta, float *rotate_axis, float *dpsi);
-EXTERNCPP void DrawDevices(void);
+EXTERNCPP void DrawDevices(int mode);
 EXTERNCPP sv_object *InitSmvObject1(char *label, char *commands,int visible);
 EXTERNCPP sv_object *InitSmvObject2(char *label, char *commandson, char *commandsoff,int visible);
 EXTERNCPP sv_object *GetSmvObjectType(char *label, sv_object *default_object);
@@ -706,8 +717,8 @@ EXTERNCPP void UpdateExtreme(void);
 EXTERNCPP void UpdateColorbarType(void);
 EXTERNCPP void InitCameraList(void);
 EXTERNCPP cameradata *InsertCamera(cameradata *cb,cameradata *source, char *name);
-EXTERNCPP void AddDefaultViews(void);
-EXTERNCPP void UpdateGluiCameraViewList(void);
+EXTERNCPP void AddDefaultViewpoints(void);
+EXTERNCPP void UpdateGluiViewpointList(void);
 EXTERNCPP void ResetGLTime(void);
 EXTERNCPP void EnableResetSavedView(void);
 EXTERNCPP void ResetGluiView(int ival);

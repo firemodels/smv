@@ -2530,15 +2530,15 @@ void ScriptShowSmokeSensors(scriptdata *scripti){
 
 /* ------------------ ScriptXYZView ------------------------ */
 
-void ScriptXYZView(scriptdata *scripti){
+void ScriptXYZView(float x, float y, float z, float az, float elev){
   use_customview = 0;
   SceneMotionCB(CUSTOM_VIEW);
   ViewpointCB(RESTORE_VIEW);
-  set_view_xyz[0]      = scripti->fval;
-  set_view_xyz[1]      = scripti->fval2;
-  set_view_xyz[2]      = scripti->fval3;
-  customview_azimuth   = scripti->fval4;
-  customview_elevation = scripti->fval5;
+  set_view_xyz[0]      = x;
+  set_view_xyz[1]      = y;
+  set_view_xyz[2]      = z;
+  customview_azimuth   = az;
+  customview_elevation = elev;
   use_customview       = 1;
   SceneMotionCB(CUSTOM_VIEW);
   SceneMotionCB(SET_VIEW_XYZ);
@@ -3064,33 +3064,39 @@ void ScriptSetViewpoint(scriptdata *scripti){
 void ScriptViewXYZMINMAXOrtho(int command){
   switch(command){
   case SCRIPT_VIEWXMIN:
+  case MENU_VIEW_XMIN:
     zaxis_angles[0] = 0.0;
     zaxis_angles[1] = 90.0;
     zaxis_angles[2] = 90.0;
     break;
   case SCRIPT_VIEWXMAX:
+  case MENU_VIEW_XMAX:
     zaxis_angles[0] =   0.0;
     zaxis_angles[1] =  90.0;
     zaxis_angles[2] = -90.0;
     break;
 
   case SCRIPT_VIEWYMIN:
+  case MENU_VIEW_YMIN:
     zaxis_angles[0] =  0.0;
     zaxis_angles[1] = 90.0;
     zaxis_angles[2] =  0.0;
     break;
   case SCRIPT_VIEWYMAX:
+  case MENU_VIEW_YMAX:
     zaxis_angles[0] =   0.0;
     zaxis_angles[1] =  90.0;
     zaxis_angles[2] = 180.0;
     break;
 
   case SCRIPT_VIEWZMIN:
+  case MENU_VIEW_ZMIN:
     zaxis_angles[0] = -90.0;
     zaxis_angles[1] =   0.0;
     zaxis_angles[2] =   0.0;
     break;
   case SCRIPT_VIEWZMAX:
+  case MENU_VIEW_ZMAX:
     zaxis_angles[0] =  90.0;
     zaxis_angles[1] =  0.0;
     zaxis_angles[2] =  0.0;
@@ -3104,7 +3110,7 @@ void ScriptViewXYZMINMAXOrtho(int command){
 
 /* ------------------ ScriptViewXYZMINMAXPersp ------------------------ */
 
-void ScriptViewXYZMINMAXPersp(scriptdata *scripti, int command){
+void ScriptViewXYZMINMAXPersp(int command){
   float aperture_temp1, aperture_temp2;
   float azimuth, elevation;
   float DL;
@@ -3127,11 +3133,11 @@ void ScriptViewXYZMINMAXPersp(scriptdata *scripti, int command){
     DL2 = (height/2.0)/tan(DEG2RAD*aperture_temp2/2.0);
     DL = 1.05*MAX(DL1, DL2);
 
-    if(scripti->command==SCRIPT_VIEWXMIN){
+    if(command==SCRIPT_VIEWXMIN){
       xcen = xbar0ORIG-DL;
       azimuth = 90.0;
     }
-    if(scripti->command==SCRIPT_VIEWXMAX){
+    if(command==SCRIPT_VIEWXMAX){
       xcen = xbarORIG+DL;
       azimuth = -90.0;
     }
@@ -3149,11 +3155,11 @@ void ScriptViewXYZMINMAXPersp(scriptdata *scripti, int command){
     DL2 = (height/2.0)/tan(DEG2RAD*aperture_temp2/2.0);
     DL = 1.05*MAX(DL1, DL2);
 
-    if(scripti->command==SCRIPT_VIEWYMIN){
+    if(command==SCRIPT_VIEWYMIN){
       ycen = ybar0ORIG-DL;
       azimuth = 0.0;
     }
-    if(scripti->command==SCRIPT_VIEWYMAX){
+    if(command==SCRIPT_VIEWYMAX){
       ycen = ybarORIG+DL;
       azimuth = 180.0;
     }
@@ -3171,11 +3177,11 @@ void ScriptViewXYZMINMAXPersp(scriptdata *scripti, int command){
     DL2 = (height/2.0)/tan(DEG2RAD*aperture_temp2/2.0);
     DL = 1.05*MAX(DL1, DL2);
 
-    if(scripti->command==SCRIPT_VIEWZMIN){
+    if(command==SCRIPT_VIEWZMIN){
       zcen = zbar0ORIG-DL;
       elevation = 89.9;
     }
-    if(scripti->command==SCRIPT_VIEWZMAX){
+    if(command==SCRIPT_VIEWZMAX){
       zcen = zbarORIG+DL;
       elevation = -89.9;
     }
@@ -3183,12 +3189,7 @@ void ScriptViewXYZMINMAXPersp(scriptdata *scripti, int command){
     ResetGluiView(EXTERNAL_VIEW);
     break;
   }
-  scripti->fval  = xcen;
-  scripti->fval2 = ycen;
-  scripti->fval3 = zcen;
-  scripti->fval4 = azimuth;
-  scripti->fval5 = elevation;
-  ScriptXYZView(scripti);
+  ScriptXYZView(xcen, ycen, zcen, azimuth, elevation);
 }
 
 /* ------------------ SetViewZMAXPersp ------------------------ */
@@ -3468,14 +3469,14 @@ int RunScriptCommand(scriptdata *script_command){
     case SCRIPT_VIEWZMIN:
     case SCRIPT_VIEWZMAX:
       if(projection_type==PROJECTION_PERSPECTIVE){
-        ScriptViewXYZMINMAXPersp(scripti, scripti->command);
+        ScriptViewXYZMINMAXPersp(scripti->command);
       }
       else{
         ScriptViewXYZMINMAXOrtho(scripti->command);
       }
       break;
     case SCRIPT_XYZVIEW:
-      ScriptXYZView(scripti);
+      ScriptXYZView(scripti->fval, scripti->fval2, scripti->fval3, scripti->fval4, scripti->fval5);
       break;
     case SCRIPT_PARTCLASSTYPE:
       ScriptPartClassType(scripti);

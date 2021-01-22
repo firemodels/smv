@@ -3383,7 +3383,7 @@ void DrawTreeDevicePlots(void){
 
 /* ----------------------- DrawDevices ----------------------------- */
 
-void DrawDevices(void){
+void DrawDevices(int mode){
   int drawobjects_as_vectors;
   int ii;
 
@@ -3859,6 +3859,9 @@ void DrawDevices(void){
     }
     if(sensorrelsize != 1.0){
       glScalef(sensorrelsize, sensorrelsize, sensorrelsize);
+    }
+    if(mode == SELECTOBJECT){
+      glScalef(4.0, 4.0, 4.0);
     }
     prop = devicei->prop;
     if(prop != NULL){

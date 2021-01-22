@@ -23,6 +23,9 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(update_adjust_y, 2);
+SVEXTERN int SVDECL(visFrameTimelabel, 1);
+SVEXTERN int SVDECL(rotation_axis, 1);
 #ifdef pp_ZTREE
 SVEXTERN ztreedevicedata SVDECL(*ztreedeviceinfo, NULL);
 SVEXTERN devicedata SVDECL(**deviceinfo_sortedz, NULL);
@@ -826,7 +829,10 @@ SVEXTERN int smoke_render_option;
 SVEXTERN float fnear, ffar;
 SVEXTERN float partfacedir[3];
 SVEXTERN int SVDECL(demo_option,0);
-SVEXTERN int small_font_height, large_font_height;
+
+SVEXTERN int colorbar_font_height, font_height;
+SVEXTERN void SVDECL(*colorbar_font_ptr, NULL), SVDECL(*font_ptr,NULL);
+
 SVEXTERN float cb_valmin, cb_valmax, cb_val;
 SVEXTERN int cb_colorindex;
 SVEXTERN float rgbterrain[4*MAXRGB];
@@ -1017,7 +1023,8 @@ SVEXTERN float modelview_scratch[16];
 SVEXTERN int SVDECL(ncameras_sorted, 0);
 SVEXTERN cameradata SVDECL(**cameras_sorted, NULL);
 SVEXTERN cameradata SVDECL(*camera_current,NULL), SVDECL(*camera_save,NULL), SVDECL(*camera_last,NULL);
-SVEXTERN cameradata SVDECL(*camera_external,NULL), SVDECL(*camera_internal,NULL);
+SVEXTERN cameradata SVDECL(*camera_external,NULL);
+SVEXTERN cameradata SVDECL(**camera_defaults, NULL);
 SVEXTERN cameradata SVDECL(*camera_ini,NULL), SVDECL(*camera_external_save,NULL);
 SVEXTERN cameradata camera_list_first, camera_list_last, SVDECL(**camera_list,NULL);
 SVEXTERN int ncamera_list,i_view_list,SVDECL(init_camera_list, 1);
@@ -1079,7 +1086,7 @@ SVEXTERN int SVDECL(old_draw_colorlabel,0);
 SVEXTERN int vis3DSmoke3D;
 SVEXTERN int smokeskip,smokeskipm1;
 SVEXTERN int nrooms,nzoneinfo, nfires;
-SVEXTERN float SVDECL(window_aspect_ratio,1.0), SVDECL(scene_aspect_ratio,1.0);
+SVEXTERN float SVDECL(scene_aspect_ratio,1.0);
 
 SVEXTERN int SVDECL(screenWidth,640), SVDECL(screenHeight,480);
 SVEXTERN int SVDECL(screenWidthINI,640), SVDECL(screenHeightINI,480);
@@ -1270,9 +1277,7 @@ SVEXTERN int SVDECL(visColorbarHorizontal, 0), SVDECL(visColorbarHorizontal_save
 SVEXTERN int SVDECL(visFullTitle, 1), SVDECL(visFramerate, 0);
 SVEXTERN int SVDECL(visFramelabel,1), SVDECL(visTimelabel,1);
 SVEXTERN int SVDECL(visHRRlabel,0);
-#ifdef pp_memstatus
-SVEXTERN int visAvailmemory;
-#endif
+SVEXTERN int SVDECL(visAvailmemory, 0);
 SVEXTERN int SVDECL(block_volsmoke,1),SVDECL(smoke3dVoldebug,0);
 SVEXTERN slicedata SVDECL(*sd_shown,NULL);
 SVEXTERN vslicedata SVDECL(*vd_shown,NULL);
@@ -1375,8 +1380,8 @@ SVEXTERN int rendertourcount;
 
 #ifdef pp_MEMDEBUG
 SVEXTERN int list_memcheck_index;
-SVEXTERN int SVDECL(visUsagememory,0);
 #endif
+SVEXTERN int SVDECL(visUsagememory,0);
 SVEXTERN float gslice_norm[3];
 #ifdef INMAIN
 SVEXTERN float tour_xyz[3]={0.0,0.0,0.0};
@@ -1430,8 +1435,6 @@ SVEXTERN char release_title[1024];
 SVEXTERN char plot3d_title[1024];
 SVEXTERN char SVDECL(*partshortlabel,NULL),SVDECL(*partunitlabel,NULL);
 SVEXTERN char emptylabel[2];
-SVEXTERN void SVDECL(*large_font,NULL);
-SVEXTERN void SVDECL(*small_font,NULL);
 
 SVEXTERN int nopenvents,nopenvents_nonoutline,ndummyvents,ntransparentblocks,ntransparentvents;
 SVEXTERN int nventcolors;

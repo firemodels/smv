@@ -53,10 +53,16 @@ void UpdateTimeLabels(void){
     }
     if(dt<0.0)dt=-dt;
     timevalptr=Time2TimeLabel(time0,dt,timeval);
-    strcpy(timelabel,"Time: ");
+    strcpy(timelabel, "");
+    if(visFrameTimelabel==1)strcat(timelabel,"Time: ");
     strcat(timelabel,timevalptr);
   }
-  sprintf(framelabel,"Frame: %i",itimes);
+  if(visFrameTimelabel==1){
+    sprintf(framelabel, "Frame: %i", itimes);
+  }
+  else{
+    sprintf(framelabel, "%i", itimes);
+  }
   if(hrrinfo!=NULL&&hrrinfo->display==1&&hrrinfo->loaded==1){
     float hrr;
 
@@ -2455,7 +2461,7 @@ void DrawVerticalColorbarRegLabels(void){
 
   // -------------- particle file top labels ------------
 
-  if(showevac_colorbar == 1 || showsmoke == 1){
+  if(showevac_colorbar==1||(showsmoke==1&&parttype!=0)){
     char partunitlabel2[256], partshortlabel2[256];
 
     strcpy(partshortlabel2, "");

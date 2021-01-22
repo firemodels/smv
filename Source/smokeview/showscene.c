@@ -111,7 +111,8 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     /* ++++++++++++++++++++++++ draw sensors/sprinklers/heat detectors +++++++++++++++++++++++++ */
 
     CLIP_GEOMETRY;
-    DrawDevices();
+
+    DrawDevices(mode);
     if(viswindrose)DrawWindRosesDevices();
     SNIFF_ERRORS("after DrawDevices");
 
@@ -196,7 +197,8 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   if(mode == SELECTOBJECT){
     if(select_device == 1){
       CLIP_GEOMETRY;
-      DrawDevices();
+
+      DrawDevices(mode);
       SNIFF_ERRORS("after drawselect_devices");
       return;
     }
@@ -486,6 +488,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   if(active_smokesensors == 1 && show_smokesensors != SMOKESENSORS_HIDDEN){
     CLIP_VALS;
     GetSmokeSensors();
+
     DrawDevicesVal();
   }
 

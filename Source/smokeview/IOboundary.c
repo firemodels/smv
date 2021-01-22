@@ -2352,6 +2352,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 #define BOUND_COMPUTE_PERCENTILES 116
     cpp_boundsdata *bounds;
 
+    update_patchfile_bounds = 1; // temporary fix to make sure bounds are up to date
     if(update_patchfile_bounds==1){
       update_patchfile_bounds = 0;
       GetGlobalPatchBounds();

@@ -145,13 +145,6 @@ void SetViewPoint(int option){
       camera_current->eye[1]=camera_current->isometric_y;
     }
     break;
-  case RESTORE_INTERIOR_VIEW:
-    rotation_type_save = camera_current->rotation_type;
-    projection_type_save = camera_current->projection_type;
-    CopyCamera(camera_current,camera_internal);
-    camera_current->rotation_type=rotation_type_save;
-    camera_current->projection_type=projection_type_save;
-    break;
   default:
     ASSERT(FFALSE);
     break;
