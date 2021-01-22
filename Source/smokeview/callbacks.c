@@ -3240,14 +3240,35 @@ void SetScreenSize(int *width, int *height){
   }
 }
 
+/* ------------------ AdjustY ------------------------ */
+
+void AdjustY(cameradata *ca){
+  switch(selected_view){
+    case 0:
+    case -1:
+      UpdateCameraYpos(ca, 1);
+      break;
+    case 1:
+    case -2:
+    case -3:
+      UpdateCameraYpos(ca, 2);
+      break;
+    case -4:
+    case -5:
+      UpdateCameraYpos(ca, 3);
+      break;
+    default:
+      UpdateCameraYpos(ca, 2);
+      break;
+  }
+}
+
 /* ------------------ ReshapeCB ------------------------ */
 
 void ReshapeCB(int width, int height){
   START_TIMER(timer_reshape);
   if(disable_reshape==1)return;
   updatemenu=1;
-  window_aspect_ratio = MAX((float)width,1.0)/MAX((float)height,1.0);
-  if(window_aspect_ratio<1.0)window_aspect_ratio=1.0/window_aspect_ratio;
   if(strcmp(camera_current->name,"external")!=0||in_external==0){
     CopyCamera(camera_save,camera_current);
   }

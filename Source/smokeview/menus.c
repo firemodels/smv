@@ -1845,6 +1845,27 @@ void ResetMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
+/* ------------------ ResetDefaultMenu ------------------------ */
+
+void ResetDefaultMenu(int var){
+  ResetMenu(var);
+  switch(var){
+    case 0:
+    case -1:
+      UpdateCameraYpos(camera_current, 1);
+      break;
+    case 1:
+    case -2:
+    case -3:
+      UpdateCameraYpos(camera_current, 2);
+      break;
+    case -4:
+    case -5:
+      UpdateCameraYpos(camera_current, 3);
+      break;
+  }
+}
+
 /* ------------------ RenderState ------------------------ */
 
 void RenderState(int onoff){
@@ -8932,7 +8953,7 @@ updatemenu=0;
 
   /* --------------------------------default view menu -------------------------- */
   SortCameras();
-  CREATEMENU(defaultviewmenu, ResetMenu);
+  CREATEMENU(defaultviewmenu, ResetDefaultMenu);
   for(i = 0; i<ncameras_sorted; i++){
     cameradata *ca;
     char line[256];
