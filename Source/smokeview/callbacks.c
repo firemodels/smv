@@ -3261,6 +3261,10 @@ void AdjustY(cameradata *ca){
       UpdateCameraYpos(ca, 2);
       break;
   }
+  if(selected_view<=1&&selected_view>-5){
+    void ResetDefaultMenu(int var);
+    ResetDefaultMenu(selected_view);
+  }
 }
 
 /* ------------------ ReshapeCB ------------------------ */
@@ -3281,8 +3285,10 @@ void ReshapeCB(int width, int height){
   else{
     CopyCamera(camera_current,camera_save);
   }
+  AdjustY(camera_current);
   windowsize_pointer_old = -1;
   UpdateWindowSizeList();
+  update_adjust_y = 2;
 }
 
 /* ------------------ ResetGLTime ------------------------ */

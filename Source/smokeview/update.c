@@ -2188,6 +2188,11 @@ void OutputBounds(void){
 void UpdateDisplay(void){
 
   LOCK_IBLANK;
+  if(update_adjust_y>0){
+    void AdjustY(cameradata*ca);
+    AdjustY(camera_current);
+    update_adjust_y--;
+  }
   if(update_ini_boundary_type==1){
     update_ini_boundary_type = 0;
     ShowBoundaryMenu(INI_EXTERIORwallmenu);

@@ -23,6 +23,7 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(update_adjust_y, 2);
 SVEXTERN int SVDECL(visFrameTimelabel, 1);
 SVEXTERN int SVDECL(rotation_axis, 1);
 #ifdef pp_ZTREE
