@@ -245,11 +245,6 @@
 #define ABS(a) ((a)>=0 ? (a) : (-(a)))
 #endif
 
-#ifndef SMV_ROUND
-#define SMV_ROUND(x,n) ( (float)((int)(pow(10.0,n)*x+0.5))/(float)pow(10.0,n) )
-#endif
-
-
 #ifndef SIGN
 #define SIGN(x) ((x)>=0 ?  1  :  -1)
 #endif
