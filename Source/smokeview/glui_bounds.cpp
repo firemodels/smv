@@ -125,13 +125,25 @@ class bounds_dialog{
 int InResearchMode(void);
 int InPercentileMode(void);
 
+/* ------------------ SmvRound ------------------------ */
+
+float SmvRound(float val, int n){
+  float return_val;
+  char c_val[32];
+
+  Float2String(c_val, val, n);
+  sscanf(c_val, "%f", &return_val);
+
+  return return_val;
+}
+
 /* ------------------ set_plot_minmax ------------------------ */
 
 void bounds_dialog::set_plot_minmax(float p_min, float p_max){
   float p_min_round, p_max_round;
 
-  p_min_round = SMV_ROUND(p_min, 4);
-  p_max_round = SMV_ROUND(p_max, 4);
+  p_min_round = SmvRound(p_min, 4);
+  p_max_round = SmvRound(p_max, 4);
   if(SPINNER_plot_min!=NULL)SPINNER_plot_min->set_float_val(p_min_round);
   if(SPINNER_plot_max!=NULL)SPINNER_plot_max->set_float_val(p_max_round);
 }
@@ -139,8 +151,8 @@ void bounds_dialog::set_plot_minmax(float p_min, float p_max){
 /* ------------------ set_plot_minmax_clamp ------------------------ */
 
 void bounds_dialog::set_plot_minmax_clamp(float p_min, float p_max){
-  p_min = SMV_ROUND(p_min, 4);
-  p_max = SMV_ROUND(p_max, 4);
+  p_min = SmvRound(p_min, 4);
+  p_max = SmvRound(p_max, 4);
   if(SPINNER_plot_min!=NULL){
     SPINNER_plot_min->set_float_limits(p_min, p_max);
   }
@@ -152,8 +164,8 @@ void bounds_dialog::set_plot_minmax_clamp(float p_min, float p_max){
 /* ------------------ set_percentile_minmax ------------------------ */
 
 void bounds_dialog::set_percentile_minmax(float p_min, float p_max){
-  p_min = SMV_ROUND(p_min, 4);
-  p_max = SMV_ROUND(p_max, 4);
+  p_min = SmvRound(p_min, 4);
+  p_max = SmvRound(p_max, 4);
   if(SPINNER_percentile_min!=NULL)SPINNER_percentile_min->set_float_val(p_min);
   if(SPINNER_percentile_max!=NULL)SPINNER_percentile_max->set_float_val(p_max);
 }
@@ -1835,7 +1847,7 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
             cpp_boundsdata *boundi;
 
             boundi = plot3dboundsCPP.all_bounds+i;
-            if(strcmp(boundi->unit, bounds->unit)==0){
+            if(strcmp(boundi->unit, bounds->unit)==0&&boundi->hist!=NULL){
               hist_min = MIN(hist_min, boundi->hist->val_min);
               hist_max = MAX(hist_max, boundi->hist->val_max);
             }
@@ -1975,7 +1987,7 @@ extern "C" void PartBoundsCPP_CB(int var){
             cpp_boundsdata *boundi;
 
             boundi = partboundsCPP.all_bounds+i;
-            if(strcmp(boundi->unit, bounds->unit)==0){
+            if(strcmp(boundi->unit, bounds->unit)==0&&boundi->hist!=NULL){
               hist_min = MIN(hist_min, boundi->hist->val_min);
               hist_max = MAX(hist_max, boundi->hist->val_max);
             }
