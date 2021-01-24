@@ -743,6 +743,7 @@ extern "C" void ViewpointCB(int var){
     ViewpointCB(RESTORE_VIEW);
     updatezoommenu = 1;
     EnableDisableViews();
+    AdjustY(camera_current);
     break;
   case STARTUP:
     startup_view_ini = LIST_viewpoints->get_int_val();

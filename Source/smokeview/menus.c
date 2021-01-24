@@ -1845,6 +1845,27 @@ void ResetMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
+/* ------------------ ResetDefaultMenu ------------------------ */
+
+void ResetDefaultMenu(int var){
+  ResetMenu(var);
+  switch(var){
+    case 0:
+    case -1:
+      UpdateCameraYpos(camera_current, 1);
+      break;
+    case 1:
+    case -2:
+    case -3:
+      UpdateCameraYpos(camera_current, 2);
+      break;
+    case -4:
+    case -5:
+      UpdateCameraYpos(camera_current, 3);
+      break;
+  }
+}
+
 /* ------------------ RenderState ------------------------ */
 
 void RenderState(int onoff){
@@ -8932,7 +8953,7 @@ updatemenu=0;
 
   /* --------------------------------default view menu -------------------------- */
   SortCameras();
-  CREATEMENU(defaultviewmenu, ResetMenu);
+  CREATEMENU(defaultviewmenu, ResetDefaultMenu);
   for(i = 0; i<ncameras_sorted; i++){
     cameradata *ca;
     char line[256];
@@ -9008,8 +9029,6 @@ updatemenu=0;
     glutAddMenuEntry("-",MENU_DUMMY);
   }
 
-  GLUTADDSUBMENU(_("Default viewpoints"), defaultviewmenu);
-
   for(i = 0; i < ncameras_sorted;i++){
     cameradata *ca;
     char line[256];
@@ -9047,7 +9066,9 @@ updatemenu=0;
     GLUTADDSUBMENU(_("Devices"), showobjectsmenu);
   }
   GLUTADDSUBMENU(_("Labels"),labelmenu);
-  GLUTADDSUBMENU(_("Viewpoints"), resetmenu);
+
+  GLUTADDSUBMENU(_("Viewpoints (default)"), defaultviewmenu);
+  GLUTADDSUBMENU(_("Viewpoints (user)"), resetmenu);
   glutAddMenuEntry("-", MENU_DUMMY);
   if(nsmoke3dloaded>0){
     showhide_data = 1;

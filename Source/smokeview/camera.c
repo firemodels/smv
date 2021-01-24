@@ -76,40 +76,48 @@ void AddDefaultViewpoints(void){
 
 void UpdateCameraYpos(cameradata *ci, int option){
   float local_aperture_default;
-  float width, asp;
+  float width, height, asp=1.0, offset;
 
   local_aperture_default = Zoom2Aperture(1.0);
-  asp = (float)screenHeight/(float)screenWidth;
+  if(VP_scene.width==0||VP_scene.height==0)GetViewportInfo();
+  if(VP_scene.height!=0)asp = (float)VP_scene.width/(float)VP_scene.height;
+
 
   switch(option){
     case 1:
-      if(asp>zbar/ybar){
-        width = ybar;
+      if(asp>ybar/zbar){
+        height = zbar;
+        width  = height*asp;
       }
       else{
-        width = zbar/asp;
+        width = ybar;
       }
+      offset = ci->xcen;
       break;
 
     case 2:
-      if(asp>zbar/xbar){
-        width = xbar;
+      if(asp>xbar/zbar){
+        height = zbar;
+        width  = height*asp;
       }
       else{
-        width = zbar/asp;
+        width = xbar;
       }
+      offset = ci->ycen;
       break;
 
     case 3:
-      if(asp>ybar/xbar){
-        width = xbar;
+      if(asp>xbar/ybar){
+        height = ybar;
+        width  = height*asp;
       }
       else{
-        width = ybar/asp;
+        width = xbar;
       }
+      offset = ci->zcen;
       break;
   }
-  eyeyfactor = -1.10*(width/2.0)/tan(local_aperture_default*DEG2RAD/2.0);
+  eyeyfactor = -(width/2.0)/tan(local_aperture_default*DEG2RAD/2.0) - offset;
 
   ci->eye[1] = eyeyfactor*xyzbox*geomyfactor;
   if(geom_use_factors==1)ci->eye[0] = NORMALIZE_X((geom_xmin+geom_xmax)/2.0);
