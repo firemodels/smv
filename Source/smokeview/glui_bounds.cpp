@@ -549,7 +549,7 @@ void bounds_dialog::set_percentiles(float val_00, float per_valmin, float val_50
 
   Float2String(val_label, val_00, 4);
   strcat(val_label,":");
-  PadString(val_label,"0.0", PAD_LENGTH);
+  PadString(val_label,"0.0 (min)", PAD_LENGTH);
   STATIC_percentile_00->set_name(val_label);
 
   Float2String(val_label, per_valmin, 4);
@@ -559,7 +559,7 @@ void bounds_dialog::set_percentiles(float val_00, float per_valmin, float val_50
 
   Float2String(val_label, val_50, 4);
   strcat(val_label,":");
-  PadString(val_label,"0.5", PAD_LENGTH);
+  PadString(val_label,"0.5 (median)", PAD_LENGTH);
   STATIC_percentile_50->set_name(val_label);
 
   Float2String(val_label, per_valmax, 4);
@@ -569,7 +569,7 @@ void bounds_dialog::set_percentiles(float val_00, float per_valmin, float val_50
 
   Float2String(val_label, val_100, 4);
   strcat(val_label,":");
-  PadString(val_label,"1.0", PAD_LENGTH);
+  PadString(val_label,"1.0 (max)", PAD_LENGTH);
   STATIC_percentile_100->set_name(val_label);
 }
 
@@ -1941,8 +1941,8 @@ extern "C" void PartBoundsCPP_CB(int var){
 
         GetHistogramValProc(bounds->hist, percentile_level_min, &per_valmin);
         GetHistogramValProc(bounds->hist, percentile_level_max, &per_valmax);
-        SetMin(BOUND_PART, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
-        SetMax(BOUND_PART, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
+       // SetMin(BOUND_PART, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+       // SetMax(BOUND_PART, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
 
         GetHistogramValProc(bounds->hist, 0.0, &per_00);
         GetHistogramValProc(bounds->hist, 0.5, &per_50);
@@ -1962,8 +1962,8 @@ extern "C" void PartBoundsCPP_CB(int var){
         GetHistogramValProc(bounds->hist, percentile_level_min, &per_valmin);
         GetHistogramValProc(bounds->hist, percentile_level_max, &per_valmax);
         GetHistogramValProc(bounds->hist, 0.5, &(bounds->hist->median));
-        SetMin(BOUND_PART, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
-        SetMax(BOUND_PART, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
+   //     SetMin(BOUND_PART, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+   //     SetMax(BOUND_PART, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
 
         GetHistogramValProc(bounds->hist, 0.0, &per_00);
         GetHistogramValProc(bounds->hist, 0.5, &per_50);
@@ -2000,8 +2000,8 @@ extern "C" void PartBoundsCPP_CB(int var){
               partboundsCPP.set_plot_minmax(hist_min, hist_max);
             }
           }
-          SetMin(BOUND_PART, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
-          SetMax(BOUND_PART, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
+         // SetMin(BOUND_PART, bounds->label, BOUND_PERCENTILE_MIN, per_valmin);
+         // SetMax(BOUND_PART, bounds->label, BOUND_PERCENTILE_MAX, per_valmax);
         }
         else{
           histogram_draw   = NULL;

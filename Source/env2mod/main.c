@@ -193,8 +193,8 @@ int main(int argc, char **argv){
   }
 #ifndef WIN32
   if(s_opt==1){
-    if(FileExists(file1))UNLINK(file1);
-    if(FileExists(file2))UNLINK(file2);
+    if(FileExistsOrig(file1))UNLINK(file1);
+    if(FileExistsOrig(file2))UNLINK(file2);
   }
 #endif
   return 0;
