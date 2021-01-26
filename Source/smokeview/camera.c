@@ -77,50 +77,63 @@ void AddDefaultViewpoints(void){
 void UpdateCameraYpos(cameradata *ci, int option){
   float local_aperture_default;
   float width, height, asp=1.0, offset;
+  float dx, dy, dz;
 
   local_aperture_default = Zoom2Aperture(1.0);
   if(VP_scene.width==0||VP_scene.height==0)GetViewportInfo();
   if(VP_scene.height!=0)asp = (float)VP_scene.width/(float)VP_scene.height;
 
 
+  if(geom_use_factors==1){
+    dx = NORMALIZE_X(geom_xmax) - NORMALIZE_X(geom_xmin);
+    dy = NORMALIZE_Y(geom_ymax) - NORMALIZE_Y(geom_ymin);
+    dz = NORMALIZE_Z(geom_zmax) - NORMALIZE_Z(geom_zmin);
+    ci->xcen = NORMALIZE_X((geom_xmin+geom_xmax)/2.0);
+    ci->ycen = NORMALIZE_Y((geom_ymin+geom_ymax)/2.0);
+    ci->zcen = NORMALIZE_Z((geom_zmin+geom_zmax)/2.0);
+  }
+  else{
+    dx = xbar;
+    dy = ybar;
+    dz = zbar;
+  }
   switch(option){
     case 1:
-      if(asp>ybar/zbar){
-        height = zbar;
+      if(asp>dy/dz){
+        height = dz;
         width  = height*asp;
       }
       else{
-        width = ybar;
+        width = dy;
       }
-      offset = ci->xcen;
+      offset = dx/2.0;
       break;
 
     case 2:
-      if(asp>xbar/zbar){
-        height = zbar;
+      if(asp>dx/dz){
+        height = dz;
         width  = height*asp;
       }
       else{
-        width = xbar;
+        width = dx;
       }
-      offset = ci->ycen;
+      offset = dy/2.0;
       break;
 
     case 3:
-      if(asp>xbar/ybar){
-        height = ybar;
+      if(asp>dx/dy){
+        height = dy;
         width  = height*asp;
       }
       else{
-        width = xbar;
+        width = dx;
       }
-      offset = ci->zcen;
+      offset = dz/2.0;
       break;
   }
   eyeyfactor = -(width/2.0)/tan(local_aperture_default*DEG2RAD/2.0) - offset;
 
-  ci->eye[1] = eyeyfactor*xyzbox*geomyfactor;
-  if(geom_use_factors==1)ci->eye[0] = NORMALIZE_X((geom_xmin+geom_xmax)/2.0);
+  ci->eye[1] = eyeyfactor;
   if(viscolorbarpath==1){
     ci->eye[0] = 0.7;
     ci->eye[1] = -2.25;
