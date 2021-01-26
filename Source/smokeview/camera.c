@@ -84,7 +84,7 @@ void UpdateCameraYpos(cameradata *ci, int option){
   if(VP_scene.height!=0)asp = (float)VP_scene.width/(float)VP_scene.height;
 
 
-  if(geom_use_factors==1){
+  if(use_geom_factors==1&&have_geom_factors==1){
     dx = NORMALIZE_X(geom_xmax) - NORMALIZE_X(geom_xmin);
     dy = NORMALIZE_Y(geom_ymax) - NORMALIZE_Y(geom_ymin);
     dz = NORMALIZE_Z(geom_zmax) - NORMALIZE_Z(geom_zmin);

@@ -1363,7 +1363,7 @@ SVEXTERN float SVDECL(geomyfactor,1.0), SVDECL(geomzfactor,1.0);
 SVEXTERN float SVDECL(geom_xmin,0.0), SVDECL(geom_xmax,1.0);
 SVEXTERN float SVDECL(geom_ymin,0.0), SVDECL(geom_ymax,1.0);
 SVEXTERN float SVDECL(geom_zmin, 0.0), SVDECL(geom_zmax, 1.0);
-SVEXTERN int SVDECL(geom_use_factors, 0);
+SVEXTERN int SVDECL(use_geom_factors, 0), SVDECL(have_geom_factors, 0);
 SVEXTERN int SVDECL(transparent_state,ALL_SOLID);
 SVEXTERN float tload_begin, tload_end;
 SVEXTERN int tload_skip;

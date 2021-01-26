@@ -1848,6 +1848,24 @@ void ResetMenu(int value){
 /* ------------------ ResetDefaultMenu ------------------------ */
 
 void ResetDefaultMenu(int var){
+  if(var==2){
+    int i;
+
+    use_geom_factors = 1 - use_geom_factors;
+    updatemenu = 1;
+    UpdateUseGeomFactors();
+    for(i = 0; i<ncameras_sorted; i++){
+      cameradata *ca;
+
+      ca = cameras_sorted[i];
+      if(ca->view_id>1)continue;
+      if(ca->view_id==selected_view){
+        ResetDefaultMenu(selected_view);
+        break;
+      }
+    }
+    return;
+  }
   ResetMenu(var);
   switch(var){
     case 0:
@@ -8954,6 +8972,10 @@ updatemenu=0;
   /* --------------------------------default view menu -------------------------- */
   SortCameras();
   CREATEMENU(defaultviewmenu, ResetDefaultMenu);
+  if(have_geom_factors==1){
+    if(use_geom_factors==1)glutAddMenuEntry("*include geometry",2);
+    if(use_geom_factors==0)glutAddMenuEntry("include geometry", 2);
+  }
   for(i = 0; i<ncameras_sorted; i++){
     cameradata *ca;
     char line[256];
