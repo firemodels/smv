@@ -28,6 +28,7 @@ unsigned char deg90[] = {'9', '0', 0};
 
 GLUI *glui_motion=NULL;
 
+GLUI_Panel *PANEL_select = NULL;
 GLUI_Panel *PANEL_360 = NULL;
 GLUI_Panel *PANEL_360_debug = NULL;
 GLUI_Panel *PANEL_custom_view=NULL;
@@ -123,6 +124,7 @@ GLUI_Spinner *SPINNER_background_red=NULL;
 GLUI_Spinner *SPINNER_background_green=NULL;
 GLUI_Spinner *SPINNER_background_blue=NULL;
 
+GLUI_Checkbox *CHECKBOX_use_geom_factors = NULL;
 GLUI_Checkbox *CHECKBOX_use_customview=NULL;
 GLUI_Checkbox *CHECKBOX_custom_view = NULL;
 GLUI_Checkbox *CHECKBOX_clip_show_rotation_center = NULL;
@@ -269,6 +271,12 @@ extern "C" void UpdateRenderRadioButtons(int width_low, int height_low, int widt
     sprintf(label, "%s %ix%i", deg360, nwidth360, nheight360);
     if(RADIOBUTTON_render_360 != NULL)RADIOBUTTON_render_360->set_name(label);
   }
+}
+
+/* ------------------ UpdateGeomFactor ------------------------ */
+
+extern "C" void UpdateUseGeomFactors(void){
+  if(CHECKBOX_use_geom_factors!=NULL)CHECKBOX_use_geom_factors->set_int_val(use_geom_factors);
 }
 
 /* ------------------ UpdatePosView ------------------------ */
@@ -618,6 +626,12 @@ extern "C" void ViewpointCB(int var){
 #endif
 
   switch(var){
+  case GEOM_FACTORS:
+    updatemenu = 1;
+    use_geom_factors = 1 - use_geom_factors;
+    void ResetDefaultMenu(int var);
+    ResetDefaultMenu(2);
+    break;
 #ifdef pp_RENDER360_DEBUG
   case SHOWALL_SCREENS:
     for(i = 0;i < nscreeninfo;i++){
@@ -1106,9 +1120,12 @@ extern "C" void GluiMotionSetup(int main_window){
   INSERT_ROLLOUT(ROLLOUT_viewpoints, glui_motion);
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_viewpoints,VIEWPOINTS_ROLLOUT, glui_motion);
 
-  LIST_viewpoints = glui_motion->add_listbox_to_panel(ROLLOUT_viewpoints, _("Select:"), &i_view_list, LIST_VIEW, ViewpointCB);
+  PANEL_select = glui_motion->add_panel_to_panel(ROLLOUT_viewpoints, "", false);
+  LIST_viewpoints = glui_motion->add_listbox_to_panel(PANEL_select, _("Select:"), &i_view_list, LIST_VIEW, ViewpointCB);
   LIST_viewpoints->set_alignment(GLUI_ALIGN_CENTER);
-
+  if(have_geom_factors==1){
+    CHECKBOX_use_geom_factors = glui_motion->add_checkbox_to_panel(PANEL_select, "include geometry", &use_geom_factors, GEOM_FACTORS, ViewpointCB);
+  }
   PANEL_reset = glui_motion->add_panel_to_panel(ROLLOUT_viewpoints, "", false);
 
   PANEL_reset1 = glui_motion->add_panel_to_panel(PANEL_reset, "", false);

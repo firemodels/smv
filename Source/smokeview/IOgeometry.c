@@ -2469,7 +2469,9 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           geom_xmax = xmax;
           geom_ymin = ymin;
           geom_ymax = ymax;
-          geom_use_factors = 1;
+          geom_zmin = zmin;
+          geom_zmax = zmax;
+          have_geom_factors = 1;
         }
 
         if(terrain_textures!=NULL){

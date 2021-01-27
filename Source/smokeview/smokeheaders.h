@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void UpdateUseGeomFactors(void);
+
 EXTERNCPP void AdjustY(cameradata *ca);
 
 EXTERNCPP void UpdateFrameTimelabel(void);

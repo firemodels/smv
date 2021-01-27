@@ -12,7 +12,8 @@
 #define ROTATE_90    103
 #define RESET_VIEW   104
 
-#define LABEL_VIEW 4
+#define LABEL_VIEW   4
+#define GEOM_FACTORS 33
 
 #define CUSTOM_ROTATION_X 9
 #define CUSTOM_ROTATION_Y 10

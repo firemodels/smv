@@ -22,18 +22,22 @@ void DrawCircVentsApproxSolid(int option){
     int j;
     meshdata *meshi;
     float *xplt, *yplt, *zplt;
+    float dx, dy, dz, dxyz;
 
     meshi = meshinfo + i;
     xplt = meshi->xplt;
     yplt = meshi->yplt;
     zplt = meshi->zplt;
+    dx = xplt[1] - xplt[0];
+    dy = yplt[1] - yplt[0];
+    dz = zplt[1] - zplt[0];
+    dxyz = MIN(MIN(dx, dy), dz)/10.0;
 
     for(j=0;j<meshi->ncvents;j++){
       cventdata *cvi;
       int ii, jj, kk;
       float xx, yy, zz;
       float xx2, yy2, zz2;
-      float dx;
 
       cvi = meshi->cventinfo + j;
 
@@ -43,10 +47,10 @@ void DrawCircVentsApproxSolid(int option){
 
       glColor3fv(cvi->color);
       if(cvi->dir==UP_X||cvi->dir==UP_Y||cvi->dir==UP_Z){
-        dx=0.001;
+        dx=dxyz;
       }
       else{
-        dx=-0.001;
+        dx=--dxyz;
       }
       switch(cvi->dir){
         case UP_X:
@@ -170,11 +174,17 @@ void DrawCircVentsApproxOutline(int option){
     int j;
     meshdata *meshi;
     float *xplt, *yplt, *zplt;
+    float dx, dy, dz, dxyz;
 
     meshi = meshinfo + i;
     xplt = meshi->xplt;
     yplt = meshi->yplt;
     zplt = meshi->zplt;
+
+    dx = xplt[1] - xplt[0];
+    dy = yplt[1] - yplt[0];
+    dz = zplt[1] - zplt[0];
+    dxyz = MIN(MIN(dx, dy), dz)/10.0;
 
     for(j=0;j<meshi->ncvents;j++){
       cventdata *cvi;
@@ -183,7 +193,6 @@ void DrawCircVentsApproxOutline(int option){
       float xx, yy, zz;
       float xx2, yy2, zz2;
       float xx3, yy3, zz3;
-      float dx;
       int in_circle;
 
       cvi = meshi->cventinfo + j;
@@ -194,10 +203,10 @@ void DrawCircVentsApproxOutline(int option){
 
       glColor3fv(cvi->color);
       if(cvi->dir==UP_X||cvi->dir==UP_Y||cvi->dir==UP_Z){
-        dx=0.001;
+        dx=dxyz;
       }
       else{
-        dx=-0.001;
+        dx=--dxyz;
       }
       switch(cvi->dir){
         case UP_X:
@@ -374,7 +383,7 @@ void DrawCircVentsExactSolid(int option){
         z0 = cvi->zmin;
       }
 
-      delta=SCALE2FDS(0.001);
+      delta=0.001;
       color=cvi->color;
       vcolor[0]=color[0]*255;
       vcolor[1]=color[1]*255;
@@ -484,7 +493,7 @@ void DrawCircVentsExactOutline(int option){
         z0 = cvi->zmin;
       }
 
-      delta=SCALE2FDS(0.001);
+      delta=0.001;
       color=cvi->color;
       vcolor[0]=color[0]*255;
       vcolor[1]=color[1]*255;

@@ -3205,7 +3205,7 @@ void SetViewZMAXPersp(void){
   aperture_temp1 = Zoom2Aperture(zoom);
   aperture_temp2 = 2.0*RAD2DEG*atan(scene_aspect_ratio*tan(DEG2RAD*aperture_temp1/2.0));
 
-  if(geom_use_factors==1){
+  if(have_geom_factors==1){
     xcen   = (geom_xmin+geom_xmax)/2.0;
     ycen   = (geom_ymin+geom_ymax)/2.0;
     width  = geom_xmax - geom_xmin;
