@@ -96,6 +96,9 @@ void UpdateCameraYpos(cameradata *ci, int option){
     dx = xbar;
     dy = ybar;
     dz = zbar;
+    ci->xcen = xbar/2.0;
+    ci->ycen = ybar/2.0;
+    ci->zcen = zbar/2.0;
   }
   switch(option){
     case 1:

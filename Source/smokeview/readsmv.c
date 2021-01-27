@@ -5885,6 +5885,7 @@ int ReadSMV(bufferstreamdata *stream){
       int len_buffer;
       char *buff2;
 
+      is_terrain_case = 1;
       auto_terrain=1;
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&visTerrainType);
@@ -5916,6 +5917,7 @@ int ReadSMV(bufferstreamdata *stream){
       int len_buffer;
       char *buff2, *blank;
 
+      is_terrain_case = 1;
       if(have_auto_terrain_image == 1){
         FREEMEMORY(terrain_textures->file);
         FREEMEMORY(terrain_textures);
