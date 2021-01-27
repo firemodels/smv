@@ -1091,7 +1091,7 @@ void UpdateTimes(void){
       devicedata *devicei;
 
       devicei = deviceinfo+i;
-      if(devicei->object->visible==0)continue;
+      if(devicei->object->visible==0||devicei->nvals==0)continue;
       if(devicei->type2==devicetypes_index){
         nglobal_times = MAX(nglobal_times, devicei->nvals);
         global_timemin = MIN(global_timemin, devicei->times[0]);

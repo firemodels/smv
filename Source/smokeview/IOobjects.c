@@ -6859,7 +6859,7 @@ void SetupDeviceData(void){
       devicedata *devi;
 
       devi = deviceinfo + i;
-      if(devi->type2>=0||strlen(devi->quantity)==0)continue;
+      if(devi->type2>=0||devi->nvals==0||strlen(devi->quantity)==0)continue;
       devi->type2=ndevicetypes;
       devi->type2vis=0;
       devicetypes[ndevicetypes++]=devi;
