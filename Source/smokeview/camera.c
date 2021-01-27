@@ -161,10 +161,10 @@ void SetCameraViewPersp(cameradata *ca, int option){
       az = 180.0;
       break;
     case MENU_VIEW_ZMIN:
-      elev = -89.0;
+      elev = -90.0;
       break;
     case MENU_VIEW_ZMAX:
-      elev = 89.0;
+      elev = 90.0;
       break;
   }
   ca->az_elev[0] = az;
