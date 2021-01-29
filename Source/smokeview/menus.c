@@ -257,11 +257,11 @@ float     part_load_time;
 #define OBJECT_ORIENTATION          -5
 #define OBJECT_MISSING              -6
 #define OBJECT_SHOWBEAM             -7
-#define OBJECT_PLOT_SHOW_ALL        -8
-#define OBJECT_PLOT_SHOW_SELECTED  -11
+//#define OBJECT_PLOT_SHOW_ALL        -8  put in smokeviewdefs.h
+//#define OBJECT_PLOT_SHOW_SELECTED  -11  put in smokeviewdefs.h
 #define OBJECT_VALUES               -9
 #define MENU_DEVICE_SETTINGS       -10
-#define OBJECT_PLOT_SHOW_TREE_ALL  -12
+//#define OBJECT_PLOT_SHOW_TREE_ALL  -12 put in smokeviewdefs.h
 //#define PLOT_HRRPUV                -13 put in smokeviewdef.h
 
 #define ISO_COLORS 4

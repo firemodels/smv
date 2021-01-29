@@ -407,6 +407,32 @@ extern "C" void DeviceCB(int var){
     }
     break;
   case SHOWDEVICEPLOT:
+    {
+      int showdevice_plot_temp;
+
+      showdevice_plot_temp = showdevice_plot;
+      switch (showdevice_plot_temp){
+        case DEVICE_PLOT_HIDDEN:
+          showdevice_plot = DEVICE_PLOT_SHOW_ALL;
+          ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
+          break;
+        case DEVICE_PLOT_SHOW_SELECTED:
+          showdevice_plot = DEVICE_PLOT_HIDDEN;
+          ShowObjectsMenu(OBJECT_PLOT_SHOW_SELECTED);
+          break;
+        case DEVICE_PLOT_SHOW_ALL:
+          showdevice_plot = DEVICE_PLOT_HIDDEN;
+          ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
+          break;
+#ifdef pp_ZTREE
+        case DEVICE_PLOT_SHOW_TREE_ALL:
+          showdevice_plot = DEVICE_PLOT_HIDDEN;
+          ShowObjectsMenu(OBJECT_PLOT_SHOW_TREE_ALL);
+          break;
+#endif
+      }
+    }
+    break;
   case SHOWDEVICEVALS:
   case COLORDEVICEVALS:
     update_times=1;
