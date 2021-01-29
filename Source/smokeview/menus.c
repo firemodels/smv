@@ -262,6 +262,7 @@ float     part_load_time;
 #define OBJECT_VALUES               -9
 #define MENU_DEVICE_SETTINGS       -10
 #define OBJECT_PLOT_SHOW_TREE_ALL  -12
+//#define PLOT_HRRPUV                -13 put in smokeviewdef.h
 
 #define ISO_COLORS 4
 
@@ -793,7 +794,7 @@ void LabelMenu(int value){
     visHRRlabel=1;
     show_firecutoff=1;
     visFramelabel=1;
-    if(hrrinfo != NULL&&hrrinfo->display != 1)UpdateHrrinfo(1);
+    if(hrrinfo != NULL&&hrrinfo->display != 1)UpdateHRRInfo(1);
     break;
    case MENU_LABEL_HideAll:
     visUSERticks=0;
@@ -812,7 +813,7 @@ void LabelMenu(int value){
     visMeshlabel=0;
     visHRRlabel=0;
     show_firecutoff=0;
-    if(hrrinfo != NULL&&hrrinfo->display != 0)UpdateHrrinfo(0);
+    if(hrrinfo != NULL&&hrrinfo->display != 0)UpdateHRRInfo(0);
     if(ntickinfo>0)visFDSticks=0;
     visgridloc=0;
     vis_slice_average=0;
@@ -840,8 +841,11 @@ void LabelMenu(int value){
      visFramelabel=1-visFramelabel;
      if(visFramelabel==1){
        visHRRlabel=0;
-       UpdateHrrinfo(visHRRlabel);
+       UpdateHRRInfo(visHRRlabel);
      }
+    plotstate=GetPlotState(DYNAMIC_PLOTS);
+    UpdateShow();
+    update_times = 1;
      break;
    case MENU_LABEL_meshlabel:
      visMeshlabel=1-visMeshlabel;
@@ -873,7 +877,7 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_hrr:
      visHRRlabel=1-visHRRlabel;
-     UpdateHrrinfo(visHRRlabel);
+     UpdateHRRInfo(visHRRlabel);
      break;
    case MENU_LABEL_firecutoff:
      show_firecutoff=1-show_firecutoff;
@@ -6113,6 +6117,17 @@ void ShowObjectsMenu(int value){
     UpdateDeviceShow();
   }
 #endif
+  else if(value==PLOT_HRRPUV){
+    show_hrrpuv_plot = 1-show_hrrpuv_plot;
+    UpdateShowHRRPUVPlot(show_hrrpuv_plot);
+    if(show_hrrpuv_plot==1){
+      visHRRlabel = 0;
+      LabelMenu(MENU_LABEL_hrr);
+    }
+    plotstate=GetPlotState(DYNAMIC_PLOTS);
+    UpdateShow();
+    update_times = 1;
+  }
   else if(value==OBJECT_PLOT_SHOW_ALL){
     update_times=1;
     if(showdevice_plot==DEVICE_PLOT_SHOW_ALL){
@@ -6140,7 +6155,7 @@ void ShowObjectsMenu(int value){
     UpdateDeviceShow();
   }
   else if(value==MENU_DEVICE_SETTINGS){
-    ShowGluiDevice();
+    ShowGluiPlotDevice();
   }
   else if(value==OBJECT_VALUES){
     update_times=1;
@@ -7489,24 +7504,32 @@ updatemenu=0;
       glutAddMenuEntry(qlabel, i);
     }
   }
-  
 
-  if(nobject_defs>0){
+  if(nobject_defs>0||hrrinfo!=NULL){
     CREATEMENU(showobjectsplotmenu,ShowObjectsMenu);
     if(ndevicetypes>0){
       GLUTADDSUBMENU(_("quantity"),devicetypemenu);
     }
-    if(showdevice_plot==DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "*Plot data for all devices",           OBJECT_PLOT_SHOW_ALL);
-    if(showdevice_plot!=DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "Plot data for all devices",            OBJECT_PLOT_SHOW_ALL);
-    if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "*Plot data for selected devices",      OBJECT_PLOT_SHOW_SELECTED);
-    if(showdevice_plot!=DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "Plot data for selected devices",       OBJECT_PLOT_SHOW_SELECTED);
+    if(nobject_defs>0){
+      if(showdevice_plot==DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "*All devices",           OBJECT_PLOT_SHOW_ALL);
+      if(showdevice_plot!=DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "All devices",            OBJECT_PLOT_SHOW_ALL);
+      if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "*Selected devices",      OBJECT_PLOT_SHOW_SELECTED);
+      if(showdevice_plot!=DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "Selected devices",       OBJECT_PLOT_SHOW_SELECTED);
 #ifdef pp_ZTREE
-    if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "*Plot data for all device trees",      OBJECT_PLOT_SHOW_TREE_ALL);
-    if(showdevice_plot!=DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "Plot data for all device trees",       OBJECT_PLOT_SHOW_TREE_ALL);
+      if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "*All device trees",      OBJECT_PLOT_SHOW_TREE_ALL);
+      if(showdevice_plot!=DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "All device trees",       OBJECT_PLOT_SHOW_TREE_ALL);
 #endif
+    }
+    if(hrrinfo!=NULL){
+      if(show_hrrpuv_plot==1)glutAddMenuEntry("*HRRPUV", PLOT_HRRPUV);
+      if(show_hrrpuv_plot==0)glutAddMenuEntry("HRRPUV", PLOT_HRRPUV);
+    }
+
     if(showdevice_val==1)glutAddMenuEntry(_("*Show values"), OBJECT_VALUES);
     if(showdevice_val==0)glutAddMenuEntry(_("Show values"),  OBJECT_VALUES);
-
+    glutAddMenuEntry(_("Settings..."), MENU_DEVICE_SETTINGS);
+  }
+  if(nobject_defs>0){
     CREATEMENU(showobjectsmenu,ShowObjectsMenu);
     for(i=0;i<nobject_defs;i++){
       sv_object *obj_typei;
@@ -7528,7 +7551,6 @@ updatemenu=0;
       if(show_missing_objects == 0)glutAddMenuEntry(_("undefined"),OBJECT_MISSING);
     }
     if(ndeviceinfo>0){
-      GLUTADDSUBMENU(_("plots/values"),showobjectsplotmenu);
       glutAddMenuEntry("-",MENU_DUMMY);
       if(select_device==1){
         glutAddMenuEntry(_("*Select"),OBJECT_SELECT);
@@ -7562,7 +7584,6 @@ updatemenu=0;
   }
 
   /* --------------------------------terrain menu -------------------------- */
-
 
   if(terrain_nindices>0||nterrain_textures>0){
     int i;
@@ -9086,6 +9107,9 @@ updatemenu=0;
   GLUTADDSUBMENU(_("Geometry"),geometrymenu);
   if(GetNumActiveDevices()>0||ncvents>0){
     GLUTADDSUBMENU(_("Devices"), showobjectsmenu);
+  }
+  if(nobject_defs>0&&ndeviceinfo>0){
+    GLUTADDSUBMENU(_("Plot data"),showobjectsplotmenu);
   }
   GLUTADDSUBMENU(_("Labels"),labelmenu);
 

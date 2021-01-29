@@ -75,7 +75,6 @@ void ReadHRR(int flag, int *errorcode){
     return;
   }
 
-
   // size data
 
   ntimeshrr = 0;
@@ -112,7 +111,19 @@ void ReadHRR(int flag, int *errorcode){
     hrrval++;
     ntimeshrr++;
   }
+
   hrrinfo->ntimes_csv = ntimeshrr-nfirst;
+  if(hrrinfo->ntimes_csv>0){
+    int i;
+
+    hrrval = hrrinfo->hrrval_csv;
+    hrr_valmin = hrrval[0];
+    hrr_valmax = hrr_valmax;
+    for(i = 1; i<hrrinfo->ntimes_csv; i++){
+      hrr_valmin = MIN(hrr_valmin, hrrval[i]);
+      hrr_valmax = MAX(hrr_valmax, hrrval[i]);
+    }
+  }
   fclose(HRRFILE);
 }
 
@@ -11112,7 +11123,7 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &visHRRlabel);
       ONEORZERO(visHRRlabel);
-      UpdateHrrinfo(visHRRlabel);
+      UpdateHRRInfo(visHRRlabel);
       continue;
     }
     if(Match(buffer, "SHOWHRRCUTOFF") == 1){

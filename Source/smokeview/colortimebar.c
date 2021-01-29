@@ -63,7 +63,7 @@ void UpdateTimeLabels(void){
   else{
     sprintf(framelabel, "%i", itimes);
   }
-  if(hrrinfo!=NULL&&hrrinfo->display==1&&hrrinfo->loaded==1){
+  if(hrrinfo!=NULL&&hrrinfo->hrrval!=NULL&&hrrinfo->display==1&&hrrinfo->loaded==1){
     float hrr;
 
     hrr = hrrinfo->hrrval[hrrinfo->itime];

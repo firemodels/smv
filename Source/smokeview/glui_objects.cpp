@@ -19,6 +19,7 @@
 #define DEVICE_NBUCKETS         5
 #define DEVICE_SHOWBEAM         6
 #define DEVICE_RADIUS           7
+//#define HRRPUV_PLOT            30 put in smokeviewdef.h
 
 #define WINDROSE_SHOW_FIRST   996
 #define WINDROSE_SHOW_NEXT    997
@@ -68,6 +69,7 @@ GLUI_Checkbox *CHECKBOX_vis_ztree = NULL;
 GLUI_Checkbox *CHECKBOX_showbeam_as_line = NULL;
 GLUI_Checkbox *CHECKBOX_use_beamcolor = NULL;
 GLUI_Checkbox **CHECKBOX_showz_windrose;
+GLUI_Checkbox *CHECKBOX_show_hrrpuv_plot=NULL;
 
 GLUI_EditText *EDIT_filter=NULL;
 
@@ -79,6 +81,8 @@ GLUI_Panel *PANEL_arrow_base=NULL;
 GLUI_Panel *PANEL_arrow_height=NULL;
 GLUI_Panel *PANEL_values = NULL;
 GLUI_Panel *PANEL_plots = NULL;
+GLUI_Panel *PANEL_plotdevice = NULL;
+GLUI_Panel *PANEL_plotproperties = NULL;
 GLUI_Panel *PANEL_label3=NULL;
 GLUI_Panel *PANEL_vector_type=NULL;
 GLUI_Panel *PANEL_beam=NULL;
@@ -135,6 +139,12 @@ int ndeviceprocinfo = 0;
 
 void Device_Rollout_CB(int var){
   ToggleRollout(deviceprocinfo, ndeviceprocinfo, var);
+}
+
+/* ------------------ UpdateShowHRRPUVPlot ------------------------ */
+
+extern "C" void UpdateShowHRRPUVPlot(int val){
+  if(CHECKBOX_show_hrrpuv_plot!=NULL)CHECKBOX_show_hrrpuv_plot->set_int_val(val);
 }
 
 /* ------------------ UpdateDeviceTypes ------------------------ */
@@ -268,6 +278,11 @@ extern "C" void DeviceCB(int var){
   int i;
 
   updatemenu = 1;
+  if(var==HRRPUV_PLOT){
+    show_hrrpuv_plot = 1-show_hrrpuv_plot;
+    ShowObjectsMenu(PLOT_HRRPUV);
+    return;
+  }
   if(var == WINDROSE_UPDATE){
     DeviceData2WindRose(nr_windrose, ntheta_windrose);
     return;
@@ -643,7 +658,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       CHECKBOX_device_1 = glui_device->add_checkbox_to_panel(PANEL_values, _("Id"), &showdevice_id, SHOWDEVICEVALS, DeviceCB);
       CHECKBOX_device_5 = glui_device->add_checkbox_to_panel(PANEL_values, _("Type"), &showdevice_type, SHOWDEVICEVALS, DeviceCB);
       CHECKBOX_device_6 = glui_device->add_checkbox_to_panel(PANEL_values, _("Unit"), &showdevice_unit, SHOWDEVICEVALS, DeviceCB);
-      CHECKBOX_device_4=glui_device->add_checkbox_to_panel(PANEL_values,_("Color"),&colordevice_val,COLORDEVICEVALS,DeviceCB);
+      CHECKBOX_device_4 = glui_device->add_checkbox_to_panel(PANEL_values,_("Color"),&colordevice_val,COLORDEVICEVALS,DeviceCB);
       glui_device->add_spinner_to_panel(PANEL_values,"min",GLUI_SPINNER_FLOAT,&device_valmin);
       glui_device->add_spinner_to_panel(PANEL_values,"max",GLUI_SPINNER_FLOAT,&device_valmax);
 
@@ -654,21 +669,23 @@ extern "C" void GluiDeviceSetup(int main_window){
       }
 
       PANEL_plots = glui_device->add_panel_to_panel(ROLLOUT_devicevalues, "plots");
-      RADIO_showdevice_plot=glui_device->add_radiogroup_to_panel(PANEL_plots, &showdevice_plot, SHOWDEVICEPLOT, DeviceCB);
+      PANEL_plotdevice = glui_device->add_panel_to_panel(PANEL_plots, "device data");
+      RADIO_showdevice_plot=glui_device->add_radiogroup_to_panel(PANEL_plotdevice, &showdevice_plot, SHOWDEVICEPLOT, DeviceCB);
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "hide");
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show selected");
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show all");
 #ifdef pp_ZTREE
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show all (trees)");
 #endif
-
-      glui_device->add_checkbox_to_panel(PANEL_plots, _("show labels"), &showdevice_labels);
-      glui_device->add_spinner_to_panel(PANEL_plots, _("size"), GLUI_SPINNER_FLOAT, &device_plot_factor);
-      glui_device->add_spinner_to_panel(PANEL_plots, _("x offset"), GLUI_SPINNER_FLOAT, device_xyz_offset);
-      glui_device->add_spinner_to_panel(PANEL_plots, _("y offset"), GLUI_SPINNER_FLOAT, device_xyz_offset+1);
-      glui_device->add_spinner_to_panel(PANEL_plots, _("z offset"), GLUI_SPINNER_FLOAT, device_xyz_offset+2);
-      glui_device->add_spinner_to_panel(PANEL_plots, _("line width"), GLUI_SPINNER_FLOAT, &device_plot_line_width);
-      glui_device->add_spinner_to_panel(PANEL_plots, _("point size"), GLUI_SPINNER_FLOAT, &device_plot_point_size);
+      CHECKBOX_show_hrrpuv_plot = glui_device->add_checkbox_to_panel(PANEL_plots, _("HRRPUV data"), &show_hrrpuv_plot,HRRPUV_PLOT, DeviceCB);
+      PANEL_plotproperties = glui_device->add_panel_to_panel(PANEL_plots, "properties");
+      glui_device->add_checkbox_to_panel(PANEL_plotproperties, _("labels"), &showdevice_labels);
+      glui_device->add_spinner_to_panel(PANEL_plotproperties, _("size"), GLUI_SPINNER_FLOAT, &device_plot_factor);
+      glui_device->add_spinner_to_panel(PANEL_plotproperties, _("x offset"), GLUI_SPINNER_FLOAT, device_xyz_offset);
+      glui_device->add_spinner_to_panel(PANEL_plotproperties, _("y offset"), GLUI_SPINNER_FLOAT, device_xyz_offset+1);
+      glui_device->add_spinner_to_panel(PANEL_plotproperties, _("z offset"), GLUI_SPINNER_FLOAT, device_xyz_offset+2);
+      glui_device->add_spinner_to_panel(PANEL_plotproperties, _("line width"), GLUI_SPINNER_FLOAT, &device_plot_line_width);
+      glui_device->add_spinner_to_panel(PANEL_plotproperties, _("point size"), GLUI_SPINNER_FLOAT, &device_plot_point_size);
 
       UpdateGluiDevices();
     }
@@ -694,12 +711,21 @@ extern "C" void HideGluiDevice(void){
   CloseRollouts(glui_device);
 }
 
+/* ------------------ ShowGluiPlotDevice ------------------------ */
+
+extern "C" void ShowGluiPlotDevice(void){
+  if(glui_device!=NULL){
+    glui_device->show();
+    if(ROLLOUT_devicevalues!=NULL)ROLLOUT_devicevalues->open();
+  }
+  
+}
+
 /* ------------------ ShowGluiDevice ------------------------ */
 
 extern "C" void ShowGluiDevice(void){
   if(glui_device!=NULL)glui_device->show();
 }
-
 /* ------------------ OpenCB ------------------------ */
 
 void OpenCB(int var){

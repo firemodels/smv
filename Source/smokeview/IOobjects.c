@@ -3297,36 +3297,47 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
 void DrawDevicePlots(void){
   int i;
 
-  for(i = 0; i<ndeviceinfo; i++){
-    devicedata *devicei;
+  if(showdevice_plot!=DEVICE_PLOT_HIDDEN){
+    for(i = 0; i<ndeviceinfo; i++){
+      devicedata *devicei;
 
-    devicei = deviceinfo+i;
-    if(devicei->object->visible==0)continue;
+      devicei = deviceinfo+i;
+      if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED&&devicei->selected==0)continue;
+      if(devicei->times==NULL||devicei->vals==NULL)continue;
+      if(devicei->nvals>1&&devicei->type2==devicetypes_index){
+        int valid;
+        float highlight_time = 0.0, highlight_val = 0.0;
 
-    if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED&&devicei->selected==0)continue;
-    if(devicei->times==NULL||devicei->vals==NULL)continue;
-    if(devicei->nvals>1&&devicei->type2==devicetypes_index){
-      int valid;
-      float highlight_time=0.0, highlight_val=0.0;
-
-      valid = 0;
-      if(global_times!=NULL){
-        highlight_time = global_times[itimes];
-        highlight_val= GetDeviceVal(global_times[itimes],devicei,&valid);
+        valid = 0;
+        if(global_times!=NULL){
+          highlight_time = global_times[itimes];
+          highlight_val = GetDeviceVal(global_times[itimes], devicei, &valid);
+        }
+        if(devicei->global_valmin>devicei->global_valmax){
+          GetGlobalDeviceBounds(devicei->type2);
+        }
+        DrawPlot(PLOT_ALL, devicei->xyz, device_plot_factor, devicei->times, devicei->vals, devicei->nvals,
+                 highlight_time, highlight_val, valid, devicei->global_valmin, devicei->global_valmax,
+                 devicei->quantity, devicei->unit
+        );
       }
-      if(devicei->global_valmin>devicei->global_valmax){
-        GetGlobalDeviceBounds(devicei->type2);
-      }
-      DrawPlot(PLOT_ALL, devicei->xyz, device_plot_factor, devicei->times, devicei->vals, devicei->nvals, 
-               highlight_time, highlight_val, valid, devicei->global_valmin, devicei->global_valmax,
-               devicei->quantity, devicei->unit
-      );
     }
+  }
+  if(show_hrrpuv_plot==1&&hrrinfo!=NULL){
+    float xyz[] = {0.0,0.0,0.0};
+    char quantity[] = "HRR", unit[] = "kW";
+    int valid = 1;
+    float highlight_time = 0.0, highlight_val = 0.0;
+
+    highlight_time = global_times[itimes];
+    highlight_val = hrrinfo->hrrval[hrrinfo->itime];
+
+    DrawPlot(PLOT_ALL, xyz, device_plot_factor, hrrinfo->times, hrrinfo->hrrval, hrrinfo->ntimes,
+             highlight_time, highlight_val, valid, hrr_valmin, hrr_valmax, quantity, unit);
   }
 }
 
 #ifdef pp_ZTREE
-
 /* ----------------------- DrawTreePlot ----------------------------- */
 
 void DrawTreePlot(int first, int n){

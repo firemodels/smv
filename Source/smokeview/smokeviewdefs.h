@@ -7,6 +7,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define PLOT_HRRPUV -13
+#define HRRPUV_PLOT            30
+
 #ifdef pp_OSX_HIGHRES
 #define GLUT_BITMAP_HELVETICA_20	(&glutBitmapHelvetica20)
 #define GLUT_BITMAP_HELVETICA_24	(&glutBitmapHelvetica24)
