@@ -27,13 +27,19 @@ int CompareFloat( const void *arg1, const void *arg2 ){
   return 0;
 }
 
-/* ------------------ UpdateHrrinfo ------------------------ */
+/* ------------------ UpdateHRRInfo ------------------------ */
 
-void UpdateHrrinfo(int vis){
-  if(hrrinfo != NULL && hrrinfo->display!=vis&&hrrinfo->loaded==1){
+void UpdateHRRInfo(int vis){
+  if(hrrinfo!=NULL&&hrrinfo->loaded==1){
     hrrinfo->display = vis;
-    UpdateTimes();
+    if(hrrinfo->display == 0)show_hrrpuv_plot = 0;
   }
+  if(visHRRlabel == 0)show_hrrpuv_plot=0;
+
+  UpdateShowHRRPUVPlot(show_hrrpuv_plot);
+  plotstate = GetPlotState(DYNAMIC_PLOTS);
+  UpdateShow();
+  update_times = 1;
 }
 
 /* ------------------ UpdateFrameNumber ------------------------ */
@@ -394,7 +400,9 @@ void UpdateShow(void){
     if(settmin_z==1&&global_times[itimes]<tmin_z)visTimeZone=0;
     if(settmax_z==1&&global_times[itimes]>tmax_z)visTimeZone=0;
   }
-
+  if(visHRRlabel==1&&show_hrrpuv_plot==1&&hrrinfo!=NULL){
+    showdeviceflag = 1;
+  }
   if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;
@@ -1086,6 +1094,11 @@ void UpdateTimes(void){
     }
   }
 
+  if(visHRRlabel==1&&show_hrrpuv_plot==1&&hrrinfo!=NULL){
+    nglobal_times = MAX(nglobal_times, hrrinfo->ntimes_csv);
+    global_timemin = MIN(global_timemin, hrrinfo->times_csv[0]);
+    global_timemax = MAX(global_timemax, hrrinfo->times_csv[hrrinfo->ntimes_csv-1]);
+  }
   if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;
@@ -1584,6 +1597,10 @@ int GetPlotState(int choice){
       break;
     case DYNAMIC_PLOTS:
     case DYNAMIC_PLOTS_NORECURSE:
+      if(visHRRlabel==1&&show_hrrpuv_plot==1&&hrrinfo!=NULL){
+        stept = 1;
+        return DYNAMIC_PLOTS;
+      }
       if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
         for(i = 0; i<ndeviceinfo; i++){
           devicedata *devicei;

@@ -5,6 +5,10 @@
 #include "gd.h"
 #endif
 
+
+EXTERNCPP void ShowObjectsMenu(int var);
+EXTERNCPP void UpdateShowHRRPUVPlot(int val);
+
 EXTERNCPP void UpdateUseGeomFactors(void);
 
 EXTERNCPP void AdjustY(cameradata *ca);
@@ -51,7 +55,7 @@ EXTERNCPP int GetPlotState(int choice);
 EXTERNCPP void UpdateDeviceShow(void);
 EXTERNCPP void UpdateClipbounds(int set_i0, int *i0, int set_i1, int *i1, int maxi);
 EXTERNCPP int CompareFloat(const void *arg1, const void *arg2);
-EXTERNCPP void UpdateHrrinfo(int val);
+EXTERNCPP void UpdateHRRInfo(int val);
 EXTERNCPP void ResetItimes0(void);
 EXTERNCPP void UpdateShow(void);
 EXTERNCPP void SynchTimes(void);
@@ -363,6 +367,7 @@ EXTERNCPP void ShowGluiWui(void);
 EXTERNCPP void HideGluiWui(void);
 EXTERNCPP void ShowGluiDisplay(int menu_id);
 EXTERNCPP void ShowGluiDevice(void);
+EXTERNCPP void ShowGluiPlotDevice(void);
 EXTERNCPP void HideGluiDevice(void);
 EXTERNCPP void SetLabelControls(void);
 EXTERNCPP void SetLabelControls2(void);

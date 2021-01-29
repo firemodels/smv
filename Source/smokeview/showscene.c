@@ -492,8 +492,10 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     DrawDevicesVal();
   }
 
+  /* ++++++++++++++++++++++++ draw device plots +++++++++++++++++++++++++ */
+
   if(mode==DRAWSCENE){
-    if(showdevice_plot==DEVICE_PLOT_SHOW_ALL||showdevice_plot==DEVICE_PLOT_SHOW_SELECTED){
+    if((show_hrrpuv_plot==1&&hrrinfo!=NULL)||showdevice_plot==DEVICE_PLOT_SHOW_ALL||showdevice_plot==DEVICE_PLOT_SHOW_SELECTED){
       DrawDevicePlots();
     }
 #ifdef pp_ZTREE
