@@ -7,6 +7,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define OBJECT_PLOT_SHOW_ALL        -8
+#define OBJECT_PLOT_SHOW_SELECTED  -11
+#define OBJECT_PLOT_SHOW_TREE_ALL  -12
+
 #define PLOT_HRRPUV -13
 #define HRRPUV_PLOT            30
 

@@ -23,6 +23,7 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(plot_option, 0);
 SVEXTERN float hrr_valmin, hrr_valmax;
 SVEXTERN int SVDECL(show_hrrpuv_plot, 0);
 SVEXTERN int SVDECL(is_terrain_case, 0);
