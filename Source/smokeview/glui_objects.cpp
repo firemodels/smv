@@ -157,8 +157,8 @@ extern "C" void UpdateDeviceTypes(int val){
 /* ------------------ UpdateDeviceShow ------------------------ */
 
 extern "C" void UpdateDeviceShow(void){
-  CHECKBOX_showdevice_val->set_int_val(showdevice_val);
-  RADIO_showdevice_plot->set_int_val(showdevice_plot);
+  if(CHECKBOX_showdevice_val!=NULL)CHECKBOX_showdevice_val->set_int_val(showdevice_val);
+  if(RADIO_showdevice_plot!=NULL)RADIO_showdevice_plot->set_int_val(showdevice_plot);
 }
 
 /* ------------------ UpdateWindRoseDevices ------------------------ */
