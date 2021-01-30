@@ -1657,6 +1657,40 @@ void Keyboard(unsigned char key, int flag){
   key2 = (char)key;
 
   switch(key2){
+    case 'A':
+      plot_option++;
+      if(plot_option>3)plot_option=0;
+      // 0 - device no, hrr no
+      // 1   device yes hrr no
+      // 2   device no  hrr yes
+      // 3   device yes hrr yes
+// toggle device plots
+      switch (plot_option){
+        case 0: // 
+        case 2: // hrr plots
+          showdevice_plot = DEVICE_PLOT_SHOW_ALL;
+          ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
+          break;
+        case 1: // device plots
+        case 3: // devices and hrr plots
+          showdevice_plot = 0;
+          ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
+          break;
+      }
+// hrr plot
+      switch(plot_option){
+        case 0: // none
+        case 1: // device plots
+          show_hrrpuv_plot = 1;
+          ShowObjectsMenu(PLOT_HRRPUV);
+          break;
+        case 2: // hrr plots
+        case 3: // devices and hrr plots
+          show_hrrpuv_plot = 0;
+          ShowObjectsMenu(PLOT_HRRPUV);
+          break;
+      }
+      break;
     case 'a':
       if(showtour_dialog==1&&edittour==1){
         AddDeleteKeyframe(ADD_KEYFRAME);

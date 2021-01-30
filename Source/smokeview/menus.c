@@ -9811,6 +9811,7 @@ updatemenu=0;
     glutAddMenuEntry(_("  }: load next time Plot3D files"), MENU_DUMMY);
   }
   glutAddMenuEntry(_("Misc"), MENU_DUMMY);
+  glutAddMenuEntry(_("  A: toggle between plot types (device and HRRPUV)"), MENU_DUMMY);
   glutAddMenuEntry(_("  r/R: render the current scene to an image file"), MENU_DUMMY);
   glutAddMenuEntry("             r: image has the same resolution as the scene", MENU_DUMMY);
   {
