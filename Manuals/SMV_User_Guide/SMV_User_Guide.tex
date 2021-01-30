@@ -3497,15 +3497,15 @@ LOADISO
 
 \hitem{LOADSLCF}Load a slice file.
 This script command uses one or more of the keywords ID, PBX, PBY, PBZ, QUANTITY, CELL\_CENTERED and VECTOR to specify slice files to load.
-These keywords are defined in the same way as when used with an \&SLCF namelist in an FDS input file. 
-ID specifies an identifier.  PBX, PBY, PBZ specify a position and orientation. 
+These keywords are defined in the same way as when used with an \&SLCF namelist in an FDS input file.
+ID specifies an identifier.  PBX, PBY, PBZ specify a position and orientation.
 PB3D, not a \&SLCF namelist keyword, is used to load 3D slice files.
 CELL\_CENTERED indicates that the slice is cell centered as opposed to node centered
 and VECTOR indicates that slice files for 3 components of velocity in addition to a slice file for QUANTITY is to be loaded.
 
-The ID keyword may be used to specify a slice file instead of QUANTITY and one of PBX, PBY, PBZ and PB3D.  
+The ID keyword may be used to specify a slice file instead of QUANTITY and one of PBX, PBY, PBZ and PB3D.
 QUANTITY contains a string enclosed in single quotes such as
-TEMPERATURE. U-VELOCITY, or SOOT DENSITY {\em etc}.  
+TEMPERATURE. U-VELOCITY, or SOOT DENSITY {\em etc}.
 Blanks are allowed in an ID or QUANTITY value.  They must be enlosed by single not double quotes.
 Any value used in an FDS input file may be used here. You may use blanks or commas to separate keywords.
 Note, that these files need to exist in order to be loaded.
@@ -3527,11 +3527,11 @@ LOADSLCF
 
 \noindent To load the same slice by specifying a quantity and location use:
 \begin{lstlisting}
-LOADSLCF 
+LOADSLCF
  PBX=1.0, QUANTITY='TEMPERATURE'
 \end{lstlisting}
 
-\noindent The first \&SLCF line has VECTOR=T parameter set so has velocity components for vector slice files.  
+\noindent The first \&SLCF line has VECTOR=T parameter set so has velocity components for vector slice files.
 To load a vector slice file use:
 \begin{lstlisting}
 LOADSLCF
@@ -3552,7 +3552,7 @@ LOADSLCF
 \end{lstlisting}
 
 The third \&SLCF namelist is a 3D slice file.  The LOADSLCF does not support the XB keyword.
-To load a 3D slice use PB33D as in the following.   
+To load a 3D slice use PB33D as in the following.
 
 \begin{lstlisting}
 LOADSLCF
@@ -4753,7 +4753,7 @@ Smokeview.
 
 \kitem{a}When in {\em eye centered}\ movement mode, slide to the left.
 
-\kitem{A}Toggle axis label smoothing on and off.
+\kitem{A}Switch plot display between device, HRRPUV, device and HRRPUV and none.
 
 \kitem{b}Toggle visibility of boundary files
 
