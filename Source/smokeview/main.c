@@ -728,23 +728,23 @@ int main(int argc, char **argv){
   int return_code;
   char *progname;
 
+// #define pp_CRASH_TEST
 #ifdef pp_CRASH_TEST
-  {
-    float *x = NULL, xx, yy, zz;
+  
+  float *x = NULL, xx, yy, zz;
 
-    zz = xx+yy;
-    printf("use undefined variable zz=%f\n", zz);
+  printf("before using undefined variable\n");
+  zz = xx+yy;
+  printf("after using undefined variable: z=%f\n", zz);
 
-    xx = 0.0;
-    zz = 1.0/xx;
-    printf("divide by zero zz=%f\n", zz);
+  xx = 0.0;
+  printf("before divide by zero\n");
+  zz = 1.0/xx;
+  printf("after divide by zero: zz=%f\n", zz);
 
-    printf("before crash\n");
-    x[0] = 1.0;
-    printf("use undefined pointer x[0]=%f\n", x[0]);
-
-    printf("after crash\n");
-  }
+  printf("before accessing null variable\n");
+  x[0] = 1.0;
+  printf("after accessing null variable: %f\n", x[0]);
 #endif
 #ifdef pp_LUA
   // If we are using lua, let lua take control here.
