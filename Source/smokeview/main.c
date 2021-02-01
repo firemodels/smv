@@ -530,6 +530,9 @@ void ParseCommandline(int argc, char **argv){
     else if(strncmp(argv[i], "-smoke3d", 8) == 0){
       smoke3d_only = 1;
     }
+    else if(strncmp(argv[i], "-no_slcf", 8)==0){
+    handle_slice_files = 0;
+    }
     else if(strncmp(argv[i], "-h", 2) == 0&&strncmp(argv[i], "-help_all", 9)!=0&&strncmp(argv[1], "-html", 5)!=0){
       Usage(argv[0],HELP_SUMMARY);
       SMV_EXIT(0);
