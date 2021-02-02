@@ -1657,35 +1657,49 @@ void Keyboard(unsigned char key, int flag){
   key2 = (char)key;
 
   switch(key2){
+#define DEVNO_HRRNO   0
+#define DEVYES_HRRYES 1
+#define DEVYES_HRRNO  2
+#define DEVNO_HRRYES  3
     case 'A':
-      plot_option++;
-      if(plot_option>3)plot_option=0;
+      if(hrrinfo==NULL&&ndeviceinfo==0)break;
+      if(hrrinfo!=NULL&&ndeviceinfo>0){
+        plot_option++;
+        if(plot_option>3)plot_option = 0;
+      }
+      else{
+        int plot_option_temp = DEVNO_HRRNO;
+
+        if(ndeviceinfo==0&&hrrinfo!=NULL&&plot_option==DEVNO_HRRNO)plot_option_temp = DEVNO_HRRYES;
+        if(ndeviceinfo>0&&hrrinfo==NULL&&plot_option==DEVNO_HRRNO)plot_option_temp = DEVYES_HRRNO;
+        plot_option = plot_option_temp;
+      }
       // 0 - device no, hrr no
-      // 1   device yes hrr no
-      // 2   device no  hrr yes
-      // 3   device yes hrr yes
-// toggle device plots
+      // 1   device yes hrr yes
+      // 2   device yes hrr no
+      // 3   device no  hrr yes
+// device plots
       switch (plot_option){
-        case 0: // 
-        case 2: // hrr plots
+        case DEVNO_HRRNO: // device plots off
+        case DEVNO_HRRYES:
           showdevice_plot = DEVICE_PLOT_SHOW_ALL;
           ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
           break;
-        case 1: // device plots
-        case 3: // devices and hrr plots
+        case DEVYES_HRRYES: // device plots on
+        case DEVYES_HRRNO:
           showdevice_plot = 0;
           ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
           break;
       }
 // hrr plot
       switch(plot_option){
-        case 0: // none
-        case 1: // device plots
+        case DEVNO_HRRNO: // hrr plots off
+        case DEVYES_HRRNO:
           show_hrrpuv_plot = 1;
           ShowObjectsMenu(PLOT_HRRPUV);
           break;
-        case 2: // hrr plots
-        case 3: // devices and hrr plots
+        case DEVYES_HRRYES: // hrr plots on
+        case DEVNO_HRRYES:
           show_hrrpuv_plot = 0;
           ShowObjectsMenu(PLOT_HRRPUV);
           break;

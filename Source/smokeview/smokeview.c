@@ -13,7 +13,7 @@
 #endif
 
 /* ------------------ _Sniff_Errors ------------------------ */
-#ifdef pp_SNIFF_ERRORS
+#ifdef pp_SNIFF_ERROR
 void _Sniff_Errors(char *whereat, char *file, int line){
   int error;
 
