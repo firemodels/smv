@@ -1849,11 +1849,54 @@ int GetInpf(bufferstreamdata *stream_in){
   return 0;
 }
 
+/* ------------------ IsDupTexture ------------------------ */
+
+int IsDupTexture(texturedata *texti){
+  int dup_texture;
+  int i, j;
+
+  i = texti - textureinfo;
+  dup_texture=0;
+  for(j=0;j<i;j++){
+    texturedata *textj;
+
+    textj = textureinfo + j;
+    if(textj->loaded==0)continue;
+    if(strcmp(texti->file,textj->file)==0){
+      texti->name=textj->name;
+      texti->loaded=1;
+      dup_texture=1;
+    }
+  }
+  return dup_texture;
+}
+
+/* ------------------ IsTerrainTexture ------------------------ */
+
+int IsTerrainTexture(texturedata *texti){
+  int is_terrain_texture;
+  int i;
+
+  is_terrain_texture=0;
+  for(i=0;i<nterrain_textures;i++){
+    int is_transparent;
+    texturedata *tt;
+
+    tt = terrain_textures + i;
+    if(tt->file==NULL||strcmp(tt->file, texti->file)!=0)continue;
+    return 1;
+  }
+  return is_terrain_texture;
+}
+
 /* ------------------ InitTextures0 ------------------------ */
 
 void InitTextures0(void){
   // get texture filename from SURF and device info
   int i;
+  float time1, time2, time3, time4, time5, time6;
+
+  START_TIMER(time1);
 
   ntextureinfo = 0;
   for(i=0;i<nsurfinfo;i++){
@@ -1873,7 +1916,9 @@ void InitTextures0(void){
     ntextureinfo++;
     surfi->textureinfo=textureinfo+ntextureinfo-1;
   }
+  STOP_TIMER(time1);
 
+  START_TIMER(time2);
   for(i=0;i<ndevice_texture_list;i++){
     char *texturefile;
     texturedata *texti;
@@ -1890,7 +1935,9 @@ void InitTextures0(void){
     texti->display=0;
     ntextureinfo++;
   }
+  STOP_TIMER(time2);
 
+  START_TIMER(time3);
   if(nterrain_textures>0){
     texturedata *texture_base;
 
@@ -1913,85 +1960,70 @@ void InitTextures0(void){
     FREEMEMORY(terrain_textures);
     terrain_textures = texture_base;
   }
+  STOP_TIMER(time3);
 
   // check to see if texture files exist .
   // If so, then convert to OpenGL format
 
+  START_TIMER(time4);
   for(i=0;i<ntextureinfo;i++){
     unsigned char *floortex;
     int texwid, texht;
     texturedata *texti;
     int dup_texture;
     int j;
+    char *filename;
+    int max_texture_size;
+    int is_transparent;
 
     texti = textureinfo + i;
     texti->loaded=0;
-    if(texti->file==NULL){
+    if(texti->file==NULL||IsDupTexture(texti)==1||IsTerrainTexture(texti)==1)continue;
+
+    CheckMemory;
+    filename=strrchr(texti->file,*dirseparator);
+    if(filename!=NULL){
+      filename++;
+    }
+    else{
+      filename=texti->file;
+    }
+    glGenTextures(1,&texti->name);
+    glBindTexture(GL_TEXTURE_2D,texti->name);
+    printf("  reading in texture image: %s",texti->file);
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
+
+    floortex=ReadPicture(texti->file,&texwid,&texht,&is_transparent,0);
+    texti->is_transparent = is_transparent;
+    if(floortex==NULL){
+      PRINTF("\n***Error: Texture %s failed to load\n", filename);
       continue;
     }
-    dup_texture=0;
-    for(j=0;j<i;j++){
-      texturedata *textj;
-
-      textj = textureinfo + j;
-      if(textj->loaded==0)continue;
-      if(strcmp(texti->file,textj->file)==0){
-        texti->name=textj->name;
-        texti->loaded=1;
-        dup_texture=1;
-      }
+    printf(" - complete\n");
+    if(texwid>max_texture_size||texht>max_texture_size){
+      printf("***error: image size: %i x %i, is larger than the maximum allowed texture size %i x %i\n", texwid, texht, max_texture_size, max_texture_size);
     }
-    if(dup_texture==1){
-      continue;
-    }
-    if(use_graphics==1){
-      char *filename;
-      int max_texture_size;
-      int is_transparent;
-
-      CheckMemory;
-      filename=strrchr(texti->file,*dirseparator);
-      if(filename!=NULL){
-        filename++;
-      }
-      else{
-        filename=texti->file;
-      }
-      glGenTextures(1,&texti->name);
-      glBindTexture(GL_TEXTURE_2D,texti->name);
-      printf("  reading in texture image: %s",texti->file);
-      glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
-
-      floortex=ReadPicture(texti->file,&texwid,&texht,&is_transparent,0);
-      texti->is_transparent = is_transparent;
-      if(floortex==NULL){
-        PRINTF("\n***Error: Texture %s failed to load\n", filename);
-        continue;
-      }
-      printf(" - complete\n");
-      if(texwid>max_texture_size||texht>max_texture_size){
-        printf("***error: image size: %i x %i, is larger than the maximum allowed texture size %i x %i\n", texwid, texht, max_texture_size, max_texture_size);
-      }
-      printf("  installing texture: %s",texti->file);
-      glTexImage2D(GL_TEXTURE_2D, 0, 4, texwid, texht, 0, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
-      SNIFF_ERRORS("after glTexImage2D");
-      printf(" - complete\n");
-      glGenerateMipmap(GL_TEXTURE_2D);
-      SNIFF_ERRORS("after glGenerateMipmap");
-      FREEMEMORY(floortex);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-      texti->loaded=1;
-    }
+    printf("  installing texture: %s",texti->file);
+    glTexImage2D(GL_TEXTURE_2D, 0, 4, texwid, texht, 0, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
+    SNIFF_ERRORS("after glTexImage2D");
+    printf(" - complete\n");
+    glGenerateMipmap(GL_TEXTURE_2D);
+    SNIFF_ERRORS("after glGenerateMipmap");
+    FREEMEMORY(floortex);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    texti->loaded=1;
   }
+  STOP_TIMER(time4);
 
   CheckMemory;
   if(ntextureinfo==0){
     FREEMEMORY(textureinfo);
   }
 
+  START_TIMER(time5);
   // define colorbar textures
 
  // glActiveTexture(GL_TEXTURE0);
@@ -2088,11 +2120,13 @@ void InitTextures0(void){
 #endif
   glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_slicesmokecolormap_01);
 
+  STOP_TIMER(time5);
   CheckMemory;
 
   // define terrain texture
 
-  if(nterrain_textures>0&&use_graphics==1){
+  START_TIMER(time6);
+  if(nterrain_textures>0){
     texturedata *tt;
     unsigned char *floortex;
     int texwid, texht;
@@ -2120,11 +2154,11 @@ void InitTextures0(void){
         if(floortex==NULL)PRINTF("***Error: Texture file %s failed to load\n",tt->file);
       }
       if(floortex!=NULL){
-        errorcode=gluBuild2DMipmaps(GL_TEXTURE_2D,4, texwid, texht, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
-        if(errorcode!=0)PRINTF("***Error: Texture file %s failed to load\n",tt->file);
-      }
-      FREEMEMORY(floortex);
-      if(errorcode==0){
+        glTexImage2D(GL_TEXTURE_2D, 0, 4, texwid, texht, 0, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        SNIFF_ERRORS("after glTexImage2D for terrain texture");
+
+        FREEMEMORY(floortex);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -2132,6 +2166,15 @@ void InitTextures0(void){
         tt->loaded=1;
       }
     }
+  }
+  STOP_TIMER(time6);
+  if(show_startup_timings==1){
+    printf("texture time1=%f\n", time1);
+    printf("texture time2=%f\n", time2);
+    printf("texture time3=%f\n", time3);
+    printf("texture time4=%f\n", time4);
+    printf("texture time5=%f\n", time5);
+    printf("texture time6=%f\n", time6);
   }
 }
 
@@ -2143,7 +2186,9 @@ float InitTextures(int use_graphics_arg){
   if(nsurfinfo>0||ndevice_texture_list>0){
     if(NewMemory((void **)&textureinfo, (nsurfinfo+ndevice_texture_list+nterrain_textures)*sizeof(texturedata))==0)return 2;
   }
-  if(use_graphics_arg==1)InitTextures0();
+  if(use_graphics_arg==1){
+    InitTextures0();
+  }
   STOP_TIMER(texture_time);
   return texture_time;
 }
