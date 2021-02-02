@@ -1879,7 +1879,6 @@ int IsTerrainTexture(texturedata *texti){
 
   is_terrain_texture=0;
   for(i=0;i<nterrain_textures;i++){
-    int is_transparent;
     texturedata *tt;
 
     tt = terrain_textures + i;
@@ -1970,8 +1969,6 @@ void InitTextures0(void){
     unsigned char *floortex;
     int texwid, texht;
     texturedata *texti;
-    int dup_texture;
-    int j;
     char *filename;
     int max_texture_size;
     int is_transparent;
@@ -2130,7 +2127,6 @@ void InitTextures0(void){
     texturedata *tt;
     unsigned char *floortex;
     int texwid, texht;
-    int errorcode;
 
     for(i=0;i<nterrain_textures;i++){
       int is_transparent;
@@ -2144,7 +2140,6 @@ void InitTextures0(void){
       glGenTextures(1,&tt->name);
       glBindTexture(GL_TEXTURE_2D,tt->name);
       floortex=NULL;
-      errorcode=1;
       if(tt->file!=NULL){
 #ifdef _DEBUG
         PRINTF("terrain texture file: %s",tt->file);
