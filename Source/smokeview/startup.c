@@ -27,11 +27,13 @@ void InitDefaultCameras(void){
   }
 
   strcpy(name_external, "external");
-  InitCamera(camera_external, name_external);
-  camera_external->view_id = EXTERNAL_LIST_ID;
   if(is_terrain_case==1){
     CopyCamera(camera_external, camera_defaults[5]);
     strcpy(camera_external->name, name_external);
+  }
+  else{
+    InitCamera(camera_external, name_external);
+    camera_external->view_id = EXTERNAL_LIST_ID;
   }
 
   if(camera_ini!=NULL&&camera_ini->defined==1){

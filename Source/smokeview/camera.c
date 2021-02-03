@@ -135,8 +135,8 @@ void UpdateCameraYpos(cameradata *ci, int option){
       break;
   }
   eyeyfactor = -(width/2.0)/tan(local_aperture_default*DEG2RAD/2.0) - offset;
-  if(use_geom_factors==1&&have_geom_factors==1){
-    eyeyfactor *= 1.2;
+  if(option==3&&use_geom_factors==1&&have_geom_factors==1){
+    eyeyfactor *= 1.4;
   }
   else{
     eyeyfactor *= 1.05;
