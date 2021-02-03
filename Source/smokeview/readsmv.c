@@ -2126,7 +2126,7 @@ void InitTextures0(void){
   if(nterrain_textures>0){
     texturedata *tt;
     unsigned char *floortex;
-    int texwid, texht;
+    int texwid, texht, nloaded=0;
 
     for(i=0;i<nterrain_textures;i++){
       int is_transparent;
@@ -2158,7 +2158,9 @@ void InitTextures0(void){
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        nloaded++;
         tt->loaded=1;
+        if(nloaded==1)tt->display = 1; // display first texture by default
       }
     }
   }
