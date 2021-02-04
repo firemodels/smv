@@ -2126,7 +2126,7 @@ void InitTextures0(void){
   if(nterrain_textures>0){
     texturedata *tt;
     unsigned char *floortex;
-    int texwid, texht;
+    int texwid, texht, nloaded=0;
 
     for(i=0;i<nterrain_textures;i++){
       int is_transparent;
@@ -2158,7 +2158,9 @@ void InitTextures0(void){
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        nloaded++;
         tt->loaded=1;
+        if(nloaded==1)tt->display = 1; // display first texture by default
       }
     }
   }
@@ -2491,11 +2493,11 @@ void GetBoxGeomCorners(void){
   box_geom_corners[1][1] = ymin;
   box_geom_corners[1][2] = zmin;
 
-  box_geom_corners[2][0] = xmax;
+  box_geom_corners[2][0] = xmin;
   box_geom_corners[2][1] = ymax;
   box_geom_corners[2][2] = zmin;
 
-  box_geom_corners[3][0] = xmin;
+  box_geom_corners[3][0] = xmax;
   box_geom_corners[3][1] = ymax;
   box_geom_corners[3][2] = zmin;
 
@@ -2507,11 +2509,11 @@ void GetBoxGeomCorners(void){
   box_geom_corners[5][1] = ymin;
   box_geom_corners[5][2] = zmax;
 
-  box_geom_corners[6][0] = xmax;
+  box_geom_corners[6][0] = xmin;
   box_geom_corners[6][1] = ymax;
   box_geom_corners[6][2] = zmax;
 
-  box_geom_corners[7][0] = xmin;
+  box_geom_corners[7][0] = xmax;
   box_geom_corners[7][1] = ymax;
   box_geom_corners[7][2] = zmax;
 
@@ -2528,11 +2530,11 @@ void GetBoxCorners(float xbar_local, float ybar_local, float zbar_local){
   box_corners[1][1] = 0.0;
   box_corners[1][2] = 0.0;
 
-  box_corners[2][0] = xbar_local;
+  box_corners[2][0] = 0.0;
   box_corners[2][1] = ybar_local;
   box_corners[2][2] = 0.0;
 
-  box_corners[3][0] = 0.0;
+  box_corners[3][0] = xbar_local;
   box_corners[3][1] = ybar_local;
   box_corners[3][2] = 0.0;
 
@@ -2544,11 +2546,11 @@ void GetBoxCorners(float xbar_local, float ybar_local, float zbar_local){
   box_corners[5][1] = 0.0;
   box_corners[5][2] = zbar_local;
 
-  box_corners[6][0] = xbar_local;
+  box_corners[6][0] = 0.0;
   box_corners[6][1] = ybar_local;
   box_corners[6][2] = zbar_local;
 
-  box_corners[7][0] = 0.0;
+  box_corners[7][0] = xbar_local;
   box_corners[7][1] = ybar_local;
   box_corners[7][2] = zbar_local;
 }

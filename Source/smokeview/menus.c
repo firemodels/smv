@@ -7627,12 +7627,6 @@ updatemenu=0;
   if((auto_terrain==0&&ngeominfo>0)||(auto_terrain==1&&ngeominfo>1)){
     GLUTADDSUBMENU(_("Immersed"), immersedmenu);
   }
-  if(nterraininfo>0&&ngeominfo==0){
-    GLUTADDSUBMENU(_("Terrain"),terrain_obst_showmenu);
-  }
-  if(terrain_nindices>0||nterrain_textures>0){
-    GLUTADDSUBMENU(_("Terrain"), terrain_geom_showmenu);
-  }
   if(GetNTotalVents()>0)GLUTADDSUBMENU(_("Surfaces"), ventmenu);
   if(nrooms > 0){
     if(visCompartments == 1){
@@ -9105,6 +9099,12 @@ updatemenu=0;
   CREATEMENU(showhidemenu,ShowHideMenu);
   GLUTADDSUBMENU(_("Color"), colorbarmenu);
   GLUTADDSUBMENU(_("Geometry"),geometrymenu);
+  if(nterraininfo>0&&ngeominfo==0){
+    GLUTADDSUBMENU(_("Terrain"), terrain_obst_showmenu);
+  }
+  if(terrain_nindices>0||nterrain_textures>0){
+    GLUTADDSUBMENU(_("Terrain"), terrain_geom_showmenu);
+  }
   if(GetNumActiveDevices()>0||ncvents>0){
     GLUTADDSUBMENU(_("Devices"), showobjectsmenu);
   }

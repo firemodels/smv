@@ -109,7 +109,7 @@ void UpdateCameraYpos(cameradata *ci, int option){
       else{
         width = dy;
       }
-      offset = dx/2.0;
+      offset = (dx-dy)/2.0;
       break;
 
     case 2:
@@ -120,7 +120,7 @@ void UpdateCameraYpos(cameradata *ci, int option){
       else{
         width = dx;
       }
-      offset = dy/2.0;
+      offset = 0.0;
       break;
 
     case 3:
@@ -131,12 +131,20 @@ void UpdateCameraYpos(cameradata *ci, int option){
       else{
         width = dx;
       }
-      offset = dz/2.0;
+      offset = (dz-dy)/2.0;
       break;
   }
   eyeyfactor = -(width/2.0)/tan(local_aperture_default*DEG2RAD/2.0) - offset;
+  if(option==3&&use_geom_factors==1&&have_geom_factors==1){
+    eyeyfactor *= 1.4;
+  }
+  else{
+    eyeyfactor *= 1.05;
+  }
 
+  ci->eye[0] = ci->xcen;
   ci->eye[1] = eyeyfactor;
+  ci->eye[2] = ci->zcen;
   if(viscolorbarpath==1){
     ci->eye[0] = 0.7;
     ci->eye[1] = -2.25;

@@ -25,6 +25,8 @@ void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigne
   float terrain_xmin, terrain_xmax, terrain_ymin, terrain_ymax;
   int first = 1;
 
+
+  if(geominfo->geomlistinfo==NULL)return;
   terrain = geominfo->geomlistinfo - 1;
 
   sizeof_vertices  = 9*terrain->nverts*sizeof(float);
