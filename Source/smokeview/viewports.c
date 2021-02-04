@@ -1917,41 +1917,148 @@ void GetZoneSmokeDir(float *mm){
   }
 }
 
+/* ------------------ DistPtXYZ  ------------------------ */
+
+float DistPtXYZ(float *pt, float x, float y, float z){
+  float dx, dy, dz;
+
+  dx = pt[0] - x;
+  dy = pt[1] - y;
+  dz = pt[2] - z;
+  return sqrt(dx*dx + dy*dy + dz*dz);
+}
+
+/* ------------------ DistPointLineSeg  ------------------------ */
+
+float DistPointLineSeg(float *point, float *xyz1, float *xyz2){
+  int i;
+  float dp[3], dxyz[3];
+  float num, denom;
+  float t;
+  // xt = xyz1*(1-t) + xyz2*t
+  // (point - xt) .dot. (xyz2 - xyz1) = 0
+  // solve for t and compute distance between xt and point
+
+  for(i=0;i<3;i++){
+    dp[i]   = point[i]  - xyz1[i];
+    dxyz[i] = xyz2[i] - xyz1[i];
+  }
+  num   = DOT3(dp, dxyz);
+  denom = DOT3(dxyz, dxyz);
+  if(denom>0.0){
+    float xyz[3];
+    float dist;
+
+    t = num/denom;
+    if(t<0.0||t>1.0)return -1.0;
+    for(i=0;i<3;i++){
+      xyz[i] = xyz1[i]*(1.0-t)+xyz2[i]*t;
+      dxyz[i] = point[i] - xyz[i];
+    }
+    dist = sqrt(DOT3(dxyz,dxyz));
+    return dist;
+  }
+  return -1.0;
+}
+
+/* ------------------ DistPointBox  ------------------------ */
+
+float DistPointBox(float *point, float corners[8][3], float *maxdist){
+  float dist_planes[6], dist_corners[8];
+  float dist;
+  float *xyz1, *xyz2, delta;
+  int i;
+
+  //         6------------7
+  //        /|           /|
+  //      /  |         /  | 
+  //    /    |       /    |
+  //   4------------5     |
+  //   |     |      |     |
+  //   |     2------|-----3
+  //   |    /       |    /
+  //   |  /         |  /
+  //   |/           |/
+  //   0------------1
+
+  int edges[]={
+    0,1,2,3,4,5,6,7,
+    0,4,1,5,2,6,3,7,
+    0,2,1,3,4,6,5,7
+  };
+
+  xyz1 = corners[0];
+  xyz2 = corners[7];
+  {
+    float dx, dy, dz;
+
+    DIST3(xyz1, xyz2, delta);
+    delta /= 10.0;
+  }
+
+  dist_planes[0] = ABS(point[0] - xyz1[0]);
+  dist_planes[1] = ABS(point[0] - xyz2[0]);
+  dist_planes[2] = ABS(point[1] - xyz1[1]);
+  dist_planes[3] = ABS(point[1] - xyz2[1]);
+  dist_planes[4] = ABS(point[2] - xyz1[2]);
+  dist_planes[5] = ABS(point[2] - xyz2[2]);
+
+  dist_corners[0] = DistPtXYZ(point, xyz1[0], xyz1[1], xyz1[2]);
+  dist_corners[1] = DistPtXYZ(point, xyz2[0], xyz1[1], xyz1[2]);
+  dist_corners[2] = DistPtXYZ(point, xyz1[0], xyz2[1], xyz1[2]);
+  dist_corners[3] = DistPtXYZ(point, xyz2[0], xyz2[1], xyz1[2]);
+  dist_corners[4] = DistPtXYZ(point, xyz1[0], xyz1[1], xyz2[2]);
+  dist_corners[5] = DistPtXYZ(point, xyz2[0], xyz1[1], xyz2[2]);
+  dist_corners[6] = DistPtXYZ(point, xyz1[0], xyz2[1], xyz2[2]);
+  dist_corners[7] = DistPtXYZ(point, xyz2[0], xyz2[1], xyz2[2]);
+
+  dist = dist_corners[0];
+  *maxdist = dist;
+  for(i=1;i<8;i++){
+    dist = MIN(dist, dist_corners[i]);
+    *maxdist = MAX(*maxdist, dist_corners[i]);
+  }
+  if(point[0]>=xyz1[0]&&point[0]<=xyz2[0]&&point[1]>=xyz1[1]&&point[1]<=xyz2[1]){
+    dist = MIN(dist, dist_planes[4]);
+    dist = MIN(dist, dist_planes[5]);
+  }
+  if(point[0]>=xyz1[0]&&point[0]<=xyz2[0]&&point[2]>=xyz1[2]&&point[2]<=xyz2[2]){
+    dist = MIN(dist, dist_planes[2]);
+    dist = MIN(dist, dist_planes[3]);
+  }
+  if(point[1]>=xyz1[1]&&point[1]<=xyz2[1]&&point[2]>=xyz1[2]&&point[2]<=xyz2[2]){
+    dist = MIN(dist, dist_planes[0]);
+    dist = MIN(dist, dist_planes[1]);
+  }
+
+  for(i=0;i<12;i++){
+    int i1, i2;
+    float mdist;
+
+    i1 = edges[2*i];
+    i2 = edges[2*i+1];
+    mdist = DistPointLineSeg(point, corners[i1], corners[i2]);
+    if(mdist>0.0)dist = MIN(dist, mdist);
+  }
+  dist     -= delta;
+  *maxdist += delta;
+
+  return dist;
+}
+
 /* ------------------ GetMinMaxDepth  ------------------------ */
 
 void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth){
   int i;
   float depth, dx, dy, dz;
 
-  // get distance to each corner of the domain
-
-  dx = box_corners[0][0]  - eye[0];
-  dy = box_corners[0][1]  - eye[1];
-  dz = box_corners[0][2] - eye[2];
-  depth = sqrt(dx*dx+dy*dy+dz*dz);
-  *min_depth = depth;
-  *max_depth = depth;
-
-  for(i = 1; i<8; i++){
-    dx = box_corners[i][0]-eye[0];
-    dy = box_corners[i][1]-eye[1];
-    dz = box_corners[i][2]-eye[2];
-    depth = sqrt(dx*dx+dy*dy+dz*dz);
-    *min_depth = MIN(*min_depth, depth);
-    *max_depth = MAX(*max_depth, depth);
-  }
-
-  // get distance to each corner of the geometry (if it exists)
+  *min_depth = DistPointBox(smv_eyepos, box_corners, max_depth);
 
   if(have_box_geom_corners==1){
-    for(i = 0; i<8; i++){
-      dx = box_geom_corners[i][0]-eye[0];
-      dy = box_geom_corners[i][1]-eye[1];
-      dz = box_geom_corners[i][2]-eye[2];
-      depth = sqrt(dx*dx+dy*dy+dz*dz);
-      *min_depth = MIN(*min_depth, depth);
-      *max_depth = MAX(*max_depth, depth);
-    }
+    float maxdist;
+
+    *min_depth = MIN(*min_depth, DistPointBox(smv_eyepos, box_geom_corners, &maxdist));
+    *max_depth = MAX(*max_depth, maxdist);
   }
 
   // get distance to each tour node
@@ -1963,9 +2070,9 @@ void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth){
 
       touri = tourinfo+i;
       for(keyj = (touri->first_frame).next; keyj->next!=NULL; keyj = keyj->next){
-        dx = NORMALIZE_X(keyj->eye[0])-eye[0];
-        dy = NORMALIZE_Y(keyj->eye[1])-eye[1];
-        dz = NORMALIZE_Z(keyj->eye[2])-eye[2];
+        dx = NORMALIZE_X(keyj->eye[0])-smv_eyepos[0];
+        dy = NORMALIZE_Y(keyj->eye[1])-smv_eyepos[1];
+        dz = NORMALIZE_Z(keyj->eye[2])-smv_eyepos[2];
         depth = sqrt(dx*dx+dy*dy+dz*dz);
         *min_depth = MIN(*min_depth, depth);
         *max_depth = MAX(*max_depth, depth);
