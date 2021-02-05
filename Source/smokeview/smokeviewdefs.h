@@ -27,6 +27,13 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MENU_VIEW_ZMIN            -113
 #define MENU_VIEW_ZMAX            -114
 
+#define VIEW_XMIN                    0
+#define VIEW_XMAX                   -1
+#define VIEW_YMIN                   -2
+#define VIEW_YMAX                   -3
+#define VIEW_ZMIN                   -4
+#define VIEW_ZMAX                   -5
+
 #define DEVICE_devicetypes     28
 
 #define DEVICE_PLOT_HIDDEN        0
