@@ -42,9 +42,7 @@ EXTERNCPP void IncrementPartPropIndex(void);
 
 EXTERNCPP int GetStringWidth(char *string);
 EXTERNCPP void DrawDevicePlots(void);
-#ifdef pp_ZTREE
 EXTERNCPP void DrawTreeDevicePlots(void);
-#endif
 EXTERNCPP int GetPercentileDraw(int type);
 EXTERNCPP int GetPlotState(int choice);
 

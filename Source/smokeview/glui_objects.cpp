@@ -424,12 +424,10 @@ extern "C" void DeviceCB(int var){
           showdevice_plot = DEVICE_PLOT_HIDDEN;
           ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
           break;
-#ifdef pp_ZTREE
         case DEVICE_PLOT_SHOW_TREE_ALL:
           showdevice_plot = DEVICE_PLOT_HIDDEN;
           ShowObjectsMenu(OBJECT_PLOT_SHOW_TREE_ALL);
           break;
-#endif
       }
     }
     break;
@@ -700,9 +698,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "hide");
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show selected");
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show all");
-#ifdef pp_ZTREE
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show all (trees)");
-#endif
       CHECKBOX_show_hrrpuv_plot = glui_device->add_checkbox_to_panel(PANEL_plots, _("HRRPUV data"), &show_hrrpuv_plot,HRRPUV_PLOT, DeviceCB);
       PANEL_plotproperties = glui_device->add_panel_to_panel(PANEL_plots, "properties");
       glui_device->add_checkbox_to_panel(PANEL_plotproperties, _("labels"), &showdevice_labels);

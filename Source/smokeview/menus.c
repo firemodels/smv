@@ -6102,7 +6102,6 @@ void ShowObjectsMenu(int value){
   else if(value==OBJECT_SELECT){
     select_device=1-select_device;
   }
-#ifdef pp_ZTREE
   else if(value==OBJECT_PLOT_SHOW_TREE_ALL){
     update_times=1;
     if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL){
@@ -6116,7 +6115,6 @@ void ShowObjectsMenu(int value){
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     UpdateDeviceShow();
   }
-#endif
   else if(value==PLOT_HRRPUV){
     show_hrrpuv_plot = 1-show_hrrpuv_plot;
     UpdateShowHRRPUVPlot(show_hrrpuv_plot);

@@ -41,11 +41,9 @@ SVEXTERN int SVDECL(is_terrain_case, 0);
 SVEXTERN int SVDECL(update_adjust_y, 2);
 SVEXTERN int SVDECL(visFrameTimelabel, 1);
 SVEXTERN int SVDECL(rotation_axis, 1);
-#ifdef pp_ZTREE
 SVEXTERN ztreedevicedata SVDECL(*ztreedeviceinfo, NULL);
 SVEXTERN devicedata SVDECL(**deviceinfo_sortedz, NULL);
 SVEXTERN int SVDECL(nztreedeviceinfo, 0);
-#endif
 
 SVEXTERN int SVDECL(readini_output, 0);
 SVEXTERN int SVDECL(show_startup_timings, 0);
