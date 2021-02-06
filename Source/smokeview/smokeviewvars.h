@@ -25,7 +25,7 @@
 
 SVEXTERN int SVDECL(nslicemenuinfo, 0);
 #ifdef pp_MOVIE_BATCH
-SVEXTERN int SVDECL(slice_menu_index, 0);
+SVEXTERN int SVDECL(movie_slice_index, 0), SVDECL(movie_queue_index, 0), SVDECL(movie_nprocessors, 10);
 #endif
 SVEXTERN slicemenudata SVDECL(**slicemenu_sorted, NULL);
 SVEXTERN float SVDECL(texture_time, 0.0);

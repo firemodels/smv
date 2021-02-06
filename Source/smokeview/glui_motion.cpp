@@ -88,6 +88,9 @@ GLUI_Rollout *ROLLOUT_upper = NULL;
 GLUI_Rollout *ROLLOUT_background = NULL;
 GLUI_Rollout *ROLLOUT_foreground = NULL;
 
+#ifdef pp_MOVIE_BATCH
+GLUI_Spinner *SPINNER_movie_nprocessors=NULL;
+#endif
 GLUI_Spinner *SPINNER_360_skip_x=NULL;
 GLUI_Spinner *SPINNER_360_skip_y=NULL;
 GLUI_Spinner *SPINNER_movie_crf = NULL;
@@ -170,6 +173,9 @@ GLUI_RadioButton *RADIOBUTTON_1e=NULL;
 GLUI_RadioButton *RADIOBUTTON_1f=NULL;
 GLUI_RadioButton *RADIOBUTTON_1g=NULL;
 
+#ifdef pp_MOVIE_BATCH
+GLUI_Button *BUTTON_make_movie_batch=NULL;
+#endif
 GLUI_Button *BUTTON_rotate90=NULL;
 GLUI_Button *BUTTON_90_z=NULL,*BUTTON_eyelevel=NULL, *BUTTON_floorlevel=NULL, *BUTTON_reset_saved_view=NULL;
 GLUI_Button *BUTTON_replace_view=NULL,*BUTTON_add_view=NULL,*BUTTON_delete_view=NULL;
@@ -192,7 +198,8 @@ GLUI_EditText *EDIT_movie_name = NULL;
 GLUI_EditText *EDIT_render_file_base = NULL;
 
 #ifdef pp_MOVIE_BATCH
-GLUI_Listbox *LIST_slicemenu=NULL;
+GLUI_Listbox *LIST_movie_slice_index=NULL;
+GLUI_Listbox *LIST_movie_queue_index=NULL;
 #endif
 GLUI_Listbox *LIST_viewpoints=NULL;
 GLUI_Listbox *LIST_windowsize=NULL;
@@ -1403,10 +1410,7 @@ extern "C" void GluiMotionSetup(int main_window){
   INSERT_ROLLOUT(ROLLOUT_make_movie_batch, glui_motion);
   ADDPROCINFO(mvrprocinfo,nmvrprocinfo,ROLLOUT_make_movie_batch,MOVIE_ROLLOUT_BATCH, glui_motion);
 
-  LIST_slicemenu = glui_motion->add_listbox_to_panel(ROLLOUT_make_movie_batch, "slice:", &slice_menu_index);
-  for(i = 0; i<ncolorbars; i++){
-
-  }
+  LIST_movie_slice_index = glui_motion->add_listbox_to_panel(ROLLOUT_make_movie_batch, "slice:", &movie_slice_index);
   for(i = 0; i<nslicemenuinfo; i++){
     char *cdir[] = {" ", "x=", "y=", "z=", " "};
     colorbardata *cbi;
@@ -1430,8 +1434,19 @@ extern "C" void GluiMotionSetup(int main_window){
       strcat(label, cdir[idir]);
       strcat(label, cposition);
     }
-    LIST_slicemenu->add_item(i, label);
+    LIST_movie_slice_index->add_item(i, label);
   }
+  {
+    char *queues[]={"batch", "batch2", "batch3", "batch4" };
+    LIST_movie_queue_index = glui_motion->add_listbox_to_panel(ROLLOUT_make_movie_batch, "queue:", &movie_queue_index);
+    for(i=0;i<4;i++){
+      LIST_movie_queue_index->add_item(i, queues[i]);
+    }
+  }
+  SPINNER_movie_nprocessors = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie_batch, _("processors"), GLUI_SPINNER_INT, &movie_nprocessors);
+  SPINNER_movie_nprocessors->set_int_limits(1, 36);
+  BUTTON_make_movie_batch = glui_motion->add_button_to_panel(ROLLOUT_make_movie_batch, "Make movie", MAKE_MOVIE_BATCH, RenderCB);
+
 #endif
 
   PANEL_close = glui_motion->add_panel("",GLUI_PANEL_NONE);
@@ -2347,6 +2362,10 @@ void RenderCB(int var){
     case OUTPUT_FFMPEG:
       output_ffmpeg_command=1;
       break;
+#ifdef pp_MOVIE_BATCH
+    case MAKE_MOVIE_BATCH:
+      break;
+#endif
     case MAKE_MOVIE:
       if(have_ffmpeg == 0){
         PRINTF("*** Error: The movie generating program ffmpeg is not available\n");

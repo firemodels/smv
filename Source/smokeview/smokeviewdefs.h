@@ -303,8 +303,11 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MAX_VSLABS  2
 #define MAX_MSLABS  2
 
-#define MAKE_MOVIE     28
-#define OUTPUT_FFMPEG 129
+#define MAKE_MOVIE        28
+#ifdef pp_MOVIE_BATCH
+#define MAKE_MOVIE_BATCH 130
+#endif
+#define OUTPUT_FFMPEG    129
 
 #define PNG        0
 #define JPEG       1
