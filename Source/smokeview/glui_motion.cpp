@@ -1409,7 +1409,6 @@ extern "C" void GluiMotionSetup(int main_window){
   }
   for(i = 0; i<nslicemenuinfo; i++){
     char *cdir[] = {" ", "x=", "y=", "z=", " "};
-    colorbardata *cbi;
     slicedata *slicei;
     slicemenudata *slicemi;
     char label[100], *quantity, cposition[25];
