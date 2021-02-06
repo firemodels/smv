@@ -1371,7 +1371,12 @@ extern "C" void GluiMotionSetup(int main_window){
 
   if(have_ffmpeg == 1){
 #ifdef pp_MOVIE_BATCH
-    ROLLOUT_make_movie = glui_motion->add_rollout("Movie(local)", false, MOVIE_ROLLOUT, MVRRolloutCB);
+    if(have_slurm==1){
+      ROLLOUT_make_movie = glui_motion->add_rollout("Movie(local)", false, MOVIE_ROLLOUT, MVRRolloutCB);
+    }
+    else{
+      ROLLOUT_make_movie = glui_motion->add_rollout("Movie", false, MOVIE_ROLLOUT, MVRRolloutCB);
+    }
 #else
     ROLLOUT_make_movie = glui_motion->add_rollout("Movie", false, MOVIE_ROLLOUT, MVRRolloutCB);
 #endif
@@ -1406,46 +1411,44 @@ extern "C" void GluiMotionSetup(int main_window){
   }
 
 #ifdef pp_MOVIE_BATCH
-  ROLLOUT_make_movie_batch = glui_motion->add_rollout("Movie(batch)", false, MOVIE_ROLLOUT_BATCH, MVRRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_make_movie_batch, glui_motion);
-  ADDPROCINFO(mvrprocinfo,nmvrprocinfo,ROLLOUT_make_movie_batch,MOVIE_ROLLOUT_BATCH, glui_motion);
+  if(have_slurm==1&&nmovie_queues>0){
+    ROLLOUT_make_movie_batch = glui_motion->add_rollout("Movie(batch)", false, MOVIE_ROLLOUT_BATCH, MVRRolloutCB);
+    INSERT_ROLLOUT(ROLLOUT_make_movie_batch, glui_motion);
+    ADDPROCINFO(mvrprocinfo, nmvrprocinfo, ROLLOUT_make_movie_batch, MOVIE_ROLLOUT_BATCH, glui_motion);
 
-  LIST_movie_slice_index = glui_motion->add_listbox_to_panel(ROLLOUT_make_movie_batch, "slice:", &movie_slice_index);
-  for(i = 0; i<nslicemenuinfo; i++){
-    char *cdir[] = {" ", "x=", "y=", "z=", " "};
-    slicedata *slicei;
-    slicemenudata *slicemi;
-    char label[100], *quantity, cposition[25];
-    float position;
-    int idir;
+    LIST_movie_slice_index = glui_motion->add_listbox_to_panel(ROLLOUT_make_movie_batch, "slice:", &movie_slice_index);
+    for(i = 0; i<nslicemenuinfo; i++){
+      char *cdir[] = {" ", "x=", "y=", "z=", " "};
+      slicedata *slicei;
+      slicemenudata *slicemi;
+      char label[100], *quantity, cposition[25];
+      float position;
+      int idir;
 
-    slicemi = slicemenu_sorted[i];
-    slicei = slicemi->sliceinfo;
-    quantity = slicei->label.longlabel;
-    idir = CLAMP(slicei->idir, 0, 4);
-    position = slicei->position_orig;
-    sprintf(cposition, "%f", position);
-    TrimZeros(cposition);
-    strcpy(label, " ");
-    if(idir>=1&&idir<=3){
-      strcat(label, quantity);
-      strcat(label, ", ");
-      strcat(label, cdir[idir]);
-      strcat(label, cposition);
+      slicemi = slicemenu_sorted[i];
+      slicei = slicemi->sliceinfo;
+      quantity = slicei->label.longlabel;
+      idir = CLAMP(slicei->idir, 0, 4);
+      position = slicei->position_orig;
+      sprintf(cposition, "%f", position);
+      TrimZeros(cposition);
+      strcpy(label, " ");
+      if(idir>=1&&idir<=3){
+        strcat(label, quantity);
+        strcat(label, ", ");
+        strcat(label, cdir[idir]);
+        strcat(label, cposition);
+      }
+      LIST_movie_slice_index->add_item(i, label);
     }
-    LIST_movie_slice_index->add_item(i, label);
-  }
-  {
-    char *queues[]={"batch", "batch2", "batch3", "batch4" };
     LIST_movie_queue_index = glui_motion->add_listbox_to_panel(ROLLOUT_make_movie_batch, "queue:", &movie_queue_index);
-    for(i=0;i<4;i++){
-      LIST_movie_queue_index->add_item(i, queues[i]);
+    for(i = 0; i<nmovie_queues; i++){
+      LIST_movie_queue_index->add_item(i, movie_queues[i]);
     }
+    SPINNER_movie_nprocessors = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie_batch, _("processors"), GLUI_SPINNER_INT, &movie_nprocessors);
+    SPINNER_movie_nprocessors->set_int_limits(1, 36);
+    BUTTON_make_movie_batch = glui_motion->add_button_to_panel(ROLLOUT_make_movie_batch, "Make movie", MAKE_MOVIE_BATCH, RenderCB);
   }
-  SPINNER_movie_nprocessors = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie_batch, _("processors"), GLUI_SPINNER_INT, &movie_nprocessors);
-  SPINNER_movie_nprocessors->set_int_limits(1, 36);
-  BUTTON_make_movie_batch = glui_motion->add_button_to_panel(ROLLOUT_make_movie_batch, "Make movie", MAKE_MOVIE_BATCH, RenderCB);
-
 #endif
 
   PANEL_close = glui_motion->add_panel("",GLUI_PANEL_NONE);
