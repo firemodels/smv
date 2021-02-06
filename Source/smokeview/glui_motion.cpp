@@ -1413,7 +1413,6 @@ extern "C" void GluiMotionSetup(int main_window){
   LIST_movie_slice_index = glui_motion->add_listbox_to_panel(ROLLOUT_make_movie_batch, "slice:", &movie_slice_index);
   for(i = 0; i<nslicemenuinfo; i++){
     char *cdir[] = {" ", "x=", "y=", "z=", " "};
-    colorbardata *cbi;
     slicedata *slicei;
     slicemenudata *slicemi;
     char label[100], *quantity, cposition[25];
