@@ -23,6 +23,11 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(nslicemenuinfo, 0);
+#ifdef pp_MOVIE_BATCH
+SVEXTERN int SVDECL(slice_menu_index, 0);
+#endif
+SVEXTERN slicemenudata SVDECL(**slicemenu_sorted, NULL);
 SVEXTERN float SVDECL(texture_time, 0.0);
 SVEXTERN int SVDECL(handle_slice_files, 1);
 SVEXTERN int SVDECL(plot_option, 0);

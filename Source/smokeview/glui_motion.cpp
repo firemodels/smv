@@ -72,6 +72,9 @@ GLUI_Rollout *ROLLOUT_projection=NULL;
 GLUI_Rollout *ROLLOUT_render=NULL;
 GLUI_Rollout *ROLLOUT_viewpoints=NULL;
 GLUI_Rollout *ROLLOUT_make_movie = NULL;
+#ifdef pp_MOVIE_BATCH
+GLUI_Rollout *ROLLOUT_make_movie_batch = NULL;
+#endif
 GLUI_Rollout *ROLLOUT_gslice = NULL;
 #ifdef ROTATE_TRANSLATE
 GLUI_Rollout *ROLLOUT_translaterotate=NULL;
@@ -188,6 +191,9 @@ GLUI_EditText *EDIT_view_label=NULL;
 GLUI_EditText *EDIT_movie_name = NULL;
 GLUI_EditText *EDIT_render_file_base = NULL;
 
+#ifdef pp_MOVIE_BATCH
+GLUI_Listbox *LIST_slicemenu=NULL;
+#endif
 GLUI_Listbox *LIST_viewpoints=NULL;
 GLUI_Listbox *LIST_windowsize=NULL;
 GLUI_Listbox *LIST_mesh2=NULL;
@@ -195,7 +201,7 @@ GLUI_Listbox *LIST_render_skip=NULL;
 
 rolloutlistdata first_rollout, last_rollout;
 
-procdata motionprocinfo[9], mvrprocinfo[4], subrenderprocinfo[4];
+procdata motionprocinfo[9], mvrprocinfo[5], subrenderprocinfo[4];
 int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0;
 
 /* ------------------ CloseRollouts ------------------------ */
@@ -1357,7 +1363,11 @@ extern "C" void GluiMotionSetup(int main_window){
   CHECKBOX_clip_rendered_scene = glui_motion->add_checkbox_to_panel(ROLLOUT_scene_clip, "clip rendered scene", &clip_rendered_scene);
 
   if(have_ffmpeg == 1){
+#ifdef pp_MOVIE_BATCH
+    ROLLOUT_make_movie = glui_motion->add_rollout("Movie(local)", false, MOVIE_ROLLOUT, MVRRolloutCB);
+#else
     ROLLOUT_make_movie = glui_motion->add_rollout("Movie", false, MOVIE_ROLLOUT, MVRRolloutCB);
+#endif
     INSERT_ROLLOUT(ROLLOUT_make_movie, glui_motion);
     ADDPROCINFO(mvrprocinfo,nmvrprocinfo,ROLLOUT_make_movie,MOVIE_ROLLOUT, glui_motion);
 
@@ -1387,6 +1397,42 @@ extern "C" void GluiMotionSetup(int main_window){
     glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Output ffmpeg command", OUTPUT_FFMPEG, RenderCB);
     RenderCB(MOVIE_FILETYPE);
   }
+
+#ifdef pp_MOVIE_BATCH
+  ROLLOUT_make_movie_batch = glui_motion->add_rollout("Movie(batch)", false, MOVIE_ROLLOUT_BATCH, MVRRolloutCB);
+  INSERT_ROLLOUT(ROLLOUT_make_movie_batch, glui_motion);
+  ADDPROCINFO(mvrprocinfo,nmvrprocinfo,ROLLOUT_make_movie_batch,MOVIE_ROLLOUT_BATCH, glui_motion);
+
+  LIST_slicemenu = glui_motion->add_listbox_to_panel(ROLLOUT_make_movie_batch, "slice:", &slice_menu_index);
+  for(i = 0; i<ncolorbars; i++){
+
+  }
+  for(i = 0; i<nslicemenuinfo; i++){
+    char *cdir[] = {" ", "x=", "y=", "z=", " "};
+    colorbardata *cbi;
+    slicedata *slicei;
+    slicemenudata *slicemi;
+    char label[100], *quantity, cposition[25];
+    float position;
+    int idir;
+
+    slicemi = slicemenu_sorted[i];
+    slicei = slicemi->sliceinfo;
+    quantity = slicei->label.longlabel;
+    idir = CLAMP(slicei->idir, 0, 4);
+    position = slicei->position_orig;
+    sprintf(cposition, "%f", position);
+    TrimZeros(cposition);
+    strcpy(label, " ");
+    if(idir>=1&&idir<=3){
+      strcat(label, quantity);
+      strcat(label, ", ");
+      strcat(label, cdir[idir]);
+      strcat(label, cposition);
+    }
+    LIST_slicemenu->add_item(i, label);
+  }
+#endif
 
   PANEL_close = glui_motion->add_panel("",GLUI_PANEL_NONE);
 

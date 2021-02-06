@@ -7963,10 +7963,10 @@ void SliceData2Hist(slicedata *sd, float *xyz, float *dxyz, float time, float dt
 
 /* ------------------ ISSliceMenuDup ------------------------ */
 
-int IsSliceMenuDup(slicemenudata *slicemenu_arg, int nslicemenuinfo, char *label, int slcf_index, float position_arg){
+int IsSliceMenuDup(slicemenudata *slicemenu_arg, int nslicemenuinfo_arg, char *label, int slcf_index, float position_arg){
   int i;
 
-  for(i = 0; i<nslicemenuinfo; i++){
+  for(i = 0; i<nslicemenuinfo_arg; i++){
     slicemenudata *slicemi;
     slicedata *slicei;
 
@@ -8015,10 +8015,9 @@ int CompareSliceMenuInfo(const void *arg1, const void *arg2){
 
 /* ------------------ GenerateSliceMenu ------------------------ */
 
-void GenerateSliceMenu(void){
+void GenerateSliceMenu(int option){
   char slicemenu_filename[256];
   int i;
-  int nslicemenuinfo;
   FILE *stream = NULL;
 
   if(nsliceinfo==0)return;
@@ -8032,8 +8031,6 @@ void GenerateSliceMenu(void){
   strcat(slicemenu_filename, ".slcf");
 
   // if we can't write out to the slice menu file then abort
-  stream = fopen(slicemenu_filename, "w");
-  if(stream==NULL)return;
 
   nslicemenuinfo = 0;
   NewMemory((void **)&slicemenuinfo, nsliceinfo*sizeof(slicemenudata));
@@ -8049,71 +8046,70 @@ void GenerateSliceMenu(void){
     nslicemenuinfo++;
   }
 
-  slicemenudata **menu_sort = NULL;
-  NewMemory((void **)&menu_sort, nslicemenuinfo*sizeof(slicemenudata));
+  NewMemory((void **)&slicemenu_sorted, nslicemenuinfo*sizeof(slicemenudata));
   for(i = 0; i<nslicemenuinfo; i++){
-    menu_sort[i] = slicemenuinfo+i;
+    slicemenu_sorted[i] = slicemenuinfo+i;
   }
-  qsort((slicemenudata **)menu_sort, (size_t)nslicemenuinfo, sizeof(slicemenudata *), CompareSliceMenuInfo);
+  qsort((slicemenudata **)slicemenu_sorted, (size_t)nslicemenuinfo, sizeof(slicemenudata *), CompareSliceMenuInfo);
 
-  int max1=0,  max2=0, max3=0, max4=0;
-  for(i = 0; i<nslicemenuinfo; i++){
-    slicedata *slicei;
-    slicemenudata *slicemi;
-    char *quantity, cposition[25];
+  if(option==1){
+    int max1 = 0, max2 = 0, max3 = 0, max4 = 0;
 
-    slicemi = menu_sort[i];
-    slicei = slicemi->sliceinfo;
-    quantity = slicei->label.longlabel;
-    if(strlen(quantity)>max2)max2 = strlen(quantity);
-    sprintf(cposition, "%f", slicei->position_orig);
-    TrimZeros(cposition);
-    if(strlen(cposition)>max4)max4 = strlen(cposition);
-  }
-  max1 = 5;
-  max2 = MAX(5, max2) + 1;
-  max3 = 4;
-  max4 = MAX(8, max4) + 1;
-  char cform1[20], cform2[20], cform3[20], cform4[20];
-  sprintf(cform1, "%s%i.%is", "%",max1,max1);/* %20.20s*/
-  sprintf(cform2, "%s-%i.%is", "%", max2,max2);
-  sprintf(cform3, "%s%i.%is", "%", max3,max3);
-  sprintf(cform4, "%s%i.%is", "%", max4,max4);
+    stream = fopen(slicemenu_filename, "w");
+    if(stream==NULL)return;
+    for(i = 0; i<nslicemenuinfo; i++){
+      slicedata *slicei;
+      slicemenudata *slicemi;
+      char *quantity, cposition[25];
 
-  char format[80];
-  sprintf(format, "%s, %s, %s, %s\n",cform1, cform2, cform3, cform4);
-
-
-  fprintf(stream, "\n");
-  fprintf(stream, format, "index", "quantity", "dir", "position");
-#ifdef _DEBUG
-  printf("\n");
-  printf(format, "ind", "quantity", "dir", "pos");
-#endif
-  for(i = 0; i<nslicemenuinfo; i++){
-    slicedata *slicei;
-    slicemenudata *slicemi;
-    char *quantity, cposition[25];
-    float position;
-    char index[10], cdir[10];
-
-    slicemi = menu_sort[i];
-    slicei = slicemi->sliceinfo;
-    quantity = slicei->label.longlabel;
-    sprintf(cdir,"%i",slicei->idir);
-    position = slicei->position_orig;
-    sprintf(cposition, "%f", position);
-    TrimZeros(cposition);
-    if(strcmp(quantity, "BURNING RATE")==0){
-      printf("were here\n");
+      slicemi = slicemenu_sorted[i];
+      slicei = slicemi->sliceinfo;
+      quantity = slicei->label.longlabel;
+      if(strlen(quantity)>max2)max2 = strlen(quantity);
+      sprintf(cposition, "%f", slicei->position_orig);
+      TrimZeros(cposition);
+      if(strlen(cposition)>max4)max4 = strlen(cposition);
     }
-    sprintf(index, "%i", i+1);
-    fprintf(stream, format, index, quantity, cdir, cposition);
-#ifdef _DEBUG
-    printf(format, index, quantity, cdir, cposition);
-#endif
-  }
-  fclose(stream);
-}
 
- 
+    max1 = 5;
+    max2 = MAX(5, max2) + 1;
+    max3 = 4;
+    max4 = MAX(8, max4) + 1;
+    char cform1[20], cform2[20], cform3[20], cform4[20];
+    sprintf(cform1, "%s%i.%is", "%",max1,max1);/* %20.20s*/
+    sprintf(cform2, "%s-%i.%is", "%", max2,max2);
+    sprintf(cform3, "%s%i.%is", "%", max3,max3);
+    sprintf(cform4, "%s%i.%is", "%", max4,max4);
+
+    char format[80];
+    sprintf(format, "%s, %s, %s, %s\n",cform1, cform2, cform3, cform4);
+
+    fprintf(stream, "\n");
+    fprintf(stream, format, "index", "quantity", "dir", "position");
+#ifdef _DEBUG
+    printf("\n");
+    printf(format, "ind", "quantity", "dir", "pos");
+#endif
+    for(i = 0; i<nslicemenuinfo; i++){
+      slicedata *slicei;
+      slicemenudata *slicemi;
+      char *quantity, cposition[25];
+      float position;
+      char index[10], cdir[10];
+
+      slicemi = slicemenu_sorted[i];
+      slicei = slicemi->sliceinfo;
+      quantity = slicei->label.longlabel;
+      sprintf(cdir, "%i", slicei->idir);
+      position = slicei->position_orig;
+      sprintf(cposition, "%f", position);
+      TrimZeros(cposition);
+      sprintf(index, "%i", i+1);
+      fprintf(stream, format, index, quantity, cdir, cposition);
+#ifdef _DEBUG
+      printf(format, index, quantity, cdir, cposition);
+#endif
+    }
+    fclose(stream);
+  }
+}

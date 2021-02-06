@@ -67,7 +67,7 @@ EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valm
 
 EXTERNCPP void ScriptLoadSliceRender(scriptdata*scripti);
 EXTERNCPP int GetNSliceFrames(char *file, float *stime_min, float *stime_max);
-EXTERNCPP void GenerateSliceMenu(void);
+EXTERNCPP void GenerateSliceMenu(int from_commandline);
 #ifdef pp_WUI_VAO
 int InitTerrainVAO(int sizeof_vertices, int sizeof_indices);
 void DrawTerrainGeomGPU(void);
