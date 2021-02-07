@@ -368,6 +368,7 @@ fi
     GENERATE_SCRIPTS $slice_index
     make_movie
     if [ "$ans" == "2" ]; then
+      save_state
       exit
     fi
   fi
