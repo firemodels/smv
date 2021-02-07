@@ -28,6 +28,7 @@ SVEXTERN int SVDECL(nslicemenuinfo, 0);
 SVEXTERN int SVDECL(have_slurm, 0);
 SVEXTERN int SVDECL(movie_slice_index, 0), SVDECL(movie_queue_index, 0), SVDECL(movie_nprocessors, 10);
 SVEXTERN char SVDECL(**movie_queues, NULL);
+SVEXTERN char movie_htmldir[256], movie_email[256];
 SVEXTERN int SVDECL(nmovie_queues, 0);
 SVEXTERN char movie_queue_list[1000];
 #endif

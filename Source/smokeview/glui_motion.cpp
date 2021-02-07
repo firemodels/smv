@@ -28,6 +28,11 @@ unsigned char deg90[] = {'9', '0', 0};
 
 GLUI *glui_motion=NULL;
 
+#ifdef pp_MOVIE_BATCH
+GLUI_EditText *EDITTEXT_movie_email = NULL;
+GLUI_EditText *EDITTEXT_movie_htmldir = NULL;
+#endif
+
 GLUI_Panel *PANEL_select = NULL;
 GLUI_Panel *PANEL_360 = NULL;
 GLUI_Panel *PANEL_360_debug = NULL;
@@ -210,6 +215,24 @@ rolloutlistdata first_rollout, last_rollout;
 
 procdata motionprocinfo[9], mvrprocinfo[5], subrenderprocinfo[4];
 int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0;
+
+/* ------------------ MakeUserConfig ------------------------ */
+
+#ifdef pp_MOVIE_BATCH
+void MakeUserConfig(char *file){
+  FILE *stream = NULL;
+
+  stream = fopen(file, "w");
+  if(stream==NULL)return;
+  fprintf(stream, "#/bin/bash\n");
+  fprintf(stream, "export USER_NPROCS = %i\n", movie_nprocessors);
+  fprintf(stream, "export USER_QUEUE = %s\n", movie_queues[movie_queue_index]);
+  fprintf(stream, "export USER_RENDERDIR = .\n");
+  if(strlen(movie_htmldir)>0)fprintf(stream, "export USER_MOVIEDIR = %s\n", movie_htmldir);
+  if(strlen(movie_email)>0)fprintf(stream, "export USER_EMAIL = %s\n", movie_email);
+  fprintf(stream, "export USER_SHARE =\n");
+}
+#endif
 
 /* ------------------ CloseRollouts ------------------------ */
 
@@ -1447,6 +1470,13 @@ extern "C" void GluiMotionSetup(int main_window){
     }
     SPINNER_movie_nprocessors = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie_batch, _("processors"), GLUI_SPINNER_INT, &movie_nprocessors);
     SPINNER_movie_nprocessors->set_int_limits(1, 36);
+
+    EDITTEXT_movie_email=glui_motion->add_edittext_to_panel(ROLLOUT_make_movie_batch,"email:",GLUI_EDITTEXT_TEXT,movie_email);
+    EDITTEXT_movie_email->set_w(300);
+
+    EDITTEXT_movie_htmldir=glui_motion->add_edittext_to_panel(ROLLOUT_make_movie_batch,"html directory:",GLUI_EDITTEXT_TEXT,movie_htmldir);
+    EDITTEXT_movie_htmldir->set_w(300);
+
     BUTTON_make_movie_batch = glui_motion->add_button_to_panel(ROLLOUT_make_movie_batch, "Make movie", MAKE_MOVIE_BATCH, RenderCB);
   }
 #endif

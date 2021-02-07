@@ -1202,11 +1202,29 @@ void InitVars(void){
           if(queue==NULL||nmovie_queues>=MAX_QUEUS)break;
           movie_queues[nmovie_queues++]=TrimFrontBack((queue));
         }
+        ResizeMemory((void **)&movie_queues, nmovie_queues*sizeof(char *));;
+        have_slurm = 1;
       }
     }
-    if(movie_queues!=NULL){
-      ResizeMemory((void **)&movie_queues, nmovie_queues*sizeof(char *));;
-      have_slurm = 1;
+    {
+      char *htmldir=NULL;
+      char *email=NULL;
+
+      htmldir = getenv("SMV_HTMLDIR");
+      if(htmldir!=NULL&&strlen(htmldir)>0){
+        strcpy(movie_htmldir, htmldir);
+      }
+      else{
+        strcpy(movie_htmldir, "");
+      }
+
+      email = getenv("SMV_EMAIL");
+      if(email!=NULL&&strlen(email)>0){
+        strcpy(movie_email, email);
+      }
+      else{
+        strcpy(movie_email, "");
+      }
     }
   }
 #endif
