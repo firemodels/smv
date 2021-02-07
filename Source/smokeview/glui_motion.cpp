@@ -222,7 +222,7 @@ int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0;
 
 void MakeMovieSlurm(void){
   FILE *stream=NULL;
-  char user_config[1000], command_line[1000], script_in[1000];
+  char user_config[1000], command_line[1000], script_in[1000], script_bash[1000];
 
   strcpy(user_config, "slice2mp4_");
   strcat(user_config, fdsprefix);
@@ -234,8 +234,17 @@ void MakeMovieSlurm(void){
   
   fprintf(stream, " %i \n 2\n", movie_slice_index+1);
   fclose(stream);
-  sprintf(command_line, " cat %s | slice2mp4 -c %s %s", script_in, user_config, fdsprefix);
-  printf("running command: %s\n", command_line);
+  
+  strcpy(script_bash, movie_basename);
+  strcat(script_bash, "_smv.sh");
+  stream = fopen(script_bash, "w");
+  if(stream==NULL)return;
+
+  fprintf(stream, "#/bin/bash\n");
+  fprintf(stream, "cat %s | $SMV_SLICE2MP4 -c %s %s\n", script_in, user_config, fdsprefix);
+  fclose(stream);
+
+  sprintf(command_line, "bash %s", script_bash);
   system(command_line);
 }
 
@@ -251,12 +260,12 @@ void MakeMovieConfig(void){
   stream = fopen(user_config, "w");
   if(stream==NULL)return;
   fprintf(stream, "#/bin/bash\n");
-  fprintf(stream, "export USER_NPROCS = %i\n", movie_nprocessors);
-  fprintf(stream, "export USER_QUEUE = %s\n", movie_queues[movie_queue_index]);
-  fprintf(stream, "export USER_RENDERDIR = .\n");
-  if(strlen(movie_htmldir)>0)fprintf(stream, "export USER_MOVIEDIR = %s\n", movie_htmldir);
-  if(strlen(movie_email)>0)fprintf(stream, "export USER_EMAIL = %s\n", movie_email);
-  fprintf(stream, "export USER_SHARE =\n");
+  fprintf(stream, "export USER_NPROCS=%i\n", movie_nprocessors);
+  fprintf(stream, "export USER_QUEUE=%s\n", movie_queues[movie_queue_index]);
+  fprintf(stream, "export USER_RENDERDIR=.\n");
+  if(strlen(movie_htmldir)>0)fprintf(stream, "export USER_MOVIEDIR=%s\n", movie_htmldir);
+  if(strlen(movie_email)>0)fprintf(stream, "export USER_EMAIL=%s\n", movie_email);
+  fprintf(stream, "export USER_SHARE=\n");
   fclose(stream);
 }
 
