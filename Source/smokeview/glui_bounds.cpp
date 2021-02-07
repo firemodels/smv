@@ -4099,7 +4099,7 @@ void ScriptCB(int var){
     updatemenu = 1;
     break;
   case SCRIPT_EDIT_INI:
-    strcpy(label, _("Save"));
+    strcpy(label, _("Save "));
     strcat(label, fdsprefix);
     TrimBack(script_inifile_suffix);
     if(strlen(script_inifile_suffix) > 0){
