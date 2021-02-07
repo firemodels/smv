@@ -30,7 +30,8 @@ SVEXTERN int SVDECL(movie_slice_index, 0), SVDECL(movie_queue_index, 0), SVDECL(
 SVEXTERN char SVDECL(**movie_queues, NULL);
 SVEXTERN char movie_htmldir[256], movie_email[256];
 SVEXTERN int SVDECL(nmovie_queues, 0);
-SVEXTERN char movie_queue_list[1000];
+SVEXTERN char movie_queue_list[1000], movie_basename[1000], movie_ini_filename[1000];
+SVEXTERN slicedata SVDECL(*movie_sliceinfo, NULL);
 #endif
 SVEXTERN slicemenudata SVDECL(**slicemenu_sorted, NULL);
 SVEXTERN float SVDECL(texture_time, 0.0);

@@ -210,6 +210,7 @@ float     part_load_time;
 
 #define MENU_TIMEVIEW             -103
 #define SAVE_VIEWPOINT            -101
+//#define SAVE_CURRENT_VIEWPOINT    -115 movied to smokeviewdefs.h
 #define SAVE_VIEWPOINT_AS_STARTUP -106
 #define MENU_STARTUPVIEW          -102
 #define MENU_OUTLINEVIEW          -104
@@ -1816,11 +1817,23 @@ void ResetMenu(int value){
   case MENU_VIEWPOINT_TOPVIEW:
     SetViewZMAXPersp();
     break;
+#ifdef pp_MOVIE_BATCH
+  case SAVE_CURRENT_VIEWPOINT:
+#endif
   case SAVE_VIEWPOINT:
     {
       cameradata *ca;
 
+#ifdef pp_MOVIE_BATCH
+      if(value==SAVE_CURRENT_VIEWPOINT){
+        strcpy(view_label, "current");
+      }
+      else{
+        GetNextViewLabel(view_label);
+      }
+#else
       GetNextViewLabel(view_label);
+#endif
       AddListView(view_label);
       ca = GetCamera(view_label);
       if(ca != NULL){

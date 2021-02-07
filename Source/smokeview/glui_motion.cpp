@@ -29,8 +29,8 @@ unsigned char deg90[] = {'9', '0', 0};
 GLUI *glui_motion=NULL;
 
 #ifdef pp_MOVIE_BATCH
-GLUI_EditText *EDITTEXT_movie_email = NULL;
-GLUI_EditText *EDITTEXT_movie_htmldir = NULL;
+GLUI_EditText *EDITTEXT_movie_email    = NULL;
+GLUI_EditText *EDITTEXT_movie_htmldir  = NULL;
 #endif
 
 GLUI_Panel *PANEL_select = NULL;
@@ -216,13 +216,39 @@ rolloutlistdata first_rollout, last_rollout;
 procdata motionprocinfo[9], mvrprocinfo[5], subrenderprocinfo[4];
 int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0;
 
-/* ------------------ MakeUserConfig ------------------------ */
-
 #ifdef pp_MOVIE_BATCH
-void MakeUserConfig(char *file){
+
+/* ------------------ MakeMovie ------------------------ */
+
+void MakeMovie(void){
+  FILE *stream=NULL;
+  char user_config[1000], command_line[1000], script_in[1000];
+
+  strcpy(user_config, "slice2mp4_");
+  strcat(user_config, fdsprefix);
+
+  strcpy(script_in, movie_basename);
+  strcat(script_in, ".in");
+  stream = fopen(script_in, "w");
+  if(stream==NULL)return;
+  
+  fprintf(" %i \n 2\n", movie_slice_index+1);
+  fclose(stream);
+  sprintf(command_line, " cat %s | slice2mp4 -c %s %s", script_in, user_config, fdsprefix);
+  printf("running command: %s\n", command_line);
+  system(command_line);
+}
+
+/* ------------------ MakeMovieConfig ------------------------ */
+
+void MakeMovieConfig(void){
+  char user_config[1000];
   FILE *stream = NULL;
 
-  stream = fopen(file, "w");
+  strcpy(user_config, "slice2mp4_");
+  strcat(user_config, fdsprefix);
+
+  stream = fopen(user_config, "w");
   if(stream==NULL)return;
   fprintf(stream, "#/bin/bash\n");
   fprintf(stream, "export USER_NPROCS = %i\n", movie_nprocessors);
@@ -231,7 +257,54 @@ void MakeUserConfig(char *file){
   if(strlen(movie_htmldir)>0)fprintf(stream, "export USER_MOVIEDIR = %s\n", movie_htmldir);
   if(strlen(movie_email)>0)fprintf(stream, "export USER_EMAIL = %s\n", movie_email);
   fprintf(stream, "export USER_SHARE =\n");
+  fclose(stream);
 }
+
+/* ------------------ MakeMovieScript ------------------------ */
+
+void MakeMovieScript(void){
+  char script_file[1000];
+  FILE *stream=NULL;
+  slicedata *slicei;
+  slicemenudata *slicemi;
+
+  strcpy(script_file, movie_basename);
+  strcat(script_file, ".ssf");
+  stream = fopen(script_file, "w");
+  if(stream==NULL)return;
+  slicemi = slicemenu_sorted[movie_slice_index];
+  slicei = slicemi->sliceinfo;
+
+  fprintf(stream, "RENDERDIR\n");
+  fprintf(stream, " .\n");
+  fprintf(stream, "UNLOADALL\n");
+  fprintf(stream, "LOADINI\n");
+  fprintf(stream, " %s\n", movie_ini_filename);
+  fprintf(stream, "SETVIEWPOINT\n");
+  fprintf(stream, " current\n");
+  fprintf(stream, "LOADSLICERENDER\n");
+  fprintf(stream, " %s\n", slicei->label.longlabel);
+  fprintf(stream, " %i %f\n", slicei->idir, slicei->position_orig);
+  fprintf(stream, " %s\n", movie_basename);
+  fprintf(stream, " 0 1\n");
+  fclose(stream);
+  /*
+  RENDERDIR
+    .
+    UNLOADALL
+    LOADINIFILE
+    cogoleto_fire_2019_ls2_slice_1.ini
+    VIEWZMAX
+
+    LOADSLICERENDER
+    LEVEL SET VALUE(terrain)
+    3       1.0
+    cogoleto_fire_2019_ls2_slice_1
+    0 1
+*/
+
+}
+
 #endif
 
 /* ------------------ CloseRollouts ------------------------ */
@@ -378,6 +451,18 @@ extern "C" void SetColorControls(void){
   if(SPINNER_background_green!=NULL)SPINNER_background_green->set_int_val(glui_backgroundbasecolor[1]);
   if(SPINNER_background_blue !=NULL) SPINNER_background_blue->set_int_val(glui_backgroundbasecolor[2]);
 }
+
+#ifdef pp_MOVIE_BATCH
+void MovieCB(int val){
+  switch (val){
+    case MOVIE_SLICE_INDEX:
+      sprintf(movie_basename, "%s_slice_%i", fdsprefix, movie_slice_index+1);
+      strcpy(movie_ini_filename, movie_basename);
+      strcat(movie_ini_filename, ".ini");
+      break;
+  }
+}
+#endif
 
 /* ------------------ SubRenderRolloutCB ------------------------ */
 
@@ -693,6 +778,27 @@ extern "C" void ViewpointCB(int var){
   case LABEL_VIEW:
     updatemenu = 1;
     break;
+#ifdef pp_MOVIE_BATCH
+  case REPLACE_CURRENT_VIEW:
+    {
+      int current_view_id=-1;
+      cameradata *cex;
+
+      cex = &camera_list_first;
+      cex = cex->next;
+      cex = cex->next;
+      for(ca = cex; ca->next!=NULL; ca = ca->next){
+        if(strcmp(ca->name,"current")==0){
+          current_view_id = ca->view_id;
+        }
+      }
+      if(current_view_id!=-1){
+        LIST_viewpoints->set_int_val(current_view_id);
+        ViewpointCB(REPLACE_VIEW);
+      }
+    }
+    break;
+#endif
   case REPLACE_VIEW:
     ival = LIST_viewpoints->get_int_val();
     selected_view = ival;
@@ -1439,7 +1545,7 @@ extern "C" void GluiMotionSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_make_movie_batch, glui_motion);
     ADDPROCINFO(mvrprocinfo, nmvrprocinfo, ROLLOUT_make_movie_batch, MOVIE_ROLLOUT_BATCH, glui_motion);
 
-    LIST_movie_slice_index = glui_motion->add_listbox_to_panel(ROLLOUT_make_movie_batch, "slice:", &movie_slice_index);
+    LIST_movie_slice_index = glui_motion->add_listbox_to_panel(ROLLOUT_make_movie_batch, "slice:", &movie_slice_index, MOVIE_SLICE_INDEX, MovieCB);
     for(i = 0; i<nslicemenuinfo; i++){
       char *cdir[] = {" ", "x=", "y=", "z=", " "};
       slicedata *slicei;
@@ -1464,6 +1570,8 @@ extern "C" void GluiMotionSetup(int main_window){
       }
       LIST_movie_slice_index->add_item(i, label);
     }
+    MovieCB(MOVIE_SLICE_INDEX);
+
     LIST_movie_queue_index = glui_motion->add_listbox_to_panel(ROLLOUT_make_movie_batch, "queue:", &movie_queue_index);
     for(i = 0; i<nmovie_queues; i++){
       LIST_movie_queue_index->add_item(i, movie_queues[i]);
@@ -2310,6 +2418,18 @@ extern "C" void AddListView(char *label_in){
   char *label;
   cameradata *cam1,*cam2,*cex,*ca;
 
+  // ignore duplicate labels
+#ifdef pp_MOVIE_BATCH
+  if(label_in!=NULL&&strlen(label_in)>0){
+    cex = &camera_list_first;
+    cex = cex->next;
+    cex = cex->next;
+    for(ca = cex; ca->next!=NULL; ca = ca->next){
+      if(strcmp(ca->name,label_in)==0)return;
+    }
+  }
+#endif
+
   ival=LIST_viewpoints->get_int_val();
   if(ival==-1){
     LIST_viewpoints->set_int_val(0);
@@ -2396,6 +2516,12 @@ void RenderCB(int var){
       break;
 #ifdef pp_MOVIE_BATCH
     case MAKE_MOVIE_BATCH:
+      ViewpointCB(REPLACE_CURRENT_VIEW);
+      ResetMenu(SAVE_CURRENT_VIEWPOINT);
+      WriteIni(SCRIPT_INI, movie_ini_filename);
+      MakeMovieScript();
+      MakeMovieConfig();
+      MakeMovie();
       break;
 #endif
     case MAKE_MOVIE:

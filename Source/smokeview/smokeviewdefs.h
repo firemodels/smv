@@ -26,6 +26,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MENU_VIEW_YMAX            -112
 #define MENU_VIEW_ZMIN            -113
 #define MENU_VIEW_ZMAX            -114
+#ifdef pp_MOVIE_BATCH
+#define SAVE_CURRENT_VIEWPOINT    -115
+#endif
 
 #define VIEW_XMIN                    0
 #define VIEW_XMAX                   -1
