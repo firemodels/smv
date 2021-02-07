@@ -232,7 +232,7 @@ void MakeMovie(void){
   stream = fopen(script_in, "w");
   if(stream==NULL)return;
   
-  fprintf(" %i \n 2\n", movie_slice_index+1);
+  fprintf(stream, " %i \n 2\n", movie_slice_index+1);
   fclose(stream);
   sprintf(command_line, " cat %s | slice2mp4 -c %s %s", script_in, user_config, fdsprefix);
   printf("running command: %s\n", command_line);

@@ -1182,8 +1182,6 @@ void InitVars(void){
 #ifdef pp_MOVIE_BATCH
   {
     char *queue_list = NULL;
-    char queue_list_copy;
-    char temp;
     char *queues = "batch ; batch2 ;batch3;batch4";
 
     queue_list = getenv("SMV_QUEUES");
