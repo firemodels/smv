@@ -220,7 +220,7 @@ int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0;
 
 /* ------------------ MakeMovie ------------------------ */
 
-void MakeMovie(void){
+void MakeMovieSlurm(void){
   FILE *stream=NULL;
   char user_config[1000], command_line[1000], script_in[1000];
 
@@ -2521,7 +2521,7 @@ void RenderCB(int var){
       WriteIni(SCRIPT_INI, movie_ini_filename);
       MakeMovieScript();
       MakeMovieConfig();
-      MakeMovie();
+      MakeMovieSlurm();
       break;
 #endif
     case MAKE_MOVIE:
