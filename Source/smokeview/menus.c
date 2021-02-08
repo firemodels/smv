@@ -2823,9 +2823,12 @@ void PeriodicReloads(int value){
 /* ------------------ PeriodicRefresh ------------------------ */
 
 void PeriodicRefresh(int value){
+  update_refresh = 0;
   if(periodic_refresh!=0){
     GLUTPOSTREDISPLAY;
-    glutTimerFunc((unsigned int)value, PeriodicRefresh, value);
+    if(glui_refresh_rate>0){
+      glutTimerFunc((unsigned int)value, PeriodicRefresh, refresh_interval);
+    }
   }
 }
 #endif

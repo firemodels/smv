@@ -23,6 +23,10 @@
 #include "glutbitmap.h"
 #endif
 
+#ifdef pp_REFRESH
+SVEXTERN int SVDECL(periodic_refresh, 0), SVDECL(update_refresh, 1);
+SVEXTERN int SVDECL(glui_refresh_rate, 1), SVDECL(glui_refresh_rate_old, 1), SVDECL(refresh_interval, 1000);
+#endif
 SVEXTERN int SVDECL(nslicemenuinfo, 0);
 #ifdef pp_MOVIE_BATCH
 SVEXTERN int SVDECL(have_slurm, 0);
@@ -1270,9 +1274,6 @@ SVEXTERN int updatefaces,updatefacelists;
 SVEXTERN int updateOpenSMVFile;
 
 SVEXTERN int SVDECL(periodic_reloads, 0), SVDECL(periodic_reload_value, 2);
-#ifdef pp_REFRESH
-SVEXTERN int SVDECL(periodic_refresh, 1), SVDECL(update_refresh, 1);
-#endif
 
 SVEXTERN int slicefilenum;
 SVEXTERN int zonefilenum;

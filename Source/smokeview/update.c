@@ -1712,9 +1712,9 @@ int GetPlotState(int choice){
     periodic_refresh = 0;
   }
   else{
-    if(periodic_refresh==0){
+    if(periodic_refresh==0&&glui_refresh_rate>0){
       periodic_refresh = 1;
-      PeriodicRefresh(REFRESH_INTERVAL);
+      PeriodicRefresh(refresh_interval);
     }
   }
 #endif
@@ -1830,7 +1830,7 @@ void UpdateShowScene(void){
 #ifdef pp_REFRESH
   if(update_refresh==1){
     update_refresh = 0;
-    PeriodicRefresh(REFRESH_INTERVAL);
+    PeriodicRefresh(refresh_interval);
   }
 #endif
   if(update_glui_devices==1){

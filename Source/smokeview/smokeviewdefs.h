@@ -7,9 +7,12 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
-#ifdef pp_REFRESH
-#define REFRESH_INTERVAL          1000
-#endif
+#define LABELS_vcolorbar 34
+#define LABELS_hcolorbar 35
+#define LABELS_shade      5
+#define LABELS_shadedata 30
+#define LABELS_colorbar_shift 36
+
 
 #define OBJECT_PLOT_SHOW_ALL        -8
 #define OBJECT_PLOT_SHOW_SELECTED  -11
