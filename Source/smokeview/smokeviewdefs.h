@@ -8,7 +8,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #endif
 
 #ifdef pp_REFRESH
-#define REFRESH_INTERVAL          2000
+#define REFRESH_INTERVAL          1000
 #endif
 
 #define OBJECT_PLOT_SHOW_ALL        -8
