@@ -25,7 +25,7 @@
 
 #ifdef pp_REFRESH
 SVEXTERN int SVDECL(periodic_refresh, 0), SVDECL(update_refresh, 1);
-SVEXTERN int SVDECL(glui_refresh_rate, 1), SVDECL(glui_refresh_rate_old, 1), SVDECL(refresh_interval, 1000);
+SVEXTERN int SVDECL(glui_refresh_rate, 10), SVDECL(glui_refresh_rate_old, 10), SVDECL(refresh_interval, 100);
 #endif
 SVEXTERN int SVDECL(nslicemenuinfo, 0);
 #ifdef pp_MOVIE_BATCH
