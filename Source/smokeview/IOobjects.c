@@ -3337,7 +3337,6 @@ void DrawDevicePlots(void){
   }
 }
 
-#ifdef pp_ZTREE
 /* ----------------------- DrawTreePlot ----------------------------- */
 
 void DrawTreePlot(int first, int n){
@@ -3390,7 +3389,6 @@ void DrawTreeDevicePlots(void){
     DrawTreePlot(ztreei->first, ztreei->n);
   }
 }
-#endif
 
 /* ----------------------- DrawDevices ----------------------------- */
 
@@ -5942,7 +5940,6 @@ int CompareV3Devices( const void *arg1, const void *arg2 ){
   return 0;
 }
 
-#ifdef pp_ZTREE
 /* ------------------ CompareV3Devices ------------------------ */
 
 int CompareZ3Devices(const void *arg1, const void *arg2){
@@ -6038,7 +6035,6 @@ void SetupZTreeDevices(void){
   }
   ResizeMemory((void **)&ztreedeviceinfo, nztreedeviceinfo*sizeof(ztreedevicedata));
 }
-#endif
 
 /* ----------------------- SetupWindTreeDevices ----------------------------- */
 
@@ -6909,9 +6905,7 @@ void SetupDeviceData(void){
   }
 
   SetupWindTreeDevices();
-#ifdef pp_ZTREE
   SetupZTreeDevices();
-#endif
   UpdateColorDevices();
 
   DeviceData2WindRose(nr_windrose,ntheta_windrose);

@@ -3109,87 +3109,28 @@ void ScriptViewXYZMINMAXOrtho(int command){
 }
 
 /* ------------------ ScriptViewXYZMINMAXPersp ------------------------ */
-
+void ResetDefaultMenu(int var);
 void ScriptViewXYZMINMAXPersp(int command){
-  float aperture_temp1, aperture_temp2;
-  float azimuth, elevation;
-  float DL;
-  float DL1, DL2;
-  float width, height;
-  float xcen, ycen, zcen;
-
-  aperture_temp1 = Zoom2Aperture(zoom);
-  aperture_temp2 = 2.0*RAD2DEG*atan(scene_aspect_ratio*tan(DEG2RAD*aperture_temp1/2.0));
-
   switch (command){
   case SCRIPT_VIEWXMIN:
+    ResetDefaultMenu(VIEW_XMIN);
+    break;
   case SCRIPT_VIEWXMAX:
-    ycen = (ybar0ORIG+ybarORIG)/2.0;
-    zcen = (zbar0ORIG+zbarORIG)/2.0;
-    width = ybarORIG-ybar0ORIG;
-    height = zbarORIG-zbar0ORIG;
-
-    DL1 = (width/2.0)/tan(DEG2RAD*aperture_temp1/2.0);
-    DL2 = (height/2.0)/tan(DEG2RAD*aperture_temp2/2.0);
-    DL = 1.05*MAX(DL1, DL2);
-
-    if(command==SCRIPT_VIEWXMIN){
-      xcen = xbar0ORIG-DL;
-      azimuth = 90.0;
-    }
-    if(command==SCRIPT_VIEWXMAX){
-      xcen = xbarORIG+DL;
-      azimuth = -90.0;
-    }
-    elevation = 0.0;
+    ResetDefaultMenu(VIEW_XMAX);
     break;
-
   case SCRIPT_VIEWYMIN:
-  case SCRIPT_VIEWYMAX:
-    xcen = (xbar0ORIG+xbarORIG)/2.0;
-    zcen = (zbar0ORIG+zbarORIG)/2.0;
-    width = xbarORIG-xbar0ORIG;
-    height = zbarORIG-zbar0ORIG;
-
-    DL1 = (width/2.0)/tan(DEG2RAD*aperture_temp1/2.0);
-    DL2 = (height/2.0)/tan(DEG2RAD*aperture_temp2/2.0);
-    DL = 1.05*MAX(DL1, DL2);
-
-    if(command==SCRIPT_VIEWYMIN){
-      ycen = ybar0ORIG-DL;
-      azimuth = 0.0;
-    }
-    if(command==SCRIPT_VIEWYMAX){
-      ycen = ybarORIG+DL;
-      azimuth = 180.0;
-    }
-    elevation = 0.0;
+    ResetDefaultMenu(VIEW_YMIN);
     break;
-
+  case SCRIPT_VIEWYMAX:
+    ResetDefaultMenu(VIEW_YMAX);
+    break;
   case SCRIPT_VIEWZMIN:
+    ResetDefaultMenu(VIEW_ZMIN);
+    break;
   case SCRIPT_VIEWZMAX:
-    xcen = (xbar0ORIG+xbarORIG)/2.0;
-    ycen = (ybar0ORIG+ybarORIG)/2.0;
-    width = xbarORIG-xbar0ORIG;
-    height = ybarORIG-ybar0ORIG;
-
-    DL1 = (width/2.0)/tan(DEG2RAD*aperture_temp1/2.0);
-    DL2 = (height/2.0)/tan(DEG2RAD*aperture_temp2/2.0);
-    DL = 1.05*MAX(DL1, DL2);
-
-    if(command==SCRIPT_VIEWZMIN){
-      zcen = zbar0ORIG-DL;
-      elevation = 89.9;
-    }
-    if(command==SCRIPT_VIEWZMAX){
-      zcen = zbarORIG+DL;
-      elevation = -89.9;
-    }
-    azimuth = 0.0;
-    ResetGluiView(EXTERNAL_VIEW);
+    ResetDefaultMenu(VIEW_ZMAX);
     break;
   }
-  ScriptXYZView(xcen, ycen, zcen, azimuth, elevation);
 }
 
 /* ------------------ SetViewZMAXPersp ------------------------ */

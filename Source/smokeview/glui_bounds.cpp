@@ -2883,11 +2883,7 @@ GLUI_RadioButton *RADIOBUTTON_plot3d_iso_hidden=NULL;
 GLUI_RadioButton *RADIOBUTTON_zone_permin=NULL;
 GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
 
-#define LABELS_shade      5
-#define LABELS_shadedata 30
-
 #define FLIP                  19
-#define LABELS_colorbar_shift 36
 #define CB_USE_LIGHTING      120
 #define COLORBAR_EXTREME_RGB  15
 #define COLORBAR_EXTREME      16
@@ -4099,7 +4095,7 @@ void ScriptCB(int var){
     updatemenu = 1;
     break;
   case SCRIPT_EDIT_INI:
-    strcpy(label, _("Save"));
+    strcpy(label, _("Save "));
     strcat(label, fdsprefix);
     TrimBack(script_inifile_suffix);
     if(strlen(script_inifile_suffix) > 0){
@@ -4908,9 +4904,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     }
     LIST_colorbar2->set_int_val(colorbartype);
   }
-
-#define LABELS_vcolorbar 34
-#define LABELS_hcolorbar 35
 
   CHECKBOX_visColorbarVertical2   = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, "vertical",   &visColorbarVertical,   LABELS_vcolorbar, LabelsCB);
   CHECKBOX_visColorbarHorizontal2 = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, "horizontal", &visColorbarHorizontal, LABELS_hcolorbar, LabelsCB);

@@ -7,6 +7,13 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define LABELS_vcolorbar 34
+#define LABELS_hcolorbar 35
+#define LABELS_shade      5
+#define LABELS_shadedata 30
+#define LABELS_colorbar_shift 36
+
+
 #define OBJECT_PLOT_SHOW_ALL        -8
 #define OBJECT_PLOT_SHOW_SELECTED  -11
 #define OBJECT_PLOT_SHOW_TREE_ALL  -12
@@ -26,15 +33,23 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MENU_VIEW_YMAX            -112
 #define MENU_VIEW_ZMIN            -113
 #define MENU_VIEW_ZMAX            -114
+#ifdef pp_MOVIE_BATCH
+#define SAVE_CURRENT_VIEWPOINT    -115
+#endif
+
+#define VIEW_XMIN                    0
+#define VIEW_XMAX                   -1
+#define VIEW_YMIN                   -2
+#define VIEW_YMAX                   -3
+#define VIEW_ZMIN                   -4
+#define VIEW_ZMAX                   -5
 
 #define DEVICE_devicetypes     28
 
 #define DEVICE_PLOT_HIDDEN        0
 #define DEVICE_PLOT_SHOW_SELECTED 1
 #define DEVICE_PLOT_SHOW_ALL      2
-#ifdef pp_ZTREE
 #define DEVICE_PLOT_SHOW_TREE_ALL 3
-#endif
 #define PLOT_ONLY_DATA 0
 #define PLOT_ALL       1
 
@@ -296,8 +311,11 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MAX_VSLABS  2
 #define MAX_MSLABS  2
 
-#define MAKE_MOVIE     28
-#define OUTPUT_FFMPEG 129
+#define MAKE_MOVIE        28
+#ifdef pp_MOVIE_BATCH
+#define MAKE_MOVIE_BATCH 130
+#endif
+#define OUTPUT_FFMPEG    129
 
 #define PNG        0
 #define JPEG       1

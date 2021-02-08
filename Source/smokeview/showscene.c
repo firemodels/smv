@@ -498,11 +498,9 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     if((show_hrrpuv_plot==1&&hrrinfo!=NULL)||showdevice_plot==DEVICE_PLOT_SHOW_ALL||showdevice_plot==DEVICE_PLOT_SHOW_SELECTED){
       DrawDevicePlots();
     }
-#ifdef pp_ZTREE
     if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL){
       DrawTreeDevicePlots();
     }
-#endif
   }
 
   /* ++++++++++++++++++++++++ draw zone fire modeling info +++++++++++++++++++++++++ */

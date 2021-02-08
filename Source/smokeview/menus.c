@@ -210,6 +210,7 @@ float     part_load_time;
 
 #define MENU_TIMEVIEW             -103
 #define SAVE_VIEWPOINT            -101
+//#define SAVE_CURRENT_VIEWPOINT    -115 movied to smokeviewdefs.h
 #define SAVE_VIEWPOINT_AS_STARTUP -106
 #define MENU_STARTUPVIEW          -102
 #define MENU_OUTLINEVIEW          -104
@@ -1816,11 +1817,23 @@ void ResetMenu(int value){
   case MENU_VIEWPOINT_TOPVIEW:
     SetViewZMAXPersp();
     break;
+#ifdef pp_MOVIE_BATCH
+  case SAVE_CURRENT_VIEWPOINT:
+#endif
   case SAVE_VIEWPOINT:
     {
       cameradata *ca;
 
+#ifdef pp_MOVIE_BATCH
+      if(value==SAVE_CURRENT_VIEWPOINT){
+        strcpy(view_label, "current");
+      }
+      else{
+        GetNextViewLabel(view_label);
+      }
+#else
       GetNextViewLabel(view_label);
+#endif
       AddListView(view_label);
       ca = GetCamera(view_label);
       if(ca != NULL){
@@ -2806,6 +2819,19 @@ void PeriodicReloads(int value){
   }
 }
 
+#ifdef pp_REFRESH
+/* ------------------ PeriodicRefresh ------------------------ */
+
+void PeriodicRefresh(int value){
+  update_refresh = 0;
+  if(periodic_refresh!=0){
+    GLUTPOSTREDISPLAY;
+    if(glui_refresh_rate>0){
+      glutTimerFunc((unsigned int)value, PeriodicRefresh, refresh_interval);
+    }
+  }
+}
+#endif
 
 /* ------------------ ScriptMenu2 ------------------------ */
 
@@ -2964,7 +2990,7 @@ void ReloadMenu(int value){
 
   if(value == MENU_DUMMY)return;
   updatemenu=1;
-  periodic_value=value;
+  periodic_reload_value=value;
   switch(value){
   case STOP_RELOADING:
     periodic_reloads=0;
@@ -6102,7 +6128,6 @@ void ShowObjectsMenu(int value){
   else if(value==OBJECT_SELECT){
     select_device=1-select_device;
   }
-#ifdef pp_ZTREE
   else if(value==OBJECT_PLOT_SHOW_TREE_ALL){
     update_times=1;
     if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL){
@@ -6116,7 +6141,6 @@ void ShowObjectsMenu(int value){
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     UpdateDeviceShow();
   }
-#endif
   else if(value==PLOT_HRRPUV){
     show_hrrpuv_plot = 1-show_hrrpuv_plot;
     UpdateShowHRRPUVPlot(show_hrrpuv_plot);
@@ -11672,12 +11696,12 @@ updatemenu=0;
     glutAddMenuEntry("-", MENU_DUMMY);
     glutAddMenuEntry(_("When:"), MENU_DUMMY);
     glutAddMenuEntry(_("  now"),RELOAD_SWITCH);
-    if(periodic_value==1)glutAddMenuEntry(_("   *every minute"),1);
-    if(periodic_value!=1)glutAddMenuEntry(_("   every minute"),1);
-    if(periodic_value==5)glutAddMenuEntry(_("   *every 5 minutes"),5);
-    if(periodic_value!=5)glutAddMenuEntry(_("   every 5 minutes"),5);
-    if(periodic_value==10)glutAddMenuEntry(_("   *every 10 minutes"),10);
-    if(periodic_value!=10)glutAddMenuEntry(_("   every 10 minutes"),10);
+    if(periodic_reload_value==1)glutAddMenuEntry(_("   *every minute"),1);
+    if(periodic_reload_value!=1)glutAddMenuEntry(_("   every minute"),1);
+    if(periodic_reload_value==5)glutAddMenuEntry(_("   *every 5 minutes"),5);
+    if(periodic_reload_value!=5)glutAddMenuEntry(_("   every 5 minutes"),5);
+    if(periodic_reload_value==10)glutAddMenuEntry(_("   *every 10 minutes"),10);
+    if(periodic_reload_value!=10)glutAddMenuEntry(_("   every 10 minutes"),10);
     glutAddMenuEntry(_("Cancel"),STOP_RELOADING);
 
 

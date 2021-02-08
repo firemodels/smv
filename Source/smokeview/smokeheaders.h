@@ -5,6 +5,9 @@
 #include "gd.h"
 #endif
 
+#ifdef pp_REFRESH
+EXTERNCPP void PeriodicRefresh(int var);
+#endif
 
 EXTERNCPP void ShowObjectsMenu(int var);
 EXTERNCPP void UpdateShowHRRPUVPlot(int val);
@@ -42,9 +45,7 @@ EXTERNCPP void IncrementPartPropIndex(void);
 
 EXTERNCPP int GetStringWidth(char *string);
 EXTERNCPP void DrawDevicePlots(void);
-#ifdef pp_ZTREE
 EXTERNCPP void DrawTreeDevicePlots(void);
-#endif
 EXTERNCPP int GetPercentileDraw(int type);
 EXTERNCPP int GetPlotState(int choice);
 
@@ -67,7 +68,7 @@ EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valm
 
 EXTERNCPP void ScriptLoadSliceRender(scriptdata*scripti);
 EXTERNCPP int GetNSliceFrames(char *file, float *stime_min, float *stime_max);
-EXTERNCPP void GenerateSliceMenu(void);
+EXTERNCPP void GenerateSliceMenu(int from_commandline);
 #ifdef pp_WUI_VAO
 int InitTerrainVAO(int sizeof_vertices, int sizeof_indices);
 void DrawTerrainGeomGPU(void);

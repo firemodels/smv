@@ -17,6 +17,10 @@ GLUI_Spinner *SPINNER_cullgeom_portsize=NULL;
 
 GLUI_Listbox *LIST_LB_labels=NULL;
 
+#ifdef pp_REFRESH
+GLUI_Spinner *SPINNER_refresh_rate=NULL;
+#endif
+
 GLUI_Spinner *SPINNER_LB_tick_xbeg=NULL;
 GLUI_Spinner *SPINNER_LB_tick_ybeg=NULL;
 GLUI_Spinner *SPINNER_LB_tick_zbeg=NULL;
@@ -196,31 +200,35 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LB_TICK_XYZ 12
 #define LB_SHOW_TICK 13
 
-#define LABELS_label 0
-#define LABELS_vcolorbar 34
-#define LABELS_hcolorbar 35
-#define FRAME_label 21
-#define HRR_label 22
-#define FIRECUTOFF_label 23
-#define LABELS_showall 1
-#define LABELS_hideall 2
-#define LABELS_close 3
-#define LABELS_flip 4
-#define LABELS_shade 5
-#define LABELS_transparent 6
-#define LABELS_fontsize 7
-#define LABELS_ticks 8
-#define LABELS_drawface 24
-#define LABELS_hide_overlaps 25
-#define LABELS_version 26
-#define LABELS_meshlabel 27
-#define LABELS_usertick 28
-#define LABELS_usertick2 29
-#define LABELS_shadedata 30
-#define LABELS_shownorth 31
-#define LABELS_tick_inside 32
-#define LABELS_tick_outside 33
-#define LABELS_colorbar_shift 36
+#define LABELS_label           0
+//#define LABELS_vcolorbar      34  movied to smokeviewdefs.h
+//#define LABELS_hcolorbar      35  movied to smokeviewdefs.h
+#define FRAME_label           21
+#define HRR_label             22
+#define FIRECUTOFF_label      23
+#define LABELS_showall         1
+#define LABELS_hideall         2
+#define LABELS_close           3
+#define LABELS_flip            4
+//#define LABELS_shade           5   movied to smokeviewdefs.h
+#define LABELS_transparent     6
+#define LABELS_fontsize        7
+#define LABELS_ticks           8
+#define LABELS_drawface       24
+#define LABELS_hide_overlaps  25
+#define LABELS_version        26
+#define LABELS_meshlabel      27
+#define LABELS_usertick       28
+#define LABELS_usertick2      29
+//#define LABELS_shadedata      30   movied to smokeviewdefs.h
+#define LABELS_shownorth      31
+#define LABELS_tick_inside    32
+#define LABELS_tick_outside   33
+//#define LABELS_colorbar_shift 36  movied to smokeviewdefs.h
+#ifdef pp_REFRESH
+#define LABELS_REFRESH_RATE   37
+#endif
+
 
 #define SPLIT_COLORBAR 1
 
@@ -596,6 +604,10 @@ extern "C" void GluiLabelsSetup(int main_window){
   CHECKBOX_labels_ticks = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Ticks (FDS)"), &visFDSticks, LABELS_label, LabelsCB);
   CHECKBOX_visUSERticks2 = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Ticks (User)"), &visUSERticks, LABELS_usertick2, LabelsCB);
   glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Toggle dialogs"), &toggle_dialogs);
+#ifdef pp_REFRESH
+  SPINNER_refresh_rate = glui_labels->add_spinner_to_panel(PANEL_gen1, _("refresh rate"), GLUI_SPINNER_INT, &glui_refresh_rate, LABELS_REFRESH_RATE, LabelsCB);
+  SPINNER_refresh_rate->set_int_limits(0,10);
+#endif
 
   PANEL_titles=glui_labels->add_panel_to_panel(PANEL_gen1,"Titles");
   CHECKBOX_labels_title = glui_labels->add_checkbox_to_panel(PANEL_titles,     _("Smokeview version, build date"), &vis_title_smv_version, LABELS_label,   LabelsCB);
@@ -987,6 +999,18 @@ extern "C" void UpdateColorbarControls(void){
 extern "C" void LabelsCB(int var){
   updatemenu=1;
   switch(var){
+#ifdef pp_REFRESH
+    case LABELS_REFRESH_RATE:
+      if(glui_refresh_rate>0){
+        refresh_interval = 1000/(float)glui_refresh_rate;
+        if(glui_refresh_rate_old==0){
+          PeriodicRefresh(refresh_interval);
+          GLUTPOSTREDISPLAY;
+        }
+      }
+      glui_refresh_rate_old = glui_refresh_rate;
+      break;
+#endif
   case LABELS_colorbar_shift:
     UpdateRGBColors(colorbar_select_index);
     break;

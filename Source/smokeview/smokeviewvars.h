@@ -23,6 +23,21 @@
 #include "glutbitmap.h"
 #endif
 
+#ifdef pp_REFRESH
+SVEXTERN int SVDECL(periodic_refresh, 0), SVDECL(update_refresh, 1);
+SVEXTERN int SVDECL(glui_refresh_rate, 1), SVDECL(glui_refresh_rate_old, 1), SVDECL(refresh_interval, 1000);
+#endif
+SVEXTERN int SVDECL(nslicemenuinfo, 0);
+#ifdef pp_MOVIE_BATCH
+SVEXTERN int SVDECL(have_slurm, 0);
+SVEXTERN int SVDECL(movie_slice_index, 0), SVDECL(movie_queue_index, 0), SVDECL(movie_nprocessors, 10);
+SVEXTERN char SVDECL(**movie_queues, NULL);
+SVEXTERN char movie_htmldir[256], movie_email[256];
+SVEXTERN int SVDECL(nmovie_queues, 0);
+SVEXTERN char movie_queue_list[1000], movie_basename[1000], movie_ini_filename[1000];
+SVEXTERN slicedata SVDECL(*movie_sliceinfo, NULL);
+#endif
+SVEXTERN slicemenudata SVDECL(**slicemenu_sorted, NULL);
 SVEXTERN float SVDECL(texture_time, 0.0);
 SVEXTERN int SVDECL(handle_slice_files, 1);
 SVEXTERN int SVDECL(plot_option, 0);
@@ -32,11 +47,9 @@ SVEXTERN int SVDECL(is_terrain_case, 0);
 SVEXTERN int SVDECL(update_adjust_y, 2);
 SVEXTERN int SVDECL(visFrameTimelabel, 1);
 SVEXTERN int SVDECL(rotation_axis, 1);
-#ifdef pp_ZTREE
 SVEXTERN ztreedevicedata SVDECL(*ztreedeviceinfo, NULL);
 SVEXTERN devicedata SVDECL(**deviceinfo_sortedz, NULL);
 SVEXTERN int SVDECL(nztreedeviceinfo, 0);
-#endif
 
 SVEXTERN int SVDECL(readini_output, 0);
 SVEXTERN int SVDECL(show_startup_timings, 0);
@@ -1260,8 +1273,7 @@ SVEXTERN int SVDECL(use_graphics,1);
 SVEXTERN int updatefaces,updatefacelists;
 SVEXTERN int updateOpenSMVFile;
 
-SVEXTERN int periodic_reloads;
-SVEXTERN int periodic_value;
+SVEXTERN int SVDECL(periodic_reloads, 0), SVDECL(periodic_reload_value, 2);
 
 SVEXTERN int slicefilenum;
 SVEXTERN int zonefilenum;

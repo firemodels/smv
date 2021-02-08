@@ -1179,6 +1179,54 @@ void InitVars(void){
   object_circ.ncirc=0;
   cvent_circ.ncirc=0;
 
+#ifdef pp_MOVIE_BATCH
+  {
+    char *queue_list = NULL;
+    char *queues = "batch ; batch2 ;batch3;batch4";
+
+    queue_list = getenv("SMV_QUEUES");
+    queue_list = queues; // placeholder until linux version is complete
+    if(queue_list!=NULL){
+      char *queue;
+
+#define MAX_QUEUS 100
+      strcpy(movie_queue_list, queue_list);
+      queue = strtok(movie_queue_list, ";");
+      if(queue!=NULL){
+        NewMemory((void **)&movie_queues, MAX_QUEUS*sizeof(char *));
+        movie_queues[nmovie_queues++]=TrimFrontBack((queue));
+        for(;;){
+          queue = strtok(NULL, ";");
+          if(queue==NULL||nmovie_queues>=MAX_QUEUS)break;
+          movie_queues[nmovie_queues++]=TrimFrontBack((queue));
+        }
+        ResizeMemory((void **)&movie_queues, nmovie_queues*sizeof(char *));;
+        have_slurm = 1;
+      }
+    }
+    {
+      char *htmldir=NULL;
+      char *email=NULL;
+
+      htmldir = getenv("SMV_HTMLDIR");
+      if(htmldir!=NULL&&strlen(htmldir)>0){
+        strcpy(movie_htmldir, htmldir);
+      }
+      else{
+        strcpy(movie_htmldir, "");
+      }
+
+      email = getenv("SMV_EMAIL");
+      if(email!=NULL&&strlen(email)>0){
+        strcpy(movie_email, email);
+      }
+      else{
+        strcpy(movie_email, "");
+      }
+    }
+  }
+#endif
+
 #ifdef pp_RENDER360_DEBUG
   NewMemory((void **)&screenvis, nscreeninfo * sizeof(int));
   for(i = 0; i < nscreeninfo; i++){
@@ -1586,9 +1634,6 @@ void InitVars(void){
 
   updatefaces=0,updatefacelists=0;
   updateOpenSMVFile=0;
-
-  periodic_reloads=0;
-  periodic_value=-2;
 
   slicefilenum=-1;
   zonefilenum=-1;

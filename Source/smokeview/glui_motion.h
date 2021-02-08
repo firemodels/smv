@@ -15,6 +15,10 @@
 #define LABEL_VIEW   4
 #define GEOM_FACTORS 33
 
+#ifdef pp_MOVIE_BATCH
+#define MOVIE_SLICE_INDEX 1
+#endif
+
 #define CUSTOM_ROTATION_X 9
 #define CUSTOM_ROTATION_Y 10
 #define CUSTOM_ROTATION_Z 11
@@ -23,6 +27,9 @@
 #define DELETE_VIEW 7
 #define RESTORE_VIEW 8
 #define REPLACE_VIEW 9
+#ifdef pp_MOVIE_BATCH
+#define REPLACE_CURRENT_VIEW 44
+#endif
 #define STARTUP 10
 #define CYCLEVIEWS 11
 #define ZOOM 12
@@ -72,10 +79,13 @@
 #define POSITION_VIEW_ROLLOUT   6
 #define TRANSLATEROTATE_ROLLOUT 7
 
-#define MOTION_ROLLOUT 0
-#define VIEW_ROLLOUT   1
-#define RENDER_ROLLOUT 2
-#define MOVIE_ROLLOUT  3
+#define MOTION_ROLLOUT       0
+#define VIEW_ROLLOUT         1
+#define RENDER_ROLLOUT       2
+#define MOVIE_ROLLOUT        3
+#ifdef pp_MOVIE_BATCH
+#define MOVIE_ROLLOUT_BATCH  4
+#endif
 
 #define RENDER_FILE_ROLLOUT   0
 #define RENDER_SIZE_ROLLOUT   1

@@ -10072,11 +10072,19 @@ typedef struct {
   UpdateVSlices();
   if(update_slice==1)return 3;
 
+#ifdef pp_MOVIE_BATCH
+  GenerateSliceMenu(generate_info_from_commandline);
   if(generate_info_from_commandline==1){
-    GenerateSliceMenu();
     GenerateViewpointMenu();
     exit(0);
   }
+#else
+  if(generate_info_from_commandline==1){
+    GenerateSliceMenu(generate_info_from_commandline);
+    GenerateViewpointMenu();
+    exit(0);
+  }
+#endif
 
   GetBoundaryParams();
 
