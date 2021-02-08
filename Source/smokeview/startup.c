@@ -1635,9 +1635,6 @@ void InitVars(void){
   updatefaces=0,updatefacelists=0;
   updateOpenSMVFile=0;
 
-  periodic_reloads=0;
-  periodic_value=-2;
-
   slicefilenum=-1;
   zonefilenum=-1;
   targfilenum=-1;

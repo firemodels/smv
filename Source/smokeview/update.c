@@ -1572,9 +1572,9 @@ void UpdateTimes(void){
   CheckMemory;
 }
 
-/* ------------------ GetPlotState ------------------------ */
+/* ------------------ GetPlotStateSub ------------------------ */
 
-int GetPlotState(int choice){
+int GetPlotStateSub(int choice){
   int i;
 
   UpdateLoadedLists();
@@ -1701,6 +1701,26 @@ int GetPlotState(int choice){
   return NO_PLOTS;
 }
 
+/* ------------------ GetPlotState ------------------------ */
+
+int GetPlotState(int choice){
+  int plot_state;
+
+  plot_state = GetPlotStateSub(choice);
+#ifdef pp_REFRESH
+  if(plot_state==DYNAMIC_PLOTS){
+    periodic_refresh = 0;
+  }
+  else{
+    if(periodic_refresh==0){
+      periodic_refresh = 1;
+      PeriodicRefresh(REFRESH_INTERVAL);
+    }
+  }
+#endif
+  return plot_state;
+}
+
 /* ------------------ GetIndex ------------------------ */
 
 int GetIndex(float key, const float *list, int nlist){
@@ -1807,6 +1827,12 @@ void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo){
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
+#ifdef pp_REFRESH
+  if(update_refresh==1){
+    update_refresh = 0;
+    PeriodicRefresh(REFRESH_INTERVAL);
+  }
+#endif
   if(update_glui_devices==1){
     update_glui_devices = 0;
     UpdateGluiDevices();

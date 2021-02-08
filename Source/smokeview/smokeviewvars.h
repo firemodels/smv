@@ -1269,8 +1269,10 @@ SVEXTERN int SVDECL(use_graphics,1);
 SVEXTERN int updatefaces,updatefacelists;
 SVEXTERN int updateOpenSMVFile;
 
-SVEXTERN int periodic_reloads;
-SVEXTERN int periodic_value;
+SVEXTERN int SVDECL(periodic_reloads, 0), SVDECL(periodic_reload_value, 2);
+#ifdef pp_REFRESH
+SVEXTERN int SVDECL(periodic_refresh, 1), SVDECL(update_refresh, 1);
+#endif
 
 SVEXTERN int slicefilenum;
 SVEXTERN int zonefilenum;

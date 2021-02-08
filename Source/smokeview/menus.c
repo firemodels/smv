@@ -2819,6 +2819,16 @@ void PeriodicReloads(int value){
   }
 }
 
+#ifdef pp_REFRESH
+/* ------------------ PeriodicRefresh ------------------------ */
+
+void PeriodicRefresh(int value){
+  if(periodic_refresh!=0){
+    GLUTPOSTREDISPLAY;
+    glutTimerFunc((unsigned int)value, PeriodicRefresh, value);
+  }
+}
+#endif
 
 /* ------------------ ScriptMenu2 ------------------------ */
 
@@ -2977,7 +2987,7 @@ void ReloadMenu(int value){
 
   if(value == MENU_DUMMY)return;
   updatemenu=1;
-  periodic_value=value;
+  periodic_reload_value=value;
   switch(value){
   case STOP_RELOADING:
     periodic_reloads=0;
@@ -11683,12 +11693,12 @@ updatemenu=0;
     glutAddMenuEntry("-", MENU_DUMMY);
     glutAddMenuEntry(_("When:"), MENU_DUMMY);
     glutAddMenuEntry(_("  now"),RELOAD_SWITCH);
-    if(periodic_value==1)glutAddMenuEntry(_("   *every minute"),1);
-    if(periodic_value!=1)glutAddMenuEntry(_("   every minute"),1);
-    if(periodic_value==5)glutAddMenuEntry(_("   *every 5 minutes"),5);
-    if(periodic_value!=5)glutAddMenuEntry(_("   every 5 minutes"),5);
-    if(periodic_value==10)glutAddMenuEntry(_("   *every 10 minutes"),10);
-    if(periodic_value!=10)glutAddMenuEntry(_("   every 10 minutes"),10);
+    if(periodic_reload_value==1)glutAddMenuEntry(_("   *every minute"),1);
+    if(periodic_reload_value!=1)glutAddMenuEntry(_("   every minute"),1);
+    if(periodic_reload_value==5)glutAddMenuEntry(_("   *every 5 minutes"),5);
+    if(periodic_reload_value!=5)glutAddMenuEntry(_("   every 5 minutes"),5);
+    if(periodic_reload_value==10)glutAddMenuEntry(_("   *every 10 minutes"),10);
+    if(periodic_reload_value!=10)glutAddMenuEntry(_("   every 10 minutes"),10);
     glutAddMenuEntry(_("Cancel"),STOP_RELOADING);
 
 

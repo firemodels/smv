@@ -5,6 +5,9 @@
 #include "gd.h"
 #endif
 
+#ifdef pp_REFRESH
+EXTERNCPP void PeriodicRefresh(int var);
+#endif
 
 EXTERNCPP void ShowObjectsMenu(int var);
 EXTERNCPP void UpdateShowHRRPUVPlot(int val);
