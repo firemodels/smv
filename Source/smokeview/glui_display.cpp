@@ -605,7 +605,7 @@ extern "C" void GluiLabelsSetup(int main_window){
   CHECKBOX_visUSERticks2 = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Ticks (User)"), &visUSERticks, LABELS_usertick2, LabelsCB);
   glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Toggle dialogs"), &toggle_dialogs);
 #ifdef pp_REFRESH
-  SPINNER_refresh_rate = glui_labels->add_spinner_to_panel(PANEL_gen1, _("refresh rate"), GLUI_SPINNER_INT, &glui_refresh_rate, LABELS_REFRESH_RATE, LabelsCB);
+  SPINNER_refresh_rate = glui_labels->add_spinner_to_panel(PANEL_gen1, _("refresh rate (fps)"), GLUI_SPINNER_INT, &glui_refresh_rate, LABELS_REFRESH_RATE, LabelsCB);
   SPINNER_refresh_rate->set_int_limits(0,10);
 #endif
 
