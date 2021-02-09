@@ -78,7 +78,7 @@ if [ "$ffmpeg_not_found" == "1" ]; then
   exit 1
 fi
 
-if [ "$JOBPREFIX != "" ]; then
+if [ "$JOBPREFIX" != "" ]; then
   wait_cases_end
 fi
 
