@@ -222,6 +222,7 @@ int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0;
 
 void MakeMovieBashScript(void){
   char *firemodels=NULL, *email=NULL;
+  char *email_ptr=NULL;
 
   FILE *stream=NULL;
   char command_line[1000];
@@ -249,8 +250,8 @@ void MakeMovieBashScript(void){
   fprintf(stream, "$QSMV -j SV_ -P $NPROCS -q $QUEUE -e $SMOKEVIEW -c %s %s\n", movie_ssf_script, fdsprefix);
   fprintf(stream, "$MAKEMOVIE -i . -j SV_ -o %s %s %s\n", movie_htmldir, movie_basename, movie_basename);
 
-  email = getenv("SMV_EMAIL");
-  if(email!=NULL){
+  email_ptr = TrimFrontBack(movie_email);
+  if(email_ptr!=NULL&&strlen(email_ptr)>0){
     char full_animation_file[256];
     slicedata *slicei;
     slicemenudata *slicemi;
@@ -272,8 +273,8 @@ void MakeMovieBashScript(void){
     strcat(full_animation_file, movie_basename);
     strcat(full_animation_file, ".mp4");
     fprintf(stream, "if [ -e %s ]; then\n", full_animation_file);
-    fprintf(stream, "  echo \"emailing results to %s\"\n", email);
-    fprintf(stream, "  echo \"\" | mail -s \"%s\" -a %s %s\n", label,full_animation_file, email);
+    fprintf(stream, "  echo \"emailing results to %s\"\n", email_ptr);
+    fprintf(stream, "  echo \"\" | mail -s \"%s\" -a %s %s\n", label,full_animation_file, email_ptr);
     fprintf(stream, "else\n");
     fprintf(stream, "  echo \"Animation file, %s, failed to build\"\n", full_animation_file);
     fprintf(stream, "fi\n");
@@ -1603,7 +1604,7 @@ extern "C" void GluiMotionSetup(int main_window){
     SPINNER_movie_nprocs = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie_batch, _("processors"), GLUI_SPINNER_INT, &movie_nprocs);
     SPINNER_movie_nprocs->set_int_limits(1, 36);
 
-    EDITTEXT_movie_email=glui_motion->add_edittext_to_panel(ROLLOUT_make_movie_batch,"email:",GLUI_EDITTEXT_TEXT,movie_email);
+    EDITTEXT_movie_email=glui_motion->add_edittext_to_panel(ROLLOUT_make_movie_batch,"email:",GLUI_EDITTEXT_TEXT, movie_email);
     EDITTEXT_movie_email->set_w(300);
 
     EDITTEXT_movie_htmldir=glui_motion->add_edittext_to_panel(ROLLOUT_make_movie_batch,"html directory:",GLUI_EDITTEXT_TEXT,movie_htmldir);
