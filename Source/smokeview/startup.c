@@ -1182,10 +1182,10 @@ void InitVars(void){
 #ifdef pp_MOVIE_BATCH
   {
     char *queue_list = NULL;
-    char *queues = "batch ; batch2 ;batch3;batch4";
+    char *queues = "batch";
 
     queue_list = getenv("SMV_QUEUES");
-    queue_list = queues; // placeholder until linux version is complete
+    if(queue_list==NULL)queue_list = queues; // placeholder until linux version is complete
     if(queue_list!=NULL){
       char *queue;
 

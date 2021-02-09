@@ -221,10 +221,17 @@ int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0;
 /* ------------------ MakeMovieBashScript ------------------------ */
 
 void MakeMovieBashScript(void){
-  char *qsmv_path=NULL, *smv_path = NULL, *movie_path = NULL;;
+  char *firemodels=NULL, *qsmv_path=NULL, *smv_path = NULL, movie_path[256];
 
   FILE *stream=NULL;
   char command_line[1000];
+
+  firemodels = getenv("FIREMODELS");
+  if(firemodels==NULL){
+    printf("***error: The environment variable FIREMODELS is not defined\n");
+    printf("          Movie making script aborted\n");
+    return;
+  }
 
   stream = fopen(movie_bash_script, "w");
   if(stream==NULL)return;
@@ -233,31 +240,20 @@ void MakeMovieBashScript(void){
   fprintf(stream, "NPROCS=%i\n", movie_nprocs);
   fprintf(stream, "QUEUE=%s\n", movie_queues[movie_queue_index]);
 
-  movie_path = getenv("MOVIE_PATH");
-  if(movie_path!=NULL){
-    fprintf(stream, "MAKEMOVIE=%s\n", movie_path);
-  }
+  strcpy(movie_path, firemodels);
+  strcat(movie_path, "/smv/Utilities/Scripts/make_movie.sh");
+  fprintf(stream, "MAKEMOVIE=%s\n", movie_path);
 
-  smv_path = getenv("SMV_PATH");
-  if(smv_path==NULL){
-    fprintf(stream, "SMOKEVIEW=smokeview\n");
-  }
-  else{
-    fprintf(stream, "SMOKEVIEW=%s\n", smv_path);
-  }
-  qsmv_path = getenv("QSMV_PATH");
-  if(qsmv_path==NULL){
-    fprintf(stream, "QSMV=qsmv.sh\n");
-  }
-  else{
-    fprintf(stream, "QSMV=%s\n", qsmv_path);
-  }
+  strcpy(smv_path, firemodels);
+  strcat(smv_path, "/smv/Build/smokeview/intel_linux_64/smokeview_linux_64");
+  fprintf(stream, "SMOKEVIEW=%s\n", smv_path);
+
+  strcpy(qsmv_path, firemodels);
+  strcat(qsmv_path, "/smv/Utilities/Scripts/qsmv.sh");
+  fprintf(stream, "QSMV=%s\n", qsmv_path);
+
   fprintf(stream, "$QSMV -j SV_ -P $NPROCS -q $QUEUE -e $SMOKEVIEW -c %s %s\n", movie_ssf_script, fdsprefix);
-  movie_path = getenv("MOVIE_PATH");
-  if(movie_path!=NULL){
-    fprintf(stream, "$MAKEMOVIE -i . -j SV_ -o %s %s %s\n", movie_htmldir, movie_basename, movie_basename);
-  }
-
+  fprintf(stream, "$MAKEMOVIE -i . -j SV_ -o %s %s %s\n", movie_htmldir, movie_basename, movie_basename);
 
   fclose(stream);
 
