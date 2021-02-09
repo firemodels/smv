@@ -12083,6 +12083,13 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %i %i %i %i", &movie_filetype,&movie_framerate,&movie_bitrate,&quicktime_dummy,&movie_crf);
       continue;
     }
+    if(Match(buffer, "MOVIEPARMS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %i %i", &movie_queue_index, &movie_nprocs, &movie_slice_index);
+      movie_queue_index = CLAMP(0, nmovie_queues-1);
+      movie_slice_index = CLAMP(0, nslicemenuinfo-1);
+      continue;
+    }
     if(Match(buffer, "RENDERFILELABEL") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i ", &render_label_type);
@@ -14830,6 +14837,9 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, "MOVIEFILETYPE\n");
     fprintf(fileout," %i %i %i %i %i\n",movie_filetype,movie_framerate,movie_bitrate,quicktime_dummy,movie_crf);
   }
+
+  fprintf(fileout, "MOVIEPARMS\n");
+  fprintf(fileout, " %i %i\n", movie_queue_index, movie_nprocs, movie_slice_index);
   if(nskyboxinfo>0){
     int iskybox;
     skyboxdata *skyi;
