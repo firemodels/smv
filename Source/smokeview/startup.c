@@ -1181,28 +1181,24 @@ void InitVars(void){
 
 #ifdef pp_MOVIE_BATCH
   {
-    char *queue_list = NULL;
-    char *queues = "batch";
+    char *queue_list = NULL, *queues = "batch", *queue;
 
     queue_list = getenv("SMV_QUEUES");
     if(queue_list==NULL)queue_list = queues; // placeholder until linux version is complete
-    if(queue_list!=NULL){
-      char *queue;
 
 #define MAX_QUEUS 100
-      strcpy(movie_queue_list, queue_list);
-      queue = strtok(movie_queue_list, ";");
-      if(queue!=NULL){
-        NewMemory((void **)&movie_queues, MAX_QUEUS*sizeof(char *));
-        movie_queues[nmovie_queues++]=TrimFrontBack((queue));
-        for(;;){
-          queue = strtok(NULL, ";");
-          if(queue==NULL||nmovie_queues>=MAX_QUEUS)break;
-          movie_queues[nmovie_queues++]=TrimFrontBack((queue));
-        }
-        ResizeMemory((void **)&movie_queues, nmovie_queues*sizeof(char *));;
-        have_slurm = 1;
+    strcpy(movie_queue_list, queue_list);
+    queue = strtok(movie_queue_list, ":");
+    if(queue!=NULL){
+      NewMemory((void **)&movie_queues, MAX_QUEUS*sizeof(char *));
+      movie_queues[nmovie_queues++]=TrimFrontBack(queue);
+      for(;;){
+        queue = strtok(NULL, ":");
+        if(queue==NULL||nmovie_queues>=MAX_QUEUS)break;
+        movie_queues[nmovie_queues++]=TrimFrontBack(queue);
       }
+      ResizeMemory((void **)&movie_queues, nmovie_queues*sizeof(char *));;
+      have_slurm = 1;
     }
     {
       char *htmldir=NULL;
