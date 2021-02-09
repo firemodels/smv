@@ -288,7 +288,6 @@ void MakeMovieBashScript(void){
 /* ------------------ MakeMovieSMVScript ------------------------ */
 
 void MakeMovieSMVScript(void){
-  char script_file[1000];
   FILE *stream=NULL;
   slicedata *slicei;
   slicemenudata *slicemi;
