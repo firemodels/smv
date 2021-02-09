@@ -1827,12 +1827,10 @@ void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo){
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
-#ifdef pp_MOVIE_BATCH
   if(update_movie_parms==1){
     update_movie_parms = 0;
     UpdateMovieParms();
   }
-#endif
 #ifdef pp_REFRESH
   if(update_refresh==1){
     update_refresh = 0;

@@ -28,10 +28,8 @@ unsigned char deg90[] = {'9', '0', 0};
 
 GLUI *glui_motion=NULL;
 
-#ifdef pp_MOVIE_BATCH
 GLUI_EditText *EDITTEXT_movie_email    = NULL;
 GLUI_EditText *EDITTEXT_movie_htmldir  = NULL;
-#endif
 
 GLUI_Panel *PANEL_select = NULL;
 GLUI_Panel *PANEL_360 = NULL;
@@ -77,9 +75,7 @@ GLUI_Rollout *ROLLOUT_projection=NULL;
 GLUI_Rollout *ROLLOUT_render=NULL;
 GLUI_Rollout *ROLLOUT_viewpoints=NULL;
 GLUI_Rollout *ROLLOUT_make_movie = NULL;
-#ifdef pp_MOVIE_BATCH
 GLUI_Rollout *ROLLOUT_make_movie_batch = NULL;
-#endif
 GLUI_Rollout *ROLLOUT_gslice = NULL;
 #ifdef ROTATE_TRANSLATE
 GLUI_Rollout *ROLLOUT_translaterotate=NULL;
@@ -93,9 +89,7 @@ GLUI_Rollout *ROLLOUT_upper = NULL;
 GLUI_Rollout *ROLLOUT_background = NULL;
 GLUI_Rollout *ROLLOUT_foreground = NULL;
 
-#ifdef pp_MOVIE_BATCH
 GLUI_Spinner *SPINNER_movie_nprocs=NULL;
-#endif
 GLUI_Spinner *SPINNER_360_skip_x=NULL;
 GLUI_Spinner *SPINNER_360_skip_y=NULL;
 GLUI_Spinner *SPINNER_movie_crf = NULL;
@@ -178,9 +172,7 @@ GLUI_RadioButton *RADIOBUTTON_1e=NULL;
 GLUI_RadioButton *RADIOBUTTON_1f=NULL;
 GLUI_RadioButton *RADIOBUTTON_1g=NULL;
 
-#ifdef pp_MOVIE_BATCH
 GLUI_Button *BUTTON_make_movie_batch=NULL;
-#endif
 GLUI_Button *BUTTON_rotate90=NULL;
 GLUI_Button *BUTTON_90_z=NULL,*BUTTON_eyelevel=NULL, *BUTTON_floorlevel=NULL, *BUTTON_reset_saved_view=NULL;
 GLUI_Button *BUTTON_replace_view=NULL,*BUTTON_add_view=NULL,*BUTTON_delete_view=NULL;
@@ -202,10 +194,8 @@ GLUI_EditText *EDIT_view_label=NULL;
 GLUI_EditText *EDIT_movie_name = NULL;
 GLUI_EditText *EDIT_render_file_base = NULL;
 
-#ifdef pp_MOVIE_BATCH
 GLUI_Listbox *LIST_movie_slice_index=NULL;
 GLUI_Listbox *LIST_movie_queue_index=NULL;
-#endif
 GLUI_Listbox *LIST_viewpoints=NULL;
 GLUI_Listbox *LIST_windowsize=NULL;
 GLUI_Listbox *LIST_mesh2=NULL;
@@ -215,8 +205,6 @@ rolloutlistdata first_rollout, last_rollout;
 
 procdata motionprocinfo[9], mvrprocinfo[5], subrenderprocinfo[4];
 int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0;
-
-#ifdef pp_MOVIE_BATCH
 
 /* ------------------ MakeMovieBashScript ------------------------ */
 
@@ -313,8 +301,6 @@ void MakeMovieSMVScript(void){
   fclose(stream);
 }
 
-#endif
-
 /* ------------------ CloseRollouts ------------------------ */
 
 extern "C" void CloseRollouts(GLUI *dialog){
@@ -333,13 +319,11 @@ extern "C" void CloseRollouts(GLUI *dialog){
 
 /* ------------------ UpdateMovieParms ------------------------ */
 
-#ifdef pp_MOVIE_BATCH
 extern "C" void UpdateMovieParms(void){
   if(LIST_movie_slice_index!=NULL)LIST_movie_slice_index->set_int_val(movie_slice_index);
   if(LIST_movie_queue_index!=NULL)LIST_movie_queue_index->set_int_val(movie_queue_index);
   if(SPINNER_movie_nprocs!=NULL)SPINNER_movie_nprocs->set_int_val(movie_nprocs);
 }
-#endif
 
 /* ------------------ ShrinkDialogs ------------------------ */
 
@@ -470,7 +454,6 @@ extern "C" void SetColorControls(void){
   if(SPINNER_background_blue !=NULL) SPINNER_background_blue->set_int_val(glui_backgroundbasecolor[2]);
 }
 
-#ifdef pp_MOVIE_BATCH
 /* ------------------ MovieCB ------------------------ */
 
 void MovieCB(int val){
@@ -489,7 +472,6 @@ void MovieCB(int val){
       break;
   }
 }
-#endif
 
 /* ------------------ SubRenderRolloutCB ------------------------ */
 
@@ -805,7 +787,6 @@ extern "C" void ViewpointCB(int var){
   case LABEL_VIEW:
     updatemenu = 1;
     break;
-#ifdef pp_MOVIE_BATCH
   case REPLACE_CURRENT_VIEW:
     {
       int current_view_id=-1;
@@ -825,7 +806,6 @@ extern "C" void ViewpointCB(int var){
       }
     }
     break;
-#endif
   case REPLACE_VIEW:
     ival = LIST_viewpoints->get_int_val();
     selected_view = ival;
@@ -1526,16 +1506,12 @@ extern "C" void GluiMotionSetup(int main_window){
   CHECKBOX_clip_rendered_scene = glui_motion->add_checkbox_to_panel(ROLLOUT_scene_clip, "clip rendered scene", &clip_rendered_scene);
 
   if(have_ffmpeg == 1){
-#ifdef pp_MOVIE_BATCH
     if(have_slurm==1){
       ROLLOUT_make_movie = glui_motion->add_rollout("Movie(local)", false, MOVIE_ROLLOUT, MVRRolloutCB);
     }
     else{
       ROLLOUT_make_movie = glui_motion->add_rollout("Movie", false, MOVIE_ROLLOUT, MVRRolloutCB);
     }
-#else
-    ROLLOUT_make_movie = glui_motion->add_rollout("Movie", false, MOVIE_ROLLOUT, MVRRolloutCB);
-#endif
     INSERT_ROLLOUT(ROLLOUT_make_movie, glui_motion);
     ADDPROCINFO(mvrprocinfo,nmvrprocinfo,ROLLOUT_make_movie,MOVIE_ROLLOUT, glui_motion);
 
@@ -1566,7 +1542,6 @@ extern "C" void GluiMotionSetup(int main_window){
     RenderCB(MOVIE_FILETYPE);
   }
 
-#ifdef pp_MOVIE_BATCH
   if(have_slurm==1&&nmovie_queues>0){
     ROLLOUT_make_movie_batch = glui_motion->add_rollout("Movie(cluster)", false, MOVIE_ROLLOUT_BATCH, MVRRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_make_movie_batch, glui_motion);
@@ -1614,7 +1589,6 @@ extern "C" void GluiMotionSetup(int main_window){
 
     BUTTON_make_movie_batch = glui_motion->add_button_to_panel(ROLLOUT_make_movie_batch, "Make movie", MAKE_MOVIE_BATCH, RenderCB);
   }
-#endif
 
   PANEL_close = glui_motion->add_panel("",GLUI_PANEL_NONE);
 
@@ -2417,11 +2391,9 @@ extern "C" void ShowGluiMotion(int menu_id){
     case DIALOG_MOVIE:
       MVRRolloutCB(MOVIE_ROLLOUT);
       break;
-#ifdef pp_MOVIE_BATCH
     case DIALOG_MOVIE_BATCH:
       MVRRolloutCB(MOVIE_ROLLOUT_BATCH);
       break;
-#endif
     case DIALOG_WINDOW:
       MVRRolloutCB(VIEW_ROLLOUT);
       MotionRolloutCB(WINDOW_ROLLOUT);
@@ -2451,7 +2423,6 @@ extern "C" void AddListView(char *label_in){
   cameradata *cam1,*cam2,*cex,*ca;
 
   // ignore duplicate labels
-#ifdef pp_MOVIE_BATCH
   if(label_in!=NULL&&strlen(label_in)>0){
     cex = &camera_list_first;
     cex = cex->next;
@@ -2460,7 +2431,6 @@ extern "C" void AddListView(char *label_in){
       if(strcmp(ca->name,label_in)==0)return;
     }
   }
-#endif
 
   ival=LIST_viewpoints->get_int_val();
   if(ival==-1){
@@ -2546,7 +2516,6 @@ void RenderCB(int var){
     case OUTPUT_FFMPEG:
       output_ffmpeg_command=1;
       break;
-#ifdef pp_MOVIE_BATCH
     case MAKE_MOVIE_BATCH:
       ViewpointCB(REPLACE_CURRENT_VIEW);
       ResetMenu(SAVE_CURRENT_VIEWPOINT);
@@ -2554,7 +2523,6 @@ void RenderCB(int var){
       MakeMovieSMVScript();
       MakeMovieBashScript();
       break;
-#endif
     case MAKE_MOVIE:
       if(have_ffmpeg == 0){
         PRINTF("*** Error: The movie generating program ffmpeg is not available\n");

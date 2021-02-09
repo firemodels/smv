@@ -69,9 +69,6 @@
 //*** options: Linux
 
 #ifdef pp_LINUX
-#ifndef pp_MOVIE_BATCH
-#define pp_MOVIE_BATCH  // generate movies on a linux cluster
-#endif
 #define pp_DEG          // output degree symbol
 #define pp_REFRESH      // refresh glui dialogs when they change size
 #define pp_DIALOG_SHORTCUTS // dialog shortcuts
@@ -109,10 +106,7 @@
 //*** options: for debugging
 
 #ifdef _DEBUG
-#ifndef pp_MOVIE_BATCH
-#define pp_MOVIE_BATCH
-#endif
-#define pp_MOVIE_BATCH_DEBUG
+//#define pp_MOVIE_BATCH_DEBUG // allow movei batch dialogs to be defined for testing
 #ifndef pp_RESEARCH_DEBUG
 #define pp_RESEARCH_DEBUG
 #endif
@@ -120,7 +114,6 @@
 #define pp_SNIFF_ERROR
 #endif
 
-//#undef pp_MOVIE_BATCH
 
 #endif
 

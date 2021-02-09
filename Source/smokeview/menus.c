@@ -1520,9 +1520,7 @@ void DialogMenu(int value){
   case DIALOG_MOTION:
   case DIALOG_RENDER:
   case DIALOG_MOVIE:
-#ifdef pp_MOVIE_BATCH
   case DIALOG_MOVIE_BATCH:
-#endif
   case DIALOG_SCALING:
   case DIALOG_VIEW:
   case DIALOG_WINDOW:
@@ -1820,23 +1818,17 @@ void ResetMenu(int value){
   case MENU_VIEWPOINT_TOPVIEW:
     SetViewZMAXPersp();
     break;
-#ifdef pp_MOVIE_BATCH
   case SAVE_CURRENT_VIEWPOINT:
-#endif
   case SAVE_VIEWPOINT:
     {
       cameradata *ca;
 
-#ifdef pp_MOVIE_BATCH
       if(value==SAVE_CURRENT_VIEWPOINT){
         strcpy(view_label, "current");
       }
       else{
         GetNextViewLabel(view_label);
       }
-#else
-      GetNextViewLabel(view_label);
-#endif
       AddListView(view_label);
       ca = GetCamera(view_label);
       if(ca != NULL){
@@ -9489,7 +9481,6 @@ updatemenu=0;
 #endif
   glutAddMenuEntry(_("Save/load configuration files..."), DIALOG_CONFIG);
   glutAddMenuEntry(_("Render images..."), DIALOG_RENDER);
-#ifdef pp_MOVIE_BATCH
   if(have_slurm==1){
     if(have_ffmpeg==1){
       glutAddMenuEntry(_("Make movies(local)..."), DIALOG_MOVIE);
@@ -9501,11 +9492,6 @@ updatemenu=0;
       glutAddMenuEntry(_("Make movies..."), DIALOG_MOVIE);
     }
     }
-#else
-  if(have_ffmpeg==1){
-    glutAddMenuEntry(_("Make movies..."), DIALOG_MOVIE);
-  }
-#endif
   glutAddMenuEntry(_("Record/run scripts..."), DIALOG_SCRIPT);
 
   /* --------------------------------viewdialog menu -------------------------- */

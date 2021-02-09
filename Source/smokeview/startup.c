@@ -1179,7 +1179,6 @@ void InitVars(void){
   object_circ.ncirc=0;
   cvent_circ.ncirc=0;
 
-#ifdef pp_MOVIE_BATCH
   {
     char *queue_list = NULL, *queue;
 #ifdef MOVIE_BATCH_DEBUG
@@ -1226,7 +1225,6 @@ void InitVars(void){
       }
     }
   }
-#endif
 
 #ifdef pp_RENDER360_DEBUG
   NewMemory((void **)&screenvis, nscreeninfo * sizeof(int));
