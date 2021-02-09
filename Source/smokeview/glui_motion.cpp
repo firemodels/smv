@@ -221,7 +221,7 @@ int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0;
 /* ------------------ MakeMovieBashScript ------------------------ */
 
 void MakeMovieBashScript(void){
-  char *firemodels=NULL, *qsmv_path=NULL, *smv_path = NULL, movie_path[256];
+  char *firemodels=NULL, qsmv_path[256], smv_path[256], movie_path[256];
 
   FILE *stream=NULL;
   char command_line[1000];
