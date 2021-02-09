@@ -221,7 +221,7 @@ int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0;
 /* ------------------ MakeMovieBashScript ------------------------ */
 
 void MakeMovieBashScript(void){
-  char *firemodels=NULL, qsmv_path[256], smv_path[256], movie_path[256];
+  char *firemodels=NULL, *email=NULL;
 
   FILE *stream=NULL;
   char command_line[1000];
@@ -239,21 +239,45 @@ void MakeMovieBashScript(void){
   fprintf(stream, "#/bin/bash\n");
   fprintf(stream, "NPROCS=%i\n", movie_nprocs);
   fprintf(stream, "QUEUE=%s\n", movie_queues[movie_queue_index]);
+  
+  fprintf(stream, "FIREMODELS=%s\n", firemodels);
+  fprintf(stream, "MAKEMOVIE=$FIREMODELS/smv/Utilities/Scripts/make_movie.sh\n");
+  fprintf(stream, "QSMV=$FIREMODELS/smv/Utilities/Scripts/qsmv.sh\n");
+  fprintf(stream, "SMOKEVIEW=$FIREMODELS/smv/Build/smokeview/intel_linux_64/smokeview_linux_64\n");
 
-  strcpy(movie_path, firemodels);
-  strcat(movie_path, "/smv/Utilities/Scripts/make_movie.sh");
-  fprintf(stream, "MAKEMOVIE=%s\n", movie_path);
-
-  strcpy(smv_path, firemodels);
-  strcat(smv_path, "/smv/Build/smokeview/intel_linux_64/smokeview_linux_64");
-  fprintf(stream, "SMOKEVIEW=%s\n", smv_path);
-
-  strcpy(qsmv_path, firemodels);
-  strcat(qsmv_path, "/smv/Utilities/Scripts/qsmv.sh");
-  fprintf(stream, "QSMV=%s\n", qsmv_path);
 
   fprintf(stream, "$QSMV -j SV_ -P $NPROCS -q $QUEUE -e $SMOKEVIEW -c %s %s\n", movie_ssf_script, fdsprefix);
   fprintf(stream, "$MAKEMOVIE -i . -j SV_ -o %s %s %s\n", movie_htmldir, movie_basename, movie_basename);
+
+  email = getenv("SMV_EMAIL");
+  if(email!=NULL){
+    char full_animation_file[256];
+    slicedata *slicei;
+    slicemenudata *slicemi;
+    char *slicelabel, label[256];
+    
+    slicemi = slicemenu_sorted[movie_slice_index];
+    slicei = slicemi->sliceinfo;
+    slicelabel = slicei->label.longlabel;
+    if(slicelabel!=NULL && strlen(slicelabel)>0){
+      strcpy(label, "animation: ");
+      strcat(label, slicelabel);
+    }
+    else{
+      strcpy(label, "animation results");
+    }
+
+    strcpy(full_animation_file, movie_htmldir);
+    strcat(full_animation_file, "/");
+    strcat(full_animation_file, movie_basename);
+    strcat(full_animation_file, ".mp4");
+    fprintf(stream, "if [ -e %s ]; then\n", full_animation_file);
+    fprintf(stream, "  echo \"emailing results to %s\"\n", email);
+    fprintf(stream, "  echo \"\" | mail -s \"%s\" -a %s %s\n", label,full_animation_file, email);
+    fprintf(stream, "else\n");
+    fprintf(stream, "  echo \"Animation file, %s, failed to build\"\n", full_animation_file);
+    fprintf(stream, "fi\n");
+  }
 
   fclose(stream);
 
