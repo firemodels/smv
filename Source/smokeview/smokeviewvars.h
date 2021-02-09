@@ -29,6 +29,7 @@ SVEXTERN int SVDECL(glui_refresh_rate, 10), SVDECL(glui_refresh_rate_old, 10), S
 #endif
 SVEXTERN int SVDECL(nslicemenuinfo, 0);
 #ifdef pp_MOVIE_BATCH
+SVEXTERN int SVDECL(update_movie_parms, 0);
 SVEXTERN int SVDECL(have_slurm, 0);
 SVEXTERN int SVDECL(movie_slice_index, 0), SVDECL(movie_queue_index, 0), SVDECL(movie_nprocs, 10), SVDECL(nmovie_queues, 0);
 SVEXTERN char SVDECL(**movie_queues, NULL), movie_htmldir[256], movie_email[256], movie_queue_list[256];

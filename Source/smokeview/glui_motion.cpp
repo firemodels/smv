@@ -94,7 +94,7 @@ GLUI_Rollout *ROLLOUT_background = NULL;
 GLUI_Rollout *ROLLOUT_foreground = NULL;
 
 #ifdef pp_MOVIE_BATCH
-GLUI_Spinner *SPINNER_movie_nprocessors=NULL;
+GLUI_Spinner *SPINNER_movie_nprocs=NULL;
 #endif
 GLUI_Spinner *SPINNER_360_skip_x=NULL;
 GLUI_Spinner *SPINNER_360_skip_y=NULL;
@@ -328,6 +328,14 @@ extern "C" void CloseRollouts(GLUI *dialog){
     updatemenu = 1;
   }
 #endif
+}
+
+/* ------------------ UpdateMovieParms ------------------------ */
+
+extern "C" void UpdateMovieParms(void){
+  if(LIST_movie_slice_index!=NULL)LIST_movie_slice_index->set_int_val(movie_slice_index);
+  if(LIST_movie_queue_index!=NULL)LIST_movie_queue_index->set_int_val(movie_queue_index);
+  if(SPINNER_movie_nprocs!=NULL)SPINNER_movie_nprocs->set_int_val(movie_nprocs);
 }
 
 /* ------------------ ShrinkDialogs ------------------------ */
@@ -1592,8 +1600,8 @@ extern "C" void GluiMotionSetup(int main_window){
     for(i = 0; i<nmovie_queues; i++){
       LIST_movie_queue_index->add_item(i, movie_queues[i]);
     }
-    SPINNER_movie_nprocessors = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie_batch, _("processors"), GLUI_SPINNER_INT, &movie_nprocs);
-    SPINNER_movie_nprocessors->set_int_limits(1, 36);
+    SPINNER_movie_nprocs = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie_batch, _("processors"), GLUI_SPINNER_INT, &movie_nprocs);
+    SPINNER_movie_nprocs->set_int_limits(1, 36);
 
     EDITTEXT_movie_email=glui_motion->add_edittext_to_panel(ROLLOUT_make_movie_batch,"email:",GLUI_EDITTEXT_TEXT,movie_email);
     EDITTEXT_movie_email->set_w(300);
