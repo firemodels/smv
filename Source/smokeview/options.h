@@ -48,7 +48,7 @@
 //#define pp_SLICE_BUFFER       // read  slice file into a buffer before processing
 //#define pp_RESEARCH_DEBUG     // output whether data is reloaded or colors re-mapped when toggling to/from research mode
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
-//#define pp_MOVIE_BATCH
+#define pp_MOVIE_BATCH
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
