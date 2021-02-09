@@ -23,10 +23,6 @@
 #define pp_REFRESH
 #endif
 
-#ifdef pp_OSX_HIGHRES
-#define pp_REFRESH
-#endif
-
 #ifdef pp_REFRESH
 extern "C" int refresh_glui_dialogs;
 extern "C" void SetMainWindow(void);
