@@ -218,68 +218,51 @@ int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0;
 
 #ifdef pp_MOVIE_BATCH
 
-/* ------------------ MakeMovie ------------------------ */
+/* ------------------ MakeMovieBashScript ------------------------ */
 
-void MakeMovieSlurm(void){
+void MakeMovieBashScript(void){
+  char *qsmv_path=NULL, *smv_path = NULL;
+
   FILE *stream=NULL;
-  char user_config[1000], command_line[1000], script_in[1000], script_bash[1000];
+  char command_line[1000];
 
-  strcpy(user_config, "slice2mp4_");
-  strcat(user_config, fdsprefix);
-
-  strcpy(script_in, movie_basename);
-  strcat(script_in, ".in");
-  stream = fopen(script_in, "w");
-  if(stream==NULL)return;
-  
-  fprintf(stream, " %i \n 2\n", movie_slice_index+1);
-  fclose(stream);
-  
-  strcpy(script_bash, movie_basename);
-  strcat(script_bash, "_smv.sh");
-  stream = fopen(script_bash, "w");
+  stream = fopen(movie_bash_script, "w");
   if(stream==NULL)return;
 
   fprintf(stream, "#/bin/bash\n");
-  fprintf(stream, "cat %s | $SMV_SLICE2MP4 -c %s %s\n", script_in, user_config, fdsprefix);
+  fprintf(stream, "NPROCS=%i\n", movie_nprocs);
+  fprintf(stream, "QUEUE=%s\n", movie_queues[movie_queue_index]);
+
+  smv_path = getenv("SMV_PATH");
+  if(smv_path==NULL){
+    fprintf(stream, "SMOKEVIEW=smokeview\n");
+  }
+  else{
+    fprintf(stream, "SMOKEVIEW=%s\n", smv_path);
+  }
+  qsmv_path = getenv("QSMV_PATH");
+  if(qsmv_path==NULL){
+    fprintf(stream, "QSMV=qsmv.sh\n");
+  }
+  else{
+    fprintf(stream, "QSMV=%s\n", qsmv_path);
+  }
+  fprintf(stream, "$QSMV -j SV_ -P $NPROCS -q $QUEUE -e $SMOKEVIEW -c %s %s\n", movie_ssf_script, fdsprefix);
   fclose(stream);
 
-  sprintf(command_line, "bash %s", script_bash);
+  sprintf(command_line, "bash %s", movie_bash_script);
   system(command_line);
 }
 
-/* ------------------ MakeMovieConfig ------------------------ */
+/* ------------------ MakeMovieSMVScript ------------------------ */
 
-void MakeMovieConfig(void){
-  char user_config[1000];
-  FILE *stream = NULL;
-
-  strcpy(user_config, "slice2mp4_");
-  strcat(user_config, fdsprefix);
-
-  stream = fopen(user_config, "w");
-  if(stream==NULL)return;
-  fprintf(stream, "#/bin/bash\n");
-  fprintf(stream, "export USER_NPROCS=%i\n", movie_nprocessors);
-  fprintf(stream, "export USER_QUEUE=%s\n", movie_queues[movie_queue_index]);
-  fprintf(stream, "export USER_RENDERDIR=.\n");
-  if(strlen(movie_htmldir)>0)fprintf(stream, "export USER_MOVIEDIR=%s\n", movie_htmldir);
-  if(strlen(movie_email)>0)fprintf(stream, "export USER_EMAIL=%s\n", movie_email);
-  fprintf(stream, "export USER_SHARE=\n");
-  fclose(stream);
-}
-
-/* ------------------ MakeMovieScript ------------------------ */
-
-void MakeMovieScript(void){
+void MakeMovieSMVScript(void){
   char script_file[1000];
   FILE *stream=NULL;
   slicedata *slicei;
   slicemenudata *slicemi;
 
-  strcpy(script_file, movie_basename);
-  strcat(script_file, ".ssf");
-  stream = fopen(script_file, "w");
+  stream = fopen(movie_ssf_script, "w");
   if(stream==NULL)return;
   slicemi = slicemenu_sorted[movie_slice_index];
   slicei = slicemi->sliceinfo;
@@ -297,21 +280,6 @@ void MakeMovieScript(void){
   fprintf(stream, " %s\n", movie_basename);
   fprintf(stream, " 0 1\n");
   fclose(stream);
-  /*
-  RENDERDIR
-    .
-    UNLOADALL
-    LOADINIFILE
-    cogoleto_fire_2019_ls2_slice_1.ini
-    VIEWZMAX
-
-    LOADSLICERENDER
-    LEVEL SET VALUE(terrain)
-    3       1.0
-    cogoleto_fire_2019_ls2_slice_1
-    0 1
-*/
-
 }
 
 #endif
@@ -462,10 +430,19 @@ extern "C" void SetColorControls(void){
 }
 
 #ifdef pp_MOVIE_BATCH
+/* ------------------ MovieCB ------------------------ */
+
 void MovieCB(int val){
   switch (val){
     case MOVIE_SLICE_INDEX:
       sprintf(movie_basename, "%s_slice_%i", fdsprefix, movie_slice_index+1);
+
+      strcpy(movie_ssf_script, movie_basename);
+      strcat(movie_ssf_script, ".ssf");
+
+      strcpy(movie_bash_script, movie_basename);
+      strcat(movie_bash_script, ".sh");
+
       strcpy(movie_ini_filename, movie_basename);
       strcat(movie_ini_filename, ".ini");
       break;
@@ -1585,7 +1562,7 @@ extern "C" void GluiMotionSetup(int main_window){
     for(i = 0; i<nmovie_queues; i++){
       LIST_movie_queue_index->add_item(i, movie_queues[i]);
     }
-    SPINNER_movie_nprocessors = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie_batch, _("processors"), GLUI_SPINNER_INT, &movie_nprocessors);
+    SPINNER_movie_nprocessors = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie_batch, _("processors"), GLUI_SPINNER_INT, &movie_nprocs);
     SPINNER_movie_nprocessors->set_int_limits(1, 36);
 
     EDITTEXT_movie_email=glui_motion->add_edittext_to_panel(ROLLOUT_make_movie_batch,"email:",GLUI_EDITTEXT_TEXT,movie_email);
@@ -2528,9 +2505,8 @@ void RenderCB(int var){
       ViewpointCB(REPLACE_CURRENT_VIEW);
       ResetMenu(SAVE_CURRENT_VIEWPOINT);
       WriteIni(SCRIPT_INI, movie_ini_filename);
-      MakeMovieScript();
-      MakeMovieConfig();
-      MakeMovieSlurm();
+      MakeMovieSMVScript();
+      MakeMovieBashScript();
       break;
 #endif
     case MAKE_MOVIE:
