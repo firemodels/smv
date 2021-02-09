@@ -1181,10 +1181,15 @@ void InitVars(void){
 
 #ifdef pp_MOVIE_BATCH
   {
-    char *queue_list = NULL, *queues = "batch", *queue;
+    char *queue_list = NULL, *queue;
+#ifdef MOVIE_BATCH_DEBUG
+    char *queues = "batch";
+#endif
 
     queue_list = getenv("SMV_QUEUES");
+#ifdef MOVIE_BATCH_DEBUG
     if(queue_list==NULL)queue_list = queues; // placeholder until linux version is complete
+#endif
 
 #define MAX_QUEUS 100
     strcpy(movie_queue_list, queue_list);

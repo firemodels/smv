@@ -333,11 +333,13 @@ extern "C" void CloseRollouts(GLUI *dialog){
 
 /* ------------------ UpdateMovieParms ------------------------ */
 
+#ifdef pp_MOVIE_BATCH
 extern "C" void UpdateMovieParms(void){
   if(LIST_movie_slice_index!=NULL)LIST_movie_slice_index->set_int_val(movie_slice_index);
   if(LIST_movie_queue_index!=NULL)LIST_movie_queue_index->set_int_val(movie_queue_index);
   if(SPINNER_movie_nprocs!=NULL)SPINNER_movie_nprocs->set_int_val(movie_nprocs);
 }
+#endif
 
 /* ------------------ ShrinkDialogs ------------------------ */
 
@@ -1566,7 +1568,7 @@ extern "C" void GluiMotionSetup(int main_window){
 
 #ifdef pp_MOVIE_BATCH
   if(have_slurm==1&&nmovie_queues>0){
-    ROLLOUT_make_movie_batch = glui_motion->add_rollout("Movie(batch)", false, MOVIE_ROLLOUT_BATCH, MVRRolloutCB);
+    ROLLOUT_make_movie_batch = glui_motion->add_rollout("Movie(cluster)", false, MOVIE_ROLLOUT_BATCH, MVRRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_make_movie_batch, glui_motion);
     ADDPROCINFO(mvrprocinfo, nmvrprocinfo, ROLLOUT_make_movie_batch, MOVIE_ROLLOUT_BATCH, glui_motion);
 
@@ -2415,6 +2417,11 @@ extern "C" void ShowGluiMotion(int menu_id){
     case DIALOG_MOVIE:
       MVRRolloutCB(MOVIE_ROLLOUT);
       break;
+#ifdef pp_MOVIE_BATCH
+    case DIALOG_MOVIE_BATCH:
+      MVRRolloutCB(MOVIE_ROLLOUT_BATCH);
+      break;
+#endif
     case DIALOG_WINDOW:
       MVRRolloutCB(VIEW_ROLLOUT);
       MotionRolloutCB(WINDOW_ROLLOUT);

@@ -48,7 +48,6 @@
 //#define pp_SLICE_BUFFER       // read  slice file into a buffer before processing
 //#define pp_RESEARCH_DEBUG     // output whether data is reloaded or colors re-mapped when toggling to/from research mode
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
-#define pp_MOVIE_BATCH
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
@@ -70,6 +69,9 @@
 //*** options: Linux
 
 #ifdef pp_LINUX
+#ifndef pp_MOVIE_BATCH
+#define pp_MOVIE_BATCH  // generate movies on a linux cluster
+#endif
 #define pp_DEG          // output degree symbol
 #define pp_REFRESH      // refresh glui dialogs when they change size
 #define pp_DIALOG_SHORTCUTS // dialog shortcuts
@@ -107,12 +109,18 @@
 //*** options: for debugging
 
 #ifdef _DEBUG
+#ifndef pp_MOVIE_BATCH
+#define pp_MOVIE_BATCH
+#endif
+#define pp_MOVIE_BATCH_DEBUG
 #ifndef pp_RESEARCH_DEBUG
 #define pp_RESEARCH_DEBUG
 #endif
 #define pp_RENDER360_DEBUG
 #define pp_SNIFF_ERROR
 #endif
+
+//#undef pp_MOVIE_BATCH
 
 #endif
 

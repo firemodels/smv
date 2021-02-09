@@ -991,6 +991,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define DIALOG_SCALING   41
 #define DIALOG_WINDOW    42
 #define DIALOG_MOVIE     43
+#define DIALOG_MOVIE_BATCH 45
 #define DIALOG_SHRINKALL -3
 
 #define UNLOAD_LAST -2
