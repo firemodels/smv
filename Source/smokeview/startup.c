@@ -1169,9 +1169,6 @@ void InitScriptErrorFiles(void){
 void InitVars(void){
   int i;
   char *queue_list = NULL, *queue=NULL, *htmldir=NULL, *email=NULL;
-#ifdef pp_MOVIE_BATCH_DEBUG
-  char *queues = "batch";
-#endif
 
 #ifdef pp_OSX_HIGHRES
   double_scale = 1;
