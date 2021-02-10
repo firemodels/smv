@@ -90,6 +90,7 @@
 #ifdef pp_OSX
 #ifndef pp_QUARTZ
 #define pp_DEG          // output degree symbol
+#define pp_REFRESH      // refresh glui dialogs when they change size
 #ifndef pp_OSX_LOWRES
 #define pp_OSX_HIGHRES
 #endif
