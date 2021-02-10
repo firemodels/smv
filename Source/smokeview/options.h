@@ -106,7 +106,7 @@
 //*** options: for debugging
 
 #ifdef _DEBUG
-//#define pp_MOVIE_BATCH_DEBUG // allow movei batch dialogs to be defined for testing
+#define pp_MOVIE_BATCH_DEBUG // allow movei batch dialogs to be defined for testing
 #ifndef pp_RESEARCH_DEBUG
 #define pp_RESEARCH_DEBUG
 #endif
