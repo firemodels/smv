@@ -600,7 +600,6 @@ QUEUE=$QUEUE
 SMOKEVIEW="$SMOKEVIEW"
 SMOKEVIEWBINDIR="$SMOKEVIEWBINDIR"
 QSMV="$FIREMODELS/smv/Utilities/Scripts/qsmv.sh $SHARE $O_opt $v_opt"
-echo input=$input
 \$QSMV -j $JOBPREFIX -P \$NPROCS -q \$QUEUE -e \$SMOKEVIEW -b \$SMOKEVIEWBINDIR -c $smv_scriptname $input
 EOF
 chmod +x $img_scriptname
