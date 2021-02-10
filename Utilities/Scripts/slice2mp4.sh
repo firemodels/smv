@@ -283,6 +283,7 @@ fi
 #  echo "S - toggle node sharing"
   echo "q - set queue"
   echo ""
+  echo "w - save settings"
   echo "1 - create MP4 animation"
   echo "2 - create MP4 animation then exit"
   echo "x - exit"
@@ -362,6 +363,9 @@ fi
   if [ "$ans" == "x" ]; then
     save_state
     exit
+  fi
+  if [ "$ans" == "w" ]; then
+    save_state
   fi
   if [[ "$ans" == "1" ]] ||  [[ "$ans" == "2" ]]; then
     writeini
