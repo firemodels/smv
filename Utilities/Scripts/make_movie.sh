@@ -1,4 +1,18 @@
 #!/bin/bash
+
+#---------------------------------------------
+#                   wait_cases_end
+#---------------------------------------------
+
+wait_cases_end()
+{
+  while [[ `qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep ${JOBPREFIX} | grep -v 'C$'` != '' ]]; do
+     JOBS_REMAINING=`qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep ${JOBPREFIX} | grep -v 'C$' | wc -l`
+     echo "Waiting for ${JOBS_REMAINING} cases to complete."
+     sleep 3
+  done
+}
+
 if [ $# -lt 1 ] ; then
   echo "Usage: makemovie.sh [-i input_directory] [-o output_directory] [-m movie_name] base_name"
   echo ""
@@ -7,6 +21,7 @@ if [ $# -lt 1 ] ; then
   echo "where xxxx is a frame number."
   echo ""
   echo "-i dir - directory where movie frames are located (default: .)"
+  echo " -j prefix - wait to create movie until jobs with prefix finish"
   echo "-o dir - directory where movie will be placed (default: .)"
   echo "-m movie name - name of movie generated (default: input_base.mp4)"
   echo ""
@@ -16,11 +31,16 @@ fi
 indir=.
 outdir=.
 moviename=
-while getopts 'i:o:m:' OPTION
+JOBPREFIX=
+
+while getopts 'i:j:o:m:' OPTION
 do
 case $OPTION in
   i)
   indir="$OPTARG"
+  ;;
+  j)
+  JOBPREFIX="$OPTARG"
   ;;
   o)
   outdir="$OPTARG"
@@ -56,6 +76,10 @@ if [ "$ffmpeg_not_found" == "1" ]; then
   echoerr "***error: ffmpeg not found."
   echoerr "          generation of $moviename aborted"
   exit 1
+fi
+
+if [ "$JOBPREFIX" != "" ]; then
+  wait_cases_end
 fi
 
 #create movie

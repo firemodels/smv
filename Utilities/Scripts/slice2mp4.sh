@@ -137,7 +137,7 @@ restore_state()
     EMAIL=${SLICE2MP4_EMAIL}
     SHARE=${SLICE2MP4_SHARE}
   fi
-  LOCALCONFIG=$CONFIGDIR/fds2mp4_${input}
+  LOCALCONFIG=$CONFIGDIR/slice2mp4_${input}
   if [ -e $LOCALCONFIG ]; then
     source $LOCALCONFIG
     viewpoint=$SLICE2MP4_VIEWPOINT
@@ -151,7 +151,7 @@ restore_state()
       TIMEBAR="0"
     fi
     FONTSIZE=${SLICE2MP4_FONTSIZE}
-    if [ "$FONTIZE" == "" ]; then
+    if [ "$FONTSIZE" == "" ]; then
       FONTSIZE="0"
     fi
   fi
@@ -176,7 +176,7 @@ save_state()
   echo "export SLICE2MP4_VIEWPOINT=\"$viewpoint\""    >> $LOCALCONFIG
   echo "export SLICE2MP4_VIEWPOINTD=\"$viewpointd\""  >> $LOCALCONFIG
   echo "export SLICE2MP4_COLORBAR=$COLORBAR"          >> $LOCALCONFIG
-  echo "export SLICE2MP4_FONTIZE=$FONTSIZE"           >> $LOCALCONFIG
+  echo "export SLICE2MP4_FONTSIZE=$FONTSIZE"          >> $LOCALCONFIG
   echo "export SLICE2MP4_TIMEBAR=$TIMEBAR"            >> $LOCALCONFIG
 }
 
@@ -283,6 +283,7 @@ fi
 #  echo "S - toggle node sharing"
   echo "q - set queue"
   echo ""
+  echo "w - save settings"
   echo "1 - create MP4 animation"
   echo "2 - create MP4 animation then exit"
   echo "x - exit"
@@ -362,6 +363,9 @@ fi
   if [ "$ans" == "x" ]; then
     save_state
     exit
+  fi
+  if [ "$ans" == "w" ]; then
+    save_state
   fi
   if [[ "$ans" == "1" ]] ||  [[ "$ans" == "2" ]]; then
     writeini
@@ -593,9 +597,10 @@ SHARE=
 #!/bin/bash
 NPROCS=$NPROCS
 QUEUE=$QUEUE
-SMOKEVIEW=$SMOKEVIEW
+SMOKEVIEW="$SMOKEVIEW"
+SMOKEVIEWBINDIR="$SMOKEVIEWBINDIR"
 QSMV="$FIREMODELS/smv/Utilities/Scripts/qsmv.sh $SHARE $O_opt $v_opt"
-\$QSMV -j $JOBPREFIX -P \$NPROCS -q \$QUEUE -e \$SMOKEVIEW -c $smv_scriptname $input
+\$QSMV -j $JOBPREFIX -P \$NPROCS -q \$QUEUE -e \$SMOKEVIEW -b \$SMOKEVIEWBINDIR -c $smv_scriptname $input
 EOF
 chmod +x $img_scriptname
 }
@@ -648,7 +653,9 @@ SCRIPTDIR=`dirname "$0"`
 cd $SCRIPTDIR/../../..
 ROOTDIR=`pwd`
 SMVREPO=$ROOTDIR/smv
+BOTREPO=$ROOTDIR/bot
 cd $CURDIR
+SMOKEVIEWBINDIR=$BOTREPO/Bundle/smv/for_bundle
 SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_64
 if [ ! -e $SMOKEVIEW ]; then
   SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_test_64

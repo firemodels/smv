@@ -152,6 +152,7 @@ extern "C" void UpdateShowHRRPUVPlot(int val){
 extern "C" void UpdateDeviceTypes(int val){
   devicetypes_index = val;
   RADIO_devicetypes->set_int_val(val);
+  updatemenu = 1;
 }
 
 /* ------------------ UpdateDeviceShow ------------------------ */

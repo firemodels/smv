@@ -48,7 +48,6 @@
 //#define pp_SLICE_BUFFER       // read  slice file into a buffer before processing
 //#define pp_RESEARCH_DEBUG     // output whether data is reloaded or colors re-mapped when toggling to/from research mode
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
-//#define pp_MOVIE_BATCH
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
@@ -91,7 +90,6 @@
 #ifdef pp_OSX
 #ifndef pp_QUARTZ
 #define pp_DEG          // output degree symbol
-#define pp_REFRESH      // refresh glui dialogs when they change size
 #ifndef pp_OSX_LOWRES
 #define pp_OSX_HIGHRES
 #endif
@@ -108,12 +106,14 @@
 //*** options: for debugging
 
 #ifdef _DEBUG
+#define pp_MOVIE_BATCH_DEBUG // allow movei batch dialogs to be defined for testing
 #ifndef pp_RESEARCH_DEBUG
 #define pp_RESEARCH_DEBUG
 #endif
 #define pp_RENDER360_DEBUG
 #define pp_SNIFF_ERROR
 #endif
+
 
 #endif
 

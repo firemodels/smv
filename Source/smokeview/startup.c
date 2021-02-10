@@ -1168,6 +1168,7 @@ void InitScriptErrorFiles(void){
 
 void InitVars(void){
   int i;
+  char *queue_list = NULL, *queue=NULL, *htmldir=NULL, *email=NULL;
 
 #ifdef pp_OSX_HIGHRES
   double_scale = 1;
@@ -1179,53 +1180,49 @@ void InitVars(void){
   object_circ.ncirc=0;
   cvent_circ.ncirc=0;
 
-#ifdef pp_MOVIE_BATCH
-  {
-    char *queue_list = NULL;
-    char *queues = "batch ; batch2 ;batch3;batch4";
+//*** define slurm queues
 
-    queue_list = getenv("SMV_QUEUES");
-    queue_list = queues; // placeholder until linux version is complete
-    if(queue_list!=NULL){
-      char *queue;
+  queue_list = getenv("SMV_QUEUES");
+#ifdef pp_MOVIE_BATCH_DEBUG
+  if(queue_list==NULL)queue_list = "batch"; // placeholder for debugging slurm queues on the PC
+#endif
 
 #define MAX_QUEUS 100
-      strcpy(movie_queue_list, queue_list);
-      queue = strtok(movie_queue_list, ";");
-      if(queue!=NULL){
-        NewMemory((void **)&movie_queues, MAX_QUEUS*sizeof(char *));
-        movie_queues[nmovie_queues++]=TrimFrontBack((queue));
-        for(;;){
-          queue = strtok(NULL, ";");
-          if(queue==NULL||nmovie_queues>=MAX_QUEUS)break;
-          movie_queues[nmovie_queues++]=TrimFrontBack((queue));
-        }
-        ResizeMemory((void **)&movie_queues, nmovie_queues*sizeof(char *));;
-        have_slurm = 1;
-      }
-    }
-    {
-      char *htmldir=NULL;
-      char *email=NULL;
-
-      htmldir = getenv("SMV_HTMLDIR");
-      if(htmldir!=NULL&&strlen(htmldir)>0){
-        strcpy(movie_htmldir, htmldir);
-      }
-      else{
-        strcpy(movie_htmldir, "");
-      }
-
-      email = getenv("SMV_EMAIL");
-      if(email!=NULL&&strlen(email)>0){
-        strcpy(movie_email, email);
-      }
-      else{
-        strcpy(movie_email, "");
-      }
-    }
+  if(queue_list!=NULL){
+    strcpy(movie_queue_list, queue_list);
+    queue = strtok(movie_queue_list, ":");
   }
-#endif
+  if(queue!=NULL){
+    NewMemory((void **)&movie_queues, MAX_QUEUS*sizeof(char *));
+    movie_queues[nmovie_queues++]=TrimFrontBack(queue);
+    for(;;){
+      queue = strtok(NULL, ":");
+      if(queue==NULL||nmovie_queues>=MAX_QUEUS)break;
+      movie_queues[nmovie_queues++]=TrimFrontBack(queue);
+    }
+    ResizeMemory((void **)&movie_queues, nmovie_queues*sizeof(char *));;
+    have_slurm = 1;
+  }
+
+//*** define html directory
+
+  htmldir = getenv("SMV_HTMLDIR");
+  if(htmldir!=NULL&&strlen(htmldir)>0){
+    strcpy(movie_htmldir, htmldir);
+  }
+  else{
+    strcpy(movie_htmldir, "");
+  }
+
+//*** define email address
+
+  email = getenv("SMV_EMAIL");
+  if(email!=NULL&&strlen(email)>0){
+    strcpy(movie_email, email);
+  }
+  else{
+    strcpy(movie_email, "");
+  }
 
 #ifdef pp_RENDER360_DEBUG
   NewMemory((void **)&screenvis, nscreeninfo * sizeof(int));

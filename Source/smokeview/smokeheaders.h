@@ -9,6 +9,8 @@
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
 
+EXTERNCPP void UpdateMovieParms(void);
+
 EXTERNCPP void ShowObjectsMenu(int var);
 EXTERNCPP void UpdateShowHRRPUVPlot(int val);
 

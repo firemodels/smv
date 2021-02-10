@@ -28,15 +28,15 @@ SVEXTERN int SVDECL(periodic_refresh, 0), SVDECL(update_refresh, 1);
 SVEXTERN int SVDECL(glui_refresh_rate, 10), SVDECL(glui_refresh_rate_old, 10), SVDECL(refresh_interval, 100);
 #endif
 SVEXTERN int SVDECL(nslicemenuinfo, 0);
-#ifdef pp_MOVIE_BATCH
+
+// movie batch variables
+SVEXTERN int SVDECL(update_movie_parms, 0);
 SVEXTERN int SVDECL(have_slurm, 0);
-SVEXTERN int SVDECL(movie_slice_index, 0), SVDECL(movie_queue_index, 0), SVDECL(movie_nprocessors, 10);
-SVEXTERN char SVDECL(**movie_queues, NULL);
-SVEXTERN char movie_htmldir[256], movie_email[256];
-SVEXTERN int SVDECL(nmovie_queues, 0);
-SVEXTERN char movie_queue_list[1000], movie_basename[1000], movie_ini_filename[1000];
+SVEXTERN int SVDECL(movie_slice_index, 0), SVDECL(movie_queue_index, 0), SVDECL(movie_nprocs, 10), SVDECL(nmovie_queues, 0);
+SVEXTERN char SVDECL(**movie_queues, NULL), movie_htmldir[256], movie_email[256], movie_queue_list[256];
+SVEXTERN char movie_basename[256], movie_ssf_script[256], movie_bash_script[256], movie_ini_filename[256];
 SVEXTERN slicedata SVDECL(*movie_sliceinfo, NULL);
-#endif
+
 SVEXTERN slicemenudata SVDECL(**slicemenu_sorted, NULL);
 SVEXTERN float SVDECL(texture_time, 0.0);
 SVEXTERN int SVDECL(handle_slice_files, 1);

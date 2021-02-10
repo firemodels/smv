@@ -280,12 +280,6 @@ void ParseCommandline(int argc, char **argv){
     }
   }
 
-#ifdef pp_MOVIE_BATCH
-  strcpy(movie_basename, fdsprefix);
-  strcat(movie_basename, "_slice_1");
-  strcpy(movie_ini_filename, movie_basename);
-  strcat(movie_ini_filename, ".ini");
-#endif
   FREEMEMORY(log_filename);
   NewMemory((void **)&log_filename, len_casename + strlen(".smvlog") + 1);
   STRCPY(log_filename, fdsprefix);

@@ -2173,23 +2173,40 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'p':
     case 'P':
-      if(IsPartLoaded()==1){
-        IncrementPartPropIndex();
+      {
+        int is_part_loaded, is_plot3d_loaded;
+
+        is_part_loaded = IsPartLoaded();
+        is_plot3d_loaded = IsPlot3DLoaded();
+
+        if(is_part_loaded==1||is_plot3d_loaded==1){
+          if(is_part_loaded==1){
+            IncrementPartPropIndex();
 #define BOUND_PERCENTILE_DRAW          120
-        PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
-      }
-      if(IsPlot3DLoaded()==1){
-        plotn += FlowDir;
-        if(plotn<1){
-          plotn = numplot3dvars;
+            PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+          }
+          if(is_plot3d_loaded==1){
+            plotn += FlowDir;
+            if(plotn<1){
+              plotn = numplot3dvars;
+            }
+            if(plotn>numplot3dvars){
+              plotn = 1;
+            }
+            UpdateAllPlotSlices();
+            if(visiso==1&&cache_plot3d_data==1)UpdateSurface();
+            UpdatePlot3dListIndex();
+            Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+          }
         }
-        if(plotn>numplot3dvars){
-          plotn = 1;
+        else{
+          if(ndevicetypes>0){
+            devicetypes_index++;
+            if(devicetypes_index>=ndevicetypes)devicetypes_index = 0;
+            updatemenu = 1;
+            UpdateDeviceTypes(devicetypes_index);
+          }
         }
-        UpdateAllPlotSlices();
-        if(visiso==1&&cache_plot3d_data==1)UpdateSurface();
-        UpdatePlot3dListIndex();
-        Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
       }
       update_chop_colors = 1;
       break;
