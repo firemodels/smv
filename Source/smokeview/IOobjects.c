@@ -3198,7 +3198,7 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
   float xscale=1.0, zscale=1.0;
   float origin[3];
   int i;
-  char cvalmin[20], cvalmax[20];
+  char cvalmin[20], cvalmax[20], cval[20];
   int ndigits = 3;
 
   origin[0] = xyz0[0];
@@ -3223,6 +3223,7 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
   if(zmax>zmin)zscale = 1.0/(zmax-zmin);
   Float2String(cvalmin, zmin, ndigits);
   Float2String(cvalmax, zmax, ndigits);
+  Float2String(cval, highlight_y, ndigits);
 
   dx = (xmax - xmin)/20.0;
   dz = (zmax - zmin)/20.0;
@@ -3275,10 +3276,14 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
   float dfont = (float)GetFontHeight()/((float)screenHeight*zscale*factor*SCALE2SMV(1.0));
 
   if(option == PLOT_ALL && showdevice_labels==1){
+    float zmid;
+
+    zmid = (zmax-2.0*dfont+zmin)/2.0;
     Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmin-0.5*dfont, cvalmin);
     Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-0.5*dfont, cvalmax);
-    Output3Text(foregroundcolor, xmax+2.0*dx, 0.0, zmax-1.6*dfont, quantity);
-    Output3Text(foregroundcolor, xmax+2.0*dx, 0.0, zmax-2.7*dfont, unit);
+    Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmid-0.5*dfont, cval);
+    Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-1.6*dfont, quantity);
+    Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-2.7*dfont, unit);
   }
 
   if(valid==1){
