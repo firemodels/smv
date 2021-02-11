@@ -3316,11 +3316,12 @@ void TimeAverageDeviceData(float *times, float *vals, float *vals_avg, int nvals
     }
     return;
   }
-  for(i = 0; i<nvals-1; i++){
+  for(i = 0; i<nvals; i++){
     float tlower, tupper;
     int ilower, iupper;
     float sum;
     int j;
+    int count;
 
     if(times[i]>=device_time_average/2.0&&times[i]<=times[nvals-1]-device_time_average/2.0){
       tlower = times[i]-device_time_average/2.0;
@@ -3336,17 +3337,26 @@ void TimeAverageDeviceData(float *times, float *vals, float *vals_avg, int nvals
     }
     for(j = i; j>=0; j--){
       ilower = j;
-      if(times[j]<tlower)break;
+      if(times[j]<=tlower)break;
     }
     for(j = i; j<nvals; j++){
       iupper = j;
-      if(times[j]>tupper)break;
+      if(times[j]>=tupper)break;
     }
     sum = 0.0;
+    count = 0;
     for(j = ilower; j<=iupper;j++){
-      sum += vals[j];
+      if(times[j]>=tlower&&times[j]<=tupper){
+        sum += vals[j];
+        count++;
+      }
     }
-    vals_avg[i] = sum/(float)(iupper+1-ilower);
+    if(count>0){
+      vals_avg[i] = sum/(float)(count);
+    }
+    else{
+      vals_avg[i] = vals[i];
+    }
   }
 }
 #endif

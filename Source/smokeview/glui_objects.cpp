@@ -484,6 +484,36 @@ extern "C" void UpdateGluiDevices(void){
   DeviceCB(DEVICE_devicetypes);
 }
 
+/* ------------------ GetDeviceTminTmax ------------------------ */
+
+#ifdef pp_DEVICE_AVG
+float GetDeviceTminTmax(void){
+  float return_val=1.0;
+  int first = 1, i;
+
+  for(i = 0; i<ndeviceinfo; i++){
+    devicedata *devicei;
+    float *times;
+
+    devicei = deviceinfo+i;
+    times = devicei->times;
+    if(times!=NULL&&devicei->nvals>0){
+      float tval;
+
+      tval = times[devicei->nvals-1];
+      if(first==1){
+        first = 0;
+        return_val = tval;
+      }
+      else{
+        return_val = MAX(return_val, tval);
+      }
+    }
+  }
+  return return_val;
+}
+#endif
+
 /* ------------------ GluiDeviceSetup ------------------------ */
 
 extern "C" void GluiDeviceSetup(int main_window){
@@ -719,8 +749,13 @@ extern "C" void GluiDeviceSetup(int main_window){
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show all");
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show all (trees)");
 #ifdef pp_DEVICE_AVG
-      SPINNER_device_time_average = glui_device->add_spinner_to_panel(PANEL_plots, _("time average interval"), GLUI_SPINNER_FLOAT, &device_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
-      SPINNER_device_time_average->set_int_limits(0, 100);
+      {
+        float dev_tmax;
+
+        dev_tmax = GetDeviceTminTmax();
+          SPINNER_device_time_average = glui_device->add_spinner_to_panel(PANEL_plots, _("time average interval"), GLUI_SPINNER_FLOAT, &device_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
+          SPINNER_device_time_average->set_float_limits(0.0, dev_tmax);
+        }
 #endif
       CHECKBOX_show_hrrpuv_plot = glui_device->add_checkbox_to_panel(PANEL_plots, _("HRRPUV data"), &show_hrrpuv_plot,HRRPUV_PLOT, DeviceCB);
       PANEL_plotproperties = glui_device->add_panel_to_panel(PANEL_plots, "properties");
