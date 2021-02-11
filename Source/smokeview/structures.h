@@ -110,6 +110,7 @@ typedef struct _geomdata {
   int memory_id, loaded, display;
   int is_terrain;
   float *float_vals;
+  float bounding_box[6];
   int *file2_tris, nfile2_tris;
   int *int_vals, nfloat_vals, nint_vals;
   float *times;

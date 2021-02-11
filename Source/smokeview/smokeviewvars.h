@@ -23,6 +23,7 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(geom_bounding_box, 0);
 #ifdef pp_DEVICE_AVG
 SVEXTERN float SVDECL(device_time_average, 0.0);
 #endif

@@ -548,6 +548,9 @@ void ParseCommandline(int argc, char **argv){
     else if(strncmp(argv[i], "-fed", 4) == 0){
       compute_fed = 1;
     }
+    else if(strncmp(argv[i], "-outline", 8)==0){
+    geom_bounding_box = 1;
+    }
     else if(strncmp(argv[i], "-geominfo", 9)==0){
       print_geominfo = 1;
     }

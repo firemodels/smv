@@ -287,7 +287,7 @@ void DrawTerrainGeom(int option){
   float neutral_color[4] = {0.91, 0.91, 0.76, 1.0};
   int draw_surface = 1, draw_texture=0;
 
-  if(terrain_nindices<=0)return;
+  if(geom_bounding_box==1||terrain_nindices<=0)return;
 
   for(i = 0; i<nterrain_textures; i++){
     texturedata *texti;
