@@ -54,6 +54,7 @@ float     part_load_time;
 #define MENU_TERRAIN_SHOW_LINES   -2
 #define MENU_TERRAIN_SHOW_POINTS  -3
 #define MENU_TERRAIN_SHOW_TOP     -4
+#define MENU_TERRAIN_BOUNDING_BOX -5
 
 #define MENU_KEEP_ALL -2
 #define MENU_KEEP_FINE -3
@@ -6228,6 +6229,9 @@ void TerrainGeomShowMenu(int value){
     case MENU_TERRAIN_SHOW_POINTS:
       terrain_show_geometry_points = 1-terrain_show_geometry_points;
       break;
+    case MENU_TERRAIN_BOUNDING_BOX:
+      geom_bounding_box = 1 - geom_bounding_box;
+      break;
     case MENU_TERRAIN_SHOW_TOP:
       terrain_showonly_top = 1 - terrain_showonly_top;
       break;
@@ -6352,12 +6356,13 @@ void ZoneShowMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
-#define GEOM_Vents 15
-#define GEOM_Compartments 16
-#define GEOM_Outline 3
+#define GEOM_Vents         15
+#define GEOM_Compartments  16
+#define GEOM_Outline        3
 #define GEOM_TriangleCount 14
-#define GEOM_ShowAll 11
-#define GEOM_HideAll 13
+#define GEOM_ShowAll       11
+#define GEOM_HideAll       13
+#define GEOM_bounding_box  10
 
 /* ------------------ GeometryMenu ------------------------ */
 
@@ -6366,6 +6371,9 @@ void GeometryMenu(int value){
   switch(value){
   case GEOM_TriangleCount:
     show_triangle_count=1-show_triangle_count;
+    break;
+  case GEOM_bounding_box:
+    geom_bounding_box = 1-geom_bounding_box;
     break;
   case GEOM_Outline:
     if(isZoneFireModel==0)visFrame=1-visFrame;
@@ -7618,6 +7626,10 @@ updatemenu=0;
       if(terrain_show_geometry_points==1)glutAddMenuEntry(_("*vertices"),      MENU_TERRAIN_SHOW_POINTS);
       if(terrain_show_geometry_points==0)glutAddMenuEntry(_("vertices"),       MENU_TERRAIN_SHOW_POINTS);
     }
+    if(ngeominfoptrs>0){
+      if(geom_bounding_box==1)glutAddMenuEntry(_("*bounding box"), MENU_TERRAIN_BOUNDING_BOX);
+      if(geom_bounding_box==0)glutAddMenuEntry(_("bounding box"),  MENU_TERRAIN_BOUNDING_BOX);
+    }
     if(nterrain_textures>0){
       glutAddMenuEntry("-", MENU_DUMMY);
       glutAddMenuEntry("textures:", MENU_DUMMY);
@@ -7670,6 +7682,10 @@ updatemenu=0;
   }
   else{
     visFrame=0;
+  }
+  if(ngeominfoptrs>0){
+    if(geom_bounding_box==1)glutAddMenuEntry(_("*bounding box"), GEOM_bounding_box);
+    if(geom_bounding_box==0)glutAddMenuEntry(_("bounding box"), GEOM_bounding_box);
   }
 #ifdef _DEBUG
   if(show_triangle_count==1)glutAddMenuEntry(_("*Triangle count"), GEOM_TriangleCount);
