@@ -263,7 +263,7 @@ void MakeMovieBashScript(void){
     strcat(full_animation_file, ".mp4");
     fprintf(stream, "if [ -e %s ]; then\n", full_animation_file);
     fprintf(stream, "  echo \"emailing results to %s\"\n", email_ptr);
-    fprintf(stream, "  echo \"\" | mail -s \"%s\" -a %s %s\n", label,full_animation_file, email_ptr);
+    fprintf(stream, "  echo \"%s/%s.mp4\" | mail -s \"%s\" %s\n", movie_url, movie_basename, label, email_ptr);
     fprintf(stream, "else\n");
     fprintf(stream, "  echo \"Animation file, %s, failed to build\"\n", full_animation_file);
     fprintf(stream, "fi\n");
