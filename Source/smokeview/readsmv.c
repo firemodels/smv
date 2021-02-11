@@ -6741,7 +6741,37 @@ int ReadSMV(bufferstreamdata *stream){
       strcpy(geomdiagi->geomdatafile, buffptr);
     }
 
+
   /*
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++ BOXGEOM ++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  */
+    if(Match(buffer, "BOXGEOM")==1){
+      if(geomboxinfo!=NULL){
+        FREEMEMORY(geomboxinfo);
+        ngeomboxinfo = 0;
+      }
+      TrimBack(buffer);
+      if(strlen(buffer)>7){
+        sscanf(buffer+7, "%i", &ngeomboxinfo);
+      }
+      if(ngeomboxinfo>0){
+        NewMemory((void **)&geomboxinfo, ngeomboxinfo*sizeof(geomboxdata));
+        for(i = 0; i<ngeomboxinfo; i++){
+          geomboxdata *gbi;
+          float *xyz;
+
+          gbi = geomboxinfo+i;
+          xyz = gbi->bounding_box;
+          FGETS(buffer, 255, stream);
+          sscanf(buffer, "%f %f %f %f %f %f", xyz, xyz+1, xyz+2, xyz+3, xyz+4, xyz+5);
+        }
+      }
+
+    }
+
+       /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++ GEOM ++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
