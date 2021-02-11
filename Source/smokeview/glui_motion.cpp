@@ -30,6 +30,7 @@ GLUI *glui_motion=NULL;
 
 GLUI_EditText *EDITTEXT_movie_email    = NULL;
 GLUI_EditText *EDITTEXT_movie_htmldir  = NULL;
+GLUI_EditText *EDITTEXT_movie_url      = NULL;
 
 GLUI_Panel *PANEL_select = NULL;
 GLUI_Panel *PANEL_360 = NULL;
@@ -1586,6 +1587,9 @@ extern "C" void GluiMotionSetup(int main_window){
 
     EDITTEXT_movie_htmldir=glui_motion->add_edittext_to_panel(ROLLOUT_make_movie_batch,"html directory:",GLUI_EDITTEXT_TEXT,movie_htmldir);
     EDITTEXT_movie_htmldir->set_w(300);
+
+    EDITTEXT_movie_url = glui_motion->add_edittext_to_panel(ROLLOUT_make_movie_batch, "url:", GLUI_EDITTEXT_TEXT, movie_url);
+    EDITTEXT_movie_url->set_w(300);
 
     BUTTON_make_movie_batch = glui_motion->add_button_to_panel(ROLLOUT_make_movie_batch, "Make movie", MAKE_MOVIE_BATCH, RenderCB);
   }

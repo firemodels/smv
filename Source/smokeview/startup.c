@@ -1204,6 +1204,24 @@ void InitVars(void){
     have_slurm = 1;
   }
 
+//*** define weburl
+  {
+    char *hostname = NULL, *username = NULL;
+
+    hostname = getenv("HOSTNAME");
+    username = getenv("USER");
+
+    if(hostname!=NULL&&username!=NULL){
+      strcpy(movie_url, "http://");
+      strcat(movie_url, hostname);
+      strcat(movie_url, "/");
+      strcat(movie_url, username);
+    }
+    else{
+      strcpy(movie_url, "");
+    }
+  }
+
 //*** define html directory
 
   htmldir = getenv("SMV_HTMLDIR");
