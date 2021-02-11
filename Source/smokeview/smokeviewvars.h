@@ -23,6 +23,9 @@
 #include "glutbitmap.h"
 #endif
 
+#ifdef pp_DEVICE_AVG
+SVEXTERN float SVDECL(device_time_average, 0.0);
+#endif
 #ifdef pp_REFRESH
 SVEXTERN int SVDECL(periodic_refresh, 0), SVDECL(update_refresh, 1);
 SVEXTERN int SVDECL(glui_refresh_rate, 10), SVDECL(glui_refresh_rate_old, 10), SVDECL(refresh_interval, 100);

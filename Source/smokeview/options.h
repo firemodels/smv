@@ -48,6 +48,7 @@
 //#define pp_SLICE_BUFFER       // read  slice file into a buffer before processing
 //#define pp_RESEARCH_DEBUG     // output whether data is reloaded or colors re-mapped when toggling to/from research mode
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
+#define pp_DEVICE_AVG          // time average device data for 2d plot display
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
