@@ -3317,7 +3317,6 @@ void TimeAverageDeviceData(float *times, float *vals, float *vals_avg, int nvals
     return;
   }
   for(i = 0; i<nvals-1; i++){
-    int jlower, jupper;
     float tlower, tupper;
     int ilower, iupper;
     float sum;
