@@ -30,6 +30,7 @@ GLUI *glui_motion=NULL;
 
 GLUI_EditText *EDITTEXT_movie_email    = NULL;
 GLUI_EditText *EDITTEXT_movie_htmldir  = NULL;
+GLUI_EditText *EDITTEXT_movie_url      = NULL;
 
 GLUI_Panel *PANEL_select = NULL;
 GLUI_Panel *PANEL_360 = NULL;
@@ -262,7 +263,7 @@ void MakeMovieBashScript(void){
     strcat(full_animation_file, ".mp4");
     fprintf(stream, "if [ -e %s ]; then\n", full_animation_file);
     fprintf(stream, "  echo \"emailing results to %s\"\n", email_ptr);
-    fprintf(stream, "  echo \"\" | mail -s \"%s\" -a %s %s\n", label,full_animation_file, email_ptr);
+    fprintf(stream, "  echo \"%s/%s.mp4\" | mail -s \"%s\" %s\n", movie_url, movie_basename, label, email_ptr);
     fprintf(stream, "else\n");
     fprintf(stream, "  echo \"Animation file, %s, failed to build\"\n", full_animation_file);
     fprintf(stream, "fi\n");
@@ -1586,6 +1587,9 @@ extern "C" void GluiMotionSetup(int main_window){
 
     EDITTEXT_movie_htmldir=glui_motion->add_edittext_to_panel(ROLLOUT_make_movie_batch,"html directory:",GLUI_EDITTEXT_TEXT,movie_htmldir);
     EDITTEXT_movie_htmldir->set_w(300);
+
+    EDITTEXT_movie_url = glui_motion->add_edittext_to_panel(ROLLOUT_make_movie_batch, "url:", GLUI_EDITTEXT_TEXT, movie_url);
+    EDITTEXT_movie_url->set_w(300);
 
     BUTTON_make_movie_batch = glui_motion->add_button_to_panel(ROLLOUT_make_movie_batch, "Make movie", MAKE_MOVIE_BATCH, RenderCB);
   }
