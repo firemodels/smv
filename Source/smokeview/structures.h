@@ -121,6 +121,13 @@ typedef struct _geomdata {
   geomobjdata *geomobjinfo;
 } geomdata;
 
+
+/* --------------------------  geomboxdata ------------------------------------ */
+
+typedef struct _geomboxdata {
+  float bounding_box[6];
+} geomboxdata;
+
 /* --------------------------  geomdiagdata ------------------------------------ */
 
 typedef struct _geomdiagdata {

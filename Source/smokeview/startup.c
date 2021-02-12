@@ -1203,6 +1203,9 @@ void InitVars(void){
     ResizeMemory((void **)&movie_queues, nmovie_queues*sizeof(char *));;
     have_slurm = 1;
   }
+#ifndef MOVIE_BATCH
+  have_slurm = 0;
+#endif
 
 //*** define weburl
   {

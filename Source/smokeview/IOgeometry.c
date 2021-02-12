@@ -460,6 +460,55 @@ int HaveNonTextures(tridata **tris, int ntris){
   return 0;
 }
 
+/* ------------------ DrawBox ------------------------ */
+
+void DrawBox(float *bb){
+  glBegin(GL_LINES);
+    // xx
+  glVertex3f(bb[0], bb[2], bb[4]);
+  glVertex3f(bb[1], bb[2], bb[4]);
+
+  glVertex3f(bb[0], bb[2], bb[5]);
+  glVertex3f(bb[1], bb[2], bb[5]);
+
+  glVertex3f(bb[0], bb[3], bb[4]);
+  glVertex3f(bb[1], bb[3], bb[4]);
+
+  glVertex3f(bb[0], bb[3], bb[5]);
+  glVertex3f(bb[1], bb[3], bb[5]);
+
+  // yy
+  glVertex3f(bb[0], bb[2], bb[4]);
+  glVertex3f(bb[0], bb[3], bb[4]);
+
+  glVertex3f(bb[0], bb[2], bb[5]);
+  glVertex3f(bb[0], bb[3], bb[5]);
+
+  glVertex3f(bb[1], bb[2], bb[4]);
+  glVertex3f(bb[1], bb[3], bb[4]);
+
+  glVertex3f(bb[1], bb[2], bb[5]);
+  glVertex3f(bb[1], bb[3], bb[5]);
+
+  // zz
+  glVertex3f(bb[0], bb[2], bb[4]);
+  glVertex3f(bb[0], bb[2], bb[5]);
+
+  glVertex3f(bb[0], bb[3], bb[4]);
+  glVertex3f(bb[0], bb[3], bb[5]);
+
+  glVertex3f(bb[1], bb[2], bb[4]);
+  glVertex3f(bb[1], bb[2], bb[5]);
+
+  glVertex3f(bb[1], bb[3], bb[4]);
+  glVertex3f(bb[1], bb[3], bb[5]);
+  glEnd();
+
+  glBegin(GL_POINTS);
+  glVertex3f(bb[0], bb[2], bb[4]);
+  glEnd();
+}
+
 /* ------------------ DrawGeomBoundingBox ------------------------ */
 
 void DrawGeomBoundingBox(void){
@@ -471,57 +520,25 @@ void DrawGeomBoundingBox(void){
   glTranslatef(geom_delx, geom_dely, geom_delz);
   glColor4fv(foregroundcolor);
   glPointSize(5.0);
-  for(i = 0; i < ngeominfoptrs; i++){
-    geomdata *geomi;
-    float *bb;
+  if(ngeomboxinfo>0){
+    for(i = 0; i<ngeomboxinfo; i++){
+      geomboxdata *gbi;
+      float *bb;
 
-    geomi = geominfoptrs[i];
-    bb = geomi->bounding_box;
+      gbi = geomboxinfo + i;
+      bb = gbi->bounding_box;
+      DrawBox(bb);
+    }
+  }
+  else{
+    for(i = 0; i<ngeominfoptrs; i++){
+      geomdata *geomi;
+      float *bb;
 
-    glBegin(GL_LINES);
-      // xx
-    glVertex3f(bb[0], bb[2], bb[4]);
-    glVertex3f(bb[1], bb[2], bb[4]);
-    
-    glVertex3f(bb[0], bb[2], bb[5]);
-    glVertex3f(bb[1], bb[2], bb[5]);
-    
-    glVertex3f(bb[0], bb[3], bb[4]);
-    glVertex3f(bb[1], bb[3], bb[4]);
-
-    glVertex3f(bb[0], bb[3], bb[5]);
-    glVertex3f(bb[1], bb[3], bb[5]);
-
-    // yy
-    glVertex3f(bb[0], bb[2], bb[4]);
-    glVertex3f(bb[0], bb[3], bb[4]);
-
-    glVertex3f(bb[0], bb[2], bb[5]);
-    glVertex3f(bb[0], bb[3], bb[5]);
-
-    glVertex3f(bb[1], bb[2], bb[4]);
-    glVertex3f(bb[1], bb[3], bb[4]);
-
-    glVertex3f(bb[1], bb[2], bb[5]);
-    glVertex3f(bb[1], bb[3], bb[5]);
-
-    // zz
-    glVertex3f(bb[0], bb[2], bb[4]);
-    glVertex3f(bb[0], bb[2], bb[5]);
-
-    glVertex3f(bb[0], bb[3], bb[4]);
-    glVertex3f(bb[0], bb[3], bb[5]);
-
-    glVertex3f(bb[1], bb[2], bb[4]);
-    glVertex3f(bb[1], bb[2], bb[5]);
-
-    glVertex3f(bb[1], bb[3], bb[4]);
-    glVertex3f(bb[1], bb[3], bb[5]);
-    glEnd();
-
-    glBegin(GL_POINTS);
-    glVertex3f(bb[0], bb[2], bb[4]);
-    glEnd();
+      geomi = geominfoptrs[i];
+      bb = geomi->bounding_box;
+      DrawBox(bb);
+    }
   }
   glPopMatrix();
 }
