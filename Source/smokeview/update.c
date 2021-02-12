@@ -1839,6 +1839,15 @@ void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo){
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
+  if(open_movie_dialog==1){
+    open_movie_dialog = 0;
+    if(have_slurm==1&&nmovie_queues>0){
+      ShowGluiMotion(DIALOG_MOVIE_BATCH);
+    }
+    else{
+      ShowGluiMotion(DIALOG_MOVIE);
+    }
+  }
   if(update_movie_parms==1){
     update_movie_parms = 0;
     UpdateMovieParms();

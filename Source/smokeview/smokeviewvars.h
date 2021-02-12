@@ -23,6 +23,7 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(open_movie_dialog, 0);
 SVEXTERN int SVDECL(ngeomboxinfo, 0);
 SVEXTERN geomboxdata SVDECL(*geomboxinfo, NULL);
 SVEXTERN int SVDECL(geom_bounding_box, 0);
