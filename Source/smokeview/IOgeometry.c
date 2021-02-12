@@ -462,7 +462,9 @@ int HaveNonTextures(tridata **tris, int ntris){
 
 /* ------------------ DrawBox ------------------------ */
 
-void DrawBox(float *bb){
+void DrawBox(float *bb, float *box_color){
+  glColor3fv(box_color);
+  glLineWidth(geom_linewidth);
   glBegin(GL_LINES);
     // xx
   glVertex3f(bb[0], bb[2], bb[4]);
@@ -504,6 +506,7 @@ void DrawBox(float *bb){
   glVertex3f(bb[1], bb[3], bb[5]);
   glEnd();
 
+  glPointSize(geom_pointsize);
   glBegin(GL_POINTS);
   glVertex3f(bb[0], bb[2], bb[4]);
   glEnd();
@@ -518,26 +521,28 @@ void DrawGeomBoundingBox(void){
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
   glTranslatef(-xbar0,-ybar0,-zbar0);
   glTranslatef(geom_delx, geom_dely, geom_delz);
-  glColor4fv(foregroundcolor);
-  glPointSize(5.0);
-  if(ngeomboxinfo>0){
-    for(i = 0; i<ngeomboxinfo; i++){
-      geomboxdata *gbi;
-      float *bb;
+  for(i = 0; i<ngeominfo; i++){
+    geomdata *geomi;
+    int j, have_box;
 
-      gbi = geomboxinfo + i;
-      bb = gbi->bounding_box;
-      DrawBox(bb);
+    geomi = geominfo + i;
+    if(geomi->geomtype!=GEOM_GEOM)continue;
+    have_box = 0;
+    for(j = 0; j<geomi->ngeomobjinfo; j++){
+      geomobjdata *geomobjj;
+
+      geomobjj = geomi->geomobjinfo+j;
+      if(geomobjj->bounding_box!=NULL){
+        float *box_color;
+
+        box_color = foregroundcolor;
+        if(geomobjj->color!=NULL)box_color = geomobjj->color;
+        DrawBox(geomobjj->bounding_box, box_color);
+        have_box = 1;
+      }
     }
-  }
-  else{
-    for(i = 0; i<ngeominfoptrs; i++){
-      geomdata *geomi;
-      float *bb;
-
-      geomi = geominfoptrs[i];
-      bb = geomi->bounding_box;
-      DrawBox(bb);
+    if(have_box==0){
+      DrawBox(geomi->bounding_box, foregroundcolor);
     }
   }
   glPopMatrix();

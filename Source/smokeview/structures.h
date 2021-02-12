@@ -95,7 +95,7 @@ typedef struct _geomlistdata {
 typedef struct _geomobjdata {
   struct _surfdata *surf;
   struct _texturedata *texture;
-  float *color;
+  float *bounding_box, *color;
   char *texture_name;
   float texture_width, texture_height, texture_center[3];
   int texture_mapping;
@@ -121,12 +121,6 @@ typedef struct _geomdata {
   geomobjdata *geomobjinfo;
 } geomdata;
 
-
-/* --------------------------  geomboxdata ------------------------------------ */
-
-typedef struct _geomboxdata {
-  float bounding_box[6];
-} geomboxdata;
 
 /* --------------------------  geomdiagdata ------------------------------------ */
 
