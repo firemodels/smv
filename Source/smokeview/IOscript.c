@@ -2126,8 +2126,15 @@ void ScriptLoadSliceRender(scriptdata *scripti){
 
       if(slicei->nframes==0){
         float dt=1.0, val_min, val_max;
-        
-        slicei->nframes = GetNSliceFrames(slicei->file, &scripti->fval2, &scripti->fval3);
+
+        if(slicei->slice_filetype==SLICE_GEOM){
+          int nvals, error;
+          
+          slicei->nframes = GetGeomDataSize(slicei->file, &nvals, &scripti->fval2, &scripti->fval3, &error);
+        }
+        else{
+          slicei->nframes = GetNSliceFrames(slicei->file, &scripti->fval2, &scripti->fval3);
+        }
         val_min = scripti->fval2;
         val_max = scripti->fval3;
         if(slicei->nframes>0&&val_min<=val_max){

@@ -2436,7 +2436,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
 /* ------------------ ReadGeomDataSize ------------------------ */
 
-void GetGeomDataSize(char *filename,int *ntimes,int *nvars,int *error){
+int GetGeomDataSize(char *filename, int *nvars, float *tmin, float *tmax, int *error){
 
   float time;
   int one, version;
@@ -2444,9 +2444,13 @@ void GetGeomDataSize(char *filename,int *ntimes,int *nvars,int *error){
   FILE *stream=NULL;
   int returncode=0;
   int nvars_local, ntimes_local;
+  int first = 1;
 
   *error=1;
-  if(filename==NULL)return;
+  *tmin = 0.0;
+  *tmax = 1.0;
+  *nvars = 0;
+  if(filename==NULL)return 0;
   stream = fopen(filename,"rb");
   if(stream==NULL)printf(" The boundary element file name, %s, does not exist",filename);
 
@@ -2460,6 +2464,11 @@ void GetGeomDataSize(char *filename,int *ntimes,int *nvars,int *error){
     int nvals[4], nskip;
 
     FORTREAD(&time, 1, stream);
+    if(first==1){
+      first = 0;
+      *tmin = time;
+    }
+    *tmax = time;
     if(returncode==0)break;
     FORTREAD(nvals, 4, stream);
     if(returncode==0)break;
@@ -2476,9 +2485,9 @@ void GetGeomDataSize(char *filename,int *ntimes,int *nvars,int *error){
     nvars_local += nvert_s+nvert_d+nface_s+nface_d;
     ntimes_local++;
   }
-  *nvars = nvars_local;
-  *ntimes = ntimes_local;
   fclose(stream);
+  *nvars = nvars_local;
+  return ntimes_local;
 }
 
 /* ------------------ GetGeomData------------------------ */
@@ -2568,6 +2577,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   int error;
   FILE_SIZE return_filesize = 0;
   float total_time;
+  float tmin_local, tmax_local;
 
   // 1
   // time
@@ -2612,7 +2622,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 
   //GetGeomDataHeader(file,&ntimes,&nvals);
 
-  GetGeomDataSize(file, &ntimes_local, &nvals, &error);
+  ntimes_local = GetGeomDataSize(file, &nvals, &tmin_local, &tmax_local, &error);
 
   if(ntimes_local>0){
     NewMemory((void **)&patchi->geom_nstatics, ntimes_local*sizeof(int));
