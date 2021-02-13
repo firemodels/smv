@@ -2567,7 +2567,7 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
 
 /* ------------------ ReadGeomData ------------------------ */
 
-FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *errorcode){
+FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int time_frame, float *time_value, int *errorcode){
   char *file;
   int ntimes_local;
   int i;
@@ -2673,7 +2673,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       FREEMEMORY(colorlabelpatch);
     }
     if (NewMemory((void **)&colorlabelpatch, MAXRGB * sizeof(char *)) == 0) {
-      ReadGeomData(patchi, NULL, UNLOAD, &error);
+      ReadGeomData(patchi, NULL, UNLOAD, time_frame, time_value,  &error);
       return 0;
     }
     for (n = 0; n < MAXRGB; n++) {
@@ -2681,7 +2681,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     }
     for (n = 0; n < nrgb; n++) {
       if (NewMemory((void **)&colorlabelpatch[n], 11) == 0) {
-        ReadGeomData(patchi, NULL, UNLOAD, &error);
+        ReadGeomData(patchi, NULL, UNLOAD, time_frame, time_value, &error);
         return 0;
       }
     }
@@ -2840,7 +2840,7 @@ FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
     if(load_flag == LOAD){
       UpdateBoundaryHist(patchi);
     }
-    return_filesize=ReadGeomData(patchi,NULL, load_flag,errorcode);
+    return_filesize=ReadGeomData(patchi,NULL, load_flag,ALL_FRAMES, NULL, errorcode);
   }
   else{
     ASSERT(ifile>=0&&ifile<npatchinfo);
@@ -4579,8 +4579,8 @@ int UpdateBoundaryHist(patchdata *patchj){
     else{
       int error_code;
 
-      ReadGeomData(patchi, NULL, UPDATE_HIST, &error_code);
-      ReadGeomData(patchi, NULL, UNLOAD, &error_code);
+      ReadGeomData(patchi, NULL, UPDATE_HIST, ALL_FRAMES, NULL, &error_code);
+      ReadGeomData(patchi, NULL, UNLOAD, ALL_FRAMES, NULL, &error_code);
     }
   }
   return sum;

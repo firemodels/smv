@@ -2663,10 +2663,10 @@ void ScriptLoadFile(scriptdata *scripti){
     sd = sliceinfo + i;
     if(strcmp(sd->file,scripti->cval)==0){
       if(i<nsliceinfo-nfedinfo){
-        ReadSlice(sd->file,i, ALL_SLICE_FRAMES, NULL, LOAD, SET_SLICECOLOR,&errorcode);
+        ReadSlice(sd->file,i, ALL_FRAMES, NULL, LOAD, SET_SLICECOLOR,&errorcode);
       }
       else{
-        ReadFed(i, ALL_SLICE_FRAMES, NULL, LOAD,FED_SLICE,&errorcode);
+        ReadFed(i, ALL_FRAMES, NULL, LOAD,FED_SLICE,&errorcode);
       }
       return;
     }
