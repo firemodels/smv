@@ -2071,12 +2071,8 @@ int GetNSliceGeomFrames(scriptdata *scripti){
  // determine number of time frames
 
     for(j = 0; j<mslicei->nslices; j++){
-      slicedata *slicej;
-
       slicei = sliceinfo+mslicei->islices[j];
       if(slicei->nframes==0){
-        float dt = 1.0, val_min, val_max;
-
         if(slicei->slice_filetype==SLICE_GEOM){
           int nvals, error;
 
