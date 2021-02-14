@@ -136,6 +136,9 @@ restore_state()
     MOVIEDIR=${SLICE2MP4_MOVIEDIR}
     EMAIL=${SLICE2MP4_EMAIL}
     SHARE=${SLICE2MP4_SHARE}
+    if [ "${SLICE2MP4_WEBHOST}" != "" ]; then
+      SMV_WEBHOST=${SLICE2MP4_WEBHOST}
+    fi
   fi
   LOCALCONFIG=$CONFIGDIR/slice2mp4_${input}
   if [ -e $LOCALCONFIG ]; then
@@ -170,6 +173,11 @@ save_state()
   echo "export SLICE2MP4_MOVIEDIR=$MOVIEDIR"    >> $GLOBALCONFIG
   echo "export SLICE2MP4_EMAIL=$EMAIL"          >> $GLOBALCONFIG
   echo "export SLICE2MP4_SHARE=$SHARE"          >> $GLOBALCONFIG
+  if [ "$SMV_WEBHOST" == "" ]; then
+    echo "export SLICE2MP4_WEBHOST=none"        >> $GLOBALCONFIG
+  else
+    echo "export SLICE2MP4_WEBHOST=$SMV_WEBHOST" >> $GLOBALCONFIG
+  fi
   
   LOCALCONFIG=$CONFIGDIR/slice2mp4_${input}
   echo "#/bin/bash"                                   >  $LOCALCONFIG
@@ -249,7 +257,7 @@ fi
 echo ""
 echo "        PNG dir: $RENDERDIR"
 echo "        mp4 dir: $MOVIEDIR"
-echo "      smokeview: $SMOKEVIEW"
+echo "            url: $SMV_WEBHOST"
 #if [ "$SHARE" == "" ]; then
 #  echo "      processes: $NPROCS, node sharing off"
 #else
@@ -277,6 +285,10 @@ fi
   echo ""
   echo "r - set PNG dir "
   echo "a - set mp4 dir"
+  echo "u - set web url"
+  if [ "$SMV_WEBHOST_default" != "" ]; then
+    echo "U - use default url ($SMV_WEBHOST_default)"
+  fi
   echo "m - set email address"
   echo ""
   echo "p - set number of processes"
@@ -292,6 +304,16 @@ fi
     read -p "   enter animation directory: " MOVIEDIR
     CHECK_WRITE $MOVIEDIR
     continue
+  fi
+  if [ "$ans" == "u" ]; then
+    read -p "   enter web url:" SMV_WEBHOST
+    continue
+  fi
+  if [ "$SMV_WEBHOST_default" != "" ]; then
+    if [ "$ans" == "U" ]; then
+      SMV_WEBHOST=$SMV_WEBHOST_default 
+      continue
+    fi
   fi
   if [ "$ans" == "b" ]; then
     read -p "   set $slice_quantity_short min: " valmin
@@ -541,8 +563,13 @@ make_movie() {
     $MAKEMOVIE -i $RENDERDIR -o $MOVIEDIR $img_basename $img_basename >& /dev/null
     if [ "$EMAIL" != "" ]; then
       if [ -e $animation_file ]; then
-        echo "animation file, $animation_file, sent to $EMAIL"
-        echo "" | mail -s "animation of $slice_quantity" -a $animation_file $EMAIL
+        if [[ "$SMV_WEBHOST" != "" ]] && [[ "$SMV_WEBHOST" != "none" ]]; then
+          echo "link to animation file, $animation_file, sent to $EMAIL"
+          echo "$SMV_WEBHOST/$animation_file" | mail -s "animation of $slice_quantity generated" $EMAIL
+        else
+          echo "animation file, $animation_file, generated"
+          echo "" | mail -s "animation of $slice_quantity generated" $EMAIL
+        fi
       fi
     fi
   fi
@@ -667,6 +694,10 @@ SHARE=
 v_opt=
 O_opt=
 USER_CONFIG=
+SMV_WEBHOST_default=
+if [ "$SMV_WEBHOST" != "" ]; then
+  SMV_WEBHOST_default=$SMV_WEBHOST
+fi
 
 #---------------------------------------------
 #                  parse command line options 
