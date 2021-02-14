@@ -2044,6 +2044,59 @@ void SetSliceGlobalBounds(char *type){
   }
 }
 
+/* ------------------ GetNSliceFrames ------------------------ */
+
+int GetNSliceGeomFrames(scriptdata *scripti){
+  int nframes = -1;
+  int i;
+
+  nframes = -1;
+  for(i = 0; i<nmultisliceinfo; i++){
+    multislicedata *mslicei;
+    slicedata *slicei;
+    int j;
+
+    mslicei = multisliceinfo+i;
+    if(mslicei->nslices<=0)continue;
+    slicei = sliceinfo+mslicei->islices[0];
+    if(MatchUpper(slicei->label.longlabel, scripti->cval)==NOTMATCH)continue;
+    if(scripti->ival==0){
+      if(slicei->volslice==0)continue;
+    }
+    else{
+      if(slicei->idir!=scripti->ival)continue;
+      if(ABS(slicei->position_orig-scripti->fval)>slicei->delta_orig)continue;
+    }
+
+ // determine number of time frames
+
+    for(j = 0; j<mslicei->nslices; j++){
+      slicedata *slicej;
+
+      slicei = sliceinfo+mslicei->islices[j];
+      if(slicei->nframes==0){
+        float dt = 1.0, val_min, val_max;
+
+        if(slicei->slice_filetype==SLICE_GEOM){
+          int nvals, error;
+
+          slicei->nframes = GetGeomDataSize(slicei->file, &nvals, &scripti->fval2, &scripti->fval3, &error);
+        }
+        else{
+          slicei->nframes = GetNSliceFrames(slicei->file, &scripti->fval2, &scripti->fval3);
+        }
+      }
+      if(nframes==-1){
+        nframes = slicei->nframes;
+      }
+      else{
+        nframes = MIN(nframes, slicei->nframes);
+      }
+    }
+  }
+  return nframes;
+}
+
 /* ------------------ ScriptLoadSliceRender ------------------------ */
 
 void ScriptLoadSliceRender(scriptdata *scripti){
@@ -2075,6 +2128,7 @@ void ScriptLoadSliceRender(scriptdata *scripti){
     if(shortlabel!=NULL){
       SetSliceGlobalBounds(shortlabel);
     }
+    frames_total = GetNSliceGeomFrames(scripti);
   }
   else{
     frame_current = scripti->ival4;
@@ -2084,11 +2138,8 @@ void ScriptLoadSliceRender(scriptdata *scripti){
   script_render_flag = 1;
   scripti->ival4 = frame_current;
 
-  if(frames_total>0){
+  if(frame_current<frames_total){
     PRINTF("\nFrame: %i of %i, ", frame_current, frames_total);
-  }
-  else{
-    PRINTF("\nFrame: %i, ", frame_current);
   }
 
   for(i = 0; i<nmultisliceinfo; i++){
@@ -2115,39 +2166,6 @@ void ScriptLoadSliceRender(scriptdata *scripti){
 
     START_TIMER(slice_load_time);
     GLUTSETCURSOR(GLUT_CURSOR_WAIT);
-
- // determine number of time frames
-
-    frames_total = -1;
-    for(j = 0; j<mslicei->nslices; j++){
-      slicedata *slicej;
-
-      slicei = sliceinfo+mslicei->islices[j];
-      if(slicei->nframes==0){
-        float dt = 1.0, val_min, val_max;
-
-        if(slicei->slice_filetype==SLICE_GEOM){
-          int nvals, error;
-
-          slicei->nframes = GetGeomDataSize(slicei->file, &nvals, &scripti->fval2, &scripti->fval3, &error);
-        }
-        else{
-          slicei->nframes = GetNSliceFrames(slicei->file, &scripti->fval2, &scripti->fval3);
-        }
-        val_min = scripti->fval2;
-        val_max = scripti->fval3;
-        if(slicei->nframes>0&&val_min<=val_max){
-          dt = (val_max-val_min)/(float)slicei->nframes;
-        }
-        scripti->fval5 = dt;
-      }
-      if(frames_total==-1){
-        frames_total = slicei->nframes;
-      }
-      else{
-        frames_total = MIN(frames_total, slicei->nframes);
-      }
-    }
 
     // load slice data
 
