@@ -646,6 +646,14 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
     OutputSliceData();
   }
   PRINTF(" Completed\n");
+  if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER){
+    char timer_render_label[20];
+
+    STOP_TIMER(timer_render);
+    Float2String(timer_render_label, timer_render, 3);
+    printf("render time: %s s\n", timer_render_label);
+    START_TIMER(timer_render);
+  }
   return 0;
 }
 

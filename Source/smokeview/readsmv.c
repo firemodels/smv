@@ -10297,6 +10297,8 @@ typedef struct {
     PRINTF("   wrap up: %.1f s\n", wrapup_time);
     PRINTF("\n");
   }
+  STOP_TIMER(timer_startup);
+  START_TIMER(timer_render);
   return 0;
 }
 

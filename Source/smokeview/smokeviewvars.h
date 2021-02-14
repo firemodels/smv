@@ -23,6 +23,7 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN float SVDECL(timer_startup, 0.0), SVDECL(timer_render, -1.0);
 SVEXTERN int SVDECL(frames_total, 0 );
 SVEXTERN int SVDECL(open_movie_dialog, 0);
 SVEXTERN int SVDECL(geom_bounding_box, 0);

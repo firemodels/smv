@@ -2107,6 +2107,7 @@ void ScriptLoadSliceRender(scriptdata *scripti){
   if(scripti->first==1){
     char *shortlabel = NULL;
 
+    PRINTF("startup time: %f\n", timer_startup);
     PRINTF("script: loading slice files of type: %s\n", scripti->cval);
     PRINTF("  frames: %i,%i,%i,... \n\n", frame_start, frame_start+frame_skip, frame_start+2*frame_skip);
     scripti->first = 0;
@@ -2214,17 +2215,19 @@ void ScriptLoadSliceRender(scriptdata *scripti){
     updatemenu = 1;
     STOP_TIMER(slice_load_time);
 
-    printf("files: %i, ", count);
-    if(total_slice_size>1000000000){
-      PRINTF("file size: %.1f GB, load time: %.1f s\n", (float)total_slice_size/1000000000., slice_load_time);
-    }
-    else if(total_slice_size>1000000){
-      PRINTF("file size: %.1f MB, load time: %.1f s\n", (float)total_slice_size/1000000., slice_load_time);
-    }
-    else{
-      PRINTF("file size: %.0f KB, load time: %.1f s\n", (float)total_slice_size/1000., slice_load_time);
-    }
 
+    if(frame_current<frames_total){
+      PRINTF("files: %i, ", count);
+      if(total_slice_size>1000000000){
+        PRINTF("file size: %.1f GB, load time: %.1f s\n", (float)total_slice_size/1000000000., slice_load_time);
+      }
+      else if(total_slice_size>1000000){
+        PRINTF("file size: %.1f MB, load time: %.1f s\n", (float)total_slice_size/1000000., slice_load_time);
+      }
+      else{
+        PRINTF("file size: %.0f KB, load time: %.1f s\n", (float)total_slice_size/1000., slice_load_time);
+      }
+    }
     break;
   }
   if(valid_frame==1&&count==0){
