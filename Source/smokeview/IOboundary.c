@@ -7,6 +7,7 @@
 
 #include "smokeviewvars.h"
 #include "compress.h"
+#include "IOscript.h"
 
 #define FIRST_TIME 1
 
@@ -2492,7 +2493,7 @@ int GetGeomDataSize(char *filename, int *nvars, float *tmin, float *tmax, int *e
 
 /* ------------------ GetGeomData------------------------ */
 
-FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *nstatics, int *ndynamics, float *vals, int *error){
+FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *nstatics, int *ndynamics, float *vals, int time_frame, float *time_value, int *error){
   FILE_SIZE file_size;
 
   int i, one, nvars;
@@ -2533,33 +2534,57 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
     nstatics[i] = nvert_s+ntri_s;
 
     if(nvert_s>0){
-      FORTREAD(vals+nvars, nvert_s, stream);
-      if(returncode==0)break;
-      file_size += (4+4*nvert_s+4);
+      if(time_frame==i||time_frame==ALL_FRAMES){
+        FORTREAD(vals+nvars, nvert_s, stream);
+        if(returncode==0)break;
+        file_size += (4+4*nvert_s+4);
+      }
+      else{
+        fseek(stream, 4+4*nvert_s+4, SEEK_CUR);
+      }
     }
     nvars += nvert_s;
 
     if(ntri_s>0){
-      FORTREAD(vals+nvars, ntri_s, stream);
-      if(returncode==0)break;
-      file_size += (4+4*ntri_s+4);
+      if(time_frame==i||time_frame==ALL_FRAMES){
+        FORTREAD(vals+nvars, ntri_s, stream);
+        if(returncode==0)break;
+        file_size += (4+4*ntri_s+4);
+      }
+      else{
+        fseek(stream, (4+4*ntri_s+4), SEEK_CUR);
+      }
     }
     nvars += ntri_s;
 
     ndynamics[i] = nvert_d+ntri_d;
     if(nvert_d>0){
-      FORTREAD(vals+nvars, nvert_d, stream);
-      if(returncode==0)break;
-      file_size += (4+4*nvert_d+4);
+      if(time_frame==i||time_frame==ALL_FRAMES){
+        FORTREAD(vals+nvars, nvert_d, stream);
+        if(returncode==0)break;
+        file_size += (4+4*nvert_d+4);
+      }
+      else{
+        fseek(stream, 4+4*nvert_d+4, SEEK_CUR);
+      }
     }
     nvars += nvert_d;
 
     if(ntri_d>0){
-      FORTREAD(vals+nvars, ntri_d, stream);
-      if(returncode==0)break;
-      file_size += (4+4*ntri_d+4);
+      if(time_frame==i||time_frame==ALL_FRAMES){
+        FORTREAD(vals+nvars, ntri_d, stream);
+        if(returncode==0)break;
+        file_size += (4+4*ntri_d+4);
+      }
+      else{
+        fseek(stream, 4+4*ntri_d+4, SEEK_CUR);
+      }
     }
     nvars += ntri_d;
+    if(i==time_frame){
+      *time_value = times[i];
+      break;
+    }
   }
   fclose(stream);
   return file_size;
@@ -2638,7 +2663,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 
   if(load_flag == UPDATE_HIST){
     GetGeomData(file, ntimes_local, nvals, patchi->geom_times,
-      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &error);
+      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, &error);
     ResetHistogram(patchi->histogram, NULL, NULL);
     UpdateHistogram(patchi->geom_vals, NULL, nvals, patchi->histogram);
     CompleteHistogram(patchi->histogram);
@@ -2647,9 +2672,11 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   else{
     int filesize;
 
-    PRINTF("Loading %s(%s)", file,patchi->label.shortlabel);
+    if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
+      PRINTF("Loading %s(%s)", file, patchi->label.shortlabel);
+    }
     filesize=GetGeomData(file, ntimes_local, nvals, patchi->geom_times,
-      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, &error);
+      patchi->geom_nstatics, patchi->geom_ndynamics, patchi->geom_vals, time_frame, time_value, &error);
     return_filesize += filesize;
   }
 
@@ -2823,7 +2850,9 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   }
   updatemenu = 1;
   STOP_TIMER(total_time);
-  PRINTF(" - %.1f MB/%.1f s\n", (float)return_filesize/1000000., total_time);
+  if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
+    PRINTF(" - %.1f MB/%.1f s\n", (float)return_filesize/1000000., total_time);
+  }
   return return_filesize;
 }
 

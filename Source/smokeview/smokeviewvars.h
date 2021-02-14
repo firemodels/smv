@@ -23,6 +23,7 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(frames_total, 0 );
 SVEXTERN int SVDECL(open_movie_dialog, 0);
 SVEXTERN int SVDECL(geom_bounding_box, 0);
 #ifdef pp_DEVICE_AVG

@@ -13,28 +13,28 @@ void UpdateTimeLabels(void){
   float time0;
 
   time0 = timeoffset;
-  if(global_times!=NULL)time0 = timeoffset + global_times[itimes];
+  if(global_times!=NULL)time0 = timeoffset+global_times[itimes];
   if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER){
     time0 = current_script_command->fval4;
   }
 
   if(vishmsTimelabel==1){
-    int hour, min, sec,sec10;
+    int hour, min, sec, sec10;
     char sign[2];
 
-    if(time0 < 0){
-      strcpy(sign,"-");
+    if(time0<0){
+      strcpy(sign, "-");
       time0 = ABS(time0);
     }
     else{
-      strcpy(sign," ");
+      strcpy(sign, " ");
     }
     hour = time0/3600;
-    min = (int)(time0/60.0 - 60.0*hour);
-    sec10 = (int)(10*(time0 -  60.0*min - 3600.0*hour));
+    min = (int)(time0/60.0-60.0*hour);
+    sec10 = (int)(10*(time0-60.0*min-3600.0*hour));
     sec = sec10/10;
-    sec10 = sec10 - 10*sec;
-    sprintf(timelabel,"  %s%i:%.2i:%.2i.%i", sign,hour, min, sec, sec10);
+    sec10 = sec10-10*sec;
+    sprintf(timelabel, "  %s%i:%.2i:%.2i.%i", sign, hour, min, sec, sec10);
   }
   else{
     float dt;
@@ -51,18 +51,31 @@ void UpdateTimeLabels(void){
         dt = 0.0;
       }
     }
-    if(dt<0.0)dt=-dt;
-    timevalptr=Time2TimeLabel(time0,dt,timeval);
+    if(dt<0.0)dt = -dt;
+    timevalptr = Time2TimeLabel(time0, dt, timeval);
     strcpy(timelabel, "");
-    if(visFrameTimelabel==1)strcat(timelabel,"Time: ");
-    strcat(timelabel,timevalptr);
+    if(visFrameTimelabel==1)strcat(timelabel, "Time: ");
+    strcat(timelabel, timevalptr);
   }
-  if(visFrameTimelabel==1){
-    sprintf(framelabel, "Frame: %i", itimes);
+
+  {
+    int itime_val;
+
+    if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER){
+      itime_val = script_itime;
+    }
+    else{
+      itime_val = itimes;
+    }
+
+    if(visFrameTimelabel==1){
+      sprintf(framelabel, "Frame: %i", itime_val);
+    }
+    else{
+      sprintf(framelabel, "%i", itime_val);
+    }
   }
-  else{
-    sprintf(framelabel, "%i", itimes);
-  }
+
   if(hrrinfo!=NULL&&hrrinfo->hrrval!=NULL&&hrrinfo->display==1&&hrrinfo->loaded==1){
     float hrr;
 
