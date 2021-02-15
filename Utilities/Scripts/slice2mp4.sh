@@ -564,11 +564,11 @@ make_movie() {
     if [ "$EMAIL" != "" ]; then
       if [ -e $animation_file ]; then
         if [[ "$SMV_WEBHOST" != "" ]] && [[ "$SMV_WEBHOST" != "none" ]]; then
-          echo "link to animation file, $animation_file, sent to $EMAIL"
-          echo "$SMV_WEBHOST/$animation_file" | mail -s "animation of $slice_quantity generated" $EMAIL
+          echo "URL: $SMV_WEBHOST/${img_basename}.mp4 sent to $EMAIL"
+          echo "$SMV_WEBHOST/${img_basename}.mp4" | mail -s "$slice_quantity slice generated" $EMAIL
         else
-          echo "animation file, $animation_file, generated"
-          echo "" | mail -s "animation of $slice_quantity generated" $EMAIL
+          echo "$animation_file slice generated"
+          echo "" | mail -s "$slice_quantity slice generated" $EMAIL
         fi
       fi
     fi
