@@ -3120,10 +3120,10 @@ void ReloadAllSliceFiles(void){
     if(ii == nslice_loaded-1)set_slicecolor = SET_SLICECOLOR;
 
     if(slicei->slice_filetype == SLICE_GEOM){
-      load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
+      load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, &errorcode);
     }
     else{
-      load_size+=ReadSlice(             slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
+      load_size+=ReadSlice(             slicei->file,i, ALL_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
     }
     file_count++;
   }
@@ -3160,10 +3160,10 @@ void LoadUnloadMenu(int value){
       slicei = sliceinfo + i;
       if(slicei->loaded == 1){
         if(slicei->slice_filetype == SLICE_GEOM){
-          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, ALL_FRAMES, NULL, &errorcode);
         }
         else{
-          ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR,&errorcode);
+          ReadSlice(slicei->file, i, ALL_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR, &errorcode);
         }
       }
     }
@@ -3213,7 +3213,7 @@ void LoadUnloadMenu(int value){
     }
     for(i=0;i<nvsliceinfo;i++){
       if(vsliceinfo[i].loaded==1){
-        ReadVSlice(i, ALL_SLICE_FRAMES, NULL, load_mode,&errorcode);
+        ReadVSlice(i, ALL_FRAMES, NULL, load_mode,&errorcode);
       }
     }
     if(nslice_loaded>1)last_slice_loaded = slice_loaded_list[nslice_loaded-1];
@@ -3240,10 +3240,10 @@ void LoadUnloadMenu(int value){
         set_slicecolor = DEFER_SLICECOLOR;
         if(i == last_slice_loaded)set_slicecolor = SET_SLICECOLOR;
         if(slicei->slice_filetype==SLICE_GEOM){
-          ReadGeomData(slicei->patchgeom, slicei, load_mode, &errorcode);
+          ReadGeomData(slicei->patchgeom, slicei, load_mode, ALL_FRAMES, NULL, &errorcode);
         }
         else{
-          ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
+          ReadSlice(slicei->file, i, ALL_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
         }
       }
     }
@@ -3983,11 +3983,11 @@ void UnloadVSliceMenu(int value){
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   if(value>=0){
-    ReadVSlice(value,ALL_SLICE_FRAMES, NULL, UNLOAD,&errorcode);
+    ReadVSlice(value,ALL_FRAMES, NULL, UNLOAD,&errorcode);
   }
   else if(value==UNLOAD_ALL){
     for(i=0;i<nvsliceinfo;i++){
-      ReadVSlice(i,ALL_SLICE_FRAMES, NULL, UNLOAD,&errorcode);
+      ReadVSlice(i,ALL_FRAMES, NULL, UNLOAD,&errorcode);
     }
   }
   else if(value==-2){
@@ -3995,7 +3995,7 @@ void UnloadVSliceMenu(int value){
 
     unload_index=LastVSliceLoadstack();
     if(unload_index>=0&&unload_index<nvsliceinfo){
-      ReadVSlice(unload_index,ALL_SLICE_FRAMES, NULL, UNLOAD,&errorcode);
+      ReadVSlice(unload_index,ALL_FRAMES, NULL, UNLOAD,&errorcode);
     }
   }
 }
@@ -4103,7 +4103,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value==UNLOAD_ALL){
     for(i=0;i<nvsliceinfo;i++){
-      ReadVSlice(i,ALL_SLICE_FRAMES, NULL,  UNLOAD,&errorcode);
+      ReadVSlice(i,ALL_FRAMES, NULL,  UNLOAD,&errorcode);
     }
     return 0;
   }
@@ -4114,7 +4114,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
     vslicedata *vslicei;
     slicedata *slicei;
 
-    return_filesize = ReadVSlice(value, ALL_SLICE_FRAMES, NULL, LOAD, &errorcode);
+    return_filesize = ReadVSlice(value, ALL_FRAMES, NULL, LOAD, &errorcode);
     vslicei = vsliceinfo + value;
     slicei = vslicei->val;
     if(script_multivslice==0&&slicei!=NULL&&scriptoutstream!=NULL){
@@ -4150,7 +4150,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
       if(strcmp(longlabel,submenulabel)!=0)continue;
       if(dir!=0&&dir!=slicei->idir)continue;
       file_count++;
-      load_size+=ReadVSlice(i,ALL_SLICE_FRAMES, NULL, LOAD,&errorcode);
+      load_size+=ReadVSlice(i,ALL_FRAMES, NULL, LOAD,&errorcode);
     }
     STOP_TIMER(load_time);
     PRINT_LOADTIMES(file_count,load_size,load_time);
@@ -4179,10 +4179,10 @@ void UnloadSliceMenu(int value){
     slicei = sliceinfo+value;
 
     if(slicei->slice_filetype==SLICE_GEOM){
-      ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+      ReadGeomData(slicei->patchgeom, slicei, UNLOAD, ALL_FRAMES, NULL, &errorcode);
     }
     else{
-      ReadSlice("", value, ALL_SLICE_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
+      ReadSlice("", value, ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
     }
   }
   if(value<=-3){
@@ -4195,10 +4195,10 @@ void UnloadSliceMenu(int value){
 
         slicei = sliceinfo+i;
         if(slicei->slice_filetype == SLICE_GEOM){
-          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, ALL_FRAMES, NULL, &errorcode);
         }
         else{
-          ReadSlice("",i, ALL_SLICE_FRAMES, NULL, UNLOAD,DEFER_SLICECOLOR,&errorcode);
+          ReadSlice("",i, ALL_FRAMES, NULL, UNLOAD,DEFER_SLICECOLOR,&errorcode);
         }
       }
       for(i=0;i<npatchinfo;i++){
@@ -4219,10 +4219,10 @@ void UnloadSliceMenu(int value){
 
         slicei = sliceinfo+unload_index;
         if(slicei->slice_filetype==SLICE_GEOM){
-          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, ALL_FRAMES, NULL, &errorcode);
         }
         else{
-          ReadSlice("", unload_index, ALL_SLICE_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
+          ReadSlice("", unload_index, ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
         }
       }
     }
@@ -4627,7 +4627,7 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_
       if(fed_colorbar != NULL&&fed_colorbar - colorbarinfo == colorbartype)reset_colorbar = 1;
 
       if(slicei->slice_filetype == SLICE_GEOM){
-        return_filesize = ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
+        return_filesize = ReadGeomData(slicei->patchgeom, slicei, LOAD, time_frame, time_value, &errorcode);
       }
       else {
         return_filesize = ReadSlice(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
@@ -4660,7 +4660,7 @@ void LoadSliceMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
     SetLoadedSliceBounds(&value, 1);
-    LoadSlicei(SET_SLICECOLOR,value, ALL_SLICE_FRAMES, NULL);
+    LoadSlicei(SET_SLICECOLOR,value, ALL_FRAMES, NULL);
   }
   else{
     switch (value){
@@ -4675,10 +4675,10 @@ void LoadSliceMenu(int value){
           slicei = sliceinfo + i;
           if(slicei->loaded == 1){
             if(slicei->slice_filetype == SLICE_GEOM){
-              ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+              ReadGeomData(slicei->patchgeom, slicei, UNLOAD, ALL_FRAMES, NULL, &errorcode);
             }
             else{
-              ReadSlice("",i, ALL_SLICE_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR,&errorcode);
+              ReadSlice("",i, ALL_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR, &errorcode);
             }
           }
         }
@@ -4728,10 +4728,10 @@ void LoadSliceMenu(int value){
           set_slicecolor = DEFER_SLICECOLOR;
           if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
           if(slicei->slice_filetype == SLICE_GEOM){
-            load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
+            load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, &errorcode);
           }
           else{
-            load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
+            load_size+=             ReadSlice(slicei->file,i, ALL_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
           }
           file_count++;
         }
@@ -4921,7 +4921,7 @@ FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
       set_slicecolor = SET_SLICECOLOR;
     }
     if(slicei->skipdup== 0){
-      file_size += LoadSlicei(set_slicecolor,mslicei->islices[i],ALL_SLICE_FRAMES, NULL);
+      file_size += LoadSlicei(set_slicecolor,mslicei->islices[i],ALL_FRAMES, NULL);
       file_count++;
     }
   }
@@ -5036,10 +5036,10 @@ void LoadMultiSliceMenu(int value){
       set_slicecolor = DEFER_SLICECOLOR;
       if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
       if(slicei->slice_filetype == SLICE_GEOM){
-        load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, &errorcode);
+        load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, &errorcode);
       }
       else{
-        load_size+=             ReadSlice(slicei->file,i, ALL_SLICE_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
+        load_size+=             ReadSlice(slicei->file,i, ALL_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
       }
       file_count++;
     }

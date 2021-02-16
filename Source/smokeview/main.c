@@ -739,6 +739,7 @@ int main(int argc, char **argv){
   int return_code;
   char *progname;
 
+  START_TIMER(timer_startup);
 // #define pp_CRASH_TEST
 #ifdef pp_CRASH_TEST
   

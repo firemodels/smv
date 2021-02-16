@@ -169,7 +169,12 @@ void UpdateFrameNumber(int changetime){
           patchi = sd->patchgeom;
           if(patchi->geom_timeslist == NULL)continue;
           if(patchi->structured == YES || patchi->boundary == 1 || patchi->geom_times == NULL || patchi->geom_timeslist == NULL)continue;
-          patchi->geom_itime = patchi->geom_timeslist[itimes];
+          if(current_script_command!=NULL && current_script_command->command == SCRIPT_LOADSLICERENDER){
+            patchi->geom_itime = script_itime;
+          }
+          else{
+            patchi->geom_itime = patchi->geom_timeslist[itimes];
+          }
           patchi->geom_ival_static = patchi->geom_ivals_static[patchi->geom_itime];
           patchi->geom_ival_dynamic = patchi->geom_ivals_dynamic[patchi->geom_itime];
           patchi->geom_nval_static = patchi->geom_nstatics[patchi->geom_itime];
@@ -2357,7 +2362,10 @@ void UpdateDisplay(void){
     updatemenu = 0;
   }
   if(update_patch_bounds!=-1||update_slice_bounds!=-1||update_part_bounds!=-1||update_plot3d_bounds!=-1){
-    OutputBounds();
+
+    if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
+      OutputBounds();
+    }
     update_patch_bounds = -1;
     update_slice_bounds = -1;
     update_part_bounds = -1;

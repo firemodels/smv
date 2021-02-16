@@ -74,7 +74,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MINMAX_LOADED 1
 #define MINMAX_INI    2
 
-#define ALL_SLICE_FRAMES -1
+#define ALL_FRAMES       -1
 
 #define COLORBAR_SHIFT_MIN          0.1
 #define COLORBAR_SHIFT_MAX         10.0

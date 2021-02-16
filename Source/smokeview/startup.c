@@ -1079,9 +1079,9 @@ void InitOpenGL(int option){
       vslicedata *vslicei;
 
       vslicei = vsliceinfo + i;
-      if(vslicei->autoload==0&&vslicei->loaded==1)ReadVSlice(i,ALL_SLICE_FRAMES, NULL, UNLOAD,&errorcode);
+      if(vslicei->autoload==0&&vslicei->loaded==1)ReadVSlice(i,ALL_FRAMES, NULL, UNLOAD,&errorcode);
       if(vslicei->autoload==1){
-        ReadVSlice(i,ALL_SLICE_FRAMES, NULL, LOAD,&errorcode);
+        ReadVSlice(i,ALL_FRAMES, NULL, LOAD,&errorcode);
       }
     }
     // note:  only slices that are NOT a part of a vector slice will be loaded here
@@ -1105,7 +1105,7 @@ void InitOpenGL(int option){
         slicei = sliceinfo + i;
         set_slicecolor = DEFER_SLICECOLOR;
         if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-        if(slicei->autoload == 0 && slicei->loaded == 1)ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, UNLOAD, set_slicecolor,&errorcode);
+        if(slicei->autoload == 0 && slicei->loaded == 1)ReadSlice(slicei->file, i, ALL_FRAMES, NULL, UNLOAD, set_slicecolor,&errorcode);
         if(slicei->autoload == 1 && slicei->loaded == 0){
         }
       }

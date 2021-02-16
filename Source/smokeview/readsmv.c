@@ -6748,24 +6748,33 @@ int ReadSMV(bufferstreamdata *stream){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(Match(buffer, "BOXGEOM")==1){
-      if(geomboxinfo!=NULL){
-        FREEMEMORY(geomboxinfo);
-        ngeomboxinfo = 0;
-      }
+      int nbounds = 0;
+
       TrimBack(buffer);
       if(strlen(buffer)>7){
-        sscanf(buffer+7, "%i", &ngeomboxinfo);
+        sscanf(buffer+7, "%i", &nbounds);
       }
-      if(ngeomboxinfo>0){
-        NewMemory((void **)&geomboxinfo, ngeomboxinfo*sizeof(geomboxdata));
-        for(i = 0; i<ngeomboxinfo; i++){
-          geomboxdata *gbi;
+      if(nbounds>0){
+        float *bounds;
+
+        NewMemory((void **)&bounds, 6*nbounds*sizeof(float));
+        for(i = 0; i<nbounds; i++){
           float *xyz;
 
-          gbi = geomboxinfo+i;
-          xyz = gbi->bounding_box;
+          xyz = bounds+6*i;
           FGETS(buffer, 255, stream);
           sscanf(buffer, "%f %f %f %f %f %f", xyz, xyz+1, xyz+2, xyz+3, xyz+4, xyz+5);
+        }
+        if(ngeominfo>0){
+          geomdata *geomi;
+
+          geomi = geominfo+ngeominfo-1;
+          for(i = 0; i<MIN(nbounds, geomi->ngeomobjinfo); i++){
+            geomobjdata *geomobji;
+
+            geomobji = geomi->geomobjinfo+i;
+            geomobji->bounding_box = bounds + 6*i;
+          }
         }
       }
 
@@ -6829,6 +6838,7 @@ int ReadSMV(bufferstreamdata *stream){
       }
 
       if(ngeomobjinfo>0){
+        geomi->ngeomobjinfo = ngeomobjinfo;
         NewMemory((void **)&geomi->geomobjinfo,ngeomobjinfo*sizeof(geomobjdata));
         for(i=0;i<ngeomobjinfo;i++){
           geomobjdata *geomobji;
@@ -6846,6 +6856,7 @@ int ReadSMV(bufferstreamdata *stream){
           colorlabel = strchr(buffer, '!');
           geomobji->color = NULL;
           geomobji->use_geom_color = 0;
+          geomobji->bounding_box = NULL;
           if(colorlabel!=NULL){
             int colors[3] = {-1, -1, -1};
 
@@ -10286,6 +10297,8 @@ typedef struct {
     PRINTF("   wrap up: %.1f s\n", wrapup_time);
     PRINTF("\n");
   }
+  STOP_TIMER(timer_startup);
+  START_TIMER(timer_render);
   return 0;
 }
 

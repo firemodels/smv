@@ -5,6 +5,7 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
+#include "IOscript.h"
 
 /* ------------------ GetPartFileBounds ------------------------ */
 
@@ -253,14 +254,27 @@ void GetGlobalPatchBounds(void){
     patchdata *patchi;
     float valmin, valmax;
     boundsdata *boundi;
+    int update_file_bounds;
+
 
     patchi = patchinfo + i;
-    if(GetFileBounds(patchi->bound_file, &valmin, &valmax)==1){
-      patchi->have_bound_file = YES;
+
+    update_file_bounds = 0;
+    if(patchi->valmin_fds>patchi->valmax_fds)update_file_bounds = 1;
+    if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER)update_file_bounds = 1;
+
+    if(update_bounds==1){
+      if(GetFileBounds(patchi->bound_file, &valmin, &valmax)==1){
+        patchi->have_bound_file = YES;
+      }
+      if(valmin > valmax)continue;
+      patchi->valmin_fds = valmin;
+      patchi->valmax_fds = valmax;
     }
-    if(valmin > valmax)continue;
-    patchi->valmin_fds = valmin;
-    patchi->valmax_fds = valmax;
+    else{
+      valmin = patchi->valmin_fds;
+      valmax = patchi->valmax_fds;
+    }
     boundi = GetPatchBoundsInfo(patchi->label.shortlabel);
     if(boundi == NULL)continue;
     if(boundi->dlg_global_valmin > boundi->dlg_global_valmax){
@@ -503,15 +517,28 @@ void GetGlobalSliceBounds(void){
     slicedata *slicei;
     float valmin, valmax;
     boundsdata *boundi;
+    int update_file_bounds;
 
     slicei = sliceinfo+i;
     if(slicei->is_fed==1)continue;
-    if(GetFileBounds(slicei->bound_file, &valmin, &valmax)==1){
+
+    update_file_bounds = 0;
+    if(slicei->valmin_fds>slicei->valmax_fds)update_file_bounds = 1;
+    if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER)update_file_bounds = 1;
+
+    if(update_file_bounds==1){
+      if(GetFileBounds(slicei->bound_file, &valmin, &valmax)==1){
+        slicei->have_bound_file = YES;
+      }
+      if(valmin>valmax)continue;
+      slicei->valmin_fds = valmin;
+      slicei->valmax_fds = valmax;
+    }
+    else{
+      valmin = slicei->valmin_fds;
+      valmax = slicei->valmax_fds;
       slicei->have_bound_file = YES;
     }
-    if(valmin>valmax)continue;
-    slicei->valmin_fds = valmin;
-    slicei->valmax_fds = valmax;
     boundi = GetSliceBoundsInfo(slicei->label.shortlabel);
     if(boundi==NULL)continue;
     if(boundi->dlg_global_valmin>boundi->dlg_global_valmax){

@@ -846,7 +846,7 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   int returncode=0;
 
   sd = sliceinfo + sd_index;
-  if(sd->loaded==1)ReadSlice(sd->file,sd_index, ALL_SLICE_FRAMES, NULL,  UNLOAD,SET_SLICECOLOR,&error);
+  if(sd->loaded==1)ReadSlice(sd->file,sd_index, ALL_FRAMES, NULL,  UNLOAD,SET_SLICECOLOR,&error);
   if(flag==UNLOAD){
     FREEMEMORY(sd->qslicedata);
     FREEMEMORY(sd->times);
@@ -865,7 +865,7 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
         GetSliceHeader(sd->comp_file,sd->size_file,sd->compression_type,
                        sliceframestep,settmin_s,settmax_s,tmin_s,tmax_s,
                        &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sd->ncompressed, &sd->valmin, &sd->valmax)==0){
-        ReadSlice("",sd_index, ALL_SLICE_FRAMES,NULL,UNLOAD,SET_SLICECOLOR,&error);
+        ReadSlice("",sd_index, ALL_FRAMES,NULL,UNLOAD,SET_SLICECOLOR,&error);
         return -1;
       }
     }
@@ -1003,7 +1003,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   }
 
   if(file_type==FED_SLICE){
-    ReadSlice(fed_slice->file,fedi->fed_index, ALL_SLICE_FRAMES, NULL, UNLOAD,SET_SLICECOLOR,&error_local);
+    ReadSlice(fed_slice->file,fedi->fed_index, ALL_FRAMES, NULL, UNLOAD,SET_SLICECOLOR,&error_local);
   }
   else if(file_type==FED_ISO){
     ReadIsoOrig(fed_iso->file,file_index,UNLOAD,&error_local);
@@ -1208,7 +1208,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     CReadSlice_frame(0,fedi->co_index,UNLOAD);
   }
   if(file_type==FED_SLICE){
-    ReadSlice(fed_slice->file,fedi->fed_index,ALL_SLICE_FRAMES,NULL,flag,SET_SLICECOLOR,&error_local);
+    ReadSlice(fed_slice->file,fedi->fed_index,ALL_FRAMES,NULL,flag,SET_SLICECOLOR,&error_local);
   }
   else{
     ReadIsoOrig(fed_iso->file,file_index,flag,&error_local);
@@ -4118,7 +4118,7 @@ void GetSliceSizes(slicedata *sd, char *slicefilenameptr, int time_frame, int *n
     if((settmin_s_arg!=0&&timeval<tmin_s_arg)||timeval<=time_max){
     }
     else{
-      if(time_frame==ALL_SLICE_FRAMES)loadframe = 1;
+      if(time_frame==ALL_FRAMES)loadframe = 1;
       time_max = timeval;
     }
     if(settmax_s_arg!=0&&timeval>tmax_s_arg){
@@ -4629,7 +4629,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
         error = 1;
       }
       else{
-        if(time_frame==ALL_SLICE_FRAMES){
+        if(time_frame==ALL_FRAMES){
           sd->ntimes = (int)(GetFileSizeSMV(file)-headersize)/framesize;
           if(sliceframestep>1)sd->ntimes /= sliceframestep;
         }
@@ -4640,7 +4640,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
       *errorcode = 1;
       return 0;
     }
-    if(time_frame==ALL_SLICE_FRAMES){
+    if(time_frame==ALL_FRAMES){
       PRINTF("Loading %s(%s)", file, sd->label.shortlabel);
     }
     MEMSTATUS(1, &availmemory, NULL, NULL);
@@ -4921,7 +4921,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
 
   STOP_TIMER(total_time);
 
-  if(time_frame==ALL_SLICE_FRAMES&&flag != RESETBOUNDS){
+  if(time_frame==ALL_FRAMES&&flag != RESETBOUNDS){
     if(file_size>1000000000){
       PRINTF(" - %.1f GB/%.1f s\n", (float)file_size / 1000000000., total_time);
     }

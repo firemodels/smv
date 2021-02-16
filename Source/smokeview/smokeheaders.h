@@ -9,6 +9,8 @@
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
 
+EXTERNCPP int GetGeomDataSize(char *file, int *nvals, float *tmin, float *tmax, int *error);
+
 EXTERNCPP void UpdateMovieParms(void);
 
 EXTERNCPP void ShowObjectsMenu(int var);
@@ -196,7 +198,7 @@ EXTERNCPP int IsSmokeComponentPresent(smoke3ddata *smoke3di);
 EXTERNCPP void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax);
 EXTERNCPP void UpdateAllSliceColors(int slicetype, int *errorcode);
 EXTERNCPP void UpdateSliceBounds(void);
-EXTERNCPP FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int *errorcode);
+EXTERNCPP FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int time_frame, float *time_value, int *errorcode);
 EXTERNCPP void UpdateWhereFaceVolumes(void);
 EXTERNCPP void UpdateTimebarOverlap(void);
 EXTERNCPP void UpdateRenderRadioButtons(int width_low, int height_low, int width_high, int height_high);
