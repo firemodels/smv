@@ -1118,23 +1118,28 @@ void InitDefaultColorbars(int nini){
   strcpy(cbi->label, "Methanol");
   cbi->label_ptr = cbi->label;
 
-  cbi->nnodes = 3;
+  cbi->nnodes = 4;
   cbi->nodehilight = 0;
 
   cbi->index_node[0] = 0;
-  cbi->rgb_node[0] = 0;
-  cbi->rgb_node[1] = 0;
+  cbi->rgb_node[0] = 9;
+  cbi->rgb_node[1] = 160;
   cbi->rgb_node[2] = 255;
 
   cbi->index_node[1] = 192;
-  cbi->rgb_node[3] = 0;
-  cbi->rgb_node[4] = 0;
+  cbi->rgb_node[3] = 9;
+  cbi->rgb_node[4] = 160;
   cbi->rgb_node[5] = 255;
 
-  cbi->index_node[2] = 255;
+  cbi->index_node[2] = 200;
   cbi->rgb_node[6] = 255;
   cbi->rgb_node[7] = 255;
   cbi->rgb_node[8] = 255;
+
+  cbi->index_node[3] = 255;
+  cbi->rgb_node[9] = 255;
+  cbi->rgb_node[10] = 255;
+  cbi->rgb_node[11] = 255;
 
   cbi++;
 
