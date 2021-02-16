@@ -10134,7 +10134,7 @@ typedef struct {
   GenerateSliceMenu(generate_info_from_commandline);
   if(generate_info_from_commandline==1){
     GenerateViewpointMenu();
-    exit(0);
+    SMV_EXIT(0);
   }
 
   GetBoundaryParams();
