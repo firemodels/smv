@@ -254,16 +254,11 @@ void GetGlobalPatchBounds(void){
     patchdata *patchi;
     float valmin, valmax;
     boundsdata *boundi;
-    int update_file_bounds;
-
 
     patchi = patchinfo + i;
 
-    update_file_bounds = 0;
-    if(patchi->valmin_fds>patchi->valmax_fds)update_file_bounds = 1;
-    if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER)update_file_bounds = 1;
-
-    if(update_bounds==1){
+    if(patchi->valmin_fds>patchi->valmax_fds||
+       current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
       if(GetFileBounds(patchi->bound_file, &valmin, &valmax)==1){
         patchi->have_bound_file = YES;
       }
