@@ -1641,7 +1641,7 @@ float GetMeshZCell(meshdata *meshi, float xval, float yval, int *valid){
   int nxcell;
 
   *valid = 0;
-  if(meshi==NULL)return 0.0;
+  if(meshi==NULL||meshi->zcell==NULL)return 0.0;
   xplt = meshi->xplt_orig;
   yplt = meshi->yplt_orig;
   ibar = meshi->ibar;
