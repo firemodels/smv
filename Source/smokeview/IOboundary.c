@@ -2536,7 +2536,7 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
     int nvals[4];
 
     FORTREAD(&time, 1, stream);
-    if(iframe==time_frame||iframe==ALL_FRAMES)times[count] = time;
+    if(time_frame==ALL_FRAMES||time_frame==iframe)times[count] = time;
     if(returncode==0)break;
     file_size += (4+4+4);
     FORTREAD(nvals, 4, stream);
@@ -2545,10 +2545,10 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
     nvert_d = nvals[2];
     ntri_d = nvals[3];
     file_size += (4+4*4+4);
-    if(iframe==time_frame||iframe==ALL_FRAMES)nstatics[count] = nvert_s+ntri_s;
+    if(time_frame==ALL_FRAMES||time_frame==iframe)nstatics[count] = nvert_s+ntri_s;
 
     if(nvert_s>0){
-      if(time_frame==iframe||time_frame==ALL_FRAMES){
+      if(time_frame==ALL_FRAMES||time_frame==iframe){
         FORTREAD(vals+nvars, nvert_s, stream);
         if(returncode==0)break;
         file_size += (4+4*nvert_s+4);
@@ -2560,7 +2560,7 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
     }
 
     if(ntri_s>0){
-      if(time_frame==iframe||time_frame==ALL_FRAMES){
+      if(time_frame==ALL_FRAMES||time_frame==iframe){
         FORTREAD(vals+nvars, ntri_s, stream);
         if(returncode==0)break;
         file_size += (4+4*ntri_s+4);
@@ -2571,9 +2571,9 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
       }
     }
 
-    if(iframe==time_frame||iframe==ALL_FRAMES)ndynamics[count] = nvert_d+ntri_d;
+    if(time_frame==ALL_FRAMES||time_frame==iframe)ndynamics[count] = nvert_d+ntri_d;
     if(nvert_d>0){
-      if(time_frame==iframe||time_frame==ALL_FRAMES){
+      if(time_frame==ALL_FRAMES||time_frame==iframe){
         FORTREAD(vals+nvars, nvert_d, stream);
         if(returncode==0)break;
         file_size += (4+4*nvert_d+4);
@@ -2585,7 +2585,7 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
     }
 
     if(ntri_d>0){
-      if(time_frame==iframe||time_frame==ALL_FRAMES){
+      if(time_frame==ALL_FRAMES||time_frame==iframe){
         FORTREAD(vals+nvars, ntri_d, stream);
         if(returncode==0)break;
         file_size += (4+4*ntri_d+4);
@@ -2595,11 +2595,11 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
         fseek(stream, 4+4*ntri_d+4, SEEK_CUR);
       }
     }
-    if(iframe==time_frame){
+    if(time_frame==iframe){
       *time_value = times[count];
       break;
     }
-    if(iframe==ALL_FRAMES)count++;
+    if(time_frame==ALL_FRAMES)count++;
   }
   fclose(stream);
   return file_size;
