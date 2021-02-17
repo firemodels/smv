@@ -9,7 +9,7 @@
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
 
-EXTERNCPP int GetGeomDataSize(char *file, int *nvals, float *tmin, float *tmax, int *error);
+EXTERNCPP int GetGeomDataSize(char *file, int *nvals, float *tmin, float *tmax, int time_frame, int *error);
 
 EXTERNCPP void UpdateMovieParms(void);
 
