@@ -145,7 +145,6 @@ void UpdateFrameNumber(int changetime){
           }
           CheckMemory;
         }
-
       }
     }
     for(i=0;i<ngeominfoptrs;i++){
@@ -1124,7 +1123,7 @@ void UpdateTimes(void){
     geomdata *geomi;
 
     geomi = geominfoptrs[i];
-    if(geomi->loaded==0||geomi->display==0)continue;
+    if(geomi->loaded==0||geomi->display==0||geomi->ntimes<=1)continue;
     nglobal_times = MAX(nglobal_times,geomi->ntimes);
     global_timemin = MIN(global_timemin, geomi->times[0]);
     global_timemax = MAX(global_timemax, geomi->times[geomi->ntimes-1]);

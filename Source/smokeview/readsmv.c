@@ -4447,6 +4447,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   }
   patchi->modtime = 0;
   patchi->geom_timeslist = NULL;
+  patchi->geom_offsets = NULL;
   patchi->geom_ivals_dynamic = NULL;
   patchi->geom_ivals_static = NULL;
   patchi->geom_ndynamics = NULL;
@@ -4866,6 +4867,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 
   sd = sliceinfo+nn_slice-1;
 
+  sd->geom_offsets = NULL;
   sd->slcf_index = slcf_index;
   sd->finalize = 1;
   sd->ntimes = 0;
