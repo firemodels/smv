@@ -169,7 +169,7 @@ void UpdateFrameNumber(int changetime){
           if(patchi->geom_timeslist == NULL)continue;
           if(patchi->structured == YES || patchi->boundary == 1 || patchi->geom_times == NULL || patchi->geom_timeslist == NULL)continue;
           if(current_script_command!=NULL && current_script_command->command == SCRIPT_LOADSLICERENDER){
-            patchi->geom_itime = script_itime;
+            patchi->geom_itime = 0; // only one frame loaded at a time when using LOADSLICERNDER
           }
           else{
             patchi->geom_itime = patchi->geom_timeslist[itimes];

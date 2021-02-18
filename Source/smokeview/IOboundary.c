@@ -2480,7 +2480,7 @@ int GetGeomDataSize(char *filename, int *nvars, float *tmin, float *tmax, int ti
   for(iframe=frame_start;;iframe++){
     int nvals[4], nskip;
 
-    if(geom_offset_flag!=NULL&&*geom_offset_flag==BUILD_GEOM_OFFSETS)geom_offsets[geom_offset_index++] = geom_offset;
+    if(geom_offset_flag!=NULL&&*geom_offset_flag==BUILD_GEOM_OFFSETS)geom_offsets[geom_offset_index] = geom_offset;
     FORTREAD(&time, 1, stream);
     geom_offset += (4+4+4);
     if(time_frame==ALL_FRAMES||time_frame==iframe){
@@ -2508,6 +2508,7 @@ int GetGeomDataSize(char *filename, int *nvars, float *tmin, float *tmax, int ti
       nvars_local += nvert_s+nvert_d+nface_s+nface_d;
       ntimes_local++;
     }
+    geom_offset_index++;
     if(geom_offset_flag!=NULL&&*geom_offset_flag==GET_GEOM_OFFSETS&&time_frame==iframe)break;
     if(fseek(stream, nskip, SEEK_CUR)!=0)break;
   }
