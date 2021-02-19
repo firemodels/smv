@@ -1814,7 +1814,7 @@ void ResetMenu(int value){
   case SAVE_VIEWPOINT_AS_STARTUP:
     ResetMenu(SAVE_VIEWPOINT);
     ResetMenu(MENU_STARTUPVIEW);
-    update_startup_view = 1;
+    update_startup_view = 3;
     break;
   case MENU_VIEWPOINT_TOPVIEW:
     SetViewZMAXPersp();
