@@ -12712,7 +12712,7 @@ int ReadIni2(char *inifile, int localfile){
       front = TrimFront(buffer);
       TrimBack(front);
       strcpy(startup_view_label, front);
-      update_startup_view = 1;
+      update_startup_view = 3;
       continue;
     }
     if(Match(buffer, "USER_ROTATE") == 1){

@@ -1898,7 +1898,7 @@ void UpdateShowScene(void){
   if(loadfiles_at_startup==1&&update_load_files == 1){
     LoadFiles();
   }
-  if(update_startup_view == 1){
+  if(update_startup_view > 0){
     cameradata *ca;
 
     ca = GetCamera(startup_view_label);
@@ -1908,7 +1908,7 @@ void UpdateShowScene(void){
     }
     update_rotation_center = 0;
     update_rotation_center_ini = 0;
-    update_startup_view = 0;
+    update_startup_view--;
   }
   if(update_tour_list == 1){
     UpdateTourList();

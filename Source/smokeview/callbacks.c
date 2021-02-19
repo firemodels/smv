@@ -3350,10 +3350,10 @@ void ReshapeCB(int width, int height){
   else{
     CopyCamera(camera_current,camera_save);
   }
-  AdjustY(camera_current);
+  if(current_script_command==NULL)AdjustY(camera_current);
   windowsize_pointer_old = -1;
   UpdateWindowSizeList();
-  update_adjust_y = 2;
+  if(current_script_command==NULL)update_adjust_y = 2;
 }
 
 /* ------------------ ResetGLTime ------------------------ */
