@@ -2536,7 +2536,7 @@ void GetBoxGeomCorners(void){
   box_geom_corners[7][2] = zmax;
 
 }
-  
+
   /* ------------------ GetBoxCorners ------------------------ */
 
 void GetBoxCorners(float xbar_local, float ybar_local, float zbar_local){
@@ -5228,7 +5228,7 @@ char *GetViewPointPtr(char **viewpoint_list, int nviewpoint_list, char *viewpoin
 char *GetCharPtr(char *label){
   char *labelptr, labelcopy[256], *labelcopyptr;
   int lenlabel;
-  
+
 
   if(label==NULL||strlen(label)==0)return NULL;
   strcpy(labelcopy,label);
@@ -6012,11 +6012,11 @@ int ReadSMV(bufferstreamdata *stream){
       blank = strchr(buffer,' ');
       if(blank!=NULL){
         int nvals=0;
-        
+
         sscanf(blank+1,"%i",&nvals);
         if(nvals!=0)nterrain_textures = MAX(nvals,0);
       }
-      
+
 
       if(nterrain_textures>0){
         NewMemory((void **)&terrain_textures, nterrain_textures*sizeof(texturedata));
@@ -14013,7 +14013,7 @@ void WriteIniLocal(FILE *fileout){
     }
   }
   fprintf(fileout, "SHOWDEVICEPLOTS\n");
-  fprintf(fileout, " %i %i %f %f %f %f %f %f\n", 
+  fprintf(fileout, " %i %i %f %f %f %f %f %f\n",
           showdevice_plot, showdevice_labels, device_plot_factor, device_plot_line_width, device_plot_point_size,
           device_xyz_offset[0], device_xyz_offset[1], device_xyz_offset[2]
   );
@@ -14197,7 +14197,7 @@ void WriteIniLocal(FILE *fileout){
       char *label;
 
       label = patchi->label.shortlabel;
-        
+
       GetMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, "V2_BOUNDARY\n");
       fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
@@ -14224,7 +14224,7 @@ void WriteIniLocal(FILE *fileout){
       char *label;
 
       label = propi->label->shortlabel;
-        
+
       GetMinMax(BOUND_PART, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %f %i %f %s\n", set_valmin, valmin, set_valmax, valmax, label);
     }
