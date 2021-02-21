@@ -23,6 +23,8 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN char viewpoint_label_saved[256];
+SVEXTERN int SVDECL(update_saving_viewpoint, 0);
 SVEXTERN float SVDECL(timer_startup, 0.0), SVDECL(timer_render, -1.0);
 SVEXTERN int SVDECL(frames_total, 0 );
 SVEXTERN int SVDECL(open_movie_dialog, 0);
@@ -1056,7 +1058,7 @@ SVEXTERN cameradata camera_list_first, camera_list_last, SVDECL(**camera_list,NU
 SVEXTERN int ncamera_list,i_view_list,SVDECL(init_camera_list, 1);
 SVEXTERN int camera_max_id;
 SVEXTERN int startup,startup_view_ini,selected_view;
-SVEXTERN char startup_view_label[256];
+SVEXTERN char viewpoint_label_startup[256];
 SVEXTERN char SVDECL(*camera_label,NULL), SVDECL(*colorbar_label,NULL);
 
 SVEXTERN int vis_boundary_type[7], SVDECL(update_ini_boundary_type,0);

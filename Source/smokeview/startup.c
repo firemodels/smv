@@ -2181,10 +2181,8 @@ void InitVars(void){
   camera_max_id=2;
   startup=0;
   startup_view_ini=1;
-  strcpy(startup_view_label,"external");
+  strcpy(viewpoint_label_startup,"external");
   selected_view=-999;
-
-
   {
     int iii;
 

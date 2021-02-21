@@ -1835,6 +1835,8 @@ void ResetMenu(int value){
       if(ca != NULL){
         ResetMenu(ca->view_id);
       }
+      update_saving_viewpoint = 2;
+      strcpy(viewpoint_label_saved, view_label);
     }
     break;
   case MENU_STARTUPVIEW:
@@ -9059,7 +9061,7 @@ updatemenu=0;
     }
     else{
       strcat(line, ca->name);
-      if(strcmp(ca->name, startup_view_label)==0){
+      if(strcmp(ca->name, viewpoint_label_startup)==0){
         strcat(line, " (startup view)");
       }
     }
@@ -9096,7 +9098,7 @@ updatemenu=0;
 
     glutAddMenuEntry(menu_label,SAVE_VIEWPOINT);
     if(current_view != NULL){
-      if(strcmp(current_view,startup_view_label)!=0){
+      if(strcmp(current_view, viewpoint_label_startup)!=0){
         strcpy(menu_label, _("Apply"));
         strcat(menu_label, " ");
         strcat(menu_label, current_view);
@@ -9134,7 +9136,7 @@ updatemenu=0;
     }
     else{
       strcat(line,ca->name);
-      if(strcmp(ca->name,startup_view_label)==0){
+      if(strcmp(ca->name, viewpoint_label_startup)==0){
         strcat(line," (startup view)");
       }
     }

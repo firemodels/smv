@@ -1898,10 +1898,14 @@ void UpdateShowScene(void){
     LoadFiles();
   }
   if(update_startup_view>0){
-    SetStartupViewPoint();
+    SetCurrentViewPoint(viewpoint_label_startup);
     update_rotation_center = 0;
     update_rotation_center_ini = 0;
     update_startup_view--;
+  }
+  if(update_saving_viewpoint>0){
+    SetCurrentViewPoint(viewpoint_label_saved);
+    update_saving_viewpoint--;
   }
   if(update_tour_list == 1){
     UpdateTourList();

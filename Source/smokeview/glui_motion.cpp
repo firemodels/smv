@@ -743,17 +743,17 @@ void EnableDisableViews(void){
   }
 }
 
-/*------------------SetStartupViewPoint------------------------ */
+/*------------------SetCurrentViewPoint------------------------ */
 
-extern "C" void SetStartupViewPoint(void){
+extern "C" void SetCurrentViewPoint(char *viewpoint_label){
   int i;
 
-  if(strlen(startup_view_label)==0)return;
+  if(strlen(viewpoint_label)==0)return;
   for(i = 0; i<ncameras_sorted; i++){
     cameradata *ca;
 
     ca = cameras_sorted[i];
-    if(strcmp(ca->name, startup_view_label)==0){
+    if(strcmp(ca->name, viewpoint_label)==0){
       LIST_viewpoints->set_int_val(ca->view_id);
       ViewpointCB(LIST_VIEW);
       break;
@@ -935,7 +935,7 @@ extern "C" void ViewpointCB(int var){
 
       cam_label = GetCameraLabel(startup_view_ini);
       if(cam_label != NULL){
-        strcpy(startup_view_label, cam_label);
+        strcpy(viewpoint_label_startup, cam_label);
       }
     }
     selected_view = startup_view_ini;

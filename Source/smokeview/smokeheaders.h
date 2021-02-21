@@ -9,7 +9,7 @@
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
 
-EXTERNCPP void SetStartupViewPoint(void);
+EXTERNCPP void SetCurrentViewPoint(char *viewpoint_label);
 
 EXTERNCPP int GetGeomDataSize(char *file, int *nvals, float *tmin, float *tmax, int time_frame,
                               int *geom_offsets, int *geom_offset_flag, int *error);

@@ -12713,7 +12713,7 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       front = TrimFront(buffer);
       TrimBack(front);
-      strcpy(startup_view_label, front);
+      strcpy(viewpoint_label_startup, front);
       update_startup_view = 3;
       continue;
     }
@@ -14878,7 +14878,7 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, " %s\n", fds_filein);
   }
   fprintf(fileout, "LABELSTARTUPVIEW\n");
-  fprintf(fileout, " %s\n", startup_view_label);
+  fprintf(fileout, " %s\n", viewpoint_label_startup);
   fprintf(fileout, "RENDERCLIP\n");
   fprintf(fileout, " %i %i %i %i %i\n",
     clip_rendered_scene, render_clip_left, render_clip_right, render_clip_bottom, render_clip_top);
