@@ -1898,8 +1898,6 @@ void UpdateShowScene(void){
     LoadFiles();
   }
   if(update_startup_view>0){
-    cameradata *ca;
-
     SetStartupViewPoint();
     update_rotation_center = 0;
     update_rotation_center_ini = 0;
