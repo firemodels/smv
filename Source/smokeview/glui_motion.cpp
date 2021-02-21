@@ -229,7 +229,7 @@ void MakeMovieBashScript(void){
   fprintf(stream, "#/bin/bash\n");
   fprintf(stream, "NPROCS=%i\n", movie_nprocs);
   fprintf(stream, "QUEUE=%s\n", movie_queues[movie_queue_index]);
-  
+
   fprintf(stream, "FIREMODELS=%s\n", firemodels);
   fprintf(stream, "MAKEMOVIE=$FIREMODELS/smv/Utilities/Scripts/make_movie.sh\n");
   fprintf(stream, "QSMV=$FIREMODELS/smv/Utilities/Scripts/qsmv.sh\n");
@@ -245,7 +245,7 @@ void MakeMovieBashScript(void){
     slicedata *slicei;
     slicemenudata *slicemi;
     char *slicelabel, label[256];
-    
+
     slicemi = slicemenu_sorted[movie_slice_index];
     slicei = slicemi->sliceinfo;
     slicelabel = slicei->label.longlabel;
@@ -741,6 +741,25 @@ void EnableDisableViews(void){
     BUTTON_replace_view->enable();
     BUTTON_delete_view->enable();
   }
+}
+
+/*------------------SetStartupViewPoint------------------------ */
+
+extern "C" void SetStartupViewPoint(void){
+  int i;
+
+  if(strlen(startup_view_label)==0)return;
+  for(i = 0; i<ncameras_sorted; i++){
+    cameradata *ca;
+
+    ca = cameras_sorted[i];
+    if(strcmp(ca->name, startup_view_label)==0){
+      LIST_viewpoints->set_int_val(ca->view_id);
+      ViewpointCB(LIST_VIEW);
+      break;
+    }
+  }
+  glutPostRedisplay();
 }
 
 /* ------------------ ViewpointCB ------------------------ */
@@ -1646,7 +1665,7 @@ extern "C" void UpdateWindowSizeList(void){
     windowsize_pointer=9;
   }
   if(LIST_windowsize!=NULL)LIST_windowsize->set_int_val(windowsize_pointer);
-   windowsize_pointer_old = windowsize_pointer;  
+   windowsize_pointer_old = windowsize_pointer;
 }
 
 /* ------------------ UpdateTranslate ------------------------ */
@@ -1747,7 +1766,6 @@ extern "C" void UpdateRotationIndex(int val){
   UpdateMeshList1(val);
 
   glutPostRedisplay();
-
 }
 
 /* ------------------ UpdateProjectionType ------------------------ */

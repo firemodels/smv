@@ -1897,14 +1897,10 @@ void UpdateShowScene(void){
   if(loadfiles_at_startup==1&&update_load_files == 1){
     LoadFiles();
   }
-  if(update_startup_view > 0){
+  if(update_startup_view>0){
     cameradata *ca;
 
-    ca = GetCamera(startup_view_label);
-    if(ca != NULL){
-      ResetMenu(ca->view_id);
-      startup_view_ini = ca->view_id;
-    }
+    SetStartupViewPoint();
     update_rotation_center = 0;
     update_rotation_center_ini = 0;
     update_startup_view--;

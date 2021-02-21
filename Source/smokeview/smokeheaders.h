@@ -9,6 +9,8 @@
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
 
+EXTERNCPP void SetStartupViewPoint(void);
+
 EXTERNCPP int GetGeomDataSize(char *file, int *nvals, float *tmin, float *tmax, int time_frame,
                               int *geom_offsets, int *geom_offset_flag, int *error);
 
@@ -43,7 +45,7 @@ EXTERNCPP void MergePlot3DHistograms(void);
 
 EXTERNCPP void UpdateColorbarControls(void);
 EXTERNCPP void UpdateColorbarControls2(void);
-  
+
 EXTERNCPP void UpdateColorLabelDigits(void);
 
 EXTERNCPP void IncrementPartPropIndex(void);
