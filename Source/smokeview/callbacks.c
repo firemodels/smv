@@ -3308,6 +3308,7 @@ void SetScreenSize(int *width, int *height){
 /* ------------------ AdjustY ------------------------ */
 
 void AdjustY(cameradata *ca){
+  if(projection_type!=PROJECTION_PERSPECTIVE)return;
   switch(selected_view){
     case 0:
     case -1:
