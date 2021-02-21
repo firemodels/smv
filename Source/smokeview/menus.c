@@ -1814,7 +1814,7 @@ void ResetMenu(int value){
   case SAVE_VIEWPOINT_AS_STARTUP:
     ResetMenu(SAVE_VIEWPOINT);
     ResetMenu(MENU_STARTUPVIEW);
-    update_startup_view = 1;
+    update_startup_view = 3;
     break;
   case MENU_VIEWPOINT_TOPVIEW:
     SetViewZMAXPersp();
@@ -4660,7 +4660,16 @@ void LoadSliceMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
     SetLoadedSliceBounds(&value, 1);
+#ifdef pp_SINGLE_FRAME_TEST
+      {
+        float time_value;
+        int itime_value=10;
+
+        LoadSlicei(SET_SLICECOLOR,value, itime_value, &time_value);
+      }
+#else
     LoadSlicei(SET_SLICECOLOR,value, ALL_FRAMES, NULL);
+#endif
   }
   else{
     switch (value){
@@ -4921,7 +4930,16 @@ FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
       set_slicecolor = SET_SLICECOLOR;
     }
     if(slicei->skipdup== 0){
+#ifdef pp_SINGLE_FRAME_TEST
+      {
+        float time_value;
+        int itime_value=10;
+
+        file_size += LoadSlicei(set_slicecolor, mslicei->islices[i], itime_value, &time_value);
+      }
+#else
       file_size += LoadSlicei(set_slicecolor,mslicei->islices[i],ALL_FRAMES, NULL);
+#endif
       file_count++;
     }
   }

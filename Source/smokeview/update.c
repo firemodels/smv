@@ -145,7 +145,6 @@ void UpdateFrameNumber(int changetime){
           }
           CheckMemory;
         }
-
       }
     }
     for(i=0;i<ngeominfoptrs;i++){
@@ -170,7 +169,7 @@ void UpdateFrameNumber(int changetime){
           if(patchi->geom_timeslist == NULL)continue;
           if(patchi->structured == YES || patchi->boundary == 1 || patchi->geom_times == NULL || patchi->geom_timeslist == NULL)continue;
           if(current_script_command!=NULL && current_script_command->command == SCRIPT_LOADSLICERENDER){
-            patchi->geom_itime = script_itime;
+            patchi->geom_itime = 0; // only one frame loaded at a time when using LOADSLICERNDER
           }
           else{
             patchi->geom_itime = patchi->geom_timeslist[itimes];
@@ -1124,7 +1123,7 @@ void UpdateTimes(void){
     geomdata *geomi;
 
     geomi = geominfoptrs[i];
-    if(geomi->loaded==0||geomi->display==0)continue;
+    if(geomi->loaded==0||geomi->display==0||geomi->ntimes<=1)continue;
     nglobal_times = MAX(nglobal_times,geomi->ntimes);
     global_timemin = MIN(global_timemin, geomi->times[0]);
     global_timemax = MAX(global_timemax, geomi->times[geomi->ntimes-1]);
@@ -1898,7 +1897,7 @@ void UpdateShowScene(void){
   if(loadfiles_at_startup==1&&update_load_files == 1){
     LoadFiles();
   }
-  if(update_startup_view == 1){
+  if(update_startup_view > 0){
     cameradata *ca;
 
     ca = GetCamera(startup_view_label);
@@ -1908,7 +1907,7 @@ void UpdateShowScene(void){
     }
     update_rotation_center = 0;
     update_rotation_center_ini = 0;
-    update_startup_view = 0;
+    update_startup_view--;
   }
   if(update_tour_list == 1){
     UpdateTourList();

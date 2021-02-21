@@ -254,16 +254,11 @@ void GetGlobalPatchBounds(void){
     patchdata *patchi;
     float valmin, valmax;
     boundsdata *boundi;
-    int update_file_bounds;
-
 
     patchi = patchinfo + i;
 
-    update_file_bounds = 0;
-    if(patchi->valmin_fds>patchi->valmax_fds)update_file_bounds = 1;
-    if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER)update_file_bounds = 1;
-
-    if(update_bounds==1){
+    if(patchi->valmin_fds>patchi->valmax_fds||
+       current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
       if(GetFileBounds(patchi->bound_file, &valmin, &valmax)==1){
         patchi->have_bound_file = YES;
       }
@@ -517,16 +512,12 @@ void GetGlobalSliceBounds(void){
     slicedata *slicei;
     float valmin, valmax;
     boundsdata *boundi;
-    int update_file_bounds;
 
     slicei = sliceinfo+i;
     if(slicei->is_fed==1)continue;
+    if(slicei->valmin_fds>slicei->valmax_fds ||
+       current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
 
-    update_file_bounds = 0;
-    if(slicei->valmin_fds>slicei->valmax_fds)update_file_bounds = 1;
-    if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER)update_file_bounds = 1;
-
-    if(update_file_bounds==1){
       if(GetFileBounds(slicei->bound_file, &valmin, &valmax)==1){
         slicei->have_bound_file = YES;
       }
