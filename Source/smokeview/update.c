@@ -1907,6 +1907,10 @@ void UpdateShowScene(void){
     SetCurrentViewPoint(viewpoint_label_saved);
     update_saving_viewpoint--;
   }
+  if(update_viewpoint_script>0){
+    SetCurrentViewPoint(viewpoint_script);
+    update_viewpoint_script--;
+  }
   if(update_tour_list == 1){
     UpdateTourList();
   }

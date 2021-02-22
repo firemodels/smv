@@ -756,10 +756,10 @@ extern "C" void SetCurrentViewPoint(char *viewpoint_label){
     if(strcmp(ca->name, viewpoint_label)==0){
       LIST_viewpoints->set_int_val(ca->view_id);
       ViewpointCB(LIST_VIEW);
+      glutPostRedisplay();
       break;
     }
   }
-  glutPostRedisplay();
 }
 
 /* ------------------ ViewpointCB ------------------------ */

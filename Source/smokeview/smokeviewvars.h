@@ -23,6 +23,8 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(update_viewpoint_script, 0);
+SVEXTERN char viewpoint_script[256];
 SVEXTERN char viewpoint_label_saved[256];
 SVEXTERN int SVDECL(update_saving_viewpoint, 0);
 SVEXTERN float SVDECL(timer_startup, 0.0), SVDECL(timer_render, -1.0);
@@ -136,7 +138,7 @@ SVEXTERN int SVDECL(terrain_nindices, 0);
 SVEXTERN int SVDECL(terrain_nfaces, 0);
 
 
-SVEXTERN int SVDECL(terrain_show_geometry_surface, 1); 
+SVEXTERN int SVDECL(terrain_show_geometry_surface, 1);
 SVEXTERN int SVDECL(terrain_show_geometry_outline, 0);
 SVEXTERN int SVDECL(terrain_show_geometry_points, 0);
 SVEXTERN int SVDECL(terrain_showonly_top, 0);
@@ -353,7 +355,6 @@ SVEXTERN int SVDECL(ngeom_data, 0);
 SVEXTERN int SVDECL(have_geom_slice_menus, 0), SVDECL(geom_slice_loaded,0);
 SVEXTERN FILE SVDECL(*stderr2,NULL);
 SVEXTERN char SVDECL(*script_error1_filename,NULL);
-SVEXTERN int SVDECL(script_viewpoint_found, YES);
 SVEXTERN int SVDECL(render_firsttime, NO);
 SVEXTERN int SVDECL(solid_ht3d, 0);
 SVEXTERN int SVDECL(load_incremental, 0);

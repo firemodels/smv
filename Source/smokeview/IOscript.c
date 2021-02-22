@@ -1769,7 +1769,7 @@ int SliceMatch(scriptdata *scripti, slicedata *slicei){
     // not a valid slice if there is no slicelabel or it does not match ID
     if(slicei->slicelabel==NULL||MatchUpper(slicei->slicelabel, scripti->id)==NOTMATCH)return 0;
 
-    // if QUANTITY is not specified it CANNOT be a velocity slice 
+    // if QUANTITY is not specified it CANNOT be a velocity slice
     if(scripti->quantity==NULL){
       if(
         strcmp(slicei->label.shortlabel, "U_VEL")==0||
@@ -1934,7 +1934,7 @@ void ScriptLoadSLCF(scriptdata *scripti){
 
     slicei = sliceinfo+i;
     if(SliceMatch(scripti, slicei)==0)continue;
-    
+
     LoadSliceMenu(i);
     count++;
     if(slicei->finalize==1)break;
@@ -3083,6 +3083,7 @@ void ScriptRGBtest(scriptdata *scripti){
   rgb_test_delta  = scripti->ival4;
   use_lighting = 0;
 }
+
 /* ------------------ ScriptSetViewpoint ------------------------ */
 
 void ScriptSetViewpoint(scriptdata *scripti){
@@ -3091,19 +3092,12 @@ void ScriptSetViewpoint(scriptdata *scripti){
   int count=0;
 
   viewpoint = scripti->cval;
-  script_viewpoint_found = YES;
+  update_viewpoint_script = 3;
+  strcpy(viewpoint_script, viewpoint);
   PRINTF("script: set viewpoint to %s\n\n",viewpoint);
-  for(ca=camera_list_first.next;ca->next!=NULL;ca=ca->next){
-    if(strcmp(scripti->cval,ca->name)==0){
-      ResetMenu(ca->view_id);
-      count++;
-      break;
-    }
-  }
-  if(count == 0){
+  if(GetCamera(viewpoint) == NULL){
     fprintf(stderr, "*** Error: The viewpoint %s was not found\n", viewpoint);
     if(stderr2!=NULL)fprintf(stderr2, "*** Error: The viewpoint %s was not found\n", viewpoint);
-    script_viewpoint_found = NO;
   }
 }
 
