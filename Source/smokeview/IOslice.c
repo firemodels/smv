@@ -8086,6 +8086,10 @@ void GenerateSliceMenu(int option){
     nslicemenuinfo++;
   }
 
+  if(nslicemenuinfo==0){
+    FREEMEMORY(slicemenuinfo);
+    return;
+  }
   NewMemory((void **)&slicemenu_sorted, nslicemenuinfo*sizeof(slicemenudata));
   for(i = 0; i<nslicemenuinfo; i++){
     slicemenu_sorted[i] = slicemenuinfo+i;

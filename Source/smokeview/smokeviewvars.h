@@ -767,7 +767,7 @@ SVEXTERN int SVDECL(niso_timesteps,0);
 SVEXTERN isotri SVDECL(**iso_trans,NULL),SVDECL(**iso_opaques,NULL);
 SVEXTERN int SVDECL(niso_trans,0),SVDECL(niso_opaques,0);
 SVEXTERN int SVDECL(sort_iso_triangles,1);
-SVEXTERN int SVDECL(object_outlines,0);
+SVEXTERN int SVDECL(object_outlines,0), SVDECL(object_box, 0), SVDECL(have_object_box, 0);
 SVEXTERN int SVDECL(usemenu,1),SVDECL(show_evac_slices,0);
 SVEXTERN float direction_color[4], SVDECL(*direction_color_ptr,NULL);
 SVEXTERN int SVDECL(constant_evac_coloring,1),SVDECL(data_evac_coloring,1),SVDECL(show_evac_colorbar,0);
