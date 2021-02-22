@@ -3088,9 +3088,7 @@ void ScriptRGBtest(scriptdata *scripti){
 
 void ScriptSetViewpoint(scriptdata *scripti){
   char *viewpoint;
-  cameradata *ca;
-  int count=0;
-
+  
   viewpoint = scripti->cval;
   update_viewpoint_script = 3;
   strcpy(viewpoint_script, viewpoint);
