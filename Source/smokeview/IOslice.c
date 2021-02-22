@@ -92,7 +92,7 @@ slicedata *gslice;
            else{                                   \
              DU = U->qval256[U->iqsliceframe[(n)]];\
            }                                       \
-         }                                         
+         }
 
 #define ADJUST_VEC_DX(dx)                       \
          if(vec_uniform_length==1){                              \
@@ -945,6 +945,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   int nxy;
   int nxdata, nydata;
   int ibar, jbar, kbar;
+  slicedata *slicei=NULL;
 
 #define FEDCO(CO) ( (2.764/100000.0)*pow(1000000.0*CLAMP(CO,0.0,0.1),1.036)/60.0 )
 #define FEDO2(O2)  ( exp( -(8.13-0.54*(20.9-100.0*CLAMP(O2,0.0,0.2))) )/60.0 )
@@ -954,7 +955,6 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   ASSERT(fedinfo!=NULL);
   ASSERT(file_index>=0);
   if(file_type==FED_SLICE){
-    slicedata *slicei;
 
     ASSERT(file_index<nsliceinfo);
     slicei = sliceinfo + file_index;
@@ -1017,6 +1017,20 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   // regenerate if either the FED slice or isosurface file does not exist or is older than
   // either the CO, CO2 or O2 slice files
 
+  if(file_type==FED_SLICE){
+    FILE *stream;
+
+    stream = fopen(slicei->bound_file, "r");
+    if(stream!=NULL){
+      slicei->have_bound_file = 1;
+      fclose(stream);
+      UpdateGlobalFEDSliceBounds();
+    }
+    else{
+      slicei->have_bound_file = 0;
+      regenerate_fed = 1;
+    }
+  }
   if(regenerate_fed==1||
      (file_type==FED_SLICE&&(IsFileNewer(fed_slice->file,o2->file)!=1||
        IsFileNewer(fed_slice->file,co2->file)!=1||
@@ -1081,7 +1095,6 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
        ReadFed(file_index,time_frame, time_value, UNLOAD, file_type, errorcode);
        return;
     }
-
     fed_slice->is1=co->is1;
     fed_slice->is2=co->is2;
     fed_slice->js1=co->js1;
@@ -1124,6 +1137,9 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     for(i=0;i<frame_size;i++){
       fed_frame[i]=0.0;
     }
+    float fed_valmin = 1.0, fed_valmax = 0.0;
+    fed_valmin = 0.0;
+    fed_valmax = 0.0;
     for(i=1;i<fed_slice->ntimes;i++){
       int jj;
       float dt;
@@ -1154,9 +1170,25 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
         fed_o2_val = (val1+val2)*dt/2.0;
 
         fed_frame[jj] = fed_framem1[jj] + fed_co_val + fed_o2_val;
+        fed_valmin = MIN(fed_valmin, fed_frame[jj]);
+        fed_valmax = MAX(fed_valmax, fed_frame[jj]);
       }
     }
     FREEMEMORY(iblank);
+    if(file_type==FED_SLICE){
+      FILE *stream=NULL;
+
+      stream = fopen(slicei->bound_file, "w");
+      if(stream!=NULL){
+        fprintf(stream, "0.0 %f %f\n", fed_valmin, fed_valmax);
+        fclose(stream);
+        slicei->have_bound_file=1;
+        UpdateGlobalFEDSliceBounds();
+      }
+      else{
+        slicei->have_bound_file=0;
+      }
+    }
     OutSlicefile(fed_slice);
     if(fed_slice->volslice==1){
       float *xplt, *yplt, *zplt;
@@ -1665,7 +1697,7 @@ void ComputeLoadedSliceHist(char *label, histogramdata **histptr){
   if(*histptr!=NULL)FreeHistogram(*histptr);
   NewMemory((void **)&hist, sizeof(histogramdata));
   *histptr = hist;
-  
+
   InitHistogram(hist, NHIST_BUCKETS, NULL, NULL);
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
@@ -2745,11 +2777,13 @@ void UpdateFedinfo(void){
     sd->mesh_type = co2->mesh_type;
     sd->histograms = NULL;
     sd->nhistograms = 0;
+    sd->have_bound_file = 0;
 
     strcpy(filename_base, fedi->co->file);
     ext = strrchr(filename_base, '.');
     *ext = 0;
     strcat(filename_base, "_fed.sf");
+
     filename = GetFileName(smokeview_scratchdir, filename_base, NOT_FORCE_IN_DIR);
 
     NewMemory((void **)&fedi->fed_slice->reg_file, strlen(filename) + 1);
@@ -2757,6 +2791,10 @@ void UpdateFedinfo(void){
 
     NewMemory((void **)&sd->reg_file, strlen(filename)+1);
     strcpy(sd->reg_file, filename);
+
+    NewMemory((void **)&sd->bound_file, strlen(filename)+4+1);
+    strcpy(sd->bound_file, filename);
+    strcat(sd->bound_file, ".bnd");
 
     FREEMEMORY(filename);
     sd->file = sd->reg_file;

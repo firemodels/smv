@@ -99,6 +99,7 @@ EXTERNCPP void GetGlobalPatchBounds(void);
 EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded_max);
 EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(void);
+EXTERNCPP void UpdateGlobalFEDSliceBounds(void);
 
 EXTERNCPP void SetPercentileDrawOff(void);
 EXTERNCPP void ClosePartFiles(void);
