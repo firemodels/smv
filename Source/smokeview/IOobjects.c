@@ -1749,6 +1749,84 @@ void DrawCuboid(float *origin, float verts[8][3], unsigned char *rgbcolor, int d
   if(origin!=NULL)glPopMatrix();
 }
 
+/* ----------------------- DrawBox ----------------------------- */
+
+void DrawBox2(float *origin, float *dxyz, float *color, int draw_outline){
+  if(origin!=NULL){
+    glPushMatrix();
+    glTranslatef(origin[0], origin[1], origin[2]);
+  }
+  if(draw_outline==0){
+    glBegin(GL_QUADS);
+    if(color!=NULL)glColor3fv(color);
+
+    //
+    //  0   dx
+    // bottom face
+    glNormal3f(0.0, 0.0, -1.0);
+    glVertex3f(0.0,     0.0,     0.0);
+    glVertex3f(0.0, dxyz[1], 0.0);
+    glVertex3f(dxyz[0], dxyz[1], 0.0);
+    glVertex3f(dxyz[0], 0.0,     0.0);
+
+    // top face
+    glNormal3f(0.0, 0.0, 1.0);
+    glVertex3f(0.0, 0.0, dxyz[2]);
+    glVertex3f(dxyz[0], 0.0, dxyz[2]);
+    glVertex3f(dxyz[0], dxyz[1], dxyz[2]);
+    glVertex3f(0.0, dxyz[1], dxyz[2]);
+
+    // front face
+    glNormal3f(0.0, -1.0, 0.0);
+    glVertex3f(0.0, 0.0, 0.0);
+    glVertex3f(dxyz[0], 0.0, 0.0);
+    glVertex3f(dxyz[0], 0.0, dxyz[2]);
+    glVertex3f(0.0, 0.0, dxyz[2]);
+
+    // back face
+    glNormal3f(0.0, 1.0, 0.0);
+    glVertex3f(0.0, dxyz[1], 0.0);
+    glVertex3f(0.0, dxyz[1], dxyz[2]);
+    glVertex3f(dxyz[0], dxyz[1], dxyz[2]);
+    glVertex3f(dxyz[0], dxyz[1], 0.0);
+
+    // left face
+    glNormal3f(-1.0, 0.0, 0.0);
+    glVertex3f(0.0, 0.0, 0.0);
+    glVertex3f(0.0, 0.0, dxyz[2]);
+    glVertex3f(0.0, dxyz[1], dxyz[2]);
+    glVertex3f(0.0, dxyz[1], 0.0);
+
+    // right face
+    glNormal3f(1.0, 0.0, 0.0);
+    glVertex3f(dxyz[0], 0.0, 0.0);
+    glVertex3f(dxyz[0], dxyz[1], 0.0);
+    glVertex3f(dxyz[0], dxyz[1], dxyz[2]);
+    glVertex3f(dxyz[0], 0.0, dxyz[2]);
+    glEnd();
+  }
+  else{
+    glBegin(GL_LINES);
+    if(color!=NULL)glColor3fv(color);
+    glVertex3f(0.0, 0.0,     0.0);     glVertex3f(dxyz[0], 0.0,     0.0);
+    glVertex3f(0.0, dxyz[1], 0.0);     glVertex3f(dxyz[0], dxyz[1], 0.0);
+    glVertex3f(0.0, dxyz[1], dxyz[2]); glVertex3f(dxyz[0], dxyz[1], dxyz[2]);
+    glVertex3f(0.0, 0.0,     dxyz[2]); glVertex3f(dxyz[0], 0.0,     dxyz[2]);
+
+    glVertex3f(0.0,     0.0, 0.0);     glVertex3f(0.0,     dxyz[1], 0.0);
+    glVertex3f(dxyz[0], 0.0, 0.0);     glVertex3f(dxyz[0], dxyz[1], 0.0);
+    glVertex3f(dxyz[0], 0.0, dxyz[2]); glVertex3f(dxyz[0], dxyz[1], dxyz[2]);
+    glVertex3f(0.0,     0.0, dxyz[2]); glVertex3f(0.0,     dxyz[1], dxyz[2]);
+
+    glVertex3f(0.0,     0.0,     0.0); glVertex3f(0.0,     0.0,     dxyz[2]);
+    glVertex3f(0.0,     dxyz[1], 0.0); glVertex3f(0.0,     dxyz[1], dxyz[2]);
+    glVertex3f(dxyz[0], dxyz[1], 0.0); glVertex3f(dxyz[0], dxyz[1], dxyz[2]);
+    glVertex3f(dxyz[0], 0.0,     0.0); glVertex3f(dxyz[0], 0.0,     dxyz[2]);
+    glEnd();
+  }
+  if(origin!=NULL)glPopMatrix();
+}
+
 /* ----------------------- DrawCubeC ----------------------------- */
 
 void DrawCubeC(float size, unsigned char *rgbcolor){
@@ -3479,6 +3557,37 @@ void DrawDevices(int mode){
 
   if(select_device == 0 || show_mode != SELECTOBJECT){
     int i;
+
+    if(object_box==1){
+      if(object_outlines==0){
+        ENABLE_LIGHTING;
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+        glEnable(GL_COLOR_MATERIAL);
+      }
+
+      glPushMatrix();
+      glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+      glTranslatef(-xbar0, -ybar0, -zbar0);
+      for(i = 0; i<ndeviceinfo; i++){
+        devicedata *devicei;
+        float *xyz1, *xyz2, dxyz[3];
+
+        devicei = deviceinfo+i;
+        if(devicei->object->visible==0)continue;
+        xyz1 = devicei->xyz1;
+        xyz2 = devicei->xyz2;
+        dxyz[0] = xyz2[0]-xyz1[0];
+        dxyz[1] = xyz2[1]-xyz1[1];
+        dxyz[2] = xyz2[2]-xyz1[2];
+        DrawBox2(xyz1, dxyz, foregroundcolor, object_outlines);
+      }
+      glPopMatrix();
+      if(object_outlines==0){
+        DISABLE_LIGHTING;
+      }
+    }
 
     for(i = 0;i < ndeviceinfo;i++){
       devicedata *devicei;
