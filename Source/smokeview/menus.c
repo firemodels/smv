@@ -259,6 +259,7 @@ float     part_load_time;
 #define OBJECT_ORIENTATION          -5
 #define OBJECT_MISSING              -6
 #define OBJECT_SHOWBEAM             -7
+#define OBJECT_BOX                 -14
 //#define OBJECT_PLOT_SHOW_ALL        -8  put in smokeviewdefs.h
 //#define OBJECT_PLOT_SHOW_SELECTED  -11  put in smokeviewdefs.h
 #define OBJECT_VALUES               -9
@@ -6179,12 +6180,15 @@ void ShowObjectsMenu(int value){
   }
   else if(value==OBJECT_VALUES){
     update_times=1;
-    showdevice_val = 1 - showdevice_val;    
+    showdevice_val = 1 - showdevice_val;
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     UpdateDeviceShow();
   }
   else if(value==OBJECT_OUTLINE){
     object_outlines=1-object_outlines;
+  }
+  else if(value==OBJECT_BOX){
+    object_box = 1-object_box;
   }
   else if(value==OBJECT_ORIENTATION){
     show_device_orientation=1-show_device_orientation;
@@ -6243,7 +6247,7 @@ void TerrainGeomShowMenu(int value){
   updatemenu = 1;
   GLUTPOSTREDISPLAY;
 }
-  
+
   /* ------------------ ZoneShowMenu ------------------------ */
 
 void ZoneShowMenu(int value){
@@ -7588,6 +7592,10 @@ updatemenu=0;
     }
     if(object_outlines==0)glutAddMenuEntry(_("Outline"),OBJECT_OUTLINE);
     if(object_outlines==1)glutAddMenuEntry(_("*Outline"),OBJECT_OUTLINE);
+    if(have_object_box==1){
+      if(object_box==0)glutAddMenuEntry(_("Box"), OBJECT_BOX);
+      if(object_box==1)glutAddMenuEntry(_("*Box"), OBJECT_BOX);
+    }
     glutAddMenuEntry(_("Show all"),OBJECT_SHOWALL);
     glutAddMenuEntry(_("Hide all"),OBJECT_HIDEALL);
     if(show_device_orientation==1){
@@ -7650,7 +7658,7 @@ updatemenu=0;
     }
 
   }
-  
+
   /* --------------------------------geometry menu -------------------------- */
 
   CREATEMENU(geometrymenu,GeometryMenu);
@@ -8489,7 +8497,7 @@ updatemenu=0;
     }
     glutAddMenuEntry(label, i);
   }
-  
+
   /* -------------------------------- colorbarmenu -------------------------- */
 
   CREATEMENU(colorbarshademenu,ColorbarMenu);

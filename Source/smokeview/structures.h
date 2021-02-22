@@ -949,6 +949,7 @@ typedef struct _device {
   char *texturefile;
   int ntextures;
   float xyz[3], xyz1[3], xyz2[3], eyedist;
+  int have_xyz, have_xyz1, have_xyz2;
   float val;
   float xyzplot[3];
   float xyznorm[3];

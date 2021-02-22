@@ -1437,14 +1437,17 @@ void InitDevice(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float
   float norm;
   int i;
 
-  devicei->selected = 0;
-  devicei->nvals = 0;
-  devicei->filetype = -1;
+  devicei->selected    = 0;
+  devicei->nvals       = 0;
+  devicei->filetype    = -1;
   devicei->in_zone_csv = 0;
   devicei->in_devc_csv = 0;
-  devicei->labelptr = devicei->label;
-  devicei->color = NULL;
-  devicei->line_width = 1.0;
+  devicei->labelptr    = devicei->label;
+  devicei->color       = NULL;
+  devicei->line_width  = 1.0;
+  devicei->have_xyz    = 0;
+  devicei->have_xyz1   = 0;
+  devicei->have_xyz2   = 0;
   if(labelptr != NULL){
     strcpy(devicei->label, labelptr);
   }
@@ -1470,20 +1473,24 @@ void InitDevice(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float
     devicei->plane_surface = NULL;
   }
   if(xyz != NULL){
-    devicei->xyz[0] = xyz[0];
-    devicei->xyz[1] = xyz[1];
-    devicei->xyz[2] = xyz[2];
+    devicei->xyz[0]   = xyz[0];
+    devicei->xyz[1]   = xyz[1];
+    devicei->xyz[2]   = xyz[2];
+    devicei->have_xyz = 1;
   }
   if(xyz1 != NULL){
-    devicei->xyz1[0] = xyz1[0];
-    devicei->xyz1[1] = xyz1[1];
-    devicei->xyz1[2] = xyz1[2];
+    devicei->xyz1[0]   = xyz1[0];
+    devicei->xyz1[1]   = xyz1[1];
+    devicei->xyz1[2]   = xyz1[2];
+    devicei->have_xyz1 = 1;
   }
   if(xyz2 != NULL){
-    devicei->xyz2[0] = xyz2[0];
-    devicei->xyz2[1] = xyz2[1];
-    devicei->xyz2[2] = xyz2[2];
+    devicei->xyz2[0]   = xyz2[0];
+    devicei->xyz2[1]   = xyz2[1];
+    devicei->xyz2[2]   = xyz2[2];
+    devicei->have_xyz2 = 1;
   }
+  if(xyz1!=NULL&&xyz2!=NULL)have_object_box = 1;
   if(is_beam == 1)have_beam = 1;
   devicei->is_beam = is_beam;
   norm = sqrt(xyzn[0] * xyzn[0] + xyzn[1] * xyzn[1] + xyzn[2] * xyzn[2]);
@@ -1497,23 +1504,23 @@ void InitDevice(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float
     devicei->xyznorm[1] = 0.0;
     devicei->xyznorm[2] = 1.0;
   }
-  devicei->times = NULL;
-  devicei->vals = NULL;
+  devicei->times          = NULL;
+  devicei->vals           = NULL;
 #ifdef pp_DEVICE_AVG
-  devicei->vals_orig = NULL;
-  devicei->update_avg = 0;
+  devicei->vals_orig      = NULL;
+  devicei->update_avg     = 0;
 #endif
   devicei->nstate_changes = 0;
   devicei->istate_changes = 0;
-  devicei->act_times = NULL;
-  devicei->state_values = NULL;
-  devicei->showstatelist = NULL;
-  devicei->act_time = -1.0;
-  devicei->device_mesh = NULL;
-  devicei->state0 = state0;
-  devicei->nparams = nparams;
-  devicei->params = params;
-  devicei->ival = 0;
+  devicei->act_times      = NULL;
+  devicei->state_values   = NULL;
+  devicei->showstatelist  = NULL;
+  devicei->act_time       = -1.0;
+  devicei->device_mesh    = NULL;
+  devicei->state0         = state0;
+  devicei->nparams        = nparams;
+  devicei->params         = params;
+  devicei->ival           = 0;
   if(nparams > 0 && params != NULL){
     for(i = 0; i < nparams; i++){
       devicei->params[i] = params[i];
@@ -13358,7 +13365,7 @@ int ReadIni2(char *inifile, int localfile){
         int ndevices_ini;
 
         fgets(buffer, 255, stream);
-        sscanf(buffer, "%i", &ndevices_ini);
+        sscanf(buffer, "%i %i %i", &ndevices_ini, &object_outlines, &object_box);
 
         for(i = 0; i<nobject_defs; i++){
           obj_typei = object_defs[i];
@@ -14003,7 +14010,7 @@ void WriteIniLocal(FILE *fileout){
     }
   }
   fprintf(fileout, "SHOWDEVICES\n");
-  fprintf(fileout, " %i\n", ndevice_vis);
+  fprintf(fileout, " %i %i %i\n", ndevice_vis, object_outlines, object_box);
   for(i = 0; i < nobject_defs; i++){
     obj_typei = object_defs[i];
     if(obj_typei->used == 1 && obj_typei->visible == 1){
