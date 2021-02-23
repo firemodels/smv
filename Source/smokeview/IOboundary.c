@@ -2928,6 +2928,20 @@ FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
   patchdata *patchi;
   FILE_SIZE return_filesize = 0;
 
+  if(load_flag==LOAD&&stept==0){
+    int timestate;
+
+    timestate = GetPlotState(DYNAMIC_PLOTS);
+    if(plotstate==DYNAMIC_PLOTS){
+      update_stept = 1;
+      if(global_times!=NULL){
+        time_paused = global_times[itimes];
+      }
+      else{
+        time_paused = 0.0;
+      }
+    }
+  }
   update_fileload = 1;
   patchi = patchinfo + ifile;
   if(patchi->structured == NO){

@@ -1852,6 +1852,10 @@ void UpdateShowScene(void){
       ShowGluiMotion(DIALOG_MOVIE);
     }
   }
+  if(update_stept==1){
+    update_stept = 0;
+    SetTimeVal(time_paused);
+  }
   if(update_movie_parms==1){
     update_movie_parms = 0;
     UpdateMovieParms();

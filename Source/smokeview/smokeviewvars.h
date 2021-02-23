@@ -23,6 +23,8 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN float SVDECL(time_paused,0.0);
+SVEXTERN int SVDECL(update_stept, -1);
 SVEXTERN int SVDECL(update_viewpoint_script, 0);
 SVEXTERN char viewpoint_script[256];
 SVEXTERN char viewpoint_label_saved[256];
