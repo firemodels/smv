@@ -2117,6 +2117,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   FILE_SIZE file_size_local;
   float load_time_local;
 
+  SetTimeState();
   START_TIMER(load_time_local);
   ASSERT(ifile_arg>=0&&ifile_arg<npartinfo);
   parti=partinfo+ifile_arg;

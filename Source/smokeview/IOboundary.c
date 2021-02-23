@@ -2922,13 +2922,10 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   return return_filesize;
 }
 
-/* ------------------ ReadBoundary ------------------------ */
+/* ------------------ SetTimeState ------------------------ */
 
-FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
-  patchdata *patchi;
-  FILE_SIZE return_filesize = 0;
-
-  if(load_flag==LOAD&&stept==0){
+void SetTimeState(void){
+  if(stept==0){
     int timestate;
 
     timestate = GetPlotState(DYNAMIC_PLOTS);
@@ -2942,6 +2939,16 @@ FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
       }
     }
   }
+}
+
+/* ------------------ ReadBoundary ------------------------ */
+
+FILE_SIZE ReadBoundary(int ifile, int load_flag, int *errorcode){
+  patchdata *patchi;
+  FILE_SIZE return_filesize = 0;
+
+
+  SetTimeState();
   update_fileload = 1;
   patchi = patchinfo + ifile;
   if(patchi->structured == NO){

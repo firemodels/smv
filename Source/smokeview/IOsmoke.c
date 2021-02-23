@@ -6173,6 +6173,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   char compstring_local[128];
   int fortran_skip=0;
 
+  SetTimeState();
   update_fileload = 1;
 #ifndef pp_FSEEK
   if(flag_arg==RELOAD)flag_arg = LOAD;

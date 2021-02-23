@@ -4486,6 +4486,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   slicedata *sd;
   int ntimes_slice_old;
 
+  SetTimeState();
   vslicedata *vd;
   meshdata *meshi;
 

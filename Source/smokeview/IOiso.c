@@ -960,6 +960,7 @@ FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, 
   isodata *isoi;
   FILE_SIZE return_filesize=0;
 
+  SetTimeState();
   update_fileload = 1;
   if(ifile>=0&&ifile<nisoinfo){
 
