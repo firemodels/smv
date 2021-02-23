@@ -7613,8 +7613,8 @@ updatemenu=0;
     if(object_outlines==0)glutAddMenuEntry(_("Outline"),OBJECT_OUTLINE);
     if(object_outlines==1)glutAddMenuEntry(_("*Outline"),OBJECT_OUTLINE);
     if(have_object_box==1){
-      if(object_box==0)glutAddMenuEntry(_("Box"), OBJECT_BOX);
-      if(object_box==1)glutAddMenuEntry(_("*Box"), OBJECT_BOX);
+      if(object_box==0)glutAddMenuEntry(_("Show XB"), OBJECT_BOX);
+      if(object_box==1)glutAddMenuEntry(_("*Show XB"), OBJECT_BOX);
     }
     glutAddMenuEntry(_("Show all"),OBJECT_SHOWALL);
     glutAddMenuEntry(_("Hide all"),OBJECT_HIDEALL);

@@ -3581,7 +3581,7 @@ void DrawDevices(int mode){
         dxyz[0] = xyz2[0]-xyz1[0];
         dxyz[1] = xyz2[1]-xyz1[1];
         dxyz[2] = xyz2[2]-xyz1[2];
-        DrawBox2(xyz1, dxyz, foregroundcolor, object_outlines);
+        DrawBox2(xyz1, dxyz, foregroundcolor, OUTLINE_ONLY);
       }
       glPopMatrix();
       if(object_outlines==0){
