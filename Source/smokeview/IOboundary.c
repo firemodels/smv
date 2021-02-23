@@ -2929,7 +2929,7 @@ void SetTimeState(void){
     int timestate;
 
     timestate = GetPlotState(DYNAMIC_PLOTS);
-    if(plotstate==DYNAMIC_PLOTS){
+    if(timestate==DYNAMIC_PLOTS){
       update_stept = 1;
       if(global_times!=NULL){
         time_paused = global_times[itimes];
