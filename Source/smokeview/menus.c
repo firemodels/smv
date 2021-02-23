@@ -3096,7 +3096,7 @@ void LoadVolsmoke3DMenu(int value){
     ShowBoundsDialog(DLG_3DSMOKE);
   }
   updatemenu = 1;
-  IdleCB();
+  ForceIdle();
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }

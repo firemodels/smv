@@ -2420,7 +2420,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   UpdateUnitDefs();
   UpdateChopColors();
   PrintMemoryInfo;
-  IdleCB();
+  ForceIdle();
 
   STOP_TIMER(total_time);
 
@@ -2704,7 +2704,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
       ResizeMemory((void **)&geom_offsets, geom_offset_flag*sizeof(int));
       if(patchi!=NULL)patchi->geom_offsets = geom_offsets;
       if(slicei!=NULL)slicei->geom_offsets = geom_offsets;
-      
+
     }
     else if(geom_offset_flag==0){
       FREEMEMORY(geom_offsets);
@@ -2911,9 +2911,9 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     }
     UpdateUnitDefs();
     UpdateTimes();
-    force_redisplay = 1;
     UpdateFrameNumber(1);
   }
+  force_redisplay = 1;
   updatemenu = 1;
   STOP_TIMER(total_time);
   if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){

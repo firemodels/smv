@@ -1361,8 +1361,7 @@ extern "C" void Smoke3dCB(int var){
     break;
   case GLOBAL_FIRE_CUTOFF:
     glutPostRedisplay();
-    force_redisplay=1;
-    IdleCB();
+    ForceIdle();
     UpdateSmokeColormap(smoke_render_option);
     break;
   case UPDATE_SMOKEFIRE_COLORS2:

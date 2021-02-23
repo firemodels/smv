@@ -1212,7 +1212,7 @@ void ReadZone(int ifile, int flag, int *errorcode){
     PRINTF("computing vent bounds\n");
     GetZoneVentBounds();
   }
-  IdleCB();
+  ForceIdle();
   CheckMemory;
 
 }

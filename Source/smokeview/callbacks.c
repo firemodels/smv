@@ -3275,6 +3275,13 @@ void IdleCB(void){
   }
 }
 
+/* ------------------ ForceIdle ------------------------ */
+
+void ForceIdle(void){
+  force_redisplay = 1;
+  IdleCB();
+}
+
 /* ------------------ SetScreenSize ------------------------ */
 
 void SetScreenSize(int *width, int *height){

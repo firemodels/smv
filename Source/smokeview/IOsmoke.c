@@ -5922,7 +5922,7 @@ void SmokeWrapup(void){
   smoke_render_option = RENDER_SLICE;
   update_fire_alpha = 1;
   Smoke3dCB(SMOKE_OPTIONS);
-  IdleCB();
+  ForceIdle();
 }
 
 #define READSMOKE3D_CONTINUE_ON 0

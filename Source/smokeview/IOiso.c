@@ -160,7 +160,7 @@ void ReadIsoGeomWrapup(int flag){
 #endif
   UpdateTimes();
   GetFaceInfo();
-  IdleCB();
+  ForceIdle();
 }
 
 /* ------------------ UnloadIsoTrans ------------------------ */
@@ -238,8 +238,7 @@ void UnloadIso(meshdata *meshi){
 
   UpdateTimes();
   updatemenu = 1;
-  IdleCB();
-
+  ForceIdle();
   return;
 }
 
@@ -946,7 +945,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
 
   UpdateTimes();
   PrintMemoryInfo;
-  IdleCB();
+  ForceIdle();
 
   STOP_TIMER(total_time);
 

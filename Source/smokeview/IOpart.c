@@ -2104,7 +2104,7 @@ void FinalizePartLoad(partdata *parti){
   UpdateTimes();
   UpdatePart5Extremes();
   updatemenu = 1;
-  IdleCB();
+  ForceIdle();
   glutPostRedisplay();
 }
 

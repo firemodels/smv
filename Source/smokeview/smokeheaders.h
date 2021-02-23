@@ -216,6 +216,7 @@ EXTERNCPP void ImmersedBoundCB(int var);
 EXTERNCPP void UpdateImmersedControls(void);
 EXTERNCPP void InitScriptErrorFiles(void);
 EXTERNCPP void UpdateRenderListSkip(void);
+EXTERNCPP void ForceIdle(void);
 EXTERNCPP void UpdateFrameNumber(int changetime);
 EXTERNCPP void UpdateVentOffset(void);
 #ifdef pp_LOAD_INCREMENTAL

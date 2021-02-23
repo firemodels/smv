@@ -1474,7 +1474,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
   PushVSliceLoadstack(ivslice);
 
   PrintMemoryInfo;
-  if(finalize==1)IdleCB();
+  if(finalize==1)ForceIdle();
   return return_filesize;
 }
 
@@ -4950,7 +4950,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     }
     CheckMemory;
 #endif
-    IdleCB();
+    ForceIdle();
   }
 
   if(cache_slice_data == 0){
