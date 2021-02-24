@@ -3759,7 +3759,11 @@ void DoNonStereo(void){
     IdleDisplay();
 
     stop_rendering = 1;
+#ifdef pp_SCRIPT_RENDER_FIX
+    if(current_script_command==NULL&&plotstate==DYNAMIC_PLOTS && nglobal_times>0){
+#else
     if(plotstate==DYNAMIC_PLOTS && nglobal_times>0){
+#endif
       if(itimes>=0&&itimes<nglobal_times&&
         ((render_frame[itimes]==0&&stereotype==STEREO_NONE)||(render_frame[itimes]<2&&stereotype!=STEREO_NONE))
         ){
