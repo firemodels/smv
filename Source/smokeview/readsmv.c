@@ -2474,7 +2474,7 @@ void GetBoxGeomCorners(void){
   geomlistdata *geomlisti;
 
   have_box_geom_corners = 0;
-  if(geominfo==NULL||geominfo->geomlistinfo==NULL||auto_terrain==0||ngeominfo==0)return;
+  if(geominfo==NULL||geominfo->geomlistinfo==NULL||geominfo==0)return;
 
   geomi = geominfo;
   geomlisti = geomi->geomlistinfo-1;

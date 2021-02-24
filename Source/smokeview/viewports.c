@@ -55,7 +55,7 @@ int GetStringWidth(char *string){
 
 /* ------------------ GetColorbarLabelWidth ------------------------ */
 
-void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local, 
+void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
                            int *slice_label_width, int *boundary_label_width, int *part_label_width, int *plot3d_label_width,
                            int *zone_label_width){
   *slice_label_width    = 0;
@@ -235,7 +235,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
 /* ------------------------ MaxColorLabelWidth ------------------------- */
 
   int MaxColorbarLabelWidth(int nextra){
-    int i, max_width;    
+    int i, max_width;
     char sample_label[32];
     int show_slice_colorbar_local, showcfast_local, slice_label_width, boundary_label_width, part_label_width, plot3d_label_width, zone_label_width;
 
@@ -1971,7 +1971,7 @@ float DistPointBox(float *point, float corners[8][3], float *maxdist){
 
   //         6------------7
   //        /|           /|
-  //      /  |         /  | 
+  //      /  |         /  |
   //    /    |       /    |
   //   4------------5     |
   //   |     |      |     |
@@ -2046,8 +2046,8 @@ float DistPointBox(float *point, float corners[8][3], float *maxdist){
   }
 
   // add a 'safety' factor'
-  dist     -= delta;
-  *maxdist += delta;
+  //dist     -= delta;
+  //*maxdist += delta;
 
   return dist;
 }
@@ -2153,9 +2153,9 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
 
     eye = camera_current->eye;
     GetMinMaxDepth(eye, &min_depth, &max_depth);
-    fnear = MAX(min_depth-1.0, 0.00001);
-    ffar  = MAX(    max_depth+1.0, farclip);
-    ffar = max_depth+1.0;
+    fnear = MAX(min_depth-0.1, 0.00001);
+    ffar  = MAX(    max_depth+0.1, farclip);
+  //  ffar = max_depth+1.0;
   }
 
   aperture_temp = Zoom2Aperture(zoom);
