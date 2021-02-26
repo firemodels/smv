@@ -129,6 +129,26 @@ typedef struct _geomdiagdata {
   geomdata *geom;
 } geomdiagdata;
 
+
+#ifdef pp_BINGEOM
+
+typedef struct _bgeomdata {
+  char *file;
+  int n_verts, n_faces, n_surf_ids;
+  float *verts;
+  int *faces, *surfs;
+} bgeomdata;
+
+/* --------------------------  bingeomdata ------------------------------------ */
+
+typedef struct _bingeomdata {
+  int *surf_indexes, nsurf_ids;
+  char **surf_ids;
+  bgeomdata geom_input, geom_fds;
+} bingeomdata;
+#endif
+
+
 /* --------------------------  screendata ------------------------------------ */
 
 typedef struct _screendata {

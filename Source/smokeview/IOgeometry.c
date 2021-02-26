@@ -2181,6 +2181,79 @@ void ReadAllGeom(void){
   }
 }
 
+#ifdef pp_BINGEOM
+/* ------------------ InitBinGeom ------------------------ */
+
+void InitBingeom(bingeomdata *bingeomi){
+  bingeomi->geom_fds.file = NULL;
+  bingeomi->geom_input.file = NULL;
+  bingeomi->nsurf_ids = 0;
+  bingeomi->surf_ids = NULL;
+  bingeomi->surf_indexes = NULL;
+}
+
+/* ------------------ InitBinGeom ------------------------ */
+
+void SetupBingeom(void){
+  int i;
+
+  for(i=0;i<nbingeominfo;i++){
+    bingeomdata *bingeomi;
+    int j;
+
+    bingeomi = bingeominfo + i;
+    for(j=0;j<bingeominfo->nsurf_ids;j++){
+      int surface_index;
+
+      surface_index = GetSurfaceIndex(bingeomi->surf_ids[j]);
+      bingeomi->surf_indexes[j] = surface_index;
+    }
+  }
+}
+
+/* ------------------ ReadBGeom ------------------------ */
+
+ReadBingeom(char *file, bgeomdata *bgeomi){
+  FILE *stream = NULL;
+  int one, n_verts, n_faces, n_surf_ids;
+  int sizes[4];
+  double *dverts;
+  float *verts;
+  int *faces, *surfs;
+  int returncode;
+  int i;
+
+  stream = fopen(file, "rb");
+  FORTREAD(&one, 1, stream);
+  FORTREAD(sizes, 4, stream);
+  n_verts    = sizes[0];
+  n_faces    = sizes[1];
+  n_surf_ids = sizes[2];
+
+  NewMemory((void **)&dverts, 3*MAX(n_verts, 1)*sizeof(double));
+  NewMemory((void **)&verts,  3*MAX(n_verts, 1)*sizeof(float));
+  NewMemory((void **)&faces,  3*MAX(n_faces, 1)*sizeof(int));
+  NewMemory((void **)&surfs,    MAX(n_verts, 1)*sizeof(int));
+
+  FORTREAD(dverts, 6*n_verts, stream);
+  FORTREAD(faces, 3*n_faces, stream);
+  FORTREAD(surfs, n_surf_ids, stream);
+  for(i = 0; i<n_verts; i++){
+    verts[i] = (float)dverts[i];
+  }
+  FREEMEMORY(dverts);
+
+  bgeomi->n_faces    = n_faces;
+  bgeomi->n_surf_ids = n_surf_ids;
+  bgeomi->n_verts    = n_verts;
+  bgeomi->verts      = verts;
+  bgeomi->faces      = faces;
+  bgeomi->surfs      = surfs;
+
+  fclose(stream);
+}
+#endif
+
 /* ------------------ InitGeomlist ------------------------ */
 
 void InitGeomlist(geomlistdata *geomlisti){

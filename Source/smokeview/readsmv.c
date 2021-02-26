@@ -3149,6 +3149,22 @@ int CreateNullLabel(flowlabels *flowlabel){
   return 0;
 }
 
+#ifdef pp_BINGEOM
+/* ------------------ GetSurfaceIndex ------------------------ */
+
+int GetSurfaceIndex(char *label){
+  int i;
+
+  for(i = 0; i<nsurfinfo; i++){
+    surfdata *surfi;
+
+    surfi = surfinfo+i;
+    if(strcmp(surfi->surfacelabel, label)==0)return i;
+  }
+  return -1;
+}
+#endif
+
 /* ------------------ GetSurface ------------------------ */
 
 surfdata *GetSurface(char *label){
@@ -5917,6 +5933,12 @@ int ReadSMV(bufferstreamdata *stream){
       ngeominfo++;
       continue;
     }
+#ifdef pp_BINGEOM
+    if(Match(buffer, "BINGEOM")==1){
+      nbingeominfo++;
+      continue;
+    }
+#endif
     if(Match(buffer,"PROP") == 1){
       npropinfo++;
       continue;
@@ -6319,6 +6341,12 @@ int ReadSMV(bufferstreamdata *stream){
    NewMemory((void **)&geominfo,ngeominfo*sizeof(geomdata));
    ngeominfo=0;
  }
+#ifdef pp_BINGEOM
+ if(nbingeominfo>0){
+   NewMemory((void **)&bingeominfo,nbingeominfo*sizeof(bingeomdata));
+   nbingeominfo=0;
+ }
+#endif
  if(npropinfo>0){
    NewMemory((void **)&propinfo,npropinfo*sizeof(propdata));
    npropinfo=1; // the 0'th prop is the default human property
@@ -6915,6 +6943,56 @@ int ReadSMV(bufferstreamdata *stream){
       ngeominfo++;
       continue;
     }
+
+#ifdef pp_BINGEOM
+    if(Match(buffer, "BINGEOM")==1){
+      char *buffptr;
+      bingeomdata *bingeomi;
+      int nsurf_ids = 0;
+      char *file;
+
+      bingeomi = bingeominfo + nbingeominfo;
+      InitBingeom(bingeomi);
+
+      FGETS(buffer,255,stream);
+      buffptr = TrimFront(buffer);
+      NewMemory((void **)&file,strlen(buffptr)+1);
+      strcpy(file,buffptr);
+      bingeomi->geom_fds.file = file;
+
+      FGETS(buffer,255,stream);
+      buffptr = TrimFront(buffer);
+      NewMemory((void **)&file,strlen(buffptr)+1);
+      strcpy(file,buffptr);
+      bingeomi->geom_input.file = file;
+
+      FGETS(buffer, 255, stream);
+      sscanf(buffer, "%i", &nsurf_ids);
+
+      if(nsurf_ids>0){
+        char **surf_ids;
+        int *surf_indexes, nsurf_ids;
+
+        NewMemory((void **)&surf_ids, nsurf_ids*sizeof(char *));
+        NewMemory((void **)&surf_indexes, nsurf_ids*sizeof(int));
+        for(i = 0; i<nsurf_ids; i++){
+          char *surf;
+
+          FGETS(buffer, 255, stream);
+          buffptr = TrimFront(buffer);
+          NewMemory((void **)&surf, strlen(buffptr)+1);
+          strcpy(surf, buffptr);
+          surf_ids[i] = surf;
+          surf_indexes[i] = -1;
+        }
+        bingeomi->surf_ids = surf_ids;
+        bingeomi->surf_indexes = surf_indexes;
+      }
+
+      nbingeominfo++;
+      continue;
+    }
+#endif
 
     /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -10028,6 +10106,10 @@ typedef struct {
   //RemoveDupBlockages();
   InitCullGeom(cullgeom);
   InitEvacProp();
+
+#ifdef pp_BINGEOM
+  SetupBingeom();
+#endif
 
   UpdateINIList();
 
