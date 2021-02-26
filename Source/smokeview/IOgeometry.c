@@ -2213,7 +2213,7 @@ void SetupBingeom(void){
 
 /* ------------------ ReadBGeom ------------------------ */
 
-ReadBingeom(char *file, bgeomdata *bgeomi){
+void ReadBingeom(char *file, bgeomdata *bgeomi){
   FILE *stream = NULL;
   int one, n_verts, n_faces, n_surf_ids;
   int sizes[4];
