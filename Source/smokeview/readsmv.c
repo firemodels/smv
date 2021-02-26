@@ -6971,7 +6971,7 @@ int ReadSMV(bufferstreamdata *stream){
 
       if(nsurf_ids>0){
         char **surf_ids;
-        int *surf_indexes, nsurf_ids;
+        int *surf_indexes;
 
         NewMemory((void **)&surf_ids, nsurf_ids*sizeof(char *));
         NewMemory((void **)&surf_indexes, nsurf_ids*sizeof(int));
