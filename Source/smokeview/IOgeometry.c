@@ -2218,7 +2218,7 @@ void SetupBingeom(void){
 void ReadBingeom(char *file, bgeomdata *bgeomi){
   FILE *stream = NULL;
   int geom_type;
-  int one, n_verts, n_faces, n_surf_ids;
+  int n_verts, n_faces, n_surf_ids;
   int sizes[4];
   double *dverts;
   float *verts;

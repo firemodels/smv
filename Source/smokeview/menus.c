@@ -7028,7 +7028,6 @@ updatemenu=0;
 #ifdef pp_BINGEOM
   if(nbingeominfo>0){
     int showall=1, hideall=1;
-    char showalllabel[20];
 
     CREATEMENU(immersed2menu, Immersed2Menu);
     for(i = 0; i<nbingeominfo; i++){
