@@ -34,7 +34,7 @@ void GetTriangleNormal(float *v1, float *v2, float *v3, float *norm, float *area
   norm[0]=u[1]*v[2]-u[2]*v[1];
   norm[1]=u[2]*v[0]-u[0]*v[2];
   norm[2]=u[0]*v[1]-u[1]*v[0];
-  *area = 0.5*ABS(sqrt(norm[0]*norm[0]+norm[1]*norm[1]+norm[2]*norm[2]));
+  if(area!=NULL)*area = 0.5*ABS(sqrt(norm[0]*norm[0]+norm[1]*norm[1]+norm[2]*norm[2]));
   ReduceToUnit(norm);
 }
 
@@ -2185,11 +2185,13 @@ void ReadAllGeom(void){
 /* ------------------ InitBinGeom ------------------------ */
 
 void InitBingeom(bingeomdata *bingeomi){
-  bingeomi->geom_fds.file = NULL;
+  bingeomi->geom_fds.file   = NULL;
   bingeomi->geom_input.file = NULL;
-  bingeomi->nsurf_ids = 0;
-  bingeomi->surf_ids = NULL;
-  bingeomi->surf_indexes = NULL;
+  bingeomi->geom_id         = NULL;
+  bingeomi->nsurf_ids       = 0;
+  bingeomi->surf_ids        = NULL;
+  bingeomi->surf_indexes    = NULL;
+  bingeomi->display         = 0;
 }
 
 /* ------------------ InitBinGeom ------------------------ */
@@ -2215,6 +2217,7 @@ void SetupBingeom(void){
 
 void ReadBingeom(char *file, bgeomdata *bgeomi){
   FILE *stream = NULL;
+  int geom_type;
   int one, n_verts, n_faces, n_surf_ids;
   int sizes[4];
   double *dverts;
@@ -2223,8 +2226,11 @@ void ReadBingeom(char *file, bgeomdata *bgeomi){
   int returncode;
   int i;
 
+  if(file==NULL||strlen(file)==0)return;
   stream = fopen(file, "rb");
-  FORTREAD(&one, 1, stream);
+  if(stream==NULL)return;
+
+  FORTREAD(&geom_type, 1, stream);
   FORTREAD(sizes, 4, stream);
   n_verts    = sizes[0];
   n_faces    = sizes[1];
@@ -2235,7 +2241,7 @@ void ReadBingeom(char *file, bgeomdata *bgeomi){
   NewMemory((void **)&faces,  3*MAX(n_faces, 1)*sizeof(int));
   NewMemory((void **)&surfs,    MAX(n_verts, 1)*sizeof(int));
 
-  FORTREAD(dverts, 6*n_verts, stream);
+  FORTREAD_DOUBLE(dverts,3*n_verts, stream);
   FORTREAD(faces, 3*n_faces, stream);
   FORTREAD(surfs, n_surf_ids, stream);
   for(i = 0; i<n_verts; i++){
@@ -2243,6 +2249,7 @@ void ReadBingeom(char *file, bgeomdata *bgeomi){
   }
   FREEMEMORY(dverts);
 
+  bgeomi->geom_type  = geom_type;
   bgeomi->n_faces    = n_faces;
   bgeomi->n_surf_ids = n_surf_ids;
   bgeomi->n_verts    = n_verts;
@@ -2730,6 +2737,8 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
         for(k=0;k<6;k++){
           triangles[ii].tverts[k]=texture_coords[6*ii+k];
         }
+        GetTriangleNormal(triangles[ii].verts[0]->xyz, triangles[ii].verts[1]->xyz, triangles[ii].verts[2]->xyz,
+                          triangles[ii].tri_norm, NULL);
 
         switch(type){
         case GEOM_GEOM:
@@ -2804,6 +2813,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
   }
   geomi->loaded=1;
   geomi->display=1;
+  stept = 1;
   fclose(stream);
   return return_filesize;
 }
@@ -3597,8 +3607,8 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       else{
         DISABLE_LIGHTING;
       }
-      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, iso_specular);
-      glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, iso_shininess);
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR,            iso_specular);
+      glMaterialf(GL_FRONT_AND_BACK,  GL_SHININESS,           iso_shininess);
       glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
       glEnable(GL_COLOR_MATERIAL);
 
@@ -3650,7 +3660,6 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
           else{
             t_level = 1.0;
           }
-          glColor4f(color0[0], color0[1], color0[2], t_level);
 
           xyzptr[0] = trianglei->verts[0]->xyz;
           xyzptr[1] = trianglei->verts[1]->xyz;

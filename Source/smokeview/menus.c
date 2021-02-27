@@ -5458,6 +5458,9 @@ void LoadBoundaryMenu(int value){
             PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
           }
           load_size+=ReadBoundary(i, LOAD, &errorcode);
+          if(patchi->structured!=NO&&patchi->finalize==1){
+            UpdateTriangles(GEOM_STATIC, GEOM_UPDATE_ALL);
+          }
           file_count++;
           UNLOCK_COMPRESS;
         }
@@ -5748,6 +5751,15 @@ void VentMenu(int value){
 #define GEOMETRY_VOLUMES_EXTERIOR 19
 #define GEOMETRY_DUMMY -999
 
+#ifdef pp_BINGEOM
+#define BINGEOMETRY_SHOWALL -1
+#define BINGEOMETRY_HIDEALL -2
+#endif
+
+#ifdef pp_BINGEOM
+void Immersed2Menu(int value);
+#endif
+
 /* ------------------ ImmersedMenu ------------------------ */
 
 void ImmersedMenu(int value){
@@ -5864,10 +5876,74 @@ void ImmersedMenu(int value){
       ASSERT(FFALSE);
       break;
   }
+#ifdef pp_BINGEOM
+  if(show_faces_shaded==1||show_faces_outline == 1){
+    Immersed2Menu(BINGEOMETRY_HIDEALL);
+    updatemenu = 1;
+  }
+#endif
   UpdateGeometryControls();
 
   GLUTPOSTREDISPLAY;
 }
+
+#ifdef pp_BINGEOM
+/* ------------------ Immersed2Menu ------------------------ */
+
+void Immersed2Menu(int value){
+  if(value==MENU_DUMMY)return;
+
+  if(value>=0&&value<nbingeominfo){
+    bingeomdata *bingeomi;
+    int i, display_bingeom = 0;;
+
+    bingeomi = bingeominfo+value;
+    bingeomi->display = 1-bingeomi->display;
+    for(i = 0; i<nbingeominfo; i++){
+      bingeomdata *bgi;
+
+      bgi = bingeominfo+i;
+      if(bgi->display==1){
+        display_bingeom = 1;
+        updatemenu = 1;
+        break;
+      }
+    }
+    if(display_bingeom==1){
+      ImmersedMenu(GEOMETRY_HIDEALL);
+      updatemenu = 1;
+    }
+  }
+  if(value<0){
+    switch (value){
+      int i;
+
+      case BINGEOMETRY_SHOWALL:
+        for(i = 0; i<nbingeominfo; i++){
+          bingeomdata *bgi;
+
+          bgi = bingeominfo+i;
+          bgi->display = 1;
+        }
+        ImmersedMenu(GEOMETRY_HIDEALL);
+        updatemenu = 1;
+        break;
+      case BINGEOMETRY_HIDEALL:
+        for(i = 0; i<nbingeominfo; i++){
+          bingeomdata *bgi;
+
+          bgi = bingeominfo+i;
+          bgi->display = 0;
+        }
+        updatemenu = 1;
+        break;
+      default:
+        ASSERT(FFALSE);
+        break;
+    }
+  }
+}
+#endif
 
 /* ------------------ BlockageMenu ------------------------ */
 
@@ -6547,6 +6623,9 @@ static int vectorskipmenu=0,unitsmenu=0;
 static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
 static int gridslicemenu=0, blockagemenu=0, immersedmenu=0, immersedinteriormenu=0, immersedsurfacemenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
+#ifdef pp_BINGEOM
+static int immersed2menu = 0;
+#endif
 static int loadpatchsinglemenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=0,unloadsmoke3dsinglemenu=0, showvolsmokesinglemenu=0, includepatchmenu=0;
 static int plot3dshowsinglemeshmenu=0;
 static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
@@ -6945,6 +7024,38 @@ updatemenu=0;
   }
 
 /* --------------------------------surface geometry menu -------------------------- */
+
+#ifdef pp_BINGEOM
+  if(nbingeominfo>0){
+    int showall=1, hideall=1;
+    char showalllabel[20];
+
+    CREATEMENU(immersed2menu, Immersed2Menu);
+    for(i = 0; i<nbingeominfo; i++){
+      bingeomdata *bgi;
+      char bingeom_label[32];
+
+      bgi = bingeominfo + i;
+      strcpy(bingeom_label, "");
+      if(bgi->display==1){
+        strcat(bingeom_label, "*");
+        hideall=0;
+      }
+      else{
+        showall=0;
+      }
+      strcat(bingeom_label, bgi->geom_id);
+      glutAddMenuEntry(bingeom_label, i);
+    }
+    glutAddMenuEntry("-",       MENU_DUMMY);
+    if(showall==1)glutAddMenuEntry("*show all", BINGEOMETRY_SHOWALL);
+    if(showall==0)glutAddMenuEntry("show all",  BINGEOMETRY_SHOWALL);
+    if(hideall==1)glutAddMenuEntry("*hide all",  BINGEOMETRY_HIDEALL);
+    if(hideall==0)glutAddMenuEntry("hide all",   BINGEOMETRY_HIDEALL);
+  }
+#endif
+
+  /* --------------------------------surface geometry menu -------------------------- */
 
   CREATEMENU(immersedmenu,ImmersedMenu);
   GLUTADDSUBMENU(_("Faces"),immersedsurfacemenu);
@@ -7686,6 +7797,11 @@ updatemenu=0;
   if((auto_terrain==0&&ngeominfo>0)||(auto_terrain==1&&ngeominfo>1)){
     GLUTADDSUBMENU(_("Immersed"), immersedmenu);
   }
+#ifdef pp_BINGEOM
+  if(nbingeominfo>0){
+    GLUTADDSUBMENU(_("Immersed2"), immersed2menu);
+  }
+#endif
   if(GetNTotalVents()>0)GLUTADDSUBMENU(_("Surfaces"), ventmenu);
   if(nrooms > 0){
     if(visCompartments == 1){

@@ -6949,22 +6949,28 @@ int ReadSMV(bufferstreamdata *stream){
       char *buffptr;
       bingeomdata *bingeomi;
       int nsurf_ids = 0;
-      char *file;
+      char *file, *geom_id;
 
       bingeomi = bingeominfo + nbingeominfo;
       InitBingeom(bingeomi);
 
-      FGETS(buffer,255,stream);
+      FGETS(buffer, 255, stream);
       buffptr = TrimFront(buffer);
-      NewMemory((void **)&file,strlen(buffptr)+1);
-      strcpy(file,buffptr);
-      bingeomi->geom_fds.file = file;
+      NewMemory((void **)&geom_id, strlen(buffptr)+1);
+      strcpy(geom_id, buffptr);
+      bingeomi->geom_id = geom_id;
 
       FGETS(buffer,255,stream);
       buffptr = TrimFront(buffer);
       NewMemory((void **)&file,strlen(buffptr)+1);
       strcpy(file,buffptr);
       bingeomi->geom_input.file = file;
+
+      FGETS(buffer,255,stream);
+      buffptr = TrimFront(buffer);
+      NewMemory((void **)&file,strlen(buffptr)+1);
+      strcpy(file,buffptr);
+      bingeomi->geom_fds.file = file;
 
       FGETS(buffer, 255, stream);
       sscanf(buffer, "%i", &nsurf_ids);

@@ -238,7 +238,7 @@ SVEXTERN int SVDECL(updating_triangles, 0);
 SVEXTERN int SVDECL(iso_multithread, 0), SVDECL(iso_multithread_save,0);
 SVEXTERN int SVDECL(part_multithread, 0);
 SVEXTERN int SVDECL(lighting_on,0);
-SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 0);
+SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 1);
 SVEXTERN int SVDECL(update_texturebar, 0);
 SVEXTERN float SVDECL(iso_valmin, 20.0), SVDECL(iso_valmax, 1020.0);
 SVEXTERN float SVDECL(glui_iso_valmin, 20.0), SVDECL(glui_iso_valmax, 1020.0);
@@ -919,7 +919,7 @@ SVEXTERN float mat_specular_orig[4];
 SVEXTERN float SVDECL(*mat_ambient2,NULL), SVDECL(*mat_specular2,NULL);
 
 SVEXTERN GLfloat iso_specular[4];
-SVEXTERN GLfloat iso_shininess;
+SVEXTERN GLfloat SVDECL(iso_shininess, 50.0), SVDECL(glui_shininess, 50.0);
 
 SVEXTERN float block_ambient_orig[4];
 SVEXTERN float SVDECL(*block_ambient2,NULL);

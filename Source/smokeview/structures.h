@@ -134,6 +134,7 @@ typedef struct _geomdiagdata {
 
 typedef struct _bgeomdata {
   char *file;
+  int geom_type;
   int n_verts, n_faces, n_surf_ids;
   float *verts;
   int *faces, *surfs;
@@ -142,8 +143,9 @@ typedef struct _bgeomdata {
 /* --------------------------  bingeomdata ------------------------------------ */
 
 typedef struct _bingeomdata {
+  char *geom_id, **surf_ids;
   int *surf_indexes, nsurf_ids;
-  char **surf_ids;
+  int display;
   bgeomdata geom_input, geom_fds;
 } bingeomdata;
 #endif

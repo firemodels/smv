@@ -2913,6 +2913,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     UpdateTimes();
     UpdateFrameNumber(1);
   }
+  stept = 1;
   force_redisplay = 1;
   updatemenu = 1;
   STOP_TIMER(total_time);
