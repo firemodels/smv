@@ -909,6 +909,10 @@ extern "C" void ViewpointCB(int var){
     camera_current->rotation_type = rotation_type_save;
     EDIT_view_label->set_text(ca->name);
     break;
+  case LIST_VIEW_FROM_DIALOG:
+    ViewpointCB(LIST_VIEW);
+    AdjustY(camera_current);
+    break;
   case LIST_VIEW:
     ival = LIST_viewpoints->get_int_val();
     old_listview = -2;
@@ -926,7 +930,9 @@ extern "C" void ViewpointCB(int var){
     ViewpointCB(RESTORE_VIEW);
     updatezoommenu = 1;
     EnableDisableViews();
+#ifndef pp_DISABLE_ADJUSTY
     AdjustY(camera_current);
+#endif
     break;
   case STARTUP:
     startup_view_ini = LIST_viewpoints->get_int_val();
@@ -1290,7 +1296,7 @@ extern "C" void GluiMotionSetup(int main_window){
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_viewpoints,VIEWPOINTS_ROLLOUT, glui_motion);
 
   PANEL_select = glui_motion->add_panel_to_panel(ROLLOUT_viewpoints, "", false);
-  LIST_viewpoints = glui_motion->add_listbox_to_panel(PANEL_select, _("Select:"), &i_view_list, LIST_VIEW, ViewpointCB);
+  LIST_viewpoints = glui_motion->add_listbox_to_panel(PANEL_select, _("Select:"), &i_view_list, LIST_VIEW_FROM_DIALOG, ViewpointCB);
   LIST_viewpoints->set_alignment(GLUI_ALIGN_CENTER);
   if(have_geom_factors==1){
     CHECKBOX_use_geom_factors = glui_motion->add_checkbox_to_panel(PANEL_select, "include geometry", &use_geom_factors, GEOM_FACTORS, ViewpointCB);

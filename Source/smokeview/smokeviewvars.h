@@ -23,6 +23,7 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(update_reshape, 0);
 #ifdef pp_BINGEOM
 SVEXTERN int SVDECL(nbingeominfo, 0);
 SVEXTERN bingeomdata SVDECL(*bingeominfo, NULL);

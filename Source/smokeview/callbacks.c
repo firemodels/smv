@@ -3363,7 +3363,8 @@ void ReshapeCB(int width, int height){
   windowsize_pointer_old = -1;
   UpdateWindowSizeList();
   if(current_script_command==NULL)update_adjust_y = 2;
-}
+  update_reshape = 2;
+ }
 
 /* ------------------ ResetGLTime ------------------------ */
 
