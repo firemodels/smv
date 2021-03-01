@@ -855,15 +855,37 @@ void DrawGeom(int flag, int timestate){
             glBegin(GL_TRIANGLES);
             lasttexture = texti;
           }
-          for(j = 0; j < 3; j++){
-            vertdata *vertj;
-            float *tvertj;
+          {
+            float tx[3], ty[3];
 
-            vertj = trianglei->verts[j];
-            tvertj = trianglei->tverts + 2 * j;
-            glNormal3fv(vertj->vert_norm);
-            glTexCoord2fv(tvertj);
-            glVertex3fv(vertj->xyz);
+            for(j = 0; j < 3; j++){
+              vertdata *vertj;
+              float *tvertj;
+
+              vertj = trianglei->verts[j];
+              tvertj = trianglei->tverts + 2 * j;
+              tx[j] = tvertj[0];
+              ty[j] = tvertj[1];
+            }
+            if(MAX(tx[0],tx[2])>0.8&&tx[1]<0.2){
+              tx[1]+=1.0;
+            }
+            if(MAX(tx[0],tx[1])>0.8&&tx[2]<0.2){
+              tx[2]+=1.0;
+            }
+            if(MAX(tx[1],tx[2])>0.8&&tx[0]<0.2){
+              tx[0]+=1.0;
+            }
+            for(j = 0; j < 3; j++){
+              vertdata *vertj;
+              float *tvertj;
+
+              vertj = trianglei->verts[j];
+              tvertj = trianglei->tverts + 2 * j;
+              glNormal3fv(vertj->vert_norm);
+              glTexCoord2f(tx[j],ty[j]);
+              glVertex3fv(vertj->xyz);
+            }
           }
         }
       }
@@ -2722,6 +2744,35 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
             text_coords[4] = (xy[0]-xmin)*xfactor;
             text_coords[5] = (xy[1]-ymin)*yfactor;
           }
+        }
+      }
+      else if(geomi->geomobjinfo!=NULL&&geomi->geomobjinfo->texture_mapping==TEXTURE_SPHERICAL){
+        for(ii = 0; ii<ntris; ii++){
+          float *text_coords;
+          int *tri_ind;
+          float *xy;
+          vertdata *vert;
+
+#define XYZ2AZ(x,y)     CLAMP(((atan2((y),(x))+PI)/(2.0*PI)), 0.0, 1.0)
+#define XYZ2ELEV(x,y,z) CLAMP(( (PI/2.0+atan2( (z), sqrt( (x)*(x)+(y)*(y) ) )) /PI ), 0.0, 1.0)
+
+          text_coords = texture_coords+6*ii;
+          tri_ind = ijk+3*ii;
+
+          vert = verts+tri_ind[0]-1;
+          xy = vert->xyz;
+          text_coords[0] = XYZ2AZ(xy[0],xy[1]);
+          text_coords[1] = XYZ2ELEV(xy[0], xy[1], xy[2]);
+
+          vert = verts+tri_ind[1]-1;
+          xy = vert->xyz;
+          text_coords[2] = XYZ2AZ(xy[0], xy[1]);
+          text_coords[3] = XYZ2ELEV(xy[0], xy[1], xy[2]);
+
+          vert = verts+tri_ind[2]-1;
+          xy = vert->xyz;
+          text_coords[4] = XYZ2AZ(xy[0], xy[1]);
+          text_coords[5] = XYZ2ELEV(xy[0], xy[1], xy[2]);
         }
       }
 
