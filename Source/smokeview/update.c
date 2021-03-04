@@ -1734,6 +1734,9 @@ int GetPlotState(int choice){
     }
   }
 #endif
+  if(plot_state!=DYNAMIC_PLOTS&&last_time_paused==1){
+    last_time_paused = 0;
+  }
   return plot_state;
 }
 

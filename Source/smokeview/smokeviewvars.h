@@ -28,6 +28,7 @@ SVEXTERN int SVDECL(update_reshape, 0);
 SVEXTERN int SVDECL(nbingeominfo, 0);
 SVEXTERN bingeomdata SVDECL(*bingeominfo, NULL);
 #endif
+SVEXTERN int SVDECL(last_time_paused, 0);
 SVEXTERN float SVDECL(time_paused,0.0);
 SVEXTERN int SVDECL(update_stept, -1);
 SVEXTERN int SVDECL(update_viewpoint_script, 0);
