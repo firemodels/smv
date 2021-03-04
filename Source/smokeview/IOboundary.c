@@ -2926,7 +2926,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 /* ------------------ SetTimeState ------------------------ */
 
 void SetTimeState(void){
-  if(stept==0){
+  if(stept==0&&last_time_paused==1){
     int timestate;
 
     timestate = GetPlotState(DYNAMIC_PLOTS);

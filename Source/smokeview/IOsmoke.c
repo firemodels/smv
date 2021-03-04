@@ -5914,6 +5914,7 @@ void UpdateLoadedSmoke(int *h_loaded, int *t_loaded){
 void SmokeWrapup(void){
   UpdateFireCutoffs();
   plotstate = GetPlotState(DYNAMIC_PLOTS);
+  stept = 1;
   SetSmokeColorFlags();
   UpdateLoadedSmoke(&hrrpuv_loaded,&temp_loaded);
   UpdateSmoke3dFileParms();

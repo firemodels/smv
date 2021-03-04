@@ -2975,6 +2975,7 @@ void ScriptSetTimeVal(scriptdata *scripti){
     itimes=imin;
     script_itime=imin;
     stept=0;
+    last_time_paused = 1;
     force_redisplay=1;
     UpdateFrameNumber(0);
     UpdateTimeLabels();

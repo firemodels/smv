@@ -799,6 +799,7 @@ int TimebarClick(int x, int y){
     CheckTimeBound();
     timebar_drag=1;
     stept=0;
+    last_time_paused = 1;
     IdleCB();
     return 1;
   }
@@ -2427,6 +2428,9 @@ void Keyboard(unsigned char key, int flag){
           //if(render_skip!=RENDER_CURRENT_SINGLE)render_skip = 1;
         }
         else{
+          if(flag==FROM_CALLBACK){
+            last_time_paused = 0;
+          }
           itime_save = -1;
           render_skip = RENDER_CURRENT_SINGLE;
         }
