@@ -867,14 +867,17 @@ void DrawGeom(int flag, int timestate){
               tx[j] = tvertj[0];
               ty[j] = tvertj[1];
             }
-            if(MAX(tx[0],tx[2])>0.8&&tx[1]<0.2){
-              tx[1]+=1.0;
-            }
-            if(MAX(tx[0],tx[1])>0.8&&tx[2]<0.2){
-              tx[2]+=1.0;
-            }
-            if(MAX(tx[1],tx[2])>0.8&&tx[0]<0.2){
-              tx[0]+=1.0;
+            // textures on a sphereare periodic
+            if(trianglei->geomobj!=NULL && trianglei->geomobj->texture_mapping==TEXTURE_SPHERICAL){
+              if(MAX(tx[0],tx[2])>0.8&&tx[1]<0.2){
+                tx[1]+=1.0;
+              }
+              if(MAX(tx[0],tx[1])>0.8&&tx[2]<0.2){
+                tx[2]+=1.0;
+              }
+              if(MAX(tx[1],tx[2])>0.8&&tx[0]<0.2){
+                tx[0]+=1.0;
+              }
             }
             for(j = 0; j < 3; j++){
               vertdata *vertj;
@@ -2645,6 +2648,9 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       }
       FREEMEMORY(xyz);
     }
+    bounding_box[XMAX] = MAX(bounding_box[XMAX], bounding_box[XMIN]+0.001);
+    bounding_box[YMAX] = MAX(bounding_box[YMAX], bounding_box[YMIN]+0.001);
+    bounding_box[ZMAX] = MAX(bounding_box[ZMAX], bounding_box[ZMIN]+0.001);
     if(ntris>0){
       int *surf_ind=NULL,*ijk=NULL;
       float *texture_coords=NULL;
@@ -2773,6 +2779,34 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           xy = vert->xyz;
           text_coords[4] = XYZ2AZ(xy[0], xy[1]);
           text_coords[5] = XYZ2ELEV(xy[0], xy[1], xy[2]);
+        }
+      }
+      else if(geomi->geomobjinfo!=NULL&&geomi->geomobjinfo->texture_mapping==TEXTURE_RECTANGULAR){
+        for(ii = 0; ii<ntris; ii++){
+          float *text_coords;
+          int *tri_ind;
+          float *xy;
+          vertdata *vert;
+
+#define XYZ2X(x) ((x)-bounding_box[XMIN])/(bounding_box[XMAX]-bounding_box[XMIN])
+#define XYZ2Y(y) ((y)-bounding_box[YMIN])/(bounding_box[YMAX]-bounding_box[YMIN])
+          text_coords = texture_coords+6*ii;
+          tri_ind = ijk+3*ii;
+
+          vert = verts+tri_ind[0]-1;
+          xy = vert->xyz;
+          text_coords[0] = XYZ2X(xy[0]);
+          text_coords[1] = XYZ2Y(xy[1]);
+
+          vert = verts+tri_ind[1]-1;
+          xy = vert->xyz;
+          text_coords[2] = XYZ2X(xy[0]);
+          text_coords[3] = XYZ2Y(xy[1]);
+
+          vert = verts+tri_ind[2]-1;
+          xy = vert->xyz;
+          text_coords[4] = XYZ2X(xy[0]);
+          text_coords[5] = XYZ2Y(xy[1]);
         }
       }
 
