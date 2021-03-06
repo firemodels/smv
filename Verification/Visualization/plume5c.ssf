@@ -502,6 +502,8 @@ LOADINIFILE
  plume5c_plot3d_line.ini
 LOADPLOT3D
  1 40.0
+SETVIEWPOINT
+ external
 RENDERONCE
  plume5c_plot3d_line
 
@@ -512,6 +514,8 @@ LOADINIFILE
  plume5c_plot3d_step.ini
 LOADPLOT3D
  1 40.0
+SETVIEWPOINT
+ external
 RENDERONCE
  plume5c_plot3d_step
 
@@ -522,6 +526,8 @@ LOADINIFILE
  plume5c_plot3d_shaded.ini
 LOADPLOT3D
  1 40.0
+SETVIEWPOINT
+ external
 RENDERONCE
  plume5c_plot3d_shaded
 
@@ -531,6 +537,8 @@ RENDERONCE
 UNLOADALL
 LOADINIFILE
  plume5c_solid.ini
+SETVIEWPOINT
+ external
 RENDERONCE
  plume5c_solid
 
@@ -538,6 +546,8 @@ RENDERONCE
 
 LOADINIFILE
  plume5c_outline.ini
+SETVIEWPOINT
+ external
 RENDERONCE
  plume5c_outline
 
@@ -545,6 +555,8 @@ RENDERONCE
 
 LOADINIFILE
  plume5c_hidden.ini
+SETVIEWPOINT
+ external
 RENDERONCE
  plume5c_hidden
 
@@ -842,10 +854,10 @@ LOADFILE
  plume5c_1.prt5
 LOADINIFILE
  plume5c_lr_stereo.ini
-SETVIEWPOINT
- view 1
 SETTIMEVAL
  30.000000
+SETVIEWPOINT
+ view 1
 RENDERONCE
  plume5c_iso_lr_stereo
 

@@ -229,7 +229,7 @@ void MakeMovieBashScript(void){
   fprintf(stream, "#/bin/bash\n");
   fprintf(stream, "NPROCS=%i\n", movie_nprocs);
   fprintf(stream, "QUEUE=%s\n", movie_queues[movie_queue_index]);
-  
+
   fprintf(stream, "FIREMODELS=%s\n", firemodels);
   fprintf(stream, "MAKEMOVIE=$FIREMODELS/smv/Utilities/Scripts/make_movie.sh\n");
   fprintf(stream, "QSMV=$FIREMODELS/smv/Utilities/Scripts/qsmv.sh\n");
@@ -245,7 +245,7 @@ void MakeMovieBashScript(void){
     slicedata *slicei;
     slicemenudata *slicemi;
     char *slicelabel, label[256];
-    
+
     slicemi = slicemenu_sorted[movie_slice_index];
     slicei = slicemi->sliceinfo;
     slicelabel = slicei->label.longlabel;
@@ -743,6 +743,25 @@ void EnableDisableViews(void){
   }
 }
 
+/*------------------SetCurrentViewPoint------------------------ */
+
+extern "C" void SetCurrentViewPoint(char *viewpoint_label){
+  int i;
+
+  if(strlen(viewpoint_label)==0)return;
+  for(i = 0; i<ncameras_sorted; i++){
+    cameradata *ca;
+
+    ca = cameras_sorted[i];
+    if(strcmp(ca->name, viewpoint_label)==0){
+      LIST_viewpoints->set_int_val(ca->view_id);
+      ViewpointCB(LIST_VIEW);
+      glutPostRedisplay();
+      break;
+    }
+  }
+}
+
 /* ------------------ ViewpointCB ------------------------ */
 
 extern "C" void ViewpointCB(int var){
@@ -890,6 +909,10 @@ extern "C" void ViewpointCB(int var){
     camera_current->rotation_type = rotation_type_save;
     EDIT_view_label->set_text(ca->name);
     break;
+  case LIST_VIEW_FROM_DIALOG:
+    ViewpointCB(LIST_VIEW);
+    AdjustY(camera_current);
+    break;
   case LIST_VIEW:
     ival = LIST_viewpoints->get_int_val();
     old_listview = -2;
@@ -907,7 +930,13 @@ extern "C" void ViewpointCB(int var){
     ViewpointCB(RESTORE_VIEW);
     updatezoommenu = 1;
     EnableDisableViews();
+#ifdef pp_DISABLE_ADJUSTY
+    if(update_startup_view>0&&current_script_command==NULL){
+      AdjustY(camera_current);
+    }
+#else
     AdjustY(camera_current);
+#endif
     break;
   case STARTUP:
     startup_view_ini = LIST_viewpoints->get_int_val();
@@ -916,7 +945,7 @@ extern "C" void ViewpointCB(int var){
 
       cam_label = GetCameraLabel(startup_view_ini);
       if(cam_label != NULL){
-        strcpy(startup_view_label, cam_label);
+        strcpy(viewpoint_label_startup, cam_label);
       }
     }
     selected_view = startup_view_ini;
@@ -1271,7 +1300,7 @@ extern "C" void GluiMotionSetup(int main_window){
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_viewpoints,VIEWPOINTS_ROLLOUT, glui_motion);
 
   PANEL_select = glui_motion->add_panel_to_panel(ROLLOUT_viewpoints, "", false);
-  LIST_viewpoints = glui_motion->add_listbox_to_panel(PANEL_select, _("Select:"), &i_view_list, LIST_VIEW, ViewpointCB);
+  LIST_viewpoints = glui_motion->add_listbox_to_panel(PANEL_select, _("Select:"), &i_view_list, LIST_VIEW_FROM_DIALOG, ViewpointCB);
   LIST_viewpoints->set_alignment(GLUI_ALIGN_CENTER);
   if(have_geom_factors==1){
     CHECKBOX_use_geom_factors = glui_motion->add_checkbox_to_panel(PANEL_select, "include geometry", &use_geom_factors, GEOM_FACTORS, ViewpointCB);
@@ -1646,7 +1675,7 @@ extern "C" void UpdateWindowSizeList(void){
     windowsize_pointer=9;
   }
   if(LIST_windowsize!=NULL)LIST_windowsize->set_int_val(windowsize_pointer);
-   windowsize_pointer_old = windowsize_pointer;  
+   windowsize_pointer_old = windowsize_pointer;
 }
 
 /* ------------------ UpdateTranslate ------------------------ */
@@ -1747,7 +1776,6 @@ extern "C" void UpdateRotationIndex(int val){
   UpdateMeshList1(val);
 
   glutPostRedisplay();
-
 }
 
 /* ------------------ UpdateProjectionType ------------------------ */

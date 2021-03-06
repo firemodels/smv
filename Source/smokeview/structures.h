@@ -129,6 +129,28 @@ typedef struct _geomdiagdata {
   geomdata *geom;
 } geomdiagdata;
 
+
+#ifdef pp_BINGEOM
+
+typedef struct _bgeomdata {
+  char *file;
+  int geom_type;
+  int n_verts, n_faces, n_surf_ids;
+  float *verts;
+  int *faces, *surfs;
+} bgeomdata;
+
+/* --------------------------  bingeomdata ------------------------------------ */
+
+typedef struct _bingeomdata {
+  char *geom_id, **surf_ids;
+  int *surf_indexes, nsurf_ids;
+  int display;
+  bgeomdata geom_input, geom_fds;
+} bingeomdata;
+#endif
+
+
 /* --------------------------  screendata ------------------------------------ */
 
 typedef struct _screendata {
@@ -1281,6 +1303,7 @@ typedef struct _slicedata {
   int nhistograms;
   struct _patchdata *patchgeom;
   FILE_SIZE file_size;
+  int *geom_offsets;
 #ifdef pp_SLICETHREAD
   int skipload, loadstatus, boundstatus;
 #endif
@@ -1429,6 +1452,7 @@ typedef struct _patchdata {
   char *comp_file, *reg_file;
   char *geomfile, *filetype_label;
   geomdata *geominfo;
+  int *geom_offsets;
   //int *patchsize;
   int skip,dir;
   float xyz_min[3], xyz_max[3];

@@ -23,6 +23,18 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(update_reshape, 0);
+#ifdef pp_BINGEOM
+SVEXTERN int SVDECL(nbingeominfo, 0);
+SVEXTERN bingeomdata SVDECL(*bingeominfo, NULL);
+#endif
+SVEXTERN int SVDECL(last_time_paused, 0);
+SVEXTERN float SVDECL(time_paused,0.0);
+SVEXTERN int SVDECL(update_stept, -1);
+SVEXTERN int SVDECL(update_viewpoint_script, 0);
+SVEXTERN char viewpoint_script[256];
+SVEXTERN char viewpoint_label_saved[256];
+SVEXTERN int SVDECL(update_saving_viewpoint, 0);
 SVEXTERN float SVDECL(timer_startup, 0.0), SVDECL(timer_render, -1.0);
 SVEXTERN int SVDECL(frames_total, 0 );
 SVEXTERN int SVDECL(open_movie_dialog, 0);
@@ -134,7 +146,7 @@ SVEXTERN int SVDECL(terrain_nindices, 0);
 SVEXTERN int SVDECL(terrain_nfaces, 0);
 
 
-SVEXTERN int SVDECL(terrain_show_geometry_surface, 1); 
+SVEXTERN int SVDECL(terrain_show_geometry_surface, 1);
 SVEXTERN int SVDECL(terrain_show_geometry_outline, 0);
 SVEXTERN int SVDECL(terrain_show_geometry_points, 0);
 SVEXTERN int SVDECL(terrain_showonly_top, 0);
@@ -228,7 +240,7 @@ SVEXTERN int SVDECL(updating_triangles, 0);
 SVEXTERN int SVDECL(iso_multithread, 0), SVDECL(iso_multithread_save,0);
 SVEXTERN int SVDECL(part_multithread, 0);
 SVEXTERN int SVDECL(lighting_on,0);
-SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 0);
+SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 1);
 SVEXTERN int SVDECL(update_texturebar, 0);
 SVEXTERN float SVDECL(iso_valmin, 20.0), SVDECL(iso_valmax, 1020.0);
 SVEXTERN float SVDECL(glui_iso_valmin, 20.0), SVDECL(glui_iso_valmax, 1020.0);
@@ -351,7 +363,6 @@ SVEXTERN int SVDECL(ngeom_data, 0);
 SVEXTERN int SVDECL(have_geom_slice_menus, 0), SVDECL(geom_slice_loaded,0);
 SVEXTERN FILE SVDECL(*stderr2,NULL);
 SVEXTERN char SVDECL(*script_error1_filename,NULL);
-SVEXTERN int SVDECL(script_viewpoint_found, YES);
 SVEXTERN int SVDECL(render_firsttime, NO);
 SVEXTERN int SVDECL(solid_ht3d, 0);
 SVEXTERN int SVDECL(load_incremental, 0);
@@ -910,7 +921,7 @@ SVEXTERN float mat_specular_orig[4];
 SVEXTERN float SVDECL(*mat_ambient2,NULL), SVDECL(*mat_specular2,NULL);
 
 SVEXTERN GLfloat iso_specular[4];
-SVEXTERN GLfloat iso_shininess;
+SVEXTERN GLfloat SVDECL(iso_shininess, 50.0), SVDECL(glui_shininess, 50.0);
 
 SVEXTERN float block_ambient_orig[4];
 SVEXTERN float SVDECL(*block_ambient2,NULL);
@@ -1056,7 +1067,7 @@ SVEXTERN cameradata camera_list_first, camera_list_last, SVDECL(**camera_list,NU
 SVEXTERN int ncamera_list,i_view_list,SVDECL(init_camera_list, 1);
 SVEXTERN int camera_max_id;
 SVEXTERN int startup,startup_view_ini,selected_view;
-SVEXTERN char startup_view_label[256];
+SVEXTERN char viewpoint_label_startup[256];
 SVEXTERN char SVDECL(*camera_label,NULL), SVDECL(*colorbar_label,NULL);
 
 SVEXTERN int vis_boundary_type[7], SVDECL(update_ini_boundary_type,0);

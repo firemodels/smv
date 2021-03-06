@@ -546,11 +546,6 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
   }
   strcat(renderfullfile,renderfile);
 
-  if(script_viewpoint_found==NO&&current_script_command!=NULL){
-    FileCopy(script_error1_filename,renderfullfile);
-    return 0;
-  }
-
   RENDERfile = fopen(renderfullfile, "wb");
   if(RENDERfile == NULL){
     fprintf(stderr, "*** Error: unable to render screen image to %s", renderfullfile);

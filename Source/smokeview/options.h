@@ -50,6 +50,10 @@
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
 #define pp_DEVICE_AVG          // time average device data for 2d plot display
 #define pp_MOVIE_BATCH         // activate batch movie dialog
+//#define pp_SINGLE_FRAME_TEST   // test loading a single slice file frame (without using a script)
+//#define pp_SCRIPT_RENDER_FIX  // temporary fix to script rendering, needs to be explored further
+//#define pp_BINGEOM               // geometry format used by fds
+#define pp_DISABLE_ADJUSTY      // turn off y adjust when selecting a viewpoint
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set

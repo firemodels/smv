@@ -2031,7 +2031,6 @@ void InitVars(void){
   iso_specular[1] = 0.7;
   iso_specular[2] = 0.7;
   iso_specular[3] = 1.0;
-  iso_shininess = 10.0f;
 
   light_position0[0] = 1.0f;
   light_position0[1] = 1.0f;
@@ -2181,10 +2180,8 @@ void InitVars(void){
   camera_max_id=2;
   startup=0;
   startup_view_ini=1;
-  strcpy(startup_view_label,"external");
+  strcpy(viewpoint_label_startup,"external");
   selected_view=-999;
-
-
   {
     int iii;
 
