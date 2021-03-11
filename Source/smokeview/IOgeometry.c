@@ -859,10 +859,8 @@ void DrawGeom(int flag, int timestate){
             float tx[3], ty[3];
 
             for(j = 0; j < 3; j++){
-              vertdata *vertj;
               float *tvertj;
 
-              vertj = trianglei->verts[j];
               tvertj = trianglei->tverts + 2 * j;
               tx[j] = tvertj[0];
               ty[j] = tvertj[1];
@@ -881,10 +879,8 @@ void DrawGeom(int flag, int timestate){
             }
             for(j = 0; j < 3; j++){
               vertdata *vertj;
-              float *tvertj;
 
               vertj = trianglei->verts[j];
-              tvertj = trianglei->tverts + 2 * j;
               glNormal3fv(vertj->vert_norm);
               glTexCoord2f(tx[j],ty[j]);
               glVertex3fv(vertj->xyz);
