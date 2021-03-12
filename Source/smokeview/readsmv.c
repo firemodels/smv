@@ -7673,11 +7673,14 @@ int ReadSMV(bufferstreamdata *stream){
       surfi->color = GetColorPtr(s_color);
       if(s_color[3]<0.99){
         surfi->transparent=1;
+        surfi->transparent_level = s_color[3];
+      }
+      else{
+        surfi->transparent_level = 1.0;
       }
       surfi->glui_color[0] = CLAMP(255*surfi->color[0],0,255);
       surfi->glui_color[1] = CLAMP(255*surfi->color[1], 0, 255);
       surfi->glui_color[2] = CLAMP(255*surfi->color[2], 0, 255);
-      surfi->transparent_level=1.0;
       surfi->temp_ignition=temp_ignition;
       surfi->emis=emis;
       surfi->t_height=t_height;
