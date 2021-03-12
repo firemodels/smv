@@ -607,10 +607,13 @@ void RemapColorbarType(int cb_oldtype, char *cb_newname){
       strcpy(cb_newname, "Methanol");
       break;
     case 15:
+      strcpy(cb_newname, "Propane");
+      break;
+    case 16:
       strcpy(cb_newname, "CO2");
       break;
     default:
-#define NCOLORBARS_PREV 16
+#define NCOLORBARS_PREV 17
       if(cb_oldtype>=NCOLORBARS_PREV){
         cb_oldtype -= (NCOLORBARS_PREV-ndefaultcolorbars);
       }
@@ -633,7 +636,7 @@ void InitDefaultColorbars(int nini){
   int i;
   colorbardata *cbi;
 
-  ndefaultcolorbars=17;
+  ndefaultcolorbars=18;
 
   FREEMEMORY(colorbarinfo);
   ncolorbars=ndefaultcolorbars;
@@ -1148,6 +1151,41 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[6] = 255;
   cbi->rgb_node[7] = 255;
   cbi->rgb_node[8] = 255;
+
+  cbi->index_node[3] = 255;
+  cbi->rgb_node[9] = 255;
+  cbi->rgb_node[10] = 255;
+  cbi->rgb_node[11] = 255;
+
+  cbi++;
+
+  // Propane
+
+  strcpy(cbi->label, "Propane");
+  cbi->label_ptr = cbi->label;
+
+  cbi->nnodes = 5;
+  cbi->nodehilight = 0;
+
+  cbi->index_node[0] = 0;
+  cbi->rgb_node[0] = 0;
+  cbi->rgb_node[1] = 0;
+  cbi->rgb_node[2] = 0;
+
+  cbi->index_node[1] = 140;
+  cbi->rgb_node[3] = 235;
+  cbi->rgb_node[4] = 120;
+  cbi->rgb_node[5] = 0;
+
+  cbi->index_node[2] = 160;
+  cbi->rgb_node[6] = 250;
+  cbi->rgb_node[7] = 180;
+  cbi->rgb_node[8] = 0;
+
+  cbi->index_node[2] = 190;
+  cbi->rgb_node[6] = 252;
+  cbi->rgb_node[7] = 248;
+  cbi->rgb_node[8] = 70;
 
   cbi->index_node[3] = 255;
   cbi->rgb_node[9] = 255;
