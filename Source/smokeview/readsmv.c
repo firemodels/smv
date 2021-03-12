@@ -6896,17 +6896,19 @@ int ReadSMV(bufferstreamdata *stream){
           geomobji->bounding_box = NULL;
           if(colorlabel!=NULL){
             int colors[3] = {-1, -1, -1};
+            float transparency = -1.0;
 
             colorlabel++;
             if(colorlabel!=buffer)colorlabel[-1] = 0;
-            sscanf(colorlabel, "%i %i %i", colors, colors+1, colors+2);
+            sscanf(colorlabel, "%i %i %i %f", colors, colors+1, colors+2, &transparency);
             if(colors[0]>=0&&colors[1]>=0&&colors[2]>=0){
               float fcolors[4];
 
               fcolors[0] = colors[0]/255.0;
               fcolors[1] = colors[1]/255.0;
               fcolors[2] = colors[2]/255.0;
-              fcolors[3] = 1.0;
+              if(transparency<0.0)transparency = 1.0;
+              fcolors[3] = transparency;
               geomobji->color = GetColorPtr(fcolors);
               geomobji->use_geom_color = 1;
             }
