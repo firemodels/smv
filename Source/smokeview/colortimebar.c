@@ -1182,15 +1182,15 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[7] = 180;
   cbi->rgb_node[8] = 0;
 
-  cbi->index_node[2] = 190;
-  cbi->rgb_node[6] = 252;
-  cbi->rgb_node[7] = 248;
-  cbi->rgb_node[8] = 70;
+  cbi->index_node[3] = 190;
+  cbi->rgb_node[9] = 252;
+  cbi->rgb_node[10] = 248;
+  cbi->rgb_node[11] = 70;
 
-  cbi->index_node[3] = 255;
-  cbi->rgb_node[9] = 255;
-  cbi->rgb_node[10] = 255;
-  cbi->rgb_node[11] = 255;
+  cbi->index_node[4] = 255;
+  cbi->rgb_node[12] = 255;
+  cbi->rgb_node[13] = 255;
+  cbi->rgb_node[14] = 255;
 
   cbi++;
 
