@@ -4232,7 +4232,7 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
           is_opaque = 0;
           tri = geomlisti->triangles+j;
           if(hilight_skinny==1&&tri->skinny==1)is_opaque = 1;
-          if(tri->geomobj->use_geom_color==1){
+          if(tri->geomobj!=NULL&&tri->geomobj->use_geom_color==1){
             if(tri->geomobj->color[3]>=1.0)is_opaque = 1;
           }
           else{
