@@ -1,4 +1,4 @@
-&HEAD CHID='voltest5' TITLE='volume rendering test case'
+&HEAD CHID='voltest5' TITLE='volume rendering test case'/
 
 &MULT ID='mesh array', DX=0.75,DY=0.75,DZ=1.0, I_UPPER=3,J_UPPER=3,K_UPPER=3 /
 &MESH IJK=48,48,32, XB=-1.5,-0.75,-1.5,-0.75,-.0625,0.9375, MULT_ID='mesh array' /
