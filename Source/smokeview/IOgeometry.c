@@ -4236,7 +4236,7 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
             if(tri->geomobj->color[3]>=1.0)is_opaque = 1;
           }
           else{
-            if(tri->geomsurf->transparent_level>=1.0)is_opaque;
+            if(tri->geomsurf->transparent_level>=1.0)is_opaque = 1;
           }
           if(geom_force_transparent == 1)is_opaque = 0;
           isurf = tri->geomsurf - surfinfo - nsurfinfo - 1;
