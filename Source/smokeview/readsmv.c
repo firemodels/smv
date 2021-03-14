@@ -6896,17 +6896,19 @@ int ReadSMV(bufferstreamdata *stream){
           geomobji->bounding_box = NULL;
           if(colorlabel!=NULL){
             int colors[3] = {-1, -1, -1};
+            float transparency = -1.0;
 
             colorlabel++;
             if(colorlabel!=buffer)colorlabel[-1] = 0;
-            sscanf(colorlabel, "%i %i %i", colors, colors+1, colors+2);
+            sscanf(colorlabel, "%i %i %i %f", colors, colors+1, colors+2, &transparency);
             if(colors[0]>=0&&colors[1]>=0&&colors[2]>=0){
               float fcolors[4];
 
               fcolors[0] = colors[0]/255.0;
               fcolors[1] = colors[1]/255.0;
               fcolors[2] = colors[2]/255.0;
-              fcolors[3] = 1.0;
+              if(transparency<0.0)transparency = 1.0;
+              fcolors[3] = transparency;
               geomobji->color = GetColorPtr(fcolors);
               geomobji->use_geom_color = 1;
             }
@@ -7671,11 +7673,14 @@ int ReadSMV(bufferstreamdata *stream){
       surfi->color = GetColorPtr(s_color);
       if(s_color[3]<0.99){
         surfi->transparent=1;
+        surfi->transparent_level = s_color[3];
+      }
+      else{
+        surfi->transparent_level = 1.0;
       }
       surfi->glui_color[0] = CLAMP(255*surfi->color[0],0,255);
       surfi->glui_color[1] = CLAMP(255*surfi->color[1], 0, 255);
       surfi->glui_color[2] = CLAMP(255*surfi->color[2], 0, 255);
-      surfi->transparent_level=1.0;
       surfi->temp_ignition=temp_ignition;
       surfi->emis=emis;
       surfi->t_height=t_height;

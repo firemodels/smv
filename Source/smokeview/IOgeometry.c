@@ -578,7 +578,7 @@ void DrawGeom(int flag, int timestate){
     ntris=ntransparent_triangles;
     tris=transparent_triangles;
   }
-  if(ntris==0)return;
+  if(ntris==0&&show_faces_shaded==1&&show_faces_outline==0)return;
 
   if(ntris>0&&timestate==GEOM_STATIC){
     float *color;
@@ -663,11 +663,12 @@ void DrawGeom(int flag, int timestate){
         else{
           if(trianglei->geomobj!=NULL&&trianglei->geomobj->color!=NULL&&trianglei->geomobj->use_geom_color==1){
             color = trianglei->geomobj->color;
+            transparent_level_local = trianglei->geomobj->color[3];
           }
           else{
             color = trianglei->geomsurf->color;
+            transparent_level_local = trianglei->geomsurf->transparent_level;
           }
-          transparent_level_local = trianglei->geomsurf->transparent_level;
         }
         if(geom_force_transparent==1)transparent_level_local = geom_transparency;
         if(use_select_color==1||use_surf_color==1){
@@ -4229,9 +4230,14 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
           int is_opaque;
 
           is_opaque = 0;
-          tri = geomlisti->triangles + j;
-          if(hilight_skinny == 1 && tri->skinny == 1)is_opaque = 1;
-          if(tri->geomsurf->transparent_level >= 1.0)is_opaque = 1;
+          tri = geomlisti->triangles+j;
+          if(hilight_skinny==1&&tri->skinny==1)is_opaque = 1;
+          if(tri->geomobj!=NULL&&tri->geomobj->use_geom_color==1){
+            if(tri->geomobj->color[3]>=1.0)is_opaque = 1;
+          }
+          else{
+            if(tri->geomsurf!=NULL&&tri->geomsurf->transparent_level>=1.0)is_opaque = 1;
+          }
           if(geom_force_transparent == 1)is_opaque = 0;
           isurf = tri->geomsurf - surfinfo - nsurfinfo - 1;
           tri->geomlisti = geomlisti;
