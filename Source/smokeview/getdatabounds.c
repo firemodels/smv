@@ -919,7 +919,7 @@ void PrintPartLoadSummary(int option_arg,int type_arg){
 /* ------------------ GetAllPartBounds ------------------------ */
 
 void GetAllPartBounds(void){
-  int i, ncount = 0;;
+  int i;
   FILE *stream = NULL;
 
   LOCK_PART_LOAD;
@@ -976,10 +976,6 @@ void GetAllPartBounds(void){
       }
       UNLOCK_PART_LOAD;
       return;
-    }
-    else{
-      if(ncount==0)printf("particle bound files have changed - re-generating global particle bound file\n");
-      ncount++;
     }
     fclose(stream);
   }
