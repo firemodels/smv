@@ -900,12 +900,12 @@ void PrintPartLoadSummary(int option_arg,int type_arg){
 
       partj = partinfo+j;
       doit = 0;
+#ifdef pp_PART_SIZE
       if(type_arg==PART_SIZING&&partj->boundstatus==PART_BOUND_COMPUTING)doit = 1;
+#endif
       if(type_arg==PART_LOADING&&partj->loadstatus==FILE_LOADING)doit = 1;
       if(doit==1){
-#ifdef pp_PART_SIZE
         printf("%s", partj->reg_file);
-#endif
         if(isize_local!=nsize_local-1)printf(", ");
         isize_local++;
       }
@@ -919,7 +919,7 @@ void PrintPartLoadSummary(int option_arg,int type_arg){
 /* ------------------ GetAllPartBounds ------------------------ */
 
 void GetAllPartBounds(void){
-  int i;
+  int i, ncount = 0;;
   FILE *stream = NULL;
 
   LOCK_PART_LOAD;
@@ -978,7 +978,8 @@ void GetAllPartBounds(void){
       return;
     }
     else{
-      printf("***warning: particle bound files have changed - re-generating global particle bound file\n");
+      if(ncount==0)printf("particle bound files have changed - re-generating global particle bound file\n");
+      ncount++;
     }
     fclose(stream);
   }
@@ -994,11 +995,15 @@ void GetAllPartBounds(void){
       continue;
     }
     parti->boundstatus = PART_BOUND_COMPUTING;
+#ifdef pp_PART_SIZE
     PrintPartLoadSummary(PART_BEFORE, PART_SIZING);
+#endif
     UNLOCK_PART_LOAD;
     ReadPartBounds(parti,global_have_global_bound_file);
     LOCK_PART_LOAD;
+#ifdef pp_PART_SIZE
     if(npartinfo>1)PrintPartLoadSummary(PART_AFTER, PART_SIZING);
+#endif
     parti->boundstatus = PART_BOUND_DEFINED;
     UNLOCK_PART_LOAD;
   }
