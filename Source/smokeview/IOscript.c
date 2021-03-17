@@ -551,13 +551,12 @@ int CompileScript(char *scriptfile){
 
   // add a SETVIEWPOINT command for the default view point at the beginning of thes script
   {
-    int keyword_index;
+    char label[20];
 
-    keyword_index = GetScriptKeywordIndex("SETVIEWPOINT");
-    InitScriptI(scriptinfo,keyword_index,"SETVIEWPOINT");
+    strcpy(label, "SETVIEWPOINT");
+    InitScriptI(scriptinfo, SCRIPT_SETVIEWPOINT, label);
+    scriptinfo->cval = GetPointer(viewpoint_label_startup);
   }
-  scriptinfo->cval = GetPointer(viewpoint_label_startup);
-
   /*
    ************************************************************************
    ************************ start of pass 2 *********************************
