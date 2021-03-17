@@ -1993,30 +1993,7 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'i':
-      if(cache_plot3d_data==1){
-        HandleIso();
-        return;
-      }
-      break;
-    case 'I':
-      show_slice_in_obst++;
-      if(show_slice_in_obst>2)show_slice_in_obst = 0;
-      UpdateShowSliceInObst();
-      updatemenu = 1;
-      break;
-    case 'j':
-    case 'J':
-      if(keystate==GLUT_ACTIVE_CTRL){
-        select_device = 1-select_device;
-        updatemenu = 1;
-        if(select_device==1){
-          printf("device selection on\n");
-        }
-        else{
-          printf("device selection off\n");
-        }
-      }
-      else if(keystate==GLUT_ACTIVE_ALT){
+      if(keystate==GLUT_ACTIVE_ALT){ // toggle device visibility
         if(nobject_defs>0){
           int vis;
 
@@ -2030,16 +2007,26 @@ void Keyboard(unsigned char key, int flag){
           updatemenu = 1;
         }
       }
-      else{
-        if(key2=='J'){
-          sensorrelsize /= 1.5;
-          UpdateDeviceSize();
-        }
-        else{
-          sensorrelsize *= 1.5;
-          UpdateDeviceSize();
-        }
+      else if(cache_plot3d_data==1){
+        HandleIso();
+        return;
       }
+      break;
+    case 'I':
+      show_slice_in_obst++;
+      if(show_slice_in_obst>2)show_slice_in_obst = 0;
+      UpdateShowSliceInObst();
+      updatemenu = 1;
+      break;
+    case 'j':
+    case 'J':
+      if(keystate==GLUT_ACTIVE_ALT||key2=='J'){
+        sensorrelsize /= 1.5;
+      }
+      else{
+        sensorrelsize *= 1.5;
+      }
+      UpdateDeviceSize();
       break;
     case '`':
       if(ndeviceinfo>0){
@@ -2079,9 +2066,21 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'k':
     case 'K':
-      visTimebar = 1 - visTimebar;
-      if(visTimebar==0)PRINTF("Time bar hidden\n");
-      if(visTimebar==1)PRINTF("Time bar visible\n");
+      if(keystate==GLUT_ACTIVE_ALT){ // toggle device selection
+        select_device = 1-select_device;
+        updatemenu = 1;
+        if(select_device==1){
+          printf("device selection on\n");
+        }
+        else{
+          printf("device selection off\n");
+        }
+      }
+      else{
+        visTimebar = 1 - visTimebar;
+        if(visTimebar==0)PRINTF("Time bar hidden\n");
+        if(visTimebar==1)PRINTF("Time bar visible\n");
+      }
       break;
     case 'l':
       LoadUnloadMenu(RELOADALL);
@@ -3322,7 +3321,7 @@ void SetScreenSize(int *width, int *height){
 
 void AdjustY(cameradata *ca){
 
-  if(projection_type!=PROJECTION_PERSPECTIVE||update_saving_viewpoint>0||update_viewpoint_script>0)return;
+  if(projection_type!=PROJECTION_PERSPECTIVE||update_saving_viewpoint>0)return;
   switch(selected_view){
     case 0:
     case -1:

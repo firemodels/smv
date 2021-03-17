@@ -931,9 +931,8 @@ extern "C" void ViewpointCB(int var){
     updatezoommenu = 1;
     EnableDisableViews();
 #ifdef pp_DISABLE_ADJUSTY
-    if(update_startup_view>0&&current_script_command==NULL){
-      AdjustY(camera_current);
-    }
+    if(current_script_command==NULL&&update_startup_view>0)AdjustY(camera_current);
+    if(current_script_command!=NULL&&update_viewpoint_script>0)AdjustY(camera_current);
 #else
     AdjustY(camera_current);
 #endif
