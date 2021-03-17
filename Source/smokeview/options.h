@@ -54,6 +54,7 @@
 //#define pp_SCRIPT_RENDER_FIX  // temporary fix to script rendering, needs to be explored further
 //#define pp_BINGEOM               // geometry format used by fds
 #define pp_DISABLE_ADJUSTY      // turn off y adjust when selecting a viewpoint
+#define pp_SCRIPT_SETVIEW       // add SETVIEWPOINT command at the beginning of a script
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
