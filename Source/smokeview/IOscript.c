@@ -546,7 +546,17 @@ int CompileScript(char *scriptfile){
     return 1;
   }
 
+  nscriptinfo++;
   NewMemory((void **)&scriptinfo,nscriptinfo*sizeof(scriptdata));
+
+  // add a SETVIEWPOINT command for the default view point at the beginning of thes script
+  {
+    int keyword_index;
+
+    keyword_index = GetScriptKeywordIndex("SETVIEWPOINT");
+    InitScriptI(scriptinfo,keyword_index,"SETVIEWPOINT");
+  }
+  scriptinfo->cval = GetPointer(viewpoint_label_startup);
 
   /*
    ************************************************************************
@@ -554,7 +564,7 @@ int CompileScript(char *scriptfile){
    ************************************************************************
  */
 
-  nscriptinfo=0;
+  nscriptinfo=1;
   rewind(stream);
   while(!feof(stream)){
     int keyword_index;
