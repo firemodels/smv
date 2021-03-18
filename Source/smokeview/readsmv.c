@@ -5614,10 +5614,6 @@ int ReadSMV(bufferstreamdata *stream){
   FREEMEMORY(camera_external_save);
   NewMemory((void **)&camera_external_save,sizeof(cameradata));
 
-  FREEMEMORY(camera_ini);
-  NewMemory((void **)&camera_ini,sizeof(cameradata));
-  camera_ini->defined=0;
-
   FREEMEMORY(camera_current);
   NewMemory((void **)&camera_current,sizeof(cameradata));
 
@@ -12846,10 +12842,10 @@ int ReadIni2(char *inifile, int localfile){
       char name_ini[32];
       float zoom_in;
       int zoomindex_in;
-      cameradata *ci;
+      cameradata camera_local, *ci;
       char *bufferptr;
 
-      ci = camera_ini;
+      ci = &camera_local;
 
       if(Match(buffer, "VIEWPOINT6") == 1)is_viewpoint6 = 1;
 
@@ -12873,6 +12869,7 @@ int ReadIni2(char *inifile, int localfile){
         eye[1] = ymin_local + eye[1] * xyzmaxdiff_local;
         eye[2] = zmin_local + eye[2] * xyzmaxdiff_local;
       }
+#ifdef pp_ZOOM_INI
       zoom = zoom_in;
       zoomindex = zoomindex_in;
       if(zoomindex != -1){
@@ -12892,6 +12889,7 @@ int ReadIni2(char *inifile, int localfile){
         }
       }
       updatezoommenu = 1;
+#endif
 
       p_type = 0;
       fgets(buffer, 255, stream);
@@ -12955,9 +12953,9 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       TrimBack(buffer);
       bufferptr = TrimFront(buffer);
-      strcpy(camera_ini->name, bufferptr);
+      strcpy(ci->name, bufferptr);
       InitCameraList();
-      InsertCamera(&camera_list_first, camera_ini, bufferptr);
+      InsertCamera(&camera_list_first, ci, bufferptr);
 
       EnableResetSavedView();
       ci->dirty = 1;
