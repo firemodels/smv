@@ -6,7 +6,6 @@
 #include GLUT_H
 #include <math.h>
 
-#include "update.h"
 #include "smokeviewvars.h"
 
 GLUI *glui_shooter=NULL;
@@ -275,7 +274,6 @@ void ShooterCB(int var){
 
 extern "C" void GluiShooterSetup(int main_window){
 
-  update_glui_shooter=0;
   if(glui_shooter!=NULL){
     glui_shooter->close();
     glui_shooter=NULL;

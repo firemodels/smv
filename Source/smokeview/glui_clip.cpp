@@ -279,7 +279,6 @@ void SetClipControls(int val){
 /* ------------------ GluiClipSetup ------------------------ */
 
 extern "C" void GluiClipSetup(int main_window){
-  update_glui_clip=0;
   if(glui_clip!=NULL){
     glui_clip->close();
     glui_clip=NULL;

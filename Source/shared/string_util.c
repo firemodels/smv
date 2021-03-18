@@ -406,66 +406,58 @@ char *GetFormat(int bef, int aft, char *format){
   return format;
 }
 
-/* ------------------ SliceNum2String ------------------------ */
+/* ------------------ Truncate ------------------------ */
 
-void SliceNum2String(char *string, float tval, int ndecimals){
-  float tval2, mant10;
-  int exp10;
-  char format[20];
+void Truncate(float val, char *cval, int ndigits){
+  int i, count=0, have_period=0;
 
-  tval2 = ABS(tval);
-  if(0.01-.001<=tval2&&tval2<0.1){
-    sprintf(string, GetFormat(3,ndecimals+1,format), tval);
-  }
-  else if(0.1<=tval2&&tval2<1.0){
-    sprintf(string, GetFormat(3,ndecimals+1,format), tval);
-  }
-  else if(1.0<=tval2&&tval2<10.0){
-    sprintf(string, GetFormat(3,ndecimals+1,format), tval);
-  }
-  else if(10.0<=tval2&&tval2<100.0){
-    sprintf(string, GetFormat(3,ndecimals,format), tval);
-  }
-  else if(100.0<=tval2&&tval2<1000.0){
-    sprintf(string, GetFormat(3,ndecimals-1,format), tval);
-  }
-  else if(1000.0<=tval2&&tval2<10000.0){
-    sprintf(string, GetFormat(4,ndecimals-1,format), tval);
-  }
-  else if(10000.0<=tval2&&tval2<100000.0){
-    sprintf(string, GetFormat(5,ndecimals-1,format), tval);
-  }
-  else if(tval2==0.0){
-    STRCPY(string, "0.00");
-  }
-  else{
-    mant10 = FrExp10(tval, &exp10);
-    mant10 = (float)((int)(10.0f*mant10+0.5f))/10.0f;
-    if(mant10>=10.0f){
-      mant10 /= 10.0f;
-      exp10++;
-    }
-    if(exp10<-99){
-      STRCPY(string, "0.00");
-    }
-    else if(exp10>=-99&&exp10<-9){
-      sprintf(string, "%2.1f%i", mant10, exp10);
-    }
-    else if(exp10>99){
-      STRCPY(string, "***");
-    }
-    else{
-      if(exp10==0){
-        sprintf(string, "%2.1f", mant10);
+  sprintf(cval,"%f",val);
+  for(i = 0; i<strlen(cval); i++){
+    if(cval[i]=='.')have_period = 1;
+    if(cval[i]=='.'||cval[i]=='-'||cval[i]=='+')continue;
+    count++;
+    if(count>ndigits){
+      if(have_period==1){
+        cval[i] = 0;
+        break;
       }
       else{
-        sprintf(string, "%2.1fE%i", mant10, exp10);
+        cval[i] = '0';
       }
     }
-
-    /*sprintf(string,"%1.1e",tval); */
   }
-  if(strlen(string)>9)fprintf(stderr, "***fatal error - overwriting string\n");
+}
+
+/* ------------------ Float2String ------------------------ */
+
+void Float2String(char *c_val, float val, int ndigits){
+  float mantissa;
+  int exponent;
+  
+  mantissa = GetMantissaExponent(ABS(val), &exponent);
+  mantissa += 5.0*pow(10.0,-ndigits);
+  if(exponent>=0&&exponent<5){
+    char c_abs_val[32];
+
+    val = SIGN(val)*mantissa*pow(10.0,exponent);
+    Truncate(ABS(val), c_abs_val, ndigits);
+    TrimZeros(c_abs_val);
+    strcpy(c_val,"");
+    if(val<0.0)strcat(c_val,"-");
+    strcat(c_val,c_abs_val);
+  }
+  else{
+    char c_mantissa[32], c_exponent[32];
+
+    Truncate(mantissa, c_mantissa, ndigits);
+    TrimZeros(c_mantissa);
+    sprintf(c_exponent, "%i", exponent);
+    strcpy(c_val, "");
+    if(val<0.0)strcat(c_val, "-");
+    strcat(c_val, c_mantissa);
+    strcat(c_val, "E");
+    strcat(c_val, c_exponent);
+  }
 }
 
 /* ------------------ Num2String ------------------------ */
@@ -500,7 +492,7 @@ void Num2String(char *string, float tval){
     STRCPY(string,"0.00");
   }
   else{
-    mant10 = FrExp10(tval,&exp10);
+    mant10 = GetMantissaExponent(tval,&exp10);
     mant10 = (float)((int)(10.0f*mant10+0.5f))/10.0f;
     if(mant10>=10.0f){
       mant10/=10.0f;
@@ -629,9 +621,9 @@ void Array2String(float *vals, int nvals, char *string){
   strcat(string,cval);
 }
 
-/* ------------------ FrExp10 ------------------------ */
+/* ------------------ GetMantissaExponent ------------------------ */
 
-float FrExp10(float x, int *exp10){
+float GetMantissaExponent(float x, int *exp10){
   float xabs, mantissa;
 
   xabs = ABS((double)x);
@@ -1356,14 +1348,6 @@ unsigned int DiffDate(char *token, char *tokenbase){
   return difft;
 }
 
-#ifdef pp_BETA
-  #define SET_VERSIONTITLE
-#else
-#ifndef pp_OFFICIAL_RELEASE
-  #define SET_VERSIONTITLE
-#endif
-#endif
-
 /* ------------------ GetBaseTitle ------------------------ */
 
 void GetBaseTitle(char *progname, char *title_base){
@@ -1383,11 +1367,6 @@ void GetBaseTitle(char *progname, char *title_base){
   strcat(title_base, " ");
   strcat(title_base, version);
 
-#ifdef SET_VERSIONTITLE
-  if(strcmp(version,"")!=0)strcat(title_base, "(");
-  strcat(title_base, git_version);
-  if(strcmp(version,"")!=0)strcat(title_base, ")");
-#endif
   strcat(title_base, " - ");
 }
 
@@ -1423,7 +1402,13 @@ unsigned char *GetHashSHA1(char *file){
     char *pathentry, fullpath[1024];
 
     pathentry = Which(file);
-    strcpy(fullpath, pathentry);
+    if(pathentry==NULL){
+      strcpy(fullpath,".");
+      strcat(fullpath,dirseparator);
+    }
+    else{
+      strcpy(fullpath, pathentry);
+    }
     strcat(fullpath, file);
 #ifdef WIN32
     {
@@ -1480,7 +1465,13 @@ unsigned char *GetHashMD5(char *file){
     char *pathentry, fullpath[1024];
 
     pathentry = Which(file);
-    strcpy(fullpath, pathentry);
+    if(pathentry==NULL){
+      strcpy(fullpath,".");
+      strcat(fullpath,dirseparator);
+    }
+    else{
+      strcpy(fullpath, pathentry);
+    }
     strcat(fullpath, file);
 #ifdef WIN32
     {
@@ -1528,7 +1519,13 @@ unsigned char *GetHashSHA256(char *file){
     char *pathentry, fullpath[1024];
 
     pathentry = Which(file);
-    strcpy(fullpath, pathentry);
+    if(pathentry==NULL){
+      strcpy(fullpath,".");
+      strcat(fullpath,dirseparator);
+    }
+    else{
+      strcpy(fullpath, pathentry);
+    }
     strcat(fullpath, file);
 #ifdef WIN32
     {
@@ -1690,13 +1687,17 @@ void PRINTversion(char *progname){
 #endif
 #ifdef WIN32
   PRINTF("Platform         : WIN64 ");
-#ifdef pp_INTEL
+#ifdef __INTEL_COMPILER
   PRINTF(" (Intel C/C++)");
 #endif
   PRINTF("\n");
 #endif
 #ifdef pp_OSX
+#ifdef pp_QUARTZ
+  PRINTF("Platform         : OSX64/QUARTZ\n");
+#else
   PRINTF("Platform         : OSX64\n");
+#endif
 #endif
 #ifdef pp_LINUX
   PRINTF("Platform         : LINUX64\n");

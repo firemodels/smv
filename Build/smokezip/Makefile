@@ -8,6 +8,8 @@ FILTERC =
 FILTERF =
 OPT =
 
+SMV_TESTFLAG=
+
 VPATH = $(SOURCE_DIR)/smokezip ../../../../FDS/Source $(SOURCE_DIR)/shared $(SOURCE_DIR)/smokeview 
 bin = .
 
@@ -33,8 +35,8 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 # Definition of the object variables
 
 obj =    main.o CNV3dsmoke.o CNVboundary.o CNVpart.o CNVplot3d.o CNVslice.o assert.o \
-         csphere.o dmalloc.o lightsmoke.o histogram.o readfiles.o utilities.o \
-         isobox.o file_util.o string_util.o threader.o compress.o md5.o sha1.o sha256.o \
+         csphere.o dmalloc.o lightsmoke.o histogram.o readfiles.o utilities.o isobox.o\
+         file_util.o string_util.o threader.o compress.o md5.o sha1.o sha256.o stdio_buffer.o\
          fdsmodules.o gsmv.o getdata.o
 objwin = $(obj:.o=.obj)
 
@@ -65,8 +67,8 @@ no_target:
 # ------------- intel win 64 ----------------
 
 intel_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads 
-intel_win_64 : CFLAGS    = -Od /nologo -D pp_INTEL -D WIN32 -D PTW32_STATIC_LIB -D X64  $(OPT) $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : FFLAGS    = -Od /nologo -fpp -D pp_cvf -D X64 -D pp_INTEL -D WIN32 /iface:stdref /fpscomp:general
+intel_win_64 : CFLAGS    = -Od /nologo -D WIN32 -D PTW32_STATIC_LIB -D X64  $(OPT) $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG) 
+intel_win_64 : FFLAGS    = -Od /nologo -fpp -D pp_cvf -D X64 -D WIN32 /iface:stdref /fpscomp:general
 intel_win_64 : CC        = icl
 intel_win_64 : CPP       = icl
 intel_win_64 : FC        = ifort
@@ -79,7 +81,7 @@ intel_win_64 : $(objwin)
 
 gnu_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads 
 gnu_win_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4
-gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
+gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW $(SMV_TESTFLAG) 
 gnu_win_64 : LFLAGS    = -m64
 gnu_win_64 : CC        = gcc
 gnu_win_64 : CPP       = g++
@@ -92,7 +94,7 @@ gnu_win_64 : $(obj)
 # ------------- gnu linux 64 ----------------
 
 gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_LINUX -ffree-form -frecord-marker=4
-gnu_linux_64 : CFLAGS    = -O0 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64 : CFLAGS    = -O0 -m64 -Wall -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG) 
 gnu_linux_64 : LFLAGS    = -m64
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : CPP       = g++
@@ -105,7 +107,7 @@ gnu_linux_64 : $(obj)
 # ------------- gnu linux 64 ----------------
 
 gnu_linux_64_db : FFLAGS    = -O0 -m64 -ggdb -Wall -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 -fcheck=all -fbacktrace
-gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO)
+gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG) 
 gnu_linux_64_db : LFLAGS    = -m64
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : CPP       = g++
@@ -119,7 +121,7 @@ gnu_linux_64_db : $(obj)
 # ------------- gnu osx 64 ----------------
 
 gnu_osx_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_OSX -ffree-form -frecord-marker=4
-gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
+gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_OSX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG) 
 gnu_osx_64 : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread -L $(GLIBDIR) -lgfortran
 gnu_osx_64 : CC        = gcc
 gnu_osx_64 : CPP       = g++
@@ -132,7 +134,7 @@ gnu_osx_64 : $(obj)
 # ------------- gnu osx 64 db ----------------
 
 gnu_osx_64_db : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_OSX -ffree-form -frecord-marker=4
-gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO)
+gnu_osx_64_db : CFLAGS    = -O0 -m64 -Wall -D _DEBUG -D pp_OSX -D pp_GCC -Wno-deprecated-declarations -Wno-write-strings $(GNU_COMPINFO) $(GITINFO) $(SMV_TESTFLAG) 
 gnu_osx_64_db : LFLAGS    = -L $(LIB_DIR)/gnu_osx_64 -lz -lpthread -L $(GLIBDIR) -lgfortran
 gnu_osx_64_db : CC        = gcc
 gnu_osx_64_db : CPP       = g++
@@ -146,8 +148,8 @@ gnu_osx_64_db : $(obj)
 
 LINUXFORTLIBS_64=$(IFORT_COMPILER_LIB)/libifcore.a
 
-intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_INTEL -D pp_LINUX
-intel_linux_64 : CFLAGS    = -O2 -m64 ${INC_DIR} -D pp_LINUX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_LINUX
+intel_linux_64 : CFLAGS    = -O2 -m64 ${INC_DIR} -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG) 
 intel_linux_64 : LFLAGS    = -lifport $(LINUXFORTLIBS_64) -L $(LIB_DIR)/intel_linux_64 -lz -lpthread -static-intel
 intel_linux_64 : CC        = icc
 intel_linux_64 : CPP       = icc
@@ -162,8 +164,8 @@ OSXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libifport.
 
 # ------------- intel osx 64 ----------------
 
-intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_INTEL -D pp_OSX  -mmacosx-version-min=10.9 -stand:f08
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)  -mmacosx-version-min=10.9 
+intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_OSX  -mmacosx-version-min=10.9 -stand:f08
+intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)  $(SMV_TESTFLAG)  -mmacosx-version-min=10.9 
 intel_osx_64 : LFLAGS    = -m64 -static-intel -mmacosx-version-min=10.9 $(OSXFORTLIBS) -L $(LIB_DIR)/intel_osx_64 -lz -lpthread
 intel_osx_64 : CC        = icc
 intel_osx_64 : CPP       = icc
@@ -175,8 +177,8 @@ intel_osx_64 : $(obj)
 
 # ------------- intel osx 64 db ----------------
 
-intel_osx_64_db : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_INTEL -D pp_OSX -mmacosx-version-min=10.9 -stand:f08
-intel_osx_64_db : CFLAGS    = -O0 -g -m64 -static-intel -D _DEBUG -D pp_OSX -D pp_INTEL -mmacosx-version-min=10.9 $(SMV_TESTFLAG) -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64_db : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_OSX -mmacosx-version-min=10.9 -stand:f08
+intel_osx_64_db : CFLAGS    = -O0 -g -m64 -static-intel -D _DEBUG -D pp_OSX -mmacosx-version-min=10.9 $(SMV_TESTFLAG) -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64_db : LFLAGS    = -m64 -static-intel -mmacosx-version-min=10.9 $(OSXFORTLIBS) -L $(LIB_DIR)/intel_osx_64 -lz -lpthread
 intel_osx_64_db : CC        = icc
 intel_osx_64_db : CPP       = icc

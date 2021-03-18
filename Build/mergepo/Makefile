@@ -60,7 +60,7 @@ no_target:
 
 # ------------- win 64 ----------------
 
-intel_win_64 : CFLAGS    = -O2 /nologo -D X64 -D WIN32 -D pp_INTEL -D PTW32_STATIC_LIB $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -O2 /nologo -D X64 -D WIN32 -D PTW32_STATIC_LIB $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : LFLAGS    = 
 intel_win_64 : CC        = icl
 intel_win_64 : CPP       = icl
@@ -82,7 +82,7 @@ gnu_win_64 : $(obj)
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = icc
 intel_linux_64 : CPP       = icc
 intel_linux_64 : exe       = mergepo_linux_64
@@ -102,7 +102,7 @@ gcc_linux_64 : $(obj)
 
 # ------------- intel osx 64 ----------------
 
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : CC        = icc
 intel_osx_64 : CPP       = icc
 intel_osx_64 : exe       = mergepo_osx_64

@@ -30,7 +30,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # Definition of the object variables
 
-obj = sh2bat.o string_util.o dmalloc.o assert.o file_util.o md5.o sha1.o sha256.o
+obj = sh2bat.o string_util.o dmalloc.o assert.o file_util.o md5.o sha1.o sha256.o stdio_buffer.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***
@@ -50,7 +50,7 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -D WIN32 -O2 -D pp_INTEL /nologo $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -D WIN32 -O2 /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
 intel_win_64 : CPP       = icl
 intel_win_64 : exe       = sh2bat_win_64.exe

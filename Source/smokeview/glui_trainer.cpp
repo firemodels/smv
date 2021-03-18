@@ -71,7 +71,6 @@ extern "C" void HideGluiAlert(void){
 /* ------------------ GluiAlertSetup ------------------------ */
 
 extern "C" void GluiAlertSetup(int main_window){
-  update_glui_alert=0;
   if(glui_alert!=NULL){
     glui_alert->close();
     glui_alert=NULL;
@@ -317,7 +316,6 @@ void RotateCB(int var){
 
 extern "C" void GluiTrainerSetup(int main_window){
 
-  update_glui_trainer=0;
   if(glui_trainer!=NULL){
     glui_trainer->close();
     glui_trainer=NULL;
@@ -360,7 +358,6 @@ extern "C" void GluiTrainerSetup(int main_window){
     for(ca=camera_list_first.next;ca->next!=NULL;ca=ca->next){
       char line[256];
 
-      if(strcmp(ca->name,"internal")==0)continue;
       if(strcmp(ca->name,"external")==0){
         strcpy(line,"Default");
         LIST_viewpoint->add_item(ca->view_id,line);

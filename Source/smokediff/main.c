@@ -7,6 +7,7 @@
 #include "svdiff.h"
 #include "string_util.h"
 #include "MALLOCC.h"
+#include "stdio_buffer.h"
 
 //dummy change to bump version number to 1.0.10
 //dummy change to force githash change
@@ -289,10 +290,6 @@ int main(int argc, char **argv){
   ReadSMV(smv_buffer2, NULL, caseinfo+1);
   FCLOSE(smv_buffer2);
 
-  if(no_plot3d==0){
-    SetupPlot3D(stream_out);
-    diff_plot3ds(stream_out);
-  }
   if(no_slice==0){
     setup_slice(stream_out);
     diff_slices(stream_out);
@@ -300,6 +297,10 @@ int main(int argc, char **argv){
   if(no_boundary==0){
     setup_boundary(stream_out);
     diff_boundaryes(stream_out);
+  }
+  if(no_plot3d==0){
+    SetupPlot3D(stream_out);
+    diff_plot3ds(stream_out);
   }
 
   fclose(stream_out);

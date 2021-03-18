@@ -7,7 +7,7 @@
 #define pp_HASH   // md5, sha1 and sha255 hashing
 #endif
 
-#ifdef pp_INTEL
+#ifdef __INTEL_COMPILER
 #define pp_FSEEK
 #ifdef WIN32
 #define HAVE_MSVS
@@ -22,7 +22,7 @@
 //*** needed when using Windows Intel compilers
 //    to prevent warnings/errors
 
-#ifdef pp_INTEL
+#ifdef __INTEL_COMPILER
 
 #ifndef _CRT_SECURE_NO_DEPRECATE
 #define _CRT_SECURE_NO_DEPRECATE
@@ -137,7 +137,6 @@
 #define SVEXTERN extern CCC
 #define SVDECL(var,val)  var
 #endif
-
 
 #define GLUT_H <GL/glut.h>
 #ifdef pp_OSX

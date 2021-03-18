@@ -1,3 +1,4 @@
+#include "option_glui.h"
 /****************************************************************************
   
   GLUI User Interface Toolkit
@@ -21,11 +22,12 @@
 #define _GLUI_H_
 
 #ifdef pp_OSX
-//#ifdef pp_QUARTZ
-//#include <GL/glut.h>
-//#else
+#ifdef pp_QUARTZ
+#include <GL/glut.h>
+#else
 #include <GLUT/glut.h>
-//#endif
+#include "glutbitmap.h"  // only needed on non-quartz osx platforms
+#endif
 #else
 #include <GL/glut.h>
 #endif
@@ -97,8 +99,15 @@ enum GLUI_Control_Types {
 
 
 /********* Constants for window placement **********/
-#define GLUI_XOFF                     6
-#define GLUI_YOFF                     6
+//#define GLUI_XOFF                     6 // original values
+//#define GLUI_YOFF                     6
+#ifdef pp_OSX
+#define GLUI_XOFF                     3
+#define GLUI_YOFF                     1
+#else
+#define GLUI_XOFF                     3
+#define GLUI_YOFF                     3
+#endif
 #define GLUI_ITEMSPACING              3
 #define GLUI_CHECKBOX_SIZE           13
 #define GLUI_RADIOBUTTON_SIZE        13
@@ -371,7 +380,11 @@ extern int glui_img_listbox_up_dis[];
 
 extern int *bitmap_arrays[];
 
-
+#ifdef pp_OSX_HIGHRES
+#define GLUT_BITMAP_HELVETICA_20        (&glutBitmapHelvetica20)
+#define GLUT_BITMAP_HELVETICA_24        (&glutBitmapHelvetica24)
+#define GLUT_BITMAP_HELVETICA_36        (&glutBitmapHelvetica36)
+#endif
 
 /************************************************************/
 /*                                                          */
@@ -382,12 +395,18 @@ class GLUI_Bitmap
 {
 public:
   unsigned char *pixels;
+#ifdef pp_OSX_HIGHRES
+  unsigned char *pixels_highres;
+#endif
   int            w, h;
   
   void load_from_array( int *array );
 
   GLUI_Bitmap( void ) {
     pixels = NULL;
+#ifdef pp_OSX_HIGHRES
+    pixels_highres = NULL;
+#endif
     w      = 0;
     h      = 0;
   }
@@ -1690,6 +1709,31 @@ void glui_parent_window_keyboard_func(unsigned char key, int x, int y);
 void glui_parent_window_mouse_func(int, int, int, int );
 void glui_parent_window_special_func(int key, int x, int y);
 
+#ifdef pp_OSX_HIGHRES
+#ifdef IN_GLUICPP
+int double_scale=1;
+#else
+extern "C" int double_scale;
+#endif
+#endif
 
+#ifdef CPP
+#define CCCC "C"
+#else
+#define CCCC
+#endif
+
+
+#ifdef INGLUT
+#define GLUTEXTERN
+#else
+#define GLUTEXTERN extern CCCC
+#endif
+
+#ifdef pp_OSX_HIGHRES
+GLUTEXTERN const BitmapFontRec glutBitmapHelvetica20;
+GLUTEXTERN const BitmapFontRec glutBitmapHelvetica24;
+GLUTEXTERN const BitmapFontRec glutBitmapHelvetica36;
+#endif
 
 #endif

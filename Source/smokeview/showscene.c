@@ -7,7 +7,6 @@
 #include <sys/stat.h>
 #include GLUT_H
 
-#include "update.h"
 #include "smokeviewvars.h"
 #include "viewports.h"
 #include "IOobjects.h"
@@ -53,16 +52,16 @@ void DrawLights(float *position0, float *position1){
 /* ------------------ ShowScene2 ------------------------ */
 
 void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
-  if(rotation_type == EYE_CENTERED&&nskyboxinfo>0)DrawSkybox();
-  UpdateLights(light_position0, light_position1);
-  if(drawlights==1)DrawLights(light_position0, light_position1);
+  if(mode==DRAWSCENE){
+    if(rotation_type==EYE_CENTERED&&nskyboxinfo>0)DrawSkybox();
+    UpdateLights(light_position0, light_position1);
+    if(drawlights==1)DrawLights(light_position0, light_position1);
 
 
  // if(render_status==RENDER_ON&&render_mode==RENDER_360){
  //   UpdateLights(light_position0, light_position1);
  // }
 
-  if(mode == DRAWSCENE){
     glPointSize((float)1.0);
 
 
@@ -112,7 +111,8 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     /* ++++++++++++++++++++++++ draw sensors/sprinklers/heat detectors +++++++++++++++++++++++++ */
 
     CLIP_GEOMETRY;
-    DrawDevices();
+
+    DrawDevices(mode);
     if(viswindrose)DrawWindRosesDevices();
     SNIFF_ERRORS("after DrawDevices");
 
@@ -197,7 +197,8 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   if(mode == SELECTOBJECT){
     if(select_device == 1){
       CLIP_GEOMETRY;
-      DrawDevices();
+
+      DrawDevices(mode);
       SNIFF_ERRORS("after drawselect_devices");
       return;
     }
@@ -487,7 +488,19 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   if(active_smokesensors == 1 && show_smokesensors != SMOKESENSORS_HIDDEN){
     CLIP_VALS;
     GetSmokeSensors();
+
     DrawDevicesVal();
+  }
+
+  /* ++++++++++++++++++++++++ draw device plots +++++++++++++++++++++++++ */
+
+  if(mode==DRAWSCENE){
+    if((show_hrrpuv_plot==1&&hrrinfo!=NULL)||showdevice_plot==DEVICE_PLOT_SHOW_ALL||showdevice_plot==DEVICE_PLOT_SHOW_SELECTED){
+      DrawDevicePlots();
+    }
+    if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL){
+      DrawTreeDevicePlots();
+    }
   }
 
   /* ++++++++++++++++++++++++ draw zone fire modeling info +++++++++++++++++++++++++ */
@@ -583,6 +596,11 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
     if(VP_title.doit == 1){
       ViewportTitle(quad, s_left, s_down);
       SNIFF_ERRORS("after ViewportTitle");
+    }
+
+    if(histogram_draw!=NULL){
+      ViewportHistogram(quad, s_left, s_down);
+      SNIFF_ERRORS("after ViewportHistogram");
     }
 
     ViewportScene(quad, view_mode, s_left, s_down, screen);

@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include "histogram.h"
 #include "pragmas.h"
@@ -27,7 +28,7 @@ float GetHistogramCDF(histogramdata *histogram, float val){
   return (float)sum / (float)histogram->ntotal;
 }
 
-  /* ------------------ GetHistogramVal ------------------------ */
+/* ------------------ GetHistogramVal ------------------------ */
 
 float GetHistogramVal(histogramdata *histogram, float cdf){
 
@@ -116,7 +117,7 @@ void FreeHistogram(histogramdata *histogram){
   }
 }
 
-/* ------------------ get_hist_statistics ------------------------ */
+/* ------------------ GetHistogramStats ------------------------ */
 
 void GetHistogramStats(histogramdata *histogram){
   int i, ntotal;
@@ -250,7 +251,67 @@ void CopyVals2Histogram(float *vals, char *mask, float *weight, int nvals, histo
   histogram->val_max=valmax;
 }
 
-  /* ------------------ UpdateHistogram ------------------------ */
+  /* ------------------ MergeVals2Histogram ------------------------ */
+
+void MergeVals2Histogram(float *vals, char *mask, float *weight, int nvals, histogramdata *histogram){
+
+// copy vals into histogram
+
+  int i;
+  float valmin, valmax;
+  float dbucket;
+  float nnvals = 0.0;
+
+// initialize
+
+  valmin = histogram->val_min;
+  valmax = histogram->val_max;
+  histogram->defined = 1;
+
+  for(i = 0; i<nvals; i++){
+    if(mask!=NULL&&mask[i]==0)continue;
+    if(weight!=NULL){
+      nnvals += weight[i];
+    }
+    else{
+      nnvals++;
+    }
+  }
+
+// record unmasked data in histogram
+
+  if(nnvals>0){
+    dbucket = (valmax-valmin)/histogram->nbuckets;
+    if(dbucket==0.0){
+      if(weight!=NULL){
+        histogram->buckets[0] += nnvals;
+      }
+      else{
+        histogram->buckets[0] += nnvals;
+      }
+    }
+    else{
+      for(i = 0; i<nvals; i++){
+        int ival;
+
+        if(mask!=NULL&&mask[i]==0)continue;
+        ival = (vals[i]-valmin)/dbucket;
+        ival = CLAMP(ival, 0, histogram->nbuckets-1);
+        if(weight!=NULL){
+          histogram->buckets[ival] += weight[i];
+        }
+        else{
+          histogram->buckets[ival]++;
+        }
+      }
+    }
+  }
+  histogram->ntotal += nnvals;
+  histogram->val_min = valmin;
+  histogram->val_max = valmax;
+}
+
+/* ------------------ UpdateHistogram ------------------------ */
 
 void UpdateHistogram(float *vals, char *mask, int nvals, histogramdata *histogram_to){
 

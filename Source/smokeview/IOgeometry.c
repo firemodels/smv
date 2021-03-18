@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "update.h"
 #include "smokeviewvars.h"
 #ifdef pp_ISOTIME
 #include GLUT_H
@@ -547,6 +546,7 @@ void DrawGeom(int flag, int timestate){
           if(trianglei->exterior==1&&show_faces_exterior==0)continue;
           if(trianglei->exterior==0&&show_faces_interior==0)continue;
           if(trianglei->geomtype==GEOM_GEOM&&show_faces_shaded==0)continue;
+          if(trianglei->geomsurf->invisible==1)continue;
         }
         else{
           if(show_iso_shaded==0)continue;
@@ -2429,14 +2429,18 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
 
       // compute texture coordinates
 
-      if(terrain_textures!=NULL&&geomi->is_terrain==1){
-        float xmin, xmax, ymin, ymax, xfactor, yfactor;
+
+      if(geomi->is_terrain==1){
+        float xmin, xmax, ymin, ymax, zmin, zmax;
         int ii;
 
         xmin = verts[0].xyz[0];
         xmax = xmin;
         ymin = verts[0].xyz[1];
         ymax = ymin;
+        zmin = verts[0].xyz[2];
+        zmax = zmin;
+
         for(ii=1;ii<nverts;ii++){
           float *xyz;
 
@@ -2445,34 +2449,62 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           xmax = MAX(xmax,xyz[0]);
           ymin = MIN(ymin,xyz[1]);
           ymax = MAX(ymax,xyz[1]);
+          zmin = MIN(zmin,xyz[2]);
+          zmax = MAX(zmax,xyz[2]);
         }
-        xfactor = 1.0;
-        yfactor = 1.0;
-        if(ABS(xmax-xmin)>0.0001)xfactor = 1.0/(xmax-xmin);
-        if(ABS(ymax-ymin)>0.0001)yfactor = 1.0/(ymax-ymin);
-        for(ii=0;ii<ntris;ii++){
-          float *text_coords;
-          int *tri_ind;
-          float *xy;
-          vertdata *vert;
+        if(zmax>zmin&&xmax>xmin){
+          float xratio, yratio, zratio;
 
-          text_coords = texture_coords + 6*ii;
-          tri_ind = ijk + 3*ii;
+          xratio = (xmax-xmin)/(xbarORIG-xbar0ORIG);
+          yratio = (ymax-ymin)/(ybarORIG-ybar0ORIG);
+          zratio = (zmax-zmin)/(zbarORIG-zbar0ORIG);
 
-          vert = verts+tri_ind[0]-1;
-          xy = vert->xyz;
-          text_coords[0] = (xy[0]-xmin)*xfactor;
-          text_coords[1] = (xy[1]-ymin)*yfactor;
+          geomyfactor = MAX(xratio,zratio);
+          geomyfactor = MAX(1.0,geomyfactor);
 
-          vert = verts+tri_ind[1]-1;
-          xy = vert->xyz;
-          text_coords[2] = (xy[0]-xmin)*xfactor;
-          text_coords[3] = (xy[1]-ymin)*yfactor;
+          geomzfactor = MAX(xratio, yratio);
+          geomzfactor = MAX(1.0, geomzfactor);
 
-          vert = verts+tri_ind[2]-1;
-          xy = vert->xyz;
-          text_coords[4] = (xy[0]-xmin)*xfactor;
-          text_coords[5] = (xy[1]-ymin)*yfactor;
+          geom_xmin = xmin;
+          geom_xmax = xmax;
+          geom_ymin = ymin;
+          geom_ymax = ymax;
+          geom_zmin = zmin;
+          geom_zmax = zmax;
+          have_geom_factors = 1;
+        }
+
+        if(terrain_textures!=NULL){
+          float xfactor, yfactor;
+
+          xfactor = 1.0;
+          yfactor = 1.0;
+          if(ABS(xmax-xmin)>0.0001)xfactor = 1.0/(xmax-xmin);
+          if(ABS(ymax-ymin)>0.0001)yfactor = 1.0/(ymax-ymin);
+          for(ii=0;ii<ntris;ii++){
+            float *text_coords;
+            int *tri_ind;
+            float *xy;
+            vertdata *vert;
+
+            text_coords = texture_coords + 6*ii;
+            tri_ind = ijk + 3*ii;
+
+            vert = verts+tri_ind[0]-1;
+            xy = vert->xyz;
+            text_coords[0] = (xy[0]-xmin)*xfactor;
+            text_coords[1] = (xy[1]-ymin)*yfactor;
+
+            vert = verts+tri_ind[1]-1;
+            xy = vert->xyz;
+            text_coords[2] = (xy[0]-xmin)*xfactor;
+            text_coords[3] = (xy[1]-ymin)*yfactor;
+
+            vert = verts+tri_ind[2]-1;
+            xy = vert->xyz;
+            text_coords[4] = (xy[0]-xmin)*xfactor;
+            text_coords[5] = (xy[1]-ymin)*yfactor;
+          }
         }
       }
 
@@ -3982,6 +4014,7 @@ void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
   geomi->file2_tris = NULL;
   geomi->nfile2_tris = 0;
 }
+
 /* ------------------ RotateU2V ------------------------ */
 
 void RotateU2V(float *u, float *v, float *axis, float *angle){

@@ -293,7 +293,6 @@ void GetStartupSmoke(int seq_id);
 void GetStartupBoundary(int seq_id);
 unsigned int UnCompressRLE(unsigned char *buffer_in, int nchars_in, unsigned char *buffer_out);
 int ReadSMV(char *file);
-int GetEndian(void);
 slicedata *GetSlice(char *string);
 void *CompressSlices(void *arg);
 void *CompressVolSlices(void *arg);
@@ -304,7 +303,6 @@ void initpdf(pdfdata *pdf);
 void makesvd(char *destdir, char *smvfile);
 void getpdf(float *vals, int nvals, pdfdata *pdf);
 void mergepdf(pdfdata *pdf1, pdfdata *pdf2, pdfdata *pdfmerge);
-void SmoothLabel(float *a, float *b, int n);
 #ifdef pp_PART
 void compress_parts(void *arg);
 void *convert_parts2iso(void *arg);
@@ -330,7 +328,20 @@ float atan3(float y, float x);
 void initvolrender(void);
 void GetSliceParmsC(char *file, int *ni, int *nj, int *nk);
 
-
+#ifdef pp_WIN_ONEAPI
+#define FORTgetpartheader1     _F(GETPARTHEADER1)
+#define FORTgetpartheader2     _F(GETPARTHEADER2)
+#define FORTgetpartdataframe   _F(GETPARTDATAFRAME)
+#define FORTclosefortranfile   _F(CLOSEFORTRANFILE)
+#define FORTgetboundaryheader1 _F(GETBOUNDARYHEADER1)
+#define FORTgetboundaryheader2 _F(GETBOUNDARYHEADER2)
+#define FORTopenboundary       _F(OPENBOUNDARY)
+#define FORTgetpatchdata       _F(GETPATCHDATA)
+#define FORTopenslice          _F(OPENSLICE)
+#define FORTopenpart           _F(OPENPART)
+#define FORTgetsliceframe      _F(GETSLICEFRAME)
+#define FORTgetplot3dq         _F(GETPLOT3DQ)
+#else
 #define FORTgetpartheader1     _F(getpartheader1)
 #define FORTgetpartheader2     _F(getpartheader2)
 #define FORTgetpartdataframe   _F(getpartdataframe)
@@ -342,6 +353,8 @@ void GetSliceParmsC(char *file, int *ni, int *nj, int *nk);
 #define FORTopenslice          _F(openslice)
 #define FORTopenpart           _F(openpart)
 #define FORTgetsliceframe      _F(getsliceframe)
+#define FORTgetplot3dq         _F(getplot3dq)
+#endif
 
 #ifdef WIN32
 #define STDCALLF extern void _stdcall
@@ -423,8 +436,7 @@ EXTERN char *GLOBdestdir,*GLOBsourcedir;
 EXTERN char GLOBpp[2],GLOBx[2];
 EXTERN int GLOBsmoke3dzipstep, GLOBboundzipstep, GLOBslicezipstep;
 EXTERN int GLOBfilesremoved;
-EXTERN int GLOBendf, GLOBsyst;
-EXTERN char GLOBendianfilebase[1024];
+EXTERN int GLOBsyst;
 EXTERN char *GLOBendianfile;
 EXTERN int GLOBautozip, GLOBmake_demo;
 EXTERN int GLOBget_bounds, GLOBget_slice_bounds, GLOBget_plot3d_bounds, GLOBget_boundary_bounds;

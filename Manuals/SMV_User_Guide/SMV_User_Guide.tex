@@ -1042,34 +1042,9 @@ data that has a special property, for example a tenability temperature criteria 
 Figure \ref{figslicesplit} illustrates a scene using a colorbar with a split at 0.0~m/s. Velocities greater than 0.0~m/s are colored with shades of red.
 Velocities less than 0.0~m/s are colored with shades of blue.
 
-Fig. \ref{fignewslice}\ illustrates how interpolating color within the colorbar
-improves the visualization.
-Colors are crisper and sharper, more
-accurately representing the underlying data. This is most
-noticeable when selecting the colorbar with the mouse.
-This causes a portion of the colorbar to turn black and the
-corresponding region in the scene to also turn black.  The
-black color is accurate to the pixel so this feature may be used
-to highlight regions of interest. The improved accuracy is a
-result of the way color interpolations are performed.  Colors
-are interpolated within the colorbar using a 1D texture map.  Color interpolations with
-the former method occurred within the color cube.
-
 Note, due to the way that transparent objects are drawn (from back to front),
 3D Smoke/Fire and transparent slices may not display
 properly when shown at the same time.
-
-\begin{figure}[bph]
-\begin{center}
-\begin{tabular}{ccc}
-\includegraphics[height=3.5in]{../SMV_Verification_Guide/SCRIPT_FIGURES/plume5c_notexturebar}&
-\includegraphics[height=3.5in]{../SMV_Verification_Guide/SCRIPT_FIGURES/plume5c_texturebar}\\
-colors interpolated using a 3D color cube&colors interpolated using a 1D texture colorbar\\
-\end{tabular}
-\caption [Slice file snapshots illustrating two methods for mapping data to color.] {Slice file snapshots illustrating two methods for mapping data to color.}
-\label{fignewslice}%
-\end{center}
-\end{figure}
 
 \section{2D Shaded Contours and Vector Slices - Slice Files}
 \label{section:slices}
@@ -1706,7 +1681,7 @@ flow speed and direction.  Plumes are represented as inverted
 cones with heights calculated in Smokeview using the same
 correlation as CFAST and heat release rate data computed by CFAST.
 A Smokeview view of the one room sample case that comes with the
-CFAST installation is illustrated in Figs. \ref{figcfast}, \ref{figcfast2}\,  \ref{figcfastsmoke}
+CFAST installation is illustrated in Figs. \ref{figcfast}, \ref{figcfastsmoke}
 and \ref{figcfastboundary}.
 
 \begin{figure}[bph]
@@ -1722,27 +1697,8 @@ and \ref{figcfastboundary}.
 \\
 \end{tabular}
 \end{center}
-\caption{CFAST test showing upper/lower layer temperatures and vent flow
-visualized using color.}
+\caption{CFAST test showing upper/lower layer temperatures and vent flow.}
 \label{figcfast}%
-\end{figure}
-
-\begin{figure}[bph]
-\begin{center}
-\begin{tabular}{ccc}
-\includegraphics[width=3.00in]{SCRIPT_FIGURES/cfast_test_c2_100}&
-\includegraphics[width=3.00in]{SCRIPT_FIGURES/cfast_test_c2_200}\\
-100.0 s&200.0 s\\
-\includegraphics[width=3.00in]{SCRIPT_FIGURES/cfast_test_c2_300}&
-\includegraphics[width=3.00in]{SCRIPT_FIGURES/cfast_test_c2_400}\\
-300.0 s&400.0 s
-&\raisebox{0.0ex}[0pt]{\includegraphics[height=5.0in]{\SMVfigdir/colorbar_20_620}}\\
-\\
-\end{tabular}
-\end{center}
-\caption{CFAST test showing upper/lower layer, plume and ceiling jet temperatures, and vent flow
-visualized using color.}
-\label{figcfast2}%
 \end{figure}
 
 \begin{figure}[bph]
@@ -1775,8 +1731,7 @@ is visualized using color.}
 \\
 \end{tabular}
 \end{center}
-\caption{CFAST test showing wall temperatures
-visualized using color.}
+\caption{CFAST test showing wall temperatures.}
 \label{figcfastboundary}%
 \end{figure}
 
@@ -3540,24 +3495,68 @@ LOADISO
   mesh number (int)
 \end{lstlisting}
 
-\hitem{LOADSLICE}Load a slice file of a given type.
-The type is the same as what Smokeview displays in the Load menus for slice files.  The plane orientation is specified by using 1 for x, 2 for y and 3 for z.
-Usage:
+\hitem{LOADSLCF}Load a slice file.
+This script command uses one or more of the keywords ID, PBX, PBY, PBZ, QUANTITY, CELL\_CENTERED and VECTOR to specify slice files to load.
+These keywords are defined in the same way as when used with an \&SLCF namelist in an FDS input file.
+ID specifies an identifier.  PBX, PBY, PBZ specify a position and orientation.
+PB3D, not a \&SLCF namelist keyword, is used to load 3D slice files.
+CELL\_CENTERED indicates that the slice is cell centered as opposed to node centered
+and VECTOR indicates that slice files for 3 components of velocity in addition to a slice file for QUANTITY is to be loaded.
+
+The ID keyword may be used to specify a slice file instead of QUANTITY and one of PBX, PBY, PBZ and PB3D.
+QUANTITY contains a string enclosed in single quotes such as
+TEMPERATURE. U-VELOCITY, or SOOT DENSITY {\em etc}.
+Blanks are allowed in an ID or QUANTITY value.  They must be enlosed by single not double quotes.
+Any value used in an FDS input file may be used here. You may use blanks or commas to separate keywords.
+Note, that these files need to exist in order to be loaded.
+
+In the following examples assume that your input file has these  \&SLCF lines.
+
 \begin{lstlisting}
-LOADSLICE
-  type (char)
-  1/2/3 (int)  val (float)
+&SLCF PBX=1.0, QUANTITY='TEMPERATURE', VECTOR=T ID='x slice 1' /
+&SLCF PBY=2.0, QUANTITY='TEMPERATURE', CELL_CENTERED=T ID='y slice 1' /
+&SLCF XB=0.0,1.0,0.0,1.0,0.0,1.0, QUANTITY='TEMPERATURE' /
 \end{lstlisting}
 
-\hitem{LOADVSLICE}Load a vector slice file of a given type.
-The type is the same as what Smokeview displays in the
-Load menus for slice files.  The plane orientation is
-specified by using 1 for x, 2 for y and 3 for z.
-Usage:
+
+\noindent To load the first slice without specifying the location or quantity, use the ID with
 \begin{lstlisting}
-LOADVSLICE
- type (char)
- 1/2/3 (int)  val (float)
+LOADSLCF
+ ID='x slice 1'
+\end{lstlisting}
+
+\noindent To load the same slice by specifying a quantity and location use:
+\begin{lstlisting}
+LOADSLCF
+ PBX=1.0, QUANTITY='TEMPERATURE'
+\end{lstlisting}
+
+\noindent The first \&SLCF line has VECTOR=T parameter set so has velocity components for vector slice files.
+To load a vector slice file use:
+\begin{lstlisting}
+LOADSLCF
+ ID='x slice 1' VECTOR=T
+\end{lstlisting}
+
+\noindent or
+
+\begin{lstlisting}
+LOADSLCF
+ PBX=1.0, QUANTITY='TEMPERATURE' VECTOR=T
+\end{lstlisting}
+
+\noindent The second \&SLCF namelist is cell centered.  To load a cell centered slice file use
+\begin{lstlisting}
+LOADSLCF
+ ID='y slice 1' CELL_CENTERED=T
+\end{lstlisting}
+
+The third \&SLCF namelist is a 3D slice file.  The LOADSLCF does not support the XB keyword.
+To load a 3D slice use PB33D as in the following.
+
+\begin{lstlisting}
+LOADSLCF
+ QUANTITY='TEMPERATURE' PB3D=T
 \end{lstlisting}
 
 \hitem{LOADVOLSMOKE}\ Load files needed to view volume rendered
@@ -4754,7 +4753,7 @@ Smokeview.
 
 \kitem{a}When in {\em eye centered}\ movement mode, slide to the left.
 
-\kitem{A}Toggle axis label smoothing on and off.
+\kitem{A}Switch plot display between device, HRRPUV, device and HRRPUV and none.
 
 \kitem{b}Toggle visibility of boundary files
 
@@ -4818,13 +4817,9 @@ This option may be used with the {\em m}\ key to highlight all meshes in sequenc
 
 \kitem{O}Toggle the blockage view state between 1) defined in input file and 2) outline only
 
-\kitem{p}Show the next variable in a Plot3D data set.
+\kitem{p}Cycle through particle file types.
 
-\kitem{P}The cursor keys and the page up/down keys are needed to
-both move grid and Plot3D planes around the scene and to move
-through the scene while in {\em eye centered}\ mode.  The upper
-case ``P`` key is then used to switch the way these keys are used
-between grid/Plot3D movement mode and scene movement mode.
+\kitem{P}Cycle through Plot3D file types.
 
 \kitem{q}Switch between blockage views.  These views are blocks
 that are aligned on grid lines, blocks as specified by the user
@@ -4852,6 +4847,9 @@ meshed.
 
 \kitem{t}Toggle the time stepping mode.  Time stepping mode allows
 one to step through the simulation one time step at a time.
+
+\kitem{T}Toggle the time time bar time label between showing time as seconds
+and time as hour, minutes and seconds.
 
 \kitem{u,U}Reload files from the keyboard.  This is useful when
 using Smokeview to display a case that is currently running in

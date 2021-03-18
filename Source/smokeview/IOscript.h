@@ -63,6 +63,7 @@
 #define SCRIPT_VIEWZMIN          231
 #define SCRIPT_VIEWZMAX          232
 #define SCRIPT_LOADSLICERENDER   233
+#define SCRIPT_LOADSLCF          234
 
 #define SCRIPT_SETTIMEVAL        301
 #define SCRIPT_SETVIEWPOINT      302

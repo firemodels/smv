@@ -57,7 +57,6 @@ extern "C" void UpdateGluiWui(void){
 /* ------------------ GluiWuiSetup ------------------------ */
 
 extern "C" void GluiWuiSetup(int main_window){
-  update_glui_wui=0;
   if(glui_wui!=NULL){
     glui_wui->close();
     glui_wui=NULL;
@@ -157,12 +156,8 @@ extern "C" void WuiCB(int var){
       list_slice_index=fire_line_type;
       UpdateSliceList(list_slice_index);
 
-      SliceBoundCB(FILETYPEINDEX);
+      SliceBoundCB(FILETYPE_INDEX);
 
-#ifndef pp_NEWBOUND_DIALOG
-      glui_setslicemin = SET_MIN;
-      glui_setslicemax = SET_MAX;
-#endif
       glui_slicemin=20.0;
       glui_slicemax=fire_line_max;
       glui_setslicechopmin = 1;
@@ -179,7 +174,7 @@ extern "C" void WuiCB(int var){
       SliceBoundCB(CHOPVALMIN);
       SliceBoundCB(CHOPVALMAX);
 
-      SliceBoundCB(FILEUPDATE);
+      SliceBoundCB(FILE_UPDATE);
       SliceBoundCB(CHOPUPDATE);
       break;
     case TERRAIN_COLORS:

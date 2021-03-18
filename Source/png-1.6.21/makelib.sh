@@ -3,4 +3,4 @@ rm -f *.o
 source ../scripts/setopts.sh $*
 
 rm -f *.o
-eval make COMPILER=${COMPILER} SIZE=${SIZE} libpng.a
+eval make -j 4 COMPILER=${COMPILER} SIZE=${SIZE} libpng.a

@@ -33,7 +33,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # Definition of the object variables
 
-obj = assert.o file_util.o md5.o sha1.o sha256.o dmalloc.o string_util.o env2mod.o main.o
+obj = assert.o file_util.o md5.o sha1.o sha256.o dmalloc.o string_util.o stdio_buffer.o env2mod.o main.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***
@@ -51,7 +51,7 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od -D WIN32 -D pp_INTEL /nologo $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -Od -D WIN32 /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
 intel_win_64 : exe       = env2mod_win_64.exe
 
@@ -93,7 +93,7 @@ gnu_linux_64_db : $(obj)
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = icc
 intel_linux_64 : exe       = env2mod_linux_64
 
@@ -113,7 +113,7 @@ gnu_osx_64 : $(obj)
 
 # ------------- intel osx 64 ----------------
 
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : LFLAGS    = -m64
 intel_osx_64 : CC        = icc
 intel_osx_64 : exe       = env2mod_osx_64

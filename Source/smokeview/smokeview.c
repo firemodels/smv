@@ -13,7 +13,7 @@
 #endif
 
 /* ------------------ _Sniff_Errors ------------------------ */
-#ifdef pp_SNIFF_ERRORS
+#ifdef pp_SNIFF_ERROR
 void _Sniff_Errors(char *whereat, char *file, int line){
   int error;
 
@@ -144,13 +144,6 @@ void SetViewPoint(int option){
     if(camera_current->projection_type==PROJECTION_ORTHOGRAPHIC){
       camera_current->eye[1]=camera_current->isometric_y;
     }
-    break;
-  case RESTORE_INTERIOR_VIEW:
-    rotation_type_save = camera_current->rotation_type;
-    projection_type_save = camera_current->projection_type;
-    CopyCamera(camera_current,camera_internal);
-    camera_current->rotation_type=rotation_type_save;
-    camera_current->projection_type=projection_type_save;
     break;
   default:
     ASSERT(FFALSE);

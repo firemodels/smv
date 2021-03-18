@@ -13,6 +13,10 @@
 #include "IOvolsmoke.h"
 #include "glui_motion.h"
 
+#define ROTATE_TRANSLATE
+#ifdef pp_OSX_HIGHRES
+#undef ROTATE_TRANSLATE
+#endif
 
 #ifdef pp_DEG
 unsigned char deg360[] = { '3','6','0',DEG_SYMBOL,0 };
@@ -24,6 +28,12 @@ unsigned char deg90[] = {'9', '0', 0};
 
 GLUI *glui_motion=NULL;
 
+#ifdef pp_MOVIE_BATCH
+GLUI_EditText *EDITTEXT_movie_email    = NULL;
+GLUI_EditText *EDITTEXT_movie_htmldir  = NULL;
+#endif
+
+GLUI_Panel *PANEL_select = NULL;
 GLUI_Panel *PANEL_360 = NULL;
 GLUI_Panel *PANEL_360_debug = NULL;
 GLUI_Panel *PANEL_custom_view=NULL;
@@ -31,7 +41,10 @@ GLUI_Panel *PANEL_render_file = NULL;
 GLUI_Panel *PANEL_render_format = NULL;
 GLUI_Panel *PANEL_movie_type = NULL;
 GLUI_Panel *PANEL_user_center = NULL;
-GLUI_Panel *PANEL_rotate=NULL, *PANEL_translate=NULL,*PANEL_close=NULL;
+#ifdef ROTATE_TRANSLATE
+GLUI_Panel *PANEL_rotate = NULL;
+#endif
+GLUI_Panel *PANEL_close = NULL;
 GLUI_Panel *PANEL_file_suffix=NULL, *PANEL_file_type=NULL;
 GLUI_Panel *PANEL_radiorotate=NULL;
 GLUI_Panel *PANEL_gslice_center=NULL;
@@ -39,7 +52,10 @@ GLUI_Panel *PANEL_gslice_normal=NULL;
 GLUI_Panel *PANEL_gslice_show=NULL;
 GLUI_Panel *PANEL_speed=NULL;
 GLUI_Panel *PANEL_height=NULL;
-GLUI_Panel *PANEL_translate2=NULL,*PANEL_translate3=NULL;
+#ifdef ROTATE_TRANSLATE
+GLUI_Panel *PANEL_translate2 = NULL;
+#endif
+GLUI_Panel *PANEL_translate3 = NULL;
 GLUI_Panel *PANEL_anglebuttons=NULL;
 GLUI_Panel *PANEL_reset1=NULL;
 GLUI_Panel *PANEL_reset2=NULL;
@@ -61,8 +77,13 @@ GLUI_Rollout *ROLLOUT_projection=NULL;
 GLUI_Rollout *ROLLOUT_render=NULL;
 GLUI_Rollout *ROLLOUT_viewpoints=NULL;
 GLUI_Rollout *ROLLOUT_make_movie = NULL;
+#ifdef pp_MOVIE_BATCH
+GLUI_Rollout *ROLLOUT_make_movie_batch = NULL;
+#endif
 GLUI_Rollout *ROLLOUT_gslice = NULL;
+#ifdef ROTATE_TRANSLATE
 GLUI_Rollout *ROLLOUT_translaterotate=NULL;
+#endif
 #ifdef pp_RENDER360_DEBUG
 GLUI_Rollout *ROLLOUT_screenvis = NULL;
 GLUI_Rollout *ROLLOUT_lower = NULL;
@@ -72,6 +93,9 @@ GLUI_Rollout *ROLLOUT_upper = NULL;
 GLUI_Rollout *ROLLOUT_background = NULL;
 GLUI_Rollout *ROLLOUT_foreground = NULL;
 
+#ifdef pp_MOVIE_BATCH
+GLUI_Spinner *SPINNER_movie_nprocessors=NULL;
+#endif
 GLUI_Spinner *SPINNER_360_skip_x=NULL;
 GLUI_Spinner *SPINNER_360_skip_y=NULL;
 GLUI_Spinner *SPINNER_movie_crf = NULL;
@@ -111,6 +135,7 @@ GLUI_Spinner *SPINNER_background_red=NULL;
 GLUI_Spinner *SPINNER_background_green=NULL;
 GLUI_Spinner *SPINNER_background_blue=NULL;
 
+GLUI_Checkbox *CHECKBOX_use_geom_factors = NULL;
 GLUI_Checkbox *CHECKBOX_use_customview=NULL;
 GLUI_Checkbox *CHECKBOX_custom_view = NULL;
 GLUI_Checkbox *CHECKBOX_clip_show_rotation_center = NULL;
@@ -129,8 +154,10 @@ GLUI_Checkbox *CHECKBOX_overwrite_movie = NULL;
 GLUI_Checkbox **CHECKBOX_screenvis = NULL;
 #endif
 
-GLUI_Translation *ROTATE_2axis=NULL,*ROTATE_eye_z=NULL;
-GLUI_Translation *TRANSLATE_z=NULL,*TRANSLATE_xy=NULL;
+#ifdef ROTATE_TRANSLATE
+GLUI_Translation *ROTATE_2axis = NULL;
+GLUI_Translation *TRANSLATE_z=NULL,*TRANSLATE_xy=NULL, *ROTATE_eye_z = NULL;
+#endif
 
 GLUI_RadioGroup *RADIO_render_resolution = NULL;
 GLUI_RadioGroup *RADIO_projection=NULL,*RADIO_rotation_type=NULL;
@@ -151,6 +178,9 @@ GLUI_RadioButton *RADIOBUTTON_1e=NULL;
 GLUI_RadioButton *RADIOBUTTON_1f=NULL;
 GLUI_RadioButton *RADIOBUTTON_1g=NULL;
 
+#ifdef pp_MOVIE_BATCH
+GLUI_Button *BUTTON_make_movie_batch=NULL;
+#endif
 GLUI_Button *BUTTON_rotate90=NULL;
 GLUI_Button *BUTTON_90_z=NULL,*BUTTON_eyelevel=NULL, *BUTTON_floorlevel=NULL, *BUTTON_reset_saved_view=NULL;
 GLUI_Button *BUTTON_replace_view=NULL,*BUTTON_add_view=NULL,*BUTTON_delete_view=NULL;
@@ -172,6 +202,10 @@ GLUI_EditText *EDIT_view_label=NULL;
 GLUI_EditText *EDIT_movie_name = NULL;
 GLUI_EditText *EDIT_render_file_base = NULL;
 
+#ifdef pp_MOVIE_BATCH
+GLUI_Listbox *LIST_movie_slice_index=NULL;
+GLUI_Listbox *LIST_movie_queue_index=NULL;
+#endif
 GLUI_Listbox *LIST_viewpoints=NULL;
 GLUI_Listbox *LIST_windowsize=NULL;
 GLUI_Listbox *LIST_mesh2=NULL;
@@ -179,8 +213,108 @@ GLUI_Listbox *LIST_render_skip=NULL;
 
 rolloutlistdata first_rollout, last_rollout;
 
-procdata motionprocinfo[9], mvrprocinfo[4], subrenderprocinfo[4];
+procdata motionprocinfo[9], mvrprocinfo[5], subrenderprocinfo[4];
 int nmotionprocinfo = 0, nmvrprocinfo=0, nsubrenderprocinfo=0;
+
+#ifdef pp_MOVIE_BATCH
+
+/* ------------------ MakeMovie ------------------------ */
+
+void MakeMovieSlurm(void){
+  FILE *stream=NULL;
+  char user_config[1000], command_line[1000], script_in[1000], script_bash[1000];
+
+  strcpy(user_config, "slice2mp4_");
+  strcat(user_config, fdsprefix);
+
+  strcpy(script_in, movie_basename);
+  strcat(script_in, ".in");
+  stream = fopen(script_in, "w");
+  if(stream==NULL)return;
+  
+  fprintf(stream, " %i \n 2\n", movie_slice_index+1);
+  fclose(stream);
+  
+  strcpy(script_bash, movie_basename);
+  strcat(script_bash, "_smv.sh");
+  stream = fopen(script_bash, "w");
+  if(stream==NULL)return;
+
+  fprintf(stream, "#/bin/bash\n");
+  fprintf(stream, "cat %s | $SMV_SLICE2MP4 -c %s %s\n", script_in, user_config, fdsprefix);
+  fclose(stream);
+
+  sprintf(command_line, "bash %s", script_bash);
+  system(command_line);
+}
+
+/* ------------------ MakeMovieConfig ------------------------ */
+
+void MakeMovieConfig(void){
+  char user_config[1000];
+  FILE *stream = NULL;
+
+  strcpy(user_config, "slice2mp4_");
+  strcat(user_config, fdsprefix);
+
+  stream = fopen(user_config, "w");
+  if(stream==NULL)return;
+  fprintf(stream, "#/bin/bash\n");
+  fprintf(stream, "export USER_NPROCS=%i\n", movie_nprocessors);
+  fprintf(stream, "export USER_QUEUE=%s\n", movie_queues[movie_queue_index]);
+  fprintf(stream, "export USER_RENDERDIR=.\n");
+  if(strlen(movie_htmldir)>0)fprintf(stream, "export USER_MOVIEDIR=%s\n", movie_htmldir);
+  if(strlen(movie_email)>0)fprintf(stream, "export USER_EMAIL=%s\n", movie_email);
+  fprintf(stream, "export USER_SHARE=\n");
+  fclose(stream);
+}
+
+/* ------------------ MakeMovieScript ------------------------ */
+
+void MakeMovieScript(void){
+  char script_file[1000];
+  FILE *stream=NULL;
+  slicedata *slicei;
+  slicemenudata *slicemi;
+
+  strcpy(script_file, movie_basename);
+  strcat(script_file, ".ssf");
+  stream = fopen(script_file, "w");
+  if(stream==NULL)return;
+  slicemi = slicemenu_sorted[movie_slice_index];
+  slicei = slicemi->sliceinfo;
+
+  fprintf(stream, "RENDERDIR\n");
+  fprintf(stream, " .\n");
+  fprintf(stream, "UNLOADALL\n");
+  fprintf(stream, "LOADINI\n");
+  fprintf(stream, " %s\n", movie_ini_filename);
+  fprintf(stream, "SETVIEWPOINT\n");
+  fprintf(stream, " current\n");
+  fprintf(stream, "LOADSLICERENDER\n");
+  fprintf(stream, " %s\n", slicei->label.longlabel);
+  fprintf(stream, " %i %f\n", slicei->idir, slicei->position_orig);
+  fprintf(stream, " %s\n", movie_basename);
+  fprintf(stream, " 0 1\n");
+  fclose(stream);
+  /*
+  RENDERDIR
+    .
+    UNLOADALL
+    LOADINIFILE
+    cogoleto_fire_2019_ls2_slice_1.ini
+    VIEWZMAX
+
+    LOADSLICERENDER
+    LEVEL SET VALUE(terrain)
+    3       1.0
+    cogoleto_fire_2019_ls2_slice_1
+    0 1
+*/
+
+}
+
+#endif
 
 /* ------------------ CloseRollouts ------------------------ */
 
@@ -257,6 +391,12 @@ extern "C" void UpdateRenderRadioButtons(int width_low, int height_low, int widt
   }
 }
 
+/* ------------------ UpdateGeomFactor ------------------------ */
+
+extern "C" void UpdateUseGeomFactors(void){
+  if(CHECKBOX_use_geom_factors!=NULL)CHECKBOX_use_geom_factors->set_int_val(use_geom_factors);
+}
+
 /* ------------------ UpdatePosView ------------------------ */
 
 extern "C" void UpdatePosView(void){
@@ -320,6 +460,18 @@ extern "C" void SetColorControls(void){
   if(SPINNER_background_green!=NULL)SPINNER_background_green->set_int_val(glui_backgroundbasecolor[1]);
   if(SPINNER_background_blue !=NULL) SPINNER_background_blue->set_int_val(glui_backgroundbasecolor[2]);
 }
+
+#ifdef pp_MOVIE_BATCH
+void MovieCB(int val){
+  switch (val){
+    case MOVIE_SLICE_INDEX:
+      sprintf(movie_basename, "%s_slice_%i", fdsprefix, movie_slice_index+1);
+      strcpy(movie_ini_filename, movie_basename);
+      strcat(movie_ini_filename, ".ini");
+      break;
+  }
+}
+#endif
 
 /* ------------------ SubRenderRolloutCB ------------------------ */
 
@@ -571,9 +723,8 @@ void EnableDisableViews(void){
     selected_view = ival;
 
     cex = &camera_list_first;
-    cex = cex->next;
-    cex = cex->next;
-    cex = cex->next;
+    cex = cex->next; // skip over first
+    cex = cex->next; // skip over external
     if(cex->next == NULL){
       BUTTON_cycle_views->disable();
     }
@@ -581,18 +732,13 @@ void EnableDisableViews(void){
       BUTTON_cycle_views->enable();
     }
   }
-
-  switch(ival){
-  case -1:
-  case 0:
-  case 1:
+  if(ival<=1){
     BUTTON_replace_view->disable();
     BUTTON_delete_view->disable();
-    break;
-  default:
+  }
+  else{
     BUTTON_replace_view->enable();
     BUTTON_delete_view->enable();
-    break;
   }
 }
 
@@ -610,6 +756,12 @@ extern "C" void ViewpointCB(int var){
 #endif
 
   switch(var){
+  case GEOM_FACTORS:
+    updatemenu = 1;
+    use_geom_factors = 1 - use_geom_factors;
+    void ResetDefaultMenu(int var);
+    ResetDefaultMenu(2);
+    break;
 #ifdef pp_RENDER360_DEBUG
   case SHOWALL_SCREENS:
     for(i = 0;i < nscreeninfo;i++){
@@ -625,7 +777,6 @@ extern "C" void ViewpointCB(int var){
     break;
 #endif
   case RESTORE_EXTERIOR_VIEW:
-  case RESTORE_INTERIOR_VIEW:
     SetViewPoint(var);
     break;
   case SAVE_VIEW:
@@ -636,6 +787,27 @@ extern "C" void ViewpointCB(int var){
   case LABEL_VIEW:
     updatemenu = 1;
     break;
+#ifdef pp_MOVIE_BATCH
+  case REPLACE_CURRENT_VIEW:
+    {
+      int current_view_id=-1;
+      cameradata *cex;
+
+      cex = &camera_list_first;
+      cex = cex->next;
+      cex = cex->next;
+      for(ca = cex; ca->next!=NULL; ca = ca->next){
+        if(strcmp(ca->name,"current")==0){
+          current_view_id = ca->view_id;
+        }
+      }
+      if(current_view_id!=-1){
+        LIST_viewpoints->set_int_val(current_view_id);
+        ViewpointCB(REPLACE_VIEW);
+      }
+    }
+    break;
+#endif
   case REPLACE_VIEW:
     ival = LIST_viewpoints->get_int_val();
     selected_view = ival;
@@ -715,7 +887,7 @@ extern "C" void ViewpointCB(int var){
     rotation_type_save = ca->rotation_type;
     CopyCamera(camera_current, ca);
     if(rotation_type == ROTATION_3AXIS)Camera2Quat(camera_current, quat_general, quat_rotation);
-    if(strcmp(ca->name, "external") == 0 || strcmp(ca->name, "internal") == 0)updatezoommenu = 1;
+    if(strcmp(ca->name, "external") == 0)updatezoommenu = 1;
     camera_current->rotation_type = rotation_type_save;
     EDIT_view_label->set_text(ca->name);
     break;
@@ -736,6 +908,7 @@ extern "C" void ViewpointCB(int var){
     ViewpointCB(RESTORE_VIEW);
     updatezoommenu = 1;
     EnableDisableViews();
+    AdjustY(camera_current);
     break;
   case STARTUP:
     startup_view_ini = LIST_viewpoints->get_int_val();
@@ -756,31 +929,27 @@ extern "C" void ViewpointCB(int var){
     cex = &camera_list_first;
     cex = cex->next;
     cex = cex->next;
-    switch(ival){
-    case -1:
-    case 0:
-    case 1:
+    if(ival<=1){
       cex = cex->next;
-      if(cex->next == NULL)return;
+      if(cex->next==NULL)return;
       ival = cex->view_id;
-      break;
-    default:
-      for(ca = cex;ca->next != NULL;ca = ca->next){
-        if(ca->view_id == ival)break;
+    }
+    else{
+      for(ca = cex; ca->next!=NULL; ca = ca->next){
+        if(ca->view_id==ival)break;
       }
       cex = ca->next;
-      if(cex->next == NULL){
+      if(cex->next==NULL){
         cex = &camera_list_first;
         cex = cex->next;
         cex = cex->next;
         cex = cex->next;
-        if(cex->next == NULL)return;
+        if(cex->next==NULL)return;
         ival = cex->view_id;
       }
       else{
         ival = cex->view_id;
       }
-      break;
     }
     LIST_viewpoints->set_int_val(ival);
     selected_view = ival;
@@ -795,11 +964,14 @@ extern "C" void ViewpointCB(int var){
 /* ------------------ ResetGluiView ------------------------ */
 
 extern "C" void ResetGluiView(int ival){
-  ASSERT(ival>=0);
+  ASSERT(ival>=-5);
 #ifdef pp_LUA
   LIST_viewpoints->set_int_val(ival);
 #else
-  if(ival!=old_listview)LIST_viewpoints->set_int_val(ival);
+  if(ival!=old_listview){
+    old_listview = ival;
+    LIST_viewpoints->set_int_val(ival);
+  }
 #endif
   selected_view=ival;
   BUTTON_replace_view->enable();
@@ -843,9 +1015,9 @@ extern "C" void UpdateCameraLabel(void){
   EDIT_view_label->set_text(camera_label);
 }
 
-/* ------------------ UpdateGluiCameraViewList ------------------------ */
+/* ------------------ UpdateGluiViewpointList ------------------------ */
 
-extern "C" void UpdateGluiCameraViewList(void){
+extern "C" void UpdateGluiViewpointList(void){
   cameradata *ca;
   int i;
 
@@ -901,7 +1073,6 @@ extern "C" void GluiMotionSetup(int main_window){
 
   eye_xyz=camera_current->eye;
 
-  update_glui_motion=0;
   if(glui_motion!=NULL){
     glui_motion->close();
     glui_motion=NULL;
@@ -913,6 +1084,7 @@ extern "C" void GluiMotionSetup(int main_window){
   INSERT_ROLLOUT(ROLLOUT_motion, glui_motion);
   ADDPROCINFO(mvrprocinfo, nmvrprocinfo, ROLLOUT_motion, MOTION_ROLLOUT, glui_motion);
 
+#ifdef ROTATE_TRANSLATE
   ROLLOUT_translaterotate=glui_motion->add_rollout_to_panel(ROLLOUT_motion, _("Translate/Rotate"), true, TRANSLATEROTATE_ROLLOUT, MotionRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_translaterotate, glui_motion);
   ADDPROCINFO(motionprocinfo, nmotionprocinfo, ROLLOUT_translaterotate, TRANSLATEROTATE_ROLLOUT, glui_motion);
@@ -941,6 +1113,7 @@ extern "C" void GluiMotionSetup(int main_window){
   ROTATE_eye_z=glui_motion->add_translation_to_panel(PANEL_rotate,_("View"),GLUI_TRANSLATION_X,motion_dir,EYE_ROTATE,SceneMotionCB);
   ROTATE_eye_z->set_speed(180.0/(float)screenWidth);
   ROTATE_eye_z->disable();
+#endif
 
   ROLLOUT_view = glui_motion->add_rollout_to_panel(ROLLOUT_motion, _("Position/View"), false, POSITION_VIEW_ROLLOUT, MotionRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_view, glui_motion);
@@ -1098,9 +1271,12 @@ extern "C" void GluiMotionSetup(int main_window){
   INSERT_ROLLOUT(ROLLOUT_viewpoints, glui_motion);
   ADDPROCINFO(motionprocinfo,nmotionprocinfo,ROLLOUT_viewpoints,VIEWPOINTS_ROLLOUT, glui_motion);
 
-  LIST_viewpoints = glui_motion->add_listbox_to_panel(ROLLOUT_viewpoints, _("Select:"), &i_view_list, LIST_VIEW, ViewpointCB);
+  PANEL_select = glui_motion->add_panel_to_panel(ROLLOUT_viewpoints, "", false);
+  LIST_viewpoints = glui_motion->add_listbox_to_panel(PANEL_select, _("Select:"), &i_view_list, LIST_VIEW, ViewpointCB);
   LIST_viewpoints->set_alignment(GLUI_ALIGN_CENTER);
-
+  if(have_geom_factors==1){
+    CHECKBOX_use_geom_factors = glui_motion->add_checkbox_to_panel(PANEL_select, "include geometry", &use_geom_factors, GEOM_FACTORS, ViewpointCB);
+  }
   PANEL_reset = glui_motion->add_panel_to_panel(ROLLOUT_viewpoints, "", false);
 
   PANEL_reset1 = glui_motion->add_panel_to_panel(PANEL_reset, "", false);
@@ -1332,7 +1508,16 @@ extern "C" void GluiMotionSetup(int main_window){
   CHECKBOX_clip_rendered_scene = glui_motion->add_checkbox_to_panel(ROLLOUT_scene_clip, "clip rendered scene", &clip_rendered_scene);
 
   if(have_ffmpeg == 1){
+#ifdef pp_MOVIE_BATCH
+    if(have_slurm==1){
+      ROLLOUT_make_movie = glui_motion->add_rollout("Movie(local)", false, MOVIE_ROLLOUT, MVRRolloutCB);
+    }
+    else{
+      ROLLOUT_make_movie = glui_motion->add_rollout("Movie", false, MOVIE_ROLLOUT, MVRRolloutCB);
+    }
+#else
     ROLLOUT_make_movie = glui_motion->add_rollout("Movie", false, MOVIE_ROLLOUT, MVRRolloutCB);
+#endif
     INSERT_ROLLOUT(ROLLOUT_make_movie, glui_motion);
     ADDPROCINFO(mvrprocinfo,nmvrprocinfo,ROLLOUT_make_movie,MOVIE_ROLLOUT, glui_motion);
 
@@ -1362,6 +1547,56 @@ extern "C" void GluiMotionSetup(int main_window){
     glui_motion->add_button_to_panel(ROLLOUT_make_movie, "Output ffmpeg command", OUTPUT_FFMPEG, RenderCB);
     RenderCB(MOVIE_FILETYPE);
   }
+
+#ifdef pp_MOVIE_BATCH
+  if(have_slurm==1&&nmovie_queues>0){
+    ROLLOUT_make_movie_batch = glui_motion->add_rollout("Movie(batch)", false, MOVIE_ROLLOUT_BATCH, MVRRolloutCB);
+    INSERT_ROLLOUT(ROLLOUT_make_movie_batch, glui_motion);
+    ADDPROCINFO(mvrprocinfo, nmvrprocinfo, ROLLOUT_make_movie_batch, MOVIE_ROLLOUT_BATCH, glui_motion);
+
+    LIST_movie_slice_index = glui_motion->add_listbox_to_panel(ROLLOUT_make_movie_batch, "slice:", &movie_slice_index, MOVIE_SLICE_INDEX, MovieCB);
+    for(i = 0; i<nslicemenuinfo; i++){
+      char *cdir[] = {" ", "x=", "y=", "z=", " "};
+      slicedata *slicei;
+      slicemenudata *slicemi;
+      char label[100], *quantity, cposition[25];
+      float position;
+      int idir;
+
+      slicemi = slicemenu_sorted[i];
+      slicei = slicemi->sliceinfo;
+      quantity = slicei->label.longlabel;
+      idir = CLAMP(slicei->idir, 0, 4);
+      position = slicei->position_orig;
+      sprintf(cposition, "%f", position);
+      TrimZeros(cposition);
+      strcpy(label, " ");
+      if(idir>=1&&idir<=3){
+        strcat(label, quantity);
+        strcat(label, ", ");
+        strcat(label, cdir[idir]);
+        strcat(label, cposition);
+      }
+      LIST_movie_slice_index->add_item(i, label);
+    }
+    MovieCB(MOVIE_SLICE_INDEX);
+
+    LIST_movie_queue_index = glui_motion->add_listbox_to_panel(ROLLOUT_make_movie_batch, "queue:", &movie_queue_index);
+    for(i = 0; i<nmovie_queues; i++){
+      LIST_movie_queue_index->add_item(i, movie_queues[i]);
+    }
+    SPINNER_movie_nprocessors = glui_motion->add_spinner_to_panel(ROLLOUT_make_movie_batch, _("processors"), GLUI_SPINNER_INT, &movie_nprocessors);
+    SPINNER_movie_nprocessors->set_int_limits(1, 36);
+
+    EDITTEXT_movie_email=glui_motion->add_edittext_to_panel(ROLLOUT_make_movie_batch,"email:",GLUI_EDITTEXT_TEXT,movie_email);
+    EDITTEXT_movie_email->set_w(300);
+
+    EDITTEXT_movie_htmldir=glui_motion->add_edittext_to_panel(ROLLOUT_make_movie_batch,"html directory:",GLUI_EDITTEXT_TEXT,movie_htmldir);
+    EDITTEXT_movie_htmldir->set_w(300);
+
+    BUTTON_make_movie_batch = glui_motion->add_button_to_panel(ROLLOUT_make_movie_batch, "Make movie", MAKE_MOVIE_BATCH, RenderCB);
+  }
+#endif
 
   PANEL_close = glui_motion->add_panel("",GLUI_PANEL_NONE);
 
@@ -1415,6 +1650,7 @@ extern "C" void UpdateWindowSizeList(void){
     windowsize_pointer=9;
   }
   if(LIST_windowsize!=NULL)LIST_windowsize->set_int_val(windowsize_pointer);
+   windowsize_pointer_old = windowsize_pointer;  
 }
 
 /* ------------------ UpdateTranslate ------------------------ */
@@ -1429,18 +1665,24 @@ extern "C" void UpdateTranslate(void){
   d_eye_xyz[1]=eye_xyz[1]-eye_xyz0[1];
   d_eye_xyz[2]=eye_xyz[2]-eye_xyz0[2];
 
+#ifdef ROTATE_TRANSLATE
   TRANSLATE_xy->set_x(d_eye_xyz[0]);
+#endif
   if(rotation_type==ROTATION_1AXIS){
     d_eye_xyz[1]=0.0;
   }
+#ifdef ROTATE_TRANSLATE
   TRANSLATE_xy->set_y(d_eye_xyz[1]);
   TRANSLATE_z->set_y(eye_xyz[2]);
+#endif
   if(rotation_type==ROTATION_3AXIS){
   }
   else{
+#ifdef ROTATE_TRANSLATE
     ROTATE_2axis->set_x(az_elev[0]);
     ROTATE_2axis->set_y(az_elev[1]);
     ROTATE_eye_z->set_x(camera_current->azimuth);
+#endif
   }
   UpdateGluiSetViewXYZ(camera_current->eye);
 }
@@ -1540,9 +1782,10 @@ extern "C" void ShowHideTranslate(int var){
   d_eye_xyz[1]=0.0;
   switch(var){
   case ROTATION_3AXIS:
-    if(PANEL_translate!=NULL)PANEL_translate->enable();
+#ifdef ROTATE_TRANSLATE
     if(ROTATE_2axis!=NULL)ROTATE_2axis->disable();
     if(ROTATE_eye_z!=NULL)ROTATE_eye_z->disable();
+#endif
     if(BUTTON_90_z!=NULL)BUTTON_90_z->disable();
     if(CHECKBOX_blockpath!=NULL)CHECKBOX_blockpath->disable();
     if(PANEL_speed!=NULL)PANEL_speed->disable();
@@ -1555,9 +1798,10 @@ extern "C" void ShowHideTranslate(int var){
     if(BUTTON_snap!=NULL)BUTTON_snap->enable();
     break;
   case ROTATION_2AXIS:
-    if(PANEL_translate!=NULL)PANEL_translate->enable();
+#ifdef ROTATE_TRANSLATE
     if(ROTATE_2axis!=NULL)ROTATE_2axis->enable();
     if(ROTATE_eye_z!=NULL)ROTATE_eye_z->disable();
+#endif
     if(BUTTON_90_z!=NULL)BUTTON_90_z->disable();
     if(CHECKBOX_blockpath!=NULL)CHECKBOX_blockpath->disable();
     if(PANEL_speed!=NULL)PANEL_speed->disable();
@@ -1570,9 +1814,10 @@ extern "C" void ShowHideTranslate(int var){
     if(BUTTON_snap!=NULL)BUTTON_snap->enable();
     break;
   case EYE_CENTERED:
-    if(PANEL_translate!=NULL)PANEL_translate->enable();
+#ifdef ROTATE_TRANSLATE
     if(ROTATE_2axis!=NULL)ROTATE_2axis->disable();
     if(ROTATE_eye_z!=NULL)ROTATE_eye_z->enable();
+#endif
     if(BUTTON_90_z!=NULL)BUTTON_90_z->enable();
     if(CHECKBOX_blockpath!=NULL)CHECKBOX_blockpath->enable();
     if(PANEL_speed!=NULL)PANEL_speed->enable();
@@ -1585,9 +1830,10 @@ extern "C" void ShowHideTranslate(int var){
     if(BUTTON_snap!=NULL)BUTTON_snap->disable();
     break;
   case ROTATION_1AXIS:
-    if(PANEL_translate!=NULL)PANEL_translate->enable();
+#ifdef ROTATE_TRANSLATE
     if(ROTATE_2axis!=NULL)ROTATE_2axis->enable();
     if(ROTATE_eye_z!=NULL)ROTATE_eye_z->disable();
+#endif
     if(BUTTON_90_z!=NULL)BUTTON_90_z->disable();
     if(CHECKBOX_blockpath!=NULL)CHECKBOX_blockpath->disable();
     if(PANEL_speed!=NULL)PANEL_speed->disable();
@@ -1784,9 +2030,11 @@ extern "C" void SceneMotionCB(int var){
       if(rotation_type==ROTATION_2AXIS){
         float *az_elev;
 
+#ifdef ROTATE_TRANSLATE
         az_elev = camera_current->az_elev;
         az_elev[0] = ROTATE_2axis->get_x();
         az_elev[1] = -ROTATE_2axis->get_y();
+#endif
       }
       break;
     case WINDOWSIZE_LIST:
@@ -1835,9 +2083,19 @@ extern "C" void SceneMotionCB(int var){
           break;
       }
       if(windowsize_pointer>=2){
-        SPINNER_window_width->set_int_val(glui_screenWidth);
-        SPINNER_window_height->set_int_val(glui_screenHeight);
-        SetScreenSize(&glui_screenWidth,&glui_screenHeight);
+        if(windowsize_pointer==windowsize_pointer_old)break;
+        windowsize_pointer_old = windowsize_pointer;
+#ifdef pp_OSX_HIGHRES
+        if(double_scale==1){
+          glui_screenWidth  /= 2;
+          glui_screenHeight /= 2;
+        }
+#endif
+        SetScreenSize(&glui_screenWidth, &glui_screenHeight);
+        screenWidth  = glui_screenWidth;
+        screenHeight = glui_screenHeight;
+        SPINNER_window_width->set_int_val(screenWidth);
+        SPINNER_window_height->set_int_val(screenHeight);
         ResizeWindow(screenWidth,screenHeight);
       }
       {
@@ -1851,7 +2109,17 @@ extern "C" void SceneMotionCB(int var){
       SnapScene();
       break;
     case WINDOW_RESIZE:
-      SetScreenSize(&glui_screenWidth,&glui_screenHeight);
+#ifdef pp_OSX
+#ifndef pp_QUART
+      glui_screenWidth  /= 2;
+      glui_screenHeight /=2;
+#endif
+#endif
+      SetScreenSize(&glui_screenWidth, &glui_screenHeight);
+      screenWidth = glui_screenWidth;
+      screenHeight = glui_screenHeight;
+      SPINNER_window_width->set_int_val(screenWidth);
+      SPINNER_window_height->set_int_val(screenHeight);
       UpdateWindowSizeList();
       ResizeWindow(screenWidth,screenHeight);
       break;
@@ -2055,10 +2323,12 @@ extern "C" void SceneMotionCB(int var){
         eye_xyz0[0]=eye_xyz[0];
         eye_xyz0[1]=eye_xyz[1];
       }
+#ifdef ROTATE_TRANSLATE
       if(TRANSLATE_xy!=NULL){
         TRANSLATE_xy->set_x(d_eye_xyz[0]);
         TRANSLATE_xy->set_y(d_eye_xyz[1]);
       }
+#endif
       glui_move_mode=TRANSLATE_XY;
       UpdateTranslate();
       break;
@@ -2119,7 +2389,9 @@ extern "C" void ShowGluiMotion(int menu_id){
       break;
     case DIALOG_MOTION:
       MVRRolloutCB(RENDER_ROLLOUT);
+#ifdef ROTATE_TRANSLATE
       MotionRolloutCB(TRANSLATEROTATE_ROLLOUT);
+#endif
       break;
     case DIALOG_RENDER:
       MVRRolloutCB(RENDER_ROLLOUT);
@@ -2154,6 +2426,18 @@ extern "C" void AddListView(char *label_in){
   int ival;
   char *label;
   cameradata *cam1,*cam2,*cex,*ca;
+
+  // ignore duplicate labels
+#ifdef pp_MOVIE_BATCH
+  if(label_in!=NULL&&strlen(label_in)>0){
+    cex = &camera_list_first;
+    cex = cex->next;
+    cex = cex->next;
+    for(ca = cex; ca->next!=NULL; ca = ca->next){
+      if(strcmp(ca->name,label_in)==0)return;
+    }
+  }
+#endif
 
   ival=LIST_viewpoints->get_int_val();
   if(ival==-1){
@@ -2239,6 +2523,16 @@ void RenderCB(int var){
     case OUTPUT_FFMPEG:
       output_ffmpeg_command=1;
       break;
+#ifdef pp_MOVIE_BATCH
+    case MAKE_MOVIE_BATCH:
+      ViewpointCB(REPLACE_CURRENT_VIEW);
+      ResetMenu(SAVE_CURRENT_VIEWPOINT);
+      WriteIni(SCRIPT_INI, movie_ini_filename);
+      MakeMovieScript();
+      MakeMovieConfig();
+      MakeMovieSlurm();
+      break;
+#endif
     case MAKE_MOVIE:
       if(have_ffmpeg == 0){
         PRINTF("*** Error: The movie generating program ffmpeg is not available\n");

@@ -2032,12 +2032,12 @@ int lua_set_boundcolor(lua_State *L) {
   return 0;
 }
 
-int lua_set_colorbar_textureflag(lua_State *L) {
-  int setting = lua_tonumber(L, 1);
-  int return_code = set_colorbar_textureflag(setting);
-  lua_pushnumber(L, 1);
-  return 1;
-}
+// int lua_set_colorbar_textureflag(lua_State *L) {
+//   int setting = lua_tonumber(L, 1);
+//   int return_code = set_colorbar_textureflag(setting);
+//   lua_pushnumber(L, 1);
+//   return 1;
+// }
 
 float getcolorfield(lua_State *L, int stack_index,const char *key) {
   if (!lua_istable(L, stack_index)){
@@ -2631,13 +2631,6 @@ int lua_set_userrotate(lua_State *L) {
 int lua_set_aperture(lua_State *L) {
   int v = lua_tonumber(L, 1);
   int return_code = set_aperture(v);
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
-int lua_set_axissmooth(lua_State *L) {
-  int v = lua_tonumber(L, 1);
-  int return_code = set_axissmooth(v);
   lua_pushnumber(L, return_code);
   return 1;
 }
@@ -3740,12 +3733,12 @@ int lua_set_smokerthick(lua_State *L) {
 }
 #endif
 
-int lua_set_smokethick(lua_State *L) {
-  int v = lua_tonumber(L, 1);
-  int return_code = set_smokethick(v);
-  lua_pushnumber(L, return_code);
-  return 1;
-}
+// int lua_set_smokethick(lua_State *L) {
+//   int v = lua_tonumber(L, 1);
+//   int return_code = set_smokethick(v);
+//   lua_pushnumber(L, return_code);
+//   return 1;
+// }
 
 #ifdef pp_GPU
 int lua_set_usegpu(lua_State *L) {
@@ -4482,7 +4475,6 @@ lua_State* initLua() {
   lua_register(L, "loadplot3d", lua_loadplot3d);
   lua_register(L, "loadslice", lua_loadslice);
   lua_register(L, "loadsliceindex", lua_loadsliceindex);
-  // lua_register(L, "loadnamedslice", lua_loadnamedslice);
   lua_register(L, "loadvslice", lua_loadvslice);
   lua_register(L, "loadiso", lua_loadiso);
   lua_register(L, "unloadall", lua_unloadall);
@@ -4656,7 +4648,6 @@ lua_State* initLua() {
   lua_register(L, "set_blockshininess", lua_set_blockshininess);
   lua_register(L, "set_blockspecular", lua_set_blockspecular);
   lua_register(L, "set_boundcolor", lua_set_boundcolor);
-  lua_register(L, "set_colorbar_textureflag", lua_set_colorbar_textureflag);
   lua_register(L, "set_diffuselight", lua_set_diffuselight);
   lua_register(L, "set_directioncolor", lua_set_directioncolor);
   lua_register(L, "set_flip", lua_set_flip);
@@ -4713,7 +4704,7 @@ lua_State* initLua() {
   lua_register(L, "set_userrotate", lua_set_userrotate);
 
   lua_register(L, "set_aperture", lua_set_aperture);
-  lua_register(L, "set_axissmooth", lua_set_axissmooth);
+  // lua_register(L, "set_axissmooth", lua_set_axissmooth);
   lua_register(L, "set_blocklocation", lua_set_blocklocation);
   lua_register(L, "set_boundarytwoside", lua_set_boundarytwoside);
   lua_register(L, "set_clip", lua_set_clip);
@@ -4848,7 +4839,7 @@ lua_State* initLua() {
 #ifdef pp_GPU // TODO: register anyway, but tell user it is not available
   lua_register(L, "set_smokerthick", lua_set_smokerthick);
 #endif
-  lua_register(L, "set_smokethick", lua_set_smokethick);
+  // lua_register(L, "set_smokethick", lua_set_smokethick);
 #ifdef pp_GPU
   lua_register(L, "set_usegpu", lua_set_usegpu);
 #endif

@@ -1,7 +1,7 @@
 #!/bin/bash
 # this script assumes it is being run in Verification
 is_benchmark="no"
-while getopts 'Ad:po:t' OPTION
+while getopts 'Ad:n:p:o:t' OPTION
 do
 case $OPTION  in
   A)
@@ -10,8 +10,11 @@ case $OPTION  in
   d)
    dir="$OPTARG"
    ;;
+  n)
+   dummy="$OPTARG"
+   ;;
   p)
-   dummy=1
+   dummy="$OPTARG"
    ;;
   o)
    dummy="$OPTARG"
@@ -48,9 +51,9 @@ fi
    # Grep for wall clock time
    WALL_CLOCK_TIME_VALUE=`grep -H "Total Elapsed Wall Clock Time (s):" "$outfile" | awk -F' ' '{print $(NF)}'`
 
-   # Grep for CPU time and units
+   # grab time from 1st row after header, last column
    TOTAL_CPU_TIME=0.0
-   CPU_TIME=`cat "$cpufile" | awk '{if(NR>1)print}' | awk -F',' '{print $(NF)}'`
+   CPU_TIME=`tail -1 "$cpufile" | awk -F',' '{print $17}'`
    for j in $CPU_TIME
    do
       jafter=`echo ${j} | sed -e 's/[eE]+*/\\*10\\^/'`

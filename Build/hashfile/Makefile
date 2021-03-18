@@ -32,7 +32,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # Definition of the object variables
 
-obj =    assert.o dmalloc.o file_util.o string_util.o sha1.o md5.o sha256.o main.o
+obj =    assert.o dmalloc.o file_util.o string_util.o sha1.o md5.o sha256.o stdio_buffer.o main.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***
@@ -54,7 +54,7 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od -D WIN32 -D pp_INTEL /nologo $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -Od -D WIN32 /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
 intel_win_64 : exe       = hashfile_win_64.exe
 
@@ -81,7 +81,7 @@ gnu_linux_64: $(obj)
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = icc
 intel_linux_64 : exe       = hashfile_linux_64
 
@@ -90,7 +90,7 @@ intel_linux_64 : $(obj)
 
 # ------------- intel osx 64 ----------------
 
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : CC        = icc
 intel_osx_64 : exe       = hashfile_osx_64
 

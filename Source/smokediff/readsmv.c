@@ -311,27 +311,8 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
       meshi->dz = zplt[1]-zplt[0];
       continue;
     }
-    if(Match(buffer,"ENDF") == 1){
-      char endian_filename[1024];
-      int len;
 
-      if(FGETS(buffer,255,streamsmv)==NULL)break;
-      len=strlen(buffer);
-      buffer[len-1]='\0';
-      TrimBack(buffer);
-      FullFile(endian_filename,smvcase->dir,buffer);
-      if(stream_out!=NULL){
-        int lenout;
-
-        MakeOutFile(endian_filename, NULL, buffer, ".end");
-        fprintf(stream_out,"ENDF\n %s\n",endian_filename);
-        MakeOutFile(endian_filename, destdir, buffer, ".end");
-        lenout=strlen(endian_filename);
-        FORTendianout(endian_filename,lenout);
-      }
-      continue;
-    }
-  /*
+   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ PL3D ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

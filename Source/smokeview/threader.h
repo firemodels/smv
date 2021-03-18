@@ -13,9 +13,6 @@
 #endif
 
 #define MAX_PART_THREADS 16
-#ifdef pp_SLICETHREAD
-#define MAX_SLICE_THREADS 16
-#endif
 
 // setup LOCKS
 
@@ -27,11 +24,6 @@
 #else
   #define LOCK_TRIANGLES
   #define UNLOCK_TRIANGLES
-#endif
-
-#ifdef pp_SLICETHREAD
-  #define LOCK_SLICE_LOAD    pthread_mutex_lock(&mutexSLICE_LOAD);
-  #define UNLOCK_SLICE_LOAD  pthread_mutex_unlock(&mutexSLICE_LOAD);
 #endif
 
   #define LOCK_PART_LOAD    pthread_mutex_lock(&mutexPART_LOAD);
@@ -63,10 +55,6 @@
 
 // blank out all preprocessing symbols if we arn't using threading
 #ifndef pp_THREAD
-#ifdef pp_SLICETHREAD
-  #define LOCK_SLICE_LOAD
-  #define UNLOCK_SLICE_LOAD
-#endif
 
   #define LOCK_PART_LOAD
   #define UNLOCK_PART_LOAD
@@ -102,9 +90,6 @@ void MtReadVolsmokeAllFramesAllMeshes2(void);
 #ifdef pp_THREAD
 
 MT_EXTERN pthread_t makeiblank_thread_id;
-#ifdef pp_SLICETHREAD
-MT_EXTERN pthread_mutex_t mutexSLICE_LOAD;
-#endif
 MT_EXTERN pthread_mutex_t mutexPART_LOAD;
 MT_EXTERN pthread_mutex_t mutexIBLANK;
 MT_EXTERN pthread_mutex_t mutexVOLLOAD;
@@ -122,9 +107,6 @@ MT_EXTERN pthread_t update_all_patch_bounds_id;
 MT_EXTERN pthread_t read_volsmoke_id;
 MT_EXTERN pthread_t triangles_id;
 MT_EXTERN pthread_t partthread_ids[MAX_PART_THREADS];
-#ifdef pp_SLICETHREAD
-MT_EXTERN pthread_t slicethread_ids[MAX_SLICE_THREADS];
-#endif
 #ifdef pp_SAMPLE
 MT_EXTERN pthread_t sample_thread_id;
 #endif

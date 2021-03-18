@@ -30,7 +30,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # Definition of the object variables
 
-obj = main.o string_util.o dmalloc.o assert.o file_util.o md5.o sha1.o sha256.o
+obj = main.o string_util.o dmalloc.o assert.o file_util.o md5.o sha1.o sha256.o stdio_buffer.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***
@@ -50,7 +50,7 @@ no_target:
 
 # ------------- intel Win 64 ----------------
 
-intel_win_64 : CFLAGS    = -O1 /nologo -D WIN32 -D pp_INTEL -I $(SOURCE_DIR)/shared $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -O1 /nologo -D WIN32 -I $(SOURCE_DIR)/shared $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
 intel_win_64 : exe       = background_win_64.exe
 
@@ -68,7 +68,7 @@ gnu_win_64 : $(obj)
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_INTEL -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : CC        = icc
 intel_linux_64 : exe       = background_linux_64
 
@@ -96,7 +96,7 @@ gnu_linux_64_db: $(obj)
 # ------------- OSX 64 ----------------
 #  64 bit osx
 
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_INTEL -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : CC        = icc
 intel_osx_64 : exe       = background_osx_64
 

@@ -106,6 +106,7 @@ function usage {
   echo "      This options adds export I_MPI_FABRICS=shm:tcp to the run script"
   echo " -f repository root - name and location of repository where FDS is located"
   echo "    [default: $FDSROOT]"
+  echo " -g   - only run if input file and executable are not dirty"
   echo " -i use installed fds"
   echo " -I use Intel MPI version of fds"
   echo " -j prefix - specify a job prefix"
@@ -117,12 +118,13 @@ function usage {
   echo "        MIN ( number of cores, number of mpi processes)"
   echo " -O n - run cases casea.fds, caseb.fds, ... using 1, ..., N OpenMP threads"
   echo "        where case is specified on the command line. N can be at most 9."
+  echo " -r   - append trace flag to the mpiexec call generated"
   echo " -s   - stop job"
   echo " -S   - use startup files to set the environment, do not load modules"
-  echo " -r   - append trace flag to the mpiexec call generated"
   echo " -t   - used for timing studies, run a job alone on a node (reserving $NCORES_COMPUTENODE cores)"
   echo " -T type - run dv (development), db (debug), inspect, advise, or vtune version of fds"
   echo "           if -T is not specified then the release version of fds is used"
+  echo " -U n - only allow n jobs owned by `whoami` to run at a time"
   echo " -V   - show command line used to invoke qfds.sh"
   echo " -w time - walltime, where time is hh:mm for PBS and dd-hh:mm:ss for SLURM. [default: $walltime]"
   echo ""
@@ -198,7 +200,7 @@ if [ "$MPIRUN_MCA" != "" ]; then
 fi
 
 n_mpi_processes=1
-n_mpi_processes_per_node=1
+n_mpi_processes_per_node=2
 if [ "$platform" == "linux" ]; then
 max_processes_per_node=`cat /proc/cpuinfo | grep cores | wc -l`
 else
@@ -219,6 +221,14 @@ vtuneresdir=
 vtuneargs=
 use_config=""
 EMAIL=
+CHECK_DIRTY=
+USERMAX=
+
+# by default maximize cores used if psm module is loaded
+MAX_MPI_PROCESSES_PER_NODE=
+if [ "$USE_PSM" != "" ]; then
+  MAX_MPI_PROCESSES_PER_NODE=1
+fi
 
 # determine which resource manager is running (or none)
 
@@ -255,8 +265,8 @@ dir=.
 benchmark=no
 showinput=0
 exe=
+
 STARTUP=
-SET_MPI_PROCESSES_PER_NODE=
 if [ "$QFDS_STARTUP" != "" ]; then
   STARTUP=$QFDS_STARTUP
 fi
@@ -279,7 +289,7 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'Aa:b:c:Cd:D:e:Ef:hHiIj:Lm:Mn:No:O:p:Pq:rsStT:vVw:x:' OPTION
+while getopts 'Aa:b:c:Cd:D:e:Ef:ghHiIj:Lm:Mn:No:O:p:Pq:rsStT:U:vVw:x:' OPTION
 do
 case $OPTION  in
   A) # used by timing scripts to identify benchmark cases
@@ -313,6 +323,9 @@ case $OPTION  in
   f)
    FDSROOT="$OPTARG"
    ;;
+  g)
+   CHECK_DIRTY=1
+   ;;
   h)
    usage
    exit
@@ -342,9 +355,10 @@ case $OPTION  in
    ;;
   n)
    n_mpi_processes_per_node="$OPTARG"
+   MAX_MPI_PROCESSES_PER_NODE=
    ;;
   N)
-   SET_MPI_PROCESSES_PER_NODE=1
+   MAX_MPI_PROCESSES_PER_NODE=1
    ;;
   o)
    n_openmp_threads="$OPTARG"
@@ -416,6 +430,9 @@ case $OPTION  in
      use_vtune=1
    fi
    ;;
+  U)
+   USERMAX="$OPTARG"
+   ;;
   v)
    showinput=1
    ;;
@@ -439,7 +456,12 @@ if [ "$showcommandline" == "1" ]; then
   exit
 fi
 
-if [ "$SET_MPI_PROCESSES_PER_NODE" == "1" ]; then
+if [ "$n_mpi_processes" == "1" ]; then
+  n_mpi_processes_per_node=1
+fi
+
+# use as many processes per node as possible (fewest number of nodes)
+if [ "$MAX_MPI_PROCESSES_PER_NODE" == "1" ]; then
    n_mpi_processes_per_node=$n_mpi_processes
    if test $n_mpi_processes_per_node -gt $ncores ; then
      n_mpi_processes_per_node=$ncores
@@ -584,6 +606,15 @@ if test $nodes -lt 1 ; then
   nodes=1
 fi
 
+# don't let other jobs run on nodes used by this job if you are using psm and more than 1 node
+if [ "$USE_PSM" != "" ]; then
+  if test $nodes -gt 1 ; then
+    SLURM_PSM="#SBATCH --exclusive"
+  else
+    PROVIDER="export FI_PROVIDER=shm"
+  fi
+fi
+
 #*** define processes per node
 
 let ppn="$n_mpi_processes_per_node*n_openmp_threads"
@@ -685,6 +716,42 @@ MPIRUN="$MPIRUNEXE $REPORT_BINDINGS $SOCKET_OPTION $MCA -np $n_mpi_processes $tr
 
 cd $dir
 fulldir=`pwd`
+
+#*** check if exe and/or input file is dirty before running
+if [[ "$CHECK_DIRTY" == "1" ]] && [[ "$exe" != "" ]]; then
+  if [ -e $exe ]; then
+    is_dirty_exe=`echo "" | $exe |& grep dirty |& wc -l`
+    dirty_exe=`   echo "" | $exe |& grep dirty |& awk '{print $3}'`
+    is_dirty_input=`git diff $in   |& wc -l`
+
+    is_dirty=
+    if [ $is_dirty_exe -gt 0 ]; then
+      is_dirty=1
+    fi
+    if [ $is_dirty_input -gt 0 ]; then
+      is_dirty=1
+    fi
+
+    if [ "$is_dirty" == "1" ]; then
+      echo ""
+      if [ $is_dirty_exe -gt 0 ]; then
+        echo "***error: source used to build FDS is dirty."
+      fi
+      echo "executable: $exe"
+      echo "          $dirty_exe"
+      if [ $is_dirty_input -gt 0 ]; then
+        echo "***error: input file $in is dirty."
+      else
+        echo "input file: $in"
+      fi
+    fi
+    if [ "$is_dirty" == "1" ]; then
+      echo "Use the -g option to ignore this error"
+      echo "Exiting."
+      exit 1
+    fi
+  fi
+fi
 
 #*** define files
 
@@ -830,12 +897,22 @@ cat << EOF >> $scriptfile
 EOF
 fi
 
+if [ "$SLURM_MEM" != "" ]; then
 cat << EOF >> $scriptfile
 $SLURM_MEM
 EOF
+fi
+
+if [ "$SLURM_PSM" != "" ]; then
+cat << EOF >> $scriptfile
+$SLURM_PSM
+EOF
+fi
+
     if [ "$walltimestring_slurm" != "" ]; then
       cat << EOF >> $scriptfile
 #SBATCH $walltimestring_slurm
+
 EOF
     fi
 
@@ -917,7 +994,15 @@ export VT_CONFIG=$use_config
 EOF
 fi
 
+
+if [ "$PROVIDER" != "" ]; then
 cat << EOF >> $scriptfile
+$PROVIDER
+EOF
+fi
+
+cat << EOF >> $scriptfile
+
 cd $fulldir
 echo
 echo \`date\`
@@ -1001,6 +1086,16 @@ if [ "$showinput" == "1" ]; then
   exit
 fi
 
+# wait until number of jobs running alread by user is less than USERMAX
+if [ "$USERMAX" != "" ]; then
+  nuser=`squeue | grep -v JOBID | awk '{print $4}' | grep $USER | wc -l`
+  while [ $nuser -gt $USERMAX ]
+  do
+    nuser=`squeue | grep -v JOBID | awk '{print $4}' | grep $USER | wc -l`
+    sleep 10
+  done
+fi
+
 #*** output info to screen
 echo "submitted at `date`"                          > $qlog
 if [ "$queue" != "none" ]; then
@@ -1053,6 +1148,7 @@ fi
 $SLEEP
 echo 
 chmod +x $scriptfile
+
 if [ "$queue" != "none" ]; then
   $QSUB $scriptfile | tee -a $qlog
 else

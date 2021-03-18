@@ -31,7 +31,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # Definition of the object variables
 
-obj =    main.o assert.o dmalloc.o string_util.o file_util.o  md5.o sha1.o sha256.o
+obj =    main.o assert.o dmalloc.o string_util.o file_util.o  md5.o sha1.o sha256.o stdio_buffer.o
 objwin = $(obj:.o=.obj)
 
 # main has to be compiled without optimization (on a Windows PC) otherwise errors occcur
@@ -52,7 +52,7 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : CFLAGS    = -Od /nologo -D WIN32 -D X64 -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -Od /nologo -D WIN32 -D X64 $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = icl
 intel_win_64 : CPP       = icl
 intel_win_64 : exe       = wind2fds_win_64.exe
@@ -72,7 +72,7 @@ gnu_win_64 : $(obj)
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX -D pp_INTEL $(GITINFO) $(GNU_COMPINFO)
+intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
 intel_linux_64 : CC        = icc
 intel_linux_64 : CPP       = icc
 intel_linux_64 : exe       = wind2fds_linux_64
@@ -104,7 +104,7 @@ gnu_linux_64_db : $(obj)
 
 # ------------- intel osx 64 ----------------
 
-intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX -D pp_INTEL $(GITINFO) $(INTEL_COMPINFO)
+intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : CC        = icc
 intel_osx_64 : CPP       = icc
 intel_osx_64 : exe       = wind2fds_osx_64

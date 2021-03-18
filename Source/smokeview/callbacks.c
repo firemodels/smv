@@ -6,12 +6,8 @@
 #include <math.h>
 #include GLUT_H
 
-#include "update.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
-#ifdef pp_OPENVR
-#include "vr.h"
-#endif
 
 #ifdef pp_LUA
 #include "lua_api.h"
@@ -467,24 +463,24 @@ void MouseSelectDevice(int button, int state, int x, int y){
 
   val = (r << (nbluebits+ngreenbits)) | (g << nbluebits) | b;
 
-  if(val>0){
+  if(val>0&&val<ndeviceinfo){
     devicedata *devicei;
     float *xyz;
 
-    selected_device_tag=val;
-    devicei = deviceinfo + val-1;
+    devicei = deviceinfo+val-1;
+    devicei->selected = 1-devicei->selected;
     xyz = devicei->xyz;
 
-    if(devicei->labelptr!=NULL&&strcmp(devicei->labelptr,"null")!=0){
-      PRINTF("Selected Device: index=%i location:(%f,%f,%f) label:%s\n",val,xyz[0],xyz[1],xyz[2],devicei->labelptr);
+    if(devicei->labelptr!=NULL&&strcmp(devicei->labelptr, "null")!=0){
+      PRINTF("Selected Device: index=%i location:(%f,%f,%f) label:%s\n", val, xyz[0], xyz[1], xyz[2], devicei->labelptr);
     }
     else{
-      PRINTF("Selected Device: index=%i location:(%f,%f,%f)\n",val,xyz[0],xyz[1],xyz[2]);
+      PRINTF("Selected Device: index=%i location:(%f,%f,%f)\n", val, xyz[0], xyz[1], xyz[2]);
     }
-    glShadeModel(GL_SMOOTH);
-    glEnable(GL_BLEND);
-    ENABLE_LIGHTING;
   }
+  glShadeModel(GL_SMOOTH);
+  glEnable(GL_BLEND);
+  ENABLE_LIGHTING;
 }
 
 /* ------------------ MouseSelectAvatar ------------------------ */
@@ -962,6 +958,13 @@ void UpdateMouseInfo(int flag, int xm, int ym){
 
 void MouseCB(int button, int state, int xm, int ym){
   float *eye_xyz;
+
+#ifdef pp_OSX_HIGHRES
+  if(double_scale==1){
+    xm *= 2;
+    ym *= 2;
+  }
+#endif
 
   {
     float delta_time;
@@ -1466,7 +1469,12 @@ int ThrottleGpu(void){
 /* ------------------ MouseDragCB ------------------------ */
 
 void MouseDragCB(int xm, int ym){
-
+#ifdef pp_OSX_HIGHRES
+  if(double_scale==1){
+    xm *= 2;
+    ym *= 2;
+  }
+#endif
   {
     float delta_time;
 
@@ -1545,6 +1553,70 @@ void PrintGPUState(void){
 }
 #endif
 
+/* ------------------ IsPartLoaded ------------------------ */
+
+int IsPartLoaded(void){
+  int i;
+
+  for(i = 0; i<npartinfo; i++){
+    partdata *parti;
+
+    parti = partinfo+i;
+    if(parti->loaded==0||parti->display==0)continue;
+    return 1;
+  }
+  return 0;
+}
+
+/* ------------------ IsPlot3DLoaded ------------------------ */
+
+int IsPlot3DLoaded(void){
+  int i;
+
+  for(i = 0; i<nplot3dinfo; i++){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo+i;
+    if(plot3di->loaded==0||plot3di->display==0)continue;
+    return 1;
+  }
+  return 0;
+}
+
+/* ------------------ Plot3DListMenu ------------------------ */
+
+int GetPlot3DTimeList(int inc){
+  float time;
+  int have_plot3d = 0, i;
+  int return_val=-1;
+  float delta_time;
+
+  if(nplot3dtimelist<=1)return 0;
+  delta_time = (plot3dtimelist[1]-plot3dtimelist[0])/2.0;
+
+  for(i = 0; i<nplot3dinfo; i++){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo+i;
+    if(plot3di->loaded==1){
+      time = plot3di->time;
+      have_plot3d = 1;
+      break;
+    }
+  }
+  if(have_plot3d==0)return 0;
+
+  for(i = 0; i<nplot3dtimelist; i++){
+    if(ABS(time-plot3dtimelist[i])<delta_time){
+      return_val = i+inc;
+      break;
+    }
+  }
+  if(return_val<0)return_val = nplot3dtimelist-1;
+  if(return_val>nplot3dtimelist-1)return_val = 0;
+  return return_val;
+}
+
 /* ------------------ Keyboard ------------------------ */
 
 void Keyboard(unsigned char key, int flag){
@@ -1555,7 +1627,11 @@ void Keyboard(unsigned char key, int flag){
   int keystate=0;
 
   if(flag==FROM_CALLBACK){
+#ifdef pp_OSX
+    keystate = GLUTGETMODIFIERS();
+#else
     keystate = (GLUT_ACTIVE_ALT|GLUT_ACTIVE_CTRL)&GLUTGETMODIFIERS();
+#endif
     if(scriptoutstream!=NULL&&key!='t'&&key!='r'&&key!='R'&&key!=' '&&key!='-'){
       fprintf(scriptoutstream,"KEYBOARD\n");
       switch(keystate){
@@ -1581,6 +1657,54 @@ void Keyboard(unsigned char key, int flag){
   key2 = (char)key;
 
   switch(key2){
+#define DEVNO_HRRNO   0
+#define DEVYES_HRRYES 1
+#define DEVYES_HRRNO  2
+#define DEVNO_HRRYES  3
+    case 'A':
+      if(hrrinfo==NULL&&ndeviceinfo==0)break;
+      if(hrrinfo!=NULL&&ndeviceinfo>0){
+        plot_option++;
+        if(plot_option>3)plot_option = 0;
+      }
+      else{
+        int plot_option_temp = DEVNO_HRRNO;
+
+        if(ndeviceinfo==0&&hrrinfo!=NULL&&plot_option==DEVNO_HRRNO)plot_option_temp = DEVNO_HRRYES;
+        if(ndeviceinfo>0&&hrrinfo==NULL&&plot_option==DEVNO_HRRNO)plot_option_temp = DEVYES_HRRNO;
+        plot_option = plot_option_temp;
+      }
+      // 0 - device no, hrr no
+      // 1   device yes hrr yes
+      // 2   device yes hrr no
+      // 3   device no  hrr yes
+// device plots
+      switch (plot_option){
+        case DEVNO_HRRNO: // device plots off
+        case DEVNO_HRRYES:
+          showdevice_plot = DEVICE_PLOT_SHOW_ALL;
+          ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
+          break;
+        case DEVYES_HRRYES: // device plots on
+        case DEVYES_HRRNO:
+          showdevice_plot = 0;
+          ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
+          break;
+      }
+// hrr plot
+      switch(plot_option){
+        case DEVNO_HRRNO: // hrr plots off
+        case DEVYES_HRRNO:
+          show_hrrpuv_plot = 1;
+          ShowObjectsMenu(PLOT_HRRPUV);
+          break;
+        case DEVYES_HRRYES: // hrr plots on
+        case DEVNO_HRRYES:
+          show_hrrpuv_plot = 0;
+          ShowObjectsMenu(PLOT_HRRPUV);
+          break;
+      }
+      break;
     case 'a':
       if(showtour_dialog==1&&edittour==1){
         AddDeleteKeyframe(ADD_KEYFRAME);
@@ -1590,7 +1714,7 @@ void Keyboard(unsigned char key, int flag){
         HandleMoveKeys(256+key2);
         break;
       }
-      if((visVector==1&&ReadPlot3dFile==1)||showvslice==1||isZoneFireModel==1){
+      if((visVector==1&&nplot3dloaded>0)||showvslice==1||isZoneFireModel==1){
       }
       else{
         break;
@@ -1614,7 +1738,7 @@ void Keyboard(unsigned char key, int flag){
         PRINTF("vector length factor: %f\n",vecfactor);
         UpdateGluiVecFactor();
       }
-      if(visVector==1&&ReadPlot3dFile==1){
+      if(visVector==1&&nplot3dloaded>0){
         gbsave=current_mesh;
         for(i=0;i<nmeshes;i++){
           gbi = meshinfo + i;
@@ -1627,16 +1751,14 @@ void Keyboard(unsigned char key, int flag){
         UpdateCurrentMesh(gbsave);
       }
       break;
-    case 'A':
-      axislabels_smooth=1-axislabels_smooth;
-      UpdateAxisLabelsSmooth();
-      break;
     case 'b':
     case 'B':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
+#ifdef pp_DIALOG_SHORTCUTS
         DialogMenu(DIALOG_BOUNDS); // clip dialog
         break;
+#endif
       case GLUT_ACTIVE_CTRL:
       default:
         show_boundaryfiles = 1-show_boundaryfiles;
@@ -1660,8 +1782,10 @@ void Keyboard(unsigned char key, int flag){
     case 'c':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
+#ifdef pp_DIALOG_SHORTCUTS
         DialogMenu(DIALOG_CLIP); // clip dialog
         break;
+#endif
       case GLUT_ACTIVE_CTRL:
       default:
         if(nrooms>0){
@@ -1683,8 +1807,10 @@ void Keyboard(unsigned char key, int flag){
     case 'C':
       switch(keystate){
         case GLUT_ACTIVE_ALT:
+#ifdef pp_DIALOG_SHORTCUTS
           DialogMenu(DIALOG_COLORBAR); // colorbar dialog
           break;
+#endif
         case GLUT_ACTIVE_CTRL:
         default:
           if(nrooms>0){
@@ -1707,8 +1833,10 @@ void Keyboard(unsigned char key, int flag){
       }
       switch(keystate){
       case GLUT_ACTIVE_ALT:
+#ifdef pp_DIALOG_SHORTCUTS
         DialogMenu(DIALOG_DISPLAY); // display dialog
         break;
+#endif
       case GLUT_ACTIVE_CTRL:
       default:
         if(rotation_type==EYE_CENTERED){
@@ -1725,8 +1853,10 @@ void Keyboard(unsigned char key, int flag){
     case 'E':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
+#ifdef pp_DIALOG_SHORTCUTS
         DialogMenu(DIALOG_GEOMETRY); // edit geometry
         break;
+#endif
       case GLUT_ACTIVE_CTRL:
       default:
         rotation_type++;
@@ -1737,16 +1867,10 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'f':
-      switch(keystate){
-      case GLUT_ACTIVE_ALT:
-      case GLUT_ACTIVE_CTRL:
-      default:
 #ifdef pp_GLUTGET
-        alt_ctrl_key_state = KEY_ALT;
-#endif
-        break;
-      }
+      alt_ctrl_key_state = KEY_ALT;
       break;
+#endif
     case 'F':
       hide_overlaps=1-hide_overlaps;
       updatehiddenfaces=1;
@@ -1757,8 +1881,10 @@ void Keyboard(unsigned char key, int flag){
     case 'g':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
+#ifdef pp_DIALOG_SHORTCUTS
         DialogMenu(DIALOG_VIEW);
         break;
+#endif
       case GLUT_ACTIVE_CTRL:
       default:
         if(ntotal_blockages>0||isZoneFireModel==0||(isZoneFireModel==1&&ntrnx>0)){
@@ -1864,7 +1990,7 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'i':
-      if(cache_qdata==1){
+      if(cache_plot3d_data==1){
         HandleIso();
         return;
       }
@@ -1877,13 +2003,76 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'j':
     case 'J':
-      if(keystate==GLUT_ACTIVE_ALT){
-        sensorrelsize /= 1.5;
+      if(keystate==GLUT_ACTIVE_CTRL){
+        select_device = 1-select_device;
+        updatemenu = 1;
+        if(select_device==1){
+          printf("device selection on\n");
+        }
+        else{
+          printf("device selection off\n");
+        }
+      }
+      else if(keystate==GLUT_ACTIVE_ALT){
+        if(nobject_defs>0){
+          int vis;
+
+          vis = 1-object_defs[0]->visible;
+          for(i = 0; i<nobject_defs; i++){
+            sv_object *objecti;
+
+            objecti = object_defs[i];
+            objecti->visible = vis;
+          }
+          updatemenu = 1;
+        }
       }
       else{
-        sensorrelsize *= 1.5;
+        if(key2=='J'){
+          sensorrelsize /= 1.5;
+          UpdateDeviceSize();
+        }
+        else{
+          sensorrelsize *= 1.5;
+          UpdateDeviceSize();
+        }
       }
-      UpdateDeviceSize();
+      break;
+    case '`':
+      if(ndeviceinfo>0){
+        int selected;
+
+        selected = 1-deviceinfo[0].selected;
+        if(selected==1&&select_device==0)select_device = 1;
+        for(i = 0; i<ndeviceinfo; i++){
+          devicedata *devicei;
+
+          devicei = deviceinfo+i;
+          devicei->selected = selected;
+        }
+      }
+      if(nobject_defs>0){
+        int makevis=1;
+
+        for(i = 0; i<nobject_defs; i++){
+          sv_object *objecti;
+
+          objecti = object_defs[i];
+          if(objecti->visible==1){
+            makevis = 0;
+            break;
+          }
+        }
+        if(makevis==1){
+          for(i = 0; i<nobject_defs; i++){
+            sv_object *objecti;
+
+            objecti = object_defs[i];
+            objecti->visible = 1;
+          }
+        }
+        updatemenu = 1;
+      }
       break;
     case 'k':
     case 'K':
@@ -1901,8 +2090,10 @@ void Keyboard(unsigned char key, int flag){
     case 'M':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
+#ifdef pp_DIALOG_SHORTCUTS
         DialogMenu(DIALOG_MOTION); // motion dialog
         break;
+#endif
       case GLUT_ACTIVE_CTRL:
       default:
         if(nmeshes>1){
@@ -1981,16 +2172,26 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'p':
-      plotn += FlowDir;
-      if(plotn<1){
-        plotn=numplot3dvars;
+    case 'P':
+      if(IsPartLoaded()==1){
+        IncrementPartPropIndex();
+#define BOUND_PERCENTILE_DRAW          120
+        PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
       }
-      if(plotn>numplot3dvars){
-        plotn=1;
+      if(IsPlot3DLoaded()==1){
+        plotn += FlowDir;
+        if(plotn<1){
+          plotn = numplot3dvars;
+        }
+        if(plotn>numplot3dvars){
+          plotn = 1;
+        }
+        UpdateAllPlotSlices();
+        if(visiso==1&&cache_plot3d_data==1)UpdateSurface();
+        UpdatePlot3dListIndex();
+        Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
       }
-      UpdateAllPlotSlices();
-      if(visiso==1&&cache_qdata==1)UpdateSurface();
-      UpdatePlot3dListIndex();
+      update_chop_colors = 1;
       break;
     case 'q':
       blocklocation++;
@@ -2036,8 +2237,9 @@ void Keyboard(unsigned char key, int flag){
         int rflag=0;
 
         if(keystate==GLUT_ACTIVE_ALT&&strncmp((const char *)&key2, "r", 1) == 0){
-          research_mode=1-research_mode;
-          update_research_mode=1;
+          research_mode = 1-research_mode;
+          UpdatdateResearchModeCPP();
+          update_research_mode = 1;
           return;
         }
 
@@ -2156,8 +2358,10 @@ void Keyboard(unsigned char key, int flag){
     case 's':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
+#ifdef pp_DIALOG_SHORTCUTS
         DialogMenu(DIALOG_3DSMOKE); // 3d smoke dialog
         break;
+#endif
       case GLUT_ACTIVE_CTRL:
         SnapScene();
         break;
@@ -2181,6 +2385,7 @@ void Keyboard(unsigned char key, int flag){
     case 't':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
+#ifdef pp_DIALOG_SHORTCUTS
         if(showtour_dialog==1){
           DialogMenu(DIALOG_TOUR_HIDE);
         }
@@ -2188,6 +2393,7 @@ void Keyboard(unsigned char key, int flag){
           DialogMenu(DIALOG_TOUR_SHOW);
         }
         break;
+#endif
       case GLUT_ACTIVE_CTRL:
       default:
         stept=(stept+1)%2;
@@ -2211,6 +2417,10 @@ void Keyboard(unsigned char key, int flag){
         UpdateRenderListSkip();
       }
       break;
+    case 'T':
+      vishmsTimelabel = 1-vishmsTimelabel;
+      SetLabelControls();
+      break;
     case 'u':
     case 'U':
       switch(keystate){
@@ -2226,6 +2436,10 @@ void Keyboard(unsigned char key, int flag){
           }
           break;
       }
+      break;
+    case '|':
+      projection_type = 1-projection_type;
+      SceneMotionCB(PROJECTION);
       break;
     case 'v':
       switch(keystate){
@@ -2253,8 +2467,10 @@ void Keyboard(unsigned char key, int flag){
     case 'w':
       switch(keystate){
         case GLUT_ACTIVE_ALT:
+#ifdef pp_DIALOG_SHORTCUTS
           DialogMenu(DIALOG_WUI); // WUI dialog
           break;
+#endif
         case GLUT_ACTIVE_CTRL:
         default:
           if(rotation_type==EYE_CENTERED){
@@ -2274,6 +2490,7 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'x':
     case 'X':
+#ifdef pp_DIALOG_SHORTCUTS
       if(keystate==GLUT_ACTIVE_ALT){
         if(key2=='x')DialogMenu(DIALOG_HIDEALL);
         if(key2=='X')DialogMenu(DIALOG_SHRINKALL);
@@ -2283,6 +2500,11 @@ void Keyboard(unsigned char key, int flag){
         plotstate = GetPlotState(STATIC_PLOTS);
         updatemenu = 1;
       }
+#else
+      visx_all = 1-visx_all;
+      plotstate = GetPlotState(STATIC_PLOTS);
+      updatemenu = 1;
+#endif
       break;
     case 'y':
     case 'Y':
@@ -2292,6 +2514,7 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'z':
     case 'Z':
+#ifdef pp_DIALOG_SHORTCUTS
       if(keystate==GLUT_ACTIVE_ALT){
         DialogMenu(DIALOG_SMOKEZIP); // compress dialog
       }
@@ -2300,6 +2523,11 @@ void Keyboard(unsigned char key, int flag){
         plotstate = GetPlotState(STATIC_PLOTS);
         updatemenu = 1;
       }
+#else
+      visz_all = 1-visz_all;
+      plotstate = GetPlotState(STATIC_PLOTS);
+      updatemenu = 1;
+#endif
       break;
     case '0':
       if(plotstate==DYNAMIC_PLOTS){
@@ -2308,13 +2536,6 @@ void Keyboard(unsigned char key, int flag){
         return;
       }
       break;
-#ifdef pp_MULTI_RES
-    case '`':
-      slice_resolution_level++;
-      if(slice_resolution_level>max_slice_resolution)slice_resolution_level = 0;
-      printf("slice resolution level: %i\n", slice_resolution_level);
-      break;
-#endif
     case '~':
       LevelScene(1,1,quat_general);
       Quat2Rot(quat_general,quat_rotation);
@@ -2463,15 +2684,17 @@ void Keyboard(unsigned char key, int flag){
     case ';':
       ColorbarMenu(COLORBAR_FLIP);
       break;
-    case '{':
-      iplot3dtimelist--;
-      if(iplot3dtimelist<0)iplot3dtimelist=nplot3dtimelist-1;
-      Plot3DListMenu(iplot3dtimelist);
+#ifdef pp_REFRESH
+    case '_':
+      RefreshGluiDialogs();
       break;
+#endif
+    case '{':
     case '}':
-      iplot3dtimelist++;
-      if(iplot3dtimelist>=nplot3dtimelist)iplot3dtimelist=0;
+      if(key2=='{')iplot3dtimelist = GetPlot3DTimeList(-1);
+      if(key2=='}')iplot3dtimelist = GetPlot3DTimeList(1);
       Plot3DListMenu(iplot3dtimelist);
+      updatemenu = 1;
       break;
   }
 
@@ -2538,7 +2761,7 @@ void Keyboard(unsigned char key, int flag){
       ASSERT(FFALSE);
       break;
   }
-  if(ReadPlot3dFile==1){
+  if(nplot3dloaded>0){
     plotstate = GetPlotState(STATIC_PLOTS);
     if(visiso!=0&&current_mesh->slicedir==ISO){
       plotiso[plotn-1] += FlowDir;
@@ -2622,7 +2845,7 @@ void UpdateClipPlanes(void){
 /* ------------------ HandleIso ------------------------ */
 
 void HandleIso(void){
-    if(ReadPlot3dFile==1){
+    if(nplot3dloaded>0){
       UpdateShowStep(1-visiso,ISO);
       if(visiso==1){
         UpdateSurface();
@@ -3014,7 +3237,7 @@ void IdleCB(void){
 
   if(render_status == RENDER_ON && from_DisplayCB==0)return;
   CheckMemory;
-  if(use_graphics==1)glutSetWindow(mainwindow_id);
+  if(use_graphics==1)SetMainWindow();
   UpdateShow();
   START_TICKS(thistime);
   thisinterval = thistime - lasttime;
@@ -3039,22 +3262,22 @@ void IdleCB(void){
 
 void SetScreenSize(int *width, int *height){
   if(width!=NULL){
-    screenWidth=MAX(*width,1);
+    screenWidth = MAX(*width,1);
     screenWidth = MAX(screenWidth, 1);
     if(screenWidth%2==1)screenWidth++;
 
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
-    screenWidth*=2;
-#endif
+#ifdef pp_OSX_HIGHRES
+    if(double_scale==1){
+      screenWidth *= 2;
+    }
 #endif
   }
   if(height!=NULL){
     screenHeight=MAX(*height,1);
-#ifdef pp_OSX
-#ifndef pp_QUARTZ
-    screenHeight*=2;
-#endif
+#ifdef pp_OSX_HIGHRES
+    if(double_scale==1){
+      screenHeight *= 2;
+    }
 #endif
   }
   {
@@ -3065,27 +3288,55 @@ void SetScreenSize(int *width, int *height){
   }
 }
 
+/* ------------------ AdjustY ------------------------ */
+
+void AdjustY(cameradata *ca){
+  switch(selected_view){
+    case 0:
+    case -1:
+      UpdateCameraYpos(ca, 1);
+      break;
+    case 1:
+    case -2:
+    case -3:
+      UpdateCameraYpos(ca, 2);
+      break;
+    case -4:
+    case -5:
+      UpdateCameraYpos(ca, 3);
+      break;
+    default:
+      UpdateCameraYpos(ca, 2);
+      break;
+  }
+  if(selected_view<=1&&selected_view>-5){
+    void ResetDefaultMenu(int var);
+    ResetDefaultMenu(selected_view);
+  }
+}
+
 /* ------------------ ReshapeCB ------------------------ */
 
 void ReshapeCB(int width, int height){
   START_TIMER(timer_reshape);
   if(disable_reshape==1)return;
   updatemenu=1;
-  window_aspect_ratio = MAX((float)width,1.0)/MAX((float)height,1.0);
-  if(window_aspect_ratio<1.0)window_aspect_ratio=1.0/window_aspect_ratio;
   if(strcmp(camera_current->name,"external")!=0||in_external==0){
     CopyCamera(camera_save,camera_current);
   }
   SetScreenSize(&width,&height);
   windowresized=1;
-  UpdateCameraYpos(camera_external);
+  UpdateCameraYpos(camera_external, 2);
   if(strcmp(camera_current->name,"external")==0&&in_external==1){
     SetViewPoint(RESTORE_EXTERIOR_VIEW);
   }
   else{
     CopyCamera(camera_current,camera_save);
   }
+  AdjustY(camera_current);
+  windowsize_pointer_old = -1;
   UpdateWindowSizeList();
+  update_adjust_y = 2;
 }
 
 /* ------------------ ResetGLTime ------------------------ */
@@ -3437,7 +3688,10 @@ void DoScriptHtml(void){
     scriptdata *scripti;
 
     scripti = scriptinfo + i;
-    if(scripti->need_graphics==1)continue;
+    if(scripti->need_graphics==1){
+      printf("***warning: script command, %s, requires graphics\n", scripti->command_label);
+      continue;
+    }
     RunScriptCommand(scripti);
   }
 }
@@ -3533,40 +3787,6 @@ void DoNonStereo(void){
   }
 }
 
-#ifdef pp_OPENVR
-
-/* ------------------ DoVR ------------------------ */
-
-void DoVR(void){
-  float view_projection[16];
-  int i;
-
-  printf("left view_projection:\n");
-  GetCurrentViewProjectionMatrix(LEFT_EYE, view_projection);
-  for(i = 0; i<16; i++){
-    printf("%f ", view_projection[i]);
-    if(i%4==3)printf("\n");
-  }
-  printf("\n\n");
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadMatrixf(view_projection);
-  ShowScene(DRAWSCENE,VIEW_LEFT,0,0,0,NULL);
-
-  printf("right view_projection:\n");
-  GetCurrentViewProjectionMatrix(RIGHT_EYE, view_projection);
-  for(i = 0; i<16; i++){
-    printf("%f ", view_projection[i]);
-    if(i%4==3)printf("\n");
-  }
-  printf("\n\n");
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadMatrixf(view_projection);
-  ShowScene(DRAWSCENE,VIEW_LEFT,0,0,0,NULL);
-}
-#endif
-
 /* ------------------ DisplayCB ------------------------ */
 
 void DisplayCB(void){
@@ -3580,15 +3800,17 @@ void DisplayCB(void){
     if(use_vr==0){
       DoNonStereo();
     }
-#ifdef pp_OPENVR
-    else{
-      DoVR();
-    }
-#endif
   }
   else{
     DoStereo();
   }
+}
+
+/* ------------------ SetMainWindow ------------------------ */
+
+void SetMainWindow(void){
+  glutSetWindow(mainwindow_id);
+  GLUTPOSTREDISPLAY;
 }
 
 /* ------------------ ResizeWindow ------------------------ */
@@ -3597,7 +3819,7 @@ void ResizeWindow(int width, int height){
   float wscaled, hscaled;
 
   if(render_mode == RENDER_360&&render_status==RENDER_ON)return;
-  glutSetWindow(mainwindow_id);
+  SetMainWindow();
   wscaled = (float)width/(float)max_screenWidth;
   hscaled = (float)height/(float)max_screenHeight;
   if(wscaled>1.0||hscaled>1.0){
