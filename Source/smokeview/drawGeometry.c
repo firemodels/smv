@@ -47,10 +47,10 @@ void DrawCircVentsApproxSolid(int option){
 
       glColor3fv(cvi->color);
       if(cvi->dir==UP_X||cvi->dir==UP_Y||cvi->dir==UP_Z){
-        dx=dxyz;
+        dx = dxyz;
       }
       else{
-        dx=--dxyz;
+        dx= -dxyz;
       }
       switch(cvi->dir){
         case UP_X:
@@ -203,10 +203,10 @@ void DrawCircVentsApproxOutline(int option){
 
       glColor3fv(cvi->color);
       if(cvi->dir==UP_X||cvi->dir==UP_Y||cvi->dir==UP_Z){
-        dx=dxyz;
+        dx = dxyz;
       }
       else{
-        dx=--dxyz;
+        dx = -dxyz;
       }
       switch(cvi->dir){
         case UP_X:

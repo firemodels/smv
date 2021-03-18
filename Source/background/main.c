@@ -18,9 +18,9 @@
 
 #ifdef WIN32
 void GetSystemTimesAddress(void);
+int getnprocs(char *command);
 #endif
 unsigned char cpuusage(void);
-int getnprocs(char *command);
 
 #ifdef pp_LINUX
 int get_ncores(void);
@@ -68,7 +68,7 @@ void Usage(char *prog, int option){
   printf("  -d dtime  - wait dtime seconds before running prog in the background\n");
   printf("  -m max    - wait to run prog until memory usage is less than max (25-100%s)\n", pp);
   printf("  -u max    - wait to run prog until cpu usage is less than max (25-100%s)\n", pp);
-#ifdef pp_WIN32
+#ifdef WIN32
   printf("  -U max    - wait to run prog until number of instances of prog is less than max \n");
 #endif
   UsageCommon(HELP_SUMMARY);
@@ -379,6 +379,7 @@ void GetSystemTimesAddress(){
 
 /* ------------------ getnprocs ------------------------ */
 
+#ifdef WIN32
 int getnprocs(char *command){
   FILE *stream;
   int count=0;
@@ -410,6 +411,7 @@ int getnprocs(char *command){
   fclose(stream);
   return count;
 }
+#endif
 
 /* ------------------ cpuusage ------------------------ */
 

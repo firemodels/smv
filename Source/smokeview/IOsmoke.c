@@ -5914,6 +5914,7 @@ void UpdateLoadedSmoke(int *h_loaded, int *t_loaded){
 void SmokeWrapup(void){
   UpdateFireCutoffs();
   plotstate = GetPlotState(DYNAMIC_PLOTS);
+  stept = 1;
   SetSmokeColorFlags();
   UpdateLoadedSmoke(&hrrpuv_loaded,&temp_loaded);
   UpdateSmoke3dFileParms();
@@ -5922,7 +5923,7 @@ void SmokeWrapup(void){
   smoke_render_option = RENDER_SLICE;
   update_fire_alpha = 1;
   Smoke3dCB(SMOKE_OPTIONS);
-  IdleCB();
+  ForceIdle();
 }
 
 #define READSMOKE3D_CONTINUE_ON 0
@@ -6173,6 +6174,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   char compstring_local[128];
   int fortran_skip=0;
 
+  SetTimeState();
   update_fileload = 1;
 #ifndef pp_FSEEK
   if(flag_arg==RELOAD)flag_arg = LOAD;

@@ -1749,6 +1749,84 @@ void DrawCuboid(float *origin, float verts[8][3], unsigned char *rgbcolor, int d
   if(origin!=NULL)glPopMatrix();
 }
 
+/* ----------------------- DrawBox ----------------------------- */
+
+void DrawBox2(float *origin, float *dxyz, float *color, int draw_outline){
+  if(origin!=NULL){
+    glPushMatrix();
+    glTranslatef(origin[0], origin[1], origin[2]);
+  }
+  if(draw_outline==0){
+    glBegin(GL_QUADS);
+    if(color!=NULL)glColor3fv(color);
+
+    //
+    //  0   dx
+    // bottom face
+    glNormal3f(0.0, 0.0, -1.0);
+    glVertex3f(0.0,     0.0,     0.0);
+    glVertex3f(0.0, dxyz[1], 0.0);
+    glVertex3f(dxyz[0], dxyz[1], 0.0);
+    glVertex3f(dxyz[0], 0.0,     0.0);
+
+    // top face
+    glNormal3f(0.0, 0.0, 1.0);
+    glVertex3f(0.0, 0.0, dxyz[2]);
+    glVertex3f(dxyz[0], 0.0, dxyz[2]);
+    glVertex3f(dxyz[0], dxyz[1], dxyz[2]);
+    glVertex3f(0.0, dxyz[1], dxyz[2]);
+
+    // front face
+    glNormal3f(0.0, -1.0, 0.0);
+    glVertex3f(0.0, 0.0, 0.0);
+    glVertex3f(dxyz[0], 0.0, 0.0);
+    glVertex3f(dxyz[0], 0.0, dxyz[2]);
+    glVertex3f(0.0, 0.0, dxyz[2]);
+
+    // back face
+    glNormal3f(0.0, 1.0, 0.0);
+    glVertex3f(0.0, dxyz[1], 0.0);
+    glVertex3f(0.0, dxyz[1], dxyz[2]);
+    glVertex3f(dxyz[0], dxyz[1], dxyz[2]);
+    glVertex3f(dxyz[0], dxyz[1], 0.0);
+
+    // left face
+    glNormal3f(-1.0, 0.0, 0.0);
+    glVertex3f(0.0, 0.0, 0.0);
+    glVertex3f(0.0, 0.0, dxyz[2]);
+    glVertex3f(0.0, dxyz[1], dxyz[2]);
+    glVertex3f(0.0, dxyz[1], 0.0);
+
+    // right face
+    glNormal3f(1.0, 0.0, 0.0);
+    glVertex3f(dxyz[0], 0.0, 0.0);
+    glVertex3f(dxyz[0], dxyz[1], 0.0);
+    glVertex3f(dxyz[0], dxyz[1], dxyz[2]);
+    glVertex3f(dxyz[0], 0.0, dxyz[2]);
+    glEnd();
+  }
+  else{
+    glBegin(GL_LINES);
+    if(color!=NULL)glColor3fv(color);
+    glVertex3f(0.0, 0.0,     0.0);     glVertex3f(dxyz[0], 0.0,     0.0);
+    glVertex3f(0.0, dxyz[1], 0.0);     glVertex3f(dxyz[0], dxyz[1], 0.0);
+    glVertex3f(0.0, dxyz[1], dxyz[2]); glVertex3f(dxyz[0], dxyz[1], dxyz[2]);
+    glVertex3f(0.0, 0.0,     dxyz[2]); glVertex3f(dxyz[0], 0.0,     dxyz[2]);
+
+    glVertex3f(0.0,     0.0, 0.0);     glVertex3f(0.0,     dxyz[1], 0.0);
+    glVertex3f(dxyz[0], 0.0, 0.0);     glVertex3f(dxyz[0], dxyz[1], 0.0);
+    glVertex3f(dxyz[0], 0.0, dxyz[2]); glVertex3f(dxyz[0], dxyz[1], dxyz[2]);
+    glVertex3f(0.0,     0.0, dxyz[2]); glVertex3f(0.0,     dxyz[1], dxyz[2]);
+
+    glVertex3f(0.0,     0.0,     0.0); glVertex3f(0.0,     0.0,     dxyz[2]);
+    glVertex3f(0.0,     dxyz[1], 0.0); glVertex3f(0.0,     dxyz[1], dxyz[2]);
+    glVertex3f(dxyz[0], dxyz[1], 0.0); glVertex3f(dxyz[0], dxyz[1], dxyz[2]);
+    glVertex3f(dxyz[0], 0.0,     0.0); glVertex3f(dxyz[0], 0.0,     dxyz[2]);
+    glEnd();
+  }
+  if(origin!=NULL)glPopMatrix();
+}
+
 /* ----------------------- DrawCubeC ----------------------------- */
 
 void DrawCubeC(float size, unsigned char *rgbcolor){
@@ -3198,7 +3276,7 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
   float xscale=1.0, zscale=1.0;
   float origin[3];
   int i;
-  char cvalmin[20], cvalmax[20];
+  char cvalmin[20], cvalmax[20], cval[20];
   int ndigits = 3;
 
   origin[0] = xyz0[0];
@@ -3223,6 +3301,7 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
   if(zmax>zmin)zscale = 1.0/(zmax-zmin);
   Float2String(cvalmin, zmin, ndigits);
   Float2String(cvalmax, zmax, ndigits);
+  Float2String(cval, highlight_y, ndigits);
 
   dx = (xmax - xmin)/20.0;
   dz = (zmax - zmin)/20.0;
@@ -3275,10 +3354,14 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
   float dfont = (float)GetFontHeight()/((float)screenHeight*zscale*factor*SCALE2SMV(1.0));
 
   if(option == PLOT_ALL && showdevice_labels==1){
+    float zmid;
+
+    zmid = (zmax-2.0*dfont+zmin)/2.0;
     Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmin-0.5*dfont, cvalmin);
     Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-0.5*dfont, cvalmax);
-    Output3Text(foregroundcolor, xmax+2.0*dx, 0.0, zmax-1.6*dfont, quantity);
-    Output3Text(foregroundcolor, xmax+2.0*dx, 0.0, zmax-2.7*dfont, unit);
+    Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmid-0.5*dfont, cval);
+    Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-1.6*dfont, quantity);
+    Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-2.7*dfont, unit);
   }
 
   if(valid==1){
@@ -3292,6 +3375,70 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
   glPopMatrix();
 }
 
+/* ------------------ DeviceTimeAverage ------------------------ */
+
+#ifdef pp_DEVICE_AVG
+void TimeAverageDeviceData(float *times, float *vals, float *vals_avg, int nvals){
+  int i;
+
+  if(nvals<=0)return;
+  if(times[nvals-1]<=device_time_average){
+    float sum = 0.0;
+
+    for(i = 0; i<nvals; i++){
+      sum += vals[i];
+    }
+    sum /= (float)nvals;
+    for(i = 0; i<nvals; i++){
+      vals_avg[i] = sum;
+    }
+    return;
+  }
+  for(i = 0; i<nvals; i++){
+    float tlower, tupper;
+    int ilower, iupper;
+    float sum;
+    int j;
+    int count;
+
+    if(times[i]>=device_time_average/2.0&&times[i]<=times[nvals-1]-device_time_average/2.0){
+      tlower = times[i]-device_time_average/2.0;
+      tupper = tlower+device_time_average;
+    }
+    else if(times[i]<=device_time_average/2.0){
+      tlower = times[0];
+      tupper = tlower+device_time_average;
+    }
+    else{
+      tupper = times[nvals-1];
+      tlower = tupper-device_time_average;
+    }
+    for(j = i; j>=0; j--){
+      ilower = j;
+      if(times[j]<=tlower)break;
+    }
+    for(j = i; j<nvals; j++){
+      iupper = j;
+      if(times[j]>=tupper)break;
+    }
+    sum = 0.0;
+    count = 0;
+    for(j = ilower; j<=iupper;j++){
+      if(times[j]>=tlower&&times[j]<=tupper){
+        sum += vals[j];
+        count++;
+      }
+    }
+    if(count>0){
+      vals_avg[i] = sum/(float)(count);
+    }
+    else{
+      vals_avg[i] = vals[i];
+    }
+  }
+}
+#endif
+
 /* ----------------------- DrawDevicePlots ----------------------------- */
 
 void DrawDevicePlots(void){
@@ -3304,6 +3451,12 @@ void DrawDevicePlots(void){
       devicei = deviceinfo+i;
       if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED&&devicei->selected==0)continue;
       if(devicei->times==NULL||devicei->vals==NULL)continue;
+#ifdef pp_DEVICE_AVG
+      if(devicei->update_avg==1){
+        devicei->update_avg = 0;
+        TimeAverageDeviceData(devicei->times, devicei->vals_orig, devicei->vals, devicei->nvals);
+      }
+#endif
       if(devicei->nvals>1&&devicei->type2==devicetypes_index){
         int valid;
         float highlight_time = 0.0, highlight_val = 0.0;
@@ -3332,6 +3485,12 @@ void DrawDevicePlots(void){
     highlight_time = global_times[itimes];
     highlight_val = hrrinfo->hrrval[hrrinfo->itime];
 
+#ifdef pp_DEVICE_AVG
+    if(hrrinfo->update_avg==1){
+      hrrinfo->update_avg = 0;
+      TimeAverageDeviceData(hrrinfo->times, hrrinfo->hrrval_orig, hrrinfo->hrrval, hrrinfo->ntimes);
+    }
+#endif
     DrawPlot(PLOT_ALL, xyz, device_plot_factor, hrrinfo->times, hrrinfo->hrrval, hrrinfo->ntimes,
              highlight_time, highlight_val, valid, hrr_valmin, hrr_valmax, quantity, unit);
   }
@@ -3398,6 +3557,37 @@ void DrawDevices(int mode){
 
   if(select_device == 0 || show_mode != SELECTOBJECT){
     int i;
+
+    if(object_box==1){
+      if(object_outlines==0){
+        ENABLE_LIGHTING;
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+        glEnable(GL_COLOR_MATERIAL);
+      }
+
+      glPushMatrix();
+      glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+      glTranslatef(-xbar0, -ybar0, -zbar0);
+      for(i = 0; i<ndeviceinfo; i++){
+        devicedata *devicei;
+        float *xyz1, *xyz2, dxyz[3];
+
+        devicei = deviceinfo+i;
+        if(devicei->object->visible==0)continue;
+        xyz1 = devicei->xyz1;
+        xyz2 = devicei->xyz2;
+        dxyz[0] = xyz2[0]-xyz1[0];
+        dxyz[1] = xyz2[1]-xyz1[1];
+        dxyz[2] = xyz2[2]-xyz1[2];
+        DrawBox2(xyz1, dxyz, foregroundcolor, OUTLINE_ONLY);
+      }
+      glPopMatrix();
+      if(object_outlines==0){
+        DISABLE_LIGHTING;
+      }
+    }
 
     for(i = 0;i < ndeviceinfo;i++){
       devicedata *devicei;
@@ -6220,6 +6410,9 @@ void ReadDeviceData(char *file, int filetype, int loadstatus){
       devicei = deviceinfo + i;
       if(devicei->filetype!=filetype)continue;
       FREEMEMORY(devicei->vals);
+#ifdef pp_DEVICE_AVG
+      FREEMEMORY(devicei->vals_orig);
+#endif
       FREEMEMORY(devicei->valids);
     }
     for(i=0;i<ndeviceinfo;i++){
@@ -6298,6 +6491,9 @@ void ReadDeviceData(char *file, int filetype, int loadstatus){
     NewMemory((void **)&devicei->vals,nrows*sizeof(float));
     NewMemory((void **)&devicei->valids,nrows*sizeof(int));
     devicei->times=times_local;
+#ifdef pp_DEVICE_AVG
+    NewMemory((void **)&devicei->vals_orig,nrows*sizeof(float));
+#endif
 #ifdef pp_DEG
     if(strcmp(devcunits[i],"C")==0){
       strcpy(devicei->unit,degC);
@@ -6323,6 +6519,9 @@ void ReadDeviceData(char *file, int filetype, int loadstatus){
       devicei = devices[icol];
       if(devicei==NULL)continue;
       devicei->vals[irow-2]=vals[icol];
+#ifdef pp_DEVICE_AVG
+      devicei->vals_orig[irow-2]=vals[icol];
+#endif
       devicei->valids[irow-2]=valids[icol];
     }
   }

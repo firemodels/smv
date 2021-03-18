@@ -145,7 +145,6 @@ void UpdateFrameNumber(int changetime){
           }
           CheckMemory;
         }
-
       }
     }
     for(i=0;i<ngeominfoptrs;i++){
@@ -169,7 +168,12 @@ void UpdateFrameNumber(int changetime){
           patchi = sd->patchgeom;
           if(patchi->geom_timeslist == NULL)continue;
           if(patchi->structured == YES || patchi->boundary == 1 || patchi->geom_times == NULL || patchi->geom_timeslist == NULL)continue;
-          patchi->geom_itime = patchi->geom_timeslist[itimes];
+          if(current_script_command!=NULL && current_script_command->command == SCRIPT_LOADSLICERENDER){
+            patchi->geom_itime = 0; // only one frame loaded at a time when using LOADSLICERNDER
+          }
+          else{
+            patchi->geom_itime = patchi->geom_timeslist[itimes];
+          }
           patchi->geom_ival_static = patchi->geom_ivals_static[patchi->geom_itime];
           patchi->geom_ival_dynamic = patchi->geom_ivals_dynamic[patchi->geom_itime];
           patchi->geom_nval_static = patchi->geom_nstatics[patchi->geom_itime];
@@ -1119,7 +1123,7 @@ void UpdateTimes(void){
     geomdata *geomi;
 
     geomi = geominfoptrs[i];
-    if(geomi->loaded==0||geomi->display==0)continue;
+    if(geomi->loaded==0||geomi->display==0||geomi->ntimes<=1)continue;
     nglobal_times = MAX(nglobal_times,geomi->ntimes);
     global_timemin = MIN(global_timemin, geomi->times[0]);
     global_timemax = MAX(global_timemax, geomi->times[geomi->ntimes-1]);
@@ -1287,12 +1291,18 @@ void UpdateTimes(void){
     FREEMEMORY(hrrinfo->timeslist);
     FREEMEMORY(hrrinfo->times);
     FREEMEMORY(hrrinfo->hrrval);
+#ifdef pp_DEVICE_AVG
+    FREEMEMORY(hrrinfo->hrrval_orig);
+#endif
     if(hrrinfo->loaded==1&&hrrinfo->display==1&&nglobal_times>0){
       int jstart=0;
 
       NewMemory((void **)&hrrinfo->timeslist,nglobal_times*sizeof(int));
       NewMemory((void **)&hrrinfo->times,nglobal_times*sizeof(float));
       NewMemory((void **)&hrrinfo->hrrval,nglobal_times*sizeof(float));
+#ifdef pp_DEVICE_AVG
+      NewMemory((void **)&hrrinfo->hrrval_orig, nglobal_times*sizeof(float));
+#endif
       hrrinfo->ntimes=nglobal_times;
       for(i=0;i<nglobal_times;i++){
         int j, foundit;
@@ -1312,12 +1322,18 @@ void UpdateTimes(void){
               f1=0.0;
             }
             hrrinfo->hrrval[i]=(1.0-f1)*hrrinfo->hrrval_csv[j]+f1*hrrinfo->hrrval_csv[j+1];
+#ifdef pp_DEVICE_AVG
+            hrrinfo->hrrval_orig[i]=hrrinfo->hrrval[i];
+#endif
             jstart=j;
             break;
           }
         }
         if(foundit==0){
           hrrinfo->hrrval[i]=hrrinfo->hrrval_csv[hrrinfo->ntimes_csv-1];
+#ifdef pp_DEVICE_AVG
+          hrrinfo->hrrval_orig[i]=hrrinfo->hrrval[i];
+#endif
         }
       }
     }
@@ -1718,6 +1734,9 @@ int GetPlotState(int choice){
     }
   }
 #endif
+  if(plot_state!=DYNAMIC_PLOTS&&last_time_paused==1){
+    last_time_paused = 0;
+  }
   return plot_state;
 }
 
@@ -1827,6 +1846,23 @@ void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo){
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
+  if(open_movie_dialog==1){
+    open_movie_dialog = 0;
+    if(have_slurm==1&&nmovie_queues>0){
+      ShowGluiMotion(DIALOG_MOVIE_BATCH);
+    }
+    else{
+      ShowGluiMotion(DIALOG_MOVIE);
+    }
+  }
+  if(update_stept==1){
+    update_stept = 0;
+    SetTimeVal(time_paused);
+  }
+  if(update_movie_parms==1){
+    update_movie_parms = 0;
+    UpdateMovieParms();
+  }
 #ifdef pp_REFRESH
   if(update_refresh==1){
     update_refresh = 0;
@@ -1868,17 +1904,19 @@ void UpdateShowScene(void){
   if(loadfiles_at_startup==1&&update_load_files == 1){
     LoadFiles();
   }
-  if(update_startup_view == 1){
-    cameradata *ca;
-
-    ca = GetCamera(startup_view_label);
-    if(ca != NULL){
-      ResetMenu(ca->view_id);
-      startup_view_ini = ca->view_id;
-    }
+  if(update_startup_view>0){
+    SetCurrentViewPoint(viewpoint_label_startup);
     update_rotation_center = 0;
     update_rotation_center_ini = 0;
-    update_startup_view = 0;
+    update_startup_view--;
+  }
+  if(update_saving_viewpoint>0){
+    SetCurrentViewPoint(viewpoint_label_saved);
+    update_saving_viewpoint--;
+  }
+  if(update_viewpoint_script>0){
+    SetCurrentViewPoint(viewpoint_script);
+    update_viewpoint_script--;
   }
   if(update_tour_list == 1){
     UpdateTourList();
@@ -2332,7 +2370,10 @@ void UpdateDisplay(void){
     updatemenu = 0;
   }
   if(update_patch_bounds!=-1||update_slice_bounds!=-1||update_part_bounds!=-1||update_plot3d_bounds!=-1){
-    OutputBounds();
+
+    if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
+      OutputBounds();
+    }
     update_patch_bounds = -1;
     update_slice_bounds = -1;
     update_part_bounds = -1;

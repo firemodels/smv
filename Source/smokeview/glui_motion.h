@@ -15,48 +15,45 @@
 #define LABEL_VIEW   4
 #define GEOM_FACTORS 33
 
-#ifdef pp_MOVIE_BATCH
 #define MOVIE_SLICE_INDEX 1
-#endif
 
-#define CUSTOM_ROTATION_X 9
-#define CUSTOM_ROTATION_Y 10
-#define CUSTOM_ROTATION_Z 11
-#define LIST_VIEW 5
-#define ADD_VIEW 6
-#define DELETE_VIEW 7
-#define RESTORE_VIEW 8
-#define REPLACE_VIEW 9
-#ifdef pp_MOVIE_BATCH
-#define REPLACE_CURRENT_VIEW 44
-#endif
-#define STARTUP 10
-#define CYCLEVIEWS 11
-#define ZOOM 12
-#define APERTURE 15
-#define CURSOR 13
-#define SAVE_SETTINGS_MOTION 14
-#define WINDOW_RESIZE 16
-#define WINDOWSIZE_LIST 17
-#define SNAPSCENE 21
-#define SET_VIEW_XYZ 22
-#define ZAXIS_CUSTOM 25
-#define USE_GVEC 28
-#define GSLICE_TRANSLATE 24
-#define GSLICE_NORMAL 27
-#define PLAY_MOVIE 29
-#define MOVIE_NAME 30
-#define CLOSE_MOTION 1
+#define CUSTOM_ROTATION_X      9
+#define CUSTOM_ROTATION_Y     10
+#define CUSTOM_ROTATION_Z     11
+#define LIST_VIEW              5
+#define LIST_VIEW_FROM_DIALOG 45
+#define ADD_VIEW               6
+#define DELETE_VIEW            7
+#define RESTORE_VIEW           8
+#define REPLACE_VIEW           9
+#define REPLACE_CURRENT_VIEW  44
+#define STARTUP               10
+#define CYCLEVIEWS            11
+#define ZOOM                  12
+#define APERTURE              15
+#define CURSOR                13
+#define SAVE_SETTINGS_MOTION  14
+#define WINDOW_RESIZE         16
+#define WINDOWSIZE_LIST       17
+#define SNAPSCENE             21
+#define SET_VIEW_XYZ          22
+#define ZAXIS_CUSTOM          25
+#define USE_GVEC              28
+#define GSLICE_TRANSLATE      24
+#define GSLICE_NORMAL         27
+#define PLAY_MOVIE            29
+#define MOVIE_NAME            30
+#define CLOSE_MOTION           1
 #ifdef pp_RENDER360_DEBUG
-#define SHOWALL_SCREENS 31
-#define HIDEALL_SCREENS 32
+#define SHOWALL_SCREENS       31
+#define HIDEALL_SCREENS       32
 #endif
-#define WINDOW_COLORS 33
-#define COLOR_FLIP 34
-#define CLIP_SHOW_ROTATE 35
-#define ZAXIS_UP 41
-#define NEARFARCLIP 42
-#define CUSTOM_VIEW 43
+#define WINDOW_COLORS         33
+#define COLOR_FLIP            34
+#define CLIP_SHOW_ROTATE      35
+#define ZAXIS_UP              41
+#define NEARFARCLIP           42
+#define CUSTOM_VIEW           43
 
 #define RENDER_TYPE 0
 #define RENDER_RESOLUTION 1
@@ -83,9 +80,7 @@
 #define VIEW_ROLLOUT         1
 #define RENDER_ROLLOUT       2
 #define MOVIE_ROLLOUT        3
-#ifdef pp_MOVIE_BATCH
 #define MOVIE_ROLLOUT_BATCH  4
-#endif
 
 #define RENDER_FILE_ROLLOUT   0
 #define RENDER_SIZE_ROLLOUT   1

@@ -5,6 +5,7 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
+#include "IOscript.h"
 
 /* ------------------ GetPartFileBounds ------------------------ */
 
@@ -147,7 +148,7 @@ int GetGlobalPartBounds(int flag){
           strcpy(boundscppi->unit, "");
         }
       }
-      
+
       boundscppi->cache = cache_part_data;
       boundscppi->set_valtype = 0;
       if(i==0){
@@ -255,12 +256,20 @@ void GetGlobalPatchBounds(void){
     boundsdata *boundi;
 
     patchi = patchinfo + i;
-    if(GetFileBounds(patchi->bound_file, &valmin, &valmax)==1){
-      patchi->have_bound_file = YES;
+
+    if(patchi->valmin_fds>patchi->valmax_fds||
+       current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
+      if(GetFileBounds(patchi->bound_file, &valmin, &valmax)==1){
+        patchi->have_bound_file = YES;
+      }
+      if(valmin > valmax)continue;
+      patchi->valmin_fds = valmin;
+      patchi->valmax_fds = valmax;
     }
-    if(valmin > valmax)continue;
-    patchi->valmin_fds = valmin;
-    patchi->valmax_fds = valmax;
+    else{
+      valmin = patchi->valmin_fds;
+      valmax = patchi->valmax_fds;
+    }
     boundi = GetPatchBoundsInfo(patchi->label.shortlabel);
     if(boundi == NULL)continue;
     if(boundi->dlg_global_valmin > boundi->dlg_global_valmax){
@@ -307,7 +316,7 @@ void GetGlobalPatchBounds(void){
         NewMemory((void **)&boundscppi->unit, len+1);
         strcpy(boundscppi->unit, boundi->label->unit);
       }
-      
+
       boundscppi->cache = cache_boundary_data;
       boundscppi->set_valtype = 0;
 
@@ -506,12 +515,21 @@ void GetGlobalSliceBounds(void){
 
     slicei = sliceinfo+i;
     if(slicei->is_fed==1)continue;
-    if(GetFileBounds(slicei->bound_file, &valmin, &valmax)==1){
+    if(slicei->valmin_fds>slicei->valmax_fds ||
+       current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
+
+      if(GetFileBounds(slicei->bound_file, &valmin, &valmax)==1){
+        slicei->have_bound_file = YES;
+      }
+      if(valmin>valmax)continue;
+      slicei->valmin_fds = valmin;
+      slicei->valmax_fds = valmax;
+    }
+    else{
+      valmin = slicei->valmin_fds;
+      valmax = slicei->valmax_fds;
       slicei->have_bound_file = YES;
     }
-    if(valmin>valmax)continue;
-    slicei->valmin_fds = valmin;
-    slicei->valmax_fds = valmax;
     boundi = GetSliceBoundsInfo(slicei->label.shortlabel);
     if(boundi==NULL)continue;
     if(boundi->dlg_global_valmin>boundi->dlg_global_valmax){
@@ -547,7 +565,7 @@ void GetGlobalSliceBounds(void){
         NewMemory((void **)&boundscppi->unit, len+1);
         strcpy(boundscppi->unit, boundi->label->unit);
       }
-      
+
       boundscppi->cache = cache_slice_data;
       boundscppi->set_valtype = 0;
 
@@ -567,6 +585,96 @@ void GetGlobalSliceBounds(void){
       boundscppi->set_chopmax = boundi->setchopmax;
       boundscppi->chopmin     = boundi->chopmin;
       boundscppi->chopmax     = boundi->chopmax;
+
+      boundscppi->hist = NULL;
+    }
+  }
+}
+
+/* ------------------ UpdateGlobalFEDSliceBounds ------------------------ */
+
+void UpdateGlobalFEDSliceBounds(void){
+  int i;
+
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+    float valmin, valmax;
+    boundsdata *boundi;
+
+    slicei = sliceinfo+i;
+    if(slicei->is_fed==0||slicei->have_bound_file==0)continue;
+    if(slicei->valmin_fds>slicei->valmax_fds||
+       current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
+
+      GetFileBounds(slicei->bound_file, &valmin, &valmax);
+
+      if(valmin>valmax)continue;
+      slicei->valmin_fds = valmin;
+      slicei->valmax_fds = valmax;
+    }
+    else{
+      valmin = slicei->valmin_fds;
+      valmax = slicei->valmax_fds;
+      slicei->have_bound_file = YES;
+    }
+    boundi = GetSliceBoundsInfo(slicei->label.shortlabel);
+    if(boundi==NULL)continue;
+    if(boundi->dlg_global_valmin>boundi->dlg_global_valmax){
+      boundi->dlg_global_valmin = valmin;
+      boundi->dlg_global_valmax = valmax;
+    }
+    else{
+      boundi->dlg_global_valmin = MIN(boundi->dlg_global_valmin, valmin);
+      boundi->dlg_global_valmax = MAX(boundi->dlg_global_valmax, valmax);
+    }
+  }
+  for(i = 0; i<nslicebounds; i++){
+    boundsdata *boundi;
+
+    boundi = slicebounds+i;
+    if(strcmp(boundi->label->shortlabel, "FED")==0){
+      boundi->dlg_valmin = 0.0;;
+      boundi->dlg_valmax = 3.0;
+    }
+  }
+  nslicebounds_cpp = nslicebounds;
+  if(nslicebounds_cpp>0){
+    for(i = 0; i<nslicebounds_cpp; i++){
+      cpp_boundsdata *boundscppi;
+      boundsdata *boundi;
+
+      boundscppi = slicebounds_cpp+i;
+      boundi = slicebounds+i;
+      if(strcmp(boundi->label->shortlabel, "FED")!=0)continue;
+
+      strcpy(boundscppi->label, boundi->shortlabel);
+      {
+        int len;
+
+        len = strlen(boundi->label->unit);
+        NewMemory((void **)&boundscppi->unit, len+1);
+        strcpy(boundscppi->unit, boundi->label->unit);
+      }
+
+      boundscppi->cache = cache_slice_data;
+      boundscppi->set_valtype = 0;
+
+      boundscppi->set_valmin = BOUND_SET_MIN;
+      boundscppi->valmin[BOUND_SET_MIN] = 0.0;
+      boundscppi->valmin[BOUND_LOADED_MIN] = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_GLOBAL_MIN] = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_PERCENTILE_MIN] = boundi->dlg_global_valmin;
+
+      boundscppi->set_valmax = BOUND_SET_MAX;
+      boundscppi->valmax[BOUND_SET_MAX] = 3.0;
+      boundscppi->valmax[BOUND_LOADED_MAX] = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_GLOBAL_MAX] = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
+
+      boundscppi->set_chopmin = boundi->setchopmin;
+      boundscppi->set_chopmax = boundi->setchopmax;
+      boundscppi->chopmin = boundi->chopmin;
+      boundscppi->chopmax = boundi->chopmax;
 
       boundscppi->hist = NULL;
     }
@@ -792,12 +900,12 @@ void PrintPartLoadSummary(int option_arg,int type_arg){
 
       partj = partinfo+j;
       doit = 0;
+#ifdef pp_PART_SIZE
       if(type_arg==PART_SIZING&&partj->boundstatus==PART_BOUND_COMPUTING)doit = 1;
+#endif
       if(type_arg==PART_LOADING&&partj->loadstatus==FILE_LOADING)doit = 1;
       if(doit==1){
-#ifdef pp_PART_SIZE
         printf("%s", partj->reg_file);
-#endif
         if(isize_local!=nsize_local-1)printf(", ");
         isize_local++;
       }
@@ -869,9 +977,6 @@ void GetAllPartBounds(void){
       UNLOCK_PART_LOAD;
       return;
     }
-    else{
-      printf("***warning: particle bound files have changed - re-generating global particle bound file\n");
-    }
     fclose(stream);
   }
   UNLOCK_PART_LOAD;
@@ -886,11 +991,15 @@ void GetAllPartBounds(void){
       continue;
     }
     parti->boundstatus = PART_BOUND_COMPUTING;
+#ifdef pp_PART_SIZE
     PrintPartLoadSummary(PART_BEFORE, PART_SIZING);
+#endif
     UNLOCK_PART_LOAD;
     ReadPartBounds(parti,global_have_global_bound_file);
     LOCK_PART_LOAD;
+#ifdef pp_PART_SIZE
     if(npartinfo>1)PrintPartLoadSummary(PART_AFTER, PART_SIZING);
+#endif
     parti->boundstatus = PART_BOUND_DEFINED;
     UNLOCK_PART_LOAD;
   }

@@ -14,6 +14,8 @@
 #endif
 #include "IOscript.h"
 
+int nrenderonce=0;
+
 /* ------------------ GetGridIndex ------------------------ */
 
 int GetGridIndex(float val, int dir, float *plotxyz, int nplotxyz){
@@ -799,6 +801,7 @@ int TimebarClick(int x, int y){
     CheckTimeBound();
     timebar_drag=1;
     stept=0;
+    last_time_paused = 1;
     IdleCB();
     return 1;
   }
@@ -1990,30 +1993,7 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'i':
-      if(cache_plot3d_data==1){
-        HandleIso();
-        return;
-      }
-      break;
-    case 'I':
-      show_slice_in_obst++;
-      if(show_slice_in_obst>2)show_slice_in_obst = 0;
-      UpdateShowSliceInObst();
-      updatemenu = 1;
-      break;
-    case 'j':
-    case 'J':
-      if(keystate==GLUT_ACTIVE_CTRL){
-        select_device = 1-select_device;
-        updatemenu = 1;
-        if(select_device==1){
-          printf("device selection on\n");
-        }
-        else{
-          printf("device selection off\n");
-        }
-      }
-      else if(keystate==GLUT_ACTIVE_ALT){
+      if(keystate==GLUT_ACTIVE_ALT){ // toggle device visibility
         if(nobject_defs>0){
           int vis;
 
@@ -2027,16 +2007,26 @@ void Keyboard(unsigned char key, int flag){
           updatemenu = 1;
         }
       }
-      else{
-        if(key2=='J'){
-          sensorrelsize /= 1.5;
-          UpdateDeviceSize();
-        }
-        else{
-          sensorrelsize *= 1.5;
-          UpdateDeviceSize();
-        }
+      else if(cache_plot3d_data==1){
+        HandleIso();
+        return;
       }
+      break;
+    case 'I':
+      show_slice_in_obst++;
+      if(show_slice_in_obst>2)show_slice_in_obst = 0;
+      UpdateShowSliceInObst();
+      updatemenu = 1;
+      break;
+    case 'j':
+    case 'J':
+      if(keystate==GLUT_ACTIVE_ALT||key2=='J'){
+        sensorrelsize /= 1.5;
+      }
+      else{
+        sensorrelsize *= 1.5;
+      }
+      UpdateDeviceSize();
       break;
     case '`':
       if(ndeviceinfo>0){
@@ -2076,9 +2066,21 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'k':
     case 'K':
-      visTimebar = 1 - visTimebar;
-      if(visTimebar==0)PRINTF("Time bar hidden\n");
-      if(visTimebar==1)PRINTF("Time bar visible\n");
+      if(keystate==GLUT_ACTIVE_ALT){ // toggle device selection
+        select_device = 1-select_device;
+        updatemenu = 1;
+        if(select_device==1){
+          printf("device selection on\n");
+        }
+        else{
+          printf("device selection off\n");
+        }
+      }
+      else{
+        visTimebar = 1 - visTimebar;
+        if(visTimebar==0)PRINTF("Time bar hidden\n");
+        if(visTimebar==1)PRINTF("Time bar visible\n");
+      }
       break;
     case 'l':
       LoadUnloadMenu(RELOADALL);
@@ -2173,23 +2175,40 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'p':
     case 'P':
-      if(IsPartLoaded()==1){
-        IncrementPartPropIndex();
+      {
+        int is_part_loaded, is_plot3d_loaded;
+
+        is_part_loaded = IsPartLoaded();
+        is_plot3d_loaded = IsPlot3DLoaded();
+
+        if(is_part_loaded==1||is_plot3d_loaded==1){
+          if(is_part_loaded==1){
+            IncrementPartPropIndex();
 #define BOUND_PERCENTILE_DRAW          120
-        PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
-      }
-      if(IsPlot3DLoaded()==1){
-        plotn += FlowDir;
-        if(plotn<1){
-          plotn = numplot3dvars;
+            PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+          }
+          if(is_plot3d_loaded==1){
+            plotn += FlowDir;
+            if(plotn<1){
+              plotn = numplot3dvars;
+            }
+            if(plotn>numplot3dvars){
+              plotn = 1;
+            }
+            UpdateAllPlotSlices();
+            if(visiso==1&&cache_plot3d_data==1)UpdateSurface();
+            UpdatePlot3dListIndex();
+            Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+          }
         }
-        if(plotn>numplot3dvars){
-          plotn = 1;
+        else{
+          if(ndevicetypes>0){
+            devicetypes_index++;
+            if(devicetypes_index>=ndevicetypes)devicetypes_index = 0;
+            updatemenu = 1;
+            UpdateDeviceTypes(devicetypes_index);
+          }
         }
-        UpdateAllPlotSlices();
-        if(visiso==1&&cache_plot3d_data==1)UpdateSurface();
-        UpdatePlot3dListIndex();
-        Plot3DBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
       }
       update_chop_colors = 1;
       break;
@@ -2410,6 +2429,9 @@ void Keyboard(unsigned char key, int flag){
           //if(render_skip!=RENDER_CURRENT_SINGLE)render_skip = 1;
         }
         else{
+          if(flag==FROM_CALLBACK){
+            last_time_paused = 0;
+          }
           itime_save = -1;
           render_skip = RENDER_CURRENT_SINGLE;
         }
@@ -3258,6 +3280,13 @@ void IdleCB(void){
   }
 }
 
+/* ------------------ ForceIdle ------------------------ */
+
+void ForceIdle(void){
+  force_redisplay = 1;
+  IdleCB();
+}
+
 /* ------------------ SetScreenSize ------------------------ */
 
 void SetScreenSize(int *width, int *height){
@@ -3291,6 +3320,8 @@ void SetScreenSize(int *width, int *height){
 /* ------------------ AdjustY ------------------------ */
 
 void AdjustY(cameradata *ca){
+
+  if(projection_type!=PROJECTION_PERSPECTIVE||update_saving_viewpoint>0||update_viewpoint_script>0)return;
   switch(selected_view){
     case 0:
     case -1:
@@ -3333,11 +3364,12 @@ void ReshapeCB(int width, int height){
   else{
     CopyCamera(camera_current,camera_save);
   }
-  AdjustY(camera_current);
+  if(current_script_command==NULL)AdjustY(camera_current);
   windowsize_pointer_old = -1;
   UpdateWindowSizeList();
-  update_adjust_y = 2;
-}
+  if(current_script_command==NULL)update_adjust_y = 2;
+  update_reshape = 2;
+ }
 
 /* ------------------ ResetGLTime ------------------------ */
 
@@ -3638,8 +3670,24 @@ void DoScript(void){
         }
       }
     }
-    if(render_status==RENDER_OFF){   // don't advance command if Smokeview is executing a RENDERALL command
-      current_script_command++;
+    int advance_script = 0;
+
+    if(current_script_command->command==SCRIPT_SETVIEWPOINT&&update_viewpoint_script>0){
+      advance_script=0;
+    }
+    else{
+      advance_script = 1;
+      if(render_status!=RENDER_OFF)advance_script = 0;
+    }
+#define NREPEATS 2
+    if(nrenderonce>=NREPEATS){
+      nrenderonce = 0;
+    }
+
+    if(advance_script==1){                        // don't advance command if Smokeview is executing a RENDERALL command
+      if(nrenderonce==0){
+        current_script_command++; // force RENDERONCE to be run twice
+      }
       script_render_flag= RunScriptCommand(current_script_command);
       if(runscript==2&&noexit==0&&current_script_command==NULL){
         SMV_EXIT(0);
@@ -3667,6 +3715,9 @@ void DoScript(void){
           //UnloadVolsmokeFrameAllMeshes(remove_frame);
         }
       }
+    }
+    if(current_script_command!=NULL&&current_script_command->command==SCRIPT_RENDERONCE){
+      nrenderonce++;
     }
     glutPostRedisplay();
   }
@@ -3723,7 +3774,11 @@ void DoNonStereo(void){
     IdleDisplay();
 
     stop_rendering = 1;
+#ifdef pp_SCRIPT_RENDER_FIX
+    if(current_script_command==NULL&&plotstate==DYNAMIC_PLOTS && nglobal_times>0){
+#else
     if(plotstate==DYNAMIC_PLOTS && nglobal_times>0){
+#endif
       if(itimes>=0&&itimes<nglobal_times&&
         ((render_frame[itimes]==0&&stereotype==STEREO_NONE)||(render_frame[itimes]<2&&stereotype!=STEREO_NONE))
         ){

@@ -1079,9 +1079,9 @@ void InitOpenGL(int option){
       vslicedata *vslicei;
 
       vslicei = vsliceinfo + i;
-      if(vslicei->autoload==0&&vslicei->loaded==1)ReadVSlice(i,ALL_SLICE_FRAMES, NULL, UNLOAD,&errorcode);
+      if(vslicei->autoload==0&&vslicei->loaded==1)ReadVSlice(i,ALL_FRAMES, NULL, UNLOAD,&errorcode);
       if(vslicei->autoload==1){
-        ReadVSlice(i,ALL_SLICE_FRAMES, NULL, LOAD,&errorcode);
+        ReadVSlice(i,ALL_FRAMES, NULL, LOAD,&errorcode);
       }
     }
     // note:  only slices that are NOT a part of a vector slice will be loaded here
@@ -1105,7 +1105,7 @@ void InitOpenGL(int option){
         slicei = sliceinfo + i;
         set_slicecolor = DEFER_SLICECOLOR;
         if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-        if(slicei->autoload == 0 && slicei->loaded == 1)ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, UNLOAD, set_slicecolor,&errorcode);
+        if(slicei->autoload == 0 && slicei->loaded == 1)ReadSlice(slicei->file, i, ALL_FRAMES, NULL, UNLOAD, set_slicecolor,&errorcode);
         if(slicei->autoload == 1 && slicei->loaded == 0){
         }
       }
@@ -1168,6 +1168,7 @@ void InitScriptErrorFiles(void){
 
 void InitVars(void){
   int i;
+  char *queue_list = NULL, *queue=NULL, *htmldir=NULL, *email=NULL;
 
 #ifdef pp_OSX_HIGHRES
   double_scale = 1;
@@ -1179,53 +1180,70 @@ void InitVars(void){
   object_circ.ncirc=0;
   cvent_circ.ncirc=0;
 
-#ifdef pp_MOVIE_BATCH
-  {
-    char *queue_list = NULL;
-    char *queues = "batch ; batch2 ;batch3;batch4";
+//*** define slurm queues
 
-    queue_list = getenv("SMV_QUEUES");
-    queue_list = queues; // placeholder until linux version is complete
-    if(queue_list!=NULL){
-      char *queue;
+  queue_list = getenv("SMV_QUEUES");
+#ifdef pp_MOVIE_BATCH_DEBUG
+  if(queue_list==NULL)queue_list = "batch"; // placeholder for debugging slurm queues on the PC
+#endif
 
 #define MAX_QUEUS 100
-      strcpy(movie_queue_list, queue_list);
-      queue = strtok(movie_queue_list, ";");
-      if(queue!=NULL){
-        NewMemory((void **)&movie_queues, MAX_QUEUS*sizeof(char *));
-        movie_queues[nmovie_queues++]=TrimFrontBack((queue));
-        for(;;){
-          queue = strtok(NULL, ";");
-          if(queue==NULL||nmovie_queues>=MAX_QUEUS)break;
-          movie_queues[nmovie_queues++]=TrimFrontBack((queue));
-        }
-        ResizeMemory((void **)&movie_queues, nmovie_queues*sizeof(char *));;
-        have_slurm = 1;
-      }
+  if(queue_list!=NULL){
+    strcpy(movie_queue_list, queue_list);
+    queue = strtok(movie_queue_list, ":");
+  }
+  if(queue!=NULL){
+    NewMemory((void **)&movie_queues, MAX_QUEUS*sizeof(char *));
+    movie_queues[nmovie_queues++]=TrimFrontBack(queue);
+    for(;;){
+      queue = strtok(NULL, ":");
+      if(queue==NULL||nmovie_queues>=MAX_QUEUS)break;
+      movie_queues[nmovie_queues++]=TrimFrontBack(queue);
     }
-    {
-      char *htmldir=NULL;
-      char *email=NULL;
+    ResizeMemory((void **)&movie_queues, nmovie_queues*sizeof(char *));;
+    have_slurm = 1;
+  }
+#ifndef pp_MOVIE_BATCH
+  have_slurm = 0;
+#endif
 
-      htmldir = getenv("SMV_HTMLDIR");
-      if(htmldir!=NULL&&strlen(htmldir)>0){
-        strcpy(movie_htmldir, htmldir);
-      }
-      else{
-        strcpy(movie_htmldir, "");
-      }
+//*** define weburl
+  {
+    char *hostname = NULL, *username = NULL;
 
-      email = getenv("SMV_EMAIL");
-      if(email!=NULL&&strlen(email)>0){
-        strcpy(movie_email, email);
-      }
-      else{
-        strcpy(movie_email, "");
-      }
+    hostname = getenv("HOSTNAME");
+    username = getenv("USER");
+
+    if(hostname!=NULL&&username!=NULL){
+      strcpy(movie_url, "http://");
+      strcat(movie_url, hostname);
+      strcat(movie_url, "/");
+      strcat(movie_url, username);
+    }
+    else{
+      strcpy(movie_url, "");
     }
   }
-#endif
+
+//*** define html directory
+
+  htmldir = getenv("SMV_HTMLDIR");
+  if(htmldir!=NULL&&strlen(htmldir)>0){
+    strcpy(movie_htmldir, htmldir);
+  }
+  else{
+    strcpy(movie_htmldir, "");
+  }
+
+//*** define email address
+
+  email = getenv("SMV_EMAIL");
+  if(email!=NULL&&strlen(email)>0){
+    strcpy(movie_email, email);
+  }
+  else{
+    strcpy(movie_email, "");
+  }
 
 #ifdef pp_RENDER360_DEBUG
   NewMemory((void **)&screenvis, nscreeninfo * sizeof(int));
@@ -2013,7 +2031,6 @@ void InitVars(void){
   iso_specular[1] = 0.7;
   iso_specular[2] = 0.7;
   iso_specular[3] = 1.0;
-  iso_shininess = 10.0f;
 
   light_position0[0] = 1.0f;
   light_position0[1] = 1.0f;
@@ -2163,10 +2180,8 @@ void InitVars(void){
   camera_max_id=2;
   startup=0;
   startup_view_ini=1;
-  strcpy(startup_view_label,"external");
+  strcpy(viewpoint_label_startup,"external");
   selected_view=-999;
-
-
   {
     int iii;
 

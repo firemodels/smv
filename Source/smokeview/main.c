@@ -44,6 +44,8 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -html          - output html version of smokeview scene"));
     PRINTF("%s\n", _(" -info            generate casename.slcf and casename.viewpoint files containing slice file and viewpiont info"));
     PRINTF("%s\n", _(" -lang xx       - where xx is de, es, fr, it for German, Spanish, French or Italian"));
+    PRINTF("%s\n", _(" -make_movie    - open the movie generating dialog box"));
+    PRINTF("%s\n", _(" -outline       - show geometry bound boxes instead of geometry"));
     PRINTF("%s\n", _(" -ng_ini        - non-graphics version of -ini."));
     PRINTF("%s\n", _(" -scriptrenderdir dir - directory containing script rendered images"));
     PRINTF("%s\n", _("                  (override directory specified by RENDERDIR script keyword)"));
@@ -280,12 +282,6 @@ void ParseCommandline(int argc, char **argv){
     }
   }
 
-#ifdef pp_MOVIE_BATCH
-  strcpy(movie_basename, fdsprefix);
-  strcat(movie_basename, "_slice_1");
-  strcpy(movie_ini_filename, movie_basename);
-  strcat(movie_ini_filename, ".ini");
-#endif
   FREEMEMORY(log_filename);
   NewMemory((void **)&log_filename, len_casename + strlen(".smvlog") + 1);
   STRCPY(log_filename, fdsprefix);
@@ -554,6 +550,12 @@ void ParseCommandline(int argc, char **argv){
     else if(strncmp(argv[i], "-fed", 4) == 0){
       compute_fed = 1;
     }
+    else if(strncmp(argv[i], "-outline", 8)==0){
+      geom_bounding_box = 1;
+    }
+    else if(strncmp(argv[i], "-make_movie", 11)==0){
+      open_movie_dialog = 1;
+    }
     else if(strncmp(argv[i], "-geominfo", 9)==0){
       print_geominfo = 1;
     }
@@ -737,9 +739,10 @@ int main(int argc, char **argv){
   int return_code;
   char *progname;
 
+  START_TIMER(timer_startup);
 // #define pp_CRASH_TEST
 #ifdef pp_CRASH_TEST
-  
+
   float *x = NULL, xx, yy, zz;
 
   printf("before using undefined variable\n");

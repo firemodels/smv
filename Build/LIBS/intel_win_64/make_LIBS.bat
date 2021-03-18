@@ -6,7 +6,9 @@ set arg2=%2
 set arg3=%3
 
 :: setup compiler environment
+if x%arg1% == xbot goto skip1
 call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
+:skip1
 
 set EXIT_SCRIPT=1
 

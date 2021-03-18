@@ -412,10 +412,10 @@ LOAD3DSMOKE
  SOOT DENSITY
 LOAD3DSMOKE
  HRRPUV
-SETVIEWPOINT
- external
 SETTIMEVAL
  30.000000
+SETVIEWPOINT
+ external
 RENDERONCE
  thouse5_smoke_noclip
 
@@ -431,10 +431,10 @@ LOAD3DSMOKE
  HRRPUV
 LOADINIFILE
  thouse5_clip_blockages.ini
-SETVIEWPOINT
- external
 SETTIMEVAL
  30.000000
+SETVIEWPOINT
+ external
 RENDERONCE
  thouse5_smoke_clip_blockages
 
@@ -448,13 +448,12 @@ LOAD3DSMOKE
  SOOT DENSITY
 LOAD3DSMOKE
  HRRPUV
-SETVIEWPOINT
- external
-
 LOADINIFILE
  thouse5_clip_blockages_data.ini
 SETTIMEVAL
  30.000000
+SETVIEWPOINT
+ external
 RENDERONCE
  thouse5_smoke_clip_blockages_data
 
@@ -537,10 +536,10 @@ LABEL
 LOADINIFILE
  thouse5.ini
 UNLOADALL
-SETVIEWPOINT
- external
 LOADISO
  Fractional effective dose: 0.3, 1.0, 3.0
+SETVIEWPOINT
+ external
 SETTIMEVAL
  5.000000
 RENDERONCE
@@ -570,12 +569,12 @@ LOADINIFILE
  thouse5_fed.ini
 SCENECLIP
  1
-SETVIEWPOINT
- upy
 LOADSLCF
  PBY=1.6 QUANTITY='Fractional effective dose'
 SETTIMEVAL
  5.0
+SETVIEWPOINT
+ upy
 RENDERONCE
  thouse5_fed_z1p5_slice_005
 SETTIMEVAL

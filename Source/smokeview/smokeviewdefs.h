@@ -33,9 +33,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MENU_VIEW_YMAX            -112
 #define MENU_VIEW_ZMIN            -113
 #define MENU_VIEW_ZMAX            -114
-#ifdef pp_MOVIE_BATCH
 #define SAVE_CURRENT_VIEWPOINT    -115
-#endif
 
 #define VIEW_XMIN                    0
 #define VIEW_XMAX                   -1
@@ -76,7 +74,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MINMAX_LOADED 1
 #define MINMAX_INI    2
 
-#define ALL_SLICE_FRAMES -1
+#define ALL_FRAMES       -1
 
 #define COLORBAR_SHIFT_MIN          0.1
 #define COLORBAR_SHIFT_MAX         10.0
@@ -312,9 +310,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MAX_MSLABS  2
 
 #define MAKE_MOVIE        28
-#ifdef pp_MOVIE_BATCH
 #define MAKE_MOVIE_BATCH 130
-#endif
 #define OUTPUT_FFMPEG    129
 
 #define PNG        0
@@ -991,6 +987,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define DIALOG_SCALING   41
 #define DIALOG_WINDOW    42
 #define DIALOG_MOVIE     43
+#define DIALOG_MOVIE_BATCH 45
 #define DIALOG_SHRINKALL -3
 
 #define UNLOAD_LAST -2

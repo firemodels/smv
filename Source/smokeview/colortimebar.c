@@ -13,28 +13,28 @@ void UpdateTimeLabels(void){
   float time0;
 
   time0 = timeoffset;
-  if(global_times!=NULL)time0 = timeoffset + global_times[itimes];
+  if(global_times!=NULL)time0 = timeoffset+global_times[itimes];
   if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER){
     time0 = current_script_command->fval4;
   }
 
   if(vishmsTimelabel==1){
-    int hour, min, sec,sec10;
+    int hour, min, sec, sec10;
     char sign[2];
 
-    if(time0 < 0){
-      strcpy(sign,"-");
+    if(time0<0){
+      strcpy(sign, "-");
       time0 = ABS(time0);
     }
     else{
-      strcpy(sign," ");
+      strcpy(sign, " ");
     }
     hour = time0/3600;
-    min = (int)(time0/60.0 - 60.0*hour);
-    sec10 = (int)(10*(time0 -  60.0*min - 3600.0*hour));
+    min = (int)(time0/60.0-60.0*hour);
+    sec10 = (int)(10*(time0-60.0*min-3600.0*hour));
     sec = sec10/10;
-    sec10 = sec10 - 10*sec;
-    sprintf(timelabel,"  %s%i:%.2i:%.2i.%i", sign,hour, min, sec, sec10);
+    sec10 = sec10-10*sec;
+    sprintf(timelabel, "  %s%i:%.2i:%.2i.%i", sign, hour, min, sec, sec10);
   }
   else{
     float dt;
@@ -51,18 +51,31 @@ void UpdateTimeLabels(void){
         dt = 0.0;
       }
     }
-    if(dt<0.0)dt=-dt;
-    timevalptr=Time2TimeLabel(time0,dt,timeval);
+    if(dt<0.0)dt = -dt;
+    timevalptr = Time2TimeLabel(time0, dt, timeval);
     strcpy(timelabel, "");
-    if(visFrameTimelabel==1)strcat(timelabel,"Time: ");
-    strcat(timelabel,timevalptr);
+    if(visFrameTimelabel==1)strcat(timelabel, "Time: ");
+    strcat(timelabel, timevalptr);
   }
-  if(visFrameTimelabel==1){
-    sprintf(framelabel, "Frame: %i", itimes);
+
+  {
+    int itime_val;
+
+    if(current_script_command!=NULL&&current_script_command->command==SCRIPT_LOADSLICERENDER){
+      itime_val = script_itime;
+    }
+    else{
+      itime_val = itimes;
+    }
+
+    if(visFrameTimelabel==1){
+      sprintf(framelabel, "Frame: %i", itime_val);
+    }
+    else{
+      sprintf(framelabel, "%i", itime_val);
+    }
   }
-  else{
-    sprintf(framelabel, "%i", itimes);
-  }
+
   if(hrrinfo!=NULL&&hrrinfo->hrrval!=NULL&&hrrinfo->display==1&&hrrinfo->loaded==1){
     float hrr;
 
@@ -594,10 +607,13 @@ void RemapColorbarType(int cb_oldtype, char *cb_newname){
       strcpy(cb_newname, "Methanol");
       break;
     case 15:
+      strcpy(cb_newname, "Propane");
+      break;
+    case 16:
       strcpy(cb_newname, "CO2");
       break;
     default:
-#define NCOLORBARS_PREV 16
+#define NCOLORBARS_PREV 17
       if(cb_oldtype>=NCOLORBARS_PREV){
         cb_oldtype -= (NCOLORBARS_PREV-ndefaultcolorbars);
       }
@@ -620,7 +636,7 @@ void InitDefaultColorbars(int nini){
   int i;
   colorbardata *cbi;
 
-  ndefaultcolorbars=17;
+  ndefaultcolorbars=18;
 
   FREEMEMORY(colorbarinfo);
   ncolorbars=ndefaultcolorbars;
@@ -739,25 +755,25 @@ void InitDefaultColorbars(int nini){
   cbi->nodehilight = 0;
 
   cbi->index_node[0]  =   0;
-  
+
   cbi->rgb_node[0]    =   0;
   cbi->rgb_node[1]    = 151;
   cbi->rgb_node[2]    = 255;
 
   cbi->index_node[1]  = 113;
-  
+
   cbi->rgb_node[3]    = 255;
   cbi->rgb_node[4]    =   0;
   cbi->rgb_node[5]    =   0;
 
   cbi->index_node[2]  = 212;
-  
+
   cbi->rgb_node[6]    = 255;
   cbi->rgb_node[7]    = 255;
   cbi->rgb_node[8]    =   0;
- 
+
   cbi->index_node[3]  = 255;
-  
+
   cbi->rgb_node[9]    = 255;
   cbi->rgb_node[10]   = 255;
   cbi->rgb_node[11]   = 255;
@@ -1118,23 +1134,63 @@ void InitDefaultColorbars(int nini){
   strcpy(cbi->label, "Methanol");
   cbi->label_ptr = cbi->label;
 
-  cbi->nnodes = 3;
+  cbi->nnodes = 4;
+  cbi->nodehilight = 0;
+
+  cbi->index_node[0] = 0;
+  cbi->rgb_node[0] = 9;
+  cbi->rgb_node[1] = 160;
+  cbi->rgb_node[2] = 255;
+
+  cbi->index_node[1] = 192;
+  cbi->rgb_node[3] = 9;
+  cbi->rgb_node[4] = 160;
+  cbi->rgb_node[5] = 255;
+
+  cbi->index_node[2] = 200;
+  cbi->rgb_node[6] = 255;
+  cbi->rgb_node[7] = 255;
+  cbi->rgb_node[8] = 255;
+
+  cbi->index_node[3] = 255;
+  cbi->rgb_node[9] = 255;
+  cbi->rgb_node[10] = 255;
+  cbi->rgb_node[11] = 255;
+
+  cbi++;
+
+  // Propane
+
+  strcpy(cbi->label, "Propane");
+  cbi->label_ptr = cbi->label;
+
+  cbi->nnodes = 5;
   cbi->nodehilight = 0;
 
   cbi->index_node[0] = 0;
   cbi->rgb_node[0] = 0;
   cbi->rgb_node[1] = 0;
-  cbi->rgb_node[2] = 255;
+  cbi->rgb_node[2] = 0;
 
-  cbi->index_node[1] = 192;
-  cbi->rgb_node[3] = 0;
-  cbi->rgb_node[4] = 0;
-  cbi->rgb_node[5] = 255;
+  cbi->index_node[1] = 140;
+  cbi->rgb_node[3] = 235;
+  cbi->rgb_node[4] = 120;
+  cbi->rgb_node[5] = 0;
 
-  cbi->index_node[2] = 255;
-  cbi->rgb_node[6] = 255;
-  cbi->rgb_node[7] = 255;
-  cbi->rgb_node[8] = 255;
+  cbi->index_node[2] = 160;
+  cbi->rgb_node[6] = 250;
+  cbi->rgb_node[7] = 180;
+  cbi->rgb_node[8] = 0;
+
+  cbi->index_node[3] = 190;
+  cbi->rgb_node[9] = 252;
+  cbi->rgb_node[10] = 248;
+  cbi->rgb_node[11] = 70;
+
+  cbi->index_node[4] = 255;
+  cbi->rgb_node[12] = 255;
+  cbi->rgb_node[13] = 255;
+  cbi->rgb_node[14] = 255;
 
   cbi++;
 

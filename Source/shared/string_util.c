@@ -707,7 +707,7 @@ char *Time2TimeLabel(float sv_time, float dt, char *timelabel){
     sprintf(timelabel,"%4.2f",sv_time);
   }
   else{
-    sprintf(timelabel,"%4.1f",sv_time);
+    Float2String(timelabel, sv_time, 4);
   }
   TrimZeros(timelabel);
   TrimBack(timelabel);

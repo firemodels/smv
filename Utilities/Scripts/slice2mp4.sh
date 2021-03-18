@@ -136,8 +136,11 @@ restore_state()
     MOVIEDIR=${SLICE2MP4_MOVIEDIR}
     EMAIL=${SLICE2MP4_EMAIL}
     SHARE=${SLICE2MP4_SHARE}
+    if [ "${SLICE2MP4_WEBHOST}" != "" ]; then
+      SMV_WEBHOST=${SLICE2MP4_WEBHOST}
+    fi
   fi
-  LOCALCONFIG=$CONFIGDIR/fds2mp4_${input}
+  LOCALCONFIG=$CONFIGDIR/slice2mp4_${input}
   if [ -e $LOCALCONFIG ]; then
     source $LOCALCONFIG
     viewpoint=$SLICE2MP4_VIEWPOINT
@@ -151,7 +154,7 @@ restore_state()
       TIMEBAR="0"
     fi
     FONTSIZE=${SLICE2MP4_FONTSIZE}
-    if [ "$FONTIZE" == "" ]; then
+    if [ "$FONTSIZE" == "" ]; then
       FONTSIZE="0"
     fi
   fi
@@ -170,13 +173,18 @@ save_state()
   echo "export SLICE2MP4_MOVIEDIR=$MOVIEDIR"    >> $GLOBALCONFIG
   echo "export SLICE2MP4_EMAIL=$EMAIL"          >> $GLOBALCONFIG
   echo "export SLICE2MP4_SHARE=$SHARE"          >> $GLOBALCONFIG
+  if [ "$SMV_WEBHOST" == "" ]; then
+    echo "export SLICE2MP4_WEBHOST=none"        >> $GLOBALCONFIG
+  else
+    echo "export SLICE2MP4_WEBHOST=$SMV_WEBHOST" >> $GLOBALCONFIG
+  fi
   
   LOCALCONFIG=$CONFIGDIR/slice2mp4_${input}
   echo "#/bin/bash"                                   >  $LOCALCONFIG
   echo "export SLICE2MP4_VIEWPOINT=\"$viewpoint\""    >> $LOCALCONFIG
   echo "export SLICE2MP4_VIEWPOINTD=\"$viewpointd\""  >> $LOCALCONFIG
   echo "export SLICE2MP4_COLORBAR=$COLORBAR"          >> $LOCALCONFIG
-  echo "export SLICE2MP4_FONTIZE=$FONTSIZE"           >> $LOCALCONFIG
+  echo "export SLICE2MP4_FONTSIZE=$FONTSIZE"          >> $LOCALCONFIG
   echo "export SLICE2MP4_TIMEBAR=$TIMEBAR"            >> $LOCALCONFIG
 }
 
@@ -249,7 +257,7 @@ fi
 echo ""
 echo "        PNG dir: $RENDERDIR"
 echo "        mp4 dir: $MOVIEDIR"
-echo "      smokeview: $SMOKEVIEW"
+echo "            url: $SMV_WEBHOST"
 #if [ "$SHARE" == "" ]; then
 #  echo "      processes: $NPROCS, node sharing off"
 #else
@@ -277,12 +285,17 @@ fi
   echo ""
   echo "r - set PNG dir "
   echo "a - set mp4 dir"
+  echo "u - set web url"
+  if [ "$SMV_WEBHOST_default" != "" ]; then
+    echo "U - use default url ($SMV_WEBHOST_default)"
+  fi
   echo "m - set email address"
   echo ""
   echo "p - set number of processes"
 #  echo "S - toggle node sharing"
   echo "q - set queue"
   echo ""
+  echo "w - save settings"
   echo "1 - create MP4 animation"
   echo "2 - create MP4 animation then exit"
   echo "x - exit"
@@ -291,6 +304,16 @@ fi
     read -p "   enter animation directory: " MOVIEDIR
     CHECK_WRITE $MOVIEDIR
     continue
+  fi
+  if [ "$ans" == "u" ]; then
+    read -p "   enter web url:" SMV_WEBHOST
+    continue
+  fi
+  if [ "$SMV_WEBHOST_default" != "" ]; then
+    if [ "$ans" == "U" ]; then
+      SMV_WEBHOST=$SMV_WEBHOST_default 
+      continue
+    fi
   fi
   if [ "$ans" == "b" ]; then
     read -p "   set $slice_quantity_short min: " valmin
@@ -362,6 +385,9 @@ fi
   if [ "$ans" == "x" ]; then
     save_state
     exit
+  fi
+  if [ "$ans" == "w" ]; then
+    save_state
   fi
   if [[ "$ans" == "1" ]] ||  [[ "$ans" == "2" ]]; then
     writeini
@@ -537,8 +563,13 @@ make_movie() {
     $MAKEMOVIE -i $RENDERDIR -o $MOVIEDIR $img_basename $img_basename >& /dev/null
     if [ "$EMAIL" != "" ]; then
       if [ -e $animation_file ]; then
-        echo "animation file, $animation_file, sent to $EMAIL"
-        echo "" | mail -s "animation of $slice_quantity" -a $animation_file $EMAIL
+        if [[ "$SMV_WEBHOST" != "" ]] && [[ "$SMV_WEBHOST" != "none" ]]; then
+          echo "URL: $SMV_WEBHOST/${img_basename}.mp4 sent to $EMAIL"
+          echo "$SMV_WEBHOST/${img_basename}.mp4" | mail -s "$slice_quantity slice generated" $EMAIL
+        else
+          echo "$animation_file slice generated"
+          echo "" | mail -s "$slice_quantity slice generated" $EMAIL
+        fi
       fi
     fi
   fi
@@ -593,9 +624,10 @@ SHARE=
 #!/bin/bash
 NPROCS=$NPROCS
 QUEUE=$QUEUE
-SMOKEVIEW=$SMOKEVIEW
+SMOKEVIEW="$SMOKEVIEW"
+SMOKEVIEWBINDIR="$SMOKEVIEWBINDIR"
 QSMV="$FIREMODELS/smv/Utilities/Scripts/qsmv.sh $SHARE $O_opt $v_opt"
-\$QSMV -j $JOBPREFIX -P \$NPROCS -q \$QUEUE -e \$SMOKEVIEW -c $smv_scriptname $input
+\$QSMV -j $JOBPREFIX -P \$NPROCS -q \$QUEUE -e \$SMOKEVIEW -b \$SMOKEVIEWBINDIR -c $smv_scriptname $input
 EOF
 chmod +x $img_scriptname
 }
@@ -648,7 +680,9 @@ SCRIPTDIR=`dirname "$0"`
 cd $SCRIPTDIR/../../..
 ROOTDIR=`pwd`
 SMVREPO=$ROOTDIR/smv
+BOTREPO=$ROOTDIR/bot
 cd $CURDIR
+SMOKEVIEWBINDIR=$BOTREPO/Bundle/smv/for_bundle
 SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_64
 if [ ! -e $SMOKEVIEW ]; then
   SMOKEVIEW=$SMVREPO/Build/smokeview/intel_linux_64/smokeview_linux_test_64
@@ -660,6 +694,10 @@ SHARE=
 v_opt=
 O_opt=
 USER_CONFIG=
+SMV_WEBHOST_default=
+if [ "$SMV_WEBHOST" != "" ]; then
+  SMV_WEBHOST_default=$SMV_WEBHOST
+fi
 
 #---------------------------------------------
 #                  parse command line options 

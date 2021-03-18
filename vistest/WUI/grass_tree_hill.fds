@@ -57,11 +57,11 @@ cMESH IJK=50,25,25, XB=0,50,  0,25,0,25 /
 
 -- Boundary conditions
 &SURF ID='WIND',VEL=-1 /
-&VENT MB = XMIN, SURF_ID = 'WIND' /
-&VENT MB = XMAX, SURF_ID = 'OPEN' /
-&VENT MB = YMIN, SURF_ID = 'OPEN' /
-&VENT MB = YMAX, SURF_ID = 'OPEN' /
-&VENT MB = ZMAX, SURF_ID = 'OPEN' /
+&VENT MB = 'XMIN', SURF_ID = 'WIND' /
+&VENT MB = 'XMAX', SURF_ID = 'OPEN' /
+&VENT MB = 'YMIN', SURF_ID = 'OPEN' /
+&VENT MB = 'YMAX', SURF_ID = 'OPEN' /
+&VENT MB = 'ZMAX', SURF_ID = 'OPEN' /
 
 -- Grass on flat ground upwind of hill
 &VENT XB=6,20,-20,20,0,0,SURF_ID='GRASS' /

@@ -540,21 +540,37 @@ int CompileScript(char *scriptfile){
     if(GetScriptKeywordIndex(buffer)!=SCRIPT_UNKNOWN)nscriptinfo++;
   }
 
+#ifdef pp_SCRIPT_SETVIEW
+  nscriptinfo++;
+#endif
+
   if(nscriptinfo==0){
     fclose(stream);
     fprintf(stderr,"*** Error: scriptfile has no usable commands\n");
     return 1;
   }
 
-  NewMemory((void **)&scriptinfo,nscriptinfo*sizeof(scriptdata));
+NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
+
+#ifdef pp_SCRIPT_SETVIEW
+  // add a SETVIEWPOINT command for the default view point at the beginning of thes script
+  {
+    char label[20];
+
+    strcpy(label, "SETVIEWPOINT");
+    InitScriptI(scriptinfo, SCRIPT_SETVIEWPOINT, label);
+    scriptinfo->cval = GetPointer(viewpoint_label_startup);
+  }
+  nscriptinfo=1;
+#else
+  nscriptinfo=0;
+#endif
 
   /*
    ************************************************************************
    ************************ start of pass 2 *********************************
    ************************************************************************
  */
-
-  nscriptinfo=0;
   rewind(stream);
   while(!feof(stream)){
     int keyword_index;
@@ -1769,7 +1785,7 @@ int SliceMatch(scriptdata *scripti, slicedata *slicei){
     // not a valid slice if there is no slicelabel or it does not match ID
     if(slicei->slicelabel==NULL||MatchUpper(slicei->slicelabel, scripti->id)==NOTMATCH)return 0;
 
-    // if QUANTITY is not specified it CANNOT be a velocity slice 
+    // if QUANTITY is not specified it CANNOT be a velocity slice
     if(scripti->quantity==NULL){
       if(
         strcmp(slicei->label.shortlabel, "U_VEL")==0||
@@ -1934,7 +1950,7 @@ void ScriptLoadSLCF(scriptdata *scripti){
 
     slicei = sliceinfo+i;
     if(SliceMatch(scripti, slicei)==0)continue;
-    
+
     LoadSliceMenu(i);
     count++;
     if(slicei->finalize==1)break;
@@ -2044,6 +2060,55 @@ void SetSliceGlobalBounds(char *type){
   }
 }
 
+/* ------------------ GetNSliceFrames ------------------------ */
+
+int GetNSliceGeomFrames(scriptdata *scripti){
+  int nframes = -1;
+  int i;
+
+  nframes = -1;
+  for(i = 0; i<nmultisliceinfo; i++){
+    multislicedata *mslicei;
+    slicedata *slicei;
+    int j;
+
+    mslicei = multisliceinfo+i;
+    if(mslicei->nslices<=0)continue;
+    slicei = sliceinfo+mslicei->islices[0];
+    if(MatchUpper(slicei->label.longlabel, scripti->cval)==NOTMATCH)continue;
+    if(scripti->ival==0){
+      if(slicei->volslice==0)continue;
+    }
+    else{
+      if(slicei->idir!=scripti->ival)continue;
+      if(ABS(slicei->position_orig-scripti->fval)>slicei->delta_orig)continue;
+    }
+
+ // determine number of time frames
+
+    for(j = 0; j<mslicei->nslices; j++){
+      slicei = sliceinfo+mslicei->islices[j];
+      if(slicei->nframes==0){
+        if(slicei->slice_filetype==SLICE_GEOM){
+          int nvals, error;
+
+          slicei->nframes = GetGeomDataSize(slicei->file, &nvals, &scripti->fval2, &scripti->fval3, ALL_FRAMES, NULL, NULL,  &error);
+        }
+        else{
+          slicei->nframes = GetNSliceFrames(slicei->file, &scripti->fval2, &scripti->fval3);
+        }
+      }
+      if(nframes==-1){
+        nframes = slicei->nframes;
+      }
+      else{
+        nframes = MIN(nframes, slicei->nframes);
+      }
+    }
+  }
+  return nframes;
+}
+
 /* ------------------ ScriptLoadSliceRender ------------------------ */
 
 void ScriptLoadSliceRender(scriptdata *scripti){
@@ -2058,6 +2123,7 @@ void ScriptLoadSliceRender(scriptdata *scripti){
   if(scripti->first==1){
     char *shortlabel = NULL;
 
+    PRINTF("startup time: %f\n", timer_startup);
     PRINTF("script: loading slice files of type: %s\n", scripti->cval);
     PRINTF("  frames: %i,%i,%i,... \n\n", frame_start, frame_start+frame_skip, frame_start+2*frame_skip);
     scripti->first = 0;
@@ -2075,14 +2141,19 @@ void ScriptLoadSliceRender(scriptdata *scripti){
     if(shortlabel!=NULL){
       SetSliceGlobalBounds(shortlabel);
     }
+    frames_total = GetNSliceGeomFrames(scripti);
   }
   else{
     frame_current = scripti->ival4;
     frame_current += frame_skip;
   }
+  script_itime = frame_current;
+  script_render_flag = 1;
   scripti->ival4 = frame_current;
 
-  PRINTF("\nFrame %i/", frame_current);
+  if(frame_current<frames_total){
+    PRINTF("\nFrame: %i of %i, ", frame_current, frames_total);
+  }
 
   for(i = 0; i<nmultisliceinfo; i++){
     multislicedata *mslicei;
@@ -2108,6 +2179,9 @@ void ScriptLoadSliceRender(scriptdata *scripti){
 
     START_TIMER(slice_load_time);
     GLUTSETCURSOR(GLUT_CURSOR_WAIT);
+
+    // load slice data
+
     for(j = 0; j<mslicei->nslices; j++){
       slicedata *slicej;
       int finalize_save;
@@ -2123,19 +2197,7 @@ void ScriptLoadSliceRender(scriptdata *scripti){
       else{
         slicei->finalize = 0;
       }
-
-      if(slicei->nframes==0){
-        float dt=1.0, val_min, val_max;
-        
-        slicei->nframes = GetNSliceFrames(slicei->file, &scripti->fval2, &scripti->fval3);
-        val_min = scripti->fval2;
-        val_max = scripti->fval3;
-        if(slicei->nframes>0&&val_min<=val_max){
-          dt = (val_max-val_min)/(float)slicei->nframes;
-        }
-        scripti->fval5 = dt;
-      }
-      if(frame_current>=slicei->nframes){
+      if(frame_current>=frames_total){
         scripti->exit = 1;
         valid_frame = 0;
         RenderState(RENDER_OFF);
@@ -2169,17 +2231,19 @@ void ScriptLoadSliceRender(scriptdata *scripti){
     updatemenu = 1;
     STOP_TIMER(slice_load_time);
 
-    printf("%i files/", count);
-    if(total_slice_size>1000000000){
-      PRINTF("%.1f GB/%.1f s\n", (float)total_slice_size/1000000000., slice_load_time);
-    }
-    else if(total_slice_size>1000000){
-      PRINTF("%.1f MB/%.1f s\n", (float)total_slice_size/1000000., slice_load_time);
-    }
-    else{
-      PRINTF("%.0f KB/%.1f s\n", (float)total_slice_size/1000., slice_load_time);
-    }
 
+    if(frame_current<frames_total){
+      PRINTF("files: %i, ", count);
+      if(total_slice_size>1000000000){
+        PRINTF("file size: %.1f GB, load time: %.1f s\n", (float)total_slice_size/1000000000., slice_load_time);
+      }
+      else if(total_slice_size>1000000){
+        PRINTF("file size: %.1f MB, load time: %.1f s\n", (float)total_slice_size/1000000., slice_load_time);
+      }
+      else{
+        PRINTF("file size: %.0f KB, load time: %.1f s\n", (float)total_slice_size/1000., slice_load_time);
+      }
+    }
     break;
   }
   if(valid_frame==1&&count==0){
@@ -2656,10 +2720,10 @@ void ScriptLoadFile(scriptdata *scripti){
     sd = sliceinfo + i;
     if(strcmp(sd->file,scripti->cval)==0){
       if(i<nsliceinfo-nfedinfo){
-        ReadSlice(sd->file,i, ALL_SLICE_FRAMES, NULL, LOAD, SET_SLICECOLOR,&errorcode);
+        ReadSlice(sd->file,i, ALL_FRAMES, NULL, LOAD, SET_SLICECOLOR,&errorcode);
       }
       else{
-        ReadFed(i, ALL_SLICE_FRAMES, NULL, LOAD,FED_SLICE,&errorcode);
+        ReadFed(i, ALL_FRAMES, NULL, LOAD,FED_SLICE,&errorcode);
       }
       return;
     }
@@ -2927,6 +2991,7 @@ void ScriptSetTimeVal(scriptdata *scripti){
     itimes=imin;
     script_itime=imin;
     stept=0;
+    last_time_paused = 1;
     force_redisplay=1;
     UpdateFrameNumber(0);
     UpdateTimeLabels();
@@ -3035,27 +3100,19 @@ void ScriptRGBtest(scriptdata *scripti){
   rgb_test_delta  = scripti->ival4;
   use_lighting = 0;
 }
+
 /* ------------------ ScriptSetViewpoint ------------------------ */
 
 void ScriptSetViewpoint(scriptdata *scripti){
   char *viewpoint;
-  cameradata *ca;
-  int count=0;
 
   viewpoint = scripti->cval;
-  script_viewpoint_found = YES;
+  update_viewpoint_script = 3;
+  strcpy(viewpoint_script, viewpoint);
   PRINTF("script: set viewpoint to %s\n\n",viewpoint);
-  for(ca=camera_list_first.next;ca->next!=NULL;ca=ca->next){
-    if(strcmp(scripti->cval,ca->name)==0){
-      ResetMenu(ca->view_id);
-      count++;
-      break;
-    }
-  }
-  if(count == 0){
+  if(GetCamera(viewpoint) == NULL){
     fprintf(stderr, "*** Error: The viewpoint %s was not found\n", viewpoint);
     if(stderr2!=NULL)fprintf(stderr2, "*** Error: The viewpoint %s was not found\n", viewpoint);
-    script_viewpoint_found = NO;
   }
 }
 

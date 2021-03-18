@@ -514,7 +514,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   PrintMemoryInfo;
   UpdateTimes();
   UpdateUnitDefs();
-  IdleCB();
+  ForceIdle();
   STOP_TIMER(total_time);
 
   if(file_size!=0&&read_time>0.0){

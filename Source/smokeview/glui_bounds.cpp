@@ -1702,7 +1702,7 @@ extern "C" void SliceBoundsCPP_CB(int var){
   
           set_slicecolor = DEFER_SLICECOLOR;
           if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-          ReadSlice("", i, ALL_SLICE_FRAMES, NULL, RESETBOUNDS, set_slicecolor, &error);
+          ReadSlice("", i, ALL_FRAMES, NULL, RESETBOUNDS, set_slicecolor, &error);
         }
       }
       break;
@@ -6037,7 +6037,7 @@ extern "C" void SliceBoundCB(int var){
 
         set_slicecolor = DEFER_SLICECOLOR;
         if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-        ReadSlice("", i, ALL_SLICE_FRAMES, NULL, RESETBOUNDS, set_slicecolor, &error);
+        ReadSlice("", i, ALL_FRAMES, NULL, RESETBOUNDS, set_slicecolor, &error);
       }
     }
     slice_fileupdate--;
