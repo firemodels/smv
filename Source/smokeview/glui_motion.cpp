@@ -909,6 +909,17 @@ extern "C" void ViewpointCB(int var){
     camera_current->rotation_type = rotation_type_save;
     EDIT_view_label->set_text(ca->name);
     break;
+#ifdef pp_VIEWPOINT_MENU
+  case LIST_VIEW:
+  case LIST_VIEW_FROM_DIALOG:
+    {
+      int camera_id;
+
+      camera_id = LIST_viewpoints->get_int_val();
+      ResetMenu(camera_id);
+    }
+    break;
+#else
   case LIST_VIEW_FROM_DIALOG:
     ViewpointCB(LIST_VIEW);
     AdjustY(camera_current);
@@ -938,6 +949,7 @@ extern "C" void ViewpointCB(int var){
     AdjustY(camera_current);
 #endif
     break;
+#endif
   case STARTUP:
     startup_view_ini = LIST_viewpoints->get_int_val();
     {
