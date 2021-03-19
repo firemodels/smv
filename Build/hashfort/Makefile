@@ -26,7 +26,7 @@ no_target:
 
 # ------------- intel win 64 ----------------
 
-intel_win_64 : FFLAGS    = -O2 /nologo /fpscomp:general /stand:f08
+intel_win_64 : FFLAGS    = -O2 /nologo /fpscomp:general /stand:f18
 intel_win_64 : FC        = ifort
 intel_win_64 : exe       = hashfort_win_64.exe
 
@@ -35,7 +35,7 @@ intel_win_64 : $(objwin)
 
 # ------------- intel linux 64 ----------------
 
-intel_linux_64 : FFLAGS    = -O2 -m64 -stand:f08
+intel_linux_64 : FFLAGS    = -O2 -m64 -stand:f18
 intel_linux_64 : FC        = ifort
 intel_linux_64 : exe       = hashfort_linux_64
 
@@ -44,7 +44,7 @@ intel_linux_64 : $(obj)
 
 # ------------- intel oxx 64 ----------------
 
-intel_osx_64 : FFLAGS    = -O2 -m64 -stand:f08
+intel_osx_64 : FFLAGS    = -O2 -m64 -stand:f18
 intel_osx_64 : FC        = ifort
 intel_osx_64 : exe       = hashfort_osx_64
 

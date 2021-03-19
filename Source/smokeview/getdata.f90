@@ -1611,7 +1611,6 @@ real :: dummy, qval
 
 integer :: nxpts, nypts, nzpts
 integer :: i, j, k, n
-real :: r2
 
 integer :: u_in
 
@@ -1642,8 +1641,8 @@ if(isotest.eq.0)then
     do i = 1, nx
     do j = 1, ny
     do k = 1, nz
-      r2 = sqrt(float((i-nx/2)**2 + (j-ny/2)**2 + (k-nz/2)**2))
-      qval = r2
+      qval = (i-nx/2)**2 + (j-ny/2)**2 + (k-nz/2)**2
+      qval = sqrt(qval)
       if(isotest.eq.1)then
         qq(i,j,k,1) = 0.0
         qq(i,j,k,2) = 0.0
