@@ -68,7 +68,7 @@ no_target:
 
 intel_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads 
 intel_win_64 : CFLAGS    = -Od /nologo -D WIN32 -D PTW32_STATIC_LIB -D X64  $(OPT) $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG) 
-intel_win_64 : FFLAGS    = -Od /nologo -fpp -D pp_cvf -D X64 -D WIN32 /iface:stdref /fpscomp:general
+intel_win_64 : FFLAGS    = -Od /nologo -fpp -D pp_cvf -D X64 -D WIN32 /iface:stdref /fpscomp:general /stand:f18
 intel_win_64 : CC        = icl
 intel_win_64 : CPP       = icl
 intel_win_64 : FC        = ifort
@@ -148,7 +148,7 @@ gnu_osx_64_db : $(obj)
 
 LINUXFORTLIBS_64=$(IFORT_COMPILER_LIB)/libifcore.a
 
-intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_LINUX
+intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_LINUX -stand:f18
 intel_linux_64 : CFLAGS    = -O2 -m64 ${INC_DIR} -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG) 
 intel_linux_64 : LFLAGS    = -lifport $(LINUXFORTLIBS_64) -L $(LIB_DIR)/intel_linux_64 -lz -lpthread -static-intel
 intel_linux_64 : CC        = icc
@@ -164,7 +164,7 @@ OSXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libifport.
 
 # ------------- intel osx 64 ----------------
 
-intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_OSX  -mmacosx-version-min=10.9 -stand:f08
+intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_OSX  -mmacosx-version-min=10.9 -stand:f18
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)  $(SMV_TESTFLAG)  -mmacosx-version-min=10.9 
 intel_osx_64 : LFLAGS    = -m64 -static-intel -mmacosx-version-min=10.9 $(OSXFORTLIBS) -L $(LIB_DIR)/intel_osx_64 -lz -lpthread
 intel_osx_64 : CC        = icc
@@ -177,7 +177,7 @@ intel_osx_64 : $(obj)
 
 # ------------- intel osx 64 db ----------------
 
-intel_osx_64_db : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_OSX -mmacosx-version-min=10.9 -stand:f08
+intel_osx_64_db : FFLAGS    = -O0 -m64 -static-intel -fpp -D pp_OSX -mmacosx-version-min=10.9 -stand:f18
 intel_osx_64_db : CFLAGS    = -O0 -g -m64 -static-intel -D _DEBUG -D pp_OSX -mmacosx-version-min=10.9 $(SMV_TESTFLAG) -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64_db : LFLAGS    = -m64 -static-intel -mmacosx-version-min=10.9 $(OSXFORTLIBS) -L $(LIB_DIR)/intel_osx_64 -lz -lpthread
 intel_osx_64_db : CC        = icc
