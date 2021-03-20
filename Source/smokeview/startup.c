@@ -36,13 +36,8 @@ void InitDefaultCameras(void){
     camera_external->view_id = EXTERNAL_LIST_ID;
   }
 
-  if(camera_ini!=NULL&&camera_ini->defined==1){
-    CopyCamera(camera_current, camera_ini);
-  }
-  else{
-    camera_external->zoom = zoom;
-    CopyCamera(camera_current, camera_external);
-  }
+  camera_external->zoom = zoom;
+  CopyCamera(camera_current, camera_external);
   strcpy(camera_label, camera_current->name);
   UpdateCameraLabel();
 
