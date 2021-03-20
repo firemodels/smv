@@ -916,7 +916,12 @@ extern "C" void ViewpointCB(int var){
       int camera_id;
 
       camera_id = LIST_viewpoints->get_int_val();
-      ResetMenu(camera_id);
+      if(camera_id<=1){
+        ResetDefaultMenu(camera_id);
+      }
+      else{
+        ResetMenu(camera_id);
+      }
     }
     break;
 #else
