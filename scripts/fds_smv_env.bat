@@ -29,7 +29,7 @@ if exist %userprofile%\.bundle\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="11-Feb-2021"
+set smvlogdate="21-Mar-2021"
 
 :: ---- repo locations ----
 
@@ -49,18 +49,19 @@ set misc_dir=fire-notes/INSTALL/LIBS/LINUX/LIB64
 
 :: set to INTEL if using Intel MPI library
 set linux_mpi_version=INTEL
-set linux_intel_mpi_version=20u1
+set linux_intel_mpi_version=oneapi
 
 
-set osx_mpi_version=3.1.2
+set osx_mpi_version=4.1.0
+set osx_openmpi_dir=/opt/openmpi410_oneapi_64
 ::set osx_mpi_version=1.8.4
 
 set linux_comp_version=20u1
-set osx_comp_version=20u1
+set osx_comp_version=oneapi
 
 :: ---- INTEL compiler version ----
 
-set INTELVERSION=INTEL20U1
+set INTELVERSION=INTELoneapi
 
 :: ---- Guide locations ----
 
