@@ -168,12 +168,14 @@ extern "C" void UpdateWhereFaceVolumes(void){
 #ifdef pp_CFACES
 extern "C" void UpdateGluiCfaces(void){
   glui_use_cfaces = use_cfaces;
-  CHECKBOX_cfaces->set_int_val(use_cfaces);
-  if(use_cfaces==1){
-    PANEL_cfaces->enable();
-  }
-  else{
-    PANEL_cfaces->disable();
+  if(CHECKBOX_cfaces!=NULL)CHECKBOX_cfaces->set_int_val(use_cfaces);
+  if(PANEL_cfaces!=NULL){
+    if(use_cfaces==1){
+      PANEL_cfaces->enable();
+    }
+    else{
+      PANEL_cfaces->disable();
+    }
   }
 }
 #endif
@@ -516,7 +518,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_geom_transparency = glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "level", GLUI_SPINNER_FLOAT, &geom_transparency);
     SPINNER_geom_transparency->set_float_limits(0.0, 1.0);
 
-#ifdef pp_CFACES    
+#ifdef pp_CFACES
     VolumeCB(VOL_USE_CFACES);
 #endif
     glui_geometry->add_column_to_panel(PANEL_group1, false);
