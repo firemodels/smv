@@ -9,6 +9,10 @@
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
 
+#ifdef pp_CFACES
+EXTERNCPP void UpdatGluiCfaces(void);
+#endif
+
 EXTERNCPP void SetTimeState(void);
 
 EXTERNCPP void SetCurrentViewPoint(char *viewpoint_label);

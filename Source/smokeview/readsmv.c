@@ -6822,6 +6822,7 @@ int ReadSMV(bufferstreamdata *stream){
 
       geomi = cgeominfo+ncgeominfo;
       InitGeom(geomi, GEOM_CGEOM, FDSBLOCK);
+      geomi->memory_id = ++nmemory_ids;
 
       FGETS(buffer,255,stream);
       TrimBack(buffer);

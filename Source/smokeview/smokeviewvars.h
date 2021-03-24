@@ -23,6 +23,11 @@
 #include "glutbitmap.h"
 #endif
 
+#ifdef pp_CFACES
+SVEXTERN int SVDECL(geom_cface_type, 1);
+SVEXTERN int SVDECL(glui_use_cfaces, 0);
+SVEXTERN int SVDECL(use_cfaces, 0);
+#endif
 SVEXTERN int SVDECL(update_reshape, 0);
 SVEXTERN int SVDECL(last_time_paused, 0);
 SVEXTERN float SVDECL(time_paused,0.0);
@@ -802,7 +807,6 @@ SVEXTERN int SVDECL(ngeominfo,0);
 #ifdef pp_CFACES
 SVEXTERN geomdata SVDECL(*cgeominfo, NULL);
 SVEXTERN int SVDECL(ncgeominfo, 0);
-SVEXTERN int SVDECL(use_cfaces, 0);
 #endif
 
 SVEXTERN int npartframes_max;

@@ -4114,7 +4114,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
   // draw surfaces
 
   geomi = cgeom;
-  if(show_slice_shaded[IN_CUTCELL_GLUI]==1||show_slice_shaded[IN_SOLID_GLUI]==1||show_slice_shaded[IN_GAS_GLUI]==1&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
+  if(show_faces_shaded==1&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
     for(i=0;i<1;i++){
       geomlistdata *geomlisti;
       int ntris, j, enable_lighting;
@@ -4154,9 +4154,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
         trianglei = geomlisti->triangles+j;
 
         insolid = trianglei->insolid&3;
-        if(insolid==IN_CUTCELL&&show_slice_shaded[IN_CUTCELL_GLUI]==0)continue;
-        if(insolid==IN_SOLID&&show_slice_shaded[IN_SOLID_GLUI]==0)continue;
-        if(insolid==IN_GAS&&show_slice_shaded[IN_GAS_GLUI]==0)continue;
         t_level = transparent_level;
 
         xyzptr[0] = trianglei->verts[0]->xyz;
@@ -4185,7 +4182,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
   // draw lines
 
-  if(show_slice_outlines[IN_CUTCELL_GLUI]==1||show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
+  if(show_faces_outline==1&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
     for(i = 0; i<1; i++){
       geomlistdata *geomlisti;
       int ntris;
@@ -4207,31 +4204,17 @@ void DrawCGeom(int flag, geomdata *cgeom){
         int show_edge1 = 1, show_edge2 = 1, show_edge3 = 1;
 
         trianglei = geomlisti->triangles+j;
-        {
-          int insolid, insolid_glui = -1;
+        if(geom_cface_type==1){
+          int insolid4, insolid8, insolid16;
 
-          insolid = trianglei->insolid&3;
-          if(insolid>=0&&insolid<3)insolid_glui = insolid;
-          if(insolid==IN_CUTCELL&&show_slice_outlines[IN_CUTCELL_GLUI]==0)continue;
-          if(insolid==IN_SOLID&&show_slice_outlines[IN_SOLID_GLUI]==0)continue;
-          if(insolid==IN_GAS&&show_slice_outlines[IN_GAS_GLUI]==0)continue;
+          insolid4 = trianglei->insolid&4;
+          if(insolid4==4)show_edge1 = 0;
 
-          if(insolid_glui!=-1&&slice_edgetypes[insolid_glui]==IMMERSED_POLYGON){
-            int insolid4, insolid8, insolid16;
+          insolid8 = trianglei->insolid&8;
+          if(insolid8==8)show_edge2 = 0;
 
-            insolid4 = trianglei->insolid&4;
-            if(insolid4==4)show_edge1 = 0;
-
-            insolid8 = trianglei->insolid&8;
-            if(insolid8==8)show_edge2 = 0;
-
-            insolid16 = trianglei->insolid&16;
-            if(insolid16==16)show_edge3 = 0;
-          }
-          if(show_slice_shaded[IN_CUTCELL_GLUI]==1||
-             show_slice_shaded[IN_SOLID_GLUI]==1||
-             show_slice_shaded[IN_GAS_GLUI]==1){
-          }
+          insolid16 = trianglei->insolid&16;
+          if(insolid16==16)show_edge3 = 0;
         }
         glColor4fv(foregroundcolor);
 
@@ -4261,7 +4244,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
   // draw points
 
-  if(show_slice_points[IN_CUTCELL_GLUI]==1||show_slice_points[IN_SOLID_GLUI]==1||show_slice_points[IN_GAS_GLUI]==1&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
+  if(show_geom_verts&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
     for(i = 0; i<1; i++){
       geomlistdata *geomlisti;
       int ntris;
@@ -4282,18 +4265,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
         tridata *trianglei;
 
         trianglei = geomlisti->triangles+j;
-        {
-          int insolid;
-
-          insolid = trianglei->insolid&3;
-          if(insolid==IN_CUTCELL&&show_slice_points[IN_CUTCELL_GLUI]==0)continue;
-          if(insolid==IN_SOLID&&show_slice_points[IN_SOLID_GLUI]==0)continue;
-          if(insolid==IN_GAS&&show_slice_points[IN_GAS_GLUI]==0)continue;
-          if(show_slice_shaded[IN_CUTCELL_GLUI]==1||
-             show_slice_shaded[IN_SOLID_GLUI]==1||
-             show_slice_shaded[IN_GAS_GLUI]==1){
-          }
-        }
         glColor4fv(foregroundcolor);
 
         xyzptr[0] = trianglei->verts[0]->xyz;
