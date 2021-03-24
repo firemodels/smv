@@ -24,10 +24,6 @@
 #endif
 
 SVEXTERN int SVDECL(update_reshape, 0);
-#ifdef pp_BINGEOM
-SVEXTERN int SVDECL(nbingeominfo, 0);
-SVEXTERN bingeomdata SVDECL(*bingeominfo, NULL);
-#endif
 SVEXTERN int SVDECL(last_time_paused, 0);
 SVEXTERN float SVDECL(time_paused,0.0);
 SVEXTERN int SVDECL(update_stept, -1);

@@ -15,14 +15,6 @@
                            returncode=fread(var,4,count,STREAM);\
                            if(returncode!=count)returncode=0;\
                            FSEEK(STREAM,TRAILER_SIZE,SEEK_CUR)
-#ifdef pp_BINGEOM
-#define FORTREAD_DOUBLE(var,count,STREAM) \
-                           FSEEK(STREAM,HEADER_SIZE,SEEK_CUR);\
-                           returncode=fread(var,8,count,STREAM);\
-                           if(returncode!=count)returncode=0;\
-                           FSEEK(STREAM,TRAILER_SIZE,SEEK_CUR)
-#endif
-
 #ifdef pp_WIN_ONEAPI
 #define FORTgetslicefiledirection _F(GETSLICEFILEDIRECTION)
 #define FORTgetgeomdatasize       _F(GETGEOMDATASIZE)
