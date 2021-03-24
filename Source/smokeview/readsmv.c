@@ -5595,6 +5595,19 @@ int ReadSMV(bufferstreamdata *stream){
     ngeominfo=0;
   }
 
+#ifdef pp_CFACES
+  if(ncgeominfo>0){
+    for(i = 0; i<ncgeominfo; i++){
+      geomdata *geomi;
+
+      geomi = cgeominfo+i;
+      FREEMEMORY(geomi->file);
+    }
+    FREEMEMORY(cgeominfo);
+    ncgeominfo = 0;
+  }
+#endif
+
   FREEMEMORY(tickinfo);
   ntickinfo=0;
   ntickinfo_smv=0;
@@ -5923,6 +5936,12 @@ int ReadSMV(bufferstreamdata *stream){
       ngeomdiaginfo++;
       continue;
     }
+#ifdef pp_CFACES
+    if(Match(buffer, "CGEOM")==1){
+      ncgeominfo++;
+      continue;
+    }
+#endif
     if(Match(buffer, "GEOM") == 1 ||
        Match(buffer, "BGEOM") == 1 ||
        Match(buffer, "SGEOM") == 1){
@@ -6337,6 +6356,12 @@ int ReadSMV(bufferstreamdata *stream){
    NewMemory((void **)&geominfo,ngeominfo*sizeof(geomdata));
    ngeominfo=0;
  }
+#ifdef pp_CFACES
+ if(ncgeominfo>0){
+   NewMemory((void **)&cgeominfo, ncgeominfo*sizeof(geomdata));
+   ncgeominfo = 0;
+ }
+#endif
 #ifdef pp_BINGEOM
  if(nbingeominfo>0){
    NewMemory((void **)&bingeominfo,nbingeominfo*sizeof(bingeomdata));
@@ -6812,6 +6837,28 @@ int ReadSMV(bufferstreamdata *stream){
       }
 
     }
+
+       /*
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++ CGEOM ++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  */
+#ifdef pp_CFACES
+    if(Match(buffer, "CGEOM")==1){
+      geomdata *geomi;
+      char *buff2;
+
+      geomi = cgeominfo+ncgeominfo;
+      InitGeom(geomi, GEOM_CGEOM, FDSBLOCK);
+
+      FGETS(buffer,255,stream);
+      TrimBack(buffer);
+      buff2 = TrimFront(buffer);
+      NewMemory((void **)&geomi->file,strlen(buff2)+1);
+      strcpy(geomi->file,buff2);
+      ncgeominfo++;
+    }
+#endif
 
        /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

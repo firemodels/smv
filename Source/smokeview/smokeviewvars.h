@@ -803,6 +803,11 @@ SVEXTERN int n_embedded_meshes;
 
 SVEXTERN geomdata SVDECL(*geominfo,NULL);
 SVEXTERN int SVDECL(ngeominfo,0);
+#ifdef pp_CFACES
+SVEXTERN geomdata SVDECL(*cgeominfo, NULL);
+SVEXTERN int SVDECL(ncgeominfo, 0);
+SVEXTERN int SVDECL(use_cfaces, 0);
+#endif
 
 SVEXTERN int npartframes_max;
 SVEXTERN int force_isometric;

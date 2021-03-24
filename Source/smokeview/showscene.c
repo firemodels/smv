@@ -269,15 +269,32 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   if(ngeominfoptrs>0){
     CLIP_GEOMETRY;
-#ifndef WUI_NEW
 #ifdef pp_WUI_VAO
     if(have_terrain_vao==0){
       DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
       DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
     }
 #else
-    DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
-    DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
+#ifdef pp_CFACES
+    if(use_cfaces==1&&ncgeominfo>0){
+      int i;
+
+      for(i = 0; i<ncgeominfo; i++){
+        geomdata *geomi;
+
+        geomi = cgeominfo+i;
+        DrawCGeom(DRAW_OPAQUE, geomi);
+      }
+    }
+    else if(ngeominfoptrs>0){
+      DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
+      DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
+    }
+#else
+    if(ngeominfoptrs>0){
+      DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
+      DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
+    }
 #endif
 #endif
     SNIFF_ERRORS("DrawGeom");
@@ -441,11 +458,27 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw triangles +++++++++++++++++++++++++ */
 
-  if(ngeominfoptrs>0){
-    CLIP_GEOMETRY;
+#ifdef pp_CFACES
+  if(use_cfaces==1&&ncgeominfo>0){
+    int i;
+
+    for(i = 0; i<ncgeominfo; i++){
+      geomdata *geomi;
+
+      geomi = cgeominfo+i;
+      DrawCGeom(DRAW_TRANSPARENT, geomi);
+    }
+  }
+  else if(ngeominfoptrs>0){
     DrawGeom(DRAW_TRANSPARENT, GEOM_STATIC);
     DrawGeom(DRAW_TRANSPARENT, GEOM_DYNAMIC);
   }
+#else
+  if(ngeominfoptrs>0){
+    DrawGeom(DRAW_TRANSPARENT, GEOM_STATIC);
+    DrawGeom(DRAW_TRANSPARENT, GEOM_DYNAMIC);
+  }
+#endif
 
   if(showiso == 1){
     CLIP_VALS;

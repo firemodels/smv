@@ -57,6 +57,7 @@
 //#define pp_SCRIPT_SETVIEW       // add SETVIEWPOINT command at the beginning of a script
 #define pp_ZOOM_INI           // initialize zoom settings in VIEWPOINT5 .ini code
 #define pp_VIEWPOINT_MENU       // use viewpoint menu code when setting viewpoints from a dialog
+#define pp_CFACES              // code to read in cfaces geometry files
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
