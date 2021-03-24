@@ -4153,8 +4153,15 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
         trianglei = geomlisti->triangles+j;
 
+        if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
+        if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
+        if(trianglei->exterior==1&&show_faces_exterior==0)continue;
+        if(trianglei->exterior==0&&show_faces_interior==0)continue;
+        if(trianglei->geomtype==GEOM_CGEOM&&show_faces_shaded==0)continue;
+        if(trianglei->geomsurf->invisible==1)continue;
+
         insolid = trianglei->insolid&3;
-        t_level = transparent_level;
+        t_level = geom_transparency;
 
         xyzptr[0] = trianglei->verts[0]->xyz;
         xyzptr[1] = trianglei->verts[1]->xyz;
