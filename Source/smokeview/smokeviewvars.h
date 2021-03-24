@@ -23,6 +23,7 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(force_fixedpoint, 0);
 #ifdef pp_CFACES
 SVEXTERN int SVDECL(geom_cface_type, 1);
 SVEXTERN int SVDECL(glui_use_cfaces, 0);

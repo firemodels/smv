@@ -2021,11 +2021,11 @@ void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, fl
   char cmin[100], cmax[100];
   char labelunit[50];
 
-  Float2String(cvalmin_fds, valmin_fds, 6);
-  Float2String(cvalmax_fds, valmax_fds, 6);
+  Float2String(cvalmin_fds, valmin_fds, 6, force_fixedpoint);
+  Float2String(cvalmax_fds, valmax_fds, 6, force_fixedpoint);
 
-  Float2String(cdiff_min, valmin_fds-valmin_smv, 3);
-  Float2String(cdiff_max, valmax_fds-valmax_smv, 3);
+  Float2String(cdiff_min, valmin_fds-valmin_smv, 3, force_fixedpoint);
+  Float2String(cdiff_max, valmax_fds-valmax_smv, 3, force_fixedpoint);
 
   strcpy(cmin,cvalmin_fds);
   strcat(cmin,"(");

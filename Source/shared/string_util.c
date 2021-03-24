@@ -430,13 +430,13 @@ void Truncate(float val, char *cval, int ndigits){
 
 /* ------------------ Float2String ------------------------ */
 
-void Float2String(char *c_val, float val, int ndigits){
+void Float2String(char *c_val, float val, int ndigits, int fixedpoint_labels){
   float mantissa;
   int exponent;
-  
+
   mantissa = GetMantissaExponent(ABS(val), &exponent);
   mantissa += 5.0*pow(10.0,-ndigits);
-  if(exponent>=0&&exponent<5){
+  if(exponent>=0&&exponent<5||fixedpoint_labels==1){
     char c_abs_val[32];
 
     val = SIGN(val)*mantissa*pow(10.0,exponent);
@@ -694,7 +694,7 @@ char *GetString(char *buffer){
 
   /* ------------------ Time2TimeLabel ------------------------ */
 
-char *Time2TimeLabel(float sv_time, float dt, char *timelabel){
+char *Time2TimeLabel(float sv_time, float dt, char *timelabel, int fixed_point){
   char *timelabelptr;
 
   if(dt<0.001){
@@ -707,7 +707,7 @@ char *Time2TimeLabel(float sv_time, float dt, char *timelabel){
     sprintf(timelabel,"%4.2f",sv_time);
   }
   else{
-    Float2String(timelabel, sv_time, 4);
+    Float2String(timelabel, sv_time, 4, fixed_point);
   }
   TrimZeros(timelabel);
   TrimBack(timelabel);

@@ -3299,9 +3299,9 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
     zmax = global_valmax;
   }
   if(zmax>zmin)zscale = 1.0/(zmax-zmin);
-  Float2String(cvalmin, zmin, ndigits);
-  Float2String(cvalmax, zmax, ndigits);
-  Float2String(cval, highlight_y, ndigits);
+  Float2String(cvalmin, zmin, ndigits, force_fixedpoint);
+  Float2String(cvalmax, zmax, ndigits, force_fixedpoint);
+  Float2String(cval, highlight_y, ndigits, force_fixedpoint);
 
   dx = (xmax - xmin)/20.0;
   dz = (zmax - zmin)/20.0;

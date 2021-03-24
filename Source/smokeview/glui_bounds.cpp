@@ -131,7 +131,7 @@ float SmvRound(float val, int n){
   float return_val;
   char c_val[32];
 
-  Float2String(c_val, val, n);
+  Float2String(c_val, val, n, force_fixedpoint);
   sscanf(c_val, "%f", &return_val);
 
   return return_val;
@@ -337,7 +337,7 @@ void bounds_dialog::setupNoGraphics(char *file_type, cpp_boundsdata *bounds_arg,
 
 /* ------------------ setup ------------------------ */
 
-void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_arg, int nbounds_arg, int *cache_flag, int cache_enable, int percentile_enabled_arg, 
+void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_arg, int nbounds_arg, int *cache_flag, int cache_enable, int percentile_enabled_arg,
                           void Callback(int var),
                           GLUI_Update_CB PROC_CB, procdata *procinfo, int *nprocinfo){
   GLUI_Rollout *ROLLOUT_bound;
@@ -360,7 +360,7 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
 
   NewMemory((void **)&all_bounds_save, nall_bounds*sizeof(cpp_boundsdata));
   SaveBounds();
-  
+
   research_mode_cpp = research_mode;
   percentile_enabled = percentile_enabled_arg;
 
@@ -547,27 +547,27 @@ void bounds_dialog::set_percentiles(float val_00, float per_valmin, float val_50
   char val_label[sizeof(GLUI_String)];
 #define PAD_LENGTH 12
 
-  Float2String(val_label, val_00, 4);
+  Float2String(val_label, val_00, 4, force_fixedpoint);
   strcat(val_label,":");
   PadString(val_label,"0.0 (min)", PAD_LENGTH);
   STATIC_percentile_00->set_name(val_label);
 
-  Float2String(val_label, per_valmin, 4);
+  Float2String(val_label, per_valmin, 4, force_fixedpoint);
   strcat(val_label,":");
   PadString(val_label,"", PAD_LENGTH);
   SPINNER_percentile_min->edittext->set_name(val_label);
 
-  Float2String(val_label, val_50, 4);
+  Float2String(val_label, val_50, 4, force_fixedpoint);
   strcat(val_label,":");
   PadString(val_label,"0.5 (median)", PAD_LENGTH);
   STATIC_percentile_50->set_name(val_label);
 
-  Float2String(val_label, per_valmax, 4);
+  Float2String(val_label, per_valmax, 4, force_fixedpoint);
   strcat(val_label,":");
   PadString(val_label,"", PAD_LENGTH);
   SPINNER_percentile_max->edittext->set_name(val_label);
 
-  Float2String(val_label, val_100, 4);
+  Float2String(val_label, val_100, 4, force_fixedpoint);
   strcat(val_label,":");
   PadString(val_label,"1.0 (max)", PAD_LENGTH);
   STATIC_percentile_100->set_name(val_label);
@@ -1699,7 +1699,7 @@ extern "C" void SliceBoundsCPP_CB(int var){
         sd = sliceinfo + i;
         if(sd->slicefile_labelindex == slicefile_labelindex){
           int set_slicecolor;
-  
+
           set_slicecolor = DEFER_SLICECOLOR;
           if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
           ReadSlice("", i, ALL_FRAMES, NULL, RESETBOUNDS, set_slicecolor, &error);
@@ -2540,7 +2540,7 @@ void SetLoadedPartBounds(int *list, int nlist){
   int *set_valmin, *set_valmax, nall;
   int i, j;
   int npart_types;
-  
+
 
   npart_types = GetNValtypes(BOUND_PART);
 
@@ -4822,7 +4822,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       max_slice_skip = MAX(max_slice_skip, meshi->ibar/2);
       max_slice_skip = MAX(max_slice_skip, meshi->jbar/2);
       max_slice_skip = MAX(max_slice_skip, meshi->kbar/2);
-      
+
     }
     SPINNER_slice_skip = glui_bounds->add_spinner_to_panel(ROLLOUT_boundimmersed, "skip", GLUI_SPINNER_INT, &slice_skip,  SLICE_SKIP, SliceBoundCB);
     SliceBoundCB(SLICE_SKIP);
@@ -4922,6 +4922,7 @@ extern "C" void GluiBoundsSetup(int main_window){
   SPINNER_colorbar_selection_width = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("Selection width:"), GLUI_SPINNER_INT, &colorbar_selection_width, COLORBAND, SliceBoundCB);
   SPINNER_colorbar_selection_width->set_int_limits(COLORBAR_SELECTION_WIDTH_MIN, COLORBAR_SELECTION_WIDTH_MAX);
   SPINNER_ncolorlabel_digits = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("digits:"), GLUI_SPINNER_INT, &ncolorlabel_digits, COLORLABEL_DIGITS, SliceBoundCB);
+  glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force fixed point labels"), &force_fixedpoint);
   SPINNER_ncolorlabel_digits->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
   SPINNER_ncolorlabel_padding = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("padding:"), GLUI_SPINNER_INT, &ncolorlabel_padding, COLORLABEL_DIGITS, SliceBoundCB);
   SPINNER_ncolorlabel_padding->set_int_limits(0, 8, GLUI_LIMIT_CLAMP);
