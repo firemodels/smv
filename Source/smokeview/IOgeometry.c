@@ -4228,7 +4228,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
       for(j = 0; j<ntris; j++){
         float *xyzptr[3];
         tridata *trianglei;
-        int color_index;
         float t_level, color[] = {0.0,1.0,0.0,1.0};
         int insolid;
 
@@ -4286,7 +4285,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
         float *xyzptr[3];
         tridata *trianglei;
         int show_edge1 = 1, show_edge2 = 1, show_edge3 = 1;
-        int draw_foreground = 1;
 
         trianglei = geomlisti->triangles+j;
         {
@@ -4313,10 +4311,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
           if(show_slice_shaded[IN_CUTCELL_GLUI]==1||
              show_slice_shaded[IN_SOLID_GLUI]==1||
              show_slice_shaded[IN_GAS_GLUI]==1){
-            draw_foreground = 1;
-          }
-          else{
-            draw_foreground = 0;
           }
         }
         glColor4fv(foregroundcolor);
@@ -4352,7 +4346,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
       geomlistdata *geomlisti;
       int ntris;
       int j;
-      float *color;
 
       geomlisti = geomi->geomlistinfo-1;
 
@@ -4367,11 +4360,8 @@ void DrawCGeom(int flag, geomdata *cgeom){
       for(j = 0; j<ntris; j++){
         float *xyzptr[3];
         tridata *trianglei;
-        int draw_foreground;
 
         trianglei = geomlisti->triangles+j;
-        draw_foreground = 0;
-
         {
           int insolid;
 
@@ -4382,10 +4372,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
           if(show_slice_shaded[IN_CUTCELL_GLUI]==1||
              show_slice_shaded[IN_SOLID_GLUI]==1||
              show_slice_shaded[IN_GAS_GLUI]==1){
-            draw_foreground = 1;
-          }
-          else{
-            draw_foreground = 0;
           }
         }
         glColor4fv(foregroundcolor);
