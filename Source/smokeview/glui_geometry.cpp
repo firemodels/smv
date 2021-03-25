@@ -505,11 +505,14 @@ extern "C" void GluiGeometrySetup(int main_window){
     CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_surface_points = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "points", &show_geom_verts, VOL_SHOWHIDE, VolumeCB);
 #ifdef pp_CFACES
-    CHECKBOX_cfaces = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "cfaces", &glui_use_cfaces, VOL_USE_CFACES, VolumeCB);
-    PANEL_cfaces = glui_geometry->add_panel_to_panel(PANEL_triangles, "cfaces");
-    RADIO_cface_type = glui_geometry->add_radiogroup_to_panel(PANEL_cfaces, &geom_cface_type);
-    glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "triangles");
-    glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "polygons");
+    if(ncgeominfo>0){
+      CHECKBOX_cfaces = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "cfaces", &glui_use_cfaces, VOL_USE_CFACES, VolumeCB);
+      PANEL_cfaces = glui_geometry->add_panel_to_panel(PANEL_triangles, "cfaces");
+      RADIO_cface_type = glui_geometry->add_radiogroup_to_panel(PANEL_cfaces, &geom_cface_type);
+      glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "triangles");
+      glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "polygons");
+      VolumeCB(VOL_USE_CFACES);
+    }
 #endif
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "line width", GLUI_SPINNER_FLOAT, &geom_linewidth);
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "point size", GLUI_SPINNER_FLOAT, &geom_pointsize);
@@ -518,11 +521,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_geom_transparency = glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "level", GLUI_SPINNER_FLOAT, &geom_transparency);
     SPINNER_geom_transparency->set_float_limits(0.0, 1.0);
 
-#ifdef pp_CFACES
-    VolumeCB(VOL_USE_CFACES);
-#endif
     glui_geometry->add_column_to_panel(PANEL_group1, false);
-
 
     PANEL_volumes = glui_geometry->add_panel_to_panel(PANEL_group1, "volumes");
     CHECKBOX_volumes_interior = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "interior", &show_volumes_interior);
