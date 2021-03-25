@@ -4345,6 +4345,11 @@ FILE_SIZE GetSliceData(slicedata *sd, char *slicefilename, int time_frame, int *
         qqto = qq + IJKNODE(0,j,1);
         for(i = 0;i<nxsp;i++){
 //        qq[IJKNODE(i, j, 1)] = qq[IJKNODE(i, j, 0)];
+          if((sd->slice_filetype==SLICE_CELL_CENTER&&i!=0&&j!=0)||
+             sd->slice_filetype!=SLICE_CELL_CENTER){
+            *qminptr = MIN(*qminptr, *qqfrom);
+            *qmaxptr = MAX(*qmaxptr, *qqfrom);
+          }
           *qqto++ = *qqfrom++;
         }
       }
@@ -4358,6 +4363,11 @@ FILE_SIZE GetSliceData(slicedata *sd, char *slicefilename, int time_frame, int *
         qqto = qq + IJKNODE(0,1,k);
         for(i = 0;i<nxsp;i++){
 //        qq[IJKNODE(i, 1, k)] = qq[IJKNODE(i, 0, k)];
+          if((sd->slice_filetype==SLICE_CELL_CENTER&&i!=0&&k!=0)||
+              sd->slice_filetype!=SLICE_CELL_CENTER){
+            *qminptr = MIN(*qminptr, *qqfrom);
+            *qmaxptr = MAX(*qmaxptr, *qqfrom);
+          }
           *qqto++ = *qqfrom++;
         }
       }
@@ -4378,6 +4388,11 @@ FILE_SIZE GetSliceData(slicedata *sd, char *slicefilename, int time_frame, int *
 //      qdata(ii+1:ii+nysp) = qq(i, 1:nysp, 1)
         for(j = 0;j<nysp;j++){
 //        qdataptr[ii+j] = qq[IJKNODE(i, j, 0)];
+          if((sd->slice_filetype==SLICE_CELL_CENTER&&i!=0&&j!=0)||
+              sd->slice_filetype!=SLICE_CELL_CENTER){
+            *qminptr = MIN(*qminptr, *qqfrom);
+            *qmaxptr = MAX(*qmaxptr, *qqfrom);
+          }
           *qqto++ = *qqfrom;
           qqfrom += nx;
         }
@@ -4395,6 +4410,11 @@ FILE_SIZE GetSliceData(slicedata *sd, char *slicefilename, int time_frame, int *
         qqfrom = qq + IJKNODE(i, 0, 0);
         for(k = 0;k<nzsp+koff;k++){
 //        qdataptr[kk+k] = qq[IJKNODE(i, 0, k)];
+          if((sd->slice_filetype==SLICE_CELL_CENTER&&i!=0&&k!=0)||
+              sd->slice_filetype!=SLICE_CELL_CENTER){
+            *qminptr = MIN(*qminptr, *qqfrom);
+            *qmaxptr = MAX(*qmaxptr, *qqfrom);
+          }
           *qqto++ = *qqfrom;
           qqfrom += nxy;
         }
@@ -4413,6 +4433,11 @@ FILE_SIZE GetSliceData(slicedata *sd, char *slicefilename, int time_frame, int *
           qqfrom = qq + IJKNODE(i, j, 0);
           for(k = 0;k<nzsp+koff;k++){
 //          qdataptr[kk+k] = qq[IJKNODE(i, j, k)];
+            if((sd->slice_filetype==SLICE_CELL_CENTER&&i!=0&&j!=0&&k!=0)||
+                sd->slice_filetype!=SLICE_CELL_CENTER){
+              *qminptr = MIN(*qminptr, *qqfrom);
+              *qmaxptr = MAX(*qmaxptr, *qqfrom);
+            }
             *qqto++ = *qqfrom;
             qqfrom += nxy;
           }
@@ -4424,26 +4449,6 @@ FILE_SIZE GetSliceData(slicedata *sd, char *slicefilename, int time_frame, int *
   *js2ptr += joff;
   *ntimesptr = nsteps;
 
-  {
-    int nvals;
-    float *qq;
-
-    if(*idirptr==3){
-      nvals = nsteps*nxsp*nysp;
-    }
-    else if(*idirptr==2){
-      nvals = nsteps*nxsp*(nzsp+koff);
-    }
-    else{
-      nvals = nsteps*(nysp+joff)*(nzsp+koff)*nxsp;
-    }
-    qq = qdataptr;
-    for(i = 0;i<nvals;i++){
-      *qminptr = MIN(*qminptr, *qq);
-      *qmaxptr = MAX(*qmaxptr, *qq);
-      qq++;
-    }
-  }
   FCLOSE_SLICE(stream);
   FREEMEMORY(qq);
   return file_size;
