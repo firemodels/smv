@@ -4417,10 +4417,10 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     patchi->file = patchi->reg_file;
   }
 
-  patchi->geomfile = NULL;
   patchi->geominfo = NULL;
   if(patchi->structured==NO){
     int igeom;
+    char *geomfile;
 
     if(slicegeom==1){
       strcpy(buffer, buffers[2]);
@@ -4431,24 +4431,28 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
         return RETURN_BREAK;
       }
     }
-    bufferptr = TrimFrontBack(buffer);
-    NewMemory((void **)&patchi->geomfile, strlen(bufferptr)+1);
-    strcpy(patchi->geomfile, bufferptr);
-    for(igeom = 0; igeom<ngeominfo; igeom++){
-      geomdata *geomi;
 
-      geomi = geominfo+igeom;
-      if(strcmp(geomi->file, patchi->geomfile)==0){
-        patchi->geominfo = geomi;
-        if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
-          geomi->geomtype = GEOM_BOUNDARY;
-          geomi->fdsblock = FDSBLOCK;
+    if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&ncgeominfo>0){
+      patchi->geominfo = cgeominfo+blocknumber;
+    }
+    else{
+      geomfile = TrimFrontBack(buffer);
+      for(igeom = 0; igeom<ngeominfo; igeom++){
+        geomdata *geomi;
+
+        geomi = geominfo+igeom;
+        if(strcmp(geomi->file, geomfile)==0){
+          patchi->geominfo = geomi;
+          if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
+            geomi->geomtype = GEOM_BOUNDARY;
+            geomi->fdsblock = FDSBLOCK;
+          }
+          else{
+            geomi->geomtype = GEOM_SLICE;
+            geomi->fdsblock = NOT_FDSBLOCK;
+          }
+          break;
         }
-        else{
-          geomi->geomtype = GEOM_SLICE;
-          geomi->fdsblock = NOT_FDSBLOCK;
-        }
-        break;
       }
     }
   }

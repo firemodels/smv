@@ -1428,7 +1428,7 @@ typedef struct _patchdata {
   char *file,*size_file,*bound_file;
   int have_bound_file;
   char *comp_file, *reg_file;
-  char *geomfile, *filetype_label;
+  char *filetype_label;
   geomdata *geominfo;
   int *geom_offsets;
   //int *patchsize;

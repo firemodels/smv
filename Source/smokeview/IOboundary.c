@@ -4204,7 +4204,7 @@ void DrawBoundaryFrame(int flag){
       if(flag == DRAW_OPAQUE){
         if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
           DrawGeomData(flag, patchi, GEOM_STATIC);
-          DrawGeomData(flag, patchi, GEOM_DYNAMIC);
+//          DrawGeomData(flag, patchi, GEOM_DYNAMIC); // only allow boundary files that do not move for now
         }
       }
       else{
