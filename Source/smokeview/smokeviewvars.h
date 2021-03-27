@@ -1600,7 +1600,9 @@ SVEXTERN char SVDECL(*smv_filename,NULL),SVDECL(*fed_filename,NULL),fed_filename
 SVEXTERN char SVDECL(*part_globalbound_filename, NULL);
 SVEXTERN char SVDECL(*sliceinfo_filename,NULL);
 SVEXTERN char SVDECL(*deviceinfo_filename, NULL);
-SVEXTERN char SVDECL(*database_filename,NULL),SVDECL(*smokeview_bindir,NULL),SVDECL(*iso_filename,NULL);
+SVEXTERN char SVDECL(*database_filename,NULL),SVDECL(*iso_filename,NULL);
+SVEXTERN char SVDECL(*smokeview_bindir,NULL);
+SVEXTERN char SVDECL(*smokeview_casedir, NULL);
 #ifdef pp_LUA
 SVEXTERN char SVDECL(*smokeview_bindir_abs,NULL);
 #endif
