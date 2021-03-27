@@ -732,6 +732,34 @@ void ParseCommandline(int argc, char **argv){
   }
 }
 
+/* ------------------ CheckSMV ------------------------ */
+
+int CheckSMV(int argc, char **argv){
+  char *arg;
+  char casedir[100], casename[100];
+  FILE *stream;
+
+  if(argc==0)return 1;
+
+  arg = argv[argc-1];
+  if(strlen(arg)==0||arg[0]=='-')return 1;
+
+  strcpy(casename, arg);
+  strcpy(casedir, casename);
+  strcat(casename, ".smv");
+  stream = fopen(casename, "r");
+  if(stream==NULL){
+    stream = fopen_indir(casedir, casename, "r");
+    if(stream==NULL){
+      printf("***error: unable to open %s\n", casename);
+      return 0;
+    }
+    CHDIR(casedir);
+  }
+  fclose(stream);
+  return 1;
+}
+
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
@@ -771,6 +799,9 @@ int main(int argc, char **argv){
 #endif
   SetStdOut(stdout);
   initMALLOC();
+  if(CheckSMV(argc, argv)==0){
+    SMV_EXIT(1);
+}
   InitRandAB(1000000);
   InitVars();
   if(argc==1)DisplayVersionInfo("Smokeview ");
