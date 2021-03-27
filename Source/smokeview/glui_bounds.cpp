@@ -1701,7 +1701,10 @@ extern "C" void SliceBoundsCPP_CB(int var){
           int set_slicecolor;
 
           set_slicecolor = DEFER_SLICECOLOR;
-          if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
+          if(i == last_slice){
+            set_slicecolor = SET_SLICECOLOR;
+            sd->finalize = 1;
+          }
           ReadSlice("", i, ALL_FRAMES, NULL, RESETBOUNDS, set_slicecolor, &error);
         }
       }
