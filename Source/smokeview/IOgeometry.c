@@ -4149,7 +4149,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
         float *xyzptr[3];
         tridata *trianglei;
         float t_level, color[] = {0.0,1.0,0.0,1.0};
-        int insolid;
 
         trianglei = geomlisti->triangles+j;
 
@@ -4160,7 +4159,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
         if(trianglei->geomtype==GEOM_CGEOM&&show_faces_shaded==0)continue;
         if(trianglei->geomsurf->invisible==1)continue;
 
-        insolid = trianglei->insolid&3;
         t_level = geom_transparency;
 
         xyzptr[0] = trianglei->verts[0]->xyz;
