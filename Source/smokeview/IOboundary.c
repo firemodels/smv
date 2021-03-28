@@ -2854,7 +2854,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   else {
     slicefile_labelindex = GetSliceBoundsIndexFromLabel(patchi->label.shortlabel);
   }
-  if(patchi->finalize==1){
+  if((slicei==NULL&&patchi->finalize==1)||(slicei!=NULL&&slicei->finalize==1)){
     plotstate = GetPlotState(DYNAMIC_PLOTS);
     if(patchi->boundary==1)UpdateBoundaryType();
     cpp_boundsdata *bounds;
@@ -4204,7 +4204,7 @@ void DrawBoundaryFrame(int flag){
       if(flag == DRAW_OPAQUE){
         if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
           DrawGeomData(flag, patchi, GEOM_STATIC);
-          DrawGeomData(flag, patchi, GEOM_DYNAMIC);
+//          DrawGeomData(flag, patchi, GEOM_DYNAMIC); // only allow boundary files that do not move for now
         }
       }
       else{

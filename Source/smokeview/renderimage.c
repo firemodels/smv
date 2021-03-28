@@ -329,7 +329,7 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
       if(code == 1 && render_label_type == RENDER_LABEL_TIME){
         char timelabel_local[20], *timelabelptr, dt = 1.0;
 
-        timelabelptr = Time2TimeLabel(time_local, dt, timelabel_local);
+        timelabelptr = Time2TimeLabel(time_local, dt, timelabel_local, force_fixedpoint);
         strcat(suffix, "_");
         strcat(suffix, timelabelptr);
         strcat(suffix, "s");
@@ -343,7 +343,7 @@ int GetRenderFileName(int view_mode, char *renderfile_dir, char *renderfile_full
       time_local = global_times[itimes];
       dt = global_times[1] - global_times[0];
       if(dt < 0.0)dt = -dt;
-      timelabelptr = Time2TimeLabel(time_local, dt, timelabel_local);
+      timelabelptr = Time2TimeLabel(time_local, dt, timelabel_local, force_fixedpoint);
       strcpy(suffix, timelabelptr);
       strcat(suffix, "s");
     }
@@ -645,7 +645,7 @@ int MergeRenderScreenBuffers(int nfactor, GLubyte **screenbuffers){
     char timer_render_label[20];
 
     STOP_TIMER(timer_render);
-    Float2String(timer_render_label, timer_render, 3);
+    Float2String(timer_render_label, timer_render, 3, force_fixedpoint);
     printf("render time: %s s\n", timer_render_label);
     START_TIMER(timer_render);
   }

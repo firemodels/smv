@@ -3149,22 +3149,6 @@ int CreateNullLabel(flowlabels *flowlabel){
   return 0;
 }
 
-#ifdef pp_BINGEOM
-/* ------------------ GetSurfaceIndex ------------------------ */
-
-int GetSurfaceIndex(char *label){
-  int i;
-
-  for(i = 0; i<nsurfinfo; i++){
-    surfdata *surfi;
-
-    surfi = surfinfo+i;
-    if(strcmp(surfi->surfacelabel, label)==0)return i;
-  }
-  return -1;
-}
-#endif
-
 /* ------------------ GetSurface ------------------------ */
 
 surfdata *GetSurface(char *label){
@@ -4433,10 +4417,10 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     patchi->file = patchi->reg_file;
   }
 
-  patchi->geomfile = NULL;
   patchi->geominfo = NULL;
   if(patchi->structured==NO){
     int igeom;
+    char *geomfile;
 
     if(slicegeom==1){
       strcpy(buffer, buffers[2]);
@@ -4447,24 +4431,28 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
         return RETURN_BREAK;
       }
     }
-    bufferptr = TrimFrontBack(buffer);
-    NewMemory((void **)&patchi->geomfile, strlen(bufferptr)+1);
-    strcpy(patchi->geomfile, bufferptr);
-    for(igeom = 0; igeom<ngeominfo; igeom++){
-      geomdata *geomi;
 
-      geomi = geominfo+igeom;
-      if(strcmp(geomi->file, patchi->geomfile)==0){
-        patchi->geominfo = geomi;
-        if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
-          geomi->geomtype = GEOM_BOUNDARY;
-          geomi->fdsblock = FDSBLOCK;
+    if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&ncgeominfo>0){
+      patchi->geominfo = cgeominfo+blocknumber;
+    }
+    else{
+      geomfile = TrimFrontBack(buffer);
+      for(igeom = 0; igeom<ngeominfo; igeom++){
+        geomdata *geomi;
+
+        geomi = geominfo+igeom;
+        if(strcmp(geomi->file, geomfile)==0){
+          patchi->geominfo = geomi;
+          if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
+            geomi->geomtype = GEOM_BOUNDARY;
+            geomi->fdsblock = FDSBLOCK;
+          }
+          else{
+            geomi->geomtype = GEOM_SLICE;
+            geomi->fdsblock = NOT_FDSBLOCK;
+          }
+          break;
         }
-        else{
-          geomi->geomtype = GEOM_SLICE;
-          geomi->fdsblock = NOT_FDSBLOCK;
-        }
-        break;
       }
     }
   }
@@ -5595,6 +5583,19 @@ int ReadSMV(bufferstreamdata *stream){
     ngeominfo=0;
   }
 
+#ifdef pp_CFACES
+  if(ncgeominfo>0){
+    for(i = 0; i<ncgeominfo; i++){
+      geomdata *geomi;
+
+      geomi = cgeominfo+i;
+      FREEMEMORY(geomi->file);
+    }
+    FREEMEMORY(cgeominfo);
+    ncgeominfo = 0;
+  }
+#endif
+
   FREEMEMORY(tickinfo);
   ntickinfo=0;
   ntickinfo_smv=0;
@@ -5923,18 +5924,18 @@ int ReadSMV(bufferstreamdata *stream){
       ngeomdiaginfo++;
       continue;
     }
+#ifdef pp_CFACES
+    if(Match(buffer, "CGEOM")==1){
+      ncgeominfo++;
+      continue;
+    }
+#endif
     if(Match(buffer, "GEOM") == 1 ||
        Match(buffer, "BGEOM") == 1 ||
        Match(buffer, "SGEOM") == 1){
       ngeominfo++;
       continue;
     }
-#ifdef pp_BINGEOM
-    if(Match(buffer, "BINGEOM")==1){
-      nbingeominfo++;
-      continue;
-    }
-#endif
     if(Match(buffer,"PROP") == 1){
       npropinfo++;
       continue;
@@ -6337,10 +6338,10 @@ int ReadSMV(bufferstreamdata *stream){
    NewMemory((void **)&geominfo,ngeominfo*sizeof(geomdata));
    ngeominfo=0;
  }
-#ifdef pp_BINGEOM
- if(nbingeominfo>0){
-   NewMemory((void **)&bingeominfo,nbingeominfo*sizeof(bingeomdata));
-   nbingeominfo=0;
+#ifdef pp_CFACES
+ if(ncgeominfo>0){
+   NewMemory((void **)&cgeominfo, ncgeominfo*sizeof(geomdata));
+   ncgeominfo = 0;
  }
 #endif
  if(npropinfo>0){
@@ -6815,6 +6816,29 @@ int ReadSMV(bufferstreamdata *stream){
 
        /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++ CGEOM ++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  */
+#ifdef pp_CFACES
+    if(Match(buffer, "CGEOM")==1){
+      geomdata *geomi;
+      char *buff2;
+
+      geomi = cgeominfo+ncgeominfo;
+      InitGeom(geomi, GEOM_CGEOM, FDSBLOCK);
+      geomi->memory_id = ++nmemory_ids;
+
+      FGETS(buffer,255,stream);
+      TrimBack(buffer);
+      buff2 = TrimFront(buffer);
+      NewMemory((void **)&geomi->file,strlen(buff2)+1);
+      strcpy(geomi->file,buff2);
+      ncgeominfo++;
+    }
+#endif
+
+       /*
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++ GEOM ++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
@@ -6941,62 +6965,6 @@ int ReadSMV(bufferstreamdata *stream){
       ngeominfo++;
       continue;
     }
-
-#ifdef pp_BINGEOM
-    if(Match(buffer, "BINGEOM")==1){
-      char *buffptr;
-      bingeomdata *bingeomi;
-      int nsurf_ids = 0;
-      char *file, *geom_id;
-
-      bingeomi = bingeominfo + nbingeominfo;
-      InitBingeom(bingeomi);
-
-      FGETS(buffer, 255, stream);
-      buffptr = TrimFront(buffer);
-      NewMemory((void **)&geom_id, strlen(buffptr)+1);
-      strcpy(geom_id, buffptr);
-      bingeomi->geom_id = geom_id;
-
-      FGETS(buffer,255,stream);
-      buffptr = TrimFront(buffer);
-      NewMemory((void **)&file,strlen(buffptr)+1);
-      strcpy(file,buffptr);
-      bingeomi->geom_input.file = file;
-
-      FGETS(buffer,255,stream);
-      buffptr = TrimFront(buffer);
-      NewMemory((void **)&file,strlen(buffptr)+1);
-      strcpy(file,buffptr);
-      bingeomi->geom_fds.file = file;
-
-      FGETS(buffer, 255, stream);
-      sscanf(buffer, "%i", &nsurf_ids);
-
-      if(nsurf_ids>0){
-        char **surf_ids;
-        int *surf_indexes;
-
-        NewMemory((void **)&surf_ids, nsurf_ids*sizeof(char *));
-        NewMemory((void **)&surf_indexes, nsurf_ids*sizeof(int));
-        for(i = 0; i<nsurf_ids; i++){
-          char *surf;
-
-          FGETS(buffer, 255, stream);
-          buffptr = TrimFront(buffer);
-          NewMemory((void **)&surf, strlen(buffptr)+1);
-          strcpy(surf, buffptr);
-          surf_ids[i] = surf;
-          surf_indexes[i] = -1;
-        }
-        bingeomi->surf_ids = surf_ids;
-        bingeomi->surf_indexes = surf_indexes;
-      }
-
-      nbingeominfo++;
-      continue;
-    }
-#endif
 
     /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -10114,10 +10082,6 @@ typedef struct {
   InitCullGeom(cullgeom);
   InitEvacProp();
 
-#ifdef pp_BINGEOM
-  SetupBingeom();
-#endif
-
   UpdateINIList();
 
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
@@ -10582,11 +10546,12 @@ int ReadIni2(char *inifile, int localfile){
       int dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %f %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits);
+      sscanf(buffer, " %i %i %f %i %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits, &force_fixedpoint);
       colorbar_shift = CLAMP(colorbar_shift, COLORBAR_SHIFT_MIN, COLORBAR_SHIFT_MAX);
       if(research_mode==1&&research_mode_override==0)research_mode=0;
       ncolorlabel_digits = CLAMP(ncolorlabel_digits, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
       ONEORZERO(research_mode);
+      ONEORZERO(force_fixedpoint);
       if(research_mode==1&&percentile_mode==1){
         percentile_mode = 0;
         update_percentile_mode = 1;
@@ -14658,7 +14623,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "PERCENTILEMODE\n");
   fprintf(fileout, " %i\n", percentile_mode);
   fprintf(fileout, "RESEARCHMODE\n");
-  fprintf(fileout, " %i %i %f %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits);
+  fprintf(fileout, " %i %i %f %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint);
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
   fprintf(fileout, "SLICEAVERAGE\n");

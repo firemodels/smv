@@ -35,6 +35,7 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -1x            - turn off 2x scene scaling."));
 #endif
     PRINTF("%s\n", _(" -build         - show pre-processing directives used in this build of Smokeview"));
+    PRINTF("%s\n", _(" -casedir dir   - specify location of case (if different than current directory)"));
     PRINTF("%s\n", _(" -convert_ini case1.ini case2.ini - update case1.ini to the current format"));
     PRINTF("%s\n", _("                  and save results into case2.ini"));
     PRINTF("%s\n", _(" -demo          - use demonstrator mode of Smokeview"));
@@ -205,17 +206,18 @@ void ParseCommandline(int argc, char **argv){
     argi = argv[iarg];
     if(strncmp(argi, "-", 1) == 0){
       if(
-        strncmp(argi, "-points", 7) == 0 ||
-        strncmp(argi, "-frames", 7) == 0 ||
-        strncmp(argi, "-lang", 5) == 0 ||
-        strncmp(argi, "-script", 7) == 0 ||
-        strncmp(argi, "-htmlscript", 11)==0||
+        strncmp(argi, "-points", 7) == 0      ||
+        strncmp(argi, "-frames", 7) == 0      ||
+        strncmp(argi, "-lang", 5) == 0        ||
+        strncmp(argi, "-script", 7) == 0      ||
+        strncmp(argi, "-htmlscript", 11)==0   ||
 #ifdef pp_LUA
-        strncmp(argi, "-luascript", 10) == 0 ||
+        strncmp(argi, "-luascript", 10) == 0  ||
 #endif
         strncmp(argi, "-startframe", 11) == 0 ||
-        strncmp(argi, "-skipframe", 10) == 0 ||
-        strncmp(argi, "-bindir", 7) == 0 ||
+        strncmp(argi, "-skipframe", 10) == 0  ||
+        strncmp(argi, "-bindir", 7) == 0      ||
+        strncmp(argi, "-casedir", 8)==0       ||
         strncmp(argi, "-update_ini", 11) == 0
         ){
         iarg++;
@@ -696,6 +698,16 @@ void ParseCommandline(int argc, char **argv){
         if(smokeview_bindir[len2 - 1] != dirseparator[0])strcat(smokeview_bindir, dirseparator);
       }
     }
+    else if(strncmp(argv[i], "-casedir", 8)==0){
+      ++i;
+      if(i<argc){
+        int len2;
+
+        len2 = strlen(argv[i]);
+        NewMemory((void **)&smokeview_casedir, len2+2);
+        strcpy(smokeview_casedir, argv[i]);
+      }
+    }
     else if(strncmp(argv[i], "-build", 6) == 0){
       showbuild = 1;
       Usage(argv[0],HELP_ALL);
@@ -730,6 +742,40 @@ void ParseCommandline(int argc, char **argv){
 
     InitVolrenderScript(fdsprefix, NULL, vol_startframe0, vol_skipframe0);
   }
+}
+
+/* ------------------ CheckSMVFile ------------------------ */
+
+int CheckSMVFile(int argc, char **argv, char *subdir){
+  char *arg;
+  char casedir[100], *casedirptr, casename[100];
+  FILE *stream;
+
+  if(argc==0)return 1;
+
+  arg = argv[argc-1];
+  if(strlen(arg)==0||arg[0]=='-')return 1;
+
+  strcpy(casename, arg);
+  if(subdir==NULL){
+    casedirptr = casedir;
+    strcpy(casedir, casename);
+  }
+  else{
+    casedirptr = subdir;
+  }
+  strcat(casename, ".smv");
+  stream = fopen(casename, "r");
+  if(stream==NULL){
+    stream = fopen_indir(casedirptr, casename, "r");
+    if(stream==NULL){
+      printf("***error: unable to open %s\n", casename);
+      return 0;
+    }
+    CHDIR(casedirptr);
+  }
+  fclose(stream);
+  return 1;
 }
 
 /* ------------------ main ------------------------ */
@@ -798,7 +844,9 @@ int main(int argc, char **argv){
     PRINTVERSION("smokeview", argv_sv[0]);
     return 1;
   }
-
+  if(CheckSMVFile(argc, argv_sv, smokeview_casedir)==0){
+    SMV_EXIT(1);
+  }
   InitTextureDir();
   InitScriptErrorFiles();
   smokezippath= GetSmokeZipPath(smokeview_bindir);

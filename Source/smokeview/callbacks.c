@@ -2213,6 +2213,10 @@ void Keyboard(unsigned char key, int flag){
       update_chop_colors = 1;
       break;
     case 'q':
+#ifdef pp_CFACES
+      use_cfaces = 1 - use_cfaces;
+      UpdateGluiCfaces();
+#endif
       blocklocation++;
       if((ncadgeom==0&&blocklocation>BLOCKlocation_exact)||
                        blocklocation>BLOCKlocation_cad){

@@ -794,7 +794,7 @@ void MakeColorLabels(char colorlabels[12][11], float colorvalues[12], float tmin
 
     tval = tmin_arg + (n-1)*dt;
     colorvalues[n] = tval;
-    Float2String(&colorlabels[n][0], tval, ncolorlabel_digits);
+    Float2String(&colorlabels[n][0], tval, ncolorlabel_digits, force_fixedpoint);
   }
 }
 
@@ -847,7 +847,7 @@ void GetSliceColors(const float *t, int nt, unsigned char *it,
   }
   tval = local_tmax;
   colorvalues[nlevel-1] = tval;
-  Float2String(&colorlabels[nlevel-1][0], tval, ncolorlabel_digits);
+  Float2String(&colorlabels[nlevel-1][0], tval, ncolorlabel_digits, force_fixedpoint);
 }
 
 /* ------------------ getSliceLabelels ------------------------ */

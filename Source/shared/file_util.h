@@ -82,6 +82,17 @@ int FileExistsOrig(char *filename);
 #define YES 1
 #endif
 
+#ifdef WIN32
+#define CHDIR _chdir
+#define GETCWD _getcwd
+#define SEP '\\'
+#else
+#define CHDIR chdir
+#define GETCWD getcwd
+#define SEP '/'
+#endif
+
+
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 EXTERNCPP FILE *fopen_indir(char *dir, char *file, char *mode);

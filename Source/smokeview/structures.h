@@ -129,28 +129,6 @@ typedef struct _geomdiagdata {
   geomdata *geom;
 } geomdiagdata;
 
-
-#ifdef pp_BINGEOM
-
-typedef struct _bgeomdata {
-  char *file;
-  int geom_type;
-  int n_verts, n_faces, n_surf_ids;
-  float *verts;
-  int *faces, *surfs;
-} bgeomdata;
-
-/* --------------------------  bingeomdata ------------------------------------ */
-
-typedef struct _bingeomdata {
-  char *geom_id, **surf_ids;
-  int *surf_indexes, nsurf_ids;
-  int display;
-  bgeomdata geom_input, geom_fds;
-} bingeomdata;
-#endif
-
-
 /* --------------------------  screendata ------------------------------------ */
 
 typedef struct _screendata {
@@ -1183,7 +1161,7 @@ typedef struct _partdata {
   int nclasses;
   partclassdata **partclassptr;
   part5data *data5;
-  histogramdata **histograms; 
+  histogramdata **histograms;
   int bounds_set;
   float *global_min, *global_max;
   float *valmin_fds, *valmax_fds;   // read in from .bnd files
@@ -1450,7 +1428,7 @@ typedef struct _patchdata {
   char *file,*size_file,*bound_file;
   int have_bound_file;
   char *comp_file, *reg_file;
-  char *geomfile, *filetype_label;
+  char *filetype_label;
   geomdata *geominfo;
   int *geom_offsets;
   //int *patchsize;

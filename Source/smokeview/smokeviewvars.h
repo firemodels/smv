@@ -23,11 +23,13 @@
 #include "glutbitmap.h"
 #endif
 
-SVEXTERN int SVDECL(update_reshape, 0);
-#ifdef pp_BINGEOM
-SVEXTERN int SVDECL(nbingeominfo, 0);
-SVEXTERN bingeomdata SVDECL(*bingeominfo, NULL);
+SVEXTERN int SVDECL(force_fixedpoint, 0);
+#ifdef pp_CFACES
+SVEXTERN int SVDECL(geom_cface_type, 1);
+SVEXTERN int SVDECL(glui_use_cfaces, 0);
+SVEXTERN int SVDECL(use_cfaces, 0);
 #endif
+SVEXTERN int SVDECL(update_reshape, 0);
 SVEXTERN int SVDECL(last_time_paused, 0);
 SVEXTERN float SVDECL(time_paused,0.0);
 SVEXTERN int SVDECL(update_stept, -1);
@@ -803,6 +805,10 @@ SVEXTERN int n_embedded_meshes;
 
 SVEXTERN geomdata SVDECL(*geominfo,NULL);
 SVEXTERN int SVDECL(ngeominfo,0);
+#ifdef pp_CFACES
+SVEXTERN geomdata SVDECL(*cgeominfo, NULL);
+SVEXTERN int SVDECL(ncgeominfo, 0);
+#endif
 
 SVEXTERN int npartframes_max;
 SVEXTERN int force_isometric;
@@ -1594,7 +1600,9 @@ SVEXTERN char SVDECL(*smv_filename,NULL),SVDECL(*fed_filename,NULL),fed_filename
 SVEXTERN char SVDECL(*part_globalbound_filename, NULL);
 SVEXTERN char SVDECL(*sliceinfo_filename,NULL);
 SVEXTERN char SVDECL(*deviceinfo_filename, NULL);
-SVEXTERN char SVDECL(*database_filename,NULL),SVDECL(*smokeview_bindir,NULL),SVDECL(*iso_filename,NULL);
+SVEXTERN char SVDECL(*database_filename,NULL),SVDECL(*iso_filename,NULL);
+SVEXTERN char SVDECL(*smokeview_bindir,NULL);
+SVEXTERN char SVDECL(*smokeview_casedir, NULL);
 #ifdef pp_LUA
 SVEXTERN char SVDECL(*smokeview_bindir_abs,NULL);
 #endif

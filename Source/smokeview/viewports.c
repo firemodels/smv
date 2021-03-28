@@ -92,7 +92,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
       float val;
 
       val = tttmin+i*slicerange/(nrgb-2);
-      Float2String(slicecolorlabel, val, ncolorlabel_digits);
+      Float2String(slicecolorlabel, val, ncolorlabel_digits, force_fixedpoint);
       strcat(slicecolorlabel,"A");
       *slice_label_width = MAX(*slice_label_width, GetStringWidth(slicecolorlabel));
     }
@@ -125,7 +125,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
       float val;
 
       val = tttmin+i*patchrange/(nrgb-2);
-      Float2String(boundary_colorlabel, val, ncolorlabel_digits);
+      Float2String(boundary_colorlabel, val, ncolorlabel_digits, force_fixedpoint);
       strcat(boundary_colorlabel,"A");
       *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
     }
@@ -164,7 +164,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
       float val;
 
       val = tttmin + i*partrange / (nrgb - 2);
-      Float2String(partcolorlabel, val, ncolorlabel_digits);
+      Float2String(partcolorlabel, val, ncolorlabel_digits, force_fixedpoint);
       strcat(partcolorlabel,"A");
       *part_label_width = MAX(*part_label_width, GetStringWidth(partcolorlabel));
     }
@@ -189,7 +189,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
       float val;
 
       val = tttmin+(i-1)*zonerange/(nrgb-2);
-      Float2String(zonecolorlabel, val, ncolorlabel_digits);
+      Float2String(zonecolorlabel, val, ncolorlabel_digits, force_fixedpoint);
       strcat(zonecolorlabel, "A");
       *zone_label_width = MAX(*zone_label_width, GetStringWidth(zonecolorlabel));
     }
@@ -225,7 +225,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
       float val;
 
       val = tttmin+i*plot3drange/(nrgb-2);
-      Float2String(plot3dcolorlabel, val, ncolorlabel_digits);
+      Float2String(plot3dcolorlabel, val, ncolorlabel_digits, force_fixedpoint);
       strcat(plot3dcolorlabel, "A");
       *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
     }
@@ -2153,7 +2153,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
 
     eye = camera_current->eye;
     GetMinMaxDepth(eye, &min_depth, &max_depth);
-    fnear = MAX(min_depth-0.15, 0.00001);
+    fnear = MAX(min_depth-0.15, 0.001);
     ffar  = MAX(    max_depth+0.1, farclip);
   //  ffar = max_depth+1.0;
   }
