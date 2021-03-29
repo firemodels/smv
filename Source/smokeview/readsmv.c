@@ -5583,7 +5583,6 @@ int ReadSMV(bufferstreamdata *stream){
     ngeominfo=0;
   }
 
-#ifdef pp_CFACES
   if(ncgeominfo>0){
     for(i = 0; i<ncgeominfo; i++){
       geomdata *geomi;
@@ -5594,7 +5593,6 @@ int ReadSMV(bufferstreamdata *stream){
     FREEMEMORY(cgeominfo);
     ncgeominfo = 0;
   }
-#endif
 
   FREEMEMORY(tickinfo);
   ntickinfo=0;
@@ -5924,12 +5922,10 @@ int ReadSMV(bufferstreamdata *stream){
       ngeomdiaginfo++;
       continue;
     }
-#ifdef pp_CFACES
     if(Match(buffer, "CGEOM")==1){
       ncgeominfo++;
       continue;
     }
-#endif
     if(Match(buffer, "GEOM") == 1 ||
        Match(buffer, "BGEOM") == 1 ||
        Match(buffer, "SGEOM") == 1){
@@ -6338,12 +6334,10 @@ int ReadSMV(bufferstreamdata *stream){
    NewMemory((void **)&geominfo,ngeominfo*sizeof(geomdata));
    ngeominfo=0;
  }
-#ifdef pp_CFACES
  if(ncgeominfo>0){
    NewMemory((void **)&cgeominfo, ncgeominfo*sizeof(geomdata));
    ncgeominfo = 0;
  }
-#endif
  if(npropinfo>0){
    NewMemory((void **)&propinfo,npropinfo*sizeof(propdata));
    npropinfo=1; // the 0'th prop is the default human property
@@ -6819,7 +6813,6 @@ int ReadSMV(bufferstreamdata *stream){
     +++++++++++++++++++++++++++++ CGEOM ++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-#ifdef pp_CFACES
     if(Match(buffer, "CGEOM")==1){
       geomdata *geomi;
       char *buff2;
@@ -6835,9 +6828,8 @@ int ReadSMV(bufferstreamdata *stream){
       strcpy(geomi->file,buff2);
       ncgeominfo++;
     }
-#endif
 
-       /*
+    /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++ GEOM ++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

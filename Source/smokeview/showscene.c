@@ -275,7 +275,6 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
       DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
     }
 #else
-#ifdef pp_CFACES
     if(use_cfaces==1&&ncgeominfo>0){
       int i;
 
@@ -290,12 +289,6 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
       DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
       DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
     }
-#else
-    if(ngeominfoptrs>0){
-      DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
-      DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
-    }
-#endif
 #endif
     SNIFF_ERRORS("DrawGeom");
   }
@@ -458,7 +451,6 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw triangles +++++++++++++++++++++++++ */
 
-#ifdef pp_CFACES
   if(use_cfaces==1&&ncgeominfo>0){
     int i;
 
@@ -473,12 +465,6 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     DrawGeom(DRAW_TRANSPARENT, GEOM_STATIC);
     DrawGeom(DRAW_TRANSPARENT, GEOM_DYNAMIC);
   }
-#else
-  if(ngeominfoptrs>0){
-    DrawGeom(DRAW_TRANSPARENT, GEOM_STATIC);
-    DrawGeom(DRAW_TRANSPARENT, GEOM_DYNAMIC);
-  }
-#endif
 
   if(showiso == 1){
     CLIP_VALS;
