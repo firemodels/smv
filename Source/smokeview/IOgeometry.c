@@ -4124,6 +4124,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
       ntris = geomlisti->ntriangles;
       if(ntris==0)continue;
+      if(geom_force_transparent==1&&flag!=DRAW_TRANSPARENT)continue;
 
       if(flag==DRAW_TRANSPARENT&&use_transparency_data==1)TransparentOn();
 
@@ -4146,9 +4147,10 @@ void DrawCGeom(int flag, geomdata *cgeom){
       if(auto_terrain==1)glTranslatef(-0.0, 0.0, SCALE2FDS(0.01));
       glBegin(GL_TRIANGLES);
       for(j = 0; j<ntris; j++){
-        float *xyzptr[3];
+        float *color, *xyzptr[3];
         tridata *trianglei;
-        float t_level, color[] = {0.0,1.0,0.0,1.0};
+        float transparent_level_local;
+        float skinny_color[] = {1.0,0.0,0.0,1.0};
 
         trianglei = geomlisti->triangles+j;
 
@@ -4159,14 +4161,30 @@ void DrawCGeom(int flag, geomdata *cgeom){
         if(trianglei->geomtype==GEOM_CGEOM&&show_faces_shaded==0)continue;
         if(trianglei->geomsurf->invisible==1)continue;
 
-        t_level = geom_transparency;
-
         xyzptr[0] = trianglei->verts[0]->xyz;
         xyzptr[1] = trianglei->verts[1]->xyz;
         xyzptr[2] = trianglei->verts[2]->xyz;
 
+        if(hilight_skinny==1&&trianglei->skinny==1){
+          color = skinny_color;
+          transparent_level_local = 1.0;
+        }
+        else{
+          if(trianglei->geomobj!=NULL&&trianglei->geomobj->color!=NULL&&trianglei->geomobj->use_geom_color==1){
+            color = trianglei->geomobj->color;
+            transparent_level_local = trianglei->geomobj->color[3];
+          }
+          else{
+            color = trianglei->geomsurf->color;
+            transparent_level_local = trianglei->geomsurf->transparent_level;
+          }
+        }
+        if(geom_force_transparent==1)transparent_level_local = geom_transparency;
+        if(flag==DRAW_TRANSPARENT&&transparent_level_local>=1.0)continue;
+        if(flag!=DRAW_TRANSPARENT&&transparent_level_local<1.0)continue;
+
         if(lighting_on==1)glNormal3fv(trianglei->tri_norm);
-        glColor4f(color[0], color[1], color[2], t_level);
+        glColor4f(color[0], color[1], color[2], transparent_level_local);
         glVertex3fv(xyzptr[0]);
         glVertex3fv(xyzptr[1]);
         glVertex3fv(xyzptr[2]);
