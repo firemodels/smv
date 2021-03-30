@@ -52,9 +52,7 @@ void ReadHRR(int flag, int *errorcode){
     FREEMEMORY(hrrinfo->times);
     FREEMEMORY(hrrinfo->hrrval_csv);
     FREEMEMORY(hrrinfo->hrrval);
-#ifdef pp_DEVICE_AVG
     FREEMEMORY(hrrinfo->hrrval_orig);
-#endif
     FREEMEMORY(hrrinfo->timeslist);
   }
   FREEMEMORY(hrrinfo);
@@ -67,9 +65,7 @@ void ReadHRR(int flag, int *errorcode){
   hrrinfo->timeslist = NULL;
   hrrinfo->hrrval_csv = NULL;
   hrrinfo->hrrval = NULL;
-#ifdef pp_DEVICE_AVG
   hrrinfo->hrrval_orig = NULL;
-#endif
   hrrinfo->ntimes_csv = 0;
   hrrinfo->loaded = 1;
   hrrinfo->display = display;
@@ -1506,10 +1502,8 @@ void InitDevice(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float
   }
   devicei->times          = NULL;
   devicei->vals           = NULL;
-#ifdef pp_DEVICE_AVG
   devicei->vals_orig      = NULL;
   devicei->update_avg     = 0;
-#endif
   devicei->nstate_changes = 0;
   devicei->istate_changes = 0;
   devicei->act_times      = NULL;
@@ -1583,10 +1577,8 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   devicei->params=NULL;
   devicei->times=NULL;
   devicei->vals=NULL;
-#ifdef pp_DEVICE_AVG
   devicei->vals = NULL;
   devicei->update_avg = 0;
-#endif
   devicei->target_index = -1;
   devicei->global_valmin = 1.0;
   devicei->global_valmax = 0.0;
@@ -1717,10 +1709,8 @@ void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
   devicei->params = NULL;
   devicei->times = NULL;
   devicei->vals = NULL;
-#ifdef pp_DEVICE_AVG
   devicei->vals_orig = NULL;
   devicei->update_avg = 0;
-#endif
   fgets(buffer, 255, stream);
   TrimCommas(buffer);
 

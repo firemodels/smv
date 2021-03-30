@@ -48,7 +48,6 @@
 //#define pp_SLICE_BUFFER       // read  slice file into a buffer before processing
 //#define pp_RESEARCH_DEBUG     // output whether data is reloaded or colors re-mapped when toggling to/from research mode
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
-#define pp_DEVICE_AVG          // time average device data for 2d plot display
 #define pp_MOVIE_BATCH         // activate batch movie dialog
 //#define pp_SINGLE_FRAME_TEST   // test loading a single slice file frame (without using a script)
 //#define pp_SCRIPT_RENDER_FIX  // temporary fix to script rendering, needs to be explored further

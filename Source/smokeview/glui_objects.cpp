@@ -20,9 +20,7 @@
 #define DEVICE_SHOWBEAM         6
 #define DEVICE_RADIUS           7
 //#define HRRPUV_PLOT            30 put in smokeviewdef.h
-#ifdef pp_DEVICE_AVG
 #define DEVICE_TIMEAVERAGE     31
-#endif
 
 
 #define WINDROSE_SHOW_FIRST   996
@@ -117,9 +115,7 @@ GLUI_Rollout *ROLLOUT_windrose = NULL;
 GLUI_Rollout **ROLLOUT_showz_windrose;
 GLUI_Rollout *ROLLOUT_trees = NULL;
 
-#ifdef pp_DEVICE_AVG
 GLUI_Spinner *SPINNER_device_time_average = NULL;
-#endif
 GLUI_Spinner *SPINNER_windrose_merge_dxyzt[6];
 GLUI_Spinner *SPINNER_sensorrelsize=NULL;
 GLUI_Spinner *SPINNER_orientation_scale=NULL;
@@ -405,7 +401,6 @@ extern "C" void DeviceCB(int var){
   case DEVICE_show_orientation:
     updatemenu = 1;
     break;
-#ifdef pp_DEVICE_AVG
   case DEVICE_TIMEAVERAGE:
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;
@@ -415,7 +410,6 @@ extern "C" void DeviceCB(int var){
     }
     hrrinfo->update_avg = 1;
     break;
-#endif
   case DEVICE_devicetypes:
     for(i = 0;i < ndevicetypes;i++){
       devicetypes[i]->type2vis = 0;
@@ -486,7 +480,6 @@ extern "C" void UpdateGluiDevices(void){
 
 /* ------------------ GetDeviceTminTmax ------------------------ */
 
-#ifdef pp_DEVICE_AVG
 float GetDeviceTminTmax(void){
   float return_val=1.0;
   int first = 1, i;
@@ -512,7 +505,6 @@ float GetDeviceTminTmax(void){
   }
   return return_val;
 }
-#endif
 
 /* ------------------ GluiDeviceSetup ------------------------ */
 
@@ -748,15 +740,13 @@ extern "C" void GluiDeviceSetup(int main_window){
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show selected");
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show all");
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show all (trees)");
-#ifdef pp_DEVICE_AVG
       {
         float dev_tmax;
 
         dev_tmax = GetDeviceTminTmax();
           SPINNER_device_time_average = glui_device->add_spinner_to_panel(PANEL_plots, _("time average interval"), GLUI_SPINNER_FLOAT, &device_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
           SPINNER_device_time_average->set_float_limits(0.0, dev_tmax);
-        }
-#endif
+      }
       CHECKBOX_show_hrrpuv_plot = glui_device->add_checkbox_to_panel(PANEL_plots, _("HRRPUV data"), &show_hrrpuv_plot,HRRPUV_PLOT, DeviceCB);
       PANEL_plotproperties = glui_device->add_panel_to_panel(PANEL_plots, "properties");
       glui_device->add_checkbox_to_panel(PANEL_plotproperties, _("labels"), &showdevice_labels);
