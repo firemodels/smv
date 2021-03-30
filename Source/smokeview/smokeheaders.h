@@ -9,9 +9,7 @@
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
 
-#ifdef pp_CFACES
 EXTERNCPP void UpdateGluiCfaces(void);
-#endif
 
 EXTERNCPP void SetTimeState(void);
 
@@ -491,9 +489,7 @@ EXTERNCPP void ReadHRR(int flag, int *errorcode);
 EXTERNCPP void ReadDeviceData(char *file, int filetype, int flag);
 EXTERNCPP void SetupZoneDevs(void);
 EXTERNCPP void SetupDeviceData(void);
-#ifdef pp_CFACES
 EXTERNCPP void DrawCGeom(int flag, geomdata *cgeom);
-#endif
 EXTERNCPP void DrawGeom(int flag,int frameflag);
 EXTERNCPP void DrawGeomDiag(void);
 EXTERNCPP void RemoveDupBlockages(void);

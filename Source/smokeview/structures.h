@@ -937,10 +937,8 @@ typedef struct _device {
   char label[30], csvlabel[30], *labelptr;
   char quantity[30], unit[30];
   float *times, *vals;
-#ifdef pp_DEVICE_AVG
   float *vals_orig;
   int update_avg;
-#endif
   int *valids;
   int ival,nvals,type2,type2vis;
   int in_devc_csv;
@@ -1195,13 +1193,9 @@ typedef struct _menudata {
 typedef struct _hrrdata {
   char *file, hrrlabel[256];
   int loaded, display, *timeslist, itime;
-#ifdef pp_DEVICE_AVG
   int update_avg;
-#endif
   float *times_csv, *times, *hrrval_csv, *hrrval;
-#ifdef pp_DEVICE_AVG
   float *hrrval_orig;
-#endif
   int ntimes, ntimes_csv;
 } hrrdata;
 

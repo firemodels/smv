@@ -2106,7 +2106,6 @@ void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
 
     // faces
 
-#ifdef pp_CFACES
     if(ntris>0){
       int skip=0;
 
@@ -2122,13 +2121,6 @@ void ReadGeomHeader2(geomdata *geomi, int *ntimes_local){
       }
       FSEEK(stream, skip, SEEK_CUR);
     }
-#else
-    if(ntris>0){
-      FSEEK(stream,4+3*ntris*4+4,SEEK_CUR); // skip triangles
-      FSEEK(stream,4+ntris*4+4,SEEK_CUR);   // skip surf
-      FSEEK(stream,4+6*ntris*4+4,SEEK_CUR); // skip textures
-    }
-#endif
 
     // volumes
 
@@ -2219,14 +2211,12 @@ void ReadAllGeom(void){
     geomdiagi = geomdiaginfo + i;
     ReadGeom(geomdiagi->geom, LOAD, GEOM_GEOM, NULL, &errorcode);
   }
-#ifdef pp_CFACES
   for(i = 0; i<ncgeominfo; i++){
     geomdata *geomi;
 
     geomi = cgeominfo+i;
     ReadGeom(geomi, LOAD, GEOM_CGEOM, NULL, &errorcode);
   }
-#endif
 }
 
 /* ------------------ InitGeomlist ------------------------ */
@@ -2596,16 +2586,13 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
     bounding_box[ZMAX] = MAX(bounding_box[ZMAX], bounding_box[ZMIN]+0.001);
     if(ntris>0){
       int *surf_ind=NULL,*ijk=NULL;
-#ifdef pp_CFACES
       int *locations=NULL, *geom_ind=NULL;
-#endif
       float *texture_coords=NULL;
       int ii;
 
       NewMemoryMemID((void **)&triangles,ntris*sizeof(tridata),geomi->memory_id);
       NewMemory((void **)&ijk,3*ntris*sizeof(int));
       NewMemory((void **)&surf_ind,ntris*sizeof(int));
-#ifdef pp_CFACES
       if(geomi->geomtype==GEOM_CGEOM){
         NewMemory((void **)&locations, ntris*sizeof(int));
         NewMemory((void **)&geom_ind,  ntris*sizeof(int));
@@ -2614,13 +2601,9 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       else{
         NewMemory((void **)&texture_coords,6*ntris*sizeof(float));
       }
-#else
-      NewMemory((void **)&texture_coords,6*ntris*sizeof(float));
-#endif
       geomlisti->triangles=triangles;
       geomlisti->ntriangles=ntris;
 
-#ifdef pp_CFACES
       if(geomi->geomtype==GEOM_CGEOM){
         FORTREADBR(ijk, 3*ntris, stream);
         return_filesize += 4+3*ntris*4+4;
@@ -2644,16 +2627,6 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
         FORTREADBR(texture_coords, 6*ntris, stream);
         return_filesize += 4+6*ntris*4+4;
       }
-#else
-      FORTREADBR(ijk,3*ntris,stream);
-      return_filesize += 4+3*ntris*4+4;
-
-      FORTREADBR(surf_ind,ntris,stream);
-      return_filesize += 4+ntris*4+4;
-
-      FORTREADBR(texture_coords,6*ntris,stream);
-      return_filesize += 4+6*ntris*4+4;
-#endif
 
       // compute texture coordinates
 
@@ -2734,11 +2707,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           }
         }
       }
-#ifdef pp_CFACES
       else if(geomi->geomtype!=GEOM_CGEOM&&geomi->geomobjinfo!=NULL&&geomi->geomobjinfo->texture_mapping==TEXTURE_SPHERICAL){
-#else
-      else if(geomi->geomobjinfo!=NULL&&geomi->geomobjinfo->texture_mapping==TEXTURE_SPHERICAL){
-#endif
         for(ii = 0; ii<ntris; ii++){
           float *text_coords;
           int *tri_ind;
@@ -2767,11 +2736,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           text_coords[5] = XYZ2ELEV(xy[0], xy[1], xy[2]);
         }
       }
-#ifdef pp_CFACES
       else if(geomi->geomtype!=GEOM_CGEOM&&geomi->geomobjinfo!=NULL&&geomi->geomobjinfo->texture_mapping==TEXTURE_RECTANGULAR){
-#else
-      else if(geomi->geomobjinfo!=NULL&&geomi->geomobjinfo->texture_mapping==TEXTURE_RECTANGULAR){
-#endif
         for(ii = 0; ii<ntris; ii++){
           float *text_coords;
           int *tri_ind;
@@ -2809,21 +2774,14 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           triangles[ii].verts[k]=verts+ijk[3*ii+k]-1;
         }
 
-#ifdef pp_CFACES
         if(geomi->geomtype!=GEOM_CGEOM){
           for(k=0;k<6;k++){
             triangles[ii].tverts[k]=texture_coords[6*ii+k];
           }
         }
-#else
-        for(k=0;k<6;k++){
-         triangles[ii].tverts[k]=texture_coords[6*ii+k];
-        }
-#endif
         GetTriangleNormal(triangles[ii].verts[0]->xyz, triangles[ii].verts[1]->xyz, triangles[ii].verts[2]->xyz,
                           triangles[ii].tri_norm, NULL);
         switch(type){
-#ifdef pp_CFACES
           geomdata *tgeom;
         case GEOM_CGEOM:
           surfi=surfinfo + CLAMP(surf_ind[ii],0,nsurfinfo-1);
@@ -2832,7 +2790,6 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           triangles[ii].geomobj = tgeom->geomobjinfo;
           triangles[ii].geomobj = NULL;
           break;
-#endif
         case GEOM_GEOM:
         case GEOM_ISO:
           surfi=surfinfo + CLAMP(surf_ind[ii],0,nsurfinfo-1);
@@ -4104,7 +4061,6 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
 
 }
 
-#ifdef pp_CFACES
 /* ------------------ DrawGeomData ------------------------ */
 
 void DrawCGeom(int flag, geomdata *cgeom){
@@ -4303,7 +4259,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
     }
   }
 }
-#endif
 
 /* ------------------ CompareTransparentTriangles ------------------------ */
 

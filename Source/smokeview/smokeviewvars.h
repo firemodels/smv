@@ -24,11 +24,9 @@
 #endif
 
 SVEXTERN int SVDECL(force_fixedpoint, 0);
-#ifdef pp_CFACES
 SVEXTERN int SVDECL(geom_cface_type, 1);
 SVEXTERN int SVDECL(glui_use_cfaces, 0);
 SVEXTERN int SVDECL(use_cfaces, 0);
-#endif
 SVEXTERN int SVDECL(update_reshape, 0);
 SVEXTERN int SVDECL(last_time_paused, 0);
 SVEXTERN float SVDECL(time_paused,0.0);
@@ -41,9 +39,7 @@ SVEXTERN float SVDECL(timer_startup, 0.0), SVDECL(timer_render, -1.0);
 SVEXTERN int SVDECL(frames_total, 0 );
 SVEXTERN int SVDECL(open_movie_dialog, 0);
 SVEXTERN int SVDECL(geom_bounding_box, 0);
-#ifdef pp_DEVICE_AVG
 SVEXTERN float SVDECL(device_time_average, 0.0);
-#endif
 #ifdef pp_REFRESH
 SVEXTERN int SVDECL(periodic_refresh, 0), SVDECL(update_refresh, 1);
 SVEXTERN int SVDECL(glui_refresh_rate, 10), SVDECL(glui_refresh_rate_old, 10), SVDECL(refresh_interval, 100);
@@ -805,10 +801,8 @@ SVEXTERN int n_embedded_meshes;
 
 SVEXTERN geomdata SVDECL(*geominfo,NULL);
 SVEXTERN int SVDECL(ngeominfo,0);
-#ifdef pp_CFACES
 SVEXTERN geomdata SVDECL(*cgeominfo, NULL);
 SVEXTERN int SVDECL(ncgeominfo, 0);
-#endif
 
 SVEXTERN int npartframes_max;
 SVEXTERN int force_isometric;
