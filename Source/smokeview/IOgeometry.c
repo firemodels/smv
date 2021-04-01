@@ -2782,13 +2782,10 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
         GetTriangleNormal(triangles[ii].verts[0]->xyz, triangles[ii].verts[1]->xyz, triangles[ii].verts[2]->xyz,
                           triangles[ii].tri_norm, NULL);
         switch(type){
-          geomdata *tgeom;
         case GEOM_CGEOM:
           surfi=surfinfo + CLAMP(surf_ind[ii],0,nsurfinfo-1);
           triangles[ii].insolid = locations[ii];
-          tgeom = cgeominfo + geom_ind[ii]-1;
-          triangles[ii].geomobj = tgeom->geomobjinfo;
-          triangles[ii].geomobj = NULL;
+          triangles[ii].geomobj = geominfo->geomobjinfo+geom_ind[ii]-1;
           break;
         case GEOM_GEOM:
         case GEOM_ISO:
