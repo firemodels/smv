@@ -6383,13 +6383,15 @@ void ZoneShowMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
-#define GEOM_Vents         15
-#define GEOM_Compartments  16
-#define GEOM_Outline        3
-#define GEOM_TriangleCount 14
-#define GEOM_ShowAll       11
-#define GEOM_HideAll       13
-#define GEOM_bounding_box  10
+#define GEOM_Vents             15
+#define GEOM_Compartments      16
+#define GEOM_Outline            3
+#define GEOM_TriangleCount     14
+#define GEOM_ShowAll           11
+#define GEOM_HideAll           13
+#define GEOM_bounding_box      10
+#define GEOM_bounding_box_auto 12
+
 
 /* ------------------ GeometryMenu ------------------------ */
 
@@ -6400,7 +6402,12 @@ void GeometryMenu(int value){
     show_triangle_count=1-show_triangle_count;
     break;
   case GEOM_bounding_box:
-    geom_bounding_box = 1-geom_bounding_box;
+    geom_bounding_box = 1 - geom_bounding_box;
+    UpdateGeomBoundingBox();
+    break;
+  case GEOM_bounding_box_auto:
+    geom_bounding_box_auto = 1 - geom_bounding_box_auto;
+    UpdateGeomBoundingBox();
     break;
   case GEOM_Outline:
     if(isZoneFireModel==0)visFrame=1-visFrame;
@@ -7717,6 +7724,8 @@ updatemenu=0;
   if(ngeominfoptrs>0){
     if(geom_bounding_box==1)glutAddMenuEntry(_("*bounding box"), GEOM_bounding_box);
     if(geom_bounding_box==0)glutAddMenuEntry(_("bounding box"), GEOM_bounding_box);
+    if(geom_bounding_box_auto==1)glutAddMenuEntry(_("*bounding box(mouse down)"), GEOM_bounding_box_auto);
+    if(geom_bounding_box_auto==0)glutAddMenuEntry(_("bounding box(mouse down)"), GEOM_bounding_box_auto);
   }
 #ifdef _DEBUG
   if(show_triangle_count==1)glutAddMenuEntry(_("*Triangle count"), GEOM_TriangleCount);

@@ -38,7 +38,7 @@ SVEXTERN int SVDECL(update_saving_viewpoint, 0);
 SVEXTERN float SVDECL(timer_startup, 0.0), SVDECL(timer_render, -1.0);
 SVEXTERN int SVDECL(frames_total, 0 );
 SVEXTERN int SVDECL(open_movie_dialog, 0);
-SVEXTERN int SVDECL(geom_bounding_box, 0);
+SVEXTERN int SVDECL(geom_bounding_box, 0), SVDECL(geom_bounding_box_save, 0), SVDECL(geom_bounding_box_auto, 1);
 SVEXTERN float SVDECL(device_time_average, 0.0);
 #ifdef pp_REFRESH
 SVEXTERN int SVDECL(periodic_refresh, 0), SVDECL(update_refresh, 1);

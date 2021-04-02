@@ -1019,9 +1019,14 @@ void MouseCB(int button, int state, int xm, int ym){
     colorbar_splitdrag=0;
     GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
     UpdateTrainerMoves();
+    if(geom_bounding_box_auto==1)geom_bounding_box = geom_bounding_box_save;
     return;
   }
 
+  if(geom_bounding_box_auto==1){
+    geom_bounding_box_save = geom_bounding_box;
+    geom_bounding_box = 1;
+  }
   mouse_down=1;
 
   // check for double click for translating/rotating 3D slice plane
