@@ -14,6 +14,8 @@ edgedata *edge_list;
 tridata *triangle_list;
 tetdata *volume_list;
 
+void UpdateGeomTriangles(geomdata *geomi, int geom_type);
+
 /* ------------------ GetTriangleNormal ------------------------ */
 
 void GetTriangleNormal(float *v1, float *v2, float *v3, float *norm, float *area){
@@ -2217,6 +2219,12 @@ void ReadAllGeom(void){
     geomi = cgeominfo+i;
     ReadGeom(geomi, LOAD, GEOM_CGEOM, NULL, &errorcode);
   }
+  for(i = 0; i<ncgeominfo; i++){
+    geomdata *geomi;
+
+    geomi = cgeominfo+i;
+    UpdateGeomTriangles(geomi, GEOM_STATIC);
+  }
 }
 
 /* ------------------ InitGeomlist ------------------------ */
@@ -3399,7 +3407,7 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
 }
 
 /* ------------------ RemoveDuplicateVertices ------------------------ */
-
+#ifdef pp_REMOVE_DUPLICATES
 void RemoveDuplicateVertices(vertdata *verts, int nverts, tridata *triangles, int ntriangles){
   int j, *vert_map=NULL;
 
@@ -3443,20 +3451,17 @@ void RemoveDuplicateVertices(vertdata *verts, int nverts, tridata *triangles, in
   }
   if(nverts>0)FREEMEMORY(vert_map);
 }
+#endif
 
-/* ------------------ UpdatePatchGeomTriangles ------------------------ */
+/* ------------------ UpdateGeomTriangles ------------------------ */
 
-void UpdatePatchGeomTriangles(patchdata *patchi, int geom_type){
-  geomdata *geomi;
+void UpdateGeomTriangles(geomdata *geomi, int geom_type){
   geomlistdata *geomlisti;
   tridata **connected_triangles;
-  int ntris, nverts, nconnected_triangles=0;
+  int ntris, nverts, nconnected_triangles = 0;
   int j;
 
-  if(patchi->patch_filetype!=PATCH_GEOMETRY_BOUNDARY)return;
-  geomi = patchi->geominfo;
   if(geomi==NULL||geomi->display==0||geomi->loaded==0)return;
-
   if(geom_type==GEOM_STATIC){
     geomlisti = geomi->geomlistinfo-1;
   }
@@ -3469,7 +3474,9 @@ void UpdatePatchGeomTriangles(patchdata *patchi, int geom_type){
   ntris = geomlisti->ntriangles;
   nverts = geomlisti->nverts;
 
+#ifdef pp_REMOVE_DUPLICATES
   RemoveDuplicateVertices(geomlisti->verts, nverts, geomlisti->triangles, ntris);
+#endif
 
   for(j = 0; j<nverts; j++){
     vertdata *vert;
@@ -3552,6 +3559,16 @@ void UpdatePatchGeomTriangles(patchdata *patchi, int geom_type){
     }
   }
   geomlisti->norms_defined = 1;
+}
+
+/* ------------------ UpdatePatchGeomTriangles ------------------------ */
+
+void UpdatePatchGeomTriangles(patchdata *patchi, int geom_type){
+  geomdata *geomi;
+
+  if(patchi->patch_filetype!=PATCH_GEOMETRY_BOUNDARY)return;
+  geomi = patchi->geominfo;
+  UpdateGeomTriangles(geomi, geom_type);
 }
 
 /* ------------------ AverageGeomColors ------------------------ */
@@ -4178,6 +4195,9 @@ void DrawCGeom(int flag, geomdata *cgeom){
         float *xyzptr[3];
         tridata *trianglei;
         int show_edge1 = 1, show_edge2 = 1, show_edge3 = 1;
+        float *norm0, *norm1, *norm2;
+        float vert2a[3], vert2b[3], vert2c[3];
+        int k;
 
         trianglei = geomlisti->triangles+j;
         if(geom_cface_type==1){
@@ -4194,23 +4214,32 @@ void DrawCGeom(int flag, geomdata *cgeom){
         }
         glColor4fv(foregroundcolor);
 
+        norm0 = trianglei->verts[0]->vert_norm;
+        norm1 = trianglei->verts[1]->vert_norm;
+        norm2 = trianglei->verts[2]->vert_norm;
+
         xyzptr[0] = trianglei->verts[0]->xyz;
         xyzptr[1] = trianglei->verts[1]->xyz;
         xyzptr[2] = trianglei->verts[2]->xyz;
 
+        for(k = 0; k<3; k++){
+          vert2a[k] = xyzptr[0][k]+geom_outline_offset*norm0[k];
+          vert2b[k] = xyzptr[1][k]+geom_outline_offset*norm1[k];
+          vert2c[k] = xyzptr[2][k]+geom_outline_offset*norm2[k];
+        }
         if(show_edge1==1){
-          glVertex3fv(xyzptr[0]);
-          glVertex3fv(xyzptr[1]);
+          glVertex3fv(vert2a);
+          glVertex3fv(vert2b);
         }
 
         if(show_edge2==1){
-          glVertex3fv(xyzptr[1]);
-          glVertex3fv(xyzptr[2]);
+          glVertex3fv(vert2b);
+          glVertex3fv(vert2c);
         }
 
         if(show_edge3==1){
-          glVertex3fv(xyzptr[2]);
-          glVertex3fv(xyzptr[0]);
+          glVertex3fv(vert2c);
+          glVertex3fv(vert2a);
         }
       }
       glEnd();
