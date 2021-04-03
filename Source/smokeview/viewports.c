@@ -2253,9 +2253,8 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     ffar = fnear + farclip;
   }
   else{
-    float min_depth, max_depth, *eye;
+    float min_depth, max_depth;
 
-    eye = camera_current->eye;
     GetMinMaxDepth(smv_eyepos, &min_depth, &max_depth);
     if(is_terrain_case==1){
       fnear = MAX(min_depth-0.15, 0.00001);
