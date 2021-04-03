@@ -5519,9 +5519,6 @@ int ReadSMV(bufferstreamdata *stream){
 
   FREEMEMORY(fds_title);
 
-  FREEMEMORY(geomdiaginfo);
-  ngeomdiaginfo = 0;
-
   FREEMEMORY(treeinfo);
   ntreeinfo=0;
   for(i=0;i<nterraininfo;i++){
@@ -5906,10 +5903,6 @@ int ReadSMV(bufferstreamdata *stream){
         nfiles=0;
       }
       ncsvinfo+=nfiles;
-      continue;
-    }
-    if(Match(buffer, "GEOMDIAG") == 1){
-      ngeomdiaginfo++;
       continue;
     }
     if(Match(buffer, "CGEOM")==1){
@@ -6584,11 +6577,6 @@ int ReadSMV(bufferstreamdata *stream){
     npropinfo=1;
   }
 
-  if(ngeomdiaginfo > 0){
-    NewMemory((void **)&geomdiaginfo, ngeomdiaginfo*sizeof(geomdiagdata));
-    ngeomdiaginfo = 0;
-  }
-
 /*
    ************************************************************************
    ************************ start of pass 2 *******************************
@@ -6727,38 +6715,6 @@ int ReadSMV(bufferstreamdata *stream){
       ncsvinfo+=nfiles;
       continue;
     }
-
-    /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++ GEOMDIAG ++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    */
-    if(Match(buffer, "GEOMDIAG") == 1){
-      geomdiagdata *geomdiagi;
-      char *buffptr;
-
-      geomdiagi = geomdiaginfo + ngeomdiaginfo;
-      ngeomdiaginfo++;
-
-      FGETS(buffer, 255, stream);
-      TrimBack(buffer);
-      buffptr = TrimFront(buffer);
-      NewMemory((void **)&geomdiagi->geomfile, strlen(buffptr) + 1);
-      strcpy(geomdiagi->geomfile, buffptr);
-
-      NewMemory((void **)&geomdiagi->geom, sizeof(geomdata));
-      InitGeom(geomdiagi->geom,GEOM_GEOM,NOT_FDSBLOCK);
-
-      NewMemory((void **)&geomdiagi->geom->file, strlen(buffptr) + 1);
-      strcpy(geomdiagi->geom->file, buffptr);
-
-      FGETS(buffer, 255, stream);
-      TrimBack(buffer);
-      buffptr = TrimFront(buffer);
-      NewMemory((void **)&geomdiagi->geomdatafile, strlen(buffptr) + 1);
-      strcpy(geomdiagi->geomdatafile, buffptr);
-    }
-
 
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -10692,8 +10648,10 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
     if(Match(buffer, "GEOMDIAGS") == 1){
+      int dummy;
+
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %i %i %i %i", &structured_isopen, &unstructured_isopen, &show_geometry_diagnostics,
+      sscanf(buffer, " %i %i %i %i %i %i %i", &structured_isopen, &unstructured_isopen, &dummy,
         &highlight_edge0, &highlight_edge1, &highlight_edge2, &highlight_edgeother);
       continue;
     }
@@ -14679,7 +14637,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i\n",
     show_slice_points[0], show_slice_points[1], show_slice_points[2]);
   fprintf(fileout, "GEOMDIAGS\n");
-  fprintf(fileout, " %i %i %i %i %i %i %i\n", structured_isopen, unstructured_isopen, show_geometry_diagnostics,
+  fprintf(fileout, " %i %i %i %i %i %i %i\n", structured_isopen, unstructured_isopen, 0,
     highlight_edge0, highlight_edge1, highlight_edge2, highlight_edgeother);
   fprintf(fileout, "GEOMDOMAIN\n");
   fprintf(fileout, " %i %i\n", showgeom_inside_domain, showgeom_outside_domain);

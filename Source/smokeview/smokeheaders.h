@@ -493,7 +493,6 @@ EXTERNCPP void SetupZoneDevs(void);
 EXTERNCPP void SetupDeviceData(void);
 EXTERNCPP void DrawCGeom(int flag, geomdata *cgeom);
 EXTERNCPP void DrawGeom(int flag,int frameflag);
-EXTERNCPP void DrawGeomDiag(void);
 EXTERNCPP void RemoveDupBlockages(void);
 EXTERNCPP void SortIsoTriangles(float *mm);
 EXTERNCPP void UpdateIsoTriangles(int flag);

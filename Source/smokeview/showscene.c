@@ -293,14 +293,6 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     SNIFF_ERRORS("DrawGeom");
   }
 
-  /* ++++++++++++++++++++++++ draw diagnostic geometry +++++++++++++++++++++++++ */
-
-  if(show_geometry_diagnostics == 1){
-    CLIP_GEOMETRY;
-    DrawGeomDiag();
-    SNIFF_ERRORS("DrawGeomDiag");
-  }
-
   /* ++++++++++++++++++++++++ draw shooter points +++++++++++++++++++++++++ */
 
   if(showshooter != 0 && shooter_active == 1){

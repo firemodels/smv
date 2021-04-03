@@ -191,37 +191,6 @@ void GetFaceInfo(void){
   }
 }
 
-/* ------------------ DrawGeomDiag ------------------------ */
-
-void DrawGeomDiag(void){
-  int i;
-
-    glPushMatrix();
-    glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-    glTranslatef(-xbar0, -ybar0, -zbar0);
-    glBegin(GL_TRIANGLES);
-    for(i = 0; i < ngeomdiaginfo; i++){
-      geomdiagdata *geomdiagi;
-      geomlistdata *geomframe;
-      int ntriangles;
-      int j;
-
-      geomdiagi = geomdiaginfo + i;
-      geomframe = geomdiagi->geom->geomlistinfo_0;
-      ntriangles = geomframe->ntriangles;
-      for(j = 0; j < ntriangles; j++){
-        tridata *trianglej;
-
-        trianglej = geomframe->triangles + j;
-        glVertex3fv(trianglej->verts[0]->xyz);
-        glVertex3fv(trianglej->verts[1]->xyz);
-        glVertex3fv(trianglej->verts[2]->xyz);
-      }
-    }
-    glEnd();
-    glPopMatrix();
-}
-
   /* ------------------ GetGeomZBounds ------------------------ */
 
 void GetGeomZBounds(float *zmin, float *zmax){
@@ -2207,22 +2176,11 @@ void ReadAllGeom(void){
 #endif
     ReadGeom(geomi,LOAD,GEOM_GEOM,NULL,&errorcode);
   }
-  for(i = 0; i < ngeomdiaginfo; i++){
-    geomdiagdata *geomdiagi;
-
-    geomdiagi = geomdiaginfo + i;
-    ReadGeom(geomdiagi->geom, LOAD, GEOM_GEOM, NULL, &errorcode);
-  }
   for(i = 0; i<ncgeominfo; i++){
     geomdata *geomi;
 
     geomi = cgeominfo+i;
     ReadGeom(geomi, LOAD, GEOM_CGEOM, NULL, &errorcode);
-  }
-  for(i = 0; i<ncgeominfo; i++){
-    geomdata *geomi;
-
-    geomi = cgeominfo+i;
     UpdateGeomTriangles(geomi, GEOM_STATIC);
   }
 }
