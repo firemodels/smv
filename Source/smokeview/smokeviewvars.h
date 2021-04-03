@@ -214,6 +214,9 @@ SVEXTERN int npart5loaded, npartloaded, nevacloaded;
 SVEXTERN int SVDECL(global_have_global_bound_file, 0);
 SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
 SVEXTERN int SVDECL(npartthread_ids, 4);
+#ifdef pp_READALLGEOM_MT
+SVEXTERN int SVDECL(nreadallgeomthread_ids, 8);
+#endif
 SVEXTERN int SVDECL(partfast, NO);
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);
 SVEXTERN int SVDECL(use_fire_alpha, 0);
@@ -237,6 +240,11 @@ SVEXTERN int SVDECL(cancel_update_triangles, 0);
 SVEXTERN int SVDECL(updating_triangles, 0);
 SVEXTERN int SVDECL(iso_multithread, 0), SVDECL(iso_multithread_save,0);
 SVEXTERN int SVDECL(part_multithread, 0);
+#ifdef pp_READALLGEOM_MT
+SVEXTERN int SVDECL(readallgeom_multithread, 1);
+#else
+SVEXTERN int SVDECL(readallgeom_multithread, 0);
+#endif
 SVEXTERN int SVDECL(lighting_on,0);
 SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 1);
 SVEXTERN int SVDECL(update_texturebar, 0);

@@ -10245,7 +10245,7 @@ typedef struct {
 
   UpdateMeshTerrain(); // slow
 
-  ReadAllGeom();
+  ReadAllGeomMT();
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
   GetBoxGeomCorners();

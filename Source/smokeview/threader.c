@@ -11,6 +11,9 @@
 
 void InitMultiThreading(void){
 #ifdef pp_THREAD
+#ifdef pp_READALLGEOM_MT
+  pthread_mutex_init(&mutexREADALLGEOM, NULL);
+#endif
   pthread_mutex_init(&mutexPART_LOAD, NULL);
   pthread_mutex_init(&mutexCOMPRESS,NULL);
 #ifdef pp_ISOTHREAD
@@ -135,6 +138,41 @@ void LoadAllPartFilesMT(int partnum){
 #endif
 
 #ifdef pp_THREAD
+#ifdef pp_READALLGEOM_MT
+/* ------------------ MtReadAllGeom ------------------------ */
+
+void *MtReadAllGeom(void *arg){
+  ReadAllGeom();
+  pthread_exit(NULL);
+  return NULL;
+}
+
+void ReadAllGeomMT(void){
+  if(readallgeom_multithread==1){
+    int i;
+
+    SetupReadAllGeom();
+    for(i = 0; i<nreadallgeomthread_ids; i++){
+      pthread_create(readallgeomthread_ids+i, NULL, MtReadAllGeom, NULL);
+    }
+    for(i = 0; i<nreadallgeomthread_ids; i++){
+      pthread_join(readallgeomthread_ids[i], NULL);
+    }
+  }
+  else{
+    SetupReadAllGeom();
+    ReadAllGeom();
+  }
+}
+#else
+void ReadAllGeomMT(void){
+  SetupReadAllGeom();
+  ReadAllGeom();
+}
+#endif
+#endif
+
+#ifdef pp_THREAD
 /* ------------------ MtGetAllPartBounds ------------------------ */
 
 void *MtGetAllPartBounds(void *arg){
@@ -244,7 +282,7 @@ void *MtMakeIBlank(void *arg){
 /* ------------------ Sample ------------------------ */
 
 #ifdef pp_SAMPLE
-// example multi threading routines 
+// example multi threading routines
 // need to declare sample_thread_id in threader.h
 // need to declare sample_multithread in smokeviewvars.h
 

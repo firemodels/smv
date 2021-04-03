@@ -106,6 +106,7 @@ typedef struct _geomobjdata {
 
 typedef struct _geomdata {
   char *file, *file2, *topo_file;
+  int read_status;
   int cache_defined;
   int memory_id, loaded, display;
   int is_terrain;

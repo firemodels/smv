@@ -2162,6 +2162,25 @@ void GetGeomDataHeader(char *file, int *ntimes_local, int *nvals){
   fclose(stream);
 }
 
+/* ------------------ SetupReadAllGeom ------------------------ */
+
+void SetupReadAllGeom(void){
+  int i, errorcode;
+
+  for(i = 0; i<ngeominfo; i++){
+    geomdata *geomi;
+
+    geomi = geominfo+i;
+    geomi->read_status = 0;
+  }
+  for(i = 0; i<ncgeominfo; i++){
+    geomdata *geomi;
+
+    geomi = cgeominfo+i;
+    geomi->read_status = 0;
+  }
+}
+
 /* ------------------ ReadAllGeom ------------------------ */
 
 void ReadAllGeom(void){
@@ -2171,15 +2190,31 @@ void ReadAllGeom(void){
     geomdata *geomi;
 
     geomi = geominfo + i;
+    LOCK_READALLGEOM;
+    if(geomi->read_status!=0){
+      UNLOCK_READALLGEOM;
+      continue;
+    }
+    geomi->read_status = 1;
+    UNLOCK_READALLGEOM;
+
 #ifdef pp_SKIP_BOUNDARY_GEOMS
-    if(geomi->geomtype!=GEOM_GEOM)continue; // skips geometries for boundary files
+      if(geomi->geomtype!=GEOM_GEOM)continue; // skips geometries for boundary files
 #endif
-    ReadGeom(geomi,LOAD,GEOM_GEOM,NULL,&errorcode);
+      ReadGeom(geomi, LOAD, GEOM_GEOM, NULL, &errorcode);
   }
   for(i = 0; i<ncgeominfo; i++){
     geomdata *geomi;
 
     geomi = cgeominfo+i;
+    LOCK_READALLGEOM;
+    if(geomi->read_status!=0){
+      UNLOCK_READALLGEOM;
+      continue;
+    }
+    geomi->read_status = 1;
+    UNLOCK_READALLGEOM;
+
     ReadGeom(geomi, LOAD, GEOM_CGEOM, NULL, &errorcode);
     UpdateGeomTriangles(geomi, GEOM_STATIC);
   }
@@ -3355,7 +3390,9 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   STOP_TIMER(time1);
   START_TIMER(time2);
 #endif
-  if(load_flag==LOAD&&geomi->geomtype!=GEOM_ISO)ClassifyGeom(geomi,geom_frame_index);
+  if(load_flag==LOAD&&geomi->geomtype!=GEOM_ISO){
+    ClassifyGeom(geomi, geom_frame_index);
+  }
 #ifdef pp_ISOTIME
   STOP_TIMER(time2);
   printf("\niso load time=%f\n",time1);
