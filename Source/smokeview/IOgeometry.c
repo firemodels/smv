@@ -2165,7 +2165,7 @@ void GetGeomDataHeader(char *file, int *ntimes_local, int *nvals){
 /* ------------------ SetupReadAllGeom ------------------------ */
 
 void SetupReadAllGeom(void){
-  int i, errorcode;
+  int i;
 
   for(i = 0; i<ngeominfo; i++){
     geomdata *geomi;
