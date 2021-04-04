@@ -9,8 +9,6 @@
 #include GLUT_H
 #endif
 
-tetdata *volume_list;
-
 void UpdateGeomTriangles(geomdata *geomi, int geom_type);
 
 /* ------------------ GetTriangleNormal ------------------------ */
@@ -3021,19 +3019,17 @@ int CompareFaces(const void *arg1, const void *arg2){
 /* ------------------ CompareVolumeFaces ------------------------ */
 
 int CompareVolumeFaces(const void *arg1, const void *arg2){
-  int face1, face2;
+  volfacedata *face1, *face2;
   tetdata *vol1, *vol2;
   int *verts1, *verts2;
   int v1[3], v2[3];
 
-  face1=*(int *)arg1;
-  face2=*(int *)arg2;
-  vol1 = volume_list + face1/4;
-  vol2 = volume_list + face2/4;
-  face1 %= 4;
-  face2 %= 4;
-  verts1 = vol1->faces+3*face1;
-  verts2 = vol2->faces+3*face2;
+  face1  = (volfacedata *)arg1;
+  face2  = (volfacedata *)arg2;
+  vol1   = face1->vol;
+  vol2   = face2->vol;
+  verts1 = vol1->faces+3*face1->faceindex;
+  verts2 = vol2->faces+3*face2->faceindex;
 
   v1[1]=MIN(verts1[1],verts1[2]);
   v1[2]=MAX(verts1[1],verts1[2]);
@@ -3153,36 +3149,37 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
       ReorderFace(faces+9);
     }
     if(nvolumes>0){
-      int *facelist_index=NULL,nfacelist_index;
+      int nfacelist_index;
+      volfacedata *facelist_ptr=NULL;
 
       nfacelist_index=4*nvolumes;
-      volume_list=geomlisti->volumes;
-      NewMemory((void **)&facelist_index,4*nfacelist_index*sizeof(int));
+      NewMemory((void **)&facelist_ptr,4*nfacelist_index*sizeof(volfacedata));
       for(j=0;j<nfacelist_index;j++){
-        facelist_index[j]=j;
+        volfacedata *facei;
+
+        facei = facelist_ptr+i;
+        facei->faceindex = j%4;
+        facei->vol = geomlisti->volumes+j/4;
       }
-      qsort(facelist_index,nfacelist_index,sizeof(int), CompareVolumeFaces);
+      qsort(facelist_ptr,nfacelist_index,sizeof(volfacedata), CompareVolumeFaces);
       for(j=1;j<nfacelist_index;j++){
-        int face1, face2;
+        volfacedata *face1, *face2;
         tetdata *vol1, *vol2;
         int *verts1, *verts2;
 
-        face1=facelist_index[j-1];
-        face2=facelist_index[j];
-        vol1 = volume_list + face1/4;
-        vol2 = volume_list + face2/4;
-        face1 %= 4;
-        face2 %= 4;
-        verts1 = vol1->faces+3*face1;
-        verts2 = vol2->faces+3*face2;
+        face1=facelist_ptr + j-1;
+        face2=facelist_ptr + j;
+        vol1 = face1->vol;
+        vol2 = face2->vol;
+        verts1 = vol1->faces+3*face1->faceindex;
+        verts2 = vol2->faces+3*face2->faceindex;
         if(verts1[0]!=verts2[0])continue;
         if(MIN(verts1[1],verts1[2])!=MIN(verts2[1],verts2[2]))continue;
         if(MAX(verts1[1],verts1[2])!=MAX(verts2[1],verts2[2]))continue;
-        vol1->exterior[face1]=0;
-        vol2->exterior[face2]=0;
+        vol1->exterior[face1->faceindex]=0;
+        vol2->exterior[face2->faceindex]=0;
       }
-
-      FREEMEMORY(facelist_index);
+      FREEMEMORY(facelist_ptr);
     }
     if(ntriangles > 0){
       int nfacelist_index;

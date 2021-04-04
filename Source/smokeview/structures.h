@@ -78,6 +78,13 @@ typedef struct _tetdata {
   edgedata *edges[4];
 } tetdata;
 
+/* --------------------------  volfacedata ------------------------------------ */
+
+typedef struct _volfacedata {
+  tetdata *vol;
+  int faceindex;
+} volfacedata;
+
 /* --------------------------  geomlistdata ------------------------------------ */
 
 typedef struct _geomlistdata {
