@@ -2183,7 +2183,9 @@ void ReadAllGeom(void){
 
   for(i=0;i<ngeominfo;i++){
     geomdata *geomi;
+#ifdef pp_XXXXXX
     int j, count;
+#endif
 
     geomi = geominfo + i;
     LOCK_READALLGEOM;
@@ -2223,7 +2225,9 @@ void ReadAllGeom(void){
   }
   for(i = 0; i<ncgeominfo; i++){
     geomdata *geomi;
+#ifdef XXXXXX
     int j, count;
+#endif
 
     geomi = cgeominfo+i;
     LOCK_READALLGEOM;
@@ -3260,8 +3264,6 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
       edges2[nedges].vert_index[1] = edgelist_ptr[nedges]->vert_index[1];
       nedges++;
       for(ii = 1; ii < nedgelist_index; ii++){
-        int jj;
-
         if(CompareEdges(edgelist_ptr[ii - 1], edgelist_ptr[ii])==0)continue;
         edges2[nedges].vert_index[0] = edgelist_ptr[ii]->vert_index[0];
         edges2[nedges].vert_index[1] = edgelist_ptr[ii]->vert_index[1];
