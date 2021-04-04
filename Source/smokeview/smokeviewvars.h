@@ -215,7 +215,7 @@ SVEXTERN int SVDECL(global_have_global_bound_file, 0);
 SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
 SVEXTERN int SVDECL(npartthread_ids, 4);
 #ifdef pp_READALLGEOM_MT
-SVEXTERN int SVDECL(nreadallgeomthread_ids, 8);
+SVEXTERN int SVDECL(nreadallgeomthread_ids, 4);
 #endif
 SVEXTERN int SVDECL(partfast, NO);
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);

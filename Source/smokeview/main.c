@@ -218,6 +218,7 @@ void ParseCommandline(int argc, char **argv){
         strncmp(argi, "-skipframe", 10) == 0  ||
         strncmp(argi, "-bindir", 7) == 0      ||
         strncmp(argi, "-casedir", 8)==0       ||
+        strncmp(argi, "-threads", 8)==0       ||
         strncmp(argi, "-update_ini", 11) == 0
         ){
         iarg++;
@@ -706,6 +707,13 @@ void ParseCommandline(int argc, char **argv){
         len2 = strlen(argv[i]);
         NewMemory((void **)&smokeview_casedir, len2+2);
         strcpy(smokeview_casedir, argv[i]);
+      }
+    }
+    else if(strncmp(argv[i], "-threads", 8)==0){
+      ++i;
+      if(i<argc){
+        sscanf(argv[i], "%i", &nreadallgeomthread_ids);
+        nreadallgeomthread_ids = CLAMP(nreadallgeomthread_ids, 1, 16);
       }
     }
     else if(strncmp(argv[i], "-build", 6) == 0){
