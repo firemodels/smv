@@ -5740,7 +5740,6 @@ void VentMenu(int value){
 #define GEOMETRY_SHOWNORMAL 3
 #define GEOMETRY_SORTFACES 6
 #define GEOMETRY_SMOOTHNORMAL 4
-#define GEOMETRY_SHOWDIAGNOSTICS 13
 #define GEOMETRY_HILIGHTSKINNY 5
 #define GEOMETRY_HIDEALL 8
 #define GEOMETRY_INSIDE_DOMAIN 14
@@ -5824,9 +5823,6 @@ void ImmersedMenu(int value){
       break;
     case GEOMETRY_SORTFACES:
       sort_geometry=1-sort_geometry;
-      break;
-    case GEOMETRY_SHOWDIAGNOSTICS:
-      show_geometry_diagnostics = 1 - show_geometry_diagnostics;
       break;
     case GEOMETRY_HIDE:
       show_faces_shaded=0;
@@ -6978,14 +6974,6 @@ updatemenu=0;
   }
   else{
     glutAddMenuEntry(_("Smooth normal"), GEOMETRY_SMOOTHNORMAL);
-  }
-  if(ngeomdiaginfo>0){
-    if(show_geometry_diagnostics == 1){
-      glutAddMenuEntry(_("*Show geometry diagnostics"), GEOMETRY_SHOWDIAGNOSTICS);
-    }
-    else{
-      glutAddMenuEntry(_("Show geometry diagnostics"), GEOMETRY_SHOWDIAGNOSTICS);
-    }
   }
   if(hilight_skinny == 1){
     glutAddMenuEntry(_("*Hilight skinny triangles"), GEOMETRY_HILIGHTSKINNY);

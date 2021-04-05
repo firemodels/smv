@@ -214,6 +214,9 @@ SVEXTERN int npart5loaded, npartloaded, nevacloaded;
 SVEXTERN int SVDECL(global_have_global_bound_file, 0);
 SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
 SVEXTERN int SVDECL(npartthread_ids, 4);
+#ifdef pp_READALLGEOM_MT
+SVEXTERN int SVDECL(nreadallgeomthread_ids, 4);
+#endif
 SVEXTERN int SVDECL(partfast, NO);
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);
 SVEXTERN int SVDECL(use_fire_alpha, 0);
@@ -237,6 +240,11 @@ SVEXTERN int SVDECL(cancel_update_triangles, 0);
 SVEXTERN int SVDECL(updating_triangles, 0);
 SVEXTERN int SVDECL(iso_multithread, 0), SVDECL(iso_multithread_save,0);
 SVEXTERN int SVDECL(part_multithread, 0);
+#ifdef pp_READALLGEOM_MT
+SVEXTERN int SVDECL(readallgeom_multithread, 1);
+#else
+SVEXTERN int SVDECL(readallgeom_multithread, 0);
+#endif
 SVEXTERN int SVDECL(lighting_on,0);
 SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 1);
 SVEXTERN int SVDECL(update_texturebar, 0);
@@ -400,7 +408,7 @@ SVEXTERN char SVDECL(*file_smokesensors, NULL);
 SVEXTERN int SVDECL(light_faces, 1);
 SVEXTERN char SVDECL(*prog_fullpath, NULL);
 SVEXTERN int SVDECL(nwindrosez_checkboxes, 0);
-SVEXTERN float startup_time, read_time_elapsed;
+SVEXTERN float readgeom_time, startup_time, read_time_elapsed;
 SVEXTERN int SVDECL(fast_startup, 0), SVDECL(lookfor_compressed_slice,1);
 #ifdef pp_GLUTGET
 SVEXTERN int SVDECL(alt_ctrl_key_state, KEY_NONE);
@@ -555,8 +563,6 @@ SVEXTERN int SVDECL(scale_increment_windrose, 5), SVDECL(scale_max_windrose, 25)
 SVEXTERN int    SVDECL(showref_windrose,1), SVDECL(scale_windrose,WINDROSE_LOCALSCALE);
 SVEXTERN int SVDECL(showlabels_windrose,1), SVDECL(windstate_windrose,WINDROSE_DIRECTION);
 
-SVEXTERN int SVDECL(ngeomdiaginfo, 0), SVDECL(show_geometry_diagnostics,0);
-SVEXTERN geomdiagdata SVDECL(*geomdiaginfo,NULL);
 SVEXTERN int SVDECL(zone_rho, 1);
 SVEXTERN int SVDECL(visventslab, 0), SVDECL(visventprofile, 1);
 SVEXTERN int SVDECL(update_readiso_geom_wrapup, UPDATE_ISO_OFF);

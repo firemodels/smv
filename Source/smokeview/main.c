@@ -218,6 +218,7 @@ void ParseCommandline(int argc, char **argv){
         strncmp(argi, "-skipframe", 10) == 0  ||
         strncmp(argi, "-bindir", 7) == 0      ||
         strncmp(argi, "-casedir", 8)==0       ||
+        strncmp(argi, "-threads", 8)==0       ||
         strncmp(argi, "-update_ini", 11) == 0
         ){
         iarg++;
@@ -708,6 +709,13 @@ void ParseCommandline(int argc, char **argv){
         strcpy(smokeview_casedir, argv[i]);
       }
     }
+    else if(strncmp(argv[i], "-threads", 8)==0){
+      ++i;
+      if(i<argc){
+        sscanf(argv[i], "%i", &nreadallgeomthread_ids);
+        nreadallgeomthread_ids = CLAMP(nreadallgeomthread_ids, 1, 16);
+      }
+    }
     else if(strncmp(argv[i], "-build", 6) == 0){
       showbuild = 1;
       Usage(argv[0],HELP_ALL);
@@ -873,11 +881,16 @@ int main(int argc, char **argv){
   }
 
   STOP_TIMER(startup_time);
+  PRINTF("\n");
   if(runhtmlscript==1){
-    PRINTF("\nTime: %.1f s\n", startup_time);
+    PRINTF("Time: %.1f s\n", startup_time);
     return 0;
   }
-  PRINTF("\nStartup time: %.1f s\n", startup_time);
+  if(ngeominfo>0||ncgeominfo>0){
+    PRINTF("Read geometry time: %.1f s\n", readgeom_time);
+  }
+  PRINTF("Startup time: %.1f s\n", startup_time);
+  PRINTF("\n");
 
   glutMainLoop();
   return 0;
