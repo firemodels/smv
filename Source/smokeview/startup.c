@@ -561,7 +561,7 @@ void InitOpenGL(int option){
   glutReshapeFunc(ReshapeCB);
   glutDisplayFunc(DisplayCB);
   glutVisibilityFunc(NULL);
-  glutMenuStatusFunc(MenuStatus_CB);
+  glutMenuStatusFunc(MenuStatusCB);
 #ifdef _DEBUG
   if(option==PRINT)PRINTF("%s\n",_("initialized"));
 #endif
