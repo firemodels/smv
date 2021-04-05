@@ -3375,11 +3375,10 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
 /* ------------------ ClassifyAllGeom ------------------------ */
 
 void ClassifyAllGeom(void){
-  int i, errorcode;
+  int i;
 
   for(i = 0; i<ngeominfo; i++){
     geomdata *geomi;
-    int j, count;
 
     geomi = geominfo+i;
     LOCK_READALLGEOM;
@@ -3399,7 +3398,6 @@ void ClassifyAllGeom(void){
   }
   for(i = 0; i<ncgeominfo; i++){
     geomdata *geomi;
-    int j, count;
 
     geomi = cgeominfo+i;
     LOCK_READALLGEOM;
