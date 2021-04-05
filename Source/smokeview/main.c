@@ -881,11 +881,16 @@ int main(int argc, char **argv){
   }
 
   STOP_TIMER(startup_time);
+  PRINTF("\n");
   if(runhtmlscript==1){
-    PRINTF("\nTime: %.1f s\n", startup_time);
+    PRINTF("Time: %.1f s\n", startup_time);
     return 0;
   }
-  PRINTF("\nStartup time: %.1f s\n", startup_time);
+  if(ngeominfo>0||ncgeominfo>0){
+    PRINTF("Read geometry time: %.1f s\n", readgeom_time);
+  }
+  PRINTF("Startup time: %.1f s\n", startup_time);
+  PRINTF("\n");
 
   glutMainLoop();
   return 0;

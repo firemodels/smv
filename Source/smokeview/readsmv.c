@@ -10245,7 +10245,9 @@ typedef struct {
 
   UpdateMeshTerrain(); // slow
 
+  START_TIMER(readgeom_time);
   ReadAllGeomMT();
+  STOP_TIMER(readgeom_time);
   ClassifyAllGeomMT();
 
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
