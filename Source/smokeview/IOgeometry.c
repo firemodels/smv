@@ -530,7 +530,7 @@ void DrawGeom(int flag, int timestate){
   tridata **tris;
   int texture_state = OFF, texture_first=1;
 
-  if(geom_bounding_box==1){
+  if(geom_bounding_box_always==1||geom_bounding_box_mousedown==1){
     if(flag!=DRAW_OPAQUE||timestate!=GEOM_STATIC)return;
     DrawGeomBoundingBox();
     return;
@@ -4461,7 +4461,7 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
     count_opaque = 0;
     ntransparent_triangles = count_transparent;
     nopaque_triangles = count_opaque;
-    if(geom_bounding_box==1)continue;
+    if(geom_bounding_box_always==1||geom_bounding_box_mousedown==1)continue;
     for(i = 0; i < ngeominfoptrs; i++){
       geomdata *geomi;
 

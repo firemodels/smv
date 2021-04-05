@@ -475,7 +475,7 @@ EXTERNCPP void SpecialKeyboardCB(int key, int x, int y);
 EXTERNCPP void SpecialKeyboardUpCB(int key, int x, int y);
 EXTERNCPP void MouseCB(int button, int state, int x, int y);
 EXTERNCPP void MouseDragCB(int xm, int ym);
-EXTERNCPP void MenuStatus_CB(int status, int x, int y);
+EXTERNCPP void MenuStatusCB(int status, int x, int y);
 EXTERNCPP void IdleCB(void);
 
 SVEXTERN void UpdateVectorWidgets(void);

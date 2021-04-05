@@ -6253,7 +6253,7 @@ void TerrainGeomShowMenu(int value){
       terrain_show_geometry_points = 1-terrain_show_geometry_points;
       break;
     case MENU_TERRAIN_BOUNDING_BOX:
-      geom_bounding_box = 1 - geom_bounding_box;
+      geom_bounding_box_always = 1 - geom_bounding_box_always;
       break;
     case MENU_TERRAIN_SHOW_TOP:
       terrain_showonly_top = 1 - terrain_showonly_top;
@@ -6386,7 +6386,6 @@ void ZoneShowMenu(int value){
 #define GEOM_ShowAll           11
 #define GEOM_HideAll           13
 #define GEOM_bounding_box      10
-#define GEOM_bounding_box_auto 12
 
 
 /* ------------------ GeometryMenu ------------------------ */
@@ -6398,11 +6397,7 @@ void GeometryMenu(int value){
     show_triangle_count=1-show_triangle_count;
     break;
   case GEOM_bounding_box:
-    geom_bounding_box = 1 - geom_bounding_box;
-    UpdateGeomBoundingBox();
-    break;
-  case GEOM_bounding_box_auto:
-    geom_bounding_box_auto = 1 - geom_bounding_box_auto;
+    geom_bounding_box_always = 1 - geom_bounding_box_always;
     UpdateGeomBoundingBox();
     break;
   case GEOM_Outline:
@@ -7653,8 +7648,8 @@ updatemenu=0;
       if(terrain_show_geometry_points==0)glutAddMenuEntry(_("vertices"),       MENU_TERRAIN_SHOW_POINTS);
     }
     if(ngeominfoptrs>0){
-      if(geom_bounding_box==1)glutAddMenuEntry(_("*bounding box"), MENU_TERRAIN_BOUNDING_BOX);
-      if(geom_bounding_box==0)glutAddMenuEntry(_("bounding box"),  MENU_TERRAIN_BOUNDING_BOX);
+      if(geom_bounding_box_always==1)glutAddMenuEntry(_("*bounding box"), MENU_TERRAIN_BOUNDING_BOX);
+      if(geom_bounding_box_always==0)glutAddMenuEntry(_("bounding box"),  MENU_TERRAIN_BOUNDING_BOX);
     }
     if(nterrain_textures>0){
       glutAddMenuEntry("-", MENU_DUMMY);
@@ -7710,10 +7705,8 @@ updatemenu=0;
     visFrame=0;
   }
   if(ngeominfoptrs>0){
-    if(geom_bounding_box==1)glutAddMenuEntry(_("*bounding box"), GEOM_bounding_box);
-    if(geom_bounding_box==0)glutAddMenuEntry(_("bounding box"), GEOM_bounding_box);
-    if(geom_bounding_box_auto==1)glutAddMenuEntry(_("*bounding box(mouse down)"), GEOM_bounding_box_auto);
-    if(geom_bounding_box_auto==0)glutAddMenuEntry(_("bounding box(mouse down)"), GEOM_bounding_box_auto);
+    if(geom_bounding_box_always==1)glutAddMenuEntry(_("*bounding box"), GEOM_bounding_box);
+    if(geom_bounding_box_always==0)glutAddMenuEntry(_("bounding box"), GEOM_bounding_box);
   }
 #ifdef _DEBUG
   if(show_triangle_count==1)glutAddMenuEntry(_("*Triangle count"), GEOM_TriangleCount);
@@ -12083,11 +12076,19 @@ updatemenu=0;
 
 }
 
-/* ------------------ MenuStatus ------------------------ */
+/* ------------------ MenuStatusCB ------------------------ */
 
-void MenuStatus_CB(int status, int x, int y){
+void MenuStatusCB(int status, int x, int y){
   float *eye_xyz;
+
   menustatus=status;
+  if(menustatus==GLUT_MENU_IN_USE ){
+    geom_bounding_box_mousedown = 1;
+  }
+  else{
+    geom_bounding_box_mousedown = 0;
+  }
+
   /* keep scene from "bouncing" around when leaving a menu */
   start_xyz0[0]=x;
   start_xyz0[1]=y;

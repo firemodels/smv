@@ -10667,7 +10667,7 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i", &show_volumes_interior, &show_volumes_exterior, &show_volumes_solid, &show_volumes_outline);
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f %i %i", &geom_vert_exag, &geom_max_angle, &geom_bounding_box, &geom_bounding_box_auto);
+      sscanf(buffer, " %f %f %i", &geom_vert_exag, &geom_max_angle, &geom_bounding_box_always);
       continue;
     }
     if(Match(buffer, "SHOWTRIANGLECOUNT") == 1){
@@ -14652,7 +14652,7 @@ void WriteIni(int flag,char *filename){
      show_faces_interior, show_faces_exterior, show_faces_shaded, show_faces_outline, smooth_geom_normal,
      geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors);
   fprintf(fileout, " %i %i %i %i\n", show_volumes_interior, show_volumes_exterior, show_volumes_solid, show_volumes_outline);
-  fprintf(fileout, " %f %f %i %i\n", geom_vert_exag, geom_max_angle, geom_bounding_box, geom_bounding_box_auto);
+  fprintf(fileout, " %f %f %i\n", geom_vert_exag, geom_max_angle, geom_bounding_box_always);
   fprintf(fileout, "GEOMSLICEPROPS\n");
   fprintf(fileout, " %f %f\n", geomslice_linewidth, geomslice_pointsize);
 
