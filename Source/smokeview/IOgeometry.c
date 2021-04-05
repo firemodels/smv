@@ -3161,9 +3161,9 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
       for(j=0;j<nfacelist_index;j++){
         volfacedata *facei;
 
-        facei = facelist_ptr+i;
+        facei            = facelist_ptr + j;
         facei->faceindex = j%4;
-        facei->vol = geomlisti->volumes+j/4;
+        facei->vol       = geomlisti->volumes + j/4;
       }
       qsort(facelist_ptr,nfacelist_index,sizeof(volfacedata), CompareVolumeFaces);
       for(j=1;j<nfacelist_index;j++){
