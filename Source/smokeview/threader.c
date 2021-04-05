@@ -139,6 +139,29 @@ void LoadAllPartFilesMT(int partnum){
 
 #ifdef pp_THREAD
 #ifdef pp_READALLGEOM_MT
+/* ------------------ MtClassifyAllGeom ------------------------ */
+
+void *MtClassifyAllGeom(void *arg){
+  ClassifyAllGeom();
+  pthread_exit(NULL);
+  return NULL;
+}
+
+void ClassifyAllGeomMT(void){
+  if(readallgeom_multithread==1){
+    int i;
+
+    SetupReadAllGeom();
+    for(i = 0; i<nreadallgeomthread_ids; i++){
+      pthread_create(classifyallgeomthread_ids+i, NULL, MtClassifyAllGeom, NULL);
+    }
+  }
+  else{
+    SetupReadAllGeom();
+    ClassifyAllGeom();
+  }
+}
+
 /* ------------------ MtReadAllGeom ------------------------ */
 
 void *MtReadAllGeom(void *arg){

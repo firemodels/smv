@@ -10245,14 +10245,9 @@ typedef struct {
 
   UpdateMeshTerrain(); // slow
 
-  {
-    float read_time;
+  ReadAllGeomMT();
+  ClassifyAllGeomMT();
 
-    START_TIMER(read_time);
-    ReadAllGeomMT();
-    STOP_TIMER(read_time);
-    printf("read geom time=%f\n", read_time);
-  }
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
   GetBoxGeomCorners();

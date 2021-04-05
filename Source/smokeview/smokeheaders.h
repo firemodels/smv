@@ -176,6 +176,7 @@ EXTERNCPP void MakeColorLabels(char colorlabels[12][11], float colorvalues[12], 
 EXTERNCPP void FinalizePartLoad(partdata *parti);
 EXTERNCPP void LoadAllPartFilesMT(int val);
 EXTERNCPP void ReadAllGeomMT(void);
+EXTERNCPP void ClassifyAllGeomMT(void);
 EXTERNCPP void GetAllPartBoundsMT(void);
 EXTERNCPP void LoadAllPartFiles(int partnum);
 EXTERNCPP void CreatePartBoundFile(partdata *parti);
@@ -960,6 +961,7 @@ EXTERNCPP void ReadPlot3D(char *file, int ifile, int flag,int *errorcode);
 EXTERNCPP void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local);
 EXTERNCPP void SetupReadAllGeom(void);
 EXTERNCPP void ReadAllGeom(void);
+EXTERNCPP void ClassifyAllGeom(void);
 EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode);
 EXTERNCPP void ReadGeomFile2(geomdata *geomi);
 EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock);

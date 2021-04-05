@@ -126,6 +126,7 @@ MT_EXTERN pthread_t triangles_id;
 MT_EXTERN pthread_t partthread_ids[MAX_PART_THREADS];
 #ifdef pp_READALLGEOM_MT
 MT_EXTERN pthread_t readallgeomthread_ids[MAX_READALLGEOM_THREADS];
+MT_EXTERN pthread_t classifyallgeomthread_ids[MAX_READALLGEOM_THREADS];
 #endif
 #ifdef pp_SAMPLE
 MT_EXTERN pthread_t sample_thread_id;
