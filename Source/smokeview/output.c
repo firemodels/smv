@@ -20,7 +20,6 @@
 #ifdef pp_DPRINT
 void PrintLine(char *filepath, int line, float *timer, char *label){
   char *file;
-  float test;
 
   file = strrchr(filepath, SEP);
   if(file==NULL){
