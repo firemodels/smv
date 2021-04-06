@@ -9,6 +9,8 @@
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
 
+EXTERNCPP void DrawGeomBoundingBox(float *boundingbox_color);
+
 EXTERNCPP void UpdateGeomBoundingBox(void);
 
 EXTERNCPP void UpdateGluiCfaces(void);

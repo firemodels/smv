@@ -34,7 +34,8 @@
 #define SURF_SET              49
 #define SURF_GET              50
 
-GLUI_Checkbox *CHECKBOX_geom_bounding_box = NULL;
+GLUI_Checkbox *CHECKBOX_geom_bounding_box      = NULL;
+GLUI_Checkbox *CHECKBOX_geom_bounding_box_auto = NULL;
 GLUI_Checkbox *CHECKBOX_cfaces = NULL;
 GLUI_Checkbox *CHECKBOX_show_zlevel = NULL;
 GLUI_Checkbox *CHECKBOX_surface_solid=NULL, *CHECKBOX_surface_outline=NULL, *CHECKBOX_surface_points = NULL;
@@ -100,7 +101,6 @@ GLUI_Spinner *SPINNER_surf_axis[3]         = {NULL, NULL, NULL};
 #define SELECT_GEOM            4
 #define VOL_USE_CFACES         5
 #define GEOM_BOUNDING_BOX      6
-#define GEOM_BOUNDING_BOX_AUTO 7
 
 GLUI *glui_geometry=NULL;
 
@@ -177,6 +177,7 @@ extern "C" void UpdateGluiCfaces(void){
 
 extern "C" void UpdateGeomBoundingBox(void){
   if(CHECKBOX_geom_bounding_box!=NULL)CHECKBOX_geom_bounding_box->set_int_val(geom_bounding_box_always);
+  if(CHECKBOX_geom_bounding_box_auto!=NULL)CHECKBOX_geom_bounding_box_auto->set_int_val(geom_bounding_box_auto);
 }
 
 /* ------------------ UpdateVisAxisLabels ------------------------ */
@@ -503,7 +504,8 @@ extern "C" void GluiGeometrySetup(int main_window){
     CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "solid", &show_faces_shaded, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_surface_points = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "points", &show_geom_verts, VOL_SHOWHIDE, VolumeCB);
-    CHECKBOX_geom_bounding_box      = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "bounding box",     &geom_bounding_box_always,      GEOM_BOUNDING_BOX,      VolumeCB);
+    CHECKBOX_geom_bounding_box      = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "bounding box(always)",     &geom_bounding_box_always,  GEOM_BOUNDING_BOX, VolumeCB);
+    CHECKBOX_geom_bounding_box_auto = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "bounding box(mousedown)",  &geom_bounding_box_auto,    GEOM_BOUNDING_BOX, VolumeCB);
     if(ncgeominfo>0){
       CHECKBOX_cfaces = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "cfaces", &glui_use_cfaces, VOL_USE_CFACES, VolumeCB);
       PANEL_cfaces = glui_geometry->add_panel_to_panel(PANEL_triangles, "cfaces");
@@ -852,7 +854,6 @@ extern "C" void VolumeCB(int var){
     Keyboard('q',FROM_SMOKEVIEW);
     break;
   case GEOM_BOUNDING_BOX:
-  case GEOM_BOUNDING_BOX_AUTO:
     updatemenu=1;
     break;
   default:

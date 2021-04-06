@@ -480,7 +480,7 @@ void DrawBox(float *bb, float *box_color){
 
 /* ------------------ DrawGeomBoundingBox ------------------------ */
 
-void DrawGeomBoundingBox(void){
+void DrawGeomBoundingBox(float *boundingbox_color){
   int i;
 
   glPushMatrix();
@@ -503,6 +503,7 @@ void DrawGeomBoundingBox(void){
 
         box_color = foregroundcolor;
         if(geomobjj->color!=NULL)box_color = geomobjj->color;
+        if(boundingbox_color!=NULL)box_color = boundingbox_color;
         DrawBox(geomobjj->bounding_box, box_color);
         have_box = 1;
       }
@@ -530,12 +531,6 @@ void DrawGeom(int flag, int timestate){
   tridata **tris;
   int texture_state = OFF, texture_first=1;
 
-  if(geom_bounding_box_always==1||geom_bounding_box_mousedown==1){
-    if(flag!=DRAW_OPAQUE||timestate!=GEOM_STATIC)return;
-    DrawGeomBoundingBox();
-    return;
-  }
-
   if(flag == DRAW_OPAQUE){
     ntris=nopaque_triangles;
     tris=opaque_triangles;
@@ -545,6 +540,12 @@ void DrawGeom(int flag, int timestate){
     tris=transparent_triangles;
   }
   if(ntris==0&&show_faces_shaded==1&&show_faces_outline==0)return;
+
+  if(geom_bounding_box_always==1||geom_bounding_box_mousedown==1){
+    if(flag!=DRAW_OPAQUE||timestate!=GEOM_STATIC)return;
+    DrawGeomBoundingBox(NULL);
+    return;
+  }
 
   if(ntris>0&&timestate==GEOM_STATIC){
     float *color;
