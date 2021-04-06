@@ -539,13 +539,14 @@ void DrawGeom(int flag, int timestate){
     ntris=ntransparent_triangles;
     tris=transparent_triangles;
   }
-  if(ntris==0&&show_faces_shaded==1&&show_faces_outline==0)return;
 
   if(geom_bounding_box_always==1||geom_bounding_box_mousedown==1){
-    if(flag!=DRAW_OPAQUE||timestate!=GEOM_STATIC)return;
-    DrawGeomBoundingBox(NULL);
+    if(flag==DRAW_OPAQUE&&timestate==GEOM_STATIC){
+      DrawGeomBoundingBox(NULL);
+    }
     return;
   }
+  if(ntris==0&&show_faces_shaded==1&&show_faces_outline==0)return;
 
   if(ntris>0&&timestate==GEOM_STATIC){
     float *color;
