@@ -1023,7 +1023,7 @@ void MouseCB(int button, int state, int xm, int ym){
     return;
   }
 
-  geom_bounding_box_mousedown = 1;
+  if(geom_bounding_box_auto==1)geom_bounding_box_mousedown = 1;
   mouse_down=1;
 
   // check for double click for translating/rotating 3D slice plane
@@ -1756,8 +1756,11 @@ void Keyboard(unsigned char key, int flag){
         UpdateCurrentMesh(gbsave);
       }
       break;
-    case 'b':
     case 'B':
+      geom_bounding_box_auto = 1-geom_bounding_box_auto;
+      UpdateGeomBoundingBox();
+      break;
+    case 'b':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
 #ifdef pp_DIALOG_SHORTCUTS

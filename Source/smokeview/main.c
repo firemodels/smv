@@ -34,6 +34,7 @@ void Usage(char *prog,int option){
 #ifdef pp_OSX_HIGHRES
     PRINTF("%s\n", _(" -1x            - turn off 2x scene scaling."));
 #endif
+    PRINTF("%s\n", _(" -big           - hide scene and data when moving scene or selecting menus"));
     PRINTF("%s\n", _(" -build         - show pre-processing directives used in this build of Smokeview"));
     PRINTF("%s\n", _(" -casedir dir   - specify location of case (if different than current directory)"));
     PRINTF("%s\n", _(" -convert_ini case1.ini case2.ini - update case1.ini to the current format"));
@@ -467,6 +468,9 @@ void ParseCommandline(int argc, char **argv){
       stereoactive = 1;
       stereotype = STEREO_TIME;
       PRINTF("stereo option activated\n");
+    }
+    else if(strncmp(argv[i], "-big", 4)==0){
+      geom_bounding_box_auto = 1;
     }
     else if(strncmp(argv[i], "-timings", 8)==0){
       show_startup_timings = 1;
