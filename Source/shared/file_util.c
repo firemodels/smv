@@ -774,16 +774,6 @@ char *LastName(char *argi){
   char *lastdirsep;
   char *dir, *filename, cwdpath[1000];
 
-#ifdef WIN32
-#define CHDIR _chdir
-#define GETCWD _getcwd
-#define SEP '\\'
-#else
-#define CHDIR chdir
-#define GETCWD getcwd
-#define SEP '/'
-#endif
-
   filename=argi;
   lastdirsep=strrchr(argi,SEP);
   if(lastdirsep!=NULL){

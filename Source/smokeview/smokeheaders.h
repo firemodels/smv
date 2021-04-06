@@ -9,11 +9,12 @@
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
 
-#ifdef pp_BINGEOM
-EXTERNCPP void InitBingeom(bingeomdata *bingeomi);
-EXTERNCPP void SetupBingeom(void);
-EXTERNCPP int  GetSurfaceIndex(char *label);
-#endif
+EXTERNCPP void DrawGeomBoundingBox(float *boundingbox_color);
+
+EXTERNCPP void UpdateGeomBoundingBox(void);
+
+EXTERNCPP void UpdateGluiCfaces(void);
+
 EXTERNCPP void SetTimeState(void);
 
 EXTERNCPP void SetCurrentViewPoint(char *viewpoint_label);
@@ -176,6 +177,8 @@ EXTERNCPP void CloseRollouts(GLUI *dialog);
 EXTERNCPP void MakeColorLabels(char colorlabels[12][11], float colorvalues[12], float tmin_arg, float tmax_arg, int nlevel);
 EXTERNCPP void FinalizePartLoad(partdata *parti);
 EXTERNCPP void LoadAllPartFilesMT(int val);
+EXTERNCPP void ReadAllGeomMT(void);
+EXTERNCPP void ClassifyAllGeomMT(void);
 EXTERNCPP void GetAllPartBoundsMT(void);
 EXTERNCPP void LoadAllPartFiles(int partnum);
 EXTERNCPP void CreatePartBoundFile(partdata *parti);
@@ -474,7 +477,7 @@ EXTERNCPP void SpecialKeyboardCB(int key, int x, int y);
 EXTERNCPP void SpecialKeyboardUpCB(int key, int x, int y);
 EXTERNCPP void MouseCB(int button, int state, int x, int y);
 EXTERNCPP void MouseDragCB(int xm, int ym);
-EXTERNCPP void MenuStatus_CB(int status, int x, int y);
+EXTERNCPP void MenuStatusCB(int status, int x, int y);
 EXTERNCPP void IdleCB(void);
 
 SVEXTERN void UpdateVectorWidgets(void);
@@ -492,8 +495,8 @@ EXTERNCPP void ReadHRR(int flag, int *errorcode);
 EXTERNCPP void ReadDeviceData(char *file, int filetype, int flag);
 EXTERNCPP void SetupZoneDevs(void);
 EXTERNCPP void SetupDeviceData(void);
+EXTERNCPP void DrawCGeom(int flag, geomdata *cgeom);
 EXTERNCPP void DrawGeom(int flag,int frameflag);
-EXTERNCPP void DrawGeomDiag(void);
 EXTERNCPP void RemoveDupBlockages(void);
 EXTERNCPP void SortIsoTriangles(float *mm);
 EXTERNCPP void UpdateIsoTriangles(int flag);
@@ -958,7 +961,9 @@ EXTERNCPP void DrawCADGeom(const cadgeomdata *cd);
 
 EXTERNCPP void ReadPlot3D(char *file, int ifile, int flag,int *errorcode);
 EXTERNCPP void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntimes_local);
+EXTERNCPP void SetupReadAllGeom(void);
 EXTERNCPP void ReadAllGeom(void);
+EXTERNCPP void ClassifyAllGeom(void);
 EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode);
 EXTERNCPP void ReadGeomFile2(geomdata *geomi);
 EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock);

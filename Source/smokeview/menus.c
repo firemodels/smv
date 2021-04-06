@@ -50,11 +50,12 @@ float     part_load_time;
   }
 
 
-#define MENU_TERRAIN_SHOW_SURFACE -1
-#define MENU_TERRAIN_SHOW_LINES   -2
-#define MENU_TERRAIN_SHOW_POINTS  -3
-#define MENU_TERRAIN_SHOW_TOP     -4
-#define MENU_TERRAIN_BOUNDING_BOX -5
+#define MENU_TERRAIN_SHOW_SURFACE      -1
+#define MENU_TERRAIN_SHOW_LINES        -2
+#define MENU_TERRAIN_SHOW_POINTS       -3
+#define MENU_TERRAIN_SHOW_TOP          -4
+#define MENU_TERRAIN_BOUNDING_BOX      -5
+#define MENU_TERRAIN_BOUNDING_BOX_AUTO -6
 
 #define MENU_KEEP_ALL -2
 #define MENU_KEEP_FINE -3
@@ -5740,7 +5741,6 @@ void VentMenu(int value){
 #define GEOMETRY_SHOWNORMAL 3
 #define GEOMETRY_SORTFACES 6
 #define GEOMETRY_SMOOTHNORMAL 4
-#define GEOMETRY_SHOWDIAGNOSTICS 13
 #define GEOMETRY_HILIGHTSKINNY 5
 #define GEOMETRY_HIDEALL 8
 #define GEOMETRY_INSIDE_DOMAIN 14
@@ -5750,15 +5750,6 @@ void VentMenu(int value){
 #define GEOMETRY_VOLUMES_INTERIOR 18
 #define GEOMETRY_VOLUMES_EXTERIOR 19
 #define GEOMETRY_DUMMY -999
-
-#ifdef pp_BINGEOM
-#define BINGEOMETRY_SHOWALL -1
-#define BINGEOMETRY_HIDEALL -2
-#endif
-
-#ifdef pp_BINGEOM
-void Immersed2Menu(int value);
-#endif
 
 /* ------------------ ImmersedMenu ------------------------ */
 
@@ -5834,9 +5825,6 @@ void ImmersedMenu(int value){
     case GEOMETRY_SORTFACES:
       sort_geometry=1-sort_geometry;
       break;
-    case GEOMETRY_SHOWDIAGNOSTICS:
-      show_geometry_diagnostics = 1 - show_geometry_diagnostics;
-      break;
     case GEOMETRY_HIDE:
       show_faces_shaded=0;
       show_faces_outline=0;
@@ -5876,74 +5864,10 @@ void ImmersedMenu(int value){
       ASSERT(FFALSE);
       break;
   }
-#ifdef pp_BINGEOM
-  if(show_faces_shaded==1||show_faces_outline == 1){
-    Immersed2Menu(BINGEOMETRY_HIDEALL);
-    updatemenu = 1;
-  }
-#endif
   UpdateGeometryControls();
 
   GLUTPOSTREDISPLAY;
 }
-
-#ifdef pp_BINGEOM
-/* ------------------ Immersed2Menu ------------------------ */
-
-void Immersed2Menu(int value){
-  if(value==MENU_DUMMY)return;
-
-  if(value>=0&&value<nbingeominfo){
-    bingeomdata *bingeomi;
-    int i, display_bingeom = 0;;
-
-    bingeomi = bingeominfo+value;
-    bingeomi->display = 1-bingeomi->display;
-    for(i = 0; i<nbingeominfo; i++){
-      bingeomdata *bgi;
-
-      bgi = bingeominfo+i;
-      if(bgi->display==1){
-        display_bingeom = 1;
-        updatemenu = 1;
-        break;
-      }
-    }
-    if(display_bingeom==1){
-      ImmersedMenu(GEOMETRY_HIDEALL);
-      updatemenu = 1;
-    }
-  }
-  if(value<0){
-    switch (value){
-      int i;
-
-      case BINGEOMETRY_SHOWALL:
-        for(i = 0; i<nbingeominfo; i++){
-          bingeomdata *bgi;
-
-          bgi = bingeominfo+i;
-          bgi->display = 1;
-        }
-        ImmersedMenu(GEOMETRY_HIDEALL);
-        updatemenu = 1;
-        break;
-      case BINGEOMETRY_HIDEALL:
-        for(i = 0; i<nbingeominfo; i++){
-          bingeomdata *bgi;
-
-          bgi = bingeominfo+i;
-          bgi->display = 0;
-        }
-        updatemenu = 1;
-        break;
-      default:
-        ASSERT(FFALSE);
-        break;
-    }
-  }
-}
-#endif
 
 /* ------------------ BlockageMenu ------------------------ */
 
@@ -6330,7 +6254,12 @@ void TerrainGeomShowMenu(int value){
       terrain_show_geometry_points = 1-terrain_show_geometry_points;
       break;
     case MENU_TERRAIN_BOUNDING_BOX:
-      geom_bounding_box = 1 - geom_bounding_box;
+      geom_bounding_box_always = 1 - geom_bounding_box_always;
+      UpdateGeomBoundingBox();
+      break;
+    case MENU_TERRAIN_BOUNDING_BOX_AUTO:
+      geom_bounding_box_auto = 1 - geom_bounding_box_auto;
+      UpdateGeomBoundingBox();
       break;
     case MENU_TERRAIN_SHOW_TOP:
       terrain_showonly_top = 1 - terrain_showonly_top;
@@ -6456,13 +6385,15 @@ void ZoneShowMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
-#define GEOM_Vents         15
-#define GEOM_Compartments  16
-#define GEOM_Outline        3
-#define GEOM_TriangleCount 14
-#define GEOM_ShowAll       11
-#define GEOM_HideAll       13
-#define GEOM_bounding_box  10
+#define GEOM_Vents             15
+#define GEOM_Compartments      16
+#define GEOM_Outline            3
+#define GEOM_TriangleCount     14
+#define GEOM_ShowAll           11
+#define GEOM_HideAll           13
+#define GEOM_BOUNDING_BOX      10
+#define GEOM_BOUNDING_BOX_AUTO  9
+
 
 /* ------------------ GeometryMenu ------------------------ */
 
@@ -6472,8 +6403,13 @@ void GeometryMenu(int value){
   case GEOM_TriangleCount:
     show_triangle_count=1-show_triangle_count;
     break;
-  case GEOM_bounding_box:
-    geom_bounding_box = 1-geom_bounding_box;
+  case GEOM_BOUNDING_BOX:
+    geom_bounding_box_always = 1 - geom_bounding_box_always;
+    UpdateGeomBoundingBox();
+    break;
+  case GEOM_BOUNDING_BOX_AUTO:
+    geom_bounding_box_auto = 1-geom_bounding_box_auto;
+    UpdateGeomBoundingBox();
     break;
   case GEOM_Outline:
     if(isZoneFireModel==0)visFrame=1-visFrame;
@@ -6623,9 +6559,6 @@ static int vectorskipmenu=0,unitsmenu=0;
 static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
 static int gridslicemenu=0, blockagemenu=0, immersedmenu=0, immersedinteriormenu=0, immersedsurfacemenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
-#ifdef pp_BINGEOM
-static int immersed2menu = 0;
-#endif
 static int loadpatchsinglemenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=0,unloadsmoke3dsinglemenu=0, showvolsmokesinglemenu=0, includepatchmenu=0;
 static int plot3dshowsinglemeshmenu=0;
 static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
@@ -7023,37 +6956,6 @@ updatemenu=0;
     glutAddMenuEntry(_("   Exterior"), GEOMETRY_VOLUMES_EXTERIOR);
   }
 
-/* --------------------------------surface geometry menu -------------------------- */
-
-#ifdef pp_BINGEOM
-  if(nbingeominfo>0){
-    int showall=1, hideall=1;
-
-    CREATEMENU(immersed2menu, Immersed2Menu);
-    for(i = 0; i<nbingeominfo; i++){
-      bingeomdata *bgi;
-      char bingeom_label[32];
-
-      bgi = bingeominfo + i;
-      strcpy(bingeom_label, "");
-      if(bgi->display==1){
-        strcat(bingeom_label, "*");
-        hideall=0;
-      }
-      else{
-        showall=0;
-      }
-      strcat(bingeom_label, bgi->geom_id);
-      glutAddMenuEntry(bingeom_label, i);
-    }
-    glutAddMenuEntry("-",       MENU_DUMMY);
-    if(showall==1)glutAddMenuEntry("*show all", BINGEOMETRY_SHOWALL);
-    if(showall==0)glutAddMenuEntry("show all",  BINGEOMETRY_SHOWALL);
-    if(hideall==1)glutAddMenuEntry("*hide all",  BINGEOMETRY_HIDEALL);
-    if(hideall==0)glutAddMenuEntry("hide all",   BINGEOMETRY_HIDEALL);
-  }
-#endif
-
   /* --------------------------------surface geometry menu -------------------------- */
 
   CREATEMENU(immersedmenu,ImmersedMenu);
@@ -7078,14 +6980,6 @@ updatemenu=0;
   }
   else{
     glutAddMenuEntry(_("Smooth normal"), GEOMETRY_SMOOTHNORMAL);
-  }
-  if(ngeomdiaginfo>0){
-    if(show_geometry_diagnostics == 1){
-      glutAddMenuEntry(_("*Show geometry diagnostics"), GEOMETRY_SHOWDIAGNOSTICS);
-    }
-    else{
-      glutAddMenuEntry(_("Show geometry diagnostics"), GEOMETRY_SHOWDIAGNOSTICS);
-    }
   }
   if(hilight_skinny == 1){
     glutAddMenuEntry(_("*Hilight skinny triangles"), GEOMETRY_HILIGHTSKINNY);
@@ -7765,8 +7659,10 @@ updatemenu=0;
       if(terrain_show_geometry_points==0)glutAddMenuEntry(_("vertices"),       MENU_TERRAIN_SHOW_POINTS);
     }
     if(ngeominfoptrs>0){
-      if(geom_bounding_box==1)glutAddMenuEntry(_("*bounding box"), MENU_TERRAIN_BOUNDING_BOX);
-      if(geom_bounding_box==0)glutAddMenuEntry(_("bounding box"),  MENU_TERRAIN_BOUNDING_BOX);
+      if(geom_bounding_box_always==1)glutAddMenuEntry(_("*bounding box(always)"),   MENU_TERRAIN_BOUNDING_BOX);
+      if(geom_bounding_box_always==0)glutAddMenuEntry(_("bounding box(always)"),    MENU_TERRAIN_BOUNDING_BOX);
+      if(geom_bounding_box_auto==1)glutAddMenuEntry(_("*bounding box(mouse down)"), MENU_TERRAIN_BOUNDING_BOX_AUTO);
+      if(geom_bounding_box_auto==0)glutAddMenuEntry(_("bounding box(mouse down)"),  MENU_TERRAIN_BOUNDING_BOX_AUTO);
     }
     if(nterrain_textures>0){
       glutAddMenuEntry("-", MENU_DUMMY);
@@ -7796,11 +7692,6 @@ updatemenu=0;
   if((auto_terrain==0&&ngeominfo>0)||(auto_terrain==1&&ngeominfo>1)){
     GLUTADDSUBMENU(_("Immersed"), immersedmenu);
   }
-#ifdef pp_BINGEOM
-  if(nbingeominfo>0){
-    GLUTADDSUBMENU(_("Immersed2"), immersed2menu);
-  }
-#endif
   if(GetNTotalVents()>0)GLUTADDSUBMENU(_("Surfaces"), ventmenu);
   if(nrooms > 0){
     if(visCompartments == 1){
@@ -7827,8 +7718,10 @@ updatemenu=0;
     visFrame=0;
   }
   if(ngeominfoptrs>0){
-    if(geom_bounding_box==1)glutAddMenuEntry(_("*bounding box"), GEOM_bounding_box);
-    if(geom_bounding_box==0)glutAddMenuEntry(_("bounding box"), GEOM_bounding_box);
+    if(geom_bounding_box_always==1)glutAddMenuEntry(_("*bounding box(always)"),   GEOM_BOUNDING_BOX);
+    if(geom_bounding_box_always==0)glutAddMenuEntry(_("bounding box(always)"),    GEOM_BOUNDING_BOX);
+    if(geom_bounding_box_auto==1)glutAddMenuEntry(_("*bounding box(mouse down)"), GEOM_BOUNDING_BOX_AUTO);
+    if(geom_bounding_box_auto==0)glutAddMenuEntry(_("bounding box(mouse down)"),  GEOM_BOUNDING_BOX_AUTO);
   }
 #ifdef _DEBUG
   if(show_triangle_count==1)glutAddMenuEntry(_("*Triangle count"), GEOM_TriangleCount);
@@ -12198,11 +12091,19 @@ updatemenu=0;
 
 }
 
-/* ------------------ MenuStatus ------------------------ */
+/* ------------------ MenuStatusCB ------------------------ */
 
-void MenuStatus_CB(int status, int x, int y){
+void MenuStatusCB(int status, int x, int y){
   float *eye_xyz;
+
   menustatus=status;
+  if(menustatus==GLUT_MENU_IN_USE &&  geom_bounding_box_auto==1){
+    geom_bounding_box_mousedown = 1;
+  }
+  else{
+    geom_bounding_box_mousedown = 0;
+  }
+
   /* keep scene from "bouncing" around when leaving a menu */
   start_xyz0[0]=x;
   start_xyz0[1]=y;

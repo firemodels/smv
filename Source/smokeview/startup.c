@@ -36,13 +36,8 @@ void InitDefaultCameras(void){
     camera_external->view_id = EXTERNAL_LIST_ID;
   }
 
-  if(camera_ini!=NULL&&camera_ini->defined==1){
-    CopyCamera(camera_current, camera_ini);
-  }
-  else{
-    camera_external->zoom = zoom;
-    CopyCamera(camera_current, camera_external);
-  }
+  camera_external->zoom = zoom;
+  CopyCamera(camera_current, camera_external);
   strcpy(camera_label, camera_current->name);
   UpdateCameraLabel();
 
@@ -566,7 +561,7 @@ void InitOpenGL(int option){
   glutReshapeFunc(ReshapeCB);
   glutDisplayFunc(DisplayCB);
   glutVisibilityFunc(NULL);
-  glutMenuStatusFunc(MenuStatus_CB);
+  glutMenuStatusFunc(MenuStatusCB);
 #ifdef _DEBUG
   if(option==PRINT)PRINTF("%s\n",_("initialized"));
 #endif
@@ -1203,9 +1198,6 @@ void InitVars(void){
     ResizeMemory((void **)&movie_queues, nmovie_queues*sizeof(char *));;
     have_slurm = 1;
   }
-#ifndef pp_MOVIE_BATCH
-  have_slurm = 0;
-#endif
 
 //*** define weburl
   {

@@ -23,11 +23,12 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(geom_bounding_box_auto, 0);
+SVEXTERN int SVDECL(force_fixedpoint, 0);
+SVEXTERN int SVDECL(geom_cface_type, 1);
+SVEXTERN int SVDECL(glui_use_cfaces, 0);
+SVEXTERN int SVDECL(use_cfaces, 0);
 SVEXTERN int SVDECL(update_reshape, 0);
-#ifdef pp_BINGEOM
-SVEXTERN int SVDECL(nbingeominfo, 0);
-SVEXTERN bingeomdata SVDECL(*bingeominfo, NULL);
-#endif
 SVEXTERN int SVDECL(last_time_paused, 0);
 SVEXTERN float SVDECL(time_paused,0.0);
 SVEXTERN int SVDECL(update_stept, -1);
@@ -38,10 +39,8 @@ SVEXTERN int SVDECL(update_saving_viewpoint, 0);
 SVEXTERN float SVDECL(timer_startup, 0.0), SVDECL(timer_render, -1.0);
 SVEXTERN int SVDECL(frames_total, 0 );
 SVEXTERN int SVDECL(open_movie_dialog, 0);
-SVEXTERN int SVDECL(geom_bounding_box, 0);
-#ifdef pp_DEVICE_AVG
+SVEXTERN int SVDECL(geom_bounding_box_mousedown, 0), SVDECL(geom_bounding_box_always, 0);
 SVEXTERN float SVDECL(device_time_average, 0.0);
-#endif
 #ifdef pp_REFRESH
 SVEXTERN int SVDECL(periodic_refresh, 0), SVDECL(update_refresh, 1);
 SVEXTERN int SVDECL(glui_refresh_rate, 10), SVDECL(glui_refresh_rate_old, 10), SVDECL(refresh_interval, 100);
@@ -216,6 +215,9 @@ SVEXTERN int npart5loaded, npartloaded, nevacloaded;
 SVEXTERN int SVDECL(global_have_global_bound_file, 0);
 SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
 SVEXTERN int SVDECL(npartthread_ids, 4);
+#ifdef pp_READALLGEOM_MT
+SVEXTERN int SVDECL(nreadallgeomthread_ids, 4);
+#endif
 SVEXTERN int SVDECL(partfast, NO);
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);
 SVEXTERN int SVDECL(use_fire_alpha, 0);
@@ -239,6 +241,11 @@ SVEXTERN int SVDECL(cancel_update_triangles, 0);
 SVEXTERN int SVDECL(updating_triangles, 0);
 SVEXTERN int SVDECL(iso_multithread, 0), SVDECL(iso_multithread_save,0);
 SVEXTERN int SVDECL(part_multithread, 0);
+#ifdef pp_READALLGEOM_MT
+SVEXTERN int SVDECL(readallgeom_multithread, 1);
+#else
+SVEXTERN int SVDECL(readallgeom_multithread, 0);
+#endif
 SVEXTERN int SVDECL(lighting_on,0);
 SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 1);
 SVEXTERN int SVDECL(update_texturebar, 0);
@@ -402,7 +409,7 @@ SVEXTERN char SVDECL(*file_smokesensors, NULL);
 SVEXTERN int SVDECL(light_faces, 1);
 SVEXTERN char SVDECL(*prog_fullpath, NULL);
 SVEXTERN int SVDECL(nwindrosez_checkboxes, 0);
-SVEXTERN float startup_time, read_time_elapsed;
+SVEXTERN float readgeom_time, startup_time, read_time_elapsed;
 SVEXTERN int SVDECL(fast_startup, 0), SVDECL(lookfor_compressed_slice,1);
 #ifdef pp_GLUTGET
 SVEXTERN int SVDECL(alt_ctrl_key_state, KEY_NONE);
@@ -557,8 +564,6 @@ SVEXTERN int SVDECL(scale_increment_windrose, 5), SVDECL(scale_max_windrose, 25)
 SVEXTERN int    SVDECL(showref_windrose,1), SVDECL(scale_windrose,WINDROSE_LOCALSCALE);
 SVEXTERN int SVDECL(showlabels_windrose,1), SVDECL(windstate_windrose,WINDROSE_DIRECTION);
 
-SVEXTERN int SVDECL(ngeomdiaginfo, 0), SVDECL(show_geometry_diagnostics,0);
-SVEXTERN geomdiagdata SVDECL(*geomdiaginfo,NULL);
 SVEXTERN int SVDECL(zone_rho, 1);
 SVEXTERN int SVDECL(visventslab, 0), SVDECL(visventprofile, 1);
 SVEXTERN int SVDECL(update_readiso_geom_wrapup, UPDATE_ISO_OFF);
@@ -803,6 +808,8 @@ SVEXTERN int n_embedded_meshes;
 
 SVEXTERN geomdata SVDECL(*geominfo,NULL);
 SVEXTERN int SVDECL(ngeominfo,0);
+SVEXTERN geomdata SVDECL(*cgeominfo, NULL);
+SVEXTERN int SVDECL(ncgeominfo, 0);
 
 SVEXTERN int npartframes_max;
 SVEXTERN int force_isometric;
@@ -1062,7 +1069,7 @@ SVEXTERN cameradata SVDECL(**cameras_sorted, NULL);
 SVEXTERN cameradata SVDECL(*camera_current,NULL), SVDECL(*camera_save,NULL), SVDECL(*camera_last,NULL);
 SVEXTERN cameradata SVDECL(*camera_external,NULL);
 SVEXTERN cameradata SVDECL(**camera_defaults, NULL);
-SVEXTERN cameradata SVDECL(*camera_ini,NULL), SVDECL(*camera_external_save,NULL);
+SVEXTERN cameradata SVDECL(*camera_external_save,NULL);
 SVEXTERN cameradata camera_list_first, camera_list_last, SVDECL(**camera_list,NULL);
 SVEXTERN int ncamera_list,i_view_list,SVDECL(init_camera_list, 1);
 SVEXTERN int camera_max_id;
@@ -1594,7 +1601,9 @@ SVEXTERN char SVDECL(*smv_filename,NULL),SVDECL(*fed_filename,NULL),fed_filename
 SVEXTERN char SVDECL(*part_globalbound_filename, NULL);
 SVEXTERN char SVDECL(*sliceinfo_filename,NULL);
 SVEXTERN char SVDECL(*deviceinfo_filename, NULL);
-SVEXTERN char SVDECL(*database_filename,NULL),SVDECL(*smokeview_bindir,NULL),SVDECL(*iso_filename,NULL);
+SVEXTERN char SVDECL(*database_filename,NULL),SVDECL(*iso_filename,NULL);
+SVEXTERN char SVDECL(*smokeview_bindir,NULL);
+SVEXTERN char SVDECL(*smokeview_casedir, NULL);
 #ifdef pp_LUA
 SVEXTERN char SVDECL(*smokeview_bindir_abs,NULL);
 #endif

@@ -260,6 +260,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define GEOM_ISO      1
 #define GEOM_SLICE    2
 #define GEOM_BOUNDARY 3
+#define GEOM_CGEOM    4
 
 #define PATCH_STRUCTURED_NODE_CENTER 0
 #define PATCH_STRUCTURED_CELL_CENTER 1

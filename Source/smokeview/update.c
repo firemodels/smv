@@ -1291,18 +1291,14 @@ void UpdateTimes(void){
     FREEMEMORY(hrrinfo->timeslist);
     FREEMEMORY(hrrinfo->times);
     FREEMEMORY(hrrinfo->hrrval);
-#ifdef pp_DEVICE_AVG
     FREEMEMORY(hrrinfo->hrrval_orig);
-#endif
     if(hrrinfo->loaded==1&&hrrinfo->display==1&&nglobal_times>0){
       int jstart=0;
 
       NewMemory((void **)&hrrinfo->timeslist,nglobal_times*sizeof(int));
       NewMemory((void **)&hrrinfo->times,nglobal_times*sizeof(float));
       NewMemory((void **)&hrrinfo->hrrval,nglobal_times*sizeof(float));
-#ifdef pp_DEVICE_AVG
       NewMemory((void **)&hrrinfo->hrrval_orig, nglobal_times*sizeof(float));
-#endif
       hrrinfo->ntimes=nglobal_times;
       for(i=0;i<nglobal_times;i++){
         int j, foundit;
@@ -1322,18 +1318,14 @@ void UpdateTimes(void){
               f1=0.0;
             }
             hrrinfo->hrrval[i]=(1.0-f1)*hrrinfo->hrrval_csv[j]+f1*hrrinfo->hrrval_csv[j+1];
-#ifdef pp_DEVICE_AVG
             hrrinfo->hrrval_orig[i]=hrrinfo->hrrval[i];
-#endif
             jstart=j;
             break;
           }
         }
         if(foundit==0){
           hrrinfo->hrrval[i]=hrrinfo->hrrval_csv[hrrinfo->ntimes_csv-1];
-#ifdef pp_DEVICE_AVG
           hrrinfo->hrrval_orig[i]=hrrinfo->hrrval[i];
-#endif
         }
       }
     }
@@ -2021,11 +2013,11 @@ void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, fl
   char cmin[100], cmax[100];
   char labelunit[50];
 
-  Float2String(cvalmin_fds, valmin_fds, 6);
-  Float2String(cvalmax_fds, valmax_fds, 6);
+  Float2String(cvalmin_fds, valmin_fds, 6, force_fixedpoint);
+  Float2String(cvalmax_fds, valmax_fds, 6, force_fixedpoint);
 
-  Float2String(cdiff_min, valmin_fds-valmin_smv, 3);
-  Float2String(cdiff_max, valmax_fds-valmax_smv, 3);
+  Float2String(cdiff_min, valmin_fds-valmin_smv, 3, force_fixedpoint);
+  Float2String(cdiff_max, valmax_fds-valmax_smv, 3, force_fixedpoint);
 
   strcpy(cmin,cvalmin_fds);
   strcat(cmin,"(");

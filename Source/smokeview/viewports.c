@@ -92,7 +92,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
       float val;
 
       val = tttmin+i*slicerange/(nrgb-2);
-      Float2String(slicecolorlabel, val, ncolorlabel_digits);
+      Float2String(slicecolorlabel, val, ncolorlabel_digits, force_fixedpoint);
       strcat(slicecolorlabel,"A");
       *slice_label_width = MAX(*slice_label_width, GetStringWidth(slicecolorlabel));
     }
@@ -125,7 +125,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
       float val;
 
       val = tttmin+i*patchrange/(nrgb-2);
-      Float2String(boundary_colorlabel, val, ncolorlabel_digits);
+      Float2String(boundary_colorlabel, val, ncolorlabel_digits, force_fixedpoint);
       strcat(boundary_colorlabel,"A");
       *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
     }
@@ -164,7 +164,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
       float val;
 
       val = tttmin + i*partrange / (nrgb - 2);
-      Float2String(partcolorlabel, val, ncolorlabel_digits);
+      Float2String(partcolorlabel, val, ncolorlabel_digits, force_fixedpoint);
       strcat(partcolorlabel,"A");
       *part_label_width = MAX(*part_label_width, GetStringWidth(partcolorlabel));
     }
@@ -189,7 +189,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
       float val;
 
       val = tttmin+(i-1)*zonerange/(nrgb-2);
-      Float2String(zonecolorlabel, val, ncolorlabel_digits);
+      Float2String(zonecolorlabel, val, ncolorlabel_digits, force_fixedpoint);
       strcat(zonecolorlabel, "A");
       *zone_label_width = MAX(*zone_label_width, GetStringWidth(zonecolorlabel));
     }
@@ -225,7 +225,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
       float val;
 
       val = tttmin+i*plot3drange/(nrgb-2);
-      Float2String(plot3dcolorlabel, val, ncolorlabel_digits);
+      Float2String(plot3dcolorlabel, val, ncolorlabel_digits, force_fixedpoint);
       strcat(plot3dcolorlabel, "A");
       *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
     }
@@ -1962,8 +1962,8 @@ float DistPointLineSeg(float *point, float *xyz1, float *xyz2){
 }
 
 /* ------------------ DistPointBox  ------------------------ */
-
-float DistPointBox(float *point, float corners[8][3], float *maxdist){
+#ifdef pp_OLD_DISTPOINTBOX
+void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxdist){
   float dist_planes[6], dist_corners[8];
   float dist;
   float *xyz1, *xyz2, delta;
@@ -2049,8 +2049,111 @@ float DistPointBox(float *point, float corners[8][3], float *maxdist){
   //dist     -= delta;
   //*maxdist += delta;
 
-  return dist;
+  *mindist = dist;
 }
+
+#else
+
+/* ------------------ DistPointBox  ------------------------ */
+
+void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxdist){
+  int i, j, k;
+  float xmin, xmax, ymin, ymax, zmin, zmax;
+  float minval, maxval, dist;
+  float dx, dy, dz;
+
+  //         6------------7
+  //        /|           /|
+  //      /  |         /  |
+  //    /    |       /    |
+  //   4------------5     |
+  //   |     |      |     |
+  //   |     2------|-----3
+  //   |    /       |    /
+  //   |  /         |  /
+  //   |/           |/
+  //   0------------1
+
+  xmin = corners[0][0];
+  xmax = corners[1][0];
+  ymin = corners[0][1];
+  ymax = corners[2][1];
+  zmin = corners[0][2];
+  zmax = corners[4][2];
+
+#define NIJK 5
+
+  dx = (xmax - xmin)/(float)(NIJK-1);
+  dy = (ymax - ymin)/(float)(NIJK-1);
+  dz = (zmax - zmin)/(float)(NIJK-1);
+
+  dist = DistPtXYZ(point, xmin, ymin, zmin);
+  minval = dist;
+  maxval = dist;
+  for(i = 0; i<NIJK; i++){
+    float xx;
+
+    xx = xmin+(float)i*dx;
+
+    for(j = 0; j<NIJK; j++){
+      float yy;
+      float dist;
+
+      yy     = ymin+(float)j*dy;
+      dist   = DistPtXYZ(point, xx, yy, zmin);
+      minval = MIN(minval, dist);
+      maxval = MAX(maxval, dist);
+
+      dist   = DistPtXYZ(point, xx, yy, zmax);
+      minval = MIN(minval, dist);
+      maxval = MAX(maxval, dist);
+    }
+  }
+
+  for(i = 0; i<NIJK; i++){
+    float xx;
+
+    xx = xmin+(float)i*dx;
+
+    for(k = 0; k<NIJK; k++){
+      float zz;
+      float dist;
+
+      zz     = zmin+(float)k*dz;
+      dist   = DistPtXYZ(point, xx, ymin, zz);
+      minval = MIN(minval, dist);
+      maxval = MAX(maxval, dist);
+
+      dist   = DistPtXYZ(point, xx, ymax, zz);
+      minval = MIN(minval, dist);
+      maxval = MAX(maxval, dist);
+    }
+  }
+
+  for(j = 0; j<NIJK; j++){
+    float yy;
+
+    yy = ymin+(float)j*dy;
+
+    for(k = 0; k<NIJK; k++){
+      float zz;
+      float dist;
+
+      zz     = zmin+(float)k*dz;
+      dist   = DistPtXYZ(point, xmin, yy, zz);
+      minval = MIN(minval, dist);
+      maxval = MAX(maxval, dist);
+
+      dist   = DistPtXYZ(point, xmax, yy, zz);
+      minval = MIN(minval, dist);
+      maxval = MAX(maxval, dist);
+    }
+  }
+
+  *mindist = minval;
+  *maxdist = maxval;
+}
+#endif
 
 /* ------------------ GetMinMaxDepth  ------------------------ */
 
@@ -2058,12 +2161,13 @@ void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth){
   int i;
   float depth, dx, dy, dz;
 
-  *min_depth = DistPointBox(smv_eyepos, box_corners, max_depth);
+  DistPointBox(smv_eyepos, box_corners, min_depth, max_depth);
 
   if(have_box_geom_corners==1){
-    float maxdist;
+    float mindist, maxdist;
 
-    *min_depth = MIN(*min_depth, DistPointBox(smv_eyepos, box_geom_corners, &maxdist));
+    DistPointBox(smv_eyepos, box_geom_corners, &mindist, &maxdist);
+    *min_depth = MAX(*min_depth, mindist);
     *max_depth = MAX(*max_depth, maxdist);
   }
 
@@ -2149,13 +2253,16 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     ffar = fnear + farclip;
   }
   else{
-    float min_depth, max_depth, *eye;
+    float min_depth, max_depth;
 
-    eye = camera_current->eye;
-    GetMinMaxDepth(eye, &min_depth, &max_depth);
-    fnear = MAX(min_depth-0.15, 0.00001);
+    GetMinMaxDepth(smv_eyepos, &min_depth, &max_depth);
+    if(is_terrain_case==1){
+      fnear = MAX(min_depth-0.15, 0.00001);
+    }
+    else{
+      fnear = MAX(min_depth-0.75, 0.001);
+    }
     ffar  = MAX(    max_depth+0.1, farclip);
-  //  ffar = max_depth+1.0;
   }
 
   aperture_temp = Zoom2Aperture(zoom);

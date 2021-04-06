@@ -262,33 +262,37 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   /* ++++++++++++++++++++++++ draw blockages +++++++++++++++++++++++++ */
 
   CLIP_GEOMETRY;
-  DrawBlockages(mode, DRAW_OPAQUE);
-  SNIFF_ERRORS("DrawBlockages");
+  if(geom_bounding_box_mousedown==0){
+    DrawBlockages(mode, DRAW_OPAQUE);
+    SNIFF_ERRORS("DrawBlockages");
+  }
 
   /* ++++++++++++++++++++++++ draw triangles +++++++++++++++++++++++++ */
 
   if(ngeominfoptrs>0){
     CLIP_GEOMETRY;
-#ifndef WUI_NEW
 #ifdef pp_WUI_VAO
     if(have_terrain_vao==0){
       DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
       DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
     }
 #else
-    DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
-    DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
-#endif
+    if(use_cfaces==1&&ncgeominfo>0){
+      int i;
+
+      for(i = 0; i<ncgeominfo; i++){
+        geomdata *geomi;
+
+        geomi = cgeominfo+i;
+        DrawCGeom(DRAW_OPAQUE, geomi);
+      }
+    }
+    else if(ngeominfoptrs>0){
+      DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
+      DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
+    }
 #endif
     SNIFF_ERRORS("DrawGeom");
-  }
-
-  /* ++++++++++++++++++++++++ draw diagnostic geometry +++++++++++++++++++++++++ */
-
-  if(show_geometry_diagnostics == 1){
-    CLIP_GEOMETRY;
-    DrawGeomDiag();
-    SNIFF_ERRORS("DrawGeomDiag");
   }
 
   /* ++++++++++++++++++++++++ draw shooter points +++++++++++++++++++++++++ */
@@ -315,7 +319,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   DrawTerrainGeom(DRAW_OPAQUE);
 #endif
 
-  if(visTerrainType != TERRAIN_HIDDEN&&nterraininfo>0&&ngeominfo==0){
+  if(visTerrainType != TERRAIN_HIDDEN&&nterraininfo>0&&ngeominfo==0 && geom_bounding_box_mousedown==0){
     int i;
 
     //shaded 17 0
@@ -359,12 +363,14 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   }
   if(((show_node_slices_and_vectors == 1 || show_cell_slices_and_vectors==1)&& showvslice == 1) || (showslice == 1 && use_transparency_data == 0)){
     CLIP_VALS;
-    DrawSliceFrame();
+    if(geom_bounding_box_mousedown==0){
+      DrawSliceFrame();
+    }
   }
 
   /* ++++++++++++++++++++++++ draw boundary files +++++++++++++++++++++++++ */
 
-  if(showpatch == 1){
+  if(showpatch == 1 && geom_bounding_box_mousedown==0){
     CLIP_VALS;
     DrawBoundaryFrame(DRAW_OPAQUE);
   }
@@ -378,7 +384,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw animated isosurfaces +++++++++++++++++++++++++ */
 
-  if(showiso == 1){
+  if(showiso == 1 && geom_bounding_box_mousedown==0){
     CLIP_VALS;
     DrawIso(DRAW_OPAQUE);
   }
@@ -441,13 +447,22 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw triangles +++++++++++++++++++++++++ */
 
-  if(ngeominfoptrs>0){
-    CLIP_GEOMETRY;
+  if(use_cfaces==1&&ncgeominfo>0){
+    int i;
+
+    for(i = 0; i<ncgeominfo; i++){
+      geomdata *geomi;
+
+      geomi = cgeominfo+i;
+      DrawCGeom(DRAW_TRANSPARENT, geomi);
+    }
+  }
+  else if(ngeominfoptrs>0){
     DrawGeom(DRAW_TRANSPARENT, GEOM_STATIC);
     DrawGeom(DRAW_TRANSPARENT, GEOM_DYNAMIC);
   }
 
-  if(showiso == 1){
+  if(showiso == 1 && geom_bounding_box_mousedown==0){
     CLIP_VALS;
     DrawIso(DRAW_TRANSPARENT);
   }
@@ -459,7 +474,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw 3D smoke +++++++++++++++++++++++++ */
 
-  if(show3dsmoke == 1){
+  if(show3dsmoke == 1 && geom_bounding_box_mousedown==0){
     CLIP_VALS;
 #ifdef pp_SMOKETEST
     if(usegpu==0&&hrrpuv_max_blending==1){
@@ -475,7 +490,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw vol smoke +++++++++++++++++++++++++ */
 
-  if(showvolrender == 1&&show3dsmoke==0){
+  if(showvolrender == 1 && show3dsmoke==0 && geom_bounding_box_mousedown==0){
     CLIP_VALS;
     DrawVolSmokeFrame();
   }
@@ -485,7 +500,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   if(smoke_test == 1)DrawSmokeTest();
 #endif
 
-  if(active_smokesensors == 1 && show_smokesensors != SMOKESENSORS_HIDDEN){
+  if(active_smokesensors == 1 && show_smokesensors != SMOKESENSORS_HIDDEN && geom_bounding_box_mousedown==0){
     CLIP_VALS;
     GetSmokeSensors();
 
@@ -494,7 +509,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw device plots +++++++++++++++++++++++++ */
 
-  if(mode==DRAWSCENE){
+  if(mode==DRAWSCENE && geom_bounding_box_mousedown==0){
     if((show_hrrpuv_plot==1&&hrrinfo!=NULL)||showdevice_plot==DEVICE_PLOT_SHOW_ALL||showdevice_plot==DEVICE_PLOT_SHOW_SELECTED){
       DrawDevicePlots();
     }
@@ -513,7 +528,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw boundary files +++++++++++++++++++++++++ */
 
-  if(showpatch == 1){
+  if(showpatch == 1 && geom_bounding_box_mousedown==0){
     CLIP_VALS;
     DrawBoundaryFrame(DRAW_TRANSPARENT);
   }
@@ -523,7 +538,9 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   if((show_node_slices_and_vectors == 1 || show_cell_slices_and_vectors==1) || (showslice == 1 && use_transparency_data == 1)){
     if(nslice_loaded>0||ngeomslice_loaded>0){
       CLIP_VALS;
-      DrawSliceFrame();
+      if(geom_bounding_box_mousedown==0){
+        DrawSliceFrame();
+      }
       SNIFF_ERRORS("after DrawSliceFrame");
     }
   }
@@ -533,12 +550,14 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   //  DrawDemo(20,20);
   //  DrawDemo2(1);
   CLIP_GEOMETRY;
-  DrawBlockages(mode, DRAW_TRANSPARENT);
+  if(geom_bounding_box_mousedown==0){
+    DrawBlockages(mode, DRAW_TRANSPARENT);
+  }
   SNIFF_ERRORS("after drawBlokcages");
 
   /* ++++++++++++++++++++++++ draw vector slice files +++++++++++++++++++++++++ */
 
-  if(showvslice == 1){
+  if(showvslice == 1 && geom_bounding_box_mousedown==0){
     CLIP_VALS;
     DrawVSliceFrame();
   }
@@ -546,7 +565,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw plot3d files +++++++++++++++++++++++++ */
 
-  if(showplot3d == 1){
+  if(showplot3d == 1 && geom_bounding_box_mousedown==0){
     CLIP_VALS;
     DrawPlot3dFrame();
   }

@@ -78,6 +78,13 @@ typedef struct _tetdata {
   edgedata *edges[4];
 } tetdata;
 
+/* --------------------------  volfacedata ------------------------------------ */
+
+typedef struct _volfacedata {
+  tetdata *vol;
+  int faceindex;
+} volfacedata;
+
 /* --------------------------  geomlistdata ------------------------------------ */
 
 typedef struct _geomlistdata {
@@ -106,6 +113,7 @@ typedef struct _geomobjdata {
 
 typedef struct _geomdata {
   char *file, *file2, *topo_file;
+  int read_status;
   int cache_defined;
   int memory_id, loaded, display;
   int is_terrain;
@@ -128,28 +136,6 @@ typedef struct _geomdiagdata {
   char *geomfile, *geomdatafile;
   geomdata *geom;
 } geomdiagdata;
-
-
-#ifdef pp_BINGEOM
-
-typedef struct _bgeomdata {
-  char *file;
-  int geom_type;
-  int n_verts, n_faces, n_surf_ids;
-  float *verts;
-  int *faces, *surfs;
-} bgeomdata;
-
-/* --------------------------  bingeomdata ------------------------------------ */
-
-typedef struct _bingeomdata {
-  char *geom_id, **surf_ids;
-  int *surf_indexes, nsurf_ids;
-  int display;
-  bgeomdata geom_input, geom_fds;
-} bingeomdata;
-#endif
-
 
 /* --------------------------  screendata ------------------------------------ */
 
@@ -959,10 +945,8 @@ typedef struct _device {
   char label[30], csvlabel[30], *labelptr;
   char quantity[30], unit[30];
   float *times, *vals;
-#ifdef pp_DEVICE_AVG
   float *vals_orig;
   int update_avg;
-#endif
   int *valids;
   int ival,nvals,type2,type2vis;
   int in_devc_csv;
@@ -1183,7 +1167,7 @@ typedef struct _partdata {
   int nclasses;
   partclassdata **partclassptr;
   part5data *data5;
-  histogramdata **histograms; 
+  histogramdata **histograms;
   int bounds_set;
   float *global_min, *global_max;
   float *valmin_fds, *valmax_fds;   // read in from .bnd files
@@ -1217,13 +1201,9 @@ typedef struct _menudata {
 typedef struct _hrrdata {
   char *file, hrrlabel[256];
   int loaded, display, *timeslist, itime;
-#ifdef pp_DEVICE_AVG
   int update_avg;
-#endif
   float *times_csv, *times, *hrrval_csv, *hrrval;
-#ifdef pp_DEVICE_AVG
   float *hrrval_orig;
-#endif
   int ntimes, ntimes_csv;
 } hrrdata;
 
@@ -1450,7 +1430,7 @@ typedef struct _patchdata {
   char *file,*size_file,*bound_file;
   int have_bound_file;
   char *comp_file, *reg_file;
-  char *geomfile, *filetype_label;
+  char *filetype_label;
   geomdata *geominfo;
   int *geom_offsets;
   //int *patchsize;

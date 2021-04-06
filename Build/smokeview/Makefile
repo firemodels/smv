@@ -174,7 +174,7 @@ WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 # ------------- intel_win_64_db ----------------
 
 intel_win_64_db : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
-intel_win_64_db : FFLAGS    = /Od /iface:stdref /fpp -D WIN32 /Zi /nologo /fpscomp:general /debug:full /extend_source:132 /warn:unused /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f08
+intel_win_64_db : FFLAGS    = /Od /iface:stdref /fpp -D WIN32 /Zi /nologo /fpscomp:general /debug:full /extend_source:132 /warn:unused /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f18
 intel_win_64_db : CFLAGS    = /Od /W4 /debug:full /Zi -D _DEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(GLUT),freeglut)
 intel_win_64_db : CFLAGS   += -D FREEGLUT_STATIC
@@ -194,7 +194,7 @@ intel_win_64 : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokevi
 ifeq ($(LUA_SCRIPTING),true)
 intel_win_64 : INC += -I $(SOURCE_DIR)/lua-5.3.1/src
 endif
-intel_win_64 : FFLAGS    = -O2 /iface:stdref /fpp -D WIN32 /fpscomp:general
+intel_win_64 : FFLAGS    = -O2 /iface:stdref /fpp -D WIN32 /fpscomp:general /stand:f18
 intel_win_64 : CFLAGS    = -O1 -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(GLUT),freeglut)
 intel_win_64 : CFLAGS   += -D FREEGLUT_STATIC
@@ -268,7 +268,7 @@ INTEL_LIBS_LINUX =$(IFORT_COMPILER_LIB)/libifcore.a $(IFORT_COMPILER_LIB)/libifp
 # ------------- intel_linux_64 ----------------
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
-intel_linux_64 : FFLAGS    = -O0 -traceback -m64 -static-intel -fpp $(SMV_PROFILEFLAG)
+intel_linux_64 : FFLAGS    = -O0 -traceback -m64 -static-intel -fpp -stand:f18 $(SMV_PROFILEFLAG)
 intel_linux_64 : CFLAGS    = -O0 -traceback -m64 -static-intel -D pp_LINUX $(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)
@@ -287,7 +287,7 @@ intel_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 
 # ------------- intel_linux_64_db ----------------
 
-intel_linux_64_db : FFLAGS    = -O0 -m64 -static-intel -traceback -g -fpe0 -fltconsistency -WB -fpp -stand:f08 $(SMV_PROFILEFLAG)
+intel_linux_64_db : FFLAGS    = -O0 -m64 -static-intel -traceback -g -fpe0 -fltconsistency -WB -fpp -stand:f18 $(SMV_PROFILEFLAG)
 intel_linux_64_db : CFLAGS    = -O0 -g -m64 -static-intel $(SMV_TESTFLAG) -D _DEBUG -D pp_LINUX $(SMV_PROFILEFLAG) -traceback -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64_db : LFLAGS    = -m64 -static-intel $(INTEL_LIBS_LINUX) -traceback $(SMV_PROFILEFLAG)
 intel_linux_64_db : CC        = icc
@@ -384,7 +384,7 @@ INTEL_LIBS_OSX = $(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libif
 
 # ------------- intel_osx_64 ----------------
 
-intel_osx_64 : FFLAGS    = -O0 -m64 -traceback -static-intel -fpp -D pp_OSX  -mmacosx-version-min=10.9 -stand:f08
+intel_osx_64 : FFLAGS    = -O0 -m64 -traceback -static-intel -fpp -D pp_OSX  -mmacosx-version-min=10.9 -stand:f18
 intel_osx_64 : CFLAGS    = -O0 -m64 -I $(SOURCE_DIR)/glui_gl -traceback -static-intel -D pp_OSX $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO) -mmacosx-version-min=10.9
 intel_osx_64 : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)
@@ -414,7 +414,7 @@ intel_osx_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 
 # ------------- intel_osx_64_db ----------------
 
-intel_osx_64_db : FFLAGS    = -O0 -g -m64 -traceback -static-intel -fpp     -D pp_OSX  -mmacosx-version-min=10.9 -stand:f08
+intel_osx_64_db : FFLAGS    = -O0 -g -m64 -traceback -static-intel -fpp     -D pp_OSX  -mmacosx-version-min=10.9 -stand:f18
 intel_osx_64_db : CFLAGS    = -O0 -g -m64 -I $(SOURCE_DIR)/glui_gl -traceback -static-intel -D _DEBUG -D pp_OSX $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO) -mmacosx-version-min=10.9
 intel_osx_64_db : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)

@@ -52,7 +52,7 @@ void UpdateTimeLabels(void){
       }
     }
     if(dt<0.0)dt = -dt;
-    timevalptr = Time2TimeLabel(time0, dt, timeval);
+    timevalptr = Time2TimeLabel(time0, dt, timeval, force_fixedpoint);
     strcpy(timelabel, "");
     if(visFrameTimelabel==1)strcat(timelabel, "Time: ");
     strcat(timelabel, timevalptr);
@@ -2110,7 +2110,7 @@ void DrawHorizontalColorbarRegLabels(void){
         partcolorlabel_ptr = partcolorlabel;
         val = tttmin + i*partrange / (nrgb - 2);
         val = ScaleFloat2Float(val, partfactor);
-        Float2String(partcolorlabel_ptr, val, ncolorlabel_digits);
+        Float2String(partcolorlabel_ptr, val, ncolorlabel_digits, force_fixedpoint);
       }
       OutputBarText(horiz_position, 0.0, foreground_color, partcolorlabel_ptr);
     }
@@ -2179,11 +2179,11 @@ void DrawHorizontalColorbarRegLabels(void){
           val = tttmin + i*slicerange / (nrgb - 2);
           ScaleFloat2String(val, slicecolorlabel, slicefactor);
           slicecolorlabel_ptr = slicecolorlabel;
-          Float2String(slicecolorlabel_ptr, val, ncolorlabel_digits);
+          Float2String(slicecolorlabel_ptr, val, ncolorlabel_digits, force_fixedpoint);
         }
         else{
           slicecolorlabel_ptr = slicecolorlabel;
-          Float2String(slicecolorlabel_ptr, sb->colorvalues[i+1], ncolorlabel_digits);
+          Float2String(slicecolorlabel_ptr, sb->colorvalues[i+1], ncolorlabel_digits, force_fixedpoint);
         }
         OutputBarText(horiz_position, 0.0, foreground_color, slicecolorlabel_ptr);
       }
@@ -2234,7 +2234,7 @@ void DrawHorizontalColorbarRegLabels(void){
         val = colorvaluespatch[i+1];
       }
       val = ScaleFloat2Float(val, patchfactor);
-      Float2String(boundary_colorlabel, val, ncolorlabel_digits);
+      Float2String(boundary_colorlabel, val, ncolorlabel_digits, force_fixedpoint);
       boundary_colorlabel_ptr = boundary_colorlabel;
       OutputBarText(horiz_position, 0.0, foreground_color, boundary_colorlabel_ptr);
     }
@@ -2334,7 +2334,7 @@ void DrawHorizontalColorbarRegLabels(void){
         }
         plot3dcolorlabel_ptr = plot3dcolorlabel;
         ScaleFloat2String(val, plot3dcolorlabel, plot3dfactor);
-        Float2String(plot3dcolorlabel, val, ncolorlabel_digits);
+        Float2String(plot3dcolorlabel, val, ncolorlabel_digits, force_fixedpoint);
         OutputBarText(horiz_position, 0.0, foreground_color, plot3dcolorlabel_ptr);
       }
     }
@@ -2814,7 +2814,7 @@ void DrawVerticalColorbarRegLabels(void){
         partcolorlabel_ptr = partcolorlabel;
         val = tttmin + i*partrange / (nrgb - 2);
         val = ScaleFloat2Float(val, partfactor);
-        Float2String(partcolorlabel_ptr, val, ncolorlabel_digits);
+        Float2String(partcolorlabel_ptr, val, ncolorlabel_digits, force_fixedpoint);
       }
       OutputBarText(0.0, vert_position, foreground_color, partcolorlabel_ptr);
     }
@@ -2847,7 +2847,7 @@ void DrawVerticalColorbarRegLabels(void){
       if(ABS(colorbar_shift-1.0)>0.0001){
         shifted_colorbar_index = SHIFT_VAL(global_colorbar_index, 0, 255, colorbar_shift);
       }
-      Float2String(slicelabel, tttval, ncolorlabel_digits);
+      Float2String(slicelabel, tttval, ncolorlabel_digits, force_fixedpoint);
       slicecolorlabel_ptr = slicelabel;
       if(sliceflag == 1){
         ScaleFloat2String(tttval, slicecolorlabel, slicefactor);
@@ -2910,7 +2910,7 @@ void DrawVerticalColorbarRegLabels(void){
         if(ABS(colorbar_shift-1.0)>0.0001){
           val = SHIFT_VAL(val,valmin,valmax,1.0/colorbar_shift);
         }
-        Float2String(slicecolorlabel, val, ncolorlabel_digits);
+        Float2String(slicecolorlabel, val, ncolorlabel_digits, force_fixedpoint);
         slicecolorlabel_ptr = slicecolorlabel;
         OutputBarText(0.0, vert_position, foreground_color, slicecolorlabel_ptr);
       }
@@ -2963,7 +2963,7 @@ void DrawVerticalColorbarRegLabels(void){
         val = colorvaluespatch[i+1];
       }
       val = ScaleFloat2Float(val, patchfactor);
-      Float2String(boundary_colorlabel, val, ncolorlabel_digits);
+      Float2String(boundary_colorlabel, val, ncolorlabel_digits, force_fixedpoint);
       boundary_colorlabel_ptr = boundary_colorlabel;
       OutputBarText(0.0, vert_position, foreground_color, boundary_colorlabel_ptr);
     }
@@ -3012,7 +3012,7 @@ void DrawVerticalColorbarRegLabels(void){
         val = colorvalueszone[i+1];
       }
       val = ScaleFloat2Float(val, zonefactor);
-      Float2String(zonecolorlabel, val, ncolorlabel_digits);
+      Float2String(zonecolorlabel, val, ncolorlabel_digits, force_fixedpoint);
       zonecolorlabel_ptr = zonecolorlabel;
       OutputBarText(0.0, vert_position, foreground_color, zonecolorlabel_ptr);
     }
@@ -3066,7 +3066,7 @@ void DrawVerticalColorbarRegLabels(void){
         }
         plot3dcolorlabel_ptr = plot3dcolorlabel;
         ScaleFloat2String(val, plot3dcolorlabel, plot3dfactor);
-        Float2String(plot3dcolorlabel, val, ncolorlabel_digits);
+        Float2String(plot3dcolorlabel, val, ncolorlabel_digits, force_fixedpoint);
         OutputBarText(0.0, vert_position, foreground_color, plot3dcolorlabel_ptr);
       }
     }

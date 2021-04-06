@@ -34,6 +34,9 @@
 #define SURF_SET              49
 #define SURF_GET              50
 
+GLUI_Checkbox *CHECKBOX_geom_bounding_box      = NULL;
+GLUI_Checkbox *CHECKBOX_geom_bounding_box_auto = NULL;
+GLUI_Checkbox *CHECKBOX_cfaces = NULL;
 GLUI_Checkbox *CHECKBOX_show_zlevel = NULL;
 GLUI_Checkbox *CHECKBOX_surface_solid=NULL, *CHECKBOX_surface_outline=NULL, *CHECKBOX_surface_points = NULL;
 GLUI_Checkbox *CHECKBOX_geom_force_transparent = NULL;
@@ -49,6 +52,7 @@ GLUI_Checkbox *CHECKBOX_show_texture_1dimage = NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_2dimage = NULL;
 
 GLUI_RadioGroup *RADIO_select_geom = NULL;
+GLUI_RadioGroup *RADIO_cface_type = NULL;
 
 GLUI_StaticText *STATIC_vertx1=NULL;
 GLUI_StaticText *STATIC_verty1=NULL;
@@ -93,8 +97,10 @@ GLUI_Spinner *SPINNER_geom_triangle_rgb[3] = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_surf_rgb[3]          = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_surf_axis[3]         = {NULL, NULL, NULL};
 
-#define VOL_SHOWHIDE 3
-#define SELECT_GEOM  4
+#define VOL_SHOWHIDE           3
+#define SELECT_GEOM            4
+#define VOL_USE_CFACES         5
+#define GEOM_BOUNDING_BOX      6
 
 GLUI *glui_geometry=NULL;
 
@@ -110,6 +116,7 @@ GLUI_EditText *EDIT_xmax=NULL, *EDIT_ymax=NULL, *EDIT_zmax=NULL;
 GLUI_Listbox *LIST_obst_surface[7]={NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 GLUI_Listbox *LIST_geom_surface=NULL;
 
+GLUI_Panel *PANEL_cfaces = NULL;
 GLUI_Panel *PANEL_obj_select=NULL,*PANEL_faces=NULL,*PANEL_triangles=NULL,*PANEL_volumes=NULL,*PANEL_geom_showhide;
 GLUI_Panel *PANEL_properties_surf = NULL;
 GLUI_Panel *PANEL_properties_vertex = NULL;
@@ -149,6 +156,28 @@ extern "C" void UpdateWhereFaceVolumes(void){
   if(CHECKBOX_faces_exterior != NULL)CHECKBOX_faces_exterior->set_int_val(show_faces_exterior);
   if(CHECKBOX_volumes_interior != NULL)CHECKBOX_volumes_interior->set_int_val(show_volumes_interior);
   if(CHECKBOX_volumes_exterior != NULL)CHECKBOX_volumes_exterior->set_int_val(show_volumes_exterior);
+}
+
+/* ------------------ UpdateGluiCfaces ------------------------ */
+
+extern "C" void UpdateGluiCfaces(void){
+  glui_use_cfaces = use_cfaces;
+  if(CHECKBOX_cfaces!=NULL)CHECKBOX_cfaces->set_int_val(use_cfaces);
+  if(PANEL_cfaces!=NULL){
+    if(use_cfaces==1){
+      PANEL_cfaces->enable();
+    }
+    else{
+      PANEL_cfaces->disable();
+    }
+  }
+}
+
+/* ------------------ UpdateGeomBoundingBox ------------------------ */
+
+extern "C" void UpdateGeomBoundingBox(void){
+  if(CHECKBOX_geom_bounding_box!=NULL)CHECKBOX_geom_bounding_box->set_int_val(geom_bounding_box_always);
+  if(CHECKBOX_geom_bounding_box_auto!=NULL)CHECKBOX_geom_bounding_box_auto->set_int_val(geom_bounding_box_auto);
 }
 
 /* ------------------ UpdateVisAxisLabels ------------------------ */
@@ -475,6 +504,16 @@ extern "C" void GluiGeometrySetup(int main_window){
     CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "solid", &show_faces_shaded, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_surface_points = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "points", &show_geom_verts, VOL_SHOWHIDE, VolumeCB);
+    CHECKBOX_geom_bounding_box      = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "bounding box(always)",     &geom_bounding_box_always,  GEOM_BOUNDING_BOX, VolumeCB);
+    CHECKBOX_geom_bounding_box_auto = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "bounding box(mousedown)",  &geom_bounding_box_auto,    GEOM_BOUNDING_BOX, VolumeCB);
+    if(ncgeominfo>0){
+      CHECKBOX_cfaces = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "cfaces", &glui_use_cfaces, VOL_USE_CFACES, VolumeCB);
+      PANEL_cfaces = glui_geometry->add_panel_to_panel(PANEL_triangles, "cfaces");
+      RADIO_cface_type = glui_geometry->add_radiogroup_to_panel(PANEL_cfaces, &geom_cface_type);
+      glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "triangles");
+      glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "polygons");
+      VolumeCB(VOL_USE_CFACES);
+    }
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "line width", GLUI_SPINNER_FLOAT, &geom_linewidth);
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "point size", GLUI_SPINNER_FLOAT, &geom_pointsize);
     PANEL_geom_transparency = glui_geometry->add_panel_to_panel(PANEL_triangles, "transparency");
@@ -483,7 +522,6 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_geom_transparency->set_float_limits(0.0, 1.0);
 
     glui_geometry->add_column_to_panel(PANEL_group1, false);
-
 
     PANEL_volumes = glui_geometry->add_panel_to_panel(PANEL_group1, "volumes");
     CHECKBOX_volumes_interior = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "interior", &show_volumes_interior);
@@ -808,6 +846,14 @@ extern "C" void VolumeCB(int var){
     terrain_show_geometry_outline = show_faces_outline;
     terrain_show_geometry_points  = show_geom_verts;
     terrain_show_geometry_surface = show_faces_shaded;
+    updatemenu=1;
+    break;
+  case VOL_USE_CFACES:
+    blocklocation--;
+    use_cfaces = 1 - glui_use_cfaces;
+    Keyboard('q',FROM_SMOKEVIEW);
+    break;
+  case GEOM_BOUNDING_BOX:
     updatemenu=1;
     break;
   default:

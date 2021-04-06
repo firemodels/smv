@@ -1019,9 +1019,11 @@ void MouseCB(int button, int state, int xm, int ym){
     colorbar_splitdrag=0;
     GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
     UpdateTrainerMoves();
+    geom_bounding_box_mousedown = 0;
     return;
   }
 
+  if(geom_bounding_box_auto==1)geom_bounding_box_mousedown = 1;
   mouse_down=1;
 
   // check for double click for translating/rotating 3D slice plane
@@ -1754,8 +1756,11 @@ void Keyboard(unsigned char key, int flag){
         UpdateCurrentMesh(gbsave);
       }
       break;
-    case 'b':
     case 'B':
+      geom_bounding_box_auto = 1-geom_bounding_box_auto;
+      UpdateGeomBoundingBox();
+      break;
+    case 'b':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
 #ifdef pp_DIALOG_SHORTCUTS
@@ -2213,6 +2218,8 @@ void Keyboard(unsigned char key, int flag){
       update_chop_colors = 1;
       break;
     case 'q':
+      use_cfaces = 1 - use_cfaces;
+      UpdateGluiCfaces();
       blocklocation++;
       if((ncadgeom==0&&blocklocation>BLOCKlocation_exact)||
                        blocklocation>BLOCKlocation_cad){

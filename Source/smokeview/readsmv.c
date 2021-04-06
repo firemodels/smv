@@ -52,9 +52,7 @@ void ReadHRR(int flag, int *errorcode){
     FREEMEMORY(hrrinfo->times);
     FREEMEMORY(hrrinfo->hrrval_csv);
     FREEMEMORY(hrrinfo->hrrval);
-#ifdef pp_DEVICE_AVG
     FREEMEMORY(hrrinfo->hrrval_orig);
-#endif
     FREEMEMORY(hrrinfo->timeslist);
   }
   FREEMEMORY(hrrinfo);
@@ -67,9 +65,7 @@ void ReadHRR(int flag, int *errorcode){
   hrrinfo->timeslist = NULL;
   hrrinfo->hrrval_csv = NULL;
   hrrinfo->hrrval = NULL;
-#ifdef pp_DEVICE_AVG
   hrrinfo->hrrval_orig = NULL;
-#endif
   hrrinfo->ntimes_csv = 0;
   hrrinfo->loaded = 1;
   hrrinfo->display = display;
@@ -1506,10 +1502,8 @@ void InitDevice(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float
   }
   devicei->times          = NULL;
   devicei->vals           = NULL;
-#ifdef pp_DEVICE_AVG
   devicei->vals_orig      = NULL;
   devicei->update_avg     = 0;
-#endif
   devicei->nstate_changes = 0;
   devicei->istate_changes = 0;
   devicei->act_times      = NULL;
@@ -1583,10 +1577,8 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   devicei->params=NULL;
   devicei->times=NULL;
   devicei->vals=NULL;
-#ifdef pp_DEVICE_AVG
   devicei->vals = NULL;
   devicei->update_avg = 0;
-#endif
   devicei->target_index = -1;
   devicei->global_valmin = 1.0;
   devicei->global_valmax = 0.0;
@@ -1717,10 +1709,8 @@ void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
   devicei->params = NULL;
   devicei->times = NULL;
   devicei->vals = NULL;
-#ifdef pp_DEVICE_AVG
   devicei->vals_orig = NULL;
   devicei->update_avg = 0;
-#endif
   fgets(buffer, 255, stream);
   TrimCommas(buffer);
 
@@ -3149,22 +3139,6 @@ int CreateNullLabel(flowlabels *flowlabel){
   return 0;
 }
 
-#ifdef pp_BINGEOM
-/* ------------------ GetSurfaceIndex ------------------------ */
-
-int GetSurfaceIndex(char *label){
-  int i;
-
-  for(i = 0; i<nsurfinfo; i++){
-    surfdata *surfi;
-
-    surfi = surfinfo+i;
-    if(strcmp(surfi->surfacelabel, label)==0)return i;
-  }
-  return -1;
-}
-#endif
-
 /* ------------------ GetSurface ------------------------ */
 
 surfdata *GetSurface(char *label){
@@ -4433,10 +4407,10 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     patchi->file = patchi->reg_file;
   }
 
-  patchi->geomfile = NULL;
   patchi->geominfo = NULL;
   if(patchi->structured==NO){
     int igeom;
+    char *geomfile;
 
     if(slicegeom==1){
       strcpy(buffer, buffers[2]);
@@ -4447,24 +4421,28 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
         return RETURN_BREAK;
       }
     }
-    bufferptr = TrimFrontBack(buffer);
-    NewMemory((void **)&patchi->geomfile, strlen(bufferptr)+1);
-    strcpy(patchi->geomfile, bufferptr);
-    for(igeom = 0; igeom<ngeominfo; igeom++){
-      geomdata *geomi;
 
-      geomi = geominfo+igeom;
-      if(strcmp(geomi->file, patchi->geomfile)==0){
-        patchi->geominfo = geomi;
-        if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
-          geomi->geomtype = GEOM_BOUNDARY;
-          geomi->fdsblock = FDSBLOCK;
+    if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&ncgeominfo>0){
+      patchi->geominfo = cgeominfo+blocknumber;
+    }
+    else{
+      geomfile = TrimFrontBack(buffer);
+      for(igeom = 0; igeom<ngeominfo; igeom++){
+        geomdata *geomi;
+
+        geomi = geominfo+igeom;
+        if(strcmp(geomi->file, geomfile)==0){
+          patchi->geominfo = geomi;
+          if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
+            geomi->geomtype = GEOM_BOUNDARY;
+            geomi->fdsblock = FDSBLOCK;
+          }
+          else{
+            geomi->geomtype = GEOM_SLICE;
+            geomi->fdsblock = NOT_FDSBLOCK;
+          }
+          break;
         }
-        else{
-          geomi->geomtype = GEOM_SLICE;
-          geomi->fdsblock = NOT_FDSBLOCK;
-        }
-        break;
       }
     }
   }
@@ -5541,9 +5519,6 @@ int ReadSMV(bufferstreamdata *stream){
 
   FREEMEMORY(fds_title);
 
-  FREEMEMORY(geomdiaginfo);
-  ngeomdiaginfo = 0;
-
   FREEMEMORY(treeinfo);
   ntreeinfo=0;
   for(i=0;i<nterraininfo;i++){
@@ -5595,6 +5570,17 @@ int ReadSMV(bufferstreamdata *stream){
     ngeominfo=0;
   }
 
+  if(ncgeominfo>0){
+    for(i = 0; i<ncgeominfo; i++){
+      geomdata *geomi;
+
+      geomi = cgeominfo+i;
+      FREEMEMORY(geomi->file);
+    }
+    FREEMEMORY(cgeominfo);
+    ncgeominfo = 0;
+  }
+
   FREEMEMORY(tickinfo);
   ntickinfo=0;
   ntickinfo_smv=0;
@@ -5613,10 +5599,6 @@ int ReadSMV(bufferstreamdata *stream){
 
   FREEMEMORY(camera_external_save);
   NewMemory((void **)&camera_external_save,sizeof(cameradata));
-
-  FREEMEMORY(camera_ini);
-  NewMemory((void **)&camera_ini,sizeof(cameradata));
-  camera_ini->defined=0;
 
   FREEMEMORY(camera_current);
   NewMemory((void **)&camera_current,sizeof(cameradata));
@@ -5923,8 +5905,8 @@ int ReadSMV(bufferstreamdata *stream){
       ncsvinfo+=nfiles;
       continue;
     }
-    if(Match(buffer, "GEOMDIAG") == 1){
-      ngeomdiaginfo++;
+    if(Match(buffer, "CGEOM")==1){
+      ncgeominfo++;
       continue;
     }
     if(Match(buffer, "GEOM") == 1 ||
@@ -5933,12 +5915,6 @@ int ReadSMV(bufferstreamdata *stream){
       ngeominfo++;
       continue;
     }
-#ifdef pp_BINGEOM
-    if(Match(buffer, "BINGEOM")==1){
-      nbingeominfo++;
-      continue;
-    }
-#endif
     if(Match(buffer,"PROP") == 1){
       npropinfo++;
       continue;
@@ -6341,12 +6317,10 @@ int ReadSMV(bufferstreamdata *stream){
    NewMemory((void **)&geominfo,ngeominfo*sizeof(geomdata));
    ngeominfo=0;
  }
-#ifdef pp_BINGEOM
- if(nbingeominfo>0){
-   NewMemory((void **)&bingeominfo,nbingeominfo*sizeof(bingeomdata));
-   nbingeominfo=0;
+ if(ncgeominfo>0){
+   NewMemory((void **)&cgeominfo, ncgeominfo*sizeof(geomdata));
+   ncgeominfo = 0;
  }
-#endif
  if(npropinfo>0){
    NewMemory((void **)&propinfo,npropinfo*sizeof(propdata));
    npropinfo=1; // the 0'th prop is the default human property
@@ -6603,11 +6577,6 @@ int ReadSMV(bufferstreamdata *stream){
     npropinfo=1;
   }
 
-  if(ngeomdiaginfo > 0){
-    NewMemory((void **)&geomdiaginfo, ngeomdiaginfo*sizeof(geomdiagdata));
-    ngeomdiaginfo = 0;
-  }
-
 /*
    ************************************************************************
    ************************ start of pass 2 *******************************
@@ -6747,38 +6716,6 @@ int ReadSMV(bufferstreamdata *stream){
       continue;
     }
 
-    /*
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++ GEOMDIAG ++++++++++++++++++++++++++
-    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    */
-    if(Match(buffer, "GEOMDIAG") == 1){
-      geomdiagdata *geomdiagi;
-      char *buffptr;
-
-      geomdiagi = geomdiaginfo + ngeomdiaginfo;
-      ngeomdiaginfo++;
-
-      FGETS(buffer, 255, stream);
-      TrimBack(buffer);
-      buffptr = TrimFront(buffer);
-      NewMemory((void **)&geomdiagi->geomfile, strlen(buffptr) + 1);
-      strcpy(geomdiagi->geomfile, buffptr);
-
-      NewMemory((void **)&geomdiagi->geom, sizeof(geomdata));
-      InitGeom(geomdiagi->geom,GEOM_GEOM,NOT_FDSBLOCK);
-
-      NewMemory((void **)&geomdiagi->geom->file, strlen(buffptr) + 1);
-      strcpy(geomdiagi->geom->file, buffptr);
-
-      FGETS(buffer, 255, stream);
-      TrimBack(buffer);
-      buffptr = TrimFront(buffer);
-      NewMemory((void **)&geomdiagi->geomdatafile, strlen(buffptr) + 1);
-      strcpy(geomdiagi->geomdatafile, buffptr);
-    }
-
-
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++ BOXGEOM ++++++++++++++++++++++++++
@@ -6818,6 +6755,27 @@ int ReadSMV(bufferstreamdata *stream){
     }
 
        /*
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++ CGEOM ++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  */
+    if(Match(buffer, "CGEOM")==1){
+      geomdata *geomi;
+      char *buff2;
+
+      geomi = cgeominfo+ncgeominfo;
+      InitGeom(geomi, GEOM_CGEOM, FDSBLOCK);
+      geomi->memory_id = ++nmemory_ids;
+
+      FGETS(buffer,255,stream);
+      TrimBack(buffer);
+      buff2 = TrimFront(buffer);
+      NewMemory((void **)&geomi->file,strlen(buff2)+1);
+      strcpy(geomi->file,buff2);
+      ncgeominfo++;
+    }
+
+    /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++ GEOM ++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -6945,62 +6903,6 @@ int ReadSMV(bufferstreamdata *stream){
       ngeominfo++;
       continue;
     }
-
-#ifdef pp_BINGEOM
-    if(Match(buffer, "BINGEOM")==1){
-      char *buffptr;
-      bingeomdata *bingeomi;
-      int nsurf_ids = 0;
-      char *file, *geom_id;
-
-      bingeomi = bingeominfo + nbingeominfo;
-      InitBingeom(bingeomi);
-
-      FGETS(buffer, 255, stream);
-      buffptr = TrimFront(buffer);
-      NewMemory((void **)&geom_id, strlen(buffptr)+1);
-      strcpy(geom_id, buffptr);
-      bingeomi->geom_id = geom_id;
-
-      FGETS(buffer,255,stream);
-      buffptr = TrimFront(buffer);
-      NewMemory((void **)&file,strlen(buffptr)+1);
-      strcpy(file,buffptr);
-      bingeomi->geom_input.file = file;
-
-      FGETS(buffer,255,stream);
-      buffptr = TrimFront(buffer);
-      NewMemory((void **)&file,strlen(buffptr)+1);
-      strcpy(file,buffptr);
-      bingeomi->geom_fds.file = file;
-
-      FGETS(buffer, 255, stream);
-      sscanf(buffer, "%i", &nsurf_ids);
-
-      if(nsurf_ids>0){
-        char **surf_ids;
-        int *surf_indexes;
-
-        NewMemory((void **)&surf_ids, nsurf_ids*sizeof(char *));
-        NewMemory((void **)&surf_indexes, nsurf_ids*sizeof(int));
-        for(i = 0; i<nsurf_ids; i++){
-          char *surf;
-
-          FGETS(buffer, 255, stream);
-          buffptr = TrimFront(buffer);
-          NewMemory((void **)&surf, strlen(buffptr)+1);
-          strcpy(surf, buffptr);
-          surf_ids[i] = surf;
-          surf_indexes[i] = -1;
-        }
-        bingeomi->surf_ids = surf_ids;
-        bingeomi->surf_indexes = surf_indexes;
-      }
-
-      nbingeominfo++;
-      continue;
-    }
-#endif
 
     /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -10118,10 +10020,6 @@ typedef struct {
   InitCullGeom(cullgeom);
   InitEvacProp();
 
-#ifdef pp_BINGEOM
-  SetupBingeom();
-#endif
-
   UpdateINIList();
 
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
@@ -10347,7 +10245,11 @@ typedef struct {
 
   UpdateMeshTerrain(); // slow
 
-  ReadAllGeom();
+  START_TIMER(readgeom_time);
+  ReadAllGeomMT();
+  STOP_TIMER(readgeom_time);
+  ClassifyAllGeomMT();
+
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
   GetBoxGeomCorners();
@@ -10586,11 +10488,12 @@ int ReadIni2(char *inifile, int localfile){
       int dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %f %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits);
+      sscanf(buffer, " %i %i %f %i %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits, &force_fixedpoint);
       colorbar_shift = CLAMP(colorbar_shift, COLORBAR_SHIFT_MIN, COLORBAR_SHIFT_MAX);
       if(research_mode==1&&research_mode_override==0)research_mode=0;
       ncolorlabel_digits = CLAMP(ncolorlabel_digits, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
       ONEORZERO(research_mode);
+      ONEORZERO(force_fixedpoint);
       if(research_mode==1&&percentile_mode==1){
         percentile_mode = 0;
         update_percentile_mode = 1;
@@ -10749,8 +10652,10 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
     if(Match(buffer, "GEOMDIAGS") == 1){
+      int dummy;
+
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %i %i %i %i", &structured_isopen, &unstructured_isopen, &show_geometry_diagnostics,
+      sscanf(buffer, " %i %i %i %i %i %i %i", &structured_isopen, &unstructured_isopen, &dummy,
         &highlight_edge0, &highlight_edge1, &highlight_edge2, &highlight_edgeother);
       continue;
     }
@@ -10762,7 +10667,7 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i", &show_volumes_interior, &show_volumes_exterior, &show_volumes_solid, &show_volumes_outline);
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f", &geom_vert_exag, &geom_max_angle);
+      sscanf(buffer, " %f %f %i %i", &geom_vert_exag, &geom_max_angle, &geom_bounding_box_always, &geom_bounding_box_auto);
       continue;
     }
     if(Match(buffer, "SHOWTRIANGLECOUNT") == 1){
@@ -12846,10 +12751,10 @@ int ReadIni2(char *inifile, int localfile){
       char name_ini[32];
       float zoom_in;
       int zoomindex_in;
-      cameradata *ci;
+      cameradata camera_local, *ci;
       char *bufferptr;
 
-      ci = camera_ini;
+      ci = &camera_local;
 
       if(Match(buffer, "VIEWPOINT6") == 1)is_viewpoint6 = 1;
 
@@ -12873,6 +12778,7 @@ int ReadIni2(char *inifile, int localfile){
         eye[1] = ymin_local + eye[1] * xyzmaxdiff_local;
         eye[2] = zmin_local + eye[2] * xyzmaxdiff_local;
       }
+#ifdef pp_ZOOM_INI
       zoom = zoom_in;
       zoomindex = zoomindex_in;
       if(zoomindex != -1){
@@ -12892,6 +12798,7 @@ int ReadIni2(char *inifile, int localfile){
         }
       }
       updatezoommenu = 1;
+#endif
 
       p_type = 0;
       fgets(buffer, 255, stream);
@@ -12955,9 +12862,9 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       TrimBack(buffer);
       bufferptr = TrimFront(buffer);
-      strcpy(camera_ini->name, bufferptr);
+      strcpy(ci->name, bufferptr);
       InitCameraList();
-      InsertCamera(&camera_list_first, camera_ini, bufferptr);
+      InsertCamera(&camera_list_first, ci, bufferptr);
 
       EnableResetSavedView();
       ci->dirty = 1;
@@ -14660,7 +14567,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "PERCENTILEMODE\n");
   fprintf(fileout, " %i\n", percentile_mode);
   fprintf(fileout, "RESEARCHMODE\n");
-  fprintf(fileout, " %i %i %f %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits);
+  fprintf(fileout, " %i %i %f %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint);
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
   fprintf(fileout, "SLICEAVERAGE\n");
@@ -14734,7 +14641,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i\n",
     show_slice_points[0], show_slice_points[1], show_slice_points[2]);
   fprintf(fileout, "GEOMDIAGS\n");
-  fprintf(fileout, " %i %i %i %i %i %i %i\n", structured_isopen, unstructured_isopen, show_geometry_diagnostics,
+  fprintf(fileout, " %i %i %i %i %i %i %i\n", structured_isopen, unstructured_isopen, 0,
     highlight_edge0, highlight_edge1, highlight_edge2, highlight_edgeother);
   fprintf(fileout, "GEOMDOMAIN\n");
   fprintf(fileout, " %i %i\n", showgeom_inside_domain, showgeom_outside_domain);
@@ -14745,7 +14652,7 @@ void WriteIni(int flag,char *filename){
      show_faces_interior, show_faces_exterior, show_faces_shaded, show_faces_outline, smooth_geom_normal,
      geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors);
   fprintf(fileout, " %i %i %i %i\n", show_volumes_interior, show_volumes_exterior, show_volumes_solid, show_volumes_outline);
-  fprintf(fileout, " %f %f\n", geom_vert_exag, geom_max_angle);
+  fprintf(fileout, " %f %f %i %i\n", geom_vert_exag, geom_max_angle, geom_bounding_box_always, geom_bounding_box_auto);
   fprintf(fileout, "GEOMSLICEPROPS\n");
   fprintf(fileout, " %f %f\n", geomslice_linewidth, geomslice_pointsize);
 

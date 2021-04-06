@@ -42,11 +42,11 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
     valmax_normalized = NORMALH(valmax, nmin, nmax);
     median_normalized = NORMALH(histogram->median, nmin, nmax);
   }
-  Float2String(cmin, gmin, ndigits);
-  Float2String(cmedian, histogram->median, ndigits);
-  Float2String(cmax, gmax, ndigits);
-  Float2String(cvalmin, valmin, ndigits);
-  Float2String(cvalmax, valmax, ndigits);
+  Float2String(cmin, gmin, ndigits, force_fixedpoint);
+  Float2String(cmedian, histogram->median, ndigits, force_fixedpoint);
+  Float2String(cmax, gmax, ndigits, force_fixedpoint);
+  Float2String(cvalmin, valmin, ndigits, force_fixedpoint);
+  Float2String(cvalmax, valmax, ndigits, force_fixedpoint);
   cmin_width = (float)GetStringWidth(cmin)/screenWidth;
   cmax_width = (float)GetStringWidth(cmax)/screenWidth;
   median_width = (float)GetStringWidth(cmedian)/screenWidth;
