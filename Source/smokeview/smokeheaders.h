@@ -9,6 +9,10 @@
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
 
+#ifdef pp_DPRINT
+EXTERNCPP void PrintLine(char *tag, int line, float *timer, char *label);
+#endif
+
 EXTERNCPP void DrawGeomBoundingBox(float *boundingbox_color);
 
 EXTERNCPP void UpdateGeomBoundingBox(void);

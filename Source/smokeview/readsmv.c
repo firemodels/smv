@@ -10010,6 +10010,11 @@ typedef struct {
   START_TIMER(wrapup_time);
 
   PRINTF("  wrapping up\n");
+#ifdef pp_DPRINT
+  float timer_readsmv;
+#endif
+
+  INIT_PRINT(timer_readsmv);
   CheckMemory;
   UpdateIsoColors();
   CheckMemory;
@@ -10128,10 +10133,14 @@ typedef struct {
   UpdatePlotxyzAll();
   CheckMemory;
 
+  TIMER_PRINT(timer_readsmv, "time 1");
   UpdateVSlices();
+  TIMER_PRINT(timer_readsmv, "UpdateVSlices");
   if(update_slice==1)return 3;
 
   GenerateSliceMenu(generate_info_from_commandline);
+  TIMER_PRINT(timer_readsmv, "GenerateSliceMenu");
+
   if(generate_info_from_commandline==1){
     GenerateViewpointMenu();
     SMV_EXIT(0);
@@ -10205,7 +10214,11 @@ typedef struct {
       }
     }
   }
+
+  TIMER_PRINT(timer_readsmv, "time 2");
+
   UpdateTerrain(1,vertical_factor); // xxslow
+  TIMER_PRINT(timer_readsmv, "UpdateTerrain");
   UpdateTerrainColors();
   UpdateSmoke3dMenuLabels();
   UpdateVSliceBoundIndexes();
@@ -10215,6 +10228,8 @@ typedef struct {
   UpdateTourMenuLabels();
   SetupCircularTourNodes();
   InitUserTicks();
+  TIMER_PRINT(timer_readsmv, "time 3");
+
   clip_I=ibartemp; clip_J=jbartemp; clip_K=kbartemp;
 
   // define changed_idlist used for blockage editing
@@ -10245,12 +10260,14 @@ typedef struct {
 
   UpdateMeshTerrain(); // slow
 
-  START_TIMER(readgeom_time);
+  TIMER_PRINT(timer_readsmv, "time 4");
   ReadAllGeomMT();
-  STOP_TIMER(readgeom_time);
+  TIMER_PRINT(timer_readsmv, "ReadAllGeomMT");
   ClassifyAllGeomMT();
 
+  TIMER_PRINT(timer_readsmv, "null");
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
+  TIMER_PRINT(timer_readsmv, "UpdateTriangles");
   GetFaceInfo();
   GetBoxGeomCorners();
   if(ngeominfo>0&&auto_terrain==1){
