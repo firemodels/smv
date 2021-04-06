@@ -234,7 +234,7 @@ int InitTerrainVAO(int sizeof_vertices, int sizeof_indices){
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof_indices, terrain_indices, GL_STATIC_DRAW);
 
  #define BUFFER_OFFSET(i) ((void *)(i))
- 
+
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), BUFFER_OFFSET(0));
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9*sizeof(float), BUFFER_OFFSET(6*sizeof(float)));
   glEnableVertexAttribArray(0);
@@ -287,7 +287,10 @@ void DrawTerrainGeom(int option){
   float neutral_color[4] = {0.91, 0.91, 0.76, 1.0};
   int draw_surface = 1, draw_texture=0;
 
-  if(geom_bounding_box_always==1||geom_bounding_box_mousedown==1||terrain_nindices<=0)return;
+  if(geom_bounding_box_always==1||geom_bounding_box_mousedown==1||terrain_nindices<=0){
+    DrawGeomBoundingBox(foregroundcolor);
+    return;
+  }
 
   for(i = 0; i<nterrain_textures; i++){
     texturedata *texti;
