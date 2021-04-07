@@ -32,7 +32,9 @@ void PrintLine(char *filepath, int line, float *timer, char *label){
   if(*timer>0.0){
     if(strcmp(label, "null") != 0){
       STOP_TIMER(*timer);
-      printf("%s/%i/%s %.1f s\n", file, line, label, *timer);
+      if(*timer>0.1){
+        printf("%s/%i/%s %.1f s\n", file, line, label, *timer);
+      }
     }
   }
   START_TIMER(*timer);
