@@ -1949,7 +1949,7 @@ void InitTextures0(void){
     texti->display=0;
     ntextureinfo++;
   }
-  TIMER_PRINT(texture_timer, "null");
+  TIMER_PRINT(texture_timer, "device textures");
 
   if(nterrain_textures>0){
     texturedata *texture_base;
@@ -2026,7 +2026,6 @@ void InitTextures0(void){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     texti->loaded=1;
   }
-  TIMER_PRINT(texture_timer, "texture install");
 
   CheckMemory;
   if(ntextureinfo==0){
@@ -2129,7 +2128,7 @@ void InitTextures0(void){
 #endif
   glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_slicesmokecolormap_01);
 
-  TIMER_PRINT(texture_timer, "texture time 5");
+  TIMER_PRINT(texture_timer, "texture setup");
   CheckMemory;
 
   // define terrain texture
@@ -2175,22 +2174,26 @@ void InitTextures0(void){
       }
     }
   }
-  TIMER_PRINT(texture_timer, "texture time 6");
+  TIMER_PRINT(texture_timer, "terrain texture setup");
 }
 
   /* ------------------ InitTextures ------------------------ */
 
-float InitTextures(int use_graphics_arg){
-  START_TIMER(texture_time);
+void InitTextures(int use_graphics_arg){
+  float total_texture_time;
+
+  INIT_PRINT(total_texture_time);
+  TIMER_PRINT(total_texture_time, "null");
+
+
   UpdateDeviceTextures();
   if(nsurfinfo>0||ndevice_texture_list>0){
-    if(NewMemory((void **)&textureinfo, (nsurfinfo+ndevice_texture_list+nterrain_textures)*sizeof(texturedata))==0)return 2;
+    if(NewMemory((void **)&textureinfo, (nsurfinfo+ndevice_texture_list+nterrain_textures)*sizeof(texturedata))==0)return;
   }
   if(use_graphics_arg==1){
     InitTextures0();
   }
-  STOP_TIMER(texture_time);
-  return texture_time;
+  TIMER_PRINT(total_texture_time, "total texure time");
 }
 
   /* ------------------ UpdateBoundInfo ------------------------ */
@@ -8370,7 +8373,7 @@ int ReadSMV(bufferstreamdata *stream){
 
   // define texture data structures by constructing a list of unique file names from surfinfo and devices
 
-  texture_time = InitTextures(use_graphics);
+ InitTextures(use_graphics);
 
 /*
     Initialize blockage labels and blockage surface labels
@@ -10306,7 +10309,6 @@ typedef struct {
     PRINTF("        pass 5: %.1f s\n", pass5_time);
     PRINTF("all passes: %.1f s\n", processing_time);
 
-    PRINTF("   Texture time: %.1f s\n", texture_time);
     PRINTF("   wrap up: %.1f s\n", wrapup_time);
     PRINTF("\n");
   }

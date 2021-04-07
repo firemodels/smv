@@ -57,7 +57,6 @@ SVEXTERN char movie_basename[256], movie_ssf_script[256], movie_bash_script[256]
 SVEXTERN slicedata SVDECL(*movie_sliceinfo, NULL);
 
 SVEXTERN slicemenudata SVDECL(**slicemenu_sorted, NULL);
-SVEXTERN float SVDECL(texture_time, 0.0);
 SVEXTERN int SVDECL(handle_slice_files, 1);
 SVEXTERN int SVDECL(plot_option, 0);
 SVEXTERN float hrr_valmin, hrr_valmax;
