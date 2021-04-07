@@ -3099,6 +3099,7 @@ edgedata *GetEdge(edgedata *edges, int nedges, int iv1, int iv2){
 void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
   int i, iend;
 
+  if(geomi->geomlistinfo==NULL)return;
   iend = geomi->ntimes;
   if(geom_frame_index!=NULL)iend=1;
 
@@ -3107,6 +3108,7 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
     int nverts, nvolumes, ntriangles;
     int j;
     vertdata *vertbase;
+
 
     geomlisti = geomi->geomlistinfo+i;
     if(i!=-1&&geom_frame_index!=NULL)geomlisti = geomi->geomlistinfo+(*geom_frame_index);
