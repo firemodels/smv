@@ -1908,9 +1908,10 @@ int IsTerrainTexture(texturedata *texti){
 void InitTextures0(void){
   // get texture filename from SURF and device info
   int i;
-  float time1, time2, time3, time4, time5, time6;
+  float texture_timer;
 
-  START_TIMER(time1);
+  INIT_PRINT(texture_timer);
+  TIMER_PRINT(texture_timer, "null");
 
   ntextureinfo = 0;
   for(i=0;i<nsurfinfo;i++){
@@ -1930,9 +1931,8 @@ void InitTextures0(void){
     ntextureinfo++;
     surfi->textureinfo=textureinfo+ntextureinfo-1;
   }
-  STOP_TIMER(time1);
+  TIMER_PRINT(texture_timer, "SURF textures");
 
-  START_TIMER(time2);
   for(i=0;i<ndevice_texture_list;i++){
     char *texturefile;
     texturedata *texti;
@@ -1949,9 +1949,8 @@ void InitTextures0(void){
     texti->display=0;
     ntextureinfo++;
   }
-  STOP_TIMER(time2);
+  TIMER_PRINT(texture_timer, "null");
 
-  START_TIMER(time3);
   if(nterrain_textures>0){
     texturedata *texture_base;
 
@@ -1974,12 +1973,11 @@ void InitTextures0(void){
     FREEMEMORY(terrain_textures);
     terrain_textures = texture_base;
   }
-  STOP_TIMER(time3);
+  TIMER_PRINT(texture_timer, "terrain textures");
 
   // check to see if texture files exist .
   // If so, then convert to OpenGL format
 
-  START_TIMER(time4);
   for(i=0;i<ntextureinfo;i++){
     unsigned char *floortex;
     int texwid, texht;
@@ -2028,14 +2026,13 @@ void InitTextures0(void){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     texti->loaded=1;
   }
-  STOP_TIMER(time4);
+  TIMER_PRINT(texture_timer, "texture install");
 
   CheckMemory;
   if(ntextureinfo==0){
     FREEMEMORY(textureinfo);
   }
 
-  START_TIMER(time5);
   // define colorbar textures
 
  // glActiveTexture(GL_TEXTURE0);
@@ -2132,12 +2129,11 @@ void InitTextures0(void){
 #endif
   glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_slicesmokecolormap_01);
 
-  STOP_TIMER(time5);
+  TIMER_PRINT(texture_timer, "texture time 5");
   CheckMemory;
 
   // define terrain texture
 
-  START_TIMER(time6);
   if(nterrain_textures>0){
     texturedata *tt;
     unsigned char *floortex;
@@ -2179,15 +2175,7 @@ void InitTextures0(void){
       }
     }
   }
-  STOP_TIMER(time6);
-  if(show_startup_timings==1){
-    printf("texture time1=%f\n", time1);
-    printf("texture time2=%f\n", time2);
-    printf("texture time3=%f\n", time3);
-    printf("texture time4=%f\n", time4);
-    printf("texture time5=%f\n", time5);
-    printf("texture time6=%f\n", time6);
-  }
+  TIMER_PRINT(texture_timer, "texture time 6");
 }
 
   /* ------------------ InitTextures ------------------------ */
@@ -10219,10 +10207,9 @@ typedef struct {
   }
 
   TIMER_PRINT(timer_readsmv, "update bound info");
-
   UpdateTerrain(1,vertical_factor); // xxslow
-  TIMER_PRINT(timer_readsmv, "UpdateTerrain");
   UpdateTerrainColors();
+  TIMER_PRINT(timer_readsmv, "UpdateTerrain");
   UpdateSmoke3dMenuLabels();
   UpdateVSliceBoundIndexes();
   UpdateBoundaryMenuLabels();
