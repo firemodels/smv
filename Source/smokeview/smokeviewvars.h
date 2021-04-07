@@ -23,6 +23,7 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(have_geom_triangles, 0);
 SVEXTERN int SVDECL(geom_bounding_box_auto, 0);
 SVEXTERN int SVDECL(force_fixedpoint, 0);
 SVEXTERN int SVDECL(geom_cface_type, 1);
