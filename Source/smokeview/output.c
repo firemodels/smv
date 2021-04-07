@@ -14,6 +14,34 @@
 
 #define DENORMAL(x,i, n, min,max) ((min) + (i)*((max)-(min))/(n))
 #define NORMALH(x,min,max) (((x)-(min))/((max)-(min))   )
+
+/* ------------------ PrintLine ------------------------ */
+
+#ifdef pp_DPRINT
+void PrintLine(char *filepath, int line, float *timer, char *label){
+  char *file;
+
+  file = strrchr(filepath, SEP);
+  if(file==NULL){
+    file = filepath;
+  }
+  else{
+    file++;
+  }
+  if(*timer>0.0){
+    if(strcmp(label, "null") != 0){
+      STOP_TIMER(*timer);
+      printf("%s/%i/%s %.1f s\n", file, line, label, *timer);
+    }
+  }
+  else{
+    printf("%s/%i/%s\n", file, line, label);
+  }
+  START_TIMER(*timer);
+}
+#endif
+
+
   /* ------------------ DrawHistogram ------------------------ */
 
 #define MAXN 201
@@ -442,10 +470,10 @@ void WriteLabels(void){
     tstart_stop = thislabel->tstart_stop;
     xyz = thislabel->xyz;
     rgblabel = thislabel->rgb;
-    fprintf(stream, "%f, %f, %f, %f, %f, %i, %i, %i, %s%s%s\n", 
-            tstart_stop[0], tstart_stop[1], 
-            xyz[0], xyz[1], xyz[2], 
-            rgblabel[0], rgblabel[1], rgblabel[2], 
+    fprintf(stream, "%f, %f, %f, %f, %f, %i, %i, %i, %s%s%s\n",
+            tstart_stop[0], tstart_stop[1],
+            xyz[0], xyz[1], xyz[2],
+            rgblabel[0], rgblabel[1], rgblabel[2],
             quote,TrimFrontBack(thislabel->name),quote
     );
   }

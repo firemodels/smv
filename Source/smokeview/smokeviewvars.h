@@ -23,6 +23,7 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(have_geom_triangles, 0);
 SVEXTERN int SVDECL(geom_bounding_box_auto, 0);
 SVEXTERN int SVDECL(force_fixedpoint, 0);
 SVEXTERN int SVDECL(geom_cface_type, 1);
@@ -409,7 +410,7 @@ SVEXTERN char SVDECL(*file_smokesensors, NULL);
 SVEXTERN int SVDECL(light_faces, 1);
 SVEXTERN char SVDECL(*prog_fullpath, NULL);
 SVEXTERN int SVDECL(nwindrosez_checkboxes, 0);
-SVEXTERN float readgeom_time, startup_time, read_time_elapsed;
+SVEXTERN float startup_time, read_time_elapsed;
 SVEXTERN int SVDECL(fast_startup, 0), SVDECL(lookfor_compressed_slice,1);
 #ifdef pp_GLUTGET
 SVEXTERN int SVDECL(alt_ctrl_key_state, KEY_NONE);

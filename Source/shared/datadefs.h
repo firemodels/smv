@@ -13,6 +13,14 @@
 
 #define ONEORZERO(val) if(val!=0)val=1
 
+#ifdef pp_DPRINT
+#define INIT_PRINT(timer)  (timer=-1.0)
+#define TIMER_PRINT(timer, label) (PrintLine(__FILE__, __LINE__, &timer, #label))
+#else
+#define INIT_PRINT(timer)
+#define TIMER_PRINT(timer, label)
+#endif
+
 #define K2C(T) ((T)-273.15)
 #define C2K(T) ((T)+273.15)
 
@@ -36,10 +44,6 @@
 #define DENORMALIZE_X(x) (xbar0+(x)*xyzmaxdiff)
 #define DENORMALIZE_Y(y) (ybar0+(y)*xyzmaxdiff)
 #define DENORMALIZE_Z(z) (zbar0+(z)*xyzmaxdiff)
-
-#define DENORMALIZE_XX(x) (xbar0+(x)*(xbarORIG-xbar0))
-#define DENORMALIZE_YY(y) (ybar0+(y)*(ybarORIG-ybar0))
-#define DENORMALIZE_ZZ(z) (zbar0+(z)*(zbarORIG-zbar0))
 
 #define VERT_AVG2(v1,v2,vavg) \
   vavg[0]=(v1[0]+v2[0])/2.0;\

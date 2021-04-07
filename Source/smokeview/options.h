@@ -57,6 +57,7 @@
 //#define pp_REMOVE_DUPLICATES     // remove duplicate geometry vertices
 //#define pp_OLD_DISTPOINTBOX      // original algorithm for computing distance between a point and a box
 #define pp_READALLGEOM_MT         // read geometry files in parallel
+//#define pp_DPRINT                // output timer info
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
@@ -122,6 +123,9 @@
 #endif
 #define pp_RENDER360_DEBUG
 #define pp_SNIFF_ERROR
+#ifndef pp_DPRINT
+#define pp_DPRINT
+#endif
 #endif
 
 

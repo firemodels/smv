@@ -890,9 +890,6 @@ int main(int argc, char **argv){
     PRINTF("Time: %.1f s\n", startup_time);
     return 0;
   }
-  if(ngeominfo>0||ncgeominfo>0){
-    PRINTF("Read geometry time: %.1f s\n", readgeom_time);
-  }
   PRINTF("Startup time: %.1f s\n", startup_time);
   PRINTF("\n");
 

@@ -2257,7 +2257,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
 
     GetMinMaxDepth(smv_eyepos, &min_depth, &max_depth);
     if(is_terrain_case==1){
-      fnear = MAX(min_depth-0.15, 0.00001);
+      fnear = MAX(min_depth-0.75, 0.00001);
     }
     else{
       fnear = MAX(min_depth-0.75, 0.001);

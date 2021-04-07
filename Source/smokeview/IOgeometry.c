@@ -531,6 +531,14 @@ void DrawGeom(int flag, int timestate){
   tridata **tris;
   int texture_state = OFF, texture_first=1;
 
+  if(geom_bounding_box_always==1||geom_bounding_box_mousedown==1){
+    if(flag==DRAW_OPAQUE&&timestate==GEOM_STATIC){
+      if(have_geom_triangles==1){
+        DrawGeomBoundingBox(NULL);
+      }
+    }
+    return;
+  }
   if(flag == DRAW_OPAQUE){
     ntris=nopaque_triangles;
     tris=opaque_triangles;
@@ -540,12 +548,6 @@ void DrawGeom(int flag, int timestate){
     tris=transparent_triangles;
   }
   if(ntris==0&&show_faces_shaded==1&&show_faces_outline==0)return;
-
-  if(geom_bounding_box_always==1||geom_bounding_box_mousedown==1){
-    if(flag!=DRAW_OPAQUE||timestate!=GEOM_STATIC)return;
-    DrawGeomBoundingBox(NULL);
-    return;
-  }
 
   if(ntris>0&&timestate==GEOM_STATIC){
     float *color;
@@ -4456,13 +4458,13 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
 
   if(loaded_isomesh!=NULL)showlevels=loaded_isomesh->showlevels;
 
+  have_geom_triangles = 0;
   for(iter = 0; iter < 2; iter++){
     CheckMemory;
     count_transparent = 0;
     count_opaque = 0;
     ntransparent_triangles = count_transparent;
     nopaque_triangles = count_opaque;
-    if(geom_bounding_box_always==1||geom_bounding_box_mousedown==1)continue;
     for(i = 0; i < ngeominfoptrs; i++){
       geomdata *geomi;
 
@@ -4471,6 +4473,8 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
       // reject unwanted geometry
 
       if(auto_terrain==1&&i==0)continue;
+      if(geomi->is_terrain==1)continue;
+      have_geom_triangles = 1;
       if( (geomi->fdsblock == NOT_FDSBLOCK && geomi->geomtype!=GEOM_ISO)|| geomi->patchactive == 1)continue;
       for(itime = 0; itime < 2; itime++){
         geomlistdata *geomlisti;
