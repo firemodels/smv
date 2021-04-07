@@ -45,10 +45,6 @@
 #define DENORMALIZE_Y(y) (ybar0+(y)*xyzmaxdiff)
 #define DENORMALIZE_Z(z) (zbar0+(z)*xyzmaxdiff)
 
-#define DENORMALIZE_XX(x) (xbar0+(x)*(xbarORIG-xbar0))
-#define DENORMALIZE_YY(y) (ybar0+(y)*(ybarORIG-ybar0))
-#define DENORMALIZE_ZZ(z) (zbar0+(z)*(zbarORIG-zbar0))
-
 #define VERT_AVG2(v1,v2,vavg) \
   vavg[0]=(v1[0]+v2[0])/2.0;\
   vavg[1]=(v1[1]+v2[1])/2.0;\
