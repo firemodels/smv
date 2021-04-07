@@ -21,7 +21,8 @@
 void PrintLine(char *filepath, int line, float *timer, char *label){
   char *file;
 
-  file = strrchr(filepath, SEP);
+  file = strrchr(filepath, '\\');
+  if(file==NULL)file = strrchr(filepath, '/');
   if(file==NULL){
     file = filepath;
   }
@@ -33,9 +34,6 @@ void PrintLine(char *filepath, int line, float *timer, char *label){
       STOP_TIMER(*timer);
       printf("%s/%i/%s %.1f s\n", file, line, label, *timer);
     }
-  }
-  else{
-    printf("%s/%i/%s\n", file, line, label);
   }
   START_TIMER(*timer);
 }

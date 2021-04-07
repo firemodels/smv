@@ -10133,7 +10133,7 @@ typedef struct {
   UpdatePlotxyzAll();
   CheckMemory;
 
-  TIMER_PRINT(timer_readsmv, "time 1");
+  TIMER_PRINT(timer_readsmv, "null");
   UpdateVSlices();
   TIMER_PRINT(timer_readsmv, "UpdateVSlices");
   if(update_slice==1)return 3;
@@ -10166,6 +10166,7 @@ typedef struct {
     }
   }
 
+  TIMER_PRINT(timer_readsmv, "null");
   MakeIBlankCarve();
   MakeIBlankSmoke3D();
   MakeIBlankAll();
@@ -10177,7 +10178,9 @@ typedef struct {
   LOCK_IBLANK
   SetVentDirs();
   UNLOCK_IBLANK
+  TIMER_PRINT(timer_readsmv, "make blanks");
   UpdateFaces();
+  TIMER_PRINT(timer_readsmv, "UpdateFaces");
 
   xcenGLOBAL=xbar/2.0;  ycenGLOBAL=ybar/2.0; zcenGLOBAL=zbar/2.0;
   xcenCUSTOM=xbar/2.0;  ycenCUSTOM=ybar/2.0; zcenCUSTOM=zbar/2.0;
@@ -10215,7 +10218,7 @@ typedef struct {
     }
   }
 
-  TIMER_PRINT(timer_readsmv, "time 2");
+  TIMER_PRINT(timer_readsmv, "update bound info");
 
   UpdateTerrain(1,vertical_factor); // xxslow
   TIMER_PRINT(timer_readsmv, "UpdateTerrain");
@@ -10228,7 +10231,7 @@ typedef struct {
   UpdateTourMenuLabels();
   SetupCircularTourNodes();
   InitUserTicks();
-  TIMER_PRINT(timer_readsmv, "time 3");
+  TIMER_PRINT(timer_readsmv, "update menu labels");
 
   clip_I=ibartemp; clip_J=jbartemp; clip_K=kbartemp;
 
@@ -10253,14 +10256,14 @@ typedef struct {
     nchanged_idlist=ntotal;
   }
 
+  TIMER_PRINT(timer_readsmv, "null");
   InitNabors();
   InitVolRender();
   InitVolRenderSurface(FIRSTCALL);
   radius_windrose = 0.2*xyzmaxdiff;
 
   UpdateMeshTerrain(); // slow
-
-  TIMER_PRINT(timer_readsmv, "time 4");
+  TIMER_PRINT(timer_readsmv, "UpdateMesnTerrain");
   ReadAllGeomMT();
   TIMER_PRINT(timer_readsmv, "ReadAllGeomMT");
   ClassifyAllGeomMT();
@@ -10273,7 +10276,9 @@ typedef struct {
   if(ngeominfo>0&&auto_terrain==1){
     int sizeof_vertices, sizeof_indices;
 
+    TIMER_PRINT(timer_readsmv, "null");
     GenerateTerrainGeom(&terrain_vertices, &sizeof_vertices, &terrain_indices, &sizeof_indices, &terrain_nindices);
+    TIMER_PRINT(timer_readsmv, "GenerateTerrainGeom");
   }
 #ifdef pp_WUI_VAO
   have_terrain_vao = 0;

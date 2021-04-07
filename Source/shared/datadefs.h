@@ -14,8 +14,8 @@
 #define ONEORZERO(val) if(val!=0)val=1
 
 #ifdef pp_DPRINT
-#define INIT_PRINT(timer)  (timer=-1.0)
-#define TIMER_PRINT(timer, label) (PrintLine(__FILE__, __LINE__, &timer, #label))
+#define INIT_PRINT(timer)  timer=-1.0
+#define TIMER_PRINT(timer, label) if(show_startup_timings){PrintLine(__FILE__, __LINE__, &timer, label);}
 #else
 #define INIT_PRINT(timer)
 #define TIMER_PRINT(timer, label)
