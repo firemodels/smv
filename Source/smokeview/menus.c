@@ -6902,28 +6902,28 @@ updatemenu=0;
   }
   glutAddMenuEntry(_("Where"),GEOMETRY_DUMMY);
   if(show_faces_interior == 1){
-    glutAddMenuEntry(_("   *Interior"), GEOMETRY_FACES_INTERIOR);
+    glutAddMenuEntry(_("   *Inside geometry"), GEOMETRY_FACES_INTERIOR);
   }
   else {
-    glutAddMenuEntry(_("   Interior"), GEOMETRY_FACES_INTERIOR);
+    glutAddMenuEntry(_("   Inside geometry"), GEOMETRY_FACES_INTERIOR);
   }
   if(show_faces_exterior == 1){
-    glutAddMenuEntry(_("   *Exterior"), GEOMETRY_FACES_EXTERIOR);
+    glutAddMenuEntry(_("   *Geometry surface"), GEOMETRY_FACES_EXTERIOR);
   }
   else {
-    glutAddMenuEntry(_("   Exterior"), GEOMETRY_FACES_EXTERIOR);
+    glutAddMenuEntry(_("   Geometry surface"), GEOMETRY_FACES_EXTERIOR);
   }
   if(showgeom_inside_domain == 1){
-    glutAddMenuEntry(_("   *Inside domain"), GEOMETRY_INSIDE_DOMAIN);
+    glutAddMenuEntry(_("   *Inside FDS domain"), GEOMETRY_INSIDE_DOMAIN);
   }
   else {
-    glutAddMenuEntry(_("   Inside domain"), GEOMETRY_INSIDE_DOMAIN);
+    glutAddMenuEntry(_("   Inside Domain domain"), GEOMETRY_INSIDE_DOMAIN);
   }
   if(showgeom_outside_domain == 1){
-    glutAddMenuEntry(_("   *Outside domain"), GEOMETRY_OUTSIDE_DOMAIN);
+    glutAddMenuEntry(_("   *Outside FDS domain"), GEOMETRY_OUTSIDE_DOMAIN);
   }
   else {
-    glutAddMenuEntry(_("   Outside domain"), GEOMETRY_OUTSIDE_DOMAIN);
+    glutAddMenuEntry(_("   Outside FDS domain"), GEOMETRY_OUTSIDE_DOMAIN);
   }
 
 /* --------------------------------interior geometry menu -------------------------- */
