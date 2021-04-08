@@ -2561,6 +2561,25 @@ void GetBoxCorners(float xbar_local, float ybar_local, float zbar_local){
   box_corners[7][2] = zbar_local;
 }
 
+/* ------------------ UpdateMeshBoxBounds ------------------------ */
+
+void UpdateMeshBoxBounds(void){
+  int i;
+
+  for(i = 0; i<nmeshes;  i++){
+    meshdata *meshi;
+
+    // xplt, yplt, zplt has original cooredinates because this routine is calld before UpdateMeshCoords
+    meshi = meshinfo+i;
+    meshi->boxmin[0] = meshi->xplt[0];
+    meshi->boxmin[1] = meshi->yplt[0];
+    meshi->boxmin[2] = meshi->zplt[0];
+    meshi->boxmax[0] = meshi->xplt[meshi->ibar];
+    meshi->boxmax[1] = meshi->yplt[meshi->jbar];
+    meshi->boxmax[2] = meshi->zplt[meshi->kbar];
+  }
+}
+
 /* ------------------ UpdateMeshCoords ------------------------ */
 
 void UpdateMeshCoords(void){
@@ -2886,12 +2905,6 @@ void UpdateMeshCoords(void){
     }
 
     meshi->boxoffset=-(zplt[1]-zplt[0])/10.0;
-    meshi->boxmin[0]=xplt_orig[0];
-    meshi->boxmin[1]=yplt_orig[0];
-    meshi->boxmin[2]=zplt_orig[0];
-    meshi->boxmax[0]=xplt_orig[ibar];
-    meshi->boxmax[1]=yplt_orig[jbar];
-    meshi->boxmax[2]=zplt_orig[kbar];
     meshi->dbox[0]=meshi->boxmax[0]-meshi->boxmin[0];
     meshi->dbox[1]=meshi->boxmax[1]-meshi->boxmin[1];
     meshi->dbox[2]=meshi->boxmax[2]-meshi->boxmin[2];
@@ -10107,6 +10120,7 @@ typedef struct {
   UpdateLoadedLists();
   CheckMemory;
 
+  UpdateMeshBoxBounds();
   TIMER_PRINT(timer_readsmv, "UpdateMesnTerrain");
   ReadAllGeomMT();
   TIMER_PRINT(timer_readsmv, "ReadAllGeomMT");
