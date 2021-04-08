@@ -2660,6 +2660,43 @@ void UpdateMeshCoords(void){
     zbar0 = MIN(zbar0, meshi->xyz_bar0[ZZZ]);
   }
 
+  geomlistdata *geomlisti;
+  if(geominfo!=NULL&&geominfo->geomlistinfo!=NULL){
+    geomlisti = geominfo->geomlistinfo-1;
+    if(geomlisti->nverts>0){
+      vertdata *verti;
+      float *xyz;
+      float xmin, xmax, ymin, ymax, zmin, zmax;
+
+      verti = geomlisti->verts;
+      xyz = verti->xyz;
+
+      xmin = xyz[0];
+      xmax = xmin;
+      ymin = xyz[1];
+      ymax = ymin;
+      zmin = xyz[2];
+      zmax = zmin;
+
+      for(i = 1; i<geomlisti->nverts; i++){
+        verti = geomlisti->verts+i;
+        xyz = verti->xyz;
+        xmin = MIN(xyz[0], xmin);
+        xmax = MAX(xyz[0], xmax);
+        ymin = MIN(xyz[1], ymin);
+        ymax = MAX(xyz[1], ymax);
+        zmin = MIN(xyz[2], zmin);
+        zmax = MAX(xyz[2], zmax);
+      }
+      xbar0 = MIN(xbar0, xmin);
+      ybar0 = MIN(ybar0, ymin);
+      zbar0 = MIN(zbar0, zmin);
+      xbar = MAX(xbar, xmax);
+      ybar = MAX(ybar, ymax);
+      zbar = MAX(zbar, zmax);
+    }
+  }
+
   factor = 256*128;
   dxsbar = (xbar-xbar0)/factor;
   dysbar = (ybar-ybar0)/factor;
@@ -10070,6 +10107,10 @@ typedef struct {
   UpdateLoadedLists();
   CheckMemory;
 
+  TIMER_PRINT(timer_readsmv, "UpdateMesnTerrain");
+  ReadAllGeomMT();
+  TIMER_PRINT(timer_readsmv, "ReadAllGeomMT");
+
   UpdateMeshCoords();
   CheckMemory;
 
@@ -10253,9 +10294,6 @@ typedef struct {
   radius_windrose = 0.2*xyzmaxdiff;
 
   UpdateMeshTerrain(); // slow
-  TIMER_PRINT(timer_readsmv, "UpdateMesnTerrain");
-  ReadAllGeomMT();
-  TIMER_PRINT(timer_readsmv, "ReadAllGeomMT");
   ClassifyAllGeomMT();
 
   TIMER_PRINT(timer_readsmv, "null");
