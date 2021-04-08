@@ -1908,9 +1908,10 @@ int IsTerrainTexture(texturedata *texti){
 void InitTextures0(void){
   // get texture filename from SURF and device info
   int i;
-  float time1, time2, time3, time4, time5, time6;
+  float texture_timer;
 
-  START_TIMER(time1);
+  INIT_PRINT(texture_timer);
+  TIMER_PRINT(texture_timer, "null");
 
   ntextureinfo = 0;
   for(i=0;i<nsurfinfo;i++){
@@ -1930,9 +1931,8 @@ void InitTextures0(void){
     ntextureinfo++;
     surfi->textureinfo=textureinfo+ntextureinfo-1;
   }
-  STOP_TIMER(time1);
+  TIMER_PRINT(texture_timer, "SURF textures");
 
-  START_TIMER(time2);
   for(i=0;i<ndevice_texture_list;i++){
     char *texturefile;
     texturedata *texti;
@@ -1949,9 +1949,8 @@ void InitTextures0(void){
     texti->display=0;
     ntextureinfo++;
   }
-  STOP_TIMER(time2);
+  TIMER_PRINT(texture_timer, "device textures");
 
-  START_TIMER(time3);
   if(nterrain_textures>0){
     texturedata *texture_base;
 
@@ -1974,12 +1973,11 @@ void InitTextures0(void){
     FREEMEMORY(terrain_textures);
     terrain_textures = texture_base;
   }
-  STOP_TIMER(time3);
+  TIMER_PRINT(texture_timer, "terrain textures");
 
   // check to see if texture files exist .
   // If so, then convert to OpenGL format
 
-  START_TIMER(time4);
   for(i=0;i<ntextureinfo;i++){
     unsigned char *floortex;
     int texwid, texht;
@@ -2028,14 +2026,12 @@ void InitTextures0(void){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     texti->loaded=1;
   }
-  STOP_TIMER(time4);
 
   CheckMemory;
   if(ntextureinfo==0){
     FREEMEMORY(textureinfo);
   }
 
-  START_TIMER(time5);
   // define colorbar textures
 
  // glActiveTexture(GL_TEXTURE0);
@@ -2132,12 +2128,11 @@ void InitTextures0(void){
 #endif
   glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_slicesmokecolormap_01);
 
-  STOP_TIMER(time5);
+  TIMER_PRINT(texture_timer, "texture setup");
   CheckMemory;
 
   // define terrain texture
 
-  START_TIMER(time6);
   if(nterrain_textures>0){
     texturedata *tt;
     unsigned char *floortex;
@@ -2179,30 +2174,26 @@ void InitTextures0(void){
       }
     }
   }
-  STOP_TIMER(time6);
-  if(show_startup_timings==1){
-    printf("texture time1=%f\n", time1);
-    printf("texture time2=%f\n", time2);
-    printf("texture time3=%f\n", time3);
-    printf("texture time4=%f\n", time4);
-    printf("texture time5=%f\n", time5);
-    printf("texture time6=%f\n", time6);
-  }
+  TIMER_PRINT(texture_timer, "terrain texture setup");
 }
 
   /* ------------------ InitTextures ------------------------ */
 
-float InitTextures(int use_graphics_arg){
-  START_TIMER(texture_time);
+void InitTextures(int use_graphics_arg){
+  float total_texture_time;
+
+  INIT_PRINT(total_texture_time);
+  TIMER_PRINT(total_texture_time, "null");
+
+
   UpdateDeviceTextures();
   if(nsurfinfo>0||ndevice_texture_list>0){
-    if(NewMemory((void **)&textureinfo, (nsurfinfo+ndevice_texture_list+nterrain_textures)*sizeof(texturedata))==0)return 2;
+    if(NewMemory((void **)&textureinfo, (nsurfinfo+ndevice_texture_list+nterrain_textures)*sizeof(texturedata))==0)return;
   }
   if(use_graphics_arg==1){
     InitTextures0();
   }
-  STOP_TIMER(texture_time);
-  return texture_time;
+  TIMER_PRINT(total_texture_time, "total texure time");
 }
 
   /* ------------------ UpdateBoundInfo ------------------------ */
@@ -2667,6 +2658,43 @@ void UpdateMeshCoords(void){
     xbar0 = MIN(xbar0, meshi->xyz_bar0[XXX]);
     ybar0 = MIN(ybar0, meshi->xyz_bar0[YYY]);
     zbar0 = MIN(zbar0, meshi->xyz_bar0[ZZZ]);
+  }
+
+  geomlistdata *geomlisti;
+  if(geominfo!=NULL&&geominfo->geomlistinfo!=NULL){
+    geomlisti = geominfo->geomlistinfo-1;
+    if(geomlisti->nverts>0){
+      vertdata *verti;
+      float *xyz;
+      float xmin, xmax, ymin, ymax, zmin, zmax;
+
+      verti = geomlisti->verts;
+      xyz = verti->xyz;
+
+      xmin = xyz[0];
+      xmax = xmin;
+      ymin = xyz[1];
+      ymax = ymin;
+      zmin = xyz[2];
+      zmax = zmin;
+
+      for(i = 1; i<geomlisti->nverts; i++){
+        verti = geomlisti->verts+i;
+        xyz = verti->xyz;
+        xmin = MIN(xyz[0], xmin);
+        xmax = MAX(xyz[0], xmax);
+        ymin = MIN(xyz[1], ymin);
+        ymax = MAX(xyz[1], ymax);
+        zmin = MIN(xyz[2], zmin);
+        zmax = MAX(xyz[2], zmax);
+      }
+      xbar0 = MIN(xbar0, xmin);
+      ybar0 = MIN(ybar0, ymin);
+      zbar0 = MIN(zbar0, zmin);
+      xbar = MAX(xbar, xmax);
+      ybar = MAX(ybar, ymax);
+      zbar = MAX(zbar, zmax);
+    }
   }
 
   factor = 256*128;
@@ -8382,7 +8410,7 @@ int ReadSMV(bufferstreamdata *stream){
 
   // define texture data structures by constructing a list of unique file names from surfinfo and devices
 
-  texture_time = InitTextures(use_graphics);
+ InitTextures(use_graphics);
 
 /*
     Initialize blockage labels and blockage surface labels
@@ -10079,6 +10107,10 @@ typedef struct {
   UpdateLoadedLists();
   CheckMemory;
 
+  TIMER_PRINT(timer_readsmv, "UpdateMesnTerrain");
+  ReadAllGeomMT();
+  TIMER_PRINT(timer_readsmv, "ReadAllGeomMT");
+
   UpdateMeshCoords();
   CheckMemory;
 
@@ -10219,10 +10251,9 @@ typedef struct {
   }
 
   TIMER_PRINT(timer_readsmv, "update bound info");
-
   UpdateTerrain(1,vertical_factor); // xxslow
-  TIMER_PRINT(timer_readsmv, "UpdateTerrain");
   UpdateTerrainColors();
+  TIMER_PRINT(timer_readsmv, "UpdateTerrain");
   UpdateSmoke3dMenuLabels();
   UpdateVSliceBoundIndexes();
   UpdateBoundaryMenuLabels();
@@ -10263,9 +10294,6 @@ typedef struct {
   radius_windrose = 0.2*xyzmaxdiff;
 
   UpdateMeshTerrain(); // slow
-  TIMER_PRINT(timer_readsmv, "UpdateMesnTerrain");
-  ReadAllGeomMT();
-  TIMER_PRINT(timer_readsmv, "ReadAllGeomMT");
   ClassifyAllGeomMT();
 
   TIMER_PRINT(timer_readsmv, "null");
@@ -10319,7 +10347,6 @@ typedef struct {
     PRINTF("        pass 5: %.1f s\n", pass5_time);
     PRINTF("all passes: %.1f s\n", processing_time);
 
-    PRINTF("   Texture time: %.1f s\n", texture_time);
     PRINTF("   wrap up: %.1f s\n", wrapup_time);
     PRINTF("\n");
   }

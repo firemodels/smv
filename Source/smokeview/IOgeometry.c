@@ -532,10 +532,8 @@ void DrawGeom(int flag, int timestate){
   int texture_state = OFF, texture_first=1;
 
   if(geom_bounding_box_always==1||geom_bounding_box_mousedown==1){
-    if(flag==DRAW_OPAQUE&&timestate==GEOM_STATIC){
-      if(have_geom_triangles==1){
-        DrawGeomBoundingBox(NULL);
-      }
+    if(flag==DRAW_OPAQUE&&timestate==GEOM_STATIC&&have_geom_triangles==1){
+      DrawGeomBoundingBox(NULL);
     }
     return;
   }
@@ -3099,6 +3097,7 @@ edgedata *GetEdge(edgedata *edges, int nedges, int iv1, int iv2){
 void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
   int i, iend;
 
+  if(geomi->geomlistinfo==NULL)return;
   iend = geomi->ntimes;
   if(geom_frame_index!=NULL)iend=1;
 
@@ -3107,6 +3106,7 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
     int nverts, nvolumes, ntriangles;
     int j;
     vertdata *vertbase;
+
 
     geomlisti = geomi->geomlistinfo+i;
     if(i!=-1&&geom_frame_index!=NULL)geomlisti = geomi->geomlistinfo+(*geom_frame_index);
@@ -4154,6 +4154,13 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
 void DrawCGeom(int flag, geomdata *cgeom){
   int i;
   geomdata *geomi;
+
+  if(geom_bounding_box_always==1||geom_bounding_box_mousedown==1){
+    if(flag==DRAW_OPAQUE&&have_geom_triangles==1){
+      DrawGeomBoundingBox(NULL);
+    }
+    return;
+  }
 
   // draw surfaces
 
