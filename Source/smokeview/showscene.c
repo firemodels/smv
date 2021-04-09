@@ -154,10 +154,15 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
     /* ++++++++++++++++++++++++ draw simulation frame (corners at (0,0,0) and (xbar,ybar,zbar) +++++++++++++++++++++++++ */
 
-    if(isZoneFireModel == 0 && visFrame == 1 && highlight_flag == 2){
+
+    if(geom_bounding_box_mousedown==1||(isZoneFireModel == 0 && visFrame == 1 && highlight_flag == 2)){
       CLIP_GEOMETRY;
       DrawOutlines();
       SNIFF_ERRORS("after DrawOutlines");
+    }
+
+    if(geom_bounding_box_mousedown==1){
+      DrawObstBoundingBox();
     }
 
     if(show_rotation_center == 1){

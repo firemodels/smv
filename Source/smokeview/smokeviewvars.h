@@ -23,6 +23,12 @@
 #include "glutbitmap.h"
 #endif
 
+#ifdef INMAIN
+SVEXTERN float obst_bounding_box[6]={1.0,0.0,1.0,0.0,1.0,0.0};
+#else
+SVEXTERN float obst_bounding_box[6];
+#endif
+
 SVEXTERN int SVDECL(have_geom_triangles, 0);
 SVEXTERN int SVDECL(geom_bounding_box_auto, 0);
 SVEXTERN int SVDECL(force_fixedpoint, 0);

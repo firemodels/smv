@@ -478,6 +478,21 @@ void DrawBox(float *bb, float *box_color){
   glEnd();
 }
 
+/* ------------------ DrawObstBoundingBox ------------------------ */
+
+void DrawObstBoundingBox(void){
+  int i;
+
+  if(obst_bounding_box[0]>obst_bounding_box[1])return;
+  if(obst_bounding_box[2]>obst_bounding_box[3])return;
+  if(obst_bounding_box[4]>obst_bounding_box[5])return;
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(-xbar0, -ybar0, -zbar0);
+  DrawBox(obst_bounding_box, foregroundcolor);
+  glPopMatrix();
+}
+
 /* ------------------ DrawGeomBoundingBox ------------------------ */
 
 void DrawGeomBoundingBox(float *boundingbox_color){
