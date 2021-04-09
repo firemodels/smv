@@ -1575,7 +1575,7 @@ extern "C" void SetChopMax(int type, char *label, int set_valmax, float valmax){
 /* ------------------ slice callback: SliceBoundsCPP_CB ------------------------ */
 
 extern "C" void SliceBoundsCPP_CB(int var){
-  int ii, last_slice, error;
+  int ii, last_slice;
   cpp_boundsdata *bounds;
   float per_valmin, per_valmax;
 

@@ -481,8 +481,6 @@ void DrawBox(float *bb, float *box_color){
 /* ------------------ DrawObstBoundingBox ------------------------ */
 
 void DrawObstBoundingBox(void){
-  int i;
-
   if(obst_bounding_box[0]>obst_bounding_box[1])return;
   if(obst_bounding_box[2]>obst_bounding_box[3])return;
   if(obst_bounding_box[4]>obst_bounding_box[5])return;
