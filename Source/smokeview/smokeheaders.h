@@ -9,10 +9,7 @@
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
 
-#ifdef pp_DPRINT
-EXTERNCPP void PrintLine(char *tag, int line, float *timer, char *label);
-#endif
-
+EXTERNCPP void PrintTime(char *tag, int line, float *timer, char *label);
 
 EXTERNCPP void DrawObstBoundingBox(void);
 EXTERNCPP void DrawGeomBoundingBox(float *boundingbox_color);
@@ -1034,6 +1031,7 @@ EXTERNCPP void GetPlot3DColors(int iplot, int settmin, float *ttmin, int settmax
 EXTERNCPP void GetSliceLabels(float tmin, float tmax, int nlevel,
               char labels[12][11],float *tlevels256);
 EXTERNCPP void UpdatePart5Extremes(void);
+EXTERNCPP void UpdateSliceColors(int last_slice);
 EXTERNCPP void GetSliceColors(const float *t, int nt, unsigned char *it,
               float tmin, float tmax,
               int ndatalevel, int nlevel,

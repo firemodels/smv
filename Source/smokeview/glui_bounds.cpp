@@ -1691,23 +1691,11 @@ extern "C" void SliceBoundsCPP_CB(int var){
           break;
         }
       }
-      for(ii = 0; ii < nslice_loaded; ii++){
-        int i;
-        slicedata *sd;
-
-        i = slice_loaded_list[ii];
-        sd = sliceinfo + i;
-        if(sd->slicefile_labelindex == slicefile_labelindex){
-          int set_slicecolor;
-
-          set_slicecolor = DEFER_SLICECOLOR;
-          if(i == last_slice){
-            set_slicecolor = SET_SLICECOLOR;
-            sd->finalize = 1;
-          }
-          ReadSlice("", i, ALL_FRAMES, NULL, RESETBOUNDS, set_slicecolor, &error);
-        }
-      }
+      float timer_update_slice_colors;
+      INIT_PRINT_TIMER(timer_update_slice_colors);
+      PRINT_TIMER(timer_update_slice_colors, "null");
+      UpdateSliceColors(last_slice);
+      PRINT_TIMER(timer_update_slice_colors, "updateslicecolors");
       break;
     case BOUND_RELOAD_DATA:
       SetLoadedSliceBounds(NULL, 0);

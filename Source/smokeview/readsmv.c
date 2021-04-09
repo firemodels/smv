@@ -1910,8 +1910,8 @@ void InitTextures0(void){
   int i;
   float texture_timer;
 
-  INIT_PRINT(texture_timer);
-  TIMER_PRINT(texture_timer, "null");
+  INIT_PRINT_TIMER(texture_timer);
+  PRINT_TIMER(texture_timer, "null");
 
   ntextureinfo = 0;
   for(i=0;i<nsurfinfo;i++){
@@ -1931,7 +1931,7 @@ void InitTextures0(void){
     ntextureinfo++;
     surfi->textureinfo=textureinfo+ntextureinfo-1;
   }
-  TIMER_PRINT(texture_timer, "SURF textures");
+  PRINT_TIMER(texture_timer, "SURF textures");
 
   for(i=0;i<ndevice_texture_list;i++){
     char *texturefile;
@@ -1949,7 +1949,7 @@ void InitTextures0(void){
     texti->display=0;
     ntextureinfo++;
   }
-  TIMER_PRINT(texture_timer, "device textures");
+  PRINT_TIMER(texture_timer, "device textures");
 
   if(nterrain_textures>0){
     texturedata *texture_base;
@@ -1973,7 +1973,7 @@ void InitTextures0(void){
     FREEMEMORY(terrain_textures);
     terrain_textures = texture_base;
   }
-  TIMER_PRINT(texture_timer, "terrain textures");
+  PRINT_TIMER(texture_timer, "terrain textures");
 
   // check to see if texture files exist .
   // If so, then convert to OpenGL format
@@ -2128,7 +2128,7 @@ void InitTextures0(void){
 #endif
   glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_slicesmokecolormap_01);
 
-  TIMER_PRINT(texture_timer, "texture setup");
+  PRINT_TIMER(texture_timer, "texture setup");
   CheckMemory;
 
   // define terrain texture
@@ -2174,7 +2174,7 @@ void InitTextures0(void){
       }
     }
   }
-  TIMER_PRINT(texture_timer, "terrain texture setup");
+  PRINT_TIMER(texture_timer, "terrain texture setup");
 }
 
   /* ------------------ InitTextures ------------------------ */
@@ -2182,8 +2182,8 @@ void InitTextures0(void){
 void InitTextures(int use_graphics_arg){
   float total_texture_time;
 
-  INIT_PRINT(total_texture_time);
-  TIMER_PRINT(total_texture_time, "null");
+  INIT_PRINT_TIMER(total_texture_time);
+  PRINT_TIMER(total_texture_time, "null");
 
 
   UpdateDeviceTextures();
@@ -2193,7 +2193,7 @@ void InitTextures(int use_graphics_arg){
   if(use_graphics_arg==1){
     InitTextures0();
   }
-  TIMER_PRINT(total_texture_time, "total texure time");
+  PRINT_TIMER(total_texture_time, "total texure time");
 }
 
   /* ------------------ UpdateBoundInfo ------------------------ */
@@ -10081,11 +10081,9 @@ typedef struct {
   START_TIMER(wrapup_time);
 
   PRINTF("  wrapping up\n");
-#ifdef pp_DPRINT
   float timer_readsmv;
-#endif
 
-  INIT_PRINT(timer_readsmv);
+  INIT_PRINT_TIMER(timer_readsmv);
   CheckMemory;
   UpdateIsoColors();
   CheckMemory;
@@ -10151,9 +10149,9 @@ typedef struct {
   CheckMemory;
 
   UpdateMeshBoxBounds();
-  TIMER_PRINT(timer_readsmv, "UpdateMesnTerrain");
+  PRINT_TIMER(timer_readsmv, "UpdateMesnTerrain");
   ReadAllGeomMT();
-  TIMER_PRINT(timer_readsmv, "ReadAllGeomMT");
+  PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
   UpdateMeshCoords();
   CheckMemory;
@@ -10209,13 +10207,13 @@ typedef struct {
   UpdatePlotxyzAll();
   CheckMemory;
 
-  TIMER_PRINT(timer_readsmv, "null");
+  PRINT_TIMER(timer_readsmv, "null");
   UpdateVSlices();
-  TIMER_PRINT(timer_readsmv, "UpdateVSlices");
+  PRINT_TIMER(timer_readsmv, "UpdateVSlices");
   if(update_slice==1)return 3;
 
   GenerateSliceMenu(generate_info_from_commandline);
-  TIMER_PRINT(timer_readsmv, "GenerateSliceMenu");
+  PRINT_TIMER(timer_readsmv, "GenerateSliceMenu");
 
   if(generate_info_from_commandline==1){
     GenerateViewpointMenu();
@@ -10242,7 +10240,7 @@ typedef struct {
     }
   }
 
-  TIMER_PRINT(timer_readsmv, "null");
+  PRINT_TIMER(timer_readsmv, "null");
   MakeIBlankCarve();
   MakeIBlankSmoke3D();
   MakeIBlankAll();
@@ -10254,9 +10252,9 @@ typedef struct {
   LOCK_IBLANK
   SetVentDirs();
   UNLOCK_IBLANK
-  TIMER_PRINT(timer_readsmv, "make blanks");
+  PRINT_TIMER(timer_readsmv, "make blanks");
   UpdateFaces();
-  TIMER_PRINT(timer_readsmv, "UpdateFaces");
+  PRINT_TIMER(timer_readsmv, "UpdateFaces");
 
   xcenGLOBAL=xbar/2.0;  ycenGLOBAL=ybar/2.0; zcenGLOBAL=zbar/2.0;
   xcenCUSTOM=xbar/2.0;  ycenCUSTOM=ybar/2.0; zcenCUSTOM=zbar/2.0;
@@ -10294,10 +10292,10 @@ typedef struct {
     }
   }
 
-  TIMER_PRINT(timer_readsmv, "update bound info");
+  PRINT_TIMER(timer_readsmv, "update bound info");
   UpdateTerrain(1,vertical_factor); // xxslow
   UpdateTerrainColors();
-  TIMER_PRINT(timer_readsmv, "UpdateTerrain");
+  PRINT_TIMER(timer_readsmv, "UpdateTerrain");
   UpdateSmoke3dMenuLabels();
   UpdateVSliceBoundIndexes();
   UpdateBoundaryMenuLabels();
@@ -10306,7 +10304,7 @@ typedef struct {
   UpdateTourMenuLabels();
   SetupCircularTourNodes();
   InitUserTicks();
-  TIMER_PRINT(timer_readsmv, "update menu labels");
+  PRINT_TIMER(timer_readsmv, "update menu labels");
 
   clip_I=ibartemp; clip_J=jbartemp; clip_K=kbartemp;
 
@@ -10331,7 +10329,7 @@ typedef struct {
     nchanged_idlist=ntotal;
   }
 
-  TIMER_PRINT(timer_readsmv, "null");
+  PRINT_TIMER(timer_readsmv, "null");
   InitNabors();
   InitVolRender();
   InitVolRenderSurface(FIRSTCALL);
@@ -10340,17 +10338,17 @@ typedef struct {
   UpdateMeshTerrain(); // slow
   ClassifyAllGeomMT();
 
-  TIMER_PRINT(timer_readsmv, "null");
+  PRINT_TIMER(timer_readsmv, "null");
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
-  TIMER_PRINT(timer_readsmv, "UpdateTriangles");
+  PRINT_TIMER(timer_readsmv, "UpdateTriangles");
   GetFaceInfo();
   GetBoxGeomCorners();
   if(ngeominfo>0&&auto_terrain==1){
     int sizeof_vertices, sizeof_indices;
 
-    TIMER_PRINT(timer_readsmv, "null");
+    PRINT_TIMER(timer_readsmv, "null");
     GenerateTerrainGeom(&terrain_vertices, &sizeof_vertices, &terrain_indices, &sizeof_indices, &terrain_nindices);
-    TIMER_PRINT(timer_readsmv, "GenerateTerrainGeom");
+    PRINT_TIMER(timer_readsmv, "GenerateTerrainGeom");
   }
 #ifdef pp_WUI_VAO
   have_terrain_vao = 0;
@@ -10375,7 +10373,7 @@ typedef struct {
   PrintMemoryInfo;
 
   STOP_TIMER(wrapup_time);
-  if(show_startup_timings==1){
+  if(show_timings==1){
     PRINTF(".smv Processing Times\n");
     PRINTF("---------------------\n");
 
@@ -10569,12 +10567,6 @@ int ReadIni2(char *inifile, int localfile){
         update_research_mode = 1;
       }
       update_percentile_mode = 1;
-      continue;
-    }
-    if(Match(buffer, "TIMINGS")==1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, " %i", &show_startup_timings);
-      ONEORZERO(show_startup_timings);
       continue;
     }
     if(Match(buffer, "RESEARCHMODE") == 1){
@@ -15018,8 +15010,6 @@ void WriteIni(int flag,char *filename){
   }
   fprintf(fileout, "RENDEROPTION\n");
   fprintf(fileout, " %i %i %i\n", render_window_size, resolution_multiplier, nheight360);
-  fprintf(fileout, "TIMINGS\n");
-  fprintf(fileout, " %i\n", show_startup_timings);
   fprintf(fileout, "UNITCLASSES\n");
   fprintf(fileout, " %i\n", nunitclasses);
   for(i = 0; i<nunitclasses; i++){

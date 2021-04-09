@@ -15,12 +15,12 @@
 #define DENORMAL(x,i, n, min,max) ((min) + (i)*((max)-(min))/(n))
 #define NORMALH(x,min,max) (((x)-(min))/((max)-(min))   )
 
-/* ------------------ PrintLine ------------------------ */
+/* ------------------ PrintTime ------------------------ */
 
-#ifdef pp_DPRINT
-void PrintLine(char *filepath, int line, float *timer, char *label){
+void PrintTime(char *filepath, int line, float *timer, char *label){
   char *file;
 
+  if(show_timings==0)return;
   file = strrchr(filepath, '\\');
   if(file==NULL)file = strrchr(filepath, '/');
   if(file==NULL){
@@ -39,8 +39,6 @@ void PrintLine(char *filepath, int line, float *timer, char *label){
   }
   START_TIMER(*timer);
 }
-#endif
-
 
   /* ------------------ DrawHistogram ------------------------ */
 

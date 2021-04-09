@@ -473,7 +473,7 @@ void ParseCommandline(int argc, char **argv){
       geom_bounding_box_auto = 1;
     }
     else if(strncmp(argv[i], "-timings", 8)==0){
-      show_startup_timings = 1;
+      show_timings = 1;
     }
     else if(strncmp(argv[i], "-lang", 5) == 0){
       ++i;
@@ -878,17 +878,17 @@ int main(int argc, char **argv){
   if(return_code==0&&update_bounds==1){
     float timer_update_bounds;
 
-    INIT_PRINT(timer_update_bounds);
+    INIT_PRINT_TIMER(timer_update_bounds);
     return_code=Update_Bounds();
-    TIMER_PRINT(timer_update_bounds, "Update_Bounds");
+    PRINT_TIMER(timer_update_bounds, "Update_Bounds");
   }
   if(return_code!=0)return 1;
   if(convert_ini==1){
     float timer_read_ini;
 
-    INIT_PRINT(timer_read_ini);
+    INIT_PRINT_TIMER(timer_read_ini);
     ReadIni(ini_from);
-    TIMER_PRINT(timer_read_ini, "ReadIni");
+    PRINT_TIMER(timer_read_ini, "ReadIni");
   }
   if(runhtmlscript==1){
     DoScriptHtml();
