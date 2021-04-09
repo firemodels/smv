@@ -5512,6 +5512,34 @@ void UpdateEvents(void){
   fclose(stream);
 }
 
+/* ------------------ UpdateObstBoundingBox ------------------------ */
+
+void UpdateObstBoundingBox(float *XB){
+  float XB0[6];
+  int i;
+
+  XB0[0] = MIN(XB[0], XB[1]);
+  XB0[1] = MAX(XB[0], XB[1]);
+  XB0[2] = MIN(XB[2], XB[3]);
+  XB0[3] = MAX(XB[2], XB[3]);
+  XB0[4] = MIN(XB[4], XB[5]);
+  XB0[5] = MAX(XB[4], XB[5]);
+  for(i = 0; i<3; i++){
+    int imin, imax;
+
+    imin = 2*i;
+    imax = 2*i+1;
+    if(obst_bounding_box[imin]>obst_bounding_box[imax]){
+      obst_bounding_box[imin] = XB0[imin];
+      obst_bounding_box[imax] = XB0[imax];
+    }
+    else{
+      obst_bounding_box[imin] = MIN(obst_bounding_box[imin], XB0[imin]);
+      obst_bounding_box[imax] = MAX(obst_bounding_box[imax], XB0[imax]);
+    }
+  }
+}
+
 /* ------------------ ReadSMV ------------------------ */
 
 int ReadSMV(bufferstreamdata *stream){
@@ -9057,6 +9085,8 @@ typedef struct {
             xyzEXACT,xyzEXACT+1,xyzEXACT+2,xyzEXACT+3,xyzEXACT+4,xyzEXACT+5,
             &(bc->blockage_id),s_num+DOWN_X,s_num+UP_X,s_num+DOWN_Y,s_num+UP_Y,s_num+DOWN_Z,s_num+UP_Z,
             t_origin,t_origin+1,t_origin+2);
+
+          UpdateObstBoundingBox(xyzEXACT);
           bc->xmin=xyzEXACT[0];
           bc->xmax=xyzEXACT[1];
           bc->ymin=xyzEXACT[2];

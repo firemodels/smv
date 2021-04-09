@@ -13,6 +13,8 @@ EXTERNCPP void PeriodicRefresh(int var);
 EXTERNCPP void PrintLine(char *tag, int line, float *timer, char *label);
 #endif
 
+
+EXTERNCPP void DrawObstBoundingBox(void);
 EXTERNCPP void DrawGeomBoundingBox(float *boundingbox_color);
 
 EXTERNCPP void UpdateGeomBoundingBox(void);

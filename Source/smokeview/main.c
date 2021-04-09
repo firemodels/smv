@@ -875,10 +875,20 @@ int main(int argc, char **argv){
   START_TIMER(read_time_elapsed);
 
   return_code= SetupCase(argc,argv_sv);
-  if(return_code==0&&update_bounds==1)return_code=Update_Bounds();
+  if(return_code==0&&update_bounds==1){
+    float timer_update_bounds;
+
+    INIT_PRINT(timer_update_bounds);
+    return_code=Update_Bounds();
+    TIMER_PRINT(timer_update_bounds, "Update_Bounds");
+  }
   if(return_code!=0)return 1;
   if(convert_ini==1){
+    float timer_read_ini;
+
+    INIT_PRINT(timer_read_ini);
     ReadIni(ini_from);
+    TIMER_PRINT(timer_read_ini, "ReadIni");
   }
   if(runhtmlscript==1){
     DoScriptHtml();

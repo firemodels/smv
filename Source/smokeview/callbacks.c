@@ -1759,6 +1759,13 @@ void Keyboard(unsigned char key, int flag){
     case 'B':
       geom_bounding_box_auto = 1-geom_bounding_box_auto;
       UpdateGeomBoundingBox();
+      if(geom_bounding_box_auto==1){
+        printf("auto show bounding box: on\n");
+      }
+      else{
+        printf("auto show bounding box: off\n");
+      }
+
       break;
     case 'b':
       switch(keystate){
