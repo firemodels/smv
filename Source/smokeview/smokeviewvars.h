@@ -221,6 +221,9 @@ SVEXTERN int npart5loaded, npartloaded, nevacloaded;
 SVEXTERN int SVDECL(global_have_global_bound_file, 0);
 SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
 SVEXTERN int SVDECL(npartthread_ids, 4);
+#ifdef pp_SLICETHREAD
+SVEXTERN int SVDECL(nslicethread_ids, 4);
+#endif
 #ifdef pp_READALLGEOM_MT
 SVEXTERN int SVDECL(nreadallgeomthread_ids, 4);
 #endif
@@ -247,6 +250,9 @@ SVEXTERN int SVDECL(cancel_update_triangles, 0);
 SVEXTERN int SVDECL(updating_triangles, 0);
 SVEXTERN int SVDECL(iso_multithread, 0), SVDECL(iso_multithread_save,0);
 SVEXTERN int SVDECL(part_multithread, 0);
+#ifdef pp_SLICETHREAD
+SVEXTERN int SVDECL(slice_multithread, 0);
+#endif
 #ifdef pp_READALLGEOM_MT
 SVEXTERN int SVDECL(readallgeom_multithread, 1);
 #else

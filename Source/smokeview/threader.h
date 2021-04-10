@@ -12,9 +12,8 @@
 #define MT_EXTERN extern CCC
 #endif
 
-#define MAX_PART_THREADS 16
+#define MAX_THREADS 16
 #ifdef pp_READALLGEOM_MT
-#define MAX_READALLGEOM_THREADS 16
 #endif
 
 // setup LOCKS
@@ -39,6 +38,14 @@
 
   #define LOCK_PART_LOAD    pthread_mutex_lock(&mutexPART_LOAD);
   #define UNLOCK_PART_LOAD  pthread_mutex_unlock(&mutexPART_LOAD);
+
+#ifdef pp_SLICETHREAD
+  #define LOCK_SLICE_LOAD    pthread_mutex_lock(&mutexSLICE_LOAD);
+  #define UNLOCK_SLICE_LOAD  pthread_mutex_unlock(&mutexSLICE_LOAD);
+#else
+  #define LOCK_SLICE_LOAD
+  #define UNLOCK_SLICE_LOAD
+#endif
 
   #define LOCK_COMPRESS     pthread_mutex_lock(&mutexCOMPRESS);
   #define UNLOCK_COMPRESS   pthread_mutex_unlock(&mutexCOMPRESS);
@@ -107,6 +114,9 @@ void MtReadVolsmokeAllFramesAllMeshes2(void);
 MT_EXTERN pthread_mutex_t mutexREADALLGEOM;
 #endif
 MT_EXTERN pthread_t makeiblank_thread_id;
+#ifdef pp_SLICETHREAD
+MT_EXTERN pthread_mutex_t mutexSLICE_LOAD;
+#endif
 MT_EXTERN pthread_mutex_t mutexPART_LOAD;
 MT_EXTERN pthread_mutex_t mutexIBLANK;
 MT_EXTERN pthread_mutex_t mutexVOLLOAD;
@@ -123,10 +133,13 @@ MT_EXTERN pthread_t compress_thread_id;
 MT_EXTERN pthread_t update_all_patch_bounds_id;
 MT_EXTERN pthread_t read_volsmoke_id;
 MT_EXTERN pthread_t triangles_id;
-MT_EXTERN pthread_t partthread_ids[MAX_PART_THREADS];
+MT_EXTERN pthread_t partthread_ids[MAX_THREADS];
+#ifdef pp_SLICETHREAD
+MT_EXTERN pthread_t slicethread_ids[MAX_THREADS];
+#endif
 #ifdef pp_READALLGEOM_MT
-MT_EXTERN pthread_t readallgeomthread_ids[MAX_READALLGEOM_THREADS];
-MT_EXTERN pthread_t classifyallgeomthread_ids[MAX_READALLGEOM_THREADS];
+MT_EXTERN pthread_t readallgeomthread_ids[MAX_THREADS];
+MT_EXTERN pthread_t classifyallgeomthread_ids[MAX_THREADS];
 #endif
 #ifdef pp_SAMPLE
 MT_EXTERN pthread_t sample_thread_id;

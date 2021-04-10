@@ -4561,7 +4561,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       CHECKBOX_part_multithread = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Parallel loading"), &part_multithread);
       SPINNER_npartthread_ids = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once"), GLUI_SPINNER_INT, &npartthread_ids);
       if(npartinfo>1){
-        SPINNER_npartthread_ids->set_int_limits(1,MIN(npartinfo,MAX_PART_THREADS));
+        SPINNER_npartthread_ids->set_int_limits(1,MIN(npartinfo,MAX_THREADS));
       }
       else{
         SPINNER_npartthread_ids->set_int_limits(1,1);

@@ -9,6 +9,8 @@
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
 
+FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount);
+
 EXTERNCPP void PrintTime(char *tag, int line, float *timer, char *label);
 
 EXTERNCPP void DrawObstBoundingBox(void);

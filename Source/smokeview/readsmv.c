@@ -4909,6 +4909,9 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 
   sd = sliceinfo+nn_slice-1;
 
+#ifdef pp_SLICETHREAD
+  sd->loadstatus = FILE_UNLOADED;
+#endif
   sd->geom_offsets = NULL;
   sd->slcf_index = slcf_index;
   sd->finalize = 1;

@@ -4653,6 +4653,35 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_
   return return_filesize;
 }
 
+/* ------------------ LoadAllSliceFiles ------------------------ */
+
+FILE_SIZE LoadAllSliceFiles(int last_slice, char *submenulabel, int dir, int *fcount){
+  int i, file_count=0, errorcode;
+  FILE_SIZE load_size = 0;
+
+  for(i = 0; i<nsliceinfo; i++){
+    char *longlabel;
+    int set_slicecolor;
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    longlabel = slicei->label.longlabel;
+    if(strcmp(longlabel, submenulabel)!=0)continue;
+    if(dir!=0&&dir!=slicei->idir)continue;
+    set_slicecolor = DEFER_SLICECOLOR;
+    if(i==last_slice)set_slicecolor = SET_SLICECOLOR;
+    if(slicei->slice_filetype==SLICE_GEOM){
+      load_size += ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, &errorcode);
+    }
+    else{
+      load_size += ReadSlice(slicei->file, i, ALL_FRAMES, NULL, LOAD, set_slicecolor, &errorcode);
+    }
+    file_count++;
+  }
+  *fcount = file_count;
+  return load_size;
+}
+
 /* ------------------ LoadSliceMenu ------------------------ */
 
 void LoadSliceMenu(int value){
@@ -4730,24 +4759,7 @@ void LoadSliceMenu(int value){
           break;
         }
         START_TIMER(load_time);
-        for(i = 0; i<nsliceinfo; i++){
-          char *longlabel;
-          int set_slicecolor;
-
-          slicei = sliceinfo + i;
-          longlabel = slicei->label.longlabel;
-          if(strcmp(longlabel,submenulabel)!=0)continue;
-          if(dir!=0&&dir!=slicei->idir)continue;
-          set_slicecolor = DEFER_SLICECOLOR;
-          if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
-          if(slicei->slice_filetype == SLICE_GEOM){
-            load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, &errorcode);
-          }
-          else{
-            load_size+=             ReadSlice(slicei->file,i, ALL_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
-          }
-          file_count++;
-        }
+        load_size = LoadAllSliceFiles(last_slice, submenulabel, dir, &file_count);
         STOP_TIMER(load_time);
         PRINT_LOADTIMES(file_count,load_size,load_time);
       }
@@ -4918,35 +4930,8 @@ FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
 #endif
 
   SetLoadedSliceBounds(mslicei->islices, mslicei->nslices);
+  file_size = LoadAllMSlicesMT(last_slice, mslicei, &file_count);
 
-  file_count = 0;
-  file_size = 0;
-  for(i = 0; i < mslicei->nslices; i++){
-    slicedata *slicei;
-    int set_slicecolor;
-
-    slicei = sliceinfo + mslicei->islices[i];
-    set_slicecolor = DEFER_SLICECOLOR;
-
-    slicei->finalize = 0;
-    if(last_slice==mslicei->islices[i]){
-      slicei->finalize = 1;
-      set_slicecolor = SET_SLICECOLOR;
-    }
-    if(slicei->skipdup== 0){
-#ifdef pp_SINGLE_FRAME_TEST
-      {
-        float time_value;
-        int itime_value=10;
-
-        file_size += LoadSlicei(set_slicecolor, mslicei->islices[i], itime_value, &time_value);
-      }
-#else
-      file_size += LoadSlicei(set_slicecolor,mslicei->islices[i],ALL_FRAMES, NULL);
-#endif
-      file_count++;
-    }
-  }
 #ifdef pp_SLICE_BUFFER
   STOP_TIMER(process_time);
   PRINT_PROCESSTIMES(file_count, (float)file_size, process_time);

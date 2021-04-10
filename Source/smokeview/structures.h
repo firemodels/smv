@@ -1285,7 +1285,7 @@ typedef struct _slicedata {
   FILE_SIZE file_size;
   int *geom_offsets;
 #ifdef pp_SLICETHREAD
-  int skipload, loadstatus, boundstatus;
+  int loadstatus;
 #endif
 #ifdef pp_SLICE_BUFFER
   FILEBUFFER *stream_slice;
