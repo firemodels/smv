@@ -14,6 +14,9 @@ void InitMultiThreading(void){
 #ifdef pp_READALLGEOM_MT
   pthread_mutex_init(&mutexREADALLGEOM, NULL);
 #endif
+#ifdef pp_SLICETHREAD
+  pthread_mutex_init(&mutexSLICE_LOAD, NULL);
+#endif
   pthread_mutex_init(&mutexPART_LOAD, NULL);
   pthread_mutex_init(&mutexCOMPRESS,NULL);
 #ifdef pp_ISOTHREAD
@@ -92,6 +95,47 @@ void CompressSVZip(void){
 //***************************** multi threading particle loading routines ***********************************
 
 #ifdef pp_THREAD
+
+/* ------------------ LoadAllMslices ------------------------ */
+FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_value);
+
+FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei,  int *fcount){
+  FILE_SIZE file_size = 0;
+  int file_count = 0;
+  int i;
+
+  file_count = 0;
+  file_size = 0;
+  for(i = 0; i<mslicei->nslices; i++){
+    slicedata *slicei;
+    int set_slicecolor;
+
+    slicei = sliceinfo+mslicei->islices[i];
+    set_slicecolor = DEFER_SLICECOLOR;
+
+    slicei->finalize = 0;
+    if(last_slice==mslicei->islices[i]){
+      slicei->finalize = 1;
+      set_slicecolor = SET_SLICECOLOR;
+    }
+    if(slicei->skipdup==0){
+#ifdef pp_SINGLE_FRAME_TEST
+      {
+        float time_value;
+        int itime_value = 10;
+
+        file_size += LoadSlicei(set_slicecolor, mslicei->islices[i], itime_value, &time_value);
+      }
+#else
+      file_size += LoadSlicei(set_slicecolor, mslicei->islices[i], ALL_FRAMES, NULL);
+#endif
+      file_count++;
+    }
+  }
+  *fcount = file_count;
+  return file_size;
+}
+
 /* ------------------ MtLoadAllPartFiles ------------------------ */
 
 void *MtLoadAllPartFiles(void *arg){

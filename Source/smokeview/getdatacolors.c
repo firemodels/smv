@@ -798,6 +798,30 @@ void MakeColorLabels(char colorlabels[12][11], float colorvalues[12], float tmin
   }
 }
 
+/* ------------------ UpdateSliceColors ------------------------ */
+
+void UpdateSliceColors(int last_slice){
+  int ii, error;
+
+  for(ii = 0; ii<nslice_loaded; ii++){
+    int i;
+    slicedata *sd;
+
+    i = slice_loaded_list[ii];
+    sd = sliceinfo+i;
+    if(sd->slicefile_labelindex==slicefile_labelindex){
+      int set_slicecolor;
+
+      set_slicecolor = DEFER_SLICECOLOR;
+      if(i==last_slice){
+        set_slicecolor = SET_SLICECOLOR;
+        sd->finalize = 1;
+      }
+      ReadSlice("", i, ALL_FRAMES, NULL, RESETBOUNDS, set_slicecolor, &error);
+    }
+  }
+}
+
 /* ------------------ GetSliceColors ------------------------ */
 
 void GetSliceColors(const float *t, int nt, unsigned char *it,

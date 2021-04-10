@@ -1575,7 +1575,7 @@ extern "C" void SetChopMax(int type, char *label, int set_valmax, float valmax){
 /* ------------------ slice callback: SliceBoundsCPP_CB ------------------------ */
 
 extern "C" void SliceBoundsCPP_CB(int var){
-  int ii, last_slice, error;
+  int ii, last_slice;
   cpp_boundsdata *bounds;
   float per_valmin, per_valmax;
 
@@ -1691,23 +1691,11 @@ extern "C" void SliceBoundsCPP_CB(int var){
           break;
         }
       }
-      for(ii = 0; ii < nslice_loaded; ii++){
-        int i;
-        slicedata *sd;
-
-        i = slice_loaded_list[ii];
-        sd = sliceinfo + i;
-        if(sd->slicefile_labelindex == slicefile_labelindex){
-          int set_slicecolor;
-
-          set_slicecolor = DEFER_SLICECOLOR;
-          if(i == last_slice){
-            set_slicecolor = SET_SLICECOLOR;
-            sd->finalize = 1;
-          }
-          ReadSlice("", i, ALL_FRAMES, NULL, RESETBOUNDS, set_slicecolor, &error);
-        }
-      }
+      float timer_update_slice_colors;
+      INIT_PRINT_TIMER(timer_update_slice_colors);
+      PRINT_TIMER(timer_update_slice_colors, "null");
+      UpdateSliceColors(last_slice);
+      PRINT_TIMER(timer_update_slice_colors, "updateslicecolors");
       break;
     case BOUND_RELOAD_DATA:
       SetLoadedSliceBounds(NULL, 0);
@@ -4573,7 +4561,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       CHECKBOX_part_multithread = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Parallel loading"), &part_multithread);
       SPINNER_npartthread_ids = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once"), GLUI_SPINNER_INT, &npartthread_ids);
       if(npartinfo>1){
-        SPINNER_npartthread_ids->set_int_limits(1,MIN(npartinfo,MAX_PART_THREADS));
+        SPINNER_npartthread_ids->set_int_limits(1,MIN(npartinfo,MAX_THREADS));
       }
       else{
         SPINNER_npartthread_ids->set_int_limits(1,1);
