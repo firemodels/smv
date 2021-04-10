@@ -4904,7 +4904,6 @@ void LoadMultiVSliceMenu(int value){
 /* ------------------ LoadAllMSlices ------------------------ */
 
 FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
-  int i;
   float load_time;
 #ifdef pp_SLICE_BUFFER
   float process_time;
