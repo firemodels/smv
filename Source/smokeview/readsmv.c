@@ -12866,7 +12866,6 @@ int ReadIni2(char *inifile, int localfile){
         eye[1] = ymin_local + eye[1] * xyzmaxdiff_local;
         eye[2] = zmin_local + eye[2] * xyzmaxdiff_local;
       }
-#ifdef pp_ZOOM_INI
       zoom = zoom_in;
       zoomindex = zoomindex_in;
       if(zoomindex != -1){
@@ -12886,8 +12885,6 @@ int ReadIni2(char *inifile, int localfile){
         }
       }
       updatezoommenu = 1;
-#endif
-
       p_type = 0;
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f %i", &ci->view_angle, &ci->azimuth, &ci->elevation, &p_type);
