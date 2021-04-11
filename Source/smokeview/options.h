@@ -50,7 +50,6 @@
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
 //#define pp_SINGLE_FRAME_TEST   // test loading a single slice file frame (without using a script)
 //#define pp_SCRIPT_RENDER_FIX  // temporary fix to script rendering, needs to be explored further
-#define pp_DISABLE_ADJUSTY      // turn off y adjust when selecting a viewpoint
 //#define pp_SCRIPT_SETVIEW       // add SETVIEWPOINT command at the beginning of a script
 //#define pp_REMOVE_DUPLICATES     // remove duplicate geometry vertices
 #define pp_READALLGEOM_MT         // read geometry files in parallel
