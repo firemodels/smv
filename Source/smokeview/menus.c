@@ -9589,25 +9589,10 @@ updatemenu=0;
 
   CREATEMENU(dialogmenu,DialogMenu);
 
-#ifdef pp_DIALOG_SHORTCUTS
-#ifdef pp_GLUTGET
   glutAddMenuEntry(_("Display...  ALT D"), DIALOG_DISPLAY);
-#else
-  glutAddMenuEntry(_("Display...  ALT d"), DIALOG_DISPLAY);
-#endif
   glutAddMenuEntry(_("Files/Data/Coloring... ALT b"), DIALOG_BOUNDS);
   glutAddMenuEntry(_("Motion/View/Render...  ALT m"),DIALOG_MOTION);
   glutAddMenuEntry(_("Viewpoints... ALT g"),DIALOG_VIEW);
-#else
-#ifdef pp_GLUTGET
-  glutAddMenuEntry(_("Display..."), DIALOG_DISPLAY);
-#else
-  glutAddMenuEntry(_("Display..."), DIALOG_DISPLAY);
-#endif
-  glutAddMenuEntry(_("Files/Data/Coloring..."), DIALOG_BOUNDS);
-  glutAddMenuEntry(_("Motion/View/Render..."), DIALOG_MOTION);
-  glutAddMenuEntry(_("Viewpoints..."), DIALOG_VIEW);
-#endif
 
   glutAddMenuEntry("-",MENU_DUMMY2);
 
