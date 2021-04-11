@@ -55,7 +55,6 @@
 #define pp_ZOOM_INI           // initialize zoom settings in VIEWPOINT5 .ini code
 #define pp_VIEWPOINT_MENU       // use viewpoint menu code when setting viewpoints from a dialog
 //#define pp_REMOVE_DUPLICATES     // remove duplicate geometry vertices
-//#define pp_OLD_DISTPOINTBOX      // original algorithm for computing distance between a point and a box
 #define pp_READALLGEOM_MT         // read geometry files in parallel
 
 #ifdef pp_GPU
