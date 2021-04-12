@@ -18,9 +18,7 @@ void InitMultiThreading(void){
   pthread_mutex_init(&mutexPART_LOAD, NULL);
   pthread_mutex_init(&mutexCOMPRESS,NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
-#ifdef pp_THREADIBLANK
   pthread_mutex_init(&mutexIBLANK, NULL);
-#endif
 #endif
 }
 
@@ -320,7 +318,6 @@ void FinishUpdateTriangles(void){
 
 /* ------------------ MtMakeIBlank ------------------------ */
 #ifdef pp_THREAD
-#ifdef pp_THREADIBLANK
 void *MtMakeIBlank(void *arg){
 
   MakeIBlank();
@@ -331,7 +328,6 @@ void *MtMakeIBlank(void *arg){
   pthread_exit(NULL);
   return NULL;
 }
-#endif
 #endif
 
 /* ------------------ Sample ------------------------ */
@@ -366,17 +362,9 @@ void SampleMT(void){
 /* ------------------ makeiblank_all ------------------------ */
 
 #ifdef pp_THREAD
-#ifdef pp_THREADIBLANK
 void MakeIBlankAll(void){
   pthread_create(&makeiblank_thread_id, NULL, MtMakeIBlank, NULL);
 }
-#else
-void MakeIBlankAll(void){
-  MakeIBlank();
-  SetCVentDirs();
-  update_setvents=1;
-}
-#endif
 #else
 void MakeIBlankAll(void){
   MakeIBlank();

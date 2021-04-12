@@ -38,15 +38,9 @@
   #define LOCK_VOLLOAD      pthread_mutex_lock(&mutexVOLLOAD);
   #define UNLOCK_VOLLOAD    pthread_mutex_unlock(&mutexVOLLOAD);
 
-#ifdef pp_THREADIBLANK
   #define LOCK_IBLANK       pthread_mutex_lock(&mutexIBLANK);
   #define UNLOCK_IBLANK     pthread_mutex_unlock(&mutexIBLANK);
   #define JOIN_IBLANK       pthread_join(makeiblank_thread_id,NULL);
-#else
-  #define LOCK_IBLANK
-  #define UNLOCK_IBLANK
-  #define JOIN_IBLANK
-#endif
 
 #ifdef pp_SAMPLE
   #define LOCK_SAMPLE     pthread_mutex_lock(&mutexSAMPLE);

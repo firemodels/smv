@@ -146,9 +146,6 @@ void Usage(char *prog,int option){
 #ifdef pp_THREAD
     strcat(label, ", pp_THREAD");
 #endif
-#ifdef pp_THREADIBLANK
-    strcat(label, ", pp_THREADIBLANK");
-#endif
 #ifdef WIN32
     strcat(label, ", WIN32");
 #endif

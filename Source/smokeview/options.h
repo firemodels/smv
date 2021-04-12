@@ -56,10 +56,6 @@
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
 #endif
 
-#ifdef pp_THREAD
-#define pp_THREADIBLANK // construct iblank arrays in background
-#endif
-
 //*** options: windows
 
 #ifdef WIN32

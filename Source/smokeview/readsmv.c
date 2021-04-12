@@ -10247,11 +10247,9 @@ typedef struct {
   MakeIBlankCarve();
   MakeIBlankSmoke3D();
   MakeIBlankAll();
-#ifdef pp_THREADIBLANK
   if(runscript == 1){
     JOIN_IBLANK
   }
-#endif
   LOCK_IBLANK
   SetVentDirs();
   UNLOCK_IBLANK
