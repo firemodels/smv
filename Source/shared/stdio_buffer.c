@@ -223,28 +223,17 @@ filedata *fopen_buffer(char *filename, char *mode){
   if(FILE_EXISTS(filename)==NO)return NULL;
   filesize = GetFileSizeSMV(filename);
   if(filesize==0)return NULL;
+  stream = fopen(filename,"rb");
+  if(stream==NULL)return NULL;
 
   NewMemory((void **)&fileinfo, sizeof(filedata));
   if(NewMemory((void **)&buffer, filesize+1)==0){
     FREEMEMORY(fileinfo);
+    fclose(stream);
     return NULL;
   }
-
-#define INIT_PRINT_TIMER(timer)  timer=-1.0
-#define PRINT_TIMER(timer, label) PrintTime(__FILE__, __LINE__, &timer, label)
-
-  void PrintTime(char *filepath, int line, float *timer, char *label);
-  float timer_fopen_buffer;
-
-  INIT_PRINT_TIMER(timer_fopen_buffer);
-  PRINT_TIMER(timer_fopen_buffer, "null");
-
-  stream = fopen(filename, "rb");
-  if(stream==NULL)return NULL;
   fread(buffer, sizeof(char), filesize, stream);
   fclose(stream);
-
-  PRINT_TIMER(timer_fopen_buffer, filename);
 
   filesize++;           // add an extra character to file and set it to the end of string character
   buffer[filesize-1]=0;
