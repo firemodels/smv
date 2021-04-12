@@ -51,7 +51,6 @@
 //#define pp_SCRIPT_RENDER_FIX  // temporary fix to script rendering, needs to be explored further
 //#define pp_SCRIPT_SETVIEW       // add SETVIEWPOINT command at the beginning of a script
 //#define pp_REMOVE_DUPLICATES     // remove duplicate geometry vertices
-#define pp_READALLGEOM_MT         // read geometry files in parallel
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set

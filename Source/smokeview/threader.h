@@ -13,8 +13,6 @@
 #endif
 
 #define MAX_THREADS 16
-#ifdef pp_READALLGEOM_MT
-#endif
 
 // setup LOCKS
 
@@ -28,13 +26,8 @@
   #define UNLOCK_TRIANGLES
 #endif
 
-#ifdef pp_READALLGEOM_MT
   #define LOCK_READALLGEOM     pthread_mutex_lock(&mutexREADALLGEOM);
   #define UNLOCK_READALLGEOM   pthread_mutex_unlock(&mutexREADALLGEOM);
-#else
-  #define LOCK_READALLGEOM
-  #define UNLOCK_READALLGEOM
-#endif
 
   #define LOCK_PART_LOAD    pthread_mutex_lock(&mutexPART_LOAD);
   #define UNLOCK_PART_LOAD  pthread_mutex_unlock(&mutexPART_LOAD);
@@ -110,9 +103,7 @@ void MtReadVolsmokeAllFramesAllMeshes2(void);
 #ifndef CPP
 #ifdef pp_THREAD
 
-#ifdef pp_READALLGEOM_MT
 MT_EXTERN pthread_mutex_t mutexREADALLGEOM;
-#endif
 MT_EXTERN pthread_t makeiblank_thread_id;
 #ifdef pp_SLICETHREAD
 MT_EXTERN pthread_mutex_t mutexSLICE_LOAD;
@@ -137,10 +128,8 @@ MT_EXTERN pthread_t partthread_ids[MAX_THREADS];
 #ifdef pp_SLICETHREAD
 MT_EXTERN pthread_t slicethread_ids[MAX_THREADS];
 #endif
-#ifdef pp_READALLGEOM_MT
 MT_EXTERN pthread_t readallgeomthread_ids[MAX_THREADS];
 MT_EXTERN pthread_t classifyallgeomthread_ids[MAX_THREADS];
-#endif
 #ifdef pp_SAMPLE
 MT_EXTERN pthread_t sample_thread_id;
 #endif

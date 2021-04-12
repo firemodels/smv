@@ -11,9 +11,7 @@
 
 void InitMultiThreading(void){
 #ifdef pp_THREAD
-#ifdef pp_READALLGEOM_MT
   pthread_mutex_init(&mutexREADALLGEOM, NULL);
-#endif
 #ifdef pp_SLICETHREAD
   pthread_mutex_init(&mutexSLICE_LOAD, NULL);
 #endif
@@ -182,7 +180,6 @@ void LoadAllPartFilesMT(int partnum){
 #endif
 
 #ifdef pp_THREAD
-#ifdef pp_READALLGEOM_MT
 /* ------------------ MtClassifyAllGeom ------------------------ */
 
 void *MtClassifyAllGeom(void *arg){
@@ -231,12 +228,6 @@ void ReadAllGeomMT(void){
     ReadAllGeom();
   }
 }
-#else
-void ReadAllGeomMT(void){
-  SetupReadAllGeom();
-  ReadAllGeom();
-}
-#endif
 #endif
 
 #ifdef pp_THREAD
