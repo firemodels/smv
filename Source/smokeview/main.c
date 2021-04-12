@@ -101,9 +101,6 @@ void Usage(char *prog,int option){
 #ifdef pp_GCC
     strcat(label, ", pp_GCC");
 #endif
-#ifdef pp_GLUTGET
-    strcat(label, ", pp_GLUTGET");
-#endif
 #ifdef pp_GPU
     strcat(label, ", pp_GPU");
 #endif

@@ -28,7 +28,6 @@
 #define pp_DRAWISO            // turn on drawing routines
 //#define pp_UPDATE_FILELOAD  // updates fileload variables when a file has been loaded or unloaded
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
-#define pp_GLUTGET            // use d and f key in addition to CTRL and ALT key
 
 //#define pp_WUI_VAO            // use opengl vao objects for drawing terrain
 
@@ -50,12 +49,8 @@
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
 //#define pp_SINGLE_FRAME_TEST   // test loading a single slice file frame (without using a script)
 //#define pp_SCRIPT_RENDER_FIX  // temporary fix to script rendering, needs to be explored further
-#define pp_DISABLE_ADJUSTY      // turn off y adjust when selecting a viewpoint
 //#define pp_SCRIPT_SETVIEW       // add SETVIEWPOINT command at the beginning of a script
-#define pp_ZOOM_INI           // initialize zoom settings in VIEWPOINT5 .ini code
-#define pp_VIEWPOINT_MENU       // use viewpoint menu code when setting viewpoints from a dialog
 //#define pp_REMOVE_DUPLICATES     // remove duplicate geometry vertices
-//#define pp_OLD_DISTPOINTBOX      // original algorithm for computing distance between a point and a box
 #define pp_READALLGEOM_MT         // read geometry files in parallel
 
 #ifdef pp_GPU

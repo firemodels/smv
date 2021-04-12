@@ -719,7 +719,6 @@ int GetColorbarIndex(int flag, int x, int y){
   return CB_SELECT_CONTINUE;
 }
 
-#ifdef pp_GLUTGET
 #define GLUTGETMODIFIERS GlutGetModifiersNew
 int GlutGetModifiersNew(void){
   int modifier;
@@ -744,9 +743,6 @@ int GlutGetModifiersNew(void){
 #endif
   return modifier;
 }
-#else
-#define GLUTGETMODIFIERS glutGetModifiers
-#endif
 
 /* ------------------ ColorbarClick ------------------------ */
 
@@ -980,11 +976,9 @@ void MouseCB(int button, int state, int xm, int ym){
     if(state==GLUT_DOWN)UpdateFreeze(ON);
     if(state==GLUT_UP)UpdateFreeze(OFF);
   }
-#ifdef pp_GLUTGET
   if(state == GLUT_UP){
     alt_ctrl_key_state = KEY_NONE;
   }
-#endif
   if(rotation_type==ROTATION_3AXIS){
     if(state==GLUT_DOWN){
       UpdateMouseInfo(MOUSE_DOWN,xm,ym);
@@ -1532,9 +1526,7 @@ void MouseDragCB(int xm, int ym){
 
 void KeyboardUpCB(unsigned char key, int x, int y){
   resetclock=1;
-#ifdef pp_GLUTGET
   alt_ctrl_key_state = KEY_NONE;
-#endif
 }
 
 #ifdef pp_GPU
@@ -1837,10 +1829,8 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'd':
-#ifdef pp_GLUTGET
       alt_ctrl_key_state = KEY_CTRL;
       break;
-#endif
     case 'D':
       if(key2=='d'&&showtour_dialog==1&&edittour==1){
         AddDeleteKeyframe(DELETE_KEYFRAME);
@@ -1882,10 +1872,8 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'f':
-#ifdef pp_GLUTGET
       alt_ctrl_key_state = KEY_ALT;
       break;
-#endif
     case 'F':
       hide_overlaps=1-hide_overlaps;
       updatehiddenfaces=1;

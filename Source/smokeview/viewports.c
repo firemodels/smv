@@ -1962,99 +1962,6 @@ float DistPointLineSeg(float *point, float *xyz1, float *xyz2){
 }
 
 /* ------------------ DistPointBox  ------------------------ */
-#ifdef pp_OLD_DISTPOINTBOX
-void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxdist){
-  float dist_planes[6], dist_corners[8];
-  float dist;
-  float *xyz1, *xyz2, delta;
-  int i;
-
-  //         6------------7
-  //        /|           /|
-  //      /  |         /  |
-  //    /    |       /    |
-  //   4------------5     |
-  //   |     |      |     |
-  //   |     2------|-----3
-  //   |    /       |    /
-  //   |  /         |  /
-  //   |/           |/
-  //   0------------1
-
-  int edges[]={
-    0,1,2,3,4,5,6,7,
-    0,4,1,5,2,6,3,7,
-    0,2,1,3,4,6,5,7
-  };
-
-  xyz1 = corners[0];
-  xyz2 = corners[7];
-  {
-    float dx, dy, dz;
-
-    DIST3(xyz1, xyz2, delta);
-    delta /= 10.0;
-  }
-
-  // distance between point and planes aligned with each side of the box
-  dist_planes[0] = ABS(point[0] - xyz1[0]);
-  dist_planes[1] = ABS(point[0] - xyz2[0]);
-  dist_planes[2] = ABS(point[1] - xyz1[1]);
-  dist_planes[3] = ABS(point[1] - xyz2[1]);
-  dist_planes[4] = ABS(point[2] - xyz1[2]);
-  dist_planes[5] = ABS(point[2] - xyz2[2]);
-
-  // distance between pont and each box corner
-  dist_corners[0] = DistPtXYZ(point, xyz1[0], xyz1[1], xyz1[2]);
-  dist_corners[1] = DistPtXYZ(point, xyz2[0], xyz1[1], xyz1[2]);
-  dist_corners[2] = DistPtXYZ(point, xyz1[0], xyz2[1], xyz1[2]);
-  dist_corners[3] = DistPtXYZ(point, xyz2[0], xyz2[1], xyz1[2]);
-  dist_corners[4] = DistPtXYZ(point, xyz1[0], xyz1[1], xyz2[2]);
-  dist_corners[5] = DistPtXYZ(point, xyz2[0], xyz1[1], xyz2[2]);
-  dist_corners[6] = DistPtXYZ(point, xyz1[0], xyz2[1], xyz2[2]);
-  dist_corners[7] = DistPtXYZ(point, xyz2[0], xyz2[1], xyz2[2]);
-
-  // only condsider point to plane distance if point is with one of the box sides
-  dist = dist_corners[0];
-  *maxdist = dist;
-  for(i=1;i<8;i++){
-    dist = MIN(dist, dist_corners[i]);
-    *maxdist = MAX(*maxdist, dist_corners[i]);
-  }
-  if(point[0]>=xyz1[0]&&point[0]<=xyz2[0]&&point[1]>=xyz1[1]&&point[1]<=xyz2[1]){
-    dist = MIN(dist, dist_planes[4]);
-    dist = MIN(dist, dist_planes[5]);
-  }
-  if(point[0]>=xyz1[0]&&point[0]<=xyz2[0]&&point[2]>=xyz1[2]&&point[2]<=xyz2[2]){
-    dist = MIN(dist, dist_planes[2]);
-    dist = MIN(dist, dist_planes[3]);
-  }
-  if(point[1]>=xyz1[1]&&point[1]<=xyz2[1]&&point[2]>=xyz1[2]&&point[2]<=xyz2[2]){
-    dist = MIN(dist, dist_planes[0]);
-    dist = MIN(dist, dist_planes[1]);
-  }
-
-  // distance between point and each box edge
-  for(i=0;i<12;i++){
-    int i1, i2;
-    float mdist;
-
-    i1 = edges[2*i];
-    i2 = edges[2*i+1];
-    mdist = DistPointLineSeg(point, corners[i1], corners[i2]);
-    if(mdist>0.0)dist = MIN(dist, mdist);
-  }
-
-  // add a 'safety' factor'
-  //dist     -= delta;
-  //*maxdist += delta;
-
-  *mindist = dist;
-}
-
-#else
-
-/* ------------------ DistPointBox  ------------------------ */
 
 void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxdist){
   int i, j, k;
@@ -2153,7 +2060,6 @@ void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxd
   *mindist = minval;
   *maxdist = maxval;
 }
-#endif
 
 /* ------------------ GetMinMaxDepth  ------------------------ */
 
