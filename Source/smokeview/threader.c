@@ -112,16 +112,7 @@ FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei,  int *fcount
       set_slicecolor = SET_SLICECOLOR;
     }
     if(slicei->skipdup==0){
-#ifdef pp_SINGLE_FRAME_TEST
-      {
-        float time_value;
-        int itime_value = 10;
-
-        file_size += LoadSlicei(set_slicecolor, mslicei->islices[i], itime_value, &time_value);
-      }
-#else
       file_size += LoadSlicei(set_slicecolor, mslicei->islices[i], ALL_FRAMES, NULL);
-#endif
       file_count++;
     }
   }
