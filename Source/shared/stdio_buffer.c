@@ -223,15 +223,15 @@ filedata *fopen_buffer(char *filename, char *mode){
   if(FILE_EXISTS(filename)==NO)return NULL;
   filesize = GetFileSizeSMV(filename);
   if(filesize==0)return NULL;
-  stream = fopen(filename,"rb");
-  if(stream==NULL)return NULL;
 
   NewMemory((void **)&fileinfo, sizeof(filedata));
   if(NewMemory((void **)&buffer, filesize+1)==0){
     FREEMEMORY(fileinfo);
-    fclose(stream);
     return NULL;
   }
+
+  stream = fopen(filename, "rb");
+  if(stream==NULL)return NULL;
   fread(buffer, sizeof(char), filesize, stream);
   fclose(stream);
 
