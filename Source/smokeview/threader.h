@@ -18,14 +18,6 @@
 
 #ifdef pp_THREAD
 
-#ifdef pp_ISOTRIANGLES
-  #define LOCK_TRIANGLES    pthread_mutex_lock(&mutexTRIANGLES);
-  #define UNLOCK_TRIANGLES  pthread_mutex_unlock(&mutexTRIANGLES);
-#else
-  #define LOCK_TRIANGLES
-  #define UNLOCK_TRIANGLES
-#endif
-
   #define LOCK_READALLGEOM     pthread_mutex_lock(&mutexREADALLGEOM);
   #define UNLOCK_READALLGEOM   pthread_mutex_unlock(&mutexREADALLGEOM);
 
@@ -73,9 +65,6 @@
   #define LOCK_PART_LOAD
   #define UNLOCK_PART_LOAD
 
-  #define LOCK_TRIANGLES
-  #define UNLOCK_TRIANGLES
-
   #define LOCK_COMPRESS
   #define UNLOCK_COMPRESS
 
@@ -112,9 +101,6 @@ MT_EXTERN pthread_mutex_t mutexPART_LOAD;
 MT_EXTERN pthread_mutex_t mutexIBLANK;
 MT_EXTERN pthread_mutex_t mutexVOLLOAD;
 MT_EXTERN pthread_mutex_t mutexCOMPRESS;
-#ifdef pp_ISOTHREAD
-MT_EXTERN pthread_mutex_t mutexTRIANGLES;
-#endif
 #ifdef pp_SAMPLE
 MT_EXTERN pthread_mutex_t mutexSAMPLE;
 #endif

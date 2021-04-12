@@ -2410,9 +2410,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     }
     if(nface_transparent>0&&sort_transparent_faces==1)SortTransparentFaces(modelview_scratch);
     if(showiso==1)UpdateIsoTriangles(0);
-    LOCK_TRIANGLES;
     GetGeomInfoPtrs(0);
-    UNLOCK_TRIANGLES;
     if(ngeominfoptrs>0)ShowHideSortGeometry(sort_geometry,modelview_scratch);
     if(showiso==1&&sort_iso_triangles==1&&niso_trans>0)SortIsoTriangles(modelview_scratch);
 

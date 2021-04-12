@@ -769,9 +769,7 @@ extern "C" void VolumeCB(int var){
     }
     break;
   case UPDATE_GEOM:
-    LOCK_TRIANGLES;
     show_geom_bndf = glui_show_geom_bndf;
-    UNLOCK_TRIANGLES;
     update_times = 1;
     break;
   case RESET_GEOM_OFFSET:
