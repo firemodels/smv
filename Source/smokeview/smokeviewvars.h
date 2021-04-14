@@ -224,9 +224,7 @@ SVEXTERN int SVDECL(npartthread_ids, 4);
 #ifdef pp_SLICETHREAD
 SVEXTERN int SVDECL(nslicethread_ids, 4);
 #endif
-#ifdef pp_READALLGEOM_MT
 SVEXTERN int SVDECL(nreadallgeomthread_ids, 4);
-#endif
 SVEXTERN int SVDECL(partfast, NO);
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);
 SVEXTERN int SVDECL(use_fire_alpha, 0);
@@ -253,11 +251,7 @@ SVEXTERN int SVDECL(part_multithread, 0);
 #ifdef pp_SLICETHREAD
 SVEXTERN int SVDECL(slice_multithread, 0);
 #endif
-#ifdef pp_READALLGEOM_MT
 SVEXTERN int SVDECL(readallgeom_multithread, 1);
-#else
-SVEXTERN int SVDECL(readallgeom_multithread, 0);
-#endif
 SVEXTERN int SVDECL(lighting_on,0);
 SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 1);
 SVEXTERN int SVDECL(update_texturebar, 0);

@@ -4693,16 +4693,7 @@ void LoadSliceMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
     SetLoadedSliceBounds(&value, 1);
-#ifdef pp_SINGLE_FRAME_TEST
-      {
-        float time_value;
-        int itime_value=10;
-
-        LoadSlicei(SET_SLICECOLOR,value, itime_value, &time_value);
-      }
-#else
     LoadSlicei(SET_SLICECOLOR,value, ALL_FRAMES, NULL);
-#endif
   }
   else{
     switch (value){

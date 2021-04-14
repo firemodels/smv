@@ -1607,10 +1607,8 @@ void UpdateTriangles(int flag,int update){
   int j, ii, ntimes;
   int ntimes_max=0;
 
-  LOCK_TRIANGLES;
   GetGeomInfoPtrs(0);
   updating_triangles = 1;
-  UNLOCK_TRIANGLES;
   if(cancel_update_triangles==1){
     updating_triangles = 0;
     return;

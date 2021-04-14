@@ -1077,9 +1077,7 @@ void UpdateTimes(void){
   int i;
   float global_timemin=1000000000.0, global_timemax=-1000000000.0;
 
-  LOCK_TRIANGLES;
   GetGeomInfoPtrs(0);
-  UNLOCK_TRIANGLES;
 
   UpdateShow();
   CheckMemory;

@@ -6176,12 +6176,9 @@ void DrawSliceFrame(){
         if(show_cell_slices_and_vectors==0)continue;
       }
     }
-    // don't skip if the current script command is LOADSLICERENDER
-#ifndef pp_SINGLE_FRAME_TEST
     if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
       if(sd->times[0]>global_times[itimes])continue;
     }
-#endif
     if(sd->slice_filetype != SLICE_GEOM){
       if(sd->compression_type!=UNCOMPRESSED){
         UncompressSliceDataFrame(sd,sd->itime);

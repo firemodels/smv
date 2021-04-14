@@ -29,7 +29,7 @@ if exist %userprofile%\.bundle\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="29-Mar-2021"
+set smvlogdate="13-Apr-2021"
 
 :: ---- repo locations ----
 
@@ -96,6 +96,6 @@ set linux_logon=%linux_username%@%linux_hostname%
 
 ::*** OSX
 set osx_hostname=bevo.el.nist.gov
-::set osx_hostname=192.168.1.134
+set osx_hostname=192.168.1.146
 set osx_username=%username%
 set osx_logon=%osx_username%@%osx_hostname%

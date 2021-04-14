@@ -13,28 +13,13 @@
 #endif
 
 #define MAX_THREADS 16
-#ifdef pp_READALLGEOM_MT
-#endif
 
 // setup LOCKS
 
 #ifdef pp_THREAD
 
-#ifdef pp_ISOTRIANGLES
-  #define LOCK_TRIANGLES    pthread_mutex_lock(&mutexTRIANGLES);
-  #define UNLOCK_TRIANGLES  pthread_mutex_unlock(&mutexTRIANGLES);
-#else
-  #define LOCK_TRIANGLES
-  #define UNLOCK_TRIANGLES
-#endif
-
-#ifdef pp_READALLGEOM_MT
   #define LOCK_READALLGEOM     pthread_mutex_lock(&mutexREADALLGEOM);
   #define UNLOCK_READALLGEOM   pthread_mutex_unlock(&mutexREADALLGEOM);
-#else
-  #define LOCK_READALLGEOM
-  #define UNLOCK_READALLGEOM
-#endif
 
   #define LOCK_PART_LOAD    pthread_mutex_lock(&mutexPART_LOAD);
   #define UNLOCK_PART_LOAD  pthread_mutex_unlock(&mutexPART_LOAD);
@@ -53,15 +38,9 @@
   #define LOCK_VOLLOAD      pthread_mutex_lock(&mutexVOLLOAD);
   #define UNLOCK_VOLLOAD    pthread_mutex_unlock(&mutexVOLLOAD);
 
-#ifdef pp_THREADIBLANK
   #define LOCK_IBLANK       pthread_mutex_lock(&mutexIBLANK);
   #define UNLOCK_IBLANK     pthread_mutex_unlock(&mutexIBLANK);
   #define JOIN_IBLANK       pthread_join(makeiblank_thread_id,NULL);
-#else
-  #define LOCK_IBLANK
-  #define UNLOCK_IBLANK
-  #define JOIN_IBLANK
-#endif
 
 #ifdef pp_SAMPLE
   #define LOCK_SAMPLE     pthread_mutex_lock(&mutexSAMPLE);
@@ -79,9 +58,6 @@
 
   #define LOCK_PART_LOAD
   #define UNLOCK_PART_LOAD
-
-  #define LOCK_TRIANGLES
-  #define UNLOCK_TRIANGLES
 
   #define LOCK_COMPRESS
   #define UNLOCK_COMPRESS
@@ -110,9 +86,7 @@ void MtReadVolsmokeAllFramesAllMeshes2(void);
 #ifndef CPP
 #ifdef pp_THREAD
 
-#ifdef pp_READALLGEOM_MT
 MT_EXTERN pthread_mutex_t mutexREADALLGEOM;
-#endif
 MT_EXTERN pthread_t makeiblank_thread_id;
 #ifdef pp_SLICETHREAD
 MT_EXTERN pthread_mutex_t mutexSLICE_LOAD;
@@ -121,9 +95,6 @@ MT_EXTERN pthread_mutex_t mutexPART_LOAD;
 MT_EXTERN pthread_mutex_t mutexIBLANK;
 MT_EXTERN pthread_mutex_t mutexVOLLOAD;
 MT_EXTERN pthread_mutex_t mutexCOMPRESS;
-#ifdef pp_ISOTHREAD
-MT_EXTERN pthread_mutex_t mutexTRIANGLES;
-#endif
 #ifdef pp_SAMPLE
 MT_EXTERN pthread_mutex_t mutexSAMPLE;
 #endif
@@ -137,10 +108,8 @@ MT_EXTERN pthread_t partthread_ids[MAX_THREADS];
 #ifdef pp_SLICETHREAD
 MT_EXTERN pthread_t slicethread_ids[MAX_THREADS];
 #endif
-#ifdef pp_READALLGEOM_MT
 MT_EXTERN pthread_t readallgeomthread_ids[MAX_THREADS];
 MT_EXTERN pthread_t classifyallgeomthread_ids[MAX_THREADS];
-#endif
 #ifdef pp_SAMPLE
 MT_EXTERN pthread_t sample_thread_id;
 #endif

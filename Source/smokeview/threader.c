@@ -11,21 +11,14 @@
 
 void InitMultiThreading(void){
 #ifdef pp_THREAD
-#ifdef pp_READALLGEOM_MT
   pthread_mutex_init(&mutexREADALLGEOM, NULL);
-#endif
 #ifdef pp_SLICETHREAD
   pthread_mutex_init(&mutexSLICE_LOAD, NULL);
 #endif
   pthread_mutex_init(&mutexPART_LOAD, NULL);
   pthread_mutex_init(&mutexCOMPRESS,NULL);
-#ifdef pp_ISOTHREAD
-  pthread_mutex_init(&mutexTRIANGLES,NULL);
-#endif
   pthread_mutex_init(&mutexVOLLOAD,NULL);
-#ifdef pp_THREADIBLANK
   pthread_mutex_init(&mutexIBLANK, NULL);
-#endif
 #endif
 }
 
@@ -119,16 +112,7 @@ FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei,  int *fcount
       set_slicecolor = SET_SLICECOLOR;
     }
     if(slicei->skipdup==0){
-#ifdef pp_SINGLE_FRAME_TEST
-      {
-        float time_value;
-        int itime_value = 10;
-
-        file_size += LoadSlicei(set_slicecolor, mslicei->islices[i], itime_value, &time_value);
-      }
-#else
       file_size += LoadSlicei(set_slicecolor, mslicei->islices[i], ALL_FRAMES, NULL);
-#endif
       file_count++;
     }
   }
@@ -182,7 +166,6 @@ void LoadAllPartFilesMT(int partnum){
 #endif
 
 #ifdef pp_THREAD
-#ifdef pp_READALLGEOM_MT
 /* ------------------ MtClassifyAllGeom ------------------------ */
 
 void *MtClassifyAllGeom(void *arg){
@@ -231,12 +214,6 @@ void ReadAllGeomMT(void){
     ReadAllGeom();
   }
 }
-#else
-void ReadAllGeomMT(void){
-  SetupReadAllGeom();
-  ReadAllGeom();
-}
-#endif
 #endif
 
 #ifdef pp_THREAD
@@ -332,7 +309,6 @@ void FinishUpdateTriangles(void){
 
 /* ------------------ MtMakeIBlank ------------------------ */
 #ifdef pp_THREAD
-#ifdef pp_THREADIBLANK
 void *MtMakeIBlank(void *arg){
 
   MakeIBlank();
@@ -343,7 +319,6 @@ void *MtMakeIBlank(void *arg){
   pthread_exit(NULL);
   return NULL;
 }
-#endif
 #endif
 
 /* ------------------ Sample ------------------------ */
@@ -378,17 +353,9 @@ void SampleMT(void){
 /* ------------------ makeiblank_all ------------------------ */
 
 #ifdef pp_THREAD
-#ifdef pp_THREADIBLANK
 void MakeIBlankAll(void){
   pthread_create(&makeiblank_thread_id, NULL, MtMakeIBlank, NULL);
 }
-#else
-void MakeIBlankAll(void){
-  MakeIBlank();
-  SetCVentDirs();
-  update_setvents=1;
-}
-#endif
 #else
 void MakeIBlankAll(void){
   MakeIBlank();

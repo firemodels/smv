@@ -10247,11 +10247,9 @@ typedef struct {
   MakeIBlankCarve();
   MakeIBlankSmoke3D();
   MakeIBlankAll();
-#ifdef pp_THREADIBLANK
   if(runscript == 1){
     JOIN_IBLANK
   }
-#endif
   LOCK_IBLANK
   SetVentDirs();
   UNLOCK_IBLANK
@@ -14659,10 +14657,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %f %i\n", slice_average_flag, slice_average_interval, vis_slice_average);
   fprintf(fileout, "SLICEDATAOUT\n");
   fprintf(fileout, " %i \n", output_slicedata);
-#ifdef pp_SLICEFAST
-  fprintf(fileout, "SLICEFAST\n");
-  fprintf(fileout, " %i %i\n", slice_multithread, nslicethread_ids);
-#endif
   fprintf(fileout, "SLICEZIPSTEP\n");
   fprintf(fileout, " %i\n", slicezipstep);
   fprintf(fileout, "SMOKE3DZIPSTEP\n");
