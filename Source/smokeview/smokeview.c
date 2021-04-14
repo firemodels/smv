@@ -231,13 +231,13 @@ void DisplayVersionInfo(char *progname){
       char *smv2, smokeviewpath_copy[256];
 
       strcpy(smokeviewpath_copy, smokeviewpath);
-      smv2 = strstr(smokeviewpath_copy, "smv");
+      smv2 = strstr(smokeviewpath_copy, "Build");
       if(smv2==NULL){
         PRINTF("Smokeview        : %s\n", smokeviewpath);
       }
       else{
         smv2[-1] = 0;
-        PRINTF("Smokeview        : %s\n", smokeviewpath_copy);
+        PRINTF("Smokeview        : %s/\n", smokeviewpath_copy);
         PRINTF("                   %s\n", smv2);
       }
     }
