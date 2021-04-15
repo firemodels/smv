@@ -1964,22 +1964,22 @@ void Keyboard(unsigned char key, int flag){
         stept=1;
         if(nvslice_loaded_local>0){
           if(showall_slices==0){
-            ShowVSliceMenu(SHOW_ALL);
+            ShowVSliceMenu(GLUI_SHOWALL_VSLICE);
             force_redisplay=1;
           }
           else{
             itime_save=itimes;
-            ShowVSliceMenu(HIDE_ALL);
+            ShowVSliceMenu(GLUI_HIDEALL_VSLICE);
           }
         }
         if(nvslice_loaded_local==0&&nslice_loaded_local>0){
           if(showall_slices==0){
-            ShowHideSliceMenu(SHOW_ALL);
+            ShowHideSliceMenu(GLUI_SHOWALL);
             force_redisplay=1;
           }
           else{
             itime_save=itimes;
-            ShowHideSliceMenu(HIDE_ALL);
+            ShowHideSliceMenu(GLUI_HIDEALL);
           }
         }
       }
