@@ -1821,9 +1821,11 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'd':
-      alt_ctrl_key_state = KEY_CTRL;
-      break;
     case 'D':
+      if(key2=='d'&&keystate!=GLUT_ACTIVE_ALT){
+        alt_ctrl_key_state = KEY_CTRL;
+        break;
+      }
       if(key2=='d'&&showtour_dialog==1&&edittour==1){
         AddDeleteKeyframe(DELETE_KEYFRAME);
         break;
@@ -2484,7 +2486,9 @@ void Keyboard(unsigned char key, int flag){
       switch(keystate){
         case GLUT_ACTIVE_ALT:
 #ifdef pp_DIALOG_SHORTCUTS
-          DialogMenu(DIALOG_WUI); // WUI dialog
+          if(nterraininfo>0){
+            DialogMenu(DIALOG_WUI); // WUI dialog
+          }
           break;
 #endif
         case GLUT_ACTIVE_CTRL:
