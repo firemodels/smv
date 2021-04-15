@@ -4816,9 +4816,8 @@ This option may be used with the {\em m}\ key to highlight all meshes in sequenc
 
 \kitem{O}Toggle the blockage view state between 1) defined in input file and 2) outline only
 
-\kitem{p}Cycle through particle file types.
-
-\kitem{P}Cycle through Plot3D file types.
+\kitem{p, P}Cycle through particle file types or Plot3D file types (if particles are not loaded). 
+P will cycle through Plot3D file types if particles are loaded.
 
 \kitem{q}Switch between blockage views.  These views are blocks
 that are aligned on grid lines, blocks as specified by the user
@@ -4850,15 +4849,14 @@ one to step through the simulation one time step at a time.
 \kitem{T}Toggle the time bar time label between showing time as seconds
 and time as hour, minutes and seconds.
 
-\kitem{u,U}Reload files from the keyboard.  This is useful when
-using Smokeview to display a case that is currently running in
-FDS.
+\kitem{u,U}Reload currently loaded files.  This is useful when
+using Smokeview to display a case that FDS is currently running.
 
-\kitem{v}Toggle vector visibility.  This option is only active
+\kitem{v}Toggle Plot3D vector visibility.  This option is only active
 when there are U, V and/or W velocity components present in the
-Plot3D data set.
+Plot3D file.
 
-\kitem{V}Toggle visibility of volume rendered smoke.
+\kitem{V}Toggle volume rendered smoke visibility.
 
 \kitem{w}Toggle visibility of 3D node centered general slice.
 When in {\em eye centered}\ movement
@@ -4884,9 +4882,6 @@ to the yz, xz and xy planes).
 \kitem{ALT c}Open the Clipping dialog box.
 
 \kitem{ALT d, D}Open the Display dialog box.
-On the OSX version of smokeview only {\tt ALT D}\ can be used to open the Display dialog box
-as {\tt d}\ and {\tt f}\ are used for {\tt CTRL}\ and
-{\tt ALT}\ modifier keys respectively.
 
 \kitem{ALT e}Open the Blockage info dialog box.
 
