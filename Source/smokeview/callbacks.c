@@ -1770,18 +1770,10 @@ void Keyboard(unsigned char key, int flag){
       default:
         show_boundaryfiles = 1-show_boundaryfiles;
         if(show_boundaryfiles==1){
-          ShowBoundaryMenu(SHOWALL_BOUNDARY);
-          if(key2=='B'){
-            VentMenu(HIDE_ALL_VENTS);
-            BlockageMenu(visBLOCKHide);
-          }
-          }
+          ShowBoundaryMenu(GLUI_SHOWALL_BOUNDARY);
+        }
         else{
-          ShowBoundaryMenu(HIDEALL_BOUNDARY);
-          if(key2=='B'){
-            VentMenu(SHOW_ALL_VENTS);
-            BlockageMenu(visBLOCKAsInput);
-          }
+          ShowBoundaryMenu(GLUI_HIDEALL_BOUNDARY);
         }
         break;
       }
