@@ -806,7 +806,7 @@ SVEXTERN unsigned char select_device_color[4], SVDECL(*select_device_color_ptr,N
 SVEXTERN float SVDECL(*avatar_colors,NULL);
 SVEXTERN int SVDECL(script_render_flag,0), SVDECL(script_itime,0);
 
-SVEXTERN int SVDECL(show_slice_in_obst,ONLY_IN_GAS), offset_slice, SVDECL(show_slice_in_obst_old, ONLY_IN_GAS);
+SVEXTERN int SVDECL(show_slice_in_obst,ONLY_IN_GAS), offset_slice;
 SVEXTERN int skip_slice_in_embedded_mesh;
 SVEXTERN int n_embedded_meshes;
 
