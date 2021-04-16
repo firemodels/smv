@@ -85,17 +85,24 @@ void CompressSVZip(void){
 }
 #endif
 
-//***************************** multi threading particle loading routines ***********************************
-
 #ifdef pp_THREAD
 
-/* ------------------ LoadAllMslices ------------------------ */
+/* --------------------------  slicethreaddata ------------------------------------ */
+
+typedef struct _slicethreaddata {
+  int slice_index;
+  FILE_SIZE file_size;
+} slicethreaddata;
+
 FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_value);
+
+/* ------------------ LoadAllMSlicesMT ------------------------ */
 
 FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei,  int *fcount){
   FILE_SIZE file_size = 0;
   int file_count = 0;
   int i;
+//  slicethreaddata slicethreadinfo[MAX_THREADS];
 
   file_count = 0;
   file_size = 0;
@@ -111,11 +118,13 @@ FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei,  int *fcount
       slicei->finalize = 1;
       set_slicecolor = SET_SLICECOLOR;
     }
-    if(slicei->skipdup==0){
+    if(slicei->skipdup==0&&last_slice!=mslicei->islices[i]){
       file_size += LoadSlicei(set_slicecolor, mslicei->islices[i], ALL_FRAMES, NULL);
       file_count++;
     }
   }
+  file_size += LoadSlicei(SET_SLICECOLOR, last_slice, ALL_FRAMES, NULL);
+  file_count++;
   *fcount = file_count;
   return file_size;
 }

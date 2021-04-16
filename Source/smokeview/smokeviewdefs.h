@@ -546,7 +546,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define HIDEALL_PLOT3D        999
 #define GLUI_SHOWALL_BOUNDARY 994
 #define GLUI_HIDEALL_BOUNDARY 993
-#define SHOWALL_BOUNDARY      998
 #define HIDEALL_BOUNDARY      999
 #define SHOW_CHAR             997
 #define HIDEALL_PARTICLE        4

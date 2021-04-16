@@ -1770,18 +1770,10 @@ void Keyboard(unsigned char key, int flag){
       default:
         show_boundaryfiles = 1-show_boundaryfiles;
         if(show_boundaryfiles==1){
-          ShowBoundaryMenu(SHOWALL_BOUNDARY);
-          if(key2=='B'){
-            VentMenu(HIDE_ALL_VENTS);
-            BlockageMenu(visBLOCKHide);
-          }
-          }
+          ShowBoundaryMenu(GLUI_SHOWALL_BOUNDARY);
+        }
         else{
-          ShowBoundaryMenu(HIDEALL_BOUNDARY);
-          if(key2=='B'){
-            VentMenu(SHOW_ALL_VENTS);
-            BlockageMenu(visBLOCKAsInput);
-          }
+          ShowBoundaryMenu(GLUI_HIDEALL_BOUNDARY);
         }
         break;
       }
@@ -1829,9 +1821,11 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'd':
-      alt_ctrl_key_state = KEY_CTRL;
-      break;
     case 'D':
+      if(key2=='d'&&keystate!=GLUT_ACTIVE_ALT){
+        alt_ctrl_key_state = KEY_CTRL;
+        break;
+      }
       if(key2=='d'&&showtour_dialog==1&&edittour==1){
         AddDeleteKeyframe(DELETE_KEYFRAME);
         break;
@@ -1972,22 +1966,22 @@ void Keyboard(unsigned char key, int flag){
         stept=1;
         if(nvslice_loaded_local>0){
           if(showall_slices==0){
-            ShowVSliceMenu(SHOW_ALL);
+            ShowVSliceMenu(GLUI_SHOWALL_VSLICE);
             force_redisplay=1;
           }
           else{
             itime_save=itimes;
-            ShowVSliceMenu(HIDE_ALL);
+            ShowVSliceMenu(GLUI_HIDEALL_VSLICE);
           }
         }
         if(nvslice_loaded_local==0&&nslice_loaded_local>0){
           if(showall_slices==0){
-            ShowHideSliceMenu(SHOW_ALL);
+            ShowHideSliceMenu(GLUI_SHOWALL);
             force_redisplay=1;
           }
           else{
             itime_save=itimes;
-            ShowHideSliceMenu(HIDE_ALL);
+            ShowHideSliceMenu(GLUI_HIDEALL);
           }
         }
       }
@@ -2492,7 +2486,9 @@ void Keyboard(unsigned char key, int flag){
       switch(keystate){
         case GLUT_ACTIVE_ALT:
 #ifdef pp_DIALOG_SHORTCUTS
-          DialogMenu(DIALOG_WUI); // WUI dialog
+          if(nterraininfo>0){
+            DialogMenu(DIALOG_WUI); // WUI dialog
+          }
           break;
 #endif
         case GLUT_ACTIVE_CTRL:

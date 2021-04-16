@@ -5539,12 +5539,15 @@ void ShowBoundaryMenu(int value){
     vis_threshold = 1 - vis_threshold;
     UpdateChar();
   }
-  if(value==SHOWALL_BOUNDARY||value==GLUI_SHOWALL_BOUNDARY||value==GLUI_HIDEALL_BOUNDARY){
+  if(value==GLUI_SHOWALL_BOUNDARY||value==GLUI_HIDEALL_BOUNDARY){
     int ii;
 
-    if(value == GLUI_SHOWALL_BOUNDARY)show_boundaryfiles = 1;
-    if(value == GLUI_HIDEALL_BOUNDARY)show_boundaryfiles = 0;
-    if(value==SHOWALL_BOUNDARY)show_boundaryfiles = 1-show_boundaryfiles;
+    if(value == GLUI_SHOWALL_BOUNDARY){
+      show_boundaryfiles = 1;
+    }
+    if(value == GLUI_HIDEALL_BOUNDARY){
+      show_boundaryfiles = 0;
+    }
     for(ii=0;ii<npatch_loaded;ii++){
       patchdata *patchi;
       int i;
@@ -6802,7 +6805,14 @@ updatemenu=0;
           }
         }
         else{
-          glutAddMenuEntry(menulabel, SHOWALL_BOUNDARY);
+          if(show_boundaryfiles==1){
+            glutAddMenuEntry("*Show all", GLUI_SHOWALL_BOUNDARY);
+            glutAddMenuEntry("Hide all",  GLUI_SHOWALL_BOUNDARY);
+          }
+          else{
+            glutAddMenuEntry("Show all",  GLUI_SHOWALL_BOUNDARY);
+            glutAddMenuEntry("*Hide all", GLUI_SHOWALL_BOUNDARY);
+          }
         }
       }
       if(npatchloaded>1)GLUTADDSUBMENU(_("Mesh"), showpatchsinglemenu);
