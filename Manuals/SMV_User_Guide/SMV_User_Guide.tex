@@ -632,17 +632,17 @@ along coordinate axes.
 
 \subsection{Obtaining Smokeview}
 
-Smokeview is available at \hhref{http://pages.nist.gov/fds}.
-This site contains links to installation packages for
-Windows, Linux and Mac~OS~X operating systems. It also contains documentation for
-Smokeview and FDS, sample FDS calculations, software updates and
+Smokeview is available at \hhref{http://pages.nist.gov/fds/downloads.html}.
+This web page contains links to FDS and Smokeview installers for
+Windows, Linux and Mac~OS~X computer platforms. It also contains documentation for
+Smokeview and FDS, sample FDS input files, software updates and
 links for requesting feedback about the software.
 
-After obtaining the setup program, install Smokeview (and FDS)  on the PC by
+After obtaining the setup program, install Smokeview (and FDS)  on a PC by
 double-clicking the downloaded
 setup program. The setup program then steps through the
-program installation. It copies the FDS and Smokeview executables,
-sample cases and documentation to the selected directory.  The setup program also
+installation. It copies the FDS and Smokeview executables,
+sample input files and documentation to the selected directory.  The setup program also
 defines PATH variables and associates the {\tt .smv}\ file
 extension to the Smokeview program so that one may either type
 Smokeview at any command line prompt or double click on any {\tt
@@ -687,10 +687,10 @@ within the {\em Load/Unload}\ menu.
 \noindent This report documents step 3 and 4. Steps 1 and 2 are
 documented in the FDS User's Guide~\cite{FDS_Users_Guide}.
 
-Menus in Smokeview are activated by clicking the right mouse
+Smokeview menus are selected by clicking the right mouse
 button anywhere within the Smokeview window.  Data files may be
-visualized by selecting the desired {\em Load/Unload}\ menu
-option. Other menu options are discussed in Appendix
+visualized by selecting the desired {\em Load/Unload}\ menu item. 
+Other menu options are discussed in Appendix
 \ref{sectionmenu}. Many menu commands have equivalent keyboard
 shortcuts. These shortcuts are listed in Smokeview's {\em Help}\
 menu and are described in Appendix \ref{sectionkeyboard}.
@@ -1763,9 +1763,10 @@ when mapping data to color and does not smooth colorbar labels.
 \includegraphics[width=5.4027777in]{\SMVfigdir/figBOUNDset}}
 \caption[Dialog box for setting Slice file data bounds.]
 {Dialog box for setting Slice file data bounds.
-Select a variable and bound type (percentile, set or global).  Enter a lower
+Select a variable and bound type (set, global  or percentile).  Enter a lower
 and/or upper bound if set bound type was selected. Data may be excluded from the plot by
-selecting a {\em Truncate data}\ bound. Press the {\em Update}\ button for
+selecting a {\em Truncate data}\ bound. 
+Press the {\em Update colors}\ or {\em Reload data}\ button for
 the new bounds to take effect.}\ \label{figBOUNDSset}
 \end{figure}
 
@@ -1819,7 +1820,7 @@ options.] {Dialog box for setting Plot3D file
 options. Select a variable and bound type. Enter a lower
 and/or upper bound if set bound type was selected.  Data may be excluded from the plot by
 selecting a {\em Truncate data}\ bound. Select the type of contour
-plot to be displayed. Press the {\em Reload Plot3D files(s)}\ button for
+plot to be displayed. Press the {\em Update colors}\ or {\em Reload data}\ button for
 the new bounds to take effect.}\ \label{figBOUNDSplot3d}
 \end{figure}
 
@@ -1846,7 +1847,7 @@ The user may also specify the number files that are loaded simultaneously
 options.] {Dialog box for setting Particle file
 options. Select a variable and bound type. Enter a lower
 and/or upper bound if set bound type was selected. Particle files may be loaded in parallel by
-selecting the Parallel loading checkbox and setting the number of files to load in parallel.
+selecting the Fast loading checkbox and setting the number of files to load in parallel.
  }\ \label{figBOUNDSpart}
 \end{figure}
 
@@ -1856,7 +1857,7 @@ selecting the Parallel loading checkbox and setting the number of files to load 
 \centerline{\includegraphics[width=7.19444in]{\SMVfigdir/fig3DSmoke}
 }\ \caption[Dialog box for setting slice rendered 3D smoke options]
 {Dialog box for setting slice rendered 3D smoke options.  Fire color may be specified for hrrpuv values above a specified cutoff.
-Smoke color may be specified for hrrpuv values below the same cutoff. }
+Smoke color may be specified for hrrpuv values below the same cutoff. Data may be skipped for faster loading by setting the skip controls }
 \label{fig3DSmoke}
 \end{figure}
 \begin{figure}[bph]
@@ -1999,8 +2000,8 @@ option is used when invoking Smokeview and the video card supports shuttered ste
 
 \begin{figure}[bph]
 \begin{center}
-\includegraphics[height=2.055555in]{\SMVfigdir/figSTEREO}
-\caption{Dialog box for activating the stereo view option.}
+\includegraphics[width=2.9305in]{\SMVfigdir/figSTEREO}
+\caption{Dialog box for specifying stereo view options.}
 \label{figstereodialog}
 \end{center}
 \end{figure}
