@@ -913,6 +913,7 @@ void PrintPartLoadSummary(int option_arg,int type_arg){
 #ifdef pp_PART_SIZE
     printf("\n");
 #endif
+    printf("\n");
   }
 }
 
