@@ -2668,7 +2668,7 @@ GLUI_Rollout *ROLLOUT_iso_colors = NULL;
 GLUI_Rollout *ROLLOUT_smoke3d=NULL,*ROLLOUT_volsmoke3d=NULL;
 GLUI_Rollout *ROLLOUT_time=NULL,*ROLLOUT_colorbar=NULL;
 GLUI_Rollout *ROLLOUT_outputpatchdata=NULL;
-GLUI_Rollout *ROLLOUT_boundimmersed = NULL;
+GLUI_Rollout *ROLLOUT_slice_settings = NULL;
 GLUI_Rollout *ROLLOUT_filebounds = NULL;
 GLUI_Rollout *ROLLOUT_showhide = NULL;
 GLUI_Rollout *ROLLOUT_slice_average = NULL;
@@ -4753,12 +4753,12 @@ extern "C" void GluiBoundsSetup(int main_window){
     }
 
     glui_bounds->add_column_to_panel(PANEL_slice_buttonsB, false);
-    ROLLOUT_boundimmersed = glui_bounds->add_rollout_to_panel(PANEL_slice_buttonsB, "Settings",false,SLICE_SETTINGS_ROLLOUT,SliceRolloutCB);
-    INSERT_ROLLOUT(ROLLOUT_boundimmersed, glui_bounds);
-    ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_boundimmersed, SLICE_SETTINGS_ROLLOUT, glui_bounds);
+    ROLLOUT_slice_settings = glui_bounds->add_rollout_to_panel(PANEL_slice_buttonsB, "Settings",false,SLICE_SETTINGS_ROLLOUT,SliceRolloutCB);
+    INSERT_ROLLOUT(ROLLOUT_slice_settings, glui_bounds);
+    ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_settings, SLICE_SETTINGS_ROLLOUT, glui_bounds);
 
     if(ngeom_data > 0){
-      PANEL_immersed = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "slice(geometry)", true);
+      PANEL_immersed = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "slice(geometry)", true);
       PANEL_immersed_region = glui_bounds->add_panel_to_panel(PANEL_immersed, "region", true);
       RADIO_slice_celltype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_region, &slice_celltype, IMMERSED_SWITCH_CELLTYPE, ImmersedBoundCB);
       glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "gas");
@@ -4784,26 +4784,26 @@ extern "C" void GluiBoundsSetup(int main_window){
       ImmersedBoundCB(IMMERSED_SWITCH_EDGETYPE);
     }
 
-    PANEL_sliceshow = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "slice(regular)", true);
+    PANEL_sliceshow = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "slice(regular)", true);
     RADIO_show_slice_in_obst = glui_bounds->add_radiogroup_to_panel(PANEL_sliceshow, &show_slice_in_obst, SLICE_IN_OBST, SliceBoundCB);
     glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, "gas");
     glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, "gas and solid");
     glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, "solid");
 
-    SPINNER_transparent_level = glui_bounds->add_spinner_to_panel(ROLLOUT_boundimmersed, _("Transparent level"), GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, SliceBoundCB);
+    SPINNER_transparent_level = glui_bounds->add_spinner_to_panel(ROLLOUT_slice_settings, _("Transparent level"), GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, SliceBoundCB);
     SPINNER_transparent_level->set_float_limits(0.0, 1.0);
-    glui_bounds->add_spinner_to_panel(ROLLOUT_boundimmersed, "slice offset", GLUI_SPINNER_FLOAT, &sliceoffset_all);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("Output data to file"), &output_slicedata);
+    glui_bounds->add_spinner_to_panel(ROLLOUT_slice_settings, "slice offset", GLUI_SPINNER_FLOAT, &sliceoffset_all);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("Output data to file"), &output_slicedata);
     if(nfedinfo>0){
-      glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, "Regenerate FED data", &regenerate_fed);
+      glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, "Regenerate FED data", &regenerate_fed);
     }
 
     if(nterraininfo>0){
-      glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("terrain slice overlap"), &terrain_slice_overlap);
+      glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("terrain slice overlap"), &terrain_slice_overlap);
     }
 
-    glui_bounds->add_column_to_panel(ROLLOUT_boundimmersed, false);
-    PANEL_slice_smoke = glui_bounds->add_panel_to_panel(ROLLOUT_boundimmersed, "slice fire", true);
+    glui_bounds->add_column_to_panel(ROLLOUT_slice_settings, false);
+    PANEL_slice_smoke = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "slice fire", true);
     glui_bounds->add_checkbox_to_panel(PANEL_slice_smoke, _("max blending"), &slices3d_max_blending);
     glui_bounds->add_checkbox_to_panel(PANEL_slice_smoke, _("show all 3D slices"), &showall_3dslices);
 
@@ -4816,21 +4816,21 @@ extern "C" void GluiBoundsSetup(int main_window){
       max_slice_skip = MAX(max_slice_skip, meshi->kbar/2);
 
     }
-    SPINNER_slice_skip = glui_bounds->add_spinner_to_panel(ROLLOUT_boundimmersed, "skip", GLUI_SPINNER_INT, &slice_skip,  SLICE_SKIP, SliceBoundCB);
+    SPINNER_slice_skip = glui_bounds->add_spinner_to_panel(ROLLOUT_slice_settings, "skip", GLUI_SPINNER_INT, &slice_skip,  SLICE_SKIP, SliceBoundCB);
     SliceBoundCB(SLICE_SKIP);
 
 #ifdef pp_FSEEK
 #ifdef pp_LOAD_INCREMENTAL
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("incremental data loading"), &load_incremental, SLICE_LOAD_INCREMENTAL, LoadIncrementalCB);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("incremental data loading"), &load_incremental, SLICE_LOAD_INCREMENTAL, LoadIncrementalCB);
     LoadIncrementalCB(SLICE_LOAD_INCREMENTAL);
 #endif
 #endif
 
 
 #ifdef pp_SMOKETEST
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("opacity adjustment"), &slice_opacity_adjustment);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("sort slices"), &sort_slices);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_boundimmersed, _("show sorted slice labels"), &show_sort_labels);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("opacity adjustment"), &slice_opacity_adjustment);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("sort slices"), &sort_slices);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("show sorted slice labels"), &show_sort_labels);
 #endif
   }
 
@@ -6094,25 +6094,34 @@ extern "C" void ShowGluiBounds(int menu_id){
 /* ------------------ ShowBoundsDialog ------------------------ */
 
 extern "C" void ShowBoundsDialog(int type){
-  ShowGluiBounds(DIALOG_3DSMOKE);
+  if(type==DIALOG_3DSMOKE){
+    ShowGluiBounds(DIALOG_3DSMOKE);
+  }
+  else{
+    ShowGluiBounds(DIALOG_BOUNDS);
+  }
   switch (type){
     case DLG_3DSMOKE:
       if(ROLLOUT_smoke3d!=NULL)ROLLOUT_smoke3d->open();
       break;
     case DLG_BOUNDARY:
       if(ROLLOUT_bound!=NULL)ROLLOUT_bound->open();
+      if(ROLLOUT_boundary_settings!=NULL)ROLLOUT_boundary_settings->open();
       break;
     case DLG_SLICE:
       if(ROLLOUT_slice != NULL)ROLLOUT_slice->open();
+      if(ROLLOUT_slice_settings != NULL)ROLLOUT_slice_settings->open();
       break;
     case DLG_PART:
       if(ROLLOUT_part!=NULL)ROLLOUT_part->open();
+      if(ROLLOUT_particle_settings!=NULL)ROLLOUT_particle_settings->open();
       break;
     case DLG_PLOT3D:
       if(ROLLOUT_plot3d!=NULL)ROLLOUT_plot3d->open();
       break;
     case DLG_ISO:
       if(ROLLOUT_iso!=NULL)ROLLOUT_iso->open();
+      if(ROLLOUT_iso_settings!=NULL)ROLLOUT_iso_settings->open();
       break;
   }
 }
