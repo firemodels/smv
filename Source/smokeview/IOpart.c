@@ -1432,15 +1432,14 @@ void GetPartData(partdata *parti, int partframestep_arg, int nf_all_arg, FILE_SI
         int part_type;
         if(numtypes_local[2*class_index]>0){
           float *valmin_smv, *valmax_smv;
-#ifdef pp_PART_TEST
-          int iii, jjj;
-#endif
 
           FORTPART5READ_mv((void **)&(datacopy_local->rvals), nparts_local*numtypes_local[2*class_index]);
 
 #ifdef pp_PART_TEST
-          for(jjj = 0; jjj < numtypes[2 * i]; jjj++){
-            for(iii = 0; iii < nparts; iii++){
+          int iii, jjj;
+
+          for(jjj = 0; jjj < numtypes_local[2 * class_index]; jjj++){
+            for(iii = 0; iii < nparts_local; iii++){
               datacopy_local->rvals[iii+jjj*nparts_local] = 1000.0*parti->seq_id + 200*jjj+ (float)RandInt(-1000, 1000) / 1000.0;
             }
           }
