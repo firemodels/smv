@@ -117,7 +117,7 @@ size_t fread_m(void *ptr, size_t size, size_t nmemb, FILE_m *stream_m){
   return return_val;
 }
 
-/* ------------------ freadptr_m ------------------------ */
+/* ------------------ fread_mv ------------------------ */
 
 size_t fread_mv(void **ptr, size_t size, size_t nmemb, FILE_m *stream_m){
   if(stream_m->stream!=NULL)return 0;

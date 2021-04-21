@@ -5624,7 +5624,7 @@ void PartBoundCB(int var){
     break;
   case TRACERS:
   case PARTFAST:
-    if(partfast==0||npartinfo<=1){
+    if(npartinfo<=1){
       CHECKBOX_part_multithread->disable();
       SPINNER_npartthread_ids->disable();
     }
@@ -5632,6 +5632,7 @@ void PartBoundCB(int var){
       CHECKBOX_part_multithread->enable();
       SPINNER_npartthread_ids->enable();
     }
+    generate_part_histograms = 1 - partfast;
     CHECKBOX_part_multithread->set_int_val(part_multithread);
     updatemenu=1;
     break;
