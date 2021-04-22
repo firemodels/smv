@@ -2102,7 +2102,15 @@ void FinalizePartLoad(partdata *parti){
   else{
     visEvac = 1;
   }
-  update_generate_part_histograms = 1;
+  
+  // generate histograms now rather than in the background if a script is running
+  
+  if(current_script_command!=NULL){
+    GeneratePartHistograms();
+  }
+  else{
+    update_generate_part_histograms = 1;
+  }
   if(cache_part_data==1){
     SetPercentilePartBounds();
     for(j = 0; j<npartinfo; j++){
