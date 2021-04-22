@@ -1286,7 +1286,7 @@ void GeneratePartHistograms(void){
   }
   MergePartHistograms();
   EnableDisablePartPercentileDraw(1);
-  printf("particle histograms generated\n");
+  printf("particle distributions generated\n");
 }
 
 /* ------------------ GetPartData ------------------------ */
@@ -2102,9 +2102,9 @@ void FinalizePartLoad(partdata *parti){
   else{
     visEvac = 1;
   }
-  
+
   // generate histograms now rather than in the background if a script is running
-  
+
   if(current_script_command!=NULL){
     GeneratePartHistograms();
   }
