@@ -6,7 +6,7 @@
 
 /* ------------------ GetFileBuffer ------------------------ */
 
-int GetFileBuffer(char *file, FILE_SIZE offset, char *buffer, size_t nbuffer){
+int GetFileBuffer(char *file, FILE_SIZE offset, unsigned char *buffer, size_t nbuffer){
   FILE *stream = NULL;
 
   stream = fopen(file, "rb");
