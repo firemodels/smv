@@ -233,6 +233,18 @@ void ReadAllGeomMT(void){
     ReadAllGeom();
   }
 }
+
+/* ------------------ MtReadAllGeom ------------------------ */
+
+void *MTGeneratePartHistograms(void *arg){
+  GeneratePartHistograms();
+  pthread_exit(NULL);
+  return NULL;
+}
+
+void GeneratePartHistogramsMT(void){
+  pthread_create(&generate_part_histogram_id, NULL, MTGeneratePartHistograms, NULL);
+}
 #endif
 
 #ifdef pp_THREAD

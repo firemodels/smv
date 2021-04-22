@@ -29,6 +29,7 @@ SVEXTERN float obst_bounding_box[6]={1.0,0.0,1.0,0.0,1.0,0.0};
 SVEXTERN float obst_bounding_box[6];
 #endif
 
+SVEXTERN int SVDECL(update_generate_part_histograms, 0);
 SVEXTERN int SVDECL(have_geom_triangles, 0);
 SVEXTERN int SVDECL(geom_bounding_box_auto, 0);
 SVEXTERN int SVDECL(force_fixedpoint, 0);
@@ -137,7 +138,6 @@ SVEXTERN int SVDECL(update_patchfile_bounds, 0);
 
 SVEXTERN slicemenudata SVDECL(*slicemenuinfo, NULL);
 SVEXTERN int SVDECL(generate_info_from_commandline, 0);
-SVEXTERN int SVDECL(generate_part_histograms, 1);
 SVEXTERN int SVDECL(vector_debug, 0);
 #ifdef pp_WUI_VAO
 SVEXTERN int SVDECL(have_terrain_vao, 0);
@@ -225,7 +225,7 @@ SVEXTERN int SVDECL(npartthread_ids, 4);
 SVEXTERN int SVDECL(nslicethread_ids, 4);
 #endif
 SVEXTERN int SVDECL(nreadallgeomthread_ids, 4);
-SVEXTERN int SVDECL(partfast, NO);
+SVEXTERN int SVDECL(partfast, 1);
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);
 SVEXTERN int SVDECL(use_fire_alpha, 0);
 SVEXTERN int SVDECL(glui_use_fire_alpha, 1);
@@ -247,7 +247,7 @@ SVEXTERN float SVDECL(timer_reshape, 0.0);
 SVEXTERN int SVDECL(cancel_update_triangles, 0);
 SVEXTERN int SVDECL(updating_triangles, 0);
 SVEXTERN int SVDECL(iso_multithread, 0), SVDECL(iso_multithread_save,0);
-SVEXTERN int SVDECL(part_multithread, 0);
+SVEXTERN int SVDECL(part_multithread, 1);
 #ifdef pp_SLICETHREAD
 SVEXTERN int SVDECL(slice_multithread, 0);
 #endif

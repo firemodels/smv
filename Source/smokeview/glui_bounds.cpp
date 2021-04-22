@@ -96,6 +96,7 @@ class bounds_dialog{
   int  get_valtype(void);
   int  in_research_mode(void);
   int  in_percentile_mode(void);
+  void enabledisable_percentile_draw(int flag);
 
   void setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds, int nbounds,
              int *cache_flag, int cache_enable, int percentile_enable,
@@ -135,6 +136,19 @@ float SmvRound(float val, int n){
   sscanf(c_val, "%f", &return_val);
 
   return return_val;
+}
+
+/* ------------------ enabledisable_percentile_draw ------------------------ */
+
+void bounds_dialog::enabledisable_percentile_draw(int flag){
+  if(flag==1){
+    CHECKBOX_percentile_draw->enable();
+  }
+  else{
+    CHECKBOX_percentile_draw->disable();
+    percentile_draw = 0;
+    CHECKBOX_percentile_draw->set_int_val(percentile_draw);
+  }
 }
 
 /* ------------------ set_plot_minmax ------------------------ */
@@ -1235,6 +1249,14 @@ extern "C" int GetPercentileDraw(int type){
       break;
   }
   return 0;
+}
+
+/* ------------------ DisablePartPercentileDrawOff ------------------------ */
+
+extern "C" void EnableDisablePartPercentileDraw(int flag){
+  if(npartloaded>0){
+    partboundsCPP.enabledisable_percentile_draw(flag);
+  }
 }
 
 /* ------------------ SetPercentileDrawOff ------------------------ */
@@ -4554,7 +4576,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       CHECKBOX_showtracer=glui_bounds->add_checkbox_to_panel(ROLLOUT_particle_settings,_("Always show tracers"),&show_tracers_always,TRACERS,PartBoundCB);
 
       PANEL_partread=glui_bounds->add_panel_to_panel(ROLLOUT_particle_settings,_("Particle loading"));
-      CHECKBOX_partfast = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Fast loading(streaks disabled)"), &partfast, PARTFAST, PartBoundCB);
+      CHECKBOX_partfast = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Fast loading"), &partfast, PARTFAST, PartBoundCB);
       CHECKBOX_part_multithread = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Parallel loading"), &part_multithread);
       SPINNER_npartthread_ids = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once"), GLUI_SPINNER_INT, &npartthread_ids);
       if(npartinfo>1){
@@ -5632,7 +5654,6 @@ void PartBoundCB(int var){
       CHECKBOX_part_multithread->enable();
       SPINNER_npartthread_ids->enable();
     }
-    generate_part_histograms = 1 - partfast;
     CHECKBOX_part_multithread->set_int_val(part_multithread);
     updatemenu=1;
     break;

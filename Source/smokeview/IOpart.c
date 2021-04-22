@@ -15,6 +15,9 @@
 #include "IOobjects.h"
 #include "stdio_m.h"
 
+#define LOADING 0
+#define DRAWING 1
+
 #define FORTPART5READ_mv(var,size) \
 fseek_m(PART5FILE,4,SEEK_CUR);\
 fread_mv(var,4,size,PART5FILE);\
@@ -173,12 +176,12 @@ int CompareTags(const void *arg1, const void *arg2){
 
 /* ------------------ GetTagIndex ------------------------ */
 
-int GetTagIndex(const partdata *partin_arg, part5data **datain_arg, int tagval_arg){
+int GetTagIndex(const partdata *partin_arg, part5data **datain_arg, int tagval_arg, int flag){
   int *returnval_local;
   part5data *data_local;
   int i;
 
-  if(partfast==YES)return -1;
+  if(flag==LOADING&&partfast==YES)return -1;
 
   for(i = -1; i < npartinfo; i++){
     const partdata *parti_local;
@@ -602,7 +605,7 @@ void DrawPart(const partdata *parti){
 
             if(ipframe - k < 0)break;
             datapast = parti->data5 + nclasses*(ipframe - k) + i;
-            jj = GetTagIndex(parti, &datapast, tagval);
+            jj = GetTagIndex(parti, &datapast, tagval, DRAWING);
             if(jj < 0)break;
             sxx = datapast->sx;
             syy = datapast->sy;
@@ -633,7 +636,7 @@ void DrawPart(const partdata *parti){
 
             if(ipframe - k < 0)break;
             datapast = parti->data5 + nclasses*(ipframe - k) + i;
-            jj = GetTagIndex(parti, &datapast, tagval);
+            jj = GetTagIndex(parti, &datapast, tagval, DRAWING);
             if(jj < 0 || datapast->irvals == NULL)break;
             sxx = datapast->sx;
             syy = datapast->sy;
@@ -788,7 +791,7 @@ void UpdatePartVis(int first_frame_arg, partdata *parti_arg, part5data *datacopy
       int tag_index_local;
 
       datalast_local = datacopy_arg- nclasses_arg;
-      tag_index_local = GetTagIndex(parti_arg, &datalast_local, datacopy_arg->tags[ii]);
+      tag_index_local = GetTagIndex(parti_arg, &datalast_local, datacopy_arg->tags[ii], LOADING);
       if(tag_index_local!= -1 && datalast_local->vis_part[tag_index_local] == 1){
         datacopy_arg->vis_part[ii] = 1;
         nvis_local++;
@@ -1265,6 +1268,25 @@ void MergePartHistograms(void){
       }
     }
   }
+}
+
+/* ------------------ GeneratePartHistograms ------------------------ */
+
+void GeneratePartHistograms(void){
+  int i;
+
+  EnableDisablePartPercentileDraw(0);
+  for(i=0;i<npartinfo;i++){
+    partdata *parti;
+
+    parti = partinfo + i;
+    if(parti->loaded==1){
+      GetPartHistogramFile(parti);
+    }
+  }
+  MergePartHistograms();
+  EnableDisablePartPercentileDraw(1);
+  printf("particle histograms generated\n");
 }
 
 /* ------------------ GetPartData ------------------------ */
@@ -2080,10 +2102,7 @@ void FinalizePartLoad(partdata *parti){
   else{
     visEvac = 1;
   }
-
-  if(generate_part_histograms==1){
-    MergePartHistograms();
-  }
+  update_generate_part_histograms = 1;
   if(cache_part_data==1){
     SetPercentilePartBounds();
     for(j = 0; j<npartinfo; j++){
@@ -2172,9 +2191,6 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   LOCK_PART_LOAD;
   parti->loaded = 1;
   parti->display = 1;
-  if(generate_part_histograms==1){
-    GetPartHistogramFile(parti);
-  }
   if(cache_part_data==0){
     UpdatePartColors(parti);
   }
