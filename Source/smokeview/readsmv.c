@@ -12761,7 +12761,9 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "PARTFAST")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i", &partfast, &part_multithread, &npartthread_ids);
+      if(current_script_command==NULL){
+        sscanf(buffer, "%i %i %i", &partfast, &part_multithread, &npartthread_ids);
+      }
       continue;
     }
     if(Match(buffer, "WINDOWOFFSET") == 1){

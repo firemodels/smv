@@ -2645,11 +2645,13 @@ void Keyboard(unsigned char key, int flag){
     case '/':
       updatemenu=1;
       partfast = 1 - partfast;
-      if(npartinfo>1){
-        part_multithread = partfast;
-      }
-      else{
-        part_multithread = 0;
+      if(current_script_command==NULL){
+        if(npartinfo>1){
+          part_multithread = partfast;
+        }
+        else{
+          part_multithread = 0;
+        }
       }
       if(part_multithread==1){
         if(npartthread_ids>1)printf("parallel particle loading: on(%i threads)\n",npartthread_ids);
