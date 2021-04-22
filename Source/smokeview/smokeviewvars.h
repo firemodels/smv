@@ -220,7 +220,7 @@ SVEXTERN int npart5loaded, npartloaded, nevacloaded;
 
 SVEXTERN int SVDECL(global_have_global_bound_file, 0);
 SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
-SVEXTERN int SVDECL(npartthread_ids, 4);
+SVEXTERN int SVDECL(npartthread_ids, 2);
 #ifdef pp_SLICETHREAD
 SVEXTERN int SVDECL(nslicethread_ids, 4);
 #endif
