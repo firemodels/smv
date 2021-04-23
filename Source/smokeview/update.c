@@ -1845,6 +1845,10 @@ void UpdateShowScene(void){
       ShowGluiMotion(DIALOG_MOVIE);
     }
   }
+  if(update_generate_part_histograms==1){
+    update_generate_part_histograms = 0;
+    GeneratePartHistogramsMT();
+  }
   if(update_stept==1){
     update_stept = 0;
     SetTimeVal(time_paused);

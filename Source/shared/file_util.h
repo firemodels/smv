@@ -97,6 +97,7 @@ int FileExistsOrig(char *filename);
 
 EXTERNCPP FILE *fopen_indir(char *dir, char *file, char *mode);
 
+EXTERNCPP void TestWrite(char *scratchdir, char **fileptr);
 EXTERNCPP int FFLUSH(void);
 EXTERNCPP int PRINTF(const char * format, ...);
 EXTERNCPP void SetStdOut(FILE *stream);

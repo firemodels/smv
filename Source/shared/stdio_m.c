@@ -4,6 +4,19 @@
 #include "stdio_m.h"
 #include "MALLOCC.h"
 
+/* ------------------ GetFileBuffer ------------------------ */
+
+int GetFileBuffer(char *file, FILE_SIZE offset, unsigned char *buffer, size_t nbuffer){
+  FILE *stream = NULL;
+
+  stream = fopen(file, "rb");
+  if(stream==NULL)return 0;
+  fseek(stream, offset, SEEK_SET);
+  fread(buffer, (size_t)1, (size_t)nbuffer, stream);
+  fclose(stream);
+  return 1;
+}
+
 /* ------------------ fopen_m ------------------------ */
 
 FILE_m *fopen_mo(char *file, FILE_SIZE offset, FILE_SIZE size, char *mode){
@@ -15,19 +28,13 @@ FILE_m *fopen_mo(char *file, FILE_SIZE offset, FILE_SIZE size, char *mode){
 
   if(file==NULL||strlen(file)==0||mode==NULL||strlen(mode)<2)return NULL;
   if(strcmp(mode, "rb")!=0&&strcmp(mode, "rbm")!=0)return NULL;
-  stream = fopen(file, "rb");
-  if(stream==NULL){                                   // open of file failed so abort
-    return NULL;
-  }
 
   if(NewMemory((void **)&m_file, strlen(file)+1)==0){ // memory allocation failed so abort
-    fclose(stream);
     return NULL;
   }
 
   if(NewMemory((void **)&stream_m, sizeof(FILE_m))==0){
     FREEMEMORY(m_file);
-    fclose(stream);
     return NULL;
   }
   stream_m->buffer = NULL;
@@ -37,6 +44,8 @@ FILE_m *fopen_mo(char *file, FILE_SIZE offset, FILE_SIZE size, char *mode){
   stream_m->stream = NULL;
 
   if(strcmp(mode, "rb")==0){    // not mode rbm so use regular IO
+    stream = fopen(file, "rb");
+    if(stream==NULL)return NULL;
     stream_m->stream = stream;
     return stream_m;
   }
@@ -45,32 +54,34 @@ FILE_m *fopen_mo(char *file, FILE_SIZE offset, FILE_SIZE size, char *mode){
     nbuffer = size;
   }
   else{
+    stream = fopen(file, "rb");
+    if(stream==NULL)return NULL;
     fseek(stream, 0L, SEEK_END);
     nbuffer = ftell(stream);
     offset = 0;
+    fclose(stream);
   }
 
   if(nbuffer<=0){            // file is empty so abort
-    fclose(stream);
     FREEMEMORY(stream_m);
     FREEMEMORY(m_file);
     return NULL;
   }
 
   if(NewMemory((void **)&buffer, nbuffer)==0){ // allocation of memory buffer failed so revert to regular IO
+    stream = fopen(file, "rb");
+    if(stream==NULL)return NULL;
     stream_m->stream = stream;
     return stream_m;
   }
 
-  fseek(stream, offset, SEEK_SET);
-  fread(buffer, (size_t)1, (size_t)nbuffer, stream);
-  stream_m->buffer = buffer;
+  if(GetFileBuffer(file, offset, buffer, nbuffer)==0)return NULL;
+
+  stream_m->buffer     = buffer;
   stream_m->buffer_beg = buffer;
   stream_m->buffer_end = buffer+nbuffer;
-  stream_m->file = m_file;
-  //stream_m->nbuffer = nbuffer;
-  stream_m->stream = NULL;
-  fclose(stream);
+  stream_m->file       = m_file;
+  stream_m->stream     = NULL;
   return stream_m;
 }
 
@@ -117,7 +128,7 @@ size_t fread_m(void *ptr, size_t size, size_t nmemb, FILE_m *stream_m){
   return return_val;
 }
 
-/* ------------------ freadptr_m ------------------------ */
+/* ------------------ fread_mv ------------------------ */
 
 size_t fread_mv(void **ptr, size_t size, size_t nmemb, FILE_m *stream_m){
   if(stream_m->stream!=NULL)return 0;

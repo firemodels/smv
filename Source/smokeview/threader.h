@@ -42,6 +42,7 @@
   #define UNLOCK_IBLANK     pthread_mutex_unlock(&mutexIBLANK);
   #define JOIN_IBLANK       pthread_join(makeiblank_thread_id,NULL);
 
+  #define JOIN_PART_HIST    pthread_join(generate_part_histogram_id,NULL);
 #ifdef pp_SAMPLE
   #define LOCK_SAMPLE     pthread_mutex_lock(&mutexSAMPLE);
   #define UNLOCK_SAMPLE   pthread_mutex_unlock(&mutexSAMPLE);
@@ -75,6 +76,7 @@
   #define JOIN_SAMPLE
 #endif
 
+#define JOIN_PART_HIST
 #endif
 
 #ifdef pp_THREAD
@@ -105,6 +107,7 @@ MT_EXTERN pthread_t update_all_patch_bounds_id;
 MT_EXTERN pthread_t read_volsmoke_id;
 MT_EXTERN pthread_t triangles_id;
 MT_EXTERN pthread_t partthread_ids[MAX_THREADS];
+MT_EXTERN pthread_t generate_part_histogram_id;
 #ifdef pp_SLICETHREAD
 MT_EXTERN pthread_t slicethread_ids[MAX_THREADS];
 #endif

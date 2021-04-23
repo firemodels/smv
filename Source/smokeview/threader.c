@@ -160,8 +160,18 @@ void LoadAllPartFilesMT(int partnum){
     for(i = 0; i<npartinfo; i++){
       partdata *parti;
 
-     parti = partinfo+i;
-      if(parti->finalize==1)FinalizePartLoad(parti);
+      parti = partinfo+i;
+      parti->finalize=0;
+    }
+    for(i = npartinfo-1; i>=0; i--){
+      partdata *parti;
+
+      parti = partinfo+i;
+      if(parti->loaded==1){
+        parti->finalize = 1;
+        FinalizePartLoad(parti);
+        break;
+      }
     }
   }
   else{
@@ -222,6 +232,18 @@ void ReadAllGeomMT(void){
     SetupReadAllGeom();
     ReadAllGeom();
   }
+}
+
+/* ------------------ MtReadAllGeom ------------------------ */
+
+void *MTGeneratePartHistograms(void *arg){
+  GeneratePartHistograms();
+  pthread_exit(NULL);
+  return NULL;
+}
+
+void GeneratePartHistogramsMT(void){
+  pthread_create(&generate_part_histogram_id, NULL, MTGeneratePartHistograms, NULL);
 }
 #endif
 

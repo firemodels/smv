@@ -1616,11 +1616,14 @@ void ScriptLoadParticles(scriptdata *scripti){
   int i;
   int errorcode;
   int count=0;
-
+  int part_multithread_save;
   FREEMEMORY(loaded_file);
 
   PRINTF("script: loading particles files\n\n");
 
+
+  part_multithread_save = part_multithread;
+  part_multithread = 0;
   npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
   for(i=0;i<npartinfo;i++){
     partdata *parti;
@@ -1664,6 +1667,7 @@ void ScriptLoadParticles(scriptdata *scripti){
   force_redisplay=1;
   UpdateFrameNumber(0);
   updatemenu=1;
+  part_multithread = part_multithread_save;
 }
 
 /* ------------------ ScriptLoadIso ------------------------ */

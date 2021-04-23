@@ -619,7 +619,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define BLOCKlocation_grid  5
 #define BLOCKlocation_exact 6
 #define BLOCKlocation_cad   7
-#define BLOCKtexture_cad   31 
+#define BLOCKtexture_cad   31
 
 #define WALL_1 0
 #define WALL_3 1

@@ -28,6 +28,25 @@
 
 FILE *alt_stdout=NULL;
 
+/* ------------------ TestWrite ------------------------ */
+
+void TestWrite(char *scratchdir, char **fileptr){
+  char *file, filecopy[1024], newfile[1024], *beg;
+
+  if(Writable(".")==1||fileptr==NULL||scratchdir==NULL)return;
+  strcpy(filecopy, *fileptr);
+  FREEMEMORY(*fileptr);
+
+  strcpy(newfile, scratchdir);
+  strcat(newfile, dirseparator);
+  file = filecopy;
+  beg = strrchr(filecopy, SEP);
+  if(beg!=NULL)file = beg+1;
+  strcat(newfile, file);
+  NewMemory((void **)fileptr, strlen(newfile)+1);
+  strcpy(*fileptr, newfile);
+}
+
 /* ------------------ FFLUSH ------------------------ */
 
 int FFLUSH(void){

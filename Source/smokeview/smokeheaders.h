@@ -9,6 +9,9 @@
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
 
+EXTERNCPP void EnableDisablePartPercentileDraw(int flag);
+EXTERNCPP void GeneratePartHistograms(void);
+EXTERNCPP void GeneratePartHistogramsMT(void);
 FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount);
 
 EXTERNCPP void PrintTime(char *tag, int line, float *timer, char *label);
