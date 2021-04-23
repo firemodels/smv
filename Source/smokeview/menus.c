@@ -3847,6 +3847,7 @@ void SetupPart(int value, int option){
       parti = partinfo+i;
       if(parti->skipload==1)continue;
       parti->finalize = 1;
+      break;
     }
   }
 }
