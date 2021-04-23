@@ -1169,16 +1169,19 @@ void CreatePartSizeFile(partdata *parti, int angle_flag_arg){
   header_offset_local =GetPartHeaderOffset(parti);
   stream_local = fopen(parti->bound_file, "r");
   if(stream_local==NULL){
+    TestWrite(smokeview_scratchdir, &(parti->bound_file));
     CreatePartBoundFile(parti);
     stream_local = fopen(parti->bound_file, "r");
   }
   if(stream_local!=NULL){
     fclose(stream_local);
+    TestWrite(smokeview_scratchdir, &(parti->size_file));
     CreatePartSizeFileFromBound(parti->bound_file, parti->size_file, angle_flag_arg, header_offset_local);
     return;
   }
   printf("***warning: particle bound/size file %s could not be opened\n", parti->bound_file);
   printf("            particle sizing proceeding using the full particle file: %s\n", parti->reg_file);
+  TestWrite(smokeview_scratchdir, &(parti->size_file));
   CreatePartSizeFileFromPart(parti->reg_file, parti->size_file, angle_flag_arg, header_offset_local);
 }
 
