@@ -1289,7 +1289,7 @@ void GeneratePartHistograms(void){
   }
   MergePartHistograms();
   EnableDisablePartPercentileDraw(1);
-  printf("particle distributions generated\n");
+  if(part_multithread==1)printf("particle distributions generated\n");
 }
 
 /* ------------------ GetPartData ------------------------ */
@@ -2108,7 +2108,7 @@ void FinalizePartLoad(partdata *parti){
 
   // generate histograms now rather than in the background if a script is running
 
-  if(current_script_command!=NULL){
+  if(current_script_command!=NULL||part_multithread==0){
     GeneratePartHistograms();
   }
   else{
