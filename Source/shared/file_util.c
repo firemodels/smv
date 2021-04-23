@@ -40,7 +40,7 @@ void TestWrite(char *scratchdir, char **fileptr){
   strcpy(newfile, scratchdir);
   strcat(newfile, dirseparator);
   file = filecopy;
-  beg = strrchr(filecopy, dirseparator);
+  beg = strrchr(filecopy, SEP);
   if(beg!=NULL)file = beg+1;
   strcat(newfile, file);
   NewMemory((void **)fileptr, strlen(newfile)+1);
