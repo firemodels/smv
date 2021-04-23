@@ -5649,12 +5649,14 @@ void PartBoundCB(int var){
     if(npartinfo<=1){
       CHECKBOX_part_multithread->disable();
       SPINNER_npartthread_ids->disable();
+      part_multithread = 0;
+      CHECKBOX_part_multithread->set_int_val(part_multithread);
     }
     else{
       CHECKBOX_part_multithread->enable();
       SPINNER_npartthread_ids->enable();
+      CHECKBOX_part_multithread->set_int_val(part_multithread);
     }
-    CHECKBOX_part_multithread->set_int_val(part_multithread);
     updatemenu=1;
     break;
   case FRAMELOADING:
