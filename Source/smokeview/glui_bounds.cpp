@@ -57,7 +57,7 @@ class bounds_dialog{
   cpp_boundsdata bounds, *all_bounds, *all_bounds_save;
   int   nall_bounds, research_mode_cpp, percentile_mode_cpp, percentile_enabled;
   int percentile_draw;
-  float percentile_min_cpp, percentile_max_cpp;
+  float percentile_min_cpp100, percentile_max_cpp100;
   float plot_min_cpp, plot_max_cpp;
   int hist_left_percen_cpp, hist_down_percen_cpp, hist_length_percen_cpp, hist_show_labels_cpp;
 
@@ -470,34 +470,34 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
       percentile_draw = 0;
       ROLLOUT_percentiles = glui_bounds->add_rollout_to_panel(PANEL_minmax, "data distribution", false);
 
-      percentile_min_cpp = CLAMP(percentile_level_min, 0.0, 1.0);
-      percentile_max_cpp = CLAMP(percentile_level_max, percentile_level_min,1.0);
+      percentile_min_cpp100 = CLAMP(percentile_level_min, 0.0, 1.0)*100.0;
+      percentile_max_cpp100 = CLAMP(percentile_level_max, percentile_level_min,1.0)*100.0;
 
-      PANEL_drawA              = glui_bounds->add_panel_to_panel(ROLLOUT_percentiles, "values:   percentiles/100");
-      STATIC_percentile_100 = glui_bounds->add_statictext_to_panel(PANEL_drawA, "");
-      SPINNER_percentile_max   = glui_bounds->add_spinner_to_panel(PANEL_drawA, _("max:"), GLUI_SPINNER_FLOAT, &percentile_max_cpp, BOUND_PERCENTILE_MAXVAL, Callback);
-      STATIC_percentile_50 = glui_bounds->add_statictext_to_panel(PANEL_drawA, "");
-      SPINNER_percentile_min   = glui_bounds->add_spinner_to_panel(PANEL_drawA, _("min:"), GLUI_SPINNER_FLOAT, &percentile_min_cpp, BOUND_PERCENTILE_MINVAL, Callback);
-      STATIC_percentile_00 = glui_bounds->add_statictext_to_panel(PANEL_drawA, "");
+      PANEL_drawA            = glui_bounds->add_panel_to_panel(ROLLOUT_percentiles, "values:   percentiles");
+      STATIC_percentile_100  = glui_bounds->add_statictext_to_panel(PANEL_drawA, "");
+      SPINNER_percentile_max = glui_bounds->add_spinner_to_panel(PANEL_drawA,    "max", GLUI_SPINNER_FLOAT, &percentile_max_cpp100, BOUND_PERCENTILE_MAXVAL, Callback);
+      STATIC_percentile_50   = glui_bounds->add_statictext_to_panel(PANEL_drawA, "");
+      SPINNER_percentile_min = glui_bounds->add_spinner_to_panel(PANEL_drawA,    "min", GLUI_SPINNER_FLOAT, &percentile_min_cpp100, BOUND_PERCENTILE_MINVAL, Callback);
+      STATIC_percentile_00   = glui_bounds->add_statictext_to_panel(PANEL_drawA, "");
 
       glui_bounds->add_column_to_panel(ROLLOUT_percentiles, false);
-      PANEL_drawB = glui_bounds->add_panel_to_panel(ROLLOUT_percentiles, "plot bounds/position");
 
-      CHECKBOX_hist_show_labels = glui_bounds->add_checkbox_to_panel(PANEL_drawB, _("show labels"), &hist_show_labels_cpp, BOUND_HIST_LABELS, Callback);
-      CHECKBOX_percentile_draw = glui_bounds->add_checkbox_to_panel(PANEL_drawB, _("show plot"), &percentile_draw, BOUND_PERCENTILE_DRAW, Callback);
-      SPINNER_plot_max = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("max:"), GLUI_SPINNER_FLOAT, &plot_max_cpp, BOUND_PLOT_MINMAX, Callback);
-      SPINNER_plot_min = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("min:"), GLUI_SPINNER_FLOAT, &plot_min_cpp, BOUND_PLOT_MINMAX, Callback);
+      PANEL_drawB = glui_bounds->add_panel_to_panel(ROLLOUT_percentiles, "plot bounds/position");
+      CHECKBOX_hist_show_labels = glui_bounds->add_checkbox_to_panel(PANEL_drawB, _("show labels"),             &hist_show_labels_cpp, BOUND_HIST_LABELS, Callback);
+      CHECKBOX_percentile_draw  = glui_bounds->add_checkbox_to_panel(PANEL_drawB, _("show plot"),               &percentile_draw, BOUND_PERCENTILE_DRAW, Callback);
+      SPINNER_plot_max          = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("max:"), GLUI_SPINNER_FLOAT, &plot_max_cpp, BOUND_PLOT_MINMAX, Callback);
+      SPINNER_plot_min          = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("min:"), GLUI_SPINNER_FLOAT, &plot_min_cpp, BOUND_PLOT_MINMAX, Callback);
 
       glui_bounds->add_column_to_panel(PANEL_drawB, false);
       SPINNER_hist_length_percen = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("size:"), GLUI_SPINNER_INT, &hist_length_percen_cpp, BOUND_LENGTH_PERCEN, Callback);
-      SPINNER_hist_left_percen = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("left:"), GLUI_SPINNER_INT, &hist_left_percen_cpp, BOUND_LEFT_PERCEN, Callback);
-      SPINNER_hist_down_percen = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("bottom:"), GLUI_SPINNER_INT, &hist_down_percen_cpp, BOUND_DOWN_PERCEN, Callback);
+      SPINNER_hist_left_percen   = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("left:"), GLUI_SPINNER_INT, &hist_left_percen_cpp, BOUND_LEFT_PERCEN, Callback);
+      SPINNER_hist_down_percen   = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("bottom:"), GLUI_SPINNER_INT, &hist_down_percen_cpp, BOUND_DOWN_PERCEN, Callback);
       SPINNER_hist_left_percen->set_int_limits(0, 100);
       SPINNER_hist_down_percen->set_int_limits(0, 100);
       SPINNER_hist_length_percen->set_int_limits(0, 100);
 
-      SPINNER_percentile_max->set_float_limits(percentile_min_cpp, 1.0);
-      SPINNER_percentile_min->set_float_limits(0.0, percentile_max_cpp);
+      SPINNER_percentile_max->set_float_limits(percentile_min_cpp100, 100.0);
+      SPINNER_percentile_min->set_float_limits(0.0, percentile_max_cpp100);
 
       // glui_bounds->add_button_to_panel(ROLLOUT_percentiles, "Update", BOUND_COMPUTE_PERCENTILES, Callback);
     }
@@ -563,7 +563,7 @@ void bounds_dialog::set_percentiles(float val_00, float per_valmin, float val_50
 
   Float2String(val_label, val_00, 4, force_fixedpoint);
   strcat(val_label,":");
-  PadString(val_label,"0.0 (min)", PAD_LENGTH);
+  PadString(val_label,"0 %", PAD_LENGTH);
   STATIC_percentile_00->set_name(val_label);
 
   Float2String(val_label, per_valmin, 4, force_fixedpoint);
@@ -573,7 +573,7 @@ void bounds_dialog::set_percentiles(float val_00, float per_valmin, float val_50
 
   Float2String(val_label, val_50, 4, force_fixedpoint);
   strcat(val_label,":");
-  PadString(val_label,"0.5 (median)", PAD_LENGTH);
+  PadString(val_label,"50 %", PAD_LENGTH);
   STATIC_percentile_50->set_name(val_label);
 
   Float2String(val_label, per_valmax, 4, force_fixedpoint);
@@ -583,7 +583,7 @@ void bounds_dialog::set_percentiles(float val_00, float per_valmin, float val_50
 
   Float2String(val_label, val_100, 4, force_fixedpoint);
   strcat(val_label,":");
-  PadString(val_label,"1.0 (max)", PAD_LENGTH);
+  PadString(val_label,"100 %", PAD_LENGTH);
   STATIC_percentile_100->set_name(val_label);
 }
 
@@ -1030,18 +1030,18 @@ void bounds_dialog::CB(int var){
       gmax_draw = plot_max_cpp;
       break;
     case BOUND_PERCENTILE_MINVAL:
-      SPINNER_percentile_max->set_float_limits(percentile_min_cpp+0.0001, 1.0);
+      SPINNER_percentile_max->set_float_limits(percentile_min_cpp100+0.0001, 100.0);
       update_hist_bounds = 0;
-      SetPercentileMinMax(percentile_min_cpp, percentile_max_cpp);
+      SetPercentileMinMax(percentile_min_cpp100, percentile_max_cpp100);
       update_hist_bounds = 1;
-      percentile_level_min = percentile_min_cpp;
+      percentile_level_min = percentile_min_cpp100/100.0;
       break;
     case BOUND_PERCENTILE_MAXVAL:
-      SPINNER_percentile_min->set_float_limits(0.0,percentile_max_cpp-0.0001);
+      SPINNER_percentile_min->set_float_limits(0.0,percentile_max_cpp100-0.0001);
       update_hist_bounds = 0;
-      SetPercentileMinMax(percentile_min_cpp, percentile_max_cpp);
+      SetPercentileMinMax(percentile_min_cpp100, percentile_max_cpp100);
       update_hist_bounds = 1;
-      percentile_level_max = percentile_max_cpp;
+      percentile_level_max = percentile_max_cpp100/100.0;
       break;
     case BOUND_PERCENTILE_DRAW:
       if(CHECKBOX_percentile_draw!=NULL&&CHECKBOX_percentile_draw->get_int_val()!=percentile_draw){
