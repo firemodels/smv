@@ -145,7 +145,9 @@ void *MtLoadAllPartFiles(void *arg){
 void LoadAllPartFilesMT(int partnum){
   int i;
 
-  JOIN_PART_HIST;
+  if(part_multithread==1){
+    JOIN_PART_HIST;
+  }
   if(part_multithread==0){
     LoadAllPartFiles(partnum);
     return;
