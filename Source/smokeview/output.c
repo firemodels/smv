@@ -153,15 +153,6 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
   glVertex2f(0.0, 0.0);
   glVertex2f(1.0, 0.0);
 
-  glVertex2f(1.0, 0.0);
-  glVertex2f(1.0, 1.0);
-
-  glVertex2f(1.0, 1.0);
-  glVertex2f(0.0, 1.0);
-
-  glVertex2f(0.0, 1.0);
-  glVertex2f(0.0, 0.0);
-
   glColor3fv(blue);
   glVertex2f(valmin_normalized, 0.0);
   glVertex2f(valmin_normalized, -DZHIST1);

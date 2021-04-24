@@ -12761,7 +12761,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "PARTFAST")==1){
       fgets(buffer, 255, stream);
-      if(current_script_command==NULL){
+      if(current_script_command==NULL&&nevac==0){
         sscanf(buffer, "%i %i %i", &partfast, &part_multithread, &npartthread_ids);
       }
       continue;

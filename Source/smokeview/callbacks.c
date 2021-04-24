@@ -2645,8 +2645,12 @@ void Keyboard(unsigned char key, int flag){
     case '/':
       updatemenu=1;
       partfast = 1 - partfast;
+      if(nevac>0){
+        partfast = 0;
+        part_multithread = 0;
+      }
       if(current_script_command==NULL){
-        if(npartinfo>1){
+        if(npartinfo>1&&nevac==0){
           part_multithread = partfast;
         }
         else{
