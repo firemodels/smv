@@ -8128,7 +8128,7 @@ void GenerateSliceMenu(int option){
     sprintf(cform3, "%s%i.%is", "%", max3,max3);
     sprintf(cform4, "%s%i.%is", "%", max4,max4);
 
-    char format[80];
+    char format[256];
     sprintf(format, "%s, %s, %s, %s\n",cform1, cform2, cform3, cform4);
 
     fprintf(stream, "\n");
