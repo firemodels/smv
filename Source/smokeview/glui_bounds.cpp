@@ -5646,10 +5646,15 @@ void PartBoundCB(int var){
     break;
   case TRACERS:
   case PARTFAST:
-    if(npartinfo<=1){
+    if(npartinfo<=1||nevac>0){
       CHECKBOX_part_multithread->disable();
       SPINNER_npartthread_ids->disable();
       part_multithread = 0;
+      if(nevac>0){
+        partfast = 0;
+        CHECKBOX_partfast->set_int_val(partfast);
+        CHECKBOX_partfast->disable();
+      }
       CHECKBOX_part_multithread->set_int_val(part_multithread);
     }
     else{
