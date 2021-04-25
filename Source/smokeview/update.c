@@ -1848,6 +1848,7 @@ void UpdateShowScene(void){
   if(update_generate_part_histograms==1){
     update_generate_part_histograms = 0;
     GeneratePartHistogramsMT();
+    update_generate_part_histograms = -1;
   }
   if(update_stept==1){
     update_stept = 0;

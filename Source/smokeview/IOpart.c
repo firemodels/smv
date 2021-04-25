@@ -2146,7 +2146,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   FILE_SIZE file_size_local;
   float load_time_local;
 
-  if(loadflag_arg==UNLOAD&&part_multithread==1){
+  if(loadflag_arg==UNLOAD&&part_multithread==1&&update_generate_part_histograms==-1){
     JOIN_PART_HIST;
   }
   SetTimeState();

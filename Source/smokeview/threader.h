@@ -89,7 +89,6 @@ void MtReadVolsmokeAllFramesAllMeshes2(void);
 #ifdef pp_THREAD
 
 MT_EXTERN pthread_mutex_t mutexREADALLGEOM;
-MT_EXTERN pthread_t makeiblank_thread_id;
 #ifdef pp_SLICETHREAD
 MT_EXTERN pthread_mutex_t mutexSLICE_LOAD;
 #endif
@@ -101,6 +100,7 @@ MT_EXTERN pthread_mutex_t mutexCOMPRESS;
 MT_EXTERN pthread_mutex_t mutexSAMPLE;
 #endif
 
+MT_EXTERN pthread_t makeiblank_thread_id;
 MT_EXTERN pthread_t system_thread_id;
 MT_EXTERN pthread_t compress_thread_id;
 MT_EXTERN pthread_t update_all_patch_bounds_id;
