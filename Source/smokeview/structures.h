@@ -1479,6 +1479,7 @@ typedef struct _plot3ddata {
   int have_bound_file;
   int compression_type;
   int finalize;
+  int memory_id;
   float time;
   int u, v, w, nvars;
   float diff_valmin[MAXPLOT3DVARS], diff_valmax[MAXPLOT3DVARS];

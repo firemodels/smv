@@ -1041,6 +1041,9 @@ void ReadSMVDynamic(char *file){
       plot3di->autoload=0;
       plot3di->time=time_local;
       plot3di->finalize = 1;
+      nmemory_ids++;
+      plot3di->memory_id = nmemory_ids;
+
       for(i=0;i<MAXPLOT3DVARS;i++){
         plot3di->histograms[i] = NULL;
       }
