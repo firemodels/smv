@@ -541,8 +541,9 @@ void GetGlobalSliceBounds(void){
   }
   nslicebounds_cpp = nslicebounds;
   if(nslicebounds_cpp>0){
-    FREEMEMORY(slicebounds_cpp);
-    NewMemory((void **)&slicebounds_cpp, nslicebounds_cpp*sizeof(cpp_boundsdata));
+    if(slicebounds_cpp==NULL){
+      NewMemory((void **)&slicebounds_cpp, nslicebounds_cpp*sizeof(cpp_boundsdata));
+    }
     for(i = 0; i<nslicebounds_cpp; i++){
       cpp_boundsdata *boundscppi;
       boundsdata *boundi;
