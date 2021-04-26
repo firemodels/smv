@@ -22,7 +22,7 @@ void GetPlot3DHists(plot3ddata *p){
     // histi, if already allocated, is freed in ReadPlot3d
     NewMemoryMemID((void **)&histi, sizeof(histogramdata), p->memory_id);
     p->histograms[i] = histi;
-    InitHistogram(histi, NHIST_BUCKETS, NULL, NULL);
+    InitHistogramMemID(histi, NHIST_BUCKETS, NULL, NULL, p->memory_id);
 
     plot3d_mesh = meshinfo+p->blocknumber;
     nvals = (plot3d_mesh->ibar+1)*(plot3d_mesh->jbar+1)*(plot3d_mesh->kbar+1);
@@ -238,6 +238,8 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
 
     plot3di = plot3dinfo+meshi->plot3dfilenum;
     FreeAllMemory(plot3di->memory_id);
+    colorlabeliso = NULL;
+    colorlabelp3  = NULL;
   }
   if(flag==UNLOAD){
     meshi->plot3dfilenum=-1;
