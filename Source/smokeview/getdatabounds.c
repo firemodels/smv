@@ -296,7 +296,9 @@ void GetGlobalPatchBounds(void){
 
   npatchbounds_cpp = npatchbounds;
   if(npatchbounds_cpp>0){
-    NewMemory((void **)&patchbounds_cpp, npatchbounds_cpp*sizeof(cpp_boundsdata));
+    if(patchbounds_cpp==NULL){
+      NewMemory((void **)&patchbounds_cpp, npatchbounds_cpp*sizeof(cpp_boundsdata));
+    }
     for(i = 0; i<npatchbounds_cpp; i++){
       cpp_boundsdata *boundscppi;
       boundsdata *boundi;
