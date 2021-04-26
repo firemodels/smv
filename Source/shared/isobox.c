@@ -1511,6 +1511,8 @@ void InitIsoSurface(isosurface *surfacedata, float level, float *color,int color
   surfacedata->closestnodes=NULL;
   surfacedata->tvert=NULL;
   surfacedata->cullfaces=0;
+  surfacedata->norm=NULL;
+  surfacedata->vertexnorm=NULL;
 }
 
 /* ------------------ FreeSurface ------------------------ */
