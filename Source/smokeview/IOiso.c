@@ -200,27 +200,7 @@ void UnloadIso(meshdata *meshi){
 
   if(meshi->isofilenum == -1)return;
   ib = isoinfo + meshi->isofilenum;
-  if(meshi->niso_times > 0 && meshi->nisolevels > 0){
-    if(meshi->animatedsurfaces != NULL){
-      for(i = 0;i < meshi->niso_times*meshi->nisolevels;i++){
-        asurface = meshi->animatedsurfaces + i;
-        FREEMEMORY(asurface->iso_triangles);
-        FREEMEMORY(asurface->iso_vertices);
-      }
-    }
-    CheckMemoryOff;
-    FREEMEMORY(meshi->iso_times);
-    FREEMEMORY(meshi->animatedsurfaces);
-    FREEMEMORY(meshi->showlevels);
-  }
-  if(ib->dataflag==1){
-    FREEMEMORY(ib->geom_nstatics);
-    FREEMEMORY(ib->geom_ndynamics);
-    FREEMEMORY(ib->geom_times);
-    FREEMEMORY(ib->geom_vals);
-  }
-  meshi->niso_times = 0;
-  FREEMEMORY(ib->normaltable);
+  FreeAllMemory(ib->memory_id);
 
   UnloadIsoTrans();
 
@@ -237,6 +217,7 @@ void UnloadIso(meshdata *meshi){
   }
 
   UpdateTimes();
+  PrintMemoryInfo;
   updatemenu = 1;
   ForceIdle();
   return;
@@ -314,10 +295,10 @@ FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_fram
     FORTgetgeomdatasize(isoi->tfile, &ntimes_local, &isoi->geom_nvals, &error, lenfile);
 
     if(isoi->geom_nvals>0&&ntimes_local>0){
-      NewMemory((void **)&isoi->geom_nstatics, ntimes_local*sizeof(int));
-      NewMemory((void **)&isoi->geom_ndynamics, ntimes_local*sizeof(int));
-      NewMemory((void **)&isoi->geom_times, ntimes_local*sizeof(float));
-      NewMemory((void **)&isoi->geom_vals, isoi->geom_nvals*sizeof(float));
+      NewMemoryMemID((void **)&isoi->geom_nstatics,  ntimes_local*sizeof(int),       isoi->memory_id);
+      NewMemoryMemID((void **)&isoi->geom_ndynamics, ntimes_local*sizeof(int),       isoi->memory_id);
+      NewMemoryMemID((void **)&isoi->geom_times,     ntimes_local*sizeof(float),     isoi->memory_id);
+      NewMemoryMemID((void **)&isoi->geom_vals,      isoi->geom_nvals*sizeof(float), isoi->memory_id);
     }
 
     FORTgetgeomdata(isoi->tfile, &ntimes_local, &isoi->geom_nvals, isoi->geom_times,
