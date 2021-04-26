@@ -538,7 +538,7 @@ void GetGlobalSliceBounds(void){
     boundi->dlg_valmax = boundi->dlg_global_valmax;
   }
   nslicebounds_cpp = nslicebounds;
-  if(nslicebounds_cpp>0&&slicebounds_cpp!=NULL){ // only initialize once
+  if(nslicebounds_cpp>0&&slicebounds_cpp==NULL){ // only initialize once
     NewMemory((void **)&slicebounds_cpp, nslicebounds_cpp*sizeof(cpp_boundsdata));
     for(i = 0; i<nslicebounds_cpp; i++){
       cpp_boundsdata *boundscppi;
