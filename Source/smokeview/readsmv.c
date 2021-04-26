@@ -481,7 +481,6 @@ void InitMesh(meshdata *meshi){
   meshi->patchval_iframe = NULL;
   meshi->thresholdtime = NULL;
   meshi->patchblank = NULL;
-  meshi->patch_contours = NULL;
   meshi->patch_timeslist = NULL;
   meshi->ntc = 0;
   meshi->nspr = 0;

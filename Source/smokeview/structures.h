@@ -758,7 +758,6 @@ typedef struct _meshdata {
   int *boundarytype;
   int *patchdir,*patch_surfindex;
   int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
-  contour **patch_contours;
   int *blockonpatch;
   struct _meshdata **meshonpatch;
   struct _meshdata *nabors[6], *above;
