@@ -124,7 +124,7 @@ int GetGlobalPartBounds(int flag){
     }
   }
   npartbounds_cpp = npart5prop;
-  if(npartbounds_cpp>0){
+  if(npartbounds_cpp>0&&partbounds_cpp==NULL){
     NewMemory((void **)&partbounds_cpp, npartbounds_cpp*sizeof(cpp_boundsdata));
     for(i = 0; i<npartbounds_cpp; i++){
       cpp_boundsdata *boundscppi;
@@ -295,10 +295,8 @@ void GetGlobalPatchBounds(void){
   }
 
   npatchbounds_cpp = npatchbounds;
-  if(npatchbounds_cpp>0){
-    if(patchbounds_cpp==NULL){
-      NewMemory((void **)&patchbounds_cpp, npatchbounds_cpp*sizeof(cpp_boundsdata));
-    }
+  if(npatchbounds_cpp>0&&patchbounds_cpp==NULL){
+    NewMemory((void **)&patchbounds_cpp, npatchbounds_cpp*sizeof(cpp_boundsdata));
     for(i = 0; i<npatchbounds_cpp; i++){
       cpp_boundsdata *boundscppi;
       boundsdata *boundi;
@@ -402,11 +400,11 @@ void GetGlobalPlot3DBounds(void){
   }
 
   nplot3dbounds_cpp = 0;
-  if(nplot3dinfo>0){
+  if(nplot3dinfo>0&&plot3dbounds_cpp==NULL){
     int i;
 
     nplot3dbounds_cpp = MAXPLOT3DVARS;
-    if(plot3dbounds_cpp==NULL)NewMemory((void **)&plot3dbounds_cpp, nplot3dbounds_cpp*sizeof(cpp_boundsdata));
+    NewMemory((void **)&plot3dbounds_cpp, nplot3dbounds_cpp*sizeof(cpp_boundsdata));
     for(i = 0; i<nplot3dbounds_cpp; i++){
       cpp_boundsdata *boundscppi;
 
@@ -540,8 +538,7 @@ void GetGlobalSliceBounds(void){
     boundi->dlg_valmax = boundi->dlg_global_valmax;
   }
   nslicebounds_cpp = nslicebounds;
-  if(nslicebounds_cpp>0){
-    if(slicebounds_cpp!=NULL)return;
+  if(nslicebounds_cpp>0&&slicebounds_cpp!=NULL){
     NewMemory((void **)&slicebounds_cpp, nslicebounds_cpp*sizeof(cpp_boundsdata));
     for(i = 0; i<nslicebounds_cpp; i++){
       cpp_boundsdata *boundscppi;
