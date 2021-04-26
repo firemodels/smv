@@ -4637,6 +4637,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
       UpdateTimes();
       RemoveSliceLoadstack(slicefilenumber);
       update_draw_hist = 1;
+      PrintMemoryInfo;
       return 0;
     }
 
@@ -5038,6 +5039,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   GLUTPOSTREDISPLAY;
   if(sd->finalize==1){
     update_slice_bounds = slicefilenumber;
+    PrintMemoryInfo;
   }
   return return_filesize;
 }
