@@ -192,7 +192,6 @@ void UnloadIsoTrans(void){
 /* ------------------ UnloadIso ------------------------ */
 
 void UnloadIso(meshdata *meshi){
-  isosurface *asurface;
   isodata *ib;
   int nloaded = 0;
   int i;
