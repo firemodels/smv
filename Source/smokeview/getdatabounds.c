@@ -137,14 +137,9 @@ int GetGlobalPartBounds(int flag){
 
         unit = part5propinfo[i].label->unit;
         if(unit!=NULL){
-          int len;
-
-          len = strlen(unit);
-          NewMemory((void **)&boundscppi->unit, len+1);
           strcpy(boundscppi->unit, unit);
         }
         else{
-          NewMemory((void **)&boundscppi->unit, 2);
           strcpy(boundscppi->unit, "");
         }
       }
@@ -309,13 +304,7 @@ void GetGlobalPatchBounds(void){
       boundscppi = patchbounds_cpp+i;
       boundi = patchbounds+i;
       strcpy(boundscppi->label, boundi->shortlabel);
-      {
-        int len;
-
-        len = strlen(boundi->label->unit);
-        NewMemory((void **)&boundscppi->unit, len+1);
-        strcpy(boundscppi->unit, boundi->label->unit);
-      }
+      strcpy(boundscppi->unit, boundi->label->unit);
 
       boundscppi->cache = cache_boundary_data;
       boundscppi->set_valtype = 0;
@@ -550,21 +539,16 @@ void GetGlobalSliceBounds(void){
   }
   nslicebounds_cpp = nslicebounds;
   if(nslicebounds_cpp>0){
+    FREEMEMORY(slicebounds_cpp);
     NewMemory((void **)&slicebounds_cpp, nslicebounds_cpp*sizeof(cpp_boundsdata));
     for(i = 0; i<nslicebounds_cpp; i++){
       cpp_boundsdata *boundscppi;
       boundsdata *boundi;
 
-      boundscppi = slicebounds_cpp+i;
-      boundi = slicebounds+i;
+      boundscppi = slicebounds_cpp + i;
+      boundi     = slicebounds + i;
       strcpy(boundscppi->label, boundi->shortlabel);
-      {
-        int len;
-
-        len = strlen(boundi->label->unit);
-        NewMemory((void **)&boundscppi->unit, len+1);
-        strcpy(boundscppi->unit, boundi->label->unit);
-      }
+      strcpy(boundscppi->unit, boundi->label->unit);
 
       boundscppi->cache = cache_slice_data;
       boundscppi->set_valtype = 0;
@@ -648,13 +632,7 @@ void UpdateGlobalFEDSliceBounds(void){
       if(strcmp(boundi->label->shortlabel, "FED")!=0)continue;
 
       strcpy(boundscppi->label, boundi->shortlabel);
-      {
-        int len;
-
-        len = strlen(boundi->label->unit);
-        NewMemory((void **)&boundscppi->unit, len+1);
-        strcpy(boundscppi->unit, boundi->label->unit);
-      }
+      strcpy(boundscppi->unit, boundi->label->unit);
 
       boundscppi->cache = cache_slice_data;
       boundscppi->set_valtype = 0;
