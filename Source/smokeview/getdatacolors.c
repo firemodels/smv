@@ -1734,6 +1734,18 @@ void UpdateChopColors(void){
         if(ii>NCHOP-1)continue;
         rgb_plot3d[4*i+3]=transparent_level_local*(float)ii/(float)(NCHOP-1);
       }
+      for(i = 0; i<nrgb-2; i++){
+        int ii;
+        float factor;
+
+        factor = 256.0/(float)(nrgb-2);
+
+        ii = factor*((float)i+0.5);
+        if(ii>255)ii = 255;
+        rgb_plot3d_contour[i] = rgb_plot3d + 4*ii;
+      }
+      rgb_plot3d_contour[nrgb-2] = rgb_plot3d;
+      rgb_plot3d_contour[nrgb-1] = rgb_plot3d + 4*255;
     }
     if(setp3chopmax_temp_local==1){
       ichopmax=nrgb_full*(p3chopmax_temp_local - glui_p3min_local)/(glui_p3max_local - glui_p3min_local);
