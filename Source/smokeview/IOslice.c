@@ -2824,6 +2824,8 @@ void UpdateFedinfo(void){
       isoi->dataflag = 0;
       isoi->geomflag = 0;
       isoi->levels = NULL;
+      nmemory_ids++;
+      isoi->memory_id = nmemory_ids;
       SetLabels(&(isoi->surface_label), "Fractional effective dose", "FED", " ");
 
       isoi->nlevels = 3;
