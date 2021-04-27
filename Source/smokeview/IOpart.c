@@ -88,7 +88,7 @@ int GetEvacPartColor(float **color_handle, part5data *datacopy, int show_default
       colorptr = avatar_colors + 3 * color[j];
     }
     else{
-      colorptr = rgb_full[color[j]];
+      colorptr = rgb_part + 4*color[j];
     }
     if(current_property != NULL && (color[j] > current_property->imax || color[j] < current_property->imin))showcolor = 0;
   }
@@ -410,7 +410,8 @@ void DrawPart(const partdata *parti){
                 for(j = 0;j < datacopy->npoints;j++){
                   if(vis[j] == 1){
                     if(current_property != NULL && (color[j] > current_property->imax || color[j] < current_property->imin))continue;
-                    glColor4fv(rgb_full[color[j]]);
+                    if(rgb_part[4*color[j]+3]==0.0)continue;
+                    glColor4fv(rgb_part+4*color[j]);
                     glVertex3f(xplts[sx[j]], yplts[sy[j]], zplts[sz[j]]);
                   }
                 }
@@ -627,6 +628,7 @@ void DrawPart(const partdata *parti){
           tagval = datacopy->tags[j];
           if(vis[j] == 0)continue;
           if(GetEvacPartColor(&colorptr, datacopy, show_default, j, itype) == 0)continue;
+          if(colorptr[3]==0.0)continue;
 
           glBegin(GL_LINE_STRIP);
           glColor4fv(colorptr);

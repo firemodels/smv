@@ -1509,9 +1509,9 @@ void UpdateChopColors(void){
   bounds               = GetBoundsData(BOUND_PART);
   if(bounds!=NULL){
     setpartchopmin_local = bounds->set_chopmin;
-    setpartchopmax_local = bounds->set_chopmin;
+    setpartchopmax_local = bounds->set_chopmax;
     partchopmin_local = bounds->chopmin;
-    partchopmax_local = bounds->chopmin;
+    partchopmax_local = bounds->chopmax;
     glui_partmin_local = bounds->valmin[bounds->set_valmin];
     glui_partmax_local = bounds->valmax[bounds->set_valmax];
   }
@@ -1687,34 +1687,23 @@ void UpdateChopColors(void){
   }
 
   if(glui_partmax_local>glui_partmin_local){
+    for(i = 0; i<nrgb_full; i++){
+      rgb_part[4*i+3] = 1.0;
+    }
     if(setpartchopmin_local==1){
-      ichopmin=nrgb_full*(partchopmin_local - glui_partmin_local)/(glui_partmax_local-glui_partmin_local);
+      ichopmin = nrgb_full*(partchopmin_local-glui_partmin_local)/(glui_partmax_local-glui_partmin_local);
       if(ichopmin<0)ichopmin=0;
       if(ichopmin>nrgb_full-1)ichopmin=nrgb_full-1;
       for(i=0;i<ichopmin;i++){
         rgb_part[4*i+3]=0.0;
       }
-      for(i=ichopmin-NCHOP;i<ichopmin;i++){
-        if(i<=0)continue;
-        if(i>nrgb_full-1)continue;
-        ii = i - (ichopmin-NCHOP);
-        if(ii>NCHOP-1)continue;
-        rgb_part[4*i+3]=transparent_level_local*(float)ii/(float)(NCHOP-1);
-      }
     }
     if(setpartchopmax_local==1){
-      ichopmax=nrgb_full*(partchopmax_local - glui_partmin_local)/(glui_partmax_local - glui_partmin_local);
+      ichopmax = nrgb_full*(partchopmax_local - glui_partmin_local)/(glui_partmax_local - glui_partmin_local);
       if(ichopmax<0)ichopmax=0;
       if(ichopmax>nrgb_full-1)ichopmax=nrgb_full-1;
       for(i=ichopmax;i<nrgb_full;i++){
         rgb_part[4*i+3]=0.0;
-      }
-      for(i=ichopmax;i<ichopmax+NCHOP;i++){
-        if(i<=0)continue;
-        if(i>nrgb_full-1)continue;
-        ii = NCHOP-1-(i - ichopmax);
-        if(ii>NCHOP-1)continue;
-        rgb_part[4*i+3]=transparent_level_local*(float)ii/(float)(NCHOP-1);
       }
     }
   }
