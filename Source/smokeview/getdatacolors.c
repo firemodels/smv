@@ -785,7 +785,7 @@ void UpdateAllPlot3DColors(void){
 void MakeColorLabels(char colorlabels[12][11], float colorvalues[12], float tmin_arg, float tmax_arg, int nlevel){
   float range, dt;
   int n;
-  
+
   range = tmax_arg-tmin_arg;
   dt = range/(float)(nlevel-2);
 

@@ -758,7 +758,6 @@ typedef struct _meshdata {
   int *boundarytype;
   int *patchdir,*patch_surfindex;
   int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
-  contour **patch_contours;
   int *blockonpatch;
   struct _meshdata **meshonpatch;
   struct _meshdata *nabors[6], *above;
@@ -1479,6 +1478,7 @@ typedef struct _plot3ddata {
   int have_bound_file;
   int compression_type;
   int finalize;
+  int memory_id;
   float time;
   int u, v, w, nvars;
   float diff_valmin[MAXPLOT3DVARS], diff_valmax[MAXPLOT3DVARS];

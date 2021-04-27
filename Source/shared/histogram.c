@@ -93,6 +93,22 @@ void ResetHistogram(histogramdata *histogram, float *valmin, float *valmax){
   histogram->complete = 0;
 }
 
+/* ------------------ InitHistogramMemID ------------------------ */
+
+void InitHistogramMemID(histogramdata *histogram, int nbuckets, float *valmin, float *valmax, int memory_id){
+
+// initialize histogram data structures
+
+  histogram->time_defined = 0;
+  histogram->time = -1.0;
+  histogram->buckets = NULL;
+  histogram->buckets_polar = NULL;
+  NewMemoryMemID((void **)&histogram->buckets, nbuckets*sizeof(float), memory_id);
+  histogram->ndim = 1;
+  histogram->nbuckets = nbuckets;
+  ResetHistogram(histogram, valmin, valmax);
+}
+
 /* ------------------ InitHistogram ------------------------ */
 
 void InitHistogram(histogramdata *histogram, int nbuckets, float *valmin, float *valmax){

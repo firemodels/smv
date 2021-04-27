@@ -2417,12 +2417,12 @@ void SetLoadedPlot3DBounds(int *list, int nlist){
   int *set_valmin, *set_valmax, nall;
   int i,j;
 
-  NewMemory((void **)&valmin,     MAXPLOT3DVARS*sizeof(float));
-  NewMemory((void **)&valmax,     MAXPLOT3DVARS*sizeof(float));
-  NewMemory((void **)&valmin_dlg, MAXPLOT3DVARS*sizeof(float));
-  NewMemory((void **)&valmax_dlg, MAXPLOT3DVARS*sizeof(float));
-  NewMemory((void **)&set_valmin, MAXPLOT3DVARS*sizeof(int));
-  NewMemory((void **)&set_valmax, MAXPLOT3DVARS*sizeof(int));
+  NewMemoryMemID((void **)&valmin,     MAXPLOT3DVARS*sizeof(float), -1);
+  NewMemoryMemID((void **)&valmax,     MAXPLOT3DVARS*sizeof(float), -1);
+  NewMemoryMemID((void **)&valmin_dlg, MAXPLOT3DVARS*sizeof(float), -1);
+  NewMemoryMemID((void **)&valmax_dlg, MAXPLOT3DVARS*sizeof(float), -1);
+  NewMemoryMemID((void **)&set_valmin, MAXPLOT3DVARS*sizeof(int),   -1);
+  NewMemoryMemID((void **)&set_valmax, MAXPLOT3DVARS*sizeof(int),   -1);
 
   for(j = 0; j<MAXPLOT3DVARS; j++){
     valmin[j] = 1.0;

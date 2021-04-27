@@ -49,6 +49,7 @@ void GetHistogramStats(histogramdata *histogram);
 float GetHistogramCDF(histogramdata *histogram, float val);
 float GetHistogramVal(histogramdata *histogram, float cdf);
 void GetPolarBounds(float *speed, int nvals, float *rmin, float *rmax);
+void InitHistogramMemID(histogramdata *histogram, int nbuckets, float *valmin, float *valmax, int memory_id);
 void InitHistogram(histogramdata *histogram, int nbuckets, float *valmin, float *valmax);
 void InitHistogramPolar(histogramdata *histogram, int nx, int ny, float *rmin, float *rmax);
 void MergeHistogram(histogramdata *histogramto, histogramdata *histogramfrom, int reset_bounds);

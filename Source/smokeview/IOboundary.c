@@ -1471,18 +1471,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     FREEMEMORY(meshi->thresholdtime);
     FREEMEMORY(meshi->patch_times);
     FREEMEMORY(meshi->patchblank);
-
-    if(meshi->patch_contours != NULL){
-      int i;
-
-      ASSERT(meshi->npatches > 0 && meshi->maxtimes_boundary > 0);
-      for(i = 0;i < meshi->npatches*meshi->maxtimes_boundary;i++){
-        if(meshi->patch_contours[i] != NULL){
-          FreeContour(meshi->patch_contours[i]);
-        }
-      }
-      FREEMEMORY(meshi->patch_contours);
-    }
   }
 
   if(flag==UNLOAD){

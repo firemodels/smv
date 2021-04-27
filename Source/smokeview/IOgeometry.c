@@ -2396,9 +2396,9 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       float *xyz=NULL;
       float *zORIG;
 
-      NewMemory((void **)&xyz,3*nverts*sizeof(float));
-      NewMemoryMemID((void **)&verts,nverts*sizeof(vertdata),geomi->memory_id);
-      NewMemory((void **)&zORIG, nverts*sizeof(float));
+      NewMemoryMemID((void **)&xyz,3*nverts*sizeof(float),    geomi->memory_id);
+      NewMemoryMemID((void **)&verts,nverts*sizeof(vertdata), geomi->memory_id);
+      NewMemoryMemID((void **)&zORIG, nverts*sizeof(float),   geomi->memory_id);
       geomlisti->zORIG = zORIG;
       geomlisti->verts = verts;
       geomlisti->nverts=nverts;
@@ -2420,9 +2420,9 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       int offset=0;
       tridata *triangles;
 
-      NewMemoryMemID((void **)&triangles,ntris*sizeof(tridata),geomi->memory_id);
-      NewMemory((void **)&ijk,3*ntris*sizeof(int));
-      NewMemory((void **)&surf_ind,ntris*sizeof(int));
+      NewMemoryMemID((void **)&triangles,ntris*sizeof(tridata), geomi->memory_id);
+      NewMemoryMemID((void **)&ijk,3*ntris*sizeof(int),         geomi->memory_id);
+      NewMemoryMemID((void **)&surf_ind,ntris*sizeof(int),      geomi->memory_id);
       geomlisti->triangles=triangles;
       geomlisti->ntriangles=ntris;
 

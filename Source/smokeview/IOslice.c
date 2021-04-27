@@ -2824,6 +2824,8 @@ void UpdateFedinfo(void){
       isoi->dataflag = 0;
       isoi->geomflag = 0;
       isoi->levels = NULL;
+      nmemory_ids++;
+      isoi->memory_id = nmemory_ids;
       SetLabels(&(isoi->surface_label), "Fractional effective dose", "FED", " ");
 
       isoi->nlevels = 3;
@@ -4637,6 +4639,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
       UpdateTimes();
       RemoveSliceLoadstack(slicefilenumber);
       update_draw_hist = 1;
+      PrintMemoryInfo;
       return 0;
     }
 
@@ -5038,6 +5041,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   GLUTPOSTREDISPLAY;
   if(sd->finalize==1){
     update_slice_bounds = slicefilenumber;
+    PrintMemoryInfo;
   }
   return return_filesize;
 }

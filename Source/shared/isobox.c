@@ -519,7 +519,7 @@ for(n = 0; n<4; n++){
   zzval[izmax[n]] = z[1];
 }
 if(xyz0!=NULL){
-  vals = vals_dist; 
+  vals = vals_dist;
   for(n=0;n<8;n++){
     float dx, dy, dz;
     float dist;
@@ -642,7 +642,7 @@ else{
       float vhat0[3], vhat2[3];
       float A, B, C;
       float disc;
-      
+
       xyz1 = xyz + 3*v1;
       xyz2 = xyz + 3*v2;
       VEC3DIFF(vhat0,xyz0,xyz1);
@@ -1511,6 +1511,8 @@ void InitIsoSurface(isosurface *surfacedata, float level, float *color,int color
   surfacedata->closestnodes=NULL;
   surfacedata->tvert=NULL;
   surfacedata->cullfaces=0;
+  surfacedata->norm=NULL;
+  surfacedata->vertexnorm=NULL;
 }
 
 /* ------------------ FreeSurface ------------------------ */
@@ -1530,6 +1532,8 @@ void FreeSurface(isosurface *surfacedata){
   FREEMEMORY(surfacedata->rank);
   FREEMEMORY(surfacedata->closestnodes);
   FREEMEMORY(surfacedata->tvert);
+  FREEMEMORY(surfacedata->norm);
+  FREEMEMORY(surfacedata->vertexnorm);
   surfacedata->defined=0;
 }
 
