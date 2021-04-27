@@ -1611,6 +1611,10 @@ void UpdateChopColors(void){
     smin = boundarylevels256[0];
     smax = boundarylevels256[255];
 
+// make boundary colors opaque except when greater than chopmax or less than chopmin values
+    for(i=0;i<nrgb_full;i++){
+      rgb_patch[4*i+3]=1.0;
+    }
     if(setpatchchopmin_local==1){
       ichopmin=nrgb_full*(patchchopmin_local-smin)/(smax-smin);
       if(ichopmin<0)ichopmin=0;
@@ -1647,6 +1651,8 @@ void UpdateChopColors(void){
 
     smin=slicebounds[slicefile_labelindex].dlg_valmin;
     smax=slicebounds[slicefile_labelindex].dlg_valmax;
+    smin = colorbar_slice_min;
+    smax = colorbar_slice_max;
 
     if(glui_setslicechopmin_local==1){
       ichopmin=nrgb_full*(glui_slicechopmin_local-smin)/(smax-smin);

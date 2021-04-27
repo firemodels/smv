@@ -2306,7 +2306,7 @@ void UpdateDisplay(void){
     SetCacheFlag(BOUND_SLICE, cache_slice_data);
   }
   if(update_chop_colors==1){
-    update_chop_colors = 1;
+    update_chop_colors = 0;
     UpdateChopColors();
   }
   if(update_zaxis_custom == 1){
