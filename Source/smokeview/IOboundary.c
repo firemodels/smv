@@ -2671,6 +2671,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     UpdateUnitDefs();
     UpdateTimes();
     update_draw_hist = 1;
+    PrintMemoryInfo;
     return 0;
   }
   if(patchi->skip == 1)return 0;
@@ -2908,6 +2909,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
     PRINTF(" - %.1f MB/%.1f s\n", (float)return_filesize/1000000., total_time);
   }
+  PrintMemoryInfo;
   return return_filesize;
 }
 
