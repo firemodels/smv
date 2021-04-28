@@ -1291,7 +1291,7 @@ void GeneratePartHistograms(void){
   }
   MergePartHistograms();
   EnableDisablePartPercentileDraw(1);
-  if(part_multithread==1)printf("particle distributions generated\n");
+  if(part_multithread==1)printf("particle setup complete\n");
 }
 
 /* ------------------ GetPartData ------------------------ */
