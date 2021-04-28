@@ -29,6 +29,7 @@ SVEXTERN float obst_bounding_box[6]={1.0,0.0,1.0,0.0,1.0,0.0};
 SVEXTERN float obst_bounding_box[6];
 #endif
 
+SVEXTERN int SVDECL(chop_patch, 0);
 SVEXTERN float SVDECL(colorbar_slice_min, 0.0), SVDECL(colorbar_slice_max, 1.0);
 SVEXTERN int SVDECL(update_generate_part_histograms, 0);
 SVEXTERN int SVDECL(have_geom_triangles, 0);

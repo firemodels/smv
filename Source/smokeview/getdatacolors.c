@@ -1607,6 +1607,7 @@ void UpdateChopColors(void){
   }
   {
     float smin, smax;
+    int chop_patch_local;
 
     smin = boundarylevels256[0];
     smax = boundarylevels256[255];
@@ -1644,6 +1645,17 @@ void UpdateChopColors(void){
         if(ii>NCHOP-1)continue;
         rgb_patch[4*i+3]=transparent_level_local*(float)ii/(float)(NCHOP-1);
       }
+    }
+    chop_patch_local = 0;
+    for(i = 0; i<nrgb_full; i++){
+      if(rgb_patch[4*i+3]==0.0){
+        chop_patch_local = 1;
+        break;
+      }
+    }
+    if(chop_patch != chop_patch_local){
+      chop_patch      = chop_patch_local;
+      updatefacelists = 1;
     }
   }
   if(slicebounds!=NULL&&slicefile_labelindex!=-1){
