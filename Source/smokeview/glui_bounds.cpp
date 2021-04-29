@@ -80,9 +80,8 @@ class bounds_dialog{
   GLUI_Rollout     *ROLLOUT_main_bound, *ROLLOUT_truncate, *ROLLOUT_percentiles;
 
   // routines
-  bounds_dialog(void);
+  //bounds_dialog(void);
 
-  cpp_boundsdata *get_bounds_data(void);
   void CB(int var);
   int  get_cache_flag(void);
   void get_global_minmax(char *label, float *valmin, float *valmax);
@@ -97,6 +96,7 @@ class bounds_dialog{
   int  in_research_mode(void);
   int  in_percentile_mode(void);
   void enabledisable_percentile_draw(int flag);
+  cpp_boundsdata *get_bounds_data(void);
 
   void setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds, int nbounds,
              int *cache_flag, int cache_enable, int percentile_enable,
@@ -125,6 +125,11 @@ class bounds_dialog{
 
 int InResearchMode(void);
 int InPercentileMode(void);
+
+/* ------------------ bounds_dialog ------------------------ */
+
+//bounds_dialog::bounds_dialog(void){
+//}
 
 /* ------------------ SmvRound ------------------------ */
 
@@ -182,11 +187,6 @@ void bounds_dialog::set_percentile_minmax(float p_min, float p_max){
   p_max = SmvRound(p_max, 4);
   if(SPINNER_percentile_min!=NULL)SPINNER_percentile_min->set_float_val(p_min);
   if(SPINNER_percentile_max!=NULL)SPINNER_percentile_max->set_float_val(p_max);
-}
-
-/* ------------------ bounds_dialog ------------------------ */
-
-bounds_dialog::bounds_dialog(void){
 }
 
 /* ------------------ set_cache_flag ------------------------ */

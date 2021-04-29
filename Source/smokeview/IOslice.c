@@ -4909,6 +4909,8 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     }
 #define BOUND_PERCENTILE_DRAW          120
     SliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+    colorbar_slice_min = qmin;
+    colorbar_slice_max = qmax;
     UpdateUnitDefs();
     UpdateTimes();
     CheckMemory;

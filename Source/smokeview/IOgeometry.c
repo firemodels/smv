@@ -3488,6 +3488,7 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   printf("\niso load time=%f\n",time1);
   printf("\niso classify time=%f\n",time2);
 #endif
+  PrintMemoryInfo;
   return return_filesize;
 }
 
