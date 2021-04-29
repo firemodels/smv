@@ -6063,7 +6063,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
     UpdateSmoke3dMenuLabels();
   }
 
-  if(iframe_arg==ALL_SMOKE_FRAMES)PRINTF("loading %s(%s) ", smoke3di->file, smoketype_local);
+  if(iframe_arg==ALL_SMOKE_FRAMES)PRINTF("Loading %s(%s) ", smoke3di->file, smoketype_local);
   CheckMemory;
   smoke3di->request_load = 1;
   smoke3di->ntimes_old = smoke3di->ntimes;

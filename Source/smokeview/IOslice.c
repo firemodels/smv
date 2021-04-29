@@ -3476,6 +3476,7 @@ void UpdateVSlices(void){
       vslicei->seq_id=seq_id;
       vslicei->autoload=0;
       vslicei->skip = 0;
+      vslicei->reload = 0;
     }
   }
 

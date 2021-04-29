@@ -341,8 +341,7 @@ RENDERONCE
 LOADINIFILE
  plume5c_part.ini
 UNLOADALL
-LOADFILE
- plume5c_1.prt5
+LOADPARTICLES
 PARTCLASSCOLOR
  Uniform color
 SETTIMEVAL
@@ -365,8 +364,7 @@ RENDERONCE
 UNLOADALL
 LOADINIFILE
  plume5c_part_streak.ini
-LOADFILE
- plume5c_1.prt5
+LOADPARTICLES
 PARTCLASSCOLOR
  Uniform color
 SETTIMEVAL
@@ -389,8 +387,7 @@ RENDERONCE
 UNLOADALL
 LOADINIFILE
  plume5c_part_streak2.ini
-LOADFILE
- plume5c_1.prt5
+LOADPARTICLES
 PARTCLASSCOLOR
  Uniform color
 SETTIMEVAL
@@ -850,8 +847,7 @@ plume5c_plot3d_l4
 // render two left/right stereo images
 
 UNLOADALL
-LOADFILE
- plume5c_1.prt5
+LOADPARTICLES
 LOADINIFILE
  plume5c_lr_stereo.ini
 SETTIMEVAL

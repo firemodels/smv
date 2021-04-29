@@ -187,7 +187,7 @@ void ReadBoundINI(void){
 
 /* ------------------ SetupCase ------------------------ */
 
-int SetupCase(int argc, char **argv){
+int SetupCase(char *filename){
   int return_code;
   char *input_file;
 
@@ -201,7 +201,7 @@ int SetupCase(int argc, char **argv){
 
   // setup input files names
 
-  input_file = smv_filename;
+  input_file = filename;
   if(strcmp(input_filename_ext,".svd")==0||demo_option==1){
     trainer_mode=1;
     trainer_active=1;
@@ -2190,38 +2190,3 @@ void InitVars(void){
   }
 }
 
-/* ------------------ CopyArgs ------------------------ */
-
-void CopyArgs(int *argc, char **aargv, char ***argv_sv){
-#ifdef WIN32
-  char *filename=NULL;
-  char **argv=NULL;
-  int filelength=1024,openfile;
-  int i;
-
-  if(NewMemory((void **)&argv,(*argc+1)*sizeof(char **))!=0){
-    *argv_sv=argv;
-    for(i=0;i<*argc;i++){
-      argv[i]=aargv[i];
-    }
-    if(*argc==1){
-      if(NewMemory((void **)&filename,(unsigned int)(filelength+1))!=0){
-        openfile=0;
-        OpenSMVFile(filename,filelength,&openfile);
-        if(openfile==1&&ResizeMemory((void **)&filename,strlen(filename)+1)!=0){
-          *argc=2;
-          argv[1]=filename;
-        }
-        else{
-          FREEMEMORY(filename);
-        }
-      }
-    }
-  }
-  else{
-    *argc=0;
-  }
-#else
-  *argv_sv=aargv;
-#endif
-}
