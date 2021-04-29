@@ -953,7 +953,7 @@ EXTERNCPP void ScaleFloat2String(float floatfrom, char *stringto, const float *s
 EXTERNCPP float ScaleFloat2Float(float floatfrom, const float *scale);
 EXTERNCPP void ScaleString(const char *stringfrom, char *stringto, const float *scale);
 EXTERNCPP void Num2String(char *string, float tval);
-EXTERNCPP int  SetupCase(int argc, char **argv);
+EXTERNCPP int  SetupCase(char *file);
 EXTERNCPP int  GetMinPartFrames(int flag);
 EXTERNCPP int  Update_Bounds(void);
 
