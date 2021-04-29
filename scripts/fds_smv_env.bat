@@ -80,7 +80,7 @@ set OPENMPI_DIR=.bundle/OPENMPI
 set firebotrepo=/home2/smokevis2/firebot/FireModels_clone
 set firebothome=/home2/smokevis2/firebot
 
-set smokebotrepo=/home2/smokevis2/smokebot/FireModels_central
+set smokebotrepo=/home2/smokevis2/smokebot/FireModels_clone
 set smokebothome=/home2/smokevis2/smokebot
 
 :: plink options
@@ -96,6 +96,6 @@ set linux_logon=%linux_username%@%linux_hostname%
 
 ::*** OSX
 set osx_hostname=bevo.el.nist.gov
-set osx_hostname=192.168.1.146
+::set osx_hostname=192.168.1.125
 set osx_username=%username%
 set osx_logon=%osx_username%@%osx_hostname%
