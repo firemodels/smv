@@ -777,7 +777,6 @@ char *ParseCommandline(int argc, char **argv){
 /* ------------------ CheckSMVFile ------------------------ */
 
 int CheckSMVFile(char *file, char *subdir){
-  char *arg;
   char casedir[256], *casedirptr, casename[256];
   FILE *stream;
 
