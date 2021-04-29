@@ -145,6 +145,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 
 #define RESEARCH_MODE 114
 
+#define LOAD_ALL_PART_FILES      -1
+#define RELOAD_LOADED_PART_FILES -2
+
 #define COLORBAR_HIDDEN          0
 #define COLORBAR_SHOW_VERTICAL   1
 #define COLORBAR_SHOW_HORIZONTAL 2

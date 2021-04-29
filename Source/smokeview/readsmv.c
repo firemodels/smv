@@ -4146,6 +4146,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->blocknumber = blocknumber;
   parti->seq_id = nn_part;
   parti->autoload = 0;
+  parti->reload = 0;
   parti->finalize = 1;
   parti->valmin_fds = NULL;
   parti->valmax_fds = NULL;

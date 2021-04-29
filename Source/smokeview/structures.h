@@ -1355,7 +1355,7 @@ typedef struct _boundsdata {
 /* --------------------------  vslicedata ------------------------------------ */
 
 typedef struct _vslicedata {
-  int seq_id, autoload;
+  int seq_id, autoload, reload;
   slicedata *u,*v,*w,*val;
   int volslice;
   int iu, iv, iw, ival;

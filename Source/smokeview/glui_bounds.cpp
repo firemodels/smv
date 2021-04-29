@@ -2210,7 +2210,7 @@ extern "C" void PatchBoundsCPP_CB(int var){
     case BOUND_UPDATE_COLORS:
       if(HavePatchData()==1){
 #ifdef pp_RESEARCH_DEBUG
-        if(npatchloaded>0)printf("*** updating boundary file colors\n");
+        if(npatchloaded>0)printf("*** updating boundary file colors");
 #endif
         SetLoadedPatchBounds(NULL, 0);
         UpdateAllBoundaryColors();
