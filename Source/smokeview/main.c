@@ -232,6 +232,11 @@ char *ParseCommandline(int argc, char **argv){
     strcat(SMVFILENAME, argi);
   }
 
+// strip .smv extension if present
+  char *smvext;
+  smvext = strstr(SMVFILENAME, ".smv");
+  if(smvext!=NULL)*smvext = 0;
+
   argi = SMVFILENAME;
 #ifndef pp_OSX
   argi = LastName(argi);
