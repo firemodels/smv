@@ -3826,7 +3826,7 @@ void LoadAllPartFiles(int partnum){
     if(partnum>=0&&i!=partnum)continue;  //  load only particle file with file index partnum
     LOCK_PART_LOAD;                      //  or load all particle files
     if(parti->loadstatus==FILE_UNLOADED){
-      if(partnum==LOAD_ALL_PART_FILES||(partnum==RELOAD_LOADED_PART_FILES&&parti->reload==1)){
+      if(partnum==LOAD_ALL_PART_FILES||(partnum==RELOAD_LOADED_PART_FILES&&parti->reload==1)||partnum==i){
         parti->loadstatus = FILE_LOADING;
         UNLOCK_PART_LOAD;
         file_size = ReadPart(parti->file, i, LOAD, &errorcode);
