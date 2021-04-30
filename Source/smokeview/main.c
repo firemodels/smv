@@ -353,31 +353,31 @@ char *ParseCommandline(int argc, char **argv){
   STRCPY(event_filename, fdsprefix);
   STRCAT(event_filename, ".csv");
 
-  if(filename_local== NULL){
-    NewMemory((void **)&filename_local, (unsigned int)(len_casename + 6));
+  if(filename_local==NULL){
+    NewMemory((void **)&filename_local, (unsigned int)(len_casename+6));
     STRCPY(filename_local, fdsprefix);
     STRCAT(filename_local, ".smv");
-    {
-      char scriptbuffer[1024];
-
-      STRCPY(scriptbuffer, fdsprefix);
-      STRCAT(scriptbuffer, ".ssf");
-      if(default_script == NULL&&FILE_EXISTS(scriptbuffer) == YES){
-        default_script = InsertScriptFile(scriptbuffer);
-      }
-    }
-#ifdef pp_LUA
-    {
-      char luascriptbuffer[1024];
-
-      STRCPY(luascriptbuffer, fdsprefix);
-      STRCAT(luascriptbuffer, ".lua");
-      if(default_luascript == NULL&&FILE_EXISTS(luascriptbuffer) == YES){
-        default_luascript = insert_luascriptfile(luascriptbuffer);
-      }
-    }
-#endif
   }
+  {
+    char scriptbuffer[1024];
+
+    STRCPY(scriptbuffer, fdsprefix);
+    STRCAT(scriptbuffer, ".ssf");
+    if(default_script == NULL&&FILE_EXISTS(scriptbuffer) == YES){
+      default_script = InsertScriptFile(scriptbuffer);
+    }
+  }
+#ifdef pp_LUA
+  {
+    char luascriptbuffer[1024];
+
+    STRCPY(luascriptbuffer, fdsprefix);
+    STRCAT(luascriptbuffer, ".lua");
+    if(default_luascript == NULL&&FILE_EXISTS(luascriptbuffer) == YES){
+      default_luascript = insert_luascriptfile(luascriptbuffer);
+    }
+  }
+#endif
   if(filename_local!= NULL){
     FREEMEMORY(fds_filein);
     NewMemory((void **)&fds_filein, strlen(fdsprefix) + 6);
