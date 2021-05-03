@@ -2340,7 +2340,7 @@ void UpdateVsliceMenuLabels(void){
 /* ------------------ NewMultiSlice ------------------------ */
 
 int NewMultiSlice(slicedata *sdold,slicedata *sd){
-    int same=0;
+  int same=0;
 
   if(sdold->volslice!=sd->volslice)return 1;
   if(sd->volslice==0&&sd->slcf_index==0&&sd->slice_filetype==SLICE_TERRAIN){
@@ -2362,15 +2362,17 @@ int NewMultiSlice(slicedata *sdold,slicedata *sd){
   // convert from physical to scaled units using xyzmaxdiff
     delta_orig = 1.5*MAX(sdold->delta_orig,sd->delta_orig);
     delta_scaled = SCALE2SMV(delta_orig);
-    if(sd->slcf_index==0){
-      if(
-      ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled&&         // test whether two slices are identical
-      ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled&&
-      ABS(sd->zmin-sdold->zmin)<delta_scaled&&ABS(sd->zmax-sdold->zmax)<delta_scaled
-      )same=1;
-    }
-    else{
-      if(sd->slcf_index==sdold->slcf_index)same=1;
+    if(sd->cell_center_edge==0){
+      if(sd->slcf_index==0){
+        if(
+        ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled&&         // test whether two slices are identical
+        ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled&&
+        ABS(sd->zmin-sdold->zmin)<delta_scaled&&ABS(sd->zmax-sdold->zmax)<delta_scaled
+        )same=1;
+      }
+      else{
+        if(sd->slcf_index==sdold->slcf_index)same=1;
+      }
     }
     if(
       same==1&&
@@ -2383,6 +2385,7 @@ int NewMultiSlice(slicedata *sdold,slicedata *sd){
       ||sd->idir!=sdold->idir
       ||(sd->slcf_index!=0&&sd->slcf_index!=sdold->slcf_index)
       ||(sd->slcf_index==0&&ABS(sd->position_orig-sdold->position_orig)>delta_orig)
+      ||(sd->cell_center_edge==1&&ABS(sd->position_orig-sdold->position_orig)>delta_orig)
       ||sd->mesh_type!=sdold->mesh_type
       ||sd->slice_filetype!=sdold->slice_filetype
         ){

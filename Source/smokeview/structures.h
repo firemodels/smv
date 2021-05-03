@@ -1234,6 +1234,7 @@ typedef struct _slicedata {
   int loaded_save, display_save;
   float position_orig;
   int blocknumber;
+  int cell_center_edge;
   int firstshort_slice;
   int vec_comp;
   int skipdup;

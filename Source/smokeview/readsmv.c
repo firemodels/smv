@@ -4933,6 +4933,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->comp_file = NULL;
   sd->vol_file = NULL;
   sd->slicelabel = NULL;
+  sd->cell_center_edge = 0;
 #ifdef pp_SLICE_BUFFER
   sd->stream_slice = NULL;
 #endif
@@ -5143,9 +5144,18 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     sd->full_mesh = NO;
     if(sd->is2-sd->is1==meshi->ibar &&
       sd->js2-sd->js1==meshi->jbar &&
-      sd->ks2-sd->ks1==meshi->kbar)sd->full_mesh = YES;
+      sd->ks2-sd->ks1==meshi->kbar){
+        sd->full_mesh = YES;
+    }
+    if(sd->slice_filetype==SLICE_CELL_CENTER){
+      if(                         sd->is1==sd->is2&&sd->is1==1)sd->cell_center_edge = 1;
+      if(sd->cell_center_edge==0&&sd->js1==sd->js2&&sd->js1==1)sd->cell_center_edge = 1;
+      if(sd->cell_center_edge==0&&sd->ks1==sd->ks2&&sd->ks1==1)sd->cell_center_edge = 1;
+      if(sd->cell_center_edge==0&&sd->is1==sd->is2&&sd->is1==meshi->ibar)sd->cell_center_edge = 1;
+      if(sd->cell_center_edge==0&&sd->js1==sd->js2&&sd->js1==meshi->jbar)sd->cell_center_edge = 1;
+      if(sd->cell_center_edge==0&&sd->ks1==sd->ks2&&sd->ks1==meshi->kbar)sd->cell_center_edge = 1;
+    }
   }
-
   if(IsSliceDup(sd, nn_slice)==1){
     FREEMEMORY(sd->reg_file);
     FREEMEMORY(sd->comp_file);
