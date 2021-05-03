@@ -1817,7 +1817,13 @@ int SliceMatch(scriptdata *scripti, slicedata *slicei){
 
     min = slicei->ijk_min;
     max = slicei->ijk_max;
-    if(min[0]!=0||min[1]!=0||min[2]!=0)return 0;
+
+    if(slicei->slice_filetype==SLICE_CELL_CENTER){
+      if(min[0]>1||min[1]>1||min[2]>1)return 0;
+    }
+    else{
+      if(min[0]!=0||min[1]!=0||min[2]!=0)return 0;
+    }
     meshi = meshinfo+slicei->blocknumber;
     if(max[0]!=meshi->ibar||max[1]!=meshi->jbar||max[2]!=meshi->kbar)return 0;
   }
