@@ -282,7 +282,7 @@ void GetViewportInfo(void){
     show_vertical_colorbar = 0;
   }
 
-  info_width = GetStringWidth("y: 115, 11.5 m");
+  info_width = GetStringWidth("y: 115, 11.55 m");
 
   colorbar_label_width = MaxColorbarLabelWidth(ncolorlabel_padding);
 
@@ -889,23 +889,13 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
     mesh_xyz= GetMeshNoFail(xyz);
   }
   if(((showplot3d==1||visGrid!=noGridnoProbe)&&visx_all==1)||visGrid==noGridProbe||visGrid==GridProbe){
-    float plotval;
     int iplotval;
-    char buff_label[128];
+    char buff_label[128], *buff_label_ptr;
 
 
     iplotval=mesh_xyz->iplotx_all[iplotx_all];
-    plotval=xyz[0];
-    if(plotval>0.0){
-      plotval=(int)(plotval*100+0.5);
-    }
-    else{
-      plotval=(int)(plotval*100-0.5);
-    }
-    plotval/=100;
-
-    sprintf(buff_label,"%f",plotval);
-    TrimZeros(buff_label);
+    buff_label_ptr = buff_label;
+    Float2String(buff_label_ptr, xyz[0], ngridloc_digits, FORCE_FIXEDPOINT_YES);
     strcat(buff_label," m");
     sprintf(slicelabel,"x: %i, ",iplotval);
     strcat(slicelabel,buff_label);
@@ -915,22 +905,12 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
     }
   }
   if(((showplot3d==1||visGrid!=noGridnoProbe)&&visy_all==1)||visGrid==GridProbe||visGrid==noGridProbe){
-    float plotval;
     int iplotval;
-    char buff_label[128];
+    char buff_label[128], *buff_label_ptr;
 
     iplotval=mesh_xyz->iploty_all[iploty_all];
-    plotval=xyz[1];
-    if(plotval>0.0){
-      plotval=(int)(plotval*100+0.5);
-    }
-    else{
-      plotval=(int)(plotval*100-0.5);
-    }
-    plotval/=100;
-
-    sprintf(buff_label,"%f",plotval);
-    TrimZeros(buff_label);
+    buff_label_ptr = buff_label;
+    Float2String(buff_label_ptr, xyz[1], ngridloc_digits, FORCE_FIXEDPOINT_YES);
     strcat(buff_label," m");
     sprintf(slicelabel,"y: %i, ",iplotval);
     strcat(slicelabel,buff_label);
@@ -940,22 +920,12 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
     }
   }
   if(((showplot3d==1||visGrid!=noGridnoProbe)&&visz_all==1)||visGrid==GridProbe||visGrid==noGridProbe){
-    float plotval;
     int iplotval;
-    char buff_label[128];
+    char buff_label[128], *buff_label_ptr;
 
     iplotval=mesh_xyz->iplotz_all[iplotz_all];
-    plotval=xyz[2];
-    if(plotval>0.0){
-      plotval=(int)(plotval*100+0.5);
-    }
-    else{
-      plotval=(int)(plotval*100-0.5);
-    }
-    plotval/=100;
-
-    sprintf(buff_label,"%f",plotval);
-    TrimZeros(buff_label);
+    buff_label_ptr = buff_label;
+    Float2String(buff_label_ptr, xyz[2], ngridloc_digits, FORCE_FIXEDPOINT_YES);
     strcat(buff_label," m");
     sprintf(slicelabel,"z: %i, ",iplotval);
     strcat(slicelabel,buff_label);

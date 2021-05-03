@@ -689,7 +689,7 @@ void StaticVariableMenu(int value){
 
   plotn=value;
   plotstate=STATIC_PLOTS;
-  visGrid=0;
+  visGrid = noGridnoProbe;
   if(visiso==1){
     UpdateShowStep(1,ISO);
   }
@@ -2648,7 +2648,14 @@ void Plot3DShowMenu(int value){
 }
 
 
-/* ------------------ GridSliceMenu ------------------------ */
+/* ------------------ GridDigitsMenu ------------------------ */
+
+void GridDigitsMenu(int value){
+  ngridloc_digits = value;
+  UpdateGLuiGridLocation();
+}
+
+  /* ------------------ GridSliceMenu ------------------------ */
 
 void GridSliceMenu(int value){
   switch(value){
@@ -2668,7 +2675,7 @@ void GridSliceMenu(int value){
     visx_all=1;
     visy_all=1;
     visz_all=1;
-    visGrid=1;
+    visGrid= GridnoProbe;
     break;
   case GRID_hideall:
     visx_all=0;
@@ -6491,7 +6498,7 @@ void GeometryMenu(int value){
     visWalls=0;
     visCeiling=0;
     visVents=0;
-    visGrid=0;
+    visGrid = noGridnoProbe;
     BlockageMenu(visBLOCKHide);
     ImmersedMenu(GEOMETRY_HIDEALL);
     break;
@@ -6584,7 +6591,7 @@ static int plot3dshowmenu=0, staticvariablemenu=0, helpmenu=0, webhelpmenu=0, ke
 static int vectorskipmenu=0,unitsmenu=0;
 static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
-static int gridslicemenu=0, blockagemenu=0, immersedmenu=0, immersedinteriormenu=0, immersedsurfacemenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
+static int gridslicemenu=0, griddigitsmenu=0, blockagemenu=0, immersedmenu=0, immersedinteriormenu=0, immersedsurfacemenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
 static int loadpatchsinglemenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=0,unloadsmoke3dsinglemenu=0, showvolsmokesinglemenu=0, includepatchmenu=0;
 static int plot3dshowsinglemeshmenu=0;
 static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
@@ -7391,7 +7398,20 @@ updatemenu=0;
     if(nplot3dloaded>1)GLUTADDSUBMENU(_("Mesh"),plot3dshowsinglemeshmenu);
   }
 
-/* --------------------------------grid slice menu -------------------------- */
+/* --------------------------------grid digits menu -------------------------- */
+
+  CREATEMENU(griddigitsmenu, GridDigitsMenu);
+  for(i = GRIDLOC_NDECIMALS_MIN; i<=GRIDLOC_NDECIMALS_MAX;i++){
+    char digit_label[10];
+
+    if(i==ngridloc_digits){
+      sprintf(digit_label, "*%i", i);
+    }
+    else{
+      sprintf(digit_label, "%i", i);
+    }
+    glutAddMenuEntry(digit_label, i);
+  }
 
   CREATEMENU(gridslicemenu,GridSliceMenu);
   if(visGrid==GridnoProbe||visGrid==GridProbe){
@@ -7406,6 +7426,8 @@ updatemenu=0;
   else{
     glutAddMenuEntry(_("show grid location"),GRID_probe);
   }
+  GLUTADDSUBMENU(_("grid location digits"), griddigitsmenu);
+
   glutAddMenuEntry("-",MENU_DUMMY);
   if(visz_all==1){
     glutAddMenuEntry(_("*xy plane"),GRID_xy);

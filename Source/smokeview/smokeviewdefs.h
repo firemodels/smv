@@ -79,6 +79,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define COLORBAR_SHIFT_MIN          0.1
 #define COLORBAR_SHIFT_MAX         10.0
 
+#define FORCE_FIXEDPOINT_YES          1
+#define FORCE_FIXEDPOINT_NO           0
+#define GRIDLOC_NDECIMALS_MIN         2
+#define GRIDLOC_NDECIMALS_MAX         8
 #define COLORBAR_NDECIMALS_MIN        2
 #define COLORBAR_NDECIMALS_MAX        8
 

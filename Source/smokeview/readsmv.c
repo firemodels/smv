@@ -5093,6 +5093,10 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 
     GetSliceFileHeader(sd->file, &ii1, &ii2, &jj1, &jj2, &kk1, &kk2, &error);
   }
+  if(cellcenter==1){
+    ii1 = MAX(ii1, 1);
+    ii2 = MAX(ii1, ii2);
+  }
   sd->is1 = ii1;
   sd->is2 = ii2;
   sd->js1 = jj1;
@@ -10587,10 +10591,11 @@ int ReadIni2(char *inifile, int localfile){
       int dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %f %i %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits, &force_fixedpoint);
+      sscanf(buffer, " %i %i %f %i %i %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits, &force_fixedpoint, &ngridloc_digits);
       colorbar_shift = CLAMP(colorbar_shift, COLORBAR_SHIFT_MIN, COLORBAR_SHIFT_MAX);
       if(research_mode==1&&research_mode_override==0)research_mode=0;
       ncolorlabel_digits = CLAMP(ncolorlabel_digits, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
+      ngridloc_digits = CLAMP(ngridloc_digits, GRIDLOC_NDECIMALS_MIN, GRIDLOC_NDECIMALS_MAX);
       ONEORZERO(research_mode);
       ONEORZERO(force_fixedpoint);
       if(research_mode==1&&percentile_mode==1){
@@ -14665,7 +14670,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "PERCENTILEMODE\n");
   fprintf(fileout, " %i\n", percentile_mode);
   fprintf(fileout, "RESEARCHMODE\n");
-  fprintf(fileout, " %i %i %f %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint);
+  fprintf(fileout, " %i %i %f %i %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint, ngridloc_digits);
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
   fprintf(fileout, "SLICEAVERAGE\n");

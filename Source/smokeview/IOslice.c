@@ -5207,15 +5207,17 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
     int maxj;
     int j;
 
+    int plotxm1;
+    plotxm1 = MAX(plotx-1, 0);
     switch(flag){
     case SLICE_CELL_CENTER:
-      constval = (xplt[plotx] + xplt[plotx - 1]) / 2.0;
+      constval = (xplt[plotx] + xplt[plotxm1]) / 2.0;
       break;
     case SLICE_FACE_CENTER:
-      constval = xplt[plotx - 1];
+      constval = xplt[plotxm1];
       break;
     default:
-      constval = (xplt[plotx] + xplt[plotx - 1]) / 2.0;
+      constval = (xplt[plotx] + xplt[plotxm1]) / 2.0;
       ASSERT(FFALSE);
       break;
     }
@@ -5239,8 +5241,8 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         int i33;
         float z1, z3;
 
-        if(show_slice_in_obst == ONLY_IN_SOLID && iblank_cell != NULL&&iblank_cell[IJKCELL(plotx-1, j, k)] == GAS)continue;
-        if(show_slice_in_obst == ONLY_IN_GAS   && iblank_cell != NULL&&iblank_cell[IJKCELL(plotx-1, j, k)] != GAS)continue;
+        if(show_slice_in_obst == ONLY_IN_SOLID && iblank_cell != NULL&&iblank_cell[IJKCELL(plotxm1, j, k)] == GAS)continue;
+        if(show_slice_in_obst == ONLY_IN_GAS   && iblank_cell != NULL&&iblank_cell[IJKCELL(plotxm1, j, k)] != GAS)continue;
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(plotx, j, k)] == EMBED_YES)continue;
 
         index_cell = (plotx+1-incx-iimin)*sd->nslicej*sd->nslicek + (j+1-sd->js1)*sd->nslicek + k+1-sd->ks1;
