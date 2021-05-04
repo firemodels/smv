@@ -1097,10 +1097,13 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     }
     fed_slice->is1=co->is1;
     fed_slice->is2=co->is2;
+    if(fed_slice->is1!=fed_slice->is2&&fed_slice->is1==1)fed_slice->is1 = 0;
     fed_slice->js1=co->js1;
     fed_slice->js2=co->js2;
+    if(fed_slice->js1!=fed_slice->js2&&fed_slice->js1==1)fed_slice->js1 = 0;
     fed_slice->ks1=co->ks1;
     fed_slice->ks2=co->ks2;
+    if(fed_slice->ks1!=fed_slice->ks2&&fed_slice->ks1==1)fed_slice->ks1 = 0;
     fed_slice->nslicei=co->nslicei;
     fed_slice->nslicej=co->nslicej;
     fed_slice->nslicek=co->nslicek;
