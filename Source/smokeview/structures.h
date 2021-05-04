@@ -1234,6 +1234,7 @@ typedef struct _slicedata {
   int loaded_save, display_save;
   float position_orig;
   int blocknumber;
+  int cell_center_edge;
   int firstshort_slice;
   int vec_comp;
   int skipdup;
@@ -1355,7 +1356,7 @@ typedef struct _boundsdata {
 /* --------------------------  vslicedata ------------------------------------ */
 
 typedef struct _vslicedata {
-  int seq_id, autoload;
+  int seq_id, autoload, reload;
   slicedata *u,*v,*w,*val;
   int volslice;
   int iu, iv, iw, ival;

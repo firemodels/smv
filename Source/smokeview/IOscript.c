@@ -190,9 +190,9 @@ void StartScript(void){
   iso_multithread = 0;
 }
 
-/* ------------------ GetPointer ------------------------ */
+/* ------------------ GetCharPointer ------------------------ */
 
-char *GetPointer(char *buffer2){
+char *GetCharPointer(char *buffer2){
   char *cval=NULL, *buffptr;
   int len;
 
@@ -387,11 +387,11 @@ ScriptErrorCheck(keyword, buffptr)
 
 #define SETcval \
 SETbuffer;\
-scripti->cval=GetPointer(buffptr)
+scripti->cval=GetCharPointer(buffptr)
 
 #define SETcval2 \
 SETbuffer;\
-scripti->cval2 = GetPointer(buffptr)
+scripti->cval2 = GetCharPointer(buffptr)
 
 #define SETfval \
 SETbuffer;\
@@ -481,7 +481,7 @@ int ParseTokens(char *buffer, char **keywords, int *type, int nkeywords, int *to
         sscanf(val, "%f", ftokens+i);
         break;
       case TOKEN_STRING:
-        ctokens[i] = GetPointer(val);
+        ctokens[i] = GetCharPointer(val);
         break;
       case TOKEN_LOGICAL:
         if(val[0]=='.')val++;
@@ -559,7 +559,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 
     strcpy(label, "SETVIEWPOINT");
     InitScriptI(scriptinfo, SCRIPT_SETVIEWPOINT, label);
-    scriptinfo->cval = GetPointer(viewpoint_label_startup);
+    scriptinfo->cval = GetCharPointer(viewpoint_label_startup);
   }
   nscriptinfo=1;
 #else
@@ -678,7 +678,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
           }
           if(buffer[len-1]!='/')strcat(buffer,dirseparator);
 #endif
-          scripti->cval= GetPointer(buffer);
+          scripti->cval= GetCharPointer(buffer);
         }
         }
         break;
@@ -1033,31 +1033,31 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
                 scripti->pbxyz_val = ftokens[i];
                 scripti->pbxyz_dir = 1;
                 strcpy(label, "PBX");
-                scripti->c_pbxyz   = GetPointer(label);
+                scripti->c_pbxyz   = GetCharPointer(label);
                 break;
               case KW_PBY:
                 scripti->pbxyz_val = ftokens[i];
                 scripti->pbxyz_dir = 2;
                 strcpy(label, "PBY");
-                scripti->c_pbxyz   = GetPointer(label);
+                scripti->c_pbxyz   = GetCharPointer(label);
                 break;
               case KW_PBZ:
                 scripti->pbxyz_val = ftokens[i];
                 scripti->pbxyz_dir = 3;
                 strcpy(label, "PBZ");
-                scripti->c_pbxyz   = GetPointer(label);
+                scripti->c_pbxyz   = GetCharPointer(label);
                 break;
               case KW_PB3D:
                 scripti->pbxyz_val = 0.0;
                 scripti->pbxyz_dir = 0;
                 strcpy(label, "PB3D");
-                scripti->c_pbxyz = GetPointer(label);
+                scripti->c_pbxyz = GetCharPointer(label);
                 break;
               case KW_AGL_SLICE:
                 scripti->pbxyz_val = ftokens[i];
                 scripti->pbxyz_dir = 3;
                 strcpy(label, "AGL_SLICE");
-                scripti->c_pbxyz = GetPointer(label);
+                scripti->c_pbxyz = GetCharPointer(label);
                 break;
               case KW_VECTOR:
                 scripti->vector = itokens[i];
@@ -1817,7 +1817,13 @@ int SliceMatch(scriptdata *scripti, slicedata *slicei){
 
     min = slicei->ijk_min;
     max = slicei->ijk_max;
-    if(min[0]!=0||min[1]!=0||min[2]!=0)return 0;
+
+    if(slicei->slice_filetype==SLICE_CELL_CENTER){
+      if(min[0]>1||min[1]>1||min[2]>1)return 0;
+    }
+    else{
+      if(min[0]!=0||min[1]!=0||min[2]!=0)return 0;
+    }
     meshi = meshinfo+slicei->blocknumber;
     if(max[0]!=meshi->ibar||max[1]!=meshi->jbar||max[2]!=meshi->kbar)return 0;
   }

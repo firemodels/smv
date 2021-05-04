@@ -689,7 +689,7 @@ void StaticVariableMenu(int value){
 
   plotn=value;
   plotstate=STATIC_PLOTS;
-  visGrid=0;
+  visGrid = noGridnoProbe;
   if(visiso==1){
     UpdateShowStep(1,ISO);
   }
@@ -2648,7 +2648,14 @@ void Plot3DShowMenu(int value){
 }
 
 
-/* ------------------ GridSliceMenu ------------------------ */
+/* ------------------ GridDigitsMenu ------------------------ */
+
+void GridDigitsMenu(int value){
+  ngridloc_digits = value;
+  UpdateGLuiGridLocation();
+}
+
+  /* ------------------ GridSliceMenu ------------------------ */
 
 void GridSliceMenu(int value){
   switch(value){
@@ -2668,7 +2675,7 @@ void GridSliceMenu(int value){
     visx_all=1;
     visy_all=1;
     visz_all=1;
-    visGrid=1;
+    visGrid= GridnoProbe;
     break;
   case GRID_hideall:
     visx_all=0;
@@ -3211,32 +3218,59 @@ void LoadUnloadMenu(int value){
     if(hrr_csv_filename!=NULL){
       ReadHRR(LOAD, &errorcode);
     }
+
+    //*** setup vector slice and slice file reloads
+
+
+    for(i = 0; i<nvsliceinfo; i++){
+      vslicedata *vslicei;
+
+      vslicei = vsliceinfo+i;
+      vslicei->reload = 0;
+      if(vslicei->loaded==1)vslicei->reload = 1;
+    }
     slicefile_labelindex_save=slicefile_labelindex;
     for(i=0;i<nsliceinfo;i++){
-      sliceinfo[i].reload=1;
+      slicedata *slicei;
+
+      slicei = sliceinfo+i;
+      slicei->reload = 0;
+      if(slicei->loaded==1)slicei->reload = 1;
     }
-    for(i=0;i<nvsliceinfo;i++){
-      if(vsliceinfo[i].loaded==1){
+
+    //*** reload vector slice files
+
+    for(i = 0; i<nvsliceinfo; i++){
+      vslicedata *vslicei;
+
+      vslicei = vsliceinfo+i;
+      if(vslicei->reload==1){
+        ReadVSlice(i, ALL_FRAMES, NULL, UNLOAD, &errorcode);
         ReadVSlice(i, ALL_FRAMES, NULL, load_mode,&errorcode);
       }
     }
+
+    //*** reload slice files
+
     if(nslice_loaded>1)last_slice_loaded = slice_loaded_list[nslice_loaded-1];
-    for(ii = nslice_loaded - 1; ii>=0; ii--){
+    last_slice_loaded=-1;
+    for(i = nsliceinfo - 1; i>=0; i--){
       slicedata *slicei;
 
-
-      i = slice_loaded_list[ii];
       slicei = sliceinfo + i;
-      if(slicei->reload == 1){
-        last_slice_loaded = i;
-        break;
+      if(slicei->reload==1){
+        if(last_slice_loaded<0){
+          last_slice_loaded=i;
+        }
+        else{
+          if(slicei->loaded==0)slicei->reload=0;
+        }
       }
     }
     START_TIMER(load_time);
-    for(ii = 0; ii<nslice_loaded; ii++){
+    for(i = 0; i<nsliceinfo; i++){
       slicedata *slicei;
 
-      i = slice_loaded_list[ii];
       slicei = sliceinfo + i;
       if(slicei->reload==1){
         int set_slicecolor;
@@ -3255,6 +3289,8 @@ void LoadUnloadMenu(int value){
     PRINT_LOADTIMES(file_count,load_size,load_time);
     slicefile_labelindex=slicefile_labelindex_save;
 
+    //*** reload plot3d files
+
     for(i = 0; i<nplot3dinfo; i++){
       plot3dinfo[i].finalize=0;
     }
@@ -3269,35 +3305,51 @@ void LoadUnloadMenu(int value){
         ReadPlot3D(plot3dinfo[i].file,i,LOAD,&errorcode);
       }
     }
+
+    //*** reload boundary files
+
     for(ii=0;ii<npatch_loaded;ii++){
+      patchdata *patchi;
+
       i = patch_loaded_list[ii];
+      patchi = patchinfo+i;
+      PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
       ReadBoundary(i, load_mode,&errorcode);
     }
+
+    //*** reload 3d smoke files
+
     for(i=0;i<nsmoke3dinfo;i++){
       if(smoke3dinfo[i].loaded==1||smoke3dinfo[i].request_load==1){
         ReadSmoke3D(ALL_SMOKE_FRAMES, i, load_mode, FIRST_TIME, &errorcode);
       }
     }
+
+    //*** reload particle files
+
+    int npartloaded_local = 0;
     for(i=0;i<npartinfo;i++){
-      if(partinfo[i].loaded==1){
-        partinfo[i].reload=1;
-        ReadPart(partinfo[i].file,i,UNLOAD,&errorcode);
+      partdata *parti;
+
+      parti = partinfo+i;
+      if(parti->loaded==1){
+        parti->reload=1;
+        npartloaded_local++;
+        ReadPart(parti->file,i,UNLOAD,&errorcode);
       }
       else{
-        partinfo[i].reload=0;
+        parti->reload=0;
       }
+      parti->loadstatus = FILE_UNLOADED;
     }
-    npartframes_max=GetMinPartFrames(PARTFILE_RELOADALL);
-    for(i=0;i<npartinfo;i++){
-      if(partinfo[i].reload==1){
-        ReadPart(partinfo[i].file, i, UNLOAD, &errorcode);
-      }
+    if(npartloaded_local>0){
+      npartframes_max = GetMinPartFrames(PARTFILE_RELOADALL);
+      LoadAllPartFilesMT(RELOAD_LOADED_PART_FILES);
     }
-    for(i=0;i<npartinfo;i++){
-      if(partinfo[i].reload==1){
-        ReadPart(partinfo[i].file, i, LOAD, &errorcode);
-      }
-    }
+
+
+    //*** reload isosurface files
+
     update_readiso_geom_wrapup = UPDATE_ISO_START_ALL;
     CancelUpdateTriangles();
     for(i = 0; i<nisoinfo; i++){
@@ -3306,6 +3358,7 @@ void LoadUnloadMenu(int value){
       isoi = isoinfo + i;
       if(isoi->loaded==0)continue;
       ReadIso(isoi->file,i,LOAD,NULL,&errorcode);
+      printf("\n");
     }
     if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(BACKGROUND);
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
@@ -3780,13 +3833,15 @@ void LoadAllPartFiles(int partnum){
     if(partnum>=0&&i!=partnum)continue;  //  load only particle file with file index partnum
     LOCK_PART_LOAD;                      //  or load all particle files
     if(parti->loadstatus==FILE_UNLOADED){
-      parti->loadstatus = FILE_LOADING;
-      UNLOCK_PART_LOAD;
-      file_size = ReadPart(parti->file, i, LOAD, &errorcode);
-      LOCK_PART_LOAD;
-      parti->loadstatus = FILE_LOADED;
-      part_load_size += file_size;
-      part_file_count++;
+      if(partnum==LOAD_ALL_PART_FILES||(partnum==RELOAD_LOADED_PART_FILES&&parti->reload==1)||partnum==i){
+        parti->loadstatus = FILE_LOADING;
+        UNLOCK_PART_LOAD;
+        file_size = ReadPart(parti->file, i, LOAD, &errorcode);
+        LOCK_PART_LOAD;
+        parti->loadstatus = FILE_LOADED;
+        part_load_size += file_size;
+        part_file_count++;
+      }
     }
     UNLOCK_PART_LOAD;
   }
@@ -3928,10 +3983,9 @@ void LoadParticleEvacMenu(int value, int option){
 
         // load particle files unless we are reloading and the were not loaded before
 
-#define ALL_PART_FILES -1
         START_TIMER(part_load_time);
         GetAllPartBoundsMT();
-        LoadAllPartFilesMT(ALL_PART_FILES);
+        LoadAllPartFilesMT(LOAD_ALL_PART_FILES);
         STOP_TIMER(part_load_time);
         PRINT_LOADTIMES(part_file_count,part_load_size,part_load_time);
 
@@ -6444,7 +6498,7 @@ void GeometryMenu(int value){
     visWalls=0;
     visCeiling=0;
     visVents=0;
-    visGrid=0;
+    visGrid = noGridnoProbe;
     BlockageMenu(visBLOCKHide);
     ImmersedMenu(GEOMETRY_HIDEALL);
     break;
@@ -6537,7 +6591,7 @@ static int plot3dshowmenu=0, staticvariablemenu=0, helpmenu=0, webhelpmenu=0, ke
 static int vectorskipmenu=0,unitsmenu=0;
 static int isosurfacemenu=0, isovariablemenu=0, levelmenu=0;
 static int fontmenu=0, aperturemenu=0,dialogmenu=0,zoommenu=0;
-static int gridslicemenu=0, blockagemenu=0, immersedmenu=0, immersedinteriormenu=0, immersedsurfacemenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
+static int gridslicemenu=0, griddigitsmenu=0, blockagemenu=0, immersedmenu=0, immersedinteriormenu=0, immersedsurfacemenu=0, loadpatchmenu=0, ventmenu=0, circularventmenu=0;
 static int loadpatchsinglemenu=0,loadsmoke3dsinglemenu=0,loadvolsmokesinglemenu=0,unloadsmoke3dsinglemenu=0, showvolsmokesinglemenu=0, includepatchmenu=0;
 static int plot3dshowsinglemeshmenu=0;
 static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
@@ -7344,7 +7398,20 @@ updatemenu=0;
     if(nplot3dloaded>1)GLUTADDSUBMENU(_("Mesh"),plot3dshowsinglemeshmenu);
   }
 
-/* --------------------------------grid slice menu -------------------------- */
+/* --------------------------------grid digits menu -------------------------- */
+
+  CREATEMENU(griddigitsmenu, GridDigitsMenu);
+  for(i = GRIDLOC_NDECIMALS_MIN; i<=GRIDLOC_NDECIMALS_MAX;i++){
+    char digit_label[10];
+
+    if(i==ngridloc_digits){
+      sprintf(digit_label, "*%i", i);
+    }
+    else{
+      sprintf(digit_label, "%i", i);
+    }
+    glutAddMenuEntry(digit_label, i);
+  }
 
   CREATEMENU(gridslicemenu,GridSliceMenu);
   if(visGrid==GridnoProbe||visGrid==GridProbe){
@@ -7359,6 +7426,8 @@ updatemenu=0;
   else{
     glutAddMenuEntry(_("show grid location"),GRID_probe);
   }
+  GLUTADDSUBMENU(_("grid location digits"), griddigitsmenu);
+
   glutAddMenuEntry("-",MENU_DUMMY);
   if(visz_all==1){
     glutAddMenuEntry(_("*xy plane"),GRID_xy);
