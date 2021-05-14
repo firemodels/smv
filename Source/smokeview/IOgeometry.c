@@ -289,8 +289,7 @@ void UpdateGeomAreas(void){
       if(trianglei->geomtype!=GEOM_ISO){
         if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
         if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
-        if(trianglei->exterior==1&&show_faces_exterior==0)continue;
-        if(trianglei->exterior==0&&show_faces_interior==0)continue;
+        if(trianglei->exterior==0)continue;
         if(trianglei->geomtype==GEOM_GEOM&&show_faces_shaded==0)continue;
       }
       tri_surf = trianglei->geomsurf;
@@ -382,8 +381,7 @@ void DrawSelectGeom(void){
         if(trianglei->geomtype!=GEOM_ISO){
           if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
           if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
-          if(trianglei->exterior==1&&show_faces_exterior==0)continue;
-          if(trianglei->exterior==0&&show_faces_interior==0)continue;
+          if(trianglei->exterior==0)continue;
           if(trianglei->geomtype==GEOM_GEOM&&show_faces_shaded==0)continue;
         }
         GetRGB(color_index+1, &r, &g, &b);
@@ -617,8 +615,7 @@ void DrawGeom(int flag, int timestate){
         if(trianglei->geomtype!=GEOM_ISO){
           if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
           if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
-          if(trianglei->exterior==1&&show_faces_exterior==0)continue;
-          if(trianglei->exterior==0&&show_faces_interior==0)continue;
+          if(trianglei->exterior==0)continue;
           if(trianglei->geomtype==GEOM_GEOM&&show_faces_shaded==0)continue;
           if(trianglei->geomsurf->invisible==1)continue;
         }
@@ -802,8 +799,7 @@ void DrawGeom(int flag, int timestate){
         if(trianglei->geomtype!=GEOM_ISO){
           if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
           if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
-          if(trianglei->exterior==1&&show_faces_exterior==0)continue;
-          if(trianglei->exterior==0&&show_faces_interior==0)continue;
+          if(trianglei->exterior==0)continue;
         }
         else{
           if(show_iso_outline == 0)continue;
@@ -1139,8 +1135,7 @@ void DrawGeom(int flag, int timestate){
         if(trianglei->geomtype!=GEOM_ISO){
           if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
           if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
-          if(trianglei->exterior==1&&show_faces_exterior==0)continue;
-          if(trianglei->exterior==0&&show_faces_interior==0)continue;
+          if(trianglei->exterior==0)continue;
           if(trianglei->geomtype == GEOM_GEOM&&show_faces_outline == 0)continue;
         }
         else{
@@ -1272,7 +1267,6 @@ void DrawGeom(int flag, int timestate){
         trianglei = geomlisti->triangles+j;
         if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
         if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
-        if(trianglei->exterior==1&&show_faces_exterior==0)continue;
         if(trianglei->exterior==0)continue;
 
         if(trianglei->geomtype==GEOM_GEOM&&(show_geom_normal==0||smooth_geom_normal==1))continue;
@@ -1308,7 +1302,6 @@ void DrawGeom(int flag, int timestate){
         trianglei = geomlisti->triangles+j;
         if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
         if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
-        if(trianglei->exterior==1&&show_faces_exterior==0)continue;
         if(trianglei->exterior==0)continue;
         if(trianglei->geomtype == GEOM_GEOM && (show_geom_normal == 0 || smooth_geom_normal == 1))continue;
         if(trianglei->geomtype == GEOM_ISO&&(show_iso_normal == 0||smooth_iso_normal==1))continue;
@@ -1347,7 +1340,6 @@ void DrawGeom(int flag, int timestate){
         if(trianglei->geomtype!=GEOM_ISO){
           if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
           if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
-          if(trianglei->exterior==1&&show_faces_exterior==0)continue;
           if(trianglei->exterior==0)continue;
           if(trianglei->geomtype==GEOM_GEOM&&(show_geom_normal==0||smooth_geom_normal==0))continue;
         }
@@ -1382,7 +1374,6 @@ void DrawGeom(int flag, int timestate){
         trianglei = geomlisti->triangles + j;
         if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
         if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
-        if(trianglei->exterior==1&&show_faces_exterior==0)continue;
         if(trianglei->exterior==0)continue;
         if(trianglei->geomtype == GEOM_GEOM && (show_geom_normal == 0 || smooth_geom_normal == 0))continue;
         if(trianglei->geomtype == GEOM_ISO && (show_iso_normal == 0 || smooth_iso_normal == 0))continue;
@@ -4219,8 +4210,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
         if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
         if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
-        if(trianglei->exterior==1&&show_faces_exterior==0)continue;
-        if(trianglei->exterior==0&&show_faces_interior==0)continue;
+        if(trianglei->exterior==0)continue;
         if(trianglei->geomtype==GEOM_CGEOM&&show_faces_shaded==0)continue;
         if(trianglei->geomsurf->invisible==1)continue;
 

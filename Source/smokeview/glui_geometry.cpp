@@ -44,8 +44,6 @@ GLUI_Checkbox *CHECKBOX_interior_solid=NULL, *CHECKBOX_interior_outline=NULL;
 GLUI_Checkbox *CHECKBOX_geomtest=NULL, *CHECKBOX_triangletest=NULL;
 GLUI_Checkbox *CHECKBOX_show_geom_normal = NULL;
 GLUI_Checkbox *CHECKBOX_smooth_geom_normal = NULL;
-GLUI_Checkbox *CHECKBOX_faces_interior=NULL;
-GLUI_Checkbox *CHECKBOX_faces_exterior=NULL;
 GLUI_Checkbox *CHECKBOX_volumes_interior=NULL;
 GLUI_Checkbox *CHECKBOX_volumes_exterior=NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_1dimage = NULL;
@@ -159,8 +157,6 @@ extern "C" void UpdateGLuiGridLocation(void){
 /* ------------------ UpdateWhereFaceVolumes ------------------------ */
 
 extern "C" void UpdateWhereFaceVolumes(void){
-  if(CHECKBOX_faces_interior != NULL)CHECKBOX_faces_interior->set_int_val(show_faces_interior);
-  if(CHECKBOX_faces_exterior != NULL)CHECKBOX_faces_exterior->set_int_val(show_faces_exterior);
   if(CHECKBOX_volumes_interior != NULL)CHECKBOX_volumes_interior->set_int_val(show_volumes_interior);
   if(CHECKBOX_volumes_exterior != NULL)CHECKBOX_volumes_exterior->set_int_val(show_volumes_exterior);
 }
@@ -170,14 +166,6 @@ extern "C" void UpdateWhereFaceVolumes(void){
 extern "C" void UpdateGluiCfaces(void){
   glui_use_cfaces = use_cfaces;
   if(CHECKBOX_cfaces!=NULL)CHECKBOX_cfaces->set_int_val(use_cfaces);
-  if(PANEL_cfaces!=NULL){
-    if(use_cfaces==1){
-      PANEL_cfaces->enable();
-    }
-    else{
-      PANEL_cfaces->disable();
-    }
-  }
 }
 
 /* ------------------ UpdateGeomBoundingBox ------------------------ */
@@ -514,16 +502,14 @@ extern "C" void GluiGeometrySetup(int main_window){
     PANEL_geom_showhide = glui_geometry->add_panel_to_panel(ROLLOUT_unstructured, "", GLUI_PANEL_NONE);
     PANEL_group1 = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "", GLUI_PANEL_NONE);
     PANEL_triangles = glui_geometry->add_panel_to_panel(PANEL_group1, "faces");
-    CHECKBOX_faces_interior = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "interior", &show_faces_interior);
-    CHECKBOX_faces_exterior = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "exterior", &show_faces_exterior);
-    CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "solid", &show_faces_shaded, VOL_SHOWHIDE, VolumeCB);
+    CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles,   "shaded", &show_faces_shaded, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, VolumeCB);
-    CHECKBOX_surface_points = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "points", &show_geom_verts, VOL_SHOWHIDE, VolumeCB);
+    CHECKBOX_surface_points = glui_geometry->add_checkbox_to_panel(PANEL_triangles,  "points", &show_geom_verts, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_geom_bounding_box      = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "bounding box(always)",     &geom_bounding_box_always,  GEOM_BOUNDING_BOX, VolumeCB);
     CHECKBOX_geom_bounding_box_auto = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "bounding box(mousedown)",  &geom_bounding_box_auto,    GEOM_BOUNDING_BOX, VolumeCB);
     if(ncgeominfo>0){
-      CHECKBOX_cfaces = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "cfaces", &glui_use_cfaces, VOL_USE_CFACES, VolumeCB);
       PANEL_cfaces = glui_geometry->add_panel_to_panel(PANEL_triangles, "cfaces");
+      CHECKBOX_cfaces = glui_geometry->add_checkbox_to_panel(PANEL_cfaces, "show", &glui_use_cfaces, VOL_USE_CFACES, VolumeCB);
       RADIO_cface_type = glui_geometry->add_radiogroup_to_panel(PANEL_cfaces, &geom_cface_type);
       glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "triangles");
       glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "polygons");
@@ -541,14 +527,8 @@ extern "C" void GluiGeometrySetup(int main_window){
     PANEL_volumes = glui_geometry->add_panel_to_panel(PANEL_group1, "volumes");
     CHECKBOX_volumes_interior = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "interior", &show_volumes_interior);
     CHECKBOX_volumes_exterior = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "exterior", &show_volumes_exterior);
-    CHECKBOX_interior_solid = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "solid", &show_volumes_solid, VOL_SHOWHIDE, VolumeCB);
+    CHECKBOX_interior_solid = glui_geometry->add_checkbox_to_panel(PANEL_volumes,   "shaded", &show_volumes_solid, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_interior_outline = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "outline", &show_volumes_outline, VOL_SHOWHIDE, VolumeCB);
-
-    PANEL_normals = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "normals");
-    CHECKBOX_show_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_normals, "show", &show_geom_normal);
-    CHECKBOX_smooth_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_normals, "smooth", &smooth_geom_normal);
-    SPINNER_geom_ivecfactor = glui_geometry->add_spinner_to_panel(PANEL_normals, "length", GLUI_SPINNER_INT, &geom_ivecfactor, GEOM_IVECFACTOR, VolumeCB);
-    SPINNER_geom_ivecfactor->set_int_limits(0, 200);
 
     UpdateGeomAreas();
     ROLLOUT_geom_properties = glui_geometry->add_rollout_to_panel(PANEL_geom_showhide, "properties",false);
@@ -673,7 +653,6 @@ extern "C" void GluiGeometrySetup(int main_window){
       VolumeCB(SHOW_TEXTURE_2D_IMAGE);
     }
 
-
     glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "use max angle", &use_max_angle, GEOM_MAX_ANGLE, VolumeCB);
     SPINNER_geom_max_angle = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "max angle", GLUI_SPINNER_FLOAT, &geom_max_angle, GEOM_MAX_ANGLE, VolumeCB);
     SPINNER_geom_max_angle->set_float_limits(0.0, 180.0);
@@ -688,6 +667,12 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_geom_delz = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dz", GLUI_SPINNER_FLOAT, &geom_delz);
     glui_geometry->add_checkbox_to_panel(PANEL_geom_offset, "show geometry and boundary files", &glui_show_geom_bndf, UPDATE_GEOM, VolumeCB);
     BUTTON_reset_offset = glui_geometry->add_button_to_panel(PANEL_geom_offset, _("Reset"), RESET_GEOM_OFFSET, VolumeCB);
+
+    PANEL_normals = glui_geometry->add_panel_to_panel(PANEL_group1, "normals");
+    CHECKBOX_show_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_normals, "show", &show_geom_normal);
+    CHECKBOX_smooth_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_normals, "smooth", &smooth_geom_normal);
+    SPINNER_geom_ivecfactor = glui_geometry->add_spinner_to_panel(PANEL_normals, "length", GLUI_SPINNER_INT, &geom_ivecfactor, GEOM_IVECFACTOR, VolumeCB);
+    SPINNER_geom_ivecfactor->set_int_limits(0, 200);
 
     ROLLOUT_geomcheck = glui_geometry->add_rollout_to_panel(ROLLOUT_unstructured, "checks", false);
     INSERT_ROLLOUT(ROLLOUT_geomcheck, glui_geometry);

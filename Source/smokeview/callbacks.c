@@ -2112,6 +2112,23 @@ void Keyboard(unsigned char key, int flag){
       break;
 #endif
     case 'O':
+    if(show_faces_outline==0&&show_faces_shaded==1){
+      show_faces_outline = 1;
+      show_faces_shaded  = 1;
+    }
+    else if(show_faces_outline==1&&show_faces_shaded==1){
+      show_faces_outline = 1;
+      show_faces_shaded  = 0;
+    }
+    else if(show_faces_outline==1&&show_faces_shaded==0){
+      show_faces_outline = 0;
+      show_faces_shaded  = 0;
+    }
+    else if(show_faces_outline==0&&show_faces_shaded==0){
+      show_faces_outline = 0;
+      show_faces_shaded  = 1;
+    }
+    UpdateGeometryControls();
       switch(visBlocks){
         case visBLOCKAsInput:
         case visBLOCKAsInputOutline:
