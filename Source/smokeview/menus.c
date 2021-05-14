@@ -5778,8 +5778,6 @@ void VentMenu(int value){
 #define GEOMETRY_HIDEALL 8
 #define GEOMETRY_INSIDE_DOMAIN 14
 #define GEOMETRY_OUTSIDE_DOMAIN 15
-#define GEOMETRY_FACES_INTERIOR 16
-#define GEOMETRY_FACES_EXTERIOR 17
 #define GEOMETRY_VOLUMES_INTERIOR 18
 #define GEOMETRY_VOLUMES_EXTERIOR 19
 #define GEOMETRY_DUMMY -999
@@ -5875,14 +5873,6 @@ void ImmersedMenu(int value){
       break;
     case GEOMETRY_OUTSIDE_DOMAIN:
       showgeom_outside_domain = 1 - showgeom_outside_domain;
-      UpdateWhereFaceVolumes();
-      break;
-    case GEOMETRY_FACES_INTERIOR:
-      show_faces_interior = 1 - show_faces_interior;
-      UpdateWhereFaceVolumes();
-      break;
-    case GEOMETRY_FACES_EXTERIOR:
-      show_faces_exterior = 1 - show_faces_exterior;
       UpdateWhereFaceVolumes();
       break;
     case GEOMETRY_VOLUMES_INTERIOR:
@@ -6941,18 +6931,6 @@ updatemenu=0;
     glutAddMenuEntry(_("   Hide"),GEOMETRY_HIDE);
   }
   glutAddMenuEntry(_("Where"),GEOMETRY_DUMMY);
-  if(show_faces_interior == 1){
-    glutAddMenuEntry(_("   *Inside geometry"), GEOMETRY_FACES_INTERIOR);
-  }
-  else {
-    glutAddMenuEntry(_("   Inside geometry"), GEOMETRY_FACES_INTERIOR);
-  }
-  if(show_faces_exterior == 1){
-    glutAddMenuEntry(_("   *Geometry surface"), GEOMETRY_FACES_EXTERIOR);
-  }
-  else {
-    glutAddMenuEntry(_("   Geometry surface"), GEOMETRY_FACES_EXTERIOR);
-  }
   if(showgeom_inside_domain == 1){
     glutAddMenuEntry(_("   *Inside FDS domain"), GEOMETRY_INSIDE_DOMAIN);
   }

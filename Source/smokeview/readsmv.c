@@ -10764,9 +10764,11 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
     if(Match(buffer, "GEOMSHOW") == 1){
+      int dummy, dummy2;
+
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i %i %i %f %f %i",
-        &show_faces_interior, &show_faces_exterior, &show_faces_shaded, &show_faces_outline, &smooth_geom_normal,
+        &dummy, &dummy2, &show_faces_shaded, &show_faces_outline, &smooth_geom_normal,
         &geom_force_transparent, &geom_transparency,&geom_linewidth, &use_geom_factors);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i", &show_volumes_interior, &show_volumes_exterior, &show_volumes_solid, &show_volumes_outline);
@@ -14748,7 +14750,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %f %f %f %i\n", geom_delx, geom_dely, geom_delz, show_geom_bndf);
   fprintf(fileout, "GEOMSHOW\n");
   fprintf(fileout, " %i %i %i %i %i %i %f %f %i\n",
-     show_faces_interior, show_faces_exterior, show_faces_shaded, show_faces_outline, smooth_geom_normal,
+     0, 1, show_faces_shaded, show_faces_outline, smooth_geom_normal,
      geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors);
   fprintf(fileout, " %i %i %i %i\n", show_volumes_interior, show_volumes_exterior, show_volumes_solid, show_volumes_outline);
   fprintf(fileout, " %f %f %i %i\n", geom_vert_exag, geom_max_angle, geom_bounding_box_always, geom_bounding_box_auto);

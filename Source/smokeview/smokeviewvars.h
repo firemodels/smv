@@ -625,8 +625,6 @@ SVEXTERN float SVDECL(face_factor,0.01);
 SVEXTERN int SVDECL(have_volume,0);
 SVEXTERN int SVDECL(show_volumes_interior,0);
 SVEXTERN int SVDECL(show_volumes_exterior,0);
-SVEXTERN int SVDECL(show_faces_interior,0);
-SVEXTERN int SVDECL(show_faces_exterior,1);
 SVEXTERN int SVDECL(show_volumes_solid,1);
 SVEXTERN int SVDECL(show_volumes_outline,0);
 SVEXTERN int SVDECL(show_node_slices_and_vectors,0);
