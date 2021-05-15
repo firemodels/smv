@@ -85,6 +85,7 @@ GLUI_Spinner *SPINNER_spec_green = NULL;
 GLUI_Spinner *SPINNER_spec_blue = NULL;
 GLUI_Spinner *SPINNER_spec_grey = NULL;
 GLUI_Spinner *SPINNER_shininess = NULL;
+GLUI_Spinner *SPINNER_ngridloc_digits = NULL;
 
 GLUI_Checkbox *CHECKBOX_labels_showtick = NULL;
 GLUI_Checkbox *CHECKBOX_labels_meshlabel = NULL;
@@ -260,6 +261,8 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define TICKS_ROLLOUT 3
 #define LABELS_ROLLOUT 4
 #define LIGHT_ROLLOUT 5
+
+#define GLUI_GRID_LOCATION 1
 
 procdata displayprocinfo[6];
 int ndisplayprocinfo = 0;
@@ -567,6 +570,18 @@ extern "C" void ColorCB(int var){
   }
 }
 
+/* ------------------ UpdateGLuiGridLocation ------------------------ */
+
+extern "C" void UpdateGLuiGridLocation(void){
+  SPINNER_ngridloc_digits->set_int_val(ngridloc_digits);
+}
+
+/* ------------------ GridLocationCB ------------------------ */
+
+void GridLocationCB(int var){
+  updatemenu = 1;
+}
+
 /* ------------------ GluiLabelsSetup ------------------------ */
 
 extern "C" void GluiLabelsSetup(int main_window){
@@ -652,6 +667,10 @@ extern "C" void GluiLabelsSetup(int main_window){
   SPINNER_ventoffset_factor->set_float_limits(-1.0,1.0,GLUI_LIMIT_CLAMP);
   SPINNER_sliceoffset_factor=glui_labels->add_spinner_to_panel(PANEL_offset,_("slice"),GLUI_SPINNER_FLOAT,&sliceoffset_factor);
   SPINNER_sliceoffset_factor->set_float_limits(-1.0,1.0,GLUI_LIMIT_CLAMP);
+
+  SPINNER_ngridloc_digits = glui_labels->add_spinner_to_panel(PANEL_gen3, _("grid location digits:"),
+    GLUI_SPINNER_INT, &ngridloc_digits, GLUI_GRID_LOCATION, GridLocationCB);
+  SPINNER_ngridloc_digits->set_int_limits(GRIDLOC_NDECIMALS_MIN, GRIDLOC_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
 
   if(nzoneinfo > 0){
     SPINNER_zone_hvac_diam = glui_labels->add_spinner_to_panel(PANEL_gen3, "HVAC (cfast)", GLUI_SPINNER_FLOAT, &zone_hvac_diam);

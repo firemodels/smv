@@ -94,7 +94,6 @@ GLUI_Spinner *SPINNER_geom_vertex2_rgb[3]  = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_triangle_rgb[3] = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_surf_rgb[3]          = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_surf_axis[3]         = {NULL, NULL, NULL};
-GLUI_Spinner *SPINNER_ngridloc_digits = NULL;
 
 #define VOL_SHOWHIDE           3
 #define SELECT_GEOM            4
@@ -146,12 +145,6 @@ char *updatelabel=NULL;
 
 extern "C" void UpdateSelectGeom(void){
   RADIO_select_geom->set_int_val(select_geom);
-}
-
-/* ------------------ UpdateGLuiGridLocation ------------------------ */
-
-extern "C" void UpdateGLuiGridLocation(void){
-  SPINNER_ngridloc_digits->set_int_val(ngridloc_digits);
 }
 
 /* ------------------ UpdateWhereFaceVolumes ------------------------ */
@@ -260,12 +253,6 @@ void BlockeditDlgCB(int var){
     break;
   }
 
-}
-
-/* ------------------ GridLocationCB ------------------------ */
-#define GLUI_GRID_LOCATION 1
-void GridLocationCB(int var){
-  updatemenu=1;
 }
 
 /* ------------------ UpdateTriangleInfo ------------------------ */
@@ -428,9 +415,6 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_obst_surface[i]->disable();
     }
   }
-  SPINNER_ngridloc_digits = glui_geometry->add_spinner_to_panel(ROLLOUT_structured, _("grid location digits:"), GLUI_SPINNER_INT, &ngridloc_digits, GLUI_GRID_LOCATION, GridLocationCB);
-  SPINNER_ngridloc_digits->set_int_limits(GRIDLOC_NDECIMALS_MIN, GRIDLOC_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
-
   glui_geometry->add_column_to_panel(ROLLOUT_structured,false);
 
   PANEL_obj_stretch4=glui_geometry->add_panel_to_panel(ROLLOUT_structured,"",GLUI_PANEL_NONE);
