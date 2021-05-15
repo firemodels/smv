@@ -87,6 +87,7 @@ GLUI_Spinner *SPINNER_spec_grey = NULL;
 GLUI_Spinner *SPINNER_shininess = NULL;
 GLUI_Spinner *SPINNER_ngridloc_digits = NULL;
 
+GLUI_Checkbox *CHECKBOX_visaxislabels = NULL;
 GLUI_Checkbox *CHECKBOX_labels_showtick = NULL;
 GLUI_Checkbox *CHECKBOX_labels_meshlabel = NULL;
 GLUI_Checkbox *CHECKBOX_labels_version=NULL;
@@ -262,10 +263,16 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LABELS_ROLLOUT 4
 #define LIGHT_ROLLOUT 5
 
-#define GLUI_GRID_LOCATION 1
+#define UPDATEMENU 1
 
 procdata displayprocinfo[6];
 int ndisplayprocinfo = 0;
+
+/* ------------------ UpdateVisAxisLabels ------------------------ */
+
+extern "C" void UpdateVisAxisLabels(void){
+  if(CHECKBOX_visaxislabels!=NULL)CHECKBOX_visaxislabels->set_int_val(visaxislabels);
+}
 
 /* ------------------ UpdateFrameTimelabel ------------------------ */
 
@@ -576,9 +583,9 @@ extern "C" void UpdateGLuiGridLocation(void){
   SPINNER_ngridloc_digits->set_int_val(ngridloc_digits);
 }
 
-/* ------------------ GridLocationCB ------------------------ */
+/* ------------------ UpdateMenuCB ------------------------ */
 
-void GridLocationCB(int var){
+void UpdateMenuCB(int var){
   updatemenu = 1;
 }
 
@@ -669,8 +676,10 @@ extern "C" void GluiLabelsSetup(int main_window){
   SPINNER_sliceoffset_factor->set_float_limits(-1.0,1.0,GLUI_LIMIT_CLAMP);
 
   SPINNER_ngridloc_digits = glui_labels->add_spinner_to_panel(PANEL_gen3, _("grid location digits:"),
-    GLUI_SPINNER_INT, &ngridloc_digits, GLUI_GRID_LOCATION, GridLocationCB);
+    GLUI_SPINNER_INT, &ngridloc_digits, UPDATEMENU, UpdateMenuCB);
   SPINNER_ngridloc_digits->set_int_limits(GRIDLOC_NDECIMALS_MIN, GRIDLOC_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
+
+  CHECKBOX_visaxislabels = glui_labels->add_checkbox_to_panel(PANEL_gen3, _("Show axis labels"), &visaxislabels, UPDATEMENU, UpdateMenuCB);
 
   if(nzoneinfo > 0){
     SPINNER_zone_hvac_diam = glui_labels->add_spinner_to_panel(PANEL_gen3, "HVAC (cfast)", GLUI_SPINNER_FLOAT, &zone_hvac_diam);

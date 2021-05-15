@@ -67,7 +67,6 @@ GLUI_Checkbox *CHECKBOX_highlight_edge1=NULL;
 GLUI_Checkbox *CHECKBOX_highlight_edge2=NULL;
 GLUI_Checkbox *CHECKBOX_highlight_edgeother=NULL;
 GLUI_Checkbox *CHECKBOX_highlight_vertexdup = NULL;
-GLUI_Checkbox *CHECKBOX_visaxislabels=NULL;
 
 GLUI_Rollout *ROLLOUT_geomtest=NULL;
 GLUI_Rollout *ROLLOUT_geomtest2 = NULL;
@@ -166,12 +165,6 @@ extern "C" void UpdateGluiCfaces(void){
 extern "C" void UpdateGeomBoundingBox(void){
   if(CHECKBOX_geom_bounding_box!=NULL)CHECKBOX_geom_bounding_box->set_int_val(geom_bounding_box_always);
   if(CHECKBOX_geom_bounding_box_auto!=NULL)CHECKBOX_geom_bounding_box_auto->set_int_val(geom_bounding_box_auto);
-}
-
-/* ------------------ UpdateVisAxisLabels ------------------------ */
-
-extern "C" void UpdateVisAxisLabels(void){
-  if(CHECKBOX_visaxislabels!=NULL)CHECKBOX_visaxislabels->set_int_val(visaxislabels);
 }
 
 /* ------------------ UpdateGeometryControls ------------------------ */
@@ -338,135 +331,136 @@ extern "C" void GluiGeometrySetup(int main_window){
   glui_geometry = GLUI_Master.create_glui("Geometry",0,0,0);
   if(showedit_dialog==0)glui_geometry->hide();
 
-  ROLLOUT_structured = glui_geometry->add_rollout("Structured",false);
-  INSERT_ROLLOUT(ROLLOUT_structured, glui_geometry);
-  if(structured_isopen==1)ROLLOUT_structured->open();
-  PANEL_obj_select = glui_geometry->add_panel_to_panel(ROLLOUT_structured,"SURFs");
+  if(have_obsts == 1){
+    ROLLOUT_structured = glui_geometry->add_rollout("Structured", false);
+    INSERT_ROLLOUT(ROLLOUT_structured, glui_geometry);
+    if(structured_isopen==1)ROLLOUT_structured->open();
+    PANEL_obj_select = glui_geometry->add_panel_to_panel(ROLLOUT_structured, "SURFs");
 
-  PANEL_faces=glui_geometry->add_panel_to_panel(PANEL_obj_select,"",GLUI_PANEL_NONE);
+    PANEL_faces = glui_geometry->add_panel_to_panel(PANEL_obj_select, "", GLUI_PANEL_NONE);
 
-  glui_geometry->add_column_to_panel(PANEL_faces,false);
+    glui_geometry->add_column_to_panel(PANEL_faces, false);
 
-  if(nsurfinfo>0){
-    glui_geometry->add_statictext_to_panel(PANEL_faces,"");
+    if(nsurfinfo>0){
+      glui_geometry->add_statictext_to_panel(PANEL_faces, "");
 
-    LIST_obst_surface[DOWN_X] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Left"),surface_indices+DOWN_X,UPDATE_LIST,ObjectCB);
-    LIST_obst_surface[DOWN_X]->set_w(260);
-    for(i=0;i<nsurfinfo;i++){
-      surfi = surfinfo + sorted_surfidlist[i];
-      if(surfi->used_by_obst!=1)continue;
-      if(surfi->obst_surface==0)continue;
-      surfacelabel = surfi->surfacelabel;
-      LIST_obst_surface[DOWN_X]->add_item(i,surfacelabel);
+      LIST_obst_surface[DOWN_X] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Left"), surface_indices+DOWN_X, UPDATE_LIST, ObjectCB);
+      LIST_obst_surface[DOWN_X]->set_w(260);
+      for(i = 0; i<nsurfinfo; i++){
+        surfi = surfinfo+sorted_surfidlist[i];
+        if(surfi->used_by_obst!=1)continue;
+        if(surfi->obst_surface==0)continue;
+        surfacelabel = surfi->surfacelabel;
+        LIST_obst_surface[DOWN_X]->add_item(i, surfacelabel);
+      }
+
+      LIST_obst_surface[UP_X] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Right"), surface_indices+UP_X, UPDATE_LIST, ObjectCB);
+      LIST_obst_surface[UP_X]->set_w(260);
+      for(i = 0; i<nsurfinfo; i++){
+        surfi = surfinfo+sorted_surfidlist[i];
+        if(surfi->used_by_obst!=1)continue;
+        if(surfi->obst_surface==0)continue;
+        surfacelabel = surfi->surfacelabel;
+        LIST_obst_surface[UP_X]->add_item(i, surfacelabel);
+      }
+
+      LIST_obst_surface[DOWN_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Front"), surface_indices+DOWN_Y, UPDATE_LIST, ObjectCB);
+      LIST_obst_surface[DOWN_Y]->set_w(260);
+      for(i = 0; i<nsurfinfo; i++){
+        surfi = surfinfo+sorted_surfidlist[i];
+        if(surfi->used_by_obst!=1)continue;
+        if(surfi->obst_surface==0)continue;
+        surfacelabel = surfi->surfacelabel;
+        LIST_obst_surface[DOWN_Y]->add_item(i, surfacelabel);
+      }
+
+      LIST_obst_surface[UP_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Back"), surface_indices+UP_Y, UPDATE_LIST, ObjectCB);
+      LIST_obst_surface[UP_Y]->set_w(260);
+      for(i = 0; i<nsurfinfo; i++){
+        surfi = surfinfo+sorted_surfidlist[i];
+        if(surfi->used_by_obst!=1)continue;
+        if(surfi->obst_surface==0)continue;
+        surfacelabel = surfi->surfacelabel;
+        LIST_obst_surface[UP_Y]->add_item(i, surfacelabel);
+      }
+
+      LIST_obst_surface[DOWN_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Down"), surface_indices+DOWN_Z, UPDATE_LIST, ObjectCB);
+      LIST_obst_surface[DOWN_Z]->set_w(260);
+      for(i = 0; i<nsurfinfo; i++){
+        surfi = surfinfo+sorted_surfidlist[i];
+        if(surfi->used_by_obst!=1)continue;
+        if(surfi->obst_surface==0)continue;
+        surfacelabel = surfi->surfacelabel;
+        LIST_obst_surface[DOWN_Z]->add_item(i, surfacelabel);
+      }
+
+      LIST_obst_surface[UP_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Up"), surface_indices+UP_Z, UPDATE_LIST, ObjectCB);
+      LIST_obst_surface[UP_Z]->set_w(260);
+      for(i = 0; i<nsurfinfo; i++){
+        surfi = surfinfo+sorted_surfidlist[i];
+        if(surfi->used_by_obst!=1)continue;
+        if(surfi->obst_surface==0)continue;
+        surfacelabel = surfi->surfacelabel;
+        LIST_obst_surface[UP_Z]->add_item(i, surfacelabel);
+      }
+
+      ObjectCB(RADIO_WALL);
+      for(i = 0; i<6; i++){
+        LIST_obst_surface[i]->disable();
+      }
     }
+    glui_geometry->add_column_to_panel(ROLLOUT_structured, false);
 
-    LIST_obst_surface[UP_X] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Right"),surface_indices+UP_X,UPDATE_LIST,ObjectCB);
-    LIST_obst_surface[UP_X]->set_w(260);
-    for(i=0;i<nsurfinfo;i++){
-      surfi = surfinfo + sorted_surfidlist[i];
-      if(surfi->used_by_obst!=1)continue;
-      if(surfi->obst_surface==0)continue;
-      surfacelabel = surfi->surfacelabel;
-      LIST_obst_surface[UP_X]->add_item(i,surfacelabel);
-    }
+    PANEL_obj_stretch4 = glui_geometry->add_panel_to_panel(ROLLOUT_structured, "", GLUI_PANEL_NONE);
 
-    LIST_obst_surface[DOWN_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Front"),surface_indices+DOWN_Y,UPDATE_LIST,ObjectCB);
-    LIST_obst_surface[DOWN_Y]->set_w(260);
-    for(i=0;i<nsurfinfo;i++){
-      surfi = surfinfo + sorted_surfidlist[i];
-      if(surfi->used_by_obst!=1)continue;
-      if(surfi->obst_surface==0)continue;
-      surfacelabel = surfi->surfacelabel;
-      LIST_obst_surface[DOWN_Y]->add_item(i,surfacelabel);
-    }
+    {
+      char meshlabel[255];
 
-    LIST_obst_surface[UP_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Back"),surface_indices+UP_Y,UPDATE_LIST,ObjectCB);
-    LIST_obst_surface[UP_Y]->set_w(260);
-    for(i=0;i<nsurfinfo;i++){
-      surfi = surfinfo + sorted_surfidlist[i];
-      if(surfi->used_by_obst!=1)continue;
-      if(surfi->obst_surface==0)continue;
-      surfacelabel = surfi->surfacelabel;
-      LIST_obst_surface[UP_Y]->add_item(i,surfacelabel);
-    }
+      strcpy(meshlabel, _("Mesh:"));
+      strcat(meshlabel, meshinfo->label);
+      STATIC_mesh_index = glui_geometry->add_statictext_to_panel(PANEL_obj_stretch4, meshlabel);
 
-    LIST_obst_surface[DOWN_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Down"),surface_indices+DOWN_Z,UPDATE_LIST,ObjectCB);
-    LIST_obst_surface[DOWN_Z]->set_w(260);
-    for(i=0;i<nsurfinfo;i++){
-      surfi = surfinfo + sorted_surfidlist[i];
-      if(surfi->used_by_obst!=1)continue;
-      if(surfi->obst_surface==0)continue;
-      surfacelabel = surfi->surfacelabel;
-      LIST_obst_surface[DOWN_Z]->add_item(i,surfacelabel);
     }
+    STATIC_blockage_index = glui_geometry->add_statictext_to_panel(PANEL_obj_stretch4, "&OBST number: ");
+    STATIC_label = glui_geometry->add_statictext_to_panel(PANEL_obj_stretch4, "&OBST label:");
 
-    LIST_obst_surface[UP_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces,_("Up"),surface_indices+UP_Z,UPDATE_LIST,ObjectCB);
-    LIST_obst_surface[UP_Z]->set_w(260);
-    for(i=0;i<nsurfinfo;i++){
-      surfi = surfinfo + sorted_surfidlist[i];
-      if(surfi->used_by_obst!=1)continue;
-      if(surfi->obst_surface==0)continue;
-      surfacelabel = surfi->surfacelabel;
-      LIST_obst_surface[UP_Z]->add_item(i,surfacelabel);
-    }
+    PANEL_obj_stretch2 = glui_geometry->add_panel_to_panel(ROLLOUT_structured, "Coordinates");
 
-    ObjectCB(RADIO_WALL);
-    for(i=0;i<6;i++){
-      LIST_obst_surface[i]->disable();
+    if(blocklocation==BLOCKlocation_grid){
+      blockage_snapped = 1;
     }
+    else{
+      blockage_snapped = 0;
+    }
+    blockage_as_input = 1-blockage_snapped;
+    CHECKBOX_blockage = glui_geometry->add_checkbox_to_panel(PANEL_obj_stretch2, _("Dimensions snapped to grid"), &blockage_snapped,
+                                                             BLOCKAGE_AS_INPUT, ObjectCB);
+    PANEL_obj_stretch3 = glui_geometry->add_panel_to_panel(PANEL_obj_stretch2, "", GLUI_PANEL_NONE);
+    EDIT_xmin = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "x", GLUI_EDITTEXT_FLOAT, &glui_block_xmin, XMIN_SPIN, ObjectCB);
+    EDIT_ymin = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "y", GLUI_EDITTEXT_FLOAT, &glui_block_ymin, YMIN_SPIN, ObjectCB);
+    EDIT_zmin = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "z", GLUI_EDITTEXT_FLOAT, &glui_block_zmin, ZMIN_SPIN, ObjectCB);
+
+    glui_geometry->add_column_to_panel(PANEL_obj_stretch3, false);
+    EDIT_xmax = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "", GLUI_EDITTEXT_FLOAT, &glui_block_xmax, XMAX_SPIN, ObjectCB);
+    EDIT_ymax = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "", GLUI_EDITTEXT_FLOAT, &glui_block_ymax, YMAX_SPIN, ObjectCB);
+    EDIT_zmax = glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3, "", GLUI_EDITTEXT_FLOAT, &glui_block_zmax, ZMAX_SPIN, ObjectCB);
+
+    EDIT_xmin->disable();
+    EDIT_ymin->disable();
+    EDIT_zmin->disable();
+
+    EDIT_xmax->disable();
+    EDIT_ymax->disable();
+    EDIT_zmax->disable();
+    ObjectCB(BLOCKAGE_AS_INPUT);
+
+    EDIT_xmin->set_float_limits(xplt_orig[0], xplt_orig[ibar], GLUI_LIMIT_CLAMP);
+    EDIT_xmax->set_float_limits(xplt_orig[0], xplt_orig[ibar], GLUI_LIMIT_CLAMP);
+    EDIT_ymin->set_float_limits(yplt_orig[0], yplt_orig[jbar], GLUI_LIMIT_CLAMP);
+    EDIT_ymax->set_float_limits(yplt_orig[0], yplt_orig[jbar], GLUI_LIMIT_CLAMP);
+    EDIT_zmin->set_float_limits(zplt_orig[0], zplt_orig[kbar], GLUI_LIMIT_CLAMP);
+    EDIT_zmax->set_float_limits(zplt_orig[0], zplt_orig[kbar], GLUI_LIMIT_CLAMP);
   }
-  glui_geometry->add_column_to_panel(ROLLOUT_structured,false);
-
-  PANEL_obj_stretch4=glui_geometry->add_panel_to_panel(ROLLOUT_structured,"",GLUI_PANEL_NONE);
-
-  {
-    char meshlabel[255];
-
-    strcpy(meshlabel,_("Mesh:"));
-    strcat(meshlabel,meshinfo->label);
-    STATIC_mesh_index=glui_geometry->add_statictext_to_panel(PANEL_obj_stretch4,meshlabel);
-
-  }
-  STATIC_blockage_index=glui_geometry->add_statictext_to_panel(PANEL_obj_stretch4,"&OBST number: ");
-  STATIC_label=glui_geometry->add_statictext_to_panel(PANEL_obj_stretch4,"&OBST label:");
-
-  PANEL_obj_stretch2 = glui_geometry->add_panel_to_panel(ROLLOUT_structured,"Coordinates");
-
-  if(blocklocation==BLOCKlocation_grid){
-    blockage_snapped = 1;
-  }
-  else{
-    blockage_snapped = 0;
-  }
-  blockage_as_input = 1-blockage_snapped;
-  CHECKBOX_blockage=glui_geometry->add_checkbox_to_panel(PANEL_obj_stretch2,_("Dimensions snapped to grid"),&blockage_snapped,
-    BLOCKAGE_AS_INPUT,ObjectCB);
-  CHECKBOX_visaxislabels=glui_geometry->add_checkbox_to_panel(PANEL_obj_stretch2,_("Show axis labels"),&visaxislabels,VISAXISLABELS,ObjectCB);
-  PANEL_obj_stretch3 = glui_geometry->add_panel_to_panel(PANEL_obj_stretch2,"",GLUI_PANEL_NONE);
-  EDIT_xmin=glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3,"x",GLUI_EDITTEXT_FLOAT,&glui_block_xmin,XMIN_SPIN,ObjectCB);
-  EDIT_ymin=glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3,"y",GLUI_EDITTEXT_FLOAT,&glui_block_ymin,YMIN_SPIN,ObjectCB);
-  EDIT_zmin=glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3,"z",GLUI_EDITTEXT_FLOAT,&glui_block_zmin,ZMIN_SPIN,ObjectCB);
-
-  glui_geometry->add_column_to_panel(PANEL_obj_stretch3,false);
-  EDIT_xmax=glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3,"",GLUI_EDITTEXT_FLOAT,&glui_block_xmax,XMAX_SPIN,ObjectCB);
-  EDIT_ymax=glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3,"",GLUI_EDITTEXT_FLOAT,&glui_block_ymax,YMAX_SPIN,ObjectCB);
-  EDIT_zmax=glui_geometry->add_edittext_to_panel(PANEL_obj_stretch3,"",GLUI_EDITTEXT_FLOAT,&glui_block_zmax,ZMAX_SPIN,ObjectCB);
-
-  EDIT_xmin->disable();
-  EDIT_ymin->disable();
-  EDIT_zmin->disable();
-
-  EDIT_xmax->disable();
-  EDIT_ymax->disable();
-  EDIT_zmax->disable();
-  ObjectCB(BLOCKAGE_AS_INPUT);
-
-  EDIT_xmin->set_float_limits(xplt_orig[0],xplt_orig[ibar],GLUI_LIMIT_CLAMP);
-  EDIT_xmax->set_float_limits(xplt_orig[0],xplt_orig[ibar],GLUI_LIMIT_CLAMP);
-  EDIT_ymin->set_float_limits(yplt_orig[0],yplt_orig[jbar],GLUI_LIMIT_CLAMP);
-  EDIT_ymax->set_float_limits(yplt_orig[0],yplt_orig[jbar],GLUI_LIMIT_CLAMP);
-  EDIT_zmin->set_float_limits(zplt_orig[0],zplt_orig[kbar],GLUI_LIMIT_CLAMP);
-  EDIT_zmax->set_float_limits(zplt_orig[0],zplt_orig[kbar],GLUI_LIMIT_CLAMP);
 
   if(ngeominfo > 0){
     ROLLOUT_unstructured = glui_geometry->add_rollout("Immersed", false);
@@ -872,6 +866,7 @@ extern "C" void UpdateBlockVals(int flag){
   float *xplt_orig, *yplt_orig, *zplt_orig;
   int ibar, jbar, kbar;
 
+  if(have_obsts==0)return;
   GetBlockVals(&xmin,&xmax,&ymin,&ymax,&zmin,&zmax,&imin,&jmin,&kmin);
 
   xplt_orig = current_mesh->xplt_orig;

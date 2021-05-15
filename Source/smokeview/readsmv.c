@@ -10103,6 +10103,17 @@ typedef struct {
   PRINTF("  wrapping up\n");
   float timer_readsmv;
 
+  have_obsts = 0;
+  for(i=0;i<nmeshes;i++){
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    if(meshi->nbptrs>0){
+      have_obsts = 1;
+      break;
+    }
+  }
+
   INIT_PRINT_TIMER(timer_readsmv);
   CheckMemory;
   UpdateIsoColors();
