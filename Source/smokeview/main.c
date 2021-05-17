@@ -492,7 +492,7 @@ char *ParseCommandline(int argc, char **argv){
       PRINTF("stereo option activated\n");
     }
     else if(strncmp(argv[i], "-big", 4)==0){
-      geom_bounding_box_auto = 1;
+      show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
     }
     else if(strncmp(argv[i], "-timings", 8)==0){
       show_timings = 1;
