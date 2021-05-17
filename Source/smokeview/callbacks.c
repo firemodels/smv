@@ -1017,7 +1017,7 @@ void MouseCB(int button, int state, int xm, int ym){
     return;
   }
 
-  if(geom_bounding_box_auto==1)geom_bounding_box_mousedown = 1;
+  if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN)geom_bounding_box_mousedown = 1;
   mouse_down=1;
 
   // check for double click for translating/rotating 3D slice plane
@@ -1749,14 +1749,15 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'B':
-      geom_bounding_box_auto = 1-geom_bounding_box_auto;
-      UpdateGeomBoundingBox();
-      if(geom_bounding_box_auto==1){
-        printf("auto show bounding box: on\n");
+      if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
+        show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
+        printf("show bounding box when mouse is down: off\n");
       }
       else{
-        printf("auto show bounding box: off\n");
+        show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
+        printf("show bounding box when mouse is down: on\n");
       }
+      UpdateGeomBoundingBox();
 
       break;
     case 'b':

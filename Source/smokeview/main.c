@@ -492,7 +492,7 @@ char *ParseCommandline(int argc, char **argv){
       PRINTF("stereo option activated\n");
     }
     else if(strncmp(argv[i], "-big", 4)==0){
-      geom_bounding_box_auto = 1;
+      show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
     }
     else if(strncmp(argv[i], "-timings", 8)==0){
       show_timings = 1;
@@ -580,7 +580,7 @@ char *ParseCommandline(int argc, char **argv){
       compute_fed = 1;
     }
     else if(strncmp(argv[i], "-outline", 8)==0){
-      geom_bounding_box_always = 1;
+      show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
     }
     else if(strncmp(argv[i], "-make_movie", 11)==0){
       open_movie_dialog = 1;
@@ -853,7 +853,11 @@ int main(int argc, char **argv){
 
   progname=argv[0];
 
-  if(show_help==1||smv_filename==NULL){
+  if(smv_filename==NULL){
+    DisplayVersionInfo("Smokeview ");
+    SMV_EXIT(0);
+  }
+  if(show_help==1){
     Usage("smokeview",HELP_SUMMARY);
     return 1;
   }

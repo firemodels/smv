@@ -10103,6 +10103,17 @@ typedef struct {
   PRINTF("  wrapping up\n");
   float timer_readsmv;
 
+  have_obsts = 0;
+  for(i=0;i<nmeshes;i++){
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    if(meshi->nbptrs>0){
+      have_obsts = 1;
+      break;
+    }
+  }
+
   INIT_PRINT_TIMER(timer_readsmv);
   CheckMemory;
   UpdateIsoColors();
@@ -10773,7 +10784,7 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i", &show_volumes_interior, &show_volumes_exterior, &show_volumes_solid, &show_volumes_outline);
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f %i %i", &geom_vert_exag, &geom_max_angle, &geom_bounding_box_always, &geom_bounding_box_auto);
+      sscanf(buffer, " %f %f %i %i %i", &geom_vert_exag, &geom_max_angle, &dummy, &dummy2, &show_geom_boundingbox);
       continue;
     }
     if(Match(buffer, "SHOWTRIANGLECOUNT") == 1){
@@ -14753,7 +14764,7 @@ void WriteIni(int flag,char *filename){
      0, 1, show_faces_shaded, show_faces_outline, smooth_geom_normal,
      geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors);
   fprintf(fileout, " %i %i %i %i\n", show_volumes_interior, show_volumes_exterior, show_volumes_solid, show_volumes_outline);
-  fprintf(fileout, " %f %f %i %i\n", geom_vert_exag, geom_max_angle, geom_bounding_box_always, geom_bounding_box_auto);
+  fprintf(fileout, " %f %f %i %i %i\n", geom_vert_exag, geom_max_angle, 0, 0, show_geom_boundingbox);
   fprintf(fileout, "GEOMSLICEPROPS\n");
   fprintf(fileout, " %f %f\n", geomslice_linewidth, geomslice_pointsize);
 

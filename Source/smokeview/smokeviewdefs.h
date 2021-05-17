@@ -74,6 +74,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MINMAX_LOADED 1
 #define MINMAX_INI    2
 
+#define SHOW_BOUNDING_BOX_ALWAYS     0
+#define SHOW_BOUNDING_BOX_MOUSE_DOWN 1
+#define SHOW_BOUNDING_BOX_NEVER      2
+
 #define ALL_FRAMES       -1
 
 #define COLORBAR_SHIFT_MIN          0.1
