@@ -34,8 +34,6 @@
 #define SURF_SET              49
 #define SURF_GET              50
 
-GLUI_Checkbox *CHECKBOX_geom_bounding_box      = NULL;
-GLUI_Checkbox *CHECKBOX_geom_bounding_box_auto = NULL;
 GLUI_Checkbox *CHECKBOX_cfaces = NULL;
 GLUI_Checkbox *CHECKBOX_show_zlevel = NULL;
 GLUI_Checkbox *CHECKBOX_surface_solid=NULL, *CHECKBOX_surface_outline=NULL, *CHECKBOX_surface_points = NULL;
@@ -51,6 +49,7 @@ GLUI_Checkbox *CHECKBOX_show_texture_2dimage = NULL;
 
 GLUI_RadioGroup *RADIO_select_geom = NULL;
 GLUI_RadioGroup *RADIO_cface_type = NULL;
+GLUI_RadioGroup *RADIO_show_geom_boundingbox = NULL;
 
 GLUI_StaticText *STATIC_vertx1=NULL;
 GLUI_StaticText *STATIC_verty1=NULL;
@@ -115,6 +114,7 @@ GLUI_Listbox *LIST_geom_surface=NULL;
 
 GLUI_Panel *PANEL_cfaces = NULL;
 GLUI_Panel *PANEL_obj_select=NULL,*PANEL_faces=NULL,*PANEL_triangles=NULL,*PANEL_volumes=NULL,*PANEL_geom_showhide;
+GLUI_Panel *PANEL_boundingbox = NULL;
 GLUI_Panel *PANEL_properties_surf = NULL;
 GLUI_Panel *PANEL_properties_vertex = NULL;
 GLUI_Panel *PANEL_properties_triangle = NULL;
@@ -163,8 +163,7 @@ extern "C" void UpdateGluiCfaces(void){
 /* ------------------ UpdateGeomBoundingBox ------------------------ */
 
 extern "C" void UpdateGeomBoundingBox(void){
-  if(CHECKBOX_geom_bounding_box!=NULL)CHECKBOX_geom_bounding_box->set_int_val(geom_bounding_box_always);
-  if(CHECKBOX_geom_bounding_box_auto!=NULL)CHECKBOX_geom_bounding_box_auto->set_int_val(geom_bounding_box_auto);
+  if(RADIO_show_geom_boundingbox!=NULL)RADIO_show_geom_boundingbox->set_int_val(show_geom_boundingbox);
 }
 
 /* ------------------ UpdateGeometryControls ------------------------ */
@@ -483,8 +482,13 @@ extern "C" void GluiGeometrySetup(int main_window){
     CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles,   "shaded", &show_faces_shaded, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_surface_points = glui_geometry->add_checkbox_to_panel(PANEL_triangles,  "points", &show_geom_verts, VOL_SHOWHIDE, VolumeCB);
-    CHECKBOX_geom_bounding_box      = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "bounding box(always)",     &geom_bounding_box_always,  GEOM_BOUNDING_BOX, VolumeCB);
-    CHECKBOX_geom_bounding_box_auto = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "bounding box(mousedown)",  &geom_bounding_box_auto,    GEOM_BOUNDING_BOX, VolumeCB);
+
+    PANEL_boundingbox = glui_geometry->add_panel_to_panel(PANEL_triangles, "show bounding box");
+    RADIO_show_geom_boundingbox = glui_geometry->add_radiogroup_to_panel(PANEL_boundingbox, &show_geom_boundingbox, GEOM_BOUNDING_BOX, VolumeCB);
+    glui_geometry->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "always");
+    glui_geometry->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "only when mouse is down");
+    glui_geometry->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "never");
+
     if(ncgeominfo>0){
       PANEL_cfaces = glui_geometry->add_panel_to_panel(PANEL_triangles, "cfaces");
       CHECKBOX_cfaces = glui_geometry->add_checkbox_to_panel(PANEL_cfaces, "show", &glui_use_cfaces, VOL_USE_CFACES, VolumeCB);
@@ -1062,7 +1066,7 @@ extern "C" void ObjectCB(int var){
       case BLOCKAGE_AS_INPUT:
         if(var==BLOCKAGE_AS_INPUT2){
           blockage_snapped=1-blockage_as_input;
-          CHECKBOX_blockage->set_int_val(blockage_snapped);
+          if(CHECKBOX_blockage!=NULL)CHECKBOX_blockage->set_int_val(blockage_snapped);
         }
         blockage_as_input=1-blockage_snapped;
         if(blocklocation!=BLOCKlocation_cad){

@@ -6277,11 +6277,21 @@ void TerrainGeomShowMenu(int value){
       terrain_show_geometry_points = 1-terrain_show_geometry_points;
       break;
     case MENU_TERRAIN_BOUNDING_BOX:
-      geom_bounding_box_always = 1 - geom_bounding_box_always;
+      if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS){
+        show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
+      }
+      else{
+        show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
+      }
       UpdateGeomBoundingBox();
       break;
     case MENU_TERRAIN_BOUNDING_BOX_AUTO:
-      geom_bounding_box_auto = 1 - geom_bounding_box_auto;
+      if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
+        show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
+      }
+      else{
+        show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
+      }
       UpdateGeomBoundingBox();
       break;
     case MENU_TERRAIN_SHOW_TOP:
@@ -6408,14 +6418,14 @@ void ZoneShowMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
-#define GEOM_Vents             15
-#define GEOM_Compartments      16
-#define GEOM_Outline            3
-#define GEOM_TriangleCount     14
-#define GEOM_ShowAll           11
-#define GEOM_HideAll           13
-#define GEOM_BOUNDING_BOX      10
-#define GEOM_BOUNDING_BOX_AUTO  9
+#define GEOM_Vents                   15
+#define GEOM_Compartments            16
+#define GEOM_Outline                  3
+#define GEOM_TriangleCount           14
+#define GEOM_ShowAll                 11
+#define GEOM_HideAll                 13
+#define GEOM_BOUNDING_BOX_ALWAYS     10
+#define GEOM_BOUNDING_BOX_MOUSE_DOWN  9
 
 
 /* ------------------ GeometryMenu ------------------------ */
@@ -6426,12 +6436,22 @@ void GeometryMenu(int value){
   case GEOM_TriangleCount:
     show_triangle_count=1-show_triangle_count;
     break;
-  case GEOM_BOUNDING_BOX:
-    geom_bounding_box_always = 1 - geom_bounding_box_always;
+  case GEOM_BOUNDING_BOX_ALWAYS:
+    if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS){
+      show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
+    }
+    else{
+      show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
+    }
     UpdateGeomBoundingBox();
     break;
-  case GEOM_BOUNDING_BOX_AUTO:
-    geom_bounding_box_auto = 1-geom_bounding_box_auto;
+  case GEOM_BOUNDING_BOX_MOUSE_DOWN:
+    if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
+      show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
+    }
+    else{
+      show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
+    }
     UpdateGeomBoundingBox();
     break;
   case GEOM_Outline:
@@ -7692,10 +7712,10 @@ updatemenu=0;
       if(terrain_show_geometry_points==0)glutAddMenuEntry(_("vertices"),       MENU_TERRAIN_SHOW_POINTS);
     }
     if(ngeominfoptrs>0){
-      if(geom_bounding_box_always==1)glutAddMenuEntry(_("*bounding box(always)"),   MENU_TERRAIN_BOUNDING_BOX);
-      if(geom_bounding_box_always==0)glutAddMenuEntry(_("bounding box(always)"),    MENU_TERRAIN_BOUNDING_BOX);
-      if(geom_bounding_box_auto==1)glutAddMenuEntry(_("*bounding box(mouse down)"), MENU_TERRAIN_BOUNDING_BOX_AUTO);
-      if(geom_bounding_box_auto==0)glutAddMenuEntry(_("bounding box(mouse down)"),  MENU_TERRAIN_BOUNDING_BOX_AUTO);
+      if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS)glutAddMenuEntry(_("*bounding box(always)"),     MENU_TERRAIN_BOUNDING_BOX);
+      if(show_geom_boundingbox!=SHOW_BOUNDING_BOX_ALWAYS)glutAddMenuEntry(_("bounding box(always)"),      MENU_TERRAIN_BOUNDING_BOX);
+      if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("*bounding box(mouse down)"), MENU_TERRAIN_BOUNDING_BOX_AUTO);
+      if(show_geom_boundingbox!=SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("bounding box(mouse down)"),  MENU_TERRAIN_BOUNDING_BOX_AUTO);
     }
     if(nterrain_textures>0){
       glutAddMenuEntry("-", MENU_DUMMY);
@@ -7751,10 +7771,10 @@ updatemenu=0;
     visFrame=0;
   }
   if(ngeominfoptrs>0){
-    if(geom_bounding_box_always==1)glutAddMenuEntry(_("*bounding box(always)"),   GEOM_BOUNDING_BOX);
-    if(geom_bounding_box_always==0)glutAddMenuEntry(_("bounding box(always)"),    GEOM_BOUNDING_BOX);
-    if(geom_bounding_box_auto==1)glutAddMenuEntry(_("*bounding box(mouse down)"), GEOM_BOUNDING_BOX_AUTO);
-    if(geom_bounding_box_auto==0)glutAddMenuEntry(_("bounding box(mouse down)"),  GEOM_BOUNDING_BOX_AUTO);
+    if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS)glutAddMenuEntry(_("*bounding box(always)"),         GEOM_BOUNDING_BOX_ALWAYS);
+    if(show_geom_boundingbox!=SHOW_BOUNDING_BOX_ALWAYS)glutAddMenuEntry(_("bounding box(always)"),          GEOM_BOUNDING_BOX_ALWAYS);
+    if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("*bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
+    if(show_geom_boundingbox!=SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("bounding box(mouse down)"),  GEOM_BOUNDING_BOX_MOUSE_DOWN);
   }
 #ifdef _DEBUG
   if(show_triangle_count==1)glutAddMenuEntry(_("*Triangle count"), GEOM_TriangleCount);
@@ -12115,7 +12135,7 @@ void MenuStatusCB(int status, int x, int y){
   float *eye_xyz;
 
   menustatus=status;
-  if(menustatus==GLUT_MENU_IN_USE &&  geom_bounding_box_auto==1){
+  if(menustatus==GLUT_MENU_IN_USE &&  show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
     geom_bounding_box_mousedown = 1;
   }
   else{

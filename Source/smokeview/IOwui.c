@@ -287,10 +287,9 @@ void DrawTerrainGeom(int option){
   float neutral_color[4] = {0.91, 0.91, 0.76, 1.0};
   int draw_surface = 1, draw_texture=0;
 
-  if(geom_bounding_box_always==1||geom_bounding_box_mousedown==1||terrain_nindices<=0){
-    if(terrain_nindices>0){
-      DrawGeomBoundingBox(foregroundcolor);
-    }
+  if(terrain_nindices<=0)return;
+  if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS||geom_bounding_box_mousedown==1){
+    DrawGeomBoundingBox(foregroundcolor);
     return;
   }
 

@@ -580,7 +580,7 @@ char *ParseCommandline(int argc, char **argv){
       compute_fed = 1;
     }
     else if(strncmp(argv[i], "-outline", 8)==0){
-      geom_bounding_box_always = 1;
+      show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
     }
     else if(strncmp(argv[i], "-make_movie", 11)==0){
       open_movie_dialog = 1;
