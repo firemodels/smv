@@ -853,7 +853,11 @@ int main(int argc, char **argv){
 
   progname=argv[0];
 
-  if(show_help==1||smv_filename==NULL){
+  if(smv_filename==NULL){
+    DisplayVersionInfo("Smokeview ");
+    SMV_EXIT(0);
+  }
+  if(show_help==1){
     Usage("smokeview",HELP_SUMMARY);
     return 1;
   }
