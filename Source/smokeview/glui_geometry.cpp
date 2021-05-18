@@ -461,16 +461,16 @@ extern "C" void GluiGeometrySetup(int main_window){
     EDIT_zmax->set_float_limits(zplt_orig[0], zplt_orig[kbar], GLUI_LIMIT_CLAMP);
   }
 
-  if(ngeominfo > 0){
+  if(ngeominfo>0){
     ROLLOUT_unstructured = glui_geometry->add_rollout("Immersed", false);
     INSERT_ROLLOUT(ROLLOUT_unstructured, glui_geometry);
-    if(unstructured_isopen == 1)ROLLOUT_unstructured->open();
+    if(unstructured_isopen==1)ROLLOUT_unstructured->open();
 
-    for(i = 0;i < nmeshes;i++){
+    for(i = 0; i<nmeshes; i++){
       meshdata *meshi;
 
-      meshi = meshinfo + i;
-      if(meshi->ncutcells > 0){
+      meshi = meshinfo+i;
+      if(meshi->ncutcells>0){
         glui_geometry->add_checkbox_to_panel(ROLLOUT_unstructured, _("Show cutcells"), &show_cutcells);
         break;
       }
@@ -479,14 +479,14 @@ extern "C" void GluiGeometrySetup(int main_window){
     PANEL_geom_showhide = glui_geometry->add_panel_to_panel(ROLLOUT_unstructured, "", GLUI_PANEL_NONE);
     PANEL_group1 = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "", GLUI_PANEL_NONE);
     PANEL_triangles = glui_geometry->add_panel_to_panel(PANEL_group1, "faces");
-    CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles,   "shaded", &show_faces_shaded, VOL_SHOWHIDE, VolumeCB);
+    CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "shaded", &show_faces_shaded, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, VolumeCB);
-    CHECKBOX_surface_points = glui_geometry->add_checkbox_to_panel(PANEL_triangles,  "points", &show_geom_verts, VOL_SHOWHIDE, VolumeCB);
+    CHECKBOX_surface_points = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "points", &show_geom_verts, VOL_SHOWHIDE, VolumeCB);
 
     PANEL_boundingbox = glui_geometry->add_panel_to_panel(PANEL_triangles, "show bounding box");
     RADIO_show_geom_boundingbox = glui_geometry->add_radiogroup_to_panel(PANEL_boundingbox, &show_geom_boundingbox, GEOM_BOUNDING_BOX, VolumeCB);
     glui_geometry->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "always");
-    glui_geometry->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "only when mouse is down");
+    glui_geometry->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "when mouse is pressed");
     glui_geometry->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "never");
 
     if(ncgeominfo>0){
@@ -506,11 +506,13 @@ extern "C" void GluiGeometrySetup(int main_window){
 
     glui_geometry->add_column_to_panel(PANEL_group1, false);
 
-    PANEL_volumes = glui_geometry->add_panel_to_panel(PANEL_group1, "volumes");
-    CHECKBOX_volumes_interior = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "interior", &show_volumes_interior);
-    CHECKBOX_volumes_exterior = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "exterior", &show_volumes_exterior);
-    CHECKBOX_interior_solid = glui_geometry->add_checkbox_to_panel(PANEL_volumes,   "shaded", &show_volumes_solid, VOL_SHOWHIDE, VolumeCB);
-    CHECKBOX_interior_outline = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "outline", &show_volumes_outline, VOL_SHOWHIDE, VolumeCB);
+    if(have_volumes==1){
+      PANEL_volumes = glui_geometry->add_panel_to_panel(PANEL_group1, "volumes");
+      CHECKBOX_volumes_interior = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "interior", &show_volumes_interior);
+      CHECKBOX_volumes_exterior = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "exterior", &show_volumes_exterior);
+      CHECKBOX_interior_solid = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "shaded", &show_volumes_solid, VOL_SHOWHIDE, VolumeCB);
+      CHECKBOX_interior_outline = glui_geometry->add_checkbox_to_panel(PANEL_volumes, "outline", &show_volumes_outline, VOL_SHOWHIDE, VolumeCB);
+    }
 
     UpdateGeomAreas();
     ROLLOUT_geom_properties = glui_geometry->add_rollout_to_panel(PANEL_geom_showhide, "properties",false);

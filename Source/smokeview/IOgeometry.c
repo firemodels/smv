@@ -2571,7 +2571,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
     nverts=nvertfacesvolumes[0];
     ntris=nvertfacesvolumes[1];
     nvolumes=nvertfacesvolumes[2];
-    if(nvolumes>0)have_volume=1;
+    if(nvolumes>0)have_volumes=1;
 
     if(nverts>0){
       int ii;
