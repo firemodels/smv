@@ -6968,7 +6968,7 @@ updatemenu=0;
 
   CREATEMENU(immersedinteriormenu,ImmersedMenu);
   glutAddMenuEntry(_("How"),GEOMETRY_DUMMY);
-  if(have_volume==1){
+  if(have_volumes==1){
     if(show_volumes_solid==1)glutAddMenuEntry(_("  *Solid"),GEOMETRY_INTERIOR_SOLID);
     if(show_volumes_solid==0)glutAddMenuEntry(_("  Solid"),GEOMETRY_INTERIOR_SOLID);
     if(show_volumes_outline==1)glutAddMenuEntry(_("  *Outline"),GEOMETRY_INTERIOR_OUTLINE);
@@ -6998,7 +6998,7 @@ updatemenu=0;
 
   CREATEMENU(immersedmenu,ImmersedMenu);
   GLUTADDSUBMENU(_("Faces"),immersedsurfacemenu);
-  if(have_volume==1){
+  if(have_volumes==1){
     GLUTADDSUBMENU(_("Volumes"),immersedinteriormenu);
   }
   if(sort_geometry==1){

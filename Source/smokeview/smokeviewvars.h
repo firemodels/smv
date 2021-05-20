@@ -623,7 +623,7 @@ SVEXTERN int b_state[7],SVDECL(*box_state,b_state+1);
 SVEXTERN int face_id[200],face_vis[10], face_vis_old[10];
 SVEXTERN int SVDECL(update_volbox_controls,0);
 SVEXTERN float SVDECL(face_factor,0.01);
-SVEXTERN int SVDECL(have_volume,0);
+SVEXTERN int SVDECL(have_volumes,0);
 SVEXTERN int SVDECL(show_volumes_interior,0);
 SVEXTERN int SVDECL(show_volumes_exterior,0);
 SVEXTERN int SVDECL(show_volumes_solid,1);
