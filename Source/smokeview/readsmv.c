@@ -3918,8 +3918,8 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
   NewMemory((void **)&isoi->geominfo, sizeof(geomdata));
   nmemory_ids++;
   isoi->geominfo->memory_id = nmemory_ids;
-#ifdef pp_HAVE_CFACE_VECTORS
-  InitGeom(isoi->geominfo, GEOM_ISO, NOT_FDSBLOCK, VECTORS_NO);
+#ifdef pp_HAVE_CFACE_NORMALS
+  InitGeom(isoi->geominfo, GEOM_ISO, NOT_FDSBLOCK, CFACE_NORMALS_NO);
 #else
   InitGeom(isoi->geominfo, GEOM_ISO, NOT_FDSBLOCK);
 #endif
@@ -6855,16 +6855,16 @@ int ReadSMV(bufferstreamdata *stream){
     if(Match(buffer, "CGEOM")==1){
       geomdata *geomi;
       char *buff2;
-#ifdef pp_HAVE_CFACE_VECTORS
-      int have_vectors = VECTORS_NO;
+#ifdef pp_HAVE_CFACE_NORMALS
+      int have_vectors = CFACE_NORMALS_NO;
 #endif
 
       geomi = cgeominfo+ncgeominfo;
-#ifdef pp_HAVE_CFACE_VECTORS
+#ifdef pp_HAVE_CFACE_NORMALS
       buff2 = buffer+6;
       sscanf(buff2, "%i", &have_vectors);
-      if(have_vectors!=VECTORS_YES)have_vectors=VECTORS_NO;
-      if(have_vectors == VECTORS_YES)have_cface_vectors = 1;
+      if(have_vectors!=CFACE_NORMALS_YES)have_vectors=CFACE_NORMALS_NO;
+      if(have_vectors == CFACE_NORMALS_YES)have_cface_normals = 1;
       InitGeom(geomi, GEOM_CGEOM, FDSBLOCK, have_vectors);
 #else
       InitGeom(geomi, GEOM_CGEOM, FDSBLOCK);
@@ -6904,23 +6904,23 @@ int ReadSMV(bufferstreamdata *stream){
         sscanf(buff2,"%i",&ngeomobjinfo);
       }
       if(Match(buffer, "BGEOM") == 1){
-#ifdef pp_HAVE_CFACE_VECTORS
-        InitGeom(geomi, GEOM_BOUNDARY, NOT_FDSBLOCK, VECTORS_NO);
+#ifdef pp_HAVE_CFACE_NORMALS
+        InitGeom(geomi, GEOM_BOUNDARY, NOT_FDSBLOCK, CFACE_NORMALS_NO);
 #else
         InitGeom(geomi, GEOM_BOUNDARY, NOT_FDSBLOCK);
 #endif
       }
       else if(Match(buffer, "SGEOM") == 1){
-#ifdef pp_HAVE_CFACE_VECTORS
-        InitGeom(geomi, GEOM_SLICE, NOT_FDSBLOCK, VECTORS_NO);
+#ifdef pp_HAVE_CFACE_NORMALS
+        InitGeom(geomi, GEOM_SLICE, NOT_FDSBLOCK, CFACE_NORMALS_NO);
 #else
         InitGeom(geomi, GEOM_SLICE, NOT_FDSBLOCK);
 #endif
       }
       else{
         is_geom = 1;
-#ifdef pp_HAVE_CFACE_VECTORS
-        InitGeom(geomi, GEOM_GEOM, FDSBLOCK, VECTORS_NO);
+#ifdef pp_HAVE_CFACE_NORMALS
+        InitGeom(geomi, GEOM_GEOM, FDSBLOCK, CFACE_NORMALS_NO);
 #else
         InitGeom(geomi, GEOM_GEOM, FDSBLOCK);
 #endif
@@ -10805,8 +10805,8 @@ int ReadIni2(char *inifile, int localfile){
       int dummy, dummy2;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %i %i %i %f %f %i",
-        &dummy, &dummy2, &show_faces_shaded, &show_faces_outline, &smooth_geom_normal,
+      sscanf(buffer, " %i %i %i %i %i %i %f %f %i %i",
+        &dummy, &dummy2, &show_faces_shaded, &show_faces_outline, &smooth_geom_normal, &show_cface_normals,
         &geom_force_transparent, &geom_transparency,&geom_linewidth, &use_geom_factors);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i", &show_volumes_interior, &show_volumes_exterior, &show_volumes_solid, &show_volumes_outline);
@@ -14787,8 +14787,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "GEOMOFFSET\n");
   fprintf(fileout, " %f %f %f %i\n", geom_delx, geom_dely, geom_delz, show_geom_bndf);
   fprintf(fileout, "GEOMSHOW\n");
-  fprintf(fileout, " %i %i %i %i %i %i %f %f %i\n",
-     0, 1, show_faces_shaded, show_faces_outline, smooth_geom_normal,
+  fprintf(fileout, " %i %i %i %i %i %i %f %f %i %i\n",
+     0, 1, show_faces_shaded, show_faces_outline, smooth_geom_normal, show_cface_normals,
      geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors);
   fprintf(fileout, " %i %i %i %i\n", show_volumes_interior, show_volumes_exterior, show_volumes_solid, show_volumes_outline);
   fprintf(fileout, " %f %f %i %i %i\n", geom_vert_exag, geom_max_angle, 0, 0, show_geom_boundingbox);

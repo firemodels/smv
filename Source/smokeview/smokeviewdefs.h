@@ -74,9 +74,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MINMAX_LOADED 1
 #define MINMAX_INI    2
 
-#ifdef pp_HAVE_CFACE_VECTORS
-#define VECTORS_NO  0
-#define VECTORS_YES 1
+#ifdef pp_HAVE_CFACE_NORMALS
+#define CFACE_NORMALS_NO  0
+#define CFACE_NORMALS_YES 1
 #endif
 
 #define SHOW_BOUNDING_BOX_ALWAYS     0

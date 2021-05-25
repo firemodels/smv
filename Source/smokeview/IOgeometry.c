@@ -2637,8 +2637,8 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       int *surf_ind=NULL,*ijk=NULL;
       int *locations=NULL, *geom_ind=NULL;
       float *texture_coords=NULL;
-#ifdef pp_HAVE_CFACE_VECTORS
-      float *vectors=NULL;
+#ifdef pp_HAVE_CFACE_NORMALS
+      float *cface_normals=NULL;
 #endif
       int ii;
 
@@ -2653,9 +2653,9 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       else{
         NewMemory((void **)&texture_coords,6*ntris*sizeof(float));
       }
-#ifdef pp_HAVE_CFACE_VECTORS
-      if(geomi->have_vectors==VECTORS_YES){
-        NewMemory((void **)&vectors,6*ntris*sizeof(float));
+#ifdef pp_HAVE_CFACE_NORMALS
+      if(geomi->have_cface_normals==CFACE_NORMALS_YES){
+        NewMemory((void **)&cface_normals,6*ntris*sizeof(float));
       }
 #endif
       geomlisti->triangles  = triangles;
@@ -2683,9 +2683,9 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
         FORTREADBR(texture_coords, 6*ntris, stream);
         return_filesize += 4+6*ntris*4+4;
       }
-#ifdef pp_HAVE_CFACE_VECTORS
-      if(geomi->have_vectors==VECTORS_YES){
-        FORTREADBR(vectors, 6*ntris, stream);
+#ifdef pp_HAVE_CFACE_NORMALS
+      if(geomi->have_cface_normals==CFACE_NORMALS_YES){
+        FORTREADBR(cface_normals, 6*ntris, stream);
         return_filesize += 4+6*ntris*4+4;
       }
 #endif
@@ -2848,14 +2848,14 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           surfi=surfinfo + CLAMP(surf_ind[ii],0,nsurfinfo-1);
           triangles[ii].insolid = locations[ii];
           triangles[ii].geomobj = geominfo->geomobjinfo+geom_ind[ii]-1;
-#ifdef pp_HAVE_CFACE_VECTORS
-          if(vectors!=NULL){
-            triangles[ii].cface_norm1[0] = vectors[6*ii+0];
-            triangles[ii].cface_norm1[1] = vectors[6*ii+1];
-            triangles[ii].cface_norm1[2] = vectors[6*ii+2];
-            triangles[ii].cface_norm2[0] = vectors[6*ii+3];
-            triangles[ii].cface_norm2[1] = vectors[6*ii+4];
-            triangles[ii].cface_norm2[2] = vectors[6*ii+5];
+#ifdef pp_HAVE_CFACE_NORMALS
+          if(cface_normals!=NULL){
+            triangles[ii].cface_norm1[0] = cface_normals[6*ii+0];
+            triangles[ii].cface_norm1[1] = cface_normals[6*ii+1];
+            triangles[ii].cface_norm1[2] = cface_normals[6*ii+2];
+            triangles[ii].cface_norm2[0] = cface_normals[6*ii+3];
+            triangles[ii].cface_norm2[1] = cface_normals[6*ii+4];
+            triangles[ii].cface_norm2[2] = cface_normals[6*ii+5];
           }
 #endif
           break;
@@ -2887,8 +2887,8 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
         }
         triangles[ii].outside_domain = OutSideDomain(triangles[ii].verts);
       }
-#ifdef pp_HAVE_CFACE_VECTORS
-      FREEMEMORY(vectors);
+#ifdef pp_HAVE_CFACE_NORMALS
+      FREEMEMORY(cface_normals);
 #endif
       FREEMEMORY(ijk);
       FREEMEMORY(surf_ind);
@@ -4283,8 +4283,8 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
   // draw lines
 
-#ifdef pp_HAVE_CFACE_VECTORS
-  if((show_cface_vectors==1||show_faces_outline==1)&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
+#ifdef pp_HAVE_CFACE_NORMALS
+  if((show_cface_normals==1||show_faces_outline==1)&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
 #else
   if(show_faces_outline==1&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
 #endif
@@ -4356,8 +4356,8 @@ void DrawCGeom(int flag, geomdata *cgeom){
           }
         }
       }
-#ifdef pp_HAVE_CFACE_VECTORS
-      if(show_cface_vectors==1){
+#ifdef pp_HAVE_CFACE_NORMALS
+      if(show_cface_normals==1){
         for(j = 0; j<ntris; j++){
           tridata *trianglei;
 
@@ -4617,8 +4617,8 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
 
 /* ------------------ InitGeom ------------------------ */
 
-#ifdef pp_HAVE_CFACE_VECTORS
-void InitGeom(geomdata *geomi,int geomtype, int fdsblock, int have_vectors){
+#ifdef pp_HAVE_CFACE_NORMALS
+void InitGeom(geomdata *geomi,int geomtype, int fdsblock, int have_cface_normals){
 #else
 void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
 #endif
@@ -4644,8 +4644,8 @@ void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
   geomi->is_terrain = 0;
   geomi->file2_tris = NULL;
   geomi->nfile2_tris = 0;
-#ifdef pp_HAVE_CFACE_VECTORS
-  geomi->have_vectors = have_vectors;
+#ifdef pp_HAVE_CFACE_NORMALS
+  geomi->have_cface_normals = have_cface_normals;
 #endif
 }
 
