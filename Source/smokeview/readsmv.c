@@ -10806,8 +10806,8 @@ int ReadIni2(char *inifile, int localfile){
 
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i %i %i %f %f %i %i",
-        &dummy, &dummy2, &show_faces_shaded, &show_faces_outline, &smooth_geom_normal, &show_cface_normals,
-        &geom_force_transparent, &geom_transparency,&geom_linewidth, &use_geom_factors);
+        &dummy, &dummy2, &show_faces_shaded, &show_faces_outline, &smooth_geom_normal, 
+        &geom_force_transparent, &geom_transparency,&geom_linewidth, &use_geom_factors, &show_cface_normals);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i", &show_volumes_interior, &show_volumes_exterior, &show_volumes_solid, &show_volumes_outline);
       fgets(buffer, 255, stream);
@@ -14788,8 +14788,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %f %f %f %i\n", geom_delx, geom_dely, geom_delz, show_geom_bndf);
   fprintf(fileout, "GEOMSHOW\n");
   fprintf(fileout, " %i %i %i %i %i %i %f %f %i %i\n",
-     0, 1, show_faces_shaded, show_faces_outline, smooth_geom_normal, show_cface_normals,
-     geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors);
+     0, 1, show_faces_shaded, show_faces_outline, smooth_geom_normal,
+     geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors, show_cface_normals);
   fprintf(fileout, " %i %i %i %i\n", show_volumes_interior, show_volumes_exterior, show_volumes_solid, show_volumes_outline);
   fprintf(fileout, " %f %f %i %i %i\n", geom_vert_exag, geom_max_angle, 0, 0, show_geom_boundingbox);
   fprintf(fileout, "GEOMSLICEPROPS\n");
