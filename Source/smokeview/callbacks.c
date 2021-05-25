@@ -2100,16 +2100,11 @@ void Keyboard(unsigned char key, int flag){
         }
       }
       break;
-#ifdef _DEBUG
+#ifdef pp_HAVE_CFACE_NORMALS
     case 'n':
     case 'N':
-      if(nsmoke3dinfo>0){
-        adjustalphaflag++;
-        if(adjustalphaflag>3)adjustalphaflag=0;
-        PRINTF("adjustalphaflag=%i\n",adjustalphaflag);
-        UpdateSmoke3dFlags();
-        return;
-      }
+      show_cface_normals = 1-show_cface_normals;
+      UpdateGluiCfaces();
       break;
 #endif
     case 'O':

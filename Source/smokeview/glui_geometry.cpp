@@ -161,6 +161,9 @@ extern "C" void UpdateWhereFaceVolumes(void){
 extern "C" void UpdateGluiCfaces(void){
   glui_use_cfaces = use_cfaces;
   if(CHECKBOX_cfaces!=NULL)CHECKBOX_cfaces->set_int_val(use_cfaces);
+#ifdef pp_HAVE_CFACE_NORMALS
+  if(CHECKBOX_show_cface_normals!=NULL)CHECKBOX_show_cface_normals->set_int_val(show_cface_normals);
+#endif
 }
 
 /* ------------------ UpdateGeomBoundingBox ------------------------ */
