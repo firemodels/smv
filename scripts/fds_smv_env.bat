@@ -1,14 +1,18 @@
 @echo off
 
+
+
+
+
 :: ---- FDS and smokeview version ----
 
 set fds_version=FDS6.7.5
 set fds_tag=FDS6.7.5
 set fds_versionbase=6.7.5
 
-set smv_version=SMV6.7.15
-set smv_tag=SMV6.7.15
-set smv_versionbase=6.7.15
+set smv_version=SMV6.7.16
+set smv_tag=SMV6.7.16
+set smv_versionbase=6.7.16
 
 set fds_edition=FDS6
 set fds_debug=0
@@ -29,7 +33,7 @@ if exist %userprofile%\.bundle\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="3-May-2021"
+set smvlogdate="25-May-2021"
 
 :: ---- repo locations ----
 
@@ -96,6 +100,6 @@ set linux_logon=%linux_username%@%linux_hostname%
 
 ::*** OSX
 set osx_hostname=bevo.el.nist.gov
-set osx_hostname=192.168.1.146
+::set osx_hostname=192.168.1.146
 set osx_username=%username%
 set osx_logon=%osx_username%@%osx_hostname%
