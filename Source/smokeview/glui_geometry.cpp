@@ -35,6 +35,9 @@
 #define SURF_GET              50
 
 GLUI_Checkbox *CHECKBOX_cfaces = NULL;
+#ifdef pp_HAVE_CFACE_VECTORS
+GLUI_Checkbox *CHECKBOX_show_cface_vectors = NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_show_zlevel = NULL;
 GLUI_Checkbox *CHECKBOX_surface_solid=NULL, *CHECKBOX_surface_outline=NULL, *CHECKBOX_surface_points = NULL;
 GLUI_Checkbox *CHECKBOX_geom_force_transparent = NULL;
@@ -496,6 +499,11 @@ extern "C" void GluiGeometrySetup(int main_window){
       glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "triangles");
       glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "polygons");
       VolumeCB(VOL_USE_CFACES);
+#ifdef pp_HAVE_CFACE_VECTORS
+      if(have_cface_vectors==1){
+        CHECKBOX_show_cface_vectors = glui_geometry->add_checkbox_to_panel(PANEL_cfaces, "vectors", &show_cface_vectors);
+      }
+#endif
     }
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "line width", GLUI_SPINNER_FLOAT, &geom_linewidth);
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "point size", GLUI_SPINNER_FLOAT, &geom_pointsize);

@@ -3918,7 +3918,11 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
   NewMemory((void **)&isoi->geominfo, sizeof(geomdata));
   nmemory_ids++;
   isoi->geominfo->memory_id = nmemory_ids;
+#ifdef pp_HAVE_CFACE_VECTORS
+  InitGeom(isoi->geominfo, GEOM_ISO, NOT_FDSBLOCK, VECTORS_NO);
+#else
   InitGeom(isoi->geominfo, GEOM_ISO, NOT_FDSBLOCK);
+#endif
 
   bufferptr = TrimFrontBack(buffer);
 
@@ -6851,9 +6855,20 @@ int ReadSMV(bufferstreamdata *stream){
     if(Match(buffer, "CGEOM")==1){
       geomdata *geomi;
       char *buff2;
+#ifdef pp_HAVE_CFACE_VECTORS
+      int have_vectors = VECTORS_NO;
+#endif
 
       geomi = cgeominfo+ncgeominfo;
+#ifdef pp_HAVE_CFACE_VECTORS
+      buff2 = buffer+6;
+      sscanf(buff2, "%i", &have_vectors);
+      if(have_vectors!=VECTORS_YES)have_vectors=VECTORS_NO;
+      if(have_vectors == VECTORS_YES)have_cface_vectors = 1;
+      InitGeom(geomi, GEOM_CGEOM, FDSBLOCK, have_vectors);
+#else
       InitGeom(geomi, GEOM_CGEOM, FDSBLOCK);
+#endif
       geomi->memory_id = ++nmemory_ids;
 
       FGETS(buffer,255,stream);
@@ -6889,14 +6904,26 @@ int ReadSMV(bufferstreamdata *stream){
         sscanf(buff2,"%i",&ngeomobjinfo);
       }
       if(Match(buffer, "BGEOM") == 1){
+#ifdef pp_HAVE_CFACE_VECTORS
+        InitGeom(geomi, GEOM_BOUNDARY, NOT_FDSBLOCK, VECTORS_NO);
+#else
         InitGeom(geomi, GEOM_BOUNDARY, NOT_FDSBLOCK);
+#endif
       }
       else if(Match(buffer, "SGEOM") == 1){
+#ifdef pp_HAVE_CFACE_VECTORS
+        InitGeom(geomi, GEOM_SLICE, NOT_FDSBLOCK, VECTORS_NO);
+#else
         InitGeom(geomi, GEOM_SLICE, NOT_FDSBLOCK);
+#endif
       }
       else{
         is_geom = 1;
+#ifdef pp_HAVE_CFACE_VECTORS
+        InitGeom(geomi, GEOM_GEOM, FDSBLOCK, VECTORS_NO);
+#else
         InitGeom(geomi, GEOM_GEOM, FDSBLOCK);
+#endif
       }
 
       FGETS(buffer,255,stream);
