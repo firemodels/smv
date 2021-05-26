@@ -975,7 +975,11 @@ EXTERNCPP void ReadAllGeom(void);
 EXTERNCPP void ClassifyAllGeom(void);
 EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode);
 EXTERNCPP void ReadGeomFile2(geomdata *geomi);
+#ifdef pp_HAVE_CFACE_NORMALS
+EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock, int have_vectors);
+#else
 EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock);
+#endif
 EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode);
 

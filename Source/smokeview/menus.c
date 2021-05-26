@@ -7735,7 +7735,6 @@ updatemenu=0;
         if(texti->display==0)glutAddMenuEntry(tlabel, i);
       }
     }
-
   }
 
   /* --------------------------------geometry menu -------------------------- */
@@ -9956,6 +9955,11 @@ updatemenu=0;
   if(ndeviceinfo>0&&GetNumActiveDevices()>0){
     glutAddMenuEntry("  j/ALT j: increase/decrease object size", MENU_DUMMY);
   }
+#ifdef pp_HAVE_CFACE_NORMALS  
+  if(have_cface_normals==1){
+    glutAddMenuEntry(_("  n: display cface normal vectors"), MENU_DUMMY);
+  }
+#endif
   glutAddMenuEntry("  ALT r: toggle research mode (global min/max for coloring data, turn off axis label smoothing)", MENU_DUMMY);
   glutAddMenuEntry(_("  W: toggle clipping - use Options/Clip menu to specify clipping planes"), MENU_DUMMY);
   glutAddMenuEntry(_("  -/space bar: decrement/increment time step, 2D contour planes, 3D contour levels"), MENU_DUMMY);

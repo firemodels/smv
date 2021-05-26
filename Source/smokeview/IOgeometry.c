@@ -2637,6 +2637,9 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       int *surf_ind=NULL,*ijk=NULL;
       int *locations=NULL, *geom_ind=NULL;
       float *texture_coords=NULL;
+#ifdef pp_HAVE_CFACE_NORMALS
+      float *cface_normals=NULL;
+#endif
       int ii;
 
       NewMemoryMemID((void **)&triangles,ntris*sizeof(tridata),geomi->memory_id);
@@ -2650,9 +2653,13 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       else{
         NewMemory((void **)&texture_coords,6*ntris*sizeof(float));
       }
-      geomlisti->triangles=triangles;
-      geomlisti->ntriangles=ntris;
-
+#ifdef pp_HAVE_CFACE_NORMALS
+      if(geomi->have_cface_normals==CFACE_NORMALS_YES){
+        NewMemory((void **)&cface_normals,6*ntris*sizeof(float));
+      }
+#endif
+      geomlisti->triangles  = triangles;
+      geomlisti->ntriangles = ntris;
       if(geomi->geomtype==GEOM_CGEOM){
         FORTREADBR(ijk, 3*ntris, stream);
         return_filesize += 4+3*ntris*4+4;
@@ -2676,6 +2683,12 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
         FORTREADBR(texture_coords, 6*ntris, stream);
         return_filesize += 4+6*ntris*4+4;
       }
+#ifdef pp_HAVE_CFACE_NORMALS
+      if(geomi->have_cface_normals==CFACE_NORMALS_YES){
+        FORTREADBR(cface_normals, 6*ntris, stream);
+        return_filesize += 4+6*ntris*4+4;
+      }
+#endif
 
       // compute texture coordinates
 
@@ -2835,6 +2848,16 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
           surfi=surfinfo + CLAMP(surf_ind[ii],0,nsurfinfo-1);
           triangles[ii].insolid = locations[ii];
           triangles[ii].geomobj = geominfo->geomobjinfo+geom_ind[ii]-1;
+#ifdef pp_HAVE_CFACE_NORMALS
+          if(cface_normals!=NULL){
+            triangles[ii].cface_norm1[0] = cface_normals[6*ii+0];
+            triangles[ii].cface_norm1[1] = cface_normals[6*ii+1];
+            triangles[ii].cface_norm1[2] = cface_normals[6*ii+2];
+            triangles[ii].cface_norm2[0] = cface_normals[6*ii+3];
+            triangles[ii].cface_norm2[1] = cface_normals[6*ii+4];
+            triangles[ii].cface_norm2[2] = cface_normals[6*ii+5];
+          }
+#endif
           break;
         case GEOM_GEOM:
         case GEOM_ISO:
@@ -2864,7 +2887,9 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
         }
         triangles[ii].outside_domain = OutSideDomain(triangles[ii].verts);
       }
-
+#ifdef pp_HAVE_CFACE_NORMALS
+      FREEMEMORY(cface_normals);
+#endif
       FREEMEMORY(ijk);
       FREEMEMORY(surf_ind);
       FREEMEMORY(texture_coords);
@@ -4258,7 +4283,11 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
   // draw lines
 
+#ifdef pp_HAVE_CFACE_NORMALS
+  if((show_cface_normals==1||show_faces_outline==1)&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
+#else
   if(show_faces_outline==1&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
+#endif
     for(i = 0; i<1; i++){
       geomlistdata *geomlisti;
       int ntris;
@@ -4274,57 +4303,71 @@ void DrawCGeom(int flag, geomdata *cgeom){
       glTranslatef(-xbar0, -ybar0, -zbar0);
       glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
-      for(j = 0; j<ntris; j++){
-        float *xyzptr[3];
-        tridata *trianglei;
-        int show_edge1 = 1, show_edge2 = 1, show_edge3 = 1;
-        float *norm0, *norm1, *norm2;
-        float vert2a[3], vert2b[3], vert2c[3];
-        int k;
+      if(show_faces_outline==1){
+        for(j = 0; j<ntris; j++){
+          float *xyzptr[3];
+          tridata *trianglei;
+          int show_edge1 = 1, show_edge2 = 1, show_edge3 = 1;
+          float *norm0, *norm1, *norm2;
+          float vert2a[3], vert2b[3], vert2c[3];
+          int k;
 
-        trianglei = geomlisti->triangles+j;
-        if(geom_cface_type==1){
-          int insolid4, insolid8, insolid16;
+          trianglei = geomlisti->triangles+j;
+          if(geom_cface_type==1){
+            int insolid4, insolid8, insolid16;
 
-          insolid4 = trianglei->insolid&4;
-          if(insolid4==4)show_edge1 = 0;
+            insolid4 = trianglei->insolid&4;
+            if(insolid4==4)show_edge1 = 0;
 
-          insolid8 = trianglei->insolid&8;
-          if(insolid8==8)show_edge2 = 0;
+            insolid8 = trianglei->insolid&8;
+            if(insolid8==8)show_edge2 = 0;
 
-          insolid16 = trianglei->insolid&16;
-          if(insolid16==16)show_edge3 = 0;
-        }
-        glColor4fv(foregroundcolor);
+            insolid16 = trianglei->insolid&16;
+            if(insolid16==16)show_edge3 = 0;
+          }
+          glColor4fv(foregroundcolor);
 
-        norm0 = trianglei->verts[0]->vert_norm;
-        norm1 = trianglei->verts[1]->vert_norm;
-        norm2 = trianglei->verts[2]->vert_norm;
+          norm0 = trianglei->verts[0]->vert_norm;
+          norm1 = trianglei->verts[1]->vert_norm;
+          norm2 = trianglei->verts[2]->vert_norm;
 
-        xyzptr[0] = trianglei->verts[0]->xyz;
-        xyzptr[1] = trianglei->verts[1]->xyz;
-        xyzptr[2] = trianglei->verts[2]->xyz;
+          xyzptr[0] = trianglei->verts[0]->xyz;
+          xyzptr[1] = trianglei->verts[1]->xyz;
+          xyzptr[2] = trianglei->verts[2]->xyz;
 
-        for(k = 0; k<3; k++){
-          vert2a[k] = xyzptr[0][k]+geom_outline_offset*norm0[k];
-          vert2b[k] = xyzptr[1][k]+geom_outline_offset*norm1[k];
-          vert2c[k] = xyzptr[2][k]+geom_outline_offset*norm2[k];
-        }
-        if(show_edge1==1){
-          glVertex3fv(vert2a);
-          glVertex3fv(vert2b);
-        }
+          for(k = 0; k<3; k++){
+            vert2a[k] = xyzptr[0][k]+geom_outline_offset*norm0[k];
+            vert2b[k] = xyzptr[1][k]+geom_outline_offset*norm1[k];
+            vert2c[k] = xyzptr[2][k]+geom_outline_offset*norm2[k];
+          }
+          if(show_edge1==1){
+            glVertex3fv(vert2a);
+            glVertex3fv(vert2b);
+          }
 
-        if(show_edge2==1){
-          glVertex3fv(vert2b);
-          glVertex3fv(vert2c);
-        }
+          if(show_edge2==1){
+            glVertex3fv(vert2b);
+            glVertex3fv(vert2c);
+          }
 
-        if(show_edge3==1){
-          glVertex3fv(vert2c);
-          glVertex3fv(vert2a);
+          if(show_edge3==1){
+            glVertex3fv(vert2c);
+            glVertex3fv(vert2a);
+          }
         }
       }
+#ifdef pp_HAVE_CFACE_NORMALS
+      if(show_cface_normals==1){
+        for(j = 0; j<ntris; j++){
+          tridata *trianglei;
+
+          trianglei = geomlisti->triangles+j;
+          glColor4fv(foregroundcolor);
+          glVertex3fv(trianglei->cface_norm1);
+          glVertex3fv(trianglei->cface_norm2);
+        }
+      }
+#endif
       glEnd();
       glPopMatrix();
     }
@@ -4574,7 +4617,11 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
 
 /* ------------------ InitGeom ------------------------ */
 
+#ifdef pp_HAVE_CFACE_NORMALS
+void InitGeom(geomdata *geomi,int geomtype, int fdsblock, int have_cface_normals){
+#else
 void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
+#endif
   geomi->file=NULL;
   geomi->topo_file = NULL;
   geomi->cache_defined = 0;
@@ -4597,6 +4644,9 @@ void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
   geomi->is_terrain = 0;
   geomi->file2_tris = NULL;
   geomi->nfile2_tris = 0;
+#ifdef pp_HAVE_CFACE_NORMALS
+  geomi->have_cface_normals = have_cface_normals;
+#endif
 }
 
 /* ------------------ RotateU2V ------------------------ */

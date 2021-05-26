@@ -59,6 +59,9 @@ typedef struct _edgedata {
 typedef struct _tridata {
   unsigned char skinny;
   float distance, *color, tverts[6], tri_norm[3], vert_norm[9], area;
+#ifdef pp_HAVE_CFACE_NORMALS
+  float cface_norm1[3], cface_norm2[3];
+#endif
   struct _texturedata *textureinfo;
   struct _surfdata *geomsurf;
   struct _geomlistdata *geomlisti;
@@ -117,6 +120,9 @@ typedef struct _geomdata {
   int cache_defined;
   int memory_id, loaded, display;
   int is_terrain;
+#ifdef pp_HAVE_CFACE_NORMALS
+  int have_cface_normals;
+#endif
   float *float_vals;
   float bounding_box[6];
   int *file2_tris, nfile2_tris;

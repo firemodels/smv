@@ -35,6 +35,9 @@
 #define SURF_GET              50
 
 GLUI_Checkbox *CHECKBOX_cfaces = NULL;
+#ifdef pp_HAVE_CFACE_NORMALS
+GLUI_Checkbox *CHECKBOX_show_cface_normals = NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_show_zlevel = NULL;
 GLUI_Checkbox *CHECKBOX_surface_solid=NULL, *CHECKBOX_surface_outline=NULL, *CHECKBOX_surface_points = NULL;
 GLUI_Checkbox *CHECKBOX_geom_force_transparent = NULL;
@@ -158,6 +161,9 @@ extern "C" void UpdateWhereFaceVolumes(void){
 extern "C" void UpdateGluiCfaces(void){
   glui_use_cfaces = use_cfaces;
   if(CHECKBOX_cfaces!=NULL)CHECKBOX_cfaces->set_int_val(use_cfaces);
+#ifdef pp_HAVE_CFACE_NORMALS
+  if(CHECKBOX_show_cface_normals!=NULL)CHECKBOX_show_cface_normals->set_int_val(show_cface_normals);
+#endif
 }
 
 /* ------------------ UpdateGeomBoundingBox ------------------------ */
@@ -496,6 +502,11 @@ extern "C" void GluiGeometrySetup(int main_window){
       glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "triangles");
       glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "polygons");
       VolumeCB(VOL_USE_CFACES);
+#ifdef pp_HAVE_CFACE_NORMALS
+      if(have_cface_normals==1){
+        CHECKBOX_show_cface_normals = glui_geometry->add_checkbox_to_panel(PANEL_cfaces, "normals", &show_cface_normals);
+      }
+#endif
     }
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "line width", GLUI_SPINNER_FLOAT, &geom_linewidth);
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "point size", GLUI_SPINNER_FLOAT, &geom_pointsize);
