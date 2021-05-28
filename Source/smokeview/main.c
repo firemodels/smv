@@ -451,7 +451,8 @@ char *ParseCommandline(int argc, char **argv){
     if(strncmp(argv[i], "-", 1) != 0)continue;
 #ifdef pp_OSX_HIGHRES
     if(strncmp(argv[1], "-1x", 3) == 0){
-      double_scale=0;
+      double_scale = 0;
+      force_scale  = 1;
     }
 #endif
     else if(strncmp(argv[i], "-update_bounds", 14) == 0){
