@@ -455,7 +455,7 @@ char *ParseCommandline(int argc, char **argv){
       double_scale = 0;
       force_scale  = 1;
     }
-    if(strncmp(argv[1], "-2x", 3)==0){
+    else if(strncmp(argv[1], "-2x", 3)==0){
       double_scale = 1;
       force_scale = 1;
     }
