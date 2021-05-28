@@ -84,19 +84,18 @@ SVEXTERN int SVDECL(show_timings, 0);
 
 SVEXTERN float SVDECL(pixel_dens, 1.0);
 SVEXTERN float SVDECL(tourzoom_circular, 1.0);
-SVEXTERN int SVDECL(force_scale, 0);
-#ifndef _GLUI_H_
+
 #ifdef pp_OSX_HIGHRES
+SVEXTERN int SVDECL(force_scale, 0);
+extern CCC const BitmapFontRec glutBitmapHelvetica20;
+extern CCC const BitmapFontRec glutBitmapHelvetica24;
+extern CCC const BitmapFontRec glutBitmapHelvetica36;
+#ifndef _GLUI_H_
 extern int double_scale;
 #endif
 #endif
 
 SVEXTERN int SVDECL(windowsize_pointer_old, -999);
-#ifdef pp_OSX_HIGHRES
-extern CCC const BitmapFontRec glutBitmapHelvetica20;
-extern CCC const BitmapFontRec glutBitmapHelvetica24;
-extern CCC const BitmapFontRec glutBitmapHelvetica36;
-#endif
 
 SVEXTERN int SVDECL(update_draw_hist, 0);
 SVEXTERN histogramdata SVDECL(*histogram_draw, NULL);
