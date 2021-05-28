@@ -32,7 +32,8 @@ void Usage(char *prog,int option){
   if(option==HELP_ALL){
     PRINTF("\n%s\n", _("Other options:"));
 #ifdef pp_OSX_HIGHRES
-    PRINTF("%s\n", _(" -1x            - turn off 2x scene scaling."));
+    PRINTF("%s\n", _(" -1x            - turn off 2x scene scaling (do not scale scene)."));
+    PRINTF("%s\n", _(" -2x            - turn on 2x scene scaling."));
 #endif
     PRINTF("%s\n", _(" -big           - hide scene and data when moving scene or selecting menus"));
     PRINTF("%s\n", _(" -build         - show pre-processing directives used in this build of Smokeview"));
@@ -451,7 +452,12 @@ char *ParseCommandline(int argc, char **argv){
     if(strncmp(argv[i], "-", 1) != 0)continue;
 #ifdef pp_OSX_HIGHRES
     if(strncmp(argv[1], "-1x", 3) == 0){
-      double_scale=0;
+      double_scale = 0;
+      force_scale  = 1;
+    }
+    else if(strncmp(argv[1], "-2x", 3)==0){
+      double_scale = 1;
+      force_scale = 1;
     }
 #endif
     else if(strncmp(argv[i], "-update_bounds", 14) == 0){

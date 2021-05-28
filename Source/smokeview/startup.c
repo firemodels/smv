@@ -431,11 +431,24 @@ void SetupGlut(int argc, char **argv){
     max_screenWidth = glutGet(GLUT_SCREEN_WIDTH);
     max_screenHeight = glutGet(GLUT_SCREEN_HEIGHT);
 #ifdef pp_OSX_HIGHRES
+    if(force_scale==0){
+      if(monitor_screen_height!=max_screenHeight)double_scale=1;
+      if(monitor_screen_height==max_screenHeight)double_scale=0;
+    }
     if(double_scale==1){
       max_screenWidth  *= 2;
       max_screenHeight *= 2;
     }
 #endif
+    font_ptr          = GLUT_BITMAP_HELVETICA_12;
+    colorbar_font_ptr = GLUT_BITMAP_HELVETICA_10;
+#ifdef pp_OSX_HIGHRES
+    if(double_scale==1){
+      font_ptr = (void *)GLUT_BITMAP_HELVETICA_24;
+      colorbar_font_ptr = (void *)GLUT_BITMAP_HELVETICA_20;
+    }
+#endif
+
     if(trainer_mode==1){
       int TRAINER_WIDTH;
       int TRAINER_HEIGHT;
