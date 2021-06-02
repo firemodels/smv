@@ -310,7 +310,7 @@ int GetScreenHeight(void){
   char command[1000], height_file[1000], *full_height_file, buffer[255];
   int screen_height=-1;
 
-  strcpy(command,"system_profiler SPDisplaysDataType | grep Resolution | awk '{print $4}' >& ");
+  strcpy(command,"system_profiler SPDisplaysDataType | grep Resolution | awk '{print $4}' | tail -1 >& ");
   strcpy(height_file, fdsprefix);
   strcat(height_file, ".hgt");
   full_height_file = GetFileName(smokeview_scratchdir, height_file, NOT_FORCE_IN_DIR);
@@ -411,9 +411,13 @@ void SetupGlut(int argc, char **argv){
 #endif
   if(use_graphics==1){
     PRINTF("\n");
-    PRINTF("%s\n",_("initializing Glut"));
+    PRINTF("%s","initializing Glut");
     glutInit(&argc, argv);
-    PRINTF("%s\n",_("complete"));
+#ifdef pp_OSX
+    PRINTF("(%i/%i)", GetScreenHeight(), glutGet(GLUT_SCREEN_HEIGHT));
+#endif
+    PRINTF("\n%s\n",_("complete"));
+
   }
 #ifdef pp_OSX
   chdir(workingdir);
