@@ -310,7 +310,7 @@ int GetScreenHeight(void){
   char command[1000], height_file[1000], *full_height_file, buffer[255];
   int screen_height=-1;
 
-  strcpy(command,"system_profiler SPDisplaysDataType | grep Resolution | awk '{print $4}' | head -1 >& ");
+  strcpy(command,"system_profiler SPDisplaysDataType | grep Resolution | awk '{print $4}' | tail -1 >& ");
   strcpy(height_file, fdsprefix);
   strcat(height_file, ".hgt");
   full_height_file = GetFileName(smokeview_scratchdir, height_file, NOT_FORCE_IN_DIR);
