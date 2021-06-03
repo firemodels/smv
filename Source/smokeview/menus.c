@@ -9956,7 +9956,7 @@ updatemenu=0;
     glutAddMenuEntry("  j/ALT j: increase/decrease object size", MENU_DUMMY);
   }
 #ifdef pp_HAVE_CFACE_NORMALS  
-  if(have_cface_normals==1){
+  if(have_cface_normals==CFACE_NORMALS_YES){
     glutAddMenuEntry(_("  n: display cface normal vectors"), MENU_DUMMY);
   }
 #endif

@@ -121,7 +121,8 @@ typedef struct _geomdata {
   int memory_id, loaded, display;
   int is_terrain;
 #ifdef pp_HAVE_CFACE_NORMALS
-  int have_cface_normals;
+  int have_cface_normals, ncface_normals;
+  float *cface_normals;
 #endif
   float *float_vals;
   float bounding_box[6];

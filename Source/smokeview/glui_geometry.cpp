@@ -503,7 +503,7 @@ extern "C" void GluiGeometrySetup(int main_window){
       glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "polygons");
       VolumeCB(VOL_USE_CFACES);
 #ifdef pp_HAVE_CFACE_NORMALS
-      if(have_cface_normals==1){
+      if(have_cface_normals==CFACE_NORMALS_YES){
         CHECKBOX_show_cface_normals = glui_geometry->add_checkbox_to_panel(PANEL_cfaces, "normals", &show_cface_normals);
       }
 #endif
