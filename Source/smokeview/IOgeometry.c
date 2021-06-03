@@ -2910,8 +2910,6 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       FORTREADBR(&ncface_normals, 1, stream);
       return_filesize += 4+1*4+4;
       if(ncface_normals>0){
-        float *v;
-        int iii;
         float *cface_normals;
 
         NewMemory((void **)&cface_normals, 6*ncface_normals*sizeof(float));
