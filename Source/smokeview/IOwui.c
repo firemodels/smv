@@ -1629,7 +1629,6 @@ void UpdateTerrainOptions(void){
   if(nterraininfo>0||auto_terrain==1){
     visOpenVents=0;
     visDummyVents=0;
-    visFrame=0;
     updatemenu=1;
   }
 }
