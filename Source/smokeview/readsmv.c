@@ -7010,6 +7010,10 @@ int ReadSMV(bufferstreamdata *stream){
             sscanf(texture_vals, "%f %f %f %i", center, center+1, center+2, &is_terrain);
             geomi->is_terrain = is_terrain;
           }
+          if(geomi->is_terrain==1){
+            is_terrain_case = 1;
+            auto_terrain = 1;
+          }
           if(texture_mapping!=NULL&&strcmp(texture_mapping,"SPHERICAL")==0){
             geomobji->texture_mapping=TEXTURE_SPHERICAL;
           }
