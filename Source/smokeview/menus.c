@@ -49,6 +49,14 @@ float     part_load_time;
     printf("\n");\
   }
 
+#define GEOM_Vents                   15
+#define GEOM_Compartments            16
+#define GEOM_Outline                  3
+#define GEOM_TriangleCount           14
+#define GEOM_ShowAll                 11
+#define GEOM_HideAll                 13
+#define GEOM_BOUNDING_BOX_ALWAYS     10
+#define GEOM_BOUNDING_BOX_MOUSE_DOWN  9
 
 #define MENU_TERRAIN_SHOW_SURFACE      -1
 #define MENU_TERRAIN_SHOW_LINES        -2
@@ -5767,8 +5775,8 @@ void VentMenu(int value){
 #define GEOMETRY_SOLID                   0
 #define GEOMETRY_OUTLINE                 1
 #define GEOMETRY_SOLIDOUTLINE            2
-#define GEOMETRY_INTERIOR_SOLID          9
-#define GEOMETRY_INTERIOR_OUTLINE       12
+#define GEOMETRY_INTERIOR_SOLID         23
+#define GEOMETRY_INTERIOR_OUTLINE       24
 #define GEOMETRY_HIDE                    7
 #define GEOMETRY_TETRA_HIDE             11
 #define GEOMETRY_SHOWNORMAL              3
@@ -5776,7 +5784,7 @@ void VentMenu(int value){
 #define GEOMETRY_SMOOTHNORMAL            4
 #define GEOMETRY_HILIGHTSKINNY           5
 #define GEOMETRY_HIDEALL                 8
-#define GEOMETRY_INSIDE_DOMAIN          14
+#define GEOMETRY_INSIDE_DOMAIN          25
 #define GEOMETRY_OUTSIDE_DOMAIN         15
 #define GEOMETRY_VOLUMES_INTERIOR       18
 #define GEOMETRY_VOLUMES_EXTERIOR       19
@@ -5789,6 +5797,27 @@ void ImmersedMenu(int value){
   if(value==GEOMETRY_DUMMY)return;
   updatemenu=1;
   switch(value){
+    case GEOM_TriangleCount:
+      show_triangle_count=1-show_triangle_count;
+      break;
+    case GEOM_BOUNDING_BOX_ALWAYS:
+      if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS){
+        show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
+      }
+      else{
+        show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
+      }
+      UpdateGeomBoundingBox();
+      break;
+    case GEOM_BOUNDING_BOX_MOUSE_DOWN:
+      if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
+        show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
+      }
+      else{
+        show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
+      }
+      UpdateGeomBoundingBox();
+      break;
     case GEOMETRY_TERRAIN_SHOW_TOP:
       terrain_showonly_top = 1 - terrain_showonly_top;
       break;
@@ -6422,42 +6451,11 @@ void ZoneShowMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
-#define GEOM_Vents                   15
-#define GEOM_Compartments            16
-#define GEOM_Outline                  3
-#define GEOM_TriangleCount           14
-#define GEOM_ShowAll                 11
-#define GEOM_HideAll                 13
-#define GEOM_BOUNDING_BOX_ALWAYS     10
-#define GEOM_BOUNDING_BOX_MOUSE_DOWN  9
-
-
 /* ------------------ GeometryMenu ------------------------ */
 
 void GeometryMenu(int value){
 
   switch(value){
-  case GEOM_TriangleCount:
-    show_triangle_count=1-show_triangle_count;
-    break;
-  case GEOM_BOUNDING_BOX_ALWAYS:
-    if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS){
-      show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
-    }
-    else{
-      show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
-    }
-    UpdateGeomBoundingBox();
-    break;
-  case GEOM_BOUNDING_BOX_MOUSE_DOWN:
-    if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
-      show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
-    }
-    else{
-      show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
-    }
-    UpdateGeomBoundingBox();
-    break;
   case GEOM_Outline:
     if(isZoneFireModel==0)visFrame=1-visFrame;
     break;
@@ -6928,12 +6926,13 @@ updatemenu=0;
 
 /* --------------------------------surface menu -------------------------- */
 
-  CREATEMENU(immersedsurfacemenu,ImmersedMenu);
-  glutAddMenuEntry(_("What"),GEOMETRY_DUMMY);
-  if(terrain_nindices>0){
-    if(terrain_showonly_top==1)glutAddMenuEntry(_("   *Show only top surface"), GEOMETRY_TERRAIN_SHOW_TOP);
-    if(terrain_showonly_top==0)glutAddMenuEntry(_("   Show only top surface"),  GEOMETRY_TERRAIN_SHOW_TOP);
+  if(have_volumes==1){
+    CREATEMENU(immersedsurfacemenu,ImmersedMenu);
   }
+  else{
+    CREATEMENU(immersedmenu, ImmersedMenu);
+  }
+  glutAddMenuEntry(_("What"),GEOMETRY_DUMMY);
   if(show_faces_shaded==1&&show_faces_outline==1){
     glutAddMenuEntry(_("   *Solid and outline"),GEOMETRY_SOLIDOUTLINE);
   }
@@ -6972,6 +6971,46 @@ updatemenu=0;
     glutAddMenuEntry(_("   Outside FDS domain"), GEOMETRY_OUTSIDE_DOMAIN);
   }
 
+  glutAddMenuEntry("-", GEOMETRY_DUMMY);
+  if(terrain_nindices>0){
+    if(terrain_showonly_top==1)glutAddMenuEntry(_("*Show only top surface"), GEOMETRY_TERRAIN_SHOW_TOP);
+    if(terrain_showonly_top==0)glutAddMenuEntry(_("Show only top surface"), GEOMETRY_TERRAIN_SHOW_TOP);
+  }
+  if(ngeominfoptrs>0){
+    if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS)glutAddMenuEntry(_("*bounding box(always)"),         GEOM_BOUNDING_BOX_ALWAYS);
+    if(show_geom_boundingbox!=SHOW_BOUNDING_BOX_ALWAYS)glutAddMenuEntry(_("bounding box(always)"),          GEOM_BOUNDING_BOX_ALWAYS);
+    if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("*bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
+    if(show_geom_boundingbox!=SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("bounding box(mouse down)"),  GEOM_BOUNDING_BOX_MOUSE_DOWN);
+  }
+#ifdef _DEBUG
+  if(show_triangle_count==1)glutAddMenuEntry(_("*Triangle count"), GEOM_TriangleCount);
+  if(show_triangle_count==0)glutAddMenuEntry(_("Triangle count"),  GEOM_TriangleCount);
+#endif
+  if(show_geom_normal==1){
+    glutAddMenuEntry(_("*Show normal"), GEOMETRY_SHOWNORMAL);
+  }
+  else{
+    glutAddMenuEntry(_("Show normal"), GEOMETRY_SHOWNORMAL);
+  }
+  if(smooth_geom_normal==1){
+    glutAddMenuEntry(_("*Smooth normal"), GEOMETRY_SMOOTHNORMAL);
+  }
+  else{
+    glutAddMenuEntry(_("Smooth normal"), GEOMETRY_SMOOTHNORMAL);
+  }
+  if(sort_geometry==1){
+    glutAddMenuEntry(_("*Sort faces"), GEOMETRY_SORTFACES);
+  }
+  else{
+    glutAddMenuEntry(_("Sort faces"), GEOMETRY_SORTFACES);
+  }
+  if(hilight_skinny==1){
+    glutAddMenuEntry(_("*Hilight skinny triangles"), GEOMETRY_HILIGHTSKINNY);
+  }
+  else{
+    glutAddMenuEntry(_("Hilight skinny triangles"), GEOMETRY_HILIGHTSKINNY);
+  }
+
 /* --------------------------------interior geometry menu -------------------------- */
 
   CREATEMENU(immersedinteriormenu,ImmersedMenu);
@@ -7004,40 +7043,16 @@ updatemenu=0;
 
   /* --------------------------------surface geometry menu -------------------------- */
 
-  CREATEMENU(immersedmenu,ImmersedMenu);
-  GLUTADDSUBMENU(_("Faces"),immersedsurfacemenu);
   if(have_volumes==1){
+    CREATEMENU(immersedmenu,ImmersedMenu);
+    GLUTADDSUBMENU(_("Faces"),  immersedsurfacemenu);
     GLUTADDSUBMENU(_("Volumes"),immersedinteriormenu);
-  }
-  if(sort_geometry==1){
-    glutAddMenuEntry(_("*Sort faces"), GEOMETRY_SORTFACES);
-  }
-  else{
-    glutAddMenuEntry(_("Sort faces"), GEOMETRY_SORTFACES);
-  }
-  if(show_geom_normal == 1){
-    glutAddMenuEntry(_("*Show normal"), GEOMETRY_SHOWNORMAL);
-  }
-  else{
-    glutAddMenuEntry(_("Show normal"), GEOMETRY_SHOWNORMAL);
-  }
-  if(smooth_geom_normal==1){
-    glutAddMenuEntry(_("*Smooth normal"), GEOMETRY_SMOOTHNORMAL);
-  }
-  else{
-    glutAddMenuEntry(_("Smooth normal"), GEOMETRY_SMOOTHNORMAL);
-  }
-  if(hilight_skinny == 1){
-    glutAddMenuEntry(_("*Hilight skinny triangles"), GEOMETRY_HILIGHTSKINNY);
-  }
-  else{
-    glutAddMenuEntry(_("Hilight skinny triangles"), GEOMETRY_HILIGHTSKINNY);
-  }
-  if(show_faces_shaded == 0 && show_faces_outline == 0 && show_volumes_solid == 0){
-    glutAddMenuEntry(_("*Hide all"), GEOMETRY_HIDEALL);
-  }
-  else{
-    glutAddMenuEntry(_("Hide all"), GEOMETRY_HIDEALL);
+    if(show_faces_shaded == 0 && show_faces_outline == 0 && show_volumes_solid == 0){
+      glutAddMenuEntry(_("*Hide all"), GEOMETRY_HIDEALL);
+    }
+    else{
+      glutAddMenuEntry(_("Hide all"), GEOMETRY_HIDEALL);
+    }
   }
 
 /* --------------------------------blockage menu -------------------------- */
@@ -7787,16 +7802,6 @@ updatemenu=0;
   else{
     visFrame=0;
   }
-  if(ngeominfoptrs>0){
-    if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS)glutAddMenuEntry(_("*bounding box(always)"),         GEOM_BOUNDING_BOX_ALWAYS);
-    if(show_geom_boundingbox!=SHOW_BOUNDING_BOX_ALWAYS)glutAddMenuEntry(_("bounding box(always)"),          GEOM_BOUNDING_BOX_ALWAYS);
-    if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("*bounding box(mouse down)"), GEOM_BOUNDING_BOX_MOUSE_DOWN);
-    if(show_geom_boundingbox!=SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("bounding box(mouse down)"),  GEOM_BOUNDING_BOX_MOUSE_DOWN);
-  }
-#ifdef _DEBUG
-  if(show_triangle_count==1)glutAddMenuEntry(_("*Triangle count"), GEOM_TriangleCount);
-  if(show_triangle_count==0)glutAddMenuEntry(_("Triangle count"), GEOM_TriangleCount);
-#endif
   glutAddMenuEntry(_("Show all"), GEOM_ShowAll);
   glutAddMenuEntry(_("Hide all"), GEOM_HideAll);
 
