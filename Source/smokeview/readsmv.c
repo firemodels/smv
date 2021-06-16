@@ -6864,7 +6864,7 @@ int ReadSMV(bufferstreamdata *stream){
       buff2 = buffer+6;
       sscanf(buff2, "%i", &have_vectors);
       if(have_vectors!=CFACE_NORMALS_YES)have_vectors=CFACE_NORMALS_NO;
-      if(have_vectors == CFACE_NORMALS_YES)have_cface_normals = 1;
+      if(have_vectors == CFACE_NORMALS_YES)have_cface_normals = CFACE_NORMALS_YES;
       InitGeom(geomi, GEOM_CGEOM, FDSBLOCK, have_vectors);
 #else
       InitGeom(geomi, GEOM_CGEOM, FDSBLOCK);
@@ -7009,6 +7009,10 @@ int ReadSMV(bufferstreamdata *stream){
             }
             sscanf(texture_vals, "%f %f %f %i", center, center+1, center+2, &is_terrain);
             geomi->is_terrain = is_terrain;
+          }
+          if(geomi->is_terrain==1){
+            is_terrain_case = 1;
+            auto_terrain = 1;
           }
           if(texture_mapping!=NULL&&strcmp(texture_mapping,"SPHERICAL")==0){
             geomobji->texture_mapping=TEXTURE_SPHERICAL;

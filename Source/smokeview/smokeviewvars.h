@@ -749,7 +749,7 @@ SVEXTERN int SVDECL(show_faces_outline, 0);
 SVEXTERN int SVDECL(show_geom_verts, 0);
 #ifdef pp_HAVE_CFACE_NORMALS
 SVEXTERN int SVDECL(show_cface_normals, 0);
-SVEXTERN int SVDECL(have_cface_normals, 0);
+SVEXTERN int SVDECL(have_cface_normals, CFACE_NORMALS_NO);
 #endif
 
 SVEXTERN int SVDECL(show_iso_normal, 0), SVDECL(smooth_iso_normal, 1);

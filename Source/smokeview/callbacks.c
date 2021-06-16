@@ -2104,6 +2104,12 @@ void Keyboard(unsigned char key, int flag){
     case 'n':
     case 'N':
       show_cface_normals = 1-show_cface_normals;
+      if(show_cface_normals==1){
+        printf("show cface normals\n");
+      }
+      else{
+        printf("hide cface normals\n");
+      }
       UpdateGluiCfaces();
       break;
 #endif
