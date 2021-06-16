@@ -5764,23 +5764,24 @@ void VentMenu(int value){
   updatemenu=1;
   GLUTPOSTREDISPLAY;
 }
-#define GEOMETRY_SOLID 0
-#define GEOMETRY_OUTLINE 1
-#define GEOMETRY_SOLIDOUTLINE 2
-#define GEOMETRY_INTERIOR_SOLID 9
-#define GEOMETRY_INTERIOR_OUTLINE 12
-#define GEOMETRY_HIDE 7
-#define GEOMETRY_TETRA_HIDE 11
-#define GEOMETRY_SHOWNORMAL 3
-#define GEOMETRY_SORTFACES 6
-#define GEOMETRY_SMOOTHNORMAL 4
-#define GEOMETRY_HILIGHTSKINNY 5
-#define GEOMETRY_HIDEALL 8
-#define GEOMETRY_INSIDE_DOMAIN 14
-#define GEOMETRY_OUTSIDE_DOMAIN 15
-#define GEOMETRY_VOLUMES_INTERIOR 18
-#define GEOMETRY_VOLUMES_EXTERIOR 19
-#define GEOMETRY_DUMMY -999
+#define GEOMETRY_SOLID                   0
+#define GEOMETRY_OUTLINE                 1
+#define GEOMETRY_SOLIDOUTLINE            2
+#define GEOMETRY_INTERIOR_SOLID          9
+#define GEOMETRY_INTERIOR_OUTLINE       12
+#define GEOMETRY_HIDE                    7
+#define GEOMETRY_TETRA_HIDE             11
+#define GEOMETRY_SHOWNORMAL              3
+#define GEOMETRY_SORTFACES               6
+#define GEOMETRY_SMOOTHNORMAL            4
+#define GEOMETRY_HILIGHTSKINNY           5
+#define GEOMETRY_HIDEALL                 8
+#define GEOMETRY_INSIDE_DOMAIN          14
+#define GEOMETRY_OUTSIDE_DOMAIN         15
+#define GEOMETRY_VOLUMES_INTERIOR       18
+#define GEOMETRY_VOLUMES_EXTERIOR       19
+#define GEOMETRY_DUMMY                -999
+#define GEOMETRY_TERRAIN_SHOW_TOP       22
 
 /* ------------------ ImmersedMenu ------------------------ */
 
@@ -5788,6 +5789,9 @@ void ImmersedMenu(int value){
   if(value==GEOMETRY_DUMMY)return;
   updatemenu=1;
   switch(value){
+    case GEOMETRY_TERRAIN_SHOW_TOP:
+      terrain_showonly_top = 1 - terrain_showonly_top;
+      break;
     case GEOMETRY_INTERIOR_SOLID:
       show_volumes_solid=1-show_volumes_solid;
       break;
@@ -6925,7 +6929,11 @@ updatemenu=0;
 /* --------------------------------surface menu -------------------------- */
 
   CREATEMENU(immersedsurfacemenu,ImmersedMenu);
-  glutAddMenuEntry(_("How"),GEOMETRY_DUMMY);
+  glutAddMenuEntry(_("What"),GEOMETRY_DUMMY);
+  if(terrain_nindices>0){
+    if(terrain_showonly_top==1)glutAddMenuEntry(_("   *Show only top surface"), GEOMETRY_TERRAIN_SHOW_TOP);
+    if(terrain_showonly_top==0)glutAddMenuEntry(_("   Show only top surface"),  GEOMETRY_TERRAIN_SHOW_TOP);
+  }
   if(show_faces_shaded==1&&show_faces_outline==1){
     glutAddMenuEntry(_("   *Solid and outline"),GEOMETRY_SOLIDOUTLINE);
   }
@@ -9234,9 +9242,6 @@ updatemenu=0;
   GLUTADDSUBMENU(_("Geometry"),geometrymenu);
   if(nterraininfo>0&&ngeominfo==0){
     GLUTADDSUBMENU(_("Terrain"), terrain_obst_showmenu);
-  }
-  if(terrain_nindices>0||nterrain_textures>0){
-    GLUTADDSUBMENU(_("Terrain"), terrain_geom_showmenu);
   }
   if(GetNumActiveDevices()>0||ncvents>0){
     GLUTADDSUBMENU(_("Devices"), showobjectsmenu);

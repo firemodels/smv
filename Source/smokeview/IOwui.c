@@ -320,7 +320,7 @@ void DrawTerrainGeom(int option){
 
     //*** surface
 
-    if(terrain_show_geometry_surface==1&&draw_surface==1){
+    if(show_faces_shaded==1&&draw_surface==1){
       glBegin(GL_TRIANGLES);
 
       // surface
@@ -447,7 +447,7 @@ void DrawTerrainGeom(int option){
 
     //*** bottom side of top surface
 
-    if(terrain_showonly_top==1&&(terrain_show_geometry_surface==1||draw_texture==1)){
+    if(terrain_showonly_top==1&&(show_faces_shaded==1||draw_texture==1)){
       glBegin(GL_TRIANGLES);
 
       // surface
@@ -492,7 +492,7 @@ void DrawTerrainGeom(int option){
 
     //*** draw sides in a neutral color
 
-      if(terrain_showonly_top==0&&(terrain_show_geometry_surface==1||draw_texture==1)){
+      if(terrain_showonly_top==0&&(show_faces_shaded==1||draw_texture==1)){
       glBegin(GL_TRIANGLES);
 
       // surface

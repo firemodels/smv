@@ -1133,6 +1133,7 @@ void DrawGeom(int flag, int timestate){
 
         trianglei = geomlisti->triangles+j;
         if(trianglei->geomtype!=GEOM_ISO){
+          if(show_faces_outline==0)continue;
           if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
           if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
           if(trianglei->exterior==0)continue;
@@ -1250,7 +1251,7 @@ void DrawGeom(int flag, int timestate){
 
     // draw geometry normal vectors
 
-    if(geomlisti->ntriangles>0){  // draw faceted normals
+    if(show_geom_normal==1&&smooth_geom_normal==0&&geomlisti->ntriangles>0){  // draw faceted normals
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
@@ -1324,7 +1325,7 @@ void DrawGeom(int flag, int timestate){
       glEnd();
       glPopMatrix();
     }
-    if(geomlisti->ntriangles > 0){  // draw smooth normals
+    if(show_geom_normal==1&&smooth_geom_normal==1&&geomlisti->ntriangles > 0){  // draw smooth normals
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
