@@ -29,7 +29,7 @@ cMESH IJK=50,50,25, XB=0,50,-25,25,0,25 /
       THICKNESS(1:2) = 0.51,0.1
       MOISTURE_FRACTION(1) = 0.06
       SURFACE_VOLUME_RATIO(1)  = 12240
-      EMISSIVITY = 0.99 
+      EMISSIVITY = 0.99
       RGB = 122,117,48 /
 
 &MATL ID                 = 'AIR'
@@ -92,7 +92,6 @@ cMESH IJK=50,50,25, XB=0,50,-25,25,0,25 /
 &RAMP ID='RAMPIGN',T=12,F=1 /
 &RAMP ID='RAMPIGN',T=20,F=1 /
 &RAMP ID='RAMPIGN',T=21,F=0 /
-&VENT XB=4,5,-10,10,0,0,SURF_ID='LINEFIRE' /
 
 -- Boundary conditions
 &VENT XB =  0.0, 0.0,-25.0, 25.0, 0.0,25.0, SURF_ID = 'OPEN' /
@@ -101,49 +100,35 @@ cMESH IJK=50,50,25, XB=0,50,-25,25,0,25 /
 &VENT XB =  0.0,50.0, 25.0, 25.0, 0.0,25.0, SURF_ID = 'OPEN' /
 &VENT XB =  0.0,50.0, 25.0, 25.0,25.0,25.0, SURF_ID = 'OPEN' /
 
-- Hill and grass on slope
--- Grass on flat upwind of hill
-&VENT XB=5,20,-20,20,0,0,SURF_ID='GRASS' /
+&GEOM ID='terrain', SURF_ID='GRASS', IS_TERRAIN=T,
+      VERTS=
+        20.0,-25.0,0.0,
+        20.0, 25.0,0.0,
+        24.0,-25.0,4.0,
+        24.0, 25.0,4.0,
+        28.0,-25.0,4.0,
+        28.0, 25.0,4.0,
+        31.0,-25.0,0.0,
+        31.0, 25.0,0.0,
+         1.0,-25.0,0.0,
+         1.0, 25.0,0.0,
+        50.0,-25.0,0.0,
+        50.0, 25.0,0.0,
+        
+      FACES= 
+           1,4,2,1,
+           1,3,4,1,
+           3,6,4,1, 
+           3,5,6,1,
+           5,8,6,1,
+           5,7,8,1,
+           9,2,10,1,
+           9,1,2,1,
+           7,12,8,1,
+           7,11,12,1
+             /
 
--- upslope
-&OBST XB=20,21,-20,20, 0, 1,SURF_ID6='GRASS','INERT','INERT','INERT','INERT','GRASS'/
-&OBST XB=21,22,-20,20, 0, 2,SURF_ID6='GRASS','INERT','INERT','INERT','INERT','GRASS'/
-&OBST XB=22,23,-20,20, 0, 3,SURF_ID6='GRASS','INERT','INERT','INERT','INERT','GRASS'/
-&OBST XB=23,24,-20,20, 0, 4,SURF_ID6='GRASS','INERT','INERT','INERT','INERT','GRASS'/
-
-&OBST XB=20,21,-25,-20, 0, 1 / no grass portion of hill upslope
-&OBST XB=21,22,-25,-20, 0, 2/
-&OBST XB=22,23,-25,-20, 0, 3/
-&OBST XB=23,24,-25,-20, 0, 4/
-&OBST XB=20,21, 20, 25, 0, 1/ 
-&OBST XB=21,22, 20, 25, 0, 2/
-&OBST XB=22,23, 20, 25, 0, 3/
-&OBST XB=23,24, 20, 25, 0, 4/
-
--- flat top
-&OBST XB=24,28,-20,20, 0, 4,SURF_ID6='INERT','INERT','INERT','INERT','INERT','GRASS'/
-
-&OBST XB=24,28,-25,-20, 0, 4/ no grass portion of hill top
-&OBST XB=24,28, 20, 25, 0, 4/
-
--- red structure on flat hill top
-&SURF ID='red box',COLOR='RED'/
-&OBST XB=25,27,-2,2,4,6,SURF_ID='red box'/
-
--- downslope
-&OBST XB=28,29,-20,20, 0, 3,SURF_ID6='GRASS','INERT','INERT','INERT','INERT','GRASS'/
-&OBST XB=29,30,-20,20, 0, 2,SURF_ID6='GRASS','INERT','INERT','INERT','INERT','GRASS'/
-&OBST XB=30,31,-20,20, 0, 1,SURF_ID6='GRASS','INERT','INERT','INERT','INERT','GRASS'/
-
-&OBST XB=28,29,-25,-20, 0, 3/ no grass portion of hill downslope
-&OBST XB=29,30,-25,-20, 0, 2/
-&OBST XB=30,31,-25,-20, 0, 1/
-&OBST XB=28,29, 20, 25, 0, 3/
-&OBST XB=29,30, 20, 25, 0, 2/
-&OBST XB=30,31, 20, 25, 0, 1/
-
--- grass downwind of hill
-&VENT XB=31,45,-20,20, 0, 0,SURF_ID='GRASS'  /
+&VENT XB=0.0,1.0,-10,10,0,0,SURF_ID='LINEFIRE' /
 
 - Outputs
 &DUMP NFRAMES=2,DT_DEVC=0.1,SMOKE3D=.FALSE. /
