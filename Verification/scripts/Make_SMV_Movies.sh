@@ -96,7 +96,7 @@ $MAKEMOVIE -o $OUTDIR -m thouse5_smoke3d thouse5_smoke3d
 cd $WUIINDIR
 #$MAKEMOVIE -o $OUTDIR BT10m_2x2km_LS_movie
 $MAKEMOVIE -o $OUTDIR hill_structure_movie
-$MAKEMOVIE -o $OUTDIR levelset1_movie
+#$MAKEMOVIE -o $OUTDIR levelset1_movie
 $MAKEMOVIE -o $OUTDIR levelset2_movie
 $MAKEMOVIE -o $OUTDIR wind_test1_movie
 $MAKEMOVIE -o $OUTDIR tree_test2_movie
