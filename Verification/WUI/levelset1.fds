@@ -1,8 +1,8 @@
 &HEAD CHID='levelset1', TITLE='Level set example 900 m x 900 m level domain = FARSITE in physical fidelity' /
 
-&MESH IJK=75,75,100, XB=0,300,-150,150,0,100 /
+&MESH IJK=75,75,50, XB=0,300,-150,150,0,50 /
 
-&TIME T_END=200 /
+&TIME T_END=120 /
 &MISC LEVEL_SET_MODE=4, LEVEL_SET_ELLIPSE=F /
 &WIND SPEED=5.0, DIRECTION=270.0  /
 
