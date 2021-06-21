@@ -3606,6 +3606,28 @@ Usage: Display the colorbar in the same orientation as it was defined.
  CBARNORMAL
 \end{lstlisting}
 
+\hitem{GSLICEVIEW}Show general oriented slice plane, and/or triangles and normals used to represent slice.
+Usage:
+\begin{lstlisting}
+ GSLICEVIEW
+ show_gslice, show_triangles, show_triangulation, show_normals (all ints)
+\end{lstlisting}
+
+\hitem{GSLICEPOS}Set position (xpos, ypos, zpos) of general oriented slice plane.
+Usage:
+\begin{lstlisting}
+ GSLICEPOS
+ xpos (float), ypos (float), zpos (float)
+\end{lstlisting}
+
+
+\hitem{GSLICEORIEN}Set orientiation (azimuth elevation orientation angles) of general oriented slice plane.
+Usage:
+\begin{lstlisting}
+ GSLICEORIEN
+ azimuth (float), elevation (float)
+\end{lstlisting}
+
 \hitem{KEYBOARD}Passes a keyboard character to Smokeview
 Usage:
 \begin{lstlisting}
