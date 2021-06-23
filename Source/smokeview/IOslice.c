@@ -4527,12 +4527,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
 
   blocknumber = sd->blocknumber;
   meshi = meshinfo + blocknumber;
-  if(meshi->terrain!=NULL&&meshi->terrain->nvalues==0){
-    if(flag==LOAD){
-      printf("***warning: all terrain elevations below %f.  Slice file %s not loaded\n", meshi->terrain->zmin_cutoff, file);
-    }
-    return 0;
-  }
 
   if(flag != RESETBOUNDS){
     if(sd->loaded == 0 && flag == UNLOAD)return 0;
