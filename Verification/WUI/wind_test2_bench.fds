@@ -1,5 +1,4 @@
 &HEAD CHID='wind_test2_bench', TITLE='Simple hill case with devices to visualize velocity profiles' /
-&MISC TERRAIN_CASE=.TRUE./ 
 &WIND SPEED=3.0, DIRECTION=270.0 /
 &TIME T_END=60 / 
 
