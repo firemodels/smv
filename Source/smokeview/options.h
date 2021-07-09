@@ -27,7 +27,7 @@
 #define pp_DRAWISO            // turn on drawing routines
 //#define pp_UPDATE_FILELOAD  // updates fileload variables when a file has been loaded or unloaded
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
-//#define pp_SLICE_GEOM_VECTORS // implement vector slices files for geometry files
+#define pp_SLICE_GEOM_VECTORS // implement vector slices files for geometry files
 
 //#define pp_WUI_VAO            // use opengl vao objects for drawing terrain
 
