@@ -3337,6 +3337,9 @@ void UpdateVSlices(void){
 
     sdi = sliceinfo+i;
     sdi->vec_comp=0;
+#ifdef pp_GEOM_SLICE_VECTORS
+    if(sdi->slice_filetype==SLICE_GEOM)continue;
+#endif
     if(strncmp(sdi->label.shortlabel,"U-VEL",5)==0){
        sdi->vec_comp=1;
        continue;
