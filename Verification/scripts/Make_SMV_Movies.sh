@@ -73,7 +73,7 @@ NPROCS=8
 #NRESERVE="-N 4"
 $QSMV -P $NPROCS $NRESERVE -c plume5c_movies.ssf        -d Visualization plume5c
 $QSMV -P $NPROCS $NRESERVE -c thouse5_movies.ssf        -d Visualization thouse5
-$QSMV -P $NPROCS $NRESERVE -c BT10m_2x2km_LS_movies.ssf -d WUI           BT10m_2x2km_LS
+#$QSMV -P $NPROCS $NRESERVE -c BT10m_2x2km_LS_movies.ssf -d WUI           BT10m_2x2km_LS
 $QSMV -P $NPROCS $NRESERVE -c hill_structure_movies.ssf -d WUI           hill_structure
 #$QSMV -P $NPROCS $NRESERVE -c levelset1_movies.ssf      -d WUI           levelset1
 $QSMV -P $NPROCS $NRESERVE -c levelset2_movies.ssf      -d WUI           levelset2
