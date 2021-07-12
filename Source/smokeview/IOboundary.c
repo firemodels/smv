@@ -2662,6 +2662,8 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   FREEMEMORY(patchi->geom_ndynamics);
   FREEMEMORY(patchi->geom_ivals_static);
   FREEMEMORY(patchi->geom_ivals_dynamic);
+  FREEMEMORY(patchi->geom_vals_static);
+  FREEMEMORY(patchi->geom_vals_dynamic);
   FREEMEMORY(patchi->geom_vals);
   FREEMEMORY(patchi->geom_ivals);
   FREEMEMORY(patchi->geom_times);
@@ -2710,6 +2712,8 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     NewMemory((void **)&patchi->geom_times, ntimes_local*sizeof(float));
     NewMemory((void **)&patchi->geom_ivals_static, ntimes_local*sizeof(int *));
     NewMemory((void **)&patchi->geom_ivals_dynamic, ntimes_local*sizeof(int *));
+    NewMemory((void **)&patchi->geom_vals_static, ntimes_local*sizeof(float *));
+    NewMemory((void **)&patchi->geom_vals_dynamic, ntimes_local*sizeof(float *));
   }
   if(nvals>0){
     NewMemory((void **)&patchi->geom_vals, nvals*sizeof(float));
@@ -2740,8 +2744,15 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   patchi->geom_ivals_static[0] = patchi->geom_ivals;
   patchi->geom_ivals_dynamic[0] = patchi->geom_ivals_static[0]+patchi->geom_nstatics[0];
   for(i = 1;i<ntimes_local;i++){
-    patchi->geom_ivals_static[i] = patchi->geom_ivals_dynamic[i-1]+patchi->geom_ndynamics[i-1];
-    patchi->geom_ivals_dynamic[i] = patchi->geom_ivals_static[i]+patchi->geom_nstatics[i];
+    patchi->geom_ivals_static[i]  = patchi->geom_ivals_dynamic[i-1] + patchi->geom_ndynamics[i-1];
+    patchi->geom_ivals_dynamic[i] = patchi->geom_ivals_static[i]    + patchi->geom_nstatics[i];
+  }
+
+  patchi->geom_vals_static[0]  = patchi->geom_vals;
+  patchi->geom_vals_dynamic[0] = patchi->geom_vals_static[0] + patchi->geom_nstatics[0];
+  for(i = 1; i<ntimes_local; i++){
+    patchi->geom_vals_static[i]  = patchi->geom_vals_dynamic[i-1] + patchi->geom_ndynamics[i-1];
+    patchi->geom_vals_dynamic[i] = patchi->geom_vals_static[i]    + patchi->geom_nstatics[i];
   }
 
   patchi->loaded = 1;

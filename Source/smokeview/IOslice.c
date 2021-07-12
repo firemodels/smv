@@ -1291,7 +1291,12 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       u = sliceinfo + vd->iu;
       display=u->display;
       if(u->loaded==1){
-        return_filesize+=ReadSlice(u->file, vd->iu, time_frame,NULL,UNLOAD, SET_SLICECOLOR, errorcode);
+        if(u->slice_filetype == SLICE_GEOM){
+          return_filesize = ReadGeomData(u->patchgeom, u, UNLOAD, time_frame, time_value, errorcode);
+        }
+        else{
+          return_filesize+=ReadSlice(u->file, vd->iu, time_frame,NULL,UNLOAD, SET_SLICECOLOR, errorcode);
+        }
       }
       u->display=display;
       u->vloaded=0;
@@ -1302,7 +1307,12 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       v = sliceinfo + vd->iv;
       display=v->display;
       if(v->loaded==1){
-        return_filesize+=ReadSlice(v->file, vd->iv, time_frame,NULL,UNLOAD, SET_SLICECOLOR, errorcode);
+        if(v->slice_filetype == SLICE_GEOM){
+          return_filesize = ReadGeomData(v->patchgeom, v, UNLOAD, time_frame, time_value, errorcode);
+        }
+        else{
+          return_filesize+=ReadSlice(v->file, vd->iv, time_frame,NULL,UNLOAD, SET_SLICECOLOR, errorcode);
+        }
       }
       v->display=display;
       v->vloaded=0;
@@ -1313,7 +1323,12 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       w = sliceinfo + vd->iw;
       display=w->display;
       if(w->loaded==1){
-        return_filesize+=ReadSlice(w->file, vd->iw, time_frame,NULL,UNLOAD, SET_SLICECOLOR, errorcode);
+        if(w->slice_filetype == SLICE_GEOM){
+          return_filesize = ReadGeomData(w->patchgeom, w, UNLOAD, time_frame, time_value, errorcode);
+        }
+        else{
+          return_filesize+=ReadSlice(w->file, vd->iw, time_frame,NULL,UNLOAD, SET_SLICECOLOR, errorcode);
+        }
       }
       w->display=display;
       w->vloaded=0;
@@ -1324,7 +1339,12 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       val = sliceinfo + vd->ival;
       display=val->display;
       if(val->loaded==1){
-        return_filesize+=ReadSlice(val->file, vd->ival, time_frame,NULL,UNLOAD, SET_SLICECOLOR, errorcode);
+        if(val->slice_filetype == SLICE_GEOM){
+          return_filesize = ReadGeomData(val->patchgeom, val, UNLOAD, time_frame, time_value, errorcode);
+        }
+        else{
+          return_filesize+=ReadSlice(val->file, vd->ival, time_frame,NULL,UNLOAD, SET_SLICECOLOR, errorcode);
+        }
       }
       val->display=display;
       val->vloaded=0;
@@ -1347,7 +1367,12 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     finalize = vd->finalize;
     vd->u=u;
     if(scriptoutstream==NULL||script_defer_loading==0){
-      return_filesize += ReadSlice(u->file, vd->iu, time_frame,time_value, flag, set_slicecolor, errorcode);
+      if(u->slice_filetype == SLICE_GEOM){
+        return_filesize += ReadGeomData(u->patchgeom, u, LOAD, time_frame, time_value, errorcode);
+      }
+      else{
+        return_filesize += ReadSlice(u->file, vd->iu, time_frame,time_value, flag, set_slicecolor, errorcode);
+      }
       if(*errorcode!=0){
         vd->loaded = 1;
         fprintf(stderr, "*** Error: unable to load U velocity vector components in %s . Vector load aborted\n", u->file);
@@ -1370,7 +1395,12 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     finalize = vd->finalize;
     vd->v=v;
     if(scriptoutstream==NULL||script_defer_loading==0){
-      return_filesize += ReadSlice(v->file, vd->iv, time_frame,time_value,flag, set_slicecolor, errorcode);
+      if(v->slice_filetype == SLICE_GEOM){
+        return_filesize += ReadGeomData(v->patchgeom, v, LOAD, time_frame, time_value, errorcode);
+      }
+      else{
+        return_filesize += ReadSlice(v->file, vd->iv, time_frame,time_value,flag, set_slicecolor, errorcode);
+      }
       if(*errorcode!=0){
         fprintf(stderr, "*** Error: unable to load V velocity vector components in %s . Vector load aborted\n", v->file);
         vd->loaded = 1;
@@ -1394,7 +1424,12 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     finalize = vd->finalize;
     vd->w=w;
     if(scriptoutstream==NULL||script_defer_loading==0){
-      return_filesize += ReadSlice(w->file, vd->iw, time_frame,time_value,flag, set_slicecolor, errorcode);
+      if(w->slice_filetype == SLICE_GEOM){
+        return_filesize += ReadGeomData(w->patchgeom, w, LOAD, time_frame, time_value, errorcode);
+      }
+      else{
+        return_filesize += ReadSlice(w->file, vd->iw, time_frame,time_value,flag, set_slicecolor, errorcode);
+      }
       if(*errorcode!=0){
         fprintf(stderr, "*** Error: unable to load W velocity vector components in %s . Vector load aborted\n", w->file);
         vd->loaded = 1;
@@ -1419,7 +1454,12 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
     finalize = vd->finalize;
     vd->val=val;
     if(scriptoutstream==NULL||script_defer_loading==0){
-      return_filesize += ReadSlice(val->file, vd->ival, time_frame,time_value,flag, set_slicecolor, errorcode);
+      if(val->slice_filetype == SLICE_GEOM){
+        return_filesize += ReadGeomData(val->patchgeom, val, LOAD, time_frame, time_value, errorcode);
+      }
+      else{
+        return_filesize += ReadSlice(val->file, vd->ival, time_frame,time_value,flag, set_slicecolor, errorcode);
+      }
       if(*errorcode!=0){
         fprintf(stderr, "*** Error: unable to load vector values in %s . Vector load aborted\n", val->file);
         vd->loaded = 1;
@@ -7508,63 +7548,61 @@ void DrawVSliceFrame(void){
     w = vd->w;
     if(u==NULL&&v==NULL&&w==NULL)continue;
     if(sliceinfo[vd->ival].times[0]>global_times[itimes])continue;
-#define VAL val
-    if(VAL->compression_type!=UNCOMPRESSED){
-      UncompressSliceDataFrame(VAL,VAL->itime);
-      VAL->iqsliceframe=VAL->slicecomplevel;
-    }
-    else{
-      if(VAL!=NULL)VAL->iqsliceframe = VAL->slicelevel + VAL->itime*VAL->nsliceijk;
-    }
-    if(VAL->qslicedata!=NULL)VAL->qsliceframe = VAL->qslicedata + VAL->itime*VAL->nsliceijk;
-#undef VAL
-#define VAL u
-    if(VAL!=NULL){
-      if(VAL->compression_type!=UNCOMPRESSED){
-        UncompressSliceDataFrame(VAL,VAL->itime);
-        VAL->iqsliceframe=VAL->slicecomplevel;
+    if(vd->vslice_filetype!=SLICE_GEOM){
+      if(val->compression_type!=UNCOMPRESSED){
+        UncompressSliceDataFrame(val, val->itime);
+        val->iqsliceframe = val->slicecomplevel;
       }
       else{
-        if(VAL!=NULL)VAL->iqsliceframe = VAL->slicelevel + VAL->itime*VAL->nsliceijk;
+        if(val!=NULL)val->iqsliceframe = val->slicelevel+val->itime*val->nsliceijk;
       }
-    }
-#undef VAL
-#define VAL v
-    if(VAL!=NULL){
-      if(VAL->compression_type!=UNCOMPRESSED){
-        UncompressSliceDataFrame(VAL,VAL->itime);
-        VAL->iqsliceframe=VAL->slicecomplevel;
+      if(val->qslicedata!=NULL)val->qsliceframe = val->qslicedata+val->itime*val->nsliceijk;
+      if(u!=NULL){
+        if(u->compression_type!=UNCOMPRESSED){
+          UncompressSliceDataFrame(u, u->itime);
+          u->iqsliceframe = u->slicecomplevel;
+        }
+        else{
+          if(u!=NULL)u->iqsliceframe = u->slicelevel+u->itime*u->nsliceijk;
+        }
       }
-      else{
-        if(VAL!=NULL)VAL->iqsliceframe = VAL->slicelevel + VAL->itime*VAL->nsliceijk;
+      if(v!=NULL){
+        if(v->compression_type!=UNCOMPRESSED){
+          UncompressSliceDataFrame(v, v->itime);
+          v->iqsliceframe = v->slicecomplevel;
+        }
+        else{
+          if(v!=NULL)v->iqsliceframe = v->slicelevel+v->itime*v->nsliceijk;
+        }
       }
-    }
-#undef VAL
-#define VAL w
-    if(VAL!=NULL){
-      if(VAL->compression_type!=UNCOMPRESSED){
-        UncompressSliceDataFrame(VAL,VAL->itime);
-        VAL->iqsliceframe=VAL->slicecomplevel;
+      if(w!=NULL){
+        if(w->compression_type!=UNCOMPRESSED){
+          UncompressSliceDataFrame(w, w->itime);
+          w->iqsliceframe = w->slicecomplevel;
+        }
+        else{
+          if(w!=NULL)w->iqsliceframe = w->slicelevel+w->itime*w->nsliceijk;
+        }
       }
-      else{
-        if(VAL!=NULL)VAL->iqsliceframe = VAL->slicelevel + VAL->itime*VAL->nsliceijk;
+      if(u!=NULL&&u->compression_type==UNCOMPRESSED){
+        u->qslice = u->qslicedata+u->itime*u->nsliceijk;
       }
-    }
-    if(u!=NULL&&u->compression_type==UNCOMPRESSED){
-      u->qslice = u->qslicedata + u->itime*u->nsliceijk;
-    }
-    if(v!=NULL&&v->compression_type==UNCOMPRESSED){
-      v->qslice = v->qslicedata + v->itime*v->nsliceijk;
-    }
-    if(w!=NULL&&w->compression_type==UNCOMPRESSED){
-      w->qslice = w->qslicedata + w->itime*w->nsliceijk;
+      if(v!=NULL&&v->compression_type==UNCOMPRESSED){
+        v->qslice = v->qslicedata+v->itime*v->nsliceijk;
+      }
+      if(w!=NULL&&w->compression_type==UNCOMPRESSED){
+        w->qslice = w->qslicedata+w->itime*w->nsliceijk;
+      }
     }
 
     if(vd->vslice_filetype==SLICE_TERRAIN){
       DrawVVolSliceTerrain(vd);
     }
     else if(vd->vslice_filetype==SLICE_CELL_CENTER){
-        DrawVVolSliceCellCenter(vd);
+      DrawVVolSliceCellCenter(vd);
+    }
+    else if(vd->vslice_filetype==SLICE_GEOM){
+      DrawGeomVData(vd);
     }
     else{
       DrawVVolSlice(vd);
