@@ -77,6 +77,8 @@ EXTERNCPP int GetPlotState(int choice);
 #define TERRAIN_FIRE_LINE_UPDATE 39
 #endif
 
+EXTERNCPP FILE_SIZE LoadVSliceMenu2(int val);
+
 EXTERNCPP void UpdateDeviceShow(void);
 EXTERNCPP void UpdateClipbounds(int set_i0, int *i0, int set_i1, int *i1, int maxi);
 EXTERNCPP int CompareFloat(const void *arg1, const void *arg2);

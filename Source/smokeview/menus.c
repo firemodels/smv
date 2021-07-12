@@ -3173,6 +3173,9 @@ void LoadUnloadMenu(int value){
     if(nvolrenderinfo>0){
       LoadVolsmoke3DMenu(UNLOAD_ALL);
     }
+
+    LoadVSliceMenu2(UNLOAD_ALL);
+
     for(i = 0; i < nsliceinfo; i++){
       slicedata *slicei;
 

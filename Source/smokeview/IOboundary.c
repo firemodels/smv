@@ -2653,6 +2653,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   if(slicei != NULL){
     slicei->loaded = 0;
     slicei->display = 0;
+    slicei->vloaded = 0;
     slicei->ntimes = 0;
     slicei->times = NULL;
   }

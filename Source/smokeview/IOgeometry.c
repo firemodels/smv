@@ -3759,9 +3759,13 @@ void DrawGeomVData(vslicedata *vd){
         if(insolid==IN_SOLID&&show_slice_shaded[IN_SOLID_GLUI]==0)continue;
         if(insolid==IN_GAS&&show_slice_shaded[IN_GAS_GLUI]==0)continue;
 
-        color_index = ivals[j];
-        color = rgb_patch+4*color_index;
-
+        if(show_cell_slices_and_vectors==1){
+          color = foregroundcolor;
+        }
+        else{
+          color_index = ivals[j];
+          color = rgb_patch+4*color_index;
+        }
         xyz1 = trianglei->verts[0]->xyz;
         xyz2 = trianglei->verts[1]->xyz;
         xyz3 = trianglei->verts[2]->xyz;
