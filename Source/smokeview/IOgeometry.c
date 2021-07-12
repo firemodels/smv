@@ -3801,9 +3801,12 @@ void DrawGeomVData(vslicedata *vd){
         GET_VEC_GEOM_DXYZ(patchw, dw, j);
         ADJUST_VEC_DXYZ(du, dv, dw);
 
-        xyzn[0] = xyz[0] + du;
-        xyzn[1] = xyz[1] + dv;
-        xyzn[2] = xyz[2] + dw;
+        xyz[0] -= du/2.0;
+        xyz[1] -= dv/2.0;
+        xyz[2] -= dw/2.0;
+        xyzn[0] = xyz[0] + du/2.0;
+        xyzn[1] = xyz[1] + dv/2.0;
+        xyzn[2] = xyz[2] + dw/2.0;
 
         glColor3f(color[0], color[1], color[2]);
         glVertex3fv(xyz);
