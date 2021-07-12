@@ -6385,8 +6385,10 @@ void DrawSliceFrame(){
         SNIFF_ERRORS("after DrawVolSliceTerrain");
         break;
       case SLICE_GEOM:
-        DrawGeomData(DRAW_TRANSPARENT, sd->patchgeom, GEOM_STATIC);
-        DrawGeomData(DRAW_TRANSPARENT, sd->patchgeom, GEOM_DYNAMIC);
+        if(sd->vloaded==0||(sd->vloaded==1&&show_cell_slices_and_vectors==1)){
+          DrawGeomData(DRAW_TRANSPARENT, sd->patchgeom, GEOM_STATIC);
+          DrawGeomData(DRAW_TRANSPARENT, sd->patchgeom, GEOM_DYNAMIC);
+        }
         break;
       default:
         ASSERT(FFALSE);
