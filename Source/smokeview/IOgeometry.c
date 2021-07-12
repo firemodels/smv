@@ -3745,7 +3745,7 @@ void DrawGeomVData(vslicedata *vd){
       if(auto_terrain==1)glTranslatef(0.0, 0.0, SCALE2FDS(0.01));
       glBegin(GL_LINES);
       for(j = 0; j<ntris; j++){
-        float *xyz1, *xyz2, *xyz3, xyz[3], xyzn[3];
+        float *xyz1, *xyz2, *xyz3, xyz[3];
         int color_index;
         float *color;
         tridata *trianglei;
@@ -3801,16 +3801,9 @@ void DrawGeomVData(vslicedata *vd){
         GET_VEC_GEOM_DXYZ(patchw, dw, j);
         ADJUST_VEC_DXYZ(du, dv, dw);
 
-        xyz[0] -= du/2.0;
-        xyz[1] -= dv/2.0;
-        xyz[2] -= dw/2.0;
-        xyzn[0] = xyz[0] + du/2.0;
-        xyzn[1] = xyz[1] + dv/2.0;
-        xyzn[2] = xyz[2] + dw/2.0;
-
         glColor3f(color[0], color[1], color[2]);
-        glVertex3fv(xyz);
-        glVertex3fv(xyzn);
+        glVertex3f(xyz[0]-du/2.0,xyz[1]-dv/2.0, xyz[2]-dw/2.0);
+        glVertex3f(xyz[0]+du/2.0,xyz[1]+dv/2.0, xyz[2]+dw/2.0);
       }
       printf("\n\n");
       glEnd();
