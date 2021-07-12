@@ -3710,8 +3710,6 @@ void DrawGeomVData(vslicedata *vd){
   patchdata *patchi, *patchu=NULL, *patchv=NULL, *patchw=NULL;
   unsigned char *ivals;
   int i, geom_type=GEOM_STATIC;
-  int is_ccell = 0;
-  float *iuvals=NULL, *ivvals=NULL, *iwvals=NULL;
 
   patchi = vd->val->patchgeom;
   ivals = patchi->geom_ival_static;
@@ -3748,7 +3746,6 @@ void DrawGeomVData(vslicedata *vd){
       glBegin(GL_LINES);
       for(j = 0; j<ntris; j++){
         float *xyz1, *xyz2, *xyz3, xyz[3], xyzn[3];
-        int color_indices[3];
         int color_index;
         float *color;
         tridata *trianglei;
