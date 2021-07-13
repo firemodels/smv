@@ -3704,7 +3704,115 @@ void AverageGeomColors(geomlistdata *geomlisti, int itriangle, unsigned char *iv
   }
 }
 
-/* ------------------ DrawGeomData ------------------------ */
+/* ------------------ DrawGeomVData ------------------------ */
+
+void DrawGeomVData(vslicedata *vd){
+  patchdata *patchi, *patchu=NULL, *patchv=NULL, *patchw=NULL;
+  unsigned char *ivals;
+  int i, geom_type=GEOM_STATIC;
+
+  patchi = vd->val->patchgeom;
+  ivals = patchi->geom_ival_static;
+  if(vd->u!=NULL)patchu = vd->u->patchgeom;
+  if(vd->v!=NULL)patchv = vd->v->patchgeom;
+  if(vd->w!=NULL)patchw = vd->w->patchgeom;
+  if(
+    (patchi->patch_filetype==PATCH_GEOMETRY_SLICE&&(
+    show_slice_shaded[IN_CUTCELL_GLUI]==1||
+    show_slice_shaded[IN_SOLID_GLUI]==1||
+    show_slice_shaded[IN_GAS_GLUI]==1))
+    ){
+    for(i = 0; i<1; i++){
+      geomdata *geomi;
+      geomlistdata *geomlisti;
+      int ntris, j;
+
+      geomi = patchi->geominfo;
+      if(geomi==NULL||geomi->display==0||geomi->loaded==0)continue;
+      if(geom_type==GEOM_STATIC){
+        geomlisti = geomi->geomlistinfo-1;
+      }
+      else{
+        geomlisti = geomi->geomlistinfo+geomi->itime;
+      }
+
+      ntris = geomlisti->ntriangles;
+      if(ntris==0)continue;
+
+      glPushMatrix();
+      glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+      glTranslatef(-xbar0, -ybar0, -zbar0);
+      if(auto_terrain==1)glTranslatef(0.0, 0.0, SCALE2FDS(0.01));
+      glBegin(GL_LINES);
+      for(j = 0; j<ntris; j++){
+        float *xyz1, *xyz2, *xyz3, xyz[3];
+        int color_index;
+        float *color;
+        tridata *trianglei;
+        int insolid;
+        float du, dv, dw;
+
+        trianglei = geomlisti->triangles+j;
+
+        insolid = trianglei->insolid&3;
+        if(insolid==IN_CUTCELL&&show_slice_shaded[IN_CUTCELL_GLUI]==0)continue;
+        if(insolid==IN_SOLID&&show_slice_shaded[IN_SOLID_GLUI]==0)continue;
+        if(insolid==IN_GAS&&show_slice_shaded[IN_GAS_GLUI]==0)continue;
+
+        if(show_cell_slices_and_vectors==1){
+          color = foregroundcolor;
+        }
+        else{
+          color_index = ivals[j];
+          color = rgb_patch+4*color_index;
+        }
+        xyz1 = trianglei->verts[0]->xyz;
+        xyz2 = trianglei->verts[1]->xyz;
+        xyz3 = trianglei->verts[2]->xyz;
+        xyz[0] = (xyz1[0]+xyz2[0]+xyz3[0])/3.0;
+        xyz[1] = (xyz1[1]+xyz2[1]+xyz3[1])/3.0;
+        xyz[2] = (xyz1[2]+xyz2[2]+xyz3[2])/3.0;
+
+#define GET_VEC_GEOM_DXYZ(PATCHU,DU,n)                  \
+         if(PATCHU==NULL||PATCHU->geom_ival_static==NULL){                              \
+           DU=0.0;                                 \
+         }                                         \
+         else{                                     \
+           DU = PATCHU->geom_val_static[(n)];                    \
+         }
+
+#define ADJUST_VEC_DXYZ(dx,dy,dz)                       \
+         if(vec_uniform_length==1){                              \
+           float vecnorm; \
+           vecnorm = sqrt(dx*dx+dy*dy+dz*dz);\
+           if(vecnorm==0.0)vecnorm=1.0;\
+           dx *= vecfactor*0.05/(max_velocity*vecnorm);\
+           dy *= vecfactor*0.05/(max_velocity*vecnorm);\
+           dz *= vecfactor*0.05/(max_velocity*vecnorm);\
+         }                                         \
+         else{                                     \
+           dx *= 0.05*vecfactor/max_velocity;\
+           dy *= 0.05*vecfactor/max_velocity;\
+           dz *= 0.05*vecfactor/max_velocity;\
+         }                                         \
+
+        GET_VEC_GEOM_DXYZ(patchu, du, j);
+        GET_VEC_GEOM_DXYZ(patchv, dv, j);
+        GET_VEC_GEOM_DXYZ(patchw, dw, j);
+        ADJUST_VEC_DXYZ(du, dv, dw);
+
+        glColor3f(color[0], color[1], color[2]);
+        glVertex3f(xyz[0]-du/2.0,xyz[1]-dv/2.0, xyz[2]-dw/2.0);
+        glVertex3f(xyz[0]+du/2.0,xyz[1]+dv/2.0, xyz[2]+dw/2.0);
+      }
+      printf("\n\n");
+      glEnd();
+      glPopMatrix();
+    }
+  }
+}
+
+  /* ------------------ DrawGeomData ------------------------ */
 
 void DrawGeomData(int flag, patchdata *patchi, int geom_type){
   int i;
@@ -4166,10 +4274,9 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       glPopMatrix();
     }
   }
-
 }
 
-/* ------------------ DrawGeomData ------------------------ */
+/* ------------------ DrawCGeom ------------------------ */
 
 void DrawCGeom(int flag, geomdata *cgeom){
   int i;

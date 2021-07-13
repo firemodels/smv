@@ -1463,6 +1463,8 @@ typedef struct _patchdata {
   int *geom_timeslist,geom_itime;
   unsigned char *geom_ivals, **geom_ivals_static, **geom_ivals_dynamic;
   unsigned char *geom_ival_static, *geom_ival_dynamic;
+  float **geom_vals_static, **geom_vals_dynamic;
+  float  *geom_val_static,   *geom_val_dynamic;
   int geom_nval_static, geom_nval_dynamic;
   int *geom_nstatics, *geom_ndynamics;
   int geom_nvals, ngeom_times;
