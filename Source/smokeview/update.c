@@ -1077,9 +1077,7 @@ void UpdateTimes(void){
   int i;
   float global_timemin=1000000000.0, global_timemax=-1000000000.0;
 
-  LOCK_TRIANGLES;
   GetGeomInfoPtrs(0);
-  UNLOCK_TRIANGLES;
 
   UpdateShow();
   CheckMemory;
@@ -1847,6 +1845,11 @@ void UpdateShowScene(void){
       ShowGluiMotion(DIALOG_MOVIE);
     }
   }
+  if(update_generate_part_histograms==1){
+    update_generate_part_histograms = 0;
+    GeneratePartHistogramsMT();
+    update_generate_part_histograms = -1;
+  }
   if(update_stept==1){
     update_stept = 0;
     SetTimeVal(time_paused);
@@ -2303,7 +2306,7 @@ void UpdateDisplay(void){
     SetCacheFlag(BOUND_SLICE, cache_slice_data);
   }
   if(update_chop_colors==1){
-    update_chop_colors = 1;
+    update_chop_colors = 0;
     UpdateChopColors();
   }
   if(update_zaxis_custom == 1){

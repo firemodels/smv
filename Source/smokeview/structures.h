@@ -59,6 +59,9 @@ typedef struct _edgedata {
 typedef struct _tridata {
   unsigned char skinny;
   float distance, *color, tverts[6], tri_norm[3], vert_norm[9], area;
+#ifdef pp_HAVE_CFACE_NORMALS
+  float cface_norm1[3], cface_norm2[3];
+#endif
   struct _texturedata *textureinfo;
   struct _surfdata *geomsurf;
   struct _geomlistdata *geomlisti;
@@ -117,6 +120,10 @@ typedef struct _geomdata {
   int cache_defined;
   int memory_id, loaded, display;
   int is_terrain;
+#ifdef pp_HAVE_CFACE_NORMALS
+  int have_cface_normals, ncface_normals;
+  float *cface_normals;
+#endif
   float *float_vals;
   float bounding_box[6];
   int *file2_tris, nfile2_tris;
@@ -758,7 +765,6 @@ typedef struct _meshdata {
   int *boundarytype;
   int *patchdir,*patch_surfindex;
   int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
-  contour **patch_contours;
   int *blockonpatch;
   struct _meshdata **meshonpatch;
   struct _meshdata *nabors[6], *above;
@@ -1235,6 +1241,7 @@ typedef struct _slicedata {
   int loaded_save, display_save;
   float position_orig;
   int blocknumber;
+  int cell_center_edge;
   int firstshort_slice;
   int vec_comp;
   int skipdup;
@@ -1285,7 +1292,7 @@ typedef struct _slicedata {
   FILE_SIZE file_size;
   int *geom_offsets;
 #ifdef pp_SLICETHREAD
-  int skipload, loadstatus, boundstatus;
+  int loadstatus;
 #endif
 #ifdef pp_SLICE_BUFFER
   FILEBUFFER *stream_slice;
@@ -1356,7 +1363,7 @@ typedef struct _boundsdata {
 /* --------------------------  vslicedata ------------------------------------ */
 
 typedef struct _vslicedata {
-  int seq_id, autoload;
+  int seq_id, autoload, reload;
   slicedata *u,*v,*w,*val;
   int volslice;
   int iu, iv, iw, ival;
@@ -1479,6 +1486,7 @@ typedef struct _plot3ddata {
   int have_bound_file;
   int compression_type;
   int finalize;
+  int memory_id;
   float time;
   int u, v, w, nvars;
   float diff_valmin[MAXPLOT3DVARS], diff_valmax[MAXPLOT3DVARS];

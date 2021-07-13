@@ -187,7 +187,7 @@ void ReadBoundINI(void){
 
 /* ------------------ SetupCase ------------------------ */
 
-int SetupCase(int argc, char **argv){
+int SetupCase(char *filename){
   int return_code;
   char *input_file;
 
@@ -201,7 +201,7 @@ int SetupCase(int argc, char **argv){
 
   // setup input files names
 
-  input_file = smv_filename;
+  input_file = filename;
   if(strcmp(input_filename_ext,".svd")==0||demo_option==1){
     trainer_mode=1;
     trainer_active=1;
@@ -310,7 +310,7 @@ int GetScreenHeight(void){
   char command[1000], height_file[1000], *full_height_file, buffer[255];
   int screen_height=-1;
 
-  strcpy(command,"system_profiler SPDisplaysDataType | grep Resolution | awk '{print $4}' >& ");
+  strcpy(command,"system_profiler SPDisplaysDataType | grep Resolution | awk '{print $4}' | tail -1 >& ");
   strcpy(height_file, fdsprefix);
   strcat(height_file, ".hgt");
   full_height_file = GetFileName(smokeview_scratchdir, height_file, NOT_FORCE_IN_DIR);
@@ -411,9 +411,13 @@ void SetupGlut(int argc, char **argv){
 #endif
   if(use_graphics==1){
     PRINTF("\n");
-    PRINTF("%s\n",_("initializing Glut"));
+    PRINTF("%s","initializing Glut");
     glutInit(&argc, argv);
-    PRINTF("%s\n",_("complete"));
+#ifdef pp_OSX
+    PRINTF("(%i/%i)", GetScreenHeight(), glutGet(GLUT_SCREEN_HEIGHT));
+#endif
+    PRINTF("\n%s\n",_("complete"));
+
   }
 #ifdef pp_OSX
   chdir(workingdir);
@@ -431,11 +435,24 @@ void SetupGlut(int argc, char **argv){
     max_screenWidth = glutGet(GLUT_SCREEN_WIDTH);
     max_screenHeight = glutGet(GLUT_SCREEN_HEIGHT);
 #ifdef pp_OSX_HIGHRES
+    if(force_scale==0){
+      if(monitor_screen_height!=max_screenHeight)double_scale=1;
+      if(monitor_screen_height==max_screenHeight)double_scale=0;
+    }
     if(double_scale==1){
       max_screenWidth  *= 2;
       max_screenHeight *= 2;
     }
 #endif
+    font_ptr          = GLUT_BITMAP_HELVETICA_12;
+    colorbar_font_ptr = GLUT_BITMAP_HELVETICA_10;
+#ifdef pp_OSX_HIGHRES
+    if(double_scale==1){
+      font_ptr = (void *)GLUT_BITMAP_HELVETICA_24;
+      colorbar_font_ptr = (void *)GLUT_BITMAP_HELVETICA_20;
+    }
+#endif
+
     if(trainer_mode==1){
       int TRAINER_WIDTH;
       int TRAINER_HEIGHT;
@@ -2190,38 +2207,3 @@ void InitVars(void){
   }
 }
 
-/* ------------------ CopyArgs ------------------------ */
-
-void CopyArgs(int *argc, char **aargv, char ***argv_sv){
-#ifdef WIN32
-  char *filename=NULL;
-  char **argv=NULL;
-  int filelength=1024,openfile;
-  int i;
-
-  if(NewMemory((void **)&argv,(*argc+1)*sizeof(char **))!=0){
-    *argv_sv=argv;
-    for(i=0;i<*argc;i++){
-      argv[i]=aargv[i];
-    }
-    if(*argc==1){
-      if(NewMemory((void **)&filename,(unsigned int)(filelength+1))!=0){
-        openfile=0;
-        OpenSMVFile(filename,filelength,&openfile);
-        if(openfile==1&&ResizeMemory((void **)&filename,strlen(filename)+1)!=0){
-          *argc=2;
-          argv[1]=filename;
-        }
-        else{
-          FREEMEMORY(filename);
-        }
-      }
-    }
-  }
-  else{
-    *argc=0;
-  }
-#else
-  *argv_sv=aargv;
-#endif
-}

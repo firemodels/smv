@@ -289,8 +289,7 @@ void UpdateGeomAreas(void){
       if(trianglei->geomtype!=GEOM_ISO){
         if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
         if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
-        if(trianglei->exterior==1&&show_faces_exterior==0)continue;
-        if(trianglei->exterior==0&&show_faces_interior==0)continue;
+        if(trianglei->exterior==0)continue;
         if(trianglei->geomtype==GEOM_GEOM&&show_faces_shaded==0)continue;
       }
       tri_surf = trianglei->geomsurf;
@@ -382,8 +381,7 @@ void DrawSelectGeom(void){
         if(trianglei->geomtype!=GEOM_ISO){
           if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
           if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
-          if(trianglei->exterior==1&&show_faces_exterior==0)continue;
-          if(trianglei->exterior==0&&show_faces_interior==0)continue;
+          if(trianglei->exterior==0)continue;
           if(trianglei->geomtype==GEOM_GEOM&&show_faces_shaded==0)continue;
         }
         GetRGB(color_index+1, &r, &g, &b);
@@ -478,6 +476,19 @@ void DrawBox(float *bb, float *box_color){
   glEnd();
 }
 
+/* ------------------ DrawObstBoundingBox ------------------------ */
+
+void DrawObstBoundingBox(void){
+  if(obst_bounding_box[0]>obst_bounding_box[1])return;
+  if(obst_bounding_box[2]>obst_bounding_box[3])return;
+  if(obst_bounding_box[4]>obst_bounding_box[5])return;
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(-xbar0, -ybar0, -zbar0);
+  DrawBox(obst_bounding_box, foregroundcolor);
+  glPopMatrix();
+}
+
 /* ------------------ DrawGeomBoundingBox ------------------------ */
 
 void DrawGeomBoundingBox(float *boundingbox_color){
@@ -531,6 +542,12 @@ void DrawGeom(int flag, int timestate){
   tridata **tris;
   int texture_state = OFF, texture_first=1;
 
+  if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS||geom_bounding_box_mousedown==1){
+    if(flag==DRAW_OPAQUE&&timestate==GEOM_STATIC&&have_geom_triangles==1){
+      DrawGeomBoundingBox(NULL);
+    }
+    return;
+  }
   if(flag == DRAW_OPAQUE){
     ntris=nopaque_triangles;
     tris=opaque_triangles;
@@ -540,12 +557,6 @@ void DrawGeom(int flag, int timestate){
     tris=transparent_triangles;
   }
   if(ntris==0&&show_faces_shaded==1&&show_faces_outline==0)return;
-
-  if(geom_bounding_box_always==1||geom_bounding_box_mousedown==1){
-    if(flag!=DRAW_OPAQUE||timestate!=GEOM_STATIC)return;
-    DrawGeomBoundingBox(NULL);
-    return;
-  }
 
   if(ntris>0&&timestate==GEOM_STATIC){
     float *color;
@@ -604,8 +615,7 @@ void DrawGeom(int flag, int timestate){
         if(trianglei->geomtype!=GEOM_ISO){
           if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
           if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
-          if(trianglei->exterior==1&&show_faces_exterior==0)continue;
-          if(trianglei->exterior==0&&show_faces_interior==0)continue;
+          if(trianglei->exterior==0)continue;
           if(trianglei->geomtype==GEOM_GEOM&&show_faces_shaded==0)continue;
           if(trianglei->geomsurf->invisible==1)continue;
         }
@@ -789,8 +799,7 @@ void DrawGeom(int flag, int timestate){
         if(trianglei->geomtype!=GEOM_ISO){
           if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
           if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
-          if(trianglei->exterior==1&&show_faces_exterior==0)continue;
-          if(trianglei->exterior==0&&show_faces_interior==0)continue;
+          if(trianglei->exterior==0)continue;
         }
         else{
           if(show_iso_outline == 0)continue;
@@ -1124,10 +1133,10 @@ void DrawGeom(int flag, int timestate){
 
         trianglei = geomlisti->triangles+j;
         if(trianglei->geomtype!=GEOM_ISO){
+          if(show_faces_outline==0)continue;
           if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
           if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
-          if(trianglei->exterior==1&&show_faces_exterior==0)continue;
-          if(trianglei->exterior==0&&show_faces_interior==0)continue;
+          if(trianglei->exterior==0)continue;
           if(trianglei->geomtype == GEOM_GEOM&&show_faces_outline == 0)continue;
         }
         else{
@@ -1242,7 +1251,7 @@ void DrawGeom(int flag, int timestate){
 
     // draw geometry normal vectors
 
-    if(geomlisti->ntriangles>0){  // draw faceted normals
+    if(show_geom_normal==1&&smooth_geom_normal==0&&geomlisti->ntriangles>0){  // draw faceted normals
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
@@ -1259,7 +1268,6 @@ void DrawGeom(int flag, int timestate){
         trianglei = geomlisti->triangles+j;
         if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
         if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
-        if(trianglei->exterior==1&&show_faces_exterior==0)continue;
         if(trianglei->exterior==0)continue;
 
         if(trianglei->geomtype==GEOM_GEOM&&(show_geom_normal==0||smooth_geom_normal==1))continue;
@@ -1295,7 +1303,6 @@ void DrawGeom(int flag, int timestate){
         trianglei = geomlisti->triangles+j;
         if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
         if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
-        if(trianglei->exterior==1&&show_faces_exterior==0)continue;
         if(trianglei->exterior==0)continue;
         if(trianglei->geomtype == GEOM_GEOM && (show_geom_normal == 0 || smooth_geom_normal == 1))continue;
         if(trianglei->geomtype == GEOM_ISO&&(show_iso_normal == 0||smooth_iso_normal==1))continue;
@@ -1318,7 +1325,7 @@ void DrawGeom(int flag, int timestate){
       glEnd();
       glPopMatrix();
     }
-    if(geomlisti->ntriangles > 0){  // draw smooth normals
+    if(show_geom_normal==1&&smooth_geom_normal==1&&geomlisti->ntriangles > 0){  // draw smooth normals
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
@@ -1334,7 +1341,6 @@ void DrawGeom(int flag, int timestate){
         if(trianglei->geomtype!=GEOM_ISO){
           if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
           if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
-          if(trianglei->exterior==1&&show_faces_exterior==0)continue;
           if(trianglei->exterior==0)continue;
           if(trianglei->geomtype==GEOM_GEOM&&(show_geom_normal==0||smooth_geom_normal==0))continue;
         }
@@ -1369,7 +1375,6 @@ void DrawGeom(int flag, int timestate){
         trianglei = geomlisti->triangles + j;
         if(trianglei->outside_domain == 0 && showgeom_inside_domain == 0)continue;
         if(trianglei->outside_domain == 1 && showgeom_outside_domain == 0)continue;
-        if(trianglei->exterior==1&&show_faces_exterior==0)continue;
         if(trianglei->exterior==0)continue;
         if(trianglei->geomtype == GEOM_GEOM && (show_geom_normal == 0 || smooth_geom_normal == 0))continue;
         if(trianglei->geomtype == GEOM_ISO && (show_iso_normal == 0 || smooth_iso_normal == 0))continue;
@@ -1594,10 +1599,8 @@ void UpdateTriangles(int flag,int update){
   int j, ii, ntimes;
   int ntimes_max=0;
 
-  LOCK_TRIANGLES;
   GetGeomInfoPtrs(0);
   updating_triangles = 1;
-  UNLOCK_TRIANGLES;
   if(cancel_update_triangles==1){
     updating_triangles = 0;
     return;
@@ -2385,9 +2388,9 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       float *xyz=NULL;
       float *zORIG;
 
-      NewMemory((void **)&xyz,3*nverts*sizeof(float));
-      NewMemoryMemID((void **)&verts,nverts*sizeof(vertdata),geomi->memory_id);
-      NewMemory((void **)&zORIG, nverts*sizeof(float));
+      NewMemoryMemID((void **)&xyz,3*nverts*sizeof(float),    geomi->memory_id);
+      NewMemoryMemID((void **)&verts,nverts*sizeof(vertdata), geomi->memory_id);
+      NewMemoryMemID((void **)&zORIG, nverts*sizeof(float),   geomi->memory_id);
       geomlisti->zORIG = zORIG;
       geomlisti->verts = verts;
       geomlisti->nverts=nverts;
@@ -2409,9 +2412,9 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
       int offset=0;
       tridata *triangles;
 
-      NewMemoryMemID((void **)&triangles,ntris*sizeof(tridata),geomi->memory_id);
-      NewMemory((void **)&ijk,3*ntris*sizeof(int));
-      NewMemory((void **)&surf_ind,ntris*sizeof(int));
+      NewMemoryMemID((void **)&triangles,ntris*sizeof(tridata), geomi->memory_id);
+      NewMemoryMemID((void **)&ijk,3*ntris*sizeof(int),         geomi->memory_id);
+      NewMemoryMemID((void **)&surf_ind,ntris*sizeof(int),      geomi->memory_id);
       geomlisti->triangles=triangles;
       geomlisti->ntriangles=ntris;
 
@@ -2569,7 +2572,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
     nverts=nvertfacesvolumes[0];
     ntris=nvertfacesvolumes[1];
     nvolumes=nvertfacesvolumes[2];
-    if(nvolumes>0)have_volume=1;
+    if(nvolumes>0)have_volumes=1;
 
     if(nverts>0){
       int ii;
@@ -2648,9 +2651,8 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       else{
         NewMemory((void **)&texture_coords,6*ntris*sizeof(float));
       }
-      geomlisti->triangles=triangles;
-      geomlisti->ntriangles=ntris;
-
+      geomlisti->triangles  = triangles;
+      geomlisti->ntriangles = ntris;
       if(geomi->geomtype==GEOM_CGEOM){
         FORTREADBR(ijk, 3*ntris, stream);
         return_filesize += 4+3*ntris*4+4;
@@ -2862,7 +2864,6 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
         }
         triangles[ii].outside_domain = OutSideDomain(triangles[ii].verts);
       }
-
       FREEMEMORY(ijk);
       FREEMEMORY(surf_ind);
       FREEMEMORY(texture_coords);
@@ -2903,6 +2904,24 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       FREEMEMORY(matl_ind);
       geomlisti->nvolumes=nvolumes;
     }
+#ifdef pp_HAVE_CFACE_NORMALS
+    if(geomi->have_cface_normals==CFACE_NORMALS_YES){
+      int ncface_normals;
+
+      FORTREADBR(&ncface_normals, 1, stream);
+      return_filesize += 4+1*4+4;
+      if(ncface_normals>0){
+        float *cface_normals;
+
+        NewMemory((void **)&cface_normals, 6*ncface_normals*sizeof(float));
+        geomi->cface_normals = cface_normals;
+
+        FORTREADBR(cface_normals, 6*ncface_normals, stream);
+        return_filesize += 4+6*ncface_normals*4+4;
+      }
+      geomi->ncface_normals = ncface_normals;
+    }
+#endif
   }
   geomi->loaded=1;
   geomi->display=1;
@@ -3097,6 +3116,7 @@ edgedata *GetEdge(edgedata *edges, int nedges, int iv1, int iv2){
 void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
   int i, iend;
 
+  if(geomi->geomlistinfo==NULL)return;
   iend = geomi->ntimes;
   if(geom_frame_index!=NULL)iend=1;
 
@@ -3105,6 +3125,7 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
     int nverts, nvolumes, ntriangles;
     int j;
     vertdata *vertbase;
+
 
     geomlisti = geomi->geomlistinfo+i;
     if(i!=-1&&geom_frame_index!=NULL)geomlisti = geomi->geomlistinfo+(*geom_frame_index);
@@ -3475,6 +3496,7 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   printf("\niso load time=%f\n",time1);
   printf("\niso classify time=%f\n",time2);
 #endif
+  PrintMemoryInfo;
   return return_filesize;
 }
 
@@ -3750,7 +3772,7 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
-      if(auto_terrain==1)glTranslatef(-0.0, 0.0, SCALE2FDS(0.01));
+      if(auto_terrain==1)glTranslatef(0.0, 0.0, SCALE2FDS(0.01));
       glBegin(GL_TRIANGLES);
       if((patchi->patch_filetype!=PATCH_GEOMETRY_BOUNDARY&&smooth_iso_normal == 0)
        ||(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY&&geomdata_smoothnormals==0)
@@ -4153,6 +4175,13 @@ void DrawCGeom(int flag, geomdata *cgeom){
   int i;
   geomdata *geomi;
 
+  if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS||geom_bounding_box_mousedown==1){
+    if(flag==DRAW_OPAQUE&&have_geom_triangles==1){
+      DrawGeomBoundingBox(NULL);
+    }
+    return;
+  }
+
   // draw surfaces
 
   geomi = cgeom;
@@ -4186,7 +4215,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
-      if(auto_terrain==1)glTranslatef(-0.0, 0.0, SCALE2FDS(0.01));
+      if(auto_terrain==1)glTranslatef(0.0, 0.0, SCALE2FDS(0.01));
       glBegin(GL_TRIANGLES);
       for(j = 0; j<ntris; j++){
         float *color, *xyzptr[3];
@@ -4198,8 +4227,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
         if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
         if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
-        if(trianglei->exterior==1&&show_faces_exterior==0)continue;
-        if(trianglei->exterior==0&&show_faces_interior==0)continue;
+        if(trianglei->exterior==0)continue;
         if(trianglei->geomtype==GEOM_CGEOM&&show_faces_shaded==0)continue;
         if(trianglei->geomsurf->invisible==1)continue;
 
@@ -4247,7 +4275,11 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
   // draw lines
 
+#ifdef pp_HAVE_CFACE_NORMALS
+  if((show_cface_normals==1||show_faces_outline==1)&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
+#else
   if(show_faces_outline==1&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
+#endif
     for(i = 0; i<1; i++){
       geomlistdata *geomlisti;
       int ntris;
@@ -4263,60 +4295,84 @@ void DrawCGeom(int flag, geomdata *cgeom){
       glTranslatef(-xbar0, -ybar0, -zbar0);
       glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
-      for(j = 0; j<ntris; j++){
-        float *xyzptr[3];
-        tridata *trianglei;
-        int show_edge1 = 1, show_edge2 = 1, show_edge3 = 1;
-        float *norm0, *norm1, *norm2;
-        float vert2a[3], vert2b[3], vert2c[3];
-        int k;
+      if(show_faces_outline==1){
+        for(j = 0; j<ntris; j++){
+          float *xyzptr[3];
+          tridata *trianglei;
+          int show_edge1 = 1, show_edge2 = 1, show_edge3 = 1;
+          float *norm0, *norm1, *norm2;
+          float vert2a[3], vert2b[3], vert2c[3];
+          int k;
 
-        trianglei = geomlisti->triangles+j;
-        if(geom_cface_type==1){
-          int insolid4, insolid8, insolid16;
+          trianglei = geomlisti->triangles+j;
+          if(geom_cface_type==1){
+            int insolid4, insolid8, insolid16;
 
-          insolid4 = trianglei->insolid&4;
-          if(insolid4==4)show_edge1 = 0;
+            insolid4 = trianglei->insolid&4;
+            if(insolid4==4)show_edge1 = 0;
 
-          insolid8 = trianglei->insolid&8;
-          if(insolid8==8)show_edge2 = 0;
+            insolid8 = trianglei->insolid&8;
+            if(insolid8==8)show_edge2 = 0;
 
-          insolid16 = trianglei->insolid&16;
-          if(insolid16==16)show_edge3 = 0;
-        }
-        glColor4fv(foregroundcolor);
+            insolid16 = trianglei->insolid&16;
+            if(insolid16==16)show_edge3 = 0;
+          }
+          glColor4fv(foregroundcolor);
 
-        norm0 = trianglei->verts[0]->vert_norm;
-        norm1 = trianglei->verts[1]->vert_norm;
-        norm2 = trianglei->verts[2]->vert_norm;
+          norm0 = trianglei->verts[0]->vert_norm;
+          norm1 = trianglei->verts[1]->vert_norm;
+          norm2 = trianglei->verts[2]->vert_norm;
 
-        xyzptr[0] = trianglei->verts[0]->xyz;
-        xyzptr[1] = trianglei->verts[1]->xyz;
-        xyzptr[2] = trianglei->verts[2]->xyz;
+          xyzptr[0] = trianglei->verts[0]->xyz;
+          xyzptr[1] = trianglei->verts[1]->xyz;
+          xyzptr[2] = trianglei->verts[2]->xyz;
 
-        for(k = 0; k<3; k++){
-          vert2a[k] = xyzptr[0][k]+geom_outline_offset*norm0[k];
-          vert2b[k] = xyzptr[1][k]+geom_outline_offset*norm1[k];
-          vert2c[k] = xyzptr[2][k]+geom_outline_offset*norm2[k];
-        }
-        if(show_edge1==1){
-          glVertex3fv(vert2a);
-          glVertex3fv(vert2b);
-        }
+          for(k = 0; k<3; k++){
+            vert2a[k] = xyzptr[0][k]+geom_outline_offset*norm0[k];
+            vert2b[k] = xyzptr[1][k]+geom_outline_offset*norm1[k];
+            vert2c[k] = xyzptr[2][k]+geom_outline_offset*norm2[k];
+          }
+          if(show_edge1==1){
+            glVertex3fv(vert2a);
+            glVertex3fv(vert2b);
+          }
 
-        if(show_edge2==1){
-          glVertex3fv(vert2b);
-          glVertex3fv(vert2c);
-        }
+          if(show_edge2==1){
+            glVertex3fv(vert2b);
+            glVertex3fv(vert2c);
+          }
 
-        if(show_edge3==1){
-          glVertex3fv(vert2c);
-          glVertex3fv(vert2a);
+          if(show_edge3==1){
+            glVertex3fv(vert2c);
+            glVertex3fv(vert2a);
+          }
         }
       }
       glEnd();
       glPopMatrix();
     }
+#ifdef pp_HAVE_CFACE_NORMALS
+    if(show_cface_normals==1&&geomi->geomtype==GEOM_CGEOM){
+      int j;
+
+      glPushMatrix();
+      glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+      glTranslatef(-xbar0, -ybar0, -zbar0);
+      glLineWidth(geom_linewidth);
+      glBegin(GL_LINES);
+      for(j = 0; j<geomi->ncface_normals; j++){
+        float *v1, *v2;
+
+        v1 = geomi->cface_normals + 6*j;
+        v2 = v1 + 3;
+        glColor4fv(foregroundcolor);
+        glVertex3fv(v1);
+        glVertex3fv(v2);
+      }
+      glEnd();
+      glPopMatrix();
+    }
+#endif
   }
 
   // draw points
@@ -4456,13 +4512,13 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
 
   if(loaded_isomesh!=NULL)showlevels=loaded_isomesh->showlevels;
 
+  have_geom_triangles = 0;
   for(iter = 0; iter < 2; iter++){
     CheckMemory;
     count_transparent = 0;
     count_opaque = 0;
     ntransparent_triangles = count_transparent;
     nopaque_triangles = count_opaque;
-    if(geom_bounding_box_always==1||geom_bounding_box_mousedown==1)continue;
     for(i = 0; i < ngeominfoptrs; i++){
       geomdata *geomi;
 
@@ -4471,6 +4527,8 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
       // reject unwanted geometry
 
       if(auto_terrain==1&&i==0)continue;
+      if(geomi->is_terrain==1)continue;
+      have_geom_triangles = 1;
       if( (geomi->fdsblock == NOT_FDSBLOCK && geomi->geomtype!=GEOM_ISO)|| geomi->patchactive == 1)continue;
       for(itime = 0; itime < 2; itime++){
         geomlistdata *geomlisti;
@@ -4561,7 +4619,11 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
 
 /* ------------------ InitGeom ------------------------ */
 
+#ifdef pp_HAVE_CFACE_NORMALS
+void InitGeom(geomdata *geomi,int geomtype, int fdsblock, int have_cface_normals){
+#else
 void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
+#endif
   geomi->file=NULL;
   geomi->topo_file = NULL;
   geomi->cache_defined = 0;
@@ -4584,6 +4646,11 @@ void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
   geomi->is_terrain = 0;
   geomi->file2_tris = NULL;
   geomi->nfile2_tris = 0;
+#ifdef pp_HAVE_CFACE_NORMALS
+  geomi->have_cface_normals = have_cface_normals;
+  geomi->ncface_normals = 0;
+  geomi->cface_normals = NULL;
+#endif
 }
 
 /* ------------------ RotateU2V ------------------------ */

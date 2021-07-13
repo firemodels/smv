@@ -650,7 +650,7 @@ extern "C" void GluiDeviceSetup(int main_window){
 
         icheckboxes = 0;
         for(i = 0; i<nzwindtreeinfo; i++){
-          char roselabel[256], xlabel[256], ylabel[256];
+          char roselabel[1024], xlabel[256], ylabel[256];
           float *xyz;
           treedevicedata *treei;
           int j;

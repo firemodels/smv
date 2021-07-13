@@ -1,7 +1,6 @@
 RENDERDIR
  ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
-LOADFILE
- pine_tree_1.prt5
+LOADPARTICLES
 PARTCLASSCOLOR
  PARTICLE TEMPERATURE
 SETTIMEVAL
@@ -25,8 +24,6 @@ SETTIMEVAL
 RENDERONCE
  pine_tree_part_040
 UNLOADALL
-// LOADFILE
-//  pine_tree.prt5_temp.tiso
 LOADISOM
  particle boundary: 0.5  (Colored by: PARTICLE TEMPERATURE)
  1

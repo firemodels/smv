@@ -287,7 +287,8 @@ void DrawTerrainGeom(int option){
   float neutral_color[4] = {0.91, 0.91, 0.76, 1.0};
   int draw_surface = 1, draw_texture=0;
 
-  if(geom_bounding_box_always==1||geom_bounding_box_mousedown==1||terrain_nindices<=0){
+  if(terrain_nindices<=0)return;
+  if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS||geom_bounding_box_mousedown==1){
     DrawGeomBoundingBox(foregroundcolor);
     return;
   }
@@ -319,7 +320,7 @@ void DrawTerrainGeom(int option){
 
     //*** surface
 
-    if(terrain_show_geometry_surface==1&&draw_surface==1){
+    if(show_faces_shaded==1&&draw_surface==1){
       glBegin(GL_TRIANGLES);
 
       // surface
@@ -446,7 +447,7 @@ void DrawTerrainGeom(int option){
 
     //*** bottom side of top surface
 
-    if(terrain_showonly_top==1&&(terrain_show_geometry_surface==1||draw_texture==1)){
+    if(terrain_showonly_top==1&&(show_faces_shaded==1||draw_texture==1)){
       glBegin(GL_TRIANGLES);
 
       // surface
@@ -491,7 +492,7 @@ void DrawTerrainGeom(int option){
 
     //*** draw sides in a neutral color
 
-      if(terrain_showonly_top==0&&(terrain_show_geometry_surface==1||draw_texture==1)){
+      if(terrain_showonly_top==0&&(show_faces_shaded==1||draw_texture==1)){
       glBegin(GL_TRIANGLES);
 
       // surface
@@ -1112,6 +1113,61 @@ void ComputeTerrainNormalsAuto(void){
   }
 }
 
+
+/* ------------------ GetTerrainData ------------------------ */
+
+int GetTerrainData(char *file, terraindata *terri){
+  FILE *WUIFILE;
+  float zmin_cutoff;
+  int ibp1, jbp1, ijbar[2];
+  float *xplt, *yplt, *z_terrain;
+  int returncode = 1;
+  int nvalues, i;
+
+#ifdef _DEBUG
+  printf("reading terrain data mesh: %i\n", (int)(terri-terraininfo));
+#endif
+  WUIFILE = fopen(file, "rb");
+  if(WUIFILE==NULL)return 1;
+
+//    WRITE(LU_TERRAIN(NM)) REAL(M%ZS-1._EB, FB)
+//    WRITE(LU_TERRAIN(NM)) IBP1, JBP1
+//    WRITE(LU_TERRAIN(NM)) (M%XPLT(I), I = 0, IBAR)
+//    WRITE(LU_TERRAIN(NM)) (M%YPLT(J), J = 0, JBAR)
+//    WRITE(LU_TERRAIN(NM)) Z_TERRAIN
+
+  FORTWUIREAD(&zmin_cutoff, 1);
+  zmin_cutoff -= 0.1;
+  terri->zmin_cutoff = zmin_cutoff;
+  FORTWUIREAD(ijbar, 2);
+  ibp1 = ijbar[0];
+  jbp1 = ijbar[1];
+
+  NewMemory((void **)&xplt, ibp1*sizeof(float));
+  NewMemory((void **)&yplt, jbp1*sizeof(float));
+  terri->xplt = xplt;
+  terri->yplt = yplt;
+  FORTWUIREAD(xplt, ibp1);
+  FORTWUIREAD(yplt, jbp1);
+
+  if(terri->znode==NULL){
+    NewMemory((void **)&z_terrain, ibp1*jbp1*sizeof(float));
+    terri->znode = z_terrain;
+  }
+  else{
+    z_terrain = terri->znode;
+  }
+  FORTWUIREAD(z_terrain, ibp1*jbp1);
+
+  for(i = 0, nvalues = 0; i<ibp1*jbp1; i++){
+    if(z_terrain[i]>zmin_cutoff)nvalues++;
+  }
+  terri->nvalues = nvalues;
+  if(returncode!=0)returncode = 0;
+  fclose(WUIFILE);
+  return returncode;
+}
+
 /* ------------------ InitTerrainZNode ------------------------ */
 
 void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xmax, int nx, float ymin, float ymax, int ny,
@@ -1183,20 +1239,10 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
       }
     }
   }
-  // don't read in terrain files if this is case uses immersive geometry for the terrain
-#ifdef pp_SKIP_TERRAIN_DATA
-  if(auto_terrain==0||ngeominfo==0){
-    if(terri->file!=NULL&&terri->defined==0){
-      GetTerrainData(terri->file, terri);
-      terri->defined = 1;
-    }
-  }
-#else
   if(terri->file!=NULL&&terri->defined==0){
     GetTerrainData(terri->file, terri);
     terri->defined = 1;
   }
-#endif
 }
 
 /* ------------------ DrawTerrainOBST ------------------------ */
@@ -1424,60 +1470,6 @@ void DrawTerrainOBSTTexture(terraindata *terri){
 
 }
 
-/* ------------------ GetTerrainData ------------------------ */
-
-int GetTerrainData(char *file, terraindata *terri){
-  FILE *WUIFILE;
-  float zmin_cutoff;
-  int ibp1, jbp1, ijbar[2];
-  float *xplt, *yplt, *z_terrain;
-  int returncode=1;
-  int nvalues,i;
-
-#ifdef _DEBUG
-  printf("reading terrain data mesh: %i\n",(int)(terri-terraininfo));
-#endif
-  WUIFILE = fopen(file, "rb");
-  if(WUIFILE == NULL)return 1;
-
-//    WRITE(LU_TERRAIN(NM)) REAL(M%ZS-1._EB, FB)
-//    WRITE(LU_TERRAIN(NM)) IBP1, JBP1
-//    WRITE(LU_TERRAIN(NM)) (M%XPLT(I), I = 0, IBAR)
-//    WRITE(LU_TERRAIN(NM)) (M%YPLT(J), J = 0, JBAR)
-//    WRITE(LU_TERRAIN(NM)) Z_TERRAIN
-
-  FORTWUIREAD(&zmin_cutoff, 1);
-  zmin_cutoff -= 0.1;
-  terri->zmin_cutoff = zmin_cutoff;
-  FORTWUIREAD(ijbar, 2);
-  ibp1 = ijbar[0];
-  jbp1 = ijbar[1];
-
-  NewMemory((void **)&xplt, ibp1*sizeof(float));
-  NewMemory((void **)&yplt, jbp1*sizeof(float));
-  terri->xplt = xplt;
-  terri->yplt = yplt;
-  FORTWUIREAD(xplt, ibp1);
-  FORTWUIREAD(yplt, jbp1);
-
-  if(terri->znode==NULL){
-    NewMemory((void **)&z_terrain, ibp1*jbp1*sizeof(float));
-    terri->znode = z_terrain;
-  }
-  else{
-    z_terrain = terri->znode;
-  }
-  FORTWUIREAD(z_terrain, ibp1*jbp1);
-
-  for(i = 0, nvalues=0; i<ibp1*jbp1; i++){
-    if(z_terrain[i]>zmin_cutoff)nvalues++;
-  }
-  terri->nvalues = nvalues;
-  if(returncode!=0)returncode=0;
-  fclose(WUIFILE);
-  return returncode;
-}
-
 /* ------------------ GetTerrainSize ------------------------ */
 
 int GetTerrainSize(char *file, float *xmin, float *xmax, int *nx, float *ymin, float *ymax, int *ny, int *times_local){
@@ -1628,7 +1620,6 @@ void UpdateTerrainOptions(void){
   if(nterraininfo>0||auto_terrain==1){
     visOpenVents=0;
     visDummyVents=0;
-    visFrame=0;
     updatemenu=1;
   }
 }

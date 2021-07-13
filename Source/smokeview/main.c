@@ -23,7 +23,7 @@ void Usage(char *prog,int option){
   PRINTF("%s\n", release_title);
   PRINTF("%s\n\n", _("Visualize fire/smoke flow simulations."));
   PRINTF("Usage: %s [options] casename", GetBaseFileName(buffer, prog));
-  PRINTF("%s\n\n", _("where "));
+  PRINTF("%s\n\n");
   PRINTF("%s\n", _(" casename       - project id (file names without the extension)"));
   PRINTF("%s\n", _(" -bindir dir    - specify location of smokeview bin directory"));
   PRINTF("%s\n", _(" -ini           - output smokeview parameter values to smokeview.ini"));
@@ -32,7 +32,8 @@ void Usage(char *prog,int option){
   if(option==HELP_ALL){
     PRINTF("\n%s\n", _("Other options:"));
 #ifdef pp_OSX_HIGHRES
-    PRINTF("%s\n", _(" -1x            - turn off 2x scene scaling."));
+    PRINTF("%s\n", _(" -1x            - turn off 2x scene scaling (do not scale scene)."));
+    PRINTF("%s\n", _(" -2x            - turn on 2x scene scaling."));
 #endif
     PRINTF("%s\n", _(" -big           - hide scene and data when moving scene or selecting menus"));
     PRINTF("%s\n", _(" -build         - show pre-processing directives used in this build of Smokeview"));
@@ -101,9 +102,6 @@ void Usage(char *prog,int option){
 #ifdef pp_GCC
     strcat(label, ", pp_GCC");
 #endif
-#ifdef pp_GLUTGET
-    strcat(label, ", pp_GLUTGET");
-#endif
 #ifdef pp_GPU
     strcat(label, ", pp_GPU");
 #endif
@@ -146,14 +144,8 @@ void Usage(char *prog,int option){
 #ifdef pp_SETTIME
     strcat(label, ", pp_SETTIME");
 #endif
-#ifdef pp_SLICELOAD
-    strcat(label, ", pp_SLICELOAD");
-#endif
 #ifdef pp_THREAD
     strcat(label, ", pp_THREAD");
-#endif
-#ifdef pp_THREADIBLANK
-    strcat(label, ", pp_THREADIBLANK");
 #endif
 #ifdef WIN32
     strcat(label, ", WIN32");
@@ -170,19 +162,17 @@ void Usage(char *prog,int option){
 
 /* ------------------ ParseCommandline ------------------------ */
 
-void ParseCommandline(int argc, char **argv){
+char *ParseCommandline(int argc, char **argv){
   int i, len_casename;
   int iarg;
   size_t len_memory;
   char *argi, *smv_ext;
   char SMVFILENAME[1024];
   int smv_parse;
+  char *filename_local = NULL;
 
   CheckMemory;
 
-  if(argc == 1){
-    SMV_EXIT(1);
-  }
   for(iarg = 1; iarg < argc; iarg++){
     if(strncmp(argv[iarg], "-ini", 4)==0){
       InitCameraList();
@@ -198,6 +188,12 @@ void ParseCommandline(int argc, char **argv){
       UpdateRGBColors(COLORBAR_INDEX_NONE);
       InitStartupDirs();
       WriteIni(GLOBAL_INI, NULL);
+      SMV_EXIT(0);
+    }
+    if(
+      strncmp(argv[iarg], "-volrender", 10)!=0&&(strncmp(argv[iarg], "-version", 8)==0||strncmp(argv[iarg], "-v", 2)==0)
+      ){
+      DisplayVersionInfo("Smokeview ");
       SMV_EXIT(0);
     }
   }
@@ -237,6 +233,11 @@ void ParseCommandline(int argc, char **argv){
     strcat(SMVFILENAME, argi);
   }
 
+// strip .smv extension if present
+  char *smvext;
+  smvext = strstr(SMVFILENAME, ".smv");
+  if(smvext!=NULL)*smvext = 0;
+
   argi = SMVFILENAME;
 #ifndef pp_OSX
   argi = LastName(argi);
@@ -247,6 +248,28 @@ void ParseCommandline(int argc, char **argv){
   len_memory = len_casename + strlen(".part") + 100;
   NewMemory((void **)&fdsprefix, (unsigned int)len_memory);
   STRCPY(fdsprefix, argi);
+
+  if(fdsprefix!=NULL&&strlen(fdsprefix)>0){
+    NewMemory((void **)&filename_local, (unsigned int)len_memory+4);
+    strcpy(filename_local, fdsprefix);
+    strcat(filename_local, ".smv");
+  }
+  else{
+#ifdef WIN32
+    int openfile, filelength;
+
+    openfile=0;
+    filelength = 1024;
+    NewMemory((void **)&filename_local, (unsigned int)len_memory+4);
+    OpenSMVFile(filename_local,filelength,&openfile);
+    if(openfile==1&&ResizeMemory((void **)&filename_local,strlen(filename_local)+1)!=0){
+    }
+    else{
+      FREEMEMORY(filename_local);
+    }
+#endif
+    if(filename_local==NULL)return NULL;
+  }
   strcpy(movie_name, fdsprefix);
   strcpy(render_file_base, fdsprefix);
   strcpy(html_file_base, fdsprefix);
@@ -331,32 +354,32 @@ void ParseCommandline(int argc, char **argv){
   STRCPY(event_filename, fdsprefix);
   STRCAT(event_filename, ".csv");
 
-  if(smv_filename == NULL){
-    NewMemory((void **)&smv_filename, (unsigned int)(len_casename + 6));
-    STRCPY(smv_filename, fdsprefix);
-    STRCAT(smv_filename, ".smv");
-    {
-      char scriptbuffer[1024];
-
-      STRCPY(scriptbuffer, fdsprefix);
-      STRCAT(scriptbuffer, ".ssf");
-      if(default_script == NULL&&FILE_EXISTS(scriptbuffer) == YES){
-        default_script = InsertScriptFile(scriptbuffer);
-      }
-    }
-#ifdef pp_LUA
-    {
-      char luascriptbuffer[1024];
-
-      STRCPY(luascriptbuffer, fdsprefix);
-      STRCAT(luascriptbuffer, ".lua");
-      if(default_luascript == NULL&&FILE_EXISTS(luascriptbuffer) == YES){
-        default_luascript = insert_luascriptfile(luascriptbuffer);
-      }
-    }
-#endif
+  if(filename_local==NULL){
+    NewMemory((void **)&filename_local, (unsigned int)(len_casename+6));
+    STRCPY(filename_local, fdsprefix);
+    STRCAT(filename_local, ".smv");
   }
-  if(smv_filename != NULL){
+  {
+    char scriptbuffer[1024];
+
+    STRCPY(scriptbuffer, fdsprefix);
+    STRCAT(scriptbuffer, ".ssf");
+    if(default_script == NULL&&FILE_EXISTS(scriptbuffer) == YES){
+      default_script = InsertScriptFile(scriptbuffer);
+    }
+  }
+#ifdef pp_LUA
+  {
+    char luascriptbuffer[1024];
+
+    STRCPY(luascriptbuffer, fdsprefix);
+    STRCAT(luascriptbuffer, ".lua");
+    if(default_luascript == NULL&&FILE_EXISTS(luascriptbuffer) == YES){
+      default_luascript = insert_luascriptfile(luascriptbuffer);
+    }
+  }
+#endif
+  if(filename_local!= NULL){
     FREEMEMORY(fds_filein);
     NewMemory((void **)&fds_filein, strlen(fdsprefix) + 6);
     STRCPY(fds_filein, fdsprefix);
@@ -429,7 +452,12 @@ void ParseCommandline(int argc, char **argv){
     if(strncmp(argv[i], "-", 1) != 0)continue;
 #ifdef pp_OSX_HIGHRES
     if(strncmp(argv[1], "-1x", 3) == 0){
-      double_scale=0;
+      double_scale = 0;
+      force_scale  = 1;
+    }
+    else if(strncmp(argv[1], "-2x", 3)==0){
+      double_scale = 1;
+      force_scale = 1;
     }
 #endif
     else if(strncmp(argv[i], "-update_bounds", 14) == 0){
@@ -470,10 +498,10 @@ void ParseCommandline(int argc, char **argv){
       PRINTF("stereo option activated\n");
     }
     else if(strncmp(argv[i], "-big", 4)==0){
-      geom_bounding_box_auto = 1;
+      show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
     }
     else if(strncmp(argv[i], "-timings", 8)==0){
-      show_startup_timings = 1;
+      show_timings = 1;
     }
     else if(strncmp(argv[i], "-lang", 5) == 0){
       ++i;
@@ -558,7 +586,7 @@ void ParseCommandline(int argc, char **argv){
       compute_fed = 1;
     }
     else if(strncmp(argv[i], "-outline", 8)==0){
-      geom_bounding_box_always = 1;
+      show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
     }
     else if(strncmp(argv[i], "-make_movie", 11)==0){
       open_movie_dialog = 1;
@@ -754,21 +782,18 @@ void ParseCommandline(int argc, char **argv){
 
     InitVolrenderScript(fdsprefix, NULL, vol_startframe0, vol_skipframe0);
   }
+  return filename_local;
 }
 
 /* ------------------ CheckSMVFile ------------------------ */
 
-int CheckSMVFile(int argc, char **argv, char *subdir){
-  char *arg;
-  char casedir[100], *casedirptr, casename[100];
+int CheckSMVFile(char *file, char *subdir){
+  char casedir[256], *casedirptr, casename[256];
   FILE *stream;
 
-  if(argc==0)return 1;
+  if(file==NULL)return 1;
 
-  arg = argv[argc-1];
-  if(strlen(arg)==0||arg[0]=='-')return 1;
-
-  strcpy(casename, arg);
+  strcpy(casename, file);
   if(subdir==NULL){
     casedirptr = casedir;
     strcpy(casedir, casename);
@@ -776,7 +801,6 @@ int CheckSMVFile(int argc, char **argv, char *subdir){
   else{
     casedirptr = subdir;
   }
-  strcat(casename, ".smv");
   stream = fopen(casename, "r");
   if(stream==NULL){
     stream = fopen_indir(casedirptr, casename, "r");
@@ -793,7 +817,6 @@ int CheckSMVFile(int argc, char **argv, char *subdir){
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){
-  char **argv_sv;
   int return_code;
   char *progname;
 
@@ -831,13 +854,15 @@ int main(int argc, char **argv){
   initMALLOC();
   InitRandAB(1000000);
   InitVars();
-  if(argc==1)DisplayVersionInfo("Smokeview ");
-  CopyArgs(&argc, argv, &argv_sv);
-  if(argc==0||argc==1)return 0;
+  ParseCommonOptions(argc, argv);
+  smv_filename = ParseCommandline(argc, argv);
 
-  progname=argv_sv[0];
+  progname=argv[0];
 
-  ParseCommonOptions(argc, argv_sv);
+  if(smv_filename==NULL){
+    DisplayVersionInfo("Smokeview ");
+    SMV_EXIT(0);
+  }
   if(show_help==1){
     Usage("smokeview",HELP_SUMMARY);
     return 1;
@@ -850,13 +875,12 @@ int main(int argc, char **argv){
   if(smokeview_bindir==NULL){
     smokeview_bindir = GetProgDir(progname, &smokeviewpath);
   }
-  ParseCommandline(argc, argv_sv);
 
-  if(show_version==1){
-    PRINTVERSION("smokeview", argv_sv[0]);
+  if(show_version==1 || smv_filename==NULL){
+    PRINTVERSION("smokeview", argv[0]);
     return 1;
   }
-  if(CheckSMVFile(argc, argv_sv, smokeview_casedir)==0){
+  if(CheckSMVFile(smv_filename, smokeview_casedir)==0){
     SMV_EXIT(1);
   }
   InitTextureDir();
@@ -870,15 +894,25 @@ int main(int argc, char **argv){
   have_ffplay = HaveProg("ffplay -version >/dev/null 2>/dev/null");
 #endif
   DisplayVersionInfo("Smokeview ");
-  SetupGlut(argc,argv_sv);
+  SetupGlut(argc,argv);
   START_TIMER(startup_time);
   START_TIMER(read_time_elapsed);
 
-  return_code= SetupCase(argc,argv_sv);
-  if(return_code==0&&update_bounds==1)return_code=Update_Bounds();
+  return_code= SetupCase(smv_filename);
+  if(return_code==0&&update_bounds==1){
+    float timer_update_bounds;
+
+    INIT_PRINT_TIMER(timer_update_bounds);
+    return_code=Update_Bounds();
+    PRINT_TIMER(timer_update_bounds, "Update_Bounds");
+  }
   if(return_code!=0)return 1;
   if(convert_ini==1){
+    float timer_read_ini;
+
+    INIT_PRINT_TIMER(timer_read_ini);
     ReadIni(ini_from);
+    PRINT_TIMER(timer_read_ini, "ReadIni");
   }
   if(runhtmlscript==1){
     DoScriptHtml();
@@ -889,9 +923,6 @@ int main(int argc, char **argv){
   if(runhtmlscript==1){
     PRINTF("Time: %.1f s\n", startup_time);
     return 0;
-  }
-  if(ngeominfo>0||ncgeominfo>0){
-    PRINTF("Read geometry time: %.1f s\n", readgeom_time);
   }
   PRINTF("Startup time: %.1f s\n", startup_time);
   PRINTF("\n");

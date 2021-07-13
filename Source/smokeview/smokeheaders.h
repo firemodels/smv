@@ -9,6 +9,15 @@
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
 
+EXTERNCPP void UpdateGLuiGridLocation(void);
+EXTERNCPP void EnableDisablePartPercentileDraw(int flag);
+EXTERNCPP void GeneratePartHistograms(void);
+EXTERNCPP void GeneratePartHistogramsMT(void);
+FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount);
+
+EXTERNCPP void PrintTime(char *tag, int line, float *timer, char *label);
+
+EXTERNCPP void DrawObstBoundingBox(void);
 EXTERNCPP void DrawGeomBoundingBox(float *boundingbox_color);
 
 EXTERNCPP void UpdateGeomBoundingBox(void);
@@ -945,7 +954,7 @@ EXTERNCPP void ScaleFloat2String(float floatfrom, char *stringto, const float *s
 EXTERNCPP float ScaleFloat2Float(float floatfrom, const float *scale);
 EXTERNCPP void ScaleString(const char *stringfrom, char *stringto, const float *scale);
 EXTERNCPP void Num2String(char *string, float tval);
-EXTERNCPP int  SetupCase(int argc, char **argv);
+EXTERNCPP int  SetupCase(char *file);
 EXTERNCPP int  GetMinPartFrames(int flag);
 EXTERNCPP int  Update_Bounds(void);
 
@@ -966,7 +975,11 @@ EXTERNCPP void ReadAllGeom(void);
 EXTERNCPP void ClassifyAllGeom(void);
 EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode);
 EXTERNCPP void ReadGeomFile2(geomdata *geomi);
+#ifdef pp_HAVE_CFACE_NORMALS
+EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock, int have_vectors);
+#else
 EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock);
+#endif
 EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode);
 
@@ -1028,6 +1041,7 @@ EXTERNCPP void GetPlot3DColors(int iplot, int settmin, float *ttmin, int settmax
 EXTERNCPP void GetSliceLabels(float tmin, float tmax, int nlevel,
               char labels[12][11],float *tlevels256);
 EXTERNCPP void UpdatePart5Extremes(void);
+EXTERNCPP void UpdateSliceColors(int last_slice);
 EXTERNCPP void GetSliceColors(const float *t, int nt, unsigned char *it,
               float tmin, float tmax,
               int ndatalevel, int nlevel,

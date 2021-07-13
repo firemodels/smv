@@ -14,6 +14,32 @@
 
 #define DENORMAL(x,i, n, min,max) ((min) + (i)*((max)-(min))/(n))
 #define NORMALH(x,min,max) (((x)-(min))/((max)-(min))   )
+
+/* ------------------ PrintTime ------------------------ */
+
+void PrintTime(char *filepath, int line, float *timer, char *label){
+  char *file;
+
+  if(show_timings==0)return;
+  file = strrchr(filepath, '\\');
+  if(file==NULL)file = strrchr(filepath, '/');
+  if(file==NULL){
+    file = filepath;
+  }
+  else{
+    file++;
+  }
+  if(*timer>0.0){
+    if(strcmp(label, "null") != 0){
+      STOP_TIMER(*timer);
+      if(*timer>0.1){
+        printf("%s/%i/%s %.1f s\n", file, line, label, *timer);
+      }
+    }
+  }
+  START_TIMER(*timer);
+}
+
   /* ------------------ DrawHistogram ------------------------ */
 
 #define MAXN 201
@@ -126,15 +152,6 @@ void DrawHistogram(histogramdata *histogram, float valmin, float valmax, float g
 
   glVertex2f(0.0, 0.0);
   glVertex2f(1.0, 0.0);
-
-  glVertex2f(1.0, 0.0);
-  glVertex2f(1.0, 1.0);
-
-  glVertex2f(1.0, 1.0);
-  glVertex2f(0.0, 1.0);
-
-  glVertex2f(0.0, 1.0);
-  glVertex2f(0.0, 0.0);
 
   glColor3fv(blue);
   glVertex2f(valmin_normalized, 0.0);
@@ -442,10 +459,10 @@ void WriteLabels(void){
     tstart_stop = thislabel->tstart_stop;
     xyz = thislabel->xyz;
     rgblabel = thislabel->rgb;
-    fprintf(stream, "%f, %f, %f, %f, %f, %i, %i, %i, %s%s%s\n", 
-            tstart_stop[0], tstart_stop[1], 
-            xyz[0], xyz[1], xyz[2], 
-            rgblabel[0], rgblabel[1], rgblabel[2], 
+    fprintf(stream, "%f, %f, %f, %f, %f, %i, %i, %i, %s%s%s\n",
+            tstart_stop[0], tstart_stop[1],
+            xyz[0], xyz[1], xyz[2],
+            rgblabel[0], rgblabel[1], rgblabel[2],
             quote,TrimFrontBack(thislabel->name),quote
     );
   }

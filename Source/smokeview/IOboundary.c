@@ -1471,18 +1471,6 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     FREEMEMORY(meshi->thresholdtime);
     FREEMEMORY(meshi->patch_times);
     FREEMEMORY(meshi->patchblank);
-
-    if(meshi->patch_contours != NULL){
-      int i;
-
-      ASSERT(meshi->npatches > 0 && meshi->maxtimes_boundary > 0);
-      for(i = 0;i < meshi->npatches*meshi->maxtimes_boundary;i++){
-        if(meshi->patch_contours[i] != NULL){
-          FreeContour(meshi->patch_contours[i]);
-        }
-      }
-      FREEMEMORY(meshi->patch_contours);
-    }
   }
 
   if(flag==UNLOAD){
@@ -2683,6 +2671,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     UpdateUnitDefs();
     UpdateTimes();
     update_draw_hist = 1;
+    PrintMemoryInfo;
     return 0;
   }
   if(patchi->skip == 1)return 0;
@@ -2920,6 +2909,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
     PRINTF(" - %.1f MB/%.1f s\n", (float)return_filesize/1000000., total_time);
   }
+  PrintMemoryInfo;
   return return_filesize;
 }
 
@@ -3083,7 +3073,6 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
   /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */
 
-  if((use_transparency_data==1&&contour_type==LINE_CONTOURS)||setpatchchopmin==1||setpatchchopmax==1)TransparentOn();
   glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
   glEnable(GL_TEXTURE_1D);
   glBindTexture(GL_TEXTURE_1D,texture_patch_colorbar_id);
@@ -3125,6 +3114,18 @@ void DrawBoundaryTexture(const meshdata *meshi){
 
         for(icol=0;icol<ncol-1;icol++){
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
+            if(rgb_patch[4*cpatchval1[0]+3]==0.0||
+               rgb_patch[4*cpatchval1[1]+3]==0.0||
+               rgb_patch[4*cpatchval2[0]+3]==0.0||
+               rgb_patch[4*cpatchval2[1]+3]==0.0){
+              cpatchval1++;
+              cpatchval2++;
+              patchblank1++;
+              patchblank2++;
+              xyzp1+=3;
+              xyzp2+=3;
+              continue;
+            }
             r11 = (float)((unsigned char)(*cpatchval1))/255.0;
             r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
             r21 = (float)((unsigned char)(*cpatchval2))/255.0;
@@ -3147,7 +3148,10 @@ void DrawBoundaryTexture(const meshdata *meshi){
               glTexCoord1f(r21);glVertex3fv(xyzp2);
             }
           }
-          cpatchval1++; cpatchval2++; patchblank1++; patchblank2++;
+          cpatchval1++;
+          cpatchval2++;
+          patchblank1++;
+          patchblank2++;
           xyzp1+=3;
           xyzp2+=3;
         }
@@ -3217,6 +3221,18 @@ void DrawBoundaryTexture(const meshdata *meshi){
         patchblank2 = patchblank1 + ncol;
 
         for(icol=0;icol<ncol-1;icol++){
+          if(rgb_patch[4*cpatchval1[0]+3]==0.0||
+             rgb_patch[4*cpatchval1[1]+3]==0.0||
+             rgb_patch[4*cpatchval2[0]+3]==0.0||
+             rgb_patch[4*cpatchval2[1]+3]==0.0){
+            cpatchval1++;
+            cpatchval2++;
+            patchblank1++;
+            patchblank2++;
+            xyzp1+=3;
+            xyzp2+=3;
+            continue;
+          }
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
             r11 = (float)((unsigned char)(*cpatchval1))/255.0;
             r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
@@ -3239,7 +3255,10 @@ void DrawBoundaryTexture(const meshdata *meshi){
               glTexCoord1f(r21);glVertex3fv(xyzp2);
             }
           }
-          cpatchval1++; cpatchval2++; patchblank1++; patchblank2++;
+          cpatchval1++;
+          cpatchval2++;
+          patchblank1++;
+          patchblank2++;
           xyzp1+=3;
           xyzp2+=3;
         }
@@ -3307,6 +3326,18 @@ void DrawBoundaryTexture(const meshdata *meshi){
         patchblank2 = patchblank1 + ncol;
 
         for(icol=0;icol<ncol-1;icol++){
+          if(rgb_patch[4*cpatchval1[0]+3]==0.0||
+            rgb_patch[4*cpatchval1[1]+3]==0.0||
+            rgb_patch[4*cpatchval2[0]+3]==0.0||
+            rgb_patch[4*cpatchval2[1]+3]==0.0){
+            cpatchval1++;
+            cpatchval2++;
+            patchblank1++;
+            patchblank2++;
+            xyzp1+=3;
+            xyzp2+=3;
+            continue;
+          }
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
             r11 = (float)((unsigned char)(*cpatchval1))/255.0;
             r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
@@ -3329,7 +3360,10 @@ void DrawBoundaryTexture(const meshdata *meshi){
               glTexCoord1f(r22);glVertex3fv(xyzp2+3);
             }
           }
-          cpatchval1++; cpatchval2++; patchblank1++; patchblank2++;
+          cpatchval1++;
+          cpatchval2++;
+          patchblank1++;
+          patchblank2++;
           xyzp1+=3;
           xyzp2+=3;
         }
@@ -3344,7 +3378,6 @@ void DrawBoundaryTexture(const meshdata *meshi){
     glEnd();
   }
   glDisable(GL_TEXTURE_1D);
-  if((use_transparency_data==1&&contour_type==LINE_CONTOURS)||setpatchchopmin==1||setpatchchopmax==1)TransparentOff();
 }
 
 /* ------------------ DrawBoundaryTextureThreshold ------------------------ */
@@ -3936,7 +3969,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 
   /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */
 
-  if((use_transparency_data==1&&contour_type==LINE_CONTOURS)||setpatchchopmin==1||setpatchchopmax==1)TransparentOn();
   nn = 0;
   glBegin(GL_TRIANGLES);
   for(n = 0;n<meshi->npatches;n++){
@@ -3971,6 +4003,14 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         patchblank2 = patchblank1+ncol;
 
         for(icol = 0;icol<ncol-1;icol++){
+          if(rgb_patch[4*cpatchval1[0]+3]==0.0){
+            cpatchval1++;
+            patchblank1++;
+            patchblank2++;
+            xyzp1 += 3;
+            xyzp2 += 3;
+            continue;
+          }
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
             if(patchventcolors==NULL){
               color11 = rgb_patch+4*(*cpatchval1);
@@ -4062,6 +4102,14 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         patchblank2 = patchblank1+ncol;
 
         for(icol = 0;icol<ncol-1;icol++){
+          if(rgb_patch[4*cpatchval1[0]+3]==0.0){
+            cpatchval1++;
+            patchblank1++;
+            patchblank2++;
+            xyzp1 += 3;
+            xyzp2 += 3;
+            continue;
+          }
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
             if(patchventcolors==NULL){
               color11 = rgb_patch+4*(*cpatchval1);
@@ -4151,6 +4199,14 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         patchblank2 = patchblank1+ncol;
 
         for(icol = 0;icol<ncol-1;icol++){
+          if(rgb_patch[4*cpatchval1[0]+3]==0.0){
+            cpatchval1++;
+            patchblank1++;
+            patchblank2++;
+            xyzp1 += 3;
+            xyzp2 += 3;
+            continue;
+          }
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
             if(patchventcolors==NULL){
               color11 = rgb_patch+4*(*cpatchval1);
@@ -4187,7 +4243,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
   if(hidepatchsurface==1){
     glEnd();
   }
-  if((use_transparency_data==1&&contour_type==LINE_CONTOURS)||setpatchchopmin==1||setpatchchopmax==1)TransparentOff();
 }
 
 /* ------------------ DrawBoundaryFrame ------------------------ */

@@ -74,11 +74,24 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MINMAX_LOADED 1
 #define MINMAX_INI    2
 
+#ifdef pp_HAVE_CFACE_NORMALS
+#define CFACE_NORMALS_NO  0
+#define CFACE_NORMALS_YES 1
+#endif
+
+#define SHOW_BOUNDING_BOX_ALWAYS     0
+#define SHOW_BOUNDING_BOX_MOUSE_DOWN 1
+#define SHOW_BOUNDING_BOX_NEVER      2
+
 #define ALL_FRAMES       -1
 
 #define COLORBAR_SHIFT_MIN          0.1
 #define COLORBAR_SHIFT_MAX         10.0
 
+#define FORCE_FIXEDPOINT_YES          1
+#define FORCE_FIXEDPOINT_NO           0
+#define GRIDLOC_NDECIMALS_MIN         2
+#define GRIDLOC_NDECIMALS_MAX         8
 #define COLORBAR_NDECIMALS_MIN        2
 #define COLORBAR_NDECIMALS_MAX        8
 
@@ -144,6 +157,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define RENDER_START_360    10
 
 #define RESEARCH_MODE 114
+
+#define LOAD_ALL_PART_FILES      -1
+#define RELOAD_LOADED_PART_FILES -2
 
 #define COLORBAR_HIDDEN          0
 #define COLORBAR_SHOW_VERTICAL   1
@@ -546,7 +562,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define HIDEALL_PLOT3D        999
 #define GLUI_SHOWALL_BOUNDARY 994
 #define GLUI_HIDEALL_BOUNDARY 993
-#define SHOWALL_BOUNDARY      998
 #define HIDEALL_BOUNDARY      999
 #define SHOW_CHAR             997
 #define HIDEALL_PARTICLE        4
@@ -620,7 +635,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define BLOCKlocation_grid  5
 #define BLOCKlocation_exact 6
 #define BLOCKlocation_cad   7
-#define BLOCKtexture_cad   31 
+#define BLOCKtexture_cad   31
 
 #define WALL_1 0
 #define WALL_3 1

@@ -1097,10 +1097,13 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     }
     fed_slice->is1=co->is1;
     fed_slice->is2=co->is2;
+    if(fed_slice->is1!=fed_slice->is2&&fed_slice->is1==1)fed_slice->is1 = 0;
     fed_slice->js1=co->js1;
     fed_slice->js2=co->js2;
+    if(fed_slice->js1!=fed_slice->js2&&fed_slice->js1==1)fed_slice->js1 = 0;
     fed_slice->ks1=co->ks1;
     fed_slice->ks2=co->ks2;
+    if(fed_slice->ks1!=fed_slice->ks2&&fed_slice->ks1==1)fed_slice->ks1 = 0;
     fed_slice->nslicei=co->nslicei;
     fed_slice->nslicej=co->nslicej;
     fed_slice->nslicek=co->nslicek;
@@ -2340,7 +2343,7 @@ void UpdateVsliceMenuLabels(void){
 /* ------------------ NewMultiSlice ------------------------ */
 
 int NewMultiSlice(slicedata *sdold,slicedata *sd){
-    int same=0;
+  int same=0;
 
   if(sdold->volslice!=sd->volslice)return 1;
   if(sd->volslice==0&&sd->slcf_index==0&&sd->slice_filetype==SLICE_TERRAIN){
@@ -2362,15 +2365,17 @@ int NewMultiSlice(slicedata *sdold,slicedata *sd){
   // convert from physical to scaled units using xyzmaxdiff
     delta_orig = 1.5*MAX(sdold->delta_orig,sd->delta_orig);
     delta_scaled = SCALE2SMV(delta_orig);
-    if(sd->slcf_index==0){
-      if(
-      ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled&&         // test whether two slices are identical
-      ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled&&
-      ABS(sd->zmin-sdold->zmin)<delta_scaled&&ABS(sd->zmax-sdold->zmax)<delta_scaled
-      )same=1;
-    }
-    else{
-      if(sd->slcf_index==sdold->slcf_index)same=1;
+    if(sd->cell_center_edge==0){
+      if(sd->slcf_index==0){
+        if(
+        ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled&&         // test whether two slices are identical
+        ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled&&
+        ABS(sd->zmin-sdold->zmin)<delta_scaled&&ABS(sd->zmax-sdold->zmax)<delta_scaled
+        )same=1;
+      }
+      else{
+        if(sd->slcf_index==sdold->slcf_index)same=1;
+      }
     }
     if(
       same==1&&
@@ -2383,6 +2388,7 @@ int NewMultiSlice(slicedata *sdold,slicedata *sd){
       ||sd->idir!=sdold->idir
       ||(sd->slcf_index!=0&&sd->slcf_index!=sdold->slcf_index)
       ||(sd->slcf_index==0&&ABS(sd->position_orig-sdold->position_orig)>delta_orig)
+      ||(sd->cell_center_edge==1&&ABS(sd->position_orig-sdold->position_orig)>delta_orig)
       ||sd->mesh_type!=sdold->mesh_type
       ||sd->slice_filetype!=sdold->slice_filetype
         ){
@@ -2824,6 +2830,8 @@ void UpdateFedinfo(void){
       isoi->dataflag = 0;
       isoi->geomflag = 0;
       isoi->levels = NULL;
+      nmemory_ids++;
+      isoi->memory_id = nmemory_ids;
       SetLabels(&(isoi->surface_label), "Fractional effective dose", "FED", " ");
 
       isoi->nlevels = 3;
@@ -3329,6 +3337,9 @@ void UpdateVSlices(void){
 
     sdi = sliceinfo+i;
     sdi->vec_comp=0;
+#ifdef pp_GEOM_SLICE_VECTORS
+    if(sdi->slice_filetype==SLICE_GEOM)continue;
+#endif
     if(strncmp(sdi->label.shortlabel,"U-VEL",5)==0){
        sdi->vec_comp=1;
        continue;
@@ -3474,6 +3485,7 @@ void UpdateVSlices(void){
       vslicei->seq_id=seq_id;
       vslicei->autoload=0;
       vslicei->skip = 0;
+      vslicei->reload = 0;
     }
   }
 
@@ -4518,12 +4530,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
 
   blocknumber = sd->blocknumber;
   meshi = meshinfo + blocknumber;
-  if(meshi->terrain!=NULL&&meshi->terrain->nvalues==0){
-    if(flag==LOAD){
-      printf("***warning: all terrain elevations below %f.  Slice file %s not loaded\n", meshi->terrain->zmin_cutoff, file);
-    }
-    return 0;
-  }
 
   if(flag != RESETBOUNDS){
     if(sd->loaded == 0 && flag == UNLOAD)return 0;
@@ -4637,6 +4643,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
       UpdateTimes();
       RemoveSliceLoadstack(slicefilenumber);
       update_draw_hist = 1;
+      PrintMemoryInfo;
       return 0;
     }
 
@@ -4906,6 +4913,8 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     }
 #define BOUND_PERCENTILE_DRAW          120
     SliceBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
+    colorbar_slice_min = qmin;
+    colorbar_slice_max = qmax;
     UpdateUnitDefs();
     UpdateTimes();
     CheckMemory;
@@ -5038,6 +5047,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   GLUTPOSTREDISPLAY;
   if(sd->finalize==1){
     update_slice_bounds = slicefilenumber;
+    PrintMemoryInfo;
   }
   return return_filesize;
 }
@@ -5197,15 +5207,17 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
     int maxj;
     int j;
 
+    int plotxm1;
+    plotxm1 = MAX(plotx-1, 0);
     switch(flag){
     case SLICE_CELL_CENTER:
-      constval = (xplt[plotx] + xplt[plotx - 1]) / 2.0;
+      constval = (xplt[plotx] + xplt[plotxm1]) / 2.0;
       break;
     case SLICE_FACE_CENTER:
-      constval = xplt[plotx - 1];
+      constval = xplt[plotxm1];
       break;
     default:
-      constval = (xplt[plotx] + xplt[plotx - 1]) / 2.0;
+      constval = (xplt[plotx] + xplt[plotxm1]) / 2.0;
       ASSERT(FFALSE);
       break;
     }
@@ -5229,8 +5241,8 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         int i33;
         float z1, z3;
 
-        if(show_slice_in_obst == ONLY_IN_SOLID && iblank_cell != NULL&&iblank_cell[IJKCELL(plotx-1, j, k)] == GAS)continue;
-        if(show_slice_in_obst == ONLY_IN_GAS   && iblank_cell != NULL&&iblank_cell[IJKCELL(plotx-1, j, k)] != GAS)continue;
+        if(show_slice_in_obst == ONLY_IN_SOLID && iblank_cell != NULL&&iblank_cell[IJKCELL(plotxm1, j, k)] == GAS)continue;
+        if(show_slice_in_obst == ONLY_IN_GAS   && iblank_cell != NULL&&iblank_cell[IJKCELL(plotxm1, j, k)] != GAS)continue;
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(plotx, j, k)] == EMBED_YES)continue;
 
         index_cell = (plotx+1-incx-iimin)*sd->nslicej*sd->nslicek + (j+1-sd->js1)*sd->nslicek + k+1-sd->ks1;
@@ -6176,12 +6188,9 @@ void DrawSliceFrame(){
         if(show_cell_slices_and_vectors==0)continue;
       }
     }
-    // don't skip if the current script command is LOADSLICERENDER
-#ifndef pp_SINGLE_FRAME_TEST
     if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
       if(sd->times[0]>global_times[itimes])continue;
     }
-#endif
     if(sd->slice_filetype != SLICE_GEOM){
       if(sd->compression_type!=UNCOMPRESSED){
         UncompressSliceDataFrame(sd,sd->itime);
@@ -8131,7 +8140,7 @@ void GenerateSliceMenu(int option){
     sprintf(cform3, "%s%i.%is", "%", max3,max3);
     sprintf(cform4, "%s%i.%is", "%", max4,max4);
 
-    char format[80];
+    char format[256];
     sprintf(format, "%s, %s, %s, %s\n",cform1, cform2, cform3, cform4);
 
     fprintf(stream, "\n");

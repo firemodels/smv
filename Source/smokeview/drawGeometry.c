@@ -2749,6 +2749,10 @@ void UpdateFaceLists(void){
     else{
       patchi=NULL;
     }
+    if(chop_patch == 1){
+      local_showpatch=0;
+      loadpatch=0;
+    }
 
     if(local_showpatch==1&&loadpatch==1){
       int jj;

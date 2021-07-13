@@ -719,7 +719,6 @@ int GetColorbarIndex(int flag, int x, int y){
   return CB_SELECT_CONTINUE;
 }
 
-#ifdef pp_GLUTGET
 #define GLUTGETMODIFIERS GlutGetModifiersNew
 int GlutGetModifiersNew(void){
   int modifier;
@@ -744,9 +743,6 @@ int GlutGetModifiersNew(void){
 #endif
   return modifier;
 }
-#else
-#define GLUTGETMODIFIERS glutGetModifiers
-#endif
 
 /* ------------------ ColorbarClick ------------------------ */
 
@@ -980,11 +976,9 @@ void MouseCB(int button, int state, int xm, int ym){
     if(state==GLUT_DOWN)UpdateFreeze(ON);
     if(state==GLUT_UP)UpdateFreeze(OFF);
   }
-#ifdef pp_GLUTGET
   if(state == GLUT_UP){
     alt_ctrl_key_state = KEY_NONE;
   }
-#endif
   if(rotation_type==ROTATION_3AXIS){
     if(state==GLUT_DOWN){
       UpdateMouseInfo(MOUSE_DOWN,xm,ym);
@@ -1023,7 +1017,7 @@ void MouseCB(int button, int state, int xm, int ym){
     return;
   }
 
-  if(geom_bounding_box_auto==1)geom_bounding_box_mousedown = 1;
+  if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN)geom_bounding_box_mousedown = 1;
   mouse_down=1;
 
   // check for double click for translating/rotating 3D slice plane
@@ -1532,9 +1526,7 @@ void MouseDragCB(int xm, int ym){
 
 void KeyboardUpCB(unsigned char key, int x, int y){
   resetclock=1;
-#ifdef pp_GLUTGET
   alt_ctrl_key_state = KEY_NONE;
-#endif
 }
 
 #ifdef pp_GPU
@@ -1757,8 +1749,16 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'B':
-      geom_bounding_box_auto = 1-geom_bounding_box_auto;
+      if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN){
+        show_geom_boundingbox = SHOW_BOUNDING_BOX_NEVER;
+        printf("show bounding box when mouse is down: off\n");
+      }
+      else{
+        show_geom_boundingbox = SHOW_BOUNDING_BOX_MOUSE_DOWN;
+        printf("show bounding box when mouse is down: on\n");
+      }
       UpdateGeomBoundingBox();
+
       break;
     case 'b':
       switch(keystate){
@@ -1771,18 +1771,10 @@ void Keyboard(unsigned char key, int flag){
       default:
         show_boundaryfiles = 1-show_boundaryfiles;
         if(show_boundaryfiles==1){
-          ShowBoundaryMenu(SHOWALL_BOUNDARY);
-          if(key2=='B'){
-            VentMenu(HIDE_ALL_VENTS);
-            BlockageMenu(visBLOCKHide);
-          }
-          }
+          ShowBoundaryMenu(GLUI_SHOWALL_BOUNDARY);
+        }
         else{
-          ShowBoundaryMenu(HIDEALL_BOUNDARY);
-          if(key2=='B'){
-            VentMenu(SHOW_ALL_VENTS);
-            BlockageMenu(visBLOCKAsInput);
-          }
+          ShowBoundaryMenu(GLUI_HIDEALL_BOUNDARY);
         }
         break;
       }
@@ -1830,11 +1822,11 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'd':
-#ifdef pp_GLUTGET
-      alt_ctrl_key_state = KEY_CTRL;
-      break;
-#endif
     case 'D':
+      if(key2=='d'&&keystate!=GLUT_ACTIVE_ALT){
+        alt_ctrl_key_state = KEY_CTRL;
+        break;
+      }
       if(key2=='d'&&showtour_dialog==1&&edittour==1){
         AddDeleteKeyframe(DELETE_KEYFRAME);
         break;
@@ -1875,10 +1867,8 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'f':
-#ifdef pp_GLUTGET
       alt_ctrl_key_state = KEY_ALT;
       break;
-#endif
     case 'F':
       hide_overlaps=1-hide_overlaps;
       updatehiddenfaces=1;
@@ -1977,22 +1967,22 @@ void Keyboard(unsigned char key, int flag){
         stept=1;
         if(nvslice_loaded_local>0){
           if(showall_slices==0){
-            ShowVSliceMenu(SHOW_ALL);
+            ShowVSliceMenu(GLUI_SHOWALL_VSLICE);
             force_redisplay=1;
           }
           else{
             itime_save=itimes;
-            ShowVSliceMenu(HIDE_ALL);
+            ShowVSliceMenu(GLUI_HIDEALL_VSLICE);
           }
         }
         if(nvslice_loaded_local==0&&nslice_loaded_local>0){
           if(showall_slices==0){
-            ShowHideSliceMenu(SHOW_ALL);
+            ShowHideSliceMenu(GLUI_SHOWALL);
             force_redisplay=1;
           }
           else{
             itime_save=itimes;
-            ShowHideSliceMenu(HIDE_ALL);
+            ShowHideSliceMenu(GLUI_HIDEALL);
           }
         }
       }
@@ -2110,19 +2100,37 @@ void Keyboard(unsigned char key, int flag){
         }
       }
       break;
-#ifdef _DEBUG
+#ifdef pp_HAVE_CFACE_NORMALS
     case 'n':
     case 'N':
-      if(nsmoke3dinfo>0){
-        adjustalphaflag++;
-        if(adjustalphaflag>3)adjustalphaflag=0;
-        PRINTF("adjustalphaflag=%i\n",adjustalphaflag);
-        UpdateSmoke3dFlags();
-        return;
+      show_cface_normals = 1-show_cface_normals;
+      if(show_cface_normals==1){
+        printf("show cface normals\n");
       }
+      else{
+        printf("hide cface normals\n");
+      }
+      UpdateGluiCfaces();
       break;
 #endif
     case 'O':
+    if(show_faces_outline==0&&show_faces_shaded==1){
+      show_faces_outline = 1;
+      show_faces_shaded  = 1;
+    }
+    else if(show_faces_outline==1&&show_faces_shaded==1){
+      show_faces_outline = 1;
+      show_faces_shaded  = 0;
+    }
+    else if(show_faces_outline==1&&show_faces_shaded==0){
+      show_faces_outline = 0;
+      show_faces_shaded  = 0;
+    }
+    else if(show_faces_outline==0&&show_faces_shaded==0){
+      show_faces_outline = 0;
+      show_faces_shaded  = 1;
+    }
+    UpdateGeometryControls();
       switch(visBlocks){
         case visBLOCKAsInput:
         case visBLOCKAsInputOutline:
@@ -2497,7 +2505,9 @@ void Keyboard(unsigned char key, int flag){
       switch(keystate){
         case GLUT_ACTIVE_ALT:
 #ifdef pp_DIALOG_SHORTCUTS
-          DialogMenu(DIALOG_WUI); // WUI dialog
+          if(nterraininfo>0){
+            DialogMenu(DIALOG_WUI); // WUI dialog
+          }
           break;
 #endif
         case GLUT_ACTIVE_CTRL:
@@ -2654,15 +2664,21 @@ void Keyboard(unsigned char key, int flag){
     case '/':
       updatemenu=1;
       partfast = 1 - partfast;
-      if(npartinfo>1){
-        part_multithread = partfast;
-      }
-      else{
+      if(nevac>0){
+        partfast = 0;
         part_multithread = 0;
       }
+      if(current_script_command==NULL){
+        if(npartinfo>1&&nevac==0){
+          part_multithread = partfast;
+        }
+        else{
+          part_multithread = 0;
+        }
+      }
       if(part_multithread==1){
-        if(npartthread_ids>1)printf("parallel particle loading: on(%i threads,streaks disabled)\n",npartthread_ids);
-        if(npartthread_ids==1)printf("parallel particle loading: on(1 thread, streaks disabled)\n");
+        if(npartthread_ids>1)printf("parallel particle loading: on(%i threads)\n",npartthread_ids);
+        if(npartthread_ids==1)printf("parallel particle loading: on(1 thread)\n");
       }
       if(part_multithread==0)printf("parallel particle loading: off\n");
       UpdateGluiPartFast();

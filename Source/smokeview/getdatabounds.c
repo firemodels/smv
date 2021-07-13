@@ -124,7 +124,7 @@ int GetGlobalPartBounds(int flag){
     }
   }
   npartbounds_cpp = npart5prop;
-  if(npartbounds_cpp>0){
+  if(npartbounds_cpp>0&&partbounds_cpp==NULL){ // only initialize once
     NewMemory((void **)&partbounds_cpp, npartbounds_cpp*sizeof(cpp_boundsdata));
     for(i = 0; i<npartbounds_cpp; i++){
       cpp_boundsdata *boundscppi;
@@ -137,14 +137,9 @@ int GetGlobalPartBounds(int flag){
 
         unit = part5propinfo[i].label->unit;
         if(unit!=NULL){
-          int len;
-
-          len = strlen(unit);
-          NewMemory((void **)&boundscppi->unit, len+1);
           strcpy(boundscppi->unit, unit);
         }
         else{
-          NewMemory((void **)&boundscppi->unit, 2);
           strcpy(boundscppi->unit, "");
         }
       }
@@ -300,7 +295,7 @@ void GetGlobalPatchBounds(void){
   }
 
   npatchbounds_cpp = npatchbounds;
-  if(npatchbounds_cpp>0){
+  if(npatchbounds_cpp>0&&patchbounds_cpp==NULL){ // only initialize once
     NewMemory((void **)&patchbounds_cpp, npatchbounds_cpp*sizeof(cpp_boundsdata));
     for(i = 0; i<npatchbounds_cpp; i++){
       cpp_boundsdata *boundscppi;
@@ -309,13 +304,7 @@ void GetGlobalPatchBounds(void){
       boundscppi = patchbounds_cpp+i;
       boundi = patchbounds+i;
       strcpy(boundscppi->label, boundi->shortlabel);
-      {
-        int len;
-
-        len = strlen(boundi->label->unit);
-        NewMemory((void **)&boundscppi->unit, len+1);
-        strcpy(boundscppi->unit, boundi->label->unit);
-      }
+      strcpy(boundscppi->unit, boundi->label->unit);
 
       boundscppi->cache = cache_boundary_data;
       boundscppi->set_valtype = 0;
@@ -411,11 +400,11 @@ void GetGlobalPlot3DBounds(void){
   }
 
   nplot3dbounds_cpp = 0;
-  if(nplot3dinfo>0){
+  if(nplot3dinfo>0&&plot3dbounds_cpp==NULL){ // only initialize once
     int i;
 
     nplot3dbounds_cpp = MAXPLOT3DVARS;
-    if(plot3dbounds_cpp==NULL)NewMemory((void **)&plot3dbounds_cpp, nplot3dbounds_cpp*sizeof(cpp_boundsdata));
+    NewMemory((void **)&plot3dbounds_cpp, nplot3dbounds_cpp*sizeof(cpp_boundsdata));
     for(i = 0; i<nplot3dbounds_cpp; i++){
       cpp_boundsdata *boundscppi;
 
@@ -549,22 +538,16 @@ void GetGlobalSliceBounds(void){
     boundi->dlg_valmax = boundi->dlg_global_valmax;
   }
   nslicebounds_cpp = nslicebounds;
-  if(nslicebounds_cpp>0){
+  if(nslicebounds_cpp>0&&slicebounds_cpp==NULL){ // only initialize once
     NewMemory((void **)&slicebounds_cpp, nslicebounds_cpp*sizeof(cpp_boundsdata));
     for(i = 0; i<nslicebounds_cpp; i++){
       cpp_boundsdata *boundscppi;
       boundsdata *boundi;
 
-      boundscppi = slicebounds_cpp+i;
-      boundi = slicebounds+i;
+      boundscppi = slicebounds_cpp + i;
+      boundi     = slicebounds + i;
       strcpy(boundscppi->label, boundi->shortlabel);
-      {
-        int len;
-
-        len = strlen(boundi->label->unit);
-        NewMemory((void **)&boundscppi->unit, len+1);
-        strcpy(boundscppi->unit, boundi->label->unit);
-      }
+      strcpy(boundscppi->unit, boundi->label->unit);
 
       boundscppi->cache = cache_slice_data;
       boundscppi->set_valtype = 0;
@@ -648,13 +631,7 @@ void UpdateGlobalFEDSliceBounds(void){
       if(strcmp(boundi->label->shortlabel, "FED")!=0)continue;
 
       strcpy(boundscppi->label, boundi->shortlabel);
-      {
-        int len;
-
-        len = strlen(boundi->label->unit);
-        NewMemory((void **)&boundscppi->unit, len+1);
-        strcpy(boundscppi->unit, boundi->label->unit);
-      }
+      strcpy(boundscppi->unit, boundi->label->unit);
 
       boundscppi->cache = cache_slice_data;
       boundscppi->set_valtype = 0;
@@ -913,6 +890,7 @@ void PrintPartLoadSummary(int option_arg,int type_arg){
 #ifdef pp_PART_SIZE
     printf("\n");
 #endif
+    printf("\n");
   }
 }
 

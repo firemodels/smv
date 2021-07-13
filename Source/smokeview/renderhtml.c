@@ -1567,9 +1567,7 @@ void GeomLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsp
   if(ngeominfoptrs>0){
     int ngeom_verts, ngeom_tris;
 
-    LOCK_TRIANGLES;
     GetGeomInfoPtrs(0);
-    UNLOCK_TRIANGLES;
     ShowHideSortGeometry(0, NULL);
     GetGeometryNodes(0, NULL, NULL, NULL, NULL, &ngeom_verts, NULL, &ngeom_tris);
 

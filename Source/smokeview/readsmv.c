@@ -481,7 +481,6 @@ void InitMesh(meshdata *meshi){
   meshi->patchval_iframe = NULL;
   meshi->thresholdtime = NULL;
   meshi->patchblank = NULL;
-  meshi->patch_contours = NULL;
   meshi->patch_timeslist = NULL;
   meshi->ntc = 0;
   meshi->nspr = 0;
@@ -1041,6 +1040,9 @@ void ReadSMVDynamic(char *file){
       plot3di->autoload=0;
       plot3di->time=time_local;
       plot3di->finalize = 1;
+      nmemory_ids++;
+      plot3di->memory_id = nmemory_ids;
+
       for(i=0;i<MAXPLOT3DVARS;i++){
         plot3di->histograms[i] = NULL;
       }
@@ -1908,9 +1910,10 @@ int IsTerrainTexture(texturedata *texti){
 void InitTextures0(void){
   // get texture filename from SURF and device info
   int i;
-  float time1, time2, time3, time4, time5, time6;
+  float texture_timer;
 
-  START_TIMER(time1);
+  INIT_PRINT_TIMER(texture_timer);
+  PRINT_TIMER(texture_timer, "null");
 
   ntextureinfo = 0;
   for(i=0;i<nsurfinfo;i++){
@@ -1930,9 +1933,8 @@ void InitTextures0(void){
     ntextureinfo++;
     surfi->textureinfo=textureinfo+ntextureinfo-1;
   }
-  STOP_TIMER(time1);
+  PRINT_TIMER(texture_timer, "SURF textures");
 
-  START_TIMER(time2);
   for(i=0;i<ndevice_texture_list;i++){
     char *texturefile;
     texturedata *texti;
@@ -1949,9 +1951,8 @@ void InitTextures0(void){
     texti->display=0;
     ntextureinfo++;
   }
-  STOP_TIMER(time2);
+  PRINT_TIMER(texture_timer, "device textures");
 
-  START_TIMER(time3);
   if(nterrain_textures>0){
     texturedata *texture_base;
 
@@ -1974,12 +1975,11 @@ void InitTextures0(void){
     FREEMEMORY(terrain_textures);
     terrain_textures = texture_base;
   }
-  STOP_TIMER(time3);
+  PRINT_TIMER(texture_timer, "terrain textures");
 
   // check to see if texture files exist .
   // If so, then convert to OpenGL format
 
-  START_TIMER(time4);
   for(i=0;i<ntextureinfo;i++){
     unsigned char *floortex;
     int texwid, texht;
@@ -2028,14 +2028,12 @@ void InitTextures0(void){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     texti->loaded=1;
   }
-  STOP_TIMER(time4);
 
   CheckMemory;
   if(ntextureinfo==0){
     FREEMEMORY(textureinfo);
   }
 
-  START_TIMER(time5);
   // define colorbar textures
 
  // glActiveTexture(GL_TEXTURE0);
@@ -2132,12 +2130,11 @@ void InitTextures0(void){
 #endif
   glTexImage1D(GL_TEXTURE_1D,0,GL_RGBA,MAXSMOKERGB,0,GL_RGBA,GL_FLOAT,rgb_slicesmokecolormap_01);
 
-  STOP_TIMER(time5);
+  PRINT_TIMER(texture_timer, "texture setup");
   CheckMemory;
 
   // define terrain texture
 
-  START_TIMER(time6);
   if(nterrain_textures>0){
     texturedata *tt;
     unsigned char *floortex;
@@ -2179,30 +2176,26 @@ void InitTextures0(void){
       }
     }
   }
-  STOP_TIMER(time6);
-  if(show_startup_timings==1){
-    printf("texture time1=%f\n", time1);
-    printf("texture time2=%f\n", time2);
-    printf("texture time3=%f\n", time3);
-    printf("texture time4=%f\n", time4);
-    printf("texture time5=%f\n", time5);
-    printf("texture time6=%f\n", time6);
-  }
+  PRINT_TIMER(texture_timer, "terrain texture setup");
 }
 
   /* ------------------ InitTextures ------------------------ */
 
-float InitTextures(int use_graphics_arg){
-  START_TIMER(texture_time);
+void InitTextures(int use_graphics_arg){
+  float total_texture_time;
+
+  INIT_PRINT_TIMER(total_texture_time);
+  PRINT_TIMER(total_texture_time, "null");
+
+
   UpdateDeviceTextures();
   if(nsurfinfo>0||ndevice_texture_list>0){
-    if(NewMemory((void **)&textureinfo, (nsurfinfo+ndevice_texture_list+nterrain_textures)*sizeof(texturedata))==0)return 2;
+    if(NewMemory((void **)&textureinfo, (nsurfinfo+ndevice_texture_list+nterrain_textures)*sizeof(texturedata))==0)return;
   }
   if(use_graphics_arg==1){
     InitTextures0();
   }
-  STOP_TIMER(texture_time);
-  return texture_time;
+  PRINT_TIMER(total_texture_time, "total texure time");
 }
 
   /* ------------------ UpdateBoundInfo ------------------------ */
@@ -2570,6 +2563,25 @@ void GetBoxCorners(float xbar_local, float ybar_local, float zbar_local){
   box_corners[7][2] = zbar_local;
 }
 
+/* ------------------ UpdateMeshBoxBounds ------------------------ */
+
+void UpdateMeshBoxBounds(void){
+  int i;
+
+  for(i = 0; i<nmeshes;  i++){
+    meshdata *meshi;
+
+    // xplt, yplt, zplt has original cooredinates because this routine is calld before UpdateMeshCoords
+    meshi = meshinfo+i;
+    meshi->boxmin[0] = meshi->xplt[0];
+    meshi->boxmin[1] = meshi->yplt[0];
+    meshi->boxmin[2] = meshi->zplt[0];
+    meshi->boxmax[0] = meshi->xplt[meshi->ibar];
+    meshi->boxmax[1] = meshi->yplt[meshi->jbar];
+    meshi->boxmax[2] = meshi->zplt[meshi->kbar];
+  }
+}
+
 /* ------------------ UpdateMeshCoords ------------------------ */
 
 void UpdateMeshCoords(void){
@@ -2667,6 +2679,43 @@ void UpdateMeshCoords(void){
     xbar0 = MIN(xbar0, meshi->xyz_bar0[XXX]);
     ybar0 = MIN(ybar0, meshi->xyz_bar0[YYY]);
     zbar0 = MIN(zbar0, meshi->xyz_bar0[ZZZ]);
+  }
+
+  geomlistdata *geomlisti;
+  if(geominfo!=NULL&&geominfo->geomlistinfo!=NULL){
+    geomlisti = geominfo->geomlistinfo-1;
+    if(geomlisti->nverts>0){
+      vertdata *verti;
+      float *xyz;
+      float xmin, xmax, ymin, ymax, zmin, zmax;
+
+      verti = geomlisti->verts;
+      xyz = verti->xyz;
+
+      xmin = xyz[0];
+      xmax = xmin;
+      ymin = xyz[1];
+      ymax = ymin;
+      zmin = xyz[2];
+      zmax = zmin;
+
+      for(i = 1; i<geomlisti->nverts; i++){
+        verti = geomlisti->verts+i;
+        xyz = verti->xyz;
+        xmin = MIN(xyz[0], xmin);
+        xmax = MAX(xyz[0], xmax);
+        ymin = MIN(xyz[1], ymin);
+        ymax = MAX(xyz[1], ymax);
+        zmin = MIN(xyz[2], zmin);
+        zmax = MAX(xyz[2], zmax);
+      }
+      xbar0 = MIN(xbar0, xmin);
+      ybar0 = MIN(ybar0, ymin);
+      zbar0 = MIN(zbar0, zmin);
+      xbar = MAX(xbar, xmax);
+      ybar = MAX(ybar, ymax);
+      zbar = MAX(zbar, zmax);
+    }
   }
 
   factor = 256*128;
@@ -2858,12 +2907,6 @@ void UpdateMeshCoords(void){
     }
 
     meshi->boxoffset=-(zplt[1]-zplt[0])/10.0;
-    meshi->boxmin[0]=xplt_orig[0];
-    meshi->boxmin[1]=yplt_orig[0];
-    meshi->boxmin[2]=zplt_orig[0];
-    meshi->boxmax[0]=xplt_orig[ibar];
-    meshi->boxmax[1]=yplt_orig[jbar];
-    meshi->boxmax[2]=zplt_orig[kbar];
     meshi->dbox[0]=meshi->boxmax[0]-meshi->boxmin[0];
     meshi->dbox[1]=meshi->boxmax[1]-meshi->boxmin[1];
     meshi->dbox[2]=meshi->boxmax[2]-meshi->boxmin[2];
@@ -3875,7 +3918,11 @@ int ParseISOFProcess(bufferstreamdata *stream, char *buffer, int *iiso_in, int *
   NewMemory((void **)&isoi->geominfo, sizeof(geomdata));
   nmemory_ids++;
   isoi->geominfo->memory_id = nmemory_ids;
+#ifdef pp_HAVE_CFACE_NORMALS
+  InitGeom(isoi->geominfo, GEOM_ISO, NOT_FDSBLOCK, CFACE_NORMALS_NO);
+#else
   InitGeom(isoi->geominfo, GEOM_ISO, NOT_FDSBLOCK);
+#endif
 
   bufferptr = TrimFrontBack(buffer);
 
@@ -4103,6 +4150,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->blocknumber = blocknumber;
   parti->seq_id = nn_part;
   parti->autoload = 0;
+  parti->reload = 0;
   parti->finalize = 1;
   parti->valmin_fds = NULL;
   parti->valmax_fds = NULL;
@@ -4868,6 +4916,9 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 
   sd = sliceinfo+nn_slice-1;
 
+#ifdef pp_SLICETHREAD
+  sd->loadstatus = FILE_UNLOADED;
+#endif
   sd->geom_offsets = NULL;
   sd->slcf_index = slcf_index;
   sd->finalize = 1;
@@ -4886,6 +4937,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->comp_file = NULL;
   sd->vol_file = NULL;
   sd->slicelabel = NULL;
+  sd->cell_center_edge = 0;
 #ifdef pp_SLICE_BUFFER
   sd->stream_slice = NULL;
 #endif
@@ -5045,6 +5097,10 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 
     GetSliceFileHeader(sd->file, &ii1, &ii2, &jj1, &jj2, &kk1, &kk2, &error);
   }
+  if(cellcenter==1){
+    ii1 = MAX(ii1, 1);
+    ii2 = MAX(ii1, ii2);
+  }
   sd->is1 = ii1;
   sd->is2 = ii2;
   sd->js1 = jj1;
@@ -5096,9 +5152,18 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     sd->full_mesh = NO;
     if(sd->is2-sd->is1==meshi->ibar &&
       sd->js2-sd->js1==meshi->jbar &&
-      sd->ks2-sd->ks1==meshi->kbar)sd->full_mesh = YES;
+      sd->ks2-sd->ks1==meshi->kbar){
+        sd->full_mesh = YES;
+    }
+    if(sd->slice_filetype==SLICE_CELL_CENTER){
+      if(                         sd->is1==sd->is2&&sd->is1==1)sd->cell_center_edge = 1;
+      if(sd->cell_center_edge==0&&sd->js1==sd->js2&&sd->js1==1)sd->cell_center_edge = 1;
+      if(sd->cell_center_edge==0&&sd->ks1==sd->ks2&&sd->ks1==1)sd->cell_center_edge = 1;
+      if(sd->cell_center_edge==0&&sd->is1==sd->is2&&sd->is1==meshi->ibar)sd->cell_center_edge = 1;
+      if(sd->cell_center_edge==0&&sd->js1==sd->js2&&sd->js1==meshi->jbar)sd->cell_center_edge = 1;
+      if(sd->cell_center_edge==0&&sd->ks1==sd->ks2&&sd->ks1==meshi->kbar)sd->cell_center_edge = 1;
+    }
   }
-
   if(IsSliceDup(sd, nn_slice)==1){
     FREEMEMORY(sd->reg_file);
     FREEMEMORY(sd->comp_file);
@@ -5469,6 +5534,34 @@ void UpdateEvents(void){
     }
   }
   fclose(stream);
+}
+
+/* ------------------ UpdateObstBoundingBox ------------------------ */
+
+void UpdateObstBoundingBox(float *XB){
+  float XB0[6];
+  int i;
+
+  XB0[0] = MIN(XB[0], XB[1]);
+  XB0[1] = MAX(XB[0], XB[1]);
+  XB0[2] = MIN(XB[2], XB[3]);
+  XB0[3] = MAX(XB[2], XB[3]);
+  XB0[4] = MIN(XB[4], XB[5]);
+  XB0[5] = MAX(XB[4], XB[5]);
+  for(i = 0; i<3; i++){
+    int imin, imax;
+
+    imin = 2*i;
+    imax = 2*i+1;
+    if(obst_bounding_box[imin]>obst_bounding_box[imax]){
+      obst_bounding_box[imin] = XB0[imin];
+      obst_bounding_box[imax] = XB0[imax];
+    }
+    else{
+      obst_bounding_box[imin] = MIN(obst_bounding_box[imin], XB0[imin]);
+      obst_bounding_box[imax] = MAX(obst_bounding_box[imax], XB0[imax]);
+    }
+  }
 }
 
 /* ------------------ ReadSMV ------------------------ */
@@ -6762,9 +6855,20 @@ int ReadSMV(bufferstreamdata *stream){
     if(Match(buffer, "CGEOM")==1){
       geomdata *geomi;
       char *buff2;
+#ifdef pp_HAVE_CFACE_NORMALS
+      int have_vectors = CFACE_NORMALS_NO;
+#endif
 
       geomi = cgeominfo+ncgeominfo;
+#ifdef pp_HAVE_CFACE_NORMALS
+      buff2 = buffer+6;
+      sscanf(buff2, "%i", &have_vectors);
+      if(have_vectors!=CFACE_NORMALS_YES)have_vectors=CFACE_NORMALS_NO;
+      if(have_vectors == CFACE_NORMALS_YES)have_cface_normals = CFACE_NORMALS_YES;
+      InitGeom(geomi, GEOM_CGEOM, FDSBLOCK, have_vectors);
+#else
       InitGeom(geomi, GEOM_CGEOM, FDSBLOCK);
+#endif
       geomi->memory_id = ++nmemory_ids;
 
       FGETS(buffer,255,stream);
@@ -6800,14 +6904,26 @@ int ReadSMV(bufferstreamdata *stream){
         sscanf(buff2,"%i",&ngeomobjinfo);
       }
       if(Match(buffer, "BGEOM") == 1){
+#ifdef pp_HAVE_CFACE_NORMALS
+        InitGeom(geomi, GEOM_BOUNDARY, NOT_FDSBLOCK, CFACE_NORMALS_NO);
+#else
         InitGeom(geomi, GEOM_BOUNDARY, NOT_FDSBLOCK);
+#endif
       }
       else if(Match(buffer, "SGEOM") == 1){
+#ifdef pp_HAVE_CFACE_NORMALS
+        InitGeom(geomi, GEOM_SLICE, NOT_FDSBLOCK, CFACE_NORMALS_NO);
+#else
         InitGeom(geomi, GEOM_SLICE, NOT_FDSBLOCK);
+#endif
       }
       else{
         is_geom = 1;
+#ifdef pp_HAVE_CFACE_NORMALS
+        InitGeom(geomi, GEOM_GEOM, FDSBLOCK, CFACE_NORMALS_NO);
+#else
         InitGeom(geomi, GEOM_GEOM, FDSBLOCK);
+#endif
       }
 
       FGETS(buffer,255,stream);
@@ -6893,6 +7009,10 @@ int ReadSMV(bufferstreamdata *stream){
             }
             sscanf(texture_vals, "%f %f %f %i", center, center+1, center+2, &is_terrain);
             geomi->is_terrain = is_terrain;
+          }
+          if(geomi->is_terrain==1){
+            is_terrain_case = 1;
+            auto_terrain = 1;
           }
           if(texture_mapping!=NULL&&strcmp(texture_mapping,"SPHERICAL")==0){
             geomobji->texture_mapping=TEXTURE_SPHERICAL;
@@ -8382,7 +8502,7 @@ int ReadSMV(bufferstreamdata *stream){
 
   // define texture data structures by constructing a list of unique file names from surfinfo and devices
 
-  texture_time = InitTextures(use_graphics);
+ InitTextures(use_graphics);
 
 /*
     Initialize blockage labels and blockage surface labels
@@ -9016,6 +9136,8 @@ typedef struct {
             xyzEXACT,xyzEXACT+1,xyzEXACT+2,xyzEXACT+3,xyzEXACT+4,xyzEXACT+5,
             &(bc->blockage_id),s_num+DOWN_X,s_num+UP_X,s_num+DOWN_Y,s_num+UP_Y,s_num+DOWN_Z,s_num+UP_Z,
             t_origin,t_origin+1,t_origin+2);
+
+          UpdateObstBoundingBox(xyzEXACT);
           bc->xmin=xyzEXACT[0];
           bc->xmax=xyzEXACT[1];
           bc->ymin=xyzEXACT[2];
@@ -10010,6 +10132,20 @@ typedef struct {
   START_TIMER(wrapup_time);
 
   PRINTF("  wrapping up\n");
+  float timer_readsmv;
+
+  have_obsts = 0;
+  for(i=0;i<nmeshes;i++){
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    if(meshi->nbptrs>0){
+      have_obsts = 1;
+      break;
+    }
+  }
+
+  INIT_PRINT_TIMER(timer_readsmv);
   CheckMemory;
   UpdateIsoColors();
   CheckMemory;
@@ -10074,6 +10210,11 @@ typedef struct {
   UpdateLoadedLists();
   CheckMemory;
 
+  UpdateMeshBoxBounds();
+  PRINT_TIMER(timer_readsmv, "UpdateMesnTerrain");
+  ReadAllGeomMT();
+  PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
+
   UpdateMeshCoords();
   CheckMemory;
 
@@ -10128,10 +10269,14 @@ typedef struct {
   UpdatePlotxyzAll();
   CheckMemory;
 
+  PRINT_TIMER(timer_readsmv, "null");
   UpdateVSlices();
+  PRINT_TIMER(timer_readsmv, "UpdateVSlices");
   if(update_slice==1)return 3;
 
   GenerateSliceMenu(generate_info_from_commandline);
+  PRINT_TIMER(timer_readsmv, "GenerateSliceMenu");
+
   if(generate_info_from_commandline==1){
     GenerateViewpointMenu();
     SMV_EXIT(0);
@@ -10157,18 +10302,19 @@ typedef struct {
     }
   }
 
+  PRINT_TIMER(timer_readsmv, "null");
   MakeIBlankCarve();
   MakeIBlankSmoke3D();
   MakeIBlankAll();
-#ifdef pp_THREADIBLANK
   if(runscript == 1){
     JOIN_IBLANK
   }
-#endif
   LOCK_IBLANK
   SetVentDirs();
   UNLOCK_IBLANK
+  PRINT_TIMER(timer_readsmv, "make blanks");
   UpdateFaces();
+  PRINT_TIMER(timer_readsmv, "UpdateFaces");
 
   xcenGLOBAL=xbar/2.0;  ycenGLOBAL=ybar/2.0; zcenGLOBAL=zbar/2.0;
   xcenCUSTOM=xbar/2.0;  ycenCUSTOM=ybar/2.0; zcenCUSTOM=zbar/2.0;
@@ -10205,8 +10351,11 @@ typedef struct {
       }
     }
   }
+
+  PRINT_TIMER(timer_readsmv, "update bound info");
   UpdateTerrain(1,vertical_factor); // xxslow
   UpdateTerrainColors();
+  PRINT_TIMER(timer_readsmv, "UpdateTerrain");
   UpdateSmoke3dMenuLabels();
   UpdateVSliceBoundIndexes();
   UpdateBoundaryMenuLabels();
@@ -10215,6 +10364,8 @@ typedef struct {
   UpdateTourMenuLabels();
   SetupCircularTourNodes();
   InitUserTicks();
+  PRINT_TIMER(timer_readsmv, "update menu labels");
+
   clip_I=ibartemp; clip_J=jbartemp; clip_K=kbartemp;
 
   // define changed_idlist used for blockage editing
@@ -10238,25 +10389,26 @@ typedef struct {
     nchanged_idlist=ntotal;
   }
 
+  PRINT_TIMER(timer_readsmv, "null");
   InitNabors();
   InitVolRender();
   InitVolRenderSurface(FIRSTCALL);
   radius_windrose = 0.2*xyzmaxdiff;
 
   UpdateMeshTerrain(); // slow
-
-  START_TIMER(readgeom_time);
-  ReadAllGeomMT();
-  STOP_TIMER(readgeom_time);
   ClassifyAllGeomMT();
 
+  PRINT_TIMER(timer_readsmv, "null");
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
+  PRINT_TIMER(timer_readsmv, "UpdateTriangles");
   GetFaceInfo();
   GetBoxGeomCorners();
   if(ngeominfo>0&&auto_terrain==1){
     int sizeof_vertices, sizeof_indices;
 
+    PRINT_TIMER(timer_readsmv, "null");
     GenerateTerrainGeom(&terrain_vertices, &sizeof_vertices, &terrain_indices, &sizeof_indices, &terrain_nindices);
+    PRINT_TIMER(timer_readsmv, "GenerateTerrainGeom");
   }
 #ifdef pp_WUI_VAO
   have_terrain_vao = 0;
@@ -10281,7 +10433,7 @@ typedef struct {
   PrintMemoryInfo;
 
   STOP_TIMER(wrapup_time);
-  if(show_startup_timings==1){
+  if(show_timings==1){
     PRINTF(".smv Processing Times\n");
     PRINTF("---------------------\n");
 
@@ -10297,7 +10449,6 @@ typedef struct {
     PRINTF("        pass 5: %.1f s\n", pass5_time);
     PRINTF("all passes: %.1f s\n", processing_time);
 
-    PRINTF("   Texture time: %.1f s\n", texture_time);
     PRINTF("   wrap up: %.1f s\n", wrapup_time);
     PRINTF("\n");
   }
@@ -10478,20 +10629,15 @@ int ReadIni2(char *inifile, int localfile){
       update_percentile_mode = 1;
       continue;
     }
-    if(Match(buffer, "TIMINGS")==1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, " %i", &show_startup_timings);
-      ONEORZERO(show_startup_timings);
-      continue;
-    }
     if(Match(buffer, "RESEARCHMODE") == 1){
       int dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %f %i %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits, &force_fixedpoint);
+      sscanf(buffer, " %i %i %f %i %i %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits, &force_fixedpoint, &ngridloc_digits);
       colorbar_shift = CLAMP(colorbar_shift, COLORBAR_SHIFT_MIN, COLORBAR_SHIFT_MAX);
       if(research_mode==1&&research_mode_override==0)research_mode=0;
       ncolorlabel_digits = CLAMP(ncolorlabel_digits, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
+      ngridloc_digits = CLAMP(ngridloc_digits, GRIDLOC_NDECIMALS_MIN, GRIDLOC_NDECIMALS_MAX);
       ONEORZERO(research_mode);
       ONEORZERO(force_fixedpoint);
       if(research_mode==1&&percentile_mode==1){
@@ -10660,14 +10806,22 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
     if(Match(buffer, "GEOMSHOW") == 1){
+      int dummy, dummy2;
+
       fgets(buffer, 255, stream);
+#ifdef pp_HAVE_CFACE_NORMALS
+      sscanf(buffer, " %i %i %i %i %i %i %f %f %i %i",
+        &dummy, &dummy2, &show_faces_shaded, &show_faces_outline, &smooth_geom_normal,
+        &geom_force_transparent, &geom_transparency,&geom_linewidth, &use_geom_factors, &show_cface_normals);
+#else
       sscanf(buffer, " %i %i %i %i %i %i %f %f %i",
-        &show_faces_interior, &show_faces_exterior, &show_faces_shaded, &show_faces_outline, &smooth_geom_normal,
-        &geom_force_transparent, &geom_transparency,&geom_linewidth, &use_geom_factors);
+             &dummy, &dummy2, &show_faces_shaded, &show_faces_outline, &smooth_geom_normal,
+             &geom_force_transparent, &geom_transparency, &geom_linewidth, &use_geom_factors);
+#endif
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i", &show_volumes_interior, &show_volumes_exterior, &show_volumes_solid, &show_volumes_outline);
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f %i %i", &geom_vert_exag, &geom_max_angle, &geom_bounding_box_always, &geom_bounding_box_auto);
+      sscanf(buffer, " %f %f %i %i %i", &geom_vert_exag, &geom_max_angle, &dummy, &dummy2, &show_geom_boundingbox);
       continue;
     }
     if(Match(buffer, "SHOWTRIANGLECOUNT") == 1){
@@ -12675,7 +12829,9 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "PARTFAST")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i", &partfast, &part_multithread, &npartthread_ids);
+      if(current_script_command==NULL&&nevac==0){
+        sscanf(buffer, "%i %i %i", &partfast, &part_multithread, &npartthread_ids);
+      }
       continue;
     }
     if(Match(buffer, "WINDOWOFFSET") == 1){
@@ -12778,7 +12934,6 @@ int ReadIni2(char *inifile, int localfile){
         eye[1] = ymin_local + eye[1] * xyzmaxdiff_local;
         eye[2] = zmin_local + eye[2] * xyzmaxdiff_local;
       }
-#ifdef pp_ZOOM_INI
       zoom = zoom_in;
       zoomindex = zoomindex_in;
       if(zoomindex != -1){
@@ -12798,8 +12953,6 @@ int ReadIni2(char *inifile, int localfile){
         }
       }
       updatezoommenu = 1;
-#endif
-
       p_type = 0;
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f %i", &ci->view_angle, &ci->azimuth, &ci->elevation, &p_type);
@@ -14567,17 +14720,13 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "PERCENTILEMODE\n");
   fprintf(fileout, " %i\n", percentile_mode);
   fprintf(fileout, "RESEARCHMODE\n");
-  fprintf(fileout, " %i %i %f %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint);
+  fprintf(fileout, " %i %i %f %i %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint, ngridloc_digits);
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
   fprintf(fileout, "SLICEAVERAGE\n");
   fprintf(fileout, " %i %f %i\n", slice_average_flag, slice_average_interval, vis_slice_average);
   fprintf(fileout, "SLICEDATAOUT\n");
   fprintf(fileout, " %i \n", output_slicedata);
-#ifdef pp_SLICEFAST
-  fprintf(fileout, "SLICEFAST\n");
-  fprintf(fileout, " %i %i\n", slice_multithread, nslicethread_ids);
-#endif
   fprintf(fileout, "SLICEZIPSTEP\n");
   fprintf(fileout, " %i\n", slicezipstep);
   fprintf(fileout, "SMOKE3DZIPSTEP\n");
@@ -14648,11 +14797,17 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "GEOMOFFSET\n");
   fprintf(fileout, " %f %f %f %i\n", geom_delx, geom_dely, geom_delz, show_geom_bndf);
   fprintf(fileout, "GEOMSHOW\n");
+#ifdef pp_HAVE_CFACE_NORMALS
+  fprintf(fileout, " %i %i %i %i %i %i %f %f %i %i\n",
+     0, 1, show_faces_shaded, show_faces_outline, smooth_geom_normal,
+     geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors, show_cface_normals);
+#else
   fprintf(fileout, " %i %i %i %i %i %i %f %f %i\n",
-     show_faces_interior, show_faces_exterior, show_faces_shaded, show_faces_outline, smooth_geom_normal,
-     geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors);
+          0, 1, show_faces_shaded, show_faces_outline, smooth_geom_normal,
+          geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors);
+#endif
   fprintf(fileout, " %i %i %i %i\n", show_volumes_interior, show_volumes_exterior, show_volumes_solid, show_volumes_outline);
-  fprintf(fileout, " %f %f %i %i\n", geom_vert_exag, geom_max_angle, geom_bounding_box_always, geom_bounding_box_auto);
+  fprintf(fileout, " %f %f %i %i %i\n", geom_vert_exag, geom_max_angle, 0, 0, show_geom_boundingbox);
   fprintf(fileout, "GEOMSLICEPROPS\n");
   fprintf(fileout, " %f %f\n", geomslice_linewidth, geomslice_pointsize);
 
@@ -14925,8 +15080,6 @@ void WriteIni(int flag,char *filename){
   }
   fprintf(fileout, "RENDEROPTION\n");
   fprintf(fileout, " %i %i %i\n", render_window_size, resolution_multiplier, nheight360);
-  fprintf(fileout, "TIMINGS\n");
-  fprintf(fileout, " %i\n", show_startup_timings);
   fprintf(fileout, "UNITCLASSES\n");
   fprintf(fileout, " %i\n", nunitclasses);
   for(i = 0; i<nunitclasses; i++){
