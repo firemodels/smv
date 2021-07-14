@@ -13916,6 +13916,20 @@ int ReadIni(char *inifile){
     }
   }
 
+  // smokeview.ini in current directory
+
+  {
+    int returnval;
+    char smokeviewini_localfilename[100];
+
+    strcpy(smokeviewini_localfilename, "smokeview.ini");
+    returnval = ReadIni2(smokeviewini_localfilename, 0);
+    if(returnval==2)return 2;
+    if(returnval==0&&readini_output==1){
+      PRINTF("- complete\n");
+    }
+  }
+
   // casename.ini
 
   if(caseini_filename!=NULL){
