@@ -4619,14 +4619,12 @@ extern "C" void GluiBoundsSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_vector, glui_bounds);
     ADDPROCINFO(plot3dprocinfo, nplot3dprocinfo, ROLLOUT_vector, PLOT3D_VECTOR_ROLLOUT, glui_bounds);
 
-#define MAX_VECTOR_FACTOR 40.0
     glui_bounds->add_checkbox_to_panel(ROLLOUT_vector,_("Show vectors"),&visVector,UPDATEPLOT,Plot3DBoundCB);
     SPINNER_plot3d_vectorpointsize=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("Point size"),GLUI_SPINNER_FLOAT,&vectorpointsize,UPDATE_VECTOR,Plot3DBoundCB);
     SPINNER_plot3d_vectorpointsize->set_float_limits(1.0,10.0);
     SPINNER_plot3d_vectorlinewidth=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("Vector width"),GLUI_SPINNER_FLOAT,&vectorlinewidth,UPDATE_VECTOR,Plot3DBoundCB);
     SPINNER_plot3d_vectorlinewidth->set_float_limits(1.0,10.0);
     SPINNER_plot3d_vectorlinelength=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("Vector length"),GLUI_SPINNER_FLOAT,&vecfactor,UPDATE_VECTOR,Plot3DBoundCB);
-    SPINNER_plot3d_vectorlinelength->set_float_limits(0.0, MAX_VECTOR_FACTOR);
     SPINNER_plot3dvectorskip=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("Vector skip"),GLUI_SPINNER_INT,&vectorskip,PLOT3D_VECTORSKIP,Plot3DBoundCB);
     SPINNER_plot3dvectorskip->set_int_limits(1,4);
 
@@ -4713,7 +4711,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_vectorlinewidth=glui_bounds->add_spinner_to_panel(PANEL_vector1,_("Vector width"),GLUI_SPINNER_FLOAT,&vectorlinewidth,UPDATE_VECTOR,SliceBoundCB);
     SPINNER_vectorlinewidth->set_float_limits(1.0,20.0);
     SPINNER_vectorlinelength = glui_bounds->add_spinner_to_panel(PANEL_vector1, _("Vector length"), GLUI_SPINNER_FLOAT, &vecfactor, UPDATE_VECTOR, SliceBoundCB);
-    SPINNER_vectorlinelength->set_float_limits(0.0, MAX_VECTOR_FACTOR);
     SPINNER_slicevectorskip = glui_bounds->add_spinner_to_panel(PANEL_vector1, _("Vector skip"), GLUI_SPINNER_INT, &vectorskip, SLICE_VECTORSKIP, SliceBoundCB);
     SPINNER_slicevectorskip->set_int_limits(1, 4);
 
@@ -5101,14 +5098,21 @@ extern "C" void Plot3DBoundCB(int var){
     if(SPINNER_slicevectorskip!=NULL)SPINNER_slicevectorskip->set_int_val(vectorskip);
     break;
   case UPDATE_VECTOR_FROM_SMV:
+    if(vecfactor<0.0)vecfactor = 0.0;
     if(SPINNER_vectorpointsize!=NULL&&SPINNER_vectorlinewidth!=NULL&&SPINNER_vectorlinelength!=NULL){
       SPINNER_vectorpointsize->set_float_val(vectorpointsize);
       SPINNER_vectorlinewidth->set_float_val(vectorlinewidth);
       SPINNER_vectorlinelength->set_float_val(vecfactor);
+      if(SPINNER_plot3d_vectorlinelength!=NULL)SPINNER_plot3d_vectorlinelength->set_float_val(vecfactor);
     }
     Plot3DBoundCB(UPDATE_VECTOR);
     break;
   case UPDATE_VECTOR:
+    if(vecfactor<0.0){
+      vecfactor = 0.0;
+      if(SPINNER_vectorlinewidth!=NULL)SPINNER_vectorlinelength->set_float_val(vecfactor);
+      if(SPINNER_plot3d_vectorlinelength!=NULL)SPINNER_plot3d_vectorlinelength->set_float_val(vecfactor);
+    }
     UpdatePlotSlice(XDIR);
     UpdatePlotSlice(YDIR);
     UpdatePlotSlice(ZDIR);
@@ -5955,14 +5959,21 @@ extern "C" void SliceBoundCB(int var){
       UpdateSliceContours(list_slice_index,slice_line_contour_min, slice_line_contour_max,slice_line_contour_num);
       break;
   case UPDATE_VECTOR_FROM_SMV:
+    if(vecfactor<0.0)vecfactor = 0.0;
     if(SPINNER_plot3d_vectorpointsize!=NULL&&SPINNER_plot3d_vectorlinewidth!=NULL&&SPINNER_plot3d_vectorlinelength!=NULL){
       SPINNER_plot3d_vectorpointsize->set_float_val(vectorpointsize);
       SPINNER_plot3d_vectorlinewidth->set_float_val(vectorlinewidth);
+      if(SPINNER_vectorlinewidth!=NULL)SPINNER_vectorlinelength->set_float_val(vecfactor);
       SPINNER_plot3d_vectorlinelength->set_float_val(vecfactor);
     }
     SliceBoundCB(UPDATE_VECTOR);
     break;
   case UPDATE_VECTOR:
+    if(vecfactor<0.0){
+      vecfactor = 0.0;
+      if(SPINNER_vectorlinewidth!=NULL)SPINNER_vectorlinelength->set_float_val(vecfactor);
+      if(SPINNER_plot3d_vectorlinelength!=NULL)SPINNER_plot3d_vectorlinelength->set_float_val(vecfactor);
+    }
     break;
   case FRAMELOADING:
     sliceframestep=sliceframeskip+1;
