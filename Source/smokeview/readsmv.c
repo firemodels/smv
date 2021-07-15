@@ -4816,7 +4816,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   size_t len;
   int read_slice_header = 0;
   char zlib_file[255], rle_file[255];
-  int cell_center_flag = 0;
+  int cell_center_flag = -1;
 
   char *bufferptr, *bufferptr2;
   int nslicefiles, nn_slice;
@@ -4935,7 +4935,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->valmin_fds = 1.0;
   sd->valmax_fds = 0.0;
   sd->cell_center = cellcenter;
-  if(slicegeom==1&&cell_center_flag==0)sd->cell_center = 1;
+  if(slicegeom==1&&cell_center_flag==1)sd->cell_center = 1;
  // sd->file_size = 0;
   sd->nframes = 0;
   sd->reg_file = NULL;
