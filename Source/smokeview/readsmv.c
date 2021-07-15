@@ -4816,6 +4816,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   size_t len;
   int read_slice_header = 0;
   char zlib_file[255], rle_file[255];
+  int cell_center_flag = 0;
 
   char *bufferptr, *bufferptr2;
   int nslicefiles, nn_slice;
@@ -4847,7 +4848,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   if(char_slcf_index!=NULL){
     *char_slcf_index = 0;
     char_slcf_index++;
-    sscanf(char_slcf_index, "%i", &slcf_index);
+    sscanf(char_slcf_index, "%i %i", &slcf_index, &cell_center_flag);
   }
 
   sliceparms = strchr(buffer, '&');
@@ -4933,6 +4934,8 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->valmax_smv = 0.0;
   sd->valmin_fds = 1.0;
   sd->valmax_fds = 0.0;
+  sd->cell_center = cellcenter;
+  if(slicegeom==1&&cell_center_flag==0)sd->cell_center = 1;
  // sd->file_size = 0;
   sd->nframes = 0;
   sd->reg_file = NULL;
@@ -5047,7 +5050,15 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     if(ReadLabels(&sd->label, stream, "(cell centered)")==LABEL_ERR)return RETURN_TWO;
   }
   else if(sd->slice_filetype==SLICE_GEOM){
-    if(ReadLabelsBNDS(&sd->label, stream, buffers[3], buffers[4], buffers[5], "(geometry)")==LABEL_ERR)return RETURN_TWO;
+    char geom_label[20];
+
+    if(sd->cell_center==1){
+      strcpy(geom_label, "(geometry/cell)");
+    }
+    else{
+      strcpy(geom_label, "(geometry/node)");
+    }
+    if(ReadLabelsBNDS(&sd->label, stream, buffers[3], buffers[4], buffers[5], geom_label)==LABEL_ERR)return RETURN_TWO;
   }
   else if(sd->slice_filetype==SLICE_FACE_CENTER){
     if(ReadLabels(&sd->label, stream, "(face centered)")==LABEL_ERR)return RETURN_TWO;
