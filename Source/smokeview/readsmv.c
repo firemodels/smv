@@ -11315,27 +11315,12 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
     if(Match(buffer, "SHOWEXTREMEDATA") == 1){
-      int below = -1, above = -1, show_extremedata;
+      int below = -1, above = -1, dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i", &show_extremedata, &below, &above);
-      if(below == -1 && above == -1){
-        if(below == -1)below = 0;
-        if(below != 0)below = 1;
-        if(above == -1)above = 0;
-        if(above != 0)above = 1;
-      }
-      else{
-        if(show_extremedata != 1)show_extremedata = 0;
-        if(show_extremedata == 1){
-          below = 1;
-          above = 1;
-        }
-        else{
-          below = 0;
-          above = 0;
-        }
-      }
+      sscanf(buffer, "%i %i %i", &dummy, &below, &above);
+      if(below != 1)below = 0;
+      if(above != 1)above = 0;
       show_extreme_mindata = below;
       show_extreme_maxdata = above;
       continue;
