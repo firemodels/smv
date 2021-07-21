@@ -306,7 +306,7 @@ EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
 EXTERNCPP void MakeIBlankAll(void);
 EXTERNCPP void UpdateSliceDupDialog(void);
 EXTERNCPP void DrawNorth(void);
-EXTERNCPP void DrawGeomData(int flag, patchdata *patchi, int geom_type);
+EXTERNCPP void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomVData(vslicedata *vd);
 EXTERNCPP void UpdateCurrentColorbar(colorbardata *cb);
 EXTERNCPP int  HaveFire(void);
