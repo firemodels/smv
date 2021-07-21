@@ -6386,8 +6386,8 @@ void DrawSliceFrame(){
         break;
       case SLICE_GEOM:
         if(sd->vloaded==0||(sd->vloaded==1&&show_cell_slices_and_vectors==1)){
-          DrawGeomData(DRAW_TRANSPARENT, sd->patchgeom, GEOM_STATIC);
-          DrawGeomData(DRAW_TRANSPARENT, sd->patchgeom, GEOM_DYNAMIC);
+          DrawGeomData(DRAW_TRANSPARENT, sd, sd->patchgeom, GEOM_STATIC);
+          DrawGeomData(DRAW_TRANSPARENT, sd, sd->patchgeom, GEOM_DYNAMIC);
         }
         break;
       default:
@@ -6408,8 +6408,8 @@ void DrawSliceFrame(){
 
     patchi = patchinfo + ii;
     if(patchi->boundary==0 && patchi->loaded == 1 && patchi->display == 1){
-      DrawGeomData(DRAW_TRANSPARENT, patchi, GEOM_STATIC);
-      DrawGeomData(DRAW_TRANSPARENT, patchi, GEOM_DYNAMIC);
+      DrawGeomData(DRAW_TRANSPARENT, NULL, patchi, GEOM_STATIC);
+      DrawGeomData(DRAW_TRANSPARENT, NULL, patchi, GEOM_DYNAMIC);
     }
   }
 }

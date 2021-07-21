@@ -4952,6 +4952,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   if(slicegeom==1){
     patchdata *patchgeom_local;
 
+    if(cell_center_flag==1)sd->cell_center = 1;
     sd->slice_filetype = SLICE_GEOM;
     NewMemory((void **)&patchgeom_local, sizeof(patchdata));
     sd->patchgeom = patchgeom_local;

@@ -4270,14 +4270,14 @@ void DrawBoundaryFrame(int flag){
     if(patchi->structured == NO && patchi->loaded == 1 && patchi->display == 1){
       if(flag == DRAW_OPAQUE){
         if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
-          DrawGeomData(flag, patchi, GEOM_STATIC);
-//          DrawGeomData(flag, patchi, GEOM_DYNAMIC); // only allow boundary files that do not move for now
+          DrawGeomData(flag, NULL, patchi, GEOM_STATIC);
+//          DrawGeomData(flag, NULL, patchi, GEOM_DYNAMIC); // only allow boundary files that do not move for now
         }
       }
       else{
         if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
-          DrawGeomData(flag, patchi, GEOM_STATIC);
-          DrawGeomData(flag, patchi, GEOM_DYNAMIC);
+          DrawGeomData(flag, NULL, patchi, GEOM_STATIC);
+          DrawGeomData(flag, NULL, patchi, GEOM_DYNAMIC);
         }
       }
     }

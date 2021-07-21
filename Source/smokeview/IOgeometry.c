@@ -3814,7 +3814,7 @@ void DrawGeomVData(vslicedata *vd){
 
   /* ------------------ DrawGeomData ------------------------ */
 
-void DrawGeomData(int flag, patchdata *patchi, int geom_type){
+void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   int i;
   unsigned char *ivals;
   int is_ccell = 0;
@@ -3996,11 +3996,18 @@ void DrawGeomData(int flag, patchdata *patchi, int geom_type){
             color2 = rgb_patch+4*color_indices[2];
           }
           else{
-            color_index = ivals[j];
-            color = rgb_patch+4*color_index;
-            color0 = color;
-            color1 = color;
-            color2 = color;
+            if(sd==NULL||sd->cell_center==1){
+              color_index = ivals[j];
+              color = rgb_patch+4*color_index;
+              color0 = color;
+              color1 = color;
+              color2 = color;
+            }
+            else{
+              color0 = rgb_patch+4*ivals[trianglei->vert_index[0]];
+              color1 = rgb_patch+4*ivals[trianglei->vert_index[1]];
+              color2 = rgb_patch+4*ivals[trianglei->vert_index[2]];
+            }
           }
 
           xyzptr[0] = trianglei->verts[0]->xyz;
