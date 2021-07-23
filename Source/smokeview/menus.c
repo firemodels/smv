@@ -3123,10 +3123,21 @@ void ReloadAllSliceFiles(void){
   int ii;
   int file_count = 0;
   float load_size = 0.0, load_time;
+  int last_slice=0;
 
   LOCK_COMPRESS
   slicefile_labelindex_save = slicefile_labelindex;
   START_TIMER(load_time);
+  for(ii = nslice_loaded-1; ii >= 0; ii--){
+    slicedata *slicei;
+    int i;
+
+    i = slice_loaded_list[ii];
+    slicei = sliceinfo+i;
+    if(slicei->display==0)continue;
+    last_slice = i;
+    break;
+  }
   for(ii = 0; ii < nslice_loaded; ii++){
     slicedata *slicei;
     int set_slicecolor;
@@ -3135,8 +3146,9 @@ void ReloadAllSliceFiles(void){
 
     i = slice_loaded_list[ii];
     slicei = sliceinfo + i;
+    if(slicei->display==0)continue;
     set_slicecolor = DEFER_SLICECOLOR;
-    if(ii == nslice_loaded-1)set_slicecolor = SET_SLICECOLOR;
+    if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
 
     if(slicei->slice_filetype == SLICE_GEOM){
       load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, &errorcode);

@@ -1517,7 +1517,10 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
   PushVSliceLoadstack(ivslice);
 
   PrintMemoryInfo;
-  if(finalize==1)ForceIdle();
+  if(finalize==1){
+    updatemenu = 1;
+    ForceIdle();
+  }
   return return_filesize;
 }
 
@@ -4569,6 +4572,15 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   histograms_defined = 0;
   sd = sliceinfo+slicefilenumber;
 
+  if(flag==LOAD){
+    for(i = 0; i<nsliceinfo; i++){
+      slicedata *slicei;
+
+      slicei = sliceinfo+i;
+      if(slicei->display==1&&strcmp(sd->label.longlabel, slicei->label.longlabel)!=0)slicei->display = 0;
+    }
+  }
+
   blocknumber = sd->blocknumber;
   meshi = meshinfo + blocknumber;
 
@@ -4969,7 +4981,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
           slicedata *slicei;
 
           slicei = sliceinfo+i;
-          if(slicei->loaded==0)continue;
+          if(slicei->loaded==0||slicei->display==0)continue;
           if(slicei->slicefile_labelindex!=slicefile_labelindex)continue;
           slicei->globalmin = qmin;
           slicei->globalmax = qmax;
