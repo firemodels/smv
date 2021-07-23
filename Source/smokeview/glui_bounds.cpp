@@ -4550,45 +4550,36 @@ extern "C" void GluiBoundsSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_part, glui_bounds);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_part, PART_ROLLOUT, glui_bounds);
 
-    {
-      char boundmenulabel[100];
+    partboundsCPP.setup("particle", ROLLOUT_part, partbounds_cpp, npartbounds_cpp, &cache_part_data, SHOW_CACHE_CHECKBOX, PERCENTILE_ENABLED, PartBoundsCPP_CB,
+                        ParticleRolloutCB, particleprocinfo, &nparticleprocinfo);
 
-      strcpy(boundmenulabel, "Reload ");
-      strcat(boundmenulabel, label);
-      strcat(boundmenulabel, " File");
-      if(npartinfo > 1)strcat(boundmenulabel, "s");
+    ROLLOUT_particle_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_part,"Settings",false,PARTICLE_SETTINGS, ParticleRolloutCB);
+    INSERT_ROLLOUT(ROLLOUT_particle_settings, glui_bounds);
+    ADDPROCINFO(particleprocinfo, nparticleprocinfo, ROLLOUT_particle_settings, PARTICLE_SETTINGS, glui_bounds);
 
-      partboundsCPP.setup("particle", ROLLOUT_part, partbounds_cpp, npartbounds_cpp, &cache_part_data, SHOW_CACHE_CHECKBOX, PERCENTILE_ENABLED, PartBoundsCPP_CB,
-                          ParticleRolloutCB, particleprocinfo, &nparticleprocinfo);
+    SPINNER_partpointsize=glui_bounds->add_spinner_to_panel(ROLLOUT_particle_settings,_("Particle size"),GLUI_SPINNER_FLOAT,&partpointsize);
+    SPINNER_partpointsize->set_float_limits(1.0,100.0);
+    SPINNER_streaklinewidth=glui_bounds->add_spinner_to_panel(ROLLOUT_particle_settings,_("Streak line width"),GLUI_SPINNER_FLOAT,&streaklinewidth);
+    SPINNER_streaklinewidth->set_float_limits(1.0,100.0);
 
-      ROLLOUT_particle_settings = glui_bounds->add_rollout_to_panel(ROLLOUT_part,"Settings",false,PARTICLE_SETTINGS, ParticleRolloutCB);
-      INSERT_ROLLOUT(ROLLOUT_particle_settings, glui_bounds);
-      ADDPROCINFO(particleprocinfo, nparticleprocinfo, ROLLOUT_particle_settings, PARTICLE_SETTINGS, glui_bounds);
+    SPINNER_partstreaklength=glui_bounds->add_spinner_to_panel(ROLLOUT_particle_settings,_("Streak length (s)"),GLUI_SPINNER_FLOAT,&float_streak5value,STREAKLENGTH,PartBoundCB);
+    SPINNER_partstreaklength->set_float_limits(0.0,tmax_part);
 
-      SPINNER_partpointsize=glui_bounds->add_spinner_to_panel(ROLLOUT_particle_settings,_("Particle size"),GLUI_SPINNER_FLOAT,&partpointsize);
-      SPINNER_partpointsize->set_float_limits(1.0,100.0);
-      SPINNER_streaklinewidth=glui_bounds->add_spinner_to_panel(ROLLOUT_particle_settings,_("Streak line width"),GLUI_SPINNER_FLOAT,&streaklinewidth);
-      SPINNER_streaklinewidth->set_float_limits(1.0,100.0);
+    CHECKBOX_showtracer=glui_bounds->add_checkbox_to_panel(ROLLOUT_particle_settings,_("Always show tracers"),&show_tracers_always,TRACERS,PartBoundCB);
 
-      SPINNER_partstreaklength=glui_bounds->add_spinner_to_panel(ROLLOUT_particle_settings,_("Streak length (s)"),GLUI_SPINNER_FLOAT,&float_streak5value,STREAKLENGTH,PartBoundCB);
-      SPINNER_partstreaklength->set_float_limits(0.0,tmax_part);
-
-      CHECKBOX_showtracer=glui_bounds->add_checkbox_to_panel(ROLLOUT_particle_settings,_("Always show tracers"),&show_tracers_always,TRACERS,PartBoundCB);
-
-      PANEL_partread=glui_bounds->add_panel_to_panel(ROLLOUT_particle_settings,_("Particle loading"));
-      CHECKBOX_partfast = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Fast loading"), &partfast, PARTFAST, PartBoundCB);
-      CHECKBOX_part_multithread = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Parallel loading"), &part_multithread);
-      SPINNER_npartthread_ids = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once"), GLUI_SPINNER_INT, &npartthread_ids);
-      if(npartinfo>1){
-        SPINNER_npartthread_ids->set_int_limits(1,MIN(npartinfo,MAX_THREADS));
-      }
-      else{
-        SPINNER_npartthread_ids->set_int_limits(1,1);
-      }
-      PartBoundCB(PARTFAST);
+    PANEL_partread=glui_bounds->add_panel_to_panel(ROLLOUT_particle_settings,_("Particle loading"));
+    CHECKBOX_partfast = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Fast loading"), &partfast, PARTFAST, PartBoundCB);
+    CHECKBOX_part_multithread = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Parallel loading"), &part_multithread);
+    SPINNER_npartthread_ids = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once"), GLUI_SPINNER_INT, &npartthread_ids);
+    if(npartinfo>1){
+      SPINNER_npartthread_ids->set_int_limits(1,MIN(npartinfo,MAX_THREADS));
     }
-    PartBoundCB(FILETYPE_INDEX);
+    else{
+      SPINNER_npartthread_ids->set_int_limits(1,1);
+    }
+    PartBoundCB(PARTFAST);
   }
+  PartBoundCB(FILETYPE_INDEX);
 
   if(have_evac==1){
     glui_active=1;
