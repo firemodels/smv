@@ -6582,6 +6582,109 @@ int IsBoundaryType(int type){
   return 0;
 }
 
+/* ------------------ IsoLoadState ------------------------ */
+
+void IsoLoadState(isodata *isoi, int  *load_state){
+  int i, total=0, loaded=0;
+
+  for(i=0; i<nisoinfo; i++){
+    isodata *isoii;
+
+    isoii = isoinfo + i;
+    if(strcmp(isoi->surface_label.longlabel, isoii->surface_label.longlabel)!=0)continue;
+    total++;
+    if(isoii->loaded==1)loaded++;
+  }
+  if(loaded==0){
+    *load_state = 0;
+  }
+  else{
+    if(loaded<total){
+      *load_state = 1;
+    }
+    else{
+      *load_state = 2;
+    }
+  }
+}
+
+/* ------------------ PatchLoadState ------------------------ */
+
+void PatchLoadState(patchdata *patchi, int  *load_state){
+  int i, total=0, loaded=0;
+
+  for(i=0; i<npatchinfo; i++){
+    patchdata *patchii;
+
+    patchii = patchinfo + i;
+    if(strcmp(patchi->label.longlabel, patchii->label.longlabel)!=0)continue;
+    total++;
+    if(patchii->loaded==1)loaded++;
+  }
+  if(loaded==0){
+    *load_state = 0;
+  }
+  else{
+    if(loaded<total){
+      *load_state = 1;
+    }
+    else{
+      *load_state = 2;
+    }
+  }
+}
+
+/* ------------------ Plot3DLoadState ------------------------ */
+
+void Plot3DLoadState(float time, int  *load_state){
+  int i, total=0, loaded=0;
+
+  for(i=0; i<nplot3dinfo; i++){
+    plot3ddata *plot3di;
+
+    plot3di = plot3dinfo + i;
+    if(ABS(plot3di->time-time)>0.1)continue;
+    total++;
+    if(plot3di->loaded==1)loaded++;
+  }
+  if(loaded==0){
+    *load_state = 0;
+  }
+  else{
+    if(loaded<total){
+      *load_state = 1;
+    }
+    else{
+      *load_state = 2;
+    }
+  }
+}
+
+/* ------------------ PartLoadState ------------------------ */
+
+void PartLoadState(int  *load_state){
+  int i, total=0, loaded=0;
+
+  for(i=0; i<npartinfo; i++){
+    partdata *parti;
+
+    parti = partinfo + i;
+    total++;
+    if(parti->loaded==1)loaded++;
+  }
+  if(loaded==0){
+    *load_state = 0;
+  }
+  else{
+    if(loaded<total){
+      *load_state = 1;
+    }
+    else{
+      *load_state = 2;
+    }
+  }
+}
+
 /* ------------------ InitMenus ------------------------ */
 
 void InitMenus(int unload){
@@ -10102,7 +10205,13 @@ updatemenu=0;
 
       CREATEMENU(particlemenu,LoadParticleMenu);
       if(npartinfo > 0){
-        strcpy(menulabel, _("Particles"));
+        int part_load_state;
+
+        PartLoadState(&part_load_state);
+        strcpy(menulabel, "");
+        if(part_load_state==1)strcat(menulabel, "#");
+        if(part_load_state==2)strcat(menulabel, "*");
+        strcat(menulabel, "Particles");
         glutAddMenuEntry(menulabel, MENU_PARTICLE_ALLMESHES);
         strcpy(menulabel, "Mesh");
         GLUTADDSUBMENU(menulabel, particlesubmenu);
@@ -11276,6 +11385,9 @@ updatemenu=0;
         }
 #endif
         if(ii==0){
+          int plot3d_load_state;
+          char prefix[3];
+
           glutAddMenuEntry(_("Settings..."), MENU_PLOT3D_SETTINGS);
           if(nplot3dloaded>1){
             GLUTADDSUBMENU(_("Unload"),unloadplot3dmenu);
@@ -11286,7 +11398,11 @@ updatemenu=0;
           glutAddMenuEntry("-", MENU_PLOT3D_DUMMY);
           strcpy(menulabel,plot3di->longlabel);
           glutAddMenuEntry(menulabel,MENU_PLOT3D_DUMMY);
-          sprintf(menulabel,"  %f",plot3di->time);
+          Plot3DLoadState(plot3di->time, &plot3d_load_state);
+          strcpy(prefix, "");
+          if(plot3d_load_state==1)strcat(prefix,"#");
+          if(plot3d_load_state==2)strcat(prefix,"*");
+          sprintf(menulabel,"  %s%f", prefix, plot3di->time);
           TrimZeros(menulabel);
           strcat(menulabel," s");
           if(nmeshes>1){
@@ -11303,6 +11419,8 @@ updatemenu=0;
           nloadsubplot3dmenu++;
         }
         if(ii!=0){
+          int plot3d_load_state;
+
           i = plot3dorderindex[ii];
           im1 = plot3dorderindex[ii-1];
           plot3di = plot3dinfo + i;
@@ -11311,7 +11429,13 @@ updatemenu=0;
             glutAddMenuEntry(plot3di->longlabel,MENU_PLOT3D_DUMMY);
           }
           if(ABS(plot3di->time-plot3dim1->time)>0.1){
-            sprintf(menulabel,"  %f",plot3di->time);
+            char prefix[3];
+
+            Plot3DLoadState(plot3di->time, &plot3d_load_state);
+            strcpy(prefix, "");
+            if(plot3d_load_state==1)strcat(prefix,"#");
+            if(plot3d_load_state==2)strcat(prefix,"*");
+            sprintf(menulabel,"  %s%f",prefix, plot3di->time);
             TrimZeros(menulabel);
             strcat(menulabel," s");
             if(nmeshes>1){
@@ -11548,7 +11672,15 @@ updatemenu=0;
               GLUTADDSUBMENU(patchi->menulabel_base,loadsubpatchmenu_b[iloadsubpatchmenu_b]);
             }
             else if(nsubmenus==1){
-              glutAddMenuEntry(patchi->label.longlabel,-i-10);
+              char menulabel[1024];
+              int patch_load_state;
+
+              PatchLoadState(patchi, &patch_load_state);
+              strcpy(menulabel, "");
+              if(patch_load_state==1)strcat(menulabel, "#");
+              if(patch_load_state==2)strcat(menulabel, "*");
+              strcat(menulabel, patchi->label.longlabel);
+              glutAddMenuEntry(menulabel,-i-10);
             }
             iloadsubpatchmenu_b++;
           }
@@ -11672,8 +11804,13 @@ updatemenu=0;
             }
             if(useitem!=-1){
               char menulabel[1024];
+              int load_state;
 
-              strcpy(menulabel,isoi->surface_label.longlabel);
+              IsoLoadState(isoi, &load_state);
+              strcpy(menulabel,"");
+              if(load_state==1)strcat(menulabel, "#");
+              if(load_state==2)strcat(menulabel, "*");
+              strcat(menulabel, isoi->surface_label.longlabel);
               glutAddMenuEntry(menulabel,-useitem-10);
             }
           }
