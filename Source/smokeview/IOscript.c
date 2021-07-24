@@ -1809,6 +1809,8 @@ int SliceMatch(scriptdata *scripti, slicedata *slicei){
   ASSERT(scripti->quantity!=NULL);
   if(scripti->quantity==NULL)return 0;  // should never happen
   if(scripti->quantity!=NULL&&strncmp(scripti->quantity, slicei->label.longlabel,strlen(scripti->quantity))!=0)return 0;
+  if(scripti->cell_centered==0&&slicei->slice_filetype==SLICE_CELL_CENTER)return 0;
+  if(scripti->cell_centered==1&&slicei->slice_filetype!=SLICE_CELL_CENTER)return 0;
   if(scripti->pbxyz_dir==0){
     int *min, *max;
     meshdata *meshi;

@@ -5575,6 +5575,7 @@ void PartBoundCB(int var){
 
   prop_new = part5propinfo + ipart5prop;
   prop_old = part5propinfo + ipart5prop_old;
+  if(part5propinfo==NULL)return;
   switch(var){
   case VALMIN:
     if(setpartmin==SET_MIN)prop_new->user_min = glui_partmin;
