@@ -313,7 +313,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 #ifdef pp_WUI_VAO
   if(have_terrain_vao==1&&usegpu==1){
     CLIP_GEOMETRY;
-    DrawTerrainGeomGPU(DRAW_OPAQUE);
+    DrawTerrainGeomGPU();
   }
   else{
     CLIP_GEOMETRY;
@@ -438,8 +438,6 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
 #ifdef pp_WUI_VAO
   if(have_terrain_vao==1&&usegpu==1){
-    CLIP_GEOMETRY;
-    DrawTerrainGeomGPU(DRAW_TRANSPARENT);
   }
   else{
     CLIP_GEOMETRY;
