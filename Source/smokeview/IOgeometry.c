@@ -896,6 +896,7 @@ void DrawGeom(int flag, int timestate){
 
     geomi = geominfoptrs[i];
     if(geomi->loaded==0||geomi->display==0)continue;
+    if(geomi->is_terrain==1)continue;
     if(geomi->geomtype!=GEOM_GEOM&&geomi->geomtype!=GEOM_ISO)continue;
     if(timestate==GEOM_STATIC||geomi->ntimes==0){
       geomlisti = geomi->geomlistinfo-1;
