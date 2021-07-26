@@ -4538,6 +4538,20 @@ int GetNSliceFrames(char *file, float *stime_min, float *stime_max){
   return nframes;
 }
 
+/* ------------------ HideSlices ------------------------ */
+
+void HideSlices(char *longlabel){
+  int i;
+
+  if(longlabel==NULL)return;
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    if(slicei->display==1&&strcmp(slicei->label.longlabel, longlabel)!=0)slicei->display = 0;
+  }
+}
+
 /* ------------------ ReadSlice ------------------------ */
 
 FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode){
@@ -4573,12 +4587,7 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   sd = sliceinfo+slicefilenumber;
 
   if(flag==LOAD){
-    for(i = 0; i<nsliceinfo; i++){
-      slicedata *slicei;
-
-      slicei = sliceinfo+i;
-      if(slicei->display==1&&strcmp(sd->label.longlabel, slicei->label.longlabel)!=0)slicei->display = 0;
-    }
+    HideSlices(sd->label.longlabel);
   }
 
   blocknumber = sd->blocknumber;

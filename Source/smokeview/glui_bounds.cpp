@@ -2285,11 +2285,12 @@ void SetLoadedSliceBounds(int *list, int nlist){
   float valmin_dlg, valmax_dlg;
   float valmin, valmax;
   char *label=NULL;
-  slicedata *slicei;
   int i;
 
   if(list==NULL){
     for(i = 0; i<nsliceinfo; i++){
+      slicedata *slicei;
+
       slicei = sliceinfo+i;
       if(slicei->loaded==1&&slicei->display==1){
         label = slicei->label.shortlabel;
@@ -2298,6 +2299,8 @@ void SetLoadedSliceBounds(int *list, int nlist){
     }
   }
   else{
+    slicedata *slicei;
+
     slicei = sliceinfo+list[0];
     label = slicei->label.shortlabel;
   }
