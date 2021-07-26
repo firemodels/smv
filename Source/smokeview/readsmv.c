@@ -10417,6 +10417,7 @@ typedef struct {
   PRINT_TIMER(timer_readsmv, "UpdateTriangles");
   GetFaceInfo();
   GetBoxGeomCorners();
+
 #ifdef pp_WUI_VAO
   have_terrain_vao = 0;
 #endif
