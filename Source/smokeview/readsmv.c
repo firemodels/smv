@@ -5151,7 +5151,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->timeslist = NULL;
   sd->blocknumber = blocknumber;
   sd->vloaded = 0;
-  sd->reload = 0;
   sd->nline_contours = 0;
   sd->line_contours = NULL;
   sd->menu_show = 1;

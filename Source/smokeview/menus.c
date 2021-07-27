@@ -3251,13 +3251,6 @@ void LoadUnloadMenu(int value){
       if(vslicei->loaded==1)vslicei->reload = 1;
     }
     slicefile_labelindex_save=slicefile_labelindex;
-    for(i=0;i<nsliceinfo;i++){
-      slicedata *slicei;
-
-      slicei = sliceinfo+i;
-      slicei->reload = 0;
-      if(slicei->loaded==1)slicei->reload = 1;
-    }
 
     //*** reload vector slice files
 

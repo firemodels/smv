@@ -1383,7 +1383,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       if(u->valmin<valmin)valmin = u->valmin;
       if(u->valmax>valmax)valmax = u->valmax;
       u->display = 0;
-      u->reload = 0;
       u->vloaded = 1;
     }
   }
@@ -1412,7 +1411,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       if(v->valmin<valmin)valmin = v->valmin;
       if(v->valmax>valmax)valmax = v->valmax;
       v->display = 0;
-      v->reload = 0;
       v->vloaded = 1;
     }
   }
@@ -1441,7 +1439,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       if(w->valmin<valmin)valmin = w->valmin;
       if(w->valmax>valmax)valmax = w->valmax;
       w->display = 0;
-      w->reload = 0;
       w->vloaded = 1;
     }
   }
@@ -1473,7 +1470,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       vd->valmax = valmax;
       val->display = 0;
       val->vloaded = 1;
-      val->reload = 0;
     }
   }
   vd->display=1;
@@ -2818,7 +2814,6 @@ void UpdateFedinfo(void){
     sd->timeslist = NULL;
     sd->blocknumber = co2->blocknumber;
     sd->vloaded = 0;
-    sd->reload = 0;
     sd->nline_contours = 0;
     sd->line_contours = NULL;
     sd->menu_show = 1;
