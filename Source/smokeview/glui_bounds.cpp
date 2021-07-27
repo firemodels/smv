@@ -1724,10 +1724,12 @@ extern "C" void SliceBoundsCPP_CB(int var){
       SetLoadedSliceBounds(NULL, 0);
 #ifdef pp_THREAD
       LockUnlockCompress(1);
+#endif
+      SetLoadedSliceBounds(NULL, 0);
+      ReloadAllVectorSliceFiles();
       ReloadAllSliceFiles();
+#ifdef pp_THREAD
       LockUnlockCompress(0);
-#else
-      ReloadAllSliceFiles();
 #endif
       SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
       break;
@@ -6079,6 +6081,8 @@ extern "C" void SliceBoundCB(int var){
     if(research_mode==1){
       SliceBoundCB(SET_GLOBAL_BOUNDS);
     }
+    SetLoadedSliceBounds(NULL, 0);
+    ReloadAllVectorSliceFiles();
     ReloadAllSliceFiles();
     SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
     break;

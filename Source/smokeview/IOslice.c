@@ -1283,6 +1283,9 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
   vd->val=NULL;
   int set_slicecolor = SET_SLICECOLOR;
 
+  if(vd->iu!=-1)sliceinfo[vd->iu].uvw = 1;
+  if(vd->iv!=-1)sliceinfo[vd->iv].uvw = 1;
+  if(vd->iw!=-1)sliceinfo[vd->iw].uvw = 1;
   if(flag==UNLOAD){
     if(vd->loaded==0)return 0;
     if(vd->iu!=-1){
@@ -2783,6 +2786,7 @@ void UpdateFedinfo(void){
     nn_slice = nsliceinfo + i;
 
     sd->is_fed = 1;
+    sd->uvw = 0;
     sd->fedptr = fedi;
     sd->slice_filetype = co2->slice_filetype;
     if(sd->slice_filetype == SLICE_CELL_CENTER){
@@ -4539,6 +4543,12 @@ void HideSlices(char *longlabel){
   int i;
 
   if(longlabel==NULL)return;
+  for(i = 0; i<nvsliceinfo; i++){
+    vslicedata *vslicei;
+
+    vslicei = vsliceinfo+i;
+    if(vslicei->display==1&&strcmp(sliceinfo[vslicei->ival].label.longlabel, longlabel)!=0)vslicei->display = 0;
+  }
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
 
@@ -4580,10 +4590,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   slicefilenum = ifile;
   histograms_defined = 0;
   sd = sliceinfo+slicefilenumber;
-
-  if(flag==LOAD){
-    HideSlices(sd->label.longlabel);
-  }
 
   blocknumber = sd->blocknumber;
   meshi = meshinfo + blocknumber;
@@ -4939,7 +4945,11 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   CheckMemory;
 
   sd->loaded = 1;
-  if(sd->vloaded == 0)sd->display = 1;
+  if(sd->vloaded == 0){
+    sd->display = 1;
+    if(sd->uvw==0)HideSlices(sd->label.longlabel);
+  }
+
   slicefile_labelindex = GetSliceBoundsIndex(sd);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   if(sd->finalize==1){

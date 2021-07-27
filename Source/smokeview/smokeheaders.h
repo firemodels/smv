@@ -268,6 +268,8 @@ EXTERNCPP void UpdateShowRotationCenter2(void);
 EXTERNCPP void UpdateGluiRotateAbout(int val);
 EXTERNCPP void UpdateRotationIndex(int val);
 EXTERNCPP void ReloadAllSliceFiles(void);
+EXTERNCPP void ReloadAllVectorSliceFiles(void);
+EXTERNCPP void UnloadAllSliceFiles(char *longlabel);
 EXTERNCPP void UpdateWindRoseDevices(int option);
 EXTERNCPP void ParticleStreakShowMenu(int var);
 EXTERNCPP void UpdateGeomNormals();
