@@ -4990,7 +4990,8 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
           slicedata *slicei;
 
           slicei = sliceinfo+i;
-          if(slicei->loaded==0||slicei->display==0)continue;
+          if(slicei->loaded==0)continue;
+          if(slicei->vloaded==0&&slicei->display==0)continue;
           if(slicei->slicefile_labelindex!=slicefile_labelindex)continue;
           slicei->globalmin = qmin;
           slicei->globalmax = qmax;
