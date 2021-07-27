@@ -1708,6 +1708,7 @@ extern "C" void SliceBoundsCPP_CB(int var){
 
         i = slice_loaded_list[ii];
         sd = sliceinfo + i;
+        if(sd->vloaded==0&&sd->display==0)continue;
         if(sd->slicefile_labelindex == slicefile_labelindex){
           last_slice = i;
           break;
@@ -1721,7 +1722,14 @@ extern "C" void SliceBoundsCPP_CB(int var){
       break;
     case BOUND_RELOAD_DATA:
       SetLoadedSliceBounds(NULL, 0);
+#ifdef pp_THREAD
+      LockUnlockCompress(1);
       ReloadAllSliceFiles();
+      LockUnlockCompress(0);
+#else
+      ReloadAllSliceFiles();
+#endif
+      SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
       break;
     case BOUND_RESEARCH_MODE:
       if(npartinfo>0)partboundsCPP.CB(BOUND_RESEARCH_MODE);
@@ -6072,6 +6080,7 @@ extern "C" void SliceBoundCB(int var){
       SliceBoundCB(SET_GLOBAL_BOUNDS);
     }
     ReloadAllSliceFiles();
+    SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
     break;
   default:
     ASSERT(FFALSE);

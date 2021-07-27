@@ -809,6 +809,7 @@ void UpdateSliceColors(int last_slice){
 
     i = slice_loaded_list[ii];
     sd = sliceinfo+i;
+    if(sd->vloaded==0&&sd->display==0)continue;
     if(sd->slicefile_labelindex==slicefile_labelindex){
       int set_slicecolor;
 
