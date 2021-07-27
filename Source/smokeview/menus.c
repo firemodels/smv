@@ -3123,7 +3123,7 @@ void ReloadAllSliceFiles(void){
   int ii;
   int file_count = 0;
   float load_size = 0.0, load_time;
-  slicedata *last_slice=NULL, **reload_slicelist;
+  slicedata **reload_slicelist;
 
   NewMemory((void **)&reload_slicelist, nsliceinfo*sizeof(slicedata *));
   slicefile_labelindex_save = slicefile_labelindex;
@@ -3230,7 +3230,6 @@ void LoadUnloadMenu(int value){
     GLUTPOSTREDISPLAY;
   }
   if(value==RELOADALL||value==RELOAD_INCREMENTAL_ALL){
-    int last_slice_loaded;
     int load_mode;
 
     if(value==RELOADALL)load_mode = LOAD;
