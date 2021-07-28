@@ -199,7 +199,7 @@ GLUI_Listbox *LIST_movie_slice_index=NULL;
 GLUI_Listbox *LIST_movie_queue_index=NULL;
 GLUI_Listbox *LIST_viewpoints=NULL;
 GLUI_Listbox *LIST_windowsize=NULL;
-GLUI_Listbox *LIST_mesh2=NULL;
+GLUI_Listbox *LIST_rotate_about=NULL;
 GLUI_Listbox *LIST_render_skip=NULL;
 
 rolloutlistdata first_rollout, last_rollout;
@@ -418,7 +418,7 @@ extern "C" void UpdateShowRotationCenter(void){
 /* ------------------ UpdateGluiRotateAbout ------------------------ */
 
 void UpdateGluiRotateAbout(int val){
-  if(LIST_mesh2 != NULL)LIST_mesh2->set_int_val(val);
+  if(LIST_rotate_about != NULL)LIST_rotate_about->set_int_val(val);
   SceneMotionCB(MESH_LIST);
 }
 
@@ -1166,25 +1166,24 @@ extern "C" void GluiMotionSetup(int main_window){
   rotation_index=&camera_current->rotation_index;
   *rotation_index=glui_rotation_index_ini;
 
-  LIST_mesh2 = glui_motion->add_listbox_to_panel(ROLLOUT_rotation_type,_("Rotate about:"),rotation_index,MESH_LIST,SceneMotionCB);
-  LIST_mesh2->add_item(ROTATE_ABOUT_CLIPPING_CENTER, _("center of clipping planes"));
-  LIST_mesh2->add_item(ROTATE_ABOUT_USER_CENTER,_("user specified center"));
+  LIST_rotate_about = glui_motion->add_listbox_to_panel(ROLLOUT_rotation_type,_("Rotate about:"),rotation_index,MESH_LIST,SceneMotionCB);
+  LIST_rotate_about->add_item(ROTATE_ABOUT_CLIPPING_CENTER, _("center of clipping planes"));
+  LIST_rotate_about->add_item(ROTATE_ABOUT_USER_CENTER,_("user specified center"));
   if(have_geom_bb==1){
-    LIST_mesh2->add_item(ROTATE_ABOUT_FDS_CENTER, _("FDS domain center"));
+    LIST_rotate_about->add_item(ROTATE_ABOUT_FDS_CENTER, _("FDS domain center"));
+    LIST_rotate_about->add_item(ROTATE_ABOUT_WORLD_CENTER, _("FDS+Geometry domain center"));
   }
+  else{
+    LIST_rotate_about->add_item(ROTATE_ABOUT_WORLD_CENTER, _("FDS domain center"));
+  }
+  LIST_rotate_about->set_int_val(ROTATE_ABOUT_WORLD_CENTER);
+
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
 
     meshi = meshinfo + i;
-    LIST_mesh2->add_item(i,meshi->label);
+    LIST_rotate_about->add_item(i,meshi->label);
   }
-  if(have_geom_bb==1){
-    LIST_mesh2->add_item(nmeshes, _("FDS+Geometry domain center"));
-  }
-  else{
-    LIST_mesh2->add_item(nmeshes, _("FDS domain center"));
-  }
-  LIST_mesh2->set_int_val(*rotation_index);
 
   PANEL_user_center = glui_motion->add_panel_to_panel(ROLLOUT_rotation_type, "rotation center");
   CHECKBOX_show_rotation_center=glui_motion->add_checkbox_to_panel(PANEL_user_center,_("Show"),&show_rotation_center, CLIP_SHOW_ROTATE, SceneMotionCB);
@@ -1815,7 +1814,7 @@ extern "C" void ShowHideTranslate(int var){
     if(RADIO_rotation_type!=NULL)RADIO_rotation_type->set_int_val(rotation_type);
     if(BUTTON_eyelevel!=NULL)BUTTON_eyelevel->disable();
     if(BUTTON_floorlevel!=NULL)BUTTON_floorlevel->disable();
-    if(LIST_mesh2!=NULL)LIST_mesh2->enable();
+    if(LIST_rotate_about!=NULL)LIST_rotate_about->enable();
     if(CHECKBOX_show_rotation_center!=NULL)CHECKBOX_show_rotation_center->enable();
     if(BUTTON_snap!=NULL)BUTTON_snap->enable();
     break;
@@ -1831,7 +1830,7 @@ extern "C" void ShowHideTranslate(int var){
     if(RADIO_rotation_type!=NULL)RADIO_rotation_type->set_int_val(rotation_type);
     if(BUTTON_eyelevel!=NULL)BUTTON_eyelevel->disable();
     if(BUTTON_floorlevel!=NULL)BUTTON_floorlevel->disable();
-    if(LIST_mesh2!=NULL)LIST_mesh2->enable();
+    if(LIST_rotate_about!=NULL)LIST_rotate_about->enable();
     if(CHECKBOX_show_rotation_center!=NULL)CHECKBOX_show_rotation_center->enable();
     if(BUTTON_snap!=NULL)BUTTON_snap->enable();
     break;
@@ -1847,7 +1846,7 @@ extern "C" void ShowHideTranslate(int var){
     if(RADIO_rotation_type!=NULL)RADIO_rotation_type->set_int_val(rotation_type);
     if(BUTTON_eyelevel!=NULL)BUTTON_eyelevel->enable();
     if(BUTTON_floorlevel!=NULL)BUTTON_floorlevel->enable();
-    if(LIST_mesh2!=NULL)LIST_mesh2->disable();
+    if(LIST_rotate_about!=NULL)LIST_rotate_about->disable();
     if(CHECKBOX_show_rotation_center!=NULL)CHECKBOX_show_rotation_center->disable();
     if(BUTTON_snap!=NULL)BUTTON_snap->disable();
     break;
@@ -1863,7 +1862,7 @@ extern "C" void ShowHideTranslate(int var){
     if(RADIO_rotation_type!=NULL)RADIO_rotation_type->set_int_val(rotation_type);
     if(BUTTON_eyelevel!=NULL)BUTTON_eyelevel->disable();
     if(BUTTON_floorlevel!=NULL)BUTTON_floorlevel->disable();
-    if(LIST_mesh2!=NULL)LIST_mesh2->enable();
+    if(LIST_rotate_about!=NULL)LIST_rotate_about->enable();
     if(CHECKBOX_show_rotation_center!=NULL)CHECKBOX_show_rotation_center->enable();
     if(BUTTON_snap!=NULL)BUTTON_snap->enable();
     break;
@@ -2187,6 +2186,11 @@ extern "C" void SceneMotionCB(int var){
         SPINNER_ycenCUSTOM->disable();
         SPINNER_zcenCUSTOM->disable();
       }
+      else if(*rotation_index==ROTATE_ABOUT_WORLD_CENTER){
+        SPINNER_xcenCUSTOM->disable();
+        SPINNER_ycenCUSTOM->disable();
+        SPINNER_zcenCUSTOM->disable();
+      }
       else{
         custom_worldcenter=0;
         SPINNER_xcenCUSTOM->disable();
@@ -2206,9 +2210,13 @@ extern "C" void SceneMotionCB(int var){
       else if(*rotation_index==ROTATE_ABOUT_CLIPPING_CENTER){
         UpdateRotationIndex(ROTATE_ABOUT_CLIPPING_CENTER);
       }
+      else if(*rotation_index==ROTATE_ABOUT_WORLD_CENTER){
+        UpdateCurrentMesh(meshinfo);
+        UpdateRotationIndex(ROTATE_ABOUT_WORLD_CENTER);
+      }
       else{
         UpdateCurrentMesh(meshinfo);
-        UpdateRotationIndex(nmeshes);
+        UpdateRotationIndex(ROTATE_ABOUT_WORLD_CENTER);
       }
       update_rotation_center=1;
       return;
@@ -2394,8 +2402,8 @@ extern "C" void SceneMotionCB(int var){
 /* ------------------ UpdateMeshList1 ------------------------ */
 
 extern "C" void UpdateMeshList1(int val){
-  if(LIST_mesh2==NULL)return;
-  LIST_mesh2->set_int_val(val);
+  if(LIST_rotate_about==NULL)return;
+  LIST_rotate_about->set_int_val(val);
   if(val>=0&&val<nmeshes){
     RADIO_rotation_type->set_int_val(ROTATION_2AXIS);
     HandleRotationType(ROTATION_2AXIS);
