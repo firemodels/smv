@@ -24,11 +24,17 @@
 #endif
 
 #ifdef INMAIN
-SVEXTERN float obst_bounding_box[6]={1.0,0.0,1.0,0.0,1.0,0.0};
+SVEXTERN float obst_bounding_box[6] = {1.0,0.0,1.0,0.0,1.0,0.0};
+SVEXTERN float geom_bounding_box[6] = {1000000000.0, -1000000000.0,
+                                       1000000000.0, -1000000000.0,
+                                       1000000000.0, -1000000000.0
+                                      };
 #else
 SVEXTERN float obst_bounding_box[6];
+SVEXTERN float geom_bounding_box[6];
 #endif
 
+SVEXTERN int SVDECL(have_geom_bb, 0);
 SVEXTERN int SVDECL(show_geom_boundingbox, SHOW_BOUNDING_BOX_NEVER);
 SVEXTERN int SVDECL(have_obsts, 0);
 SVEXTERN int SVDECL(chop_patch, 0);
@@ -1167,6 +1173,8 @@ SVEXTERN float xbar, ybar, zbar;
 SVEXTERN float xbar0, ybar0, zbar0;
 SVEXTERN float xbarORIG, ybarORIG, zbarORIG;
 SVEXTERN float xbar0ORIG, ybar0ORIG, zbar0ORIG;
+SVEXTERN float xbarFDS, ybarFDS, zbarFDS;
+SVEXTERN float xbar0FDS, ybar0FDS, zbar0FDS;
 SVEXTERN int ReadIsoFile;
 SVEXTERN int ReadVolSlice;
 SVEXTERN int ReadZoneFile, SVDECL(ReadPartFile,0);
