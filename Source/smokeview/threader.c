@@ -61,6 +61,16 @@ void CompressSVZip2(void){
 }
 
 #ifdef pp_THREAD
+/* ------------------ LockUnlockCompress ------------------------ */
+
+void LockUnlockCompress(int flag){
+  if(flag==1){
+    LOCK_COMPRESS;
+  }
+  else{
+    UNLOCK_COMPRESS;
+  }
+}
  /* ------------------ MtCompressSVZip ------------------------ */
 
 void *MtCompressSVZip(void *arg){

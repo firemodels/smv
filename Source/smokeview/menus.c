@@ -3117,51 +3117,111 @@ void LoadVolsmoke3DMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
 }
 
+/* ------------------ UnloadAllSliceFiles ------------------------ */
+
+void UnloadAllSliceFiles(char *longlabel){
+  int i, errorcode;
+
+  for(i=0; i<nvsliceinfo; i++){
+    vslicedata *vslicei;
+
+    vslicei = vsliceinfo+i;
+    if(vslicei->loaded==0)continue;
+    if(vslicei->val==NULL)continue;
+    if(longlabel==NULL||strcmp(vslicei->val->label.longlabel,longlabel)!=0){
+      ReadVSlice(i,ALL_FRAMES, NULL, UNLOAD,&errorcode);
+    }
+  }
+  for(i=0; i<nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    if(slicei->loaded==0||slicei->vloaded==1)continue;
+    if(longlabel==NULL||strcmp(slicei->label.longlabel,longlabel)!=0){
+      ReadSlice("", i, ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
+    }
+  }
+}
+
+/* ------------------ ReloadAllVectorSliceFiles ------------------------ */
+
+void ReloadAllVectorSliceFiles(void){
+  int i, errorcode;
+
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    slicei->uvw = 0;
+  }
+  for(i = 0; i<nvsliceinfo; i++){
+    vslicedata *vslicei;
+
+    vslicei = vsliceinfo+i;
+    vslicei->reload = 0;
+    if(vslicei->loaded==1&&vslicei->display==1)vslicei->reload = 1;
+    if(vslicei->iu>=0)sliceinfo[vslicei->iu].uvw = 1;
+    if(vslicei->iv>=0)sliceinfo[vslicei->iv].uvw = 1;
+    if(vslicei->iw>=0)sliceinfo[vslicei->iw].uvw = 1;
+  }
+
+    //*** reload vector slice files
+
+  for(i = 0; i<nvsliceinfo; i++){
+    vslicedata *vslicei;
+
+    vslicei = vsliceinfo+i;
+    if(vslicei->reload==1){
+      ReadVSlice(i, ALL_FRAMES, NULL, UNLOAD, &errorcode);
+      ReadVSlice(i, ALL_FRAMES, NULL, LOAD, &errorcode);
+    }
+  }
+}
+
 /* ------------------ ReloadAllSliceFiles ------------------------ */
 
 void ReloadAllSliceFiles(void){
   int ii;
   int file_count = 0;
   float load_size = 0.0, load_time;
-  int last_slice=0;
+  slicedata **reload_slicelist;
 
-  LOCK_COMPRESS
+  NewMemory((void **)&reload_slicelist, nsliceinfo*sizeof(slicedata *));
   slicefile_labelindex_save = slicefile_labelindex;
   START_TIMER(load_time);
-  for(ii = nslice_loaded-1; ii >= 0; ii--){
-    slicedata *slicei;
-    int i;
 
-    i = slice_loaded_list[ii];
-    slicei = sliceinfo+i;
-    if(slicei->display==0)continue;
-    last_slice = i;
-    break;
-  }
-  for(ii = 0; ii < nslice_loaded; ii++){
+  for(ii=0; ii<nsliceinfo; ii++){
     slicedata *slicei;
-    int set_slicecolor;
+
+    slicei = sliceinfo+ii;
+    reload_slicelist[ii] = NULL;
+    if(slicei->loaded==1&&slicei->display==1){ // don't reload a slice file that is part of a vector slice
+      if(slicei->vloaded==0){
+        reload_slicelist[ii] = slicei;
+      }
+    }
+  }
+  for(ii = 0; ii < nsliceinfo; ii++){
+    slicedata *slicei;
     int i;
     int errorcode;
 
-    i = slice_loaded_list[ii];
-    slicei = sliceinfo + i;
-    if(slicei->display==0)continue;
-    set_slicecolor = DEFER_SLICECOLOR;
-    if(i == last_slice)set_slicecolor = SET_SLICECOLOR;
+    slicei = reload_slicelist[ii];
+    if(slicei==NULL)continue;
+    i = slicei-sliceinfo;
 
     if(slicei->slice_filetype == SLICE_GEOM){
       load_size+=ReadGeomData(slicei->patchgeom, slicei, LOAD, ALL_FRAMES, NULL, &errorcode);
     }
     else{
-      load_size+=ReadSlice(             slicei->file,i, ALL_FRAMES, NULL, LOAD,set_slicecolor,&errorcode);
+      load_size+=ReadSlice(slicei->file, i, ALL_FRAMES, NULL, LOAD, DEFER_SLICECOLOR, &errorcode);
     }
     file_count++;
   }
   STOP_TIMER(load_time);
+  FREEMEMORY(reload_slicelist);
   PRINT_LOADTIMES(file_count,load_size,load_time);
   slicefile_labelindex = slicefile_labelindex_save;
-  UNLOCK_COMPRESS;
 }
 
 /* ------------------ LoadUnloadMenu ------------------------ */
@@ -3231,7 +3291,6 @@ void LoadUnloadMenu(int value){
     GLUTPOSTREDISPLAY;
   }
   if(value==RELOADALL||value==RELOAD_INCREMENTAL_ALL){
-    int last_slice_loaded;
     int load_mode;
 
     if(value==RELOADALL)load_mode = LOAD;
@@ -3242,72 +3301,16 @@ void LoadUnloadMenu(int value){
       ReadHRR(LOAD, &errorcode);
     }
 
-    //*** setup vector slice and slice file reloads
 
+    //*** reload vector slice and slice files
 
-    for(i = 0; i<nvsliceinfo; i++){
-      vslicedata *vslicei;
-
-      vslicei = vsliceinfo+i;
-      vslicei->reload = 0;
-      if(vslicei->loaded==1)vslicei->reload = 1;
-    }
-    slicefile_labelindex_save=slicefile_labelindex;
-    for(i=0;i<nsliceinfo;i++){
-      slicedata *slicei;
-
-      slicei = sliceinfo+i;
-      slicei->reload = 0;
-      if(slicei->loaded==1)slicei->reload = 1;
-    }
-
-    //*** reload vector slice files
-
-    for(i = 0; i<nvsliceinfo; i++){
-      vslicedata *vslicei;
-
-      vslicei = vsliceinfo+i;
-      if(vslicei->reload==1){
-        ReadVSlice(i, ALL_FRAMES, NULL, UNLOAD, &errorcode);
-        ReadVSlice(i, ALL_FRAMES, NULL, load_mode,&errorcode);
-      }
-    }
-
-    //*** reload slice files
-
-    if(nslice_loaded>1)last_slice_loaded = slice_loaded_list[nslice_loaded-1];
-    last_slice_loaded=-1;
-    for(i = nsliceinfo - 1; i>=0; i--){
-      slicedata *slicei;
-
-      slicei = sliceinfo + i;
-      if(slicei->reload==1){
-        if(last_slice_loaded<0){
-          last_slice_loaded=i;
-        }
-        else{
-          if(slicei->loaded==0)slicei->reload=0;
-        }
-      }
-    }
+#define BOUND_UPDATE_COLORS  110
+    slicefile_labelindex_save = slicefile_labelindex;
     START_TIMER(load_time);
-    for(i = 0; i<nsliceinfo; i++){
-      slicedata *slicei;
-
-      slicei = sliceinfo + i;
-      if(slicei->reload==1){
-        int set_slicecolor;
-
-        set_slicecolor = DEFER_SLICECOLOR;
-        if(i == last_slice_loaded)set_slicecolor = SET_SLICECOLOR;
-        if(slicei->slice_filetype==SLICE_GEOM){
-          ReadGeomData(slicei->patchgeom, slicei, load_mode, ALL_FRAMES, NULL, &errorcode);
-        }
-        else{
-          ReadSlice(slicei->file, i, ALL_FRAMES, NULL, load_mode, set_slicecolor, &errorcode);
-        }
-      }
-    }
+    SetLoadedSliceBounds(NULL, 0);
+    ReloadAllVectorSliceFiles();
+    ReloadAllSliceFiles();
+    SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
     STOP_TIMER(load_time);
     PRINT_LOADTIMES(file_count,load_size,load_time);
     slicefile_labelindex=slicefile_labelindex_save;
@@ -4863,6 +4866,13 @@ void LoadMultiVSliceMenu(int value){
       }
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
+      char *longlabel=NULL;
+      vslicedata *vslice1;
+
+      vslice1 = vsliceinfo+mvslicei->ivslices[0];
+      if(vslice1->ival>=0)longlabel = sliceinfo[vslice1->ival].label.longlabel;
+      UnloadAllSliceFiles(longlabel); // unload all vector slices except for the type being loaded now
+
       START_TIMER(load_time);
       for(i = 0; i<mvslicei->nvslices; i++){
         vslicedata *vslicei;
@@ -5034,6 +5044,7 @@ void LoadMultiSliceMenu(int value){
     if(scriptoutstream==NULL||script_defer_loading==0){
       int last_slice;
       FILE_SIZE total_size=0;
+      char *longlabel;
 
       last_slice = mslicei->nslices - 1;
       for(i = mslicei->nslices-1; i >=0; i--){
@@ -5053,6 +5064,8 @@ void LoadMultiSliceMenu(int value){
           UnloadSliceMenu(mslicei->islices[i]);
         }
       }
+      longlabel = sliceinfo[last_slice].label.longlabel;
+      UnloadAllSliceFiles(longlabel);  // unload all slices except for the type being loaded now
       total_size = LoadAllMSlices(last_slice, mslicei);
       if(compute_slice_file_sizes==1){
         PRINTF(" size of slice files to be loaded=");

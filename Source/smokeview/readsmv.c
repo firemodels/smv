@@ -2681,6 +2681,13 @@ void UpdateMeshCoords(void){
     zbar0 = MIN(zbar0, meshi->xyz_bar0[ZZZ]);
   }
 
+  xbar0FDS = xbar0;
+  ybar0FDS = ybar0;
+  zbar0FDS = zbar0;
+  xbarFDS  = xbar;
+  ybarFDS  = ybar;
+  zbarFDS  = zbar;
+
   geomlistdata *geomlisti;
   if(geominfo!=NULL&&geominfo->geomlistinfo!=NULL){
     geomlisti = geominfo->geomlistinfo-1;
@@ -2699,6 +2706,12 @@ void UpdateMeshCoords(void){
       zmin = xyz[2];
       zmax = zmin;
 
+      geom_bounding_box[0] = geomlisti->verts[0].xyz[0];
+      geom_bounding_box[1] = geomlisti->verts[0].xyz[0];
+      geom_bounding_box[2] = geomlisti->verts[0].xyz[1];
+      geom_bounding_box[3] = geomlisti->verts[0].xyz[1];
+      geom_bounding_box[4] = geomlisti->verts[0].xyz[2];
+      geom_bounding_box[5] = geomlisti->verts[0].xyz[2];
       for(i = 1; i<geomlisti->nverts; i++){
         verti = geomlisti->verts+i;
         xyz = verti->xyz;
@@ -2715,6 +2728,13 @@ void UpdateMeshCoords(void){
       xbar = MAX(xbar, xmax);
       ybar = MAX(ybar, ymax);
       zbar = MAX(zbar, zmax);
+      geom_bounding_box[0] = MIN(xmin, geom_bounding_box[0]);
+      geom_bounding_box[1] = MAX(xmax, geom_bounding_box[1]);
+      geom_bounding_box[2] = MIN(ymin, geom_bounding_box[2]);
+      geom_bounding_box[3] = MAX(ymax, geom_bounding_box[3]);
+      geom_bounding_box[4] = MIN(zmin, geom_bounding_box[4]);
+      geom_bounding_box[5] = MAX(zmax, geom_bounding_box[5]);
+      have_geom_bb = 1;
     }
   }
 
@@ -5151,7 +5171,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->timeslist = NULL;
   sd->blocknumber = blocknumber;
   sd->vloaded = 0;
-  sd->reload = 0;
+  sd->uvw = 0;
   sd->nline_contours = 0;
   sd->line_contours = NULL;
   sd->menu_show = 1;
@@ -10417,24 +10437,20 @@ typedef struct {
   PRINT_TIMER(timer_readsmv, "UpdateTriangles");
   GetFaceInfo();
   GetBoxGeomCorners();
+
+#ifdef pp_WUI_VAO
+  have_terrain_vao = 0;
+#endif
   if(ngeominfo>0&&auto_terrain==1){
     int sizeof_vertices, sizeof_indices;
 
     PRINT_TIMER(timer_readsmv, "null");
     GenerateTerrainGeom(&terrain_vertices, &sizeof_vertices, &terrain_indices, &sizeof_indices, &terrain_nindices);
+#ifdef pp_WUI_VAO
+    have_terrain_vao = InitTerrainVAO(sizeof_vertices, sizeof_indices);
+#endif
     PRINT_TIMER(timer_readsmv, "GenerateTerrainGeom");
   }
-#ifdef pp_WUI_VAO
-  have_terrain_vao = 0;
-  if(ngeominfo>0&&auto_terrain==1){
-    int sizeof_vertices, sizeof_indices;
-
-    have_terrain_vao = InitTerrainVAO(sizeof_vertices, sizeof_indices);
-  }
-  else{
-    have_terrain_vao = 0;
-  }
-#endif
 
   // update event labels
   UpdateEvents();

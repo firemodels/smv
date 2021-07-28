@@ -30,8 +30,6 @@ GLUI_Panel *PANEL_rotation_center = NULL;
 
 GLUI_Rollout *PANEL_blockageview = NULL;
 
-GLUI_Listbox *LIST_mesh=NULL;
-
 GLUI_RadioButton *RADIOBUTTON_clip_1a=NULL;
 GLUI_RadioButton *RADIOBUTTON_clip_1b=NULL;
 GLUI_RadioButton *RADIOBUTTON_clip_1c=NULL;

@@ -1283,6 +1283,9 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
   vd->val=NULL;
   int set_slicecolor = SET_SLICECOLOR;
 
+  if(vd->iu!=-1)sliceinfo[vd->iu].uvw = 1;
+  if(vd->iv!=-1)sliceinfo[vd->iv].uvw = 1;
+  if(vd->iw!=-1)sliceinfo[vd->iw].uvw = 1;
   if(flag==UNLOAD){
     if(vd->loaded==0)return 0;
     if(vd->iu!=-1){
@@ -1383,7 +1386,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       if(u->valmin<valmin)valmin = u->valmin;
       if(u->valmax>valmax)valmax = u->valmax;
       u->display = 0;
-      u->reload = 0;
       u->vloaded = 1;
     }
   }
@@ -1412,7 +1414,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       if(v->valmin<valmin)valmin = v->valmin;
       if(v->valmax>valmax)valmax = v->valmax;
       v->display = 0;
-      v->reload = 0;
       v->vloaded = 1;
     }
   }
@@ -1441,7 +1442,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       if(w->valmin<valmin)valmin = w->valmin;
       if(w->valmax>valmax)valmax = w->valmax;
       w->display = 0;
-      w->reload = 0;
       w->vloaded = 1;
     }
   }
@@ -1473,7 +1473,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       vd->valmax = valmax;
       val->display = 0;
       val->vloaded = 1;
-      val->reload = 0;
     }
   }
   vd->display=1;
@@ -2787,6 +2786,7 @@ void UpdateFedinfo(void){
     nn_slice = nsliceinfo + i;
 
     sd->is_fed = 1;
+    sd->uvw = 0;
     sd->fedptr = fedi;
     sd->slice_filetype = co2->slice_filetype;
     if(sd->slice_filetype == SLICE_CELL_CENTER){
@@ -2818,7 +2818,6 @@ void UpdateFedinfo(void){
     sd->timeslist = NULL;
     sd->blocknumber = co2->blocknumber;
     sd->vloaded = 0;
-    sd->reload = 0;
     sd->nline_contours = 0;
     sd->line_contours = NULL;
     sd->menu_show = 1;
@@ -4538,6 +4537,26 @@ int GetNSliceFrames(char *file, float *stime_min, float *stime_max){
   return nframes;
 }
 
+/* ------------------ HideSlices ------------------------ */
+
+void HideSlices(char *longlabel){
+  int i;
+
+  if(longlabel==NULL)return;
+  for(i = 0; i<nvsliceinfo; i++){
+    vslicedata *vslicei;
+
+    vslicei = vsliceinfo+i;
+    if(vslicei->display==1&&strcmp(sliceinfo[vslicei->ival].label.longlabel, longlabel)!=0)vslicei->display = 0;
+  }
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo+i;
+    if(slicei->display==1&&strcmp(slicei->label.longlabel, longlabel)!=0)slicei->display = 0;
+  }
+}
+
 /* ------------------ ReadSlice ------------------------ */
 
 FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode){
@@ -4571,15 +4590,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   slicefilenum = ifile;
   histograms_defined = 0;
   sd = sliceinfo+slicefilenumber;
-
-  if(flag==LOAD){
-    for(i = 0; i<nsliceinfo; i++){
-      slicedata *slicei;
-
-      slicei = sliceinfo+i;
-      if(slicei->display==1&&strcmp(sd->label.longlabel, slicei->label.longlabel)!=0)slicei->display = 0;
-    }
-  }
 
   blocknumber = sd->blocknumber;
   meshi = meshinfo + blocknumber;
@@ -4935,7 +4945,11 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
   CheckMemory;
 
   sd->loaded = 1;
-  if(sd->vloaded == 0)sd->display = 1;
+  if(sd->vloaded == 0){
+    sd->display = 1;
+    if(sd->uvw==0)HideSlices(sd->label.longlabel);
+  }
+
   slicefile_labelindex = GetSliceBoundsIndex(sd);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   if(sd->finalize==1){
@@ -4981,7 +4995,8 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
           slicedata *slicei;
 
           slicei = sliceinfo+i;
-          if(slicei->loaded==0||slicei->display==0)continue;
+          if(slicei->loaded==0)continue;
+          if(slicei->vloaded==0&&slicei->display==0)continue;
           if(slicei->slicefile_labelindex!=slicefile_labelindex)continue;
           slicei->globalmin = qmin;
           slicei->globalmax = qmax;

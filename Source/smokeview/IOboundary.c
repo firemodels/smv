@@ -2804,6 +2804,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     sb = slicebounds + slicetype;
     sb->label = &(slicei->label);
 
+    HideSlices(slicei->label.longlabel);
     slicei->loaded = 1;
     slicei->display = 1;
     slicei->ntimes = patchi->ngeom_times;
@@ -2912,6 +2913,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     }
     UpdateUnitDefs();
     UpdateTimes();
+    force_redisplay = 1;
     UpdateFrameNumber(1);
   }
   stept = 1;

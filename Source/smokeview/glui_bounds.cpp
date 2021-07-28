@@ -1708,6 +1708,7 @@ extern "C" void SliceBoundsCPP_CB(int var){
 
         i = slice_loaded_list[ii];
         sd = sliceinfo + i;
+        if(sd->vloaded==0&&sd->display==0)continue;
         if(sd->slicefile_labelindex == slicefile_labelindex){
           last_slice = i;
           break;
@@ -1721,7 +1722,16 @@ extern "C" void SliceBoundsCPP_CB(int var){
       break;
     case BOUND_RELOAD_DATA:
       SetLoadedSliceBounds(NULL, 0);
+#ifdef pp_THREAD
+      LockUnlockCompress(1);
+#endif
+      SetLoadedSliceBounds(NULL, 0);
+      ReloadAllVectorSliceFiles();
       ReloadAllSliceFiles();
+#ifdef pp_THREAD
+      LockUnlockCompress(0);
+#endif
+      SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
       break;
     case BOUND_RESEARCH_MODE:
       if(npartinfo>0)partboundsCPP.CB(BOUND_RESEARCH_MODE);
@@ -2285,11 +2295,12 @@ void SetLoadedSliceBounds(int *list, int nlist){
   float valmin_dlg, valmax_dlg;
   float valmin, valmax;
   char *label=NULL;
-  slicedata *slicei;
   int i;
 
   if(list==NULL){
     for(i = 0; i<nsliceinfo; i++){
+      slicedata *slicei;
+
       slicei = sliceinfo+i;
       if(slicei->loaded==1&&slicei->display==1){
         label = slicei->label.shortlabel;
@@ -2298,6 +2309,8 @@ void SetLoadedSliceBounds(int *list, int nlist){
     }
   }
   else{
+    slicedata *slicei;
+
     slicei = sliceinfo+list[0];
     label = slicei->label.shortlabel;
   }
@@ -6068,7 +6081,10 @@ extern "C" void SliceBoundCB(int var){
     if(research_mode==1){
       SliceBoundCB(SET_GLOBAL_BOUNDS);
     }
+    SetLoadedSliceBounds(NULL, 0);
+    ReloadAllVectorSliceFiles();
     ReloadAllSliceFiles();
+    SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
     break;
   default:
     ASSERT(FFALSE);

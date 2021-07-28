@@ -1281,8 +1281,7 @@ typedef struct _slicedata {
   int ndirxyz[4];
   int nslicetotal;
   int slicefile_labelindex;
-  int vloaded;
-  int reload;
+  int vloaded, uvw;
   int cell_center;
   float delta_orig, dplane_min, dplane_max;
   int extreme_min, extreme_max;
