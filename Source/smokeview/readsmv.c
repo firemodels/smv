@@ -10840,9 +10840,9 @@ int ReadIni2(char *inifile, int localfile){
 
       fgets(buffer, 255, stream);
 #ifdef pp_HAVE_CFACE_NORMALS
-      sscanf(buffer, " %i %i %i %i %i %i %f %f %i %i",
+      sscanf(buffer, " %i %i %i %i %i %i %f %f %i %i %f %f",
         &dummy, &dummy2, &show_faces_shaded, &show_faces_outline, &smooth_geom_normal,
-        &geom_force_transparent, &geom_transparency,&geom_linewidth, &use_geom_factors, &show_cface_normals);
+        &geom_force_transparent, &geom_transparency,&geom_linewidth, &use_geom_factors, &show_cface_normals, &geom_pointsize, &cface_deltaz);
 #else
       sscanf(buffer, " %i %i %i %i %i %i %f %f %i",
              &dummy, &dummy2, &show_faces_shaded, &show_faces_outline, &smooth_geom_normal,
@@ -14827,9 +14827,9 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %f %f %f %i\n", geom_delx, geom_dely, geom_delz, show_geom_bndf);
   fprintf(fileout, "GEOMSHOW\n");
 #ifdef pp_HAVE_CFACE_NORMALS
-  fprintf(fileout, " %i %i %i %i %i %i %f %f %i %i\n",
+  fprintf(fileout, " %i %i %i %i %i %i %f %f %i %i %f %f\n",
      0, 1, show_faces_shaded, show_faces_outline, smooth_geom_normal,
-     geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors, show_cface_normals);
+     geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors, show_cface_normals, geom_pointsize, cface_deltaz);
 #else
   fprintf(fileout, " %i %i %i %i %i %i %f %f %i\n",
           0, 1, show_faces_shaded, show_faces_outline, smooth_geom_normal,

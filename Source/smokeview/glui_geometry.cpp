@@ -510,6 +510,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     }
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "line width", GLUI_SPINNER_FLOAT, &geom_linewidth);
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "point size", GLUI_SPINNER_FLOAT, &geom_pointsize);
+    glui_geometry->add_spinner_to_panel(PANEL_triangles, "vertical offset", GLUI_SPINNER_FLOAT, &cface_deltaz);
     PANEL_geom_transparency = glui_geometry->add_panel_to_panel(PANEL_triangles, "transparency");
     CHECKBOX_geom_force_transparent = glui_geometry->add_checkbox_to_panel(PANEL_geom_transparency, "force", &geom_force_transparent);
     SPINNER_geom_transparency = glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "level", GLUI_SPINNER_FLOAT, &geom_transparency);

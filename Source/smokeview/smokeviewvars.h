@@ -45,6 +45,7 @@ SVEXTERN int SVDECL(force_fixedpoint, FORCE_FIXEDPOINT_NO);
 SVEXTERN int SVDECL(geom_cface_type, 1);
 SVEXTERN int SVDECL(glui_use_cfaces, 0);
 SVEXTERN int SVDECL(use_cfaces, 0);
+SVEXTERN float SVDECL(cface_deltaz, 0.0);
 SVEXTERN int SVDECL(update_reshape, 0);
 SVEXTERN int SVDECL(last_time_paused, 0);
 SVEXTERN float SVDECL(time_paused,0.0);

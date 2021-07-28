@@ -4409,7 +4409,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(-xbar0, -ybar0, -zbar0 + cface_deltaz);
       glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
       if(show_faces_outline==1){
