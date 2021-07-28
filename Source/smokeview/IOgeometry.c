@@ -476,6 +476,39 @@ void DrawBox(float *bb, float *box_color){
   glEnd();
 }
 
+/* ------------------ GetGeomBoundingBox ------------------------ */
+
+void GetGeomBoundingBox(float *bb_box){
+  int i, istart=ngeominfo;
+
+  for(i = 0; i<ngeominfo; i++){
+    geomdata *geomi;
+    int j;
+
+    geomi = geominfo+i;
+    if(geomi->geomtype==GEOM_GEOM){
+      for(j=0; j<6; j++){
+        bb_box[j] = geomi->bounding_box[j];
+      }
+      istart=i+1;
+    }
+  }
+  for(i = istart; i<ngeominfo; i++){
+    geomdata *geomi;
+    int j;
+
+    geomi = geominfo+i;
+    if(geomi->geomtype==GEOM_GEOM){
+      bb_box[0] = MIN(bb_box[0], geomi->bounding_box[0]);
+      bb_box[1] = MAX(bb_box[1], geomi->bounding_box[1]);
+      bb_box[2] = MIN(bb_box[2], geomi->bounding_box[2]);
+      bb_box[3] = MAX(bb_box[3], geomi->bounding_box[3]);
+      bb_box[4] = MIN(bb_box[4], geomi->bounding_box[4]);
+      bb_box[5] = MAX(bb_box[5], geomi->bounding_box[5]);
+    }
+  }
+}
+
 /* ------------------ DrawObstBoundingBox ------------------------ */
 
 void DrawObstBoundingBox(void){
