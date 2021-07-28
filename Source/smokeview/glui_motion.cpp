@@ -1169,10 +1169,6 @@ extern "C" void GluiMotionSetup(int main_window){
   LIST_mesh2 = glui_motion->add_listbox_to_panel(ROLLOUT_rotation_type,_("Rotate about:"),rotation_index,MESH_LIST,SceneMotionCB);
   LIST_mesh2->add_item(ROTATE_ABOUT_CLIPPING_CENTER, _("center of clipping planes"));
   LIST_mesh2->add_item(ROTATE_ABOUT_USER_CENTER,_("user specified center"));
-  GetGeomBoundingBox(geom_bounding_box);
-  if(geom_bounding_box[0]<=geom_bounding_box[1]){
-    LIST_mesh2->add_item(ROTATE_ABOUT_GEOM_CENTER,_("geometry center"));
-  }
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
 
@@ -1731,11 +1727,6 @@ extern "C" void UpdateRotationIndex(int val){
         camera_current->ycen = ycenCUSTOM;
         camera_current->zcen = zcenCUSTOM;
       }
-      else if(*rotation_index==ROTATE_ABOUT_GEOM_CENTER){
-        camera_current->xcen = NORMALIZE_X( (geom_bounding_box[0] + geom_bounding_box[1])/2.0 );
-        camera_current->ycen = NORMALIZE_Y( (geom_bounding_box[2] + geom_bounding_box[3])/2.0 );
-        camera_current->zcen = NORMALIZE_Z( (geom_bounding_box[4] + geom_bounding_box[5])/2.0 );
-      }
       else{
         camera_current->xcen = ((camera_current->clip_xmin == 1 ? clipinfo.xmin : xbar0ORIG) + (camera_current->clip_xmax == 1 ? clipinfo.xmax : xbarORIG)) / 2.0;
         camera_current->ycen = ((camera_current->clip_ymin == 1 ? clipinfo.ymin : ybar0ORIG) + (camera_current->clip_ymax == 1 ? clipinfo.ymax : ybarORIG)) / 2.0;
@@ -1746,7 +1737,7 @@ extern "C" void UpdateRotationIndex(int val){
       }
     }
   }
-  if(*rotation_index!=ROTATE_ABOUT_USER_CENTER&&*rotation_index!=ROTATE_ABOUT_GEOM_CENTER){
+  if(*rotation_index!=ROTATE_ABOUT_USER_CENTER){
     xcenCUSTOM = camera_current->xcen;
     ycenCUSTOM = camera_current->ycen;
     zcenCUSTOM = camera_current->zcen;
@@ -2151,9 +2142,6 @@ extern "C" void SceneMotionCB(int var){
     case FLOORLEVEL:
       desired_view_height=0.6;
       break;
-    case CUSTOM_ROTATION_GEOM_CENTER:
-      UpdateRotationIndex(ROTATE_ABOUT_GEOM_CENTER);
-      break;
     case CUSTOM_ROTATION_X:
       xcenCUSTOM = NORMALIZE_X(xcenCUSTOMsmv);
       UpdateRotationIndex(ROTATE_ABOUT_USER_CENTER);
@@ -2173,12 +2161,6 @@ extern "C" void SceneMotionCB(int var){
         SPINNER_xcenCUSTOM->enable();
         SPINNER_ycenCUSTOM->enable();
         SPINNER_zcenCUSTOM->enable();
-      }
-      else if(*rotation_index==ROTATE_ABOUT_GEOM_CENTER){
-        custom_worldcenter=1;
-        SPINNER_xcenCUSTOM->disable();
-        SPINNER_ycenCUSTOM->disable();
-        SPINNER_zcenCUSTOM->disable();
       }
       else if(*rotation_index==ROTATE_ABOUT_CLIPPING_CENTER){
         custom_worldcenter = 1;
@@ -2201,9 +2183,6 @@ extern "C" void SceneMotionCB(int var){
       }
       else if(*rotation_index==ROTATE_ABOUT_CLIPPING_CENTER){
         UpdateRotationIndex(ROTATE_ABOUT_CLIPPING_CENTER);
-      }
-      else if(*rotation_index==ROTATE_ABOUT_GEOM_CENTER){
-        UpdateRotationIndex(ROTATE_ABOUT_GEOM_CENTER);
       }
       else{
         UpdateCurrentMesh(meshinfo);

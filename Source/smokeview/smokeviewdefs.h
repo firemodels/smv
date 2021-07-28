@@ -180,7 +180,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 
 #define ROTATE_ABOUT_USER_CENTER     -1
 #define ROTATE_ABOUT_CLIPPING_CENTER -2
-#define ROTATE_ABOUT_GEOM_CENTER     -3
 
 #define ONLY_IN_GAS   0
 #define GAS_AND_SOLID 1

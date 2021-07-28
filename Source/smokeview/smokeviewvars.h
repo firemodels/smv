@@ -24,11 +24,9 @@
 #endif
 
 #ifdef INMAIN
-SVEXTERN float obst_bounding_box[6] = {1.0,0.0,1.0,0.0,1.0,0.0};
-SVEXTERN float geom_bounding_box[6] = {1.0,0.0,1.0,0.0,1.0,0.0};
+SVEXTERN float obst_bounding_box[6]={1.0,0.0,1.0,0.0,1.0,0.0};
 #else
 SVEXTERN float obst_bounding_box[6];
-SVEXTERN float geom_bounding_box[6];
 #endif
 
 SVEXTERN int SVDECL(show_geom_boundingbox, SHOW_BOUNDING_BOX_NEVER);
