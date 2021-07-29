@@ -1126,7 +1126,7 @@ void DrawGeom(int flag, int timestate){
       }
       else{
         glLineWidth(geom_linewidth);
-        line_offset = geom_outline_offset;
+        line_offset = geom_norm_offset;
       }
       glBegin(GL_LINES);
       for(j=0;j<geomlisti->ntriangles;j++){
@@ -4409,7 +4409,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0 + cface_deltaz);
+      glTranslatef(-xbar0, -ybar0, -zbar0+SCALE2FDS(geom_dz_offset));
       glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
       if(show_faces_outline==1){
@@ -4445,9 +4445,9 @@ void DrawCGeom(int flag, geomdata *cgeom){
           xyzptr[2] = trianglei->verts[2]->xyz;
 
           for(k = 0; k<3; k++){
-            vert2a[k] = xyzptr[0][k]+geom_outline_offset*norm0[k];
-            vert2b[k] = xyzptr[1][k]+geom_outline_offset*norm1[k];
-            vert2c[k] = xyzptr[2][k]+geom_outline_offset*norm2[k];
+            vert2a[k] = xyzptr[0][k]+geom_norm_offset*norm0[k];
+            vert2b[k] = xyzptr[1][k]+geom_norm_offset*norm1[k];
+            vert2c[k] = xyzptr[2][k]+geom_norm_offset*norm2[k];
           }
           if(show_edge1==1){
             glVertex3fv(vert2a);

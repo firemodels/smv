@@ -160,7 +160,9 @@ extern "C" void UpdateWhereFaceVolumes(void){
 
 extern "C" void UpdateGluiCfaces(void){
   glui_use_cfaces = use_cfaces;
-  if(CHECKBOX_cfaces!=NULL)CHECKBOX_cfaces->set_int_val(use_cfaces);
+  if(CHECKBOX_cfaces!=NULL){
+    CHECKBOX_cfaces->set_int_val(use_cfaces);
+  }
 #ifdef pp_HAVE_CFACE_NORMALS
   if(CHECKBOX_show_cface_normals!=NULL)CHECKBOX_show_cface_normals->set_int_val(show_cface_normals);
 #endif
@@ -510,7 +512,8 @@ extern "C" void GluiGeometrySetup(int main_window){
     }
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "line width", GLUI_SPINNER_FLOAT, &geom_linewidth);
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "point size", GLUI_SPINNER_FLOAT, &geom_pointsize);
-    glui_geometry->add_spinner_to_panel(PANEL_triangles, "vertical offset", GLUI_SPINNER_FLOAT, &cface_deltaz);
+    glui_geometry->add_spinner_to_panel(PANEL_triangles, "offset(normal)", GLUI_SPINNER_FLOAT, &geom_norm_offset);
+    glui_geometry->add_spinner_to_panel(PANEL_triangles, "offset(dz)", GLUI_SPINNER_FLOAT, &geom_dz_offset);
     PANEL_geom_transparency = glui_geometry->add_panel_to_panel(PANEL_triangles, "transparency");
     CHECKBOX_geom_force_transparent = glui_geometry->add_checkbox_to_panel(PANEL_geom_transparency, "force", &geom_force_transparent);
     SPINNER_geom_transparency = glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "level", GLUI_SPINNER_FLOAT, &geom_transparency);
@@ -831,7 +834,7 @@ extern "C" void VolumeCB(int var){
     UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_NORMALS);
     break;
   case GEOM_OUTLINE_IOFFSET:
-    geom_outline_offset = (float)geom_outline_ioffset/1000.0;
+    geom_norm_offset = (float)geom_outline_ioffset/1000.0;
     break;
     // update_volbox_controls=1;
     // face_vis
