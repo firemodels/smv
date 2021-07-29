@@ -10135,6 +10135,7 @@ updatemenu=0;
   }
   if(ngeominfo){
     glutAddMenuEntry(_("  =: toggle vertex selected in examine geometry dialog"), MENU_DUMMY);
+    glutAddMenuEntry(_("  Z: toggle rotation center between FDS and FDS+GEOM center"), MENU_DUMMY);
   }
   glutAddMenuEntry(_("  !: snap scene to closest 45 degree orientation"), MENU_DUMMY);
   glutAddMenuEntry(_("  ~: level the scene"),2);

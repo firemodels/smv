@@ -2575,8 +2575,18 @@ void Keyboard(unsigned char key, int flag){
       plotstate = GetPlotState(STATIC_PLOTS);
       updatemenu = 1;
       break;
-    case 'z':
     case 'Z':
+      rotate_center = 1-rotate_center;
+      if(rotate_center==1&&have_geom_bb==1){
+        printf("rotate about FDS+GEOM center\n");
+        UpdateGluiRotateAbout(ROTATE_ABOUT_WORLD_CENTER);
+      }
+      else{
+        printf("rotate about FDS domain center\n");
+        UpdateGluiRotateAbout(ROTATE_ABOUT_FDS_CENTER);
+      }
+      break;
+    case 'z':
 #ifdef pp_DIALOG_SHORTCUTS
       if(keystate==GLUT_ACTIVE_ALT){
         DialogMenu(DIALOG_SMOKEZIP); // compress dialog
