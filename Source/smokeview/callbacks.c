@@ -2114,23 +2114,23 @@ void Keyboard(unsigned char key, int flag){
       break;
 #endif
     case 'O':
-    if(show_faces_outline==0&&show_faces_shaded==1){
-      show_faces_outline = 1;
-      show_faces_shaded  = 1;
-    }
-    else if(show_faces_outline==1&&show_faces_shaded==1){
-      show_faces_outline = 1;
-      show_faces_shaded  = 0;
-    }
-    else if(show_faces_outline==1&&show_faces_shaded==0){
-      show_faces_outline = 0;
-      show_faces_shaded  = 0;
-    }
-    else if(show_faces_outline==0&&show_faces_shaded==0){
-      show_faces_outline = 0;
-      show_faces_shaded  = 1;
-    }
     if(ncgeominfo>0){
+      if(show_faces_outline==0&&show_faces_shaded==1){
+        show_faces_outline = 1;
+        show_faces_shaded = 1;
+      }
+      else if(show_faces_outline==1&&show_faces_shaded==1){
+        show_faces_outline = 1;
+        show_faces_shaded = 0;
+      }
+      else if(show_faces_outline==1&&show_faces_shaded==0){
+        show_faces_outline = 0;
+        show_faces_shaded = 0;
+      }
+      else if(show_faces_outline==0&&show_faces_shaded==0){
+        show_faces_outline = 0;
+        show_faces_shaded = 1;
+      }
       if(use_cfaces==1){
         printf("cfaces: ");
         if(show_faces_shaded==1) printf("shaded triangles ");
@@ -2238,20 +2238,20 @@ void Keyboard(unsigned char key, int flag){
       update_chop_colors = 1;
       break;
     case 'q':
-      use_cfaces = 1 - use_cfaces;
-    if(ncgeominfo>0){
-      if(use_cfaces==1){
-        printf("cfaces: ");
-        if(show_faces_shaded==1) printf("shaded triangles ");
-        if(show_faces_outline==1)printf("outlines");
-        if(show_faces_shaded==0&&show_faces_outline==0)printf("hidden");
-        printf("\n");
+      if(ncgeominfo>0){
+        use_cfaces = 1-use_cfaces;
+        if(use_cfaces==1){
+          printf("cfaces: ");
+          if(show_faces_shaded==1) printf("shaded triangles ");
+          if(show_faces_outline==1)printf("outlines");
+          if(show_faces_shaded==0&&show_faces_outline==0)printf("hidden");
+          printf("\n");
+        }
+        else{
+          printf("show cfaces: no\n");
+        }
+        UpdateGluiCfaces();
       }
-      else{
-        printf("show cfaces: no\n");
-      }
-    }
-      UpdateGluiCfaces();
       blocklocation++;
       if((ncadgeom==0&&blocklocation>BLOCKlocation_exact)||
                        blocklocation>BLOCKlocation_cad){

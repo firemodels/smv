@@ -436,17 +436,19 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw terrain +++++++++++++++++++++++++ */
 
+  if(use_cfaces==0||ncgeominfo==0){
 #ifdef pp_WUI_VAO
-  if(have_terrain_vao==1&&usegpu==1){
-  }
-  else{
+    if(have_terrain_vao==1&&usegpu==1){
+    }
+    else{
+      CLIP_GEOMETRY;
+      DrawTerrainGeom(DRAW_TRANSPARENT);
+    }
+#else
     CLIP_GEOMETRY;
     DrawTerrainGeom(DRAW_TRANSPARENT);
-  }
-#else
-  CLIP_GEOMETRY;
-  DrawTerrainGeom(DRAW_TRANSPARENT);
 #endif
+  }
 
   /* ++++++++++++++++++++++++ draw triangles +++++++++++++++++++++++++ */
 
