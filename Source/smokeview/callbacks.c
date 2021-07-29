@@ -2139,7 +2139,7 @@ void Keyboard(unsigned char key, int flag){
         printf("\n");
       }
       else{
-        printf("show cfaces: no\n");
+        printf("cfaces: off\n");
       }
     }
     UpdateGeometryControls();
@@ -2241,14 +2241,14 @@ void Keyboard(unsigned char key, int flag){
       if(ncgeominfo>0){
         use_cfaces = 1-use_cfaces;
         if(use_cfaces==1){
-          printf("cfaces: ");
+          printf("show cfaces: ");
           if(show_faces_shaded==1) printf("shaded triangles ");
           if(show_faces_outline==1)printf("outlines");
           if(show_faces_shaded==0&&show_faces_outline==0)printf("hidden");
           printf("\n");
         }
         else{
-          printf("show cfaces: no\n");
+          printf("show cfaces: off\n");
         }
         UpdateGluiCfaces();
       }
