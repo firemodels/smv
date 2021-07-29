@@ -310,19 +310,21 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
 
   /* ++++++++++++++++++++++++ draw terrain +++++++++++++++++++++++++ */
 
+  if(use_cfaces==0||ncgeominfo==0){
 #ifdef pp_WUI_VAO
-  if(have_terrain_vao==1&&usegpu==1){
-    CLIP_GEOMETRY;
-    DrawTerrainGeomGPU();
-  }
-  else{
+    if(have_terrain_vao==1&&usegpu==1){
+      CLIP_GEOMETRY;
+      DrawTerrainGeomGPU();
+    }
+    else{
+      CLIP_GEOMETRY;
+      DrawTerrainGeom(DRAW_OPAQUE);
+    }
+#else
     CLIP_GEOMETRY;
     DrawTerrainGeom(DRAW_OPAQUE);
-  }
-#else
-  CLIP_GEOMETRY;
-  DrawTerrainGeom(DRAW_OPAQUE);
 #endif
+  }
 
   if(visTerrainType != TERRAIN_HIDDEN&&nterraininfo>0&&ngeominfo==0 && geom_bounding_box_mousedown==0){
     int i;

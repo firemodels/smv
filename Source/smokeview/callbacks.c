@@ -2118,29 +2118,33 @@ void Keyboard(unsigned char key, int flag){
       if(show_faces_outline==0&&show_faces_shaded==1){
         show_faces_outline = 1;
         show_faces_shaded = 1;
+        terrain_show_geometry_outline = 1;
       }
       else if(show_faces_outline==1&&show_faces_shaded==1){
         show_faces_outline = 1;
         show_faces_shaded = 0;
+        terrain_show_geometry_outline = 1;
       }
       else if(show_faces_outline==1&&show_faces_shaded==0){
         show_faces_outline = 0;
         show_faces_shaded = 0;
+        terrain_show_geometry_outline = 0;
       }
       else if(show_faces_outline==0&&show_faces_shaded==0){
         show_faces_outline = 0;
         show_faces_shaded = 1;
+        terrain_show_geometry_outline = 0;
       }
       if(use_cfaces==1){
         printf("cfaces: ");
-        if(show_faces_shaded==1) printf("shaded triangles ");
-        if(show_faces_outline==1)printf("outlines");
-        if(show_faces_shaded==0&&show_faces_outline==0)printf("hidden");
-        printf("\n");
       }
       else{
-        printf("show cfaces: no\n");
+        printf("geometry: ");
       }
+      if(show_faces_shaded==1) printf("shaded triangles ");
+      if(show_faces_outline==1)printf("outlines");
+      if(show_faces_shaded==0&&show_faces_outline==0)printf("hidden");
+      printf("\n");
     }
     UpdateGeometryControls();
       switch(visBlocks){
@@ -2242,14 +2246,14 @@ void Keyboard(unsigned char key, int flag){
         use_cfaces = 1-use_cfaces;
         if(use_cfaces==1){
           printf("cfaces: ");
-          if(show_faces_shaded==1) printf("shaded triangles ");
-          if(show_faces_outline==1)printf("outlines");
-          if(show_faces_shaded==0&&show_faces_outline==0)printf("hidden");
-          printf("\n");
         }
         else{
-          printf("show cfaces: no\n");
+          printf("geometry: ");
         }
+        if(show_faces_shaded==1) printf("shaded triangles ");
+        if(show_faces_outline==1)printf("outlines");
+        if(show_faces_shaded==0&&show_faces_outline==0)printf("hidden");
+        printf("\n");
         UpdateGluiCfaces();
       }
       blocklocation++;
