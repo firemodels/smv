@@ -2130,6 +2130,18 @@ void Keyboard(unsigned char key, int flag){
       show_faces_outline = 0;
       show_faces_shaded  = 1;
     }
+    if(ncgeominfo>0){
+      if(use_cfaces==1){
+        printf("cfaces: ");
+        if(show_faces_shaded==1) printf("shaded triangles ");
+        if(show_faces_outline==1)printf("outlines");
+        if(show_faces_shaded==0&&show_faces_outline==0)printf("hidden");
+        printf("\n");
+      }
+      else{
+        printf("show cfaces: no\n");
+      }
+    }
     UpdateGeometryControls();
       switch(visBlocks){
         case visBLOCKAsInput:
@@ -2227,6 +2239,18 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'q':
       use_cfaces = 1 - use_cfaces;
+    if(ncgeominfo>0){
+      if(use_cfaces==1){
+        printf("cfaces: ");
+        if(show_faces_shaded==1) printf("shaded triangles ");
+        if(show_faces_outline==1)printf("outlines");
+        if(show_faces_shaded==0&&show_faces_outline==0)printf("hidden");
+        printf("\n");
+      }
+      else{
+        printf("show cfaces: no\n");
+      }
+    }
       UpdateGluiCfaces();
       blocklocation++;
       if((ncadgeom==0&&blocklocation>BLOCKlocation_exact)||
