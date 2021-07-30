@@ -280,10 +280,29 @@ void DrawTerrainGeomGPU(void){
 /* ------------------ InDomain ------------------------ */
 
 int InDomain(float *v1, float *v2, float *v3){
-  if(v1[0]<xbar0FDS||v1[0]>xbarFDS||v1[1]<ybar0FDS||v1[1]>ybarFDS||v1[2]<zbar0FDS||v1[2]>zbarFDS)return 0;
-  if(v2[0]<xbar0FDS||v2[0]>xbarFDS||v2[1]<ybar0FDS||v2[1]>ybarFDS||v2[2]<zbar0FDS||v2[2]>zbarFDS)return 0;
-  if(v3[0]<xbar0FDS||v3[0]>xbarFDS||v3[1]<ybar0FDS||v3[1]>ybarFDS||v3[2]<zbar0FDS||v3[2]>zbarFDS)return 0;
-  return 1;
+  int inside1 = 0, inside2 = 0, inside3 = 0;
+  float vmid[3];
+
+  if(v1[0]>=xbar0FDS&&v1[0]<=xbarFDS&&
+     v1[1]>=ybar0FDS&&v1[1]<=ybarFDS&&
+     v1[2]>=zbar0FDS&&v1[2]<=zbarFDS)inside1=1;
+
+  if(v2[0]>=xbar0FDS&&v2[0]<=xbarFDS&&
+     v2[1]>=ybar0FDS&&v2[1]<=ybarFDS&&
+     v2[2]>=zbar0FDS&&v2[2]<=zbarFDS)inside2 = 1;
+
+  if(v3[0]>=xbar0FDS&&v3[0]<=xbarFDS&&
+     v3[1]>=ybar0FDS&&v3[1]<=ybarFDS&&
+     v3[2]>=zbar0FDS&&v3[2]<=zbarFDS)inside3 = 1;
+  if(inside1==1&&inside2==1&&inside3==1)return 1; // all points are inside
+  if(inside1==0&&inside2==0&&inside3==0)return 0; // all points are outside
+  vmid[0] = (v1[0]+v2[0]+v3[0])/3.0;
+  vmid[1] = (v1[1]+v2[1]+v3[1])/3.0;
+  vmid[2] = (v1[2]+v2[2]+v3[2])/3.0;
+  if(vmid[0]>=xbar0FDS&&vmid[0]<=xbarFDS&&
+     vmid[1]>=ybar0FDS&&vmid[1]<=ybarFDS&&
+     vmid[2]>=zbar0FDS&&vmid[2]<=zbarFDS)return 1; // center is inside
+  return 0;                                        // center is outside
 }
 
 /* ------------------ DrawTerrainGeom ------------------------ */
