@@ -277,6 +277,15 @@ void DrawTerrainGeomGPU(void){
 
 #endif
 
+/* ------------------ InDomain ------------------------ */
+
+int InDomain(float *v1, float *v2, float *v3){
+  if(v1[0]<xbar0FDS||v1[0]>xbarFDS||v1[1]<ybar0FDS||v1[1]>ybarFDS||v1[2]<zbar0FDS||v1[2]>zbarFDS)return 0;
+  if(v2[0]<xbar0FDS||v2[0]>xbarFDS||v2[1]<ybar0FDS||v2[1]>ybarFDS||v2[2]<zbar0FDS||v2[2]>zbarFDS)return 0;
+  if(v3[0]<xbar0FDS||v3[0]>xbarFDS||v3[1]<ybar0FDS||v3[1]>ybarFDS||v3[2]<zbar0FDS||v3[2]>zbarFDS)return 0;
+  return 1;
+}
+
 /* ------------------ DrawTerrainGeom ------------------------ */
 
 void DrawTerrainGeom(int option){
@@ -329,24 +338,34 @@ void DrawTerrainGeom(int option){
         float *c1;
         float *n1, *n2, *n3;
         unsigned int *ind;
+        int inside_domain=0, outside_domain=1;
 
         ind = terrain_indices+3*i;
 
         c1 = terrain_colors+3*i;
 
         v1 = terrain_vertices+9*ind[0];
+        v2 = terrain_vertices+9*ind[1];
+        v3 = terrain_vertices+9*ind[2];
+
+        if(showgeom_inside_domain==0||showgeom_outside_domain==0){
+          inside_domain = InDomain(v1, v2, v3);
+          outside_domain = 1-inside_domain;
+        }
+
+        if(showgeom_inside_domain==0&&inside_domain==1)continue;
+        if(showgeom_outside_domain==0&&outside_domain==1)continue;
+
         n1 = v1+3;
         if(terrain_showonly_top==1&&n1[2]<0.0)continue;
         glColor3fv(c1);
         glNormal3fv(n1);
         glVertex3fv(v1);
 
-        v2 = terrain_vertices+9*ind[1];
         n2 = v2+3;
         glNormal3fv(n2);
         glVertex3fv(v2);
 
-        v3 = terrain_vertices+9*ind[2];
         n3 = v3+3;
         glNormal3fv(n3);
         glVertex3fv(v3);
@@ -368,6 +387,7 @@ void DrawTerrainGeom(int option){
       glColor3fv(foregroundcolor);
       for(i = 0; i<terrain_nfaces; i++){
         int j;
+        int inside_domain=0, outside_domain=1;
 
         float *v1, *v2, *v3;
         float v1o[3], v2o[3], v3o[3];
@@ -379,6 +399,15 @@ void DrawTerrainGeom(int option){
         v1 = terrain_vertices+9*ind[0];
         v2 = terrain_vertices+9*ind[1];
         v3 = terrain_vertices+9*ind[2];
+
+        if(showgeom_inside_domain==0||showgeom_outside_domain==0){
+          inside_domain = InDomain(v1, v2, v3);
+          outside_domain = 1-inside_domain;
+        }
+
+        if(showgeom_inside_domain==0&&inside_domain==1)continue;
+        if(showgeom_outside_domain==0&&outside_domain==1)continue;
+
         n1 = v1+3;
         n2 = v2+3;
         n3 = v3+3;
@@ -415,6 +444,7 @@ void DrawTerrainGeom(int option){
       glColor3fv(foregroundcolor);
       for(i = 0; i<terrain_nfaces; i++){
         int j;
+        int inside_domain=0, outside_domain=1;
 
         float *v1, *v2, *v3;
         float v1o[3], v2o[3], v3o[3];
@@ -426,6 +456,15 @@ void DrawTerrainGeom(int option){
         v1 = terrain_vertices+9*ind[0];
         v2 = terrain_vertices+9*ind[1];
         v3 = terrain_vertices+9*ind[2];
+
+        if(showgeom_inside_domain==0||showgeom_outside_domain==0){
+          inside_domain = InDomain(v1, v2, v3);
+          outside_domain = 1-inside_domain;
+        }
+
+        if(showgeom_inside_domain==0&&inside_domain==1)continue;
+        if(showgeom_outside_domain==0&&outside_domain==1)continue;
+
         n1 = v1+3;
         n2 = v2+3;
         n3 = v3+3;
@@ -456,11 +495,23 @@ void DrawTerrainGeom(int option){
         float *n1, *n2, *n3;
         unsigned int *ind;
         float n1n[3], n2n[3], n3n[3];
+        int inside_domain=0, outside_domain=1;
 
         ind = terrain_indices+3*i;
 
 
         v1 = terrain_vertices+9*ind[0];
+        v2 = terrain_vertices+9*ind[1];
+        v3 = terrain_vertices+9*ind[2];
+
+        if(showgeom_inside_domain==0||showgeom_outside_domain==0){
+          inside_domain = InDomain(v1, v2, v3);
+          outside_domain = 1-inside_domain;
+        }
+
+        if(showgeom_inside_domain==0&&inside_domain==1)continue;
+        if(showgeom_outside_domain==0&&outside_domain==1)continue;
+
         n1 = v1+3;
         if(n1[2]<0.0)continue;
         n1n[0] = -n1[0];
@@ -471,7 +522,6 @@ void DrawTerrainGeom(int option){
         glNormal3fv(n1n);
         glVertex3fv(v1);
 
-        v3 = terrain_vertices+9*ind[2];
         n3 = v3+3;
         n3n[0] = -n3[0];
         n3n[1] = -n3[1];
@@ -479,7 +529,6 @@ void DrawTerrainGeom(int option){
         glNormal3fv(n3n);
         glVertex3fv(v3);
 
-        v2 = terrain_vertices+9*ind[1];
         n2 = v2+3;
         n2n[0] = -n2[0];
         n2n[1] = -n2[1];
@@ -500,22 +549,32 @@ void DrawTerrainGeom(int option){
         float *v1, *v2, *v3;
         float *n1, *n2, *n3;
         unsigned int *ind;
+        int inside_domain=0, outside_domain=1;
 
         ind = terrain_indices+3*i;
 
         v1 = terrain_vertices+9*ind[0];
+        v2 = terrain_vertices+9*ind[1];
+        v3 = terrain_vertices+9*ind[2];
+
+        if(showgeom_inside_domain==0||showgeom_outside_domain==0){
+          inside_domain = InDomain(v1, v2, v3);
+          outside_domain = 1-inside_domain;
+        }
+
+        if(showgeom_inside_domain==0&&inside_domain==1)continue;
+        if(showgeom_outside_domain==0&&outside_domain==1)continue;
+
         n1 = v1+3;
         if(n1[2]>=0.0)continue;
         glColor4fv(neutral_color);
         glNormal3fv(n1);
         glVertex3fv(v1);
 
-        v2 = terrain_vertices+9*ind[1];
         n2 = v2+3;
         glNormal3fv(n2);
         glVertex3fv(v2);
 
-        v3 = terrain_vertices+9*ind[2];
         n3 = v3+3;
         glNormal3fv(n3);
         glVertex3fv(v3);
@@ -570,10 +629,22 @@ void DrawTerrainGeom(int option){
         float *n1, *n2, *n3;
         float *t1, *t2, *t3;
         unsigned int *ind;
+        int inside_domain=0, outside_domain=1;
 
         ind = terrain_indices+3*i;
 
         v1 = terrain_vertices+9*ind[0];
+        v2 = terrain_vertices+9*ind[1];
+        v3 = terrain_vertices+9*ind[2];
+
+        if(showgeom_inside_domain==0||showgeom_outside_domain==0){
+          inside_domain = InDomain(v1, v2, v3);
+          outside_domain = 1-inside_domain;
+        }
+
+        if(showgeom_inside_domain==0&&inside_domain==1)continue;
+        if(showgeom_outside_domain==0&&outside_domain==1)continue;
+
         t1 = terrain_tvertices+2*ind[0];
         n1 = v1+3;
         if(n1[2]<0.0)continue;
@@ -581,14 +652,12 @@ void DrawTerrainGeom(int option){
         glTexCoord2fv(t1);
         glVertex3f(v1[0], v1[1], v1[2]+dz);
 
-        v2 = terrain_vertices+9*ind[1];
         t2 = terrain_tvertices+2*ind[1];
         n2 = v2+3;
         glTexCoord2fv(t2);
         glNormal3fv(n2);
         glVertex3f(v2[0], v2[1], v2[2]+dz);
 
-        v3 = terrain_vertices+9*ind[2];
         t3 = terrain_tvertices+2*ind[2];
         n3 = v3+3;
         glTexCoord2fv(t3);
