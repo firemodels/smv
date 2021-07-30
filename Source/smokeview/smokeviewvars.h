@@ -365,6 +365,8 @@ SVEXTERN int SVDECL(windrose_ttype, 2);
 #else
   SVEXTERN float windrose_merge_dxyzt[6];
 #endif
+
+SVEXTERN int SVDECL(drawing_boundary_files, 0);
 SVEXTERN int SVDECL(lock_mouse_aperture, 0);
 SVEXTERN int SVDECL(windrose_merge_type,WINDROSE_POINT);
 SVEXTERN int SVDECL(windrose_first, 0), SVDECL(windrose_next, 1);
