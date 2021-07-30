@@ -390,6 +390,8 @@ void UpdateShow(void){
   showdeviceflag = 0;
   visTimeParticles=1; visTimeSlice=1; visTimeBoundary=1; visTimeZone=1; visTimeIso=1;
 
+  drawing_boundary_files = 0;
+
   RenderTime=0;
   if(global_times!=NULL){
     if(settmin_p==1&&global_times[itimes]<tmin_p)visTimeParticles=0;
@@ -672,6 +674,8 @@ void UpdateShow(void){
       }
     }
     if(patchflag==1)showpatch=1;
+    drawing_boundary_files = showpatch;
+
     for(i=0;i<nmeshes;i++){
       meshdata *meshi;
 

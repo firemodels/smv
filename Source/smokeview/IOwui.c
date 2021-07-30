@@ -314,6 +314,7 @@ void DrawTerrainGeom(int option){
   float terrain_specular[4] = {0.8, 0.8, 0.8, 1.0};
   float neutral_color[4] = {0.91, 0.91, 0.76, 1.0};
   int draw_surface = 1, draw_texture=0;
+  int showgeom_inside_domain_local;
 
   if(terrain_nindices<=0)return;
   if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS||geom_bounding_box_mousedown==1){
@@ -330,6 +331,10 @@ void DrawTerrainGeom(int option){
       if(texti->is_transparent==0)draw_surface = 0; // don't draw a surface if we are drawing a texture
     }
   }
+
+  showgeom_inside_domain_local = showgeom_inside_domain;
+  if(drawing_boundary_files==1)showgeom_inside_domain_local = 0; // hide terrain within FDS domain if drawing boundary files
+
   if(option==DRAW_TRANSPARENT&&draw_texture==0)return;
 
   glEnable(GL_NORMALIZE);
@@ -367,12 +372,12 @@ void DrawTerrainGeom(int option){
         v2 = terrain_vertices+9*ind[1];
         v3 = terrain_vertices+9*ind[2];
 
-        if(showgeom_inside_domain==0||showgeom_outside_domain==0){
+        if(showgeom_inside_domain_local==0||showgeom_outside_domain==0){
           inside_domain = InDomain(v1, v2, v3);
           outside_domain = 1-inside_domain;
         }
 
-        if(showgeom_inside_domain==0&&inside_domain==1)continue;
+        if(showgeom_inside_domain_local==0&&inside_domain==1)continue;
         if(showgeom_outside_domain==0&&outside_domain==1)continue;
 
         n1 = v1+3;
@@ -419,12 +424,12 @@ void DrawTerrainGeom(int option){
         v2 = terrain_vertices+9*ind[1];
         v3 = terrain_vertices+9*ind[2];
 
-        if(showgeom_inside_domain==0||showgeom_outside_domain==0){
+        if(showgeom_inside_domain_local==0||showgeom_outside_domain==0){
           inside_domain = InDomain(v1, v2, v3);
           outside_domain = 1-inside_domain;
         }
 
-        if(showgeom_inside_domain==0&&inside_domain==1)continue;
+        if(showgeom_inside_domain_local==0&&inside_domain==1)continue;
         if(showgeom_outside_domain==0&&outside_domain==1)continue;
 
         n1 = v1+3;
@@ -476,12 +481,12 @@ void DrawTerrainGeom(int option){
         v2 = terrain_vertices+9*ind[1];
         v3 = terrain_vertices+9*ind[2];
 
-        if(showgeom_inside_domain==0||showgeom_outside_domain==0){
+        if(showgeom_inside_domain_local==0||showgeom_outside_domain==0){
           inside_domain = InDomain(v1, v2, v3);
           outside_domain = 1-inside_domain;
         }
 
-        if(showgeom_inside_domain==0&&inside_domain==1)continue;
+        if(showgeom_inside_domain_local==0&&inside_domain==1)continue;
         if(showgeom_outside_domain==0&&outside_domain==1)continue;
 
         n1 = v1+3;
@@ -523,12 +528,12 @@ void DrawTerrainGeom(int option){
         v2 = terrain_vertices+9*ind[1];
         v3 = terrain_vertices+9*ind[2];
 
-        if(showgeom_inside_domain==0||showgeom_outside_domain==0){
+        if(showgeom_inside_domain_local==0||showgeom_outside_domain==0){
           inside_domain = InDomain(v1, v2, v3);
           outside_domain = 1-inside_domain;
         }
 
-        if(showgeom_inside_domain==0&&inside_domain==1)continue;
+        if(showgeom_inside_domain_local==0&&inside_domain==1)continue;
         if(showgeom_outside_domain==0&&outside_domain==1)continue;
 
         n1 = v1+3;
@@ -576,12 +581,12 @@ void DrawTerrainGeom(int option){
         v2 = terrain_vertices+9*ind[1];
         v3 = terrain_vertices+9*ind[2];
 
-        if(showgeom_inside_domain==0||showgeom_outside_domain==0){
+        if(showgeom_inside_domain_local==0||showgeom_outside_domain==0){
           inside_domain = InDomain(v1, v2, v3);
           outside_domain = 1-inside_domain;
         }
 
-        if(showgeom_inside_domain==0&&inside_domain==1)continue;
+        if(showgeom_inside_domain_local==0&&inside_domain==1)continue;
         if(showgeom_outside_domain==0&&outside_domain==1)continue;
 
         n1 = v1+3;
@@ -656,12 +661,12 @@ void DrawTerrainGeom(int option){
         v2 = terrain_vertices+9*ind[1];
         v3 = terrain_vertices+9*ind[2];
 
-        if(showgeom_inside_domain==0||showgeom_outside_domain==0){
+        if(showgeom_inside_domain_local==0||showgeom_outside_domain==0){
           inside_domain = InDomain(v1, v2, v3);
           outside_domain = 1-inside_domain;
         }
 
-        if(showgeom_inside_domain==0&&inside_domain==1)continue;
+        if(showgeom_inside_domain_local==0&&inside_domain==1)continue;
         if(showgeom_outside_domain==0&&outside_domain==1)continue;
 
         t1 = terrain_tvertices+2*ind[0];
