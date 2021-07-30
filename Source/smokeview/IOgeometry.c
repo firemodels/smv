@@ -4332,7 +4332,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
-      if(auto_terrain==1)glTranslatef(0.0, 0.0, SCALE2FDS(0.01));
       glBegin(GL_TRIANGLES);
       for(j = 0; j<ntris; j++){
         float *color, *xyzptr[3];
