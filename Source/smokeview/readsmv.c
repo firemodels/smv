@@ -10352,7 +10352,8 @@ typedef struct {
 
   xcenGLOBAL=xbar/2.0;  ycenGLOBAL=ybar/2.0; zcenGLOBAL=zbar/2.0;
   xcenCUSTOM=xbar/2.0;  ycenCUSTOM=ybar/2.0; zcenCUSTOM=zbar/2.0;
-  glui_rotation_index = nmeshes;
+
+  glui_rotation_index = ROTATE_ABOUT_FDS_CENTER;
 
   UpdateBoundInfo();
 
@@ -12896,6 +12897,7 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "USER_ROTATE") == 1){
       if(fgets(buffer, 255, stream) == NULL)break;
       sscanf(buffer, "%i %i %f %f %f", &glui_rotation_index_ini, &show_rotation_center, &xcenCUSTOM, &ycenCUSTOM, &zcenCUSTOM);
+      if(glui_rotation_index_ini>=0)glui_rotation_index = ROTATE_ABOUT_FDS_CENTER;
       update_rotation_center_ini = 1;
       continue;
     }

@@ -4,7 +4,7 @@
 #define TRANSLATE_XY 101
 #define ROTATE_2AXIS 102
 #define GLUI_Z         2
-#define MESH_LIST      4
+#define ROTATE_ABOUT   4
 #define EYE_ROTATE     5
 #define EYE_ROTATE_90  6
 #define EYELEVEL       7

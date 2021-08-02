@@ -419,7 +419,7 @@ extern "C" void UpdateShowRotationCenter(void){
 
 void UpdateGluiRotateAbout(int val){
   if(LIST_rotate_about != NULL)LIST_rotate_about->set_int_val(val);
-  SceneMotionCB(MESH_LIST);
+  SceneMotionCB(ROTATE_ABOUT);
 }
 
 /* ------------------ UpdateShowGravityVector ------------------------ */
@@ -1166,7 +1166,7 @@ extern "C" void GluiMotionSetup(int main_window){
   rotation_index=&camera_current->rotation_index;
   *rotation_index=glui_rotation_index_ini;
 
-  LIST_rotate_about = glui_motion->add_listbox_to_panel(ROLLOUT_rotation_type,_("Rotate about:"),rotation_index,MESH_LIST,SceneMotionCB);
+  LIST_rotate_about = glui_motion->add_listbox_to_panel(ROLLOUT_rotation_type,_("Rotate about:"), rotation_index, ROTATE_ABOUT,SceneMotionCB);
   LIST_rotate_about->add_item(ROTATE_ABOUT_CLIPPING_CENTER, _("center of clipping planes"));
   LIST_rotate_about->add_item(ROTATE_ABOUT_USER_CENTER,_("user specified center"));
   if(have_geom_bb==1){
@@ -1177,13 +1177,6 @@ extern "C" void GluiMotionSetup(int main_window){
     LIST_rotate_about->add_item(ROTATE_ABOUT_WORLD_CENTER, _("FDS domain center"));
   }
   LIST_rotate_about->set_int_val(ROTATE_ABOUT_WORLD_CENTER);
-
-  for(i=0;i<nmeshes;i++){
-    meshdata *meshi;
-
-    meshi = meshinfo + i;
-    LIST_rotate_about->add_item(i,meshi->label);
-  }
 
   PANEL_user_center = glui_motion->add_panel_to_panel(ROLLOUT_rotation_type, "rotation center");
   CHECKBOX_show_rotation_center=glui_motion->add_checkbox_to_panel(PANEL_user_center,_("Show"),&show_rotation_center, CLIP_SHOW_ROTATE, SceneMotionCB);
@@ -1197,7 +1190,7 @@ extern "C" void GluiMotionSetup(int main_window){
   SPINNER_ycenCUSTOM->set_float_limits(DENORMALIZE_Y(0.0),DENORMALIZE_Y(1.0));
   SPINNER_zcenCUSTOM->set_float_limits(DENORMALIZE_Z(0.0),DENORMALIZE_Z(1.0));
 
-  SceneMotionCB(MESH_LIST);
+  SceneMotionCB(ROTATE_ABOUT);
 
   PANEL_anglebuttons = glui_motion->add_panel_to_panel(ROLLOUT_rotation_type,"",GLUI_PANEL_NONE);
   BUTTON_90_z=glui_motion->add_button_to_panel(PANEL_anglebuttons,"90 deg",EYE_ROTATE_90,SceneMotionCB);
@@ -1748,17 +1741,16 @@ extern "C" void UpdateRotationIndex(int val){
       }
     }
   }
-  if(*rotation_index!=ROTATE_ABOUT_USER_CENTER&&*rotation_index!=ROTATE_ABOUT_FDS_CENTER){
-    xcenCUSTOM = camera_current->xcen;
-    ycenCUSTOM = camera_current->ycen;
-    zcenCUSTOM = camera_current->zcen;
-    xcenCUSTOMsmv = DENORMALIZE_X(xcenCUSTOM);
-    ycenCUSTOMsmv = DENORMALIZE_Y(ycenCUSTOM);
-    zcenCUSTOMsmv = DENORMALIZE_Z(zcenCUSTOM);
-    if(SPINNER_xcenCUSTOM!=NULL)SPINNER_xcenCUSTOM->set_float_val(xcenCUSTOMsmv);
-    if(SPINNER_ycenCUSTOM!=NULL)SPINNER_ycenCUSTOM->set_float_val(ycenCUSTOMsmv);
-    if(SPINNER_zcenCUSTOM!=NULL)SPINNER_zcenCUSTOM->set_float_val(zcenCUSTOMsmv);
-  }
+
+  xcenCUSTOM = camera_current->xcen;
+  ycenCUSTOM = camera_current->ycen;
+  zcenCUSTOM = camera_current->zcen;
+  xcenCUSTOMsmv = DENORMALIZE_X(xcenCUSTOM);
+  ycenCUSTOMsmv = DENORMALIZE_Y(ycenCUSTOM);
+  zcenCUSTOMsmv = DENORMALIZE_Z(zcenCUSTOM);
+  if(SPINNER_xcenCUSTOM!=NULL)SPINNER_xcenCUSTOM->set_float_val(xcenCUSTOMsmv);
+  if(SPINNER_ycenCUSTOM!=NULL)SPINNER_ycenCUSTOM->set_float_val(ycenCUSTOMsmv);
+  if(SPINNER_zcenCUSTOM!=NULL)SPINNER_zcenCUSTOM->set_float_val(zcenCUSTOMsmv);
 
   if(*rotation_index!=ROTATE_ABOUT_USER_CENTER){
     float *az_elev;
@@ -2160,7 +2152,7 @@ extern "C" void SceneMotionCB(int var){
       zcenCUSTOM = NORMALIZE_Z(zcenCUSTOMsmv);
       UpdateRotationIndex(ROTATE_ABOUT_USER_CENTER);
       break;
-    case MESH_LIST:
+    case ROTATE_ABOUT:
       glui_rotation_index = *rotation_index;
       if(*rotation_index==ROTATE_ABOUT_USER_CENTER){
         custom_worldcenter=1;
