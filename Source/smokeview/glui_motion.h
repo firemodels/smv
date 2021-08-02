@@ -17,9 +17,7 @@
 
 #define MOVIE_SLICE_INDEX 1
 
-#define CUSTOM_ROTATION_X      9
-#define CUSTOM_ROTATION_Y     10
-#define CUSTOM_ROTATION_Z     11
+#define CUSTOM_ROTATION_XYZ    9
 #define LIST_VIEW              5
 #define LIST_VIEW_FROM_DIALOG 45
 #define ADD_VIEW               6

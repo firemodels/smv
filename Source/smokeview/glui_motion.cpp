@@ -1190,9 +1190,9 @@ extern "C" void GluiMotionSetup(int main_window){
   xcenCUSTOMsmv = DENORMALIZE_X(xcenCUSTOM);
   ycenCUSTOMsmv = DENORMALIZE_Y(ycenCUSTOM);
   zcenCUSTOMsmv = DENORMALIZE_Z(zcenCUSTOM);
-  SPINNER_xcenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"x:",GLUI_SPINNER_FLOAT,&xcenCUSTOMsmv,CUSTOM_ROTATION_X,SceneMotionCB);
-  SPINNER_ycenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"y:",GLUI_SPINNER_FLOAT,&ycenCUSTOMsmv,CUSTOM_ROTATION_Y,SceneMotionCB);
-  SPINNER_zcenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"z:",GLUI_SPINNER_FLOAT,&zcenCUSTOMsmv,CUSTOM_ROTATION_Z,SceneMotionCB);
+  SPINNER_xcenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"x:",GLUI_SPINNER_FLOAT,&xcenCUSTOMsmv, CUSTOM_ROTATION_XYZ,SceneMotionCB);
+  SPINNER_ycenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"y:",GLUI_SPINNER_FLOAT,&ycenCUSTOMsmv, CUSTOM_ROTATION_XYZ,SceneMotionCB);
+  SPINNER_zcenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"z:",GLUI_SPINNER_FLOAT,&zcenCUSTOMsmv, CUSTOM_ROTATION_XYZ,SceneMotionCB);
   SPINNER_xcenCUSTOM->set_float_limits(DENORMALIZE_X(0.0),DENORMALIZE_X(1.0));
   SPINNER_ycenCUSTOM->set_float_limits(DENORMALIZE_Y(0.0),DENORMALIZE_Y(1.0));
   SPINNER_zcenCUSTOM->set_float_limits(DENORMALIZE_Z(0.0),DENORMALIZE_Z(1.0));
@@ -1264,7 +1264,7 @@ extern "C" void GluiMotionSetup(int main_window){
   }
 
   PANEL_gslice_center = glui_motion->add_panel_to_panel(ROLLOUT_gslice,_("rotation center"),true);
-  SPINNER_gslice_center_x=glui_motion->add_spinner_to_panel(PANEL_gslice_center,"x:",GLUI_SPINNER_FLOAT,gslice_xyz,GSLICE_TRANSLATE, GSliceCB);
+  SPINNER_gslice_center_x=glui_motion->add_spinner_to_panel(PANEL_gslice_center,"x:",GLUI_SPINNER_FLOAT,gslice_xyz,  GSLICE_TRANSLATE, GSliceCB);
   SPINNER_gslice_center_y=glui_motion->add_spinner_to_panel(PANEL_gslice_center,"y:",GLUI_SPINNER_FLOAT,gslice_xyz+1,GSLICE_TRANSLATE, GSliceCB);
   SPINNER_gslice_center_z=glui_motion->add_spinner_to_panel(PANEL_gslice_center,"z:",GLUI_SPINNER_FLOAT,gslice_xyz+2,GSLICE_TRANSLATE, GSliceCB);
   SPINNER_gslice_center_x->set_float_limits(xbar0,DENORMALIZE_X(xbar),GLUI_LIMIT_CLAMP);
@@ -1707,7 +1707,6 @@ extern "C" void UpdateTranslate(void){
 /* ------------------ UpdateRotationIndex ------------------------ */
 
 extern "C" void UpdateRotationIndex(int val){
-  float *az_elev;
   int *rotation_index;
 
   rotation_index = &camera_current->rotation_index;
@@ -1761,14 +1760,15 @@ extern "C" void UpdateRotationIndex(int val){
     if(SPINNER_zcenCUSTOM!=NULL)SPINNER_zcenCUSTOM->set_float_val(zcenCUSTOMsmv);
   }
 
-  az_elev = camera_current->az_elev;
+  if(*rotation_index!=ROTATE_ABOUT_USER_CENTER){
+    float *az_elev;
 
-  az_elev[0]=0.;
-  az_elev[1]=0.;
-
-  camera_current->azimuth=0.0;
-
-  camera_current->view_angle=0.0;
+    az_elev = camera_current->az_elev;
+    az_elev[0]                 = 0.0;
+    az_elev[1]                 = 0.0;
+    camera_current->azimuth    = 0.0;
+    camera_current->view_angle = 0.0;
+  }
 
   UpdateMeshList1(val);
 
@@ -2133,7 +2133,7 @@ extern "C" void SceneMotionCB(int var){
 #ifdef pp_OSX
 #ifndef pp_QUART
       glui_screenWidth  /= 2;
-      glui_screenHeight /=2;
+      glui_screenHeight /= 2;
 #endif
 #endif
       SetScreenSize(&glui_screenWidth, &glui_screenHeight);
@@ -2154,15 +2154,9 @@ extern "C" void SceneMotionCB(int var){
     case FLOORLEVEL:
       desired_view_height=0.6;
       break;
-    case CUSTOM_ROTATION_X:
+    case CUSTOM_ROTATION_XYZ:
       xcenCUSTOM = NORMALIZE_X(xcenCUSTOMsmv);
-      UpdateRotationIndex(ROTATE_ABOUT_USER_CENTER);
-      break;
-    case CUSTOM_ROTATION_Y:
       ycenCUSTOM = NORMALIZE_Y(ycenCUSTOMsmv);
-      UpdateRotationIndex(ROTATE_ABOUT_USER_CENTER);
-      break;
-    case CUSTOM_ROTATION_Z:
       zcenCUSTOM = NORMALIZE_Z(zcenCUSTOMsmv);
       UpdateRotationIndex(ROTATE_ABOUT_USER_CENTER);
       break;
@@ -2386,9 +2380,7 @@ extern "C" void SceneMotionCB(int var){
     case WINDOW_RESIZE:
     case WINDOWSIZE_LIST:
     case SNAPSCENE:
-    case CUSTOM_ROTATION_X:
-    case CUSTOM_ROTATION_Y:
-    case CUSTOM_ROTATION_Z:
+    case CUSTOM_ROTATION_XYZ:
     case ROTATE_2AXIS:
     case WINDOW_COLORS:
     case COLOR_FLIP:
