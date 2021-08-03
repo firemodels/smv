@@ -3806,7 +3806,6 @@ void DrawGeomVData(vslicedata *vd){
         glVertex3f(xyz[0]-du/2.0,xyz[1]-dv/2.0, xyz[2]-dw/2.0);
         glVertex3f(xyz[0]+du/2.0,xyz[1]+dv/2.0, xyz[2]+dw/2.0);
       }
-      printf("\n\n");
       glEnd();
       glPopMatrix();
     }
