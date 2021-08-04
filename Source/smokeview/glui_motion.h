@@ -4,7 +4,7 @@
 #define TRANSLATE_XY 101
 #define ROTATE_2AXIS 102
 #define GLUI_Z         2
-#define MESH_LIST      4
+#define ROTATE_ABOUT   4
 #define EYE_ROTATE     5
 #define EYE_ROTATE_90  6
 #define EYELEVEL       7
@@ -17,9 +17,7 @@
 
 #define MOVIE_SLICE_INDEX 1
 
-#define CUSTOM_ROTATION_X      9
-#define CUSTOM_ROTATION_Y     10
-#define CUSTOM_ROTATION_Z     11
+#define CUSTOM_ROTATION_XYZ    9
 #define LIST_VIEW              5
 #define LIST_VIEW_FROM_DIALOG 45
 #define ADD_VIEW               6

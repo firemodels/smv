@@ -1928,12 +1928,12 @@ void UpdateShowScene(void){
   }
   if(update_rotation_center == 1){
     camera_current->rotation_index = glui_rotation_index;
-    SceneMotionCB(MESH_LIST);
+    SceneMotionCB(ROTATE_ABOUT);
     update_rotation_center = 0;
   }
   if(update_rotation_center_ini == 1){
     camera_current->rotation_index = glui_rotation_index_ini;
-    SceneMotionCB(MESH_LIST);
+    SceneMotionCB(ROTATE_ABOUT);
     update_rotation_center_ini = 0;
   }
   if(camera_current->dirty == 1){
