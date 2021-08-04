@@ -6236,6 +6236,7 @@ void SortLoadedSliceList(void){
 void DrawSliceFrame(){
   int ii;
   int jjj, nslicemax, blend_mode;
+  int draw_slice;
 
   SortLoadedSliceList();
 
@@ -6413,7 +6414,17 @@ void DrawSliceFrame(){
         SNIFF_ERRORS("after DrawVolSliceTerrain");
         break;
       case SLICE_GEOM:
-        if(sd->vloaded==0||(sd->vloaded==1&&show_cell_slices_and_vectors==1)){
+      // don't draw slice if also a vector slice unless you want to
+      //     (set show_cell_slices_and_vectors or show_node_slices_and_vectors)
+        draw_slice = 0;
+        if(sd->vloaded==1){
+          if(sd->cell_center==1&&show_cell_slices_and_vectors==1)draw_slice=1;
+          if(sd->cell_center==0&&show_node_slices_and_vectors==1)draw_slice=1;
+        }
+        else{
+          draw_slice=1;
+        }
+        if(draw_slice==1){
           DrawGeomData(DRAW_TRANSPARENT, sd, sd->patchgeom, GEOM_STATIC);
           DrawGeomData(DRAW_TRANSPARENT, sd, sd->patchgeom, GEOM_DYNAMIC);
         }
