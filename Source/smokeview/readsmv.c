@@ -4520,6 +4520,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->geom_ivals_dynamic = NULL;
   patchi->geom_ivals_static = NULL;
   patchi->geom_vals_static = NULL;
+  patchi->geom_vert2tri = 0;
   patchi->geom_vals_dynamic = NULL;
   patchi->geom_ndynamics = NULL;
   patchi->geom_nstatics = NULL;
@@ -10740,6 +10741,8 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
     if(Match(buffer, "GEOMCELLPROPS")==1){
+      int vector_slice[3] = {-1, -1, -1};
+
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i",
         &slice_celltype);
@@ -10754,19 +10757,25 @@ int ReadIni2(char *inifile, int localfile){
       }
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %f",
-        show_slice_shaded,show_slice_shaded+1,show_slice_shaded+2,&geomslice_pointsize);
+      sscanf(buffer, " %i %i %i %f %i %i %i",
+        show_slice_shaded,show_slice_shaded+1,show_slice_shaded+2,&geomslice_pointsize,
+             vector_slice, vector_slice+1, vector_slice+2
+             );
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i",
         show_slice_outlines,show_slice_outlines+1,show_slice_outlines+2);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i",
         show_slice_points,show_slice_points+1,show_slice_points+2);
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i",
+             show_vector_slice, show_vector_slice+1, show_vector_slice+2);
 
       for(i=0;i<MAX_CELL_TYPES;i++){
         show_slice_shaded[i]   = CLAMP(show_slice_shaded[i],0,1);
         show_slice_outlines[i] = CLAMP(show_slice_outlines[i],0,1);
         show_slice_points[i]   = CLAMP(show_slice_points[i],0,1);
+        if(vector_slice[i]>=0)show_vector_slice[i] = CLAMP(vector_slice[i], 0, 1);
       }
       continue;
     }
@@ -14814,8 +14823,9 @@ void WriteIni(int flag,char *filename){
     slice_celltype);
   fprintf(fileout, " %i %i %i\n",
     slice_edgetypes[0], slice_edgetypes[1], slice_edgetypes[2]);
-  fprintf(fileout, " %i %i %i\n",
-    show_slice_shaded[0], show_slice_shaded[1], show_slice_shaded[2]);
+  fprintf(fileout, " %i %i %i %f %i %i %i\n",
+    show_slice_shaded[0], show_slice_shaded[1], show_slice_shaded[2], geomslice_pointsize,
+    show_vector_slice[0], show_vector_slice[1], show_vector_slice[2]);
   fprintf(fileout, " %i %i %i\n",
     show_slice_outlines[0], show_slice_outlines[1], show_slice_outlines[2]);
   fprintf(fileout, " %i %i %i\n",

@@ -3705,6 +3705,31 @@ void AverageGeomColors(geomlistdata *geomlisti, int itriangle, unsigned char *iv
   }
 }
 
+/* ------------------ Tri2Verts ------------------------ */
+
+void Tri2Verts(tridata *triangles, int ntriangles, vertdata *verts, int nverts){
+  int i;
+
+  for(i = 0; i<nverts; i++){
+    vertdata *verti;
+
+    verti = verts+i;
+    verti->triangle1 = NULL;
+  }
+  for(i = 0; i<ntriangles; i++){
+    tridata *trii;
+    vertdata *vert1, *vert2, *vert3;
+
+    trii = triangles+i;
+    vert1 = verts+trii->vert_index[0];
+    vert2 = verts+trii->vert_index[1];
+    vert3 = verts+trii->vert_index[2];
+    vert1->triangle1 = trii;
+    vert2->triangle1 = trii;
+    vert3->triangle1 = trii;
+  }
+}
+
 /* ------------------ DrawGeomVData ------------------------ */
 
 void DrawGeomVData(vslicedata *vd){
@@ -3712,8 +3737,10 @@ void DrawGeomVData(vslicedata *vd){
   unsigned char *ivals;
   int i, geom_type=GEOM_STATIC;
   int cell_center, nvals;
+  int vert2tri;
 
   patchi = vd->val->patchgeom;
+  vert2tri = patchi->geom_vert2tri;
   cell_center = vd->val->cell_center;
   ivals = patchi->geom_ival_static;
   if(vd->u!=NULL)patchu = vd->u->patchgeom;
@@ -3721,9 +3748,9 @@ void DrawGeomVData(vslicedata *vd){
   if(vd->w!=NULL)patchw = vd->w->patchgeom;
   if(
     (patchi->patch_filetype==PATCH_GEOMETRY_SLICE&&(
-    show_slice_shaded[IN_CUTCELL_GLUI]==1||
-    show_slice_shaded[IN_SOLID_GLUI]==1||
-    show_slice_shaded[IN_GAS_GLUI]==1))
+    show_vector_slice[IN_CUTCELL_GLUI]==1||
+    show_vector_slice[IN_SOLID_GLUI]==1||
+    show_vector_slice[IN_GAS_GLUI]==1))
     ){
     for(i = 0; i<1; i++){
       geomdata *geomi;
@@ -3737,6 +3764,10 @@ void DrawGeomVData(vslicedata *vd){
       }
       else{
         geomlisti = geomi->geomlistinfo+geomi->itime;
+      }
+      if(cell_center==0&&vert2tri==0){
+        patchi->geom_vert2tri = 1;
+        Tri2Verts(geomlisti->triangles, geomlisti->ntriangles, geomlisti->verts, geomlisti->nverts);
       }
 
       ntris = geomlisti->ntriangles;
@@ -3763,20 +3794,28 @@ void DrawGeomVData(vslicedata *vd){
         int insolid;
         float du, dv, dw;
 
-        if(cell_center==1)trianglei = geomlisti->triangles+j;
-        if(cell_center==0)verti     = geomlisti->verts+j;
-
+        insolid = -1;
         if(cell_center==1){
+          trianglei = geomlisti->triangles+j;
           insolid = trianglei->insolid&3;
-          if(insolid==IN_CUTCELL&&show_slice_shaded[IN_CUTCELL_GLUI]==0)continue;
-          if(insolid==IN_SOLID&&show_slice_shaded[IN_SOLID_GLUI]==0)continue;
-          if(insolid==IN_GAS&&show_slice_shaded[IN_GAS_GLUI]==0)continue;
-        }
-
-        if((cell_center==1&&show_cell_slices_and_vectors==1)||(cell_center==0&&show_node_slices_and_vectors==1)){
-          color = foregroundcolor;
         }
         else{
+          verti = geomlisti->verts+j;
+          if(verti->triangle1!=NULL)insolid = verti->triangle1->insolid&3;
+        }
+        if(insolid>=0){
+          if(insolid==IN_CUTCELL&&show_vector_slice[IN_CUTCELL_GLUI]==0)continue;
+          if(insolid==IN_SOLID  &&show_vector_slice[IN_SOLID_GLUI]==0)continue;
+          if(insolid==IN_GAS    &&show_vector_slice[IN_GAS_GLUI]==0)continue;
+        }
+
+        color = NULL;
+        if((cell_center==1&&show_cell_slices_and_vectors==1)||(cell_center==0&&show_node_slices_and_vectors==1)){
+          if(insolid==IN_CUTCELL   &&show_slice_shaded[IN_CUTCELL_GLUI]==1)color = foregroundcolor;
+          if(insolid==IN_SOLID_GLUI&&show_slice_shaded[IN_SOLID_GLUI]==1)color = foregroundcolor;
+          if(insolid==IN_GAS_GLUI  &&show_slice_shaded[IN_GAS_GLUI]==1)color = foregroundcolor;
+        }
+        if(color==NULL){
           color_index = ivals[j];
           color = rgb_patch+4*color_index;
         }
@@ -3789,7 +3828,7 @@ void DrawGeomVData(vslicedata *vd){
           xyz[2] = (xyz1[2]+xyz2[2]+xyz3[2])/3.0;
           xyzptr = xyz;
         }
-        if(cell_center==0){
+        else{
           xyzptr = verti->xyz;
         }
 
@@ -4114,6 +4153,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
           tridata *trianglei;
           int show_edge1=1, show_edge2=1, show_edge3 = 1;
           int draw_foreground=1;
+          float *color0, *color1, *color2;
 
           trianglei = geomlisti->triangles + j;
           if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
@@ -4171,15 +4211,21 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
             }
           }
           if(draw_foreground == 1){
-             glColor4fv(foregroundcolor);
+             color0 = foregroundcolor;
+             color1 = foregroundcolor;
+             color2 = foregroundcolor;
           }
           else{
-            int color_index;
-            float *color;
-
-            color_index = ivals[j];
-            color = rgb_patch + 4 * color_index;
-            glColor3fv(color);
+            if(sd==NULL||sd->cell_center==1){
+              color0 = rgb_patch+4*ivals[j];
+              color1 = color0;
+              color2 = color0;
+            }
+            else{
+              color0 = rgb_patch+4*ivals[trianglei->vert_index[0]];
+              color1 = rgb_patch+4*ivals[trianglei->vert_index[1]];
+              color2 = rgb_patch+4*ivals[trianglei->vert_index[2]];
+            }
           }
 
           xyzptr[0] = trianglei->verts[0]->xyz;
@@ -4187,16 +4233,19 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
           xyzptr[2] = trianglei->verts[2]->xyz;
 
           if(show_edge1==1){
+            glColor3fv(color0);
             glVertex3fv(xyzptr[0]);
             glVertex3fv(xyzptr[1]);
           }
 
           if(show_edge2==1){
+            glColor3fv(color1);
             glVertex3fv(xyzptr[1]);
             glVertex3fv(xyzptr[2]);
           }
 
           if(show_edge3==1){
+            glColor3fv(color2);
             glVertex3fv(xyzptr[2]);
             glVertex3fv(xyzptr[0]);
           }
