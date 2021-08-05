@@ -4785,7 +4785,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_settings, SLICE_SETTINGS_ROLLOUT, glui_bounds);
 
     if(ngeom_data > 0){
-      PANEL_immersed = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "slice/vector slice(geometry)", true);
+      PANEL_immersed = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "slice/vector(geometry)", true);
       PANEL_immersed_region = glui_bounds->add_panel_to_panel(PANEL_immersed, "region", true);
       RADIO_slice_celltype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_region, &slice_celltype, IMMERSED_SWITCH_CELLTYPE, ImmersedBoundCB);
       glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "gas");
@@ -4813,7 +4813,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     }
 
     glui_bounds->add_column_to_panel(ROLLOUT_slice_settings, false);
-    PANEL_slice_smoke = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "slice fire", true);
+    PANEL_slice_smoke = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "slice(fire)", true);
     glui_bounds->add_checkbox_to_panel(PANEL_slice_smoke, _("max blending"), &slices3d_max_blending);
     glui_bounds->add_checkbox_to_panel(PANEL_slice_smoke, _("show all 3D slices"), &showall_3dslices);
 
