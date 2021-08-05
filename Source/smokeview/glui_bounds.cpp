@@ -4791,7 +4791,12 @@ extern "C" void GluiBoundsSetup(int main_window){
       glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "gas");
       glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "solid(geometry)");
       glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "cut cell");
-      CHECKBOX_show_vector_slice = glui_bounds->add_checkbox_to_panel(PANEL_immersed, "show vectors", &glui_show_vector_slice, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+
+      PANEL_immersed_outlinetype = glui_bounds->add_panel_to_panel(PANEL_immersed, "outline type", true);
+      RADIO_slice_edgetype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_outlinetype, &glui_slice_edgetype, IMMERSED_SWITCH_EDGETYPE, ImmersedBoundCB);
+      glui_bounds->add_radiobutton_to_group(RADIO_slice_edgetype, _("polygon"));
+      glui_bounds->add_radiobutton_to_group(RADIO_slice_edgetype, _("triangle"));
+      glui_bounds->add_radiobutton_to_group(RADIO_slice_edgetype, _("none"));
 
       glui_bounds->add_column_to_panel(PANEL_immersed, false);
       PANEL_immersed_drawas = glui_bounds->add_panel_to_panel(PANEL_immersed, "draw slice as", true);
@@ -4801,33 +4806,10 @@ extern "C" void GluiBoundsSetup(int main_window){
       glui_bounds->add_spinner_to_panel(PANEL_immersed_drawas, "line width", GLUI_SPINNER_FLOAT, &geomslice_linewidth);
       glui_bounds->add_spinner_to_panel(PANEL_immersed_drawas, "point size", GLUI_SPINNER_FLOAT, &geomslice_pointsize);
 
-      glui_bounds->add_column_to_panel(PANEL_immersed, false);
-      PANEL_immersed_outlinetype = glui_bounds->add_panel_to_panel(PANEL_immersed, "outline type", true);
-      RADIO_slice_edgetype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_outlinetype, &glui_slice_edgetype, IMMERSED_SWITCH_EDGETYPE, ImmersedBoundCB);
-      glui_bounds->add_radiobutton_to_group(RADIO_slice_edgetype, _("polygon"));
-      glui_bounds->add_radiobutton_to_group(RADIO_slice_edgetype, _("triangle"));
-      glui_bounds->add_radiobutton_to_group(RADIO_slice_edgetype, _("none"));
+      CHECKBOX_show_vector_slice = glui_bounds->add_checkbox_to_panel(PANEL_immersed, "draw vectors", &glui_show_vector_slice, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
 
       ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
       ImmersedBoundCB(IMMERSED_SWITCH_EDGETYPE);
-    }
-
-    PANEL_sliceshow = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "slice(regular)", true);
-    RADIO_show_slice_in_obst = glui_bounds->add_radiogroup_to_panel(PANEL_sliceshow, &show_slice_in_obst, SLICE_IN_OBST, SliceBoundCB);
-    glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, "gas");
-    glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, "gas and solid");
-    glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, "solid");
-
-    SPINNER_transparent_level = glui_bounds->add_spinner_to_panel(ROLLOUT_slice_settings, _("Transparent level"), GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, SliceBoundCB);
-    SPINNER_transparent_level->set_float_limits(0.0, 1.0);
-    glui_bounds->add_spinner_to_panel(ROLLOUT_slice_settings, "slice offset", GLUI_SPINNER_FLOAT, &sliceoffset_all);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("Output data to file"), &output_slicedata);
-    if(nfedinfo>0){
-      glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, "Regenerate FED data", &regenerate_fed);
-    }
-
-    if(nterraininfo>0){
-      glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("terrain slice overlap"), &terrain_slice_overlap);
     }
 
     glui_bounds->add_column_to_panel(ROLLOUT_slice_settings, false);
@@ -4847,6 +4829,23 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_slice_skip = glui_bounds->add_spinner_to_panel(ROLLOUT_slice_settings, "skip", GLUI_SPINNER_INT, &slice_skip,  SLICE_SKIP, SliceBoundCB);
     SliceBoundCB(SLICE_SKIP);
 
+    PANEL_sliceshow = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "slice(regular)", true);
+    RADIO_show_slice_in_obst = glui_bounds->add_radiogroup_to_panel(PANEL_sliceshow, &show_slice_in_obst, SLICE_IN_OBST, SliceBoundCB);
+    glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, "gas");
+    glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, "gas and solid");
+    glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, "solid");
+
+    SPINNER_transparent_level = glui_bounds->add_spinner_to_panel(ROLLOUT_slice_settings, _("Transparent level"), GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, SliceBoundCB);
+    SPINNER_transparent_level->set_float_limits(0.0, 1.0);
+    glui_bounds->add_spinner_to_panel(ROLLOUT_slice_settings, "slice offset", GLUI_SPINNER_FLOAT, &sliceoffset_all);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("Output data to file"), &output_slicedata);
+    if(nfedinfo>0){
+      glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, "Regenerate FED data", &regenerate_fed);
+    }
+
+    if(nterraininfo>0){
+      glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("terrain slice overlap"), &terrain_slice_overlap);
+    }
 #ifdef pp_FSEEK
 #ifdef pp_LOAD_INCREMENTAL
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("incremental data loading"), &load_incremental, SLICE_LOAD_INCREMENTAL, LoadIncrementalCB);
