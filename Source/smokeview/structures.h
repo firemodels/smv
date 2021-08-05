@@ -42,7 +42,7 @@ typedef struct _vertdata {
   unsigned char on_mesh_boundary;
   int geomtype;
   int isdup;
-  struct _tridata **triangles;
+  struct _tridata **triangles, *triangle1;
 } vertdata;
 
 /* --------------------------  edgedata ------------------------------------ */
@@ -1467,6 +1467,7 @@ typedef struct _patchdata {
   float  *geom_val_static,   *geom_val_dynamic;
   int geom_nval_static, geom_nval_dynamic;
   int *geom_nstatics, *geom_ndynamics;
+  int geom_vert2tri;
   int geom_nvals, ngeom_times;
   flowlabels label;
   char menulabel[128], menulabel_base[128], menulabel_suffix[128], gslicedir[50];

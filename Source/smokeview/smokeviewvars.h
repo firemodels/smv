@@ -29,9 +29,11 @@ SVEXTERN float geom_bounding_box[6] = {1000000000.0, -1000000000.0,
                                        1000000000.0, -1000000000.0,
                                        1000000000.0, -1000000000.0
                                       };
+SVEXTERN int show_vector_slice[MAX_CELL_TYPES]={1,1,1};
 #else
 SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
+SVEXTERN int show_vector_slice[MAX_CELL_TYPES];
 #endif
 
 SVEXTERN int SVDECL(rotate_center, 0);
@@ -737,6 +739,7 @@ SVEXTERN int SVDECL(show_volsmoke_moving,0);
 SVEXTERN int SVDECL(freeze_volsmoke,0);
 SVEXTERN int SVDECL(autofreeze_volsmoke, ON);
 
+SVEXTERN int SVDECL(glui_show_vector_slice, 1);
 SVEXTERN int SVDECL(glui_show_slice_shaded,1);
 SVEXTERN int SVDECL(glui_show_slice_outlines,0);
 SVEXTERN int SVDECL(glui_show_slice_points,0);

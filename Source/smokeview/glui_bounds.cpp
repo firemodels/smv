@@ -2835,6 +2835,7 @@ GLUI_Checkbox *CHECKBOX_show_boundary_outline=NULL;
 GLUI_Checkbox *CHECKBOX_part_multithread = NULL;
 GLUI_Checkbox *CHECKBOX_partfast = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_shaded = NULL;
+GLUI_Checkbox *CHECKBOX_show_vector_slice = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_outlines = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_points = NULL;
 
@@ -3681,8 +3682,9 @@ extern "C" void ImmersedBoundCB(int var){
     int i;
 
   case IMMERSED_SWITCH_CELLTYPE:
-    glui_slice_edgetype  = slice_edgetypes[slice_celltype];
-    glui_show_slice_shaded  = show_slice_shaded[slice_celltype];
+    glui_show_vector_slice   = show_vector_slice[slice_celltype];
+    glui_slice_edgetype      = slice_edgetypes[slice_celltype];
+    glui_show_slice_shaded   = show_slice_shaded[slice_celltype];
     glui_show_slice_outlines = show_slice_outlines[slice_celltype];
     glui_show_slice_points   = show_slice_points[slice_celltype];
     for(i=0;i<3;i++){
@@ -3697,6 +3699,7 @@ extern "C" void ImmersedBoundCB(int var){
       }
     }
     if(RADIO_slice_edgetype!=NULL)RADIO_slice_edgetype->set_int_val(glui_slice_edgetype);
+    if(CHECKBOX_show_vector_slice!=NULL)CHECKBOX_show_vector_slice->set_int_val(glui_show_vector_slice);
     if(CHECKBOX_show_slice_shaded!=NULL)CHECKBOX_show_slice_shaded->set_int_val(glui_show_slice_shaded);
     if(CHECKBOX_show_slice_outlines!=NULL)CHECKBOX_show_slice_outlines->set_int_val(glui_show_slice_outlines);
     if(CHECKBOX_show_slice_points!=NULL)CHECKBOX_show_slice_points->set_int_val(glui_show_slice_points);
@@ -3709,6 +3712,7 @@ extern "C" void ImmersedBoundCB(int var){
     else{
       if(glui_slice_edgetype == IMMERSED_HIDDEN)glui_slice_edgetype = IMMERSED_TRIANGLE;
     }
+    show_vector_slice[slice_celltype]   = glui_show_vector_slice;
     slice_edgetypes[slice_celltype]     = glui_slice_edgetype;
     show_slice_shaded[slice_celltype]   = glui_show_slice_shaded;
     show_slice_outlines[slice_celltype] = glui_show_slice_outlines;
@@ -4781,18 +4785,19 @@ extern "C" void GluiBoundsSetup(int main_window){
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_settings, SLICE_SETTINGS_ROLLOUT, glui_bounds);
 
     if(ngeom_data > 0){
-      PANEL_immersed = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "slice(geometry)", true);
+      PANEL_immersed = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "slice/vector slice(geometry)", true);
       PANEL_immersed_region = glui_bounds->add_panel_to_panel(PANEL_immersed, "region", true);
       RADIO_slice_celltype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_region, &slice_celltype, IMMERSED_SWITCH_CELLTYPE, ImmersedBoundCB);
       glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "gas");
       glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "solid(geometry)");
       glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "cut cell");
+      CHECKBOX_show_vector_slice = glui_bounds->add_checkbox_to_panel(PANEL_immersed, "show vectors", &glui_show_vector_slice, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
 
       glui_bounds->add_column_to_panel(PANEL_immersed, false);
-      PANEL_immersed_drawas = glui_bounds->add_panel_to_panel(PANEL_immersed, "draw as", true);
-      CHECKBOX_show_slice_shaded = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "shaded", &glui_show_slice_shaded, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+      PANEL_immersed_drawas = glui_bounds->add_panel_to_panel(PANEL_immersed, "draw slice as", true);
+      CHECKBOX_show_slice_shaded = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "shaded",  &glui_show_slice_shaded, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
       CHECKBOX_show_slice_outlines = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "outline", &glui_show_slice_outlines, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-      CHECKBOX_show_slice_points = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "points", &glui_show_slice_points, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+      CHECKBOX_show_slice_points = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "points",  &glui_show_slice_points, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
       glui_bounds->add_spinner_to_panel(PANEL_immersed_drawas, "line width", GLUI_SPINNER_FLOAT, &geomslice_linewidth);
       glui_bounds->add_spinner_to_panel(PANEL_immersed_drawas, "point size", GLUI_SPINNER_FLOAT, &geomslice_pointsize);
 
