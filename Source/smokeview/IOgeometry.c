@@ -3784,8 +3784,10 @@ void DrawGeomVData(vslicedata *vd){
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
       if(auto_terrain==1)glTranslatef(0.0, 0.0, SCALE2FDS(0.01));
+
+      glLineWidth(vectorlinewidth);
       glBegin(GL_LINES);
-      for(j = 0; j<nvals; j++){
+      for(j = 0; j<nvals; j+=vectorskip){
         float *xyz1, *xyz2, *xyz3, xyz[3], *xyzptr;
         int color_index;
         float *color;
@@ -3862,6 +3864,65 @@ void DrawGeomVData(vslicedata *vd){
 
         glColor3f(color[0], color[1], color[2]);
         glVertex3f(xyzptr[0]-du/2.0, xyzptr[1]-dv/2.0, xyzptr[2]-dw/2.0);
+        glVertex3f(xyzptr[0]+du/2.0, xyzptr[1]+dv/2.0, xyzptr[2]+dw/2.0);
+      }
+      glEnd();
+
+      glPointSize(vectorpointsize);
+      glBegin(GL_POINTS);
+      for(j = 0; j<nvals; j+=vectorskip){
+        float *xyz1, *xyz2, *xyz3, xyz[3], *xyzptr;
+        int color_index;
+        float *color;
+        tridata *trianglei;
+        vertdata *verti;
+        int insolid;
+        float du, dv, dw;
+
+        insolid = -1;
+        if(cell_center==1){
+          trianglei = geomlisti->triangles+j;
+          insolid = trianglei->insolid&3;
+        }
+        else{
+          verti = geomlisti->verts+j;
+          if(verti->triangle1!=NULL)insolid = verti->triangle1->insolid&3;
+        }
+        if(insolid>=0){
+          if(insolid==IN_CUTCELL&&show_vector_slice[IN_CUTCELL_GLUI]==0)continue;
+          if(insolid==IN_SOLID  &&show_vector_slice[IN_SOLID_GLUI]==0)continue;
+          if(insolid==IN_GAS    &&show_vector_slice[IN_GAS_GLUI]==0)continue;
+        }
+
+        color = NULL;
+        if((cell_center==1&&show_cell_slices_and_vectors==1)||(cell_center==0&&show_node_slices_and_vectors==1)){
+          if(insolid==IN_CUTCELL   &&show_slice_shaded[IN_CUTCELL_GLUI]==1)color = foregroundcolor;
+          if(insolid==IN_SOLID_GLUI&&show_slice_shaded[IN_SOLID_GLUI]==1)color = foregroundcolor;
+          if(insolid==IN_GAS_GLUI  &&show_slice_shaded[IN_GAS_GLUI]==1)color = foregroundcolor;
+        }
+        if(color==NULL){
+          color_index = ivals[j];
+          color = rgb_patch+4*color_index;
+        }
+        if(cell_center==1){
+          xyz1 = trianglei->verts[0]->xyz;
+          xyz2 = trianglei->verts[1]->xyz;
+          xyz3 = trianglei->verts[2]->xyz;
+          xyz[0] = (xyz1[0]+xyz2[0]+xyz3[0])/3.0;
+          xyz[1] = (xyz1[1]+xyz2[1]+xyz3[1])/3.0;
+          xyz[2] = (xyz1[2]+xyz2[2]+xyz3[2])/3.0;
+          xyzptr = xyz;
+        }
+        else{
+          xyzptr = verti->xyz;
+        }
+
+        GET_VEC_GEOM_DXYZ(patchu, du, j);
+        GET_VEC_GEOM_DXYZ(patchv, dv, j);
+        GET_VEC_GEOM_DXYZ(patchw, dw, j);
+        ADJUST_VEC_DXYZ(du, dv, dw);
+
+        glColor3f(color[0], color[1], color[2]);
         glVertex3f(xyzptr[0]+du/2.0, xyzptr[1]+dv/2.0, xyzptr[2]+dw/2.0);
       }
       glEnd();
