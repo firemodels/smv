@@ -4812,6 +4812,13 @@ extern "C" void GluiBoundsSetup(int main_window){
 
     CHECKBOX_show_node_slices_and_vectors=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings,_("Show node centered slices and vectors"),&show_node_slices_and_vectors);
     CHECKBOX_show_node_slices_and_vectors=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings,_("Show cell centered slices and vectors"),&show_cell_slices_and_vectors);
+    SPINNER_transparent_level = glui_bounds->add_spinner_to_panel(ROLLOUT_slice_settings, _("Transparent level"), GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, SliceBoundCB);
+    SPINNER_transparent_level->set_float_limits(0.0, 1.0);
+    glui_bounds->add_spinner_to_panel(ROLLOUT_slice_settings, "slice offset", GLUI_SPINNER_FLOAT, &sliceoffset_all);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("Output data to file"), &output_slicedata);
+    if(nfedinfo>0){
+      glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, "Regenerate FED data", &regenerate_fed);
+    }
 
     glui_bounds->add_column_to_panel(ROLLOUT_slice_settings, false);
     PANEL_slice_smoke = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "slice(fire)", true);
@@ -4835,14 +4842,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, "gas");
     glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, "gas and solid");
     glui_bounds->add_radiobutton_to_group(RADIO_show_slice_in_obst, "solid");
-
-    SPINNER_transparent_level = glui_bounds->add_spinner_to_panel(ROLLOUT_slice_settings, _("Transparent level"), GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, SliceBoundCB);
-    SPINNER_transparent_level->set_float_limits(0.0, 1.0);
-    glui_bounds->add_spinner_to_panel(ROLLOUT_slice_settings, "slice offset", GLUI_SPINNER_FLOAT, &sliceoffset_all);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("Output data to file"), &output_slicedata);
-    if(nfedinfo>0){
-      glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, "Regenerate FED data", &regenerate_fed);
-    }
 
     if(nterraininfo>0){
       glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("terrain slice overlap"), &terrain_slice_overlap);
