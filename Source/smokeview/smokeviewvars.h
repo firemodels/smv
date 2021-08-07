@@ -825,6 +825,7 @@ SVEXTERN float SVDECL(*avatar_colors,NULL);
 SVEXTERN int SVDECL(script_render_flag,0), SVDECL(script_itime,0);
 
 SVEXTERN int SVDECL(show_slice_in_obst,ONLY_IN_GAS), offset_slice;
+SVEXTERN int SVDECL(show_slice_in_solid, 0), SVDECL(show_slice_in_gas, 1);
 SVEXTERN int skip_slice_in_embedded_mesh;
 SVEXTERN int n_embedded_meshes;
 
