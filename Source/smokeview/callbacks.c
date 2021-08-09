@@ -2010,7 +2010,7 @@ void Keyboard(unsigned char key, int flag){
     case 'I':
       show_slice_in_obst++;
       if(show_slice_in_obst>2)show_slice_in_obst = 0;
-      UpdateShowSliceInObst();
+      UpdateShowSliceInObst(show_slice_in_obst);
       updatemenu = 1;
       break;
     case 'j':

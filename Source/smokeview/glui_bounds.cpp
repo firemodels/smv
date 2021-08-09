@@ -2739,7 +2739,6 @@ GLUI_Panel *PANEL_immersed_region = NULL;
 GLUI_Panel *PANEL_immersed_drawas = NULL;
 GLUI_Panel *PANEL_immersed_outlinetype = NULL;
 GLUI_Panel *PANEL_where = NULL;
-GLUI_Panel *PANEL_sliceshow=NULL;
 GLUI_Panel *PANEL_slicedup = NULL;
 GLUI_Panel *PANEL_vectorslicedup = NULL;
 GLUI_Panel *PANEL_iso_eachlevel = NULL;
@@ -2882,8 +2881,6 @@ GLUI_Checkbox *CHECKBOX_transparentflag = NULL;
 GLUI_Checkbox *CHECKBOX_use_lighting = NULL;
 GLUI_Checkbox *CHECKBOX_show_extreme_mindata = NULL;
 GLUI_Checkbox *CHECKBOX_show_extreme_maxdata = NULL;
-GLUI_Checkbox *CHECKBOX_slice_in_gas=NULL;
-GLUI_Checkbox *CHECKBOX_slice_in_solid=NULL;
 
 GLUI_RadioGroup *RADIO_iso_setmin=NULL;
 GLUI_RadioGroup *RADIO_iso_setmax=NULL;
@@ -2903,6 +2900,8 @@ GLUI_RadioGroup *RADIO_part5=NULL;
 GLUI_RadioGroup *RADIO_plot3d_isotype=NULL;
 GLUI_RadioGroup *RADIO_plot3d_display=NULL;
 GLUI_RadioGroup *RADIO2_plot3d_display = NULL;
+GLUI_RadioButton *RADIO_button_cutcell = NULL;
+
 
 #ifdef pp_MEMDEBUG
 GLUI_RadioGroup *RADIO_memcheck=NULL;
@@ -3283,7 +3282,8 @@ extern "C" void UpdateHistogramType(void){
 
 /* ------------------ UpdateShowSliceInObst ------------------------ */
 
-extern "C" void UpdateShowSliceInObst(void){
+extern "C" void UpdateShowSliceInObst(int var){
+  show_slice_in_obst = var;
   if(show_slice_in_obst==GAS_AND_SOLID){
     show_slice_in_gas   = 1;
     show_slice_in_solid = 1;
@@ -3300,8 +3300,9 @@ extern "C" void UpdateShowSliceInObst(void){
     show_slice_in_gas   = 1;
     show_slice_in_solid = 0;
   }
-  CHECKBOX_slice_in_gas->set_int_val(show_slice_in_gas);
-  CHECKBOX_slice_in_solid->set_int_val(show_slice_in_solid);
+  show_slice_shaded[IN_GAS_GLUI]   = show_slice_in_gas;
+  show_slice_shaded[IN_SOLID_GLUI] = show_slice_in_solid;
+  ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
 }
 
 /* ------------------ UpdateIsoColorlevel ------------------------ */
@@ -4782,36 +4783,33 @@ extern "C" void GluiBoundsSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_slice_settings, glui_bounds);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_settings, SLICE_SETTINGS_ROLLOUT, glui_bounds);
 
-#ifndef pp_COMBINE_SLICE
-    if(ngeom_data > 0){
-#endif
-      PANEL_immersed = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "show slice(geometry)", true);
-      PANEL_immersed_region = glui_bounds->add_panel_to_panel(PANEL_immersed, "region", true);
-      RADIO_slice_celltype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_region, &slice_celltype, IMMERSED_SWITCH_CELLTYPE, ImmersedBoundCB);
-      glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "gas");
-      glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "solid(geometry)");
-      glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "cut cell");
+    PANEL_immersed = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "show slice", true);
+    PANEL_immersed_region = glui_bounds->add_panel_to_panel(PANEL_immersed, "region", true);
+    RADIO_slice_celltype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_region, &slice_celltype, IMMERSED_SWITCH_CELLTYPE, ImmersedBoundCB);
+    glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "gas");
+    glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "solid");
 
-      PANEL_immersed_outlinetype = glui_bounds->add_panel_to_panel(PANEL_immersed, "outline type", true);
-      RADIO_slice_edgetype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_outlinetype, &glui_slice_edgetype, IMMERSED_SWITCH_EDGETYPE, ImmersedBoundCB);
-      glui_bounds->add_radiobutton_to_group(RADIO_slice_edgetype, _("polygon"));
-      glui_bounds->add_radiobutton_to_group(RADIO_slice_edgetype, _("triangle"));
-      glui_bounds->add_radiobutton_to_group(RADIO_slice_edgetype, _("none"));
 
-      glui_bounds->add_column_to_panel(PANEL_immersed, false);
-      PANEL_immersed_drawas = glui_bounds->add_panel_to_panel(PANEL_immersed, "draw slice as", true);
-      CHECKBOX_show_slice_shaded = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "shaded",  &glui_show_slice_shaded, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-      CHECKBOX_show_slice_outlines = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "outline", &glui_show_slice_outlines, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-      CHECKBOX_show_slice_points = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "points",  &glui_show_slice_points, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-      CHECKBOX_show_vector_slice = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "vectors", &glui_show_vector_slice, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-      glui_bounds->add_spinner_to_panel(PANEL_immersed_drawas, "line width", GLUI_SPINNER_FLOAT, &geomslice_linewidth);
-      glui_bounds->add_spinner_to_panel(PANEL_immersed_drawas, "point size", GLUI_SPINNER_FLOAT, &geomslice_pointsize);
+    RADIO_button_cutcell = glui_bounds->add_radiobutton_to_group(RADIO_slice_celltype, "cut cell");
+    if(ngeom_data==0)RADIO_button_cutcell->disable();
 
-      ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
-      ImmersedBoundCB(IMMERSED_SWITCH_EDGETYPE);
-#ifndef pp_COMBINE_SLICE
-    }
-#endif
+    PANEL_immersed_outlinetype = glui_bounds->add_panel_to_panel(PANEL_immersed, "outline type", true);
+    RADIO_slice_edgetype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_outlinetype, &glui_slice_edgetype, IMMERSED_SWITCH_EDGETYPE, ImmersedBoundCB);
+    glui_bounds->add_radiobutton_to_group(RADIO_slice_edgetype, _("polygon"));
+    glui_bounds->add_radiobutton_to_group(RADIO_slice_edgetype, _("triangle"));
+    glui_bounds->add_radiobutton_to_group(RADIO_slice_edgetype, _("none"));
+
+    glui_bounds->add_column_to_panel(PANEL_immersed, false);
+    PANEL_immersed_drawas = glui_bounds->add_panel_to_panel(PANEL_immersed, "draw slice as", true);
+    CHECKBOX_show_slice_shaded = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "shaded",  &glui_show_slice_shaded, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+    CHECKBOX_show_slice_outlines = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "outline", &glui_show_slice_outlines, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+    CHECKBOX_show_slice_points = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "points",  &glui_show_slice_points, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+    CHECKBOX_show_vector_slice = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "vectors", &glui_show_vector_slice, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+    glui_bounds->add_spinner_to_panel(PANEL_immersed_drawas, "line width", GLUI_SPINNER_FLOAT, &geomslice_linewidth);
+    glui_bounds->add_spinner_to_panel(PANEL_immersed_drawas, "point size", GLUI_SPINNER_FLOAT, &geomslice_pointsize);
+
+    ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
+    ImmersedBoundCB(IMMERSED_SWITCH_EDGETYPE);
 
     PANEL_slice_vector = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, _("Vector"), true);
 
@@ -4832,12 +4830,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
     CHECKBOX_color_vector_black = glui_bounds->add_checkbox_to_panel(PANEL_vector2, _("Color black"), &color_vector_black);
 
-    if(nfedinfo>0){
-      glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, "Regenerate FED data", &regenerate_fed);
-    }
-
     if(ngeom_data > 0)glui_bounds->add_column_to_panel(ROLLOUT_slice_settings, false);
-    PANEL_sliceshow = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "show slice(structured)", true);
 
     if(show_slice_in_obst==ONLY_IN_GAS){
       show_slice_in_gas   = 1;
@@ -4855,8 +4848,6 @@ extern "C" void GluiBoundsSetup(int main_window){
       show_slice_in_gas   = 1;
       show_slice_in_solid = 0;
     }
-    CHECKBOX_slice_in_gas = glui_bounds->add_checkbox_to_panel(PANEL_sliceshow,   "gas",   &show_slice_in_gas,   SLICE_IN_GAS,   SliceBoundCB);
-    CHECKBOX_slice_in_solid = glui_bounds->add_checkbox_to_panel(PANEL_sliceshow, "solid", &show_slice_in_solid, SLICE_IN_SOLID, SliceBoundCB);
 
     if(ngeom_data == 0)glui_bounds->add_column_to_panel(ROLLOUT_slice_settings, false);
     PANEL_showslice = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "show vectors and slices", true);
@@ -4883,6 +4874,9 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_slice_skip = glui_bounds->add_spinner_to_panel(PANEL_slice_misc, "skip", GLUI_SPINNER_INT, &slice_skip, SLICE_SKIP, SliceBoundCB);
     SliceBoundCB(SLICE_SKIP);
     glui_bounds->add_checkbox_to_panel(PANEL_slice_misc, _("Output data to file"), &output_slicedata);
+    if(nfedinfo>0){
+      glui_bounds->add_checkbox_to_panel(PANEL_slice_misc, "Regenerate FED data", &regenerate_fed);
+    }
 
 
     if(nterraininfo>0){
@@ -5860,38 +5854,6 @@ extern "C" void SliceBoundCB(int var){
       if(histogram_show_graph == 1 || histogram_show_numbers == 1){
         update_slice_hists = 1;
         visColorbarVertical = 1;
-      }
-      break;
-    case SLICE_IN_GAS:
-      if(show_slice_in_gas==1&&show_slice_in_solid==1){
-        show_slice_in_obst = GAS_AND_SOLID;
-      }
-      else if(show_slice_in_gas==1&&show_slice_in_solid==0){
-        show_slice_in_obst = ONLY_IN_GAS;
-      }
-      else if(show_slice_in_gas==0&&show_slice_in_solid==1){
-        show_slice_in_obst = ONLY_IN_SOLID;
-      }
-      else{
-        show_slice_in_solid = 1;
-        show_slice_in_obst = ONLY_IN_SOLID;
-        CHECKBOX_slice_in_solid->set_int_val(1);
-      }
-      break;
-    case SLICE_IN_SOLID:
-      if(show_slice_in_gas==1&&show_slice_in_solid==1){
-        show_slice_in_obst = GAS_AND_SOLID;
-      }
-      else if(show_slice_in_gas==1&&show_slice_in_solid==0){
-        show_slice_in_obst = ONLY_IN_GAS;
-      }
-      else if(show_slice_in_gas==0&&show_slice_in_solid==1){
-        show_slice_in_obst = ONLY_IN_SOLID;
-      }
-      else{
-        show_slice_in_gas = 1;
-        show_slice_in_obst = ONLY_IN_GAS;
-        CHECKBOX_slice_in_gas->set_int_val(1);
       }
       break;
     case DATA_transparent:

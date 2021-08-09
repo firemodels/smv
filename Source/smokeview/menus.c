@@ -524,16 +524,13 @@ void ShowMultiSliceMenu(int value){
     ShowHideSliceMenu(value);
     return;
   case MENU_SHOWSLICE_IN_GAS:
-    show_slice_in_obst = ONLY_IN_GAS;
-    UpdateShowSliceInObst();
+    UpdateShowSliceInObst(ONLY_IN_GAS);
     break;
   case MENU_SHOWSLICE_IN_GASANDSOLID:
-    show_slice_in_obst = GAS_AND_SOLID;
-    UpdateShowSliceInObst();
+    UpdateShowSliceInObst(GAS_AND_SOLID);
     break;
   case MENU_SHOWSLICE_IN_SOLID:
-    show_slice_in_obst = ONLY_IN_SOLID;
-    UpdateShowSliceInObst();
+    UpdateShowSliceInObst(ONLY_IN_SOLID);
     break;
   case -12:
     offset_slice = 1 - offset_slice;
@@ -1249,18 +1246,15 @@ void ShowVSliceMenu(int value){
     return;
   }
   if(value==MENU_SHOWSLICE_IN_GAS){
-    show_slice_in_obst = ONLY_IN_GAS;
-    UpdateShowSliceInObst();
+    UpdateShowSliceInObst(ONLY_IN_GAS);
     return;
   }
   else if(value==MENU_SHOWSLICE_IN_GASANDSOLID){
-    show_slice_in_obst = GAS_AND_SOLID;
-    UpdateShowSliceInObst();
+    UpdateShowSliceInObst(GAS_AND_SOLID);
     return;
   }
   else if(value==MENU_SHOWSLICE_IN_SOLID){
-    show_slice_in_obst = ONLY_IN_SOLID;
-    UpdateShowSliceInObst();
+    UpdateShowSliceInObst(ONLY_IN_SOLID);
     return;
   }
   if(value == MENU_SHOWSLICE_OFFSET){
@@ -1346,16 +1340,13 @@ void ShowHideSliceMenu(int value){
       }
       break;
     case MENU_SHOWSLICE_IN_GAS:
-      show_slice_in_obst = ONLY_IN_GAS;
-      UpdateShowSliceInObst();
+      UpdateShowSliceInObst(ONLY_IN_GAS);
       break;
     case MENU_SHOWSLICE_IN_GASANDSOLID:
-      show_slice_in_obst = GAS_AND_SOLID;
-      UpdateShowSliceInObst();
+      UpdateShowSliceInObst(GAS_AND_SOLID);
       break;
     case MENU_SHOWSLICE_IN_SOLID:
-      show_slice_in_obst = ONLY_IN_SOLID;
-      UpdateShowSliceInObst();
+      UpdateShowSliceInObst(ONLY_IN_SOLID);
       break;
     case MENU_SHOWSLICE_OFFSET:
       offset_slice=1-offset_slice;
@@ -4798,16 +4789,13 @@ void LoadSliceMenu(int value){
         }
         break;
       case MENU_SHOWSLICE_IN_GAS:
-        show_slice_in_obst = ONLY_IN_GAS;
-        UpdateShowSliceInObst();
+        UpdateShowSliceInObst(ONLY_IN_GAS);
         break;
       case  MENU_SHOWSLICE_IN_GASANDSOLID:
-        show_slice_in_obst = GAS_AND_SOLID;
-        UpdateShowSliceInObst();
+        UpdateShowSliceInObst(GAS_AND_SOLID);
         break;
       case MENU_SHOWSLICE_IN_SOLID:
-        show_slice_in_obst = ONLY_IN_SOLID;
-        UpdateShowSliceInObst();
+        UpdateShowSliceInObst(ONLY_IN_SOLID);
         break;
       case MENU_SLICE_SETTINGS:
         ShowBoundsDialog(DLG_SLICE);

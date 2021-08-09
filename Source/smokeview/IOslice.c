@@ -7067,7 +7067,6 @@ void DrawSliceFrame(){
         if(orien==0){
           DrawVolSliceTexture(sd);
           SNIFF_ERRORS("after DrawVolSliceTexture");
-#ifdef pp_COMBINE_SLICE
           if(show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1){
             DrawVolSliceLines(sd);
             SNIFF_ERRORS("after DrawVolSliceLines SLICE_CELL_CENTER");
@@ -7076,7 +7075,6 @@ void DrawSliceFrame(){
             DrawVolSliceVerts(sd);
             SNIFF_ERRORS("after DrawVolSliceVerts SLICE_CELL_CENTER");
           }
-#endif
         }
 #ifdef pp_GPU
         if(sd->volslice==1&&(vis_gslice_data==1)){
@@ -7102,7 +7100,6 @@ void DrawSliceFrame(){
       case SLICE_CELL_CENTER:
         DrawVolSliceCellFaceCenter(sd, SLICE_CELL_CENTER);
         SNIFF_ERRORS("after DrawVolSliceCellFaceCenter SLICE_CELL_CENTER");
-#ifdef pp_COMBINE_SLICE
         if(show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1){
           DrawVolSliceLines(sd);
           SNIFF_ERRORS("after DrawVolSliceLines SLICE_CELL_CENTER");
@@ -7111,12 +7108,10 @@ void DrawSliceFrame(){
           DrawVolSliceVerts(sd);
           SNIFF_ERRORS("after DrawVolSliceVerts SLICE_CELL_CENTER");
         }
-#endif
         break;
       case SLICE_FACE_CENTER:
         DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER);
         SNIFF_ERRORS("after DrawVolSliceCellFaceCenter SLICE_FACE_CENTER");
-#ifdef pp_COMBINE_SLICE
         if(show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1){
           DrawVolSliceLines(sd);
           SNIFF_ERRORS("after DrawVolSliceLines SLICE_CELL_CENTER");
@@ -7125,7 +7120,6 @@ void DrawSliceFrame(){
           DrawVolSliceVerts(sd);
           SNIFF_ERRORS("after DrawVolSliceVerts SLICE_CELL_CENTER");
         }
-#endif
         break;
       case SLICE_TERRAIN:
         DrawVolSliceTerrain(sd);

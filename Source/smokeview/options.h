@@ -53,7 +53,6 @@
 //#define pp_REMOVE_DUPLICATES     // remove duplicate geometry vertices
 #define pp_HAVE_CFACE_NORMALS    //  read in and optionally draw cface normal vectors
 //#define pp_TERRAIN_OLD            // original terrain menus and dialog boxes
-#define pp_COMBINE_SLICE         // combine geometry and structured slice diaog box
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
