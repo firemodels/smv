@@ -6491,6 +6491,8 @@ void DrawVolSliceVerts(const slicedata *sd){
   char *iblank_embed;
   int plotx, ploty, plotz;
   int draw_x_slice = 0, draw_y_slice = 0, draw_z_slice = 0;
+  int n;
+  float *slice_color, *slice_color13, *slice_color31, *slice_color33;
 
   meshdata *meshi;
 
@@ -6542,21 +6544,48 @@ void DrawVolSliceVerts(const slicedata *sd){
     for(j = sd->js1; j<maxj; j += slice_skipy){
       int j2;
 
+      n = (j-sd->js1)*sd->nslicek-slice_skipy;
+      n += (plotx-sd->is1)*sd->nslicej*sd->nslicek;
       j2 = MIN(j+slice_skipy, sd->js2);
       yy1 = yplt[j];
       y3 = yplt[j2];
 
       // val(i,j,k) = di*nj*nk + dj*nk + dk
       for(k = sd->ks1; k<sd->ks2; k += slice_skipz){
-        int k2;
+        int k2, in_gas, in_solid;
 
+        n += slice_skipz;
+
+        in_gas = 1;
+        if(c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)in_gas = 0;
+        in_solid = 1-in_gas;
         k2 = MIN(k+slice_skipz, sd->ks2);
         if(slice_skipz==1&&slice_skipy==1){
-          if(show_slice_points[IN_SOLID_GLUI]==0&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)continue;
-          if(show_slice_points[IN_GAS_GLUI]==0&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]==GASGAS)continue;
+          if(c_iblank_x!=NULL){
+            if(show_slice_points[IN_SOLID_GLUI]==0&&in_solid==1)continue;
+            if(show_slice_points[IN_GAS_GLUI]==0&&in_gas==1)continue;
+          }
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
         }
 
+        if(in_gas==1&&show_slice_shaded[IN_GAS_GLUI]==1){
+          slice_color = foregroundcolor;
+          slice_color13 = foregroundcolor;
+          slice_color31 = foregroundcolor;
+          slice_color33 = foregroundcolor;
+        }
+        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+          slice_color = foregroundcolor;
+          slice_color13 = foregroundcolor;
+          slice_color31 = foregroundcolor;
+          slice_color33 = foregroundcolor;
+        }
+        else{
+          slice_color = rgb_slice+4*sd->iqsliceframe[n];
+          slice_color13 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEX(0, 1)];
+          slice_color33 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEX(1, 1)];
+          slice_color31 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEX(1, 0)];
+        }
         z1 = zplt[k];
         z3 = zplt[k2];
 
@@ -6566,9 +6595,14 @@ void DrawVolSliceVerts(const slicedata *sd){
         */
         //  (yy1,z3) (y3,z3)
         //  (yy1,z1) (y3,z1)
+
+        glColor3fv(slice_color);
         glVertex3f(constval, yy1, z1);
+        glColor3fv(slice_color31);
         glVertex3f(constval, y3, z1);
+        glColor3fv(slice_color33);
         glVertex3f(constval, y3, z3);
+        glColor3fv(slice_color13);
         glVertex3f(constval, yy1, z3);
       }
     }
@@ -6592,6 +6626,9 @@ void DrawVolSliceVerts(const slicedata *sd){
       int kmin, kmax;
       int i2;
 
+      n = (i-sd->is1)*sd->nslicej*sd->nslicek-slice_skipx;
+      n += (ploty-sd->js1)*sd->nslicek;
+
       i2 = MIN(i+slice_skipx, iend);
 
       x1 = xplt[i];
@@ -6601,16 +6638,43 @@ void DrawVolSliceVerts(const slicedata *sd){
       kmax = sd->ks2;
       for(k = kmin; k<kmax; k += slice_skipz){
         int k2;
+        int in_solid, in_gas;
+
+        n += slice_skipz;
+
+        in_gas = 1;
+        if(c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]!=GASGAS)in_gas = 0;
+        in_solid = 1-in_gas;
 
         k2 = MIN(k+slice_skipz, sd->ks2);
         if(slice_skipx==1&&slice_skipz==1){
-          if(show_slice_points[IN_SOLID_GLUI]==0&&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]!=GASGAS)continue;
-          if(show_slice_points[IN_GAS_GLUI]==0  &&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]==GASGAS)continue;
+          if(c_iblank_y!=NULL){
+            if(show_slice_points[IN_GAS_GLUI]==0&&in_gas==1)continue;
+            if(show_slice_points[IN_SOLID_GLUI]==0&&in_solid==1)continue;
+          }
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, ploty, k)]==EMBED_YES)continue;
         }
         z1 = zplt[k];
         z3 = zplt[k2];
 
+        if(in_gas==1&&show_slice_shaded[IN_GAS_GLUI]==1){
+          slice_color = foregroundcolor;
+          slice_color13 = foregroundcolor;
+          slice_color31 = foregroundcolor;
+          slice_color33 = foregroundcolor;
+        }
+        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+          slice_color = foregroundcolor;
+          slice_color13 = foregroundcolor;
+          slice_color31 = foregroundcolor;
+          slice_color33 = foregroundcolor;
+        }
+        else{
+          slice_color = rgb_slice+4*sd->iqsliceframe[n];
+          slice_color13 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEY(0, 1)];
+          slice_color33 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEY(1, 1)];
+          slice_color31 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEY(1, 0)];
+        }
         /*
         n+1 (x1,z3)   n2+1 (x3,z3)
         n (x1,z1)     n2 (x3,z1)
@@ -6619,9 +6683,13 @@ void DrawVolSliceVerts(const slicedata *sd){
         */
         //  (x1,z3) (x3,z3)
         //  (x1,z1) (x3,z1,r31)
+        glColor3fv(slice_color);
         glVertex3f(x1, constval, z1);
+        glColor3fv(slice_color31);
         glVertex3f(x3, constval, z1);
+        glColor3fv(slice_color33);
         glVertex3f(x3, constval, z3);
+        glColor3fv(slice_color13);
         glVertex3f(x1, constval, z3);
       }
     }
@@ -6640,6 +6708,10 @@ void DrawVolSliceVerts(const slicedata *sd){
     }
     for(i = sd->is1; i<maxi; i += slice_skipx){
       int i2;
+      int in_gas, in_solid;
+
+      n = (i-sd->is1)*sd->nslicej*sd->nslicek-slice_skipx*sd->nslicek;
+      n += (plotz-sd->ks1);
 
       i2 = MIN(i+slice_skipx, sd->is2);
 
@@ -6649,15 +6721,39 @@ void DrawVolSliceVerts(const slicedata *sd){
       for(j = sd->js1; j<sd->js2; j += slice_skipy){
         int j2;
 
+        n += slice_skipy*sd->nslicek;
         j2 = MIN(j+slice_skipy, sd->js2);
+        in_gas = 1;
+        if(c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]!=GASGAS)in_gas = 0;
+        in_solid = 1-in_gas;
         if(slice_skipy==1&&slice_skipx==1){
-          if(show_slice_points[IN_GAS_GLUI]==0&&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]==GASGAS)continue;
-          if(show_slice_points[IN_SOLID_GLUI]==0&&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
+          if(c_iblank_z!=NULL){
+            if(show_slice_points[IN_GAS_GLUI]==0&&in_gas==1)continue;
+            if(show_slice_points[IN_SOLID_GLUI]==0&&in_solid==1)continue;
+          }
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
         }
         yy1 = yplt[j];
         y3 = yplt[j2];
 
+        if(in_gas==1&&show_slice_shaded[IN_GAS_GLUI]==1){
+          slice_color = foregroundcolor;
+          slice_color13 = foregroundcolor;
+          slice_color31 = foregroundcolor;
+          slice_color33 = foregroundcolor;
+        }
+        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+          slice_color = foregroundcolor;
+          slice_color13 = foregroundcolor;
+          slice_color31 = foregroundcolor;
+          slice_color33 = foregroundcolor;
+        }
+        else{
+          slice_color = rgb_slice+4*sd->iqsliceframe[n];
+          slice_color13 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEY(0, 1)];
+          slice_color33 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEY(1, 1)];
+          slice_color31 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEY(1, 0)];
+        }
         /*
         n+nk (x1,y3)   n2+nk (x3,y3)
         n (x1,y1)      n2 (x3,y1)
@@ -6666,9 +6762,13 @@ void DrawVolSliceVerts(const slicedata *sd){
         */
         //  (x1,y3) (x3,y3)
         //  (x1,yy1) (x3,yy1)
+        glColor3fv(slice_color);
         glVertex3f(x1, yy1, constval);
+        glColor3fv(slice_color31);
         glVertex3f(x3, yy1, constval);
+        glColor3fv(slice_color33);
         glVertex3f(x3, y3, constval);
+        glColor3fv(slice_color13);
         glVertex3f(x1, y3, constval);
       }
     }
