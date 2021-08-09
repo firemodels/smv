@@ -6162,6 +6162,7 @@ void DrawVolSliceLines(const slicedata *sd){
   char *c_iblank_x, *c_iblank_y, *c_iblank_z;
   char *iblank_embed;
   int plotx, ploty, plotz;
+  int draw_x_slice = 0, draw_y_slice = 0, draw_z_slice = 0;
 
   meshdata *meshi;
 
@@ -6191,13 +6192,18 @@ void DrawVolSliceLines(const slicedata *sd){
   ny = jbar+1;
   nxy = nx*ny;
 
-  //*** x plane slices
+  if((sd->volslice==1&&plotx>=0&&visx_all==1)||(sd->volslice==0&&sd->idir==XDIR))draw_x_slice = 1;
+  if((sd->volslice==1&&ploty>=0&&visy_all==1)||(sd->volslice==0&&sd->idir==YDIR))draw_y_slice = 1;
+  if((sd->volslice==1&&plotz>=0&&visz_all==1)||(sd->volslice==0&&sd->idir==ZDIR))draw_z_slice = 1;
 
-  if((sd->volslice==1&&plotx>=0&&visx_all==1)||(sd->volslice==0&&sd->idir==XDIR)){
+  if(draw_x_slice==1||draw_y_slice==1||draw_z_slice==1)glBegin(GL_LINES);
+
+    //*** x plane slices
+
+  if(draw_x_slice==1){
     int maxj;
 
     constval = xplt[plotx]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
-    glBegin(GL_LINES);
     maxj = sd->js2;
     if(sd->js1+1>maxj){
       maxj = sd->js1+1;
@@ -6215,8 +6221,8 @@ void DrawVolSliceLines(const slicedata *sd){
 
         k2 = MIN(k+slice_skipz, sd->ks2);
         if(slice_skipz==1&&slice_skipy==1){
-          if(show_slice_in_obst==ONLY_IN_SOLID&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]==GASGAS)continue;
-          if(show_slice_in_obst==ONLY_IN_GAS&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)continue;
+          if(show_slice_outlines[IN_SOLID_GLUI]==0&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)continue;
+          if(show_slice_outlines[IN_GAS_GLUI]==0  &&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]==GASGAS)continue;
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
         }
 
@@ -6242,17 +6248,15 @@ void DrawVolSliceLines(const slicedata *sd){
         glVertex3f(constval, yy1, z1);
       }
     }
-    glEnd();
   }
 
   //*** y plane slices
 
-  if((sd->volslice==1&&ploty>=0&&visy_all==1)||(sd->volslice==0&&sd->idir==YDIR)){
+  if(draw_y_slice==1){
     int maxi;
     int istart, iend;
 
     constval = yplt[ploty]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
-    glBegin(GL_LINES);
     maxi = sd->is1+sd->nslicei-1;
     if(sd->is1+1>maxi){
       maxi = sd->is1+1;
@@ -6276,8 +6280,8 @@ void DrawVolSliceLines(const slicedata *sd){
 
         k2 = MIN(k+slice_skipz, sd->ks2);
         if(slice_skipx==1&&slice_skipz==1){
-          if(show_slice_in_obst==ONLY_IN_SOLID&&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]==GASGAS)continue;
-          if(show_slice_in_obst==ONLY_IN_GAS&&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]!=GASGAS)continue;
+          if(show_slice_outlines[IN_GAS_GLUI]==0  &&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]==GASGAS)continue;
+          if(show_slice_outlines[IN_SOLID_GLUI]==0&&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]!=GASGAS)continue;
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, ploty, k)]==EMBED_YES)continue;
         }
         z1 = zplt[k];
@@ -6304,16 +6308,14 @@ void DrawVolSliceLines(const slicedata *sd){
         glVertex3f(x1, constval, z1);
       }
     }
-    glEnd();
   }
 
   //*** z plane slices
 
-  if((sd->volslice==1&&plotz>=0&&visz_all==1)||(sd->volslice==0&&sd->idir==ZDIR)){
+  if(draw_z_slice==1){
     int maxi;
 
     constval = zplt[plotz]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
-    glBegin(GL_LINES);
 
     maxi = sd->is1+sd->nslicei-1;
     if(sd->is1+1>maxi){
@@ -6332,8 +6334,8 @@ void DrawVolSliceLines(const slicedata *sd){
 
         j2 = MIN(j+slice_skipy, sd->js2);
         if(slice_skipy==1&&slice_skipx==1){
-          if(show_slice_in_obst==ONLY_IN_SOLID&&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]==GASGAS)continue;
-          if(show_slice_in_obst==ONLY_IN_GAS&&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
+          if(show_slice_outlines[IN_GAS_GLUI]==0  &&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]==GASGAS)continue;
+          if(show_slice_outlines[IN_SOLID_GLUI]==0&&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
         }
         yy1 = yplt[j];
@@ -6360,8 +6362,8 @@ void DrawVolSliceLines(const slicedata *sd){
         glVertex3f(x1, yy1, constval);
       }
     }
-    glEnd();
   }
+  if(draw_x_slice==1||draw_y_slice==1||draw_z_slice==1)glEnd();
 }
 
 /* ------------------ DrawVolSliceVerts ------------------------ */
@@ -6376,6 +6378,7 @@ void DrawVolSliceVerts(const slicedata *sd){
   char *c_iblank_x, *c_iblank_y, *c_iblank_z;
   char *iblank_embed;
   int plotx, ploty, plotz;
+  int draw_x_slice = 0, draw_y_slice = 0, draw_z_slice = 0;
 
   meshdata *meshi;
 
@@ -6405,13 +6408,18 @@ void DrawVolSliceVerts(const slicedata *sd){
   ny = jbar+1;
   nxy = nx*ny;
 
+  if((sd->volslice==1&&plotx>=0&&visx_all==1)||(sd->volslice==0&&sd->idir==XDIR))draw_x_slice = 1;
+  if((sd->volslice==1&&ploty>=0&&visy_all==1)||(sd->volslice==0&&sd->idir==YDIR))draw_y_slice = 1;
+  if((sd->volslice==1&&plotz>=0&&visz_all==1)||(sd->volslice==0&&sd->idir==ZDIR))draw_z_slice = 1;
+
+  if(draw_x_slice==1||draw_y_slice==1||draw_z_slice==1)glBegin(GL_POINTS);
+
   //*** x plane slices
 
-  if((sd->volslice==1&&plotx>=0&&visx_all==1)||(sd->volslice==0&&sd->idir==XDIR)){
+  if(draw_x_slice==1){
     int maxj;
 
     constval = xplt[plotx]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
-    glBegin(GL_POINTS);
     maxj = sd->js2;
     if(sd->js1+1>maxj){
       maxj = sd->js1+1;
@@ -6422,8 +6430,8 @@ void DrawVolSliceVerts(const slicedata *sd){
       // val(i,j,k) = di*nj*nk + dj*nk + dk
       for(k = sd->ks1; k<=sd->ks2; k += slice_skipz){
         if(slice_skipz==1&&slice_skipy==1){
-          if(show_slice_in_obst==ONLY_IN_SOLID&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]==GASGAS)continue;
-          if(show_slice_in_obst==ONLY_IN_GAS&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)continue;
+          if(show_slice_points[IN_SOLID_GLUI]==0&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)continue;
+          if(show_slice_points[IN_GAS_GLUI]==0  &&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]==GASGAS)continue;
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
         }
 
@@ -6438,17 +6446,15 @@ void DrawVolSliceVerts(const slicedata *sd){
         glVertex3f(constval, yy1, z1);
       }
     }
-    glEnd();
   }
 
   //*** y plane slices
 
-  if((sd->volslice==1&&ploty>=0&&visy_all==1)||(sd->volslice==0&&sd->idir==YDIR)){
+  if(draw_y_slice==1){
     int maxi;
     int istart, iend;
 
     constval = yplt[ploty]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
-    glBegin(GL_POINTS);
     maxi = sd->is1+sd->nslicei-1;
     if(sd->is1+1>maxi){
       maxi = sd->is1+1;
@@ -6465,8 +6471,8 @@ void DrawVolSliceVerts(const slicedata *sd){
       kmax = sd->ks2;
       for(k = kmin; k<=kmax; k += slice_skipz){
         if(slice_skipx==1&&slice_skipz==1){
-          if(show_slice_in_obst==ONLY_IN_SOLID&&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]==GASGAS)continue;
-          if(show_slice_in_obst==ONLY_IN_GAS&&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]!=GASGAS)continue;
+          if(show_slice_points[IN_SOLID_GLUI]==0&&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]!=GASGAS)continue;
+          if(show_slice_points[IN_GAS_GLUI]==0  &&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]==GASGAS)continue;
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, ploty, k)]==EMBED_YES)continue;
         }
         z1 = zplt[k];
@@ -6482,16 +6488,14 @@ void DrawVolSliceVerts(const slicedata *sd){
         glVertex3f(x1, constval, z1);
       }
     }
-    glEnd();
   }
 
   //*** z plane slices
 
-  if((sd->volslice==1&&plotz>=0&&visz_all==1)||(sd->volslice==0&&sd->idir==ZDIR)){
+  if(draw_z_slice==1){
     int maxi;
 
     constval = zplt[plotz]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
-    glBegin(GL_POINTS);
 
     maxi = sd->is1+sd->nslicei-1;
     if(sd->is1+1>maxi){
@@ -6502,8 +6506,8 @@ void DrawVolSliceVerts(const slicedata *sd){
 
       for(j = sd->js1; j<=sd->js2; j += slice_skipy){
         if(slice_skipy==1&&slice_skipx==1){
-          if(show_slice_in_obst==ONLY_IN_SOLID&&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]==GASGAS)continue;
-          if(show_slice_in_obst==ONLY_IN_GAS&&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
+          if(show_slice_points[IN_SOLID_GLUI]==0&&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
+          if(show_slice_points[IN_GAS_GLUI]==0  &&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]==GASGAS)continue;
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
         }
         yy1 = yplt[j];
@@ -6519,8 +6523,8 @@ void DrawVolSliceVerts(const slicedata *sd){
         glVertex3f(x1, yy1, constval);
       }
     }
-    glEnd();
   }
+  if(draw_x_slice==1||draw_y_slice==1||draw_z_slice==1)glEnd();
 }
 
 /* ------------------ ComputeOpacityCorrections ------------------------ */
@@ -6752,6 +6756,16 @@ void DrawSliceFrame(){
         if(orien==0){
           DrawVolSliceTexture(sd);
           SNIFF_ERRORS("after DrawVolSliceTexture");
+#ifdef pp_COMBINE_SLICE
+          if(show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1){
+            DrawVolSliceLines(sd);
+            SNIFF_ERRORS("after DrawVolSliceLines SLICE_CELL_CENTER");
+          }
+          if(show_slice_points[IN_SOLID_GLUI]==1||show_slice_points[IN_GAS_GLUI]==1){
+            DrawVolSliceVerts(sd);
+            SNIFF_ERRORS("after DrawVolSliceVerts SLICE_CELL_CENTER");
+          }
+#endif
         }
 #ifdef pp_GPU
         if(sd->volslice==1&&(vis_gslice_data==1)){
@@ -6777,10 +6791,30 @@ void DrawSliceFrame(){
       case SLICE_CELL_CENTER:
         DrawVolSliceCellFaceCenter(sd, SLICE_CELL_CENTER);
         SNIFF_ERRORS("after DrawVolSliceCellFaceCenter SLICE_CELL_CENTER");
+#ifdef pp_COMBINE_SLICE
+        if(show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1){
+          DrawVolSliceLines(sd);
+          SNIFF_ERRORS("after DrawVolSliceLines SLICE_CELL_CENTER");
+        }
+        if(show_slice_points[IN_SOLID_GLUI]==1||show_slice_points[IN_GAS_GLUI]==1){
+          DrawVolSliceVerts(sd);
+          SNIFF_ERRORS("after DrawVolSliceVerts SLICE_CELL_CENTER");
+        }
+#endif
         break;
       case SLICE_FACE_CENTER:
         DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER);
         SNIFF_ERRORS("after DrawVolSliceCellFaceCenter SLICE_FACE_CENTER");
+#ifdef pp_COMBINE_SLICE
+        if(show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1){
+          DrawVolSliceLines(sd);
+          SNIFF_ERRORS("after DrawVolSliceLines SLICE_CELL_CENTER");
+        }
+        if(show_slice_points[IN_SOLID_GLUI]==1||show_slice_points[IN_GAS_GLUI]==1){
+          DrawVolSliceVerts(sd);
+          SNIFF_ERRORS("after DrawVolSliceVerts SLICE_CELL_CENTER");
+        }
+#endif
         break;
       case SLICE_TERRAIN:
         DrawVolSliceTerrain(sd);

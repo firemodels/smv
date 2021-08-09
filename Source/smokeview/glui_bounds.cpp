@@ -4782,7 +4782,9 @@ extern "C" void GluiBoundsSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_slice_settings, glui_bounds);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_settings, SLICE_SETTINGS_ROLLOUT, glui_bounds);
 
+#ifndef pp_COMBINE_SLICE
     if(ngeom_data > 0){
+#endif
       PANEL_immersed = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "show slice(geometry)", true);
       PANEL_immersed_region = glui_bounds->add_panel_to_panel(PANEL_immersed, "region", true);
       RADIO_slice_celltype = glui_bounds->add_radiogroup_to_panel(PANEL_immersed_region, &slice_celltype, IMMERSED_SWITCH_CELLTYPE, ImmersedBoundCB);
@@ -4807,7 +4809,9 @@ extern "C" void GluiBoundsSetup(int main_window){
 
       ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
       ImmersedBoundCB(IMMERSED_SWITCH_EDGETYPE);
+#ifndef pp_COMBINE_SLICE
     }
+#endif
 
     PANEL_slice_vector = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, _("Vector"), true);
 

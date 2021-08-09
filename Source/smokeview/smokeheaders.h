@@ -753,6 +753,8 @@ EXTERNCPP void DrawGSliceData(slicedata *slicei);
 EXTERNCPP void DrawGSliceOutline(void);
 EXTERNCPP void DrawBoundaryFrame(int flag);
 EXTERNCPP void SceneMotionCB(int var);
+EXTERNCPP void DrawVolSliceLines(const slicedata *sd);
+EXTERNCPP void DrawVolSliceVerts(const slicedata *sd);
 
 EXTERNCPP void DrawSmoke3DVol(void);
 EXTERNCPP void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent, int *drawing_vent_transparent);
