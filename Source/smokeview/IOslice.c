@@ -6154,7 +6154,6 @@ void DrawVolSliceTexture(const slicedata *sd){
 
 void DrawVolSliceLines(const slicedata *sd){
   int i, j, k;
-  float r11, r31, r13, r33;
   float constval, x1, x3, yy1, y3, z1, z3;
 
   float *xplt, *yplt, *zplt;
@@ -6204,7 +6203,6 @@ void DrawVolSliceLines(const slicedata *sd){
       maxj = sd->js1+1;
     }
     for(j = sd->js1; j<maxj; j += slice_skipy){
-      float ymid;
       int j2;
 
       j2 = MIN(j+slice_skipy, sd->js2);
@@ -6213,7 +6211,6 @@ void DrawVolSliceLines(const slicedata *sd){
 
       // val(i,j,k) = di*nj*nk + dj*nk + dk
       for(k = sd->ks1; k<sd->ks2; k += slice_skipz){
-        float rmid, zmid;
         int k2;
 
         k2 = MIN(k+slice_skipz, sd->ks2);
@@ -6371,7 +6368,7 @@ void DrawVolSliceLines(const slicedata *sd){
 
 void DrawVolSliceVerts(const slicedata *sd){
   int i, j, k;
-  float constval, x1, x3, yy1, y3, z1, z3;
+  float constval, x1, yy1, z1;
 
   float *xplt, *yplt, *zplt;
   int ibar, jbar;
@@ -6467,8 +6464,6 @@ void DrawVolSliceVerts(const slicedata *sd){
       kmin = sd->ks1;
       kmax = sd->ks2;
       for(k = kmin; k<=kmax; k += slice_skipz){
-        int k2;
-
         if(slice_skipx==1&&slice_skipz==1){
           if(show_slice_in_obst==ONLY_IN_SOLID&&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]==GASGAS)continue;
           if(show_slice_in_obst==ONLY_IN_GAS&&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]!=GASGAS)continue;
