@@ -6163,6 +6163,8 @@ void DrawVolSliceLines(const slicedata *sd){
   char *iblank_embed;
   int plotx, ploty, plotz;
   int draw_x_slice = 0, draw_y_slice = 0, draw_z_slice = 0;
+  int n;
+  float *slice_color, *slice_color13, *slice_color31, *slice_color33;
 
   meshdata *meshi;
 
@@ -6196,8 +6198,11 @@ void DrawVolSliceLines(const slicedata *sd){
   if((sd->volslice==1&&ploty>=0&&visy_all==1)||(sd->volslice==0&&sd->idir==YDIR))draw_y_slice = 1;
   if((sd->volslice==1&&plotz>=0&&visz_all==1)||(sd->volslice==0&&sd->idir==ZDIR))draw_z_slice = 1;
 
-  if(draw_x_slice==1||draw_y_slice==1||draw_z_slice==1)glBegin(GL_LINES);
-
+  if(draw_x_slice==1||draw_y_slice==1||draw_z_slice==1){
+    glLineWidth(geomslice_linewidth);
+    glBegin(GL_LINES);
+    glColor3fv(foregroundcolor);
+  }
     //*** x plane slices
 
   if(draw_x_slice==1){
@@ -6211,21 +6216,50 @@ void DrawVolSliceLines(const slicedata *sd){
     for(j = sd->js1; j<maxj; j += slice_skipy){
       int j2;
 
+      n = (j - sd->js1)*sd->nslicek - slice_skipy;
+      n += (plotx - sd->is1)*sd->nslicej*sd->nslicek;
       j2 = MIN(j+slice_skipy, sd->js2);
       yy1 = yplt[j];
       y3 = yplt[j2];
 
       // val(i,j,k) = di*nj*nk + dj*nk + dk
       for(k = sd->ks1; k<sd->ks2; k += slice_skipz){
-        int k2;
+        int k2, in_gas, in_solid;
 
+
+        n += slice_skipz;
+
+        in_gas=1;
+        if(c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)in_gas=0;
+        in_solid = 1 - in_gas;
         k2 = MIN(k+slice_skipz, sd->ks2);
         if(slice_skipz==1&&slice_skipy==1){
-          if(show_slice_outlines[IN_SOLID_GLUI]==0&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)continue;
-          if(show_slice_outlines[IN_GAS_GLUI]==0  &&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]==GASGAS)continue;
+          if(c_iblank_x!=NULL){
+            if(show_slice_outlines[IN_SOLID_GLUI]==0&&in_solid==1)continue;
+            if(show_slice_outlines[IN_GAS_GLUI]==0  &&in_gas==1)continue;
+          }
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
         }
+#define IND_SLICEX(JJ,KK) JJ*sd->nslicek + KK*slice_skipz
 
+        if(in_gas==1&&show_slice_shaded[IN_GAS_GLUI]==1){
+          slice_color   = foregroundcolor;
+          slice_color13 = foregroundcolor;
+          slice_color31 = foregroundcolor;
+          slice_color33 = foregroundcolor;
+        }
+        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+          slice_color   = foregroundcolor;
+          slice_color13 = foregroundcolor;
+          slice_color31 = foregroundcolor;
+          slice_color33 = foregroundcolor;
+        }
+        else{
+          slice_color   = rgb_slice + 4 * sd->iqsliceframe[n];
+          slice_color13 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEX(0,1)];
+          slice_color33 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEX(1,1)];
+          slice_color31 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEX(1,0)];
+        }
         z1 = zplt[k];
         z3 = zplt[k2];
 
@@ -6235,16 +6269,22 @@ void DrawVolSliceLines(const slicedata *sd){
         */
         //  (yy1,z3) (y3,z3)
         //  (yy1,z1) (y3,z1)
+
+        glColor3fv(slice_color);
         glVertex3f(constval, yy1, z1);
+        glColor3fv(slice_color31);
         glVertex3f(constval, y3, z1);
 
         glVertex3f(constval, y3, z1);
+        glColor3fv(slice_color33);
         glVertex3f(constval, y3, z3);
 
         glVertex3f(constval, y3, z3);
+        glColor3fv(slice_color13);
         glVertex3f(constval, yy1, z3);
 
         glVertex3f(constval, yy1, z3);
+        glColor3fv(slice_color);
         glVertex3f(constval, yy1, z1);
       }
     }
@@ -6268,6 +6308,9 @@ void DrawVolSliceLines(const slicedata *sd){
       int kmin, kmax;
       int i2;
 
+      n = (i - sd->is1)*sd->nslicej*sd->nslicek - slice_skipx;
+      n += (ploty - sd->js1)*sd->nslicek;
+
       i2 = MIN(i+slice_skipx, iend);
 
       x1 = xplt[i];
@@ -6277,16 +6320,45 @@ void DrawVolSliceLines(const slicedata *sd){
       kmax = sd->ks2;
       for(k = kmin; k<kmax; k += slice_skipz){
         int k2;
+        int in_solid, in_gas;
+
+        n += slice_skipz;
+
+        in_gas = 1;
+        if(c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]!=GASGAS)in_gas = 0;
+        in_solid = 1 - in_gas;
 
         k2 = MIN(k+slice_skipz, sd->ks2);
         if(slice_skipx==1&&slice_skipz==1){
-          if(show_slice_outlines[IN_GAS_GLUI]==0  &&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]==GASGAS)continue;
-          if(show_slice_outlines[IN_SOLID_GLUI]==0&&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]!=GASGAS)continue;
+          if(c_iblank_y!=NULL){
+            if(show_slice_outlines[IN_GAS_GLUI]==0  &&in_gas==1)continue;
+            if(show_slice_outlines[IN_SOLID_GLUI]==0&&in_solid==1)continue;
+          }
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, ploty, k)]==EMBED_YES)continue;
         }
         z1 = zplt[k];
         z3 = zplt[k2];
 
+#define IND_SLICEY(II,KK) II*sd->nslicej*sd->nslicek + KK*slice_skipz
+
+        if(in_gas==1&&show_slice_shaded[IN_GAS_GLUI]==1){
+          slice_color   = foregroundcolor;
+          slice_color13 = foregroundcolor;
+          slice_color31 = foregroundcolor;
+          slice_color33 = foregroundcolor;
+        }
+        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+          slice_color   = foregroundcolor;
+          slice_color13 = foregroundcolor;
+          slice_color31 = foregroundcolor;
+          slice_color33 = foregroundcolor;
+        }
+        else{
+          slice_color   = rgb_slice + 4 * sd->iqsliceframe[n];
+          slice_color13 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEY(0,1)];
+          slice_color33 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEY(1,1)];
+          slice_color31 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEY(1,0)];
+        }
         /*
         n+1 (x1,z3)   n2+1 (x3,z3)
         n (x1,z1)     n2 (x3,z1)
@@ -6295,16 +6367,21 @@ void DrawVolSliceLines(const slicedata *sd){
         */
         //  (x1,z3) (x3,z3)
         //  (x1,z1) (x3,z1,r31)
+        glColor3fv(slice_color);
         glVertex3f(x1, constval, z1);
+        glColor3fv(slice_color31);
         glVertex3f(x3, constval, z1);
 
         glVertex3f(x3, constval, z1);
+        glColor3fv(slice_color33);
         glVertex3f(x3, constval, z3);
 
         glVertex3f(x3, constval, z3);
+        glColor3fv(slice_color13);
         glVertex3f(x1, constval, z3);
 
         glVertex3f(x1, constval, z3);
+        glColor3fv(slice_color);
         glVertex3f(x1, constval, z1);
       }
     }
@@ -6323,6 +6400,10 @@ void DrawVolSliceLines(const slicedata *sd){
     }
     for(i = sd->is1; i<maxi; i += slice_skipx){
       int i2;
+      int in_gas, in_solid;
+
+      n = (i - sd->is1)*sd->nslicej*sd->nslicek - slice_skipx*sd->nslicek;
+      n += (plotz - sd->ks1);
 
       i2 = MIN(i+slice_skipx, sd->is2);
 
@@ -6332,15 +6413,41 @@ void DrawVolSliceLines(const slicedata *sd){
       for(j = sd->js1; j<sd->js2; j += slice_skipy){
         int j2;
 
+        n += slice_skipy*sd->nslicek;
         j2 = MIN(j+slice_skipy, sd->js2);
+        in_gas = 1;
+        if(c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]!=GASGAS)in_gas = 0;
+        in_solid = 1 - in_gas;
         if(slice_skipy==1&&slice_skipx==1){
-          if(show_slice_outlines[IN_GAS_GLUI]==0  &&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]==GASGAS)continue;
-          if(show_slice_outlines[IN_SOLID_GLUI]==0&&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
+          if(c_iblank_z!=NULL){
+            if(show_slice_outlines[IN_GAS_GLUI]==0  &&in_gas==1)continue;
+            if(show_slice_outlines[IN_SOLID_GLUI]==0&&in_solid==1)continue;
+          }
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
         }
         yy1 = yplt[j];
         y3 = yplt[j2];
 
+#define IND_SLICEZ(II,JJ) II*sd->nslicej*sd->nslicek + JJ*slice_skipy*sd->nslicek
+
+        if(in_gas==1&&show_slice_shaded[IN_GAS_GLUI]==1){
+          slice_color   = foregroundcolor;
+          slice_color13 = foregroundcolor;
+          slice_color31 = foregroundcolor;
+          slice_color33 = foregroundcolor;
+        }
+        if(in_solid==1&&show_slice_shaded[IN_SOLID_GLUI]==1){
+          slice_color   = foregroundcolor;
+          slice_color13 = foregroundcolor;
+          slice_color31 = foregroundcolor;
+          slice_color33 = foregroundcolor;
+        }
+        else{
+          slice_color   = rgb_slice + 4 * sd->iqsliceframe[n];
+          slice_color13 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEY(0,1)];
+          slice_color33 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEY(1,1)];
+          slice_color31 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEY(1,0)];
+        }
         /*
         n+nk (x1,y3)   n2+nk (x3,y3)
         n (x1,y1)      n2 (x3,y1)
@@ -6349,16 +6456,21 @@ void DrawVolSliceLines(const slicedata *sd){
         */
         //  (x1,y3) (x3,y3)
         //  (x1,yy1) (x3,yy1)
+        glColor3fv(slice_color);
         glVertex3f(x1, yy1, constval);
+        glColor3fv(slice_color31);
         glVertex3f(x3, yy1, constval);
 
         glVertex3f(x3, yy1, constval);
+        glColor3fv(slice_color33);
         glVertex3f(x3, y3, constval);
 
         glVertex3f(x3, y3, constval);
+        glColor3fv(slice_color13);
         glVertex3f(x1, y3, constval);
 
         glVertex3f(x1, y3, constval);
+        glColor3fv(slice_color);
         glVertex3f(x1, yy1, constval);
       }
     }
@@ -6370,7 +6482,7 @@ void DrawVolSliceLines(const slicedata *sd){
 
 void DrawVolSliceVerts(const slicedata *sd){
   int i, j, k;
-  float constval, x1, yy1, z1;
+  float constval, x1, x3, yy1, y3, z1, z3;
 
   float *xplt, *yplt, *zplt;
   int ibar, jbar;
@@ -6412,9 +6524,12 @@ void DrawVolSliceVerts(const slicedata *sd){
   if((sd->volslice==1&&ploty>=0&&visy_all==1)||(sd->volslice==0&&sd->idir==YDIR))draw_y_slice = 1;
   if((sd->volslice==1&&plotz>=0&&visz_all==1)||(sd->volslice==0&&sd->idir==ZDIR))draw_z_slice = 1;
 
-  if(draw_x_slice==1||draw_y_slice==1||draw_z_slice==1)glBegin(GL_POINTS);
-
-  //*** x plane slices
+  if(draw_x_slice==1||draw_y_slice==1||draw_z_slice==1){
+    glPointSize(geomslice_pointsize);
+    glBegin(GL_POINTS);
+    glColor3fv(foregroundcolor);
+  }
+    //*** x plane slices
 
   if(draw_x_slice==1){
     int maxj;
@@ -6424,18 +6539,26 @@ void DrawVolSliceVerts(const slicedata *sd){
     if(sd->js1+1>maxj){
       maxj = sd->js1+1;
     }
-    for(j = sd->js1; j<=maxj; j += slice_skipy){
+    for(j = sd->js1; j<maxj; j += slice_skipy){
+      int j2;
+
+      j2 = MIN(j+slice_skipy, sd->js2);
       yy1 = yplt[j];
+      y3 = yplt[j2];
 
       // val(i,j,k) = di*nj*nk + dj*nk + dk
-      for(k = sd->ks1; k<=sd->ks2; k += slice_skipz){
+      for(k = sd->ks1; k<sd->ks2; k += slice_skipz){
+        int k2;
+
+        k2 = MIN(k+slice_skipz, sd->ks2);
         if(slice_skipz==1&&slice_skipy==1){
           if(show_slice_points[IN_SOLID_GLUI]==0&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)continue;
-          if(show_slice_points[IN_GAS_GLUI]==0  &&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]==GASGAS)continue;
+          if(show_slice_points[IN_GAS_GLUI]==0&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]==GASGAS)continue;
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
         }
 
         z1 = zplt[k];
+        z3 = zplt[k2];
 
         /*
         n+1 (y1,z3) n2+1 (y3,z3)
@@ -6444,6 +6567,9 @@ void DrawVolSliceVerts(const slicedata *sd){
         //  (yy1,z3) (y3,z3)
         //  (yy1,z1) (y3,z1)
         glVertex3f(constval, yy1, z1);
+        glVertex3f(constval, y3, z1);
+        glVertex3f(constval, y3, z3);
+        glVertex3f(constval, yy1, z3);
       }
     }
   }
@@ -6462,20 +6588,28 @@ void DrawVolSliceVerts(const slicedata *sd){
     istart = sd->is1;
     iend = maxi;
 
-    for(i = istart; i<=iend; i += slice_skipx){
+    for(i = istart; i<iend; i += slice_skipx){
       int kmin, kmax;
+      int i2;
+
+      i2 = MIN(i+slice_skipx, iend);
 
       x1 = xplt[i];
+      x3 = xplt[i2];
 
       kmin = sd->ks1;
       kmax = sd->ks2;
-      for(k = kmin; k<=kmax; k += slice_skipz){
+      for(k = kmin; k<kmax; k += slice_skipz){
+        int k2;
+
+        k2 = MIN(k+slice_skipz, sd->ks2);
         if(slice_skipx==1&&slice_skipz==1){
           if(show_slice_points[IN_SOLID_GLUI]==0&&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]!=GASGAS)continue;
           if(show_slice_points[IN_GAS_GLUI]==0  &&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]==GASGAS)continue;
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, ploty, k)]==EMBED_YES)continue;
         }
         z1 = zplt[k];
+        z3 = zplt[k2];
 
         /*
         n+1 (x1,z3)   n2+1 (x3,z3)
@@ -6486,6 +6620,9 @@ void DrawVolSliceVerts(const slicedata *sd){
         //  (x1,z3) (x3,z3)
         //  (x1,z1) (x3,z1,r31)
         glVertex3f(x1, constval, z1);
+        glVertex3f(x3, constval, z1);
+        glVertex3f(x3, constval, z3);
+        glVertex3f(x1, constval, z3);
       }
     }
   }
@@ -6501,16 +6638,25 @@ void DrawVolSliceVerts(const slicedata *sd){
     if(sd->is1+1>maxi){
       maxi = sd->is1+1;
     }
-    for(i = sd->is1; i<=maxi; i += slice_skipx){
-      x1 = xplt[i];
+    for(i = sd->is1; i<maxi; i += slice_skipx){
+      int i2;
 
-      for(j = sd->js1; j<=sd->js2; j += slice_skipy){
+      i2 = MIN(i+slice_skipx, sd->is2);
+
+      x1 = xplt[i];
+      x3 = xplt[i2];
+
+      for(j = sd->js1; j<sd->js2; j += slice_skipy){
+        int j2;
+
+        j2 = MIN(j+slice_skipy, sd->js2);
         if(slice_skipy==1&&slice_skipx==1){
+          if(show_slice_points[IN_GAS_GLUI]==0&&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]==GASGAS)continue;
           if(show_slice_points[IN_SOLID_GLUI]==0&&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
-          if(show_slice_points[IN_GAS_GLUI]==0  &&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]==GASGAS)continue;
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
         }
         yy1 = yplt[j];
+        y3 = yplt[j2];
 
         /*
         n+nk (x1,y3)   n2+nk (x3,y3)
@@ -6521,6 +6667,9 @@ void DrawVolSliceVerts(const slicedata *sd){
         //  (x1,y3) (x3,y3)
         //  (x1,yy1) (x3,yy1)
         glVertex3f(x1, yy1, constval);
+        glVertex3f(x3, yy1, constval);
+        glVertex3f(x3, y3, constval);
+        glVertex3f(x1, y3, constval);
       }
     }
   }
