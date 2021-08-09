@@ -5308,9 +5308,16 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         int index_cell;
         int i33;
         float z1, z3;
+        int in_solid, in_gas;
 
-        if(show_slice_in_obst == ONLY_IN_SOLID && iblank_cell != NULL&&iblank_cell[IJKCELL(plotxm1, j, k)] == GAS)continue;
-        if(show_slice_in_obst == ONLY_IN_GAS   && iblank_cell != NULL&&iblank_cell[IJKCELL(plotxm1, j, k)] != GAS)continue;
+        in_gas=1;
+        if(iblank_cell != NULL&&iblank_cell[IJKCELL(plotxm1, j, k)] != GAS)in_gas=0;
+        in_solid = 1 - in_gas;
+
+        if(iblank_cell!=NULL){
+          if(show_slice_shaded[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+          if(show_slice_shaded[IN_GAS_GLUI]==0   && in_gas==1)continue;
+        }
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(plotx, j, k)] == EMBED_YES)continue;
 
         index_cell = (plotx+1-incx-iimin)*sd->nslicej*sd->nslicek + (j+1-sd->js1)*sd->nslicek + k+1-sd->ks1;
@@ -5345,9 +5352,16 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
           float val;
           int index_cell;
           float z1, z3;
+          int in_solid, in_gas;
 
-          if(show_slice_in_obst == ONLY_IN_SOLID && iblank_cell != NULL&&iblank_cell[IJKCELL(plotx-1, j, k)] == GAS)continue;
-          if(show_slice_in_obst == ONLY_IN_GAS   && iblank_cell != NULL&&iblank_cell[IJKCELL(plotx-1, j, k)] != GAS)continue;
+          in_gas=1;
+          if(iblank_cell != NULL&&iblank_cell[IJKCELL(plotxm1, j, k)] != GAS)in_gas=0;
+          in_solid = 1 - in_gas;
+
+          if(iblank_cell!=NULL){
+            if(show_slice_shaded[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+            if(show_slice_shaded[IN_GAS_GLUI]==0   && in_gas==1)continue;
+          }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(plotx, j, k)] == EMBED_YES)continue;
           z1 = zplt[k];
           z3 = zplt[k + 1];
@@ -5397,9 +5411,16 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
       for(k = sd->ks1; k<sd->ks2; k++){
         int i33;
         float z1, z3;
+        int in_solid, in_gas;
 
-        if(show_slice_in_obst == ONLY_IN_SOLID && iblank_cell != NULL&&iblank_cell[IJKCELL(i, ploty-1, k)] == GAS)continue;
-        if(show_slice_in_obst == ONLY_IN_GAS   && iblank_cell != NULL&&iblank_cell[IJKCELL(i, ploty-1, k)] != GAS)continue;
+        in_gas=1;
+        if(iblank_cell != NULL&&iblank_cell[IJKCELL(i, ploty-1, k)] != GAS)in_gas=0;
+        in_solid = 1 - in_gas;
+
+        if(iblank_cell!=NULL){
+          if(show_slice_shaded[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+          if(show_slice_shaded[IN_GAS_GLUI]==0   && in_gas==1)continue;
+        }
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, ploty, k)] == EMBED_YES)continue;
 
         index_cell = (i+incx-sd->is1)*sd->nslicej*sd->nslicek + (ploty+1-incy-sd->js1)*sd->nslicek + k+1-sd->ks1;
@@ -5434,9 +5455,16 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
           float val;
           int index_cell;
           float z1, z3;
+          int in_solid, in_gas;
 
-          if(show_slice_in_obst == ONLY_IN_SOLID && iblank_cell != NULL&&iblank_cell[IJKCELL(i, ploty-1, k)] == GAS)continue;
-          if(show_slice_in_obst == ONLY_IN_GAS   && iblank_cell != NULL&&iblank_cell[IJKCELL(i, ploty-1, k)] != GAS)continue;
+          in_gas=1;
+          if(iblank_cell != NULL&&iblank_cell[IJKCELL(i, ploty-1, k)] != GAS)in_gas=0;
+          in_solid = 1 - in_gas;
+
+          if(iblank_cell!=NULL){
+            if(show_slice_shaded[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+            if(show_slice_shaded[IN_GAS_GLUI]==0   && in_gas==1)continue;
+          }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, ploty, k)] == EMBED_YES)continue;
 
           index_cell = (i+incx-sd->is1)*sd->nslicej*sd->nslicek + (ploty+1-incy-sd->js1)*sd->nslicek + k+1-sd->ks1;
@@ -5488,9 +5516,16 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         int index_cell;
         int i33;
         float yy1, y3;
+        int in_solid, in_gas;
 
-        if(show_slice_in_obst == ONLY_IN_SOLID && iblank_cell != NULL&&iblank_cell[IJKCELL(i, j, plotz-1)] == GAS)continue;
-        if(show_slice_in_obst == ONLY_IN_GAS   && iblank_cell != NULL&&iblank_cell[IJKCELL(i, j, plotz-1)] != GAS)continue;
+        in_gas=1;
+        if(iblank_cell != NULL&&iblank_cell[IJKCELL(i, j, plotz-1)] != GAS)in_gas=0;
+        in_solid = 1 - in_gas;
+
+        if(iblank_cell!=NULL){
+          if(show_slice_shaded[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+          if(show_slice_shaded[IN_GAS_GLUI]==0   && in_gas==1)continue;
+        }
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, j, plotz)] == EMBED_YES)continue;
 
         index_cell = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (j+incy-sd->js1)*sd->nslicek + plotz+1-incz-sd->ks1;
@@ -5525,9 +5560,16 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
           float val;
           int index_cell;
           float yy1, y3;
+          int in_solid, in_gas;
 
-          if(show_slice_in_obst == ONLY_IN_SOLID && iblank_cell != NULL&&iblank_cell[IJKCELL(i, j, plotz-1)] == GAS)continue;
-          if(show_slice_in_obst == ONLY_IN_GAS   && iblank_cell != NULL&&iblank_cell[IJKCELL(i, j, plotz-1)] != GAS)continue;
+          in_gas=1;
+          if(iblank_cell != NULL&&iblank_cell[IJKCELL(i, j, plotz-1)] != GAS)in_gas=0;
+          in_solid = 1 - in_gas;
+
+          if(iblank_cell!=NULL){
+            if(show_slice_shaded[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+            if(show_slice_shaded[IN_GAS_GLUI]==0   && in_gas==1)continue;
+          }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, j, plotz)] == EMBED_YES)continue;
 
           index_cell = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (j+incy-sd->js1)*sd->nslicek + plotz+1-incz-sd->ks1;
@@ -5963,11 +6005,18 @@ void DrawVolSliceTexture(const slicedata *sd){
       for(k = sd->ks1; k<sd->ks2; k+=slice_skipz){
         float rmid, zmid;
         int k2;
+        int in_solid, in_gas;
+
+        in_gas=1;
+        if(c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)in_gas=0;
+        in_solid = 1 - in_gas;
 
         k2 = MIN(k+slice_skipz, sd->ks2);
           if(slice_skipz==1&&slice_skipy==1){
-            if(show_slice_in_obst==ONLY_IN_SOLID&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]==GASGAS)continue;
-            if(show_slice_in_obst==ONLY_IN_GAS&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)continue;
+            if(c_iblank_x!=NULL){
+              if(show_slice_shaded[IN_SOLID_GLUI]==0&&in_solid==1)continue;
+              if(show_slice_shaded[IN_GAS_GLUI]==0&&in_gas==1)continue;
+            }
             if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
           }
         r11 = (float)sd->iqsliceframe[ IJK_SLICE(plotx, j,  k)   ] / 255.0;
@@ -6035,11 +6084,18 @@ void DrawVolSliceTexture(const slicedata *sd){
       for(k = kmin; k<kmax; k+=slice_skipz){
         float rmid, zmid;
         int k2;
+        int in_solid, in_gas;
+
+        in_gas=1;
+        if(c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]!=GASGAS)in_gas=0;
+        in_solid = 1 - in_gas;
 
         k2 = MIN(k + slice_skipz, sd->ks2);
         if(slice_skipx==1&&slice_skipz==1){
-          if(show_slice_in_obst==ONLY_IN_SOLID && c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]==GASGAS)continue;
-          if(show_slice_in_obst == ONLY_IN_GAS   && c_iblank_y != NULL&&c_iblank_y[IJK(i, ploty, k)] != GASGAS)continue;
+          if(c_iblank_y!=NULL){
+            if(show_slice_shaded[IN_SOLID_GLUI]==0   && in_solid==1)continue;
+            if(show_slice_shaded[IN_GAS_GLUI]==0 && in_gas==1)continue;
+          }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, ploty, k)] == EMBED_YES)continue;
         }
         r11 = (float)sd->iqsliceframe[IJK_SLICE(i,  ploty, k)]/255.0;
@@ -6103,11 +6159,18 @@ void DrawVolSliceTexture(const slicedata *sd){
       for(j = sd->js1; j<sd->js2; j+=slice_skipy){
         float ymid, rmid;
         int j2;
+        int in_solid, in_gas;
+
+        in_gas=1;
+        if(c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)] != GASGAS)in_gas=0;
+        in_solid = 1 - in_gas;
 
         j2 = MIN(j+slice_skipy, sd->js2);
         if(slice_skipy==1&&slice_skipx==1){
-          if(show_slice_in_obst==ONLY_IN_SOLID && c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]==GASGAS)continue;
-          if(show_slice_in_obst == ONLY_IN_GAS   && c_iblank_z != NULL&&c_iblank_z[IJK(i, j, plotz)] != GASGAS)continue;
+          if(c_iblank_z!=NULL){
+            if(show_slice_shaded[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+            if(show_slice_shaded[IN_GAS_GLUI]==0   && in_gas==1)continue;
+          }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
         }
         r11 = (float)sd->iqsliceframe[ IJK_SLICE(i,   j, plotz)   ] / 255.0;
@@ -6225,7 +6288,6 @@ void DrawVolSliceLines(const slicedata *sd){
       // val(i,j,k) = di*nj*nk + dj*nk + dk
       for(k = sd->ks1; k<sd->ks2; k += slice_skipz){
         int k2, in_gas, in_solid;
-
 
         n += slice_skipz;
 
