@@ -6150,6 +6150,384 @@ void DrawVolSliceTexture(const slicedata *sd){
   if(cullfaces == 1)glEnable(GL_CULL_FACE);
 }
 
+/* ------------------ DrawVolSliceLines ------------------------ */
+
+void DrawVolSliceLines(const slicedata *sd){
+  int i, j, k;
+  float r11, r31, r13, r33;
+  float constval, x1, x3, yy1, y3, z1, z3;
+
+  float *xplt, *yplt, *zplt;
+  int ibar, jbar;
+  int nx, ny, nxy;
+  char *c_iblank_x, *c_iblank_y, *c_iblank_z;
+  char *iblank_embed;
+  int plotx, ploty, plotz;
+
+  meshdata *meshi;
+
+  if(sd->volslice==1&&visx_all==0&&visy_all==0&&visz_all==0)return;
+  meshi = meshinfo+sd->blocknumber;
+
+  xplt = meshi->xplt;
+  yplt = meshi->yplt;
+  zplt = meshi->zplt;
+  if(sd->volslice==1){
+    plotx = meshi->iplotx_all[iplotx_all];
+    ploty = meshi->iploty_all[iploty_all];
+    plotz = meshi->iplotz_all[iplotz_all];
+  }
+  else{
+    plotx = sd->is1;
+    ploty = sd->js1;
+    plotz = sd->ks1;
+  }
+  ibar = meshi->ibar;
+  jbar = meshi->jbar;
+  c_iblank_x = meshi->c_iblank_x;
+  c_iblank_y = meshi->c_iblank_y;
+  c_iblank_z = meshi->c_iblank_z;
+  iblank_embed = meshi->c_iblank_embed;
+  nx = ibar+1;
+  ny = jbar+1;
+  nxy = nx*ny;
+
+  //*** x plane slices
+
+  if((sd->volslice==1&&plotx>=0&&visx_all==1)||(sd->volslice==0&&sd->idir==XDIR)){
+    int maxj;
+
+    constval = xplt[plotx]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    glBegin(GL_LINES);
+    maxj = sd->js2;
+    if(sd->js1+1>maxj){
+      maxj = sd->js1+1;
+    }
+    for(j = sd->js1; j<maxj; j += slice_skipy){
+      float ymid;
+      int j2;
+
+      j2 = MIN(j+slice_skipy, sd->js2);
+      yy1 = yplt[j];
+      y3 = yplt[j2];
+
+      // val(i,j,k) = di*nj*nk + dj*nk + dk
+      for(k = sd->ks1; k<sd->ks2; k += slice_skipz){
+        float rmid, zmid;
+        int k2;
+
+        k2 = MIN(k+slice_skipz, sd->ks2);
+        if(slice_skipz==1&&slice_skipy==1){
+          if(show_slice_in_obst==ONLY_IN_SOLID&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]==GASGAS)continue;
+          if(show_slice_in_obst==ONLY_IN_GAS&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)continue;
+          if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
+        }
+
+        z1 = zplt[k];
+        z3 = zplt[k2];
+
+        /*
+        n+1 (y1,z3) n2+1 (y3,z3)
+        n (y1,z1)     n2 (y3,z1)
+        */
+        //  (yy1,z3) (y3,z3)
+        //  (yy1,z1) (y3,z1)
+        glVertex3f(constval, yy1, z1);
+        glVertex3f(constval, y3, z1);
+
+        glVertex3f(constval, y3, z1);
+        glVertex3f(constval, y3, z3);
+
+        glVertex3f(constval, y3, z3);
+        glVertex3f(constval, yy1, z3);
+
+        glVertex3f(constval, yy1, z3);
+        glVertex3f(constval, yy1, z1);
+      }
+    }
+    glEnd();
+  }
+
+  //*** y plane slices
+
+  if((sd->volslice==1&&ploty>=0&&visy_all==1)||(sd->volslice==0&&sd->idir==YDIR)){
+    int maxi;
+    int istart, iend;
+
+    constval = yplt[ploty]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    glBegin(GL_LINES);
+    maxi = sd->is1+sd->nslicei-1;
+    if(sd->is1+1>maxi){
+      maxi = sd->is1+1;
+    }
+    istart = sd->is1;
+    iend = maxi;
+
+    for(i = istart; i<iend; i += slice_skipx){
+      int kmin, kmax;
+      int i2;
+
+      i2 = MIN(i+slice_skipx, iend);
+
+      x1 = xplt[i];
+      x3 = xplt[i2];
+
+      kmin = sd->ks1;
+      kmax = sd->ks2;
+      for(k = kmin; k<kmax; k += slice_skipz){
+        int k2;
+
+        k2 = MIN(k+slice_skipz, sd->ks2);
+        if(slice_skipx==1&&slice_skipz==1){
+          if(show_slice_in_obst==ONLY_IN_SOLID&&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]==GASGAS)continue;
+          if(show_slice_in_obst==ONLY_IN_GAS&&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]!=GASGAS)continue;
+          if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, ploty, k)]==EMBED_YES)continue;
+        }
+        z1 = zplt[k];
+        z3 = zplt[k2];
+
+        /*
+        n+1 (x1,z3)   n2+1 (x3,z3)
+        n (x1,z1)     n2 (x3,z1)
+
+        val(i,j,k) = di*nj*nk + dj*nk + dk
+        */
+        //  (x1,z3) (x3,z3)
+        //  (x1,z1) (x3,z1,r31)
+        glVertex3f(x1, constval, z1);
+        glVertex3f(x3, constval, z1);
+
+        glVertex3f(x3, constval, z1);
+        glVertex3f(x3, constval, z3);
+
+        glVertex3f(x3, constval, z3);
+        glVertex3f(x1, constval, z3);
+
+        glVertex3f(x1, constval, z3);
+        glVertex3f(x1, constval, z1);
+      }
+    }
+    glEnd();
+  }
+
+  //*** z plane slices
+
+  if((sd->volslice==1&&plotz>=0&&visz_all==1)||(sd->volslice==0&&sd->idir==ZDIR)){
+    int maxi;
+
+    constval = zplt[plotz]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    glBegin(GL_LINES);
+
+    maxi = sd->is1+sd->nslicei-1;
+    if(sd->is1+1>maxi){
+      maxi = sd->is1+1;
+    }
+    for(i = sd->is1; i<maxi; i += slice_skipx){
+      int i2;
+
+      i2 = MIN(i+slice_skipx, sd->is2);
+
+      x1 = xplt[i];
+      x3 = xplt[i2];
+
+      for(j = sd->js1; j<sd->js2; j += slice_skipy){
+        int j2;
+
+        j2 = MIN(j+slice_skipy, sd->js2);
+        if(slice_skipy==1&&slice_skipx==1){
+          if(show_slice_in_obst==ONLY_IN_SOLID&&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]==GASGAS)continue;
+          if(show_slice_in_obst==ONLY_IN_GAS&&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
+          if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
+        }
+        yy1 = yplt[j];
+        y3 = yplt[j2];
+
+        /*
+        n+nk (x1,y3)   n2+nk (x3,y3)
+        n (x1,y1)      n2 (x3,y1)
+
+        val(i,j,k) = di*nj*nk + dj*nk + dk
+        */
+        //  (x1,y3) (x3,y3)
+        //  (x1,yy1) (x3,yy1)
+        glVertex3f(x1, yy1, constval);
+        glVertex3f(x3, yy1, constval);
+
+        glVertex3f(x3, yy1, constval);
+        glVertex3f(x3, y3, constval);
+
+        glVertex3f(x3, y3, constval);
+        glVertex3f(x1, y3, constval);
+
+        glVertex3f(x1, y3, constval);
+        glVertex3f(x1, yy1, constval);
+      }
+    }
+    glEnd();
+  }
+}
+
+/* ------------------ DrawVolSliceVerts ------------------------ */
+
+void DrawVolSliceVerts(const slicedata *sd){
+  int i, j, k;
+  float constval, x1, x3, yy1, y3, z1, z3;
+
+  float *xplt, *yplt, *zplt;
+  int ibar, jbar;
+  int nx, ny, nxy;
+  char *c_iblank_x, *c_iblank_y, *c_iblank_z;
+  char *iblank_embed;
+  int plotx, ploty, plotz;
+
+  meshdata *meshi;
+
+  if(sd->volslice==1&&visx_all==0&&visy_all==0&&visz_all==0)return;
+  meshi = meshinfo+sd->blocknumber;
+
+  xplt = meshi->xplt;
+  yplt = meshi->yplt;
+  zplt = meshi->zplt;
+  if(sd->volslice==1){
+    plotx = meshi->iplotx_all[iplotx_all];
+    ploty = meshi->iploty_all[iploty_all];
+    plotz = meshi->iplotz_all[iplotz_all];
+  }
+  else{
+    plotx = sd->is1;
+    ploty = sd->js1;
+    plotz = sd->ks1;
+  }
+  ibar = meshi->ibar;
+  jbar = meshi->jbar;
+  c_iblank_x = meshi->c_iblank_x;
+  c_iblank_y = meshi->c_iblank_y;
+  c_iblank_z = meshi->c_iblank_z;
+  iblank_embed = meshi->c_iblank_embed;
+  nx = ibar+1;
+  ny = jbar+1;
+  nxy = nx*ny;
+
+  //*** x plane slices
+
+  if((sd->volslice==1&&plotx>=0&&visx_all==1)||(sd->volslice==0&&sd->idir==XDIR)){
+    int maxj;
+
+    constval = xplt[plotx]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    glBegin(GL_POINTS);
+    maxj = sd->js2;
+    if(sd->js1+1>maxj){
+      maxj = sd->js1+1;
+    }
+    for(j = sd->js1; j<=maxj; j += slice_skipy){
+      yy1 = yplt[j];
+
+      // val(i,j,k) = di*nj*nk + dj*nk + dk
+      for(k = sd->ks1; k<=sd->ks2; k += slice_skipz){
+        if(slice_skipz==1&&slice_skipy==1){
+          if(show_slice_in_obst==ONLY_IN_SOLID&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]==GASGAS)continue;
+          if(show_slice_in_obst==ONLY_IN_GAS&&c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)continue;
+          if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
+        }
+
+        z1 = zplt[k];
+
+        /*
+        n+1 (y1,z3) n2+1 (y3,z3)
+        n (y1,z1)     n2 (y3,z1)
+        */
+        //  (yy1,z3) (y3,z3)
+        //  (yy1,z1) (y3,z1)
+        glVertex3f(constval, yy1, z1);
+      }
+    }
+    glEnd();
+  }
+
+  //*** y plane slices
+
+  if((sd->volslice==1&&ploty>=0&&visy_all==1)||(sd->volslice==0&&sd->idir==YDIR)){
+    int maxi;
+    int istart, iend;
+
+    constval = yplt[ploty]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    glBegin(GL_POINTS);
+    maxi = sd->is1+sd->nslicei-1;
+    if(sd->is1+1>maxi){
+      maxi = sd->is1+1;
+    }
+    istart = sd->is1;
+    iend = maxi;
+
+    for(i = istart; i<=iend; i += slice_skipx){
+      int kmin, kmax;
+
+      x1 = xplt[i];
+
+      kmin = sd->ks1;
+      kmax = sd->ks2;
+      for(k = kmin; k<=kmax; k += slice_skipz){
+        int k2;
+
+        if(slice_skipx==1&&slice_skipz==1){
+          if(show_slice_in_obst==ONLY_IN_SOLID&&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]==GASGAS)continue;
+          if(show_slice_in_obst==ONLY_IN_GAS&&c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]!=GASGAS)continue;
+          if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, ploty, k)]==EMBED_YES)continue;
+        }
+        z1 = zplt[k];
+
+        /*
+        n+1 (x1,z3)   n2+1 (x3,z3)
+        n (x1,z1)     n2 (x3,z1)
+
+        val(i,j,k) = di*nj*nk + dj*nk + dk
+        */
+        //  (x1,z3) (x3,z3)
+        //  (x1,z1) (x3,z1,r31)
+        glVertex3f(x1, constval, z1);
+      }
+    }
+    glEnd();
+  }
+
+  //*** z plane slices
+
+  if((sd->volslice==1&&plotz>=0&&visz_all==1)||(sd->volslice==0&&sd->idir==ZDIR)){
+    int maxi;
+
+    constval = zplt[plotz]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    glBegin(GL_POINTS);
+
+    maxi = sd->is1+sd->nslicei-1;
+    if(sd->is1+1>maxi){
+      maxi = sd->is1+1;
+    }
+    for(i = sd->is1; i<=maxi; i += slice_skipx){
+      x1 = xplt[i];
+
+      for(j = sd->js1; j<=sd->js2; j += slice_skipy){
+        if(slice_skipy==1&&slice_skipx==1){
+          if(show_slice_in_obst==ONLY_IN_SOLID&&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]==GASGAS)continue;
+          if(show_slice_in_obst==ONLY_IN_GAS&&c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
+          if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
+        }
+        yy1 = yplt[j];
+
+        /*
+        n+nk (x1,y3)   n2+nk (x3,y3)
+        n (x1,y1)      n2 (x3,y1)
+
+        val(i,j,k) = di*nj*nk + dj*nk + dk
+        */
+        //  (x1,y3) (x3,y3)
+        //  (x1,yy1) (x3,yy1)
+        glVertex3f(x1, yy1, constval);
+      }
+    }
+    glEnd();
+  }
+}
+
 /* ------------------ ComputeOpacityCorrections ------------------------ */
 
 void ComputeOpacityCorrections(meshdata *meshi, float *xyz0, float *normal){
