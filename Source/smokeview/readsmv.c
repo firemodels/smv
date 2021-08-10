@@ -10735,13 +10735,9 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(boundary_edgetype);
       continue;
     }
-    if(Match(buffer, "GEOMSLICEPROPS")==1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f", &geomslice_linewidth, &geomslice_pointsize);
-      continue;
-    }
     if(Match(buffer, "GEOMCELLPROPS")==1){
       int vector_slice[3] = {-1, -1, -1};
+      float dummy;
 
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i",
@@ -10758,9 +10754,7 @@ int ReadIni2(char *inifile, int localfile){
 
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %f %i %i %i",
-        show_slice_shaded,show_slice_shaded+1,show_slice_shaded+2,&geomslice_pointsize,
-             vector_slice, vector_slice+1, vector_slice+2
-             );
+        show_slice_shaded,show_slice_shaded+1,show_slice_shaded+2,&dummy, vector_slice, vector_slice+1, vector_slice+2);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i",
         show_slice_outlines,show_slice_outlines+1,show_slice_outlines+2);
@@ -14824,7 +14818,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i\n",
     slice_edgetypes[0], slice_edgetypes[1], slice_edgetypes[2]);
   fprintf(fileout, " %i %i %i %f %i %i %i\n",
-    show_slice_shaded[0], show_slice_shaded[1], show_slice_shaded[2], geomslice_pointsize,
+    show_slice_shaded[0], show_slice_shaded[1], show_slice_shaded[2], 5.0,
     show_vector_slice[0], show_vector_slice[1], show_vector_slice[2]);
   fprintf(fileout, " %i %i %i\n",
     show_slice_outlines[0], show_slice_outlines[1], show_slice_outlines[2]);
@@ -14849,8 +14843,6 @@ void WriteIni(int flag,char *filename){
 #endif
   fprintf(fileout, " %i %i %i %i\n", show_volumes_interior, show_volumes_exterior, show_volumes_solid, show_volumes_outline);
   fprintf(fileout, " %f %f %i %i %i\n", geom_vert_exag, geom_max_angle, 0, 0, show_geom_boundingbox);
-  fprintf(fileout, "GEOMSLICEPROPS\n");
-  fprintf(fileout, " %f %f\n", geomslice_linewidth, geomslice_pointsize);
 
   fprintf(fileout, "GVERSION\n");
   fprintf(fileout, " %i\n", vis_title_gversion);

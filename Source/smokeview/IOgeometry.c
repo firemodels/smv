@@ -4203,7 +4203,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
         glLineWidth(geomboundary_linewidth);
       }
       else if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
-        glLineWidth(geomslice_linewidth);
+        glLineWidth(vectorlinewidth);
       }
       else{
         glLineWidth(geom_linewidth);
@@ -4226,7 +4226,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
             if(insolid == IN_SOLID   && show_slice_outlines[IN_SOLID_GLUI] == 0)continue;
             if(insolid == IN_GAS     && show_slice_outlines[IN_GAS_GLUI] == 0)continue;
 
-            if(insolid_glui!=-1&&slice_edgetypes[insolid_glui] == IMMERSED_POLYGON){
+            if(insolid_glui!=-1&&slice_edgetypes[insolid_glui] == OUTLINE_POLYGON){
               int insolid4, insolid8, insolid16;
 
               insolid4 = trianglei->insolid&4;
@@ -4252,7 +4252,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
 
             insolid = trianglei->insolid & 3;
             if(insolid>=0&&insolid<3)insolid_glui = insolid;
-            if(insolid_glui!=-1&&boundary_edgetype==IMMERSED_POLYGON){
+            if(insolid_glui!=-1&&boundary_edgetype==OUTLINE_POLYGON){
               int insolid4, insolid8, insolid16;
 
               insolid4 = trianglei->insolid&4;
@@ -4351,7 +4351,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
         glPointSize(geomboundary_pointsize);
       }
       else if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
-        glPointSize(geomslice_pointsize);
+        glPointSize(vectorpointsize);
       }
       else{
         glPointSize(geom_pointsize);

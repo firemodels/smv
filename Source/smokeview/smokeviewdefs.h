@@ -433,9 +433,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 
 #define MAX_CELL_TYPES 3
 
-#define IMMERSED_POLYGON  0
-#define IMMERSED_TRIANGLE 1
-#define IMMERSED_HIDDEN   2
+#define OUTLINE_POLYGON  0
+#define OUTLINE_TRIANGLE 1
+#define OUTLINE_HIDDEN   2
 
 #define EMBED_YES 0
 #define EMBED_NO  1

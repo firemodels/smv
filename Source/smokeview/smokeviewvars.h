@@ -340,9 +340,7 @@ SVEXTERN int SVDECL(research_mode_override, -1);
 SVEXTERN int SVDECL(update_percentile_mode, 0);
 SVEXTERN int SVDECL(percentile_mode, 0);
 
-SVEXTERN float SVDECL(geomslice_pointsize, 5.0);
 SVEXTERN float SVDECL(geomboundary_pointsize, 5.0);
-SVEXTERN float SVDECL(geomslice_linewidth, 5.0);
 SVEXTERN float SVDECL(geomboundary_linewidth, 5.0);
 
 #ifdef pp_SMOKE_FAST
@@ -766,9 +764,9 @@ SVEXTERN int SVDECL(have_cface_normals, CFACE_NORMALS_NO);
 
 SVEXTERN int SVDECL(show_iso_normal, 0), SVDECL(smooth_iso_normal, 1);
 
-SVEXTERN int SVDECL(boundary_edgetype, IMMERSED_HIDDEN);
+SVEXTERN int SVDECL(boundary_edgetype, OUTLINE_HIDDEN);
 
-SVEXTERN int SVDECL(glui_slice_edgetype, IMMERSED_POLYGON);
+SVEXTERN int SVDECL(glui_slice_edgetype, OUTLINE_POLYGON);
 SVEXTERN int SVDECL(slice_celltype, 0);
 SVEXTERN int slice_edgetypes[3];
 

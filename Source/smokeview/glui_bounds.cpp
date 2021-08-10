@@ -3708,11 +3708,11 @@ extern "C" void ImmersedBoundCB(int var){
     glui_show_slice_points   = show_slice_points[slice_celltype];
     for(i=0;i<3;i++){
       switch(slice_edgetypes[i]){
-        case IMMERSED_POLYGON:
-        case IMMERSED_TRIANGLE:
+        case OUTLINE_POLYGON:
+        case OUTLINE_TRIANGLE:
           show_slice_outlines[i]=1;
           break;
-        case IMMERSED_HIDDEN:
+        case OUTLINE_HIDDEN:
           show_slice_outlines[i]=0;
           break;
       }
@@ -3726,10 +3726,10 @@ extern "C" void ImmersedBoundCB(int var){
     break;
   case IMMERSED_SET_DRAWTYPE:
     if(glui_show_slice_outlines == 0){
-      glui_slice_edgetype = IMMERSED_HIDDEN;
+      glui_slice_edgetype = OUTLINE_HIDDEN;
     }
     else{
-      if(glui_slice_edgetype == IMMERSED_HIDDEN)glui_slice_edgetype = IMMERSED_TRIANGLE;
+      if(glui_slice_edgetype == OUTLINE_HIDDEN)glui_slice_edgetype = OUTLINE_TRIANGLE;
     }
     show_vector_slice[slice_celltype]   = glui_show_vector_slice;
     slice_edgetypes[slice_celltype]     = glui_slice_edgetype;
@@ -3768,13 +3768,13 @@ extern "C" void BoundBoundCB(int var){
   switch(var){
   case SHOW_BOUNDARY_OUTLINE:
     if(ngeom_data==0)break;
-    if(show_boundary_outline==1&&boundary_edgetype==IMMERSED_HIDDEN)boundary_edgetype = IMMERSED_POLYGON;
-    if(show_boundary_outline==0&&boundary_edgetype!=IMMERSED_HIDDEN)boundary_edgetype = IMMERSED_HIDDEN;
+    if(show_boundary_outline==1&&boundary_edgetype==OUTLINE_HIDDEN)boundary_edgetype = OUTLINE_POLYGON;
+    if(show_boundary_outline==0&&boundary_edgetype!=OUTLINE_HIDDEN)boundary_edgetype = OUTLINE_HIDDEN;
     if(boundary_edgetype!=RADIO_boundary_edgetype->get_int_val())RADIO_boundary_edgetype->set_int_val(boundary_edgetype);
     break;
   case BOUNDARY_EDGETYPE:
-    if(boundary_edgetype==IMMERSED_HIDDEN&&show_boundary_outline==1)show_boundary_outline=0;
-    if(boundary_edgetype!=IMMERSED_HIDDEN&&show_boundary_outline==0)show_boundary_outline=1;
+    if(boundary_edgetype==OUTLINE_HIDDEN&&show_boundary_outline==1)show_boundary_outline=0;
+    if(boundary_edgetype!=OUTLINE_HIDDEN&&show_boundary_outline==0)show_boundary_outline=1;
     if(show_boundary_outline!=CHECKBOX_show_boundary_outline->get_int_val())CHECKBOX_show_boundary_outline->set_int_val(show_boundary_outline);
     break;
   case UPDATE_BOUNDARYSLICEDUPS:
@@ -4647,13 +4647,13 @@ extern "C" void GluiBoundsSetup(int main_window){
     ADDPROCINFO(plot3dprocinfo, nplot3dprocinfo, ROLLOUT_vector, PLOT3D_VECTOR_ROLLOUT, glui_bounds);
 
     glui_bounds->add_checkbox_to_panel(ROLLOUT_vector,_("Show vectors"),&visVector,UPDATEPLOT,Plot3DBoundCB);
-    SPINNER_plot3d_vectorpointsize=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("Point size"),GLUI_SPINNER_FLOAT,&vectorpointsize,UPDATE_VECTOR,Plot3DBoundCB);
+    SPINNER_plot3d_vectorpointsize=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("point size"),GLUI_SPINNER_FLOAT,&vectorpointsize,UPDATE_VECTOR,Plot3DBoundCB);
     SPINNER_plot3d_vectorpointsize->set_float_limits(1.0,10.0);
-    SPINNER_plot3d_vectorlinewidth=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("Vector width"),GLUI_SPINNER_FLOAT,&vectorlinewidth,UPDATE_VECTOR,Plot3DBoundCB);
+    SPINNER_plot3d_vectorlinewidth=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("vector width"),GLUI_SPINNER_FLOAT,&vectorlinewidth,UPDATE_VECTOR,Plot3DBoundCB);
     SPINNER_plot3d_vectorlinewidth->set_float_limits(1.0,10.0);
-    SPINNER_plot3d_vectorlinelength=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("Vector length"),GLUI_SPINNER_FLOAT,&vecfactor,UPDATE_VECTOR,Plot3DBoundCB);
+    SPINNER_plot3d_vectorlinelength=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("vector length"),GLUI_SPINNER_FLOAT,&vecfactor,UPDATE_VECTOR,Plot3DBoundCB);
     SPINNER_plot3dvectorskip=glui_bounds->add_spinner_to_panel(ROLLOUT_vector,_("Vector skip"),GLUI_SPINNER_INT,&vectorskip,PLOT3D_VECTORSKIP,Plot3DBoundCB);
-    SPINNER_plot3dvectorskip->set_int_limits(1,4);
+    SPINNER_plot3dvectorskip->set_int_limits(1,10);
 
     glui_bounds->add_column_to_panel(PANEL_plot3d, false);
 
@@ -4801,34 +4801,37 @@ extern "C" void GluiBoundsSetup(int main_window){
 
     glui_bounds->add_column_to_panel(PANEL_immersed, false);
     PANEL_immersed_drawas = glui_bounds->add_panel_to_panel(PANEL_immersed, "draw slice as", true);
-    CHECKBOX_show_slice_shaded = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "shaded",  &glui_show_slice_shaded, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+    CHECKBOX_show_slice_shaded = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "shaded",  &glui_show_slice_shaded,   IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
     CHECKBOX_show_slice_outlines = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "outline", &glui_show_slice_outlines, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-    CHECKBOX_show_slice_points = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "points",  &glui_show_slice_points, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-    CHECKBOX_show_vector_slice = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "vectors", &glui_show_vector_slice, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-    glui_bounds->add_spinner_to_panel(PANEL_immersed_drawas, "line width", GLUI_SPINNER_FLOAT, &geomslice_linewidth);
-    glui_bounds->add_spinner_to_panel(PANEL_immersed_drawas, "point size", GLUI_SPINNER_FLOAT, &geomslice_pointsize);
+    CHECKBOX_show_slice_points = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "points",  &glui_show_slice_points,   IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+    CHECKBOX_show_vector_slice = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "vectors",   &glui_show_vector_slice,   IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
 
     ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
     ImmersedBoundCB(IMMERSED_SWITCH_EDGETYPE);
 
-    PANEL_slice_vector = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, _("Vector"), true);
+    PANEL_showslice = glui_bounds->add_panel_to_panel(PANEL_immersed, "show vectors and", true);
+    CHECKBOX_show_node_slices_and_vectors = glui_bounds->add_checkbox_to_panel(PANEL_showslice, _("node centered slices"), &show_node_slices_and_vectors);
+    CHECKBOX_show_node_slices_and_vectors = glui_bounds->add_checkbox_to_panel(PANEL_showslice, _("cell centered slices"), &show_cell_slices_and_vectors);
+
+
+    PANEL_slice_vector = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "vector properties", true);
 
     PANEL_vector1 = glui_bounds->add_panel_to_panel(PANEL_slice_vector, "", false);
-    SPINNER_vectorpointsize = glui_bounds->add_spinner_to_panel(PANEL_vector1, _("Point size"), GLUI_SPINNER_FLOAT,
+    SPINNER_vectorpointsize = glui_bounds->add_spinner_to_panel(PANEL_vector1, _("point size"), GLUI_SPINNER_FLOAT,
       &vectorpointsize,UPDATE_VECTOR,SliceBoundCB);
     SPINNER_vectorpointsize->set_float_limits(1.0,20.0);
-    SPINNER_vectorlinewidth=glui_bounds->add_spinner_to_panel(PANEL_vector1,_("Vector width"),GLUI_SPINNER_FLOAT,&vectorlinewidth,UPDATE_VECTOR,SliceBoundCB);
+    SPINNER_vectorlinewidth=glui_bounds->add_spinner_to_panel(PANEL_vector1,_("width"),GLUI_SPINNER_FLOAT,&vectorlinewidth,UPDATE_VECTOR,SliceBoundCB);
     SPINNER_vectorlinewidth->set_float_limits(1.0,20.0);
-    SPINNER_vectorlinelength = glui_bounds->add_spinner_to_panel(PANEL_vector1, _("Vector length"), GLUI_SPINNER_FLOAT, &vecfactor, UPDATE_VECTOR, SliceBoundCB);
-    SPINNER_slicevectorskip = glui_bounds->add_spinner_to_panel(PANEL_vector1, _("Vector skip"), GLUI_SPINNER_INT, &vectorskip, SLICE_VECTORSKIP, SliceBoundCB);
-    SPINNER_slicevectorskip->set_int_limits(1, 4);
+    SPINNER_vectorlinelength = glui_bounds->add_spinner_to_panel(PANEL_vector1, _("length"), GLUI_SPINNER_FLOAT, &vecfactor, UPDATE_VECTOR, SliceBoundCB);
+    SPINNER_slicevectorskip = glui_bounds->add_spinner_to_panel(PANEL_vector1, _("skip"), GLUI_SPINNER_INT, &vectorskip, SLICE_VECTORSKIP, SliceBoundCB);
+    SPINNER_slicevectorskip->set_int_limits(1, 10);
 
     glui_bounds->add_column_to_panel(PANEL_slice_vector, false);
     PANEL_vector2 = glui_bounds->add_panel_to_panel(PANEL_slice_vector, "", false);
     glui_bounds->add_checkbox_to_panel(PANEL_vector2, "uniform spacing", &vec_uniform_spacing);
     glui_bounds->add_checkbox_to_panel(PANEL_vector2, "uniform length", &vec_uniform_length);
 
-    CHECKBOX_color_vector_black = glui_bounds->add_checkbox_to_panel(PANEL_vector2, _("Color black"), &color_vector_black);
+    CHECKBOX_color_vector_black = glui_bounds->add_checkbox_to_panel(PANEL_vector2, _("use foreground color"), &color_vector_black);
 
     if(ngeom_data > 0)glui_bounds->add_column_to_panel(ROLLOUT_slice_settings, false);
 
@@ -4850,9 +4853,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     }
 
     if(ngeom_data == 0)glui_bounds->add_column_to_panel(ROLLOUT_slice_settings, false);
-    PANEL_showslice = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "show vectors and slices", true);
-    CHECKBOX_show_node_slices_and_vectors = glui_bounds->add_checkbox_to_panel(PANEL_showslice, _("node centered"), &show_node_slices_and_vectors);
-    CHECKBOX_show_node_slices_and_vectors = glui_bounds->add_checkbox_to_panel(PANEL_showslice, _("cell centered"), &show_cell_slices_and_vectors);
 
     PANEL_slice_smoke = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "slice(fire)", true);
     glui_bounds->add_checkbox_to_panel(PANEL_slice_smoke, _("max blending"), &slices3d_max_blending);
@@ -4871,13 +4871,12 @@ extern "C" void GluiBoundsSetup(int main_window){
       max_slice_skip = MAX(max_slice_skip, meshi->kbar/2);
 
     }
-    SPINNER_slice_skip = glui_bounds->add_spinner_to_panel(PANEL_slice_misc, "skip", GLUI_SPINNER_INT, &slice_skip, SLICE_SKIP, SliceBoundCB);
+    SPINNER_slice_skip = glui_bounds->add_spinner_to_panel(PANEL_slice_misc, "data skip", GLUI_SPINNER_INT, &slice_skip, SLICE_SKIP, SliceBoundCB);
     SliceBoundCB(SLICE_SKIP);
-    glui_bounds->add_checkbox_to_panel(PANEL_slice_misc, _("Output data to file"), &output_slicedata);
+    glui_bounds->add_checkbox_to_panel(PANEL_slice_misc, _("Output data (press r)"), &output_slicedata);
     if(nfedinfo>0){
       glui_bounds->add_checkbox_to_panel(PANEL_slice_misc, "Regenerate FED data", &regenerate_fed);
     }
-
 
     if(nterraininfo>0){
       glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("terrain slice overlap"), &terrain_slice_overlap);

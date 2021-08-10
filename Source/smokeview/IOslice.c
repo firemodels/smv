@@ -6262,7 +6262,7 @@ void DrawVolSliceLines(const slicedata *sd){
   if((sd->volslice==1&&plotz>=0&&visz_all==1)||(sd->volslice==0&&sd->idir==ZDIR))draw_z_slice = 1;
 
   if(draw_x_slice==1||draw_y_slice==1||draw_z_slice==1){
-    glLineWidth(geomslice_linewidth);
+    glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     glColor3fv(foregroundcolor);
   }
@@ -6589,7 +6589,7 @@ void DrawVolSliceVerts(const slicedata *sd){
   if((sd->volslice==1&&plotz>=0&&visz_all==1)||(sd->volslice==0&&sd->idir==ZDIR))draw_z_slice = 1;
 
   if(draw_x_slice==1||draw_y_slice==1||draw_z_slice==1){
-    glPointSize(geomslice_pointsize);
+    glPointSize(vectorpointsize);
     glBegin(GL_POINTS);
     glColor3fv(foregroundcolor);
   }
@@ -7229,7 +7229,6 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
         //       n = (j-sd->js1)*sd->nslicek - 1;
         //       n += (plotx-sd->is1)*sd->nslicej*sd->nslicek;
-
 
         if(k != sd->ks2){
           int index_v;
@@ -8043,19 +8042,26 @@ void DrawVVolSlice(const vslicedata *vd){
         else{
           rgb_ptr = foregroundcolor;
         }
-        if(show_slice_in_obst == GAS_AND_SOLID || iblank == NULL ||
-           (show_slice_in_obst==ONLY_IN_GAS     && iblank[IJK(plotx, j, k)] == GAS  &&rgb_ptr[3] > 0.5) ||
-           (show_slice_in_obst == ONLY_IN_SOLID && iblank[IJK(plotx, j, k)] == SOLID&&rgb_ptr[3] > 0.5)
-           ){
-          z1 = zplttemp[k];
-          GET_VEC_DXYZ(u, dx, n);
-          GET_VEC_DXYZ(v, dy, n);
-          GET_VEC_DXYZ(w, dz, n);
-          ADJUST_VEC_DXYZ(dx,dy,dz);
-          glColor4fv(rgb_ptr);
-          glVertex3f(constval - dx, yy1 - dy, z1 - dz);
-          glVertex3f(constval + dx, yy1 + dy, z1 + dz);
+        int in_solid, in_gas;
+
+        in_gas=1;
+        if(iblank != NULL&&iblank[IJK(plotx, j, k)] != GAS)in_gas=0;
+        in_solid = 1 - in_gas;
+
+        if(iblank!=NULL){
+          if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+          if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
         }
+        if(rgb_ptr[3]<0.5)continue;
+
+        z1 = zplttemp[k];
+        GET_VEC_DXYZ(u, dx, n);
+        GET_VEC_DXYZ(v, dy, n);
+        GET_VEC_DXYZ(w, dz, n);
+        ADJUST_VEC_DXYZ(dx,dy,dz);
+        glColor4fv(rgb_ptr);
+        glVertex3f(constval - dx, yy1 - dy, z1 - dz);
+        glVertex3f(constval + dx, yy1 + dy, z1 + dz);
       }
     }
     glEnd();
@@ -8083,18 +8089,25 @@ void DrawVVolSlice(const vslicedata *vd){
         else{
           rgb_ptr = foregroundcolor;
         }
-        if(show_slice_in_obst==GAS_AND_SOLID||iblank==NULL||
-          (show_slice_in_obst==ONLY_IN_GAS   && iblank[IJK(plotx, j, k)]==GAS  &&rgb_ptr[3]>0.5)||
-          (show_slice_in_obst==ONLY_IN_SOLID && iblank[IJK(plotx, j, k)]==SOLID&&rgb_ptr[3]>0.5)
-          ){
-          z1 = zplttemp[k];
-          GET_VEC_DXYZ(u, dx, n);
-          GET_VEC_DXYZ(v, dy, n);
-          GET_VEC_DXYZ(w, dz, n);
-          ADJUST_VEC_DXYZ(dx,dy,dz);
-          glColor4fv(rgb_ptr);
-          glVertex3f(constval + dx, yy1 + dy, z1 + dz);
+        int in_solid, in_gas;
+
+        in_gas=1;
+        if(iblank != NULL&&iblank[IJK(plotx, j, k)] != GAS)in_gas=0;
+        in_solid = 1 - in_gas;
+
+        if(iblank!=NULL){
+          if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+          if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
         }
+        if(rgb_ptr[3]<0.5)continue;
+
+        z1 = zplttemp[k];
+        GET_VEC_DXYZ(u, dx, n);
+        GET_VEC_DXYZ(v, dy, n);
+        GET_VEC_DXYZ(w, dz, n);
+        ADJUST_VEC_DXYZ(dx,dy,dz);
+        glColor4fv(rgb_ptr);
+        glVertex3f(constval + dx, yy1 + dy, z1 + dz);
       }
     }
     glEnd();
@@ -8135,19 +8148,26 @@ void DrawVVolSlice(const vslicedata *vd){
         else{
           rgb_ptr = foregroundcolor;
         }
-        if(show_slice_in_obst == GAS_AND_SOLID || iblank == NULL ||
-           (show_slice_in_obst==ONLY_IN_GAS     && iblank[IJK(i, ploty, k)] == GAS  &&rgb_ptr[3] > 0.5) ||
-           (show_slice_in_obst == ONLY_IN_SOLID && iblank[IJK(i, ploty, k)] == SOLID&&rgb_ptr[3] > 0.5)
-           ){
-          z1 = zplttemp[k];
-          GET_VEC_DXYZ(u, dx, n);
-          GET_VEC_DXYZ(v, dy, n);
-          GET_VEC_DXYZ(w, dz, n);
-          ADJUST_VEC_DXYZ(dx,dy,dz);
-          glColor4fv(rgb_ptr);
-          glVertex3f(x1 - dx, constval - dy, z1 - dz);
-          glVertex3f(x1 + dx, constval + dy, z1 + dz);
+        int in_solid, in_gas;
+
+        in_gas=1;
+        if(iblank != NULL&&iblank[IJK(i, ploty, k)] != GAS)in_gas=0;
+        in_solid = 1 - in_gas;
+
+        if(iblank!=NULL){
+          if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+          if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
         }
+        if(rgb_ptr[3]<0.5)continue;
+
+        z1 = zplttemp[k];
+        GET_VEC_DXYZ(u, dx, n);
+        GET_VEC_DXYZ(v, dy, n);
+        GET_VEC_DXYZ(w, dz, n);
+        ADJUST_VEC_DXYZ(dx,dy,dz);
+        glColor4fv(rgb_ptr);
+        glVertex3f(x1 - dx, constval - dy, z1 - dz);
+        glVertex3f(x1 + dx, constval + dy, z1 + dz);
       }
     }
     glEnd();
@@ -8174,18 +8194,25 @@ void DrawVVolSlice(const vslicedata *vd){
         else{
           rgb_ptr = foregroundcolor;
         }
-        if(show_slice_in_obst==GAS_AND_SOLID||iblank==NULL||
-          (show_slice_in_obst==ONLY_IN_GAS   && iblank[IJK(i, ploty, k)]==GAS  &&rgb_ptr[3]>0.5)||
-          (show_slice_in_obst==ONLY_IN_SOLID && iblank[IJK(i, ploty, k)]==SOLID&&rgb_ptr[3]>0.5)
-          ){
-          z1 = zplttemp[k];
-          GET_VEC_DXYZ(u, dx, n);
-          GET_VEC_DXYZ(v, dy, n);
-          GET_VEC_DXYZ(w, dz, n);
-          ADJUST_VEC_DXYZ(dx,dy,dz);
-          glColor4fv(rgb_ptr);
-          glVertex3f(x1 + dx, constval + dy, z1 + dz);
+        int in_solid, in_gas;
+
+        in_gas=1;
+        if(iblank != NULL&&iblank[IJK(i, ploty, k)] != GAS)in_gas=0;
+        in_solid = 1 - in_gas;
+
+        if(iblank!=NULL){
+          if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+          if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
         }
+        if(rgb_ptr[3]<0.5)continue;
+
+        z1 = zplttemp[k];
+        GET_VEC_DXYZ(u, dx, n);
+        GET_VEC_DXYZ(v, dy, n);
+        GET_VEC_DXYZ(w, dz, n);
+        ADJUST_VEC_DXYZ(dx,dy,dz);
+        glColor4fv(rgb_ptr);
+        glVertex3f(x1 + dx, constval + dy, z1 + dz);
       }
     }
     glEnd();
@@ -8225,19 +8252,26 @@ void DrawVVolSlice(const vslicedata *vd){
         else{
           rgb_ptr = foregroundcolor;
         }
-        if(show_slice_in_obst == GAS_AND_SOLID || iblank == NULL ||
-           (show_slice_in_obst==ONLY_IN_GAS     && iblank[IJK(i, j, plotz)] == GAS  &&rgb_ptr[3] > 0.5) ||
-           (show_slice_in_obst == ONLY_IN_SOLID && iblank[IJK(i, j, plotz)] == SOLID&&rgb_ptr[3] > 0.5)
-           ){
-          yy1 = yplttemp[j];
-          GET_VEC_DXYZ(u, dx, n);
-          GET_VEC_DXYZ(v, dy, n);
-          GET_VEC_DXYZ(w, dz, n);
-          ADJUST_VEC_DXYZ(dx,dy,dz);
-          glColor4fv(rgb_ptr);
-          glVertex3f(x1 - dx, yy1 - dy, constval - dz);
-          glVertex3f(x1 + dx, yy1 + dy, constval + dz);
+        int in_solid, in_gas;
+
+        in_gas=1;
+        if(iblank != NULL&&iblank[IJK(i, j, plotz)] != GAS)in_gas=0;
+        in_solid = 1 - in_gas;
+
+        if(iblank!=NULL){
+          if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+          if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
         }
+        if(rgb_ptr[3]<0.5)continue;
+
+        yy1 = yplttemp[j];
+        GET_VEC_DXYZ(u, dx, n);
+        GET_VEC_DXYZ(v, dy, n);
+        GET_VEC_DXYZ(w, dz, n);
+        ADJUST_VEC_DXYZ(dx,dy,dz);
+        glColor4fv(rgb_ptr);
+        glVertex3f(x1 - dx, yy1 - dy, constval - dz);
+        glVertex3f(x1 + dx, yy1 + dy, constval + dz);
       }
     }
     glEnd();
@@ -8264,18 +8298,25 @@ void DrawVVolSlice(const vslicedata *vd){
         else{
           rgb_ptr = foregroundcolor;
         }
-        if(show_slice_in_obst==GAS_AND_SOLID||iblank==NULL||
-          (show_slice_in_obst==ONLY_IN_GAS   && iblank[IJK(i, j, plotz)]==GAS  &&rgb_ptr[3]>0.5)||
-          (show_slice_in_obst==ONLY_IN_SOLID && iblank[IJK(i, j, plotz)]==SOLID&&rgb_ptr[3]>0.5)
-          ){
-          yy1 = yplttemp[j];
-          GET_VEC_DXYZ(u, dx, n);
-          GET_VEC_DXYZ(v, dy, n);
-          GET_VEC_DXYZ(w, dz, n);
-          ADJUST_VEC_DXYZ(dx,dy,dz);
-          glColor4fv(rgb_ptr);
-          glVertex3f(x1 + dx, yy1 + dy, constval + dz);
+        int in_solid, in_gas;
+
+        in_gas=1;
+        if(iblank != NULL&&iblank[IJK(i, j, plotz)] != GAS)in_gas=0;
+        in_solid = 1 - in_gas;
+
+        if(iblank!=NULL){
+          if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+          if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
         }
+        if(rgb_ptr[3]<0.5)continue;
+
+        yy1 = yplttemp[j];
+        GET_VEC_DXYZ(u, dx, n);
+        GET_VEC_DXYZ(v, dy, n);
+        GET_VEC_DXYZ(w, dz, n);
+        ADJUST_VEC_DXYZ(dx,dy,dz);
+        glColor4fv(rgb_ptr);
+        glVertex3f(x1 + dx, yy1 + dy, constval + dz);
       }
     }
     glEnd();
