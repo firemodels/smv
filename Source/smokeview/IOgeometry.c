@@ -3936,15 +3936,19 @@ void DrawGeomVData(vslicedata *vd){
 void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   int i;
   unsigned char *ivals;
-  int is_ccell = 0;
+  int is_ccell = 0, cell_center;
+  float *vals;
 
   if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
   if(geom_type==GEOM_STATIC){
     ivals = patchi->geom_ival_static;
+    vals  = patchi->geom_val_static;
   }
   else{
     ivals = patchi->geom_ival_dynamic;
+    vals  = patchi->geom_val_dynamic;
   }
+  cell_center = sd->cell_center;
 
   // draw surfaces
 
@@ -4407,6 +4411,116 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
         glVertex3fv(xyzptr[0]);
         glVertex3fv(xyzptr[1]);
         glVertex3fv(xyzptr[2]);
+      }
+      glEnd();
+      glPopMatrix();
+    }
+  }
+
+  // show values
+
+  if(
+    cell_center_text==1&&patchi->patch_filetype==PATCH_GEOMETRY_SLICE&&(
+    show_slice_points[IN_CUTCELL_GLUI]==1||
+    show_slice_points[IN_SOLID_GLUI]==1||
+    show_slice_points[IN_GAS_GLUI]==1)
+    ){
+
+    for(i = 0; i<1; i++){
+      geomdata *geomi;
+      geomlistdata *geomlisti;
+      int ntris, nverts;
+      int j;
+      float *color;
+      int nvals;
+
+      geomi = patchi->geominfo;
+      if(geomi==NULL||geomi->display==0||geomi->loaded==0)continue;
+      if(geom_type==GEOM_STATIC){
+        geomlisti = geomi->geomlistinfo-1;
+      }
+      else{
+        geomlisti = geomi->geomlistinfo+geomi->itime;
+      }
+
+      if(cell_center==0&&patchi->geom_vert2tri==0){
+        patchi->geom_vert2tri = 1;
+        Tri2Verts(geomlisti->triangles, geomlisti->ntriangles, geomlisti->verts, geomlisti->nverts);
+      }
+      ntris  = geomlisti->ntriangles;
+      nverts = geomlisti->nverts;
+      if(ntris==0||nverts==0||patchi->patch_filetype!=PATCH_GEOMETRY_SLICE)continue;
+      nvals = ntris;
+      if(is_ccell==0)nvals = nverts;
+
+      glPushMatrix();
+      glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+      glTranslatef(-xbar0, -ybar0, -zbar0);
+      for(j = 0; j<nvals; j++){
+        float *xyzptr[3];
+        tridata *trianglei;
+        vertdata *verti;
+        int draw_foreground;
+
+        draw_foreground = 0;
+
+        int insolid;
+
+        insolid = -1;
+        if(cell_center==1){
+          trianglei = geomlisti->triangles+j;
+          insolid = trianglei->insolid&3;
+        }
+        else{
+          verti = geomlisti->verts+j;
+          if(verti->triangle1!=NULL)insolid = verti->triangle1->insolid&3;
+        }
+        if(insolid>=0){
+          if(insolid==IN_CUTCELL&&show_slice_points[IN_CUTCELL_GLUI]==0)continue;
+          if(insolid==IN_SOLID&&show_slice_points[IN_SOLID_GLUI]==0)continue;
+          if(insolid==IN_GAS&&show_slice_points[IN_GAS_GLUI]==0)continue;
+        }
+        if(show_slice_shaded[IN_CUTCELL_GLUI]==1||
+           show_slice_shaded[IN_SOLID_GLUI]==1||
+           show_slice_shaded[IN_GAS_GLUI]==1){
+          draw_foreground = 1;
+        }
+        else{
+          draw_foreground = 0;
+        }
+        if(draw_foreground==1){
+          glColor4fv(foregroundcolor);
+        }
+        else{
+          int color_index;
+
+          color_index = ivals[j];
+          color = rgb_patch+4*color_index;
+          glColor3fv(color);
+        }
+
+        float xmid[3], *xyz1, *xyz2, *xyz3;
+        float val;
+
+        if(cell_center==1){
+          val = vals[j];
+          xyz1 = trianglei->verts[0]->xyz;
+          xyz2 = trianglei->verts[1]->xyz;
+          xyz3 = trianglei->verts[2]->xyz;
+          xmid[0] = (xyz1[0]+xyz2[0]+xyz3[0])/3.0;
+          xmid[1] = (xyz1[1]+xyz2[1]+xyz3[1])/3.0;
+          xmid[2] = (xyz1[2]+xyz2[2]+xyz3[2])/3.0;
+          Output3Val(xmid[0], xmid[1], xmid[2], val);
+        }
+        else{
+          float val1;
+          int ival1;
+
+          ival1 = verti - geomlisti->verts;
+          xyz1  = verti->xyz;
+          val1  = vals[ival1];
+          Output3Val(xyz1[0], xyz1[1], xyz1[2], val1);
+        }
       }
       glEnd();
       glPopMatrix();
