@@ -2837,6 +2837,7 @@ GLUI_Checkbox *CHECKBOX_show_slice_shaded = NULL;
 GLUI_Checkbox *CHECKBOX_show_vector_slice = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_outlines = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_points = NULL;
+GLUI_Checkbox *CHECKBOX_show_slice_values = NULL;
 
 GLUI_Checkbox *CHECKBOX_show_iso_shaded=NULL;
 GLUI_Checkbox *CHECKBOX_show_iso_outline=NULL;
@@ -3706,6 +3707,7 @@ extern "C" void ImmersedBoundCB(int var){
     glui_show_slice_shaded   = show_slice_shaded[slice_celltype];
     glui_show_slice_outlines = show_slice_outlines[slice_celltype];
     glui_show_slice_points   = show_slice_points[slice_celltype];
+    glui_show_slice_values   = show_slice_values[slice_celltype];
     for(i=0;i<3;i++){
       switch(slice_edgetypes[i]){
         case OUTLINE_POLYGON:
@@ -3722,6 +3724,7 @@ extern "C" void ImmersedBoundCB(int var){
     if(CHECKBOX_show_slice_shaded!=NULL)CHECKBOX_show_slice_shaded->set_int_val(glui_show_slice_shaded);
     if(CHECKBOX_show_slice_outlines!=NULL)CHECKBOX_show_slice_outlines->set_int_val(glui_show_slice_outlines);
     if(CHECKBOX_show_slice_points!=NULL)CHECKBOX_show_slice_points->set_int_val(glui_show_slice_points);
+    if(CHECKBOX_show_slice_values!=NULL)CHECKBOX_show_slice_values->set_int_val(glui_show_slice_values);
 
     break;
   case IMMERSED_SET_DRAWTYPE:
@@ -3736,6 +3739,7 @@ extern "C" void ImmersedBoundCB(int var){
     show_slice_shaded[slice_celltype]   = glui_show_slice_shaded;
     show_slice_outlines[slice_celltype] = glui_show_slice_outlines;
     show_slice_points[slice_celltype]   = glui_show_slice_points;
+    show_slice_values[slice_celltype] = glui_show_slice_values;
     if(RADIO_slice_edgetype!=NULL)RADIO_slice_edgetype->set_int_val(glui_slice_edgetype);
     break;
   case IMMERSED_SWITCH_EDGETYPE:
@@ -4804,10 +4808,13 @@ extern "C" void GluiBoundsSetup(int main_window){
     CHECKBOX_show_slice_shaded = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "shaded",  &glui_show_slice_shaded,   IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
     CHECKBOX_show_slice_outlines = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "outline", &glui_show_slice_outlines, IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
     CHECKBOX_show_slice_points = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "points",  &glui_show_slice_points,   IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
-    CHECKBOX_show_vector_slice = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas, "vectors",   &glui_show_vector_slice,   IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+    CHECKBOX_show_slice_values = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "values",  &glui_show_slice_values,   IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
+    CHECKBOX_show_vector_slice = glui_bounds->add_checkbox_to_panel(PANEL_immersed_drawas,   "vectors", &glui_show_vector_slice,   IMMERSED_SET_DRAWTYPE, ImmersedBoundCB);
 
     ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
     ImmersedBoundCB(IMMERSED_SWITCH_EDGETYPE);
+
+    glui_bounds->add_checkbox_to_panel(PANEL_immersed, _("show values"), &cell_center_text);
 
     PANEL_showslice = glui_bounds->add_panel_to_panel(PANEL_immersed, "show vectors and", true);
     CHECKBOX_show_node_slices_and_vectors = glui_bounds->add_checkbox_to_panel(PANEL_showslice, _("node centered slices"), &show_node_slices_and_vectors);

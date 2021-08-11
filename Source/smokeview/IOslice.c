@@ -5301,6 +5301,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
       int k;
       float y3;
 
+
       yy1 = yplt[j];
       y3 = yplt[j + 1];
       // val(i,j,k) = di*nj*nk + dj*nk + dk
@@ -7140,6 +7141,9 @@ void DrawSliceFrame(){
           DrawGeomData(DRAW_TRANSPARENT, sd, sd->patchgeom, GEOM_STATIC);
           DrawGeomData(DRAW_TRANSPARENT, sd, sd->patchgeom, GEOM_DYNAMIC);
         }
+        if(cell_center_text==1){
+          DrawGeomValues(DRAW_TRANSPARENT, sd, sd->patchgeom, GEOM_STATIC);
+        }
         break;
       default:
         ASSERT(FFALSE);
@@ -7175,6 +7179,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
   meshdata *meshi;
   float *xplttemp, *yplttemp, *zplttemp;
   int plotx, ploty, plotz;
+  char *iblank_cell;
+  int ibar, jbar;
 
   sd = sliceinfo + vd->ival;
   meshi = meshinfo + sd->blocknumber;
@@ -7191,6 +7197,9 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     ploty = sd->js1;
     plotz = sd->ks1;
   }
+  ibar = meshi->ibar;
+  jbar = meshi->jbar;
+  iblank_cell = meshi->c_iblank_cell;
 
   vel_max = max_velocity;
   if(vel_max<= 0.0)vel_max = 1.0;
@@ -7208,6 +7217,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     else{
       xhalf = xplttemp[plotx];
     }
+    int plotxm1;
+    plotxm1 = MAX(plotx-1, 0);
 
     constval = xhalf + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
     glLineWidth(vectorlinewidth);
@@ -7221,8 +7232,18 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
       yy1 = yplttemp[j];
       if(j != maxj)yhalf = (yplttemp[j] + yplttemp[j + 1]) / 2.0;
-      for(k = sd->ks1; k <= sd->ks2; k++){
+      for(k = sd->ks1; k < sd->ks2; k++){
         float zhalf, z1;
+        int in_solid, in_gas;
+
+        in_gas=1;
+        if(iblank_cell != NULL&&iblank_cell[IJKCELL(plotxm1, j, k)] != GAS)in_gas=0;
+        in_solid = 1 - in_gas;
+
+        if(iblank_cell!=NULL){
+          if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+          if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
+        }
 
         z1 = zplttemp[k];
         if(k + 1 != sd->nslicek)zhalf = (zplttemp[k] + zplttemp[k + 1]) / 2.0;
@@ -7264,8 +7285,19 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
       yy1 = yplttemp[j];
       if(j != maxj)yhalf = (yplttemp[j] + yplttemp[j + 1]) / 2.0;
-      for(k = sd->ks1; k <= sd->ks2; k++){
+      for(k = sd->ks1; k < sd->ks2; k++){
         float zhalf, z1;
+
+        int in_solid, in_gas;
+
+        in_gas=1;
+        if(iblank_cell != NULL&&iblank_cell[IJKCELL(plotxm1, j, k)] != GAS)in_gas=0;
+        in_solid = 1 - in_gas;
+
+        if(iblank_cell!=NULL){
+          if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+          if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
+        }
 
         z1 = zplttemp[k];
         if(k + 1 != sd->nslicek)zhalf = (zplttemp[k] + zplttemp[k + 1]) / 2.0;
@@ -7300,8 +7332,18 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 
         yy1 = yplttemp[j];
         if(j != maxj)yhalf = (yplttemp[j] + yplttemp[j + 1]) / 2.0;
-        for(k = sd->ks1; k <= sd->ks2; k++){
+        for(k = sd->ks1; k < sd->ks2; k++){
           float zhalf, z1;
+          int in_solid, in_gas;
+
+          in_gas=1;
+          if(iblank_cell != NULL&&iblank_cell[IJKCELL(plotxm1, j, k)] != GAS)in_gas=0;
+          in_solid = 1 - in_gas;
+
+          if(iblank_cell!=NULL){
+            if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+            if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
+          }
 
           z1 = zplttemp[k];
           if(k + 1 != sd->nslicek)zhalf = (zplttemp[k] + zplttemp[k + 1]) / 2.0;
@@ -7354,8 +7396,18 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
 
-      for(k = sd->ks1; k <= sd->ks2; k++){
+      for(k = sd->ks1; k < sd->ks2; k++){
         float zhalf, z1;
+        int in_solid, in_gas;
+
+        in_gas=1;
+        if(iblank_cell != NULL&&iblank_cell[IJKCELL(i, ploty-1, k)] != GAS)in_gas=0;
+        in_solid = 1 - in_gas;
+
+        if(iblank_cell!=NULL){
+          if(show_slice_shaded[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+          if(show_slice_shaded[IN_GAS_GLUI]==0   && in_gas==1)continue;
+        }
 
         z1 = zplttemp[k];
         if(k + 1 != sd->nslicek)zhalf = (zplttemp[k] + zplttemp[k + 1]) / 2.0;
@@ -7397,8 +7449,18 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       x1 = xplttemp[i];
       if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
 
-      for(k = sd->ks1; k <= sd->ks2; k++){
+      for(k = sd->ks1; k < sd->ks2; k++){
         float zhalf, z1;
+        int in_solid, in_gas;
+
+        in_gas=1;
+        if(iblank_cell != NULL&&iblank_cell[IJKCELL(i, ploty-1, k)] != GAS)in_gas=0;
+        in_solid = 1 - in_gas;
+
+        if(iblank_cell!=NULL){
+          if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+          if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
+        }
 
         z1 = zplttemp[k];
         if(k + 1 != sd->nslicek)zhalf = (zplttemp[k] + zplttemp[k + 1]) / 2.0;
@@ -7437,8 +7499,18 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         x1 = xplttemp[i];
         if(i + 1 != sd->nslicei)xhalf = (xplttemp[i] + xplttemp[i + 1]) / 2.0;
 
-        for(k = sd->ks1; k <= sd->ks2 + 1; k++){
+        for(k = sd->ks1; k < sd->ks2 + 1; k++){
           float zhalf, z1;
+          int in_solid, in_gas;
+
+          in_gas=1;
+          if(iblank_cell != NULL&&iblank_cell[IJKCELL(i, ploty-1, k)] != GAS)in_gas=0;
+          in_solid = 1 - in_gas;
+
+          if(iblank_cell!=NULL){
+            if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+            if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
+          }
 
           z1 = zplttemp[k];
           if(k + 1 != sd->nslicek)zhalf = (zplttemp[k] + zplttemp[k + 1]) / 2.0;
@@ -7493,6 +7565,16 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       for(j = sd->js1; j <= sd->js2; j++){
         float yhalf;
         float yy1;
+        int in_solid, in_gas;
+
+        in_gas=1;
+        if(iblank_cell != NULL&&iblank_cell[IJKCELL(i, j, plotz-1)] != GAS)in_gas=0;
+        in_solid = 1 - in_gas;
+
+        if(iblank_cell!=NULL){
+          if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+          if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
+        }
 
         yy1 = yplttemp[j];
         if(j + 1 != sd->nslicej)yhalf = (yplttemp[j] + yplttemp[j + 1]) / 2.0;
@@ -7538,6 +7620,16 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       for(j = sd->js1; j <= sd->js2; j++){
         float yhalf;
         float yy1;
+        int in_solid, in_gas;
+
+        in_gas=1;
+        if(iblank_cell != NULL&&iblank_cell[IJKCELL(i, j, plotz-1)] != GAS)in_gas=0;
+        in_solid = 1 - in_gas;
+
+        if(iblank_cell!=NULL){
+          if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+          if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
+        }
 
         yy1 = yplttemp[j];
         if(j + 1 != sd->nslicej)yhalf = (yplttemp[j] + yplttemp[j + 1]) / 2.0;
@@ -7579,6 +7671,16 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
         for(j = sd->js1; j <= sd->js2 + 1; j++){
           float yhalf;
           float yy1;
+          int in_solid, in_gas;
+
+          in_gas=1;
+          if(iblank_cell != NULL&&iblank_cell[IJKCELL(i, j, plotz-1)] != GAS)in_gas=0;
+          in_solid = 1 - in_gas;
+
+          if(iblank_cell!=NULL){
+            if(show_vector_slice[IN_SOLID_GLUI]==0 && in_solid==1)continue;
+            if(show_vector_slice[IN_GAS_GLUI]==0   && in_gas==1)continue;
+          }
 
           yy1 = yplttemp[j];
           if(j + 1 != sd->nslicej)yhalf = (yplttemp[j] + yplttemp[j + 1]) / 2.0;

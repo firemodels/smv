@@ -741,10 +741,12 @@ SVEXTERN int SVDECL(glui_show_vector_slice, 1);
 SVEXTERN int SVDECL(glui_show_slice_shaded,1);
 SVEXTERN int SVDECL(glui_show_slice_outlines,0);
 SVEXTERN int SVDECL(glui_show_slice_points,0);
+SVEXTERN int SVDECL(glui_show_slice_values, 0);
 
 SVEXTERN int show_slice_shaded[MAX_CELL_TYPES];
 SVEXTERN int show_slice_outlines[MAX_CELL_TYPES];
 SVEXTERN int show_slice_points[MAX_CELL_TYPES];
+SVEXTERN int show_slice_values[MAX_CELL_TYPES];
 
 SVEXTERN int SVDECL(show_boundary_shaded, 1);
 SVEXTERN int SVDECL(show_boundary_outline, 0);
