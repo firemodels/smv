@@ -13,24 +13,24 @@ module sha1Module
       integer :: len, err
       integer(int8), dimension(:), allocatable :: bytes
       integer(int64) :: prog_size
-      
+
       hash = "unknown"
-      
+
       call get_command_argument (0, prog_path, len, err)
       if(err/=0)return
 
       inquire(file=prog_path,size=prog_size,iostat=err)
       if(err/=0)return
-      
+
       allocate(prog_contents(prog_size),stat=err)
       if(err/=0)return
-      
+
       open(LU,form='binary',file=prog_path,action='read',iostat=err)
       if(err/=0)then
          deallocate(prog_contents)
          return
       endif
-      
+
       read(LU,iostat=err)prog_contents
       if(err/=0)then
          deallocate(prog_contents)
@@ -43,10 +43,10 @@ module sha1Module
          deallocate(prog_contents)
          return
       endif
-      
+
       bytes(:prog_size) = transfer(prog_contents, bytes(:prog_size))
       hash = SHA1Hash(bytes, prog_size)
-      
+
       deallocate(bytes)
       deallocate(prog_contents)
     end function SHA1prog
