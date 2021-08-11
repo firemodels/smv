@@ -4477,7 +4477,6 @@ void DrawGeomValues(int flag, slicedata *sd, patchdata *patchi, int geom_type){
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
       for(j = 0; j<nvals; j++){
-        float *xyzptr[3];
         tridata *trianglei;
         vertdata *verti;
         int draw_foreground;
