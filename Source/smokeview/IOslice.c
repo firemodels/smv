@@ -7141,6 +7141,9 @@ void DrawSliceFrame(){
           DrawGeomData(DRAW_TRANSPARENT, sd, sd->patchgeom, GEOM_STATIC);
           DrawGeomData(DRAW_TRANSPARENT, sd, sd->patchgeom, GEOM_DYNAMIC);
         }
+        if(cell_center_text==1){
+          DrawGeomValues(DRAW_TRANSPARENT, sd, sd->patchgeom, GEOM_STATIC);
+        }
         break;
       default:
         ASSERT(FFALSE);
