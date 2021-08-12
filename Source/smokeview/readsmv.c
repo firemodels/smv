@@ -12332,7 +12332,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "CELLCENTERTEXT") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i ", &cell_center_text);
+      sscanf(buffer, "%i ", &show_slice_values_active);
       continue;
     }
     if(Match(buffer, "SHOWGRIDLOC") == 1){
@@ -15067,7 +15067,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout,"\n *** MISC ***\n\n");
 
   fprintf(fileout, "CELLCENTERTEXT\n");
-  fprintf(fileout, " %i\n", cell_center_text);
+  fprintf(fileout, " %i\n", show_slice_values_active);
   if(fds_filein != NULL&&strlen(fds_filein) > 0){
     fprintf(fileout, "INPUT_FILE\n");
     fprintf(fileout, " %s\n", fds_filein);

@@ -2633,7 +2633,7 @@ void Keyboard(unsigned char key, int flag){
       SnapScene();
       break;
     case '@':
-      cell_center_text = 1 - cell_center_text;
+      show_slice_values_active = 1 - show_slice_values_active;
       break;
     case '.':
       lock_mouse_aperture = 1 - lock_mouse_aperture;

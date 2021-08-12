@@ -1392,7 +1392,7 @@ SVEXTERN float plot3dpointsize, plot3dlinewidth;
 SVEXTERN int SVDECL(scaled_font3d_thickness,1);
 SVEXTERN int SVDECL(scaled_font2d_thickness,1);
 SVEXTERN float SVDECL(vectorlinewidth,1.0);
-SVEXTERN int SVDECL(cell_center_text,0);
+SVEXTERN int SVDECL(show_slice_values_active,0);
 SVEXTERN float SVDECL(gridlinewidth,2.0),SVDECL(ticklinewidth,2.0);
 SVEXTERN int SVDECL(zone_highlight,0),SVDECL(zone_highlight_room,0);
 SVEXTERN int SVDECL(script_step,0), SVDECL(script_step_now,0);
