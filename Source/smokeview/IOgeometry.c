@@ -3936,20 +3936,15 @@ void DrawGeomVData(vslicedata *vd){
 void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   int i;
   unsigned char *ivals;
-  int is_ccell = 0, cell_center;
-  float *vals;
+  int is_ccell = 0;
 
   if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
   if(geom_type==GEOM_STATIC){
     ivals = patchi->geom_ival_static;
-    vals  = patchi->geom_val_static;
   }
   else{
     ivals = patchi->geom_ival_dynamic;
-    vals  = patchi->geom_val_dynamic;
   }
-  cell_center = sd->cell_center;
-
   // draw surfaces
 
   if(

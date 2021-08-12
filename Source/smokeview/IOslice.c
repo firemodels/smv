@@ -5488,7 +5488,6 @@ void DrawVolSliceValues(slicedata *sd){
   int i, j, k, n;
   int i11;
   float constval, x1, yy1, z1;
-  float dx, dy, dz;
   float vel_max;
   meshdata *meshi;
   float *xplttemp, *yplttemp, *zplttemp;
@@ -5669,10 +5668,6 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
 
   meshdata *meshi;
 
-  float *rgb_ptr;
-
-  rgb_ptr = rgb_slice;
-
   meshi = meshinfo + sd->blocknumber;
 
   xplt = meshi->xplt;
@@ -5846,6 +5841,10 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
     constval += SCALE2SMV(sliceoffset_all);
 
     if(show_slice_values_active == 1){
+      maxi = sd->is1 + sd->nslicei - 1;
+      if(sd->is1 + 1>maxi){
+        maxi = sd->is1 + 1;
+      }
       for(i = sd->is1; i<maxi; i++){
         float x1, x3;
         int j;
