@@ -36,6 +36,7 @@ SVEXTERN float geom_bounding_box[6];
 SVEXTERN int show_vector_slice[MAX_CELL_TYPES];
 #endif
 
+SVEXTERN int SVDECL(sliceval_ndigits, 4);
 SVEXTERN int SVDECL(rotate_center, 0);
 SVEXTERN int SVDECL(have_geom_bb, 0);
 SVEXTERN int SVDECL(show_geom_boundingbox, SHOW_BOUNDING_BOX_NEVER);
