@@ -3727,6 +3727,19 @@ extern "C" void ImmersedBoundCB(int var){
     if(CHECKBOX_show_slice_values!=NULL)CHECKBOX_show_slice_values->set_int_val(glui_show_slice_values);
 
     break;
+  case SHOW_VALUES:
+    if(show_slice_values_active==1){
+      show_slice_values[0] = 1;
+      show_slice_values[1] = 1;
+      show_slice_values[2] = 1;
+    }
+    else{
+      show_slice_values[0] = 0;
+      show_slice_values[1] = 0;
+      show_slice_values[2] = 0;
+    }
+    ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
+    break;
   case IMMERSED_SET_DRAWTYPE:
     if(glui_show_slice_outlines == 0){
       glui_slice_edgetype = OUTLINE_HIDDEN;
@@ -4814,7 +4827,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
     ImmersedBoundCB(IMMERSED_SWITCH_EDGETYPE);
 
-    glui_bounds->add_checkbox_to_panel(PANEL_immersed, _("show values"), &show_slice_values_active);
+    glui_bounds->add_checkbox_to_panel(PANEL_immersed, _("show values"), &show_slice_values_active, SHOW_VALUES, ImmersedBoundCB);
 
     PANEL_showslice = glui_bounds->add_panel_to_panel(PANEL_immersed, "show vectors and", true);
     CHECKBOX_show_node_slices_and_vectors = glui_bounds->add_checkbox_to_panel(PANEL_showslice, _("node centered slices"), &show_node_slices_and_vectors);

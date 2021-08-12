@@ -5719,7 +5719,7 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
     }
     constval += SCALE2SMV(sliceoffset_all);
 
-    if(show_slice_values_active == 1){
+    if(show_slice_values[0]==1||show_slice_values[1]==1||show_slice_values[2]==1){
       maxj = sd->js2;
       if(sd->js1 + 1>maxj){
         maxj = sd->js1 + 1;
@@ -5779,7 +5779,7 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
     }
     constval += SCALE2SMV(sliceoffset_all);
 
-    if(show_slice_values_active == 1){
+    if(show_slice_values[0]==1||show_slice_values[1]==1||show_slice_values[2]==1){
       maxi = sd->is1 + sd->nslicei - 1;
       if(sd->is1 + 1>maxi){
         maxi = sd->is1 + 1;
@@ -5840,7 +5840,7 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
     }
     constval += SCALE2SMV(sliceoffset_all);
 
-    if(show_slice_values_active == 1){
+    if(show_slice_values[0]==1||show_slice_values[1]==1||show_slice_values[2]==1){
       maxi = sd->is1 + sd->nslicei - 1;
       if(sd->is1 + 1>maxi){
         maxi = sd->is1 + 1;
@@ -7447,7 +7447,7 @@ void DrawSliceFrame(){
           DrawGeomData(DRAW_TRANSPARENT, sd, sd->patchgeom, GEOM_STATIC);
           DrawGeomData(DRAW_TRANSPARENT, sd, sd->patchgeom, GEOM_DYNAMIC);
         }
-        if(show_slice_values_active==1){
+        if(show_slice_values[0]==1||show_slice_values[1]==1||show_slice_values[2]==1){
           DrawGeomValues(DRAW_TRANSPARENT, sd, sd->patchgeom, GEOM_STATIC);
         }
         break;

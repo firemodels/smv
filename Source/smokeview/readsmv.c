@@ -12335,6 +12335,11 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i ", &show_slice_values_active);
       continue;
     }
+    if(Match(buffer, "SHOWSLICEVALS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i ", &show_slice_values_active);
+      continue;
+    }
     if(Match(buffer, "SHOWGRIDLOC") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i ", &visgridloc);
@@ -15066,7 +15071,7 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout,"\n *** MISC ***\n\n");
 
-  fprintf(fileout, "CELLCENTERTEXT\n");
+  fprintf(fileout, "SHOWSLICEVALS\n");
   fprintf(fileout, " %i\n", show_slice_values_active);
   if(fds_filein != NULL&&strlen(fds_filein) > 0){
     fprintf(fileout, "INPUT_FILE\n");

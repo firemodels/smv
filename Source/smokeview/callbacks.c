@@ -2634,6 +2634,18 @@ void Keyboard(unsigned char key, int flag){
       break;
     case '@':
       show_slice_values_active = 1 - show_slice_values_active;
+      if(show_slice_values_active==1){
+        show_slice_values[0]=1;
+        show_slice_values[1]=1;
+        show_slice_values[2]=1;
+      }
+      else{
+        show_slice_values[0]=0;
+        show_slice_values[1]=0;
+        show_slice_values[2]=0;
+      }
+#define IMMERSED_SWITCH_CELLTYPE 0
+      ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
       break;
     case '.':
       lock_mouse_aperture = 1 - lock_mouse_aperture;
