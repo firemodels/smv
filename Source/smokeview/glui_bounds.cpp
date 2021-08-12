@@ -4827,7 +4827,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
     ImmersedBoundCB(IMMERSED_SWITCH_EDGETYPE);
 
-    glui_bounds->add_checkbox_to_panel(PANEL_immersed, _("show values"), &show_slice_values_active, SHOW_VALUES, ImmersedBoundCB);
+    glui_bounds->add_checkbox_to_panel(PANEL_immersed, _("show values(all regions)"), &show_slice_values_active, SHOW_VALUES, ImmersedBoundCB);
 
     PANEL_showslice = glui_bounds->add_panel_to_panel(PANEL_immersed, "show vectors and", true);
     CHECKBOX_show_node_slices_and_vectors = glui_bounds->add_checkbox_to_panel(PANEL_showslice, _("node centered slices"), &show_node_slices_and_vectors);
