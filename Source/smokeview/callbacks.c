@@ -2633,8 +2633,8 @@ void Keyboard(unsigned char key, int flag){
       SnapScene();
       break;
     case '@':
-      show_slice_values_active = 1 - show_slice_values_active;
-      if(show_slice_values_active==1){
+      show_slice_values_all_regions = 1 - show_slice_values_all_regions;
+      if(show_slice_values_all_regions==1){
         show_slice_values[0]=1;
         show_slice_values[1]=1;
         show_slice_values[2]=1;

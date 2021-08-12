@@ -3727,17 +3727,18 @@ extern "C" void ImmersedBoundCB(int var){
     if(CHECKBOX_show_slice_values!=NULL)CHECKBOX_show_slice_values->set_int_val(glui_show_slice_values);
 
     break;
-  case SHOW_VALUES:
-    if(show_slice_values_active==1){
-      show_slice_values[0] = 1;
-      show_slice_values[1] = 1;
-      show_slice_values[2] = 1;
-    }
-    else{
-      show_slice_values[0] = 0;
-      show_slice_values[1] = 0;
-      show_slice_values[2] = 0;
-    }
+  case SHOW_ALL_SLICE_VALUES:
+    show_slice_values[0] = 1;
+    show_slice_values[1] = 1;
+    show_slice_values[2] = 1;
+    show_slice_values_all_regions = 1;
+    ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
+    break;
+  case HIDE_ALL_SLICE_VALUES:
+    show_slice_values[0] = 0;
+    show_slice_values[1] = 0;
+    show_slice_values[2] = 0;
+    show_slice_values_all_regions = 0;
     ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
     break;
   case IMMERSED_SET_DRAWTYPE:
@@ -4827,7 +4828,8 @@ extern "C" void GluiBoundsSetup(int main_window){
     ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
     ImmersedBoundCB(IMMERSED_SWITCH_EDGETYPE);
 
-    glui_bounds->add_checkbox_to_panel(PANEL_immersed, _("show values(all regions)"), &show_slice_values_active, SHOW_VALUES, ImmersedBoundCB);
+    glui_bounds->add_button_to_panel(PANEL_immersed, _("show values(all regions)"), SHOW_ALL_SLICE_VALUES, ImmersedBoundCB);
+    glui_bounds->add_button_to_panel(PANEL_immersed, _("hide values(all regions)"), HIDE_ALL_SLICE_VALUES, ImmersedBoundCB);
 
     PANEL_showslice = glui_bounds->add_panel_to_panel(PANEL_immersed, "show vectors and", true);
     CHECKBOX_show_node_slices_and_vectors = glui_bounds->add_checkbox_to_panel(PANEL_showslice, _("node centered slices"), &show_node_slices_and_vectors);
