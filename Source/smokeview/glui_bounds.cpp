@@ -4832,7 +4832,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_button_to_panel(PANEL_immersed, _("show values(all regions)"), SHOW_ALL_SLICE_VALUES, ImmersedBoundCB);
     glui_bounds->add_button_to_panel(PANEL_immersed, _("hide values(all regions)"), HIDE_ALL_SLICE_VALUES, ImmersedBoundCB);
     SPINNER_sliceval_ndigits = glui_bounds->add_spinner_to_panel(PANEL_immersed, _("digits"), GLUI_SPINNER_INT, &sliceval_ndigits);
-    SPINNER_sliceval_ndigits->set_int_limits(1, 10);
+    SPINNER_sliceval_ndigits->set_int_limits(0, 10);
 
     PANEL_showslice = glui_bounds->add_panel_to_panel(PANEL_immersed, "show vectors and", true);
     CHECKBOX_show_node_slices_and_vectors = glui_bounds->add_checkbox_to_panel(PANEL_showslice, _("node centered slices"), &show_node_slices_and_vectors);

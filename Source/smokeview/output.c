@@ -331,7 +331,12 @@ void OutputSText2(float x, float y, float z, char *string){
 void Output3Val(float x, float y, float z, float val){
   char string[256];
 
-  Float2String(string, val, sliceval_ndigits, 0);
+  if(sliceval_ndigits>0){
+    Float2String(string, val, sliceval_ndigits, 0);
+  }
+  else{
+    sprintf(string, "%f", val);
+  }
   TrimZeros(string);
   Output3Text(foregroundcolor,x,y,z,string);
 }
