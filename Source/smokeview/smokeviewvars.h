@@ -29,11 +29,9 @@ SVEXTERN float geom_bounding_box[6] = {1000000000.0, -1000000000.0,
                                        1000000000.0, -1000000000.0,
                                        1000000000.0, -1000000000.0
                                       };
-SVEXTERN int show_vector_slice[MAX_CELL_TYPES]={1,1,1};
 #else
 SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
-SVEXTERN int show_vector_slice[MAX_CELL_TYPES];
 #endif
 
 SVEXTERN int SVDECL(sliceval_ndigits, 0);
@@ -744,10 +742,19 @@ SVEXTERN int SVDECL(glui_show_slice_outlines,0);
 SVEXTERN int SVDECL(glui_show_slice_points,0);
 SVEXTERN int SVDECL(glui_show_slice_values, 0);
 
+#ifdef INMAIN
+SVEXTERN int show_slice_shaded[MAX_CELL_TYPES]   = {1,0,1};
+SVEXTERN int show_slice_outlines[MAX_CELL_TYPES] = {0,0,0};
+SVEXTERN int show_slice_points[MAX_CELL_TYPES]   = {0,0,0};
+SVEXTERN int show_slice_values[MAX_CELL_TYPES]   = {0,0,0};
+SVEXTERN int show_vector_slice[MAX_CELL_TYPES]   = {1,0,1};
+#else
 SVEXTERN int show_slice_shaded[MAX_CELL_TYPES];
 SVEXTERN int show_slice_outlines[MAX_CELL_TYPES];
 SVEXTERN int show_slice_points[MAX_CELL_TYPES];
 SVEXTERN int show_slice_values[MAX_CELL_TYPES];
+SVEXTERN int show_vector_slice[MAX_CELL_TYPES];
+#endif
 
 SVEXTERN int SVDECL(show_boundary_shaded, 1);
 SVEXTERN int SVDECL(show_boundary_outline, 0);
