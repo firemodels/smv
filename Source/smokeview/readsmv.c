@@ -10736,6 +10736,10 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(boundary_edgetype);
       continue;
     }
+    if(Match(buffer, "SHOWSLICEVALS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i", show_slice_values, show_slice_values+1, show_slice_values+2);
+    }
     if(Match(buffer, "GEOMCELLPROPS")==1){
       int vector_slice[3] = {-1, -1, -1};
       float dummy;
@@ -14818,6 +14822,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", freeze_volsmoke, autofreeze_volsmoke);
   fprintf(fileout, "GEOMBOUNDARYPROPS\n");
   fprintf(fileout, " %i %i %i %f %f %i\n",show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize, boundary_edgetype);
+  fprintf(fileout, "SHOWSLICEVALS\n");
+  fprintf(fileout, " %i %i %i\n", show_slice_values[0], show_slice_values[1], show_slice_values[2]);
   fprintf(fileout, "GEOMCELLPROPS\n");
   fprintf(fileout, " %i\n",
     slice_celltype);
