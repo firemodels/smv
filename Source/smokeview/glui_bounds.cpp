@@ -4772,12 +4772,12 @@ extern "C" void GluiBoundsSetup(int main_window){
     BUTTON_update_line_contour=glui_bounds->add_button_to_panel(ROLLOUT_line_contour,_("Update contours"),UPDATE_LINE_CONTOUR_VALUE,SliceBoundCB);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_line_contour,_("Show contours"),&vis_slice_contours);
 
+    PANEL_slice_buttonsB = glui_bounds->add_panel_to_panel(ROLLOUT_slice, "", false);
     if(n_embedded_meshes>0){
       glui_bounds->add_column_to_panel(PANEL_slice_buttonsB, false);
       CHECKBOX_skip_subslice=glui_bounds->add_checkbox_to_panel(PANEL_slice_buttonsB,_("Skip coarse sub-slice"),&skip_slice_in_embedded_mesh);
     }
 
-    PANEL_slice_buttonsB = glui_bounds->add_panel_to_panel(ROLLOUT_slice, "", false);
     if(nslicedups>0){
       glui_bounds->add_column_to_panel(PANEL_slice_buttonsB, false);
       ROLLOUT_slicedups = glui_bounds->add_rollout_to_panel(PANEL_slice_buttonsB, _("Duplicates"), false, SLICE_DUP_ROLLOUT, SliceRolloutCB);
