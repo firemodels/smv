@@ -582,7 +582,7 @@ void DrawPlot3dTexture(meshdata *meshi){
   if(visiso==1){
     DrawStaticIso(currentsurfptr,p3dsurfacetype,p3dsurfacesmooth,2,0,plot3dlinewidth);
     if(surfincrement!=0)DrawStaticIso(currentsurf2ptr,p3dsurfacetype,p3dsurfacesmooth,2,0,plot3dlinewidth);
-    if(visGrid!=noGridnoProbe){
+    if(visGrid!=NOGRID_NOPROBE){
       if(use_transparency_data==1)TransparentOff();
       if(cullfaces==1)glEnable(GL_CULL_FACE);
       return;
@@ -1496,7 +1496,7 @@ void DrawGrid(const meshdata *meshi){
   // 2 grid, pointer
   // 3 no grid, pointer
 
-  if(visGrid==noGridProbe||visGrid==GridProbe){
+  if(visGrid==NOGRID_PROBE||visGrid==GRID_PROBE){
     if(plotx>=0&&ploty>=0&&plotz>=0){
       unsigned char pcolor[4];
 
@@ -1509,8 +1509,29 @@ void DrawGrid(const meshdata *meshi){
       glPopMatrix();
     }
   }
+  if(visGrid==NOGRID_PROBE2){
+    if(plotx>=0&&ploty>=0&&plotz>=0){
+      int ii1, ii2, jj1, jj2, kk1, kk2;
+
+      ii1 = iplotx_all;
+      if(ii1+1>nplotx_all-1)ii1 = nplotx_all-2;
+      ii2 = ii1+1;
+      jj1 = iploty_all;
+      if(jj1+1>nploty_all-1)jj1 = nploty_all-2;
+      jj2 = jj1+1;
+      kk1 = iplotz_all;
+      if(kk1+1>nplotz_all-1)kk1 = nplotz_all-2;
+      kk2 = kk1+1;
+
+      float origin[3] = {plotx_all[ii1], ploty_all[jj1], plotz_all[kk1]};
+      float dxyz[3] = {plotx_all[ii2]-plotx_all[ii1],
+                       ploty_all[jj2]-ploty_all[jj1],
+                       plotz_all[kk2]-plotz_all[kk1]};
+      DrawBox2(origin, dxyz, foregroundcolor, 1);
+    }
+  }
   if(visx_all==0&&visy_all==0&&visz_all==0)return;
-  if(visGrid==GridProbe||visGrid==GridnoProbe){
+  if(visGrid==GRID_PROBE||visGrid==GRID_NOPROBE){
     AntiAliasLine(ON);
     glLineWidth(gridlinewidth);
     if(meshi->meshrgb_ptr!=NULL){

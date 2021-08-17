@@ -320,19 +320,19 @@ void GetViewportInfo(void){
     ninfo_lines++;
     doit=1;
   }
-  if(((showplot3d==1||visGrid!=noGridnoProbe)&&visx_all==1)||visGrid==noGridProbe||visGrid==GridProbe){
+  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visx_all==1)||visGrid==NOGRID_PROBE||visGrid==GRID_PROBE){
     if(visgridloc==1){
       ninfo_lines++;
       doit=1;
     }
   }
-  if(((showplot3d==1||visGrid!=noGridnoProbe)&&visy_all==1)||visGrid==GridProbe||visGrid==noGridProbe){
+  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visy_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
     if(visgridloc==1){
       ninfo_lines++;
       doit=1;
     }
   }
-  if(((showplot3d==1||visGrid!=noGridnoProbe)&&visz_all==1)||visGrid==GridProbe||visGrid==noGridProbe){
+  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visz_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
     if(visgridloc==1){
       ninfo_lines++;
       doit=1;
@@ -882,13 +882,13 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  if((showplot3d==1||visGrid!=noGridnoProbe)&&(visx_all==1||visy_all||visz_all||visGrid==GridProbe||visGrid==noGridProbe)){
+  if((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&(visx_all==1||visy_all||visz_all||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE)){
     xyz[0]=DENORMALIZE_X(plotx_all[iplotx_all]);
     xyz[1]=DENORMALIZE_Y(ploty_all[iploty_all]);
     xyz[2]=DENORMALIZE_Z(plotz_all[iplotz_all]);
     mesh_xyz= GetMeshNoFail(xyz);
   }
-  if(((showplot3d==1||visGrid!=noGridnoProbe)&&visx_all==1)||visGrid==noGridProbe||visGrid==GridProbe){
+  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visx_all==1)||visGrid==NOGRID_PROBE||visGrid==GRID_PROBE){
     int iplotval;
     char buff_label[128], *buff_label_ptr;
 
@@ -904,7 +904,7 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
       info_lines++;
     }
   }
-  if(((showplot3d==1||visGrid!=noGridnoProbe)&&visy_all==1)||visGrid==GridProbe||visGrid==noGridProbe){
+  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visy_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
     int iplotval;
     char buff_label[128], *buff_label_ptr;
 
@@ -919,7 +919,7 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
       info_lines++;
     }
   }
-  if(((showplot3d==1||visGrid!=noGridnoProbe)&&visz_all==1)||visGrid==GridProbe||visGrid==noGridProbe){
+  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visz_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
     int iplotval;
     char buff_label[128], *buff_label_ptr;
 

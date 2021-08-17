@@ -449,10 +449,11 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define KEY_SHIFT 3
 #define KEY_NONE  2
 
-#define noGridnoProbe 0
-#define GridnoProbe   1
-#define GridProbe     2
-#define noGridProbe   3
+#define NOGRID_NOPROBE 0
+#define GRID_NOPROBE   1
+#define GRID_PROBE     2
+#define NOGRID_PROBE   3
+#define NOGRID_PROBE2  4
 
 #define FROM_SMOKEVIEW     0
 #define FROM_CALLBACK      1
