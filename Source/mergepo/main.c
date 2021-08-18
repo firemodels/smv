@@ -28,7 +28,7 @@ void Usage(char *prog, int option){
   }
 }
 
-     
+
 /* ------------------ main ------------------------ */
 
 int main(int argc, char **argv){

@@ -1749,7 +1749,7 @@ void DrawCuboid(float *origin, float verts[8][3], unsigned char *rgbcolor, int d
   if(origin!=NULL)glPopMatrix();
 }
 
-/* ----------------------- DrawBox ----------------------------- */
+/* ----------------------- DrawBox2 ----------------------------- */
 
 void DrawBox2(float *origin, float *dxyz, float *color, int draw_outline){
   if(origin!=NULL){
@@ -1806,6 +1806,7 @@ void DrawBox2(float *origin, float *dxyz, float *color, int draw_outline){
     glEnd();
   }
   else{
+    glLineWidth(4.0);
     glBegin(GL_LINES);
     if(color!=NULL)glColor3fv(color);
     glVertex3f(0.0, 0.0,     0.0);     glVertex3f(dxyz[0], 0.0,     0.0);

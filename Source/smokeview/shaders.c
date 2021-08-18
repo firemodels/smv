@@ -181,7 +181,7 @@ int SetZoneSmokeShaders(){
 
   glLinkProgram(p_zonesmoke);
   if(ShaderLinkStatus(p_zonesmoke)==GL_FALSE)return 0;
-  
+
   GPUzone_zoneinside = glGetUniformLocation(p_zonesmoke,"zoneinside");
   GPUzone_zonedir = glGetUniformLocation(p_zonesmoke,"zonedir");
   GPUzone_eyepos = glGetUniformLocation(p_zonesmoke,"eyepos");
@@ -626,7 +626,7 @@ int SetVolSmokeShaders(){
 
   glLinkProgram(p_volsmoke);
   if(ShaderLinkStatus(p_volsmoke)==GL_FALSE)return 0;
-  
+
   GPUvol_inside = glGetUniformLocation(p_volsmoke,"inside");
   GPUvol_eyepos = glGetUniformLocation(p_volsmoke,"eyepos");
   GPUvol_voltemp_offset = glGetUniformLocation(p_volsmoke, "voltemp_offset");

@@ -433,9 +433,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 
 #define MAX_CELL_TYPES 3
 
-#define IMMERSED_POLYGON  0
-#define IMMERSED_TRIANGLE 1
-#define IMMERSED_HIDDEN   2
+#define OUTLINE_POLYGON  0
+#define OUTLINE_TRIANGLE 1
+#define OUTLINE_HIDDEN   2
 
 #define EMBED_YES 0
 #define EMBED_NO  1
@@ -449,10 +449,11 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define KEY_SHIFT 3
 #define KEY_NONE  2
 
-#define noGridnoProbe 0
-#define GridnoProbe   1
-#define GridProbe     2
-#define noGridProbe   3
+#define NOGRID_NOPROBE 0
+#define GRID_NOPROBE   1
+#define GRID_PROBE     2
+#define NOGRID_PROBE   3
+#define NOGRID_PROBE2  4
 
 #define FROM_SMOKEVIEW     0
 #define FROM_CALLBACK      1

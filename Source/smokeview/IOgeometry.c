@@ -3784,8 +3784,10 @@ void DrawGeomVData(vslicedata *vd){
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
       if(auto_terrain==1)glTranslatef(0.0, 0.0, SCALE2FDS(0.01));
+
+      glLineWidth(vectorlinewidth);
       glBegin(GL_LINES);
-      for(j = 0; j<nvals; j++){
+      for(j = 0; j<nvals; j+=vectorskip){
         float *xyz1, *xyz2, *xyz3, xyz[3], *xyzptr;
         int color_index;
         float *color;
@@ -3865,6 +3867,65 @@ void DrawGeomVData(vslicedata *vd){
         glVertex3f(xyzptr[0]+du/2.0, xyzptr[1]+dv/2.0, xyzptr[2]+dw/2.0);
       }
       glEnd();
+
+      glPointSize(vectorpointsize);
+      glBegin(GL_POINTS);
+      for(j = 0; j<nvals; j+=vectorskip){
+        float *xyz1, *xyz2, *xyz3, xyz[3], *xyzptr;
+        int color_index;
+        float *color;
+        tridata *trianglei;
+        vertdata *verti;
+        int insolid;
+        float du, dv, dw;
+
+        insolid = -1;
+        if(cell_center==1){
+          trianglei = geomlisti->triangles+j;
+          insolid = trianglei->insolid&3;
+        }
+        else{
+          verti = geomlisti->verts+j;
+          if(verti->triangle1!=NULL)insolid = verti->triangle1->insolid&3;
+        }
+        if(insolid>=0){
+          if(insolid==IN_CUTCELL&&show_vector_slice[IN_CUTCELL_GLUI]==0)continue;
+          if(insolid==IN_SOLID  &&show_vector_slice[IN_SOLID_GLUI]==0)continue;
+          if(insolid==IN_GAS    &&show_vector_slice[IN_GAS_GLUI]==0)continue;
+        }
+
+        color = NULL;
+        if((cell_center==1&&show_cell_slices_and_vectors==1)||(cell_center==0&&show_node_slices_and_vectors==1)){
+          if(insolid==IN_CUTCELL   &&show_slice_shaded[IN_CUTCELL_GLUI]==1)color = foregroundcolor;
+          if(insolid==IN_SOLID_GLUI&&show_slice_shaded[IN_SOLID_GLUI]==1)color = foregroundcolor;
+          if(insolid==IN_GAS_GLUI  &&show_slice_shaded[IN_GAS_GLUI]==1)color = foregroundcolor;
+        }
+        if(color==NULL){
+          color_index = ivals[j];
+          color = rgb_patch+4*color_index;
+        }
+        if(cell_center==1){
+          xyz1 = trianglei->verts[0]->xyz;
+          xyz2 = trianglei->verts[1]->xyz;
+          xyz3 = trianglei->verts[2]->xyz;
+          xyz[0] = (xyz1[0]+xyz2[0]+xyz3[0])/3.0;
+          xyz[1] = (xyz1[1]+xyz2[1]+xyz3[1])/3.0;
+          xyz[2] = (xyz1[2]+xyz2[2]+xyz3[2])/3.0;
+          xyzptr = xyz;
+        }
+        else{
+          xyzptr = verti->xyz;
+        }
+
+        GET_VEC_GEOM_DXYZ(patchu, du, j);
+        GET_VEC_GEOM_DXYZ(patchv, dv, j);
+        GET_VEC_GEOM_DXYZ(patchw, dw, j);
+        ADJUST_VEC_DXYZ(du, dv, dw);
+
+        glColor3f(color[0], color[1], color[2]);
+        glVertex3f(xyzptr[0]+du/2.0, xyzptr[1]+dv/2.0, xyzptr[2]+dw/2.0);
+      }
+      glEnd();
       glPopMatrix();
     }
   }
@@ -3884,7 +3945,6 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   else{
     ivals = patchi->geom_ival_dynamic;
   }
-
   // draw surfaces
 
   if(
@@ -4142,7 +4202,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
         glLineWidth(geomboundary_linewidth);
       }
       else if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
-        glLineWidth(geomslice_linewidth);
+        glLineWidth(vectorlinewidth);
       }
       else{
         glLineWidth(geom_linewidth);
@@ -4165,7 +4225,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
             if(insolid == IN_SOLID   && show_slice_outlines[IN_SOLID_GLUI] == 0)continue;
             if(insolid == IN_GAS     && show_slice_outlines[IN_GAS_GLUI] == 0)continue;
 
-            if(insolid_glui!=-1&&slice_edgetypes[insolid_glui] == IMMERSED_POLYGON){
+            if(insolid_glui!=-1&&slice_edgetypes[insolid_glui] == OUTLINE_POLYGON){
               int insolid4, insolid8, insolid16;
 
               insolid4 = trianglei->insolid&4;
@@ -4191,7 +4251,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
 
             insolid = trianglei->insolid & 3;
             if(insolid>=0&&insolid<3)insolid_glui = insolid;
-            if(insolid_glui!=-1&&boundary_edgetype==IMMERSED_POLYGON){
+            if(insolid_glui!=-1&&boundary_edgetype==OUTLINE_POLYGON){
               int insolid4, insolid8, insolid16;
 
               insolid4 = trianglei->insolid&4;
@@ -4290,7 +4350,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
         glPointSize(geomboundary_pointsize);
       }
       else if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
-        glPointSize(geomslice_pointsize);
+        glPointSize(vectorpointsize);
       }
       else{
         glPointSize(geom_pointsize);
@@ -4348,6 +4408,134 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
         glVertex3fv(xyzptr[2]);
       }
       glEnd();
+      glPopMatrix();
+    }
+  }
+}
+
+  /* ------------------ DrawGeomValues ------------------------ */
+
+void DrawGeomValues(int flag, slicedata *sd, patchdata *patchi, int geom_type){
+  int i;
+  unsigned char *ivals;
+  int cell_center;
+  float *vals;
+
+  if(geom_type==GEOM_STATIC){
+    ivals = patchi->geom_ival_static;
+    vals = patchi->geom_val_static;
+  }
+  else{
+    ivals = patchi->geom_ival_dynamic;
+    vals = patchi->geom_val_dynamic;
+  }
+  cell_center = sd->cell_center;
+
+
+  // show values
+
+  if(
+    patchi->patch_filetype==PATCH_GEOMETRY_SLICE&&(
+    show_slice_values[IN_CUTCELL_GLUI]==1||
+    show_slice_values[IN_SOLID_GLUI]==1||
+    show_slice_values[IN_GAS_GLUI]==1)
+    ){
+
+    for(i = 0; i<1; i++){
+      geomdata *geomi;
+      geomlistdata *geomlisti;
+      int ntris, nverts;
+      int j;
+      float *color;
+      int nvals;
+
+      geomi = patchi->geominfo;
+      if(geomi==NULL||geomi->display==0||geomi->loaded==0)continue;
+      if(geom_type==GEOM_STATIC){
+        geomlisti = geomi->geomlistinfo-1;
+      }
+      else{
+        geomlisti = geomi->geomlistinfo+geomi->itime;
+      }
+
+      if(patchi->geom_vert2tri==0){
+        patchi->geom_vert2tri = 1;
+        Tri2Verts(geomlisti->triangles, geomlisti->ntriangles, geomlisti->verts, geomlisti->nverts);
+      }
+      ntris = geomlisti->ntriangles;
+      nverts = geomlisti->nverts;
+      if(ntris==0||nverts==0||patchi->patch_filetype!=PATCH_GEOMETRY_SLICE)continue;
+      nvals = ntris;
+      if(cell_center==0)nvals = nverts;
+
+      glPushMatrix();
+      glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+      glTranslatef(-xbar0, -ybar0, -zbar0);
+      for(j = 0; j<nvals; j++){
+        tridata *trianglei;
+        vertdata *verti;
+        int draw_foreground;
+
+        draw_foreground = 0;
+
+        int insolid;
+
+        insolid = -1;
+        if(cell_center==1){
+          trianglei = geomlisti->triangles+j;
+          insolid = trianglei->insolid&3;
+        }
+        else{
+          verti = geomlisti->verts+j;
+          if(verti->triangle1!=NULL)insolid = verti->triangle1->insolid&3;
+        }
+        if(insolid>=0){
+          if(insolid==IN_CUTCELL&&show_slice_values[IN_CUTCELL_GLUI]==0)continue;
+          if(insolid==IN_SOLID  &&show_slice_values[IN_SOLID_GLUI]==0)continue;
+          if(insolid==IN_GAS    &&show_slice_values[IN_GAS_GLUI]==0)continue;
+        }
+        if(show_slice_shaded[IN_CUTCELL_GLUI]==1||
+           show_slice_shaded[IN_SOLID_GLUI]==1||
+           show_slice_shaded[IN_GAS_GLUI]==1){
+          draw_foreground = 1;
+        }
+        else{
+          draw_foreground = 0;
+        }
+        if(draw_foreground==1){
+          glColor4fv(foregroundcolor);
+        }
+        else{
+          int color_index;
+
+          color_index = ivals[j];
+          color = rgb_patch+4*color_index;
+          glColor3fv(color);
+        }
+
+        float xmid[3], *xyz1, *xyz2, *xyz3;
+        float val;
+
+        if(cell_center==1){
+          val = vals[j];
+          xyz1 = trianglei->verts[0]->xyz;
+          xyz2 = trianglei->verts[1]->xyz;
+          xyz3 = trianglei->verts[2]->xyz;
+          xmid[0] = (xyz1[0]+xyz2[0]+xyz3[0])/3.0;
+          xmid[1] = (xyz1[1]+xyz2[1]+xyz3[1])/3.0;
+          xmid[2] = (xyz1[2]+xyz2[2]+xyz3[2])/3.0;
+          Output3Val(xmid[0], xmid[1], xmid[2], val);
+        }
+        else{
+          float val1;
+          int ival1;
+
+          ival1 = verti-geomlisti->verts;
+          xyz1 = verti->xyz;
+          val1 = vals[ival1];
+          Output3Val(xyz1[0], xyz1[1], xyz1[2], val1);
+        }
+      }
       glPopMatrix();
     }
   }

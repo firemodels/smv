@@ -309,11 +309,12 @@ EXTERNCPP void Enable360Zoom(void);
 #ifdef pp_RENDER360_DEBUG
 EXTERNCPP void DrawScreenInfo(void);
 #endif
-EXTERNCPP void UpdateShowSliceInObst(void);
+EXTERNCPP void UpdateShowSliceInObst(int var);
 EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
 EXTERNCPP void MakeIBlankAll(void);
 EXTERNCPP void UpdateSliceDupDialog(void);
 EXTERNCPP void DrawNorth(void);
+EXTERNCPP void DrawGeomValues(int flag, slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomVData(vslicedata *vd);
 EXTERNCPP void UpdateCurrentColorbar(colorbardata *cb);
@@ -753,6 +754,8 @@ EXTERNCPP void DrawGSliceData(slicedata *slicei);
 EXTERNCPP void DrawGSliceOutline(void);
 EXTERNCPP void DrawBoundaryFrame(int flag);
 EXTERNCPP void SceneMotionCB(int var);
+EXTERNCPP void DrawVolSliceLines(const slicedata *sd);
+EXTERNCPP void DrawVolSliceVerts(const slicedata *sd);
 
 EXTERNCPP void DrawSmoke3DVol(void);
 EXTERNCPP void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent, int *drawing_vent_transparent);

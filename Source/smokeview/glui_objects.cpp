@@ -788,7 +788,7 @@ extern "C" void ShowGluiPlotDevice(void){
     glui_device->show();
     if(ROLLOUT_devicevalues!=NULL)ROLLOUT_devicevalues->open();
   }
-  
+
 }
 
 /* ------------------ ShowGluiDevice ------------------------ */

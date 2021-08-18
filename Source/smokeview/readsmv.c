@@ -10665,11 +10665,12 @@ int ReadIni2(char *inifile, int localfile){
       int dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %f %i %i %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits, &force_fixedpoint, &ngridloc_digits);
+      sscanf(buffer, " %i %i %f %i %i %i %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits, &force_fixedpoint, &ngridloc_digits, &sliceval_ndigits);
       colorbar_shift = CLAMP(colorbar_shift, COLORBAR_SHIFT_MIN, COLORBAR_SHIFT_MAX);
       if(research_mode==1&&research_mode_override==0)research_mode=0;
       ncolorlabel_digits = CLAMP(ncolorlabel_digits, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
-      ngridloc_digits = CLAMP(ngridloc_digits, GRIDLOC_NDECIMALS_MIN, GRIDLOC_NDECIMALS_MAX);
+      sliceval_ndigits   = CLAMP(sliceval_ndigits, 0, 10);
+      ngridloc_digits    = CLAMP(ngridloc_digits, GRIDLOC_NDECIMALS_MIN, GRIDLOC_NDECIMALS_MAX);
       ONEORZERO(research_mode);
       ONEORZERO(force_fixedpoint);
       if(research_mode==1&&percentile_mode==1){
@@ -10735,13 +10736,13 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(boundary_edgetype);
       continue;
     }
-    if(Match(buffer, "GEOMSLICEPROPS")==1){
+    if(Match(buffer, "SHOWSLICEVALS")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f", &geomslice_linewidth, &geomslice_pointsize);
-      continue;
+      sscanf(buffer, " %i %i %i", show_slice_values, show_slice_values+1, show_slice_values+2);
     }
     if(Match(buffer, "GEOMCELLPROPS")==1){
       int vector_slice[3] = {-1, -1, -1};
+      float dummy;
 
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i",
@@ -10758,9 +10759,7 @@ int ReadIni2(char *inifile, int localfile){
 
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %f %i %i %i",
-        show_slice_shaded,show_slice_shaded+1,show_slice_shaded+2,&geomslice_pointsize,
-             vector_slice, vector_slice+1, vector_slice+2
-             );
+        show_slice_shaded,show_slice_shaded+1,show_slice_shaded+2,&dummy, vector_slice, vector_slice+1, vector_slice+2);
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i",
         show_slice_outlines,show_slice_outlines+1,show_slice_outlines+2);
@@ -12338,7 +12337,12 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "CELLCENTERTEXT") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i ", &cell_center_text);
+      sscanf(buffer, "%i ", &show_slice_values_all_regions);
+      continue;
+    }
+    if(Match(buffer, "SHOWSLICEVALS")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i ", &show_slice_values_all_regions);
       continue;
     }
     if(Match(buffer, "SHOWGRIDLOC") == 1){
@@ -14760,7 +14764,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "PERCENTILEMODE\n");
   fprintf(fileout, " %i\n", percentile_mode);
   fprintf(fileout, "RESEARCHMODE\n");
-  fprintf(fileout, " %i %i %f %i %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint, ngridloc_digits);
+  fprintf(fileout, " %i %i %f %i %i %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint, ngridloc_digits, sliceval_ndigits);
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
   fprintf(fileout, "SLICEAVERAGE\n");
@@ -14818,13 +14822,15 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", freeze_volsmoke, autofreeze_volsmoke);
   fprintf(fileout, "GEOMBOUNDARYPROPS\n");
   fprintf(fileout, " %i %i %i %f %f %i\n",show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize, boundary_edgetype);
+  fprintf(fileout, "SHOWSLICEVALS\n");
+  fprintf(fileout, " %i %i %i\n", show_slice_values[0], show_slice_values[1], show_slice_values[2]);
   fprintf(fileout, "GEOMCELLPROPS\n");
   fprintf(fileout, " %i\n",
     slice_celltype);
   fprintf(fileout, " %i %i %i\n",
     slice_edgetypes[0], slice_edgetypes[1], slice_edgetypes[2]);
   fprintf(fileout, " %i %i %i %f %i %i %i\n",
-    show_slice_shaded[0], show_slice_shaded[1], show_slice_shaded[2], geomslice_pointsize,
+    show_slice_shaded[0], show_slice_shaded[1], show_slice_shaded[2], 5.0,
     show_vector_slice[0], show_vector_slice[1], show_vector_slice[2]);
   fprintf(fileout, " %i %i %i\n",
     show_slice_outlines[0], show_slice_outlines[1], show_slice_outlines[2]);
@@ -14849,8 +14855,6 @@ void WriteIni(int flag,char *filename){
 #endif
   fprintf(fileout, " %i %i %i %i\n", show_volumes_interior, show_volumes_exterior, show_volumes_solid, show_volumes_outline);
   fprintf(fileout, " %f %f %i %i %i\n", geom_vert_exag, geom_max_angle, 0, 0, show_geom_boundingbox);
-  fprintf(fileout, "GEOMSLICEPROPS\n");
-  fprintf(fileout, " %f %f\n", geomslice_linewidth, geomslice_pointsize);
 
   fprintf(fileout, "GVERSION\n");
   fprintf(fileout, " %i\n", vis_title_gversion);
@@ -15074,8 +15078,8 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout,"\n *** MISC ***\n\n");
 
-  fprintf(fileout, "CELLCENTERTEXT\n");
-  fprintf(fileout, " %i\n", cell_center_text);
+  fprintf(fileout, "SHOWSLICEVALS\n");
+  fprintf(fileout, " %i\n", show_slice_values_all_regions);
   if(fds_filein != NULL&&strlen(fds_filein) > 0){
     fprintf(fileout, "INPUT_FILE\n");
     fprintf(fileout, " %s\n", fds_filein);

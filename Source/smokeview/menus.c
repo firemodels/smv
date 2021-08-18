@@ -524,16 +524,13 @@ void ShowMultiSliceMenu(int value){
     ShowHideSliceMenu(value);
     return;
   case MENU_SHOWSLICE_IN_GAS:
-    show_slice_in_obst = ONLY_IN_GAS;
-    UpdateShowSliceInObst();
+    UpdateShowSliceInObst(ONLY_IN_GAS);
     break;
   case MENU_SHOWSLICE_IN_GASANDSOLID:
-    show_slice_in_obst = GAS_AND_SOLID;
-    UpdateShowSliceInObst();
+    UpdateShowSliceInObst(GAS_AND_SOLID);
     break;
   case MENU_SHOWSLICE_IN_SOLID:
-    show_slice_in_obst = ONLY_IN_SOLID;
-    UpdateShowSliceInObst();
+    UpdateShowSliceInObst(ONLY_IN_SOLID);
     break;
   case -12:
     offset_slice = 1 - offset_slice;
@@ -697,7 +694,7 @@ void StaticVariableMenu(int value){
 
   plotn=value;
   plotstate=STATIC_PLOTS;
-  visGrid = noGridnoProbe;
+  visGrid = NOGRID_NOPROBE;
   if(visiso==1){
     UpdateShowStep(1,ISO);
   }
@@ -1249,18 +1246,15 @@ void ShowVSliceMenu(int value){
     return;
   }
   if(value==MENU_SHOWSLICE_IN_GAS){
-    show_slice_in_obst = ONLY_IN_GAS;
-    UpdateShowSliceInObst();
+    UpdateShowSliceInObst(ONLY_IN_GAS);
     return;
   }
   else if(value==MENU_SHOWSLICE_IN_GASANDSOLID){
-    show_slice_in_obst = GAS_AND_SOLID;
-    UpdateShowSliceInObst();
+    UpdateShowSliceInObst(GAS_AND_SOLID);
     return;
   }
   else if(value==MENU_SHOWSLICE_IN_SOLID){
-    show_slice_in_obst = ONLY_IN_SOLID;
-    UpdateShowSliceInObst();
+    UpdateShowSliceInObst(ONLY_IN_SOLID);
     return;
   }
   if(value == MENU_SHOWSLICE_OFFSET){
@@ -1346,16 +1340,13 @@ void ShowHideSliceMenu(int value){
       }
       break;
     case MENU_SHOWSLICE_IN_GAS:
-      show_slice_in_obst = ONLY_IN_GAS;
-      UpdateShowSliceInObst();
+      UpdateShowSliceInObst(ONLY_IN_GAS);
       break;
     case MENU_SHOWSLICE_IN_GASANDSOLID:
-      show_slice_in_obst = GAS_AND_SOLID;
-      UpdateShowSliceInObst();
+      UpdateShowSliceInObst(GAS_AND_SOLID);
       break;
     case MENU_SHOWSLICE_IN_SOLID:
-      show_slice_in_obst = ONLY_IN_SOLID;
-      UpdateShowSliceInObst();
+      UpdateShowSliceInObst(ONLY_IN_SOLID);
       break;
     case MENU_SHOWSLICE_OFFSET:
       offset_slice=1-offset_slice;
@@ -2683,7 +2674,7 @@ void GridSliceMenu(int value){
     visx_all=1;
     visy_all=1;
     visz_all=1;
-    visGrid= GridnoProbe;
+    visGrid= GRID_NOPROBE;
     break;
   case GRID_hideall:
     visx_all=0;
@@ -2694,17 +2685,17 @@ void GridSliceMenu(int value){
     break;
   case GRID_grid:
     switch(visGrid){
-      case GridProbe:
-        visGrid=noGridProbe;
+      case GRID_PROBE:
+        visGrid=NOGRID_PROBE;
         break;
-      case GridnoProbe:
-        visGrid=noGridnoProbe;
+      case GRID_NOPROBE:
+        visGrid=NOGRID_NOPROBE;
         break;
-      case noGridProbe:
-        visGrid=GridProbe;
+      case NOGRID_PROBE:
+        visGrid=GRID_PROBE;
         break;
-      case noGridnoProbe:
-        visGrid=GridnoProbe;
+      case NOGRID_NOPROBE:
+        visGrid=GRID_NOPROBE;
         break;
       default:
         ASSERT(FFALSE);
@@ -2713,17 +2704,17 @@ void GridSliceMenu(int value){
     break;
   case GRID_probe:
     switch(visGrid){
-      case GridProbe:
-        visGrid=GridnoProbe;
+      case GRID_PROBE:
+        visGrid=GRID_NOPROBE;
         break;
-      case GridnoProbe:
-        visGrid=GridProbe;
+      case GRID_NOPROBE:
+        visGrid=GRID_PROBE;
         break;
-      case noGridProbe:
-        visGrid=noGridnoProbe;
+      case NOGRID_PROBE:
+        visGrid=NOGRID_NOPROBE;
         break;
-      case noGridnoProbe:
-        visGrid=noGridProbe;
+      case NOGRID_NOPROBE:
+        visGrid=NOGRID_PROBE;
         break;
       default:
         ASSERT(FFALSE);
@@ -4798,16 +4789,13 @@ void LoadSliceMenu(int value){
         }
         break;
       case MENU_SHOWSLICE_IN_GAS:
-        show_slice_in_obst = ONLY_IN_GAS;
-        UpdateShowSliceInObst();
+        UpdateShowSliceInObst(ONLY_IN_GAS);
         break;
       case  MENU_SHOWSLICE_IN_GASANDSOLID:
-        show_slice_in_obst = GAS_AND_SOLID;
-        UpdateShowSliceInObst();
+        UpdateShowSliceInObst(GAS_AND_SOLID);
         break;
       case MENU_SHOWSLICE_IN_SOLID:
-        show_slice_in_obst = ONLY_IN_SOLID;
-        UpdateShowSliceInObst();
+        UpdateShowSliceInObst(ONLY_IN_SOLID);
         break;
       case MENU_SLICE_SETTINGS:
         ShowBoundsDialog(DLG_SLICE);
@@ -6538,7 +6526,7 @@ void GeometryMenu(int value){
     visWalls=0;
     visCeiling=0;
     visVents=0;
-    visGrid = noGridnoProbe;
+    visGrid = NOGRID_NOPROBE;
     BlockageMenu(visBLOCKHide);
     ImmersedMenu(GEOMETRY_HIDEALL);
     break;
@@ -7566,13 +7554,13 @@ updatemenu=0;
   }
 
   CREATEMENU(gridslicemenu,GridSliceMenu);
-  if(visGrid==GridnoProbe||visGrid==GridProbe){
+  if(visGrid==GRID_NOPROBE||visGrid==GRID_PROBE){
     glutAddMenuEntry(_("*show grid"),GRID_grid);
   }
   else{
     glutAddMenuEntry(_("show grid"),GRID_grid);
   }
-  if(visGrid==GridProbe||visGrid==noGridProbe){
+  if(visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
     glutAddMenuEntry(_("*show grid location"),GRID_probe);
   }
   else{

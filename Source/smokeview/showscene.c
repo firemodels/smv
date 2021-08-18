@@ -182,7 +182,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
     /* ++++++++++++++++++++++++ draw mesh +++++++++++++++++++++++++ */
 
     if(setPDIM == 1){
-      if(visGrid != noGridnoProbe){
+      if(visGrid != NOGRID_NOPROBE){
         int igrid;
         meshdata *meshi;
 

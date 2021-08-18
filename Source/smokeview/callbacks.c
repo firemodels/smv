@@ -72,7 +72,7 @@ void NextXIndex(int inc,int flag){
     }
     if(iplotx_all<0)iplotx_all=nplotx_all-1;
     if(iplotx_all>nplotx_all-1)iplotx_all=0;
-    if(visGrid!=noGridnoProbe)return;
+    if(visGrid!=NOGRID_NOPROBE)return;
     if(plotstate==DYNAMIC_PLOTS){
       for(i=0;i<nsliceinfo;i++){
         slicedata *slicei;
@@ -127,7 +127,7 @@ void NextYIndex(int inc,int flag){
     }
     if(iploty_all<0)iploty_all=nploty_all-1;
     if(iploty_all>nploty_all-1)iploty_all=0;
-    if(visGrid!=noGridnoProbe)return;
+    if(visGrid!=NOGRID_NOPROBE)return;
     if(plotstate==DYNAMIC_PLOTS){
       for(i=0;i<nsliceinfo;i++){
         slicedata *slicei;
@@ -182,7 +182,7 @@ void NextZIndex(int inc,int flag){
     }
     if(iplotz_all<0)iplotz_all=nplotz_all-1;
     if(iplotz_all>nplotz_all-1)iplotz_all=0;
-    if(visGrid!=noGridnoProbe)return;
+    if(visGrid!=NOGRID_NOPROBE)return;
     if(plotstate==DYNAMIC_PLOTS){
       for(i=0;i<nsliceinfo;i++){
         slicedata *slicei;
@@ -1887,23 +1887,26 @@ void Keyboard(unsigned char key, int flag){
       default:
         if(ntotal_blockages>0||isZoneFireModel==0||(isZoneFireModel==1&&ntrnx>0)){
           switch(visGrid){
-            case noGridnoProbe:
-              visGrid=GridnoProbe;
+            case NOGRID_NOPROBE:
+              visGrid=GRID_NOPROBE;
               break;
-            case GridnoProbe:
-              visGrid=GridProbe;
+            case GRID_NOPROBE:
+              visGrid=GRID_PROBE;
               break;
-            case GridProbe:
-              visGrid=noGridProbe;
+            case GRID_PROBE:
+              visGrid= NOGRID_PROBE;
               break;
-            case noGridProbe:
-              visGrid=noGridnoProbe;
+            case NOGRID_PROBE:
+              visGrid= NOGRID_PROBE2;
+              break;
+            case NOGRID_PROBE2:
+              visGrid = NOGRID_NOPROBE;
               break;
             default:
-              visGrid=noGridnoProbe;
+              visGrid= NOGRID_NOPROBE;
               break;
           }
-          if(visGrid==GridProbe||visGrid==noGridProbe)visgridloc=1;
+          if(visGrid==GRID_PROBE||visGrid==NOGRID_PROBE)visgridloc=1;
         }
         break;
       }
@@ -2010,7 +2013,7 @@ void Keyboard(unsigned char key, int flag){
     case 'I':
       show_slice_in_obst++;
       if(show_slice_in_obst>2)show_slice_in_obst = 0;
-      UpdateShowSliceInObst();
+      UpdateShowSliceInObst(show_slice_in_obst);
       updatemenu = 1;
       break;
     case 'j':
@@ -2633,7 +2636,19 @@ void Keyboard(unsigned char key, int flag){
       SnapScene();
       break;
     case '@':
-      cell_center_text = 1 - cell_center_text;
+      show_slice_values_all_regions = 1 - show_slice_values_all_regions;
+      if(show_slice_values_all_regions==1){
+        show_slice_values[0]=1;
+        show_slice_values[1]=1;
+        show_slice_values[2]=1;
+      }
+      else{
+        show_slice_values[0]=0;
+        show_slice_values[1]=0;
+        show_slice_values[2]=0;
+      }
+#define IMMERSED_SWITCH_CELLTYPE 0
+      ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
       break;
     case '.':
       lock_mouse_aperture = 1 - lock_mouse_aperture;

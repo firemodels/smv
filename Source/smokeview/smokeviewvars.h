@@ -29,13 +29,12 @@ SVEXTERN float geom_bounding_box[6] = {1000000000.0, -1000000000.0,
                                        1000000000.0, -1000000000.0,
                                        1000000000.0, -1000000000.0
                                       };
-SVEXTERN int show_vector_slice[MAX_CELL_TYPES]={1,1,1};
 #else
 SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
-SVEXTERN int show_vector_slice[MAX_CELL_TYPES];
 #endif
 
+SVEXTERN int SVDECL(sliceval_ndigits, 0);
 SVEXTERN int SVDECL(rotate_center, 0);
 SVEXTERN int SVDECL(have_geom_bb, 0);
 SVEXTERN int SVDECL(show_geom_boundingbox, SHOW_BOUNDING_BOX_NEVER);
@@ -340,9 +339,7 @@ SVEXTERN int SVDECL(research_mode_override, -1);
 SVEXTERN int SVDECL(update_percentile_mode, 0);
 SVEXTERN int SVDECL(percentile_mode, 0);
 
-SVEXTERN float SVDECL(geomslice_pointsize, 5.0);
 SVEXTERN float SVDECL(geomboundary_pointsize, 5.0);
-SVEXTERN float SVDECL(geomslice_linewidth, 5.0);
 SVEXTERN float SVDECL(geomboundary_linewidth, 5.0);
 
 #ifdef pp_SMOKE_FAST
@@ -743,10 +740,21 @@ SVEXTERN int SVDECL(glui_show_vector_slice, 1);
 SVEXTERN int SVDECL(glui_show_slice_shaded,1);
 SVEXTERN int SVDECL(glui_show_slice_outlines,0);
 SVEXTERN int SVDECL(glui_show_slice_points,0);
+SVEXTERN int SVDECL(glui_show_slice_values, 0);
 
+#ifdef INMAIN
+SVEXTERN int show_slice_shaded[MAX_CELL_TYPES]   = {1,0,1};
+SVEXTERN int show_slice_outlines[MAX_CELL_TYPES] = {0,0,0};
+SVEXTERN int show_slice_points[MAX_CELL_TYPES]   = {0,0,0};
+SVEXTERN int show_slice_values[MAX_CELL_TYPES]   = {0,0,0};
+SVEXTERN int show_vector_slice[MAX_CELL_TYPES]   = {1,0,1};
+#else
 SVEXTERN int show_slice_shaded[MAX_CELL_TYPES];
 SVEXTERN int show_slice_outlines[MAX_CELL_TYPES];
 SVEXTERN int show_slice_points[MAX_CELL_TYPES];
+SVEXTERN int show_slice_values[MAX_CELL_TYPES];
+SVEXTERN int show_vector_slice[MAX_CELL_TYPES];
+#endif
 
 SVEXTERN int SVDECL(show_boundary_shaded, 1);
 SVEXTERN int SVDECL(show_boundary_outline, 0);
@@ -766,9 +774,9 @@ SVEXTERN int SVDECL(have_cface_normals, CFACE_NORMALS_NO);
 
 SVEXTERN int SVDECL(show_iso_normal, 0), SVDECL(smooth_iso_normal, 1);
 
-SVEXTERN int SVDECL(boundary_edgetype, IMMERSED_HIDDEN);
+SVEXTERN int SVDECL(boundary_edgetype, OUTLINE_HIDDEN);
 
-SVEXTERN int SVDECL(glui_slice_edgetype, IMMERSED_POLYGON);
+SVEXTERN int SVDECL(glui_slice_edgetype, OUTLINE_POLYGON);
 SVEXTERN int SVDECL(slice_celltype, 0);
 SVEXTERN int slice_edgetypes[3];
 
@@ -825,6 +833,7 @@ SVEXTERN float SVDECL(*avatar_colors,NULL);
 SVEXTERN int SVDECL(script_render_flag,0), SVDECL(script_itime,0);
 
 SVEXTERN int SVDECL(show_slice_in_obst,ONLY_IN_GAS), offset_slice;
+SVEXTERN int SVDECL(show_slice_in_solid, 0), SVDECL(show_slice_in_gas, 1);
 SVEXTERN int skip_slice_in_embedded_mesh;
 SVEXTERN int n_embedded_meshes;
 
@@ -1391,7 +1400,7 @@ SVEXTERN float plot3dpointsize, plot3dlinewidth;
 SVEXTERN int SVDECL(scaled_font3d_thickness,1);
 SVEXTERN int SVDECL(scaled_font2d_thickness,1);
 SVEXTERN float SVDECL(vectorlinewidth,1.0);
-SVEXTERN int SVDECL(cell_center_text,0);
+SVEXTERN int SVDECL(show_slice_values_all_regions,0);
 SVEXTERN float SVDECL(gridlinewidth,2.0),SVDECL(ticklinewidth,2.0);
 SVEXTERN int SVDECL(zone_highlight,0),SVDECL(zone_highlight_room,0);
 SVEXTERN int SVDECL(script_step,0), SVDECL(script_step_now,0);

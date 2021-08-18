@@ -217,7 +217,7 @@ void AdjustBytes(unsigned char *bytes, int i11, int i21, int i31, int i41){
 void OutputPixelDataInfo(unsigned char *bytes, int nbytes, int *byte_types, int ncols_data, int nrows_out, int ncols_out){
   int i, count=0;
 
-  if(1==0){ 
+  if(1==0){
     for(i = 0; i<nrows_out-4; i+=2){
       int j;
 
