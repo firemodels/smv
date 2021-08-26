@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# define FIREMODELS in your .bashrc 
+# FIREMODELS is the repo root directory containing fds, smv bot repos. For example:
+#   export FIREMODELS=/home/username/FireModels_fork
+
 # ---------------------------- stop_fds_if_requested ----------------------------------
 
 function stop_fds_if_requested {
@@ -92,28 +96,22 @@ function usage {
   fi
   echo "Other options:"
   echo " -b email_address - send an email to email_address when jobs starts, aborts and finishes"
-  echo " -C   - use modules currently loaded rather than modules loaded when fds was built."
   echo " -d dir - specify directory where the case is found [default: .]"
-  echo " -E - use tcp transport (only available with the Intel compiled versions of fds)"
+  echo " -E - use tcp transport (only available with Intel compiled versions of fds)"
   echo "      This options adds export I_MPI_FABRICS=shm:tcp to the run script"
-  echo " -f repository root - name and location of repository where FDS is located"
-  echo "    [default: $FDSROOT]"
   echo " -g   - only run if input file and executable are not dirty"
   echo " -i use installed fds"
   echo " -I use Intel MPI version of fds"
   echo " -j prefix - specify a job prefix"
   echo " -L use Open MPI version of fds"
   echo " -m m - reserve m processes per node [default: 1]"
-  echo " -M   -  add --mca plm_rsh_agent /usr/bin/ssh to mpirun command "
   echo " -n n - number of MPI processes per node [default: 1]"
   echo " -O n - run cases casea.fds, caseb.fds, ... using 1, ..., N OpenMP threads"
   echo "        where case is specified on the command line. N can be at most 9."
   echo " -s   - stop job"
-  echo " -S   - use startup files to set the environment, do not load modules"
   echo " -t   - used for timing studies, run a job alone on a node (reserving $NCORES_COMPUTENODE cores)"
   echo " -T type - run dv (development) or db (debug) version of fds"
   echo "           if -T is not specified then the release version of fds is used"
-  echo " -U n - only allow n jobs owned by `whoami` to run at a time"
   echo " -V   - show command line used to invoke qfds.sh"
   echo " -w time - walltime, where time is hh:mm for PBS and dd-hh:mm:ss for SLURM. [default: $walltime]"
   echo " -y dir - run case in directory dir"
@@ -166,18 +164,13 @@ fi
 
 showcommandline=
 HELP=
-FDS_MODULE_OPTION=1
 MPIRUN=
 ABORTRUN=n
 DB=
 OUT2ERROR=
 stopjob=0
-MCA=
 OPENMPCASES=
 OPENMPTEST=
-if [ "$MPIRUN_MCA" != "" ]; then
-  MCA=$MPIRUN_MCA
-fi
 
 n_mpi_processes=1
 n_mpi_processes_per_node=2
@@ -189,7 +182,6 @@ use_devel=
 use_intel_mpi=1
 EMAIL=
 CHECK_DIRTY=
-USERMAX=
 casedir=
 use_default_casedir=
 MULTITHREAD=
@@ -208,8 +200,7 @@ RESOURCE_MANAGER="NONE"
 if [ $missing_slurm -eq 0 ]; then
   RESOURCE_MANAGER="SLURM"
 else
-  echo "***error: The slurm resource manager was not found."
-  echo "          The slurm resource manager is required."
+  echo "***error: The slurm resource manager was not found and is required."
   exit
 fi
 if [ "$SLURM_MEM" != "" ]; then
@@ -228,11 +219,6 @@ benchmark=no
 showinput=0
 exe=
 
-STARTUP=
-if [ "$QFDS_STARTUP" != "" ]; then
-  STARTUP=$QFDS_STARTUP
-fi
-
 if [ $# -lt 1 ]; then
   usage
 fi
@@ -241,7 +227,7 @@ commandline=`echo $* | sed 's/-V//' | sed 's/-v//'`
 
 #*** read in parameters from command line
 
-while getopts 'Ab:Cd:e:Ef:ghHiIj:Lm:Mn:o:O:p:Pq:sStT:U:vVw:y:Yz' OPTION
+while getopts 'Ab:d:e:EghHiIj:Lm:n:o:O:p:Pq:stT:vVw:y:Yz' OPTION
 do
 case $OPTION  in
   A) # used by timing scripts to identify benchmark cases
@@ -249,9 +235,6 @@ case $OPTION  in
    ;;
   b)
    EMAIL="$OPTARG"
-   ;;
-  C)
-   FDS_MODULE_OPTION=
    ;;
   d)
    dir="$OPTARG"
@@ -261,9 +244,6 @@ case $OPTION  in
    ;;
   E)
    TCP=1
-   ;;
-  f)
-   FDSROOT="$OPTARG"
    ;;
   g)
    CHECK_DIRTY=1
@@ -288,9 +268,6 @@ case $OPTION  in
    ;;
   L)
    use_intel_mpi=
-   ;;
-  M)
-   MCA="--mca plm_rsh_agent /usr/bin/ssh "
    ;;
   m)
    max_processes_per_node="$OPTARG"
@@ -325,9 +302,6 @@ case $OPTION  in
   s)
    stopjob=1
    ;;
-  S)
-   STARTUP=1
-   ;;
   t)
    benchmark="yes"
    ;;
@@ -341,9 +315,6 @@ case $OPTION  in
    if [ "$TYPE" == "db" ]; then
      use_debug=1
    fi
-   ;;
-  U)
-   USERMAX="$OPTARG"
    ;;
   v)
    showinput=1
@@ -402,8 +373,8 @@ if [ "$casedir" != "" ]; then
 fi
 
 if [[ "$TCP" != "" ]] && [[ "$use_intel_mpi" == "" ]]; then
-  echo "***error: -The E option for specifying tcp transport is only available"
-  echo "          with Intel the compiled versions of fds"
+  echo "***error: The -E option for specifying tcp transport is only available"
+  echo "          with Intel compiled versions of fds"
   exit
 fi
 
@@ -475,25 +446,22 @@ fi
 
 #*** modules loaded currently
 
-if [ "$STARTUP" == "" ]; then
-
-  CURRENT_LOADED_MODULES=`echo $LOADEDMODULES | tr ':' ' '`
+CURRENT_LOADED_MODULES=`echo $LOADEDMODULES | tr ':' ' '`
 
 # modules loaded when fds was built
 
-  if [ "$exe" != "" ]; then  # first look for file that contains the list
-    FDSDIR=$(dirname "$exe")
-    if [ -e $FDSDIR/.fdsinfo ]; then
-      FDS_LOADED_MODULES=`tail -1 $FDSDIR/.fdsinfo`
-      OPENMPI_PATH=`head -1 $FDSDIR/.fdsinfo`
-    fi
+if [ "$exe" != "" ]; then  # first look for file that contains the list
+  FDSDIR=$(dirname "$exe")
+  if [ -e $FDSDIR/.fdsinfo ]; then
+    FDS_LOADED_MODULES=`tail -1 $FDSDIR/.fdsinfo`
+    OPENMPI_PATH=`head -1 $FDSDIR/.fdsinfo`
   fi
+fi
 
-  if [[ "$FDS_MODULE_OPTION" == "1" ]] && [[ "$FDS_LOADED_MODULES" != "" ]]; then
-    MODULES=$FDS_LOADED_MODULES               # modules loaded when fds was built
-  else
-    MODULES=$CURRENT_LOADED_MODULES
-  fi
+if [[ "$FDS_LOADED_MODULES" != "" ]]; then
+  MODULES=$FDS_LOADED_MODULES               # modules loaded when fds was built
+else
+  MODULES=$CURRENT_LOADED_MODULES
 fi
 
 #*** define number of nodes
@@ -621,7 +589,7 @@ else                                 # using OpenMPI
 fi
 
 TITLE="$infile"
-MPIRUN="$MPIRUNEXE $REPORT_BINDINGS $SOCKET_OPTION $MCA -np $n_mpi_processes"
+MPIRUN="$MPIRUNEXE $REPORT_BINDINGS $SOCKET_OPTION -np $n_mpi_processes"
 
 cd $dir
 fulldir=`pwd`
@@ -893,16 +861,6 @@ if [ "$showinput" == "1" ]; then
   exit
 fi
 
-# wait until number of jobs running alread by user is less than USERMAX
-if [ "$USERMAX" != "" ]; then
-  nuser=`squeue | grep -v JOBID | awk '{print $2 $4}' | grep $queue | grep $USER | wc -l`
-  while [ $nuser -gt $USERMAX ]
-  do
-    nuser=`squeue | grep -v JOBID | awk '{print $2 $4}' | grep $queue | grep $USER | wc -l`
-    sleep 10
-  done
-fi
-
 #*** output info to screen
 echo "submitted at `date`"                          > $qlog
 if [ "$queue" != "none" ]; then
@@ -925,21 +883,7 @@ fi
     echo "           Intel MPI"              | tee -a $qlog
   fi
 
-#*** output currently loaded modules and modules when fds was built if the
-#    1) -C option was selected and
-#    2) currently loaded modules and fds loaded modules are diffent
-
-  if [ "$FDS_MODULE_OPTION" == "" ]; then
-    if [[ "$FDS_LOADED_MODULES" != "" ]] && [[ "$CURRENT_LOADED_MODULES" != "" ]]; then
-      if [ "$FDS_LOADED_MODULES" != "$CURRENT_LOADED_MODULES" ]; then
-        echo "  Modules(when run):$CURRENT_LOADED_MODULES" | tee -a $qlog
-        echo "Modules(when built):$FDS_LOADED_MODULES"     | tee -a $qlog
-        MODULES_OUT=1
-      fi
-    fi
-  fi
-
-#*** otherwise output modules used when fds is run
+#*** output modules used when fds is run
   if [[ "$MODULES" != "" ]] && [[ "$MODULES_OUT" == "" ]]; then
     echo "            Modules:$MODULES"                    | tee -a $qlog
   fi
