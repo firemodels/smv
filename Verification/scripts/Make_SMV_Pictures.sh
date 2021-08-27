@@ -112,7 +112,6 @@ case $OPTION  in
   i)
    use_installed="-i"
    ;;
-   ;;
   j)
    JOBPREFIX="$OPTARG" 
    ;;
