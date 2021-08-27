@@ -44,7 +44,6 @@ echo "Options"
 echo "-c - cfast repo directory"
 echo "-d - use debug version of FDS"
 echo "-h - display this message"
-echo "-I - compiler (intel or gnu)"
 echo "-j p - specify a job prefix"
 echo "-J - use Intel MPI version of FDS"
 echo "-m max_iterations - stop FDS runs after a specifed number of iterations (delayed stop)"
@@ -83,7 +82,7 @@ SVNROOT=`pwd`
 cd $CURDIR/..
 
 use_installed="0"
-while getopts 'c:dhI:j:Jm:o:q:rsS:uWwY' OPTION
+while getopts 'c:dhj:Jm:o:q:rsS:uWwY' OPTION
 do
 case $OPTION in
   c)
@@ -95,9 +94,6 @@ case $OPTION in
    ;;
   h)
    usage;
-   ;;
-  I)
-   COMPILER="$OPTARG"
    ;;
   j)
    JOBPREFIX="$OPTARG"
