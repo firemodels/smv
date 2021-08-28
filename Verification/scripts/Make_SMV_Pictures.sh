@@ -21,7 +21,6 @@ echo "Options"
 echo "-d - use debug version of smokeview"
 echo "-h - display this message"
 echo "-i - use installed version of smokeview"
-echo "-I - compiler (intel or gnu)"
 echo "-q q - queue used to generate images"
 echo "-t - use test version of smokeview"
 echo "-W - only generate WUI case images"
@@ -101,7 +100,7 @@ RUN_SMV=1
 RUN_WUI=1
 QUEUE=batch
 
-while getopts 'dghiI:j:q:tWY' OPTION
+while getopts 'dghij:q:tWY' OPTION
 do
 case $OPTION  in
   d)
@@ -112,9 +111,6 @@ case $OPTION  in
    ;;
   i)
    use_installed="-i"
-   ;;
-  I)
-   COMPILER="$OPTARG" 
    ;;
   j)
    JOBPREFIX="$OPTARG" 
