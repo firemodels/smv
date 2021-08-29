@@ -21,6 +21,8 @@ if "%release%" == "-r" goto endif
 
 if NOT x%GLUT% == xfreeglut set GLUT=glut
 
+if x%ONEAPI_FORT_CAPS% == x1 set SMV_TESTFLAG=%SMV_TESTFLAG% -D pp_WIN_ONEAPI
+
 if x%inc% == xinc goto skip_inc
 erase *.obj *.mod *.exe 2> Nul
 :skip_inc
