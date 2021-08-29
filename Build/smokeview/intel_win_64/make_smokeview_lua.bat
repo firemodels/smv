@@ -19,6 +19,8 @@ if "%release%" == "-r" goto endif
   set SMV_TESTSTRING=test_
 :endif
 
+if x%ONEAPI_FORT_CAPS% == x1 set SMV_TESTFLAG=%SMV_TESTFLAG% -D pp_WIN_ONEAPI
+
 erase *.obj *.mod *.exe
 make -j 4 SHELL="%ComSpec%" LUA_SCRIPTING="true" SMV_TESTFLAG="%SMV_TESTFLAG%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win_64
 if x%from% == xbot goto skip2
