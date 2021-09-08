@@ -37,7 +37,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 obj =    main.o CNV3dsmoke.o CNVboundary.o CNVpart.o CNVplot3d.o CNVslice.o assert.o \
          csphere.o dmalloc.o lightsmoke.o histogram.o readfiles.o utilities.o isobox.o\
          file_util.o string_util.o threader.o compress.o md5.o sha1.o sha256.o stdio_buffer.o\
-         fdsmodules.o gsmv.o getdata.o
+	 fdsmodules.o gsmv.o getata.o
 objwin = $(obj:.o=.obj)
 
 # main has to be compiled without optimization (on a Windows PC) otherwise errors occcur
@@ -188,6 +188,7 @@ intel_osx_64_db : exe       = smokezip_osx_64_db
 intel_osx_64_db : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
+
 #-------------- compile sring_util.c so revision strings are updated -----------
 
 string_util.o:  .FORCE
@@ -195,3 +196,16 @@ string_util.obj:        .FORCE
 
 .FORCE:
 
+# *** Object Dependencies ***
+
+gsmv.o : fdsmodules.o
+getdata.o : gsmv.o fdsmodules.o
+
+# *** do a full rebuild if any header file has changed
+#
+$(obj) : $(incs)
+
+$(objwin) : $(incs)
+
+gsmv.obj : fdsmodules.obj
+getdata.obj : gsmv.obj fdsmodules.obj
