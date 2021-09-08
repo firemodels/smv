@@ -210,3 +210,24 @@ string_util.obj:        .FORCE
 
 .FORCE:
 
+#-------------- force compilation of string_util.c -----------
+
+string_util.o:  .FORCE
+string_util.obj:        .FORCE
+
+.FORCE:
+
+# *** Object Dependencies ***
+
+gsmv.o : fdsmodules.o
+getdata.o : gsmv.o fdsmodules.o
+
+# *** do a full rebuild if any header file has changed
+#
+$(obj) : $(incs)
+
+$(objwin) : $(incs)
+
+gsmv.obj : fdsmodules.obj
+getdata.obj : gsmv.obj fdsmodules.obj
+
