@@ -313,6 +313,7 @@ void FreeLabels(flowlabels *flowlabel){
 void InitMesh(meshdata *meshi){
   int i;
 
+  meshi->is_block_terrain = NULL;
   meshi->smoke3d_soot = NULL;
   meshi->smoke3d_hrrpuv = NULL;
   meshi->smoke3d_temp = NULL;
@@ -9112,7 +9113,7 @@ typedef struct {
         is_block_terrain=meshi->is_block_terrain;
         n_blocks_normal=0;
         for(iblock=0;iblock<n_blocks;iblock++){
-          if(is_block_terrain[iblock]==0)n_blocks_normal++;
+          if(is_block_terrain==NULL||is_block_terrain[iblock]==0)n_blocks_normal++;
         }
         meshi->nbptrs=n_blocks_normal;
       }
