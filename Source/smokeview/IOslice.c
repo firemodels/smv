@@ -2497,9 +2497,11 @@ void GetGSliceParams(void){
         AppendLabels(&(patchi->label),geomlabel);
       }
     }
+#ifdef pp_BNDF_MENU_BUG
     else{
       strcpy(patchi->gslicedir, patchi->label.longlabel);
     }
+#endif
   }
 }
 

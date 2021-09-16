@@ -53,6 +53,7 @@
 //#define pp_REMOVE_DUPLICATES     // remove duplicate geometry vertices
 #define pp_HAVE_CFACE_NORMALS    //  read in and optionally draw cface normal vectors
 //#define pp_TERRAIN_OLD            // original terrain menus and dialog boxes
+//define pp_BNDF_MENU_BUG       // adds an extra menu field for geometry boundary files, a bug (highlight bug to make sure disabled code is not needed_
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
