@@ -3929,6 +3929,7 @@ void SetupPart(int value, int option){
 void LoadParticleEvacMenu(int value, int option){
   int errorcode,i;
 
+  if(value==MENU_DUMMY)return;
   part_load_size = 0;
   part_file_count = 0;
   global_part_boundsize = 0;
@@ -10193,6 +10194,7 @@ updatemenu=0;
         glutAddMenuEntry(menulabel,i);
       }
     }
+    glutAddMenuEntry(_("Unload all"), MENU_PARTICLE_UNLOAD_ALL);
 
     if(nmeshes==1){
       CREATEMENU(particlemenu,LoadParticleMenu);
@@ -10227,16 +10229,23 @@ updatemenu=0;
         if(part_load_state==2)strcat(menulabel, "*");
         strcat(menulabel, "Particles");
         glutAddMenuEntry(menulabel, MENU_PARTICLE_ALLMESHES);
+      }
+      glutAddMenuEntry("-",MENU_DUMMY);
+      if(partfast==1)glutAddMenuEntry(_("*Fast loading"), MENU_PART_PARTFAST);
+      if(partfast==0)glutAddMenuEntry(_("Fast loading"), MENU_PART_PARTFAST);
+      if(nmeshes>1){
+        char menulabel[1024];
+
         strcpy(menulabel, "Mesh");
         GLUTADDSUBMENU(menulabel, particlesubmenu);
       }
     }
-    if(partfast==1)glutAddMenuEntry(_("*Fast loading"), MENU_PART_PARTFAST);
-    if(partfast==0)glutAddMenuEntry(_("Fast loading"), MENU_PART_PARTFAST);
     glutAddMenuEntry(_("Settings..."), MENU_PART_SETTINGS);
-    if(npartloaded>=1){
-      if(npartloaded>1)GLUTADDSUBMENU(_("Unload"),unloadpartmenu);
-      glutAddMenuEntry(_("Unload all"), MENU_PARTICLE_UNLOAD_ALL);
+    if(npartloaded>1){
+      GLUTADDSUBMENU(_("Unload"),unloadpartmenu);
+    }
+    else{
+      glutAddMenuEntry(_("Unload"), MENU_PARTICLE_UNLOAD_ALL);
     }
   }
 
@@ -10563,6 +10572,9 @@ updatemenu=0;
         }
       }
     }
+    if(nslicedups > 0){
+      GLUTADDSUBMENU(_("Duplicate vector slices"), duplicatevectorslicemenu);
+    }
     if(nmultivsliceinfo>0&&nmultivsliceinfo<nvsliceinfo){
       char loadmenulabel[100];
       char steplabel[100];
@@ -10573,10 +10585,6 @@ updatemenu=0;
         strcat(loadmenulabel, steplabel);
       }
       GLUTADDSUBMENU(loadmenulabel, vsliceloadmenu);
-    }
-
-    if(nslicedups > 0){
-      GLUTADDSUBMENU(_("Duplicate vector slices"), duplicatevectorslicemenu);
     }
     glutAddMenuEntry(_("Settings..."), MENU_LOADVSLICE_SETTINGS);
     if(nvsliceloaded>1){
@@ -11014,22 +11022,21 @@ updatemenu=0;
 
     if(nmultisliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
     GLUTADDSUBMENU(_("Skip"), sliceskipmenu);
-    if(compute_slice_file_sizes==1){
-      glutAddMenuEntry(_("  *compute size of slice files to be loaded"), MENU_SLICE_FILE_SIZES);
-    }
-    else{
-      glutAddMenuEntry(_("  compute size of slice files to be loaded"), MENU_SLICE_FILE_SIZES);
-    }
     if(use_set_slicecolor==1){
-      glutAddMenuEntry(_("  *defer slice coloring"), MENU_SLICECOLORDEFER);
+      glutAddMenuEntry(_("*Defer slice coloring"), MENU_SLICECOLORDEFER);
     }
     else{
-      glutAddMenuEntry(_("  defer slice coloring"), MENU_SLICECOLORDEFER);
+      glutAddMenuEntry(_("Defer slice coloring"), MENU_SLICECOLORDEFER);
     }
     if(nslicedups > 0){
       GLUTADDSUBMENU(_("Duplicate slices"), duplicateslicemenu);
     }
-    glutAddMenuEntry(_("Settings..."), MENU_SLICE_SETTINGS);
+    if(compute_slice_file_sizes==1){
+      glutAddMenuEntry(_("*Show slice file sizes"), MENU_SLICE_FILE_SIZES);
+    }
+    else{
+      glutAddMenuEntry(_("Show slice file sizes"), MENU_SLICE_FILE_SIZES);
+    }
     if(nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo){
       char loadmenulabel[100];
       char steplabel[100];
@@ -11041,6 +11048,7 @@ updatemenu=0;
       }
       GLUTADDSUBMENU(loadmenulabel,loadslicemenu);
     }
+    glutAddMenuEntry(_("Settings..."), MENU_SLICE_SETTINGS);
     if(nmultisliceloaded+geom_slice_loaded>1){
       GLUTADDSUBMENU(_("Unload"), unloadmultislicemenu);
     }
@@ -11255,18 +11263,17 @@ updatemenu=0;
             glutAddMenuEntry("SOOT/HRRPUV(experimental loading)",MENU_SMOKE_SOOT_HRRPUV);
           }
 #endif
-          if(n_soot_menu>0||n_hrr_menu>0){
-            glutAddMenuEntry("-", MENU_DUMMY3);
-            GLUTADDSUBMENU(_("Mesh"), loadsmoke3dsinglemenu);
-          }
         }
 
         glutAddMenuEntry("-", MENU_DUMMY3);
         if(compute_smoke3d_file_sizes==1){
-          glutAddMenuEntry(_("*compute size of 3D smoke files to be loaded"), MENU_SMOKE_FILE_SIZES);
+          glutAddMenuEntry(_("*Show 3D smoke file size"), MENU_SMOKE_FILE_SIZES);
         }
         else{
-          glutAddMenuEntry(_("compute size of 3D smoke files to be loaded"), MENU_SMOKE_FILE_SIZES);
+          glutAddMenuEntry(_("Show 3D smoke file size"), MENU_SMOKE_FILE_SIZES);
+        }
+        if(nmeshes>1&&(n_soot_menu>0||n_hrr_menu>0)){
+          GLUTADDSUBMENU(_("Mesh"), loadsmoke3dsinglemenu);
         }
         glutAddMenuEntry(_("Settings..."), MENU_SMOKE_SETTINGS);
         if(nsmoke3dloaded==1)glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
@@ -11393,15 +11400,13 @@ updatemenu=0;
 
         i = plot3dorderindex[ii];
         plot3di = plot3dinfo + i;
+        if(ii==nplot3dinfo-1){
+          glutAddMenuEntry("-", MENU_PLOT3D_DUMMY);
 #ifndef pp_PLOT3D_REDUCEMENUS
-        if(ii==nplot3dinfo-1&&nmeshes>1){
-          GLUTADDSUBMENU(_("Mesh"),plot3dsinglemeshmenu);
-        }
+          if(nmeshes>1){
+            GLUTADDSUBMENU(_("Mesh"), plot3dsinglemeshmenu);
+          }
 #endif
-        if(ii==0){
-          int plot3d_load_state;
-          char prefix[3];
-
           glutAddMenuEntry(_("Settings..."), MENU_PLOT3D_SETTINGS);
           if(nplot3dloaded>1){
             GLUTADDSUBMENU(_("Unload"),unloadplot3dmenu);
@@ -11409,7 +11414,11 @@ updatemenu=0;
           else{
             glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
           }
-          glutAddMenuEntry("-", MENU_PLOT3D_DUMMY);
+        }
+        if(ii==0){
+          int plot3d_load_state;
+          char prefix[3];
+
           strcpy(menulabel,plot3di->longlabel);
           glutAddMenuEntry(menulabel,MENU_PLOT3D_DUMMY);
           Plot3DLoadState(plot3di->time, &plot3d_load_state);
@@ -12229,7 +12238,7 @@ updatemenu=0;
 
       // plot3d
 
-      if(nplot3dinfo>0)GLUTADDSUBMENU(_("Plot3d"),loadplot3dmenu);
+      if(nplot3dinfo>0)GLUTADDSUBMENU(_("Plot3D"),loadplot3dmenu);
 
       // zone fire
 
