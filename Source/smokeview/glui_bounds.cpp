@@ -2648,7 +2648,7 @@ void SetLoadedPartBounds(int *list, int nlist){
 
 #ifdef pp_REFRESH
 extern GLUI *glui_clip, *glui_colorbar, *glui_labels, *glui_geometry, *glui_motion, *glui_device;
-extern GLUI *glui_shooter, *glui_tour, *glui_stereo, *glui_trainer, *glui_wui;
+extern GLUI *glui_shooter, *glui_tour, *glui_stereo, *glui_trainer;
 #endif
 
 int cb_up_rgb[3], cb_down_rgb[3];
@@ -3008,7 +3008,6 @@ extern "C" void RefreshGluiDialogs(void){
   if(glui_stereo!=NULL)glui_stereo->refresh();
   if(glui_tour!=NULL)glui_tour->refresh();
   if(glui_trainer!=NULL)glui_trainer->refresh();
-  if(glui_wui!=NULL)glui_wui->refresh();
 }
 #endif
 

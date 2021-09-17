@@ -994,7 +994,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define DIALOG_TOUR_SHOW 21
 #define DIALOG_TOUR_HIDE 44
 #define DIALOG_TRAINER   25
-#define DIALOG_WUI       26
 #define DIALOG_SHOWFILES 33
 #define DIALOG_SCRIPT    32
 #define DIALOG_CONFIG    34

@@ -5056,9 +5056,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     }
   }
 
-  if(update_fire_line == 0 && strcmp(sd->label.shortlabel, "Fire line") == 0){
-    update_fire_line = 1;
-  }
   update_flipped_colorbar=1;
 
   if(colorbartype_ini == -1){

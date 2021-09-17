@@ -1546,9 +1546,6 @@ void DialogMenu(int value){
   case DIALOG_STEREO:
     ShowGluiStereo();
     break;
-  case DIALOG_WUI:
-    ShowGluiWui();
-    break;
   case DIALOG_COLORBAR:
     showcolorbar_dialog=1-showcolorbar_dialog;
     if(showcolorbar_dialog==1){
@@ -1588,7 +1585,6 @@ void DialogMenu(int value){
     HideGluiMotion();
     HideGluiTour();
     HideGluiClip();
-    HideGluiWui();
     HideGluiStereo();
     HideGluiColorbar();
     if(showedit_dialog==1)DialogMenu(DIALOG_GEOMETRY);
@@ -6508,7 +6504,6 @@ void GeometryMenu(int value){
     else{
       planar_terrain_slice=1;
     }
-    UpdateGluiWui();
     break;
   case GEOM_ShowAll:
     if(isZoneFireModel)visFrame=1;
@@ -7849,21 +7844,7 @@ updatemenu=0;
       if(terrain_show_geometry_surface==0)glutAddMenuEntry(_("surface"),       MENU_TERRAIN_SHOW_SURFACE);
       if(terrain_showonly_top==1)glutAddMenuEntry(_("*show only top surface"), MENU_TERRAIN_SHOW_TOP);
       if(terrain_showonly_top==0)glutAddMenuEntry(_("show only top surface"),  MENU_TERRAIN_SHOW_TOP);
-#ifdef pp_TERRAIN_OLD
-      if(terrain_show_geometry_outline==1)glutAddMenuEntry(_("*edges"),        MENU_TERRAIN_SHOW_LINES);
-      if(terrain_show_geometry_outline==0)glutAddMenuEntry(_("edges"),         MENU_TERRAIN_SHOW_LINES);
-      if(terrain_show_geometry_points==1)glutAddMenuEntry(_("*vertices"),      MENU_TERRAIN_SHOW_POINTS);
-      if(terrain_show_geometry_points==0)glutAddMenuEntry(_("vertices"),       MENU_TERRAIN_SHOW_POINTS);
-#endif
     }
-#ifdef pp_TERRAIN_OLD
-    if(ngeominfoptrs>0){
-      if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS)glutAddMenuEntry(_("*bounding box(always)"),     MENU_TERRAIN_BOUNDING_BOX);
-      if(show_geom_boundingbox!=SHOW_BOUNDING_BOX_ALWAYS)glutAddMenuEntry(_("bounding box(always)"),      MENU_TERRAIN_BOUNDING_BOX);
-      if(show_geom_boundingbox==SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("*bounding box(mouse down)"), MENU_TERRAIN_BOUNDING_BOX_AUTO);
-      if(show_geom_boundingbox!=SHOW_BOUNDING_BOX_MOUSE_DOWN)glutAddMenuEntry(_("bounding box(mouse down)"),  MENU_TERRAIN_BOUNDING_BOX_AUTO);
-    }
-#endif
     if(nterrain_textures>0){
       glutAddMenuEntry("-", MENU_DUMMY);
       glutAddMenuEntry("textures:", MENU_DUMMY);
@@ -7888,15 +7869,9 @@ updatemenu=0;
 
   CREATEMENU(geometrymenu,GeometryMenu);
   if(ntotal_blockages>0)GLUTADDSUBMENU(_("Obstacles"),blockagemenu);
-#ifdef pp_TERRAIN_OLD
-  if((auto_terrain==0&&ngeominfo>0)||(auto_terrain==1&&ngeominfo>1)){
-    GLUTADDSUBMENU(_("Immersed"), immersedmenu);
-  }
-#else
   if(ngeominfo>0){
     GLUTADDSUBMENU(_("Immersed"), immersedmenu);
   }
-#endif
   if(GetNTotalVents()>0)GLUTADDSUBMENU(_("Surfaces"), ventmenu);
   if(nrooms > 0){
     if(visCompartments == 1){
@@ -9776,15 +9751,6 @@ updatemenu=0;
   }
   glutAddMenuEntry(_("Show/Hide..."), DIALOG_SHOWFILES);
   glutAddMenuEntry(_("Particle tracking..."), DIALOG_SHOOTER);
-#ifdef pp_TERRAIN_OLD
-  if(nterraininfo>0){
-#ifdef pp_DIALOG_SHORTCUTS
-    glutAddMenuEntry(_("WUI display... ALT w..."), DIALOG_WUI);
-#else
-    glutAddMenuEntry(_("WUI display..."), DIALOG_WUI);
-#endif
-  }
-#endif
 
   /* --------------------------------window menu -------------------------- */
 
