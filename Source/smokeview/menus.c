@@ -10421,146 +10421,146 @@ updatemenu=0;
         glutAddMenuEntry("-",MENU_DUMMY);
         GLUTADDSUBMENU(_("Unload"),unloadvslicemenu);
 
-    if(nslicedups > 0){
-      CREATEMENU(duplicatevectorslicemenu,LoadMultiVSliceMenu);
-      if(vectorslicedup_option == SLICEDUP_KEEPALL){
-        glutAddMenuEntry(_("  *keep all"), MENU_KEEP_ALL);
-      }
-      else{
-        glutAddMenuEntry(_("  keep all"), MENU_KEEP_ALL);
-      }
-      if(vectorslicedup_option == SLICEDUP_KEEPFINE){
-        glutAddMenuEntry(_("  *keep fine"), MENU_KEEP_FINE);
-      }
-      else{
-        glutAddMenuEntry(_("  keep fine"), MENU_KEEP_FINE);
-      }
-      if(vectorslicedup_option == SLICEDUP_KEEPCOARSE){
-        glutAddMenuEntry(_("  *keep coarse"), MENU_KEEP_COARSE);
-      }
-      else{
-        glutAddMenuEntry(_("  keep coarse"), MENU_KEEP_COARSE);
-      }
-    }
-    if(nmultivsliceinfo<nvsliceinfo){
-      CREATEMENU(unloadmultivslicemenu,UnloadMultiVSliceMenu);
-      for(i=0;i<nmultivsliceinfo;i++){
-        multivslicedata *mvslicei;
-
-        mvslicei = multivsliceinfo + i;
-        if(mvslicei->loaded!=0){
-          glutAddMenuEntry(mvslicei->menulabel2,i);
-        }
-      }
-      glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
-
-      nloadsubmvslicemenu=1;
-      for(i=1;i<nmultivsliceinfo;i++){
-        vslicedata *vi, *vim1;
-        slicedata *si, *sim1;
-
-        vi = vsliceinfo + (multivsliceinfo+i)->ivslices[0];
-        vim1 = vsliceinfo + (multivsliceinfo+i-1)->ivslices[0];
-        si = sliceinfo + vi->ival;
-        sim1 = sliceinfo + vim1->ival;
-        if(strcmp(si->label.longlabel,sim1->label.longlabel)!=0){
-          nloadsubmvslicemenu++;
-        }
-      }
-      NewMemory((void **)&loadsubmvslicemenu,nloadsubmvslicemenu*sizeof(int));
-      for(i=0;i<nloadsubmvslicemenu;i++){
-        loadsubmvslicemenu[i]=0;
-      }
-
-      nmultisliceloaded=0;
-      nloadsubmvslicemenu=0;
-      for(i=0;i<nmultivsliceinfo;i++){
-        vslicedata *vi, *vim1, *vip1;
-        slicedata *si, *sim1, *sip1;
-        char menulabel[1024];
-        multivslicedata *mvslicei;
-
-        mvslicei = multivsliceinfo + i;
-
-        if(i>0){
-          vim1 = vsliceinfo + (multivsliceinfo+i-1)->ivslices[0];
-          sim1 = sliceinfo + vim1->ival;
-        }
-        vi = vsliceinfo + mvslicei->ivslices[0];
-        si = sliceinfo + vi->ival;
-        if(i<nmultivsliceinfo-1){
-          vip1 = vsliceinfo + (multivsliceinfo+i+1)->ivslices[0];
-          sip1 = sliceinfo + vip1->ival;
-        }
-        if(i==0||strcmp(si->label.longlabel,sim1->label.longlabel)!=0){
-          CREATEMENU(loadsubmvslicemenu[nloadsubmvslicemenu],LoadMultiVSliceMenu);
-          msubvslice_menuindex[nloadsubmvslicemenu] = vi->ival;
-        }
-
-        STRCPY(menulabel,"");
-        if(mvslicei->loaded==1){
-          STRCAT(menulabel,"*");
-          nmultisliceloaded++;
-        }
-        else if(mvslicei->loaded==-1){
-          STRCAT(menulabel,"#");
-        }
-        else{
-        }
-        STRCAT(menulabel,mvslicei->menulabel);
-        if(si->slicelabel!=NULL){
-          STRCAT(menulabel," - ");
-          STRCAT(menulabel,si->slicelabel);
-        }
-        glutAddMenuEntry(menulabel,i);
-        if(i==nmultivsliceinfo-1||strcmp(si->label.longlabel,sip1->label.longlabel)!=0){
-          if(mvslicei->ndirxyz[1]+ mvslicei->ndirxyz[2] + mvslicei->ndirxyz[3]>1){
-            glutAddMenuEntry("-",MENU_DUMMY);
+        if(nslicedups > 0){
+          CREATEMENU(duplicatevectorslicemenu,LoadMultiVSliceMenu);
+          if(vectorslicedup_option == SLICEDUP_KEEPALL){
+            glutAddMenuEntry(_("  *keep all"), MENU_KEEP_ALL);
           }
-          if(mvslicei->ndirxyz[1]>1){
-            glutAddMenuEntry(_A(_("Load all"), " x"),-1000-4*nloadsubmvslicemenu-1);
+          else{
+            glutAddMenuEntry(_("  keep all"), MENU_KEEP_ALL);
           }
-          if(mvslicei->ndirxyz[2]>1){
-            glutAddMenuEntry(_A(_("Load all"), " y"),-1000-4*nloadsubmvslicemenu-2);
+          if(vectorslicedup_option == SLICEDUP_KEEPFINE){
+            glutAddMenuEntry(_("  *keep fine"), MENU_KEEP_FINE);
           }
-          if(mvslicei->ndirxyz[3]>1){
-            glutAddMenuEntry(_A(_("Load all"), " z"),-1000-4*nloadsubmvslicemenu-3);
+          else{
+            glutAddMenuEntry(_("  keep fine"), MENU_KEEP_FINE);
           }
-          if(mvslicei->ndirxyz[1]+mvslicei->ndirxyz[2]+mvslicei->ndirxyz[3]>1){
-            glutAddMenuEntry(_("Load all"),-1000-4*nloadsubmvslicemenu);
+          if(vectorslicedup_option == SLICEDUP_KEEPCOARSE){
+            glutAddMenuEntry(_("  *keep coarse"), MENU_KEEP_COARSE);
+          }
+          else{
+            glutAddMenuEntry(_("  keep coarse"), MENU_KEEP_COARSE);
           }
         }
-        if(i==0||strcmp(si->label.longlabel,sim1->label.longlabel)!=0){
-          nloadsubmvslicemenu++;
-        }
-      }
+        if(nmultivsliceinfo<nvsliceinfo){
+          CREATEMENU(unloadmultivslicemenu,UnloadMultiVSliceMenu);
+          for(i=0;i<nmultivsliceinfo;i++){
+            multivslicedata *mvslicei;
 
-      nloadsubmvslicemenu=0;
-      CREATEMENU(loadmultivslicemenu,LoadMultiVSliceMenu);
-      for(i=0;i<nmultivsliceinfo;i++){
-        vslicedata *vi, *vim1;
-        slicedata *si, *sim1;
-
-        vi = vsliceinfo + (multivsliceinfo+i)->ivslices[0];
-        si = sliceinfo + vi->ival;
-        if(i>0){
-          vim1 = vsliceinfo + (multivsliceinfo+i-1)->ivslices[0];
-          sim1 = sliceinfo + vim1->ival;
-        }
-        if(i==0||(i>0&&strcmp(si->label.longlabel,sim1->label.longlabel)!=0)){
-          char mlabel[1024], mlabel2[1024];
-
-          STRCPY(mlabel,si->label.longlabel);
-          if((i==0&&si->mesh_type>0)||(i>0&&si->mesh_type!=sim1->mesh_type)){
-            sprintf(mlabel2,"*** Evac type %i meshes ***",si->mesh_type);
-            glutAddMenuEntry(mlabel2,MENU_DUMMY);
+            mvslicei = multivsliceinfo + i;
+            if(mvslicei->loaded!=0){
+              glutAddMenuEntry(mvslicei->menulabel2,i);
+            }
           }
-          GLUTADDSUBMENU(mlabel,loadsubmvslicemenu[nloadsubmvslicemenu]);
-          nloadsubmvslicemenu++;
+          glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
+
+          nloadsubmvslicemenu=1;
+          for(i=1;i<nmultivsliceinfo;i++){
+            vslicedata *vi, *vim1;
+            slicedata *si, *sim1;
+
+            vi = vsliceinfo + (multivsliceinfo+i)->ivslices[0];
+            vim1 = vsliceinfo + (multivsliceinfo+i-1)->ivslices[0];
+            si = sliceinfo + vi->ival;
+            sim1 = sliceinfo + vim1->ival;
+            if(strcmp(si->label.longlabel,sim1->label.longlabel)!=0){
+              nloadsubmvslicemenu++;
+            }
+          }
+          NewMemory((void **)&loadsubmvslicemenu,nloadsubmvslicemenu*sizeof(int));
+          for(i=0;i<nloadsubmvslicemenu;i++){
+            loadsubmvslicemenu[i]=0;
+          }
+
+          nmultisliceloaded=0;
+          nloadsubmvslicemenu=0;
+          for(i=0;i<nmultivsliceinfo;i++){
+            vslicedata *vi, *vim1, *vip1;
+            slicedata *si, *sim1, *sip1;
+            char menulabel[1024];
+            multivslicedata *mvslicei;
+
+            mvslicei = multivsliceinfo + i;
+
+            if(i>0){
+              vim1 = vsliceinfo + (multivsliceinfo+i-1)->ivslices[0];
+              sim1 = sliceinfo + vim1->ival;
+            }
+            vi = vsliceinfo + mvslicei->ivslices[0];
+            si = sliceinfo + vi->ival;
+            if(i<nmultivsliceinfo-1){
+              vip1 = vsliceinfo + (multivsliceinfo+i+1)->ivslices[0];
+              sip1 = sliceinfo + vip1->ival;
+            }
+            if(i==0||strcmp(si->label.longlabel,sim1->label.longlabel)!=0){
+              CREATEMENU(loadsubmvslicemenu[nloadsubmvslicemenu],LoadMultiVSliceMenu);
+              msubvslice_menuindex[nloadsubmvslicemenu] = vi->ival;
+            }
+
+            STRCPY(menulabel,"");
+            if(mvslicei->loaded==1){
+              STRCAT(menulabel,"*");
+              nmultisliceloaded++;
+            }
+            else if(mvslicei->loaded==-1){
+              STRCAT(menulabel,"#");
+            }
+            else{
+            }
+            STRCAT(menulabel,mvslicei->menulabel);
+            if(si->slicelabel!=NULL){
+              STRCAT(menulabel," - ");
+              STRCAT(menulabel,si->slicelabel);
+            }
+            glutAddMenuEntry(menulabel,i);
+            if(i==nmultivsliceinfo-1||strcmp(si->label.longlabel,sip1->label.longlabel)!=0){
+              if(mvslicei->ndirxyz[1]+ mvslicei->ndirxyz[2] + mvslicei->ndirxyz[3]>1){
+                glutAddMenuEntry("-",MENU_DUMMY);
+              }
+              if(mvslicei->ndirxyz[1]>1){
+                glutAddMenuEntry(_A(_("Load all"), " x"),-1000-4*nloadsubmvslicemenu-1);
+              }
+              if(mvslicei->ndirxyz[2]>1){
+                glutAddMenuEntry(_A(_("Load all"), " y"),-1000-4*nloadsubmvslicemenu-2);
+              }
+              if(mvslicei->ndirxyz[3]>1){
+                glutAddMenuEntry(_A(_("Load all"), " z"),-1000-4*nloadsubmvslicemenu-3);
+              }
+              if(mvslicei->ndirxyz[1]+mvslicei->ndirxyz[2]+mvslicei->ndirxyz[3]>1){
+                glutAddMenuEntry(_("Load all"),-1000-4*nloadsubmvslicemenu);
+              }
+            }
+            if(i==0||strcmp(si->label.longlabel,sim1->label.longlabel)!=0){
+              nloadsubmvslicemenu++;
+            }
+          }
+
+          nloadsubmvslicemenu=0;
+          CREATEMENU(loadmultivslicemenu,LoadMultiVSliceMenu);
+          for(i=0;i<nmultivsliceinfo;i++){
+            vslicedata *vi, *vim1;
+            slicedata *si, *sim1;
+
+            vi = vsliceinfo + (multivsliceinfo+i)->ivslices[0];
+            si = sliceinfo + vi->ival;
+            if(i>0){
+              vim1 = vsliceinfo + (multivsliceinfo+i-1)->ivslices[0];
+              sim1 = sliceinfo + vim1->ival;
+            }
+            if(i==0||(i>0&&strcmp(si->label.longlabel,sim1->label.longlabel)!=0)){
+              char mlabel[1024], mlabel2[1024];
+
+              STRCPY(mlabel,si->label.longlabel);
+              if((i==0&&si->mesh_type>0)||(i>0&&si->mesh_type!=sim1->mesh_type)){
+                sprintf(mlabel2,"*** Evac type %i meshes ***",si->mesh_type);
+                glutAddMenuEntry(mlabel2,MENU_DUMMY);
+              }
+              GLUTADDSUBMENU(mlabel,loadsubmvslicemenu[nloadsubmvslicemenu]);
+              nloadsubmvslicemenu++;
+            }
+          }
+          if(nmultivsliceinfo>0)glutAddMenuEntry("-",MENU_DUMMY);
         }
-      }
-      if(nmultivsliceinfo>0)glutAddMenuEntry("-",MENU_DUMMY);
-    }
       }
     }
     if(nmultivsliceinfo>0&&nmultivsliceinfo<nvsliceinfo){
@@ -10589,63 +10589,63 @@ updatemenu=0;
 
 // setup boundary slices for slice files
 
-    {
-      int ii;
+  {
+    int ii;
 
-      // count patch submenus
+// count patch submenus
 
-      have_geom_slice_menus=0;
-      nloadsubpatchmenu_s = 0;
-      for(ii = 0;ii<npatchinfo;ii++){
-        int im1;
-        patchdata *patchi, *patchim1;
+    have_geom_slice_menus=0;
+    nloadsubpatchmenu_s = 0;
+    for(ii = 0;ii<npatchinfo;ii++){
+      int im1;
+      patchdata *patchi, *patchim1;
 
-        i = patchorderindex[ii];
-        if(ii>0){
-          im1 = patchorderindex[ii-1];
-          patchim1 = patchinfo+im1;
-        }
-        patchi = patchinfo+i;
-        if(ii==0||strcmp(patchi->menulabel_base, patchim1->menulabel_base)!=0){
-          nloadsubpatchmenu_s++;
-        }
+      i = patchorderindex[ii];
+      if(ii>0){
+        im1 = patchorderindex[ii-1];
+        patchim1 = patchinfo+im1;
       }
-
-      // create patch submenus
-
-      if(nloadsubpatchmenu_s > 0){
-        NewMemory((void **)&loadsubpatchmenu_s, nloadsubpatchmenu_s * sizeof(int));
-        NewMemory((void **)&nsubpatchmenus_s, nloadsubpatchmenu_s * sizeof(int));
-      }
-      for(i = 0;i<nloadsubpatchmenu_s;i++){
-        loadsubpatchmenu_s[i] = 0;
-        nsubpatchmenus_s[i] = 0;
-      }
-
-      iloadsubpatchmenu_s = 0;
-      for(ii = 0;ii<npatchinfo;ii++){
-        int im1;
-        patchdata *patchi, *patchim1;
-
-        i = patchorderindex[ii];
-        if(ii>0){
-          im1 = patchorderindex[ii-1];
-          patchim1 = patchinfo+im1;
-        }
-        patchi = patchinfo+i;
-        if(ii==0||strcmp(patchi->menulabel_base, patchim1->menulabel_base)!=0){
-          CREATEMENU(loadsubpatchmenu_s[iloadsubpatchmenu_s], LoadBoundaryMenu);
-          iloadsubpatchmenu_s++;
-        }
-        if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label, "INCLUDE_GEOM")!=0)continue;
-        if(nsubpatchmenus_s[iloadsubpatchmenu_s - 1] == 0 ||
-          strcmp(patchi->menulabel_suffix, patchim1->menulabel_suffix) != 0){
-          nsubpatchmenus_s[iloadsubpatchmenu_s-1]++;
-          have_geom_slice_menus=1;
-          glutAddMenuEntry(patchi->menulabel_suffix, -i-10);
-        }
+      patchi = patchinfo+i;
+      if(ii==0||strcmp(patchi->menulabel_base, patchim1->menulabel_base)!=0){
+        nloadsubpatchmenu_s++;
       }
     }
+
+// create patch submenus
+
+    if(nloadsubpatchmenu_s > 0){
+      NewMemory((void **)&loadsubpatchmenu_s, nloadsubpatchmenu_s * sizeof(int));
+      NewMemory((void **)&nsubpatchmenus_s, nloadsubpatchmenu_s * sizeof(int));
+    }
+    for(i = 0;i<nloadsubpatchmenu_s;i++){
+      loadsubpatchmenu_s[i] = 0;
+      nsubpatchmenus_s[i] = 0;
+    }
+
+    iloadsubpatchmenu_s = 0;
+    for(ii = 0;ii<npatchinfo;ii++){
+      int im1;
+      patchdata *patchi, *patchim1;
+
+      i = patchorderindex[ii];
+      if(ii>0){
+        im1 = patchorderindex[ii-1];
+        patchim1 = patchinfo+im1;
+      }
+      patchi = patchinfo+i;
+      if(ii==0||strcmp(patchi->menulabel_base, patchim1->menulabel_base)!=0){
+        CREATEMENU(loadsubpatchmenu_s[iloadsubpatchmenu_s], LoadBoundaryMenu);
+        iloadsubpatchmenu_s++;
+      }
+      if(patchi->filetype_label==NULL||strcmp(patchi->filetype_label, "INCLUDE_GEOM")!=0)continue;
+      if(nsubpatchmenus_s[iloadsubpatchmenu_s - 1] == 0 ||
+        strcmp(patchi->menulabel_suffix, patchim1->menulabel_suffix) != 0){
+        nsubpatchmenus_s[iloadsubpatchmenu_s-1]++;
+        have_geom_slice_menus=1;
+        glutAddMenuEntry(patchi->menulabel_suffix, -i-10);
+      }
+    }
+  }
 
   /* --------------------------------unload and load slice menus -------------------------- */
 
