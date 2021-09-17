@@ -10418,6 +10418,8 @@ updatemenu=0;
             nloadsubvslicemenu++;
           }
         }
+        glutAddMenuEntry("-",MENU_DUMMY);
+        GLUTADDSUBMENU(_("Unload"),unloadvslicemenu);
 
     if(nslicedups > 0){
       CREATEMENU(duplicatevectorslicemenu,LoadMultiVSliceMenu);
@@ -10578,7 +10580,7 @@ updatemenu=0;
     }
     glutAddMenuEntry(_("Settings..."), MENU_LOADVSLICE_SETTINGS);
     if(nvsliceloaded>1){
-      GLUTADDSUBMENU(_("Unload"),unloadvslicemenu);
+      GLUTADDSUBMENU(_("Unload"),unloadmultivslicemenu);
     }
     else{
      glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
@@ -10848,8 +10850,6 @@ updatemenu=0;
       }
     }
     glutAddMenuEntry("-", MENU_DUMMY);
-    GLUTADDSUBMENU(_("Skip"), sliceskipmenu);
-    glutAddMenuEntry(_("Settings..."), MENU_SLICE_SETTINGS);
     if(nsliceloaded+geom_slice_loaded>1){
       GLUTADDSUBMENU(_("Unload"),unloadslicemenu);
     }
