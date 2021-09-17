@@ -4500,7 +4500,7 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
     }
   }
   if(compute_smoke3d_file_sizes==1){
-    PRINTF(" size of 3D smoke files to be loaded=");
+    PRINTF(" file size: ");
     if(total_size>1000000000){
       PRINTF("%.1f GB\n", (float)total_size/1000000000.);
     }
@@ -4510,7 +4510,7 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
     else{
       PRINTF("%.0f kB\n", (float)total_size/1000.);
     }
-    PRINTF(" minimum network load time=%f s\n",(float)total_size*8.0/1000000000.0);
+    PRINTF(" load time: %f s\n",(float)total_size*8.0/1000000000.0);
     PRINTF("   (assuming a gigabit network connection)\n");
   }
   *count = file_count;
@@ -5057,7 +5057,7 @@ void LoadMultiSliceMenu(int value){
       UnloadAllSliceFiles(longlabel);  // unload all slices except for the type being loaded now
       total_size = LoadAllMSlices(last_slice, mslicei);
       if(compute_slice_file_sizes==1){
-        PRINTF(" size of slice files to be loaded=");
+        PRINTF(" file size: ");
         if(total_size>1000000000){
           PRINTF("%.1f GB\n", (float)total_size/1000000000.);
         }
@@ -5067,7 +5067,7 @@ void LoadMultiSliceMenu(int value){
         else{
           PRINTF("%.0f kB\n", (float)total_size/1000.);
         }
-        PRINTF(" minimum network load time=%f s\n",(float)total_size*8.0/1000000000.0);
+        PRINTF(" load time: %f s\n",(float)total_size*8.0/1000000000.0);
         PRINTF("   (assuming a gigabit network connection)\n");
       }
     }
