@@ -273,7 +273,6 @@ int SetupCase(char *filename){
   GluiShooterSetup(mainwindow_id);
   GluiGeometrySetup(mainwindow_id);
   GluiClipSetup(mainwindow_id);
-  GluiWuiSetup(mainwindow_id);
   GluiLabelsSetup(mainwindow_id);
   GluiDeviceSetup(mainwindow_id);
   GluiTourSetup(mainwindow_id);

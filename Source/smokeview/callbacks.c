@@ -2535,12 +2535,6 @@ void Keyboard(unsigned char key, int flag){
     case 'w':
       switch(keystate){
         case GLUT_ACTIVE_ALT:
-#ifdef pp_DIALOG_SHORTCUTS
-          if(nterraininfo>0){
-            DialogMenu(DIALOG_WUI); // WUI dialog
-          }
-          break;
-#endif
         case GLUT_ACTIVE_CTRL:
         default:
           if(rotation_type==EYE_CENTERED){

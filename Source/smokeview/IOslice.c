@@ -5056,9 +5056,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
     }
   }
 
-  if(update_fire_line == 0 && strcmp(sd->label.shortlabel, "Fire line") == 0){
-    update_fire_line = 1;
-  }
   update_flipped_colorbar=1;
 
   if(colorbartype_ini == -1){
@@ -5967,11 +5964,22 @@ void DrawVolSliceTerrain(const slicedata *sd){
         int n11, n31, n13, n33;
         int j2;
 
+#define FDS_OFFSET 0.005
+
         j2 = MIN(j+slice_skip, sd->js2);
-        z11 = znode[IJ2(i, j)];
-        z31 = znode[IJ2(i2, j)];
-        z13 = znode[IJ2(i, j2)];
-        z33 = znode[IJ2(i2, j2)];
+        z11 = znode[IJ2(i, j)] + SCALE2FDS(FDS_OFFSET);
+        z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
+
+        z31 = znode[IJ2(i2, j)]+SCALE2FDS(FDS_OFFSET);
+        z31 = terrain_zmin+geom_vert_exag*(z31-terrain_zmin);
+
+        z13 = znode[IJ2(i, j2)]+SCALE2FDS(FDS_OFFSET);
+        z13 = terrain_zmin+geom_vert_exag*(z13-terrain_zmin);
+
+        z33 = znode[IJ2(i2, j2)]+SCALE2FDS(FDS_OFFSET);
+        z33 = terrain_zmin+geom_vert_exag*(z33-terrain_zmin);
+
+
         zmid = (z11+z31+z13+z33)/4.0;
 
         yy1 = yplt[j];

@@ -542,6 +542,7 @@ void DrawGeom(int flag, int timestate){
   tridata **tris;
   int texture_state = OFF, texture_first=1;
 
+  if(auto_terrain==1)return;
   if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS||geom_bounding_box_mousedown==1){
     if(flag==DRAW_OPAQUE&&timestate==GEOM_STATIC&&have_geom_triangles==1){
       DrawGeomBoundingBox(NULL);

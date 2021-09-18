@@ -359,8 +359,10 @@ void DrawTerrainGeom(int option){
       // surface
       for(i = 0; i<terrain_nindices/3; i++){
         float *v1, *v2, *v3;
+        float v1o[3], v2o[3], v3o[3];
         float *c1;
         float *n1, *n2, *n3;
+        int j;
         unsigned int *ind;
         int inside_domain=0, outside_domain=1;
 
@@ -371,6 +373,16 @@ void DrawTerrainGeom(int option){
         v1 = terrain_vertices+9*ind[0];
         v2 = terrain_vertices+9*ind[1];
         v3 = terrain_vertices+9*ind[2];
+        for(j = 0; j<3; j++){
+          v1o[j] = v1[j];
+          v2o[j] = v2[j];
+          v3o[j] = v3[j];
+          if(j==2){
+            v1o[j] = terrain_zmin+geom_vert_exag*(v1o[j]-terrain_zmin);
+            v2o[j] = terrain_zmin+geom_vert_exag*(v2o[j]-terrain_zmin);
+            v3o[j] = terrain_zmin+geom_vert_exag*(v3o[j]-terrain_zmin);
+          }
+        }
 
         if(showgeom_inside_domain_local==0||showgeom_outside_domain==0){
           inside_domain = InDomain(v1, v2, v3);
@@ -384,15 +396,15 @@ void DrawTerrainGeom(int option){
         if(terrain_showonly_top==1&&n1[2]<0.0)continue;
         glColor3fv(c1);
         glNormal3fv(n1);
-        glVertex3fv(v1);
+        glVertex3fv(v1o);
 
         n2 = v2+3;
         glNormal3fv(n2);
-        glVertex3fv(v2);
+        glVertex3fv(v2o);
 
         n3 = v3+3;
         glNormal3fv(n3);
-        glVertex3fv(v3);
+        glVertex3fv(v3o);
       }
       glEnd();
     }
@@ -401,7 +413,7 @@ void DrawTerrainGeom(int option){
 
     //*** edges
 
-    if(terrain_show_geometry_outline==1){
+    if(show_faces_outline==1){
       glPushMatrix();
       glTranslatef(geom_delx, geom_dely, geom_delz);
       glLineWidth(geom_linewidth);
@@ -441,6 +453,11 @@ void DrawTerrainGeom(int option){
           v1o[j] = v1[j]+SCALE2FDS(FDS_OFFSET*n1[j]);
           v2o[j] = v2[j]+SCALE2FDS(FDS_OFFSET*n2[j]);
           v3o[j] = v3[j]+SCALE2FDS(FDS_OFFSET*n3[j]);
+          if(j==2){
+            v1o[j] = terrain_zmin+geom_vert_exag*(v1o[j]-terrain_zmin);
+            v2o[j] = terrain_zmin+geom_vert_exag*(v2o[j]-terrain_zmin);
+            v3o[j] = terrain_zmin+geom_vert_exag*(v3o[j]-terrain_zmin);
+          }
         }
 
         glVertex3fv(v1o);
@@ -458,7 +475,7 @@ void DrawTerrainGeom(int option){
 
     //*** vertices
 
-    if(terrain_show_geometry_points==1){
+    if(show_geom_verts==1){
       glPushMatrix();
       glTranslatef(geom_delx, geom_dely, geom_delz);
       glPointSize(geom_pointsize);
@@ -498,6 +515,11 @@ void DrawTerrainGeom(int option){
           v1o[j] = v1[j]+SCALE2FDS(FDS_OFFSET*n1[j]);
           v2o[j] = v2[j]+SCALE2FDS(FDS_OFFSET*n2[j]);
           v3o[j] = v3[j]+SCALE2FDS(FDS_OFFSET*n3[j]);
+          if(j==2){
+            v1o[j] = terrain_zmin+geom_vert_exag*(v1o[j]-terrain_zmin);
+            v2o[j] = terrain_zmin+geom_vert_exag*(v2o[j]-terrain_zmin);
+            v3o[j] = terrain_zmin+geom_vert_exag*(v3o[j]-terrain_zmin);
+          }
         }
 
         glVertex3fv(v1o);
@@ -516,7 +538,9 @@ void DrawTerrainGeom(int option){
       // surface
       for(i = 0; i<terrain_nindices/3; i++){
         float *v1, *v2, *v3;
+        float v1o[3], v2o[3], v3o[3];
         float *n1, *n2, *n3;
+        int j;
         unsigned int *ind;
         float n1n[3], n2n[3], n3n[3];
         int inside_domain=0, outside_domain=1;
@@ -527,6 +551,17 @@ void DrawTerrainGeom(int option){
         v1 = terrain_vertices+9*ind[0];
         v2 = terrain_vertices+9*ind[1];
         v3 = terrain_vertices+9*ind[2];
+
+        for(j = 0; j<3; j++){
+          v1o[j] = v1[j];
+          v2o[j] = v2[j];
+          v3o[j] = v3[j];
+          if(j==2){
+            v1o[j] = terrain_zmin+geom_vert_exag*(v1o[j]-terrain_zmin);
+            v2o[j] = terrain_zmin+geom_vert_exag*(v2o[j]-terrain_zmin);
+            v3o[j] = terrain_zmin+geom_vert_exag*(v3o[j]-terrain_zmin);
+          }
+        }
 
         if(showgeom_inside_domain_local==0||showgeom_outside_domain==0){
           inside_domain = InDomain(v1, v2, v3);
@@ -544,21 +579,21 @@ void DrawTerrainGeom(int option){
         glColor4fv(neutral_color);
 
         glNormal3fv(n1n);
-        glVertex3fv(v1);
+        glVertex3fv(v1o);
 
         n3 = v3+3;
         n3n[0] = -n3[0];
         n3n[1] = -n3[1];
         n3n[2] = -n3[2];
         glNormal3fv(n3n);
-        glVertex3fv(v3);
+        glVertex3fv(v3o);
 
         n2 = v2+3;
         n2n[0] = -n2[0];
         n2n[1] = -n2[1];
         n2n[2] = -n2[2];
         glNormal3fv(n2n);
-        glVertex3fv(v2);
+        glVertex3fv(v2o);
       }
       glEnd();
     }
@@ -571,6 +606,8 @@ void DrawTerrainGeom(int option){
       // surface
       for(i = 0; i<terrain_nindices/3; i++){
         float *v1, *v2, *v3;
+        float v1o[3], v2o[3], v3o[3];
+        int j;
         float *n1, *n2, *n3;
         unsigned int *ind;
         int inside_domain=0, outside_domain=1;
@@ -580,6 +617,17 @@ void DrawTerrainGeom(int option){
         v1 = terrain_vertices+9*ind[0];
         v2 = terrain_vertices+9*ind[1];
         v3 = terrain_vertices+9*ind[2];
+
+        for(j = 0; j<3; j++){
+          v1o[j] = v1[j];
+          v2o[j] = v2[j];
+          v3o[j] = v3[j];
+          if(j==2){
+            v1o[j] = terrain_zmin+geom_vert_exag*(v1o[j]-terrain_zmin);
+            v2o[j] = terrain_zmin+geom_vert_exag*(v2o[j]-terrain_zmin);
+            v3o[j] = terrain_zmin+geom_vert_exag*(v3o[j]-terrain_zmin);
+          }
+        }
 
         if(showgeom_inside_domain_local==0||showgeom_outside_domain==0){
           inside_domain = InDomain(v1, v2, v3);
@@ -593,15 +641,15 @@ void DrawTerrainGeom(int option){
         if(n1[2]>=0.0)continue;
         glColor4fv(neutral_color);
         glNormal3fv(n1);
-        glVertex3fv(v1);
+        glVertex3fv(v1o);
 
         n2 = v2+3;
         glNormal3fv(n2);
-        glVertex3fv(v2);
+        glVertex3fv(v2o);
 
         n3 = v3+3;
         glNormal3fv(n3);
-        glVertex3fv(v3);
+        glVertex3fv(v3o);
       }
       glEnd();
     }
@@ -622,11 +670,12 @@ void DrawTerrainGeom(int option){
       }
     }
 
-    TransparentOn();
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     glEnable(GL_TEXTURE_2D);
 
     int count = 0;
+    int is_transparent=0;
+    TransparentOff();
     for(ii = -1; ii<nterrain_textures; ii++){
       float dz;
       texturedata *texti;
@@ -644,14 +693,28 @@ void DrawTerrainGeom(int option){
       dz = SCALE2FDS((float)(count)*FDS_OFFSET);
       count++;
 
+      if(texti->is_transparent==1){
+        if(is_transparent==0){
+          is_transparent = 1;
+          TransparentOn();
+        }
+      }
+      else{
+        if(is_transparent==1){
+          is_transparent = 0;
+          TransparentOff();
+        }
+      }
       glBindTexture(GL_TEXTURE_2D, texti->name);
 
       glBegin(GL_TRIANGLES);
 
       for(i = 0; i<terrain_nindices/3; i++){
         float *v1, *v2, *v3;
+        float v1o[3], v2o[3], v3o[3];
         float *n1, *n2, *n3;
         float *t1, *t2, *t3;
+        int j;
         unsigned int *ind;
         int inside_domain=0, outside_domain=1;
 
@@ -660,6 +723,17 @@ void DrawTerrainGeom(int option){
         v1 = terrain_vertices+9*ind[0];
         v2 = terrain_vertices+9*ind[1];
         v3 = terrain_vertices+9*ind[2];
+
+        for(j = 0; j<3; j++){
+          v1o[j] = v1[j];
+          v2o[j] = v2[j];
+          v3o[j] = v3[j];
+          if(j==2){
+            v1o[j] = terrain_zmin+geom_vert_exag*(v1o[j]-terrain_zmin);
+            v2o[j] = terrain_zmin+geom_vert_exag*(v2o[j]-terrain_zmin);
+            v3o[j] = terrain_zmin+geom_vert_exag*(v3o[j]-terrain_zmin);
+          }
+        }
 
         if(showgeom_inside_domain_local==0||showgeom_outside_domain==0){
           inside_domain = InDomain(v1, v2, v3);
@@ -674,25 +748,24 @@ void DrawTerrainGeom(int option){
         if(n1[2]<0.0)continue;
         glNormal3fv(n1);
         glTexCoord2fv(t1);
-        glVertex3f(v1[0], v1[1], v1[2]+dz);
+        glVertex3f(v1o[0], v1o[1], v1o[2]+dz);
 
         t2 = terrain_tvertices+2*ind[1];
         n2 = v2+3;
         glTexCoord2fv(t2);
         glNormal3fv(n2);
-        glVertex3f(v2[0], v2[1], v2[2]+dz);
+        glVertex3f(v2o[0], v2o[1], v2o[2]+dz);
 
         t3 = terrain_tvertices+2*ind[2];
         n3 = v3+3;
         glTexCoord2fv(t3);
         glNormal3fv(n3);
-        glVertex3f(v3[0], v3[1], v3[2]+dz);
+        glVertex3f(v3o[0], v3o[1], v3o[2]+dz);
       }
       glEnd();
-
     }
     glDisable(GL_TEXTURE_2D);
-    TransparentOff();
+    if(is_transparent==1)TransparentOff();
   }
 
   glPopMatrix();

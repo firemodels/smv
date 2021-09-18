@@ -368,7 +368,6 @@ EXTERNCPP void GluiShooterSetup(int main_window);
 EXTERNCPP void GluiStereoSetup(int main_window);
 EXTERNCPP void GluiTourSetup(int main_window);
 EXTERNCPP void GluiTrainerSetup(int main_window);
-EXTERNCPP void GluiWuiSetup(int main_window);
 
 EXTERNCPP void GluiUpdateFontIndex(void);
 EXTERNCPP void GluiScriptDisable(void);
@@ -385,7 +384,6 @@ EXTERNCPP void UpdateGluiSliceUnits(void);
 EXTERNCPP void UpdateGluiPlot3Dtype(void);
 EXTERNCPP void UpdateGluiIsotype(void);
 EXTERNCPP void SetGLuiViewListManual(void);
-EXTERNCPP void UpdateGluiWui(void);
 EXTERNCPP void UpdateGluiStereo(void);
 EXTERNCPP void UpdateGluiStreakValue(float rvalue);
 EXTERNCPP void UpdateGluiZoom(void);
@@ -404,8 +402,6 @@ EXTERNCPP void HideGluiMotion(void);
 EXTERNCPP void ShowGluiClip(void);
 
 EXTERNCPP void HideGluiClip(void);
-EXTERNCPP void ShowGluiWui(void);
-EXTERNCPP void HideGluiWui(void);
 EXTERNCPP void ShowGluiDisplay(int menu_id);
 EXTERNCPP void ShowGluiDevice(void);
 EXTERNCPP void ShowGluiPlotDevice(void);
@@ -573,7 +569,6 @@ EXTERNCPP void UpdateSliceContours(int slice_type_index, float line_min, float l
 EXTERNCPP void ScriptMenu(int var);
 EXTERNCPP void SmokeColorbarMenu(int var);
 EXTERNCPP void ObjectCB(int flag);
-EXTERNCPP void WuiCB(int var);
 EXTERNCPP void CompressOnOff(int flag);
 EXTERNCPP void CompressSVZip2(void);
 EXTERNCPP void UpdateTerrainColors(void);

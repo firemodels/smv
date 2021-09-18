@@ -922,7 +922,6 @@ SVEXTERN float SVDECL(percentile_level_max, 0.99);
 SVEXTERN int SVDECL(hist_left_percen, 0), SVDECL(hist_down_percen,0), SVDECL(hist_length_percen,100), SVDECL(hist_show_labels, 1);
 
 SVEXTERN float SVDECL(fire_line_min,150.0), SVDECL(fire_line_max,200.0);
-SVEXTERN int SVDECL(update_fire_line,0);
 SVEXTERN int SVDECL(fire_line_index,-1);
 SVEXTERN int SVDECL(slice_bounds_dialog,1);
 
