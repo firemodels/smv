@@ -200,13 +200,16 @@ SVEXTERN int SVDECL(ngridloc_digits, 4);
 SVEXTERN int SVDECL(ntick_decimals, 1);
 SVEXTERN int SVDECL(mpi_nprocesses, -1), SVDECL(mpi_iprocess,-1);
 
+#ifdef pp_GEOM_DIAG
 #ifdef INMAIN
-SVEXTERN unsigned int geom_vertex1_rgb[3]  = {255, 255, 255};
-SVEXTERN unsigned int geom_vertex2_rgb[3]  = {  0,   0,   0};
+SVEXTERN unsigned int geom_vertex1_rgb[3] = {255, 255, 255};
+SVEXTERN unsigned int geom_vertex2_rgb[3] = {0,   0,   0};
 SVEXTERN unsigned int geom_triangle_rgb[3] = {255, 128,   0};
 SVEXTERN unsigned int glui_surf_rgb[3]     = {128, 128, 128};
 #else
-SVEXTERN unsigned int geom_vertex1_rgb[3], geom_vertex2_rgb[3], geom_triangle_rgb[3], glui_surf_rgb[3];
+SVEXTERN unsigned int geom_vertex1_rgb[3], geom_vertex2_rgb[3], geom_triangle_rgb[3];
+SVEXTERN unsigned int glui_surf_rgb[3];
+#endif
 #endif
 
 SVEXTERN int SVDECL(show_surf_axis, 0);
@@ -214,8 +217,10 @@ SVEXTERN float SVDECL(glui_surf_axis_length, 1.0);
 SVEXTERN float SVDECL(glui_surf_axis_width, 1.0);
 SVEXTERN float glui_surf_axis[3];
 SVEXTERN int SVDECL(use_surf_color, 0);
+#ifdef pp_GEOM_DIAG
 SVEXTERN int SVDECL(geom_surf_index, 0);
 SVEXTERN int SVDECL(select_geom, GEOM_PROP_NONE);
+#endif
 SVEXTERN int SVDECL(selected_geom_vertex1,  -1);
 SVEXTERN int SVDECL(selected_geom_vertex2,  -1);
 SVEXTERN int SVDECL(selected_geom_triangle, -1);
@@ -521,11 +526,13 @@ SVEXTERN int SVDECL(nwidth360,1024), SVDECL(nheight360,512);
 SVEXTERN unsigned int SVDECL(*screenmap360, NULL);
 SVEXTERN float SVDECL(*screenmap360IX, NULL), SVDECL(*screenmap360IY, NULL);
 
+#ifdef pp_GEOM_CHECK
 SVEXTERN int SVDECL(highlight_vertexdup, 0);
 SVEXTERN int SVDECL(highlight_edge0, 0);
 SVEXTERN int SVDECL(highlight_edge1, 0);
 SVEXTERN int SVDECL(highlight_edge2, 0);
 SVEXTERN int SVDECL(highlight_edgeother, 0);
+#endif
 
 SVEXTERN colorbardata SVDECL(*split_colorbar, NULL);
 SVEXTERN int split_colorbar_index;

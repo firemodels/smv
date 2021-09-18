@@ -169,10 +169,12 @@ EXTERNCPP void ShiftColorbars(void);
 EXTERNCPP int GetColorbarState(void);
 EXTERNCPP void ViewpointCB(int val);
 EXTERNCPP void SMV_EXIT(int code);
+#ifdef pp_GEOM_DIAG
 EXTERNCPP void UpdateSelectGeom(void);
-EXTERNCPP void UpdateVertexInfo(float *xyz1, float *xyz2);
-EXTERNCPP void UpdateTriangleInfo(surfdata *tri_surf, float tri_area);
 EXTERNCPP void DrawSelectGeom(void);
+EXTERNCPP void UpdateTriangleInfo(surfdata *tri_surf, float tri_area);
+EXTERNCPP void UpdateVertexInfo(float *xyz1, float *xyz2);
+#endif
 EXTERNCPP void UpdateGeomAreas(void);
 EXTERNCPP void GetZoneTempBounds(void);
 EXTERNCPP FILE_SIZE GetSliceData(slicedata *sd, char *slicefilename, int time_frame, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
