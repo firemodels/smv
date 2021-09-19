@@ -88,6 +88,7 @@ GLUI_Panel *PANEL_surf_axis = NULL;
 GLUI_Panel *PANEL_surf_coloraxis = NULL;
 #endif
 
+GLUI_Panel *PANEL_geom_offset_outline = NULL;
 GLUI_Panel *PANEL_geom_close = NULL;
 GLUI_Panel *PANEL_geom_transparency = NULL;
 GLUI_Panel *PANEL_normals = NULL;
@@ -537,8 +538,9 @@ extern "C" void GluiGeometrySetup(int main_window){
     }
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "line width", GLUI_SPINNER_FLOAT, &geom_linewidth);
     glui_geometry->add_spinner_to_panel(PANEL_triangles, "point size", GLUI_SPINNER_FLOAT, &geom_pointsize);
-    glui_geometry->add_spinner_to_panel(PANEL_triangles, "offset(normal)", GLUI_SPINNER_FLOAT, &geom_norm_offset);
-    glui_geometry->add_spinner_to_panel(PANEL_triangles, "offset(dz)", GLUI_SPINNER_FLOAT, &geom_dz_offset);
+    PANEL_geom_offset_outline = glui_geometry->add_panel_to_panel(PANEL_triangles, "offset outline");
+    glui_geometry->add_spinner_to_panel(PANEL_geom_offset_outline, "normal", GLUI_SPINNER_FLOAT, &geom_norm_offset);
+    glui_geometry->add_spinner_to_panel(PANEL_geom_offset_outline, "vertical", GLUI_SPINNER_FLOAT, &geom_dz_offset);
     PANEL_geom_transparency = glui_geometry->add_panel_to_panel(PANEL_triangles, "transparency");
     CHECKBOX_geom_force_transparent = glui_geometry->add_checkbox_to_panel(PANEL_geom_transparency, "force", &geom_force_transparent);
     SPINNER_geom_transparency = glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "level", GLUI_SPINNER_FLOAT, &geom_transparency);
@@ -673,6 +675,7 @@ extern "C" void GluiGeometrySetup(int main_window){
 
     VolumeCB(GEOM_VERT_EXAG);
     BUTTON_reset_zbounds = glui_geometry->add_button_to_panel(PANEL_geomtest2, _("Reset zmin/zmax"), RESET_ZBOUNDS, VolumeCB);
+    glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "show geometry and boundary files", &glui_show_geom_bndf, UPDATE_GEOM, VolumeCB);
 
     if(HaveTexture() == 1){
       show_texture_2dimage = GetTextureShow();
@@ -685,11 +688,10 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_geom_max_angle = glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "max angle", GLUI_SPINNER_FLOAT, &geom_max_angle, GEOM_MAX_ANGLE, VolumeCB);
     SPINNER_geom_max_angle->set_float_limits(0.0, 180.0);
 #endif
-    PANEL_geom_offset = glui_geometry->add_panel_to_panel(PANEL_group1, "offset");
+    PANEL_geom_offset = glui_geometry->add_panel_to_panel(PANEL_group1, "offset object");
     SPINNER_geom_delx = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dx", GLUI_SPINNER_FLOAT, &geom_delx);
     SPINNER_geom_dely = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dy", GLUI_SPINNER_FLOAT, &geom_dely);
     SPINNER_geom_delz = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dz", GLUI_SPINNER_FLOAT, &geom_delz);
-    glui_geometry->add_checkbox_to_panel(PANEL_geom_offset, "show geometry and boundary files", &glui_show_geom_bndf, UPDATE_GEOM, VolumeCB);
     BUTTON_reset_offset = glui_geometry->add_button_to_panel(PANEL_geom_offset, _("Reset"), RESET_GEOM_OFFSET, VolumeCB);
 
     PANEL_normals = glui_geometry->add_panel_to_panel(PANEL_group1, "normals");
