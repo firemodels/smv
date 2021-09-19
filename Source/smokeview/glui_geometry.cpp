@@ -8,6 +8,13 @@
 
 #include "smokeviewvars.h"
 
+//*** geomprocinfo entries
+#define STRUCTURED_ROLLOUT     0
+#define UNSTRUCTURED_ROLLOUT   1
+
+procdata  geomprocinfo[2];
+int      ngeomprocinfo = 0;
+
 #define XMIN_SPIN             20
 #define YMIN_SPIN             21
 #define ZMIN_SPIN             22
@@ -164,6 +171,12 @@ GLUI_StaticText *STATIC_label=NULL;
 
 char a_updatelabel[1000];
 char *updatelabel=NULL;
+
+/* ------------------ GeomRolloutCB ------------------------ */
+
+void GeomRolloutCB(int var){
+  ToggleRollout(geomprocinfo, ngeomprocinfo, var);
+}
 
 /* ------------------ UpdateSelectGeom ------------------------ */
 
@@ -365,8 +378,10 @@ extern "C" void GluiGeometrySetup(int main_window){
   if(showedit_dialog==0)glui_geometry->hide();
 
   if(have_obsts == 1){
-    ROLLOUT_structured = glui_geometry->add_rollout("Structured", false);
+    ROLLOUT_structured = glui_geometry->add_rollout("Structured", false, STRUCTURED_ROLLOUT, GeomRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_structured, glui_geometry);
+    ADDPROCINFO(geomprocinfo, ngeomprocinfo, ROLLOUT_structured, STRUCTURED_ROLLOUT, glui_geometry);
+
     if(structured_isopen==1)ROLLOUT_structured->open();
     PANEL_obj_select = glui_geometry->add_panel_to_panel(ROLLOUT_structured, "SURFs");
 
@@ -496,8 +511,9 @@ extern "C" void GluiGeometrySetup(int main_window){
   }
 
   if(ngeominfo>0){
-    ROLLOUT_unstructured = glui_geometry->add_rollout("Immersed", false);
+    ROLLOUT_unstructured = glui_geometry->add_rollout("Immersed", false, UNSTRUCTURED_ROLLOUT, GeomRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_unstructured, glui_geometry);
+    ADDPROCINFO(geomprocinfo, ngeomprocinfo, ROLLOUT_unstructured, UNSTRUCTURED_ROLLOUT, glui_geometry);
     if(unstructured_isopen==1)ROLLOUT_unstructured->open();
 
     for(i = 0; i<nmeshes; i++){
