@@ -347,6 +347,7 @@ void DrawTerrainGeom(int option){
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(geom_delx, geom_dely, geom_delz);
   glTranslatef(-xbar0, -ybar0, -zbar0);
 
   if(option==DRAW_OPAQUE){
@@ -415,7 +416,7 @@ void DrawTerrainGeom(int option){
 
     if(show_faces_outline==1){
       glPushMatrix();
-      glTranslatef(geom_delx, geom_dely, geom_delz);
+      glTranslatef(0.0, 0.0, geom_dz_offset);
       glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
 
@@ -477,7 +478,7 @@ void DrawTerrainGeom(int option){
 
     if(show_geom_verts==1){
       glPushMatrix();
-      glTranslatef(geom_delx, geom_dely, geom_delz);
+      glTranslatef(0.0, 0.0, geom_dz_offset);
       glPointSize(geom_pointsize);
       glBegin(GL_POINTS);
 
