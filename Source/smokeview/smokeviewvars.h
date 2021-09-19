@@ -555,7 +555,6 @@ SVEXTERN int SVDECL(force_UpdateHistograms, 1);
 SVEXTERN float SVDECL(geom_vert_exag, 1.0);
 SVEXTERN float SVDECL(geom_vecfactor, .030);
 SVEXTERN int SVDECL(geom_ivecfactor, 30);
-SVEXTERN int SVDECL(geom_outline_ioffset, 1);
 SVEXTERN float SVDECL(geom_norm_offset,0.01);
 SVEXTERN float SVDECL(geom_dz_offset,0.001);
 SVEXTERN int SVDECL(iso_outline_ioffset, 1);

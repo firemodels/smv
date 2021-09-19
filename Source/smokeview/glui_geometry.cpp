@@ -21,7 +21,6 @@
 #ifdef pp_GEOM_ANGLE
 #define GEOM_MAX_ANGLE        36
 #endif
-#define GEOM_OUTLINE_IOFFSET  37
 #define GEOM_IVECFACTOR       38
 #define SHOW_TEXTURE_2D_IMAGE 39
 #define SHOW_TEXTURE_1D_IMAGE 40
@@ -81,7 +80,6 @@ GLUI_Checkbox *CHECKBOX_highlight_vertexdup = NULL;
 #endif
 
 GLUI_Rollout *ROLLOUT_geomtest=NULL;
-GLUI_Rollout *ROLLOUT_geomtest2 = NULL;
 #ifdef pp_GEOM_DIAG
 GLUI_Rollout *ROLLOUT_geom_rgbs = NULL;
 GLUI_Rollout *ROLLOUT_geom_properties=NULL;
@@ -90,6 +88,7 @@ GLUI_Panel *PANEL_surf_axis = NULL;
 GLUI_Panel *PANEL_surf_coloraxis = NULL;
 #endif
 
+GLUI_Panel *PANEL_geom_close = NULL;
 GLUI_Panel *PANEL_geom_transparency = NULL;
 GLUI_Panel *PANEL_normals = NULL;
 
@@ -97,7 +96,6 @@ GLUI_Spinner *SPINNER_geom_transparency=NULL;
 #ifdef pp_GEOM_ANGLE
 GLUI_Spinner *SPINNER_geom_max_angle = NULL;
 #endif
-GLUI_Spinner *SPINNER_geom_outline_ioffset=NULL;
 GLUI_Spinner *SPINNER_geom_ivecfactor = NULL;
 GLUI_Spinner *SPINNER_geom_vert_exag=NULL;
 GLUI_Spinner *SPINNER_geom_zmin = NULL, *SPINNER_geom_zmax = NULL, *SPINNER_geom_zlevel=NULL;
@@ -133,6 +131,7 @@ GLUI_Listbox *LIST_obst_surface[7]={NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 GLUI_Listbox *LIST_geom_surface=NULL;
 #endif
 
+GLUI_Panel *PANEL_geomtest2 = NULL;
 GLUI_Panel *PANEL_cfaces = NULL;
 GLUI_Panel *PANEL_obj_select=NULL,*PANEL_faces=NULL,*PANEL_triangles=NULL,*PANEL_volumes=NULL,*PANEL_geom_showhide;
 GLUI_Panel *PANEL_boundingbox = NULL;
@@ -654,43 +653,38 @@ extern "C" void GluiGeometrySetup(int main_window){
     }
 #endif
 
-    ROLLOUT_geomtest2 = glui_geometry->add_rollout_to_panel(ROLLOUT_unstructured, "parameters", false);
-    INSERT_ROLLOUT(ROLLOUT_geomtest2, glui_geometry);
-    SPINNER_geom_vert_exag = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "vertical exaggeration", GLUI_SPINNER_FLOAT, &geom_vert_exag, GEOM_VERT_EXAG, VolumeCB);
+
+    PANEL_geomtest2 = glui_geometry->add_panel_to_panel(PANEL_group1, "parameters");
+    SPINNER_geom_vert_exag = glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "vertical exaggeration", GLUI_SPINNER_FLOAT, &geom_vert_exag, GEOM_VERT_EXAG, VolumeCB);
     SPINNER_geom_vert_exag->set_float_limits(0.1, 10.0);
-    CHECKBOX_show_texture_1dimage = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "show elevation color", &show_texture_1dimage, SHOW_TEXTURE_1D_IMAGE, VolumeCB);
+    CHECKBOX_show_texture_1dimage = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "show elevation color", &show_texture_1dimage, SHOW_TEXTURE_1D_IMAGE, VolumeCB);
 
     GetGeomZBounds(&terrain_zmin, &terrain_zmax);
-    SPINNER_geom_zmin = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "zmin", GLUI_SPINNER_FLOAT, &terrain_zmin, TERRAIN_ZMIN, VolumeCB);
+    SPINNER_geom_zmin = glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "zmin", GLUI_SPINNER_FLOAT, &terrain_zmin, TERRAIN_ZMIN, VolumeCB);
     SPINNER_geom_zmin->set_float_limits(zbar0ORIG, zbarORIG);
 
-    SPINNER_geom_zmax = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "zmax", GLUI_SPINNER_FLOAT, &terrain_zmax, TERRAIN_ZMAX, VolumeCB);
+    SPINNER_geom_zmax = glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "zmax", GLUI_SPINNER_FLOAT, &terrain_zmax, TERRAIN_ZMAX, VolumeCB);
     SPINNER_geom_zmax->set_float_limits(zbar0ORIG, zbarORIG);
 
     terrain_zlevel = (terrain_zmin + terrain_zmax) / 2.0;
-    CHECKBOX_show_zlevel = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "show zlevel", &show_zlevel, SHOW_ZLEVEL, VolumeCB);
-    SPINNER_geom_zlevel = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "zlevel", GLUI_SPINNER_FLOAT, &terrain_zlevel, TERRAIN_ZLEVEL, VolumeCB);
+    CHECKBOX_show_zlevel = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "show zlevel", &show_zlevel, SHOW_ZLEVEL, VolumeCB);
+    SPINNER_geom_zlevel = glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "zlevel", GLUI_SPINNER_FLOAT, &terrain_zlevel, TERRAIN_ZLEVEL, VolumeCB);
     SPINNER_geom_zlevel->set_float_limits(zbar0ORIG, zbarORIG);
 
     VolumeCB(GEOM_VERT_EXAG);
-    BUTTON_reset_zbounds = glui_geometry->add_button_to_panel(ROLLOUT_geomtest2, _("Reset zmin/zmax"), RESET_ZBOUNDS, VolumeCB);
+    BUTTON_reset_zbounds = glui_geometry->add_button_to_panel(PANEL_geomtest2, _("Reset zmin/zmax"), RESET_ZBOUNDS, VolumeCB);
 
     if(HaveTexture() == 1){
       show_texture_2dimage = GetTextureShow();
-      CHECKBOX_show_texture_2dimage = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "image", &show_texture_2dimage, SHOW_TEXTURE_2D_IMAGE, VolumeCB);
+      CHECKBOX_show_texture_2dimage = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "image", &show_texture_2dimage, SHOW_TEXTURE_2D_IMAGE, VolumeCB);
       VolumeCB(SHOW_TEXTURE_2D_IMAGE);
     }
 
 #ifdef pp_GEOM_ANGLE
-    glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "use max angle", &use_max_angle, GEOM_MAX_ANGLE, VolumeCB);
-    SPINNER_geom_max_angle = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "max angle", GLUI_SPINNER_FLOAT, &geom_max_angle, GEOM_MAX_ANGLE, VolumeCB);
+    glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "use max angle", &use_max_angle, GEOM_MAX_ANGLE, VolumeCB);
+    SPINNER_geom_max_angle = glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "max angle", GLUI_SPINNER_FLOAT, &geom_max_angle, GEOM_MAX_ANGLE, VolumeCB);
     SPINNER_geom_max_angle->set_float_limits(0.0, 180.0);
 #endif
-    SPINNER_geom_outline_ioffset = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "outline offset", GLUI_SPINNER_INT, &geom_outline_ioffset, GEOM_OUTLINE_IOFFSET, VolumeCB);
-    SPINNER_geom_outline_ioffset->set_int_limits(0, 200);
-    SPINNER_face_factor = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "face factor", GLUI_SPINNER_FLOAT, &face_factor);
-    SPINNER_face_factor->set_float_limits(0.0, 0.5);
-
     PANEL_geom_offset = glui_geometry->add_panel_to_panel(PANEL_group1, "offset");
     SPINNER_geom_delx = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dx", GLUI_SPINNER_FLOAT, &geom_delx);
     SPINNER_geom_dely = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dy", GLUI_SPINNER_FLOAT, &geom_dely);
@@ -718,9 +712,13 @@ extern "C" void GluiGeometrySetup(int main_window){
 
   }
 
-  glui_geometry->add_separator();
-  glui_geometry->add_button(_("Save settings"),SAVE_SETTINGS_GEOM, BlockeditDlgCB);
-  BUTTON_blockage_1=glui_geometry->add_button(_("Close"),CLOSE_WINDOW, BlockeditDlgCB);
+  PANEL_geom_close = glui_geometry->add_panel("", GLUI_PANEL_NONE);
+
+  glui_geometry->add_button_to_panel(PANEL_geom_close, _("Save settings"), SAVE_SETTINGS_GEOM, BlockeditDlgCB);
+
+  glui_geometry->add_column_to_panel(PANEL_geom_close, false);
+
+  BUTTON_blockage_1=glui_geometry->add_button_to_panel(PANEL_geom_close, _("Close"),CLOSE_WINDOW, BlockeditDlgCB);
 #ifdef pp_CLOSEOFF
   BUTTON_blockage_1->disable();
 #endif
@@ -871,9 +869,6 @@ extern "C" void VolumeCB(int var){
     UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_NORMALS);
     break;
 #endif
-  case GEOM_OUTLINE_IOFFSET:
-    geom_norm_offset = (float)geom_outline_ioffset/1000.0;
-    break;
     // update_volbox_controls=1;
     // face_vis
     // face_vis_old
