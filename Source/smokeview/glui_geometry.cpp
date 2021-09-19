@@ -552,15 +552,15 @@ extern "C" void GluiGeometrySetup(int main_window){
       }
 #endif
     }
-    glui_geometry->add_spinner_to_panel(PANEL_triangles, "line width", GLUI_SPINNER_FLOAT, &geom_linewidth);
-    glui_geometry->add_spinner_to_panel(PANEL_triangles, "point size", GLUI_SPINNER_FLOAT, &geom_pointsize);
-    PANEL_geom_offset_outline = glui_geometry->add_panel_to_panel(PANEL_triangles, "offset outline");
+    PANEL_geom_offset = glui_geometry->add_panel_to_panel(PANEL_triangles, "offset object");
+    SPINNER_geom_delx = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dx", GLUI_SPINNER_FLOAT, &geom_delx);
+    SPINNER_geom_dely = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dy", GLUI_SPINNER_FLOAT, &geom_dely);
+    SPINNER_geom_delz = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dz", GLUI_SPINNER_FLOAT, &geom_delz);
+    BUTTON_reset_offset = glui_geometry->add_button_to_panel(PANEL_geom_offset, _("Reset"), RESET_GEOM_OFFSET, VolumeCB);
+
+    PANEL_geom_offset_outline = glui_geometry->add_panel_to_panel(PANEL_triangles, "offset outline/verts");
     glui_geometry->add_spinner_to_panel(PANEL_geom_offset_outline, "normal", GLUI_SPINNER_FLOAT, &geom_norm_offset);
     glui_geometry->add_spinner_to_panel(PANEL_geom_offset_outline, "vertical", GLUI_SPINNER_FLOAT, &geom_dz_offset);
-    PANEL_geom_transparency = glui_geometry->add_panel_to_panel(PANEL_triangles, "transparency");
-    CHECKBOX_geom_force_transparent = glui_geometry->add_checkbox_to_panel(PANEL_geom_transparency, "force", &geom_force_transparent);
-    SPINNER_geom_transparency = glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "level", GLUI_SPINNER_FLOAT, &geom_transparency);
-    SPINNER_geom_transparency->set_float_limits(0.0, 1.0);
 
     glui_geometry->add_column_to_panel(PANEL_group1, false);
 
@@ -673,6 +673,9 @@ extern "C" void GluiGeometrySetup(int main_window){
 
 
     PANEL_geomtest2 = glui_geometry->add_panel_to_panel(PANEL_group1, "parameters");
+    glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "line width", GLUI_SPINNER_FLOAT, &geom_linewidth);
+    glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "point size", GLUI_SPINNER_FLOAT, &geom_pointsize);
+
     SPINNER_geom_vert_exag = glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "vertical exaggeration", GLUI_SPINNER_FLOAT, &geom_vert_exag, GEOM_VERT_EXAG, VolumeCB);
     SPINNER_geom_vert_exag->set_float_limits(0.1, 10.0);
     CHECKBOX_show_texture_1dimage = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "show elevation color", &show_texture_1dimage, SHOW_TEXTURE_1D_IMAGE, VolumeCB);
@@ -704,11 +707,10 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_geom_max_angle = glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "max angle", GLUI_SPINNER_FLOAT, &geom_max_angle, GEOM_MAX_ANGLE, VolumeCB);
     SPINNER_geom_max_angle->set_float_limits(0.0, 180.0);
 #endif
-    PANEL_geom_offset = glui_geometry->add_panel_to_panel(PANEL_group1, "offset object");
-    SPINNER_geom_delx = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dx", GLUI_SPINNER_FLOAT, &geom_delx);
-    SPINNER_geom_dely = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dy", GLUI_SPINNER_FLOAT, &geom_dely);
-    SPINNER_geom_delz = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dz", GLUI_SPINNER_FLOAT, &geom_delz);
-    BUTTON_reset_offset = glui_geometry->add_button_to_panel(PANEL_geom_offset, _("Reset"), RESET_GEOM_OFFSET, VolumeCB);
+    PANEL_geom_transparency = glui_geometry->add_panel_to_panel(PANEL_group1, "transparency");
+    CHECKBOX_geom_force_transparent = glui_geometry->add_checkbox_to_panel(PANEL_geom_transparency, "force", &geom_force_transparent);
+    SPINNER_geom_transparency = glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "level", GLUI_SPINNER_FLOAT, &geom_transparency);
+    SPINNER_geom_transparency->set_float_limits(0.0, 1.0);
 
     PANEL_normals = glui_geometry->add_panel_to_panel(PANEL_group1, "normals");
     CHECKBOX_show_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_normals, "show", &show_geom_normal);
