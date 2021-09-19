@@ -56,6 +56,7 @@
 //define pp_BNDF_MENU_BUG       // adds an extra menu field for geometry boundary files, a bug (highlight bug to make sure disabled code is not needed_
 //#define pp_GEOM_DIAG          // surround geometry properties dialog with pp_GEOM_DIAG so it can be removed easily
 //#define pp_GEOM_CHECK         // surround geometry check dialog with pp_GEOM_CHECK so it can be removed easily
+//#define pp_GEOM_ANGLE         // surround geometry angle widgets so they can be removed easily
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set

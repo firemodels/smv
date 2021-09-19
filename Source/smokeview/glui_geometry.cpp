@@ -18,7 +18,9 @@
 #define RADIO_WALL            32
 #define SAVE_SETTINGS_GEOM    33
 #define VISAXISLABELS         34
+#ifdef pp_GEOM_ANGLE
 #define GEOM_MAX_ANGLE        36
+#endif
 #define GEOM_OUTLINE_IOFFSET  37
 #define GEOM_IVECFACTOR       38
 #define SHOW_TEXTURE_2D_IMAGE 39
@@ -92,7 +94,9 @@ GLUI_Panel *PANEL_geom_transparency = NULL;
 GLUI_Panel *PANEL_normals = NULL;
 
 GLUI_Spinner *SPINNER_geom_transparency=NULL;
+#ifdef pp_GEOM_ANGLE
 GLUI_Spinner *SPINNER_geom_max_angle = NULL;
+#endif
 GLUI_Spinner *SPINNER_geom_outline_ioffset=NULL;
 GLUI_Spinner *SPINNER_geom_ivecfactor = NULL;
 GLUI_Spinner *SPINNER_geom_vert_exag=NULL;
@@ -677,9 +681,11 @@ extern "C" void GluiGeometrySetup(int main_window){
       VolumeCB(SHOW_TEXTURE_2D_IMAGE);
     }
 
+#ifdef pp_GEOM_ANGLE
     glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "use max angle", &use_max_angle, GEOM_MAX_ANGLE, VolumeCB);
     SPINNER_geom_max_angle = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "max angle", GLUI_SPINNER_FLOAT, &geom_max_angle, GEOM_MAX_ANGLE, VolumeCB);
     SPINNER_geom_max_angle->set_float_limits(0.0, 180.0);
+#endif
     SPINNER_geom_outline_ioffset = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "outline offset", GLUI_SPINNER_INT, &geom_outline_ioffset, GEOM_OUTLINE_IOFFSET, VolumeCB);
     SPINNER_geom_outline_ioffset->set_int_limits(0, 200);
     SPINNER_face_factor = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "face factor", GLUI_SPINNER_FLOAT, &face_factor);
@@ -859,10 +865,12 @@ extern "C" void VolumeCB(int var){
   case GEOM_IVECFACTOR:
     geom_vecfactor = (float)geom_ivecfactor/1000.0;
     break;
+#ifdef pp_GEOM_ANGLE
   case GEOM_MAX_ANGLE:
     cos_geom_max_angle=cos(DEG2RAD*geom_max_angle);
     UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_NORMALS);
     break;
+#endif
   case GEOM_OUTLINE_IOFFSET:
     geom_norm_offset = (float)geom_outline_ioffset/1000.0;
     break;

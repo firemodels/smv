@@ -560,8 +560,10 @@ SVEXTERN float SVDECL(geom_norm_offset,0.01);
 SVEXTERN float SVDECL(geom_dz_offset,0.001);
 SVEXTERN int SVDECL(iso_outline_ioffset, 1);
 SVEXTERN float SVDECL(iso_outline_offset, 0.001);
+#ifdef pp_GEOM_ANGLE
 SVEXTERN float SVDECL(geom_max_angle, 30.0), cos_geom_max_angle;
 SVEXTERN int SVDECL(use_max_angle, 1);
+#endif
 SVEXTERN int SVDECL(update_setvents, 0);
 SVEXTERN int SVDECL(use_set_slicecolor, 1);
 SVEXTERN int SVDECL(cvents_defined, 0);

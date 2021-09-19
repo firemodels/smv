@@ -1563,11 +1563,17 @@ void SmoothGeomNormals(geomlistdata *geomlisti, int geomtype){
           lengthi = NORM3(tri_normi);
           if(lengthk > 0.0&&lengthi > 0.0){
             cosang = DOT3(tri_normk, tri_normi) / (lengthi*lengthk);
+#ifdef pp_GEOM_ANGLE
             if(use_max_angle == 0 || cosang > cos_geom_max_angle){ // smooth using all triangles if an isosurface
               norm[0] += trianglek->area*tri_normk[0];
               norm[1] += trianglek->area*tri_normk[1];
               norm[2] += trianglek->area*tri_normk[2];
             }
+#else
+            norm[0] += trianglek->area*tri_normk[0];
+            norm[1] += trianglek->area*tri_normk[1];
+            norm[2] += trianglek->area*tri_normk[2];
+#endif
           }
         }
         ReduceToUnit(norm);
