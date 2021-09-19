@@ -927,7 +927,15 @@ extern "C" void ShowGluiGeometry(void){
   showedit_dialog=1;
   blockageSelect=1;
   UpdateBlockVals(NOT_SELECT_BLOCKS);
-  if(glui_geometry!=NULL)glui_geometry->show();
+  if(glui_geometry!=NULL){
+    glui_geometry->show();
+    if(ROLLOUT_unstructured!=NULL&&ROLLOUT_structured==NULL){
+      ROLLOUT_unstructured->open();
+    }
+    else if(ROLLOUT_structured!=NULL&&ROLLOUT_unstructured==NULL){
+      ROLLOUT_structured->open();
+    }
+  }
 }
 
 /* ------------------ UpdateBlockVals ------------------------ */
