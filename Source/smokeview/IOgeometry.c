@@ -4640,6 +4640,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(geom_delx, geom_dely, geom_delz);
       glBegin(GL_TRIANGLES);
       for(j = 0; j<ntris; j++){
         float *color, *xyzptr[3];
@@ -4716,7 +4717,8 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0+SCALE2FDS(geom_dz_offset));
+      glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(geom_delx, geom_dely, geom_delz+geom_dz_offset);
       glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
       if(show_faces_outline==1){
@@ -4815,6 +4817,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(geom_delx, geom_dely, geom_delz+geom_dz_offset);
       glPointSize(geom_pointsize);
       glBegin(GL_POINTS);
       for(j = 0; j<ntris; j++){
