@@ -43,6 +43,7 @@ int      ngeomprocinfo = 0;
 #define SURF_SET              49
 #define SURF_GET              50
 #endif
+#define SHOWONLY_TOP          51
 
 GLUI_Checkbox *CHECKBOX_cfaces = NULL;
 #ifdef pp_HAVE_CFACE_NORMALS
@@ -59,6 +60,7 @@ GLUI_Checkbox *CHECKBOX_volumes_interior=NULL;
 GLUI_Checkbox *CHECKBOX_volumes_exterior=NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_1dimage = NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_2dimage = NULL;
+GLUI_Checkbox *CHECKBOX_showonly_top = NULL;
 
 #ifdef pp_GEOM_DIAG
 GLUI_RadioGroup *RADIO_select_geom = NULL;
@@ -185,6 +187,12 @@ extern "C" void UpdateSelectGeom(void){
   RADIO_select_geom->set_int_val(select_geom);
 }
 #endif
+
+/* ------------------ UpdateShowOnlyTop ------------------------ */
+
+extern "C" void UpdateShowOnlyTop(void){
+  if(CHECKBOX_showonly_top!=NULL)CHECKBOX_showonly_top->set_int_val(terrain_showonly_top);
+}
 
 /* ------------------ UpdateWhereFaceVolumes ------------------------ */
 
@@ -673,6 +681,9 @@ extern "C" void GluiGeometrySetup(int main_window){
 
 
     PANEL_geomtest2 = glui_geometry->add_panel_to_panel(PANEL_group1, "parameters");
+    if(terrain_nindices>0){
+      CHECKBOX_showonly_top = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "Show only top surface", &terrain_showonly_top, SHOWONLY_TOP, VolumeCB);
+    }
     glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "line width", GLUI_SPINNER_FLOAT, &geom_linewidth);
     glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "point size", GLUI_SPINNER_FLOAT, &geom_pointsize);
 
@@ -776,7 +787,6 @@ extern "C" void VolumeCB(int var){
         SPINNER_surf_axis[0]->set_int_val(glui_surf_axis[0]);
         SPINNER_surf_axis[1]->set_int_val(glui_surf_axis[1]);
         SPINNER_surf_axis[2]->set_int_val(glui_surf_axis[2]);
-
         break;
       }
     }
@@ -835,6 +845,9 @@ extern "C" void VolumeCB(int var){
     break;
   case GEOM_VERT_EXAG:
     UpdateGeomNormals();
+    break;
+  case SHOWONLY_TOP:
+    updatemenu = 1;
     break;
   case SHOW_ZLEVEL:
   case TERRAIN_ZLEVEL:

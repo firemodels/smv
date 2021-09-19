@@ -9,6 +9,8 @@
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
 
+EXTERNCPP void UpdateShowOnlyTop(void);
+
 EXTERNCPP void UpdateGLuiGridLocation(void);
 EXTERNCPP void EnableDisablePartPercentileDraw(int flag);
 EXTERNCPP void GeneratePartHistograms(void);

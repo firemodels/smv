@@ -5833,6 +5833,7 @@ void ImmersedMenu(int value){
       break;
     case GEOMETRY_TERRAIN_SHOW_TOP:
       terrain_showonly_top = 1 - terrain_showonly_top;
+      UpdateShowOnlyTop();
       break;
     case GEOMETRY_INTERIOR_SOLID:
       show_volumes_solid=1-show_volumes_solid;
