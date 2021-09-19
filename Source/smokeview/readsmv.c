@@ -10849,6 +10849,9 @@ int ReadIni2(char *inifile, int localfile){
 #endif
     if(Match(buffer, "GEOMSHOW") == 1){
       int dummy, dummy2;
+#ifndef pp_GEOM_ANGLE
+      float rdummy;
+#endif
 
       fgets(buffer, 255, stream);
 #ifdef pp_HAVE_CFACE_NORMALS
@@ -10866,7 +10869,7 @@ int ReadIni2(char *inifile, int localfile){
 #ifdef pp_GEOM_ANGLE
       sscanf(buffer, " %f %f %i %i %i", &geom_vert_exag, &geom_max_angle, &dummy, &dummy2, &show_geom_boundingbox);
 #else
-      sscanf(buffer, " %f %f %i %i %i", &geom_vert_exag, &dummy, &dummy, &dummy2, &show_geom_boundingbox);
+      sscanf(buffer, " %f %f %i %i %i", &geom_vert_exag, &rdummy, &dummy, &dummy2, &show_geom_boundingbox);
 #endif
       continue;
     }

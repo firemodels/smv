@@ -534,9 +534,11 @@ void DrawGeom(int flag, int timestate){
   int i;
   float black[]={0.0,0.0,0.0,1.0};
   float blue[]={0.0,0.0,1.0,1.0};
+#ifdef pp_GEOM_DIAG
   float green[]={0.0,1.0,0.0,1.0};
   float cyan[] = { 0.0,1.0,1.0,1.0 };
   float magenta[] = { 1.0,0.0,1.0,1.0 };
+#endif
   float skinny_color[]={1.0,0.0,0.0,1.0};
   float *last_color=NULL;
   float last_transparent_level=-1.0;
@@ -563,7 +565,9 @@ void DrawGeom(int flag, int timestate){
 
   if(ntris>0&&timestate==GEOM_STATIC){
     float *color;
+#ifdef pp_GEOM_DIAG
     surfdata *selected_surf;
+#endif
 
   // draw geometry surface
 
@@ -585,8 +589,6 @@ void DrawGeom(int flag, int timestate){
     else{
       selected_surf = NULL;
     }
-#else
-    selected_surf = NULL;
 #endif
     have_non_textures = HaveNonTextures(tris, ntris);
     if(cullfaces==1)glDisable(GL_CULL_FACE);
@@ -1216,11 +1218,13 @@ void DrawGeom(int flag, int timestate){
       glBegin(GL_POINTS);
       for(j=0;j<geomlisti->nverts;j++){
         vertdata *verti;
+#ifdef pp_GEOM_DIAG
         int use_select_color;
+#endif
 
         verti = geomlisti->verts+j;
-        use_select_color=0;
 #ifdef pp_GEOM_DIAG
+        use_select_color=0;
         if(select_geom==GEOM_PROP_VERTEX1||select_geom==GEOM_PROP_VERTEX2){
           if(verti->geomtype==GEOM_ISO||verti->ntriangles==0)continue;
           if(selected_geom_vertex1==j)use_select_color = 1;
@@ -1553,7 +1557,10 @@ void SmoothGeomNormals(geomlistdata *geomlisti, int geomtype){
       else{
         for(k = 0; k<vertj->ntriangles; k++){
           tridata *trianglek;
-          float *tri_normk, cosang;
+          float *tri_normk;
+#ifdef pp_GEOM_ANGLE
+	  float cosang;
+#endif
           float lengthi, lengthk;
 
           trianglek = vertj->triangles[k];
@@ -1562,8 +1569,8 @@ void SmoothGeomNormals(geomlistdata *geomlisti, int geomtype){
           lengthk = NORM3(tri_normk);
           lengthi = NORM3(tri_normi);
           if(lengthk > 0.0&&lengthi > 0.0){
-            cosang = DOT3(tri_normk, tri_normi) / (lengthi*lengthk);
 #ifdef pp_GEOM_ANGLE
+            cosang = DOT3(tri_normk, tri_normi) / (lengthi*lengthk);
             if(use_max_angle == 0 || cosang > cos_geom_max_angle){ // smooth using all triangles if an isosurface
               norm[0] += trianglek->area*tri_normk[0];
               norm[1] += trianglek->area*tri_normk[1];
