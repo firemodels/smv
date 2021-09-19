@@ -1208,12 +1208,20 @@ void DrawGeom(int flag, int timestate){
 
     last_color=NULL;
     if(geomlisti->nverts>0){
+      float line_offset;
+
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
-      glTranslatef(geom_delx, geom_dely, geom_delz);
+      glTranslatef(geom_delx, geom_dely, geom_delz + geom_dz_offset);
       glPointSize(geom_pointsize);
       glBegin(GL_POINTS);
+      if(geomi->geomtype==GEOM_ISO){
+        line_offset = iso_outline_offset;
+      }
+      else{
+        line_offset = geom_norm_offset;
+      }
       for(j=0;j<geomlisti->nverts;j++){
         vertdata *verti;
         int use_select_color;
@@ -1266,7 +1274,16 @@ void DrawGeom(int flag, int timestate){
           last_color = color;
         }
 #endif
-        glVertex3fv(verti->xyz);
+        {
+          float vert2a[3];
+          int k;
+
+          for(k=0;k<3;k++){
+            vert2a[k] = verti->xyz[k] + line_offset*verti->vert_norm[k];
+          }
+
+          glVertex3fv(vert2a);
+        }
       }
       glEnd();
       glPopMatrix();
