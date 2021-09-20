@@ -526,14 +526,6 @@ SVEXTERN int SVDECL(nwidth360,1024), SVDECL(nheight360,512);
 SVEXTERN unsigned int SVDECL(*screenmap360, NULL);
 SVEXTERN float SVDECL(*screenmap360IX, NULL), SVDECL(*screenmap360IY, NULL);
 
-#ifdef pp_GEOM_CHECK
-SVEXTERN int SVDECL(highlight_vertexdup, 0);
-SVEXTERN int SVDECL(highlight_edge0, 0);
-SVEXTERN int SVDECL(highlight_edge1, 0);
-SVEXTERN int SVDECL(highlight_edge2, 0);
-SVEXTERN int SVDECL(highlight_edgeother, 0);
-#endif
-
 SVEXTERN colorbardata SVDECL(*split_colorbar, NULL);
 SVEXTERN int split_colorbar_index;
 #ifdef INMAIN

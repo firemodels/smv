@@ -80,13 +80,6 @@ GLUI_StaticText *STATIC_tri_area = NULL;
 #endif
 
 GLUI_Checkbox *CHECKBOX_use_surf_color=NULL;
-#ifdef pp_GEOM_CHECK
-GLUI_Checkbox *CHECKBOX_highlight_edge0=NULL;
-GLUI_Checkbox *CHECKBOX_highlight_edge1=NULL;
-GLUI_Checkbox *CHECKBOX_highlight_edge2=NULL;
-GLUI_Checkbox *CHECKBOX_highlight_edgeother=NULL;
-GLUI_Checkbox *CHECKBOX_highlight_vertexdup = NULL;
-#endif
 
 GLUI_Rollout *ROLLOUT_geomtest=NULL;
 #ifdef pp_GEOM_DIAG
@@ -161,9 +154,6 @@ GLUI_Panel *PANEL_geomedgecheck=NULL;
 GLUI_Panel *PANEL_group1=NULL;
 GLUI_Panel *PANEL_geom_offset=NULL;
 
-#ifdef pp_GEOM_CHECK
-GLUI_Rollout *ROLLOUT_geomcheck=NULL;
-#endif
 GLUI_Rollout *ROLLOUT_structured=NULL;
 GLUI_Rollout *ROLLOUT_unstructured=NULL;
 
@@ -744,19 +734,6 @@ extern "C" void GluiGeometrySetup(int main_window){
     CHECKBOX_smooth_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_normals, "smooth", &smooth_geom_normal);
     SPINNER_geom_ivecfactor = glui_geometry->add_spinner_to_panel(PANEL_normals, "length", GLUI_SPINNER_INT, &geom_ivecfactor, GEOM_IVECFACTOR, VolumeCB);
     SPINNER_geom_ivecfactor->set_int_limits(0, 200);
-
-#ifdef pp_GEOM_CHECK
-    ROLLOUT_geomcheck = glui_geometry->add_rollout_to_panel(ROLLOUT_unstructured, "checks", false);
-    INSERT_ROLLOUT(ROLLOUT_geomcheck, glui_geometry);
-    PANEL_geomedgecheck = glui_geometry->add_panel_to_panel(ROLLOUT_geomcheck, "edges - connected triangles");
-    CHECKBOX_highlight_edge0 = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "0", &highlight_edge0);
-    CHECKBOX_highlight_edge1 = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "1", &highlight_edge1);
-    CHECKBOX_highlight_edge2 = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "2", &highlight_edge2);
-    CHECKBOX_highlight_edgeother = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "3 or more", &highlight_edgeother);
-
-    CHECKBOX_highlight_vertexdup = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomcheck, "duplicate vertices", &highlight_vertexdup);
-#endif
-
   }
 
   PANEL_geom_close = glui_geometry->add_panel("", GLUI_PANEL_NONE);

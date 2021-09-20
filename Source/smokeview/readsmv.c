@@ -10837,16 +10837,6 @@ int ReadIni2(char *inifile, int localfile){
       &histogram_static, &histogram_nbuckets, &histogram_show_numbers, &histogram_show_graph, &histogram_show_outline, &histogram_width_factor);
       continue;
     }
-#ifdef pp_GEOM_CHECK
-    if(Match(buffer, "GEOMDIAGS") == 1){
-      int dummy;
-
-      fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %i %i %i %i", &structured_isopen, &unstructured_isopen, &dummy,
-        &highlight_edge0, &highlight_edge1, &highlight_edge2, &highlight_edgeother);
-      continue;
-    }
-#endif
     if(Match(buffer, "GEOMSHOW") == 1){
       int dummy, dummy2;
 #ifndef pp_GEOM_ANGLE
@@ -14850,11 +14840,6 @@ void WriteIni(int flag,char *filename){
     show_slice_outlines[0], show_slice_outlines[1], show_slice_outlines[2]);
   fprintf(fileout, " %i %i %i\n",
     show_slice_points[0], show_slice_points[1], show_slice_points[2]);
-#ifdef pp_GEOM_CHECK
-  fprintf(fileout, "GEOMDIAGS\n");
-  fprintf(fileout, " %i %i %i %i %i %i %i\n", structured_isopen, unstructured_isopen, 0,
-    highlight_edge0, highlight_edge1, highlight_edge2, highlight_edgeother);
-#endif
   fprintf(fileout, "GEOMDOMAIN\n");
   fprintf(fileout, " %i %i\n", showgeom_inside_domain, showgeom_outside_domain);
   fprintf(fileout, "GEOMOFFSET\n");
