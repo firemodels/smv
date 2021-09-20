@@ -754,7 +754,9 @@ extern "C" void GluiGeometrySetup(int main_window){
 /* ------------------ VolumeCB ------------------------ */
 
 extern "C" void VolumeCB(int var){
+#ifdef pp_GEOM_DIAG
   int i;
+#endif
   switch(var){
 #ifdef pp_GEOM_DIAG
   case SURF_GET:
