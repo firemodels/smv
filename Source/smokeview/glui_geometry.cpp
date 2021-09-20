@@ -26,7 +26,6 @@ int      ngeomprocinfo = 0;
 #define SAVE_SETTINGS_GEOM    33
 #define VISAXISLABELS         34
 #define GEOM_IVECFACTOR       38
-#define SHOW_TEXTURE_2D_IMAGE 39
 #define SHOW_TEXTURE_1D_IMAGE 40
 #define TERRAIN_ZMIN          41
 #define TERRAIN_ZMAX          42
@@ -42,6 +41,7 @@ int      ngeomprocinfo = 0;
 #endif
 #define SHOWONLY_TOP          51
 
+GLUI_Checkbox **CHECKBOX_terrain_texture_show = NULL;
 GLUI_Checkbox *CHECKBOX_cfaces = NULL;
 #ifdef pp_HAVE_CFACE_NORMALS
 GLUI_Checkbox *CHECKBOX_show_cface_normals = NULL;
@@ -56,7 +56,6 @@ GLUI_Checkbox *CHECKBOX_smooth_geom_normal = NULL;
 GLUI_Checkbox *CHECKBOX_volumes_interior=NULL;
 GLUI_Checkbox *CHECKBOX_volumes_exterior=NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_1dimage = NULL;
-GLUI_Checkbox *CHECKBOX_show_texture_2dimage = NULL;
 GLUI_Checkbox *CHECKBOX_showonly_top = NULL;
 
 #ifdef pp_GEOM_DIAG
@@ -160,6 +159,25 @@ GLUI_StaticText *STATIC_label=NULL;
 char a_updatelabel[1000];
 char *updatelabel=NULL;
 
+/* ------------------ UpdateTerrainTexture ------------------------ */
+
+extern "C" void UpdateTerrainTexture(int val){
+  if(CHECKBOX_terrain_texture_show!=NULL&val>=0&&val<nterrain_textures){
+    texturedata *texti;
+
+    texti = terrain_textures+val;
+    if(texti->loaded==1&&CHECKBOX_terrain_texture_show[val]!=NULL){
+      CHECKBOX_terrain_texture_show[val]->set_int_val(texti->display);
+    }
+  }
+}
+
+/* ------------------ TerrainTextureCB ------------------------ */
+
+void TerrainTextureCB(int val){
+  updatemenu = 1;
+}
+
 /* ------------------ GeomRolloutCB ------------------------ */
 
 void GeomRolloutCB(int var){
@@ -248,22 +266,6 @@ int HaveTexture(void){
 
     texti = textureinfo + i;
     if(texti->loaded == 1 && texti->used == 1)return 1;
-  }
-  return 0;
-}
-
-/* ------------------ GetTextureShow ------------------------ */
-
-int GetTextureShow(void){
-  int i;
-
-  for(i = 0; i<ntextureinfo; i++){
-    texturedata *texti;
-
-    texti = textureinfo+i;
-    if(texti->loaded==1&&texti->used==1){
-      if(texti->display == 1)return 1;
-    }
   }
   return 0;
 }
@@ -684,10 +686,21 @@ extern "C" void GluiGeometrySetup(int main_window){
     if(terrain_nindices>0){
       CHECKBOX_showonly_top = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "show only top surface", &terrain_showonly_top, SHOWONLY_TOP, VolumeCB);
     }
-    if(HaveTexture()==1){
-      show_texture_2dimage = GetTextureShow();
-      CHECKBOX_show_texture_2dimage = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "show image", &show_texture_2dimage, SHOW_TEXTURE_2D_IMAGE, VolumeCB);
-      VolumeCB(SHOW_TEXTURE_2D_IMAGE);
+    if(nterrain_textures>0){
+      int i;
+
+      NewMemory((void **)&CHECKBOX_terrain_texture_show, sizeof(GLUI_Checkbox *)*nterrain_textures);
+      for(i = 0; i<nterrain_textures; i++){
+        texturedata *texti;
+
+        texti = terrain_textures+i;
+        if(texti->loaded==1){
+          CHECKBOX_terrain_texture_show[i] = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, texti->file, &(texti->display), i, TerrainTextureCB);
+        }
+        else{
+          CHECKBOX_terrain_texture_show[i] = NULL;
+        }
+      }
     }
     glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "show geom and bndry files", &glui_show_geom_bndf, UPDATE_GEOM, VolumeCB);
 
@@ -853,30 +866,19 @@ extern "C" void VolumeCB(int var){
     SPINNER_geom_zlevel->set_float_limits(terrain_zmin, terrain_zmax);
     UpdateChopColors();
   case SHOW_TEXTURE_1D_IMAGE:
-    if(show_texture_1dimage == 1 && show_texture_2dimage == 1){
-      show_texture_2dimage=0;
-      VolumeCB(SHOW_TEXTURE_2D_IMAGE);
-      if(CHECKBOX_show_texture_2dimage!=NULL&&CHECKBOX_show_texture_2dimage->get_int_val() == 1)CHECKBOX_show_texture_2dimage->set_int_val(0);
-    }
-    break;
-  case SHOW_TEXTURE_2D_IMAGE:
-    if(show_texture_1dimage==1&&show_texture_2dimage==1){
-      show_texture_1dimage=0;
-      if(CHECKBOX_show_texture_1dimage->get_int_val() == 1)CHECKBOX_show_texture_1dimage->set_int_val(0);
-    }
-    for(i = 0; i<ntextureinfo; i++){
-      texturedata *texti;
+    if(show_texture_1dimage == 1&&nterrain_textures>0){
+      int i;
 
-      texti = textureinfo+i;
-      if(texti->loaded==1&&texti->used==1){
-        texti->display = 1 - show_texture_2dimage;
-        TextureShowMenu(i);
-        if(CHECKBOX_show_texture_2dimage != NULL){
-          if(texti->display == 1 && CHECKBOX_show_texture_2dimage->get_int_val() == 0)CHECKBOX_show_texture_2dimage->set_int_val(1);
-          if(texti->display == 0 && CHECKBOX_show_texture_2dimage->get_int_val() == 1)CHECKBOX_show_texture_2dimage->set_int_val(0);
+      for(i=0; i<nterrain_textures; i++){
+        texturedata *texti;
+
+        texti = terrain_textures+i;
+        if(texti->loaded==1){
+          texti->display = 0;
+          UpdateTerrainTexture(i);
         }
-        break;
       }
+      updatemenu = 1;
     }
     break;
   case GEOM_IVECFACTOR:

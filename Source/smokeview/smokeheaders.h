@@ -9,6 +9,8 @@
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
 
+EXTERNCPP void UpdateTerrainTexture(int val);
+
 EXTERNCPP void UpdateShowOnlyTop(void);
 
 EXTERNCPP void UpdateGLuiGridLocation(void);

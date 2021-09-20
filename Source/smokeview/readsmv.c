@@ -2155,7 +2155,7 @@ void InitTextures0(void){
       floortex=NULL;
       if(tt->file!=NULL){
 #ifdef _DEBUG
-        PRINTF("terrain texture file: %s",tt->file);
+        PRINTF("terrain texture file: %s\n",tt->file);
 #endif
         floortex=ReadPicture(tt->file,&texwid,&texht,&is_transparent,0);
         tt->is_transparent = is_transparent;
@@ -10579,8 +10579,8 @@ void UpdateUseTextures(void){
     for(i=0;i<nterrain_textures;i++){
       texturedata *texti;
 
-      texti = textureinfo+ntextureinfo-1 + i;
-      if(texti==terrain_textures+i){
+      texti = textureinfo + ntextureinfo - nterrain_textures + i;
+      if(texti = terrain_textures + i){
         texti->used = 1;
       }
     }

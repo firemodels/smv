@@ -6310,6 +6310,7 @@ void TerrainGeomShowMenu(int value){
     if(value>=0&&value<nterrain_textures){
       texti = terrain_textures+value;
       texti->display = 1-texti->display;
+      UpdateTerrainTexture(value);
     }
   }
   else{
@@ -7040,6 +7041,29 @@ updatemenu=0;
     if(vis_boundary_type[INTERIORwall]==0)glutAddMenuEntry(_("Interior"),INTERIORwallmenu);
   }
 
+  /* --------------------------------terrain menu -------------------------- */
+
+
+  if(nterrain_textures>0){
+    int i;
+
+    CREATEMENU(terrain_geom_showmenu, TerrainGeomShowMenu);
+    for(i = 0; i<nterrain_textures; i++){
+      texturedata *texti;
+
+      texti = terrain_textures+i;
+      if(texti->loaded==1){
+        char tlabel[256];
+
+        strcpy(tlabel, "  ");
+        if(texti->display==1)strcat(tlabel, "*");
+        strcat(tlabel, texti->file);
+        if(texti->display==1)glutAddMenuEntry(tlabel, i);
+        if(texti->display==0)glutAddMenuEntry(tlabel, i);
+      }
+    }
+  }
+
 /* --------------------------------surface menu -------------------------- */
 
   if(have_volumes==1){
@@ -7086,8 +7110,10 @@ updatemenu=0;
   else {
     glutAddMenuEntry(_("   Outside FDS domain"), GEOMETRY_OUTSIDE_DOMAIN);
   }
-
   glutAddMenuEntry("-", GEOMETRY_DUMMY);
+  if(nterrain_textures>0){
+    GLUTADDSUBMENU(_("Terrain images"), terrain_geom_showmenu);
+  }
   if(terrain_nindices>0){
     if(terrain_showonly_top==1)glutAddMenuEntry(_("*Show only top surface"), GEOMETRY_TERRAIN_SHOW_TOP);
     if(terrain_showonly_top==0)glutAddMenuEntry(_("Show only top surface"), GEOMETRY_TERRAIN_SHOW_TOP);
@@ -7832,38 +7858,6 @@ updatemenu=0;
     GLUTADDSUBMENU(_("Segments"),spheresegmentmenu);
     glutAddMenuEntry(_("Settings..."), MENU_DEVICE_SETTINGS);
 
-  }
-
-  /* --------------------------------terrain menu -------------------------- */
-
-  if(terrain_nindices>0||nterrain_textures>0){
-    int i;
-
-    CREATEMENU(terrain_geom_showmenu, TerrainGeomShowMenu);
-    if(terrain_nindices>0){
-      if(terrain_show_geometry_surface==1)glutAddMenuEntry(_("*surface"),      MENU_TERRAIN_SHOW_SURFACE);
-      if(terrain_show_geometry_surface==0)glutAddMenuEntry(_("surface"),       MENU_TERRAIN_SHOW_SURFACE);
-      if(terrain_showonly_top==1)glutAddMenuEntry(_("*show only top surface"), MENU_TERRAIN_SHOW_TOP);
-      if(terrain_showonly_top==0)glutAddMenuEntry(_("show only top surface"),  MENU_TERRAIN_SHOW_TOP);
-    }
-    if(nterrain_textures>0){
-      glutAddMenuEntry("-", MENU_DUMMY);
-      glutAddMenuEntry("textures:", MENU_DUMMY);
-    }
-    for(i = 0; i<nterrain_textures; i++){
-      texturedata *texti;
-
-      texti = terrain_textures+i;
-      if(texti->loaded==1){
-        char tlabel[256];
-
-        strcpy(tlabel, "  ");
-        if(texti->display==1)strcat(tlabel, "*");
-        strcat(tlabel, texti->file);
-        if(texti->display==1)glutAddMenuEntry(tlabel, i);
-        if(texti->display==0)glutAddMenuEntry(tlabel, i);
-      }
-    }
   }
 
   /* --------------------------------geometry menu -------------------------- */

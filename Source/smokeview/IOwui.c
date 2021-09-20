@@ -699,7 +699,7 @@ void DrawTerrainGeom(int option){
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     glEnable(GL_TEXTURE_2D);
 
-    int count = 0;
+    int count = 1;
     int is_transparent=0;
     TransparentOff();
     for(ii = -1; ii<nterrain_textures; ii++){
