@@ -534,11 +534,6 @@ void DrawGeom(int flag, int timestate){
   int i;
   float black[]={0.0,0.0,0.0,1.0};
   float blue[]={0.0,0.0,1.0,1.0};
-#ifdef pp_GEOM_DIAG
-  float green[]={0.0,1.0,0.0,1.0};
-  float cyan[] = { 0.0,1.0,1.0,1.0 };
-  float magenta[] = { 1.0,0.0,1.0,1.0 };
-#endif
   float skinny_color[]={1.0,0.0,0.0,1.0};
   float *last_color=NULL;
   float last_transparent_level=-1.0;
