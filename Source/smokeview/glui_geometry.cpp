@@ -25,9 +25,6 @@ int      ngeomprocinfo = 0;
 #define RADIO_WALL            32
 #define SAVE_SETTINGS_GEOM    33
 #define VISAXISLABELS         34
-#ifdef pp_GEOM_ANGLE
-#define GEOM_MAX_ANGLE        36
-#endif
 #define GEOM_IVECFACTOR       38
 #define SHOW_TEXTURE_2D_IMAGE 39
 #define SHOW_TEXTURE_1D_IMAGE 40
@@ -98,9 +95,6 @@ GLUI_Panel *PANEL_geom_transparency = NULL;
 GLUI_Panel *PANEL_normals = NULL;
 
 GLUI_Spinner *SPINNER_geom_transparency=NULL;
-#ifdef pp_GEOM_ANGLE
-GLUI_Spinner *SPINNER_geom_max_angle = NULL;
-#endif
 GLUI_Spinner *SPINNER_geom_ivecfactor = NULL;
 GLUI_Spinner *SPINNER_geom_vert_exag=NULL;
 GLUI_Spinner *SPINNER_geom_zmin = NULL, *SPINNER_geom_zmax = NULL, *SPINNER_geom_zlevel=NULL;
@@ -722,12 +716,6 @@ extern "C" void GluiGeometrySetup(int main_window){
     VolumeCB(GEOM_VERT_EXAG);
     BUTTON_reset_zbounds = glui_geometry->add_button_to_panel(PANEL_elevation_color, _("Reset zmin/zmax"), RESET_ZBOUNDS, VolumeCB);
 
-#ifdef pp_GEOM_ANGLE
-    glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "use max angle", &use_max_angle, GEOM_MAX_ANGLE, VolumeCB);
-    SPINNER_geom_max_angle = glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "max angle", GLUI_SPINNER_FLOAT, &geom_max_angle, GEOM_MAX_ANGLE, VolumeCB);
-    SPINNER_geom_max_angle->set_float_limits(0.0, 180.0);
-#endif
-
     PANEL_normals = glui_geometry->add_panel_to_panel(PANEL_group1, "normals");
     PANEL_normals->set_alignment(GLUI_ALIGN_LEFT);
     CHECKBOX_show_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_normals, "show", &show_geom_normal);
@@ -894,12 +882,6 @@ extern "C" void VolumeCB(int var){
   case GEOM_IVECFACTOR:
     geom_vecfactor = (float)geom_ivecfactor/1000.0;
     break;
-#ifdef pp_GEOM_ANGLE
-  case GEOM_MAX_ANGLE:
-    cos_geom_max_angle=cos(DEG2RAD*geom_max_angle);
-    UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_NORMALS);
-    break;
-#endif
     // update_volbox_controls=1;
     // face_vis
     // face_vis_old

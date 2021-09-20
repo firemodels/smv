@@ -10839,9 +10839,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "GEOMSHOW") == 1){
       int dummy, dummy2;
-#ifndef pp_GEOM_ANGLE
       float rdummy;
-#endif
 
       fgets(buffer, 255, stream);
 #ifdef pp_HAVE_CFACE_NORMALS
@@ -10856,11 +10854,7 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i", &show_volumes_interior, &show_volumes_exterior, &show_volumes_solid, &show_volumes_outline);
       fgets(buffer, 255, stream);
-#ifdef pp_GEOM_ANGLE
-      sscanf(buffer, " %f %f %i %i %i", &geom_vert_exag, &geom_max_angle, &dummy, &dummy2, &show_geom_boundingbox);
-#else
       sscanf(buffer, " %f %f %i %i %i", &geom_vert_exag, &rdummy, &dummy, &dummy2, &show_geom_boundingbox);
-#endif
       continue;
     }
     if(Match(buffer, "SHOWTRIANGLECOUNT") == 1){
@@ -14855,11 +14849,7 @@ void WriteIni(int flag,char *filename){
           geom_force_transparent, geom_transparency, geom_linewidth, use_geom_factors);
 #endif
   fprintf(fileout, " %i %i %i %i\n", show_volumes_interior, show_volumes_exterior, show_volumes_solid, show_volumes_outline);
-#ifdef pp_GEOM_ANGLE
-  fprintf(fileout, " %f %f %i %i %i\n", geom_vert_exag, geom_max_angle, 0, 0, show_geom_boundingbox);
-#else
   fprintf(fileout, " %f %f %i %i %i\n", geom_vert_exag, 30.0, 0, 0, show_geom_boundingbox);
-#endif
 
   fprintf(fileout, "GVERSION\n");
   fprintf(fileout, " %i\n", vis_title_gversion);

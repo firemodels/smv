@@ -1268,9 +1268,6 @@ void InitVars(void){
   beam_color[1] = 255 * foregroundcolor[1];
   beam_color[2] = 255 * foregroundcolor[2];
 
-#ifdef pp_GEOM_ANGLE
-  cos_geom_max_angle = cos(DEG2RAD*geom_max_angle);
-#endif
   if(movie_filetype==WMV){
     strcpy(movie_ext, ".wmv");
   }
