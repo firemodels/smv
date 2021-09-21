@@ -1566,7 +1566,7 @@ void UpdateChopColors(void){
       dz = (terrain_zmax - terrain_zmin)*geom_vert_exag;
       if(ABS(dz)<0.01)dz=1;
 
-      ilevel = 255 * (terrain_zlevel - terrain_zmin) / dz;
+      ilevel = 255 * geom_vert_exag*(terrain_zlevel - terrain_zmin) / dz;
       if(ABS(ilevel - i) < 3){
         rgb_terrain2[4 * i] = 0;
         rgb_terrain2[4 * i + 1] = 0;

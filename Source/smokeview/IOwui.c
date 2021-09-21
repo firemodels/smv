@@ -347,6 +347,7 @@ void DrawTerrainGeom(int option){
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(geom_delx, geom_dely, geom_delz);
   glTranslatef(-xbar0, -ybar0, -zbar0);
 
   if(option==DRAW_OPAQUE){
@@ -354,6 +355,11 @@ void DrawTerrainGeom(int option){
     //*** surface
 
     if(show_faces_shaded==1&&draw_surface==1){
+      if(show_texture_1dimage==1){
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+        glEnable(GL_TEXTURE_1D);
+        glBindTexture(GL_TEXTURE_1D, terrain_colorbar_id);
+      }
       glBegin(GL_TRIANGLES);
 
       // surface
@@ -394,19 +400,39 @@ void DrawTerrainGeom(int option){
 
         n1 = v1+3;
         if(terrain_showonly_top==1&&n1[2]<0.0)continue;
-        glColor3fv(c1);
+
+        if(show_texture_1dimage==0)glColor3fv(c1);
         glNormal3fv(n1);
+        if(show_texture_1dimage==1){
+          float texture_z;
+
+          texture_z = (v1[2]-terrain_zmin)/(terrain_zmax-terrain_zmin);
+          glTexCoord1f(texture_z);
+        }
         glVertex3fv(v1o);
 
         n2 = v2+3;
         glNormal3fv(n2);
+        if(show_texture_1dimage==1){
+          float texture_z;
+
+          texture_z = (v2[2]-terrain_zmin)/(terrain_zmax-terrain_zmin);
+          glTexCoord1f(texture_z);
+        }
         glVertex3fv(v2o);
 
         n3 = v3+3;
         glNormal3fv(n3);
+        if(show_texture_1dimage==1){
+          float texture_z;
+
+          texture_z = (v3[2]-terrain_zmin)/(terrain_zmax-terrain_zmin);
+          glTexCoord1f(texture_z);
+        }
         glVertex3fv(v3o);
       }
       glEnd();
+      if(show_texture_1dimage == 1)glDisable(GL_TEXTURE_1D);
     }
 
 #define FDS_OFFSET 0.005
@@ -415,7 +441,7 @@ void DrawTerrainGeom(int option){
 
     if(show_faces_outline==1){
       glPushMatrix();
-      glTranslatef(geom_delx, geom_dely, geom_delz);
+      glTranslatef(0.0, 0.0, geom_dz_offset);
       glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
 
@@ -477,7 +503,7 @@ void DrawTerrainGeom(int option){
 
     if(show_geom_verts==1){
       glPushMatrix();
-      glTranslatef(geom_delx, geom_dely, geom_delz);
+      glTranslatef(0.0, 0.0, geom_dz_offset);
       glPointSize(geom_pointsize);
       glBegin(GL_POINTS);
 
@@ -600,7 +626,7 @@ void DrawTerrainGeom(int option){
 
     //*** draw sides in a neutral color
 
-      if(terrain_showonly_top==0&&(show_faces_shaded==1||draw_texture==1)){
+    if(terrain_showonly_top==0&&(show_faces_shaded==1||draw_texture==1)){
       glBegin(GL_TRIANGLES);
 
       // surface
@@ -673,7 +699,7 @@ void DrawTerrainGeom(int option){
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     glEnable(GL_TEXTURE_2D);
 
-    int count = 0;
+    int count = 1;
     int is_transparent=0;
     TransparentOff();
     for(ii = -1; ii<nterrain_textures; ii++){

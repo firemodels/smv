@@ -324,6 +324,7 @@ void UpdateGeomAreas(void){
 
 /* ------------------ DrawSelectGeom ------------------------ */
 
+#ifdef pp_GEOM_DIAG
 void DrawSelectGeom(void){
   geomdata *geomi;
   geomlistdata *geomlisti;
@@ -406,6 +407,7 @@ void DrawSelectGeom(void){
   break;
   }
 }
+#endif
 
 /* ------------------ HaveNonTextures ------------------------ */
 
@@ -532,9 +534,6 @@ void DrawGeom(int flag, int timestate){
   int i;
   float black[]={0.0,0.0,0.0,1.0};
   float blue[]={0.0,0.0,1.0,1.0};
-  float green[]={0.0,1.0,0.0,1.0};
-  float cyan[] = { 0.0,1.0,1.0,1.0 };
-  float magenta[] = { 1.0,0.0,1.0,1.0 };
   float skinny_color[]={1.0,0.0,0.0,1.0};
   float *last_color=NULL;
   float last_transparent_level=-1.0;
@@ -561,7 +560,9 @@ void DrawGeom(int flag, int timestate){
 
   if(ntris>0&&timestate==GEOM_STATIC){
     float *color;
+#ifdef pp_GEOM_DIAG
     surfdata *selected_surf;
+#endif
 
   // draw geometry surface
 
@@ -573,6 +574,7 @@ void DrawGeom(int flag, int timestate){
       texture_state=TextureOn(texture_iso_colorbar_id,&texture_first);
     }
 
+#ifdef pp_GEOM_DIAG
     if(select_geom==GEOM_PROP_SURF&&ntris>0&&selected_geom_triangle>=0){
       tridata *selected_triangle;
 
@@ -582,6 +584,7 @@ void DrawGeom(int flag, int timestate){
     else{
       selected_surf = NULL;
     }
+#endif
     have_non_textures = HaveNonTextures(tris, ntris);
     if(cullfaces==1)glDisable(GL_CULL_FACE);
     glEnable(GL_NORMALIZE);
@@ -608,11 +611,13 @@ void DrawGeom(int flag, int timestate){
 
         trianglei = tris[i];
         use_select_color = 0;
+#ifdef pp_GEOM_DIAG
         if(select_geom==GEOM_PROP_TRIANGLE||select_geom==GEOM_PROP_SURF){
           if(trianglei->geomtype==GEOM_ISO)continue;
           if(select_geom==GEOM_PROP_TRIANGLE&&selected_geom_triangle==i)use_select_color = 1;
           if(select_geom==GEOM_PROP_SURF&&selected_surf==trianglei->geomsurf)use_select_color = 1;
         }
+#endif
         if(trianglei->geomtype!=GEOM_ISO){
           if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
           if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
@@ -660,6 +665,7 @@ void DrawGeom(int flag, int timestate){
             geom_rgb_uc[1] = (unsigned char)gcolor[1];
             geom_rgb_uc[2] = (unsigned char)gcolor[2];
           }
+#ifdef pp_GEOM_DIAG
           if(use_select_color==1){
             if(select_geom==GEOM_PROP_TRIANGLE||select_geom==GEOM_PROP_SURF){
               geom_rgb_uc[0] = (unsigned char)geom_triangle_rgb[0];
@@ -667,6 +673,7 @@ void DrawGeom(int flag, int timestate){
               geom_rgb_uc[2] = (unsigned char)geom_triangle_rgb[2];
             }
           }
+#endif
           if(texture_state==ON){
             glEnd();
             texture_state = TextureOff();
@@ -1120,7 +1127,7 @@ void DrawGeom(int flag, int timestate){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
-      glTranslatef(geom_delx, geom_dely, geom_delz);
+      glTranslatef(geom_delx, geom_dely, geom_delz+geom_dz_offset);
       if(geomi->geomtype==GEOM_ISO){
         glLineWidth(isolinewidth);
         line_offset = iso_outline_offset;
@@ -1198,17 +1205,28 @@ void DrawGeom(int flag, int timestate){
 
     last_color=NULL;
     if(geomlisti->nverts>0){
+      float line_offset;
+
       glPushMatrix();
       glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
       glTranslatef(-xbar0,-ybar0,-zbar0);
-      glTranslatef(geom_delx, geom_dely, geom_delz);
+      glTranslatef(geom_delx, geom_dely, geom_delz + geom_dz_offset);
       glPointSize(geom_pointsize);
       glBegin(GL_POINTS);
+      if(geomi->geomtype==GEOM_ISO){
+        line_offset = iso_outline_offset;
+      }
+      else{
+        line_offset = geom_norm_offset;
+      }
       for(j=0;j<geomlisti->nverts;j++){
         vertdata *verti;
+#ifdef pp_GEOM_DIAG
         int use_select_color;
+#endif
 
         verti = geomlisti->verts+j;
+#ifdef pp_GEOM_DIAG
         use_select_color=0;
         if(select_geom==GEOM_PROP_VERTEX1||select_geom==GEOM_PROP_VERTEX2){
           if(verti->geomtype==GEOM_ISO||verti->ntriangles==0)continue;
@@ -1227,9 +1245,9 @@ void DrawGeom(int flag, int timestate){
           geom_vertex1_rgb_uc[1] = (unsigned char)geom_vertex1_rgb[1];
           geom_vertex1_rgb_uc[2] = (unsigned char)geom_vertex1_rgb[2];
           glColor3ubv(geom_vertex1_rgb_uc);
-          last_color=NULL;
+          last_color = NULL;
         }
-        else if(use_select_color == 2){
+        else if(use_select_color==2){
           unsigned char geom_vertex2_rgb_uc[3];
 
           geom_vertex2_rgb_uc[0] = (unsigned char)geom_vertex2_rgb[0];
@@ -1242,10 +1260,29 @@ void DrawGeom(int flag, int timestate){
           color = verti->triangles[0]->geomsurf->color;
           if(last_color!=color){
             glColor3fv(color);
-            last_color=color;
+            last_color = color;
           }
         }
-        glVertex3fv(verti->xyz);
+#else
+        if(verti->geomtype==GEOM_GEOM&&show_geom_verts==0)continue;
+        if(verti->geomtype==GEOM_ISO&&show_iso_points==0)continue;
+        if(verti->ntriangles==0)continue;
+        color = verti->triangles[0]->geomsurf->color;
+        if(last_color!=color){
+          glColor3fv(color);
+          last_color = color;
+        }
+#endif
+        {
+          float vert2a[3];
+          int k;
+
+          for(k=0;k<3;k++){
+            vert2a[k] = verti->xyz[k] + line_offset*verti->vert_norm[k];
+          }
+
+          glVertex3fv(vert2a);
+        }
       }
       glEnd();
       glPopMatrix();
@@ -1399,78 +1436,6 @@ void DrawGeom(int flag, int timestate){
       glEnd();
       glPopMatrix();
     }
-
-    // geometry diagnostics
-
-    if(geomlisti->nedges>0 && (highlight_edge0 == 1||highlight_edge1 == 1 || highlight_edge2 == 1 || highlight_edgeother == 1)){
-      int ii;
-
-      glPushMatrix();
-      glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
-      glTranslatef(geom_delx, geom_dely, geom_delz);
-      glLineWidth(geom_linewidth);
-      glBegin(GL_LINES);
-
-      for(ii = 0; ii < geomlisti->nedges; ii++){
-        edgedata *edgei;
-        float *xyz0, *xyz1;
-        vertdata *v0, *v1;
-
-        edgei = geomlisti->edges + ii;
-        v0 = geomlisti->verts + edgei->vert_index[0];
-        xyz0 = v0->xyz;
-        v1 = geomlisti->verts + edgei->vert_index[1];
-        xyz1 = v1->xyz;
-        if((highlight_edge0==1&&edgei->ntriangles==0)||
-           (highlight_edge1==1&&edgei->ntriangles==1)||
-           (highlight_edge2==1&&edgei->ntriangles==2)||
-           (highlight_edgeother==1&&edgei->ntriangles>2)){
-          if(edgei->ntriangles > 2){
-            glColor3fv(cyan);
-          }
-          else if(edgei->ntriangles == 1){
-            glColor3fv(green);
-          }
-          else{
-            glColor3fv(blue);
-          }
-          glVertex3fv(xyz0);
-          glVertex3fv(xyz1);
-        }
-      }
-
-      glEnd();
-      glPopMatrix();
-
-    }
-    if(geomlisti->nverts>0 && highlight_vertexdup == 1){
-      int ii;
-
-      glPushMatrix();
-      glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0);
-      glTranslatef(geom_delx, geom_dely, geom_delz);
-      glPointSize(geom_pointsize);
-      glBegin(GL_POINTS);
-
-      glColor3fv(magenta);
-
-      for(ii = 0; ii < geomlisti->nverts; ii++){
-        vertdata *verti;
-
-        verti = geomlisti->verts + ii;
-        if(verti->isdup == 1){
-          float *xyz;
-
-          xyz = verti->xyz;
-          glVertex3fv(xyz);
-        }
-      }
-
-      glEnd();
-      glPopMatrix();
-    }
   }
 }
 
@@ -1531,7 +1496,7 @@ void SmoothGeomNormals(geomlistdata *geomlisti, int geomtype){
       else{
         for(k = 0; k<vertj->ntriangles; k++){
           tridata *trianglek;
-          float *tri_normk, cosang;
+          float *tri_normk;
           float lengthi, lengthk;
 
           trianglek = vertj->triangles[k];
@@ -1540,12 +1505,9 @@ void SmoothGeomNormals(geomlistdata *geomlisti, int geomtype){
           lengthk = NORM3(tri_normk);
           lengthi = NORM3(tri_normi);
           if(lengthk > 0.0&&lengthi > 0.0){
-            cosang = DOT3(tri_normk, tri_normi) / (lengthi*lengthk);
-            if(use_max_angle == 0 || cosang > cos_geom_max_angle){ // smooth using all triangles if an isosurface
-              norm[0] += trianglek->area*tri_normk[0];
-              norm[1] += trianglek->area*tri_normk[1];
-              norm[2] += trianglek->area*tri_normk[2];
-            }
+            norm[0] += trianglek->area*tri_normk[0];
+            norm[1] += trianglek->area*tri_normk[1];
+            norm[2] += trianglek->area*tri_normk[2];
           }
         }
         ReduceToUnit(norm);
@@ -4588,6 +4550,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(geom_delx, geom_dely, geom_delz);
       glBegin(GL_TRIANGLES);
       for(j = 0; j<ntris; j++){
         float *color, *xyzptr[3];
@@ -4664,7 +4627,8 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-      glTranslatef(-xbar0, -ybar0, -zbar0+SCALE2FDS(geom_dz_offset));
+      glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(geom_delx, geom_dely, geom_delz+geom_dz_offset);
       glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
       if(show_faces_outline==1){
@@ -4763,6 +4727,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
       glPushMatrix();
       glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
       glTranslatef(-xbar0, -ybar0, -zbar0);
+      glTranslatef(geom_delx, geom_dely, geom_delz+geom_dz_offset);
       glPointSize(geom_pointsize);
       glBegin(GL_POINTS);
       for(j = 0; j<ntris; j++){
