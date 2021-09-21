@@ -121,9 +121,6 @@ GLUI_Checkbox *CHECKBOX_zlib = NULL;
 GLUI_Checkbox **CHECKBOX_meshvisptr = NULL;
 GLUI_Checkbox *CHECKBOX_meshvis = NULL;
 GLUI_Checkbox *CHECKBOX_show_light_position_direction = NULL;
-#ifdef pp_LOAD_INCREMENTAL
-GLUI_Checkbox *CHECKBOX_smoke3d_load_incremental=NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_edit_colormap=NULL;
 GLUI_Checkbox *CHECKBOX_plane_normal=NULL;
 
@@ -282,22 +279,6 @@ extern "C" void UpdateGluiPlanes(float dmin, float dmax){
     plane_distance = CLAMP(plane_distance,dmin,dmax);
     SPINNER_plane_distance->set_float_val(plane_distance);
   }
-}
-#endif
-
-/* ------------------ LoadIncrementalCB ------------------------ */
-
-#ifdef pp_LOAD_INCREMENTAL
-extern "C" void LoadIncrementalCB(int var){
-  LoadIncrementalCB1(var);
-  LoadIncrementalCB2(var);
-  updatemenu=1;
-}
-
-/* ------------------ LoadIncrementalCB2 ------------------------ */
-
-extern "C" void LoadIncrementalCB2(int var){
-  if(CHECKBOX_smoke3d_load_incremental != NULL)CHECKBOX_smoke3d_load_incremental->set_int_val(load_incremental);
 }
 #endif
 
@@ -653,9 +634,6 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     ROLLOUT_load_options = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices, _("Load options"),false, SLICESMOKE_LOAD_ROLLOUT, SliceSmokeRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_load_options, glui_3dsmoke);
     ADDPROCINFO(slicesmokeprocinfo, nslicesmokeprocinfo, ROLLOUT_load_options, SLICESMOKE_LOAD_ROLLOUT, glui_3dsmoke);
-#ifdef pp_LOAD_INCREMENTAL
-    CHECKBOX_smoke3d_load_incremental = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_load_options, _("incrementally"), &load_incremental, SMOKE3D_LOAD_INCREMENTAL, LoadIncrementalCB);
-#endif
     SPINNER_load_3dsmoke = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_load_options, _("soot alpha >"), GLUI_SPINNER_FLOAT, &load_3dsmoke_cutoff);
     SPINNER_load_3dsmoke->set_float_limits(0.0, 255.0);
 

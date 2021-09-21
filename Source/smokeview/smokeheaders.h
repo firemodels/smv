@@ -252,11 +252,6 @@ EXTERNCPP void UpdateRenderListSkip(void);
 EXTERNCPP void ForceIdle(void);
 EXTERNCPP void UpdateFrameNumber(int changetime);
 EXTERNCPP void UpdateVentOffset(void);
-#ifdef pp_LOAD_INCREMENTAL
-EXTERNCPP void LoadIncrementalCB(int var);
-EXTERNCPP void LoadIncrementalCB1(int var);
-EXTERNCPP void LoadIncrementalCB2(int var);
-#endif
 EXTERNCPP void ColorbarCB(int var);
 EXTERNCPP void UpdateOpacityMap(void);
 EXTERNCPP void ShowBoundsDialog(int type);
