@@ -147,6 +147,7 @@ GLUI_Panel *PANEL_obj_stretch2=NULL,*PANEL_obj_stretch3=NULL, *PANEL_obj_stretch
 GLUI_Panel *PANEL_geomedgecheck=NULL;
 GLUI_Panel *PANEL_group1=NULL;
 GLUI_Panel *PANEL_geom_offset=NULL;
+GLUI_Panel *PANEL_terrain_images = NULL;
 
 GLUI_Rollout *ROLLOUT_structured=NULL;
 GLUI_Rollout *ROLLOUT_unstructured=NULL;
@@ -698,22 +699,6 @@ extern "C" void GluiGeometrySetup(int main_window){
     if(terrain_nindices>0){
       CHECKBOX_showonly_top = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "show only top surface", &terrain_showonly_top, SHOWONLY_TOP, VolumeCB);
     }
-    if(nterrain_textures>0){
-      int i;
-
-      NewMemory((void **)&CHECKBOX_terrain_texture_show, sizeof(GLUI_Checkbox *)*nterrain_textures);
-      for(i = 0; i<nterrain_textures; i++){
-        texturedata *texti;
-
-        texti = terrain_textures+i;
-        if(texti->loaded==1){
-          CHECKBOX_terrain_texture_show[i] = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, texti->file, &(texti->display), i, TerrainTextureCB);
-        }
-        else{
-          CHECKBOX_terrain_texture_show[i] = NULL;
-        }
-      }
-    }
     CHECKBOX_showgeom_inside_domain = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2,  "inside FDS domain",  &showgeom_inside_domain,  GEOM_FDS_DOMAIN, VolumeCB);
     CHECKBOX_showgeom_outside_domain = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "outside FDS domain", &showgeom_outside_domain, GEOM_FDS_DOMAIN, VolumeCB);
 
@@ -724,6 +709,24 @@ extern "C" void GluiGeometrySetup(int main_window){
 
     SPINNER_geom_vert_exag = glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "vertical exaggeration", GLUI_SPINNER_FLOAT, &geom_vert_exag, GEOM_VERT_EXAG, VolumeCB);
     SPINNER_geom_vert_exag->set_float_limits(0.1, 10.0);
+
+    if(nterrain_textures>0){
+      int i;
+
+      NewMemory((void **)&CHECKBOX_terrain_texture_show, sizeof(GLUI_Checkbox *)*nterrain_textures);
+      PANEL_terrain_images = glui_geometry->add_panel_to_panel(PANEL_group1, "terrain images");
+      for(i = 0; i<nterrain_textures; i++){
+        texturedata *texti;
+
+        texti = terrain_textures+i;
+        if(texti->loaded==1){
+          CHECKBOX_terrain_texture_show[i] = glui_geometry->add_checkbox_to_panel(PANEL_terrain_images, texti->file, &(texti->display), i, TerrainTextureCB);
+        }
+        else{
+          CHECKBOX_terrain_texture_show[i] = NULL;
+        }
+      }
+    }
 
     PANEL_elevation_color = glui_geometry->add_panel_to_panel(PANEL_group1, "color by elevation");
     PANEL_elevation_color->set_alignment(GLUI_ALIGN_LEFT);
