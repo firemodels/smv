@@ -3464,53 +3464,6 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   return return_filesize;
 }
 
-/* ------------------ RemoveDuplicateVertices ------------------------ */
-#ifdef pp_REMOVE_DUPLICATES
-void RemoveDuplicateVertices(vertdata *verts, int nverts, tridata *triangles, int ntriangles){
-  int j, *vert_map=NULL;
-
-  if(nverts>0){
-    NewMemory((void **)&vert_map, nverts*sizeof(int));
-    for(j = 0; j<nverts; j++){
-      vert_map[j] = j;
-    }
-  }
-  for(j = 0; j<nverts; j++){
-    int k;
-    vertdata *vertj;
-    float *xyzj;
-
-    vertj = verts+j;
-    xyzj = vertj->xyz;
-    for(k = 0; k<j; k++){
-      vertdata *vertk;
-      float *xyzk;
-
-      vertk = verts+k;
-      xyzk = vertk->xyz;
-      if(MAXDIFF3(xyzj, xyzk)<0.0001){
-        vert_map[j] = k;
-        break;
-      }
-    }
-  }
-  for(j = 0; j<ntriangles;j++){
-    tridata *trianglei;
-    int *vert_index;
-
-    trianglei = triangles+j;
-    vert_index = trianglei->vert_index;
-    vert_index[0] = vert_map[vert_index[0]];
-    vert_index[1] = vert_map[vert_index[1]];
-    vert_index[2] = vert_map[vert_index[2]];
-    trianglei->verts[0] = verts+vert_index[0];
-    trianglei->verts[1] = verts+vert_index[1];
-    trianglei->verts[2] = verts+vert_index[2];
-  }
-  if(nverts>0)FREEMEMORY(vert_map);
-}
-#endif
-
 /* ------------------ UpdateGeomTriangles ------------------------ */
 
 void UpdateGeomTriangles(geomdata *geomi, int geom_type){
@@ -3531,10 +3484,6 @@ void UpdateGeomTriangles(geomdata *geomi, int geom_type){
 
   ntris = geomlisti->ntriangles;
   nverts = geomlisti->nverts;
-
-#ifdef pp_REMOVE_DUPLICATES
-  RemoveDuplicateVertices(geomlisti->verts, nverts, geomlisti->triangles, ntris);
-#endif
 
   for(j = 0; j<nverts; j++){
     vertdata *vert;

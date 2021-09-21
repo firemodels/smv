@@ -48,11 +48,7 @@
 //#define pp_SLICE_BUFFER       // read  slice file into a buffer before processing
 //#define pp_RESEARCH_DEBUG     // output whether data is reloaded or colors re-mapped when toggling to/from research mode
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
-//#define pp_SCRIPT_RENDER_FIX  // temporary fix to script rendering, needs to be explored further
-//#define pp_SCRIPT_SETVIEW       // add SETVIEWPOINT command at the beginning of a script
-//#define pp_REMOVE_DUPLICATES     // remove duplicate geometry vertices
 #define pp_HAVE_CFACE_NORMALS    //  read in and optionally draw cface normal vectors
-//define pp_BNDF_MENU_BUG       // adds an extra menu field for geometry boundary files, a bug (highlight bug to make sure disabled code is not needed_
 #define pp_GEOM_DIAG          // surround geometry properties dialog with pp_GEOM_DIAG so it can be removed easily
 //#define pp_GEOM_OFFSET_OBJECT // surround geometry offset widges with pp_GEOM_OFFSET_OBJECT
 

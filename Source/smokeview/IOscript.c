@@ -540,10 +540,6 @@ int CompileScript(char *scriptfile){
     if(GetScriptKeywordIndex(buffer)!=SCRIPT_UNKNOWN)nscriptinfo++;
   }
 
-#ifdef pp_SCRIPT_SETVIEW
-  nscriptinfo++;
-#endif
-
   if(nscriptinfo==0){
     fclose(stream);
     fprintf(stderr,"*** Error: scriptfile has no usable commands\n");
@@ -552,19 +548,7 @@ int CompileScript(char *scriptfile){
 
 NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 
-#ifdef pp_SCRIPT_SETVIEW
-  // add a SETVIEWPOINT command for the default view point at the beginning of thes script
-  {
-    char label[20];
-
-    strcpy(label, "SETVIEWPOINT");
-    InitScriptI(scriptinfo, SCRIPT_SETVIEWPOINT, label);
-    scriptinfo->cval = GetCharPointer(viewpoint_label_startup);
-  }
-  nscriptinfo=1;
-#else
   nscriptinfo=0;
-#endif
 
   /*
    ************************************************************************
