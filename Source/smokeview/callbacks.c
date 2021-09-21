@@ -2107,7 +2107,6 @@ void Keyboard(unsigned char key, int flag){
         }
       }
       break;
-#ifdef pp_HAVE_CFACE_NORMALS
     case 'n':
     case 'N':
       show_cface_normals = 1-show_cface_normals;
@@ -2119,7 +2118,6 @@ void Keyboard(unsigned char key, int flag){
       }
       UpdateGluiCfaces();
       break;
-#endif
     case 'O':
     if(ncgeominfo>0){
       if(show_faces_outline==0&&show_faces_shaded==1){

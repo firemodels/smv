@@ -46,9 +46,7 @@ GLUI_Checkbox *CHECKBOX_showgeom_inside_domain = NULL;
 GLUI_Checkbox *CHECKBOX_showgeom_outside_domain = NULL;
 GLUI_Checkbox **CHECKBOX_terrain_texture_show = NULL;
 GLUI_Checkbox *CHECKBOX_cfaces = NULL;
-#ifdef pp_HAVE_CFACE_NORMALS
 GLUI_Checkbox *CHECKBOX_show_cface_normals = NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_show_zlevel = NULL;
 GLUI_Checkbox *CHECKBOX_surface_solid=NULL, *CHECKBOX_surface_outline=NULL, *CHECKBOX_surface_points = NULL;
 GLUI_Checkbox *CHECKBOX_geom_force_transparent = NULL;
@@ -217,9 +215,7 @@ extern "C" void UpdateGluiCfaces(void){
   if(CHECKBOX_cfaces!=NULL){
     CHECKBOX_cfaces->set_int_val(use_cfaces);
   }
-#ifdef pp_HAVE_CFACE_NORMALS
   if(CHECKBOX_show_cface_normals!=NULL)CHECKBOX_show_cface_normals->set_int_val(show_cface_normals);
-#endif
 }
 
 /* ------------------ UpdateGeomBoundingBox ------------------------ */
@@ -546,11 +542,9 @@ extern "C" void GluiGeometrySetup(int main_window){
       glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "triangles");
       glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "polygons");
       VolumeCB(VOL_USE_CFACES);
-#ifdef pp_HAVE_CFACE_NORMALS
       if(have_cface_normals==CFACE_NORMALS_YES){
         CHECKBOX_show_cface_normals = glui_geometry->add_checkbox_to_panel(PANEL_cfaces, "normal vectors", &show_cface_normals);
       }
-#endif
     }
 #ifdef pp_GEOM_OFFSET_OBJECT
     PANEL_geom_offset = glui_geometry->add_panel_to_panel(PANEL_group1, "offset object");

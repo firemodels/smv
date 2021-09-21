@@ -2868,7 +2868,6 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       FREEMEMORY(matl_ind);
       geomlisti->nvolumes=nvolumes;
     }
-#ifdef pp_HAVE_CFACE_NORMALS
     if(geomi->have_cface_normals==CFACE_NORMALS_YES){
       int ncface_normals;
 
@@ -2885,7 +2884,6 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       }
       geomi->ncface_normals = ncface_normals;
     }
-#endif
   }
   geomi->loaded=1;
   geomi->display=1;
@@ -4559,11 +4557,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
   // draw lines
 
-#ifdef pp_HAVE_CFACE_NORMALS
   if((show_cface_normals==1||show_faces_outline==1)&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
-#else
-  if(show_faces_outline==1&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
-#endif
     for(i = 0; i<1; i++){
       geomlistdata *geomlisti;
       int ntris;
@@ -4636,7 +4630,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
       glEnd();
       glPopMatrix();
     }
-#ifdef pp_HAVE_CFACE_NORMALS
     if(show_cface_normals==1&&geomi->geomtype==GEOM_CGEOM){
       int j;
 
@@ -4657,7 +4650,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
       glEnd();
       glPopMatrix();
     }
-#endif
   }
 
   // draw points
@@ -4905,11 +4897,7 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
 
 /* ------------------ InitGeom ------------------------ */
 
-#ifdef pp_HAVE_CFACE_NORMALS
 void InitGeom(geomdata *geomi,int geomtype, int fdsblock, int have_cface_normals){
-#else
-void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
-#endif
   geomi->file=NULL;
   geomi->topo_file = NULL;
   geomi->cache_defined = 0;
@@ -4932,11 +4920,9 @@ void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
   geomi->is_terrain = 0;
   geomi->file2_tris = NULL;
   geomi->nfile2_tris = 0;
-#ifdef pp_HAVE_CFACE_NORMALS
   geomi->have_cface_normals = have_cface_normals;
   geomi->ncface_normals = 0;
   geomi->cface_normals = NULL;
-#endif
 }
 
 /* ------------------ RotateU2V ------------------------ */
