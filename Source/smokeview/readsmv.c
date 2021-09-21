@@ -696,11 +696,7 @@ void ReadSMVDynamic(char *file){
       do_pass2=1;
       if(setup_only==1||smoke3d_only==1)continue;
       for(n = 0; n<5; n++){
-#ifdef pp_PLOT3D_STATIC
-        if(ReadPlot3DLabels(NULL, stream, NULL, NULL)==LABEL_ERR)break;
-#else
         if(ReadLabels(NULL, stream, NULL)==LABEL_ERR)break;
-#endif
       }
       nplot3dinfo++;
       continue;
@@ -956,15 +952,9 @@ void ReadSMVDynamic(char *file){
   if(nplot3dinfo>0){
     if(plot3dinfo==NULL){
       NewMemory((void **)&plot3dinfo,nplot3dinfo*sizeof(plot3ddata));
-#ifdef pp_PLOT3D_STATIC
-      NewMemory((void **)&plot3dlabels, nplot3dinfo*6*3*MAXPLOT3DLABELSIZE);
-#endif
     }
     else{
       ResizeMemory((void **)&plot3dinfo,nplot3dinfo*sizeof(plot3ddata));
-#ifdef pp_PLOT3D_STATIC
-      ResizeMemory((void **)&plot3dlabels, nplot3dinfo*6*3*MAXPLOT3DLABELSIZE);
-#endif
     }
   }
   for(i=0;i<ndeviceinfo;i++){
@@ -1079,20 +1069,12 @@ void ReadSMVDynamic(char *file){
       if(fast_startup==1||FILE_EXISTS_CASEDIR(plot3di->file)==YES){
         int n;
         int read_ok = YES;
-#ifdef pp_PLOT3D_STATIC
-        char *label_buffer;
-#endif
 
         plot3di->u = -1;
         plot3di->v = -1;
         plot3di->w = -1;
         for(n = 0;n<5;n++){
-#ifdef pp_PLOT3D_STATIC
-          label_buffer = plot3dlabels + (plot3di-plot3dinfo)*MAXPLOT3DLABELSIZE*6*3 + n*61*3;
-          if(ReadPlot3DLabels(&plot3di->label[n], stream, NULL, label_buffer)!=LABEL_OK){
-#else
           if(ReadLabels(&plot3di->label[n], stream, NULL)!=LABEL_OK){
-#endif
             read_ok=NO;
             break;
           }
@@ -1116,16 +1098,9 @@ void ReadSMVDynamic(char *file){
         else{
           plot3di->nvars = 5;
         }
-#ifdef pp_PLOT3D_STATIC
-        label_buffer = plot3dlabels + (plot3di-plot3dinfo)*MAXPLOT3DLABELSIZE*6*3 + 5*61*3;
-        plot3di->label[5].longlabel = label_buffer;
-        plot3di->label[5].shortlabel = label_buffer+MAXPLOT3DLABELSIZE;
-        plot3di->label[5].unit       = label_buffer+2*MAXPLOT3DLABELSIZE;
-#else
         if(NewMemory((void **)&plot3di->label[5].longlabel, 6)==0)return;
         if(NewMemory((void **)&plot3di->label[5].shortlabel, 6)==0)return;
         if(NewMemory((void **)&plot3di->label[5].unit, 4)==0)return;
-#endif
 
         STRCPY(plot3di->label[5].longlabel, "Speed");
         STRCPY(plot3di->label[5].shortlabel, "Speed");
