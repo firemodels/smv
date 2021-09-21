@@ -2844,9 +2844,6 @@ GLUI_Checkbox *CHECKBOX_show_iso_shaded=NULL;
 GLUI_Checkbox *CHECKBOX_show_iso_outline=NULL;
 GLUI_Checkbox *CHECKBOX_show_iso_points=NULL;
 
-#ifdef pp_LOAD_INCREMENTAL
-GLUI_Checkbox *CHECKBOX_boundary_load_incremental=NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_slice_load_incremental=NULL;
 GLUI_Checkbox *CHECKBOX_histogram_show_numbers=NULL;
 GLUI_Checkbox *CHECKBOX_histogram_show_graph=NULL;
@@ -3230,15 +3227,6 @@ extern "C" void UpdateGluiIsoBounds(void){
     if(EDIT_iso_valmax!=NULL)EDIT_iso_valmax->set_float_val(glui_iso_valmax);
   }
 }
-
-/* ------------------ LoadIncrementalCB1 ------------------------ */
-
-#ifdef pp_LOAD_INCREMENTAL
-extern "C" void LoadIncrementalCB1(int var){
-  if(CHECKBOX_boundary_load_incremental!=NULL)CHECKBOX_boundary_load_incremental->set_int_val(load_incremental);
-  if(CHECKBOX_slice_load_incremental!=NULL)CHECKBOX_slice_load_incremental->set_int_val(load_incremental);
-}
-#endif
 
 /* ------------------ UpdateVectorpointsize ------------------------ */
 
@@ -4905,13 +4893,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     if(nterraininfo>0){
       glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("terrain slice overlap"), &terrain_slice_overlap);
     }
-#ifdef pp_FSEEK
-#ifdef pp_LOAD_INCREMENTAL
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("incremental data loading"), &load_incremental, SLICE_LOAD_INCREMENTAL, LoadIncrementalCB);
-    LoadIncrementalCB(SLICE_LOAD_INCREMENTAL);
-#endif
-#endif
-
 
 #ifdef pp_SMOKETEST
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("opacity adjustment"), &slice_opacity_adjustment);

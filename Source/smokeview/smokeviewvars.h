@@ -763,10 +763,8 @@ SVEXTERN int SVDECL(show_iso_points,0);
 SVEXTERN int SVDECL(show_faces_shaded, 1);
 SVEXTERN int SVDECL(show_faces_outline, 0);
 SVEXTERN int SVDECL(show_geom_verts, 0);
-#ifdef pp_HAVE_CFACE_NORMALS
 SVEXTERN int SVDECL(show_cface_normals, 0);
 SVEXTERN int SVDECL(have_cface_normals, CFACE_NORMALS_NO);
-#endif
 
 SVEXTERN int SVDECL(show_iso_normal, 0), SVDECL(smooth_iso_normal, 1);
 
@@ -1909,9 +1907,6 @@ SVEXTERN labeldata label_first, label_last, *label_first_ptr, *label_last_ptr;
 SVEXTERN int SVDECL(*isotypes,NULL), SVDECL(*boundarytypes,NULL);
 SVEXTERN plot3ddata SVDECL(*plot3dinfo,NULL);
 SVEXTERN int SVDECL(iplot3dtimelist, -1), SVDECL(nplot3dtimelist, 0);
-#ifdef pp_PLOT3D_STATIC
-SVEXTERN char SVDECL(*plot3dlabels, NULL);
-#endif
 SVEXTERN float SVDECL(*plot3dtimelist,NULL);
 SVEXTERN patchdata SVDECL(*patchinfo,NULL);
 SVEXTERN isodata SVDECL(*isoinfo,NULL);

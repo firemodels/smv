@@ -2868,7 +2868,6 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       FREEMEMORY(matl_ind);
       geomlisti->nvolumes=nvolumes;
     }
-#ifdef pp_HAVE_CFACE_NORMALS
     if(geomi->have_cface_normals==CFACE_NORMALS_YES){
       int ncface_normals;
 
@@ -2885,7 +2884,6 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
       }
       geomi->ncface_normals = ncface_normals;
     }
-#endif
   }
   geomi->loaded=1;
   geomi->display=1;
@@ -3464,53 +3462,6 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   return return_filesize;
 }
 
-/* ------------------ RemoveDuplicateVertices ------------------------ */
-#ifdef pp_REMOVE_DUPLICATES
-void RemoveDuplicateVertices(vertdata *verts, int nverts, tridata *triangles, int ntriangles){
-  int j, *vert_map=NULL;
-
-  if(nverts>0){
-    NewMemory((void **)&vert_map, nverts*sizeof(int));
-    for(j = 0; j<nverts; j++){
-      vert_map[j] = j;
-    }
-  }
-  for(j = 0; j<nverts; j++){
-    int k;
-    vertdata *vertj;
-    float *xyzj;
-
-    vertj = verts+j;
-    xyzj = vertj->xyz;
-    for(k = 0; k<j; k++){
-      vertdata *vertk;
-      float *xyzk;
-
-      vertk = verts+k;
-      xyzk = vertk->xyz;
-      if(MAXDIFF3(xyzj, xyzk)<0.0001){
-        vert_map[j] = k;
-        break;
-      }
-    }
-  }
-  for(j = 0; j<ntriangles;j++){
-    tridata *trianglei;
-    int *vert_index;
-
-    trianglei = triangles+j;
-    vert_index = trianglei->vert_index;
-    vert_index[0] = vert_map[vert_index[0]];
-    vert_index[1] = vert_map[vert_index[1]];
-    vert_index[2] = vert_map[vert_index[2]];
-    trianglei->verts[0] = verts+vert_index[0];
-    trianglei->verts[1] = verts+vert_index[1];
-    trianglei->verts[2] = verts+vert_index[2];
-  }
-  if(nverts>0)FREEMEMORY(vert_map);
-}
-#endif
-
 /* ------------------ UpdateGeomTriangles ------------------------ */
 
 void UpdateGeomTriangles(geomdata *geomi, int geom_type){
@@ -3531,10 +3482,6 @@ void UpdateGeomTriangles(geomdata *geomi, int geom_type){
 
   ntris = geomlisti->ntriangles;
   nverts = geomlisti->nverts;
-
-#ifdef pp_REMOVE_DUPLICATES
-  RemoveDuplicateVertices(geomlisti->verts, nverts, geomlisti->triangles, ntris);
-#endif
 
   for(j = 0; j<nverts; j++){
     vertdata *vert;
@@ -4610,11 +4557,7 @@ void DrawCGeom(int flag, geomdata *cgeom){
 
   // draw lines
 
-#ifdef pp_HAVE_CFACE_NORMALS
   if((show_cface_normals==1||show_faces_outline==1)&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
-#else
-  if(show_faces_outline==1&&(geomi!=NULL&&geomi->display==1&&geomi->loaded==1)){
-#endif
     for(i = 0; i<1; i++){
       geomlistdata *geomlisti;
       int ntris;
@@ -4687,7 +4630,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
       glEnd();
       glPopMatrix();
     }
-#ifdef pp_HAVE_CFACE_NORMALS
     if(show_cface_normals==1&&geomi->geomtype==GEOM_CGEOM){
       int j;
 
@@ -4708,7 +4650,6 @@ void DrawCGeom(int flag, geomdata *cgeom){
       glEnd();
       glPopMatrix();
     }
-#endif
   }
 
   // draw points
@@ -4956,11 +4897,7 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
 
 /* ------------------ InitGeom ------------------------ */
 
-#ifdef pp_HAVE_CFACE_NORMALS
 void InitGeom(geomdata *geomi,int geomtype, int fdsblock, int have_cface_normals){
-#else
-void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
-#endif
   geomi->file=NULL;
   geomi->topo_file = NULL;
   geomi->cache_defined = 0;
@@ -4983,11 +4920,9 @@ void InitGeom(geomdata *geomi,int geomtype, int fdsblock){
   geomi->is_terrain = 0;
   geomi->file2_tris = NULL;
   geomi->nfile2_tris = 0;
-#ifdef pp_HAVE_CFACE_NORMALS
   geomi->have_cface_normals = have_cface_normals;
   geomi->ncface_normals = 0;
   geomi->cface_normals = NULL;
-#endif
 }
 
 /* ------------------ RotateU2V ------------------------ */

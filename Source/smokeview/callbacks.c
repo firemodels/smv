@@ -2107,7 +2107,6 @@ void Keyboard(unsigned char key, int flag){
         }
       }
       break;
-#ifdef pp_HAVE_CFACE_NORMALS
     case 'n':
     case 'N':
       show_cface_normals = 1-show_cface_normals;
@@ -2119,7 +2118,6 @@ void Keyboard(unsigned char key, int flag){
       }
       UpdateGluiCfaces();
       break;
-#endif
     case 'O':
     if(ncgeominfo>0){
       if(show_faces_outline==0&&show_faces_shaded==1){
@@ -3850,11 +3848,7 @@ void DoNonStereo(void){
     IdleDisplay();
 
     stop_rendering = 1;
-#ifdef pp_SCRIPT_RENDER_FIX
-    if(current_script_command==NULL&&plotstate==DYNAMIC_PLOTS && nglobal_times>0){
-#else
     if(plotstate==DYNAMIC_PLOTS && nglobal_times>0){
-#endif
       if(itimes>=0&&itimes<nglobal_times&&
         ((render_frame[itimes]==0&&stereotype==STEREO_NONE)||(render_frame[itimes]<2&&stereotype!=STEREO_NONE))
         ){

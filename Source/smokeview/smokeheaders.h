@@ -252,11 +252,6 @@ EXTERNCPP void UpdateRenderListSkip(void);
 EXTERNCPP void ForceIdle(void);
 EXTERNCPP void UpdateFrameNumber(int changetime);
 EXTERNCPP void UpdateVentOffset(void);
-#ifdef pp_LOAD_INCREMENTAL
-EXTERNCPP void LoadIncrementalCB(int var);
-EXTERNCPP void LoadIncrementalCB1(int var);
-EXTERNCPP void LoadIncrementalCB2(int var);
-#endif
 EXTERNCPP void ColorbarCB(int var);
 EXTERNCPP void UpdateOpacityMap(void);
 EXTERNCPP void ShowBoundsDialog(int type);
@@ -990,11 +985,7 @@ EXTERNCPP void ReadAllGeom(void);
 EXTERNCPP void ClassifyAllGeom(void);
 EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode);
 EXTERNCPP void ReadGeomFile2(geomdata *geomi);
-#ifdef pp_HAVE_CFACE_NORMALS
 EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock, int have_vectors);
-#else
-EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock);
-#endif
 EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
 EXTERNCPP FILE_SIZE ReadPart(char *file, int ifile, int loadflag, int *errorcode);
 
