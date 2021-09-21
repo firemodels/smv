@@ -11,8 +11,11 @@
 //*** geomprocinfo entries
 #define STRUCTURED_ROLLOUT     0
 #define UNSTRUCTURED_ROLLOUT   1
+#ifdef pp_GEOM_DIAG
+#define IMMERSED_DIAGNOSTICS   2
+#endif
 
-procdata  geomprocinfo[2];
+procdata  geomprocinfo[3];
 int      ngeomprocinfo = 0;
 
 #define XMIN_SPIN             20
@@ -148,6 +151,7 @@ GLUI_Panel *PANEL_geomedgecheck=NULL;
 GLUI_Panel *PANEL_group1=NULL;
 GLUI_Panel *PANEL_geom_offset=NULL;
 GLUI_Panel *PANEL_terrain_images = NULL;
+GLUI_Panel *PANEL_geom_show = NULL;
 
 GLUI_Rollout *ROLLOUT_structured=NULL;
 GLUI_Rollout *ROLLOUT_unstructured=NULL;
@@ -530,7 +534,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     PANEL_face_cface->set_alignment(GLUI_ALIGN_LEFT);
     PANEL_triangles = glui_geometry->add_panel_to_panel(PANEL_face_cface, "faces");
     PANEL_triangles->set_alignment(GLUI_ALIGN_LEFT);
-    CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "shaded", &show_faces_shaded, VOL_SHOWHIDE, VolumeCB);
+    CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "solid", &show_faces_shaded, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_surface_points = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "points", &show_geom_verts, VOL_SHOWHIDE, VolumeCB);
 
@@ -556,7 +560,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     BUTTON_reset_offset = glui_geometry->add_button_to_panel(PANEL_geom_offset, _("Reset"), RESET_GEOM_OFFSET, VolumeCB);
 #endif
 
-    PANEL_geom_offset_outline = glui_geometry->add_panel_to_panel(PANEL_group1, "offset outline/verts");
+    PANEL_geom_offset_outline = glui_geometry->add_panel_to_panel(PANEL_group1, "offset outline/points");
     PANEL_geom_offset_outline->set_alignment(GLUI_ALIGN_LEFT);
     glui_geometry->add_spinner_to_panel(PANEL_geom_offset_outline, "normal", GLUI_SPINNER_FLOAT, &geom_norm_offset);
     glui_geometry->add_spinner_to_panel(PANEL_geom_offset_outline, "vertical", GLUI_SPINNER_FLOAT, &geom_dz_offset);
@@ -597,7 +601,9 @@ extern "C" void GluiGeometrySetup(int main_window){
     UpdateGeomAreas();
 
 #ifdef pp_GEOM_DIAG
-    ROLLOUT_geom_properties = glui_geometry->add_rollout_to_panel(PANEL_geom_showhide, "diagnostics",false);
+    ROLLOUT_geom_properties = glui_geometry->add_rollout("Immersed diagnostics",false, IMMERSED_DIAGNOSTICS, GeomRolloutCB);
+    INSERT_ROLLOUT(ROLLOUT_geom_properties, glui_geometry);
+    ADDPROCINFO(geomprocinfo, ngeomprocinfo, ROLLOUT_geom_properties, IMMERSED_DIAGNOSTICS, glui_geometry);
     PANEL_properties2 = glui_geometry->add_panel_to_panel(ROLLOUT_geom_properties,"",GLUI_PANEL_NONE);
 
     RADIO_select_geom = glui_geometry->add_radiogroup_to_panel(PANEL_properties2, &select_geom, SELECT_GEOM,VolumeCB);
@@ -694,21 +700,24 @@ extern "C" void GluiGeometrySetup(int main_window){
 #endif
 
 
+    PANEL_geom_show = glui_geometry->add_panel_to_panel(PANEL_group1, "show");
+    PANEL_geom_show->set_alignment(GLUI_ALIGN_LEFT);
+    if(terrain_nindices>0){
+      CHECKBOX_showonly_top = glui_geometry->add_checkbox_to_panel(PANEL_geom_show, "only top surface", &terrain_showonly_top, SHOWONLY_TOP, VolumeCB);
+    }
+    CHECKBOX_showgeom_inside_domain = glui_geometry->add_checkbox_to_panel(PANEL_geom_show, "inside FDS domain", &showgeom_inside_domain, GEOM_FDS_DOMAIN, VolumeCB);
+    CHECKBOX_showgeom_outside_domain = glui_geometry->add_checkbox_to_panel(PANEL_geom_show, "outside FDS domain", &showgeom_outside_domain, GEOM_FDS_DOMAIN, VolumeCB);
+
     PANEL_geomtest2 = glui_geometry->add_panel_to_panel(PANEL_group1, "settings");
     PANEL_geomtest2->set_alignment(GLUI_ALIGN_LEFT);
-    if(terrain_nindices>0){
-      CHECKBOX_showonly_top = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "show only top surface", &terrain_showonly_top, SHOWONLY_TOP, VolumeCB);
-    }
-    CHECKBOX_showgeom_inside_domain = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2,  "inside FDS domain",  &showgeom_inside_domain,  GEOM_FDS_DOMAIN, VolumeCB);
-    CHECKBOX_showgeom_outside_domain = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "outside FDS domain", &showgeom_outside_domain, GEOM_FDS_DOMAIN, VolumeCB);
-
-    glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "show geom and bndry files", &glui_show_geom_bndf, UPDATE_GEOM, VolumeCB);
 
     glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "line width", GLUI_SPINNER_FLOAT, &geom_linewidth);
     glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "point size", GLUI_SPINNER_FLOAT, &geom_pointsize);
 
     SPINNER_geom_vert_exag = glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "vertical exaggeration", GLUI_SPINNER_FLOAT, &geom_vert_exag, GEOM_VERT_EXAG, VolumeCB);
     SPINNER_geom_vert_exag->set_float_limits(0.1, 10.0);
+
+    glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "show geometry and boundary files", &glui_show_geom_bndf, UPDATE_GEOM, VolumeCB);
 
     if(nterrain_textures>0){
       int i;
