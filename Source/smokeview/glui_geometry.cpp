@@ -40,7 +40,10 @@ int      ngeomprocinfo = 0;
 #define SURF_GET              50
 #endif
 #define SHOWONLY_TOP          51
+#define GEOM_FDS_DOMAIN       52
 
+GLUI_Checkbox *CHECKBOX_showgeom_inside_domain = NULL;
+GLUI_Checkbox *CHECKBOX_showgeom_outside_domain = NULL;
 GLUI_Checkbox **CHECKBOX_terrain_texture_show = NULL;
 GLUI_Checkbox *CHECKBOX_cfaces = NULL;
 #ifdef pp_HAVE_CFACE_NORMALS
@@ -203,6 +206,8 @@ extern "C" void UpdateShowOnlyTop(void){
 extern "C" void UpdateWhereFaceVolumes(void){
   if(CHECKBOX_volumes_interior != NULL)CHECKBOX_volumes_interior->set_int_val(show_volumes_interior);
   if(CHECKBOX_volumes_exterior != NULL)CHECKBOX_volumes_exterior->set_int_val(show_volumes_exterior);
+  if(CHECKBOX_showgeom_inside_domain!=NULL)CHECKBOX_showgeom_inside_domain->set_int_val(showgeom_inside_domain);
+  if(CHECKBOX_showgeom_outside_domain!=NULL)CHECKBOX_showgeom_outside_domain->set_int_val(showgeom_outside_domain);
 }
 
 /* ------------------ UpdateGluiCfaces ------------------------ */
@@ -525,6 +530,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     PANEL_geom_showhide = glui_geometry->add_panel_to_panel(ROLLOUT_unstructured, "", GLUI_PANEL_NONE);
     PANEL_group1 = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "", GLUI_PANEL_NONE);
     PANEL_face_cface = glui_geometry->add_panel_to_panel(PANEL_group1, "", GLUI_PANEL_NONE);
+    PANEL_face_cface->set_alignment(GLUI_ALIGN_LEFT);
     PANEL_triangles = glui_geometry->add_panel_to_panel(PANEL_face_cface, "faces");
     PANEL_triangles->set_alignment(GLUI_ALIGN_LEFT);
     CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "shaded", &show_faces_shaded, VOL_SHOWHIDE, VolumeCB);
@@ -546,12 +552,14 @@ extern "C" void GluiGeometrySetup(int main_window){
       }
 #endif
     }
+#ifdef pp_GEOM_OFFSET_OBJECT
     PANEL_geom_offset = glui_geometry->add_panel_to_panel(PANEL_group1, "offset object");
     PANEL_geom_offset->set_alignment(GLUI_ALIGN_LEFT);
     SPINNER_geom_delx = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dx", GLUI_SPINNER_FLOAT, &geom_delx);
     SPINNER_geom_dely = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dy", GLUI_SPINNER_FLOAT, &geom_dely);
     SPINNER_geom_delz = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dz", GLUI_SPINNER_FLOAT, &geom_delz);
     BUTTON_reset_offset = glui_geometry->add_button_to_panel(PANEL_geom_offset, _("Reset"), RESET_GEOM_OFFSET, VolumeCB);
+#endif
 
     PANEL_geom_offset_outline = glui_geometry->add_panel_to_panel(PANEL_group1, "offset outline/verts");
     PANEL_geom_offset_outline->set_alignment(GLUI_ALIGN_LEFT);
@@ -570,6 +578,16 @@ extern "C" void GluiGeometrySetup(int main_window){
     CHECKBOX_geom_force_transparent = glui_geometry->add_checkbox_to_panel(PANEL_geom_transparency, "force", &geom_force_transparent);
     SPINNER_geom_transparency = glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "level", GLUI_SPINNER_FLOAT, &geom_transparency);
     SPINNER_geom_transparency->set_float_limits(0.0, 1.0);
+
+    PANEL_normals = glui_geometry->add_panel_to_panel(PANEL_group1, "normals");
+    PANEL_normals->set_alignment(GLUI_ALIGN_LEFT);
+    GLUI_Panel *PANEL_show_smooth = glui_geometry->add_panel_to_panel(PANEL_normals, "", GLUI_PANEL_NONE);
+    CHECKBOX_show_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_show_smooth, "show", &show_geom_normal);
+    glui_geometry->add_column_to_panel(PANEL_show_smooth, false);
+    CHECKBOX_smooth_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_show_smooth, "smooth", &smooth_geom_normal);
+    SPINNER_geom_ivecfactor = glui_geometry->add_spinner_to_panel(PANEL_normals, "length", GLUI_SPINNER_INT, &geom_ivecfactor, GEOM_IVECFACTOR, VolumeCB);
+    SPINNER_geom_ivecfactor->set_int_limits(0, 200);
+
 
     glui_geometry->add_column_to_panel(PANEL_group1, false);
 
@@ -681,7 +699,7 @@ extern "C" void GluiGeometrySetup(int main_window){
 #endif
 
 
-    PANEL_geomtest2 = glui_geometry->add_panel_to_panel(PANEL_group1, "parameters");
+    PANEL_geomtest2 = glui_geometry->add_panel_to_panel(PANEL_group1, "settings");
     PANEL_geomtest2->set_alignment(GLUI_ALIGN_LEFT);
     if(terrain_nindices>0){
       CHECKBOX_showonly_top = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "show only top surface", &terrain_showonly_top, SHOWONLY_TOP, VolumeCB);
@@ -702,6 +720,9 @@ extern "C" void GluiGeometrySetup(int main_window){
         }
       }
     }
+    CHECKBOX_showgeom_inside_domain = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2,  "inside FDS domain",  &showgeom_inside_domain,  GEOM_FDS_DOMAIN, VolumeCB);
+    CHECKBOX_showgeom_outside_domain = glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "outside FDS domain", &showgeom_outside_domain, GEOM_FDS_DOMAIN, VolumeCB);
+
     glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "show geom and bndry files", &glui_show_geom_bndf, UPDATE_GEOM, VolumeCB);
 
     glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "line width", GLUI_SPINNER_FLOAT, &geom_linewidth);
@@ -728,13 +749,6 @@ extern "C" void GluiGeometrySetup(int main_window){
 
     VolumeCB(GEOM_VERT_EXAG);
     BUTTON_reset_zbounds = glui_geometry->add_button_to_panel(PANEL_elevation_color, _("Reset zmin/zmax"), RESET_ZBOUNDS, VolumeCB);
-
-    PANEL_normals = glui_geometry->add_panel_to_panel(PANEL_group1, "normals");
-    PANEL_normals->set_alignment(GLUI_ALIGN_LEFT);
-    CHECKBOX_show_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_normals, "show", &show_geom_normal);
-    CHECKBOX_smooth_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_normals, "smooth", &smooth_geom_normal);
-    SPINNER_geom_ivecfactor = glui_geometry->add_spinner_to_panel(PANEL_normals, "length", GLUI_SPINNER_INT, &geom_ivecfactor, GEOM_IVECFACTOR, VolumeCB);
-    SPINNER_geom_ivecfactor->set_int_limits(0, 200);
   }
 
   PANEL_geom_close = glui_geometry->add_panel("", GLUI_PANEL_NONE);
@@ -842,6 +856,7 @@ extern "C" void VolumeCB(int var){
   case GEOM_VERT_EXAG:
     UpdateGeomNormals();
     break;
+  case GEOM_FDS_DOMAIN:
   case SHOWONLY_TOP:
     updatemenu = 1;
     break;
