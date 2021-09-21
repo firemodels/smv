@@ -707,6 +707,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     }
     CHECKBOX_showgeom_inside_domain = glui_geometry->add_checkbox_to_panel(PANEL_geom_show, "inside FDS domain", &showgeom_inside_domain, GEOM_FDS_DOMAIN, VolumeCB);
     CHECKBOX_showgeom_outside_domain = glui_geometry->add_checkbox_to_panel(PANEL_geom_show, "outside FDS domain", &showgeom_outside_domain, GEOM_FDS_DOMAIN, VolumeCB);
+    glui_geometry->add_checkbox_to_panel(PANEL_geom_show, "geometry and boundary files", &glui_show_geom_bndf, UPDATE_GEOM, VolumeCB);
 
     PANEL_geomtest2 = glui_geometry->add_panel_to_panel(PANEL_group1, "settings");
     PANEL_geomtest2->set_alignment(GLUI_ALIGN_LEFT);
@@ -716,8 +717,6 @@ extern "C" void GluiGeometrySetup(int main_window){
 
     SPINNER_geom_vert_exag = glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "vertical exaggeration", GLUI_SPINNER_FLOAT, &geom_vert_exag, GEOM_VERT_EXAG, VolumeCB);
     SPINNER_geom_vert_exag->set_float_limits(0.1, 10.0);
-
-    glui_geometry->add_checkbox_to_panel(PANEL_geomtest2, "show geometry and boundary files", &glui_show_geom_bndf, UPDATE_GEOM, VolumeCB);
 
     if(nterrain_textures>0){
       int i;
