@@ -54,7 +54,7 @@
 #define pp_HAVE_CFACE_NORMALS    //  read in and optionally draw cface normal vectors
 //#define pp_TERRAIN_OLD            // original terrain menus and dialog boxes
 //define pp_BNDF_MENU_BUG       // adds an extra menu field for geometry boundary files, a bug (highlight bug to make sure disabled code is not needed_
-//#define pp_GEOM_DIAG          // surround geometry properties dialog with pp_GEOM_DIAG so it can be removed easily
+#define pp_GEOM_DIAG          // surround geometry properties dialog with pp_GEOM_DIAG so it can be removed easily
 //#define pp_GEOM_OFFSET_OBJECT // surround geometry offset widges with pp_GEOM_OFFSET_OBJECT
 
 #ifdef pp_GPU
