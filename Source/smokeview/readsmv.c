@@ -13541,7 +13541,12 @@ int ReadIni2(char *inifile, int localfile){
 
       if(Match(buffer, "TICKS") == 1){
         ntickinfo++;
-        ResizeMemory((void **)&tickinfo, (ntickinfo)*sizeof(tickdata));
+        if(tickinfo==NULL){
+          NewMemory((void **)&tickinfo, (ntickinfo)*sizeof(tickdata));
+        }
+        else{
+          ResizeMemory((void **)&tickinfo, (ntickinfo)*sizeof(tickdata));
+        }
 
         {
           tickdata *ticki;
