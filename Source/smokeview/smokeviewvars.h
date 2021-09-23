@@ -200,7 +200,6 @@ SVEXTERN int SVDECL(ngridloc_digits, 4);
 SVEXTERN int SVDECL(ntick_decimals, 1);
 SVEXTERN int SVDECL(mpi_nprocesses, -1), SVDECL(mpi_iprocess,-1);
 
-#ifdef pp_GEOM_DIAG
 #ifdef INMAIN
 SVEXTERN unsigned int geom_vertex1_rgb[3] = {255, 255, 255};
 SVEXTERN unsigned int geom_vertex2_rgb[3] = {0,   0,   0};
@@ -210,17 +209,14 @@ SVEXTERN unsigned int glui_surf_rgb[3]     = {128, 128, 128};
 SVEXTERN unsigned int geom_vertex1_rgb[3], geom_vertex2_rgb[3], geom_triangle_rgb[3];
 SVEXTERN unsigned int glui_surf_rgb[3];
 #endif
-#endif
 
 SVEXTERN int SVDECL(show_surf_axis, 0);
 SVEXTERN float SVDECL(glui_surf_axis_length, 1.0);
 SVEXTERN float SVDECL(glui_surf_axis_width, 1.0);
 SVEXTERN float glui_surf_axis[3];
 SVEXTERN int SVDECL(use_surf_color, 0);
-#ifdef pp_GEOM_DIAG
 SVEXTERN int SVDECL(geom_surf_index, 0);
 SVEXTERN int SVDECL(select_geom, GEOM_PROP_NONE);
-#endif
 SVEXTERN int SVDECL(selected_geom_vertex1,  -1);
 SVEXTERN int SVDECL(selected_geom_vertex2,  -1);
 SVEXTERN int SVDECL(selected_geom_triangle, -1);
