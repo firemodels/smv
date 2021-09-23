@@ -3667,7 +3667,7 @@ void UpdateSliceContours(int slice_type_index, float line_min, float line_max, i
         ASSERT(FFALSE);
         break;
     }
-    constval += sliceoffset_all;
+    constval += slice_dz;
 
     FreeContours(sd->line_contours,sd->nline_contours);
     sd->nline_contours=sd->ntimes;
@@ -5283,7 +5283,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
       ASSERT(FFALSE);
       break;
     }
-    constval += SCALE2SMV(sliceoffset_all);
+    constval += SCALE2SMV(slice_dz);
 
     glBegin(GL_TRIANGLES);
     maxj = sd->js2;
@@ -5353,7 +5353,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
       ASSERT(FFALSE);
       break;
     }
-    constval += SCALE2SMV(sliceoffset_all);
+    constval += SCALE2SMV(slice_dz);
 
     glBegin(GL_TRIANGLES);
     maxi = sd->is1 + sd->nslicei - 1;
@@ -5421,7 +5421,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
       ASSERT(FFALSE);
       break;
     }
-    constval += SCALE2SMV(sliceoffset_all);
+    constval += SCALE2SMV(slice_dz);
 
     glBegin(GL_TRIANGLES);
     maxi = sd->is1 + sd->nslicei - 1;
@@ -5516,7 +5516,7 @@ void DrawVolSliceValues(slicedata *sd){
   if((sd->volslice == 1 && plotx >= 0 && visx_all == 1) || (sd->volslice == 0 && sd->idir == XDIR)){
     int maxj;
 
-    constval = xplttemp[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = xplttemp[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     maxj = sd->js2;
     if(sd->js1 + 1 > maxj)maxj = sd->js1 + 1;
     for(j = sd->js1; j < maxj + 1; j += slice_skipy){
@@ -5560,7 +5560,7 @@ void DrawVolSliceValues(slicedata *sd){
   if((sd->volslice == 1 && ploty >= 0 && visy_all == 1) || (sd->volslice == 0 && sd->idir == YDIR)){
     int maxi;
 
-    constval = yplttemp[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = yplttemp[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     maxi = sd->is1 + sd->nslicei - 1;
     if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
     for(i = sd->is1; i < maxi + 1; i += slice_skipx){
@@ -5606,7 +5606,7 @@ void DrawVolSliceValues(slicedata *sd){
   if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
     int maxi;
 
-    constval = zplttemp[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = zplttemp[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     maxi = sd->is1 + sd->nslicei - 1;
     if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
     for(i = sd->is1; i < maxi + 1; i += slice_skipx){
@@ -5711,7 +5711,7 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
       ASSERT(FFALSE);
       break;
     }
-    constval += SCALE2SMV(sliceoffset_all);
+    constval += SCALE2SMV(slice_dz);
 
     if(show_slice_values[0]==1||show_slice_values[1]==1||show_slice_values[2]==1){
       maxj = sd->js2;
@@ -5771,7 +5771,7 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
       ASSERT(FFALSE);
       break;
     }
-    constval += SCALE2SMV(sliceoffset_all);
+    constval += SCALE2SMV(slice_dz);
 
     if(show_slice_values[0]==1||show_slice_values[1]==1||show_slice_values[2]==1){
       maxi = sd->is1 + sd->nslicei - 1;
@@ -5832,7 +5832,7 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
       ASSERT(FFALSE);
       break;
     }
-    constval += SCALE2SMV(sliceoffset_all);
+    constval += SCALE2SMV(slice_dz);
 
     if(show_slice_values[0]==1||show_slice_values[1]==1||show_slice_values[2]==1){
       maxi = sd->is1 + sd->nslicei - 1;
@@ -5939,7 +5939,8 @@ void DrawVolSliceTerrain(const slicedata *sd){
     z_cutoff = terri->zmin_cutoff;
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
-    glTranslatef(-xbar0,-ybar0,-zbar0+agl_smv+sliceoffset_all);
+    glTranslatef(-xbar0,-ybar0,-zbar0);
+    glTranslatef(0.0, 0.0, agl_smv+SCALE2FDS(0.01)+slice_dz);
 
     glBegin(GL_TRIANGLES);
     maxi = sd->is2;
@@ -6286,7 +6287,7 @@ void DrawVolSliceTexture(const slicedata *sd){
   if((sd->volslice == 1 && plotx >= 0 && visx_all == 1) || (sd->volslice == 0 && sd->idir == XDIR)){
     int maxj;
 
-    constval = xplt[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = xplt[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glBegin(GL_TRIANGLES);
     maxj = sd->js2;
     if(sd->js1 + 1>maxj){
@@ -6359,7 +6360,7 @@ void DrawVolSliceTexture(const slicedata *sd){
     int maxi;
     int istart, iend;
 
-    constval = yplt[ploty]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = yplt[ploty]+offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glBegin(GL_TRIANGLES);
     maxi = sd->is1+sd->nslicei-1;
     if(sd->is1+1>maxi){
@@ -6439,7 +6440,7 @@ void DrawVolSliceTexture(const slicedata *sd){
   if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
     int maxi;
 
-    constval = zplt[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = zplt[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glBegin(GL_TRIANGLES);
 
     maxi = sd->is1 + sd->nslicei - 1;
@@ -6571,7 +6572,7 @@ void DrawVolSliceLines(const slicedata *sd){
   if(draw_x_slice==1){
     int maxj;
 
-    constval = xplt[plotx]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = xplt[plotx]+offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     maxj = sd->js2;
     if(sd->js1+1>maxj){
       maxj = sd->js1+1;
@@ -6658,7 +6659,7 @@ void DrawVolSliceLines(const slicedata *sd){
     int maxi;
     int istart, iend;
 
-    constval = yplt[ploty]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = yplt[ploty]+offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     maxi = sd->is1+sd->nslicei-1;
     if(sd->is1+1>maxi){
       maxi = sd->is1+1;
@@ -6754,7 +6755,7 @@ void DrawVolSliceLines(const slicedata *sd){
   if(draw_z_slice==1){
     int maxi;
 
-    constval = zplt[plotz]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = zplt[plotz]+offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
 
     maxi = sd->is1+sd->nslicei-1;
     if(sd->is1+1>maxi){
@@ -6898,7 +6899,7 @@ void DrawVolSliceVerts(const slicedata *sd){
   if(draw_x_slice==1){
     int maxj;
 
-    constval = xplt[plotx]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = xplt[plotx]+offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     maxj = sd->js2;
     if(sd->js1+1>maxj){
       maxj = sd->js1+1;
@@ -6976,7 +6977,7 @@ void DrawVolSliceVerts(const slicedata *sd){
     int maxi;
     int istart, iend;
 
-    constval = yplt[ploty]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = yplt[ploty]+offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     maxi = sd->is1+sd->nslicei-1;
     if(sd->is1+1>maxi){
       maxi = sd->is1+1;
@@ -7062,7 +7063,7 @@ void DrawVolSliceVerts(const slicedata *sd){
   if(draw_z_slice==1){
     int maxi;
 
-    constval = zplt[plotz]+offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = zplt[plotz]+offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
 
     maxi = sd->is1+sd->nslicei-1;
     if(sd->is1+1>maxi){
@@ -7531,7 +7532,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
     int plotxm1;
     plotxm1 = MAX(plotx-1, 0);
 
-    constval = xhalf + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = xhalf + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     glColor4fv(foregroundcolor);
@@ -7647,7 +7648,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       yhalf = yplttemp[ploty];
     }
 
-    constval = yhalf + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = yhalf + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glLineWidth(vectorlinewidth);
     maxi = sd->is1 + sd->nslicei - 1;
     if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
@@ -7766,7 +7767,7 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
       zhalf = zplttemp[plotz];
     }
 
-    constval = zhalf + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = zhalf + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glLineWidth(vectorlinewidth);
     maxi = sd->is1 + sd->nslicei - 1;
     if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
@@ -7947,7 +7948,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
       if(factor_k!=1)vectorskipk *= factor_k;
     }
 
-    constval = xplttemp[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = xplttemp[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     maxj = sd->js2;
@@ -8014,7 +8015,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     int n;
     int vectorskipi, vectorskipk;
 
-    constval = yplttemp[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = yplttemp[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     maxi = sd->is1 + sd->nslicei - 1;
@@ -8092,7 +8093,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     float z_cutoff;
     int vectorskipi, vectorskipj;
 
-    constval = zplttemp[plotz] + offset_slice*sd->sliceoffset - znode[0]+SCALE2SMV(sliceoffset_all);
+    constval = zplttemp[plotz] + offset_slice*sd->sliceoffset - znode[0]+SCALE2SMV(slice_dz);
     xplttemp = meshi->xplt_orig;
     yplttemp = meshi->yplt_orig;
     znode = terri->znode;
@@ -8100,7 +8101,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     agl_smv = sd->above_ground_level;
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
-    glTranslatef(-xbar0,-ybar0,-zbar0+agl_smv+sliceoffset_all);
+    glTranslatef(-xbar0,-ybar0,-zbar0+agl_smv+slice_dz);
     glLineWidth(vectorlinewidth);
     maxi = sd->is1 + sd->nslicei - 1;
     if(sd->is1+1>maxi)maxi = sd->is1+1;
@@ -8287,7 +8288,7 @@ void DrawVVolSlice(const vslicedata *vd){
     int maxj;
     int vectorskipj, vectorskipk;
 
-    constval = xplttemp[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = xplttemp[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     maxj = sd->js2;
@@ -8391,7 +8392,7 @@ void DrawVVolSlice(const vslicedata *vd){
     int maxi;
     int vectorskipi, vectorskipk;
 
-    constval = yplttemp[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = yplttemp[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glLineWidth(vectorlinewidth);
     glBegin(GL_LINES);
     maxi = sd->is1 + sd->nslicei - 1;
@@ -8496,7 +8497,7 @@ void DrawVVolSlice(const vslicedata *vd){
     int maxi;
     int vectorskipi, vectorskipj;
 
-    constval = zplttemp[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(sliceoffset_all);
+    constval = zplttemp[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     vectorskipi = vectorskip;
     vectorskipj = vectorskip;
     if(vec_uniform_spacing==1){

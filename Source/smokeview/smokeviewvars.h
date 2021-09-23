@@ -170,7 +170,7 @@ SVEXTERN int SVDECL(showhide_textures, 0);
 
 SVEXTERN int SVDECL(print_geominfo, 1);
 
-SVEXTERN float SVDECL(sliceoffset_all, 0.0);
+SVEXTERN float SVDECL(slice_dz, 0.0);
 SVEXTERN float SVDECL(terrain_normal_length, 1.0);
 SVEXTERN int SVDECL(terrain_normal_skip, 1);
 SVEXTERN int SVDECL(show_terrain_normals, 0), SVDECL(show_terrain_grid,0);
@@ -251,7 +251,6 @@ SVEXTERN int SVDECL(rollout_count, 0);
 SVEXTERN int SVDECL(glui_defined, 0);
 SVEXTERN int SVDECL(update_times,0);
 SVEXTERN int SVDECL(show_geom_bndf, 0),SVDECL(glui_show_geom_bndf, 0);
-SVEXTERN float SVDECL(geom_delx, 0.0), SVDECL(geom_dely, 0.0), SVDECL(geom_delz, 0.0);
 SVEXTERN int SVDECL(update_windrose, 0);
 SVEXTERN int SVDECL(update_use_lighting, 0), use_lighting_ini;
 SVEXTERN float SVDECL(timer_reshape, 0.0);

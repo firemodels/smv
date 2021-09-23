@@ -27,7 +27,6 @@
 #define pp_DRAWISO            // turn on drawing routines
 //#define pp_UPDATE_FILELOAD  // updates fileload variables when a file has been loaded or unloaded
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
-//#define pp_OFFSET_GEOM_DZ     // offset geom slices by a small dz amount for terrain cases
 
 //#define pp_WUI_VAO            // use opengl vao objects for drawing terrain
 
@@ -45,7 +44,6 @@
 //#define pp_SLICE_BUFFER       // read  slice file into a buffer before processing
 //#define pp_RESEARCH_DEBUG     // output whether data is reloaded or colors re-mapped when toggling to/from research mode
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
-//#define pp_GEOM_OFFSET_OBJECT // surround geometry offset widges with pp_GEOM_OFFSET_OBJECT
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
