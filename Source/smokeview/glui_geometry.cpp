@@ -34,7 +34,6 @@ int      ngeomprocinfo = 0;
 #define TERRAIN_ZLEVEL        44
 #define SHOW_ZLEVEL           45
 #define GEOM_VERT_EXAG        46
-#define RESET_GEOM_OFFSET     47
 #define UPDATE_GEOM           48
 #define SURF_SET              49
 #define SURF_GET              50
@@ -91,9 +90,6 @@ GLUI_Spinner *SPINNER_geom_transparency=NULL;
 GLUI_Spinner *SPINNER_geom_ivecfactor = NULL;
 GLUI_Spinner *SPINNER_geom_vert_exag=NULL;
 GLUI_Spinner *SPINNER_geom_zmin = NULL, *SPINNER_geom_zmax = NULL, *SPINNER_geom_zlevel=NULL;
-GLUI_Spinner *SPINNER_geom_delx = NULL;
-GLUI_Spinner *SPINNER_geom_dely = NULL;
-GLUI_Spinner *SPINNER_geom_delz = NULL;
 GLUI_Spinner *SPINNER_geom_vertex1_rgb[3]  = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_vertex2_rgb[3]  = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_triangle_rgb[3] = {NULL, NULL, NULL};
@@ -531,14 +527,6 @@ extern "C" void GluiGeometrySetup(int main_window){
         CHECKBOX_show_cface_normals = glui_geometry->add_checkbox_to_panel(PANEL_cfaces, "normal vectors", &show_cface_normals);
       }
     }
-#ifdef pp_GEOM_OFFSET_OBJECT
-    PANEL_geom_offset = glui_geometry->add_panel_to_panel(PANEL_group1, "offset object");
-    PANEL_geom_offset->set_alignment(GLUI_ALIGN_LEFT);
-    SPINNER_geom_delx = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dx", GLUI_SPINNER_FLOAT, &geom_delx);
-    SPINNER_geom_dely = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dy", GLUI_SPINNER_FLOAT, &geom_dely);
-    SPINNER_geom_delz = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dz", GLUI_SPINNER_FLOAT, &geom_delz);
-    BUTTON_reset_offset = glui_geometry->add_button_to_panel(PANEL_geom_offset, _("Reset"), RESET_GEOM_OFFSET, VolumeCB);
-#endif
 
     PANEL_geom_offset_outline = glui_geometry->add_panel_to_panel(PANEL_group1, "offset outline/points");
     PANEL_geom_offset_outline->set_alignment(GLUI_ALIGN_LEFT);
@@ -822,14 +810,6 @@ extern "C" void VolumeCB(int var){
   case UPDATE_GEOM:
     show_geom_bndf = glui_show_geom_bndf;
     update_times = 1;
-    break;
-  case RESET_GEOM_OFFSET:
-    geom_delx = 0.0;
-    geom_dely = 0.0;
-    geom_delz = 0.0;
-    SPINNER_geom_delx->set_float_val(geom_delx);
-    SPINNER_geom_dely->set_float_val(geom_dely);
-    SPINNER_geom_delz->set_float_val(geom_delz);
     break;
   case GEOM_VERT_EXAG:
     UpdateGeomNormals();
