@@ -5939,7 +5939,8 @@ void DrawVolSliceTerrain(const slicedata *sd){
     z_cutoff = terri->zmin_cutoff;
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
-    glTranslatef(-xbar0,-ybar0,-zbar0+agl_smv+sliceoffset_all);
+    glTranslatef(-xbar0,-ybar0,-zbar0);
+    glTranslatef(0.0, 0.0, agl_smv+SCALE2FDS(0.01)+sliceoffset_all);
 
     glBegin(GL_TRIANGLES);
     maxi = sd->is2;
