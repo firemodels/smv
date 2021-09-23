@@ -4873,7 +4873,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     PANEL_slice_misc = glui_bounds->add_panel_to_panel(ROLLOUT_slice_settings, "", true);
     SPINNER_transparent_level = glui_bounds->add_spinner_to_panel(PANEL_slice_misc, _("Transparent level"), GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, SliceBoundCB);
     SPINNER_transparent_level->set_float_limits(0.0, 1.0);
-    glui_bounds->add_spinner_to_panel(PANEL_slice_misc, "slice offset", GLUI_SPINNER_FLOAT, &sliceoffset_all);
+    glui_bounds->add_spinner_to_panel(PANEL_slice_misc, "slice offset", GLUI_SPINNER_FLOAT, &slice_dz);
     for(i = 0; i<nmeshes; i++){
       meshdata *meshi;
 

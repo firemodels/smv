@@ -12175,7 +12175,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SLICEOFFSET") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%f %f", &sliceoffset_factor, &sliceoffset_all);
+      sscanf(buffer, "%f %f", &sliceoffset_factor, &slice_dz);
       continue;
     }
     if(Match(buffer, "TITLESAFE") == 1){
@@ -14628,7 +14628,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SENSORRELSIZE\n");
   fprintf(fileout, " %f\n", sensorrelsize);
   fprintf(fileout, "SLICEOFFSET\n");
-  fprintf(fileout, " %f %f\n", sliceoffset_factor,sliceoffset_all);
+  fprintf(fileout, " %f %f\n", sliceoffset_factor,slice_dz);
   fprintf(fileout, "SMOOTHLINES\n");
   fprintf(fileout, " %i\n", antialiasflag);
   fprintf(fileout, "SPHERESEGS\n");
