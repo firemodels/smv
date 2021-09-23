@@ -324,7 +324,6 @@ void UpdateGeomAreas(void){
 
 /* ------------------ DrawSelectGeom ------------------------ */
 
-#ifdef pp_GEOM_DIAG
 void DrawSelectGeom(void){
   geomdata *geomi;
   geomlistdata *geomlisti;
@@ -407,7 +406,6 @@ void DrawSelectGeom(void){
   break;
   }
 }
-#endif
 
 /* ------------------ HaveNonTextures ------------------------ */
 
@@ -560,9 +558,7 @@ void DrawGeom(int flag, int timestate){
 
   if(ntris>0&&timestate==GEOM_STATIC){
     float *color;
-#ifdef pp_GEOM_DIAG
     surfdata *selected_surf;
-#endif
 
   // draw geometry surface
 
@@ -574,7 +570,6 @@ void DrawGeom(int flag, int timestate){
       texture_state=TextureOn(texture_iso_colorbar_id,&texture_first);
     }
 
-#ifdef pp_GEOM_DIAG
     if(select_geom==GEOM_PROP_SURF&&ntris>0&&selected_geom_triangle>=0){
       tridata *selected_triangle;
 
@@ -584,7 +579,6 @@ void DrawGeom(int flag, int timestate){
     else{
       selected_surf = NULL;
     }
-#endif
     have_non_textures = HaveNonTextures(tris, ntris);
     if(cullfaces==1)glDisable(GL_CULL_FACE);
     glEnable(GL_NORMALIZE);
@@ -611,13 +605,11 @@ void DrawGeom(int flag, int timestate){
 
         trianglei = tris[i];
         use_select_color = 0;
-#ifdef pp_GEOM_DIAG
         if(select_geom==GEOM_PROP_TRIANGLE||select_geom==GEOM_PROP_SURF){
           if(trianglei->geomtype==GEOM_ISO)continue;
           if(select_geom==GEOM_PROP_TRIANGLE&&selected_geom_triangle==i)use_select_color = 1;
           if(select_geom==GEOM_PROP_SURF&&selected_surf==trianglei->geomsurf)use_select_color = 1;
         }
-#endif
         if(trianglei->geomtype!=GEOM_ISO){
           if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
           if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
@@ -665,7 +657,6 @@ void DrawGeom(int flag, int timestate){
             geom_rgb_uc[1] = (unsigned char)gcolor[1];
             geom_rgb_uc[2] = (unsigned char)gcolor[2];
           }
-#ifdef pp_GEOM_DIAG
           if(use_select_color==1){
             if(select_geom==GEOM_PROP_TRIANGLE||select_geom==GEOM_PROP_SURF){
               geom_rgb_uc[0] = (unsigned char)geom_triangle_rgb[0];
@@ -673,7 +664,6 @@ void DrawGeom(int flag, int timestate){
               geom_rgb_uc[2] = (unsigned char)geom_triangle_rgb[2];
             }
           }
-#endif
           if(texture_state==ON){
             glEnd();
             texture_state = TextureOff();
@@ -1221,12 +1211,9 @@ void DrawGeom(int flag, int timestate){
       }
       for(j=0;j<geomlisti->nverts;j++){
         vertdata *verti;
-#ifdef pp_GEOM_DIAG
         int use_select_color;
-#endif
 
         verti = geomlisti->verts+j;
-#ifdef pp_GEOM_DIAG
         use_select_color=0;
         if(select_geom==GEOM_PROP_VERTEX1||select_geom==GEOM_PROP_VERTEX2){
           if(verti->geomtype==GEOM_ISO||verti->ntriangles==0)continue;
@@ -1263,16 +1250,6 @@ void DrawGeom(int flag, int timestate){
             last_color = color;
           }
         }
-#else
-        if(verti->geomtype==GEOM_GEOM&&show_geom_verts==0)continue;
-        if(verti->geomtype==GEOM_ISO&&show_iso_points==0)continue;
-        if(verti->ntriangles==0)continue;
-        color = verti->triangles[0]->geomsurf->color;
-        if(last_color!=color){
-          glColor3fv(color);
-          last_color = color;
-        }
-#endif
         {
           float vert2a[3];
           int k;

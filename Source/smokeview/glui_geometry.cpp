@@ -11,9 +11,7 @@
 //*** geomprocinfo entries
 #define STRUCTURED_ROLLOUT     0
 #define UNSTRUCTURED_ROLLOUT   1
-#ifdef pp_GEOM_DIAG
 #define IMMERSED_DIAGNOSTICS   2
-#endif
 
 procdata  geomprocinfo[3];
 int      ngeomprocinfo = 0;
@@ -38,10 +36,8 @@ int      ngeomprocinfo = 0;
 #define GEOM_VERT_EXAG        46
 #define RESET_GEOM_OFFSET     47
 #define UPDATE_GEOM           48
-#ifdef pp_GEOM_DIAG
 #define SURF_SET              49
 #define SURF_GET              50
-#endif
 #define SHOWONLY_TOP          51
 #define GEOM_FDS_DOMAIN       52
 
@@ -62,13 +58,10 @@ GLUI_Checkbox *CHECKBOX_volumes_exterior=NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_1dimage = NULL;
 GLUI_Checkbox *CHECKBOX_showonly_top = NULL;
 
-#ifdef pp_GEOM_DIAG
 GLUI_RadioGroup *RADIO_select_geom = NULL;
-#endif
 GLUI_RadioGroup *RADIO_cface_type = NULL;
 GLUI_RadioGroup *RADIO_show_geom_boundingbox = NULL;
 
-#ifdef pp_GEOM_DIAG
 GLUI_StaticText *STATIC_vertx1=NULL;
 GLUI_StaticText *STATIC_verty1=NULL;
 GLUI_StaticText *STATIC_vertz1=NULL;
@@ -77,18 +70,15 @@ GLUI_StaticText *STATIC_verty2 = NULL;
 GLUI_StaticText *STATIC_vertz2 = NULL;
 GLUI_StaticText *STATIC_dist=NULL;
 GLUI_StaticText *STATIC_tri_area = NULL;
-#endif
 
 GLUI_Checkbox *CHECKBOX_use_surf_color=NULL;
 
 GLUI_Rollout *ROLLOUT_geomtest=NULL;
-#ifdef pp_GEOM_DIAG
 GLUI_Rollout *ROLLOUT_geom_rgbs = NULL;
 GLUI_Rollout *ROLLOUT_geom_properties=NULL;
 GLUI_Panel *PANEL_surf_color = NULL;
 GLUI_Panel *PANEL_surf_axis = NULL;
 GLUI_Panel *PANEL_surf_coloraxis = NULL;
-#endif
 
 GLUI_Panel *PANEL_face_cface = NULL;
 GLUI_Panel *PANEL_elevation_color = NULL;
@@ -104,13 +94,11 @@ GLUI_Spinner *SPINNER_geom_zmin = NULL, *SPINNER_geom_zmax = NULL, *SPINNER_geom
 GLUI_Spinner *SPINNER_geom_delx = NULL;
 GLUI_Spinner *SPINNER_geom_dely = NULL;
 GLUI_Spinner *SPINNER_geom_delz = NULL;
-#ifdef pp_GEOM_DIAG
 GLUI_Spinner *SPINNER_geom_vertex1_rgb[3]  = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_vertex2_rgb[3]  = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_triangle_rgb[3] = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_surf_rgb[3]          = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_surf_axis[3]         = {NULL, NULL, NULL};
-#endif
 
 #define VOL_SHOWHIDE           3
 #define SELECT_GEOM            4
@@ -129,9 +117,7 @@ GLUI_EditText *EDIT_xmin=NULL, *EDIT_ymin=NULL, *EDIT_zmin=NULL;
 GLUI_EditText *EDIT_xmax=NULL, *EDIT_ymax=NULL, *EDIT_zmax=NULL;
 
 GLUI_Listbox *LIST_obst_surface[7]={NULL,NULL,NULL,NULL,NULL,NULL,NULL};
-#ifdef pp_GEOM_DIAG
 GLUI_Listbox *LIST_geom_surface=NULL;
-#endif
 
 GLUI_Panel *PANEL_geomtest2 = NULL;
 GLUI_Panel *PANEL_cfaces = NULL;
@@ -140,12 +126,10 @@ GLUI_Panel *PANEL_boundingbox = NULL;
 GLUI_Panel *PANEL_vertex1_rgb = NULL;
 GLUI_Panel *PANEL_vertex2_rgb = NULL;
 GLUI_Panel *PANEL_triangle_rgb = NULL;
-#ifdef pp_GEOM_DIAG
 GLUI_Panel *PANEL_properties_surf = NULL;
 GLUI_Panel *PANEL_properties_triangle = NULL;
 GLUI_Panel *PANEL_properties_vertex = NULL;
 GLUI_Panel *PANEL_properties2 = NULL;
-#endif
 GLUI_Panel *PANEL_obj_stretch2=NULL,*PANEL_obj_stretch3=NULL, *PANEL_obj_stretch4=NULL;
 GLUI_Panel *PANEL_geomedgecheck=NULL;
 GLUI_Panel *PANEL_group1=NULL;
@@ -192,11 +176,9 @@ void GeomRolloutCB(int var){
 
 /* ------------------ UpdateSelectGeom ------------------------ */
 
-#ifdef pp_GEOM_DIAG
 extern "C" void UpdateSelectGeom(void){
   RADIO_select_geom->set_int_val(select_geom);
 }
-#endif
 
 /* ------------------ UpdateShowOnlyTop ------------------------ */
 
@@ -297,7 +279,6 @@ void BlockeditDlgCB(int var){
 /* ------------------ UpdateTriangleInfo ------------------------ */
 
 
-#ifdef pp_GEOM_DIAG
 extern "C" void UpdateTriangleInfo(surfdata *tri_surf, float tri_area){
   char label[100];
 
@@ -354,7 +335,6 @@ extern "C" void UpdateVertexInfo(float *xyz1, float *xyz2){
     STATIC_dist->set_name("dist:");
   }
 }
-#endif
 
 /* ------------------ GluiGeometrySetup ------------------------ */
 
@@ -600,7 +580,6 @@ extern "C" void GluiGeometrySetup(int main_window){
 
     UpdateGeomAreas();
 
-#ifdef pp_GEOM_DIAG
     ROLLOUT_geom_properties = glui_geometry->add_rollout("Immersed diagnostics",false, IMMERSED_DIAGNOSTICS, GeomRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_geom_properties, glui_geometry);
     ADDPROCINFO(geomprocinfo, ngeomprocinfo, ROLLOUT_geom_properties, IMMERSED_DIAGNOSTICS, glui_geometry);
@@ -697,8 +676,6 @@ extern "C" void GluiGeometrySetup(int main_window){
       SPINNER_geom_vertex2_rgb[i]->set_int_limits(0, 255);
       SPINNER_geom_triangle_rgb[i]->set_int_limits(0, 255);
     }
-#endif
-
 
     PANEL_geom_show = glui_geometry->add_panel_to_panel(PANEL_group1, "show");
     PANEL_geom_show->set_alignment(GLUI_ALIGN_LEFT);
@@ -773,11 +750,8 @@ extern "C" void GluiGeometrySetup(int main_window){
 /* ------------------ VolumeCB ------------------------ */
 
 extern "C" void VolumeCB(int var){
-#ifdef pp_GEOM_DIAG
   int i;
-#endif
   switch(var){
-#ifdef pp_GEOM_DIAG
   case SURF_GET:
     for(i = 0; i<nsurfinfo; i++){
       surfdata *surfi;
@@ -845,7 +819,6 @@ extern "C" void VolumeCB(int var){
       selected_geom_triangle = -1;
     }
     break;
-#endif
   case UPDATE_GEOM:
     show_geom_bndf = glui_show_geom_bndf;
     update_times = 1;
