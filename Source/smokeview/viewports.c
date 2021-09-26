@@ -194,7 +194,6 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
       *zone_label_width = MAX(*zone_label_width, GetStringWidth(zonecolorlabel));
     }
     SNIFF_ERRORS("after zone left labels");
-    glPopMatrix();
   }
 
   if(showplot3d==1){
