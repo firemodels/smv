@@ -771,7 +771,6 @@ void set_slice_in_obst(int setting) {
   // UpdateSliceFilenum();
   // plotstate=GetPlotState(DYNAMIC_PLOTS);
 	//
-  // UpdateGlui();
   // UpdateSliceListIndex(slicefilenum);
   // UpdateShow();
 }
@@ -4235,7 +4234,6 @@ int show_slices_showall(){
   UpdateSliceFilenum();
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
-  UpdateGlui();
   UpdateSliceListIndex(slicefilenum);
   UpdateShow();
   glutPostRedisplay();
@@ -4254,7 +4252,6 @@ int show_slices_hideall(){
   UpdateSliceFilenum();
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
-  UpdateGlui();
   UpdateSliceListIndex(slicefilenum);
   UpdateShow();
   return 0;

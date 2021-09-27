@@ -2021,7 +2021,6 @@ void UpdateAllSliceLabels(int slicetype, int *errorcode){
     if(*errorcode!=0)return;
   }
   SliceBounds2Glui(slicetype);
-  UpdateGlui();
 }
 
 /* ------------------ SetSliceColors ------------------------ */
@@ -2093,7 +2092,6 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
     if(*errorcode!=0)return;
   }
   SliceBounds2Glui(slicetype);
-  UpdateGlui();
 }
 
 /* ------------------ SliceCompare ------------------------ */
@@ -4698,7 +4696,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
         }
       }
 
-      UpdateGlui();
       UpdateUnitDefs();
       UpdateTimes();
       RemoveSliceLoadstack(slicefilenumber);
@@ -5022,7 +5019,6 @@ FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, in
 
     CheckMemory;
     CheckMemory;
-    UpdateGlui();
     CheckMemory;
 #ifdef pp_MEMDEBUG
     if(sd->compression_type==UNCOMPRESSED&&sd->slice_filetype!=SLICE_GEOM){

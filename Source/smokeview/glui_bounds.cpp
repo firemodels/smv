@@ -5286,7 +5286,6 @@ extern "C" void Plot3DBoundCB(int var){
      if(plot3dinfo[i].loaded==0)continue;
      LoadPlot3dMenu(i);
    }
-   UpdateGlui();
    break;
   case VALMIN:
     break;
@@ -5779,7 +5778,6 @@ void PartBoundCB(int var){
      PartBoundCB(FILETYPE_INDEX);
      LoadParticleMenu(PARTFILE_RELOADALL);
      LoadEvacMenu(EVACFILE_RELOADALL);
-     UpdateGlui();
      ParticlePropShowMenu(prop_index_SAVE);
     }
     break;
@@ -6132,11 +6130,6 @@ extern "C" void SliceBoundCB(int var){
     ASSERT(FFALSE);
     break;
   }
-}
-
-/* ------------------ UpdateGlui ------------------------ */
-
-extern "C" void UpdateGlui(void){
 }
 
 /* ------------------ ShowGluiBounds ------------------------ */
