@@ -418,7 +418,6 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       if(setp3min_all[nn]!=SET_MIN&&setp3min_all[nn]!=CHOP_MIN)setp3min_all[nn]=SET_MIN;
       if(setp3max_all[nn]!=SET_MAX&&setp3max_all[nn]!=CHOP_MAX)setp3max_all[nn]=SET_MAX;
     }
-    UpdateGlui();
   }
 
   GetPlot3DHists(p);

@@ -3335,7 +3335,7 @@ void BoundRolloutCB(int var){
     }
     if(var==SLICE_ROLLOUT){
       list_slice_index = CLAMP(list_slice_index,0,nlist_slice_index-1);
-      RADIO_slice->set_int_val(list_slice_index);
+      if(RADIO_slice!=NULL)RADIO_slice->set_int_val(list_slice_index);
       SliceBoundCB(FILETYPE_INDEX);
     }
   }
@@ -5286,7 +5286,6 @@ extern "C" void Plot3DBoundCB(int var){
      if(plot3dinfo[i].loaded==0)continue;
      LoadPlot3dMenu(i);
    }
-   UpdateGlui();
    break;
   case VALMIN:
     break;
@@ -5779,7 +5778,6 @@ void PartBoundCB(int var){
      PartBoundCB(FILETYPE_INDEX);
      LoadParticleMenu(PARTFILE_RELOADALL);
      LoadEvacMenu(EVACFILE_RELOADALL);
-     UpdateGlui();
      ParticlePropShowMenu(prop_index_SAVE);
     }
     break;
@@ -5875,7 +5873,7 @@ extern "C" void SliceBoundCB(int var){
       if(SPINNER_plot3dvectorskip!=NULL)SPINNER_plot3dvectorskip->set_int_val(vectorskip);
       break;
     case ZONEVALMINMAX:
-      GetZoneColors(zonetu, nzonetotal, izonetu,zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
+      GetZoneColors(zonetu, nzonetotal, izonetu, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
       GetZoneColors(zonetl, nzonetotal, izonetl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
       if(have_zonefl==1)GetZoneColors(zonefl, nzonetotal, izonefl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
       if(have_zonelw==1)GetZoneColors(zonelw, nzonetotal, izonelw, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
@@ -6074,11 +6072,11 @@ extern "C" void SliceBoundCB(int var){
     if(ROLLOUT_zone_bound!=NULL){
       int slice_index;
 
-      slice_index = RADIO_slice->get_int_val();
-      if(strcmp(slicebounds[slice_index].shortlabel, "TEMP")==0){
-        BoundRolloutCB(ZONE_ROLLOUT);
-      }
-      else{
+      if(RADIO_slice!=NULL){
+        slice_index = RADIO_slice->get_int_val();
+        if(strcmp(slicebounds[slice_index].shortlabel, "TEMP")==0){
+          BoundRolloutCB(ZONE_ROLLOUT);
+        }
       }
     }
     break;
@@ -6132,20 +6130,6 @@ extern "C" void SliceBoundCB(int var){
     ASSERT(FFALSE);
     break;
   }
-}
-
-/* ------------------ UpdateSliceList ------------------------ */
-
-extern "C" void UpdateSliceList(int index){
-  if(glui_defined==0)return;
-  RADIO_slice->set_int_val(index);
-}
-
-/* ------------------ UpdateSliceListIndex ------------------------ */
-
-/* ------------------ UpdateGlui ------------------------ */
-
-extern "C" void UpdateGlui(void){
 }
 
 /* ------------------ ShowGluiBounds ------------------------ */

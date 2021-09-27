@@ -13948,7 +13948,6 @@ int ReadIni(char *inifile){
     UpdateRGBColors(COLORBAR_INDEX_NONE);
   }
   if(use_graphics==1){
-    UpdateGlui();
     if(showall_textures==1)TextureShowMenu(MENU_TEXTURE_SHOWALL);
   }
   if(ncolorbars<=ndefaultcolorbars){

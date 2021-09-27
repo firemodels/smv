@@ -2100,7 +2100,6 @@ void FinalizePartLoad(partdata *parti){
       partj->display = 1;
     }
   }
-  UpdateGlui();
   if(parti->evac==0){
     visParticles = 1;
   }
