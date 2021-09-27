@@ -3335,7 +3335,7 @@ void BoundRolloutCB(int var){
     }
     if(var==SLICE_ROLLOUT){
       list_slice_index = CLAMP(list_slice_index,0,nlist_slice_index-1);
-      RADIO_slice->set_int_val(list_slice_index);
+      if(RADIO_slice!=NULL)RADIO_slice->set_int_val(list_slice_index);
       SliceBoundCB(FILETYPE_INDEX);
     }
   }
@@ -6074,11 +6074,11 @@ extern "C" void SliceBoundCB(int var){
     if(ROLLOUT_zone_bound!=NULL){
       int slice_index;
 
-      slice_index = RADIO_slice->get_int_val();
-      if(strcmp(slicebounds[slice_index].shortlabel, "TEMP")==0){
-        BoundRolloutCB(ZONE_ROLLOUT);
-      }
-      else{
+      if(RADIO_slice!=NULL){
+        slice_index = RADIO_slice->get_int_val();
+        if(strcmp(slicebounds[slice_index].shortlabel, "TEMP")==0){
+          BoundRolloutCB(ZONE_ROLLOUT);
+        }
       }
     }
     break;
@@ -6133,15 +6133,6 @@ extern "C" void SliceBoundCB(int var){
     break;
   }
 }
-
-/* ------------------ UpdateSliceList ------------------------ */
-
-extern "C" void UpdateSliceList(int index){
-  if(glui_defined==0)return;
-  RADIO_slice->set_int_val(index);
-}
-
-/* ------------------ UpdateSliceListIndex ------------------------ */
 
 /* ------------------ UpdateGlui ------------------------ */
 
