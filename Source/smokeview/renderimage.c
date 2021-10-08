@@ -777,10 +777,10 @@ void DrawScreenInfo(void){
     up = screeni->up;
 
     for(j = 0; j < 3; j++){
-      xyz[j+0] = view[j] - right[j]/2.0 - up[j] / 2.0;
-      xyz[j+3] = view[j] + right[j] / 2.0 - up[j] / 2.0;
-      xyz[j+6] = view[j] + right[j] / 2.0 + up[j] / 2.0;
-      xyz[j+9] = view[j] - right[j] / 2.0 + up[j] / 2.0
+      xyz[j+0] = view[j] - right[j]/2.0 - up[j]/2.0;
+      xyz[j+3] = view[j] + right[j]/2.0 - up[j]/2.0;
+      xyz[j+6] = view[j] + right[j]/2.0 + up[j]/2.0;
+      xyz[j+9] = view[j] - right[j]/2.0 + up[j]/2.0
         ;
     }
     glColor3f(0.0, 0.0, 0.0);
@@ -821,28 +821,28 @@ void SetupScreeninfo(void){
     float aspect_ratio;
     float aperture_width, aperture_height, aperture_diagonal;
 
-    aperture_width = 45.0;
-    screeni = screeninfo + ibuf;
-    screeni->nwidth=VP_scene.width;
-    screeni->nheight=VP_scene.height;
-    aspect_ratio = (float)screeni->nwidth/(float)screeni->nheight;
-    screeni->width=2.0*tan(DEG2RAD*aperture_width/2.0);
-    screeni->height = screeni->width / aspect_ratio;
-    aperture_height = 2.0*RAD2DEG*atan(screeni->height / 2.0);
+    aperture_width    = 45.0;
+    screeni           = screeninfo + ibuf;
+    screeni->nwidth   = VP_scene.width;
+    screeni->nheight  = VP_scene.height;
+    aspect_ratio      = (float)screeni->nwidth/(float)screeni->nheight;
+    screeni->width    = 2.0*tan(DEG2RAD*aperture_width/2.0);
+    screeni->height   = screeni->width / aspect_ratio;
+    aperture_height   = 2.0*RAD2DEG*atan(screeni->height / 2.0);
     aperture_diagonal = 2.0*atan(sqrt(screeni->height*screeni->height+screeni->width*screeni->width)/2.0);
-    screeni->cosmax = cos(aperture_diagonal/2.0);
+    screeni->cosmax   = cos(aperture_diagonal/2.0);
 
-    azimuth = 0.0;
+    azimuth   = 0.0;
     elevation = 0.0;
     if(ibuf == 0){
-      azimuth = 0.0;
+      azimuth   = 0.0;
       elevation = -90;
     }
     else if(ibuf >= 1 && ibuf < 9){
       int ii;
 
       ii = ibuf - 1;
-      azimuth = ii*aperture_width;
+      azimuth   = ii*aperture_width;
       elevation = -90.0+aperture_height;
     }
     else if(ibuf >= 9 && ibuf < 17){
