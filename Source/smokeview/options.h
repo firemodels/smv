@@ -103,10 +103,9 @@
 #ifndef pp_RESEARCH_DEBUG
 #define pp_RESEARCH_DEBUG
 #endif
-#define pp_RENDER360_DEBUG
 #define pp_SNIFF_ERROR
 #endif
-
+#define pp_RENDER360_DEBUG
 
 #endif
 
