@@ -16,6 +16,7 @@
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 #include "stdio_buffer.h"
+#include "glui_motion.h"
 
 #define BREAK break
 #define BREAK2 \
@@ -12247,7 +12248,8 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "RENDERFILETYPE") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i", &render_filetype, &movie_filetype);
+      sscanf(buffer, "%i %i %i", &render_filetype, &movie_filetype, &render_resolution);
+      RenderCB(RENDER_RESOLUTION);
       continue;
     }
     if(Match(buffer, "MOVIEFILETYPE") == 1){
@@ -15021,7 +15023,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "RENDERFILELABEL\n");
   fprintf(fileout, " %i\n", render_label_type);
   fprintf(fileout, "RENDERFILETYPE\n");
-  fprintf(fileout," %i %i\n",render_filetype,movie_filetype);
+  fprintf(fileout," %i %i %i\n",render_filetype, movie_filetype, render_resolution);
   fprintf(fileout, "MOVIEFILETYPE\n");
   {
     int quicktime_dummy=1;
