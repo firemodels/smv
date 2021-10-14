@@ -475,6 +475,7 @@ while true; do
   if [[ $ans -ge 1 ]] && [[ $ans -le $nviewpoints ]]; then
     viewpoint_index=$ans
     viewpoint=`cat $viewpointmenu | awk -v ind="$viewpoint_index" -F"," '{ if($1 == ind){print $2} }'`
+    viewpointd=
     return 0
   else
     echo index $ans out of bounds
