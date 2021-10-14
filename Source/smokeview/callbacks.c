@@ -8,6 +8,7 @@
 
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
+#include "glui_motion.h"
 
 #ifdef pp_LUA
 #include "lua_api.h"
@@ -3726,8 +3727,13 @@ void DoScript(void){
       }
       else if(current_script_command->command==SCRIPT_LOADSLICERENDER){
         if(current_script_command->exit==0){
+          if(render_resolution==RENDER_RESOLUTION_360){
+            render_size_index=RenderWindow;
+            resolution_multiplier = 1;
+            RenderCB(RENDER_RESOLUTION);
+            RenderCB(RENDER_START_360);
+          }
           RenderState(RENDER_ON);
-          if(render_resolution==RENDER_RESOLUTION_360)render_mode = RENDER_360;
           ScriptLoadSliceRender(current_script_command);
         }
         else{
