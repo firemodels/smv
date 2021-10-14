@@ -34,6 +34,7 @@ SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
 #endif
 
+SVEXTERN int SVDECL(frame360, 0);
 SVEXTERN int SVDECL(sliceval_ndigits, 0);
 SVEXTERN int SVDECL(rotate_center, 0);
 SVEXTERN int SVDECL(have_geom_bb, 0);

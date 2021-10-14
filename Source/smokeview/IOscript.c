@@ -2138,10 +2138,16 @@ void ScriptLoadSliceRender(scriptdata *scripti){
       SetSliceGlobalBounds(shortlabel);
     }
     frames_total = GetNSliceGeomFrames(scripti);
+    frame360 = 0;
   }
   else{
     frame_current = scripti->ival4;
-    frame_current += frame_skip;
+    if(frame_current==frame_start&&frame360==0&&render_mode==RENDER_360){ // output first frame twice - work around for a bug causing first frame to be output incorrectly
+      frame360 = 1;
+    }
+    else{
+      frame_current += frame_skip;
+    }
   }
   script_itime = frame_current;
   script_render_flag = 1;
