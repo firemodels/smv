@@ -136,6 +136,7 @@ restore_state()
     MOVIEDIR=${SLICE2MP4_MOVIEDIR}
     EMAIL=${SLICE2MP4_EMAIL}
     SHARE=${SLICE2MP4_SHARE}
+    MOVIEMODE=${SLICE2MP4_MOVIEMODE}
     if [ "${SLICE2MP4_WEBHOST}" != "" ]; then
       SMV_WEBHOST=${SLICE2MP4_WEBHOST}
     fi
@@ -173,6 +174,7 @@ save_state()
   echo "export SLICE2MP4_MOVIEDIR=$MOVIEDIR"    >> $GLOBALCONFIG
   echo "export SLICE2MP4_EMAIL=$EMAIL"          >> $GLOBALCONFIG
   echo "export SLICE2MP4_SHARE=$SHARE"          >> $GLOBALCONFIG
+  echo "export SLICE2MP4_MODE360=$MODE360"      >> $GLOBALCONFIG
   if [ "$SMV_WEBHOST" == "" ]; then
     echo "export SLICE2MP4_WEBHOST=none"        >> $GLOBALCONFIG
   else
@@ -215,6 +217,12 @@ SHOWTIMELABEL
 FONTSIZE
   $FONTSIZE
 EOF
+if [ "$MODE360" == "1" ]; then
+cat << EOF >> $smv_inifilename
+RENDERFILETYPE
+ 0 1 4
+EOF
+fi
 }
 
 #---------------------------------------------
@@ -254,6 +262,11 @@ if [ "$viewpointd" != "" ]; then
 else
   echo "      viewpoint: $viewpoint"
 fi
+if [ "$MODE360" == "0" ]; then
+  echo "     movie mode: rectangular"
+else
+  echo "     movie mode: 360"
+fi
 echo ""
 echo "        PNG dir: $RENDERDIR"
 echo "        mp4 dir: $MOVIEDIR"
@@ -280,6 +293,7 @@ else
   echo "T - hide time bar"
 fi
   echo "F - toggle font size"
+  echo "3 - toggle 360 mode"
   echo "v - set viewpoint"
 
   echo ""
@@ -321,6 +335,15 @@ fi
     have_bounds=1
     writeini
     continue;
+  fi
+  if [ "$ans" == "3" ]; then
+    if [ "$MODE360" == "0" ]; then
+      MODE360="1"
+    else
+      MODE360="0"
+    fi
+    writeini
+    continue
   fi
   if [ "$ans" == "C" ]; then
     if [ "$COLORBAR" == "0" ]; then
@@ -649,6 +672,7 @@ if [ ! -e $MOVIEDIR ]; then
 fi
 NPROCS=20
 QUEUE=batch4
+MODE360=0
 slice_index=
 HELP_ALL=
 JOBPREFIX=SV_
