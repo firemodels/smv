@@ -3727,6 +3727,7 @@ void DoScript(void){
       else if(current_script_command->command==SCRIPT_LOADSLICERENDER){
         if(current_script_command->exit==0){
           RenderState(RENDER_ON);
+          if(render_resolution==RENDER_RESOLUTION_360)render_mode = RENDER_360;
           ScriptLoadSliceRender(current_script_command);
         }
         else{
