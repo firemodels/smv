@@ -368,7 +368,11 @@ fi
   fi
   if [ "$ans" == "C" ]; then
     if [ "$COLORBAR" == "0" ]; then
-      COLORBAR="1"
+      if [ "$MODE360" == "0" ]; then
+        COLORBAR="1"
+      else
+        echo "***warning: color bar not shown in 360 movie mode"
+      fi
     else
       COLORBAR="0"
     fi
@@ -386,7 +390,11 @@ fi
   fi
   if [ "$ans" == "T" ]; then
     if [ "$TIMEBAR" == "0" ]; then
-      TIMEBAR="1"
+      if [ "$MODE360" == "0" ]; then
+        TIMEBAR="1"
+      else
+        echo "***warning: time bar not shown in 360 movie mode"
+      fi
     else
       TIMEBAR="0"
     fi
