@@ -136,7 +136,7 @@ restore_state()
     MOVIEDIR=${SLICE2MP4_MOVIEDIR}
     EMAIL=${SLICE2MP4_EMAIL}
     SHARE=${SLICE2MP4_SHARE}
-    MOVIEMODE=${SLICE2MP4_MOVIEMODE}
+    MODE360=${SLICE2MP4_MODE360}
     if [ "${SLICE2MP4_WEBHOST}" != "" ]; then
       SMV_WEBHOST=${SLICE2MP4_WEBHOST}
     fi
@@ -153,6 +153,14 @@ restore_state()
     TIMEBAR=${SLICE2MP4_TIMEBAR}
     if [ "$TIMEBAR" == "" ]; then
       TIMEBAR="0"
+    fi
+
+#*** don't show colorbar or timebar in 360 mode
+    if [ "$MODE360" == "1" ]; then
+      COLORBAR="0"
+      TIMEBAR="0"
+    else
+      MODE360="0"
     fi
     FONTSIZE=${SLICE2MP4_FONTSIZE}
     if [ "$FONTSIZE" == "" ]; then
@@ -339,8 +347,21 @@ fi
   if [ "$ans" == "3" ]; then
     if [ "$MODE360" == "0" ]; then
       MODE360="1"
+      COLORBAR_SAVE=$COLORBAR
+      TIMEBAR_SAVE=$TIMEBAR
+
+#*** don't show colorbar or timebar in 360 mode
+
+      COLORBAR="0"
+      TIMEBAR="0"
     else
       MODE360="0"
+      if [ "$COLORBAR_SAVE" != "" ]; then
+        COLORBAR=$COLORBAR_SAVE
+      fi
+      if [ "$TIMEBAR_SAVE" != "" ]; then
+        TIMEBAR=$TIMEBAR_SAVE
+      fi
     fi
     writeini
     continue
