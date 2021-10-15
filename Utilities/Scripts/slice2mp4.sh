@@ -439,32 +439,32 @@ while true; do
   fi
   if [ "$ans" == "x" ]; then
     viewpoint=
-    viewpointd="VIEWXMIN"
+    viewpointd="XMIN"
     return 0
   fi
   if [ "$ans" == "X" ]; then
     viewpoint=
-    viewpointd="VIEWXMAX"
+    viewpointd="XMAX"
     return 0
   fi
   if [ "$ans" == "y" ]; then
     viewpoint=
-    viewpointd="VIEWYMIN"
+    viewpointd="YMIN"
     return 0
   fi
   if [ "$ans" == "Y" ]; then
     viewpoint=
-    viewpointd="VIEWYMAX"
+    viewpointd="YMAX"
     return 0
   fi
   if [ "$ans" == "z" ]; then
     viewpoint=
-    viewpointd="VIEWZMIN"
+    viewpointd="ZMIN"
     return 0
   fi
   if [ "$ans" == "Z" ]; then
     viewpoint=
-    viewpointd="VIEWZMAX"
+    viewpointd="ZMAX"
     return 0
   fi
   re='^[0-9]+$'
@@ -620,6 +620,7 @@ LOADINIFILE
 EOF
 if [ "$viewpointd" != "" ]; then
   cat << EOF >> ${smv_scriptname}
+SETVIEWPOINT
   $viewpointd
 
 EOF
@@ -787,12 +788,12 @@ else
   echo "index   viewpoint"  > $viewpointmenu
   echo "d   delete"        >> $viewpointmenu
 fi
-echo "    x   VIEWXMIN"    >> $viewpointmenu
-echo "    X   VIEWXMAX"    >> $viewpointmenu
-echo "    y   VIEWYMIN"    >> $viewpointmenu
-echo "    Y   VIEWYMAX"    >> $viewpointmenu
-echo "    z   VIEWZMIN"    >> $viewpointmenu
-echo "    Z   VIEWZMAX"    >> $viewpointmenu
+echo "    x   XMIN"    >> $viewpointmenu
+echo "    X   XMAX"    >> $viewpointmenu
+echo "    y   YMIN"    >> $viewpointmenu
+echo "    Y   YMAX"    >> $viewpointmenu
+echo "    z   ZMIN"    >> $viewpointmenu
+echo "    Z   ZMAX"    >> $viewpointmenu
 
 
 # get slice file menu (required)
