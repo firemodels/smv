@@ -188,6 +188,7 @@ void StartScript(void){
   current_script_command=scriptinfo-1;
   iso_multithread_save = iso_multithread;
   iso_multithread = 0;
+  viewpoint_script_ptr = NULL;
 }
 
 /* ------------------ GetCharPointer ------------------------ */
@@ -3111,10 +3112,14 @@ void ScriptSetViewpoint(scriptdata *scripti){
   viewpoint = scripti->cval;
   update_viewpoint_script = 3;
   strcpy(viewpoint_script, viewpoint);
+  viewpoint_script_ptr = NULL;
   PRINTF("script: set viewpoint to %s\n\n",viewpoint);
   if(GetCamera(viewpoint) == NULL){
     fprintf(stderr, "*** Error: The viewpoint %s was not found\n", viewpoint);
     if(stderr2!=NULL)fprintf(stderr2, "*** Error: The viewpoint %s was not found\n", viewpoint);
+  }
+  else{
+    viewpoint_script_ptr = viewpoint_script;
   }
 }
 

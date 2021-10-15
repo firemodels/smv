@@ -53,7 +53,7 @@ SVEXTERN int SVDECL(last_time_paused, 0);
 SVEXTERN float SVDECL(time_paused,0.0);
 SVEXTERN int SVDECL(update_stept, -1);
 SVEXTERN int SVDECL(update_viewpoint_script, 0);
-SVEXTERN char viewpoint_script[256];
+SVEXTERN char viewpoint_script[256], SVDECL(*viewpoint_script_ptr, NULL);
 SVEXTERN char viewpoint_label_saved[256];
 SVEXTERN int SVDECL(update_saving_viewpoint, 0);
 SVEXTERN float SVDECL(timer_startup, 0.0), SVDECL(timer_render, -1.0);

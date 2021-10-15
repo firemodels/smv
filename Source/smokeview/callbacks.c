@@ -3728,6 +3728,7 @@ void DoScript(void){
       else if(current_script_command->command==SCRIPT_LOADSLICERENDER){
         if(current_script_command->exit==0){
           if(render_resolution==RENDER_RESOLUTION_360){
+            if(viewpoint_script_ptr!=NULL)SetCurrentViewPoint(viewpoint_script);
             render_size_index=RenderWindow;
             resolution_multiplier = 1;
             RenderCB(RENDER_RESOLUTION);
