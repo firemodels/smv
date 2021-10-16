@@ -875,8 +875,8 @@ typedef struct _keyframe {
   float keyview_xyz[3],keyview_xyz2[3];
   float xyz[3];
   float total_distance, distance;
-  float s_xyz[3], s_az, s_elev, s_zoom, s_xyz_view[3];
-  float d_xyz[3], d_az, d_elev, d_zoom, d_xyz_view[3];
+  float  xyz_tangent_left[3],  az_tangent_left,  elev_tangent_left,  zoom_tangent_left,  view_tangent_left[3];
+  float xyz_tangent_right[3], az_tangent_right, elev_tangent_right, zoom_tangent_right, view_tangent_right[3];
   float az_path;
   struct _keyframe *next,*prev;
 } keyframe;

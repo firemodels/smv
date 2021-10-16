@@ -311,15 +311,15 @@ void DrawTours(void){
 
       for(j=0;j<touri->nkeyframes;j++){
         keyframe *framej;
-        float *eye;
+        float *xyz;
 
         framej = touri->keyframe_list[j];
-        eye = framej->nodeval.xyz;
+        xyz = framej->nodeval.xyz;
         {
           char label[128];
           sprintf(label,"%8.2f",framej->disp_time+0.005);
           TrimZeros(label);
-          Output3Text(tmp_tourcol_text,eye[0]+0.02f,eye[1]+0.015f,eye[2]+0.015f,label);
+          Output3Text(tmp_tourcol_text, xyz[0]+0.02f, xyz[1]+0.015f, xyz[2]+0.015f,label);
         }
       }
     }
@@ -381,7 +381,7 @@ void DrawTours(void){
           tourdata *touri;
           float *tour_view, az_angle, dxy[2];
           pathdata *pj;
-          float *eye;
+          float *xyz;
           int iframe_local;
 
           touri = tourinfo + i;
@@ -391,10 +391,10 @@ void DrawTours(void){
           iframe_local = GetTourFrame(touri, itimes);
           pj = touri->pathnodes + iframe_local;
           if(keyframe_snap==1)pj = pj->keysnap;
-          eye = pj->xyz;
+          xyz = pj->xyz;
           tour_view = pj->tour_view;
-          dxy[0]=tour_view[0]-eye[0];
-          dxy[1]=tour_view[1]-eye[1];
+          dxy[0]=tour_view[0]-xyz[0];
+          dxy[1]=tour_view[1]-xyz[1];
           if(dxy[0]!=0.0||dxy[1]!=0.0){
             az_angle=atan2(dxy[1],dxy[0])*RAD2DEG;
           }
@@ -403,7 +403,7 @@ void DrawTours(void){
           }
 
           glPushMatrix();
-          glTranslatef(eye[0],eye[1],eye[2]);
+          glTranslatef(xyz[0], xyz[1], xyz[2]);
           glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
 
           glRotatef(az_angle,0.0,0.0,1.0);
@@ -426,7 +426,7 @@ void DrawSelectTours(void){
   tourdata *touri;
   keyframe *framej;
   int color_index=0;
-  float *eye;
+  float *xyz;
 
   glPointSize(20.0f);
   glBegin(GL_POINTS);
@@ -440,11 +440,11 @@ void DrawSelectTours(void){
           unsigned char r, g, b;
 
           framej = touri->keyframe_list[j];
-          eye = framej->nodeval.xyz;
+          xyz = framej->nodeval.xyz;
 
           GetRGB(color_index+1,&r,&g,&b);
           glColor3ub(r,g,b);
-          glVertex3fv(eye);
+          glVertex3fv(xyz);
         }
       }
       color_index++;
@@ -453,12 +453,12 @@ void DrawSelectTours(void){
   glEnd();
 }
 
-#define HERMVAL() ((2.0*t3-3.0*t2+1.0)*p0 + (t3-2.0*t2+t)*m0 + (t3-t2)*m1 + (-2.0*t3+3.0*t2)*p1)
-#define HERMDERIV() ((6.0*t2-6.0*t)*p0 + (3.0*t2-4.0*t+1.0)*m0 + (3.0*t2-2.0*t)*m1 + (-6.0*t2+6.0*t)*p1)
+#define HERMVAL()   ((2.0*t3-3.0*t2+1.0)*p0 +      (t3-2.0*t2+t)*m0 +        (t3-t2)*m1 + (-2.0*t3+3.0*t2)*p1)
+#define HERMDERIV()      ((6.0*t2-6.0*t)*p0 + (3.0*t2-4.0*t+1.0)*m0 + (3.0*t2-2.0*t)*m1 +  (-6.0*t2+6.0*t)*p1)
 
-/* ------------------ HermiteEye ------------------------ */
+/* ------------------ HermiteXYZ ------------------------ */
 
-void HermiteEye(float t, keyframe *kf1, keyframe *kf2, float *eye, float *slope){
+void HermiteXYZ(float t, keyframe *kf1, keyframe *kf2, float *xyz, float *slope){
   int i;
   float t3, t2;
 
@@ -470,10 +470,10 @@ void HermiteEye(float t, keyframe *kf1, keyframe *kf2, float *eye, float *slope)
 
     p0 = kf1->nodeval.xyz[i];
     p1 = kf2->nodeval.xyz[i];
-    m0 = kf1->d_xyz[i];
-    m1 = kf2->s_xyz[i];
+    m0 = kf1->xyz_tangent_right[i];
+    m1 = kf2->xyz_tangent_left[i];
 
-    eye[i] = HERMVAL();
+    xyz[i] = HERMVAL();
     if(i != 2)slope[i] = HERMDERIV();
   }
 }
@@ -489,20 +489,20 @@ void HermiteOther(float t, keyframe *kf1, keyframe *kf2, pathdata *pj){
 
   p0 = kf1->az_path;
   p1 = kf2->az_path;
-  m0 = kf1->d_az;
-  m1 = kf2->s_az;
+  m0 = kf1->az_tangent_right;
+  m1 = kf2->az_tangent_left;
   pj->az_path = HERMVAL();
 
   p0 = kf1->nodeval.zoom;
   p1 = kf2->nodeval.zoom;
-  m0 = kf1->d_zoom;
-  m1 = kf2->s_zoom;
+  m0 = kf1->zoom_tangent_right;
+  m1 = kf2->zoom_tangent_left;
   pj->zoom = HERMVAL();
 
   p0 = kf1->nodeval.elev_path;
   p1 = kf2->nodeval.elev_path;
-  m0 = kf1->d_elev;
-  m1 = kf2->s_elev;
+  m0 = kf1->elev_tangent_right;
+  m1 = kf2->elev_tangent_left;
   pj->elev_path = HERMVAL();
 }
 
@@ -517,8 +517,8 @@ void HermiteView(float t, keyframe *kf1, keyframe *kf2, float *view){
 
     p0 = kf1->nodeval.xyz_view_abs[i];
     p1 = kf2->nodeval.xyz_view_abs[i];
-    m0 = kf1->d_xyz_view[i];
-    m1 = kf2->s_xyz_view[i];
+    m0 = kf1->view_tangent_right[i];
+    m1 = kf2->view_tangent_left[i];
     t2 = t*t;
     t3 = t2*t;
     view[i] = HERMVAL();
@@ -599,8 +599,8 @@ void CreateTourPaths(void){
     if(touri->nkeyframes<=1)continue;
     for(keyj=(touri->first_frame).next,j=0;keyj->next!=NULL;keyj=keyj->next,j++){
       keyframe *lastkey, *thiskey, *nextkey;
-      float *lasteye, *thiseye, *nexteye;
-      float *xyz_view0, *xyz_view1, *xyz_view2;
+      float *last_xyz,  *this_xyz,  *next_xyz;
+      float *last_view, *this_view, *next_view;
 
       *tourknotskeylist_copy++ = keyj;
       *tourknotstourlist_copy++ = touri;
@@ -620,77 +620,72 @@ void CreateTourPaths(void){
         }
       }
 
-      lasteye = lastkey->nodeval.xyz;
-      thiseye = thiskey->nodeval.xyz;
-      nexteye = nextkey->nodeval.xyz;
-      xyz_view0 = lastkey->nodeval.xyz_view_abs;
-      xyz_view1 = thiskey->nodeval.xyz_view_abs;
-      xyz_view2 = nextkey->nodeval.xyz_view_abs;
+      last_xyz = lastkey->nodeval.xyz;
+      this_xyz = thiskey->nodeval.xyz;
+      next_xyz = nextkey->nodeval.xyz;
+      last_view = lastkey->nodeval.xyz_view_abs;
+      this_view = thiskey->nodeval.xyz_view_abs;
+      next_view = nextkey->nodeval.xyz_view_abs;
 
       if(touri->periodic==0&&j==0){
-        VEC3EQCONS(keyj->s_xyz,0.0);
+        VEC3EQCONS(keyj->xyz_tangent_left,0.0);
 
-        keyj->s_az=0.0;
-        keyj->s_elev=0.0;
-        keyj->s_zoom=0.0;
+        keyj->az_tangent_left   = 0.0;
+        keyj->elev_tangent_left = 0.0;
+        keyj->zoom_tangent_left = 0.0;
 
-        VEC3DIFF(keyj->d_xyz,nexteye,thiseye);
+        VEC3DIFF(keyj->xyz_tangent_right,next_xyz,this_xyz);
 
-        keyj->d_az=nextkey->az_path - thiskey->az_path;
-        keyj->d_zoom=nextkey->nodeval.zoom - thiskey->nodeval.zoom;
-        keyj->d_elev=nextkey->nodeval.elev_path - thiskey->nodeval.elev_path;
+        keyj->az_tangent_right   = nextkey->az_path - thiskey->az_path;
+        keyj->zoom_tangent_right = nextkey->nodeval.zoom - thiskey->nodeval.zoom;
+        keyj->elev_tangent_right = nextkey->nodeval.elev_path - thiskey->nodeval.elev_path;
 
-        VEC3EQCONS(keyj->s_xyz_view,0.0);
+        VEC3EQCONS(keyj->view_tangent_left,0.0);
 
-        VEC3DIFF(keyj->d_xyz_view,xyz_view2,xyz_view1);
+        VEC3DIFF(keyj->view_tangent_right,next_view,this_view);
       }
       else if(touri->periodic==0&&j==touri->nkeyframes-1){
-        VEC3DIFF(keyj->s_xyz,thiseye,lasteye);
+        VEC3DIFF(keyj->xyz_tangent_left,this_xyz,last_xyz);
 
-        keyj->s_az  =thiskey->az_path           - lastkey->az_path;
-        keyj->s_zoom=thiskey->nodeval.zoom      - lastkey->nodeval.zoom;
-        keyj->s_elev=thiskey->nodeval.elev_path - lastkey->nodeval.elev_path;
+        keyj->az_tangent_left  =thiskey->az_path           - lastkey->az_path;
+        keyj->zoom_tangent_left=thiskey->nodeval.zoom      - lastkey->nodeval.zoom;
+        keyj->elev_tangent_left=thiskey->nodeval.elev_path - lastkey->nodeval.elev_path;
 
-        VEC3EQCONS(keyj->d_xyz,0.0);
+        VEC3EQCONS(keyj->xyz_tangent_right,0.0);
 
-        keyj->d_az=0.0;
-        keyj->d_zoom=0.0;
-        keyj->d_elev=0.0;
+        keyj->az_tangent_right   = 0.0;
+        keyj->zoom_tangent_right = 0.0;
+        keyj->elev_tangent_right = 0.0;
 
-        VEC3DIFF(keyj->s_xyz_view,xyz_view1,xyz_view0);
+        VEC3DIFF(keyj->view_tangent_left,this_view,last_view);
 
-        VEC3EQCONS(keyj->d_xyz_view,0.0);
+        VEC3EQCONS(keyj->view_tangent_right,0.0);
       }
       else{
-        float sfactor, dfactor;
+#define HERM1(lastval,nextval,val)\
+        val[0]=(nextval[0] - lastval[0])/2.0;\
+        val[1]=(nextval[1] - lastval[1])/2.0;\
+        val[2]=(nextval[2] - lastval[2])/2.0
 
-        sfactor = 1.0;
-        dfactor = 1.0;
+        HERM1(last_xyz,next_xyz,keyj->xyz_tangent_left);
+        keyj->az_tangent_left   = (nextkey->az_path - lastkey->az_path)/2.0;
+        keyj->zoom_tangent_left = (nextkey->nodeval.zoom -      lastkey->nodeval.zoom)/2.0;
+        keyj->elev_tangent_left = (nextkey->nodeval.elev_path - lastkey->nodeval.elev_path)/2.0;
+        HERM1(last_view,next_view,keyj->view_tangent_left);
 
-#define HERM1(sfactor,lastval,nextval,val)\
-        val[0]=sfactor*(nextval[0] - lastval[0])/2.0;\
-        val[1]=sfactor*(nextval[1] - lastval[1])/2.0;\
-        val[2]=sfactor*(nextval[2] - lastval[2])/2.0
-
-        HERM1(sfactor,lasteye,nexteye,keyj->s_xyz);
-        keyj->s_az  =sfactor*(nextkey->az_path - lastkey->az_path)/2.0;
-        keyj->s_zoom=sfactor*(nextkey->nodeval.zoom -      lastkey->nodeval.zoom)/2.0;
-        keyj->s_elev=sfactor*(nextkey->nodeval.elev_path - lastkey->nodeval.elev_path)/2.0;
-        HERM1(sfactor,xyz_view0,xyz_view2,keyj->s_xyz_view);
-
-        HERM1(dfactor,lasteye,nexteye,keyj->d_xyz);
-        keyj->d_az  =dfactor*(nextkey->az_path - lastkey->az_path)/2.0;
-        keyj->d_zoom=dfactor*(nextkey->nodeval.zoom - lastkey->nodeval.zoom)/2.0;
-        keyj->d_elev=dfactor*(nextkey->nodeval.elev_path - lastkey->nodeval.elev_path)/2.0;
-        HERM1(dfactor,xyz_view0,xyz_view2,keyj->d_xyz_view);
+        HERM1(last_xyz,next_xyz,keyj->xyz_tangent_right);
+        keyj->az_tangent_right   = (nextkey->az_path - lastkey->az_path)/2.0;
+        keyj->zoom_tangent_right = (nextkey->nodeval.zoom - lastkey->nodeval.zoom)/2.0;
+        keyj->elev_tangent_right = (nextkey->nodeval.elev_path - lastkey->nodeval.elev_path)/2.0;
+        HERM1(last_view,next_view,keyj->view_tangent_right);
       }
     }
 
     for(keyj=(touri->first_frame).next;keyj->next!=NULL;keyj=keyj->next){
       float denom;
 
-      keyj->keyview_xyz[0]=keyj->d_xyz[0];
-      keyj->keyview_xyz[1]=keyj->d_xyz[1];
+      keyj->keyview_xyz[0]=keyj->xyz_tangent_right[0];
+      keyj->keyview_xyz[1]=keyj->xyz_tangent_right[1];
       keyj->keyview_xyz[2]=0.0;
       if(keyj->viewtype==ABS_VIEW)XYZView2AzElev(keyj);
 
@@ -708,7 +703,7 @@ void CreateTourPaths(void){
     tour_dist[0]=0.0;
     for(j=0;j<tour_ntimes;j++){
       pathdata *pj,*pjm1;
-      float *eye, *xyz_view, *tour_view;
+      float *xyz, *xyz_view, *tour_view;
       float f1, f2, dt;
       float view_local[3];
       float vtime;
@@ -739,18 +734,18 @@ void CreateTourPaths(void){
       pj->time=vtime;
       touri->path_times[j]=vtime;
 
-      eye=pj->xyz;
+      xyz =pj->xyz;
       xyz_view=pj->xyz_view_abs;
       tour_view=pj->tour_view;
 
       if(kf1->nodeval.xyz[0]==kf2->nodeval.xyz[0]&&
          kf1->nodeval.xyz[1]==kf2->nodeval.xyz[1]&&
          kf1->nodeval.xyz[2]==kf2->nodeval.xyz[2]){
-        HermiteEye(1.0,kf1->prev,kf1,eye,view_local);
+        HermiteXYZ(1.0,kf1->prev,kf1, xyz,view_local);
         Slerp(kf1->prev->keyview_xyz2,kf1->keyview_xyz2,1.0,view_local);
       }
       else{
-        HermiteEye(f1,kf1,kf2,eye,view_local);
+        HermiteXYZ(f1,kf1,kf2, xyz,view_local);
         Slerp(kf1->keyview_xyz2,kf2->keyview_xyz2,f1,view_local);
       }
 
@@ -766,9 +761,9 @@ void CreateTourPaths(void){
         float dz, distance;
 
         pjm1 = pj - 1;
-        dx = eye[0]-pjm1->xyz[0];
-        dy = eye[1]-pjm1->xyz[1];
-        dz = eye[2]-pjm1->xyz[2];
+        dx = xyz[0]-pjm1->xyz[0];
+        dy = xyz[1]-pjm1->xyz[1];
+        dz = xyz[2]-pjm1->xyz[2];
         distance = sqrt(dx*dx+dy*dy+dz*dz);
         tour_dist[j]=tour_dist[j-1] + distance;
         kf1->distance += distance;
@@ -879,7 +874,7 @@ void CreateTourPaths(void){
     iframe_old=-1;
     for(j=0;j<tour_ntimes;j++){
       pathdata *pj;
-      float *eye, *xyz_view, *tour_view;
+      float *xyz, *xyz_view, *tour_view;
       float f1, dt;
       float view_local[3];
       float vtime;
@@ -901,11 +896,11 @@ void CreateTourPaths(void){
       pj->time=vtime2;
       touri->path_times[j]=vtime2;
 
-      eye=pj->xyz;
+      xyz =pj->xyz;
       xyz_view=pj->xyz_view_abs;
       tour_view=pj->tour_view;
 
-      HermiteEye(f1,kf1,kf2,eye,view_local);
+      HermiteXYZ(f1,kf1,kf2, xyz,view_local);
       HermiteOther(f1,kf1,kf2,pj);
       HermiteView(f1,kf1,kf2,xyz_view);
 
@@ -922,18 +917,18 @@ void CreateTourPaths(void){
         az = pj->az_path*DEG2RAD;
         ROTATE(dxyz2,dxyz,az);
         dxyz2[2] = tan(pj->elev_path*DEG2RAD)/10.0;
-        VEC3ADD(tour_view,eye,dxyz2);
+        VEC3ADD(tour_view, xyz,dxyz2);
       }
       else{
         float dxyz[3], denom;
 
-        VEC3DIFF(dxyz,xyz_view,eye);
+        VEC3DIFF(dxyz,xyz_view, xyz);
         denom = 10.0*NORM3(dxyz);
         if(denom == 0.0)denom = 1.0;
         dxyz[0] /= denom;
         dxyz[1] /= denom;
         dxyz[2] /= denom;
-        VEC3ADD(tour_view,eye,dxyz);
+        VEC3ADD(tour_view, xyz,dxyz);
       }
       if(iframe_old!=iframe_new){
         iframe_old=iframe_new;
@@ -951,17 +946,17 @@ void CreateTourPaths(void){
 /* ------------------ DefaultTour ------------------------ */
 
 void DefaultTour(void){
-  float *eye_xyz,*az_elev;
+  float *xyz,*az_elev;
 
   touring=1;
-  eye_xyz = camera_current->eye;
+  xyz = camera_current->eye;
   az_elev = camera_current->az_elev;
 
   anglexy0 = az_elev[0];
   azimuth0 = camera_current->azimuth;
-  eyex0 = eye_xyz[0];
-  eyey0 = eye_xyz[1];
-  eyez0 = eye_xyz[2];
+  eyex0 = xyz[0];
+  eyey0 = xyz[1];
+  eyez0 = xyz[2];
   selected_tour=NULL;
   selected_frame=NULL;
   selectedtour_index = TOURINDEX_MANUAL;
@@ -984,7 +979,7 @@ keyframe *CopyFrame(keyframe *framei){
 /* ------------------ AddFrame ------------------------ */
 
 
-keyframe *AddFrame(keyframe *last_frame, float time_local, float *eye, float key_az_path, float elev_path, int viewtype,float zoom_local,float view[3]){
+keyframe *AddFrame(keyframe *last_frame, float time_local, float *xyz, float key_az_path, float elev_path, int viewtype,float zoom_local,float view[3]){
   keyframe *this_frame,*next_frame;
   float *feye, *fxyz_view;
 
@@ -1006,7 +1001,7 @@ keyframe *AddFrame(keyframe *last_frame, float time_local, float *eye, float key
 
   this_frame->az_path=key_az_path;
   this_frame->nodeval.elev_path=elev_path;
-  NORMALIZE_XYZ(feye,eye);
+  NORMALIZE_XYZ(feye, xyz);
   NORMALIZE_XYZ(fxyz_view,view);
   this_frame->noncon_time=time_local;
   this_frame->disp_time=time_local;
@@ -1017,9 +1012,9 @@ keyframe *AddFrame(keyframe *last_frame, float time_local, float *eye, float key
   this_frame->keyview_xyz[1] = fxyz_view[1];
   this_frame->keyview_xyz[2] = fxyz_view[2];
 
-  this_frame->xyz[0] = eye[0];
-  this_frame->xyz[1] = eye[1];
-  this_frame->xyz[2] = eye[2];
+  this_frame->xyz[0] = xyz[0];
+  this_frame->xyz[1] = xyz[1];
+  this_frame->xyz[2] = xyz[2];
 
   CheckMemory;
   return this_frame;
@@ -1462,17 +1457,17 @@ void XYZView2AzElev(keyframe *kf){
   float angle_temp, angle_temp2;
   float az, elev;
 
-  float *eye, *xyz_view;
+  float *xyz, *xyz_view;
 
   dxy2[0] = kf->keyview_xyz[0];
   dxy2[1] = kf->keyview_xyz[1];
   distxy2 = NORM2(dxy2);
   if(distxy2<=0.0)return;
 
-  eye = kf->nodeval.xyz;
+  xyz = kf->nodeval.xyz;
   xyz_view = kf->nodeval.xyz_view_abs;
 
-  VEC3DIFF(dxyz,xyz_view,eye);
+  VEC3DIFF(dxyz,xyz_view, xyz);
 
   distxy = NORM2(dxyz);
   if(distxy<=0.0)return;
