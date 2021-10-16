@@ -68,7 +68,6 @@ void InitTour(tourdata *touri){
   touri->path_times=NULL;
 
   touri->global_dist=0.0;
-  touri->local_dist=0.0;
   touri->startup=0;
   touri->isDefault=0;
 }
@@ -578,7 +577,7 @@ void CreateTourPaths(void){
     keyframe *keyj;
     keyframe *kf1, *kf2;
     float *tour_dist3a;
-    float factor,total_time;
+    float total_time;
     float total_distance;
     float vdist,vtime2,vdt;
     float tour_tstart_local, tour_tstop_local;
@@ -786,11 +785,9 @@ void CreateTourPaths(void){
       total_distance += keyj->prev->distance;
     }
 
-    // decide fraction of global path vs. local path
+    // determine tour distance
 
     touri->global_dist=0.0;
-    touri->local_dist=0.0;
-    factor=0.0;
     total_time=0.0;
     for(keyj=(touri->first_frame).next;keyj->next!=NULL;keyj=keyj->next){
       if(keyj->next->next!=NULL)total_time += keyj->next->noncon_time - keyj->noncon_time;
@@ -798,13 +795,12 @@ void CreateTourPaths(void){
     }
     if(total_time == 0.0)total_time = 1.0;
     if(touri->global_dist == 0.0)touri->global_dist = 1.0;
-    factor = touri->local_dist/total_time;
 
     // find number of points for each interval
 
     ntotal=0;
     for(keyj=(touri->first_frame).next;keyj->next!=NULL;keyj=keyj->next){
-      keyj->npoints=tour_ntimes*(1.0-factor)*keyj->distance/touri->global_dist;
+      keyj->npoints=tour_ntimes*keyj->distance/touri->global_dist;
       ntotal += keyj->npoints;
     }
     touri->first_frame.next->npoints += tour_ntimes - ntotal;

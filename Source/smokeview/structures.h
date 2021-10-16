@@ -890,7 +890,7 @@ typedef struct _tourdata {
   pathdata *pathnodes;
   int glui_avatar_index, display2;
   float *path_times,*keyframe_times;
-  float global_dist, local_dist;
+  float global_dist;
   int *timeslist;
   int ntimes,nkeyframes;
   int display,periodic;
