@@ -861,7 +861,7 @@ typedef struct _culldata {
 /* --------------------------  pathdata ------------------------------------ */
 
 typedef struct _pathdata {
-  float time, eye[3], xyz_view_abs[3], xyz_view_rel[3], tour_view[3];
+  float time, xyz[3], xyz_view_abs[3], xyz_view_rel[3], tour_view[3];
   float az_path,zoom,elev_path;
   struct _pathdata *keysnap;
 } pathdata;
@@ -873,10 +873,10 @@ typedef struct _keyframe {
   float noncon_time, con_time, disp_time;
   pathdata nodeval;
   float keyview_xyz[3],keyview_xyz2[3];
-  float eye[3];
+  float xyz[3];
   float total_distance, distance;
-  float s_eye[3], s_az, s_elev, s_zoom, s_xyz_view[3];
-  float d_eye[3], d_az, d_elev, d_zoom, d_xyz_view[3];
+  float s_xyz[3], s_az, s_elev, s_zoom, s_xyz_view[3];
+  float d_xyz[3], d_az, d_elev, d_zoom, d_xyz_view[3];
   float az_path;
   struct _keyframe *next,*prev;
 } keyframe;

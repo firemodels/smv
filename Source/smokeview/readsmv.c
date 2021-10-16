@@ -14233,9 +14233,9 @@ void WriteIniLocal(FILE *fileout){
         framei = framei->next;
         sprintf(buffer, "%f %f %f %f ",
           framei->noncon_time,
-          DENORMALIZE_X(framei->nodeval.eye[0]),
-          DENORMALIZE_Y(framei->nodeval.eye[1]),
-          DENORMALIZE_Z(framei->nodeval.eye[2]));
+          DENORMALIZE_X(framei->nodeval.xyz[0]),
+          DENORMALIZE_Y(framei->nodeval.xyz[1]),
+          DENORMALIZE_Z(framei->nodeval.xyz[2]));
         TrimMZeros(buffer);
         fprintf(fileout, " %s %i ", buffer, framei->viewtype);
         if(framei->viewtype == REL_VIEW){
