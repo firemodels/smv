@@ -575,16 +575,7 @@ void CreateTourPaths(void){
   for(i = 0; i<ntourinfo; i++){
     tourdata *touri;
     keyframe *keyj;
-    keyframe *kf1, *kf2;
-    float *tour_dist3a;
-    float total_time;
-    float total_distance;
-    float vdist, vtime2, vdt;
-    float tour_tstart_local, tour_tstop_local;
-    int j, jj;
-    int iframe_local;
-    int ntotal, ntotal2;
-    int iframe_old, iframe_new;
+    int j;
 
     touri = tourinfo+i;
     if(viewalltours==1)touri->display = 1;
