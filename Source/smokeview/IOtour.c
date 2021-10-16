@@ -572,51 +572,51 @@ void CreateTourPaths(void){
 
   tourknotskeylist_copy=tourknotskeylist;
   tourknotstourlist_copy=tourknotstourlist;
-  for(i=0;i<ntourinfo;i++){
+  for(i = 0; i<ntourinfo; i++){
     tourdata *touri;
     keyframe *keyj;
     keyframe *kf1, *kf2;
     float *tour_dist3a;
     float total_time;
     float total_distance;
-    float vdist,vtime2,vdt;
+    float vdist, vtime2, vdt;
     float tour_tstart_local, tour_tstop_local;
-    int j,jj;
+    int j, jj;
     int iframe_local;
-    int ntotal,ntotal2;
+    int ntotal, ntotal2;
     int iframe_old, iframe_new;
 
-    touri = tourinfo + i;
-    if(viewalltours==1)touri->display=1;
+    touri = tourinfo+i;
+    if(viewalltours==1)touri->display = 1;
     FREEMEMORY(touri->keyframe_list);
-    NewMemory((void **)&(touri->keyframe_list),touri->nkeyframes*sizeof(keyframe*));
+    NewMemory((void **)&(touri->keyframe_list), touri->nkeyframes*sizeof(keyframe *));
     FREEMEMORY(touri->keyframe_times);
-    NewMemory((void **)&(touri->keyframe_times),touri->nkeyframes*sizeof(float));
-    for(keyj=(touri->first_frame).next,j=0;keyj->next!=NULL;keyj=keyj->next,j++){
-      touri->keyframe_list[j]=keyj;
-      touri->keyframe_times[j]=keyj->nodeval.time;
+    NewMemory((void **)&(touri->keyframe_times), touri->nkeyframes*sizeof(float));
+    for(keyj = (touri->first_frame).next, j = 0; keyj->next!=NULL; keyj = keyj->next, j++){
+      touri->keyframe_list[j] = keyj;
+      touri->keyframe_times[j] = keyj->nodeval.time;
     }
     if(touri->nkeyframes<=1)continue;
-    for(keyj=(touri->first_frame).next,j=0;keyj->next!=NULL;keyj=keyj->next,j++){
+    for(keyj = (touri->first_frame).next, j = 0; keyj->next!=NULL; keyj = keyj->next, j++){
       keyframe *lastkey, *thiskey, *nextkey;
-      float *last_xyz,  *this_xyz,  *next_xyz;
+      float *last_xyz, *this_xyz, *next_xyz;
       float *last_view, *this_view, *next_view;
 
       *tourknotskeylist_copy++ = keyj;
       *tourknotstourlist_copy++ = touri;
-      keyj->selected=0;
-      keyj->distance=0.0;
-      keyj->npoints=0;
+      keyj->selected = 0;
+      keyj->distance = 0.0;
+      keyj->npoints = 0;
 
-      lastkey=keyj->prev;
-      thiskey=keyj;
-      nextkey=keyj->next;
+      lastkey = keyj->prev;
+      thiskey = keyj;
+      nextkey = keyj->next;
       if(touri->periodic==1){
         if(j==0){
-          lastkey=touri->keyframe_list[touri->nkeyframes-2];
+          lastkey = touri->keyframe_list[touri->nkeyframes-2];
         }
         if(j==touri->nkeyframes-1){
-          nextkey=touri->keyframe_list[1];
+          nextkey = touri->keyframe_list[1];
         }
       }
 
@@ -628,38 +628,38 @@ void CreateTourPaths(void){
       next_view = nextkey->nodeval.xyz_view_abs;
 
       if(touri->periodic==0&&j==0){
-        VEC3EQCONS(keyj->xyz_tangent_left,0.0);
+        VEC3EQCONS(keyj->xyz_tangent_left, 0.0);
 
-        keyj->az_tangent_left   = 0.0;
+        keyj->az_tangent_left = 0.0;
         keyj->elev_tangent_left = 0.0;
         keyj->zoom_tangent_left = 0.0;
 
-        VEC3DIFF(keyj->xyz_tangent_right,next_xyz,this_xyz);
+        VEC3DIFF(keyj->xyz_tangent_right, next_xyz, this_xyz);
 
-        keyj->az_tangent_right   = nextkey->az_path - thiskey->az_path;
-        keyj->zoom_tangent_right = nextkey->nodeval.zoom - thiskey->nodeval.zoom;
-        keyj->elev_tangent_right = nextkey->nodeval.elev_path - thiskey->nodeval.elev_path;
+        keyj->az_tangent_right = nextkey->az_path-thiskey->az_path;
+        keyj->zoom_tangent_right = nextkey->nodeval.zoom-thiskey->nodeval.zoom;
+        keyj->elev_tangent_right = nextkey->nodeval.elev_path-thiskey->nodeval.elev_path;
 
-        VEC3EQCONS(keyj->view_tangent_left,0.0);
+        VEC3EQCONS(keyj->view_tangent_left, 0.0);
 
-        VEC3DIFF(keyj->view_tangent_right,next_view,this_view);
+        VEC3DIFF(keyj->view_tangent_right, next_view, this_view);
       }
       else if(touri->periodic==0&&j==touri->nkeyframes-1){
-        VEC3DIFF(keyj->xyz_tangent_left,this_xyz,last_xyz);
+        VEC3DIFF(keyj->xyz_tangent_left, this_xyz, last_xyz);
 
-        keyj->az_tangent_left  =thiskey->az_path           - lastkey->az_path;
-        keyj->zoom_tangent_left=thiskey->nodeval.zoom      - lastkey->nodeval.zoom;
-        keyj->elev_tangent_left=thiskey->nodeval.elev_path - lastkey->nodeval.elev_path;
+        keyj->az_tangent_left = thiskey->az_path-lastkey->az_path;
+        keyj->zoom_tangent_left = thiskey->nodeval.zoom-lastkey->nodeval.zoom;
+        keyj->elev_tangent_left = thiskey->nodeval.elev_path-lastkey->nodeval.elev_path;
 
-        VEC3EQCONS(keyj->xyz_tangent_right,0.0);
+        VEC3EQCONS(keyj->xyz_tangent_right, 0.0);
 
-        keyj->az_tangent_right   = 0.0;
+        keyj->az_tangent_right = 0.0;
         keyj->zoom_tangent_right = 0.0;
         keyj->elev_tangent_right = 0.0;
 
-        VEC3DIFF(keyj->view_tangent_left,this_view,last_view);
+        VEC3DIFF(keyj->view_tangent_left, this_view, last_view);
 
-        VEC3EQCONS(keyj->view_tangent_right,0.0);
+        VEC3EQCONS(keyj->view_tangent_right, 0.0);
       }
       else{
 #define HERM1(lastval,nextval,val)\
@@ -667,19 +667,36 @@ void CreateTourPaths(void){
         val[1]=(nextval[1] - lastval[1])/2.0;\
         val[2]=(nextval[2] - lastval[2])/2.0
 
-        HERM1(last_xyz,next_xyz,keyj->xyz_tangent_left);
-        keyj->az_tangent_left   = (nextkey->az_path - lastkey->az_path)/2.0;
-        keyj->zoom_tangent_left = (nextkey->nodeval.zoom -      lastkey->nodeval.zoom)/2.0;
-        keyj->elev_tangent_left = (nextkey->nodeval.elev_path - lastkey->nodeval.elev_path)/2.0;
-        HERM1(last_view,next_view,keyj->view_tangent_left);
+        HERM1(last_xyz, next_xyz, keyj->xyz_tangent_left);
+        keyj->az_tangent_left = (nextkey->az_path-lastkey->az_path)/2.0;
+        keyj->zoom_tangent_left = (nextkey->nodeval.zoom-lastkey->nodeval.zoom)/2.0;
+        keyj->elev_tangent_left = (nextkey->nodeval.elev_path-lastkey->nodeval.elev_path)/2.0;
+        HERM1(last_view, next_view, keyj->view_tangent_left);
 
-        HERM1(last_xyz,next_xyz,keyj->xyz_tangent_right);
-        keyj->az_tangent_right   = (nextkey->az_path - lastkey->az_path)/2.0;
-        keyj->zoom_tangent_right = (nextkey->nodeval.zoom - lastkey->nodeval.zoom)/2.0;
-        keyj->elev_tangent_right = (nextkey->nodeval.elev_path - lastkey->nodeval.elev_path)/2.0;
-        HERM1(last_view,next_view,keyj->view_tangent_right);
+        HERM1(last_xyz, next_xyz, keyj->xyz_tangent_right);
+        keyj->az_tangent_right = (nextkey->az_path-lastkey->az_path)/2.0;
+        keyj->zoom_tangent_right = (nextkey->nodeval.zoom-lastkey->nodeval.zoom)/2.0;
+        keyj->elev_tangent_right = (nextkey->nodeval.elev_path-lastkey->nodeval.elev_path)/2.0;
+        HERM1(last_view, next_view, keyj->view_tangent_right);
       }
     }
+  }
+
+  for(i = 0; i<ntourinfo; i++){
+    tourdata *touri;
+    keyframe *keyj;
+    keyframe *kf1, *kf2;
+    float *tour_dist3a;
+    float total_time;
+    float total_distance;
+    float vdist, vtime2, vdt;
+    float tour_tstart_local, tour_tstop_local;
+    int j, jj;
+    int iframe_local;
+    int ntotal, ntotal2;
+    int iframe_old, iframe_new;
+
+    touri = tourinfo+i;
 
     for(keyj=(touri->first_frame).next;keyj->next!=NULL;keyj=keyj->next){
       float denom;
