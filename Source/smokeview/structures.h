@@ -861,7 +861,7 @@ typedef struct _culldata {
 /* --------------------------  pathdata ------------------------------------ */
 
 typedef struct _pathdata {
-  float time, xyz[3], xyz_view_abs[3], xyz_view_rel[3], tour_view[3];
+  float time, xyz[3], xyz_view_abs[3], tour_view[3];
   float az_path,zoom,elev_path;
   struct _pathdata *keysnap;
 } pathdata;
