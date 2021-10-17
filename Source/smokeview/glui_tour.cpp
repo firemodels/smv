@@ -149,7 +149,7 @@ extern "C" void GluiTourSetup(int main_window){
   SPINNER_tour_circular_center[1]=glui_tour->add_spinner_to_panel(PANEL_tour_circular_center,"y",GLUI_SPINNER_FLOAT,tour_circular_center+1,TOUR_CIRCULAR_UPDATE,TourCB);
   SPINNER_tour_circular_center[2]=glui_tour->add_spinner_to_panel(PANEL_tour_circular_center,"z",GLUI_SPINNER_FLOAT,tour_circular_center+2,TOUR_CIRCULAR_UPDATE,TourCB);
 
-  PANEL_tour_circular_view = glui_tour->add_panel_to_panel(ROLLOUT_circular,_("target"),true);
+  PANEL_tour_circular_view = glui_tour->add_panel_to_panel(ROLLOUT_circular,_("Target"),true);
   SPINNER_tourzoom_circular = glui_tour->add_spinner_to_panel(PANEL_tour_circular_view, _("Zoom:"), GLUI_SPINNER_FLOAT, &tourzoom_circular, TOUR_CIRCULAR_UPDATE, TourCB);
   SPINNER_tour_circular_view[0]=glui_tour->add_spinner_to_panel(PANEL_tour_circular_view,"x",GLUI_SPINNER_FLOAT,tour_circular_view,TOUR_CIRCULAR_UPDATE,TourCB);
   SPINNER_tour_circular_view[1]=glui_tour->add_spinner_to_panel(PANEL_tour_circular_view,"y",GLUI_SPINNER_FLOAT,tour_circular_view+1,TOUR_CIRCULAR_UPDATE,TourCB);
