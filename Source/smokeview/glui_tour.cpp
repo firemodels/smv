@@ -228,7 +228,7 @@ extern "C" void GluiTourSetup(int main_window){
 
   glui_tour->add_spinner_to_panel(PANEL_path, _("start time"), GLUI_SPINNER_FLOAT, &tour_tstart, VIEW_times, TourCB);
   glui_tour->add_spinner_to_panel(PANEL_path, _("stop time:"), GLUI_SPINNER_FLOAT, &tour_tstop, VIEW_times, TourCB);
-  glui_tour->add_spinner_to_panel(PANEL_path, _("points"), GLUI_SPINNER_INT, &tour_ntimes, VIEW_times, TourCB);
+  glui_tour->add_spinner_to_panel(PANEL_path, _("points"),     GLUI_SPINNER_INT,   &tour_ntimes, VIEW_times, TourCB);
 
   PANEL_misc = glui_tour->add_panel_to_panel(ROLLOUT_settings, "Misc", true);
   CHECKBOX_snap = glui_tour->add_checkbox_to_panel(PANEL_misc, _("View from selected keyframe"), &keyframe_snap, VIEWSNAP, TourCB);
