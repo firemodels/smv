@@ -565,7 +565,6 @@ void GetTourProperties(tourdata *touri){
     ii++;
     if(nextkey!=NULL){
       int npoints_i;
-      float time_i;
 
       npoints_i = tour_ntimes*(thiskey->distance/touri->global_dist);
       cum_npoints += npoints_i;
@@ -725,8 +724,6 @@ void CreateTourPaths(void){
 #ifdef pp_NEWTOUR
   for(i = 0; i<ntourinfo; i++){
     tourdata *touri;
-    keyframe *keyj;
-    int j;
 
     touri = tourinfo+i;
     GetTourProperties(touri);
@@ -744,7 +741,10 @@ void CreateTourPaths(void){
     float tour_tstart_local, tour_tstop_local;
     int j, jj;
     int iframe_local;
-    int ntotal, ntotal2;
+    int ntotal;
+#ifndef pp_NEWTOUR
+    int ntotal2;
+#endif
     int iframe_old, iframe_new;
 
     touri = tourinfo+i;
@@ -882,10 +882,9 @@ void CreateTourPaths(void){
     }
     touri->first_frame.next->npoints += tour_ntimes - ntotal;
 
-    ntotal2=0;
 #ifndef pp_NEWTOUR
+    ntotal2=0;
     touri->first_frame.next->disp_time=tour_tstart;
-#endif
     {
       float vtime_temp;
 
@@ -897,11 +896,10 @@ void CreateTourPaths(void){
         else{
           vtime_temp = tour_tstart + (float)ntotal2 / (float)tour_ntimes*(tour_tstop - tour_tstart);
         }
-#ifndef pp_NEWTOUR
         keyj->next->disp_time=vtime_temp;
-#endif
       }
     }
+#endif
 
    // construct distance array based on number of points in each interval
 
