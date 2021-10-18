@@ -2142,24 +2142,6 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
 
   aperture_temp = Zoom2Aperture(zoom);
 
-  if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
-    if((viewtourfrompath==1&&selectedtour_index>=0)||keyframe_snap==1){
-      tourdata *touri;
-      pathdata *pj;
-
-      touri = tourinfo + selectedtour_index;
-      frame_index = GetTourFrame(touri,itimes);
-      if(keyframe_snap==1&&selected_frame!=NULL){
-        pj=&selected_frame->nodeval;
-      }
-      else{
-        pj = touri->pathnodes + frame_index;
-      }
-
-      aperture_temp=Zoom2Aperture(1.0);
-    }
-  }
-
   widthdiv2 = fnear*tan(0.5*aperture_temp*DEG2RAD);
   fleft = -widthdiv2;
   fright = widthdiv2;
