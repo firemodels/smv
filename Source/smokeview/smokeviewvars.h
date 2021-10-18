@@ -92,7 +92,6 @@ SVEXTERN int SVDECL(readini_output, 0);
 SVEXTERN int SVDECL(show_timings, 0);
 
 SVEXTERN float SVDECL(pixel_dens, 1.0);
-SVEXTERN float SVDECL(tourzoom_circular, 1.0);
 
 #ifdef pp_OSX_HIGHRES
 SVEXTERN int SVDECL(force_scale, 0);

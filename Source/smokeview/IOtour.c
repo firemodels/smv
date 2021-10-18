@@ -516,12 +516,6 @@ void HermiteOther(float t, keyframe *kf1, keyframe *kf2, pathdata *pj){
   m1 = kf2->az_tangent_left;
   pj->az_path = HERMVAL();
 
-  p0 = kf1->nodeval.zoom;
-  p1 = kf2->nodeval.zoom;
-  m0 = kf1->zoom_tangent_right;
-  m1 = kf2->zoom_tangent_left;
-  pj->zoom = HERMVAL();
-
   p0 = kf1->nodeval.elev_path;
   p1 = kf2->nodeval.elev_path;
   m0 = kf1->elev_tangent_right;
@@ -727,12 +721,10 @@ void CreateTourPaths(void){
 
         keyj->az_tangent_left = 0.0;
         keyj->elev_tangent_left = 0.0;
-        keyj->zoom_tangent_left = 0.0;
 
         VEC3DIFF(keyj->xyz_tangent_right, next_xyz, this_xyz);
 
         keyj->az_tangent_right   = nextkey->az_path-thiskey->az_path;
-        keyj->zoom_tangent_right = nextkey->nodeval.zoom-thiskey->nodeval.zoom;
         keyj->elev_tangent_right = nextkey->nodeval.elev_path-thiskey->nodeval.elev_path;
 
         VEC3EQCONS(keyj->view_tangent_left, 0.0);
@@ -743,13 +735,11 @@ void CreateTourPaths(void){
         VEC3DIFF(keyj->xyz_tangent_left, this_xyz, last_xyz);
 
         keyj->az_tangent_left = thiskey->az_path-lastkey->az_path;
-        keyj->zoom_tangent_left = thiskey->nodeval.zoom-lastkey->nodeval.zoom;
         keyj->elev_tangent_left = thiskey->nodeval.elev_path-lastkey->nodeval.elev_path;
 
         VEC3EQCONS(keyj->xyz_tangent_right, 0.0);
 
         keyj->az_tangent_right = 0.0;
-        keyj->zoom_tangent_right = 0.0;
         keyj->elev_tangent_right = 0.0;
 
         VEC3DIFF(keyj->view_tangent_left, this_view, last_view);
@@ -764,13 +754,11 @@ void CreateTourPaths(void){
 
         HERM1(last_xyz, next_xyz, keyj->xyz_tangent_left);
         keyj->az_tangent_left = (nextkey->az_path-lastkey->az_path)/2.0;
-        keyj->zoom_tangent_left = (nextkey->nodeval.zoom-lastkey->nodeval.zoom)/2.0;
         keyj->elev_tangent_left = (nextkey->nodeval.elev_path-lastkey->nodeval.elev_path)/2.0;
         HERM1(last_view, next_view, keyj->view_tangent_left);
 
         HERM1(last_xyz, next_xyz, keyj->xyz_tangent_right);
         keyj->az_tangent_right = (nextkey->az_path-lastkey->az_path)/2.0;
-        keyj->zoom_tangent_right = (nextkey->nodeval.zoom-lastkey->nodeval.zoom)/2.0;
         keyj->elev_tangent_right = (nextkey->nodeval.elev_path-lastkey->nodeval.elev_path)/2.0;
         HERM1(last_view, next_view, keyj->view_tangent_right);
       }
@@ -1142,7 +1130,7 @@ keyframe *CopyFrame(keyframe *framei){
 /* ------------------ AddFrame ------------------------ */
 
 
-keyframe *AddFrame(keyframe *last_frame, float time_local, float *xyz, float key_az_path, float elev_path, int viewtype,float zoom_local,float view[3]){
+keyframe *AddFrame(keyframe *last_frame, float time_local, float *xyz, float key_az_path, float elev_path, int viewtype, float view[3]){
   keyframe *this_frame,*next_frame;
   float *feye, *fxyz_view;
 
@@ -1170,7 +1158,6 @@ keyframe *AddFrame(keyframe *last_frame, float time_local, float *xyz, float key
   this_frame->disp_time=time_local;
 
   this_frame->viewtype=viewtype;
-  this_frame->nodeval.zoom=zoom_local;
   this_frame->keyview_xyz[0] = fxyz_view[0];
   this_frame->keyview_xyz[1] = fxyz_view[1];
   this_frame->keyview_xyz[2] = fxyz_view[2];
@@ -1317,7 +1304,7 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
 
     viewtype=1;
 
-    addedframe=AddFrame(thisframe, key_time, key_xyz, key_az_path, elev_path, viewtype, tourzoom_circular, key_view);
+    addedframe=AddFrame(thisframe, key_time, key_xyz, key_az_path, elev_path, viewtype, key_view);
     thisframe=addedframe;
     touri->keyframe_times[j]=key_time;
   }
@@ -1390,7 +1377,7 @@ void ReverseTour(char *label){
 tourdata *AddTour(char *label){
   tourdata *tourtemp=NULL,*touri;
   int nkeyframes;
-  float key_az_path, elev_path, key_view[3], key_xyz[3], zoom_local;
+  float key_az_path, elev_path, key_view[3], key_xyz[3];
   int viewtype=0;
   float key_time;
   int i;
@@ -1436,14 +1423,13 @@ tourdata *AddTour(char *label){
     key_az_path = 0.0;
     elev_path=0.0;
     viewtype=1;
-    zoom_local=1.0;
 
     key_xyz[0] = xbar0 - 1.0;
     key_xyz[1] = ybar0 - 1.0;
     key_xyz[2] = (zbar0 + zbarORIG)/2.0;
     key_time = tour_tstart;
     thisframe=&touri->first_frame;
-    addedframe=AddFrame(thisframe,key_time, key_xyz, key_az_path, elev_path, viewtype,zoom_local,key_view);
+    addedframe=AddFrame(thisframe,key_time, key_xyz, key_az_path, elev_path, viewtype,key_view);
     touri->keyframe_times[0]=key_time;
     relpos[0] =  -key_xyz[0];
     relpos[1] =  -key_xyz[1];
@@ -1455,7 +1441,7 @@ tourdata *AddTour(char *label){
     key_xyz[2] = (zbar0 + zbarORIG)/2.0;
     key_time = tour_tstop;
     thisframe=addedframe;
-    addedframe=AddFrame(thisframe,key_time, key_xyz, key_az_path, elev_path, viewtype,zoom_local,key_view);
+    addedframe=AddFrame(thisframe,key_time, key_xyz, key_az_path, elev_path, viewtype,key_view);
     touri->keyframe_times[1]=key_time;
     relpos[0] =  -key_xyz[0];
     relpos[1] =  -key_xyz[1];

@@ -14,7 +14,6 @@ static int viewtype2=REL_VIEW;
 static float tour_ttt;
 static float tour_view_xyz[3]={0.0,0.0,0.0}, tour_elev_path=0.0;
 static int tour_hide=0;
-static float tour_zoom=1.0;
 static char tour_label[sizeof(GLUI_String)];
 
 GLUI *glui_tour=NULL;
@@ -53,8 +52,6 @@ GLUI_Spinner *SPINNER_z = NULL;
 GLUI_Spinner *SPINNER_viewx = NULL;
 GLUI_Spinner *SPINNER_viewy = NULL;
 GLUI_Spinner *SPINNER_viewz = NULL;
-GLUI_Spinner *SPINNER_tourzoom=NULL;
-GLUI_Spinner *SPINNER_tourzoom_circular = NULL;
 
 GLUI_Spinner *SPINNER_tour_circular_view[3];
 GLUI_Spinner *SPINNER_tour_circular_center[3];
@@ -150,7 +147,6 @@ extern "C" void GluiTourSetup(int main_window){
   SPINNER_tour_circular_center[2]=glui_tour->add_spinner_to_panel(PANEL_tour_circular_center,"z",GLUI_SPINNER_FLOAT,tour_circular_center+2,TOUR_CIRCULAR_UPDATE,TourCB);
 
   PANEL_tour_circular_view = glui_tour->add_panel_to_panel(ROLLOUT_circular,_("Target"),true);
-  SPINNER_tourzoom_circular = glui_tour->add_spinner_to_panel(PANEL_tour_circular_view, _("Zoom:"), GLUI_SPINNER_FLOAT, &tourzoom_circular, TOUR_CIRCULAR_UPDATE, TourCB);
   SPINNER_tour_circular_view[0]=glui_tour->add_spinner_to_panel(PANEL_tour_circular_view,"x",GLUI_SPINNER_FLOAT,tour_circular_view,TOUR_CIRCULAR_UPDATE,TourCB);
   SPINNER_tour_circular_view[1]=glui_tour->add_spinner_to_panel(PANEL_tour_circular_view,"y",GLUI_SPINNER_FLOAT,tour_circular_view+1,TOUR_CIRCULAR_UPDATE,TourCB);
   SPINNER_tour_circular_view[2]=glui_tour->add_spinner_to_panel(PANEL_tour_circular_view,"z",GLUI_SPINNER_FLOAT,tour_circular_view+2,TOUR_CIRCULAR_UPDATE,TourCB);
@@ -205,7 +201,6 @@ extern "C" void GluiTourSetup(int main_window){
   SPINNER_z=glui_tour->add_spinner_to_panel(PANEL_tourposition,"z:",GLUI_SPINNER_FLOAT,tour_xyz+2,KEYFRAME_tXYZ,TourCB);
 
   PANEL_tourview = glui_tour->add_panel_to_panel(PANEL_node, _("Target"));
-  SPINNER_tourzoom = glui_tour->add_spinner_to_panel(PANEL_tourview, _("Zoom:"), GLUI_SPINNER_FLOAT, &tour_zoom, KEYFRAME_tXYZ, TourCB);
   SPINNER_viewx=glui_tour->add_spinner_to_panel(PANEL_tourview,"x",GLUI_SPINNER_FLOAT,tour_view_xyz,KEYFRAME_viewXYZ,TourCB);
   SPINNER_viewy=glui_tour->add_spinner_to_panel(PANEL_tourview,"y",GLUI_SPINNER_FLOAT,tour_view_xyz+1,KEYFRAME_viewXYZ,TourCB);
   SPINNER_viewz=glui_tour->add_spinner_to_panel(PANEL_tourview,"z",GLUI_SPINNER_FLOAT,tour_view_xyz+2,KEYFRAME_viewXYZ,TourCB);
@@ -347,7 +342,6 @@ extern "C" void SetGluiTourKeyframe(void){
   tour_view_xyz[2] = TrimVal(DENORMALIZE_Z(xyz_view[2]));
   viewtype1=selected_frame->viewtype;
   viewtype2=1-viewtype1;
-  tour_zoom=selected_frame->nodeval.zoom;
   tour_elev_path=selected_frame->nodeval.elev_path;
 
   if(SPINNER_t==NULL)return;
@@ -365,7 +359,6 @@ extern "C" void SetGluiTourKeyframe(void){
   SPINNER_x->set_float_val(tour_xyz[0]);
   SPINNER_y->set_float_val(tour_xyz[1]);
   SPINNER_z->set_float_val(tour_xyz[2]);
-  SPINNER_tourzoom->set_float_val(tour_zoom);
   SPINNER_viewx->set_float_val(tour_view_xyz[0]);
   SPINNER_viewy->set_float_val(tour_view_xyz[1]);
   SPINNER_viewz->set_float_val(tour_view_xyz[2]);
@@ -423,7 +416,7 @@ void TourCB(int var){
   int selectedtour_index_save;
 
   float key_xyz[3];
-  float key_time_in, key_az_path, key_view[3], key_zoom;
+  float key_time_in, key_az_path, key_view[3];
   float key_elev_path;
 
   if(ntourinfo==0&&var!=TOUR_INSERT_NEW&&var!=TOUR_INSERT_COPY&&var!=TOUR_CLOSE&&var!=SAVE_SETTINGS_TOUR){
@@ -594,7 +587,6 @@ void TourCB(int var){
       selected_frame->nodeval.elev_path=tour_elev_path;
 
       selected_frame->viewtype=viewtype1;
-      selected_frame->nodeval.zoom=tour_zoom;
       NORMALIZE_XYZ(xyz_view,tour_view_xyz);
       if(update_tour_path==1)CreateTourPaths();
       selected_frame->selected=1;
@@ -656,7 +648,6 @@ void TourCB(int var){
         key_view[0]=DENORMALIZE_X(2*thiskey->nodeval.xyz_view_abs[0]-lastkey->nodeval.xyz_view_abs[0]);
         key_view[1]=DENORMALIZE_Y(2*thiskey->nodeval.xyz_view_abs[1]-lastkey->nodeval.xyz_view_abs[1]);
         key_view[2]=DENORMALIZE_Z(2*thiskey->nodeval.xyz_view_abs[2]-lastkey->nodeval.xyz_view_abs[2]);
-        key_zoom = (2*thiskey->nodeval.zoom - lastkey->nodeval.zoom);
         viewtype1=thiskey->viewtype;
         viewtype2=1-viewtype1;
       }
@@ -670,7 +661,6 @@ void TourCB(int var){
         key_view[0]=DENORMALIZE_X((thiskey->nodeval.xyz_view_abs[0]+nextkey->nodeval.xyz_view_abs[0])/2.0);
         key_view[1]=DENORMALIZE_Y((thiskey->nodeval.xyz_view_abs[1]+nextkey->nodeval.xyz_view_abs[1])/2.0);
         key_view[2]=DENORMALIZE_Z((thiskey->nodeval.xyz_view_abs[2]+nextkey->nodeval.xyz_view_abs[2])/2.0);
-        key_zoom = (thiskey->nodeval.zoom + nextkey->nodeval.zoom)/2.0;
         if(thiskey->viewtype==REL_VIEW&&nextkey->viewtype==REL_VIEW){
           viewtype1=REL_VIEW;
         }
@@ -687,7 +677,7 @@ void TourCB(int var){
         }
         viewtype2=1-viewtype1;
       }
-      newframe=AddFrame(selected_frame,key_time_in,key_xyz,key_az_path,key_elev_path,viewtype1,key_zoom,key_view);
+      newframe=AddFrame(selected_frame,key_time_in,key_xyz,key_az_path,key_elev_path,viewtype1,key_view);
       CreateTourPaths();
       NewSelect(newframe);
       SetGluiTourKeyframe();

@@ -2156,7 +2156,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
         pj = touri->pathnodes + frame_index;
       }
 
-      aperture_temp=Zoom2Aperture(pj->zoom);
+      aperture_temp=Zoom2Aperture(1.0);
     }
   }
 

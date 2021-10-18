@@ -13798,7 +13798,7 @@ int ReadIni2(char *inifile, int localfile){
                 }
                 if(zzoom<0.25)zzoom = 0.25;
                 if(zzoom>4.00)zzoom = 4.0;
-                addedframe = AddFrame(thisframe, key_time, key_xyz, key_az_path, key_elev_path, viewtype, zzoom, key_view);
+                addedframe = AddFrame(thisframe, key_time, key_xyz, key_az_path, key_elev_path, viewtype, key_view);
                 thisframe = addedframe;
                 touri->keyframe_times[j] = key_time;
               }
@@ -14242,7 +14242,7 @@ void WriteIniLocal(FILE *fileout){
           sprintf(buffer, "%f %f %f %f %f %f %f ",
             framei->az_path, framei->nodeval.elev_path, 0.0,
             0.0, 0.0, 0.0,
-            framei->nodeval.zoom);
+            1.0);
         }
         else{
           sprintf(buffer, "%f %f %f %f %f %f %f ",
@@ -14250,7 +14250,7 @@ void WriteIniLocal(FILE *fileout){
             DENORMALIZE_Y(framei->nodeval.xyz_view_abs[1]),
             DENORMALIZE_Z(framei->nodeval.xyz_view_abs[2]),
             0.0, 0.0, 0.0,
-            framei->nodeval.zoom);
+            1.0);
         }
         TrimMZeros(buffer);
         fprintf(fileout, " %s %i\n", buffer, uselocalspeed);
