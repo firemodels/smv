@@ -13797,7 +13797,7 @@ int ReadIni2(char *inifile, int localfile){
                 }
                 if(zzoom<0.25)zzoom = 0.25;
                 if(zzoom>4.00)zzoom = 4.0;
-                addedframe = AddFrame(thisframe, key_time, key_xyz, key_az_path, viewtype, key_view);
+                addedframe = AddFrame(thisframe, key_time, key_xyz, viewtype, key_view);
                 thisframe = addedframe;
                 touri->keyframe_times[j] = key_time;
               }
@@ -14239,7 +14239,7 @@ void WriteIniLocal(FILE *fileout){
         fprintf(fileout, " %s %i ", buffer, framei->viewtype);
         if(framei->viewtype == REL_VIEW){
           sprintf(buffer, "%f %f %f %f %f %f %f ",
-            framei->az_path, 0.0, 0.0,
+            0.0, 0.0, 0.0,
             0.0, 0.0, 0.0,
             1.0);
         }
