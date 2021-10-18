@@ -1169,7 +1169,7 @@ void SetupCircularTourNodes(void){
 
 void InitCircularTour(tourdata *touri, int nkeyframes, int option){
   int j;
-  float key_az_path, elev_path, key_view[3], key_xyz[3];
+  float key_view[3], key_xyz[3];
   int viewtype=0;
   float key_time;
   float angle_local;
@@ -1196,11 +1196,9 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
   key_view[2]=tour_circular_view[2];
 
   rad = tour_circular_radius;
-  elev_path=0.0;
 
   thisframe=&touri->first_frame;
   for(j=0;j<nkeyframes;j++){
-    key_az_path = 0.0;
     if(nkeyframes == 1){
       angle_local = 0.0;
     }
@@ -1300,7 +1298,7 @@ void ReverseTour(char *label){
 tourdata *AddTour(char *label){
   tourdata *tourtemp=NULL,*touri;
   int nkeyframes;
-  float key_az_path, elev_path, key_view[3], key_xyz[3];
+  float key_view[3], key_xyz[3];
   int viewtype=0;
   float key_time;
   int i;
@@ -1342,7 +1340,6 @@ tourdata *AddTour(char *label){
   if(itour==-1){
     VEC3EQCONS(key_view,0.0);
 
-    key_az_path = 0.0;
     viewtype=1;
 
     key_xyz[0] = xbar0 - 1.0;

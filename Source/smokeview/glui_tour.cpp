@@ -415,7 +415,7 @@ void TourCB(int var){
   int selectedtour_index_save;
 
   float key_xyz[3];
-  float key_time_in, key_az_path, key_view[3];
+  float key_time_in, key_view[3];
 
   if(ntourinfo==0&&var!=TOUR_INSERT_NEW&&var!=TOUR_INSERT_COPY&&var!=TOUR_CLOSE&&var!=SAVE_SETTINGS_TOUR){
     return;
