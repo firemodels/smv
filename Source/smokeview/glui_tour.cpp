@@ -12,7 +12,7 @@
 static int viewtype1=REL_VIEW;
 static int viewtype2=REL_VIEW;
 static float tour_ttt;
-static float tour_view_xyz[3]={0.0,0.0,0.0}, tour_elev_path=0.0;
+static float tour_view_xyz[3]={0.0,0.0,0.0};
 static int tour_hide=0;
 static char tour_label[sizeof(GLUI_String)];
 
@@ -342,7 +342,6 @@ extern "C" void SetGluiTourKeyframe(void){
   tour_view_xyz[2] = TrimVal(DENORMALIZE_Z(xyz_view[2]));
   viewtype1=selected_frame->viewtype;
   viewtype2=1-viewtype1;
-  tour_elev_path=selected_frame->nodeval.elev_path;
 
   if(SPINNER_t==NULL)return;
 
@@ -417,7 +416,6 @@ void TourCB(int var){
 
   float key_xyz[3];
   float key_time_in, key_az_path, key_view[3];
-  float key_elev_path;
 
   if(ntourinfo==0&&var!=TOUR_INSERT_NEW&&var!=TOUR_INSERT_COPY&&var!=TOUR_CLOSE&&var!=SAVE_SETTINGS_TOUR){
     return;
@@ -584,7 +582,6 @@ void TourCB(int var){
       NORMALIZE_XYZ(eye,tour_xyz);
       if(viewtype1==REL_VIEW){
       }
-      selected_frame->nodeval.elev_path=tour_elev_path;
 
       selected_frame->viewtype=viewtype1;
       NORMALIZE_XYZ(xyz_view,tour_view_xyz);
@@ -642,7 +639,6 @@ void TourCB(int var){
         key_xyz[1]=DENORMALIZE_Y(2*thiskey->nodeval.xyz[1]-lastkey->nodeval.xyz[1]);
         key_xyz[2]=DENORMALIZE_Z(2*thiskey->nodeval.xyz[2]-lastkey->nodeval.xyz[2]);
         key_az_path = (2*thiskey->az_path-lastkey->az_path);
-        key_elev_path=(2*thiskey->nodeval.elev_path-lastkey->nodeval.elev_path);
         key_time_in = thiskey->noncon_time;
         thiskey->noncon_time=(thiskey->noncon_time+lastkey->noncon_time)/2.0;
         key_view[0]=DENORMALIZE_X(2*thiskey->nodeval.xyz_view_abs[0]-lastkey->nodeval.xyz_view_abs[0]);
@@ -656,7 +652,6 @@ void TourCB(int var){
         key_xyz[1]=DENORMALIZE_Y((thiskey->nodeval.xyz[1]+nextkey->nodeval.xyz[1])/2.0);
         key_xyz[2]=DENORMALIZE_Z((thiskey->nodeval.xyz[2]+nextkey->nodeval.xyz[2])/2.0);
         key_az_path = (thiskey->az_path+nextkey->az_path)/2.0;
-        key_elev_path=(thiskey->nodeval.elev_path+nextkey->nodeval.elev_path)/2.0;
         key_time_in = (thiskey->noncon_time+nextkey->noncon_time)/2.0;
         key_view[0]=DENORMALIZE_X((thiskey->nodeval.xyz_view_abs[0]+nextkey->nodeval.xyz_view_abs[0])/2.0);
         key_view[1]=DENORMALIZE_Y((thiskey->nodeval.xyz_view_abs[1]+nextkey->nodeval.xyz_view_abs[1])/2.0);
@@ -666,18 +661,10 @@ void TourCB(int var){
         }
         else{
           viewtype1=ABS_VIEW;
-          if(thiskey->viewtype==ABS_VIEW){
-            //DENORMALIZE_XYZ(key_view,thiskey->nodeval.xyz_view_abs);
-            key_elev_path = thiskey->nodeval.elev_path;
-          }
-          if(thiskey->viewtype==REL_VIEW&&nextkey->viewtype==ABS_VIEW){
-            //DENORMALIZE_XYZ(key_view,nextkey->nodeval.xyz_view_abs);
-            key_elev_path = nextkey->nodeval.elev_path;
-          }
         }
         viewtype2=1-viewtype1;
       }
-      newframe=AddFrame(selected_frame,key_time_in,key_xyz,key_az_path,key_elev_path,viewtype1,key_view);
+      newframe=AddFrame(selected_frame,key_time_in,key_xyz,key_az_path,viewtype1,key_view);
       CreateTourPaths();
       NewSelect(newframe);
       SetGluiTourKeyframe();
