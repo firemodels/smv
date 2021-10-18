@@ -2093,6 +2093,12 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       pathdata *pj;
 
       touri = tourinfo + selectedtour_index;
+#ifdef pp_NEWTOUR
+      SetTourXYZView(global_times[itimes], touri);
+      camera_current->eye[0] = touri->xyz[0];
+      camera_current->eye[1] = touri->xyz[1];
+      camera_current->eye[2] = touri->xyz[2];
+#else
       frame_index = GetTourFrame(touri,itimes);
       if(keyframe_snap==1&&selected_frame!=NULL){
         pj=&selected_frame->nodeval;
@@ -2104,6 +2110,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       camera_current->eye[0]=pj->xyz[0];
       camera_current->eye[1]=pj->xyz[1];
       camera_current->eye[2]=pj->xyz[2];
+#endif
       camera_current->az_elev[1]=0.0;
       camera_current->az_elev[0]=0.0;
      }
@@ -2223,6 +2230,12 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
         if((viewtourfrompath==1&&selectedtour_index>=0)||keyframe_snap==1){
           touri = tourinfo + selectedtour_index;
+#ifdef pp_NEWTOUR
+          SetTourXYZView(global_times[itimes], touri);
+          viewx = touri->view[0]+dEyeSeparation[0];
+          viewy = touri->view[1]-dEyeSeparation[1];
+          viewz = touri->view[2];
+#else
           frame_index = GetTourFrame(touri,itimes);
           if(keyframe_snap==1&&selected_frame!=NULL){
             pj=&selected_frame->nodeval;
@@ -2234,6 +2247,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
           viewx = pj->tour_view[0]+dEyeSeparation[0];
           viewy = pj->tour_view[1]-dEyeSeparation[1];
           viewz = pj->tour_view[2];
+#endif
           use_tour = 1;
         }
       }

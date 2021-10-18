@@ -820,6 +820,7 @@ EXTERNCPP unsigned char *ReadPNG(const char *filename,int *width, int *height, i
 
 EXTERNCPP void UpdateBlockVals(int flag);
 
+EXTERNCPP void SetTourXYZView(float t, tourdata *touri);
 EXTERNCPP void CreateVolTourList(void);
 EXTERNCPP void DeleteVolTourList(void);
 EXTERNCPP void CreateTourList(void);
