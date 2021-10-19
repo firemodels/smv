@@ -869,7 +869,7 @@ typedef struct _pathdata {
 /* --------------------------  keyframe ------------------------------------ */
 
 typedef struct _keyframe {
-  int selected,viewtype,npoints;
+  int selected, viewtype, npoints;
 #ifdef pp_NEWTOUR
   float time;
 #else
@@ -891,8 +891,7 @@ typedef struct _keyframe {
 
 typedef struct _tourdata {
   char label[300],menulabel[128];
-  keyframe first_frame,last_frame;
-  keyframe **keyframe_list;
+  keyframe first_frame,last_frame, keyframe, **keyframe_list;
 #ifndef pp_NEWTOUR
   pathdata *pathnodes;
 #endif
@@ -905,7 +904,7 @@ typedef struct _tourdata {
   float global_dist;
   int *timeslist;
   int ntimes, nkeyframes;
-  int display,periodic;
+  int display, periodic;
   int startup;
   int isDefault;
 } tourdata;

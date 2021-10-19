@@ -1069,10 +1069,6 @@ void CreateTourPaths(void){
       VEC2MA(keyj->view2_smv, 10000.0/denom);
     }
 #ifdef pp_NEWTOUR
-    for(i = 0; i<ntourinfo; i++){
-      touri = tourinfo+i;
-      printf("%i\n", touri->display);
-    }
     }
 #endif
 
