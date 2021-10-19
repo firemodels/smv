@@ -347,9 +347,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define ADD_KEYFRAME     1
 #define DELETE_KEYFRAME -1
 
-#define REL_VIEW 0
-#define ABS_VIEW 1
-
 #define IS_AVATAR     1
 #define IS_NOT_AVATAR 0
 

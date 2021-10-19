@@ -344,14 +344,12 @@ void DrawTours(void){
 #else
       glVertex3fv(selected_frame->nodeval.xyz);
 #endif
-      if(selected_frame->viewtype==ABS_VIEW){
-        glColor3fv(tourcol_selectedview);
+      glColor3fv(tourcol_selectedview);
 #ifdef pp_NEWTOUR
-        glVertex3fv(selected_frame->view_smv);
+      glVertex3fv(selected_frame->view_smv);
 #else
-        glVertex3fv(selected_frame->nodeval.xyz_view_abs); //xxx
+      glVertex3fv(selected_frame->nodeval.xyz_view_abs); //xxx
 #endif
-      }
       glEnd();
       if(show_tour_hint==1){
         float *xyz;
@@ -1356,7 +1354,7 @@ keyframe *CopyFrame(keyframe *framei){
 /* ------------------ AddFrame ------------------------ */
 
 
-keyframe *AddFrame(keyframe *last_frame, float time_local, float *xyz, int viewtype, float view[3]){
+keyframe *AddFrame(keyframe *last_frame, float time_local, float *xyz, float view[3]){
   keyframe *this_frame,*next_frame;
   float *feye, *fxyz_view;
 
@@ -1368,7 +1366,6 @@ keyframe *AddFrame(keyframe *last_frame, float time_local, float *xyz, int viewt
   feye      = this_frame->nodeval.xyz; //xxx
   fxyz_view = this_frame->nodeval.xyz_view_abs;
 #endif
-  if(viewtype!=0)viewtype=1;
 
   next_frame=last_frame->next;
   if(next_frame==NULL){
@@ -1388,7 +1385,6 @@ keyframe *AddFrame(keyframe *last_frame, float time_local, float *xyz, int viewt
 #endif
   this_frame->time=time_local;
 
-  this_frame->viewtype=viewtype;
   this_frame->view_smv[0] = fxyz_view[0];
   this_frame->view_smv[1] = fxyz_view[1];
   this_frame->view_smv[2] = fxyz_view[2];
@@ -1547,7 +1543,7 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
 
     viewtype=1;
 
-    addedframe=AddFrame(thisframe, key_time, key_xyz, viewtype, key_view);
+    addedframe=AddFrame(thisframe, key_time, key_xyz, key_view);
     thisframe=addedframe;
     touri->keyframe_times[j]=key_time;
   }
@@ -1625,7 +1621,6 @@ tourdata *AddTour(char *label){
   tourdata *tourtemp=NULL,*touri;
   int nkeyframes;
   float key_view[3], key_xyz[3];
-  int viewtype=0;
   float key_time;
   int i;
   keyframe *thisframe, *addedframe;
@@ -1673,14 +1668,12 @@ tourdata *AddTour(char *label){
   if(itour==-1){
     VEC3EQCONS(key_view,0.0);
 
-    viewtype=1;
-
     key_xyz[0] = xbar0 - 1.0;
     key_xyz[1] = ybar0 - 1.0;
     key_xyz[2] = (zbar0 + zbarORIG)/2.0;
     key_time = tour_tstart;
     thisframe=&touri->first_frame;
-    addedframe=AddFrame(thisframe,key_time, key_xyz, viewtype,key_view);
+    addedframe=AddFrame(thisframe,key_time, key_xyz, key_view);
     touri->keyframe_times[0]=key_time;
 
     key_xyz[0] = xbarORIG + 1.0;
@@ -1688,7 +1681,7 @@ tourdata *AddTour(char *label){
     key_xyz[2] = (zbar0 + zbarORIG)/2.0;
     key_time = tour_tstop;
     thisframe=addedframe;
-    addedframe=AddFrame(thisframe,key_time, key_xyz, viewtype,key_view);
+    addedframe=AddFrame(thisframe,key_time, key_xyz,key_view);
     touri->keyframe_times[1]=key_time;
   }
   else{

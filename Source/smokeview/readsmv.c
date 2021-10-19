@@ -13811,7 +13811,7 @@ int ReadIni2(char *inifile, int localfile){
                 }
                 if(zzoom<0.25)zzoom = 0.25;
                 if(zzoom>4.00)zzoom = 4.0;
-                addedframe = AddFrame(thisframe, key_time, key_xyz, viewtype, key_view);
+                addedframe = AddFrame(thisframe, key_time, key_xyz, key_view);
                 thisframe = addedframe;
                 touri->keyframe_times[j] = key_time;
               }
@@ -14258,30 +14258,22 @@ void WriteIniLocal(FILE *fileout){
           DENORMALIZE_Z(framei->nodeval.xyz[2]));
 #endif
         TrimMZeros(buffer);
-        fprintf(fileout, " %s %i ", buffer, framei->viewtype);
-        if(framei->viewtype == REL_VIEW){
-          sprintf(buffer, "%f %f %f %f %f %f %f ",
-            0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0,
-            1.0);
-        }
-        else{
+        fprintf(fileout, " %s %i ", buffer, 1);
 #ifdef pp_NEWTOUR
-          sprintf(buffer, "%f %f %f %f %f %f %f ",
-                  DENORMALIZE_X(framei->view_smv[0]),
-                  DENORMALIZE_Y(framei->view_smv[1]),
-                  DENORMALIZE_Z(framei->view_smv[2]),
-                  0.0, 0.0, 0.0,
-                  1.0);
+        sprintf(buffer, "%f %f %f %f %f %f %f ",
+                DENORMALIZE_X(framei->view_smv[0]),
+                DENORMALIZE_Y(framei->view_smv[1]),
+                DENORMALIZE_Z(framei->view_smv[2]),
+                0.0, 0.0, 0.0,
+                1.0);
 #else
-          sprintf(buffer, "%f %f %f %f %f %f %f ",
-            DENORMALIZE_X(framei->nodeval.xyz_view_abs[0]),
-            DENORMALIZE_Y(framei->nodeval.xyz_view_abs[1]),
-            DENORMALIZE_Z(framei->nodeval.xyz_view_abs[2]),
-            0.0, 0.0, 0.0,
-            1.0);
+        sprintf(buffer, "%f %f %f %f %f %f %f ",
+          DENORMALIZE_X(framei->nodeval.xyz_view_abs[0]),
+          DENORMALIZE_Y(framei->nodeval.xyz_view_abs[1]),
+          DENORMALIZE_Z(framei->nodeval.xyz_view_abs[2]),
+          0.0, 0.0, 0.0,
+          1.0);
 #endif
-        }
         TrimMZeros(buffer);
         fprintf(fileout, " %s %i\n", buffer, uselocalspeed);
       }

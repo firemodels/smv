@@ -25,7 +25,6 @@
 #define TOUR_LIST 24
 #define TOUR_AVATAR 31
 #define VIEW1 26
-#define VIEW2 30
 #define VIEW_times 27
 #define TOUR_UPDATELABEL 28
 #define TOUR_USECURRENT 29

@@ -9,8 +9,6 @@
 #include "smokeviewvars.h"
 #include "glui_tour.h"
 
-static int viewtype1=REL_VIEW;
-static int viewtype2=REL_VIEW;
 static float tour_ttt;
 static float tour_view_xyz[3]={0.0,0.0,0.0};
 static int tour_hide=0;
@@ -37,7 +35,6 @@ GLUI_Panel *PANEL_tourview=NULL;
 GLUI_Panel *PANEL_tour_circular_center;
 GLUI_Panel *PANEL_tour_circular_view;
 
-GLUI_Checkbox *CHECKBOX_snap = NULL;
 GLUI_Checkbox *CHECKBOX_view1 = NULL;
 GLUI_Checkbox *CHECKBOX_view2 = NULL;
 GLUI_Checkbox *CHECKBOX_showtourroute1 = NULL;
@@ -88,7 +85,6 @@ void ToursRolloutCB(int var){
 extern "C" void UpdateTourState(void){
   TourCB(SHOWTOURROUTE);
   TourCB(VIEWTOURFROMPATH);
-  TourCB(VIEWSNAP);
 }
 
 /* ------------------ AddDeleteKeyframe ------------------------ */
@@ -196,12 +192,12 @@ extern "C" void GluiTourSetup(int main_window){
 
   SPINNER_t = glui_tour->add_spinner_to_panel(PANEL_tourposition, "t:", GLUI_SPINNER_FLOAT, &tour_ttt, KEYFRAME_tXYZ, TourCB);
   SPINNER_t->disable();
-  SPINNER_x=glui_tour->add_spinner_to_panel(PANEL_tourposition,"x:",GLUI_SPINNER_FLOAT,tour_xyz,KEYFRAME_tXYZ,TourCB);
+  SPINNER_x=glui_tour->add_spinner_to_panel(PANEL_tourposition,"x:",GLUI_SPINNER_FLOAT,tour_xyz,  KEYFRAME_tXYZ,TourCB);
   SPINNER_y=glui_tour->add_spinner_to_panel(PANEL_tourposition,"y:",GLUI_SPINNER_FLOAT,tour_xyz+1,KEYFRAME_tXYZ,TourCB);
   SPINNER_z=glui_tour->add_spinner_to_panel(PANEL_tourposition,"z:",GLUI_SPINNER_FLOAT,tour_xyz+2,KEYFRAME_tXYZ,TourCB);
 
   PANEL_tourview = glui_tour->add_panel_to_panel(PANEL_node, _("Target"));
-  SPINNER_viewx=glui_tour->add_spinner_to_panel(PANEL_tourview,"x",GLUI_SPINNER_FLOAT,tour_view_xyz,KEYFRAME_viewXYZ,TourCB);
+  SPINNER_viewx=glui_tour->add_spinner_to_panel(PANEL_tourview,"x",GLUI_SPINNER_FLOAT,tour_view_xyz,  KEYFRAME_viewXYZ,TourCB);
   SPINNER_viewy=glui_tour->add_spinner_to_panel(PANEL_tourview,"y",GLUI_SPINNER_FLOAT,tour_view_xyz+1,KEYFRAME_viewXYZ,TourCB);
   SPINNER_viewz=glui_tour->add_spinner_to_panel(PANEL_tourview,"z",GLUI_SPINNER_FLOAT,tour_view_xyz+2,KEYFRAME_viewXYZ,TourCB);
 
@@ -226,11 +222,7 @@ extern "C" void GluiTourSetup(int main_window){
   glui_tour->add_spinner_to_panel(PANEL_path, _("points"),     GLUI_SPINNER_INT,   &tour_ntimes, VIEW_times, TourCB);
 
   PANEL_misc = glui_tour->add_panel_to_panel(ROLLOUT_settings, "Misc", true);
-  CHECKBOX_snap = glui_tour->add_checkbox_to_panel(PANEL_misc, _("View from selected keyframe"), &keyframe_snap, VIEWSNAP, TourCB);
   CHECKBOX_showintermediate = glui_tour->add_checkbox_to_panel(PANEL_misc, _("Show intermediate path nodes"), &show_path_knots);
-#ifdef _DEBUG
-  glui_tour->add_checkbox_to_panel(PANEL_misc, _("Anti-alias tour path line"), &tour_antialias);
-#endif
   if(navatar_types > 0){
     glui_tour->add_checkbox_to_panel(PANEL_misc, _("Show avatar"), &show_avatar);
     LISTBOX_avatar = glui_tour->add_listbox_to_panel(PANEL_misc, _("Avatar:"), &glui_avatar_index, TOUR_AVATAR, TourCB);
@@ -345,9 +337,6 @@ extern "C" void SetGluiTourKeyframe(void){
   tour_view_xyz[0] = TrimVal(DENORMALIZE_X(xyz_view[0]));
   tour_view_xyz[1] = TrimVal(DENORMALIZE_Y(xyz_view[1]));
   tour_view_xyz[2] = TrimVal(DENORMALIZE_Z(xyz_view[2]));
-  viewtype1=selected_frame->viewtype;
-  viewtype2=1-viewtype1;
-
   if(SPINNER_t==NULL)return;
 
   {
@@ -518,15 +507,6 @@ void TourCB(int var){
     TourCB(SHOWTOURROUTE);
     CHECKBOX_showtourroute1->set_int_val(edittour);
     break;
-  case VIEWSNAP:
-    if(viewtourfrompath==1&&keyframe_snap==1){
-      viewtourfrompath=0;
-      CHECKBOX_view1->set_int_val(viewtourfrompath);
-      CHECKBOX_view2->set_int_val(viewtourfrompath);
-    }
-    TourCB(VIEWTOURFROMPATH);
-    updatemenu=0;
-    break;
   case VIEWTOURFROMPATH1:
     TourCB(VIEWTOURFROMPATH);
     CHECKBOX_view2->set_int_val(viewtourfrompath);
@@ -536,23 +516,10 @@ void TourCB(int var){
     CHECKBOX_view1->set_int_val(viewtourfrompath);
     break;
   case VIEWTOURFROMPATH:
-    if(viewtourfrompath==1&&keyframe_snap==1){
-      keyframe_snap=0;
-      CHECKBOX_snap->set_int_val(keyframe_snap);
-    }
     viewtourfrompath = 1 - viewtourfrompath;
     TOURMENU(MENU_TOUR_VIEWFROMROUTE);
     break;
-  case VIEW2:
-    viewtype1=1-viewtype2;
-    viewtype2=1-viewtype1;
-    TourCB(VIEW1);
-    break;
   case VIEW1:
-    viewtype2 = 1 - viewtype1;
-    if(selected_frame!=NULL){
-      selected_frame->viewtype=viewtype1;
-    }
     CreateTourPaths();
     break;
   case VIEW_times:
@@ -593,16 +560,11 @@ void TourCB(int var){
       memcpy(selected_frame->xyz_fds,           tour_xyz, 3*sizeof(float));
       memcpy(selected_frame->xyz_smv, eye,      3*sizeof(float));
 #endif
-      if(viewtype1==REL_VIEW){
-      }
 
-      selected_frame->viewtype=viewtype1;
       NORMALIZE_XYZ(xyz_view,tour_view_xyz);
       if(update_tour_path==1)CreateTourPaths();
       selected_frame->selected=1;
-      if(viewtype1==ABS_VIEW){
-        TourCB(KEYFRAME_viewXYZ);
-      }
+      TourCB(KEYFRAME_viewXYZ);
     }
     break;
   case KEYFRAME_NEXT:
@@ -670,8 +632,6 @@ void TourCB(int var){
         key_view[1]=DENORMALIZE_Y(2*thiskey->nodeval.xyz_view_abs[1]-lastkey->nodeval.xyz_view_abs[1]);
         key_view[2]=DENORMALIZE_Z(2*thiskey->nodeval.xyz_view_abs[2]-lastkey->nodeval.xyz_view_abs[2]);
 #endif
-        viewtype1=thiskey->viewtype;
-        viewtype2=1-viewtype1;
       }
       else{
 #ifdef pp_NEWTOUR
@@ -691,15 +651,8 @@ void TourCB(int var){
         key_view[1]=DENORMALIZE_Y((thiskey->nodeval.xyz_view_abs[1]+nextkey->nodeval.xyz_view_abs[1])/2.0);
         key_view[2]=DENORMALIZE_Z((thiskey->nodeval.xyz_view_abs[2]+nextkey->nodeval.xyz_view_abs[2])/2.0);
 #endif
-        if(thiskey->viewtype==REL_VIEW&&nextkey->viewtype==REL_VIEW){
-          viewtype1=REL_VIEW;
-        }
-        else{
-          viewtype1=ABS_VIEW;
-        }
-        viewtype2=1-viewtype1;
       }
-      newframe=AddFrame(selected_frame,key_time_in,key_xyz,viewtype1,key_view);
+      newframe=AddFrame(selected_frame,key_time_in,key_xyz,key_view);
       CreateTourPaths();
       NewSelect(newframe);
       SetGluiTourKeyframe();

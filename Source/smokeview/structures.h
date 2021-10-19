@@ -869,7 +869,7 @@ typedef struct _pathdata {
 /* --------------------------  keyframe ------------------------------------ */
 
 typedef struct _keyframe {
-  int selected, viewtype, npoints;
+  int selected, npoints;
 #ifdef pp_NEWTOUR
   float time;
 #else
