@@ -874,9 +874,12 @@ typedef struct _keyframe {
 #ifndef pp_NEWTOUR
   pathdata nodeval;
 #endif
-  float keyview_xyz[3],keyview_xyz2[3];
-  float xyz[3], xyz_normalize[3];
-  float total_distance, distance;
+  float view_smv[3], view2_smv[3];
+  float xyz_fds[3], xyz_smv[3];
+#ifndef pp_NEWTOUR
+  float total_distance;
+#endif
+  float distance;
   float  xyz_tangent_left[3],  view_tangent_left[3];
   float xyz_tangent_right[3], view_tangent_right[3];
   struct _keyframe *next,*prev;

@@ -14247,9 +14247,9 @@ void WriteIniLocal(FILE *fileout){
 #ifdef pp_NEWTOUR
         sprintf(buffer, "%f %f %f %f ",
                 framei->noncon_time,
-                DENORMALIZE_X(framei->xyz_normalize[0]),
-                DENORMALIZE_Y(framei->xyz_normalize[1]),
-                DENORMALIZE_Z(framei->xyz_normalize[2]));
+                DENORMALIZE_X(framei->xyz_smv[0]),
+                DENORMALIZE_Y(framei->xyz_smv[1]),
+                DENORMALIZE_Z(framei->xyz_smv[2]));
 #else
         sprintf(buffer, "%f %f %f %f ",
           framei->noncon_time,
@@ -14268,9 +14268,9 @@ void WriteIniLocal(FILE *fileout){
         else{
 #ifdef pp_NEWTOUR
           sprintf(buffer, "%f %f %f %f %f %f %f ",
-                  DENORMALIZE_X(framei->keyview_xyz[0]),
-                  DENORMALIZE_Y(framei->keyview_xyz[1]),
-                  DENORMALIZE_Z(framei->keyview_xyz[2]),
+                  DENORMALIZE_X(framei->view_smv[0]),
+                  DENORMALIZE_Y(framei->view_smv[1]),
+                  DENORMALIZE_Z(framei->view_smv[2]),
                   0.0, 0.0, 0.0,
                   1.0);
 #else

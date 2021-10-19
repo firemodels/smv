@@ -2055,9 +2055,9 @@ void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth){
 
       touri = tourinfo+i;
       for(keyj = (touri->first_frame).next; keyj->next!=NULL; keyj = keyj->next){
-        dx = NORMALIZE_X(keyj->xyz[0])-smv_eyepos[0];
-        dy = NORMALIZE_Y(keyj->xyz[1])-smv_eyepos[1];
-        dz = NORMALIZE_Z(keyj->xyz[2])-smv_eyepos[2];
+        dx = NORMALIZE_X(keyj->xyz_fds[0])-smv_eyepos[0];
+        dy = NORMALIZE_Y(keyj->xyz_fds[1])-smv_eyepos[1];
+        dz = NORMALIZE_Z(keyj->xyz_fds[2])-smv_eyepos[2];
         depth = sqrt(dx*dx+dy*dy+dz*dz);
         *min_depth = MIN(*min_depth, depth);
         *max_depth = MAX(*max_depth, depth);

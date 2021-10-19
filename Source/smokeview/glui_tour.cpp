@@ -331,8 +331,8 @@ extern "C" void SetGluiTourKeyframe(void){
   TourCB(TOUR_AVATAR);
   LISTBOX_avatar->set_int_val(glui_avatar_index);
 #ifdef pp_NEWTOUR
-  eye = selected_frame->xyz_normalize;
-  xyz_view = selected_frame->keyview_xyz;
+  eye = selected_frame->xyz_smv;
+  xyz_view = selected_frame->view_smv;
 #else
   eye = selected_frame->nodeval.xyz;
   xyz_view = selected_frame->nodeval.xyz_view_abs;
@@ -456,9 +456,9 @@ void TourCB(int var){
       if(selected_tour == NULL)return;
       update_tour_path=0;
       for(frame=selected_tour->first_frame.next;frame->next!=NULL;frame=frame->next){
-        tour_xyz[0] = frame->xyz[0];
-        tour_xyz[1] = frame->xyz[1];
-        tour_xyz[2] = frame->xyz[2];
+        tour_xyz[0] = frame->xyz_fds[0];
+        tour_xyz[1] = frame->xyz_fds[1];
+        tour_xyz[2] = frame->xyz_fds[2];
         SPINNER_x->set_float_val(tour_xyz[0]);
         SPINNER_y->set_float_val(tour_xyz[1]);
         SPINNER_z->set_float_val(tour_xyz[2]);
@@ -565,7 +565,7 @@ void TourCB(int var){
       if(selected_tour-tourinfo==0)dirtycircletour=1;
       selected_tour->startup=0;
 #ifdef pp_NEWTOUR
-      xyz_view = selected_frame->keyview_xyz;
+      xyz_view = selected_frame->view_smv;
 #else
       xyz_view = selected_frame->nodeval.xyz_view_abs;
 #endif
@@ -581,8 +581,8 @@ void TourCB(int var){
       if(selected_tour-tourinfo==0)dirtycircletour=1;
       selected_tour->startup=0;
 #ifdef pp_NEWTOUR
-      eye = selected_frame->xyz_normalize;
-      xyz_view = selected_frame->keyview_xyz;
+      eye = selected_frame->xyz_smv;
+      xyz_view = selected_frame->view_smv;
 #else
       eye = selected_frame->nodeval.xyz;
       xyz_view = selected_frame->nodeval.xyz_view_abs;
@@ -590,8 +590,8 @@ void TourCB(int var){
 
       NORMALIZE_XYZ(eye,tour_xyz);
 #ifdef pp_NEWTOUR
-      memcpy(selected_frame->xyz,           tour_xyz, 3*sizeof(float));
-      memcpy(selected_frame->xyz_normalize, eye,      3*sizeof(float));
+      memcpy(selected_frame->xyz_fds,           tour_xyz, 3*sizeof(float));
+      memcpy(selected_frame->xyz_smv, eye,      3*sizeof(float));
 #endif
       if(viewtype1==REL_VIEW){
       }
@@ -649,9 +649,9 @@ void TourCB(int var){
       if(nextkey==&thistour->last_frame){
         lastkey=thiskey->prev;
 #ifdef pp_NEWTOUR
-        key_xyz[0] = DENORMALIZE_X(2*thiskey->xyz_normalize[0]-lastkey->xyz_normalize[0]);
-        key_xyz[1] = DENORMALIZE_Y(2*thiskey->xyz_normalize[1]-lastkey->xyz_normalize[1]);
-        key_xyz[2] = DENORMALIZE_Z(2*thiskey->xyz_normalize[2]-lastkey->xyz_normalize[2]);
+        key_xyz[0] = DENORMALIZE_X(2*thiskey->xyz_smv[0]-lastkey->xyz_smv[0]);
+        key_xyz[1] = DENORMALIZE_Y(2*thiskey->xyz_smv[1]-lastkey->xyz_smv[1]);
+        key_xyz[2] = DENORMALIZE_Z(2*thiskey->xyz_smv[2]-lastkey->xyz_smv[2]);
 #else
         key_xyz[0]=DENORMALIZE_X(2*thiskey->nodeval.xyz[0]-lastkey->nodeval.xyz[0]);
         key_xyz[1]=DENORMALIZE_Y(2*thiskey->nodeval.xyz[1]-lastkey->nodeval.xyz[1]);
@@ -660,9 +660,9 @@ void TourCB(int var){
         key_time_in = thiskey->noncon_time;
         thiskey->noncon_time=(thiskey->noncon_time+lastkey->noncon_time)/2.0;
 #ifdef pp_NEWTOUR
-        key_view[0] = DENORMALIZE_X(2*thiskey->keyview_xyz[0]-lastkey->keyview_xyz[0]);
-        key_view[1] = DENORMALIZE_Y(2*thiskey->keyview_xyz[1]-lastkey->keyview_xyz[1]);
-        key_view[2] = DENORMALIZE_Z(2*thiskey->keyview_xyz[2]-lastkey->keyview_xyz[2]);
+        key_view[0] = DENORMALIZE_X(2*thiskey->view_smv[0]-lastkey->view_smv[0]);
+        key_view[1] = DENORMALIZE_Y(2*thiskey->view_smv[1]-lastkey->view_smv[1]);
+        key_view[2] = DENORMALIZE_Z(2*thiskey->view_smv[2]-lastkey->view_smv[2]);
 #else
         key_view[0]=DENORMALIZE_X(2*thiskey->nodeval.xyz_view_abs[0]-lastkey->nodeval.xyz_view_abs[0]);
         key_view[1]=DENORMALIZE_Y(2*thiskey->nodeval.xyz_view_abs[1]-lastkey->nodeval.xyz_view_abs[1]);
@@ -673,9 +673,9 @@ void TourCB(int var){
       }
       else{
 #ifdef pp_NEWTOUR
-        key_xyz[0]=DENORMALIZE_X((thiskey->xyz_normalize[0]+nextkey->xyz_normalize[0])/2.0);
-        key_xyz[1]=DENORMALIZE_Y((thiskey->xyz_normalize[1]+nextkey->xyz_normalize[1])/2.0);
-        key_xyz[2]=DENORMALIZE_Z((thiskey->xyz_normalize[2]+nextkey->xyz_normalize[2])/2.0);
+        key_xyz[0]=DENORMALIZE_X((thiskey->xyz_smv[0]+nextkey->xyz_smv[0])/2.0);
+        key_xyz[1]=DENORMALIZE_Y((thiskey->xyz_smv[1]+nextkey->xyz_smv[1])/2.0);
+        key_xyz[2]=DENORMALIZE_Z((thiskey->xyz_smv[2]+nextkey->xyz_smv[2])/2.0);
 #else
         key_xyz[0] = DENORMALIZE_X((thiskey->nodeval.xyz[0]+nextkey->nodeval.xyz[0])/2.0);
         key_xyz[1] = DENORMALIZE_Y((thiskey->nodeval.xyz[1]+nextkey->nodeval.xyz[1])/2.0);
@@ -683,9 +683,9 @@ void TourCB(int var){
 #endif
         key_time_in = (thiskey->noncon_time+nextkey->noncon_time)/2.0;
 #ifdef pp_NEWTOUR
-        key_view[0] = DENORMALIZE_X((thiskey->keyview_xyz[0]+nextkey->keyview_xyz[0])/2.0);
-        key_view[1] = DENORMALIZE_Y((thiskey->keyview_xyz[1]+nextkey->keyview_xyz[1])/2.0);
-        key_view[2] = DENORMALIZE_Z((thiskey->keyview_xyz[2]+nextkey->keyview_xyz[2])/2.0);
+        key_view[0] = DENORMALIZE_X((thiskey->view_smv[0]+nextkey->view_smv[0])/2.0);
+        key_view[1] = DENORMALIZE_Y((thiskey->view_smv[1]+nextkey->view_smv[1])/2.0);
+        key_view[2] = DENORMALIZE_Z((thiskey->view_smv[2]+nextkey->view_smv[2])/2.0);
 #else
         key_view[0]=DENORMALIZE_X((thiskey->nodeval.xyz_view_abs[0]+nextkey->nodeval.xyz_view_abs[0])/2.0);
         key_view[1]=DENORMALIZE_Y((thiskey->nodeval.xyz_view_abs[1]+nextkey->nodeval.xyz_view_abs[1])/2.0);
