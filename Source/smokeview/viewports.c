@@ -2090,7 +2090,9 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
   if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
     if((viewtourfrompath==1&&selectedtour_index>=0)||keyframe_snap==1){
       tourdata *touri;
+#ifndef pp_NEWTOUR
       pathdata *pj;
+#endif
 
       touri = tourinfo + selectedtour_index;
 #ifdef pp_NEWTOUR
@@ -2225,7 +2227,9 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     /* set view direction for virtual tour */
     {
       tourdata *touri;
+#ifndef pp_NEWTOUR
       pathdata *pj;
+#endif
 
       if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
         if((viewtourfrompath==1&&selectedtour_index>=0)||keyframe_snap==1){

@@ -13725,7 +13725,10 @@ int ReadIni2(char *inifile, int localfile){
 
               touri = tourinfo + i;
               touri->path_times = NULL;
+#ifndef pp_NEWTOUR
               touri->pathnodes = NULL;
+#endif
+              touri->display = 0;
 #ifdef pp_NEWTOUR
               touri->path_keyframes = NULL;
               touri->path_xyzs = NULL;
@@ -13761,7 +13764,9 @@ int ReadIni2(char *inifile, int localfile){
               touri->nkeyframes = nkeyframes;
 
               if(NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float)) == 0)return 2;
+#ifndef pp_NEWTOUR
               if(NewMemory((void **)&touri->pathnodes,  tour_ntimes*sizeof(pathdata)) == 0)return 2;
+#endif
               if(NewMemory((void **)&touri->path_times, tour_ntimes*sizeof(float)) == 0)return 2;
 #ifdef pp_NEWTOUR
               if(NewMemory((void **)&touri->path_keyframes, tour_ntimes*sizeof(keyframe *))==0)return 2;
@@ -14239,11 +14244,19 @@ void WriteIniLocal(FILE *fileout){
         int uselocalspeed = 0;
 
         framei = framei->next;
+#ifdef pp_NEWTOUR
+        sprintf(buffer, "%f %f %f %f ",
+                framei->noncon_time,
+                DENORMALIZE_X(framei->xyz_normalize[0]),
+                DENORMALIZE_Y(framei->xyz_normalize[1]),
+                DENORMALIZE_Z(framei->xyz_normalize[2]));
+#else
         sprintf(buffer, "%f %f %f %f ",
           framei->noncon_time,
           DENORMALIZE_X(framei->nodeval.xyz[0]),
           DENORMALIZE_Y(framei->nodeval.xyz[1]),
           DENORMALIZE_Z(framei->nodeval.xyz[2]));
+#endif
         TrimMZeros(buffer);
         fprintf(fileout, " %s %i ", buffer, framei->viewtype);
         if(framei->viewtype == REL_VIEW){
@@ -14253,12 +14266,21 @@ void WriteIniLocal(FILE *fileout){
             1.0);
         }
         else{
+#ifdef pp_NEWTOUR
+          sprintf(buffer, "%f %f %f %f %f %f %f ",
+                  DENORMALIZE_X(framei->keyview_xyz[0]),
+                  DENORMALIZE_Y(framei->keyview_xyz[1]),
+                  DENORMALIZE_Z(framei->keyview_xyz[2]),
+                  0.0, 0.0, 0.0,
+                  1.0);
+#else
           sprintf(buffer, "%f %f %f %f %f %f %f ",
             DENORMALIZE_X(framei->nodeval.xyz_view_abs[0]),
             DENORMALIZE_Y(framei->nodeval.xyz_view_abs[1]),
             DENORMALIZE_Z(framei->nodeval.xyz_view_abs[2]),
             0.0, 0.0, 0.0,
             1.0);
+#endif
         }
         TrimMZeros(buffer);
         fprintf(fileout, " %s %i\n", buffer, uselocalspeed);

@@ -2884,10 +2884,18 @@ void ScriptSetTourKeyFrame(scriptdata *scripti){
 
     if(keyj==(touri->first_frame).next){
       minkey=keyj;
+#ifdef pp_NEWTOUR
+      minkeytime = ABS(keyframe_time-keyj->disp_time);
+#else
       minkeytime=ABS(keyframe_time-keyj->nodeval.time);
+#endif
       continue;
     }
+#ifdef pp_NEWTOUR
+    diff_time = ABS(keyframe_time-keyj->disp_time);
+#else
     diff_time=ABS(keyframe_time-keyj->nodeval.time);
+#endif
     if(diff_time<minkeytime){
       minkey=keyj;
       minkeytime=diff_time;

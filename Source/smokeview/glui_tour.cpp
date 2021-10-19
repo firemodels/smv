@@ -330,8 +330,13 @@ extern "C" void SetGluiTourKeyframe(void){
   glui_avatar_index=ti->glui_avatar_index;
   TourCB(TOUR_AVATAR);
   LISTBOX_avatar->set_int_val(glui_avatar_index);
+#ifdef pp_NEWTOUR
+  eye = selected_frame->xyz_normalize;
+  xyz_view = selected_frame->keyview_xyz;
+#else
   eye = selected_frame->nodeval.xyz;
   xyz_view = selected_frame->nodeval.xyz_view_abs;
+#endif
 
   tour_ttt = selected_frame->disp_time;
   tour_xyz[0] = TrimVal(DENORMALIZE_X(eye[0]));
@@ -559,7 +564,11 @@ void TourCB(int var){
     if(selected_frame!=NULL){
       if(selected_tour-tourinfo==0)dirtycircletour=1;
       selected_tour->startup=0;
+#ifdef pp_NEWTOUR
+      xyz_view = selected_frame->keyview_xyz;
+#else
       xyz_view = selected_frame->nodeval.xyz_view_abs;
+#endif
       NORMALIZE_XYZ(xyz_view,tour_view_xyz);
 
       if(update_tour_path==1)CreateTourPaths();
@@ -571,10 +580,19 @@ void TourCB(int var){
       show_tour_hint = 0;
       if(selected_tour-tourinfo==0)dirtycircletour=1;
       selected_tour->startup=0;
+#ifdef pp_NEWTOUR
+      eye = selected_frame->xyz_normalize;
+      xyz_view = selected_frame->keyview_xyz;
+#else
       eye = selected_frame->nodeval.xyz;
       xyz_view = selected_frame->nodeval.xyz_view_abs;
+#endif
 
       NORMALIZE_XYZ(eye,tour_xyz);
+#ifdef pp_NEWTOUR
+      memcpy(selected_frame->xyz,           tour_xyz, 3*sizeof(float));
+      memcpy(selected_frame->xyz_normalize, eye,      3*sizeof(float));
+#endif
       if(viewtype1==REL_VIEW){
       }
 
@@ -630,25 +648,49 @@ void TourCB(int var){
       nextkey=thiskey->next;
       if(nextkey==&thistour->last_frame){
         lastkey=thiskey->prev;
+#ifdef pp_NEWTOUR
+        key_xyz[0] = DENORMALIZE_X(2*thiskey->xyz_normalize[0]-lastkey->xyz_normalize[0]);
+        key_xyz[1] = DENORMALIZE_Y(2*thiskey->xyz_normalize[1]-lastkey->xyz_normalize[1]);
+        key_xyz[2] = DENORMALIZE_Z(2*thiskey->xyz_normalize[2]-lastkey->xyz_normalize[2]);
+#else
         key_xyz[0]=DENORMALIZE_X(2*thiskey->nodeval.xyz[0]-lastkey->nodeval.xyz[0]);
         key_xyz[1]=DENORMALIZE_Y(2*thiskey->nodeval.xyz[1]-lastkey->nodeval.xyz[1]);
         key_xyz[2]=DENORMALIZE_Z(2*thiskey->nodeval.xyz[2]-lastkey->nodeval.xyz[2]);
+#endif
         key_time_in = thiskey->noncon_time;
         thiskey->noncon_time=(thiskey->noncon_time+lastkey->noncon_time)/2.0;
+#ifdef pp_NEWTOUR
+        key_view[0] = DENORMALIZE_X(2*thiskey->keyview_xyz[0]-lastkey->keyview_xyz[0]);
+        key_view[1] = DENORMALIZE_Y(2*thiskey->keyview_xyz[1]-lastkey->keyview_xyz[1]);
+        key_view[2] = DENORMALIZE_Z(2*thiskey->keyview_xyz[2]-lastkey->keyview_xyz[2]);
+#else
         key_view[0]=DENORMALIZE_X(2*thiskey->nodeval.xyz_view_abs[0]-lastkey->nodeval.xyz_view_abs[0]);
         key_view[1]=DENORMALIZE_Y(2*thiskey->nodeval.xyz_view_abs[1]-lastkey->nodeval.xyz_view_abs[1]);
         key_view[2]=DENORMALIZE_Z(2*thiskey->nodeval.xyz_view_abs[2]-lastkey->nodeval.xyz_view_abs[2]);
+#endif
         viewtype1=thiskey->viewtype;
         viewtype2=1-viewtype1;
       }
       else{
-        key_xyz[0]=DENORMALIZE_X((thiskey->nodeval.xyz[0]+nextkey->nodeval.xyz[0])/2.0);
-        key_xyz[1]=DENORMALIZE_Y((thiskey->nodeval.xyz[1]+nextkey->nodeval.xyz[1])/2.0);
-        key_xyz[2]=DENORMALIZE_Z((thiskey->nodeval.xyz[2]+nextkey->nodeval.xyz[2])/2.0);
+#ifdef pp_NEWTOUR
+        key_xyz[0]=DENORMALIZE_X((thiskey->xyz_normalize[0]+nextkey->xyz_normalize[0])/2.0);
+        key_xyz[1]=DENORMALIZE_Y((thiskey->xyz_normalize[1]+nextkey->xyz_normalize[1])/2.0);
+        key_xyz[2]=DENORMALIZE_Z((thiskey->xyz_normalize[2]+nextkey->xyz_normalize[2])/2.0);
+#else
+        key_xyz[0] = DENORMALIZE_X((thiskey->nodeval.xyz[0]+nextkey->nodeval.xyz[0])/2.0);
+        key_xyz[1] = DENORMALIZE_Y((thiskey->nodeval.xyz[1]+nextkey->nodeval.xyz[1])/2.0);
+        key_xyz[2] = DENORMALIZE_Z((thiskey->nodeval.xyz[2]+nextkey->nodeval.xyz[2])/2.0);
+#endif
         key_time_in = (thiskey->noncon_time+nextkey->noncon_time)/2.0;
+#ifdef pp_NEWTOUR
+        key_view[0] = DENORMALIZE_X((thiskey->keyview_xyz[0]+nextkey->keyview_xyz[0])/2.0);
+        key_view[1] = DENORMALIZE_Y((thiskey->keyview_xyz[1]+nextkey->keyview_xyz[1])/2.0);
+        key_view[2] = DENORMALIZE_Z((thiskey->keyview_xyz[2]+nextkey->keyview_xyz[2])/2.0);
+#else
         key_view[0]=DENORMALIZE_X((thiskey->nodeval.xyz_view_abs[0]+nextkey->nodeval.xyz_view_abs[0])/2.0);
         key_view[1]=DENORMALIZE_Y((thiskey->nodeval.xyz_view_abs[1]+nextkey->nodeval.xyz_view_abs[1])/2.0);
         key_view[2]=DENORMALIZE_Z((thiskey->nodeval.xyz_view_abs[2]+nextkey->nodeval.xyz_view_abs[2])/2.0);
+#endif
         if(thiskey->viewtype==REL_VIEW&&nextkey->viewtype==REL_VIEW){
           viewtype1=REL_VIEW;
         }
