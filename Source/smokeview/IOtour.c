@@ -990,6 +990,7 @@ void CreateTourPaths(void){
   for(i = 0; i<ntourinfo; i++){
     tourdata *touri;
     keyframe *keyj;
+#ifndef pp_NEWTOUR
     keyframe *kf1, *kf2;
     float *tour_dist3a;
     float total_time;
@@ -999,10 +1000,9 @@ void CreateTourPaths(void){
     int j, jj;
     int iframe_local;
     int ntotal;
-#ifndef pp_NEWTOUR
     int ntotal2;
-#endif
     int iframe_old, iframe_new;
+#endif
 
     touri = tourinfo+i;
 
