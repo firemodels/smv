@@ -13726,6 +13726,11 @@ int ReadIni2(char *inifile, int localfile){
               touri = tourinfo + i;
               touri->path_times = NULL;
               touri->pathnodes = NULL;
+#ifdef pp_NEWTOUR
+              touri->path_keyframes = NULL;
+              touri->path_xyzs = NULL;
+              touri->path_views = NULL;
+#endif
             }
           }
           ReallocTourMemory();
@@ -13758,7 +13763,11 @@ int ReadIni2(char *inifile, int localfile){
               if(NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float)) == 0)return 2;
               if(NewMemory((void **)&touri->pathnodes,  tour_ntimes*sizeof(pathdata)) == 0)return 2;
               if(NewMemory((void **)&touri->path_times, tour_ntimes*sizeof(float)) == 0)return 2;
-
+#ifdef pp_NEWTOUR
+              if(NewMemory((void **)&touri->path_keyframes, tour_ntimes*sizeof(keyframe *))==0)return 2;
+              if(NewMemory((void **)&touri->path_xyzs, 3*tour_ntimes*sizeof(float))==0)return 2;
+              if(NewMemory((void **)&touri->path_views, 3*tour_ntimes*sizeof(float))==0)return 2;
+#endif
               thisframe = &touri->first_frame;
               for(j = 0; j < nkeyframes; j++){
                 key_view[0] = 0.0;

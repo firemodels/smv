@@ -889,11 +889,12 @@ typedef struct _tourdata {
   int glui_avatar_index, display2;
   float *path_times,*keyframe_times;
 #ifdef pp_NEWTOUR
-  float xyz[3], view[3];
+  float xyz[3], view[3], *path_xyzs, *path_views;
+  struct _keyframe **path_keyframes;
 #endif
   float global_dist;
   int *timeslist;
-  int ntimes,nkeyframes;
+  int ntimes, nkeyframes;
   int display,periodic;
   int startup;
   int isDefault;
