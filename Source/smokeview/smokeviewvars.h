@@ -639,7 +639,6 @@ SVEXTERN int SVDECL(update_ssf,0);
 SVEXTERN char SVDECL(*ini_from,NULL), SVDECL(*ini_to,NULL);
 SVEXTERN char SVDECL(*ssf_from, NULL), SVDECL(*ssf_to, NULL);
 
-SVEXTERN int SVDECL(tour_antialias,0);
 SVEXTERN int SVDECL(tour_drag,0);
 
 SVEXTERN int SVDECL(update_gslice,0);
@@ -1763,7 +1762,6 @@ SVEXTERN int do_threshold;
 SVEXTERN int ntotal_blockages;
 SVEXTERN int updateindexcolors;
 SVEXTERN int show_path_knots;
-SVEXTERN int keyframe_snap;
 SVEXTERN int SVDECL(show_avatar,1);
 SVEXTERN int SVDECL(tourlocus_type,0);
 SVEXTERN int iavatar_types, navatar_types;

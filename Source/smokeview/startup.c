@@ -1922,7 +1922,6 @@ void InitVars(void){
   do_threshold=0;
   updateindexcolors=0;
   show_path_knots=0;
-  keyframe_snap=0;
   tourrad_avatar=0.1;
   dirtycircletour=0;
   iavatar_evac=0;

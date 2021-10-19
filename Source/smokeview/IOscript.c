@@ -2918,19 +2918,15 @@ void ScriptSetTourView(scriptdata *scripti){
   switch(scripti->ival2){
     case 0:
       viewtourfrompath=0;
-      keyframe_snap=0;
       break;
     case 1:
       viewtourfrompath=1;
-      keyframe_snap=0;
       break;
     case 2:
       viewtourfrompath=0;
-      keyframe_snap=1;
       break;
     default:
       viewtourfrompath=0;
-      keyframe_snap=0;
       break;
   }
   UpdateTourState();

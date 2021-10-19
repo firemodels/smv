@@ -225,7 +225,6 @@ void DrawTours(void){
       tourdata *touri;
 
       glColor3fv(tourcol_selectedpathline);
-      if(tour_antialias==1)AntiAliasLine(ON);
       glBegin(GL_LINES);
       touri = tourinfo + selectedtour_index;
 
@@ -249,8 +248,6 @@ void DrawTours(void){
       }
 #endif
       glEnd();
-      if(tour_antialias==1)AntiAliasLine(OFF);
-
     }
 
     /* path knots */
@@ -429,8 +426,6 @@ void DrawTours(void){
           xyz = touri->path_xyzs + 3*iframe_local;
           view = touri->path_views + 3*iframe_local;
 
-         // if(keyframe_snap==1)pj = pj->keysnap;
-
           glVertex3fv(xyz);
           glVertex3f(xyz[0], xyz[1], xyz[2]+0.1);
 
@@ -438,7 +433,6 @@ void DrawTours(void){
           glVertex3fv(view);
 #else
           pj = touri->pathnodes + iframe_local;
-          if(keyframe_snap==1)pj = pj->keysnap;
 
           glVertex3fv(pj->xyz);
           glVertex3f(pj->xyz[0],pj->xyz[1],pj->xyz[2]+0.1);
@@ -467,13 +461,10 @@ void DrawTours(void){
           iframe_local = GetTourFrame(touri, itimes);
 #ifdef pp_NEWTOUR
           xyz = touri->path_xyzs + 3*iframe_local;
-          //if(keyframe_snap==1)pj = pj->keysnap;
-
 
           DrawCir(xyz,tourrad_avatar,tourcol_avatar);
 #else
           pj = touri->pathnodes + iframe_local;
-          if(keyframe_snap==1)pj = pj->keysnap;
 
 
           DrawCir(pj->xyz,tourrad_avatar,tourcol_avatar);
@@ -501,7 +492,6 @@ void DrawTours(void){
           tour_view = touri->path_views + 3*iframe_local;
 #else
           pj = touri->pathnodes+iframe_local;
-     //     if(keyframe_snap==1)pj = pj->keysnap;
           xyz = pj->xyz;
           tour_view = pj->tour_view;
 #endif

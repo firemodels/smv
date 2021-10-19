@@ -22,7 +22,6 @@
 #define TOUR_LABEL 19
 #define TOUR_HIDE 20
 #define KEYFRAME_viewXYZ 22
-#define VIEWSNAP 23
 #define TOUR_LIST 24
 #define TOUR_AVATAR 31
 #define VIEW1 26
