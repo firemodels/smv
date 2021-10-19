@@ -58,13 +58,21 @@ void InitTour(tourdata *touri){
   touri->periodic=0;
   touri->first_frame.prev=NULL;
   touri->first_frame.next=&touri->last_frame;
+#ifdef pp_NEWTOUR
+  touri->first_frame.time = -1000000000.0;
+#else
   touri->first_frame.noncon_time=-1000000000.0;
-  touri->first_frame.disp_time=touri->first_frame.noncon_time;
+  touri->first_frame.time=touri->first_frame.noncon_time;
+#endif
 
   touri->last_frame.prev=&touri->first_frame;
   touri->last_frame.next=NULL;
+#ifdef pp_NEWTOUR
+  touri->last_frame.time = 1000000000.0;
+#else
   touri->last_frame.noncon_time=1000000000.0;
-  touri->last_frame.disp_time=touri->last_frame.noncon_time;
+  touri->last_frame.time=touri->last_frame.noncon_time;
+#endif
 
   touri->nkeyframes=0;
   touri->ntimes=tour_ntimes;
@@ -385,7 +393,7 @@ void DrawTours(void){
 #endif
         {
           char label[128];
-          sprintf(label,"%8.2f",framej->disp_time);
+          sprintf(label, "%8.2f", framej->time);
           TrimZeros(label);
           Output3Text(tmp_tourcol_text, xyz[0]+0.02f, xyz[1]+0.015f, xyz[2]+0.015f,label);
         }
@@ -672,9 +680,9 @@ void GetTourXYZ(float t, keyframe *this_key, float *xyz){
 
   next_key = this_key->next;
 
-  dt = next_key->disp_time-this_key->disp_time;
+  dt = next_key->time-this_key->time;
   t_scaled = 0.0;
-  if(dt>0.0)t_scaled = CLAMP((t-this_key->disp_time)/dt, 0.0, 1.0);
+  if(dt>0.0)t_scaled = CLAMP((t-this_key->time)/dt, 0.0, 1.0);
   HermiteXYZ(t_scaled, this_key, next_key, xyz, NULL);
 }
 
@@ -686,9 +694,9 @@ void GetTourView(float t, keyframe *this_key, float *view){
 
   next_key = this_key->next;
 
-  dt = next_key->disp_time-this_key->disp_time;
+  dt = next_key->time-this_key->time;
   t_scaled = 0.0;
-  if(dt>0.0)t_scaled = CLAMP((t-this_key->disp_time)/dt, 0.0, 1.0);
+  if(dt>0.0)t_scaled = CLAMP((t-this_key->time)/dt, 0.0, 1.0);
   HermiteView(t_scaled, this_key, next_key, view);
 }
 
@@ -698,16 +706,16 @@ keyframe *GetKeyFrame(tourdata *touri, float time){
   keyframe *first_key, *last_key, *this_key;
 
   first_key = touri->first_frame.next;
-  if(time<first_key->disp_time)return first_key;
+  if(time<first_key->time)return first_key;
 
   last_key = touri->last_frame.prev;
-  if(time>=last_key->disp_time)return last_key;
+  if(time>=last_key->time)return last_key;
 
   for(this_key = first_key; this_key!=last_key; this_key = this_key->next){
     keyframe *next_key;
 
     next_key = this_key->next;
-    if(this_key->disp_time<=time&&time<=next_key->disp_time)return this_key;
+    if(this_key->time<=time&&time<=next_key->time)return this_key;
   }
   return last_key->prev;
 }
@@ -753,7 +761,7 @@ void GetTourProperties(tourdata *touri){
     touri->global_dist += dist;
   }
   thiskey = (touri->first_frame).next;
-  thiskey->disp_time = tour_tstart;
+  thiskey->time = tour_tstart;
   float cum_dist = 0.0;
   int cum_npoints = 0;
   int ii=0;
@@ -776,17 +784,19 @@ void GetTourProperties(tourdata *touri){
     }
     thiskey->npoints = npoints_i;
     cum_dist += thiskey->distance;
-    nextkey->disp_time = tour_tstart+(cum_dist/touri->global_dist)*(tour_tstop-tour_tstart);
+    nextkey->time = tour_tstart+(cum_dist/touri->global_dist)*(tour_tstop-tour_tstart);
   }
 
   thiskey = (touri->last_frame).prev;
-  thiskey->disp_time = tour_tstop;
+  thiskey->time = tour_tstop;
 
   for(keyj = (touri->first_frame).next, j = 0; keyj->next!=NULL; keyj = keyj->next, j++){
     touri->keyframe_list[j]  = keyj;
-    keyj->con_time           = keyj->disp_time;
-    keyj->noncon_time        = keyj->disp_time;
-    touri->keyframe_times[j] = keyj->disp_time;
+#ifndef pp_NEWTOUR
+    keyj->con_time           = keyj->time;
+    keyj->noncon_time        = keyj->time;
+#endif
+    touri->keyframe_times[j] = keyj->time;
     NORMALIZE_XYZ(keyj->xyz_smv, keyj->xyz_fds);
   }
   touri->nkeyframes = j;
@@ -813,12 +823,12 @@ void SetTourXYZView(float t, tourdata *touri){
 
   first_key = touri->first_frame.next;
   last_key  = touri->last_frame.prev;
-  if(t<first_key->disp_time){
+  if(t<first_key->time){
     memcpy(touri->xyz, first_key->xyz_fds,         3*sizeof(float));
     memcpy(touri->view, first_key->view_smv, 3*sizeof(float));
     return;
   }
-  if(t>=last_key->disp_time){
+  if(t>=last_key->time){
     memcpy(touri->xyz, last_key->xyz_fds,         3*sizeof(float));
     memcpy(touri->view, last_key->view_smv, 3*sizeof(float));
     return;
@@ -827,12 +837,12 @@ void SetTourXYZView(float t, tourdata *touri){
     keyframe *next_key;
 
     next_key = this_key->next;
-    if(this_key->disp_time<=t && t<=next_key->disp_time){
+    if(this_key->time<=t && t<=next_key->time){
       float dt, t_scaled;
 
-      dt = next_key->disp_time-this_key->disp_time;
+      dt = next_key->time-this_key->time;
       t_scaled = 0.0;
-      if(dt>0.0)t_scaled = CLAMP((t-this_key->disp_time)/dt, 0.0, 1.0);
+      if(dt>0.0)t_scaled = CLAMP((t-this_key->time)/dt, 0.0, 1.0);
       HermiteXYZ(t_scaled,  this_key, next_key, touri->xyz, NULL);
       HermiteView(t_scaled, this_key, next_key, touri->view);
       break;
@@ -841,6 +851,45 @@ void SetTourXYZView(float t, tourdata *touri){
 }
 #endif
 
+/* ------------------ AdjustTourTimes ------------------------ */
+#ifndef pp_NEWTOUR
+void AdjustTourTimes(tourdata *touri){
+  float dt;
+  keyframe *keyj;
+  float tstart, tstop, dtmin;
+  int small_flag;
+
+
+  if(touri->nkeyframes>1){
+    tstart = touri->first_frame.next->noncon_time;
+    tstop = touri->last_frame.prev->noncon_time;
+    if(tour_ntimes==0){
+      dtmin = 0.0;
+    }
+    else{
+      dtmin = (float)4*(tstop-tstart)/(float)tour_ntimes;
+    }
+    small_flag = 0;
+    for(keyj = (touri->first_frame).next->next; keyj->next!=NULL; keyj = keyj->next){
+      dt = keyj->noncon_time-keyj->prev->noncon_time;
+      if(dt<dtmin){
+        small_flag = 1;
+        keyj->noncon_time = keyj->prev->noncon_time+dtmin;
+      }
+    }
+    if(small_flag==1&&tstop>tour_tstop&&tstop>0.0){
+      for(keyj = (touri->first_frame).next; keyj->next!=NULL; keyj = keyj->next){
+        if(tstop==0.0){
+          keyj->noncon_time = keyj->noncon_time;
+        }
+        else{
+          keyj->noncon_time = keyj->noncon_time*tour_tstop/tstop;
+        }
+      }
+    }
+  }
+}
+#endif
 /* ------------------ CreateTourPaths ------------------------ */
 
 void CreateTourPaths(void){
@@ -875,7 +924,7 @@ void CreateTourPaths(void){
     for(keyj=(touri->first_frame).next;keyj->next!=NULL;keyj=keyj->next){
 #ifndef pp_NEWTOUR
       keyj->nodeval.time = keyj->noncon_time; //xxx
-      keyj->disp_time=keyj->noncon_time;
+      keyj->time=keyj->noncon_time;
 #endif
       ntourknots++;
       nframes++;
@@ -905,7 +954,7 @@ void CreateTourPaths(void){
     for(keyj = (touri->first_frame).next, j = 0; keyj->next!=NULL; keyj = keyj->next, j++){
       touri->keyframe_list[j] = keyj;
 #ifndef pp_NEWTOUR
-      touri->keyframe_times[j] = keyj->disp_time;
+      touri->keyframe_times[j] = keyj->time;
 #endif
     }
     if(touri->nkeyframes<=1)continue;
@@ -1056,7 +1105,7 @@ void CreateTourPaths(void){
       kf2 = touri->keyframe_list[iframe_local+1];
       pj->keysnap = &kf1->nodeval;
 #ifdef pp_NEWTOUR
-      dt = kf2->disp_time - kf1->disp_time;
+      dt = kf2->time - kf1->time;
 #else
       dt = kf2->nodeval.time - kf1->nodeval.time;
 #endif
@@ -1065,7 +1114,7 @@ void CreateTourPaths(void){
       }
       else{
 #ifdef pp_NEWTOUR
-        f1 = CLAMP((vtime - kf1->disp_time) / dt, 0.0, 1.0);
+        f1 = CLAMP((vtime - kf1->time) / dt, 0.0, 1.0);
 #else
         f1 = CLAMP((vtime - kf1->nodeval.time) / dt, 0.0, 1.0);
         touri->path_times[j] = vtime;
@@ -1149,7 +1198,7 @@ void CreateTourPaths(void){
 
 #ifndef pp_NEWTOUR
     ntotal2=0;
-    touri->first_frame.next->disp_time=tour_tstart;
+    touri->first_frame.next->time=tour_tstart;
     {
       float vtime_temp;
 
@@ -1161,7 +1210,7 @@ void CreateTourPaths(void){
         else{
           vtime_temp = tour_tstart + (float)ntotal2 / (float)tour_ntimes*(tour_tstop - tour_tstart);
         }
-        keyj->next->disp_time=vtime_temp;
+        keyj->next->time=vtime_temp;
       }
     }
 #endif
@@ -1197,8 +1246,8 @@ void CreateTourPaths(void){
     tour_t2[0]=0.0;
     tour_dist2[0]=0.0;
 #ifdef pp_NEWTOUR
-    tour_tstart_local = touri->keyframe_list[0]->disp_time;
-    tour_tstop_local = touri->keyframe_list[touri->nkeyframes-1]->disp_time;
+    tour_tstart_local = touri->keyframe_list[0]->time;
+    tour_tstop_local = touri->keyframe_list[touri->nkeyframes-1]->time;
 #else
     tour_tstart_local = touri->keyframe_list[0]->nodeval.time;
     tour_tstop_local = touri->keyframe_list[touri->nkeyframes-1]->nodeval.time;
@@ -1236,7 +1285,7 @@ void CreateTourPaths(void){
       pj = touri->pathnodes + j;
       vtime = tour_t2[j];
 #ifdef pp_NEWTOUR
-      vtime2 = touri->keyframe_list[0]->disp_time + j*vdt;
+      vtime2 = touri->keyframe_list[0]->time + j*vdt;
 #else
       vtime2 = touri->keyframe_list[0]->nodeval.time + j*vdt;
 #endif
@@ -1245,7 +1294,7 @@ void CreateTourPaths(void){
       kf1 = touri->keyframe_list[iframe_new];
       kf2 = touri->keyframe_list[iframe_new+1];
 #ifdef pp_NEWTOUR
-      dt = kf2->disp_time - kf1->disp_time;
+      dt = kf2->time - kf1->time;
 #else
       dt = kf2->nodeval.time - kf1->nodeval.time;
 #endif
@@ -1254,7 +1303,7 @@ void CreateTourPaths(void){
       }
       else{
 #ifdef pp_NEWTOUR
-        f1 = CLAMP((vtime - kf1->disp_time)/dt,0.0,1.0);
+        f1 = CLAMP((vtime - kf1->time)/dt,0.0,1.0);
 #else
         f1 = CLAMP((vtime - kf1->nodeval.time)/dt,0.0,1.0);
         touri->path_times[j] = vtime2;
@@ -1348,8 +1397,10 @@ keyframe *AddFrame(keyframe *last_frame, float time_local, float *xyz, int viewt
 
   NORMALIZE_XYZ(feye, xyz);
   NORMALIZE_XYZ(fxyz_view,view);
+#ifndef pp_NEWTOUR
   this_frame->noncon_time=time_local;
-  this_frame->disp_time=time_local;
+#endif
+  this_frame->time=time_local;
 
   this_frame->viewtype=viewtype;
   this_frame->view_smv[0] = fxyz_view[0];
@@ -1548,8 +1599,10 @@ void ReverseTour(char *label){
   for(i = 0;i<tourreverse->nkeyframes;i++){
     keyi = keyi->next;
     keys[tourreverse->nkeyframes-1-i] = keyi;
+#ifndef pp_NEWTOUR
     times_con[i] = keyi->con_time;
     times_noncon[i] = keyi->noncon_time;
+#endif
   }
 
   tourreverse->first_frame.next = keys[0];
@@ -1557,10 +1610,12 @@ void ReverseTour(char *label){
   for(i = 0;i<tourreverse->nkeyframes-1;i++){
     keys[i]->next=keys[i+1];
   }
+#ifndef pp_NEWTOUR
   for(i = 0;i<tourreverse->nkeyframes;i++){
     keys[i]->con_time = times_con[i];
     keys[i]->noncon_time = times_noncon[i];
   }
+#endif
   for(i = 1;i<tourreverse->nkeyframes;i++){
     keys[i]->prev = keys[i-1];
   }
@@ -1808,43 +1863,3 @@ void SetupTour(void){
     if(viewalltours==1)TourMenu(MENU_TOUR_SHOWALL);
   }
 }
-
-/* ------------------ AdjustTourTimes ------------------------ */
-
-void AdjustTourTimes(tourdata *touri){
-  float dt;
-  keyframe *keyj;
-  float tstart, tstop,dtmin;
-  int small_flag;
-
-
-  if(touri->nkeyframes>1){
-    tstart = touri->first_frame.next->noncon_time;
-    tstop = touri->last_frame.prev->noncon_time;
-    if(tour_ntimes==0){
-      dtmin=0.0;
-    }
-    else{
-      dtmin = (float)4*(tstop-tstart)/(float)tour_ntimes;
-    }
-    small_flag=0;
-    for(keyj=(touri->first_frame).next->next;keyj->next!=NULL;keyj=keyj->next){
-      dt = keyj->noncon_time - keyj->prev->noncon_time;
-      if(dt<dtmin){
-        small_flag=1;
-        keyj->noncon_time = keyj->prev->noncon_time + dtmin;
-      }
-    }
-    if(small_flag==1&&tstop>tour_tstop&&tstop>0.0){
-      for(keyj=(touri->first_frame).next;keyj->next!=NULL;keyj=keyj->next){
-        if(tstop == 0.0){
-          keyj->noncon_time = keyj->noncon_time;
-        }
-        else{
-          keyj->noncon_time = keyj->noncon_time*tour_tstop / tstop;
-        }
-      }
-    }
-  }
-}
-

@@ -14246,7 +14246,7 @@ void WriteIniLocal(FILE *fileout){
         framei = framei->next;
 #ifdef pp_NEWTOUR
         sprintf(buffer, "%f %f %f %f ",
-                framei->noncon_time,
+                framei->time,
                 DENORMALIZE_X(framei->xyz_smv[0]),
                 DENORMALIZE_Y(framei->xyz_smv[1]),
                 DENORMALIZE_Z(framei->xyz_smv[2]));

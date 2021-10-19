@@ -307,7 +307,7 @@ extern "C" float TrimVal(float val){
 /* ------------------ UpdateGluiKeyframe ------------------------ */
 
 extern "C" void UpdateGluiKeyframe(void){
-  tour_ttt = selected_frame->disp_time;
+  tour_ttt = selected_frame->time;
   SPINNER_t->set_float_val(tour_ttt);
   SPINNER_x->set_float_val(tour_xyz[0]);
   SPINNER_y->set_float_val(tour_xyz[1]);
@@ -338,7 +338,7 @@ extern "C" void SetGluiTourKeyframe(void){
   xyz_view = selected_frame->nodeval.xyz_view_abs;
 #endif
 
-  tour_ttt = selected_frame->disp_time;
+  tour_ttt = selected_frame->time;
   tour_xyz[0] = TrimVal(DENORMALIZE_X(eye[0]));
   tour_xyz[1] = TrimVal(DENORMALIZE_Y(eye[1]));
   tour_xyz[2] = TrimVal(DENORMALIZE_Z(eye[2]));
@@ -354,7 +354,7 @@ extern "C" void SetGluiTourKeyframe(void){
     float time_temp;
 
     time_temp=tour_ttt;
-    SPINNER_t->set_float_limits(selected_frame->prev->disp_time,selected_frame->next->disp_time);
+    SPINNER_t->set_float_limits(selected_frame->prev->time,selected_frame->next->time);
     tour_ttt=time_temp;
     SPINNER_t->set_float_val(tour_ttt);
   }
@@ -657,13 +657,15 @@ void TourCB(int var){
         key_xyz[1]=DENORMALIZE_Y(2*thiskey->nodeval.xyz[1]-lastkey->nodeval.xyz[1]);
         key_xyz[2]=DENORMALIZE_Z(2*thiskey->nodeval.xyz[2]-lastkey->nodeval.xyz[2]);
 #endif
-        key_time_in = thiskey->noncon_time;
-        thiskey->noncon_time=(thiskey->noncon_time+lastkey->noncon_time)/2.0;
 #ifdef pp_NEWTOUR
+        key_time_in = thiskey->time;
+        thiskey->time=(thiskey->time+lastkey->time)/2.0;
         key_view[0] = DENORMALIZE_X(2*thiskey->view_smv[0]-lastkey->view_smv[0]);
         key_view[1] = DENORMALIZE_Y(2*thiskey->view_smv[1]-lastkey->view_smv[1]);
         key_view[2] = DENORMALIZE_Z(2*thiskey->view_smv[2]-lastkey->view_smv[2]);
 #else
+        key_time_in = thiskey->noncon_time;
+        thiskey->noncon_time=(thiskey->noncon_time+lastkey->noncon_time)/2.0;
         key_view[0]=DENORMALIZE_X(2*thiskey->nodeval.xyz_view_abs[0]-lastkey->nodeval.xyz_view_abs[0]);
         key_view[1]=DENORMALIZE_Y(2*thiskey->nodeval.xyz_view_abs[1]-lastkey->nodeval.xyz_view_abs[1]);
         key_view[2]=DENORMALIZE_Z(2*thiskey->nodeval.xyz_view_abs[2]-lastkey->nodeval.xyz_view_abs[2]);
@@ -673,20 +675,18 @@ void TourCB(int var){
       }
       else{
 #ifdef pp_NEWTOUR
-        key_xyz[0]=DENORMALIZE_X((thiskey->xyz_smv[0]+nextkey->xyz_smv[0])/2.0);
-        key_xyz[1]=DENORMALIZE_Y((thiskey->xyz_smv[1]+nextkey->xyz_smv[1])/2.0);
-        key_xyz[2]=DENORMALIZE_Z((thiskey->xyz_smv[2]+nextkey->xyz_smv[2])/2.0);
-#else
-        key_xyz[0] = DENORMALIZE_X((thiskey->nodeval.xyz[0]+nextkey->nodeval.xyz[0])/2.0);
-        key_xyz[1] = DENORMALIZE_Y((thiskey->nodeval.xyz[1]+nextkey->nodeval.xyz[1])/2.0);
-        key_xyz[2] = DENORMALIZE_Z((thiskey->nodeval.xyz[2]+nextkey->nodeval.xyz[2])/2.0);
-#endif
-        key_time_in = (thiskey->noncon_time+nextkey->noncon_time)/2.0;
-#ifdef pp_NEWTOUR
+        key_xyz[0]  = DENORMALIZE_X((thiskey->xyz_smv[0]+nextkey->xyz_smv[0])/2.0);
+        key_xyz[1]  = DENORMALIZE_Y((thiskey->xyz_smv[1]+nextkey->xyz_smv[1])/2.0);
+        key_xyz[2]  = DENORMALIZE_Z((thiskey->xyz_smv[2]+nextkey->xyz_smv[2])/2.0);
+        key_time_in = (thiskey->time+nextkey->time)/2.0;
         key_view[0] = DENORMALIZE_X((thiskey->view_smv[0]+nextkey->view_smv[0])/2.0);
         key_view[1] = DENORMALIZE_Y((thiskey->view_smv[1]+nextkey->view_smv[1])/2.0);
         key_view[2] = DENORMALIZE_Z((thiskey->view_smv[2]+nextkey->view_smv[2])/2.0);
 #else
+        key_xyz[0] = DENORMALIZE_X((thiskey->nodeval.xyz[0]+nextkey->nodeval.xyz[0])/2.0);
+        key_xyz[1] = DENORMALIZE_Y((thiskey->nodeval.xyz[1]+nextkey->nodeval.xyz[1])/2.0);
+        key_xyz[2] = DENORMALIZE_Z((thiskey->nodeval.xyz[2]+nextkey->nodeval.xyz[2])/2.0);
+        key_time_in = (thiskey->noncon_time+nextkey->noncon_time)/2.0;
         key_view[0]=DENORMALIZE_X((thiskey->nodeval.xyz_view_abs[0]+nextkey->nodeval.xyz_view_abs[0])/2.0);
         key_view[1]=DENORMALIZE_Y((thiskey->nodeval.xyz_view_abs[1]+nextkey->nodeval.xyz_view_abs[1])/2.0);
         key_view[2]=DENORMALIZE_Z((thiskey->nodeval.xyz_view_abs[2]+nextkey->nodeval.xyz_view_abs[2])/2.0);

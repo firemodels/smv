@@ -870,8 +870,10 @@ typedef struct _pathdata {
 
 typedef struct _keyframe {
   int selected,viewtype,npoints;
-  float noncon_time, con_time, disp_time;
-#ifndef pp_NEWTOUR
+#ifdef pp_NEWTOUR
+  float time;
+#else
+  float noncon_time, con_time, time;
   pathdata nodeval;
 #endif
   float view_smv[3], view2_smv[3];
