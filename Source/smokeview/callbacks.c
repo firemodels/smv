@@ -1257,9 +1257,9 @@ void DragTourNode(int xm, int ym){
 
 // offset tour node location
 
-        tour_xyz[0] += dx;
-        tour_xyz[1] += dy;
-        tour_xyz[2] += dz;
+        glui_tour_xyz[0] += dx;
+        glui_tour_xyz[1] += dy;
+        glui_tour_xyz[2] += dz;
 
         mouse_down_xy0[0]=xm;
         mouse_down_xy0[1]=ym;

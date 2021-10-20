@@ -1024,38 +1024,38 @@ void CreateTourPaths(void){
   }
 #endif
 
-  for(i = 0; i<ntourinfo; i++){
-    tourdata *touri;
-    keyframe *keyj;
+    for(i = 0; i<ntourinfo; i++){
+      tourdata *touri;
+      keyframe *keyj;
 #ifndef pp_NEWTOUR
-    keyframe *kf1, *kf2;
-    float *tour_dist3a;
-    float total_time;
-    float total_distance;
-    float vdist, vtime2, vdt;
-    float tour_tstart_local, tour_tstop_local;
-    int j, jj;
-    int iframe_local;
-    int ntotal;
-    int ntotal2;
-    int iframe_old, iframe_new;
+      keyframe *kf1, *kf2;
+      float *tour_dist3a;
+      float total_time;
+      float total_distance;
+      float vdist, vtime2, vdt;
+      float tour_tstart_local, tour_tstop_local;
+      int j, jj;
+      int iframe_local;
+      int ntotal;
+      int ntotal2;
+      int iframe_old, iframe_new;
 #endif
 
-    touri = tourinfo+i;
+      touri = tourinfo+i;
 
-    for(keyj = (touri->first_frame).next; keyj->next!=NULL; keyj = keyj->next){
-      float denom;
+      for(keyj = (touri->first_frame).next; keyj->next!=NULL; keyj = keyj->next){
+        float denom, view_smv[3];
 
-      keyj->view_smv[0] = keyj->xyz_tangent_right[0];
-      keyj->view_smv[1] = keyj->xyz_tangent_right[1];
-      keyj->view_smv[2] = 0.0;
+        view_smv[0] = keyj->view_tangent_right[0];
+        view_smv[1] = keyj->view_tangent_right[1];
+        view_smv[2] = 0.0;
 
-      ROTATE(keyj->view2_smv, keyj->view_smv, 0.0);
-      keyj->view2_smv[2] = 0.0;
-      denom = NORM2(keyj->view2_smv);
-      if(denom==0.0)continue;
-      VEC2MA(keyj->view2_smv, 10000.0/denom);
-    }
+        ROTATE(keyj->view2_smv, view_smv, 0.0);
+        keyj->view2_smv[2] = 0.0;
+        denom = NORM2(keyj->view2_smv);
+        if(denom==0.0)continue;
+        VEC2MA(keyj->view2_smv, 10000.0/denom);
+      }
 #ifdef pp_NEWTOUR
     }
 #endif

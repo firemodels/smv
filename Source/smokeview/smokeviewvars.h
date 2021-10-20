@@ -1448,16 +1448,19 @@ SVEXTERN int list_memcheck_index;
 SVEXTERN int SVDECL(visUsagememory,0);
 SVEXTERN float gslice_norm[3];
 #ifdef INMAIN
-SVEXTERN float tour_xyz[3]={0.0,0.0,0.0};
+SVEXTERN float glui_tour_view[3] = {0.0,0.0,0.0};
+SVEXTERN float glui_tour_xyz[3]={0.0,0.0,0.0};
 SVEXTERN float gslice_xyz[3]={-1000001.0,-1000001.0,-1000001.0};
 SVEXTERN float gslice_normal_xyz[3]={0.0,0.0,1.0};
 SVEXTERN float gslice_normal_azelev[2]={0.0,90.0};
 #else
-SVEXTERN float tour_xyz[3];
+SVEXTERN float glui_tour_view[3];
+SVEXTERN float glui_tour_xyz[3];
 SVEXTERN float gslice_xyz[3];
 SVEXTERN float gslice_normal_xyz[3];
 SVEXTERN float gslice_normal_azelev[3];
 #endif
+SVEXTERN float SVDECL(glui_tour_time, 0.0);
 
 SVEXTERN float gslice_xyz0[3],gslice_normal_azelev0[2];
 SVEXTERN int SVDECL(vis_gslice_data,0),SVDECL(SHOW_gslice_data,0),SVDECL(SHOW_gslice_data_old,0),SVDECL(show_gslice_triangles,0);
