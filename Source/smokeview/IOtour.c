@@ -812,12 +812,12 @@ void SetTourXYZView(float t, tourdata *touri){
   first_key = touri->first_frame.next;
   last_key  = touri->last_frame.prev;
   if(t<first_key->time){
-    memcpy(touri->xyz, first_key->xyz_fds,         3*sizeof(float));
+    memcpy(touri->xyz,   first_key->xyz_smv, 3*sizeof(float));
     memcpy(touri->view, first_key->view_smv, 3*sizeof(float));
     return;
   }
   if(t>=last_key->time){
-    memcpy(touri->xyz, last_key->xyz_fds,         3*sizeof(float));
+    memcpy(touri->xyz,  last_key->xyz_smv,  3*sizeof(float));
     memcpy(touri->view, last_key->view_smv, 3*sizeof(float));
     return;
   }
