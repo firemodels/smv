@@ -1474,7 +1474,6 @@ void SetupCircularTourNodes(void){
 void InitCircularTour(tourdata *touri, int nkeyframes, int option){
   int j;
   float key_view[3], key_xyz[3];
-  int viewtype=0;
   float key_time;
   float angle_local;
   float f1;
@@ -1540,8 +1539,6 @@ void InitCircularTour(tourdata *touri, int nkeyframes, int option){
       f1 = (float)j / (float)(nkeyframes - 1);
     }
     key_time = tour_tstart*(1.0-f1) + tour_tstop*f1;
-
-    viewtype=1;
 
     addedframe=AddFrame(thisframe, key_time, key_xyz, key_view);
     thisframe=addedframe;

@@ -891,7 +891,7 @@ typedef struct _keyframe {
 
 typedef struct _tourdata {
   char label[300],menulabel[128];
-  keyframe first_frame,last_frame, keyframe, **keyframe_list;
+  keyframe first_frame,last_frame, **keyframe_list;
 #ifndef pp_NEWTOUR
   pathdata *pathnodes;
 #endif
