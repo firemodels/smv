@@ -13158,7 +13158,11 @@ int ReadIni2(char *inifile, int localfile){
       }
       if(Match(buffer, "VIEWTOURFROMPATH") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
+#ifdef pp_NEWTOUR
+        sscanf(buffer, "%i %i %f", &viewtourfrompath, &tour_snap, &tour_snap_time);
+#else
         sscanf(buffer, "%i", &viewtourfrompath);
+#endif
         continue;
       }
       if(Match(buffer, "VIEWALLTOURS") == 1){
@@ -15221,7 +15225,11 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "VIEWTIMES\n");
   fprintf(fileout, " %f %f %i\n", tour_tstart, tour_tstop, tour_ntimes);
   fprintf(fileout, "VIEWTOURFROMPATH\n");
+#ifdef pp_NEWTOUR
+  fprintf(fileout, " %i %i %f\n", viewtourfrompath, tour_snap, tour_snap_time);
+#else
   fprintf(fileout," %i\n",viewtourfrompath);
+#endif
 
 
   if(flag == LOCAL_INI)WriteIniLocal(fileout);

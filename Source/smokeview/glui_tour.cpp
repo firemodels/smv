@@ -35,6 +35,9 @@ GLUI_Panel *PANEL_tour_circular_view;
 
 GLUI_Checkbox *CHECKBOX_view1 = NULL;
 GLUI_Checkbox *CHECKBOX_view2 = NULL;
+#ifdef pp_NEWTOUR
+GLUI_Checkbox *CHECKBOX_tour_snap = NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_showtourroute1 = NULL;
 GLUI_Checkbox *CHECKBOX_showtourroute2 = NULL;
 GLUI_Checkbox *CHECKBOX_showintermediate = NULL;
@@ -182,7 +185,10 @@ extern "C" void GluiTourSetup(int main_window){
   glui_tour->add_button_to_panel(PANEL_tour, _("Update label"), TOUR_UPDATELABEL, TourCB);
 
   CHECKBOX_showtourroute1 = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("Show tour"), &edittour, SHOWTOURROUTE1, TourCB);
-  CHECKBOX_view1 = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("View from tour path"), &viewtourfrompath, VIEWTOURFROMPATH1, TourCB);
+  CHECKBOX_view1 = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("View from tour"), &viewtourfrompath, VIEWTOURFROMPATH1, TourCB);
+#ifdef pp_NEWTOUR
+  CHECKBOX_tour_snap = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("View from current tour position"), &tour_snap, TOUR_SNAP, TourCB);
+#endif
 
   PANEL_node = glui_tour->add_panel_to_panel(ROLLOUT_keyframe, "", GLUI_PANEL_NONE);
 
@@ -512,6 +518,18 @@ void TourCB(int var){
     TourCB(VIEWTOURFROMPATH);
     CHECKBOX_view1->set_int_val(viewtourfrompath);
     break;
+#ifdef pp_NEWTOUR
+  case TOUR_SNAP:
+    if(tour_snap==1){
+      if(global_times!=NULL){
+        tour_snap_time = global_times[itimes];
+      }
+      else{
+        tour_snap_time = 0.0;
+      }
+    }
+    break;
+#endif
   case VIEWTOURFROMPATH:
     viewtourfrompath = 1 - viewtourfrompath;
     TOURMENU(MENU_TOUR_VIEWFROMROUTE);
