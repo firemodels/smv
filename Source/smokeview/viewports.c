@@ -2097,9 +2097,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       touri = tourinfo + selectedtour_index;
 #ifdef pp_NEWTOUR
       SetTourXYZView(global_times[itimes], touri);
-      camera_current->eye[0] = touri->xyz[0];
-      camera_current->eye[1] = touri->xyz[1];
-      camera_current->eye[2] = touri->xyz[2];
+      memcpy(camera_current->eye, touri->xyz_smv, 3*sizeof(float));
 #else
       frame_index = GetTourFrame(touri,itimes);
       pj = touri->pathnodes + frame_index;
@@ -2231,9 +2229,9 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
           touri = tourinfo + selectedtour_index;
 #ifdef pp_NEWTOUR
           SetTourXYZView(global_times[itimes], touri);
-          viewx = touri->view[0]+dEyeSeparation[0];
-          viewy = touri->view[1]-dEyeSeparation[1];
-          viewz = touri->view[2];
+          viewx = touri->view_smv[0]+dEyeSeparation[0];
+          viewy = touri->view_smv[1]-dEyeSeparation[1];
+          viewz = touri->view_smv[2];
 #else
           frame_index = GetTourFrame(touri,itimes);
           pj = touri->pathnodes + frame_index;

@@ -812,13 +812,13 @@ void SetTourXYZView(float t, tourdata *touri){
   first_key = touri->first_frame.next;
   last_key  = touri->last_frame.prev;
   if(t<first_key->time){
-    memcpy(touri->xyz,   first_key->xyz_smv, 3*sizeof(float));
-    memcpy(touri->view, first_key->view_smv, 3*sizeof(float));
+    memcpy(touri->xyz_smv,   first_key->xyz_smv, 3*sizeof(float));
+    memcpy(touri->view_smv, first_key->view_smv, 3*sizeof(float));
     return;
   }
   if(t>=last_key->time){
-    memcpy(touri->xyz,  last_key->xyz_smv,  3*sizeof(float));
-    memcpy(touri->view, last_key->view_smv, 3*sizeof(float));
+    memcpy(touri->xyz_smv,  last_key->xyz_smv,  3*sizeof(float));
+    memcpy(touri->view_smv, last_key->view_smv, 3*sizeof(float));
     return;
   }
   for(this_key = first_key; this_key!=last_key; this_key = this_key->next){
@@ -831,8 +831,8 @@ void SetTourXYZView(float t, tourdata *touri){
       dt = next_key->time-this_key->time;
       t_scaled = 0.0;
       if(dt>0.0)t_scaled = CLAMP((t-this_key->time)/dt, 0.0, 1.0);
-      HermiteXYZ(t_scaled,  this_key, next_key, touri->xyz, NULL);
-      HermiteView(t_scaled, this_key, next_key, touri->view);
+      HermiteXYZ(t_scaled,  this_key, next_key, touri->xyz_smv, NULL);
+      HermiteView(t_scaled, this_key, next_key, touri->view_smv);
       break;
     }
   }
