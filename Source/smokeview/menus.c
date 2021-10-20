@@ -9711,8 +9711,8 @@ updatemenu=0;
   CREATEMENU(viewdialogmenu, DialogMenu);
 #ifdef pp_DIALOG_SHORTCUTS
   glutAddMenuEntry(_("Clip scene...  ALT c"), DIALOG_CLIP);
-  if(showtour_dialog==1)glutAddMenuEntry(_("*Create/edit tours...  ALT t"), DIALOG_TOUR_HIDE);
-  if(showtour_dialog==0)glutAddMenuEntry(_("Create/edit tours...  ALT t"), DIALOG_TOUR_SHOW);
+  if(showtour_dialog==1)glutAddMenuEntry(_("*Create/modify tours...  ALT t"), DIALOG_TOUR_HIDE);
+  if(showtour_dialog==0)glutAddMenuEntry(_("Create/modify tours...  ALT t"), DIALOG_TOUR_SHOW);
   glutAddMenuEntry(_("Edit colorbar...  ALT C"), DIALOG_COLORBAR);
   if(isZoneFireModel==0){
     glutAddMenuEntry(_("Examine geometry...  ALT e"), DIALOG_GEOMETRY);
