@@ -188,6 +188,7 @@ void StartScript(void){
   current_script_command=scriptinfo-1;
   iso_multithread_save = iso_multithread;
   iso_multithread = 0;
+  viewpoint_script_ptr = NULL;
 }
 
 /* ------------------ GetCharPointer ------------------------ */
@@ -2138,10 +2139,16 @@ void ScriptLoadSliceRender(scriptdata *scripti){
       SetSliceGlobalBounds(shortlabel);
     }
     frames_total = GetNSliceGeomFrames(scripti);
+    frame360 = 0;
   }
   else{
     frame_current = scripti->ival4;
-    frame_current += frame_skip;
+    if(frame_current==frame_start&&frame360==0&&render_mode==RENDER_360){ // output first frame twice - work around for a bug causing first frame to be output incorrectly
+      frame360 = 1;
+    }
+    else{
+      frame_current += frame_skip;
+    }
   }
   script_itime = frame_current;
   script_render_flag = 1;
@@ -2877,10 +2884,10 @@ void ScriptSetTourKeyFrame(scriptdata *scripti){
 
     if(keyj==(touri->first_frame).next){
       minkey=keyj;
-      minkeytime=ABS(keyframe_time-keyj->nodeval.time);
+      minkeytime = ABS(keyframe_time-keyj->time);
       continue;
     }
-    diff_time=ABS(keyframe_time-keyj->nodeval.time);
+    diff_time = ABS(keyframe_time-keyj->time);
     if(diff_time<minkeytime){
       minkey=keyj;
       minkeytime=diff_time;
@@ -2903,19 +2910,15 @@ void ScriptSetTourView(scriptdata *scripti){
   switch(scripti->ival2){
     case 0:
       viewtourfrompath=0;
-      keyframe_snap=0;
       break;
     case 1:
       viewtourfrompath=1;
-      keyframe_snap=0;
       break;
     case 2:
       viewtourfrompath=0;
-      keyframe_snap=1;
       break;
     default:
       viewtourfrompath=0;
-      keyframe_snap=0;
       break;
   }
   UpdateTourState();
@@ -3105,10 +3108,14 @@ void ScriptSetViewpoint(scriptdata *scripti){
   viewpoint = scripti->cval;
   update_viewpoint_script = 3;
   strcpy(viewpoint_script, viewpoint);
+  viewpoint_script_ptr = NULL;
   PRINTF("script: set viewpoint to %s\n\n",viewpoint);
   if(GetCamera(viewpoint) == NULL){
     fprintf(stderr, "*** Error: The viewpoint %s was not found\n", viewpoint);
     if(stderr2!=NULL)fprintf(stderr2, "*** Error: The viewpoint %s was not found\n", viewpoint);
+  }
+  else{
+    viewpoint_script_ptr = viewpoint_script;
   }
 }
 

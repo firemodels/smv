@@ -136,6 +136,7 @@ restore_state()
     MOVIEDIR=${SLICE2MP4_MOVIEDIR}
     EMAIL=${SLICE2MP4_EMAIL}
     SHARE=${SLICE2MP4_SHARE}
+    MODE360=${SLICE2MP4_MODE360}
     if [ "${SLICE2MP4_WEBHOST}" != "" ]; then
       SMV_WEBHOST=${SLICE2MP4_WEBHOST}
     fi
@@ -152,6 +153,14 @@ restore_state()
     TIMEBAR=${SLICE2MP4_TIMEBAR}
     if [ "$TIMEBAR" == "" ]; then
       TIMEBAR="0"
+    fi
+
+#*** don't show colorbar or timebar in 360 mode
+    if [ "$MODE360" == "1" ]; then
+      COLORBAR="0"
+      TIMEBAR="0"
+    else
+      MODE360="0"
     fi
     FONTSIZE=${SLICE2MP4_FONTSIZE}
     if [ "$FONTSIZE" == "" ]; then
@@ -173,6 +182,7 @@ save_state()
   echo "export SLICE2MP4_MOVIEDIR=$MOVIEDIR"    >> $GLOBALCONFIG
   echo "export SLICE2MP4_EMAIL=$EMAIL"          >> $GLOBALCONFIG
   echo "export SLICE2MP4_SHARE=$SHARE"          >> $GLOBALCONFIG
+  echo "export SLICE2MP4_MODE360=$MODE360"      >> $GLOBALCONFIG
   if [ "$SMV_WEBHOST" == "" ]; then
     echo "export SLICE2MP4_WEBHOST=none"        >> $GLOBALCONFIG
   else
@@ -215,6 +225,12 @@ SHOWTIMELABEL
 FONTSIZE
   $FONTSIZE
 EOF
+if [ "$MODE360" == "1" ]; then
+cat << EOF >> $smv_inifilename
+RENDERFILETYPE
+ 0 1 4
+EOF
+fi
 }
 
 #---------------------------------------------
@@ -254,6 +270,11 @@ if [ "$viewpointd" != "" ]; then
 else
   echo "      viewpoint: $viewpoint"
 fi
+if [ "$MODE360" == "0" ]; then
+  echo "     movie mode: rectangular"
+else
+  echo "     movie mode: 360"
+fi
 echo ""
 echo "        PNG dir: $RENDERDIR"
 echo "        mp4 dir: $MOVIEDIR"
@@ -280,6 +301,7 @@ else
   echo "T - hide time bar"
 fi
   echo "F - toggle font size"
+  echo "3 - toggle 360 mode"
   echo "v - set viewpoint"
 
   echo ""
@@ -322,9 +344,35 @@ fi
     writeini
     continue;
   fi
+  if [ "$ans" == "3" ]; then
+    if [ "$MODE360" == "0" ]; then
+      MODE360="1"
+      COLORBAR_SAVE=$COLORBAR
+      TIMEBAR_SAVE=$TIMEBAR
+
+#*** don't show colorbar or timebar in 360 mode
+
+      COLORBAR="0"
+      TIMEBAR="0"
+    else
+      MODE360="0"
+      if [ "$COLORBAR_SAVE" != "" ]; then
+        COLORBAR=$COLORBAR_SAVE
+      fi
+      if [ "$TIMEBAR_SAVE" != "" ]; then
+        TIMEBAR=$TIMEBAR_SAVE
+      fi
+    fi
+    writeini
+    continue
+  fi
   if [ "$ans" == "C" ]; then
     if [ "$COLORBAR" == "0" ]; then
-      COLORBAR="1"
+      if [ "$MODE360" == "0" ]; then
+        COLORBAR="1"
+      else
+        echo "***warning: color bar not shown in 360 movie mode"
+      fi
     else
       COLORBAR="0"
     fi
@@ -342,7 +390,11 @@ fi
   fi
   if [ "$ans" == "T" ]; then
     if [ "$TIMEBAR" == "0" ]; then
-      TIMEBAR="1"
+      if [ "$MODE360" == "0" ]; then
+        TIMEBAR="1"
+      else
+        echo "***warning: time bar not shown in 360 movie mode"
+      fi
     else
       TIMEBAR="0"
     fi
@@ -416,32 +468,32 @@ while true; do
   fi
   if [ "$ans" == "x" ]; then
     viewpoint=
-    viewpointd="VIEWXMIN"
+    viewpointd="XMIN"
     return 0
   fi
   if [ "$ans" == "X" ]; then
     viewpoint=
-    viewpointd="VIEWXMAX"
+    viewpointd="XMAX"
     return 0
   fi
   if [ "$ans" == "y" ]; then
     viewpoint=
-    viewpointd="VIEWYMIN"
+    viewpointd="YMIN"
     return 0
   fi
   if [ "$ans" == "Y" ]; then
     viewpoint=
-    viewpointd="VIEWYMAX"
+    viewpointd="YMAX"
     return 0
   fi
   if [ "$ans" == "z" ]; then
     viewpoint=
-    viewpointd="VIEWZMIN"
+    viewpointd="ZMIN"
     return 0
   fi
   if [ "$ans" == "Z" ]; then
     viewpoint=
-    viewpointd="VIEWZMAX"
+    viewpointd="ZMAX"
     return 0
   fi
   re='^[0-9]+$'
@@ -452,6 +504,7 @@ while true; do
   if [[ $ans -ge 1 ]] && [[ $ans -le $nviewpoints ]]; then
     viewpoint_index=$ans
     viewpoint=`cat $viewpointmenu | awk -v ind="$viewpoint_index" -F"," '{ if($1 == ind){print $2} }'`
+    viewpointd=
     return 0
   else
     echo index $ans out of bounds
@@ -596,6 +649,7 @@ LOADINIFILE
 EOF
 if [ "$viewpointd" != "" ]; then
   cat << EOF >> ${smv_scriptname}
+SETVIEWPOINT
   $viewpointd
 
 EOF
@@ -649,6 +703,7 @@ if [ ! -e $MOVIEDIR ]; then
 fi
 NPROCS=20
 QUEUE=batch4
+MODE360=0
 slice_index=
 HELP_ALL=
 JOBPREFIX=SV_
@@ -762,12 +817,12 @@ else
   echo "index   viewpoint"  > $viewpointmenu
   echo "d   delete"        >> $viewpointmenu
 fi
-echo "    x   VIEWXMIN"    >> $viewpointmenu
-echo "    X   VIEWXMAX"    >> $viewpointmenu
-echo "    y   VIEWYMIN"    >> $viewpointmenu
-echo "    Y   VIEWYMAX"    >> $viewpointmenu
-echo "    z   VIEWZMIN"    >> $viewpointmenu
-echo "    Z   VIEWZMAX"    >> $viewpointmenu
+echo "    x   XMIN"    >> $viewpointmenu
+echo "    X   XMAX"    >> $viewpointmenu
+echo "    y   YMIN"    >> $viewpointmenu
+echo "    Y   YMAX"    >> $viewpointmenu
+echo "    z   ZMIN"    >> $viewpointmenu
+echo "    Z   ZMAX"    >> $viewpointmenu
 
 
 # get slice file menu (required)

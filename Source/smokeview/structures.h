@@ -858,26 +858,16 @@ typedef struct _culldata {
   int npixels,npixels_old;
 } culldata;
 
-/* --------------------------  pathdata ------------------------------------ */
-
-typedef struct _pathdata {
-  float time, eye[3], xyz_view_abs[3], xyz_view_rel[3], tour_view[3];
-  float az_path,zoom,elev_path;
-  struct _pathdata *keysnap;
-} pathdata;
-
 /* --------------------------  keyframe ------------------------------------ */
 
 typedef struct _keyframe {
-  int selected,viewtype,npoints;
-  float noncon_time, con_time, disp_time;
-  pathdata nodeval;
-  float keyview_xyz[3],keyview_xyz2[3];
-  float eye[3];
-  float total_distance, distance;
-  float s_eye[3], s_az, s_elev, s_zoom, s_xyz_view[3];
-  float d_eye[3], d_az, d_elev, d_zoom, d_xyz_view[3];
-  float az_path;
+  int selected, npoints;
+  float time;
+  float view_smv[3], view2_smv[3];
+  float xyz_fds[3], xyz_smv[3];
+  float distance;
+  float  xyz_tangent_left[3],  view_tangent_left[3];
+  float xyz_tangent_right[3], view_tangent_right[3];
   struct _keyframe *next,*prev;
 } keyframe;
 
@@ -885,15 +875,15 @@ typedef struct _keyframe {
 
 typedef struct _tourdata {
   char label[300],menulabel[128];
-  keyframe first_frame,last_frame;
-  keyframe **keyframe_list;
-  pathdata *pathnodes;
+  keyframe first_frame,last_frame, **keyframe_list;
   int glui_avatar_index, display2;
   float *path_times,*keyframe_times;
-  float global_dist, local_dist;
+  float xyz_smv[3], view_smv[3], *path_xyzs, *path_views;
+  struct _keyframe **path_keyframes;
+  float global_dist;
   int *timeslist;
-  int ntimes,nkeyframes;
-  int display,periodic;
+  int ntimes, nkeyframes;
+  int display, periodic;
   int startup;
   int isDefault;
 } tourdata;

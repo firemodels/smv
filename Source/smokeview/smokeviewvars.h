@@ -34,6 +34,7 @@ SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
 #endif
 
+SVEXTERN int SVDECL(frame360, 0);
 SVEXTERN int SVDECL(sliceval_ndigits, 0);
 SVEXTERN int SVDECL(rotate_center, 0);
 SVEXTERN int SVDECL(have_geom_bb, 0);
@@ -52,7 +53,7 @@ SVEXTERN int SVDECL(last_time_paused, 0);
 SVEXTERN float SVDECL(time_paused,0.0);
 SVEXTERN int SVDECL(update_stept, -1);
 SVEXTERN int SVDECL(update_viewpoint_script, 0);
-SVEXTERN char viewpoint_script[256];
+SVEXTERN char viewpoint_script[256], SVDECL(*viewpoint_script_ptr, NULL);
 SVEXTERN char viewpoint_label_saved[256];
 SVEXTERN int SVDECL(update_saving_viewpoint, 0);
 SVEXTERN float SVDECL(timer_startup, 0.0), SVDECL(timer_render, -1.0);
@@ -91,7 +92,6 @@ SVEXTERN int SVDECL(readini_output, 0);
 SVEXTERN int SVDECL(show_timings, 0);
 
 SVEXTERN float SVDECL(pixel_dens, 1.0);
-SVEXTERN float SVDECL(tourzoom_circular, 1.0);
 
 #ifdef pp_OSX_HIGHRES
 SVEXTERN int SVDECL(force_scale, 0);
@@ -352,6 +352,8 @@ SVEXTERN float tour_circular_center[3], tour_circular_radius, tour_circular_view
 SVEXTERN float tour_circular_center_default[3], tour_circular_radius_default, tour_circular_view_default[3];
 SVEXTERN float SVDECL(tour_speedup_factor, 1.0);
 SVEXTERN int SVDECL(ncircletournodes, 16);
+SVEXTERN int SVDECL(tour_snap, 0);
+SVEXTERN float SVDECL(tour_snap_time, 0.0);
 
 SVEXTERN int SVDECL(render_resolution, RENDER_RESOLUTION_CURRENT);
 SVEXTERN int SVDECL(timebar_overlap, TIMEBAR_OVERLAP_AUTO);
@@ -639,7 +641,6 @@ SVEXTERN int SVDECL(update_ssf,0);
 SVEXTERN char SVDECL(*ini_from,NULL), SVDECL(*ini_to,NULL);
 SVEXTERN char SVDECL(*ssf_from, NULL), SVDECL(*ssf_to, NULL);
 
-SVEXTERN int SVDECL(tour_antialias,0);
 SVEXTERN int SVDECL(tour_drag,0);
 
 SVEXTERN int SVDECL(update_gslice,0);
@@ -1449,16 +1450,19 @@ SVEXTERN int list_memcheck_index;
 SVEXTERN int SVDECL(visUsagememory,0);
 SVEXTERN float gslice_norm[3];
 #ifdef INMAIN
-SVEXTERN float tour_xyz[3]={0.0,0.0,0.0};
+SVEXTERN float glui_tour_view[3] = {0.0,0.0,0.0};
+SVEXTERN float glui_tour_xyz[3]={0.0,0.0,0.0};
 SVEXTERN float gslice_xyz[3]={-1000001.0,-1000001.0,-1000001.0};
 SVEXTERN float gslice_normal_xyz[3]={0.0,0.0,1.0};
 SVEXTERN float gslice_normal_azelev[2]={0.0,90.0};
 #else
-SVEXTERN float tour_xyz[3];
+SVEXTERN float glui_tour_view[3];
+SVEXTERN float glui_tour_xyz[3];
 SVEXTERN float gslice_xyz[3];
 SVEXTERN float gslice_normal_xyz[3];
 SVEXTERN float gslice_normal_azelev[3];
 #endif
+SVEXTERN float SVDECL(glui_tour_time, 0.0);
 
 SVEXTERN float gslice_xyz0[3],gslice_normal_azelev0[2];
 SVEXTERN int SVDECL(vis_gslice_data,0),SVDECL(SHOW_gslice_data,0),SVDECL(SHOW_gslice_data_old,0),SVDECL(show_gslice_triangles,0);
@@ -1763,7 +1767,6 @@ SVEXTERN int do_threshold;
 SVEXTERN int ntotal_blockages;
 SVEXTERN int updateindexcolors;
 SVEXTERN int show_path_knots;
-SVEXTERN int keyframe_snap;
 SVEXTERN int SVDECL(show_avatar,1);
 SVEXTERN int SVDECL(tourlocus_type,0);
 SVEXTERN int iavatar_types, navatar_types;

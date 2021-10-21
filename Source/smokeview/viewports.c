@@ -2055,9 +2055,9 @@ void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth){
 
       touri = tourinfo+i;
       for(keyj = (touri->first_frame).next; keyj->next!=NULL; keyj = keyj->next){
-        dx = NORMALIZE_X(keyj->eye[0])-smv_eyepos[0];
-        dy = NORMALIZE_Y(keyj->eye[1])-smv_eyepos[1];
-        dz = NORMALIZE_Z(keyj->eye[2])-smv_eyepos[2];
+        dx = NORMALIZE_X(keyj->xyz_fds[0])-smv_eyepos[0];
+        dy = NORMALIZE_Y(keyj->xyz_fds[1])-smv_eyepos[1];
+        dz = NORMALIZE_Z(keyj->xyz_fds[2])-smv_eyepos[2];
         depth = sqrt(dx*dx+dy*dy+dz*dz);
         *min_depth = MIN(*min_depth, depth);
         *max_depth = MAX(*max_depth, depth);
@@ -2088,22 +2088,17 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     VP_scene.width=screenWidth;
   }
   if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
-    if((viewtourfrompath==1&&selectedtour_index>=0)||keyframe_snap==1){
+    if((tour_snap==1||viewtourfrompath==1)&&selectedtour_index>=0){
       tourdata *touri;
-      pathdata *pj;
 
       touri = tourinfo + selectedtour_index;
-      frame_index = GetTourFrame(touri,itimes);
-      if(keyframe_snap==1&&selected_frame!=NULL){
-        pj=&selected_frame->nodeval;
+      if(tour_snap==1){
+        SetTourXYZView(tour_snap_time, touri);
       }
       else{
-        pj = touri->pathnodes + frame_index;
+        SetTourXYZView(global_times[itimes], touri);
       }
-
-      camera_current->eye[0]=pj->eye[0];
-      camera_current->eye[1]=pj->eye[1];
-      camera_current->eye[2]=pj->eye[2];
+      memcpy(camera_current->eye, touri->xyz_smv, 3*sizeof(float));
       camera_current->az_elev[1]=0.0;
       camera_current->az_elev[0]=0.0;
      }
@@ -2141,24 +2136,6 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
   }
 
   aperture_temp = Zoom2Aperture(zoom);
-
-  if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
-    if((viewtourfrompath==1&&selectedtour_index>=0)||keyframe_snap==1){
-      tourdata *touri;
-      pathdata *pj;
-
-      touri = tourinfo + selectedtour_index;
-      frame_index = GetTourFrame(touri,itimes);
-      if(keyframe_snap==1&&selected_frame!=NULL){
-        pj=&selected_frame->nodeval;
-      }
-      else{
-        pj = touri->pathnodes + frame_index;
-      }
-
-      aperture_temp=Zoom2Aperture(pj->zoom);
-    }
-  }
 
   widthdiv2 = fnear*tan(0.5*aperture_temp*DEG2RAD);
   fleft = -widthdiv2;
@@ -2236,22 +2213,19 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     /* set view direction for virtual tour */
     {
       tourdata *touri;
-      pathdata *pj;
 
       if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
-        if((viewtourfrompath==1&&selectedtour_index>=0)||keyframe_snap==1){
+        if((tour_snap==1||viewtourfrompath==1)&&selectedtour_index>=0){
           touri = tourinfo + selectedtour_index;
-          frame_index = GetTourFrame(touri,itimes);
-          if(keyframe_snap==1&&selected_frame!=NULL){
-            pj=&selected_frame->nodeval;
+          if(tour_snap==1){
+            SetTourXYZView(tour_snap_time, touri);
           }
           else{
-            pj = touri->pathnodes + frame_index;
+            SetTourXYZView(global_times[itimes], touri);
           }
-
-          viewx = pj->tour_view[0]+dEyeSeparation[0];
-          viewy = pj->tour_view[1]-dEyeSeparation[1];
-          viewz = pj->tour_view[2];
+          viewx = touri->view_smv[0]+dEyeSeparation[0];
+          viewy = touri->view_smv[1]-dEyeSeparation[1];
+          viewz = touri->view_smv[2];
           use_tour = 1;
         }
       }

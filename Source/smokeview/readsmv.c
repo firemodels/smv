@@ -16,6 +16,7 @@
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 #include "stdio_buffer.h"
+#include "glui_motion.h"
 
 #define BREAK break
 #define BREAK2 \
@@ -12247,7 +12248,8 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "RENDERFILETYPE") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i", &render_filetype, &movie_filetype);
+      sscanf(buffer, "%i %i %i", &render_filetype, &movie_filetype, &render_resolution);
+      RenderCB(RENDER_RESOLUTION);
       continue;
     }
     if(Match(buffer, "MOVIEFILETYPE") == 1){
@@ -13079,7 +13081,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     {
       int nkeyframes;
-      float key_time, key_xyz[3], key_az_path, key_view[3], zzoom, key_elev_path;
+      float key_time, key_xyz[3], key_az_path, key_view[3], zzoom;
       int viewtype, uselocalspeed;
       float *col;
 
@@ -13156,7 +13158,7 @@ int ReadIni2(char *inifile, int localfile){
       }
       if(Match(buffer, "VIEWTOURFROMPATH") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i", &viewtourfrompath);
+        sscanf(buffer, "%i %i %f", &viewtourfrompath, &tour_snap, &tour_snap_time);
         continue;
       }
       if(Match(buffer, "VIEWALLTOURS") == 1){
@@ -13723,7 +13725,10 @@ int ReadIni2(char *inifile, int localfile){
 
               touri = tourinfo + i;
               touri->path_times = NULL;
-              touri->pathnodes = NULL;
+              touri->display = 0;
+              touri->path_keyframes = NULL;
+              touri->path_xyzs = NULL;
+              touri->path_views = NULL;
             }
           }
           ReallocTourMemory();
@@ -13754,16 +13759,16 @@ int ReadIni2(char *inifile, int localfile){
               touri->nkeyframes = nkeyframes;
 
               if(NewMemory((void **)&touri->keyframe_times, nkeyframes*sizeof(float)) == 0)return 2;
-              if(NewMemory((void **)&touri->pathnodes,  tour_ntimes*sizeof(pathdata)) == 0)return 2;
               if(NewMemory((void **)&touri->path_times, tour_ntimes*sizeof(float)) == 0)return 2;
-
+              if(NewMemory((void **)&touri->path_keyframes, tour_ntimes*sizeof(keyframe *))==0)return 2;
+              if(NewMemory((void **)&touri->path_xyzs, 3*tour_ntimes*sizeof(float))==0)return 2;
+              if(NewMemory((void **)&touri->path_views, 3*tour_ntimes*sizeof(float))==0)return 2;
               thisframe = &touri->first_frame;
               for(j = 0; j < nkeyframes; j++){
                 key_view[0] = 0.0;
                 key_view[1] = 0.0;
                 key_view[2] = 0.0;
                 key_az_path = 0.0;
-                key_elev_path = 0.0;
                 viewtype = 0;
                 zzoom = 1.0;
                 uselocalspeed = 0;
@@ -13780,7 +13785,7 @@ int ReadIni2(char *inifile, int localfile){
                   sscanf(buffer, "%f %f %f %f %i %f %f %f %f %f %f %f %i",
                     &key_time,
                     key_xyz, key_xyz + 1, key_xyz + 2,
-                    &viewtype, &key_az_path, &key_elev_path, &dummy,
+                    &viewtype, &key_az_path, &dummy, &dummy,
                     dummy3, dummy3 + 1, dummy3 + 2,
                     &zzoom, &uselocalspeed);
                 }
@@ -13796,7 +13801,7 @@ int ReadIni2(char *inifile, int localfile){
                 }
                 if(zzoom<0.25)zzoom = 0.25;
                 if(zzoom>4.00)zzoom = 4.0;
-                addedframe = AddFrame(thisframe, key_time, key_xyz, key_az_path, key_elev_path, viewtype, zzoom, key_view);
+                addedframe = AddFrame(thisframe, key_time, key_xyz, key_view);
                 thisframe = addedframe;
                 touri->keyframe_times[j] = key_time;
               }
@@ -14193,7 +14198,7 @@ void WriteIniLocal(FILE *fileout){
   }
 
   fprintf(fileout, "TOURCIRCLE\n");
-  fprintf(fileout, "%f %f %f %f %f %f %f %f",
+  fprintf(fileout, "%f %f %f %f %f %f %f %f\n",
     tour_circular_center[0],
     tour_circular_center[1], tour_circular_center[2],
     tour_circular_view[0], tour_circular_view[1], tour_circular_view[2],
@@ -14230,26 +14235,18 @@ void WriteIniLocal(FILE *fileout){
 
         framei = framei->next;
         sprintf(buffer, "%f %f %f %f ",
-          framei->noncon_time,
-          DENORMALIZE_X(framei->nodeval.eye[0]),
-          DENORMALIZE_Y(framei->nodeval.eye[1]),
-          DENORMALIZE_Z(framei->nodeval.eye[2]));
+                framei->time,
+                DENORMALIZE_X(framei->xyz_smv[0]),
+                DENORMALIZE_Y(framei->xyz_smv[1]),
+                DENORMALIZE_Z(framei->xyz_smv[2]));
         TrimMZeros(buffer);
-        fprintf(fileout, " %s %i ", buffer, framei->viewtype);
-        if(framei->viewtype == REL_VIEW){
-          sprintf(buffer, "%f %f %f %f %f %f %f ",
-            framei->az_path, framei->nodeval.elev_path, 0.0,
-            0.0, 0.0, 0.0,
-            framei->nodeval.zoom);
-        }
-        else{
-          sprintf(buffer, "%f %f %f %f %f %f %f ",
-            DENORMALIZE_X(framei->nodeval.xyz_view_abs[0]),
-            DENORMALIZE_Y(framei->nodeval.xyz_view_abs[1]),
-            DENORMALIZE_Z(framei->nodeval.xyz_view_abs[2]),
-            0.0, 0.0, 0.0,
-            framei->nodeval.zoom);
-        }
+        fprintf(fileout, " %s %i ", buffer, 1);
+        sprintf(buffer, "%f %f %f %f %f %f %f ",
+                DENORMALIZE_X(framei->view_smv[0]),
+                DENORMALIZE_Y(framei->view_smv[1]),
+                DENORMALIZE_Z(framei->view_smv[2]),
+                0.0, 0.0, 0.0,
+                1.0);
         TrimMZeros(buffer);
         fprintf(fileout, " %s %i\n", buffer, uselocalspeed);
       }
@@ -15021,7 +15018,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "RENDERFILELABEL\n");
   fprintf(fileout, " %i\n", render_label_type);
   fprintf(fileout, "RENDERFILETYPE\n");
-  fprintf(fileout," %i %i\n",render_filetype,movie_filetype);
+  fprintf(fileout," %i %i %i\n",render_filetype, movie_filetype, render_resolution);
   fprintf(fileout, "MOVIEFILETYPE\n");
   {
     int quicktime_dummy=1;
@@ -15197,7 +15194,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "VIEWTIMES\n");
   fprintf(fileout, " %f %f %i\n", tour_tstart, tour_tstop, tour_ntimes);
   fprintf(fileout, "VIEWTOURFROMPATH\n");
-  fprintf(fileout," %i\n",viewtourfrompath);
+  fprintf(fileout, " %i %i %f\n", viewtourfrompath, tour_snap, tour_snap_time);
 
 
   if(flag == LOCAL_INI)WriteIniLocal(fileout);

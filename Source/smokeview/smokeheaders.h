@@ -714,7 +714,6 @@ EXTERNCPP void UncompressBoundaryDataFrame(meshdata *meshi,int frame_index);
 EXTERNCPP void RGBTest(void);
 EXTERNCPP void UpdateCADTextCoords(cadquad *quadi);
 EXTERNCPP void UpdateIndexColors(void);
-EXTERNCPP void AdjustTourTimes(tourdata *touri);
 EXTERNCPP void UpdateTourIndex(void);
 EXTERNCPP void SetTour(tourdata *thetour);
 EXTERNCPP void UpdatePlot3dDisplay(void);
@@ -820,13 +819,13 @@ EXTERNCPP unsigned char *ReadPNG(const char *filename,int *width, int *height, i
 
 EXTERNCPP void UpdateBlockVals(int flag);
 
+EXTERNCPP void SetTourXYZView(float t, tourdata *touri);
 EXTERNCPP void CreateVolTourList(void);
 EXTERNCPP void DeleteVolTourList(void);
 EXTERNCPP void CreateTourList(void);
 EXTERNCPP void DeleteTourList(void);
 EXTERNCPP void UpdateViewTour(void);
 EXTERNCPP void UpdateTourControls(void);
-EXTERNCPP void XYZView2AzElev(keyframe *kf);
 EXTERNCPP void SetupTour(void);
 EXTERNCPP void CreateTourPaths(void);
 EXTERNCPP void DrawTours(void);
@@ -847,7 +846,7 @@ EXTERNCPP void InitCircularTour(tourdata *touri, int nkeyframes, int option);
 EXTERNCPP void DeleteTourFrames(tourdata *thistour);
 EXTERNCPP keyframe *DeleteFrame(keyframe *step);
 EXTERNCPP void ReallocTourMemory(void);
-EXTERNCPP keyframe *AddFrame(keyframe *framei, float time, float *xyz, float key_azimuth, float elevation, int viewtype,float zoom,float view[3]);
+EXTERNCPP keyframe *AddFrame(keyframe *framei, float time, float *xyz,float view[3]);
 
 EXTERNCPP void GetBlockVals(float *xmin, float *xmax,
                    float *ymin, float *ymax,

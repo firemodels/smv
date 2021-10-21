@@ -8,6 +8,7 @@
 
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
+#include "glui_motion.h"
 
 #ifdef pp_LUA
 #include "lua_api.h"
@@ -1219,7 +1220,7 @@ void DragTourNode(int xm, int ym){
   float screen_perm[9];
 
   if(showtour_dialog==1&&edittour==1&&selected_frame!=NULL){
-    GetScreenMapping(selected_frame->nodeval.eye,screen_perm);
+    GetScreenMapping(selected_frame->xyz_smv, screen_perm);
   }
   else{
     return;
@@ -1252,9 +1253,9 @@ void DragTourNode(int xm, int ym){
 
 // offset tour node location
 
-        tour_xyz[0] += dx;
-        tour_xyz[1] += dy;
-        tour_xyz[2] += dz;
+        glui_tour_xyz[0] += dx;
+        glui_tour_xyz[1] += dy;
+        glui_tour_xyz[2] += dz;
 
         mouse_down_xy0[0]=xm;
         mouse_down_xy0[1]=ym;
@@ -3726,6 +3727,13 @@ void DoScript(void){
       }
       else if(current_script_command->command==SCRIPT_LOADSLICERENDER){
         if(current_script_command->exit==0){
+          if(render_resolution==RENDER_RESOLUTION_360){
+            if(viewpoint_script_ptr!=NULL)SetCurrentViewPoint(viewpoint_script);
+            render_size_index=RenderWindow;
+            resolution_multiplier = 1;
+            RenderCB(RENDER_RESOLUTION);
+            RenderCB(RENDER_START_360);
+          }
           RenderState(RENDER_ON);
           ScriptLoadSliceRender(current_script_command);
         }
