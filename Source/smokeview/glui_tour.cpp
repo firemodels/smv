@@ -80,6 +80,42 @@ void ToursRolloutCB(int var){
   }
 }
 
+#ifdef pp_NEWTOUR
+/* ------------------ SetKeyframeViews ------------------------ */
+
+void SetKeyFrameViews(float *view){
+  keyframe *this_key, *first_key, *last_key;
+
+  if(selected_tour==NULL)return;
+
+  first_key = selected_tour->first_frame.next;
+  last_key = selected_tour->last_frame.prev;
+  for(this_key = first_key; this_key->next!=NULL; this_key = this_key->next){
+    keyframe *next_key, *prev_key;
+
+    next_key = this_key->next;
+    prev_key = this_key->prev;
+    if(view==NULL){
+      if(this_key==last_key){
+        float view_temp[3];
+
+        view_temp[0] = 2*this_key->xyz_smv[0]-last_key->xyz_smv[0];
+        view_temp[1] = 2*this_key->xyz_smv[1]-last_key->xyz_smv[1];
+        view_temp[2] = 2*this_key->xyz_smv[2]-last_key->xyz_smv[2];
+        memcpy(this_key->view_smv, view_temp, 3*sizeof(float));
+      }
+      else{
+        memcpy(this_key->view_smv, next_key->xyz_smv, 3*sizeof(float));
+      }
+    }
+    else{
+      memcpy(this_key->view_smv, view, 3*sizeof(float));
+    }
+  }
+}
+#endif
+
+
 
 /* ------------------ UpdateTourState ------------------------ */
 
@@ -203,6 +239,8 @@ extern "C" void GluiTourSetup(int main_window){
   SPINNER_viewx=glui_tour->add_spinner_to_panel(PANEL_tourview,"x",GLUI_SPINNER_FLOAT,glui_tour_view,  KEYFRAME_viewXYZ,TourCB);
   SPINNER_viewy=glui_tour->add_spinner_to_panel(PANEL_tourview,"y",GLUI_SPINNER_FLOAT,glui_tour_view+1,KEYFRAME_viewXYZ,TourCB);
   SPINNER_viewz=glui_tour->add_spinner_to_panel(PANEL_tourview,"z",GLUI_SPINNER_FLOAT,glui_tour_view+2,KEYFRAME_viewXYZ,TourCB);
+  glui_tour->add_button_to_panel(PANEL_tourview, _("All nodes"), VIEW_ALL_NODES, TourCB);
+  glui_tour->add_button_to_panel(PANEL_tourview, _("Next node"), VIEW_NEXT_NODE, TourCB);
 
   PANEL_tournavigate = glui_tour->add_panel_to_panel(PANEL_node, "", GLUI_PANEL_NONE);
 
@@ -541,6 +579,12 @@ void TourCB(int var){
     ReallocTourMemory();
     CreateTourPaths();
     UpdateTimes();
+    break;
+  case VIEW_ALL_NODES:
+    SetKeyFrameViews(selected_frame->view_smv);
+    break;
+  case VIEW_NEXT_NODE:
+    SetKeyFrameViews(NULL);
     break;
   case KEYFRAME_viewXYZ:
     if(selected_frame!=NULL){

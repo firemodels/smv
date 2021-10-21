@@ -25,6 +25,8 @@
 #define TOUR_LABEL 19
 #define TOUR_HIDE 20
 #define KEYFRAME_viewXYZ 22
+#define VIEW_ALL_NODES 44
+#define VIEW_NEXT_NODE 45
 #define TOUR_LIST 24
 #define TOUR_AVATAR 31
 #define VIEW1 26

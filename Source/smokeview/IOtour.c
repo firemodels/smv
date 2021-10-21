@@ -780,10 +780,6 @@ void GetTourProperties(tourdata *touri){
 
   for(keyj = (touri->first_frame).next, j = 0; keyj->next!=NULL; keyj = keyj->next, j++){
     touri->keyframe_list[j]  = keyj;
-#ifndef pp_NEWTOUR
-    keyj->con_time           = keyj->time;
-    keyj->noncon_time        = keyj->time;
-#endif
     touri->keyframe_times[j] = keyj->time;
     NORMALIZE_XYZ(keyj->xyz_smv, keyj->xyz_fds);
   }
