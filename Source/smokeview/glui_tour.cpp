@@ -88,10 +88,9 @@ void SetKeyFrameViews(float *view){
   first_key = selected_tour->first_frame.next;
   last_key = selected_tour->last_frame.prev;
   for(this_key = first_key; this_key->next!=NULL; this_key = this_key->next){
-    keyframe *next_key, *prev_key;
+    keyframe *next_key;
 
     next_key = this_key->next;
-    prev_key = this_key->prev;
     if(view==NULL){
       if(this_key==last_key){
         float view_temp[3];
