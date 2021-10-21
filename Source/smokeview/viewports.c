@@ -2088,18 +2088,10 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     VP_scene.width=screenWidth;
   }
   if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
-#ifdef pp_NEWTOUR
     if((tour_snap==1||viewtourfrompath==1)&&selectedtour_index>=0){
-#else
-    if(viewtourfrompath==1&&selectedtour_index>=0){
-#endif
       tourdata *touri;
-#ifndef pp_NEWTOUR
-      pathdata *pj;
-#endif
 
       touri = tourinfo + selectedtour_index;
-#ifdef pp_NEWTOUR
       if(tour_snap==1){
         SetTourXYZView(tour_snap_time, touri);
       }
@@ -2107,14 +2099,6 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
         SetTourXYZView(global_times[itimes], touri);
       }
       memcpy(camera_current->eye, touri->xyz_smv, 3*sizeof(float));
-#else
-      frame_index = GetTourFrame(touri,itimes);
-      pj = touri->pathnodes + frame_index;
-
-      camera_current->eye[0]=pj->xyz[0];
-      camera_current->eye[1]=pj->xyz[1];
-      camera_current->eye[2]=pj->xyz[2];
-#endif
       camera_current->az_elev[1]=0.0;
       camera_current->az_elev[0]=0.0;
      }
@@ -2229,18 +2213,10 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     /* set view direction for virtual tour */
     {
       tourdata *touri;
-#ifndef pp_NEWTOUR
-      pathdata *pj;
-#endif
 
       if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
-#ifdef pp_NEWTOUR
         if((tour_snap==1||viewtourfrompath==1)&&selectedtour_index>=0){
-#else
-        if(viewtourfrompath==1&&selectedtour_index>=0){
-#endif
           touri = tourinfo + selectedtour_index;
-#ifdef pp_NEWTOUR
           if(tour_snap==1){
             SetTourXYZView(tour_snap_time, touri);
           }
@@ -2250,14 +2226,6 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
           viewx = touri->view_smv[0]+dEyeSeparation[0];
           viewy = touri->view_smv[1]-dEyeSeparation[1];
           viewz = touri->view_smv[2];
-#else
-          frame_index = GetTourFrame(touri,itimes);
-          pj = touri->pathnodes + frame_index;
-
-          viewx = pj->tour_view[0]+dEyeSeparation[0];
-          viewy = pj->tour_view[1]-dEyeSeparation[1];
-          viewz = pj->tour_view[2];
-#endif
           use_tour = 1;
         }
       }

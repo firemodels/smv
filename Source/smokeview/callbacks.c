@@ -1220,11 +1220,7 @@ void DragTourNode(int xm, int ym){
   float screen_perm[9];
 
   if(showtour_dialog==1&&edittour==1&&selected_frame!=NULL){
-#ifdef pp_NEWTOUR
     GetScreenMapping(selected_frame->xyz_smv, screen_perm);
-#else
-    GetScreenMapping(selected_frame->nodeval.xyz,screen_perm);
-#endif
   }
   else{
     return;

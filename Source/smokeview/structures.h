@@ -858,29 +858,13 @@ typedef struct _culldata {
   int npixels,npixels_old;
 } culldata;
 
-/* --------------------------  pathdata ------------------------------------ */
-#ifndef pp_NEWTOUR
-typedef struct _pathdata {
-  float time, xyz[3], xyz_view_abs[3], tour_view[3];
-  struct _pathdata *keysnap;
-} pathdata;
-#endif
-
 /* --------------------------  keyframe ------------------------------------ */
 
 typedef struct _keyframe {
   int selected, npoints;
-#ifdef pp_NEWTOUR
   float time;
-#else
-  float noncon_time, con_time, time;
-  pathdata nodeval;
-#endif
   float view_smv[3], view2_smv[3];
   float xyz_fds[3], xyz_smv[3];
-#ifndef pp_NEWTOUR
-  float total_distance;
-#endif
   float distance;
   float  xyz_tangent_left[3],  view_tangent_left[3];
   float xyz_tangent_right[3], view_tangent_right[3];
@@ -892,15 +876,10 @@ typedef struct _keyframe {
 typedef struct _tourdata {
   char label[300],menulabel[128];
   keyframe first_frame,last_frame, **keyframe_list;
-#ifndef pp_NEWTOUR
-  pathdata *pathnodes;
-#endif
   int glui_avatar_index, display2;
   float *path_times,*keyframe_times;
-#ifdef pp_NEWTOUR
   float xyz_smv[3], view_smv[3], *path_xyzs, *path_views;
   struct _keyframe **path_keyframes;
-#endif
   float global_dist;
   int *timeslist;
   int ntimes, nkeyframes;

@@ -35,9 +35,7 @@ GLUI_Panel *PANEL_tour_circular_view;
 
 GLUI_Checkbox *CHECKBOX_view1 = NULL;
 GLUI_Checkbox *CHECKBOX_view2 = NULL;
-#ifdef pp_NEWTOUR
 GLUI_Checkbox *CHECKBOX_tour_snap = NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_showtourroute1 = NULL;
 GLUI_Checkbox *CHECKBOX_showtourroute2 = NULL;
 GLUI_Checkbox *CHECKBOX_showintermediate = NULL;
@@ -80,7 +78,6 @@ void ToursRolloutCB(int var){
   }
 }
 
-#ifdef pp_NEWTOUR
 /* ------------------ SetKeyframeViews ------------------------ */
 
 void SetKeyFrameViews(float *view){
@@ -113,9 +110,6 @@ void SetKeyFrameViews(float *view){
     }
   }
 }
-#endif
-
-
 
 /* ------------------ UpdateTourState ------------------------ */
 
@@ -222,9 +216,7 @@ extern "C" void GluiTourSetup(int main_window){
 
   CHECKBOX_showtourroute1 = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("Show tour"), &edittour, SHOWTOURROUTE1, TourCB);
   CHECKBOX_view1 = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("View from tour"), &viewtourfrompath, VIEWTOURFROMPATH1, TourCB);
-#ifdef pp_NEWTOUR
   CHECKBOX_tour_snap = glui_tour->add_checkbox_to_panel(ROLLOUT_keyframe, _("View from current tour position"), &tour_snap, TOUR_SNAP, TourCB);
-#endif
 
   PANEL_node = glui_tour->add_panel_to_panel(ROLLOUT_keyframe, "", GLUI_PANEL_NONE);
 
@@ -363,13 +355,8 @@ extern "C" void SetGluiTourKeyframe(void){
   glui_avatar_index=ti->glui_avatar_index;
   TourCB(TOUR_AVATAR);
   LISTBOX_avatar->set_int_val(glui_avatar_index);
-#ifdef pp_NEWTOUR
   eye = selected_frame->xyz_smv;
   xyz_view = selected_frame->view_smv;
-#else
-  eye = selected_frame->nodeval.xyz;
-  xyz_view = selected_frame->nodeval.xyz_view_abs;
-#endif
 
   glui_tour_time    = selected_frame->time;
   glui_tour_xyz[0]  = TrimVal(DENORMALIZE_X(eye[0]));
@@ -556,7 +543,6 @@ void TourCB(int var){
     TourCB(VIEWTOURFROMPATH);
     CHECKBOX_view1->set_int_val(viewtourfrompath);
     break;
-#ifdef pp_NEWTOUR
   case TOUR_SNAP:
     if(tour_snap==1){
       if(global_times!=NULL){
@@ -567,7 +553,6 @@ void TourCB(int var){
       }
     }
     break;
-#endif
   case VIEWTOURFROMPATH:
     viewtourfrompath = 1 - viewtourfrompath;
     TOURMENU(MENU_TOUR_VIEWFROMROUTE);
@@ -590,11 +575,7 @@ void TourCB(int var){
     if(selected_frame!=NULL){
       if(selected_tour-tourinfo==0)dirtycircletour=1;
       selected_tour->startup=0;
-#ifdef pp_NEWTOUR
       xyz_view = selected_frame->view_smv;
-#else
-      xyz_view = selected_frame->nodeval.xyz_view_abs;
-#endif
       NORMALIZE_XYZ(xyz_view,glui_tour_view);
 
       if(update_tour_path==1)CreateTourPaths();
@@ -606,19 +587,12 @@ void TourCB(int var){
       show_tour_hint = 0;
       if(selected_tour-tourinfo==0)dirtycircletour=1;
       selected_tour->startup=0;
-#ifdef pp_NEWTOUR
       eye = selected_frame->xyz_smv;
       xyz_view = selected_frame->view_smv;
-#else
-      eye = selected_frame->nodeval.xyz;
-      xyz_view = selected_frame->nodeval.xyz_view_abs;
-#endif
 
       NORMALIZE_XYZ(eye,glui_tour_xyz);
-#ifdef pp_NEWTOUR
       memcpy(selected_frame->xyz_fds,           glui_tour_xyz, 3*sizeof(float));
       memcpy(selected_frame->xyz_smv, eye,      3*sizeof(float));
-#endif
 
       NORMALIZE_XYZ(xyz_view,glui_tour_view);
       if(update_tour_path==1)CreateTourPaths();
@@ -669,31 +643,16 @@ void TourCB(int var){
       nextkey=thiskey->next;
       if(nextkey==&thistour->last_frame){
         lastkey=thiskey->prev;
-#ifdef pp_NEWTOUR
         key_xyz[0] = DENORMALIZE_X(2*thiskey->xyz_smv[0]-lastkey->xyz_smv[0]);
         key_xyz[1] = DENORMALIZE_Y(2*thiskey->xyz_smv[1]-lastkey->xyz_smv[1]);
         key_xyz[2] = DENORMALIZE_Z(2*thiskey->xyz_smv[2]-lastkey->xyz_smv[2]);
-#else
-        key_xyz[0]=DENORMALIZE_X(2*thiskey->nodeval.xyz[0]-lastkey->nodeval.xyz[0]);
-        key_xyz[1]=DENORMALIZE_Y(2*thiskey->nodeval.xyz[1]-lastkey->nodeval.xyz[1]);
-        key_xyz[2]=DENORMALIZE_Z(2*thiskey->nodeval.xyz[2]-lastkey->nodeval.xyz[2]);
-#endif
-#ifdef pp_NEWTOUR
         key_time_in = thiskey->time;
         thiskey->time=(thiskey->time+lastkey->time)/2.0;
         key_view[0] = DENORMALIZE_X(2*thiskey->view_smv[0]-lastkey->view_smv[0]);
         key_view[1] = DENORMALIZE_Y(2*thiskey->view_smv[1]-lastkey->view_smv[1]);
         key_view[2] = DENORMALIZE_Z(2*thiskey->view_smv[2]-lastkey->view_smv[2]);
-#else
-        key_time_in = thiskey->noncon_time;
-        thiskey->noncon_time=(thiskey->noncon_time+lastkey->noncon_time)/2.0;
-        key_view[0]=DENORMALIZE_X(2*thiskey->nodeval.xyz_view_abs[0]-lastkey->nodeval.xyz_view_abs[0]);
-        key_view[1]=DENORMALIZE_Y(2*thiskey->nodeval.xyz_view_abs[1]-lastkey->nodeval.xyz_view_abs[1]);
-        key_view[2]=DENORMALIZE_Z(2*thiskey->nodeval.xyz_view_abs[2]-lastkey->nodeval.xyz_view_abs[2]);
-#endif
       }
       else{
-#ifdef pp_NEWTOUR
         key_xyz[0]  = DENORMALIZE_X((thiskey->xyz_smv[0]+nextkey->xyz_smv[0])/2.0);
         key_xyz[1]  = DENORMALIZE_Y((thiskey->xyz_smv[1]+nextkey->xyz_smv[1])/2.0);
         key_xyz[2]  = DENORMALIZE_Z((thiskey->xyz_smv[2]+nextkey->xyz_smv[2])/2.0);
@@ -701,15 +660,6 @@ void TourCB(int var){
         key_view[0] = DENORMALIZE_X((thiskey->view_smv[0]+nextkey->view_smv[0])/2.0);
         key_view[1] = DENORMALIZE_Y((thiskey->view_smv[1]+nextkey->view_smv[1])/2.0);
         key_view[2] = DENORMALIZE_Z((thiskey->view_smv[2]+nextkey->view_smv[2])/2.0);
-#else
-        key_xyz[0] = DENORMALIZE_X((thiskey->nodeval.xyz[0]+nextkey->nodeval.xyz[0])/2.0);
-        key_xyz[1] = DENORMALIZE_Y((thiskey->nodeval.xyz[1]+nextkey->nodeval.xyz[1])/2.0);
-        key_xyz[2] = DENORMALIZE_Z((thiskey->nodeval.xyz[2]+nextkey->nodeval.xyz[2])/2.0);
-        key_time_in = (thiskey->noncon_time+nextkey->noncon_time)/2.0;
-        key_view[0]=DENORMALIZE_X((thiskey->nodeval.xyz_view_abs[0]+nextkey->nodeval.xyz_view_abs[0])/2.0);
-        key_view[1]=DENORMALIZE_Y((thiskey->nodeval.xyz_view_abs[1]+nextkey->nodeval.xyz_view_abs[1])/2.0);
-        key_view[2]=DENORMALIZE_Z((thiskey->nodeval.xyz_view_abs[2]+nextkey->nodeval.xyz_view_abs[2])/2.0);
-#endif
       }
       newframe=AddFrame(selected_frame,key_time_in,key_xyz,key_view);
       CreateTourPaths();
