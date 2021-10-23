@@ -27,6 +27,7 @@ int lua_displayCB(lua_State *L);
 
 char *ParseCommandline(int argc, char **argv);
 void Usage(char *prog,int option);
+int CheckSMVFile(char *file, char *subdir);
 
 int ProgramSetupLua(lua_State *L, int argc, char **argv) {
   char *progname;
@@ -80,13 +81,13 @@ int ProgramSetupLua(lua_State *L, int argc, char **argv) {
 
 int lua_SetupGLUT(lua_State *L) {
   int argc = lua_tonumber(L, 1);
-  char **argv_sv = lua_topointer(L, 2);
+  char * const *argv_sv = lua_topointer(L, 2);
   SetupGlut(argc,argv_sv);
   return 0;
 }
 
 int lua_SetupCase(lua_State *L) {
-  char **argv_sv = lua_topointer(L, 2);
+  char * const *argv_sv = lua_topointer(L, 2);
   char *filename = argv_sv[1];
   int return_code = SetupCase(filename);
   lua_pushnumber(L, return_code);
@@ -95,7 +96,6 @@ int lua_SetupCase(lua_State *L) {
 
 int RunLuaBranch(lua_State *L, int argc, char **argv) {
   int return_code;
-  char **argv_sv;
   SetStdOut(stdout);
   initMALLOC();
   InitRandAB(1000000);
@@ -231,6 +231,7 @@ int lua_renderclip(lua_State *L) {
   int right = lua_tonumber(L, 3);
   int bottom = lua_tonumber(L, 4);
   int top = lua_tonumber(L, 5);
+  renderclip(flag, left, right, bottom, top);
   return 0;
 }
 
@@ -248,6 +249,9 @@ int lua_render(lua_State *L) {
   return 1;
 }
 
+/*
+  Returns an error code then the image data.
+*/
 int lua_render_var(lua_State *L) {
   gdImagePtr RENDERimage;
   int return_code;
@@ -256,6 +260,7 @@ int lua_render_var(lua_State *L) {
 
   // render image to RENDERimage gd buffer
   return_code = RenderFrameLuaVar(VIEW_CENTER, &RENDERimage);
+  lua_pushnumber(L, return_code);
   // convert to a simpler byte-buffer
   imageData = gdImagePngPtr(RENDERimage, &imageSize);
   // push to stack
@@ -263,7 +268,7 @@ int lua_render_var(lua_State *L) {
   // destroy C copy
   gdImageDestroy(RENDERimage);
 
-  return 1;
+  return 2;
 }
 
 int lua_gsliceview(lua_State *L) {
@@ -799,7 +804,7 @@ int lua_initsmvdata(lua_State *L) {
 */
 int lua_initsmvproginfo(lua_State *L) {
   char version[256];
-  char githash[256];
+  // char githash[256];
 
   GetProgVersion(version);
   addLuaPaths(L);
@@ -2002,7 +2007,8 @@ int lua_set_blockcolor(lua_State *L) {
 int lua_set_blockshininess(lua_State *L) {
   float v = lua_tonumber(L, 1);
   int return_code = set_blockshininess(v);
-  return 0;
+  lua_pushnumber(L, return_code);
+  return 1;
 }
 
 int lua_set_blockspecular(lua_State *L) {
@@ -2010,7 +2016,8 @@ int lua_set_blockspecular(lua_State *L) {
   float g = lua_tonumber(L, 2);
   float b = lua_tonumber(L, 3);
   int return_code = set_blockspecular(r, g, b);
-  return 0;
+  lua_pushnumber(L, return_code);
+  return 1;
 }
 
 int lua_set_boundcolor(lua_State *L) {
@@ -2018,7 +2025,8 @@ int lua_set_boundcolor(lua_State *L) {
   float g = lua_tonumber(L, 2);
   float b = lua_tonumber(L, 3);
   int return_code = set_boundcolor(r, g, b);
-  return 0;
+  lua_pushnumber(L, return_code);
+  return 1;
 }
 
 // int lua_set_colorbar_textureflag(lua_State *L) {
@@ -2070,7 +2078,6 @@ int lua_set_colorbar_colors(lua_State *L) {
     lua_pop(L, 1);
   }
   int i;
-  float *color;
   float colors[ncolors][3];
   for (i = 1; i <= ncolors; i++) {
     lua_pushnumber(L, i);
@@ -2115,7 +2122,6 @@ int lua_set_color2bar_colors(lua_State *L) {
     return 1;
   }
   int i;
-  float *color;
   float colors[ncolors][3];
   for (i = 1; i <= ncolors; i++) {
     lua_pushnumber(L, i);
@@ -2207,37 +2213,33 @@ int lua_set_heatoncolor(lua_State *L) {
 
 int lua_set_isocolors(lua_State *L) {
   float shininess = lua_tonumber(L, 1);
-  float default_opaqueness = lua_tonumber(L, 2);
+  float transparency = lua_tonumber(L, 2);
+  int transparency_option = lua_tonumber(L, 3);
+  int opacity_change = lua_tonumber(L, 4);
   float specular[3];
-  get_color(L, 3, specular);
-  int ncolors = 0;
-  int x;
+  get_color(L, 5, specular);
+  int n_colors = 0;
   // count the number of colours
   lua_pushnil(L);  /* first key */
-  while (lua_next(L, 4) != 0) {
+  while (lua_next(L, 6) != 0) {
     lua_pop(L, 1); // remove value (leave key for next iteration)
-    ncolors++;
-    x = lua_tonumber(L, -1);
+    n_colors++;
   }
   int i;
-  float *color;
-  float colors[ncolors][3];
-  for (i = 1; i <= ncolors; i++) {
-    if (!lua_istable(L, 4)) {
+  float colors[MAX_ISO_COLORS][4];
+  for (i = 1; i <= n_colors; i++) {
+    if (!lua_istable(L, 6)) {
       fprintf(stderr, "isocolor table is not present\n");
       return 1;
     }
     lua_pushnumber(L, i);
-    lua_gettable(L, 4);
+    lua_gettable(L, 6);
     get_color(L, -1, colors[i-1]);
   }
-  // for (i = 0; i < ncolors; i++) {
-  //   printf("%d: %f %f %f\n", i,
-  //     colors[i][0], colors[i][1], colors[i][2]);
-  // }
-  // specular = lua_tonumber(L, 3);
-  // int return_code = set_diffuselight(r, g, b);
-  return 0;
+  int return_code = set_isocolors(shininess, transparency, transparency_option, 
+                                  opacity_change, specular, n_colors, colors);
+  lua_pushnumber(L,return_code);
+  return 1;
 }
 
 int lua_set_colortable(lua_State *L) {
@@ -2471,10 +2473,10 @@ int lua_set_usenewdrawface(lua_State *L) {
 }
 
 int lua_set_veclength(lua_State *L) {
-  float a = lua_tonumber(L, 1);
-  float b = lua_tonumber(L, 2);
-  float c = lua_tonumber(L, 3);
-  int return_code = set_veclength(a, b, c);
+  float vf = lua_tonumber(L, 1);
+  int vec_uniform_length = lua_tonumber(L, 2);
+  int vec_uniform_spacing = lua_tonumber(L, 3);
+  int return_code = set_veclength(vf, vec_uniform_length, vec_uniform_spacing);
   lua_pushnumber(L, return_code);
   return 1;
 }
@@ -2799,7 +2801,8 @@ int lua_set_meshvis(lua_State *L) {
     i++;
   }
   int return_code = set_meshvis(n, vals);
-  return 0;
+  lua_pushnumber(L, return_code);
+  return 1;
 }
 
 int lua_set_meshoffset(lua_State *L) {
@@ -4355,7 +4358,7 @@ void addLuaPaths(lua_State *L) {
   // found, typiclly text based files with the .lua extension.
 
   lua_getglobal(L, "package");
-  int pathType = lua_getfield(L, -1, "path");
+  lua_getfield(L, -1, "path");
   const char *oldPath = lua_tostring(L, -1);
   int newLength = strlen(oldPath) + 1 + strlen(smokeview_bindir_abs) + 1 + 5 +1;
   char newPath[newLength];
@@ -4370,7 +4373,7 @@ void addLuaPaths(lua_State *L) {
 
   // package.cpath is a path variable where Lua modules may be found,
   // typically binary (C based) files such as .dll or .so.
-  int cpathType = lua_getfield(L, -1, "cpath");
+  lua_getfield(L, -1, "cpath");
   const char *oldCPath = lua_tostring(L, -1);
   int newLengthC = strlen(oldCPath) + 1 + 2*strlen(smokeview_bindir_abs) + 2*1 + 10 +1;
   char newCPath[newLengthC];
@@ -4874,7 +4877,7 @@ lua_State* initLua() {
   lua_register(L, "slice_data_map_frames_count_greater_eq", lua_slice_data_map_frames_count_greater_eq);
   lua_register(L, "slice_get_times", lua_slice_get_times);
 
-  //add fdsprefix (the path plus  CHID) as a variable in the lua environment
+  //add fdsprefix (the path plus CHID) as a variable in the lua environment
   lua_pushstring(L, fdsprefix);
   lua_setglobal(L, "fdsprefix");
 
@@ -4896,7 +4899,10 @@ lua_State* initLua() {
   lua_setglobal(L, "smokeviewEmbedded");
 
   // luaL_requiref (L, "smv", luaopen_smv, 1)
-  luaL_dostring(L, "require(\"smv\")");
+  int smv_loaded_err = luaL_dostring(L, "require(\"smv\")");
+  if (smv_loaded_err) {
+    fprintf(stderr, "Failed to load smv (lua)\n");
+  }
   // luaL_loadfile(L, "smv.lua");
   // int luaL_1dofile (lua_State *L, const char *filename);
   return L;
@@ -4928,9 +4934,8 @@ lua_State* initLua() {
 //  return 1;
 // }
 
-void runScriptString(char *string) {
-  luaL_dostring(L, string);
-//  return 0;
+int runScriptString(char *string) {
+  return luaL_dostring(L, string);
 }
 
 int loadLuaScript(char *filename) {
@@ -5006,7 +5011,10 @@ int loadSSFScript(char *filename) {
   int level =  0;
   char lString[1024];
   snprintf(lString, 1024, "require(\"ssfparser\")\nrunSSF(\"%s.ssf\")", fdsprefix);
-  luaL_dostring(L, "require \"ssfparser\"");
+  int ssfparser_loaded_err = luaL_dostring(L, "require \"ssfparser\"");
+  if (ssfparser_loaded_err) {
+    fprintf(stderr, "Failed to load ssfparser\n");
+  }
   int return_code = luaL_loadstring(L, lString);
   switch (return_code) {
     case LUA_OK:

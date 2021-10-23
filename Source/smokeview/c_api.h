@@ -253,7 +253,9 @@ int set_flip(int setting); // FLIP
 int set_foregroundcolor(float r, float g, float b); // FOREGROUNDCOLOR
 int set_heatoffcolor(float r, float g, float b); // HEATOFFCOLOR
 int set_heatoncolor(float r, float g, float b); // HEATONCOLOR
-int set_isocolors(float shininess, float default_opaueness, float specular[3], int nlevels, float colors[][4]);
+int set_isocolors(float shininess, float transparency, int transparency_option, 
+                  int opacity_change, float specular[3], int n_colors, 
+                  float colors[][4]);
 int set_colortable(int ncolors, int colors[][4], char **names);
 int set_lightpos0(float x, float y, float z, float w); // LIGHTPOS0
 int set_lightpos1(float x, float y, float z, float w); // LIGHTPOS1
@@ -284,7 +286,7 @@ int set_sprinklerabssize(float v); // SPRINKLERABSSIZE
 int set_streaklinewidth(float v); // STREAKLINEWIDTH
 int set_ticklinewidth(float v); // TICKLINEWIDTH
 int set_usenewdrawface(int v); // USENEWDRAWFACE
-int set_veclength(int a, float b, float c); // VECLENGTH
+int set_veclength(float vf, int vec_uniform_length_in, int vec_uniform_spacing_in); // VECLENGTH
 int set_vectorlinewidth(float a, float b); // VECTORLINEWIDTH
 int set_vectorpointsize(float v); // VECTORPOINTSIZE
 int set_ventlinewidth(float v); // VENTLINEWIDTH

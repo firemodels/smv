@@ -457,9 +457,6 @@ int render(const char *filename) {
 char* form_filename(int view_mode, char *renderfile_name, char *renderfile_dir,
                    char *renderfile_path, int woffset, int hoffset, int screenH,
                    const char *basename) {
-
-    // char renderfile_ext[4]; // does not include the '.'
-    char suffix[20];
     char* renderfile_ext;
     char* view_suffix;
 
@@ -593,10 +590,6 @@ int RenderFrameLua(int view_mode, const char *basename) {
 }
 
 int RenderFrameLuaVar(int view_mode, gdImagePtr *RENDERimage) {
-  char renderfile_name[1024]; // the name the file (including extension)
-  char renderfile_dir[1024]; // the directory into which the image will be
-                            // rendered
-  char renderfile_path[2048]; // the full path of the rendered image
   int woffset=0,hoffset=0;
   int screenH;
   int return_code;
@@ -719,10 +712,10 @@ int settime(float timeval) {
   if(global_times!=NULL&&nglobal_times>0){
     if(timeval<global_times[0])timeval=global_times[0];
     if(timeval>global_times[nglobal_times-1]-0.0001){
+#ifdef pp_SETTIME
       float dt;
 
       dt = timeval-global_times[nglobal_times-1]-0.0001;
-#ifdef pp_SETTIME
       if(nglobal_times>1&&dt>global_times[1]-global_times[0]){
         fprintf(stderr,"*** Error: data not available at time requested\n");
         fprintf(stderr,"           time: %f s, min time: %f, max time: %f s\n",
@@ -2423,21 +2416,23 @@ int set_heatoncolor(float r, float g, float b) {
   return 0;
 } // HEATONCOLOR
 
-int set_isocolors(float shininess, float default_opaqueness, float specular[3],
-                  int nlevels, float colors[][4]) {
-  int i;
-
+int set_isocolors(float shininess, float transparency, int transparency_option, int opacity_change, float specular[3],
+                  int n_colors, float colors[][4]) {
   iso_shininess = shininess;
-  iso_transparency = default_opaqueness;
+  iso_transparency = transparency;
+  iso_transparency_option = transparency_option;
+  iso_opacity_change = opacity_change;
   iso_specular[0] = specular[0];
   iso_specular[1] = specular[1];
   iso_specular[2] = specular[2];
 
-  for (i = 0; i < nlevels; i++) {
-    iso_colors[0] = CLAMP(colors[i][0], 0.0, 1.0);
-    iso_colors[1] = CLAMP(colors[i][1], 0.0, 1.0);
-    iso_colors[2] = CLAMP(colors[i][2], 0.0, 1.0);
-    iso_colors[3] = CLAMP(colors[i][3], 0.0, 1.0);
+  for(int nn = 0; nn<n_colors; nn++){
+    float *iso_color;
+    iso_color = iso_colors + 4 * nn;
+    iso_color[0] = CLAMP(colors[nn][0], 0.0, 1.0);
+    iso_color[1] = CLAMP(colors[nn][1], 0.0, 1.0);
+    iso_color[2] = CLAMP(colors[nn][2], 0.0, 1.0);
+    iso_color[3] = CLAMP(colors[nn][3], 0.0, 1.0);
   }
   UpdateIsoColors();
   UpdateIsoColorlevel();
@@ -2624,10 +2619,10 @@ int set_usenewdrawface(int v) {
   return 0;
 } // USENEWDRAWFACE
 
-int set_veclength(int a, float b, float c) {
-  int dummy1 = a; // TODO: what is the point of this value
-  vecfactor = b;
-  int dummy2 = c; // TODO: what is the point of this value
+int set_veclength(float vf, int vec_uniform_length_in, int vec_uniform_spacing_in) {
+  vecfactor = vf;
+  vec_uniform_spacing = vec_uniform_spacing_in;
+  vec_uniform_length = vec_uniform_length_in;
   return 0;
 } // VECLENGTH
 
