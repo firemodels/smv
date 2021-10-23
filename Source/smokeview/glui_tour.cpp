@@ -230,8 +230,8 @@ extern "C" void GluiTourSetup(int main_window){
   SPINNER_viewx=glui_tour->add_spinner_to_panel(PANEL_tourview,"x",GLUI_SPINNER_FLOAT,glui_tour_view,  KEYFRAME_viewXYZ,TourCB);
   SPINNER_viewy=glui_tour->add_spinner_to_panel(PANEL_tourview,"y",GLUI_SPINNER_FLOAT,glui_tour_view+1,KEYFRAME_viewXYZ,TourCB);
   SPINNER_viewz=glui_tour->add_spinner_to_panel(PANEL_tourview,"z",GLUI_SPINNER_FLOAT,glui_tour_view+2,KEYFRAME_viewXYZ,TourCB);
-  glui_tour->add_button_to_panel(PANEL_tourview, _("All nodes"), VIEW_ALL_NODES, TourCB);
-  glui_tour->add_button_to_panel(PANEL_tourview, _("Next node"), VIEW_NEXT_NODE, TourCB);
+  glui_tour->add_button_to_panel(PANEL_tourview, _("Use target at each node"),     VIEW_ALL_NODES, TourCB);
+  glui_tour->add_button_to_panel(PANEL_tourview, _("Set each target using next node"), VIEW_NEXT_NODE, TourCB);
 
   PANEL_tournavigate = glui_tour->add_panel_to_panel(PANEL_node, "", GLUI_PANEL_NONE);
 
@@ -566,9 +566,11 @@ void TourCB(int var){
     break;
   case VIEW_ALL_NODES:
     SetKeyFrameViews(selected_frame->view_smv);
+    SetGluiTourKeyframe();
     break;
   case VIEW_NEXT_NODE:
     SetKeyFrameViews(NULL);
+    SetGluiTourKeyframe();
     break;
   case KEYFRAME_viewXYZ:
     if(selected_frame!=NULL){
