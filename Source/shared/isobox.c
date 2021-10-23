@@ -154,7 +154,7 @@ float GetTetraVol(float *verts[4], float vals[4], float level){
 
 /* ------------------ GetIsoBox ------------------------ */
 
-void GetIsoBox(float x[2], float y[2], float z[3], float *xyz0, float *vals, float level,
+void GetIsoBox(float x[2], float y[2], float z[2], float *xyz0, float *vals, float level,
                float *xyzverts, int *nvert, int *triangles, int *ntriangles, int *polys, int *npolys){
                  int nodeindexes[8]={0,1,2,3,4,5,6,7};
                  float xvert[6], yvert[6], zvert[6];
@@ -795,7 +795,7 @@ void CalcNormal(const float *xx, const float *yy, const float *zz, float *out){
 
 /* ------------------ ReduceToUnit ------------------------ */
 
-void ReduceToUnit(float *v){
+void ReduceToUnit(float v[3]){
   float length;
 
   length = (float)sqrt((double)(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]));
