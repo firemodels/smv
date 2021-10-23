@@ -80,8 +80,7 @@ options =
             end
         end
     , GEOMSHOW = function(opt)
-        local show_faces_interior = opt.argLines[1][1]
-        local show_faces_exterior = opt.argLines[1][2]
+
         local show_faces_solid = opt.argLines[1][3]
         local show_faces_outline = opt.argLines[1][4]
         local smooth_geom_normal = opt.argLines[1][5]
@@ -94,8 +93,6 @@ options =
         local geom_vert_exag = opt.argLines[3][1]
         local geom_max_angle = opt.argLines[3][2]
         return function ()
-            set_showfaces_interior(show_faces_interior)
-            set_showfaces_exterior(show_faces_exterior)
             set_showfaces_solid(show_faces_solid)
             set_showfaces_outline(show_faces_outline)
             set_smoothgeomnormal(smooth_geom_normal)
@@ -525,12 +522,6 @@ options =
     , FRAMERATEVALUE = function(opt)
         local a = opt.argLines[1][1]
         return function () set_frameratevalue(a) end
-        end
-    , GEOMDIAGS = function(opt)
-        local a = opt.argLines[1][1]
-        local b = opt.argLines[1][2]
-        local c = opt.argLines[1][3]
-        return function () set_geomdiags(a, b, c) end
         end
     , GVERSION = function(opt)
         local a = opt.argLines[1][1]
@@ -1411,8 +1402,12 @@ options =
         end
     , PERCENTILELEVEL = function(opt)
         local v  = opt.argLines[1][1]
+        local p_level_max = opt.argLines[1][2]
+        if not p_level_max then
+            p_level_max = -1.0
+        end
         return function ()
-            set_percentilelevel(v)
+            set_percentilelevel(v,p_level_max)
         end
         end
     , TIMEOFFSET = function(opt)

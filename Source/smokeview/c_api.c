@@ -7,7 +7,6 @@
 #include <math.h>
 #include GLUT_H
 
-#include "update.h"
 #include "smokeviewvars.h"
 #include "smokeheaders.h"
 #include "IOvolsmoke.h"
@@ -32,6 +31,7 @@ void UnLoadVolsmoke3DMenu(int value);
 void LoadSlicei(int set_slicecolor, int value);
 void UpdateSliceBounds(void);
 void OutputSliceData(void);
+void UnloadBoundaryMenu(int value);
 
 int set_slice_bound_min(const char *slice_type, int set, float value) {
 	int i;
@@ -46,11 +46,12 @@ int set_slice_bound_min(const char *slice_type, int set, float value) {
   }
   UpdateSliceBounds();
   SliceBoundCB(6); // TODO: remove constant
+  return 0;
 }
 
 float get_slice_bound_min(const char *slice_type) {
   int i;
-  float min, max;
+  float min;
   for(i = 0; i < nslicebounds; i++) {
       if(!strcmp(slice_type, slicebounds[i].shortlabel)) {
           min=slicebounds[i].dlg_valmin;
@@ -62,7 +63,7 @@ float get_slice_bound_min(const char *slice_type) {
 
 float get_slice_bound_max(const char *slice_type) {
   int i;
-  float min, max;
+  float max;
   for(i = 0; i < nslicebounds; i++) {
       if(!strcmp(slice_type, slicebounds[i].shortlabel)) {
           // min=slicebounds[i].dlg_valmin;
@@ -85,6 +86,7 @@ int set_slice_bound_max(const char *slice_type, int set, float value) {
   }
   UpdateSliceBounds();
   SliceBoundCB(6); // TODO: remove constant
+  return 0;
 }
 
 /* ------------------ loadsmvall ------------------------ */
@@ -106,6 +108,7 @@ int loadsmvall(const char *input_filename) {
   // if(convert_ini==1){
     // ReadIni(ini_from);
   // }
+  return 0;
 }
 
 // This function takes a filepath to an smv file an finds the casename
@@ -159,7 +162,7 @@ int loadsmv(char *input_filename, char *input_filename_ext){
   NewMemory((void **)&part_globalbound_filename, strlen(fdsprefix)+strlen(".prt5.gbnd")+1);
   STRCPY(part_globalbound_filename, fdsprefix);
   STRCAT(part_globalbound_filename, ".prt5.gbnd");
-  part_globalbound_filename = GetFileName(smokeviewtempdir, part_globalbound_filename, NOT_FORCE_IN_DIR);
+  part_globalbound_filename = GetFileName(smokeview_scratchdir, part_globalbound_filename, NOT_FORCE_IN_DIR);
 
   // setup input files names
 
@@ -229,7 +232,6 @@ int loadsmv(char *input_filename, char *input_filename_ext){
   GluiShooterSetup(mainwindow_id);
   GluiGeometrySetup(mainwindow_id);
   GluiClipSetup(mainwindow_id);
-  GluiWuiSetup(mainwindow_id);
   GluiLabelsSetup(mainwindow_id);
   GluiDeviceSetup(mainwindow_id);
   GluiTourSetup(mainwindow_id);
@@ -276,10 +278,10 @@ int loadfile(const char *filename) {
     sd = sliceinfo + i;
     if(strcmp(sd->file,filename)==0){
       if(i<nsliceinfo-nfedinfo){
-        ReadSlice(sd->file,i, ALL_SLICE_FRAMES, NULL, LOAD, SET_SLICECOLOR,&errorcode);
+        ReadSlice(sd->file,i, ALL_FRAMES, NULL, LOAD, SET_SLICECOLOR,&errorcode);
       }
       else{
-        ReadFed(i, ALL_SLICE_FRAMES, NULL, LOAD,FED_SLICE,&errorcode);
+        ReadFed(i, ALL_FRAMES, NULL, LOAD,FED_SLICE,&errorcode);
       }
       return errorcode;
     }
@@ -338,7 +340,6 @@ int loadfile(const char *filename) {
 
     plot3di = plot3dinfo + i;
     if(strcmp(plot3di->file,filename)==0){
-      ReadPlot3dFile=1;
       ReadPlot3D(plot3di->file,i,LOAD,&errorcode);
       UpdateMenu();
       return errorcode;
@@ -347,6 +348,7 @@ int loadfile(const char *filename) {
 
   fprintf(stderr,"*** Error: file %s failed to load\n",filename);
   if(stderr2!=NULL)fprintf(stderr2, "*** Error: file %s failed to load\n", filename);
+  return 0;
 }
 
 /* ------------------ loadinifile ------------------------ */
@@ -455,9 +457,6 @@ int render(const char *filename) {
 char* form_filename(int view_mode, char *renderfile_name, char *renderfile_dir,
                    char *renderfile_path, int woffset, int hoffset, int screenH,
                    const char *basename) {
-
-    // char renderfile_ext[4]; // does not include the '.'
-    char suffix[20];
     char* renderfile_ext;
     char* view_suffix;
 
@@ -591,10 +590,6 @@ int RenderFrameLua(int view_mode, const char *basename) {
 }
 
 int RenderFrameLuaVar(int view_mode, gdImagePtr *RENDERimage) {
-  char renderfile_name[1024]; // the name the file (including extension)
-  char renderfile_dir[1024]; // the directory into which the image will be
-                            // rendered
-  char renderfile_path[2048]; // the full path of the rendered image
   int woffset=0,hoffset=0;
   int screenH;
   int return_code;
@@ -630,10 +625,10 @@ void settourkeyframe(float keyframe_time) {
 
     if(keyj==(touri->first_frame).next){
       minkey=keyj;
-      minkeytime=ABS(keyframe_time-keyj->nodeval.time);
+      minkeytime=ABS(keyframe_time-keyj->time);
       continue;
     }
-    diff_time=ABS(keyframe_time-keyj->nodeval.time);
+    diff_time=ABS(keyframe_time-keyj->time);
     if(diff_time<minkeytime){
       minkey=keyj;
       minkeytime=diff_time;
@@ -685,19 +680,15 @@ void settourview(int edittourArg, int mode, int show_tourlocusArg,
   switch(mode){
     case 0:
       viewtourfrompath=0;
-      keyframe_snap=0;
       break;
     case 1:
       viewtourfrompath=1;
-      keyframe_snap=0;
       break;
     case 2:
       viewtourfrompath=0;
-      keyframe_snap=1;
       break;
     default:
       viewtourfrompath=0;
-      keyframe_snap=0;
       break;
   }
   UpdateTourState();
@@ -721,10 +712,10 @@ int settime(float timeval) {
   if(global_times!=NULL&&nglobal_times>0){
     if(timeval<global_times[0])timeval=global_times[0];
     if(timeval>global_times[nglobal_times-1]-0.0001){
+#ifdef pp_SETTIME
       float dt;
 
       dt = timeval-global_times[nglobal_times-1]-0.0001;
-#ifdef pp_SETTIME
       if(nglobal_times>1&&dt>global_times[1]-global_times[0]){
         fprintf(stderr,"*** Error: data not available at time requested\n");
         fprintf(stderr,"           time: %f s, min time: %f, max time: %f s\n",
@@ -1021,7 +1012,7 @@ void toggle_hrrcutoff_visibility() {
 // HRR label
 void set_hrrlabel_visibility(int setting) {
   visHRRlabel = setting;
-  if (hrrinfo != NULL&&hrrinfo->display != 0)UpdateHrrinfo(0);
+  if (hrrinfo != NULL&&hrrinfo->display != 0)UpdateHRRInfo(0);
   if(show_hrrcutoff_active==0)PRINTF("HRR label hidden\n");
   if(show_hrrcutoff_active==1)PRINTF("HRR label visible\n");
 }
@@ -1032,7 +1023,7 @@ int get_hrrlabel_visibility() {
 
 void toggle_hrrlabel_visibility() {
   visHRRlabel = 1 - visHRRlabel;
-  if (hrrinfo != NULL&&hrrinfo->display != 0)UpdateHrrinfo(0);
+  if (hrrinfo != NULL&&hrrinfo->display != 0)UpdateHRRInfo(0);
   if(show_hrrcutoff_active==0)PRINTF("HRR label hidden\n");
   if(show_hrrcutoff_active==1)PRINTF("HRR label visible\n");
 }
@@ -1600,7 +1591,7 @@ void plot3dprops(int variable_index, int showvector, int vector_length_index,
   contour_type=CLAMP(display_type,0,2);
   UpdatePlot3dDisplay();
 
-  if(visVector==1&&ReadPlot3dFile==1){
+  if(visVector==1&&nplot3dloaded==1){
     meshdata *gbsave,*gbi;
 
     gbsave=current_mesh;
@@ -1823,10 +1814,10 @@ void unloadslice(int value){
     slicei = sliceinfo+value;
 
     if(slicei->slice_filetype==SLICE_GEOM){
-      ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+      ReadGeomData(slicei->patchgeom, slicei, UNLOAD, ALL_FRAMES, NULL, &errorcode);
     }
     else{
-      ReadSlice("", value, ALL_SLICE_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
+      ReadSlice("", value, ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
     }
   }
   if(value<=-3){
@@ -1839,10 +1830,10 @@ void unloadslice(int value){
 
         slicei = sliceinfo+i;
         if(slicei->slice_filetype == SLICE_GEOM){
-          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, ALL_FRAMES, NULL, &errorcode);
         }
         else{
-          ReadSlice("",i, ALL_SLICE_FRAMES, NULL, UNLOAD,DEFER_SLICECOLOR,&errorcode);
+          ReadSlice("",i, ALL_FRAMES, NULL, UNLOAD,DEFER_SLICECOLOR,&errorcode);
         }
       }
       for(i=0;i<npatchinfo;i++){
@@ -1863,10 +1854,10 @@ void unloadslice(int value){
 
         slicei = sliceinfo+unload_index;
         if(slicei->slice_filetype==SLICE_GEOM){
-          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+          ReadGeomData(slicei->patchgeom, slicei, UNLOAD, ALL_FRAMES, NULL, &errorcode);
         }
         else{
-          ReadSlice("", unload_index, ALL_SLICE_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
+          ReadSlice("", unload_index, ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
         }
       }
     }
@@ -1878,7 +1869,6 @@ void unloadslice(int value){
 void unloadall() {
   int errorcode;
   int i;
-  int ii;
 
   if(scriptoutstream!=NULL){
     fprintf(scriptoutstream,"UNLOADALL\n");
@@ -1895,10 +1885,10 @@ void unloadall() {
     slicei = sliceinfo + i;
     if(slicei->loaded == 1){
       if(slicei->slice_filetype == SLICE_GEOM){
-        ReadGeomData(slicei->patchgeom, slicei, UNLOAD, &errorcode);
+        ReadGeomData(slicei->patchgeom, slicei, UNLOAD, ALL_FRAMES, NULL, &errorcode);
       }
       else{
-        ReadSlice(slicei->file, i, ALL_SLICE_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR,&errorcode);
+        ReadSlice(slicei->file, i, ALL_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR,&errorcode);
       }
     }
   }
@@ -2118,11 +2108,11 @@ void setwindowsize(int width, int height) {
 void setgridvisibility(int selection) {
 	visGrid = selection;
 	// selection may be one of:
-	// - noGridnoProbe
-	// - GridnoProbe
-	// - GridProbe
-	// - noGridProbe
-	if(visGrid==GridProbe||visGrid==noGridProbe)visgridloc=1;
+	// - NOGRID_NOPROBE
+	// - GRID_NOPROBE
+	// - GRID_PROBE
+	// - NOGRID_PROBE
+	if(visGrid==GRID_PROBE||visGrid==NOGRID_PROBE)visgridloc=1;
 }
 
 /* ------------------ setgridparms ------------------------ */
@@ -2426,21 +2416,23 @@ int set_heatoncolor(float r, float g, float b) {
   return 0;
 } // HEATONCOLOR
 
-int set_isocolors(float shininess, float default_opaqueness, float specular[3],
-                  int nlevels, float colors[][4]) {
-  int i;
-
+int set_isocolors(float shininess, float transparency, int transparency_option, int opacity_change, float specular[3],
+                  int n_colors, float colors[][4]) {
   iso_shininess = shininess;
-  iso_transparency = default_opaqueness;
+  iso_transparency = transparency;
+  iso_transparency_option = transparency_option;
+  iso_opacity_change = opacity_change;
   iso_specular[0] = specular[0];
   iso_specular[1] = specular[1];
   iso_specular[2] = specular[2];
 
-  for (i = 0; i < nlevels; i++) {
-    iso_colors[0] = CLAMP(colors[i][0], 0.0, 1.0);
-    iso_colors[1] = CLAMP(colors[i][1], 0.0, 1.0);
-    iso_colors[2] = CLAMP(colors[i][2], 0.0, 1.0);
-    iso_colors[3] = CLAMP(colors[i][3], 0.0, 1.0);
+  for(int nn = 0; nn<n_colors; nn++){
+    float *iso_color;
+    iso_color = iso_colors + 4 * nn;
+    iso_color[0] = CLAMP(colors[nn][0], 0.0, 1.0);
+    iso_color[1] = CLAMP(colors[nn][1], 0.0, 1.0);
+    iso_color[2] = CLAMP(colors[nn][2], 0.0, 1.0);
+    iso_color[3] = CLAMP(colors[nn][3], 0.0, 1.0);
   }
   UpdateIsoColors();
   UpdateIsoColorlevel();
@@ -2507,6 +2499,7 @@ int set_sensornormcolor(float r, float g, float b) {
 int set_bw(int geo_setting, int data_setting) {
   setbw = geo_setting;
   setbwdata = data_setting;
+  return 0;
 } // SETBW
 
 int set_sprinkleroffcolor(float r, float g, float b) {
@@ -2626,10 +2619,10 @@ int set_usenewdrawface(int v) {
   return 0;
 } // USENEWDRAWFACE
 
-int set_veclength(int a, float b, float c) {
-  int dummy1 = a; // TODO: what is the point of this value
-  vecfactor = b;
-  int dummy2 = c; // TODO: what is the point of this value
+int set_veclength(float vf, int vec_uniform_length_in, int vec_uniform_spacing_in) {
+  vecfactor = vf;
+  vec_uniform_spacing = vec_uniform_spacing_in;
+  vec_uniform_length = vec_uniform_length_in;
   return 0;
 } // VECLENGTH
 
@@ -2815,23 +2808,8 @@ int set_frameratevalue(int v) {
   return 0;
 } // FRAMERATEVALUE
 
-int set_geomdiags(int structured, int unstructured, int diagnostics) {
-  structured_isopen = structured;
-  unstructured = unstructured_isopen;
-  show_geometry_diagnostics = diagnostics;
-  return 0;
-} // GEOMDIAGS
-
 // int set_geomshow(int )
 // GEOMSHOW
-int set_showfaces_interior(int v) {
-  show_faces_interior = v;
-  return 0;
-}
-int set_showfaces_exterior(int v) {
-  show_faces_exterior = v;
-  return 0;
-}
 int set_showfaces_solid(int v) {
   frameratevalue = v;
   return 0;
@@ -2862,10 +2840,6 @@ int set_showvolumes_outline(int v) {
 }
 int set_geomvertexag(int v) {
   geom_vert_exag = v;
-  return 0;
-}
-int set_geommaxangle(int v) {
-  geom_max_angle = v;
   return 0;
 }
 
@@ -3271,6 +3245,7 @@ int set_trainerview(int v) {
 int set_transparent(int use_flag, float level) {
   use_transparency_data = use_flag;
   transparent_level = level;
+  return 0;
 } // TRANSPARENT
 
 int set_treeparms(int minsize, int visx, int visy, int visz) {
@@ -3318,7 +3293,7 @@ int set_zoom(int a, float b) {
 
 // *** MISC ***
 int set_cellcentertext(int v) {
-  cell_center_text = v;
+  show_slice_values_all_regions = v;
   return 0;
 } // CELLCENTERTEXT
 
@@ -3333,8 +3308,8 @@ int set_inputfile(const char *filename) {
 } // INPUT_FILE
 
 int set_labelstartupview(const char *startupview) {
-  strcpy(startup_view_label, startupview);
-  update_startup_view = 1;
+  strcpy(viewpoint_label_startup, startupview);
+  update_startup_view = 3;
   return 0;
 } // LABELSTARTUPVIEW
 
@@ -3692,6 +3667,7 @@ int set_deviceorientation(int a, float b) {
   orientation_scale = b;
   show_device_orientation = CLAMP(show_device_orientation, 0, 1);
   orientation_scale = CLAMP(orientation_scale, 0.1, 10.0);
+  return 0;
 } // DEVICEORIENTATION
 
 int set_gridparms(int vx, int vy, int vz, int px, int py, int pz) {
@@ -3886,7 +3862,6 @@ int set_shooter(float xyz[], float dxyz[], float uvw[],
 
 int set_showdevices(int ndevices_ini, const char **names) {
   sv_object *obj_typei;
-  char *dev_label;
   int i;
   char tempname[255]; // temporary buffer to convert from const string
 
@@ -3918,6 +3893,7 @@ int set_showdevicevals(int vshowdeviceval, int vshowvdeviceval,
   showdevice_unit = vshowdeviceunit;
   devicetypes_index = CLAMP(vdevicetypes_index, 0, ndevicetypes - 1);
   UpdateGluiDevices();
+  return 0;
 } // SHOWDEVICEVALS
 
 int set_showmissingobjects(int v) {
@@ -4023,10 +3999,10 @@ int set_cache_qdata(int setting) {
   return 0;
 } // CACHE_QDATA
 
-int set_percentilelevel(int setting) {
-  percentile_level = setting;
-  if(percentile_level<0.0)percentile_level = 0.01;
-  if(percentile_level>0.5)percentile_level = 0.01;
+int set_percentilelevel(float p_level_min, float p_level_max) {
+  percentile_level_min = CLAMP(p_level_min,0.0,1.0);
+  if(p_level_max<0.0)p_level_max = 1.0 - percentile_level_min;
+  percentile_level_max = CLAMP(p_level_max, percentile_level_min+0.0001,1.0);
   return 0;
 } // PERCENTILELEVEL
 
@@ -4234,7 +4210,6 @@ int show_slices_showall(){
   UpdateSliceFilenum();
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
-  UpdateSliceListIndex(slicefilenum);
   UpdateShow();
   glutPostRedisplay();
   return 0;
@@ -4252,7 +4227,6 @@ int show_slices_hideall(){
   UpdateSliceFilenum();
   plotstate=GetPlotState(DYNAMIC_PLOTS);
 
-  UpdateSliceListIndex(slicefilenum);
   UpdateShow();
   return 0;
 }

@@ -25,39 +25,46 @@ int lua_displayCB(lua_State *L);
 #define snprintf _snprintf
 #endif
 
-void ParseCommandline(int argc, char **argv);
+char *ParseCommandline(int argc, char **argv);
 void Usage(char *prog,int option);
+int CheckSMVFile(char *file, char *subdir);
 
-int ProgramSetupLua(lua_State *L, int argc, char **argv_sv) {
+int ProgramSetupLua(lua_State *L, int argc, char **argv) {
   char *progname;
   InitVars();
-  if(argc==1)DisplayVersionInfo("Smokeview ");
+  ParseCommonOptions(argc, argv);
+  smv_filename = ParseCommandline(argc, argv);
+  printf("smv_filename: %s\n", smv_filename);
 
-  if(argc==0||argc==1)exit(0);
+  progname=argv[0];
 
-  progname=argv_sv[0];
-
-  ParseCommonOptions(argc, argv_sv);
+  if(smv_filename==NULL){
+    DisplayVersionInfo("Smokeview ");
+    SMV_EXIT(0);
+  }
   if(show_help==1){
     Usage("smokeview",HELP_SUMMARY);
-    exit(0);
-}
-  if(show_version==1){
-    PRINTVERSION("smokeview", argv_sv[0]);
-    exit(0);
+    return 1;
   }
 
   prog_fullpath = progname;
 #ifdef pp_LUA
   smokeview_bindir_abs=getprogdirabs(progname,&smokeviewpath);
 #endif
-  ParseCommandline(argc, argv_sv);
   if(smokeview_bindir==NULL){
-    smokeview_bindir= GetProgDir(progname,&smokeviewpath);
+    smokeview_bindir = GetProgDir(progname, &smokeviewpath);
+  }
+
+  if(show_version==1 || smv_filename==NULL){
+    PRINTVERSION("smokeview", argv[0]);
+    return 1;
+  }
+  if(CheckSMVFile(smv_filename, smokeview_casedir)==0){
+    SMV_EXIT(1);
   }
   InitTextureDir();
+  InitScriptErrorFiles();
   smokezippath= GetSmokeZipPath(smokeview_bindir);
-#ifdef pp_ffmpeg
 #ifdef WIN32
   have_ffmpeg = HaveProg("ffmpeg -version> Nul 2>Nul");
   have_ffplay = HaveProg("ffplay -version> Nul 2>Nul");
@@ -65,37 +72,36 @@ int ProgramSetupLua(lua_State *L, int argc, char **argv_sv) {
   have_ffmpeg = HaveProg("ffmpeg -version >/dev/null 2>/dev/null");
   have_ffplay = HaveProg("ffplay -version >/dev/null 2>/dev/null");
 #endif
-#endif
   DisplayVersionInfo("Smokeview ");
 
   return 0;
 }
 
+  
+
 int lua_SetupGLUT(lua_State *L) {
   int argc = lua_tonumber(L, 1);
-  char **argv_sv = lua_topointer(L, 2);
+  char * const *argv_sv = lua_topointer(L, 2);
   SetupGlut(argc,argv_sv);
   return 0;
 }
 
 int lua_SetupCase(lua_State *L) {
-  int argc = lua_tonumber(L, 1);
-  char **argv_sv = lua_topointer(L, 2);
-  int return_code = SetupCase(argc,argv_sv);
+  char * const *argv_sv = lua_topointer(L, 2);
+  char *filename = argv_sv[1];
+  int return_code = SetupCase(filename);
   lua_pushnumber(L, return_code);
   return 1;
 }
 
 int RunLuaBranch(lua_State *L, int argc, char **argv) {
   int return_code;
-  char **argv_sv;
   SetStdOut(stdout);
   initMALLOC();
   InitRandAB(1000000);
-  CopyArgs(&argc, argv, &argv_sv);
   // Setup the program, including parsing commandline arguments. Does not
   // initialise any graphical components.
-  ProgramSetupLua(L, argc, argv_sv);
+  ProgramSetupLua(L, argc, argv);
   // From here on out, control is passed to the lua interpreter. All further
   // setup, including graphical display setup, is handled (or at least
   // triggered) by the interpreter.
@@ -105,7 +111,7 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
   // arguments are required for glutInit.
 
   lua_pushnumber(L, argc);
-  lua_pushlightuserdata(L, argv_sv);
+  lua_pushlightuserdata(L, argv);
   lua_SetupGLUT(L);
   START_TIMER(startup_time);
   START_TIMER(read_time_elapsed);
@@ -113,22 +119,45 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
   lua_initsmvproginfo(L);
 
   // return_code= SetupCase(argc,argv_sv);
-  lua_pushnumber(L, argc);
-  lua_pushlightuserdata(L, argv_sv);
+  // lua_pushnumber(L, argc);
+  // lua_pushlightuserdata(L, argv);
+  // lua_pushlightuserdata(L, argv[1]);
+  printf("stack height: %i\n", lua_gettop(L));
   lua_SetupCase(L);
   return_code = lua_tonumber(L,-1);
 
-  if(return_code==0&&update_bounds==1)return_code=Update_Bounds();
+  if(return_code==0&&update_bounds==1){
+    float timer_update_bounds;
+
+    INIT_PRINT_TIMER(timer_update_bounds);
+    return_code=Update_Bounds();
+    PRINT_TIMER(timer_update_bounds, "Update_Bounds");
+  }
   if(return_code!=0)return 1;
   if(convert_ini==1){
+    float timer_read_ini;
+
+    INIT_PRINT_TIMER(timer_read_ini);
     ReadIni(ini_from);
+    PRINT_TIMER(timer_read_ini, "ReadIni");
+  }
+  if(runhtmlscript==1){
+    DoScriptHtml();
   }
   // Load information about the case into the lua interpreter.
   lua_initsmvdata(L);
 
   STOP_TIMER(startup_time);
-  PRINTF("\nStartup time: %.1f s\n", startup_time);
+  PRINTF("\n");
+  if(runhtmlscript==1){
+    PRINTF("Time: %.1f s\n", startup_time);
+    return 0;
+  }
+  PRINTF("Startup time: %.1f s\n", startup_time);
+  PRINTF("\n");
+
   glutMainLoop();
+  return 0;
 }
 
 /* ------------------ load_script ------------------------ */
@@ -202,6 +231,7 @@ int lua_renderclip(lua_State *L) {
   int right = lua_tonumber(L, 3);
   int bottom = lua_tonumber(L, 4);
   int top = lua_tonumber(L, 5);
+  renderclip(flag, left, right, bottom, top);
   return 0;
 }
 
@@ -219,6 +249,9 @@ int lua_render(lua_State *L) {
   return 1;
 }
 
+/*
+  Returns an error code then the image data.
+*/
 int lua_render_var(lua_State *L) {
   gdImagePtr RENDERimage;
   int return_code;
@@ -227,6 +260,7 @@ int lua_render_var(lua_State *L) {
 
   // render image to RENDERimage gd buffer
   return_code = RenderFrameLuaVar(VIEW_CENTER, &RENDERimage);
+  lua_pushnumber(L, return_code);
   // convert to a simpler byte-buffer
   imageData = gdImagePngPtr(RENDERimage, &imageSize);
   // push to stack
@@ -234,7 +268,7 @@ int lua_render_var(lua_State *L) {
   // destroy C copy
   gdImageDestroy(RENDERimage);
 
-  return 1;
+  return 2;
 }
 
 int lua_gsliceview(lua_State *L) {
@@ -746,10 +780,6 @@ int lua_initsmvdata(lua_State *L) {
   lua_get_sliceinfo(L);
   lua_setglobal(L, "sliceinfo");
 
-  lua_get_rampinfo(L);
-  lua_setglobal(L, "rampinfo");
-
-
   lua_get_csvinfo(L);
   // csvinfo is currently on the stack
   // add a metatable to it.
@@ -774,7 +804,7 @@ int lua_initsmvdata(lua_State *L) {
 */
 int lua_initsmvproginfo(lua_State *L) {
   char version[256];
-  char githash[256];
+  // char githash[256];
 
   GetProgVersion(version);
   addLuaPaths(L);
@@ -1108,43 +1138,6 @@ int lua_get_sliceinfo(lua_State *L) {
 }
 
 /*
-  Build a Lua table with information on the ramps of the model.
-*/
-// TODO: change this to use userdata instead
-int lua_get_rampinfo(lua_State *L) {
-  PRINTF("lua: initialising ramp table\n");
-  lua_createtable(L, 0, nrampinfo);
-  int i;
-  for (i = 0; i < nrampinfo; i++) {
-    lua_pushnumber(L, i+1);
-    lua_createtable(L, 0, 3);
-
-    if(rampinfo[i].name != NULL) {
-      lua_pushstring(L, rampinfo[i].name);
-      lua_setfield(L, -2, "name");
-    }
-
-    lua_createtable(L, 0, rampinfo[i].nentries);
-    int j;
-    for (j = 0; j < rampinfo[i].nentries; j++) {
-      lua_createtable(L, 0, 2);
-
-      lua_pushnumber(L, rampinfo[i].values[2*j]);
-      lua_setfield(L, -2, "t");
-
-      lua_pushnumber(L, rampinfo[i].values[2*j+1]);
-      lua_setfield(L, -2, "f");
-
-      lua_seti(L, -2, j+1);
-    }
-    lua_setfield(L, -2, "entries");
-
-    lua_settable(L, -3);
-  }
-  return 1;
-}
-
-/*
   Build a Lua table with information on the CSV files available to the model.
 */
 // TODO: provide more information via this interface.
@@ -1284,6 +1277,7 @@ int lua_makemovie(lua_State *L) {
   const char *base = lua_tostring(L, 2);
   float framerate = lua_tonumber(L, 3);
   makemovie(name, base, framerate);
+  return 0;
 }
 
 int lua_loadtour(lua_State *L) {
@@ -2013,7 +2007,8 @@ int lua_set_blockcolor(lua_State *L) {
 int lua_set_blockshininess(lua_State *L) {
   float v = lua_tonumber(L, 1);
   int return_code = set_blockshininess(v);
-  return 0;
+  lua_pushnumber(L, return_code);
+  return 1;
 }
 
 int lua_set_blockspecular(lua_State *L) {
@@ -2021,7 +2016,8 @@ int lua_set_blockspecular(lua_State *L) {
   float g = lua_tonumber(L, 2);
   float b = lua_tonumber(L, 3);
   int return_code = set_blockspecular(r, g, b);
-  return 0;
+  lua_pushnumber(L, return_code);
+  return 1;
 }
 
 int lua_set_boundcolor(lua_State *L) {
@@ -2029,7 +2025,8 @@ int lua_set_boundcolor(lua_State *L) {
   float g = lua_tonumber(L, 2);
   float b = lua_tonumber(L, 3);
   int return_code = set_boundcolor(r, g, b);
-  return 0;
+  lua_pushnumber(L, return_code);
+  return 1;
 }
 
 // int lua_set_colorbar_textureflag(lua_State *L) {
@@ -2081,7 +2078,6 @@ int lua_set_colorbar_colors(lua_State *L) {
     lua_pop(L, 1);
   }
   int i;
-  float *color;
   float colors[ncolors][3];
   for (i = 1; i <= ncolors; i++) {
     lua_pushnumber(L, i);
@@ -2126,7 +2122,6 @@ int lua_set_color2bar_colors(lua_State *L) {
     return 1;
   }
   int i;
-  float *color;
   float colors[ncolors][3];
   for (i = 1; i <= ncolors; i++) {
     lua_pushnumber(L, i);
@@ -2218,37 +2213,33 @@ int lua_set_heatoncolor(lua_State *L) {
 
 int lua_set_isocolors(lua_State *L) {
   float shininess = lua_tonumber(L, 1);
-  float default_opaqueness = lua_tonumber(L, 2);
+  float transparency = lua_tonumber(L, 2);
+  int transparency_option = lua_tonumber(L, 3);
+  int opacity_change = lua_tonumber(L, 4);
   float specular[3];
-  get_color(L, 3, specular);
-  int ncolors = 0;
-  int x;
+  get_color(L, 5, specular);
+  int n_colors = 0;
   // count the number of colours
   lua_pushnil(L);  /* first key */
-  while (lua_next(L, 4) != 0) {
+  while (lua_next(L, 6) != 0) {
     lua_pop(L, 1); // remove value (leave key for next iteration)
-    ncolors++;
-    x = lua_tonumber(L, -1);
+    n_colors++;
   }
   int i;
-  float *color;
-  float colors[ncolors][3];
-  for (i = 1; i <= ncolors; i++) {
-    if (!lua_istable(L, 4)) {
+  float colors[MAX_ISO_COLORS][4];
+  for (i = 1; i <= n_colors; i++) {
+    if (!lua_istable(L, 6)) {
       fprintf(stderr, "isocolor table is not present\n");
       return 1;
     }
     lua_pushnumber(L, i);
-    lua_gettable(L, 4);
+    lua_gettable(L, 6);
     get_color(L, -1, colors[i-1]);
   }
-  // for (i = 0; i < ncolors; i++) {
-  //   printf("%d: %f %f %f\n", i,
-  //     colors[i][0], colors[i][1], colors[i][2]);
-  // }
-  // specular = lua_tonumber(L, 3);
-  // int return_code = set_diffuselight(r, g, b);
-  return 0;
+  int return_code = set_isocolors(shininess, transparency, transparency_option, 
+                                  opacity_change, specular, n_colors, colors);
+  lua_pushnumber(L,return_code);
+  return 1;
 }
 
 int lua_set_colortable(lua_State *L) {
@@ -2482,10 +2473,10 @@ int lua_set_usenewdrawface(lua_State *L) {
 }
 
 int lua_set_veclength(lua_State *L) {
-  float a = lua_tonumber(L, 1);
-  float b = lua_tonumber(L, 2);
-  float c = lua_tonumber(L, 3);
-  int return_code = set_veclength(a, b, c);
+  float vf = lua_tonumber(L, 1);
+  int vec_uniform_length = lua_tonumber(L, 2);
+  int vec_uniform_spacing = lua_tonumber(L, 3);
+  int return_code = set_veclength(vf, vec_uniform_length, vec_uniform_spacing);
   lua_pushnumber(L, return_code);
   return 1;
 }
@@ -2720,29 +2711,6 @@ int lua_set_frameratevalue(lua_State *L) {
   return 1;
 }
 
-int lua_set_geomdiags(lua_State *L) {
-  int structured = lua_tonumber(L, 1);
-  int unstructured = lua_tonumber(L, 2);
-  int diagnostics = lua_tonumber(L, 3);
-  int return_code = set_geomdiags(structured, unstructured, diagnostics);
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
-int lua_set_showfaces_interior(lua_State *L) {
-  int v = lua_tonumber(L, 1);
-  int return_code = set_showfaces_interior(v);
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
-int lua_set_showfaces_exterior(lua_State *L) {
-  int v = lua_tonumber(L, 1);
-  int return_code = set_showfaces_exterior(v);
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
 int lua_set_showfaces_solid(lua_State *L) {
   int v = lua_tonumber(L, 1);
   int return_code = set_showfaces_solid(v);
@@ -2799,13 +2767,6 @@ int lua_set_geomvertexag(lua_State *L) {
   return 1;
 }
 
-int lua_set_geommaxangle(lua_State *L) {
-  int v = lua_tonumber(L, 1);
-  int return_code = set_geommaxangle(v);
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
 int lua_set_gversion(lua_State *L) {
   int v = lua_tonumber(L, 1);
   int return_code = set_gversion(v);
@@ -2840,7 +2801,8 @@ int lua_set_meshvis(lua_State *L) {
     i++;
   }
   int return_code = set_meshvis(n, vals);
-  return 0;
+  lua_pushnumber(L, return_code);
+  return 1;
 }
 
 int lua_set_meshoffset(lua_State *L) {
@@ -4294,8 +4256,9 @@ int lua_set_cache_qdata(lua_State *L) {
 } // CACHE_QDATA
 
 int lua_set_percentilelevel(lua_State *L) {
-  int v = lua_tonumber(L, 1);
-  int return_code = set_percentilelevel(v);
+  float p_level_min = lua_tonumber(L, 1);
+  float p_level_max = lua_tonumber(L, 2);
+  int return_code = set_percentilelevel(p_level_min,p_level_max);
   lua_pushnumber(L, return_code);
   return 1;
 } // PERCENTILELEVEL
@@ -4395,7 +4358,7 @@ void addLuaPaths(lua_State *L) {
   // found, typiclly text based files with the .lua extension.
 
   lua_getglobal(L, "package");
-  int pathType = lua_getfield(L, -1, "path");
+  lua_getfield(L, -1, "path");
   const char *oldPath = lua_tostring(L, -1);
   int newLength = strlen(oldPath) + 1 + strlen(smokeview_bindir_abs) + 1 + 5 +1;
   char newPath[newLength];
@@ -4410,7 +4373,7 @@ void addLuaPaths(lua_State *L) {
 
   // package.cpath is a path variable where Lua modules may be found,
   // typically binary (C based) files such as .dll or .so.
-  int cpathType = lua_getfield(L, -1, "cpath");
+  lua_getfield(L, -1, "cpath");
   const char *oldCPath = lua_tostring(L, -1);
   int newLengthC = strlen(oldCPath) + 1 + 2*strlen(smokeview_bindir_abs) + 2*1 + 10 +1;
   char newCPath[newLengthC];
@@ -4717,9 +4680,6 @@ lua_State* initLua() {
   lua_register(L, "set_eyez", lua_set_eyez);
   lua_register(L, "set_fontsize", lua_set_fontsize);
   lua_register(L, "set_frameratevalue", lua_set_frameratevalue);
-  lua_register(L, "set_geomdiags", lua_set_geomdiags);
-  lua_register(L, "set_showfaces_interior", lua_set_showfaces_interior);
-  lua_register(L, "set_showfaces_exterior", lua_set_showfaces_exterior);
   lua_register(L, "set_showfaces_solid", lua_set_showfaces_solid);
   lua_register(L, "set_showfaces_outline", lua_set_showfaces_outline);
   lua_register(L, "set_smoothgeomnormal", lua_set_smoothgeomnormal);
@@ -4728,7 +4688,6 @@ lua_State* initLua() {
   lua_register(L, "set_showvolumes_solid", lua_set_showvolumes_solid);
   lua_register(L, "set_showvolumes_outline", lua_set_showvolumes_outline);
   lua_register(L, "set_geomvertexag", lua_set_geomvertexag);
-  lua_register(L, "set_geommaxangle", lua_set_geommaxangle);
   lua_register(L, "set_gversion", lua_set_gversion);
   lua_register(L, "set_isotran2", lua_set_isotran2);
   lua_register(L, "set_meshvis", lua_set_meshvis);
@@ -4918,7 +4877,7 @@ lua_State* initLua() {
   lua_register(L, "slice_data_map_frames_count_greater_eq", lua_slice_data_map_frames_count_greater_eq);
   lua_register(L, "slice_get_times", lua_slice_get_times);
 
-  //add fdsprefix (the path plus  CHID) as a variable in the lua environment
+  //add fdsprefix (the path plus CHID) as a variable in the lua environment
   lua_pushstring(L, fdsprefix);
   lua_setglobal(L, "fdsprefix");
 
@@ -4940,7 +4899,10 @@ lua_State* initLua() {
   lua_setglobal(L, "smokeviewEmbedded");
 
   // luaL_requiref (L, "smv", luaopen_smv, 1)
-  luaL_dostring(L, "require(\"smv\")");
+  int smv_loaded_err = luaL_dostring(L, "require(\"smv\")");
+  if (smv_loaded_err) {
+    fprintf(stderr, "Failed to load smv (lua)\n");
+  }
   // luaL_loadfile(L, "smv.lua");
   // int luaL_1dofile (lua_State *L, const char *filename);
   return L;
@@ -4972,9 +4934,8 @@ lua_State* initLua() {
 //  return 1;
 // }
 
-void runScriptString(char *string) {
-  luaL_dostring(L, string);
-//  return 0;
+int runScriptString(char *string) {
+  return luaL_dostring(L, string);
 }
 
 int loadLuaScript(char *filename) {
@@ -5040,54 +5001,58 @@ int loadSSFScript(char *filename) {
   //       strncpy(filename, script_filename, 1024);
   //   }
   printf("scriptfile: %s\n", filename);
-    // The display callback needs to be run once initially.
-    // PROBLEM: the display CB does not work without a loaded case.
-    runscript=0;
-    lua_displayCB(L);
-    runscript=1;
-    const char* err_msg;
-    lua_Debug info;
-    int level =  0;
-    char lString[1024];
-    snprintf(lString, 1024, "require(\"ssfparser\")\nrunSSF(\"%s.ssf\")", fdsprefix);
-    luaL_dostring(L, "require \"ssfparser\"");
-    int return_code = luaL_loadstring(L, lString);
-    switch (return_code) {
-      case LUA_OK:
-        printf("%s loaded ok\n", filename);
-        break;
-      case LUA_ERRSYNTAX:
-        fprintf(stderr, "Syntax error loading %s\n", filename);
-        err_msg = lua_tostring (L, -1);
-        fprintf(stderr, "error:%s\n", err_msg);
-        level = 0;
-        while (lua_getstack(L, level, &info)) {
-            lua_getinfo(L, "nSl", &info);
-            fprintf(stderr, "  [%d] %s:%d -- %s [%s]\n",
-                level, info.short_src, info.currentline,
-                (info.name ? info.name : "<unknown>"), info.what);
-            ++level;
-        }
-        break;
-      case LUA_ERRMEM:
-        break;
-      case LUA_ERRGCMM:
-        break;
-      case LUA_ERRFILE:
-        fprintf(stderr, "Could not load file %s\n", filename);
-        err_msg = lua_tostring (L, -1);
-        fprintf(stderr, "error:%s\n", err_msg);
-        level = 0;
-        while (lua_getstack(L, level, &info)) {
+  // The display callback needs to be run once initially.
+  // PROBLEM: the display CB does not work without a loaded case.
+  runscript=0;
+  lua_displayCB(L);
+  runscript=1;
+  const char* err_msg;
+  lua_Debug info;
+  int level =  0;
+  char lString[1024];
+  snprintf(lString, 1024, "require(\"ssfparser\")\nrunSSF(\"%s.ssf\")", fdsprefix);
+  int ssfparser_loaded_err = luaL_dostring(L, "require \"ssfparser\"");
+  if (ssfparser_loaded_err) {
+    fprintf(stderr, "Failed to load ssfparser\n");
+  }
+  int return_code = luaL_loadstring(L, lString);
+  switch (return_code) {
+    case LUA_OK:
+      printf("%s loaded ok\n", filename);
+      break;
+    case LUA_ERRSYNTAX:
+      fprintf(stderr, "Syntax error loading %s\n", filename);
+      err_msg = lua_tostring (L, -1);
+      fprintf(stderr, "error:%s\n", err_msg);
+      level = 0;
+      while (lua_getstack(L, level, &info)) {
           lua_getinfo(L, "nSl", &info);
           fprintf(stderr, "  [%d] %s:%d -- %s [%s]\n",
               level, info.short_src, info.currentline,
               (info.name ? info.name : "<unknown>"), info.what);
           ++level;
-        }
-        break;
-    }
-    printf("after lua loadfile\n");
+      }
+      break;
+    case LUA_ERRMEM:
+      break;
+    case LUA_ERRGCMM:
+      break;
+    case LUA_ERRFILE:
+      fprintf(stderr, "Could not load file %s\n", filename);
+      err_msg = lua_tostring (L, -1);
+      fprintf(stderr, "error:%s\n", err_msg);
+      level = 0;
+      while (lua_getstack(L, level, &info)) {
+        lua_getinfo(L, "nSl", &info);
+        fprintf(stderr, "  [%d] %s:%d -- %s [%s]\n",
+            level, info.short_src, info.currentline,
+            (info.name ? info.name : "<unknown>"), info.what);
+        ++level;
+      }
+      break;
+  }
+  printf("after lua loadfile\n");
+  return 0;
 }
 
 int yieldOrOkSSF = LUA_YIELD;
