@@ -654,15 +654,16 @@ void TourCB(int var){
         key_view[2] = DENORMALIZE_Z(2*thiskey->view_smv[2]-lastkey->view_smv[2]);
       }
       else{
-        key_xyz[0]  = DENORMALIZE_X((thiskey->xyz_smv[0]+nextkey->xyz_smv[0])/2.0);
-        key_xyz[1]  = DENORMALIZE_Y((thiskey->xyz_smv[1]+nextkey->xyz_smv[1])/2.0);
-        key_xyz[2]  = DENORMALIZE_Z((thiskey->xyz_smv[2]+nextkey->xyz_smv[2])/2.0);
+        float t_avg;
+
+        t_avg = (thiskey->time+nextkey->time)/2.0;
+        GetTourXYZ(t_avg,  thiskey, key_xyz);
+        DENORMALIZE_XYZ(key_xyz, key_xyz);
         key_time_in = (thiskey->time+nextkey->time)/2.0;
-        key_view[0] = DENORMALIZE_X((thiskey->view_smv[0]+nextkey->view_smv[0])/2.0);
-        key_view[1] = DENORMALIZE_Y((thiskey->view_smv[1]+nextkey->view_smv[1])/2.0);
-        key_view[2] = DENORMALIZE_Z((thiskey->view_smv[2]+nextkey->view_smv[2])/2.0);
+        GetTourView(t_avg, thiskey, key_view);
+        DENORMALIZE_XYZ(key_view, key_view);
       }
-      newframe=AddFrame(selected_frame,key_time_in,key_xyz,key_view);
+      newframe=AddFrame(selected_frame, key_time_in, key_xyz, key_view);
       CreateTourPaths();
       NewSelect(newframe);
       SetGluiTourKeyframe();
