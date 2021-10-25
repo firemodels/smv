@@ -94,10 +94,14 @@ void SetKeyFrameViews(float *view){
     if(view==NULL){
       if(this_key==last_key){
         float view_temp[3];
+        float *this_xyz, *prev_xyz;
 
-        view_temp[0] = 2*this_key->xyz_smv[0]-last_key->xyz_smv[0];
-        view_temp[1] = 2*this_key->xyz_smv[1]-last_key->xyz_smv[1];
-        view_temp[2] = 2*this_key->xyz_smv[2]-last_key->xyz_smv[2];
+        this_xyz = this_key->xyz_smv;
+        prev_xyz = this_key->prev->xyz_smv;
+
+        view_temp[0] = this_xyz[0]+(this_xyz[0]-prev_xyz[0]);
+        view_temp[1] = this_xyz[1]+(this_xyz[1]-prev_xyz[1]);
+        view_temp[2] = this_xyz[2]+(this_xyz[2]-prev_xyz[2]);
         memcpy(this_key->view_smv, view_temp, 3*sizeof(float));
       }
       else{
