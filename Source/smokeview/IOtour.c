@@ -311,7 +311,11 @@ void DrawTours(void){
         xyz = framej->xyz_smv;
         {
           char label[128];
+#ifdef _DEBUG
+          sprintf(label, "%8.2f %i %f %f %f", framej->time, framej->npoints, (float)framej->npoints/framej->arc_dist, framej->arc_dist, framej->line_dist);
+#else
           sprintf(label, "%8.2f", framej->time);
+#endif
           TrimZeros(label);
           Output3Text(tmp_tourcol_text, xyz[0]+0.02f, xyz[1]+0.015f, xyz[2]+0.015f,label);
         }
@@ -564,7 +568,7 @@ keyframe *GetKeyFrame(tourdata *touri, float time){
   if(time<first_key->time)return first_key;
 
   last_key = touri->last_frame.prev;
-  if(time>=last_key->time)return last_key;
+  if(time>=last_key->time)return last_key->prev;
 
   for(this_key = first_key; this_key!=last_key; this_key = this_key->next){
     keyframe *next_key;
@@ -655,9 +659,9 @@ void GetTourProperties(tourdata *touri){
   for(j=0;j<tour_ntimes;j++){
     float f1, vtime;
 
-    f1 = 1.0;
-    if(tour_ntimes>1)f1 = (tour_ntimes - 1 - j)/(float)(tour_ntimes - 1);
-    vtime = tour_tstart*f1 + tour_tstop*(1.0-f1);
+    f1 = 0.0;
+    if(tour_ntimes>1)f1 = (float)j/(float)(tour_ntimes - 1);
+    vtime = tour_tstart*(1.0-f1) + tour_tstop*f1;
     touri->path_times[j]     = vtime;
     if(touri->path_keyframes!=NULL&&touri->path_xyzs!=NULL){
       touri->path_keyframes[j] = GetKeyFrame(touri, vtime);
