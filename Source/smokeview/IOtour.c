@@ -727,7 +727,7 @@ void CreateTourPaths(void){
       ntourknots++;
       nframes++;
       keyframe *this_key, *next_key;
-      float *this_xyz, *next_xyz, dist, *xyz_diff, *view_diff;
+      float *this_xyz, *next_xyz, *xyz_diff, *view_diff;
       float dx, dy, dz;
 
       this_key = keyj;
