@@ -207,6 +207,8 @@ EXTERNCPP void UpdateGluiPartFast(void);
 EXTERNCPP void InitRolloutList(void);
 EXTERNCPP void UpdateFireCutoffs(void);
 EXTERNCPP void UpdateCO2ColorbarList(int value);
+EXTERNCPP void GetTourXYZ(float t, keyframe *this_key, float *xyz);
+EXTERNCPP void GetTourView(float t, keyframe *this_key, float *view);
 EXTERNCPP int GetTourFrame(tourdata *touri, int itime);
 EXTERNCPP int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to);
 EXTERNCPP void InitNabors(void);
