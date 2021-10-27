@@ -579,6 +579,34 @@ keyframe *GetKeyFrame(tourdata *touri, float time){
   return last_key->prev;
 }
 
+/* ------------------ GetTourVal ------------------------ */
+
+void GetTourXYZView(float time,  float *times,  float *vals, int n,  float *val3){
+  int left;
+  float *v1, *v2, factor;
+  float t1, t2;
+
+  if(time<=times[0]){
+    memcpy(val3, vals, 3*sizeof(float));
+    return;
+  }
+  if(time>=times[n-1]){
+    memcpy(val3, vals+3*(n-1), 3*sizeof(float));
+    return;
+  }
+
+  left = GetInterval(time, times, n);
+  if(left==n-1)left=n-2;
+  v1 = vals + 3*left;
+  v2 = vals + 3*(left+1);
+  t1 = times[left];
+  t2 = times[left+1];
+  factor = (time-times[left])/(times[left+1]-times[left]);
+  val3[0] = (1.0-factor)*v1[0] + factor*v2[0];
+  val3[1] = (1.0-factor)*v1[1] + factor*v2[1];
+  val3[2] = (1.0-factor)*v1[2] + factor*v2[2];
+}
+
 /* ------------------ GetTourProperties ------------------------ */
 
 void GetTourProperties(tourdata *touri){
@@ -624,6 +652,8 @@ void GetTourProperties(tourdata *touri){
   float cum_dist = 0.0;
   int cum_npoints = 0;
   int ii=0;
+  float *tour_times, *xyzs, *views, total_distance;
+
   for(keyj = (touri->first_frame).next; keyj->next!=NULL; keyj = keyj->next){
     int npoints_i;
 
@@ -656,19 +686,53 @@ void GetTourProperties(tourdata *touri){
   }
   touri->nkeyframes = j;
 
+
+  NewMemory((void **)&(tour_times), tour_ntimes*sizeof(float));
+  NewMemory((void **)&(xyzs),       3*tour_ntimes*sizeof(float));
+  NewMemory((void **)&(views),      3*tour_ntimes*sizeof(float));
+
   for(j=0;j<tour_ntimes;j++){
     float f1, vtime;
 
     f1 = 0.0;
     if(tour_ntimes>1)f1 = (float)j/(float)(tour_ntimes - 1);
-    vtime = tour_tstart*(1.0-f1) + tour_tstop*f1;
-    touri->path_times[j]     = vtime;
-    if(touri->path_keyframes!=NULL&&touri->path_xyzs!=NULL){
+    vtime                = tour_tstart*(1.0-f1) + tour_tstop*f1;
+    tour_times[j]        = vtime;
+    touri->path_times[j] = vtime;
+    if(touri->path_keyframes!=NULL){
       touri->path_keyframes[j] = GetKeyFrame(touri, vtime);
-      GetTourXYZ(vtime, touri->path_keyframes[j], touri->path_xyzs+3*j);
-      GetTourView(vtime, touri->path_keyframes[j], touri->path_views+3*j);
+      GetTourXYZ(vtime,  touri->path_keyframes[j], xyzs  + 3*j);
+      GetTourView(vtime, touri->path_keyframes[j], views + 3*j);
+      if(j==0){
+        tour_times[j] = 0.0;
+      }
+      else{
+        float dt, *xyz1, *xyz2;
+        float dx, dy, dz;
+
+        xyz1 = xyzs + 3*(j-1);
+        xyz2 = xyzs + 3*j;
+        DDIST3(xyz1, xyz2, dt);
+        tour_times[j] = tour_times[j-1] + dt;
+      }
     }
   }
+  total_distance = tour_times[tour_ntimes-1];
+  for(j=0;j<tour_ntimes;j++){
+    tour_times[j] = tour_tstart + tour_times[j]*(tour_tstop - tour_tstart)/total_distance;
+  }
+  for(j=0;j<tour_ntimes;j++){
+    float f1, vtime;
+
+    f1 = 0.0;
+    if(tour_ntimes>1)f1 = (float)j/(float)(tour_ntimes - 1);
+    vtime               = tour_tstart*(1.0-f1) + tour_tstop*f1;
+    GetTourXYZView(vtime,  tour_times,  xyzs, tour_ntimes,  touri->path_xyzs  + 3*j);
+    GetTourXYZView(vtime,  tour_times, views, tour_ntimes,  touri->path_views + 3*j);
+  }
+  FREEMEMORY(tour_times);
+  FREEMEMORY(xyzs);
+  FREEMEMORY(views);
 }
 
 /* ------------------ SetTourXYZView ------------------------ */
