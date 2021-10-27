@@ -584,7 +584,6 @@ keyframe *GetKeyFrame(tourdata *touri, float time){
 void GetTourXYZView(float time,  float *times,  float *vals, int n,  float *val3){
   int left;
   float *v1, *v2, factor;
-  float t1, t2;
 
   if(time<=times[0]){
     memcpy(val3, vals, 3*sizeof(float));
@@ -599,8 +598,6 @@ void GetTourXYZView(float time,  float *times,  float *vals, int n,  float *val3
   if(left==n-1)left=n-2;
   v1 = vals + 3*left;
   v2 = vals + 3*(left+1);
-  t1 = times[left];
-  t2 = times[left+1];
   factor = (time-times[left])/(times[left+1]-times[left]);
   val3[0] = (1.0-factor)*v1[0] + factor*v2[0];
   val3[1] = (1.0-factor)*v1[1] + factor*v2[1];
