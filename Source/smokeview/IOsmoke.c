@@ -5912,7 +5912,6 @@ void UpdateLoadedSmoke(int *h_loaded, int *t_loaded){
 
 #define SMOKE_OPTIONS 19
 void SmokeWrapup(void){
-  UpdateFireCutoffs();
   plotstate = GetPlotState(DYNAMIC_PLOTS);
   stept = 1;
   SetSmokeColorFlags();
@@ -6033,7 +6032,6 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
       }
     }
     UpdateSmoke3dFileParms();
-    UpdateFireCutoffs();
     return READSMOKE3D_RETURN;
   }
   if(smoke3di->type==HRRPUV||smoke3di->type==TEMP){
