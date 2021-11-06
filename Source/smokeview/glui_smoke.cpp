@@ -227,35 +227,6 @@ extern "C" void UpdateFireAlpha(void){
   Smoke3dCB(USE_FIRE_ALPHA);
 }
 
-  /* ------------------ UpdateFireCutoffs ------------------------ */
-
-extern "C" void UpdateFireCutoffs(void){
-  int i;
-  int have_temp=0, have_hrrpuv = 0;
-
-  if(glui_defined==0)return;
-  for(i = 0; i<nsmoke3dinfo; i++){
-    smoke3ddata *smoke3di;
-
-    smoke3di = smoke3dinfo+i;
-    if(smoke3di->loaded==0)continue;
-    if(smoke3di->type==HRRPUV)have_hrrpuv=1;
-    if(smoke3di->type==TEMP)have_temp = 1;
-  }
-  if(have_temp==0){
-    SPINNER_temperature_cutoff->disable();
-  }
-  else{
-    SPINNER_temperature_cutoff->enable();
-  }
-  if(have_hrrpuv==0){
-    SPINNER_hrrpuv_cutoff->disable();
-  }
-  else{
-    SPINNER_hrrpuv_cutoff->enable();
-  }
-}
-
 /* ------------------ UpdateCO2ColorbarList ------------------------ */
 
 extern "C" void UpdateCO2ColorbarList(int value){
@@ -534,8 +505,6 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_emission_factor = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, "factor:", GLUI_SPINNER_FLOAT, &emission_factor, USE_FIRE_ALPHA, Smoke3dCB);
   SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.01, 100.0);
   Smoke3dCB(USE_FIRE_ALPHA);
-
-  UpdateFireCutoffs();
 
 #ifdef pp_SMOKETEST
   if (nsmoke3d_temp > 0) {
@@ -1319,7 +1288,6 @@ extern "C" void Smoke3dCB(int var){
     }
     UpdateSmokeColormap(smoke_render_option);
     Smoke3dCB(FIRE_RED);
-    UpdateFireCutoffs();
     break;
   case SMOKE_COLORBAR_LIST:
     SmokeColorbarMenu(fire_colorbar_index);
