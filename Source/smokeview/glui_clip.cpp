@@ -165,27 +165,11 @@ void ClipCB(int var){
     }
     break;
   case SPINNER_xlower:
-    SPINNER_clip_xmax->set_float_limits(clipinfo.xmin, xclip_max, GLUI_LIMIT_CLAMP);
-    updatefacelists = 1;
-    break;
   case SPINNER_xupper:
-    SPINNER_clip_xmin->set_float_limits(xclip_min, clipinfo.xmax, GLUI_LIMIT_CLAMP);
-    updatefacelists = 1;
-    break;
   case SPINNER_ylower:
-    SPINNER_clip_ymax->set_float_limits(clipinfo.ymin, yclip_max, GLUI_LIMIT_CLAMP);
-    updatefacelists = 1;
-    break;
   case SPINNER_yupper:
-    SPINNER_clip_ymin->set_float_limits(yclip_min, clipinfo.ymax, GLUI_LIMIT_CLAMP);
-    updatefacelists = 1;
-    break;
   case SPINNER_zlower:
-    SPINNER_clip_zmax->set_float_limits(clipinfo.zmin, zclip_max, GLUI_LIMIT_CLAMP);
-    updatefacelists = 1;
-    break;
   case SPINNER_zupper:
-    SPINNER_clip_zmin->set_float_limits(zclip_min, clipinfo.zmax, GLUI_LIMIT_CLAMP);
     updatefacelists = 1;
     break;
   default:
