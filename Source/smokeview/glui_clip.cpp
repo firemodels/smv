@@ -165,27 +165,11 @@ void ClipCB(int var){
     }
     break;
   case SPINNER_xlower:
-    SPINNER_clip_xmax->set_float_limits(clipinfo.xmin, xclip_max, GLUI_LIMIT_CLAMP);
-    updatefacelists = 1;
-    break;
   case SPINNER_xupper:
-    SPINNER_clip_xmin->set_float_limits(xclip_min, clipinfo.xmax, GLUI_LIMIT_CLAMP);
-    updatefacelists = 1;
-    break;
   case SPINNER_ylower:
-    SPINNER_clip_ymax->set_float_limits(clipinfo.ymin, yclip_max, GLUI_LIMIT_CLAMP);
-    updatefacelists = 1;
-    break;
   case SPINNER_yupper:
-    SPINNER_clip_ymin->set_float_limits(yclip_min, clipinfo.ymax, GLUI_LIMIT_CLAMP);
-    updatefacelists = 1;
-    break;
   case SPINNER_zlower:
-    SPINNER_clip_zmax->set_float_limits(clipinfo.zmin, zclip_max, GLUI_LIMIT_CLAMP);
-    updatefacelists = 1;
-    break;
   case SPINNER_zupper:
-    SPINNER_clip_zmin->set_float_limits(zclip_min, clipinfo.zmax, GLUI_LIMIT_CLAMP);
     updatefacelists = 1;
     break;
   default:
@@ -288,19 +272,16 @@ extern "C" void GluiClipSetup(int main_window){
   PANEL_clip_lower = glui_clip->add_panel_to_panel(PANEL_clip,_("Clip lower"));
   PANEL_clipx = glui_clip->add_panel_to_panel(PANEL_clip_lower,"X",GLUI_PANEL_NONE);
   SPINNER_clip_xmin=glui_clip->add_spinner_to_panel(PANEL_clipx,"X",GLUI_SPINNER_FLOAT,&clipinfo.xmin,SPINNER_xlower,ClipCB);
-  SPINNER_clip_xmin->set_float_limits(xclip_min,xclip_max,GLUI_LIMIT_CLAMP);
   glui_clip->add_column_to_panel(PANEL_clipx,false);
   CHECKBOX_clip_xmin=glui_clip->add_checkbox_to_panel(PANEL_clipx,"",&clipinfo.clip_xmin,CLIP_xlower,ClipCB);
 
   PANEL_clipy = glui_clip->add_panel_to_panel(PANEL_clip_lower,"Y",GLUI_PANEL_NONE);
   SPINNER_clip_ymin=glui_clip->add_spinner_to_panel(PANEL_clipy,"Y",GLUI_SPINNER_FLOAT,&clipinfo.ymin,SPINNER_ylower,ClipCB);
-  SPINNER_clip_ymin->set_float_limits(yclip_min,yclip_max,GLUI_LIMIT_CLAMP);
   glui_clip->add_column_to_panel(PANEL_clipy,false);
   CHECKBOX_clip_ymin=glui_clip->add_checkbox_to_panel(PANEL_clipy,"",&clipinfo.clip_ymin,CLIP_ylower,ClipCB);
 
   PANEL_clipz = glui_clip->add_panel_to_panel(PANEL_clip_lower,"Z",GLUI_PANEL_NONE);
   SPINNER_clip_zmin=glui_clip->add_spinner_to_panel(PANEL_clipz,"Z",GLUI_SPINNER_FLOAT,&clipinfo.zmin,SPINNER_zlower,ClipCB);
-  SPINNER_clip_zmin->set_float_limits(zclip_min,zclip_max,GLUI_LIMIT_CLAMP);
   glui_clip->add_column_to_panel(PANEL_clipz,false);
   CHECKBOX_clip_zmin=glui_clip->add_checkbox_to_panel(PANEL_clipz,"",&clipinfo.clip_zmin,CLIP_zlower,ClipCB);
 
@@ -320,19 +301,16 @@ extern "C" void GluiClipSetup(int main_window){
 
   PANEL_clipX = glui_clip->add_panel_to_panel(PANEL_clip_upper,"X",GLUI_PANEL_NONE);
   SPINNER_clip_xmax=glui_clip->add_spinner_to_panel(PANEL_clipX,"X",GLUI_SPINNER_FLOAT,&clipinfo.xmax,SPINNER_xupper,ClipCB);
-  SPINNER_clip_xmax->set_float_limits(xclip_min,xclip_max,GLUI_LIMIT_CLAMP);
   glui_clip->add_column_to_panel(PANEL_clipX,false);
   CHECKBOX_clip_xmax=glui_clip->add_checkbox_to_panel(PANEL_clipX,"",&clipinfo.clip_xmax,CLIP_xupper,ClipCB);
 
   PANEL_clipY = glui_clip->add_panel_to_panel(PANEL_clip_upper,"Y",GLUI_PANEL_NONE);
   SPINNER_clip_ymax=glui_clip->add_spinner_to_panel(PANEL_clipY,"Y",GLUI_SPINNER_FLOAT,&clipinfo.ymax,SPINNER_yupper,ClipCB);
-  SPINNER_clip_ymax->set_float_limits(yclip_min,yclip_max,GLUI_LIMIT_CLAMP);
   glui_clip->add_column_to_panel(PANEL_clipY,false);
   CHECKBOX_clip_ymax=glui_clip->add_checkbox_to_panel(PANEL_clipY,"",&clipinfo.clip_ymax,CLIP_yupper,ClipCB);
 
   PANEL_clipZ = glui_clip->add_panel_to_panel(PANEL_clip_upper,"Z",GLUI_PANEL_NONE);
   SPINNER_clip_zmax=glui_clip->add_spinner_to_panel(PANEL_clipZ,"Z",GLUI_SPINNER_FLOAT,&clipinfo.zmax,SPINNER_zupper,ClipCB);
-  SPINNER_clip_zmax->set_float_limits(zclip_min,zclip_max,GLUI_LIMIT_CLAMP);
   glui_clip->add_column_to_panel(PANEL_clipZ,false);
   CHECKBOX_clip_zmax=glui_clip->add_checkbox_to_panel(PANEL_clipZ,"",&clipinfo.clip_zmax,CLIP_zupper,ClipCB);
 
