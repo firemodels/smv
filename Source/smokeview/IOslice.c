@@ -373,7 +373,7 @@ void DrawTriangleSlice(float *v1, float *v2, float *v3, float t1, float t2, floa
   }
 }
 
-/* ------------------ DrawQuad ------------------------ */
+/* ------------------ DrawQuadSlice ------------------------ */
 
 void DrawQuadSlice(float *v1, float *v2, float *v3, float *v4, float t1, float t2, float t3, float t4, float del, int level){
   float d13, d24;
@@ -425,7 +425,7 @@ void DrawQuadOutlineSlice(float *v1, float *v2, float *v3, float *v4, float del,
   }
 }
 
-/* ------------------ DrawTriangleOutline ------------------------ */
+/* ------------------ DrawTriangleOutlineSlice ------------------------ */
 
 void DrawTriangleOutlineSlice(float *v1, float *v2, float *v3, float del, int level){
   float d12, d13, d23;
@@ -476,7 +476,7 @@ void DrawTriangleOutlineSlice(float *v1, float *v2, float *v3, float del, int le
   }
 }
 
-/* ------------------ DrawTriangleVector ------------------------ */
+/* ------------------ DrawTriangleVectorSlice ------------------------ */
 
 void DrawTriangleVectorSlice(float *v1, float *v2, float *v3, float del, int level){
 
@@ -3945,7 +3945,7 @@ int TimeAverageData(float *data_out, float *data_in, int ndata, int data_per_tim
 // time, compressed frame size                        for each frame
 // compressed buffer
 
-/* ------------------ GetSlicecZlibData ------------------------ */
+/* ------------------ GetSliceZlibRLEData ------------------------ */
 
 int GetSliceZlibRLEData(char *file, int compression_type,
   int set_tmin, int set_tmax, float tmin_local, float tmax_local, int ncompressed, int sliceskip, int nsliceframes,
@@ -9169,7 +9169,6 @@ int CompareSliceMenuInfo(const void *arg1, const void *arg2){
 
   return 0;
 }
-
 
 /* ------------------ GenerateSliceMenu ------------------------ */
 
