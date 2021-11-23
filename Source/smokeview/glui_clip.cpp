@@ -392,12 +392,24 @@ extern "C" void Update_Glui_Clip(void){
   if(CHECKBOX_clip_xmin!=NULL&&CHECKBOX_clip_ymin!=NULL&&CHECKBOX_clip_zmin!=NULL&&
      CHECKBOX_clip_xmax!=NULL&&CHECKBOX_clip_ymax!=NULL&&CHECKBOX_clip_zmax!=NULL){
 
+// set clipping min and max clipping plane checkboxes
+
     CHECKBOX_clip_xmin->set_int_val(clipinfo.clip_xmin);
     CHECKBOX_clip_ymin->set_int_val(clipinfo.clip_ymin);
     CHECKBOX_clip_zmin->set_int_val(clipinfo.clip_zmin);
     CHECKBOX_clip_xmax->set_int_val(clipinfo.clip_xmax);
     CHECKBOX_clip_ymax->set_int_val(clipinfo.clip_ymax);
     CHECKBOX_clip_zmax->set_int_val(clipinfo.clip_zmax);
+
+// set clipping min and max clipping plane values
+
+    SPINNER_clip_xmin->set_float_val(clipinfo.xmin);
+    SPINNER_clip_xmax->set_float_val(clipinfo.xmax);
+    SPINNER_clip_ymin->set_float_val(clipinfo.ymin);
+    SPINNER_clip_ymax->set_float_val(clipinfo.ymax);
+    SPINNER_clip_zmin->set_float_val(clipinfo.zmin);
+    SPINNER_clip_zmax->set_float_val(clipinfo.zmax);
+
     if(radio_clip!=NULL)radio_clip->set_int_val(clip_mode);
     ClipCB(CLIP_all);
   }
