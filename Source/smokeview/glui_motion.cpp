@@ -177,7 +177,10 @@ GLUI_Button *BUTTON_make_movie_batch=NULL;
 GLUI_Button *BUTTON_rotate90=NULL;
 GLUI_Button *BUTTON_90_z=NULL,*BUTTON_eyelevel=NULL, *BUTTON_floorlevel=NULL, *BUTTON_reset_saved_view=NULL;
 GLUI_Button *BUTTON_replace_view=NULL,*BUTTON_add_view=NULL,*BUTTON_delete_view=NULL;
-GLUI_Button *BUTTON_startup=NULL,*BUTTON_cycle_views=NULL;
+GLUI_Button *BUTTON_startup = NULL;
+GLUI_Button *BUTTON_cycle_views_user    = NULL;
+GLUI_Button *BUTTON_cycle_views_default = NULL;
+GLUI_Button *BUTTON_cycle_views_all     = NULL;
 GLUI_Button *BUTTON_snap=NULL;
 GLUI_Button *BUTTON_render_start=NULL ;
 GLUI_Button *BUTTON_motion_1=NULL;
@@ -715,7 +718,7 @@ void Camera2Quat(cameradata *ca, float *quat, float *rotation){
 /* ------------------ EnableDisableViews ------------------------ */
 
 void EnableDisableViews(void){
-  int ival;
+  int i, ival, have_user;
   cameradata *cex;
 
   ival = LIST_viewpoints->get_int_val();
@@ -727,11 +730,33 @@ void EnableDisableViews(void){
     cex = cex->next; // skip over first
     cex = cex->next; // skip over external
     if(cex->next == NULL){
-      BUTTON_cycle_views->disable();
+      BUTTON_cycle_views_user->disable();
+      BUTTON_cycle_views_default->disable();
+      BUTTON_cycle_views_all->disable();
     }
     else{
-      BUTTON_cycle_views->enable();
+      BUTTON_cycle_views_user->enable();
+      BUTTON_cycle_views_default->enable();
+      BUTTON_cycle_views_all->enable();
     }
+  }
+  have_user = 0;
+  for(i = 0; i<ncameras_sorted; i++){
+    cameradata *ca;
+
+    ca = cameras_sorted[i];
+    if(ca->view_id>1){
+      have_user = 1;
+      break;
+    }
+  }
+  if(have_user==0){
+    BUTTON_cycle_views_user->disable();
+    BUTTON_cycle_views_all->disable();
+  }
+  else{
+    BUTTON_cycle_views_user->enable();
+    BUTTON_cycle_views_all->enable();
   }
   if(ival<=1){
     BUTTON_replace_view->disable();
@@ -760,6 +785,42 @@ extern "C" void SetCurrentViewPoint(char *viewpoint_label){
       break;
     }
   }
+}
+
+/* ------------------ NextViewpoint ------------------------ */
+
+int NextViewpoint(int this_view, int view_type){
+  int i, istart;
+
+  istart = ncameras_sorted-1;
+  for(i = 0; i<ncameras_sorted; i++){
+    cameradata *ca;
+
+    ca = cameras_sorted[i];
+    if(ca->view_id==this_view){
+      istart = i;
+      break;
+    }
+  }
+  for(i = istart+1; i<2*ncameras_sorted; i++){
+    cameradata *ca;
+    int ii;
+
+    ii = i%ncameras_sorted;
+    ca = cameras_sorted[ii];
+    if(view_type==CYCLEVIEWS_ALL){
+      return ca->view_id;
+    }
+    else if(view_type==CYCLEVIEWS_USER){
+      if(ca->view_id<=1)continue;
+      return ca->view_id;
+    }
+    else{
+      if(ca->view_id>1)continue;
+      return ca->view_id;
+    }
+  }
+  return cameras_sorted[istart+1]->view_id;
 }
 
 /* ------------------ ViewpointCB ------------------------ */
@@ -887,7 +948,12 @@ extern "C" void ViewpointCB(int var){
       LIST_viewpoints->set_int_val(0);
       selected_view = 0;
     }
-    ViewpointCB(RESTORE_VIEW);
+    if(selected_view<=1){
+      ResetDefaultMenu(selected_view);
+    }
+    else{
+      ResetGluiView(selected_view);
+    }
     EnableDisableViews();
     break;
   case RESTORE_VIEW:
@@ -936,37 +1002,19 @@ extern "C" void ViewpointCB(int var){
     selected_view = startup_view_ini;
     WriteIni(LOCAL_INI, NULL);
     break;
-  case CYCLEVIEWS:
+  case CYCLEVIEWS_USER:
+  case CYCLEVIEWS_DEFAULT:
+  case CYCLEVIEWS_ALL:
     ival = LIST_viewpoints->get_int_val();
-    selected_view = ival;
-    cex = &camera_list_first;
-    cex = cex->next;
-    cex = cex->next;
-    if(ival<=1){
-      cex = cex->next;
-      if(cex->next==NULL)return;
-      ival = cex->view_id;
-    }
-    else{
-      for(ca = cex; ca->next!=NULL; ca = ca->next){
-        if(ca->view_id==ival)break;
-      }
-      cex = ca->next;
-      if(cex->next==NULL){
-        cex = &camera_list_first;
-        cex = cex->next;
-        cex = cex->next;
-        cex = cex->next;
-        if(cex->next==NULL)return;
-        ival = cex->view_id;
-      }
-      else{
-        ival = cex->view_id;
-      }
-    }
+    ival = NextViewpoint(ival, var);
     LIST_viewpoints->set_int_val(ival);
     selected_view = ival;
-    ViewpointCB(RESTORE_VIEW);
+    if(ival<=1){
+      ResetDefaultMenu(ival);
+    }
+    else{
+      ResetGluiView(ival);
+    }
     break;
   default:
     ASSERT(FFALSE);
@@ -1038,7 +1086,7 @@ extern "C" void UpdateGluiViewpointList(void){
   for(ca=camera_list_first.next;ca->next!=NULL;ca=ca->next){
     LIST_viewpoints->delete_item(ca->name);
   }
-  SortCameras();
+  SortCamerasID();
   for(i = 0; i < ncameras_sorted;i++){
     ca = cameras_sorted[i];
     LIST_viewpoints->add_item(ca->view_id, ca->name);
@@ -1296,14 +1344,16 @@ extern "C" void GluiMotionSetup(int main_window){
 
   BUTTON_delete_view = glui_motion->add_button_to_panel(PANEL_reset1, _("Delete"), DELETE_VIEW, ViewpointCB);
   delete_view_is_disabled = 0;
-  BUTTON_startup = glui_motion->add_button_to_panel(PANEL_reset1, _("Apply at startup"), STARTUP, ViewpointCB);
-  BUTTON_cycle_views = glui_motion->add_button_to_panel(PANEL_reset1, _("Cycle"), CYCLEVIEWS, ViewpointCB);
+  BUTTON_cycle_views_default = glui_motion->add_button_to_panel(PANEL_reset1, _("Cycle Default"), CYCLEVIEWS_DEFAULT, ViewpointCB);
+  BUTTON_cycle_views_user    = glui_motion->add_button_to_panel(PANEL_reset1, _("Cycle User"),    CYCLEVIEWS_USER,    ViewpointCB);
+  BUTTON_cycle_views_all     = glui_motion->add_button_to_panel(PANEL_reset1, _("Cycle All"),     CYCLEVIEWS_ALL,     ViewpointCB);
 
   glui_motion->add_column_to_panel(PANEL_reset, true);
   PANEL_reset2 = glui_motion->add_panel_to_panel(PANEL_reset, "", false);
 
-  BUTTON_replace_view = glui_motion->add_button_to_panel(PANEL_reset2, _("Replace"), REPLACE_VIEW, ViewpointCB);
   BUTTON_add_view = glui_motion->add_button_to_panel(PANEL_reset2, _("Add"), ADD_VIEW, ViewpointCB);
+  BUTTON_replace_view = glui_motion->add_button_to_panel(PANEL_reset2, _("Replace"), REPLACE_VIEW, ViewpointCB);
+  BUTTON_startup = glui_motion->add_button_to_panel(PANEL_reset2, _("Apply at startup"),  STARTUP,            ViewpointCB);
   EDIT_view_label = glui_motion->add_edittext_to_panel(PANEL_reset2, _("Edit:"), GLUI_EDITTEXT_TEXT, camera_label, LABEL_VIEW, ViewpointCB);
 
   ROLLOUT_projection = glui_motion->add_rollout_to_panel(ROLLOUT_viewA,_("Window properties"), false,WINDOW_ROLLOUT,MotionRolloutCB);

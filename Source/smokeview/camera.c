@@ -452,6 +452,55 @@ cameradata *InsertCamera(cameradata *cb,cameradata *source, char *name){
   return cam;
 }
 
+/* ------------------ CompareCamerasID ------------------------ */
+
+int CompareCamerasID(const void *arg1, const void *arg2){
+  cameradata *x, *y;
+  int x_state = IS_OTHER, y_state = IS_OTHER;
+
+  x = *(cameradata **)arg1;
+  y = *(cameradata **)arg2;
+
+  /*
+      ext  int   other
+ext    0   -1     -1
+int    1    0     -1
+other  1    1    strcmp
+  */
+
+  if(strcmp(x->name, "external")==0)x_state = IS_EXT;
+
+  if(strcmp(y->name, "external")==0)y_state = IS_EXT;
+
+  if(x_state==IS_EXT){
+    if(y_state==IS_EXT)return 0;
+    return -1;
+  }
+  else{
+    if(y_state==IS_OTHER)return x->view_id - y->view_id;
+    return 1;
+  }
+}
+
+/* ------------------ SortCamerasID ------------------------ */
+
+void SortCamerasID(void){
+  cameradata *ca;
+  int i;
+
+  FREEMEMORY(cameras_sorted);
+  ncameras_sorted = 0;
+  for(ca = camera_list_first.next; ca->next!=NULL; ca = ca->next){
+    ncameras_sorted++;
+  }
+  if(ncameras_sorted==0)return;
+  NewMemory((void **)&cameras_sorted, ncameras_sorted*sizeof(cameradata *));
+  for(i = 0, ca = camera_list_first.next; ca->next!=NULL; ca = ca->next, i++){
+    cameras_sorted[i] = ca;
+  }
+  qsort((cameradata **)cameras_sorted, (size_t)ncameras_sorted, sizeof(cameradata *), CompareCamerasID);
+}
+
 /* ------------------ DeleteCamera ------------------------ */
 
 void DeleteCamera(cameradata *cam){

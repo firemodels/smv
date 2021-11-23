@@ -598,6 +598,7 @@ EXTERNCPP float GetZCellValOffset(meshdata *meshi,float xval, float yval, int *l
 EXTERNCPP void UpdateCameraYpos(cameradata *camera_data, int option);
 EXTERNCPP cameradata *GetCamera(char *name);
 EXTERNCPP void SortCameras(void);
+EXTERNCPP void SortCamerasID(void);
 EXTERNCPP char *GetCameraLabel(int index);
 EXTERNCPP void Clip2Cam(cameradata *cam);
 EXTERNCPP void Cam2Clip(cameradata *cam);

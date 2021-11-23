@@ -26,7 +26,9 @@
 #define REPLACE_VIEW           9
 #define REPLACE_CURRENT_VIEW  44
 #define STARTUP               10
-#define CYCLEVIEWS            11
+#define CYCLEVIEWS_ALL        46
+#define CYCLEVIEWS_DEFAULT    47
+#define CYCLEVIEWS_USER       48
 #define ZOOM                  12
 #define APERTURE              15
 #define CURSOR                13
