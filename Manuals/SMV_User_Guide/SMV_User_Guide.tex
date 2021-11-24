@@ -2101,21 +2101,23 @@ A skipping interval may be selected to generate fewer images using the {\em Wher
 Controls in the {\em Viewpoint}\ portion of the Motion/View dialog box, as
 illustrated in Fig. \ref{figMOTIONviewpoints}, allow one to save the position and orientation of the scene.  These saved position/orientations are called viewpoints.  Viewpoints may then be selected resulting in the scene returning to a previously saved position and orientation.
 
-To define a viewpoint, manipulate the scene to the desired position and orientation. Then press
+Six default viewpoints are created by Smokeview labeled XMIN, XMAX, YMIN, YMAX, ZMIN and ZMAX.  These viewpoints show the scene from the near and far X, Y and Z positions looking towards the center of the scene.  To define a user viewpoint, manipulate the scene to the desired position and orientation. Then press
 {\em Add}\ button.  This adds the new viewpoint to a list of available viewpoints.
 The {\em Replace}\ button replaces the currently active viewpoint (as named by the {\em Select}\ list item) with the current position and orientation.
 
 To change the view to a currently saved
 viewpoint, use the {\em Select}\ listbox to select the desired
-viewpoint. The {\em Delete}\ button, as one would expect, removes the
+viewpoint. The {\em Cycle Default}\ , {\em Cycle User}\ and {\em Cycle All}\ buttons are used to cycle through viewpoints. The {\em Delete}\ button, as one would expect, removes the
 viewpoint.  The {\em Edit}\ text box is used to change the name of the currently  selected viewpoint.
 The {\em view at startup}\ button is used to specify the
 viewpoint that should be active when Smokeview starts up.
 
+
+
 \begin{figure}[bph]
 \centerline{
 \begin{tabular}{cc}
-\includegraphics[width=3.406in]{\SMVfigdir/figMOTION5}
+\includegraphics[width=3.5in]{\SMVfigdir/figMOTION5}
 \end{tabular}
 }\ \caption[Dialog box for specifying scene viewpoints.]{Dialog box for specifying scene viewpoints. The viewpoint portion of the  Motion/View/Render dialog box allows one to define and control viewpoints. }\ \label{figMOTIONviewpoints}
 \end{figure}
