@@ -1,18 +1,14 @@
 @echo off
 
-
-
-
-
 :: ---- FDS and smokeview version ----
 
-set fds_version=FDS6.7.5
-set fds_tag=FDS6.7.5
-set fds_versionbase=6.7.5
+set fds_version=FDS6.7.7
+set fds_tag=FDS6.7.7
+set fds_versionbase=6.7.7
 
-set smv_version=SMV6.7.16
-set smv_tag=SMV6.7.16
-set smv_versionbase=6.7.16
+set smv_version=SMV6.7.18
+set smv_tag=SMV6.7.18
+set smv_versionbase=6.7.18
 
 set fds_edition=FDS6
 set fds_debug=0
@@ -33,7 +29,7 @@ if exist %userprofile%\.bundle\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="25-May-2021"
+set smvlogdate="17-Nov-2021"
 
 :: ---- repo locations ----
 
@@ -65,7 +61,7 @@ set osx_comp_version=oneapi
 
 :: ---- INTEL compiler version ----
 
-set INTELVERSION=INTELoneapi
+set INTELVERSION=INTELoneapiu4
 
 :: ---- Guide locations ----
 
@@ -84,7 +80,7 @@ set OPENMPI_DIR=.bundle/OPENMPI
 set firebotrepo=/home2/smokevis2/firebot/FireModels_clone
 set firebothome=/home2/smokevis2/firebot
 
-set smokebotrepo=/home2/smokevis2/smokebot/FireModels_central
+set smokebotrepo=/home2/smokevis2/smokebot/FireModels_clone
 set smokebothome=/home2/smokevis2/smokebot
 
 :: plink options
@@ -100,6 +96,6 @@ set linux_logon=%linux_username%@%linux_hostname%
 
 ::*** OSX
 set osx_hostname=bevo.el.nist.gov
-::set osx_hostname=192.168.1.146
+::set osx_hostname=192.168.1.125
 set osx_username=%username%
 set osx_logon=%osx_username%@%osx_hostname%
