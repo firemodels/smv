@@ -10534,7 +10534,7 @@ void UpdateUseTextures(void){
       texturedata *texti;
 
       texti = textureinfo + ntextureinfo - nterrain_textures + i;
-      if(texti = terrain_textures + i){
+      if(texti == terrain_textures + i){
         texti->used = 1;
       }
     }

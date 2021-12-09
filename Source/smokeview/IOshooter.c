@@ -109,9 +109,9 @@ void InitShooterData(void){
     xyz = shootpointinfo[i].xyz;
     uvw = shootpointinfo[i].uvw;
     shootpointinfo[i].visible=1;
-    xyz[0] = xmin + shooter_dxyz[0]*(float)rand()/RAND_MAX;
-    xyz[1] = ymin + shooter_dxyz[1]*(float)rand()/RAND_MAX;
-    xyz[2] = zmin + shooter_dxyz[2]*(float)rand()/RAND_MAX;
+    xyz[0] = xmin + shooter_dxyz[0]*(float)rand()/(float)RAND_MAX;
+    xyz[1] = ymin + shooter_dxyz[1]*(float)rand()/(float)RAND_MAX;
+    xyz[2] = zmin + shooter_dxyz[2]*(float)rand()/(float)RAND_MAX;
     uvw[0]=shooter_uvw[0];
     uvw[1]=shooter_uvw[1];
     uvw[2]=shooter_uvw[2];

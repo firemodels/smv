@@ -37,10 +37,25 @@ typedef struct {
 #define LABEL_EOF 1
 #define LABEL_ERR 2
 
+// avoid compiler warnings on C11 and later
+#ifdef pp_DEG_TEST
+
+#ifdef pp_OSX_HIGHRES
+// 90 - 256
+#define DEG_SYMBOL -160
+#else
+// 176 - 256
+#define DEG_SYMBOL -80
+#endif
+
+#else
+
 #ifdef pp_OSX_HIGHRES
 #define DEG_SYMBOL 96
 #else
 #define DEG_SYMBOL 176
+#endif
+
 #endif
 
 #ifdef pp_HASH
