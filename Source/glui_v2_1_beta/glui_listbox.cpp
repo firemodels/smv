@@ -163,7 +163,7 @@ void    GLUI_Listbox::draw_active_area( void )
 
 /**************************************** GLUI_Listbox::add_item() **********/
 
-int  GLUI_Listbox::add_item( int id, char *new_text )
+int  GLUI_Listbox::add_item( int id, const char *new_text )
 {
   GLUI_Listbox_Item *new_node = new GLUI_Listbox_Item;
   GLUI_Listbox_Item *head;
@@ -186,8 +186,8 @@ int  GLUI_Listbox::add_item( int id, char *new_text )
   }
 
   /*** Check if we need to increase control size ***/
-  if ( w < text_x_offset + MAX( GLUI_EDITTEXT_MIN_TEXT_WIDTH, string_width( new_text ) ) + 20 ) {
-    w = text_x_offset + MAX( GLUI_EDITTEXT_MIN_TEXT_WIDTH, string_width( new_text ) ) + 20;
+  if ( w < text_x_offset + MAX( GLUI_EDITTEXT_MIN_TEXT_WIDTH, string_width( (char *)new_text ) ) + 20 ) {
+    w = text_x_offset + MAX( GLUI_EDITTEXT_MIN_TEXT_WIDTH, string_width( (char *)new_text ) ) + 20;
 
     if ( glui )
       glui->refresh();
@@ -202,9 +202,9 @@ int  GLUI_Listbox::add_item( int id, char *new_text )
 
 /************************************** GLUI_Listbox::delete_item() **********/
 
-int  GLUI_Listbox::delete_item( char *text )
+int  GLUI_Listbox::delete_item( const char *text )
 {
-  GLUI_Listbox_Item *node = get_item_ptr( text );
+  GLUI_Listbox_Item *node = get_item_ptr( (char *)text );
 
   if ( node ) {
     node->unlink();

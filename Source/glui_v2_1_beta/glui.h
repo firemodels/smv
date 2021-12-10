@@ -302,7 +302,7 @@ public:
   void      link_this_to_sibling_prev( GLUI_Node *sibling );
   void      unlink( void );
 
-  void dump( FILE *out, char *name ) {
+  void dump( FILE *out, const char *name ) {
     fprintf( out, "GLUI_node: %s\n", name );
     fprintf( out, "   parent: %p     child_head: %p    child_tail: %p\n",
 	     parent_node, child_head, child_tail );
@@ -501,7 +501,7 @@ public:
   void set_glutDialsFunc(Int2_CB f)                      {glutDialsFunc(f);};  
   
 
-  GLUI          *create_glui( char *name, long flags=0, int x=-1, int y=-1 ); 
+  GLUI          *create_glui( const char *name, long flags=0, int x=-1, int y=-1 ); 
   GLUI          *create_glui_subwindow( int parent_window, long flags=0 );
   GLUI          *find_glui_by_window_id( int window_id );
   void           get_viewport_area( int *x, int *y, int *w, int *h );
@@ -601,7 +601,7 @@ protected:
   GLUI_Control  *find_next_control_rec( GLUI_Control *control );
   GLUI_Control  *find_next_control_( GLUI_Control *control );
   GLUI_Control  *find_prev_control( GLUI_Control *control );
-  void           create_standalone_window( char *name, int x=-1, int y=-1 );
+  void           create_standalone_window( const char *name, int x=-1, int y=-1 );
   void           create_subwindow( int parent,int window_alignment );
   void           setup_default_glut_callbacks( void );
 
@@ -731,7 +731,7 @@ public:
 
   /*** Get/Set values ***/
 
-  virtual void   set_name( char *string );
+  virtual void   set_name( const char *string );
   virtual void   set_int_val( int new_int )         { int_val = new_int; output_live(true); };
   virtual void   set_float_val( float new_float )   { float_val = new_float; output_live(true); };
   virtual void   set_ptr_val( void *new_ptr )       { ptr_val = new_ptr; output_live(true); };
@@ -958,7 +958,7 @@ class GLUI_Panel : public GLUI_Control
 {
 public:
   void draw( int x, int y );
-  void set_name( char *text );
+  void set_name( const char *text );
   void set_type( int new_type );
 
   void update_size( void );
@@ -1000,7 +1000,7 @@ public:
   void  open( void ); 
   void  close( void );
 
-    /*   void set_name( char *text )   { panel.set_name( text ); }; */
+    /*   void set_name( const char *text )   { panel.set_name( text ); }; */
   void update_size( void );
 
   GLUI_Rollout( void ) {
@@ -1043,74 +1043,74 @@ public:
 			       int user_id=-1, GLUI_Update_CB callback=NULL );
   GLUI_RadioButton
     *add_radiobutton_to_group(  GLUI_RadioGroup *group,
-				char *name );
+				const char *name );
 
-  GLUI_Listbox *add_listbox( char *name, int *live_var=NULL,
+  GLUI_Listbox *add_listbox( const char *name, int *live_var=NULL,
 			     int id=-1, GLUI_Update_CB callback=NULL	);
   GLUI_Listbox *add_listbox_to_panel( GLUI_Panel *panel,
-				      char *name, int *live_var=NULL,
+				      const char *name, int *live_var=NULL,
 				      int id=-1, GLUI_Update_CB callback=NULL);
 
-  GLUI_Rotation *add_rotation( char *name, float *live_var=NULL,
+  GLUI_Rotation *add_rotation( const char *name, float *live_var=NULL,
 			       int id=-1, GLUI_Update_CB callback=NULL	);
   GLUI_Rotation *add_rotation_to_panel( GLUI_Panel *panel,
-					char *name, float *live_var=NULL,
+					const char *name, float *live_var=NULL,
 					int id=-1, GLUI_Update_CB callback=NULL);
   
-  GLUI_Translation *add_translation( char *name,
+  GLUI_Translation *add_translation( const char *name,
 				     int trans_type, float *live_var=NULL,
 				     int id=-1, GLUI_Update_CB callback=NULL	);
   GLUI_Translation *add_translation_to_panel( 
-					     GLUI_Panel *panel, char *name, 
+					     GLUI_Panel *panel, const char *name, 
 					     int trans_type, float *live_var=NULL,
 					     int id=-1, GLUI_Update_CB callback=NULL);
   
-  GLUI_Checkbox  *add_checkbox( char *name, 
+  GLUI_Checkbox  *add_checkbox( const char *name, 
 				int *live_var=NULL,
 				int id=-1, GLUI_Update_CB callback=NULL);
-  GLUI_Checkbox  *add_checkbox_to_panel( GLUI_Panel *panel, char *name, 
+  GLUI_Checkbox  *add_checkbox_to_panel( GLUI_Panel *panel, const char *name, 
 					 int *live_var=NULL, int id=-1, 
 					 GLUI_Update_CB callback=NULL);
 
-  GLUI_Button  *add_button( char *name, int id=-1, 
+  GLUI_Button  *add_button( const char *name, int id=-1, 
 			    GLUI_Update_CB callback=NULL);
-  GLUI_Button  *add_button_to_panel( GLUI_Panel *panel, char *name, 
+  GLUI_Button  *add_button_to_panel( GLUI_Panel *panel, const char *name, 
 				     int id=-1, GLUI_Update_CB callback=NULL );
 
-  GLUI_StaticText  *add_statictext( char *name );
-  GLUI_StaticText  *add_statictext_to_panel( GLUI_Panel *panel, char *name );
+  GLUI_StaticText  *add_statictext( const char *name );
+  GLUI_StaticText  *add_statictext_to_panel( GLUI_Panel *panel, const char *name );
 
-  GLUI_EditText  *add_edittext( char *name, 
+  GLUI_EditText  *add_edittext( const char *name, 
 				int data_type=GLUI_EDITTEXT_TEXT,
 				void *live_var=NULL,
 				int id=-1, GLUI_Update_CB callback=NULL	);
   GLUI_EditText  *add_edittext_to_panel( GLUI_Panel *panel, 
-					 char *name,
+					 const char *name,
 					 int data_type=GLUI_EDITTEXT_TEXT,
 					 void *live_var=NULL, int id=-1, 
 					 GLUI_Update_CB callback=NULL );
 
-  GLUI_Spinner  *add_spinner( char *name, 
+  GLUI_Spinner  *add_spinner( const char *name, 
 			      int data_type=GLUI_SPINNER_INT,
 			      void *live_var=NULL,
 			      int id=-1, GLUI_Update_CB callback=NULL );
   GLUI_Spinner  *add_spinner_to_panel( GLUI_Panel *panel, 
-				       char *name,
+				       const char *name,
 				       int data_type=GLUI_SPINNER_INT,
 				       void *live_var=NULL,
 				       int id=-1,
 				       GLUI_Update_CB callback=NULL );
 
-  GLUI_Panel     *add_panel( char *name, int type=GLUI_PANEL_EMBOSSED );
-  GLUI_Panel     *add_panel_to_panel( GLUI_Panel *panel, char *name, 
+  GLUI_Panel     *add_panel( const char *name, int type=GLUI_PANEL_EMBOSSED );
+  GLUI_Panel     *add_panel_to_panel( GLUI_Panel *panel, const char *name, 
 				      int type=GLUI_PANEL_EMBOSSED );
 
 #ifdef pp_GLUI_ORIG				      
-  GLUI_Rollout   *add_rollout( char *name, int open=true );
-  GLUI_Rollout   *add_rollout_to_panel( GLUI_Panel *panel, char *name, int open=true );
+  GLUI_Rollout   *add_rollout( const char *name, int open=true );
+  GLUI_Rollout   *add_rollout_to_panel( GLUI_Panel *panel, const char *name, int open=true );
 #else
-  GLUI_Rollout   *add_rollout(char *name, int open = true, int id = -1, GLUI_Update_CB callback = NULL);
-  GLUI_Rollout   *add_rollout_to_panel(GLUI_Panel *panel, char *name, int open = true, int id = -1, GLUI_Update_CB callback = NULL);
+  GLUI_Rollout   *add_rollout(const char *name, int open = true, int id = -1, GLUI_Update_CB callback = NULL);
+  GLUI_Rollout   *add_rollout_to_panel(GLUI_Panel *panel, const char *name, int open = true, int id = -1, GLUI_Update_CB callback = NULL);
 #endif
 
   void            set_main_gfx_window( int window_id );
@@ -1141,12 +1141,12 @@ public:
     void set_glutInitWindowSize(int width, int height);
     void set_glutInitWindowPosition(int x, int y);
     void set_glutInitDisplayMode(unsigned int mode);
-    int  set_glutCreateWindow(char *name);
+    int  set_glutCreateWindow(const char *name);
     */
 
   /***** Constructors and desctructors *****/
 
-  int init( char *name, long flags, int x, int y, int parent_window );
+  int init( const char *name, long flags, int x, int y, int parent_window );
 };
 
 
@@ -1211,7 +1211,7 @@ public:
   void set_text( char *text );
   char *get_text( void )         { return text; };  
 
-  void dump( FILE *out, char *text );
+  void dump( FILE *out, const char *text );
 
   GLUI_EditText( void ) {
     type                  = GLUI_CONTROL_EDITTEXT;
@@ -1253,7 +1253,7 @@ public:
   int  num_buttons;
 
   void draw( int x, int y );
-  void set_name( char *text );
+  void set_name( const char *text );
   void set_int_val( int int_val ); 
   void set_selected( int int_val );
 
@@ -1484,8 +1484,8 @@ public:
   void set_int_val( int new_val );
   void dump( FILE *output );
 
-  int  add_item( int id, char *text );
-  int  delete_item( char *text );
+  int  add_item( int id, const char *text );
+  int  delete_item( const char *text );
   int  delete_item( int id );
   int  sort_items( void );
 

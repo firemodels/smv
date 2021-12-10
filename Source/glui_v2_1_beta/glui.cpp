@@ -43,7 +43,7 @@ void finish_drawing( void )
 
 /************************************************ GLUI::GLUI() **********/
 
-int GLUI::init( char *text, long flags, int x, int y, int parent_window ) 
+int GLUI::init( const char *text, long flags, int x, int y, int parent_window ) 
 {
   int old_glut_window;
 
@@ -96,7 +96,7 @@ int GLUI::init( char *text, long flags, int x, int y, int parent_window )
 
 /**************************** GLUI_Main::create_standalone_window() ********/
 
-void    GLUI_Main::create_standalone_window( char *name, int x, int y )
+void    GLUI_Main::create_standalone_window( const char *name, int x, int y )
 {
   glutInitWindowSize( 100, 100 );
   if ( x >= 0 OR y >= 0 )
@@ -420,7 +420,7 @@ void glui_idle_func(void)
 
 /*********************************** GLUI_Master_Object::create_glui() ******/
 
-GLUI    *GLUI_Master_Object::create_glui( char *name, long flags,int x,int y )
+GLUI    *GLUI_Master_Object::create_glui( const char *name, long flags,int x,int y )
 {
   GLUI *new_glui;
 
@@ -1046,7 +1046,8 @@ GLUI_Main::GLUI_Main( void )
   main_panel              = new GLUI_Panel;
   main_panel->set_int_val( GLUI_PANEL_NONE );
   main_panel->glui        = (GLUI*) this;
-  main_panel->name        = "\0";
+  //main_panel->name        = "\0";
+  strcpy(main_panel->name, "\0");
 }
 
 /************************************ GLUI_Main::draw_raised_box() **********/

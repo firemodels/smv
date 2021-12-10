@@ -1031,7 +1031,7 @@ void  GLUI_Control::get_float_array_val( float *array_ptr )
 
 /****************************** GLUI_Control::set_name() ********************/
 
-void   GLUI_Control::set_name(char *string )
+void   GLUI_Control::set_name(const char *string )
 {
   strncpy((char*)name,string,sizeof(GLUI_String)); 
 
