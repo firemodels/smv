@@ -95,7 +95,7 @@ echo -glut     - build smokeview using the glut library
 echo -help     - display this message
 echo -icon     - ceate an icon
 echo -inc      - incremental build
-echo -release  - release versino
+echo -release  - release version
 echo -test     - build a test version of smokeview
 exit /b 0
 
