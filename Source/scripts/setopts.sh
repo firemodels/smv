@@ -1,6 +1,11 @@
 #!/bin/bash
-COMPILER="icx"
-COMPILER2="icpx"
+if [ "`uname`" == "Darwin" ]; then
+  COMPILER="icc"
+  COMPILER2="icpp"
+else
+  COMPILER="icx"
+  COMPILER2="icpx"
+fi
 PLATFORM=""
 GLUT=glut
 LUA=
@@ -8,17 +13,11 @@ FOREC_g=
 FOREC_i=
 target=all
 QUARTZ="-I /opt/X11/include -Wno-unknown-pragmas"
-while getopts 'CfgGhiILlqQt:T' OPTION
+while getopts 'fgGhiILlqQt:T' OPTION
 do
 case $OPTION in
   f)
    GLUT="freeglut"
-  ;;
-  C)
-   if [ "$FORCE_g" == "" ]; then
-     COMPILER="icx"
-     COMPILER2="icpx"
-   fi
   ;;
   g)
    if [ "$FORCE_i" == "" ]; then
@@ -33,7 +32,6 @@ case $OPTION in
   ;;
   h)
   echo "options:"
-  echo "-C - use the Intel icx/C11 compiler"
   echo "-f - use freeglut (not glut)
   echo "-g - use the gnu gcc compiler"
   echo "-i - use the Intel icc compiler"
@@ -44,13 +42,23 @@ case $OPTION in
   ;;
   i)
    if [ "$FORCE_g" == "" ]; then
-     COMPILER="icx"
-     COMPILER2="icpx"
+     if [ "`uname`" == "Darwin" ]; then
+       COMPILER="icc"
+       COMPILER2="icpp"
+     else 
+       COMPILER="icx"
+       COMPILER2="icpx"
+     fi       
    fi
   ;;
   I)
-   COMPILER="icx"
-   COMPILER2="icpx"
+    if [ "`uname`" == "Darwin" ]; then
+     COMPILER="icc"
+     COMPILER2="icpp"
+   else 
+     COMPILER="icx"
+     COMPILER2="icpx"
+   fi       
    FORCE_i=1
   ;;
   l)
