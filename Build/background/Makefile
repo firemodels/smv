@@ -69,7 +69,7 @@ gnu_win_64 : $(obj)
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
-intel_linux_64 : CC        = icc
+intel_linux_64 : CC        = icx
 intel_linux_64 : exe       = background_linux_64
 
 intel_linux_64 : $(obj)

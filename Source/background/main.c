@@ -28,6 +28,7 @@ float get_load(void);
 float get_host_load(char *host);
 unsigned char cpuusage_host(char *host,int ncores);
 #endif
+int get_host_ncores(char *host);
 
 #ifdef pp_OSX
 unsigned char cpuusage_host(char *host,int ncores);
