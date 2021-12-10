@@ -4644,7 +4644,7 @@ void LoadSmoke3DMenu(int value){
 
 /* ------------------ AnySmoke ------------------------ */
 
-int AnySmoke(char *type){
+int AnySmoke(const char *type){
 
   if(nsmoke3dinfo>0)return 1;
   return 0;
@@ -4652,7 +4652,7 @@ int AnySmoke(char *type){
 
 /* ------------------ AnySlices ------------------------ */
 
-int AnySlices(char *type){
+int AnySlices(const char *type){
   int i;
 
   for(i=0;i<nsliceinfo;i++){

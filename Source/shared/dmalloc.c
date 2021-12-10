@@ -89,7 +89,7 @@ void initMALLOC(void){
 
 /* ------------------ _NewMemory ------------------------ */
 
-mallocflag _NewMemory(void **ppv, size_t size, int memory_id, char *varname, char *file, int linenumber){
+mallocflag _NewMemory(void **ppv, size_t size, int memory_id, const char *varname, const char *file, int linenumber){
   mallocflag returnval;
 
   LOCK_MEM;
@@ -254,7 +254,7 @@ void FreeMemoryNOTHREAD(void *pv){
 
 /* ------------------ _ResizeMemory ------------------------ */
 
-mallocflag _ResizeMemory(void **ppv, size_t sizeNew, int memory_id, char *varname, char *file, int linenumber){
+mallocflag _ResizeMemory(void **ppv, size_t sizeNew, int memory_id, const char *varname, const char *file, int linenumber){
   mallocflag returnval;
 
   LOCK_MEM;
@@ -354,12 +354,12 @@ mallocflag _ResizeMemoryNOTHREAD(void **ppv, size_t sizeNew, int memory_id){
 
 /* ------------------ __NewMemory ------------------------ */
 
-mallocflag __NewMemory(void **ppv, size_t size, int memory_id, char *varname, char *file, int linenumber){
+mallocflag __NewMemory(void **ppv, size_t size, int memory_id, const char *varname, const char *file, int linenumber){
   void **ppb=(void **)ppv;
   blockinfo *pbi;
   int return_code;
-  char *varname2;
-  char *file2;
+  const char *varname2;
+  const char *file2;
   char ampersand='&';
 #ifdef WIN32
   char dirsep='\\';
@@ -418,7 +418,7 @@ mallocflag __NewMemory(void **ppv, size_t size, int memory_id, char *varname, ch
 
 /* ------------------ __ResizeMemory ------------------------ */
 
-mallocflag __ResizeMemory(void **ppv, size_t size, int memory_id, char *varname, char *file, int linenumber){
+mallocflag __ResizeMemory(void **ppv, size_t size, int memory_id, const char *varname, const char *file, int linenumber){
   void **ppb=(void **)ppv;
   blockinfo *pbi;
   int return_code;

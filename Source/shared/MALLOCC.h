@@ -61,7 +61,10 @@ MMEXTERN MMsize MMtotalmemory,MMmaxmemory;
 #endif
 
 #ifdef pp_THREAD
-MMEXTERN pthread_mutex_t mutexSLICE_BOUND,mutexPATCH_BOUND,mutexPART2ISO,mutexPRINT,mutexMEM;
+#ifndef pp_SMOKEZIP
+MMEXTERN pthread_mutex_t mutexSLICE_BOUND, mutexPATCH_BOUND, mutexPART2ISO, muteexPRINT;
+#endif
+MMEXTERN pthread_mutex_t mutexMEM;
 #define LOCK_MEM           pthread_mutex_lock(&mutexMEM)
 #define UNLOCK_MEM         pthread_mutex_unlock(&mutexMEM)
 #else
@@ -159,11 +162,11 @@ mallocflag CreateBlockInfo(bbyte *pbNew, size_t sizeNew);
 void FreeBlockInfo(bbyte *pb);
 void UpdateBlockInfo(bbyte *pbOld, bbyte *pbNew, size_t sizeNew);
 size_t sizeofBlock(bbyte *pv);
-MMEXTERN mallocflag __ResizeMemory(void **ppv, size_t sizeNew, int memory_id, char *varname, char *file, int linenumber);
-MMEXTERN mallocflag __NewMemory(void **ppv, size_t size, int memory_id, char *varname, char *file,int linenumber);
+MMEXTERN mallocflag __ResizeMemory(void **ppv, size_t sizeNew, int memory_id, const char *varname, const char *file, int linenumber);
+MMEXTERN mallocflag __NewMemory(void **ppv, size_t size, int memory_id, const char *varname, const char *file,int linenumber);
 #endif
-MMEXTERN mallocflag _ResizeMemory(void **ppv, size_t sizeNew, int memory_id, char *varname, char *file,int linenumber);
-MMEXTERN mallocflag _NewMemory(void **ppv, size_t size, int memory_id, char *varname, char *file,int linenumber);
+MMEXTERN mallocflag _ResizeMemory(void **ppv, size_t sizeNew, int memory_id, const char *varname, const char *file,int linenumber);
+MMEXTERN mallocflag _NewMemory(void **ppv, size_t size, int memory_id, const char *varname, const char *file,int linenumber);
 MMEXTERN void FreeMemory(void *pv);
 MMEXTERN mallocflag _ResizeMemoryNOTHREAD(void **ppv, size_t sizeNew, int memory_id);
 MMEXTERN mallocflag _NewMemoryNOTHREAD(void **ppv, size_t size, int memory_id);

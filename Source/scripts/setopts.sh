@@ -1,6 +1,6 @@
 #!/bin/bash
-COMPILER="icc"
-COMPILER2="icc"
+COMPILER="icx"
+COMPILER2="icpx"
 PLATFORM=""
 GLUT=glut
 LUA=
@@ -8,11 +8,17 @@ FOREC_g=
 FOREC_i=
 target=all
 QUARTZ="-I /opt/X11/include -Wno-unknown-pragmas"
-while getopts 'fgGhiILlqQt:T' OPTION
+while getopts 'CfgGhiILlqQt:T' OPTION
 do
 case $OPTION in
   f)
    GLUT="freeglut"
+  ;;
+  C)
+   if [ "$FORCE_g" == "" ]; then
+     COMPILER="icx"
+     COMPILER2="icpx"
+   fi
   ;;
   g)
    if [ "$FORCE_i" == "" ]; then
@@ -27,6 +33,7 @@ case $OPTION in
   ;;
   h)
   echo "options:"
+  echo "-C - use the Intel icx/C11 compiler"
   echo "-f - use freeglut (not glut)
   echo "-g - use the gnu gcc compiler"
   echo "-i - use the Intel icc compiler"
@@ -37,13 +44,13 @@ case $OPTION in
   ;;
   i)
    if [ "$FORCE_g" == "" ]; then
-     COMPILER="icc"
-     COMPILER2="icc"
+     COMPILER="icx"
+     COMPILER2="icpx"
    fi
   ;;
   I)
-   COMPILER="icc"
-   COMPILER2="icc"
+   COMPILER="icx"
+   COMPILER2="icpx"
    FORCE_i=1
   ;;
   l)

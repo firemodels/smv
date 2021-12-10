@@ -10,7 +10,7 @@ LIB_DIR = $(BUILD_DIR)/LIBS
 # Set the C standard we are using. Currently this is just the appropriate flag
 # for gcc and is not applied to other compilers.
 #C_STANDARD = -std=gnu89
-CPP_STANDARD = -libstd=c++
+#CPP_STANDARD = -libstd=c++
 
 SMV_TESTFLAG =
 SMV_TESTSTRING =
@@ -268,18 +268,18 @@ INTEL_LIBS_LINUX =$(IFORT_COMPILER_LIB)/libifcore.a $(IFORT_COMPILER_LIB)/libifp
 # ------------- intel_linux_64 ----------------
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
-intel_linux_64 : FFLAGS    = -O0 -traceback -m64 -static-intel -fpp -stand:f18 $(SMV_PROFILEFLAG)
-intel_linux_64 : CFLAGS    = -O0 -traceback -m64 -static-intel -D pp_LINUX $(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_linux_64 : FFLAGS    = -O0 -traceback -m64 -fpp -stand:f18 $(SMV_PROFILEFLAG)
+intel_linux_64 : CFLAGS    = -O0 -traceback -m64 -D pp_LINUX $(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)
 intel_linux_64 : CFLAGS    += -D pp_LUA
 intel_linux_64 : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
 intel_linux_64 : LIBLUA    += $(LIB_DIR_PLAT)/liblua.a -ldl
 endif
-intel_linux_64 : LFLAGS    = -m64 -static-intel -no-cilk $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
-intel_linux_64 : CC        = icc
-intel_linux_64 : CPP       = icpc
-intel_linux_64 : FC        = ifort
+intel_linux_64 : LFLAGS    = -m64 $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
+intel_linux_64 : CC        = icx
+intel_linux_64 : CPP       = icpx
+intel_linux_64 : FC        = ifx
 intel_linux_64 : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
 intel_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)

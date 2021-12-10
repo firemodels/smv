@@ -17,14 +17,14 @@
 
 /* ------------------ PrintTime ------------------------ */
 
-void PrintTime(char *filepath, int line, float *timer, char *label){
+void PrintTime(const char *filepath, int line, float *timer, const char *label){
   char *file;
 
   if(show_timings==0)return;
   file = strrchr(filepath, '\\');
   if(file==NULL)file = strrchr(filepath, '/');
   if(file==NULL){
-    file = filepath;
+    file = (char *)filepath;
   }
   else{
     file++;

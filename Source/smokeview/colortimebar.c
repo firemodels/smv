@@ -1852,7 +1852,7 @@ void DrawHorizontalColorbarRegLabels(void){
     }
     if(parttype == -1){
       strcpy(partshortlabel2, "temp");
-      strcpy(partunitlabel2, degC);
+      strcpy(partunitlabel2, (const char *)degC);
     }
     else if(parttype == -2){
       strcpy(partshortlabel2, "HRRPUV");
@@ -1986,7 +1986,7 @@ void DrawHorizontalColorbarRegLabels(void){
     char unitlabel[256];
     int zoneunitclass, zoneunittype;
 
-    strcpy(unitlabel, degC);
+    strcpy(unitlabel, (const char *)degC);
     GetUnitInfo(unitlabel, &zoneunitclass, &zoneunittype);
     if(zoneunitclass >= 0 && zoneunitclass < nunitclasses){
       if(zoneunittype > 0){
@@ -2536,7 +2536,7 @@ void DrawVerticalColorbarRegLabels(void){
     }
     if(parttype == -1){
       strcpy(partshortlabel2, "temp");
-      strcpy(partunitlabel2, degC);
+      strcpy(partunitlabel2, (const char *)degC);
     }
     else if(parttype == -2){
       strcpy(partshortlabel2, "HRRPUV");
@@ -2687,7 +2687,7 @@ void DrawVerticalColorbarRegLabels(void){
     char unitlabel[256];
     int zoneunitclass, zoneunittype;
 
-    strcpy(unitlabel, degC);
+    strcpy(unitlabel, (const char *)degC);
     GetUnitInfo(unitlabel, &zoneunitclass, &zoneunittype);
     if(zoneunitclass >= 0 && zoneunitclass < nunitclasses){
       if(zoneunittype > 0){
