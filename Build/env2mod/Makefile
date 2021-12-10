@@ -94,7 +94,7 @@ gnu_linux_64_db : $(obj)
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
-intel_linux_64 : CC        = icc
+intel_linux_64 : CC        = icx
 intel_linux_64 : exe       = env2mod_linux_64
 
 intel_linux_64 : $(obj)

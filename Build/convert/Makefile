@@ -126,8 +126,8 @@ gnu_osx_64_db : $(obj)
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
-intel_linux_64 : CC        = icc
-intel_linux_64 : CPP       = icc
+intel_linux_64 : CC        = icx
+intel_linux_64 : CPP       = icpx
 intel_linux_64 : exe       = convert_linux_64
 
 intel_linux_64 : $(obj)
@@ -136,8 +136,8 @@ intel_linux_64 : $(obj)
 # ------------- intel linux 64 db ----------------
 
 intel_linux_64_db : CFLAGS    = -O0 -m64 -D pp_LINUX -g -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
-intel_linux_64_db : CC        = icc
-intel_linux_64_db : CPP       = icc
+intel_linux_64_db : CC        = icx
+intel_linux_64_db : CPP       = icpx
 intel_linux_64_db : exe       = convert_linux_64_db
 
 intel_linux_64_db : $(obj)

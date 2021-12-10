@@ -151,9 +151,9 @@ LINUXFORTLIBS_64=$(IFORT_COMPILER_LIB)/libifcore.a
 intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_LINUX -stand:f18
 intel_linux_64 : CFLAGS    = -O2 -m64 ${INC_DIR} -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG) 
 intel_linux_64 : LFLAGS    = -lifport $(LINUXFORTLIBS_64) -L $(LIB_DIR)/intel_linux_64 -lz -lpthread -static-intel
-intel_linux_64 : CC        = icc
-intel_linux_64 : CPP       = icc
-intel_linux_64 : FC        = ifort
+intel_linux_64 : CC        = icx
+intel_linux_64 : CPP       = icpx
+intel_linux_64 : FC        = ifx
 intel_linux_64 : exe       = smokezip_linux_64
 
 intel_linux_64 : $(obj)

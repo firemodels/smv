@@ -100,7 +100,7 @@ LINUXFORTLIBS_64=$(IFORT_COMPILER_LIB)/libifcore.a
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : LFLAGS    = -lifport $(LINUXFORTLIBS_64)
-intel_linux_64 : CC        = icc
+intel_linux_64 : CC        = icx
 intel_linux_64 : exe       = timep_linux_64
 
 intel_linux_64 : $(obj)

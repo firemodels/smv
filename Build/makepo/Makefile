@@ -29,7 +29,7 @@ LINUX64FORTLIBDIR = $(IFORT_COMPILER)/lib/intel64
 
 # Definition of the object variables
 
-obj = main.o file_util.o string_util.o dmalloc.o assert.o md5.o sha1.o sha256.o
+obj = main.o file_util.o string_util.o dmalloc.o assert.o md5.o sha1.o sha256.o stdio_buffer.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***
@@ -83,8 +83,8 @@ gnu_win_64 : $(obj)
 
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : LFLAGS    = -lpthread
-intel_linux_64 : CC        = icc
-intel_linux_64 : CPP       = icc
+intel_linux_64 : CC        = icx
+intel_linux_64 : CPP       = icpx
 intel_linux_64 : exe       = makepo_linux_64
 
 intel_linux_64 : $(obj)

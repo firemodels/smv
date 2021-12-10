@@ -28,7 +28,7 @@ int GetTokens(unsigned char *tokens){
     if(token==NULL)return ntokens;
     token = (unsigned char *)TrimFrontBack((char *)token);
     if(strlen((char *)token)==0)return ntokens;
-    sscanf(token, "%i", &val);
+    sscanf((const char *)token, "%i", &val);
     tokens[ntokens] = val;
     ntokens++;
     token = (unsigned char *)strtok(NULL, ",");

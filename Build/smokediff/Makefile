@@ -156,9 +156,9 @@ gnu_osx_64_db : $(obj)
 
 intel_linux_64 : FFLAGS    = -O2 -m64 -fpp -D pp_LINUX -stand:f18
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
-intel_linux_64 : CC        = icc
-intel_linux_64 : CPP       = icc
-intel_linux_64 : FC        = ifort
+intel_linux_64 : CC        = icx
+intel_linux_64 : CPP       = icpx
+intel_linux_64 : FC        = ifx
 intel_linux_64 : exe       = smokediff_linux_64
 
 intel_linux_64 : $(obj)
