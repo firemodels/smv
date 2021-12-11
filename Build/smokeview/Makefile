@@ -19,6 +19,7 @@ SMV_PROFILESTRING =
 #I_CC=icl
 #I_IFORT=ifort
 I_CC=icx
+I_CPP=icpx
 I_IFORT=ifx
 COMP_VERSION =
 LUA_SCRIPTING =
@@ -282,7 +283,7 @@ intel_linux_64 : LIBLUA    += $(LIB_DIR_PLAT)/liblua.a -ldl
 endif
 intel_linux_64 : LFLAGS    = -m64 $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
 intel_linux_64 : CC        = $(I_CC)
-intel_linux_64 : CPP       = $(I_CC)
+intel_linux_64 : CPP       = $(I_CPP)
 intel_linux_64 : FC        = $(I_IFORT)
 intel_linux_64 : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
@@ -295,7 +296,7 @@ intel_linux_64_db : FFLAGS    = -O0 -m64 -static-intel -traceback -g -fpe0 -fltc
 intel_linux_64_db : CFLAGS    = -O0 -g -m64 -static-intel $(SMV_TESTFLAG) -D _DEBUG -D pp_LINUX $(SMV_PROFILEFLAG) -traceback -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64_db : LFLAGS    = -m64 -static-intel -no-cilk $(INTEL_LIBS_LINUX) -traceback $(SMV_PROFILEFLAG)
 intel_linux_64_db : CC        = $(I_CC)
-intel_linux_64_db : CPP       = $(I_CC)
+intel_linux_64_db : CPP       = $(I_CPP)
 intel_linux_64_db : FC        = $(I_IFORT)
 intel_linux_64_db : exe       = smokeview_linux_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
 
