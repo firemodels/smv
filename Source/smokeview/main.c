@@ -10,6 +10,10 @@
 #include "string_util.h"
 #include "smokeviewvars.h"
 
+#ifdef WIN32
+#include <direct.h>
+#endif
+
 #ifdef pp_LUA
 #include "c_api.h"
 #include "lua_api.h"

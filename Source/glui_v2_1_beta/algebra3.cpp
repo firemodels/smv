@@ -1,6 +1,6 @@
 /**************************************************************************
-	
-  algebra3.cpp, algebra3.h -  C++ Vector and Matrix Algebra routines	       
+
+  algebra3.cpp, algebra3.h -  C++ Vector and Matrix Algebra routines
 
   There are three vector classes and two matrix classes: vec2, vec3,
   vec4, mat3, and mat4.
@@ -12,8 +12,8 @@
   Additional functions include length(), normalize(), homogenize for
   vectors, and print(), set(), apply() for all classes.
 
-  There is a function transpose() for matrices, but note that it 
-  does not actually change the matrix, 
+  There is a function transpose() for matrices, but note that it
+  does not actually change the matrix,
 
   When multiplied with a matrix, a vector is treated as a row vector
   if it precedes the matrix (v*M), and as a column vector if it
@@ -29,7 +29,7 @@
      vec4 b( a, 4.0 );       // now b == {1.0, 2.0, 3.0, 4.0};
   When casting to a lower dimension, the vector is homogenized in
   the lower dimension.  E.g., if a 4d {X,Y,Z,W} is cast to 3d, the
-  resulting vector is {X/W, Y/W, Z/W}.  It is up to the user to 
+  resulting vector is {X/W, Y/W, Z/W}.  It is up to the user to
   insure the fourth component is not zero before casting.
 
   There are also the following function for building matrices:
@@ -38,13 +38,13 @@
      rotation3D(), rotation3Drad(),  scaling3D(),
      perspective3D()
 
- 
+
   ---------------------------------------------------------------------
-  
-  Author: Jean-Francois DOUEg					
-  Revised: Paul Rademacher                                      
+
+  Author: Jean-Francois DOUEg
+  Revised: Paul Rademacher
   Version 3.2 - Feb 1998
-								
+
 **************************************************************************/
 
 #include <math.h>
@@ -59,7 +59,7 @@
 
 /******************** vec2 CONSTRUCTORS ********************/
 
-vec2::vec2(void) 
+vec2::vec2(void)
 {n[VX] = n[VY] = 0.0; }
 
 vec2::vec2(const float x, const float y)
@@ -157,16 +157,16 @@ vec2 operator * (const vec2& v, mat3& a)
 vec3 operator * (const mat3& a, const vec3& v) {
   vec3 av;
 
-  av.n[VX] = 
+  av.n[VX] =
     a.v[0].n[VX]*v.n[VX] + a.v[0].n[VY]*v.n[VY] + a.v[0].n[VZ]*v.n[VZ];
-  av.n[VY] = 
+  av.n[VY] =
     a.v[1].n[VX]*v.n[VX] + a.v[1].n[VY]*v.n[VY] + a.v[1].n[VZ]*v.n[VZ];
-  av.n[VZ] = 
+  av.n[VZ] =
     a.v[2].n[VX]*v.n[VX] + a.v[2].n[VY]*v.n[VY] + a.v[2].n[VZ]*v.n[VZ];
   return av;
 }
 
-vec3 operator * (const vec3& v, mat3& a) 
+vec3 operator * (const vec3& v, mat3& a)
 { return a.transpose() * v; }
 
 float operator * (const vec2& a, const vec2& b)
@@ -231,7 +231,7 @@ vec2 prod(const vec2& a, const vec2& b)
 
 // CONSTRUCTORS
 
-vec3::vec3(void) 
+vec3::vec3(void)
 {n[VX] = n[VY] = n[VZ] = 0.0;}
 
 vec3::vec3(const float x, const float y, const float z)
@@ -407,7 +407,7 @@ vec3 prod(const vec3& a, const vec3& b)
 
 // CONSTRUCTORS
 
-vec4::vec4(void) 
+vec4::vec4(void)
 {n[VX] = n[VY] = n[VZ] = 0.0; n[VW] = 1.0; }
 
 vec4::vec4(const float x, const float y, const float z, const float w)
@@ -616,7 +616,7 @@ vec3& mat3::operator [] ( int i) {
 }
 
 void mat3::set( const vec3& v0, const vec3& v1, const vec3& v2 ) {
-  v[0] = v0; v[1] = v1; v[2] = v2; 
+  v[0] = v0; v[1] = v1; v[2] = v2;
 }
 
 // SPECIAL FUNCTIONS
@@ -724,7 +724,7 @@ void mat3::print( FILE *file, char *name )
   int i, j;
 
   fprintf( stderr, "%s:\n", name );
-  
+
   for( i = 0; i < 3; i++ )
   {
     fprintf( stderr, "   " );
@@ -847,7 +847,7 @@ void mat4::print( FILE *file, char *name )
   int i, j;
 
   fprintf( stderr, "%s:\n", name );
-  
+
   for( i = 0; i < 4; i++ )
   {
     fprintf( stderr, "   " );
@@ -862,7 +862,7 @@ void mat4::print( FILE *file, char *name )
 void mat4::swap_rows( int i, int j )
 {
   vec4 t;
-  
+
   t = v[i];
   v[i] = v[j];
   v[j] = t;

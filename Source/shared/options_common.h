@@ -7,10 +7,30 @@
 #define pp_HASH   // md5, sha1 and sha255 hashing
 #endif
 
+#define INTEL_LLVM_COMPILER_FORCE
+
 #ifdef __INTEL_COMPILER
+#define INTEL_COMPILER_ANY
+#endif
+
+#ifdef __INTEL_LLVM_COMPILER
+#undef INTEL_COMPILER_ANY
+#define INTEL_COMPILER_ANY
+#define INTEL_LLVM_COMPILER
+#endif
+
+#ifdef INTEL_LLVM_COMPILER_FORCE
+#undef INTEL_COMPILER_ANY
+#define INTEL_COMPILER_ANY
+#undef INTEL_LLVM_COMPILER
+#define INTEL_LLVM_COMPILER
+#endif
+
+#ifdef INTEL_COMPILER_ANY
 #define pp_FSEEK
 #ifdef WIN32
 #define HAVE_MSVS
+#define INTEL_WIN_COMPILER
 #endif
 #endif
 
@@ -22,7 +42,7 @@
 //*** needed when using Windows Intel compilers
 //    to prevent warnings/errors
 
-#ifdef __INTEL_COMPILER
+#ifdef INTEL_COMPILER_ANY
 
 #ifndef _CRT_SECURE_NO_DEPRECATE
 #define _CRT_SECURE_NO_DEPRECATE

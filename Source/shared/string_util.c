@@ -436,7 +436,7 @@ void Float2String(char *c_val, float val, int ndigits, int fixedpoint_labels){
 
   mantissa = GetMantissaExponent(ABS(val), &exponent);
   mantissa += 5.0*pow(10.0,-ndigits);
-  if(exponent>=0&&exponent<5||fixedpoint_labels==1||ABS(val)<1000.0){
+  if((exponent>=0&&exponent<5)||fixedpoint_labels==1||(ABS(val)<1000.0)){
     char c_abs_val[32];
 
     val = SIGN(val)*mantissa*pow(10.0,exponent);
@@ -1687,7 +1687,7 @@ void PRINTversion(char *progname){
 #endif
 #ifdef WIN32
   PRINTF("Platform         : WIN64 ");
-#ifdef __INTEL_COMPILER
+#ifdef INTEL_COMPILER_ANY
   PRINTF(" (Intel C/C++)");
 #endif
   PRINTF("\n");

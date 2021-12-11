@@ -2,6 +2,9 @@
 
 set CURDIR=%CD%
 
+::set I_CC=icl
+set I_CC=icx
+
 set scriptdir=%~dp0
 cd %scriptdir%\..\..\..\fds
 set fdsrepo=%CD%
@@ -13,8 +16,8 @@ set COMPILER2=g++
 
 set MSCOMPILER=X86
 
-IF "%1" NEQ "g" SET COMPILER=icl
-IF "%1" NEQ "g" SET COMPILER2=icl
+IF "%1" NEQ "g" SET COMPILER=%I_CC%
+IF "%1" NEQ "g" SET COMPILER2=%I_CC%
 
 IF "%1" EQU "m" SET COMPILER=cl
 IF "%1" EQU "m" SET COMPILER2=cl
@@ -42,6 +45,6 @@ call "%VS_COMPILER%\..\vcvarsall" %MSCOMPILER%
 GOTO Ienvexist
 :MSenvexist
 
-IF "%COMPILER%" NEQ "icl" GOTO Ienvexist
-call %fdsrepo%\Build\scripts\setup_intel_compilers.bat
+IF "%COMPILER%" NEQ "%I_CC%" GOTO Ienvexist
+call %fdsrepo%\Build\scripts\setup_intel_compilers.bat >Nul
 :Ienvexist

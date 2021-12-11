@@ -16,6 +16,10 @@ SMV_TESTFLAG =
 SMV_TESTSTRING =
 SMV_PROFILEFLAG =
 SMV_PROFILESTRING =
+#I_CC=icl
+#I_IFORT=ifort
+I_CC=icx
+I_IFORT=ifx
 COMP_VERSION =
 LUA_SCRIPTING =
 ifeq ($(shell echo "check_quotes"),"check_quotes")
@@ -175,14 +179,14 @@ WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 
 intel_win_64_db : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
 intel_win_64_db : FFLAGS    = /Od /iface:stdref /fpp -D WIN32 /Zi /nologo /fpscomp:general /debug:full /extend_source:132 /warn:unused /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f18
-intel_win_64_db : CFLAGS    = /Od /W4 /debug:full /Zi -D _DEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64_db : CFLAGS    = /Od /W4 /debug:full /Zi -D pp_INTEL -D _DEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(GLUT),freeglut)
 intel_win_64_db : CFLAGS   += -D FREEGLUT_STATIC
 endif
 intel_win_64_db : LFLAGS    = /F32768000 /traceback /Zi /DEBUG
-intel_win_64_db : CC        = icl
-intel_win_64_db : CPP       = icl
-intel_win_64_db : FC        = ifort
+intel_win_64_db : CC        = $(I_CC)
+intel_win_64_db : CPP       = $(I_CC)
+intel_win_64_db : FC        = $(I_IFORT)
 intel_win_64_db : exe       = smokeview_win_$(SMV_TESTSTRING)64_db
 
 intel_win_64_db : $(objwin)
@@ -195,7 +199,7 @@ ifeq ($(LUA_SCRIPTING),true)
 intel_win_64 : INC += -I $(SOURCE_DIR)/lua-5.3.1/src
 endif
 intel_win_64 : FFLAGS    = -O2 /iface:stdref /fpp -D WIN32 /fpscomp:general /stand:f18
-intel_win_64 : CFLAGS    = -O1 -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -O1 -D pp_INTEL -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(GLUT),freeglut)
 intel_win_64 : CFLAGS   += -D FREEGLUT_STATIC
 endif
@@ -207,9 +211,9 @@ intel_win_64 : SMV_LIBS_WIN += $(WIN_LIBDIR)\lpeg.lib
 intel_win_64 : SMVLUACORE_FILES += $(WIN_LIBDIR)/lpeg.dll
 endif
 intel_win_64 : LFLAGS    = /F32768000 -D FREEGLUT_STATIC
-intel_win_64 : CC        = icl
-intel_win_64 : CPP       = icl
-intel_win_64 : FC        = ifort
+intel_win_64 : CC        = $(I_CC)
+intel_win_64 : CPP       = $(I_CC)
+intel_win_64 : FC        = $(I_IFORT)
 intel_win_64 : exe       = smokeview_win_$(SMV_TESTSTRING)64
 
 intel_win_64 : $(objwin)
@@ -277,9 +281,9 @@ intel_linux_64 : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
 intel_linux_64 : LIBLUA    += $(LIB_DIR_PLAT)/liblua.a -ldl
 endif
 intel_linux_64 : LFLAGS    = -m64 $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
-intel_linux_64 : CC        = icx
-intel_linux_64 : CPP       = icpx
-intel_linux_64 : FC        = ifx
+intel_linux_64 : CC        = $(I_CC)
+intel_linux_64 : CPP       = $(I_CC)
+intel_linux_64 : FC        = $(I_IFORT)
 intel_linux_64 : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
 intel_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
@@ -290,9 +294,9 @@ intel_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
 intel_linux_64_db : FFLAGS    = -O0 -m64 -static-intel -traceback -g -fpe0 -fltconsistency -WB -fpp -stand:f18 $(SMV_PROFILEFLAG)
 intel_linux_64_db : CFLAGS    = -O0 -g -m64 -static-intel $(SMV_TESTFLAG) -D _DEBUG -D pp_LINUX $(SMV_PROFILEFLAG) -traceback -Wall -Wextra -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64_db : LFLAGS    = -m64 -static-intel -no-cilk $(INTEL_LIBS_LINUX) -traceback $(SMV_PROFILEFLAG)
-intel_linux_64_db : CC        = icc
-intel_linux_64_db : CPP       = icpc
-intel_linux_64_db : FC        = ifort
+intel_linux_64_db : CC        = $(I_CC)
+intel_linux_64_db : CPP       = $(I_CC)
+intel_linux_64_db : FC        = $(I_IFORT)
 intel_linux_64_db : exe       = smokeview_linux_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
 
 intel_linux_64_db : $(obj)
