@@ -10763,6 +10763,7 @@ int ReadIni2(char *inifile, int localfile){
       for(ii=0;ii<12;ii++){
         colorsplit[ii] = CLAMP(colorsplit[ii],0,255);
       }
+      update_splitcolorbar = 1;
       continue;
     }
     if(Match(buffer, "SHOWGRAVVECTOR") == 1) {

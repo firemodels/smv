@@ -2914,7 +2914,7 @@ GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
 #define CB_USE_LIGHTING      120
 #define COLORBAR_EXTREME_RGB  15
 #define COLORBAR_EXTREME      16
-#define SPLIT_COLORBAR         1
+// #define SPLIT_COLORBAR         1 now defined in smokeviewdefs.h
 
 //*** boundprocinfo entries
 #define ZONE_ROLLOUT     0
@@ -3109,6 +3109,7 @@ extern "C" void SplitCB(int var){
 
   switch(var){
   case SPLIT_COLORBAR:
+    if(split_colorbar==NULL)break;
     denom = splitvals[2]-splitvals[0];
     if(denom==0.0)denom = 1.0;
     isplit = CLAMP(255*(splitvals[1]-splitvals[0])/denom, 0, 254);

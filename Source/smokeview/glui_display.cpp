@@ -233,8 +233,6 @@ GLUI_Button *BUTTON_label_4=NULL;
 #endif
 
 
-#define SPLIT_COLORBAR 1
-
 #define LABELS_HMS 18
 #define SAVE_SETTINGS_DISPLAY 99
 
