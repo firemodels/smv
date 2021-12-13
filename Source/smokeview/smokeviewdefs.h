@@ -7,6 +7,8 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define SPLIT_COLORBAR         1
+
 #define LABELS_vcolorbar 34
 #define LABELS_hcolorbar 35
 #define LABELS_shade      5

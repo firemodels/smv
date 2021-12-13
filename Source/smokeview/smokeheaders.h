@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void SplitCB(int var);
+
 #ifdef pp_REFRESH
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
