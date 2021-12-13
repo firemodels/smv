@@ -1852,6 +1852,10 @@ void UpdateShowScene(void){
       ShowGluiMotion(DIALOG_MOVIE);
     }
   }
+  if(update_splitcolorbar==1){
+    SplitCB(SPLIT_COLORBAR);
+    update_splitcolorbar = 0;
+  }
   if(update_generate_part_histograms==1){
     update_generate_part_histograms = 0;
     GeneratePartHistogramsMT();
