@@ -13,7 +13,7 @@
 void GetPlot3DHists(plot3ddata *p){
   int i;
 
-  for(i = 0; i<MAXPLOT3DVARS; i++){
+  for(i = 0; i<p->nvars; i++){
     histogramdata *histi;
     float *vals;
     int nvals;
@@ -54,7 +54,7 @@ void MergePlot3DHistograms(void){
 
     plot3di = plot3dinfo+i;
     if(plot3di->loaded==0)continue;
-    for(k = 0; k<MAXPLOT3DVARS; k++){
+    for(k = 0; k<plot3di->nvars; k++){
       MergeHistogram(full_plot3D_histograms+k, plot3di->histograms[k], MERGE_BOUNDS);
     }
   }
@@ -167,7 +167,7 @@ int GetPlot3DBounds(plot3ddata *plot3di){
   ntotal = (meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
   iblank = meshi->c_iblank_node;
 
-  for(i = 0; i<MAXPLOT3DVARS; i++){
+  for(i = 0; i<plot3di->nvars; i++){
     int n;
 
     valmin = 1000000000.;
