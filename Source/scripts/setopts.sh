@@ -5,7 +5,7 @@ if [ "`uname`" == "Darwin" ]; then
     INTEL_ICC="icc"
   fi
   if [ "$INTEL_ICPP" == "" ]; then
-    INTEL_ICPP="icpp"
+    INTEL_ICPP="icpc"
   fi
 else
   if [ "$INTEL_ICC" == "" ]; then
@@ -56,7 +56,7 @@ case $OPTION in
    if [ "$FORCE_g" == "" ]; then
      if [ "`uname`" == "Darwin" ]; then
        COMPILER="icc"
-       COMPILER2="icpp"
+       COMPILER2="icpc"
      else 
        COMPILER=$INTEL_ICC
        COMPILER2=$INTEL_ICPP
@@ -66,7 +66,7 @@ case $OPTION in
   I)
     if [ "`uname`" == "Darwin" ]; then
      COMPILER="icc"
-     COMPILER2="icpp"
+     COMPILER2="icpc"
    else 
      COMPILER=$INTEL_ICC
      COMPILER2=$INTEL_ICPP
