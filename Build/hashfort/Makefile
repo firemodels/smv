@@ -39,7 +39,7 @@ intel_win_64 : $(objwin)
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : FFLAGS    = -O2 -m64 -stand:f18
-intel_linux_64 : FC        = ifx
+intel_linux_64 : FC        = $(I_IFORT)
 intel_linux_64 : exe       = hashfort_linux_64
 
 intel_linux_64 : $(obj)

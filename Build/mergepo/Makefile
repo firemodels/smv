@@ -66,59 +66,53 @@ no_target:
 intel_win_64 : CFLAGS    = -O2 /nologo -D X64 -D WIN32 -D PTW32_STATIC_LIB $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : LFLAGS    = 
 intel_win_64 : CC        = $(I_CC)
-intel_win_64 : CPP       = $(I_CC)
 intel_win_64 : exe       = mergepo_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(objwin)
 
 # ------------- gnu 64 ----------------
 
 gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
 gnu_win_64 : LFLAGS    = 
 gnu_win_64 : CC        = gcc
-gnu_win_64 : CPP       = gcc
 gnu_win_64 : exe       = mergepo_win_64.exe
 
 gnu_win_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(LFLAGS) $(obj)
+	$(CC) -o $(bin)/$(exe) $(LFLAGS) $(obj)
 
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
-intel_linux_64 : CC        = icx
-intel_linux_64 : CPP       = icpx
+intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = mergepo_linux_64
 
 intel_linux_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
 
 # ------------- gnu linux 64 ----------------
 
 gcc_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
 gcc_linux_64 : CC        = gcc
-gcc_linux_64 : CPP       = g++
 gcc_linux_64 : exe       = mergepo_linux_64
 
 gcc_linux_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
 
 # ------------- intel osx 64 ----------------
 
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : CC        = icc
-intel_osx_64 : CPP       = icc
 intel_osx_64 : exe       = mergepo_osx_64
 
 intel_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
 
 # ------------- gnu osx 64 ----------------
 
 gcc_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
 gcc_osx_64 : CC        = gcc
-gcc_osx_64 : CPP       = g++
 gcc_osx_64 : exe       = mergepo_osx_64
 
 gcc_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
