@@ -298,7 +298,7 @@ int main(int argc, char **argv){
       mem_usage = memusage();
     }
   }
-  _spawnvp(_P_NOWAIT,command, argv+argstart);
+  _spawnvp(_P_NOWAIT,command, (const char **)(argv+argstart));
 #else
   strcpy(command_buffer,"");
   if(hostinfo==NULL){

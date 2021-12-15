@@ -5,6 +5,9 @@ SOURCE_DIR = ../../../Source
 INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/background
 FILTERC =
 FILTERF =
+#I_CC=icl
+I_CC=icx
+
 
 VPATH = $(SOURCE_DIR)/background $(SOURCE_DIR)/shared
 bin = .
@@ -51,7 +54,7 @@ no_target:
 # ------------- intel Win 64 ----------------
 
 intel_win_64 : CFLAGS    = -O1 /nologo -D WIN32 -I $(SOURCE_DIR)/shared $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : CC        = icl
+intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = background_win_64.exe
 
 intel_win_64 : $(objwin)
