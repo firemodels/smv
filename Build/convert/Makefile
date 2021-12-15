@@ -5,6 +5,8 @@ SOURCE_DIR = ../../../Source
 INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/convert
 FILTERC =
 FILTERF =
+#I_CC=icl
+I_CC=icx
 
 VPATH = $(SOURCE_DIR)/convert ../../../../FDS/Source $(SOURCE_DIR)/shared $(SOURCE_DIR)/smokeview
 bin = .
@@ -50,8 +52,8 @@ no_target:
 # ------------- intel winx 64 db ----------------
 
 intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64_db : CC        = icl
-intel_win_64_db : CPP       = icl
+intel_win_64_db : CC        = $(I_CC)
+intel_win_64_db : CPP       = $(I_CC)
 intel_win_64_db : exe       = convert_win_64_db.exe
 
 intel_win_64_db : $(objwin)
@@ -60,8 +62,8 @@ intel_win_64_db : $(objwin)
 # ------------- intel win 64 ----------------
 
 intel_win_64 : CFLAGS    = /O2 /nologo -D X64 -D WIN32 $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : CC        = icl
-intel_win_64 : CPP       = icl
+intel_win_64 : CC        = $(I_CC)
+intel_win_64 : CPP       = $(I_CC)
 intel_win_64 : exe       = convert_win_64.exe
 
 intel_win_64 : $(objwin)
