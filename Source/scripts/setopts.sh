@@ -1,11 +1,23 @@
 #!/bin/bash
 if [ "`uname`" == "Darwin" ]; then
-  COMPILER="icc"
-  COMPILER2="icpp"
+# The Mac doesn't have new compilers
+  if [ "$INTEL_ICC" == "" ]; then
+    INTEL_ICC="icc"
+  fi
+  if [ "$INTEL_ICPP" == "" ]; then
+    INTEL_ICPP="icpp"
+  fi
 else
-  COMPILER="icx"
-  COMPILER2="icpx"
+  if [ "$INTEL_ICC" == "" ]; then
+    INTEL_ICC="icx"
+  fi
+  if [ "$INTEL_ICPP" == "" ]; then
+    INTEL_ICPP="icpx"
+  fi
 fi
+COMPILER=$INTEL_ICC
+COMPILER2=$INTEL_ICPP
+
 PLATFORM=""
 GLUT=glut
 LUA=
@@ -46,8 +58,8 @@ case $OPTION in
        COMPILER="icc"
        COMPILER2="icpp"
      else 
-       COMPILER="icx"
-       COMPILER2="icpx"
+       COMPILER=$INTEL_ICC
+       COMPILER2=$INTEL_ICPP
      fi       
    fi
   ;;
@@ -56,8 +68,8 @@ case $OPTION in
      COMPILER="icc"
      COMPILER2="icpp"
    else 
-     COMPILER="icx"
-     COMPILER2="icpx"
+     COMPILER=$INTEL_ICC
+     COMPILER2=$INTEL_ICPP
    fi       
    FORCE_i=1
   ;;
