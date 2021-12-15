@@ -180,7 +180,7 @@ WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 
 intel_win_64_db : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
 intel_win_64_db : FFLAGS    = /Od /iface:stdref /fpp -D WIN32 /Zi /nologo /fpscomp:general /debug:full /extend_source:132 /warn:unused /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f18
-intel_win_64_db : CFLAGS    = /Od /W4 /debug:full /Zi -D pp_INTEL -D _DEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64_db : CFLAGS    = /Od /W4 /debug:full /Zi -D pp_INTEL -D pp_WIN_CLANG -D _DEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(GLUT),freeglut)
 intel_win_64_db : CFLAGS   += -D FREEGLUT_STATIC
 endif
@@ -200,7 +200,7 @@ ifeq ($(LUA_SCRIPTING),true)
 intel_win_64 : INC += -I $(SOURCE_DIR)/lua-5.3.1/src
 endif
 intel_win_64 : FFLAGS    = -O2 /iface:stdref /fpp -D WIN32 /fpscomp:general /stand:f18
-intel_win_64 : CFLAGS    = -O1 -D pp_INTEL -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
+intel_win_64 : CFLAGS    = -O1 -D pp_INTEL -D pp_WIN_CLANG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(GLUT),freeglut)
 intel_win_64 : CFLAGS   += -D FREEGLUT_STATIC
 endif

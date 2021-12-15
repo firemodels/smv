@@ -2289,18 +2289,36 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       glMultMatrixf(quat_rotation);
     }
     else{
+#ifdef pp_WIN_CLANG
+      glRotatef(-90.0, 0.0, 1.0, 0.0);
+#endif
       if(use_tour == 0){
         float azimuth, elevation;
 
         elevation = camera_current->az_elev[1];
-        azimuth = camera_current->az_elev[0];
+        azimuth   = camera_current->az_elev[0];
+#ifdef pp_WIN_CLANG
+        // rotate 90 deg clockwise about the y axis
+        // X axis -> -Z axis
+        //-X axis ->  Z axis
+        // Y axis fixed
+        // Z axis -> X axis
         if(rotation_type == ROTATION_2AXIS){
-          if(rotation_axis==1)glRotatef(elevation, 1.0, 0.0, 0.0);  /* rotate about x axis */
-          if(rotation_axis==-1)glRotatef(elevation, -1.0, 0.0, 0.0);  /* rotate about x axis */
-          if(rotation_axis==2)glRotatef(elevation, 0.0, 1.0, 0.0);  /* rotate about y axis */
-          if(rotation_axis==-2)glRotatef(elevation, 0.0, -1.0, 0.0);  /* rotate about y axis */
+          if(rotation_axis==1)glRotatef(elevation,   0.0,  0.0, -1.0); // rotate about -z axis
+          if(rotation_axis==-1)glRotatef(elevation,  0.0,  0.0, 1.0);  // rotate about z axis
+          if(rotation_axis==2)glRotatef(elevation,   0.0,  1.0, 0.0);  // rotate about y axis
+          if(rotation_axis==-2)glRotatef(elevation,  0.0, -1.0, 0.0);  // rotate about y axis
+        }
+        glRotatef(azimuth, 1.0, 0.0, 0.0);      /* rotate about z axis */
+#else
+        if(rotation_type == ROTATION_2AXIS){
+          if(rotation_axis==1)glRotatef(elevation,   1.0,  0.0, 0.0);  // rotate about x axis
+          if(rotation_axis==-1)glRotatef(elevation, -1.0,  0.0, 0.0);  // rotate about -x axis
+          if(rotation_axis==2)glRotatef(elevation,   0.0,  1.0, 0.0);  // rotate about y axis
+          if(rotation_axis==-2)glRotatef(elevation,  0.0, -1.0, 0.0);  // rotate about -y axis
         }
         glRotatef(azimuth, 0.0, 0.0, 1.0);      /* rotate about z axis */
+#endif
       }
     }
     {
