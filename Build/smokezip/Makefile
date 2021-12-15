@@ -6,6 +6,11 @@ LIB_DIR = ../../LIBS
 INC_DIR =  -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokezip 
 FILTERC =
 FILTERF =
+I_CC=icl
+I_CC=icx
+I_IFORT=ifort
+I_IFORT=ifx
+
 OPT =
 
 SMV_TESTFLAG=
@@ -69,9 +74,9 @@ no_target:
 intel_win_64 : INC_DIR   += -I $(SOURCE_DIR)/pthreads 
 intel_win_64 : CFLAGS    = -Od /nologo -D WIN32 -D PTW32_STATIC_LIB -D X64  $(OPT) $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG) 
 intel_win_64 : FFLAGS    = -Od /nologo -fpp -D pp_cvf -D X64 -D WIN32 /iface:stdref /fpscomp:general /stand:f18
-intel_win_64 : CC        = icl
-intel_win_64 : CPP       = icl
-intel_win_64 : FC        = ifort
+intel_win_64 : CC        = $(I_CC)
+intel_win_64 : CPP       = $(I_CC)
+intel_win_64 : FC        = $(I_IFORT)
 intel_win_64 : exe       = smokezip_win_64.exe
 
 intel_win_64 : $(objwin)
