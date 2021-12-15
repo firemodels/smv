@@ -1,5 +1,7 @@
 FILTERC =
 FILTERF =
+#I_IFORT=ifort
+I_IFORT=ifx
 
 VPATH = ../../../Source/hashfort
 bin = .
@@ -27,7 +29,7 @@ no_target:
 # ------------- intel win 64 ----------------
 
 intel_win_64 : FFLAGS    = -O2 /nologo /fpscomp:general /stand:f18
-intel_win_64 : FC        = ifort
+intel_win_64 : FC        = $(I_IFORT)
 intel_win_64 : exe       = hashfort_win_64.exe
 
 intel_win_64 : $(objwin)
