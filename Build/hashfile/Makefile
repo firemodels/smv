@@ -7,6 +7,8 @@ INC_DIR    = -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/hashfile
 
 FILTERC =
 FILTERF =
+#I_CC=icl
+I_CC=icx
 
 VPATH = $(SOURCE_DIR)/hashfile $(SOURCE_DIR)/shared  
 bin = .
