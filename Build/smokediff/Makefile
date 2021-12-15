@@ -5,6 +5,10 @@ SOURCE_DIR = ../../../Source
 INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokediff
 FILTERC =
 FILTERF =
+#I_CC=icl
+#I_IFORT=ifort
+I_CC=icx
+I_IFORT=ifx
 
 SMV_TESTFLAG=
 
@@ -64,9 +68,9 @@ no_target:
 
 intel_win_64_db : FFLAGS    = /Od /iface:stdref /fpp -D WIN32 /nologo /debug:full /extend_source:132 /warn:unused /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f18 /fpscomp:general
 intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64_db : CC        = icl
-intel_win_64_db : CPP       = icl
-intel_win_64_db : FC        = ifort
+intel_win_64_db : CC        = $(I_CC)
+intel_win_64_db : CPP       = $(I_CC)
+intel_win_64_db : FC        = $(I_IFORT)
 intel_win_64_db : exe       = smokediff_win_64_db.exe
 
 intel_win_64_db : $(objwin)
@@ -76,9 +80,9 @@ intel_win_64_db : $(objwin)
 
 intel_win_64 : FFLAGS    = /O2 -fpp -D WIN32 /nologo /iface:stdref /stand:f18 /fpscomp:general
 intel_win_64 : CFLAGS    = /O2 /nologo -D X64 -D WIN32 $(GITINFO) $(SMV_TESTFLAG) $(INTEL_COMPINFO)
-intel_win_64 : CC        = icl
-intel_win_64 : CPP       = icl
-intel_win_64 : FC        = ifort
+intel_win_64 : CC        = $(I_CC)
+intel_win_64 : CPP       = $(I_CC)
+intel_win_64 : FC        = $(I_IFORT)
 intel_win_64 : exe       = smokediff_win_64.exe
 
 intel_win_64 : $(objwin)
