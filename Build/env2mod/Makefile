@@ -8,6 +8,8 @@ INC_DIR =  -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/env2mod
 
 FILTERC =
 FILTERF =
+#I_CC=icl
+I_CC=icx
 
 VPATH = $(SOURCE_DIR)/env2mod $(SOURCE_DIR)/shared  
 bin = .
@@ -52,7 +54,7 @@ no_target:
 # ------------- intel win 64 ----------------
 
 intel_win_64 : CFLAGS    = -Od -D WIN32 /nologo $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : CC        = icl
+intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = env2mod_win_64.exe
 
 intel_win_64 : $(objwin)
