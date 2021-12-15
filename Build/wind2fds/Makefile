@@ -6,6 +6,8 @@ BUILD_DIR = $(SOURCE_DIR)/../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
 INC_DIR =  -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/wind2fds 
 FILTERC =
+#I_CC=icl
+I_CC=icx
 
 VPATH = $(SOURCE_DIR)/wind2fds $(SOURCE_DIR)/shared 
 bin = .
@@ -53,8 +55,8 @@ no_target:
 # ------------- intel win 64 ----------------
 
 intel_win_64 : CFLAGS    = -Od /nologo -D WIN32 -D X64 $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : CC        = icl
-intel_win_64 : CPP       = icl
+intel_win_64 : CC        = $(I_CC)
+intel_win_64 : CPP       = $(I_CC)
 intel_win_64 : exe       = wind2fds_win_64.exe
 
 intel_win_64 : $(objwin)
