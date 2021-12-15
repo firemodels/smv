@@ -2,6 +2,8 @@ SOURCE_DIR = ../../../Source/
 INC_DIR = -I $(SOURCE_DIR)/makepo -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared 
 FILTERC =
 FILTERF =
+#I_CC=icl
+I_CC=icx
 
 VPATH = $(SOURCE_DIR)/makepo:$(SOURCE_DIR)/shared
 bin = .
@@ -61,8 +63,8 @@ no_target:
 
 intel_win_64 : CFLAGS    = -O2 /nologo -D X64 -D WIN32 -D PTW32_STATIC_LIB  $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : LFLAGS    = 
-intel_win_64 : CC        = icl
-intel_win_64 : CPP       = icl
+intel_win_64 : CC        = $(I_CC)
+intel_win_64 : CPP       = $(I_CC)
 intel_win_64 : exe       = makepo_win_64.exe 
 
 intel_win_64 : $(objwin)
