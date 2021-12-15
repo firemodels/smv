@@ -2,8 +2,12 @@
 
 set CURDIR=%CD%
 
-::set I_CC=icl
 set I_CC=icx
+
+:: set INTEL_CC variable to use a different compiler (for example set INTEL_CC=icl )
+if x%INTEL_CC% == x goto skip_set_CC
+  set I_CC=%INTEL_CC%
+:skip_set_CC
 
 set scriptdir=%~dp0
 cd %scriptdir%\..\..\..\fds
