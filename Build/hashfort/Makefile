@@ -1,7 +1,8 @@
 FILTERC =
 FILTERF =
-#I_IFORT=ifort
-I_IFORT=ifx
+
+# Intel compiler definitions
+include ../../scripts/intel_compiler.mak
 
 VPATH = ../../../Source/hashfort
 bin = .

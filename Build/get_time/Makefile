@@ -2,8 +2,9 @@ SOURCE_DIR = ..\..\..\Source\get_time
 INC_DIR =  -I $(SOURCE_DIR)
 FILTERC =
 FILTERF =
-#I_CC=icl
-I_CC=icx
+
+# Intel compiler definitions
+include ../../scripts/intel_compiler.mak
 
 VPATH = $(SOURCE_DIR)
 bin = .

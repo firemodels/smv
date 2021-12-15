@@ -5,8 +5,9 @@ SOURCE_DIR = ../../../Source
 INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/convert
 FILTERC =
 FILTERF =
-#I_CC=icl
-I_CC=icx
+
+# Intel compiler definitions
+include ../../scripts/intel_compiler.mak
 
 VPATH = $(SOURCE_DIR)/convert ../../../../FDS/Source $(SOURCE_DIR)/shared $(SOURCE_DIR)/smokeview
 bin = .

@@ -16,11 +16,10 @@ SMV_TESTFLAG =
 SMV_TESTSTRING =
 SMV_PROFILEFLAG =
 SMV_PROFILESTRING =
-#I_CC=icl
-#I_IFORT=ifort
-I_CC=icx
-I_CPP=icpx
-I_IFORT=ifx
+
+# Intel compiler definitions
+include ../../scripts/intel_compiler.mak
+
 COMP_VERSION =
 LUA_SCRIPTING =
 ifeq ($(shell echo "check_quotes"),"check_quotes")

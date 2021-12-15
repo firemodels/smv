@@ -6,8 +6,9 @@ BUILD_DIR = $(SOURCE_DIR)/../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
 INC_DIR =  -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/wind2fds 
 FILTERC =
-#I_CC=icl
-I_CC=icx
+
+# Intel compiler definitions
+include ../../scripts/intel_compiler.mak
 
 VPATH = $(SOURCE_DIR)/wind2fds $(SOURCE_DIR)/shared 
 bin = .

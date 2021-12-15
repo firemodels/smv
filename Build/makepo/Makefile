@@ -2,8 +2,9 @@ SOURCE_DIR = ../../../Source/
 INC_DIR = -I $(SOURCE_DIR)/makepo -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared 
 FILTERC =
 FILTERF =
-#I_CC=icl
-I_CC=icx
+
+# Intel compiler definitions
+include ../../scripts/intel_compiler.mak
 
 VPATH = $(SOURCE_DIR)/makepo:$(SOURCE_DIR)/shared
 bin = .

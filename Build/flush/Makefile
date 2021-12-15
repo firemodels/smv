@@ -12,8 +12,9 @@ WIN_LIBDIR = $(LIB_DIR)/intel_win_64
 
 FILTERC =
 FILTERF =
-#I_CC=icl
-I_CC=icx
+
+# Intel compiler definitions
+include ../../scripts/intel_compiler.mak
 
 VPATH = $(SOURCE_DIR)/flush:$(SOURCE_DIR)/shared
 bin = .

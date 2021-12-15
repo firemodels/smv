@@ -6,10 +6,9 @@ LIB_DIR = ../../LIBS
 INC_DIR =  -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokezip 
 FILTERC =
 FILTERF =
-I_CC=icl
-I_CC=icx
-I_IFORT=ifort
-I_IFORT=ifx
+
+# Intel compiler definitions
+include ../../scripts/intel_compiler.mak
 
 OPT =
 
