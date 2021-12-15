@@ -4,6 +4,8 @@
 SOURCE_DIR = ../../../Source/
 FILTERC =
 FILTERF =
+#I_CC=icl
+I_CC=icx
 
 VPATH = $(SOURCE_DIR)/getdate  
 bin = .
@@ -52,7 +54,7 @@ no_target:
 # ------------- intel win 64 ----------------
 
 intel_win_64 : CFLAGS    = -Od /nologo $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : CC        = icl
+intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = getdate_win_64.exe
 
 intel_win_64 : $(objwin)
