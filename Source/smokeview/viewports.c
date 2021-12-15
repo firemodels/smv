@@ -2289,36 +2289,40 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       glMultMatrixf(quat_rotation);
     }
     else{
+
+// rotate 90 deg clockwise about the y axis
+// X axis -> -Z axis
+//-X axis ->  Z axis
+// Y axis fixed
+// Z axis -> X axis
+
 #ifdef pp_WIN_CLANG
-      glRotatef(-90.0, 0.0, 1.0, 0.0);
+      float     x_axis[3] = {0.0,  0.0, -1.0};
+      float neg_x_axis[3] = {0.0,  0.0,  1.0};
+      float     z_axis[3] = {1.0,  0.0,  0.0};
+#else
+      float     x_axis = { 1.0, 0.0, 0.0};
+      float neg_x_axis = {-1.0, 0.0, 0.0};
+      float     z_axis = { 0.0, 0.0, 1.0};
+#endif
+      float     y_axis[3] = {0.0,  1.0,  0.0};
+      float neg_y_axis[3] = {0.0, -1.0,  0.0};
+
+#ifdef pp_WIN_CLANG
+      glRotatef(-90.0, y_axis[0], y_axis[1], y_axis[2]);
 #endif
       if(use_tour == 0){
         float azimuth, elevation;
 
         elevation = camera_current->az_elev[1];
         azimuth   = camera_current->az_elev[0];
-#ifdef pp_WIN_CLANG
-        // rotate 90 deg clockwise about the y axis
-        // X axis -> -Z axis
-        //-X axis ->  Z axis
-        // Y axis fixed
-        // Z axis -> X axis
         if(rotation_type == ROTATION_2AXIS){
-          if(rotation_axis==1)glRotatef(elevation,   0.0,  0.0, -1.0); // rotate about -z axis
-          if(rotation_axis==-1)glRotatef(elevation,  0.0,  0.0, 1.0);  // rotate about z axis
-          if(rotation_axis==2)glRotatef(elevation,   0.0,  1.0, 0.0);  // rotate about y axis
-          if(rotation_axis==-2)glRotatef(elevation,  0.0, -1.0, 0.0);  // rotate about y axis
+          if(rotation_axis==1)glRotatef(elevation,      x_axis[0],     x_axis[1],     x_axis[2]);  // rotate about  x axis
+          if(rotation_axis==-1)glRotatef(elevation, neg_x_axis[0], neg_x_axis[1], neg_x_axis[2]);  // rotate about -x axis
+          if(rotation_axis==2)glRotatef(elevation,      y_axis[0],     y_axis[1],     y_axis[2]);  // rotate about  y axis
+          if(rotation_axis==-2)glRotatef(elevation, neg_y_axis[0], neg_y_axis[1], neg_y_axis[2]);  // rotate about -y axis
         }
-        glRotatef(azimuth, 1.0, 0.0, 0.0);      /* rotate about z axis */
-#else
-        if(rotation_type == ROTATION_2AXIS){
-          if(rotation_axis==1)glRotatef(elevation,   1.0,  0.0, 0.0);  // rotate about x axis
-          if(rotation_axis==-1)glRotatef(elevation, -1.0,  0.0, 0.0);  // rotate about -x axis
-          if(rotation_axis==2)glRotatef(elevation,   0.0,  1.0, 0.0);  // rotate about y axis
-          if(rotation_axis==-2)glRotatef(elevation,  0.0, -1.0, 0.0);  // rotate about -y axis
-        }
-        glRotatef(azimuth, 0.0, 0.0, 1.0);      /* rotate about z axis */
-#endif
+        glRotatef(azimuth, z_axis[0], z_axis[1], z_axis[2]);      /* rotate about z axis */
       }
     }
     {
