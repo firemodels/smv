@@ -1714,7 +1714,7 @@ int GetTerrainSize(char *file, float *xmin, float *xmax, int *nx, float *ymin, f
 
 /* ------------------ UpdateTerrain ------------------------ */
 
-void UpdateTerrain(int allocate_memory, float vertical_factor_local){
+void UpdateTerrain(int allocate_memory){
   if(auto_terrain==1||manual_terrain==1){
     int i;
 

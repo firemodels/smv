@@ -2115,7 +2115,7 @@ void SetupReadAllGeom(void){
 /* ------------------ ReadAllGeom ------------------------ */
 
 void ReadAllGeom(void){
-  int i, errorcode;
+  int i;
 
   for(i=0;i<ngeominfo;i++){
     geomdata *geomi;
@@ -2154,7 +2154,7 @@ void ReadAllGeom(void){
 #ifdef pp_SKIP_BOUNDARY_GEOMS
       if(geomi->geomtype!=GEOM_GEOM)continue; // skips geometries for boundary files
 #endif
-      ReadGeom(geomi, LOAD, GEOM_GEOM, NULL, &errorcode);
+      ReadGeom(geomi, LOAD, GEOM_GEOM, NULL);
       LOCK_READALLGEOM;
       geomi->read_status = 2;
       UNLOCK_READALLGEOM;
@@ -2193,7 +2193,7 @@ void ReadAllGeom(void){
     geomi->read_status = 1;
     UNLOCK_READALLGEOM;
 
-    ReadGeom(geomi, LOAD, GEOM_CGEOM, NULL, &errorcode);
+    ReadGeom(geomi, LOAD, GEOM_CGEOM, NULL);
     UpdateGeomTriangles(geomi, GEOM_STATIC);
     LOCK_READALLGEOM;
     geomi->read_status = 2;
@@ -2218,7 +2218,7 @@ void InitGeomlist(geomlistdata *geomlisti){
 
 /* ------------------ ReadGeom0 ------------------------ */
 
-FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode){
+FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_index){
   FILE *stream;
   int one=1;
   int returncode=0;
@@ -2422,7 +2422,7 @@ int OutSideDomain(vertdata **verts){
 
 /* ------------------ ReadGeom2 ------------------------ */
 
-FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type, int *errorcode){
+FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
   FILE *stream;
   int one=1;
   int returncode=0;
@@ -3392,7 +3392,7 @@ void ReadGeomFile2(geomdata *geomi){
 
 /* ------------------ ReadGeom ------------------------ */
 
-FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode){
+FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index){
   FILE *stream;
   int version;
   int returncode=0;
@@ -3414,10 +3414,10 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   START_TIMER(time1);
 #endif
   if(version<=1){
-    return_filesize+=ReadGeom0(geomi,load_flag,type,geom_frame_index,errorcode);
+    return_filesize+=ReadGeom0(geomi,load_flag,type,geom_frame_index);
   }
   else{
-    return_filesize += ReadGeom2(geomi,load_flag,type,errorcode);
+    return_filesize += ReadGeom2(geomi,load_flag,type);
   }
 #ifdef pp_ISOTIME
   STOP_TIMER(time1);
@@ -4291,7 +4291,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
 
   /* ------------------ DrawGeomValues ------------------------ */
 
-void DrawGeomValues(int flag, slicedata *sd, patchdata *patchi, int geom_type){
+void DrawGeomValues(slicedata *sd, patchdata *patchi, int geom_type){
   int i;
   unsigned char *ivals;
   int cell_center;

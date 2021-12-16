@@ -200,7 +200,7 @@ int UnCompressVolSliceFrame(unsigned char *compressed_data_in,
   uncompress(fullbuffer,&countout,compressed_data_in+32,countin);
 
   if(countout==ndatafile&&n_data_in>=countout){
-    for(i=0;i<countout;i++){
+    for(i=0;(uLongf)i<countout;i++){
       data_out[i]=valmin+fullbuffer[i]*(valmax-valmin)/255.0;
     }
   }

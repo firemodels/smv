@@ -508,7 +508,7 @@ int GetOpenGLVersion(char *version_label){
   }
   strcpy(version_label2,(char *)version_string);
   strcpy(version_label,version_label2);
-  for(i=0;i<strlen(version_label2);i++){
+  for(i=0;i<(int)strlen(version_label2);i++){
     if(version_label2[i]=='.')version_label2[i]=' ';
   }
   sscanf(version_label2,"%i %i %i",&major,&minor,&subminor);

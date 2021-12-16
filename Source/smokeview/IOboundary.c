@@ -2315,8 +2315,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       }
     }
     GetBoundaryColors3(patchi, meshi->patchval, patchstart, npatchvals, meshi->cpatchval,
-      glui_setpatchmin, &glui_patchmin, glui_setpatchmax, &glui_patchmax,
-      &patchmin_global, &patchmax_global,
+      &glui_patchmin, &glui_patchmax,
       nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
       &patchi->extreme_min, &patchi->extreme_max);
     break;
@@ -2787,8 +2786,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 
     GetMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
     GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
-      set_valmin, &valmin, set_valmax, &valmax,
-      &patchmin_global, &patchmax_global,
+      &valmin, &valmax,
       nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
       &patchi->extreme_min, &patchi->extreme_max);
     if(cache_boundary_data==0){

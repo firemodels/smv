@@ -316,7 +316,7 @@ EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
 EXTERNCPP void MakeIBlankAll(void);
 EXTERNCPP void UpdateSliceDupDialog(void);
 EXTERNCPP void DrawNorth(void);
-EXTERNCPP void DrawGeomValues(int flag, slicedata *sd, patchdata *patchi, int geom_type);
+EXTERNCPP void DrawGeomValues(slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomVData(vslicedata *vd);
 EXTERNCPP void UpdateCurrentColorbar(colorbardata *cb);
@@ -636,7 +636,7 @@ EXTERNCPP void InitMultiThreading(void);
 #ifdef WIN32
 EXTERNCPP void OpenSMVFile(char *filename,int filenamelength,int *openfile);
 #endif
-EXTERNCPP int AnySmoke(const char *type);
+EXTERNCPP int AnySmoke(void);
 EXTERNCPP int AnySlices(const char *type);
 EXTERNCPP void TrainerViewMenu(int var);
 
@@ -922,13 +922,13 @@ EXTERNCPP void DrawZoneVentDataProfile(void);
 EXTERNCPP void SetViewPoint(int option);
 EXTERNCPP void UpdateTimeLabels(void);
 EXTERNCPP void RenderFrame(int view_mode);
-EXTERNCPP void UpdateTerrain(int allocate_memory, float vertical_factor);
+EXTERNCPP void UpdateTerrain(int allocate_memory);
 EXTERNCPP void SliceBoundCB(int var);
 EXTERNCPP void RenderMenu(int value);
 EXTERNCPP void LoadSmoke3DMenu(int value);
 EXTERNCPP void DisplayVersionInfo(char *progname);
 EXTERNCPP void DrawDemo(int nlat, int nlong);
-EXTERNCPP void DrawDemo2(int option);
+EXTERNCPP void DrawDemo2(void);
 EXTERNCPP void InitDemo(float rad, int nlat, int nlong);
 EXTERNCPP void DrawOutlines(void);
 EXTERNCPP void DrawCBox(float x, float y, float z, float size);
@@ -982,7 +982,7 @@ EXTERNCPP void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntime
 EXTERNCPP void SetupReadAllGeom(void);
 EXTERNCPP void ReadAllGeom(void);
 EXTERNCPP void ClassifyAllGeom(void);
-EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode);
+EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index);
 EXTERNCPP void ReadGeomFile2(geomdata *geomi);
 EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock, int have_vectors);
 EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
@@ -1023,8 +1023,7 @@ EXTERNCPP void GetBoundaryColors(float *t, int nt, unsigned char *it,
               char **labels, char *scale, float *tvals256,
               int *extreme_min, int *extreme_max);
 EXTERNCPP void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned char *it,
-              int settmin, float *tmin, int settmax, float *tmax,
-              float *tmin_global, float *tmax_global,
+              float *tmin, float *tmax,
               int nlevel,
               char **patchlabels, float *patchvalues, float *tvals256,
               int *extreme_min, int *extreme_max);
@@ -1038,7 +1037,7 @@ EXTERNCPP void GetZoneColors(const float *t, int nt, unsigned char *it,
 
 EXTERNCPP void UpdatePlot3DColors(int file, int *errorcode);
 EXTERNCPP void UpdateAllPlot3DColors(void);
-EXTERNCPP void GetPlot3DColors(int iplot, int settmin, float *ttmin, int settmax, float *ttmax,
+EXTERNCPP void GetPlot3DColors(int iplot, float *ttmin, float *ttmax,
               int ndatalevel, int nlevel,
               char **labels,char **labelsiso, float *tlevels, float *tlevels256,
               int *extreme_min, int *extreme_max

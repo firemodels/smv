@@ -196,8 +196,7 @@ void UpdateBoundaryBounds(patchdata *patchi){
 /* ------------------ GetBoundaryColors3 ------------------------ */
 
 void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned char *it,
-              int settmin, float *ttmin, int settmax, float *ttmax,
-              float *tmin_arg, float *tmax_arg,
+              float *ttmin, float *ttmax,
               int nlevel,
               char **patchlabels, float *patchvalues, float *tvals256,
               int *extreme_min, int *extreme_max
@@ -297,7 +296,6 @@ void UpdateAllBoundaryColors(void){
       if(patchi->loaded==1){
         int set_valmin, set_valmax;
         float valmin, valmax;
-        float patchmin_global, patchmax_global;
         char *label;
 
         label = patchi->label.shortlabel;
@@ -312,8 +310,7 @@ void UpdateAllBoundaryColors(void){
               meshi = meshinfo+patchi->blocknumber;
               npatchvals = meshi->npatch_times*meshi->npatchsize;
               GetBoundaryColors3(patchi, meshi->patchval, 0, npatchvals, meshi->cpatchval,
-                                 glui_setpatchmin, &glui_patchmin, glui_setpatchmax, &glui_patchmax,
-                                 &patchmin_global, &patchmax_global,
+                                 &glui_patchmin, &glui_patchmax,
                                  nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
                                  &patchi->extreme_min, &patchi->extreme_max);
             }
@@ -321,8 +318,7 @@ void UpdateAllBoundaryColors(void){
           case PATCH_GEOMETRY_BOUNDARY:
           case PATCH_GEOMETRY_SLICE:
             GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
-                               set_valmin, &valmin, set_valmax, &valmax,
-                               &patchmin_global, &patchmax_global,
+                               &valmin, &valmax,
                                nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
                                &patchi->extreme_min, &patchi->extreme_max);
             break;
@@ -654,7 +650,7 @@ void GetZoneColors(const float *t, int nt, unsigned char *it,
 
 /* ------------------ GetPlot3DColors ------------------------ */
 
-void GetPlot3DColors(int plot3dvar, int settmin, float *ttmin, int settmax, float *ttmax,
+void GetPlot3DColors(int plot3dvar, float *ttmin, float *ttmax,
               int ndatalevel, int nlevel,
               char **labels,char **labelsiso,float *tlevels, float *tlevels256,
               int *extreme_min, int *extreme_max

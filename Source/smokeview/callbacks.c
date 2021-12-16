@@ -238,7 +238,7 @@ void WindowStatus(int state){
 
 /* ------------------ MouseEditColorbar ------------------------ */
 
-void MouseEditColorbar(int button, int state, int x, int y){
+void MouseEditColorbar(int x, int y){
   int val;
   int mouse_x, mouse_y;
   GLubyte r, g, b;
@@ -296,7 +296,7 @@ void MouseEditColorbar(int button, int state, int x, int y){
 
 /* ------------------ MouseEditTour ------------------------ */
 
-void MouseEditTour(int button, int state, int x, int y){
+void MouseEditTour(int x, int y){
   int val, val1;
   int mouse_x, mouse_y;
   GLubyte r, g, b;
@@ -351,7 +351,7 @@ void MouseEditTour(int button, int state, int x, int y){
 
 /* ------------------ MouseEditBlockage ------------------------ */
 
-void MouseEditBlockage(int button, int state, int x, int y){
+void MouseEditBlockage(int x, int y){
   int val, val1;
   int mouse_x, mouse_y;
   GLubyte r, g, b;
@@ -440,7 +440,7 @@ void MouseEditBlockage(int button, int state, int x, int y){
 
 /* ------------------ MouseSelectDevice ------------------------ */
 
-void MouseSelectDevice(int button, int state, int x, int y){
+void MouseSelectDevice(int x, int y){
   int val;
   int mouse_x, mouse_y;
   GLubyte r, g, b;
@@ -488,7 +488,7 @@ void MouseSelectDevice(int button, int state, int x, int y){
 
 /* ------------------ MouseSelectAvatar ------------------------ */
 
-void MouseSelectAvatar(int button, int state, int x, int y){
+void MouseSelectAvatar(int x, int y){
   int val;
   int mouse_x, mouse_y;
   GLubyte r, g, b;
@@ -524,7 +524,7 @@ void MouseSelectAvatar(int button, int state, int x, int y){
 
 /* ------------------ MouseSelectGeom ------------------------ */
 
-void MouseSelectGeom(int button, int state, int x, int y){
+void MouseSelectGeom(int x, int y){
   int val;
   int mouse_x, mouse_y;
   GLubyte r, g, b;
@@ -1044,13 +1044,13 @@ void MouseCB(int button, int state, int xm, int ym){
     if(button==GLUT_LEFT_BUTTON){
       if(blockageSelect == 1){
         GetGeomDialogState();
-        if(structured_isopen == 1 && unstructured_isopen == 0)MouseEditBlockage(button, state, xm, ym);
+        if(structured_isopen == 1 && unstructured_isopen == 0)MouseEditBlockage(xm, ym);
       }
-      if(edittour==1&&blockageSelect==0)MouseEditTour(button,state,xm,ym);
-      if(viscolorbarpath==1)MouseEditColorbar(button, state, xm, ym);
-      if(select_avatar==1)MouseSelectAvatar(button,state,xm,ym);
-      if(select_device==1)MouseSelectDevice(button,state,xm,ym);
-      if(select_geom!=GEOM_PROP_NONE)MouseSelectGeom(button, state, xm, ym);
+      if(edittour==1&&blockageSelect==0)MouseEditTour(xm,ym);
+      if(viscolorbarpath==1)MouseEditColorbar(xm, ym);
+      if(select_avatar==1)MouseSelectAvatar(xm,ym);
+      if(select_device==1)MouseSelectDevice(xm,ym);
+      if(select_geom!=GEOM_PROP_NONE)MouseSelectGeom(xm, ym);
     }
     glutPostRedisplay();
     if( showtime==1 || showplot3d==1){
@@ -1147,7 +1147,7 @@ void ColorbarSplitDrag(int xm, int ym){
 
 /* ------------------ TimebarDrag ------------------------ */
 
-void TimebarDrag(int xm, int ym){
+void TimebarDrag(int xm){
   if(nglobal_times>0){
     int timebar_right_pos;
     int timebar_left_pos;
@@ -1502,7 +1502,7 @@ void MouseDragCB(int xm, int ym){
     return;
   }
   if(timebar_drag==1){
-    TimebarDrag(xm,ym);
+    TimebarDrag(xm);
     return;
   }
   if(move_gslice==1){

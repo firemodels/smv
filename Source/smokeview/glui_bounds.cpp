@@ -1702,6 +1702,8 @@ extern "C" void SliceBoundsCPP_CB(int var){
       printf("*** updating slice file colors\n");
 #endif
       SetLoadedSliceBounds(NULL, 0);
+      
+      last_slice = slice_loaded_list[nslice_loaded - 1];
       for(ii = nslice_loaded - 1; ii >= 0; ii--){
         int i;
         slicedata *sd;
@@ -5786,33 +5788,6 @@ void PartBoundCB(int var){
     ASSERT(FFALSE);
     break;
   }
-}
-
-/* ------------------ UpdateZoneTempBounds ------------------------ */
-
-  void UpdateZoneTempBounds(int setvalmin, float valmin, int setvalmax, float valmax){
-    int slice_index;
-
-  if(nzoneinfo>0&&RADIO_slice!=NULL){
-    slice_index = RADIO_slice->get_int_val();
-    if(strcmp(slicebounds[slice_index].shortlabel, "TEMP")==0){
-      zonemin = valmin;
-      zonemax = valmax;
-      if(EDIT_zone_min!=NULL)EDIT_zone_min->set_float_val(valmin);
-      if(EDIT_zone_max!=NULL)EDIT_zone_max->set_float_val(valmax);
-      SliceBoundCB(FILE_UPDATE);
-    }
-  }
-}
-
-/* ------------------ UpdateSliceTempBounds ------------------------ */
-
-void UpdateSliceTempBounds(int setvalmin, float valmin, int setvalmax, float valmax){
-    int temp_index;
-
-  if(slicebounds_temp==NULL||RADIO_slice==NULL)return;
-  temp_index = slicebounds_temp-slicebounds;
-  SliceBounds2Glui(temp_index);
 }
 
 /* ------------------ SliceBounds2Glui ------------------------ */

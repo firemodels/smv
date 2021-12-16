@@ -1584,7 +1584,7 @@ void ReadCAD2Geom(cadgeomdata *cd){
     *shininess=block_shininess;
     *onesided=0;
     lenbuffer=strlen(buffer);
-    for(ii=0;ii<lenbuffer;ii++){
+    for(ii=0;ii<(int)lenbuffer;ii++){
       if(buffer[ii]==',')buffer[ii]=' ';
     }
 
@@ -3912,7 +3912,7 @@ void CalcNormal4(const float *v1,
 
 /* ------------------ DrawDemo2 ------------------------ */
 
-void DrawDemo2(int option){
+void DrawDemo2(void){
       demo_mode++;
       glBegin(GL_QUADS);
       if(demo_mode%2==0){

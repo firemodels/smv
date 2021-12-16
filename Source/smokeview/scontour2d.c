@@ -360,7 +360,7 @@ void GetContours(const  float *xgrid, const float *ygrid, int nx, int ny,
         v[1]=(double)vals[ij2];
         v[2]=(double)vals[i2j2];
         v[3]=(double)vals[i2j];
-        GetContourNodes(n,nlevels,x,y,v,contlow,minfill,conthigh,maxfill,
+        GetContourNodes(x,y,v,contlow,minfill,conthigh,maxfill,
           &nnode, xnodecopy, ynodecopy,
           &nnode2,xlinecopy,ylinecopy,
           &casen,blankit);
@@ -504,7 +504,7 @@ void GetLineContours(const  float *xgrid, const float *ygrid, int nx, int ny,
 
 /*  ------------------ GetContourNodes ------------------------ */
 
-void GetContourNodes(int ilev, int nlevels, const double x[4], const double y[4], const double val[4],
+void GetContourNodes(const double x[4], const double y[4], const double val[4],
                      double  contlow, int minfill, double conthigh,int maxfill,
                      int *nnode, float *xnode, float *ynode,
                      int *nnode2,float *xline, float *yline,

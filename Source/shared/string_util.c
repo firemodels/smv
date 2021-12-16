@@ -412,7 +412,7 @@ void Truncate(float val, char *cval, int ndigits){
   int i, count=0, have_period=0;
 
   sprintf(cval,"%f",val);
-  for(i = 0; i<strlen(cval); i++){
+  for(i = 0; i<(int)strlen(cval); i++){
     if(cval[i]=='.')have_period = 1;
     if(cval[i]=='.'||cval[i]=='-'||cval[i]=='+')continue;
     count++;

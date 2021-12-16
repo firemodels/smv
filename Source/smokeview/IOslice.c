@@ -7450,7 +7450,7 @@ void DrawSliceFrame(){
           DrawGeomData(DRAW_TRANSPARENT, sd, sd->patchgeom, GEOM_DYNAMIC);
         }
         if(show_slice_values[0]==1||show_slice_values[1]==1||show_slice_values[2]==1){
-          DrawGeomValues(DRAW_TRANSPARENT, sd, sd->patchgeom, GEOM_STATIC);
+          DrawGeomValues(sd, sd->patchgeom, GEOM_STATIC);
         }
         break;
       default:
@@ -9226,10 +9226,10 @@ void GenerateSliceMenu(int option){
       slicemi = slicemenu_sorted[i];
       slicei = slicemi->sliceinfo;
       quantity = slicei->label.longlabel;
-      if(strlen(quantity)>max2)max2 = strlen(quantity);
+      if((int)strlen(quantity)>max2)max2 = strlen(quantity);
       sprintf(cposition, "%f", slicei->position_orig);
       TrimZeros(cposition);
-      if(strlen(cposition)>max4)max4 = strlen(cposition);
+      if((int)strlen(cposition)>max4)max4 = strlen(cposition);
     }
 
     max1 = 5;

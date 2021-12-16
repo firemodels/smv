@@ -302,14 +302,9 @@ void OutputSText2r(float x, float y, float z, char *string){
 
 void OutputSText2(float x, float y, float z, char *string){
   char *c;
-  int total_width=0;
   float scale_x, scale_y;
 
   if(string==NULL)return;
-  total_width=0;
-  for(c=string; *c != '\0'; c++){
-    total_width+=glutStrokeWidth(GLUT_STROKE_ROMAN,*c);
-  }
   glPushMatrix();
   scale_x = (25.0/36.0)*port_unit_width*(scaled_font2d_height2width*(float)scaled_font2d_height/(float)104.76)/(float)port_pixel_width;
   scale_y = (12.0/18.0)*(25.0/18.0)*port_unit_height*((float)scaled_font2d_height/(float)152.38)/(float)port_pixel_height;

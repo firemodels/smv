@@ -2032,7 +2032,7 @@ void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxd
 
 /* ------------------ GetMinMaxDepth  ------------------------ */
 
-void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth){
+void GetMinMaxDepth(float *min_depth, float *max_depth){
   int i;
   float depth, dx, dy, dz;
 
@@ -2125,7 +2125,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
   else{
     float min_depth, max_depth;
 
-    GetMinMaxDepth(smv_eyepos, &min_depth, &max_depth);
+    GetMinMaxDepth(&min_depth, &max_depth);
     if(is_terrain_case==1){
       fnear = MAX(min_depth-0.75, 0.00001);
     }

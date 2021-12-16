@@ -10344,7 +10344,7 @@ typedef struct {
   }
 
   PRINT_TIMER(timer_readsmv, "update bound info");
-  UpdateTerrain(1,vertical_factor); // xxslow
+  UpdateTerrain(1); // xxslow
   UpdateTerrainColors();
   PRINT_TIMER(timer_readsmv, "UpdateTerrain");
   UpdateSmoke3dMenuLabels();
@@ -11120,7 +11120,7 @@ int ReadIni2(char *inifile, int localfile){
         terrain_rgba_zmax[i] = CLAMP(terrain_rgba_zmax[i], 0, 2255);
       }
       vertical_factor = CLAMP(vertical_factor, 0.25, 4.0);
-      UpdateTerrain(0, vertical_factor);
+      UpdateTerrain(0);
       UpdateTerrainColors();
       continue;
     }

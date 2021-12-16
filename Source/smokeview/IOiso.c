@@ -256,7 +256,7 @@ void GetIsoDataBounds(isodata *isod, float *pmin, float *pmax){
 
 /* ------------------ ReadIsoGeom ------------------------ */
 
-FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_frame_index, int *errorcode){
+FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *errorcode){
   isodata *isoi;
   geomdata *geomi;
   int ilevel,error;
@@ -277,7 +277,7 @@ FILE_SIZE ReadIsoGeom(const char *file, int ifile, int load_flag, int *geom_fram
   meshi->showlevels = NULL;
   meshi->isolevels = NULL;
 
-  return_filesize=ReadGeom(geomi,load_flag,GEOM_ISO,geom_frame_index,errorcode);
+  return_filesize=ReadGeom(geomi,load_flag,GEOM_ISO,geom_frame_index);
 
   if(load_flag==UNLOAD){
     FREEMEMORY(isoi->geom_vals);
@@ -403,7 +403,7 @@ int GetIsoTType(const isodata *isoi){
 
 /* ------------------ SyncIsoBounds ------------------------ */
 
-void SyncIsoBounds(int isottype){
+void SyncIsoBounds(){
   int i, ncount;
   int firsttime = 1;
   float tmin_local, tmax_local;
@@ -626,7 +626,6 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   read_size=0;
   for(;;){
     int skip_frame;
-    int ntri_total;
 
     skip_frame=0;
     iitime++;
@@ -642,7 +641,6 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
     meshi->iso_times[itime]=time_local;
     if(iitime%isoframestep_global!=0||(settmin_i==1&&time_local<tmin_i)||(settmax_i==1&&time_local>tmax_i)||skip_frame==1){
     }
-    ntri_total=0;
     for(ilevel=0;ilevel<meshi->nisolevels;ilevel++){
       int nvertices_i, ntriangles_i;
 
@@ -876,7 +874,6 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
         }
         FREEMEMORY(vertnorms);
       }
-      ntri_total+=asurface->niso_triangles;
       asurface++;
     }
 
@@ -919,7 +916,7 @@ void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode){
   CheckMemory;
   if(ib->dataflag==1){
     iisottype = GetIsoTType(ib);
-    SyncIsoBounds(iisottype);
+    SyncIsoBounds();
     SetIsoLabels(ib->tmin, ib->tmax, ib, errorcode);
     CheckMemory;
   }
@@ -952,7 +949,7 @@ FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, 
     }
     else{
       if(isoi->geomflag==1){
-        return_filesize=ReadIsoGeom(file,ifile,flag,geom_frame_index,errorcode);
+        return_filesize=ReadIsoGeom(ifile,flag,geom_frame_index,errorcode);
       }
       else{
         ReadIsoOrig(file,ifile,flag,errorcode);

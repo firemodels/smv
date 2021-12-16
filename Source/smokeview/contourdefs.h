@@ -29,7 +29,7 @@ typedef struct {
   int idir;
 } contour;
 
-void GetContourNodes(int n, int levels, const double x[4], const double y[4], const double val[4],
+void GetContourNodes(const double x[4], const double y[4], const double val[4],
                      double contlow, int modelow, double conthigh, int modehigh,
                      int *nnode, float *xnode, float *ynode,
                      int *nnode2,float *xline, float *yline,
