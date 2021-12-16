@@ -208,12 +208,12 @@ if [ "$RUN_SMV" == "1" ]; then
 
   cd $SVNROOT/smv/Verification/Visualization
   echo Converting particles to isosurfaces in case plumeiso
-  $SMOKEZIP -part2iso plumeiso
+  $SMOKEZIP -f -part2iso plumeiso
 
   cd $SVNROOT/smv/Verification/WUI
   echo Converting particles to isosurfaces in case pine_tree
   if  [ -e pine_tree.smv ]; then
-    $SMOKEZIP -part2iso pine_tree
+    $SMOKEZIP -f -part2iso pine_tree
   fi
 
 # difference plume5c and thouse5
