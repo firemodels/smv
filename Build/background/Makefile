@@ -6,6 +6,9 @@ INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/back
 FILTERC =
 FILTERF =
 
+# Intel compiler definitions
+include ../../scripts/intel_compiler.mak
+
 VPATH = $(SOURCE_DIR)/background $(SOURCE_DIR)/shared
 bin = .
 
@@ -51,7 +54,7 @@ no_target:
 # ------------- intel Win 64 ----------------
 
 intel_win_64 : CFLAGS    = -O1 /nologo -D WIN32 -I $(SOURCE_DIR)/shared $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : CC        = icl
+intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = background_win_64.exe
 
 intel_win_64 : $(objwin)
@@ -69,7 +72,7 @@ gnu_win_64 : $(obj)
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
-intel_linux_64 : CC        = icc
+intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = background_linux_64
 
 intel_linux_64 : $(obj)

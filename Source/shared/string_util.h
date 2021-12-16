@@ -38,7 +38,7 @@ typedef struct {
 #define LABEL_ERR 2
 
 // avoid compiler warnings on C11 and later
-#ifdef pp_DEG_TEST
+#ifdef pp_C11
 
 #ifdef pp_OSX_HIGHRES
 // 90 - 256

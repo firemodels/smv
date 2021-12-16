@@ -6,6 +6,9 @@ INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/conv
 FILTERC =
 FILTERF =
 
+# Intel compiler definitions
+include ../../scripts/intel_compiler.mak
+
 VPATH = $(SOURCE_DIR)/convert ../../../../FDS/Source $(SOURCE_DIR)/shared $(SOURCE_DIR)/smokeview
 bin = .
 
@@ -50,8 +53,8 @@ no_target:
 # ------------- intel winx 64 db ----------------
 
 intel_win_64_db : CFLAGS    = /Od /Wall /debug:full /W4 /ZI -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64_db : CC        = icl
-intel_win_64_db : CPP       = icl
+intel_win_64_db : CC        = $(I_CC)
+intel_win_64_db : CPP       = $(I_CC)
 intel_win_64_db : exe       = convert_win_64_db.exe
 
 intel_win_64_db : $(objwin)
@@ -60,8 +63,8 @@ intel_win_64_db : $(objwin)
 # ------------- intel win 64 ----------------
 
 intel_win_64 : CFLAGS    = /O2 /nologo -D X64 -D WIN32 $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : CC        = icl
-intel_win_64 : CPP       = icl
+intel_win_64 : CC        = $(I_CC)
+intel_win_64 : CPP       = $(I_CC)
 intel_win_64 : exe       = convert_win_64.exe
 
 intel_win_64 : $(objwin)
@@ -126,22 +129,20 @@ gnu_osx_64_db : $(obj)
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
-intel_linux_64 : CC        = icc
-intel_linux_64 : CPP       = icc
+intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = convert_linux_64
 
 intel_linux_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) -static-intel $(obj) 
+	$(CC) -o $(bin)/$(exe) -static-intel $(obj) 
 
 # ------------- intel linux 64 db ----------------
 
 intel_linux_64_db : CFLAGS    = -O0 -m64 -D pp_LINUX -g -check=stack,uninit -fp-stack-check -fp-trap-all=divzero,invalid,overflow -ftrapuv -Wuninitialized -Wunused-function -Wunused-variable $(GITINFO) $(INTEL_COMPINFO)
-intel_linux_64_db : CC        = icc
-intel_linux_64_db : CPP       = icc
+intel_linux_64_db : CC        = $(I_ICC)
 intel_linux_64_db : exe       = convert_linux_64_db
 
 intel_linux_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) -static-intel $(obj)
+	$(CC) -o $(bin)/$(exe) -static-intel $(obj)
 	
 
 # ------------- intel osx 64 ----------------

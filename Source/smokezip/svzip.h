@@ -385,6 +385,9 @@ STDCALLF FORTopenslice(char *slicefilename, int *unit,
                       int *is1, int *is2, int *js1, int *js2, int *ks1, int *ks2,
                       int *error, FILE_SIZE lenfile);
 
+STDCALLF FORTgetplot3dq(char *qfilename, int *nx, int *ny, int *nz, float *qq, int *error, int *isotest, FILE_SIZE filelen);
+
+
 
 
 //***********************

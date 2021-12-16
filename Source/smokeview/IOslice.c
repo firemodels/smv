@@ -4142,7 +4142,7 @@ void GetSliceFileDirection(int is1, int *is2ptr, int *iis1ptr, int *iis2ptr, int
 
 /* ------------------ GetSliceSizes ------------------------ */
 
-void GetSliceSizes(slicedata *sd, char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int sliceframestep_arg,
+void GetSliceSizes(slicedata *sd, const char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int sliceframestep_arg,
   int *errorptr, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg, int *headersizeptr, int *framesizeptr){
 
   int ip1, ip2, jp1, jp2, kp1, kp2;
@@ -4264,7 +4264,7 @@ void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int 
 
 /* ------------------ GetSliceData ------------------------ */
 
-FILE_SIZE GetSliceData(slicedata *sd, char *slicefilename, int time_frame, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
+FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
   float *qminptr, float *qmaxptr, float *qdataptr, float *timesptr, int ntimes_old_arg, int *ntimesptr,
   int sliceframestep_arg, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg
 ){
@@ -4554,7 +4554,7 @@ void HideSlices(char *longlabel){
 
 /* ------------------ ReadSlice ------------------------ */
 
-FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode){
+FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode){
   float *xplt_local, *yplt_local, *zplt_local, offset, qmin, qmax, read_time, total_time;
   int blocknumber, error, i, ii, headersize, framesize, flag2 = 0;
   slicedata *sd;
@@ -7450,7 +7450,7 @@ void DrawSliceFrame(){
           DrawGeomData(DRAW_TRANSPARENT, sd, sd->patchgeom, GEOM_DYNAMIC);
         }
         if(show_slice_values[0]==1||show_slice_values[1]==1||show_slice_values[2]==1){
-          DrawGeomValues(DRAW_TRANSPARENT, sd, sd->patchgeom, GEOM_STATIC);
+          DrawGeomValues(sd, sd->patchgeom, GEOM_STATIC);
         }
         break;
       default:
@@ -9226,10 +9226,10 @@ void GenerateSliceMenu(int option){
       slicemi = slicemenu_sorted[i];
       slicei = slicemi->sliceinfo;
       quantity = slicei->label.longlabel;
-      if(strlen(quantity)>max2)max2 = strlen(quantity);
+      if((int)strlen(quantity)>max2)max2 = strlen(quantity);
       sprintf(cposition, "%f", slicei->position_orig);
       TrimZeros(cposition);
-      if(strlen(cposition)>max4)max4 = strlen(cposition);
+      if((int)strlen(cposition)>max4)max4 = strlen(cposition);
     }
 
     max1 = 5;

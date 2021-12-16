@@ -339,7 +339,7 @@ int GetScriptKeywordIndex(char *keyword){
 void GetXYZ(char *buffer,int *ival){
   int i;
 
-  for(i=0;i<strlen(buffer);i++){
+  for(i=0;i<(int)strlen(buffer);i++){
     char *c;
 
     c = buffer+i;
@@ -2521,7 +2521,7 @@ void ScriptPlot3dProps(scriptdata *scripti){
 
 /* ------------------ ScriptShowSmokeSensors ------------------------ */
 
-void ScriptShowSmokeSensors(scriptdata *scripti){
+void ScriptShowSmokeSensors(void){
   int i,j;
   FILE *stream_smokesensors;
   int nsmokesensors;
@@ -3455,7 +3455,7 @@ int RunScriptCommand(scriptdata *script_command){
       ScriptPartClassColor(scripti);
       break;
     case SCRIPT_SHOWSMOKESENSORS:
-      ScriptShowSmokeSensors(scripti);
+      ScriptShowSmokeSensors();
       break;
     case SCRIPT_SHOWPLOT3DDATA:
       ScriptShowPlot3dData(scripti);

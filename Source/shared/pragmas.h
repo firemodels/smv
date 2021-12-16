@@ -1,7 +1,7 @@
 #ifndef PRAGMAS_H_DEFINED
 #define PRAGMAS_H_DEFINED
 
-#ifdef __INTEL_COMPILER
+#ifdef INTEL_COMPILER_ANY
 #ifdef _DEBUG
 #pragma float_control( precise, on)
 #pragma float_control( except, on )

@@ -98,10 +98,10 @@ class bounds_dialog{
   void enabledisable_percentile_draw(int flag);
   cpp_boundsdata *get_bounds_data(void);
 
-  void setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds, int nbounds,
+  void setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds, int nbounds,
              int *cache_flag, int cache_enable, int percentile_enable,
              void Callback(int var), GLUI_Update_CB PROC_CB, procdata *procinfo, int *nprocinfo);
-  void setupNoGraphics(char *file_type, cpp_boundsdata *bounds, int nbounds);
+  void setupNoGraphics(const char *file_type, cpp_boundsdata *bounds, int nbounds);
   void set_cache_flag(int cache_flag);
   int  set_chopmin(char *label, int set_valmin, float valmin);
   int  set_chopmax(char *label, int set_valmax, float valmax);
@@ -340,7 +340,7 @@ void bounds_dialog::RestoreBounds(void){
   memcpy(all_bounds, all_bounds_save, nall_bounds*sizeof(cpp_boundsdata));
 }
 
-void bounds_dialog::setupNoGraphics(char *file_type, cpp_boundsdata *bounds_arg, int nbounds_arg){
+void bounds_dialog::setupNoGraphics(const char *file_type, cpp_boundsdata *bounds_arg, int nbounds_arg){
 
   all_bounds = bounds_arg;
   nall_bounds = nbounds_arg;
@@ -351,7 +351,7 @@ void bounds_dialog::setupNoGraphics(char *file_type, cpp_boundsdata *bounds_arg,
 
 /* ------------------ setup ------------------------ */
 
-void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_arg, int nbounds_arg, int *cache_flag, int cache_enable, int percentile_enabled_arg,
+void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_boundsdata *bounds_arg, int nbounds_arg, int *cache_flag, int cache_enable, int percentile_enabled_arg,
                           void Callback(int var),
                           GLUI_Update_CB PROC_CB, procdata *procinfo, int *nprocinfo){
   GLUI_Rollout *ROLLOUT_bound;
@@ -545,7 +545,7 @@ void bounds_dialog::setup(char *file_type, GLUI_Rollout *ROLLOUT_dialog, cpp_bou
 
 /* ------------------ PadString ------------------------ */
 
-void PadString(char *label1, char *label2, int length){
+void PadString(char *label1, const char *label2, int length){
   int i;
 
   TrimBack(label1);
@@ -1702,6 +1702,8 @@ extern "C" void SliceBoundsCPP_CB(int var){
       printf("*** updating slice file colors\n");
 #endif
       SetLoadedSliceBounds(NULL, 0);
+      
+      last_slice = slice_loaded_list[nslice_loaded - 1];
       for(ii = nslice_loaded - 1; ii >= 0; ii--){
         int i;
         slicedata *sd;
@@ -4449,7 +4451,7 @@ extern "C" void GluiBoundsSetup(int main_window){
         char label[256];
 
         strcpy(label, "Temperature (");
-        strcat(label, degC);
+        strcat(label, (const char *)degC);
         strcat(label, ") ");
         glui_bounds->add_spinner_to_panel(PANEL_boundary_temp_threshold, label, GLUI_SPINNER_FLOAT, &temp_threshold);
       }
@@ -5786,33 +5788,6 @@ void PartBoundCB(int var){
     ASSERT(FFALSE);
     break;
   }
-}
-
-/* ------------------ UpdateZoneTempBounds ------------------------ */
-
-  void UpdateZoneTempBounds(int setvalmin, float valmin, int setvalmax, float valmax){
-    int slice_index;
-
-  if(nzoneinfo>0&&RADIO_slice!=NULL){
-    slice_index = RADIO_slice->get_int_val();
-    if(strcmp(slicebounds[slice_index].shortlabel, "TEMP")==0){
-      zonemin = valmin;
-      zonemax = valmax;
-      if(EDIT_zone_min!=NULL)EDIT_zone_min->set_float_val(valmin);
-      if(EDIT_zone_max!=NULL)EDIT_zone_max->set_float_val(valmax);
-      SliceBoundCB(FILE_UPDATE);
-    }
-  }
-}
-
-/* ------------------ UpdateSliceTempBounds ------------------------ */
-
-void UpdateSliceTempBounds(int setvalmin, float valmin, int setvalmax, float valmax){
-    int temp_index;
-
-  if(slicebounds_temp==NULL||RADIO_slice==NULL)return;
-  temp_index = slicebounds_temp-slicebounds;
-  SliceBounds2Glui(temp_index);
 }
 
 /* ------------------ SliceBounds2Glui ------------------------ */

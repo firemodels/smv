@@ -51,7 +51,7 @@ void DrawLights(float *position0, float *position1){
 
 /* ------------------ ShowScene2 ------------------------ */
 
-void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
+void ShowScene2(int mode){
   if(mode==DRAWSCENE){
     if(rotation_type==EYE_CENTERED&&nskyboxinfo>0)DrawSkybox();
     UpdateLights(light_position0, light_position1);
@@ -555,7 +555,7 @@ void ShowScene2(int mode, int view_mode, int quad, GLint s_left, GLint s_down){
   /* ++++++++++++++++++++++++ draw transparent blockages +++++++++++++++++++++++++ */
 
   //  DrawDemo(20,20);
-  //  DrawDemo2(1);
+  //  DrawDemo2();
   CLIP_GEOMETRY;
   if(geom_bounding_box_mousedown==0){
     DrawBlockages(mode, DRAW_TRANSPARENT);
@@ -650,7 +650,7 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
       SNIFF_ERRORS("after DrawColorbarPath");
     }
   }
-  if(viscolorbarpath==0||colorbar_hidescene==0)ShowScene2(mode, view_mode, quad, s_left, s_down);
+  if(viscolorbarpath==0||colorbar_hidescene==0)ShowScene2(mode);
 
 /* ++++++++++++++++++++++++ render scene +++++++++++++++++++++++++ */
 // if rendering is not working remove following comment

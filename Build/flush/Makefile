@@ -13,6 +13,9 @@ WIN_LIBDIR = $(LIB_DIR)/intel_win_64
 FILTERC =
 FILTERF =
 
+# Intel compiler definitions
+include ../../scripts/intel_compiler.mak
+
 VPATH = $(SOURCE_DIR)/flush:$(SOURCE_DIR)/shared
 bin = .
 
@@ -58,7 +61,7 @@ no_target:
 # ------------- intel win 64 ----------------
 
 intel_win_64 : CFLAGS    = -Od -D WIN32 /nologo $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : CC        = icl
+intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = flush_win_64.exe
 
 intel_win_64 : $(objwin)
@@ -101,7 +104,7 @@ LINUXFORTLIBS_64=$(IFORT_COMPILER_LIB)/libifcore.a
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : LFLAGS    = -lifport $(LINUXFORTLIBS_64)
-intel_linux_64 : CC        = icc
+intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = flush_linux_64
 
 intel_linux_64 : $(obj)

@@ -268,7 +268,7 @@ void RemoveDupFloats(float **valsptr, int *nvals,int *ivals, float dval_min){
 
 /* ------------------ ClosestNodeIndex ------------------------ */
 
-int ClosestNodeIndex(float val,float *vals,int nvals, float eps){
+int ClosestNodeIndex(float val,float *vals,int nvals){
   int j;
 
   if(val<vals[0])return -1;
@@ -393,7 +393,7 @@ void UpdatePlotxyzAll(void){
 
       meshi->iplotx_all[j]=-1;
       val = plotx_all[j];
-        ival = ClosestNodeIndex(val,meshi->xplt,meshi->ibar+1,dxyz_min);
+        ival = ClosestNodeIndex(val,meshi->xplt,meshi->ibar+1);
       if(ival<0)continue;
       meshi->iplotx_all[j]=ival;
     }
@@ -403,7 +403,7 @@ void UpdatePlotxyzAll(void){
 
       meshi->iploty_all[j]=-1;
       val = ploty_all[j];
-      ival = ClosestNodeIndex(val,meshi->yplt,meshi->jbar+1,dxyz_min);
+      ival = ClosestNodeIndex(val,meshi->yplt,meshi->jbar+1);
       if(ival<0)continue;
       meshi->iploty_all[j]=ival;
     }
@@ -413,7 +413,7 @@ void UpdatePlotxyzAll(void){
 
       meshi->iplotz_all[j]=-1;
       val = plotz_all[j];
-      ival = ClosestNodeIndex(val,meshi->zplt,meshi->kbar+1,dxyz_min);
+      ival = ClosestNodeIndex(val,meshi->zplt,meshi->kbar+1);
       if(ival<0)continue;
       meshi->iplotz_all[j]=ival;
     }
@@ -423,7 +423,7 @@ void UpdatePlotxyzAll(void){
     int ival;
 
     meshi = meshinfo+i;
-    ival = ClosestNodeIndex(xbar/2.0, meshi->xplt, meshi->ibar+1, dxyz_min);
+    ival = ClosestNodeIndex(xbar/2.0, meshi->xplt, meshi->ibar+1);
     if(ival<0)continue;
     iplotx_all = ival;
   }
@@ -432,7 +432,7 @@ void UpdatePlotxyzAll(void){
     int ival;
 
     meshi = meshinfo+i;
-    ival = ClosestNodeIndex(ybar/2.0, meshi->yplt, meshi->jbar+1, dxyz_min);
+    ival = ClosestNodeIndex(ybar/2.0, meshi->yplt, meshi->jbar+1);
     if(ival<0)continue;
     iploty_all = ival;
   }
@@ -441,7 +441,7 @@ void UpdatePlotxyzAll(void){
     int ival;
 
     meshi = meshinfo+i;
-    ival = ClosestNodeIndex(zbar/2.0, meshi->zplt, meshi->kbar+1, dxyz_min);
+    ival = ClosestNodeIndex(zbar/2.0, meshi->zplt, meshi->kbar+1);
     if(ival<0)continue;
     iplotz_all = ival;
   }

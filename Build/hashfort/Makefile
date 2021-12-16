@@ -1,6 +1,9 @@
 FILTERC =
 FILTERF =
 
+# Intel compiler definitions
+include ../../scripts/intel_compiler.mak
+
 VPATH = ../../../Source/hashfort
 bin = .
 
@@ -27,7 +30,7 @@ no_target:
 # ------------- intel win 64 ----------------
 
 intel_win_64 : FFLAGS    = -O2 /nologo /fpscomp:general /stand:f18
-intel_win_64 : FC        = ifort
+intel_win_64 : FC        = $(I_IFORT)
 intel_win_64 : exe       = hashfort_win_64.exe
 
 intel_win_64 : $(objwin)
@@ -36,7 +39,7 @@ intel_win_64 : $(objwin)
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : FFLAGS    = -O2 -m64 -stand:f18
-intel_linux_64 : FC        = ifort
+intel_linux_64 : FC        = $(I_IFORT)
 intel_linux_64 : exe       = hashfort_linux_64
 
 intel_linux_64 : $(obj)

@@ -196,6 +196,7 @@ void    GLUI_Rotation::setup_texture( void )
   unsigned char c;
   for( i=0; i<CHECKBOARD_SIZE; i++ ) {
     for( j=0; j<CHECKBOARD_SIZE; j++ ) {
+      int ii, jj;
       if ( enabled ) {
 	dark = 110;
 	light = 220;
@@ -205,7 +206,11 @@ void    GLUI_Rotation::setup_texture( void )
 	light = glui->bkgd_color.r;
       }
 
-      c = ((((i&0x8)==0) ^ ((j&0x8))==0)) * light;
+//      c = ((((i&0x8)==0) ^ ((j&0x8))==0)) * light;
+
+      ii=((i&0x8)==0);
+      jj=((j&0x8)==0);
+      c = (ii ^ jj) * light;
       if ( c == 0 )
 	c = dark;
       texture_image[i][j][0] = c;

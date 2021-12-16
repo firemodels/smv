@@ -148,7 +148,7 @@ void  UpdatePlot3DColors(int ifile, int *errorcode){
     }
 
     GetPlot3DColors(nn,
-                    setp3min_all[nn], p3min_all + nn, setp3max_all[nn], p3max_all + nn,
+                    p3min_all + nn, p3max_all + nn,
                     nrgb_full, nrgb - 1, *(colorlabelp3 + nn), *(colorlabeliso + nn), p3levels[nn], p3levels256[nn],
                     plot3dinfo[ifile].extreme_min + nn, plot3dinfo[ifile].extreme_max + nn);
   }
@@ -960,7 +960,6 @@ void UpdateSurface(void){
 
   if(nplot3dloaded==0)return;
   for(i=0;i<nmeshes;i++){
-    float dlevel=-1.0;
     meshdata *meshi;
 
     meshi = meshinfo+i;
@@ -990,7 +989,7 @@ void UpdateSurface(void){
     isolevelindex2=colorindex;
     FreeSurface(currentsurfptr);
     InitIsoSurface(currentsurfptr, level, rgb_plot3d_contour[colorindex],-999);
-    GetIsoSurface(currentsurfptr,qdata+(plotn-1)*plot3dsize,NULL,iblank_cell,level,dlevel,
+    GetIsoSurface(currentsurfptr,qdata+(plotn-1)*plot3dsize,NULL,iblank_cell,level,
       xplt,ibar+1,yplt,jbar+1,zplt,kbar+1);
     GetNormalSurface(currentsurfptr);
     CompressIsoSurface(currentsurfptr,1,
@@ -1006,7 +1005,7 @@ void UpdateSurface(void){
       level2 = p3min_all[plotn-1] + colorindex2*(p3max_all[plotn-1]-p3min_all[plotn-1])/((float)nrgb-2.0f);
       FreeSurface(currentsurf2ptr);
       InitIsoSurface(currentsurf2ptr, level2, rgb_plot3d_contour[colorindex2],-999);
-      GetIsoSurface(currentsurf2ptr,qdata+(plotn-1)*plot3dsize,NULL,iblank_cell,level2,dlevel,
+      GetIsoSurface(currentsurf2ptr,qdata+(plotn-1)*plot3dsize,NULL,iblank_cell,level2,
         xplt,ibar+1,yplt,jbar+1,zplt,kbar+1);
       GetNormalSurface(currentsurf2ptr);
       CompressIsoSurface(currentsurf2ptr,1,

@@ -6487,7 +6487,7 @@ void ReadDeviceData(char *file, int filetype, int loadstatus){
     NewMemory((void **)&devicei->vals_orig,nrows*sizeof(float));
 #ifdef pp_DEG
     if(strcmp(devcunits[i],"C")==0){
-      strcpy(devicei->unit,degC);
+      strcpy(devicei->unit, (const char *)degC);
     }
     else{
       strcpy(devicei->unit,devcunits[i]);

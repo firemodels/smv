@@ -897,12 +897,19 @@ void CreatePartSizeFileFromBound(char *part5boundfile_arg, char *part5sizefile_a
   for(;;){
     int nclasses_local,j,eof_local;
     LINT frame_size_local;
+    char format[128];
 
     eof_local = 0;
     frame_size_local =0;
     if(fgets(buffer_local,255,streamin_local)==NULL)break;
     sscanf(buffer_local, "%f %i", &time_local, &nclasses_local);
-    fprintf(streamout_local, " %f %li\n", time_local, filepos_arg);
+#ifdef INTEL_WIN_COMPILER
+      strcpy(format, " %f %lli");
+#else
+      strcpy(format, " %f %li");
+#endif
+    fprintf(streamout_local, format, time_local, filepos_arg);
+    fprintf(streamout_local, "\n");
     frame_size_local += 12;
     for(j = 0; j<nclasses_local; j++){
       int k, npoints_local, ntypes_local;
@@ -967,6 +974,7 @@ void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, in
   while (!feof(PART5FILE)){
     float time_local;
     LINT frame_size_local;
+    char format[128];
 
     frame_size_local =0;
 
@@ -988,7 +996,13 @@ void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, in
       FSEEK(PART5FILE, skip_local, SEEK_CUR);
       frame_size_local +=skip_local;
     }
-    fprintf(streamout_local, "%f %li\n", time_local, file_offset_arg);
+#ifdef INTEL_WIN_COMPILER
+    strcpy(format, "%f %lli");
+#else
+    strcpy(format, "%f %li");
+#endif
+    fprintf(streamout_local, format, time_local, file_offset_arg);
+    fprintf(streamout_local, "\n");
     file_offset_arg += frame_size_local;
     for (i = 0; i < nclasses_local; i++){
       fprintf(streamout_local, " %i\n", numpoints_local[i]);
@@ -1914,6 +1928,7 @@ void GetPartHeader(partdata *parti, int partframestep_arg, int *nf_all, int opti
     datacopy_local =parti->data5;
     for(i=0;i<nframes_all_local;i++){
       int j;
+      char format[128];
 
       count_local++;
       fail_local =0;
@@ -1922,7 +1937,12 @@ void GetPartHeader(partdata *parti, int partframestep_arg, int *nf_all, int opti
         break;
       }
       filepos_local = -1;
-      sscanf(buffer_local,"%f %li",&time_local,&filepos_local);
+#ifdef INTEL_WIN_COMPILER
+      strcpy(format, "%f %lli");
+#else
+      strcpy(format, "%f %li");
+#endif
+      sscanf(buffer_local, format, &time_local,&filepos_local);
       parti->filepos[count_local] = filepos_local;               // record file position for every frame
       if(count_local%partframestep_arg!=0||
          (settmin_p!=0&&time_local<tmin_p-TEPS)||

@@ -90,7 +90,7 @@ SV_EXTERN void CCIsoHeader(char *isofile,
 SV_EXTERN void CCTIsoHeader(char *isofile,
                  char *isolonglabel, char *isoshortlabel, char *isounits,
                  float *levels, int *nlevels, int *error);
-SV_EXTERN void IsoOut(FILE *isostream,float t, int timeindex, isosurface *surface, int *error);
+SV_EXTERN void IsoOut(FILE *isostream,float t, int timeindex, isosurface *surface);
 SV_EXTERN void CCIsoSurface2File(char *isofile, float *t, float *data, char *iblank, float *level, int *nlevels,
      float *xplt, int *nx, float *yplt, int *ny, float *zplt, int *nz,int *reduce_triangles, int *error);
 SV_EXTERN void CCIsoSurfaceT2File(char *isofile, float *t, float *data, int *data2flag, float *data2, int *iblank,
@@ -129,7 +129,7 @@ int GetIsoSurface(isosurface *surface,
                   const float *data,
                   const float *tdata,
                   const char *iblank_cell,
-                  float level, float dlevel,
+                  float level,
                   const float *xplt, int nx,
                   const float *yplt, int ny,
                   const float *zplt, int nz

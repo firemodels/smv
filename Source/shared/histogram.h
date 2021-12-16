@@ -1,6 +1,6 @@
 #ifndef HISTOGRAM_H_DEFINED
 #define HISTOGRAM_H_DEFINED
-#ifdef __INTEL_COMPILER
+#ifdef INTEL_COMPILER_ANY
 #pragma warning (disable:2259)
 #pragma warning (disable:1572)
 #endif

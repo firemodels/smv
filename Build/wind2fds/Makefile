@@ -7,6 +7,9 @@ LIB_DIR = $(BUILD_DIR)/LIBS
 INC_DIR =  -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/wind2fds 
 FILTERC =
 
+# Intel compiler definitions
+include ../../scripts/intel_compiler.mak
+
 VPATH = $(SOURCE_DIR)/wind2fds $(SOURCE_DIR)/shared 
 bin = .
 
@@ -53,42 +56,38 @@ no_target:
 # ------------- intel win 64 ----------------
 
 intel_win_64 : CFLAGS    = -Od /nologo -D WIN32 -D X64 $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : CC        = icl
-intel_win_64 : CPP       = icl
+intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = wind2fds_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin)
+	$(CC) -o $(bin)/$(exe) $(objwin)
 
 # ------------- gnu win 64 ----------------
 
 gnu_win_64 : CFLAGS    = -O0 -m64 -D pp_LINUX -D GLEW_STATIC -D MINGW
 gnu_win_64 : CC        = gcc
-gnu_win_64 : CPP       = g++
 gnu_win_64 : exe       = wind2fds_win_64.exe
 
 gnu_win_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
 
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
-intel_linux_64 : CC        = icc
-intel_linux_64 : CPP       = icc
+intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = wind2fds_linux_64
 
 intel_linux_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
 
 # ------------- gnu linux 64 ----------------
 
 gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_GCC -Wall $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64 : CC        = gcc
-gnu_linux_64 : CPP       = g++
 gnu_linux_64 : exe       = wind2fds_linux_64
 
 gnu_linux_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
 
 
 # ------------- gnu linux 64 db ----------------
@@ -96,41 +95,37 @@ gnu_linux_64 : $(obj)
 gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64_db : CFLAGS    = -O0 -m64 -D pp_GCC -Wall $(GITINFO) $(GNU_COMPINFO)
 gnu_linux_64_db : CC        = gcc
-gnu_linux_64_db : CPP       = g++
 gnu_linux_64_db : exe       = wind2fds_linux_64_db
 
 gnu_linux_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
 
 # ------------- intel osx 64 ----------------
 
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO)
 intel_osx_64 : CC        = icc
-intel_osx_64 : CPP       = icc
 intel_osx_64 : exe       = wind2fds_osx_64
 
 intel_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) -m64 $(obj)
+	$(CC) -o $(bin)/$(exe) -m64 $(obj)
 
 # ------------- gnu osx 64 ----------------
 
 gnu_osx_64 : CFLAGS    = -O0 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
 gnu_osx_64 : CC        = gcc
-gnu_osx_64 : CPP       = g++
 gnu_osx_64 : exe       = wind2fds_osx_64
 
 gnu_osx_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
 
 # ------------- gnu osx 64 db ----------------
 
 gnu_osx_64_db : CFLAGS    = -O0 -m64 -D pp_OSX -Wall $(GITINFO) $(GNU_COMPINFO)
 gnu_osx_64_db : CC        = gcc
-gnu_osx_64_db : CPP       = g++
 gnu_osx_64_db : exe       = wind2fds_osx_64_db
 
 gnu_osx_64_db : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj)
 
 #-------------- Clean Target to remove Object and Module files -----------
 

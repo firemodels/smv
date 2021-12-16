@@ -5,6 +5,9 @@ SOURCE_DIR = ../../../Source/
 FILTERC =
 FILTERF =
 
+# Intel compiler definitions
+include ../../scripts/intel_compiler.mak
+
 VPATH = $(SOURCE_DIR)/getdate  
 bin = .
 
@@ -52,7 +55,7 @@ no_target:
 # ------------- intel win 64 ----------------
 
 intel_win_64 : CFLAGS    = -Od /nologo $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : CC        = icl
+intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = getdate_win_64.exe
 
 intel_win_64 : $(objwin)
@@ -70,7 +73,7 @@ gnu_win_64 : $(obj)
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : CFLAGS    = -O2 -m64 $(GITINFO) $(INTEL_COMPINFO)
-intel_linux_64 : CC        = icc
+intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = getdate_linux_64
 
 intel_linux_64 : $(obj)

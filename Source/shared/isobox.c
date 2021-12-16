@@ -817,7 +817,7 @@ int GetIsoSurface(isosurface *surface,
                   const float *data,
                   const float *tdata,
                   const char *iblank_cell,
-                  float level, float dlevel,
+                  float level,
                   const float *xplt, int nx,
                   const float *yplt, int ny,
                   const float *zplt, int nz
@@ -1717,7 +1717,7 @@ void CCTIsoHeader(char *isofile,
 
 /* ------------------ IsoOut ------------------------ */
 
-void IsoOut(FILE *isostream,float t, int timeindex, isosurface *surface, int *error){
+void IsoOut(FILE *isostream,float t, int timeindex, isosurface *surface){
   unsigned char czero=0,*trilist1=NULL;
   unsigned short szero=0,*trilist2=NULL;
   int i;
@@ -1794,24 +1794,9 @@ void CCIsoSurface2File(char *isofile, float *t, float *data, char *iblank,
   if(isostream==NULL)return;
   *error = 0;
   for(i=0;i<*nlevels;i++){
-    float dlevel;
-
-    dlevel=-1.0;
-    if(*nlevels>1){
-      if(i==0){
-        dlevel=ABS(level[1]-level[0]);
-      }
-      else if(i==*nlevels-1){
-        dlevel=ABS(level[*nlevels-1]-level[*nlevels-2]);
-      }
-      else{
-        dlevel=MIN(ABS(level[i+1]-level[i]),ABS(level[i]-level[i-1]));
-      }
-    }
-
     InitIsoSurface(&surface,level[i],NULL,i);
     surface.dataflag=0;
-    if(GetIsoSurface(&surface,data,NULL,(const char *)iblank,level[i],dlevel,xplt,*nx,yplt,*ny,zplt,*nz)!=0){
+    if(GetIsoSurface(&surface,data,NULL,(const char *)iblank,level[i],xplt,*nx,yplt,*ny,zplt,*nz)!=0){
       *error=1;
       return;
     }
@@ -1828,7 +1813,7 @@ void CCIsoSurface2File(char *isofile, float *t, float *data, char *iblank,
       return;
     }
 
-    IsoOut(isostream,*t,i,&surface,error);
+    IsoOut(isostream,*t,i,&surface);
 
     FreeSurface(&surface);
   }
@@ -1863,26 +1848,9 @@ void CCIsoSurfaceT2File(char *isofile, float *t, float *data, int *data2flag, fl
   if(isostream==NULL)return;
   *error = 0;
   for(i=0;i<*nlevels;i++){
-    float dlevel=0.0;
-
-    if(*nlevels>1){
-      if(i==0){
-        dlevel=ABS(level[1]-level[0]);
-      }
-      else if(i==*nlevels-1){
-        dlevel=ABS(level[*nlevels-1]-level[*nlevels-2]);
-      }
-      else{
-        float val1, val2;
-
-        val1=ABS(level[i]-level[i-1]);
-        val2=ABS(level[i+1]-level[i]);
-        dlevel=MIN(val1,val2);
-      }
-    }
     InitIsoSurface(&surface,level[i],NULL,i);
     surface.dataflag=dataflag;
-    if(GetIsoSurface(&surface,data,tdata,(const char *)iblank,level[i],dlevel,xplt,*nx,yplt,*ny,zplt,*nz)!=0){
+    if(GetIsoSurface(&surface,data,tdata,(const char *)iblank,level[i],xplt,*nx,yplt,*ny,zplt,*nz)!=0){
       *error=1;
       return;
     }
@@ -1899,7 +1867,7 @@ void CCIsoSurfaceT2File(char *isofile, float *t, float *data, int *data2flag, fl
       return;
     }
 
-    IsoOut(isostream,*t,i,&surface,error);
+    IsoOut(isostream,*t,i,&surface);
 
     FreeSurface(&surface);
   }

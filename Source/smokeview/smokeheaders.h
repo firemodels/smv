@@ -21,7 +21,7 @@ EXTERNCPP void GeneratePartHistograms(void);
 EXTERNCPP void GeneratePartHistogramsMT(void);
 FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount);
 
-EXTERNCPP void PrintTime(char *tag, int line, float *timer, char *label);
+EXTERNCPP void PrintTime(const char *tag, int line, float *timer, const char *label);
 
 EXTERNCPP void DrawObstBoundingBox(void);
 EXTERNCPP void DrawGeomBoundingBox(float *boundingbox_color);
@@ -181,11 +181,11 @@ EXTERNCPP void UpdateTriangleInfo(surfdata *tri_surf, float tri_area);
 EXTERNCPP void UpdateVertexInfo(float *xyz1, float *xyz2);
 EXTERNCPP void UpdateGeomAreas(void);
 EXTERNCPP void GetZoneTempBounds(void);
-EXTERNCPP FILE_SIZE GetSliceData(slicedata *sd, char *slicefilename, int time_frame, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
+EXTERNCPP FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
   float *qminptr, float *qmaxptr, float *qdataptr, float *timesptr, int ntimes_old_arg, int *ntimesptr,
   int sliceframestep_arg, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg
 );
-EXTERNCPP void GetSliceSizes(slicedata *sd, char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int sliceframestep_arg,
+EXTERNCPP void GetSliceSizes(slicedata *sd, const char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int sliceframestep_arg,
   int *errorptr, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg, int *headersizeptr, int *framesizeptr);
 EXTERNCPP void PrintPartLoadSummary(int option, int type);
 EXTERNCPP void CreatePartSizeFile(partdata *parti, int angle_flag_arg);
@@ -316,7 +316,7 @@ EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
 EXTERNCPP void MakeIBlankAll(void);
 EXTERNCPP void UpdateSliceDupDialog(void);
 EXTERNCPP void DrawNorth(void);
-EXTERNCPP void DrawGeomValues(int flag, slicedata *sd, patchdata *patchi, int geom_type);
+EXTERNCPP void DrawGeomValues(slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomVData(vslicedata *vd);
 EXTERNCPP void UpdateCurrentColorbar(colorbardata *cb);
@@ -636,8 +636,8 @@ EXTERNCPP void InitMultiThreading(void);
 #ifdef WIN32
 EXTERNCPP void OpenSMVFile(char *filename,int filenamelength,int *openfile);
 #endif
-EXTERNCPP int AnySmoke(char *type);
-EXTERNCPP int AnySlices(char *type);
+EXTERNCPP int AnySmoke(void);
+EXTERNCPP int AnySlices(const char *type);
 EXTERNCPP void TrainerViewMenu(int var);
 
 EXTERNCPP void DeleteCamera(cameradata *cam1);
@@ -922,13 +922,13 @@ EXTERNCPP void DrawZoneVentDataProfile(void);
 EXTERNCPP void SetViewPoint(int option);
 EXTERNCPP void UpdateTimeLabels(void);
 EXTERNCPP void RenderFrame(int view_mode);
-EXTERNCPP void UpdateTerrain(int allocate_memory, float vertical_factor);
+EXTERNCPP void UpdateTerrain(int allocate_memory);
 EXTERNCPP void SliceBoundCB(int var);
 EXTERNCPP void RenderMenu(int value);
 EXTERNCPP void LoadSmoke3DMenu(int value);
 EXTERNCPP void DisplayVersionInfo(char *progname);
 EXTERNCPP void DrawDemo(int nlat, int nlong);
-EXTERNCPP void DrawDemo2(int option);
+EXTERNCPP void DrawDemo2(void);
 EXTERNCPP void InitDemo(float rad, int nlat, int nlong);
 EXTERNCPP void DrawOutlines(void);
 EXTERNCPP void DrawCBox(float x, float y, float z, float size);
@@ -982,7 +982,7 @@ EXTERNCPP void ReadGeomHeader(geomdata *geomi, int *geom_frame_index, int *ntime
 EXTERNCPP void SetupReadAllGeom(void);
 EXTERNCPP void ReadAllGeom(void);
 EXTERNCPP void ClassifyAllGeom(void);
-EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index, int *errorcode);
+EXTERNCPP FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_index);
 EXTERNCPP void ReadGeomFile2(geomdata *geomi);
 EXTERNCPP void InitGeom(geomdata *geomi, int hasdata, int fdsblock, int have_vectors);
 EXTERNCPP FILE_SIZE ReadBoundary(int ifile, int flag, int *errorcode);
@@ -997,7 +997,7 @@ EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode);
 EXTERNCPP void ReadSmoke3DAllMeshesAllTimes(int smoketype2, int *errorcode);
 EXTERNCPP FILE_SIZE ReadSmoke3D(int iframe, int ifile, int flag, int first_time, int *errorcode);
 EXTERNCPP void ReadFed(int ifile, int time_frame, float *time_value, int flag, int file_type, int *errorcode);
-EXTERNCPP FILE_SIZE ReadSlice(char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
+EXTERNCPP FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
 EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);
 
 EXTERNCPP void InitMenus(int unload);
@@ -1023,8 +1023,7 @@ EXTERNCPP void GetBoundaryColors(float *t, int nt, unsigned char *it,
               char **labels, char *scale, float *tvals256,
               int *extreme_min, int *extreme_max);
 EXTERNCPP void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned char *it,
-              int settmin, float *tmin, int settmax, float *tmax,
-              float *tmin_global, float *tmax_global,
+              float *tmin, float *tmax,
               int nlevel,
               char **patchlabels, float *patchvalues, float *tvals256,
               int *extreme_min, int *extreme_max);
@@ -1038,7 +1037,7 @@ EXTERNCPP void GetZoneColors(const float *t, int nt, unsigned char *it,
 
 EXTERNCPP void UpdatePlot3DColors(int file, int *errorcode);
 EXTERNCPP void UpdateAllPlot3DColors(void);
-EXTERNCPP void GetPlot3DColors(int iplot, int settmin, float *ttmin, int settmax, float *ttmax,
+EXTERNCPP void GetPlot3DColors(int iplot, float *ttmin, float *ttmax,
               int ndatalevel, int nlevel,
               char **labels,char **labelsiso, float *tlevels, float *tlevels256,
               int *extreme_min, int *extreme_max

@@ -3,6 +3,9 @@ INC_DIR =  -I $(SOURCE_DIR)
 FILTERC =
 FILTERF =
 
+# Intel compiler definitions
+include ../../scripts/intel_compiler.mak
+
 VPATH = $(SOURCE_DIR)
 bin = .
 
@@ -40,8 +43,8 @@ no_target:
 # ------------- intel win 64 ----------------
 
 intel_win_64 : CFLAGS    = -Od /nologo -D WIN32 -D X64
-intel_win_64 : CC        = icl
-intel_win_64 : CPP       = icl
+intel_win_64 : CC        = $(I_CC)
+intel_win_64 : CPP       = $(I_CC)
 intel_win_64 : exe       = get_time_win_64.exe
 
 intel_win_64 : $(objwin)
