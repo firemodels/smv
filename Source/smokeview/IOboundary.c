@@ -2625,7 +2625,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   int ntimes_local;
   int i;
   int nvals;
-  float patchmin_global, patchmax_global;
   int n;
   int error;
   FILE_SIZE return_filesize = 0;
