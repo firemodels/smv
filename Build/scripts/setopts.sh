@@ -16,7 +16,12 @@ QUARTZSMV=framework
 inc=
 BUILD_LIBS=
 BUILD_ALL=1
-while getopts 'AfhiLmpqQrT' OPTION
+FULL_BUILD=
+if [ "$BUILD_ALL" == "1" ]; then
+  FULL_BUILD="[default]"
+fi
+TESTOPT=
+while getopts 'AfhiLmpqQrtT' OPTION
 do
 case $OPTION in
   A)
@@ -26,12 +31,15 @@ case $OPTION in
    GLUT=freeglut
   ;;
   h)
+  echo ""
   echo "options:"
-  echo "-a - full build"
-  echo "-i - an incremental build"
-  echo "-L - build all libraries"
+  echo "-a - full build $FULL_BUILD"
+  echo "-h - show this help info"
+  echo "-i - incremental build"
+  echo "-L - rebuild all libraries"
   echo "-p - build a profiling version of smokeview"
   echo "-t - build a test version of smokeview"
+  echo "-T - same as -t"
   exit
   ;;
   i)
@@ -40,10 +48,6 @@ case $OPTION in
   ;;
   L)
    BUILD_LIBS=1
-  ;;
-  m)
-   SMV_MPI=1
-   TESTFLAG=$TESTFLAG" -D pp_MPI"
   ;;
   p)
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"SMV_PROFILEFLAG=\"-pg\" "
@@ -58,13 +62,20 @@ case $OPTION in
   ;;
   r)
   ;;
+  t)
+   TESTOPT=1
+   ;;
   T)
-   TESTFLAG=$TESTFLAG" -D pp_BETA"
-   SMV_MAKE_OPTS="$SMV_MAKE_OPTS SMV_TESTSTRING=\"test_\" "
-   TEST=test_
+   TESTOPT=1
   ;;
 esac
 done
+
+if [ "$TESTOPT" != "" ]; then
+   TESTFLAG=" -D pp_BETA"
+   SMV_MAKE_OPTS="$SMV_MAKE_OPTS SMV_TESTSTRING=\"test_\" "
+   TEST=test_
+fi
 export SMV_MAKE_OPTS
 export GLUT
 export TEST
