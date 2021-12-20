@@ -5438,28 +5438,42 @@ Smokeview scene for use when capturing images to video.
 \elist
 
 \subsection{Time and data bounds}
-This section describes parameters used by Smokeview to 1) modify
-the time intervals used to load data (keywords beginning with T\_
-), 2) eliminate or chop data from being displayed (beginning with
-C\_) and 3) override the minimum and maximum data values (keywords
-beginning with V\_) used to convert data to color values. By
-default, Smokeview reads in data for all time values and does not
-override minimum and maximum data values. Each time and data bound
-keyword (except for V\_PLOT3D) has the format:
+This section describes ini file keywords used by Smokeview
+\begin{enumerate}
+\item to modify the time intervals used to load data (keywords beginning with T\_
+),
+
+\item to eliminate or chop data from being displayed (keywords beginning with
+C\_) and
+
+\item to override the minimum and maximum data values (keywords
+beginning with V2\_) used to convert data to color indices.
+\end{enumerate}
+
+\noindent Each time and chop keyword has the format:
 \begin{lstlisting}
 KEYWORD
 minflag minvalue maxflag maxvalue
 \end{lstlisting}
 \noindent where {\tt minflag}\ can be either 0 or 1.  If it is 1
 then, the subsequent number, {\tt minvalue}\ is used by Smokeview
-to scale the data otherwise if {\tt minflag}\ is 0 then {\tt
-minvalue}\ is ignored. The next two parameters {\tt maxflag}\ and
-{\tt maxvalue}\ are defined similarly. The {\tt V\_PLOT3D}\ keyword
-contains data bound entries for each variable in the Plot3D data
-file.  If a Plot3D {\em speed}\ variable was constructed by
-Smokeview then the {\tt V\_PLOT3D}\ keyword will contain six
-entries instead of five. \blist
+to select the data otherwise if {\tt minflag}\ is 0 then it is ignored.
+The next two parameters {\tt maxflag}\ and
+{\tt maxvalue}\ are defined similarly.
 
+The data bound keywords have the same format as the time and chop keywords
+but the setmin and setmax parameters have additional possible values.
+The keywords setmin and setmax are integers and may have the value
+\begin{itemize}
+\item USER BOUND - 0 for setting the min/max bound using valmin/valmax,
+\item LOADED GLOBAL BOUND - 1 for setting the min/max bound using global min/max of all loaded boundary files of type 'label',
+\item GLOBAL BOUND - 2 for setting the min/max bound using global min/max of all boundary files both loaded and unloaded of type 'label', and
+\item PERCENTIL BOUND - 3 for using a percentile bound .
+\end{itemize}
+valmin is only used if setmin is 0.  It is ignored if setmin is 1, 2 or 3.
+Likewise valmax is only used if setmax is 0.  It is ignored if setmax is 1, 2 or 3.
+
+\blist
 \hitemNULL{C\_BOUNDARY}
 
 \hitem{C\_PARTICLES}\ Defines the minimum and maximum values used
@@ -5509,98 +5523,80 @@ C_SLICE 1 70. 1 200.
 
 \hitemNULL{TLOAD}
 
-\hitem{V\_BOUNDARY}Defines the minimum and maximum
+\hitem{V2\_BOUNDARY}Defines the minimum and maximum
 data bounds used to convert boundary data values to color indices.
-(default: {\tt 0 1.0 0 0.0})
+(default: {\tt 1 1.0 1 0.0})
 
-The {\tt V\_BOUNDARY}\ keyword has an optional parameter allowing
+The {\tt V2\_BOUNDARY}\ keyword has an optional parameter allowing
 one to specify to which type of data the bounds should apply. For
 example, to specify boundary file bounds for temperature (30.0
 \degC, 600.0 \degC) use:
 \begin{lstlisting}
 V_BOUNDARY
-1 30.000000 1 600.000000 TEMP
+0 30.000000 0 600.000000 temp
 \end{lstlisting}
-where {\tt TEMP}\ is the Smokeview colorbar labels displayed when
+where {\tt temp}\ is the Smokeview colorbar labels displayed when
 showing the boundary file.
 
 These suffixes are added automatically when the File Bounds
 dialog box is used to set data bounds.
 
-\hitem{V\_PARTICLES}Defines the minimum and maximum
+\hitem{V2\_PARTICLES}Defines the minimum and maximum
 data bounds used to convert particle data values to color indices.
-(default: {\tt 0 1.0 0 0.0})
+(default: {\tt 1 1.0 1 0.0})
 
-\hitem{V\_PLOT3D}Defines the minimum and maximum data bounds used
+\hitem{V2\_PLOT3D}Defines the minimum and maximum data bounds used
 to convert Plot3D data values to color indices. The default values
 are given by:
 \begin{lstlisting}
-V_PLOT3D
+V2_PLOT3D
 5
-1 0 1.0 0 0.0
-2 0 1.0 0 0.0
-3 0 1.0 0 0.0
-4 0 1.0 0 0.0
-5 0 1.0 0 0.0
+1 1 1.0 1 0.0
+2 1 1.0 1 0.0
+3 1 1.0 1 0.0
+4 1 1.0 1 0.0
+5 1 1.0 1 0.0
 \end{lstlisting}
 where the initial $5$ indicates the number of subsequent entries,
 the first integer on each line indicates the Plot3D data variable
 being specified and all other parameters on each line are defined
 as above.
 
-To cause Smokeview to set the minimum and maximum data values to
+To cause Smokeview to set the minimum and maximum data values
 for the first quantity (usually temperature) to 20 and 600 use:
 
 \begin{lstlisting}
 V_PLOT3D
 5
-1 1 20.0 1 600.0
-2 0 1.0 0 0.0
-3 0 1.0 0 0.0
-4 0 1.0 0 0.0
-5 0 1.0 0 0.0
+1 0 20.0 0 600.0
+2 1  1.0 1 0.0
+3 1  1.0 1 0.0
+4 1  1.0 1 0.0
+5 1  1.0 1 0.0
 \end{lstlisting}
-The integer ``{\tt 1}'' occurring before the ``{\tt 20}'' or
-``{\tt 600}'' causes Smokeview to use the next number as a minimum
-or maximum value respectively otherwise if ``0'' is specified then
-Smokeview ignores the subsequent min/max value.
+The integer ``{\tt 0}'' occurring before the ``{\tt 20}'' and
+``{\tt 600}'' cause Smokeview to use the next number as a minimum
+and maximum value respectively.
 
-In addition to 0 and 1, the {\tt V\_PLOT3D}\ keyword may use 2 as a
-bound indicator. In the above example, if 2 rather than 1 is used
-to define Plot3D bounds, then Smokeview does not draw
-contour\footnote{This is true for {\em stepped}\ or discrete
-contours.  If {\em continuous}\ contours are drawn, then ``{\tt
-2}'' and ``{\tt 1}'' have the same effect. }\ levels smaller than
-20 or contours greater than 600. The {\tt Plot3D}\ bound line {\tt
-1 2 360.0 1 420.0}\ indicates that temperatures below 360~\degC\
-are not drawn and that temperatures above 420~\degC\ are drawn
-with the {\em highest}\ color (black in black and white mode, red
-in color mode).  This bound line could also be implemented with
-the File/Bounds dialog box as illustrated in Fig.
-\ref{figBOUNDSplot3d}\ resulting in a contour plot as illustrated
-in Fig. \ref{figceilingjet}.
-
-
-\hitem{V\_SLICE}Defines the minimum and maximum
-data bounds used to convert slice data values to color indices.
-(default: {\tt 0 1.0 0 0.0})
+\hitem{V2\_SLICE}Defines the minimum and maximum
+data bounds used to convert slice file data values to color indices.
+The default,
+\begin{lstlisting}
+V2_SLICE
+ 1 1.0 1 0.0
+\end{lstlisting}
+causes Smokeview to use min and max global bounds from loaded slice files.
 
 The {\tt V\_SLICE}\ keyword has an optional parameter allowing one
 to specify to which type of data the bounds should apply.  For
-example, to specify separate slice file bounds for temperature
-(30.0 \degC, 600.0 \degC) and the U component of velocity (-1.0
-m/s and 1.0 m/s) use:
+example, to specify slice file bounds for temperature
+(30.0 \degC, 600.0 \degC) use:
 \begin{lstlisting}
-V_SLICE
-1 30.000000 1 600.000000 TEMP
-V_SLICE
-1 -1.0 1 1.0 U-VEL
+V2_SLICE
+0 30.000000 0 600.000000 temp
 \end{lstlisting}
-where {\tt TEMP}\ and {\tt U-VEL}\ are the Smokeview colorbar labels
-displayed when showing the slice file.
-
-These suffixes are added automatically when the File/Bounds
-dialog box is used to set data bounds.
+where {\tt temp}\ is the label
+displayed when showing colorbar.
 
 \hitem{V\_TARGET}
 
