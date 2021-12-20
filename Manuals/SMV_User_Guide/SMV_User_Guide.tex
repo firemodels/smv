@@ -5440,56 +5440,66 @@ Smokeview scene for use when capturing images to video.
 \subsection{Time and data bounds}
 This section describes ini file keywords used by Smokeview
 \begin{enumerate}
-\item to modify the time intervals used to load data (keywords beginning with T\_
-),
+\item to modify the time interval used to load data (the TLOAD keyword),
 
-\item to eliminate or chop data from being displayed (keywords beginning with
+\item to discard or chop data from being displayed (keywords beginning with
 C\_) and
 
-\item to override the minimum and maximum data values (keywords
+\item to specify minimum and maximum data values (keywords
 beginning with V2\_) used to convert data to color indices.
 \end{enumerate}
 
-\noindent Each time and chop keyword has the format:
+\noindent The {\tt TLOAD}\ and chop {\tt C\_}\ keywords have the format:
 \begin{lstlisting}
 KEYWORD
 minflag minvalue maxflag maxvalue
 \end{lstlisting}
 \noindent where {\tt minflag}\ can be either 0 or 1.  If it is 1
-then, the subsequent number, {\tt minvalue}\ is used by Smokeview
+then {\tt minvalue}\ is used by Smokeview
 to select the data otherwise if {\tt minflag}\ is 0 then it is ignored.
 The next two parameters {\tt maxflag}\ and
 {\tt maxvalue}\ are defined similarly.
 
-The data bound keywords have the same format as the time and chop keywords
-but the setmin and setmax parameters have additional possible values.
-The keywords setmin and setmax are integers and may have the value
+The data bound, {\tt V2\_}, keywords
+have the same format as the time and chop keywords
+but the setmin and setmax parameters have additional values.\footnote{The corresponding {\tt V\_}\ keywords
+were updated to handle additional options.}
+The keywords setmin and setmax are integers with values
 \begin{itemize}
-\item USER BOUND - 0 for setting the min/max bound using valmin/valmax,
-\item LOADED GLOBAL BOUND - 1 for setting the min/max bound using global min/max of all loaded boundary files of type 'label',
-\item GLOBAL BOUND - 2 for setting the min/max bound using global min/max of all boundary files both loaded and unloaded of type 'label', and
-\item PERCENTIL BOUND - 3 for using a percentile bound .
+\item 0 for setting the min/max bound using valmin/valmax,
+\item 1 for setting the min/max bound using global min/max of all loaded boundary files of type 'label',
+\item 2 for setting the min/max bound using global min/max of all boundary files both loaded and unloaded of type 'label', and
+\item 3 for using a percentile bound .
 \end{itemize}
 valmin is only used if setmin is 0.  It is ignored if setmin is 1, 2 or 3.
 Likewise valmax is only used if setmax is 0.  It is ignored if setmax is 1, 2 or 3.
 
 \blist
-\hitemNULL{C\_BOUNDARY}
+
+\hitem{C\_BOUNDARY}\ Defines the minimum and maximum values used to
+discard boundary file data in a visualization. To discard boundary data
+below 70\degC\ and above 200\degC\ use:
+
+\begin{lstlisting}
+C_BOUNDARY
+  1 70. 1 200.
+\end{lstlisting}
 
 \hitem{C\_PARTICLES}\ Defines the minimum and maximum values used
-to discard particle data in a visualization. To drop particle data
+to discard particle data in a visualization. To discad particle data
 below 70\degC\ and above 200\degC\ use:
 \begin{lstlisting}
 C_PARTICLES 1 70. 1 200.
 \end{lstlisting}
 
 \hitem{C\_PLOT3D}\ Defines the minimum and maximum data values used
-to drop or chop Plot3D.  To cause Smokeview to set the minimum and
+to discard or chop Plot3D data.  To cause Smokeview to set the minimum and
 maximum chop values for the first Plot3D quantity (usually
 temperature) to 100 and 300 use:
 
 \begin{lstlisting}
-C_PLOT3D 5
+C_PLOT3D
+ 5
 1 1 100.0 1 300.0
 2 0 1.0 0 0.0
 3 0 1.0 0 0.0
@@ -5502,11 +5512,12 @@ C_PLOT3D 5
 a minimum or maximum chop value respectively.
 
 \hitem{C\_SLICE}\ Defines the minimum and maximum values used to
-discard slice file data in a visualization. To drop slice data
+discard slice file data in a visualization. To discard slice data
 below 70\degC\ and above 200\degC\ use:
 
 \begin{lstlisting}
-C_SLICE 1 70. 1 200.
+C_SLICE
+  1 70. 1 200.
 \end{lstlisting}
 
 \hitemNULL{CACHE\_BOUNDARYDATA}
@@ -5521,7 +5532,21 @@ C_SLICE 1 70. 1 200.
 
 \hitemNULL{TIMEOFFSET}
 
-\hitemNULL{TLOAD}
+\hitem{TLOAD}\ Defines the minimum and maximum time used to
+load data in a visualization and to also skip data.
+The general form of this keyword is
+\begin{lstlisting}
+TLOAD
+  set_tmin tmin set_tmax tmax set_skip skip
+\end{lstlisting}
+
+\noindent To discard data before
+10~s and after 50~s and to keep only every third data item use:
+
+\begin{lstlisting}
+TLOAD
+ 1 10. 1 50. 1 3
+\end{lstlisting}
 
 \hitem{V2\_BOUNDARY}Defines the minimum and maximum
 data bounds used to convert boundary data values to color indices.
@@ -5598,7 +5623,7 @@ V2_SLICE
 where {\tt temp}\ is the label
 displayed when showing colorbar.
 
-\hitem{V\_TARGET}
+\hitemNULL{V\_TARGET}
 
 \elist
 
