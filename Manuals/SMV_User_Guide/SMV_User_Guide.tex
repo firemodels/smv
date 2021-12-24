@@ -5449,7 +5449,8 @@ C\_) and
 beginning with V2\_) used to convert data to color indices.
 \end{enumerate}
 
-\noindent The {\tt TLOAD}\ and chop {\tt C\_}\ keywords have the format:
+\noindent The {\tt TLOAD}\ keyword for setting the time interval for loading data and
+the chop {\tt C\_}\ keywords for truncating data have the format:
 \begin{lstlisting}
 KEYWORD
 minflag minvalue maxflag maxvalue
@@ -5461,18 +5462,41 @@ The next two parameters {\tt maxflag}\ and
 {\tt maxvalue}\ are defined similarly.
 
 The data bound, {\tt V2\_}, keywords
-have the same format as the time and chop keywords
-but the setmin and setmax parameters have additional values.\footnote{The corresponding {\tt V\_}\ keywords
+have the similar format as the time and chop keywords.
+The setmin and setmax parameters have additional possible values.\footnote{The corresponding {\tt V\_}\ keywords
 were updated to handle additional options.}
-The keywords setmin and setmax are integers with values
-\begin{itemize}
-\item 0 for setting the min/max bound using valmin/valmax,
-\item 1 for setting the min/max bound using global min/max of all loaded boundary files of type 'label',
-\item 2 for setting the min/max bound using global min/max of all boundary files both loaded and unloaded of type 'label', and
-\item 3 for using a percentile bound .
-\end{itemize}
-valmin is only used if setmin is 0.  It is ignored if setmin is 1, 2 or 3.
-Likewise valmax is only used if setmax is 0.  It is ignored if setmax is 1, 2 or 3.
+The parameters used for each {\tt V2\_}\ keyword are described in Table \ref{tabV2bounds}.
+
+\newcommand{\tabentry}[1]{\parbox[c]{3.5in}{\vspace{0.05in}#1\vspace{0.05in}}}
+\begin{table}[bph]
+\begin{center}
+\caption{Description of parameters used by ini V2\_filetype bounds keywords where filetype may be BOUNDARY, PARTICLES, PLOT3D or SLICE}\ \vspace{0.1in}
+\begin{tabular}{|l|l|l|}
+\multicolumn{3}{l}{V2\_filetype} \\
+\multicolumn{3}{l}{setvalmin valmin setvalmax valmax quantity\_label} \\
+\hline Variable &  type & Description  \\
+\hline setvalmin &  integer & \tabentry{type of minimum bound\\
+0 - use valmin for minimum bound\\
+1 - use global minimum of all loaded filetype files of quantity quantity\_label \\
+2 - use global minimum of all loaded and unloaded filetype files of quantity quantity\_label 
+3 - use a percentile bound of type quantity\_label
+}  \\
+\hline valmin &  float & use valmin to convert data values to color indices  \\
+\hline setvalmax &  integer & \tabentry{type of maximum bound\\
+0 - use valmax for maximum bound\\
+1 - use global maximum of all loaded filetype files of quantity quantity\_label \\
+2 - use global maximum of all loaded and unloaded filetype files of quantity quantity\_label 
+3 - use a percentile bound of type quantity\_label
+}  \\
+\hline valmax &  float & use valmax to convert data values to color indices  \\
+\hline label & character & data quantity, for example temp for temperature  \\
+\hline
+
+
+\end{tabular}
+\label{tabV2bounds}
+\end{center}
+\end{table}
 
 \blist
 
@@ -5549,79 +5573,89 @@ TLOAD
 \end{lstlisting}
 
 \hitem{V2\_BOUNDARY}Defines the minimum and maximum
-data bounds used to convert boundary data values to color indices.
-(default: {\tt 1 1.0 1 0.0})
-
-The {\tt V2\_BOUNDARY}\ keyword has an optional parameter allowing
-one to specify to which type of data the bounds should apply. For
-example, to specify boundary file bounds for temperature (30.0
-\degC, 600.0 \degC) use:
+data bounds used to convert boundary file data values to color indices.
+The format of this keyword is
 \begin{lstlisting}
-V_BOUNDARY
+V2_BOUNDARY
+ setvalmin valmin setvalmax valmax quantity_label
+\end{lstlisting}
+where the parameters setvalmin, valmin, setvalmax, valmax and quantity\_label are described in Table \ref{tabV2bounds}.
+To specify boundary file bounds for temperature ranging from\
+30.0~\degC\ to 600.0~\degC\ use:
+\begin{lstlisting}
+V2_BOUNDARY
 0 30.000000 0 600.000000 temp
 \end{lstlisting}
 where {\tt temp}\ is the Smokeview colorbar labels displayed when
-showing the boundary file.
-
-These suffixes are added automatically when the File Bounds
-dialog box is used to set data bounds.
+showing a temperature boundary file.
 
 \hitem{V2\_PARTICLES}Defines the minimum and maximum
-data bounds used to convert particle data values to color indices.
-(default: {\tt 1 1.0 1 0.0})
+data bounds used to convert one component of particle file data values to color indices.
+The format of this keyword is
+\begin{lstlisting}
+V2_PARTICLES
+ setvalmin valmin setvalmax valmax quantity_label
+\end{lstlisting}
+where the parameters setvalmin, valmin, setvalmax, valmax and quantity\_label are described in Table \ref{tabV2bounds}.
+To specify particle file bounds for the U component of velocity ranging from
+-1.0~m/s to 2.0~m/s use:
+\begin{lstlisting}
+V2_PARTICLES
+0 -1.0 0 2.0 u
+\end{lstlisting}
+where {\tt u}\ is the Smokeview colorbar labels displayed when
+showing the particle file and the U component of velocity.
 
-\hitem{V2\_PLOT3D}Defines the minimum and maximum data bounds used
-to convert Plot3D data values to color indices. The default values
-are given by:
+\hitem{V2\_PLOT3D}Defines the minimum and maximum
+data bounds used to convert each component of plot3D file data values to color indices.
+The format of this keyword is
 \begin{lstlisting}
 V2_PLOT3D
-5
-1 1 1.0 1 0.0
-2 1 1.0 1 0.0
-3 1 1.0 1 0.0
-4 1 1.0 1 0.0
-5 1 1.0 1 0.0
+ ncomp
+ i setvalmin valmin setvalmax valmax
+ i setvalmin valmin setvalmax valmax
+ i setvalmin valmin setvalmax valmax
+ i setvalmin valmin setvalmax valmax
+ i setvalmin valmin setvalmax valmax
 \end{lstlisting}
-where the initial $5$ indicates the number of subsequent entries,
-the first integer on each line indicates the Plot3D data variable
-being specified and all other parameters on each line are defined
-as above.
-
-To cause Smokeview to set the minimum and maximum data values
-for the first quantity (usually temperature) to 20 and 600 use:
-
+where ncomp is the number of plot3D componets (usually 5), i is the component index (1 to ncomp) and
+the parameters setvalmin, valmin, setvalmax, valmax are described in Table \ref{tabV2bounds}.
+Assuming the first component is temperature, to specify file bounds ranging from 20.0~\degC\ to
+600.0~\degC\ for the first component and global bounds for the other components use:
 \begin{lstlisting}
-V_PLOT3D
-5
-1 0 20.0 0 600.0
-2 1  1.0 1 0.0
-3 1  1.0 1 0.0
-4 1  1.0 1 0.0
-5 1  1.0 1 0.0
+V2_PLOT3D
+ 5
+ 1 0 20.0 0 600.0
+ 2 2  1.0 2 0.0
+ 3 2  1.0 2 0.0
+ 4 2  1.0 2 0.0
+ 5 2  1.0 2 0.0
 \end{lstlisting}
-The integer ``{\tt 0}'' occurring before the ``{\tt 20}'' and
-``{\tt 600}'' cause Smokeview to use the next number as a minimum
-and maximum value respectively.
 
 \hitem{V2\_SLICE}Defines the minimum and maximum
 data bounds used to convert slice file data values to color indices.
-The default,
+The format of this keyword is
 \begin{lstlisting}
 V2_SLICE
- 1 1.0 1 0.0
+ setvalmin valmin setvalmax valmax quantity_label
 \end{lstlisting}
-causes Smokeview to use min and max global bounds from loaded slice files.
-
-The {\tt V\_SLICE}\ keyword has an optional parameter allowing one
-to specify to which type of data the bounds should apply.  For
-example, to specify slice file bounds for temperature
-(30.0 \degC, 600.0 \degC) use:
+where the parameters setvalmin, valmin, setvalmax, valmax and quantity\_label are described in Table \ref{tabV2bounds}.
+To specify slice file bounds for temperature ranging from
+30.0~\degC\ to 600.0~\degC\ use:
 \begin{lstlisting}
 V2_SLICE
 0 30.000000 0 600.000000 temp
 \end{lstlisting}
-where {\tt temp}\ is the label
-displayed when showing colorbar.
+where {\tt temp}\ is the Smokeview colorbar labels displayed when
+showing a temperature slice file.
+To specify slice file bounds for a minimum temperature of
+30.0~\degC\ and the global maximum temperature use:
+\begin{lstlisting}
+V2_SLICE
+0 30.000000 2 1.0 temp
+\end{lstlisting}
+where again {\tt temp}\ is the Smokeview colorbar labels displayed when
+showing a temperature slice file. The value, in this case 1.0 after the '2' and before 'temp' is ignored.
 
 \hitemNULL{V\_TARGET}
 
@@ -6248,7 +6282,6 @@ where the parameters are defined in Table \ref{tabOBST}.
 The arrays {\tt x1, ..., z2}\ and {\tt ib1, ..., kb2}\ are
 required. All other arrays are optional and may be omitted.
 
-\newcommand{\tabentry}[1]{\parbox[c]{3.5in}{\vspace{0.05in}#1\vspace{0.05in}}}
 \begin{table}[bph]
 \begin{center}
 \caption{Descriptions of parameters used by the Smokeview OBST keyword.}\ \vspace{0.1in}
