@@ -5445,8 +5445,11 @@ This section describes ini file keywords used by Smokeview
 \item to discard or chop data from being displayed (keywords beginning with
 C\_) and
 
-\item to specify minimum and maximum data values (keywords
-beginning with V2\_) used to convert data to color indices.
+\item to specify minimum data values, valmin, and maximum data values, valmax, 
+for converting data values to color indices using 
+color index = 255*(data~value - valmin)/(valmax - valmin). The user may specify 
+valmin and valmax or specify that valmin/valmax be the minimum/maximum of data in the data files (smokeview will then compute valmin and valmax) or specify that valmin/valmax be a percentile value of the files histogram distribution (for example 1\% for min or 99\% for max bounds).  Again, smokeview will compute valmin and valmax.
+
 \end{enumerate}
 
 \noindent The {\tt TLOAD}\ keyword for setting the time interval for loading data and
@@ -5478,18 +5481,23 @@ The parameters used for each {\tt V2\_}\ keyword are described in Table \ref{tab
 \hline setvalmin &  integer & \tabentry{type of minimum bound\\
 0 - use valmin for minimum bound\\
 1 - use global minimum of all loaded filetype files of quantity quantity\_label \\
-2 - use global minimum of all loaded and unloaded filetype files of quantity quantity\_label 
-3 - use a percentile bound of type quantity\_label
+2 - use global minimum of all loaded and unloaded filetype files of quantity quantity\_label \\
+3 - use a percentile bound of type quantity\_label, default 1\%.
 }  \\
-\hline valmin &  float & use valmin to convert data values to color indices  \\
+\hline valmin &  float & if setvalmin is 0, 
+use valmin for converting data values to color indices  \\
 \hline setvalmax &  integer & \tabentry{type of maximum bound\\
-0 - use valmax for maximum bound\\
+0 - use valmax for maximum bound for computing colorindices\\
 1 - use global maximum of all loaded filetype files of quantity quantity\_label \\
-2 - use global maximum of all loaded and unloaded filetype files of quantity quantity\_label 
-3 - use a percentile bound of type quantity\_label
+2 - use global maximum of all loaded and unloaded filetype files of quantity quantity\_label \\
+3 - use a percentile bound of type quantity\_label, default 99\%.
 }  \\
-\hline valmax &  float & use valmax to convert data values to color indices  \\
-\hline label & character & data quantity, for example temp for temperature  \\
+\hline valmax &  float & if setvalmax is 0, use valmax for converting data values to color indices  \\
+\hline quantity\_label & character & \tabentry{data quantity, for example temp for temperature.
+If 'quantity\_label' is not blank then setvalmin, valmin, setvalmax and valmax values are
+applied to  files of type 'quantity\_label' .  If 'quantity\_label' is blank and setvalmin and is not 0 then setvalmin is applied to all files.
+If 'quantity\_label' is blank and setvalmax and is not 0 then setvalmax is applied to all files.
+}\\
 \hline
 
 
@@ -5612,13 +5620,13 @@ The format of this keyword is
 \begin{lstlisting}
 V2_PLOT3D
  ncomp
- i setvalmin valmin setvalmax valmax
- i setvalmin valmin setvalmax valmax
- i setvalmin valmin setvalmax valmax
- i setvalmin valmin setvalmax valmax
- i setvalmin valmin setvalmax valmax
+ component_index setvalmin valmin setvalmax valmax
+ ....
+ component_index setvalmin valmin setvalmax valmax
 \end{lstlisting}
-where ncomp is the number of plot3D componets (usually 5), i is the component index (1 to ncomp) and
+where ncomp is the number of entries, 
+component\_index is either 1 to 5 or 1 to 6 if speed is one of the components of
+the plot3D file  and
 the parameters setvalmin, valmin, setvalmax, valmax are described in Table \ref{tabV2bounds}.
 Assuming the first component is temperature, to specify file bounds ranging from 20.0~\degC\ to
 600.0~\degC\ for the first component and global bounds for the other components use:
