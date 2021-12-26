@@ -5442,13 +5442,13 @@ This section describes ini file keywords used by Smokeview
 \begin{enumerate}
 \item to modify the time interval used to load data (the TLOAD keyword),
 
-\item to discard or chop data from being displayed (keywords beginning with
+\item to discard or chop data from being displayed based upon data values (keywords beginning with
 C\_) and
 
-\item to specify minimum data values, valmin, and maximum data values, valmax, 
-for converting data values to color indices using 
-color index = 255*(data~value - valmin)/(valmax - valmin). The user may specify 
-valmin and valmax or specify that valmin/valmax be the minimum/maximum of data in the data files (smokeview will then compute valmin and valmax) or specify that valmin/valmax be a percentile value of the files histogram distribution (for example 1\% for min or 99\% for max bounds).  Again, smokeview will compute valmin and valmax.
+\item to specify minimum data values, valmin, and maximum data values, valmax,
+for converting data values to color indices using
+color index = 255*(data~value - valmin)/(valmax - valmin). The user may specify
+valmin and valmax or specify that valmin and valmax be the minimum and maximum of data in the data files (smokeview will then compute valmin and valmax) or specify that valmin and valmax be a percentile value of the files data distribution (for example 1\% for min or 99\% for max bounds).  Again, smokeview will compute valmin and valmax.
 
 \end{enumerate}
 
@@ -5484,7 +5484,7 @@ The parameters used for each {\tt V2\_}\ keyword are described in Table \ref{tab
 2 - use global minimum of all loaded and unloaded filetype files of quantity quantity\_label \\
 3 - use a percentile bound of type quantity\_label, default 1\%.
 }  \\
-\hline valmin &  float & if setvalmin is 0, 
+\hline valmin &  float & if setvalmin is 0,
 use valmin for converting data values to color indices  \\
 \hline setvalmax &  integer & \tabentry{type of maximum bound\\
 0 - use valmax for maximum bound for computing colorindices\\
@@ -5624,7 +5624,7 @@ V2_PLOT3D
  ....
  component_index setvalmin valmin setvalmax valmax
 \end{lstlisting}
-where ncomp is the number of entries, 
+where ncomp is the number of entries,
 component\_index is either 1 to 5 or 1 to 6 if speed is one of the components of
 the plot3D file  and
 the parameters setvalmin, valmin, setvalmax, valmax are described in Table \ref{tabV2bounds}.
