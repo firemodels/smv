@@ -5438,7 +5438,7 @@ Smokeview scene for use when capturing images to video.
 \elist
 
 \subsection{Time and data bounds}
-This section describes ini file keywords used by Smokeview
+This section describes ini file keywords used by Smokeview:
 \begin{enumerate}
 \item to modify the time interval used to load data (the TLOAD keyword),
 
@@ -5455,20 +5455,19 @@ valmin and valmax or specify that smokeview computes these values using global o
 \noindent Most of the keywords in this section have the format:
 \begin{lstlisting}
 KEYWORD
-minflag minvalue maxflag maxvalue
+setvalmin valmin setvalmax valmax
 \end{lstlisting}
-\noindent where {\tt minflag}\ is an integer flag that determines how minvalue should be treated.
-Likewise maxflag is an integer flag that determines how maxvalue is treated.
-For the {\tt TLOAD}\ keyword for setting the time intervals and {\t C\_filetype} keywords for chopping data,
-if minflag is 0 then the minvalue parameter is ignored if 1 then the minvalue parameter is used to load data.
-Similarly if maxflag is 0 then the maxvalue parameter is ignored and if 1 the maxvalue parameter is used to load data.
+\noindent where {\tt setvalmin}\ and {\tt setvalmax} are integer flag that determines how {\tt valmin}\ and {\tt valmax}\ should be treated.
+For the {\tt TLOAD}\ keyword for setting the time intervals and {\tt C\_filetype} keywords for chopping data,
+if {\tt setvalmin} is 0 then the {\tt valmin}\ parameter is ignored if 1 then the {\tt valmin}\ parameter is used to load data.
+Similarly if {\tt setvalmax}\ is 0 then the {\tt valmax}\ parameter is ignored and if 1 the {\tt valmax}\ parameter is used to load data.
 
-The data bound, {\tt V2\_}, keywords
+The {\tt V2\_}, keywords
 have a similar format.
-The setmin and setmax parameters have additional values and the {\tt V2\_}
-keywords have an additional parameter, quantity\_label, uses for restricting 
-the type of data files examined (files with quantity temperature for example).
-The parameters used for each {\tt V2\_}\ keyword are described in Table \ref{tabV2bounds}.
+It has an additional parameter, {\tt quantity\_label}, used for restricting
+the type of data files examined (files with quantity temperature for example)
+and the {\tt setvalmin}\ and {\tt setvalmax}\ parameters have additional values.
+The parameters used for each {\tt V2\_}\ keyword are described in further detail in Table \ref{tabV2bounds}.
 
 \newcommand{\tabentry}[1]{\parbox[c]{3.5in}{\vspace{0.05in}#1\vspace{0.05in}}}
 \begin{table}[bph]
@@ -5481,7 +5480,7 @@ values of setvalmin and setvalmax.}\ \vspace{0.1in}
 \hline Variable &  type & Description  \\
 \hline setvalmin &  integer & \tabentry{type of minimum bound:\\
 0 - use valmin for minimum bound for computing color indices\\
-1 - smokeview computes minimum of all data in loaded filetype files that have
+1 - smokeview computes the minimum of all data in loaded filetype files(SLICE, BOUNDARY {\em etc}\ that have
 quantity quantity\_label \\
 2 - smokeview computes minimum of all data in loaded and unloaded filetype files of quantity quantity\_label \\
 3 - smokeview computes a histogram of data in filetype files with
@@ -5495,9 +5494,9 @@ If setvalmin is not 0 then valmin in the ini file is ignored.
 
 \hline setvalmax &  integer & \tabentry{type of maximum bound:\\
 0 - use valmax for maximum bound for computing color indices\\
-1 - smokeview computes maximum of all data in loaded filetype files that have
+1 - smokeview computes the maximum of all data in loaded filetype files(SLICE, BOUNDARY {\em etc}\ that have
 quantity quantity\_label \\
-2 - smokeview computes maximum of all data in loaded and unloaded filetype files of quantity quantity\_label \\
+2 - smokeview computes the maximum of all data in loaded and unloaded filetype files of quantity quantity\_label \\
 3 - smokeview computes a histogram of data in filetype files with
 quantity quantity\_label and used a percentile bound, default 99\%.
 }  \\
@@ -5535,7 +5534,8 @@ C_BOUNDARY
 to discard particle data in a visualization. To discad particle data
 below 70\degC\ and above 200\degC\ use:
 \begin{lstlisting}
-C_PARTICLES 1 70. 1 200.
+C_PARTICLES 
+  1 70. 1 200.
 \end{lstlisting}
 
 \hitem{C\_PLOT3D}\ Defines the minimum and maximum data values used
@@ -5552,10 +5552,6 @@ C_PLOT3D
 4 0 1.0 0 0.0
 5 0 1.0 0 0.0
 \end{lstlisting}
-
-\noindent The integer ``{\tt 1}'' occurring before the ``{\tt
-100}'' or ``{\tt 300}'' causes Smokeview to use the next number as
-a minimum or maximum chop value respectively.
 
 \hitem{C\_SLICE}\ Defines the minimum and maximum values used to
 discard slice file data in a visualization. To discard slice data
@@ -5602,7 +5598,8 @@ V2_BOUNDARY
  setvalmin valmin setvalmax valmax quantity_label
 \end{lstlisting}
 where the parameters setvalmin, valmin, setvalmax, valmax and quantity\_label are described in Table \ref{tabV2bounds}.
-The parameter quantity\_label is optional.  If it is blank then only setvalmin and setvalmax are applied to all boundary files. If it is not blank then setvalmin, valmin,
+The parameter quantity\_label is optional.  If it is blank then only setvalmin and setvalmax are applied to all boundary files.
+If it is not blank then setvalmin, valmin,
 setvalmax, valmax are applied to boundary files with quantity quantity\_label.
 
 To specify boundary file bounds for temperature ranging from\
