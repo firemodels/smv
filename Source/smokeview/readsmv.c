@@ -11165,10 +11165,10 @@ int ReadIni2(char *inifile, int localfile){
       for(i = 0; i<n3d; i++){
         int iplot3d, isetmin, isetmax;
         float p3mintemp, p3maxtemp;
-        int ival=0;
 
         fgets(buffer, 255, stream);
-        sscanf(buffer, "%i %i %f %i %f %i", &iplot3d, &isetmin, &p3mintemp, &isetmax, &p3maxtemp, &ival);
+        strcpy(buffer2, "");
+        sscanf(buffer, "%i %i %f %i %f %s", &iplot3d, &isetmin, &p3mintemp, &isetmax, &p3maxtemp, buffer2);
         if(is_old_bound==1){
           isetmin = GetNewBoundIndex(isetmin);
           isetmax = GetNewBoundIndex(isetmax);
@@ -11181,14 +11181,28 @@ int ReadIni2(char *inifile, int localfile){
           update_research_mode = 1;
         }
         iplot3d--;
-        if(iplot3d >= 0 && iplot3d<MAXPLOT3DVARS){
-          setp3min_all[iplot3d] = isetmin;
-          setp3max_all[iplot3d] = isetmax;
-          p3min_all[iplot3d]    = p3mintemp;
-          p3max_all[iplot3d]    = p3maxtemp;
-          if(plot3dinfo!=NULL){
-            SetMinMax(BOUND_PLOT3D, plot3dinfo[0].label[iplot3d].shortlabel, isetmin, p3mintemp, isetmax, p3maxtemp);
-            update_glui_bounds = 1;
+        if(strcmp(buffer2, "")!=0){
+          if(iplot3d >= 0 && iplot3d<MAXPLOT3DVARS){
+            setp3min_all[iplot3d] = isetmin;
+            setp3max_all[iplot3d] = isetmax;
+            p3min_all[iplot3d]    = p3mintemp;
+            p3max_all[iplot3d]    = p3maxtemp;
+            if(plot3dinfo!=NULL){
+              SetMinMax(BOUND_PLOT3D, plot3dinfo[0].label[iplot3d].shortlabel, isetmin, p3mintemp, isetmax, p3maxtemp);
+              update_glui_bounds = 1;
+            }
+          }
+        }
+        else{
+          int ii;
+
+          for(ii=0; ii<plot3dinfo->nvars; ii++){
+            if(isetmin!=BOUND_SET_MIN)setp3min_all[ii] = isetmin;
+            if(isetmax!=BOUND_SET_MAX)setp3max_all[ii] = isetmax;
+            if(isetmin!=BOUND_SET_MIN||isetmax!=BOUND_SET_MAX){
+              SetMinMax(BOUND_PLOT3D, buffer2, isetmin, p3mintemp, isetmax, p3maxtemp);
+              update_glui_bounds = 1;
+            }
           }
         }
       }
@@ -11774,13 +11788,12 @@ int ReadIni2(char *inifile, int localfile){
       }
       else{
         for(i = 0; i<nslicebounds; i++){
-          slicebounds[i].dlg_setvalmin = set_valmin;
-          slicebounds[i].dlg_setvalmax = set_valmax;
-          slicebounds[i].dlg_valmin = valmin;
-          slicebounds[i].dlg_valmax = valmax;
-          slicebounds[i].line_contour_min = slice_line_contour_min;
-          slicebounds[i].line_contour_max = slice_line_contour_max;
-          slicebounds[i].line_contour_num = slice_line_contour_num;
+          if(set_valmin!=BOUND_SET_MIN)slicebounds[i].dlg_setvalmin = set_valmin;
+          if(set_valmax!=BOUND_SET_MAX)slicebounds[i].dlg_setvalmax = set_valmax;
+          if(set_valmin!=BOUND_SET_MIN||set_valmax!=BOUND_SET_MAX){
+            SetMinMax(BOUND_SLICE, buffer2, set_valmin, valmin, set_valmax, valmax);
+            update_glui_bounds = 1;
+          }
         }
       }
       continue;
@@ -11871,6 +11884,8 @@ int ReadIni2(char *inifile, int localfile){
         is_old_bound = 1;
       }
       fgets(buffer, 255, stream);
+      TrimBack(buffer);
+      strcpy(buffer2, "");
       sscanf(buffer, "%i %f %i %f %s", &glui_setpatchmin, &glui_patchmin, &glui_setpatchmax, &glui_patchmax, buffer2);
       if(is_old_bound==1){
 
@@ -11888,6 +11903,16 @@ int ReadIni2(char *inifile, int localfile){
         GLUI2GlobalBoundaryBounds(buffer2);
         SetMinMax(BOUND_PATCH, buffer2, glui_setpatchmin, glui_patchmin, glui_setpatchmax, glui_patchmax);
         update_glui_bounds = 1;
+      }
+      else{
+        for(i = 0; i<npatchbounds; i++){
+          if(glui_setpatchmin!=BOUND_SET_MIN)patchbounds[i].dlg_setvalmin = glui_setpatchmin;
+          if(glui_setpatchmax!=BOUND_SET_MAX)patchbounds[i].dlg_setvalmax = glui_setpatchmax;
+          if(glui_setpatchmin!=BOUND_SET_MIN||glui_setpatchmax!=BOUND_SET_MAX){
+            SetMinMax(BOUND_PATCH, buffer2, glui_setpatchmin, glui_patchmin, glui_setpatchmax, glui_patchmax);
+            update_glui_bounds = 1;
+          }
+        }
       }
       continue;
     }
@@ -14387,7 +14412,7 @@ void WriteIniLocal(FILE *fileout){
       float valmin=1.0, valmax=0.0;
       char *label;
 
-      label = plot3dinfo[0].label->shortlabel;
+      label = plot3dinfo[0].label[i].shortlabel;
       GetMinMax(BOUND_PLOT3D, label, &set_valmin, &valmin, &set_valmax, &valmax);
       fprintf(fileout, " %i %i %f %i %f %s\n", i+1, set_valmin, valmin, set_valmax, valmax, label);
     }
