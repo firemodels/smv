@@ -11196,12 +11196,14 @@ int ReadIni2(char *inifile, int localfile){
         else{
           int ii;
 
-          for(ii=0; ii<plot3dinfo->nvars; ii++){
-            if(isetmin!=BOUND_SET_MIN)setp3min_all[ii] = isetmin;
-            if(isetmax!=BOUND_SET_MAX)setp3max_all[ii] = isetmax;
-            if(isetmin!=BOUND_SET_MIN||isetmax!=BOUND_SET_MAX){
-              SetMinMax(BOUND_PLOT3D, buffer2, isetmin, p3mintemp, isetmax, p3maxtemp);
-              update_glui_bounds = 1;
+          if(plot3dinfo!=NULL){
+            for(ii = 0; ii<plot3dinfo->nvars; ii++){
+              if(isetmin!=BOUND_SET_MIN)setp3min_all[ii] = isetmin;
+              if(isetmax!=BOUND_SET_MAX)setp3max_all[ii] = isetmax;
+              if(isetmin!=BOUND_SET_MIN||isetmax!=BOUND_SET_MAX){
+                SetMinMax(BOUND_PLOT3D, buffer2, isetmin, p3mintemp, isetmax, p3maxtemp);
+                update_glui_bounds = 1;
+              }
             }
           }
         }
