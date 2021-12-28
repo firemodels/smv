@@ -378,24 +378,18 @@ void ScaleString(const char *stringfrom, char *stringto, const float *scale){
   Num2String(stringto,val);
 }
 
-/* ------------------ ScaleFloat ------------------------ */
+/* ------------------ ScaleFloat2Float ------------------------ */
 
 float ScaleFloat2Float(float floatfrom, const float *scale){
-  float val;
-
-  val = floatfrom;
-  if(scale!=NULL)val = scale[0]*val+scale[1];
-  return val;
+  if(scale!=NULL)floatfrom = scale[0]*floatfrom+scale[1];
+  return floatfrom;
 }
 
 /* ------------------ ScaleFloat2String ------------------------ */
 
 void ScaleFloat2String(float floatfrom, char *stringto, const float *scale){
-  float val;
-
-  val = floatfrom;
-  if(scale!=NULL)val = scale[0]*val+scale[1];
-  Num2String(stringto,val);
+  if(scale!=NULL)floatfrom = scale[0]*floatfrom+scale[1];
+  Num2String(stringto, floatfrom);
 }
 
 /* ------------------ GetFormat ------------------------ */
@@ -425,6 +419,39 @@ void Truncate(float val, char *cval, int ndigits){
         cval[i] = '0';
       }
     }
+  }
+}
+
+/* ------------------ Float2StringExp ------------------------ */
+
+void Float2StringExp(char *c_val, float val, int ndigits, int fixedpoint_labels, int exp_offset){
+  float mantissa;
+  int exponent;
+
+  mantissa = GetMantissaExponent(ABS(val), &exponent);
+  exponent -= exp_offset;
+  if(mantissa!=0.0)mantissa += 5.0*pow(10.0, -ndigits);
+  if(ABS(exponent)<5||fixedpoint_labels==1||val==0.0){
+    char c_abs_val[32];
+
+    val = SIGN(val)*mantissa*pow(10.0, exponent);
+    Truncate(ABS(val), c_abs_val, ndigits);
+    TrimZeros(c_abs_val);
+    strcpy(c_val, "");
+    if(val<0.0)strcat(c_val, "-");
+    strcat(c_val, c_abs_val);
+  }
+  else{
+    char c_mantissa[32], c_exponent[32];
+
+    Truncate(mantissa, c_mantissa, ndigits);
+    TrimZeros(c_mantissa);
+    sprintf(c_exponent, "%i", exponent);
+    strcpy(c_val, "");
+    if(val<0.0)strcat(c_val, "-");
+    strcat(c_val, c_mantissa);
+    strcat(c_val, "E");
+    strcat(c_val, c_exponent);
   }
 }
 

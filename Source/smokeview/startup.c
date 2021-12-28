@@ -61,6 +61,9 @@ void InitMisc(void){
   if(colorbar_vals==NULL){
     NewMemory((void **)&colorbar_vals, nrgb*sizeof(float));
   }
+  if(colorbar_exponents==NULL){
+    NewMemory((void **)&colorbar_exponents, nrgb*sizeof(int));
+  }
   if(colorbar_labels==NULL){
     NewMemory((void **)&colorbar_labels, nrgb*sizeof(char *));
     for(i = 0; i<nrgb; i++){

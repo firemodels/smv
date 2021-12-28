@@ -35,8 +35,9 @@ SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
 #endif
 
-SVEXTERN char SVDECL(**colorbar_labels, NULL);
-SVEXTERN float SVDECL(*colorbar_vals, NULL);
+SVEXTERN char SVDECL(**colorbar_labels,  NULL);
+SVEXTERN float SVDECL(*colorbar_vals,    NULL);
+SVEXTERN int SVDECL(*colorbar_exponents, NULL);
 SVEXTERN int SVDECL(frame360, 0);
 SVEXTERN int SVDECL(sliceval_ndigits, 0);
 SVEXTERN int SVDECL(rotate_center, 0);

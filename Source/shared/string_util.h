@@ -125,6 +125,7 @@ EXTERNCPP void           ScaleString(const char *stringfrom, char *stringto, con
 EXTERNCPP void           ScaleFloat2String(float floatfrom, char *stringto, const float *scale);
 EXTERNCPP void           Num2String(char *string, float tval);
 EXTERNCPP void           Float2String(char *string, float tval, int ndecimals, int fixed_point);
+EXTERNCPP void           Float2StringExp(char *string, float tval, int ndecimals, int fixed_point, int exp_offset);
 EXTERNCPP char          *TrimFrontBack(char *buffer);
 EXTERNCPP int            STRCMP(const char *s1, const char *s2);
 EXTERNCPP char          *GetChid(char *file, char *buffer);
