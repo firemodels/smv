@@ -58,6 +58,16 @@ void InitMisc(void){
   FREEMEMORY(plotiso);
   NewMemory((void **)&plotiso, MAXPLOT3DVARS*sizeof(int));
 
+  if(colorbar_vals==NULL){
+    NewMemory((void **)&colorbar_vals, nrgb*sizeof(float));
+  }
+  if(colorbar_labels==NULL){
+    NewMemory((void **)&colorbar_labels, nrgb*sizeof(char *));
+    for(i = 0; i<nrgb; i++){
+      NewMemory((void **)&colorbar_labels[i], 256);
+    }
+  }
+
   for(i=0;i<16;i++){
     if(i%5==0){
       modelview_identity[i]=1.0;
