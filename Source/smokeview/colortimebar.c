@@ -2771,7 +2771,6 @@ void DrawVerticalColorbarRegLabels(void){
 
       for(i = 0; i<nrgb-1; i++){
         float val;
-        char slicecolorlabel[256], *slicecolorlabel_ptr = NULL;
 
         if(iposition==i)continue;
         if(sliceflag==1){
@@ -2790,7 +2789,7 @@ void DrawVerticalColorbarRegLabels(void){
         Float2String(colorbar_labels[i], colorbar_vals[i], ncolorlabel_digits, force_fixedpoint);
       }
       for(i = 0; i < nrgb - 1; i++){
-        float vert_position, val;
+        float vert_position;
 
         vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
         if(iposition == i)continue;
