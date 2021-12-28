@@ -344,6 +344,7 @@ void bounds_dialog::setupNoGraphics(const char *file_type, cpp_boundsdata *bound
 
   all_bounds = bounds_arg;
   nall_bounds = nbounds_arg;
+  update_ini = 1;
 
   NewMemory((void **)&all_bounds_save, nall_bounds*sizeof(cpp_boundsdata));
   SaveBounds();
@@ -362,6 +363,7 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
 
   all_bounds = bounds_arg;
   nall_bounds = nbounds_arg;
+  update_ini = 1;
 
   hist_left_percen_cpp   = hist_left_percen;
   hist_down_percen_cpp   = hist_down_percen;
@@ -770,6 +772,16 @@ void bounds_dialog::set_max_all(int *set_valmax, float *valmax, int nvals){
 int bounds_dialog::set_min(char *label, int set_valmin, float valmin){
   int i;
 
+  if(strcmp(label, "")==0){
+    for(i = 0; i<nall_bounds; i++){
+      cpp_boundsdata *boundi;
+
+      boundi = all_bounds+i;
+      boundi->set_valmin = set_valmin;
+      if(RADIO_set_valmin!=NULL&&RADIO_set_valmin!=NULL)RADIO_set_valmin->set_int_val(set_valmin);
+    }
+    return 1;
+  }
   for(i = 0; i<nall_bounds; i++){
     cpp_boundsdata *boundi;
 
@@ -777,8 +789,6 @@ int bounds_dialog::set_min(char *label, int set_valmin, float valmin){
     if(strcmp(boundi->label, label)==0){
       boundi->set_valmin         = set_valmin;
       boundi->valmin[set_valmin] = valmin;
-      bounds.set_valmin          = set_valmin;
-      bounds.valmin[set_valmin]  = valmin;
       if(EDIT_valmin!=NULL)EDIT_valmin->set_float_val(valmin);
       if(RADIO_set_valmin!=NULL)RADIO_set_valmin->set_int_val(set_valmin);
       return 1;
@@ -811,6 +821,16 @@ int bounds_dialog::get_max(char *label, int *set_valmax, float *valmax){
 int bounds_dialog::set_max(char *label, int set_valmax, float valmax){
   int i;
 
+  if(strcmp(label, "")==0){
+    for(i = 0; i<nall_bounds; i++){
+      cpp_boundsdata *boundi;
+
+      boundi = all_bounds+i;
+      boundi->set_valmax = set_valmax;
+      if(RADIO_set_valmax!=NULL&&RADIO_set_valmax!=NULL)RADIO_set_valmax->set_int_val(set_valmax);
+    }
+    return 1;
+  }
   for(i = 0; i<nall_bounds; i++){
     cpp_boundsdata *boundi;
 
@@ -818,8 +838,6 @@ int bounds_dialog::set_max(char *label, int set_valmax, float valmax){
     if(strcmp(boundi->label, label)==0){
       boundi->set_valmax         = set_valmax;
       boundi->valmax[set_valmax] = valmax;
-      bounds.set_valmax          = set_valmax;
-      bounds.valmax[set_valmax]  = valmax;
       if(EDIT_valmax!=NULL)EDIT_valmax->set_float_val(valmax);
       if(RADIO_set_valmax!=NULL)RADIO_set_valmax->set_int_val(set_valmax);
       return 1;
@@ -1702,7 +1720,7 @@ extern "C" void SliceBoundsCPP_CB(int var){
       printf("*** updating slice file colors\n");
 #endif
       SetLoadedSliceBounds(NULL, 0);
-      
+
       last_slice = slice_loaded_list[nslice_loaded - 1];
       for(ii = nslice_loaded - 1; ii >= 0; ii--){
         int i;
