@@ -2785,8 +2785,9 @@ void DrawVerticalColorbarRegLabels(void){
           val = SHIFT_VAL(val, valmin, valmax, 1.0/colorbar_shift);
         }
         colorbar_vals[i] = val;
-        Float2String(slicecolorlabel, val, ncolorlabel_digits, force_fixedpoint);
-        strcpy(colorbar_labels[i], slicecolorlabel);
+      }
+      for(i = 0; i<nrgb-1; i++){
+        Float2String(colorbar_labels[i], colorbar_vals[i], ncolorlabel_digits, force_fixedpoint);
       }
       for(i = 0; i < nrgb - 1; i++){
         float vert_position, val;
