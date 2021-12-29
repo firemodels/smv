@@ -2398,7 +2398,6 @@ void DrawVerticalColorbarRegLabels(void){
 
   int partflag = 0;
   float *partfactor = NULL;
-  float partrange = 0.0;
   int dohist = 0;
 
   int fed_slice = 0;
@@ -2590,7 +2589,7 @@ void DrawVerticalColorbarRegLabels(void){
 
   if(showevac_colorbar == 1 || (showsmoke == 1 && parttype != 0)){
     float *partlevels256_ptr;
-    float tttval, tttmin, tttmax;
+    float tttval;
 
     if(parttype!=0){
       int partunitclass, partunittype;
@@ -2609,9 +2608,6 @@ void DrawVerticalColorbarRegLabels(void){
     }
 
     iposition = -1;
-    tttmin = partlevels256_ptr[0];
-    tttmax = partlevels256_ptr[255];
-    partrange = tttmax - tttmin;
     glPushMatrix();
     glTranslatef(vcolorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
     glTranslatef(-leftsmoke*(colorbar_label_width + h_space), 0.0, 0.0);
