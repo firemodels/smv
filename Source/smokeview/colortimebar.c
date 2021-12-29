@@ -1866,12 +1866,10 @@ void DrawHorizontalColorbarRegLabels(void){
       int partunitclass, partunittype;
 
       GetUnitInfo(partunitlabel2, &partunitclass, &partunittype);
-      if(partunitclass >= 0 && partunitclass < nunitclasses){
-        if(partunittype >= 0){
-          partflag = 1;
-          partfactor = unitclasses[partunitclass].units[partunittype].scale;
-          strcpy(partunitlabel, unitclasses[partunitclass].units[partunittype].unit);
-        }
+      if(partunitclass >= 0 && partunitclass < nunitclasses && partunittype >= 0){
+        partflag = 1;
+        partfactor = unitclasses[partunitclass].units[partunittype].scale;
+        strcpy(partunitlabel, unitclasses[partunitclass].units[partunittype].unit);
       }
       OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, partshortlabel);
       OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, partunitlabel);
@@ -2094,7 +2092,11 @@ void DrawHorizontalColorbarRegLabels(void){
       horiz_position = MIX2(i, nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
       if(iposition == i)continue;
       if(global_prop_index>= 0 &&global_prop_index < npart5prop){
-        partcolorlabel_ptr = &part5propinfo[global_prop_index].partlabels[i + 1][0];
+        float val;
+
+        val = part5propinfo[global_prop_index].partlabelvals[i + 1];
+        Float2String(partcolorlabel, val, ncolorlabel_digits, force_fixedpoint);
+        partcolorlabel_ptr = partcolorlabel;
       }
       else{
         if(colorlabelpart != NULL){
@@ -2595,11 +2597,9 @@ void DrawVerticalColorbarRegLabels(void){
       int partunitclass, partunittype;
 
       GetUnitInfo(partunitlabel, &partunitclass, &partunittype);
-      if(partunitclass>=0&&partunitclass<nunitclasses){
-        if(partunittype>=0){
-          partflag = 1;
-          partfactor = unitclasses[partunitclass].units[partunittype].scale;
-        }
+      if(partunitclass>=0&&partunitclass<nunitclasses&&partunittype>=0){
+        partflag = 1;
+        partfactor = unitclasses[partunitclass].units[partunittype].scale;
       }
     }
     partlevels256_ptr = partlevels256;
