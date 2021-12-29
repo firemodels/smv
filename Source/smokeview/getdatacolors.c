@@ -547,13 +547,15 @@ void GetPartColors(partdata *parti, int nlevel){
     float local_tmin, local_tmax;
     float factor,range,tval;
     char **labels;
+    float *vals;
     float *ppartlevels256;
 
     propi = part5propinfo + i;
 
     local_tmin = part_valmin[i];
     local_tmax = part_valmax[i];
-    labels=propi->partlabels;
+    labels     = propi->partlabels;
+    vals       = propi->partlabelvals;
     ppartlevels256=propi->ppartlevels256;
 
     range = local_tmax - local_tmin;
@@ -562,14 +564,18 @@ void GetPartColors(partdata *parti, int nlevel){
     for(n=1;n<nlevel-2;n++){
       tval = local_tmin + (n-1)*factor;
       Num2String(&labels[n][0],tval);
+      vals[n] = tval;
     }
     for(n=0;n<256;n++){
       ppartlevels256[n] = (local_tmin*(255-n) + n*local_tmax)/255.;
     }
     tval = local_tmin + (nlevel-3)*factor;
     Num2String(&labels[nlevel-2][0],tval);
+    vals[nlevel-2] = tval;
+
     tval = local_tmax;
     Num2String(&labels[nlevel-1][0],tval);
+    vals[nlevel-1] = tval;
     CheckMemory;
   }
   FREEMEMORY(part_set_valmin);

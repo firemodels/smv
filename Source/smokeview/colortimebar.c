@@ -2632,34 +2632,38 @@ void DrawVerticalColorbarRegLabels(void){
       OutputBarText(0.0, vert_position, red_color, partcolorlabel_ptr);
     }
     for(i = 0; i < nrgb - 1; i++){
+      float val;
+
+      if(iposition == i)continue;
+      val = part5propinfo[global_prop_index].partlabelvals[i + 1];
+      val = ScaleFloat2Float(val, partfactor);
+      colorbar_vals[i] = val;
+      GetMantissaExponent(ABS(val), colorbar_exponents + i);
+    }
+    if(colorbar_vals[0] == 0.0){
+      exp_factor = colorbar_exponents[nrgb-2];
+    }
+    else{
+      exp_factor = colorbar_exponents[0];
+    }
+    if(ABS(exp_factor)<4){
+      exp_factor = 0;
+      strcpy(exp_factor_label,"");
+    }
+    else{
+      sprintf(exp_factor_label,"*10^%i",exp_factor);
+    }
+    for(i = 0; i<nrgb-1; i++){
+      if(iposition==i)continue;
+      Float2StringExp(colorbar_labels[i], colorbar_vals[i], ncolorlabel_digits, force_fixedpoint, exp_factor);
+    }
+    for(i = 0; i < nrgb - 1; i++){
       float vert_position;
-      char partcolorlabel[256];
-      char *partcolorlabel_ptr = NULL;
 
       vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
       if(iposition == i)continue;
-      if(global_prop_index>= 0 &&global_prop_index < npart5prop){
-        partcolorlabel_ptr = &part5propinfo[global_prop_index].partlabels[i + 1][0];
-      }
-      else{
-        if(colorlabelpart != NULL){
-          partcolorlabel_ptr = &colorlabelpart[i + 1][0];
-        }
-        else{
-          partcolorlabel_ptr = NULL;
-        }
-      }
-      if(partflag == 1){
-        float val;
-
-        partcolorlabel_ptr = partcolorlabel;
-        val = tttmin + i*partrange / (nrgb - 2);
-        val = ScaleFloat2Float(val, partfactor);
-        Float2String(partcolorlabel_ptr, val, ncolorlabel_digits, force_fixedpoint);
-      }
-      OutputBarText(0.0, vert_position, foreground_color, partcolorlabel_ptr);
+      OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
     }
-    strcpy(exp_factor_label, "");
     glPopMatrix();
   }
 

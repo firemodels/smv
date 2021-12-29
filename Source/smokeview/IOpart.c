@@ -1694,7 +1694,9 @@ void InitPartProp(void){
 
           propi->buckets=NULL;
           propi->partlabels=NULL;
-          NewMemory((void **)&propi->partlabels,256*sizeof(char *));
+          propi->partlabelvals = NULL;
+          NewMemory((void **)&propi->partlabels,    256*sizeof(char *));
+          NewMemory((void **)&propi->partlabelvals, 256*sizeof(float));
           for(ii=0;ii<256;ii++){
             char *labeli;
 
