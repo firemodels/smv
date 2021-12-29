@@ -2591,7 +2591,6 @@ void DrawVerticalColorbarRegLabels(void){
   if(showevac_colorbar == 1 || (showsmoke == 1 && parttype != 0)){
     float *partlevels256_ptr;
     float tttval, tttmin, tttmax;
-    char partunitlabel2[256], partshortlabel2[256];
 
     if(parttype!=0){
       int partunitclass, partunittype;
@@ -2958,10 +2957,7 @@ void DrawVerticalColorbarRegLabels(void){
       Float2StringExp(colorbar_labels[i], colorbar_vals[i], ncolorlabel_digits, force_fixedpoint, exp_factor);
     }
     for(i = 0; i < nrgb - 1; i++){
-      char boundary_colorlabel[256];
-      char *boundary_colorlabel_ptr = NULL;
       float vert_position;
-      float val;
 
       vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
 
@@ -3098,8 +3094,6 @@ void DrawVerticalColorbarRegLabels(void){
   if(showplot3d == 1){
     float *p3lev;
     float tttval, tttmin, tttmax;
-
-    char *p3label;
     char *up3label;
     char unitlabel[256];
     int plot3dunitclass, plot3dunittype;
@@ -3138,8 +3132,6 @@ void DrawVerticalColorbarRegLabels(void){
       OutputBarText(0.0, vert_position, red_color, plot3dcolorlabel_ptr);
     }
     if(visiso == 0){
-      float vert_position;
-
       for(i = 0; i < nrgb - 1; i++){
         float val;
 
