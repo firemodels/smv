@@ -1643,7 +1643,6 @@ void InitPartProp(void){
     npart5prop=0;
 
     for(i=0;i<npartclassinfo;i++){
-      int ii;
       partclassdata *partclassi;
 
       partclassi = partclassinfo + i;
