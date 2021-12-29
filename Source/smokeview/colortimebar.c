@@ -1872,7 +1872,7 @@ void DrawHorizontalColorbarRegLabels(void){
         strcpy(partunitlabel, unitclasses[partunitclass].units[partunittype].unit);
       }
       OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, partshortlabel);
-      OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, partunitlabel);
+      OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, partunitlabel);
     }
     glPopMatrix();
   }
