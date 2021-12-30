@@ -2412,6 +2412,11 @@ void UpdateDisplay(void){
     update_percentile_mode = 0;
     SetPercentileMode(percentile_mode);
   }
+  if(update_colorbar_digits==1){
+    update_colorbar_digits = 0;
+    SetColorbarDigitsCPP(ncolorlabel_digits);
+    SetColorbarDigits();
+  }
   if(update_visColorbars==1){
     update_visColorbars = 0;
     visColorbarVertical = visColorbarVertical_val;

@@ -925,8 +925,9 @@ void SmokeColorbarMenu(int value){
 
 void ColorbarDigitMenu(int value){
   ncolorlabel_digits = value;
-  UpdateColorLabelDigits();
+  update_colorbar_digits = 1;
   updatemenu=1;
+  GLUTPOSTREDISPLAY;
 }
 
   /* ------------------ ColorbarMenu ------------------------ */
