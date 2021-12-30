@@ -76,7 +76,7 @@ void AddDefaultViewpoints(void){
 
 void UpdateCameraYpos(cameradata *ci, int option){
   float local_aperture_default;
-  float width, height, asp=1.0, offset;
+  float width=1.0, height=1.0, asp=1.0, offset=0.0;
   float dx, dy, dz;
 
 

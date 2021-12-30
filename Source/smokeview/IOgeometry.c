@@ -2765,6 +2765,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
         }
         GetTriangleNormal(triangles[ii].verts[0]->xyz, triangles[ii].verts[1]->xyz, triangles[ii].verts[2]->xyz,
                           triangles[ii].tri_norm, NULL);
+        surfi = surfinfo;
         switch(type){
         case GEOM_CGEOM:
           surfi=surfinfo + CLAMP(surf_ind[ii],0,nsurfinfo-1);
@@ -2788,9 +2789,9 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
           surfi=surfinfo;
           triangles[ii].insolid = 0;
           break;
-	default:
-	  ASSERT(FFALSE);
-	  break;
+	    default:
+	      ASSERT(FFALSE);
+	      break;
         }
         if(geomi->geomtype==GEOM_GEOM)surfi->used_by_geom = 1;
         triangles[ii].geomsurf=surfi;

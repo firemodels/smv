@@ -319,7 +319,7 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
 
     for(islice = 0; islice<nsliceinfo; islice++){
       slicedata *slicei;
-      int nrows, ncols;
+      int nrows=1, ncols=1;
       unsigned char *iq;
 
       slicei = sliceinfo+islice;
@@ -670,7 +670,7 @@ void GetSliceNodeVerts(int option, int option2,
 
     for(islice = 0; islice<nsliceinfo; islice++){
       slicedata *slicei;
-      int nrows, ncols;
+      int nrows=1, ncols=1;
       unsigned char *iq;
 
       slicei = sliceinfo+islice;
