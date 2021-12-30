@@ -561,13 +561,13 @@ void CopyUV2Histogram(float *times, float *uvals, float *vvals, int nvals, float
 void CopyPolar2Histogram(float *rad, float *angle, int nvals, float rmin, float rmax, histogramdata *histogram){
   int i;
   float maxr, sum, sumr, maxtheta, sumtheta;
-  int itheta, ir, ixy;
+  int itheta, ir;
 
   if(nvals <= 0)return;
 
   for(i = 0; i < nvals; i++){
     float r,theta;
-    int ir, itheta, ixy;
+    int ixy;
 
     r = rad[i];
     theta = FMOD360(angle[i]);
@@ -589,6 +589,8 @@ void CopyPolar2Histogram(float *rad, float *angle, int nvals, float rmin, float 
   maxr = 0.0;
   sum = 0.0;
   for(itheta = 0;itheta < histogram->ntheta;itheta++){
+    int ixy;
+
     sumr = 0.0;
     for(ir = 0;ir < histogram->nr;ir++){
       ixy = ir + itheta*histogram->nr;
@@ -604,6 +606,8 @@ void CopyPolar2Histogram(float *rad, float *angle, int nvals, float rmin, float 
   for(ir = 0;ir < histogram->nr;ir++){
     sumtheta = 0.0;
     for(itheta = 0;itheta < histogram->ntheta;itheta++){
+      int ixy;
+
       ixy = ir + itheta*histogram->nr;
       sumtheta += histogram->buckets_polar[ixy];
     }

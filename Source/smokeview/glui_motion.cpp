@@ -874,7 +874,6 @@ extern "C" void ViewpointCB(int var){
   case REPLACE_CURRENT_VIEW:
     {
       int current_view_id=-1;
-      cameradata *cex;
 
       cex = &camera_list_first;
       cex = cex->next;

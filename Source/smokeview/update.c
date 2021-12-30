@@ -1246,7 +1246,6 @@ void UpdateTimes(void){
     nglobal_times = nzone_times;
   }
   if(nglobal_times>0){
-    int i;
     NewMemory((void **)&global_times, nglobal_times*sizeof(float));
     global_times[0] = global_timemin;
     for(i = 1; i<nglobal_times; i++){

@@ -13811,7 +13811,7 @@ int ReadIni2(char *inifile, int localfile){
                   &viewtype);
 
                 if(viewtype == 0){
-                  float dummy3[3],dummy;
+                  float dummy3[3];
 
                   sscanf(buffer, "%f %f %f %f %i %f %f %f %f %f %f %f %i",
                     &key_time,

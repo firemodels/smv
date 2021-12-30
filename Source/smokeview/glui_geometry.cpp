@@ -318,7 +318,6 @@ extern "C" void UpdateVertexInfo(float *xyz1, float *xyz2){
   }
   if(xyz1!=NULL&&xyz2!=NULL){
     float dx, dy, dz, dist;
-    char label[100];
 
     dx = xyz1[0]-xyz2[0];
     dy = xyz1[1]-xyz2[1];
@@ -337,7 +336,6 @@ extern "C" void UpdateVertexInfo(float *xyz1, float *xyz2){
 extern "C" void GluiGeometrySetup(int main_window){
   int ibar,jbar,kbar;
   float *xplt_orig, *yplt_orig, *zplt_orig;
-  surfdata *surfi;
   char *surfacelabel;
   int i;
 
@@ -373,6 +371,8 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_obst_surface[DOWN_X] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Left"), surface_indices+DOWN_X, UPDATE_LIST, ObjectCB);
       LIST_obst_surface[DOWN_X]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+      
         surfi = surfinfo+sorted_surfidlist[i];
         if(surfi->used_by_obst!=1)continue;
         if(surfi->obst_surface==0)continue;
@@ -383,6 +383,8 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_obst_surface[UP_X] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Right"), surface_indices+UP_X, UPDATE_LIST, ObjectCB);
       LIST_obst_surface[UP_X]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
         surfi = surfinfo+sorted_surfidlist[i];
         if(surfi->used_by_obst!=1)continue;
         if(surfi->obst_surface==0)continue;
@@ -393,6 +395,8 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_obst_surface[DOWN_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Front"), surface_indices+DOWN_Y, UPDATE_LIST, ObjectCB);
       LIST_obst_surface[DOWN_Y]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
         surfi = surfinfo+sorted_surfidlist[i];
         if(surfi->used_by_obst!=1)continue;
         if(surfi->obst_surface==0)continue;
@@ -403,6 +407,8 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_obst_surface[UP_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Back"), surface_indices+UP_Y, UPDATE_LIST, ObjectCB);
       LIST_obst_surface[UP_Y]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
         surfi = surfinfo+sorted_surfidlist[i];
         if(surfi->used_by_obst!=1)continue;
         if(surfi->obst_surface==0)continue;
@@ -413,6 +419,8 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_obst_surface[DOWN_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Down"), surface_indices+DOWN_Z, UPDATE_LIST, ObjectCB);
       LIST_obst_surface[DOWN_Z]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
         surfi = surfinfo+sorted_surfidlist[i];
         if(surfi->used_by_obst!=1)continue;
         if(surfi->obst_surface==0)continue;
@@ -423,6 +431,8 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_obst_surface[UP_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Up"), surface_indices+UP_Z, UPDATE_LIST, ObjectCB);
       LIST_obst_surface[UP_Z]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
         surfi = surfinfo+sorted_surfidlist[i];
         if(surfi->used_by_obst!=1)continue;
         if(surfi->obst_surface==0)continue;
@@ -684,8 +694,6 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_geom_vert_exag->set_float_limits(0.1, 10.0);
 
     if(nterrain_textures>0){
-      int i;
-
       NewMemory((void **)&CHECKBOX_terrain_texture_show, sizeof(GLUI_Checkbox *)*nterrain_textures);
       PANEL_terrain_images = glui_geometry->add_panel_to_panel(PANEL_group1, "terrain images");
       for(i = 0; i<nterrain_textures; i++){
@@ -845,8 +853,6 @@ extern "C" void VolumeCB(int var){
     UpdateChopColors();
   case SHOW_TEXTURE_1D_IMAGE:
     if(show_texture_1dimage == 1&&nterrain_textures>0){
-      int i;
-
       for(i=0; i<nterrain_textures; i++){
         texturedata *texti;
 

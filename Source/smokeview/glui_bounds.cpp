@@ -5073,8 +5073,6 @@ extern "C" void GluiBoundsSetup(int main_window){
 
 
   if(ncolorbars>0){
-    int i;
-
     selectedcolorbar_index2 = -1;
     LIST_colorbar2 = glui_bounds->add_listbox_to_panel(PANEL_colorbar_properties, "", &selectedcolorbar_index2, COLORBAR_LIST2, SliceBoundCB);
 
@@ -5202,12 +5200,8 @@ extern "C" void GluiBoundsSetup(int main_window){
   glui_bounds->add_spinner_to_panel(PANEL_split3, _("split"), GLUI_SPINNER_FLOAT, splitvals+1, SPLIT_COLORBAR, SplitCB);
   glui_bounds->add_spinner_to_panel(PANEL_split3, _("min"), GLUI_SPINNER_FLOAT, splitvals, SPLIT_COLORBAR, SplitCB);
 
-  {
-    int i;
-
-    for(i = 0; i<12; i++){
-      SPINNER_colorsplit[i]->set_int_limits(0, 255);
-    }
+  for(i = 0; i<12; i++){
+    SPINNER_colorsplit[i]->set_int_limits(0, 255);
   }
   SplitCB(SPLIT_COLORBAR);
 

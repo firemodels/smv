@@ -4985,7 +4985,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     if(use_set_slicecolor==0||set_slicecolor==SET_SLICECOLOR){
       if(sd->compression_type==UNCOMPRESSED){
         for(i = 0; i<nsliceinfo; i++){
-          int ii, errorcode;
           slicedata *slicei;
 
           slicei = sliceinfo+i;
@@ -5001,7 +5000,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
           for(ii = 0; ii<256; ii++){
             slicei->qval256[ii] = (qmin*(255 - ii) + qmax*ii) / 255;
           }
-          SetSliceColors(qmin, qmax, slicei, &errorcode);
+          SetSliceColors(qmin, qmax, slicei, errorcode);
         }
       }
       else{
@@ -6079,7 +6078,6 @@ void DrawVolAllSlicesTextureDiag(const slicedata *sd, int direction){
 
   if(visx_all==1){
     int icol, icol2;
-    int nx, ny;
 
     nx = sd->nslicei;
     ny = sd->nslicej;
@@ -6152,7 +6150,6 @@ void DrawVolAllSlicesTextureDiag(const slicedata *sd, int direction){
   }
   if(visy_all==1){
     int jrow, jrow2;
-    int nx, ny;
 
     nx = sd->nslicei;
     ny = sd->nslicej;

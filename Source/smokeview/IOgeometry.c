@@ -1794,7 +1794,6 @@ void UpdateTriangles(int flag,int update){
     ntriangles_max = 0;
     for(j = 0; j<ngeominfoptrs; j++){
       geomdata *geomi;
-      int ii;
       FILE *stream = NULL;
 
       geomi = geominfoptrs[j];
@@ -2616,7 +2615,6 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
 
       if(geomi->is_terrain==1){
         float xmin, xmax, ymin, ymax, zmin, zmax;
-        int ii;
 
         xmin = verts[0].xyz[0];
         xmax = xmin;
@@ -3570,12 +3568,12 @@ void AverageGeomColors(geomlistdata *geomlisti, int itriangle, unsigned char *iv
       total_area = 0.0;
       for(j = 0; j<verti->ntriangles; j++){
         int trij_index;
-        tridata *trianglei;
+        tridata *trianglej;
 
-        trianglei = verti->triangles[j];
-        trij_index = trianglei-geomlisti->triangles;
-        color_index += trianglei->area*ivals[trij_index];
-        total_area += trianglei->area;
+        trianglej    = verti->triangles[j];
+        trij_index   = trianglej-geomlisti->triangles;
+        color_index += trianglej->area*ivals[trij_index];
+        total_area  += trianglej->area;
       }
       if(total_area>0.0){
         color_indices[i] = color_index/total_area;

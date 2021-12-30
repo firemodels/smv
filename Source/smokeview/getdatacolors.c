@@ -1474,7 +1474,6 @@ void UpdateChopColors(void){
   int i;
   int ichopmin=0,ichopmax=nrgb_full;
 #define NCHOP 8
-  int ii;
   float transparent_level_local=1.0;
 
   int   setpatchchopmin_local=0, setpatchchopmax_local=0;
@@ -1628,6 +1627,8 @@ void UpdateChopColors(void){
         rgb_patch[4*i+3]=0.0;
       }
       for(i=ichopmin-NCHOP;i<ichopmin;i++){
+        int ii;
+
         if(i<=0)continue;
         if(i>nrgb_full-1)continue;
         ii = i - (ichopmin-NCHOP);
@@ -1643,6 +1644,8 @@ void UpdateChopColors(void){
         rgb_patch[4*i+3]=0.0;
       }
       for(i=ichopmax;i<ichopmax+NCHOP;i++){
+        int ii;
+ 
         if(i<=0)continue;
         if(i>nrgb_full-1)continue;
         ii = NCHOP-1-(i - ichopmax);
@@ -1678,6 +1681,8 @@ void UpdateChopColors(void){
         rgb_slice[4*i+3]=0.0;
       }
       for(i=ichopmin-NCHOP;i<ichopmin;i++){
+        int ii;
+
         if(i<=0)continue;
         if(i>nrgb_full-1)continue;
         ii = i - (ichopmin-NCHOP);
@@ -1693,6 +1698,8 @@ void UpdateChopColors(void){
         rgb_slice[4*i+3]=0.0;
       }
       for(i=ichopmax;i<ichopmax+NCHOP;i++){
+        int ii;
+
         if(i<=0)continue;
         if(i>nrgb_full-1)continue;
         ii = NCHOP-1-(i - ichopmax);
@@ -1733,6 +1740,8 @@ void UpdateChopColors(void){
         rgb_plot3d[4*i+3]=0.0;
       }
       for(i=ichopmin-NCHOP;i<ichopmin;i++){
+        int ii;
+
         if(i<=0)continue;
         if(i>nrgb_full-1)continue;
         ii = i - (ichopmin-NCHOP);
@@ -1760,6 +1769,8 @@ void UpdateChopColors(void){
         rgb_plot3d[4*i+3]=0.0;
       }
       for(i=ichopmax;i<ichopmax+NCHOP;i++){
+        int ii;
+
         if(i<=0)continue;
         if(i>nrgb_full-1)continue;
         ii = NCHOP-1-(i - ichopmax);

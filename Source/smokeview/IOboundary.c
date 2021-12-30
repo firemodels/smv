@@ -2549,17 +2549,17 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
     fseek(stream, geom_offsets[time_frame], SEEK_CUR);
   }
   for(iframe = frame_start; iframe<frame_stop; iframe++){
-    int nvals[4];
+    int nvals_local[4];
 
     FORTREAD(&time, 1, stream);
     if(time_frame==ALL_FRAMES||time_frame==iframe)times[count] = time;
     if(returncode==0)break;
     file_size += (4+4+4);
-    FORTREAD(nvals, 4, stream);
-    nvert_s = nvals[0];
-    ntri_s = nvals[1];
-    nvert_d = nvals[2];
-    ntri_d = nvals[3];
+    FORTREAD(nvals_local, 4, stream);
+    nvert_s = nvals_local[0];
+    ntri_s = nvals_local[1];
+    nvert_d = nvals_local[2];
+    ntri_d = nvals_local[3];
     file_size += (4+4*4+4);
     if(time_frame==ALL_FRAMES||time_frame==iframe)nstatics[count] = nvert_s+ntri_s;
 
@@ -2817,16 +2817,16 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     slicei->valmin_smv = qmin;
     slicei->valmax_smv = qmax;
     if(slice_average_flag==1){
-      int data_per_timestep, nvals, ntimes;
+      int data_per_timestep, nvals2, ntimes;
       float *vals, *times;
 
       show_slice_average = 1;
       vals = slicei->patchgeom->geom_vals;
-      nvals = slicei->patchgeom->geom_nvals;
+      nvals2 = slicei->patchgeom->geom_nvals;
       times = patchi->geom_times;
       ntimes = patchi->ngeom_times;
-      data_per_timestep = nvals/ntimes;
-      if(TimeAverageData(vals, vals, nvals, data_per_timestep, times, ntimes, slice_average_interval)==1){
+      data_per_timestep = nvals2/ntimes;
+      if(TimeAverageData(vals, vals, nvals2, data_per_timestep, times, ntimes, slice_average_interval)==1){
         show_slice_average = 0;
       }
     }
