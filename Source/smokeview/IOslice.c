@@ -5977,10 +5977,11 @@ void DrawVolSliceTerrain(const slicedata *sd){
         y3 = yplt[j2];
         ymid = (yy1+y3)/2.0;
 
-        if(slice_skip==1){
-          if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
-          if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
-        }
+//*** these lines were causing problems with a terrain case
+//        if(slice_skip==1){
+//          if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
+//          if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
+//        }
 
         if(z11<z_cutoff||z31<z_cutoff||z13<z_cutoff||z33<z_cutoff)continue;
         if(terrain_slice_overlap==0){
