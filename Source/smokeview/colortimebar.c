@@ -3321,7 +3321,7 @@ void Hsl2Rgb(float *hslvals, float *rgbvals, int flag){
     r = saturation;
     g = saturation;
     b = saturation;
-    if(flag==1.0){
+    if(flag==1){
       r *= 255.0;
       g *= 255.0;
       b *= 255.0;

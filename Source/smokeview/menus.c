@@ -1892,6 +1892,9 @@ void ResetDefaultMenu(int var){
     case -5:
       UpdateCameraYpos(camera_current, 3);
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 

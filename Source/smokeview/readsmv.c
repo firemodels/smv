@@ -5016,6 +5016,9 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     STRCPY(sd->comp_file, rle_file);
     sd->file = sd->comp_file;
     break;
+  default:
+    ASSERT(FFALSE);
+    break;
   }
 
   // read in geometry file name

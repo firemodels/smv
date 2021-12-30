@@ -341,6 +341,9 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
         ncols = slicei->nslicei;
         nrows = slicei->nslicej;
         break;
+      default:
+	ASSERT(FFALSE);
+	break;
       }
       if(nrows>1&&ncols>1){
         if(itime==ibeg){
@@ -494,6 +497,9 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
                 *textures++ = iq[n];
               }
             }
+            break;
+          default:
+	    ASSERT(FFALSE);
             break;
           }
         }
@@ -685,6 +691,9 @@ void GetSliceNodeVerts(int option, int option2,
       case ZDIR:
         ncols = slicei->nslicei;
         nrows = slicei->nslicej;
+        break;
+      default:
+        ASSERT(FFALSE);
         break;
       }
       if(nrows>1&&ncols>1){
@@ -896,6 +905,9 @@ void GetSliceNodeVerts(int option, int option2,
               }
             }
             break;
+	  default:
+	    ASSERT(FFALSE);
+	    break;
           }
         }
       }

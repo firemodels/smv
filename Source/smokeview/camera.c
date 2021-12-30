@@ -135,6 +135,9 @@ void UpdateCameraYpos(cameradata *ci, int option){
       }
       offset = (dz-dy)/2.0;
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
   eyeyfactor = -(width/2.0)/tan(local_aperture_default*DEG2RAD/2.0) - offset;
   if(option==3&&use_geom_factors==1&&have_geom_factors==1){
@@ -179,6 +182,9 @@ void SetCameraViewPersp(cameradata *ca, int option){
     case MENU_VIEW_ZMAX:
       elev = 90.0;
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
   ca->az_elev[0] = az;
   ca->az_elev[1] = elev;
@@ -199,6 +205,9 @@ void SetCameraViewPersp(cameradata *ca, int option){
     case MENU_VIEW_ZMIN:
     case MENU_VIEW_ZMAX:
       UpdateCameraYpos(ca, 3);
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }

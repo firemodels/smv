@@ -474,6 +474,9 @@ void MovieCB(int val){
       strcpy(movie_ini_filename, movie_basename);
       strcat(movie_ini_filename, ".ini");
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -2735,6 +2738,9 @@ void RenderCB(int var){
         RenderCB(RENDER_RESOLUTION);
         RenderCB(RENDER_START_360);
         break;
+      default:
+	ASSERT(FFALSE);
+	break;
       }
     break;
     case RENDER_START_HIGHRES:

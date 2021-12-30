@@ -402,6 +402,9 @@ void DrawSelectGeom(void){
       glEnd();
     }
   break;
+  default:
+  ASSERT(FFALSE);
+  break;
   }
 }
 
@@ -2785,6 +2788,9 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
           surfi=surfinfo;
           triangles[ii].insolid = 0;
           break;
+	default:
+	  ASSERT(FFALSE);
+	  break;
         }
         if(geomi->geomtype==GEOM_GEOM)surfi->used_by_geom = 1;
         triangles[ii].geomsurf=surfi;

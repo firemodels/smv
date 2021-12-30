@@ -7320,6 +7320,9 @@ void DrawSliceFrame(){
       nslicemax = nplotz_list;
       slice_normal[2] = direction;
       break;
+      default:
+      ASSERT(FFALSE);
+      break;
       }
       nslicemax = MAX(nslicemax, 1);
       if(slices3d_max_blending==1){

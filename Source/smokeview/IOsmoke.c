@@ -6355,6 +6355,9 @@ void ReadSmoke3DAllMeshesAllTimes(int smoketype2, int *errorcode){
         case CO2:
           if((smoketype2&CO2_2)!=0)ReadSmoke3DAllMeshes(itime, CO2, errorcode);
           break;
+	default:
+	  ASSERT(FFALSE);
+	  break;
       }
     }
   }

@@ -497,6 +497,9 @@ int ParseTokens(char *buffer, char **keywords, int *type, int nkeywords, int *to
           return 0;
         }
         break;
+      default:
+	ASSERT(FFALSE);
+	break;
     }
   }
   return i;
@@ -1050,6 +1053,9 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
               case KW_CELL_CENTERED:
                 scripti->cell_centered = itokens[i];
                 break;
+	      default:
+		ASSERT(FFALSE);
+		break;
             }
           }
           if(scripti->id==NULL){
@@ -1182,6 +1188,9 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         SETbuffer;
         sscanf(buffer,"%f %f",&scripti->fval,&scripti->fval2);
         break;
+      default:
+	ASSERT(FFALSE);
+	break;
     }
     if(scriptEOF==1)break;
     if(keyword_index!=SCRIPT_UNKNOWN&&fatal_error==0)nscriptinfo++;
@@ -3161,6 +3170,9 @@ void ScriptViewXYZMINMAXOrtho(int command){
     zaxis_angles[1] =  0.0;
     zaxis_angles[2] =  0.0;
     break;
+  default:
+    ASSERT(FFALSE);
+    break;
   }
   ResetGluiView(EXTERNAL_VIEW);
   use_customview=0;
@@ -3189,6 +3201,9 @@ void ScriptViewXYZMINMAXPersp(int command){
     break;
   case SCRIPT_VIEWZMAX:
     ResetDefaultMenu(VIEW_ZMAX);
+    break;
+  default:
+    ASSERT(FFALSE);
     break;
   }
 }

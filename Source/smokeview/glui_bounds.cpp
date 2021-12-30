@@ -1110,6 +1110,9 @@ void bounds_dialog::CB(int var){
     case BOUND_HIST_LABELS:
       hist_show_labels       = hist_show_labels_cpp;
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 };
 
@@ -1193,6 +1196,9 @@ extern "C" void SetPercentiles(int type, float val_00, float per_valmin, float v
     case BOUND_SLICE:
       if(nsliceinfo>0)sliceboundsCPP.set_percentiles(val_00, per_valmin, val_50, per_valmax, val_100);
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -1211,6 +1217,9 @@ extern "C" cpp_boundsdata *GetBoundsData(int type){
       break;
     case BOUND_SLICE:
       if(nsliceinfo>0)return sliceboundsCPP.get_bounds_data();
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
   return NULL;
@@ -1232,6 +1241,9 @@ extern "C" void GetGlobalBoundsMinMax(int type, char *label, float *valmin, floa
     case BOUND_SLICE:
       if(nsliceinfo>0)sliceboundsCPP.get_global_minmax(label, valmin, valmax);
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -1250,6 +1262,9 @@ extern "C" void SetCacheFlag(int type, int cache_flag){
       break;
     case BOUND_SLICE:
       if(nsliceinfo>0)sliceboundsCPP.set_cache_flag(cache_flag);
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }
@@ -1270,6 +1285,9 @@ extern "C" int GetCacheFlag(int type){
     case BOUND_SLICE:
       if(nsliceinfo>0)return sliceboundsCPP.get_cache_flag();
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
   return 0;
 }
@@ -1289,6 +1307,9 @@ extern "C" int GetPercentileDraw(int type){
       break;
     case BOUND_SLICE:
       if(nsliceinfo>0)return sliceboundsCPP.get_percentile_draw();
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
   return 0;
@@ -1367,6 +1388,9 @@ extern "C" void SetPercentileDraw(int type, int val){
         }
       }
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -1414,6 +1438,9 @@ extern "C" int GetValType(int type){
     case BOUND_SLICE:
       if(npatchinfo>0)return sliceboundsCPP.get_valtype();
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
   return 0;
 }
@@ -1434,6 +1461,9 @@ extern "C" int GetNValtypes(int type){
     case BOUND_SLICE:
       if(nsliceinfo>0)return sliceboundsCPP.get_nvaltypes();
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
   return 0;
 }
@@ -1453,6 +1483,9 @@ extern "C" void SetValTypeIndex(int type, int valtype_index){
       break;
     case BOUND_SLICE:
       if(nsliceinfo>0)sliceboundsCPP.set_valtype_index(valtype_index);
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }
@@ -1489,6 +1522,9 @@ extern "C" void GetMinMax(int type, char *label, int *set_valmin, float *valmin,
         sliceboundsCPP.get_max(label, set_valmax, valmax);
       }
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -1511,6 +1547,9 @@ extern "C" void GetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_
     case BOUND_SLICE:
       sliceboundsCPP.get_min_all(set_valmin, valmin, nall);
       sliceboundsCPP.get_max_all(set_valmax, valmax, nall);
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }
@@ -1535,6 +1574,9 @@ extern "C" void SetMinMax(int type, char *label, int set_valmin, float valmin, i
       sliceboundsCPP.set_min(label, set_valmin, valmin);
       sliceboundsCPP.set_max(label, set_valmax, valmax);
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -1554,6 +1596,9 @@ extern "C" void SetMin(int type, char *label, int set_valmin, float valmin){
     case BOUND_SLICE:
       sliceboundsCPP.set_min(label, set_valmin, valmin);
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -1572,6 +1617,9 @@ extern "C" void SetMax(int type, char *label, int set_valmax, float valmax){
       break;
     case BOUND_SLICE:
       sliceboundsCPP.set_max(label, set_valmax, valmax);
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }
@@ -1596,6 +1644,9 @@ extern "C" void SetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_
       sliceboundsCPP.set_min_all(set_valmin, valmin, nall);
       sliceboundsCPP.set_max_all(set_valmax, valmax, nall);
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -1615,6 +1666,9 @@ extern "C" void SetChopMin(int type, char *label, int set_valmin, float valmin){
     case BOUND_SLICE:
       sliceboundsCPP.set_chopmin(label, set_valmin, valmin);
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -1633,6 +1687,9 @@ extern "C" void SetChopMax(int type, char *label, int set_valmax, float valmax){
       break;
     case BOUND_SLICE:
       sliceboundsCPP.set_chopmax(label, set_valmax, valmax);
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }
@@ -1796,6 +1853,9 @@ extern "C" void SliceBoundsCPP_CB(int var){
       if(npatchinfo>0)patchboundsCPP.update_plot_parms();
       if(nplot3dinfo>0)plot3dboundsCPP.update_plot_parms();
       if(nsliceinfo>0)sliceboundsCPP.update_plot_parms();
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }
@@ -1966,6 +2026,9 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
       if(nplot3dinfo>0)plot3dboundsCPP.update_plot_parms();
       if(nsliceinfo>0)sliceboundsCPP.update_plot_parms();
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -2125,6 +2188,9 @@ extern "C" void PartBoundsCPP_CB(int var){
       if(nplot3dinfo>0)plot3dboundsCPP.update_plot_parms();
       if(nsliceinfo>0)sliceboundsCPP.update_plot_parms();
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -2150,6 +2216,9 @@ int HavePatchData(void){
         break;
       case PATCH_GEOMETRY_SLICE:
         break;
+    default:
+      ASSERT(FFALSE);
+      break;
     }
   }
   return 1;
@@ -2320,6 +2389,9 @@ extern "C" void PatchBoundsCPP_CB(int var){
       if(npatchinfo>0)patchboundsCPP.update_plot_parms();
       if(nplot3dinfo>0)plot3dboundsCPP.update_plot_parms();
       if(nsliceinfo>0)sliceboundsCPP.update_plot_parms();
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }
@@ -3168,6 +3240,9 @@ extern "C" void SplitCB(int var){
     UpdateColorbarSplits(split_colorbar);
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     break;
+  default:
+    ASSERT(FFALSE);
+    break;
   }
 }
 
@@ -3751,6 +3826,9 @@ extern "C" void ImmersedBoundCB(int var){
         case OUTLINE_HIDDEN:
           show_slice_outlines[i]=0;
           break;
+	default:
+	  ASSERT(FFALSE);
+	  break;
       }
     }
     if(RADIO_slice_edgetype!=NULL)RADIO_slice_edgetype->set_int_val(glui_slice_edgetype);
@@ -5445,6 +5523,9 @@ extern "C" void IsoBoundCB(int var){
         use_transparency_data=0;
         iso_opacity_change=1;
         break;
+      default:
+	ASSERT(FFALSE);
+	break;
     }
     SliceBoundCB(DATA_transparent);
     break;
@@ -6216,6 +6297,9 @@ extern "C" void ShowBoundsDialog(int type){
     case DLG_ISO:
       if(ROLLOUT_iso!=NULL)ROLLOUT_iso->open();
       if(ROLLOUT_iso_settings!=NULL)ROLLOUT_iso_settings->open();
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }

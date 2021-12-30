@@ -1526,6 +1526,9 @@ void DrawZoneVentDataProfile(void){
       case BACK_WALL:
         ywall = zvi->y1;
         break;
+      default:
+	ASSERT(FFALSE);
+	break;
       }
       dvent1 = factor*zvi->area_fraction*zvi->vdata[j];
       dvent2 = factor*zvi->area_fraction*zvi->vdata[j+1];

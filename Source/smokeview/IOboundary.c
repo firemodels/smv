@@ -1358,6 +1358,9 @@ void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *global_
       case PATCH_GEOMETRY_SLICE:
         continue;
         break;
+      default:
+	ASSERT(FFALSE);
+	break;
     }
   }
 }

@@ -805,6 +805,9 @@ extern "C" void VolumeCB(int var){
     case GEOM_PROP_VERTEX1:
     case GEOM_PROP_VERTEX2:
       selected_geom_triangle = -1;
+    default:
+      ASSERT(FFALSE);
+      break;
     }
     break;
   case UPDATE_GEOM:

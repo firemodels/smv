@@ -285,6 +285,9 @@ void UpdateAllBoundaryColors(void){
         break;
       case PATCH_GEOMETRY_SLICE:
         break;
+      default:
+        ASSERT(FFALSE);
+        break;
     }
   }
   if(nlist>0){
@@ -321,6 +324,9 @@ void UpdateAllBoundaryColors(void){
                                &valmin, &valmax,
                                nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
                                &patchi->extreme_min, &patchi->extreme_max);
+            break;
+          default:
+            ASSERT(FFALSE);
             break;
         }
       }
