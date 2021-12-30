@@ -1873,19 +1873,20 @@ void ScriptLoadVSLCF(scriptdata *scripti){
     if(SliceMatch(scripti, slicei)==0)continue;
 
     for(j=0;j<mvslicei->nvslices;j++){
-      vslicedata *vslicei;
+      vslicedata *vslicej;
       int finalize_save;
 
-      vslicei = vsliceinfo+mvslicei->ivslices[j];
-      finalize_save = vslicei->finalize;
+      vslicej = vsliceinfo+mvslicei->ivslices[j];
+//save finalize
+      finalize_save = vslicej->finalize;
       if(j==mvslicei->nvslices-1){
-        vslicei->finalize = 1;
+        vslicej->finalize = 1;
       }
       else{
-        vslicei->finalize = 0;
+        vslicej->finalize = 0;
       }
       LoadVSliceMenu(mvslicei->ivslices[j]);
-      vslicei->finalize = finalize_save;
+      vslicej->finalize = finalize_save;
       count++;
     }
     break;
@@ -1994,18 +1995,18 @@ void ScriptLoadSlice(scriptdata *scripti){
     for(j=0;j<mslicei->nslices;j++){
       slicedata *slicej;
       int finalize_save;
-      slicedata *slicei;
 
-      slicei = sliceinfo+mslicei->islices[j];
-      finalize_save = slicei->finalize;
+      slicej = sliceinfo+mslicei->islices[j];
+//save finalize
+      finalize_save = slicej->finalize;
       if(j==mslicei->nslices-1){
-        slicei->finalize = 1;
+        slicej->finalize = 1;
       }
       else{
-        slicei->finalize = 0;
+        slicej->finalize = 0;
       }
       LoadSliceMenu(mslicei->islices[j]);
-      slicei->finalize = finalize_save;
+      slicej->finalize = finalize_save;
       FREEMEMORY(loaded_file);
       slicej = sliceinfo + mslicei->islices[j];
       if(slicej->file != NULL&&strlen(slicej->file) > 0){
@@ -2197,17 +2198,17 @@ void ScriptLoadSliceRender(scriptdata *scripti){
     for(j = 0; j<mslicei->nslices; j++){
       slicedata *slicej;
       int finalize_save;
-      slicedata *slicei;
       float time_value;
       FILE_SIZE slicefile_size;
 
-      slicei = sliceinfo+mslicei->islices[j];
-      finalize_save = slicei->finalize;
+      slicej = sliceinfo+mslicei->islices[j];
+//save finalize
+      finalize_save = slicej->finalize;
       if(j==mslicei->nslices-1){
-        slicei->finalize = 1;
+        slicej->finalize = 1;
       }
       else{
-        slicei->finalize = 0;
+        slicej->finalize = 0;
       }
       if(frame_current>=frames_total){
         scripti->exit = 1;
@@ -2229,9 +2230,9 @@ void ScriptLoadSliceRender(scriptdata *scripti){
       scripti->fval4 = time_value;
       CheckMemory;
 
-      slicei->finalize = finalize_save;
+//save finalize
+      slicej->finalize = finalize_save;
       FREEMEMORY(loaded_file);
-      slicej = sliceinfo+mslicei->islices[j];
       if(slicej->file!=NULL&&strlen(slicej->file)>0){
         NewMemory((void **)&loaded_file, strlen(slicej->file)+1);
         strcpy(loaded_file, slicej->file);
@@ -2326,19 +2327,20 @@ void ScriptLoadVSlice(scriptdata *scripti){
       if(ABS(slicei->position_orig - scripti->fval) > slicei->delta_orig)continue;
     }
     for(j=0;j<mvslicei->nvslices;j++){
-      vslicedata *vslicei;
+      vslicedata *vslicej;
       int finalize_save;
 
-      vslicei = vsliceinfo+mvslicei->ivslices[j];
-      finalize_save = vslicei->finalize;
+      vslicej = vsliceinfo+mvslicei->ivslices[j];
+//save finalize
+      finalize_save = vslicej->finalize;
       if(j==mvslicei->nvslices-1){
-        vslicei->finalize = 1;
+        vslicej->finalize = 1;
       }
       else{
-        vslicei->finalize = 0;
+        vslicej->finalize = 0;
       }
       LoadVSliceMenu(mvslicei->ivslices[j]);
-      vslicei->finalize = finalize_save;
+      vslicej->finalize = finalize_save;
       count++;
     }
     break;
