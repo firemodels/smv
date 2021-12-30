@@ -4862,7 +4862,7 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
 
 /* ------------------ InitGeom ------------------------ */
 
-void InitGeom(geomdata *geomi,int geomtype, int fdsblock, int have_cface_normals){
+void InitGeom(geomdata *geomi,int geomtype, int fdsblock, int have_cface_normals_arg){
   geomi->file=NULL;
   geomi->topo_file = NULL;
   geomi->cache_defined = 0;
@@ -4885,7 +4885,7 @@ void InitGeom(geomdata *geomi,int geomtype, int fdsblock, int have_cface_normals
   geomi->is_terrain = 0;
   geomi->file2_tris = NULL;
   geomi->nfile2_tris = 0;
-  geomi->have_cface_normals = have_cface_normals;
+  geomi->have_cface_normals = have_cface_normals_arg;
   geomi->ncface_normals = 0;
   geomi->cface_normals = NULL;
 }
