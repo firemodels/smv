@@ -1712,6 +1712,7 @@ extern "C" void SliceBoundsCPP_CB(int var){
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
+    case BOUND_COLORBAR_DIGITS:
       break;
     case BOUND_PERCENTILE_MINVAL:
     case BOUND_PERCENTILE_MAXVAL:
