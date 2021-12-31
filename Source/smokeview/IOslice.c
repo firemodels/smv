@@ -5886,12 +5886,14 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
   float *xplt, *yplt, *zplt;
   int plotz;
+#ifdef pp_TERRAIN_SKIP
   int ibar, jbar;
   int nx, ny, nxy;
   char *iblank_z;
+  char *iblank_embed;
+#endif
   terraindata *terri;
   int nycell;
-  char *iblank_embed;
 
   meshdata *meshi;
 
@@ -5911,6 +5913,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
   else{
     plotz = sd->ks1;
   }
+#ifdef pp_TERRAIN_SKIP
   ibar = meshi->ibar;
   jbar = meshi->jbar;
   iblank_z = meshi->c_iblank_z;
@@ -5918,6 +5921,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
   nx = ibar + 1;
   ny = jbar + 1;
   nxy = nx*ny;
+#endif
 
   if(cullfaces == 1)glDisable(GL_CULL_FACE);
 
@@ -5978,11 +5982,13 @@ void DrawVolSliceTerrain(const slicedata *sd){
         y3 = yplt[j2];
         ymid = (yy1+y3)/2.0;
 
-//*** these lines were causing problems with a terrain case
-//        if(slice_skip==1){
-//          if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
-//          if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
-//        }
+#ifdef pp_TERRAIN_SKIP
+*** these lines were causing problems with a terrain case
+        if(slice_skip==1){
+          if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
+          if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
+        }
+#endif
 
         if(z11<z_cutoff||z31<z_cutoff||z13<z_cutoff||z33<z_cutoff)continue;
         if(terrain_slice_overlap==0){
