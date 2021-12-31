@@ -5884,14 +5884,14 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
   float *xplt, *yplt, *zplt;
   int plotz;
-  terraindata *terri;
-  int nycell;
 #ifdef pp_TERRAIN_SKIP
   int ibar, jbar;
   int nx, ny, nxy;
   char *iblank_z;
   char *iblank_embed;
 #endif
+  terraindata *terri;
+  int nycell;
 
   meshdata *meshi;
 
