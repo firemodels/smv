@@ -2403,6 +2403,7 @@ void DrawVerticalColorbarRegLabels(void){
   int dohist = 0;
 
   int fed_slice = 0;
+  float colorbar_max, colorbar_eps;
 
   GLfloat *foreground_color, *red_color;
 
@@ -2412,6 +2413,8 @@ void DrawVerticalColorbarRegLabels(void){
   char exp_factor_label[256];
 
   UpdateShowSliceColorbar(&showcfast_local, &show_slice_colorbar_local);
+
+  colorbar_eps = pow(10.0, -ncolorlabel_digits);
 
   // -------------- compute columns where left labels will occur ------------
 
@@ -2635,8 +2638,11 @@ void DrawVerticalColorbarRegLabels(void){
       colorbar_vals[i] = val;
       GetMantissaExponent(ABS(val), colorbar_exponents + i);
     }
-    if(colorbar_vals[0] == 0.0){
-      exp_factor = colorbar_exponents[nrgb-2];
+#define COLORBAR_ABS 0.0
+    colorbar_max = MAX(ABS(colorbar_vals[0]), ABS(colorbar_vals[nrgb-2]) );
+    colorbar_max = MAX(colorbar_max, colorbar_eps);
+    if(ABS(colorbar_vals[0])<colorbar_eps*(colorbar_max + COLORBAR_ABS)){
+      exp_factor = colorbar_exponents[1];
     }
     else{
       exp_factor = colorbar_exponents[0];
@@ -2650,7 +2656,7 @@ void DrawVerticalColorbarRegLabels(void){
     }
     for(i = 0; i<nrgb-1; i++){
       if(iposition==i)continue;
-      Float2StringExp(colorbar_labels[i], colorbar_vals[i], ncolorlabel_digits, force_fixedpoint, exp_factor);
+      Float2StringExp(colorbar_labels[i], colorbar_vals[i], colorbar_max, colorbar_eps, ncolorlabel_digits, force_fixedpoint, exp_factor);
     }
     for(i = 0; i < nrgb - 1; i++){
       float vert_position;
@@ -2796,6 +2802,8 @@ void DrawVerticalColorbarRegLabels(void){
         valmax = sb->colorvalues[nrgb-1];
       }
       valmax = ScaleFloat2Float(valmax, slicefactor);
+      colorbar_max = MAX(ABS(valmax), ABS(valmin));
+      colorbar_max = MAX(colorbar_max, colorbar_eps);
 
       for(i = 0; i<nrgb-1; i++){
         float val;
@@ -2814,8 +2822,8 @@ void DrawVerticalColorbarRegLabels(void){
         colorbar_vals[i] = val;
         GetMantissaExponent(ABS(val), colorbar_exponents + i);
       }
-      if(colorbar_vals[0] == 0.0){
-        exp_factor = colorbar_exponents[nrgb-2];
+      if(ABS(colorbar_vals[0])<colorbar_eps*(colorbar_max + COLORBAR_ABS)){
+        exp_factor = colorbar_exponents[1];
       }
       else{
         exp_factor = colorbar_exponents[0];
@@ -2829,7 +2837,7 @@ void DrawVerticalColorbarRegLabels(void){
       }
       for(i = 0; i<nrgb-1; i++){
         if(iposition==i)continue;
-        Float2StringExp(colorbar_labels[i], colorbar_vals[i], ncolorlabel_digits, force_fixedpoint, exp_factor);
+        Float2StringExp(colorbar_labels[i], colorbar_vals[i], colorbar_max, colorbar_eps, ncolorlabel_digits, force_fixedpoint, exp_factor);
       }
       for(i = 0; i < nrgb - 1; i++){
         float vert_position;
@@ -2935,8 +2943,10 @@ void DrawVerticalColorbarRegLabels(void){
       colorbar_vals[i] = val;
       GetMantissaExponent(ABS(val), colorbar_exponents + i);
     }
-    if(colorbar_vals[0] == 0.0){
-      exp_factor = colorbar_exponents[nrgb-2];
+    colorbar_max = MAX(ABS(colorbar_vals[0]), ABS(colorbar_vals[nrgb-2]));
+    colorbar_max = MAX(colorbar_max, colorbar_eps);
+    if(ABS(colorbar_vals[0])<colorbar_eps*(colorbar_max + COLORBAR_ABS)){
+      exp_factor = colorbar_exponents[1];
     }
     else{
       exp_factor = colorbar_exponents[0];
@@ -2950,7 +2960,7 @@ void DrawVerticalColorbarRegLabels(void){
     }
     for(i = 0; i<nrgb-1; i++){
       if(iposition==i)continue;
-      Float2StringExp(colorbar_labels[i], colorbar_vals[i], ncolorlabel_digits, force_fixedpoint, exp_factor);
+      Float2StringExp(colorbar_labels[i], colorbar_vals[i], colorbar_max, colorbar_eps, ncolorlabel_digits, force_fixedpoint, exp_factor);
     }
     for(i = 0; i < nrgb - 1; i++){
       float vert_position;
@@ -3142,8 +3152,10 @@ void DrawVerticalColorbarRegLabels(void){
         colorbar_vals[i] = val;
         GetMantissaExponent(ABS(val), colorbar_exponents + i);
       }
-      if(colorbar_vals[0] == 0.0){
-        exp_factor = colorbar_exponents[nrgb-2];
+      colorbar_max = MAX(ABS(colorbar_vals[0]), ABS(colorbar_vals[nrgb-2]));
+      colorbar_max = MAX(colorbar_max, colorbar_eps);
+      if(ABS(colorbar_vals[0])<colorbar_eps*(colorbar_max + COLORBAR_ABS)){
+        exp_factor = colorbar_exponents[1];
       }
       else{
         exp_factor = colorbar_exponents[0];
@@ -3157,7 +3169,7 @@ void DrawVerticalColorbarRegLabels(void){
       }
       for(i = 0; i<nrgb-1; i++){
         if(iposition==i)continue;
-        Float2StringExp(colorbar_labels[i], colorbar_vals[i], ncolorlabel_digits, force_fixedpoint, exp_factor);
+        Float2StringExp(colorbar_labels[i], colorbar_vals[i], colorbar_max, colorbar_eps, ncolorlabel_digits, force_fixedpoint, exp_factor);
       }
       for(i = 0; i < nrgb - 1; i++){
         float vert_position;

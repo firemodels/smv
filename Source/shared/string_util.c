@@ -424,13 +424,17 @@ void Truncate(float val, char *cval, int ndigits){
 
 /* ------------------ Float2StringExp ------------------------ */
 
-void Float2StringExp(char *c_val, float val, int ndigits, int fixedpoint_labels, int exp_offset){
+void Float2StringExp(char *c_val, float val, float valmax, float eps, int ndigits, int fixedpoint_labels, int exp_offset){
   float mantissa;
   int exponent;
 
+#define COLORBAR_ABS 0.0
+  if(ABS(val)<eps*(valmax + COLORBAR_ABS)){
+    val=0.0;
+  }
   mantissa = GetMantissaExponent(ABS(val), &exponent);
   exponent -= exp_offset;
-  if(mantissa!=0.0)mantissa += 5.0*pow(10.0, -ndigits);
+  if(mantissa!=0.0)mantissa += 5.0*eps;
   if(ABS(exponent)<5||fixedpoint_labels==1||val==0.0){
     char c_abs_val[32];
 
