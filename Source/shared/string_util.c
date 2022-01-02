@@ -557,6 +557,7 @@ void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixe
   float valmax;
   int exp_offset;
   float eps;
+  int doit;
 
   valmax = MAX(ABS(vals[0]), ABS(vals[nvals-1]));
   eps = valmax/pow(10.0, ndigits);
@@ -573,24 +574,46 @@ void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixe
   }
 
   GetCMantissaExponent(c_vals[0], &exponent_min);
+  exponent_max = exponent_max;
   for(i=1; i<nvals; i++){
     GetCMantissaExponent(c_vals[i], &exponent);
     exponent_min = MIN(exponent_min, exponent);
+    exponent_max = MAX(exponent_max, exponent);
   }
 
   exp_offset = exponent_min;
-  if(ABS(exp_offset)<4){
-    exp_offset = 0;
-    strcpy(exp_offset_label, "");
+
+  doit = 1;
+  if(exponent_min>3)doit = 0;
+  if(exponent_max<-3)doit = 0;
+  if(fixedpoint_labels==1)doit = 1;
+
+  if(doit==1){
+    if(ABS(exp_offset)>3){
+      sprintf(exp_offset_label, "*10^%i", exp_offset);
+    }
+    else{
+      exp_offset = 0;
+      strcpy(exp_offset_label, "");
+    }
+    for(i=0; i<nvals; i++){
+      ShiftDecimal(c_vals[i], -exp_offset);
+    }
   }
   else{
-    sprintf(exp_offset_label, "*10^%i", exp_offset);
-  }
+    strcpy(exp_offset_label, "");
+    for(i=0; i<nvals; i++){
+      float mantissa;
+      char c_mantissa[20];
 
-  for(i=0; i<nvals; i++){
-    ShiftDecimal(c_vals[i], -exp_offset);
+      mantissa = GetCMantissaExponent(c_vals[i], &exponent);
+      Truncate(mantissa, c_mantissa, ndigits);
+      TrimZeros(c_mantissa);
+      sprintf(c_vals[i],"%sE%i ",c_mantissa, exponent);
+    }
   }
 }
+
 
 /* ------------------ Float2String ------------------------ */
 
