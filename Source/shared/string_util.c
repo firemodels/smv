@@ -481,6 +481,43 @@ void TruncateExp(float val, char *cval, int ndigits){
   strcat(cval, label);
 }
 
+/* ------------------ Round ------------------------ */
+
+void Round(float val, char *cval, int ndigits){
+  int i, count = 0, have_period = 0;
+  int carryindex = -1;
+
+  sprintf(cval, "%f", val);
+  for(i = 0; i<(int)strlen(cval); i++){
+    if(cval[i]=='.')have_period = 1;
+    if(cval[i]=='.'||cval[i]=='-'||cval[i]=='+')continue;
+    count++;
+    if(count>ndigits){
+      if(have_period==1){
+        if(cval[i]>='5'){
+          carryindex = i;
+        }
+        cval[i] = 0;
+        break;
+      }
+      else{
+        cval[i] = '0';
+      }
+    }
+  }
+  if(carryindex<0)return;
+  for(i = carryindex-1; i>=0; i--){
+    if(cval[i]<'0'||cval[i]>'9')continue;
+    cval[i]++;
+    if((cval[i]-'0')==10){
+      cval[i] = '0';
+    }
+    else{
+      break;
+    }
+  }
+}
+
 /* ------------------ Truncate ------------------------ */
 
 void Truncate(float val, char *cval, int ndigits){
@@ -558,9 +595,12 @@ void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixe
   int exp_offset;
   float eps;
   int doit;
+  int logeps=0;
 
   valmax = MAX(ABS(vals[0]), ABS(vals[nvals-1]));
-  eps = valmax/pow(10.0, ndigits);
+  if(valmax!=0.0)logeps = (int)floor(log10((double)valmax));
+  logeps -= ndigits;
+  eps = pow(10.0, logeps)/2.0;
 
   GetMantissaExponent(valmax, &exponent_max);
   ndigit_truncate = exponent_max-ndigits;
@@ -568,17 +608,26 @@ void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixe
   for(i=0; i<nvals; i++){
     float val;
 
-    val = vals[i]+eps/2.0;
+    val = vals[i]+eps;
     if(ABS(val)<2.0*eps)val = 0.0;
     TruncateExp(val, c_vals[i], ndigit_truncate);
   }
 
-  GetCMantissaExponent(c_vals[0], &exponent_min);
-  exponent_max = exponent_max;
-  for(i=1; i<nvals; i++){
-    GetCMantissaExponent(c_vals[i], &exponent);
-    exponent_min = MIN(exponent_min, exponent);
-    exponent_max = MAX(exponent_max, exponent);
+  exponent_min = 1;
+  exponent_max = 0;
+  for(i=0; i<nvals; i++){
+    float mantissa;
+
+    mantissa = GetCMantissaExponent(c_vals[i], &exponent);
+    if(ABS(mantissa)==0.0)continue;
+    if(exponent_max<exponent_min){
+      exponent_min = exponent;
+      exponent_max = exponent;
+    }
+    else{
+      exponent_min = MIN(exponent_min, exponent);
+      exponent_max = MAX(exponent_max, exponent);
+    }
   }
 
   exp_offset = exponent_min;
@@ -607,9 +656,14 @@ void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixe
       char c_mantissa[20];
 
       mantissa = GetCMantissaExponent(c_vals[i], &exponent);
-      Truncate(mantissa, c_mantissa, ndigits);
+      Round(mantissa, c_mantissa, ndigits);
       TrimZeros(c_mantissa);
-      sprintf(c_vals[i],"%sE%i ",c_mantissa, exponent);
+      if(strcmp(c_mantissa, "0.0")==0){
+        strcpy(c_vals[i], c_mantissa);
+      }
+      else{
+        sprintf(c_vals[i], "%sE%i ", c_mantissa, exponent);
+      }
     }
   }
 }
