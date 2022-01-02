@@ -1937,7 +1937,7 @@ float DistPointLineSeg(float *point, float *xyz1, float *xyz2){
 void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxdist){
   int i, j, k;
   float xmin, xmax, ymin, ymax, zmin, zmax;
-  float minval, maxval, dist;
+  float minval, maxval;
   float dx, dy, dz;
 
   //         6------------7
@@ -1965,9 +1965,8 @@ void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxd
   dy = (ymax - ymin)/(float)(NIJK-1);
   dz = (zmax - zmin)/(float)(NIJK-1);
 
-  dist = DistPtXYZ(point, xmin, ymin, zmin);
-  minval = dist;
-  maxval = dist;
+  minval = DistPtXYZ(point, xmin, ymin, zmin);
+  maxval = minval;
   for(i = 0; i<NIJK; i++){
     float xx;
 

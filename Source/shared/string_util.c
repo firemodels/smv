@@ -453,7 +453,6 @@ float GetCMantissaExponent(char *cval, int *exp10){
 /* ------------------ TruncateExp ------------------------ */
 
 void TruncateExp(float val, char *cval, int ndigits){
-  int i;
   char *period, *c, *cstart, label[256];
   int sign=1, have_period=0;
 
@@ -507,7 +506,6 @@ void Truncate(float val, char *cval, int ndigits){
 /* ------------------ ShiftDecimal ------------------------ */
 
 void ShiftDecimal(char *cval, int nshift){
-  int decimal, digits[100], ndigits;
   int i, ii, iperiod;
   char *period, cvalcopy[100], cvalcopy2[100], *trim;
 
@@ -553,11 +551,10 @@ void ShiftDecimal(char *cval, int nshift){
 /* ------------------ Floats2Strings ------------------------ */
 
 void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixedpoint_labels, char *exp_offset_label){
-  float mantissa;
   int exponent, exponent_min, exponent_max;
   int ndigit_truncate;
   int i;
-  float val1, val2, valmax;
+  float valmax;
   int exp_offset;
   float eps;
 
@@ -577,8 +574,6 @@ void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixe
 
   GetCMantissaExponent(c_vals[0], &exponent_min);
   for(i=1; i<nvals; i++){
-    int exponent;
-
     GetCMantissaExponent(c_vals[i], &exponent);
     exponent_min = MIN(exponent_min, exponent);
   }

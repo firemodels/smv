@@ -2409,7 +2409,6 @@ void DrawVerticalColorbarRegLabels(void){
 
   int showcfast_local = 0;
   int show_slice_colorbar_local = 0;
-  int exp_factor;
   char exp_factor_label[256];
 
   max_colorbar_label_width = 0.0;
