@@ -317,6 +317,18 @@ void TrimZeros(char *line){
   line[0] = '\0';
 }
 
+/* ------------------ TrimFrontZeros ------------------------ */
+
+char *TrimFrontZeros(char *line){
+  char *c;
+
+  for(c = line; c<line+strlen(line); c++){
+    if(c[0]!='0')return c;
+    if(c[0]=='0'&&c[1]=='.')return c;
+  }
+  return line;;
+}
+
 /* ------------------ TrimMZeros ------------------------ */
 
 void TrimMZeros(char *line){
@@ -400,6 +412,76 @@ char *GetFormat(int bef, int aft, char *format){
   return format;
 }
 
+/* ------------------ GetMantissaExponent ------------------------ */
+
+float GetMantissaExponent(float x, int *exp10){
+  float xabs, mantissa;
+
+  xabs = ABS((double)x);
+  if(x==0.0f){
+    *exp10=0;
+    return 0.0f;
+  }
+  mantissa = log10((double)xabs);
+  *exp10 = (int)floor((double)mantissa);
+
+  mantissa = pow((double)10.0f,(double)mantissa-(double)*exp10);
+  if(x<0)mantissa = -mantissa;
+  return mantissa;
+}
+
+/* ------------------ GetCMantissaExponent ------------------------ */
+
+float GetCMantissaExponent(char *cval, int *exp10){
+  float x, xabs, mantissa;
+
+  sscanf(cval, "%f", &x);
+
+  xabs = ABS((double)x);
+  if(x==0.0f){
+    *exp10=0;
+    return 0.0f;
+  }
+  mantissa = log10((double)xabs);
+  *exp10 = (int)floor((double)mantissa);
+
+  mantissa = pow((double)10.0f,(double)mantissa-(double)*exp10);
+  if(x<0)mantissa = -mantissa;
+  return mantissa;
+}
+
+/* ------------------ TruncateExp ------------------------ */
+
+void TruncateExp(float val, char *cval, int ndigits){
+  int i;
+  char *period, *c, *cstart, label[256];
+  int sign=1, have_period=0;
+
+  if(val<0.0)sign = -1;
+  sprintf(label, "%.12f", ABS((double)val));
+  period = strchr(label, '.');
+  if(period==NULL){
+    strcat(label, ".");
+    period = strchr(label, '.');
+  }
+  cstart = CLAMP(period-ndigits, label, label + strlen(label)-1);
+  for(c = cstart; *c!=0; c++){
+    if(*c=='.'){
+      have_period = 1;
+    }
+    else{
+      *c = '0';
+      if(have_period==1){
+        c[1] = 0;
+        break;
+      }
+    }
+  }
+  strcpy(cval, "");
+  if(sign==-1)strcat(cval, "-");
+  strcat(cval, label);
+}
+
 /* ------------------ Truncate ------------------------ */
 
 void Truncate(float val, char *cval, int ndigits){
@@ -422,40 +504,96 @@ void Truncate(float val, char *cval, int ndigits){
   }
 }
 
-/* ------------------ Float2StringExp ------------------------ */
+/* ------------------ ShiftDecimal ------------------------ */
 
-void Float2StringExp(char *c_val, float val, float valmax, float eps, int ndigits, int fixedpoint_labels, int exp_offset){
-  float mantissa;
-  int exponent;
+void ShiftDecimal(char *cval, int nshift){
+  int decimal, digits[100], ndigits;
+  int i, ii, iperiod;
+  char *period, cvalcopy[100], cvalcopy2[100], *trim;
 
-#define COLORBAR_ABS 0.0
-  if(ABS(val)<eps*(valmax + COLORBAR_ABS)){
-    val=0.0;
+  period = strchr(cval, '.');
+  if(period==NULL)strcat(cval, ".");
+
+  ii = 0;
+  if(nshift<0){
+    for(i = 0; i<ABS(nshift); i++){
+      cvalcopy[ii++] = '0';
+    }
   }
-  mantissa = GetMantissaExponent(ABS(val), &exponent);
-  exponent -= exp_offset;
-  if(mantissa!=0.0)mantissa += 5.0*eps;
-  if(ABS(exponent)<5||fixedpoint_labels==1||val==0.0){
-    char c_abs_val[32];
+  for(i = 0; i<strlen(cval); i++){
+    if(cval[i]=='.'){
+      iperiod = i;
+      continue;
+    }
+    cvalcopy[ii++] = cval[i];
+  }
+  if(nshift>0){
+    for(i=0; i<nshift; i++){
+      cvalcopy[ii++] = '0';
+    }
+  }
+  cvalcopy[ii] = 0;
+  if(nshift>0)iperiod += nshift;
 
-    val = SIGN(val)*mantissa*pow(10.0, exponent);
-    Truncate(ABS(val), c_abs_val, ndigits);
-    TrimZeros(c_abs_val);
-    strcpy(c_val, "");
-    if(val<0.0)strcat(c_val, "-");
-    strcat(c_val, c_abs_val);
+  ii = 0;
+  for(i = 0; i<iperiod; i++){
+    cvalcopy2[i] = cvalcopy[i];
+  }
+  cvalcopy2[iperiod] = '.';
+  for(i = iperiod; i<strlen(cvalcopy); i++){
+    cvalcopy2[i+1] = cvalcopy[i];
+  }
+  cvalcopy2[i] = 0;
+
+  TrimZeros(cvalcopy2);
+  trim = TrimFrontZeros(cvalcopy2);
+  strcpy(cval, trim);
+}
+
+/* ------------------ Floats2Strings ------------------------ */
+
+void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixedpoint_labels, char *exp_offset_label){
+  float mantissa;
+  int exponent, exponent_min, exponent_max;
+  int ndigit_truncate;
+  int i;
+  float val1, val2, valmax;
+  int exp_offset;
+  float eps;
+
+  valmax = MAX(ABS(vals[0]), ABS(vals[nvals-1]));
+  eps = valmax/pow(10.0, ndigits);
+
+  GetMantissaExponent(valmax, &exponent_max);
+  ndigit_truncate = exponent_max-ndigits;
+
+  for(i=0; i<nvals; i++){
+    float val;
+
+    val = vals[i]+eps/2.0;
+    if(ABS(val)<2.0*eps)val = 0.0;
+    TruncateExp(val, c_vals[i], ndigit_truncate);
+  }
+
+  GetCMantissaExponent(c_vals[0], &exponent_min);
+  for(i=1; i<nvals; i++){
+    int exponent;
+
+    GetCMantissaExponent(c_vals[i], &exponent);
+    exponent_min = MIN(exponent_min, exponent);
+  }
+
+  exp_offset = exponent_min;
+  if(ABS(exp_offset)<4){
+    exp_offset = 0;
+    strcpy(exp_offset_label, "");
   }
   else{
-    char c_mantissa[32], c_exponent[32];
+    sprintf(exp_offset_label, "*10^%i", exp_offset);
+  }
 
-    Truncate(mantissa, c_mantissa, ndigits);
-    TrimZeros(c_mantissa);
-    sprintf(c_exponent, "%i", exponent);
-    strcpy(c_val, "");
-    if(val<0.0)strcat(c_val, "-");
-    strcat(c_val, c_mantissa);
-    strcat(c_val, "E");
-    strcat(c_val, c_exponent);
+  for(i=0; i<nvals; i++){
+    ShiftDecimal(c_vals[i], -exp_offset);
   }
 }
 
@@ -650,24 +788,6 @@ void Array2String(float *vals, int nvals, char *string){
   sprintf(cval,"%f",vals[nvals-1]);
   TrimZeros(cval);
   strcat(string,cval);
-}
-
-/* ------------------ GetMantissaExponent ------------------------ */
-
-float GetMantissaExponent(float x, int *exp10){
-  float xabs, mantissa;
-
-  xabs = ABS((double)x);
-  if(x==0.0f){
-    *exp10=0;
-    return 0.0f;
-  }
-  mantissa = log10((double)xabs);
-  *exp10 = (int)floor((double)mantissa);
-
-  mantissa = pow((double)10.0f,(double)mantissa-(double)*exp10);
-  if(x<0)mantissa = -mantissa;
-  return mantissa;
 }
 
 /* ------------------ GetFloatLabel ------------------------ */

@@ -118,6 +118,8 @@ EXTERNCPP void           TrimBack(char *line);
 EXTERNCPP void           TrimCommas(char *line);
 EXTERNCPP char          *TrimFront(char *line);
 EXTERNCPP void           TrimZeros(char *line);
+EXTERNCPP char          *TrimFrontZeros(char *line);
+
 EXTERNCPP void           TrimMZeros(char *line);
 EXTERNCPP char          *Strstr(char *c, char *key);
 EXTERNCPP char          *STRSTR(char *c, const char *key);
@@ -125,7 +127,7 @@ EXTERNCPP void           ScaleString(const char *stringfrom, char *stringto, con
 EXTERNCPP void           ScaleFloat2String(float floatfrom, char *stringto, const float *scale);
 EXTERNCPP void           Num2String(char *string, float tval);
 EXTERNCPP void           Float2String(char *string, float tval, int ndecimals, int fixed_point);
-EXTERNCPP void           Float2StringExp(char *string, float tval, float valmax, float eps, int ndecimals, int fixed_point, int exp_offset);
+EXTERNCPP void           Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixedpoint_labels, char *exp_offset_label);
 EXTERNCPP char          *TrimFrontBack(char *buffer);
 EXTERNCPP int            STRCMP(const char *s1, const char *s2);
 EXTERNCPP char          *GetChid(char *file, char *buffer);

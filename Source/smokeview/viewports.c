@@ -252,6 +252,8 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
     max_width = MAX(max_width, boundary_label_width);
     max_width = MAX(max_width, plot3d_label_width);
     max_width = MAX(max_width, zone_label_width);
+    max_width = MAX(max_width, max_colorbar_label_width);
+
     return max_width;
   }
 
@@ -1935,7 +1937,7 @@ float DistPointLineSeg(float *point, float *xyz1, float *xyz2){
 void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxdist){
   int i, j, k;
   float xmin, xmax, ymin, ymax, zmin, zmax;
-  float minval, maxval;
+  float minval, maxval, dist;
   float dx, dy, dz;
 
   //         6------------7
@@ -1963,8 +1965,9 @@ void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxd
   dy = (ymax - ymin)/(float)(NIJK-1);
   dz = (zmax - zmin)/(float)(NIJK-1);
 
-  minval = DistPtXYZ(point, xmin, ymin, zmin);
-  maxval = minval;
+  dist = DistPtXYZ(point, xmin, ymin, zmin);
+  minval = dist;
+  maxval = dist;
   for(i = 0; i<NIJK; i++){
     float xx;
 

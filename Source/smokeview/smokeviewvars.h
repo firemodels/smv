@@ -35,6 +35,7 @@ SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
 #endif
 
+SVEXTERN float SVDECL(max_colorbar_label_width, 0.0);
 SVEXTERN char SVDECL(**colorbar_labels,  NULL);
 SVEXTERN float SVDECL(*colorbar_vals,    NULL);
 SVEXTERN int SVDECL(*colorbar_exponents, NULL);
