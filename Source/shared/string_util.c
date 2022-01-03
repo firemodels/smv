@@ -454,7 +454,6 @@ float GetCMantissaExponent(char *cval, int *exp10){
 
 void RoundPos(float val, char *cval, int ndigits){
   int i, count = 0, firstdigit=-1, lastdigit = 0;
-  int carryindex = -1;
   char label[256];
 
   val = ABS(val);
