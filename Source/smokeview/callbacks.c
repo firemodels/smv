@@ -2801,6 +2801,10 @@ void Keyboard(unsigned char key, int flag){
       Plot3DListMenu(iplot3dtimelist);
       updatemenu = 1;
       break;
+    case '-':
+      break;
+    case ' ':
+      break;
     default:
       ASSERT(FFALSE);
       break;

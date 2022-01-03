@@ -2403,15 +2403,19 @@ void DrawVerticalColorbarRegLabels(void){
   int dohist = 0;
 
   int fed_slice = 0;
+  float colorbar_max, colorbar_eps;
 
   GLfloat *foreground_color, *red_color;
 
   int showcfast_local = 0;
   int show_slice_colorbar_local = 0;
-  int exp_factor;
   char exp_factor_label[256];
 
+  max_colorbar_label_width = 0.0;
+
   UpdateShowSliceColorbar(&showcfast_local, &show_slice_colorbar_local);
+
+  colorbar_eps = pow(10.0, -ncolorlabel_digits);
 
   // -------------- compute columns where left labels will occur ------------
 
@@ -2633,31 +2637,16 @@ void DrawVerticalColorbarRegLabels(void){
       val = part5propinfo[global_prop_index].partlabelvals[i + 1];
       val = ScaleFloat2Float(val, partfactor);
       colorbar_vals[i] = val;
-      GetMantissaExponent(ABS(val), colorbar_exponents + i);
     }
-    if(colorbar_vals[0] == 0.0){
-      exp_factor = colorbar_exponents[nrgb-2];
-    }
-    else{
-      exp_factor = colorbar_exponents[0];
-    }
-    if(ABS(exp_factor)<4){
-      exp_factor = 0;
-      strcpy(exp_factor_label,"");
-    }
-    else{
-      sprintf(exp_factor_label,"*10^%i",exp_factor);
-    }
-    for(i = 0; i<nrgb-1; i++){
-      if(iposition==i)continue;
-      Float2StringExp(colorbar_labels[i], colorbar_vals[i], ncolorlabel_digits, force_fixedpoint, exp_factor);
-    }
+    Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, exp_factor_label);
+    max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
     for(i = 0; i < nrgb - 1; i++){
       float vert_position;
 
       vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
       if(iposition == i)continue;
       OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
+      max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(colorbar_labels[i]));
     }
     glPopMatrix();
   }
@@ -2796,6 +2785,8 @@ void DrawVerticalColorbarRegLabels(void){
         valmax = sb->colorvalues[nrgb-1];
       }
       valmax = ScaleFloat2Float(valmax, slicefactor);
+      colorbar_max = MAX(ABS(valmax), ABS(valmin));
+      colorbar_max = MAX(colorbar_max, colorbar_eps);
 
       for(i = 0; i<nrgb-1; i++){
         float val;
@@ -2812,31 +2803,16 @@ void DrawVerticalColorbarRegLabels(void){
           val = SHIFT_VAL(val, valmin, valmax, 1.0/colorbar_shift);
         }
         colorbar_vals[i] = val;
-        GetMantissaExponent(ABS(val), colorbar_exponents + i);
       }
-      if(colorbar_vals[0] == 0.0){
-        exp_factor = colorbar_exponents[nrgb-2];
-      }
-      else{
-        exp_factor = colorbar_exponents[0];
-      }
-      if(ABS(exp_factor)<4){
-        exp_factor = 0;
-        strcpy(exp_factor_label,"");
-      }
-      else{
-        sprintf(exp_factor_label,"*10^%i",exp_factor);
-      }
-      for(i = 0; i<nrgb-1; i++){
-        if(iposition==i)continue;
-        Float2StringExp(colorbar_labels[i], colorbar_vals[i], ncolorlabel_digits, force_fixedpoint, exp_factor);
-      }
+      Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, exp_factor_label);
+      max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
       for(i = 0; i < nrgb - 1; i++){
         float vert_position;
 
         vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
         if(iposition == i)continue;
         OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
+        max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(colorbar_labels[i]));
       }
     }
     glPopMatrix();
@@ -2935,23 +2911,8 @@ void DrawVerticalColorbarRegLabels(void){
       colorbar_vals[i] = val;
       GetMantissaExponent(ABS(val), colorbar_exponents + i);
     }
-    if(colorbar_vals[0] == 0.0){
-      exp_factor = colorbar_exponents[nrgb-2];
-    }
-    else{
-      exp_factor = colorbar_exponents[0];
-    }
-    if(ABS(exp_factor)<4){
-      exp_factor = 0;
-      strcpy(exp_factor_label,"");
-    }
-    else{
-      sprintf(exp_factor_label,"*10^%i",exp_factor);
-    }
-    for(i = 0; i<nrgb-1; i++){
-      if(iposition==i)continue;
-      Float2StringExp(colorbar_labels[i], colorbar_vals[i], ncolorlabel_digits, force_fixedpoint, exp_factor);
-    }
+    Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, exp_factor_label);
+    max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
     for(i = 0; i < nrgb - 1; i++){
       float vert_position;
 
@@ -2959,6 +2920,7 @@ void DrawVerticalColorbarRegLabels(void){
 
       if(iposition == i)continue;
       OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
+      max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(colorbar_labels[i]));
     }
     glPopMatrix();
   }
@@ -3034,6 +2996,7 @@ void DrawVerticalColorbarRegLabels(void){
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
       iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
       OutputBarText(0.0, vert_position, red_color, zonecolorlabel_ptr);
+      max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(zonecolorlabel_ptr));
     }
     for(i = 0; i < nrgb - 1; i++){
       float vert_position;
@@ -3053,6 +3016,7 @@ void DrawVerticalColorbarRegLabels(void){
       Float2String(zonecolorlabel, val, ncolorlabel_digits, force_fixedpoint);
       zonecolorlabel_ptr = zonecolorlabel;
       OutputBarText(0.0, vert_position, foreground_color, zonecolorlabel_ptr);
+      max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(zonecolorlabel_ptr));
     }
     strcpy(exp_factor_label, "");
     SNIFF_ERRORS("after zone left labels");
@@ -3081,6 +3045,7 @@ void DrawVerticalColorbarRegLabels(void){
     OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, "Temp");
     OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
     OutputBarText(0.0, 0                                       , foreground_color, exp_factor_label);
+    max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
     glPopMatrix();
     SNIFF_ERRORS("After ZONE labels");
   }
@@ -3142,23 +3107,8 @@ void DrawVerticalColorbarRegLabels(void){
         colorbar_vals[i] = val;
         GetMantissaExponent(ABS(val), colorbar_exponents + i);
       }
-      if(colorbar_vals[0] == 0.0){
-        exp_factor = colorbar_exponents[nrgb-2];
-      }
-      else{
-        exp_factor = colorbar_exponents[0];
-      }
-      if(ABS(exp_factor)<4){
-        exp_factor = 0;
-        strcpy(exp_factor_label,"");
-      }
-      else{
-        sprintf(exp_factor_label,"*10^%i",exp_factor);
-      }
-      for(i = 0; i<nrgb-1; i++){
-        if(iposition==i)continue;
-        Float2StringExp(colorbar_labels[i], colorbar_vals[i], ncolorlabel_digits, force_fixedpoint, exp_factor);
-      }
+      Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, exp_factor_label);
+      max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
       for(i = 0; i < nrgb - 1; i++){
         float vert_position;
 
@@ -3166,6 +3116,7 @@ void DrawVerticalColorbarRegLabels(void){
 
         if(iposition == i)continue;
         OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
+        max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(colorbar_labels[i]));
       }
     }
     else{

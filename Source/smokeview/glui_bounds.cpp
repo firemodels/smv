@@ -67,6 +67,7 @@ class bounds_dialog{
   GLUI_Checkbox    *CHECKBOX_set_chopmin, *CHECKBOX_set_chopmax, *CHECKBOX_cache;
   GLUI_Checkbox    *CHECKBOX_research_mode, *CHECKBOX_percentile_mode, *CHECKBOX_percentile_draw;
   GLUI_Checkbox    *CHECKBOX_hist_show_labels;
+  GLUI_Checkbox    *CHECKBOX_fixedpoint;
   GLUI_RadioGroup  *RADIO_set_valtype,  *RADIO_set_valmin, *RADIO_set_valmax;
   GLUI_RadioButton *RADIO_button_loaded_min, *RADIO_button_loaded_max;
   GLUI_RadioButton *RADIO_button_all_min, *RADIO_button_all_max;
@@ -117,6 +118,7 @@ class bounds_dialog{
   void set_research_mode(int flag);
   void set_percentile_mode(int flag);
 
+  void set_fixedpoint(int flag);
   void set_colorbar_digits(int ndigits);
   void set_percentiles(float val_00, float per_valmin, float val_50, float per_valmax, float val_100);
   int  set_valtype(char *label);
@@ -311,6 +313,12 @@ void bounds_dialog::set_percentile_mode(int flag){
   CB(BOUND_CACHE_DATA);
 }
 
+/* ------------------ set_fixedpoint ------------------------ */
+
+void bounds_dialog::set_fixedpoint(int flag){
+  if(CHECKBOX_fixedpoint!=NULL)CHECKBOX_fixedpoint->set_int_val(flag);
+}
+
 /* ------------------ set_colorbar_digits ------------------------ */
 
 void bounds_dialog::set_colorbar_digits(int ndigits){
@@ -366,7 +374,7 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
                           void Callback(int var),
                           GLUI_Update_CB PROC_CB, procdata *procinfo, int *nprocinfo){
   GLUI_Rollout *ROLLOUT_bound;
-  GLUI_Panel *PANEL_bound2, *PANEL_minmax, *PANEL_minmax2, *PANEL_buttons;
+  GLUI_Panel *PANEL_bound2, *PANEL_minmax, *PANEL_minmax2, *PANEL_minmax3, *PANEL_buttons, *PANEL_colorbar, *PANEL_bounds;
   GLUI_Panel *PANEL_truncate_min, *PANEL_truncate_max, *PANEL_edit_min, *PANEL_edit_max;
   int i;
   char label1[64], label2[64];
@@ -407,12 +415,8 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
 
   glui_bounds->add_column_to_panel(PANEL_bound2, false);
 
-  ROLLOUT_bound = glui_bounds->add_rollout_to_panel(PANEL_bound2, "Bound data");
-  PANEL_minmax = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
-  CHECKBOX_research_mode   = glui_bounds->add_checkbox_to_panel(PANEL_minmax, _("global bounds for all data (research mode)"), &research_mode, BOUND_RESEARCH_MODE, Callback);
-  CHECKBOX_percentile_mode = glui_bounds->add_checkbox_to_panel(PANEL_minmax, _("percentile bounds for all data"),   &percentile_mode,    BOUND_PERCENTILE_MODE, Callback);
-  SPINNER_colorbar_digits  = glui_bounds->add_spinner_to_panel(PANEL_minmax,    "colorbar digits", GLUI_SPINNER_INT, &ncolorlabel_digits, BOUND_COLORBAR_DIGITS, Callback);
-  SPINNER_colorbar_digits->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
+  ROLLOUT_bound            = glui_bounds->add_rollout_to_panel(PANEL_bound2, "Bound data");
+  PANEL_minmax             = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
 
   CHECKBOX_cache = NULL;
   if(cache_flag!=NULL){
@@ -469,6 +473,17 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
   if(cache_flag!=NULL&&percentile_enabled==1){
     RADIO_button_percentile_max = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "percentile");
   }
+
+  PANEL_minmax3            = glui_bounds->add_panel_to_panel(PANEL_minmax, "", GLUI_PANEL_NONE);
+  PANEL_bounds             = glui_bounds->add_panel_to_panel(PANEL_minmax3, "bounds");
+  CHECKBOX_research_mode   = glui_bounds->add_checkbox_to_panel(PANEL_bounds, _("global (research mode)"), &research_mode,      BOUND_RESEARCH_MODE,   Callback);
+  CHECKBOX_percentile_mode = glui_bounds->add_checkbox_to_panel(PANEL_bounds, _("percentile"),             &percentile_mode,    BOUND_PERCENTILE_MODE, Callback);
+
+  glui_bounds->add_column_to_panel(PANEL_minmax3, false);
+  PANEL_colorbar           = glui_bounds->add_panel_to_panel(PANEL_minmax3, "colorbar labels");
+  SPINNER_colorbar_digits  = glui_bounds->add_spinner_to_panel(PANEL_colorbar,    "digits", GLUI_SPINNER_INT,     &ncolorlabel_digits, BOUND_COLORBAR_DIGITS, Callback);
+  SPINNER_colorbar_digits->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
+  CHECKBOX_fixedpoint      = glui_bounds->add_checkbox_to_panel(PANEL_colorbar, _("force fixed point"),                 &force_fixedpoint,   BOUND_COLORBAR_DIGITS, Callback);
 
   BUTTON_update_colors = NULL;
   SPINNER_percentile_min = NULL;
@@ -1142,6 +1157,15 @@ extern "C" void SetColorbarDigitsCPP(int ndigits){
   if(nplot3dinfo>0)plot3dboundsCPP.set_colorbar_digits(ndigits);
 }
 
+/* ------------------ SetFixedPointCPP ------------------------ */
+
+extern "C" void SetFixedPointCPP(int flag){
+  if(npatchinfo>0)patchboundsCPP.set_fixedpoint(flag);
+  if(nsliceinfo>0)sliceboundsCPP.set_fixedpoint(flag);
+  if(npartinfo>0)partboundsCPP.set_fixedpoint(flag);
+  if(nplot3dinfo>0)plot3dboundsCPP.set_fixedpoint(flag);
+}
+
 /* ------------------ SetPercentileMode ------------------------ */
 
 extern "C" void SetPercentileMode(int flag){
@@ -1712,6 +1736,7 @@ extern "C" void SliceBoundsCPP_CB(int var){
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
+    case BOUND_COLORBAR_DIGITS:
       break;
     case BOUND_PERCENTILE_MINVAL:
     case BOUND_PERCENTILE_MAXVAL:
@@ -2956,6 +2981,7 @@ GLUI_Checkbox *CHECKBOX_show_vector_slice = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_outlines = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_points = NULL;
 GLUI_Checkbox *CHECKBOX_show_slice_values = NULL;
+GLUI_Checkbox *CHECKBOX_fixedpoint = NULL;
 
 GLUI_Checkbox *CHECKBOX_show_iso_shaded=NULL;
 GLUI_Checkbox *CHECKBOX_show_iso_outline=NULL;
@@ -3303,6 +3329,7 @@ extern "C" void SetColorbarListIndex(int val){
 
 extern "C" void SetColorbarDigits(void){
   SPINNER_ncolorlabel_digits->set_int_val(ncolorlabel_digits);
+  if(CHECKBOX_fixedpoint!=NULL)CHECKBOX_fixedpoint->set_int_val(force_fixedpoint);
 }
 
 /* ------------------ UpdateColorbarFlip ------------------------ */
@@ -5103,10 +5130,10 @@ extern "C" void GluiBoundsSetup(int main_window){
   SPINNER_colorbar_selection_width = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("Selection width:"), GLUI_SPINNER_INT, &colorbar_selection_width, COLORBAND, SliceBoundCB);
   SPINNER_colorbar_selection_width->set_int_limits(COLORBAR_SELECTION_WIDTH_MIN, COLORBAR_SELECTION_WIDTH_MAX);
   SPINNER_ncolorlabel_digits = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("colorbar digits:"), GLUI_SPINNER_INT, &ncolorlabel_digits, COLORLABEL_DIGITS, SliceBoundCB);
-  glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force fixed point labels"), &force_fixedpoint);
   SPINNER_ncolorlabel_digits->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
   SPINNER_ncolorlabel_padding = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("padding:"), GLUI_SPINNER_INT, &ncolorlabel_padding, COLORLABEL_DIGITS, SliceBoundCB);
   SPINNER_ncolorlabel_padding->set_int_limits(0, 8, GLUI_LIMIT_CLAMP);
+  CHECKBOX_fixedpoint = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force fixed point labels"), &force_fixedpoint, COLORLABEL_DIGITS, SliceBoundCB);
 
   glui_bounds->add_column_to_panel(PANEL_cb11, false);
 

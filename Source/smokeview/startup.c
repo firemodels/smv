@@ -1723,7 +1723,6 @@ void InitVars(void){
   solidlinewidth=linewidth;
   visBLOCKold=-1;
 
-  nrgb=NRGB;
   nrgb_ini=0;
   nrgb2_ini=0;
   rgb_white=NRGB, rgb_yellow=NRGB+1, rgb_blue=NRGB+2, rgb_red=NRGB+3;

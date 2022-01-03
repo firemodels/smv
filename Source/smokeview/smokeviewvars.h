@@ -35,6 +35,7 @@ SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
 #endif
 
+SVEXTERN int SVDECL(max_colorbar_label_width, 0);
 SVEXTERN char SVDECL(**colorbar_labels,  NULL);
 SVEXTERN float SVDECL(*colorbar_vals,    NULL);
 SVEXTERN int SVDECL(*colorbar_exponents, NULL);
@@ -1414,7 +1415,7 @@ SVEXTERN int visBLOCKold;
 
 SVEXTERN int selectedcolorbar_index,selectedcolorbar_index2;
 SVEXTERN int planar_terrain_slice;
-SVEXTERN int nrgb;
+SVEXTERN int  SVDECL(nrgb, NRGB);
 SVEXTERN int nrgb_ini;
 SVEXTERN int nrgb2_ini;
 SVEXTERN int rgb_white, rgb_yellow, rgb_blue, rgb_red;

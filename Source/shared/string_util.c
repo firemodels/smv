@@ -317,6 +317,18 @@ void TrimZeros(char *line){
   line[0] = '\0';
 }
 
+/* ------------------ TrimFrontZeros ------------------------ */
+
+char *TrimFrontZeros(char *line){
+  char *c;
+
+  for(c = line; c<line+strlen(line); c++){
+    if(c[0]!='0')return c;
+    if(c[0]=='0'&&c[1]=='.')return c;
+  }
+  return line;;
+}
+
 /* ------------------ TrimMZeros ------------------------ */
 
 void TrimMZeros(char *line){
@@ -400,6 +412,113 @@ char *GetFormat(int bef, int aft, char *format){
   return format;
 }
 
+/* ------------------ GetMantissaExponent ------------------------ */
+
+float GetMantissaExponent(float x, int *exp10){
+  float xabs, mantissa;
+
+  xabs = ABS((double)x);
+  if(x==0.0f){
+    *exp10=0;
+    return 0.0f;
+  }
+  mantissa = log10((double)xabs);
+  *exp10 = (int)floor((double)mantissa);
+
+  mantissa = pow((double)10.0f,(double)mantissa-(double)*exp10);
+  if(x<0)mantissa = -mantissa;
+  return mantissa;
+}
+
+/* ------------------ GetCMantissaExponent ------------------------ */
+
+float GetCMantissaExponent(char *cval, int *exp10){
+  double x, xabs, mantissa;
+
+  sscanf(cval, "%lf", &x);
+
+  xabs = ABS((double)x);
+  if(x==0.0f){
+    *exp10=0;
+    return 0.0f;
+  }
+  mantissa = log10((double)xabs);
+  *exp10 = (int)floor((double)mantissa);
+
+  mantissa = pow((double)10.0f,(double)mantissa-(double)*exp10);
+  if(x<0)mantissa = -mantissa;
+  return (float)mantissa;
+}
+
+/* ------------------ RoundPos ------------------------ */
+
+void RoundPos(float val, char *cval, int ndigits){
+  int i, count = 0, firstdigit=-1, lastdigit = 0;
+  int carryindex = -1;
+  char label[256];
+
+  val = ABS(val);
+  if(1==0&&val>=1.0){
+    strcpy(label, "0");
+    sprintf(label+1, "%.12f", val);
+  }
+  else{
+    sprintf(label, "%.12f", val);
+  }
+  if(strchr(label, '.')==NULL){
+    strcat(label, ".0");
+  }
+  for(i = 0; i<(int)strlen(label); i++){
+    lastdigit++;
+    if(label[i]>='0'&&label[i]<='9'){
+      if(label[i]!='0'&&firstdigit<0)firstdigit = i;
+      if(firstdigit>=0)count++;
+      if(count>=ndigits)break;
+    }
+  }
+  if(label[lastdigit]=='.')lastdigit++;
+  label[lastdigit] += 5;
+  label[lastdigit+1] = 0;
+  for(i = lastdigit; i>0; i--){
+    if(label[i]>'9'){
+      label[i] -= 10;
+      if(label[i-1]=='.')i--;
+      label[i-1]++;
+    }
+    else{
+      if(label[i]=='.')i--;
+    }
+  }
+  for(i = strlen(label)-1; i>0; i--){
+    if(i<lastdigit)break;
+    if(label[i]!='.')label[i] = '0';
+  }
+  TrimZeros(label);
+  strcpy(cval, TrimFrontZeros(label));
+}
+
+/* ------------------ Round ------------------------ */
+
+void Round(float val, char *cval, int ndigits){
+  if(val>0.0){
+    RoundPos(val, cval, ndigits);
+  }
+  else if(val==0.0){
+    strcpy(cval, "0.0");
+  }
+  else{
+    char label[30];
+    int signval;
+
+    signval = SIGN(val);
+    RoundPos(ABS(val), label, ndigits);
+    strcpy(cval, "");
+    if(signval<0.0)strcat(cval, "-");
+    strcat(cval, label);
+  }
+  return;
+}
+
 /* ------------------ Truncate ------------------------ */
 
 void Truncate(float val, char *cval, int ndigits){
@@ -422,38 +541,131 @@ void Truncate(float val, char *cval, int ndigits){
   }
 }
 
-/* ------------------ Float2StringExp ------------------------ */
+/* ------------------ ShiftDecimal ------------------------ */
 
-void Float2StringExp(char *c_val, float val, int ndigits, int fixedpoint_labels, int exp_offset){
-  float mantissa;
-  int exponent;
+void ShiftDecimal(char *cval, int nshift){
+  int i, ii, iperiod;
+  char *period, cvalcopy[100], cvalcopy2[100], *trim;
 
-  mantissa = GetMantissaExponent(ABS(val), &exponent);
-  exponent -= exp_offset;
-  if(mantissa!=0.0)mantissa += 5.0*pow(10.0, -ndigits);
-  if(ABS(exponent)<5||fixedpoint_labels==1||val==0.0){
-    char c_abs_val[32];
+  period = strchr(cval, '.');
+  if(period==NULL)strcat(cval, ".");
 
-    val = SIGN(val)*mantissa*pow(10.0, exponent);
-    Truncate(ABS(val), c_abs_val, ndigits);
-    TrimZeros(c_abs_val);
-    strcpy(c_val, "");
-    if(val<0.0)strcat(c_val, "-");
-    strcat(c_val, c_abs_val);
+  ii = 0;
+  if(nshift<0){
+    for(i = 0; i<ABS(nshift); i++){
+      cvalcopy[ii++] = '0';
+    }
+  }
+  for(i = 0; i<strlen(cval); i++){
+    if(cval[i]=='.'){
+      iperiod = i;
+      continue;
+    }
+    cvalcopy[ii++] = cval[i];
+  }
+  if(nshift>0){
+    for(i=0; i<nshift; i++){
+      cvalcopy[ii++] = '0';
+    }
+  }
+  cvalcopy[ii] = 0;
+  if(nshift>0)iperiod += nshift;
+
+  ii = 0;
+  for(i = 0; i<iperiod; i++){
+    cvalcopy2[i] = cvalcopy[i];
+  }
+  cvalcopy2[iperiod] = '.';
+  for(i = iperiod; i<strlen(cvalcopy); i++){
+    cvalcopy2[i+1] = cvalcopy[i];
+  }
+  cvalcopy2[i+1] = 0;
+
+  TrimZeros(cvalcopy2);
+  trim = TrimFrontZeros(cvalcopy2);
+  strcpy(cval, trim);
+}
+
+/* ------------------ Floats2Strings ------------------------ */
+
+void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixedpoint_labels, char *exp_offset_label){
+  int exponent, exponent_min, exponent_max;
+  int i;
+  float valmax;
+  int exp_offset;
+  float eps;
+  int doit;
+  int logeps=0;
+
+  valmax = MAX(ABS(vals[0]), ABS(vals[nvals-1]));
+  if(valmax!=0.0)logeps = (int)floor(log10((double)valmax));
+  logeps -= ndigits;
+  eps = pow(10.0, logeps)/2.0;
+
+  GetMantissaExponent(valmax, &exponent_max);
+  for(i=0; i<nvals; i++){
+    float val;
+
+    val = vals[i];
+    if(ABS(val)<2.0*eps)val = 0.0;
+    Round(val, c_vals[i], ndigits);
+  }
+
+  exponent_min = 1;
+  exponent_max = 0;
+  for(i=0; i<nvals; i++){
+    float mantissa;
+
+    mantissa = GetCMantissaExponent(c_vals[i], &exponent);
+    if(ABS(mantissa)==0.0)continue;
+    if(exponent_max<exponent_min){
+      exponent_min = exponent;
+      exponent_max = exponent;
+    }
+    else{
+      exponent_min = MIN(exponent_min, exponent);
+      exponent_max = MAX(exponent_max, exponent);
+    }
+  }
+
+  exp_offset = exponent_min;
+
+  doit = 1;
+  if(exponent_min>3)doit = 0;
+  if(exponent_max<-3)doit = 0;
+  if(fixedpoint_labels==1)doit = 1;
+
+  if(doit==1){
+    if(ABS(exp_offset)>3){
+      sprintf(exp_offset_label, "*10^%i", exp_offset);
+    }
+    else{
+      exp_offset = 0;
+      strcpy(exp_offset_label, "");
+    }
+    for(i=0; i<nvals; i++){
+      ShiftDecimal(c_vals[i], -exp_offset);
+    }
   }
   else{
-    char c_mantissa[32], c_exponent[32];
+    strcpy(exp_offset_label, "");
+    for(i=0; i<nvals; i++){
+      float mantissa;
+      char c_mantissa[20];
 
-    Truncate(mantissa, c_mantissa, ndigits);
-    TrimZeros(c_mantissa);
-    sprintf(c_exponent, "%i", exponent);
-    strcpy(c_val, "");
-    if(val<0.0)strcat(c_val, "-");
-    strcat(c_val, c_mantissa);
-    strcat(c_val, "E");
-    strcat(c_val, c_exponent);
+      mantissa = GetCMantissaExponent(c_vals[i], &exponent);
+      Round(mantissa, c_mantissa, ndigits);
+      TrimZeros(c_mantissa);
+      if(strcmp(c_mantissa, "0.0")==0 || strcmp(c_mantissa, "-0.0")==0){
+        strcpy(c_vals[i], "0.0");
+      }
+      else{
+        sprintf(c_vals[i], "%sE%i ", c_mantissa, exponent);
+      }
+    }
   }
 }
+
 
 /* ------------------ Float2String ------------------------ */
 
@@ -646,24 +858,6 @@ void Array2String(float *vals, int nvals, char *string){
   sprintf(cval,"%f",vals[nvals-1]);
   TrimZeros(cval);
   strcat(string,cval);
-}
-
-/* ------------------ GetMantissaExponent ------------------------ */
-
-float GetMantissaExponent(float x, int *exp10){
-  float xabs, mantissa;
-
-  xabs = ABS((double)x);
-  if(x==0.0f){
-    *exp10=0;
-    return 0.0f;
-  }
-  mantissa = log10((double)xabs);
-  *exp10 = (int)floor((double)mantissa);
-
-  mantissa = pow((double)10.0f,(double)mantissa-(double)*exp10);
-  if(x<0)mantissa = -mantissa;
-  return mantissa;
 }
 
 /* ------------------ GetFloatLabel ------------------------ */
