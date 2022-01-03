@@ -171,6 +171,8 @@ EXTERNCPP void SetPercentileMode(int flag);
 EXTERNCPP void SetPercentileMinMax(float p_min, float p_max);
 EXTERNCPP void Plot3DBoundsCPP_CB(int var);
 EXTERNCPP void SetColorbarDigitsCPP(int ndigits);
+EXTERNCPP void SetFixedPointCPP(int flag);
+
 
 
 EXTERNCPP void ShiftColorbars(void);
