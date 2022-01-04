@@ -2415,7 +2415,6 @@ void UpdateDisplay(void){
     update_colorbar_digits = 0;
     SetColorbarDigitsCPP(ncolorlabel_digits);
     SetColorbarDigits();
-    SetFixedPointCPP(force_fixedpoint);
   }
   if(update_visColorbars==1){
     update_visColorbars = 0;
