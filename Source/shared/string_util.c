@@ -650,18 +650,13 @@ void ShiftDecimal(char *cval, int nshift){
 /* ------------------ Floats2Strings ------------------------ */
 
 void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixedpoint_labels, char *exp_offset_label){
-  int exponent, exponent_min, exponent_max, exponent_val, exponent_valmax;
+  int exponent, exponent_min, exponent_max, exponent_val;
   int i;
   float valmax;
   int exp_offset;
-  float eps;
   int doit;
-  int logeps=0;
 
   valmax = MAX(ABS(vals[0]), ABS(vals[nvals-1]));
-  if(valmax!=0.0)logeps = (int)floor(log10((double)valmax));
-  logeps -= ndigits;
-  eps = pow(10.0, logeps)/2.0;
 
   GetMantissaExponent(valmax, &exponent_max);
   for(i=0; i<nvals; i++){
