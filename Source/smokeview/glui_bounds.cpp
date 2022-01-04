@@ -440,6 +440,17 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
   RADIO_button_percentile_max = NULL;
   RADIO_button_percentile_min = NULL;
 
+  PANEL_minmax3            = glui_bounds->add_panel_to_panel(PANEL_minmax, "", GLUI_PANEL_NONE);
+  PANEL_bounds             = glui_bounds->add_panel_to_panel(PANEL_minmax3, "bounds");
+  CHECKBOX_research_mode   = glui_bounds->add_checkbox_to_panel(PANEL_bounds, _("global (research mode)"), &research_mode,      BOUND_RESEARCH_MODE,   Callback);
+  CHECKBOX_percentile_mode = glui_bounds->add_checkbox_to_panel(PANEL_bounds, _("percentile"),             &percentile_mode,    BOUND_PERCENTILE_MODE, Callback);
+
+  glui_bounds->add_column_to_panel(PANEL_minmax3, false);
+  PANEL_colorbar           = glui_bounds->add_panel_to_panel(PANEL_minmax3, "colorbar labels");
+  SPINNER_colorbar_digits  = glui_bounds->add_spinner_to_panel(PANEL_colorbar,    "digits", GLUI_SPINNER_INT,     &ncolorlabel_digits, BOUND_COLORBAR_DIGITS, Callback);
+  SPINNER_colorbar_digits->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
+  CHECKBOX_fixedpoint      = glui_bounds->add_checkbox_to_panel(PANEL_colorbar, _("force fixed point"),                 &force_fixedpoint,   BOUND_COLORBAR_DIGITS, Callback);
+
   PANEL_minmax2 = glui_bounds->add_panel_to_panel(PANEL_minmax, "", GLUI_PANEL_NONE);
 
   PANEL_min = glui_bounds->add_panel_to_panel(PANEL_minmax2, "min");
@@ -473,17 +484,6 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
   if(cache_flag!=NULL&&percentile_enabled==1){
     RADIO_button_percentile_max = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "percentile");
   }
-
-  PANEL_minmax3            = glui_bounds->add_panel_to_panel(PANEL_minmax, "", GLUI_PANEL_NONE);
-  PANEL_bounds             = glui_bounds->add_panel_to_panel(PANEL_minmax3, "bounds");
-  CHECKBOX_research_mode   = glui_bounds->add_checkbox_to_panel(PANEL_bounds, _("global (research mode)"), &research_mode,      BOUND_RESEARCH_MODE,   Callback);
-  CHECKBOX_percentile_mode = glui_bounds->add_checkbox_to_panel(PANEL_bounds, _("percentile"),             &percentile_mode,    BOUND_PERCENTILE_MODE, Callback);
-
-  glui_bounds->add_column_to_panel(PANEL_minmax3, false);
-  PANEL_colorbar           = glui_bounds->add_panel_to_panel(PANEL_minmax3, "colorbar labels");
-  SPINNER_colorbar_digits  = glui_bounds->add_spinner_to_panel(PANEL_colorbar,    "digits", GLUI_SPINNER_INT,     &ncolorlabel_digits, BOUND_COLORBAR_DIGITS, Callback);
-  SPINNER_colorbar_digits->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
-  CHECKBOX_fixedpoint      = glui_bounds->add_checkbox_to_panel(PANEL_colorbar, _("force fixed point"),                 &force_fixedpoint,   BOUND_COLORBAR_DIGITS, Callback);
 
   BUTTON_update_colors = NULL;
   SPINNER_percentile_min = NULL;
