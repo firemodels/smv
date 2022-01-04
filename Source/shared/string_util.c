@@ -450,6 +450,70 @@ float GetCMantissaExponent(char *cval, int *exp10){
   return (float)mantissa;
 }
 
+/* ------------------ RoundDecimalPos ------------------------ */
+
+void RoundDecimalPos(float val, char *cval, int decimalpos){
+  int i, lastdigit, nextpos = 0;
+  char label[256], *period;
+
+  val = ABS(val);
+  if(val>=1.0){
+    strcpy(label, "0");
+    sprintf(label+1, "%.12f", val);
+  }
+  else{
+    sprintf(label, "%.12f", val);
+  }
+  period = strchr(label, '.');
+  if(period==NULL){
+    strcat(label, ".0");
+    period = strchr(label, '.');
+  }
+  //123.11
+  lastdigit = CLAMP(period-label+decimalpos, 0, strlen(label)-1);
+  nextpos = lastdigit+1;
+  if(label[nextpos]=='.')nextpos++;
+  label[nextpos] += 5;
+  for(i = nextpos; i>0; i--){
+    if(label[i]>'9'){
+      label[i] -= 10;
+      if(label[i-1]=='.')i--;
+      label[i-1]++;
+    }
+    else{
+      if(label[i]=='.')i--;
+    }
+  }
+  label[255] = 0;
+  for(i = nextpos; i<strlen(label); i++){
+    if(label[i]!='.')label[i] = '0';
+  }
+  TrimZeros(label);
+  strcpy(cval, TrimFrontZeros(label));
+}
+
+/* ------------------ RoundDecimal ------------------------ */
+
+void RoundDecimal(float val, char *cval, int ndigits){
+  if(val>0.0){
+    RoundDecimalPos(val, cval, ndigits);
+  }
+  else if(val==0.0){
+    strcpy(cval, "0.0");
+  }
+  else{
+    char label[30];
+    int signval;
+
+    signval = SIGN(val);
+    RoundDecimalPos(ABS(val), label, ndigits);
+    strcpy(cval, "");
+    if(signval<0.0)strcat(cval, "-");
+    strcat(cval, label);
+  }
+  return;
+}
+
 /* ------------------ RoundPos ------------------------ */
 
 void RoundPos(float val, char *cval, int ndigits){
@@ -587,7 +651,7 @@ void ShiftDecimal(char *cval, int nshift){
 /* ------------------ Floats2Strings ------------------------ */
 
 void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixedpoint_labels, char *exp_offset_label){
-  int exponent, exponent_min, exponent_max;
+  int exponent, exponent_min, exponent_max, exponent_val, exponent_valmax;
   int i;
   float valmax;
   int exp_offset;
@@ -603,10 +667,13 @@ void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixe
   GetMantissaExponent(valmax, &exponent_max);
   for(i=0; i<nvals; i++){
     float val;
+    int ndecimals;
 
     val = vals[i];
-    if(ABS(val)<2.0*eps)val = 0.0;
-    Round(val, c_vals[i], ndigits);
+    GetMantissaExponent(val, &exponent_val);
+    ndecimals = ndigits-1-exponent_max;
+    if(ndecimals<=0)ndecimals--;
+    RoundDecimal(val, c_vals[i], ndecimals);
   }
 
   exponent_min = 1;
@@ -646,13 +713,18 @@ void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixe
     }
   }
   else{
+    int exp1, exp2;
+
     strcpy(exp_offset_label, "");
+    GetCMantissaExponent(c_vals[0],       &exp1);
+    GetCMantissaExponent(c_vals[nvals-1], &exp2);
+    exponent_max = MAX(exp1, exp2);
     for(i=0; i<nvals; i++){
       float mantissa;
       char c_mantissa[20];
 
       mantissa = GetCMantissaExponent(c_vals[i], &exponent);
-      Round(mantissa, c_mantissa, ndigits);
+      Round(mantissa, c_mantissa, ndigits - (exponent_max-exponent));
       TrimZeros(c_mantissa);
       if(strcmp(c_mantissa, "0.0")==0 || strcmp(c_mantissa, "-0.0")==0){
         strcpy(c_vals[i], "0.0");
