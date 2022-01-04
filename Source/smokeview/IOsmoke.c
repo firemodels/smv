@@ -2688,7 +2688,6 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
                      int *tris_out, int *ntris_out){
 
   vertpdata *vertpinfo=NULL, *vert2pinfo=NULL;
-  float dx, dy, dz;
   int i;
   float maxdist, maxdistx, maxdisty;
   float mindistx, mindisty;
@@ -2708,6 +2707,7 @@ void PolyTriangulate(int flag, float *verts_in, int nverts_in, int *poly, int np
   // determine distance of each edge and longest edge
 
   for(i = 0;i < npoly;i++){
+    float dx, dy, dz;
     float *verti, *vertip1;
     vertpdata *vertpi;
     int ip1;
@@ -3170,8 +3170,6 @@ void UpdateSmoke3DPlanes(float delta_perp, float delta_par){
     yy[1] = boxmax[1];
     zz[1] = boxmax[2];
     if(meshi->nverts == 0){
-      int j;
-
       meshi->nverts = 8;
       for(j = 0; j<8; j++){
         verts[3*j + 0] = xx[ix[j]];
@@ -6355,6 +6353,9 @@ void ReadSmoke3DAllMeshesAllTimes(int smoketype2, int *errorcode){
         case CO2:
           if((smoketype2&CO2_2)!=0)ReadSmoke3DAllMeshes(itime, CO2, errorcode);
           break;
+	default:
+	  ASSERT(FFALSE);
+	  break;
       }
     }
   }
@@ -6439,8 +6440,6 @@ void UpdateSmoke3D(smoke3ddata *smoke3di){
         int j;
 
         for(j=0;j<ny;j++){
-          int i;
-
           for(i=0;i<nx;i++){
             //ijk = i+nx*(j+k*ny);
             // if(smokeframe_in[ijk]!=0){
@@ -6660,8 +6659,6 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 
       alpha_fire_local = 0.0;
       if(firecolor_data!=NULL){
-        int fire_index;
-
         fire_index = CLAMP(firecolor_data[j]+i_hrrpuv_offset,0,254);
         firecolor_ptr = rgb_slicesmokecolormap_0255+4*fire_index;
         if(firecolor_data[j]>=i_smoke3d_cutoff){

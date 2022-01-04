@@ -16218,7 +16218,7 @@ static GLenum GLEWAPIENTRY glewContextInit ()
 
   if (GLEW_VERSION_3_0)
   {
-    GLint n = 0;
+    GLint n_local = 0;
     GLint i;
     PFNGLGETINTEGERVPROC getIntegerv;
     PFNGLGETSTRINGIPROC getStringi;
@@ -16232,12 +16232,12 @@ static GLenum GLEWAPIENTRY glewContextInit ()
     #endif
 
     if (getIntegerv)
-      getIntegerv(GL_NUM_EXTENSIONS, &n);
+      getIntegerv(GL_NUM_EXTENSIONS, &n_local);
 
     /* glGetStringi is OpenGL 3.0 */
     getStringi = (PFNGLGETSTRINGIPROC) glewGetProcAddress((const GLubyte*)"glGetStringi");
     if (getStringi)
-      for (i = 0; i<n; ++i)
+      for (i = 0; i<n_local; ++i)
       {
         ext = (const char *) getStringi(GL_EXTENSIONS, i);
 

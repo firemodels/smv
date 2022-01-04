@@ -6718,6 +6718,9 @@ void DeviceData2WindRose(int nr, int ntheta){
             if(vdev!=NULL)uvals = vdev->vals;
             if(wdev!=NULL)vvals = wdev->vals;
             break;
+          default:
+            ASSERT(FFALSE);
+            break;
           }
           if(udev!=NULL)times = udev->times;
           if(vdev!=NULL)times = vdev->times;

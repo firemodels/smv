@@ -441,6 +441,9 @@ extern "C" void DeviceCB(int var){
           showdevice_plot = DEVICE_PLOT_HIDDEN;
           ShowObjectsMenu(OBJECT_PLOT_SHOW_TREE_ALL);
           break;
+        default:
+          ASSERT(FFALSE);
+          break;
       }
     }
     break;

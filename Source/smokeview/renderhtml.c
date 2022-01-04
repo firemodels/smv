@@ -132,7 +132,7 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
   int *frame_size, int *nframes){
   int i, first = 1, minsteps;
   int itime, ibeg, iend;
-  meshdata *meshpatch;
+  meshdata *meshpatch0;
   int nv, nt;
 
   nv = 0;
@@ -147,7 +147,7 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
     patchi = patchinfo+i;
     if(patchi->loaded==0||patchi->display==0||patchi->structured==NO)continue;
     if(patchi->patch_filetype!=PATCH_STRUCTURED_NODE_CENTER)continue;
-    meshpatch = meshinfo+patchi->blocknumber;
+    meshpatch0 = meshinfo+patchi->blocknumber;
     if(first==1){
       first = 0;
       minsteps = patchi->ntimes;
@@ -166,8 +166,8 @@ void GetBndfNodeVerts(int option, int option2, int *offset,
     *nframes = iend;
   }
   else{
-    ibeg = meshpatch->patch_itime;
-    iend = meshpatch->patch_itime+1;
+    ibeg = meshpatch0->patch_itime;
+    iend = meshpatch0->patch_itime+1;
     *nframes = 1;
   }
   *frame_size = 0;
@@ -319,7 +319,7 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
 
     for(islice = 0; islice<nsliceinfo; islice++){
       slicedata *slicei;
-      int nrows, ncols;
+      int nrows=1, ncols=1;
       unsigned char *iq;
 
       slicei = sliceinfo+islice;
@@ -341,16 +341,19 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
         ncols = slicei->nslicei;
         nrows = slicei->nslicej;
         break;
+      default:
+	ASSERT(FFALSE);
+	break;
       }
       if(nrows>1&&ncols>1){
         if(itime==ibeg){
-          int ntris, nverts;
+          int ntris_local, nverts_local;
 
-          ntris = 2*(nrows-1)*(ncols-1);
-          nverts = 3*ntris;
-          *frame_size += nverts;
-          nv += nverts;
-          nt += ntris;
+          ntris_local = 2*(nrows-1)*(ncols-1);
+          nverts_local = 3*ntris_local;
+          *frame_size += nverts_local;
+          nv += nverts_local;
+          nt += ntris_local;
         }
         if(option==1){
           meshdata *meshi;
@@ -494,6 +497,9 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
                 *textures++ = iq[n];
               }
             }
+            break;
+          default:
+	    ASSERT(FFALSE);
             break;
           }
         }
@@ -664,7 +670,7 @@ void GetSliceNodeVerts(int option, int option2,
 
     for(islice = 0; islice<nsliceinfo; islice++){
       slicedata *slicei;
-      int nrows, ncols;
+      int nrows=1, ncols=1;
       unsigned char *iq;
 
       slicei = sliceinfo+islice;
@@ -685,6 +691,9 @@ void GetSliceNodeVerts(int option, int option2,
       case ZDIR:
         ncols = slicei->nslicei;
         nrows = slicei->nslicej;
+        break;
+      default:
+        ASSERT(FFALSE);
         break;
       }
       if(nrows>1&&ncols>1){
@@ -896,6 +905,9 @@ void GetSliceNodeVerts(int option, int option2,
               }
             }
             break;
+	  default:
+	    ASSERT(FFALSE);
+	    break;
           }
         }
       }
@@ -2304,8 +2316,6 @@ int Smv2Html(char *html_file, int option, int from_where, int vr_flag){
       continue;
     }
     else if(Match(buffer, "//***VERTS")==1){
-      int i;
-
       // center of scene
       fprintf(stream_out, "         var xcen=%f;\n", xbar/2.0);
       fprintf(stream_out, "         var ycen=%f;\n", ybar/2.0);

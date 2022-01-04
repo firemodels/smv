@@ -1299,7 +1299,12 @@ These contours were generated using CO, $\mathrm{CO_2}$ and $\mathrm{O_2}$ data 
 \end{figure}
 
 \subsection{Duplicate Slices}
-FDS outputs duplicate slices whenever a {\tt \&SLCF}\ entry is specified where two meshes coincide.  One set of slices is output for each mesh.  Using the Slice/Duplicates panel of the File/Bounds dialog box, illustrated in Figure \ref{fig:sliceduplicate}, one may specify whether to keep all duplicate slices, keep the finely gridded slices or keep the coarsely gridded slices.  One may similarly specify preferences for vector slice files. By default smokeview keeps only finely gridded slices and keeps all vector slices (so one may diagnose possible flow problems).
+FDS outputs duplicate slices whenever a {\tt \&SLCF}\ entry is specified where two meshes coincide.
+One set of slices is output for each mesh.
+Using the Slice/Duplicates panel of the File/Bounds dialog box, illustrated in Figure \ref{fig:sliceduplicate},
+one may specify whether to keep all duplicate slices, keep the finely gridded slices or keep the coarsely gridded slices.
+One may similarly specify preferences for vector slice files. By default Smokeview keeps only finely
+gridded slices and keeps all vector slices (so one may diagnose possible flow problems).
 
 FDS also outputs duplicate slices when two or more identical {\tt \&SLCF}\ entries are specified in the input ({\tt .fds}) file.  Smokeview ignores these duplicate slices when processing the {\tt .smv} file.
 
@@ -1538,7 +1543,7 @@ velocity vectors may also be displayed. Figures \ref{figdevicevectors} and
 \ref{figwindprofile} illustrates velocity visualization using arrows and continuous profiles.
 
 
-Flow vectors may be visualized as lines, arrows, smokeview objects or continuous profiles.  The length
+Flow vectors may be visualized as lines, arrows, Smokeview objects or continuous profiles.  The length
 and diameter of vector lines may be specified.  In addition, if arrows are selected, the length and diameter of the arrow head may be specified.
 The following {\tt \&DEVC}\ lines give an example of defining device flow vectors.
 
@@ -2091,8 +2096,8 @@ A skipping interval may be selected to generate fewer images using the {\em Wher
 \begin{figure}[bph]
 \begin{center}
 \includegraphics[width=2.5902777in]{\SMVfigdir/figRENDER}
-\caption[Dialog box for creating images of the smokeview scene.]
-{Dialog box for creating images of the smokeview scene. The Render portion of the Motion/View/Render dialog box allows one to create images of the smokeview scene. One may also clip or crop the rendered image.}
+\caption[Dialog box for creating images of the Smokeview scene.]
+{Dialog box for creating images of the Smokeview scene. The Render portion of the Motion/View/Render dialog box allows one to create images of the Smokeview scene. One may also clip or crop the rendered image.}
 \label{figMOTIONrender}
 \end{center}
 \end{figure}
@@ -4084,7 +4089,7 @@ Guide~\cite{FDS_Users_Guide})
 information that Smokeview uses to visualize model.
 
 \item To visualize the model, open {\tt testcase1.smv}\ with
-Smokeview by either typing {\tt smokeview testcase1}\ at a command
+Smokeview by either typing {\tt Smokeview testcase1}\ at a command
 shell prompt or if on the PC by double-clicking the file {\tt
 testcase1.smv}.
 
@@ -4731,11 +4736,11 @@ when and where they are placed.
 \hhitem{Particle tracking}{Data}\ Dialog box for releasing and viewing particles
 within the scene.
 
-\hhitem{Render images}{Files}\ Dialog box for creating images of a smokeview scene.  In addition, if the program {\tt ffmpeg}\ is present in the user path, one may create movies.
+\hhitem{Render images}{Files}\ Dialog box for creating images of a Smokeview scene.  In addition, if the program {\tt ffmpeg}\ is present in the user path, one may create movies.
 
 \hhitem{Scaling}{Window}\ Dialog box for scaling the X, Y and or Z dimensions of a Smokeview scene.
 
-\hhitem{Scripts}{Files}Dialog box for recording or running a smokeview script.
+\hhitem{Scripts}{Files}Dialog box for recording or running a Smokeview script.
 
 \hhitem{Show/Hide}{Data}Dialog box for showing or hiding data.
 
@@ -4820,7 +4825,7 @@ grid perpendicular to the x, y and z axes respectively.
 
 \kitem{I}Toggle slice file visibility wihin obstacles.
 
-\kitem{j,J}Increase size of smokeview objects (use ALT j to decrease size).
+\kitem{j,J}Increase size of Smokeview objects (use ALT j to decrease size).
 
 \kitem{k,K}Toggle timebar visibility.
 
@@ -4916,7 +4921,7 @@ to the yz, xz and xy planes).
 
 \kitem{ALT i}Toggle device visibility.
 
-\kitem{ALT j}Decrease size of smokeview objects (use 'j' to increase the size).
+\kitem{ALT j}Decrease size of Smokeview objects (use 'j' to increase the size).
 
 \kitem{ALT k}Toggle device selection.
 
@@ -5440,39 +5445,39 @@ Smokeview scene for use when capturing images to video.
 \subsection{Time and data bounds}
 This section describes ini file keywords used by Smokeview:
 \begin{enumerate}
-\item to modify the time interval used to load data (the TLOAD keyword),
+\item to set the time interval for loading data (the TLOAD keyword),
 
-\item to discard or chop data from being displayed based upon data values (keywords beginning with
-C\_) and
+\item to discard or chop data based upon data values (keywords beginning with
+C\_),
 
-\item to specify minimum data values, valmin, and maximum data values, valmax,
-for converting data values to color indices using
-color index = 255*(data~value - valmin)/(valmax - valmin). The user may specify
-valmin and valmax or specify that smokeview computes these values using global or percentile bounds.
+\item to specify min and max data values
+for computing color indices (keywords beginning with {\tt V2\_}).
+Color indices are computed using an equation of the form
+\begin{eqnarray*}
+\mbox{color index} = 255\frac{\mbox{data~value - valmin}}{\mbox{valmax - valmin}}
+\end{eqnarray*}
+The user may specify
+valmin and valmax or specify that Smokeview compute these values using global bounds or percentile bounds from a histogram of the data that it also computes.
 
 \end{enumerate}
 
 \noindent Most of the keywords in this section have the format:
 \begin{lstlisting}
 KEYWORD
-setvalmin valmin setvalmax valmax
+  setvalmin valmin setvalmax valmax quantity_label
 \end{lstlisting}
-\noindent where {\tt setvalmin}\ and {\tt setvalmax} are integer flag that determines how {\tt valmin}\ and {\tt valmax}\ should be treated.
-For the {\tt TLOAD}\ keyword for setting the time intervals and {\tt C\_filetype} keywords for chopping data,
-if {\tt setvalmin} is 0 then the {\tt valmin}\ parameter is ignored if 1 then the {\tt valmin}\ parameter is used to load data.
-Similarly if {\tt setvalmax}\ is 0 then the {\tt valmax}\ parameter is ignored and if 1 the {\tt valmax}\ parameter is used to load data.
+\noindent where {\tt setvalmin}\ and {\tt setvalmax} are integer flags that determines how {\tt valmin}\ and {\tt valmax}\ are treated and quantity\_label is the 
+file data quantity the bound parameters are applied to.
 
-The {\tt V2\_}, keywords
-have a similar format.
-It has an additional parameter, {\tt quantity\_label}, used for restricting
-the type of data files examined (files with quantity temperature for example)
-and the {\tt setvalmin}\ and {\tt setvalmax}\ parameters have additional values.
-The parameters used for each {\tt V2\_}\ keyword are described in further detail in Table \ref{tabV2bounds}.
+The {\tt setvalmin} and {\tt setvalmax} parameters can have values of  0 or 1 when used with the {\tt TLOAD}\ and {\tt C\_filetype} keywords
+If {\tt setvalmin}\ is 0 then {\tt valmin}\ is ignored and if 1 {\tt valmin}\ is used to load data.
+The same for {\tt setvalmax}.
+Parameters for {\tt V2\_}\ keywords are described in  Table \ref{tabV2bounds}.
 
 \newcommand{\tabentry}[1]{\parbox[c]{3.5in}{\vspace{0.05in}#1\vspace{0.05in}}}
 \begin{table}[bph]
 \begin{center}
-\caption[Description of parameters used by V2\_filetype ini keywords.]{Description of parameters used by V2\_filetype  ini keywords where filetype may be BOUNDARY, PARTICLES, PLOT3D or SLICE. The parameters valmin and valmax for computing color indices are obtained from the ini file or computed by smokeview depending on the
+\caption[Description of parameters used by V2\_filetype ini keywords.]{Description of parameters used by V2\_filetype  ini keywords where filetype may be BOUNDARY, PARTICLES, PLOT3D or SLICE. The parameters valmin and valmax for computing color indices are obtained from the ini file or computed by Smokeview depending on the
 values of setvalmin and setvalmax.}\ \vspace{0.1in}
 \begin{tabular}{|l|l|l|}
 \multicolumn{3}{l}{V2\_filetype} \\
@@ -5480,10 +5485,10 @@ values of setvalmin and setvalmax.}\ \vspace{0.1in}
 \hline Variable &  type & Description  \\
 \hline setvalmin &  integer & \tabentry{type of minimum bound:\\
 0 - use valmin for minimum bound for computing color indices\\
-1 - smokeview computes the minimum of all data in loaded filetype files(SLICE, BOUNDARY {\em etc}\ that have
+1 - Smokeview computes the minimum of all data in loaded filetype files(SLICE, BOUNDARY {\em etc}\ that have
 quantity quantity\_label \\
-2 - smokeview computes minimum of all data in loaded and unloaded filetype files of quantity quantity\_label \\
-3 - smokeview computes a histogram of data in filetype files with
+2 - Smokeview computes minimum of all data in loaded and unloaded filetype files of quantity quantity\_label \\
+3 - Smokeview computes a histogram of data in filetype files with
 quantity quantity\_label and used a percentile bound, default 1\%.
 }  \\
 
@@ -5494,10 +5499,10 @@ If setvalmin is not 0 then valmin in the ini file is ignored.
 
 \hline setvalmax &  integer & \tabentry{type of maximum bound:\\
 0 - use valmax for maximum bound for computing color indices\\
-1 - smokeview computes the maximum of all data in loaded filetype files(SLICE, BOUNDARY {\em etc}\ that have
+1 - Smokeview computes the maximum of all data in loaded filetype files(SLICE, BOUNDARY {\em etc}\ that have
 quantity quantity\_label \\
-2 - smokeview computes the maximum of all data in loaded and unloaded filetype files of quantity quantity\_label \\
-3 - smokeview computes a histogram of data in filetype files with
+2 - Smokeview computes the maximum of all data in loaded and unloaded filetype files of quantity quantity\_label \\
+3 - Smokeview computes a histogram of data in filetype files with
 quantity quantity\_label and used a percentile bound, default 99\%.
 }  \\
 
@@ -5506,7 +5511,7 @@ use valmax for converting data values to color indices.
 If setvalmax is not 0 then valmax in the ini file is ignored.
 }  \\
 
-\hline quantity\_label & character & \tabentry{data quantity, label appearing in smokeview colorbar, for example temp for temperature.
+\hline quantity\_label & character & \tabentry{data quantity, label appearing in Smokeview colorbar, for example temp for temperature.
 If 'quantity\_label' is not blank then setvalmin, valmin, setvalmax and valmax values are
 applied to  files of type filetype and quantity 'quantity\_label' .  If 'quantity\_label' is blank and setvalmin is not 0 then setvalmin is applied to all files of type filetpye and quantity quantity\label.
 If 'quantity\_label' is blank and setvalmax and is not 0 then setvalmax is applied to all files.
@@ -5527,15 +5532,15 @@ below 70\degC\ and above 200\degC\ use:
 
 \begin{lstlisting}
 C_BOUNDARY
-  1 70. 1 200.
+  1 70. 1 200. temp
 \end{lstlisting}
 
 \hitem{C\_PARTICLES}\ Defines the minimum and maximum values used
 to discard particle data in a visualization. To discad particle data
 below 70\degC\ and above 200\degC\ use:
 \begin{lstlisting}
-C_PARTICLES 
-  1 70. 1 200.
+C_PARTICLES
+  1 70. 1 200. temp
 \end{lstlisting}
 
 \hitem{C\_PLOT3D}\ Defines the minimum and maximum data values used
@@ -5559,7 +5564,7 @@ below 70\degC\ and above 200\degC\ use:
 
 \begin{lstlisting}
 C_SLICE
-  1 70. 1 200.
+  1 70. 1 200. temp
 \end{lstlisting}
 
 \hitemNULL{CACHE\_BOUNDARYDATA}
@@ -5579,11 +5584,14 @@ load data in a visualization and to also skip data.
 The general form of this keyword is
 \begin{lstlisting}
 TLOAD
-  set_tmin tmin set_tmax tmax set_skip skip
+  setvalmin valmin setvalmax valmax setskip skip
 \end{lstlisting}
 
-\noindent To discard data before
-10~s and after 50~s and to keep only every third data item use:
+\noindent where data is not loaded for time 
+less than {\tt valmin}\ if {\tt setvalmin}\ is 1
+and data is not loaded for time greater than {\tt valmax}\ if {\tt setvalmax}\ is 1.
+Every {\tt skip}\ time frame is loaded if {\tt setskip}\ is 1.  To discard data before
+10~s and after 50~s and to load every third time frame use:
 
 \begin{lstlisting}
 TLOAD
@@ -5620,7 +5628,7 @@ V2_PARTICLES
 \end{lstlisting}
 where the parameters setvalmin, valmin, setvalmax, valmax and quantity\_label are described in Table \ref{tabV2bounds}.
 The parameter quantity\_label is optional.  If it is blank then only setvalmin and setvalmax are applied to all components in all particle files. If it not blank then setvalmin, valmin,
-setvalmax, valmax are applied to components in all particle files with quantity quantity\_label.
+setvalmax, valmax are applied to particle file components that have the quantity quantity\_label.
 
 To specify particle file bounds for the U component of velocity ranging from
 -1.0~m/s to 2.0~m/s use:
@@ -5795,7 +5803,7 @@ are all iso-surface levels transparent (ALL\_TRANSPARENT=1), minimum
 iso-surface level solid (MIN\_SOLID=2), maximum iso-surface level solid (MAX\_SOLID=3)
 and all iso-surface levels transparent (ALL\_TRANSPARENT=4) (default: 3)
 
-\hitem{LABELSTARTUPVIEW}Specifies a viewpoint to be applied when smokeview first starts up.
+\hitem{LABELSTARTUPVIEW}Specifies a viewpoint to be applied when Smokeview first starts up.
 Any viewpoint defined by the VIEWPOINT5 ini keyword or the predefined viewpoints external or internal may used to with the LABELSTARTUPVIEW keyword.
 (default: external)
 

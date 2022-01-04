@@ -58,6 +58,19 @@ void InitMisc(void){
   FREEMEMORY(plotiso);
   NewMemory((void **)&plotiso, MAXPLOT3DVARS*sizeof(int));
 
+  if(colorbar_vals==NULL){
+    NewMemory((void **)&colorbar_vals, nrgb*sizeof(float));
+  }
+  if(colorbar_exponents==NULL){
+    NewMemory((void **)&colorbar_exponents, nrgb*sizeof(int));
+  }
+  if(colorbar_labels==NULL){
+    NewMemory((void **)&colorbar_labels, nrgb*sizeof(char *));
+    for(i = 0; i<nrgb; i++){
+      NewMemory((void **)&colorbar_labels[i], 256);
+    }
+  }
+
   for(i=0;i<16;i++){
     if(i%5==0){
       modelview_identity[i]=1.0;
@@ -1710,7 +1723,6 @@ void InitVars(void){
   solidlinewidth=linewidth;
   visBLOCKold=-1;
 
-  nrgb=NRGB;
   nrgb_ini=0;
   nrgb2_ini=0;
   rgb_white=NRGB, rgb_yellow=NRGB+1, rgb_blue=NRGB+2, rgb_red=NRGB+3;

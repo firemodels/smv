@@ -1866,15 +1866,13 @@ void DrawHorizontalColorbarRegLabels(void){
       int partunitclass, partunittype;
 
       GetUnitInfo(partunitlabel2, &partunitclass, &partunittype);
-      if(partunitclass >= 0 && partunitclass < nunitclasses){
-        if(partunittype >= 0){
-          partflag = 1;
-          partfactor = unitclasses[partunitclass].units[partunittype].scale;
-          strcpy(partunitlabel, unitclasses[partunitclass].units[partunittype].unit);
-        }
+      if(partunitclass >= 0 && partunitclass < nunitclasses && partunittype >= 0){
+        partflag = 1;
+        partfactor = unitclasses[partunitclass].units[partunittype].scale;
+        strcpy(partunitlabel, unitclasses[partunitclass].units[partunittype].unit);
       }
       OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, partshortlabel);
-      OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, partunitlabel);
+      OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, partunitlabel);
     }
     glPopMatrix();
   }
@@ -2094,7 +2092,11 @@ void DrawHorizontalColorbarRegLabels(void){
       horiz_position = MIX2(i, nrgb - 2, hcolorbar_right_pos, hcolorbar_left_pos);
       if(iposition == i)continue;
       if(global_prop_index>= 0 &&global_prop_index < npart5prop){
-        partcolorlabel_ptr = &part5propinfo[global_prop_index].partlabels[i + 1][0];
+        float val;
+
+        val = part5propinfo[global_prop_index].partlabelvals[i + 1];
+        Float2String(partcolorlabel, val, ncolorlabel_digits, force_fixedpoint);
+        partcolorlabel_ptr = partcolorlabel;
       }
       else{
         if(colorlabelpart != NULL){
@@ -2373,8 +2375,6 @@ void DrawHorizontalColorbarRegLabels(void){
 /* ------------------ DrawVerticalColorbarRegLabels ------------------------ */
 
 void DrawVerticalColorbarRegLabels(void){
-  int ilabel = 0;
-
   int i;
   int ileft = 0;
   int leftzone, leftsmoke, leftslice, lefthist, leftpatch, leftiso;
@@ -2400,17 +2400,22 @@ void DrawVerticalColorbarRegLabels(void){
 
   int partflag = 0;
   float *partfactor = NULL;
-  float partrange = 0.0;
   int dohist = 0;
 
   int fed_slice = 0;
+  float colorbar_max, colorbar_eps;
 
   GLfloat *foreground_color, *red_color;
 
   int showcfast_local = 0;
   int show_slice_colorbar_local = 0;
+  char exp_factor_label[256];
+
+  max_colorbar_label_width = 0.0;
 
   UpdateShowSliceColorbar(&showcfast_local, &show_slice_colorbar_local);
+
+  colorbar_eps = pow(10.0, -ncolorlabel_digits);
 
   // -------------- compute columns where left labels will occur ------------
 
@@ -2515,197 +2520,6 @@ void DrawVerticalColorbarRegLabels(void){
     }
   }
 
-  // -------------- particle file top labels ------------
-
-  if(showevac_colorbar==1||(showsmoke==1&&parttype!=0)){
-    char partunitlabel2[256], partshortlabel2[256];
-
-    strcpy(partshortlabel2, "");
-    strcpy(partunitlabel2, "");
-
-    glPushMatrix();
-    glTranslatef(
-      vcolorbar_left_pos - colorbar_label_width,
-      vcolorbar_top_pos + v_space + vcolorbar_delta,
-      0.0);
-    if(dohist == 1)glTranslatef(colorbar_label_width / 2.0, 0.0, 0.0);
-
-    if(parttype != 0){
-      if(showsmoke == 1 && showevac == 0)OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Part");
-      if(showevac == 1)OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Human");
-    }
-    if(parttype == -1){
-      strcpy(partshortlabel2, "temp");
-      strcpy(partunitlabel2, (const char *)degC);
-    }
-    else if(parttype == -2){
-      strcpy(partshortlabel2, "HRRPUV");
-      strcpy(partunitlabel2, "kW/m3");
-    }
-    else{
-      if(partshortlabel != NULL)strcpy(partshortlabel2, partshortlabel);
-      if(partunitlabel != NULL)strcpy(partunitlabel2, partunitlabel);
-    }
-    if(parttype != 0){
-      int partunitclass, partunittype;
-
-      GetUnitInfo(partunitlabel2, &partunitclass, &partunittype);
-      if(partunitclass >= 0 && partunitclass < nunitclasses){
-        if(partunittype >= 0){
-          partflag = 1;
-          partfactor = unitclasses[partunitclass].units[partunittype].scale;
-          strcpy(partunitlabel, unitclasses[partunitclass].units[partunittype].unit);
-        }
-      }
-      OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, partshortlabel);
-      OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, partunitlabel);
-    }
-    glPopMatrix();
-  }
-
-  // -------------- slice file top labels ------------
-
-  if(show_slice_colorbar_local==1){
-    char unitlabel[256];
-    int sliceunitclass, sliceunittype;
-    boundsdata *sb;
-
-    sb = slicebounds + slicefile_labelindex;
-    strcpy(unitlabel, sb->label->unit);
-    GetUnitInfo(sb->label->unit, &sliceunitclass, &sliceunittype);
-    if(sliceunitclass >= 0 && sliceunitclass < nunitclasses){
-      if(sliceunittype > 0){
-        sliceflag = 1;
-        slicefactor = unitclasses[sliceunitclass].units[sliceunittype].scale;
-        strcpy(unitlabel, unitclasses[sliceunitclass].units[sliceunittype].unit);
-      }
-    }
-    glPushMatrix();
-    glTranslatef(
-      vcolorbar_left_pos - colorbar_label_width,
-      vcolorbar_top_pos + v_space + vcolorbar_delta,
-      0.0);
-    glTranslatef(-leftslice*(colorbar_label_width + h_space), 0.0, 0.0);
-    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Slice");
-    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, sb->label->shortlabel);
-    OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
-    if(strcmp(unitlabel, "ppm") == 0 && slicefactor != NULL){
-      slicefactor2[0] = *slicefactor;
-      slicefactor2[1] = 0.0;
-      slicefactor = slicefactor2;
-    }
-    glPopMatrix();
-    ilabel++;
-  }
-
-  // -------------- isosurface top labels ------------
-
-  if(showiso_colorbar == 1){
-    char unitlabel[256];
-    boundsdata *sb;
-
-    sb = isobounds + iisottype;
-    strcpy(unitlabel, sb->label->unit);
-    glPushMatrix();
-    glTranslatef(
-      vcolorbar_left_pos - colorbar_label_width,
-      vcolorbar_top_pos + v_space + vcolorbar_delta,
-      0.0);
-    glTranslatef(-leftiso*(colorbar_label_width + h_space), 0.0, 0.0);
-    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Iso");
-    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, sb->label->shortlabel);
-    OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
-    glPopMatrix();
-  }
-
-  // -------------- boundary file top labels ------------
-
-  if(showpatch == 1 && wall_cell_color_flag == 0){
-    char unitlabel[256];
-    patchdata *patchi;
-    int patchunitclass, patchunittype;
-
-    patchi = patchinfo + boundarytypes[iboundarytype];
-    strcpy(unitlabel, patchi->label.unit);
-    GetUnitInfo(patchi->label.unit, &patchunitclass, &patchunittype);
-    if(patchunitclass >= 0 && patchunitclass < nunitclasses){
-      if(patchunittype > 0){
-        patchflag = 1;
-        patchfactor = unitclasses[patchunitclass].units[patchunittype].scale;
-        strcpy(unitlabel, unitclasses[patchunitclass].units[patchunittype].unit);
-      }
-    }
-    glPushMatrix();
-    glTranslatef(
-      vcolorbar_left_pos - colorbar_label_width,
-      vcolorbar_top_pos + v_space + vcolorbar_delta,
-      0.0);
-    glTranslatef(-leftpatch*(colorbar_label_width + h_space), 0.0, 0.0);
-    if(dohist == 1)glTranslatef(colorbar_label_width / 2.0, 0.0, 0.0);
-
-    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Bndry");
-    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, patchi->label.shortlabel);
-    OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
-    glPopMatrix();
-  }
-
-  // -------------- plot3d top labels ------------
-
-  if(showplot3d == 1){
-    char *p3label;
-    char *up3label;
-    char unitlabel[256];
-    int plot3dunitclass, plot3dunittype;
-
-    up3label = plot3dinfo[0].label[plotn - 1].unit;
-    strcpy(unitlabel, up3label);
-    GetUnitInfo(up3label, &plot3dunitclass, &plot3dunittype);
-    if(plot3dunitclass >= 0 && plot3dunitclass < nunitclasses){
-      if(plot3dunittype > 0){
-        plot3dflag = 1;
-        plot3dfactor = unitclasses[plot3dunitclass].units[plot3dunittype].scale;
-        strcpy(unitlabel, unitclasses[plot3dunitclass].units[plot3dunittype].unit);
-      }
-    }
-    p3label = plot3dinfo[0].label[plotn - 1].shortlabel;
-    glPushMatrix();
-    glTranslatef(
-      vcolorbar_left_pos - colorbar_label_width,
-      vcolorbar_top_pos + v_space + vcolorbar_delta,
-      0.0);
-    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Plot3D");
-    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, p3label);
-    OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
-    if(strcmp(unitlabel, "ppm") == 0 && plot3dfactor != NULL){
-      plot3dfactor2[0] = *plot3dfactor;
-      plot3dfactor2[1] = 0.0;
-      plot3dfactor = plot3dfactor2;
-    }
-    glPopMatrix();
-  }
-  if(showcfast_local==1){
-    char unitlabel[256];
-    int zoneunitclass, zoneunittype;
-
-    strcpy(unitlabel, (const char *)degC);
-    GetUnitInfo(unitlabel, &zoneunitclass, &zoneunittype);
-    if(zoneunitclass >= 0 && zoneunitclass < nunitclasses){
-      if(zoneunittype > 0){
-        zoneflag = 1;
-        zonefactor = unitclasses[zoneunitclass].units[zoneunittype].scale;
-        strcpy(unitlabel, unitclasses[zoneunitclass].units[zoneunittype].unit);
-      }
-    }
-    glPushMatrix();
-    glTranslatef(vcolorbar_left_pos - colorbar_label_width, vcolorbar_top_pos + v_space + vcolorbar_delta, 0.0);
-    glTranslatef(-leftzone*(colorbar_label_width + h_space), 0.0, 0.0);
-    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Zone");
-    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, "Temp");
-    OutputBarText(0.0, (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
-    glPopMatrix();
-    SNIFF_ERRORS("After ZONE labels");
-  }
-
   // -------------- isosurface left labels ------------
 
   if(showiso_colorbar == 1){
@@ -2757,21 +2571,47 @@ void DrawVerticalColorbarRegLabels(void){
     glPopMatrix();
   }
 
+  // -------------- isosurface top labels ------------
+
+  if(showiso_colorbar == 1){
+    char unitlabel[256];
+    boundsdata *sb;
+
+    sb = isobounds + iisottype;
+    strcpy(unitlabel, sb->label->unit);
+    glPushMatrix();
+    glTranslatef(
+      vcolorbar_left_pos - colorbar_label_width,
+      vcolorbar_top_pos + v_space + vcolorbar_delta,
+      0.0);
+    glTranslatef(-leftiso*(colorbar_label_width + h_space), 0.0, 0.0);
+    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Iso");
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, sb->label->shortlabel);
+    OutputBarText(0.0, (VP_vcolorbar.text_height + v_space),     foreground_color, unitlabel);
+    glPopMatrix();
+  }
+
   // -------------- particle left labels ------------
 
   if(showevac_colorbar == 1 || (showsmoke == 1 && parttype != 0)){
     float *partlevels256_ptr;
-    float tttval, tttmin, tttmax;
+    float tttval;
 
+    if(parttype!=0){
+      int partunitclass, partunittype;
+
+      GetUnitInfo(partunitlabel, &partunitclass, &partunittype);
+      if(partunitclass>=0&&partunitclass<nunitclasses&&partunittype>=0){
+        partflag = 1;
+        partfactor = unitclasses[partunitclass].units[partunittype].scale;
+      }
+    }
     partlevels256_ptr = partlevels256;
     if(global_prop_index>= 0 &&global_prop_index < npart5prop){
       partlevels256_ptr = part5propinfo[global_prop_index].ppartlevels256;
     }
 
     iposition = -1;
-    tttmin = partlevels256_ptr[0];
-    tttmax = partlevels256_ptr[255];
-    partrange = tttmax - tttmin;
     glPushMatrix();
     glTranslatef(vcolorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
     glTranslatef(-leftsmoke*(colorbar_label_width + h_space), 0.0, 0.0);
@@ -2791,32 +2631,71 @@ void DrawVerticalColorbarRegLabels(void){
       OutputBarText(0.0, vert_position, red_color, partcolorlabel_ptr);
     }
     for(i = 0; i < nrgb - 1; i++){
+      float val;
+
+      if(iposition == i)continue;
+      val = part5propinfo[global_prop_index].partlabelvals[i + 1];
+      val = ScaleFloat2Float(val, partfactor);
+      colorbar_vals[i] = val;
+    }
+    Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, exp_factor_label);
+    max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
+    for(i = 0; i < nrgb - 1; i++){
       float vert_position;
-      char partcolorlabel[256];
-      char *partcolorlabel_ptr = NULL;
 
       vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
       if(iposition == i)continue;
-      if(global_prop_index>= 0 &&global_prop_index < npart5prop){
-        partcolorlabel_ptr = &part5propinfo[global_prop_index].partlabels[i + 1][0];
-      }
-      else{
-        if(colorlabelpart != NULL){
-          partcolorlabel_ptr = &colorlabelpart[i + 1][0];
-        }
-        else{
-          partcolorlabel_ptr = NULL;
-        }
-      }
-      if(partflag == 1){
-        float val;
+      OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
+      max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(colorbar_labels[i]));
+    }
+    glPopMatrix();
+  }
 
-        partcolorlabel_ptr = partcolorlabel;
-        val = tttmin + i*partrange / (nrgb - 2);
-        val = ScaleFloat2Float(val, partfactor);
-        Float2String(partcolorlabel_ptr, val, ncolorlabel_digits, force_fixedpoint);
+  // -------------- particle file top labels ------------
+
+  if(showevac_colorbar==1||(showsmoke==1&&parttype!=0)){
+    char partunitlabel2[256], partshortlabel2[256];
+
+    strcpy(partshortlabel2, "");
+    strcpy(partunitlabel2, "");
+
+    glPushMatrix();
+    glTranslatef(
+      vcolorbar_left_pos - colorbar_label_width,
+      vcolorbar_top_pos + v_space + vcolorbar_delta,
+      0.0);
+    if(dohist == 1)glTranslatef(colorbar_label_width / 2.0, 0.0, 0.0);
+
+    if(parttype != 0){
+      if(showsmoke == 1 && showevac == 0)OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Part");
+      if(showevac == 1)OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space),                   foreground_color, "Human");
+    }
+    if(parttype == -1){
+      strcpy(partshortlabel2, "temp");
+      strcpy(partunitlabel2, (const char *)degC);
+    }
+    else if(parttype == -2){
+      strcpy(partshortlabel2, "HRRPUV");
+      strcpy(partunitlabel2, "kW/m3");
+    }
+    else{
+      if(partshortlabel != NULL)strcpy(partshortlabel2, partshortlabel);
+      if(partunitlabel != NULL)strcpy(partunitlabel2,   partunitlabel);
+    }
+    if(parttype != 0){
+      int partunitclass, partunittype;
+
+      GetUnitInfo(partunitlabel, &partunitclass, &partunittype);
+      if(partunitclass >= 0 && partunitclass < nunitclasses){
+        if(partunittype >= 0){
+          partflag = 1;
+          partfactor = unitclasses[partunitclass].units[partunittype].scale;
+          strcpy(partunitlabel2, unitclasses[partunitclass].units[partunittype].unit);
+        }
       }
-      OutputBarText(0.0, vert_position, foreground_color, partcolorlabel_ptr);
+      OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space),     foreground_color, partshortlabel);
+      OutputBarText(0.0, 1 * (VP_vcolorbar.text_height + v_space),     foreground_color, partunitlabel2);
+      OutputBarText(0.0, 0 * (VP_vcolorbar.text_height + v_space),     foreground_color, exp_factor_label);
     }
     glPopMatrix();
   }
@@ -2828,7 +2707,20 @@ void DrawVerticalColorbarRegLabels(void){
     boundsdata *sb;
     float slicerange;
 
+    char unitlabel[256];
+    int sliceunitclass, sliceunittype;
+
     sb = slicebounds + slicefile_labelindex;
+    strcpy(unitlabel, sb->label->unit);
+    GetUnitInfo(sb->label->unit, &sliceunitclass, &sliceunittype);
+    if(sliceunitclass >= 0 && sliceunitclass < nunitclasses){
+      if(sliceunittype > 0){
+        sliceflag = 1;
+        slicefactor = unitclasses[sliceunitclass].units[sliceunittype].scale;
+        strcpy(unitlabel, unitclasses[sliceunitclass].units[sliceunittype].unit);
+      }
+    }
+
     tttmin = sb->levels256[0];
     tttmax = sb->levels256[255];
     slicerange = tttmax - tttmin;
@@ -2893,13 +2785,13 @@ void DrawVerticalColorbarRegLabels(void){
         valmax = sb->colorvalues[nrgb-1];
       }
       valmax = ScaleFloat2Float(valmax, slicefactor);
+      colorbar_max = MAX(ABS(valmax), ABS(valmin));
+      colorbar_max = MAX(colorbar_max, colorbar_eps);
 
-      for(i = 0; i < nrgb - 1; i++){
-        float vert_position, val;
-        char slicecolorlabel[256], *slicecolorlabel_ptr = NULL;
+      for(i = 0; i<nrgb-1; i++){
+        float val;
 
-        vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
-        if(iposition == i)continue;
+        if(iposition==i)continue;
         if(sliceflag==1){
           val = tttmin+i*slicerange/(nrgb-2);
         }
@@ -2908,12 +2800,55 @@ void DrawVerticalColorbarRegLabels(void){
         }
         val = ScaleFloat2Float(val, slicefactor);
         if(ABS(colorbar_shift-1.0)>0.0001){
-          val = SHIFT_VAL(val,valmin,valmax,1.0/colorbar_shift);
+          val = SHIFT_VAL(val, valmin, valmax, 1.0/colorbar_shift);
         }
-        Float2String(slicecolorlabel, val, ncolorlabel_digits, force_fixedpoint);
-        slicecolorlabel_ptr = slicecolorlabel;
-        OutputBarText(0.0, vert_position, foreground_color, slicecolorlabel_ptr);
+        colorbar_vals[i] = val;
       }
+      Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, exp_factor_label);
+      max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
+      for(i = 0; i < nrgb - 1; i++){
+        float vert_position;
+
+        vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
+        if(iposition == i)continue;
+        OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
+        max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(colorbar_labels[i]));
+      }
+    }
+    glPopMatrix();
+  }
+
+  // -------------- slice file top labels ------------
+
+  if(show_slice_colorbar_local==1){
+    char unitlabel[256];
+    int sliceunitclass, sliceunittype;
+    boundsdata *sb;
+
+    sb = slicebounds + slicefile_labelindex;
+    strcpy(unitlabel, sb->label->unit);
+    GetUnitInfo(sb->label->unit, &sliceunitclass, &sliceunittype);
+    if(sliceunitclass >= 0 && sliceunitclass < nunitclasses){
+      if(sliceunittype > 0){
+        sliceflag = 1;
+        slicefactor = unitclasses[sliceunitclass].units[sliceunittype].scale;
+        strcpy(unitlabel, unitclasses[sliceunitclass].units[sliceunittype].unit);
+      }
+    }
+    glPushMatrix();
+    glTranslatef(
+      vcolorbar_left_pos - colorbar_label_width,
+      vcolorbar_top_pos + v_space + vcolorbar_delta,
+      0.0);
+    glTranslatef(-leftslice*(colorbar_label_width + h_space), 0.0, 0.0);
+    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Slice");
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, sb->label->shortlabel);
+    OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0, 0                                       , foreground_color, exp_factor_label);
+    if(strcmp(unitlabel, "ppm") == 0 && slicefactor != NULL){
+      slicefactor2[0] = *slicefactor;
+      slicefactor2[1] = 0.0;
+      slicefactor = slicefactor2;
     }
     glPopMatrix();
   }
@@ -2922,6 +2857,21 @@ void DrawVerticalColorbarRegLabels(void){
 
   if(showpatch == 1 && wall_cell_color_flag == 0){
     float tttval, tttmin, tttmax;
+
+    char unitlabel[256];
+    patchdata *patchi;
+    int patchunitclass, patchunittype;
+
+    patchi = patchinfo + boundarytypes[iboundarytype];
+    strcpy(unitlabel, patchi->label.unit);
+    GetUnitInfo(patchi->label.unit, &patchunitclass, &patchunittype);
+    if(patchunitclass >= 0 && patchunitclass < nunitclasses){
+      if(patchunittype > 0){
+        patchflag = 1;
+        patchfactor = unitclasses[patchunitclass].units[patchunittype].scale;
+        strcpy(unitlabel, unitclasses[patchunitclass].units[patchunittype].unit);
+      }
+    }
 
     iposition = -1;
     tttmin = boundarylevels256[0];
@@ -2948,12 +2898,7 @@ void DrawVerticalColorbarRegLabels(void){
       OutputBarText(0.0, vert_position, red_color, boundary_colorlabel_ptr);
     }
     for(i = 0; i < nrgb - 1; i++){
-      char boundary_colorlabel[256];
-      char *boundary_colorlabel_ptr = NULL;
-      float vert_position;
       float val;
-
-      vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
 
       if(iposition == i)continue;
       if(patchflag==1){
@@ -2963,10 +2908,52 @@ void DrawVerticalColorbarRegLabels(void){
         val = colorvaluespatch[i+1];
       }
       val = ScaleFloat2Float(val, patchfactor);
-      Float2String(boundary_colorlabel, val, ncolorlabel_digits, force_fixedpoint);
-      boundary_colorlabel_ptr = boundary_colorlabel;
-      OutputBarText(0.0, vert_position, foreground_color, boundary_colorlabel_ptr);
+      colorbar_vals[i] = val;
+      GetMantissaExponent(ABS(val), colorbar_exponents + i);
     }
+    Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, exp_factor_label);
+    max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
+    for(i = 0; i < nrgb - 1; i++){
+      float vert_position;
+
+      vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
+
+      if(iposition == i)continue;
+      OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
+      max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(colorbar_labels[i]));
+    }
+    glPopMatrix();
+  }
+
+  // -------------- boundary file top labels ------------
+
+  if(showpatch == 1 && wall_cell_color_flag == 0){
+    char unitlabel[256];
+    patchdata *patchi;
+    int patchunitclass, patchunittype;
+
+    patchi = patchinfo + boundarytypes[iboundarytype];
+    strcpy(unitlabel, patchi->label.unit);
+    GetUnitInfo(patchi->label.unit, &patchunitclass, &patchunittype);
+    if(patchunitclass >= 0 && patchunitclass < nunitclasses){
+      if(patchunittype > 0){
+        patchflag = 1;
+        patchfactor = unitclasses[patchunitclass].units[patchunittype].scale;
+        strcpy(unitlabel, unitclasses[patchunitclass].units[patchunittype].unit);
+      }
+    }
+    glPushMatrix();
+    glTranslatef(
+      vcolorbar_left_pos - colorbar_label_width,
+      vcolorbar_top_pos + v_space + vcolorbar_delta,
+      0.0);
+    glTranslatef(-leftpatch*(colorbar_label_width + h_space), 0.0, 0.0);
+    if(dohist == 1)glTranslatef(colorbar_label_width / 2.0, 0.0, 0.0);
+
+    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Bndry");
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, patchi->label.shortlabel);
+    OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0, 0                                       , foreground_color, exp_factor_label);
     glPopMatrix();
   }
 
@@ -2974,6 +2961,19 @@ void DrawVerticalColorbarRegLabels(void){
 
   if(showcfast_local==1){
     float tttval, tttmin, tttmax;
+
+    char unitlabel[256];
+    int zoneunitclass, zoneunittype;
+
+    strcpy(unitlabel, (const char *)degC);
+    GetUnitInfo(unitlabel, &zoneunitclass, &zoneunittype);
+    if(zoneunitclass >= 0 && zoneunitclass < nunitclasses){
+      if(zoneunittype > 0){
+        zoneflag = 1;
+        zonefactor = unitclasses[zoneunitclass].units[zoneunittype].scale;
+        strcpy(unitlabel, unitclasses[zoneunitclass].units[zoneunittype].unit);
+      }
+    }
 
     iposition = -1;
     tttmin = zonelevels256[0];
@@ -2996,6 +2996,7 @@ void DrawVerticalColorbarRegLabels(void){
       vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
       iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
       OutputBarText(0.0, vert_position, red_color, zonecolorlabel_ptr);
+      max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(zonecolorlabel_ptr));
     }
     for(i = 0; i < nrgb - 1; i++){
       float vert_position;
@@ -3015,9 +3016,38 @@ void DrawVerticalColorbarRegLabels(void){
       Float2String(zonecolorlabel, val, ncolorlabel_digits, force_fixedpoint);
       zonecolorlabel_ptr = zonecolorlabel;
       OutputBarText(0.0, vert_position, foreground_color, zonecolorlabel_ptr);
+      max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(zonecolorlabel_ptr));
     }
+    strcpy(exp_factor_label, "");
     SNIFF_ERRORS("after zone left labels");
     glPopMatrix();
+  }
+
+  // -------------- zone top labels ------------
+
+  if(showcfast_local==1){
+    char unitlabel[256];
+    int zoneunitclass, zoneunittype;
+
+    strcpy(unitlabel, (const char *)degC);
+    GetUnitInfo(unitlabel, &zoneunitclass, &zoneunittype);
+    if(zoneunitclass >= 0 && zoneunitclass < nunitclasses){
+      if(zoneunittype > 0){
+        zoneflag = 1;
+        zonefactor = unitclasses[zoneunitclass].units[zoneunittype].scale;
+        strcpy(unitlabel, unitclasses[zoneunitclass].units[zoneunittype].unit);
+      }
+    }
+    glPushMatrix();
+    glTranslatef(vcolorbar_left_pos - colorbar_label_width, vcolorbar_top_pos + v_space + vcolorbar_delta, 0.0);
+    glTranslatef(-leftzone*(colorbar_label_width + h_space), 0.0, 0.0);
+    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Zone");
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, "Temp");
+    OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0, 0                                       , foreground_color, exp_factor_label);
+    max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
+    glPopMatrix();
+    SNIFF_ERRORS("After ZONE labels");
   }
 
   // -------------- plot3d left labels ------------
@@ -3025,6 +3055,20 @@ void DrawVerticalColorbarRegLabels(void){
   if(showplot3d == 1){
     float *p3lev;
     float tttval, tttmin, tttmax;
+    char *up3label;
+    char unitlabel[256];
+    int plot3dunitclass, plot3dunittype;
+
+    up3label = plot3dinfo[0].label[plotn-1].unit;
+    strcpy(unitlabel, up3label);
+    GetUnitInfo(up3label, &plot3dunitclass, &plot3dunittype);
+    if(plot3dunitclass>=0&&plot3dunitclass<nunitclasses){
+      if(plot3dunittype>0){
+        plot3dflag = 1;
+        plot3dfactor = unitclasses[plot3dunitclass].units[plot3dunittype].scale;
+        strcpy(unitlabel, unitclasses[plot3dunitclass].units[plot3dunittype].unit);
+      }
+    }
 
     iposition = -1;
     p3lev = p3levels256[plotn - 1];
@@ -3049,14 +3093,9 @@ void DrawVerticalColorbarRegLabels(void){
       OutputBarText(0.0, vert_position, red_color, plot3dcolorlabel_ptr);
     }
     if(visiso == 0){
-      float vert_position;
-
       for(i = 0; i < nrgb - 1; i++){
-        char plot3dcolorlabel[256];
-        char *plot3dcolorlabel_ptr = NULL;
         float val;
 
-        vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
         if(iposition == i)continue;
         if(plot3dflag == 1){
           val = tttmin + i*plot3drange / (nrgb - 2);
@@ -3064,10 +3103,20 @@ void DrawVerticalColorbarRegLabels(void){
         else{
           val = colorvaluesp3[plotn - 1][i];
         }
-        plot3dcolorlabel_ptr = plot3dcolorlabel;
-        ScaleFloat2String(val, plot3dcolorlabel, plot3dfactor);
-        Float2String(plot3dcolorlabel, val, ncolorlabel_digits, force_fixedpoint);
-        OutputBarText(0.0, vert_position, foreground_color, plot3dcolorlabel_ptr);
+        val = ScaleFloat2Float(val, plot3dfactor);
+        colorbar_vals[i] = val;
+        GetMantissaExponent(ABS(val), colorbar_exponents + i);
+      }
+      Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, exp_factor_label);
+      max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
+      for(i = 0; i < nrgb - 1; i++){
+        float vert_position;
+
+        vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
+
+        if(iposition == i)continue;
+        OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
+        max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(colorbar_labels[i]));
       }
     }
     else{
@@ -3095,6 +3144,41 @@ void DrawVerticalColorbarRegLabels(void){
           OutputBarText(0.0, vert_position, foreground_color, plot3dcolorlabel_ptr);
         }
       }
+    }
+    glPopMatrix();
+  }
+  // -------------- plot3d top labels ------------
+
+  if(showplot3d == 1){
+    char *p3label;
+    char *up3label;
+    char unitlabel[256];
+    int plot3dunitclass, plot3dunittype;
+
+    up3label = plot3dinfo[0].label[plotn - 1].unit;
+    strcpy(unitlabel, up3label);
+    GetUnitInfo(up3label, &plot3dunitclass, &plot3dunittype);
+    if(plot3dunitclass >= 0 && plot3dunitclass < nunitclasses){
+      if(plot3dunittype > 0){
+        plot3dflag = 1;
+        plot3dfactor = unitclasses[plot3dunitclass].units[plot3dunittype].scale;
+        strcpy(unitlabel, unitclasses[plot3dunitclass].units[plot3dunittype].unit);
+      }
+    }
+    p3label = plot3dinfo[0].label[plotn - 1].shortlabel;
+    glPushMatrix();
+    glTranslatef(
+      vcolorbar_left_pos - colorbar_label_width,
+      vcolorbar_top_pos + v_space + vcolorbar_delta,
+      0.0);
+    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Plot3D");
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, p3label);
+    OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0, 0                                       , foreground_color, exp_factor_label);
+    if(strcmp(unitlabel, "ppm") == 0 && plot3dfactor != NULL){
+      plot3dfactor2[0] = *plot3dfactor;
+      plot3dfactor2[1] = 0.0;
+      plot3dfactor = plot3dfactor2;
     }
     glPopMatrix();
   }
@@ -3188,7 +3272,7 @@ void Hsl2Rgb(float *hslvals, float *rgbvals, int flag){
     r = saturation;
     g = saturation;
     b = saturation;
-    if(flag==1.0){
+    if(flag==1){
       r *= 255.0;
       g *= 255.0;
       b *= 255.0;

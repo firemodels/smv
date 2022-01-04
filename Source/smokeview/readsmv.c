@@ -5016,6 +5016,9 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     STRCPY(sd->comp_file, rle_file);
     sd->file = sd->comp_file;
     break;
+  default:
+    ASSERT(FFALSE);
+    break;
   }
 
   // read in geometry file name
@@ -12079,12 +12082,14 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "COLORBAR") == 1){
       float *rgb_ini_copy;
       int nn;
+      int dummy;
 
       CheckMemory;
       fgets(buffer, 255, stream);
-      {
-        int dummy;
-        sscanf(buffer, "%i %i %i %i", &nrgb_ini, &dummy, &colorbar_select_index, &colorbar_selection_width);
+      sscanf(buffer, "%i %i %i %i", &nrgb_ini, &dummy, &colorbar_select_index, &colorbar_selection_width);
+      if(nrgb_ini!=12){
+        fprintf(stderr, "***warning: COLORBAR ini parameter skipped - only colorbars with 12 entries are supported.\n");
+        continue;
       }
       colorbar_selection_width = CLAMP(colorbar_selection_width, COLORBAR_SELECTION_WIDTH_MIN, COLORBAR_SELECTION_WIDTH_MAX);
       FREEMEMORY(rgb_ini);
@@ -13808,7 +13813,7 @@ int ReadIni2(char *inifile, int localfile){
                   &viewtype);
 
                 if(viewtype == 0){
-                  float dummy3[3],dummy;
+                  float dummy3[3];
 
                   sscanf(buffer, "%f %f %f %f %i %f %f %f %f %f %f %f %i",
                     &key_time,

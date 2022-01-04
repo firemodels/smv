@@ -572,6 +572,9 @@ extern "C" void ColorCB(int var){
     SPINNER_diff_green->set_int_val(glui_diffusegrey);
     SPINNER_diff_blue->set_int_val(glui_diffusegrey);
   break;
+  default:
+    ASSERT(FFALSE);
+    break;
   }
 }
 

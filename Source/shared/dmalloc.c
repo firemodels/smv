@@ -49,13 +49,6 @@ void _memorystatus(unsigned int size,unsigned int *availmem,unsigned int *physme
     if(availmem!=NULL)*availmem=stat.dwMemoryLoad;
     if(totalmem!=NULL)*totalmem=stat.dwTotalPhys/(1024*1024);
     if(physmemused!=NULL)*physmemused=(stat.dwTotalPhys-stat.dwAvailPhys)/(1024*1024);
-#ifdef pp_MEMDEBUG
-    if(size!=0&&size<=stat.dwAvailPhys-0.1*stat.dwTotalPhys){
-      int memsize;
-
-      memsize = stat.dwAvailPhys/(1024*1024);
-    }
-#endif
     if(size!=0&&size>stat.dwAvailPhys-0.1*stat.dwTotalPhys){
       fprintf(stderr,"*** Warning: Low Memory. Only %i M available for viewing data.\n",
            (int)stat.dwAvailPhys/(1024*1024));

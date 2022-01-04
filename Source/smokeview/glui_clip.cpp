@@ -204,6 +204,9 @@ void ClipCB(int var){
     camera_current->zmin = clipinfo.zmin;
     camera_current->zmax = clipinfo.zmax;
     break;
+  default:
+    ASSERT(FFALSE);
+    break;
   }
   if(glui_rotation_index==ROTATE_ABOUT_CLIPPING_CENTER)UpdateRotationIndex(ROTATE_ABOUT_CLIPPING_CENTER);
   if(var >= CLIP_xlower&&var <= CLIP_zupper){

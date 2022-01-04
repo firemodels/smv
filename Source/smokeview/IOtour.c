@@ -800,23 +800,23 @@ void CreateTourPaths(void){
       xyz_diff = this_key->xyz_diff;
       view_diff = this_key->view_diff;
       if(next_key->next==NULL){
-        int i;
+        int ii;
 
         this_key->line_dist = 0.0;
-        for(i=0;i<3;i++){
-          xyz_diff[i] = 0.0;
-          view_diff[i] = 0.0;
+        for(ii=0;ii<3;ii++){
+          xyz_diff[ii]  = 0.0;
+          view_diff[ii] = 0.0;
         }
       }
       else{
-        int i;
+        int ii;
 
         this_xyz = this_key->xyz_smv;
         next_xyz = next_key->xyz_smv;
         DDIST3(this_xyz, next_xyz, this_key->line_dist);
-        for(i=0;i<3;i++){
-          xyz_diff[i]  = (next_xyz[i]           - this_xyz[i]);
-          view_diff[i] = (next_key->view_smv[i] - this_key->view_smv[i]);
+        for(ii=0;ii<3;ii++){
+          xyz_diff[ii]  = (next_xyz[ii]           - this_xyz[ii]);
+          view_diff[ii] = (next_key->view_smv[ii] - this_key->view_smv[ii]);
         }
       }
     }

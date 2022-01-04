@@ -1246,7 +1246,6 @@ void UpdateTimes(void){
     nglobal_times = nzone_times;
   }
   if(nglobal_times>0){
-    int i;
     NewMemory((void **)&global_times, nglobal_times*sizeof(float));
     global_times[0] = global_timemin;
     for(i = 1; i<nglobal_times; i++){
@@ -2411,6 +2410,11 @@ void UpdateDisplay(void){
   if(update_percentile_mode==1){
     update_percentile_mode = 0;
     SetPercentileMode(percentile_mode);
+  }
+  if(update_colorbar_digits==1){
+    update_colorbar_digits = 0;
+    SetColorbarDigitsCPP(ncolorlabel_digits);
+    SetColorbarDigits();
   }
   if(update_visColorbars==1){
     update_visColorbars = 0;

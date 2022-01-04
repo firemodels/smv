@@ -285,6 +285,9 @@ void UpdateAllBoundaryColors(void){
         break;
       case PATCH_GEOMETRY_SLICE:
         break;
+      default:
+        ASSERT(FFALSE);
+        break;
     }
   }
   if(nlist>0){
@@ -321,6 +324,9 @@ void UpdateAllBoundaryColors(void){
                                &valmin, &valmax,
                                nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
                                &patchi->extreme_min, &patchi->extreme_max);
+            break;
+          default:
+            ASSERT(FFALSE);
             break;
         }
       }
@@ -546,14 +552,14 @@ void GetPartColors(partdata *parti, int nlevel){
     partpropdata *propi;
     float local_tmin, local_tmax;
     float factor,range,tval;
-    char **labels;
+    float *vals;
     float *ppartlevels256;
 
     propi = part5propinfo + i;
 
     local_tmin = part_valmin[i];
     local_tmax = part_valmax[i];
-    labels=propi->partlabels;
+    vals       = propi->partlabelvals;
     ppartlevels256=propi->ppartlevels256;
 
     range = local_tmax - local_tmin;
@@ -561,15 +567,16 @@ void GetPartColors(partdata *parti, int nlevel){
     factor = range/(nlevel-2);
     for(n=1;n<nlevel-2;n++){
       tval = local_tmin + (n-1)*factor;
-      Num2String(&labels[n][0],tval);
+      vals[n] = tval;
     }
     for(n=0;n<256;n++){
       ppartlevels256[n] = (local_tmin*(255-n) + n*local_tmax)/255.;
     }
     tval = local_tmin + (nlevel-3)*factor;
-    Num2String(&labels[nlevel-2][0],tval);
+    vals[nlevel-2] = tval;
+
     tval = local_tmax;
-    Num2String(&labels[nlevel-1][0],tval);
+    vals[nlevel-1] = tval;
     CheckMemory;
   }
   FREEMEMORY(part_set_valmin);
@@ -1467,7 +1474,6 @@ void UpdateChopColors(void){
   int i;
   int ichopmin=0,ichopmax=nrgb_full;
 #define NCHOP 8
-  int ii;
   float transparent_level_local=1.0;
 
   int   setpatchchopmin_local=0, setpatchchopmax_local=0;
@@ -1621,6 +1627,8 @@ void UpdateChopColors(void){
         rgb_patch[4*i+3]=0.0;
       }
       for(i=ichopmin-NCHOP;i<ichopmin;i++){
+        int ii;
+
         if(i<=0)continue;
         if(i>nrgb_full-1)continue;
         ii = i - (ichopmin-NCHOP);
@@ -1636,6 +1644,8 @@ void UpdateChopColors(void){
         rgb_patch[4*i+3]=0.0;
       }
       for(i=ichopmax;i<ichopmax+NCHOP;i++){
+        int ii;
+ 
         if(i<=0)continue;
         if(i>nrgb_full-1)continue;
         ii = NCHOP-1-(i - ichopmax);
@@ -1671,6 +1681,8 @@ void UpdateChopColors(void){
         rgb_slice[4*i+3]=0.0;
       }
       for(i=ichopmin-NCHOP;i<ichopmin;i++){
+        int ii;
+
         if(i<=0)continue;
         if(i>nrgb_full-1)continue;
         ii = i - (ichopmin-NCHOP);
@@ -1686,6 +1698,8 @@ void UpdateChopColors(void){
         rgb_slice[4*i+3]=0.0;
       }
       for(i=ichopmax;i<ichopmax+NCHOP;i++){
+        int ii;
+
         if(i<=0)continue;
         if(i>nrgb_full-1)continue;
         ii = NCHOP-1-(i - ichopmax);
@@ -1726,6 +1740,8 @@ void UpdateChopColors(void){
         rgb_plot3d[4*i+3]=0.0;
       }
       for(i=ichopmin-NCHOP;i<ichopmin;i++){
+        int ii;
+
         if(i<=0)continue;
         if(i>nrgb_full-1)continue;
         ii = i - (ichopmin-NCHOP);
@@ -1753,6 +1769,8 @@ void UpdateChopColors(void){
         rgb_plot3d[4*i+3]=0.0;
       }
       for(i=ichopmax;i<ichopmax+NCHOP;i++){
+        int ii;
+
         if(i<=0)continue;
         if(i>nrgb_full-1)continue;
         ii = NCHOP-1-(i - ichopmax);

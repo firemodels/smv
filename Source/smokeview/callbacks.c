@@ -570,6 +570,9 @@ void MouseSelectGeom(int x, int y){
     case GEOM_PROP_SURF:
       selected_geom_triangle = val-1;
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
     }
 
     switch(select_geom){
@@ -605,6 +608,9 @@ void MouseSelectGeom(int x, int y){
         tri_surf = trii->geomsurf;
         UpdateTriangleInfo(tri_surf, trii->area);
       }
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
     }
     glShadeModel(GL_SMOOTH);
@@ -1688,6 +1694,9 @@ void Keyboard(unsigned char key, int flag){
           showdevice_plot = 0;
           ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
           break;
+	default:
+	  ASSERT(FFALSE);
+	  break;
       }
 // hrr plot
       switch(plot_option){
@@ -1701,6 +1710,9 @@ void Keyboard(unsigned char key, int flag){
           show_hrrpuv_plot = 0;
           ShowObjectsMenu(PLOT_HRRPUV);
           break;
+	default:
+	  ASSERT(FFALSE);
+	  break;
       }
       break;
     case 'a':
@@ -2663,6 +2675,9 @@ void Keyboard(unsigned char key, int flag){
       case 2:
         printf("only if time/colorbar hidden\n");
         break;
+      default:
+        ASSERT(FFALSE);
+        break;
       }
       break;
  //    vis_colorbar                       state
@@ -2785,6 +2800,13 @@ void Keyboard(unsigned char key, int flag){
       if(key2=='}')iplot3dtimelist = GetPlot3DTimeList(1);
       Plot3DListMenu(iplot3dtimelist);
       updatemenu = 1;
+      break;
+    case '-':
+      break;
+    case ' ':
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 

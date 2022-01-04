@@ -39,6 +39,7 @@ GLUI *glui_bounds=NULL;
 #define BOUND_HIST_LABELS              124
 #define BOUND_PERCENTILE_MODE          125
 #define BOUND_PLOT_MINMAX              126
+#define BOUND_COLORBAR_DIGITS          127
 
 #define PERCENTILE_DISABLED 0
 #define PERCENTILE_ENABLED  1
@@ -75,6 +76,7 @@ class bounds_dialog{
   GLUI_Spinner *SPINNER_percentile_min, *SPINNER_percentile_max;
   GLUI_Spinner *SPINNER_plot_min, *SPINNER_plot_max;
   GLUI_Spinner *SPINNER_hist_left_percen, *SPINNER_hist_down_percen, *SPINNER_hist_length_percen;
+  GLUI_Spinner *SPINNER_colorbar_digits;
   GLUI_StaticText  *STATIC_min_unit, *STATIC_max_unit, *STATIC_chopmin_unit, *STATIC_chopmax_unit;
   GLUI_StaticText *STATIC_percentile_00, *STATIC_percentile_50, *STATIC_percentile_100;
   GLUI_Rollout     *ROLLOUT_main_bound, *ROLLOUT_truncate, *ROLLOUT_percentiles;
@@ -114,6 +116,8 @@ class bounds_dialog{
   void set_percentile_minmax(float p_min, float p_max);
   void set_research_mode(int flag);
   void set_percentile_mode(int flag);
+
+  void set_colorbar_digits(int ndigits);
   void set_percentiles(float val_00, float per_valmin, float val_50, float per_valmax, float val_100);
   int  set_valtype(char *label);
   void set_valtype_index(int index);
@@ -307,7 +311,13 @@ void bounds_dialog::set_percentile_mode(int flag){
   CB(BOUND_CACHE_DATA);
 }
 
-  /* ------------------ set_plot_parms ------------------------ */
+/* ------------------ set_colorbar_digits ------------------------ */
+
+void bounds_dialog::set_colorbar_digits(int ndigits){
+  if(SPINNER_colorbar_digits!=NULL)SPINNER_colorbar_digits->set_int_val(ndigits);
+}
+
+/* ------------------ set_plot_parms ------------------------ */
 
 void bounds_dialog::update_plot_parms(void){
   if(hist_left_percen != hist_left_percen_cpp){
@@ -397,10 +407,8 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
 
   glui_bounds->add_column_to_panel(PANEL_bound2, false);
 
-  ROLLOUT_bound = glui_bounds->add_rollout_to_panel(PANEL_bound2, "Bound data");
-  PANEL_minmax = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
-  CHECKBOX_research_mode   = glui_bounds->add_checkbox_to_panel(PANEL_minmax, _("global bounds for all data (research mode)"), &research_mode, BOUND_RESEARCH_MODE, Callback);
-  CHECKBOX_percentile_mode = glui_bounds->add_checkbox_to_panel(PANEL_minmax, _("percentile bounds for all data"), &percentile_mode, BOUND_PERCENTILE_MODE, Callback);
+  ROLLOUT_bound            = glui_bounds->add_rollout_to_panel(PANEL_bound2, "Bound data");
+  PANEL_minmax             = glui_bounds->add_panel_to_panel(ROLLOUT_bound, "", GLUI_PANEL_NONE);
 
   CHECKBOX_cache = NULL;
   if(cache_flag!=NULL){
@@ -423,6 +431,12 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
 
   RADIO_button_percentile_max = NULL;
   RADIO_button_percentile_min = NULL;
+
+  CHECKBOX_research_mode   = glui_bounds->add_checkbox_to_panel(PANEL_minmax, _("global bounds for all data (research mode)"), &research_mode,      BOUND_RESEARCH_MODE,   Callback);
+  CHECKBOX_percentile_mode = glui_bounds->add_checkbox_to_panel(PANEL_minmax, _("percentile bounds for all data"),             &percentile_mode,    BOUND_PERCENTILE_MODE, Callback);
+
+  SPINNER_colorbar_digits  = glui_bounds->add_spinner_to_panel(PANEL_minmax,    "colorbar label digits", GLUI_SPINNER_INT,     &ncolorlabel_digits, BOUND_COLORBAR_DIGITS, Callback);
+  SPINNER_colorbar_digits->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
 
   PANEL_minmax2 = glui_bounds->add_panel_to_panel(PANEL_minmax, "", GLUI_PANEL_NONE);
 
@@ -1041,6 +1055,10 @@ void bounds_dialog::CB(int var){
       update_percentile_mode = 1;
       CB(BOUND_CACHE_DATA);
       break;
+    case BOUND_COLORBAR_DIGITS:
+      update_colorbar_digits = 1;
+      updatemenu = 1;
+      break;
     case BOUND_COMPUTE_PERCENTILES:
       break;
     case BOUND_PLOT_MINMAX:
@@ -1094,6 +1112,9 @@ void bounds_dialog::CB(int var){
     case BOUND_HIST_LABELS:
       hist_show_labels       = hist_show_labels_cpp;
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 };
 
@@ -1112,6 +1133,15 @@ extern "C" void SetResearchMode(int flag){
   if(nsliceinfo>0)sliceboundsCPP.set_research_mode(flag);
   if(npartinfo>0)partboundsCPP.set_research_mode(flag);
   if(nplot3dinfo>0)plot3dboundsCPP.set_research_mode(flag);
+}
+
+/* ------------------ SetColorbarDigitsCPP ------------------------ */
+
+extern "C" void SetColorbarDigitsCPP(int ndigits){
+  if(npatchinfo>0)patchboundsCPP.set_colorbar_digits(ndigits);
+  if(nsliceinfo>0)sliceboundsCPP.set_colorbar_digits(ndigits);
+  if(npartinfo>0)partboundsCPP.set_colorbar_digits(ndigits);
+  if(nplot3dinfo>0)plot3dboundsCPP.set_colorbar_digits(ndigits);
 }
 
 /* ------------------ SetPercentileMode ------------------------ */
@@ -1168,6 +1198,9 @@ extern "C" void SetPercentiles(int type, float val_00, float per_valmin, float v
     case BOUND_SLICE:
       if(nsliceinfo>0)sliceboundsCPP.set_percentiles(val_00, per_valmin, val_50, per_valmax, val_100);
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -1186,6 +1219,9 @@ extern "C" cpp_boundsdata *GetBoundsData(int type){
       break;
     case BOUND_SLICE:
       if(nsliceinfo>0)return sliceboundsCPP.get_bounds_data();
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
   return NULL;
@@ -1207,6 +1243,9 @@ extern "C" void GetGlobalBoundsMinMax(int type, char *label, float *valmin, floa
     case BOUND_SLICE:
       if(nsliceinfo>0)sliceboundsCPP.get_global_minmax(label, valmin, valmax);
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -1225,6 +1264,9 @@ extern "C" void SetCacheFlag(int type, int cache_flag){
       break;
     case BOUND_SLICE:
       if(nsliceinfo>0)sliceboundsCPP.set_cache_flag(cache_flag);
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }
@@ -1245,6 +1287,9 @@ extern "C" int GetCacheFlag(int type){
     case BOUND_SLICE:
       if(nsliceinfo>0)return sliceboundsCPP.get_cache_flag();
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
   return 0;
 }
@@ -1264,6 +1309,9 @@ extern "C" int GetPercentileDraw(int type){
       break;
     case BOUND_SLICE:
       if(nsliceinfo>0)return sliceboundsCPP.get_percentile_draw();
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
   return 0;
@@ -1342,6 +1390,9 @@ extern "C" void SetPercentileDraw(int type, int val){
         }
       }
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -1389,6 +1440,9 @@ extern "C" int GetValType(int type){
     case BOUND_SLICE:
       if(npatchinfo>0)return sliceboundsCPP.get_valtype();
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
   return 0;
 }
@@ -1409,6 +1463,9 @@ extern "C" int GetNValtypes(int type){
     case BOUND_SLICE:
       if(nsliceinfo>0)return sliceboundsCPP.get_nvaltypes();
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
   return 0;
 }
@@ -1428,6 +1485,9 @@ extern "C" void SetValTypeIndex(int type, int valtype_index){
       break;
     case BOUND_SLICE:
       if(nsliceinfo>0)sliceboundsCPP.set_valtype_index(valtype_index);
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }
@@ -1464,6 +1524,9 @@ extern "C" void GetMinMax(int type, char *label, int *set_valmin, float *valmin,
         sliceboundsCPP.get_max(label, set_valmax, valmax);
       }
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -1486,6 +1549,9 @@ extern "C" void GetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_
     case BOUND_SLICE:
       sliceboundsCPP.get_min_all(set_valmin, valmin, nall);
       sliceboundsCPP.get_max_all(set_valmax, valmax, nall);
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }
@@ -1510,6 +1576,9 @@ extern "C" void SetMinMax(int type, char *label, int set_valmin, float valmin, i
       sliceboundsCPP.set_min(label, set_valmin, valmin);
       sliceboundsCPP.set_max(label, set_valmax, valmax);
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -1529,6 +1598,9 @@ extern "C" void SetMin(int type, char *label, int set_valmin, float valmin){
     case BOUND_SLICE:
       sliceboundsCPP.set_min(label, set_valmin, valmin);
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -1547,6 +1619,9 @@ extern "C" void SetMax(int type, char *label, int set_valmax, float valmax){
       break;
     case BOUND_SLICE:
       sliceboundsCPP.set_max(label, set_valmax, valmax);
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }
@@ -1571,6 +1646,9 @@ extern "C" void SetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_
       sliceboundsCPP.set_min_all(set_valmin, valmin, nall);
       sliceboundsCPP.set_max_all(set_valmax, valmax, nall);
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -1590,6 +1668,9 @@ extern "C" void SetChopMin(int type, char *label, int set_valmin, float valmin){
     case BOUND_SLICE:
       sliceboundsCPP.set_chopmin(label, set_valmin, valmin);
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -1608,6 +1689,9 @@ extern "C" void SetChopMax(int type, char *label, int set_valmax, float valmax){
       break;
     case BOUND_SLICE:
       sliceboundsCPP.set_chopmax(label, set_valmax, valmax);
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }
@@ -1630,6 +1714,7 @@ extern "C" void SliceBoundsCPP_CB(int var){
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
+    case BOUND_COLORBAR_DIGITS:
       break;
     case BOUND_PERCENTILE_MINVAL:
     case BOUND_PERCENTILE_MAXVAL:
@@ -1771,6 +1856,9 @@ extern "C" void SliceBoundsCPP_CB(int var){
       if(npatchinfo>0)patchboundsCPP.update_plot_parms();
       if(nplot3dinfo>0)plot3dboundsCPP.update_plot_parms();
       if(nsliceinfo>0)sliceboundsCPP.update_plot_parms();
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }
@@ -1941,6 +2029,9 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
       if(nplot3dinfo>0)plot3dboundsCPP.update_plot_parms();
       if(nsliceinfo>0)sliceboundsCPP.update_plot_parms();
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -2100,6 +2191,9 @@ extern "C" void PartBoundsCPP_CB(int var){
       if(nplot3dinfo>0)plot3dboundsCPP.update_plot_parms();
       if(nsliceinfo>0)sliceboundsCPP.update_plot_parms();
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -2125,6 +2219,9 @@ int HavePatchData(void){
         break;
       case PATCH_GEOMETRY_SLICE:
         break;
+    default:
+      ASSERT(FFALSE);
+      break;
     }
   }
   return 1;
@@ -2295,6 +2392,9 @@ extern "C" void PatchBoundsCPP_CB(int var){
       if(npatchinfo>0)patchboundsCPP.update_plot_parms();
       if(nplot3dinfo>0)plot3dboundsCPP.update_plot_parms();
       if(nsliceinfo>0)sliceboundsCPP.update_plot_parms();
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }
@@ -3143,6 +3243,9 @@ extern "C" void SplitCB(int var){
     UpdateColorbarSplits(split_colorbar);
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     break;
+  default:
+    ASSERT(FFALSE);
+    break;
   }
 }
 
@@ -3199,9 +3302,9 @@ extern "C" void SetColorbarListIndex(int val){
   if(LIST_colorbar2!=NULL)LIST_colorbar2->set_int_val(val);
 }
 
-/* ------------------ UpdateColorLabelDigits ------------------------ */
+/* ------------------ SetColorbarDigits ------------------------ */
 
-extern "C" void UpdateColorLabelDigits(void){
+extern "C" void SetColorbarDigits(void){
   SPINNER_ncolorlabel_digits->set_int_val(ncolorlabel_digits);
 }
 
@@ -3726,6 +3829,9 @@ extern "C" void ImmersedBoundCB(int var){
         case OUTLINE_HIDDEN:
           show_slice_outlines[i]=0;
           break;
+	default:
+	  ASSERT(FFALSE);
+	  break;
       }
     }
     if(RADIO_slice_edgetype!=NULL)RADIO_slice_edgetype->set_int_val(glui_slice_edgetype);
@@ -4970,8 +5076,6 @@ extern "C" void GluiBoundsSetup(int main_window){
 
 
   if(ncolorbars>0){
-    int i;
-
     selectedcolorbar_index2 = -1;
     LIST_colorbar2 = glui_bounds->add_listbox_to_panel(PANEL_colorbar_properties, "", &selectedcolorbar_index2, COLORBAR_LIST2, SliceBoundCB);
 
@@ -5001,11 +5105,11 @@ extern "C" void GluiBoundsSetup(int main_window){
 
   SPINNER_colorbar_selection_width = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("Selection width:"), GLUI_SPINNER_INT, &colorbar_selection_width, COLORBAND, SliceBoundCB);
   SPINNER_colorbar_selection_width->set_int_limits(COLORBAR_SELECTION_WIDTH_MIN, COLORBAR_SELECTION_WIDTH_MAX);
-  SPINNER_ncolorlabel_digits = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("digits:"), GLUI_SPINNER_INT, &ncolorlabel_digits, COLORLABEL_DIGITS, SliceBoundCB);
-  glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force fixed point labels"), &force_fixedpoint);
+  SPINNER_ncolorlabel_digits = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("colorbar digits:"), GLUI_SPINNER_INT, &ncolorlabel_digits, COLORLABEL_DIGITS, SliceBoundCB);
   SPINNER_ncolorlabel_digits->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
   SPINNER_ncolorlabel_padding = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("padding:"), GLUI_SPINNER_INT, &ncolorlabel_padding, COLORLABEL_DIGITS, SliceBoundCB);
   SPINNER_ncolorlabel_padding->set_int_limits(0, 8, GLUI_LIMIT_CLAMP);
+  glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force fixed point labels"), &force_fixedpoint, COLORLABEL_DIGITS, SliceBoundCB);
 
   glui_bounds->add_column_to_panel(PANEL_cb11, false);
 
@@ -5099,12 +5203,8 @@ extern "C" void GluiBoundsSetup(int main_window){
   glui_bounds->add_spinner_to_panel(PANEL_split3, _("split"), GLUI_SPINNER_FLOAT, splitvals+1, SPLIT_COLORBAR, SplitCB);
   glui_bounds->add_spinner_to_panel(PANEL_split3, _("min"), GLUI_SPINNER_FLOAT, splitvals, SPLIT_COLORBAR, SplitCB);
 
-  {
-    int i;
-
-    for(i = 0; i<12; i++){
-      SPINNER_colorsplit[i]->set_int_limits(0, 255);
-    }
+  for(i = 0; i<12; i++){
+    SPINNER_colorsplit[i]->set_int_limits(0, 255);
   }
   SplitCB(SPLIT_COLORBAR);
 
@@ -5420,6 +5520,9 @@ extern "C" void IsoBoundCB(int var){
         use_transparency_data=0;
         iso_opacity_change=1;
         break;
+      default:
+	ASSERT(FFALSE);
+	break;
     }
     SliceBoundCB(DATA_transparent);
     break;
@@ -5963,6 +6066,7 @@ extern "C" void SliceBoundCB(int var){
       break;
     case COLORLABEL_DIGITS:
       updatemenu = 1;
+      update_colorbar_digits = 1;
       break;
     case SLICE_SKIP:
       slice_skip = CLAMP(slice_skip,1,max_slice_skip);
@@ -6190,6 +6294,9 @@ extern "C" void ShowBoundsDialog(int type){
     case DLG_ISO:
       if(ROLLOUT_iso!=NULL)ROLLOUT_iso->open();
       if(ROLLOUT_iso_settings!=NULL)ROLLOUT_iso_settings->open();
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }

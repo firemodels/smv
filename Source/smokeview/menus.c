@@ -511,8 +511,6 @@ void ShowAllSmoke(void){
 /* ------------------ ShowMultiSliceMenu ------------------------ */
 
 void ShowMultiSliceMenu(int value){
-  multislicedata *mslicei;
-  slicedata *sd;
   int mdisplay;
   int i;
 
@@ -544,32 +542,32 @@ void ShowMultiSliceMenu(int value){
       ShowBoundaryMenu(value+1000);
     }
     else{
+      multislicedata *mslicei;
+      slicedata *sd;
+
       mslicei = multisliceinfo+value;
       mdisplay = 0;
-      {
-        slicedata *sd;
 
-        sd = sliceinfo+mslicei->islices[0];
-        if(slicefile_labelindex==sd->slicefile_labelindex){
-          if(plotstate!=DYNAMIC_PLOTS){
-            plotstate = DYNAMIC_PLOTS;
-            mdisplay = 1;
-          }
-          else{
-            if(mslicei->display == -1){
-              mdisplay = 0;
-            }
-            else {
-              mdisplay = 1 - mslicei->display;
-            }
-          }
-        }
-        else{
+      sd = sliceinfo+mslicei->islices[0];
+      if(slicefile_labelindex==sd->slicefile_labelindex){
+        if(plotstate!=DYNAMIC_PLOTS){
           plotstate = DYNAMIC_PLOTS;
-          sd = sliceinfo+mslicei->islices[0];
-          slicefile_labelindex = sd->slicefile_labelindex;
           mdisplay = 1;
         }
+        else{
+          if(mslicei->display == -1){
+            mdisplay = 0;
+          }
+          else {
+            mdisplay = 1 - mslicei->display;
+          }
+        }
+      }
+      else{
+        plotstate = DYNAMIC_PLOTS;
+        sd = sliceinfo+mslicei->islices[0];
+        slicefile_labelindex = sd->slicefile_labelindex;
+        mdisplay = 1;
       }
       for(i = 0; i<mslicei->nslices; i++){
         sd = sliceinfo+mslicei->islices[i];
@@ -925,8 +923,9 @@ void SmokeColorbarMenu(int value){
 
 void ColorbarDigitMenu(int value){
   ncolorlabel_digits = value;
-  UpdateColorLabelDigits();
+  update_colorbar_digits = 1;
   updatemenu=1;
+  GLUTPOSTREDISPLAY;
 }
 
   /* ------------------ ColorbarMenu ------------------------ */
@@ -1890,6 +1889,9 @@ void ResetDefaultMenu(int var){
     case -4:
     case -5:
       UpdateCameraYpos(camera_current, 3);
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }
@@ -4562,8 +4564,6 @@ void LoadSmoke3DMenu(int value){
 #ifdef pp_SMOKE_FAST
   else if(value == MENU_SMOKE_SOOT_HRRPUV){
     if(smoke3d_load_test == 1){
-      int errorcode;
-
       ReadSmoke3DAllMeshesAllTimes(SOOT_2|HRRPUV_2, &errorcode);
     }
     else{
@@ -4572,8 +4572,6 @@ void LoadSmoke3DMenu(int value){
   }
   else if(value == MENU_SMOKE_SOOT_HRRPUV_CO2){
     if(smoke3d_load_test==1){
-      int errorcode;
-
       ReadSmoke3DAllMeshesAllTimes(SOOT|HRRPUV|CO2, &errorcode);
     }
     else{
@@ -4582,8 +4580,6 @@ void LoadSmoke3DMenu(int value){
   }
   else if(value == MENU_SMOKE_SOOT_TEMP){
     if(smoke3d_load_test==1){
-      int errorcode;
-
       ReadSmoke3DAllMeshesAllTimes(SOOT|TEMP, &errorcode);
     }
     else{
@@ -4592,8 +4588,6 @@ void LoadSmoke3DMenu(int value){
   }
   else if(value == MENU_SMOKE_SOOT_TEMP_CO2){
     if(smoke3d_load_test==1){
-      int errorcode;
-
       ReadSmoke3DAllMeshesAllTimes(SOOT|TEMP|CO2, &errorcode);
     }
     else{
@@ -4623,8 +4617,6 @@ void LoadSmoke3DMenu(int value){
     if(scriptoutstream==NULL||script_defer_loading==0){
 #ifdef pp_SMOKE_FAST
       if(smoke3d_load_test==1){
-        int errorcode;
-
         ReadSmoke3DAllMeshesAllTimes(smoke3dj->type2, &errorcode);
       }
       else{
@@ -4829,12 +4821,12 @@ void LoadSliceMenu(int value){
 
 void LoadMultiVSliceMenu(int value){
   int i;
-  multivslicedata *mvslicei;
   int file_count = 0;
   float load_size = 0.0, load_time;
 
   if(value==MENU_DUMMY)return;
   if(value>=0){
+    multivslicedata *mvslicei;
 
     mvslicei = multivsliceinfo + value;
     if(scriptoutstream!=NULL){
@@ -5257,7 +5249,7 @@ void LoadPlot3dMenu(int value){
   }
   else if(value==RELOAD_ALL){
     plot3ddata **plot3d_list;
-    int nlist=0, i;
+    int nlist=0;
 
     NewMemory((void **)&plot3d_list, nplot3dinfo*sizeof(plot3ddata *));
     for(i = 0; i<nplot3dinfo; i++){
@@ -5271,12 +5263,9 @@ void LoadPlot3dMenu(int value){
     if(nlist>0)SetLoadedPlot3DBounds(&value, 1);
     if(nlist>0)plot3d_list[nlist-1]->finalize = 1;
     for(i = 0; i<nlist; i++){
-      int errorcode;
-
       ReadPlot3D("", plot3d_list[i]-plot3dinfo, UNLOAD, &errorcode);
     }
     for(i = 0; i<nlist; i++){
-      int errorcode;
       plot3ddata *plot3di;
 
       plot3di = plot3d_list[i];
@@ -6958,7 +6947,6 @@ updatemenu=0;
 
     CREATEMENU(showpatchmenu,ShowBoundaryMenu);
     if(npatchloaded>0){
-      char menulabel[1024];
       patchdata *patchi=NULL, *patchim1=NULL;
 
       for(ii = 0;ii<npatchinfo;ii++){
@@ -7002,8 +6990,6 @@ updatemenu=0;
     npatchloaded=0;
     {
       int local_do_threshold=0;
-      int ii;
-
 
       for(i = 0;i<npatchinfo;i++){
         patchdata *patchi;
@@ -7043,8 +7029,6 @@ updatemenu=0;
 
 
   if(nterrain_textures>0){
-    int i;
-
     CREATEMENU(terrain_geom_showmenu, TerrainGeomShowMenu);
     for(i = 0; i<nterrain_textures; i++){
       texturedata *texti;
@@ -10191,8 +10175,6 @@ updatemenu=0;
       if(partfast==1)glutAddMenuEntry(_("*Fast loading"), MENU_PART_PARTFAST);
       if(partfast==0)glutAddMenuEntry(_("Fast loading"), MENU_PART_PARTFAST);
       if(nmeshes>1){
-        char menulabel[1024];
-
         strcpy(menulabel, "Mesh");
         GLUTADDSUBMENU(menulabel, particlesubmenu);
       }
@@ -12139,9 +12121,6 @@ updatemenu=0;
         GLUTADDSUBMENU(loadmenulabel,loadmultivslicemenu);
       }
       else if(nvsliceinfo>0){
-        char loadmenulabel[100];
-        char steplabel[100];
-
         strcpy(loadmenulabel,_("Vector slice"));
         if(sliceframestep>1){
           sprintf(steplabel,"/Skip %i",sliceframeskip);

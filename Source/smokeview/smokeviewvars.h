@@ -35,6 +35,10 @@ SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
 #endif
 
+SVEXTERN int SVDECL(max_colorbar_label_width, 0);
+SVEXTERN char SVDECL(**colorbar_labels,  NULL);
+SVEXTERN float SVDECL(*colorbar_vals,    NULL);
+SVEXTERN int SVDECL(*colorbar_exponents, NULL);
 SVEXTERN int SVDECL(frame360, 0);
 SVEXTERN int SVDECL(sliceval_ndigits, 0);
 SVEXTERN int SVDECL(rotate_center, 0);
@@ -194,6 +198,7 @@ SVEXTERN int SVDECL(compute_slice_file_sizes, 0);
 SVEXTERN int SVDECL(compute_smoke3d_file_sizes, 0);
 
 SVEXTERN int SVDECL(update_fileload, 1);
+SVEXTERN int SVDECL(update_colorbar_digits, 0);
 
 SVEXTERN int SVDECL(show_bndf_mesh_interface, 0);
 SVEXTERN int SVDECL(ncolorlabel_digits, 4), SVDECL(ncolorlabel_padding, 0);
@@ -1410,7 +1415,7 @@ SVEXTERN int visBLOCKold;
 
 SVEXTERN int selectedcolorbar_index,selectedcolorbar_index2;
 SVEXTERN int planar_terrain_slice;
-SVEXTERN int nrgb;
+SVEXTERN int  SVDECL(nrgb, NRGB);
 SVEXTERN int nrgb_ini;
 SVEXTERN int nrgb2_ini;
 SVEXTERN int rgb_white, rgb_yellow, rgb_blue, rgb_red;

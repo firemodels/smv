@@ -402,6 +402,9 @@ void DrawSelectGeom(void){
       glEnd();
     }
   break;
+  default:
+  ASSERT(FFALSE);
+  break;
   }
 }
 
@@ -1791,7 +1794,6 @@ void UpdateTriangles(int flag,int update){
     ntriangles_max = 0;
     for(j = 0; j<ngeominfoptrs; j++){
       geomdata *geomi;
-      int ii;
       FILE *stream = NULL;
 
       geomi = geominfoptrs[j];
@@ -2613,7 +2615,6 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
 
       if(geomi->is_terrain==1){
         float xmin, xmax, ymin, ymax, zmin, zmax;
-        int ii;
 
         xmin = verts[0].xyz[0];
         xmax = xmin;
@@ -2762,6 +2763,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
         }
         GetTriangleNormal(triangles[ii].verts[0]->xyz, triangles[ii].verts[1]->xyz, triangles[ii].verts[2]->xyz,
                           triangles[ii].tri_norm, NULL);
+        surfi = surfinfo;
         switch(type){
         case GEOM_CGEOM:
           surfi=surfinfo + CLAMP(surf_ind[ii],0,nsurfinfo-1);
@@ -2785,6 +2787,9 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
           surfi=surfinfo;
           triangles[ii].insolid = 0;
           break;
+	    default:
+	      ASSERT(FFALSE);
+	      break;
         }
         if(geomi->geomtype==GEOM_GEOM)surfi->used_by_geom = 1;
         triangles[ii].geomsurf=surfi;
@@ -3563,12 +3568,12 @@ void AverageGeomColors(geomlistdata *geomlisti, int itriangle, unsigned char *iv
       total_area = 0.0;
       for(j = 0; j<verti->ntriangles; j++){
         int trij_index;
-        tridata *trianglei;
+        tridata *trianglej;
 
-        trianglei = verti->triangles[j];
-        trij_index = trianglei-geomlisti->triangles;
-        color_index += trianglei->area*ivals[trij_index];
-        total_area += trianglei->area;
+        trianglej    = verti->triangles[j];
+        trij_index   = trianglej-geomlisti->triangles;
+        color_index += trianglej->area*ivals[trij_index];
+        total_area  += trianglej->area;
       }
       if(total_area>0.0){
         color_indices[i] = color_index/total_area;
@@ -4862,7 +4867,7 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
 
 /* ------------------ InitGeom ------------------------ */
 
-void InitGeom(geomdata *geomi,int geomtype, int fdsblock, int have_cface_normals){
+void InitGeom(geomdata *geomi,int geomtype, int fdsblock, int have_cface_normals_arg){
   geomi->file=NULL;
   geomi->topo_file = NULL;
   geomi->cache_defined = 0;
@@ -4885,7 +4890,7 @@ void InitGeom(geomdata *geomi,int geomtype, int fdsblock, int have_cface_normals
   geomi->is_terrain = 0;
   geomi->file2_tris = NULL;
   geomi->nfile2_tris = 0;
-  geomi->have_cface_normals = have_cface_normals;
+  geomi->have_cface_normals = have_cface_normals_arg;
   geomi->ncface_normals = 0;
   geomi->cface_normals = NULL;
 }

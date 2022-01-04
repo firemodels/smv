@@ -474,6 +474,9 @@ void MovieCB(int val){
       strcpy(movie_ini_filename, movie_basename);
       strcat(movie_ini_filename, ".ini");
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
   }
 }
 
@@ -871,7 +874,6 @@ extern "C" void ViewpointCB(int var){
   case REPLACE_CURRENT_VIEW:
     {
       int current_view_id=-1;
-      cameradata *cex;
 
       cex = &camera_list_first;
       cex = cex->next;
@@ -2735,6 +2737,9 @@ void RenderCB(int var){
         RenderCB(RENDER_RESOLUTION);
         RenderCB(RENDER_START_360);
         break;
+      default:
+	ASSERT(FFALSE);
+	break;
       }
     break;
     case RENDER_START_HIGHRES:

@@ -69,7 +69,7 @@ EXTERNCPP void MergePlot3DHistograms(void);
 EXTERNCPP void UpdateColorbarControls(void);
 EXTERNCPP void UpdateColorbarControls2(void);
 
-EXTERNCPP void UpdateColorLabelDigits(void);
+EXTERNCPP void SetColorbarDigits(void);
 
 EXTERNCPP void IncrementPartPropIndex(void);
 
@@ -170,6 +170,7 @@ EXTERNCPP void SetResearchMode(int flag);
 EXTERNCPP void SetPercentileMode(int flag);
 EXTERNCPP void SetPercentileMinMax(float p_min, float p_max);
 EXTERNCPP void Plot3DBoundsCPP_CB(int var);
+EXTERNCPP void SetColorbarDigitsCPP(int ndigits);
 
 EXTERNCPP void ShiftColorbars(void);
 EXTERNCPP int GetColorbarState(void);

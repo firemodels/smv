@@ -4985,7 +4985,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     if(use_set_slicecolor==0||set_slicecolor==SET_SLICECOLOR){
       if(sd->compression_type==UNCOMPRESSED){
         for(i = 0; i<nsliceinfo; i++){
-          int ii, errorcode;
           slicedata *slicei;
 
           slicei = sliceinfo+i;
@@ -5001,7 +5000,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
           for(ii = 0; ii<256; ii++){
             slicei->qval256[ii] = (qmin*(255 - ii) + qmax*ii) / 255;
           }
-          SetSliceColors(qmin, qmax, slicei, &errorcode);
+          SetSliceColors(qmin, qmax, slicei, errorcode);
         }
       }
       else{
@@ -5878,7 +5877,6 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
 }
 
 /* ------------------ DrawVolSliceTerrain ------------------------ */
-
 void DrawVolSliceTerrain(const slicedata *sd){
   int i, j;
   float r11, r31, r13, r33;
@@ -5983,7 +5981,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
         ymid = (yy1+y3)/2.0;
 
 #ifdef pp_TERRAIN_SKIP
-*** these lines were causing problems with a terrain case
+//*** these lines were causing problems with a terrain case
         if(slice_skip==1){
           if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
           if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
@@ -6086,7 +6084,6 @@ void DrawVolAllSlicesTextureDiag(const slicedata *sd, int direction){
 
   if(visx_all==1){
     int icol, icol2;
-    int nx, ny;
 
     nx = sd->nslicei;
     ny = sd->nslicej;
@@ -6159,7 +6156,6 @@ void DrawVolAllSlicesTextureDiag(const slicedata *sd, int direction){
   }
   if(visy_all==1){
     int jrow, jrow2;
-    int nx, ny;
 
     nx = sd->nslicei;
     ny = sd->nslicej;
@@ -7326,6 +7322,9 @@ void DrawSliceFrame(){
       visz_all = 1;
       nslicemax = nplotz_list;
       slice_normal[2] = direction;
+      break;
+      default:
+      ASSERT(FFALSE);
       break;
       }
       nslicemax = MAX(nslicemax, 1);

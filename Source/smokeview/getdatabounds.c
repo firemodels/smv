@@ -401,8 +401,6 @@ void GetGlobalPlot3DBounds(void){
 
   nplot3dbounds_cpp = 0;
   if(nplot3dinfo>0&&plot3dbounds_cpp==NULL){ // only initialize once
-    int i;
-
     nplot3dbounds_cpp = plot3dinfo[0].nvars;
     NewMemory((void **)&plot3dbounds_cpp, nplot3dbounds_cpp*sizeof(cpp_boundsdata));
     for(i = 0; i<nplot3dbounds_cpp; i++){
