@@ -690,8 +690,8 @@ void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixe
   exp_offset = exponent_min;
 
   doit = 1;
-  if(exponent_min>3)doit = 0;
-  if(exponent_max<-3)doit = 0;
+  if(exponent_min>4  && ndigits>=exponent_min)doit = 0;
+  if(exponent_max<-4 && ndigits>=ABS(exponent_max))doit = 0;
   if(fixedpoint_labels==1)doit = 1;
 
   if(doit==1){
