@@ -477,7 +477,6 @@ void RoundPos(float val, char *cval, int ndigits){
   }
   if(label[lastdigit]=='.')lastdigit++;
   label[lastdigit] += 5;
-  label[lastdigit+1] = 0;
   for(i = lastdigit; i>0; i--){
     if(label[i]>'9'){
       label[i] -= 10;
@@ -488,8 +487,8 @@ void RoundPos(float val, char *cval, int ndigits){
       if(label[i]=='.')i--;
     }
   }
-  for(i = strlen(label)-1; i>0; i--){
-    if(i<lastdigit)break;
+  label[255] = 0;
+  for(i = lastdigit; i<strlen(label);i++){
     if(label[i]!='.')label[i] = '0';
   }
   TrimZeros(label);
