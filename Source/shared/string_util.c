@@ -634,7 +634,7 @@ void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixe
   if(fixedpoint_labels==1)doit = 1;
 
   if(doit==1){
-    if(ABS(exp_offset)>3){
+    if(ABS(exp_offset)>=3){
       sprintf(exp_offset_label, "*10^%i", exp_offset);
     }
     else{
