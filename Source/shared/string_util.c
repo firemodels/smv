@@ -457,7 +457,7 @@ void RoundPos(float val, char *cval, int ndigits){
   char label[256];
 
   val = ABS(val);
-  if(1==0&&val>=1.0){
+  if(val>=1.0){
     strcpy(label, "0");
     sprintf(label+1, "%.12f", val);
   }
