@@ -469,7 +469,6 @@ void RoundDecimalPos(float val, char *cval, int decimalpos){
     strcat(label, ".0");
     period = strchr(label, '.');
   }
-  //123.11
   lastdigit = CLAMP(period-label+decimalpos, 0, strlen(label)-1);
   nextpos = lastdigit+1;
   if(label[nextpos]=='.')nextpos++;
