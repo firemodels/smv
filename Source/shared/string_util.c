@@ -507,7 +507,7 @@ void RoundDecimal(float val, char *cval, int ndigits){
     signval = SIGN(val);
     RoundDecimalPos(ABS(val), label, ndigits);
     strcpy(cval, "");
-    if(signval<0.0)strcat(cval, "-");
+    if(signval<0.0&&strcmp(label,"0.0")!=0)strcat(cval, "-");
     strcat(cval, label);
   }
   return;
@@ -574,7 +574,7 @@ void Round(float val, char *cval, int ndigits){
     signval = SIGN(val);
     RoundPos(ABS(val), label, ndigits);
     strcpy(cval, "");
-    if(signval<0.0)strcat(cval, "-");
+    if(signval<0.0&&strcmp(label, "0.0")!=0)strcat(cval, "-");
     strcat(cval, label);
   }
   return;
