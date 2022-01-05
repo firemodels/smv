@@ -1582,7 +1582,7 @@ void DrawTerrainOBSTTexture(terraindata *terri){
   float *x, *y;
   float terrain_color[4];
 
-  if(terri->terrain_mesh->is_bottom==0)return;
+ // if(terri->terrain_mesh->is_bottom==0)return;
 
   terrain_color[0]=1.0;
   terrain_color[1]=1.0;
