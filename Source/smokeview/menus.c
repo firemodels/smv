@@ -6470,7 +6470,10 @@ void GeometryMenu(int value){
   case 7:
     visCeiling=1-visCeiling;
     break;
-
+  case 17+TERRAIN_SKIP:
+    terrain_skip = 1-terrain_skip;
+    updatemenu = 1;
+    break;
   case 17+TERRAIN_3D:
   case 17+TERRAIN_3D_MAP:
   case 17+TERRAIN_HIDDEN:
@@ -7679,6 +7682,9 @@ updatemenu=0;
   }
   if(visTerrainType==TERRAIN_HIDDEN)glutAddMenuEntry(_("*Hidden"),17+TERRAIN_HIDDEN);
   if(visTerrainType!=TERRAIN_HIDDEN)glutAddMenuEntry(_("Hidden"),17+TERRAIN_HIDDEN);
+  if(terrain_skip==1)glutAddMenuEntry(_("*skip"), 17+TERRAIN_SKIP);
+  if(terrain_skip==0)glutAddMenuEntry(_("skip"), 17+TERRAIN_SKIP);
+
 
   if(nobject_defs>0){
     int multiprop;
