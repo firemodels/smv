@@ -649,7 +649,7 @@ void ShiftDecimal(char *cval, int nshift){
 
 /* ------------------ Floats2Strings ------------------------ */
 
-void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixedpoint_labels, char *exp_offset_label){
+void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixedpoint_labels, int exponential_labels, char *exp_offset_label){
   int exponent, exponent_min, exponent_max, exponent_val;
   int i;
   float valmax;
@@ -693,6 +693,7 @@ void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixe
   if(exponent_min>4  && ndigits>=exponent_min)doit = 0;
   if(exponent_max<-4 && ndigits>=ABS(exponent_max))doit = 0;
   if(fixedpoint_labels==1)doit = 1;
+  if(exponential_labels==1)doit = 0;
 
   if(doit==1){
     if(ABS(exp_offset)>=3){
