@@ -2993,6 +2993,8 @@ GLUI_Checkbox *CHECKBOX_use_tload_begin=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_end=NULL;
 GLUI_Checkbox *CHECKBOX_use_tload_skip=NULL;
 GLUI_Checkbox *CHECKBOX_colorbar_flip = NULL;
+GLUI_Checkbox *CHECKBOX_fixedpoint=NULL;
+GLUI_Checkbox *CHECKBOX_exponential=NULL;
 GLUI_Checkbox *CHECKBOX_colorbar_autoflip = NULL;
 GLUI_Checkbox *CHECKBOX_labels_shadedata = NULL;
 GLUI_Checkbox *CHECKBOX_labels_shade = NULL;
@@ -3306,6 +3308,8 @@ extern "C" void SetColorbarListIndex(int val){
 
 extern "C" void SetColorbarDigits(void){
   SPINNER_ncolorlabel_digits->set_int_val(ncolorlabel_digits);
+  CHECKBOX_fixedpoint->set_int_val(force_fixedpoint);
+  CHECKBOX_exponential->set_int_val(force_exponential);
 }
 
 /* ------------------ UpdateColorbarFlip ------------------------ */
@@ -5102,14 +5106,14 @@ extern "C" void GluiBoundsSetup(int main_window){
 
   glui_bounds->add_separator_to_panel(PANEL_colorbar_properties);
 
-
   SPINNER_colorbar_selection_width = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("Selection width:"), GLUI_SPINNER_INT, &colorbar_selection_width, COLORBAND, SliceBoundCB);
   SPINNER_colorbar_selection_width->set_int_limits(COLORBAR_SELECTION_WIDTH_MIN, COLORBAR_SELECTION_WIDTH_MAX);
   SPINNER_ncolorlabel_digits = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("colorbar digits:"), GLUI_SPINNER_INT, &ncolorlabel_digits, COLORLABEL_DIGITS, SliceBoundCB);
   SPINNER_ncolorlabel_digits->set_int_limits(COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX, GLUI_LIMIT_CLAMP);
   SPINNER_ncolorlabel_padding = glui_bounds->add_spinner_to_panel(PANEL_colorbar_properties, _("padding:"), GLUI_SPINNER_INT, &ncolorlabel_padding, COLORLABEL_DIGITS, SliceBoundCB);
   SPINNER_ncolorlabel_padding->set_int_limits(0, 8, GLUI_LIMIT_CLAMP);
-  glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force fixed point labels"), &force_fixedpoint, COLORLABEL_DIGITS, SliceBoundCB);
+  CHECKBOX_fixedpoint  = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force fixed point labels"), &force_fixedpoint,  COLORLABEL_DIGITS, SliceBoundCB);
+  CHECKBOX_exponential = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, _("force exponential labels"), &force_exponential, FORCE_EXPONENTIAL, SliceBoundCB);
 
   glui_bounds->add_column_to_panel(PANEL_cb11, false);
 
@@ -6064,7 +6068,13 @@ extern "C" void SliceBoundCB(int var){
     case COLORBAND:
       UpdateRGBColors(colorbar_select_index);
       break;
+    case FORCE_EXPONENTIAL:
+      if(force_exponential==1&&force_fixedpoint==1)force_fixedpoint=0;
+      updatemenu = 1;
+      update_colorbar_digits = 1;
+      break;
     case COLORLABEL_DIGITS:
+      if(force_exponential==1&&force_fixedpoint==1)force_exponential=0;
       updatemenu = 1;
       update_colorbar_digits = 1;
       break;

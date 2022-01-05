@@ -2421,6 +2421,8 @@ void UpdateDisplay(void){
     visColorbarVertical = visColorbarVertical_val;
     visColorbarHorizontal = visColorbarHorizontal_val;
     vis_colorbar = GetColorbarState();
+    UpdateColorbarControls();
+    UpdateColorbarControls2();
     updatemenu = 1;
   }
   if(update_windrose==1){
