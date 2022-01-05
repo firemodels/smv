@@ -10623,7 +10623,7 @@ int ReadIni2(char *inifile, int localfile){
       int dummy;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %f %i %i %i %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits, &force_fixedpoint, &ngridloc_digits, &sliceval_ndigits);
+      sscanf(buffer, " %i %i %f %i %i %i %i %i", &research_mode, &dummy, &colorbar_shift, &ncolorlabel_digits, &force_fixedpoint, &ngridloc_digits, &sliceval_ndigits, &force_exponential);
       colorbar_shift = CLAMP(colorbar_shift, COLORBAR_SHIFT_MIN, COLORBAR_SHIFT_MAX);
       if(research_mode==1&&research_mode_override==0)research_mode=0;
       ncolorlabel_digits = CLAMP(ncolorlabel_digits, COLORBAR_NDECIMALS_MIN, COLORBAR_NDECIMALS_MAX);
@@ -10631,6 +10631,8 @@ int ReadIni2(char *inifile, int localfile){
       ngridloc_digits    = CLAMP(ngridloc_digits, GRIDLOC_NDECIMALS_MIN, GRIDLOC_NDECIMALS_MAX);
       ONEORZERO(research_mode);
       ONEORZERO(force_fixedpoint);
+      ONEORZERO(force_exponential);
+      if(force_fixedpoint==1&&force_exponential==1)force_exponential = 0;
       if(research_mode==1&&percentile_mode==1){
         percentile_mode = 0;
         update_percentile_mode = 1;
@@ -14734,7 +14736,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "PERCENTILEMODE\n");
   fprintf(fileout, " %i\n", percentile_mode);
   fprintf(fileout, "RESEARCHMODE\n");
-  fprintf(fileout, " %i %i %f %i %i %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint, ngridloc_digits, sliceval_ndigits);
+  fprintf(fileout, " %i %i %f %i %i %i %i %i\n", research_mode, 1, colorbar_shift, ncolorlabel_digits, force_fixedpoint, ngridloc_digits, sliceval_ndigits, force_exponential);
   fprintf(fileout, "SHOWFEDAREA\n");
   fprintf(fileout, " %i\n", show_fed_area);
   fprintf(fileout, "SLICEAVERAGE\n");

@@ -2638,7 +2638,7 @@ void DrawVerticalColorbarRegLabels(void){
       val = ScaleFloat2Float(val, partfactor);
       colorbar_vals[i] = val;
     }
-    Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, exp_factor_label);
+    Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, exp_factor_label);
     max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
     for(i = 0; i < nrgb - 1; i++){
       float vert_position;
@@ -2804,7 +2804,7 @@ void DrawVerticalColorbarRegLabels(void){
         }
         colorbar_vals[i] = val;
       }
-      Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, exp_factor_label);
+      Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, exp_factor_label);
       max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
       for(i = 0; i < nrgb - 1; i++){
         float vert_position;
@@ -2911,7 +2911,7 @@ void DrawVerticalColorbarRegLabels(void){
       colorbar_vals[i] = val;
       GetMantissaExponent(ABS(val), colorbar_exponents + i);
     }
-    Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, exp_factor_label);
+    Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, exp_factor_label);
     max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
     for(i = 0; i < nrgb - 1; i++){
       float vert_position;
@@ -3107,7 +3107,7 @@ void DrawVerticalColorbarRegLabels(void){
         colorbar_vals[i] = val;
         GetMantissaExponent(ABS(val), colorbar_exponents + i);
       }
-      Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, exp_factor_label);
+      Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, exp_factor_label);
       max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
       for(i = 0; i < nrgb - 1; i++){
         float vert_position;
