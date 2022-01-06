@@ -1450,8 +1450,6 @@ void DrawTerrainOBST(terraindata *terri){
 
 #define ZOFFSET 0.001
 
-  if(terri->terrain_mesh->is_bottom==0)return;
-
   terrain_color[0]=0.47843;
   terrain_color[1]=0.45882;
   terrain_color[2]=0.18824;

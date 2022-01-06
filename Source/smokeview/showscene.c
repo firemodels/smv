@@ -360,7 +360,7 @@ void ShowScene2(int mode){
         break;
       }
     }
-    if(visTerrainType==TERRAIN_3D_MAP){
+    if(visTerrainType==TERRAIN_3D_MAP||visTerrainType==TERRAIN_3D){
       for(i = 0; i<nmeshes; i++){
         meshdata *meshi;
 
