@@ -360,6 +360,14 @@ void ShowScene2(int mode){
         break;
       }
     }
+    if(visTerrainType==TERRAIN_3D_MAP){
+      for(i = 0; i<nmeshes; i++){
+        meshdata *meshi;
+
+        meshi = meshinfo+i;
+        DrawTerrainOBSTSides(meshi);
+      }
+    }
   }
 
   /* ++++++++++++++++++++++++ draw slice files +++++++++++++++++++++++++ */

@@ -1572,6 +1572,144 @@ void DrawTerrainOBST(terraindata *terri){
 
 }
 
+/* ------------------ DrawTerrainOBSTSides ------------------------ */
+
+void DrawTerrainOBSTSides(meshdata *meshi){
+  float *znode;
+  unsigned char *uc_znormal, *uc_zn;
+  int nxcell, nycell;
+  int i, j;
+  float *x, *y;
+  float terrain_color[4];
+  terraindata *terri;
+  int ibar, jbar, kbar;
+  float zmin, zmax;
+
+  terri = meshi->terrain;
+
+  terrain_color[0] = 0.47843;
+  terrain_color[1] = 0.45882;
+  terrain_color[2] = 0.18824;
+  terrain_color[3] = 1.0;
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(mscale[0]), SCALE2SMV(mscale[1]), vertical_factor*SCALE2SMV(mscale[2]));
+  glTranslatef(-xbar0, -ybar0, -zbar0);
+
+  ENABLE_LIGHTING;
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
+
+  glEnable(GL_COLOR_MATERIAL);
+  glColor4fv(terrain_color);
+  glBegin(GL_TRIANGLES);
+  znode = NULL;
+  if(terri!=NULL)znode = terri->znode;
+  nxcell = meshi->ibar;
+  nycell = meshi->jbar;
+  ibar   = meshi->ibar;
+  jbar   = meshi->jbar;
+  kbar   = meshi->kbar;
+  x      = meshi->xplt_orig;
+  y      = meshi->yplt_orig;
+  zmin   = meshi->zplt_orig[0];
+  zmax   = meshi->zplt_orig[kbar];
+
+  if(meshi->is_extface[0]==MESH_EXT&&znode!=NULL){
+    float zij, zijp1;
+
+    i = 0;
+    for(j = 0; j<jbar; j++){
+      zij   = znode[ijnode3(i, j)];
+      if(zij<terri->zmin_cutoff)continue;
+      if(zij<terri->zmin_cutoff)zij = meshi->zplt_orig[kbar];
+      zijp1 = znode[ijnode3(i, j+1)];
+      if(zijp1<terri->zmin_cutoff)continue;
+      if(zijp1<terri->zmin_cutoff)zijp1 = meshi->zplt_orig[kbar];
+      glVertex3f(x[i], y[j],   zbar0);
+      glVertex3f(x[i], y[j],   zij);
+      glVertex3f(x[i], y[j+1], zbar0);
+
+      glVertex3f(x[i], y[j+1], zbar0);
+      glVertex3f(x[i], y[j],   zij);
+      glVertex3f(x[i], y[j+1], zijp1);
+    }
+  }
+  if(meshi->is_extface[1]==MESH_EXT&&znode!=NULL){
+    float zij, zijp1;
+
+    i = ibar;
+    for(j = 0; j<jbar; j++){
+      zij   = znode[ijnode3(i, j)];
+      if(zij<terri->zmin_cutoff)continue;
+      if(zij<terri->zmin_cutoff)zij = meshi->zplt_orig[kbar];
+      zijp1 = znode[ijnode3(i, j+1)];
+      if(zijp1<terri->zmin_cutoff)zijp1 = meshi->zplt_orig[kbar];
+      glVertex3f(x[i], y[j],   zbar0);
+      glVertex3f(x[i], y[j+1], zbar0);
+      glVertex3f(x[i], y[j+1], zijp1);
+
+      glVertex3f(x[i], y[j],   zbar0);
+      glVertex3f(x[i], y[j+1], zijp1);
+      glVertex3f(x[i], y[j],   zij);
+    }
+  }
+  if(meshi->is_extface[2]==MESH_EXT&&znode!=NULL){
+    float zij, zip1j;
+
+    j = 0;
+    for(i = 0; i<ibar; i++){
+      zij   = znode[ijnode3(i, j)];
+      if(zij<terri->zmin_cutoff)continue;
+      if(zij<terri->zmin_cutoff)zij = meshi->zplt_orig[kbar];
+      zip1j = znode[ijnode3(i+1, j)];
+      if(zip1j<terri->zmin_cutoff)zip1j = meshi->zplt_orig[kbar];
+      glVertex3f(x[i],   y[j], zbar0);
+      glVertex3f(x[i+1], y[j], zbar0);
+      glVertex3f(x[i+1], y[j], zip1j);
+
+      glVertex3f(x[i],   y[j], zbar0);
+      glVertex3f(x[i+1], y[j], zip1j);
+      glVertex3f(x[i],   y[j], zij);
+    }
+  }
+  if(meshi->is_extface[3]==MESH_EXT&&znode!=NULL){
+    float zij, zip1j;
+
+    j = jbar;
+    for(i = 0; i<ibar; i++){
+      zij   = znode[ijnode3(i, j)];
+      if(zij<terri->zmin_cutoff)continue;
+      if(zij<terri->zmin_cutoff)zij = meshi->zplt_orig[kbar];
+      zip1j = znode[ijnode3(i+1, j)];
+      if(zip1j<terri->zmin_cutoff)zip1j = meshi->zplt_orig[kbar];
+      glVertex3f(x[i],   y[j], zbar0);
+      glVertex3f(x[i+1], y[j], zip1j);
+      glVertex3f(x[i+1], y[j], zbar0);
+
+      glVertex3f(x[i],   y[j], zbar0);
+      glVertex3f(x[i],   y[j], zij);
+      glVertex3f(x[i+1], y[j], zip1j);
+    }
+  }
+  if(meshi->is_extface[4]==MESH_EXT){
+    for(i = 0; i<ibar; i++){
+      glVertex3f(x[0],    y[0],    meshi->zplt_orig[0]);
+      glVertex3f(x[ibar], y[jbar], meshi->zplt_orig[0]);
+      glVertex3f(x[ibar], y[0],    meshi->zplt_orig[0]);
+
+      glVertex3f(x[0],    y[0],    meshi->zplt_orig[0]);
+      glVertex3f(x[0],    y[jbar], meshi->zplt_orig[0]);
+      glVertex3f(x[ibar], y[jbar], meshi->zplt_orig[0]);
+    }
+  }
+  glEnd();
+
+  glDisable(GL_COLOR_MATERIAL);
+  DISABLE_LIGHTING;
+
+  glPopMatrix();
+}
+
 /* ------------------ DrawTerrainOBSTTexture ------------------------ */
 
 void DrawTerrainOBSTTexture(terraindata *terri){
