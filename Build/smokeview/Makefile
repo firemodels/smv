@@ -507,9 +507,12 @@ string_util.obj:	.FORCE
 .FORCE:
 
 # *** Object Dependencies ***
+
 gsmv.o : fdsmodules.o
+getdata.o : gsmv.o fdsmodules.o
 
 gsmv.obj : fdsmodules.obj
+getdata.obj : gsmv.obj fdsmodules.obj
 
 # *** do a full rebuild if any header file has changed
 #
