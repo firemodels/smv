@@ -480,6 +480,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define TERRAIN_SKIP       5
 #define TERRAIN_TOP        6
 
+#define TERRAIN_TOP_SIDE      0
+#define TERRAIN_BOTTOM_SIDE   1
+#define TERRAIN_BOTH_SIDES    2
+
 #define CSV_FDS   0
 #define CSV_CFAST 1
 #define CSV_EXP   2

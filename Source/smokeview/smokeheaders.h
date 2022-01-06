@@ -575,7 +575,7 @@ EXTERNCPP void ObjectCB(int flag);
 EXTERNCPP void CompressOnOff(int flag);
 EXTERNCPP void CompressSVZip2(void);
 EXTERNCPP void UpdateTerrainColors(void);
-EXTERNCPP void DrawTerrainOBST(terraindata *terri);
+EXTERNCPP void DrawTerrainOBST(terraindata *terri, int flag);
 EXTERNCPP void DrawTerrainOBSTTexture(terraindata *terri);
 EXTERNCPP void DrawTerrainOBSTSides(meshdata *meshi);
 EXTERNCPP void DrawTrees(void);

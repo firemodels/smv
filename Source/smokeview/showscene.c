@@ -338,11 +338,18 @@ void ShowScene2(int mode){
     CLIP_GEOMETRY;
     for(i = 0;i<nterraininfo;i++){
       terraindata *terri;
+      int flag;
 
       terri = terraininfo + i;
+      if(terrain_showonly_top==1){
+        flag = TERRAIN_BOTH_SIDES;
+      }
+      else{
+        flag = TERRAIN_TOP_SIDE;
+      }
       switch(visTerrainType){
       case TERRAIN_3D:
-        DrawTerrainOBST(terri);
+        DrawTerrainOBST(terri, flag);
         break;
       case TERRAIN_2D_STEPPED:
       case TERRAIN_2D_LINE:
@@ -352,7 +359,7 @@ void ShowScene2(int mode){
           DrawTerrainOBSTTexture(terri);
         }
         else{
-          DrawTerrainOBST(terri);
+          DrawTerrainOBST(terri, flag);
         }
         break;
       default:

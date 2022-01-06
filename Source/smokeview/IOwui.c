@@ -1420,7 +1420,7 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
 
 /* ------------------ DrawTerrainOBST ------------------------ */
 
-void DrawTerrainOBST(terraindata *terri){
+void DrawTerrainOBST(terraindata *terri, int flag){
   float *znode;
   unsigned char *uc_znormal;
   int nycell;
@@ -1523,17 +1523,33 @@ void DrawTerrainOBST(terraindata *terri){
       uc_zn4 = uc_znormal+ijnode3(i, jp1);
       zn4 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn4));
 
-      glNormal3fv(zn1);
-      glVertex3f(x[i],y[j],     zval1);
+      if(flag==TERRAIN_TOP_SIDE||flag==TERRAIN_BOTH_SIDES){
+        glNormal3fv(zn1);
+        glVertex3f(x[i],y[j],     zval1);
 
-      glNormal3fv(zn2);
-      glVertex3f(x[i+1],y[j],   zval2);
+        glNormal3fv(zn2);
+        glVertex3f(x[i+1],y[j],   zval2);
 
-      glNormal3fv(zn3);
-      glVertex3f(x[i+1],y[j+1], zval3);
+        glNormal3fv(zn3);
+        glVertex3f(x[i+1],y[j+1], zval3);
 
-      glNormal3fv(zn4);
-      glVertex3f(x[i],y[j+1],   zval4);
+        glNormal3fv(zn4);
+        glVertex3f(x[i],y[j+1],   zval4);
+      }
+
+      if(flag==TERRAIN_BOTTOM_SIDE||flag==TERRAIN_BOTH_SIDES){
+        glNormal3fv(zn1);
+        glVertex3f(x[i], y[j], zval1);
+
+        glNormal3fv(zn4);
+        glVertex3f(x[i], y[j+1], zval4);
+
+        glNormal3fv(zn3);
+        glVertex3f(x[i+1], y[j+1], zval3);
+
+        glNormal3fv(zn2);
+        glVertex3f(x[i+1], y[j], zval2);
+      }
     }
   }
   glEnd();
@@ -1872,6 +1888,24 @@ void DrawTerrainOBSTTexture(terraindata *terri){
       glNormal3fv(zn4);
       glTexCoord2f(tx,typ1);
       glVertex3f(x[i],y[j+1],zval4);
+
+      if(terrain_showonly_top==1){
+        glNormal3fv(zn1);
+        glTexCoord2f(tx,ty);
+        glVertex3f(x[i],y[j],zval1);
+
+        glNormal3fv(zn4);
+        glTexCoord2f(tx,typ1);
+        glVertex3f(x[i],y[j+1],zval4);
+
+        glNormal3fv(zn3);
+        glTexCoord2f(txp1,typ1);
+        glVertex3f(x[i+1],y[j+1],zval3);
+
+        glNormal3fv(zn2);
+        glTexCoord2f(txp1,ty);
+        glVertex3f(x[i+1],y[j],zval2);
+      }
     }
   }
   glEnd();
@@ -1882,7 +1916,6 @@ void DrawTerrainOBSTTexture(terraindata *terri){
   DISABLE_LIGHTING;
 
   glPopMatrix();
-
 }
 
 /* ------------------ GetTerrainSize ------------------------ */
