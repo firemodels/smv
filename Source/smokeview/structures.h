@@ -690,7 +690,6 @@ typedef struct _meshdata {
   float boxmin[3], boxmiddle[3], boxmax[3], dbox[3], boxeps[3], dcell, dcell3[3], eyedist;
   float slice_min[3], slice_max[3];
   float boxmin_scaled[3], boxmiddle_scaled[3], boxmax_scaled[3];
-  float *zcell;
   float xyz_bar0[3], xyz_bar[3];
   float xcen, ycen, zcen;
   float face_centers[18];
@@ -763,7 +762,7 @@ typedef struct _meshdata {
   int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
   int *blockonpatch;
   struct _meshdata **meshonpatch;
-  struct _meshdata *nabors[6], *above;
+  struct _meshdata *nabors[6];
   struct _supermeshdata *super;
   int *ptype;
   int *boundary_row, *boundary_col, *blockstart;

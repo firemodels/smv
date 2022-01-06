@@ -895,7 +895,6 @@ EXTERNCPP void UpdateBoundaryTypes(void);
 
 EXTERNCPP int WriteFileBounds(char *file, float valmin, float valmax);
 EXTERNCPP void SetViewZMAXPersp(void);
-EXTERNCPP void UpdateMeshTerrain(void);
 EXTERNCPP void UpdateTerrainOptions(void);
 EXTERNCPP void UpdatePlot3dTitle(void);
 EXTERNCPP void LoadPlot3dMenu(int value);
