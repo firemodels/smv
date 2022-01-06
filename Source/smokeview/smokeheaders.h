@@ -577,6 +577,7 @@ EXTERNCPP void CompressSVZip2(void);
 EXTERNCPP void UpdateTerrainColors(void);
 EXTERNCPP void DrawTerrainOBST(terraindata *terri);
 EXTERNCPP void DrawTerrainOBSTTexture(terraindata *terri);
+EXTERNCPP void DrawTerrainOBSTSides(meshdata *meshi);
 EXTERNCPP void DrawTrees(void);
 EXTERNCPP void InitCullGeom(int cullflag);
 EXTERNCPP void GetCullSkips(meshdata *meshi, int cullflag, int cull_portsize, int *iiskip, int *jjskip, int *kkskip);
@@ -894,7 +895,6 @@ EXTERNCPP void UpdateBoundaryTypes(void);
 
 EXTERNCPP int WriteFileBounds(char *file, float valmin, float valmax);
 EXTERNCPP void SetViewZMAXPersp(void);
-EXTERNCPP void UpdateMeshTerrain(void);
 EXTERNCPP void UpdateTerrainOptions(void);
 EXTERNCPP void UpdatePlot3dTitle(void);
 EXTERNCPP void LoadPlot3dMenu(int value);

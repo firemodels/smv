@@ -319,7 +319,6 @@ void InitMesh(meshdata *meshi){
   meshi->smoke3d_hrrpuv = NULL;
   meshi->smoke3d_temp = NULL;
   meshi->smoke3d_co2 = NULL;
-  meshi->above = NULL;
   meshi->smokeplaneinfo = NULL;
   meshi->nsmokeplaneinfo = 0;
   meshi->nverts = 0;
@@ -389,7 +388,6 @@ void InitMesh(meshdata *meshi){
   meshi->cullgeominfo = NULL;
   meshi->is_bottom = 1;
   meshi->blockvis = 1;
-  meshi->zcell = NULL;
   meshi->terrain = NULL;
   meshi->meshrgb[0] = 0.0;
   meshi->meshrgb[1] = 0.0;
@@ -9928,35 +9926,8 @@ typedef struct {
   START_TIMER(pass5_time);
 
   if(auto_terrain==1&&manual_terrain==0){
-    float zbarmin;
-
-    zbarmin=meshinfo->xyz_bar0[ZZZ];
-    for(i=1;i<nmeshes;i++){
-      meshdata *meshi;
-
-      meshi = meshinfo + i;
-      if(meshi->xyz_bar0[ZZZ]<zbarmin)zbarmin=meshi->xyz_bar0[ZZZ];
-    }
     nOBST=0;
     iobst=0;
-    for(i=0;i<nmeshes;i++){
-      meshdata *meshi;
-      int ibar, jbar;
-
-      meshi = meshinfo + i;
-      ibar = meshi->ibar;
-      jbar = meshi->jbar;
-      if(ibar>0&&jbar>0){
-        float *zcell;
-        int j;
-
-        NewMemory((void **)&meshi->zcell,ibar*jbar*sizeof(float));
-        zcell = meshi->zcell;
-        for(j=0;j<ibar*jbar;j++){
-          zcell[j]=zbarmin; // assume initially that zcell (terrain height) is at base of the domain
-        }
-      }
-    }
   }
 
   /*
@@ -10054,7 +10025,6 @@ typedef struct {
     */
     if(Match(buffer, "OBST")==1&&auto_terrain==1&&manual_terrain==0){
       meshdata *meshi;
-      int nxcell;
       int n_blocks;
       int iblock;
       int nn;
@@ -10073,12 +10043,9 @@ typedef struct {
       for(nn=0;nn<n_blocks;nn++){
         FGETS(buffer,255,stream);
       }
-      nxcell = meshi->ibar;
       nn=-1;
       for(iblock=0;iblock<n_blocks;iblock++){
         int ijk2[5],kmax;
-        int ii, jj;
-        float block_zmax;
 
         if(meshi->is_block_terrain!=NULL&&meshi->is_block_terrain[iblock]==0){
           FGETS(buffer,255,stream);
@@ -10088,15 +10055,6 @@ typedef struct {
 
         FGETS(buffer,255,stream);
         sscanf(buffer,"%i %i %i %i %i %i",ijk2,ijk2+1,ijk2+2,ijk2+3,ijk2+4,&kmax);
-        block_zmax = meshi->zplt[kmax];
-        for(ii=ijk2[0];ii<ijk2[1];ii++){
-          for(jj=ijk2[2];jj<ijk2[3];jj++){
-            int ij;
-
-            ij = IJCELL2(ii,jj);
-            meshi->zcell[ij]=MAX(meshi->zcell[ij],block_zmax);
-          }
-        }
       }
       FREEMEMORY(meshi->is_block_terrain);
       continue;
@@ -10325,26 +10283,6 @@ typedef struct {
   UpdateSliceBoundLabels();
   UpdateIsoTypes();
   UpdateBoundaryTypes();
-  if(auto_terrain==1&&manual_terrain==0){
-    for(i=0;i<nmeshes;i++){
-      meshdata *meshi;
-      float *zcell;
-      int j;
-
-      meshi = meshinfo + i;
-      zcell = meshi->zcell;
-
-      zterrain_min = zcell[0];
-      zterrain_max = zterrain_min;
-      for(j=1;j<meshi->ibar*meshi->jbar;j++){
-        float zval;
-
-        zval=*zcell++;
-        if(zval<zterrain_min)zterrain_min=zval;
-        if(zval>zterrain_max)zterrain_max=zval;
-      }
-    }
-  }
 
   PRINT_TIMER(timer_readsmv, "update bound info");
   UpdateTerrain(1); // xxslow
@@ -10389,7 +10327,6 @@ typedef struct {
   InitVolRenderSurface(FIRSTCALL);
   radius_windrose = 0.2*xyzmaxdiff;
 
-  UpdateMeshTerrain(); // slow
   ClassifyAllGeomMT();
 
   PRINT_TIMER(timer_readsmv, "null");

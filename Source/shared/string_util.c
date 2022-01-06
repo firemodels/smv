@@ -687,7 +687,7 @@ void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixe
     }
   }
 
-  exp_offset = exponent_min;
+  exp_offset = (exponent_min/3)*3;
 
   doit = 1;
   if(exponent_min>4  && ndigits>=exponent_min)doit = 0;
