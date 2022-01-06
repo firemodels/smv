@@ -1364,10 +1364,8 @@ int GetTerrainData(char *file, terraindata *terri){
 void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xmax, int nx, float ymin, float ymax, int ny,
                        int allocate_memory){
   float dx, dy;
-  float *x, *y, *z;
-  int nxcell;
-  int i,j;
-  int ij;
+  float *x, *y;
+  int i;
 
   if(meshi!=NULL){
     meshi->terrain=terri;

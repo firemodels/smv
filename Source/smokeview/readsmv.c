@@ -10025,7 +10025,6 @@ typedef struct {
     */
     if(Match(buffer, "OBST")==1&&auto_terrain==1&&manual_terrain==0){
       meshdata *meshi;
-      int nxcell;
       int n_blocks;
       int iblock;
       int nn;
@@ -10044,12 +10043,9 @@ typedef struct {
       for(nn=0;nn<n_blocks;nn++){
         FGETS(buffer,255,stream);
       }
-      nxcell = meshi->ibar;
       nn=-1;
       for(iblock=0;iblock<n_blocks;iblock++){
         int ijk2[5],kmax;
-        int ii, jj;
-        float block_zmax;
 
         if(meshi->is_block_terrain!=NULL&&meshi->is_block_terrain[iblock]==0){
           FGETS(buffer,255,stream);
@@ -10059,7 +10055,6 @@ typedef struct {
 
         FGETS(buffer,255,stream);
         sscanf(buffer,"%i %i %i %i %i %i",ijk2,ijk2+1,ijk2+2,ijk2+3,ijk2+4,&kmax);
-        block_zmax = meshi->zplt[kmax];
       }
       FREEMEMORY(meshi->is_block_terrain);
       continue;
