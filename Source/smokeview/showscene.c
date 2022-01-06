@@ -361,11 +361,13 @@ void ShowScene2(int mode){
       }
     }
     if(visTerrainType==TERRAIN_3D_MAP||visTerrainType==TERRAIN_3D){
-      for(i = 0; i<nmeshes; i++){
-        meshdata *meshi;
+      if(terrain_showonly_top==0){
+        for(i = 0; i<nmeshes; i++){
+          meshdata *meshi;
 
-        meshi = meshinfo+i;
-        DrawTerrainOBSTSides(meshi);
+          meshi = meshinfo+i;
+          DrawTerrainOBSTSides(meshi);
+        }
       }
     }
   }
