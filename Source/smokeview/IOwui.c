@@ -1574,14 +1574,12 @@ void DrawTerrainOBST(terraindata *terri){
 
 void DrawTerrainOBSTSides(meshdata *meshi){
   float *znode;
-  unsigned char *uc_znormal, *uc_zn;
-  int nxcell, nycell;
+  int nycell;
   int i, j;
   float *x, *y;
   float terrain_color[4];
   terraindata *terri;
   int ibar, jbar, kbar;
-  float zmin, zmax;
 
   terri = meshi->terrain;
 
@@ -1602,15 +1600,12 @@ void DrawTerrainOBSTSides(meshdata *meshi){
   glBegin(GL_TRIANGLES);
   znode = NULL;
   if(terri!=NULL)znode = terri->znode;
-  nxcell = meshi->ibar;
   nycell = meshi->jbar;
   ibar   = meshi->ibar;
   jbar   = meshi->jbar;
   kbar   = meshi->kbar;
   x      = meshi->xplt_orig;
   y      = meshi->yplt_orig;
-  zmin   = meshi->zplt_orig[0];
-  zmax   = meshi->zplt_orig[kbar];
 
   if(meshi->is_extface[0]==MESH_EXT&&znode!=NULL){
     float zij, zijp1;
