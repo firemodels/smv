@@ -5890,7 +5890,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
   char *iblank_embed;
   terraindata *terri;
   int nycell;
-
+  float z0_offset;
   meshdata *meshi;
 
   meshi = meshinfo + sd->blocknumber;
@@ -5928,9 +5928,13 @@ void DrawVolSliceTerrain(const slicedata *sd){
     int maxi;
     float *znode, agl_smv, z_cutoff;
 
+#define FDS_OFFSET 0.005
+
     znode = terri->znode;
     agl_smv = sd->above_ground_level;
-    z_cutoff = terri->zmin_cutoff;
+    z_cutoff = terri->zmin_cutoff + SCALE2FDS(FDS_OFFSET);
+    z0_offset = zplt[0] + SCALE2FDS(FDS_OFFSET);
+
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
     glTranslatef(-xbar0,-ybar0,-zbar0);
@@ -5954,21 +5958,52 @@ void DrawVolSliceTerrain(const slicedata *sd){
         int n11, n31, n13, n33;
         int j2;
 
-#define FDS_OFFSET 0.005
-
         j2 = MIN(j+slice_skip, sd->js2);
-        z11 = znode[IJ2(i, j)] + SCALE2FDS(FDS_OFFSET);
+        z11 = znode[IJ2(i, j)]   + SCALE2FDS(FDS_OFFSET);
+        z31 = znode[IJ2(i2, j)]  + SCALE2FDS(FDS_OFFSET);
+        z13 = znode[IJ2(i, j2)]  + SCALE2FDS(FDS_OFFSET);
+        z33 = znode[IJ2(i2, j2)] + SCALE2FDS(FDS_OFFSET);
+
+        if(z11<z_cutoff||z31<z_cutoff||z33<z_cutoff||z13<z_cutoff){
+          int count = 0;
+          float zsum=0.0;
+
+          if(z11>=z_cutoff){
+            zsum += z11;
+            count++;
+          }
+          if(z31>=z_cutoff){
+            zsum += z31;
+            count++;
+          }
+          if(z33>=z_cutoff){
+            zsum += z33;
+            count++;
+          }
+          if(z13>=z_cutoff){
+            zsum += z13;
+            count++;
+          }
+          if(count==0)continue;
+          zsum /= (float)count;
+          if(z11<z_cutoff){
+            z11 = zsum;
+          }
+          if(z31<z_cutoff){
+            z31 = zsum;
+          }
+          if(z33<z_cutoff){
+            z33 = zsum;
+          }
+          if(z13<z_cutoff){
+            z13 = zsum;
+          }
+        }
+
         z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
-
-        z31 = znode[IJ2(i2, j)]+SCALE2FDS(FDS_OFFSET);
         z31 = terrain_zmin+geom_vert_exag*(z31-terrain_zmin);
-
-        z13 = znode[IJ2(i, j2)]+SCALE2FDS(FDS_OFFSET);
         z13 = terrain_zmin+geom_vert_exag*(z13-terrain_zmin);
-
-        z33 = znode[IJ2(i2, j2)]+SCALE2FDS(FDS_OFFSET);
         z33 = terrain_zmin+geom_vert_exag*(z33-terrain_zmin);
-
 
         zmid = (z11+z31+z13+z33)/4.0;
 
@@ -5983,9 +6018,8 @@ void DrawVolSliceTerrain(const slicedata *sd){
           }
         }
 
-        if(z11<z_cutoff||z31<z_cutoff||z13<z_cutoff||z33<z_cutoff)continue;
         if(terrain_slice_overlap==0){
-          if(z11<zplt[0]||z31<zplt[0]||z13<zplt[0]||z33<zplt[0])continue;
+          if(z11<z0_offset||z31<z0_offset||z13<z0_offset||z33<z0_offset)continue;
         }
 
         n11 = IJK_SLICE(i,j,sd->ks1);
