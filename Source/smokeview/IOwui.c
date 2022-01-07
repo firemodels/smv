@@ -1495,7 +1495,7 @@ void DrawTerrainOBST(terraindata *terri, int flag){
           zsum += zval4;
           count++;
         }
-        if(count==0)continue;
+        if(count<=1)continue;
         zsum /= (float)count;
         if(zval1<zcut){
           zval1 = zsum;
@@ -1851,6 +1851,7 @@ void DrawTerrainOBSTTexture(terraindata *terri){
           zsum += zval3;
           count++;
         }
+        if(count<=1)continue;
         if(zval4>=zcut){
           zsum += zval4;
           count++;
@@ -1916,6 +1917,8 @@ void DrawTerrainOBSTTexture(terraindata *terri){
   DISABLE_LIGHTING;
 
   glPopMatrix();
+  //if(terrain_showonly_top==1)DrawTerrainOBST(terri, TERRAIN_BOTTOM_SIDE);
+
 }
 
 /* ------------------ GetTerrainSize ------------------------ */
