@@ -1431,9 +1431,6 @@ void DrawTerrainOBST(terraindata *terri, int flag){
   float terrain_shininess=100.0;
   float terrain_specular[4]={0.8,0.8,0.8,1.0};
   float zcut;
-  meshdata *terrain_mesh;
-
-  terrain_mesh = terri->terrain_mesh;
 
 #define ZOFFSET 0.001
 

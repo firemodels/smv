@@ -5882,7 +5882,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
   float r11, r31, r13, r33;
   float x1, x3, yy1, y3;
 
-  float *xplt, *yplt, *zplt;
+  float *xplt, *yplt;
   int plotz;
   int ibar, jbar;
   int nx, ny, nxy;
@@ -5890,7 +5890,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
   char *iblank_embed;
   terraindata *terri;
   int nycell;
-  float z0_offset;
   meshdata *meshi;
 
   meshi = meshinfo + sd->blocknumber;
@@ -5901,7 +5900,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
   xplt = meshi->xplt_orig;
   yplt = meshi->yplt_orig;
-  zplt = meshi->zplt_orig;
 
   if(sd->volslice == 1){
     plotz = meshi->iplotz_all[iplotz_all];
@@ -5924,7 +5922,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
   glEnable(GL_TEXTURE_1D);
   glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
   if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
-    float z11, z31, z13, z33, zmid;
+    float z11, z31, z13, z33;
     int maxi;
     float *znode, agl_smv, zcut;
 
@@ -5933,7 +5931,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
     znode = terri->znode;
     agl_smv = sd->above_ground_level;
     zcut = terri->zmin_cutoff;
-    z0_offset = zplt[0] + SCALE2FDS(FDS_OFFSET);
 
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
