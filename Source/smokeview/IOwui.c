@@ -1622,7 +1622,7 @@ void DrawTerrainOBSTSides(meshdata *meshi){
   float *x, *y;
   float terrain_color[4];
   terraindata *terri;
-  int ibar, jbar, kbar;
+  int ibar, jbar;
   float zcutoff;
 
   terri = meshi->terrain;
@@ -1653,7 +1653,6 @@ void DrawTerrainOBSTSides(meshdata *meshi){
   nycell = meshi->jbar;
   ibar   = meshi->ibar;
   jbar   = meshi->jbar;
-  kbar   = meshi->kbar;
   x      = meshi->xplt_orig;
   y      = meshi->yplt_orig;
 
