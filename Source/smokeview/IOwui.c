@@ -1328,6 +1328,7 @@ int GetTerrainData(char *file, terraindata *terri){
 //    WRITE(LU_TERRAIN(NM)) Z_TERRAIN
 
   FORTWUIREAD(&zmin_cutoff, 1);
+  zmin_cutoff = zbar0;
   zmin_cutoff -= 0.1;
   terri->zmin_cutoff = zmin_cutoff;
   FORTWUIREAD(ijbar, 2);
@@ -1430,6 +1431,9 @@ void DrawTerrainOBST(terraindata *terri, int flag){
   float terrain_shininess=100.0;
   float terrain_specular[4]={0.8,0.8,0.8,1.0};
   float zcut;
+  meshdata *terrain_mesh;
+
+  terrain_mesh = terri->terrain_mesh;
 
 #define ZOFFSET 0.001
 
@@ -1450,7 +1454,7 @@ void DrawTerrainOBST(terraindata *terri, int flag){
   glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,terrain_specular);
   glEnable(GL_COLOR_MATERIAL);
 
-  glBegin(GL_QUADS);
+  glBegin(GL_TRIANGLES);
   uc_znormal = terri->uc_znormal;
   znode = terri->znode;
   nycell = terri->jbar;
@@ -1467,49 +1471,26 @@ void DrawTerrainOBST(terraindata *terri, int flag){
       int ip1;
       float zval1, zval2, zval3, zval4;
       float *zn1, *zn2, *zn3, *zn4;
+      int skip123, skip134;
 
       ip1 = i + 1;
 
-      zval1 = znode[ijnode3(i, j)]     + ZOFFSET;
-      zval2 = znode[ijnode3(ip1, j)]   + ZOFFSET;
-      zval3 = znode[ijnode3(ip1, jp1)] + ZOFFSET;
-      zval4 = znode[ijnode3(i, jp1)]   + ZOFFSET;
+      zval1 = znode[ijnode3(i, j)];
+      zval2 = znode[ijnode3(ip1, j)];
+      zval3 = znode[ijnode3(ip1, jp1)];
+      zval4 = znode[ijnode3(i, jp1)];
 
-      if(zval1<zcut||zval2<zcut||zval3<zcut||zval4<zcut){
-        float zsum = 0.0;
-        int count = 0;
+      if(zval1<zcut&&zval2<zcut&&zval3<zcut&&zval4<zcut)continue;
 
-        if(zval1>=zcut){
-          zsum += zval1;
-          count++;
-        }
-        if(zval2>=zcut){
-          zsum += zval2;
-          count++;
-        }
-        if(zval3>=zcut){
-          zsum += zval3;
-          count++;
-        }
-        if(zval4>=zcut){
-          zsum += zval4;
-          count++;
-        }
-        if(count<=1)continue;
-        zsum /= (float)count;
-        if(zval1<zcut){
-          zval1 = zsum;
-        }
-        if(zval2<zcut){
-          zval2 = zsum;
-        }
-        if(zval3<zcut){
-          zval3 = zsum;
-        }
-        if(zval4<zcut){
-          zval4 = zsum;
-        }
-      }
+      skip123 = 0;
+      skip134 = 0;
+      if(zval1<zcut||zval2<zcut||zval3<zcut)skip123=1;
+      if(zval1<zcut||zval3<zcut||zval4<zcut)skip134=1;
+
+      zval1 += ZOFFSET;
+      zval2 += ZOFFSET;
+      zval3 += ZOFFSET;
+      zval4 += ZOFFSET;
 
       uc_zn1 = uc_znormal+ijnode3(i,j);
       zn1 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn1));
@@ -1524,31 +1505,51 @@ void DrawTerrainOBST(terraindata *terri, int flag){
       zn4 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn4));
 
       if(flag==TERRAIN_TOP_SIDE||flag==TERRAIN_BOTH_SIDES){
-        glNormal3fv(zn1);
-        glVertex3f(x[i],y[j],     zval1);
+        if(skip123==0){
+          glNormal3fv(zn1);
+          glVertex3f(x[i], y[j], zval1);
 
-        glNormal3fv(zn2);
-        glVertex3f(x[i+1],y[j],   zval2);
+          glNormal3fv(zn2);
+          glVertex3f(x[i+1], y[j], zval2);
 
-        glNormal3fv(zn3);
-        glVertex3f(x[i+1],y[j+1], zval3);
+          glNormal3fv(zn3);
+          glVertex3f(x[i+1], y[j+1], zval3);
+        }
 
-        glNormal3fv(zn4);
-        glVertex3f(x[i],y[j+1],   zval4);
+        if(skip134==0){
+          glNormal3fv(zn1);
+          glVertex3f(x[i], y[j], zval1);
+
+          glNormal3fv(zn3);
+          glVertex3f(x[i+1], y[j+1], zval3);
+
+          glNormal3fv(zn4);
+          glVertex3f(x[i], y[j+1], zval4);
+        }
       }
 
       if(flag==TERRAIN_BOTTOM_SIDE||flag==TERRAIN_BOTH_SIDES){
-        glNormal3fv(zn1);
-        glVertex3f(x[i], y[j], zval1);
+        if(skip134==0){
+          glNormal3fv(zn1);
+          glVertex3f(x[i], y[j], zval1);
 
-        glNormal3fv(zn4);
-        glVertex3f(x[i], y[j+1], zval4);
+          glNormal3fv(zn4);
+          glVertex3f(x[i], y[j+1], zval4);
 
-        glNormal3fv(zn3);
-        glVertex3f(x[i+1], y[j+1], zval3);
+          glNormal3fv(zn3);
+          glVertex3f(x[i+1], y[j+1], zval3);
+        }
 
-        glNormal3fv(zn2);
-        glVertex3f(x[i+1], y[j], zval2);
+        if(skip123==0){
+          glNormal3fv(zn1);
+          glVertex3f(x[i], y[j], zval1);
+
+          glNormal3fv(zn3);
+          glVertex3f(x[i+1], y[j+1], zval3);
+
+          glNormal3fv(zn2);
+          glVertex3f(x[i+1], y[j], zval2);
+        }
       }
     }
   }
@@ -1791,7 +1792,7 @@ void DrawTerrainOBSTTexture(terraindata *terri){
 
   glEnable(GL_COLOR_MATERIAL);
   glColor4fv(terrain_color);
-  glBegin(GL_QUADS);
+  glBegin(GL_TRIANGLES);
   uc_znormal = terri->uc_znormal;
   znode = terri->znode;
   nxcell = terri->ibar;
@@ -1812,6 +1813,7 @@ void DrawTerrainOBSTTexture(terraindata *terri){
       float zval1, zval2, zval3, zval4;
       int ip1;
       float tx,txp1;
+      int skip123=0, skip134=0;
 
       ip1 = i + 1;
 
@@ -1834,77 +1836,71 @@ void DrawTerrainOBSTTexture(terraindata *terri){
       zn4 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn4));
       zval4 = znode[ijnode3(i, jp1)];
 
-      if(zval1<zcut||zval2<zcut||zval3<zcut||zval4<zcut){
-        float zsum = 0.0;
-        int count = 0;
+      if(zval1<zcut&&zval2<zcut&&zval3<zcut&&zval4<zcut)continue;
 
-        if(zval1>=zcut){
-          zsum += zval1;
-          count++;
-        }
-        if(zval2>=zcut){
-          zsum += zval2;
-          count++;
-        }
-        if(zval3>=zcut){
-          zsum += zval3;
-          count++;
-        }
-        if(count<=1)continue;
-        if(zval4>=zcut){
-          zsum += zval4;
-          count++;
-        }
-        if(count==0)continue;
-        zsum /= (float)count;
-        if(zval1<zcut){
-          zval1 = zsum;
-        }
-        if(zval2<zcut){
-          zval2 = zsum;
-        }
-        if(zval3<zcut){
-          zval3 = zsum;
-        }
-        if(zval4<zcut){
-          zval4 = zsum;
-        }
-      }
+      skip123 = 0;
+      skip134 = 0;
+      if(zval1<zcut||zval2<zcut||zval3<zcut)skip123=1;
+      if(zval1<zcut||zval3<zcut||zval4<zcut)skip134=1;
 
-      glNormal3fv(zn1);
-      glTexCoord2f(tx,ty);
-      glVertex3f(x[i],y[j],zval1);
-
-
-      glNormal3fv(zn2);
-      glTexCoord2f(txp1,ty);
-      glVertex3f(x[i+1],y[j],zval2);
-
-
-      glNormal3fv(zn3);
-      glTexCoord2f(txp1,typ1);
-      glVertex3f(x[i+1],y[j+1],zval3);
-
-      glNormal3fv(zn4);
-      glTexCoord2f(tx,typ1);
-      glVertex3f(x[i],y[j+1],zval4);
-
-      if(terrain_showonly_top==1){
+      if(skip123==0){
         glNormal3fv(zn1);
         glTexCoord2f(tx,ty);
         glVertex3f(x[i],y[j],zval1);
 
-        glNormal3fv(zn4);
-        glTexCoord2f(tx,typ1);
-        glVertex3f(x[i],y[j+1],zval4);
+
+        glNormal3fv(zn2);
+        glTexCoord2f(txp1,ty);
+        glVertex3f(x[i+1],y[j],zval2);
+
+
+        glNormal3fv(zn3);
+        glTexCoord2f(txp1,typ1);
+        glVertex3f(x[i+1],y[j+1],zval3);
+      }
+
+      if(skip134==0){
+        glNormal3fv(zn1);
+        glTexCoord2f(tx,ty);
+        glVertex3f(x[i],y[j],zval1);
 
         glNormal3fv(zn3);
         glTexCoord2f(txp1,typ1);
         glVertex3f(x[i+1],y[j+1],zval3);
 
-        glNormal3fv(zn2);
-        glTexCoord2f(txp1,ty);
-        glVertex3f(x[i+1],y[j],zval2);
+        glNormal3fv(zn4);
+        glTexCoord2f(tx,typ1);
+        glVertex3f(x[i],y[j+1],zval4);
+      }
+
+      if(terrain_showonly_top==1){
+        if(skip134==0){
+          glNormal3fv(zn1);
+          glTexCoord2f(tx,ty);
+          glVertex3f(x[i],y[j],zval1);
+
+          glNormal3fv(zn4);
+          glTexCoord2f(tx,typ1);
+          glVertex3f(x[i],y[j+1],zval4);
+
+          glNormal3fv(zn3);
+          glTexCoord2f(txp1,typ1);
+          glVertex3f(x[i+1],y[j+1],zval3);
+        }
+
+        if(skip123==0){
+          glNormal3fv(zn1);
+          glTexCoord2f(tx,ty);
+          glVertex3f(x[i],y[j],zval1);
+
+          glNormal3fv(zn3);
+          glTexCoord2f(txp1,typ1);
+          glVertex3f(x[i+1],y[j+1],zval3);
+
+          glNormal3fv(zn2);
+          glTexCoord2f(txp1,ty);
+          glVertex3f(x[i+1],y[j],zval2);
+        }
       }
     }
   }
