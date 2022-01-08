@@ -35,7 +35,7 @@ SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
 #endif
 
-SVEXTERN int SVDECL(terrain_skip, 1);
+SVEXTERN int SVDECL(terrain_skip, 1), SVDECL(terrain_debug, 0);
 SVEXTERN int SVDECL(max_colorbar_label_width, 0);
 SVEXTERN char SVDECL(**colorbar_labels,  NULL);
 SVEXTERN float SVDECL(*colorbar_vals,    NULL);
