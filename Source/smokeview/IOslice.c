@@ -5877,6 +5877,164 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
 }
 
 /* ------------------ DrawVolSliceTerrain ------------------------ */
+void DrawVolSliceTerrainLinePt(const slicedata *sd){
+  int i, j;
+  float r11, r31, r13, r33;
+  float x1, x3, yy1, y3;
+
+  float *xplt, *yplt;
+  int plotz;
+  int ibar, jbar;
+  int nx, ny, nxy;
+  char *iblank_z;
+  char *iblank_embed;
+  terraindata *terri;
+  int nycell;
+  meshdata *meshi;
+
+  meshi = meshinfo+sd->blocknumber;
+
+  terri = meshi->terrain;
+  if(terri==NULL)return;
+  nycell = terri->jbar;
+
+  xplt = meshi->xplt_orig;
+  yplt = meshi->yplt_orig;
+
+  if(sd->volslice==1){
+    plotz = meshi->iplotz_all[iplotz_all];
+  }
+  else{
+    plotz = sd->ks1;
+  }
+  ibar = meshi->ibar;
+  jbar = meshi->jbar;
+  iblank_z = meshi->c_iblank_z;
+  iblank_embed = meshi->c_iblank_embed;
+  nx = ibar+1;
+  ny = jbar+1;
+  nxy = nx*ny;
+
+  if(cullfaces==1)glDisable(GL_CULL_FACE);
+
+  if((sd->volslice==1&&plotz>=0&&visz_all==1)||(sd->volslice==0&&sd->idir==ZDIR)){
+    float z11, z31, z13, z33;
+    int maxi;
+    float *znode, agl_smv, zcut;
+    float *this_color, *last_color, ter_red[]={1.0,0.0,0.0,1.0}, ter_black[]={0.0,0,0,0.0,1.0};
+
+#define FDS_OFFSET 0.005
+
+    this_color = ter_black;
+    last_color =  NULL;
+
+    znode = terri->znode;
+    agl_smv = sd->above_ground_level;
+    zcut = terri->zmin_cutoff;
+
+    glPushMatrix();
+    glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), vertical_factor*SCALE2SMV(1.0));
+    glTranslatef(-xbar0, -ybar0, -zbar0);
+    glTranslatef(0.0, 0.0, agl_smv+SCALE2FDS(0.01)+slice_dz);
+
+    glPointSize(5.0);
+    glBegin(GL_POINTS);
+    maxi = sd->is2;
+    for(i = sd->is1; i<=maxi; i += slice_skip){
+      if(plotz<sd->ks1)break;
+      if(plotz>=sd->ks1+sd->nslicek)break;
+      x1 = xplt[i];
+
+      for(j = sd->js1; j<=sd->js2; j += slice_skip){
+        int n11, n31, n13, n33;
+
+        z11 = znode[IJ2(i, j)];
+
+        if(z11<zcut){
+          this_color = ter_red;
+        }
+        else{
+          this_color = ter_black;
+        }
+        z11 += SCALE2FDS(FDS_OFFSET);
+
+        z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
+
+        yy1 = yplt[j];
+
+        if(terrain_skip==0){
+          if(slice_skip==1){
+            if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
+            if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
+          }
+        }
+        if(this_color!=last_color){
+          last_color = this_color;
+          glColor3fv(this_color);
+        }
+        glVertex3f(x1, yy1, z11);
+      }
+    }
+    glEnd();
+
+    glLineWidth(2.0);
+    glBegin(GL_LINES);
+    glColor3fv(ter_black);
+    for(i = sd->is1; i<maxi; i += slice_skip){
+      if(plotz<sd->ks1)break;
+      if(plotz>=sd->ks1+sd->nslicek)break;
+      x1 = xplt[i];
+      x3 = xplt[i+1];
+
+      for(j = sd->js1; j<sd->js2; j += slice_skip){
+        z11 = znode[IJ2(i, j)];
+        z31 = znode[IJ2(i+1, j)];
+        z33 = znode[IJ2(i+1, j+1)];
+        z13 = znode[IJ2(i, j+1)];
+        if(z11<zcut)continue;
+        if(z31<zcut)continue;
+        if(z33<zcut)continue;
+        if(z13<zcut)continue;
+
+        z11 += SCALE2FDS(FDS_OFFSET);
+        z31 += SCALE2FDS(FDS_OFFSET);
+        z33 += SCALE2FDS(FDS_OFFSET);
+        z13 += SCALE2FDS(FDS_OFFSET);
+
+        z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
+        z31 = terrain_zmin+geom_vert_exag*(z31-terrain_zmin);
+        z33 = terrain_zmin+geom_vert_exag*(z33-terrain_zmin);
+        z13 = terrain_zmin+geom_vert_exag*(z13-terrain_zmin);
+
+        yy1 = yplt[j];
+        y3 = yplt[j+1];
+
+        if(terrain_skip==0){
+          if(slice_skip==1){
+            if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
+            if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
+          }
+        }
+        glVertex3f(x1, yy1, z11);
+        glVertex3f(x3, yy1, z31);
+
+        glVertex3f(x3, yy1, z31);
+        glVertex3f(x3, y3, z33);
+
+        glVertex3f(x3, y3, z33);
+        glVertex3f(x1, y3, z13);
+
+        glVertex3f(x1, y3, z13);
+        glVertex3f(x1, yy1, z11);
+      }
+    }
+    glEnd();
+    glPopMatrix();
+  }
+  if(cullfaces==1)glEnable(GL_CULL_FACE);
+}
+
+/* ------------------ DrawVolSliceTerrain ------------------------ */
 void DrawVolSliceTerrain(const slicedata *sd){
   int i, j;
   float r11, r31, r13, r33;
@@ -6014,8 +6172,9 @@ void DrawVolSliceTerrain(const slicedata *sd){
   glDisable(GL_TEXTURE_1D);
   if(use_transparency_data == 1)TransparentOff();
   if(cullfaces == 1)glEnable(GL_CULL_FACE);
-
+  if(terrain_debug==1)DrawVolSliceTerrainLinePt(sd);
 }
+
 
 #define VALIJK(i,j,k) ( ((i))*sd->nslicej*sd->nslicek + ((j))*sd->nslicek+ (k)    )
 
