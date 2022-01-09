@@ -5934,7 +5934,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
     glPushMatrix();
     glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), vertical_factor*SCALE2SMV(1.0));
     glTranslatef(-xbar0, -ybar0, -zbar0);
-    glTranslatef(0.0, 0.0, agl_smv+SCALE2FDS(0.01)+slice_dz);
+    glTranslatef(0.0, 0.0, MAX(agl_smv, SCALE2FDS(FDS_OFFSET))+slice_dz);
 
     glPointSize(5.0);
     glBegin(GL_POINTS);
@@ -5953,8 +5953,6 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
         else{
           this_color = ter_black;
         }
-        z11 += SCALE2FDS(FDS_OFFSET);
-
         z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
 
         yy1 = yplt[j];
@@ -5992,11 +5990,6 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
         if(z31<zcut)continue;
         if(z33<zcut)continue;
         if(z13<zcut)continue;
-
-        z11 += SCALE2FDS(FDS_OFFSET);
-        z31 += SCALE2FDS(FDS_OFFSET);
-        z33 += SCALE2FDS(FDS_OFFSET);
-        z13 += SCALE2FDS(FDS_OFFSET);
 
         z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
         z31 = terrain_zmin+geom_vert_exag*(z31-terrain_zmin);
@@ -6051,6 +6044,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
   terri = meshi->terrain;
   if(terri == NULL)return;
+  if(terrain_debug==1)printf("slice data from mesh %i znode(0)=%f\n", 1+(int)(meshi-meshinfo), terri->znode[0]);
   nycell = terri->jbar;
 
   xplt = meshi->xplt_orig;
@@ -6081,15 +6075,13 @@ void DrawVolSliceTerrain(const slicedata *sd){
     int maxi;
     float *znode, agl_smv, zcut;
 
-#define FDS_OFFSET 0.005
-
     znode = terri->znode;
     agl_smv = sd->above_ground_level;
     zcut = terri->zmin_cutoff;
 
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
-    glTranslatef(-xbar0,-ybar0,-zbar0 + agl_smv+SCALE2FDS(0.01)+slice_dz);
+    glTranslatef(-xbar0,-ybar0,-zbar0 + MAX(agl_smv,SCALE2FDS(FDS_OFFSET))+slice_dz);
 
     glBegin(GL_TRIANGLES);
     maxi = sd->is2;
@@ -6116,11 +6108,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
         if(z11<zcut&&z31<zcut&&z33<zcut&&z13<zcut)continue;
         if(z11<zcut||z31<zcut||z33<zcut)skip123=1;
         if(z11<zcut||z33<zcut||z13<zcut)skip134=1;
-
-        z11 += SCALE2FDS(FDS_OFFSET);
-        z31 += SCALE2FDS(FDS_OFFSET);
-        z13 += SCALE2FDS(FDS_OFFSET);
-        z33 += SCALE2FDS(FDS_OFFSET);
 
         z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
         z31 = terrain_zmin+geom_vert_exag*(z31-terrain_zmin);
