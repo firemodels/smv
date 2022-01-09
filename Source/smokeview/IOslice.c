@@ -6092,8 +6092,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
-    glTranslatef(-xbar0,-ybar0,-zbar0);
-    glTranslatef(0.0, 0.0, agl_smv+SCALE2FDS(0.01)+slice_dz);
+    glTranslatef(-xbar0,-ybar0,-zbar0 + agl_smv+SCALE2FDS(0.01)+slice_dz);
 
     glBegin(GL_TRIANGLES);
     maxi = sd->is2;
@@ -6112,7 +6111,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
         int skip123=0, skip134=0;
 
         j2 = MIN(j+slice_skip, sd->js2);
-        z11 = znode[IJ2(i, j)];
+        z11 = znode[IJ2(i,  j)];
         z31 = znode[IJ2(i2, j)];
         z13 = znode[IJ2(i, j2)];
         z33 = znode[IJ2(i2, j2)];

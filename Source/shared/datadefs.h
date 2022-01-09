@@ -296,7 +296,7 @@
 #define IJKCELL(i,j,k) ((i)+ (j)*ibar+(k)*ibar*jbar)
 #endif
 
-#ifndef IJKCELL2
+#ifndef IJCELL2
 #define IJCELL2(i,j) (nxcell*(j) + (i))
 #endif
 
