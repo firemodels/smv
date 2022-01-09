@@ -5876,7 +5876,7 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
 
 }
 
-/* ------------------ DrawVolSliceTerrain ------------------------ */
+/* ------------------ DrawVolSliceTerrainLinePt ------------------------ */
 void DrawVolSliceTerrainLinePt(const slicedata *sd){
   int i, j;
   float x1, x3, yy1, y3;
@@ -6044,7 +6044,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
   terri = meshi->terrain;
   if(terri == NULL)return;
-  if(terrain_debug==1)printf("slice data from mesh %i znode(0)=%f\n", 1+(int)(meshi-meshinfo), terri->znode[0]);
   nycell = terri->jbar;
 
   xplt = meshi->xplt_orig;
