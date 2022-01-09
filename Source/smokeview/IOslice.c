@@ -5879,7 +5879,6 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
 /* ------------------ DrawVolSliceTerrain ------------------------ */
 void DrawVolSliceTerrainLinePt(const slicedata *sd){
   int i, j;
-  float r11, r31, r13, r33;
   float x1, x3, yy1, y3;
 
   float *xplt, *yplt;
@@ -5946,8 +5945,6 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
       x1 = xplt[i];
 
       for(j = sd->js1; j<=sd->js2; j += slice_skip){
-        int n11, n31, n13, n33;
-
         z11 = znode[IJ2(i, j)];
 
         if(z11<zcut){
