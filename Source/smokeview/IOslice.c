@@ -6069,7 +6069,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
   if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
     float z11, z31, z13, z33;
     int maxi;
-    meshdata *floor_mesh;
     float *znode, agl_smv, zmin, zmax;
 
     znode = meshi->floor_mesh->znodes_complete;
@@ -6081,8 +6080,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
     zmax -= agl_smv;
     zmin -= 2.0*meshi->dz;
     zmax += 2.0* meshi->dz;
-
-    floor_mesh = meshi->floor_mesh;
 
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));

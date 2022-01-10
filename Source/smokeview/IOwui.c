@@ -2051,7 +2051,6 @@ void UpdateTerrain(int allocate_memory){
         meshdata *meshj;
         terraindata *terrainj;
         int kk;
-        float zcut;
         float dx, dy;
 
         meshj = meshinfo+j;
