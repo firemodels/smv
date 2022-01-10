@@ -5876,7 +5876,7 @@ void DrawVolSliceCellFaceCenterValues(const slicedata *sd, int flag){
 
 }
 
-/* ------------------ DrawVolSliceTerrain ------------------------ */
+/* ------------------ DrawVolSliceTerrainLinePt ------------------------ */
 void DrawVolSliceTerrainLinePt(const slicedata *sd){
   int i, j;
   float x1, x3, yy1, y3;
@@ -5934,7 +5934,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
     glPushMatrix();
     glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), vertical_factor*SCALE2SMV(1.0));
     glTranslatef(-xbar0, -ybar0, -zbar0);
-    glTranslatef(0.0, 0.0, agl_smv+SCALE2FDS(0.01)+slice_dz);
+    glTranslatef(0.0, 0.0, MAX(agl_smv, SCALE2FDS(FDS_OFFSET))+slice_dz);
 
     glPointSize(5.0);
     glBegin(GL_POINTS);
@@ -5953,8 +5953,6 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
         else{
           this_color = ter_black;
         }
-        z11 += SCALE2FDS(FDS_OFFSET);
-
         z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
 
         yy1 = yplt[j];
@@ -5992,11 +5990,6 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
         if(z31<zcut)continue;
         if(z33<zcut)continue;
         if(z13<zcut)continue;
-
-        z11 += SCALE2FDS(FDS_OFFSET);
-        z31 += SCALE2FDS(FDS_OFFSET);
-        z33 += SCALE2FDS(FDS_OFFSET);
-        z13 += SCALE2FDS(FDS_OFFSET);
 
         z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
         z31 = terrain_zmin+geom_vert_exag*(z31-terrain_zmin);
@@ -6043,15 +6036,12 @@ void DrawVolSliceTerrain(const slicedata *sd){
   int nx, ny, nxy;
   char *iblank_z;
   char *iblank_embed;
-  terraindata *terri;
   int nycell;
   meshdata *meshi;
 
   meshi = meshinfo + sd->blocknumber;
 
-  terri = meshi->terrain;
-  if(terri == NULL)return;
-  nycell = terri->jbar;
+  nycell = meshi->jbar;
 
   xplt = meshi->xplt_orig;
   yplt = meshi->yplt_orig;
@@ -6079,18 +6069,21 @@ void DrawVolSliceTerrain(const slicedata *sd){
   if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
     float z11, z31, z13, z33;
     int maxi;
-    float *znode, agl_smv, zcut;
+    float *znode, agl_smv, zmin, zmax;
 
-#define FDS_OFFSET 0.005
-
-    znode = terri->znode;
+    znode = meshi->floor_mesh->znodes_complete;
     agl_smv = sd->above_ground_level;
-    zcut = terri->zmin_cutoff;
+    zmin = meshi->zplt_orig[0];
+    zmax = meshi->zplt_orig[meshi->kbar];
+
+    zmin -= agl_smv;
+    zmax -= agl_smv;
+    zmin -= 2.0*meshi->dz;
+    zmax += 2.0* meshi->dz;
 
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
-    glTranslatef(-xbar0,-ybar0,-zbar0);
-    glTranslatef(0.0, 0.0, agl_smv+SCALE2FDS(0.01)+slice_dz);
+    glTranslatef(-xbar0,-ybar0,-zbar0 + MAX(agl_smv,SCALE2FDS(FDS_OFFSET))+slice_dz);
 
     glBegin(GL_TRIANGLES);
     maxi = sd->is2;
@@ -6106,22 +6099,20 @@ void DrawVolSliceTerrain(const slicedata *sd){
       for(j = sd->js1; j<sd->js2; j += slice_skip){
         int n11, n31, n13, n33;
         int j2;
-        int skip123=0, skip134=0;
+        int draw123=0, draw134=0;
 
         j2 = MIN(j+slice_skip, sd->js2);
-        z11 = znode[IJ2(i, j)];
+        z11 = znode[IJ2(i,  j)];
         z31 = znode[IJ2(i2, j)];
         z13 = znode[IJ2(i, j2)];
         z33 = znode[IJ2(i2, j2)];
 
-        if(z11<zcut&&z31<zcut&&z33<zcut&&z13<zcut)continue;
-        if(z11<zcut||z31<zcut||z33<zcut)skip123=1;
-        if(z11<zcut||z33<zcut||z13<zcut)skip134=1;
 
-        z11 += SCALE2FDS(FDS_OFFSET);
-        z31 += SCALE2FDS(FDS_OFFSET);
-        z13 += SCALE2FDS(FDS_OFFSET);
-        z33 += SCALE2FDS(FDS_OFFSET);
+        if(z11<zmin&&z13<zmin&&z31<zmin&&z33<zmin)continue;
+        if(z11>zmax&&z13>zmax&&z31>zmax&&z33>zmax)continue;
+        draw123 = 1;
+        draw134 = 1;
+
 
         z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
         z31 = terrain_zmin+geom_vert_exag*(z31-terrain_zmin);
@@ -6150,13 +6141,13 @@ void DrawVolSliceTerrain(const slicedata *sd){
         n33 = IJK_SLICE(i2,j2,sd->ks1);
         r33 = (float)sd->iqsliceframe[n33]/255.0;
 
-        if(skip123==0){
+        if(draw123==1){
           glTexCoord1f(r11);  glVertex3f(x1, yy1, z11);
           glTexCoord1f(r31);  glVertex3f(x3, yy1, z31);
           glTexCoord1f(r33);  glVertex3f(x3,  y3, z33);
         }
 
-        if(skip134==0){
+        if(draw134==1){
           glTexCoord1f(r11);  glVertex3f(x1, yy1, z11);
           glTexCoord1f(r33);  glVertex3f(x3,  y3, z33);
           glTexCoord1f(r13);  glVertex3f(x1,  y3, z13);

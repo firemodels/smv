@@ -12,7 +12,7 @@
 #include "IOobjects.h"
 
 #define ijnode2(i,j) ((nxcell+1)*(j) + (i))
-#define ijnode3(i,j) ((nycell+1)*(i) + (j))
+
 #define FORTWUIREAD(var,size) FSEEK(WUIFILE,4,SEEK_CUR);\
                            returncode=fread(var,4,size,WUIFILE);\
                            FSEEK(WUIFILE,4,SEEK_CUR)
@@ -1179,7 +1179,7 @@ void ComputeTerrainNormalsAuto(void){
 
         zval = (val1*loc1 + val2*loc2 + val3*loc3 + val4*loc4)/(float)MAX(1,count);
 
-        znode[ijnode3(i,j)]=zval;
+        znode[IJ2(i,j)]=zval;
         zval_offset = SCALE2SMV((val1_offset*loc1 + val2_offset*loc2 + val3_offset*loc3 + val4_offset*loc4))/(float)MAX(1,count);
 
         *znode_offset++=zval_offset;
@@ -1267,7 +1267,7 @@ void ComputeTerrainNormalsAuto(void){
      //     -dzdx -dzdy 1
 
         //znormal = terri->znormal + 3*ijnode2(i,j);
-        uc_znormal = terri->uc_znormal + ijnode3(i,j);
+        uc_znormal = terri->uc_znormal + IJ2(i,j);
         znormal3[0] = -dzdx;
         znormal3[1] = -dzdy;
         znormal3[2] = 1.0;
@@ -1369,7 +1369,15 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
   int i;
 
   if(meshi!=NULL){
-    meshi->terrain=terri;
+    meshi->terrain = terri;
+    meshi->nznodes = (nx+1)*(ny+1);
+    if(allocate_memory==1){
+      meshi->nznodes = (nx+1)*(ny+1);
+      meshi->znodes_complete = NULL;
+      if(meshi->nabors[MDOWN]==NULL){
+        NewMemory((void **)&meshi->znodes_complete, (nx+1)*(ny+1)*sizeof(float));
+      }
+    }
   }
 
   if(terri==NULL)return;
@@ -1472,10 +1480,10 @@ void DrawTerrainOBST(terraindata *terri, int flag){
 
       ip1 = i + 1;
 
-      zval1 = znode[ijnode3(i, j)];
-      zval2 = znode[ijnode3(ip1, j)];
-      zval3 = znode[ijnode3(ip1, jp1)];
-      zval4 = znode[ijnode3(i, jp1)];
+      zval1 = znode[IJ2(i, j)];
+      zval2 = znode[IJ2(ip1, j)];
+      zval3 = znode[IJ2(ip1, jp1)];
+      zval4 = znode[IJ2(i, jp1)];
 
       if(zval1<zcut&&zval2<zcut&&zval3<zcut&&zval4<zcut)continue;
 
@@ -1489,16 +1497,16 @@ void DrawTerrainOBST(terraindata *terri, int flag){
       zval3 += ZOFFSET;
       zval4 += ZOFFSET;
 
-      uc_zn1 = uc_znormal+ijnode3(i,j);
+      uc_zn1 = uc_znormal+IJ2(i,j);
       zn1 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn1));
 
-      uc_zn2 = uc_znormal+ijnode3(ip1, j);
+      uc_zn2 = uc_znormal+IJ2(ip1, j);
       zn2 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn2));
 
-      uc_zn3 = uc_znormal+ijnode3(ip1, jp1);
+      uc_zn3 = uc_znormal+IJ2(ip1, jp1);
       zn3 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn3));
 
-      uc_zn4 = uc_znormal+ijnode3(i, jp1);
+      uc_zn4 = uc_znormal+IJ2(i, jp1);
       zn4 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn4));
 
       if(flag==TERRAIN_TOP_SIDE||flag==TERRAIN_BOTH_SIDES){
@@ -1568,10 +1576,10 @@ void DrawTerrainOBST(terraindata *terri, int flag){
         for(i = 0; i<terri->ibar; i++){
           float zval11, zval13, zval33, zval31;
 
-          zval11 = znode[ijnode3(i,     j)]+ZOFFSET;
-          zval31 = znode[ijnode3(i+1,   j)]+ZOFFSET;
-          zval33 = znode[ijnode3(i+1, j+1)]+ZOFFSET;
-          zval13 = znode[ijnode3(i,   j+1)]+ZOFFSET;
+          zval11 = znode[IJ2(i,     j)]+ZOFFSET;
+          zval31 = znode[IJ2(i+1,   j)]+ZOFFSET;
+          zval33 = znode[IJ2(i+1, j+1)]+ZOFFSET;
+          zval13 = znode[IJ2(i,   j+1)]+ZOFFSET;
 
           glVertex3f(x[i],   y[j],   zval11);
           glVertex3f(x[i+1], y[j],   zval31);
@@ -1593,9 +1601,9 @@ void DrawTerrainOBST(terraindata *terri, int flag){
           unsigned char *uc_zn;
           float zval11, *zn;
 
-          zval11 = znode[ijnode3(i,     j)]+ZOFFSET;
+          zval11 = znode[IJ2(i,     j)]+ZOFFSET;
 
-          uc_zn = uc_znormal+ijnode3(i, j);
+          uc_zn = uc_znormal+IJ2(i, j);
           zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
 
           glVertex3f(x[i], y[j], zval11);
@@ -1659,8 +1667,8 @@ void DrawTerrainOBSTSides(meshdata *meshi){
 
     i = 0;
     for(j = 0; j<jbar; j++){
-      zij   = znode[ijnode3(i, j)];
-      zijp1 = znode[ijnode3(i, j+1)];
+      zij   = znode[IJ2(i, j)];
+      zijp1 = znode[IJ2(i, j+1)];
       if(zij>zcutoff){
         glVertex3f(x[i], y[j],   zbar0);
         glVertex3f(x[i], y[j],   zij);
@@ -1680,8 +1688,8 @@ void DrawTerrainOBSTSides(meshdata *meshi){
 
     i = ibar;
     for(j = 0; j<jbar; j++){
-      zij   = znode[ijnode3(i, j)];
-      zijp1 = znode[ijnode3(i, j+1)];
+      zij   = znode[IJ2(i, j)];
+      zijp1 = znode[IJ2(i, j+1)];
 
       if(zijp1>zcutoff){
         glVertex3f(x[i], y[j],   zbar0);
@@ -1702,8 +1710,8 @@ void DrawTerrainOBSTSides(meshdata *meshi){
 
     j = 0;
     for(i = 0; i<ibar; i++){
-      zij   = znode[ijnode3(i, j)];
-      zip1j = znode[ijnode3(i+1, j)];
+      zij   = znode[IJ2(i, j)];
+      zip1j = znode[IJ2(i+1, j)];
       if(zip1j>zcutoff){
         glVertex3f(x[i],   y[j], zbar0);
         glVertex3f(x[i+1], y[j], zbar0);
@@ -1723,8 +1731,8 @@ void DrawTerrainOBSTSides(meshdata *meshi){
 
     j = jbar;
     for(i = 0; i<ibar; i++){
-      zij   = znode[ijnode3(i, j)];
-      zip1j = znode[ijnode3(i+1, j)];
+      zij   = znode[IJ2(i, j)];
+      zip1j = znode[IJ2(i+1, j)];
       if(zip1j>zcutoff){
         glVertex3f(x[i],   y[j], zbar0);
         glVertex3f(x[i+1], y[j], zip1j);
@@ -1819,19 +1827,19 @@ void DrawTerrainOBSTTexture(terraindata *terri){
 
       uc_zn1 = uc_znormal+ijnode2(i,j);
       zn1 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn1));
-      zval1 = znode[ijnode3(i, j)];
+      zval1 = znode[IJ2(i, j)];
 
       uc_zn2 = uc_znormal+ijnode2(ip1, j);
       zn2 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn2));
-      zval2 = znode[ijnode3(ip1, j)];
+      zval2 = znode[IJ2(ip1, j)];
 
       uc_zn3 = uc_znormal+ijnode2(ip1, jp1);
       zn3 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn3));
-      zval3 = znode[ijnode3(ip1, jp1)];
+      zval3 = znode[IJ2(ip1, jp1)];
 
       uc_zn4 = uc_znormal+ijnode2(i, jp1);
       zn4 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn4));
-      zval4 = znode[ijnode3(i, jp1)];
+      zval4 = znode[IJ2(i, jp1)];
 
       if(zval1<zcut&&zval2<zcut&&zval3<zcut&&zval4<zcut)continue;
 
@@ -2012,6 +2020,59 @@ void UpdateTerrain(int allocate_memory){
     }
     if(manual_terrain==1){
       ComputeTerrainNormalsManual();
+    }
+  }
+  if(allocate_memory==1){
+    int i;
+
+    for(i = 0; i<nmeshes; i++){
+      meshdata *meshi;
+      terraindata *terraini;
+      int j;
+
+      meshi = meshinfo+i;
+      if(meshi->is_bottom==0)continue;
+      terraini = meshi->terrain;
+      if(terraini==NULL){
+        int ii;
+
+        for(ii = 0; ii<meshi->nznodes; ii++){
+          meshi->znodes_complete[ii] = zbar0;
+        }
+      }
+      else{
+        int ii;
+
+        for(ii = 0; ii<meshi->nznodes; ii++){
+          meshi->znodes_complete[ii] = terraini->znode[ii];
+        }
+      }
+      for(j = 0; j<nmeshes; j++){
+        meshdata *meshj;
+        terraindata *terrainj;
+        int kk;
+        float dx, dy;
+
+        meshj = meshinfo+j;
+        if(meshj==meshi || meshj->is_bottom==1)continue;
+        dx = ABS(meshi->xplt_orig[0]          - meshj->xplt_orig[0]);
+        dy = ABS(meshi->yplt_orig[0]          - meshj->yplt_orig[0]);
+        if(dx>meshi->dx/2.0 || dy>meshi->dy/2.0)continue;
+
+        dx = ABS(meshi->xplt_orig[meshi->ibar]          - meshj->xplt_orig[meshj->ibar]);
+        dy = ABS(meshi->yplt_orig[meshi->jbar]          - meshj->yplt_orig[meshj->jbar]);
+        if(dx>meshi->dx/2.0 || dy>meshi->dy/2.0)continue;
+
+        if(meshi->ibar!=meshj->ibar || meshi->jbar!=meshj->jbar)continue;
+
+        meshj->floor_mesh = meshi;
+        terrainj = meshj->terrain;
+        if(terrainj!=NULL){
+          for(kk = 0; kk<meshj->nznodes; kk++){
+            if(terrainj->znode[kk]>meshi->boxmin[2]-meshi->dz/2.0)meshi->znodes_complete[kk] = terrainj->znode[kk];
+          }
+        }
+      }
     }
   }
   if(nterraininfo>0){

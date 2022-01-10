@@ -655,6 +655,9 @@ typedef struct _meshdata {
   int *cutcells, ncutcells;
   int update_smoke3dcolors;
   terraindata *terrain;
+  float *znodes_complete;
+  int nznodes;
+  struct _meshdata *floor_mesh;
   int mesh_type;
 #ifdef pp_GPU
   GLuint blockage_texture_id;

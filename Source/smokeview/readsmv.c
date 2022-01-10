@@ -314,6 +314,10 @@ void FreeLabels(flowlabels *flowlabel){
 void InitMesh(meshdata *meshi){
   int i;
 
+  meshi->znodes_complete = NULL;
+  meshi->nznodes = 0;
+  meshi->floor_mesh = meshi;
+  meshi->is_bottom = 0;
   meshi->is_block_terrain = NULL;
   meshi->smoke3d_soot = NULL;
   meshi->smoke3d_hrrpuv = NULL;
@@ -386,7 +390,6 @@ void InitMesh(meshdata *meshi){
 #endif
   meshi->mesh_offset_ptr = NULL;
   meshi->cullgeominfo = NULL;
-  meshi->is_bottom = 1;
   meshi->blockvis = 1;
   meshi->terrain = NULL;
   meshi->meshrgb[0] = 0.0;
@@ -10283,6 +10286,8 @@ typedef struct {
   UpdateSliceBoundLabels();
   UpdateIsoTypes();
   UpdateBoundaryTypes();
+
+  InitNabors();
 
   PRINT_TIMER(timer_readsmv, "update bound info");
   UpdateTerrain(1); // xxslow
