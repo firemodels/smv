@@ -1369,7 +1369,15 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
   int i;
 
   if(meshi!=NULL){
-    meshi->terrain=terri;
+    meshi->terrain = terri;
+    meshi->nznodes = (nx+1)*(ny+1);
+    if(allocate_memory==1){
+      meshi->nznodes = (nx+1)*(ny+1);
+      meshi->znodes_complete = NULL;
+      if(meshi->nabors[MDOWN]==NULL){
+        NewMemory((void **)&meshi->znodes_complete, (nx+1)*(ny+1)*sizeof(float));
+      }
+    }
   }
 
   if(terri==NULL)return;
@@ -2012,6 +2020,60 @@ void UpdateTerrain(int allocate_memory){
     }
     if(manual_terrain==1){
       ComputeTerrainNormalsManual();
+    }
+  }
+  if(allocate_memory==1){
+    int i;
+
+    for(i = 0; i<nmeshes; i++){
+      meshdata *meshi;
+      terraindata *terraini;
+      int j;
+
+      meshi = meshinfo+i;
+      if(meshi->is_bottom==0)continue;
+      terraini = meshi->terrain;
+      if(terraini==NULL){
+        int ii;
+
+        for(ii = 0; ii<meshi->nznodes; ii++){
+          meshi->znodes_complete[ii] = zbar0;
+        }
+      }
+      else{
+        int ii;
+
+        for(ii = 0; ii<meshi->nznodes; ii++){
+          meshi->znodes_complete[ii] = terraini->znode[ii];
+        }
+      }
+      for(j = 0; j<nmeshes; j++){
+        meshdata *meshj;
+        terraindata *terrainj;
+        int kk;
+        float zcut;
+        float dx, dy;
+
+        meshj = meshinfo+j;
+        if(meshj==meshi || meshj->is_bottom==1)continue;
+        dx = ABS(meshi->xplt_orig[0]          - meshj->xplt_orig[0]);
+        dy = ABS(meshi->yplt_orig[0]          - meshj->yplt_orig[0]);
+        if(dx>meshi->dx/2.0 || dy>meshi->dy/2.0)continue;
+
+        dx = ABS(meshi->xplt_orig[meshi->ibar]          - meshj->xplt_orig[meshj->ibar]);
+        dy = ABS(meshi->yplt_orig[meshi->jbar]          - meshj->yplt_orig[meshj->jbar]);
+        if(dx>meshi->dx/2.0 || dy>meshi->dy/2.0)continue;
+
+        if(meshi->ibar!=meshj->ibar || meshi->jbar!=meshj->jbar)continue;
+
+        meshj->floor_mesh = meshi;
+        terrainj = meshj->terrain;
+        if(terrainj!=NULL){
+          for(kk = 0; kk<meshj->nznodes; kk++){
+            if(terrainj->znode[kk]>meshi->boxmin[2]-meshi->dz/2.0)meshi->znodes_complete[kk] = terrainj->znode[kk];
+          }
+        }
+      }
     }
   }
   if(nterraininfo>0){

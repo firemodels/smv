@@ -213,6 +213,7 @@ EXTERNCPP void GetTourXYZ(float t, keyframe *this_key, float *xyz);
 EXTERNCPP void GetTourView(float t, keyframe *this_key, float *view);
 EXTERNCPP int GetTourFrame(tourdata *touri, int itime);
 EXTERNCPP int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to);
+EXTERNCPP int IsBottomMesh(meshdata *mesh_from);
 EXTERNCPP void InitNabors(void);
 EXTERNCPP int Smv2Html(char *html_out, int option, int from_where, int vr_flag);
 EXTERNCPP int Smv2Geom(char *html_file);

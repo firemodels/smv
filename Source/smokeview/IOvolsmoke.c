@@ -384,6 +384,23 @@ void InitVolsmokeSuperTexture(supermeshdata *smesh){
 }
 #endif
 
+/* ------------------ IsBottomMesh ------------------------ */
+
+int IsBottomMesh(meshdata *mesh_from){
+  float xyz[3];
+  float *boxmax, *boxmin;
+  int return_val;
+
+  boxmin = mesh_from->boxmin;
+  boxmax = mesh_from->boxmax;
+  xyz[0] = (boxmin[0]+boxmax[0])/2.0;
+  xyz[1] = (boxmin[1]+boxmax[1])/2.0;
+  xyz[2] = boxmin[2]-(boxmax[2]-boxmin[2])/100.0;
+  int InMesh(float *xyz);
+  return_val = 1-InMesh(xyz);
+  return return_val;
+}
+
 /* ------------------ MeshConnect ------------------------ */
 
 int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to){
@@ -579,6 +596,7 @@ void InitNabors(void){
     int j;
 
     meshi = meshinfo+i;
+    meshi->is_bottom = IsBottomMesh(meshi);
     for(j = 0;j<nmeshes;j++){
       meshdata *meshj;
 
