@@ -1129,7 +1129,6 @@ int MergeTimes(float **times, int ntimes, float *time_in, int ntimes_in){
 
 void UpdateTimes(void){
   int i;
-  float global_timemin=1000000000.0, global_timemax=-1000000000.0;
 
   GetGeomInfoPtrs(0);
 
@@ -1264,15 +1263,7 @@ void UpdateTimes(void){
     if(touri->display==0)continue;
     nglobal_times = MergeTimes(&global_times, nglobal_times, touri->path_times, touri->ntimes);
   }
-  CheckMemory;
-
-  // setup global_times array
-
-  if(nglobal_times>0){
-    global_timemin = global_times[0];
-    global_timemax = global_times[nglobal_times-1];
-  }
-
+  
   CheckMemory;
 
   // allocate memory for individual timelist arrays
