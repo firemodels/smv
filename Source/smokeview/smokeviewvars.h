@@ -1728,7 +1728,8 @@ SVEXTERN int SVDECL(hilight_skinny,0);
 SVEXTERN int minfill, maxfill;
 
 SVEXTERN int SVDECL(*plotiso,NULL);
-SVEXTERN float SVDECL(*global_times,NULL),cputimes[20];
+SVEXTERN float SVDECL(*global_times,NULL), SVDECL(*times_buffer, NULL), cputimes[20];
+SVEXTERN int SVDECL(ntimes_buffer, 0);
 SVEXTERN int cpuframe;
 
 SVEXTERN float eye_position_fds[3],xeyedir[3], yeyedir[3], zeyedir[3];

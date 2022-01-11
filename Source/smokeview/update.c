@@ -1078,16 +1078,23 @@ void ConvertSsf(void){
   }
 }
 
-#define TIME_EPS 0.0001
-
   /* ------------------ MergeTimes ------------------------ */
 
 int MergeTimes(float **times, int ntimes, float *time_in, int ntimes_in){
-  float *buffer;
-  int left, right, nbuffer;
-  float *timesptr;
+  int left, right, nbuffer, i;
+  float *timesptr, dt_eps;
 
   if(ntimes_in<=0)return 0;
+
+  dt_eps = 0.0;
+  for(i = 1; i<ntimes_in; i++){
+    float dt;
+
+    dt = time_in[i]-time_in[i-1];
+    ASSERT(dt>=0.0);
+    dt_eps = MIN(dt_eps, ABS(dt)/2.0);
+  }
+
   if(*times==NULL || ntimes<=0){
     if(*times==NULL){
       NewMemory((void **)times, ntimes_in*sizeof(float));
@@ -1095,7 +1102,11 @@ int MergeTimes(float **times, int ntimes, float *time_in, int ntimes_in){
     memcpy(*times, time_in, ntimes_in*sizeof(float));
     return ntimes_in;
   }
-  NewMemory((void **)&buffer, (ntimes+ntimes_in)*sizeof(float));
+  if(ntimes+ntimes_in>ntimes_buffer){
+    ntimes_buffer = ntimes+ntimes_in+1000;
+    FREEMEMORY(times_buffer);
+    NewMemory((void **)&times_buffer, ntimes_buffer*sizeof(float));
+  }
 
   timesptr = *times;
   for(left=0,right=0,nbuffer=0;left<ntimes&&right<ntimes_in;){
@@ -1111,17 +1122,16 @@ int MergeTimes(float **times, int ntimes, float *time_in, int ntimes_in){
       minval = rval;
       right++;
     }
-    if(nbuffer==0||minval>buffer[nbuffer-1]+TIME_EPS){
-      buffer[nbuffer++] = minval;
+    if(nbuffer==0||minval>times_buffer[nbuffer-1]+dt_eps){
+      times_buffer[nbuffer++] = minval;
     }
   }
   if(nbuffer>ntimes){
     FREEMEMORY(*times);
     NewMemory((void **)times, nbuffer*sizeof(float));
   }
-  memcpy(*times, buffer, nbuffer*sizeof(float));
+  memcpy(*times, times_buffer, nbuffer*sizeof(float));
 
-  FREEMEMORY(buffer);
   return nbuffer;
 }
 
@@ -1139,6 +1149,8 @@ void UpdateTimes(void){
 
   FREEMEMORY(global_times);
   nglobal_times = 0;
+  FREEMEMORY(times_buffer);
+  ntimes_buffer = 0;
 
   // determine min time, max time and number of times
 
