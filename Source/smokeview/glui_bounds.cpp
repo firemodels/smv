@@ -2893,6 +2893,9 @@ GLUI_Panel *PANEL_split3 = NULL;
 GLUI_Panel *PANEL_extreme = NULL, *PANEL_cb8 = NULL, *PANEL_cb7 = NULL;
 GLUI_Panel *PANEL_extreme_min = NULL, *PANEL_extreme_max = NULL;
 
+#ifdef pp_IIMEBAR_DIGITS
+GLUI_Spinner *SPINNER_ntimebar_digits = NULL;
+#endif
 GLUI_Spinner *SPINNER_sliceval_ndigits = NULL;
 GLUI_Spinner *SPINNER_npartthread_ids = NULL;
 GLUI_Spinner *SPINNER_iso_outline_ioffset = NULL;
@@ -4095,6 +4098,10 @@ void TimeBoundCB(int var){
       UpdateTBounds();
     }
     break;
+#ifdef pp_TIMEBAR_DIGITS
+  case TIMEBAR_DIGITS:
+    break;
+#endif
   case TBOUNDS_USE:
     if(use_tload_begin == 1){
       SPINNER_tload_begin->enable();
@@ -5034,9 +5041,9 @@ extern "C" void GluiBoundsSetup(int main_window){
 
   // ----------------------------------- Time ----------------------------------------
 
-  ROLLOUT_time = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "Time", false, TIME_ROLLOUT, BoundRolloutCB);
+  ROLLOUT_time = glui_bounds->add_rollout("Time", false, TIME_ROLLOUT, BoundRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_time, glui_bounds);
-  ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_time, TIME_ROLLOUT, glui_bounds);
+  ADDPROCINFO(fileprocinfo, nfileprocinfo, ROLLOUT_time, TIME_ROLLOUT, glui_bounds);
 
   PANEL_time1a = glui_bounds->add_panel_to_panel(ROLLOUT_time, "", false);
   SPINNER_timebounds = glui_bounds->add_spinner_to_panel(PANEL_time1a, _("Time:"), GLUI_SPINNER_FLOAT, &glui_time);
@@ -5063,10 +5070,18 @@ extern "C" void GluiBoundsSetup(int main_window){
   CHECKBOX_use_tload_skip = glui_bounds->add_checkbox_to_panel(PANEL_time2c, "", &use_tload_skip, TBOUNDS_USE, TimeBoundCB);
   SPINNER_tload_skip->set_int_limits(0, 1000);
 
+#ifdef pp_TIMEBAR_DIGITS
+  SPINNER_ntimebar_digits = glui_bounds->add_spinner_to_panel(PANEL_time2, _("timebar digits:"), GLUI_SPINNER_INT, &ntimebar_digits, TIMEBAR_DIGITS, TimeBoundCB);
+  SPINNER_ntimebar_digits->set_int_limits(3, 8, GLUI_LIMIT_CLAMP);
+#endif
+
   glui_bounds->add_button_to_panel(PANEL_time2, _("Reload all data"), RELOAD_ALL_DATA, TimeBoundCB);
+#ifdef pp_LOAD_NEWDATA
   glui_bounds->add_button_to_panel(PANEL_time2, _("Reload new data"), RELOAD_INCREMENTAL_DATA, TimeBoundCB);
+#endif
 
   TimeBoundCB(TBOUNDS_USE);
+
 
   // -------------- Data coloring -------------------
 

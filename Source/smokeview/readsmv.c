@@ -6230,6 +6230,8 @@ int ReadSMV(bufferstreamdata *stream){
         BREAK;
       }
       sscanf(buffer,"%f %f %i",&tour_tstart,&tour_tstop,&tour_ntimes);
+      global_tbegin = tour_tstart;
+      global_tend   = tour_tstop;
       if(tour_ntimes<2)tour_ntimes=2;
       ReallocTourMemory();
       continue;
@@ -6820,7 +6822,16 @@ int ReadSMV(bufferstreamdata *stream){
       ncsvinfo+=nfiles;
       continue;
     }
-
+  /*
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++ TIMES +++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  */
+    if(Match(buffer, "TIMES")==1){
+      FGETS(buffer, 255, stream);
+      sscanf(buffer, "%f %f", &global_tbegin, &global_tend);
+      continue;
+    }
   /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++ BOXGEOM ++++++++++++++++++++++++++

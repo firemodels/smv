@@ -1078,15 +1078,19 @@ void ConvertSsf(void){
   }
 }
 
-  /* ------------------ MergeTimes ------------------------ */
+  /* ------------------ MergeGlobalTimes ------------------------ */
 
-int MergeTimes(float **times, int ntimes, float *time_in, int ntimes_in){
+void MergeGlobalTimes(float *time_in, int ntimes_in){
   int left, right, nbuffer, i;
-  float *timesptr, dt_eps;
+  float dt_eps;
 
-  if(ntimes_in<=0)return 0;
+  if(ntimes_in<=0){
+    nglobal_times = 0;
+    return;
+  }
 
-  dt_eps = 0.0;
+  // when adding a time to current list assume it is already there if it closer than dt_es
+  dt_eps = 0.001;
   for(i = 1; i<ntimes_in; i++){
     float dt;
 
@@ -1094,25 +1098,38 @@ int MergeTimes(float **times, int ntimes, float *time_in, int ntimes_in){
     ASSERT(dt>=0.0);
     dt_eps = MIN(dt_eps, ABS(dt)/2.0);
   }
+  if(nglobal_times>1){
+    for(i = 1; i<nglobal_times; i++){
+      float dt;
 
-  if(*times==NULL || ntimes<=0){
-    if(*times==NULL){
-      NewMemory((void **)times, ntimes_in*sizeof(float));
+      dt = global_times[i]-global_times[i-1];
+      ASSERT(dt>=0.0);
+      dt_eps = MIN(dt_eps, ABS(dt)/2.0);
     }
-    memcpy(*times, time_in, ntimes_in*sizeof(float));
-    return ntimes_in;
   }
-  if(ntimes+ntimes_in>ntimes_buffer){
-    ntimes_buffer = ntimes+ntimes_in+1000;
+
+  // add time_in values to global_times the first time
+  if(global_times==NULL || nglobal_times<=0){
+    if(global_times==NULL){
+      NewMemory((void **)&global_times, ntimes_in*sizeof(float));
+    }
+    memcpy(global_times, time_in, ntimes_in*sizeof(float));
+    nglobal_times = ntimes_in;
+    return;
+  }
+
+// allocate buffer for merged times
+  if(nglobal_times+ntimes_in>ntimes_buffer){
+    ntimes_buffer = nglobal_times+ntimes_in+1000;
     FREEMEMORY(times_buffer);
     NewMemory((void **)&times_buffer, ntimes_buffer*sizeof(float));
   }
 
-  timesptr = *times;
-  for(left=0,right=0,nbuffer=0;left<ntimes&&right<ntimes_in;){
+  // merge global_times and times_in into times_buffer
+  for(left=0,right=0,nbuffer=0;left<nglobal_times&&right<ntimes_in;){
     float lval, rval, minval;
 
-    lval = timesptr[MIN(left, ntimes-1)];
+    lval = global_times[MIN(left, nglobal_times-1)];
     rval = time_in[MIN(right, ntimes_in-1)];
     if(right==ntimes_in||lval<rval){
       minval = lval;
@@ -1126,13 +1143,15 @@ int MergeTimes(float **times, int ntimes, float *time_in, int ntimes_in){
       times_buffer[nbuffer++] = minval;
     }
   }
-  if(nbuffer>ntimes){
-    FREEMEMORY(*times);
-    NewMemory((void **)times, nbuffer*sizeof(float));
-  }
-  memcpy(*times, times_buffer, nbuffer*sizeof(float));
 
-  return nbuffer;
+  // copy merged times array back into original global_times array
+  if(nbuffer>nglobal_times){
+    FREEMEMORY(global_times);
+    NewMemory((void **)&global_times, nbuffer*sizeof(float));
+  }
+  memcpy(global_times, times_buffer, nbuffer*sizeof(float));
+
+  nglobal_times = nbuffer;
 }
 
   /* ------------------ UpdateTimes ------------------------ */
@@ -1164,12 +1183,20 @@ void UpdateTimes(void){
 
       stimes[0] = ss_tmin;
       stimes[1] = ss_tmax;
-      nglobal_times = MergeTimes(&global_times, nglobal_times, stimes, 2);
+      MergeGlobalTimes(stimes, 2);
     }
   }
 
+  if(global_tbegin<global_tend){
+    float stimes[2];
+
+    stimes[0] = global_tbegin;
+    stimes[1] = global_tend;
+    MergeGlobalTimes(stimes, 2);
+  }
+
   if(visHRRlabel==1&&show_hrrpuv_plot==1&&hrrinfo!=NULL){
-    nglobal_times = MergeTimes(&global_times, nglobal_times, hrrinfo->times_csv, hrrinfo->ntimes_csv);
+    MergeGlobalTimes(hrrinfo->times_csv, hrrinfo->ntimes_csv);
   }
   if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
@@ -1178,7 +1205,7 @@ void UpdateTimes(void){
       devicei = deviceinfo+i;
       if(devicei->object->visible==0||devicei->nvals==0)continue;
       if(devicei->type2==devicetypes_index){
-        nglobal_times = MergeTimes(&global_times, nglobal_times, devicei->times, devicei->nvals);
+        MergeGlobalTimes(devicei->times, devicei->nvals);
       }
     }
   }
@@ -1188,7 +1215,7 @@ void UpdateTimes(void){
 
     geomi = geominfoptrs[i];
     if(geomi->loaded==0||geomi->display==0||geomi->ntimes<=1)continue;
-    nglobal_times = MergeTimes(&global_times, nglobal_times, geomi->times, geomi->ntimes);
+    MergeGlobalTimes(geomi->times, geomi->ntimes);
   }
   if(visShooter!=0&&shooter_active==1){
     nglobal_times = MAX(nglobal_times,nshooter_frames);
@@ -1198,14 +1225,14 @@ void UpdateTimes(void){
 
     parti = partinfo + i;
     if(parti->loaded==0)continue;
-    nglobal_times = MergeTimes(&global_times, nglobal_times, parti->times, parti->ntimes);
+    MergeGlobalTimes(parti->times, parti->ntimes);
   }
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd;
 
     sd=sliceinfo+i;
     if(sd->loaded==1||sd->vloaded==1){
-      nglobal_times = MergeTimes(&global_times, nglobal_times, sd->times, sd->ntimes);
+      MergeGlobalTimes(sd->times, sd->ntimes);
     }
   }
   for(i=0;i<npatchinfo;i++){
@@ -1213,7 +1240,7 @@ void UpdateTimes(void){
 
     patchi = patchinfo + i;
     if(patchi->loaded==1&&patchi->structured == NO){
-      nglobal_times = MergeTimes(&global_times, nglobal_times, patchi->geom_times, patchi->ngeom_times);
+      MergeGlobalTimes(patchi->geom_times, patchi->ngeom_times);
     }
   }
   for(i=0;i<nmeshes;i++){
@@ -1226,12 +1253,12 @@ void UpdateTimes(void){
     if(filenum!=-1){
       patchi=patchinfo+filenum;
       if(patchi->loaded==1&&patchi->structured == YES){
-        nglobal_times = MergeTimes(&global_times, nglobal_times, meshi->patch_times, meshi->npatch_times);
+        MergeGlobalTimes(meshi->patch_times, meshi->npatch_times);
       }
     }
   }
   if(ReadZoneFile==1&&visZone==1){
-    nglobal_times = MergeTimes(&global_times, nglobal_times, zone_times, nzone_times);
+    MergeGlobalTimes(zone_times, nzone_times);
   }
   if(ReadIsoFile==1&&visAIso!=0){
     for(i=0;i<nisoinfo;i++){
@@ -1241,7 +1268,7 @@ void UpdateTimes(void){
       ib = isoinfo+i;
       if(ib->geomflag==1||ib->loaded==0)continue;
       meshi=meshinfo + ib->blocknumber;
-      nglobal_times = MergeTimes(&global_times, nglobal_times, meshi->iso_times, meshi->niso_times);
+      MergeGlobalTimes(meshi->iso_times, meshi->niso_times);
     }
   }
   if(nvolrenderinfo>0){
@@ -1253,7 +1280,7 @@ void UpdateTimes(void){
       vr = &meshi->volrenderinfo;
       if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
       if(vr->loaded==0||vr->display==0)continue;
-      nglobal_times = MergeTimes(&global_times, nglobal_times, vr->times, vr->ntimes);
+      MergeGlobalTimes(vr->times, vr->ntimes);
     }
   }
   {
@@ -1263,7 +1290,7 @@ void UpdateTimes(void){
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
         if(smoke3di->loaded==0)continue;
-        nglobal_times = MergeTimes(&global_times, nglobal_times, smoke3di->times, smoke3di->ntimes);
+        MergeGlobalTimes(smoke3di->times, smoke3di->ntimes);
       }
     }
   }
@@ -1273,9 +1300,9 @@ void UpdateTimes(void){
 
     touri = tourinfo + i;
     if(touri->display==0)continue;
-    nglobal_times = MergeTimes(&global_times, nglobal_times, touri->path_times, touri->ntimes);
+    MergeGlobalTimes(touri->path_times, touri->ntimes);
   }
-  
+
   CheckMemory;
 
   // allocate memory for individual timelist arrays
