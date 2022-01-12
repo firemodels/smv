@@ -7367,7 +7367,9 @@ void DrawSliceFrame(){
       }
     }
     if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
-      if(sd->times[0]>global_times[itimes])continue;
+    // don't draw slice if the global time is before the first or after the last slice time
+      if(global_times[itimes] < sd->times[0])continue;
+      if(global_times[itimes] > sd->times[sd->ntimes-1])continue;
     }
     if(sd->slice_filetype != SLICE_GEOM){
       if(sd->compression_type!=UNCOMPRESSED){

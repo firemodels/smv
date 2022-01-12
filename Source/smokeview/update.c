@@ -1126,7 +1126,7 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
   }
 
   // merge global_times and times_in into times_buffer
-  for(left=0,right=0,nbuffer=0;left<nglobal_times&&right<ntimes_in;){
+  for(left=0,right=0,nbuffer=0;left<nglobal_times||right<ntimes_in;){
     float lval, rval, minval;
 
     lval = global_times[MIN(left, nglobal_times-1)];

@@ -122,9 +122,14 @@ void DrawTimebar(float xleft, float xright, float ybot, float ytop){
     }
   }
   else{
-    if(nglobal_times!=1){
-      xxright = xleft+(float)itimes*(xright-xleft)/(nglobal_times-1);
+// draw time bar proportional to time
+    float factor=0.0, dtime;
+
+    dtime = global_times[nglobal_times-1] - global_times[0];
+    if(dtime!=0.0&&nglobal_times>1){
+      factor = CLAMP((global_times[itimes] - global_times[0])/dtime, 0.0, 1.0);
     }
+    xxright = xleft*(1.0-factor) + xright*factor;
   }
   glBegin(GL_POLYGON);
   glColor4fv(timebarcolor);
