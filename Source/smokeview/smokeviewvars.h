@@ -204,6 +204,7 @@ SVEXTERN int SVDECL(update_colorbar_digits, 0);
 
 SVEXTERN int SVDECL(show_bndf_mesh_interface, 0);
 SVEXTERN int SVDECL(ncolorlabel_digits, 4), SVDECL(ncolorlabel_padding, 0);
+SVEXTERN int SVDECL(ntimebar_digits, 3);
 SVEXTERN int SVDECL(ngridloc_digits, 4);
 SVEXTERN int SVDECL(ntick_decimals, 1);
 SVEXTERN int SVDECL(mpi_nprocesses, -1), SVDECL(mpi_iprocess,-1);
@@ -1729,6 +1730,7 @@ SVEXTERN int minfill, maxfill;
 
 SVEXTERN int SVDECL(*plotiso,NULL);
 SVEXTERN float SVDECL(*global_times,NULL), SVDECL(*times_buffer, NULL), cputimes[20];
+SVEXTERN float SVDECL(global_tbegin, 1.0), SVDECL(global_tend, 0.0);
 SVEXTERN int SVDECL(ntimes_buffer, 0);
 SVEXTERN int cpuframe;
 

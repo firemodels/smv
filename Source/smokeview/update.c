@@ -1090,7 +1090,7 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
   }
 
   // when adding a time to current list assume it is already there if it closer than dt_es
-  dt_eps = 0.0;
+  dt_eps = 0.001;
   for(i = 1; i<ntimes_in; i++){
     float dt;
 
@@ -1099,7 +1099,7 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
     dt_eps = MIN(dt_eps, ABS(dt)/2.0);
   }
   if(nglobal_times>1){
-    for(i = 1; i<ntimes_in; i++){
+    for(i = 1; i<nglobal_times; i++){
       float dt;
 
       dt = global_times[i]-global_times[i-1];
@@ -1147,7 +1147,7 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
   // copy merged times array back into original global_times array
   if(nbuffer>nglobal_times){
     FREEMEMORY(global_times);
-    NewMemory((void **)global_times, nbuffer*sizeof(float));
+    NewMemory((void **)&global_times, nbuffer*sizeof(float));
   }
   memcpy(global_times, times_buffer, nbuffer*sizeof(float));
 
@@ -1185,6 +1185,14 @@ void UpdateTimes(void){
       stimes[1] = ss_tmax;
       MergeGlobalTimes(stimes, 2);
     }
+  }
+
+  if(global_tbegin<global_tend){
+    float stimes[2];
+
+    stimes[0] = global_tbegin;
+    stimes[1] = global_tend;
+    MergeGlobalTimes(stimes, 2);
   }
 
   if(visHRRlabel==1&&show_hrrpuv_plot==1&&hrrinfo!=NULL){
