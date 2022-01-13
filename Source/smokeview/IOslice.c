@@ -6095,8 +6095,8 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
     zmin -= agl_smv;
     zmax -= agl_smv;
-    zmin -= 2.0*meshi->dz;
-    zmax += 2.0* meshi->dz;
+    zmin -= meshi->dz/4.0;
+    zmax += meshi->dz/4.0;
 
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
