@@ -1027,7 +1027,6 @@ SVEXTERN unsigned char SVDECL(*izonetargets, NULL);
 SVEXTERN int nzone_times;
 SVEXTERN float barright;
 SVEXTERN float SVDECL(*tspr,NULL);
-SVEXTERN float tmin_global, tmax_global;
 
 SVEXTERN int videoSTEREO;
 SVEXTERN float fzero;
@@ -1310,7 +1309,7 @@ SVEXTERN int ntrnx, ntrny, ntrnz,npdim,nmeshes,clip_mesh;
 SVEXTERN int SVDECL(nOBST,0),SVDECL(nVENT,0),SVDECL(nCVENT,0),SVDECL(ncvents,0),noffset;
 SVEXTERN int visLabels;
 SVEXTERN float framerate;
-SVEXTERN int nglobal_times, itimes, itime_save, itimeold, seqnum,RenderTime,RenderTimeOld, SVDECL(itime_cycle,0);
+SVEXTERN int seqnum,RenderTime,RenderTimeOld, SVDECL(itime_cycle,0);
 SVEXTERN int SVDECL(fed_seqnum, 0);
 SVEXTERN int nopart;
 SVEXTERN int uindex, vindex, windex;
@@ -1729,9 +1728,12 @@ SVEXTERN int SVDECL(hilight_skinny,0);
 SVEXTERN int minfill, maxfill;
 
 SVEXTERN int SVDECL(*plotiso,NULL);
+
+SVEXTERN int nglobal_times, itimes, itime_save, itimeold;
 SVEXTERN float SVDECL(*global_times,NULL), SVDECL(*times_buffer, NULL), cputimes[20];
 SVEXTERN float SVDECL(global_tbegin, 1.0), SVDECL(global_tend, 0.0);
 SVEXTERN int SVDECL(ntimes_buffer, 0);
+
 SVEXTERN int cpuframe;
 
 SVEXTERN float eye_position_fds[3],xeyedir[3], yeyedir[3], zeyedir[3];

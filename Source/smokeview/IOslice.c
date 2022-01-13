@@ -2518,17 +2518,26 @@ int IsSliceDuplicate(multislicedata *mslicei, int ii, int flag){
   int jj;
   float *xyzmini, *xyzmaxi;
   slicedata *slicei;
+  meshdata *meshi;
+
 
   if(flag==FIND_DUPLICATES&&slicedup_option==SLICEDUP_KEEPALL)return 0;
   slicei = sliceinfo+mslicei->islices[ii];
+  meshi = meshinfo+slicei->blocknumber;
   xyzmini = slicei->xyz_min;
   xyzmaxi = slicei->xyz_max;
   for(jj=0;jj<mslicei->nslices;jj++){ // identify duplicate slices
     slicedata *slicej;
     float *xyzminj, *xyzmaxj;
+    meshdata *meshj;
 
     slicej = sliceinfo + mslicei->islices[jj];
+    meshj = meshinfo+slicej->blocknumber;
     if(slicej==slicei||slicej->skipdup==1)continue;
+    if(slicei->above_ground_level>0.0&&slicej->above_ground_level>0.0){
+      if(slicei->ks1==0&&slicej->ks2==meshj->kbar)return 0;
+      if(slicej->ks1==0&&slicei->ks2==meshi->kbar)return 0;
+    }
     xyzminj = slicej->xyz_min;
     xyzmaxj = slicej->xyz_max;
     if(slicei->patchgeom==NULL){
@@ -2556,21 +2565,29 @@ int IsVectorSliceDuplicate(multivslicedata *mvslicei, int i){
   float *xyzmini, *xyzmaxi;
   slicedata *slicei;
   vslicedata *vslicei;
+  meshdata *meshi;
 
 
   if(vectorslicedup_option==SLICEDUP_KEEPALL)return 0;
   vslicei = vsliceinfo + mvslicei->ivslices[i];
   slicei = sliceinfo + vslicei->ival;
+  meshi = meshinfo+slicei->blocknumber;
   xyzmini = slicei->xyz_min;
   xyzmaxi = slicei->xyz_max;
   for(jj=0;jj<mvslicei->nvslices;jj++){ // identify duplicate slices
     vslicedata *vslicej;
     slicedata *slicej;
     float *xyzminj, *xyzmaxj;
+    meshdata *meshj;
 
     vslicej = vsliceinfo + mvslicei->ivslices[jj];
     slicej = sliceinfo + vslicej->ival;
+    meshj = meshinfo+slicej->blocknumber;
     if(slicej==slicei||slicej->skipdup==1)continue;
+    if(slicei->above_ground_level>0.0&&slicej->above_ground_level>0.0){
+      if(slicei->ks1==0&&slicej->ks2==meshj->kbar)return 0;
+      if(slicej->ks1==0&&slicei->ks2==meshi->kbar)return 0;
+    }
     xyzminj = slicej->xyz_min;
     xyzmaxj = slicej->xyz_max;
     if(MAXDIFF3(xyzmini, xyzminj) < SLICEEPS&&MAXDIFF3(xyzmaxi, xyzmaxj) < SLICEEPS){
