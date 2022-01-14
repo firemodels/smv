@@ -5927,8 +5927,8 @@ int ReadSMV(bufferstreamdata *stream){
     }
     TrimBack(buffer);
     if(strncmp(buffer," ",1)==0||buffer[0]==0)continue;
-    if(Match(buffer, "PL3D")==1){
-      BREAK;
+    if(Match(buffer, "PL3D")==1){// read plot3d entries in ReadSMVDynamic routine
+      continue;
     }
 
     /*
@@ -6717,7 +6717,7 @@ int ReadSMV(bufferstreamdata *stream){
       if(strncmp(buffer," ",1)==0||buffer[0]==0)continue;
     }
     if(Match(buffer, "PL3D")==1){
-      BREAK;
+      continue;
     }
 
     /*
@@ -8092,7 +8092,7 @@ int ReadSMV(bufferstreamdata *stream){
     TrimBack(buffer);
     if(strncmp(buffer," ",1)==0||buffer[0]==0)continue;
     if(Match(buffer, "PL3D")==1){
-      BREAK;
+      continue;
     }
     /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -8580,7 +8580,7 @@ int ReadSMV(bufferstreamdata *stream){
     }
     CheckMemory;
     if(Match(buffer, "PL3D")==1){
-      BREAK;
+      continue;
     }
     /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -9966,7 +9966,7 @@ typedef struct {
     }
     if(strncmp(buffer," ",1)==0||buffer[0]==0)continue;
     if(Match(buffer, "PL3D")==1){
-      BREAK;
+      continue;
     }
 
     /*
