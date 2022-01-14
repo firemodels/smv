@@ -11727,32 +11727,22 @@ int ReadIni2(char *inifile, int localfile){
         }
       }
       if(strcmp(buffer2, "TEMP")==0&&nzoneinfo>0)continue;
-      if(strcmp(buffer2, "") != 0){
-        TrimBack(buffer2);
-        for(i = 0; i<nslicebounds; i++){
-          if(strcmp(slicebounds[i].shortlabel, buffer2)==0){
-            slicebounds[i].dlg_setvalmin = set_valmin;
-            slicebounds[i].dlg_setvalmax = set_valmax;
-            slicebounds[i].dlg_valmin = valmin;
-            slicebounds[i].dlg_valmax = valmax;
-            SetMinMax(BOUND_SLICE, buffer2, set_valmin, valmin, set_valmax, valmax);
-            update_glui_bounds = 1;
-            if(level_val!=NULL){
-              slicebounds[i].line_contour_min = slice_line_contour_min;
-              slicebounds[i].line_contour_max = slice_line_contour_max;
-              slicebounds[i].line_contour_num = slice_line_contour_num;
-            }
-            break;
+      TrimBack(buffer2);
+      for(i = 0; i<nslicebounds; i++){
+      if(strcmp(buffer2, "") == 0 || strcmp(slicebounds[i].shortlabel, buffer2)==0){
+          slicebounds[i].dlg_setvalmin = set_valmin;
+          slicebounds[i].dlg_setvalmax = set_valmax;
+          slicebounds[i].dlg_valmin    = valmin;
+          slicebounds[i].dlg_valmax    = valmax;
+          SetMinMax(BOUND_SLICE, slicebounds[i].shortlabel, set_valmin, valmin, set_valmax, valmax);
+          update_glui_bounds = 1;
+          if(level_val!=NULL){
+            slicebounds[i].line_contour_min = slice_line_contour_min;
+            slicebounds[i].line_contour_max = slice_line_contour_max;
+            slicebounds[i].line_contour_num = slice_line_contour_num;
           }
-        }
-      }
-      else{
-        for(i = 0; i<nslicebounds; i++){
-          if(set_valmin!=BOUND_SET_MIN)slicebounds[i].dlg_setvalmin = set_valmin;
-          if(set_valmax!=BOUND_SET_MAX)slicebounds[i].dlg_setvalmax = set_valmax;
-          if(set_valmin!=BOUND_SET_MIN||set_valmax!=BOUND_SET_MAX){
-            SetMinMax(BOUND_SLICE, buffer2, set_valmin, valmin, set_valmax, valmax);
-            update_glui_bounds = 1;
+          if(strcmp(slicebounds[i].shortlabel, buffer2)==0){
+            break;
           }
         }
       }
@@ -11859,19 +11849,16 @@ int ReadIni2(char *inifile, int localfile){
         research_mode = 0;
         update_research_mode = 1;
       }
-      if(strcmp(buffer2, "") != 0){
-        GLUI2GlobalBoundaryBounds(buffer2);
-        SetMinMax(BOUND_PATCH, buffer2, glui_setpatchmin, glui_patchmin, glui_setpatchmax, glui_patchmax);
-        update_glui_bounds = 1;
-      }
-      else{
-        for(i = 0; i<npatchbounds; i++){
-          if(glui_setpatchmin!=BOUND_SET_MIN)patchbounds[i].dlg_setvalmin = glui_setpatchmin;
-          if(glui_setpatchmax!=BOUND_SET_MAX)patchbounds[i].dlg_setvalmax = glui_setpatchmax;
-          if(glui_setpatchmin!=BOUND_SET_MIN||glui_setpatchmax!=BOUND_SET_MAX){
-            SetMinMax(BOUND_PATCH, buffer2, glui_setpatchmin, glui_patchmin, glui_setpatchmax, glui_patchmax);
-            update_glui_bounds = 1;
-          }
+      GLUI2GlobalBoundaryBounds(buffer2);
+      for(i = 0; i<npatchbounds; i++){
+        boundsdata *boundi;
+
+        boundi = patchbounds + i;
+        if(strcmp(buffer2, "") == 0 || strcmp(buffer2, boundi->shortlabel) == 0){
+          patchbounds[i].dlg_setvalmin = glui_setpatchmin;
+          patchbounds[i].dlg_setvalmax = glui_setpatchmax;
+          SetMinMax(BOUND_PATCH, boundi->shortlabel, glui_setpatchmin, glui_patchmin, glui_setpatchmax, glui_patchmax);
+          update_glui_bounds = 1;
         }
       }
       continue;
