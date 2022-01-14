@@ -1127,17 +1127,27 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
 
   // merge global_times and times_in into times_buffer
   for(left=0,right=0,nbuffer=0;left<nglobal_times||right<ntimes_in;){
-    float lval, rval, minval;
+    float minval;
 
-    lval = global_times[MIN(left, nglobal_times-1)];
-    rval = time_in[MIN(right, ntimes_in-1)];
-    if(right==ntimes_in||lval<rval){
-      minval = lval;
-      left++;
+    if(left>=nglobal_times){
+      minval = time_in[right++];
+    }
+    else if(right>=ntimes_in){
+      minval = global_times[left++];
     }
     else{
-      minval = rval;
-      right++;
+      float lval, rval;
+
+      lval = global_times[left];
+      rval = time_in[right];
+      if(lval<rval){
+        minval = lval;
+        left++;
+      }
+      else{
+        minval = rval;
+        right++;
+      }
     }
     if(nbuffer==0||minval>times_buffer[nbuffer-1]+dt_eps){
       times_buffer[nbuffer++] = minval;
