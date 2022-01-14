@@ -35,6 +35,40 @@ void GetTriangleNormal(float *v1, float *v2, float *v3, float *norm, float *area
   ReduceToUnit(norm);
 }
 
+/* ------------------ GetTriangleNormal ------------------------ */
+
+void GetTriangleNormalxx(float *v1, float *v2, float *v3, float *normal, float *area){
+  double u[3], v[3], normal_local[3];
+  float norm;
+  int i;
+
+  for(i=0;i<3;i++){
+    u[i]=(double)v2[i] - (double)v1[i];
+    v[i]=(double)v3[i] - (double)v1[i];
+  }
+
+  // triangle area = 1/2 * | u x v |
+  /*
+     i   j  k
+     ux uy uz
+     vx vy vz
+  */
+  normal_local[0]=u[1]*v[2]-u[2]*v[1];
+  normal_local[1]=u[2]*v[0]-u[0]*v[2];
+  normal_local[2]=u[0]*v[1]-u[1]*v[0];
+  norm = sqrt((float)(normal_local[0]*normal_local[0]+normal_local[1]*normal_local[1]+normal_local[2]*normal_local[2]));
+  if(area!=NULL)*area = norm/2.0;
+  if((float)norm==0.0){
+    normal[0] = 0.0;
+    normal[1] = 0.0;
+    normal[2] = 1.0;
+  }
+  else{
+    normal[0] = (float)normal_local[0]/norm;
+    normal[1] = (float)normal_local[1]/norm;
+    normal[2] = (float)normal_local[2]/norm;
+  }
+}
 /* ----------------------- CompareVerts ----------------------------- */
 
 int CompareVerts( const void *arg1, const void *arg2 ){
