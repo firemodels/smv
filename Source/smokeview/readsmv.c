@@ -11701,7 +11701,6 @@ int ReadIni2(char *inifile, int localfile){
               float *vmins, *vmaxs;
               int ivalmins[MAX_PART_TYPES],  ivalmaxs[MAX_PART_TYPES];
               float valmins[MAX_PART_TYPES], valmaxs[MAX_PART_TYPES];
-              int i;
 
               if(npart_types>MAX_PART_TYPES){
                 NewMemory((void **)&ivmins, npart_types*sizeof(int));
