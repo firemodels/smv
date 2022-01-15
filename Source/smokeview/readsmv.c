@@ -702,7 +702,6 @@ void ReadSMVDynamic(char *file){
       }
       nplot3dinfo++;
       continue;
-
     }
 /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -11152,17 +11151,17 @@ int ReadIni2(char *inifile, int localfile){
           }
         }
         else{
-          int ii;
-
           if(plot3dinfo!=NULL){
+            int ii;
+
             for(ii = 0; ii<plot3dinfo->nvars; ii++){
-              if(isetmin!=BOUND_SET_MIN)setp3min_all[ii] = isetmin;
-              if(isetmax!=BOUND_SET_MAX)setp3max_all[ii] = isetmax;
-              if(isetmin!=BOUND_SET_MIN||isetmax!=BOUND_SET_MAX){
-                SetMinMax(BOUND_PLOT3D, buffer2, isetmin, p3mintemp, isetmax, p3maxtemp);
-                update_glui_bounds = 1;
-              }
+              setp3min_all[ii] = isetmin;
+              setp3max_all[ii] = isetmax;
+              p3min_all[ii]    = p3mintemp;
+              p3max_all[ii]    = p3maxtemp;
+              SetMinMax(BOUND_PLOT3D, plot3dinfo[0].label[ii].shortlabel, isetmin, p3mintemp, isetmax, p3maxtemp);
             }
+            update_glui_bounds = 1;
           }
         }
       }
@@ -11653,7 +11652,48 @@ int ReadIni2(char *inifile, int localfile){
                 break;
             }
           }
-          SetMinMax(BOUND_PART, short_label, ivmin, vmin, ivmax, vmax);
+#define MAX_PART_TYPES 100
+          if(strcmp(short_label, "")==0){
+            int npart_types;
+
+            npart_types = GetNValtypes(BOUND_PART);
+            if(npart_types>0){
+              int  *ivmins, *ivmaxs;
+              float *vmins, *vmaxs;
+              int ivalmins[MAX_PART_TYPES],  ivalmaxs[MAX_PART_TYPES];
+              float valmins[MAX_PART_TYPES], valmaxs[MAX_PART_TYPES];
+              int i;
+
+              if(npart_types>MAX_PART_TYPES){
+                NewMemory((void **)&ivmins, npart_types*sizeof(int));
+                NewMemory((void **)&vmins,  npart_types*sizeof(float));
+                NewMemory((void **)&ivmaxs, npart_types*sizeof(int));
+                NewMemory((void **)&vmaxs,  npart_types*sizeof(float));
+              }
+              else{
+                ivmins = ivalmins;
+                ivmaxs = ivalmaxs;
+                vmins = valmins;
+                vmaxs = valmaxs;
+              }
+              for(i = 0; i<npart_types; i++){
+                ivmins[i] = ivmin;
+                ivmaxs[i] = ivmax;
+                vmins[i]  = vmin;
+                vmaxs[i]  = vmax;
+              }
+              SetMinMaxAll(BOUND_PART, ivmins, vmins, ivmaxs, vmaxs, npart_types);
+              if(npart_types>MAX_PART_TYPES){
+                FREEMEMORY(ivmins);
+                FREEMEMORY(vmins);
+                FREEMEMORY(ivmaxs);
+                FREEMEMORY(vmaxs);
+              }
+            }
+          }
+          else{
+            SetMinMax(BOUND_PART, short_label, ivmin, vmin, ivmax, vmax);
+          }
           update_glui_bounds=1;
         }
       }
