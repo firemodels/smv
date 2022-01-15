@@ -10523,6 +10523,45 @@ int GetNewBoundIndex(int old_index){
   return bound_map[old_index];
 }
 
+/* ------------------ SetBoundBounds ------------------------ */
+
+void SetBoundBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *quantity){
+  int i;
+
+  GLUI2GlobalBoundaryBounds(quantity);
+  for(i = 0; i<npatchbounds; i++){
+    boundsdata *boundi;
+
+    boundi = patchbounds+i;
+    if(strcmp(quantity, "")==0||strcmp(quantity, boundi->shortlabel)==0){
+      patchbounds[i].dlg_setvalmin = glui_setpatchmin;
+      patchbounds[i].dlg_setvalmax = glui_setpatchmax;
+      SetMinMax(BOUND_PATCH, boundi->shortlabel, set_valmin, valmin, set_valmax, valmax);
+      update_glui_bounds = 1;
+    }
+  }
+}
+
+/* ------------------ SetSliceBounds ------------------------ */
+
+void SetSliceBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2){
+  int i;
+
+  for(i = 0; i<nslicebounds; i++){
+    if(strcmp(buffer2, "")==0||strcmp(slicebounds[i].shortlabel, buffer2)==0){
+      slicebounds[i].dlg_setvalmin = set_valmin;
+      slicebounds[i].dlg_setvalmax = set_valmax;
+      slicebounds[i].dlg_valmin = valmin;
+      slicebounds[i].dlg_valmax = valmax;
+      SetMinMax(BOUND_SLICE, slicebounds[i].shortlabel, set_valmin, valmin, set_valmax, valmax);
+      update_glui_bounds = 1;
+      if(strcmp(slicebounds[i].shortlabel, buffer2)==0){
+        break;
+      }
+    }
+  }
+}
+
 /* ------------------ ReadIni2 ------------------------ */
 
 int ReadIni2(char *inifile, int localfile){
@@ -11725,6 +11764,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "V2_SLICE")==1||Match(buffer, "V_SLICE")==1){
       int is_old_bound;
+      char *colon;
 
       is_old_bound=0;
       if(Match(buffer, "V_SLICE")==1){
@@ -11738,54 +11778,28 @@ int ReadIni2(char *inifile, int localfile){
       strcpy(buffer2, "");
       sscanf(buffer, "%i %f %i %f %s", &set_valmin, &valmin, &set_valmax, &valmax, buffer2);
 
-    if(is_old_bound==1){
-      set_valmin = GetNewBoundIndex(set_valmin);
-      set_valmax = GetNewBoundIndex(set_valmax);
-    }
-    if(
-    set_valmin==BOUND_SET_MIN||set_valmin==BOUND_PERCENTILE_MIN||
-    set_valmax==BOUND_SET_MAX||set_valmax==BOUND_PERCENTILE_MAX
-    ){
-      research_mode = 0;
-      update_research_mode = 1;
-    }
-      {
-        char *colon;
-
-        colon = strstr(buffer, ":");
-        level_val = NULL;
-        if(colon != NULL){
-          level_val = colon + 1;
-          TrimBack(level_val);
-          *colon = 0;
-          if(strlen(level_val)>1){
-            sscanf(level_val, "%f %f %i", &slice_line_contour_min, &slice_line_contour_max, &slice_line_contour_num);
-          }
-          {
-            level_val = NULL;
-          }
+      if(is_old_bound==1){
+        set_valmin = GetNewBoundIndex(set_valmin);
+        set_valmax = GetNewBoundIndex(set_valmax);
+      }
+      if(set_valmin==BOUND_SET_MIN||set_valmin==BOUND_PERCENTILE_MIN||set_valmax==BOUND_SET_MAX||set_valmax==BOUND_PERCENTILE_MAX){
+        research_mode = 0;
+        update_research_mode = 1;
+      }
+      colon = strstr(buffer, ":");
+      level_val = NULL;
+      if(colon != NULL){
+        level_val = colon + 1;
+        TrimBack(level_val);
+        *colon = 0;
+        if(strlen(level_val)>1){
+          sscanf(level_val, "%f %f %i", &slice_line_contour_min, &slice_line_contour_max, &slice_line_contour_num);
         }
+        level_val = NULL;
       }
       if(strcmp(buffer2, "TEMP")==0&&nzoneinfo>0)continue;
       TrimBack(buffer2);
-      for(i = 0; i<nslicebounds; i++){
-      if(strcmp(buffer2, "") == 0 || strcmp(slicebounds[i].shortlabel, buffer2)==0){
-          slicebounds[i].dlg_setvalmin = set_valmin;
-          slicebounds[i].dlg_setvalmax = set_valmax;
-          slicebounds[i].dlg_valmin    = valmin;
-          slicebounds[i].dlg_valmax    = valmax;
-          SetMinMax(BOUND_SLICE, slicebounds[i].shortlabel, set_valmin, valmin, set_valmax, valmax);
-          update_glui_bounds = 1;
-          if(level_val!=NULL){
-            slicebounds[i].line_contour_min = slice_line_contour_min;
-            slicebounds[i].line_contour_max = slice_line_contour_max;
-            slicebounds[i].line_contour_num = slice_line_contour_num;
-          }
-          if(strcmp(slicebounds[i].shortlabel, buffer2)==0){
-            break;
-          }
-        }
-      }
+      SetSliceBounds(set_valmin, valmin, set_valmax, valmax, buffer2);
       continue;
     }
     if(Match(buffer, "C_SLICE")==1){
@@ -11889,18 +11903,7 @@ int ReadIni2(char *inifile, int localfile){
         research_mode = 0;
         update_research_mode = 1;
       }
-      GLUI2GlobalBoundaryBounds(buffer2);
-      for(i = 0; i<npatchbounds; i++){
-        boundsdata *boundi;
-
-        boundi = patchbounds + i;
-        if(strcmp(buffer2, "") == 0 || strcmp(buffer2, boundi->shortlabel) == 0){
-          patchbounds[i].dlg_setvalmin = glui_setpatchmin;
-          patchbounds[i].dlg_setvalmax = glui_setpatchmax;
-          SetMinMax(BOUND_PATCH, boundi->shortlabel, glui_setpatchmin, glui_patchmin, glui_setpatchmax, glui_patchmax);
-          update_glui_bounds = 1;
-        }
-      }
+      SetBoundBounds(glui_setpatchmin, glui_patchmin, glui_setpatchmax, glui_patchmax, buffer2);
       continue;
     }
     if(Match(buffer, "C_BOUNDARY")==1){
