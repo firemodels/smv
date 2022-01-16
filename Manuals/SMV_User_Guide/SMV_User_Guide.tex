@@ -3369,8 +3369,67 @@ and commands to output the scene to image files.
 %%\hitem{LOADSLICEM}
 %%\hitem{LOADVSLICEM}
 
+%%-----------------------------------------------------------------------
 \subsection{Loading and Unloading  Files}
+\subsubsection{3D Smoke Files}
+\blist
 
+\hitem{LOAD3DSMOKE}
+Load a 3D smoke file.  The types supported are
+SOOT DENSITY, HRRPUV,\\
+TEMPERATURE and CARBON DIOXIDE DENSITY.
+Usage:
+\begin{lstlisting}
+LOAD3DSMOKE
+  type (char)
+\end{lstlisting}
+
+\hitem{LOADVOLSMOKE}\ Load files needed to view volume rendered
+smoke.  One may either load files for all meshes or for one
+particular mesh.  Usage:
+\begin{lstlisting}
+LOADVOLSMOKE
+ mesh number (-1 for all meshes) (int)
+ \end{lstlisting}
+
+
+\hitem{LOADVOLSMOKEFRAME}\ Load a volume rendered smoke frame.
+Usage:
+\begin{lstlisting}
+LOADVOLSMOKEFRAME
+ mesh_index (int) frame_index (int)
+\end{lstlisting}
+If the mesh\_index is positive then volume rendered smoke for that
+mesh index is loaded. If the mesh\_index is negative then volume
+rendered smoke for all meshes is loaded.
+
+\elist
+
+\subsubsection{Boundary Files}
+
+\blist
+
+\hitem{LOADBOUNDARY}\ Load a boundary file of a particular type.
+The type is the same as what Smokeview displays in the Load menus for boundary files.
+Usage:
+\begin{lstlisting}
+LOADBOUNDARY
+   type (char)
+\end{lstlisting}
+
+\hitem{SETBOUNDBOUNDS}
+Used SETBOUNDBOUNDS to set minimum and maximum bounds for boundary files.  SETBOUNDBOUNDS should be used before a boundary
+file is loaded.
+\begin{lstlisting}
+  SETBOUNDBOUNDS
+  ivalmin (int) valmin (float) ivalmax (int) valmax quantity (char)
+\end{lstlisting}
+
+
+\elist
+
+
+\subsubsection{General Files}
 \blist
 \hitem{LOADFILE}
 Use LOADFILE to load a particular file.  Smokeview will determine
@@ -3392,6 +3451,15 @@ LOADINIFILE
   file (char)
 \end{lstlisting}
 
+\hitem{UNLOADALL}Unload all data files currently loaded.
+Usage:
+\begin{lstlisting}
+UNLOADALL
+\end{lstlisting}
+\elist
+
+\subsubsection{Slice and Vector Slice Files}
+\blist
 \hitem{LOADVFILE}
 Use LOADVFILE to load a particular vector slice file.  Smokeview will load the file
 specified along with the corresponding U, V and W velocity slice files if they are available.
@@ -3399,107 +3467,6 @@ Usage:
 \begin{lstlisting}
 LOADVFILE
   file (char)
-\end{lstlisting}
-
-\hitem{LOADBOUNDARY}\ Load a boundary file of a particular type.
-The type is the same as what Smokeview displays in the Load menus for boundary files.
-Usage:
-\begin{lstlisting}
-LOADBOUNDARY
-   type (char)
-\end{lstlisting}
-
-\hitem{LOAD3DSMOKE}
-Load a 3D smoke file.  The types supported are
-SOOT DENSITY, HRRPUV,\\
-TEMPERATURE and CARBON DIOXIDE DENSITY.
-Usage:
-\begin{lstlisting}
-LOAD3DSMOKE
-  type (char)
-\end{lstlisting}
-
-\hitem{LOADPARTICLES}Load particle files.  Only particle files created with FDS version 5 or
-later are supported.
-Usage:
-\begin{lstlisting}
-LOADPARTICLES
-\end{lstlisting}
-
-\hitem{PARTCLASSCOLOR}Show a particular particle class.  Class names supported for a given
-run are displayed in the Particle Class Smokeview menu.
-Usage:
-\begin{lstlisting}
-PARTCLASSCOLOR
-   color (char)
-\end{lstlisting}
-
-\hitem{PARTCLASSTYPE}Show a particular particle type.  Type names supported for a given
-run are displayed in the Particle Type Smokeview menu.
-Usage:
-\begin{lstlisting}
-PARTCLASSTYPE
-   type (char)
-\end{lstlisting}
-
-\hitem{LOADPLOT3D}Load a Plot3D file for a given mesh at a specified time.
-Usage:
-\begin{lstlisting}
-LOADPLOT3D
-  mesh number (an integer from 1 to the number of meshes) time (float)
-\end{lstlisting}
-
-\hitem{PLOT3DPROPS}Specifies Plot3D plot properties that
-apply to all Plot3D plots currently being displayed.
-Usage:
-\begin{lstlisting}
-PLOT3DPROPS
-  variable_index (int) showvector (0/1) (int) vector_length_index
-  (int) display_type (int) vector_length (float)
-\end{lstlisting}
-where
-\begin{itemize}
-\item variable\_index - is an integer from 1 to the number of
-Plot3D file components (usually 5),
-\item showvector - is 1 to draw vectors, 0 otherwise
-\item vector\_length\_index, is an integer index from 0 to 6
-pointing to an internal Smokeview array used to determine vector length.
-\item display\_type - is 0 for stepped contours, 1 for line
-contours and 2 for continuous contours
-\item vector\_length - if vector\_length\_index is negative
-then Smokeview uses vector\_length set the PLOT3D vector length
-\end{itemize}
-
-\hitem{SHOWPLOT3DDATA}Specifies a particular Plot3D plot to be
-displayed (mesh number, whether visible or not, orientation and position)
-Usage:
-\begin{lstlisting}
-SHOWPLOT3DDATA
-  mesh number (int) plane orientation (int)  display show/hide (0/1) (int) position (float)
-\end{lstlisting}
-where
-\begin{itemize}
-\item mesh number - the mesh number (ranges from 1 to the number of meshes),
-\item orientation - direction or orientation of the plane being plotted, 1 for YZ planes, 2 for XZ planes and 3 for XY planes
-\item display - 0 if Plot3D plane is hidden, 1 if it is displayed
-\item position - position of Plot3D plane
-\end{itemize}
-
-\hitem{LOADISO}Load an iso-surface file for all meshes for a specified type.
-The type is the same as what Smokeview displays in the Load menus for iso-surface files.
-Usage:
-\begin{lstlisting}
-LOADISO
-  type (char)
-\end{lstlisting}
-
-\hitem{LOADISOM}Load an iso-surface file for a specified mesh and type.
-The type is the same as what Smokeview displays in the Load menus for iso-surface files.
-Usage:
-\begin{lstlisting}
-LOADISO
-  type (char)
-  mesh number (int)
 \end{lstlisting}
 
 \hitem{LOADSLCF}Load a slice file.
@@ -3566,31 +3533,111 @@ LOADSLCF
  QUANTITY='TEMPERATURE' PB3D=T
 \end{lstlisting}
 
-\hitem{LOADVOLSMOKE}\ Load files needed to view volume rendered
-smoke.  One may either load files for all meshes or for one
-particular mesh.  Usage:
-\begin{lstlisting}
-LOADVOLSMOKE
- mesh number (-1 for all meshes) (int)
- \end{lstlisting}
 
-
-\hitem{LOADVOLSMOKEFRAME}\ Load a volume rendered smoke frame.
-Usage:
+\hitem{SETSLICEBOUNDS}
+Used SETSLICEBOUNDS to set minimum and maximum bounds for slice files.  SETSLICEBOUNDS should be used before a slice
+file is loaded.
 \begin{lstlisting}
-LOADVOLSMOKEFRAME
- mesh_index (int) frame_index (int)
-\end{lstlisting}
-If the mesh\_index is positive then volume rendered smoke for that
-mesh index is loaded. If the mesh\_index is negative then volume
-rendered smoke for all meshes is loaded.
-
-\hitem{UNLOADALL}Unload all data files currently loaded.
-Usage:
-\begin{lstlisting}
-UNLOADALL
+  SETSLICEBOUNDS
+  ivalmin (int) valmin (float) ivalmax (int) valmax quantity (char)
 \end{lstlisting}
 \elist
+
+\subsubsection{Particle Files}
+\blist
+\hitem{LOADPARTICLES}Load particle files.  Only particle files created with FDS version 5 or
+later are supported.
+Usage:
+\begin{lstlisting}
+LOADPARTICLES
+\end{lstlisting}
+
+\hitem{PARTCLASSCOLOR}Show a particular particle class.  Class names supported for a given
+run are displayed in the Particle Class Smokeview menu.
+Usage:
+\begin{lstlisting}
+PARTCLASSCOLOR
+   color (char)
+\end{lstlisting}
+
+\hitem{PARTCLASSTYPE}Show a particular particle type.  Type names supported for a given
+run are displayed in the Particle Type Smokeview menu.
+Usage:
+\begin{lstlisting}
+PARTCLASSTYPE
+   type (char)
+\end{lstlisting}
+\elist
+
+\subsubsection{PLOT3D Files}
+\blist
+\hitem{LOADPLOT3D}Load a Plot3D file for a given mesh at a specified time.
+Usage:
+\begin{lstlisting}
+LOADPLOT3D
+  mesh number (an integer from 1 to the number of meshes) time (float)
+\end{lstlisting}
+
+\hitem{PLOT3DPROPS}Specifies Plot3D plot properties that
+apply to all Plot3D plots currently being displayed.
+Usage:
+\begin{lstlisting}
+PLOT3DPROPS
+  variable_index (int) showvector (0/1) (int) vector_length_index
+  (int) display_type (int) vector_length (float)
+\end{lstlisting}
+where
+\begin{itemize}
+\item variable\_index - is an integer from 1 to the number of
+Plot3D file components (usually 5),
+\item showvector - is 1 to draw vectors, 0 otherwise
+\item vector\_length\_index, is an integer index from 0 to 6
+pointing to an internal Smokeview array used to determine vector length.
+\item display\_type - is 0 for stepped contours, 1 for line
+contours and 2 for continuous contours
+\item vector\_length - if vector\_length\_index is negative
+then Smokeview uses vector\_length set the PLOT3D vector length
+\end{itemize}
+
+\hitem{SHOWPLOT3DDATA}Specifies a particular Plot3D plot to be
+displayed (mesh number, whether visible or not, orientation and position)
+Usage:
+\begin{lstlisting}
+SHOWPLOT3DDATA
+  mesh number (int) plane orientation (int)  display show/hide (0/1) (int) position (float)
+\end{lstlisting}
+where
+\begin{itemize}
+\item mesh number - the mesh number (ranges from 1 to the number of meshes),
+\item orientation - direction or orientation of the plane being plotted, 1 for YZ planes, 2 for XZ planes and 3 for XY planes
+\item display - 0 if Plot3D plane is hidden, 1 if it is displayed
+\item position - position of Plot3D plane
+\end{itemize}
+\elist
+
+\subsubsection{Isosurface Files}
+\blist
+\hitem{LOADISO}Load an iso-surface file for all meshes for a specified type.
+The type is the same as what Smokeview displays in the Load menus for iso-surface files.
+Usage:
+\begin{lstlisting}
+LOADISO
+  type (char)
+\end{lstlisting}
+
+\hitem{LOADISOM}Load an iso-surface file for a specified mesh and type.
+The type is the same as what Smokeview displays in the Load menus for iso-surface files.
+Usage:
+\begin{lstlisting}
+LOADISO
+  type (char)
+  mesh number (int)
+\end{lstlisting}
+
+
+\elist
+
+%%-----------------------------------------------------------------------
 \subsection{Controlling the Scene}
 
 
@@ -3735,11 +3782,9 @@ ZSCENECLIP
   setzmin zmin setzmax zmax
 \end{lstlisting}
 
-
-
-
-
 \elist
+
+%%-----------------------------------------------------------------------
 
 \subsection{Rendering Images}
 
@@ -5466,11 +5511,11 @@ valmin and valmax or specify that Smokeview compute these values using global bo
 KEYWORD
   setvalmin valmin setvalmax valmax quantity_label
 \end{lstlisting}
-\noindent where {\tt setvalmin}\ and {\tt setvalmax} are integer flags that determines how {\tt valmin}\ and {\tt valmax}\ 
+\noindent where {\tt setvalmin}\ and {\tt setvalmax} are integer flags that determines how {\tt valmin}\ and {\tt valmax}\
 are treated and quantity\_label is the
 file data quantity the bound parameters are applied to.
 
-The {\tt setvalmin} and {\tt setvalmax} parameters can have values of  0 or 1 when used with 
+The {\tt setvalmin} and {\tt setvalmax} parameters can have values of  0 or 1 when used with
 the {\tt TLOAD}\ and {\tt C\_filetype} keywords
 If {\tt setvalmin}\ is 0 then {\tt valmin}\ is ignored and if 1 {\tt valmin}\ is used to load data.
 The same for {\tt setvalmax}.
@@ -5480,8 +5525,8 @@ Parameters for {\tt V2\_}\ keywords are described in  Table \ref{tabV2bounds}.
 \begin{table}[bph]
 \begin{center}
 \caption[Description of parameters used by the V2\_filetype ini keywords.]
-{Description of parameters used by the V2\_filetype  ini keywords where filetype may be 
-BOUNDARY, PARTICLES, PLOT3D or SLICE. The parameters valmin and valmax are obtained from 
+{Description of parameters used by the V2\_filetype  ini keywords where filetype may be
+BOUNDARY, PARTICLES, PLOT3D or SLICE. The parameters valmin and valmax are obtained from
 the ini file or are computed by Smokeview depending on the
 value of setvalmin and setvalmax.}\ \vspace{0.1in}
 \begin{tabular}{|l|l|l|}
@@ -5507,7 +5552,7 @@ If setvalmin or setvalmax is not 0 then the respective valmin and valmax in the 
 \hline quantity\_label & character &
 \tabentry{The parameter `quantity\_label' is the label appearing in the
 Smokeview colorbar, for example temp for temperature.
-Possible values are given in Table \ref{tabBNDF} for the V2\_BOUNDBOUNDS ini keyword and 
+Possible values are given in Table \ref{tabBNDF} for the V2\_BOUNDBOUNDS ini keyword and
 Table \ref{tabSLCF} for the V2\_SLCFBOUNDS ini keyword.
 If `quantity\_label' is blank then setvalmin, valmin, setvalmax and
 valmax parameters are
