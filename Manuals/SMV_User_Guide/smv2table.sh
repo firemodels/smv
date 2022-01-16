@@ -12,7 +12,7 @@ else
 fi
 echo "\begin{tabular}{l|l|}"
 echo "\hline"
-echo "$KEY Quantity & ini/ssf file Label \\ \hline"
+echo "$KEY Quantity & ini/ssf file Label \\\\ \hline"
 grep -A 3 $KEY $smvfile | grep -v $KEY | grep -v ${ext}$  | grep -v \- | \
 awk 'NR > 1 {print prev, "%", $0}; {prev = $0}' | \
 sed -n 1~2p | sort |\
