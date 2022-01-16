@@ -16,5 +16,5 @@ echo "$KEY Quantity & ini/ssf file Label \\\\ \hline"
 grep -A 3 $KEY $smvfile | grep -v $KEY | grep -v ${ext}$  | grep -v \- | sed s/_/\\\\_/g | \
 awk 'NR > 1 {print prev, "%", $0}; {prev = $0}' | \
 sed -n 1~2p | sort |\
-awk -F'%' '{print "{\\ct " $1 "} & {\\ct " $2 " } \\\\ \\hline"}'
+awk -F'%' '{print $1 " & " $2 " \\\\ \\hline"}'
 echo "\end{tabular}"

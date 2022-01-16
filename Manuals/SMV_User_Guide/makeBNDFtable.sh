@@ -1,11 +1,11 @@
 #!/bin/bash
-TABLE=BNDFtable.tex
+TABLE=BNDFlabels.tex
 SMVFILE=../../Verification/Visualization/labels.smv
 
 cat << EOF > $TABLE
 \begin{table}[bph]
 \begin{center}
-\caption{BNDF quantities and corresponding labels used in the ini file and smokeview scripts}
+\caption{BNDF quantities and associated labels used with the V2\_BOUNDARY ini keyword and the SETBOUNDBOUNDS ssf script command.}
 \vspace{0.1in}
 EOF
 ./smv2table.sh $SMVFILE BNDF >> $TABLE
