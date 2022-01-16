@@ -5466,10 +5466,12 @@ valmin and valmax or specify that Smokeview compute these values using global bo
 KEYWORD
   setvalmin valmin setvalmax valmax quantity_label
 \end{lstlisting}
-\noindent where {\tt setvalmin}\ and {\tt setvalmax} are integer flags that determines how {\tt valmin}\ and {\tt valmax}\ are treated and quantity\_label is the
+\noindent where {\tt setvalmin}\ and {\tt setvalmax} are integer flags that determines how {\tt valmin}\ and {\tt valmax}\ 
+are treated and quantity\_label is the
 file data quantity the bound parameters are applied to.
 
-The {\tt setvalmin} and {\tt setvalmax} parameters can have values of  0 or 1 when used with the {\tt TLOAD}\ and {\tt C\_filetype} keywords
+The {\tt setvalmin} and {\tt setvalmax} parameters can have values of  0 or 1 when used with 
+the {\tt TLOAD}\ and {\tt C\_filetype} keywords
 If {\tt setvalmin}\ is 0 then {\tt valmin}\ is ignored and if 1 {\tt valmin}\ is used to load data.
 The same for {\tt setvalmax}.
 Parameters for {\tt V2\_}\ keywords are described in  Table \ref{tabV2bounds}.
@@ -5477,7 +5479,10 @@ Parameters for {\tt V2\_}\ keywords are described in  Table \ref{tabV2bounds}.
 \newcommand{\tabentry}[1]{\parbox[c]{3.5in}{\vspace{0.05in}#1\vspace{0.05in}}}
 \begin{table}[bph]
 \begin{center}
-\caption[Description of parameters used by the V2\_filetype ini keywords.]{Description of parameters used by the V2\_filetype  ini keywords where filetype may be BOUNDARY, PARTICLES, PLOT3D or SLICE. The parameters valmin and valmax are obtained from the ini file or are computed by Smokeview depending on the
+\caption[Description of parameters used by the V2\_filetype ini keywords.]
+{Description of parameters used by the V2\_filetype  ini keywords where filetype may be 
+BOUNDARY, PARTICLES, PLOT3D or SLICE. The parameters valmin and valmax are obtained from 
+the ini file or are computed by Smokeview depending on the
 value of setvalmin and setvalmax.}\ \vspace{0.1in}
 \begin{tabular}{|l|l|l|}
 \multicolumn{3}{l}{{V2\_filetype}} \\
@@ -5502,6 +5507,8 @@ If setvalmin or setvalmax is not 0 then the respective valmin and valmax in the 
 \hline quantity\_label & character &
 \tabentry{The parameter `quantity\_label' is the label appearing in the
 Smokeview colorbar, for example temp for temperature.
+Possible values are given in Table \ref{tabBNDF} for the V2\_BOUNDBOUNDS ini keyword and 
+Table \ref{tabSLCF} for the V2\_SLCFBOUNDS ini keyword.
 If `quantity\_label' is blank then setvalmin, valmin, setvalmax and
 valmax parameters are
 applied to all filetype files.
@@ -5603,6 +5610,7 @@ The parameter quantity\_label is optional.  If it is blank then the bound
 parameters are applied to all boundary files.
 If it is not blank they
 are applied to only boundary files with quantity quantity\_label.
+Possible quantity labels are given in Table \ref{tabBNDF}.
 
 To specify boundary file bounds for temperature ranging from\
 30.0~\degC\ to 600.0~\degC\ use:
@@ -5612,6 +5620,8 @@ V2_BOUNDARY
 \end{lstlisting}
 where {\tt temp}\ is the Smokeview colorbar label displayed when
 showing a temperature boundary file.
+
+\input{BNDFlabels.tex}
 
 \hitem{V2\_PARTICLES}Defines the minimum and maximum
 data bounds used for converting one component of particle file data values to color indices.
@@ -5673,6 +5683,7 @@ The parameter quantity\_label is optional.  If it is blank then the bound
 parameters are applied to all slice files.
 If it is not blank then they
 are applied to only slice files with quantity quantity\_label.
+Possible quantity labels are given in Table \ref{tabSLCF}.
 
 To specify slice file bounds for temperature ranging from
 30.0~\degC\ to 600.0~\degC\ use:
@@ -5690,6 +5701,8 @@ V2_SLICE
 \end{lstlisting}
 where again {\tt temp}\ is the Smokeview colorbar labels displayed when
 showing a temperature slice file. The value, in this case 1.0 after the '2' and before 'temp' is ignored.
+
+\input{SLCFlabels.tex}
 
 \hitemNULL{V\_TARGET}
 
@@ -6315,9 +6328,6 @@ is given by:
 where the parameters are defined in Table \ref{tabOBST}.
 The arrays {\tt x1, ..., z2}\ and {\tt ib1, ..., kb2}\ are
 required. All other arrays are optional and may be omitted.
-
-\input{BNDFlabels.tex}
-\input{SLCFlabels.tex}
 
 \begin{table}[bph]
 \begin{center}
