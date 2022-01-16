@@ -10,11 +10,15 @@ else
   KEY=SLCF
   ext=sf
 fi
-echo "\begin{tabular}{|l|l|}"
-echo "\hline"
-echo "$KEY Quantity & ini/ssf file Label \\\\ \hline"
+cat << EOF
+\begin{tabular}{|l|l|}
+\hline
+\\&$KEY Quantity & ini/ssf file Label \\\\ \hline
+EOF
 grep -A 3 $KEY $smvfile | grep -v $KEY | grep -v ${ext}$  | grep -v \- | sed s/_/\\\\_/g | \
 awk 'NR > 1 {print prev, "%", $0}; {prev = $0}' | \
 sed -n 1~2p | sort |\
 awk -F'%' '{print $1 " & " $2 " \\\\ \\hline"}'
-echo "\end{tabular}"
+cat << EOF
+\end{tabular}
+EOF
