@@ -13,31 +13,7 @@ void UpdateGeomTriangles(geomdata *geomi, int geom_type);
 
 /* ------------------ GetTriangleNormal ------------------------ */
 
-void GetTriangleNormal(float *v1, float *v2, float *v3, float *norm, float *area){
-  float u[3], v[3];
-  int i;
-
-  for(i=0;i<3;i++){
-    u[i]=v2[i]-v1[i];
-    v[i]=v3[i]-v1[i];
-  }
-
-  // triangle area = 1/2 * | u x v |
-  /*
-     i   j  k
-     ux uy uz
-     vx vy vz
-  */
-  norm[0]=u[1]*v[2]-u[2]*v[1];
-  norm[1]=u[2]*v[0]-u[0]*v[2];
-  norm[2]=u[0]*v[1]-u[1]*v[0];
-  if(area!=NULL)*area = 0.5*ABS(sqrt(norm[0]*norm[0]+norm[1]*norm[1]+norm[2]*norm[2]));
-  ReduceToUnit(norm);
-}
-
-/* ------------------ GetTriangleNormal ------------------------ */
-
-void GetTriangleNormalxx(float *v1, float *v2, float *v3, float *normal, float *area){
+void GetTriangleNormal(float *v1, float *v2, float *v3, float *normal, float *area){
   double u[3], v[3], normal_local[3];
   float norm;
   int i;
@@ -2237,6 +2213,20 @@ void ReadAllGeom(void){
   }
 }
 
+/* ------------------ UpdateAllGeomTriangles ------------------------ */
+
+void UpdateAllGeomTriangles(void){
+  int i;
+
+  printf("ngeom=%i\n",ngeominfo);
+  for(i = 0; i<ngeominfo; i++){
+    geomdata *geomi;
+
+    geomi = geominfo+i;
+    UpdateGeomTriangles(geomi, GEOM_STATIC);
+  }
+}
+
 /* ------------------ InitGeomlist ------------------------ */
 
 void InitGeomlist(geomlistdata *geomlisti){
@@ -2797,6 +2787,8 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
         }
         GetTriangleNormal(triangles[ii].verts[0]->xyz, triangles[ii].verts[1]->xyz, triangles[ii].verts[2]->xyz,
                           triangles[ii].tri_norm, NULL);
+
+        CheckMemory;
         surfi = surfinfo;
         switch(type){
         case GEOM_CGEOM:

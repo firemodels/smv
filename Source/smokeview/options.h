@@ -29,6 +29,7 @@
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
 //#define pp_LOAD_NEWDATA     // add button for loading new data
 //#define pp_TIMEBAR_DIGITS   // add widget for setting the number of time bar digits
+//#define pp_TERRAIN_UPDATE     // add button to update terrain buttons
 
 //#define pp_WUI_VAO            // use opengl vao objects for drawing terrain
 
