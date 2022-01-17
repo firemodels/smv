@@ -1,6 +1,18 @@
 #!/bin/bash
-CHID=$1
-INFILE=$CHID.fds
+INFILE=$1
+CHID=${INFILE%.*}
+
+if [ $# -ne 1 ];  then
+  cat << EOF
+
+ This script creates an FDS input file using &BNDF and &SLCF quantities found
+ in a table of frequently used output quanties contained in the FDS User Guide.
+
+ Usage:  $0 casename.fds
+
+EOF
+exit
+fi
 CURDIR=`pwd`
 
 cd ../../../fds/Manuals/FDS_User_Guide
