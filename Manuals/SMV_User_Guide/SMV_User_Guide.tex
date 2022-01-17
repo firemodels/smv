@@ -5488,77 +5488,80 @@ Smokeview scene for use when capturing images to video.
 \elist
 
 \subsection{Time and data bounds}
-This section describes ini file keywords used by Smokeview:
+This section describes the ini file keywords used by Smokeview:
 \begin{enumerate}
 \item to set the time interval for loading data (the TLOAD keyword),
 
-\item to discard or chop data based upon data values (keywords beginning with
-C\_),
+\item to discard or chop data based upon data values (keywords beginning with C\_),
 
-\item to specify min and max data values
+\item to specify minimum and maximum data values
 for computing color indices (keywords beginning with {\tt V2\_}).
 Color indices are computed using an equation of the form
 \begin{eqnarray*}
 \mbox{color index} = 255\frac{\mbox{data~value - valmin}}{\mbox{valmax - valmin}}
 \end{eqnarray*}
-The user may specify
-valmin and valmax or specify that Smokeview compute these values using global bounds or percentile bounds from a histogram of the data that it also computes.
+The user may specify {\tt valmin}\  and {\tt valmax}\  or specify
+that Smokeview compute these values using global bounds
+or percentile bounds from a histogram of the data that it also computes.
 
 \end{enumerate}
 
-\noindent Most of the keywords in this section have the format:
+\noindent Most of the keywords in this section have the form:
 \begin{lstlisting}
 KEYWORD
   setvalmin valmin setvalmax valmax quantity_label
 \end{lstlisting}
-\noindent where {\tt setvalmin}\ and {\tt setvalmax} are integer flags that determines how {\tt valmin}\ and {\tt valmax}\
-are treated and quantity\_label is the
+\noindent where {\tt setvalmin}\ and {\tt setvalmax} are integer parameters
+that determines how {\tt valmin}\ and {\tt valmax}\
+are treated and the parameter {\tt quantity\_label}\ is the
 file data quantity the bound parameters are applied to.
 
 The {\tt setvalmin} and {\tt setvalmax} parameters can have values of  0 or 1 when used with
-the {\tt TLOAD}\ and {\tt C\_filetype} keywords
-If {\tt setvalmin}\ is 0 then {\tt valmin}\ is ignored and if 1 {\tt valmin}\ is used to load data.
+the {\tt TLOAD}\ and {\tt C\_filetype} keywords.
+If {\tt setvalmin}\ is 0 then {\tt valmin}\ is ignored.
+If {\tt setvalmin}\ is 1 then {\tt valmin}\ is used to load data.
 The same for {\tt setvalmax}.
-Parameters for {\tt V2\_}\ keywords are described in  Table \ref{tabV2bounds}.
+{\tt V2\_}\ keyword parameters have more values and are described in  Table \ref{tabV2bounds}.
 
 \newcommand{\tabentry}[1]{\parbox[c]{3.5in}{\vspace{0.05in}#1\vspace{0.05in}}}
 \begin{table}[bph]
 \begin{center}
 \caption[Description of parameters used by the V2\_filetype ini keywords.]
 {Description of parameters used by the V2\_filetype  ini keywords where filetype may be
-BOUNDARY, PARTICLES, PLOT3D or SLICE. The parameters valmin and valmax are obtained from
+BOUNDARY, PARTICLES, PLOT3D or SLICE. The parameters {\tt valmin}\  and {\tt valmax}\  are obtained from
 the ini file or are computed by Smokeview depending on the
-value of setvalmin and setvalmax.}\ \vspace{0.1in}
+value of {\tt setvalmin}\  and {\tt setvalmax}\ .}\ \vspace{0.1in}
 \begin{tabular}{|l|l|l|}
 \multicolumn{3}{l}{{V2\_filetype}} \\
-\multicolumn{3}{l}{setvalmin valmin setvalmax valmax quantity\_label} \\
+\multicolumn{3}{l}{{\tt setvalmin valmin setvalmax valmax quantity\_label} } \\
 \hline Parameter &  type & Description  \\
-\hline setvalmin/setvalmax &  integer & \tabentry{
-0 - use valmin/valmax for the minimum/maximum bound when computing color indices\\
-1 - Smokeview computes valmin/valmax using the minimum/maximum of data in loaded files
-with quantity quantity\_label \\
-2 - Smokeview computes valmin/valmax using the minimum/maximum of data in both loaded and unloaded files with quantity quantity\_label \\
-3 - Smokeview computes a histogram of the data and used a percentile bound, default 1\%
-for valmin and 99\% for valmax.
-The defaults may be changed using the
+\hline {\tt setvalmin}\ /{\tt set{\tt valmax}\ }\  &  integer & \tabentry{
+0 - use {\tt valmin/valmax}\  for the minimum/maximum bound when computing color indices\\
+1 - Smokeview computes {\tt valmin/valmax}\  using the minimum/maximum of data in loaded files
+with quantity {\tt quantity\_label}\  \\
+2 - Smokeview computes {\tt valmin/valmax}\  using the minimum/maximum of data in both loaded and unloaded files
+with the quantity {\tt quantity\_label}\  \\
+3 - Smokeview computes a histogram of the data and uses a percentile bound, default 1\%
+for {\tt valmin}\  and 99\% for {\tt valmax}\ .
+The default values may be changed using the
   \frame{data distribution}\ tab of the bounds dialog box.
 }.  \\
 
-\hline valmin/valmax &  float & \tabentry{If setvalmin/setvalmax is 0,
-use valmin/valmax for converting data values to color indices.
-If setvalmin or setvalmax is not 0 then the respective valmin and valmax in the ini file is ignored.
+\hline {\tt valmin/valmax}\  &  float & 
+\tabentry{If {\tt setvalmin}\  or {\tt setvalmax}\ are   0,
+use {\tt valmin}\ or {\tt valmax}\ for converting data values to color indices.
+If they  are not 0 then {\tt valmin}\  and {\tt valmax}\  are ignored.
 }  \\
 
-\hline quantity\_label & character &
-\tabentry{The parameter `quantity\_label' is the label appearing in the
-Smokeview colorbar, for example temp for temperature.
-Possible values are given in Table \ref{tabBNDF} for the V2\_BOUNDBOUNDS ini keyword and
-Table \ref{tabSLCF} for the V2\_SLCFBOUNDS ini keyword.
-If `quantity\_label' is blank then setvalmin, valmin, setvalmax and
-valmax parameters are
-applied to all filetype files.
-If `quantity\_label' is not blank then these parameters
-are only applied to file\_type files with that quantity.
+\hline {\tt quantity\_label}\  & character &
+\tabentry{The parameter {\tt quantity\_label}\ is the label appearing in the
+Smokeview colorbar, for example {\tt temp}\ for the quantity {\tt TEMPERATURE}.
+This parameter is optional.  If it is not blank then {\tt setvalmin, valmin, setvalmax}\ and {\tt valmax}\ 
+are applied to filetype files with quantity {\tt quantity\_label}.
+If it is blank then these parameters are applied to all filetype files.
+Possible values of {\tt quantity\_label}\ are given in Table \ref{tabBNDF} for the {\tt V2\_BOUNDBOUNDS}\ ini keyword and
+Table \ref{tabSLCF} for the {\tt V2\_SLICEBOUNDS}\ ini keyword. The {\tt quantity\_label}\ label
+is also found in the .smv file.
 }\\
 \hline
 
@@ -5651,10 +5654,10 @@ V2_BOUNDARY
 where the parameters
 {\tt setvalmin}, {\tt valmin}, {\tt setvalmax}, {\tt valmax}\ and {\tt quantity\_label}\
 are described in Table \ref{tabV2bounds}.
-The parameter quantity\_label is optional.  If it is blank then the bound
+The parameter {\tt quantity\_label}\ is optional.  If it is blank then the bound
 parameters are applied to all boundary files.
 If it is not blank they
-are applied to only boundary files with quantity quantity\_label.
+are applied to only boundary files with quantity {\tt quantity\_label}.
 Possible quantity labels are given in Table \ref{tabBNDF}.
 
 To specify boundary file bounds for temperature ranging from\
@@ -5675,9 +5678,11 @@ The format of this keyword is
 V2_PARTICLES
  setvalmin valmin setvalmax valmax quantity_label
 \end{lstlisting}
-where the parameters setvalmin, valmin, setvalmax, valmax and quantity\_label are described in Table \ref{tabV2bounds}.
-The parameter quantity\_label is optional.  If it is blank then only setvalmin and setvalmax are applied to all components in all particle files. If it not blank then setvalmin, valmin,
-setvalmax, valmax are applied to particle file components that have the quantity quantity\_label.
+where the parameters {\tt setvalmin}\ , {\tt valmin}\ , {\tt setvalmax}\ , {\tt valmax}\  and
+{\tt quantity\_label}\ are described in Table \ref{tabV2bounds}. The parameter {\tt quantity\_label}\
+is optional.  If it is blank then only {\tt setvalmin}\  and {\tt setvalmax}\  are applied to all
+components in all particle files. If it not blank then {\tt setvalmin}\ , {\tt valmin}\ , {\tt setvalmax}\ ,
+{\tt valmax}\  are applied to particle file components that have the quantity {\tt quantity\_label}.
 
 To specify particle file bounds for the U component of velocity ranging from
 -1.0~m/s to 2.0~m/s use:
@@ -5701,7 +5706,7 @@ V2_PLOT3D
 where ncomp is the number of entries,
 component\_index is either 1 to 5 or 1 to 6 if speed is one of the components of
 the plot3D file  and
-the parameters setvalmin, valmin, setvalmax, valmax are described in Table \ref{tabV2bounds}.
+the parameters {\tt setvalmin}\ , {\tt valmin}\ , {\tt setvalmax}\ , {\tt valmax}\  are described in Table \ref{tabV2bounds}.
 Assuming the first component is temperature, to specify file bounds ranging from 20.0~\degC\ to
 600.0~\degC\ for the first component and global bounds for the other components use:
 \begin{lstlisting}
@@ -5724,10 +5729,9 @@ V2_SLICE
 where the parameters
 {\tt setvalmin}, {\tt valmin}, {\tt setvalmax}, {\tt valmax}\ and {\tt quantity\_label}\
 are described in Table \ref{tabV2bounds}.
-The parameter quantity\_label is optional.  If it is blank then the bound
+The parameter {\tt quantity\_label}\ is optional.  If it is blank then the bound
 parameters are applied to all slice files.
-If it is not blank then they
-are applied to only slice files with quantity quantity\_label.
+If it is not blank then they are applied to only slice files with quantity {\tt quantity\_label}.
 Possible quantity labels are given in Table \ref{tabSLCF}.
 
 To specify slice file bounds for temperature ranging from
