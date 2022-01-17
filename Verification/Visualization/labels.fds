@@ -1,4 +1,4 @@
-&HEAD CHID='labels2',TITLE='Generate Slice and Boundary File Labels' /
+&HEAD CHID='labels',TITLE='Generate Slice and Boundary File Labels' /
 
 &MESH IJK=32,32,32, XB=0.0,1.6,0.0,1.0,0.0,1.6 /
 
