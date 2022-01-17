@@ -11177,30 +11177,14 @@ int ReadIni2(char *inifile, int localfile){
           update_research_mode = 1;
         }
         iplot3d--;
-        if(strcmp(buffer2, "")!=0){
-          if(iplot3d >= 0 && iplot3d<MAXPLOT3DVARS){
-            setp3min_all[iplot3d] = isetmin;
-            setp3max_all[iplot3d] = isetmax;
-            p3min_all[iplot3d]    = p3mintemp;
-            p3max_all[iplot3d]    = p3maxtemp;
-            if(plot3dinfo!=NULL){
-              SetMinMax(BOUND_PLOT3D, plot3dinfo[0].label[iplot3d].shortlabel, isetmin, p3mintemp, isetmax, p3maxtemp);
-              update_glui_bounds = 1;
-            }
-          }
-        }
-        else{
-          int ii;
-
+        if(iplot3d >= 0 && iplot3d<MAXPLOT3DVARS){
+          setp3min_all[iplot3d] = isetmin;
+          setp3max_all[iplot3d] = isetmax;
+          p3min_all[iplot3d]    = p3mintemp;
+          p3max_all[iplot3d]    = p3maxtemp;
           if(plot3dinfo!=NULL){
-            for(ii = 0; ii<plot3dinfo->nvars; ii++){
-              if(isetmin!=BOUND_SET_MIN)setp3min_all[ii] = isetmin;
-              if(isetmax!=BOUND_SET_MAX)setp3max_all[ii] = isetmax;
-              if(isetmin!=BOUND_SET_MIN||isetmax!=BOUND_SET_MAX){
-                SetMinMax(BOUND_PLOT3D, buffer2, isetmin, p3mintemp, isetmax, p3maxtemp);
-                update_glui_bounds = 1;
-              }
-            }
+            SetMinMax(BOUND_PLOT3D, plot3dinfo[0].label[iplot3d].shortlabel, isetmin, p3mintemp, isetmax, p3maxtemp);
+            update_glui_bounds = 1;
           }
         }
       }
