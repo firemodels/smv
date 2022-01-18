@@ -251,6 +251,7 @@ void InitScriptI(scriptdata *scripti, int command,char *label){
   scripti->pbxyz_dir     = 0;
   scripti->cell_centered = 0;
   scripti->vector        = 0;
+  strcpy(scripti->quantity2, "");
 }
 
 /* ------------------ GetScriptKeywordIndex ------------------------ */
@@ -319,6 +320,8 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"SCENECLIP") == MATCH)return SCRIPT_SCENECLIP;
   if(MatchUpper(keyword,"SETTOURKEYFRAME") == MATCH)return SCRIPT_SETTOURKEYFRAME;
   if(MatchUpper(keyword,"SETTIMEVAL") == MATCH)return SCRIPT_SETTIMEVAL;                 // documented
+  if(MatchUpper(keyword,"SETSLICEBOUNDS")==MATCH)return SCRIPT_SETSLICEBOUNDS;
+  if(MatchUpper(keyword,"SETBOUNDBOUNDS")==MATCH)return SCRIPT_SETBOUNDBOUNDS;
   if(MatchUpper(keyword,"SETTOURVIEW") == MATCH)return SCRIPT_SETTOURVIEW;
   if(MatchUpper(keyword,"SETVIEWPOINT") == MATCH)return SCRIPT_SETVIEWPOINT;             // documented
   if(MatchUpper(keyword,"SHOWPLOT3DDATA") == MATCH)return SCRIPT_SHOWPLOT3DDATA;         // documented
@@ -1130,6 +1133,20 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         SETfval;
         if(scripti->fval<0.0)scripti->fval=0.0;
         scripti->need_graphics = 0;
+        break;
+
+// SETBOUNDBOUNDS
+//  type (char) ivalmin (int) valmin (float) ivalmax (int) valmax quantity (char)
+      case SCRIPT_SETBOUNDBOUNDS:
+        SETbuffer;
+        sscanf(buffer," %i %f %i %f, %s",&scripti->ival,&scripti->fval, &scripti->ival2,&scripti->fval2, scripti->quantity2);
+        break;
+
+// SETSLICEBOUNDS
+//  type (char) ivalmin (int) valmin (float) ivalmax (int) valmax quantity (char)
+      case SCRIPT_SETSLICEBOUNDS:
+        SETbuffer;
+        sscanf(buffer," %i %f %i %f, %s",&scripti->ival,&scripti->fval, &scripti->ival2,&scripti->fval2, scripti->quantity2);
         break;
 
 // SETTOURVIEW
@@ -2935,6 +2952,36 @@ void ScriptSetTourView(scriptdata *scripti){
   UpdateTourState();
 }
 
+/* ------------------ ScriptSetSliceBounds ------------------------ */
+
+void ScriptSetSliceBounds(scriptdata *scripti){
+  int set_valmin, set_valmax;
+  float valmin, valmax;
+  char *quantity;
+
+  set_valmin = scripti->ival;
+  set_valmax = scripti->ival2;
+  valmin = scripti->fval;
+  valmax = scripti->fval2;
+  quantity = scripti->quantity2;
+  SetSliceBounds(set_valmin, valmin, set_valmax, valmax, quantity);
+}
+
+/* ------------------ ScriptSetBoundBounds ------------------------ */
+
+void ScriptSetBoundBounds(scriptdata *scripti){
+  int set_valmin, set_valmax;
+  float valmin, valmax;
+  char *quantity;
+
+  set_valmin = scripti->ival;
+  set_valmax = scripti->ival2;
+  valmin = scripti->fval;
+  valmax = scripti->fval2;
+  quantity = scripti->quantity2;
+  SetBoundBounds(set_valmin, valmin, set_valmax, valmax, quantity);
+}
+
 /* ------------------ ScriptSetTimeVal ------------------------ */
 
 void ScriptSetTimeVal(scriptdata *scripti){
@@ -3554,6 +3601,12 @@ int RunScriptCommand(scriptdata *script_command){
     case SCRIPT_SETTIMEVAL:
       returnval=1;
       ScriptSetTimeVal(scripti);
+      break;
+    case SCRIPT_SETSLICEBOUNDS:
+      ScriptSetSliceBounds(scripti);
+      break;
+    case SCRIPT_SETBOUNDBOUNDS:
+      ScriptSetBoundBounds(scripti);
       break;
     case SCRIPT_SETTOURVIEW:
       ScriptSetTourView(scripti);

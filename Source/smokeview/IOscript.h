@@ -77,6 +77,8 @@
 #define SCRIPT_EXIT              310
 #define SCRIPT_LABEL             311
 #define SCRIPT_PROJECTION        312
+#define SCRIPT_SETSLICEBOUNDS    314
+#define SCRIPT_SETBOUNDBOUNDS    315
 
 #define SCRIPT_SLICE_FILE          0
 #define SCRIPT_BOUNDARY_FILE       1

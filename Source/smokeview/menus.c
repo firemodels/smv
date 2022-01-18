@@ -11353,21 +11353,6 @@ updatemenu=0;
 
         i = plot3dorderindex[ii];
         plot3di = plot3dinfo + i;
-        if(ii==nplot3dinfo-1){
-          glutAddMenuEntry("-", MENU_PLOT3D_DUMMY);
-#ifndef pp_PLOT3D_REDUCEMENUS
-          if(nmeshes>1){
-            GLUTADDSUBMENU(_("Mesh"), plot3dsinglemeshmenu);
-          }
-#endif
-          glutAddMenuEntry(_("Settings..."), MENU_PLOT3D_SETTINGS);
-          if(nplot3dloaded>1){
-            GLUTADDSUBMENU(_("Unload"),unloadplot3dmenu);
-          }
-          else{
-            glutAddMenuEntry(_("Unload"),UNLOAD_ALL);
-          }
-        }
         if(ii==0){
           int plot3d_load_state;
           char prefix[3];
@@ -11426,6 +11411,21 @@ updatemenu=0;
               glutAddMenuEntry(menulabel,i);
             }
             nloadsubplot3dmenu++;
+          }
+        }
+        if(ii==nplot3dinfo-1){
+          glutAddMenuEntry("-", MENU_PLOT3D_DUMMY);
+#ifndef pp_PLOT3D_REDUCEMENUS
+          if(nmeshes>1){
+            GLUTADDSUBMENU(_("Mesh"), plot3dsinglemeshmenu);
+          }
+#endif
+          glutAddMenuEntry(_("Settings..."), MENU_PLOT3D_SETTINGS);
+          if(nplot3dloaded>1){
+            GLUTADDSUBMENU(_("Unload"), unloadplot3dmenu);
+          }
+          else{
+            glutAddMenuEntry(_("Unload"), UNLOAD_ALL);
           }
         }
       }
