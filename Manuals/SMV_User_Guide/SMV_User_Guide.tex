@@ -3961,7 +3961,8 @@ by default but may be shown along with the colorbar display by
 un-checking the {\em Hide scene}\ checkbox.
 
 The colorbar is represented visually in two ways.  First, as a series
-of colored nodes and lines within a unit cube. The cube has axese red (x direction), green (y direction) and blue (z direction).
+of colored nodes and lines within a unit cube. The cube has
+red (x direction), green (y direction) and blue (z direction) axes.
 The nodes and lines are a spatial representation of the colorbar where as
 stated earlier the r, g, b color components are mapped to x, y, z spatial
 coordinates.
@@ -4841,7 +4842,7 @@ Smokeview.
 
 \kitem{b}Toggle boundary file visibility
 
-\kitem{B}Show geometry and blockage bounding box outines when moving scene.
+\kitem{B}Show geometry and blockage bounding box outlines when moving scene.
 
 \kitem{c}Toggle 2D contour display between banded, continuously
 shaded and line contours.
@@ -4879,7 +4880,7 @@ grid perpendicular to the x, y and z axes respectively.
 
 \kitem{i}Toggle Plot3D iso-contour visibility.
 
-\kitem{I}Toggle slice file visibility wihin obstacles.
+\kitem{I}Toggle slice file visibility within obstacles.
 
 \kitem{j,J}Increase size of Smokeview objects (use ALT j to decrease size).
 
@@ -5594,7 +5595,7 @@ C_BOUNDARY
 \end{lstlisting}
 
 \hitem{C\_PARTICLES}\ Defines the minimum and maximum values used
-to discard particle data in a visualization. To discad particle data
+to discard particle data in a visualization. To discard particle data
 below 70\degC\ and above 200\degC\ use:
 \begin{lstlisting}
 C_PARTICLES
@@ -5662,21 +5663,22 @@ TLOAD
  1 10. 1 50. 1 3
 \end{lstlisting}
 
-\hitem{V2\_BOUNDARY}Defines the minimum and maximum
-data bounds used for converting boundary file data values to color indices.
-The format of this keyword is
+\hitem{V2\_BOUNDARY, V2\_PARICLES, V2\_SLICE}Defines the minimum and maximum
+data bounds used for converting boundary, particle or slice file data values to color indices.
+The format of these keyword is
 \begin{lstlisting}
 V2_BOUNDARY
  setvalmin valmin setvalmax valmax quantity_label
 \end{lstlisting}
 where the parameters
-{\tt setvalmin}, {\tt valmin}, {\tt setvalmax}, {\tt valmax}\ and {\tt quantity\_label}\
+{\tt setvalmin}, {\tt valmin}, {\tt setvalmax}, {\tt valmax}\ and {\tt quantity\_label}.
 are described in Table \ref{tabV2bounds}.
+The format of the {\tt V2\_PARTICLES}\ and {\tt V2\_SLICE}\ keywords is the same.
 The parameter {\tt quantity\_label}\ is optional.  If it is blank then the bound
-parameters are applied to all boundary files.
+parameters are applied to all boundary, particle or slice files.
 If it is not blank they
-are applied to only boundary files with quantity {\tt quantity\_label}.
-Possible quantity labels are given in Table \ref{tabBNDF}.
+are applied to only boundary, particle or slice files with quantity {\tt quantity\_label}.
+Possible quantity labels are given in Table \ref{tabBNDF} for boundary files and Table \ref{tabSLCF} or slice files.  Quantity labels for all files types may be found in the .smv file.
 
 To specify boundary file bounds for temperature ranging from\
 30.0~\degC\ to 600.0~\degC\ use:
@@ -5686,22 +5688,6 @@ V2_BOUNDARY
 \end{lstlisting}
 where {\tt temp}\ is the Smokeview colorbar label displayed when
 showing a temperature boundary file.
-
-\input{BNDFlabels.tex}
-
-\hitem{V2\_PARTICLES}Defines the minimum and maximum
-data bounds used for converting one component of particle file data values to color indices.
-The format of this keyword is
-\begin{lstlisting}
-V2_PARTICLES
- setvalmin valmin setvalmax valmax quantity_label
-\end{lstlisting}
-where the parameters {\tt setvalmin}\ , {\tt valmin}\ , {\tt setvalmax}\ , {\tt valmax}\  and
-{\tt quantity\_label}\ are described in Table \ref{tabV2bounds}. The parameter {\tt quantity\_label}\
-is optional.  If it is blank then only {\tt setvalmin}\  and {\tt setvalmax}\  are applied to all
-components in all particle files. If it not blank then {\tt setvalmin}\ , {\tt valmin}\ , {\tt setvalmax}\ ,
-{\tt valmax}\  are applied to particle file components that have the quantity {\tt quantity\_label}.
-
 To specify particle file bounds for the U component of velocity ranging from
 -1.0~m/s to 2.0~m/s use:
 \begin{lstlisting}
@@ -5710,49 +5696,6 @@ V2_PARTICLES
 \end{lstlisting}
 where {\tt u}\ is the Smokeview colorbar labels displayed when
 showing the particle file and the U component of velocity.
-
-\hitem{V2\_PLOT3D}Defines the minimum and maximum
-data bounds used for converting each component of plot3D file data values to color indices.
-The format of this keyword is
-\begin{lstlisting}
-V2_PLOT3D
- ncomp
- component_index setvalmin valmin setvalmax valmax
- ....
- component_index setvalmin valmin setvalmax valmax
-\end{lstlisting}
-where ncomp is the number of entries,
-component\_index is either 1 to 5 or 1 to 6 if speed is one of the components of
-the plot3D file  and
-the parameters {\tt setvalmin}\ , {\tt valmin}\ , {\tt setvalmax}\ , {\tt valmax}\  are described in Table \ref{tabV2bounds}. Smokeview uses the {\tt component\_index}\ not {\tt quantity\_label}\
-for determining which quantity to apply parameters to.
-Assuming the first component is temperature, to specify file bounds ranging from 20.0~\degC\ to
-600.0~\degC\ for the first component and global bounds for the other components use:
-\begin{lstlisting}
-V2_PLOT3D
- 5
- 1 0 20.0 0 600.0
- 2 2  1.0 2 0.0
- 3 2  1.0 2 0.0
- 4 2  1.0 2 0.0
- 5 2  1.0 2 0.0
-\end{lstlisting}
-
-\hitem{V2\_SLICE}Defines the minimum and maximum
-data bounds used for converting slice file data values to color indices.
-The format of this keyword is
-\begin{lstlisting}
-V2_SLICE
- setvalmin valmin setvalmax valmax quantity_label
-\end{lstlisting}
-where the parameters
-{\tt setvalmin}, {\tt valmin}, {\tt setvalmax}, {\tt valmax}\ and {\tt quantity\_label}\
-are described in Table \ref{tabV2bounds}.
-The parameter {\tt quantity\_label}\ is optional.  If it is blank then the bound
-parameters are applied to all slice files.
-If it is not blank then they are applied to only slice files with quantity {\tt quantity\_label}.
-Possible quantity labels are given in Table \ref{tabSLCF}.
-
 To specify slice file bounds for temperature ranging from
 30.0~\degC\ to 600.0~\degC\ use:
 \begin{lstlisting}
@@ -5768,8 +5711,38 @@ V2_SLICE
 0 30.000000 2 1.0 temp
 \end{lstlisting}
 
+\input{BNDFlabels.tex}
 
 \input{SLCFlabels.tex}
+
+\hitem{V2\_PLOT3D}Defines the minimum and maximum
+data bounds used for converting plot3D file data component values to color indices.
+The format of this keyword is
+\begin{lstlisting}
+V2_PLOT3D
+ ncomp
+ component_index setvalmin valmin setvalmax valmax
+ ....
+ component_index setvalmin valmin setvalmax valmax
+\end{lstlisting}
+where ncomp is the number of entries,
+component\_index is either 1 to 5 or 1 to 6 if speed is one of the components of
+the plot3D file  and
+the parameters {\tt setvalmin}\ , {\tt valmin}\ , {\tt setvalmax}\ , {\tt valmax}\  are the same
+as those used with the {\tt V2\_BOUNDARY, V2\_PARITICLES} and {\tt V2\_SLICE}\ keywords and are
+described in Table \ref{tabV2bounds}. Smokeview uses the {\tt component\_index}\ not {\tt quantity\_label}\
+for determining which quantity to apply bounds to.
+Assuming the first component is temperature, to specify file bounds ranging from 20.0~\degC\ to
+600.0~\degC\ for the first component and global bounds for the other components use:
+\begin{lstlisting}
+V2_PLOT3D
+ 5
+ 1 0 20.0 0 600.0
+ 2 2  1.0 2 0.0
+ 3 2  1.0 2 0.0
+ 4 2  1.0 2 0.0
+ 5 2  1.0 2 0.0
+\end{lstlisting}
 
 \hitemNULL{V\_TARGET}
 
