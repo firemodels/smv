@@ -409,7 +409,6 @@ sscanf(buffptr, "%i", &scripti->ival)
 SETbuffer;\
 sscanf(buffptr, "%i", &scripti->ival2)
 
-#ifndef pp_DEG
 /* ------------------ RemoveDeg ------------------------ */
 
 void RemoveDeg(char *string){
@@ -426,7 +425,6 @@ void RemoveDeg(char *string){
   }
   string[ii] = 0;
 }
-#endif
 
 #define TOKEN_UNKNOWN -1
 #define TOKEN_INT      0
@@ -792,9 +790,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 //  mesh number (int)
       case SCRIPT_LOADISOM:
         SETcval;
-#ifndef pp_DEG
         RemoveDeg(scripti->cval);
-#endif
         scripti->ival = 1;
         SETival;
         scripti->need_graphics = 0;

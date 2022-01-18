@@ -1300,21 +1300,8 @@ void InitVars(void){
   for(i=0;i<7;i++){
     b_state[i]=-1;
   }
-#ifdef pp_DEG
-  degC[0]=DEG_SYMBOL;
-  degC[1]='C';
-  degC[2]='\0';
-#else
-  strcpy(degC,"C");
-#endif
-
-#ifdef pp_DEG
-  degF[0]=DEG_SYMBOL;
-  degF[1]='F';
-  degF[2]='\0';
-#else
-  strcpy(degF,"F");
-#endif
+  strcpy((char *)degC,"C");
+  strcpy((char *)degF,"F");
 
   strcpy(default_fed_colorbar,"FED");
 
