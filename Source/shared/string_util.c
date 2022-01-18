@@ -1295,21 +1295,7 @@ int ReadLabelsBNDS(flowlabels *flowlabel, BFILE *stream, char *bufferD, char *bu
   TrimBack(buffer);
   len = strlen(buffer) + 1;// allow room for deg C symbol in case it is present
   if(NewMemory((void *)&flowlabel->unit, (unsigned int)(len + 1)) == 0)return LABEL_ERR;
-#ifdef pp_DEG
-  if(strlen(buffer) == 1 && strcmp(buffer, "C") == 0){
-    unsigned char *unit;
-
-    unit = (unsigned char *)flowlabel->unit;
-    unit[0] = DEG_SYMBOL;
-    unit[1] = 'C';
-    unit[2] = '\0';
-  }
-  else{
-    STRCPY(flowlabel->unit, buffer);
-  }
-#else
   STRCPY(flowlabel->unit, buffer);
-#endif
   return LABEL_OK;
 }
 
@@ -1364,21 +1350,7 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
   len = strlen(buffer)+1;// allow room for deg C symbol in case it is present
   if(flowlabel!=NULL){
     if(NewMemory((void *)&flowlabel->unit, (unsigned int)(len+1))==0)return LABEL_ERR;
-#ifdef pp_DEG
-    if(strlen(buffer)==1&&strcmp(buffer, "C")==0){
-      unsigned char *unit;
-
-      unit = (unsigned char *)flowlabel->unit;
-      unit[0] = DEG_SYMBOL;
-      unit[1] = 'C';
-      unit[2] = '\0';
-    }
-    else{
-      STRCPY(flowlabel->unit, buffer);
-    }
-#else
     STRCPY(flowlabel->unit, buffer);
-#endif
   }
   return return_val;
 }
@@ -1434,21 +1406,7 @@ int ReadPlot3DLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label, c
   len=strlen(buffer)+1;// allow room for deg C symbol in case it is present
   if(flowlabel!=NULL){
     flowlabel->unit = labels_static + 2*MAXPLOT3DLABELSIZE;
-#ifdef pp_DEG
-    if(strlen(buffer)==1&&strcmp(buffer, "C")==0){
-      unsigned char *unit;
-
-      unit = (unsigned char *)flowlabel->unit;
-      unit[0] = DEG_SYMBOL;
-      unit[1] = 'C';
-      unit[2] = '\0';
-    }
-    else{
-      STRCPY(flowlabel->unit, buffer);
-    }
-#else
     STRCPY(flowlabel->unit, buffer);
-#endif
   }
   return return_val;
 }

@@ -9622,11 +9622,7 @@ updatemenu=0;
       glutAddMenuEntry(sizeHIGHRES, RenderStartHIGHRES);
       {
         char rend_label[100];
-#ifdef pp_DEG
-        unsigned char deg360[] = {'3','6','0',DEG_SYMBOL,0};
-#else
         unsigned char deg360[] = {'3','6','0',0};
-#endif
 
         sprintf(rend_label,"%s - %ix%i",deg360,nwidth360, nheight360);
         glutAddMenuEntry(rend_label, RenderStart360);
@@ -10031,11 +10027,7 @@ updatemenu=0;
   glutAddMenuEntry("             r: image has the same resolution as the scene", MENU_DUMMY);
   {
     char render_label[1024];
-#ifdef pp_DEG
-    unsigned char deg360[] = {'3','6','0',DEG_SYMBOL,0};
-#else
     unsigned char deg360[] = {'3','6','0',0};
-#endif
 
     sprintf(render_label, "            R: image has %i times the resolution of of scene", MAX(2,resolution_multiplier));
     glutAddMenuEntry(render_label, MENU_DUMMY);

@@ -18,13 +18,8 @@
 #undef ROTATE_TRANSLATE
 #endif
 
-#ifdef pp_DEG
-unsigned char deg360[] = { '3','6','0',DEG_SYMBOL,0 };
-unsigned char deg90[] = {'9', '0', DEG_SYMBOL, 0};
-#else
 unsigned char deg360[] = { '3','6','0',0 };
 unsigned char deg90[] = {'9', '0', 0};
-#endif
 
 GLUI *glui_motion=NULL;
 
