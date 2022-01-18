@@ -3418,12 +3418,17 @@ LOADBOUNDARY
 \end{lstlisting}
 
 \hitem{SETBOUNDBOUNDS}
-Used SETBOUNDBOUNDS to set minimum and maximum bounds for boundary files.  SETBOUNDBOUNDS should be used before a boundary
-file is loaded.
+Use {\tt SETBOUNDBOUNDS}\ to set minimum and maximum bounds for boundary files.  
+{\tt SETBOUNDBOUNDS}\ must be used before a boundary file is loaded.
 \begin{lstlisting}
   SETBOUNDBOUNDS
-  ivalmin (int) valmin (float) ivalmax (int) valmax quantity (char)
+  ivalmin (int) valmin (float) ivalmax (int) valmax quantity_label (char)
 \end{lstlisting}
+
+The usage of the
+{\tt ivalmin, valmin, ivalmax, valmax}\ and {\tt quantity\_label}
+parameters is the same as those used for the
+{\tt V2\_BOUNDARY}\ ini keyword and are describe in Appendix \ref{section:timedatabounds}.
 
 
 \elist
@@ -3535,13 +3540,19 @@ LOADSLCF
 
 
 \hitem{SETSLICEBOUNDS}
-Used SETSLICEBOUNDS to set minimum and maximum bounds for slice files.  SETSLICEBOUNDS should be used before a slice
+Use {\tt SETSLICEBOUNDS}\ to set minimum and maximum bounds for slice files.  
+{\tt SETSLICEBOUNDS}\ must be used before a slice
 file is loaded.
 \begin{lstlisting}
   SETSLICEBOUNDS
   ivalmin (int) valmin (float) ivalmax (int) valmax quantity (char)
 \end{lstlisting}
 \elist
+
+The usage of the
+{\tt ivalmin, valmin, ivalmax, valmax}\ and {\tt quantity\_label}
+parameters is the same as those used for the
+{\tt V2\_SLICE}\ ini keyword and are describe in Appendix \ref{section:timedatabounds}.
 
 \subsubsection{Particle Files}
 \blist
@@ -5488,13 +5499,14 @@ Smokeview scene for use when capturing images to video.
 \elist
 
 \subsection{Time and data bounds}
+\label{section:timedatabounds}
 This section describes the ini file keywords used by Smokeview:
 \begin{enumerate}
 \item to set the time interval for loading data (the TLOAD keyword),
 
-\item to discard or chop data based upon data values (keywords beginning with C\_),
+\item to discard or chop data based upon data values (keywords beginning with C\_), and
 
-\item to specify minimum and maximum data values
+\item to specify minimum and maximum data bounds
 for computing color indices (keywords beginning with {\tt V2\_}).
 Color indices are computed using an equation of the form
 \begin{eqnarray*}
@@ -5512,7 +5524,7 @@ KEYWORD
   setvalmin valmin setvalmax valmax quantity_label
 \end{lstlisting}
 \noindent where {\tt setvalmin}\ and {\tt setvalmax} are integer parameters
-that determines how {\tt valmin}\ and {\tt valmax}\
+that determine how {\tt valmin}\ and {\tt valmax}\
 are treated and the parameter {\tt quantity\_label}\ is the
 file data quantity the bound parameters are applied to.
 
@@ -5547,16 +5559,16 @@ The default values may be changed using the
   \frame{data distribution}\ tab of the bounds dialog box.
 }.  \\
 
-\hline {\tt valmin/valmax}\  &  float & 
+\hline {\tt valmin/valmax}\  &  float &
 \tabentry{If {\tt setvalmin}\  or {\tt setvalmax}\ are   0,
 use {\tt valmin}\ or {\tt valmax}\ for converting data values to color indices.
-If they  are not 0 then {\tt valmin}\  and {\tt valmax}\  are ignored.
+If they  are not 0 then smokeview computes these bounds.
 }  \\
 
 \hline {\tt quantity\_label}\  & character &
 \tabentry{The parameter {\tt quantity\_label}\ is the label appearing in the
 Smokeview colorbar, for example {\tt temp}\ for the quantity {\tt TEMPERATURE}.
-This parameter is optional.  If it is not blank then {\tt setvalmin, valmin, setvalmax}\ and {\tt valmax}\ 
+This parameter is optional.  If it is not blank then {\tt setvalmin, valmin, setvalmax}\ and {\tt valmax}\
 are applied to filetype files with quantity {\tt quantity\_label}.
 If it is blank then these parameters are applied to all filetype files.
 Possible values of {\tt quantity\_label}\ are given in Table \ref{tabBNDF} for the {\tt V2\_BOUNDBOUNDS}\ ini keyword and
@@ -5619,7 +5631,13 @@ C_SLICE
 
 \hitemNULL{PATCHDATAOUT}
 
-\hitemNULL{PERCENTILELEVEL}
+\hitem{PERCENTILELEVEL} Defines the minimum and maximum percentile levels for setting data bounds.
+The defaults are 0.01 for the minimum level and 0.99 for maximum level.
+
+\begin{lstlisting}
+PERCENTILLEVEL
+ min_level max_level
+\end{lstlisting}
 
 \hitemNULL{SLICEDATAOUT}
 
@@ -5706,7 +5724,8 @@ V2_PLOT3D
 where ncomp is the number of entries,
 component\_index is either 1 to 5 or 1 to 6 if speed is one of the components of
 the plot3D file  and
-the parameters {\tt setvalmin}\ , {\tt valmin}\ , {\tt setvalmax}\ , {\tt valmax}\  are described in Table \ref{tabV2bounds}.
+the parameters {\tt setvalmin}\ , {\tt valmin}\ , {\tt setvalmax}\ , {\tt valmax}\  are described in Table \ref{tabV2bounds}. Smokeview uses the {\tt component\_index}\ not {\tt quantity\_label}\
+for determining which quantity to apply parameters to.
 Assuming the first component is temperature, to specify file bounds ranging from 20.0~\degC\ to
 600.0~\degC\ for the first component and global bounds for the other components use:
 \begin{lstlisting}
@@ -5748,8 +5767,7 @@ To specify slice file bounds for a minimum temperature of
 V2_SLICE
 0 30.000000 2 1.0 temp
 \end{lstlisting}
-where again {\tt temp}\ is the Smokeview colorbar labels displayed when
-showing a temperature slice file. The value, in this case 1.0 after the '2' and before 'temp' is ignored.
+
 
 \input{SLCFlabels.tex}
 
