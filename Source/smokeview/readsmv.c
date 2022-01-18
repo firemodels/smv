@@ -697,6 +697,7 @@ void ReadSMVDynamic(char *file){
 
       do_pass2=1;
       if(setup_only==1||smoke3d_only==1)continue;
+      FGETS(buffer, 255, stream);
       for(n = 0; n<5; n++){
         if(ReadLabels(NULL, stream, NULL)==LABEL_ERR)break;
       }
