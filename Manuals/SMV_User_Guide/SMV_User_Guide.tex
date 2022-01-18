@@ -3418,7 +3418,7 @@ LOADBOUNDARY
 \end{lstlisting}
 
 \hitem{SETBOUNDBOUNDS}
-Use {\tt SETBOUNDBOUNDS}\ to set minimum and maximum bounds for boundary files.  
+Use {\tt SETBOUNDBOUNDS}\ to set minimum and maximum bounds for boundary files.
 {\tt SETBOUNDBOUNDS}\ must be used before a boundary file is loaded.
 \begin{lstlisting}
   SETBOUNDBOUNDS
@@ -3540,7 +3540,7 @@ LOADSLCF
 
 
 \hitem{SETSLICEBOUNDS}
-Use {\tt SETSLICEBOUNDS}\ to set minimum and maximum bounds for slice files.  
+Use {\tt SETSLICEBOUNDS}\ to set minimum and maximum bounds for slice files.
 {\tt SETSLICEBOUNDS}\ must be used before a slice
 file is loaded.
 \begin{lstlisting}
@@ -5678,7 +5678,9 @@ The parameter {\tt quantity\_label}\ is optional.  If it is blank then the bound
 parameters are applied to all boundary, particle or slice files.
 If it is not blank they
 are applied to only boundary, particle or slice files with quantity {\tt quantity\_label}.
-Possible quantity labels are given in Table \ref{tabBNDF} for boundary files and Table \ref{tabSLCF} or slice files.  Quantity labels for all files types may be found in the .smv file.
+Possible quantity labels are given in Table \ref{tabBNDF} for boundary files and Table \ref{tabSLCF} or slice files.
+Quantity labels may also be found in the .smv file for those quantities used
+on a {\tt \&BNDF, \&PART}\ or {\tt \&SLCF}\ namelists in the fds input file.
 
 To specify boundary file bounds for temperature ranging from\
 30.0~\degC\ to 600.0~\degC\ use:
@@ -5848,10 +5850,15 @@ upper bound.  Smokeview will not display frames faster than this
 rate but may display frames at a slower rate if the scene to be
 visualized is complex. (default: 1000000 (essentially unlimited))
 
-\hitem{ISOTRANS}Specifies transparency state for iso-surfaces. The choices
-are all iso-surface levels transparent (ALL\_TRANSPARENT=1), minimum
-iso-surface level solid (MIN\_SOLID=2), maximum iso-surface level solid (MAX\_SOLID=3)
-and all iso-surface levels transparent (ALL\_TRANSPARENT=4) (default: 3)
+\hitem{ISOTRANS}Specifies the transparency state for iso-surfaces. The choices
+are 
+\begin{itemize}
+\item all iso-surface levels are transparent (ALL\_TRANSPARENT=1), 
+\item the minimum iso-surface level is solid (MIN\_SOLID=2), 
+\item the maximum iso-surface level solid (MAX\_SOLID=3) (default)
+\item all iso-surface levels transparent (ALL\_TRANSPARENT=4)
+\end{itemize}
+
 
 \hitem{LABELSTARTUPVIEW}Specifies a viewpoint to be applied when Smokeview first starts up.
 Any viewpoint defined by the VIEWPOINT5 ini keyword or the predefined viewpoints external or internal may used to with the LABELSTARTUPVIEW keyword.
