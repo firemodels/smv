@@ -1238,10 +1238,10 @@ SVEXTERN int setisochopmin, setisochopmax;
 SVEXTERN float isochopmin, isochopmax;
 
 SVEXTERN int vis_onlythreshold, vis_threshold, canshow_threshold, activate_threshold;
-SVEXTERN int settmin_p, settmin_b, settmin_z, settmin_i;
-SVEXTERN int settmax_p, settmax_b, settmax_z, settmax_i;
-SVEXTERN float tmin_p, tmin_b, tmin_z, tmin_i;
-SVEXTERN float tmax_p, tmax_b, tmax_z, tmax_i;
+SVEXTERN int settmin_p, settmin_b, settmin_i;
+SVEXTERN int settmax_p, settmax_b, settmax_i;
+SVEXTERN float tmin_p, tmin_b, tmin_i;
+SVEXTERN float tmax_p, tmax_b, tmax_i;
 SVEXTERN float SVDECL(glui_patchmin,1.0),SVDECL(glui_patchmax,0.0);
 SVEXTERN float SVDECL(targetmin, 1.0), SVDECL(targetmax, 0.0);
 SVEXTERN float SVDECL(glui_partmin,1.0), SVDECL(glui_partmax,0.0);
