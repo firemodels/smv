@@ -6363,11 +6363,6 @@ extern "C" void UpdateGluiTimeBounds(float time_min, float time_max){
 /* ------------------ UpdateTBounds ------------------------ */
 
 extern "C" void UpdateTBounds(void){
-  settmin_p=use_tload_begin;
-  settmax_p=use_tload_end;
-  tmin_p=tload_begin;
-  tmax_p=tload_end;
-
   settmin_i=use_tload_begin;
   settmax_i=use_tload_end;
   tmin_i=tload_begin;

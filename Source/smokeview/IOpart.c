@@ -1375,8 +1375,8 @@ void GetPartData(partdata *parti, int partframestep_arg, int nf_all_arg, FILE_SI
     if(returncode==FAIL_m)break;
 
     if(count_local%partframestep_arg!=0||
-      (settmin_p==1&&time_local<tmin_p-TEPS)||
-      (settmax_p==1&&time_local>tmax_p+TEPS)){
+      (use_tload_begin==1&&time_local<tload_begin-TEPS)||
+      (use_tload_end==1&&time_local>tload_end+TEPS)){
       doit_local=0;
     }
     else{
@@ -1887,8 +1887,8 @@ void GetPartHeader(partdata *parti, int partframestep_arg, int *nf_all, int opti
     if(exitloop_local==1)break;
     nframes_all_local++;
     if((nframes_all_local-1)%partframestep_arg!=0||
-       (settmin_p!=0&&time_local<tmin_p-TEPS)||
-       (settmax_p!=0&&time_local>tmax_p+TEPS)){
+       (use_tload_begin!=0&&time_local<tload_begin-TEPS)||
+       (use_tload_end!=0&&time_local>tload_end+TEPS)){
        continue;
     }
     (parti->ntimes)++;
@@ -1941,8 +1941,8 @@ void GetPartHeader(partdata *parti, int partframestep_arg, int *nf_all, int opti
       sscanf(buffer_local, format, &time_local,&filepos_local);
       parti->filepos[count_local] = filepos_local;               // record file position for every frame
       if(count_local%partframestep_arg!=0||
-         (settmin_p!=0&&time_local<tmin_p-TEPS)||
-         (settmax_p!=0&&time_local>tmax_p+TEPS)){
+         (use_tload_begin!=0&&time_local<tload_begin-TEPS)||
+         (use_tload_end!=0&&time_local>tload_end+TEPS)){
         for(j=0;j<parti->nclasses;j++){
           if(fgets(buffer_local,255,stream)==NULL){
             fail_local =1;

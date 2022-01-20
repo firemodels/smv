@@ -1591,10 +1591,10 @@ void InitVars(void){
   vis_onlythreshold=0, vis_threshold=0;
   activate_threshold=1;
   canshow_threshold=1;
-  settmin_p=0, settmin_b=0, settmin_i=0;
-  settmax_p=0, settmax_b=0, settmax_i=0;
-  tmin_p=1., tmin_b=1., tmin_i=1.;
-  tmax_p=0., tmax_b=0., tmax_i=0.;
+  settmin_b=0, settmin_i=0;
+  settmax_b=0, settmax_i=0;
+  tmin_b=1., tmin_i=1.;
+  tmax_b=0., tmax_i=0.;
   speedmax=0.0;
   hrrpuv_max_smv=1200.0;
   FlowDir=1,ClipDir=1;
