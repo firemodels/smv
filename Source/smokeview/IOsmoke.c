@@ -5260,6 +5260,8 @@ void DrawSmokeFrame(void){
   int i;
   int blend_mode;
 
+  if(use_tload_begin==1 && global_times[itimes]<tload_begin)return;
+  if(use_tload_end==1   && global_times[itimes]>tload_end)return;
   triangle_count = 0;
 #ifdef pp_GPUSMOKE
   if(smoke_timer == 1){
@@ -5399,6 +5401,8 @@ void DrawVolSmokeFrame(void){
 #endif
   int load_shaders = 0;
 
+  if(use_tload_begin==1&&global_times[itimes]<tload_begin)return;
+  if(use_tload_end==1&&global_times[itimes]>tload_end)return;
   triangle_count = 0;
 #ifdef pp_GPUSMOKE
   if(smoke_timer==1){

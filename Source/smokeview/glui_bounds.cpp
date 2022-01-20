@@ -4094,9 +4094,8 @@ void TimeBoundCB(int var){
     SetTimeVal(glui_time);
     break;
   case TBOUNDS:
-    if(use_tload_begin == 1 || use_tload_end == 1 || use_tload_skip == 1){
-      UpdateTBounds();
-    }
+    UpdateTBounds();
+    UpdateTimes();
     break;
 #ifdef pp_TIMEBAR_DIGITS
   case TIMEBAR_DIGITS:
@@ -4122,6 +4121,7 @@ void TimeBoundCB(int var){
       SPINNER_tload_skip->disable();
     }
     UpdateTBounds();
+    UpdateTimes();
     break;
   case RELOAD_ALL_DATA:
     ReloadMenu(RELOAD_ALL_NOW);
@@ -6368,20 +6368,10 @@ extern "C" void UpdateTBounds(void){
   tmin_p=tload_begin;
   tmax_p=tload_end;
 
-  settmin_s=use_tload_begin;
-  settmax_s=use_tload_end;
-  tmin_s=tload_begin;
-  tmax_s=tload_end;
-
   settmin_i=use_tload_begin;
   settmax_i=use_tload_end;
   tmin_i=tload_begin;
   tmax_i=tload_end;
-
-  settmin_s=use_tload_begin;
-  settmax_s=use_tload_end;
-  tmin_s=tload_begin;
-  tmax_s=tload_end;
 
   settmin_b=use_tload_begin;
   settmax_b=use_tload_end;

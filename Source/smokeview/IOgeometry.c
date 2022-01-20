@@ -4816,6 +4816,10 @@ void ShowHideSortGeometry(int sort_geom, float *mm){
           geomlisti = geomi->geomlistinfo + geomi->itime;
           if(geomi->currentframe != NULL)geomlisti = geomi->currentframe;
         }
+        if(itime==1&&geomi->geomtype==GEOM_ISO){
+          if(use_tload_begin==1&&global_times[itimes]<tload_begin)continue;
+          if(use_tload_end==1&&global_times[itimes]>tload_end)continue;
+        }
 
         for(j = 0; j < geomlisti->ntriangles; j++){
           tridata *tri;

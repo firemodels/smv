@@ -4265,6 +4265,9 @@ void DrawBoundaryFrame(int flag){
   meshdata *meshi;
   int i;
 
+  if(use_tload_begin==1 && global_times[itimes]<tload_begin)return;
+  if(use_tload_end==1   && global_times[itimes]>tload_end)return;
+
   for(i=0;i<npatchinfo;i++){
     patchdata *patchi;
 

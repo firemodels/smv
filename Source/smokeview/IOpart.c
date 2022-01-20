@@ -664,6 +664,8 @@ void DrawPartFrame(void){
   partdata *parti;
   int i;
 
+  if(use_tload_begin==1&&global_times[itimes]<tload_begin)return;
+  if(use_tload_end==1&&global_times[itimes]>tload_end)return;
   for(i=0;i<npartinfo;i++){
     parti = partinfo + i;
     if(parti->loaded==0||parti->display==0)continue;
@@ -683,6 +685,8 @@ void DrawPartFrame(void){
 void DrawEvacFrame(void){
   int i;
 
+  if(use_tload_begin==1&&global_times[itimes]<tload_begin)return;
+  if(use_tload_end==1&&global_times[itimes]>tload_end)return;
   for(i=0;i<npartinfo;i++){
     partdata *parti;
 

@@ -1194,6 +1194,8 @@ void DrawIsoOrig(int tranflag){
 
 void DrawIso(int tranflag){
   if(niso_opaques>0||niso_trans>0){
+    if(use_tload_begin==1&&global_times[itimes]<tload_begin)return;
+    if(use_tload_end==1&&global_times[itimes]>tload_end)return;
     DrawIsoOrig(tranflag);
   }
 }

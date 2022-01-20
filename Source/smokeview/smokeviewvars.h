@@ -1238,10 +1238,10 @@ SVEXTERN int setisochopmin, setisochopmax;
 SVEXTERN float isochopmin, isochopmax;
 
 SVEXTERN int vis_onlythreshold, vis_threshold, canshow_threshold, activate_threshold;
-SVEXTERN int settmin_p, settmin_b, settmin_s, settmin_z, settmin_i;
-SVEXTERN int settmax_p, settmax_b, settmax_s, settmax_z, settmax_i;
-SVEXTERN float tmin_p, tmin_b, tmin_s, tmin_z, tmin_i;
-SVEXTERN float tmax_p, tmax_b, tmax_s, tmax_z, tmax_i;
+SVEXTERN int settmin_p, settmin_b, settmin_z, settmin_i;
+SVEXTERN int settmax_p, settmax_b, settmax_z, settmax_i;
+SVEXTERN float tmin_p, tmin_b, tmin_z, tmin_i;
+SVEXTERN float tmax_p, tmax_b, tmax_z, tmax_i;
 SVEXTERN float SVDECL(glui_patchmin,1.0),SVDECL(glui_patchmax,0.0);
 SVEXTERN float SVDECL(targetmin, 1.0), SVDECL(targetmax, 0.0);
 SVEXTERN float SVDECL(glui_partmin,1.0), SVDECL(glui_partmax,0.0);
@@ -1438,9 +1438,9 @@ SVEXTERN float SVDECL(geom_ymin,0.0), SVDECL(geom_ymax,1.0);
 SVEXTERN float SVDECL(geom_zmin, 0.0), SVDECL(geom_zmax, 1.0);
 SVEXTERN int SVDECL(use_geom_factors, 1), SVDECL(have_geom_factors, 0);
 SVEXTERN int SVDECL(transparent_state,ALL_SOLID);
-SVEXTERN float tload_begin, tload_end;
+SVEXTERN float SVDECL(tload_begin, 0.0), SVDECL(tload_end, 0.0);
 SVEXTERN int tload_skip;
-SVEXTERN int use_tload_begin,use_tload_end,use_tload_skip;
+SVEXTERN int SVDECL(use_tload_begin, 0), SVDECL(use_tload_end, 0), SVDECL(use_tload_skip, 0);
 
 SVEXTERN float frameinterval;
 
