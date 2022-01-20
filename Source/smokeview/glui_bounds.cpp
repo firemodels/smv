@@ -6368,11 +6368,6 @@ extern "C" void UpdateTBounds(void){
   tmin_i=tload_begin;
   tmax_i=tload_end;
 
-  settmin_b=use_tload_begin;
-  settmax_b=use_tload_end;
-  tmin_b=tload_begin;
-  tmax_b=tload_end;
-
   if(use_tload_skip==1){
     smoke3dframeskip=tload_skip;
     boundframeskip=tload_skip;

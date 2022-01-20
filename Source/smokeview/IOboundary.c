@@ -2224,11 +2224,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     }
     CheckMemory;
     if(error!=0)break;
-    if(settmax_b!=0&&*meshi->patch_timesi>tmax_b)break;
+    if(use_tload_end!=0&&*meshi->patch_timesi>tload_end)break;
 
     switch(loadpatchbysteps){
       case UNCOMPRESSED_ALLFRAMES:
-        if(!(settmin_b!=0&&*meshi->patch_timesi<tmin_b)){
+        if(!(use_tload_begin!=0&&*meshi->patch_timesi<tload_begin)){
            meshi->npatch_times++;
           patchi->ntimes=meshi->npatch_times;
           if(meshi->npatch_times + 1 > maxtimes_boundary){
