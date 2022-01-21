@@ -6093,7 +6093,8 @@ extern "C" void SliceBoundCB(int var){
     }
     break;
   case FRAMELOADING:
-    tload_zipstep=tload_zipskip+1;
+    tload_zipstep = tload_zipskip + 1;
+    tload_step    = tload_skip + 1;
     updatemenu=1;
     break;
   case CHOPUPDATE:

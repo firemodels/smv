@@ -4243,6 +4243,7 @@ void GetSliceSizes(slicedata *sd, const char *slicefilenameptr, int time_frame, 
       loadframe = 0;
     }
     if(loadframe==1)*ntimesptr = *ntimesptr+1;
+    count++;
   }
   *errorptr = 0;
 #ifdef pp_SLICE_BUFFER
