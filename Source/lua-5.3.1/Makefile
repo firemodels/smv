@@ -52,7 +52,7 @@ R= $V.1
 all:	$(PLAT)
 
 $(PLATS) clean:
-	cd src && $(MAKE) $@
+	cd src && $(MAKE) liblua.a
 
 test:	dummy
 	src/lua -v

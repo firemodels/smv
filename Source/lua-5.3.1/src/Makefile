@@ -12,6 +12,7 @@ LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
 LIBS= -lm $(SYSLIBS) $(MYLIBS)
 
 AR= ar rcu
+AR_OUT=
 RANLIB= ranlib
 RM= rm -f
 
@@ -26,9 +27,8 @@ MYOBJS=
 
 # == END OF USER SETTINGS -- NO NEED TO CHANGE ANYTHING BELOW THIS LINE =======
 
-PLATS= aix bsd c89 freebsd generic linux macosx mingw posix solaris windows
+PLATS= aix bsd c89 freebsd generic linux macosx mingw posix solaris
 
-LUA_LIB=liblua.lib
 LUA_A=	liblua.a
 CORE_O=	lapi.o lcode.o lctype.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o \
 	lmem.o lobject.o lopcodes.o lparser.o lstate.o lstring.o ltable.o \
@@ -56,11 +56,8 @@ o:	$(ALL_O)
 
 a:	$(ALL_A)
 
-$(LUA_LIB): $(BASE_O)
-	lib $(BASE_O) -OUT:$@
-
 $(LUA_A): $(BASE_O)
-	$(AR) $@ $(BASE_O)
+	$(AR) $(AR_OUT)$@ $(BASE_O)
 	$(RANLIB) $@
 
 $(LUA_T): $(LUA_O) $(LUA_A)
@@ -121,9 +118,6 @@ mingw:
 	"AR=$(CC) -shared -o" "RANLIB=strip --strip-unneeded" \
 	"SYSCFLAGS=-DLUA_BUILD_AS_DLL" "SYSLIBS=" "SYSLDFLAGS=-s" lua.exe
 	$(MAKE) "LUAC_T=luac.exe" luac.exe
-
-windows: $(BASE_O)
-	gcc -shared -o liblua.dll $(BASE_O) -Wl,--output-def,liblua.def,--out-implib,liblua.a
 
 posix:
 	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_POSIX"

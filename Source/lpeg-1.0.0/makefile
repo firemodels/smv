@@ -30,7 +30,7 @@ CC = gcc
 
 FILES = lpvm.o lpcap.o lptree.o lpcode.o lpprint.o
 
-DLLFLAGS = -shared -fPIC
+DLLFLAGS = /LD /OUT:lpeg.dll /LIBPATH:../lua-5.3.1/src ../lua-5.3.1/src/liblua.a
 # DLLFLAGS =
 
 linux:
@@ -43,7 +43,7 @@ macosx:
 	make lpeg.so "DLLFLAGS = -bundle -undefined dynamic_lookup"
 
 lpeg.dll: $(FILES)
-	$(CC) $(DLLFLAGS) $(FILES) -o $@ -L ../lua-5.3.1/src -llua53
+	$(CC) $(DLLFLAGS) $(FILES) -o $@
 
 lpeg.lib: $(FILES)
 	lib $(FILES) -OUT:$@
