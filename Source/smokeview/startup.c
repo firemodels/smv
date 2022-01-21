@@ -1571,8 +1571,6 @@ void InitVars(void){
 
   slicefilenumber=0;
   nspr=0;
-  smoke3dframestep=1;
-  smoke3dframeskip=0;
   vectorskip=1;
   rotation_type=ROTATION_2AXIS;
   eyeview_level=1;
@@ -1684,13 +1682,6 @@ void InitVars(void){
   visNormalEditColors=1;
   visWalls=0, visGrid=0, visCeiling=0;
   visSensor=1, visSensorNorm=1, hasSensorNorm=0;
-  partframestep=1, sliceframestep=1, boundframestep=1;
-  partframeskip=0, sliceframeskip=0, boundframeskip=0;
-  boundzipstep=1, boundzipskip=0;
-  smoke3dzipstep=1, smoke3dzipskip=0;
-  isozipstep=1, isozipskip=0;
-  slicezipstep=1, slicezipskip=0;
-  evacframeskip=0, evacframestep=1;
   render_window_size=RenderWindow;
   RenderMenu(render_window_size);
   viewoption=0;

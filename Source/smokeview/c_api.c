@@ -2665,7 +2665,7 @@ int set_windowheight(int v) {
 
 // --  *** DATA LOADING ***
 int set_boundzipstep(int v) {
-  boundzipstep = v;
+  tload_zipstep = v;
   return 0;
 } // BOUNDZIPSTEP
 
@@ -2684,7 +2684,7 @@ int set_fedcolorbar(const char *name) {
 } // FEDCOLORBAR
 
 int set_isozipstep(int v) {
-  isozipstep = v;
+  tload_zipstep = v;
   return 0;
 } // ISOZIPSTEP
 
@@ -2716,12 +2716,12 @@ int set_slicedataout(int v) {
 } // SLICEDATAOUT
 
 int set_slicezipstep(int v) {
-  slicezipstep = v;
+  tload_zipstep = v;
   return 0;
 } // SLICEZIPSTEP
 
 int set_smoke3dzipstep(int v) {
-  smoke3dzipstep = v;
+  tload_zipstep = v;
   return 0;
 } // SMOKE3DZIPSTEP
 

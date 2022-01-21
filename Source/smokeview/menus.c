@@ -10525,8 +10525,8 @@ updatemenu=0;
       char steplabel[100];
 
       strcpy(loadmenulabel, "Mesh");
-      if(sliceframestep>1){
-        sprintf(steplabel, "/Skip %i", sliceframeskip);
+      if(tload_step>1){
+        sprintf(steplabel, "/Skip %i", tload_skip);
         strcat(loadmenulabel, steplabel);
       }
       GLUTADDSUBMENU(loadmenulabel, vsliceloadmenu);
@@ -10987,8 +10987,8 @@ updatemenu=0;
       char steplabel[100];
 
       strcpy(loadmenulabel,"Mesh");
-      if(sliceframeskip>0){
-        sprintf(steplabel,"/Skip %i",sliceframeskip);
+      if(tload_skip>0){
+        sprintf(steplabel,"/Skip %i",tload_skip);
         strcat(loadmenulabel,steplabel);
       }
       GLUTADDSUBMENU(loadmenulabel,loadslicemenu);
@@ -12075,8 +12075,8 @@ updatemenu=0;
 
       if(nsmoke3dinfo>0){
         strcpy(loadmenulabel,_("3D smoke"));
-        if(smoke3dframeskip>0){
-          sprintf(steplabel,"/Skip %i",smoke3dframeskip);
+        if(tload_skip>0){
+          sprintf(steplabel,"/Skip %i",tload_skip);
           strcat(loadmenulabel,steplabel);
         }
         GLUTADDSUBMENU(loadmenulabel,loadsmoke3dmenu);
@@ -12101,16 +12101,16 @@ updatemenu=0;
 
       if((nmultisliceinfo > 0 && nmultisliceinfo + nfedinfo < nsliceinfo)||have_geom_slice_menus==1){
         strcpy(loadmenulabel, _("Slice"));
-        if(sliceframeskip > 0){
-          sprintf(steplabel, "/Skip %i", sliceframeskip);
+        if(tload_skip > 0){
+          sprintf(steplabel, "/Skip %i", tload_skip);
           strcat(loadmenulabel, steplabel);
         }
         GLUTADDSUBMENU(loadmenulabel, loadmultislicemenu);
       }
       else if(nsliceinfo > 0){
         strcpy(loadmenulabel, "Slice");
-        if(sliceframeskip > 0){
-          sprintf(steplabel, "/Skip %i", sliceframeskip);
+        if(tload_skip > 0){
+          sprintf(steplabel, "/Skip %i", tload_skip);
           strcat(loadmenulabel, steplabel);
         }
         GLUTADDSUBMENU(loadmenulabel, loadslicemenu);
@@ -12120,16 +12120,16 @@ updatemenu=0;
 
       if(nvsliceinfo > 0 && nmultivsliceinfo < nvsliceinfo){
         strcpy(loadmenulabel,_("Vector Slice"));
-        if(sliceframeskip>0){
-          sprintf(steplabel,"/Skip %i",sliceframeskip);
+        if(tload_skip>0){
+          sprintf(steplabel,"/Skip %i",tload_skip);
           strcat(loadmenulabel,steplabel);
         }
         GLUTADDSUBMENU(loadmenulabel,loadmultivslicemenu);
       }
       else if(nvsliceinfo>0){
         strcpy(loadmenulabel,_("Vector slice"));
-        if(sliceframestep>1){
-          sprintf(steplabel,"/Skip %i",sliceframeskip);
+        if(tload_step>1){
+          sprintf(steplabel,"/Skip %i",tload_skip);
           strcat(loadmenulabel,steplabel);
         }
         GLUTADDSUBMENU(loadmenulabel,vsliceloadmenu);
@@ -12139,8 +12139,8 @@ updatemenu=0;
 
       if(nisoinfo>0){
         strcpy(loadmenulabel,"Isosurface");
-        if(isoframeskip_global>0){
-          sprintf(steplabel,"/Skip %i",isoframeskip_global);
+        if(tload_skip>0){
+          sprintf(steplabel,"/Skip %i",tload_skip);
           strcat(loadmenulabel,steplabel);
         }
         GLUTADDSUBMENU(loadmenulabel,loadisomenu);
@@ -12150,8 +12150,8 @@ updatemenu=0;
 
       if(npatchinfo>0){
         strcpy(loadmenulabel,"Boundary");
-        if(boundframeskip>0){
-          sprintf(steplabel,"/Skip %i",boundframeskip);
+        if(tload_skip>0){
+          sprintf(steplabel,"/Skip %i",tload_skip);
           strcat(loadmenulabel,steplabel);
         }
         GLUTADDSUBMENU(loadmenulabel,loadpatchmenu);
@@ -12162,16 +12162,16 @@ updatemenu=0;
       if(npartinfo>0){
         if(nevac!=npartinfo){
           strcpy(loadmenulabel,"Particles");
-          if(partframeskip>0){
-            sprintf(steplabel,"/Skip Frame %i",partframeskip);
+          if(tload_skip>0){
+            sprintf(steplabel,"/Skip Frame %i",tload_skip);
             strcat(loadmenulabel,steplabel);
           }
           GLUTADDSUBMENU(loadmenulabel,particlemenu);
         }
         if(nevac>0){
           strcpy(loadmenulabel,_("Evacuation"));
-          if(partframeskip>0){
-            sprintf(steplabel,"/Skip Frame %i",partframeskip);
+          if(tload_skip>0){
+            sprintf(steplabel,"/Skip Frame %i",tload_skip);
             strcat(loadmenulabel,steplabel);
           }
           GLUTADDSUBMENU(loadmenulabel,evacmenu);

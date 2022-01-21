@@ -1298,10 +1298,6 @@ extern "C" void Smoke3dCB(int var){
     UpdateCO2Colormap();
     Smoke3dCB(UPDATE_SMOKECOLORS);
     break;
-  case FRAMELOADING_SMOKE:
-    smoke3dframestep = smoke3dframeskip+1;
-    updatemenu=1;
-    break;
   case SAVE_SETTINGS_SMOKE:
     WriteIni(LOCAL_INI,NULL);
     break;

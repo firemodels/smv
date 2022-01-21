@@ -2215,9 +2215,9 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   else{
     PRINTF("Loading %s", file_arg);
   }
-  GetPartHeader(parti, partframestep, &nf_all_local, NOT_FORCE, 1);
+  GetPartHeader(parti, tload_step, &nf_all_local, NOT_FORCE, 1);
   CheckMemory;
-  GetPartData(parti, partframestep, nf_all_local, &file_size_local);
+  GetPartData(parti, tload_step, nf_all_local, &file_size_local);
   CheckMemory;
   LOCK_PART_LOAD;
   parti->loaded = 1;

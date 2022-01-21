@@ -5632,7 +5632,7 @@ void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *nt
     iframe_local++;
     if(time_local <= time_max)continue;
     if(use_tload_end == 1 && time_local > tload_end)break;
-    if(iii%smoke3dframestep == 0 && (use_tload_begin == 0 || time_local >= tload_begin)){
+    if(iii%tload_step == 0 && (use_tload_begin == 0 || time_local >= tload_begin)){
       nframes_found++;
       time_max = time_local;
     }
@@ -5677,7 +5677,7 @@ int GetSmoke3DSizes(int fortran_skip, char *smokefile, int version, float **time
     iframe_local++;
     if(time_local <= time_max)continue;
     if(use_tload_end == 1 && time_local > tload_end)break;
-    if(iii%smoke3dframestep == 0 && (use_tload_begin == 0 || time_local >= tload_begin)){
+    if(iii%tload_step == 0 && (use_tload_begin == 0 || time_local >= tload_begin)){
       nframes_found++;
       time_max = time_local;
     }
@@ -5738,7 +5738,7 @@ int GetSmoke3DSizes(int fortran_skip, char *smokefile, int version, float **time
       continue;
     }
 
-    if(iii%smoke3dframestep == 0 && (use_tload_begin == 0 || time_local >= tload_begin)){
+    if(iii%tload_step == 0 && (use_tload_begin == 0 || time_local >= tload_begin)){
       *use_smokeframe_full = 1;
       *time_found++ = time_local;
       time_max = time_local;

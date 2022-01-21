@@ -2916,10 +2916,7 @@ GLUI_Spinner *SPINNER_tload_end=NULL;
 GLUI_Spinner *SPINNER_tload_skip=NULL;
 GLUI_Spinner *SPINNER_plot3d_vectorpointsize=NULL,*SPINNER_plot3d_vectorlinewidth=NULL,*SPINNER_plot3d_vectorlinelength=NULL;
 GLUI_Spinner *SPINNER_sliceaverage=NULL;
-GLUI_Spinner *SPINNER_smoke3dzipstep=NULL;
-GLUI_Spinner *SPINNER_slicezipstep=NULL;
-GLUI_Spinner *SPINNER_isozipstep=NULL;
-GLUI_Spinner *SPINNER_boundzipstep=NULL;
+GLUI_Spinner *SPINNER_zipstep=NULL;
 GLUI_Spinner *SPINNER_partstreaklength=NULL;
 GLUI_Spinner *SPINNER_partpointsize=NULL;
 GLUI_Spinner *SPINNER_isopointsize=NULL;
@@ -3942,11 +3939,6 @@ extern "C" void BoundBoundCB(int var){
   case HIDEPATCHSURFACE:
     updatefacelists = 1;
     break;
-  case FRAMELOADING:
-    boundframestep = boundframeskip + 1;
-    boundzipstep = boundzipskip + 1;
-    updatemenu = 1;
-    break;
   case CHOPUPDATE:
     UpdateChopColors();
     break;
@@ -4062,21 +4054,6 @@ extern "C" void BoundBoundCB(int var){
     break;
   case LOAD_FILES:
     LoadFiles();
-    break;
-  default:
-    ASSERT(FFALSE);
-    break;
-  }
-}
-
-/* ------------------ Smoke3dBoundCB ------------------------ */
-
-void Smoke3dBoundCB(int var){
-  switch(var){
-  case FRAMELOADING:
-    smoke3dframestep = smoke3dframeskip + 1;
-    smoke3dzipstep = smoke3dzipskip + 1;
-    updatemenu = 1;
     break;
   default:
     ASSERT(FFALSE);
@@ -4370,26 +4347,9 @@ extern "C" void GluiBoundsSetup(int main_window){
       &overwrite_all, OVERWRITE, BoundBoundCB);
     CHECKBOX_compress_autoloaded = glui_bounds->add_checkbox_to_panel(ROLLOUT_compress, _("Compress only autoloaded files"),
       &compress_autoloaded, COMPRESS_AUTOLOADED, BoundBoundCB);
-    if(nsliceinfo > 0){
-      SPINNER_slicezipstep = glui_bounds->add_spinner_to_panel(ROLLOUT_compress, _("Slice frame Skip"), GLUI_SPINNER_INT, &slicezipskip,
+      SPINNER_zipstep = glui_bounds->add_spinner_to_panel(ROLLOUT_compress, _("Frame Skip"), GLUI_SPINNER_INT, &tload_zipskip,
         FRAMELOADING, SliceBoundCB);
-      SPINNER_slicezipstep->set_int_limits(0, 100);
-    }
-    if(nisoinfo > 0){
-      SPINNER_isozipstep = glui_bounds->add_spinner_to_panel(ROLLOUT_compress, _("Compressed file frame skip"), GLUI_SPINNER_INT, &isozipskip,
-        FRAMELOADING, IsoBoundCB);
-      SPINNER_isozipstep->set_int_limits(0, 100);
-    }
-    if(nsmoke3dinfo > 0){
-      SPINNER_smoke3dzipstep = glui_bounds->add_spinner_to_panel(ROLLOUT_compress, _("3D smoke frame skip"), GLUI_SPINNER_INT, &smoke3dzipskip,
-        FRAMELOADING, Smoke3dBoundCB);
-      SPINNER_smoke3dzipstep->set_int_limits(0, 100);
-    }
-    if(npatchinfo > 0){
-      SPINNER_boundzipstep = glui_bounds->add_spinner_to_panel(ROLLOUT_compress, _("Boundary file frame skip"),
-        GLUI_SPINNER_INT, &boundzipskip, FRAMELOADING, BoundBoundCB);
-      SPINNER_boundzipstep->set_int_limits(0, 100);
-    }
+      SPINNER_zipstep->set_int_limits(0, 100);
     BUTTON_compress = glui_bounds->add_button_to_panel(ROLLOUT_compress, _("Run smokezip"), COMPRESS_FILES, BoundBoundCB);
   }
 #endif
@@ -5610,11 +5570,6 @@ extern "C" void IsoBoundCB(int var){
       LIST_colortable->set_int_val(i_colortable_list);
     }
     break;
-  case FRAMELOADING:
-    isoframestep_global=isoframeskip_global+1;
-    isozipstep=isozipskip+1;
-    updatemenu=1;
-    break;
   case ISO_SURFACE:
   case  ISO_OUTLINE:
   case ISO_POINTS:
@@ -5857,12 +5812,6 @@ void PartBoundCB(int var){
       SPINNER_npartthread_ids->enable();
       CHECKBOX_part_multithread->set_int_val(part_multithread);
     }
-    updatemenu=1;
-    break;
-  case FRAMELOADING:
-    partframestep=partframeskip+1;
-    evacframestep=evacframeskip+1;
-    evacframestep=evacframeskip+1;
     updatemenu=1;
     break;
   case CHOPUPDATE:
@@ -6144,8 +6093,7 @@ extern "C" void SliceBoundCB(int var){
     }
     break;
   case FRAMELOADING:
-    sliceframestep=sliceframeskip+1;
-    slicezipstep=slicezipskip+1;
+    tload_zipstep=tload_zipskip+1;
     updatemenu=1;
     break;
   case CHOPUPDATE:
@@ -6363,27 +6311,6 @@ extern "C" void UpdateGluiTimeBounds(float time_min, float time_max){
 /* ------------------ UpdateTBounds ------------------------ */
 
 extern "C" void UpdateTBounds(void){
-  if(use_tload_skip==1){
-    smoke3dframeskip=tload_skip;
-    boundframeskip=tload_skip;
-    isoframeskip_global=tload_skip;
-    partframeskip=tload_skip;
-    evacframeskip=tload_skip;
-    sliceframeskip=tload_skip;
-  }
-  else{
-    smoke3dframeskip=0;
-    boundframeskip=0;
-    isoframeskip_global=0;
-    partframeskip=0;
-    evacframeskip=0;
-    sliceframeskip=0;
-  }
-
-  Smoke3dBoundCB(FRAMELOADING);
-  BoundBoundCB(FRAMELOADING);
-  IsoBoundCB(FRAMELOADING);
-  PartBoundCB(FRAMELOADING);
   SliceBoundCB(FRAMELOADING);
 }
 

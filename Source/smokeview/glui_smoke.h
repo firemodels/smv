@@ -28,7 +28,6 @@
 #define SMOKE_RTHICK 8
 #endif
 #define SAVE_SETTINGS_SMOKE 9
-#define FRAMELOADING_SMOKE 10
 #define SMOKETEST 11
 #define VOL_SMOKE 13
 #define VOL_NGRID 18

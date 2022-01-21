@@ -1086,14 +1086,14 @@ void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
       local_count++;
     }
     if(fread(&compressed_size, 4, 1, stream)==0)break;
-    if(skip_frame==0&&local_count%boundframestep==0){
+    if(skip_frame==0&&local_count%tload_step==0){
       if(fread(datacopy, 1, compressed_size, stream)==0)break;
     }
     else{
       FSEEK(stream, compressed_size, SEEK_CUR);
     }
 
-    if(skip_frame==1||local_count%boundframestep!=0)continue;
+    if(skip_frame==1||local_count%tload_step!=0)continue;
     i++;
     if(i>=ntimes_local)break;
     ASSERT(i<ntimes_local);
@@ -1294,7 +1294,7 @@ void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
     if(frame_skip==1)continue;
 
     local_count++;
-    if(local_count%boundframestep!=0)continue;
+    if(local_count%tload_step!=0)continue;
 
     nf++;
     bsize += compressed_size;
@@ -2155,7 +2155,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         FORTskipdata(&file_unit,&framesizes);
         local_first = 0;
       }
-      for(n=0;n<boundframestep;n++){
+      for(n=0;n<tload_step;n++){
         if(error==0){
           int npatchval_iframe;
           int filesize;
