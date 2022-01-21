@@ -1,10 +1,12 @@
 @echo off
 setlocal
-cd src
-erase *.o *.lib *.def *.dll
-call "%VS_COMPILER%\vcvarsall" x86_amd64
-cd ..
-make windows
-cd src
-lib /machine:x64 /def:liblua.def
+call ..\scripts\setopts %*
+title Building windows lua library
+erase *.o *.obj liblua.a liblua.lib
+set target=windows
+make CC=%COMPILER% SIZE=%SIZE% AR=lib AR_OUT="/OUT:" RANLIB=dir RM=erase -f ./Makefile %target%
+if %COPYLIB% == 1 copy %FROMLIB% %TOLIB%
+if "x%EXIT_SCRIPT%" == "x" goto skip1
+exit
+:skip1
 endlocal
