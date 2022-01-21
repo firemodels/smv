@@ -86,7 +86,7 @@ STDCALLF FORTskipdata(int *lunit, int *size);
 STDCALLF FORTgetdata1(int *file_unit, int *ipart, int *error);
 
 STDCALLF FORTgetslicesizes(char *slicefilename, int *nslicei, int *nslicej, int *nslicek,
-                          int *nsteps,int *sliceframestep, int *error,
+                          int *nsteps,int *tload_step, int *error,
                           int *settime_p, int *settmax_p, float *tmin_p, float *tmax_p,
                           int *headersize, int *framesize,FILE_SIZE slicefilelen);
 STDCALLF FORTwriteslicedata(char *slicefilename,

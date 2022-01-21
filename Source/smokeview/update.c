@@ -393,22 +393,6 @@ void UpdateShow(void){
   drawing_boundary_files = 0;
 
   RenderTime=0;
-  if(global_times!=NULL){
-    if(settmin_p==1&&global_times[itimes]<tmin_p)visTimeParticles=0;
-    if(settmax_p==1&&global_times[itimes]>tmax_p)visTimeParticles=0;
-
-    if(settmin_s==1&&global_times[itimes]<tmin_s)visTimeSlice=0;
-    if(settmax_s==1&&global_times[itimes]>tmax_s)visTimeSlice=0;
-
-    if(settmin_i==1&&global_times[itimes]<tmin_i)visTimeIso=0;
-    if(settmax_i==1&&global_times[itimes]>tmax_i)visTimeIso=0;
-
-    if(settmin_b==1&&global_times[itimes]<tmin_b)visTimeBoundary=0;
-    if(settmax_b==1&&global_times[itimes]>tmax_b)visTimeBoundary=0;
-
-    if(settmin_z==1&&global_times[itimes]<tmin_z)visTimeZone=0;
-    if(settmax_z==1&&global_times[itimes]>tmax_z)visTimeZone=0;
-  }
   if(visHRRlabel==1&&show_hrrpuv_plot==1&&hrrinfo!=NULL){
     showdeviceflag = 1;
   }

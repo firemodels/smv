@@ -1571,8 +1571,6 @@ void InitVars(void){
 
   slicefilenumber=0;
   nspr=0;
-  smoke3dframestep=1;
-  smoke3dframeskip=0;
   vectorskip=1;
   rotation_type=ROTATION_2AXIS;
   eyeview_level=1;
@@ -1591,10 +1589,6 @@ void InitVars(void){
   vis_onlythreshold=0, vis_threshold=0;
   activate_threshold=1;
   canshow_threshold=1;
-  settmin_p=0, settmin_b=0, settmin_s=0, settmin_z=0, settmin_i=0;
-  settmax_p=0, settmax_b=0, settmax_s=0, settmax_z=0, settmax_i=0;
-  tmin_p=1., tmin_b=1., tmin_s=1., tmin_z=1., tmin_i=1.;
-  tmax_p=0., tmax_b=0., tmax_s=0., tmax_z=0., tmax_i=0.;
   speedmax=0.0;
   hrrpuv_max_smv=1200.0;
   FlowDir=1,ClipDir=1;
@@ -1688,13 +1682,6 @@ void InitVars(void){
   visNormalEditColors=1;
   visWalls=0, visGrid=0, visCeiling=0;
   visSensor=1, visSensorNorm=1, hasSensorNorm=0;
-  partframestep=1, sliceframestep=1, boundframestep=1;
-  partframeskip=0, sliceframeskip=0, boundframeskip=0;
-  boundzipstep=1, boundzipskip=0;
-  smoke3dzipstep=1, smoke3dzipskip=0;
-  isozipstep=1, isozipskip=0;
-  slicezipstep=1, slicezipskip=0;
-  evacframeskip=0, evacframestep=1;
   render_window_size=RenderWindow;
   RenderMenu(render_window_size);
   viewoption=0;
@@ -1722,13 +1709,6 @@ void InitVars(void){
   eyexfactor=0.5f, eyeyfactor=-0.9f, eyezfactor=0.5f;
 
   frameinterval=1.0;
-
-  use_tload_begin=0;
-  use_tload_end=0;
-  use_tload_skip=0;
-  tload_begin=0.0;
-  tload_end=1.0;
-  tload_skip=0;
 
   blockages_dirty=0;
   usetextures=0;

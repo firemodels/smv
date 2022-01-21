@@ -2707,6 +2707,7 @@ void UpdateFaceLists(void){
   int n_normals_single, n_normals_double, n_transparent_double;
   int i;
   int drawing_transparent, drawing_blockage_transparent, drawing_vent_transparent;
+  int check_blockhide=1;
 
   GetDrawingParms(&drawing_transparent, &drawing_blockage_transparent, &drawing_vent_transparent);
 
@@ -2721,6 +2722,9 @@ void UpdateFaceLists(void){
   if(opengldefined==1){
     glutPostRedisplay();
   }
+  // if we are not showing boundary files then don't try to hide blockages
+  if(use_tload_begin == 1 && global_times!=NULL && global_times[itimes] < tload_begin)check_blockhide = 0;
+  if(use_tload_end   == 1 && global_times!=NULL && global_times[itimes] > tload_end)check_blockhide = 0;
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
     int patchfilenum;
@@ -2754,7 +2758,7 @@ void UpdateFaceLists(void){
       loadpatch=0;
     }
 
-    if(local_showpatch==1&&loadpatch==1){
+    if(local_showpatch==1&&loadpatch==1&&check_blockhide==1){
       int jj;
 
       for(jj=0;jj<meshi->nbptrs;jj++){

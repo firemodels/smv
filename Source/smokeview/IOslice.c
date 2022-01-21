@@ -856,14 +856,14 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   if(frame_index_local==first_frame_index){
     if(sd->compression_type==UNCOMPRESSED){
 
-      FORTgetslicesizes(sd->file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sliceframestep,&error,
-        &settmin_s, &settmax_s, &tmin_s, &tmax_s, &headersize, &framesize,
+      FORTgetslicesizes(sd->file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &tload_step,&error,
+        &use_tload_begin, &use_tload_end, &tload_begin, &tload_end, &headersize, &framesize,
         slicefilelen);
     }
     else if(sd->compression_type!=UNCOMPRESSED){
       if(
         GetSliceHeader(sd->comp_file,sd->size_file,sd->compression_type,
-                       sliceframestep,settmin_s,settmax_s,tmin_s,tmax_s,
+                       tload_step, use_tload_begin, use_tload_end, tload_begin, tload_end,
                        &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sd->ncompressed, &sd->valmin, &sd->valmax)==0){
         ReadSlice("",sd_index, ALL_FRAMES,NULL,UNLOAD,SET_SLICECOLOR,&error);
         return -1;
@@ -4159,7 +4159,7 @@ void GetSliceFileDirection(int is1, int *is2ptr, int *iis1ptr, int *iis2ptr, int
 
 /* ------------------ GetSliceSizes ------------------------ */
 
-void GetSliceSizes(slicedata *sd, const char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int sliceframestep_arg,
+void GetSliceSizes(slicedata *sd, const char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int tload_step_arg,
   int *errorptr, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg, int *headersizeptr, int *framesizeptr){
 
   int ip1, ip2, jp1, jp2, kp1, kp2;
@@ -4230,7 +4230,7 @@ void GetSliceSizes(slicedata *sd, const char *slicefilenameptr, int time_frame, 
       return;
     }
     FSEEK_SLICE(SLICEFILE, *framesizeptr-12, SEEK_CUR);
-    if(count%sliceframestep_arg==0){
+    if(count%tload_step_arg==0){
       countskip++;
       if(time_frame>=0&&time_frame==countskip){
         *ntimesptr = *ntimesptr+1;
@@ -4243,6 +4243,7 @@ void GetSliceSizes(slicedata *sd, const char *slicefilenameptr, int time_frame, 
       loadframe = 0;
     }
     if(loadframe==1)*ntimesptr = *ntimesptr+1;
+    count++;
   }
   *errorptr = 0;
 #ifdef pp_SLICE_BUFFER
@@ -4283,7 +4284,7 @@ void GetSliceFileHeader(char *file, int *ip1, int *ip2, int *jp1, int *jp2, int 
 
 FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame, int *is1ptr, int *is2ptr, int *js1ptr, int *js2ptr, int *ks1ptr, int *ks2ptr, int *idirptr,
   float *qminptr, float *qmaxptr, float *qdataptr, float *timesptr, int ntimes_old_arg, int *ntimesptr,
-  int sliceframestep_arg, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg
+  int tload_step_arg, int settmin_s_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg
 ){
 
   int i, j, k;
@@ -4400,7 +4401,7 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
     FORT_SLICEREAD(qq, nxsp*nysp*nzsp, stream);
     if(returncode==0||nsteps>=*ntimesptr)break;
     count++;
-    if(count%sliceframestep_arg!=0)loadframe = 0;
+    if(count%tload_step_arg!=0)loadframe = 0;
     if(loadframe==0)continue;
     if(koff==1){
 //  qq(1:nxsp, 1:nysp, 2) = qq(1:nxsp, 1:nysp, 1)
@@ -4726,13 +4727,13 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
     if(sd->compression_type == UNCOMPRESSED){
       sd->ntimes_old = sd->ntimes;
-      GetSliceSizes(sd, file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, sliceframestep, &error,
-          settmin_s, settmax_s, tmin_s, tmax_s, &headersize, &framesize);
+      GetSliceSizes(sd, file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step, &error,
+                    use_tload_begin, use_tload_end, tload_begin, tload_end, &headersize, &framesize);
     }
     else if(sd->compression_type != UNCOMPRESSED){
       if(
         GetSliceHeader(sd->comp_file, sd->size_file, sd->compression_type,
-          sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s,
+          tload_step, use_tload_begin, use_tload_end, tload_begin, tload_end,
           &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &sd->ncompressed, &sd->valmin, &sd->valmax) == 0){
         ReadSlice("", ifile, time_frame, time_value, UNLOAD, set_slicecolor, &error);
         *errorcode = 1;
@@ -4748,7 +4749,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       *errorcode = 1;
       return 0;
     }
-    if(settmax_s == 0 && settmin_s == 0 && sd->compression_type == UNCOMPRESSED){
+    if(use_tload_begin== 0 &&use_tload_end == 0 && sd->compression_type == UNCOMPRESSED){
       if(framesize <= 0){
         fprintf(stderr, "*** Error: frame size is 0 in slice file %s . \n", file);
         error = 1;
@@ -4756,7 +4757,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       else{
         if(time_frame==ALL_FRAMES){
           sd->ntimes = (int)(GetFileSizeSMV(file)-headersize)/framesize;
-          if(sliceframestep>1)sd->ntimes /= sliceframestep;
+          if(tload_step>1)sd->ntimes /= tload_step;
         }
       }
     }
@@ -4782,7 +4783,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         return 0;
       }
       return_code=GetSliceCompressedData(sd->comp_file, sd->compression_type,
-        settmin_s, settmax_s, tmin_s, tmax_s, sd->ncompressed, sliceframestep, sd->ntimes,
+        use_tload_begin, use_tload_end, tload_begin, tload_end, sd->ncompressed, tload_step, sd->ntimes,
         sd->times, sd->qslicedata_compressed, sd->compindex, &sd->globalmin, &sd->globalmax);
       if(return_code == 0){
         ReadSlice("", ifile, time_frame, time_value, UNLOAD,  set_slicecolor, &error);
@@ -4820,7 +4821,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       if(sd->ntimes > ntimes_slice_old){
         return_filesize = GetSliceData(sd, file, time_frame, &sd->is1, &sd->is2, &sd->js1, &sd->js2, &sd->ks1, &sd->ks2, &sd->idir,
             &qmin, &qmax, sd->qslicedata, sd->times, ntimes_slice_old, &sd->ntimes,
-            sliceframestep, settmin_s, settmax_s, tmin_s, tmax_s
+            tload_step, use_tload_begin, use_tload_end, tload_begin, tload_end
           );
         file_size = (int)return_filesize;
         sd->valmin_smv = qmin;
@@ -7364,6 +7365,8 @@ void DrawSliceFrame(){
   int jjj, nslicemax, blend_mode;
   int draw_slice;
 
+  if(use_tload_begin==1 && global_times[itimes]<tload_begin)return;
+  if(use_tload_end==1   && global_times[itimes]>tload_end)return;
   SortLoadedSliceList();
 
   for(ii = 0; ii<nslice_loaded; ii++){
@@ -8746,6 +8749,8 @@ void DrawVVolSlice(const vslicedata *vd){
 void DrawVSliceFrame(void){
   int i;
 
+  if(use_tload_begin==1 && global_times[itimes]<tload_begin)return;
+  if(use_tload_end==1   && global_times[itimes]>tload_end)return;
   for(i=0;i<nvsliceinfo;i++){
     vslicedata *vd;
     slicedata *u, *v, *w, *val;

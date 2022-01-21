@@ -1086,14 +1086,14 @@ void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
       local_count++;
     }
     if(fread(&compressed_size, 4, 1, stream)==0)break;
-    if(skip_frame==0&&local_count%boundframestep==0){
+    if(skip_frame==0&&local_count%tload_step==0){
       if(fread(datacopy, 1, compressed_size, stream)==0)break;
     }
     else{
       FSEEK(stream, compressed_size, SEEK_CUR);
     }
 
-    if(skip_frame==1||local_count%boundframestep!=0)continue;
+    if(skip_frame==1||local_count%tload_step!=0)continue;
     i++;
     if(i>=ntimes_local)break;
     ASSERT(i<ntimes_local);
@@ -1294,7 +1294,7 @@ void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
     if(frame_skip==1)continue;
 
     local_count++;
-    if(local_count%boundframestep!=0)continue;
+    if(local_count%tload_step!=0)continue;
 
     nf++;
     bsize += compressed_size;
@@ -2155,7 +2155,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         FORTskipdata(&file_unit,&framesizes);
         local_first = 0;
       }
-      for(n=0;n<boundframestep;n++){
+      for(n=0;n<tload_step;n++){
         if(error==0){
           int npatchval_iframe;
           int filesize;
@@ -2224,11 +2224,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     }
     CheckMemory;
     if(error!=0)break;
-    if(settmax_b!=0&&*meshi->patch_timesi>tmax_b)break;
+    if(use_tload_end!=0&&*meshi->patch_timesi>tload_end)break;
 
     switch(loadpatchbysteps){
       case UNCOMPRESSED_ALLFRAMES:
-        if(!(settmin_b!=0&&*meshi->patch_timesi<tmin_b)){
+        if(!(use_tload_begin!=0&&*meshi->patch_timesi<tload_begin)){
            meshi->npatch_times++;
           patchi->ntimes=meshi->npatch_times;
           if(meshi->npatch_times + 1 > maxtimes_boundary){
@@ -4264,6 +4264,9 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 void DrawBoundaryFrame(int flag){
   meshdata *meshi;
   int i;
+
+  if(use_tload_begin==1 && global_times[itimes]<tload_begin)return;
+  if(use_tload_end==1   && global_times[itimes]>tload_end)return;
 
   for(i=0;i<npatchinfo;i++){
     patchdata *patchi;
