@@ -1374,9 +1374,9 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
     FORTPART5READ_m(&time_local,1);
     if(returncode==FAIL_m)break;
 
-    if(tload_step>1       && count_local%tload_step!=0||
-      (use_tload_begin==1 && time_local<tload_begin-TEPS)||
-      (use_tload_end==1   && time_local>tload_end+TEPS)){
+    if((tload_step>1       && count_local%tload_step!=0)||
+       (use_tload_begin==1 && time_local<tload_begin-TEPS)||
+       (use_tload_end==1   && time_local>tload_end+TEPS)){
       doit_local=0;
     }
     else{
