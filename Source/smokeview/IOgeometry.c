@@ -1968,9 +1968,9 @@ void ReadGeomHeader0(geomdata *geomi, int *geom_frame_index, int *ntimes_local){
     }
 
     if(geom_frame_index==NULL){
-      if(use_tload_begin == 1 && times_local[0] < tload_begin)continue;
-      if(use_tload_skip == 1 && tload_skip>1 && icount%tload_skip!=0)continue;
-      if(use_tload_end == 1 && times_local[0] > tload_end)break;
+      if(tload_step      >  1 && icount%tload_step != 0)continue;
+      if(use_tload_begin == 1 && times_local[0]     < tload_begin)continue;
+      if(use_tload_end   == 1 && times_local[0]     >tload_end)break;
     }
     nt++;
   }
@@ -2318,9 +2318,9 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
 
       icount++;
       if(geom_frame_index == NULL){
-        if(use_tload_begin == 1 && times_local[0] < tload_begin)skipframe = 1;
-        if(use_tload_skip == 1 && tload_skip>1 && icount%tload_skip != 0)skipframe = 1;
-        if(use_tload_end == 1 && times_local[0] > tload_end)skipframe = 1;
+        if(use_tload_begin == 1 && times_local[0]     < tload_begin)skipframe = 1;
+        if(use_tload_end   == 1 && times_local[0]     > tload_end)skipframe = 1;
+        if(tload_step      >  1 && icount%tload_step != 0)skipframe = 1;
         if(skipframe == 0)geomi->times[iframe] = times_local[0];
       }
       else{

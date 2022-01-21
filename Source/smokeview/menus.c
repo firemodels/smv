@@ -10525,7 +10525,7 @@ updatemenu=0;
       char steplabel[100];
 
       strcpy(loadmenulabel, "Mesh");
-      if(tload_step>1){
+      if(tload_step > 1){
         sprintf(steplabel, "/Skip %i", tload_skip);
         strcat(loadmenulabel, steplabel);
       }
@@ -10987,7 +10987,7 @@ updatemenu=0;
       char steplabel[100];
 
       strcpy(loadmenulabel,"Mesh");
-      if(tload_skip>0){
+      if(tload_step > 1){
         sprintf(steplabel,"/Skip %i",tload_skip);
         strcat(loadmenulabel,steplabel);
       }
@@ -12075,7 +12075,7 @@ updatemenu=0;
 
       if(nsmoke3dinfo>0){
         strcpy(loadmenulabel,_("3D smoke"));
-        if(tload_skip>0){
+        if(tload_step > 1){
           sprintf(steplabel,"/Skip %i",tload_skip);
           strcat(loadmenulabel,steplabel);
         }
@@ -12101,7 +12101,7 @@ updatemenu=0;
 
       if((nmultisliceinfo > 0 && nmultisliceinfo + nfedinfo < nsliceinfo)||have_geom_slice_menus==1){
         strcpy(loadmenulabel, _("Slice"));
-        if(tload_skip > 0){
+        if(tload_step > 1){
           sprintf(steplabel, "/Skip %i", tload_skip);
           strcat(loadmenulabel, steplabel);
         }
@@ -12109,7 +12109,7 @@ updatemenu=0;
       }
       else if(nsliceinfo > 0){
         strcpy(loadmenulabel, "Slice");
-        if(tload_skip > 0){
+        if(tload_step > 1){
           sprintf(steplabel, "/Skip %i", tload_skip);
           strcat(loadmenulabel, steplabel);
         }
@@ -12120,7 +12120,7 @@ updatemenu=0;
 
       if(nvsliceinfo > 0 && nmultivsliceinfo < nvsliceinfo){
         strcpy(loadmenulabel,_("Vector Slice"));
-        if(tload_skip>0){
+        if(tload_step > 1){
           sprintf(steplabel,"/Skip %i",tload_skip);
           strcat(loadmenulabel,steplabel);
         }
@@ -12128,7 +12128,7 @@ updatemenu=0;
       }
       else if(nvsliceinfo>0){
         strcpy(loadmenulabel,_("Vector slice"));
-        if(tload_step>1){
+        if(tload_step > 1){
           sprintf(steplabel,"/Skip %i",tload_skip);
           strcat(loadmenulabel,steplabel);
         }
@@ -12139,7 +12139,7 @@ updatemenu=0;
 
       if(nisoinfo>0){
         strcpy(loadmenulabel,"Isosurface");
-        if(tload_skip>0){
+        if(tload_step > 1){
           sprintf(steplabel,"/Skip %i",tload_skip);
           strcat(loadmenulabel,steplabel);
         }
@@ -12150,7 +12150,7 @@ updatemenu=0;
 
       if(npatchinfo>0){
         strcpy(loadmenulabel,"Boundary");
-        if(tload_skip>0){
+        if(tload_step > 1){
           sprintf(steplabel,"/Skip %i",tload_skip);
           strcat(loadmenulabel,steplabel);
         }
@@ -12162,7 +12162,7 @@ updatemenu=0;
       if(npartinfo>0){
         if(nevac!=npartinfo){
           strcpy(loadmenulabel,"Particles");
-          if(tload_skip>0){
+          if(tload_step > 1){
             sprintf(steplabel,"/Skip Frame %i",tload_skip);
             strcat(loadmenulabel,steplabel);
           }
@@ -12170,7 +12170,7 @@ updatemenu=0;
         }
         if(nevac>0){
           strcpy(loadmenulabel,_("Evacuation"));
-          if(tload_skip>0){
+          if(tload_step > 1){
             sprintf(steplabel,"/Skip Frame %i",tload_skip);
             strcat(loadmenulabel,steplabel);
           }

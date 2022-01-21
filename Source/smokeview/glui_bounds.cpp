@@ -4073,6 +4073,7 @@ void TimeBoundCB(int var){
   case TBOUNDS:
     UpdateTBounds();
     UpdateTimes();
+    updatemenu = 1;
     break;
 #ifdef pp_TIMEBAR_DIGITS
   case TIMEBAR_DIGITS:
@@ -4099,6 +4100,7 @@ void TimeBoundCB(int var){
     }
     UpdateTBounds();
     UpdateTimes();
+    updatemenu = 1;
     break;
   case RELOAD_ALL_DATA:
     ReloadMenu(RELOAD_ALL_NOW);
@@ -5041,6 +5043,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 #endif
 
   TimeBoundCB(TBOUNDS_USE);
+  TimeBoundCB(TBOUNDS);
 
 
   // -------------- Data coloring -------------------
@@ -6094,7 +6097,12 @@ extern "C" void SliceBoundCB(int var){
     break;
   case FRAMELOADING:
     tload_zipstep = tload_zipskip + 1;
-    tload_step    = tload_skip + 1;
+    if(use_tload_skip==0){
+      tload_step = 1;
+    }
+    else{
+      tload_step = tload_skip + 1;
+    }
     updatemenu=1;
     break;
   case CHOPUPDATE:
