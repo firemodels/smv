@@ -521,6 +521,12 @@ Colorbars may then be adapted to best highlight the simulation data visualized.
 Regions in the simulation with certain data values may be highlighted by clicking
 on the colorbar.
 
+\subsubsection{Data Compression}\ An option has been added to the
+{\em LOAD/UNLOAD}\ menu to compress 3D smoke and boundary
+files (Section \ref{ch:smokezip}). The option shells out to the program Smokezip which runs in
+the background enabling one to continue to use Smokeview while
+files are compressing.
+
 \subsubsection{Data Comparison}\ A stand alone utility program named Smokediff
 may be used to compare two FDS cases (Section \ref{ch:smokediff}).
 Smokediff generates the difference between corresponding slice and boundary
@@ -1789,7 +1795,7 @@ data when converting data to color. Variable types are determined from the files
 by FDS and are automatically recorded in the {\tt .smv}\ file. The
 data bounds are set in a pair of edit boxes. Radio buttons
 adjacent to the edit boxes determine what type of bounds should be
-applied.
+applied.  
 The \frameit{Update Colors}\ and \frameit{Reload Data} buttons
 as the names suggest allow one to update colors (without re-reading data files) or reload data.
 
