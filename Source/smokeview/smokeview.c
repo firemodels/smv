@@ -243,9 +243,11 @@ void DisplayVersionInfo(char *progname){
     }
 #endif
   }
+#ifdef pp_COMPRESS
   if(smokezippath!=NULL){
     PRINTF("Smokezip         : %s\n",smokezippath);
   }
+#endif
   if(texturedir!=NULL){
     PRINTF("Texture directory: %s\n",texturedir);
   }
