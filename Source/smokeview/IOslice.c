@@ -1265,7 +1265,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
 
 /* ------------------ ReadVSlice ------------------------ */
 
-FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, int *errorcode){
+FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode){
   vslicedata *vd;
   float valmin, valmax;
   int display;
@@ -1281,7 +1281,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
   vd->v=NULL;
   vd->w=NULL;
   vd->val=NULL;
-  int set_slicecolor = SET_SLICECOLOR;
 
   if(vd->iu!=-1)sliceinfo[vd->iu].uvw = 1;
   if(vd->iv!=-1)sliceinfo[vd->iv].uvw = 1;
@@ -1298,7 +1297,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
           return_filesize = ReadGeomData(u->patchgeom, u, UNLOAD, time_frame, time_value, errorcode);
         }
         else{
-          return_filesize+=ReadSlice(u->file, vd->iu, time_frame,NULL,UNLOAD, SET_SLICECOLOR, errorcode);
+          return_filesize+=ReadSlice(u->file, vd->iu, time_frame,NULL,UNLOAD, DEFER_SLICECOLOR, errorcode);
         }
       }
       u->display=display;
@@ -1314,7 +1313,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
           return_filesize = ReadGeomData(v->patchgeom, v, UNLOAD, time_frame, time_value, errorcode);
         }
         else{
-          return_filesize+=ReadSlice(v->file, vd->iv, time_frame,NULL,UNLOAD, SET_SLICECOLOR, errorcode);
+          return_filesize+=ReadSlice(v->file, vd->iv, time_frame,NULL,UNLOAD, DEFER_SLICECOLOR, errorcode);
         }
       }
       v->display=display;
@@ -1330,7 +1329,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
           return_filesize = ReadGeomData(w->patchgeom, w, UNLOAD, time_frame, time_value, errorcode);
         }
         else{
-          return_filesize+=ReadSlice(w->file, vd->iw, time_frame,NULL,UNLOAD, SET_SLICECOLOR, errorcode);
+          return_filesize+=ReadSlice(w->file, vd->iw, time_frame,NULL,UNLOAD, DEFER_SLICECOLOR, errorcode);
         }
       }
       w->display=display;
@@ -1346,7 +1345,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
           return_filesize = ReadGeomData(val->patchgeom, val, UNLOAD, time_frame, time_value, errorcode);
         }
         else{
-          return_filesize+=ReadSlice(val->file, vd->ival, time_frame,NULL,UNLOAD, SET_SLICECOLOR, errorcode);
+          return_filesize+=ReadSlice(val->file, vd->ival, time_frame,NULL,UNLOAD, set_slicecolor, errorcode);
         }
       }
       val->display=display;
@@ -1374,12 +1373,17 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
         return_filesize += ReadGeomData(u->patchgeom, u, LOAD, time_frame, time_value, errorcode);
       }
       else{
-        return_filesize += ReadSlice(u->file, vd->iu, time_frame,time_value, flag, set_slicecolor, errorcode);
+        int finalize_save;
+
+        finalize_save = u->finalize;
+        u->finalize = 0;
+        return_filesize += ReadSlice(u->file, vd->iu, time_frame,time_value, flag, DEFER_SLICECOLOR, errorcode);
+        u->finalize = finalize_save;
       }
       if(*errorcode!=0){
         vd->loaded = 1;
         fprintf(stderr, "*** Error: unable to load U velocity vector components in %s . Vector load aborted\n", u->file);
-        ReadVSlice(ivslice, time_frame, time_value, UNLOAD, errorcode);
+        ReadVSlice(ivslice, time_frame, time_value, UNLOAD, DEFER_SLICECOLOR, errorcode);
         *errorcode = 1;
         return 0;
       }
@@ -1401,12 +1405,17 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
         return_filesize += ReadGeomData(v->patchgeom, v, LOAD, time_frame, time_value, errorcode);
       }
       else{
-        return_filesize += ReadSlice(v->file, vd->iv, time_frame,time_value,flag, set_slicecolor, errorcode);
+        int finalize_save;
+
+        finalize_save = v->finalize;
+        v->finalize==0;
+        return_filesize += ReadSlice(v->file, vd->iv, time_frame,time_value,flag, DEFER_SLICECOLOR, errorcode);
+        v->finalize = finalize_save;
       }
       if(*errorcode!=0){
         fprintf(stderr, "*** Error: unable to load V velocity vector components in %s . Vector load aborted\n", v->file);
         vd->loaded = 1;
-        ReadVSlice(ivslice, time_frame, time_value, UNLOAD, errorcode);
+        ReadVSlice(ivslice, time_frame, time_value, UNLOAD, DEFER_SLICECOLOR, errorcode);
         *errorcode = 1;
         return 0;
       }
@@ -1429,12 +1438,17 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
         return_filesize += ReadGeomData(w->patchgeom, w, LOAD, time_frame, time_value, errorcode);
       }
       else{
-        return_filesize += ReadSlice(w->file, vd->iw, time_frame,time_value,flag, set_slicecolor, errorcode);
+        int finalize_save;
+
+        finalize_save = w->finalize;
+        w->finalize = 0;
+        return_filesize += ReadSlice(w->file, vd->iw, time_frame,time_value,flag, DEFER_SLICECOLOR, errorcode);
+        w->finalize = finalize_save;
       }
       if(*errorcode!=0){
         fprintf(stderr, "*** Error: unable to load W velocity vector components in %s . Vector load aborted\n", w->file);
         vd->loaded = 1;
-        ReadVSlice(ivslice, time_frame, time_value, UNLOAD, errorcode);
+        ReadVSlice(ivslice, time_frame, time_value, UNLOAD, DEFER_SLICECOLOR, errorcode);
         *errorcode = 1;
         return 0;
       }
@@ -1463,7 +1477,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       if(*errorcode!=0){
         fprintf(stderr, "*** Error: unable to load vector values in %s . Vector load aborted\n", val->file);
         vd->loaded = 1;
-        ReadVSlice(ivslice, time_frame, time_value, UNLOAD, errorcode);
+        ReadVSlice(ivslice, time_frame, time_value, UNLOAD, DEFER_SLICECOLOR, errorcode);
         *errorcode = 1;
         return 0;
       }
@@ -4713,9 +4727,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
           UpdateAllSliceLabels(slicefile_labelindex, errorcode);
         }
       }
-
       UpdateUnitDefs();
-      UpdateTimes();
+      update_times = 1;
       RemoveSliceLoadstack(slicefilenumber);
       update_draw_hist = 1;
       PrintMemoryInfo;
