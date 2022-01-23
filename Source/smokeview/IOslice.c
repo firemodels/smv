@@ -1373,12 +1373,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
         return_filesize += ReadGeomData(u->patchgeom, u, LOAD, time_frame, time_value, errorcode);
       }
       else{
-        int finalize_save;
-
-        finalize_save = u->finalize;
-        u->finalize = 0;
-        return_filesize += ReadSlice(u->file, vd->iu, time_frame,time_value, flag, DEFER_SLICECOLOR, errorcode);
-        u->finalize = finalize_save;
+        return_filesize += ReadSlice(u->file, vd->iu, time_frame,time_value, flag, set_slicecolor, errorcode);
       }
       if(*errorcode!=0){
         vd->loaded = 1;
@@ -1405,12 +1400,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
         return_filesize += ReadGeomData(v->patchgeom, v, LOAD, time_frame, time_value, errorcode);
       }
       else{
-        int finalize_save;
-
-        finalize_save = v->finalize;
-        v->finalize=0;
-        return_filesize += ReadSlice(v->file, vd->iv, time_frame,time_value,flag, DEFER_SLICECOLOR, errorcode);
-        v->finalize = finalize_save;
+        return_filesize += ReadSlice(v->file, vd->iv, time_frame,time_value,flag, set_slicecolor, errorcode);
       }
       if(*errorcode!=0){
         fprintf(stderr, "*** Error: unable to load V velocity vector components in %s . Vector load aborted\n", v->file);
@@ -1438,12 +1428,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
         return_filesize += ReadGeomData(w->patchgeom, w, LOAD, time_frame, time_value, errorcode);
       }
       else{
-        int finalize_save;
-
-        finalize_save = w->finalize;
-        w->finalize = 0;
-        return_filesize += ReadSlice(w->file, vd->iw, time_frame,time_value,flag, DEFER_SLICECOLOR, errorcode);
-        w->finalize = finalize_save;
+        return_filesize += ReadSlice(w->file, vd->iw, time_frame,time_value,flag, set_slicecolor, errorcode);
       }
       if(*errorcode!=0){
         fprintf(stderr, "*** Error: unable to load W velocity vector components in %s . Vector load aborted\n", w->file);
