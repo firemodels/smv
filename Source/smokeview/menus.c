@@ -4230,7 +4230,6 @@ FILE_SIZE LoadVSliceMenu2(int value){
       }
     }
     for(i=0;i<nvsliceinfo;i++){
-      int set_slicecolor;
       vslicedata *vslicei;
 
       vslicei = vsliceinfo + i;

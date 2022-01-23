@@ -1408,7 +1408,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
         int finalize_save;
 
         finalize_save = v->finalize;
-        v->finalize==0;
+        v->finalize=0;
         return_filesize += ReadSlice(v->file, vd->iv, time_frame,time_value,flag, DEFER_SLICECOLOR, errorcode);
         v->finalize = finalize_save;
       }
