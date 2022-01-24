@@ -786,16 +786,22 @@ int ColorbarClick(int x, int y){
 
 /* ------------------ TimebarClick ------------------------ */
 
-int TimebarClick(int x, int y){
-  if(screenHeight-y<titlesafe_offset+VP_timebar.height&&nglobal_times>0){
+int TimebarClick(int xm, int ym){
+  if(screenHeight-ym<titlesafe_offset+VP_timebar.height&&nglobal_times>0){
     int timebar_right_pos;
     int timebar_left_pos;
 
     timebar_left_pos = VP_timebar.left+timebar_left_width;
     timebar_right_pos = VP_timebar.right-timebar_right_width;
 
-    if(timebar_right_pos>timebar_left_pos){
-      itimes = (float)nglobal_times*(float)(x-timebar_left_pos)/(float)(timebar_right_pos-timebar_left_pos);
+    if(global_times!=NULL&&timebar_right_pos>timebar_left_pos){
+      float time, factor;
+
+      factor = (float)(xm-timebar_left_pos)/(float)(timebar_right_pos-timebar_left_pos);
+      factor = CLAMP(factor, 0.0, 1.0);
+      time = global_times[0]*(1.0-factor)+global_times[nglobal_times-1]*factor;
+      itimes = GetInterval(time, global_times, nglobal_times);
+      itimes = CLAMP(itimes, 0, nglobal_times-1);
     }
     else{
       itimes=0;
@@ -1162,8 +1168,14 @@ void TimebarDrag(int xm){
     timebar_right_pos=VP_timebar.right-timebar_right_width;
 
     itimes=0;
-    if(timebar_right_pos>timebar_left_pos){
-      itimes = (float)nglobal_times*(float)(xm-timebar_left_pos)/(float)(timebar_right_pos-timebar_left_pos);
+    if(global_times!=NULL&&timebar_right_pos>timebar_left_pos){
+      float time, factor;
+
+      factor = (float)(xm-timebar_left_pos)/(float)(timebar_right_pos-timebar_left_pos);
+      factor = CLAMP(factor, 0.0, 1.0);
+      time = global_times[0]*(1.0-factor)+global_times[nglobal_times-1]*factor;
+      itimes = GetInterval(time, global_times, nglobal_times);
+      itimes = CLAMP(itimes, 0, nglobal_times-1);
     }
     CheckTimeBound();
     timebar_drag=1;
