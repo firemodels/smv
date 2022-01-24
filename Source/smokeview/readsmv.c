@@ -11949,31 +11949,14 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(output_slicedata);
       continue;
     }
-    if(Match(buffer, "SMOKE3DZIPSTEP") == 1){
+    if(Match(buffer, "SMOKE3DZIPSTEP") == 1 ||
+       Match(buffer, "SLICEZIPSTEP")   == 1 ||
+       Match(buffer, "ISOZIPSTEP")     == 1 ||
+       Match(buffer, "BOUNDZIPSTEP")   == 1 ||
+       Match(buffer, "ZIPSTEP")        == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &tload_zipstep);
-      if(tload_zipstep<1)tload_zipstep = 1;
-      tload_zipskip = tload_zipstep - 1;
-      continue;
-    }
-    if(Match(buffer, "SLICEZIPSTEP") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &tload_zipstep);
-      if(tload_zipstep<1)tload_zipstep = 1;
-      tload_zipskip = tload_zipstep - 1;
-      continue;
-    }
-    if(Match(buffer, "ISOZIPSTEP") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &tload_zipstep);
-      if(tload_zipstep<1)tload_zipstep = 1;
-      tload_zipskip = tload_zipstep - 1;
-      continue;
-    }
-    if(Match(buffer, "BOUNDZIPSTEP") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &tload_zipstep);
-      if(tload_zipstep<1)tload_zipstep = 1;
+      tload_zipstep = MAX(tload_zipstep, 1);
       tload_zipskip = tload_zipstep - 1;
       continue;
     }
@@ -14686,14 +14669,10 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout, "\n *** DATA LOADING ***\n\n");
 
-  fprintf(fileout, "BOUNDZIPSTEP\n");
-  fprintf(fileout, " %i\n", tload_zipstep);
   fprintf(fileout, "FED\n");
   fprintf(fileout," %i\n",regenerate_fed);
   fprintf(fileout, "FEDCOLORBAR\n");
   fprintf(fileout, " %s\n", default_fed_colorbar);
-  fprintf(fileout, "ISOZIPSTEP\n");
-  fprintf(fileout, " %i\n", tload_zipstep);
   fprintf(fileout, "LOADINC\n");
   fprintf(fileout, " %i\n", load_incremental);
   fprintf(fileout, "NOPART\n");
@@ -14710,12 +14689,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %f %i\n", slice_average_flag, slice_average_interval, vis_slice_average);
   fprintf(fileout, "SLICEDATAOUT\n");
   fprintf(fileout, " %i \n", output_slicedata);
-  fprintf(fileout, "SLICEZIPSTEP\n");
-  fprintf(fileout, " %i\n", tload_zipstep);
-  fprintf(fileout, "SMOKE3DZIPSTEP\n");
-  fprintf(fileout, " %i\n", tload_zipstep);
   fprintf(fileout, "USER_ROTATE\n");
   fprintf(fileout, " %i %i %f %f %f\n", glui_rotation_index, show_rotation_center, xcenCUSTOM, ycenCUSTOM, zcenCUSTOM);
+  fprintf(fileout, "ZIPSTEP\n");
+  fprintf(fileout, " %i\n", tload_zipstep);
 
   fprintf(fileout,"\n *** VIEW PARAMETERS ***\n\n");
 

@@ -1265,7 +1265,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
 
 /* ------------------ ReadVSlice ------------------------ */
 
-FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, int *errorcode){
+FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode){
   vslicedata *vd;
   float valmin, valmax;
   int display;
@@ -1281,7 +1281,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
   vd->v=NULL;
   vd->w=NULL;
   vd->val=NULL;
-  int set_slicecolor = SET_SLICECOLOR;
 
   if(vd->iu!=-1)sliceinfo[vd->iu].uvw = 1;
   if(vd->iv!=-1)sliceinfo[vd->iv].uvw = 1;
@@ -1298,7 +1297,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
           return_filesize = ReadGeomData(u->patchgeom, u, UNLOAD, time_frame, time_value, errorcode);
         }
         else{
-          return_filesize+=ReadSlice(u->file, vd->iu, time_frame,NULL,UNLOAD, SET_SLICECOLOR, errorcode);
+          return_filesize+=ReadSlice(u->file, vd->iu, time_frame,NULL,UNLOAD, DEFER_SLICECOLOR, errorcode);
         }
       }
       u->display=display;
@@ -1314,7 +1313,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
           return_filesize = ReadGeomData(v->patchgeom, v, UNLOAD, time_frame, time_value, errorcode);
         }
         else{
-          return_filesize+=ReadSlice(v->file, vd->iv, time_frame,NULL,UNLOAD, SET_SLICECOLOR, errorcode);
+          return_filesize+=ReadSlice(v->file, vd->iv, time_frame,NULL,UNLOAD, DEFER_SLICECOLOR, errorcode);
         }
       }
       v->display=display;
@@ -1330,7 +1329,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
           return_filesize = ReadGeomData(w->patchgeom, w, UNLOAD, time_frame, time_value, errorcode);
         }
         else{
-          return_filesize+=ReadSlice(w->file, vd->iw, time_frame,NULL,UNLOAD, SET_SLICECOLOR, errorcode);
+          return_filesize+=ReadSlice(w->file, vd->iw, time_frame,NULL,UNLOAD, DEFER_SLICECOLOR, errorcode);
         }
       }
       w->display=display;
@@ -1346,7 +1345,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
           return_filesize = ReadGeomData(val->patchgeom, val, UNLOAD, time_frame, time_value, errorcode);
         }
         else{
-          return_filesize+=ReadSlice(val->file, vd->ival, time_frame,NULL,UNLOAD, SET_SLICECOLOR, errorcode);
+          return_filesize+=ReadSlice(val->file, vd->ival, time_frame,NULL,UNLOAD, set_slicecolor, errorcode);
         }
       }
       val->display=display;
@@ -1379,7 +1378,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       if(*errorcode!=0){
         vd->loaded = 1;
         fprintf(stderr, "*** Error: unable to load U velocity vector components in %s . Vector load aborted\n", u->file);
-        ReadVSlice(ivslice, time_frame, time_value, UNLOAD, errorcode);
+        ReadVSlice(ivslice, time_frame, time_value, UNLOAD, DEFER_SLICECOLOR, errorcode);
         *errorcode = 1;
         return 0;
       }
@@ -1406,7 +1405,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       if(*errorcode!=0){
         fprintf(stderr, "*** Error: unable to load V velocity vector components in %s . Vector load aborted\n", v->file);
         vd->loaded = 1;
-        ReadVSlice(ivslice, time_frame, time_value, UNLOAD, errorcode);
+        ReadVSlice(ivslice, time_frame, time_value, UNLOAD, DEFER_SLICECOLOR, errorcode);
         *errorcode = 1;
         return 0;
       }
@@ -1434,7 +1433,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       if(*errorcode!=0){
         fprintf(stderr, "*** Error: unable to load W velocity vector components in %s . Vector load aborted\n", w->file);
         vd->loaded = 1;
-        ReadVSlice(ivslice, time_frame, time_value, UNLOAD, errorcode);
+        ReadVSlice(ivslice, time_frame, time_value, UNLOAD, DEFER_SLICECOLOR, errorcode);
         *errorcode = 1;
         return 0;
       }
@@ -1463,7 +1462,7 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
       if(*errorcode!=0){
         fprintf(stderr, "*** Error: unable to load vector values in %s . Vector load aborted\n", val->file);
         vd->loaded = 1;
-        ReadVSlice(ivslice, time_frame, time_value, UNLOAD, errorcode);
+        ReadVSlice(ivslice, time_frame, time_value, UNLOAD, DEFER_SLICECOLOR, errorcode);
         *errorcode = 1;
         return 0;
       }
@@ -4713,9 +4712,8 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
           UpdateAllSliceLabels(slicefile_labelindex, errorcode);
         }
       }
-
       UpdateUnitDefs();
-      UpdateTimes();
+      update_times = 1;
       RemoveSliceLoadstack(slicefilenumber);
       update_draw_hist = 1;
       PrintMemoryInfo;
@@ -5901,10 +5899,13 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
 
   float *xplt, *yplt;
   int plotz;
+#ifdef pp_TERRAIN_SKIP
   int ibar, jbar;
-  int nx, ny, nxy;
+  int nx, ny;
+  int nxy;
   char *iblank_z;
   char *iblank_embed;
+#endif
   terraindata *terri;
   int nycell;
   meshdata *meshi;
@@ -5924,6 +5925,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
   else{
     plotz = sd->ks1;
   }
+#ifdef pp_TERRAIN_SKIP
   ibar = meshi->ibar;
   jbar = meshi->jbar;
   iblank_z = meshi->c_iblank_z;
@@ -5931,6 +5933,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
   nx = ibar+1;
   ny = jbar+1;
   nxy = nx*ny;
+#endif
 
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
@@ -5939,6 +5942,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
     int maxi;
     float *znode, agl_smv, zcut;
     float *this_color, *last_color, ter_red[]={1.0,0.0,0.0,1.0}, ter_black[]={0.0,0,0,0.0,1.0};
+    float zmax;
 
 #define FDS_OFFSET 0.005
 
@@ -5948,6 +5952,9 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
     znode = terri->znode;
     agl_smv = sd->above_ground_level;
     zcut = terri->zmin_cutoff;
+    zmax = meshi->zplt_orig[meshi->kbar];
+    zmax -= agl_smv;
+    zmax += meshi->dz/4.0;
 
     glPushMatrix();
     glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), vertical_factor*SCALE2SMV(1.0));
@@ -5965,6 +5972,8 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
       for(j = sd->js1; j<=sd->js2; j += slice_skip){
         z11 = znode[IJ2(i, j)];
 
+        if(z11>zmax)continue;
+
         if(z11<zcut){
           this_color = ter_red;
         }
@@ -5975,12 +5984,14 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
 
         yy1 = yplt[j];
 
+#ifdef pp_TERRAIN_SKIP
         if(terrain_skip==0){
           if(slice_skip==1){
             if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
             if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
           }
         }
+#endif
         if(this_color!=last_color){
           last_color = this_color;
           glColor3fv(this_color);
@@ -6000,14 +6011,16 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
       x3 = xplt[i+1];
 
       for(j = sd->js1; j<sd->js2; j += slice_skip){
+        int draw1=1, draw2=1, draw3=1, draw4=1;
+
         z11 = znode[IJ2(i, j)];
         z31 = znode[IJ2(i+1, j)];
         z33 = znode[IJ2(i+1, j+1)];
         z13 = znode[IJ2(i, j+1)];
-        if(z11<zcut)continue;
-        if(z31<zcut)continue;
-        if(z33<zcut)continue;
-        if(z13<zcut)continue;
+        if(z11>zmax||z31>zmax)draw1 = 0;
+        if(z31>zmax||z33>zmax)draw2 = 0;
+        if(z33>zmax||z13>zmax)draw3 = 0;
+        if(z13>zmax||z11>zmax)draw4 = 0;
 
         z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
         z31 = terrain_zmin+geom_vert_exag*(z31-terrain_zmin);
@@ -6017,23 +6030,33 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
         yy1 = yplt[j];
         y3 = yplt[j+1];
 
+#ifdef pp_TERRAIN_SKIP
         if(terrain_skip==0){
           if(slice_skip==1){
             if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
             if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
           }
         }
-        glVertex3f(x1, yy1, z11);
-        glVertex3f(x3, yy1, z31);
+#endif
+        if(draw1==1){
+          glVertex3f(x1, yy1, z11);
+          glVertex3f(x3, yy1, z31);
+        }
 
-        glVertex3f(x3, yy1, z31);
-        glVertex3f(x3, y3, z33);
+        if(draw2==1){
+          glVertex3f(x3, yy1, z31);
+          glVertex3f(x3, y3, z33);
+        }
 
-        glVertex3f(x3, y3, z33);
-        glVertex3f(x1, y3, z13);
+        if(draw3==1){
+          glVertex3f(x3, y3, z33);
+          glVertex3f(x1, y3, z13);
+        }
 
-        glVertex3f(x1, y3, z13);
-        glVertex3f(x1, yy1, z11);
+        if(draw4==1){
+          glVertex3f(x1, y3, z13);
+          glVertex3f(x1, yy1, z11);
+        }
       }
     }
     glEnd();
@@ -6050,10 +6073,13 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
   float *xplt, *yplt;
   int plotz;
+#ifdef pp_TERRAIN_SKIP
   int ibar, jbar;
-  int nx, ny, nxy;
+  int nx, ny;
+  int nxy;
   char *iblank_z;
   char *iblank_embed;
+#endif
   int nycell;
   meshdata *meshi;
 
@@ -6070,6 +6096,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
   else{
     plotz = sd->ks1;
   }
+#ifdef pp_TERRAIN_SKIP
   ibar = meshi->ibar;
   jbar = meshi->jbar;
   iblank_z = meshi->c_iblank_z;
@@ -6077,6 +6104,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
   nx = ibar + 1;
   ny = jbar + 1;
   nxy = nx*ny;
+#endif
 
   if(cullfaces == 1)glDisable(GL_CULL_FACE);
 
@@ -6087,16 +6115,13 @@ void DrawVolSliceTerrain(const slicedata *sd){
   if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
     float z11, z31, z13, z33;
     int maxi;
-    float *znode, agl_smv, zmin, zmax;
+    float *znode, agl_smv, zmax;
 
     znode = meshi->floor_mesh->znodes_complete;
     agl_smv = sd->above_ground_level;
-    zmin = meshi->zplt_orig[0];
     zmax = meshi->zplt_orig[meshi->kbar];
 
-    zmin -= agl_smv;
     zmax -= agl_smv;
-    zmin -= meshi->dz/4.0;
     zmax += meshi->dz/4.0;
 
     glPushMatrix();
@@ -6126,11 +6151,11 @@ void DrawVolSliceTerrain(const slicedata *sd){
         z33 = znode[IJ2(i2, j2)];
 
 
-        if(z11<zmin&&z13<zmin&&z31<zmin&&z33<zmin)continue;
-        if(z11>zmax&&z13>zmax&&z31>zmax&&z33>zmax)continue;
         draw123 = 1;
         draw134 = 1;
-
+        if(z11>zmax||z31>zmax||z33>zmax)draw123 = 0;
+        if(z11>zmax||z33>zmax||z13>zmax)draw134 = 0;
+        if(draw123==0&&draw134==0)continue;
 
         z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
         z31 = terrain_zmin+geom_vert_exag*(z31-terrain_zmin);
@@ -6140,12 +6165,14 @@ void DrawVolSliceTerrain(const slicedata *sd){
         yy1 = yplt[j];
         y3 = yplt[j2];
 
+#ifdef pp_TERRAIN_SKIP
         if(terrain_skip==0){
           if(slice_skip==1){
             if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
             if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
           }
         }
+#endif
 
         n11 = IJK_SLICE(i,j,sd->ks1);
         r11 = (float)sd->iqsliceframe[n11]/255.0;
@@ -6178,7 +6205,9 @@ void DrawVolSliceTerrain(const slicedata *sd){
   glDisable(GL_TEXTURE_1D);
   if(use_transparency_data == 1)TransparentOff();
   if(cullfaces == 1)glEnable(GL_CULL_FACE);
+#ifdef pp_TERRAIN_DEBUG
   if(terrain_debug==1)DrawVolSliceTerrainLinePt(sd);
+#endif
 }
 
 
@@ -8237,6 +8266,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     float agl_smv;
     float z_cutoff;
     int vectorskipi, vectorskipj;
+    float zmax;
 
     constval = zplttemp[plotz] + offset_slice*sd->sliceoffset - znode[0]+SCALE2SMV(slice_dz);
     xplttemp = meshi->xplt_orig;
@@ -8244,6 +8274,9 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     znode = terri->znode;
     z_cutoff = terri->zmin_cutoff;
     agl_smv = sd->above_ground_level;
+    zmax = meshi->zplt_orig[meshi->kbar];
+    zmax -= agl_smv;
+    zmax += meshi->dz/4.0;
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
     glTranslatef(-xbar0,-ybar0,-zbar0+agl_smv+slice_dz);
@@ -8266,7 +8299,8 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
           float z11;
 
           z11 = znode[IJ2(i, j)];
-          if(z11<z_cutoff)continue;
+          if(z11>zmax)continue;
+
           n11 = (i-sd->is1)*sd->nslicej*sd->nslicek + (j-sd->js1)*sd->nslicek;
           if(color_vector_black==0&&show_node_slices_and_vectors==0){
             rgb_ptr = rgb_slice+4*sd->iqsliceframe[n11];

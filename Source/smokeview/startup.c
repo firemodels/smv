@@ -1099,13 +1099,31 @@ void InitOpenGL(int option){
     }
     if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(BACKGROUND);
     update_readiso_geom_wrapup = UPDATE_ISO_OFF;
+
+    int lastslice;
+    for(i = nvsliceinfo-1; i>=0; i--){
+      vslicedata *vslicei;
+
+      vslicei = vsliceinfo+i;
+      if(vslicei->autoload==1){
+        lastslice = i;
+        break;
+      }
+    }
     for(i = 0; i<nvsliceinfo; i++){
       vslicedata *vslicei;
 
       vslicei = vsliceinfo + i;
-      if(vslicei->autoload==0&&vslicei->loaded==1)ReadVSlice(i,ALL_FRAMES, NULL, UNLOAD,&errorcode);
+      if(vslicei->autoload==0&&vslicei->loaded==1){
+        ReadVSlice(i, ALL_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR, &errorcode);
+      }
       if(vslicei->autoload==1){
-        ReadVSlice(i,ALL_FRAMES, NULL, LOAD,&errorcode);
+        if(lastslice==i){
+          ReadVSlice(i,ALL_FRAMES, NULL, LOAD, SET_SLICECOLOR, &errorcode);
+        }
+        else{
+          ReadVSlice(i,ALL_FRAMES, NULL, LOAD, DEFER_SLICECOLOR, &errorcode);
+        }
       }
     }
     // note:  only slices that are NOT a part of a vector slice will be loaded here
@@ -1675,7 +1693,6 @@ void InitVars(void){
 #endif
   visBlocks=visBLOCKAsInput;
   visTransparentBlockage=0;
-  visBlocksSave=visBLOCKAsInput;
   blocklocation=BLOCKlocation_grid;
   ncadgeom=0;
   visFloor=0, visFrame=1;

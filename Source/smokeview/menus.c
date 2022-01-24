@@ -1560,13 +1560,11 @@ void DialogMenu(int value){
         CheckMemoryOn;
         updategetobstlabels=0;
       }
-      visBlocksSave=visBlocks;
       ShowGluiGeometry();
       visBlocks=visBLOCKNormal;
     }
     if(showedit_dialog==0){
       HideGluiGeometry();
-      visBlocks=visBlocksSave;
     }
     UpdateTrainerOutline();
     break;
@@ -3115,7 +3113,7 @@ void UnloadAllSliceFiles(char *longlabel){
     if(vslicei->loaded==0)continue;
     if(vslicei->val==NULL)continue;
     if(longlabel==NULL||strcmp(vslicei->val->label.longlabel,longlabel)!=0){
-      ReadVSlice(i,ALL_FRAMES, NULL, UNLOAD,&errorcode);
+      ReadVSlice(i,ALL_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR, &errorcode);
     }
   }
   for(i=0; i<nsliceinfo; i++){
@@ -3124,7 +3122,7 @@ void UnloadAllSliceFiles(char *longlabel){
     slicei = sliceinfo+i;
     if(slicei->loaded==0||slicei->vloaded==1)continue;
     if(longlabel==NULL||strcmp(slicei->label.longlabel,longlabel)!=0){
-      ReadSlice("", i, ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
+      ReadSlice("", i, ALL_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR, &errorcode);
     }
   }
 }
@@ -3158,8 +3156,31 @@ void ReloadAllVectorSliceFiles(void){
 
     vslicei = vsliceinfo+i;
     if(vslicei->reload==1){
-      ReadVSlice(i, ALL_FRAMES, NULL, UNLOAD, &errorcode);
-      ReadVSlice(i, ALL_FRAMES, NULL, LOAD, &errorcode);
+      ReadVSlice(i, ALL_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR, &errorcode);
+    }
+  }
+  int lastslice;
+
+  for(i = nvsliceinfo-1; i>=0; i--){
+    vslicedata *vslicei;
+
+    vslicei = vsliceinfo+i;
+    if(vslicei->reload==1){
+      lastslice = i;
+      break;
+    }
+  }
+  for(i = 0; i<nvsliceinfo; i++){
+    vslicedata *vslicei;
+
+    vslicei = vsliceinfo+i;
+    if(vslicei->reload==1){
+      if(i==lastslice){
+        ReadVSlice(i, ALL_FRAMES, NULL, LOAD, SET_SLICECOLOR, &errorcode);
+      }
+      else{
+        ReadVSlice(i, ALL_FRAMES, NULL, LOAD, DEFER_SLICECOLOR, &errorcode);
+      }
     }
   }
 }
@@ -4055,11 +4076,32 @@ void UnloadVSliceMenu(int value){
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   if(value>=0){
-    ReadVSlice(value,ALL_FRAMES, NULL, UNLOAD,&errorcode);
+    ReadVSlice(value,ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
   }
   else if(value==UNLOAD_ALL){
+    int lastslice;
+
+    for(i = nvsliceinfo-1; i>=0; i--){
+      vslicedata *vslicei;
+
+      vslicei = vsliceinfo+i;
+      if(vslicei->loaded==1){
+        lastslice = i;
+        break;
+      }
+    }
     for(i=0;i<nvsliceinfo;i++){
-      ReadVSlice(i,ALL_FRAMES, NULL, UNLOAD,&errorcode);
+      vslicedata *vslicei;
+
+      vslicei = vsliceinfo+i;
+      if(vslicei->loaded==1){
+        if(lastslice==i){
+          ReadVSlice(i, ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
+        }
+        else{
+          ReadVSlice(i, ALL_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR, &errorcode);
+        }
+      }
     }
   }
   else if(value==-2){
@@ -4067,7 +4109,7 @@ void UnloadVSliceMenu(int value){
 
     unload_index=LastVSliceLoadstack();
     if(unload_index>=0&&unload_index<nvsliceinfo){
-      ReadVSlice(unload_index,ALL_FRAMES, NULL, UNLOAD,&errorcode);
+      ReadVSlice(unload_index,ALL_FRAMES, NULL, UNLOAD, SET_SLICECOLOR, &errorcode);
     }
   }
 }
@@ -4174,8 +4216,29 @@ FILE_SIZE LoadVSliceMenu2(int value){
   if(value==MENU_DUMMY)return 0;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value==UNLOAD_ALL){
+    int lastslice;
+
+    for(i=nvsliceinfo-1;i>=0;i--){
+      vslicedata *vslicei;
+
+      vslicei = vsliceinfo + i;
+      if(vslicei->loaded==1){
+        lastslice = i;
+        break;
+      }
+    }
     for(i=0;i<nvsliceinfo;i++){
-      ReadVSlice(i,ALL_FRAMES, NULL,  UNLOAD,&errorcode);
+      vslicedata *vslicei;
+
+      vslicei = vsliceinfo + i;
+      if(vslicei->loaded==1){
+        if(lastslice==i){
+          ReadVSlice(i,ALL_FRAMES, NULL,  UNLOAD, SET_SLICECOLOR, &errorcode);
+        }
+        else{
+          ReadVSlice(i,ALL_FRAMES, NULL,  UNLOAD, DEFER_SLICECOLOR, &errorcode);
+        }
+      }
     }
     return 0;
   }
@@ -4186,7 +4249,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
     vslicedata *vslicei;
     slicedata *slicei;
 
-    return_filesize = ReadVSlice(value, ALL_FRAMES, NULL, LOAD, &errorcode);
+    return_filesize = ReadVSlice(value, ALL_FRAMES, NULL, LOAD, SET_SLICECOLOR, &errorcode);
     vslicei = vsliceinfo + value;
     slicei = vslicei->val;
     if(script_multivslice==0&&slicei!=NULL&&scriptoutstream!=NULL){
@@ -4204,6 +4267,7 @@ FILE_SIZE LoadVSliceMenu2(int value){
     int dir;
     int file_count = 0;
     float load_size = 0.0, load_time;
+    int lastslice;
 
     value = -(1000 + value);
     submenutype=value/4;
@@ -4213,6 +4277,18 @@ FILE_SIZE LoadVSliceMenu2(int value){
     slicei = sliceinfo + vslicei->ival;
     submenulabel = slicei->label.longlabel;
     START_TIMER(load_time);
+
+    for(i = nvsliceinfo-1; i>=0; i--){
+      char *longlabel;
+
+      vslicei = vsliceinfo+i;
+      slicei = sliceinfo+vslicei->ival;
+      longlabel = slicei->label.longlabel;
+      if(strcmp(longlabel, submenulabel)!=0)continue;
+      if(dir!=0&&dir!=slicei->idir)continue;
+      lastslice = i;
+      break;
+    }
     for(i=0;i<nvsliceinfo;i++){
       char *longlabel;
 
@@ -4222,7 +4298,12 @@ FILE_SIZE LoadVSliceMenu2(int value){
       if(strcmp(longlabel,submenulabel)!=0)continue;
       if(dir!=0&&dir!=slicei->idir)continue;
       file_count++;
-      load_size+=ReadVSlice(i,ALL_FRAMES, NULL, LOAD,&errorcode);
+      if(lastslice==i){
+        load_size+=ReadVSlice(i,ALL_FRAMES, NULL, LOAD, SET_SLICECOLOR, &errorcode);
+      }
+      else{
+        load_size+=ReadVSlice(i,ALL_FRAMES, NULL, LOAD, DEFER_SLICECOLOR, &errorcode);
+      }
     }
     STOP_TIMER(load_time);
     PRINT_LOADTIMES(file_count,load_size,load_time);
@@ -5926,7 +6007,7 @@ void ImmersedMenu(int value){
 }
 
 /* ------------------ BlockageMenu ------------------------ */
-
+void GeometryMenu(int val);
 void BlockageMenu(int value){
   int change_state=0;
 
@@ -5951,6 +6032,7 @@ void BlockageMenu(int value){
         outline_state=OUTLINE_NONE;
       }
       change_state=1;
+      GeometryMenu(17 + TERRAIN_HIDDEN);
       break;
     case visCADOpaque:
       viscadopaque = 1 - viscadopaque;
@@ -5963,16 +6045,19 @@ void BlockageMenu(int value){
       else{
         outline_state=OUTLINE_NONE;
       }
+      GeometryMenu(17 + TERRAIN_HIDDEN);
       change_state=1;
       break;
     case visBLOCKAsInput:
       solid_state=visBLOCKAsInput;
       if(outline_state==OUTLINE_ONLY)outline_state=OUTLINE_ADDED;
+      GeometryMenu(17 + TERRAIN_HIDDEN);
       change_state=1;
       break;
     case visBLOCKNormal:
       solid_state=visBLOCKNormal;
       if(outline_state==OUTLINE_ONLY)outline_state=OUTLINE_ADDED;
+      GeometryMenu(17 + TERRAIN_HIDDEN);
       change_state=1;
       break;
     case visBLOCKHide:
@@ -6466,14 +6551,18 @@ void GeometryMenu(int value){
   case 7:
     visCeiling=1-visCeiling;
     break;
+#ifdef pp_TERRAIN_SKIP
   case 17+TERRAIN_SKIP:
     terrain_skip = 1-terrain_skip;
     updatemenu = 1;
     break;
+#endif
+#ifdef pp_TERRAIN_DEBUG
   case 17+TERRAIN_DEBUG:
     terrain_debug = 1-terrain_debug;
     updatemenu = 1;
     break;
+#endif
   case 17+TERRAIN_TOP:
     terrain_showonly_top = 1 - terrain_showonly_top;
     updatemenu = 1;
@@ -6481,8 +6570,8 @@ void GeometryMenu(int value){
   case 17+TERRAIN_3D:
   case 17+TERRAIN_3D_MAP:
   case 17+TERRAIN_HIDDEN:
-    if(value==17+TERRAIN_HIDDEN){
-      BlockageMenu(visBlocksSave);
+    visTerrainType = value-17;
+    if(visTerrainType == TERRAIN_HIDDEN){
       if(visOtherVents!=visOtherVentsSAVE){
         visOtherVents=visOtherVentsSAVE;
       }
@@ -6492,8 +6581,8 @@ void GeometryMenu(int value){
         visOtherVentsSAVE=visOtherVents;
         visOtherVents=0;
       }
+      BlockageMenu(visBLOCKHide);
     }
-    visTerrainType=value-17;
     if(visTerrainType==TERRAIN_3D){
       planar_terrain_slice=0;
     }
@@ -7688,10 +7777,14 @@ updatemenu=0;
   }
   if(visTerrainType==TERRAIN_HIDDEN)glutAddMenuEntry(_("*Hidden"),17+TERRAIN_HIDDEN);
   if(visTerrainType!=TERRAIN_HIDDEN)glutAddMenuEntry(_("Hidden"),17+TERRAIN_HIDDEN);
+#ifdef pp_TERRAIN_SKIP
   if(terrain_skip==1)glutAddMenuEntry(_("*skip"), 17+TERRAIN_SKIP);
   if(terrain_skip==0)glutAddMenuEntry(_("skip"), 17+TERRAIN_SKIP);
-  if(terrain_debug==1)glutAddMenuEntry(_("*debug"), 17+TERRAIN_DEBUG);
-  if(terrain_debug==0)glutAddMenuEntry(_("debug"), 17+TERRAIN_DEBUG);
+#endif
+#ifdef pp_TERRAIN_DEBUG
+  if(terrain_debug==1)glutAddMenuEntry(_("*terrain slice debug"), 17+TERRAIN_DEBUG);
+  if(terrain_debug==0)glutAddMenuEntry(_("terrain slice debug"), 17+TERRAIN_DEBUG);
+#endif
 
 
   if(nobject_defs>0){
