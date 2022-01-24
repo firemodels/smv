@@ -5973,12 +5973,14 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
 
         yy1 = yplt[j];
 
+#ifdef pp_TERRAIN_SKIP
         if(terrain_skip==0){
           if(slice_skip==1){
             if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
             if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
           }
         }
+#endif
         if(this_color!=last_color){
           last_color = this_color;
           glColor3fv(this_color);
@@ -6015,12 +6017,14 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
         yy1 = yplt[j];
         y3 = yplt[j+1];
 
+#ifdef pp_TERRAIN_SKIP
         if(terrain_skip==0){
           if(slice_skip==1){
             if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
             if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
           }
         }
+#endif
         glVertex3f(x1, yy1, z11);
         glVertex3f(x3, yy1, z31);
 
@@ -6138,12 +6142,14 @@ void DrawVolSliceTerrain(const slicedata *sd){
         yy1 = yplt[j];
         y3 = yplt[j2];
 
+#ifdef pp_TERRAIN_SKIP
         if(terrain_skip==0){
           if(slice_skip==1){
             if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
             if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
           }
         }
+#endif
 
         n11 = IJK_SLICE(i,j,sd->ks1);
         r11 = (float)sd->iqsliceframe[n11]/255.0;

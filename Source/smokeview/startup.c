@@ -1693,7 +1693,6 @@ void InitVars(void){
 #endif
   visBlocks=visBLOCKAsInput;
   visTransparentBlockage=0;
-  visBlocksSave=visBLOCKAsInput;
   blocklocation=BLOCKlocation_grid;
   ncadgeom=0;
   visFloor=0, visFrame=1;

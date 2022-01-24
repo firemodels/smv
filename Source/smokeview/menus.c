@@ -1560,13 +1560,11 @@ void DialogMenu(int value){
         CheckMemoryOn;
         updategetobstlabels=0;
       }
-      visBlocksSave=visBlocks;
       ShowGluiGeometry();
       visBlocks=visBLOCKNormal;
     }
     if(showedit_dialog==0){
       HideGluiGeometry();
-      visBlocks=visBlocksSave;
     }
     UpdateTrainerOutline();
     break;
@@ -6009,7 +6007,7 @@ void ImmersedMenu(int value){
 }
 
 /* ------------------ BlockageMenu ------------------------ */
-
+void GeometryMenu(int val);
 void BlockageMenu(int value){
   int change_state=0;
 
@@ -6034,6 +6032,7 @@ void BlockageMenu(int value){
         outline_state=OUTLINE_NONE;
       }
       change_state=1;
+      GeometryMenu(17 + TERRAIN_HIDDEN);
       break;
     case visCADOpaque:
       viscadopaque = 1 - viscadopaque;
@@ -6046,16 +6045,19 @@ void BlockageMenu(int value){
       else{
         outline_state=OUTLINE_NONE;
       }
+      GeometryMenu(17 + TERRAIN_HIDDEN);
       change_state=1;
       break;
     case visBLOCKAsInput:
       solid_state=visBLOCKAsInput;
       if(outline_state==OUTLINE_ONLY)outline_state=OUTLINE_ADDED;
+      GeometryMenu(17 + TERRAIN_HIDDEN);
       change_state=1;
       break;
     case visBLOCKNormal:
       solid_state=visBLOCKNormal;
       if(outline_state==OUTLINE_ONLY)outline_state=OUTLINE_ADDED;
+      GeometryMenu(17 + TERRAIN_HIDDEN);
       change_state=1;
       break;
     case visBLOCKHide:
@@ -6549,10 +6551,12 @@ void GeometryMenu(int value){
   case 7:
     visCeiling=1-visCeiling;
     break;
+#ifdef pp_TERRAIN_SKIP
   case 17+TERRAIN_SKIP:
     terrain_skip = 1-terrain_skip;
     updatemenu = 1;
     break;
+#endif
   case 17+TERRAIN_DEBUG:
     terrain_debug = 1-terrain_debug;
     updatemenu = 1;
@@ -6564,8 +6568,8 @@ void GeometryMenu(int value){
   case 17+TERRAIN_3D:
   case 17+TERRAIN_3D_MAP:
   case 17+TERRAIN_HIDDEN:
-    if(value==17+TERRAIN_HIDDEN){
-      BlockageMenu(visBlocksSave);
+    visTerrainType = value-17;
+    if(visTerrainType == TERRAIN_HIDDEN){
       if(visOtherVents!=visOtherVentsSAVE){
         visOtherVents=visOtherVentsSAVE;
       }
@@ -6575,8 +6579,8 @@ void GeometryMenu(int value){
         visOtherVentsSAVE=visOtherVents;
         visOtherVents=0;
       }
+      BlockageMenu(visBLOCKHide);
     }
-    visTerrainType=value-17;
     if(visTerrainType==TERRAIN_3D){
       planar_terrain_slice=0;
     }
@@ -7771,8 +7775,10 @@ updatemenu=0;
   }
   if(visTerrainType==TERRAIN_HIDDEN)glutAddMenuEntry(_("*Hidden"),17+TERRAIN_HIDDEN);
   if(visTerrainType!=TERRAIN_HIDDEN)glutAddMenuEntry(_("Hidden"),17+TERRAIN_HIDDEN);
+#ifdef pp_TERRAIN_SKIP
   if(terrain_skip==1)glutAddMenuEntry(_("*skip"), 17+TERRAIN_SKIP);
   if(terrain_skip==0)glutAddMenuEntry(_("skip"), 17+TERRAIN_SKIP);
+#endif
   if(terrain_debug==1)glutAddMenuEntry(_("*debug"), 17+TERRAIN_DEBUG);
   if(terrain_debug==0)glutAddMenuEntry(_("debug"), 17+TERRAIN_DEBUG);
 
