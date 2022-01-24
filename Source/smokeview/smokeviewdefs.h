@@ -481,7 +481,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define TERRAIN_SKIP       5
 #endif
 #define TERRAIN_TOP        6
+#ifdef pp_TERRAIN_DEBUG
 #define TERRAIN_DEBUG      7
+#endif
 
 #define TERRAIN_TOP_SIDE      0
 #define TERRAIN_BOTTOM_SIDE   1

@@ -6557,10 +6557,12 @@ void GeometryMenu(int value){
     updatemenu = 1;
     break;
 #endif
+#ifdef pp_TERRAIN_DEBUG
   case 17+TERRAIN_DEBUG:
     terrain_debug = 1-terrain_debug;
     updatemenu = 1;
     break;
+#endif
   case 17+TERRAIN_TOP:
     terrain_showonly_top = 1 - terrain_showonly_top;
     updatemenu = 1;
@@ -7779,8 +7781,10 @@ updatemenu=0;
   if(terrain_skip==1)glutAddMenuEntry(_("*skip"), 17+TERRAIN_SKIP);
   if(terrain_skip==0)glutAddMenuEntry(_("skip"), 17+TERRAIN_SKIP);
 #endif
-  if(terrain_debug==1)glutAddMenuEntry(_("*debug"), 17+TERRAIN_DEBUG);
-  if(terrain_debug==0)glutAddMenuEntry(_("debug"), 17+TERRAIN_DEBUG);
+#ifdef pp_TERRAIN_DEBUG
+  if(terrain_debug==1)glutAddMenuEntry(_("*terrain slice debug"), 17+TERRAIN_DEBUG);
+  if(terrain_debug==0)glutAddMenuEntry(_("terrain slice debug"), 17+TERRAIN_DEBUG);
+#endif
 
 
   if(nobject_defs>0){

@@ -5937,6 +5937,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
     int maxi;
     float *znode, agl_smv, zcut;
     float *this_color, *last_color, ter_red[]={1.0,0.0,0.0,1.0}, ter_black[]={0.0,0,0,0.0,1.0};
+    float zmin, zmax;
 
 #define FDS_OFFSET 0.005
 
@@ -5946,6 +5947,12 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
     znode = terri->znode;
     agl_smv = sd->above_ground_level;
     zcut = terri->zmin_cutoff;
+    zmin = meshi->zplt_orig[0];
+    zmax = meshi->zplt_orig[meshi->kbar];
+    zmin -= agl_smv;
+    zmax -= agl_smv;
+    zmin -= meshi->dz/4.0;
+    zmax += meshi->dz/4.0;
 
     glPushMatrix();
     glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), vertical_factor*SCALE2SMV(1.0));
@@ -5962,6 +5969,8 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
 
       for(j = sd->js1; j<=sd->js2; j += slice_skip){
         z11 = znode[IJ2(i, j)];
+
+        if(z11>zmax)continue;
 
         if(z11<zcut){
           this_color = ter_red;
@@ -6000,14 +6009,16 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
       x3 = xplt[i+1];
 
       for(j = sd->js1; j<sd->js2; j += slice_skip){
+        int draw1=1, draw2=1, draw3=1, draw4=1;
+
         z11 = znode[IJ2(i, j)];
         z31 = znode[IJ2(i+1, j)];
         z33 = znode[IJ2(i+1, j+1)];
         z13 = znode[IJ2(i, j+1)];
-        if(z11<zcut)continue;
-        if(z31<zcut)continue;
-        if(z33<zcut)continue;
-        if(z13<zcut)continue;
+        if(z11>zmax||z31>zmax)draw1 = 0;
+        if(z31>zmax||z33>zmax)draw2 = 0;
+        if(z33>zmax||z13>zmax)draw3 = 0;
+        if(z13>zmax||z11>zmax)draw4 = 0;
 
         z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
         z31 = terrain_zmin+geom_vert_exag*(z31-terrain_zmin);
@@ -6025,17 +6036,25 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
           }
         }
 #endif
-        glVertex3f(x1, yy1, z11);
-        glVertex3f(x3, yy1, z31);
+        if(draw1==1){
+          glVertex3f(x1, yy1, z11);
+          glVertex3f(x3, yy1, z31);
+        }
 
-        glVertex3f(x3, yy1, z31);
-        glVertex3f(x3, y3, z33);
+        if(draw2==1){
+          glVertex3f(x3, yy1, z31);
+          glVertex3f(x3, y3, z33);
+        }
 
-        glVertex3f(x3, y3, z33);
-        glVertex3f(x1, y3, z13);
+        if(draw3==1){
+          glVertex3f(x3, y3, z33);
+          glVertex3f(x1, y3, z13);
+        }
 
-        glVertex3f(x1, y3, z13);
-        glVertex3f(x1, yy1, z11);
+        if(draw4==1){
+          glVertex3f(x1, y3, z13);
+          glVertex3f(x1, yy1, z11);
+        }
       }
     }
     glEnd();
@@ -6182,7 +6201,9 @@ void DrawVolSliceTerrain(const slicedata *sd){
   glDisable(GL_TEXTURE_1D);
   if(use_transparency_data == 1)TransparentOff();
   if(cullfaces == 1)glEnable(GL_CULL_FACE);
+#ifdef pp_TERRAIN_DEBUG
   if(terrain_debug==1)DrawVolSliceTerrainLinePt(sd);
+#endif
 }
 
 
