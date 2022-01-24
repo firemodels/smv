@@ -5942,7 +5942,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
     int maxi;
     float *znode, agl_smv, zcut;
     float *this_color, *last_color, ter_red[]={1.0,0.0,0.0,1.0}, ter_black[]={0.0,0,0,0.0,1.0};
-    float zmin, zmax;
+    float zmax;
 
 #define FDS_OFFSET 0.005
 
@@ -5952,11 +5952,8 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
     znode = terri->znode;
     agl_smv = sd->above_ground_level;
     zcut = terri->zmin_cutoff;
-    zmin = meshi->zplt_orig[0];
     zmax = meshi->zplt_orig[meshi->kbar];
-    zmin -= agl_smv;
     zmax -= agl_smv;
-    zmin -= meshi->dz/4.0;
     zmax += meshi->dz/4.0;
 
     glPushMatrix();
@@ -6118,16 +6115,13 @@ void DrawVolSliceTerrain(const slicedata *sd){
   if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
     float z11, z31, z13, z33;
     int maxi;
-    float *znode, agl_smv, zmin, zmax;
+    float *znode, agl_smv, zmax;
 
     znode = meshi->floor_mesh->znodes_complete;
     agl_smv = sd->above_ground_level;
-    zmin = meshi->zplt_orig[0];
     zmax = meshi->zplt_orig[meshi->kbar];
 
-    zmin -= agl_smv;
     zmax -= agl_smv;
-    zmin -= meshi->dz/4.0;
     zmax += meshi->dz/4.0;
 
     glPushMatrix();
