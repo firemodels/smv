@@ -5899,10 +5899,13 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
 
   float *xplt, *yplt;
   int plotz;
+#ifdef pp_TERRAIN_SKIP
   int ibar, jbar;
-  int nx, ny, nxy;
+  int nx, ny;
+  int nxy;
   char *iblank_z;
   char *iblank_embed;
+#endif
   terraindata *terri;
   int nycell;
   meshdata *meshi;
@@ -5922,6 +5925,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
   else{
     plotz = sd->ks1;
   }
+#ifdef pp_TERRAIN_SKIP
   ibar = meshi->ibar;
   jbar = meshi->jbar;
   iblank_z = meshi->c_iblank_z;
@@ -5929,6 +5933,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
   nx = ibar+1;
   ny = jbar+1;
   nxy = nx*ny;
+#endif
 
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
@@ -6071,10 +6076,13 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
   float *xplt, *yplt;
   int plotz;
+#ifdef pp_TERRAIN_SKIP
   int ibar, jbar;
-  int nx, ny, nxy;
+  int nx, ny;
+  int nxy;
   char *iblank_z;
   char *iblank_embed;
+#endif
   int nycell;
   meshdata *meshi;
 
@@ -6091,6 +6099,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
   else{
     plotz = sd->ks1;
   }
+#ifdef pp_TERRAIN_SKIP
   ibar = meshi->ibar;
   jbar = meshi->jbar;
   iblank_z = meshi->c_iblank_z;
@@ -6098,6 +6107,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
   nx = ibar + 1;
   ny = jbar + 1;
   nxy = nx*ny;
+#endif
 
   if(cullfaces == 1)glDisable(GL_CULL_FACE);
 
