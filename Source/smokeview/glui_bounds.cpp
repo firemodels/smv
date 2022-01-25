@@ -4070,11 +4070,6 @@ void TimeBoundCB(int var){
   case SET_TIME:
     SetTimeVal(glui_time);
     break;
-  case TBOUNDS:
-    UpdateTBounds();
-    UpdateTimes();
-    updatemenu = 1;
-    break;
 #ifdef pp_TIMEBAR_DIGITS
   case TIMEBAR_DIGITS:
     break;
@@ -4101,6 +4096,23 @@ void TimeBoundCB(int var){
     UpdateTBounds();
     UpdateTimes();
     updatemenu = 1;
+    break;
+  case TBOUNDS:
+    UpdateTBounds();
+    UpdateTimes();
+    updatemenu = 1;
+    break;
+  case SET_FDS_TIMES:
+    use_tload_begin = 1;
+    use_tload_end   = 1;
+    tload_begin     = global_tbegin;
+    tload_end       = global_tend;
+    SPINNER_tload_begin->set_float_val(tload_begin);
+    SPINNER_tload_end->set_float_val(tload_end);
+    CHECKBOX_use_tload_begin->set_int_val(use_tload_begin);
+    CHECKBOX_use_tload_end->set_int_val(use_tload_end);
+    TimeBoundCB(TBOUNDS);
+    TimeBoundCB(TBOUNDS_USE);
     break;
   case RELOAD_ALL_DATA:
     ReloadMenu(RELOAD_ALL_NOW);
@@ -5015,6 +5027,8 @@ extern "C" void GluiBoundsSetup(int main_window){
   BUTTON_SETTIME = glui_bounds->add_button_to_panel(PANEL_time1a, _("Set"), SET_TIME, TimeBoundCB);
 
   PANEL_time2 = glui_bounds->add_panel_to_panel(ROLLOUT_time, _("Data loading"), true);
+
+  glui_bounds->add_button_to_panel(PANEL_time2, _("Use FDS start/end times"), SET_FDS_TIMES, TimeBoundCB);
 
   PANEL_time2a = glui_bounds->add_panel_to_panel(PANEL_time2, "", false);
   SPINNER_tload_begin = glui_bounds->add_spinner_to_panel(PANEL_time2a, _("min time"), GLUI_SPINNER_FLOAT, &tload_begin, TBOUNDS, TimeBoundCB);

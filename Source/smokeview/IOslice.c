@@ -5944,7 +5944,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
     float *this_color, *last_color, ter_red[]={1.0,0.0,0.0,1.0}, ter_black[]={0.0,0,0,0.0,1.0};
     float zmax;
 
-#define FDS_OFFSET 0.005
+#define FDS_OFFSET 0.01
 
     this_color = ter_black;
     last_color =  NULL;
@@ -8057,49 +8057,35 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 /* ------------------ DrawVVolSliceTerrain ------------------------ */
 
 void DrawVVolSliceTerrain(const vslicedata *vd){
-  int i, j, k;
-  int i11;
-  float constval, x1, yy1, z1;
+  int i, j;
+  float x1, yy1;
   slicedata *u, *v, *w, *sd;
   float dx, dy, dz;
   float vel_max;
   meshdata *meshi;
-  float *xplttemp, *yplttemp, *zplttemp;
-  char *iblank;
-  int nx, ny, nxy;
+  float *xplttemp, *yplttemp;
   float *rgb_ptr;
   terraindata *terri;
   float *znode;
   int nycell;
-  int plotx, ploty, plotz;
-  float mesh_dx, mesh_dy, mesh_dz;
-  int factor_i, factor_j, factor_k;
+  int plotz;
+  float mesh_dx, mesh_dy;
+  int factor_i, factor_j;
 
   sd = sliceinfo + vd->ival;
   meshi = meshinfo + sd->blocknumber;
   xplttemp = meshi->xplt;
   yplttemp = meshi->yplt;
-  zplttemp = meshi->zplt;
   mesh_dx = meshi->xplt_orig[1]-meshi->xplt_orig[0];
   mesh_dy = meshi->yplt_orig[1]-meshi->yplt_orig[0];
-  mesh_dz = meshi->zplt_orig[1]-meshi->zplt_orig[0];
   factor_i = max_dx/mesh_dx+0.5;
   factor_j = max_dy/mesh_dy+0.5;
-  factor_k = max_dz/mesh_dz+0.5;
   if(vd->volslice == 1){
-    plotx = meshi->iplotx_all[iplotx_all];
-    ploty = meshi->iploty_all[iploty_all];
     plotz = meshi->iplotz_all[iplotz_all];
   }
   else{
-    plotx = sd->is1;
-    ploty = sd->js1;
     plotz = sd->ks1;
   }
-  iblank = meshi->c_iblank_node;
-  nx = meshi->ibar + 1;
-  ny = meshi->jbar + 1;
-  nxy = nx*ny;
 
   terri = meshi->terrain;
   if(terri == NULL)return;
@@ -8111,155 +8097,6 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   u = vd->u;
   v = vd->v;
   w = vd->w;
-  if((vd->volslice == 1 && plotx >= 0 && visx_all == 1) || (vd->volslice == 0 && sd->idir == XDIR)){
-    int maxj, n;
-    int vectorskipj, vectorskipk;
-
-    vectorskipj = vectorskip;
-    vectorskipk = vectorskip;
-    if(vec_uniform_spacing==1){
-      if(factor_j!=1)vectorskipj *= factor_j;
-      if(factor_k!=1)vectorskipk *= factor_k;
-    }
-
-    constval = xplttemp[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
-    glLineWidth(vectorlinewidth);
-    glBegin(GL_LINES);
-    maxj = sd->js2;
-    if(sd->js1 + 1 > maxj)maxj = sd->js1 + 1;
-    for(j = sd->js1; j < maxj + 1; j += vectorskipj){
-      n = (j - sd->js1)*sd->nslicek - vectorskipj;
-      n += (plotx - sd->is1)*sd->nslicej*sd->nslicek;
-      yy1 = yplttemp[j];
-      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
-        n += vectorskipk;
-        i11 = sd->iqsliceframe[n];
-        if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
-          rgb_ptr = rgb_slice + 4 * i11;
-        }
-        else{
-          rgb_ptr = foregroundcolor;
-        }
-        if(iblank[IJK(plotx, j, k)] == GAS&&rgb_ptr[3] > 0.5){
-          z1 = zplttemp[k];
-          GET_VEC_DXYZ(u, dx, n);
-          GET_VEC_DXYZ(v, dy, n);
-          GET_VEC_DXYZ(w, dz, n);
-          ADJUST_VEC_DXYZ(dx,dy,dz);
-          glColor4fv(rgb_ptr);
-          glVertex3f(constval - dx, yy1 - dy, z1 - dz);
-          glVertex3f(constval + dx, yy1 + dy, z1 + dz);
-        }
-      }
-    }
-    glEnd();
-    SNIFF_ERRORS("after DrawVVolSliceTerrain:lines dir=1");
-
-    glPointSize(vectorpointsize);
-    glBegin(GL_POINTS);
-    for(j = sd->js1; j < maxj + 1; j += vectorskipj){
-      n = (j - sd->js1)*sd->nslicek - vectorskipj;
-      n += (plotx - sd->is1)*sd->nslicej*sd->nslicek;
-      yy1 = yplttemp[j];
-      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
-        n += vectorskipk;
-        i11 = sd->iqsliceframe[n];
-        if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
-          rgb_ptr = rgb_slice + 4 * i11;
-        }
-        else{
-          rgb_ptr = foregroundcolor;
-        }
-        if(iblank[IJK(plotx, j, k)] == GAS&&rgb_ptr[3] > 0.5){
-          z1 = zplttemp[k];
-          GET_VEC_DXYZ(u, dx, n);
-          GET_VEC_DXYZ(v, dy, n);
-          GET_VEC_DXYZ(w, dz, n);
-          ADJUST_VEC_DXYZ(dx,dy,dz);
-          glColor4fv(rgb_ptr);
-          glVertex3f(constval + dx, yy1 + dy, z1 + dz);
-        }
-      }
-    }
-    glEnd();
-    SNIFF_ERRORS("after DrawVVolSliceTerrain:points dir=1");
-  }
-  if((vd->volslice == 1 && ploty >= 0 && visy_all == 1) || (vd->volslice == 0 && sd->idir == YDIR)){
-    int maxi;
-    int n;
-    int vectorskipi, vectorskipk;
-
-    constval = yplttemp[ploty] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
-    glLineWidth(vectorlinewidth);
-    glBegin(GL_LINES);
-    maxi = sd->is1 + sd->nslicei - 1;
-    vectorskipi = vectorskip;
-    vectorskipk = vectorskip;
-    if(vec_uniform_spacing==1){
-      if(factor_i!=1)vectorskipi *= factor_i;
-      if(factor_k!=1)vectorskipk *= factor_k;
-    }
-    if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
-    for(i = sd->is1; i < maxi + 1; i += vectorskipi){
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskipi;
-      n += (ploty - sd->js1)*sd->nslicek;
-
-      x1 = xplttemp[i];
-
-      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
-        n += vectorskipk;
-        i11 = sd->iqsliceframe[n];
-        if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
-          rgb_ptr = rgb_slice + 4 * i11;
-        }
-        else{
-          rgb_ptr = foregroundcolor;
-        }
-        if(iblank[IJK(i, ploty, k)] == GAS&&rgb_ptr[3] > 0.5){
-          z1 = zplttemp[k];
-          GET_VEC_DXYZ(u, dx, n);
-          GET_VEC_DXYZ(v, dy, n);
-          GET_VEC_DXYZ(w, dz, n);
-          ADJUST_VEC_DXYZ(dx,dy,dz);
-          glColor4fv(rgb_ptr);
-          glVertex3f(x1 - dx, constval - dy, z1 - dz);
-          glVertex3f(x1 + dx, constval + dy, z1 + dz);
-        }
-      }
-    }
-    glEnd();
-    SNIFF_ERRORS("after DrawVVolSliceTerrain:lines dir=2");
-    glPointSize(vectorpointsize);
-    glBegin(GL_POINTS);
-    for(i = sd->is1; i < maxi + 1; i += vectorskipi){
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskipi;
-      n += (ploty - sd->js1)*sd->nslicek;
-
-      x1 = xplttemp[i];
-
-      for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
-        n += vectorskipk;
-        i11 = sd->iqsliceframe[n];
-        if(color_vector_black == 0 && show_node_slices_and_vectors == 0){
-          rgb_ptr = rgb_slice + 4 * i11;
-        }
-        else{
-          rgb_ptr = foregroundcolor;
-        }
-        if(iblank[IJK(i, ploty, k)] == GAS&&rgb_ptr[3] > 0.5){
-          z1 = zplttemp[k];
-          GET_VEC_DXYZ(u, dx, n);
-          GET_VEC_DXYZ(v, dy, n);
-          GET_VEC_DXYZ(w, dz, n);
-          ADJUST_VEC_DXYZ(dx,dy,dz);
-          glColor4fv(rgb_ptr);
-          glVertex3f(x1 + dx, constval + dy, z1 + dz);
-        }
-      }
-    }
-    glEnd();
-    SNIFF_ERRORS("after DrawVVolSliceTerrain:points dir=2");
-  }
 
   if((vd->volslice == 1 && plotz >= 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
     int maxi;
@@ -8268,7 +8105,6 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     int vectorskipi, vectorskipj;
     float zmax;
 
-    constval = zplttemp[plotz] + offset_slice*sd->sliceoffset - znode[0]+SCALE2SMV(slice_dz);
     xplttemp = meshi->xplt_orig;
     yplttemp = meshi->yplt_orig;
     znode = terri->znode;
@@ -8279,7 +8115,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     zmax += meshi->dz/4.0;
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
-    glTranslatef(-xbar0,-ybar0,-zbar0+agl_smv+slice_dz);
+    glTranslatef(-xbar0,-ybar0,-zbar0+MAX(agl_smv, SCALE2FDS(FDS_OFFSET))+slice_dz);
     glLineWidth(vectorlinewidth);
     maxi = sd->is1 + sd->nslicei - 1;
     if(sd->is1+1>maxi)maxi = sd->is1+1;

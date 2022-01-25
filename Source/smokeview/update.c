@@ -1181,12 +1181,11 @@ void UpdateTimes(void){
     }
   }
 
-  if(global_tbegin<global_tend){
-    float stimes[2];
-
-    stimes[0] = global_tbegin;
-    stimes[1] = global_tend;
-    MergeGlobalTimes(stimes, 2);
+  if(use_tload_begin==1){
+    MergeGlobalTimes(&tload_begin, 1);
+  }
+  if(use_tload_end==1){
+    MergeGlobalTimes(&tload_end, 1);
   }
 
   if(visHRRlabel==1&&show_hrrpuv_plot==1&&hrrinfo!=NULL){

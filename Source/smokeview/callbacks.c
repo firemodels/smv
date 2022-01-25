@@ -784,29 +784,43 @@ int ColorbarClick(int x, int y){
   return 0;
 }
 
+/* ------------------ GetTimeFrame ------------------------ */
+
+int GetTimeFrame(int xm){
+  int timebar_right_pos;
+  int timebar_left_pos;
+  int iframe;
+
+  timebar_left_pos = VP_timebar.left+timebar_left_width;
+  timebar_right_pos = VP_timebar.right-timebar_right_width;
+
+  iframe = 0;
+  if(global_times!=NULL&&timebar_right_pos>timebar_left_pos){
+    float time, factor;
+
+    factor = (float)(xm-timebar_left_pos)/(float)(timebar_right_pos-timebar_left_pos);
+    factor = CLAMP(factor, 0.0, 1.0);
+    time = global_times[0]*(1.0-factor)+global_times[nglobal_times-1]*factor;
+    if(time<=global_times[0]){
+      iframe = 0;
+    }
+    else if(time>=global_times[nglobal_times-1]){
+      iframe = nglobal_times-1;
+    }
+    else{
+      iframe = GetInterval(time, global_times, nglobal_times);
+      iframe = CLAMP(iframe, 0, nglobal_times-1);
+    }
+  }
+  return iframe;
+}
+
 /* ------------------ TimebarClick ------------------------ */
 
 int TimebarClick(int xm, int ym){
   if(screenHeight-ym<titlesafe_offset+VP_timebar.height&&nglobal_times>0){
-    int timebar_right_pos;
-    int timebar_left_pos;
-
-    timebar_left_pos = VP_timebar.left+timebar_left_width;
-    timebar_right_pos = VP_timebar.right-timebar_right_width;
-
-    if(global_times!=NULL&&timebar_right_pos>timebar_left_pos){
-      float time, factor;
-
-      factor = (float)(xm-timebar_left_pos)/(float)(timebar_right_pos-timebar_left_pos);
-      factor = CLAMP(factor, 0.0, 1.0);
-      time = global_times[0]*(1.0-factor)+global_times[nglobal_times-1]*factor;
-      itimes = GetInterval(time, global_times, nglobal_times);
-      itimes = CLAMP(itimes, 0, nglobal_times-1);
-    }
-    else{
-      itimes=0;
-    }
 //    PRINTF("ngt=%i xl=%i x=%i xr=%i\n",nglobal_times,timebar_left_pos,x,timebar_right_pos);
+    itimes = GetTimeFrame(xm);
     CheckTimeBound();
     timebar_drag=1;
     stept=0;
@@ -815,6 +829,17 @@ int TimebarClick(int xm, int ym){
     return 1;
   }
   return 0;
+}
+
+/* ------------------ TimebarDrag ------------------------ */
+
+void TimebarDrag(int xm){
+  if(nglobal_times>0){
+    itimes = GetTimeFrame(xm);
+    CheckTimeBound();
+    timebar_drag = 1;
+  }
+  IdleCB();
 }
 
 /* ------------------ UpdateMouseInfo ------------------------ */
@@ -1155,32 +1180,6 @@ void ColorbarSplitDrag(int xm, int ym){
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     UpdateColorbarSplits(current_colorbar);
   }
-}
-
-/* ------------------ TimebarDrag ------------------------ */
-
-void TimebarDrag(int xm){
-  if(nglobal_times>0){
-    int timebar_right_pos;
-    int timebar_left_pos;
-
-    timebar_left_pos = VP_timebar.left+timebar_left_width;
-    timebar_right_pos=VP_timebar.right-timebar_right_width;
-
-    itimes=0;
-    if(global_times!=NULL&&timebar_right_pos>timebar_left_pos){
-      float time, factor;
-
-      factor = (float)(xm-timebar_left_pos)/(float)(timebar_right_pos-timebar_left_pos);
-      factor = CLAMP(factor, 0.0, 1.0);
-      time = global_times[0]*(1.0-factor)+global_times[nglobal_times-1]*factor;
-      itimes = GetInterval(time, global_times, nglobal_times);
-      itimes = CLAMP(itimes, 0, nglobal_times-1);
-    }
-    CheckTimeBound();
-    timebar_drag=1;
-  }
-  IdleCB();
 }
 
 /* ------------------ DragColorbarEditNode ------------------------ */

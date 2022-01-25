@@ -2218,7 +2218,6 @@ void ReadAllGeom(void){
 void UpdateAllGeomTriangles(void){
   int i;
 
-  printf("ngeom=%i\n",ngeominfo);
   for(i = 0; i<ngeominfo; i++){
     geomdata *geomi;
 
