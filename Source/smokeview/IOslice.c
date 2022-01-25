@@ -8059,47 +8059,34 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 void DrawVVolSliceTerrain(const vslicedata *vd){
   int i, j, k;
   int i11;
-  float constval, x1, yy1, z1;
+  float x1, yy1, z1;
   slicedata *u, *v, *w, *sd;
   float dx, dy, dz;
   float vel_max;
   meshdata *meshi;
-  float *xplttemp, *yplttemp, *zplttemp;
-  char *iblank;
-  int nx, ny, nxy;
+  float *xplttemp, *yplttemp;
   float *rgb_ptr;
   terraindata *terri;
   float *znode;
   int nycell;
-  int plotx, ploty, plotz;
-  float mesh_dx, mesh_dy, mesh_dz;
-  int factor_i, factor_j, factor_k;
+  int plotz;
+  float mesh_dx, mesh_dy;
+  int factor_i, factor_j;
 
   sd = sliceinfo + vd->ival;
   meshi = meshinfo + sd->blocknumber;
   xplttemp = meshi->xplt;
   yplttemp = meshi->yplt;
-  zplttemp = meshi->zplt;
   mesh_dx = meshi->xplt_orig[1]-meshi->xplt_orig[0];
   mesh_dy = meshi->yplt_orig[1]-meshi->yplt_orig[0];
-  mesh_dz = meshi->zplt_orig[1]-meshi->zplt_orig[0];
   factor_i = max_dx/mesh_dx+0.5;
   factor_j = max_dy/mesh_dy+0.5;
-  factor_k = max_dz/mesh_dz+0.5;
   if(vd->volslice == 1){
-    plotx = meshi->iplotx_all[iplotx_all];
-    ploty = meshi->iploty_all[iploty_all];
     plotz = meshi->iplotz_all[iplotz_all];
   }
   else{
-    plotx = sd->is1;
-    ploty = sd->js1;
     plotz = sd->ks1;
   }
-  iblank = meshi->c_iblank_node;
-  nx = meshi->ibar + 1;
-  ny = meshi->jbar + 1;
-  nxy = nx*ny;
 
   terri = meshi->terrain;
   if(terri == NULL)return;
@@ -8119,7 +8106,6 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     int vectorskipi, vectorskipj;
     float zmax;
 
-    constval = zplttemp[plotz] + offset_slice*sd->sliceoffset - znode[0]+SCALE2SMV(slice_dz);
     xplttemp = meshi->xplt_orig;
     yplttemp = meshi->yplt_orig;
     znode = terri->znode;
