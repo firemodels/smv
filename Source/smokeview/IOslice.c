@@ -8057,9 +8057,8 @@ void DrawVVolSliceCellCenter(const vslicedata *vd){
 /* ------------------ DrawVVolSliceTerrain ------------------------ */
 
 void DrawVVolSliceTerrain(const vslicedata *vd){
-  int i, j, k;
-  int i11;
-  float x1, yy1, z1;
+  int i, j;
+  float x1, yy1;
   slicedata *u, *v, *w, *sd;
   float dx, dy, dz;
   float vel_max;
