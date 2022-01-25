@@ -6231,7 +6231,10 @@ int ReadSMV(bufferstreamdata *stream){
       }
       sscanf(buffer,"%f %f %i",&tour_tstart,&tour_tstop,&tour_ntimes);
       global_tbegin = tour_tstart;
+      tload_begin   = tour_tstart;
+
       global_tend   = tour_tstop;
+      tload_end     = tour_tstop;
       if(tour_ntimes<2)tour_ntimes=2;
       ReallocTourMemory();
       continue;
