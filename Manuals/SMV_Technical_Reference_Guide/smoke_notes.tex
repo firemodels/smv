@@ -503,8 +503,7 @@ displayed.
 
 Summarizing, a slice rendering algorithm for visualizing smoke consists of
 splitting the RTE across individual slice planes within a single
-mesh.  Figure~\ref{fig:smokenum} shows an example illustrating a various number
-of slice planes used to visualize smoke and fire.
+mesh.  
 The 3D computational domain is partitioned into a series of
 2D slices.  The RTE is then solved on each slice.  Each slice
 solution only accounts for conditions between adjacent slices.
@@ -513,22 +512,6 @@ combined using video hardware to form the final image.
 Slices become more transparent as the come closer together. Problems
 can then occur resulting in poor  visualizations because of numerical round off error.
 In this case, different solution techniques are required such as volume rendering which integrates the entire RTE at once rather than one slice at a time.
-
-\begin{figure}[bph]
-\begin{center}
-\begin{tabular}{cc}
-\includegraphics[height=3.5in]{../SMV_User_Guide/SCRIPT_FIGURES/smokegeom_smoke_06}&
-\includegraphics[height=3.5in]{../SMV_User_Guide/SCRIPT_FIGURES/smokegeom_smoke_09}\\
-a) 6 planes&9 planes\\
-\includegraphics[height=3.5in]{../SMV_User_Guide/SCRIPT_FIGURES/smokegeom_smoke_12}&
-\includegraphics[height=3.5in]{../SMV_User_Guide/SCRIPT_FIGURES/smokegeom_smoke_15}\\
-a) 12 planes&15 planes\\
-\end{tabular}
-\end{center}
-\caption{Four images showing increasing number of planes used to visualize smoke and fire.}
-\label{fig:smokenum}
-\end{figure}
-
 
 % -------------------  Computing Color ------------------------
 
