@@ -4582,8 +4582,6 @@ void ParseSMOKE3DCount(void){
 int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_in, int *ioffset_in, int *ismoke3dcount_in, int *ismoke3d_in){
   size_t len;
   size_t lenbuffer;
-  float temp_val = -1.0;
-  char *buffer_temp;
   int filetype = C_GENERATED;
   int blocknumber;
   char buffer2[256];
