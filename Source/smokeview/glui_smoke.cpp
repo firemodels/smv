@@ -62,10 +62,6 @@ GLUI_Spinner *SPINNER_smoke3d_skipx = NULL;
 GLUI_Spinner *SPINNER_smoke3d_skipy = NULL;
 GLUI_Spinner *SPINNER_smoke3d_skipz = NULL;
 GLUI_Spinner *SPINNER_smoke3d_kmax = NULL;
-#ifdef pp_GPUSMOKE
-GLUI_Spinner *SPINNER_smokebox_buffer=NULL;
-GLUI_Spinner *SPINNER_smoke3d_delta_par = NULL;
-#endif
 #ifdef pp_GPU
 GLUI_Spinner *SPINNER_smoke3d_rthick=NULL;
 GLUI_Spinner *SPINNER_smoke3d_rthick2=NULL;
@@ -101,10 +97,6 @@ GLUI_Spinner *SPINNER_slicehrrpuv_cut2 = NULL;
 GLUI_Spinner *SPINNER_slicehrrpuv_cut1 = NULL;
 GLUI_Spinner *SPINNER_hrrpuvoffset=NULL;
 GLUI_Spinner *SPINNER_co2color[3];
-#ifdef pp_GPUSMOKE
-GLUI_Spinner *SPINNER_plane_distance=NULL;
-GLUI_Spinner *SPINNER_smoke3d_delta_multiple=NULL;
-#endif
 GLUI_Spinner *SPINNER_emission_factor=NULL;
 
 GLUI_Checkbox *CHECKBOX_smoke_flip=NULL;
@@ -150,10 +142,6 @@ GLUI_Rollout *ROLLOUT_volsmoke_move = NULL;
 GLUI_Rollout *ROLLOUT_load_options = NULL;
 #ifdef pp_SMOKETEST
 GLUI_Rollout *ROLLOUT_voltemp = NULL;
-#endif
-#ifdef pp_GPUSMOKE
-GLUI_Rollout *ROLLOUT_smoke_diag = NULL;
-GLUI_Rollout *ROLLOUT_smoketest = NULL;
 #endif
 GLUI_Rollout *ROLLOUT_slicehrrpuv = NULL;
 GLUI_Rollout *ROLLOUT_firecolor = NULL;
@@ -240,18 +228,6 @@ extern "C" void UpdateCO2ColorbarList(int value){
 extern "C" void UpdateBackgroundFlip2(int flip) {
   if(CHECKBOX_smoke_flip!=NULL)CHECKBOX_smoke_flip->set_int_val(flip);
 }
-
-#ifdef pp_GPUSMOKE
-/* ------------------ UpdateGLuiPlanes ------------------------ */
-
-extern "C" void UpdateGluiPlanes(float dmin, float dmax){
-  SPINNER_plane_distance->set_float_limits(dmin,dmax);
-  if(plane_distance<dmin||plane_distance>dmax){
-    plane_distance = CLAMP(plane_distance,dmin,dmax);
-    SPINNER_plane_distance->set_float_val(plane_distance);
-  }
-}
-#endif
 
 /* ------------------ UpdateFreeze ------------------------ */
 
@@ -609,15 +585,6 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     SPINNER_load_hrrpuv = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_load_options, _("HRRPUV >"), GLUI_SPINNER_FLOAT, &load_hrrpuv_cutoff);
     SPINNER_load_hrrpuv->set_float_limits(0.0, HRRPUV_CUTOFF_MAX);
 
-#ifdef pp_GPUSMOKE
-    PANEL_smokealg = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices, _("Visualization type"));
-    RADIO_newsmoke = glui_3dsmoke->add_radiogroup_to_panel(PANEL_smokealg, &use_newsmoke, SMOKE_NEW, Smoke3dCB);
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("original"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("test"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_newsmoke, _("diagnostic"));
-#endif
-
-
 #ifdef pp_GPU
     if(gpuactive==0){
       usegpu=0;
@@ -655,65 +622,6 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_("adjust off-center"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_("zero at boundaries"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha,_("both"));
-
-#ifdef pp_GPUSMOKE
-  ROLLOUT_smoketest = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_slices, _("Visualization options (test)"), false, SLICESMOKE_TEST_ROLLOUT, SliceSmokeRolloutCB);
-  INSERT_ROLLOUT(ROLLOUT_smoketest, glui_3dsmoke);
-  ADDPROCINFO(slicesmokeprocinfo, nslicesmokeprocinfo, ROLLOUT_smoketest, SLICESMOKE_TEST_ROLLOUT, glui_3dsmoke);
-  PANEL_gridres = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoketest, _("resolution"));
-
-    smoke3d_delta_par_min = meshinfo->xplt_orig[1]-meshinfo->xplt_orig[0];
-    for(i = 1; i<nmeshes; i++){
-      meshdata *meshi;
-      float delta;
-
-      meshi = meshinfo+i;
-      delta = meshi->xplt_orig[1]-meshi->xplt_orig[0];
-      smoke3d_delta_par_min = MIN(delta, smoke3d_delta_par_min);
-    }
-
-    smoke3d_delta_par = smoke3d_delta_par_min;
-    smoke3d_delta_perp = smoke3d_delta_multiple*smoke3d_delta_par;
-
-    SPINNER_smoke3d_delta_par = glui_3dsmoke->add_spinner_to_panel(PANEL_gridres, _("parallel (m)"), GLUI_SPINNER_FLOAT, &smoke3d_delta_par, SMOKE_DELTA_PAR, Smoke3dCB);
-    SPINNER_smoke3d_delta_multiple = glui_3dsmoke->add_spinner_to_panel(PANEL_gridres, _("perpendicular/parallel"), GLUI_SPINNER_FLOAT, &smoke3d_delta_multiple, SMOKE_DELTA_MULTIPLE, Smoke3dCB);
-
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoketest, _("fast interpolation"), &smoke_fast_interp);
-
-    ROLLOUT_smoke_diag = glui_3dsmoke->add_rollout_to_panel(ROLLOUT_smoketest,_("diagnostic"),false);
-    INSERT_ROLLOUT(ROLLOUT_smoke_diag, glui_3dsmoke);
-    PANEL_slice_alignment = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoke_diag, _("smoke slice alignment"));;
-    RADIO_smokealign = glui_3dsmoke->add_radiogroup_to_panel(PANEL_slice_alignment, &smoke_mesh_aligned);
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_smokealign, _("perpendicular to line of sight"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_smokealign, _("mesh aligned"));
-
-    PANEL_smoke_outline_type = glui_3dsmoke->add_panel_to_panel(ROLLOUT_smoke_diag, _("outline type"));
-    RADIO_smoke_outline_type = glui_3dsmoke->add_radiogroup_to_panel(PANEL_smoke_outline_type, &smoke_outline_type);
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_smoke_outline_type, _("triangle"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_smoke_outline_type, _("triangulation"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_smoke_outline_type, _("polygon"));
-    CHECKBOX_update_smokeplanes =glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("Update"), &update_smokeplanes);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("disable frustum cull check"), &smoke_frustum);
-    CHECKBOX_plane_single=glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("single plane"), &plane_single);
-    SPINNER_plane_distance=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("single plane distance"), GLUI_SPINNER_FLOAT, &plane_distance);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("performance info"), &smoke_timer);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("smoke outline"), &smoke_outline);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("smoke box"), &use_smokebox);
-    SPINNER_smokebox_buffer=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("smokebox buffer"), GLUI_SPINNER_INT, &smokebox_buffer, SMOKEBOX_BUFFER, Smoke3dCB);
-    SPINNER_smokebox_buffer->set_int_limits(0,5);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("exact distance"), &smoke_exact_dist);
-    CHECKBOX_smoke_getvals = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("get vals"), &smoke_getvals);
-
-    CHECKBOX_plane_normal = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("normals"), &plane_normal);
-
-    glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("outline width"), GLUI_SPINNER_FLOAT, &plane_outline_width);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("solid"), &plane_solid);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("polygon"), &smoke_show_polygon);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("distance labels"), &plane_labels);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("show all mesh outlines"), &plane_all_mesh_outlines);
-    glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_smoke_diag, _("display reduced number of smoke planes"), &smoke_subset);
-    SPINNER_smoke_num = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smoke_diag, _("number of smoke planes"), GLUI_SPINNER_INT, &smoke_num, SMOKE_NUM, Smoke3dCB);
-#endif
   }
 
   // volume render dialog
@@ -945,80 +853,6 @@ extern "C" void Smoke3dCB(int var){
     ShowHideMenu(MENU_SHOWHIDE_FLIP);
     updatemenu = 1;
     break;
-#ifdef pp_GPUSMOKE
-  case SMOKE_NUM:
-    if(smoke_num<0){
-      smoke_num = 0;
-      SPINNER_smoke_num->set_int_val(0);
-    }
-    break;
-  case SMOKEBOX_BUFFER:
-    for(i = 0;i<nmeshes;i++){
-      meshdata *meshi;
-
-      meshi = meshinfo+i;
-      meshi->update_smokebox = 1;
-    }
-    break;
-  case SMOKE_NEW:
-    if(use_newsmoke==SMOKE3D_ORIG){
-      for(i = 0;i<nmeshes;i++){
-        meshdata *meshi;
-
-        meshi = meshinfo+i;
-        meshi->update_smoke3dcolors=1;
-      }
-    }
-    if(use_newsmoke != SMOKE3D_DIAG){
-      if(update_smokeplanes!=1){
-        update_smokeplanes = 1;
-        if(CHECKBOX_update_smokeplanes!=NULL)CHECKBOX_update_smokeplanes->set_int_val(1);
-      }
-      if(plane_single!=0){
-        plane_single = 0;
-        if(CHECKBOX_plane_single!=NULL)CHECKBOX_plane_single->set_int_val(0);
-      }
-      if(use_newsmoke==SMOKE3D_NEW){
-        if(smoke_getvals==0){
-          smoke_getvals = 1;
-          if(CHECKBOX_plane_single!=NULL)CHECKBOX_plane_single->set_int_val(1);
-        }
-        if(smoke_outline_type!=SMOKE_TRIANGULATION){
-          smoke_outline_type=SMOKE_TRIANGULATION;
-          if(RADIO_smoke_outline_type!=NULL)RADIO_smoke_outline_type->set_int_val(smoke_outline_type);
-        }
-      }
-    }
-    else{
-      if(update_smokeplanes==0&&config_update_smokeplanes==0){
-        update_smokeplanes = 1;
-        CHECKBOX_update_smokeplanes->set_int_val(1);
-      }
-      else if(config_update_smokeplanes==1){
-        config_update_smokeplanes = 0;
-      }
-      if(plane_normal==1){
-        plane_normal=0;
-        CHECKBOX_plane_normal->set_int_val(0);
-      }
-    }
-    glutPostRedisplay();
-    break;
-  case SMOKE_DELTA_MULTIPLE:
-    if(smoke3d_delta_multiple<1.0){
-      smoke3d_delta_multiple = 1.0;
-      SPINNER_smoke3d_delta_multiple->set_float_val(smoke3d_delta_multiple);
-    }
-    smoke3d_delta_perp = smoke3d_delta_par*smoke3d_delta_multiple;
-    break;
-  case SMOKE_DELTA_PAR:
-    if(smoke3d_delta_par <= smoke3d_delta_par_min){
-      smoke3d_delta_par = smoke3d_delta_par_min;
-      SPINNER_smoke3d_delta_par->set_float_val(smoke3d_delta_par);
-    }
-    smoke3d_delta_perp = smoke3d_delta_par*smoke3d_delta_multiple;
-    break;
-#endif
   case SMOKE_BLACK:
     break;
   case SMOKE_SKIP:

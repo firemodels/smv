@@ -1926,13 +1926,6 @@ void UpdateShowScene(void){
     update_times = 0;
     UpdateTimes();
   }
-#ifdef pp_GPUSMOKE
-  if(update_smoketype_vals==1){
-    update_smoketype_vals = 0;
-    Smoke3dCB(SMOKE_NEW);
-    Smoke3dCB(SMOKE_DELTA_MULTIPLE);
-  }
-#endif
   if(update_use_lighting==1){
     use_lighting = 1-use_lighting_ini;
     ColorbarMenu(USE_LIGHTING);

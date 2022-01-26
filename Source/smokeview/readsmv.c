@@ -355,25 +355,6 @@ void InitMesh(meshdata *meshi){
   meshi->iploty_all = NULL;
   meshi->iplotz_all = NULL;
 #ifdef pp_GPU
-#ifdef pp_GPUSMOKE
-  meshi->update_smokebox = 0;
-  meshi->smoke_verts  = NULL;
-  meshi->smoke_vals   = NULL;
-  meshi->smoke_tris   = NULL;
-  meshi->smoke_ntris  = 0;
-  meshi->smoke_nverts = 0;
-  meshi->max_verts = 0;
-  meshi->max_tris = 0;
-
-  meshi->smoke_texture_id = 0;
-  meshi->smoke_texture_buffer = NULL;
-
-  meshi->fire_texture_id = 0;
-  meshi->fire_texture_buffer = NULL;
-
-  meshi->co2_texture_id = 0;
-  meshi->co2_texture_buffer = NULL;
-#endif
 
   meshi->volsmoke_texture_buffer = NULL;
   meshi->volsmoke_texture_id = 0;
@@ -11106,16 +11087,6 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %i", &show_smokesensors, &test_smokesensors);
       continue;
     }
-#ifdef pp_GPUSMOKE
-    if(Match(buffer, "SMOKETYPE")==1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %f %f %i %i %i", &use_newsmoke, &smoke_mesh_aligned, &smoke3d_delta_par, &smoke3d_delta_multiple,
-                                             &use_smokebox, &smokebox_buffer, &update_smokeplanes);
-      config_update_smokeplanes=1;
-      update_smoketype_vals=1;
-      continue;
-    }
-#endif
 #ifdef pp_GPU
     if(gpuactive == 1 && Match(buffer, "USEGPU") == 1){
       fgets(buffer, 255, stream);
@@ -14896,11 +14867,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i\n", slicedup_option, vectorslicedup_option, boundaryslicedup_option);
   fprintf(fileout, "SMOKESENSORS\n");
   fprintf(fileout, " %i %i\n", show_smokesensors, test_smokesensors);
-#ifdef pp_GPUSMOKE
-  fprintf(fileout, "SMOKETYPE\n");
-  fprintf(fileout, " %i %i %f %f %i %i %i\n",  use_newsmoke, smoke_mesh_aligned, smoke3d_delta_par, smoke3d_delta_multiple,
-                                               use_smokebox, smokebox_buffer, update_smokeplanes);
-#endif
   fprintf(fileout, "STARTUPLANG\n");
   fprintf(fileout, " %s\n", startup_lang_code);
   fprintf(fileout, "STEREO\n");

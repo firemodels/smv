@@ -326,9 +326,6 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"SETVIEWPOINT") == MATCH)return SCRIPT_SETVIEWPOINT;             // documented
   if(MatchUpper(keyword,"SHOWPLOT3DDATA") == MATCH)return SCRIPT_SHOWPLOT3DDATA;         // documented
   if(MatchUpper(keyword,"SHOWSMOKESENSORS")==MATCH)return SCRIPT_SHOWSMOKESENSORS;
-#ifdef pp_GPUSMOKE
-  if(MatchUpper(keyword,"SMOKEFRAMES")==MATCH)return SCRIPT_SMOKEFRAMES;
-#endif
   if(MatchUpper(keyword,"UNLOADALL") == MATCH)return SCRIPT_UNLOADALL;                   // documented
   if(MatchUpper(keyword,"UNLOADTOUR") == MATCH)return SCRIPT_UNLOADTOUR;                 // documented
   if(MatchUpper(keyword,"VOLSMOKERENDERALL") == MATCH)return SCRIPT_VOLSMOKERENDERALL;   // documented
@@ -1159,15 +1156,6 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
       case SCRIPT_SETTOURKEYFRAME:
         SETfval;
         break;
-
-// SMOKEFRAMES
-//  num (int) usesubset (int)
-#ifdef pp_GPUSMOKE
-      case SCRIPT_SMOKEFRAMES:
-        SETbuffer;
-        sscanf(buffer,"%i %i %i",&scripti->ival,&scripti->ival2,&scripti->ival3);
-        break;
-#endif
 
 // RGBTEST
 //  x y z r g b delta
@@ -3134,16 +3122,6 @@ void SetTimeVal(float timeval){
   }
 }
 
-/* ------------------ ScriptSmokeframes ------------------------ */
-#ifdef pp_GPUSMOKE
-void ScriptSmokeframes(scriptdata *scripti){
-  smoke_num = scripti->ival;
-  smoke_subset = scripti->ival2;
-  use_newsmoke = scripti->ival3;
-  Smoke3dCB(SMOKE_NEW);
-}
-#endif
-
 /* ------------------ ScriptRGBtest ------------------------ */
 
 void ScriptRGBtest(scriptdata *scripti){
@@ -3618,11 +3596,6 @@ int RunScriptCommand(scriptdata *script_command){
     case SCRIPT_SETVIEWPOINT:
       ScriptSetViewpoint(scripti);
       break;
-#ifdef pp_GPUSMOKE
-    case SCRIPT_SMOKEFRAMES:
-      ScriptSmokeframes(scripti);
-      break;
-#endif
     case SCRIPT_RGBTEST:
       ScriptRGBtest(scripti);
       break;

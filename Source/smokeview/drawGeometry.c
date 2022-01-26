@@ -5027,9 +5027,6 @@ void DrawFacesOLD(){
 
       meshi = meshinfo + j;
       if(meshi->blockvis==0)continue;
-#ifdef pp_GPUSMOKE
-      if(show3dsmoke==1&&plane_all_mesh_outlines==0&&IsSmokeInMesh(meshi)==0)continue;
-#endif
       for(i=0;i<meshi->nface_outlines;i++){
         facedata *facei;
         float *vertices;

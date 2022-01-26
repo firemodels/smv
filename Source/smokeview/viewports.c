@@ -2261,14 +2261,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     }
     if(nsmoke3dinfo>0&&show3dsmoke==1){
       SortSmoke3dinfo();
-#ifdef pp_GPUSMOKE
-      if(use_newsmoke==SMOKE3D_ORIG||smoke_mesh_aligned==1)GetSmokeDir(modelview_scratch);
-      if(update_smokeplanes==1||use_newsmoke==SMOKE3D_NEW){
-        UpdateSmoke3DPlanes(smoke3d_delta_perp, smoke3d_delta_par);
-      }
-#else
       GetSmokeDir(modelview_scratch);
-#endif
       SNIFF_ERRORS("after GetSmokeDir");
     }
     else if(showslice==1&&(showall_3dslices==1||nslice_loaded>1)){

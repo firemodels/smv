@@ -10,9 +10,6 @@
 #include "smokeviewvars.h"
 
 GLuint p_smoke, p_3dslice, p_zonesmoke, p_volsmoke;
-#ifdef pp_GPUSMOKE
-GLuint p_newsmoke;
-#endif
 
 #define LINK_BAD 0
 #define LINK_GOOD 1
@@ -194,134 +191,6 @@ int SetZoneSmokeShaders(){
 
   return 1;
 }
-
-#ifdef pp_GPUSMOKE
-/* ------------------ SetNewSmokeShaders ------------------------ */
-
-int SetNewSmokeShaders(void){
-  GLuint vert_shader, frag_shader;
-
-  const GLchar *FragmentShaderSource[] = {
-    "#version 120\n"
-    "uniform sampler3D smoke_texture, fire_texture, co2_texture;"
-    "uniform sampler1D colormap;"
-    "uniform vec3 boxmin,boxmax, co2_color;"
-    "uniform float hrrpuv_max_smv, global_hrrpuv_cutoff, fire_alpha, co2_alpha;"
-    "uniform float grid_ratio;"
-    "uniform int have_smoke, have_fire, have_co2;"
-    "varying vec3 fragpos;"
-    "void main(){"
-    "  vec3 texture_position,color;"
-    "  float smoke_val, fire_val, co2_val;"
-    "  float color_val, color_index;"
-    "  float alpha, alpha_factor;"
-    "  int use_smoke,output_fragment;"
-    "  float f1, f2, denom, fire_delta;"
-
-    "  texture_position = (fragpos-boxmin)/(boxmax-boxmin);"
-    "  use_smoke=1;"
-    "  fire_delta=50.0;"
-    "  color = vec3(0.0,0.0,0.0);"
-    "  output_fragment=0;"
-    "  alpha_factor=1.0;"
-    "  if(have_fire==1){"
-    "    fire_val = texture3D(fire_texture,texture_position).x;"
-    "    if(fire_val>global_hrrpuv_cutoff){"
-    "      alpha_factor = clamp((fire_val-global_hrrpuv_cutoff)/fire_delta,0.0,1.0);"
-    "      color_index = fire_val/hrrpuv_max_smv;"
-    "      color = texture1D(colormap,color_index).rgb;"
-    "      alpha = fire_alpha*alpha_factor;"
-    "      if(alpha>0.0&&alpha<1.0&&grid_ratio>1.1){"
-    "        alpha = 1.0 - pow(1.0-alpha,grid_ratio);"
-    "      };"
-    "      if(have_smoke==1&&have_co2==1){"
-    "        smoke_val = texture3D(smoke_texture,texture_position).x;"
-    "        if(smoke_val>0.0&&smoke_val<1.0&&grid_ratio>1.1){"
-    "          smoke_val = 1.0 - pow(1.0-smoke_val,grid_ratio);"
-    "        }"
-    "        co2_val   = texture3D(co2_texture,texture_position).x;"
-    "        f1 = smoke_val;"
-    "        f2 = 0.0*co2_val;"
-    "        denom = f1 + f2;"
-    "        if(denom > 0.0){"
-    "          f1 /= denom;"
-    "          f2 /= denom;"
-    "        }"
-    "        else{"
-    "          f1 = 1.0;"
-    "          f2 = 0.0;"
-    "        }"
-    "        color = f1*color + f2*co2_color;"
-    "        alpha = f1*alpha + f2*co2_alpha;"
-    "      }"
-    "      use_smoke=0;"
-    "      output_fragment=1;"
-    "    }"
-    "  }"
-    "  if(have_smoke==1&&use_smoke==1){"
-    "    smoke_val = texture3D(smoke_texture,texture_position).x;"
-    "    if(smoke_val>0.0&&smoke_val<1.0&&grid_ratio>1.1){"
-    "      smoke_val = 1.0 - pow(1.0-smoke_val,grid_ratio);"
-    "    }"
-    "    color = vec3(0.0,0.0,0.0);"
-    "    alpha = smoke_val;"
-    "    output_fragment=1;"
-    "  }"
-    "  if(output_fragment==1){"
-    "    gl_FragColor = vec4(color.r,color.g,color.b,alpha);"
-    "  }"
-    "  else{"
-    "    gl_FragColor = vec4(color.r,color.g,color.b,0.0);"
-    "  }"
-    "}"
-  };
-
-  const GLchar *VertexShaderSource[] = {
-    "#version 120\n"
-    "varying vec3 fragpos;"
-    "void main(){"
-    "  fragpos=vec3(gl_Vertex);"
-    "  gl_Position=ftransform();"
-    "}"
-  };
-
-  vert_shader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vert_shader, 1, VertexShaderSource, NULL);
-  glCompileShader(vert_shader);
-  if(ShaderCompileStatus(vert_shader, "3D slice vertex shader(new)") == GL_FALSE)return 0;;
-
-  frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(frag_shader, 1, FragmentShaderSource, NULL);
-  glCompileShader(frag_shader);
-  if(ShaderCompileStatus(frag_shader, "3D slice fragment shader(new)") == GL_FALSE)return 0;;
-
-  p_newsmoke = glCreateProgram();
-  glAttachShader(p_newsmoke, vert_shader);
-  glAttachShader(p_newsmoke, frag_shader);
-
-  glLinkProgram(p_newsmoke);
-  if(ShaderLinkStatus(p_newsmoke) == GL_FALSE)return 0;
-
-       GPUnewsmoke_have_co2 = glGetUniformLocation(p_newsmoke, "have_co2");
-  GPUnewsmoke_co2_color     = glGetUniformLocation(p_newsmoke, "co2_color");
-  GPUnewsmoke_co2_alpha     = glGetUniformLocation(p_newsmoke, "color_alpha");
-    GPUnewsmoke_co2texture  = glGetUniformLocation(p_newsmoke, "co2_texture");
-     GPUnewsmoke_grid_ratio = glGetUniformLocation(p_newsmoke, "grid_ratio");
-   GPUnewsmoke_smoketexture = glGetUniformLocation(p_newsmoke, "smoke_texture");
-    GPUnewsmoke_firetexture = glGetUniformLocation(p_newsmoke, "fire_texture");
-    GPUnewsmoke_have_smoke  = glGetUniformLocation(p_newsmoke, "have_smoke");
-      GPUnewsmoke_have_fire = glGetUniformLocation(p_newsmoke, "have_fire");
-  GPUnewsmoke_smokecolormap = glGetUniformLocation(p_newsmoke, "colormap");
-         GPUnewsmoke_boxmin = glGetUniformLocation(p_newsmoke, "boxmin");
-         GPUnewsmoke_boxmax = glGetUniformLocation(p_newsmoke, "boxmax");
- GPUnewsmoke_hrrpuv_max_smv = glGetUniformLocation(p_newsmoke, "hrrpuv_max_smv");
-  GPUnewsmoke_hrrpuv_cutoff = glGetUniformLocation(p_newsmoke, "global_hrrpuv_cutoff");
-     GPUnewsmoke_fire_alpha = glGetUniformLocation(p_newsmoke, "fire_alpha");
-
-
-  return 1;
-}
-#endif
 
 /* ------------------ Set3DSliceShaders ------------------------ */
 
@@ -784,14 +653,6 @@ void LoadZoneSmokeShaders(void){
   glUseProgram(p_zonesmoke);
 }
 
-/* ------------------ LoadNewSmokeShaders ------------------------ */
-
-#ifdef pp_GPUSMOKE
-void LoadNewSmokeShaders(void){
-  glUseProgram(p_newsmoke);
-}
-#endif
-
 /* ------------------ LoadSmokeShaders ------------------------ */
 
 void LoadSmokeShaders(void){
@@ -826,15 +687,6 @@ int InitShaders(void){
 
   if(GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader){
     PRINTF("  GPU shaders\n");
-#ifdef pp_GPUSMOKE
-    if(SetNewSmokeShaders() == 1){
-      PRINTF("    3D smoke(new) loaded\n");
-    }
-    else{
-      PRINTF("    3D smoke(new) failed to load\n");
-      err = 1;
-    }
-#endif
     if(SetSmokeShaders()==1){
       PRINTF("    3D smoke loaded\n");
     }

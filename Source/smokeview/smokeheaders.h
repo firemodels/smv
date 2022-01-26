@@ -228,11 +228,6 @@ EXTERNCPP void UpdateListIsoColorobar(void);
 EXTERNCPP void UpdateTexturebar(void);
 EXTERNCPP void UpdatePosView(void);
 EXTERNCPP void UpdateUseLighting(void);
-#ifdef pp_GPUSMOKE
-EXTERNCPP  void UpdateGluiPlanes(float dmin, float dmax);
-EXTERNCPP void UpdateSmoke3DPlanes(float delta_perp, float delta_par);
-EXTERNCPP int IsSmokeInMesh(meshdata *meshi);
-#endif
 EXTERNCPP void GetFileSizes(void);
 EXTERNCPP int IsSmokeComponentPresent(smoke3ddata *smoke3di);
 EXTERNCPP void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax);
@@ -584,9 +579,6 @@ EXTERNCPP void InitCullGeom(int cullflag);
 EXTERNCPP void GetCullSkips(meshdata *meshi, int cullflag, int cull_portsize, int *iiskip, int *jjskip, int *kkskip);
 #ifdef pp_GPU
 EXTERNCPP int  InitShaders(void);
-#ifdef pp_GPUSMOKE
-EXTERNCPP void LoadNewSmokeShaders(void);
-#endif
 EXTERNCPP void LoadSmokeShaders(void);
 EXTERNCPP void Load3DSliceShaders(void);
 EXTERNCPP void LoadZoneSmokeShaders(void);

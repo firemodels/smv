@@ -312,36 +312,8 @@ SVEXTERN screendata SVDECL(*screenglobal, NULL);
 SVEXTERN int SVDECL(smoke_outline_type, SMOKE_OUTLINE_TRIANGLE);
 SVEXTERN int SVDECL(update_filesizes, 0);
 SVEXTERN int SVDECL(use_newsmoke, SMOKE3D_ORIG);
-#ifdef pp_GPUSMOKE
-SVEXTERN int SVDECL(config_update_smokeplanes, 0);
-SVEXTERN int SVDECL(smoke_num, -1), SVDECL(smoke_subset,0);
-SVEXTERN int SVDECL(update_smoketype_vals, 0);
-SVEXTERN int SVDECL(smoke_outline, 0);
-SVEXTERN int SVDECL(smoke_show_polygon, 1);
-SVEXTERN int SVDECL(smokebox_buffer,0);
-SVEXTERN int SVDECL(use_smokebox, 1);
-SVEXTERN int SVDECL(smoke_getvals, 0);
-SVEXTERN int SVDECL(smoke_exact_dist, 0);
-SVEXTERN int SVDECL(smoke_timer, 0);
-SVEXTERN int SVDECL(plane_normal, 1);
-SVEXTERN int SVDECL(smoke_frustum, 0);
-SVEXTERN int SVDECL(smoke_fast_interp, 0);
-SVEXTERN int SVDECL(plane_labels, 0);
-SVEXTERN int SVDECL(smoke_mesh_aligned, 1);
-SVEXTERN int SVDECL(plane_single, 1);
-SVEXTERN float SVDECL(plane_outline_width, 2);
-SVEXTERN int SVDECL(plane_all_mesh_outlines, 1);
-SVEXTERN int SVDECL(plane_solid, 1);
-SVEXTERN float SVDECL(plane_distance, 0.0);
-SVEXTERN int SVDECL(update_smokeplanes, 0);
-SVEXTERN float SVDECL(smoke3d_delta_multiple, 1.0);
-SVEXTERN float SVDECL(smoke3d_delta_par,0.5);
-SVEXTERN float SVDECL(smoke3d_delta_par_min, 0.5);
-SVEXTERN float SVDECL(smoke3d_delta_perp, 0.5);
-#else
 SVEXTERN int SVDECL(compute_smoke3d_planes_par, 0);
 SVEXTERN float SVDECL(smoke3d_delta_perp,0.5);
-#endif
 SVEXTERN int SVDECL(smoke3d_black, 0);
 SVEXTERN int SVDECL(smoke3d_skip, 1), SVDECL(smoke3d_skipx, 1), SVDECL(smoke3d_skipy, 1), SVDECL(smoke3d_skipz, 1), SVDECL(smoke3d_kmax, -1);
 SVEXTERN int SVDECL(slice_skip, 1), SVDECL(slice_skipx, 1), SVDECL(slice_skipy, 1), SVDECL(slice_skipz, 1), SVDECL(max_slice_skip,-1);
@@ -871,15 +843,6 @@ SVEXTERN int GPUzone_xyzmaxdiff;
 SVEXTERN int GPUzone_boxmin, GPUzone_boxmax;
 SVEXTERN int GPUzone_zlay;
 SVEXTERN int GPUzone_odl, GPUzone_odu;
-
-#ifdef pp_GPUSMOKE
-SVEXTERN int GPUnewsmoke_boxmin, GPUnewsmoke_boxmax;
-SVEXTERN int GPUnewsmoke_smoketexture, GPUnewsmoke_firetexture, GPUnewsmoke_co2texture, GPUnewsmoke_smokecolormap;
-SVEXTERN int GPUnewsmoke_have_smoke, GPUnewsmoke_have_fire;
-SVEXTERN int GPUnewsmoke_hrrpuv_max_smv, GPUnewsmoke_hrrpuv_cutoff, GPUnewsmoke_fire_alpha;
-SVEXTERN int GPUnewsmoke_have_co2, GPUnewsmoke_co2_color, GPUnewsmoke_co2_alpha;
-SVEXTERN int GPUnewsmoke_co2texture, GPUnewsmoke_grid_ratio;
-#endif
 
 SVEXTERN int GPUvol_inside, GPUvol_eyepos, GPUvol_xyzmaxdiff, GPUvol_slicetype,GPUvol_dcell3;
 SVEXTERN int GPUvol_gpu_vol_factor;

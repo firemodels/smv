@@ -661,14 +661,6 @@ typedef struct _meshdata {
   int mesh_type;
 #ifdef pp_GPU
   GLuint blockage_texture_id;
-#ifdef pp_GPUSMOKE
-  GLuint smoke_texture_id, fire_texture_id, co2_texture_id;
-  float *smoke_texture_buffer, *fire_texture_buffer, *co2_texture_buffer;
-  float *smoke_verts, *smoke_vals;
-  int max_tris, max_verts;
-  int *smoke_tris, smoke_ntris, smoke_nverts;
-  int update_smokebox;
-#endif
   struct _smoke3ddata *smoke3d_soot, *smoke3d_hrrpuv, *smoke3d_temp, *smoke3d_co2;
   GLuint     volsmoke_texture_id,     volfire_texture_id,     vollight_texture_id;
   float *volsmoke_texture_buffer,*volfire_texture_buffer,*vollight_texture_buffer;
