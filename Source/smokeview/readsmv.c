@@ -4598,19 +4598,10 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
   ismoke3dcount = *ismoke3dcount_in;
   ismoke3d      = *ismoke3d_in;
 
-  if(Match(buffer, "SMOKF3D")==1||Match(buffer, "VSMOKF3D")==1||
-     Match(buffer, "SMOKG3D")==1||Match(buffer, "VSMOKG3D")==1
-    ){
+  if(Match(buffer, "SMOKF3D")==1){
     filetype = FORTRAN_GENERATED;
   }
 
-  if(Match(buffer, "VSMOKE3D")==1||Match(buffer, "VSMOKF3D")==1||Match(buffer, "VSMOKG3D")==1){
-    int idummy;
-
-    buffer_temp = buffer+8;
-    sscanf(buffer_temp, "%i %f", &idummy, &temp_val);
-    if(temp_val>0.0)hrrpuv_max_smv = temp_val;
-  }
   nn_smoke3d++;
   *nn_smoke3d_in = nn_smoke3d;
 
@@ -6344,13 +6335,7 @@ int ReadSMV(bufferstreamdata *stream){
 //*** SMOKE3D
 
     if(
-      Match(buffer, "SMOKE3D") == 1  ||
-      Match(buffer, "VSMOKE3D") == 1 ||
-      Match(buffer, "SMOKF3D") == 1  ||
-      Match(buffer, "VSMOKF3D") == 1 ||
-      Match(buffer, "SMOKG3D") == 1  ||
-      Match(buffer, "VSMOKG3D") == 1
-      ){
+      Match(buffer, "SMOKE3D") == 1  || Match(buffer, "SMOKF3D") == 1  || Match(buffer, "SMOKG3D") == 1){
       ParseSMOKE3DCount();
       continue;
     }
@@ -9805,13 +9790,7 @@ typedef struct {
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(
-      Match(buffer,"SMOKE3D") == 1   ||
-      Match(buffer,"VSMOKE3D") == 1  ||
-      Match(buffer,"SMOKF3D") == 1   ||
-      Match(buffer,"VSMOKF3D") == 1  ||
-      Match(buffer, "SMOKG3D") == 1  ||
-      Match(buffer, "VSMOKG3D") == 1
-      ){
+      Match(buffer,"SMOKE3D") == 1 || Match(buffer,"SMOKF3D") == 1 || Match(buffer, "SMOKG3D") == 1){
       int return_val;
 
       return_val = ParseSMOKE3DProcess(stream, buffer, &nn_smoke3d, &ioffset, &ismoke3dcount, &ismoke3d);
