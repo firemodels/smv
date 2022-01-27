@@ -129,8 +129,8 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
 #define ADJUSTALPHA(ALPHAIN,ASPECTRATIO,NORM,NORMTYPE) \
             alphaf_out[n]=0;\
             if(ALPHAIN==0)continue;\
-            if((adjustalphaflag==2||adjustalphaflag==3)&&iblank_smoke3d!=NULL&&iblank_smoke3d[n]==SOLID)continue;\
-            if(adjustalphaflag==2){\
+            if((adjustalphaflag==ALPHA_WALL||adjustalphaflag==ALPHA_CENTER_WALL)&&iblank_smoke3d!=NULL&&iblank_smoke3d[n]==SOLID)continue;\
+            if(adjustalphaflag==ALPHA_WALL){\
               alphaf_out[n]=ALPHAIN;\
             }\
             else{\
@@ -234,7 +234,7 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
   value[3]=alphaf_in[n21];\
   if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
   SMOKETIMER;\
-  if((adjustalphaflag==2||adjustalphaflag==3)&&iblank_smoke3d!=NULL){\
+  if((adjustalphaflag==ALPHA_WALL||adjustalphaflag==ALPHA_CENTER_WALL)&&iblank_smoke3d!=NULL){\
     if(iblank_smoke3d[n11]==SOLID)value[0]=0;\
     if(iblank_smoke3d[n12]==SOLID)value[1]=0;\
     if(iblank_smoke3d[n22]==SOLID)value[2]=0;\
@@ -278,7 +278,7 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
   value[1]=alphaf_in[n12];\
   value[2]=alphaf_in[n22];\
   value[3]=alphaf_in[n21];\
-  if((adjustalphaflag==2||adjustalphaflag==3)&&iblank_smoke3d!=NULL){\
+  if((adjustalphaflag==ALPHA_WALL||adjustalphaflag==ALPHA_CENTER_WALL)&&iblank_smoke3d!=NULL){\
     if(iblank_smoke3d[n11]==SOLID)value[0]=0;\
     if(iblank_smoke3d[n12]==SOLID)value[1]=0;\
     if(iblank_smoke3d[n22]==SOLID)value[2]=0;\
@@ -2003,7 +2003,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
-    if(adjustalphaflag!=0){
+    if(adjustalphaflag!=ALPHA_NONE){
 
       aspectratio = meshi->dx;
       for(i = is1;i<=is2;i++){
@@ -2159,7 +2159,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
-    if(adjustalphaflag!=0){
+    if(adjustalphaflag!=ALPHA_NONE){
 
       aspectratio = meshi->dy;
       for(j = js1;j<=js2;j++){
@@ -2313,7 +2313,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
     aspectratio = meshi->dz;
-    if(adjustalphaflag!=0){
+    if(adjustalphaflag!=ALPHA_NONE){
       for(k = ks1;k<=ks2;k++){
         kterm = (k-ks1)*nxy;
 
@@ -2461,7 +2461,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
     aspectratio = meshi->dxy;
-    if(adjustalphaflag!=0){
+    if(adjustalphaflag!=ALPHA_NONE){
 
       for(iii = 1;iii<nx+ny-2;iii += skip_local){
         ipj = iii;
@@ -2649,7 +2649,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
     aspectratio = meshi->dxy;
-    if(adjustalphaflag!=0){
+    if(adjustalphaflag!=ALPHA_NONE){
 
       for(iii = 1;iii<nx+ny-2;iii += skip_local){
         jmi = iii;
@@ -2841,7 +2841,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
     aspectratio = meshi->dyz;
-    if(adjustalphaflag!=0){
+    if(adjustalphaflag!=ALPHA_NONE){
 
       for(iii = 1;iii<ny+nz-2;iii += skip_local){
         jpk = iii;
@@ -3027,7 +3027,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
   case -7:
     aspectratio = meshi->dyz;
 
-    if(adjustalphaflag!=0){
+    if(adjustalphaflag!=ALPHA_NONE){
 
       for(iii = 1;iii<ny+nz-2;iii += skip_local){
         kmj = iii;
@@ -3220,7 +3220,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
     aspectratio = meshi->dxz;
-    if(adjustalphaflag!=0){
+    if(adjustalphaflag!=ALPHA_NONE){
 
       for(iii = 1;iii<nx+nz-2;iii += skip_local){
         ipk = iii;
@@ -3406,7 +3406,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
   case 9:
   case -9:
     aspectratio = meshi->dxz;
-    if(adjustalphaflag!=0){
+    if(adjustalphaflag!=ALPHA_NONE){
 
       for(iii = 1;iii<nx+nz-2;iii += skip_local){
         kmi = iii;

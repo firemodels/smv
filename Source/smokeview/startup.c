@@ -1902,8 +1902,6 @@ void InitVars(void){
 
   cpuframe=0;
 
-  adjustalphaflag=3;
-
   highlight_block=-1, highlight_mesh=0, highlight_flag=2;
 
   visUSERticks=0;
