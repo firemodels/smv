@@ -133,7 +133,7 @@ GLUI_Panel *PANEL_color = NULL;
 GLUI_Panel *PANEL_smoke = NULL;
 GLUI_Panel *PANEL_loadcutoff = NULL;
 GLUI_Panel *PANEL_loadframe = NULL;
-GLUI_Panel *PANEL_slice_settings = NULL;
+GLUI_Panel *PANEL_node_display = NULL;
 GLUI_Panel *PANEL_display = NULL;
 GLUI_Panel *PANEL_load_options = NULL;
 
@@ -572,7 +572,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     ADDPROCINFO(smokeprocinfo, nsmokeprocinfo, ROLLOUT_slices, SLICERENDER_ROLLOUT, glui_3dsmoke);
     ROLLOUT_slices->set_alignment(GLUI_ALIGN_LEFT);
 
-    PANEL_load_options = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices, _("Load options"));
+    PANEL_load_options = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices, _("Load when:"));
     SPINNER_load_3dsmoke = glui_3dsmoke->add_spinner_to_panel(PANEL_load_options, _("soot alpha >"), GLUI_SPINNER_FLOAT, &load_3dsmoke_cutoff);
     SPINNER_load_3dsmoke->set_float_limits(0.0, 255.0);
 
@@ -586,6 +586,11 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha, _("adjust off-center"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha, _("zero at boundaries"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha, _("both"));
+#ifdef pp_GPU
+    SPINNER_smoke3d_rthick = glui_3dsmoke->add_spinner_to_panel(PANEL_absorption, _("Thickness"),
+                                                                GLUI_SPINNER_FLOAT, &smoke3d_rthick, SMOKE_RTHICK, Smoke3dCB);
+    SPINNER_smoke3d_rthick->set_float_limits(1.0, 255.0);
+#endif
 
 #ifdef pp_GPU
     if(gpuactive==0){
@@ -596,26 +601,21 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_column_to_panel(ROLLOUT_slices, false);
 
 
-    PANEL_slice_settings=glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices,"Display");
-    PANEL_display = glui_3dsmoke->add_panel_to_panel(PANEL_slice_settings, "", GLUI_PANEL_NONE);
+    PANEL_display = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices, "smoke slice display");
     RADIO_skipframes = glui_3dsmoke->add_radiogroup_to_panel(PANEL_display,&smokeskipm1);
     glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("All"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("Every 2nd"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("Every 3rd"));
 
-#ifdef pp_GPU
-    SPINNER_smoke3d_rthick=glui_3dsmoke->add_spinner_to_panel(PANEL_display,_("Thickness"),
-      GLUI_SPINNER_FLOAT,&smoke3d_rthick,SMOKE_RTHICK,Smoke3dCB);
-    SPINNER_smoke3d_rthick->set_float_limits(1.0,255.0);
-#endif
     UpdateSmokeThickness();
 
-    SPINNER_smoke3d_skip   = glui_3dsmoke->add_spinner_to_panel(PANEL_display, "Skip",   GLUI_SPINNER_INT, &smoke3d_skip,  SMOKE_SKIP,     Smoke3dCB);
-    SPINNER_smoke3d_skipx  = glui_3dsmoke->add_spinner_to_panel(PANEL_display, "Skip x", GLUI_SPINNER_INT, &smoke3d_skipx, SMOKE_SKIP_XYZ, Smoke3dCB);
-    SPINNER_smoke3d_skipy  = glui_3dsmoke->add_spinner_to_panel(PANEL_display, "Skip y", GLUI_SPINNER_INT, &smoke3d_skipy, SMOKE_SKIP_XYZ, Smoke3dCB);
-    SPINNER_smoke3d_skipz  = glui_3dsmoke->add_spinner_to_panel(PANEL_display, "Skip z", GLUI_SPINNER_INT, &smoke3d_skipz, SMOKE_SKIP_XYZ, Smoke3dCB);
-    SPINNER_smoke3d_kmax   = glui_3dsmoke->add_spinner_to_panel(PANEL_display, "max k", GLUI_SPINNER_INT, &smoke3d_kmax);
-    CHECKBOX_smokecullflag = glui_3dsmoke->add_checkbox_to_panel(PANEL_display,"Cull hidden slices", &smokecullflag);
+    PANEL_node_display = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices, "smoke node display");
+    SPINNER_smoke3d_skip   = glui_3dsmoke->add_spinner_to_panel(PANEL_node_display, "x/y/z",   GLUI_SPINNER_INT, &smoke3d_skip,  SMOKE_SKIP,     Smoke3dCB);
+    SPINNER_smoke3d_skipx  = glui_3dsmoke->add_spinner_to_panel(PANEL_node_display, "x",     GLUI_SPINNER_INT, &smoke3d_skipx, SMOKE_SKIP_XYZ, Smoke3dCB);
+    SPINNER_smoke3d_skipy  = glui_3dsmoke->add_spinner_to_panel(PANEL_node_display, "y",     GLUI_SPINNER_INT, &smoke3d_skipy, SMOKE_SKIP_XYZ, Smoke3dCB);
+    SPINNER_smoke3d_skipz  = glui_3dsmoke->add_spinner_to_panel(PANEL_node_display, "z",     GLUI_SPINNER_INT, &smoke3d_skipz, SMOKE_SKIP_XYZ, Smoke3dCB);
+    SPINNER_smoke3d_kmax   = glui_3dsmoke->add_spinner_to_panel(PANEL_node_display, "max k", GLUI_SPINNER_INT, &smoke3d_kmax);
+    CHECKBOX_smokecullflag = glui_3dsmoke->add_checkbox_to_panel(PANEL_node_display,"Cull hidden planes", &smokecullflag);
   }
 
   // volume render dialog
