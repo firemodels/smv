@@ -473,8 +473,8 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   glui_3dsmoke->add_radiobutton_to_group(RADIO_use_fire_alpha, _("soot/fire dependent"));
 
   glui_3dsmoke->add_column_to_panel(PANEL_fire_opacity, false);
-  SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, _("50% HRRPUV/temperature opacity (m):"), GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
-  SPINNER_emission_factor = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, "factor:", GLUI_SPINNER_FLOAT, &emission_factor, USE_FIRE_ALPHA, Smoke3dCB);
+  SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, "50% opacity at depth (m):", GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
+  SPINNER_emission_factor = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, "opacity multiplier:", GLUI_SPINNER_FLOAT, &emission_factor, USE_FIRE_ALPHA, Smoke3dCB);
   SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.01, 100.0);
   Smoke3dCB(USE_FIRE_ALPHA);
 
@@ -829,18 +829,25 @@ extern "C" void Smoke3dCB(int var){
 
   case USE_FIRE_ALPHA:
     use_fire_alpha = 1-glui_use_fire_alpha;
-    if(use_fire_alpha==1||HaveSoot()==0){
+    if(HaveFire()==0){
       SPINNER_smoke3d_fire_halfdepth->enable();
-      SPINNER_emission_factor->disable();
+      SPINNER_emission_factor->enable();
     }
     else{
-      SPINNER_smoke3d_fire_halfdepth->disable();
-      SPINNER_emission_factor->enable();
+      if(use_fire_alpha==1||HaveSoot()==0){
+        SPINNER_smoke3d_fire_halfdepth->enable();
+        SPINNER_emission_factor->disable();
+      }
+      else{
+        SPINNER_smoke3d_fire_halfdepth->disable();
+        SPINNER_emission_factor->enable();
+      }
     }
     if(emission_factor < 1.0){
       emission_factor = 1.0;
       SPINNER_emission_factor->set_float_val(emission_factor);
     }
+    Smoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
     glutPostRedisplay();
     break;
   case BACKGROUND_FLIP:

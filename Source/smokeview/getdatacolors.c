@@ -1645,7 +1645,7 @@ void UpdateChopColors(void){
       }
       for(i=ichopmax;i<ichopmax+NCHOP;i++){
         int ii;
- 
+
         if(i<=0)continue;
         if(i>nrgb_full-1)continue;
         ii = NCHOP-1-(i - ichopmax);
