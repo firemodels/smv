@@ -1114,17 +1114,20 @@ extern "C" void Smoke3dCB(int var){
     if(CHECKBOX_use_fire_colormap!=NULL)CHECKBOX_use_fire_colormap->set_int_val(use_fire_colormap);
     if(CHECKBOX_use_co2_rgb!=NULL)CHECKBOX_use_co2_rgb->set_int_val(use_co2_rgb);
     if(CHECKBOX_use_co2_colormap!=NULL)CHECKBOX_use_co2_colormap->set_int_val(use_co2_colormap);
-    if(use_co2_colormap==1){
-      SPINNER_co2color[0]->disable();
-      SPINNER_co2color[1]->disable();
-      SPINNER_co2color[2]->disable();
-      LISTBOX_co2_colorbar->enable();
-    }
-    else{
-      SPINNER_co2color[0]->enable();
-      SPINNER_co2color[1]->enable();
-      SPINNER_co2color[2]->enable();
-      LISTBOX_co2_colorbar->disable();
+
+    if(nsmoke3d_co2>0){
+      if(use_co2_colormap==1){
+        SPINNER_co2color[0]->disable();
+        SPINNER_co2color[1]->disable();
+        SPINNER_co2color[2]->disable();
+        LISTBOX_co2_colorbar->enable();
+      }
+      else{
+        SPINNER_co2color[0]->enable();
+        SPINNER_co2color[1]->enable();
+        SPINNER_co2color[2]->enable();
+        LISTBOX_co2_colorbar->disable();
+      }
     }
     if(use_smoke_colormap==1){
       LISTBOX_smoke_colorbar->enable();
