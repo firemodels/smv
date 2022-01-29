@@ -1906,7 +1906,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
   float *xplt, *yplt, *zplt;
   unsigned char smokealpha, *smokealpha_ptr, *smokecolor_ptr;
   int nx, ny, nz;
-  unsigned char *alphaf_in, *alphaf_out, *alphaf_ptr;
+  unsigned char *alphaf_out, *alphaf_ptr;
   unsigned char *colorptr;
   int xyzindex1[6], xyzindex2[6], *xyzindex, node;
   float xnode[4], znode[4], ynode[4];
@@ -1948,7 +1948,6 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
   yplt = meshi->yplt;
   zplt = meshi->zplt;
   iblank_smoke3d = meshi->iblank_smoke3d;
-  alphaf_in = smoke3di->smokeframe_in;
   alphaf_out = smoke3di->smokeframe_out;
 
   switch(demo_mode){
