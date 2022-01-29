@@ -1884,6 +1884,21 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
 #endif
 
+/* ------------------ InitAlphas ------------------------ */
+
+void InitAlphas(unsigned char *alphanew, int n, float valmin, float valmax, float dx){
+  int i;
+
+  for(i = 0; i<n; i++){
+    float val, factor;
+
+    factor = (float)i/(float)(n-1);
+    val = valmin*(1.0-factor) + valmax*factor;
+    val = (float)n*(1.0-exp(-val*dx));
+    alphanew[i] = CLAMP((unsigned char)val, 0, n);
+  }
+}
+
 /* ------------------ DrawSmoke3d ------------------------ */
 
 void DrawSmoke3D(smoke3ddata *smoke3di){

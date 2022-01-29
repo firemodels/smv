@@ -4567,6 +4567,8 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
   int blocknumber;
   char buffer2[256];
   char *bufferptr;
+  int have_extinct = -1;
+  float extinct = -1.0, valmin=1.0, valmax=0.0;
 
   int nn_smoke3d, ioffset, ismoke3dcount, ismoke3d;
 
@@ -4596,7 +4598,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     char *buffer3;
 
     buffer3 = buffer+8;
-    sscanf(buffer3, "%i", &blocknumber);
+    sscanf(buffer3, "%i %f %f %f", &blocknumber, &extinct, &valmin, &valmax);
     blocknumber--;
   }
   if(FGETS(buffer, 255, stream)==NULL){
@@ -4608,7 +4610,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
   lenbuffer = len;
   {
     smoke3ddata *smoke3di;
-    int ii;
+    int ii, i;
 
     smoke3di = smoke3dinfo+ismoke3d;
 
@@ -4623,6 +4625,21 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     if(NewMemory((void **)&smoke3di->reg_file, (unsigned int)(len+1))==0)return RETURN_TWO;
     STRCPY(smoke3di->reg_file, bufferptr);
 
+    smoke3di->valmin       = valmin;
+    smoke3di->valmax       = valmax;
+    smoke3di->extinct      = extinct;
+    smoke3di->have_extinct = 0;
+    if(extinct>=0.0)smoke3di->have_extinct = 1;
+    for(i=0; i<9; i++){
+      unsigned char *alpha_new;
+      int j;
+
+      NewMemory((void **)&alpha_new, 256);
+      smoke3di->alpha_new[i] = alpha_new;
+      for(j=0;j<256;j++){
+        alpha_new[j] = j;
+      }
+    }
     smoke3di->ntimes = 0;
     smoke3di->ntimes_old = 0;
     smoke3di->filetype = filetype;
