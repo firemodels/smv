@@ -1487,25 +1487,26 @@ void GetSmokeDir(float *mm){
 
     minangle = 1000.0;
     iminangle = -10;
+
     meshj->dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
     meshj->dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
     meshj->dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
+
     meshj->dxyz[0] = meshj->dx;
     meshj->dxyz[1] = meshj->dy;
     meshj->dxyz[2] = meshj->dz;
-    meshj->dxy = meshj->dx*meshj->dx + meshj->dy*meshj->dy;
-    meshj->dxy = sqrt(meshj->dxy) / 2.0;
-    meshj->dxz = meshj->dx*meshj->dx + meshj->dz*meshj->dz;
-    meshj->dxz = sqrt(meshj->dxz) / 2.0;
-    meshj->dyz = meshj->dy*meshj->dy + meshj->dz*meshj->dz;
-    meshj->dyz = sqrt(meshj->dyz) / 2.0;
 
-    meshj->dy /= meshj->dx;
-    meshj->dz /= meshj->dx;
+    // dxy = x*y/sqrt(x*x+y*y)
+    meshj->dxy = meshj->dx*meshj->dy/sqrt(meshj->dx*meshj->dx + meshj->dy*meshj->dy);
+    meshj->dxz = meshj->dx*meshj->dz/sqrt(meshj->dx*meshj->dx + meshj->dz*meshj->dz);
+    meshj->dyz = meshj->dy*meshj->dz/sqrt(meshj->dy*meshj->dy + meshj->dz*meshj->dz);
+
+    meshj->dy  /= meshj->dx;
+    meshj->dz  /= meshj->dx;
     meshj->dxy /= meshj->dx;
     meshj->dxz /= meshj->dx;
     meshj->dyz /= meshj->dx;
-    meshj->dx = 1.0;
+    meshj->dx   = 1.0;
 
     for(i = -9;i <= 9;i++){
       if(i == 0)continue;
