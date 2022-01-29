@@ -311,7 +311,6 @@ SVEXTERN screendata SVDECL(*screenglobal, NULL);
 
 SVEXTERN int SVDECL(smoke_outline_type, SMOKE_OUTLINE_TRIANGLE);
 SVEXTERN int SVDECL(update_filesizes, 0);
-SVEXTERN int SVDECL(use_newsmoke, SMOKE3D_ORIG);
 SVEXTERN int SVDECL(compute_smoke3d_planes_par, 0);
 SVEXTERN float SVDECL(smoke3d_delta_perp,0.5);
 SVEXTERN int SVDECL(smoke3d_black, 0);

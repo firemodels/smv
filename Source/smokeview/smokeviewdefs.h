@@ -796,10 +796,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define RENDER_RESOLUTION_HIGH    3
 #define RENDER_RESOLUTION_360     4
 
-#define SMOKE3D_ORIG  0
-#define SMOKE3D_NEW   1
-#define SMOKE3D_DIAG  2
-
 #define SMOKE_OUTLINE_TRIANGLE 0
 #define SMOKE_TRIANGULATION    1
 #define SMOKE_OUTLINE_POLYGON  2
