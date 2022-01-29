@@ -748,7 +748,7 @@ typedef struct _meshdata {
   int *iso_timeslist;
   int iso_itime;
   int smokedir,smokedir_old;
-  float dx, dy, dz, dxy,dxz,dyz,dxyz[3];
+  float dxDdx, dyDdx, dzDdx, dxyDdx, dxzDdx, dyzDdx, dxyz[3];
   float norm[3];
   float dplane_min[4], dplane_max[4];
 

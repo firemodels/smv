@@ -840,7 +840,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 1:
   case -1:
 
-    aspectratio = meshi->dx;
+    aspectratio = meshi->dxDdx;
     glUniform1f(GPU_aspectratio, aspectratio);
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
@@ -942,7 +942,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 2:
   case -2:
 
-    aspectratio = meshi->dy;
+    aspectratio = meshi->dyDdx;
     glUniform1f(GPU_aspectratio, aspectratio);
 
 
@@ -1045,7 +1045,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 3:
   case -3:
 
-    aspectratio = meshi->dz;
+    aspectratio = meshi->dzDdx;
     glUniform1f(GPU_aspectratio, aspectratio);
 
 
@@ -1143,7 +1143,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 4:
   case -4:
 
-    aspectratio = meshi->dxy;
+    aspectratio = meshi->dxyDdx;
     glUniform1f(GPU_aspectratio, aspectratio);
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
@@ -1263,7 +1263,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 5:
   case -5:
 
-    aspectratio = meshi->dxy;
+    aspectratio = meshi->dxyDdx;
     glUniform1f(GPU_aspectratio, aspectratio);
 
 
@@ -1389,7 +1389,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 6:
   case -6:
 
-    aspectratio = meshi->dyz;
+    aspectratio = meshi->dyzDdx;
     glUniform1f(GPU_aspectratio, aspectratio);
 
 
@@ -1509,7 +1509,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
   case 7:
   case -7:
-    aspectratio = meshi->dyz;
+    aspectratio = meshi->dyzDdx;
     glUniform1f(GPU_aspectratio, aspectratio);
 
 
@@ -1635,7 +1635,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
   case 8:
   case -8:
-    aspectratio = meshi->dxz;
+    aspectratio = meshi->dxzDdx;
     glUniform1f(GPU_aspectratio, aspectratio);
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
@@ -1755,7 +1755,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
     /* interchange y and z, j and z */
   case 9:
   case -9:
-    aspectratio = meshi->dxz;
+    aspectratio = meshi->dxzDdx;
     glUniform1f(GPU_aspectratio, aspectratio);
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
@@ -2020,7 +2020,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     if(adjustalphaflag!=ALPHA_NONE){
 
-      aspectratio = meshi->dx;
+      aspectratio = meshi->dxDdx;
       for(i = is1;i<=is2;i++){
         iterm = (i-smoke3di->is1);
 
@@ -2176,7 +2176,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     if(adjustalphaflag!=ALPHA_NONE){
 
-      aspectratio = meshi->dy;
+      aspectratio = meshi->dyDdx;
       for(j = js1;j<=js2;j++){
         jterm = (j-js1)*nx;
         //    xp[1]=yplt[j];
@@ -2327,7 +2327,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
   case -3:
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
-    aspectratio = meshi->dz;
+    aspectratio = meshi->dzDdx;
     if(adjustalphaflag!=ALPHA_NONE){
       for(k = ks1;k<=ks2;k++){
         kterm = (k-ks1)*nxy;
@@ -2475,7 +2475,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
-    aspectratio = meshi->dxy;
+    aspectratio = meshi->dxyDdx;
     if(adjustalphaflag!=ALPHA_NONE){
 
       for(iii = 1;iii<nx+ny-2;iii += skip_local){
@@ -2663,7 +2663,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
-    aspectratio = meshi->dxy;
+    aspectratio = meshi->dxyDdx;
     if(adjustalphaflag!=ALPHA_NONE){
 
       for(iii = 1;iii<nx+ny-2;iii += skip_local){
@@ -2855,7 +2855,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
-    aspectratio = meshi->dyz;
+    aspectratio = meshi->dyzDdx;
     if(adjustalphaflag!=ALPHA_NONE){
 
       for(iii = 1;iii<ny+nz-2;iii += skip_local){
@@ -3040,7 +3040,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
   case 7:
   case -7:
-    aspectratio = meshi->dyz;
+    aspectratio = meshi->dyzDdx;
 
     if(adjustalphaflag!=ALPHA_NONE){
 
@@ -3234,7 +3234,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
-    aspectratio = meshi->dxz;
+    aspectratio = meshi->dxzDdx;
     if(adjustalphaflag!=ALPHA_NONE){
 
       for(iii = 1;iii<nx+nz-2;iii += skip_local){
@@ -3420,7 +3420,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     /* interchange y and z, j and z */
   case 9:
   case -9:
-    aspectratio = meshi->dxz;
+    aspectratio = meshi->dxzDdx;
     if(adjustalphaflag!=ALPHA_NONE){
 
       for(iii = 1;iii<nx+nz-2;iii += skip_local){
@@ -4735,9 +4735,9 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
       float tempj, tempmax=1200.0;
 
       co2j = 0.1*(float)j/255.0;
-      smoke3di->co2_alphas[j] = 255.0*(1.0-pow(0.5, (mesh_smoke3d->dx/co2_halfdepth)*(co2j/co2max)));
+      smoke3di->co2_alphas[j] = 255.0*(1.0-pow(0.5,  (mesh_smoke3d->dxyz[0]/co2_halfdepth)*(co2j/co2max)));
       tempj = 20.0 + (tempmax-20.0)*(float)j/255.0;
-      smoke3di->fire_alphas[j] = 255.0*(1.0-pow(0.5, (mesh_smoke3d->dx/fire_halfdepth)*(tempj/tempmax)));
+      smoke3di->fire_alphas[j] = 255.0*(1.0-pow(0.5, (mesh_smoke3d->dxyz[1]/fire_halfdepth)*(tempj/tempmax)));
     }
   }
 
@@ -4760,14 +4760,14 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
       smoke3di->fire_alpha=255;
     }
     else{
-      smoke3di->fire_alpha=255*(1.0-pow(0.5,mesh_smoke3d->dx/fire_halfdepth));
+      smoke3di->fire_alpha=255*(1.0-pow(0.5,mesh_smoke3d->dxyz[0]/fire_halfdepth));
     }
 
     if(co2_halfdepth <= 0.0){
       smoke3di->co2_alpha = 255;
     }
     else {
-      smoke3di->co2_alpha = 255 * (1.0 - pow(0.5, mesh_smoke3d->dx / co2_halfdepth));
+      smoke3di->co2_alpha = 255 * (1.0 - pow(0.5, mesh_smoke3d->dxyz[0]/ co2_halfdepth));
     }
 
 //  temp and hrrpuv cannot be loaded at the same time
@@ -4994,13 +4994,13 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
       smoke3di->fire_alpha = 255;
     }
     else{
-      smoke3di->fire_alpha = 255*(1.0-pow(0.5, meshi->dx/fire_halfdepth));
+      smoke3di->fire_alpha = 255*(1.0-pow(0.5, meshi->dxyz[0]/fire_halfdepth));
     }
     if(co2_halfdepth<=0.0){
       smoke3di->co2_alpha = 255;
     }
     else {
-      smoke3di->co2_alpha = 255*(1.0-pow(0.5, meshi->dx/co2_halfdepth));
+      smoke3di->co2_alpha = 255*(1.0-pow(0.5, meshi->dxyz[0]/co2_halfdepth));
     }
     firecolor_data = NULL;
     smokecolor_data = NULL;

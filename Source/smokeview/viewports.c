@@ -1488,25 +1488,27 @@ void GetSmokeDir(float *mm){
     minangle = 1000.0;
     iminangle = -10;
 
-    meshj->dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
-    meshj->dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
-    meshj->dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
+    meshj->dxDdx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
+    meshj->dyDdx = meshj->yplt_orig[1] - meshj->yplt_orig[0];
+    meshj->dzDdx = meshj->zplt_orig[1] - meshj->zplt_orig[0];
 
-    meshj->dxyz[0] = meshj->dx;
-    meshj->dxyz[1] = meshj->dy;
-    meshj->dxyz[2] = meshj->dz;
+    meshj->dxyz[0] = meshj->dxDdx;
+    meshj->dxyz[1] = meshj->dyDdx;
+    meshj->dxyz[2] = meshj->dzDdx;
 
     // dxy = x*y/sqrt(x*x+y*y)
-    meshj->dxy = meshj->dx*meshj->dy/sqrt(meshj->dx*meshj->dx + meshj->dy*meshj->dy);
-    meshj->dxz = meshj->dx*meshj->dz/sqrt(meshj->dx*meshj->dx + meshj->dz*meshj->dz);
-    meshj->dyz = meshj->dy*meshj->dz/sqrt(meshj->dy*meshj->dy + meshj->dz*meshj->dz);
+#define DIAGDIST(X,Y)  (X)*(Y)/sqrt((X)*(X)+(Y)*(Y))
 
-    meshj->dy  /= meshj->dx;
-    meshj->dz  /= meshj->dx;
-    meshj->dxy /= meshj->dx;
-    meshj->dxz /= meshj->dx;
-    meshj->dyz /= meshj->dx;
-    meshj->dx   = 1.0;
+    meshj->dxyDdx = DIAGDIST(meshj->dxDdx, meshj->dyDdx);
+    meshj->dxzDdx = DIAGDIST(meshj->dxDdx, meshj->dzDdx);
+    meshj->dyzDdx = DIAGDIST(meshj->dyDdx, meshj->dzDdx);
+
+    meshj->dyDdx  /= meshj->dxDdx;
+    meshj->dzDdx  /= meshj->dxDdx;
+    meshj->dxyDdx /= meshj->dxDdx;
+    meshj->dxzDdx /= meshj->dxDdx;
+    meshj->dyzDdx /= meshj->dxDdx;
+    meshj->dxDdx   = 1.0;
 
     for(i = -9;i <= 9;i++){
       if(i == 0)continue;

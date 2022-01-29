@@ -383,12 +383,12 @@ void InitMesh(meshdata *meshi){
   meshi->merge_color = NULL;
   meshi->smokecolor_ptr = NULL;
   meshi->smokealpha_ptr = NULL;
-  meshi->dx = 1.0;
-  meshi->dy = 1.0;
-  meshi->dz = 1.0;
-  meshi->dxy = 1.0;
-  meshi->dxz = 1.0;
-  meshi->dyz = 1.0;
+  meshi->dxDdx  = 1.0;
+  meshi->dyDdx  = 1.0;
+  meshi->dzDdx  = 1.0;
+  meshi->dxyDdx = 1.0;
+  meshi->dxzDdx = 1.0;
+  meshi->dyzDdx = 1.0;
   meshi->label = NULL;
   meshi->maxtimes_boundary = 0;
   meshi->slicedir = YDIR;
@@ -4567,7 +4567,6 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
   int blocknumber;
   char buffer2[256];
   char *bufferptr;
-  int have_extinct = -1;
   float extinct = -1.0, valmin=1.0, valmax=0.0;
 
   int nn_smoke3d, ioffset, ismoke3dcount, ismoke3d;
