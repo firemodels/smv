@@ -13037,11 +13037,6 @@ int ReadIni2(char *inifile, int localfile){
       int viewtype, uselocalspeed;
       float *col;
 
-      if(Match(buffer, "ADJUSTALPHA") == 1){
-        if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i", &adjustalphaflag);
-        continue;
-      }
       if(Match(buffer, "SMOKECULL") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%i", &smokecullflag);
@@ -15006,8 +15001,6 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout,"\n *** 3D SMOKE INFO ***\n\n");
 
-  fprintf(fileout,"ADJUSTALPHA\n");
-  fprintf(fileout," %i\n",adjustalphaflag);
   {
     colorbardata *cb;
     char percen[2];

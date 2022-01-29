@@ -834,7 +834,7 @@ SVEXTERN int GPU_aspectratio;
 SVEXTERN int GPU_smoke3d_rthick, GPU_skip, GPU_hrrcutoff, GPU_hrr, GPU_hrrpuv_max_smv, GPU_hrrpuv_cutoff;
 SVEXTERN int GPU_fire_alpha, GPU_firecolor, GPU_have_smoke, GPU_smokecolormap;
 SVEXTERN int GPU_smokeshade,GPU_smokealpha;
-SVEXTERN int GPU_adjustalphaflag, GPU_use_fire_alpha, GPU_emission_factor;
+SVEXTERN int GPU_use_fire_alpha, GPU_emission_factor;
 
 SVEXTERN int GPUzone_zonedir;
 SVEXTERN int GPUzone_zoneinside;
@@ -1697,7 +1697,6 @@ SVEXTERN float eye_position_fds[3],xeyedir[3], yeyedir[3], zeyedir[3];
 // #else
 //  SVEXTERN float eyzeyeorig_OLD[3];
 //#endif
-SVEXTERN int SVDECL(adjustalphaflag, ALPHA_CENTER_WALL);
 SVEXTERN int SVDECL(colorbar_selection_width,5);
 SVEXTERN int SVDECL(have_extreme_mindata,0), SVDECL(have_extreme_maxdata,0);
 SVEXTERN int SVDECL(show_extreme_mindata,0), SVDECL(show_extreme_maxdata,0);

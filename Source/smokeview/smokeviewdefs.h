@@ -485,11 +485,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define TERRAIN_DEBUG      7
 #endif
 
-#define ALPHA_NONE        0
-#define ALPHA_CENTER      1
-#define ALPHA_WALL        2
-#define ALPHA_CENTER_WALL 3
-
 #define TERRAIN_TOP_SIDE      0
 #define TERRAIN_BOTTOM_SIDE   1
 #define TERRAIN_BOTH_SIDES    2
