@@ -1893,6 +1893,11 @@ void UpdateShowScene(void){
       GenerateTerrainGeom(&terrain_vertices, &sizeof_vertices, &terrain_indices, &sizeof_indices, &terrain_nindices);
     }
   }
+  if(update_smokefire_colors==1){
+    update_smokefire_colors = 0;
+    Smoke3dCB(UPDATE_SMOKEFIRE_COLORS);
+    Smoke3dCB(UPDATE_SMOKEFIRE_COLORS2);
+  }
   if(update_splitcolorbar==1){
     SplitCB(SPLIT_COLORBAR);
     update_splitcolorbar = 0;

@@ -4490,7 +4490,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
     }
     PrintMemoryInfo;
   }
-
+  update_smokefire_colors = 1;
   *errorcode_arg = 0;
   return file_size_local;
 }
@@ -4668,12 +4668,12 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     }
     for(j = 0; j<256; j++){
       float co2j, co2max=0.1;
-      float tempj, tempmax=1200.0;
+      float tempj, tempmax=1200.0, tempmin=20.0;
 
-      co2j = 0.1*(float)j/255.0;
+      co2j = co2max*(float)j/255.0;
       smoke3di->co2_alphas[j] = 255.0*(1.0-pow(0.5,  (mesh_smoke3d->dxyz[0]/co2_halfdepth)*(co2j/co2max)));
-      tempj = 20.0 + (tempmax-20.0)*(float)j/255.0;
-      smoke3di->fire_alphas[j] = 255.0*(1.0-pow(0.5, (mesh_smoke3d->dxyz[1]/fire_halfdepth)*(tempj/tempmax)));
+      tempj = tempmin + (tempmax-20.0)*(float)j/255.0;
+      smoke3di->fire_alphas[j] = 255.0*(1.0-pow(0.5, (mesh_smoke3d->dxyz[0]/fire_halfdepth)*((tempj-tempmin)/tempmax)));
     }
   }
 
@@ -4703,7 +4703,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
       smoke3di->co2_alpha = 255;
     }
     else {
-      smoke3di->co2_alpha = 255 * (1.0 - pow(0.5, mesh_smoke3d->dxyz[0]/ co2_halfdepth));
+      smoke3di->co2_alpha = 255 * (1.0 - pow(0.5, mesh_smoke3d->dxyz[0]/co2_halfdepth));
     }
 
 //  temp and hrrpuv cannot be loaded at the same time
