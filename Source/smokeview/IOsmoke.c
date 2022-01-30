@@ -130,10 +130,12 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
             alphaf_out[n]=0;\
             if(ALPHAIN==0)continue;\
             if(iblank_smoke3d!=NULL&&iblank_smoke3d[n]==SOLID)continue;\
-            alphaf_out[n]=AdjustAlpha(ALPHAIN, ASPECTRATIO)
-
-#define SMOKESKIP if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue
-#define SMOKETIMER
+            if(smoke3di->have_extinct==1){\
+              alphaf_out[n] = alpha_map[ALPHAIN];\
+            }\
+            else{\
+              alphaf_out[n]=AdjustAlpha(ALPHAIN, ASPECTRATIO);\
+            }
 
 // -------------------------- DRAWVERTEX ----------------------------------
 #define DRAWVERTEX(XX,YY,ZZ)        \
@@ -141,8 +143,7 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
   value[1]=alphaf_ptr[n12]; \
   value[2]=alphaf_ptr[n22]; \
   value[3]=alphaf_ptr[n21]; \
-  SMOKESKIP;\
-  SMOKETIMER;\
+  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
   ivalue[0]=n11<<2;  \
   ivalue[1]=n12<<2;  \
   ivalue[2]=n22<<2;  \
@@ -178,13 +179,20 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
 // -------------------------- DRAWVERTEXTERRAIN ----------------------------------
 
 #define DRAWVERTEXTERRAIN(XX,YY,ZZ)        \
-  value[0]=alphaf_ptr[n11]; \
-  value[1]=alphaf_ptr[n12]; \
-  value[2]=alphaf_ptr[n22]; \
-  value[3]=alphaf_ptr[n21]; \
-  SMOKESKIP;\
+  if(smoke3di->have_extinct==1){\
+    value[0] = alpha_map[alphaf_ptr[n11]]; \
+    value[1] = alpha_map[alphaf_ptr[n12]]; \
+    value[2] = alpha_map[alphaf_ptr[n22]]; \
+    value[3] = alpha_map[alphaf_ptr[n21]]; \
+  }\
+  else{\
+    value[0] = alphaf_ptr[n11]; \
+    value[1] = alphaf_ptr[n12]; \
+    value[2] = alphaf_ptr[n22]; \
+    value[3] = alphaf_ptr[n21]; \
+  }\
+  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
   z_offset[XXX]=znode_offset[m11];\
-  SMOKETIMER;\
   z_offset[YYY]=znode_offset[m12];\
   z_offset[ZZZ]=znode_offset[m22];\
   z_offset[3]=znode_offset[m21];\
@@ -223,18 +231,25 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
 // -------------------------- DRAWVERTEXGPU ----------------------------------
 
 #define DRAWVERTEXGPU(XX,YY,ZZ) \
-  value[0]=alphaf_in[n11];\
-  value[1]=alphaf_in[n12];\
-  value[2]=alphaf_in[n22];\
-  value[3]=alphaf_in[n21];\
-  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
-  SMOKETIMER;\
+  if(smoke3di->have_extinct==1){\
+    value[0] = alpha_map[alphaf_in[n11]]; \
+    value[1] = alpha_map[alphaf_in[n12]]; \
+    value[2] = alpha_map[alphaf_in[n22]]; \
+    value[3] = alpha_map[alphaf_in[n21]]; \
+  }\
+  else{\
+    value[0] = alphaf_in[n11]; \
+    value[1] = alphaf_in[n12]; \
+    value[2] = alphaf_in[n22]; \
+    value[3] = alphaf_in[n21]; \
+  }\
   if(iblank_smoke3d!=NULL){\
     if(iblank_smoke3d[n11]==SOLID)value[0]=0;\
     if(iblank_smoke3d[n12]==SOLID)value[1]=0;\
     if(iblank_smoke3d[n22]==SOLID)value[2]=0;\
     if(iblank_smoke3d[n21]==SOLID)value[3]=0;\
   }\
+  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
   if(firecolor==NULL&&value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
   if(ABS(value[0]-value[2])<ABS(value[1]-value[3])){     \
     xyzindex=xyzindex1;                                  \
@@ -269,10 +284,18 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
   z_offset[YYY]=znode_offset[m12];\
   z_offset[ZZZ]=znode_offset[m22];\
   z_offset[3]=znode_offset[m21];\
-  value[0]=alphaf_in[n11];\
-  value[1]=alphaf_in[n12];\
-  value[2]=alphaf_in[n22];\
-  value[3]=alphaf_in[n21];\
+  if(smoke3di->have_extinct==1){\
+    value[0] = alpha_map[alphaf_in[n11]]; \
+    value[1] = alpha_map[alphaf_in[n12]]; \
+    value[2] = alpha_map[alphaf_in[n22]]; \
+    value[3] = alpha_map[alphaf_in[n21]]; \
+  }\
+  else{\
+    value[0] = alphaf_in[n11]; \
+    value[1] = alphaf_in[n12]; \
+    value[2] = alphaf_in[n22]; \
+    value[3] = alphaf_in[n21]; \
+  }\
   if(iblank_smoke3d!=NULL){\
     if(iblank_smoke3d[n11]==SOLID)value[0]=0;\
     if(iblank_smoke3d[n12]==SOLID)value[1]=0;\
@@ -828,6 +851,8 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
   TransparentOn();
   switch(ssmokedir){
+    unsigned char *alpha_map;
+
     // +++++++++++++++++++++++++++++++++++ DIR 1 +++++++++++++++++++++++++++++++++++++++
 
 
@@ -835,6 +860,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case -1:
 
     aspectratio = meshi->dxDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_X];
     glUniform1f(GPU_aspectratio, aspectratio);
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
@@ -937,6 +963,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case -2:
 
     aspectratio = meshi->dyDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_Y];
     glUniform1f(GPU_aspectratio, aspectratio);
 
 
@@ -1040,6 +1067,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case -3:
 
     aspectratio = meshi->dzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_Z];
     glUniform1f(GPU_aspectratio, aspectratio);
 
 
@@ -1138,6 +1166,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case -4:
 
     aspectratio = meshi->dxyDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_XY];
     glUniform1f(GPU_aspectratio, aspectratio);
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
@@ -1258,6 +1287,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case -5:
 
     aspectratio = meshi->dxyDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_XY];
     glUniform1f(GPU_aspectratio, aspectratio);
 
 
@@ -1384,6 +1414,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case -6:
 
     aspectratio = meshi->dyzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_YZ];
     glUniform1f(GPU_aspectratio, aspectratio);
 
 
@@ -1503,7 +1534,9 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
   case 7:
   case -7:
+
     aspectratio = meshi->dyzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_YZ];
     glUniform1f(GPU_aspectratio, aspectratio);
 
 
@@ -1629,7 +1662,9 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
   case 8:
   case -8:
+
     aspectratio = meshi->dxzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_XZ];
     glUniform1f(GPU_aspectratio, aspectratio);
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
@@ -1746,10 +1781,10 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
     // +++++++++++++++++++++++++++++++++++ DIR 9 +++++++++++++++++++++++++++++++++++++++
 
-    /* interchange y and z, j and z */
   case 9:
   case -9:
     aspectratio = meshi->dxzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_XZ];
     glUniform1f(GPU_aspectratio, aspectratio);
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
@@ -1893,6 +1928,37 @@ void InitAlphas(unsigned char *alphanew, int n, float valmin, float valmax, floa
   }
 }
 
+/* ------------------ UpdateSmokeAlphas ------------------------ */
+
+void UpdateSmokeAlphas(void){
+  int i;
+
+  for(i = 0; i<nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
+    float dists[6];
+    meshdata *smoke_mesh;
+    float valmin, valmax;
+    int j;
+    float dx;
+
+    smoke3di = smoke3dinfo+i;
+    if(smoke3di->have_extinct==0)continue;
+    smoke_mesh = meshinfo+smoke3di->blocknumber;
+    dx = smoke_mesh->dxyz[0];
+    valmin = 0.0;
+    valmax = -254.0*log(1.0-1.0/254.0)/dx;
+    dists[ALPHA_X]  = smoke_mesh->dxDdx*dx;
+    dists[ALPHA_Y]  = smoke_mesh->dyDdx*dx;
+    dists[ALPHA_Z]  = smoke_mesh->dzDdx*dx;
+    dists[ALPHA_XY] = smoke_mesh->dxyDdx*dx;
+    dists[ALPHA_YZ] = smoke_mesh->dyzDdx*dx;
+    dists[ALPHA_XZ] = smoke_mesh->dxzDdx*dx;
+    for(j=0;j<6;j++){
+      InitAlphas(smoke3di->alphas_dir[j], 254, valmin, valmax, dists[j]);
+    }
+  }
+}
+
 /* ------------------ DrawSmoke3d ------------------------ */
 
 void DrawSmoke3D(smoke3ddata *smoke3di){
@@ -2003,6 +2069,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
   TransparentOn();
   switch(ssmokedir){
+    unsigned char *alpha_map;
 
     // +++++++++++++++++++++++++++++++++++ DIR 1 +++++++++++++++++++++++++++++++++++++++
 
@@ -2012,6 +2079,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
     aspectratio = meshi->dxDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_X];
     for(i = is1;i<=is2;i++){
       iterm = (i-smoke3di->is1);
 
@@ -2034,7 +2102,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
         if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
       }
 
-      for(k = ks1;k<=ks2;k++){
+      for(k = ks1; k<=ks2; k++){
         kterm = (k-ks1)*nxy;
 
         if(smokecullflag==1&&k!=ks2){
@@ -2047,7 +2115,6 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
         for(j = js1;j<=js2;j++){
           jterm = (j-js1)*nx;
-          //  jterm = (j-js1)*nx;
           n = iterm+jterm+kterm;
           ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
           smokealpha = smokealpha_ptr[n];
@@ -2162,6 +2229,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
     aspectratio = meshi->dyDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_Y];
     for(j = js1;j<=js2;j++){
       jterm = (j-js1)*nx;
         //    xp[1]=yplt[j];
@@ -2306,9 +2374,11 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
   case 3:
   case -3:
+
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
     aspectratio = meshi->dzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_Z];
     for(k = ks1;k<=ks2;k++){
       kterm = (k-ks1)*nxy;
 
@@ -2452,6 +2522,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
     aspectratio = meshi->dxyDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_XY];
     for(iii = 1;iii<nx+ny-2;iii += skip_local){
       ipj = iii;
       if(ssmokedir<0)ipj = nx+ny-2-iii;
@@ -2634,6 +2705,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
     aspectratio = meshi->dxyDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_XY];
     for(iii = 1;iii<nx+ny-2;iii += skip_local){
       jmi = iii;
       if(ssmokedir<0)jmi = nx+ny-2-iii;
@@ -2820,6 +2892,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
     aspectratio = meshi->dyzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_YZ];
     for(iii = 1;iii<ny+nz-2;iii += skip_local){
       jpk = iii;
       if(ssmokedir<0)jpk = ny+nz-2-iii;
@@ -2998,8 +3071,11 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
   case 7:
   case -7:
-    aspectratio = meshi->dyzDdx;
 
+    // ++++++++++++++++++  adjust transparency +++++++++++++++++
+
+    aspectratio = meshi->dyzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_YZ];
     for(iii = 1;iii<ny+nz-2;iii += skip_local){
       kmj = iii;
       if(ssmokedir<0)kmj = ny+nz-2-iii;
@@ -3187,6 +3263,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
     aspectratio = meshi->dxzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_XZ];
     for(iii = 1;iii<nx+nz-2;iii += skip_local){
       ipk = iii;
       if(ssmokedir<0)ipk = nx+nz-2-iii;
@@ -3363,10 +3440,13 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     // +++++++++++++++++++++++++++++++++++ DIR 9 +++++++++++++++++++++++++++++++++++++++
 
-    /* interchange y and z, j and z */
   case 9:
   case -9:
+
+    // ++++++++++++++++++  adjust transparency +++++++++++++++++
+
     aspectratio = meshi->dxzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_XZ];
     for(iii = 1;iii<nx+nz-2;iii += skip_local){
       kmi = iii;
       if(ssmokedir<0)kmi = nx+nz-2-iii;

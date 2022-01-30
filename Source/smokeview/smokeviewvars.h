@@ -41,6 +41,7 @@ SVEXTERN int SVDECL(terrain_skip, 1);
 #ifdef pp_TERRAIN_DEBUG
 SVEXTERN int SVDECL(terrain_debug, 0);
 #endif
+SVEXTERN int SVDECL(update_smoke_alphas, 0);
 SVEXTERN int SVDECL(max_colorbar_label_width, 0);
 SVEXTERN char SVDECL(**colorbar_labels,  NULL);
 SVEXTERN float SVDECL(*colorbar_vals,    NULL);

@@ -1907,6 +1907,10 @@ int HaveSoot(void) {
 void UpdateShowScene(void){
   have_fire  = HaveFire();
   have_smoke = HaveSoot();
+  if(update_smoke_alphas==1){
+    update_smoke_alphas = 0;
+    UpdateSmokeAlphas();
+  }
   if(open_movie_dialog==1){
     open_movie_dialog = 0;
     if(have_slurm==1&&nmovie_queues>0){

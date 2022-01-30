@@ -1488,28 +1488,6 @@ void GetSmokeDir(float *mm){
     minangle = 1000.0;
     iminangle = -10;
 
-    meshj->dxDdx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
-    meshj->dyDdx = meshj->yplt_orig[1] - meshj->yplt_orig[0];
-    meshj->dzDdx = meshj->zplt_orig[1] - meshj->zplt_orig[0];
-
-    meshj->dxyz[0] = meshj->dxDdx;
-    meshj->dxyz[1] = meshj->dyDdx;
-    meshj->dxyz[2] = meshj->dzDdx;
-
-    // dxy = x*y/sqrt(x*x+y*y)
-#define DIAGDIST(X,Y)  (X)*(Y)/sqrt((X)*(X)+(Y)*(Y))
-
-    meshj->dxyDdx = DIAGDIST(meshj->dxDdx, meshj->dyDdx);
-    meshj->dxzDdx = DIAGDIST(meshj->dxDdx, meshj->dzDdx);
-    meshj->dyzDdx = DIAGDIST(meshj->dyDdx, meshj->dzDdx);
-
-    meshj->dyDdx  /= meshj->dxDdx;
-    meshj->dzDdx  /= meshj->dxDdx;
-    meshj->dxyDdx /= meshj->dxDdx;
-    meshj->dxzDdx /= meshj->dxDdx;
-    meshj->dyzDdx /= meshj->dxDdx;
-    meshj->dxDdx   = 1.0;
-
     for(i = -9;i <= 9;i++){
       if(i == 0)continue;
       ii = ABS(i);

@@ -3106,6 +3106,30 @@ void UpdateMeshCoords(void){
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3dinfo_sorted[i]=smoke3dinfo+i;
   }
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+    float dx, dy, dz;
+
+    meshi = meshinfo+i;
+
+    dx = meshi->xplt_orig[1]-meshi->xplt_orig[0];
+    dy = meshi->yplt_orig[1]-meshi->yplt_orig[0];
+    dz = meshi->zplt_orig[1]-meshi->zplt_orig[0];
+
+    meshi->dxyz[0] = dx;
+    meshi->dxyz[1] = dy;
+    meshi->dxyz[2] = dz;
+
+    // dxy = x*y/sqrt(x*x+y*y)
+#define DIAGDIST(X,Y)  (X)*(Y)/sqrt((X)*(X)+(Y)*(Y))
+
+    meshi->dxDdx  = 1.0;
+    meshi->dyDdx  = dy/dx;
+    meshi->dzDdx  = dz/dx;
+    meshi->dxyDdx = DIAGDIST(dx, dy)/dx;
+    meshi->dxzDdx = DIAGDIST(dx, dz)/dx;
+    meshi->dyzDdx = DIAGDIST(dy, dz)/dx;
+  }
 }
 
 /* ------------------ IsSliceDup ------------------------ */
@@ -4628,16 +4652,15 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->valmax       = valmax;
     smoke3di->extinct      = extinct;
     smoke3di->have_extinct = 0;
-    if(extinct>=0.0)smoke3di->have_extinct = 1;
-    for(i=0; i<9; i++){
-      unsigned char *alpha_new;
-      int j;
+    if(extinct>=0.0){
+      smoke3di->have_extinct = 1;
+      update_smoke_alphas = 1;
+    }
+    for(i=0; i<6; i++){
+      unsigned char *alpha_dir;
 
-      NewMemory((void **)&alpha_new, 256);
-      smoke3di->alpha_new[i] = alpha_new;
-      for(j=0;j<256;j++){
-        alpha_new[j] = j;
-      }
+      NewMemory((void **)&alpha_dir, 256);
+      smoke3di->alphas_dir[i] = alpha_dir;
     }
     smoke3di->ntimes = 0;
     smoke3di->ntimes_old = 0;

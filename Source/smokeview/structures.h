@@ -1394,7 +1394,13 @@ typedef struct _smoke3ddata {
   int have_extinct;
   float extinct;
   float valmin, valmax;
-  unsigned char *alpha_new[9];
+#define ALPHA_X  0
+#define ALPHA_Y  1
+#define ALPHA_Z  2
+#define ALPHA_XY 3
+#define ALPHA_YZ 4
+#define ALPHA_XZ 5
+  unsigned char *alphas_dir[6];
   int fire_alpha, co2_alpha;
   float fire_alphas[256], co2_alphas[256];
   int *timeslist;
