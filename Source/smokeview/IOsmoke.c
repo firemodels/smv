@@ -736,7 +736,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   float aspectratio;
   int ssmokedir;
   unsigned char *iblank_smoke3d;
-  int have_smoke;
+  int have_smoke_local;
 
   unsigned char *firecolor, *alphaf_in;
   float value[4], fvalue[4];
@@ -755,10 +755,10 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
       sooti = smoke3dinfo+smoke3di->smokestate[SOOT].index;
     }
     if(sooti!=NULL&&sooti->display==1){
-      have_smoke = 1;
+      have_smoke_local = 1;
     }
     else{
-      have_smoke = 0;
+      have_smoke_local = 0;
     }
   }
   iblank_smoke3d = meshi->iblank_smoke3d;
@@ -819,7 +819,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
   glUniform1f(GPU_emission_factor, emission_factor);
   glUniform1i(GPU_use_fire_alpha, use_fire_alpha);
-  glUniform1i(GPU_have_smoke, have_smoke);
+  glUniform1i(GPU_have_smoke, have_smoke_local);
   glUniform1i(GPU_smokecolormap, 0);
   glUniform1f(GPU_smoke3d_rthick, smoke3d_rthick);
   glUniform1f(GPU_hrrpuv_max_smv, hrrpuv_max_smv);
@@ -4366,6 +4366,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
 
   SetTimeState();
   update_fileload = 1;
+  update_smokefire_colors = 1;
 #ifndef pp_FSEEK
   if(flag_arg==RELOAD)flag_arg = LOAD;
 #endif
@@ -4490,7 +4491,6 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
     }
     PrintMemoryInfo;
   }
-
   *errorcode_arg = 0;
   return file_size_local;
 }
@@ -4668,12 +4668,12 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     }
     for(j = 0; j<256; j++){
       float co2j, co2max=0.1;
-      float tempj, tempmax=1200.0;
+      float tempj, tempmax=1200.0, tempmin=20.0;
 
-      co2j = 0.1*(float)j/255.0;
+      co2j = co2max*(float)j/255.0;
       smoke3di->co2_alphas[j] = 255.0*(1.0-pow(0.5,  (mesh_smoke3d->dxyz[0]/co2_halfdepth)*(co2j/co2max)));
-      tempj = 20.0 + (tempmax-20.0)*(float)j/255.0;
-      smoke3di->fire_alphas[j] = 255.0*(1.0-pow(0.5, (mesh_smoke3d->dxyz[1]/fire_halfdepth)*(tempj/tempmax)));
+      tempj = tempmin + (tempmax-20.0)*(float)j/255.0;
+      smoke3di->fire_alphas[j] = 255.0*(1.0-pow(0.5, (mesh_smoke3d->dxyz[0]/fire_halfdepth)*((tempj-tempmin)/tempmax)));
     }
   }
 
@@ -4703,7 +4703,7 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
       smoke3di->co2_alpha = 255;
     }
     else {
-      smoke3di->co2_alpha = 255 * (1.0 - pow(0.5, mesh_smoke3d->dxyz[0]/ co2_halfdepth));
+      smoke3di->co2_alpha = 255 * (1.0 - pow(0.5, mesh_smoke3d->dxyz[0]/co2_halfdepth));
     }
 
 //  temp and hrrpuv cannot be loaded at the same time

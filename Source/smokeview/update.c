@@ -366,7 +366,6 @@ void UpdateShow(void){
   int shooter_flag;
 
   if(update_fileload==1)UpdateFileLoad();
-  have_fire = HaveFire();
   showtime=0;
   showtime2=0;
   showplot3d=0;
@@ -1872,9 +1871,42 @@ void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo){
   UpdateColorTableList(ncolortableinfo_old);
 }
 
+/* ------------------ HaveFire ------------------------ */
+
+int HaveFire(void) {
+  int i;
+
+  for(i = 0; i<nsmoke3dinfo; i++) {
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo+i;
+    if(smoke3di->loaded==1) {
+      if(smoke3di->type==HRRPUV)return HRRPUV;
+      if(smoke3di->type==TEMP)return TEMP;
+    }
+  }
+  return 0;
+}
+
+/* ------------------ HaveSoot ------------------------ */
+
+int HaveSoot(void) {
+  int i;
+
+  for(i = 0; i<nsmoke3dinfo; i++) {
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo+i;
+    if(smoke3di->loaded==1&&smoke3di->type==SOOT)return 1;
+  }
+  return 0;
+}
+
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
+  have_fire  = HaveFire();
+  have_smoke = HaveSoot();
   if(open_movie_dialog==1){
     open_movie_dialog = 0;
     if(have_slurm==1&&nmovie_queues>0){
@@ -1892,6 +1924,12 @@ void UpdateShowScene(void){
     if(auto_terrain==1){
       GenerateTerrainGeom(&terrain_vertices, &sizeof_vertices, &terrain_indices, &sizeof_indices, &terrain_nindices);
     }
+  }
+  if(update_smokefire_colors==1){
+    update_smokefire_colors = 0;
+    Smoke3dCB(UPDATE_SMOKEFIRE_COLORS);
+    Smoke3dCB(UPDATE_SMOKEFIRE_COLORS2);
+    Smoke3dCB(USE_OPACITY_DEPTH);
   }
   if(update_splitcolorbar==1){
     SplitCB(SPLIT_COLORBAR);
