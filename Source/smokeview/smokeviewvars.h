@@ -362,7 +362,7 @@ SVEXTERN int SVDECL(showgeom_inside_domain, 1);
 SVEXTERN int SVDECL(showgeom_outside_domain, 1);
 SVEXTERN int nsootloaded, nhrrpuvloaded, ntemploaded, nco2loaded;
 SVEXTERN int nsootfiles, nhrrpuvfiles, ntempfiles, nco2files;
-SVEXTERN int SVDECL(have_fire, 0);
+SVEXTERN int SVDECL(have_fire, 0), SVDECL(have_smoke, 0);
 SVEXTERN int SVDECL(nsmoke3d_temp, 0);
 SVEXTERN int SVDECL(nsmoke3d_co2, 0);
 SVEXTERN int SVDECL(nsmoke3d_hrrpuv, 0);
@@ -1851,6 +1851,10 @@ SVEXTERN int fire_color_int255[3];
 SVEXTERN int smoke_color_int255[4];
 SVEXTERN int co2_color_int255[3];
 #endif
+
+SVEXTERN int SVDECL(use_opacity_depth, 1);
+SVEXTERN int SVDECL(use_opacity_multiplier, 0);
+
 SVEXTERN int SVDECL(update_smokefire_colors, 0);
 SVEXTERN float SVDECL(fire_halfdepth,0.3), SVDECL(fire_halfdepth2, 0.3), SVDECL(smoke_albedo, 0.3), SVDECL(smoke_albedo_base, 0.3);
 SVEXTERN float SVDECL(co2_halfdepth, 10.0);

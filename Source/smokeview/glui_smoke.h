@@ -71,7 +71,7 @@
 #define SMOKE_NUM 80
 #define BACKGROUND_FLIP 81
 #define USE_FIRE_ALPHA 84
-
-
+#define USE_OPACITY_DEPTH 93
+#define USE_OPACITY_MULTIPLIER 94
 #endif
 

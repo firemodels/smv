@@ -95,6 +95,8 @@ GLUI_Spinner *SPINNER_hrrpuvoffset=NULL;
 GLUI_Spinner *SPINNER_co2color[3];
 GLUI_Spinner *SPINNER_emission_factor=NULL;
 
+GLUI_Checkbox *CHECKBOX_use_opacity_depth = NULL;
+GLUI_Checkbox *CHECKBOX_use_opacity_multiplier = NULL;
 GLUI_Checkbox *CHECKBOX_use_co2_colormap = NULL;
 GLUI_Checkbox *CHECKBOX_use_fire_colormap = NULL;
 GLUI_Checkbox *CHECKBOX_use_smoke_rgb = NULL;
@@ -476,15 +478,23 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
   PANEL_fire_opacity = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firecolor, "opacity");
   glui_use_fire_alpha = 1-use_fire_alpha;
-  RADIO_use_fire_alpha = glui_3dsmoke->add_radiogroup_to_panel(PANEL_fire_opacity,&glui_use_fire_alpha, USE_FIRE_ALPHA, Smoke3dCB);
-  glui_3dsmoke->add_radiobutton_to_group(RADIO_use_fire_alpha, _("use 50% opacity depth"));
-  glui_3dsmoke->add_radiobutton_to_group(RADIO_use_fire_alpha, _("soot/fire dependent"));
-
-  glui_3dsmoke->add_column_to_panel(PANEL_fire_opacity, false);
+  if(glui_use_fire_alpha==0){
+    use_opacity_depth      = 1;
+    use_opacity_multiplier = 0;
+  }
+  else{
+    use_opacity_depth      = 0;
+    use_opacity_multiplier = 1;
+  }
+  CHECKBOX_use_opacity_depth = glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity, "set 50% opacity depth",
+    &use_opacity_depth, USE_OPACITY_DEPTH, Smoke3dCB);
   SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, "50% opacity at depth (m):", GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
+
+  CHECKBOX_use_opacity_multiplier = glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity, "set opacity multiplier (when smoke also loaded)",
+    &use_opacity_multiplier, USE_OPACITY_MULTIPLIER, Smoke3dCB);
   SPINNER_emission_factor = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, "opacity multiplier:", GLUI_SPINNER_FLOAT, &emission_factor, USE_FIRE_ALPHA, Smoke3dCB);
   SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.01, 100.0);
-  Smoke3dCB(USE_FIRE_ALPHA);
+  Smoke3dCB(USE_OPACITY_DEPTH);
 
 #ifdef pp_SMOKETEST
   if (nsmoke3d_temp > 0) {
@@ -864,19 +874,15 @@ extern "C" void Smoke3dCB(int var){
 
   case USE_FIRE_ALPHA:
     use_fire_alpha = 1-glui_use_fire_alpha;
-    if(HaveFire()==0){
+    if(have_fire!=0&&have_smoke==0){
       SPINNER_smoke3d_fire_halfdepth->enable();
-      SPINNER_emission_factor->enable();
+      SPINNER_emission_factor->disable();
+      CHECKBOX_use_opacity_multiplier->disable();
     }
     else{
-      if(use_fire_alpha==1||HaveSoot()==0){
-        SPINNER_smoke3d_fire_halfdepth->enable();
-        SPINNER_emission_factor->disable();
-      }
-      else{
-        SPINNER_smoke3d_fire_halfdepth->disable();
-        SPINNER_emission_factor->enable();
-      }
+      SPINNER_smoke3d_fire_halfdepth->enable();
+      SPINNER_emission_factor->enable();
+      CHECKBOX_use_opacity_multiplier->enable();
     }
     if(emission_factor < 1.0){
       emission_factor = 1.0;
@@ -884,6 +890,33 @@ extern "C" void Smoke3dCB(int var){
     }
     Smoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
     glutPostRedisplay();
+    break;
+  case USE_OPACITY_DEPTH:
+    if(have_fire!=0&&have_smoke==0){
+      use_opacity_depth      = 1;
+      use_opacity_multiplier = 0;
+    }
+    glui_use_fire_alpha = 1 - use_opacity_depth;
+    if(have_smoke!=0&&have_fire==0){
+        use_opacity_multiplier = 0;
+    }
+    else{
+      use_opacity_multiplier = 1 - use_opacity_depth;
+    }
+    CHECKBOX_use_opacity_depth->set_int_val(use_opacity_depth);
+    CHECKBOX_use_opacity_multiplier->set_int_val(use_opacity_multiplier);
+    Smoke3dCB(USE_FIRE_ALPHA);
+    break;
+  case USE_OPACITY_MULTIPLIER:
+    if(have_fire!=0&&have_smoke==0){
+      use_opacity_depth      = 1;
+      use_opacity_multiplier = 0;
+    }
+    glui_use_fire_alpha = use_opacity_multiplier;
+    use_opacity_depth =  1 - use_opacity_multiplier;
+    CHECKBOX_use_opacity_depth->set_int_val(use_opacity_depth);
+    CHECKBOX_use_opacity_multiplier->set_int_val(use_opacity_multiplier);
+    Smoke3dCB(USE_FIRE_ALPHA);
     break;
   case BACKGROUND_FLIP:
     background_flip = 1-background_flip;
