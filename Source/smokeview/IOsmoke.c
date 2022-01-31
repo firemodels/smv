@@ -733,7 +733,6 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
   unsigned char *firecolor, *alphaf_in;
   float value[4], fvalue[4];
-  float smoke_extinction;
 
   meshdata *meshi;
 
@@ -1869,7 +1868,7 @@ void InitAlphas(unsigned char *alphanew,
   int i;
 
   for(i = 0; i<254; i++){
-    float val, factor;
+    float val;
 
     val = -log(1.0-(i)/254.0)/(base_extinct*base_dx);
     val = 254.0*(1.0-exp(-val*new_extinct*new_dx));
@@ -1918,7 +1917,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
   float *znode_offset, z_offset[4];
 
   float *xplt, *yplt, *zplt;
-  unsigned char smokealpha, *smokealpha_ptr, *smokecolor_ptr;
+  unsigned char *smokealpha_ptr, *smokecolor_ptr;
   int nx, ny, nz;
   unsigned char *alphaf_out, *alphaf_ptr;
   unsigned char *colorptr;
