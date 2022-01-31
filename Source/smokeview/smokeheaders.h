@@ -289,7 +289,6 @@ EXTERNCPP void UpdateVSliceDups(void);
 EXTERNCPP void UnloadVSliceMenu(int value);
 EXTERNCPP void UpdateSliceDups(void);
 EXTERNCPP void UpdateSmokeAlphas(void);
-EXTERNCPP int  HaveSmokeExtinct(float *extinction);
 EXTERNCPP void UpdateBoundarySliceDups(void);
 EXTERNCPP void IsoBoundCB(int var);
 EXTERNCPP void UpdateScriptStep(void);

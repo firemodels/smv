@@ -4591,7 +4591,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
   int blocknumber;
   char buffer2[256];
   char *bufferptr;
-  float extinct = -1.0, valmin=1.0, valmax=0.0;
+  float extinct = -1.0;
 
   int nn_smoke3d, ioffset, ismoke3dcount, ismoke3d;
 
@@ -4621,7 +4621,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     char *buffer3;
 
     buffer3 = buffer+8;
-    sscanf(buffer3, "%i %f %f %f", &blocknumber, &extinct, &valmin, &valmax);
+    sscanf(buffer3, "%i %f", &blocknumber, &extinct);
     blocknumber--;
   }
   if(FGETS(buffer, 255, stream)==NULL){
@@ -4648,14 +4648,6 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     if(NewMemory((void **)&smoke3di->reg_file, (unsigned int)(len+1))==0)return RETURN_TWO;
     STRCPY(smoke3di->reg_file, bufferptr);
 
-    smoke3di->valmin       = valmin;
-    smoke3di->valmax       = valmax;
-    smoke3di->extinct      = extinct;
-    smoke3di->have_extinct = 0;
-    if(extinct>=0.0){
-      smoke3di->have_extinct = 1;
-      update_smoke_alphas = 1;
-    }
     for(i=0; i<6; i++){
       unsigned char *alpha_dir;
 
@@ -4754,6 +4746,14 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
       smoke3di->type = SOOT;
       smoke3di->type2 = SOOT_2;
       nsmoke3d_soot++;
+    }
+    if(extinct<0.0&&smoke3di->type == SOOT){
+      extinct = 8700.0;
+    }
+    smoke3di->extinct = extinct;
+    if(extinct>=0.0){
+      update_smoke_alphas = 1;
+      glui_smoke3d_extinct = extinct;
     }
   }
   return RETURN_CONTINUE;
@@ -13089,14 +13089,6 @@ int ReadIni2(char *inifile, int localfile){
         smoke_albedo = CLAMP(smoke_albedo, 0.0, 1.0);
         continue;
       }
-#ifdef pp_GPU
-      if(Match(buffer, "SMOKERTHICK") == 1){
-        if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%f", &smoke3d_rthick);
-        smoke3d_rthick = CLAMP(smoke3d_rthick, 1.0, 255.0);
-        continue;
-      }
-#endif
       if(Match(buffer, "FIRECOLOR") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%i %i %i", fire_color_int255, fire_color_int255+1, fire_color_int255+2);
@@ -15088,10 +15080,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i\n", slice_skip, slice_skipx, slice_skipy, slice_skipz);
   fprintf(fileout, "SMOKESKIP\n");
   fprintf(fileout," %i %i %i %i %i\n",smokeskipm1,smoke3d_skip, smoke3d_skipx, smoke3d_skipy, smoke3d_skipz);
-#ifdef pp_GPU
-  fprintf(fileout,"SMOKERTHICK\n");
-  fprintf(fileout," %f\n",smoke3d_rthick);
-#endif
 #ifdef pp_GPU
   fprintf(fileout, "USEGPU\n");
   fprintf(fileout, " %i\n", usegpu);

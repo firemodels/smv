@@ -831,8 +831,7 @@ SVEXTERN char opengl_version_label[256];
 SVEXTERN int SVDECL(usevolrender,1);
 SVEXTERN int SVDECL(usegpu,0),SVDECL(gpuactive,0);
 #ifdef pp_GPU
-SVEXTERN int GPU_aspectratio;
-SVEXTERN int GPU_smoke3d_rthick, GPU_skip, GPU_hrrcutoff, GPU_hrr, GPU_hrrpuv_max_smv, GPU_hrrpuv_cutoff;
+SVEXTERN int GPU_skip, GPU_hrrcutoff, GPU_hrr, GPU_hrrpuv_max_smv, GPU_hrrpuv_cutoff;
 SVEXTERN int GPU_fire_alpha, GPU_firecolor, GPU_have_smoke, GPU_smokecolormap;
 SVEXTERN int GPU_smokeshade,GPU_smokealpha;
 SVEXTERN int GPU_use_fire_alpha, GPU_emission_factor;
@@ -1874,9 +1873,6 @@ SVEXTERN int SVDECL(use_co2_colormap, 0),   SVDECL(use_co2_rgb, 1);
 
 SVEXTERN int smokecullflag;
 SVEXTERN int visMAINmenus;
-#ifdef pp_GPU
-SVEXTERN float smoke3d_rthick;
-#endif
 SVEXTERN int ijkbarmax;
 SVEXTERN int blockage_as_input, blockage_snapped;
 SVEXTERN int show_cad_and_grid;

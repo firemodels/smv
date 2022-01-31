@@ -1902,23 +1902,6 @@ int HaveSootLoaded(void) {
   return 0;
 }
 
-/* ------------------ HaveSmokeExtinct ------------------------ */
-
-int HaveSmokeExtinct(float *extinction){
-  int i;
-
-  for(i = 0; i<nsmoke3dinfo; i++) {
-    smoke3ddata *smoke3di;
-
-    smoke3di = smoke3dinfo+i;
-    if(smoke3di->have_extinct==1){
-      *extinction = smoke3di->extinct;
-      return 1;
-    }
-  }
-  return 0;
-}
-
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
