@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+//#define pp_GEOM_DEBUG        // debug out in geometry routines
 //#define pp_CRASH_TEST         // test detection of division by zero or use of undefined pointer
 //#define pp_SHOW_BOUND_MIRROR  // add menu for showing boundary files on mirror/open vents
 //#define pp_HTML_VR           // output VR html code

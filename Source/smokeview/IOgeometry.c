@@ -2131,13 +2131,13 @@ void ReadAllGeom(void){
 
   for(i=0;i<ngeominfo;i++){
     geomdata *geomi;
-#ifdef pp_XXXXXX
+#ifdef pp_GEOM_DEBUG
     int j, count;
 #endif
 
     geomi = geominfo + i;
     LOCK_READALLGEOM;
-#ifdef XXXXXX
+#ifdef pp_GEOM_DEBUG
     count = 0;
     for(j = 0; j<ngeominfo; j++){
       geomdata *geomj;
@@ -2173,13 +2173,13 @@ void ReadAllGeom(void){
   }
   for(i = 0; i<ncgeominfo; i++){
     geomdata *geomi;
-#ifdef XXXXXX
+#ifdef pp_GEOM_DEBUG
     int j, count;
 #endif
 
     geomi = cgeominfo+i;
     LOCK_READALLGEOM;
-#ifdef XXXXXX
+#ifdef pp_GEOM_DEBUG
     count = 0;
     for(j = 0; j<ncgeominfo; j++){
       geomdata *geomj;
@@ -3298,7 +3298,7 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
           break;
         }
       }
-#ifdef XXXXXXX
+#ifdef pp_GEOM_DEBUG
       printf("\n\nedges\n");
       printf("                       total: %i\n", nedges);
       printf("        0 connected triangle: %i\n", ntri0);
@@ -3343,7 +3343,7 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
         vi = verts + ii;
         if(vi->isdup == 1)ndups++;
       }
-#ifdef XXXXXX
+#ifdef pp_GEOM_DEBUG
 //      printf("\nvertices\n");
 //      printf("\n   total: %i\n", nverts);
 //      printf("duplicates: %i\n", ndups);
