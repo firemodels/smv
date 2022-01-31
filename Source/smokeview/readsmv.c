@@ -383,12 +383,12 @@ void InitMesh(meshdata *meshi){
   meshi->merge_color = NULL;
   meshi->smokecolor_ptr = NULL;
   meshi->smokealpha_ptr = NULL;
-  meshi->dx = 1.0;
-  meshi->dy = 1.0;
-  meshi->dz = 1.0;
-  meshi->dxy = 1.0;
-  meshi->dxz = 1.0;
-  meshi->dyz = 1.0;
+  meshi->dxDdx  = 1.0;
+  meshi->dyDdx  = 1.0;
+  meshi->dzDdx  = 1.0;
+  meshi->dxyDdx = 1.0;
+  meshi->dxzDdx = 1.0;
+  meshi->dyzDdx = 1.0;
   meshi->label = NULL;
   meshi->maxtimes_boundary = 0;
   meshi->slicedir = YDIR;
@@ -3106,6 +3106,30 @@ void UpdateMeshCoords(void){
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3dinfo_sorted[i]=smoke3dinfo+i;
   }
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+    float dx, dy, dz;
+
+    meshi = meshinfo+i;
+
+    dx = meshi->xplt_orig[1]-meshi->xplt_orig[0];
+    dy = meshi->yplt_orig[1]-meshi->yplt_orig[0];
+    dz = meshi->zplt_orig[1]-meshi->zplt_orig[0];
+
+    meshi->dxyz[0] = dx;
+    meshi->dxyz[1] = dy;
+    meshi->dxyz[2] = dz;
+
+    // dxy = x*y/sqrt(x*x+y*y)
+#define DIAGDIST(X,Y)  (X)*(Y)/sqrt((X)*(X)+(Y)*(Y))
+
+    meshi->dxDdx  = 1.0;
+    meshi->dyDdx  = dy/dx;
+    meshi->dzDdx  = dz/dx;
+    meshi->dxyDdx = DIAGDIST(dx, dy)/dx;
+    meshi->dxzDdx = DIAGDIST(dx, dz)/dx;
+    meshi->dyzDdx = DIAGDIST(dy, dz)/dx;
+  }
 }
 
 /* ------------------ IsSliceDup ------------------------ */
@@ -4567,6 +4591,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
   int blocknumber;
   char buffer2[256];
   char *bufferptr;
+  float extinct = -1.0, valmin=1.0, valmax=0.0;
 
   int nn_smoke3d, ioffset, ismoke3dcount, ismoke3d;
 
@@ -4596,7 +4621,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     char *buffer3;
 
     buffer3 = buffer+8;
-    sscanf(buffer3, "%i", &blocknumber);
+    sscanf(buffer3, "%i %f %f %f", &blocknumber, &extinct, &valmin, &valmax);
     blocknumber--;
   }
   if(FGETS(buffer, 255, stream)==NULL){
@@ -4608,7 +4633,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
   lenbuffer = len;
   {
     smoke3ddata *smoke3di;
-    int ii;
+    int ii, i;
 
     smoke3di = smoke3dinfo+ismoke3d;
 
@@ -4623,6 +4648,20 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     if(NewMemory((void **)&smoke3di->reg_file, (unsigned int)(len+1))==0)return RETURN_TWO;
     STRCPY(smoke3di->reg_file, bufferptr);
 
+    smoke3di->valmin       = valmin;
+    smoke3di->valmax       = valmax;
+    smoke3di->extinct      = extinct;
+    smoke3di->have_extinct = 0;
+    if(extinct>=0.0){
+      smoke3di->have_extinct = 1;
+      update_smoke_alphas = 1;
+    }
+    for(i=0; i<6; i++){
+      unsigned char *alpha_dir;
+
+      NewMemory((void **)&alpha_dir, 256);
+      smoke3di->alphas_dir[i] = alpha_dir;
+    }
     smoke3di->ntimes = 0;
     smoke3di->ntimes_old = 0;
     smoke3di->filetype = filetype;
@@ -13021,11 +13060,6 @@ int ReadIni2(char *inifile, int localfile){
       int viewtype, uselocalspeed;
       float *col;
 
-      if(Match(buffer, "ADJUSTALPHA") == 1){
-        if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i", &adjustalphaflag);
-        continue;
-      }
       if(Match(buffer, "SMOKECULL") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%i", &smokecullflag);
@@ -14990,8 +15024,6 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout,"\n *** 3D SMOKE INFO ***\n\n");
 
-  fprintf(fileout,"ADJUSTALPHA\n");
-  fprintf(fileout," %i\n",adjustalphaflag);
   {
     colorbardata *cb;
     char percen[2];

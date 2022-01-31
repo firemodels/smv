@@ -129,16 +129,13 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
 #define ADJUSTALPHA(ALPHAIN,ASPECTRATIO,NORM,NORMTYPE) \
             alphaf_out[n]=0;\
             if(ALPHAIN==0)continue;\
-            if((adjustalphaflag==ALPHA_WALL||adjustalphaflag==ALPHA_CENTER_WALL)&&iblank_smoke3d!=NULL&&iblank_smoke3d[n]==SOLID)continue;\
-            if(adjustalphaflag==ALPHA_WALL){\
-              alphaf_out[n]=ALPHAIN;\
+            if(iblank_smoke3d!=NULL&&iblank_smoke3d[n]==SOLID)continue;\
+            if(smoke3di->have_extinct==1){\
+              alphaf_out[n] = alpha_map[ALPHAIN];\
             }\
             else{\
               alphaf_out[n]=AdjustAlpha(ALPHAIN, ASPECTRATIO);\
             }
-
-#define SMOKESKIP if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue
-#define SMOKETIMER
 
 // -------------------------- DRAWVERTEX ----------------------------------
 #define DRAWVERTEX(XX,YY,ZZ)        \
@@ -146,8 +143,7 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
   value[1]=alphaf_ptr[n12]; \
   value[2]=alphaf_ptr[n22]; \
   value[3]=alphaf_ptr[n21]; \
-  SMOKESKIP;\
-  SMOKETIMER;\
+  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
   ivalue[0]=n11<<2;  \
   ivalue[1]=n12<<2;  \
   ivalue[2]=n22<<2;  \
@@ -183,13 +179,20 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
 // -------------------------- DRAWVERTEXTERRAIN ----------------------------------
 
 #define DRAWVERTEXTERRAIN(XX,YY,ZZ)        \
-  value[0]=alphaf_ptr[n11]; \
-  value[1]=alphaf_ptr[n12]; \
-  value[2]=alphaf_ptr[n22]; \
-  value[3]=alphaf_ptr[n21]; \
-  SMOKESKIP;\
+  if(smoke3di->have_extinct==1){\
+    value[0] = alpha_map[alphaf_ptr[n11]]; \
+    value[1] = alpha_map[alphaf_ptr[n12]]; \
+    value[2] = alpha_map[alphaf_ptr[n22]]; \
+    value[3] = alpha_map[alphaf_ptr[n21]]; \
+  }\
+  else{\
+    value[0] = alphaf_ptr[n11]; \
+    value[1] = alphaf_ptr[n12]; \
+    value[2] = alphaf_ptr[n22]; \
+    value[3] = alphaf_ptr[n21]; \
+  }\
+  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
   z_offset[XXX]=znode_offset[m11];\
-  SMOKETIMER;\
   z_offset[YYY]=znode_offset[m12];\
   z_offset[ZZZ]=znode_offset[m22];\
   z_offset[3]=znode_offset[m21];\
@@ -228,18 +231,25 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
 // -------------------------- DRAWVERTEXGPU ----------------------------------
 
 #define DRAWVERTEXGPU(XX,YY,ZZ) \
-  value[0]=alphaf_in[n11];\
-  value[1]=alphaf_in[n12];\
-  value[2]=alphaf_in[n22];\
-  value[3]=alphaf_in[n21];\
-  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
-  SMOKETIMER;\
-  if((adjustalphaflag==ALPHA_WALL||adjustalphaflag==ALPHA_CENTER_WALL)&&iblank_smoke3d!=NULL){\
+  if(smoke3di->have_extinct==1){\
+    value[0] = alpha_map[alphaf_in[n11]]; \
+    value[1] = alpha_map[alphaf_in[n12]]; \
+    value[2] = alpha_map[alphaf_in[n22]]; \
+    value[3] = alpha_map[alphaf_in[n21]]; \
+  }\
+  else{\
+    value[0] = alphaf_in[n11]; \
+    value[1] = alphaf_in[n12]; \
+    value[2] = alphaf_in[n22]; \
+    value[3] = alphaf_in[n21]; \
+  }\
+  if(iblank_smoke3d!=NULL){\
     if(iblank_smoke3d[n11]==SOLID)value[0]=0;\
     if(iblank_smoke3d[n12]==SOLID)value[1]=0;\
     if(iblank_smoke3d[n22]==SOLID)value[2]=0;\
     if(iblank_smoke3d[n21]==SOLID)value[3]=0;\
   }\
+  if(value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
   if(firecolor==NULL&&value[0]==0&&value[1]==0&&value[2]==0&&value[3]==0)continue;\
   if(ABS(value[0]-value[2])<ABS(value[1]-value[3])){     \
     xyzindex=xyzindex1;                                  \
@@ -274,11 +284,19 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
   z_offset[YYY]=znode_offset[m12];\
   z_offset[ZZZ]=znode_offset[m22];\
   z_offset[3]=znode_offset[m21];\
-  value[0]=alphaf_in[n11];\
-  value[1]=alphaf_in[n12];\
-  value[2]=alphaf_in[n22];\
-  value[3]=alphaf_in[n21];\
-  if((adjustalphaflag==ALPHA_WALL||adjustalphaflag==ALPHA_CENTER_WALL)&&iblank_smoke3d!=NULL){\
+  if(smoke3di->have_extinct==1){\
+    value[0] = alpha_map[alphaf_in[n11]]; \
+    value[1] = alpha_map[alphaf_in[n12]]; \
+    value[2] = alpha_map[alphaf_in[n22]]; \
+    value[3] = alpha_map[alphaf_in[n21]]; \
+  }\
+  else{\
+    value[0] = alphaf_in[n11]; \
+    value[1] = alphaf_in[n12]; \
+    value[2] = alphaf_in[n22]; \
+    value[3] = alphaf_in[n21]; \
+  }\
+  if(iblank_smoke3d!=NULL){\
     if(iblank_smoke3d[n11]==SOLID)value[0]=0;\
     if(iblank_smoke3d[n12]==SOLID)value[1]=0;\
     if(iblank_smoke3d[n22]==SOLID)value[2]=0;\
@@ -741,13 +759,16 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   float aspectratio;
   int ssmokedir;
   unsigned char *iblank_smoke3d;
-  int have_smoke;
+  int have_smoke_local;
 
   unsigned char *firecolor, *alphaf_in;
   float value[4], fvalue[4];
+  int have_extinction;
+  float smoke_extinction;
 
   meshdata *meshi;
 
+  have_extinction = HaveSmokeExtinct(&smoke_extinction);
   meshi = meshinfo+smoke3di->blocknumber;
   if(meshvisptr[meshi-meshinfo]==0)return;
 
@@ -760,10 +781,10 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
       sooti = smoke3dinfo+smoke3di->smokestate[SOOT].index;
     }
     if(sooti!=NULL&&sooti->display==1){
-      have_smoke = 1;
+      have_smoke_local = 1;
     }
     else{
-      have_smoke = 0;
+      have_smoke_local = 0;
     }
   }
   iblank_smoke3d = meshi->iblank_smoke3d;
@@ -824,8 +845,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
   glUniform1f(GPU_emission_factor, emission_factor);
   glUniform1i(GPU_use_fire_alpha, use_fire_alpha);
-  glUniform1i(GPU_adjustalphaflag, adjustalphaflag);
-  glUniform1i(GPU_have_smoke, have_smoke);
+  glUniform1i(GPU_have_smoke, have_smoke_local);
   glUniform1i(GPU_smokecolormap, 0);
   glUniform1f(GPU_smoke3d_rthick, smoke3d_rthick);
   glUniform1f(GPU_hrrpuv_max_smv, hrrpuv_max_smv);
@@ -833,14 +853,18 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   glUniform1f(GPU_fire_alpha, smoke3di->fire_alpha);
 
   TransparentOn();
+  aspectratio = 1.0;
   switch(ssmokedir){
+    unsigned char *alpha_map;
+
     // +++++++++++++++++++++++++++++++++++ DIR 1 +++++++++++++++++++++++++++++++++++++++
 
 
   case 1:
   case -1:
 
-    aspectratio = meshi->dx;
+    if(have_extinction==0)aspectratio = meshi->dxDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_X];
     glUniform1f(GPU_aspectratio, aspectratio);
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
@@ -942,7 +966,8 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 2:
   case -2:
 
-    aspectratio = meshi->dy;
+    if(have_extinction==0)aspectratio = meshi->dyDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_Y];
     glUniform1f(GPU_aspectratio, aspectratio);
 
 
@@ -1045,7 +1070,8 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 3:
   case -3:
 
-    aspectratio = meshi->dz;
+    if(have_extinction==0)aspectratio = meshi->dzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_Z];
     glUniform1f(GPU_aspectratio, aspectratio);
 
 
@@ -1143,7 +1169,8 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 4:
   case -4:
 
-    aspectratio = meshi->dxy;
+    if(have_extinction==0)aspectratio = meshi->dxyDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_XY];
     glUniform1f(GPU_aspectratio, aspectratio);
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
@@ -1263,7 +1290,8 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 5:
   case -5:
 
-    aspectratio = meshi->dxy;
+    if(have_extinction==0)aspectratio = meshi->dxyDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_XY];
     glUniform1f(GPU_aspectratio, aspectratio);
 
 
@@ -1389,7 +1417,8 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 6:
   case -6:
 
-    aspectratio = meshi->dyz;
+    if(have_extinction==0)aspectratio = meshi->dyzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_YZ];
     glUniform1f(GPU_aspectratio, aspectratio);
 
 
@@ -1509,7 +1538,9 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
   case 7:
   case -7:
-    aspectratio = meshi->dyz;
+
+    if(have_extinction==0)aspectratio = meshi->dyzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_YZ];
     glUniform1f(GPU_aspectratio, aspectratio);
 
 
@@ -1635,7 +1666,9 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
   case 8:
   case -8:
-    aspectratio = meshi->dxz;
+
+    if(have_extinction==0)aspectratio = meshi->dxzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_XZ];
     glUniform1f(GPU_aspectratio, aspectratio);
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
@@ -1752,10 +1785,11 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
     // +++++++++++++++++++++++++++++++++++ DIR 9 +++++++++++++++++++++++++++++++++++++++
 
-    /* interchange y and z, j and z */
   case 9:
   case -9:
-    aspectratio = meshi->dxz;
+
+    if(have_extinction==0)aspectratio = meshi->dxzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_XZ];
     glUniform1f(GPU_aspectratio, aspectratio);
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
@@ -1884,6 +1918,54 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
 #endif
 
+/* ------------------ InitAlphas ------------------------ */
+
+void InitAlphas(unsigned char *alphanew, int n, float valmin, float valmax, float dx){
+  int i;
+  float base_extinct;
+
+  HaveSmokeExtinct(&base_extinct);
+  for(i = 0; i<n; i++){
+    float val, factor;
+
+    factor = (float)i/(float)(n-1);
+    val = valmin*(1.0-factor) + valmax*factor;
+    val = (float)n*(1.0-exp(-val*(glui_smoke3d_extinct/base_extinct)*dx));
+    alphanew[i] = CLAMP((unsigned char)val, 0, n);
+  }
+}
+
+/* ------------------ UpdateSmokeAlphas ------------------------ */
+
+void UpdateSmokeAlphas(void){
+  int i;
+
+  for(i = 0; i<nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
+    float dists[6];
+    meshdata *smoke_mesh;
+    float valmin, valmax;
+    int j;
+    float dx;
+
+    smoke3di = smoke3dinfo+i;
+    if(smoke3di->have_extinct==0)continue;
+    smoke_mesh = meshinfo+smoke3di->blocknumber;
+    dx = smoke_mesh->dxyz[0];
+    valmin = 0.0;
+    valmax = -254.0*log(1.0-1.0/254.0)/dx;
+    dists[ALPHA_X]  = smoke_mesh->dxDdx*dx;
+    dists[ALPHA_Y]  = smoke_mesh->dyDdx*dx;
+    dists[ALPHA_Z]  = smoke_mesh->dzDdx*dx;
+    dists[ALPHA_XY] = smoke_mesh->dxyDdx*dx;
+    dists[ALPHA_YZ] = smoke_mesh->dyzDdx*dx;
+    dists[ALPHA_XZ] = smoke_mesh->dxzDdx*dx;
+    for(j=0;j<6;j++){
+      InitAlphas(smoke3di->alphas_dir[j], 254, valmin, valmax, dists[j]);
+    }
+  }
+}
+
 /* ------------------ DrawSmoke3d ------------------------ */
 
 void DrawSmoke3D(smoke3ddata *smoke3di){
@@ -1897,7 +1979,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
   float *xplt, *yplt, *zplt;
   unsigned char smokealpha, *smokealpha_ptr, *smokecolor_ptr;
   int nx, ny, nz;
-  unsigned char *alphaf_in, *alphaf_out, *alphaf_ptr;
+  unsigned char *alphaf_out, *alphaf_ptr;
   unsigned char *colorptr;
   int xyzindex1[6], xyzindex2[6], *xyzindex, node;
   float xnode[4], znode[4], ynode[4];
@@ -1939,7 +2021,6 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
   yplt = meshi->yplt;
   zplt = meshi->zplt;
   iblank_smoke3d = meshi->iblank_smoke3d;
-  alphaf_in = smoke3di->smokeframe_in;
   alphaf_out = smoke3di->smokeframe_out;
 
   switch(demo_mode){
@@ -1995,6 +2076,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
   TransparentOn();
   switch(ssmokedir){
+    unsigned char *alpha_map;
 
     // +++++++++++++++++++++++++++++++++++ DIR 1 +++++++++++++++++++++++++++++++++++++++
 
@@ -2003,57 +2085,51 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
-    if(adjustalphaflag!=ALPHA_NONE){
+    aspectratio = meshi->dxDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_X];
+    for(i = is1;i<=is2;i++){
+      iterm = (i-smoke3di->is1);
 
-      aspectratio = meshi->dx;
-      for(i = is1;i<=is2;i++){
-        iterm = (i-smoke3di->is1);
+      if(smokecullflag==1){
+        x11[0] = xplt[i];
+        x12[0] = xplt[i];
+        x22[0] = xplt[i];
+        x21[0] = xplt[i];
 
-        if(smokecullflag==1){
-          x11[0] = xplt[i];
-          x12[0] = xplt[i];
-          x22[0] = xplt[i];
-          x21[0] = xplt[i];
+        x11[1] = yplt[js1];
+        x12[1] = yplt[js2];
+        x22[1] = yplt[js2];
+        x21[1] = yplt[js1];
 
-          x11[1] = yplt[js1];
-          x12[1] = yplt[js2];
-          x22[1] = yplt[js2];
-          x21[1] = yplt[js1];
+        x11[2] = zplt[ks1];
+        x12[2] = zplt[ks1];
+        x22[2] = zplt[ks2];
+        x21[2] = zplt[ks2];
 
-          x11[2] = zplt[ks1];
-          x12[2] = zplt[ks1];
-          x22[2] = zplt[ks2];
-          x21[2] = zplt[ks2];
+        if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
+      }
 
+      for(k = ks1; k<=ks2; k++){
+        kterm = (k-ks1)*nxy;
+
+        if(smokecullflag==1&&k!=ks2){
+          x11[2] = zplt[k];
+          x12[2] = zplt[k];
+          x22[2] = zplt[k+1];
+          x21[2] = zplt[k+1];
           if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
         }
 
-        for(k = ks1;k<=ks2;k++){
-          kterm = (k-ks1)*nxy;
-
-          if(smokecullflag==1&&k!=ks2){
-            x11[2] = zplt[k];
-            x12[2] = zplt[k];
-            x22[2] = zplt[k+1];
-            x21[2] = zplt[k+1];
-            if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
-          }
-
-          for(j = js1;j<=js2;j++){
-            jterm = (j-js1)*nx;
-            //  jterm = (j-js1)*nx;
-            n = iterm+jterm+kterm;
-            ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            smokealpha = smokealpha_ptr[n];
-            ADJUSTALPHA(smokealpha, aspectratio, NULL, 1);
-          }
+        for(j = js1;j<=js2;j++){
+          jterm = (j-js1)*nx;
+          n = iterm+jterm+kterm;
+          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          smokealpha = smokealpha_ptr[n];
+          ADJUSTALPHA(smokealpha, aspectratio, NULL, 1);
         }
       }
-      alphaf_ptr = alphaf_out;
     }
-    else{
-      alphaf_ptr = alphaf_in;
-    }
+    alphaf_ptr = alphaf_out;
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
     glBegin(GL_TRIANGLES);
@@ -2159,58 +2235,53 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
-    if(adjustalphaflag!=ALPHA_NONE){
-
-      aspectratio = meshi->dy;
-      for(j = js1;j<=js2;j++){
-        jterm = (j-js1)*nx;
+    aspectratio = meshi->dyDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_Y];
+    for(j = js1;j<=js2;j++){
+      jterm = (j-js1)*nx;
         //    xp[1]=yplt[j];
 
-        if(smokecullflag==1){
-          x11[0] = xplt[is1];
-          x12[0] = xplt[is2];
-          x22[0] = xplt[is2];
-          x21[0] = xplt[is1];
+      if(smokecullflag==1){
+        x11[0] = xplt[is1];
+        x12[0] = xplt[is2];
+        x22[0] = xplt[is2];
+        x21[0] = xplt[is1];
 
-          x11[1] = yplt[j];
-          x12[1] = yplt[j];
-          x22[1] = yplt[j];
-          x21[1] = yplt[j];
+        x11[1] = yplt[j];
+        x12[1] = yplt[j];
+        x22[1] = yplt[j];
+        x21[1] = yplt[j];
 
-          x11[2] = zplt[ks1];
-          x12[2] = zplt[ks1];
-          x22[2] = zplt[ks2];
-          x21[2] = zplt[ks2];
+        x11[2] = zplt[ks1];
+        x12[2] = zplt[ks1];
+        x22[2] = zplt[ks2];
+        x21[2] = zplt[ks2];
+
+        if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
+      }
+
+      for(k = ks1;k<=ks2;k++){
+        kterm = (k-ks1)*nxy;
+
+        if(smokecullflag==1&&k!=ks2){
+          x11[2] = zplt[k];
+          x12[2] = zplt[k];
+          x22[2] = zplt[k+1];
+          x21[2] = zplt[k+1];
 
           if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
         }
 
-        for(k = ks1;k<=ks2;k++){
-          kterm = (k-ks1)*nxy;
-
-          if(smokecullflag==1&&k!=ks2){
-            x11[2] = zplt[k];
-            x12[2] = zplt[k];
-            x22[2] = zplt[k+1];
-            x21[2] = zplt[k+1];
-
-            if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
-          }
-
-          for(i = is1;i<=is2;i++){
-            iterm = (i-is1);
-            n = iterm+jterm+kterm;
-            ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            smokealpha = smokealpha_ptr[n];
-            ADJUSTALPHA(smokealpha, aspectratio, NULL, 2);
-          }
+        for(i = is1;i<=is2;i++){
+          iterm = (i-is1);
+          n = iterm+jterm+kterm;
+          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          smokealpha = smokealpha_ptr[n];
+          ADJUSTALPHA(smokealpha, aspectratio, NULL, 2);
         }
       }
-      alphaf_ptr = alphaf_out;
     }
-    else{
-      alphaf_ptr = alphaf_in;
-    }
+    alphaf_ptr = alphaf_out;
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
 
@@ -2310,57 +2381,54 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
   case 3:
   case -3:
+
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
-    aspectratio = meshi->dz;
-    if(adjustalphaflag!=ALPHA_NONE){
-      for(k = ks1;k<=ks2;k++){
-        kterm = (k-ks1)*nxy;
+    aspectratio = meshi->dzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_Z];
+    for(k = ks1;k<=ks2;k++){
+      kterm = (k-ks1)*nxy;
 
-        if(smokecullflag==1){
-          x11[0] = xplt[is1];
-          x12[0] = xplt[is2];
-          x22[0] = xplt[is2];
-          x21[0] = xplt[is1];
+      if(smokecullflag==1){
+        x11[0] = xplt[is1];
+        x12[0] = xplt[is2];
+        x22[0] = xplt[is2];
+        x21[0] = xplt[is1];
 
-          x11[1] = yplt[js1];
-          x12[1] = yplt[js1];
-          x22[1] = yplt[js2];
-          x21[1] = yplt[js2];
+        x11[1] = yplt[js1];
+        x12[1] = yplt[js1];
+        x22[1] = yplt[js2];
+        x21[1] = yplt[js2];
 
-          x11[2] = zplt[k];
-          x12[2] = zplt[k];
-          x22[2] = zplt[k];
-          x21[2] = zplt[k];
+        x11[2] = zplt[k];
+        x12[2] = zplt[k];
+        x22[2] = zplt[k];
+        x21[2] = zplt[k];
 
+        if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
+      }
+
+      for(j = js1;j<=js2;j++){
+        jterm = (j-js1)*nx;
+
+        if(smokecullflag==1&&j!=js2){
+          x11[1] = yplt[j];
+          x12[1] = yplt[j];
+          x22[1] = yplt[j+1];
+          x21[1] = yplt[j+1];
           if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
         }
 
-        for(j = js1;j<=js2;j++){
-          jterm = (j-js1)*nx;
-
-          if(smokecullflag==1&&j!=js2){
-            x11[1] = yplt[j];
-            x12[1] = yplt[j];
-            x22[1] = yplt[j+1];
-            x21[1] = yplt[j+1];
-            if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
-          }
-
-          for(i = is1;i<=is2;i++){
-            iterm = (i-is1);
-            n = iterm+jterm+kterm;
-            ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            smokealpha = smokealpha_ptr[n];
-            ADJUSTALPHA(smokealpha, aspectratio, NULL, 3);
-          }
+        for(i = is1;i<=is2;i++){
+          iterm = (i-is1);
+          n = iterm+jterm+kterm;
+          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          smokealpha = smokealpha_ptr[n];
+          ADJUSTALPHA(smokealpha, aspectratio, NULL, 3);
         }
       }
-      alphaf_ptr = alphaf_out;
     }
-    else{
-      alphaf_ptr = alphaf_in;
-    }
+    alphaf_ptr = alphaf_out;
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
 
@@ -2460,77 +2528,72 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
-    aspectratio = meshi->dxy;
-    if(adjustalphaflag!=ALPHA_NONE){
+    aspectratio = meshi->dxyDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_XY];
+    for(iii = 1;iii<nx+ny-2;iii += skip_local){
+      ipj = iii;
+      if(ssmokedir<0)ipj = nx+ny-2-iii;
+      ibeg = 0;
+      jbeg = ipj;
+      if(jbeg>ny-1){
+        jbeg = ny-1;
+        ibeg = ipj-jbeg;
+      }
+      iend = nx-1;
+      jend = ipj-iend;
+      if(jend<0){
+        jend = 0;
+        iend = ipj-jend;
+      }
 
-      for(iii = 1;iii<nx+ny-2;iii += skip_local){
-        ipj = iii;
-        if(ssmokedir<0)ipj = nx+ny-2-iii;
-        ibeg = 0;
-        jbeg = ipj;
-        if(jbeg>ny-1){
-          jbeg = ny-1;
-          ibeg = ipj-jbeg;
-        }
-        iend = nx-1;
-        jend = ipj-iend;
-        if(jend<0){
-          jend = 0;
-          iend = ipj-jend;
-        }
 
+      if(smokecullflag==1){
+        x11[0] = xplt[is1+ibeg];
+        x12[0] = xplt[is1+iend];
+        x22[0] = xplt[is1+iend];
+        x21[0] = xplt[is1+ibeg];
 
-        if(smokecullflag==1){
-          x11[0] = xplt[is1+ibeg];
-          x12[0] = xplt[is1+iend];
-          x22[0] = xplt[is1+iend];
-          x21[0] = xplt[is1+ibeg];
+        x11[1] = yplt[js1+jbeg];
+        x12[1] = yplt[js1+jend];
+        x22[1] = yplt[js1+jend];
+        x21[1] = yplt[js1+jbeg];
 
-          x11[1] = yplt[js1+jbeg];
-          x12[1] = yplt[js1+jend];
-          x22[1] = yplt[js1+jend];
-          x21[1] = yplt[js1+jbeg];
+        x11[2] = zplt[ks1];
+        x12[2] = zplt[ks1];
+        x22[2] = zplt[ks2];
+        x21[2] = zplt[ks2];
 
-          x11[2] = zplt[ks1];
-          x12[2] = zplt[ks1];
-          x22[2] = zplt[ks2];
-          x21[2] = zplt[ks2];
+        if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
+      }
+
+      for(k = ks1;k<=ks2;k++){
+        kterm = (k-ks1)*nxy;
+
+        if(smokecullflag==1&&k!=ks2){
+          x11[2] = zplt[k];
+          x12[2] = zplt[k];
+          x22[2] = zplt[k+1];
+          x21[2] = zplt[k+1];
 
           if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
         }
 
-        for(k = ks1;k<=ks2;k++){
-          kterm = (k-ks1)*nxy;
+        for(ii = ibeg;ii<=iend;ii++){
+          i = is1+ii;
+          iterm = (i-is1);
 
-          if(smokecullflag==1&&k!=ks2){
-            x11[2] = zplt[k];
-            x12[2] = zplt[k];
-            x22[2] = zplt[k+1];
-            x21[2] = zplt[k+1];
+          jj = ipj-ii;
+          j = js1+jj;
+          jterm = (j-js1)*nx;
 
-            if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
-          }
-
-          for(ii = ibeg;ii<=iend;ii++){
-            i = is1+ii;
-            iterm = (i-is1);
-
-            jj = ipj-ii;
-            j = js1+jj;
-            jterm = (j-js1)*nx;
-
-            n = iterm+jterm+kterm;
-            ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            smokealpha = smokealpha_ptr[n];
-            ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
-          }
+          n = iterm+jterm+kterm;
+          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          smokealpha = smokealpha_ptr[n];
+          ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
         }
       }
-      alphaf_ptr = alphaf_out;
     }
-    else{
-      alphaf_ptr = alphaf_in;
-    }
+    alphaf_ptr = alphaf_out;
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
 
@@ -2648,76 +2711,71 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
-    aspectratio = meshi->dxy;
-    if(adjustalphaflag!=ALPHA_NONE){
+    aspectratio = meshi->dxyDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_XY];
+    for(iii = 1;iii<nx+ny-2;iii += skip_local){
+      jmi = iii;
+      if(ssmokedir<0)jmi = nx+ny-2-iii;
 
-      for(iii = 1;iii<nx+ny-2;iii += skip_local){
-        jmi = iii;
-        if(ssmokedir<0)jmi = nx+ny-2-iii;
+      ibeg = 0;
+      jbeg = ibeg-nx+1+jmi;
+      if(jbeg<0){
+        jbeg = 0;
+        ibeg = jbeg+nx-1-jmi;
+      }
+      iend = nx-1;
+      jend = iend+jmi+1-nx;
+      if(jend>ny-1){
+        jend = ny-1;
+        iend = jend+nx-1-jmi;
+      }
 
-        ibeg = 0;
-        jbeg = ibeg-nx+1+jmi;
-        if(jbeg<0){
-          jbeg = 0;
-          ibeg = jbeg+nx-1-jmi;
-        }
-        iend = nx-1;
-        jend = iend+jmi+1-nx;
-        if(jend>ny-1){
-          jend = ny-1;
-          iend = jend+nx-1-jmi;
-        }
+      if(smokecullflag==1){
+        x11[0] = xplt[is1+ibeg];
+        x12[0] = xplt[is1+iend];
+        x22[0] = xplt[is1+iend];
+        x21[0] = xplt[is1+ibeg];
 
-        if(smokecullflag==1){
-          x11[0] = xplt[is1+ibeg];
-          x12[0] = xplt[is1+iend];
-          x22[0] = xplt[is1+iend];
-          x21[0] = xplt[is1+ibeg];
+        x11[1] = yplt[js1+jbeg];
+        x12[1] = yplt[js1+jend];
+        x22[1] = yplt[js1+jend];
+        x21[1] = yplt[js1+jbeg];
 
-          x11[1] = yplt[js1+jbeg];
-          x12[1] = yplt[js1+jend];
-          x22[1] = yplt[js1+jend];
-          x21[1] = yplt[js1+jbeg];
+        x11[2] = zplt[ks1];
+        x12[2] = zplt[ks1];
+        x22[2] = zplt[ks2];
+        x21[2] = zplt[ks2];
 
-          x11[2] = zplt[ks1];
-          x12[2] = zplt[ks1];
-          x22[2] = zplt[ks2];
-          x21[2] = zplt[ks2];
+        if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
+      }
 
+      for(k = ks1;k<=ks2;k++){
+        kterm = (k-ks1)*nxy;
+
+        if(smokecullflag==1&&k!=ks2){
+          x11[2] = zplt[k];
+          x12[2] = zplt[k];
+          x22[2] = zplt[k+1];
+          x21[2] = zplt[k+1];
           if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
         }
 
-        for(k = ks1;k<=ks2;k++){
-          kterm = (k-ks1)*nxy;
+        for(ii = ibeg;ii<=iend;ii++){
+          i = is1+ii;
+          iterm = (i-is1);
 
-          if(smokecullflag==1&&k!=ks2){
-            x11[2] = zplt[k];
-            x12[2] = zplt[k];
-            x22[2] = zplt[k+1];
-            x21[2] = zplt[k+1];
-            if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
-          }
+          jj = ii+jmi+1-nx;
+          j = js1+jj;
+          jterm = (j-js1)*nx;
 
-          for(ii = ibeg;ii<=iend;ii++){
-            i = is1+ii;
-            iterm = (i-is1);
-
-            jj = ii+jmi+1-nx;
-            j = js1+jj;
-            jterm = (j-js1)*nx;
-
-            n = iterm+jterm+kterm;
-            ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            smokealpha = smokealpha_ptr[n];
-            ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
-          }
+          n = iterm+jterm+kterm;
+          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          smokealpha = smokealpha_ptr[n];
+          ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
         }
       }
-      alphaf_ptr = alphaf_out;
     }
-    else{
-      alphaf_ptr = alphaf_in;
-    }
+    alphaf_ptr = alphaf_out;
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
 
@@ -2840,77 +2898,72 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
-    aspectratio = meshi->dyz;
-    if(adjustalphaflag!=ALPHA_NONE){
+    aspectratio = meshi->dyzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_YZ];
+    for(iii = 1;iii<ny+nz-2;iii += skip_local){
+      jpk = iii;
+      if(ssmokedir<0)jpk = ny+nz-2-iii;
+      jbeg = 0;
+      kbeg = jpk;
+      if(kbeg>nz-1){
+        kbeg = nz-1;
+        jbeg = jpk-kbeg;
+      }
+      jend = ny-1;
+      kend = jpk-jend;
+      if(kend<0){
+        kend = 0;
+        jend = jpk-kend;
+      }
 
-      for(iii = 1;iii<ny+nz-2;iii += skip_local){
-        jpk = iii;
-        if(ssmokedir<0)jpk = ny+nz-2-iii;
-        jbeg = 0;
-        kbeg = jpk;
-        if(kbeg>nz-1){
-          kbeg = nz-1;
-          jbeg = jpk-kbeg;
-        }
-        jend = ny-1;
-        kend = jpk-jend;
-        if(kend<0){
-          kend = 0;
-          jend = jpk-kend;
-        }
 
+      if(smokecullflag==1){
+        x11[0] = xplt[is1];
+        x12[0] = xplt[is1];
+        x22[0] = xplt[is2];
+        x21[0] = xplt[is2];
 
-        if(smokecullflag==1){
-          x11[0] = xplt[is1];
-          x12[0] = xplt[is1];
-          x22[0] = xplt[is2];
-          x21[0] = xplt[is2];
+        x11[1] = yplt[js1+jbeg];
+        x12[1] = yplt[js1+jend];
+        x22[1] = yplt[js1+jend];
+        x21[1] = yplt[js1+jbeg];
 
-          x11[1] = yplt[js1+jbeg];
-          x12[1] = yplt[js1+jend];
-          x22[1] = yplt[js1+jend];
-          x21[1] = yplt[js1+jbeg];
+        x11[2] = zplt[ks1+kbeg];
+        x12[2] = zplt[ks1+kend];
+        x22[2] = zplt[ks1+kend];
+        x21[2] = zplt[ks1+kbeg];
 
-          x11[2] = zplt[ks1+kbeg];
-          x12[2] = zplt[ks1+kend];
-          x22[2] = zplt[ks1+kend];
-          x21[2] = zplt[ks1+kbeg];
+        if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
+      }
+
+      for(i = is1;i<=is2;i++){
+        iterm = (i-is1);
+
+        if(smokecullflag==1&&i!=is2){
+          x11[0] = xplt[i];
+          x12[0] = xplt[i];
+          x22[0] = xplt[i+1];
+          x21[0] = xplt[i+1];
 
           if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
         }
 
-        for(i = is1;i<=is2;i++){
-          iterm = (i-is1);
+        for(jj = jbeg;jj<=jend;jj++){
+          j = js1+jj;
+          jterm = (j-js1)*nx;
 
-          if(smokecullflag==1&&i!=is2){
-            x11[0] = xplt[i];
-            x12[0] = xplt[i];
-            x22[0] = xplt[i+1];
-            x21[0] = xplt[i+1];
+          kk = jpk-jj;
+          k = ks1+kk;
+          kterm = (k-ks1)*nxy;
 
-            if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
-          }
-
-          for(jj = jbeg;jj<=jend;jj++){
-            j = js1+jj;
-            jterm = (j-js1)*nx;
-
-            kk = jpk-jj;
-            k = ks1+kk;
-            kterm = (k-ks1)*nxy;
-
-            n = iterm+jterm+kterm;
-            ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            smokealpha = smokealpha_ptr[n];
-            ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
-          }
+          n = iterm+jterm+kterm;
+          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          smokealpha = smokealpha_ptr[n];
+          ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
         }
       }
-      alphaf_ptr = alphaf_out;
     }
-    else{
-      alphaf_ptr = alphaf_in;
-    }
+    alphaf_ptr = alphaf_out;
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
 
@@ -3025,77 +3078,74 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
   case 7:
   case -7:
-    aspectratio = meshi->dyz;
 
-    if(adjustalphaflag!=ALPHA_NONE){
+    // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
-      for(iii = 1;iii<ny+nz-2;iii += skip_local){
-        kmj = iii;
-        if(ssmokedir<0)kmj = ny+nz-2-iii;
+    aspectratio = meshi->dyzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_YZ];
+    for(iii = 1;iii<ny+nz-2;iii += skip_local){
+      kmj = iii;
+      if(ssmokedir<0)kmj = ny+nz-2-iii;
 
-        jbeg = 0;
-        kbeg = jbeg-ny+1+kmj;
-        if(kbeg<0){
-          kbeg = 0;
-          jbeg = kbeg+ny-1-kmj;
-        }
-        jend = ny-1;
-        kend = jend+kmj+1-ny;
-        if(kend>nz-1){
-          kend = nz-1;
-          jend = kend+ny-1-kmj;
-        }
+      jbeg = 0;
+      kbeg = jbeg-ny+1+kmj;
+      if(kbeg<0){
+        kbeg = 0;
+        jbeg = kbeg+ny-1-kmj;
+      }
+      jend = ny-1;
+      kend = jend+kmj+1-ny;
+      if(kend>nz-1){
+        kend = nz-1;
+        jend = kend+ny-1-kmj;
+      }
 
-        if(smokecullflag==1){
-          x11[0] = xplt[is1];
-          x12[0] = xplt[is1];
-          x22[0] = xplt[is2];
-          x21[0] = xplt[is2];
+      if(smokecullflag==1){
+        x11[0] = xplt[is1];
+        x12[0] = xplt[is1];
+        x22[0] = xplt[is2];
+        x21[0] = xplt[is2];
 
-          x11[1] = yplt[js1+jbeg];
-          x12[1] = yplt[js1+jend];
-          x22[1] = yplt[js1+jend];
-          x21[1] = yplt[js1+jbeg];
+        x11[1] = yplt[js1+jbeg];
+        x12[1] = yplt[js1+jend];
+        x22[1] = yplt[js1+jend];
+        x21[1] = yplt[js1+jbeg];
 
-          x11[2] = zplt[ks1+kbeg];
-          x12[2] = zplt[ks1+kend];
-          x22[2] = zplt[ks1+kend];
-          x21[2] = zplt[ks1+kbeg];
+        x11[2] = zplt[ks1+kbeg];
+        x12[2] = zplt[ks1+kend];
+        x22[2] = zplt[ks1+kend];
+        x21[2] = zplt[ks1+kbeg];
 
+        if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
+      }
+
+      for(i = is1;i<=is2;i++){
+        iterm = (i-is1);
+
+        if(smokecullflag==1&&i!=is2){
+          x11[0] = xplt[i];
+          x12[0] = xplt[i];
+          x22[0] = xplt[i+1];
+          x21[0] = xplt[i+1];
           if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
         }
 
-        for(i = is1;i<=is2;i++){
-          iterm = (i-is1);
+        for(jj = jbeg;jj<=jend;jj++){
+          j = js1+jj;
+          jterm = (j-js1)*nx;
 
-          if(smokecullflag==1&&i!=is2){
-            x11[0] = xplt[i];
-            x12[0] = xplt[i];
-            x22[0] = xplt[i+1];
-            x21[0] = xplt[i+1];
-            if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
-          }
+          kk = jj+kmj+1-ny;
+          k = ks1+kk;
+          kterm = (k-ks1)*nxy;
 
-          for(jj = jbeg;jj<=jend;jj++){
-            j = js1+jj;
-            jterm = (j-js1)*nx;
-
-            kk = jj+kmj+1-ny;
-            k = ks1+kk;
-            kterm = (k-ks1)*nxy;
-
-            n = iterm+jterm+kterm;
-            ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            smokealpha = smokealpha_ptr[n];
-            ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
-          }
+          n = iterm+jterm+kterm;
+          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          smokealpha = smokealpha_ptr[n];
+          ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
         }
       }
-      alphaf_ptr = alphaf_out;
     }
-    else{
-      alphaf_ptr = alphaf_in;
-    }
+    alphaf_ptr = alphaf_out;
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
 
@@ -3219,77 +3269,72 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
-    aspectratio = meshi->dxz;
-    if(adjustalphaflag!=ALPHA_NONE){
+    aspectratio = meshi->dxzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_XZ];
+    for(iii = 1;iii<nx+nz-2;iii += skip_local){
+      ipk = iii;
+      if(ssmokedir<0)ipk = nx+nz-2-iii;
+      ibeg = 0;
+      kbeg = ipk;
+      if(kbeg>nz-1){
+        kbeg = nz-1;
+        ibeg = ipk-kbeg;
+      }
+      iend = nx-1;
+      kend = ipk-iend;
+      if(kend<0){
+        kend = 0;
+        iend = ipk-kend;
+      }
 
-      for(iii = 1;iii<nx+nz-2;iii += skip_local){
-        ipk = iii;
-        if(ssmokedir<0)ipk = nx+nz-2-iii;
-        ibeg = 0;
-        kbeg = ipk;
-        if(kbeg>nz-1){
-          kbeg = nz-1;
-          ibeg = ipk-kbeg;
-        }
-        iend = nx-1;
-        kend = ipk-iend;
-        if(kend<0){
-          kend = 0;
-          iend = ipk-kend;
-        }
 
+      if(smokecullflag==1){
+        x11[0] = xplt[is1+ibeg];
+        x12[0] = xplt[is1+iend];
+        x22[0] = xplt[is1+iend];
+        x21[0] = xplt[is1+ibeg];
 
-        if(smokecullflag==1){
-          x11[0] = xplt[is1+ibeg];
-          x12[0] = xplt[is1+iend];
-          x22[0] = xplt[is1+iend];
-          x21[0] = xplt[is1+ibeg];
+        x11[1] = yplt[js1];
+        x12[1] = yplt[js1];
+        x22[1] = yplt[js2];
+        x21[1] = yplt[js2];
 
-          x11[1] = yplt[js1];
-          x12[1] = yplt[js1];
-          x22[1] = yplt[js2];
-          x21[1] = yplt[js2];
+        x11[2] = zplt[ks1+kbeg];
+        x12[2] = zplt[ks1+kend];
+        x22[2] = zplt[ks1+kend];
+        x21[2] = zplt[ks1+kbeg];
 
-          x11[2] = zplt[ks1+kbeg];
-          x12[2] = zplt[ks1+kend];
-          x22[2] = zplt[ks1+kend];
-          x21[2] = zplt[ks1+kbeg];
+        if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
+      }
+
+      for(j = js1;j<=js2;j++){
+        jterm = (j-js1)*nx;
+
+        if(smokecullflag==1&&j!=js2){
+          x11[1] = yplt[j];
+          x12[1] = yplt[j];
+          x22[1] = yplt[j+1];
+          x21[1] = yplt[j+1];
 
           if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
         }
 
-        for(j = js1;j<=js2;j++){
-          jterm = (j-js1)*nx;
+        for(ii = ibeg;ii<=iend;ii++){
+          i = is1+ii;
+          iterm = (i-is1);
 
-          if(smokecullflag==1&&j!=js2){
-            x11[1] = yplt[j];
-            x12[1] = yplt[j];
-            x22[1] = yplt[j+1];
-            x21[1] = yplt[j+1];
+          kk = ipk-ii;
+          k = ks1+kk;
+          kterm = (k-ks1)*nxy;
 
-            if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
-          }
-
-          for(ii = ibeg;ii<=iend;ii++){
-            i = is1+ii;
-            iterm = (i-is1);
-
-            kk = ipk-ii;
-            k = ks1+kk;
-            kterm = (k-ks1)*nxy;
-
-            n = iterm+jterm+kterm;
-            ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            smokealpha = smokealpha_ptr[n];
-            ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
-          }
+          n = iterm+jterm+kterm;
+          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          smokealpha = smokealpha_ptr[n];
+          ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
         }
       }
-      alphaf_ptr = alphaf_out;
     }
-    else{
-      alphaf_ptr = alphaf_in;
-    }
+    alphaf_ptr = alphaf_out;
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
 
@@ -3402,79 +3447,76 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
     // +++++++++++++++++++++++++++++++++++ DIR 9 +++++++++++++++++++++++++++++++++++++++
 
-    /* interchange y and z, j and z */
   case 9:
   case -9:
-    aspectratio = meshi->dxz;
-    if(adjustalphaflag!=ALPHA_NONE){
 
-      for(iii = 1;iii<nx+nz-2;iii += skip_local){
-        kmi = iii;
-        if(ssmokedir<0)kmi = nx+nz-2-iii;
+    // ++++++++++++++++++  adjust transparency +++++++++++++++++
 
-        ibeg = 0;
-        kbeg = ibeg-nx+1+kmi;
-        if(kbeg<0){
-          kbeg = 0;
-          ibeg = kbeg+nx-1-kmi;
-        }
-        iend = nx-1;
-        kend = iend+kmi+1-nx;
-        if(kend>nz-1){
-          kend = nz-1;
-          iend = kend+nx-1-kmi;
-        }
+    aspectratio = meshi->dxzDdx;
+    alpha_map = smoke3di->alphas_dir[ALPHA_XZ];
+    for(iii = 1;iii<nx+nz-2;iii += skip_local){
+      kmi = iii;
+      if(ssmokedir<0)kmi = nx+nz-2-iii;
 
-        if(smokecullflag==1){
-          x11[0] = xplt[is1+ibeg];
-          x12[0] = xplt[is1+iend];
-          x22[0] = xplt[is1+iend];
-          x21[0] = xplt[is1+ibeg];
+      ibeg = 0;
+      kbeg = ibeg-nx+1+kmi;
+      if(kbeg<0){
+        kbeg = 0;
+        ibeg = kbeg+nx-1-kmi;
+      }
+      iend = nx-1;
+      kend = iend+kmi+1-nx;
+      if(kend>nz-1){
+        kend = nz-1;
+        iend = kend+nx-1-kmi;
+      }
 
-          x11[1] = yplt[js1];
-          x12[1] = yplt[js1];
-          x22[1] = yplt[js2];
-          x21[1] = yplt[js2];
+      if(smokecullflag==1){
+        x11[0] = xplt[is1+ibeg];
+        x12[0] = xplt[is1+iend];
+        x22[0] = xplt[is1+iend];
+        x21[0] = xplt[is1+ibeg];
 
-          x11[2] = zplt[ks1+kbeg];
-          x12[2] = zplt[ks1+kend];
-          x22[2] = zplt[ks1+kend];
-          x21[2] = zplt[ks1+kbeg];
+        x11[1] = yplt[js1];
+        x12[1] = yplt[js1];
+        x22[1] = yplt[js2];
+        x21[1] = yplt[js2];
 
+        x11[2] = zplt[ks1+kbeg];
+        x12[2] = zplt[ks1+kend];
+        x22[2] = zplt[ks1+kend];
+        x21[2] = zplt[ks1+kbeg];
+
+        if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
+      }
+
+      for(j = js1;j<=js2;j++){
+        jterm = (j-js1)*nx;
+
+        if(smokecullflag==1&&j!=js2){
+          x11[1] = yplt[j];
+          x12[1] = yplt[j];
+          x22[1] = yplt[j+1];
+          x21[1] = yplt[j+1];
           if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
         }
 
-        for(j = js1;j<=js2;j++){
-          jterm = (j-js1)*nx;
+        for(ii = ibeg;ii<=iend;ii++){
+          i = is1+ii;
+          iterm = (i-is1);
 
-          if(smokecullflag==1&&j!=js2){
-            x11[1] = yplt[j];
-            x12[1] = yplt[j];
-            x22[1] = yplt[j+1];
-            x21[1] = yplt[j+1];
-            if(RectangleInFrustum(x11, x12, x22, x21)==0)continue;
-          }
+          kk = ii+kmi+1-nx;
+          k = ks1+kk;
+          kterm = (k-ks1)*nxy;
 
-          for(ii = ibeg;ii<=iend;ii++){
-            i = is1+ii;
-            iterm = (i-is1);
-
-            kk = ii+kmi+1-nx;
-            k = ks1+kk;
-            kterm = (k-ks1)*nxy;
-
-            n = iterm+jterm+kterm;
-            ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
-            smokealpha = smokealpha_ptr[n];
-            ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
-          }
+          n = iterm+jterm+kterm;
+          ASSERT(n>=0&&n<smoke3di->nchars_uncompressed);
+          smokealpha = smokealpha_ptr[n];
+          ADJUSTALPHA(smokealpha, aspectratio, norm, 4);
         }
       }
-      alphaf_ptr = alphaf_out;
     }
-    else{
-      alphaf_ptr = alphaf_in;
-    }
+    alphaf_ptr = alphaf_out;
 
     // ++++++++++++++++++  draw triangles +++++++++++++++++
 
@@ -3618,10 +3660,8 @@ void DrawSmokeFrame(void){
   triangle_count = 0;
 #ifdef pp_GPU
   if(usegpu==1){
-    if(use_newsmoke==SMOKE3D_ORIG){
-      LoadSmokeShaders();
-      load_shaders = 1;
-    }
+    LoadSmokeShaders();
+    load_shaders = 1;
   }
 #endif
 
@@ -3661,9 +3701,7 @@ void DrawSmokeFrame(void){
       DrawSmoke3DGPU(smoke3di);
     }
     else{
-      if(use_newsmoke==SMOKE3D_ORIG){
-        DrawSmoke3D(smoke3di);
-      }
+      DrawSmoke3D(smoke3di);
     }
 #else
     DrawSmoke3D(smoke3di);
@@ -4415,6 +4453,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
 
   SetTimeState();
   update_fileload = 1;
+  update_smokefire_colors = 1;
 #ifndef pp_FSEEK
   if(flag_arg==RELOAD)flag_arg = LOAD;
 #endif
@@ -4539,7 +4578,6 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
     }
     PrintMemoryInfo;
   }
-
   *errorcode_arg = 0;
   return file_size_local;
 }
@@ -4717,12 +4755,12 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
     }
     for(j = 0; j<256; j++){
       float co2j, co2max=0.1;
-      float tempj, tempmax=1200.0;
+      float tempj, tempmax=1200.0, tempmin=20.0;
 
-      co2j = 0.1*(float)j/255.0;
-      smoke3di->co2_alphas[j] = 255.0*(1.0-pow(0.5, (mesh_smoke3d->dx/co2_halfdepth)*(co2j/co2max)));
-      tempj = 20.0 + (tempmax-20.0)*(float)j/255.0;
-      smoke3di->fire_alphas[j] = 255.0*(1.0-pow(0.5, (mesh_smoke3d->dx/fire_halfdepth)*(tempj/tempmax)));
+      co2j = co2max*(float)j/255.0;
+      smoke3di->co2_alphas[j] = 255.0*(1.0-pow(0.5,  (mesh_smoke3d->dxyz[0]/co2_halfdepth)*(co2j/co2max)));
+      tempj = tempmin + (tempmax-20.0)*(float)j/255.0;
+      smoke3di->fire_alphas[j] = 255.0*(1.0-pow(0.5, (mesh_smoke3d->dxyz[0]/fire_halfdepth)*((tempj-tempmin)/tempmax)));
     }
   }
 
@@ -4745,14 +4783,14 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
       smoke3di->fire_alpha=255;
     }
     else{
-      smoke3di->fire_alpha=255*(1.0-pow(0.5,mesh_smoke3d->dx/fire_halfdepth));
+      smoke3di->fire_alpha=255*(1.0-pow(0.5,mesh_smoke3d->dxyz[0]/fire_halfdepth));
     }
 
     if(co2_halfdepth <= 0.0){
       smoke3di->co2_alpha = 255;
     }
     else {
-      smoke3di->co2_alpha = 255 * (1.0 - pow(0.5, mesh_smoke3d->dx / co2_halfdepth));
+      smoke3di->co2_alpha = 255 * (1.0 - pow(0.5, mesh_smoke3d->dxyz[0]/co2_halfdepth));
     }
 
 //  temp and hrrpuv cannot be loaded at the same time
@@ -4979,13 +5017,13 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
       smoke3di->fire_alpha = 255;
     }
     else{
-      smoke3di->fire_alpha = 255*(1.0-pow(0.5, meshi->dx/fire_halfdepth));
+      smoke3di->fire_alpha = 255*(1.0-pow(0.5, meshi->dxyz[0]/fire_halfdepth));
     }
     if(co2_halfdepth<=0.0){
       smoke3di->co2_alpha = 255;
     }
     else {
-      smoke3di->co2_alpha = 255*(1.0-pow(0.5, meshi->dx/co2_halfdepth));
+      smoke3di->co2_alpha = 255*(1.0-pow(0.5, meshi->dxyz[0]/co2_halfdepth));
     }
     firecolor_data = NULL;
     smokecolor_data = NULL;
@@ -5008,7 +5046,7 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
       }
     }
 #ifdef pp_GPU
-    if(usegpu==1&&use_newsmoke==SMOKE3D_ORIG)continue;
+    if(usegpu==1)continue;
 #endif
     ASSERT(firecolor_data!=NULL||smokecolor_data!=NULL);
     meshi->smokecolor_ptr = firecolor_data;
@@ -5019,7 +5057,7 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
 /* ------------------ MergeSmoke3D ------------------------ */
 
 void MergeSmoke3D(smoke3ddata *smoke3dset){
-  if(smoke3d_black==1||use_newsmoke==SMOKE3D_NEW){
+  if(smoke3d_black==1){
     MergeSmoke3DBlack(smoke3dset);
     }
   else{

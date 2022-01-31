@@ -748,7 +748,7 @@ typedef struct _meshdata {
   int *iso_timeslist;
   int iso_itime;
   int smokedir,smokedir_old;
-  float dx, dy, dz, dxy,dxz,dyz,dxyz[3];
+  float dxDdx, dyDdx, dzDdx, dxyDdx, dxzDdx, dyzDdx, dxyz[3];
   float norm[3];
   float dplane_min[4], dplane_max[4];
 
@@ -1391,6 +1391,16 @@ typedef struct _smoke3ddata {
   char menulabel[128];
   float *times;
   int *use_smokeframe;
+  int have_extinct;
+  float extinct;
+  float valmin, valmax;
+#define ALPHA_X  0
+#define ALPHA_Y  1
+#define ALPHA_Z  2
+#define ALPHA_XY 3
+#define ALPHA_YZ 4
+#define ALPHA_XZ 5
+  unsigned char *alphas_dir[6];
   int fire_alpha, co2_alpha;
   float fire_alphas[256], co2_alphas[256];
   int *timeslist;

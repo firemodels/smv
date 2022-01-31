@@ -1058,37 +1058,6 @@ void InitRGB(void){
   }
 }
 
-/* ------------------ HaveFire ------------------------ */
-
-int HaveFire(void) {
-  int i;
-
-  for (i = 0; i < nsmoke3dinfo; i++) {
-    smoke3ddata *smoke3di;
-
-    smoke3di = smoke3dinfo + i;
-    if (smoke3di->loaded == 1) {
-      if (smoke3di->type == HRRPUV)return HRRPUV;
-      if (smoke3di->type == TEMP)return TEMP;
-    }
-  }
-  return 0;
-}
-
-/* ------------------ HaveSoot ------------------------ */
-
-int HaveSoot(void) {
-  int i;
-
-  for(i = 0; i<nsmoke3dinfo; i++) {
-    smoke3ddata *smoke3di;
-
-    smoke3di = smoke3dinfo+i;
-    if(smoke3di->loaded==1&&smoke3di->type==SOOT)return 1;
-  }
-  return 0;
-}
-
 /* ------------------ UpdateCO2Colormap ------------------------ */
 
 void UpdateCO2Colormap(void){
@@ -1136,7 +1105,6 @@ void UpdateSmokeColormap(int option){
   int icut;
   float *rgb_colormap=NULL;
 
-  have_fire = HaveFire();
   if(have_fire==HRRPUV&&option==RENDER_SLICE){
     valmin=global_hrrpuv_min;
     valcut=global_hrrpuv_cutoff;

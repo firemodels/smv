@@ -553,7 +553,7 @@ int SetSmokeShaders(){
     "uniform sampler1D smokecolormap;"
     "uniform float hrrpuv_max_smv, hrrpuv_cutoff, emission_factor;"
     "uniform float aspectratio, smoke3d_rthick, fire_alpha;"
-    "uniform int have_smoke, adjustalphaflag, use_fire_alpha;"
+    "uniform int have_smoke, use_fire_alpha;"
 
     "attribute float hrr, smoke_alpha;"
 
@@ -574,14 +574,12 @@ int SetSmokeShaders(){
     "  alpha=0.0;"
     "  if(have_smoke==1){"
     "    alpha=smoke_alpha/255.0;"
-    "    if(adjustalphaflag==1||adjustalphaflag==3){"
-    "      r=aspectratio;"
-    "      term1 = alpha*r;"
-    "      term2 = -term1*alpha*(r-1.0)/2.0;"
-    "      term3 = -term2*alpha*(r-2.0)/3.0;"
-    "      term4 = -term3*alpha*(r-3.0)/4.0;"
-    "      alpha = term1+term2+term3+term4;"
-    "    }"
+    "    r=aspectratio;"
+    "    term1 = alpha*r;"
+    "    term2 = -term1*alpha*(r-1.0)/2.0;"
+    "    term3 = -term2*alpha*(r-2.0)/3.0;"
+    "    term4 = -term3*alpha*(r-3.0)/4.0;"
+    "    alpha = term1+term2+term3+term4;"
     "    alpha /= smoke3d_rthick;"
     "  }"
     "  hrrlocal=(hrr/254.0)*hrrpuv_max_smv;"
@@ -633,7 +631,6 @@ int SetSmokeShaders(){
   GPU_smoke3d_rthick  = glGetUniformLocation(p_smoke,"smoke3d_rthick");
   GPU_have_smoke      = glGetUniformLocation(p_smoke,"have_smoke");
   GPU_aspectratio     = glGetUniformLocation(p_smoke,"aspectratio");
-  GPU_adjustalphaflag = glGetUniformLocation(p_smoke,"adjustalphaflag");
   GPU_use_fire_alpha  = glGetUniformLocation(p_smoke, "use_fire_alpha");
   GPU_emission_factor = glGetUniformLocation(p_smoke, "emission_factor");
   GPU_hrr             = glGetAttribLocation(p_smoke,"hrr");

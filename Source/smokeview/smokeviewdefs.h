@@ -485,11 +485,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define TERRAIN_DEBUG      7
 #endif
 
-#define ALPHA_NONE        0
-#define ALPHA_CENTER      1
-#define ALPHA_WALL        2
-#define ALPHA_CENTER_WALL 3
-
 #define TERRAIN_TOP_SIDE      0
 #define TERRAIN_BOTTOM_SIDE   1
 #define TERRAIN_BOTH_SIDES    2
@@ -800,10 +795,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define RENDER_RESOLUTION_CURRENT 2
 #define RENDER_RESOLUTION_HIGH    3
 #define RENDER_RESOLUTION_360     4
-
-#define SMOKE3D_ORIG  0
-#define SMOKE3D_NEW   1
-#define SMOKE3D_DIAG  2
 
 #define SMOKE_OUTLINE_TRIANGLE 0
 #define SMOKE_TRIANGULATION    1

@@ -33,7 +33,6 @@ GLUI_RadioGroup *RADIO_use_fire_alpha = NULL;
 GLUI_RadioGroup *RADIO_smokealign = NULL;
 GLUI_RadioGroup *RADIO_smoke_outline_type = NULL;
 GLUI_RadioGroup *RADIO_newsmoke = NULL;
-GLUI_RadioGroup *RADIO_alpha=NULL;
 GLUI_RadioGroup *RADIO_render=NULL;
 GLUI_RadioGroup *RADIO_skipframes=NULL;
 GLUI_RadioGroup *RADIO_smokesensors=NULL;
@@ -63,6 +62,9 @@ GLUI_Spinner *SPINNER_smoke3d_kmax = NULL;
 GLUI_Spinner *SPINNER_smoke3d_rthick=NULL;
 GLUI_Spinner *SPINNER_smoke3d_rthick2=NULL;
 #endif
+GLUI_Spinner *SPINNER_smoke3d_extinct = NULL;
+GLUI_Spinner *SPINNER_smoke3d_extinct2 = NULL;
+
 GLUI_Spinner *SPINNER_smoke3d_fire_red=NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_green=NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_blue=NULL;
@@ -96,6 +98,8 @@ GLUI_Spinner *SPINNER_hrrpuvoffset=NULL;
 GLUI_Spinner *SPINNER_co2color[3];
 GLUI_Spinner *SPINNER_emission_factor=NULL;
 
+GLUI_Checkbox *CHECKBOX_use_opacity_depth = NULL;
+GLUI_Checkbox *CHECKBOX_use_opacity_multiplier = NULL;
 GLUI_Checkbox *CHECKBOX_use_co2_colormap = NULL;
 GLUI_Checkbox *CHECKBOX_use_fire_colormap = NULL;
 GLUI_Checkbox *CHECKBOX_use_smoke_rgb = NULL;
@@ -129,7 +133,6 @@ GLUI_Panel *PANEL_fire_cutoff = NULL;
 GLUI_Panel *PANEL_overall = NULL;
 GLUI_Panel *PANEL_colormap2 = NULL;
 GLUI_Panel *PANEL_colormap = NULL;
-GLUI_Panel *PANEL_absorption = NULL;
 GLUI_Panel *PANEL_smokesensor = NULL;
 GLUI_Panel *PANEL_color = NULL;
 GLUI_Panel *PANEL_smoke = NULL;
@@ -354,7 +357,6 @@ extern "C" void UpdateCombineMeshes(void){
 /* ------------------ UpdateSmoke3dFlags ------------------------ */
 
 extern "C" void UpdateSmoke3dFlags(void){
-  RADIO_alpha->set_int_val(adjustalphaflag);
 #ifdef pp_GPU
   if(CHECKBOX_smokeGPU!=NULL)CHECKBOX_smokeGPU->set_int_val(usegpu);
 #endif
@@ -426,11 +428,16 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_smoke3d_smoke_green->set_int_limits(0, 255);
   SPINNER_smoke3d_smoke_blue->set_int_limits(0, 255);
   SPINNER_smoke3d_smoke_gray->set_int_limits(0, 255);
-
+  if(HaveSmokeExtinct(&glui_smoke3d_extinct)==1){
+    SPINNER_smoke3d_extinct2 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("Extinction (m2/kg)"),
+                                                                 GLUI_SPINNER_FLOAT, &glui_smoke3d_extinct, SMOKE_EXTINCT, Smoke3dCB);
+  }
 #ifdef pp_GPU
-    SPINNER_smoke3d_rthick2=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor,_("Thickness"),
-      GLUI_SPINNER_FLOAT,&smoke3d_rthick,SMOKE_RTHICK,Smoke3dCB);
-    SPINNER_smoke3d_rthick2->set_float_limits(1.0,255.0);
+  else{
+    SPINNER_smoke3d_rthick2 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("Thickness"),
+                                                                 GLUI_SPINNER_FLOAT, &smoke3d_rthick, SMOKE_RTHICK, Smoke3dCB);
+    SPINNER_smoke3d_rthick2->set_float_limits(1.0, 255.0);
+  }
 #endif
   UpdateSmokeThickness();
 
@@ -479,15 +486,23 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
   PANEL_fire_opacity = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firecolor, "opacity");
   glui_use_fire_alpha = 1-use_fire_alpha;
-  RADIO_use_fire_alpha = glui_3dsmoke->add_radiogroup_to_panel(PANEL_fire_opacity,&glui_use_fire_alpha, USE_FIRE_ALPHA, Smoke3dCB);
-  glui_3dsmoke->add_radiobutton_to_group(RADIO_use_fire_alpha, _("use 50% opacity depth"));
-  glui_3dsmoke->add_radiobutton_to_group(RADIO_use_fire_alpha, _("soot/fire dependent"));
-
-  glui_3dsmoke->add_column_to_panel(PANEL_fire_opacity, false);
+  if(glui_use_fire_alpha==0){
+    use_opacity_depth      = 1;
+    use_opacity_multiplier = 0;
+  }
+  else{
+    use_opacity_depth      = 0;
+    use_opacity_multiplier = 1;
+  }
+  CHECKBOX_use_opacity_depth = glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity, "set 50% opacity depth",
+    &use_opacity_depth, USE_OPACITY_DEPTH, Smoke3dCB);
   SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, "50% opacity at depth (m):", GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
+
+  CHECKBOX_use_opacity_multiplier = glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity, "set opacity multiplier (when smoke also loaded)",
+    &use_opacity_multiplier, USE_OPACITY_MULTIPLIER, Smoke3dCB);
   SPINNER_emission_factor = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, "opacity multiplier:", GLUI_SPINNER_FLOAT, &emission_factor, USE_FIRE_ALPHA, Smoke3dCB);
   SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.01, 100.0);
-  Smoke3dCB(USE_FIRE_ALPHA);
+  Smoke3dCB(USE_OPACITY_DEPTH);
 
 #ifdef pp_SMOKETEST
   if (nsmoke3d_temp > 0) {
@@ -603,27 +618,12 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     SPINNER_load_hrrpuv = glui_3dsmoke->add_spinner_to_panel(PANEL_load_options, _("HRRPUV >"), GLUI_SPINNER_FLOAT, &load_hrrpuv_cutoff);
     SPINNER_load_hrrpuv->set_float_limits(0.0, HRRPUV_CUTOFF_MAX);
 
-    PANEL_absorption = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices, _("Absorption adjustments"));
-    PANEL_absorption->set_alignment(GLUI_ALIGN_LEFT);
-    RADIO_alpha = glui_3dsmoke->add_radiogroup_to_panel(PANEL_absorption, &adjustalphaflag);
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha, _("none"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha, _("increase off-center"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha, _("zero at boundaries"));
-    glui_3dsmoke->add_radiobutton_to_group(RADIO_alpha, _("both"));
-#ifdef pp_GPU
-    SPINNER_smoke3d_rthick = glui_3dsmoke->add_spinner_to_panel(PANEL_absorption, _("Thickness"),
-                                                                GLUI_SPINNER_FLOAT, &smoke3d_rthick, SMOKE_RTHICK, Smoke3dCB);
-    SPINNER_smoke3d_rthick->set_float_limits(1.0, 255.0);
-#endif
-
 #ifdef pp_GPU
     if(gpuactive==0){
       usegpu=0;
       CHECKBOX_smokeGPU->disable();
     }
 #endif
-    glui_3dsmoke->add_column_to_panel(ROLLOUT_slices, false);
-
 
     PANEL_display = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices, "smoke slice display");
     RADIO_skipframes = glui_3dsmoke->add_radiogroup_to_panel(PANEL_display,&smokeskipm1);
@@ -631,7 +631,21 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("Every 2nd"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("Every 3rd"));
 
+  if(HaveSmokeExtinct(&glui_smoke3d_extinct)==1){
+    SPINNER_smoke3d_extinct = glui_3dsmoke->add_spinner_to_panel(PANEL_display, _("Extinction (m2/kg)"),
+                                                                 GLUI_SPINNER_FLOAT, &glui_smoke3d_extinct, SMOKE_EXTINCT, Smoke3dCB);
+  }
+#ifdef pp_GPU
+  else{
+      SPINNER_smoke3d_rthick = glui_3dsmoke->add_spinner_to_panel(PANEL_display, _("Thickness"),
+                                                                  GLUI_SPINNER_FLOAT, &smoke3d_rthick, SMOKE_RTHICK, Smoke3dCB);
+      SPINNER_smoke3d_rthick->set_float_limits(1.0, 255.0);
+  }
+#endif
+
     UpdateSmokeThickness();
+
+    glui_3dsmoke->add_column_to_panel(ROLLOUT_slices, false);
 
     PANEL_node_display = glui_3dsmoke->add_panel_to_panel(ROLLOUT_slices, "smoke node display");
     SPINNER_smoke3d_skip   = glui_3dsmoke->add_spinner_to_panel(PANEL_node_display, "x/y/z",   GLUI_SPINNER_INT, &smoke3d_skip,  SMOKE_SKIP,     Smoke3dCB);
@@ -874,19 +888,15 @@ extern "C" void Smoke3dCB(int var){
 
   case USE_FIRE_ALPHA:
     use_fire_alpha = 1-glui_use_fire_alpha;
-    if(HaveFire()==0){
+    if(have_fire!=0&&have_smoke==0){
       SPINNER_smoke3d_fire_halfdepth->enable();
-      SPINNER_emission_factor->enable();
+      SPINNER_emission_factor->disable();
+      CHECKBOX_use_opacity_multiplier->disable();
     }
     else{
-      if(use_fire_alpha==1||HaveSoot()==0){
-        SPINNER_smoke3d_fire_halfdepth->enable();
-        SPINNER_emission_factor->disable();
-      }
-      else{
-        SPINNER_smoke3d_fire_halfdepth->disable();
-        SPINNER_emission_factor->enable();
-      }
+      SPINNER_smoke3d_fire_halfdepth->enable();
+      SPINNER_emission_factor->enable();
+      CHECKBOX_use_opacity_multiplier->enable();
     }
     if(emission_factor < 1.0){
       emission_factor = 1.0;
@@ -894,6 +904,33 @@ extern "C" void Smoke3dCB(int var){
     }
     Smoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
     glutPostRedisplay();
+    break;
+  case USE_OPACITY_DEPTH:
+    if(have_fire!=0&&have_smoke==0){
+      use_opacity_depth      = 1;
+      use_opacity_multiplier = 0;
+    }
+    glui_use_fire_alpha = 1 - use_opacity_depth;
+    if(have_smoke!=0&&have_fire==0){
+        use_opacity_multiplier = 0;
+    }
+    else{
+      use_opacity_multiplier = 1 - use_opacity_depth;
+    }
+    CHECKBOX_use_opacity_depth->set_int_val(use_opacity_depth);
+    CHECKBOX_use_opacity_multiplier->set_int_val(use_opacity_multiplier);
+    Smoke3dCB(USE_FIRE_ALPHA);
+    break;
+  case USE_OPACITY_MULTIPLIER:
+    if(have_fire!=0&&have_smoke==0){
+      use_opacity_depth      = 1;
+      use_opacity_multiplier = 0;
+    }
+    glui_use_fire_alpha = use_opacity_multiplier;
+    use_opacity_depth =  1 - use_opacity_multiplier;
+    CHECKBOX_use_opacity_depth->set_int_val(use_opacity_depth);
+    CHECKBOX_use_opacity_multiplier->set_int_val(use_opacity_multiplier);
+    Smoke3dCB(USE_FIRE_ALPHA);
     break;
   case BACKGROUND_FLIP:
     background_flip = 1-background_flip;
@@ -1268,7 +1305,13 @@ extern "C" void Smoke3dCB(int var){
     UpdateSmokeColormap(RENDER_SLICE);
     UpdateSmokeColormap(smoke_render_option);
     IdleCB();
-   break;
+     break;
+   case SMOKE_EXTINCT:
+     update_smoke_alphas = 1;
+     glui_smoke3d_extinct = MAX(glui_smoke3d_extinct, 0.0);
+     SPINNER_smoke3d_extinct->set_float_val(glui_smoke3d_extinct);
+     SPINNER_smoke3d_extinct2->set_float_val(glui_smoke3d_extinct);
+     break;
 #ifdef pp_GPU
   case SMOKE_RTHICK:
 

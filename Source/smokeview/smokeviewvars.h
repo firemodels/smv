@@ -41,6 +41,8 @@ SVEXTERN int SVDECL(terrain_skip, 1);
 #ifdef pp_TERRAIN_DEBUG
 SVEXTERN int SVDECL(terrain_debug, 0);
 #endif
+SVEXTERN float glui_smoke3d_extinct;
+SVEXTERN int SVDECL(update_smoke_alphas, 0);
 SVEXTERN int SVDECL(max_colorbar_label_width, 0);
 SVEXTERN char SVDECL(**colorbar_labels,  NULL);
 SVEXTERN float SVDECL(*colorbar_vals,    NULL);
@@ -311,7 +313,6 @@ SVEXTERN screendata SVDECL(*screenglobal, NULL);
 
 SVEXTERN int SVDECL(smoke_outline_type, SMOKE_OUTLINE_TRIANGLE);
 SVEXTERN int SVDECL(update_filesizes, 0);
-SVEXTERN int SVDECL(use_newsmoke, SMOKE3D_ORIG);
 SVEXTERN int SVDECL(compute_smoke3d_planes_par, 0);
 SVEXTERN float SVDECL(smoke3d_delta_perp,0.5);
 SVEXTERN int SVDECL(smoke3d_black, 0);
@@ -363,7 +364,7 @@ SVEXTERN int SVDECL(showgeom_inside_domain, 1);
 SVEXTERN int SVDECL(showgeom_outside_domain, 1);
 SVEXTERN int nsootloaded, nhrrpuvloaded, ntemploaded, nco2loaded;
 SVEXTERN int nsootfiles, nhrrpuvfiles, ntempfiles, nco2files;
-SVEXTERN int SVDECL(have_fire, 0);
+SVEXTERN int SVDECL(have_fire, 0), SVDECL(have_smoke, 0);
 SVEXTERN int SVDECL(nsmoke3d_temp, 0);
 SVEXTERN int SVDECL(nsmoke3d_co2, 0);
 SVEXTERN int SVDECL(nsmoke3d_hrrpuv, 0);
@@ -834,7 +835,7 @@ SVEXTERN int GPU_aspectratio;
 SVEXTERN int GPU_smoke3d_rthick, GPU_skip, GPU_hrrcutoff, GPU_hrr, GPU_hrrpuv_max_smv, GPU_hrrpuv_cutoff;
 SVEXTERN int GPU_fire_alpha, GPU_firecolor, GPU_have_smoke, GPU_smokecolormap;
 SVEXTERN int GPU_smokeshade,GPU_smokealpha;
-SVEXTERN int GPU_adjustalphaflag, GPU_use_fire_alpha, GPU_emission_factor;
+SVEXTERN int GPU_use_fire_alpha, GPU_emission_factor;
 
 SVEXTERN int GPUzone_zonedir;
 SVEXTERN int GPUzone_zoneinside;
@@ -1594,6 +1595,7 @@ SVEXTERN char SVDECL(*smokeview_bindir,NULL);
 SVEXTERN char SVDECL(*smokeview_casedir, NULL);
 #ifdef pp_LUA
 SVEXTERN char SVDECL(*smokeview_bindir_abs,NULL);
+SVEXTERN int  SVDECL(adjustalphaflag, 3);
 #endif
 SVEXTERN scriptfiledata first_scriptfile, last_scriptfile, SVDECL(*default_script,NULL);
 #ifdef pp_LUA
@@ -1697,7 +1699,6 @@ SVEXTERN float eye_position_fds[3],xeyedir[3], yeyedir[3], zeyedir[3];
 // #else
 //  SVEXTERN float eyzeyeorig_OLD[3];
 //#endif
-SVEXTERN int SVDECL(adjustalphaflag, ALPHA_CENTER_WALL);
 SVEXTERN int SVDECL(colorbar_selection_width,5);
 SVEXTERN int SVDECL(have_extreme_mindata,0), SVDECL(have_extreme_maxdata,0);
 SVEXTERN int SVDECL(show_extreme_mindata,0), SVDECL(show_extreme_maxdata,0);
@@ -1853,7 +1854,12 @@ SVEXTERN int fire_color_int255[3];
 SVEXTERN int smoke_color_int255[4];
 SVEXTERN int co2_color_int255[3];
 #endif
-SVEXTERN float SVDECL(fire_halfdepth,3.0), SVDECL(fire_halfdepth2, 3.0), SVDECL(smoke_albedo, 0.3), SVDECL(smoke_albedo_base, 0.3);
+
+SVEXTERN int SVDECL(use_opacity_depth, 1);
+SVEXTERN int SVDECL(use_opacity_multiplier, 0);
+
+SVEXTERN int SVDECL(update_smokefire_colors, 0);
+SVEXTERN float SVDECL(fire_halfdepth,0.3), SVDECL(fire_halfdepth2, 0.3), SVDECL(smoke_albedo, 0.3), SVDECL(smoke_albedo_base, 0.3);
 SVEXTERN float SVDECL(co2_halfdepth, 10.0);
 
 SVEXTERN int SVDECL(co2_colormap_type, CO2_COLORBAR);

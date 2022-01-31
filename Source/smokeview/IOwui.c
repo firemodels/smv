@@ -2057,11 +2057,11 @@ void UpdateTerrain(int allocate_memory){
         if(meshj==meshi || meshj->is_bottom==1)continue;
         dx = ABS(meshi->xplt_orig[0]          - meshj->xplt_orig[0]);
         dy = ABS(meshi->yplt_orig[0]          - meshj->yplt_orig[0]);
-        if(dx>meshi->dx/2.0 || dy>meshi->dy/2.0)continue;
+        if(dx>meshi->dxyz[0]/2.0 || dy>meshi->dxyz[1]/2.0)continue;
 
         dx = ABS(meshi->xplt_orig[meshi->ibar]          - meshj->xplt_orig[meshj->ibar]);
         dy = ABS(meshi->yplt_orig[meshi->jbar]          - meshj->yplt_orig[meshj->jbar]);
-        if(dx>meshi->dx/2.0 || dy>meshi->dy/2.0)continue;
+        if(dx>meshi->dxyz[0]/2.0 || dy>meshi->dxyz[1]/2.0)continue;
 
         if(meshi->ibar!=meshj->ibar || meshi->jbar!=meshj->jbar)continue;
 
@@ -2069,7 +2069,7 @@ void UpdateTerrain(int allocate_memory){
         terrainj = meshj->terrain;
         if(terrainj!=NULL){
           for(kk = 0; kk<meshj->nznodes; kk++){
-            if(terrainj->znode[kk]>meshi->boxmin[2]-meshi->dz/2.0)meshi->znodes_complete[kk] = terrainj->znode[kk];
+            if(terrainj->znode[kk]>meshi->boxmin[2]-meshi->dxyz[2]/2.0)meshi->znodes_complete[kk] = terrainj->znode[kk];
           }
         }
       }
