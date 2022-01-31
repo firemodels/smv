@@ -763,9 +763,12 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
   unsigned char *firecolor, *alphaf_in;
   float value[4], fvalue[4];
+  int have_extinction;
+  float smoke_extinction;
 
   meshdata *meshi;
 
+  have_extinction = HaveSmokeExtinct(&smoke_extinction);
   meshi = meshinfo+smoke3di->blocknumber;
   if(meshvisptr[meshi-meshinfo]==0)return;
 
@@ -850,6 +853,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   glUniform1f(GPU_fire_alpha, smoke3di->fire_alpha);
 
   TransparentOn();
+  aspectratio = 1.0;
   switch(ssmokedir){
     unsigned char *alpha_map;
 
@@ -859,7 +863,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 1:
   case -1:
 
-    aspectratio = meshi->dxDdx;
+    if(have_extinction==0)aspectratio = meshi->dxDdx;
     alpha_map = smoke3di->alphas_dir[ALPHA_X];
     glUniform1f(GPU_aspectratio, aspectratio);
 
@@ -962,7 +966,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 2:
   case -2:
 
-    aspectratio = meshi->dyDdx;
+    if(have_extinction==0)aspectratio = meshi->dyDdx;
     alpha_map = smoke3di->alphas_dir[ALPHA_Y];
     glUniform1f(GPU_aspectratio, aspectratio);
 
@@ -1066,7 +1070,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 3:
   case -3:
 
-    aspectratio = meshi->dzDdx;
+    if(have_extinction==0)aspectratio = meshi->dzDdx;
     alpha_map = smoke3di->alphas_dir[ALPHA_Z];
     glUniform1f(GPU_aspectratio, aspectratio);
 
@@ -1165,7 +1169,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 4:
   case -4:
 
-    aspectratio = meshi->dxyDdx;
+    if(have_extinction==0)aspectratio = meshi->dxyDdx;
     alpha_map = smoke3di->alphas_dir[ALPHA_XY];
     glUniform1f(GPU_aspectratio, aspectratio);
 
@@ -1286,7 +1290,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 5:
   case -5:
 
-    aspectratio = meshi->dxyDdx;
+    if(have_extinction==0)aspectratio = meshi->dxyDdx;
     alpha_map = smoke3di->alphas_dir[ALPHA_XY];
     glUniform1f(GPU_aspectratio, aspectratio);
 
@@ -1413,7 +1417,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 6:
   case -6:
 
-    aspectratio = meshi->dyzDdx;
+    if(have_extinction==0)aspectratio = meshi->dyzDdx;
     alpha_map = smoke3di->alphas_dir[ALPHA_YZ];
     glUniform1f(GPU_aspectratio, aspectratio);
 
@@ -1535,7 +1539,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 7:
   case -7:
 
-    aspectratio = meshi->dyzDdx;
+    if(have_extinction==0)aspectratio = meshi->dyzDdx;
     alpha_map = smoke3di->alphas_dir[ALPHA_YZ];
     glUniform1f(GPU_aspectratio, aspectratio);
 
@@ -1663,7 +1667,7 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   case 8:
   case -8:
 
-    aspectratio = meshi->dxzDdx;
+    if(have_extinction==0)aspectratio = meshi->dxzDdx;
     alpha_map = smoke3di->alphas_dir[ALPHA_XZ];
     glUniform1f(GPU_aspectratio, aspectratio);
 
@@ -1783,7 +1787,8 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
   case 9:
   case -9:
-    aspectratio = meshi->dxzDdx;
+
+    if(have_extinction==0)aspectratio = meshi->dxzDdx;
     alpha_map = smoke3di->alphas_dir[ALPHA_XZ];
     glUniform1f(GPU_aspectratio, aspectratio);
 
