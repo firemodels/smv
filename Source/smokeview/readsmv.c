@@ -4737,7 +4737,8 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
       smoke3di->type2 = TEMP_2;
       nsmoke3d_temp++;
     }
-    else if(Match(smoke3di->label.shortlabel, "rho_CO2")==1){
+    else if(Match(smoke3di->label.shortlabel, "rho_CO2")==1||
+            Match(smoke3di->label.shortlabel, "Y_CO2")==1){
       smoke3di->type = CO2;
       smoke3di->type2 = CO2_2;
       nsmoke3d_co2++;
@@ -4747,14 +4748,12 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
       smoke3di->type2 = SOOT_2;
       nsmoke3d_soot++;
     }
-    if(extinct<0.0&&smoke3di->type == SOOT){
-      extinct = 8700.0;
+    if(smoke3di->type==SOOT){
+      if(extinct<0.0)extinct = 8700.0;
+      glui_smoke3d_extinct = MAX(glui_smoke3d_extinct, extinct);
     }
     smoke3di->extinct = extinct;
-    if(extinct>=0.0){
-      update_smoke_alphas = 1;
-      glui_smoke3d_extinct = extinct;
-    }
+    if(extinct>=0.0)update_smoke_alphas = 1;
   }
   return RETURN_CONTINUE;
 }
