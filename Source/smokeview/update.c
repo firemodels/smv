@@ -1873,7 +1873,7 @@ void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo){
 
 /* ------------------ HaveFire ------------------------ */
 
-int HaveFire(void) {
+int HaveFireLoaded(void) {
   int i;
 
   for(i = 0; i<nsmoke3dinfo; i++) {
@@ -1890,7 +1890,7 @@ int HaveFire(void) {
 
 /* ------------------ HaveSoot ------------------------ */
 
-int HaveSoot(void) {
+int HaveSootLoaded(void) {
   int i;
 
   for(i = 0; i<nsmoke3dinfo; i++) {
@@ -1902,11 +1902,28 @@ int HaveSoot(void) {
   return 0;
 }
 
+/* ------------------ HaveSmokeExtinct ------------------------ */
+
+int HaveSmokeExtinct(float *extinction){
+  int i;
+
+  for(i = 0; i<nsmoke3dinfo; i++) {
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo+i;
+    if(smoke3di->have_extinct==1){
+      *extinction = smoke3di->extinct;
+      return 1;
+    }
+  }
+  return 0;
+}
+
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
-  have_fire  = HaveFire();
-  have_smoke = HaveSoot();
+  have_fire  = HaveFireLoaded();
+  have_smoke = HaveSootLoaded();
   if(update_smoke_alphas==1){
     update_smoke_alphas = 0;
     UpdateSmokeAlphas();

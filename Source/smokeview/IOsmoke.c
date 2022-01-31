@@ -1917,13 +1917,15 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
 
 void InitAlphas(unsigned char *alphanew, int n, float valmin, float valmax, float dx){
   int i;
+  float base_extinct;
 
+  HaveSmokeExtinct(&base_extinct);
   for(i = 0; i<n; i++){
     float val, factor;
 
     factor = (float)i/(float)(n-1);
     val = valmin*(1.0-factor) + valmax*factor;
-    val = (float)n*(1.0-exp(-val*dx));
+    val = (float)n*(1.0-exp(-val*(glui_smoke3d_extinct/base_extinct)*dx));
     alphanew[i] = CLAMP((unsigned char)val, 0, n);
   }
 }

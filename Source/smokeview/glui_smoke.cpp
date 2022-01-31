@@ -62,6 +62,9 @@ GLUI_Spinner *SPINNER_smoke3d_kmax = NULL;
 GLUI_Spinner *SPINNER_smoke3d_rthick=NULL;
 GLUI_Spinner *SPINNER_smoke3d_rthick2=NULL;
 #endif
+GLUI_Spinner *SPINNER_smoke3d_extinct = NULL;
+GLUI_Spinner *SPINNER_smoke3d_extinct2 = NULL;
+
 GLUI_Spinner *SPINNER_smoke3d_fire_red=NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_green=NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_blue=NULL;
@@ -425,11 +428,16 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_smoke3d_smoke_green->set_int_limits(0, 255);
   SPINNER_smoke3d_smoke_blue->set_int_limits(0, 255);
   SPINNER_smoke3d_smoke_gray->set_int_limits(0, 255);
-
+  if(HaveSmokeExtinct(&glui_smoke3d_extinct)==1){
+    SPINNER_smoke3d_extinct2 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("Extinction (m2/kg)"),
+                                                                 GLUI_SPINNER_FLOAT, &glui_smoke3d_extinct, SMOKE_EXTINCT, Smoke3dCB);
+  }
 #ifdef pp_GPU
-    SPINNER_smoke3d_rthick2=glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor,_("Thickness"),
-      GLUI_SPINNER_FLOAT,&smoke3d_rthick,SMOKE_RTHICK,Smoke3dCB);
-    SPINNER_smoke3d_rthick2->set_float_limits(1.0,255.0);
+  else{
+    SPINNER_smoke3d_rthick2 = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("Thickness"),
+                                                                 GLUI_SPINNER_FLOAT, &smoke3d_rthick, SMOKE_RTHICK, Smoke3dCB);
+    SPINNER_smoke3d_rthick2->set_float_limits(1.0, 255.0);
+  }
 #endif
   UpdateSmokeThickness();
 
@@ -623,10 +631,16 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("Every 2nd"));
     glui_3dsmoke->add_radiobutton_to_group(RADIO_skipframes,_("Every 3rd"));
 
+  if(HaveSmokeExtinct(&glui_smoke3d_extinct)==1){
+    SPINNER_smoke3d_extinct = glui_3dsmoke->add_spinner_to_panel(PANEL_display, _("Extinction (m2/kg)"),
+                                                                 GLUI_SPINNER_FLOAT, &glui_smoke3d_extinct, SMOKE_EXTINCT, Smoke3dCB);
+  }
 #ifdef pp_GPU
-    SPINNER_smoke3d_rthick = glui_3dsmoke->add_spinner_to_panel(PANEL_display, _("Thickness"),
-                                                                GLUI_SPINNER_FLOAT, &smoke3d_rthick, SMOKE_RTHICK, Smoke3dCB);
-    SPINNER_smoke3d_rthick->set_float_limits(1.0, 255.0);
+  else{
+      SPINNER_smoke3d_rthick = glui_3dsmoke->add_spinner_to_panel(PANEL_display, _("Thickness"),
+                                                                  GLUI_SPINNER_FLOAT, &smoke3d_rthick, SMOKE_RTHICK, Smoke3dCB);
+      SPINNER_smoke3d_rthick->set_float_limits(1.0, 255.0);
+  }
 #endif
 
     UpdateSmokeThickness();
@@ -1291,7 +1305,13 @@ extern "C" void Smoke3dCB(int var){
     UpdateSmokeColormap(RENDER_SLICE);
     UpdateSmokeColormap(smoke_render_option);
     IdleCB();
-   break;
+     break;
+   case SMOKE_EXTINCT:
+     update_smoke_alphas = 1;
+     glui_smoke3d_extinct = MAX(glui_smoke3d_extinct, 0.0);
+     SPINNER_smoke3d_extinct->set_float_val(glui_smoke3d_extinct);
+     SPINNER_smoke3d_extinct2->set_float_val(glui_smoke3d_extinct);
+     break;
 #ifdef pp_GPU
   case SMOKE_RTHICK:
 
