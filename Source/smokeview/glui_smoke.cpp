@@ -410,7 +410,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_smoke3d_smoke_red   = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("red"),   GLUI_SPINNER_INT, smoke_color_int255,   SMOKE_RED,   Smoke3dCB);
   SPINNER_smoke3d_smoke_green = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("green"), GLUI_SPINNER_INT, smoke_color_int255+1, SMOKE_GREEN, Smoke3dCB);
   SPINNER_smoke3d_smoke_blue  = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("blue"),  GLUI_SPINNER_INT, smoke_color_int255+2, SMOKE_BLUE,  Smoke3dCB);
-  SPINNER_smoke3d_smoke_gray  = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("gray"), GLUI_SPINNER_INT, smoke_color_int255+3, SMOKE_GRAY, Smoke3dCB);
+  SPINNER_smoke3d_smoke_gray  = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_smokecolor, _("gray"),  GLUI_SPINNER_INT, smoke_color_int255+3, SMOKE_GRAY,  Smoke3dCB);
   SPINNER_smoke3d_smoke_red->set_int_limits(0, 255);
   SPINNER_smoke3d_smoke_green->set_int_limits(0, 255);
   SPINNER_smoke3d_smoke_blue->set_int_limits(0, 255);
@@ -538,13 +538,13 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     }
   }
 
-  Smoke3dCB(USE_SMOKE_RGB);
   Smoke3dCB(USE_FIRE_RGB);
   Smoke3dCB(USE_FIRE_COLORMAP);
   Smoke3dCB(USE_CO2_RGB);
   Smoke3dCB(USE_CO2_COLORMAP);
   Smoke3dCB(UPDATE_SMOKEFIRE_COLORS);
   Smoke3dCB(UPDATE_SMOKEFIRE_COLORS2);
+  Smoke3dCB(USE_SMOKE_RGB);
 
 
   PANEL_colormap2 = glui_3dsmoke->add_panel_to_panel(PANEL_colormap,"",GLUI_PANEL_NONE);
@@ -824,7 +824,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 void SetRGBColorMapVars(int use_rgb){
   int use_colormap;
 
-  use_colormap = 1 - use_rgb;
+  use_colormap       = 1 - use_rgb;
   use_smoke_rgb      = use_rgb;
   use_smoke_colormap = use_colormap;
   use_fire_rgb       = use_rgb;
@@ -1194,7 +1194,6 @@ extern "C" void Smoke3dCB(int var){
       LISTBOX_smoke_colorbar->set_int_val(fire_colorbar_index);
     }
     UpdateSmokeColormap(smoke_render_option);
-    Smoke3dCB(FIRE_RED);
     break;
   case SMOKE_COLORBAR_LIST:
     SmokeColorbarMenu(fire_colorbar_index);
@@ -1243,16 +1242,22 @@ extern "C" void Smoke3dCB(int var){
   }
     Smoke3dCB(SMOKE_RED);
     break;
-  case UPDATE_SMOKEFIRE_COLORS_COMMON:
-  case FIRE_RED:
-  case FIRE_GREEN:
-  case FIRE_BLUE:
   case SMOKE_RED:
   case SMOKE_GREEN:
   case SMOKE_BLUE:
   case SMOKE_SHADE:
+    Smoke3dCB(USE_SMOKE_RGB);
+    Smoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
+    break;
+  case FIRE_RED:
+  case FIRE_GREEN:
+  case FIRE_BLUE:
+    Smoke3dCB(USE_FIRE_RGB);
+    Smoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
+    break;
+  case UPDATE_SMOKEFIRE_COLORS_COMMON:
     glutPostRedisplay();
-    force_redisplay=1;
+    force_redisplay = 1;
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     UpdateSmokeColormap(smoke_render_option);
     Smoke3dCB(UPDATE_SMOKECOLORS);
