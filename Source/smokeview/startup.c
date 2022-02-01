@@ -1902,8 +1902,6 @@ void InitVars(void){
 
   cpuframe=0;
 
-  adjustalphaflag=3;
-
   highlight_block=-1, highlight_mesh=0, highlight_flag=2;
 
   visUSERticks=0;
@@ -1978,7 +1976,6 @@ void InitVars(void){
   smokecullflag=1;
   visMAINmenus=0;
 #ifdef pp_GPU
-  smoke3d_rthick=1.0;
   usegpu=0;
 #endif
   ijkbarmax=5;

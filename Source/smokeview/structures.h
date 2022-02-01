@@ -661,14 +661,6 @@ typedef struct _meshdata {
   int mesh_type;
 #ifdef pp_GPU
   GLuint blockage_texture_id;
-#ifdef pp_GPUSMOKE
-  GLuint smoke_texture_id, fire_texture_id, co2_texture_id;
-  float *smoke_texture_buffer, *fire_texture_buffer, *co2_texture_buffer;
-  float *smoke_verts, *smoke_vals;
-  int max_tris, max_verts;
-  int *smoke_tris, smoke_ntris, smoke_nverts;
-  int update_smokebox;
-#endif
   struct _smoke3ddata *smoke3d_soot, *smoke3d_hrrpuv, *smoke3d_temp, *smoke3d_co2;
   GLuint     volsmoke_texture_id,     volfire_texture_id,     vollight_texture_id;
   float *volsmoke_texture_buffer,*volfire_texture_buffer,*vollight_texture_buffer;
@@ -756,7 +748,7 @@ typedef struct _meshdata {
   int *iso_timeslist;
   int iso_itime;
   int smokedir,smokedir_old;
-  float dx, dy, dz, dxy,dxz,dyz,dxyz[3];
+  float dxDdx, dyDdx, dzDdx, dxyDdx, dxzDdx, dyzDdx, dxyz[3];
   float norm[3];
   float dplane_min[4], dplane_max[4];
 
@@ -1390,6 +1382,7 @@ typedef struct _smoke3ddata {
   int filetype;
   int loaded, finalize, display, request_load, primary_file;
   int is_zlib;
+  int first_smoketype;
   smokestatedata smokestate[MAXSMOKETYPES];
   int blocknumber;
   int type,type2;
@@ -1399,6 +1392,14 @@ typedef struct _smoke3ddata {
   char menulabel[128];
   float *times;
   int *use_smokeframe;
+  float extinct;
+#define ALPHA_X  0
+#define ALPHA_Y  1
+#define ALPHA_Z  2
+#define ALPHA_XY 3
+#define ALPHA_YZ 4
+#define ALPHA_XZ 5
+  unsigned char *alphas_dir[6];
   int fire_alpha, co2_alpha;
   float fire_alphas[256], co2_alphas[256];
   int *timeslist;

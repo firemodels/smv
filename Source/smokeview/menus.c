@@ -770,7 +770,13 @@ void LabelMenu(int value){
     vis_colorbar = GetColorbarState();
     break;
   case MENU_LABEL_timebar:
-    visTimebar=1-visTimebar;
+    visTimebar        = 1-visTimebar;
+    visTimelabel      = 1-visTimebar;
+    visFrameTimelabel = 1-visTimebar;
+    visFramelabel     = 1-visTimebar;
+    LabelMenu(MENU_LABEL_timelabel);
+    LabelMenu(MENU_LABEL_frametimelabel);
+    LabelMenu(MENU_LABEL_framelabel);
     break;
   case MENU_LABEL_framerate:
     visFramerate = 1 - visFramerate;
@@ -838,6 +844,7 @@ void LabelMenu(int value){
      break;
    case MENU_LABEL_timelabel:
      visTimelabel=1-visTimelabel;
+     break;
    case MENU_LABEL_frametimelabel:
      visFrameTimelabel = 1-visFrameTimelabel;
      UpdateFrameTimelabel();

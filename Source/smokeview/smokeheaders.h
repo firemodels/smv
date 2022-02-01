@@ -228,11 +228,6 @@ EXTERNCPP void UpdateListIsoColorobar(void);
 EXTERNCPP void UpdateTexturebar(void);
 EXTERNCPP void UpdatePosView(void);
 EXTERNCPP void UpdateUseLighting(void);
-#ifdef pp_GPUSMOKE
-EXTERNCPP  void UpdateGluiPlanes(float dmin, float dmax);
-EXTERNCPP void UpdateSmoke3DPlanes(float delta_perp, float delta_par);
-EXTERNCPP int IsSmokeInMesh(meshdata *meshi);
-#endif
 EXTERNCPP void GetFileSizes(void);
 EXTERNCPP int IsSmokeComponentPresent(smoke3ddata *smoke3di);
 EXTERNCPP void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax);
@@ -293,6 +288,7 @@ EXTERNCPP void UpdateShowbeamAsLine(void);
 EXTERNCPP void UpdateVSliceDups(void);
 EXTERNCPP void UnloadVSliceMenu(int value);
 EXTERNCPP void UpdateSliceDups(void);
+EXTERNCPP void UpdateSmokeAlphas(void);
 EXTERNCPP void UpdateBoundarySliceDups(void);
 EXTERNCPP void IsoBoundCB(int var);
 EXTERNCPP void UpdateScriptStep(void);
@@ -322,9 +318,7 @@ EXTERNCPP void DrawGeomValues(slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type);
 EXTERNCPP void DrawGeomVData(vslicedata *vd);
 EXTERNCPP void UpdateCurrentColorbar(colorbardata *cb);
-EXTERNCPP int  HaveFire(void);
 EXTERNCPP void UpdateFireAlpha(void);
-EXTERNCPP int  HaveSoot(void);
 EXTERNCPP void UpdateObjectUsed(void);
 EXTERNCPP void UpdateColorTableList(int ncolortableinfo_old);
 EXTERNCPP void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo);
@@ -584,9 +578,6 @@ EXTERNCPP void InitCullGeom(int cullflag);
 EXTERNCPP void GetCullSkips(meshdata *meshi, int cullflag, int cull_portsize, int *iiskip, int *jjskip, int *kkskip);
 #ifdef pp_GPU
 EXTERNCPP int  InitShaders(void);
-#ifdef pp_GPUSMOKE
-EXTERNCPP void LoadNewSmokeShaders(void);
-#endif
 EXTERNCPP void LoadSmokeShaders(void);
 EXTERNCPP void Load3DSliceShaders(void);
 EXTERNCPP void LoadZoneSmokeShaders(void);

@@ -5954,7 +5954,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
     zcut = terri->zmin_cutoff;
     zmax = meshi->zplt_orig[meshi->kbar];
     zmax -= agl_smv;
-    zmax += meshi->dz/4.0;
+    zmax += meshi->dxyz[2]/4.0;
 
     glPushMatrix();
     glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), vertical_factor*SCALE2SMV(1.0));
@@ -6122,7 +6122,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
     zmax = meshi->zplt_orig[meshi->kbar];
 
     zmax -= agl_smv;
-    zmax += meshi->dz/4.0;
+    zmax += meshi->dxyz[2]/4.0;
 
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
@@ -7464,15 +7464,15 @@ void DrawSliceFrame(){
         visy_all = 1;
         nslicemax = nploty_list;
         orien = 1;
-        slice_normal[0] = direction*slicemesh->dy;
-        slice_normal[1] = direction*slicemesh->dx;
+        slice_normal[0] = direction*slicemesh->dyDdx;
+        slice_normal[1] = direction*slicemesh->dxDdx;
         break;
       case 5:  // 45 slope slices
         visx_all = 1;
         nslicemax = nplotx_list;
         orien = 1;
-        slice_normal[0] = -direction*slicemesh->dy;
-        slice_normal[1] = direction*slicemesh->dx;
+        slice_normal[0] = -direction*slicemesh->dyDdx;
+        slice_normal[1] =  direction*slicemesh->dxDdx;
         break;
         // x direction
       case 1:
@@ -8112,7 +8112,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     agl_smv = sd->above_ground_level;
     zmax = meshi->zplt_orig[meshi->kbar];
     zmax -= agl_smv;
-    zmax += meshi->dz/4.0;
+    zmax += meshi->dxyz[2]/4.0;
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
     glTranslatef(-xbar0,-ybar0,-zbar0+MAX(agl_smv, SCALE2FDS(FDS_OFFSET))+slice_dz);

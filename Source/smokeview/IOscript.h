@@ -53,7 +53,6 @@
 #define SCRIPT_LOADSLICEM        221
 #define SCRIPT_LOADVSLICEM       222
 #define SCRIPT_SHOWSMOKESENSORS  223
-#define SCRIPT_SMOKEFRAMES       224
 #define SCRIPT_RGBTEST           225
 #define SCRIPT_XYZVIEW           226
 #define SCRIPT_VIEWXMIN          227

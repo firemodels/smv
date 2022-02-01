@@ -3128,25 +3128,21 @@ void DrawVerticalColorbarRegLabels(void){
       float vert_position;
 
       for(i = 0; i < nrgb - 2; i++){
-        char plot3dcolorlabel[256];
-        char *plot3dcolorlabel_ptr = NULL;
+        float val;
 
-        vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
-
+        val = tttmin + (i - 1)*plot3drange / (nrgb - 2);
+        colorbar_vals[i] = val;
+      }
+      Floats2Strings(colorbar_labels, colorbar_vals, nrgb-2, ncolorlabel_digits, force_fixedpoint, force_exponential, exp_factor_label);
+      max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
+      for(i = 0; i < nrgb - 2; i++){
+        vert_position = MIX2(i+0.5, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
         if(iposition == i)continue;
-        plot3dcolorlabel_ptr = &colorlabeliso[plotn - 1][i][0];
-        if(plot3dflag == 1){
-          float val;
-
-          val = tttmin + (i - 1)*plot3drange / (nrgb - 2);
-          ScaleFloat2String(val, plot3dcolorlabel, plot3dfactor);
-          plot3dcolorlabel_ptr = plot3dcolorlabel;
-        }
         if(isolevelindex == i || isolevelindex2 == i){
-          OutputBarText(0.0, vert_position, red_color, plot3dcolorlabel_ptr);
+          OutputBarText(0.0, vert_position, red_color, colorbar_labels[i]);
         }
         else{
-          OutputBarText(0.0, vert_position, foreground_color, plot3dcolorlabel_ptr);
+          OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
         }
       }
     }

@@ -355,25 +355,6 @@ void InitMesh(meshdata *meshi){
   meshi->iploty_all = NULL;
   meshi->iplotz_all = NULL;
 #ifdef pp_GPU
-#ifdef pp_GPUSMOKE
-  meshi->update_smokebox = 0;
-  meshi->smoke_verts  = NULL;
-  meshi->smoke_vals   = NULL;
-  meshi->smoke_tris   = NULL;
-  meshi->smoke_ntris  = 0;
-  meshi->smoke_nverts = 0;
-  meshi->max_verts = 0;
-  meshi->max_tris = 0;
-
-  meshi->smoke_texture_id = 0;
-  meshi->smoke_texture_buffer = NULL;
-
-  meshi->fire_texture_id = 0;
-  meshi->fire_texture_buffer = NULL;
-
-  meshi->co2_texture_id = 0;
-  meshi->co2_texture_buffer = NULL;
-#endif
 
   meshi->volsmoke_texture_buffer = NULL;
   meshi->volsmoke_texture_id = 0;
@@ -402,12 +383,12 @@ void InitMesh(meshdata *meshi){
   meshi->merge_color = NULL;
   meshi->smokecolor_ptr = NULL;
   meshi->smokealpha_ptr = NULL;
-  meshi->dx = 1.0;
-  meshi->dy = 1.0;
-  meshi->dz = 1.0;
-  meshi->dxy = 1.0;
-  meshi->dxz = 1.0;
-  meshi->dyz = 1.0;
+  meshi->dxDdx  = 1.0;
+  meshi->dyDdx  = 1.0;
+  meshi->dzDdx  = 1.0;
+  meshi->dxyDdx = 1.0;
+  meshi->dxzDdx = 1.0;
+  meshi->dyzDdx = 1.0;
   meshi->label = NULL;
   meshi->maxtimes_boundary = 0;
   meshi->slicedir = YDIR;
@@ -2560,6 +2541,67 @@ void UpdateMeshBoxBounds(void){
   }
 }
 
+/* ------------------ CompareSmoketypes ------------------------ */
+
+int CompareSmoketypes( const void *arg1, const void *arg2 ){
+  smoke3ddata *smoke3di, *smoke3dj;
+
+  smoke3di = *(smoke3ddata **)arg1;
+  smoke3dj = *(smoke3ddata **)arg2;
+  if(smoke3di->type==smoke3dj->type)return 0;
+  if(smoke3di->type==SOOT)return -1;
+  if(smoke3dj->type==SOOT)return 1;
+  if(smoke3di->type==HRRPUV)return -1;
+  if(smoke3dj->type==HRRPUV)return 1;
+  if(smoke3di->type==TEMP)return -1;
+  if(smoke3dj->type==TEMP)return 1;
+  return strcmp(smoke3di->label.longlabel,smoke3dj->label.longlabel);
+}
+
+/* ------------------ UpdateSmokeTypes ------------------------ */
+
+void UpdateSmokeTypes(void){
+  int i;
+
+  for(i = 0; i<nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
+    int j;
+
+    smoke3di = smoke3dinfo+i;
+    smoke3di->first_smoketype = 1;
+    for(j = 0; j<i; j++){
+      smoke3ddata *smoke3dj;
+
+      smoke3dj = smoke3dinfo+j;
+      if(smoke3di->type!=smoke3dj->type)continue;
+      if(smoke3dj->first_smoketype==1){
+        smoke3di->first_smoketype = 0;
+        break;
+      }
+    }
+  }
+  nsmoketypes = 0;
+  for(i = 0; i<nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo+i;
+    if(smoke3di->first_smoketype==1)nsmoketypes++;
+  }
+  if(nsmoketypes>0){
+    NewMemory((void **)&smoketypes, nsmoketypes*sizeof(smoke3ddata *));
+    nsmoketypes = 0;
+    for(i = 0; i<nsmoke3dinfo; i++){
+      smoke3ddata *smoke3di;
+
+      smoke3di = smoke3dinfo+i;
+      if(smoke3di->first_smoketype==1)smoketypes[nsmoketypes++] = smoke3di;
+    }
+    if(nsmoketypes>1){
+      qsort((smoke3ddata **)smoketypes, nsmoketypes, sizeof(smoke3ddata *), CompareSmoketypes);
+    }
+  }
+}
+
 /* ------------------ UpdateMeshCoords ------------------------ */
 
 void UpdateMeshCoords(void){
@@ -3124,6 +3166,30 @@ void UpdateMeshCoords(void){
   }
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3dinfo_sorted[i]=smoke3dinfo+i;
+  }
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+    float dx, dy, dz;
+
+    meshi = meshinfo+i;
+
+    dx = meshi->xplt_orig[1]-meshi->xplt_orig[0];
+    dy = meshi->yplt_orig[1]-meshi->yplt_orig[0];
+    dz = meshi->zplt_orig[1]-meshi->zplt_orig[0];
+
+    meshi->dxyz[0] = dx;
+    meshi->dxyz[1] = dy;
+    meshi->dxyz[2] = dz;
+
+    // dxy = x*y/sqrt(x*x+y*y)
+#define DIAGDIST(X,Y)  (X)*(Y)/sqrt((X)*(X)+(Y)*(Y))
+
+    meshi->dxDdx  = 1.0;
+    meshi->dyDdx  = dy/dx;
+    meshi->dzDdx  = dz/dx;
+    meshi->dxyDdx = DIAGDIST(dx, dy)/dx;
+    meshi->dxzDdx = DIAGDIST(dx, dz)/dx;
+    meshi->dyzDdx = DIAGDIST(dy, dz)/dx;
   }
 }
 
@@ -4586,6 +4652,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
   int blocknumber;
   char buffer2[256];
   char *bufferptr;
+  float extinct = -1.0;
 
   int nn_smoke3d, ioffset, ismoke3dcount, ismoke3d;
 
@@ -4615,7 +4682,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     char *buffer3;
 
     buffer3 = buffer+8;
-    sscanf(buffer3, "%i", &blocknumber);
+    sscanf(buffer3, "%i %f", &blocknumber, &extinct);
     blocknumber--;
   }
   if(FGETS(buffer, 255, stream)==NULL){
@@ -4627,7 +4694,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
   lenbuffer = len;
   {
     smoke3ddata *smoke3di;
-    int ii;
+    int ii, i;
 
     smoke3di = smoke3dinfo+ismoke3d;
 
@@ -4642,6 +4709,12 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     if(NewMemory((void **)&smoke3di->reg_file, (unsigned int)(len+1))==0)return RETURN_TWO;
     STRCPY(smoke3di->reg_file, bufferptr);
 
+    for(i=0; i<6; i++){
+      unsigned char *alpha_dir;
+
+      NewMemory((void **)&alpha_dir, 256);
+      smoke3di->alphas_dir[i] = alpha_dir;
+    }
     smoke3di->ntimes = 0;
     smoke3di->ntimes_old = 0;
     smoke3di->filetype = filetype;
@@ -4675,6 +4748,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->file_size = 0;
     smoke3di->blocknumber = blocknumber;
     smoke3di->lastiframe = -999;
+    smoke3di->first_smoketype = 0;
     for(ii = 0; ii<MAXSMOKETYPES; ii++){
       smoke3di->smokestate[ii].index = -1;
     }
@@ -4725,7 +4799,8 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
       smoke3di->type2 = TEMP_2;
       nsmoke3d_temp++;
     }
-    else if(Match(smoke3di->label.shortlabel, "rho_CO2")==1){
+    else if(Match(smoke3di->label.shortlabel, "rho_CO2")==1||
+            Match(smoke3di->label.shortlabel, "Y_CO2")==1){
       smoke3di->type = CO2;
       smoke3di->type2 = CO2_2;
       nsmoke3d_co2++;
@@ -4735,6 +4810,12 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
       smoke3di->type2 = SOOT_2;
       nsmoke3d_soot++;
     }
+    if(smoke3di->type==SOOT){
+      if(extinct<0.0)extinct = 8700.0;
+      glui_smoke3d_extinct = MAX(glui_smoke3d_extinct, extinct);
+    }
+    smoke3di->extinct = extinct;
+    if(extinct>=0.0)update_smoke_alphas = 1;
   }
   return RETURN_CONTINUE;
 }
@@ -10161,6 +10242,9 @@ typedef struct {
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
   UpdateMeshCoords();
+#ifdef pp_SMOKETYPES
+  UpdateSmokeTypes();
+#endif
   CheckMemory;
 
   // allocate memory for geometry pointers (only once)
@@ -11106,16 +11190,6 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %i", &show_smokesensors, &test_smokesensors);
       continue;
     }
-#ifdef pp_GPUSMOKE
-    if(Match(buffer, "SMOKETYPE")==1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %f %f %i %i %i", &use_newsmoke, &smoke_mesh_aligned, &smoke3d_delta_par, &smoke3d_delta_multiple,
-                                             &use_smokebox, &smokebox_buffer, &update_smokeplanes);
-      config_update_smokeplanes=1;
-      update_smoketype_vals=1;
-      continue;
-    }
-#endif
 #ifdef pp_GPU
     if(gpuactive == 1 && Match(buffer, "USEGPU") == 1){
       fgets(buffer, 255, stream);
@@ -13050,11 +13124,6 @@ int ReadIni2(char *inifile, int localfile){
       int viewtype, uselocalspeed;
       float *col;
 
-      if(Match(buffer, "ADJUSTALPHA") == 1){
-        if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i", &adjustalphaflag);
-        continue;
-      }
       if(Match(buffer, "SMOKECULL") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%i", &smokecullflag);
@@ -13084,14 +13153,6 @@ int ReadIni2(char *inifile, int localfile){
         smoke_albedo = CLAMP(smoke_albedo, 0.0, 1.0);
         continue;
       }
-#ifdef pp_GPU
-      if(Match(buffer, "SMOKERTHICK") == 1){
-        if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%f", &smoke3d_rthick);
-        smoke3d_rthick = CLAMP(smoke3d_rthick, 1.0, 255.0);
-        continue;
-      }
-#endif
       if(Match(buffer, "FIRECOLOR") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%i %i %i", fire_color_int255, fire_color_int255+1, fire_color_int255+2);
@@ -14896,11 +14957,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i\n", slicedup_option, vectorslicedup_option, boundaryslicedup_option);
   fprintf(fileout, "SMOKESENSORS\n");
   fprintf(fileout, " %i %i\n", show_smokesensors, test_smokesensors);
-#ifdef pp_GPUSMOKE
-  fprintf(fileout, "SMOKETYPE\n");
-  fprintf(fileout, " %i %i %f %f %i %i %i\n",  use_newsmoke, smoke_mesh_aligned, smoke3d_delta_par, smoke3d_delta_multiple,
-                                               use_smokebox, smokebox_buffer, update_smokeplanes);
-#endif
   fprintf(fileout, "STARTUPLANG\n");
   fprintf(fileout, " %s\n", startup_lang_code);
   fprintf(fileout, "STEREO\n");
@@ -15024,8 +15080,6 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout,"\n *** 3D SMOKE INFO ***\n\n");
 
-  fprintf(fileout,"ADJUSTALPHA\n");
-  fprintf(fileout," %i\n",adjustalphaflag);
   {
     colorbardata *cb;
     char percen[2];
@@ -15090,10 +15144,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i\n", slice_skip, slice_skipx, slice_skipy, slice_skipz);
   fprintf(fileout, "SMOKESKIP\n");
   fprintf(fileout," %i %i %i %i %i\n",smokeskipm1,smoke3d_skip, smoke3d_skipx, smoke3d_skipy, smoke3d_skipz);
-#ifdef pp_GPU
-  fprintf(fileout,"SMOKERTHICK\n");
-  fprintf(fileout," %f\n",smoke3d_rthick);
-#endif
 #ifdef pp_GPU
   fprintf(fileout, "USEGPU\n");
   fprintf(fileout, " %i\n", usegpu);

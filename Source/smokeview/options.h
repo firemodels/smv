@@ -17,13 +17,14 @@
 
 //*** options: all platforms
 
+//#define pp_SMOKETYPES          // handle multiple smoke types
+//#define pp_GEOM_DEBUG        // debug out in geometry routines
 //#define pp_CRASH_TEST         // test detection of division by zero or use of undefined pointer
 //#define pp_SHOW_BOUND_MIRROR  // add menu for showing boundary files on mirror/open vents
 //#define pp_HTML_VR           // output VR html code
 //#define pp_SKIP_BOUNDARY_GEOMS // skips reading of boundary geometry files
 #define pp_GPU                // support the GPU
 #define pp_THREAD             // turn on multi-threading
-#define pp_GPUSMOKE           // code to speed up 3d smoke using the gpu
 #define pp_DRAWISO            // turn on drawing routines
 //#define pp_UPDATE_FILELOAD  // updates fileload variables when a file has been loaded or unloaded
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
