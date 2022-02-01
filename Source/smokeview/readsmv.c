@@ -2548,6 +2548,13 @@ int CompareSmoketypes( const void *arg1, const void *arg2 ){
 
   smoke3di = *(smoke3ddata **)arg1;
   smoke3dj = *(smoke3ddata **)arg2;
+  if(smoke3di->type==smoke3dj->type)return 0;
+  if(smoke3di->type==SOOT)return -1;
+  if(smoke3dj->type==SOOT)return 1;
+  if(smoke3di->type==HRRPUV)return -1;
+  if(smoke3dj->type==HRRPUV)return 1;
+  if(smoke3di->type==TEMP)return -1;
+  if(smoke3dj->type==TEMP)return 1;
   return strcmp(smoke3di->label.longlabel,smoke3dj->label.longlabel);
 }
 
@@ -2561,13 +2568,12 @@ void UpdateSmokeTypes(void){
     int j;
 
     smoke3di = smoke3dinfo+i;
-    if(smoke3di->type==HRRPUV||smoke3di->type==TEMP)continue;
     smoke3di->first_smoketype = 1;
     for(j = 0; j<i; j++){
       smoke3ddata *smoke3dj;
 
       smoke3dj = smoke3dinfo+j;
-      if(smoke3dj->type==HRRPUV||smoke3dj->type==TEMP||smoke3di->type!=smoke3dj->type)continue;
+      if(smoke3di->type!=smoke3dj->type)continue;
       if(smoke3dj->first_smoketype==1){
         smoke3di->first_smoketype = 0;
         break;
@@ -2589,9 +2595,7 @@ void UpdateSmokeTypes(void){
       smoke3ddata *smoke3di;
 
       smoke3di = smoke3dinfo+i;
-      if(smoke3di->first_smoketype==1){
-        smoketypes[nsmoketypes++] = smoke3di;
-      }
+      if(smoke3di->first_smoketype==1)smoketypes[nsmoketypes++] = smoke3di;
     }
     if(nsmoketypes>1){
       qsort((smoke3ddata **)smoketypes, nsmoketypes, sizeof(smoke3ddata *), CompareSmoketypes);
