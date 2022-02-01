@@ -41,6 +41,8 @@ SVEXTERN int SVDECL(terrain_skip, 1);
 #ifdef pp_TERRAIN_DEBUG
 SVEXTERN int SVDECL(terrain_debug, 0);
 #endif
+SVEXTERN int nsmoketypes;
+SVEXTERN smoke3ddata SVDECL(**smoketypes, NULL);
 SVEXTERN float glui_smoke3d_extinct;
 SVEXTERN int SVDECL(update_smoke_alphas, 0);
 SVEXTERN int SVDECL(max_colorbar_label_width, 0);

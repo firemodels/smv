@@ -2541,6 +2541,64 @@ void UpdateMeshBoxBounds(void){
   }
 }
 
+/* ------------------ CompareSmoketypes ------------------------ */
+
+int CompareSmoketypes( const void *arg1, const void *arg2 ){
+  smoke3ddata *smoke3di, *smoke3dj;
+
+  smoke3di = *(smoke3ddata **)arg1;
+  smoke3dj = *(smoke3ddata **)arg2;
+  return strcmp(smoke3di->label.longlabel,smoke3dj->label.longlabel);
+}
+
+/* ------------------ UpdateSmokeTypes ------------------------ */
+
+void UpdateSmokeTypes(void){
+  int i;
+
+  for(i = 0; i<nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
+    int j;
+
+    smoke3di = smoke3dinfo+i;
+    if(smoke3di->type==HRRPUV||smoke3di->type==TEMP)continue;
+    smoke3di->first_smoketype = 1;
+    for(j = 0; j<i; j++){
+      smoke3ddata *smoke3dj;
+
+      smoke3dj = smoke3dinfo+j;
+      if(smoke3dj->type==HRRPUV||smoke3dj->type==TEMP||smoke3di->type!=smoke3dj->type)continue;
+      if(smoke3dj->first_smoketype==1){
+        smoke3di->first_smoketype = 0;
+        break;
+      }
+    }
+  }
+  nsmoketypes = 0;
+  for(i = 0; i<nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
+    int j;
+
+    smoke3di = smoke3dinfo+i;
+    if(smoke3di->first_smoketype==1)nsmoketypes++;
+  }
+  if(nsmoketypes>0){
+    NewMemory((void **)&smoketypes, nsmoketypes*sizeof(smoke3ddata *));
+    nsmoketypes = 0;
+    for(i = 0; i<nsmoke3dinfo; i++){
+      smoke3ddata *smoke3di;
+
+      smoke3di = smoke3dinfo+i;
+      if(smoke3di->first_smoketype==1){
+        smoketypes[nsmoketypes++] = smoke3di;
+      }
+    }
+    if(nsmoketypes>1){
+      qsort((smoke3ddata **)smoketypes, nsmoketypes, sizeof(smoke3ddata *), CompareSmoketypes);
+    }
+  }
+}
+
 /* ------------------ UpdateMeshCoords ------------------------ */
 
 void UpdateMeshCoords(void){
@@ -4687,6 +4745,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->file_size = 0;
     smoke3di->blocknumber = blocknumber;
     smoke3di->lastiframe = -999;
+    smoke3di->first_smoketype = 0;
     for(ii = 0; ii<MAXSMOKETYPES; ii++){
       smoke3di->smokestate[ii].index = -1;
     }
@@ -10180,6 +10239,9 @@ typedef struct {
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
   UpdateMeshCoords();
+#ifdef pp_SMOKETYPES
+  UpdateSmokeTypes();
+#endif
   CheckMemory;
 
   // allocate memory for geometry pointers (only once)
