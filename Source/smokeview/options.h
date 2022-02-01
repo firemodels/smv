@@ -39,7 +39,6 @@
 //#define pp_PART_TEST        // for debugging, set particle values to 100*parti->seq_id + small random number
 
 //*** in development: all platforms
-#define pp_SMOKE_FAST           // load 3d smoke in parallel
 //#define pp_SMOKETEST          // max blending for fire, regular blending for smoke
 //#define pp_SPECTRAL           // use black body colors - not fully implemented
 #define pp_SLICETHREAD        // parallel slice file loading

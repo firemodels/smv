@@ -3788,34 +3788,6 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
   return SMOKE_SIZE;
 }
 
-
-/* ------------------ GetSmoke3DTimeStepsMin ------------------------ */
-
-int GetSmoke3DTimeStepsMin(int smoketype){
-  int i, minstep=-1;
-
-  for(i = 0; i < nsmoke3dinfo; i++){
-    smoke3ddata *smoke3di;
-    int nsteps, nsteps_found;
-
-    smoke3di = smoke3dinfo + i;
-    if((smoke3di->type2&smoketype) != 0){
-      int fortran_skip;
-
-      fortran_skip = 0;
-      if(smoke3di->filetype==FORTRAN_GENERATED&&smoke3di->is_zlib==0)fortran_skip = 4;
-      GetSmoke3DTimeSteps(fortran_skip, smoke3di->file, smoke3di->compression_type, &nsteps_found, &nsteps);
-      if(minstep==-1){
-        minstep = nsteps;
-      }
-      else{
-        minstep = MIN(minstep,nsteps);
-      }
-    }
-  }
-  return minstep;
-}
-
 /* ------------------ GetSmoke3DTimeSteps ------------------------ */
 
 void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *ntimes_found, int *ntimes_full){
@@ -4527,41 +4499,6 @@ void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode){
     }
     ReadSmoke3D(iframe, i, LOAD, first_time, errorcode);
   }
-}
-
-/* ------------------ ReadSmoke3DAllMeshesAllTimes ------------------------ */
-
-void ReadSmoke3DAllMeshesAllTimes(int smoketype2, int *errorcode){
-  int i, ntimes, itime;
-
-  update_fileload = 1;
-  ntimes = GetSmoke3DTimeStepsMin(smoketype2);
-  for(itime = 0; itime < ntimes; itime++){
-    //printf("itime=%i\n", itime);
-    for(i = 0; i < nsmoke3dinfo; i++){
-      smoke3ddata *smoke3di;
-
-      smoke3di = smoke3dinfo + i;
-      switch (smoke3di->type){
-        case SOOT:
-          if((smoketype2&SOOT_2)!=0)ReadSmoke3DAllMeshes(itime, SOOT, errorcode);
-          break;
-        case HRRPUV:
-          if((smoketype2&HRRPUV_2)!=0)ReadSmoke3DAllMeshes(itime, HRRPUV, errorcode);
-          break;
-        case TEMP:
-          if((smoketype2&TEMP_2)!=0)ReadSmoke3DAllMeshes(itime, TEMP, errorcode);
-          break;
-        case CO2:
-          if((smoketype2&CO2_2)!=0)ReadSmoke3DAllMeshes(itime, CO2, errorcode);
-          break;
-	default:
-	  ASSERT(FFALSE);
-	  break;
-      }
-    }
-  }
-  SmokeWrapup();
 }
 
 /* ------------------ UpdateSmoke3d ------------------------ */

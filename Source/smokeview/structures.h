@@ -1385,7 +1385,7 @@ typedef struct _smoke3ddata {
   int first_smoketype;
   smokestatedata smokestate[MAXSMOKETYPES];
   int blocknumber;
-  int type,type2;
+  int type;
   int is1, is2, js1, js2, ks1, ks2;
   int compression_type;
   flowlabels label;
