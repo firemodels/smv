@@ -2577,7 +2577,6 @@ void UpdateSmokeTypes(void){
   nsmoketypes = 0;
   for(i = 0; i<nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
-    int j;
 
     smoke3di = smoke3dinfo+i;
     if(smoke3di->first_smoketype==1)nsmoketypes++;
