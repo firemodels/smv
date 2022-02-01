@@ -4798,11 +4798,9 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     }
     if(Match(smoke3di->label.shortlabel, "soot")==1||Match(smoke3di->label.shortlabel, "rho_C")==1){
       smoke3di->type = SOOT;
-      nsmoke3d_soot++;
     }
     else if(Match(smoke3di->label.shortlabel, "hrrpuv")==1){
       smoke3di->type = HRRPUV;
-      nsmoke3d_hrrpuv++;
     }
     else if(Match(smoke3di->label.shortlabel, "temp")==1){
       smoke3di->type = TEMP;
@@ -4815,7 +4813,6 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     }
     else{
       smoke3di->type = SOOT;
-      nsmoke3d_soot++;
     }
     if(smoke3di->type==SOOT){
       if(extinct<0.0)extinct = 8700.0;

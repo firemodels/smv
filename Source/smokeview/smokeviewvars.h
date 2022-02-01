@@ -368,8 +368,6 @@ SVEXTERN int nsootfiles, nhrrpuvfiles, ntempfiles, nco2files;
 SVEXTERN int SVDECL(have_fire, 0), SVDECL(have_smoke, 0);
 SVEXTERN int SVDECL(nsmoke3d_temp, 0);
 SVEXTERN int SVDECL(nsmoke3d_co2, 0);
-SVEXTERN int SVDECL(nsmoke3d_hrrpuv, 0);
-SVEXTERN int SVDECL(nsmoke3d_soot, 0);
 SVEXTERN int SVDECL(update_zaxis_custom, 0);
 SVEXTERN int SVDECL(from_DisplayCB, 0);
 SVEXTERN int SVDECL(ngeom_data, 0);
@@ -425,9 +423,6 @@ SVEXTERN int SVDECL(nvel_devices, 0);
 SVEXTERN int SVDECL(update_slice, 0);
 SVEXTERN int SVDECL(*windrosez_showhide, NULL), SVDECL(nwindrosez_showhide,0), SVDECL(update_windrose_showhide,0);
 SVEXTERN int SVDECL(vol_adaptive, 1);
-#ifdef pp_SMOKETEST
-SVEXTERN int SVDECL(smoke_test, 0);
-#endif
 #ifdef INMAIN
   SVEXTERN float smoke_test_color[4] = {0.0,0.0,0.0,1.0};
   SVEXTERN float smoke_test_target_color[4] = {1.0,0.0,0.0,1.0};

@@ -5005,12 +5005,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     if(nterraininfo>0){
       glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("terrain slice overlap"), &terrain_slice_overlap);
     }
-
-#ifdef pp_SMOKETEST
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("opacity adjustment"), &slice_opacity_adjustment);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("sort slices"), &sort_slices);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("show sorted slice labels"), &show_sort_labels);
-#endif
   }
 
   // ----------------------------------- Time ----------------------------------------

@@ -39,7 +39,6 @@
 //#define pp_PART_TEST        // for debugging, set particle values to 100*parti->seq_id + small random number
 
 //*** in development: all platforms
-//#define pp_SMOKETEST          // max blending for fire, regular blending for smoke
 //#define pp_SPECTRAL           // use black body colors - not fully implemented
 #define pp_SLICETHREAD        // parallel slice file loading
 //#define pp_SHOW_CACHE         // show file cache checkbox
@@ -97,7 +96,6 @@
 
 #ifdef pp_BETA
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
-//#define pp_SMOKETEST         // experimental smoke dialog box entries
 #endif
 
 //*** options: for debugging

@@ -297,9 +297,6 @@ EXTERNCPP void UpdateGluiRender(void);
 EXTERNCPP void AddScriptList(char *file, int id);
 EXTERNCPP void UpdateMenu(void);
 EXTERNCPP void VolumeCB(int var);
-#ifdef pp_SMOKETEST
-EXTERNCPP void DrawSmokeTest(void);
-#endif
 EXTERNCPP void Smoke3dCB(int var);
 EXTERNCPP void InitAllLightFractions(float *xyz_light, int light_type);
 EXTERNCPP void GetAllSliceHists(void);
@@ -728,11 +725,7 @@ EXTERNCPP int  PointInFrustum( float *xyz);
 EXTERNCPP int BoxInFrustum(float *xx, float *yy, float *zz);
 EXTERNCPP int  RectangleInFrustum( float *x11, float *x12, float *x22, float *x21);
 EXTERNCPP void UpdateSmoke3D(smoke3ddata *smoke3di);
-#ifdef pp_SMOKETEST
-EXTERNCPP void DrawSmokeFrame(int option);
-#else
 EXTERNCPP void DrawSmokeFrame(void);
-#endif
 EXTERNCPP void DrawVolSmokeFrame(void);
 EXTERNCPP void DrawLightDirections(void);
 EXTERNCPP void DrawPartFrame(void);
