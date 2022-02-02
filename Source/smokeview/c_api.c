@@ -3525,8 +3525,8 @@ int set_smokealbedo(float v) {
 
 #ifdef pp_GPU
 int set_smokerthick(float v) {
-  smoke3d_rthick = v;
-  smoke3d_rthick = CLAMP(smoke3d_rthick, 1.0, 255.0);
+ // smoke3d_rthick = v;
+ // smoke3d_rthick = CLAMP(smoke3d_rthick, 1.0, 255.0);
   // smoke3d_thick = LogBase2(smoke3d_rthick);
   return 0;
 } // SMOKERTHICK

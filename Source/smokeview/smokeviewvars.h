@@ -41,8 +41,10 @@ SVEXTERN int SVDECL(terrain_skip, 1);
 #ifdef pp_TERRAIN_DEBUG
 SVEXTERN int SVDECL(terrain_debug, 0);
 #endif
-SVEXTERN int nsmoketypes;
-SVEXTERN smoke3ddata SVDECL(**smoketypes, NULL);
+#ifdef pp_SMOKE3DTYPES
+SVEXTERN int nsmoke3dtypes, smoke3d_other;
+SVEXTERN smoke3ddata SVDECL(**smoke3dtypes, NULL);
+#endif
 SVEXTERN float glui_smoke3d_extinct;
 SVEXTERN int SVDECL(update_smoke_alphas, 0);
 SVEXTERN int SVDECL(max_colorbar_label_width, 0);
@@ -331,9 +333,6 @@ SVEXTERN int SVDECL(percentile_mode, 0);
 SVEXTERN float SVDECL(geomboundary_pointsize, 5.0);
 SVEXTERN float SVDECL(geomboundary_linewidth, 5.0);
 
-#ifdef pp_SMOKE_FAST
-SVEXTERN int SVDECL(smoke3d_load_test, 0);
-#endif
 SVEXTERN int SVDECL(smoke3d_only, 0);
 SVEXTERN int SVDECL(update_tour_path,1);
 SVEXTERN int SVDECL(tour_circular_index, -1);
@@ -369,8 +368,6 @@ SVEXTERN int nsootfiles, nhrrpuvfiles, ntempfiles, nco2files;
 SVEXTERN int SVDECL(have_fire, 0), SVDECL(have_smoke, 0);
 SVEXTERN int SVDECL(nsmoke3d_temp, 0);
 SVEXTERN int SVDECL(nsmoke3d_co2, 0);
-SVEXTERN int SVDECL(nsmoke3d_hrrpuv, 0);
-SVEXTERN int SVDECL(nsmoke3d_soot, 0);
 SVEXTERN int SVDECL(update_zaxis_custom, 0);
 SVEXTERN int SVDECL(from_DisplayCB, 0);
 SVEXTERN int SVDECL(ngeom_data, 0);
@@ -426,9 +423,6 @@ SVEXTERN int SVDECL(nvel_devices, 0);
 SVEXTERN int SVDECL(update_slice, 0);
 SVEXTERN int SVDECL(*windrosez_showhide, NULL), SVDECL(nwindrosez_showhide,0), SVDECL(update_windrose_showhide,0);
 SVEXTERN int SVDECL(vol_adaptive, 1);
-#ifdef pp_SMOKETEST
-SVEXTERN int SVDECL(smoke_test, 0);
-#endif
 #ifdef INMAIN
   SVEXTERN float smoke_test_color[4] = {0.0,0.0,0.0,1.0};
   SVEXTERN float smoke_test_target_color[4] = {1.0,0.0,0.0,1.0};

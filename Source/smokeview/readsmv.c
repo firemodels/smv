@@ -2541,6 +2541,7 @@ void UpdateMeshBoxBounds(void){
   }
 }
 
+#ifdef pp_SMOKE3DTYPES
 /* ------------------ CompareSmoketypes ------------------------ */
 
 int CompareSmoketypes( const void *arg1, const void *arg2 ){
@@ -2560,7 +2561,7 @@ int CompareSmoketypes( const void *arg1, const void *arg2 ){
 
 /* ------------------ UpdateSmokeTypes ------------------------ */
 
-void UpdateSmokeTypes(void){
+void UpdateSmoke3DTypes(void){
   int i;
 
   for(i = 0; i<nsmoke3dinfo; i++){
@@ -2580,27 +2581,38 @@ void UpdateSmokeTypes(void){
       }
     }
   }
-  nsmoketypes = 0;
+  nsmoke3dtypes = 0;
   for(i = 0; i<nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo+i;
-    if(smoke3di->first_smoketype==1)nsmoketypes++;
+    if(smoke3di->first_smoketype==1)nsmoke3dtypes++;
   }
-  if(nsmoketypes>0){
-    NewMemory((void **)&smoketypes, nsmoketypes*sizeof(smoke3ddata *));
-    nsmoketypes = 0;
+  if(nsmoke3dtypes>0){
+    NewMemory((void **)&smoke3dtypes, nsmoke3dtypes*sizeof(smoke3ddata *));
+    nsmoke3dtypes = 0;
     for(i = 0; i<nsmoke3dinfo; i++){
       smoke3ddata *smoke3di;
 
       smoke3di = smoke3dinfo+i;
-      if(smoke3di->first_smoketype==1)smoketypes[nsmoketypes++] = smoke3di;
+      if(smoke3di->first_smoketype==1)smoke3dtypes[nsmoke3dtypes++] = smoke3di;
     }
-    if(nsmoketypes>1){
-      qsort((smoke3ddata **)smoketypes, nsmoketypes, sizeof(smoke3ddata *), CompareSmoketypes);
+    if(nsmoke3dtypes>1){
+      qsort((smoke3ddata **)smoke3dtypes, nsmoke3dtypes, sizeof(smoke3ddata *), CompareSmoketypes);
+    }
+  }
+  smoke3d_other = nsmoke3dtypes;
+  for(i = 0; i<nsmoke3dtypes; i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dtypes[i];
+    if(smoke3di->type!=SOOT&&smoke3di->type!=HRRPUV&&smoke3di->type!=TEMP){
+      smoke3d_other = i;
+      break;
     }
   }
 }
+#endif
 
 /* ------------------ UpdateMeshCoords ------------------------ */
 
@@ -4786,29 +4798,21 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     }
     if(Match(smoke3di->label.shortlabel, "soot")==1||Match(smoke3di->label.shortlabel, "rho_C")==1){
       smoke3di->type = SOOT;
-      smoke3di->type2 = SOOT_2;
-      nsmoke3d_soot++;
     }
     else if(Match(smoke3di->label.shortlabel, "hrrpuv")==1){
       smoke3di->type = HRRPUV;
-      smoke3di->type2 = HRRPUV_2;
-      nsmoke3d_hrrpuv++;
     }
     else if(Match(smoke3di->label.shortlabel, "temp")==1){
       smoke3di->type = TEMP;
-      smoke3di->type2 = TEMP_2;
       nsmoke3d_temp++;
     }
     else if(Match(smoke3di->label.shortlabel, "rho_CO2")==1||
             Match(smoke3di->label.shortlabel, "Y_CO2")==1){
       smoke3di->type = CO2;
-      smoke3di->type2 = CO2_2;
       nsmoke3d_co2++;
     }
     else{
       smoke3di->type = SOOT;
-      smoke3di->type2 = SOOT_2;
-      nsmoke3d_soot++;
     }
     if(smoke3di->type==SOOT){
       if(extinct<0.0)extinct = 8700.0;
@@ -10243,8 +10247,8 @@ typedef struct {
   PRINT_TIMER(timer_readsmv, "ReadAllGeomMT");
 
   UpdateMeshCoords();
-#ifdef pp_SMOKETYPES
-  UpdateSmokeTypes();
+#ifdef pp_SMOKE3DTYPES
+  UpdateSmoke3DTypes();
 #endif
   CheckMemory;
 
