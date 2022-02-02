@@ -728,6 +728,7 @@ EXTERNCPP int  PointInFrustum( float *xyz);
 EXTERNCPP int BoxInFrustum(float *xx, float *yy, float *zz);
 EXTERNCPP int  RectangleInFrustum( float *x11, float *x12, float *x22, float *x21);
 EXTERNCPP void UpdateSmoke3D(smoke3ddata *smoke3di);
+EXTERNCPP int HaveSmokeSensor(void);
 #ifdef pp_SMOKETEST
 EXTERNCPP void DrawSmokeFrame(int option);
 #else

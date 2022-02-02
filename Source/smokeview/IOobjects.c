@@ -285,7 +285,21 @@ void RGBTest(void){
       rgb_test_xyz[0], rgb_test_xyz[1], rgb_test_xyz[2],
       rgb_test_rgb[0], rgb_test_rgb[1], rgb_test_rgb[2]);
   }
-  use_lighting = 1;
+  use_lighting = 0;
+}
+
+/* ----------------------- HaveSmokeSensor ----------------------------- */
+
+int HaveSmokeSensor(void){
+  int i;
+
+  for(i = 0; i<ndeviceinfo; i++){
+    devicedata *devicei;
+
+    devicei = deviceinfo+i;
+    if(STRCMP(devicei->object->label, "smokesensor")==0)return 1;
+  }
+  return 0;
 }
 
 /* ----------------------- GetDeviceScreenCoords ----------------------------- */

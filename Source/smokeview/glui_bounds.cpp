@@ -3165,7 +3165,7 @@ extern "C" void Plot3DBounds2Glui(void){
 /* ------------------ UpdateUseLighting ------------------------ */
 
 extern "C" void UpdateUseLighting(void){
-  CHECKBOX_use_lighting->set_int_val(use_lighting);
+  if(CHECKBOX_use_lighting!=NULL)CHECKBOX_use_lighting->set_int_val(use_lighting);
 }
 
 /* ------------------ ExtremeCB ------------------------ */

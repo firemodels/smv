@@ -182,7 +182,7 @@ GLUI_StaticText *STATIC_timelimit_max = NULL;
 #define SLICERENDER_ROLLOUT 1
 #define MESH_ROLLOUT        2
 
-procdata smokeprocinfo[2], volsmokeprocinfo[7], colorprocinfo[3], sublightprocinfo[3];
+procdata smokeprocinfo[3], volsmokeprocinfo[7], colorprocinfo[3], sublightprocinfo[3];
 int nsmokeprocinfo = 0, nvolsmokeprocinfo=0, ncolorprocinfo = 0, nsublightprocinfo=0;
 
 #define FIRECOLOR_ROLLOUT  0

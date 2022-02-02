@@ -987,6 +987,9 @@ void ColorbarMenu(int value){
       SetLabelControls();
       break;
     case USE_LIGHTING:
+      UpdateUseLighting();
+      break;
+    case TOGGLE_LIGHTING:
       use_lighting = 1 - use_lighting;
       UpdateUseLighting();
       break;
@@ -8872,8 +8875,8 @@ updatemenu=0;
   if(setbw == 1)glutAddMenuEntry(_("*Black/White (geometry)"), COLORBAR_TOGGLE_BW);
   if(setbw == 0)glutAddMenuEntry(_("Black/White (geometry)"), COLORBAR_TOGGLE_BW);
   glutAddMenuEntry(_("  Reset"), COLORBAR_RESET);
-  if(use_lighting==1)glutAddMenuEntry(_("*Lighting"), USE_LIGHTING);
-  if(use_lighting==0)glutAddMenuEntry(_("Lighting"), USE_LIGHTING);
+  if(use_lighting==1)glutAddMenuEntry(_("*Lighting"), TOGGLE_LIGHTING);
+  if(use_lighting==0)glutAddMenuEntry(_("Lighting"),  TOGGLE_LIGHTING);
   glutAddMenuEntry(_("Settings..."), MENU_COLORBAR_SETTINGS);
 
 /* --------------------------------showVslice menu -------------------------- */

@@ -897,6 +897,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define COLORBAR_TOGGLE_BW_DATA  -21
 #define MENU_COLORBAR_SETTINGS   -22
 #define USE_LIGHTING             -25
+#define TOGGLE_LIGHTING          -26
 
 #define LOAD        0
 #define UNLOAD      1
