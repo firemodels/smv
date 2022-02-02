@@ -17,7 +17,7 @@
 
 //*** options: all platforms
 
-//#define pp_SMOKETYPES          // handle multiple smoke types
+#define pp_SMOKE3DTYPES          // handle multiple smoke types
 //#define pp_GEOM_DEBUG        // debug out in geometry routines
 //#define pp_CRASH_TEST         // test detection of division by zero or use of undefined pointer
 //#define pp_SHOW_BOUND_MIRROR  // add menu for showing boundary files on mirror/open vents
@@ -39,8 +39,6 @@
 //#define pp_PART_TEST        // for debugging, set particle values to 100*parti->seq_id + small random number
 
 //*** in development: all platforms
-#define pp_SMOKE_FAST           // load 3d smoke in parallel
-//#define pp_SMOKETEST          // max blending for fire, regular blending for smoke
 //#define pp_SPECTRAL           // use black body colors - not fully implemented
 #define pp_SLICETHREAD        // parallel slice file loading
 //#define pp_SHOW_CACHE         // show file cache checkbox
@@ -98,7 +96,6 @@
 
 #ifdef pp_BETA
 #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
-//#define pp_SMOKETEST         // experimental smoke dialog box entries
 #endif
 
 //*** options: for debugging

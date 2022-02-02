@@ -297,9 +297,6 @@ EXTERNCPP void UpdateGluiRender(void);
 EXTERNCPP void AddScriptList(char *file, int id);
 EXTERNCPP void UpdateMenu(void);
 EXTERNCPP void VolumeCB(int var);
-#ifdef pp_SMOKETEST
-EXTERNCPP void DrawSmokeTest(void);
-#endif
 EXTERNCPP void Smoke3dCB(int var);
 EXTERNCPP void InitAllLightFractions(float *xyz_light, int light_type);
 EXTERNCPP void GetAllSliceHists(void);
@@ -728,11 +725,7 @@ EXTERNCPP int  PointInFrustum( float *xyz);
 EXTERNCPP int BoxInFrustum(float *xx, float *yy, float *zz);
 EXTERNCPP int  RectangleInFrustum( float *x11, float *x12, float *x22, float *x21);
 EXTERNCPP void UpdateSmoke3D(smoke3ddata *smoke3di);
-#ifdef pp_SMOKETEST
-EXTERNCPP void DrawSmokeFrame(int option);
-#else
 EXTERNCPP void DrawSmokeFrame(void);
-#endif
 EXTERNCPP void DrawVolSmokeFrame(void);
 EXTERNCPP void DrawLightDirections(void);
 EXTERNCPP void DrawPartFrame(void);
@@ -987,7 +980,6 @@ EXTERNCPP FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, i
 EXTERNCPP void FreeSmoke3D(smoke3ddata *smoke3di);
 EXTERNCPP void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *ntimes_found, int *ntimes_full);
 EXTERNCPP void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode);
-EXTERNCPP void ReadSmoke3DAllMeshesAllTimes(int smoketype2, int *errorcode);
 EXTERNCPP FILE_SIZE ReadSmoke3D(int iframe, int ifile, int flag, int first_time, int *errorcode);
 EXTERNCPP void ReadFed(int ifile, int time_frame, float *time_value, int flag, int file_type, int *errorcode);
 EXTERNCPP FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);

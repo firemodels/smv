@@ -300,59 +300,6 @@ unsigned char AdjustAlpha(unsigned char alpha, float factor){
     glVertex3f(XX,YY,ZZ+z_offset[mm]);                                \
   }
 
-
-  /* ------------------ DrawSmokeTest ------------------------ */
-#ifdef pp_SMOKETEST
-void DrawSmokeTest(void){
-  meshdata *meshi;
-  int i;
-  float dy,y;
-  float *boxmin, *boxmax, zmid;
-  float ymin, ymax;
-  float opacity_full, opacity_slice;
-
-  meshi = meshinfo;
-  boxmin = meshi->boxmin;
-  boxmax = meshi->boxmax;
-  ymin = boxmin[1] + 0.1;
-  ymax = boxmin[1] + smoke_test_range;
-  dy = (ymax-ymin) / (float)(smoke_test_nslices - 1);
-  zmid = (boxmin[2] + boxmax[2]) / 2.0;
-
-  opacity_full = smoke_test_opacity;
-  opacity_slice = 1.0 - pow(1.0 - opacity_full, 1.0/(float)smoke_test_nslices);
-
-  TransparentOn();
-  glPushMatrix();
-  glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
-  glTranslatef(-xbar0,-ybar0,-zbar0);
-  glBegin(GL_TRIANGLES);
-  for(i=0;i<smoke_test_nslices;i++){
-    y = ymax - (float)i*dy;
-    glColor4f(smoke_test_color[0],smoke_test_color[1],smoke_test_color[2],opacity_slice);
-    glVertex3f(boxmin[0],y,boxmin[2]);
-    glVertex3f(boxmax[0],y,boxmin[2]);
-    glVertex3f(boxmax[0],y,zmid);
-
-    glVertex3f(boxmin[0],y,boxmin[2]);
-    glVertex3f(boxmax[0],y,zmid);
-    glVertex3f(boxmin[0],y,zmid);
-  }
-  y = ymin;
-  glColor4f(smoke_test_color[0], smoke_test_color[1], smoke_test_color[2], opacity_full);
-  glVertex3f(boxmin[0], y, zmid);
-  glVertex3f(boxmax[0], y, zmid);
-  glVertex3f(boxmax[0], y, boxmax[2]);
-
-  glVertex3f(boxmin[0], y, zmid);
-  glVertex3f(boxmax[0], y, boxmax[2]);
-  glVertex3f(boxmin[0], y, boxmax[2]);
-  glEnd();
-  glPopMatrix();
-  TransparentOff();
-}
-#endif
-
   /* ------------------ GetLightLimit ------------------------ */
 
 void GetLightLimit(float *xyz1, float *dxyz, float *xyz_light, int light_type, float *xyz2, float *length){
@@ -3562,11 +3509,7 @@ void DrawSmoke3D(smoke3ddata *smoke3di){
 
 /* ------------------ DrawSmokeFrame ------------------------ */
 
-#ifdef pp_SMOKETEST
-void DrawSmokeFrame(int option){
-#else
 void DrawSmokeFrame(void){
-#endif
   // options:
   // SMOKE3D_FIRE_ONLY      0
   // SMOKE3D_SMOKE_ONLY     1
@@ -3587,11 +3530,7 @@ void DrawSmokeFrame(void){
 #endif
 
   blend_mode = 0;
-#ifdef pp_SMOKETEST
-  if(option==SMOKE3D_FIRE_ONLY){
-#else
   if(usegpu==0&&hrrpuv_max_blending==1){
-#endif
     blend_mode = 1;
     glBlendEquation(GL_MAX);
   }
@@ -3600,23 +3539,8 @@ void DrawSmokeFrame(void){
 
     smoke3di = smoke3dinfo_sorted[i];
     if(smoke3di->loaded==0||smoke3di->display==0)continue;
-#ifdef pp_SMOKETEST
-    switch(option){
-    case SMOKE3D_FIRE_ONLY:
-      if(smoke3di->type!=HRRPUV&&smoke3di->type!=TEMP)continue;
-      break;
-    case SMOKE3D_SMOKE_AND_FIRE:
-      if(smoke3di->primary_file==0)continue;
-      if(IsSmokeComponentPresent(smoke3di)==0)continue;
-      break;
-    case SMOKE3D_SMOKE_ONLY:
-      if(smoke3di->type!=SOOT)continue;
-      break;
-    }
-#else
     if(smoke3di->primary_file==0)continue;
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
-#endif
 #ifdef pp_GPU
     if(usegpu==1){
       DrawSmoke3DGPU(smoke3di);
@@ -3786,34 +3710,6 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
   fclose(SMOKE_SIZE);
   SMOKE_SIZE = fopen(smoke_sizefilename, "r");
   return SMOKE_SIZE;
-}
-
-
-/* ------------------ GetSmoke3DTimeStepsMin ------------------------ */
-
-int GetSmoke3DTimeStepsMin(int smoketype){
-  int i, minstep=-1;
-
-  for(i = 0; i < nsmoke3dinfo; i++){
-    smoke3ddata *smoke3di;
-    int nsteps, nsteps_found;
-
-    smoke3di = smoke3dinfo + i;
-    if((smoke3di->type2&smoketype) != 0){
-      int fortran_skip;
-
-      fortran_skip = 0;
-      if(smoke3di->filetype==FORTRAN_GENERATED&&smoke3di->is_zlib==0)fortran_skip = 4;
-      GetSmoke3DTimeSteps(fortran_skip, smoke3di->file, smoke3di->compression_type, &nsteps_found, &nsteps);
-      if(minstep==-1){
-        minstep = nsteps;
-      }
-      else{
-        minstep = MIN(minstep,nsteps);
-      }
-    }
-  }
-  return minstep;
 }
 
 /* ------------------ GetSmoke3DTimeSteps ------------------------ */
@@ -4527,41 +4423,6 @@ void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode){
     }
     ReadSmoke3D(iframe, i, LOAD, first_time, errorcode);
   }
-}
-
-/* ------------------ ReadSmoke3DAllMeshesAllTimes ------------------------ */
-
-void ReadSmoke3DAllMeshesAllTimes(int smoketype2, int *errorcode){
-  int i, ntimes, itime;
-
-  update_fileload = 1;
-  ntimes = GetSmoke3DTimeStepsMin(smoketype2);
-  for(itime = 0; itime < ntimes; itime++){
-    //printf("itime=%i\n", itime);
-    for(i = 0; i < nsmoke3dinfo; i++){
-      smoke3ddata *smoke3di;
-
-      smoke3di = smoke3dinfo + i;
-      switch (smoke3di->type){
-        case SOOT:
-          if((smoketype2&SOOT_2)!=0)ReadSmoke3DAllMeshes(itime, SOOT, errorcode);
-          break;
-        case HRRPUV:
-          if((smoketype2&HRRPUV_2)!=0)ReadSmoke3DAllMeshes(itime, HRRPUV, errorcode);
-          break;
-        case TEMP:
-          if((smoketype2&TEMP_2)!=0)ReadSmoke3DAllMeshes(itime, TEMP, errorcode);
-          break;
-        case CO2:
-          if((smoketype2&CO2_2)!=0)ReadSmoke3DAllMeshes(itime, CO2, errorcode);
-          break;
-	default:
-	  ASSERT(FFALSE);
-	  break;
-      }
-    }
-  }
-  SmokeWrapup();
 }
 
 /* ------------------ UpdateSmoke3d ------------------------ */
