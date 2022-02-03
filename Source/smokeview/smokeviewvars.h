@@ -41,10 +41,12 @@ SVEXTERN int SVDECL(terrain_skip, 1);
 #ifdef pp_TERRAIN_DEBUG
 SVEXTERN int SVDECL(terrain_debug, 0);
 #endif
-#ifdef pp_SMOKE3DTYPES
 SVEXTERN int nsmoke3dtypes, smoke3d_other;
-SVEXTERN smoke3ddata SVDECL(**smoke3dtypes, NULL);
-#endif
+SVEXTERN smoke3dtypedata SVDECL(*smoke3dtypes, NULL);
+
+SVEXTERN int SOOT_index, HRRPUV_index, TEMP_index, CO2_index, OTHER_index;
+SVEXTERN int nother_types;
+
 SVEXTERN float glui_smoke3d_extinct;
 SVEXTERN int SVDECL(update_smoke_alphas, 0);
 SVEXTERN int SVDECL(max_colorbar_label_width, 0);
@@ -365,7 +367,7 @@ SVEXTERN int SVDECL(showgeom_inside_domain, 1);
 SVEXTERN int SVDECL(showgeom_outside_domain, 1);
 SVEXTERN int nsootloaded, nhrrpuvloaded, ntemploaded, nco2loaded;
 SVEXTERN int nsootfiles, nhrrpuvfiles, ntempfiles, nco2files;
-SVEXTERN int SVDECL(have_fire, 0), SVDECL(have_smoke, 0);
+SVEXTERN int SVDECL(have_fire, NO_FIRE), SVDECL(have_smoke, NO_SMOKE);
 SVEXTERN int SVDECL(nsmoke3d_temp, 0);
 SVEXTERN int SVDECL(nsmoke3d_co2, 0);
 SVEXTERN int SVDECL(update_zaxis_custom, 0);

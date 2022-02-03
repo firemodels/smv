@@ -1881,11 +1881,11 @@ int HaveFireLoaded(void) {
 
     smoke3di = smoke3dinfo+i;
     if(smoke3di->loaded==1) {
-      if(smoke3di->type==HRRPUV)return HRRPUV;
-      if(smoke3di->type==TEMP)return TEMP;
+      if(smoke3di->type==HRRPUV_index)return HRRPUV_index;
+      if(smoke3di->type==TEMP_index)return TEMP_index;
     }
   }
-  return 0;
+  return NO_FIRE;
 }
 
 /* ------------------ HaveSoot ------------------------ */
@@ -1897,9 +1897,9 @@ int HaveSootLoaded(void) {
     smoke3ddata *smoke3di;
 
     smoke3di = smoke3dinfo+i;
-    if(smoke3di->loaded==1&&smoke3di->type==SOOT)return 1;
+    if(smoke3di->loaded==1&&smoke3di->type==SOOT_index)return SOOT_index;
   }
-  return 0;
+  return NO_SMOKE;
 }
 
 /* ------------------ UpdateShowScene ------------------------ */

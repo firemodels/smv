@@ -1105,7 +1105,7 @@ void UpdateSmokeColormap(int option){
   int icut;
   float *rgb_colormap=NULL;
 
-  if(have_fire==HRRPUV&&option==RENDER_SLICE){
+  if(have_fire==HRRPUV_index&&option==RENDER_SLICE){
     valmin=global_hrrpuv_min;
     valcut=global_hrrpuv_cutoff;
     valmax=global_hrrpuv_max;
@@ -1116,7 +1116,7 @@ void UpdateSmokeColormap(int option){
     valcut = global_temp_cutoff;
     valmax = global_temp_max;
     rgb_colormap = rgb_volsmokecolormap;
-    if(have_fire == TEMP)rgb_colormap=rgb_slicesmokecolormap_01;
+    if(have_fire == TEMP_index)rgb_colormap=rgb_slicesmokecolormap_01;
   }
   icut = (MAXSMOKERGB-1)*((valcut-valmin)/(valmax-valmin));
   icut = CLAMP(icut,2,(MAXSMOKERGB-3));
@@ -1129,7 +1129,7 @@ void UpdateSmokeColormap(int option){
   switch(fire_colormap_type){
     case FIRECOLORMAP_DIRECT:
       for(n=0;n<MAXSMOKERGB;n++){
-        if(n<icut||have_fire==0){
+        if(n<icut||have_fire==NO_FIRE){
           rgb_colormap[4*n+0] = (float)smoke_color_int255[0] / 255.0;
           rgb_colormap[4*n+1] = (float)smoke_color_int255[1] / 255.0;
           rgb_colormap[4*n+2] = (float)smoke_color_int255[2] / 255.0;
