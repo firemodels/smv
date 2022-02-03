@@ -272,8 +272,9 @@ SVEXTERN int SVDECL(glui_defined, 0);
 SVEXTERN int SVDECL(update_times,0);
 SVEXTERN int SVDECL(show_geom_bndf, 0),SVDECL(glui_show_geom_bndf, 0);
 SVEXTERN int SVDECL(update_windrose, 0);
-SVEXTERN int SVDECL(update_use_lighting, 0), use_lighting_ini;
+SVEXTERN int SVDECL(update_use_lighting, 0), SVDECL(use_lighting, 1);
 SVEXTERN float SVDECL(timer_reshape, 0.0);
+SVEXTERN int SVDECL(update_device, 0);
 
 SVEXTERN int SVDECL(cancel_update_triangles, 0);
 SVEXTERN int SVDECL(updating_triangles, 0);
@@ -306,7 +307,6 @@ SVEXTERN int SVDECL(debug_360, 0), SVDECL(debug_360_skip_x,25), SVDECL(debug_360
 SVEXTERN char SVDECL(*ffmpeg_command_filename, NULL);
 SVEXTERN int SVDECL(output_ffmpeg_command, 0);
 SVEXTERN int SVDECL(margin360_size, 0);
-SVEXTERN int SVDECL(use_lighting, 1);
 
 SVEXTERN float SVDECL(update_rgb_test,0), SVDECL(rgb_test_delta,10), rgb_test_xyz[3];
 SVEXTERN int   rgb_test_rgb[3];

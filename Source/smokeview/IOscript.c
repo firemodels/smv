@@ -3135,6 +3135,7 @@ void ScriptRGBtest(scriptdata *scripti){
   rgb_test_rgb[2] = scripti->ival3;
   rgb_test_delta  = scripti->ival4;
   use_lighting = 0;
+  update_use_lighting = 1;
 }
 
 /* ------------------ ScriptSetViewpoint ------------------------ */

@@ -1966,8 +1966,14 @@ void UpdateShowScene(void){
     update_times = 0;
     UpdateTimes();
   }
+  if(update_device==1){
+    update_device = 0;
+    if(HaveSmokeSensor()==1){
+      use_lighting = 0;
+      update_use_lighting = 1;
+    }
+  }
   if(update_use_lighting==1){
-    use_lighting = 1-use_lighting_ini;
     ColorbarMenu(USE_LIGHTING);
     update_use_lighting = 0;
   }

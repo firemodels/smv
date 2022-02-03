@@ -8238,6 +8238,7 @@ int ReadSMV(bufferstreamdata *stream){
       devicei = deviceinfo + ndeviceinfo;
       ParseDevicekeyword(stream,devicei);
       CheckMemory;
+      update_device = 1;
       ndeviceinfo++;
       continue;
     }
@@ -12851,8 +12852,10 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "LIGHTING")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &use_lighting_ini);
-      update_use_lighting=1;
+      if(HaveSmokeSensor()==0){ // don't use lighting if there are devices of type smokesensor
+        sscanf(buffer, "%i", &use_lighting);
+        update_use_lighting = 1;
+      }
       continue;
     }
     if(Match(buffer, "LIGHTFACES")==1){
