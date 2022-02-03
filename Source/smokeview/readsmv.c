@@ -4770,7 +4770,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
   lenbuffer = len;
   {
     smoke3ddata *smoke3di;
-    int ii, i;
+    int i;
 
     smoke3di = smoke3dinfo+ismoke3d;
 
