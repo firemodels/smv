@@ -4853,8 +4853,15 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
       if(ReadLabels(&smoke3di->label, stream, NULL)==LABEL_ERR)return RETURN_TWO;
       nsmoke3dinfo--;
     }
+    if(extinct<0.0){
+      char *label;
+
+      label = smoke3di->label.shortlabel;
+      extinct = 0.0;
+      if(Match(label, "soot")==1||Match(label, "rho_C")==1||Match(label, "rho_C0.9H0.1")==1)extinct = 8700.0;
+    }
     smoke3di->extinct = extinct;
-    if(extinct>=0.0)update_smoke_alphas = 1;
+    update_smoke_alphas = 1;
   }
   return RETURN_CONTINUE;
 }
