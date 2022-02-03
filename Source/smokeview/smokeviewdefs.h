@@ -131,6 +131,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MUP    5
 #define MEPS   0.1
 
+#define NO_SMOKE -1
+#define NO_FIRE  -1
+
 #define GLUTPOSTREDISPLAY  if(use_graphics==1)glutPostRedisplay()
 #define GLUTSETCURSOR(val) if(use_graphics==1)glutSetCursor(val)
 
@@ -296,12 +299,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #ifndef UPDATE_SMOKEFIRE_COLORS
 #define UPDATE_SMOKEFIRE_COLORS 54
 #endif
-
-#define MAXSMOKETYPES 4
-#define SOOT          0
-#define HRRPUV        1
-#define TEMP          2
-#define CO2           3
 
 #define NELEV_ZONE 100
 

@@ -367,26 +367,21 @@ void GetFileSizes(void){
       file_size = GetFileSizeSMV(smoke3di->reg_file);
       compressed_file_size = GetFileSizeSMV(smoke3di->comp_file);
 
-      switch(smoke3di->type){
-      case SOOT:
-        soot  += file_size;
+      if(smoke3di->type==SOOT_index){
+        soot += file_size;
         soot2 += compressed_file_size;
-        break;
-      case HRRPUV:
-        hrrpuv  += file_size;
+      }
+      else if(smoke3di->type==HRRPUV_index){
+        hrrpuv += file_size;
         hrrpuv2 += compressed_file_size;
-        break;
-      case TEMP:
-        temp  += file_size;
+      }
+      else if(smoke3di->type==TEMP_index){
+        temp += file_size;
         temp2 += compressed_file_size;
-        break;
-      case CO2:
-        co2  += file_size;
+      }
+      else if(smoke3di->type==CO2_index){
+        co2 += file_size;
         co22 += compressed_file_size;
-        break;
-      default:
-        ASSERT(FFALSE);
-        break;
       }
     }
     printf("3d smoke file sizes:\n");
@@ -11131,7 +11126,7 @@ updatemenu=0;
         }
         for(i=0;i<nsmoke3dinfo;i++){
           smoke3di = smoke3dinfo + i;
-          if(smoke3di->type!=SOOT)continue;
+          if(smoke3di->type!=SOOT_index)continue;
           n_soot_menu++;
           strcpy(menulabel,"");
           if(smoke3di->loaded==1){
@@ -11148,7 +11143,7 @@ updatemenu=0;
         }
         for(i=0;i<nsmoke3dinfo;i++){
           smoke3di = smoke3dinfo + i;
-          if(smoke3di->type!=HRRPUV)continue;
+          if(smoke3di->type!=HRRPUV_index)continue;
           n_hrr_menu++;
           strcpy(menulabel,"");
           if(smoke3di->loaded==1){
@@ -11165,7 +11160,7 @@ updatemenu=0;
         }
         for(i = 0;i < nsmoke3dinfo;i++){
           smoke3di = smoke3dinfo + i;
-          if(smoke3di->type != TEMP)continue;
+          if(smoke3di->type != TEMP_index)continue;
           n_temp_menu++;
           strcpy(menulabel, "");
           if(smoke3di->loaded == 1){
@@ -11182,7 +11177,7 @@ updatemenu=0;
         }
         for(i = 0;i < nsmoke3dinfo;i++){
           smoke3di = smoke3dinfo + i;
-          if(smoke3di->type != CO2)continue;
+          if(smoke3di->type != CO2_index)continue;
           n_co2_menu++;
           strcpy(menulabel, "");
           if(smoke3di->loaded == 1){

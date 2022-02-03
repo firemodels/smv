@@ -786,7 +786,7 @@ extern "C" void Smoke3dCB(int var){
 
   case USE_FIRE_ALPHA:
     use_fire_alpha = 1-glui_use_fire_alpha;
-    if(have_fire!=0&&have_smoke==0){
+    if(have_smoke!=NO_FIRE&&have_smoke==NO_SMOKE){
       SPINNER_smoke3d_fire_halfdepth->enable();
       SPINNER_emission_factor->disable();
       CHECKBOX_use_opacity_multiplier->disable();
@@ -804,12 +804,12 @@ extern "C" void Smoke3dCB(int var){
     glutPostRedisplay();
     break;
   case USE_OPACITY_DEPTH:
-    if(have_fire!=0&&have_smoke==0){
+    if(have_smoke!=NO_FIRE&&have_smoke==NO_SMOKE){
       use_opacity_depth      = 1;
       use_opacity_multiplier = 0;
     }
     glui_use_fire_alpha = 1 - use_opacity_depth;
-    if(have_smoke!=0&&have_fire==0){
+    if(have_smoke!=NO_SMOKE&&have_fire==NO_FIRE){
         use_opacity_multiplier = 0;
     }
     else{
@@ -820,7 +820,7 @@ extern "C" void Smoke3dCB(int var){
     Smoke3dCB(USE_FIRE_ALPHA);
     break;
   case USE_OPACITY_MULTIPLIER:
-    if(have_fire!=0&&have_smoke==0){
+    if(have_smoke!=NO_FIRE&&have_smoke==NO_SMOKE){
       use_opacity_depth      = 1;
       use_opacity_multiplier = 0;
     }
@@ -1232,7 +1232,7 @@ extern "C" void Smoke3dCB(int var){
         }
       }
     }
-    if(have_fire==HRRPUV&&smoke_render_option==RENDER_SLICE){
+    if(have_fire==HRRPUV_index&&smoke_render_option==RENDER_SLICE){
 #ifdef pp_GPU
       if(usegpu==1){
         RADIO_skipframes->set_int_val(0);
