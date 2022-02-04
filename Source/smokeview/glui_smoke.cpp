@@ -789,7 +789,7 @@ extern "C" void Smoke3dCB(int var){
 
   case USE_FIRE_ALPHA:
     use_fire_alpha = 1-glui_use_fire_alpha;
-    if(have_smoke!=NO_FIRE&&have_smoke==NO_SMOKE){
+    if(have_fire!=NO_FIRE&&have_smoke==NO_SMOKE){
       SPINNER_smoke3d_fire_halfdepth->enable();
       SPINNER_emission_factor->disable();
       CHECKBOX_use_opacity_multiplier->disable();
@@ -807,7 +807,7 @@ extern "C" void Smoke3dCB(int var){
     glutPostRedisplay();
     break;
   case USE_OPACITY_DEPTH:
-    if(have_smoke!=NO_FIRE&&have_smoke==NO_SMOKE){
+    if(have_fire!=NO_FIRE&&have_smoke==NO_SMOKE){
       use_opacity_depth      = 1;
       use_opacity_multiplier = 0;
     }
@@ -823,7 +823,7 @@ extern "C" void Smoke3dCB(int var){
     Smoke3dCB(USE_FIRE_ALPHA);
     break;
   case USE_OPACITY_MULTIPLIER:
-    if(have_smoke!=NO_FIRE&&have_smoke==NO_SMOKE){
+    if(have_fire!=NO_FIRE&&have_smoke==NO_SMOKE){
       use_opacity_depth      = 1;
       use_opacity_multiplier = 0;
     }
