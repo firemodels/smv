@@ -2561,6 +2561,7 @@ int CompareSmoketypes( const void *arg1, const void *arg2 ){
   smoke3dtypedata *smoketypei, *smoketypej;
   smoke3ddata *smoke3di, *smoke3dj;
   char *labeli, *labelj;
+  float exti, extj;;
 
   smoketypei = (smoke3dtypedata *)arg1;
   smoketypej = (smoke3dtypedata *)arg2;
@@ -2568,10 +2569,12 @@ int CompareSmoketypes( const void *arg1, const void *arg2 ){
   smoke3dj = smoketypej->smoke3d;
   labeli = smoke3di->label.shortlabel;
   labelj = smoke3dj->label.shortlabel;
+  exti = smoke3di->extinct;
+  extj = smoke3di->extinct;
   if(Match(labeli,labelj)==1)return 0;
 
-  if(Match(labeli, "soot")==1||Match(labeli, "rho_C")==1||Match(labeli, "rho_C0.9H0.1")==1)return -1;
-  if(Match(labelj, "soot")==1||Match(labelj, "rho_C")==1||Match(labelj, "rho_C0.9H0.1")==1)return  1;
+  if(exti>0.0)return -1;
+  if(extj>0.0)return 1;
 
   if(Match(labeli, "hrrpuv")==1)return -1;
   if(Match(labelj, "hrrpuv")==1)return  1;
@@ -2652,10 +2655,12 @@ void UpdateSmoke3DTypes(void){
   for(i = 0; i<nsmoke3dtypes; i++){
     smoke3ddata *smoke3di;
     char *label;
+    float ext;
 
     smoke3di = smoke3dtypes[i].smoke3d;
     label = smoke3di->label.shortlabel;
-    if(Match(label, "soot")==1||Match(label, "rho_C")==1||Match(label, "rho_C0.9H0.1")==1){
+    ext = smoke3di->extinct;
+    if(ext>0.0){
       SOOT_index = i;
       glui_smoke3d_extinct = smoke3dtypes[i].extinction;
       continue;

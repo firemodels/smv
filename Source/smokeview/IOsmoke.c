@@ -4040,7 +4040,6 @@ void SmokeWrapup(void){
 
 int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *errorcode_arg){
   meshdata *mesh_smoke3d;
-  char smoketype_local[32];
   int i,j,ii;
   int fortran_skip = 0;
   int error_local;
@@ -4049,23 +4048,16 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
 
   mesh_smoke3d = meshinfo+smoke3di->blocknumber;
   if(smoke3di->type==HRRPUV_index){
-    strcpy(smoketype_local, "hrrpuv");
     mesh_smoke3d->smoke3d_hrrpuv = smoke3di;
   }
   else if(smoke3di->type==TEMP_index){
-    strcpy(smoketype_local, "temperature");
     mesh_smoke3d->smoke3d_temp = smoke3di;
   }
   else if(smoke3di->type==CO2_index){
-    strcpy(smoketype_local, "CO2");
     mesh_smoke3d->smoke3d_co2 = smoke3di;
   }
   else if(smoke3di->type==SOOT_index){
-    strcpy(smoketype_local, "soot");
     mesh_smoke3d->smoke3d_soot = smoke3di;
-  }
-  else{
-    strcpy(smoketype_local, "unknown");
   }
 
   if(smoke3di->filetype==FORTRAN_GENERATED&&smoke3di->is_zlib==0)fortran_skip = 4;
@@ -4145,7 +4137,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
     UpdateSmoke3dMenuLabels();
   }
 
-  if(iframe_arg==ALL_SMOKE_FRAMES)PRINTF("Loading %s(%s) ", smoke3di->file, smoketype_local);
+  if(iframe_arg==ALL_SMOKE_FRAMES)PRINTF("Loading %s(%s) ", smoke3di->file, smoke3di->label.shortlabel);
   CheckMemory;
   smoke3di->request_load = 1;
   smoke3di->ntimes_old = smoke3di->ntimes;
