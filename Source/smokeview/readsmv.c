@@ -2570,8 +2570,11 @@ int CompareSmoketypes( const void *arg1, const void *arg2 ){
   labeli = smoke3di->label.shortlabel;
   labelj = smoke3dj->label.shortlabel;
   exti = smoke3di->extinct;
-  extj = smoke3di->extinct;
+  extj = smoke3dj->extinct;
+
   if(Match(labeli,labelj)==1)return 0;
+
+  if(exti>0.0&&extj>0.0)return strcmp(labeli, labelj);
 
   if(exti>0.0)return -1;
   if(extj>0.0)return 1;
@@ -2579,11 +2582,8 @@ int CompareSmoketypes( const void *arg1, const void *arg2 ){
   if(Match(labeli, "hrrpuv")==1)return -1;
   if(Match(labelj, "hrrpuv")==1)return  1;
 
-  if(Match(labeli, "temp")==1)return -1;
-  if(Match(labelj, "temp")==1)return  1;
-
-  if(Match(labeli, "rho_CO2")==1||Match(labeli, "Y_CO2")==1)return -1;
-  if(Match(labelj, "rho_CO2")==1||Match(labelj, "Y_CO2")==1)return  1;
+  if(Match(labeli, "temp")==1)return  -1;
+  if(Match(labelj, "temp")==1)return   1;
 
   return strcmp(labeli, labelj);
 }
