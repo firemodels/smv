@@ -2617,7 +2617,8 @@ void UpdateSmoke3DTypes(void){
     if(doit==1){
       typen = smoke3dtypes+nsmoke3dtypes;
       typen->smoke3d = smoke3di;
-      typen->label = smoke3di->label.shortlabel;
+      typen->shortlabel = smoke3di->label.shortlabel;
+      typen->longlabel = smoke3di->label.longlabel;
       typen->extinction = smoke3di->extinct;
       nsmoke3dtypes++;
     }

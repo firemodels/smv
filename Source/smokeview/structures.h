@@ -1421,8 +1421,9 @@ typedef struct _smoke3ddata {
   /* --------------------------  smoke3dttypedata ------------------------------------ */
 
 typedef struct smoke3dtypedata {
-  char *label;
+  char *shortlabel, *longlabel;
   int type;  // color based or opacity based
+  int menu_id;
   smoke3ddata *smoke3d;
   float extinction, valmin, valmax;
 } smoke3dtypedata;

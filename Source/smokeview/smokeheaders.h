@@ -588,6 +588,7 @@ EXTERNCPP void InitSphere(int nlat, int nlong);
 EXTERNCPP void InitCircle(unsigned int npoints, circdata *circinfo);
 EXTERNCPP int  HaveTerrainSlice(void);
 EXTERNCPP int HaveSmokeSensor(void);
+EXTERNCPP int GetSmoke3DType(char *label);
 EXTERNCPP float GetZCellValOffset(meshdata *meshi,float xval, float yval, int *loc);
 EXTERNCPP void UpdateCameraYpos(cameradata *camera_data, int option);
 EXTERNCPP cameradata *GetCamera(char *name);
