@@ -11144,11 +11144,7 @@ updatemenu=0;
         GLUTADDSUBMENU(_("Mesh"), unloadsmoke3dsinglemenu);
       }
     {
-      smoke3ddata *smoke3di;
-
       if(nsmoke3dinfo>0){
-        char menulabel[1024];
-
         if(nmeshes==1){
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
         }
@@ -11159,6 +11155,9 @@ updatemenu=0;
             CREATEMENU(smoke3dtypes[ii].menu_id, LoadSmoke3DMenu);
           }
           for(i = 0; i<nsmoke3dinfo; i++){
+            char menulabel[256];
+	    smoke3ddata *smoke3di;
+
             smoke3di = smoke3dinfo+i;
             if(smoke3di->type!=ii)continue;
             strcpy(menulabel, "");
@@ -11170,9 +11169,6 @@ updatemenu=0;
           }
         }
         if(nmeshes>1){
-          int useitem;
-          smoke3ddata *smoke3dj;
-
           CREATEMENU(loadsmoke3dsinglemenu, LoadSmoke3DMenu);
           for(ii = 0; ii<nsmoke3dtypes; ii++){
             char menulabel[256];
@@ -11201,9 +11197,9 @@ updatemenu=0;
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
           // multi mesh smoke menus items
           for(ii = 0; ii<nsmoke3dtypes; ii++){
-            char menulabel[256];
             int jj;
             int ntotal, nloaded;
+	    char menulabel[256];
 
             ntotal=0;
             nloaded=0;
