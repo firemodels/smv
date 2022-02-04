@@ -1391,7 +1391,7 @@ typedef struct _smoke3ddata {
   char menulabel[128];
   float *times;
   int *use_smokeframe;
-  float extinct;
+  float extinct, valmin, valmax;
 #define ALPHA_X  0
 #define ALPHA_Y  1
 #define ALPHA_Z  2
@@ -1422,8 +1422,9 @@ typedef struct _smoke3ddata {
 
 typedef struct smoke3dtypedata {
   char *label;
+  int type;  // color based or opacity based
   smoke3ddata *smoke3d;
-  float extinction;
+  float extinction, valmin, valmax;
 } smoke3dtypedata;
 
 /* --------------------------  patchdata ------------------------------------ */
