@@ -4047,17 +4047,19 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
   int ncomp_smoke_total_skipped_local;
 
   mesh_smoke3d = meshinfo+smoke3di->blocknumber;
-  if(smoke3di->type==HRRPUV_index){
-    mesh_smoke3d->smoke3d_hrrpuv = smoke3di;
-  }
-  else if(smoke3di->type==TEMP_index){
-    mesh_smoke3d->smoke3d_temp = smoke3di;
-  }
-  else if(smoke3di->type==CO2_index){
-    mesh_smoke3d->smoke3d_co2 = smoke3di;
-  }
-  else if(smoke3di->type==SOOT_index){
+  if(smoke3di->extinct>0.0){
     mesh_smoke3d->smoke3d_soot = smoke3di;
+  }
+  else{
+    if(smoke3di->type==HRRPUV_index){
+      mesh_smoke3d->smoke3d_hrrpuv = smoke3di;
+    }
+    else if(smoke3di->type==TEMP_index){
+      mesh_smoke3d->smoke3d_temp = smoke3di;
+    }
+    else if(smoke3di->type==CO2_index){
+      mesh_smoke3d->smoke3d_co2 = smoke3di;
+    }
   }
 
   if(smoke3di->filetype==FORTRAN_GENERATED&&smoke3di->is_zlib==0)fortran_skip = 4;
@@ -4369,6 +4371,13 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
       PRINTF(" - %.0f kB/%.1f s\n", (float)file_size_local/1000., total_time_local);
     }
     PrintMemoryInfo;
+  }
+  if(smoke3di->extinct>0.0){
+    SOOT_index = GetSmoke3DType(smoke3di->label.shortlabel);
+    update_smoke_alphas = 1;
+    glui_smoke3d_extinct = smoke3di->extinct;
+#define SMOKE_EXTINCT 95
+    Smoke3dCB(SMOKE_EXTINCT);
   }
   *errorcode_arg = 0;
   return file_size_local;
@@ -4842,8 +4851,7 @@ void UpdateSmoke3dMenuLabels(void){
     case UNKNOWN:
       // compression type not determined yet
       break;
-    case RLE:
-      STRCAT(smoke3di->menulabel," (RLE) ");
+    case RLE: // 3d smoke files are rle compressed by default
       break;
     case ZLIB:
       STRCAT(smoke3di->menulabel," (ZLIB) ");

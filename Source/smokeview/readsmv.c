@@ -2567,23 +2567,23 @@ int CompareSmoketypes( const void *arg1, const void *arg2 ){
   smoketypej = (smoke3dtypedata *)arg2;
   smoke3di = smoketypei->smoke3d;
   smoke3dj = smoketypej->smoke3d;
-  labeli = smoke3di->label.shortlabel;
-  labelj = smoke3dj->label.shortlabel;
+  labeli = smoke3di->label.longlabel;
+  labelj = smoke3dj->label.longlabel;
   exti = smoke3di->extinct;
-  extj = smoke3di->extinct;
+  extj = smoke3dj->extinct;
+
   if(Match(labeli,labelj)==1)return 0;
+
+  if(exti>0.0&&extj>0.0)return strcmp(labeli, labelj);
 
   if(exti>0.0)return -1;
   if(extj>0.0)return 1;
 
-  if(Match(labeli, "hrrpuv")==1)return -1;
-  if(Match(labelj, "hrrpuv")==1)return  1;
+  if(Match(labeli, "HRRPUV")==1)return -1;
+  if(Match(labelj, "HRRPUV")==1)return  1;
 
-  if(Match(labeli, "temp")==1)return -1;
-  if(Match(labelj, "temp")==1)return  1;
-
-  if(Match(labeli, "rho_CO2")==1||Match(labeli, "Y_CO2")==1)return -1;
-  if(Match(labelj, "rho_CO2")==1||Match(labelj, "Y_CO2")==1)return  1;
+  if(Match(labeli, "TEMPERATURE")==1)return  -1;
+  if(Match(labelj, "TEMPERATURE")==1)return   1;
 
   return strcmp(labeli, labelj);
 }
@@ -2617,7 +2617,8 @@ void UpdateSmoke3DTypes(void){
     if(doit==1){
       typen = smoke3dtypes+nsmoke3dtypes;
       typen->smoke3d = smoke3di;
-      typen->label = smoke3di->label.shortlabel;
+      typen->shortlabel = smoke3di->label.shortlabel;
+      typen->longlabel = smoke3di->label.longlabel;
       typen->extinction = smoke3di->extinct;
       nsmoke3dtypes++;
     }
@@ -4866,6 +4867,18 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
       if(Match(label, "soot")==1||Match(label, "rho_C")==1||Match(label, "rho_C0.9H0.1")==1)extinct = 8700.0;
     }
     smoke3di->extinct = extinct;
+
+    strcpy(smoke3di->cextinct, "");
+    if(extinct>0.0){
+      char cextinct[32], *per;
+
+      sprintf(cextinct, "%f", extinct);
+      per = strchr(cextinct, '.');
+      if(per!=NULL)per[0] = 0;
+      strcpy(smoke3di->cextinct, "(");
+      strcat(smoke3di->cextinct, cextinct);
+      strcat(smoke3di->cextinct, ")");
+    }
     update_smoke_alphas = 1;
   }
   return RETURN_CONTINUE;

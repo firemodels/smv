@@ -4614,6 +4614,21 @@ void LoadSmoke3DMenu(int value){
 
       smoke3di = smoke3dinfo + value;
       smoke3di->finalize = 1;
+      if(smoke3di->extinct>0.0){ // only load one smoke type at a time
+        int j, add_blank=0;
+
+        for(j = 0; j<nsmoke3dinfo; j++){
+          smoke3ddata *smoke3dj;
+
+          smoke3dj = smoke3dinfo+j;
+          if(smoke3dj->loaded==1&smoke3dj->extinct>0.0&&smoke3di->type!=smoke3dj->type){
+            PRINTF("Unloading %s(%s)\n", smoke3dj->file, smoke3dj->label.shortlabel);
+            ReadSmoke3D(ALL_SMOKE_FRAMES, j, UNLOAD, FIRST_TIME, &errorcode);
+            add_blank = 1;
+          }
+        }
+        if(add_blank==1)printf("\n");
+      }
       ReadSmoke3D(ALL_SMOKE_FRAMES, value, LOAD, FIRST_TIME, &errorcode);
     }
   }
@@ -4631,16 +4646,31 @@ void LoadSmoke3DMenu(int value){
     }
 
   else if(value<=-100){
-    smoke3ddata *smoke3dj;
+    smoke3ddata *smoke3di;
 
     value = -(value + 100);
-    smoke3dj = smoke3dinfo + value;
+    smoke3di = smoke3dtypes[value].smoke3d;
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"LOAD3DSMOKE\n");
-      fprintf(scriptoutstream," %s\n",smoke3dj->label.longlabel);
+      fprintf(scriptoutstream," %s\n",smoke3di->label.longlabel);
     }
     if(scriptoutstream==NULL||script_defer_loading==0){
-      load_size=LoadSmoke3D(smoke3dj->type, &file_count);
+      if(smoke3di->extinct>0.0){ // only load one smoke type at a time
+        int j, add_blank=0;
+
+        for(j = 0; j<nsmoke3dinfo; j++){
+          smoke3ddata *smoke3dj;
+
+          smoke3dj = smoke3dinfo+j;
+          if(smoke3dj->loaded==1&smoke3dj->extinct>0.0&&smoke3di->type!=smoke3dj->type){
+            PRINTF("Unloading %s(%s)\n", smoke3dj->file, smoke3dj->label.shortlabel);
+            ReadSmoke3D(ALL_SMOKE_FRAMES, j, UNLOAD, FIRST_TIME, &errorcode);
+            add_blank = 1;
+          }
+        }
+        if(add_blank==1)printf("\n");
+      }
+      load_size=LoadSmoke3D(smoke3di->type, &file_count);
     }
   }
   STOP_TIMER(load_time);
@@ -6754,8 +6784,7 @@ static int luascriptmenu=0;
 static int luascriptlistmenu=0;
 #endif
 static int loadplot3dmenu=0, unloadvslicemenu=0, unloadslicemenu=0;
-static int loadsmoke3dmenu=0,loadsmoke3dsootmenu=0,loadsmoke3dhrrmenu=0;
-static int loadsmoke3dtempmenu = 0, loadsmoke3dco2menu = 0;
+static int loadsmoke3dmenu = 0;
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
 static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
 static int unloadevacmenu=0, unloadpartmenu=0, loadslicemenu=0, loadmultislicemenu=0;
@@ -11100,132 +11129,96 @@ updatemenu=0;
           glutAddMenuEntry(smokemenulabel,i);
         }
         CREATEMENU(unloadsmoke3dmenu,UnLoadSmoke3DMenu);
-        if(nsootloaded>0)glutAddMenuEntry(_("SOOT DENSITY"), MENU_UNLOADSMOKE3D_UNLOADALLSOOT);
-        if(nhrrpuvloaded>0)glutAddMenuEntry(_("HRRPUV"), MENU_UNLOADSMOKE3D_UNLOADALLFIRE);
-        if(ntemploaded>0)glutAddMenuEntry(_("TEMPERATURE"), MENU_UNLOADSMOKE3D_UNLOADALLTEMP);
-        if(nco2loaded>0)glutAddMenuEntry(_("CARBON DIOXIDE DENSITY"), MENU_UNLOADSMOKE3D_UNLOADALLCO2);
-        if(nsootloaded+nhrrpuvloaded+ntemploaded+nco2loaded>0)glutAddMenuEntry("-", MENU_DUMMY);
+        for(i = 0; i<nsmoke3dtypes; i++){
+          int j, doit;
+
+          doit = 0;
+          for(j = 0; j<nsmoke3dinfo; j++){
+            if(smoke3dinfo[j].loaded==1&&smoke3dinfo[j].type==i){
+              doit = 1;
+              break;
+            }
+          }
+          if(doit==1)glutAddMenuEntry(smoke3dtypes[i].longlabel, -(i+1));
+        }
         GLUTADDSUBMENU(_("Mesh"), unloadsmoke3dsinglemenu);
       }
     {
-      smoke3ddata *smoke3di;
-      int n_soot_menu=0, n_hrr_menu=0;
-      int n_temp_menu = 0, n_co2_menu = 0;
-
       if(nsmoke3dinfo>0){
-        char menulabel[1024];
-
         if(nmeshes==1){
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
         }
 
-        // 3d smoke soot menu
-
-        if(nmeshes>1){
-          CREATEMENU(loadsmoke3dsootmenu,LoadSmoke3DMenu);
-        }
-        for(i=0;i<nsmoke3dinfo;i++){
-          smoke3di = smoke3dinfo + i;
-          if(smoke3di->type!=SOOT_index)continue;
-          n_soot_menu++;
-          strcpy(menulabel,"");
-          if(smoke3di->loaded==1){
-            strcat(menulabel,"*");
+        int ii;
+        for(ii = 0; ii<nsmoke3dtypes; ii++){
+          if(nmeshes>1){
+            CREATEMENU(smoke3dtypes[ii].menu_id, LoadSmoke3DMenu);
           }
-          strcat(menulabel,smoke3di->menulabel);
-          glutAddMenuEntry(menulabel,i);
-        }
+          for(i = 0; i<nsmoke3dinfo; i++){
+            char menulabel[256];
+	        smoke3ddata *smoke3di;
 
-        // 3d smoke hrrpuv menu
-
-        if(nmeshes>1){
-          CREATEMENU(loadsmoke3dhrrmenu,LoadSmoke3DMenu);
-        }
-        for(i=0;i<nsmoke3dinfo;i++){
-          smoke3di = smoke3dinfo + i;
-          if(smoke3di->type!=HRRPUV_index)continue;
-          n_hrr_menu++;
-          strcpy(menulabel,"");
-          if(smoke3di->loaded==1){
-            strcat(menulabel,"*");
+            smoke3di = smoke3dinfo+i;
+            if(smoke3di->type!=ii)continue;
+            strcpy(menulabel, "");
+            if(smoke3di->loaded==1){
+              strcat(menulabel, "*");
+            }
+            strcat(menulabel, smoke3di->menulabel);
+            glutAddMenuEntry(menulabel, i);
           }
-          strcat(menulabel,smoke3di->menulabel);
-          glutAddMenuEntry(menulabel,i);
-        }
-
-        // 3d smoke temperature menu
-
-        if(nmeshes > 1){
-          CREATEMENU(loadsmoke3dtempmenu, LoadSmoke3DMenu);
-        }
-        for(i = 0;i < nsmoke3dinfo;i++){
-          smoke3di = smoke3dinfo + i;
-          if(smoke3di->type != TEMP_index)continue;
-          n_temp_menu++;
-          strcpy(menulabel, "");
-          if(smoke3di->loaded == 1){
-            strcat(menulabel, "*");
-          }
-          strcat(menulabel, smoke3di->menulabel);
-          glutAddMenuEntry(menulabel, i);
-        }
-
-        // 3d smoke co2 menu
-
-        if(nmeshes > 1){
-          CREATEMENU(loadsmoke3dco2menu, LoadSmoke3DMenu);
-        }
-        for(i = 0;i < nsmoke3dinfo;i++){
-          smoke3di = smoke3dinfo + i;
-          if(smoke3di->type != CO2_index)continue;
-          n_co2_menu++;
-          strcpy(menulabel, "");
-          if(smoke3di->loaded == 1){
-            strcat(menulabel, "*");
-          }
-          strcat(menulabel, smoke3di->menulabel);
-          glutAddMenuEntry(menulabel, i);
         }
         if(nmeshes>1){
-          int useitem;
-          smoke3ddata *smoke3dj;
+          CREATEMENU(loadsmoke3dsinglemenu, LoadSmoke3DMenu);
+          for(ii = 0; ii<nsmoke3dtypes; ii++){
+            char menulabel[256];
+            int jj;
+            int ntotal, nloaded;
 
-          if(n_soot_menu>0||n_hrr_menu>0){
-            CREATEMENU(loadsmoke3dsinglemenu,LoadSmoke3DMenu);
-            if(n_soot_menu>0)GLUTADDSUBMENU(_("SOOT DENSITY"),loadsmoke3dsootmenu);
-            if(n_hrr_menu>0)GLUTADDSUBMENU(_("HRRPUV"),loadsmoke3dhrrmenu);
-            if(n_temp_menu > 0)GLUTADDSUBMENU(_("TEMPERATURE"), loadsmoke3dtempmenu);
-            if(n_co2_menu > 0)GLUTADDSUBMENU(_("CO2"), loadsmoke3dco2menu);
+            ntotal=0;
+            nloaded=0;
+            for(jj=0;jj<nsmoke3dinfo;jj++){
+              if(smoke3dinfo[jj].type==ii){
+                if(smoke3dinfo[jj].loaded==1)nloaded++;
+                ntotal++;
+              }
+            }
+            strcpy(menulabel,"");
+            if(nloaded==ntotal){
+              strcat(menulabel, "*");
+            }
+            else if(nloaded>0&&nloaded<ntotal){
+              strcat(menulabel, "#");
+            }
+            strcat(menulabel, smoke3dtypes[ii].longlabel);
+            GLUTADDSUBMENU(menulabel, smoke3dtypes[ii].menu_id);
           }
 
           CREATEMENU(loadsmoke3dmenu,LoadSmoke3DMenu);
           // multi mesh smoke menus items
-          for(i=0;i<nsmoke3dinfo;i++){
-            int j;
+          for(ii = 0; ii<nsmoke3dtypes; ii++){
+            int jj;
+            int ntotal, nloaded;
+	    char menulabel[256];
 
-            useitem=i;
-            smoke3di=smoke3dinfo + i;
-            for(j=0;j<i;j++){
-              smoke3dj = smoke3dinfo + j;
-              if(strcmp(smoke3di->label.longlabel,smoke3dj->label.longlabel)==0){
-                useitem=-1;
-                break;
+            ntotal=0;
+            nloaded=0;
+            for(jj=0;jj<nsmoke3dinfo;jj++){
+              if(smoke3dinfo[jj].type==ii){
+                if(smoke3dinfo[jj].loaded==1)nloaded++;
+                ntotal++;
               }
             }
-            if(useitem!=-1){
-              strcpy(menulabel, "");
-              if(nsootloaded>0 && (
-                strcmp(smoke3di->label.longlabel, "SOOT MASS FRACTION") == 0 ||
-                strcmp(smoke3di->label.longlabel, "SOOT DENSITY") == 0)
-                ){
-                strcat(menulabel, "*");
-              }
-              if(nhrrpuvloaded>0&&strcmp(smoke3di->label.longlabel, "HRRPUV")==0)strcat(menulabel, "*");
-              if(ntemploaded>0 && strcmp(smoke3di->label.longlabel, "TEMPERATURE") == 0)strcat(menulabel, "*");
-              if(nco2loaded>0 && strcmp(smoke3di->label.longlabel, "CARBON DIOXIDE DENSITY") == 0)strcat(menulabel, "*");
-              strcat(menulabel,smoke3di->label.longlabel);
-              glutAddMenuEntry(menulabel,-useitem-100);
+            strcpy(menulabel,"");
+            if(nloaded==ntotal){
+              strcat(menulabel, "*");
             }
+            else if(nloaded>0&&nloaded<ntotal){
+              strcat(menulabel, "#");
+            }
+            strcat(menulabel, smoke3dtypes[ii].longlabel);
+            strcat(menulabel, smoke3dtypes[ii].smoke3d->cextinct);
+            glutAddMenuEntry(menulabel,-ii-100);
           }
         }
 
@@ -11236,7 +11229,7 @@ updatemenu=0;
         else{
           glutAddMenuEntry(_("Show 3D smoke file size"), MENU_SMOKE_FILE_SIZES);
         }
-        if(nmeshes>1&&(n_soot_menu>0||n_hrr_menu>0)){
+        if(nmeshes>1){
           GLUTADDSUBMENU(_("Mesh"), loadsmoke3dsinglemenu);
         }
         glutAddMenuEntry(_("Settings..."), MENU_SMOKE_SETTINGS);
