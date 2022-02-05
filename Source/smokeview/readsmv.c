@@ -2593,6 +2593,7 @@ int CompareSmoketypes( const void *arg1, const void *arg2 ){
 void UpdateSmoke3DTypes(void){
   int i;
 
+  if(nsmoke3dinfo==0)return;
   NewMemory((void **)&smoke3dtypes, nsmoke3dinfo*sizeof(smoke3dtypedata));
   for(i = 0; i<nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
