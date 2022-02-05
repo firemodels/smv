@@ -4649,7 +4649,7 @@ void LoadSmoke3DMenu(int value){
     smoke3ddata *smoke3di;
 
     value = -(value + 100);
-    smoke3di = smoke3dinfo + value;
+    smoke3di = smoke3dtypes[value].smoke3d;
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"LOAD3DSMOKE\n");
       fprintf(scriptoutstream," %s\n",smoke3di->label.longlabel);
@@ -11156,7 +11156,7 @@ updatemenu=0;
           }
           for(i = 0; i<nsmoke3dinfo; i++){
             char menulabel[256];
-	    smoke3ddata *smoke3di;
+	        smoke3ddata *smoke3di;
 
             smoke3di = smoke3dinfo+i;
             if(smoke3di->type!=ii)continue;
