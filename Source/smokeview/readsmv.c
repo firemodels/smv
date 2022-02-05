@@ -2579,11 +2579,11 @@ int CompareSmoketypes( const void *arg1, const void *arg2 ){
   if(exti>0.0)return -1;
   if(extj>0.0)return 1;
 
-  if(Match(labeli, "hrrpuv")==1)return -1;
-  if(Match(labelj, "hrrpuv")==1)return  1;
+  if(Match(labeli, "HRRPUV")==1)return -1;
+  if(Match(labelj, "HRRPUV")==1)return  1;
 
-  if(Match(labeli, "temp")==1)return  -1;
-  if(Match(labelj, "temp")==1)return   1;
+  if(Match(labeli, "TEMPERATURE")==1)return  -1;
+  if(Match(labelj, "TEMPERATURE")==1)return   1;
 
   return strcmp(labeli, labelj);
 }
@@ -4867,6 +4867,18 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
       if(Match(label, "soot")==1||Match(label, "rho_C")==1||Match(label, "rho_C0.9H0.1")==1)extinct = 8700.0;
     }
     smoke3di->extinct = extinct;
+
+    strcpy(smoke3di->cextinct, "");
+    if(extinct>0.0){
+      char cextinct[32], *per;
+
+      sprintf(cextinct, "%f", extinct);
+      per = strchr(cextinct, '.');
+      if(per!=NULL)per[0] = 0;
+      strcpy(smoke3di->cextinct, "(");
+      strcat(smoke3di->cextinct, cextinct);
+      strcat(smoke3di->cextinct, ")");
+    }
     update_smoke_alphas = 1;
   }
   return RETURN_CONTINUE;

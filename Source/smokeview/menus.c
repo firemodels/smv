@@ -11217,6 +11217,7 @@ updatemenu=0;
               strcat(menulabel, "#");
             }
             strcat(menulabel, smoke3dtypes[ii].longlabel);
+            strcat(menulabel, smoke3dtypes[ii].smoke3d->cextinct);
             glutAddMenuEntry(menulabel,-ii-100);
           }
         }

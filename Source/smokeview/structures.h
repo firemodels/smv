@@ -1392,6 +1392,7 @@ typedef struct _smoke3ddata {
   float *times;
   int *use_smokeframe;
   float extinct, valmin, valmax;
+  char cextinct[32];
 #define ALPHA_X  0
 #define ALPHA_Y  1
 #define ALPHA_Z  2
