@@ -2567,8 +2567,8 @@ int CompareSmoketypes( const void *arg1, const void *arg2 ){
   smoketypej = (smoke3dtypedata *)arg2;
   smoke3di = smoketypei->smoke3d;
   smoke3dj = smoketypej->smoke3d;
-  labeli = smoke3di->label.shortlabel;
-  labelj = smoke3dj->label.shortlabel;
+  labeli = smoke3di->label.longlabel;
+  labelj = smoke3dj->label.longlabel;
   exti = smoke3di->extinct;
   extj = smoke3dj->extinct;
 
