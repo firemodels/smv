@@ -44,8 +44,7 @@ SVEXTERN int SVDECL(terrain_debug, 0);
 SVEXTERN int nsmoke3dtypes, smoke3d_other;
 SVEXTERN smoke3dtypedata SVDECL(*smoke3dtypes, NULL);
 
-SVEXTERN int SOOT_index, HRRPUV_index, TEMP_index, CO2_index, OTHER_index;
-SVEXTERN int nother_types;
+SVEXTERN int SOOT_index, HRRPUV_index, TEMP_index, CO2_index;
 
 SVEXTERN float glui_smoke3d_extinct;
 SVEXTERN int SVDECL(update_smoke_alphas, 0);

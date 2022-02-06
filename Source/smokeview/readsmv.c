@@ -2651,8 +2651,6 @@ void UpdateSmoke3DTypes(void){
   HRRPUV_index = -1;
   TEMP_index   = -1;
   CO2_index    = -1;
-  OTHER_index  = -1;
-  nother_types      =  0;
 
   for(i = 0; i<nsmoke3dtypes; i++){
     smoke3ddata *smoke3di;
@@ -2668,7 +2666,6 @@ void UpdateSmoke3DTypes(void){
       continue;
     }
     if(Match(label, "hrrpuv")==1){
-
       HRRPUV_index = i;
       continue;
     }
@@ -2680,8 +2677,6 @@ void UpdateSmoke3DTypes(void){
       CO2_index = i;
       continue;
     }
-    OTHER_index = i;
-    nother_types = nsmoke3dtypes - i;
   }
 }
 

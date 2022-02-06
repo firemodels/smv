@@ -117,7 +117,6 @@ GLUI_Checkbox *CHECKBOX_show_light_position_direction = NULL;
 GLUI_Checkbox *CHECKBOX_edit_colormap=NULL;
 GLUI_Checkbox *CHECKBOX_plane_normal=NULL;
 
-GLUI_Panel *PANEL_opacity = NULL;
 GLUI_Panel *PANEL_colormap3 = NULL;
 GLUI_Panel *PANEL_fire_opacity = NULL;
 GLUI_Panel *PANEL_smoke_opacity = NULL;
@@ -141,6 +140,7 @@ GLUI_Panel *PANEL_smoke_rgb = NULL;
 GLUI_Panel *PANEL_fire_rgb = NULL;
 GLUI_Panel *PANEL_smokefire_rgb = NULL;
 
+GLUI_Rollout *ROLLOUT_opacity = NULL;
 GLUI_Rollout *ROLLOUT_light_color = NULL;
 GLUI_Rollout *ROLLOUT_scatter = NULL;
 GLUI_Rollout *ROLLOUT_light_position = NULL;
@@ -177,8 +177,9 @@ GLUI_StaticText *STATIC_timelimit_max = NULL;
 procdata smokeprocinfo[3], volsmokeprocinfo[7], colorprocinfo[3], sublightprocinfo[3];
 int nsmokeprocinfo = 0, nvolsmokeprocinfo=0, ncolorprocinfo = 0, nsublightprocinfo=0;
 
-#define FIRECOLOR_ROLLOUT  0
-#define CO2COLOR_ROLLOUT   1
+#define FIRECOLOR_ROLLOUT   0
+#define FIREOPACITY_ROLLOUT 1
+#define CO2COLOR_ROLLOUT    2
 
 #define VOLSMOKE_DISPLAY           0
 #define VOLSMOKE_MOVEMENT          1
@@ -393,12 +394,11 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     use_fire_rgb       = 0;
     use_fire_colormap  = 1;
   }
-  ROLLOUT_firecolor = glui_3dsmoke->add_rollout_to_panel(PANEL_overall, _("smoke/fire"),false, FIRECOLOR_ROLLOUT, ColorRolloutCB);
+  ROLLOUT_firecolor = glui_3dsmoke->add_rollout_to_panel(PANEL_overall, _("smoke/fire color"),false, FIRECOLOR_ROLLOUT, ColorRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_firecolor, glui_3dsmoke);
   ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_firecolor, FIRECOLOR_ROLLOUT, glui_3dsmoke);
 
-  PANEL_color = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firecolor, "color");
-  PANEL_fire_color = glui_3dsmoke->add_panel_to_panel(PANEL_color, "red/green/blue");
+  PANEL_fire_color = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firecolor, "red/green/blue");
 
   CHECKBOX_use_fire_rgb = glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_color, "set", &use_fire_rgb, USE_FIRE_RGB, Smoke3dCB);
 
@@ -424,7 +424,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_smoke3d_fire_blue->set_int_limits(0,255);
 
   if(ncolorbars > 0){
-    PANEL_colormap3 = glui_3dsmoke->add_panel_to_panel(PANEL_color, "colormap");
+    PANEL_colormap3 = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firecolor, "colormap");
     CHECKBOX_use_fire_colormap = glui_3dsmoke->add_checkbox_to_panel(PANEL_colormap3, "set", &use_fire_colormap, USE_FIRE_COLORMAP, Smoke3dCB);
     LISTBOX_smoke_colorbar = glui_3dsmoke->add_listbox_to_panel(PANEL_colormap3, "Select:", &fire_colorbar_index, SMOKE_COLORBAR_LIST, Smoke3dCB);
     for(i = 0;i < ncolorbars;i++){
@@ -441,7 +441,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
 
 #define HRRPUV_CUTOFF_MAX (hrrpuv_max_smv-0.01)
 
-  PANEL_fire_cutoff = glui_3dsmoke->add_panel_to_panel(PANEL_color, "Color as fire when:");
+  PANEL_fire_cutoff = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firecolor, "Color as fire when:");
   SPINNER_hrrpuv_cutoff = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_cutoff, "HRRPUV (kW/m3) > ", GLUI_SPINNER_FLOAT, &global_hrrpuv_cutoff, GLOBAL_FIRE_CUTOFF, Smoke3dCB);
   SPINNER_hrrpuv_cutoff->set_float_limits(0.0, HRRPUV_CUTOFF_MAX);
   {
@@ -452,12 +452,15 @@ extern "C" void Glui3dSmokeSetup(int main_window){
       &global_temp_cutoff, TEMP_CUTOFF, Smoke3dCB);
   }
 
-  PANEL_opacity = glui_3dsmoke->add_panel_to_panel(ROLLOUT_firecolor, "opacity");
-  PANEL_smoke_opacity = glui_3dsmoke->add_panel_to_panel(PANEL_opacity, "smoke");
+  ROLLOUT_opacity = glui_3dsmoke->add_rollout_to_panel(PANEL_overall, "smoke/fire opacity",false, FIREOPACITY_ROLLOUT, ColorRolloutCB);
+  INSERT_ROLLOUT(ROLLOUT_opacity, glui_3dsmoke);
+  ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_opacity, FIREOPACITY_ROLLOUT, glui_3dsmoke);
+
+  PANEL_smoke_opacity = glui_3dsmoke->add_panel_to_panel(ROLLOUT_opacity, "smoke");
   SPINNER_smoke3d_extinct2 = glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_opacity, _("Extinction (m2/kg)"),
                                                                 GLUI_SPINNER_FLOAT, &glui_smoke3d_extinct, SMOKE_EXTINCT, Smoke3dCB);
 
-  PANEL_fire_opacity = glui_3dsmoke->add_panel_to_panel(PANEL_opacity, "fire");
+  PANEL_fire_opacity = glui_3dsmoke->add_panel_to_panel(ROLLOUT_opacity, "fire");
   glui_use_fire_alpha = 1-use_fire_alpha;
   if(glui_use_fire_alpha==0){
     use_opacity_depth      = 1;
@@ -486,10 +489,10 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     use_co2_colormap = 1;
   }
   if(nsmoke3d_co2 > 0){
-    ROLLOUT_co2color=glui_3dsmoke->add_rollout_to_panel(PANEL_overall, "CO2", false, CO2COLOR_ROLLOUT, ColorRolloutCB);
+    ROLLOUT_co2color=glui_3dsmoke->add_rollout_to_panel(PANEL_overall, "CO2 color", false, CO2COLOR_ROLLOUT, ColorRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_co2color,glui_3dsmoke);
     ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_co2color, CO2COLOR_ROLLOUT, glui_3dsmoke);
-    CHECKBOX_use_co2_rgb = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_co2color, "Set red/green/blue", &use_co2_rgb, USE_CO2_RGB, Smoke3dCB);
+    CHECKBOX_use_co2_rgb = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_co2color, "set red/green/blue", &use_co2_rgb, USE_CO2_RGB, Smoke3dCB);
 
     SPINNER_co2color[0] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_co2color, _("red"),   GLUI_SPINNER_INT, co2_color_int255,     CO2_COLOR, Smoke3dCB);
     SPINNER_co2color[1] = glui_3dsmoke->add_spinner_to_panel(ROLLOUT_co2color, _("green"), GLUI_SPINNER_INT, co2_color_int255 + 1, CO2_COLOR, Smoke3dCB);
@@ -498,7 +501,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     SPINNER_co2color[1]->set_int_limits(0, 255);
     SPINNER_co2color[2]->set_int_limits(0, 255);
     if(ncolorbars > 0){
-      CHECKBOX_use_co2_colormap = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_co2color, "Set colormap", &use_co2_colormap, USE_CO2_COLORMAP, Smoke3dCB);
+      CHECKBOX_use_co2_colormap = glui_3dsmoke->add_checkbox_to_panel(ROLLOUT_co2color, "set colormap", &use_co2_colormap, USE_CO2_COLORMAP, Smoke3dCB);
       LISTBOX_co2_colorbar = glui_3dsmoke->add_listbox_to_panel(ROLLOUT_co2color, "colormap:", &co2_colorbar_index, CO2_COLORBAR_LIST, Smoke3dCB);
       for(i = 0; i < ncolorbars; i++){
         colorbardata *cbi;
