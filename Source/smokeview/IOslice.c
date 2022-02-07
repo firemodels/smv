@@ -4059,7 +4059,9 @@ int GetSliceCompressedData(char *file, int compression_type,
 /* ------------------ InitSlice3DTexture ------------------------ */
 
 void InitSlice3DTexture(meshdata *meshi){
+#ifdef pp_WINGPU
   GLint border_size = 0;
+#endif
   GLsizei nx, ny, nz;
 
   PRINTF("Defining 3d slice textures for %s ...", meshi->label);
@@ -4076,6 +4078,7 @@ void InitSlice3DTexture(meshdata *meshi){
   nx = meshi->ibar + 1;
   ny = meshi->jbar + 1;
   nz = meshi->kbar + 1;
+#ifdef pp_WINGPU
   if(meshi->slice3d_texture_buffer == NULL){
     int i;
 
@@ -4084,10 +4087,11 @@ void InitSlice3DTexture(meshdata *meshi){
       meshi->slice3d_texture_buffer[i] = 0.0;
     }
   }
+  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, meshi->slice3d_texture_buffer);
+#endif
   if(meshi->slice3d_c_buffer == NULL){
     NewMemory((void **)&meshi->slice3d_c_buffer, nx*ny*nz * sizeof(float));
   }
-  glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, nx, ny, nz, border_size, GL_RED, GL_FLOAT, meshi->slice3d_texture_buffer);
 
 
   if(slice3d_colormap_id_defined == -1){
@@ -7555,7 +7559,7 @@ void DrawSliceFrame(){
             SNIFF_ERRORS("after DrawVolSliceValues SLICE_NODE_CENTER");
           }
         }
-#ifdef pp_GPU
+#ifdef pp_WINGPU
         if(sd->volslice==1&&(vis_gslice_data==1)){
           if(usegpu==1){
             Load3DSliceShaders();

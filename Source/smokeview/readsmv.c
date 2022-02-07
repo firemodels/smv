@@ -365,7 +365,9 @@ void InitMesh(meshdata *meshi){
   meshi->vollight_texture_buffer = NULL;
   meshi->vollight_texture_id = 0;
 
+#ifdef pp_WINGPU
   meshi->slice3d_texture_buffer = NULL;
+#endif
   meshi->slice3d_texture_id = 0;
   meshi->slice3d_c_buffer = NULL;
 #endif
