@@ -3712,6 +3712,7 @@ void DoScriptLua(void){
 #ifdef pp_LUA_SSF
 void DoScript(void){
   int script_return_code;
+
   if(runscript == 1){
       runscript = 0;
       PRINTF("running ssf script instruction\n");
@@ -3724,6 +3725,7 @@ void DoScript(void){
 }
 #else
 void DoScript(void){
+  SNIFF_ERRORS("DoScript: start");
   if(runscript==1&&default_script!=NULL){
     ScriptMenu(default_script->id);
     runscript=2;
@@ -3948,6 +3950,7 @@ void DoNonStereo(void){
 /* ------------------ DisplayCB ------------------------ */
 
 void DisplayCB(void){
+  SNIFF_ERRORS("DisplayDB: start");
   DoScript();
 #ifdef pp_LUA
   DoScriptLua();

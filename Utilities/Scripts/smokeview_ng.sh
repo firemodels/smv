@@ -106,17 +106,21 @@ fi
 VERSION=$PLATFORM$TEST$SIZE$DEBUG
 VERSION2=$PLATFORM$SIZE
 
-SVNROOT=~/FDS-SMV
+if [ "$FIREMODELS" == "" ]; then
+  SVNROOT=$HOME/FDS-SMV
+else
+  SVNROOT=$FIREMODELS
+fi
 
-SMOKEVIEW=$SVNROOT/smv/Build/intel_$VERSION2/smokeview_$VERSION
+SMOKEVIEW=$SVNROOT/smv/Build/smokeview/intel_$VERSION2/smokeview_$VERSION
 
 if [ "$BINDIR" == "" ]; then
   BINDIR="$SVNROOT/smv/for_bundle"
 fi
 SMVBINDIR="-bindir $BINDIR"
 
-STARTX=$SVNROOT/Utilities/Scripts/startXserver.sh
-STOPX=$SVNROOT/Utilities/Scripts/stopXserver.sh
+STARTX=$SVNROOT/smv/Utilities/Scripts/startXserver.sh
+STOPX=$SVNROOT/smv/Utilities/Scripts/stopXserver.sh
 
 source $STARTX
 echo "     smokeview: $SMOKEVIEW"

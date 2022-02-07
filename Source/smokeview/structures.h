@@ -665,7 +665,10 @@ typedef struct _meshdata {
   GLuint     volsmoke_texture_id,     volfire_texture_id,     vollight_texture_id;
   float *volsmoke_texture_buffer,*volfire_texture_buffer,*vollight_texture_buffer;
   GLuint slice3d_texture_id;
-  float *slice3d_texture_buffer,*slice3d_c_buffer;
+  float *slice3d_c_buffer;
+#ifdef pp_WINGPU
+  float *slice3d_texture_buffer;
+#endif
 #endif
   float meshrgb[3], *meshrgb_ptr;
   float mesh_offset[3], *mesh_offset_ptr;
