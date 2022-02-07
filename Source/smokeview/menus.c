@@ -4721,6 +4721,7 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_
   int errorcode;
   FILE_SIZE return_filesize=0;
 
+  SNIFF_ERRORS("LoadSlicei: start");     
   slicei = sliceinfo + value;
   slicei->loading=1;
   if(script_multislice == 0 && scriptoutstream != NULL){
@@ -4796,6 +4797,7 @@ void LoadSliceMenu(int value){
   float load_time, load_size = 0.0;
   int file_count=0;
 
+  SNIFF_ERRORS("LoadSliceMenu: start");
   if(value==MENU_DUMMY)return;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){

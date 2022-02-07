@@ -14,7 +14,7 @@
 
 /* ------------------ _Sniff_Errors ------------------------ */
 #ifdef pp_SNIFF_ERROR
-void _Sniff_Errors(char *whereat, char *file, int line){
+void _Sniff_Errors(const char *whereat, const char *file, int line){
   int error;
 
   while((error=glGetError())!=GL_NO_ERROR){

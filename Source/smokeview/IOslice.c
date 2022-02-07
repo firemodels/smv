@@ -4064,6 +4064,7 @@ void InitSlice3DTexture(meshdata *meshi){
 #endif
   GLsizei nx, ny, nz;
 
+  SNIFF_ERRORS("InitSlice3DTexture: start");
   PRINTF("Defining 3d slice textures for %s ...", meshi->label);
   FFLUSH();
 
@@ -4581,6 +4582,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   slicedata *sd;
   int ntimes_slice_old;
 
+  SNIFF_ERRORS("ReadSlice: start");
   SetTimeState();
   vslicedata *vd;
   meshdata *meshi;
@@ -5126,6 +5128,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     update_slice_bounds = slicefilenumber;
     PrintMemoryInfo;
   }
+  SNIFF_ERRORS("ReadSlice: end");
   return return_filesize;
 }
 
