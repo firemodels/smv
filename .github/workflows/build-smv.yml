@@ -75,7 +75,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         lua:
-          - lua
+          # - lua
           - no-lua
     runs-on: ${{ matrix.os }}
     steps:
@@ -161,7 +161,7 @@ jobs:
       fail-fast: false
       matrix:
         lua:
-          - lua
+          # - lua
           - no-lua
     runs-on: windows-latest
     defaults:
