@@ -3902,6 +3902,7 @@ extern "C" void ImmersedBoundCB(int var){
 extern "C" void BoundBoundCB(int var){
   int i;
 
+  SNIFF_ERRORS("BoundBoundCB: start");
   switch(var){
   case SHOW_BOUNDARY_OUTLINE:
     if(ngeom_data==0)break;
@@ -5252,6 +5253,7 @@ extern "C" void CompressOnOff(int flag){
 extern "C" void Plot3DBoundCB(int var){
   int i;
 
+  SNIFF_ERRORS("Plot3DBoundCB: start");
   switch(var){
   case PLOT3D_VECTORSKIP:
     if(SPINNER_slicevectorskip!=NULL)SPINNER_slicevectorskip->set_int_val(vectorskip);
@@ -5738,6 +5740,7 @@ extern "C" void IncrementPartPropIndex(void){
 void PartBoundCB(int var){
   partpropdata *prop_new, *prop_old;
 
+  SNIFF_ERRORS("PartBoundCB: start");
   prop_new = part5propinfo + ipart5prop;
   prop_old = part5propinfo + ipart5prop_old;
   if(part5propinfo==NULL)return;
@@ -5916,6 +5919,7 @@ extern "C" void SliceBoundCB(int var){
   slicedata *sd;
   int last_slice;
 
+  SNIFF_ERRORS("SliceBoundCB: start");
   updatemenu=1;
   if(var==COLORBAR_LIST2){
     selectedcolorbar_index= GetColorbarListIndex();

@@ -969,6 +969,7 @@ void InitCadColors(void){
 /* ------------------ UpdateTexturebar ------------------------ */
 
 void UpdateTexturebar(void){
+  SNIFF_ERRORS("UpdateTexturebar - start");
   if(use_graphics==0)return;
   glBindTexture(GL_TEXTURE_1D, terrain_colorbar_id);
   glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, 256, 0, GL_RGBA, GL_FLOAT, rgb_terrain2);
@@ -1461,6 +1462,7 @@ void UpdateChopColors(void){
 
   cpp_boundsdata *bounds;
 
+  SNIFF_ERRORS("UpdateChopColors: start");
   bounds                = GetBoundsData(BOUND_PATCH);
   if(bounds!=NULL){
     setpatchchopmin_local = bounds->set_chopmin;
