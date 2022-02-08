@@ -81,10 +81,10 @@ bufferstreamdata *GetSMVBuffer(char *file, char *file2){
   stream2->fileinfo = NULL;
 
   if(file!=NULL){
-    stream->fileinfo = fopen_buffer(file, "r");
+    stream->fileinfo = fopen_buffer(file, "r", 1, 0);
   }
   if(file2!=NULL){
-    stream2->fileinfo = fopen_buffer(file2, "r");
+    stream2->fileinfo = fopen_buffer(file2, "r", 1, 0);
   }
 
   if(stream->fileinfo==NULL&&stream2->fileinfo==NULL){
@@ -112,7 +112,7 @@ bufferstreamdata *FOPEN_RB(char *file){
   filedata *fileinfo;
 
   if(file==NULL)return NULL;
-  fileinfo = fopen_buffer(file, "rb");
+  fileinfo = fopen_buffer(file, "rb", 1, 0);
   if(fileinfo==NULL)return NULL;
 
   NewMemory((void **)&stream, sizeof(bufferstreamdata));
@@ -221,14 +221,36 @@ FILE_SIZE freadptr_buffer(void **ptr, FILE_SIZE size, FILE_SIZE count, filedata 
   return copy_count/size;
 }
 
+/* ------------------ ReadBuffer ------------------------ */
+
+int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads){
+  int i, filesizei;
+
+  filesizei = filesize/nthreads;
+
+  for(i = 0; i<nthreads; i++){
+    FILE *stream;
+    int start, end;
+
+    start = i*filesizei;
+    end = start+filesizei;
+    if(end>filesize)end = filesize;
+
+    stream = fopen(filename, "rb");
+    if(stream==NULL)return 0;
+    fread(buffer+start, sizeof(char), end-start, stream);
+    fclose(stream);
+  }
+  return 1;
+}
+
   /* ------------------ fopen_buffer ------------------------ */
 
-filedata *fopen_buffer(char *filename, char *mode){
+filedata *fopen_buffer(char *filename, char *mode, int nthreads, int use_multithread){
   FILE_SIZE i,filesize;
   filedata *fileinfo;
   char *buffer, **lines;
   int nlines;
-  FILE *stream;
 
   // only support r and rb modes (ascii and binary)
 
@@ -238,21 +260,18 @@ filedata *fopen_buffer(char *filename, char *mode){
   if(FILE_EXISTS(filename)==NO)return NULL;
   filesize = GetFileSizeSMV(filename);
   if(filesize==0)return NULL;
-  stream = fopen(filename,"rb");
-  if(stream==NULL)return NULL;
 
-  NewMemory((void **)&fileinfo, sizeof(filedata));
-  if(NewMemory((void **)&buffer, filesize+1)==0){
-    FREEMEMORY(fileinfo);
-    fclose(stream);
+  if(NewMemory((void **)&buffer, filesize+1)==0)return NULL;
+
+  if(ReadBuffer(filename, filesize, buffer, nthreads)==0){
+    FREEMEMORY(buffer);
     return NULL;
   }
-  fread(buffer, sizeof(char), filesize, stream);
-  fclose(stream);
 
   filesize++;           // add an extra character to file and set it to the end of string character
   buffer[filesize-1]=0;
 
+  NewMemory((void **)&fileinfo, sizeof(filedata));
   fileinfo->buffer   = buffer;
   fileinfo->filesize = filesize;
   fileinfo->lines    = NULL;
@@ -261,12 +280,8 @@ filedata *fopen_buffer(char *filename, char *mode){
   fileinfo->pos      = 0;
   CheckMemory;
 
-  if(strcmp(mode, "r")==0){
-    fileinfo->mode=FILE_ASCII;
-  }
-  if(strcmp(mode, "rb")==0){
-    fileinfo->mode = FILE_BINARY;
-  }
+  if(strcmp(mode, "r")==0)fileinfo->mode=FILE_ASCII;
+  if(strcmp(mode, "rb")==0)fileinfo->mode = FILE_BINARY;
 
   if(fileinfo->mode==FILE_ASCII){
 

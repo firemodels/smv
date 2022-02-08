@@ -37,7 +37,7 @@ EXTERNCPP FILE_SIZE         freadptr_buffer(void **ptr, FILE_SIZE size, FILE_SIZ
 EXTERNCPP int               feof_buffer(filedata *fileinfo);
 EXTERNCPP char             *fgets_buffer(filedata *fileinfo, char *buffer, int size);
 EXTERNCPP void              rewind_buffer(filedata *fileinfo);
-EXTERNCPP filedata         *fopen_buffer(char *filename, char *mode);
+EXTERNCPP filedata         *fopen_buffer(char *filename, char *mode, int nthreads, int use_multihread);
 
 
 #endif

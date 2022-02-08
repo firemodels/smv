@@ -14,6 +14,7 @@
 #include "compress.h"
 
 #ifdef pp_SMOKEBUFFER
+#define MFILE                  *bufferstreamdata
 #define SKIP_SMOKE             fseek_buffer(SMOKE3DFILE->fileinfo, fortran_skip, SEEK_CUR)
 #define FOPEN_SMOKE(file,mode) FOPEN_RB(file)
 #define FREAD_SMOKE(a,b,c,d)   fread_buffer(a,b,c,d->fileinfo)
@@ -21,7 +22,8 @@
 #define FSEEK_SMOKE(a,b,c)     fseek_buffer(a->fileinfo,b,c)
 #define FCLOSE_SMOKE(a)        fclose_buffer(a->fileinfo)
 #else
-#define SKIP_SMOKE              FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
+#define MFILE                  FILE
+#define SKIP_SMOKE             FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
 #define FOPEN_SMOKE(file,mode) fopen(file,mode)
 #define FREAD_SMOKE(a,b,c,d)   fread(a,b,c,d)
 #define FEOF_SMOKE(a)          feof(a)
@@ -3621,11 +3623,7 @@ void DrawVolSmokeFrame(void){
 
 /* ------------------ SkipSmokeFrames ------------------------ */
 
-#ifdef pp_SMOKEBUFFER
-void SkipSmokeFrames(bufferstreamdata *SMOKE3DFILE, smoke3ddata *smoke3di, int nsteps, int fortran_skip){
-#else
-void SkipSmokeFrames(FILE *SMOKE3DFILE, smoke3ddata *smoke3di, int nsteps, int fortran_skip){
-#endif
+void SkipSmokeFrames(MFILE *SMOKE3DFILE, smoke3ddata *smoke3di, int nsteps, int fortran_skip){
   int i;
   int skip_local = 0;
 
@@ -3643,11 +3641,7 @@ void SkipSmokeFrames(FILE *SMOKE3DFILE, smoke3ddata *smoke3di, int nsteps, int f
 
 FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
   FILE *SMOKE_SIZE;
-#ifdef pp_SMOKEBUFFER
-  bufferstreamdata *SMOKE3DFILE;
-#else
-  FILE *SMOKE3DFILE;
-#endif
+  MFILE *SMOKE3DFILE;
   char smoke_sizefilename[1024], smoke_sizefilename2[1024];
   int lentext;
   char *textptr;
@@ -4256,13 +4250,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
 
 FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time, int *errorcode_arg){
   smoke3ddata *smoke3di;
-#ifdef pp_SMOKEBUFFER
-  bufferstreamdata *SMOKE3DFILE;
-#define FOPEN_SMOKE(file,mode) FOPEN_RB(file)
-#else
-  FILE *SMOKE3DFILE;
-#define FOPEN_SMOKE(file,mode) fopen(file,mode)
-#endif
+  MFILE *SMOKE3DFILE;
   int error_local;
   FILE_SIZE file_size_local=0;
   float read_time_local, total_time_local;
