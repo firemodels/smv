@@ -13,6 +13,22 @@
 #include "IOvolsmoke.h"
 #include "compress.h"
 
+#ifdef pp_SMOKEBUFFER
+#define SKIP_SMOKE             fseek_buffer(SMOKE3DFILE->fileinfo, fortran_skip, SEEK_CUR)
+#define FOPEN_SMOKE(file,mode) FOPEN_RB(file)
+#define FREAD_SMOKE(a,b,c,d)   fread_buffer(a,b,c,d->fileinfo)
+#define FEOF_SMOKE(a)          feof_buffer(a->fileinfo)
+#define FSEEK_SMOKE(a,b,c)     fseek_buffer(a->fileinfo,b,c)
+#define FCLOSE_SMOKE(a)        fclose_buffer(a->fileinfo)
+#else
+#define SKIP_SMOKE              FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
+#define FOPEN_SMOKE(file,mode) fopen(file,mode)
+#define FREAD_SMOKE(a,b,c,d)   fread(a,b,c,d)
+#define FEOF_SMOKE(a)          feof(a)
+#define FSEEK_SMOKE(a,b,c)     fseek(a,b,c)
+#define FCLOSE_SMOKE(a)        fclose(a)
+#endif
+
 #define SKIP FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
 
 int cull_count=0;
@@ -3605,7 +3621,11 @@ void DrawVolSmokeFrame(void){
 
 /* ------------------ SkipSmokeFrames ------------------------ */
 
+#ifdef pp_SMOKEBUFFER
+void SkipSmokeFrames(bufferstreamdata *SMOKE3DFILE, smoke3ddata *smoke3di, int nsteps, int fortran_skip){
+#else
 void SkipSmokeFrames(FILE *SMOKE3DFILE, smoke3ddata *smoke3di, int nsteps, int fortran_skip){
+#endif
   int i;
   int skip_local = 0;
 
@@ -3616,13 +3636,18 @@ void SkipSmokeFrames(FILE *SMOKE3DFILE, smoke3ddata *smoke3di, int nsteps, int f
     skip_local += 4+2*4+4;         // size
     skip_local += 4+smoke3di->nchars_compressed_smoke[i]+4;
   }
-  FSEEK(SMOKE3DFILE, skip_local, SEEK_SET);
+  FSEEK_SMOKE(SMOKE3DFILE, skip_local, SEEK_SET);
 }
 
 /* ------------------ GetSmokeFileSize ------------------------ */
 
 FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
-  FILE *SMOKE_SIZE, *SMOKE3DFILE;
+  FILE *SMOKE_SIZE;
+#ifdef pp_SMOKEBUFFER
+  bufferstreamdata *SMOKE3DFILE;
+#else
+  FILE *SMOKE3DFILE;
+#endif
   char smoke_sizefilename[1024], smoke_sizefilename2[1024];
   int lentext;
   char *textptr;
@@ -3663,13 +3688,13 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
     SMOKE_SIZE = fopen(smoke_sizefilename, "w");
   }
   if(SMOKE_SIZE == NULL)return NULL;  // can't write size file in temp directory so give up
-  SMOKE3DFILE = fopen(smokefile, "rb");
+  SMOKE3DFILE = FOPEN_SMOKE(smokefile, "rb");
   if(SMOKE3DFILE == NULL){
     fclose(SMOKE_SIZE);
     return NULL;
   }
 
-  SKIP; fread(nxyz, 4, 8, SMOKE3DFILE); SKIP;
+  SKIP_SMOKE; FREAD_SMOKE(nxyz, 4, 8, SMOKE3DFILE); SKIP_SMOKE;
 
   if(version != 1)version = 0;
   fprintf(SMOKE_SIZE, "%i\n", version);
@@ -3678,9 +3703,9 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
     int nframeboth;
     size_t count;
 
-    SKIP; count=fread(&time_local, 4, 1, SMOKE3DFILE); SKIP;
-    if(count!=1||feof(SMOKE3DFILE) != 0)break;
-    SKIP; fread(nchars, 4, 2, SMOKE3DFILE); SKIP;
+    SKIP_SMOKE; count=FREAD_SMOKE(&time_local, 4, 1, SMOKE3DFILE); SKIP_SMOKE;
+    if(count!=1||FEOF_SMOKE(SMOKE3DFILE) != 0)break;
+    SKIP_SMOKE; FREAD_SMOKE(nchars, 4, 2, SMOKE3DFILE); SKIP_SMOKE;
     if(version == 0){ // uncompressed data
       fprintf(SMOKE_SIZE, "%f %i %i\n", time_local, nchars[0], nchars[1]);
     }
@@ -3702,10 +3727,10 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
       }
     }
     skip_local = ABS(nchars[1]);
-    SKIP; FSEEK(SMOKE3DFILE, skip_local, SEEK_CUR); SKIP;
+    SKIP_SMOKE; FSEEK_SMOKE(SMOKE3DFILE, skip_local, SEEK_CUR); SKIP_SMOKE;
   }
 
-  fclose(SMOKE3DFILE);
+  FCLOSE_SMOKE(SMOKE3DFILE);
   fclose(SMOKE_SIZE);
   SMOKE_SIZE = fopen(smoke_sizefilename, "r");
   return SMOKE_SIZE;
@@ -3900,7 +3925,7 @@ int GetSmoke3DVersion(smoke3ddata *smoke3di){
   if(SMOKE3D_REGFILE!=NULL)SMOKE3DFILE = SMOKE3D_REGFILE;
   smoke3di->file = file;
 
-  SKIP;fread(nxyz, 4, 8, SMOKE3DFILE);SKIP;
+  SKIP;fread(nxyz, 4, 8, SMOKE3DFILE); SKIP;
   {
     float time_local;
     int nchars[2];
@@ -4231,7 +4256,13 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
 
 FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time, int *errorcode_arg){
   smoke3ddata *smoke3di;
+#ifdef pp_SMOKEBUFFER
+  bufferstreamdata *SMOKE3DFILE;
+#define FOPEN_SMOKE(file,mode) FOPEN_RB(file)
+#else
   FILE *SMOKE3DFILE;
+#define FOPEN_SMOKE(file,mode) fopen(file,mode)
+#endif
   int error_local;
   FILE_SIZE file_size_local=0;
   float read_time_local, total_time_local;
@@ -4265,14 +4296,14 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
 
 //*** read in data
 
-  SMOKE3DFILE=fopen(smoke3di->file,"rb");
+  SMOKE3DFILE=FOPEN_SMOKE(smoke3di->file,"rb");
   if(SMOKE3DFILE==NULL){
     SetupSmoke3D(smoke3di,UNLOAD, iframe_arg, &error_local);
     *errorcode_arg =1;
     return 0;
   }
 
-  SKIP;fread(nxyz_local,4,8,SMOKE3DFILE);SKIP;
+  SKIP_SMOKE;FREAD_SMOKE(nxyz_local,4,8,SMOKE3DFILE);SKIP_SMOKE;
   file_size_local +=4+4*8+4;
   smoke3di->is1=nxyz_local[2];
   smoke3di->is2=nxyz_local[3];
@@ -4303,17 +4334,17 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   iii = frame_start_local;
   nframes_found_local = frame_start_local;
   for(i=frame_start_local;i<frame_end_local;i++){
-    SKIP;fread(&time_local,4,1,SMOKE3DFILE);SKIP;
+    SKIP_SMOKE;FREAD_SMOKE(&time_local,4,1,SMOKE3DFILE);SKIP_SMOKE;
     file_size_local +=4+4+4;
-    if(feof(SMOKE3DFILE)!=0||(use_tload_end==1&&time_local>tload_end)){
+    if(FEOF_SMOKE(SMOKE3DFILE)!=0||(use_tload_end==1&&time_local>tload_end)){
       smoke3di->ntimes_full=i;
       smoke3di->ntimes=nframes_found_local;
       break;
     }
     if(use_tload_begin==1&&time_local<tload_begin)smoke3di->use_smokeframe[i]=0;
-    SKIP;fread(nchars_local,4,2,SMOKE3DFILE);SKIP;
+    SKIP_SMOKE;FREAD_SMOKE(nchars_local,4,2,SMOKE3DFILE); SKIP_SMOKE;
     file_size_local += 4+2*4+4;
-    if(feof(SMOKE3DFILE)!=0){
+    if(FEOF_SMOKE(SMOKE3DFILE)!=0){
       smoke3di->ntimes_full=i;
       smoke3di->ntimes=nframes_found_local;
       break;
@@ -4322,11 +4353,11 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
       float complevel_local;
 
       nframes_found_local++;
-      SKIP;fread(smoke3di->smokeframe_comp_list[iii],1,smoke3di->nchars_compressed_smoke[iii],SMOKE3DFILE);SKIP;
+      SKIP_SMOKE;FREAD_SMOKE(smoke3di->smokeframe_comp_list[iii],1,smoke3di->nchars_compressed_smoke[iii],SMOKE3DFILE); SKIP_SMOKE;
       file_size_local +=4+smoke3di->nchars_compressed_smoke[iii]+4;
       iii++;
       CheckMemory;
-      if(feof(SMOKE3DFILE)!=0){
+      if(FEOF_SMOKE(SMOKE3DFILE)!=0){
         smoke3di->ntimes_full=i;
         smoke3di->ntimes=nframes_found_local;
         break;
@@ -4341,8 +4372,8 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
       TrimZeros(compstring_local);
     }
     else{
-      SKIP;FSEEK(SMOKE3DFILE,smoke3di->nchars_compressed_smoke_full[i],SEEK_CUR);SKIP;
-      if(feof(SMOKE3DFILE)!=0){
+      SKIP_SMOKE;FSEEK_SMOKE(SMOKE3DFILE,smoke3di->nchars_compressed_smoke_full[i],SEEK_CUR);SKIP_SMOKE;
+      if(FEOF_SMOKE(SMOKE3DFILE)!=0){
         smoke3di->ntimes_full=i;
         smoke3di->ntimes=nframes_found_local;
         break;
@@ -4352,7 +4383,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   STOP_TIMER(read_time_local);
 
   if(SMOKE3DFILE!=NULL){
-    fclose(SMOKE3DFILE);
+    FCLOSE_SMOKE(SMOKE3DFILE);
   }
 
   smoke3di->loaded=1;
