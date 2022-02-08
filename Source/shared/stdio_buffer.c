@@ -105,10 +105,25 @@ bufferstreamdata *GetSMVBuffer(char *file, char *file2){
   return stream;
 }
 
+/* ------------------ FOPEN_RB ------------------------ */
+
+bufferstreamdata *FOPEN_RB(char *file){
+  bufferstreamdata *stream;
+  filedata *fileinfo;
+
+  if(file==NULL)return NULL;
+  fileinfo = fopen_buffer(file, "rb");
+  if(fileinfo==NULL)return NULL;
+
+  NewMemory((void **)&stream, sizeof(bufferstreamdata));
+  stream->fileinfo = fileinfo;
+  return stream;
+}
+
 /* ------------------ feof_buffer ------------------------ */
 
 int feof_buffer(filedata *fileinfo){
-  if(fileinfo->iline>=fileinfo->nlines)return 1;
+  if(fileinfo->mode==FILE_ASCII&&fileinfo->iline>=fileinfo->nlines)return 1;
   if(fileinfo->pos>=fileinfo->filesize)return 1;
   return 0;
 }
