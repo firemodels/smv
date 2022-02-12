@@ -14,7 +14,7 @@
 #include "compress.h"
 
 #ifdef pp_SMOKEBUFFER
-#define MFILE                  *bufferstreamdata
+typedef bufferstreamdata MFILE;
 #define SKIP_SMOKE             fseek_buffer(SMOKE3DFILE->fileinfo, fortran_skip, SEEK_CUR)
 #define FOPEN_SMOKE(file,mode) FOPEN_RB(file)
 #define FREAD_SMOKE(a,b,c,d)   fread_buffer(a,b,c,d->fileinfo)
@@ -22,6 +22,7 @@
 #define FSEEK_SMOKE(a,b,c)     fseek_buffer(a->fileinfo,b,c)
 #define FCLOSE_SMOKE(a)        fclose_buffer(a->fileinfo)
 #else
+typedef FILE MFILE;
 #define MFILE                  FILE
 #define SKIP_SMOKE             FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
 #define FOPEN_SMOKE(file,mode) fopen(file,mode)
