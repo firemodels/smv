@@ -700,7 +700,12 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   meshi = meshinfo+smoke3di->blocknumber;
   if(meshvisptr[meshi-meshinfo]==0)return;
 
-  firecolor = smoke3di->smokestate[HRRPUV_index].color;
+  if(HRRPUV_index>=0){
+    firecolor = smoke3di->smokestate[HRRPUV_index].color;
+  }
+  else{
+    firecolor = NULL;
+  }
 
   {
     smoke3ddata *sooti = NULL;
