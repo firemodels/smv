@@ -6101,10 +6101,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
   float *xplt, *yplt;
   int plotz;
-  int ibar, jbar;
-  int nx, ny, nxy;
-  char *iblank_z;
-  char *iblank_embed;
   terraindata *terri;
   int nycell;
   meshdata *meshi;
@@ -6124,13 +6120,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
   else{
     plotz = sd->ks1;
   }
-  ibar = meshi->ibar;
-  jbar = meshi->jbar;
-  iblank_z = meshi->c_iblank_z;
-  iblank_embed = meshi->c_iblank_embed;
-  nx = ibar + 1;
-  ny = jbar + 1;
-  nxy = nx*ny;
 
   if(cullfaces == 1)glDisable(GL_CULL_FACE);
 
