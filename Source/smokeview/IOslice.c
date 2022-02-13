@@ -4558,19 +4558,40 @@ int GetNSliceFrames(char *file, float *stime_min, float *stime_max){
 
 void HideSlices(char *longlabel){
   int i;
+  int len;
+
 
   if(longlabel==NULL)return;
+  len = strlen(longlabel);
   for(i = 0; i<nvsliceinfo; i++){
     vslicedata *vslicei;
 
     vslicei = vsliceinfo+i;
-    if(vslicei->display==1&&strcmp(sliceinfo[vslicei->ival].label.longlabel, longlabel)!=0)vslicei->display = 0;
+    if(vslicei->display==1){
+      char *label2;
+      int len2;
+
+      label2 = sliceinfo[vslicei->ival].label.longlabel;
+      len2 = strlen(label2);
+      if(strncmp(label2, longlabel, MIN(len, len2))!=0){
+        vslicei->display = 0;
+      }
+    }
   }
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
 
     slicei = sliceinfo+i;
-    if(slicei->display==1&&strcmp(slicei->label.longlabel, longlabel)!=0)slicei->display = 0;
+    if(slicei->display==1){
+      char *label2;
+      int len2;
+
+      label2 = slicei->label.longlabel;
+      len2 = strlen(label2);
+      if(strncmp(label2, longlabel, MIN(len, len2))!=0){
+        slicei->display = 0;
+      }
+    }
   }
 }
 
@@ -5951,7 +5972,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
     float *this_color, *last_color, ter_red[]={1.0,0.0,0.0,1.0}, ter_black[]={0.0,0,0,0.0,1.0};
     float zmax;
 
-#define FDS_OFFSET 0.01
+#define FDS_OFFSET 0.04
 
     this_color = ter_black;
     last_color =  NULL;
@@ -6080,19 +6101,19 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
   float *xplt, *yplt;
   int plotz;
-#ifdef pp_TERRAIN_SKIP
   int ibar, jbar;
-  int nx, ny;
-  int nxy;
+  int nx, ny, nxy;
   char *iblank_z;
   char *iblank_embed;
-#endif
+  terraindata *terri;
   int nycell;
   meshdata *meshi;
 
   meshi = meshinfo + sd->blocknumber;
 
-  nycell = meshi->jbar;
+  terri = meshi->terrain;
+  if(terri == NULL)return;
+  nycell = terri->jbar;
 
   xplt = meshi->xplt_orig;
   yplt = meshi->yplt_orig;
@@ -6103,7 +6124,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
   else{
     plotz = sd->ks1;
   }
-#ifdef pp_TERRAIN_SKIP
   ibar = meshi->ibar;
   jbar = meshi->jbar;
   iblank_z = meshi->c_iblank_z;
@@ -6111,7 +6131,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
   nx = ibar + 1;
   ny = jbar + 1;
   nxy = nx*ny;
-#endif
 
   if(cullfaces == 1)glDisable(GL_CULL_FACE);
 
@@ -6122,18 +6141,28 @@ void DrawVolSliceTerrain(const slicedata *sd){
   if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
     float z11, z31, z13, z33;
     int maxi;
-    float *znode, agl_smv, zmax;
+    float *znode, agl_smv, zmin, zmax;
+    float voffset;
 
-    znode = meshi->floor_mesh->znodes_complete;
+    znode = terri->znode;
+
     agl_smv = sd->above_ground_level;
-    zmax = meshi->zplt_orig[meshi->kbar];
+    if(agl_offset_actual==1){
+      voffset = agl_smv;
+    }
+    else{
+      voffset = MAX(agl_smv, SCALE2FDS(FDS_OFFSET))+slice_dz;
+    }
 
+    zmin = meshi->zplt_orig[0];
+    zmin = zbar0;
+    zmax = meshi->zplt_orig[meshi->kbar];
+//    zmin -= agl_smv;
     zmax -= agl_smv;
-    zmax += meshi->dxyz[2]/4.0;
 
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
-    glTranslatef(-xbar0,-ybar0,-zbar0 + MAX(agl_smv,SCALE2FDS(FDS_OFFSET))+slice_dz);
+    glTranslatef(-xbar0,-ybar0,-zbar0 + voffset);
 
     glBegin(GL_TRIANGLES);
     maxi = sd->is2;
@@ -6149,7 +6178,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
       for(j = sd->js1; j<sd->js2; j += slice_skip){
         int n11, n31, n13, n33;
         int j2;
-        int draw123=0, draw134=0;
+        int skip123=0, skip134=0;
 
         j2 = MIN(j+slice_skip, sd->js2);
         z11 = znode[IJ2(i,  j)];
@@ -6157,12 +6186,11 @@ void DrawVolSliceTerrain(const slicedata *sd){
         z13 = znode[IJ2(i, j2)];
         z33 = znode[IJ2(i2, j2)];
 
+        if(z11>zmax&&z31>zmax&&z33>zmax)skip123=1; // all above skip
+        if(z11>zmax&&z33>zmax&&z13>zmax)skip134=1;
 
-        draw123 = 1;
-        draw134 = 1;
-        if(z11>zmax||z31>zmax||z33>zmax)draw123 = 0;
-        if(z11>zmax||z33>zmax||z13>zmax)draw134 = 0;
-        if(draw123==0&&draw134==0)continue;
+        if(z11<zmin||z31<zmin||z33<zmin)skip123=1; // any below skip
+        if(z11<zmin||z33<zmin||z13<zmin)skip134=1;
 
         z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
         z31 = terrain_zmin+geom_vert_exag*(z31-terrain_zmin);
@@ -6171,15 +6199,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
         yy1 = yplt[j];
         y3 = yplt[j2];
-
-#ifdef pp_TERRAIN_SKIP
-        if(terrain_skip==0){
-          if(slice_skip==1){
-            if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
-            if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
-          }
-        }
-#endif
 
         n11 = IJK_SLICE(i,j,sd->ks1);
         r11 = (float)sd->iqsliceframe[n11]/255.0;
@@ -6193,13 +6212,13 @@ void DrawVolSliceTerrain(const slicedata *sd){
         n33 = IJK_SLICE(i2,j2,sd->ks1);
         r33 = (float)sd->iqsliceframe[n33]/255.0;
 
-        if(draw123==1){
+        if(skip123==0){
           glTexCoord1f(r11);  glVertex3f(x1, yy1, z11);
           glTexCoord1f(r31);  glVertex3f(x3, yy1, z31);
           glTexCoord1f(r33);  glVertex3f(x3,  y3, z33);
         }
 
-        if(draw134==1){
+        if(skip134==0){
           glTexCoord1f(r11);  glVertex3f(x1, yy1, z11);
           glTexCoord1f(r33);  glVertex3f(x3,  y3, z33);
           glTexCoord1f(r13);  glVertex3f(x1,  y3, z13);
