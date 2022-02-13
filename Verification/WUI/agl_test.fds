@@ -1,0 +1,39 @@
+&HEAD CHID='agl_test',TITLE='Test AGL slices' /
+
+&MESH IJK=80,10,30, XB=0.0,8.0,0.0,1.0,0.0,3.0 /
+
+&DUMP NFRAMES=10 /
+
+&INIT XB=0.0,8.0,0.0,1.0,0.0,0.5  TEMPERATURE=100.0 /
+&INIT XB=0.0,8.0,0.0,1.0,0.5,1.0  TEMPERATURE=200.0 /
+&INIT XB=0.0,8.0,0.0,1.0,1.0,1.5  TEMPERATURE=300.0 /
+&INIT XB=0.0,8.0,0.0,1.0,1.5,2.0  TEMPERATURE=400.0 /
+&INIT XB=0.0,8.0,0.0,1.0,2.0,3.0  TEMPERATURE=500.0 /
+
+&SURF ID = 'GRASS'
+      RGB = 122,117,48 /
+
+&GEOM ID='terrain', SURF_ID='GRASS', IS_TERRAIN=T,
+      VERTS=
+        0.0,0.0,0.0,
+        0.0,1.0,0.0,
+        8.0,0.0,1.5,
+        8.0,1.0,1.5,
+        
+      FACES= 
+           1,3,4,1,
+           1,4,2,1
+             /
+
+
+&TIME T_END=10. /  Total simulation time
+
+ Y slices
+
+&SLCF PBY=0.5,QUANTITY='TEMPERATURE',VECTOR=.TRUE. /
+&SLCF AGL_SLICE=1., QUANTITY='TEMPERATURE' /
+
+&SLCF PBY=0.8,QUANTITY='TEMPERATURE',CELL_CENTERED=.TRUE. /
+
+
+&TAIL /
