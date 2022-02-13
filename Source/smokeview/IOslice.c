@@ -6181,10 +6181,10 @@ void DrawVolSliceTerrain(const slicedata *sd){
         z13 = znode[IJ2(i, j2)];
         z33 = znode[IJ2(i2, j2)];
 
-        if(z11>zmax&&z31>zmax&&z33>zmax)skip123=1; // all above skip
+        if(z11>zmax&&z31>zmax&&z33>zmax)skip123=1; // all above then skip
         if(z11>zmax&&z33>zmax&&z13>zmax)skip134=1;
 
-        if(z11<zmin||z31<zmin||z33<zmin)skip123=1; // any below skip
+        if(z11<zmin||z31<zmin||z33<zmin)skip123=1; // any below then skip
         if(z11<zmin||z33<zmin||z13<zmin)skip134=1;
 
         z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
