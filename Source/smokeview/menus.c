@@ -3110,23 +3110,33 @@ void LoadVolsmoke3DMenu(int value){
 
 void UnloadAllSliceFiles(char *longlabel){
   int i, errorcode;
+  int len;
 
+  if(longlabel!=NULL)len = strlen(longlabel);
   for(i=0; i<nvsliceinfo; i++){
     vslicedata *vslicei;
+    char *label2;
+    int len2;
 
     vslicei = vsliceinfo+i;
     if(vslicei->loaded==0)continue;
     if(vslicei->val==NULL)continue;
-    if(longlabel==NULL||strcmp(vslicei->val->label.longlabel,longlabel)!=0){
+    label2 = vslicei->val->label.longlabel;
+    len2 = strlen(label2);
+    if(longlabel==NULL||strncmp(label2,longlabel,MIN(len,len2))!=0){
       ReadVSlice(i,ALL_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR, &errorcode);
     }
   }
   for(i=0; i<nsliceinfo; i++){
     slicedata *slicei;
+    char *label2;
+    int len2;
 
     slicei = sliceinfo+i;
     if(slicei->loaded==0||slicei->vloaded==1)continue;
-    if(longlabel==NULL||strcmp(slicei->label.longlabel,longlabel)!=0){
+    label2 = slicei->label.longlabel;
+    len2 = strlen(label2);
+    if(longlabel==NULL||strncmp(label2, longlabel,MIN(len,len2))!=0){
       ReadSlice("", i, ALL_FRAMES, NULL, UNLOAD, DEFER_SLICECOLOR, &errorcode);
     }
   }
@@ -4721,7 +4731,7 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_
   int errorcode;
   FILE_SIZE return_filesize=0;
 
-  SNIFF_ERRORS("LoadSlicei: start");     
+  SNIFF_ERRORS("LoadSlicei: start");
   slicei = sliceinfo + value;
   slicei->loading=1;
   if(script_multislice == 0 && scriptoutstream != NULL){

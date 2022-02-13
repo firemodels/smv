@@ -24,19 +24,20 @@ typedef struct bufferstreamdata{
   filedata *fileinfo;
 } bufferstreamdata;
 
+EXTERNCPP bufferstreamdata *FOPEN_RB(char *file);
 EXTERNCPP bufferstreamdata *GetSMVBuffer(char *file, char *file2);
 EXTERNCPP bufferstreamdata *CopySMVBuffer(bufferstreamdata *stream_in);
-EXTERNCPP int AppendFileBuffer(filedata *file1, filedata *file2);
-EXTERNCPP void OutputFileBuffer(filedata *fileinfo);
-EXTERNCPP void fclose_buffer(filedata *fileinfo);
-EXTERNCPP FILE_SIZE ftell_buffer(filedata *stream);
-EXTERNCPP int fseek_buffer(filedata *stream, FILE_SIZE offset, int origin);
-FILE_SIZE fread_buffer(void *ptr, FILE_SIZE size, FILE_SIZE count, filedata *stream);
-FILE_SIZE freadptr_buffer(void **ptr, FILE_SIZE size, FILE_SIZE count, filedata *stream);
-EXTERNCPP int feof_buffer(filedata *fileinfo);
-EXTERNCPP char *fgets_buffer(filedata *fileinfo, char *buffer, int size);
-EXTERNCPP void rewind_buffer(filedata *fileinfo);
-EXTERNCPP filedata *fopen_buffer(char *filename, char *mode);
+EXTERNCPP int               AppendFileBuffer(filedata *file1, filedata *file2);
+EXTERNCPP void              OutputFileBuffer(filedata *fileinfo);
+EXTERNCPP void              fclose_buffer(filedata *fileinfo);
+EXTERNCPP FILE_SIZE         ftell_buffer(filedata *stream);
+EXTERNCPP int               fseek_buffer(filedata *stream, FILE_SIZE offset, int origin);
+EXTERNCPP FILE_SIZE         fread_buffer(void *ptr, FILE_SIZE size, FILE_SIZE count, filedata *stream);
+EXTERNCPP FILE_SIZE         freadptr_buffer(void **ptr, FILE_SIZE size, FILE_SIZE count, filedata *stream);
+EXTERNCPP int               feof_buffer(filedata *fileinfo);
+EXTERNCPP char             *fgets_buffer(filedata *fileinfo, char *buffer, int size);
+EXTERNCPP void              rewind_buffer(filedata *fileinfo);
+EXTERNCPP filedata         *fopen_buffer(char *filename, char *mode, int nthreads, int use_multihread);
 
 
 #endif
