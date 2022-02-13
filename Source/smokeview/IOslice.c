@@ -5971,6 +5971,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
     float *znode, agl_smv, zcut;
     float *this_color, *last_color, ter_red[]={1.0,0.0,0.0,1.0}, ter_black[]={0.0,0,0,0.0,1.0};
     float zmax;
+    float voffset;
 
 #define FDS_OFFSET 0.04
 
@@ -5979,6 +5980,12 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
 
     znode = terri->znode;
     agl_smv = sd->above_ground_level;
+    if(agl_offset_actual==1){
+      voffset = agl_smv;
+    }
+    else{
+      voffset = MAX(agl_smv, SCALE2FDS(FDS_OFFSET))+slice_dz;
+    }
     zcut = terri->zmin_cutoff;
     zmax = meshi->zplt_orig[meshi->kbar];
     zmax -= agl_smv;
@@ -5986,8 +5993,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
 
     glPushMatrix();
     glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), vertical_factor*SCALE2SMV(1.0));
-    glTranslatef(-xbar0, -ybar0, -zbar0);
-    glTranslatef(0.0, 0.0, MAX(agl_smv, SCALE2FDS(FDS_OFFSET))+slice_dz);
+    glTranslatef(-xbar0, -ybar0, -zbar0 + voffset);
 
     glPointSize(5.0);
     glBegin(GL_POINTS);
