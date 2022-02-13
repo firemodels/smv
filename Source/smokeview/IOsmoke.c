@@ -710,8 +710,11 @@ void DrawSmoke3DGPU(smoke3ddata *smoke3di){
   {
     smoke3ddata *sooti = NULL;
 
-    if(smoke3di->smokestate[SOOT_index].index >=0){
+    if(SOOT_index>=0&&smoke3di->smokestate[SOOT_index].index>=0){
       sooti = smoke3dinfo+smoke3di->smokestate[SOOT_index].index;
+    }
+    else{
+      sooti = NULL;
     }
     if(sooti!=NULL&&sooti->display==1){
       have_smoke_local = 1;
