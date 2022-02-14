@@ -1918,14 +1918,58 @@ void GetMinMaxDepth(float *min_depth, float *max_depth){
   int i;
   float depth, dx, dy, dz;
 
-  DistPointBox(smv_eyepos, box_corners, min_depth, max_depth);
+  *min_depth = -1.0;
+  *max_depth = -1.0;
+  if(use_meshdist==0){
+    DistPointBox(smv_eyepos, box_corners, min_depth, max_depth);
+  }
+  else{
+    for(i = 0; i<nmeshes; i++){
+      meshdata *meshi;
+      int j;
+
+      meshi = meshinfo+i;
+      if(is_terrain_case&&meshi->terrain==NULL)continue;
+      for(j = 0; j<8; j++){
+        float *vertj;
+
+        vertj = meshi->verts+3*j;
+        if(FDSPointInFrustum(vertj)==1){
+          float dist;
+
+          dx = NORMALIZE_X(vertj[0])-smv_eyepos[0];
+          dy = NORMALIZE_Y(vertj[1])-smv_eyepos[1];
+          dz = NORMALIZE_Z(vertj[2])-smv_eyepos[2];
+          dist = sqrt(dx*dx+dy*dy+dz*dz);
+          if(*min_depth<0.0){
+            *min_depth = dist;
+            *max_depth = dist;
+          }
+          else{
+            *min_depth = MIN(*min_depth, dist);
+            *max_depth = MAX(*max_depth, dist);
+          }
+        }
+      }
+    }
+  }
+  if(*min_depth<0.0){
+    *min_depth = 0.0001;
+    *max_depth = 1.0;
+  }
 
   if(have_box_geom_corners==1){
     float mindist, maxdist;
 
     DistPointBox(smv_eyepos, box_geom_corners, &mindist, &maxdist);
-    *min_depth = MAX(*min_depth, mindist);
-    *max_depth = MAX(*max_depth, maxdist);
+    if(*min_depth<0.0){
+      *min_depth = mindist;
+      *max_depth = maxdist;
+    }
+    else{
+      *min_depth = MIN(*min_depth, mindist);
+      *max_depth = MAX(*max_depth, maxdist);
+    }
   }
 
   // get distance to each tour node
@@ -1941,12 +1985,22 @@ void GetMinMaxDepth(float *min_depth, float *max_depth){
         dy = NORMALIZE_Y(keyj->xyz_fds[1])-smv_eyepos[1];
         dz = NORMALIZE_Z(keyj->xyz_fds[2])-smv_eyepos[2];
         depth = sqrt(dx*dx+dy*dy+dz*dz);
-        *min_depth = MIN(*min_depth, depth);
-        *max_depth = MAX(*max_depth, depth);
+        if(*min_depth<0.0){
+          *min_depth = depth;
+          *max_depth = depth;
+        }
+        else{
+          *min_depth = MIN(*min_depth, depth);
+          *max_depth = MAX(*max_depth, depth);
+        }
       }
     }
   }
-}
+  if(*min_depth<0.0){
+    *min_depth = 0.001;
+    *max_depth = 1.0;
+  }
+  }
 
 /* ----------------------- ViewportScene ----------------------------- */
 
@@ -2009,14 +2063,15 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
 
     GetMinMaxDepth(&min_depth, &max_depth);
     if(is_terrain_case==1){
-      fnear = MAX(min_depth-0.75, 0.00001);
+      fnear = MAX(min_depth,     0.00001);
+      ffar  = MAX(max_depth+0.1, fnear+2.0);
     }
     else{
       fnear = MAX(min_depth-0.75, 0.001);
+      ffar  = MAX(max_depth+0.1,  farclip);
     }
-    ffar  = MAX(    max_depth+0.1, farclip);
+  //  printf("min_depth=%f max_depth=%f, fnear=%f ffar=%f\n", min_depth, max_depth, fnear, ffar);
   }
-
   aperture_temp = Zoom2Aperture(zoom);
 
   widthdiv2 = fnear*tan(0.5*aperture_temp*DEG2RAD);

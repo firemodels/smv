@@ -325,7 +325,6 @@ void InitMesh(meshdata *meshi){
   meshi->smoke3d_co2 = NULL;
   meshi->smokeplaneinfo = NULL;
   meshi->nsmokeplaneinfo = 0;
-  meshi->nverts = 0;
   meshi->opacity_adjustments = NULL;
   meshi->light_fraction = NULL;
   meshi->uc_light_fraction = NULL;
@@ -2762,6 +2761,12 @@ void UpdateMeshCoords(void){
 
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
+    float xminmax[2], yminmax[2], zminmax[2];
+    float *verts;
+    int xindex[8]={0,1,0,1,0,1,0,1};
+    int yindex[8]={0,0,1,1,0,0,1,1};
+    int zindex[8]={0,0,0,0,1,1,1,1};
+    int j;
 
     meshi=meshinfo+i;
     if(i==0){
@@ -2779,6 +2784,19 @@ void UpdateMeshCoords(void){
     xbar0 = MIN(xbar0, meshi->xyz_bar0[XXX]);
     ybar0 = MIN(ybar0, meshi->xyz_bar0[YYY]);
     zbar0 = MIN(zbar0, meshi->xyz_bar0[ZZZ]);
+
+    xminmax[0] = meshi->xyz_bar0[XXX];
+    xminmax[1] = meshi->xyz_bar[XXX];
+    yminmax[0] = meshi->xyz_bar0[YYY];
+    yminmax[1] = meshi->xyz_bar[YYY];
+    zminmax[0] = meshi->xyz_bar0[ZZZ];
+    zminmax[1] = meshi->xyz_bar[ZZZ];
+    verts = meshi->verts;
+    for(j=0;j<8;j++){
+      verts[3*j+0] = xminmax[xindex[j]];
+      verts[3*j+1] = yminmax[yindex[j]];
+      verts[3*j+2] = zminmax[zindex[j]];
+    } 
   }
 
   xbar0FDS = xbar0;
@@ -11152,6 +11170,7 @@ int ReadIni2(char *inifile, int localfile){
       UpdateEvacParms();
       continue;
     }
+
     if(Match(buffer, "OFFSETSLICE") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &offset_slice);
@@ -12276,7 +12295,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SLICEOFFSET") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%f %f", &sliceoffset_factor, &slice_dz);
+      sscanf(buffer, "%f %f %i", &sliceoffset_factor, &slice_dz, &agl_offset_actual);
       continue;
     }
     if(Match(buffer, "TITLESAFE") == 1){
@@ -14713,7 +14732,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SENSORRELSIZE\n");
   fprintf(fileout, " %f\n", sensorrelsize);
   fprintf(fileout, "SLICEOFFSET\n");
-  fprintf(fileout, " %f %f\n", sliceoffset_factor,slice_dz);
+  fprintf(fileout, " %f %f %i\n", sliceoffset_factor,slice_dz, agl_offset_actual);
   fprintf(fileout, "SMOOTHLINES\n");
   fprintf(fileout, " %i\n", antialiasflag);
   fprintf(fileout, "SPHERESEGS\n");

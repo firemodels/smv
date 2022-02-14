@@ -46,6 +46,9 @@ SVEXTERN smoke3dtypedata SVDECL(*smoke3dtypes, NULL);
 
 SVEXTERN int SOOT_index, HRRPUV_index, TEMP_index, CO2_index;
 
+SVEXTERN int SVDECL(agl_offset_actual, 1);
+SVEXTERN int SVDECL(use_meshdist, 0);
+
 SVEXTERN float glui_smoke3d_extinct;
 SVEXTERN int SVDECL(update_smoke_alphas, 0);
 SVEXTERN int SVDECL(max_colorbar_label_width, 0);
