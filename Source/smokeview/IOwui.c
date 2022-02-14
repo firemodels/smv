@@ -2083,6 +2083,8 @@ void UpdateTerrain(int allocate_memory){
       terraindata *terri;
       float *znode, *znode_scaled;
       int i, j;
+      float mesh_zmin, mesh_zmax;
+      float t_zmin, t_zmax;
 
       meshi=meshinfo + imesh;
       terri = meshi->terrain;
@@ -2090,12 +2092,32 @@ void UpdateTerrain(int allocate_memory){
       terri->terrain_mesh = meshi;
       znode = terri->znode;
       znode_scaled = terri->znode_scaled;
+      t_zmin=1.0;
+      t_zmax=0.0;
+      mesh_zmin = meshi->zplt_orig[0];
+      mesh_zmax = meshi->zplt_orig[meshi->kbar];
 
       for(j=0;j<=terri->jbar;j++){
         for(i=0;i<=terri->ibar;i++){
           *znode_scaled = NORMALIZE_Z(*znode);
+          if(*znode>=mesh_zmin&&*znode<=mesh_zmax){
+            if(t_zmin>t_zmax){
+              t_zmin = *znode;
+              t_zmax = *znode;
+            }
+            else{
+              t_zmin = MIN(*znode, t_zmin);
+              t_zmax = MAX(*znode, t_zmax);
+            }
+          }
           znode++;
           znode_scaled++;
+        }
+      }
+      if(t_zmin<t_zmax){
+        for(j=0; j<4; j++){
+          meshi->verts[   3*j+2] = t_zmin;
+          meshi->verts[12+3*j+2] = t_zmax;
         }
       }
     }

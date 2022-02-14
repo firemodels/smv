@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+#define pp_USE_MESH_DISTANCE // turn on experimental method for computing min/max depth buffer distances
 #define pp_SMOKEBUFFER       // read 3d smoke files using memory bufffer i/o routines
 //#define pp_GEOM_DEBUG        // debug out in geometry routines
 //#define pp_CRASH_TEST         // test detection of division by zero or use of undefined pointer

@@ -5973,7 +5973,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
     float zmax;
     float voffset;
 
-#define FDS_OFFSET 0.04
+#define FDS_OFFSET 0.01
 
     this_color = ter_black;
     last_color =  NULL;

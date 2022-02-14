@@ -685,7 +685,7 @@ typedef struct _meshdata {
                      //  MESH_INT if face i is completely adjacent to another mesh,
                      // MESH_BOTH if face i is neither
   int inside;
-  float boxmin[3], boxmiddle[3], boxmax[3], dbox[3], boxeps[3], dcell, dcell3[3], eyedist;
+  float boxmin[3], boxmiddle[3], boxmax[3], dbox[3], boxeps[3], dcell, dcell3[3], verts[24], eyedist;
   float slice_min[3], slice_max[3];
   float boxmin_scaled[3], boxmiddle_scaled[3], boxmax_scaled[3];
   float xyz_bar0[3], xyz_bar[3];
@@ -813,10 +813,6 @@ typedef struct _meshdata {
   meshplanedata gsliceinfo;
   meshplanedata *smokeplaneinfo;
   int nsmokeplaneinfo;
-  float verts[24];
-  float vert_dists[8], vert_distmin, vert_distmax;
-  int nverts;
-
   int s_offset[3];
 } meshdata;
 
