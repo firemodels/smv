@@ -5007,9 +5007,6 @@ extern "C" void GluiBoundsSetup(int main_window){
       glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("terrain slice overlap"), &terrain_slice_overlap);
       glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("actual agl offset"), &agl_offset_actual);
     }
-#ifdef pp_USE_MESH_DISTANCE
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_settings, _("use mesh distance"), &use_meshdist);
-#endif
   }
 
   // ----------------------------------- Time ----------------------------------------

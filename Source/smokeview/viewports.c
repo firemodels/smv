@@ -1840,168 +1840,97 @@ void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxd
   zmin = corners[0][2];
   zmax = corners[4][2];
 
-#define NIJK 5
+#define NIJK 10
 
   dx = (xmax - xmin)/(float)(NIJK-1);
   dy = (ymax - ymin)/(float)(NIJK-1);
   dz = (zmax - zmin)/(float)(NIJK-1);
+  minval = 1.0;
+  maxval = 0.0;
+  for(k = 0; k<NIJK; k++){
+    float xyz[3];
 
-  minval = DistPtXYZ(point, xmin, ymin, zmin);
-  maxval = minval;
-  for(i = 0; i<NIJK; i++){
-    float xx;
-
-    xx = xmin+(float)i*dx;
-
+    xyz[2] = zmin+k*dz;
     for(j = 0; j<NIJK; j++){
-      float yy;
-      float dist;
+      xyz[1] = ymin+j*dy;
+      for(i = 0; i<NIJK; i++){
+        float dist;
 
-      yy     = ymin+(float)j*dy;
-      dist   = DistPtXYZ(point, xx, yy, zmin);
-      minval = MIN(minval, dist);
-      maxval = MAX(maxval, dist);
-
-      dist   = DistPtXYZ(point, xx, yy, zmax);
-      minval = MIN(minval, dist);
-      maxval = MAX(maxval, dist);
+        xyz[0] = xmin+i*dx;
+     //   if(PointInFrustum(xyz)==0)continue;
+        dist   = DistPtXYZ(point, xyz[0], xyz[1], xyz[2]);
+        if(minval>maxval){
+          minval = dist;
+          maxval = dist;
+        }
+        else{
+          minval = MIN(minval, dist);
+          maxval = MAX(maxval, dist);
+        }
+      }
     }
   }
+  if(minval<=maxval){
+    *mindist = minval;
+    *maxdist = maxval;
+  }
+  else{
+    float dist[8];
 
-  for(i = 0; i<NIJK; i++){
-    float xx;
-
-    xx = xmin+(float)i*dx;
-
-    for(k = 0; k<NIJK; k++){
-      float zz;
-      float dist;
-
-      zz     = zmin+(float)k*dz;
-      dist   = DistPtXYZ(point, xx, ymin, zz);
-      minval = MIN(minval, dist);
-      maxval = MAX(maxval, dist);
-
-      dist   = DistPtXYZ(point, xx, ymax, zz);
-      minval = MIN(minval, dist);
-      maxval = MAX(maxval, dist);
+    dist[0] = DistPtXYZ(point, xmin, ymin, zmin);
+    dist[1] = DistPtXYZ(point, xmin, ymax, zmin);
+    dist[2] = DistPtXYZ(point, xmax, ymin, zmin);
+    dist[3] = DistPtXYZ(point, xmax, ymax, zmin);
+    dist[4] = DistPtXYZ(point, xmin, ymin, zmax);
+    dist[5] = DistPtXYZ(point, xmin, ymax, zmax);
+    dist[6] = DistPtXYZ(point, xmax, ymin, zmax);
+    dist[7] = DistPtXYZ(point, xmax, ymax, zmax);
+    *mindist = dist[0];
+    *maxdist = dist[0];
+    for(i = 1; i<8; i++){
+      *mindist = MIN(*mindist, dist[i]);
+      *maxdist = MAX(*maxdist, dist[i]);
     }
   }
-
-  for(j = 0; j<NIJK; j++){
-    float yy;
-
-    yy = ymin+(float)j*dy;
-
-    for(k = 0; k<NIJK; k++){
-      float zz;
-      float dist;
-
-      zz     = zmin+(float)k*dz;
-      dist   = DistPtXYZ(point, xmin, yy, zz);
-      minval = MIN(minval, dist);
-      maxval = MAX(maxval, dist);
-
-      dist   = DistPtXYZ(point, xmax, yy, zz);
-      minval = MIN(minval, dist);
-      maxval = MAX(maxval, dist);
-    }
-  }
-
-  *mindist = minval;
-  *maxdist = maxval;
 }
 
 /* ------------------ GetMinMaxDepth  ------------------------ */
 
 void GetMinMaxDepth(float *min_depth, float *max_depth){
-  int i;
-  float depth, dx, dy, dz;
 
-  *min_depth = -1.0;
-  *max_depth = -1.0;
-  if(use_meshdist==0){
-    DistPointBox(smv_eyepos, box_corners, min_depth, max_depth);
-  }
-  else{
-    for(i = 0; i<nmeshes; i++){
-      meshdata *meshi;
-      float *verts;
-      int j;
-
-      meshi = meshinfo+i;
-      if(is_terrain_case&&meshi->terrain==NULL)continue;
-      for(j = 0; j<8; j++){
-        float *vertj;
-
-        vertj = meshi->verts+3*j;
-        if(FDSPointInFrustum(vertj)==1){
-          float dx, dy, dz, dist;
-
-          dx = NORMALIZE_X(vertj[0])-smv_eyepos[0];
-          dy = NORMALIZE_Y(vertj[1])-smv_eyepos[1];
-          dz = NORMALIZE_Z(vertj[2])-smv_eyepos[2];
-          dist = sqrt(dx*dx+dy*dy+dz*dz);
-          if(*min_depth<0.0){
-            *min_depth = dist;
-            *max_depth = dist;
-          }
-          else{
-            *min_depth = MIN(*min_depth, dist);
-            *max_depth = MAX(*max_depth, dist);
-          }
-        }
-      }
-    }
-  }
-  if(*min_depth<0.0){
-    *min_depth = 0.0001;
-    *max_depth = 1.0;
-  }
+  DistPointBox(smv_eyepos, box_corners, min_depth, max_depth);
 
   if(have_box_geom_corners==1){
     float mindist, maxdist;
 
     DistPointBox(smv_eyepos, box_geom_corners, &mindist, &maxdist);
-    if(*min_depth<0.0){
-      *min_depth = mindist;
-      *max_depth = maxdist;
-    }
-    else{
-      *min_depth = MIN(*min_depth, mindist);
-      *max_depth = MAX(*max_depth, maxdist);
-    }
+    *min_depth = MIN(*min_depth, mindist);
+    *max_depth = MAX(*max_depth, maxdist);
   }
 
   // get distance to each tour node
 
   if(edittour==1){
+    int i;
+
     for(i = 0; i<ntourinfo; i++){
       tourdata *touri;
       keyframe *keyj;
 
       touri = tourinfo+i;
       for(keyj = (touri->first_frame).next; keyj->next!=NULL; keyj = keyj->next){
+        float dist, dx, dy, dz;
+
         dx = NORMALIZE_X(keyj->xyz_fds[0])-smv_eyepos[0];
         dy = NORMALIZE_Y(keyj->xyz_fds[1])-smv_eyepos[1];
         dz = NORMALIZE_Z(keyj->xyz_fds[2])-smv_eyepos[2];
-        depth = sqrt(dx*dx+dy*dy+dz*dz);
-        if(*min_depth<0.0){
-          *min_depth = depth;
-          *max_depth = depth;
-        }
-        else{
-          *min_depth = MIN(*min_depth, depth);
-          *max_depth = MAX(*max_depth, depth);
-        }
+        dist = sqrt(dx*dx+dy*dy+dz*dz);
+        *min_depth = MIN(*min_depth, dist);
+        *max_depth = MAX(*max_depth, dist);
       }
     }
   }
-  if(*min_depth<0.0){
-    *min_depth = 0.001;
-    *max_depth = 1.0;
-  }
-  }
+}
 
 /* ----------------------- ViewportScene ----------------------------- */
 
@@ -2064,8 +1993,8 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
 
     GetMinMaxDepth(&min_depth, &max_depth);
     if(is_terrain_case==1){
-      fnear = MAX(min_depth,     0.00001);
-      ffar  = MAX(max_depth+0.1, fnear+2.0);
+      fnear = MAX(min_depth  -0.1,     0.00001);
+      ffar  = MAX(max_depth + 0.1, fnear+2.0);
     }
     else{
       fnear = MAX(min_depth-0.75, 0.001);
