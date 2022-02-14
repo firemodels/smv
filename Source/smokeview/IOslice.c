@@ -6107,7 +6107,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
   float *xplt, *yplt;
   int plotz;
-  terraindata *terri;
   int nycell;
   meshdata *meshi;
 

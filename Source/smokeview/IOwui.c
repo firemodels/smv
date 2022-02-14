@@ -2038,8 +2038,6 @@ void UpdateTerrain(int allocate_memory){
 
     for(i = 0; i<nmeshes; i++){
       meshdata *meshi;
-      terraindata *terraini;
-      int j;
       int ii;
 
       meshi = meshinfo+i;
