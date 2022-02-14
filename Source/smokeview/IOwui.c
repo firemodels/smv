@@ -1373,10 +1373,7 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
     meshi->nznodes = (nx+1)*(ny+1);
     if(allocate_memory==1){
       meshi->nznodes = (nx+1)*(ny+1);
-      meshi->znodes_complete = NULL;
-      if(meshi->nabors[MDOWN]==NULL){
-        NewMemory((void **)&meshi->znodes_complete, (nx+1)*(ny+1)*sizeof(float));
-      }
+      NewMemory((void **)&meshi->znodes_complete, (nx+1)*(ny+1)*sizeof(float));
     }
   }
 
@@ -1972,6 +1969,20 @@ int GetTerrainSize(char *file, float *xmin, float *xmax, int *nx, float *ymin, f
   return 0;
 }
 
+/* ------------------ GetTerrainElev ------------------------ */
+
+float GetTerrainElev(meshdata *meshi, int index){
+  for(;;){
+    if(meshi==NULL)return zbar0-2.0;
+    if(meshi->terrain==NULL||meshi->terrain->znode[index]<zbar0){
+      meshi = meshi->nabors[MDOWN];
+    }
+    else{
+      return meshi->terrain->znode[index];
+    }
+  }
+}
+
 /* ------------------ UpdateTerrain ------------------------ */
 
 void UpdateTerrain(int allocate_memory){
@@ -2029,49 +2040,11 @@ void UpdateTerrain(int allocate_memory){
       meshdata *meshi;
       terraindata *terraini;
       int j;
+      int ii;
 
       meshi = meshinfo+i;
-      if(meshi->is_bottom==0)continue;
-      terraini = meshi->terrain;
-      if(terraini==NULL){
-        int ii;
-
-        for(ii = 0; ii<meshi->nznodes; ii++){
-          meshi->znodes_complete[ii] = zbar0;
-        }
-      }
-      else{
-        int ii;
-
-        for(ii = 0; ii<meshi->nznodes; ii++){
-          meshi->znodes_complete[ii] = terraini->znode[ii];
-        }
-      }
-      for(j = 0; j<nmeshes; j++){
-        meshdata *meshj;
-        terraindata *terrainj;
-        int kk;
-        float dx, dy;
-
-        meshj = meshinfo+j;
-        if(meshj==meshi || meshj->is_bottom==1)continue;
-        dx = ABS(meshi->xplt_orig[0]          - meshj->xplt_orig[0]);
-        dy = ABS(meshi->yplt_orig[0]          - meshj->yplt_orig[0]);
-        if(dx>meshi->dxyz[0]/2.0 || dy>meshi->dxyz[1]/2.0)continue;
-
-        dx = ABS(meshi->xplt_orig[meshi->ibar]          - meshj->xplt_orig[meshj->ibar]);
-        dy = ABS(meshi->yplt_orig[meshi->jbar]          - meshj->yplt_orig[meshj->jbar]);
-        if(dx>meshi->dxyz[0]/2.0 || dy>meshi->dxyz[1]/2.0)continue;
-
-        if(meshi->ibar!=meshj->ibar || meshi->jbar!=meshj->jbar)continue;
-
-        meshj->floor_mesh = meshi;
-        terrainj = meshj->terrain;
-        if(terrainj!=NULL){
-          for(kk = 0; kk<meshj->nznodes; kk++){
-            if(terrainj->znode[kk]>meshi->boxmin[2]-meshi->dxyz[2]/2.0)meshi->znodes_complete[kk] = terrainj->znode[kk];
-          }
-        }
+      for(ii = 0; ii<meshi->nznodes; ii++){
+        meshi->znodes_complete[ii] = GetTerrainElev(meshi, ii);
       }
     }
   }

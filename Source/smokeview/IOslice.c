@@ -6112,10 +6112,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
   meshdata *meshi;
 
   meshi = meshinfo + sd->blocknumber;
-
-  terri = meshi->terrain;
-  if(terri == NULL)return;
-  nycell = terri->jbar;
+  nycell = meshi->jbar;
 
   xplt = meshi->xplt_orig;
   yplt = meshi->yplt_orig;
@@ -6139,7 +6136,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
     float *znode, agl_smv, zmin, zmax;
     float voffset;
 
-    znode = terri->znode;
+    znode = meshi->znodes_complete;
 
     agl_smv = sd->above_ground_level;
     if(agl_offset_actual==1){
