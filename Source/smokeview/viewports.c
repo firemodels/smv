@@ -1926,7 +1926,6 @@ void GetMinMaxDepth(float *min_depth, float *max_depth){
   else{
     for(i = 0; i<nmeshes; i++){
       meshdata *meshi;
-      float *verts;
       int j;
 
       meshi = meshinfo+i;
@@ -1936,7 +1935,7 @@ void GetMinMaxDepth(float *min_depth, float *max_depth){
 
         vertj = meshi->verts+3*j;
         if(FDSPointInFrustum(vertj)==1){
-          float dx, dy, dz, dist;
+          float dist;
 
           dx = NORMALIZE_X(vertj[0])-smv_eyepos[0];
           dy = NORMALIZE_Y(vertj[1])-smv_eyepos[1];
