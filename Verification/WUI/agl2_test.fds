@@ -1,6 +1,7 @@
-&HEAD CHID='agl_test',TITLE='Test AGL slices' /
+&HEAD CHID='agl2_test',TITLE='Test AGL slices' /
 
-&MESH IJK=40,10,60, XB=0.0,8.0,0.0,1.0,0.0,3.0 /
+&MULT ID='mesh', DX=4.0, DY=4.0, DZ=1.0, I_UPPER=1, J_UPPER=0, K_UPPER=2 /
+&MESH IJK=20,10,20, XB=0.0,4.0,0.0,1.0,0.0,1.0, MULT_ID=mesh /
 
 &DUMP NFRAMES=10 /
 

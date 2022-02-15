@@ -1373,10 +1373,9 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
     meshi->nznodes = (nx+1)*(ny+1);
     if(allocate_memory==1){
       meshi->nznodes = (nx+1)*(ny+1);
-      meshi->znodes_complete = NULL;
-      if(meshi->nabors[MDOWN]==NULL){
-        NewMemory((void **)&meshi->znodes_complete, (nx+1)*(ny+1)*sizeof(float));
-      }
+#ifndef pp_ZNODES
+      NewMemory((void **)&meshi->znodes_complete, (nx+1)*(ny+1)*sizeof(float));
+#endif
     }
   }
 
@@ -1972,6 +1971,20 @@ int GetTerrainSize(char *file, float *xmin, float *xmax, int *nx, float *ymin, f
   return 0;
 }
 
+/* ------------------ GetTerrainElev ------------------------ */
+
+float GetTerrainElev(meshdata *meshi, int index){
+  for(;;){
+    if(meshi==NULL)return zbar0-2.0;
+    if(meshi->terrain==NULL||meshi->terrain->znode[index]<zbar0){
+      meshi = meshi->nabors[MDOWN];
+    }
+    else{
+      return meshi->terrain->znode[index];
+    }
+  }
+}
+
 /* ------------------ UpdateTerrain ------------------------ */
 
 void UpdateTerrain(int allocate_memory){
@@ -2025,55 +2038,68 @@ void UpdateTerrain(int allocate_memory){
   if(allocate_memory==1){
     int i;
 
+#ifdef pp_ZNODES
     for(i = 0; i<nmeshes; i++){
       meshdata *meshi;
-      terraindata *terraini;
       int j;
+      int nx, ny;
 
       meshi = meshinfo+i;
-      if(meshi->is_bottom==0)continue;
-      terraini = meshi->terrain;
-      if(terraini==NULL){
-        int ii;
-
-        for(ii = 0; ii<meshi->nznodes; ii++){
-          meshi->znodes_complete[ii] = zbar0;
-        }
-      }
-      else{
-        int ii;
-
-        for(ii = 0; ii<meshi->nznodes; ii++){
-          meshi->znodes_complete[ii] = terraini->znode[ii];
-        }
-      }
-      for(j = 0; j<nmeshes; j++){
+      nx = meshi->ibar;
+      ny = meshi->jbar;
+      meshi->nznodes = (nx+1)*(ny+1);
+      if(meshi->nabors[MUP]==NULL){
         meshdata *meshj;
-        terraindata *terrainj;
-        int kk;
-        float dx, dy;
+        int ii;
 
-        meshj = meshinfo+j;
-        if(meshj==meshi || meshj->is_bottom==1)continue;
-        dx = ABS(meshi->xplt_orig[0]          - meshj->xplt_orig[0]);
-        dy = ABS(meshi->yplt_orig[0]          - meshj->yplt_orig[0]);
-        if(dx>meshi->dxyz[0]/2.0 || dy>meshi->dxyz[1]/2.0)continue;
-
-        dx = ABS(meshi->xplt_orig[meshi->ibar]          - meshj->xplt_orig[meshj->ibar]);
-        dy = ABS(meshi->yplt_orig[meshi->jbar]          - meshj->yplt_orig[meshj->jbar]);
-        if(dx>meshi->dxyz[0]/2.0 || dy>meshi->dxyz[1]/2.0)continue;
-
-        if(meshi->ibar!=meshj->ibar || meshi->jbar!=meshj->jbar)continue;
-
-        meshj->floor_mesh = meshi;
-        terrainj = meshj->terrain;
-        if(terrainj!=NULL){
-          for(kk = 0; kk<meshj->nznodes; kk++){
-            if(terrainj->znode[kk]>meshi->boxmin[2]-meshi->dxyz[2]/2.0)meshi->znodes_complete[kk] = terrainj->znode[kk];
-          }
+        NewMemory((void **)&meshi->znodes_complete, (nx+1)*(ny+1)*sizeof(float));
+        for(ii = 0; ii<meshi->nznodes; ii++){
+          meshi->znodes_complete[ii] = GetTerrainElev(meshi, ii);
+        }
+        meshj = meshi->nabors[MDOWN];
+        for(;;){
+          if(meshj==NULL)break;
+          meshj->znodes_complete = meshi->znodes_complete;
+          meshj = meshj->nabors[MDOWN];
         }
       }
     }
+#else
+    for(i = 0; i<nmeshes; i++){
+      meshdata *meshi;
+      int ii;
+
+      meshi = meshinfo+i;
+      for(ii = 0; ii<meshi->nznodes; ii++){
+        meshi->znodes_complete[ii] = GetTerrainElev(meshi, ii);
+      }
+    }
+#endif
+    for(i=0; i<nsliceinfo; i++){
+      slicedata *slicei;
+      meshdata *meshi;
+      float zmin, zmax;
+      float agl;
+      int ii;
+
+      slicei = sliceinfo + i;
+      if(slicei->slice_filetype!=SLICE_TERRAIN)continue;
+      meshi = meshinfo + slicei->blocknumber;
+      zmin = meshi->zplt_orig[0];
+      zmax = meshi->zplt_orig[meshi->kbar];
+      agl = slicei->above_ground_level;
+      for(ii = 0; ii<meshi->nznodes; ii++){
+        float zslice, zterrain;
+
+        zterrain = meshi->znodes_complete[ii];
+        zslice   = zterrain+agl;
+        if(zterrain>zbar0&&zslice>=zmin&&zslice<=zmax){
+          slicei->have_agl_data = 1;
+          break;
+        }
+      }
+    }
+    CheckMemory;
   }
   if(nterraininfo>0){
     int imesh;
@@ -2083,6 +2109,8 @@ void UpdateTerrain(int allocate_memory){
       terraindata *terri;
       float *znode, *znode_scaled;
       int i, j;
+      float mesh_zmin, mesh_zmax;
+      float t_zmin, t_zmax;
 
       meshi=meshinfo + imesh;
       terri = meshi->terrain;
@@ -2090,12 +2118,32 @@ void UpdateTerrain(int allocate_memory){
       terri->terrain_mesh = meshi;
       znode = terri->znode;
       znode_scaled = terri->znode_scaled;
+      t_zmin=1.0;
+      t_zmax=0.0;
+      mesh_zmin = meshi->zplt_orig[0];
+      mesh_zmax = meshi->zplt_orig[meshi->kbar];
 
       for(j=0;j<=terri->jbar;j++){
         for(i=0;i<=terri->ibar;i++){
           *znode_scaled = NORMALIZE_Z(*znode);
+          if(*znode>=mesh_zmin&&*znode<=mesh_zmax){
+            if(t_zmin>t_zmax){
+              t_zmin = *znode;
+              t_zmax = *znode;
+            }
+            else{
+              t_zmin = MIN(*znode, t_zmin);
+              t_zmax = MAX(*znode, t_zmax);
+            }
+          }
           znode++;
           znode_scaled++;
+        }
+      }
+      if(t_zmin<t_zmax){
+        for(j=0; j<4; j++){
+          meshi->verts[   3*j+2] = t_zmin;
+          meshi->verts[12+3*j+2] = t_zmax;
         }
       }
     }

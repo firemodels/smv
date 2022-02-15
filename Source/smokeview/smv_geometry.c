@@ -297,7 +297,7 @@ void UpdatePlotxyzAll(void){
     xplt = meshi->xplt_orig;
     yplt = meshi->yplt_orig;
     zplt = meshi->zplt_orig;
-    dxyz = meshi->dxyz;
+    dxyz = meshi->dxyz_orig;
     dxyz[0] = ABS(xplt[1] - xplt[0]);
     dxyz[1] = ABS(yplt[1] - yplt[0]);
     dxyz[2] = ABS(zplt[1] - zplt[0]);

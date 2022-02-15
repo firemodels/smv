@@ -325,7 +325,6 @@ void InitMesh(meshdata *meshi){
   meshi->smoke3d_co2 = NULL;
   meshi->smokeplaneinfo = NULL;
   meshi->nsmokeplaneinfo = 0;
-  meshi->nverts = 0;
   meshi->opacity_adjustments = NULL;
   meshi->light_fraction = NULL;
   meshi->uc_light_fraction = NULL;
@@ -2762,6 +2761,12 @@ void UpdateMeshCoords(void){
 
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
+    float xminmax[2], yminmax[2], zminmax[2];
+    float *verts;
+    int xindex[8]={0,1,0,1,0,1,0,1};
+    int yindex[8]={0,0,1,1,0,0,1,1};
+    int zindex[8]={0,0,0,0,1,1,1,1};
+    int j;
 
     meshi=meshinfo+i;
     if(i==0){
@@ -2779,6 +2784,19 @@ void UpdateMeshCoords(void){
     xbar0 = MIN(xbar0, meshi->xyz_bar0[XXX]);
     ybar0 = MIN(ybar0, meshi->xyz_bar0[YYY]);
     zbar0 = MIN(zbar0, meshi->xyz_bar0[ZZZ]);
+
+    xminmax[0] = meshi->xyz_bar0[XXX];
+    xminmax[1] = meshi->xyz_bar[XXX];
+    yminmax[0] = meshi->xyz_bar0[YYY];
+    yminmax[1] = meshi->xyz_bar[YYY];
+    zminmax[0] = meshi->xyz_bar0[ZZZ];
+    zminmax[1] = meshi->xyz_bar[ZZZ];
+    verts = meshi->verts;
+    for(j=0;j<8;j++){
+      verts[3*j+0] = xminmax[xindex[j]];
+      verts[3*j+1] = yminmax[yindex[j]];
+      verts[3*j+2] = zminmax[zindex[j]];
+    }
   }
 
   xbar0FDS = xbar0;
@@ -3033,9 +3051,9 @@ void UpdateMeshCoords(void){
     meshi->boxmiddle[0] = meshi->boxmin[0]+meshi->dbox[0]/2.0;
     meshi->boxmiddle[1] = meshi->boxmin[1]+meshi->dbox[1]/2.0;
     meshi->boxmiddle[2] = meshi->boxmin[2]+meshi->dbox[2]/2.0;
-    meshi->boxeps[0]=0.5*meshi->dbox[0]/(float)ibar;
-    meshi->boxeps[1]=0.5*meshi->dbox[1]/(float)jbar;
-    meshi->boxeps[2]=0.5*meshi->dbox[2]/(float)kbar;
+    meshi->boxeps[0]=0.5*(xplt[ibar]-xplt[0])/(float)ibar;
+    meshi->boxeps[1]=0.5*(yplt[jbar]-yplt[0])/(float)jbar;
+    meshi->boxeps[2]=0.5*(zplt[kbar]-zplt[0])/(float)kbar;
     meshi->dcell3[0] = xplt[1]-xplt[0];
     meshi->dcell3[1] = yplt[1]-yplt[0];
     meshi->dcell3[2] = zplt[1]-zplt[0];
@@ -3257,9 +3275,9 @@ void UpdateMeshCoords(void){
     dy = meshi->yplt_orig[1]-meshi->yplt_orig[0];
     dz = meshi->zplt_orig[1]-meshi->zplt_orig[0];
 
-    meshi->dxyz[0] = dx;
-    meshi->dxyz[1] = dy;
-    meshi->dxyz[2] = dz;
+    meshi->dxyz_orig[0] = dx;
+    meshi->dxyz_orig[1] = dy;
+    meshi->dxyz_orig[2] = dz;
 
     // dxy = x*y/sqrt(x*x+y*y)
 #define DIAGDIST(X,Y)  (X)*(Y)/sqrt((X)*(X)+(Y)*(Y))
@@ -5259,6 +5277,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->ijk_max[2] = kk2;
   sd->is_fed = 0;
   sd->above_ground_level = above_ground_level;
+  sd->have_agl_data = 0;
   sd->seq_id = nn_slice;
   sd->autoload = 0;
   sd->display = 0;

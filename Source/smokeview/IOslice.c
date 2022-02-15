@@ -5938,6 +5938,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
   int nycell;
   meshdata *meshi;
 
+  if(sd->have_agl_data==0)return;
   meshi = meshinfo+sd->blocknumber;
 
   terri = meshi->terrain;
@@ -5973,7 +5974,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
     float zmax;
     float voffset;
 
-#define FDS_OFFSET 0.04
+#define FDS_OFFSET 0.01
 
     this_color = ter_black;
     last_color =  NULL;
@@ -5989,7 +5990,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
     zcut = terri->zmin_cutoff;
     zmax = meshi->zplt_orig[meshi->kbar];
     zmax -= agl_smv;
-    zmax += meshi->dxyz[2]/4.0;
+    zmax += meshi->dxyz_orig[2]/4.0;
 
     glPushMatrix();
     glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), vertical_factor*SCALE2SMV(1.0));
@@ -6107,15 +6108,12 @@ void DrawVolSliceTerrain(const slicedata *sd){
 
   float *xplt, *yplt;
   int plotz;
-  terraindata *terri;
   int nycell;
   meshdata *meshi;
 
+  if(sd->have_agl_data==0)return;
   meshi = meshinfo + sd->blocknumber;
-
-  terri = meshi->terrain;
-  if(terri == NULL)return;
-  nycell = terri->jbar;
+  nycell = meshi->jbar;
 
   xplt = meshi->xplt_orig;
   yplt = meshi->yplt_orig;
@@ -6139,7 +6137,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
     float *znode, agl_smv, zmin, zmax;
     float voffset;
 
-    znode = terri->znode;
+    znode = meshi->znodes_complete;
 
     agl_smv = sd->above_ground_level;
     if(agl_offset_actual==1){
@@ -6150,9 +6148,8 @@ void DrawVolSliceTerrain(const slicedata *sd){
     }
 
     zmin = meshi->zplt_orig[0];
-    zmin = zbar0;
     zmax = meshi->zplt_orig[meshi->kbar];
-//    zmin -= agl_smv;
+    zmin -= agl_smv;
     zmax -= agl_smv;
 
     glPushMatrix();
@@ -6173,7 +6170,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
       for(j = sd->js1; j<sd->js2; j += slice_skip){
         int n11, n31, n13, n33;
         int j2;
-        int skip123=0, skip134=0;
+        int draw123=0, draw134=0;
 
         j2 = MIN(j+slice_skip, sd->js2);
         z11 = znode[IJ2(i,  j)];
@@ -6181,11 +6178,20 @@ void DrawVolSliceTerrain(const slicedata *sd){
         z13 = znode[IJ2(i, j2)];
         z33 = znode[IJ2(i2, j2)];
 
-        if(z11>zmax&&z31>zmax&&z33>zmax)skip123=1; // all above then skip
-        if(z11>zmax&&z33>zmax&&z13>zmax)skip134=1;
+        if(z11>=zmin&&z11<=zmax){
+          draw123=1;
+          draw134=1;
+        }
+        if(z33>=zmin&&z33<=zmax){
+          draw123=1;
+          draw134=1;
+        }
+        if(draw123==0&&z31>=zmin&&z31<=zmax)draw123=1;
+        if(draw134==0&&z13>=zmin&&z13<=zmax)draw134=1;
+        if(z11<zbar0||z31<zbar0||z33<zbar0)draw123=0;
+        if(z11<zbar0||z33<zbar0||z13<zbar0)draw134=0;
 
-        if(z11<zmin||z31<zmin||z33<zmin)skip123=1; // any below then skip
-        if(z11<zmin||z33<zmin||z13<zmin)skip134=1;
+        if(draw123==0&draw134==0)continue;
 
         z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
         z31 = terrain_zmin+geom_vert_exag*(z31-terrain_zmin);
@@ -6195,25 +6201,23 @@ void DrawVolSliceTerrain(const slicedata *sd){
         yy1 = yplt[j];
         y3 = yplt[j2];
 
-        n11 = IJK_SLICE(i,j,sd->ks1);
+        n11 = IJK_SLICE(i,   j, sd->ks1);
+        n31 = IJK_SLICE(i2,  j, sd->ks1);
+        n13 = IJK_SLICE( i, j2, sd->ks1);
+        n33 = IJK_SLICE(i2, j2, sd->ks1);
+
         r11 = (float)sd->iqsliceframe[n11]/255.0;
-
-        n31 = IJK_SLICE(i2,j,sd->ks1);
         r31 = (float)sd->iqsliceframe[n31]/255.0;
-
-        n13 = IJK_SLICE(i,j2,sd->ks1);
         r13 = (float)sd->iqsliceframe[n13]/255.0;
-
-        n33 = IJK_SLICE(i2,j2,sd->ks1);
         r33 = (float)sd->iqsliceframe[n33]/255.0;
 
-        if(skip123==0){
+        if(draw123==1){
           glTexCoord1f(r11);  glVertex3f(x1, yy1, z11);
           glTexCoord1f(r31);  glVertex3f(x3, yy1, z31);
           glTexCoord1f(r33);  glVertex3f(x3,  y3, z33);
         }
 
-        if(skip134==0){
+        if(draw134==1){
           glTexCoord1f(r11);  glVertex3f(x1, yy1, z11);
           glTexCoord1f(r33);  glVertex3f(x3,  y3, z33);
           glTexCoord1f(r13);  glVertex3f(x1,  y3, z13);
@@ -8133,7 +8137,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     agl_smv = sd->above_ground_level;
     zmax = meshi->zplt_orig[meshi->kbar];
     zmax -= agl_smv;
-    zmax += meshi->dxyz[2]/4.0;
+    zmax += meshi->dxyz_orig[2]/4.0;
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
     glTranslatef(-xbar0,-ybar0,-zbar0+MAX(agl_smv, SCALE2FDS(FDS_OFFSET))+slice_dz);
