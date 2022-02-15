@@ -87,6 +87,7 @@ jobs:
           PLATFORM: ${{ matrix.os }}
           LUA: ${{ matrix.lua }}
         run: |
+          sudo apt-get update
           sudo apt-get install build-essential gfortran freeglut3-dev libx11-dev libxmu-dev libxi-dev
           pushd Build/smokeview/gnu_linux_64
           if [[ "$LUA" == "lua" ]]; then
@@ -137,6 +138,7 @@ jobs:
           LUA: ${{ matrix.lua }}
         run: |
           source /opt/intel/oneapi/setvars.sh
+          sudo apt-get update
           sudo apt-get install build-essential gfortran freeglut3-dev libx11-dev libxmu-dev libxi-dev
           pushd Build/smokeview/intel_linux_64
           if [[ "$LUA" == "lua" ]]; then
