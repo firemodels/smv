@@ -1246,6 +1246,7 @@ typedef struct _slicedata {
   int ntimes,ntimes_old,itime;
   unsigned char *iqsliceframe;
   float above_ground_level;
+  int have_agl_data;
   int volslice;
   int is1, is2, js1, js2, ks1, ks2;
   int ijk_min[3], ijk_max[3];

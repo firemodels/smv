@@ -5032,6 +5032,7 @@ FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
     int set_slicecolor;
 
     slicei = sliceinfo+mslicei->islices[i];
+    if(slicei->slice_filetype==SLICE_TERRAIN&&slicei->have_agl_data==0)continue;
     printf("reading %s\n",slicei->file);
     slicei->stream_slice = fopen_buffer(slicei->file,"rb");
     file_size += slicei->stream_slice->filesize;
@@ -5086,6 +5087,7 @@ void LoadMultiSliceMenu(int value){
         slicedata *slicei;
 
         slicei = sliceinfo + mslicei->islices[i];
+        if(slicei->slice_filetype==SLICE_TERRAIN&&slicei->have_agl_data==0)continue;
         if(slicei->skipdup== 0){
           last_slice = mslicei->islices[i];
           break;

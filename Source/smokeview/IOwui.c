@@ -1373,7 +1373,9 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
     meshi->nznodes = (nx+1)*(ny+1);
     if(allocate_memory==1){
       meshi->nznodes = (nx+1)*(ny+1);
+#ifndef pp_ZNODES
       NewMemory((void **)&meshi->znodes_complete, (nx+1)*(ny+1)*sizeof(float));
+#endif
     }
   }
 
@@ -2036,6 +2038,33 @@ void UpdateTerrain(int allocate_memory){
   if(allocate_memory==1){
     int i;
 
+#ifdef pp_ZNODES
+    for(i = 0; i<nmeshes; i++){
+      meshdata *meshi;
+      int j;
+      int nx, ny;
+
+      meshi = meshinfo+i;
+      nx = meshi->ibar;
+      ny = meshi->jbar;
+      meshi->nznodes = (nx+1)*(ny+1);
+      if(meshi->nabors[MUP]==NULL){
+        meshdata *meshj;
+        int ii;
+
+        NewMemory((void **)&meshi->znodes_complete, (nx+1)*(ny+1)*sizeof(float));
+        for(ii = 0; ii<meshi->nznodes; ii++){
+          meshi->znodes_complete[ii] = GetTerrainElev(meshi, ii);
+        }
+        meshj = meshi->nabors[MDOWN];
+        for(;;){
+          if(meshj==NULL)break;
+          meshj->znodes_complete = meshi->znodes_complete;
+          meshj = meshj->nabors[MDOWN];
+        }
+      }
+    }
+#else
     for(i = 0; i<nmeshes; i++){
       meshdata *meshi;
       int ii;
@@ -2045,6 +2074,32 @@ void UpdateTerrain(int allocate_memory){
         meshi->znodes_complete[ii] = GetTerrainElev(meshi, ii);
       }
     }
+#endif
+    for(i=0; i<nsliceinfo; i++){
+      slicedata *slicei;
+      meshdata *meshi;
+      float zmin, zmax;
+      float agl;
+      int ii;
+
+      slicei = sliceinfo + i;
+      if(slicei->slice_filetype!=SLICE_TERRAIN)continue;
+      meshi = meshinfo + slicei->blocknumber;
+      zmin = meshi->zplt_orig[0];
+      zmax = meshi->zplt_orig[meshi->kbar];
+      agl = slicei->above_ground_level;
+      for(ii = 0; ii<meshi->nznodes; ii++){
+        float zslice, zterrain;
+
+        zterrain = meshi->znodes_complete[ii];
+        zslice   = zterrain+agl;
+        if(zterrain>zbar0&&zslice>=zmin&&zslice<=zmax){
+          slicei->have_agl_data = 1;
+          break;
+        }
+      }
+    }
+    CheckMemory;
   }
   if(nterraininfo>0){
     int imesh;

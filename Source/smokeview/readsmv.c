@@ -2796,7 +2796,7 @@ void UpdateMeshCoords(void){
       verts[3*j+0] = xminmax[xindex[j]];
       verts[3*j+1] = yminmax[yindex[j]];
       verts[3*j+2] = zminmax[zindex[j]];
-    } 
+    }
   }
 
   xbar0FDS = xbar0;
@@ -3051,9 +3051,9 @@ void UpdateMeshCoords(void){
     meshi->boxmiddle[0] = meshi->boxmin[0]+meshi->dbox[0]/2.0;
     meshi->boxmiddle[1] = meshi->boxmin[1]+meshi->dbox[1]/2.0;
     meshi->boxmiddle[2] = meshi->boxmin[2]+meshi->dbox[2]/2.0;
-    meshi->boxeps[0]=0.5*meshi->dbox[0]/(float)ibar;
-    meshi->boxeps[1]=0.5*meshi->dbox[1]/(float)jbar;
-    meshi->boxeps[2]=0.5*meshi->dbox[2]/(float)kbar;
+    meshi->boxeps[0]=0.5*(xplt[ibar]-xplt[0])/(float)ibar;
+    meshi->boxeps[1]=0.5*(yplt[jbar]-yplt[0])/(float)jbar;
+    meshi->boxeps[2]=0.5*(zplt[kbar]-zplt[0])/(float)kbar;
     meshi->dcell3[0] = xplt[1]-xplt[0];
     meshi->dcell3[1] = yplt[1]-yplt[0];
     meshi->dcell3[2] = zplt[1]-zplt[0];
@@ -5277,6 +5277,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->ijk_max[2] = kk2;
   sd->is_fed = 0;
   sd->above_ground_level = above_ground_level;
+  sd->have_agl_data = 0;
   sd->seq_id = nn_slice;
   sd->autoload = 0;
   sd->display = 0;
