@@ -5990,7 +5990,7 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
     zcut = terri->zmin_cutoff;
     zmax = meshi->zplt_orig[meshi->kbar];
     zmax -= agl_smv;
-    zmax += meshi->dxyz[2]/4.0;
+    zmax += meshi->dxyz_orig[2]/4.0;
 
     glPushMatrix();
     glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), vertical_factor*SCALE2SMV(1.0));
@@ -8137,7 +8137,7 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
     agl_smv = sd->above_ground_level;
     zmax = meshi->zplt_orig[meshi->kbar];
     zmax -= agl_smv;
-    zmax += meshi->dxyz[2]/4.0;
+    zmax += meshi->dxyz_orig[2]/4.0;
     glPushMatrix();
     glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
     glTranslatef(-xbar0,-ybar0,-zbar0+MAX(agl_smv, SCALE2FDS(FDS_OFFSET))+slice_dz);

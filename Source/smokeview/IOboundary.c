@@ -4475,8 +4475,8 @@ int CompareMeshResolution(int dir, meshdata *meshi, meshdata *meshj){
   float grid_eps;
   float *dxyzi, *dxyzj;
 
-  dxyzi = meshi->dxyz;
-  dxyzj = meshj->dxyz;
+  dxyzi = meshi->dxyz_orig;
+  dxyzj = meshj->dxyz_orig;
   grid_eps = MIN(dxyzi[dir],dxyzj[dir])/2.0;
 
   if(ABS(dxyzi[dir]-dxyzj[dir]) < grid_eps)return 0;
@@ -4516,7 +4516,7 @@ int IsBoundaryDuplicate(patchdata *patchi, int flag){
     if((patchi->dir != patchj->dir)||patchj->dir==0)continue;
     if(strcmp(labeli->longlabel, labelj->longlabel) != 0)continue;
 
-    grid_eps = MAX(meshi->dxyz[patchi->dir],meshj->dxyz[patchi->dir]);
+    grid_eps = MAX(meshi->dxyz_orig[patchi->dir],meshj->dxyz_orig[patchi->dir]);
 
     xyzminj = patchj->xyz_min;
     xyzmaxj = patchj->xyz_max;

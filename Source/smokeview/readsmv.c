@@ -3275,9 +3275,9 @@ void UpdateMeshCoords(void){
     dy = meshi->yplt_orig[1]-meshi->yplt_orig[0];
     dz = meshi->zplt_orig[1]-meshi->zplt_orig[0];
 
-    meshi->dxyz[0] = dx;
-    meshi->dxyz[1] = dy;
-    meshi->dxyz[2] = dz;
+    meshi->dxyz_orig[0] = dx;
+    meshi->dxyz_orig[1] = dy;
+    meshi->dxyz_orig[2] = dz;
 
     // dxy = x*y/sqrt(x*x+y*y)
 #define DIAGDIST(X,Y)  (X)*(Y)/sqrt((X)*(X)+(Y)*(Y))
