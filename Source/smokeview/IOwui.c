@@ -2093,7 +2093,7 @@ void UpdateTerrain(int allocate_memory){
 
         zterrain = meshi->znodes_complete[ii];
         zslice   = zterrain+agl;
-        if(zterrain>zbar0&&zslice>=zmin&&zslice<=zmax){
+        if(zterrain>=zbar0&&zslice>=zmin&&zslice<=zmax){
           slicei->have_agl_data = 1;
           break;
         }
