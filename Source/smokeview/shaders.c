@@ -667,30 +667,30 @@ int InitShaders(void){
   }
 
   if(GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader){
-    PRINTF("  GPU shaders\n");
+    if(verbose_output==1)PRINTF("  GPU shaders\n");
     if(SetSmokeShaders()==1){
-      PRINTF("    3D smoke loaded\n");
+      if(verbose_output==1)PRINTF("    3D smoke loaded\n");
     }
     else{
       PRINTF("    3D smoke failed to load\n");
       err=1;
     }
     if(SetVolSmokeShaders()==1){
-      PRINTF("    volume smoke loaded\n");
+      if(verbose_output==1)PRINTF("    volume smoke loaded\n");
     }
     else{
       PRINTF("    volume smoke failed to load\n");
       err=1;
     }
     if(Set3DSliceShaders()==1){
-      PRINTF("    3D slice loaded\n");
+      if(verbose_output==1)PRINTF("    3D slice loaded\n");
     }
     else{
       PRINTF("    3D slice failed to load\n");
       err=1;
     }
     if(SetZoneSmokeShaders()==1){
-      PRINTF("    zone smoke loaded\n");
+      if(verbose_output==1)PRINTF("    zone smoke loaded\n");
     }
     else{
       PRINTF("    zone smoke failed to load\n");

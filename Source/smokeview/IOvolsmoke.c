@@ -2988,7 +2988,7 @@ void InitVolsmokeTexture(meshdata *meshi){
   int i;
 
   //UnloadVolsmokeSuperTextures();
-  PRINTF("defining smoke and fire textures for %s - ", meshi->label);
+  if(verbose_output==1)PRINTF("defining smoke and fire textures for %s - ", meshi->label);
   FFLUSH();
 
   nx = meshi->ibar+1;
@@ -3085,8 +3085,8 @@ void InitVolsmokeTexture(meshdata *meshi){
   }
 
   glActiveTexture(GL_TEXTURE0);
-  PRINTF("complete");
-  PRINTF("\n");
+  if(verbose_output==1)PRINTF("complete");
+  if(verbose_output==1)PRINTF("\n");
   FFLUSH();
 }
 

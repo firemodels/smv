@@ -2953,10 +2953,15 @@ void HandleRotationType(int flag){
 void UpdateClipPlanes(void){
   if(trainer_mode==0){
     if(clip_mode!=clip_mode_last){
-      if(clip_mode==CLIP_OFF)PRINTF("clipping off\n");
-      if(clip_mode==CLIP_BLOCKAGES_DATA)PRINTF("clipping blockages + data\n");
-      if(clip_mode==CLIP_BLOCKAGES)PRINTF("clipping blockages\n");
-      if(clip_mode==CLIP_DATA)PRINTF("clipping data\n");
+      if(startup==1){
+        if(clip_mode==CLIP_OFF)PRINTF("clipping off\n");
+        if(clip_mode==CLIP_BLOCKAGES_DATA)PRINTF("clipping blockages + data\n");
+        if(clip_mode==CLIP_BLOCKAGES)PRINTF("clipping blockages\n");
+        if(clip_mode==CLIP_DATA)PRINTF("clipping data\n");
+      }
+      else{
+        startup = 0;
+      }
       clip_mode_last=clip_mode;
     }
   }

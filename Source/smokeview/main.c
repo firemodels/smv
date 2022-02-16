@@ -586,6 +586,9 @@ char *ParseCommandline(int argc, char **argv){
     else if(strncmp(argv[i], "-fed", 4) == 0){
       compute_fed = 1;
     }
+    else if(strncmp(argv[i], "-verbose", 8)==0){
+      verbose_output = 1;
+    }
     else if(strncmp(argv[i], "-outline", 8)==0){
       show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
     }
@@ -926,7 +929,6 @@ int main(int argc, char **argv){
     return 0;
   }
   PRINTF("Startup time: %.1f s\n", startup_time);
-  PRINTF("\n");
 
   glutMainLoop();
   return 0;

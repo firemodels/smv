@@ -7172,7 +7172,7 @@ int ReadObjectDefs(char *file){
 
   stream=fopen(file,"r");
   if(stream==NULL)return 0;
-  PRINTF("reading %s ",file);
+  if(verbose_output==1)PRINTF("reading %s ", file);
 
   firstdef=-1;
   buffer_ptr=NULL;
@@ -7335,8 +7335,10 @@ int ReadObjectDefs(char *file){
       objecti=objecti->next;
     }
   }
-  PRINTF("- complete");
-  PRINTF("\n\n");
+  if(verbose_output==1){
+    PRINTF("- complete");
+    PRINTF("\n\n");
+  }
   return ndevices;
 }
 

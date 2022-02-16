@@ -4065,7 +4065,7 @@ void InitSlice3DTexture(meshdata *meshi){
   GLsizei nx, ny, nz;
 
   SNIFF_ERRORS("InitSlice3DTexture: start");
-  PRINTF("Defining 3d slice textures for %s ...", meshi->label);
+  if(verbose_output==1)PRINTF("Defining 3d slice textures for %s ...", meshi->label);
   FFLUSH();
 
   glActiveTexture(GL_TEXTURE0);
@@ -4107,8 +4107,8 @@ void InitSlice3DTexture(meshdata *meshi){
   }
 
   glActiveTexture(GL_TEXTURE0);
-  PRINTF("completed");
-  PRINTF("\n");
+  if(verbose_output==1)PRINTF("completed");
+  if(verbose_output==1)PRINTF("\n");
   FFLUSH();
 }
 #endif
