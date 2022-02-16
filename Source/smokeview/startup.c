@@ -391,8 +391,8 @@ void InitStartupDirs(void){
   strcat(smokeviewini_filename, dirseparator);
   strcat(smokeviewini_filename, "smokeview.ini");
 
-  PRINTF("Scratch directory: %s\n", smokeview_scratchdir);
-  PRINTF("    smokeview.ini: %s\n", smokeviewini_filename);
+  if(verbose_output==1)PRINTF("Scratch directory: %s\n", smokeview_scratchdir);
+  if(verbose_output==1)PRINTF("    smokeview.ini: %s\n", smokeviewini_filename);
 
   if(freehome==1){
   // don't free homedir if it is a pointer defined by getenv
@@ -423,12 +423,12 @@ void SetupGlut(int argc, char **argv){
 #endif
   if(use_graphics==1){
     PRINTF("\n");
-    PRINTF("%s","initializing Glut");
+    if(verbose_output==1)PRINTF("%s","initializing Glut");
     glutInit(&argc, argv);
 #ifdef pp_OSX
-    PRINTF("(%i/%i)", GetScreenHeight(), glutGet(GLUT_SCREEN_HEIGHT));
+    if(verbose_output==1)PRINTF("(%i/%i)", GetScreenHeight(), glutGet(GLUT_SCREEN_HEIGHT));
 #endif
-    PRINTF("\n%s\n",_("complete"));
+    if(verbose_output==1)PRINTF("\n%s\n",_("complete"));
 
   }
 #ifdef pp_OSX
@@ -437,11 +437,11 @@ void SetupGlut(int argc, char **argv){
 
   if(use_graphics==1){
 #ifdef _DEBUG
-    PRINTF("%s",_("initializing Smokeview graphics window - "));
+    if(verbose_output==1)PRINTF("%s",_("initializing Smokeview graphics window - "));
 #endif
     glutInitWindowSize(screenWidth, screenHeight);
 #ifdef _DEBUG
-    PRINTF("%s\n",_("initialized"));
+    if(verbose_output==1)PRINTF("%s\n",_("initialized"));
 #endif
 
     max_screenWidth = glutGet(GLUT_SCREEN_WIDTH);
@@ -539,7 +539,9 @@ void InitOpenGL(int option){
   int type;
   int err;
 
-  if(option==PRINT)PRINTF("%s\n",_("initializing OpenGL"));
+  if(option==PRINT){
+    if(verbose_output==1)PRINTF("%s\n", _("initializing OpenGL"));
+  }
 
   type = GLUT_RGB|GLUT_DEPTH;
   if(buffertype==GLUT_DOUBLE){
@@ -648,7 +650,9 @@ void InitOpenGL(int option){
     if(nblueshift<0)nblueshift=0;
   }
   opengldefined=1;
-  if(option==PRINT)PRINTF("%s\n\n",_("complete"));
+  if(option==PRINT){
+    if(verbose_output==1)PRINTF("%s\n\n", _("complete"));
+  }
 }
 
 /* ------------------ Set3DSmokeStartup ------------------------ */

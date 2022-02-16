@@ -1962,7 +1962,7 @@ void InitTextures0(void){
     }
     glGenTextures(1,&texti->name);
     glBindTexture(GL_TEXTURE_2D,texti->name);
-    printf("  reading in texture image: %s",texti->file);
+    if(verbose_output==1)printf("  reading in texture image: %s",texti->file);
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
 
     floortex=ReadPicture(texti->file,&texwid,&texht,&is_transparent,0);
@@ -1971,14 +1971,14 @@ void InitTextures0(void){
       PRINTF("\n***Error: Texture %s failed to load\n", filename);
       continue;
     }
-    printf(" - complete\n");
+    if(verbose_output==1)printf(" - complete\n");
     if(texwid>max_texture_size||texht>max_texture_size){
       printf("***error: image size: %i x %i, is larger than the maximum allowed texture size %i x %i\n", texwid, texht, max_texture_size, max_texture_size);
     }
-    printf("  installing texture: %s",texti->file);
+    if(verbose_output==1)printf("  installing texture: %s",texti->file);
     glTexImage2D(GL_TEXTURE_2D, 0, 4, texwid, texht, 0, GL_RGBA, GL_UNSIGNED_BYTE, floortex);
     SNIFF_ERRORS("after glTexImage2D");
-    printf(" - complete\n");
+    if(verbose_output==1)printf(" - complete\n");
     glGenerateMipmap(GL_TEXTURE_2D);
     SNIFF_ERRORS("after glGenerateMipmap");
     FREEMEMORY(floortex);
@@ -6068,7 +6068,7 @@ int ReadSMV(bufferstreamdata *stream){
   ntc_total=0;
   nspr_total=0;
   nheat_total=0;
-  PRINTF("%s","  pass 1\n");
+  if(verbose_output==1)PRINTF("%s","  pass 1\n");
   for(;;){
     if(FEOF(stream)!=0){
       BREAK;
@@ -6848,7 +6848,7 @@ int ReadSMV(bufferstreamdata *stream){
   if(noffset==0)ioffset=1;
 
   REWIND(stream);
-  PRINTF("%s","  pass 2\n");
+  if(verbose_output==1)PRINTF("%s","  pass 2\n");
   for(;;){
     if(FEOF(stream)!=0){
       BREAK;
@@ -8222,7 +8222,7 @@ int ReadSMV(bufferstreamdata *stream){
   }
   ndeviceinfo=0;
   REWIND(stream);
-  PRINTF("%s","  pass 3\n");
+  if(verbose_output==1)PRINTF("%s","  pass 3\n");
 
   /*
    ************************************************************************
@@ -8702,7 +8702,7 @@ int ReadSMV(bufferstreamdata *stream){
  */
 
   REWIND(stream);
-  PRINTF("%s","  pass 4\n");
+  if(verbose_output==1)PRINTF("%s","  pass 4\n");
   startpass=1;
   CheckMemory;
 
@@ -10096,7 +10096,7 @@ typedef struct {
   REWIND(stream);
   if(do_pass4==1||(auto_terrain==1&&manual_terrain==0)){
     do_pass5 = 1;
-    PRINTF("%s","  pass 5\n");
+    if(verbose_output==1)PRINTF("%s","  pass 5\n");
   }
 
   while(((auto_terrain==1&&manual_terrain==0)||do_pass4==1)){
@@ -10239,7 +10239,7 @@ typedef struct {
   STOP_TIMER(processing_time);
   START_TIMER(wrapup_time);
 
-  PRINTF("  wrapping up\n");
+  if(verbose_output==1)PRINTF("  wrapping up\n");
   float timer_readsmv;
 
   have_obsts = 0;
@@ -10515,8 +10515,10 @@ typedef struct {
   SetupMeshWalls();
   update_windrose = 1;
 
-  PRINTF("%s",_("complete"));
-  PRINTF("\n\n");
+  if(verbose_output==1){
+    PRINTF("%s", _("complete"));
+    PRINTF("\n\n");
+  }
   PrintMemoryInfo;
 
   STOP_TIMER(wrapup_time);
@@ -10717,7 +10719,9 @@ int ReadIni2(char *inifile, int localfile){
   updatefacelists = 1;
 
   if((stream = fopen(inifile, "r")) == NULL)return 1;
-  if(readini_output==1)PRINTF("reading %s ", inifile);
+  if(readini_output==1){
+    if(verbose_output==1)PRINTF("reading %s ", inifile);
+  }
 
   for(i = 0; i<nunitclasses_ini; i++){
     f_units *uc;
@@ -13982,7 +13986,7 @@ int ReadIni(char *inifile){
     returnval = ReadIni2(smvprogini_ptr, 0);
     if(returnval==2)return 2;
     if(returnval == 0 && readini_output==1){
-      PRINTF("- complete\n");
+      if(verbose_output==1)PRINTF("- complete\n");
     }
     UpdateTerrainOptions();
   }
@@ -13995,7 +13999,7 @@ int ReadIni(char *inifile){
     returnval = ReadIni2(smokeviewini_filename, 0);
     if(returnval==2)return 2;
     if(returnval == 0 && readini_output==1){
-      PRINTF("- complete\n");
+      if(verbose_output==1)PRINTF("- complete\n");
     }
   }
 
@@ -14009,7 +14013,7 @@ int ReadIni(char *inifile){
     returnval = ReadIni2(smokeviewini_localfilename, 0);
     if(returnval==2)return 2;
     if(returnval==0&&readini_output==1){
-      PRINTF("- complete\n");
+      if(verbose_output==1)PRINTF("- complete\n");
     }
   }
 
@@ -14035,7 +14039,7 @@ int ReadIni(char *inifile){
     }
     if(returnval==2)return 2;
     if(returnval == 0 && readini_output==1){
-      PRINTF("- complete\n");
+      if(verbose_output==1)PRINTF("- complete\n");
     }
   }
 
@@ -14046,7 +14050,7 @@ int ReadIni(char *inifile){
 
     return_code = ReadIni2(inifile,1);
     if(return_code == 0 && readini_output==1){
-      PRINTF("- complete\n");
+      if(verbose_output==1)PRINTF("- complete\n");
     }
 
     if(return_code==1||return_code==2){

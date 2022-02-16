@@ -48,6 +48,8 @@ SVEXTERN int SOOT_index, HRRPUV_index, TEMP_index, CO2_index;
 
 SVEXTERN int SVDECL(agl_offset_actual, 1);
 
+SVEXTERN int SVDECL(startup, 1);
+SVEXTERN int SVDECL(verbose_output, 0);
 SVEXTERN float glui_smoke3d_extinct;
 SVEXTERN int SVDECL(update_smoke_alphas, 0);
 SVEXTERN int SVDECL(max_colorbar_label_width, 0);
