@@ -150,8 +150,10 @@ void ReadBoundINI(void){
     FREEMEMORY(fullfilename);
     return;
   }
-  PRINTF("%s", _("reading: "));
-  PRINTF("%s\n", fullfilename);
+  if(verbose_output==1){
+    PRINTF("%s", _("reading: "));
+    PRINTF("%s\n", fullfilename);
+  }
 
   while(!feof(stream)){
     char buffer[255], buffer2[255];
