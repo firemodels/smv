@@ -2896,7 +2896,6 @@ GLUI_Panel *PANEL_extreme_min = NULL, *PANEL_extreme_max = NULL;
 #ifdef pp_IIMEBAR_DIGITS
 GLUI_Spinner *SPINNER_ntimebar_digits = NULL;
 #endif
-GLUI_Spinner *SPINNER_sliceval_ndigits = NULL;
 GLUI_Spinner *SPINNER_npartthread_ids = NULL;
 GLUI_Spinner *SPINNER_iso_outline_ioffset = NULL;
 GLUI_Spinner *SPINNER_histogram_width_factor = NULL;
@@ -4931,8 +4930,6 @@ extern "C" void GluiBoundsSetup(int main_window){
 
     glui_bounds->add_button_to_panel(PANEL_immersed, _("show values(all regions)"), SHOW_ALL_SLICE_VALUES, ImmersedBoundCB);
     glui_bounds->add_button_to_panel(PANEL_immersed, _("hide values(all regions)"), HIDE_ALL_SLICE_VALUES, ImmersedBoundCB);
-    SPINNER_sliceval_ndigits = glui_bounds->add_spinner_to_panel(PANEL_immersed, _("digits"), GLUI_SPINNER_INT, &sliceval_ndigits);
-    SPINNER_sliceval_ndigits->set_int_limits(0, 10);
 
     PANEL_showslice = glui_bounds->add_panel_to_panel(PANEL_immersed, "show vectors and", true);
     CHECKBOX_show_node_slices_and_vectors = glui_bounds->add_checkbox_to_panel(PANEL_showslice, _("node centered slices"), &show_node_slices_and_vectors);
