@@ -6,16 +6,11 @@
 &TIME T_END=200 /
 &MISC SOLID_PHASE_ONLY=.TRUE., FREEZE_VELOCITY=.TRUE. /
 
-&WIND U0=10.,RAMP_U0_Z='ramp_u_z',
-      V0=10.,RAMP_V0_Z='ramp_v_z'/
+&WIND SPEED=14.142, RAMP_SPEED_Z='ramp_z', DIRECTION=225 /
 
-&RAMP ID='ramp_u_z', Z= -10, F= 0.0 /
-&RAMP ID='ramp_u_z', Z=   0, F= 1.0 /
-&RAMP ID='ramp_u_z', Z= 100, F= 1.0 /
-
-&RAMP ID='ramp_v_z', Z= -10, F= 0.0 /
-&RAMP ID='ramp_v_z', Z=   0, F= 1.0 /
-&RAMP ID='ramp_v_z', Z= 100, F= 1.0 /
+&RAMP ID='ramp_z', Z= -10, F= 0.0 /
+&RAMP ID='ramp_z', Z=   0, F= 1.0 /
+&RAMP ID='ramp_z', Z= 100, F= 1.0 /
 
 &SLCF AGL_SLICE=5.,  QUANTITY='VELOCITY', VECTOR=T /
 &SLCF AGL_SLICE=25., QUANTITY='VELOCITY', VECTOR=T /
