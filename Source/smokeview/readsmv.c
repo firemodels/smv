@@ -13249,11 +13249,17 @@ int ReadIni2(char *inifile, int localfile){
         continue;
       }
       if(Match(buffer, "SMOKECOLOR") == 1){
+        int f_gray_smoke = -1;
+
         if(fgets(buffer, 255, stream) == NULL)break;
-        sscanf(buffer, "%i %i %i", smoke_color_int255, smoke_color_int255+1, smoke_color_int255+2);
+        sscanf(buffer, "%i %i %i, %i", smoke_color_int255, smoke_color_int255+1, smoke_color_int255+2, &f_gray_smoke);
         smoke_color_int255[0] = CLAMP(smoke_color_int255[0], 0, 255);
         smoke_color_int255[1] = CLAMP(smoke_color_int255[1], 0, 255);
         smoke_color_int255[2] = CLAMP(smoke_color_int255[2], 0, 255);
+        if(f_gray_smoke>=0){
+          force_gray_smoke = f_gray_smoke;
+          if(force_gray_smoke!=0)force_gray_smoke = 1;
+        }
         continue;
       }
       if(Match(buffer, "CO2COLOR") == 1){
@@ -15220,7 +15226,7 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, " %i %i %i\n", show_extremedata, show_extreme_mindata, show_extreme_maxdata);
   }
   fprintf(fileout, "SMOKECOLOR\n");
-  fprintf(fileout, " %i %i %i\n", smoke_color_int255[0], smoke_color_int255[1], smoke_color_int255[2]);
+  fprintf(fileout, " %i %i %i %i\n", smoke_color_int255[0], smoke_color_int255[1], smoke_color_int255[2], force_gray_smoke);
   fprintf(fileout, "SMOKECULL\n");
   fprintf(fileout," %i\n",smokecullflag);
   if(ABS(smoke_albedo - smoke_albedo_base) > 0.001){

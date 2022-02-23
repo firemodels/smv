@@ -18,7 +18,7 @@
 #define CO2SMOKE 63
 #define UPDATE_SMOKECOLORS 4
 #define GLOBAL_FIRE_CUTOFF 15
-#define SMOKE_SHADE 7
+#define FORCE_GRAY             7
 #define SMOKE_COLORBAR_LIST   16
 #define FIRECOLORMAP_TYPE     17
 #define CO2_COLORBAR_LIST     82
