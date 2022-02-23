@@ -72,7 +72,6 @@ GLUI_Spinner *SPINNER_smoke3d_smoke_red=NULL;
 GLUI_Spinner *SPINNER_smoke3d_fire_alpha = NULL;
 GLUI_Spinner *SPINNER_smoke3d_smoke_green=NULL;
 GLUI_Spinner *SPINNER_smoke3d_smoke_blue=NULL;
-GLUI_Spinner *SPINNER_smoke3d_smoke_gray = NULL;
 GLUI_Spinner *SPINNER_load_3dsmoke = NULL;
 GLUI_Spinner *SPINNER_load_hrrpuv = NULL;
 GLUI_Spinner *SPINNER_light_xyz[3];
@@ -405,14 +404,13 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   PANEL_smokefire_rgb = glui_3dsmoke->add_panel_to_panel(PANEL_fire_color, "", GLUI_PANEL_NONE);
 
   PANEL_smoke_rgb = glui_3dsmoke->add_panel_to_panel(PANEL_smokefire_rgb, "smoke");
-  SPINNER_smoke3d_smoke_red = glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_rgb, _("red"), GLUI_SPINNER_INT, smoke_color_int255, SMOKE_RED, Smoke3dCB);
+  SPINNER_smoke3d_smoke_red   = glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_rgb, _("red"),   GLUI_SPINNER_INT, smoke_color_int255,   SMOKE_RED,   Smoke3dCB);
   SPINNER_smoke3d_smoke_green = glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_rgb, _("green"), GLUI_SPINNER_INT, smoke_color_int255+1, SMOKE_GREEN, Smoke3dCB);
-  SPINNER_smoke3d_smoke_blue = glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_rgb, _("blue"), GLUI_SPINNER_INT, smoke_color_int255+2, SMOKE_BLUE, Smoke3dCB);
-  SPINNER_smoke3d_smoke_gray = glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_rgb, _("gray"), GLUI_SPINNER_INT, smoke_color_int255+3, SMOKE_GRAY, Smoke3dCB);
+  SPINNER_smoke3d_smoke_blue  = glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_rgb, _("blue"),  GLUI_SPINNER_INT, smoke_color_int255+2, SMOKE_BLUE,  Smoke3dCB);
+                                glui_3dsmoke->add_checkbox_to_panel(PANEL_smoke_rgb, "force gray", &force_gray_smoke, FORCE_GRAY, Smoke3dCB);
   SPINNER_smoke3d_smoke_red->set_int_limits(0, 255);
   SPINNER_smoke3d_smoke_green->set_int_limits(0, 255);
   SPINNER_smoke3d_smoke_blue->set_int_limits(0, 255);
-  SPINNER_smoke3d_smoke_gray->set_int_limits(0, 255);
 
   glui_3dsmoke->add_column_to_panel(PANEL_smokefire_rgb, false);
   PANEL_fire_rgb = glui_3dsmoke->add_panel_to_panel(PANEL_smokefire_rgb, "fire");
@@ -1141,24 +1139,23 @@ extern "C" void Smoke3dCB(int var){
     Smoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
     UpdateCO2Colormap();
     break;
-  case SMOKE_GRAY:
-  {
-    int smoke_gray_level;
-
-    smoke_gray_level = smoke_color_int255[3];
-    smoke_color_int255[0] = smoke_gray_level;
-    smoke_color_int255[1] = smoke_gray_level;
-    smoke_color_int255[2] = smoke_gray_level;
-    SPINNER_smoke3d_smoke_red->set_float_val(smoke_gray_level);
-    SPINNER_smoke3d_smoke_green->set_float_val(smoke_gray_level);
-    SPINNER_smoke3d_smoke_blue->set_float_val(smoke_gray_level);
-  }
-    Smoke3dCB(SMOKE_RED);
-    break;
+  case FORCE_GRAY:
   case SMOKE_RED:
   case SMOKE_GREEN:
   case SMOKE_BLUE:
-  case SMOKE_SHADE:
+    if(force_gray_smoke==1){
+      int smoke_gray_level;
+
+      smoke_gray_level = smoke_color_int255[0];
+      if(var==SMOKE_GREEN)smoke_gray_level = smoke_color_int255[1];
+      if(var==SMOKE_BLUE)smoke_gray_level = smoke_color_int255[2];
+      smoke_color_int255[0] = smoke_gray_level;
+      smoke_color_int255[1] = smoke_gray_level;
+      smoke_color_int255[2] = smoke_gray_level;
+      SPINNER_smoke3d_smoke_red->set_float_val(smoke_gray_level);
+      SPINNER_smoke3d_smoke_green->set_float_val(smoke_gray_level);
+      SPINNER_smoke3d_smoke_blue->set_float_val(smoke_gray_level);
+    }
     Smoke3dCB(USE_SMOKE_RGB);
     Smoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
     break;
