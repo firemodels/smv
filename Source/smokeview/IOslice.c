@@ -8120,7 +8120,6 @@ void DrawVVolSliceTerrain(const vslicedata *vd){
   if((vd->volslice == 1 && plotz >= 0 && visz_all == 1) || (vd->volslice == 0 && sd->idir == ZDIR)){
     int maxi;
     float agl_smv;
-    float z_cutoff;
     int vectorskipi, vectorskipj;
     float zmin, zmax, voffset;
 
