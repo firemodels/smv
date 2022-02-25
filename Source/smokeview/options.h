@@ -9,7 +9,7 @@
 
 //*** define smokeview title
 
-#ifdef pp_BETAp
+#ifdef pp_BETA
   #define PROGVERSION "Test"
 #else
   #define PROGVERSION ""
