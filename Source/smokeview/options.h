@@ -17,7 +17,6 @@
 
 //*** options: all platforms
 
-//#define pp_ZNODES            // allocate and define znodes array more efficiently
 #define pp_SMOKEBUFFER       // read 3d smoke files using memory bufffer i/o routines
 //#define pp_GEOM_DEBUG        // debug out in geometry routines
 //#define pp_CRASH_TEST         // test detection of division by zero or use of undefined pointer

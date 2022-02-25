@@ -1373,9 +1373,7 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
     meshi->nznodes = (nx+1)*(ny+1);
     if(allocate_memory==1){
       meshi->nznodes = (nx+1)*(ny+1);
-#ifndef pp_ZNODES
       NewMemory((void **)&meshi->znodes_complete, (nx+1)*(ny+1)*sizeof(float));
-#endif
     }
   }
 
@@ -2038,43 +2036,18 @@ void UpdateTerrain(int allocate_memory){
   if(allocate_memory==1){
     int i;
 
-#ifdef pp_ZNODES
-    for(i = 0; i<nmeshes; i++){
-      meshdata *meshi;
-      int j;
-      int nx, ny;
-
-      meshi = meshinfo+i;
-      nx = meshi->ibar;
-      ny = meshi->jbar;
-      meshi->nznodes = (nx+1)*(ny+1);
-      if(meshi->nabors[MUP]==NULL){
-        meshdata *meshj;
-        int ii;
-
-        NewMemory((void **)&meshi->znodes_complete, (nx+1)*(ny+1)*sizeof(float));
-        for(ii = 0; ii<meshi->nznodes; ii++){
-          meshi->znodes_complete[ii] = GetTerrainElev(meshi, ii);
-        }
-        meshj = meshi->nabors[MDOWN];
-        for(;;){
-          if(meshj==NULL)break;
-          meshj->znodes_complete = meshi->znodes_complete;
-          meshj = meshj->nabors[MDOWN];
-        }
-      }
-    }
-#else
     for(i = 0; i<nmeshes; i++){
       meshdata *meshi;
       int ii;
 
       meshi = meshinfo+i;
+      // compute elevations for terrain in each mesh
+      // really only need to do this for one mesh in a column but computation isquick and doesn't take a lot of space
+      // so doing it for all meshes keeps code simpler
       for(ii = 0; ii<meshi->nznodes; ii++){
         meshi->znodes_complete[ii] = GetTerrainElev(meshi, ii);
       }
     }
-#endif
     for(i=0; i<nsliceinfo; i++){
       slicedata *slicei;
       meshdata *meshi;
