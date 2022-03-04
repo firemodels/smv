@@ -238,6 +238,7 @@ int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads){
 
     stream = fopen(filename, "rb");
     if(stream==NULL)return 0;
+    fseek(stream, start, SEEK_SET);
     fread(buffer+start, sizeof(char), end-start, stream);
     fclose(stream);
   }
