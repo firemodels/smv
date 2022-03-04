@@ -221,28 +221,67 @@ FILE_SIZE freadptr_buffer(void **ptr, FILE_SIZE size, FILE_SIZE count, filedata 
   return copy_count/size;
 }
 
+
+/* --------------------------  _readbufferdata ------------------------------------ */
+
+typedef struct _readbufferdata {
+  char *filename, *buffer;
+  int start, size, returnval;
+} readbufferdata;
+
+/* ------------------ ReadBufferi ------------------------ */
+
+void ReadBufferi(readbufferdata *readbufferi){
+    FILE *stream;
+
+    stream = fopen(readbufferi->filename, "rb");
+    if(stream==NULL){
+      readbufferi->returnval = 0;
+      return;
+    }
+    fseek(stream, readbufferi->start, SEEK_SET);
+    fread(readbufferi->buffer+readbufferi->start, sizeof(char), readbufferi->size, stream);
+    fclose(stream);
+    readbufferi->returnval = 1;
+}
+
 /* ------------------ ReadBuffer ------------------------ */
 
 int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads){
-  int i, filesizei;
+  int i, filesizei, returnval;
+  readbufferdata *readbufferinfo;
 
+  returnval = 1;
   filesizei = filesize/nthreads;
 
+  NewMemory((void **)&readbufferinfo, nthreads*sizeof(readbufferdata));
+
   for(i = 0; i<nthreads; i++){
-    FILE *stream;
+    readbufferdata *readbufferi;
     int start, end;
 
     start = i*filesizei;
     end = start+filesizei;
-    if(end>filesize)end = filesize;
+    if(end>filesize)end = filesize;;
 
-    stream = fopen(filename, "rb");
-    if(stream==NULL)return 0;
-    fseek(stream, start, SEEK_SET);
-    fread(buffer+start, sizeof(char), end-start, stream);
-    fclose(stream);
+    readbufferi = readbufferinfo + i;
+    readbufferi->buffer   = buffer;
+    readbufferi->filename = filename;
+    readbufferi->start    = start;
+    readbufferi->size     = end-start;
+    ReadBufferi(readbufferi);
   }
-  return 1;
+  for(i = 0; i<nthreads; i++){
+    readbufferdata *readbufferi;
+
+    readbufferi = readbufferinfo + i;
+    if(readbufferi->returnval==0){
+      returnval = 0;
+      break;
+    }
+  }
+  FREEMEMORY(readbufferinfo);
+  return returnval;
 }
 
   /* ------------------ fopen_buffer ------------------------ */
