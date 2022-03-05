@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+//#define pp_SMOKEBUFFERPTR     // read 3d smoke files using memory buffe pointers
 #define pp_SMOKEBUFFER       // read 3d smoke files using memory buffer i/o routines
 //#define pp_GEOM_DEBUG        // debug out in geometry routines
 //#define pp_CRASH_TEST         // test detection of division by zero or use of undefined pointer
