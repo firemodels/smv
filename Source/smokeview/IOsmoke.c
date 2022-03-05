@@ -23,7 +23,7 @@ typedef bufferstreamdata MFILE;
 #define FSEEK_SMOKE(a,b,c)      fseek_buffer(a->fileinfo,b,c)
 #define FCLOSE_SMOKE(a)         fclose_buffer(a->fileinfo)
 #else
-typedef FILE MFILE;F
+typedef FILE MFILE;
 #define MFILE                   FILE
 #define SKIP_SMOKE              FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
 #define FOPEN_SMOKE(file,mode,nthreads,use_threads) fopen(file,mode)
