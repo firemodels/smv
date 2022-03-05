@@ -107,12 +107,12 @@ bufferstreamdata *GetSMVBuffer(char *file, char *file2){
 
 /* ------------------ FOPEN_RB ------------------------ */
 
-bufferstreamdata *FOPEN_RB(char *file){
+bufferstreamdata *FOPEN_RB(char *file, int nthreads, int use_threads){
   bufferstreamdata *stream;
   filedata *fileinfo;
 
   if(file==NULL)return NULL;
-  fileinfo = fopen_buffer(file, "rb", 1, 0);
+  fileinfo = fopen_buffer(file, "rb", nthreads, use_threads);
   if(fileinfo==NULL)return NULL;
 
   NewMemory((void **)&stream, sizeof(bufferstreamdata));

@@ -16,7 +16,7 @@
 #ifdef pp_SMOKEBUFFER
 typedef bufferstreamdata MFILE;
 #define SKIP_SMOKE             fseek_buffer(SMOKE3DFILE->fileinfo, fortran_skip, SEEK_CUR)
-#define FOPEN_SMOKE(file,mode) FOPEN_RB(file)
+#define FOPEN_SMOKE(file,mode,nthreads,use_threads) FOPEN_RB(file,nthreads,use_threads)
 #define FREAD_SMOKE(a,b,c,d)   fread_buffer(a,b,c,d->fileinfo)
 #define FEOF_SMOKE(a)          feof_buffer(a->fileinfo)
 #define FSEEK_SMOKE(a,b,c)     fseek_buffer(a->fileinfo,b,c)
@@ -25,7 +25,7 @@ typedef bufferstreamdata MFILE;
 typedef FILE MFILE;
 #define MFILE                  FILE
 #define SKIP_SMOKE             FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
-#define FOPEN_SMOKE(file,mode) fopen(file,mode)
+#define FOPEN_SMOKE(file,mode,nthreads,use_threads) fopen(file,mode)
 #define FREAD_SMOKE(a,b,c,d)   fread(a,b,c,d)
 #define FEOF_SMOKE(a)          feof(a)
 #define FSEEK_SMOKE(a,b,c)     fseek(a,b,c)
@@ -3691,7 +3691,7 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
     SMOKE_SIZE = fopen(smoke_sizefilename, "w");
   }
   if(SMOKE_SIZE == NULL)return NULL;  // can't write size file in temp directory so give up
-  SMOKE3DFILE = FOPEN_SMOKE(smokefile, "rb");
+  SMOKE3DFILE = FOPEN_SMOKE(smokefile, "rb", nsmoke_threads, use_smoke_thread);
   if(SMOKE3DFILE == NULL){
     fclose(SMOKE_SIZE);
     return NULL;
@@ -4293,7 +4293,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
 
 //*** read in data
 
-  SMOKE3DFILE=FOPEN_SMOKE(smoke3di->file,"rb");
+  SMOKE3DFILE=FOPEN_SMOKE(smoke3di->file,"rb", nsmoke_threads, use_smoke_thread);
   if(SMOKE3DFILE==NULL){
     SetupSmoke3D(smoke3di,UNLOAD, iframe_arg, &error_local);
     *errorcode_arg =1;
