@@ -348,7 +348,12 @@ int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use
     int start, end;
 
     start = i*filesizei;
-    end = start+filesizei;
+    if(i==nthreads-1){
+      end = filesize;
+    }
+    else{
+      end = start+filesizei;
+    }
     if(end>filesize)end = filesize;;
 
     readbufferi = readbufferinfo+i;
