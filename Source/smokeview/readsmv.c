@@ -6831,6 +6831,10 @@ int ReadSMV(bufferstreamdata *stream){
     InitDefaultProp();
     npropinfo=1;
   }
+  float timer_readsmv;
+  INIT_PRINT_TIMER(timer_readsmv);
+  PRINT_TIMER(timer_readsmv, "pass 1");
+
 
 /*
    ************************************************************************
@@ -8223,6 +8227,7 @@ int ReadSMV(bufferstreamdata *stream){
   ndeviceinfo=0;
   REWIND(stream);
   if(verbose_output==1)PRINTF("%s","  pass 3\n");
+  PRINT_TIMER(timer_readsmv, "pass 2");
 
   /*
    ************************************************************************
@@ -8694,6 +8699,7 @@ int ReadSMV(bufferstreamdata *stream){
   ioffset=0;
   npartclassinfo=0;
   if(noffset==0)ioffset=1;
+  PRINT_TIMER(timer_readsmv, "pass 3");
 
 /*
    ************************************************************************
@@ -10086,6 +10092,7 @@ typedef struct {
     nOBST=0;
     iobst=0;
   }
+  PRINT_TIMER(timer_readsmv, "pass 4");
 
   /*
    ************************************************************************
@@ -10240,7 +10247,6 @@ typedef struct {
   START_TIMER(wrapup_time);
 
   if(verbose_output==1)PRINTF("  wrapping up\n");
-  float timer_readsmv;
 
   have_obsts = 0;
   for(i=0;i<nmeshes;i++){
@@ -10253,7 +10259,6 @@ typedef struct {
     }
   }
 
-  INIT_PRINT_TIMER(timer_readsmv);
   CheckMemory;
   UpdateIsoColors();
   CheckMemory;
@@ -10437,10 +10442,15 @@ typedef struct {
   // close .smv file
 
   UpdateSelectFaces();
+  PRINT_TIMER(timer_readsmv, "UpdateSelectFaces");
   UpdateSliceBoundIndexes();
+  PRINT_TIMER(timer_readsmv, "UpdateSliceBoundIndexes");
   UpdateSliceBoundLabels();
+  PRINT_TIMER(timer_readsmv, "UpdateSliceBoundLabels");
   UpdateIsoTypes();
+  PRINT_TIMER(timer_readsmv, "UpdateIsoTypes");
   UpdateBoundaryTypes();
+  PRINT_TIMER(timer_readsmv, "UpdateBoundaryTypes");
 
   InitNabors();
 
