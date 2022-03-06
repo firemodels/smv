@@ -294,29 +294,6 @@ void GetAllPartBoundsMT(void){
 }
 #endif
 
-/* --------------------------  _readbufferdata ------------------------------------ */
-
-typedef struct _readbufferdata {
-  char *filename, *buffer;
-  int start, size, returnval;
-} readbufferdata;
-
-/* ------------------ ReadBufferi ------------------------ */
-
-void ReadBufferi(readbufferdata *readbufferi){
-  FILE *stream;
-
-  stream = fopen(readbufferi->filename, "rb");
-  if(stream==NULL){
-    readbufferi->returnval = 0;
-    return;
-  }
-  fseek(stream, readbufferi->start, SEEK_SET);
-  fread(readbufferi->buffer+readbufferi->start, sizeof(char), readbufferi->size, stream);
-  fclose(stream);
-  readbufferi->returnval = 1;
-}
-
 #ifdef pp_THREAD
 /* ------------------ MtReadBufferi ------------------------ */
 
@@ -327,6 +304,7 @@ void *MtReadBufferi(void *arg){
 }
 #endif
 
+#ifdef pp_THREADBUFFER
 /* ------------------ ReadBuffer ------------------------ */
 
 int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use_multithread){
@@ -376,24 +354,26 @@ int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use
   }
 #else
     ReadBufferi(readbufferi);
+  }
 #endif
-    for(i = 0; i<nthreads; i++){
-      readbufferdata *readbufferi;
+  for(i = 0; i<nthreads; i++){
+    readbufferdata *readbufferi;
 
-      readbufferi = readbufferinfo+i;
-      if(readbufferi->returnval==0){
-        returnval = 0;
-        break;
-      }
+    readbufferi = readbufferinfo+i;
+    if(readbufferi->returnval==0){
+      returnval = 0;
+      break;
     }
-    FREEMEMORY(readbufferinfo);
+  }
+  FREEMEMORY(readbufferinfo);
 #ifdef pp_THREAD
-    if(use_multithread==1&&nthreads>1){
-      FREEMEMORY(readbuffer_ids);
-    }
+  if(use_multithread==1&&nthreads>1){
+    FREEMEMORY(readbuffer_ids);
+  }
 #endif
-    return returnval;
+  return returnval;
 }
+#endif
 
   //***************************** multi threading triangle update ***********************************
 

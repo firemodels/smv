@@ -221,6 +221,67 @@ FILE_SIZE freadptr_buffer(void **ptr, FILE_SIZE size, FILE_SIZE count, filedata 
   return copy_count/size;
 }
 
+/* ------------------ ReadBufferi ------------------------ */
+
+void ReadBufferi(readbufferdata *readbufferi){
+  FILE *stream;
+
+  stream = fopen(readbufferi->filename, "rb");
+  if(stream==NULL){
+    readbufferi->returnval = 0;
+    return;
+  }
+  fseek(stream, readbufferi->start, SEEK_SET);
+  fread(readbufferi->buffer+readbufferi->start, sizeof(char), readbufferi->size, stream);
+  fclose(stream);
+  readbufferi->returnval = 1;
+}
+
+/* ------------------ ReadBuffer ------------------------ */
+#ifndef pp_THREADBUFFER
+int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use_multithread){
+  int i, filesizei, returnval;
+  readbufferdata *readbufferinfo;
+
+  returnval = 1;
+  filesizei = filesize/nthreads;
+
+  NewMemory((void **)&readbufferinfo, nthreads*sizeof(readbufferdata));
+
+  for(i = 0; i<nthreads; i++){
+    readbufferdata *readbufferi;
+    int start, end;
+
+    start = i*filesizei;
+    if(i==nthreads-1){
+      end = filesize;
+    }
+    else{
+      end = start+filesizei;
+    }
+    if(end>filesize)end = filesize;;
+
+    readbufferi = readbufferinfo+i;
+    readbufferi->buffer = buffer;
+    readbufferi->filename = filename;
+    readbufferi->start = start;
+    readbufferi->size = end-start;
+    ReadBufferi(readbufferi);
+  }
+  for(i = 0; i<nthreads; i++){
+    readbufferdata *readbufferi;
+
+    readbufferi = readbufferinfo+i;
+    if(readbufferi->returnval==0){
+      returnval = 0;
+      break;
+    }
+  }
+  FREEMEMORY(readbufferinfo);
+  return returnval;
+}
+#endif
+
 /* ------------------ fopen_buffer ------------------------ */
 
 filedata *fopen_buffer(char *filename, char *mode, int nthreads, int use_multithread){
