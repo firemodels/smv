@@ -2304,10 +2304,15 @@ void UpdateBoundInfo(void){
       }
     }
   }
+  INIT_PRINT_TIMER(bounds_timer);
   UpdateChar();
+  PRINT_TIMER(bounds_timer, "UpdateChar");
   GetGlobalPartBounds(ALL_FILES);
+  PRINT_TIMER(bounds_timer, "GetGlobalPartBounds");
   GetGlobalSliceBounds();
+  PRINT_TIMER(bounds_timer, "GetGlobalSliceBounds");
   GetGlobalPatchBounds();
+  PRINT_TIMER(bounds_timer, "GetGlobalPatchBounds");
 }
 
 /*
@@ -10315,6 +10320,7 @@ typedef struct {
     NewMemory((void **)&patch_loaded_list,npatchinfo*sizeof(int));
   }
   UpdateLoadedLists();
+  PRINT_TIMER(timer_readsmv, "UpdateLoadedLists");
   CheckMemory;
 
   UpdateMeshBoxBounds();
@@ -10377,7 +10383,7 @@ typedef struct {
   UpdatePlotxyzAll();
   CheckMemory;
 
-  PRINT_TIMER(timer_readsmv, "null");
+  PRINT_TIMER(timer_readsmv, NULL);
   UpdateVSlices();
   PRINT_TIMER(timer_readsmv, "UpdateVSlices");
   if(update_slice==1)return 3;
@@ -10410,7 +10416,7 @@ typedef struct {
     }
   }
 
-  PRINT_TIMER(timer_readsmv, "null");
+  PRINT_TIMER(timer_readsmv, NULL);
   MakeIBlankCarve();
   MakeIBlankSmoke3D();
   MakeIBlankAll();
@@ -10430,8 +10436,10 @@ typedef struct {
   glui_rotation_index = ROTATE_ABOUT_FDS_CENTER;
 
   UpdateBoundInfo();
+  PRINT_TIMER(timer_readsmv, "UpdateBoundInfo");
 
   UpdateObjectUsed();
+  PRINT_TIMER(timer_readsmv, "UpdateObjectUsed");
 
   // close .smv file
 
@@ -10485,7 +10493,7 @@ typedef struct {
     nchanged_idlist=ntotal;
   }
 
-  PRINT_TIMER(timer_readsmv, "null");
+  PRINT_TIMER(timer_readsmv, NULL);
   InitNabors();
   InitVolRender();
   InitVolRenderSurface(FIRSTCALL);
@@ -10494,7 +10502,7 @@ typedef struct {
 
   ClassifyAllGeomMT();
 
-  PRINT_TIMER(timer_readsmv, "null");
+  PRINT_TIMER(timer_readsmv, NULL);
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   GetFaceInfo();
   GetBoxGeomCorners();
@@ -10506,7 +10514,7 @@ typedef struct {
   if(ngeominfo>0&&auto_terrain==1){
     int sizeof_vertices, sizeof_indices;
 
-    PRINT_TIMER(timer_readsmv, "null");
+    PRINT_TIMER(timer_readsmv, NULL);
     GenerateTerrainGeom(&terrain_vertices, &sizeof_vertices, &terrain_indices, &sizeof_indices, &terrain_nindices);
 #ifdef pp_WUI_VAO
     have_terrain_vao = InitTerrainVAO(sizeof_vertices, sizeof_indices);
@@ -10516,8 +10524,10 @@ typedef struct {
 
   // update event labels
   UpdateEvents();
+  PRINT_TIMER(timer_readsmv, "UpdateEvents");
 
   SetupMeshWalls();
+  PRINT_TIMER(timer_readsmv, "SetupMeshWalls");
   update_windrose = 1;
 
   if(verbose_output==1){
