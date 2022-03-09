@@ -1870,11 +1870,8 @@ int IsTerrainTexture(texturedata *texti){
 void InitTextures0(void){
   // get texture filename from SURF and device info
   int i;
-  float texture_timer;
 
   INIT_PRINT_TIMER(texture_timer);
-  PRINT_TIMER(texture_timer, "null");
-
   ntextureinfo = 0;
   for(i=0;i<nsurfinfo;i++){
     surfdata *surfi;
@@ -2142,12 +2139,7 @@ void InitTextures0(void){
   /* ------------------ InitTextures ------------------------ */
 
 void InitTextures(int use_graphics_arg){
-  float total_texture_time;
-
   INIT_PRINT_TIMER(total_texture_time);
-  PRINT_TIMER(total_texture_time, "null");
-
-
   UpdateDeviceTextures();
   if(nsurfinfo>0||ndevice_texture_list>0){
     if(NewMemory((void **)&textureinfo, (nsurfinfo+ndevice_texture_list+nterrain_textures)*sizeof(texturedata))==0)return;
@@ -5757,6 +5749,7 @@ int ReadSMV(bufferstreamdata *stream){
   char buffer[256], buffers[6][256];
   patchdata *patchgeom;
 
+  INIT_PRINT_TIMER(timer_readsmv);
   START_TIMER(processing_time);
 
   START_TIMER(getfilelist_time);
@@ -6053,6 +6046,8 @@ int ReadSMV(bufferstreamdata *stream){
   if(cadgeominfo!=NULL)FreeCADInfo();
 
   STOP_TIMER(pass0_time );
+
+  PRINT_TIMER(timer_readsmv, "readsmv setup");
 
 /*
    ************************************************************************
@@ -6831,6 +6826,8 @@ int ReadSMV(bufferstreamdata *stream){
     InitDefaultProp();
     npropinfo=1;
   }
+
+  PRINT_TIMER(timer_readsmv, "readsmv pass 1");
 
 /*
    ************************************************************************
@@ -8224,6 +8221,8 @@ int ReadSMV(bufferstreamdata *stream){
   REWIND(stream);
   if(verbose_output==1)PRINTF("%s","  pass 3\n");
 
+  PRINT_TIMER(timer_readsmv, "readsmv pass 2");
+
   /*
    ************************************************************************
    ************************ start of pass 3 *******************************
@@ -8694,6 +8693,8 @@ int ReadSMV(bufferstreamdata *stream){
   ioffset=0;
   npartclassinfo=0;
   if(noffset==0)ioffset=1;
+
+  PRINT_TIMER(timer_readsmv, "readsmv pass 3");
 
 /*
    ************************************************************************
@@ -10087,6 +10088,8 @@ typedef struct {
     iobst=0;
   }
 
+  PRINT_TIMER(timer_readsmv, "readsmv pass 4");
+
   /*
    ************************************************************************
    ************************ start of pass 5 *******************************
@@ -10231,6 +10234,9 @@ typedef struct {
    ************************************************************************
  */
 
+  INIT_PRINT_TIMER(timer_wrapup);
+  PRINT_TIMER(timer_readsmv, "readsmv pass 5");
+
   if(update_filesizes==1){
     GetFileSizes();
     SMV_EXIT(0);
@@ -10240,7 +10246,6 @@ typedef struct {
   START_TIMER(wrapup_time);
 
   if(verbose_output==1)PRINTF("  wrapping up\n");
-  float timer_readsmv;
 
   have_obsts = 0;
   for(i=0;i<nmeshes;i++){
@@ -10253,9 +10258,10 @@ typedef struct {
     }
   }
 
-  INIT_PRINT_TIMER(timer_readsmv);
   CheckMemory;
+  PRINT_TIMER(timer_readsmv, NULL);
   UpdateIsoColors();
+  PRINT_TIMER(timer_readsmv, "UpdateIsoColors");
   CheckMemory;
 
   UpdateSmoke3dFileParms();
@@ -10270,6 +10276,7 @@ typedef struct {
 
 // update csv data
 
+  PRINT_TIMER(timer_readsmv, NULL);
   if(hrr_csv_filename!=NULL)ReadHRR(LOAD, &errorcode);
   ReadDeviceData(NULL,CSV_FDS,UNLOAD);
   ReadDeviceData(NULL,CSV_EXP,UNLOAD);
@@ -10282,6 +10289,7 @@ typedef struct {
   }
   SetupDeviceData();
   if(nzoneinfo>0)SetupZoneDevs();
+  PRINT_TIMER(timer_readsmv, "setup devices");
 
 #ifdef pp_THREAD
   InitMultiThreading();
@@ -10329,12 +10337,15 @@ typedef struct {
 
   // allocate memory for geometry pointers (only once)
 
+  PRINT_TIMER(timer_readsmv, NULL);
   GetGeomInfoPtrs(1);
+  PRINT_TIMER(timer_readsmv, "GetGeomInfoPtrs");
 
   /*
     Associate a surface with each block.
   */
   UpdateUseTextures();
+  PRINT_TIMER(timer_readsmv, "UpdateUseTextures");
   CheckMemory;
 
   /* compute global bar's and box's */
@@ -10378,7 +10389,6 @@ typedef struct {
   UpdatePlotxyzAll();
   CheckMemory;
 
-  PRINT_TIMER(timer_readsmv, "null");
   UpdateVSlices();
   PRINT_TIMER(timer_readsmv, "UpdateVSlices");
   if(update_slice==1)return 3;
@@ -10392,8 +10402,10 @@ typedef struct {
   }
 
   GetBoundaryParams();
+  PRINT_TIMER(timer_readsmv, "GetBoundaryParams");
 
   GetGSliceParams();
+  PRINT_TIMER(timer_readsmv, "GetGSliceParams");
 
   active_smokesensors=0;
   for(i=0;i<ndeviceinfo;i++){
@@ -10411,7 +10423,6 @@ typedef struct {
     }
   }
 
-  PRINT_TIMER(timer_readsmv, "null");
   MakeIBlankCarve();
   MakeIBlankSmoke3D();
   MakeIBlankAll();
@@ -10481,7 +10492,6 @@ typedef struct {
     nchanged_idlist=ntotal;
   }
 
-  PRINT_TIMER(timer_readsmv, "null");
   InitNabors();
   InitVolRender();
   InitVolRenderSurface(FIRSTCALL);
@@ -10489,7 +10499,6 @@ typedef struct {
 
   ClassifyAllGeomMT();
 
-  PRINT_TIMER(timer_readsmv, "null");
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
   PRINT_TIMER(timer_readsmv, "UpdateTriangles");
   GetFaceInfo();
@@ -10501,7 +10510,6 @@ typedef struct {
   if(ngeominfo>0&&auto_terrain==1){
     int sizeof_vertices, sizeof_indices;
 
-    PRINT_TIMER(timer_readsmv, "null");
     GenerateTerrainGeom(&terrain_vertices, &sizeof_vertices, &terrain_indices, &sizeof_indices, &terrain_nindices);
 #ifdef pp_WUI_VAO
     have_terrain_vao = InitTerrainVAO(sizeof_vertices, sizeof_indices);
@@ -10511,8 +10519,10 @@ typedef struct {
 
   // update event labels
   UpdateEvents();
+  PRINT_TIMER(timer_readsmv, "UpdateEvents");
 
   SetupMeshWalls();
+  PRINT_TIMER(timer_readsmv, "SetupMeshWalls");
   update_windrose = 1;
 
   if(verbose_output==1){
@@ -10543,6 +10553,7 @@ typedef struct {
   }
   STOP_TIMER(timer_startup);
   START_TIMER(timer_render);
+  PRINT_TIMER(timer_wrapup, "wrapup");
   return 0;
 }
 

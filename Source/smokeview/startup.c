@@ -208,6 +208,7 @@ int SetupCase(char *filename){
 
   return_code=-1;
 
+  INIT_PRINT_TIMER(time_startup);
   FREEMEMORY(part_globalbound_filename);
   NewMemory((void **)&part_globalbound_filename, strlen(fdsprefix)+strlen(".prt5.gbnd")+1);
   STRCPY(part_globalbound_filename, fdsprefix);
@@ -234,6 +235,7 @@ int SetupCase(char *filename){
     smv_streaminfo = GetSMVBuffer(iso_filename, input_file);
 
     return_code = ReadSMV(smv_streaminfo);
+    PRINT_TIMER(time_startup, "ReadSMV");
     if(smv_streaminfo!=NULL){
       FCLOSE(smv_streaminfo);
     }
@@ -263,6 +265,7 @@ int SetupCase(char *filename){
   InitUnits();
   InitUnitDefs();
   SetUnitVis();
+  PRINT_TIMER(time_startup, "units");
 
   CheckMemory;
   readini_output = 0;
@@ -270,8 +273,10 @@ int SetupCase(char *filename){
   readini_output = 1;
 
   ReadBoundINI();
+  PRINT_TIMER(time_startup, "units");
 
   UpdateRGBColors(COLORBAR_INDEX_NONE);
+  PRINT_TIMER(time_startup, "units");
 
   if(use_graphics==0){
     SliceBoundsSetupNoGraphics();
@@ -294,6 +299,7 @@ int SetupCase(char *filename){
   GluiAlertSetup(mainwindow_id);
   GluiStereoSetup(mainwindow_id);
   Glui3dSmokeSetup(mainwindow_id);
+  PRINT_TIMER(time_startup, "dialogs");
 
   UpdateLights(light_position0, light_position1);
 
@@ -306,6 +312,7 @@ int SetupCase(char *filename){
   GluiTrainerSetup(mainwindow_id);
   glutDetachMenu(GLUT_RIGHT_BUTTON);
   InitMenus(LOAD);
+  PRINT_TIMER(time_startup, "menus");
   glutAttachMenu(GLUT_RIGHT_BUTTON);
   if(trainer_mode==1){
     ShowGluiTrainer();
