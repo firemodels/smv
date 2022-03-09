@@ -82,7 +82,6 @@
 
 #ifdef pp_THREAD
 void MtReadVolsmokeAllFramesAllMeshes2(void);
-void *MtReadBufferi(void *arg);
 #endif
 
 // define mutex's and thread_ids
