@@ -345,16 +345,6 @@ char *ParseCommandline(int argc, char **argv){
   STRCPY(htmlslicecell_filename, fdsprefix);
   STRCAT(htmlslicecell_filename, "_slicecell.json");
 
-  FREEMEMORY(bnds_slice_filename);
-  NewMemory((void **)&bnds_slice_filename, len_casename+strlen("_sf.bnds")+1);
-  STRCPY(bnds_slice_filename, fdsprefix);
-  STRCAT(bnds_slice_filename, "_sf.bnds");
-
-  FREEMEMORY(bnds_patch_filename);
-  NewMemory((void **)&bnds_patch_filename, len_casename+strlen("_bf.bnds")+1);
-  STRCPY(bnds_patch_filename, fdsprefix);
-  STRCAT(bnds_patch_filename, "_bf.bnds");
-
   FREEMEMORY(boundinfo_filename);
   NewMemory((void **)&boundinfo_filename, len_casename + strlen(".binfo") + 1);
   STRCPY(boundinfo_filename, fdsprefix);
@@ -914,12 +904,16 @@ int main(int argc, char **argv){
 
   return_code= SetupCase(smv_filename);
   if(return_code==0&&update_bounds==1){
+    float timer_update_bounds;
+
     INIT_PRINT_TIMER(timer_update_bounds);
     return_code=Update_Bounds();
     PRINT_TIMER(timer_update_bounds, "Update_Bounds");
   }
   if(return_code!=0)return 1;
   if(convert_ini==1){
+    float timer_read_ini;
+
     INIT_PRINT_TIMER(timer_read_ini);
     ReadIni(ini_from);
     PRINT_TIMER(timer_read_ini, "ReadIni");

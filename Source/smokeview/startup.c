@@ -259,23 +259,19 @@ int SetupCase(char *filename){
   }
 
   /* initialize units */
-  INIT_PRINT_TIMER(timer_start);
+
   InitUnits();
   InitUnitDefs();
   SetUnitVis();
-  PRINT_TIMER(timer_start, "init units");
 
   CheckMemory;
   readini_output = 0;
   ReadIni(NULL);
   readini_output = 1;
-  PRINT_TIMER(timer_start, "init ReadINI");
 
   ReadBoundINI();
-  PRINT_TIMER(timer_start, "ReadBoundINI");
 
   UpdateRGBColors(COLORBAR_INDEX_NONE);
-  PRINT_TIMER(timer_start, "UpdateRGBColors");
 
   if(use_graphics==0){
     SliceBoundsSetupNoGraphics();
@@ -284,7 +280,6 @@ int SetupCase(char *filename){
   glui_defined = 1;
   InitTranslate(smokeview_bindir, tr_name);
 
-  PRINT_TIMER(timer_start, "InitTranslate");
   if(ntourinfo==0)SetupTour();
   InitRolloutList();
   GluiColorbarSetup(mainwindow_id);
@@ -299,7 +294,6 @@ int SetupCase(char *filename){
   GluiAlertSetup(mainwindow_id);
   GluiStereoSetup(mainwindow_id);
   Glui3dSmokeSetup(mainwindow_id);
-  PRINT_TIMER(timer_start, "dialogs");
 
   UpdateLights(light_position0, light_position1);
 
@@ -319,7 +313,6 @@ int SetupCase(char *filename){
   }
   // initialize info header
   initialiseInfoHeader(&titleinfo, release_title, smv_githash, fds_githash, chidfilebase, fds_title);
-  PRINT_TIMER(timer_start, "glut routines");
   return 0;
 }
 

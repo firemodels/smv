@@ -157,13 +157,6 @@ typedef struct _boundata {
   int defined;
 } bounddata;
 
-/* --------------------------  boundfiledata ------------------------------------ */
-
-typedef struct _boundfiledata {
-  char *file;
-  float valmin, valmax;
-} boundfiledata;
-
 /* --------------------------  propdata ------------------------------------ */
 #define PROPVARMAX 100
 typedef struct _propdata {

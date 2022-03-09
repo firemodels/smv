@@ -29,9 +29,13 @@ void PrintTime(const char *filepath, int line, float *timer, const char *label){
   else{
     file++;
   }
-  if(label != NULL){
-    STOP_TIMER(*timer);
-    if(*timer>0.1)printf("%s/%i/%s %.1f s\n", file, line, label, *timer);
+  if(*timer>0.0){
+    if(strcmp(label, "null") != 0){
+      STOP_TIMER(*timer);
+      if(*timer>0.1){
+        printf("%s/%i/%s %.1f s\n", file, line, label, *timer);
+      }
+    }
   }
   START_TIMER(*timer);
 }
