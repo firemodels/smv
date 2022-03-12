@@ -1120,7 +1120,7 @@ extern "C" void GluiMotionSetup(int main_window){
   int i;
 #define TRANSLATE_SPEED 0.005
   int *rotation_index;
-#ifdef pp_ROTATE_TRANSLATE
+#ifdef ROTATE_TRANSLATE
   float *eye_xyz;
 #endif
 
@@ -1131,7 +1131,7 @@ extern "C" void GluiMotionSetup(int main_window){
 
   strcpy(camera_label,"current");
 
-#ifdef pp_ROTATE_TRANSLATE
+#ifdef ROTATE_TRANSLATE
   eye_xyz=camera_current->eye;
 #endif
 
