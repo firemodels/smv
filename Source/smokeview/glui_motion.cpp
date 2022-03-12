@@ -1120,7 +1120,9 @@ extern "C" void GluiMotionSetup(int main_window){
   int i;
 #define TRANSLATE_SPEED 0.005
   int *rotation_index;
+#ifdef ROTATE_TRANSLATE
   float *eye_xyz;
+#endif
 
   if(camera_label!=NULL){
     FREEMEMORY(camera_label);
@@ -1129,7 +1131,9 @@ extern "C" void GluiMotionSetup(int main_window){
 
   strcpy(camera_label,"current");
 
+#ifdef ROTATE_TRANSLATE
   eye_xyz=camera_current->eye;
+#endif
 
   if(glui_motion!=NULL){
     glui_motion->close();
@@ -1713,10 +1717,15 @@ extern "C" void UpdateWindowSizeList(void){
 /* ------------------ UpdateTranslate ------------------------ */
 
 extern "C" void UpdateTranslate(void){
-  float *eye_xyz,*az_elev;
+  float *eye_xyz;
+#ifdef ROTATE_TRANSLATE
+  float *az_elev;
+#endif
 
   eye_xyz = camera_current->eye;
+#ifdef ROTATE_TRANSLATE
   az_elev = camera_current->az_elev;
+#endif
 
   d_eye_xyz[0]=eye_xyz[0]-eye_xyz0[0];
   d_eye_xyz[1]=eye_xyz[1]-eye_xyz0[1];
@@ -2088,9 +2097,9 @@ extern "C" void SceneMotionCB(int var){
       return;
     case ROTATE_2AXIS:
       if(rotation_type==ROTATION_2AXIS){
+#ifdef ROTATE_TRANSLATE
         float *az_elev;
 
-#ifdef ROTATE_TRANSLATE
         az_elev = camera_current->az_elev;
         az_elev[0] = ROTATE_2axis->get_x();
         az_elev[1] = -ROTATE_2axis->get_y();
