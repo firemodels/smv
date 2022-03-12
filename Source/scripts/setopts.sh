@@ -24,7 +24,7 @@ LUA=
 FOREC_g=
 FOREC_i=
 target=all
-QUARTZ="-I /opt/X11/include -Wno-unknown-pragmas"
+QUARTZ="framework"
 while getopts 'fgGhiILlqQt:T' OPTION
 do
 case $OPTION in
@@ -98,7 +98,7 @@ shift $(($OPTIND-1))
 # the parameter QUARTZ is only for the mac
 if [ "`uname`" == "Darwin" ]; then
   if [ "$QUARTZ" == "framework" ]; then
-    PLATFORM="-D pp_OSX"
+    PLATFORM="-D pp_OSX -D pp_NOQUARTZ"
     if [ "$LOWRES" != "" ]; then
       PLATFORM="$PLATFORM -D pp_OSX_LOWRES"
     fi
