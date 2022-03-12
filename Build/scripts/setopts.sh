@@ -13,6 +13,7 @@ else
   GLUT=glut
 fi
 QUARTZSMV=framework
+NOQUARTZ=1
 inc=
 BUILD_LIBS=
 BUILD_ALL=1
@@ -55,6 +56,7 @@ case $OPTION in
   ;;
   q)
    QUARTZSMV="use_quartz"
+   NOQUARTZ=
    SMV_MAKE_OPTS=$SMV_MAKE_OPTS"-I /opt/X11/include -Wno-unknown-pragmas"
   ;;
   Q)
