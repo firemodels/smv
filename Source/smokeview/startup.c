@@ -208,7 +208,6 @@ int SetupCase(char *filename){
 
   return_code=-1;
 
-  INIT_PRINT_TIMER(time_startup);
   FREEMEMORY(part_globalbound_filename);
   NewMemory((void **)&part_globalbound_filename, strlen(fdsprefix)+strlen(".prt5.gbnd")+1);
   STRCPY(part_globalbound_filename, fdsprefix);
@@ -235,7 +234,6 @@ int SetupCase(char *filename){
     smv_streaminfo = GetSMVBuffer(iso_filename, input_file);
 
     return_code = ReadSMV(smv_streaminfo);
-    PRINT_TIMER(time_startup, "ReadSMV");
     if(smv_streaminfo!=NULL){
       FCLOSE(smv_streaminfo);
     }
@@ -261,22 +259,23 @@ int SetupCase(char *filename){
   }
 
   /* initialize units */
-
+  INIT_PRINT_TIMER(timer_start);
   InitUnits();
   InitUnitDefs();
   SetUnitVis();
-  PRINT_TIMER(time_startup, "units");
+  PRINT_TIMER(timer_start, "init units");
 
   CheckMemory;
   readini_output = 0;
   ReadIni(NULL);
   readini_output = 1;
+  PRINT_TIMER(timer_start, "init ReadINI");
 
   ReadBoundINI();
-  PRINT_TIMER(time_startup, "units");
+  PRINT_TIMER(timer_start, "ReadBoundINI");
 
   UpdateRGBColors(COLORBAR_INDEX_NONE);
-  PRINT_TIMER(time_startup, "units");
+  PRINT_TIMER(timer_start, "UpdateRGBColors");
 
   if(use_graphics==0){
     SliceBoundsSetupNoGraphics();
@@ -285,6 +284,7 @@ int SetupCase(char *filename){
   glui_defined = 1;
   InitTranslate(smokeview_bindir, tr_name);
 
+  PRINT_TIMER(timer_start, "InitTranslate");
   if(ntourinfo==0)SetupTour();
   InitRolloutList();
   GluiColorbarSetup(mainwindow_id);
@@ -299,7 +299,7 @@ int SetupCase(char *filename){
   GluiAlertSetup(mainwindow_id);
   GluiStereoSetup(mainwindow_id);
   Glui3dSmokeSetup(mainwindow_id);
-  PRINT_TIMER(time_startup, "dialogs");
+  PRINT_TIMER(timer_start, "dialogs");
 
   UpdateLights(light_position0, light_position1);
 
@@ -312,7 +312,6 @@ int SetupCase(char *filename){
   GluiTrainerSetup(mainwindow_id);
   glutDetachMenu(GLUT_RIGHT_BUTTON);
   InitMenus(LOAD);
-  PRINT_TIMER(time_startup, "menus");
   glutAttachMenu(GLUT_RIGHT_BUTTON);
   if(trainer_mode==1){
     ShowGluiTrainer();
@@ -320,6 +319,7 @@ int SetupCase(char *filename){
   }
   // initialize info header
   initialiseInfoHeader(&titleinfo, release_title, smv_githash, fds_githash, chidfilebase, fds_title);
+  PRINT_TIMER(timer_start, "glut routines");
   return 0;
 }
 

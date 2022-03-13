@@ -5719,6 +5719,133 @@ void UpdateObstBoundingBox(float *XB){
   }
 }
 
+#ifdef pp_CACHE_FILEBOUNDS
+/* ------------------ GetSliceInfoIndex ------------------------ */
+
+char *GetSliceInfoFileptr(char *file){
+  int i;
+
+  for(i=0;i<nsliceinfo;i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo + i;
+    if(strcmp(slicei->file, file)==0)return slicei->file;
+  }
+  return NULL;
+}
+
+/* ------------------ GetPatchInfoIndex ------------------------ */
+
+char *GetPatchInfoFileptr(char *file){
+  int i;
+
+  for(i=0;i<npatchinfo;i++){
+    patchdata *patchi;
+
+    patchi = patchinfo + i;
+    if(strcmp(patchi->file, file)==0)return patchi->file;
+  }
+  return NULL;
+}
+
+/* ------------------ UpdateFileBoundList ------------------------ */
+
+void UpdateFileBoundList(void){
+  if(nsliceinfo>0){
+    int i;
+    FILE *stream;
+
+    stream = fopen(bnds_slice_filename, "r");
+    if(stream!=NULL){
+      nsliceboundfileinfo = 0;
+      for(;;){
+        char buffer[255];
+
+        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
+        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
+        nsliceboundfileinfo++;
+      }
+      NewMemory((void **)&sliceboundfileinfo, nsliceboundfileinfo*sizeof(boundfiledata));
+      rewind(stream);
+
+      for(i=0;i<nsliceboundfileinfo;i++){
+        sliceboundfileinfo[i].file   = NULL;
+        sliceboundfileinfo[i].valmin = 1.0;
+        sliceboundfileinfo[i].valmax = 0.0;
+      }
+      for(i=0;i<nsliceboundfileinfo;i++){
+        char buffer[255];
+        float valmin, valmax;
+
+        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
+        sliceboundfileinfo[i].file=GetSliceInfoFileptr(TrimFrontBack(buffer));
+
+        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
+        sscanf(buffer, "%f %f", &valmin, &valmax);
+        sliceboundfileinfo[i].valmin = valmin;
+        sliceboundfileinfo[i].valmax = valmax;
+      }
+      fclose(stream);
+    }
+    else{
+      nsliceboundfileinfo = nsliceinfo;
+      NewMemory((void **)&sliceboundfileinfo, nsliceboundfileinfo*sizeof(boundfiledata));
+      for(i=0;i<nsliceinfo;i++){
+        sliceboundfileinfo[i].file   = NULL;
+        sliceboundfileinfo[i].valmin = 1.0;
+        sliceboundfileinfo[i].valmax = 0.0;
+      }
+    }
+  }
+  if(npatchinfo>0){
+    int i;
+    FILE *stream;
+
+    stream = fopen(bnds_patch_filename, "r");
+    if(stream!=NULL){
+      npatchboundfileinfo = 0;
+      for(;;){
+        char buffer[255];
+
+        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
+        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
+        npatchboundfileinfo++;
+      }
+      NewMemory((void **)&patchboundfileinfo, npatchboundfileinfo*sizeof(boundfiledata));
+      rewind(stream);
+
+      for(i=0;i<npatchboundfileinfo;i++){
+        patchboundfileinfo[i].file   = NULL;
+        patchboundfileinfo[i].valmin = 1.0;
+        patchboundfileinfo[i].valmax = 0.0;
+      }
+      for(i=0;i<npatchboundfileinfo;i++){
+        char buffer[255];
+        float valmin, valmax;
+
+        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
+        patchboundfileinfo[i].file=GetPatchInfoFileptr(TrimFrontBack(buffer));
+
+        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
+        sscanf(buffer, "%f %f", &valmin, &valmax);
+        patchboundfileinfo[i].valmin = valmin;
+        patchboundfileinfo[i].valmax = valmax;
+      }
+      fclose(stream);
+    }
+    else{
+      npatchboundfileinfo = npatchinfo;
+      NewMemory((void **)&patchboundfileinfo, npatchboundfileinfo*sizeof(boundfiledata));
+      for(i=0;i<npatchinfo;i++){
+        patchboundfileinfo[i].file   = NULL;
+        patchboundfileinfo[i].valmin = 1.0;
+        patchboundfileinfo[i].valmax = 0.0;
+      }
+    }
+  }
+}
+#endif
+
 /* ------------------ ReadSMV ------------------------ */
 
 int ReadSMV(bufferstreamdata *stream){
@@ -6046,7 +6173,6 @@ int ReadSMV(bufferstreamdata *stream){
   if(cadgeominfo!=NULL)FreeCADInfo();
 
   STOP_TIMER(pass0_time );
-
   PRINT_TIMER(timer_readsmv, "readsmv setup");
 
 /*
@@ -6538,9 +6664,7 @@ int ReadSMV(bufferstreamdata *stream){
     }
 
   }
-
   STOP_TIMER(pass1_time);
-
 
 /*
    ************************************************************************
@@ -6826,8 +6950,7 @@ int ReadSMV(bufferstreamdata *stream){
     InitDefaultProp();
     npropinfo=1;
   }
-
-  PRINT_TIMER(timer_readsmv, "readsmv pass 1");
+  PRINT_TIMER(timer_readsmv, "pass 1");
 
 /*
    ************************************************************************
@@ -8220,8 +8343,7 @@ int ReadSMV(bufferstreamdata *stream){
   ndeviceinfo=0;
   REWIND(stream);
   if(verbose_output==1)PRINTF("%s","  pass 3\n");
-
-  PRINT_TIMER(timer_readsmv, "readsmv pass 2");
+  PRINT_TIMER(timer_readsmv, "pass 2");
 
   /*
    ************************************************************************
@@ -8693,8 +8815,7 @@ int ReadSMV(bufferstreamdata *stream){
   ioffset=0;
   npartclassinfo=0;
   if(noffset==0)ioffset=1;
-
-  PRINT_TIMER(timer_readsmv, "readsmv pass 3");
+  PRINT_TIMER(timer_readsmv, "pass 3");
 
 /*
    ************************************************************************
@@ -10087,8 +10208,7 @@ typedef struct {
     nOBST=0;
     iobst=0;
   }
-
-  PRINT_TIMER(timer_readsmv, "readsmv pass 4");
+  PRINT_TIMER(timer_readsmv, "pass 4");
 
   /*
    ************************************************************************
@@ -10220,6 +10340,7 @@ typedef struct {
       continue;
     }
   }
+  PRINT_TIMER(timer_readsmv, "pass 5");
   PrintMemoryInfo;
   if(do_pass5==1){
     STOP_TIMER(pass5_time);
@@ -10234,9 +10355,7 @@ typedef struct {
    ************************************************************************
  */
 
-  INIT_PRINT_TIMER(timer_wrapup);
-  PRINT_TIMER(timer_readsmv, "readsmv pass 5");
-
+  INIT_PRINT_TIMER(total_wrapup_time);
   if(update_filesizes==1){
     GetFileSizes();
     SMV_EXIT(0);
@@ -10259,9 +10378,7 @@ typedef struct {
   }
 
   CheckMemory;
-  PRINT_TIMER(timer_readsmv, NULL);
   UpdateIsoColors();
-  PRINT_TIMER(timer_readsmv, "UpdateIsoColors");
   CheckMemory;
 
   UpdateSmoke3dFileParms();
@@ -10276,7 +10393,6 @@ typedef struct {
 
 // update csv data
 
-  PRINT_TIMER(timer_readsmv, NULL);
   if(hrr_csv_filename!=NULL)ReadHRR(LOAD, &errorcode);
   ReadDeviceData(NULL,CSV_FDS,UNLOAD);
   ReadDeviceData(NULL,CSV_EXP,UNLOAD);
@@ -10289,7 +10405,6 @@ typedef struct {
   }
   SetupDeviceData();
   if(nzoneinfo>0)SetupZoneDevs();
-  PRINT_TIMER(timer_readsmv, "setup devices");
 
 #ifdef pp_THREAD
   InitMultiThreading();
@@ -10337,15 +10452,12 @@ typedef struct {
 
   // allocate memory for geometry pointers (only once)
 
-  PRINT_TIMER(timer_readsmv, NULL);
   GetGeomInfoPtrs(1);
-  PRINT_TIMER(timer_readsmv, "GetGeomInfoPtrs");
 
   /*
     Associate a surface with each block.
   */
   UpdateUseTextures();
-  PRINT_TIMER(timer_readsmv, "UpdateUseTextures");
   CheckMemory;
 
   /* compute global bar's and box's */
@@ -10389,6 +10501,7 @@ typedef struct {
   UpdatePlotxyzAll();
   CheckMemory;
 
+  PRINT_TIMER(timer_readsmv, "null");
   UpdateVSlices();
   PRINT_TIMER(timer_readsmv, "UpdateVSlices");
   if(update_slice==1)return 3;
@@ -10402,10 +10515,8 @@ typedef struct {
   }
 
   GetBoundaryParams();
-  PRINT_TIMER(timer_readsmv, "GetBoundaryParams");
 
   GetGSliceParams();
-  PRINT_TIMER(timer_readsmv, "GetGSliceParams");
 
   active_smokesensors=0;
   for(i=0;i<ndeviceinfo;i++){
@@ -10423,6 +10534,7 @@ typedef struct {
     }
   }
 
+  PRINT_TIMER(timer_readsmv, "null");
   MakeIBlankCarve();
   MakeIBlankSmoke3D();
   MakeIBlankAll();
@@ -10441,6 +10553,10 @@ typedef struct {
 
   glui_rotation_index = ROTATE_ABOUT_FDS_CENTER;
 
+#ifdef pp_CACHE_FILEBOUNDS
+  UpdateFileBoundList();
+#endif
+  PRINT_TIMER(timer_readsmv, "UpdateFileBoundList");
   UpdateBoundInfo();
 
   UpdateObjectUsed();
@@ -10448,14 +10564,19 @@ typedef struct {
   // close .smv file
 
   UpdateSelectFaces();
+  PRINT_TIMER(timer_readsmv, "UpdateSelectFaces");
   UpdateSliceBoundIndexes();
+  PRINT_TIMER(timer_readsmv, "UpdateSliceBoundIndexes");
   UpdateSliceBoundLabels();
+  PRINT_TIMER(timer_readsmv, "UpdateSliceBoundLabels");
   UpdateIsoTypes();
+  PRINT_TIMER(timer_readsmv, "UpdateIsoTypes");
   UpdateBoundaryTypes();
+  PRINT_TIMER(timer_readsmv, "UpdateBoundaryTypes");
 
   InitNabors();
 
-  PRINT_TIMER(timer_readsmv, "update bound info");
+  PRINT_TIMER(timer_readsmv, "update nabors");
   UpdateTerrain(1); // xxslow
   UpdateTerrainColors();
   PRINT_TIMER(timer_readsmv, "UpdateTerrain");
@@ -10492,17 +10613,20 @@ typedef struct {
     nchanged_idlist=ntotal;
   }
 
+  PRINT_TIMER(timer_readsmv, "null");
   InitNabors();
   InitVolRender();
   InitVolRenderSurface(FIRSTCALL);
   radius_windrose = 0.2*xyzmaxdiff;
+  PRINT_TIMER(timer_readsmv, "InitVolRender");
 
   ClassifyAllGeomMT();
 
+  PRINT_TIMER(timer_readsmv, "null");
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
-  PRINT_TIMER(timer_readsmv, "UpdateTriangles");
   GetFaceInfo();
   GetBoxGeomCorners();
+  PRINT_TIMER(timer_readsmv, "update trianglesfaces");
 
 #ifdef pp_WUI_VAO
   have_terrain_vao = 0;
@@ -10510,6 +10634,7 @@ typedef struct {
   if(ngeominfo>0&&auto_terrain==1){
     int sizeof_vertices, sizeof_indices;
 
+    PRINT_TIMER(timer_readsmv, "null");
     GenerateTerrainGeom(&terrain_vertices, &sizeof_vertices, &terrain_indices, &sizeof_indices, &terrain_nindices);
 #ifdef pp_WUI_VAO
     have_terrain_vao = InitTerrainVAO(sizeof_vertices, sizeof_indices);
@@ -10519,10 +10644,8 @@ typedef struct {
 
   // update event labels
   UpdateEvents();
-  PRINT_TIMER(timer_readsmv, "UpdateEvents");
 
   SetupMeshWalls();
-  PRINT_TIMER(timer_readsmv, "SetupMeshWalls");
   update_windrose = 1;
 
   if(verbose_output==1){
@@ -10553,7 +10676,7 @@ typedef struct {
   }
   STOP_TIMER(timer_startup);
   START_TIMER(timer_render);
-  PRINT_TIMER(timer_wrapup, "wrapup");
+  PRINT_TIMER(total_wrapup_time, "total wrapup time");
   return 0;
 }
 
