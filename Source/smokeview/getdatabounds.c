@@ -243,9 +243,10 @@ void GetSliceFileBoundMinMax(char *file, float *valmin, float *valmax){
     boundfiledata *bi;
 
     bi = sliceboundfileinfo + i;
-    if(strcmp(bi->file, file)==0){
+    if(bi->file!=NULL&&file!=NULL&&strcmp(bi->file, file)==0){
       *valmin = bi->valmin;
       *valmax = bi->valmax;
+      return;
     }
   }
   *valmin = 1.0;
@@ -262,9 +263,10 @@ void GetPatchFileBoundMinMax(char *file, float *valmin, float *valmax){
     boundfiledata *bi;
 
     bi = patchboundfileinfo + i;
-    if(strcmp(bi->file, file)==0){
+    if(bi->file!=NULL&&file!=NULL&&strcmp(bi->file, file)==0){
       *valmin = bi->valmin;
       *valmax = bi->valmax;
+      return;
     }
   }
   *valmin = 1.0;

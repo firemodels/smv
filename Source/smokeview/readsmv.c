@@ -5751,6 +5751,8 @@ char *GetPatchInfoFileptr(char *file){
 /* ------------------ UpdateFileBoundList ------------------------ */
 
 void UpdateFileBoundList(void){
+  int call_again=0;
+
   if(nsliceinfo>0){
     int i;
     FILE *stream;
@@ -5790,11 +5792,9 @@ void UpdateFileBoundList(void){
     else{
       nsliceboundfileinfo = nsliceinfo;
       NewMemory((void **)&sliceboundfileinfo, nsliceboundfileinfo*sizeof(boundfiledata));
-      for(i=0;i<nsliceinfo;i++){
-        sliceboundfileinfo[i].file   = NULL;
-        sliceboundfileinfo[i].valmin = 1.0;
-        sliceboundfileinfo[i].valmax = 0.0;
-      }
+      void GetGlobalSliceBounds(void);
+      GetGlobalSliceBounds();
+      call_again = 1;
     }
   }
   if(npatchinfo>0){
@@ -5836,12 +5836,13 @@ void UpdateFileBoundList(void){
     else{
       npatchboundfileinfo = npatchinfo;
       NewMemory((void **)&patchboundfileinfo, npatchboundfileinfo*sizeof(boundfiledata));
-      for(i=0;i<npatchinfo;i++){
-        patchboundfileinfo[i].file   = NULL;
-        patchboundfileinfo[i].valmin = 1.0;
-        patchboundfileinfo[i].valmax = 0.0;
-      }
+      void GetGlobalPatchBounds(void);
+      GetGlobalPatchBounds();
+      call_again = 1;
     }
+  }
+  if(call_again == 1){
+    UpdateFileBoundList();
   }
 }
 #endif
