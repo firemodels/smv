@@ -278,8 +278,8 @@ void GetGlobalPatchBounds(void){
   int i;
 #ifdef pp_CACHE_FILEBOUNDS
   int build_bnds_file = 0;
-#endif
   FILE *stream=NULL;
+#endif
 
   if(npatchinfo==0)return;
 #ifdef pp_CACHE_FILEBOUNDS
@@ -557,8 +557,8 @@ void GetGlobalSliceBounds(void){
   int i;
 #ifdef pp_CACHE_FILEBOUNDS
   int build_bnds_file = 0;
-#endif
   FILE *stream=NULL;
+#endif
 
   if(nsliceinfo==0)return;
 #ifdef pp_CACHE_FILEBOUNDS
