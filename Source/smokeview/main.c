@@ -346,14 +346,25 @@ char *ParseCommandline(int argc, char **argv){
   STRCAT(htmlslicecell_filename, "_slicecell.json");
 
 #ifdef pp_CACHE_FILEBOUNDS
+  char frontdir[256];
+
+  if(Writable(".")==0){
+    strcpy(frontdir, GetHomeDir());
+    strcat(frontdir, dirseparator);
+  }
+  else{
+    strcpy(frontdir, "");
+  }
   FREEMEMORY(bnds_slice_filename);
-  NewMemory((void **)&bnds_slice_filename, len_casename+strlen("_sf.bnds")+1);
-  STRCPY(bnds_slice_filename, fdsprefix);
+  NewMemory((void **)&bnds_slice_filename, strlen(frontdir) + len_casename+strlen("_sf.bnds")+1);
+  STRCPY(bnds_slice_filename, frontdir);
+  STRCAT(bnds_slice_filename, fdsprefix);
   STRCAT(bnds_slice_filename, "_sf.bnds");
 
   FREEMEMORY(bnds_patch_filename);
-  NewMemory((void **)&bnds_patch_filename, len_casename+strlen("_bf.bnds")+1);
-  STRCPY(bnds_patch_filename, fdsprefix);
+  NewMemory((void **)&bnds_patch_filename, strlen(frontdir) + len_casename+strlen("_bf.bnds")+1);
+  STRCPY(bnds_patch_filename, frontdir);
+  STRCAT(bnds_patch_filename, fdsprefix);
   STRCAT(bnds_patch_filename, "_bf.bnds");
 #endif
 

@@ -348,6 +348,24 @@ int GetScreenHeight(void){
 }
 #endif
 
+/* ------------------ GetHomeDir ------------------------ */
+
+char *GetHomeDir(){
+  char *homedir;
+
+#ifdef WIN32
+  homedir = getenv("userprofile");
+#else
+  homedir = getenv("HOME");
+#endif
+
+  if(homedir==NULL){
+    NewMemory((void **)&homedir, 2);
+    strcpy(homedir, ".");
+  }
+  return homedir;
+}
+
 /* ------------------ InitStartupDirs ------------------------ */
 
 void InitStartupDirs(void){
@@ -374,17 +392,7 @@ void InitStartupDirs(void){
 
   startup_pass = 2;
 
-#ifdef WIN32
-  homedir = getenv("userprofile");
-#else
-  homedir = getenv("HOME");
-#endif
-
-  if(homedir==NULL){
-    NewMemory((void **)&homedir, 2);
-    freehome = 1;
-    strcpy(homedir, ".");
-  }
+  homedir = GetHomeDir();
 
   NewMemory((void **)&smokeview_scratchdir, strlen(homedir)+strlen(dirseparator)+strlen(".smokeview")+strlen(dirseparator)+1);
   strcpy(smokeview_scratchdir, homedir);
@@ -402,11 +410,6 @@ void InitStartupDirs(void){
 
   if(verbose_output==1)PRINTF("Scratch directory: %s\n", smokeview_scratchdir);
   if(verbose_output==1)PRINTF("    smokeview.ini: %s\n", smokeviewini_filename);
-
-  if(freehome==1){
-  // don't free homedir if it is a pointer defined by getenv
-    FREEMEMORY(homedir);
-  }
 
 #ifdef pp_OSX
   monitor_screen_height = GetScreenHeight();

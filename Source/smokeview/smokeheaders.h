@@ -132,6 +132,7 @@ EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(void);
 EXTERNCPP void UpdateGlobalFEDSliceBounds(void);
 
+EXTERNCPP char *GetHomeDir(void);
 EXTERNCPP void SetPercentileDrawOff(void);
 EXTERNCPP void ClosePartFiles(void);
 EXTERNCPP void PartBoundsCPP_CB(int var);
