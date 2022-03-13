@@ -370,7 +370,6 @@ char *GetHomeDir(){
 
 void InitStartupDirs(void){
   char *homedir = NULL;
-  int freehome = 0;
 
 // get smokeview bin directory from argv[0] which contains the full path of the smokeview binary
 
