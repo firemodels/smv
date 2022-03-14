@@ -6190,7 +6190,7 @@ int ReadSMV(bufferstreamdata *stream){
   ntc_total=0;
   nspr_total=0;
   nheat_total=0;
-  if(verbose_output==1)PRINTF("%s","  pass 1\n");
+  PRINTF("%s","  pass 1\n");
   for(;;){
     if(FEOF(stream)!=0){
       BREAK;
@@ -6969,7 +6969,7 @@ int ReadSMV(bufferstreamdata *stream){
   if(noffset==0)ioffset=1;
 
   REWIND(stream);
-  if(verbose_output==1)PRINTF("%s","  pass 2\n");
+  PRINTF("%s","  pass 2\n");
   for(;;){
     if(FEOF(stream)!=0){
       BREAK;
@@ -8343,7 +8343,7 @@ int ReadSMV(bufferstreamdata *stream){
   }
   ndeviceinfo=0;
   REWIND(stream);
-  if(verbose_output==1)PRINTF("%s","  pass 3\n");
+  PRINTF("%s","  pass 3\n");
   PRINT_TIMER(timer_readsmv, "pass 2");
 
   /*
@@ -8825,7 +8825,7 @@ int ReadSMV(bufferstreamdata *stream){
  */
 
   REWIND(stream);
-  if(verbose_output==1)PRINTF("%s","  pass 4\n");
+  PRINTF("%s","  pass 4\n");
   startpass=1;
   CheckMemory;
 
@@ -10220,7 +10220,7 @@ typedef struct {
   REWIND(stream);
   if(do_pass4==1||(auto_terrain==1&&manual_terrain==0)){
     do_pass5 = 1;
-    if(verbose_output==1)PRINTF("%s","  pass 5\n");
+    PRINTF("%s","  pass 5\n");
   }
 
   while(((auto_terrain==1&&manual_terrain==0)||do_pass4==1)){
@@ -10365,7 +10365,7 @@ typedef struct {
   STOP_TIMER(processing_time);
   START_TIMER(wrapup_time);
 
-  if(verbose_output==1)PRINTF("  wrapping up\n");
+  PRINTF("  wrapping up\n");
 
   have_obsts = 0;
   for(i=0;i<nmeshes;i++){
@@ -10649,10 +10649,8 @@ typedef struct {
   SetupMeshWalls();
   update_windrose = 1;
 
-  if(verbose_output==1){
-    PRINTF("%s", _("complete"));
-    PRINTF("\n\n");
-  }
+  PRINTF("%s", _("complete"));
+  PRINTF("\n\n");
   PrintMemoryInfo;
 
   STOP_TIMER(wrapup_time);
