@@ -132,7 +132,7 @@ EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(void);
 EXTERNCPP void UpdateGlobalFEDSliceBounds(void);
 
-#ifdef pp_PLOT_SLICE
+#ifdef pp_SLICE_PLOT
 EXTERNCPP void Slice2Device(void);
 #endif
 
