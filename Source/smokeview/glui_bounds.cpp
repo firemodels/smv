@@ -2828,6 +2828,9 @@ GLUI_Rollout *ROLLOUT_slice_average = NULL;
 GLUI_Rollout *ROLLOUT_slice_histogram = NULL;
 GLUI_Rollout *ROLLOUT_line_contour = NULL;
 GLUI_Rollout *ROLLOUT_slicedups = NULL;
+#ifdef pp_SLICE_PLOT
+GLUI_Rollout *ROLLOUT_slice_2d_plots = NULL;
+#endif
 GLUI_Rollout *ROLLOUT_vector = NULL;
 GLUI_Rollout *ROLLOUT_isosurface = NULL;
 GLUI_Rollout *ROLLOUT_boundary_settings = NULL;
@@ -3067,7 +3070,10 @@ int      nisoprocinfo=0;
 #define SLICE_HISTOGRAM_ROLLOUT 5
 #define SLICE_DUP_ROLLOUT       6
 #define SLICE_SETTINGS_ROLLOUT  7
-procdata  sliceprocinfo[8];
+#ifdef pp_SLICE_PLOT
+#define SLICE_2D_PLOTS          8
+#endif
+procdata  sliceprocinfo[9];
 int      nsliceprocinfo=0;
 
 //*** plot3dprocinfo entries
@@ -4876,6 +4882,18 @@ extern "C" void GluiBoundsSetup(int main_window){
       CHECKBOX_skip_subslice=glui_bounds->add_checkbox_to_panel(PANEL_slice_buttonsB,_("Skip coarse sub-slice"),&skip_slice_in_embedded_mesh);
     }
 
+#ifdef pp_SLICE_PLOT
+    glui_bounds->add_column_to_panel(PANEL_slice_buttonsB, false);
+    ROLLOUT_slice_2d_plots = glui_bounds->add_rollout_to_panel(PANEL_slice_buttonsB, _("2D plots"), false, SLICE_2D_PLOTS, SliceRolloutCB);
+    INSERT_ROLLOUT(ROLLOUT_slice_2d_plots, glui_bounds);
+    ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_2d_plots, SLICE_2D_PLOTS, glui_bounds);
+    glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_2d_plots,_("show plot"),                 &slice_show_plot, SLICE_PLOT, SliceBoundCB);
+    glui_bounds->add_spinner_to_panel(ROLLOUT_slice_2d_plots, "x", GLUI_SPINNER_FLOAT, slice_xyz+0,   SLICE_PLOT, SliceBoundCB);
+    glui_bounds->add_spinner_to_panel(ROLLOUT_slice_2d_plots, "y", GLUI_SPINNER_FLOAT, slice_xyz+1,   SLICE_PLOT, SliceBoundCB);
+    glui_bounds->add_spinner_to_panel(ROLLOUT_slice_2d_plots, "z", GLUI_SPINNER_FLOAT, slice_xyz+2,   SLICE_PLOT, SliceBoundCB);
+    glui_bounds->add_spinner_to_panel(ROLLOUT_slice_2d_plots, _("size"), GLUI_SPINNER_FLOAT,  &slice_plot_factor);
+#endif
+
     if(nslicedups>0){
       glui_bounds->add_column_to_panel(PANEL_slice_buttonsB, false);
       ROLLOUT_slicedups = glui_bounds->add_rollout_to_panel(PANEL_slice_buttonsB, _("Duplicates"), false, SLICE_DUP_ROLLOUT, SliceRolloutCB);
@@ -5945,6 +5963,11 @@ extern "C" void SliceBoundCB(int var){
     case COLORBAR_EXTREME2:
       UpdateExtreme();
       break;
+#ifdef pp_SLICE_PLOT
+    case SLICE_PLOT:
+      Slice2Device();
+      break;
+#endif
     case UPDATE_SLICEDUPS:
     updatemenu = 1;
     break;

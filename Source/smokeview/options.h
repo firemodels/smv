@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+//#define pp_SLICE_PLOT           // show 2d slice plots
 //#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds
 #define pp_THREADBUFFER
 //#define pp_SMOKEBUFFERPTR     // read 3d smoke files using memory buffe pointers

@@ -132,6 +132,10 @@ EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(void);
 EXTERNCPP void UpdateGlobalFEDSliceBounds(void);
 
+#ifdef pp_PLOT_SLICE
+EXTERNCPP void Slice2Device(void);
+#endif
+
 EXTERNCPP char *GetHomeDir(void);
 EXTERNCPP void SetPercentileDrawOff(void);
 EXTERNCPP void ClosePartFiles(void);

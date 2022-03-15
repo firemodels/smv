@@ -1280,6 +1280,9 @@ typedef struct _slicedata {
   struct _patchdata *patchgeom;
   FILE_SIZE file_size;
   int *geom_offsets;
+#ifdef pp_SLICE_PLOT
+  devicedata vals2d;
+#endif
 #ifdef pp_SLICETHREAD
   int loadstatus;
 #endif

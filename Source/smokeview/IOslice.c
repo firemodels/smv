@@ -7413,12 +7413,72 @@ void SortLoadedSliceList(void){
   }
 }
 
+#ifdef pp_SLICE_PLOT
+/* ------------------ Slice2Device ------------------------ */
+
+void Slice2Device(void){
+  int i;
+
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+    devicedata *sdev;
+
+    slicei = sliceinfo+i;
+    if(slicei->loaded==0)continue;
+    sdev = &(slicei->vals2d);
+    if(sdev->vals==NULL){
+      int j;
+
+      FREEMEMORY(sdev->vals);
+      NewMemory((void **)&(sdev->vals), slicei->ntimes*sizeof(float));
+      sdev->nvals = slicei->ntimes;
+      sdev->times = slicei->times;
+      for(j = 0; j<sdev->nvals; j++){
+        sdev->vals[i] = sdev->times[j]*sdev->times[j];
+      }
+    }
+  }
+}
+
+/* ------------------ DrawSlicePlots ------------------------ */
+void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
+              float highlight_x, float highlight_y, int valid,
+              float global_valmin, float global_valmax, char *quantity, char *unit);
+
+void DrawSlicePlots(void){
+  int i;
+
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+    devicedata *devicei;
+    float valmin, valmax;
+    float highlight_val;
+
+    slicei = sliceinfo+i;
+    if(slicei->loaded==0)continue;
+    devicei = &(slicei->vals2d);
+    valmin = devicei->times[0]*devicei->times[0];
+    highlight_val = devicei->vals[itimes];
+    valmax = devicei->times[devicei->nvals-1]*devicei->times[devicei->nvals-1];
+    DrawPlot(PLOT_ALL, slice_xyz, slice_plot_factor, devicei->times, devicei->vals, devicei->nvals,
+             global_times[itimes], highlight_val, 1, valmin, valmax,
+             slicei->label.shortlabel, slicei->label.unit);
+  }
+}
+#endif
+
 /* ------------------ DrawSliceFrame ------------------------ */
 
 void DrawSliceFrame(){
   int ii;
   int jjj, nslicemax, blend_mode;
   int draw_slice;
+
+#ifdef pp_SLICE_PLOT
+  if(slice_show_plot==1){
+    DrawSlicePlots();
+  }
+#endif
 
   if(use_tload_begin==1 && global_times[itimes]<tload_begin)return;
   if(use_tload_end==1   && global_times[itimes]>tload_end)return;

@@ -5059,6 +5059,11 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 #ifdef pp_SLICETHREAD
   sd->loadstatus = FILE_UNLOADED;
 #endif
+#ifdef pp_SLICE_PLOT
+  sd->vals2d.vals  = NULL;
+  sd->vals2d.times = NULL;
+  sd->vals2d.nvals = 0;
+#endif
   sd->geom_offsets = NULL;
   sd->slcf_index = slcf_index;
   sd->finalize = 1;
