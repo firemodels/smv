@@ -1622,6 +1622,7 @@ SVEXTERN float slice_xyz[3];
 #endif
 SVEXTERN int   SVDECL(slice_show_plot, 0);
 SVEXTERN float SVDECL(slice_plot_factor, 1.0);
+SVEXTERN int   SVDECL(update_slice2device, 0);
 #endif
 SVEXTERN int SVDECL(script_multislice,0), SVDECL(script_multivslice,0), SVDECL(script_iso,0);
 SVEXTERN FILE SVDECL(*scriptoutstream,NULL);

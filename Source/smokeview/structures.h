@@ -1348,6 +1348,9 @@ typedef struct _boundsdata {
   float dlg_global_valmin, dlg_global_valmax;
   float line_contour_min;
   float line_contour_max;
+#ifdef pp_SLICE_PLOT
+  float dev_min, dev_max;
+#endif
   int line_contour_num;
   char  colorlabels[12][11];
   float colorvalues[12];

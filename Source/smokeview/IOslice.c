@@ -4993,6 +4993,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     int set_valmin, set_valmax;
 
     update_slicefile_bounds = 1; // temporary fix to make sure bounds are always up to date
+#ifdef pp_SLICE_PLOT
+    update_slice2device = 1;
+#endif
     if(update_slicefile_bounds==1){
       update_slicefile_bounds = 0;
       GetGlobalSliceBounds();
@@ -7488,6 +7491,19 @@ float GetSliceVal(slicedata *slicei, int itime, int offset){
   return sliceval;
 }
 
+/* ------------------ GetDevMinMax ------------------------ */
+
+void GetDevMinMax(devicedata *devi, float *valmin, float *valmax){
+  int i;
+
+  *valmin = devi->vals[0];
+  *valmax = *valmin;
+  for(i = 1; i<devi->nvals; i++){
+    *valmin = MIN(*valmin, devi->vals[i]);
+    *valmax = MAX(*valmax, devi->vals[i]);
+  }
+}
+
 /* ------------------ Slice2Device ------------------------ */
 
 void Slice2Device(void){
@@ -7516,9 +7532,37 @@ void Slice2Device(void){
       sdev->vals[j] = GetSliceVal(slicei, j, offset);
     }
   }
+  for(i = 0; i<nslicebounds; i++){
+    boundsdata *sb;
+    int j;
+
+    sb = slicebounds+i;
+    sb->dev_min = 1.0;
+    sb->dev_max = 0.0;
+
+    for(j = 0; j<nsliceinfo; j++){
+      slicedata *slicej;
+      devicedata *devicej;
+      float valmin, valmax;
+
+      slicej = sliceinfo+j;
+      devicej = &(slicej->vals2d);
+      if(slicej->loaded==0||devicej->valid==0||strcmp(sb->label->longlabel, slicej->label.longlabel)!=0)continue;
+      GetDevMinMax(devicej, &valmin, &valmax);
+      if(sb->dev_min>sb->dev_max){
+        sb->dev_min = valmin;
+        sb->dev_max = valmax;
+      }
+      else{
+        sb->dev_min = MIN(valmin, sb->dev_min);
+        sb->dev_max = MAX(valmax, sb->dev_max);
+      }
+    }
+  }
 }
 
 /* ------------------ DrawSlicePlots ------------------------ */
+
 void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
               float highlight_x, float highlight_y, int valid,
               float global_valmin, float global_valmax, char *quantity, char *unit);
@@ -7537,12 +7581,6 @@ void DrawSlicePlots(void){
     slicei = sliceinfo+i;
     devicei = &(slicei->vals2d);
     if(slicei->loaded==0||devicei->valid==0)continue;
-    valmin = devicei->vals[0];
-    valmax = valmin;
-    for(j = 1; j<devicei->nvals; j++){
-      valmin = MIN(devicei->vals[j], valmin);
-      valmax = MAX(devicei->vals[j], valmax);
-    }
 
     highlight_val = devicei->vals[itimes];
     glPushMatrix();
@@ -7558,8 +7596,14 @@ void DrawSlicePlots(void){
     boundsdata *sb;
 
     sb = slicebounds + slicefile_labelindex;
-    valmin = MIN(valmin, sb->levels256[0]);
-    valmax = MAX(valmax, sb->levels256[255]);
+    if(sb->dev_min>sb->dev_max){
+      valmin = sb->levels256[0];
+      valmax = sb->levels256[255];
+    }
+    else{
+      valmin = MIN(sb->dev_min, sb->levels256[0]);
+      valmax = MAX(sb->dev_max, sb->levels256[255]);
+    }
     DrawPlot(PLOT_ALL, xyz, slice_plot_factor, devicei->times, devicei->vals, devicei->nvals,
              global_times[itimes], highlight_val, 1, valmin, valmax,
              slicei->label.shortlabel, slicei->label.unit);
