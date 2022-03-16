@@ -7517,10 +7517,9 @@ void Slice2Device(void){
     slicei = sliceinfo+i;
     dev_mesh = meshinfo+slicei->blocknumber;
     sdev = &(slicei->vals2d);
-    if(slicei->volslice==1||slicei->loaded==0||InMeshi(dev_mesh, slice_xyz)==0){
-      sdev->valid = 0;
-      continue;
-    }
+    sdev->valid = 0;
+    if(slicei->volslice==1||slicei->loaded==0||slicei->ntimes==0)continue;
+    if(InMeshi(dev_mesh, slicei->idir, slice_xyz)==0)continue;
     sdev->valid = 1;
     FREEMEMORY(sdev->vals);
     NewMemory((void **)&(sdev->vals), slicei->ntimes*sizeof(float));
