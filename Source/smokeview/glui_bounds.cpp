@@ -2907,6 +2907,11 @@ GLUI_Spinner *SPINNER_iso_colors[4];
 GLUI_Spinner *SPINNER_iso_transparency;
 GLUI_Spinner *SPINNER_transparent_level = NULL;
 GLUI_Spinner *SPINNER_slice_skip = NULL;
+#ifdef pp_SLICE_PLOT
+GLUI_Spinner *SPINNER_slice_x = NULL;
+GLUI_Spinner *SPINNER_slice_y = NULL;
+GLUI_Spinner *SPINNER_slice_z = NULL;
+#endif
 GLUI_Spinner *SPINNER_line_contour_num=NULL;
 GLUI_Spinner *SPINNER_line_contour_width=NULL;
 GLUI_Spinner *SPINNER_line_contour_min=NULL;
@@ -4888,9 +4893,12 @@ extern "C" void GluiBoundsSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_slice_2d_plots, glui_bounds);
     ADDPROCINFO(sliceprocinfo, nsliceprocinfo, ROLLOUT_slice_2d_plots, SLICE_2D_PLOTS, glui_bounds);
     glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_2d_plots,_("show plot"),                 &slice_show_plot, SLICE_PLOT, SliceBoundCB);
-    glui_bounds->add_spinner_to_panel(ROLLOUT_slice_2d_plots, "x", GLUI_SPINNER_FLOAT, slice_xyz+0,   SLICE_PLOT, SliceBoundCB);
-    glui_bounds->add_spinner_to_panel(ROLLOUT_slice_2d_plots, "y", GLUI_SPINNER_FLOAT, slice_xyz+1,   SLICE_PLOT, SliceBoundCB);
-    glui_bounds->add_spinner_to_panel(ROLLOUT_slice_2d_plots, "z", GLUI_SPINNER_FLOAT, slice_xyz+2,   SLICE_PLOT, SliceBoundCB);
+    SPINNER_slice_x = glui_bounds->add_spinner_to_panel(ROLLOUT_slice_2d_plots, "x", GLUI_SPINNER_FLOAT, slice_xyz+0,   SLICE_PLOT, SliceBoundCB);
+    SPINNER_slice_y = glui_bounds->add_spinner_to_panel(ROLLOUT_slice_2d_plots, "y", GLUI_SPINNER_FLOAT, slice_xyz+1,   SLICE_PLOT, SliceBoundCB);
+    SPINNER_slice_z = glui_bounds->add_spinner_to_panel(ROLLOUT_slice_2d_plots, "z", GLUI_SPINNER_FLOAT, slice_xyz+2,   SLICE_PLOT, SliceBoundCB);
+    SPINNER_slice_x->set_float_limits(xbar0FDS, xbarFDS);
+    SPINNER_slice_y->set_float_limits(ybar0FDS, ybarFDS);
+    SPINNER_slice_z->set_float_limits(zbar0FDS, zbarFDS);
     glui_bounds->add_spinner_to_panel(ROLLOUT_slice_2d_plots, _("size"), GLUI_SPINNER_FLOAT,  &slice_plot_factor);
 #endif
 
