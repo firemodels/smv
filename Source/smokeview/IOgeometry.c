@@ -2419,8 +2419,6 @@ FILE_SIZE ReadGeom0(geomdata *geomi, int load_flag, int type, int *geom_frame_in
 /* ------------------ InMesh ------------------------ */
 
 int InMeshi(meshdata *meshi, float *xyz){
-  int i;
-
   float *boxmin, *boxmax;
 
   boxmin = meshi->boxmin;

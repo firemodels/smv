@@ -7424,7 +7424,7 @@ int GetSliceOffset(slicedata *sd, float *xyz, float *device_xyz){
   int plotx, ploty, plotz;
   int i, j, k, ii;
   int ibar, jbar, kbar;
-  int nx, ny, nz, nxy;
+  int nx, ny, nz;
   int offset;
 
   memcpy(device_xyz, xyz, 3*sizeof(float));
@@ -7441,7 +7441,6 @@ int GetSliceOffset(slicedata *sd, float *xyz, float *device_xyz){
   nx = ibar + 1;
   ny = jbar + 1;
   nz = kbar + 1;
-  nxy = nx*ny;
   i=0;
   j=0;
   k=0;
