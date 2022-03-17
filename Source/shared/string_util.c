@@ -1299,7 +1299,6 @@ int ReadLabelsBNDS(flowlabels *flowlabel, BFILE *stream, char *bufferD, char *bu
   return LABEL_OK;
 }
 
-
 /* ------------------ ReadLabels ------------------------ */
 
 int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){

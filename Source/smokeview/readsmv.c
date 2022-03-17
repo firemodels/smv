@@ -36,7 +36,121 @@
 #define ZVENT_1ROOM 1
 #define ZVENT_2ROOM 2
 
+#ifdef pp_HRR
 /* ------------------ ReadHRR ------------------------ */
+
+void ReadHRROther(int flag){
+  FILE *stream;
+  int max_chars, nrows, ncols;
+  char **labels, **units;
+  int nlabels, nunits, nvals;
+  float *vals;
+  int *valids;
+  int i, irow;
+  char *buffer;
+
+  if(nhrrotherinfo>0){
+    for(i=0;i<nhrrotherinfo;i++){
+      hrrotherdata *hi;
+
+      hi = hrrotherinfo + i;
+      FREEMEMORY(hi->vals);
+    }
+    FREEMEMORY(hrrotherinfo);
+    FREEMEMORY(hrr_buffer_units);
+    FREEMEMORY(hrr_buffer_labels);
+    nhrrotherinfo = 0;
+  }
+  if(flag==UNLOAD)return;
+
+  stream = fopen(hrr_csv_filename, "r");
+  if(stream==NULL)return;
+
+  max_chars =  GetRowCols(stream, &nrows, &ncols);
+  nhrrotherinfo = ncols;
+
+  NewMemory((void **)&buffer,            max_chars+1);
+  NewMemory((void **)&hrr_buffer_units,  max_chars+1);
+  NewMemory((void **)&hrr_buffer_labels, max_chars+1);
+  NewMemory((void **)&labels, nhrrotherinfo*sizeof(char *));
+  NewMemory((void **)&units, nhrrotherinfo*sizeof(char *));
+  NewMemory((void **)&hrrotherinfo, nhrrotherinfo*sizeof(hrrotherdata));
+  NewMemory((void **)&vals, nhrrotherinfo*sizeof(float));
+  NewMemory((void **)&valids, nhrrotherinfo*sizeof(int));
+  for(i = 0; i<nhrrotherinfo; i++){
+    hrrotherdata *hi;
+
+    hi = hrrotherinfo+i;
+    NewMemory((void **)&hi->vals, nrows*sizeof(float));
+  }
+
+  fgets(hrr_buffer_units, max_chars, stream);
+  ParseCSV(hrr_buffer_units, units, &nunits);
+
+  fgets(hrr_buffer_labels, max_chars, stream);
+  ParseCSV(hrr_buffer_labels, labels, &nlabels);
+  for(i = 0; i<nhrrotherinfo; i++){
+    hrrotherdata *hi;
+    flowlabels *label;
+
+    hi = hrrotherinfo+i;
+    label = &(hi->label);
+    label->unit = NULL;
+    label->shortlabel = NULL;
+    label->longlabel = NULL;
+  }
+  for(i=0;i<nunits;i++){
+    hrrotherdata *hi;
+    flowlabels *label;
+
+    hi = hrrotherinfo + i;
+    label = &(hi->label);
+    label->unit = units[i];
+  }
+  for(i = 0; i<nlabels; i++){
+    hrrotherdata *hi;
+    flowlabels *label;
+
+    hi = hrrotherinfo+i;
+    label = &(hi->label);
+    label->longlabel = labels[i];
+    label->shortlabel = labels[i];
+  }
+
+  irow = 0;
+  while(!feof(stream)){
+    fgets(buffer, max_chars, stream);
+    FParseCSV(buffer, vals, valids, ncols, &nvals);
+    for(i = 0; i<nhrrotherinfo; i++){
+      hrrotherdata *hi;
+
+      hi = hrrotherinfo+i;
+      hi->vals[irow] = 0.0;
+      if(valids[i]==1)hi->vals[irow] = vals[i];
+    }
+    irow++;
+    if(irow>=nrows)break;
+  }
+  for(i = 0; i<nhrrotherinfo; i++){
+    hrrotherdata *hi;
+
+    hi = hrrotherinfo+i;
+    hi->nvals = irow;
+    printf("%s %s\n", hi->label.shortlabel, hi->label.unit);
+  }
+  printf("%i %i %i\n",max_chars, nrows, ncols);
+
+  FREEMEMORY(units);
+  FREEMEMORY(labels);
+  FREEMEMORY(vals);
+  FREEMEMORY(vals);
+  FREEMEMORY(buffer);
+  fclose(stream);
+}
+#endif
+
+/* ------------------ ReadHRR ------------------------ */
+
 #define LENBUFFER 1024
 void ReadHRR(int flag, int *errorcode){
   FILE *HRRFILE;
@@ -45,6 +159,10 @@ void ReadHRR(int flag, int *errorcode){
   float *hrrtime, *hrrval;
   int display = 0;
   int ntimes_saved;
+
+#ifdef pp_HRR
+  ReadHRROther(flag);
+#endif
 
   *errorcode = 0;
   if(hrrinfo!=NULL){

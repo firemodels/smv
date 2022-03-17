@@ -868,6 +868,11 @@ SVEXTERN int GPUvol_voltemp_offset;
 SVEXTERN int GPUvol_voltemp_factor;
 #endif
 
+#ifdef pp_HRR
+SVEXTERN hrrotherdata SVDECL(*hrrotherinfo, NULL);
+SVEXTERN int SVDECL(nhrrotherinfo, 0);
+SVEXTERN char SVDECL(*hrr_buffer_labels, NULL), SVDECL(*hrr_buffer_units, NULL);
+#endif
 SVEXTERN int SVDECL(ncsvinfo,0);
 SVEXTERN csvdata SVDECL(*csvinfo,NULL);
 SVEXTERN int smoke_render_option;
