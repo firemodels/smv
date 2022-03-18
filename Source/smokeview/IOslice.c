@@ -7573,7 +7573,6 @@ void DrawSlicePlots(void){
     devicedata *devicei;
     float valmin, valmax;
     float highlight_val;
-    int j;
     float xyz[3] = {0.0,0.0,0.0};
 
     slicei = sliceinfo+i;
