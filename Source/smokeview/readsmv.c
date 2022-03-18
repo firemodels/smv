@@ -120,30 +120,34 @@ void ReadHRROther(int flag){
   GetRowCols(stream, &nrows, &ncols);
   nhrrotherinfo = ncols;
 
+  // allocate memory
+
   NewMemory((void **)&labels,         nhrrotherinfo*sizeof(char *));
   NewMemory((void **)&units,          nhrrotherinfo*sizeof(char *));
   NewMemory((void **)&hrrotherinfo, 2*nhrrotherinfo*sizeof(hrrotherdata));
   NewMemory((void **)&vals,           nhrrotherinfo*sizeof(float));
   NewMemory((void **)&valids,         nhrrotherinfo*sizeof(int));
-  for(i = 0; i<nhrrotherinfo; i++){
+
+// initalize each column
+  for(i = 0; i<2*nhrrotherinfo; i++){
     hrrotherdata *hi;
 
     hi = hrrotherinfo+i;
-    NewMemory((void **)&hi->vals, nrows*sizeof(float));
+    NewMemory((void **)&hi->vals, (nrows-2)*sizeof(float));
+    hi->base_col = -1;
+    hi->nvals = nrows-2;
   }
+  CheckMemory;
+
+// setup labels and units
 
   fgets(buffer_units, LENBUFFER, stream);
   ParseCSV(buffer_units, units, &nunits);
 
   fgets(buffer_labels, LENBUFFER, stream);
   ParseCSV(buffer_labels, labels, &nlabels);
+  CheckMemory;
 
-  for(i = 0; i<nhrrotherinfo; i++){
-    hrrotherdata *hi;
-
-    hi = hrrotherinfo+i;
-    hi->base_col = -1;
-  }
   for(i = 0; i<nhrrotherinfo; i++){
     hrrotherdata *hi;
 
@@ -152,9 +156,16 @@ void ReadHRROther(int flag){
     TrimBack(units[i]);
     SetLabels(&(hi->label), labels[i], labels[i], units[i]);
   }
+  CheckMemory;
+
+// find column index of several quantities
+
   time_col  = GetHrrCsvCol("Time");
   hrr_col   = GetHrrCsvCol("HRR");
   qradi_col = GetHrrCsvCol("Q_RADI");
+  CheckMemory;
+
+// define column for each MLR column by heat of combustion except for air and products
   nhrrhcinfo = 0;
   for(i = 0; i<nhrrotherinfo; i++){
     hrrotherdata *hi, *hi2;
@@ -174,24 +185,29 @@ void ReadHRROther(int flag){
       nhrrhcinfo++;
     }
   }
+  CheckMemory;
 
+// read in data
   irow = 0;
   while(!feof(stream)){
-    fgets(buffer, LENBUFFER, stream);
+    if(fgets(buffer, LENBUFFER, stream)==NULL)break;
+    TrimBack(buffer);
+    if(strlen(buffer)==0)break;
     FParseCSV(buffer, vals, valids, ncols, &nvals);
+    if(nvals<ncols)break;
     for(i = 0; i<nhrrotherinfo; i++){
       hrrotherdata *hi;
-      float *v;
 
       hi = hrrotherinfo+i;
-      v = hi->vals;
       hi->vals[irow] = 0.0;
       if(valids[i]==1)hi->vals[irow] = vals[i];
-      v[irow] = 1.0;
     }
     irow++;
     if(irow>=nrows)break;
   }
+  CheckMemory;
+
+//define column of hrr/qradi
   if(hrr_col>=0&qradi_col>=0){
     char label[256];
     hrrotherdata *hi_chirad;
@@ -201,26 +217,33 @@ void ReadHRROther(int flag){
     hi_chirad = hrrotherinfo+chirad_col;
 
     strcpy(label, "CHIRAD");
-    SetLabels(&(hi_chirad->label), label, label, "");
+    SetLabels(&(hi_chirad->label), label, label, "-");
     hi_chirad->nvals = nrows - 2;
     nhrrhcinfo++;
   }
+  CheckMemory;
+
+// construct column for each MLR column by heat of combustion except for air and products
   for(i = nhrrotherinfo; i<nhrrotherinfo+nhrrhcinfo; i++){
     hrrotherdata *hi;
 
     hi = hrrotherinfo+i;
-    NewMemory((void **)&hi->vals, nrows*sizeof(float));
+    hi->nvals = nrows-2;
     if(hi->base_col>=0){
       hrrotherdata *hi_from;
+      int j;
 
       hi_from = hrrotherinfo+hi->base_col;
       memcpy(hi->vals, hi_from->vals, hi_from->nvals*sizeof(float));
       hi->nvals = hi_from->nvals;
-      for(i=0;i<hi->nvals;i++){
-        hi->vals[i] *= fuel_hoc;
+      for(j=0;j<hi->nvals;j++){
+        hi->vals[j] *= fuel_hoc;
       }
     }
   }
+  CheckMemory;
+
+//construct column of hrr/qradi
   if(hrr_col>=0&qradi_col>=0){
     hrrotherdata *hi_chirad, *hi_hrr, *hi_qradi;
 
@@ -237,6 +260,9 @@ void ReadHRROther(int flag){
       }
     }
   }
+  CheckMemory;
+
+//compute min and max of each column
   for(i = 0; i<nhrrotherinfo; i++){
     hrrotherdata *hi;
     float valmin, valmax;
@@ -253,7 +279,15 @@ void ReadHRROther(int flag){
     hi->valmin = valmin;
     hi->valmax = valmax;
   }
+  CheckMemory;
 
+  for(i = nhrrotherinfo+nhrrhcinfo; i<2*nhrrotherinfo; i++){
+    hrrotherdata *hi;
+
+    hi = hrrotherinfo+i;
+    FREEMEMORY(hi->vals);
+  }
+  CheckMemory;
   FREEMEMORY(units);
   FREEMEMORY(labels);
   FREEMEMORY(vals);
