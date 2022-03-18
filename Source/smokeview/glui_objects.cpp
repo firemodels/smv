@@ -305,9 +305,9 @@ extern "C" void DeviceCB(int var){
 #ifdef pp_HRR
   if(var==HRRPUV2_PLOT){
     if(show_hrr2==1&&show_hrrpuv_plot==1){
-      show_hrrpuv_plot = 0;
-      CHECKBOX_show_hrrpuv_plot->set_int_val(0);
-      DeviceCB(HRRPUV_PLOT);
+     // show_hrrpuv_plot = 0;
+     // CHECKBOX_show_hrrpuv_plot->set_int_val(0);
+     // DeviceCB(HRRPUV_PLOT);
     }
   }
 #endif

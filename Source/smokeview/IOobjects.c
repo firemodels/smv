@@ -3487,7 +3487,7 @@ void DrawDevicePlots(void){
       }
     }
   }
-  if(show_hrrpuv_plot==1&&hrrinfo!=NULL){
+  if(show_hrr2==0&&show_hrrpuv_plot==1&&hrrinfo!=NULL){
     float xyz[] = {0.0,0.0,0.0};
     char quantity[] = "HRR", unit[] = "kW";
     int valid = 1;
@@ -3502,6 +3502,19 @@ void DrawDevicePlots(void){
     }
     DrawPlot(PLOT_ALL, xyz, device_plot_factor, hrrinfo->times, hrrinfo->hrrval, hrrinfo->ntimes,
              highlight_time, highlight_val, valid, hrr_valmin, hrr_valmax, quantity, unit);
+  }
+  if(show_hrr2==1){
+    float xyz[] = {0.0,0.0,0.0};
+    float highlight_time = 0.0, highlight_val = 0.0;
+    int valid = 1;
+    hrrotherdata *hi, *hitime;
+
+    hi = hrrotherinfo+glui_hrr;
+    hitime = hrrotherinfo+time_col;
+    highlight_time = global_times[itimes];
+    highlight_val  = hi->vals[CLAMP(itimes,0,hi->nvals-1)];
+    DrawPlot(PLOT_ALL, xyz, device_plot_factor, hitime->vals, hi->vals, hi->nvals,
+             highlight_time, highlight_val, valid, hi->valmin, hi->valmax, hi->label.longlabel, hi->label.unit);
   }
 }
 
