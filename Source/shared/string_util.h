@@ -74,6 +74,9 @@ typedef struct {
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
+#ifdef pp_HRR
+EXTERNCPP int            GetTokens(char *buffer, char **tokens);
+#endif
 EXTERNCPP char          *GetFloatLabel(float val, char *label);
 EXTERNCPP char          *GetIntLabel(int val, char *label);
 EXTERNCPP char          *AppendString(char *S1, char *S2);

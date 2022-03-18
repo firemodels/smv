@@ -870,8 +870,11 @@ SVEXTERN int GPUvol_voltemp_factor;
 
 #ifdef pp_HRR
 SVEXTERN hrrotherdata SVDECL(*hrrotherinfo, NULL);
-SVEXTERN int SVDECL(nhrrotherinfo, 0);
-SVEXTERN char SVDECL(*hrr_buffer_labels, NULL), SVDECL(*hrr_buffer_units, NULL);
+SVEXTERN int SVDECL(nhrrotherinfo, 0), SVDECL(nhrrhcinfo, 0);
+SVEXTERN int SVDECL(time_col, -1), SVDECL(hrr_col, -1), SVDECL(qradi_col, -1), SVDECL(chirad_col, -1);
+SVEXTERN int SVDECL(glui_hrr, 1);
+SVEXTERN int SVDECL(show_hrr2, 0);
+SVEXTERN float SVDECL(fuel_hoc, -1.0), SVDECL(fuel_hoc_default, -1.0);
 #endif
 SVEXTERN int SVDECL(ncsvinfo,0);
 SVEXTERN csvdata SVDECL(*csvinfo,NULL);

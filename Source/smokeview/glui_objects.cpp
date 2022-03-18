@@ -72,11 +72,20 @@ GLUI_Checkbox *CHECKBOX_showbeam_as_line = NULL;
 GLUI_Checkbox *CHECKBOX_use_beamcolor = NULL;
 GLUI_Checkbox **CHECKBOX_showz_windrose;
 GLUI_Checkbox *CHECKBOX_show_hrrpuv_plot=NULL;
+#ifdef pp_HRR
+GLUI_Checkbox *CHECKBOX_show_hrr2=NULL;
+#endif
 
 GLUI_EditText *EDIT_filter=NULL;
 
 GLUI_Listbox *LIST_open=NULL;
+#ifdef pp_HRR
+GLUI_Listbox *LIST_hrrdata=NULL;
+#endif
 
+#ifdef pp_HRR
+GLUI_Panel *PANEL_plothrr=NULL;
+#endif
 GLUI_Panel *PANEL_objects=NULL;
 GLUI_Panel *PANEL_vectors=NULL;
 GLUI_Panel *PANEL_arrow_base=NULL;
@@ -285,8 +294,23 @@ extern "C" void DeviceCB(int var){
   if(var==HRRPUV_PLOT){
     show_hrrpuv_plot = 1-show_hrrpuv_plot;
     ShowObjectsMenu(PLOT_HRRPUV);
+#ifdef pp_HRR
+    if(show_hrr2==1&&show_hrrpuv_plot==1){
+      show_hrr2 = 0;
+      CHECKBOX_show_hrr2->set_int_val(0);
+    }
+#endif
     return;
   }
+#ifdef pp_HRR
+  if(var==HRRPUV2_PLOT){
+    if(show_hrr2==1&&show_hrrpuv_plot==1){
+      show_hrrpuv_plot = 0;
+      CHECKBOX_show_hrrpuv_plot->set_int_val(0);
+      DeviceCB(HRRPUV_PLOT);
+    }
+  }
+#endif
   if(var == WINDROSE_UPDATE){
     DeviceData2WindRose(nr_windrose, ntheta_windrose);
     return;
@@ -751,6 +775,21 @@ extern "C" void GluiDeviceSetup(int main_window){
           SPINNER_device_time_average->set_float_limits(0.0, dev_tmax);
       }
       CHECKBOX_show_hrrpuv_plot = glui_device->add_checkbox_to_panel(PANEL_plots, _("HRRPUV data"), &show_hrrpuv_plot,HRRPUV_PLOT, DeviceCB);
+#ifdef pp_HRR
+      PANEL_plothrr = glui_device->add_panel_to_panel(PANEL_plots, "hrr spreadsheet data");
+      CHECKBOX_show_hrr2 = glui_device->add_checkbox_to_panel(PANEL_plothrr,_("show plot"),&show_hrr2, HRRPUV2_PLOT, DeviceCB);
+      LIST_hrrdata = glui_device->add_listbox_to_panel(PANEL_plothrr, "type:", &glui_hrr);
+      for(i=0;i<nhrrotherinfo+nhrrhcinfo;i++){
+        hrrotherdata *hi;
+
+        hi = hrrotherinfo+i;
+        if(hi->label.shortlabel!=NULL){
+          if(strcmp(hi->label.shortlabel, "Time")==0)continue;
+          LIST_hrrdata->add_item(i, hi->label.shortlabel);
+        }
+      }
+      LIST_hrrdata->set_int_val(glui_hrr);
+#endif
       PANEL_plotproperties = glui_device->add_panel_to_panel(PANEL_plots, "properties");
       glui_device->add_checkbox_to_panel(PANEL_plotproperties, _("labels"), &showdevice_labels);
       glui_device->add_spinner_to_panel(PANEL_plotproperties, _("size"), GLUI_SPINNER_FLOAT, &device_plot_factor);
