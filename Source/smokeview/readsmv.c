@@ -105,6 +105,7 @@ void ReadHRROther(int flag){
 
       hi = hrrotherinfo + i;
       FREEMEMORY(hi->vals);
+      FREEMEMORY(hi->vals_orig);
     }
     FREEMEMORY(hrrotherinfo);
     nhrrotherinfo = 0;
@@ -134,6 +135,7 @@ void ReadHRROther(int flag){
 
     hi = hrrotherinfo+i;
     NewMemory((void **)&hi->vals, (nrows-2)*sizeof(float));
+    NewMemory((void **)&hi->vals_orig, (nrows-2)*sizeof(float));
     hi->base_col = -1;
     hi->nvals = nrows-2;
   }
@@ -243,7 +245,7 @@ void ReadHRROther(int flag){
   }
   CheckMemory;
 
-//construct column of hrr/qradi
+//construct column of qradi/hrr
   if(hrr_col>=0&qradi_col>=0){
     hrrotherdata *hi_chirad, *hi_hrr, *hi_qradi;
 
@@ -253,7 +255,7 @@ void ReadHRROther(int flag){
     hi_chirad->nvals = MIN(hi_qradi->nvals, hi_hrr->nvals);
     for(i=0;i<hi_chirad->nvals;i++){
       if(hi_hrr->vals[i]!=0.0){
-        hi_chirad->vals[i] = -hi_qradi->vals[i]/hi_hrr->vals[i];
+        hi_chirad->vals[i] = CLAMP(-hi_qradi->vals[i]/hi_hrr->vals[i],0.0,1.0);
       }
       else{
         hi_chirad->vals[i] = 0.0;
@@ -262,8 +264,16 @@ void ReadHRROther(int flag){
   }
   CheckMemory;
 
+//compute vals into vals_orig
+  for(i = 0; i<nhrrotherinfo+nhrrhcinfo; i++){
+    hrrotherdata *hi;
+
+    hi = hrrotherinfo+i;
+    memcpy(hi->vals_orig, hi->vals, hi->nvals*sizeof(float));
+  }
+
 //compute min and max of each column
-  for(i = 0; i<nhrrotherinfo; i++){
+  for(i = 0; i<nhrrotherinfo+nhrrhcinfo; i++){
     hrrotherdata *hi;
     float valmin, valmax;
     int j;
@@ -281,11 +291,13 @@ void ReadHRROther(int flag){
   }
   CheckMemory;
 
+// free arrays that were not used
   for(i = nhrrotherinfo+nhrrhcinfo; i<2*nhrrotherinfo; i++){
     hrrotherdata *hi;
 
     hi = hrrotherinfo+i;
     FREEMEMORY(hi->vals);
+    FREEMEMORY(hi->vals_orig);
   }
   CheckMemory;
   FREEMEMORY(units);

@@ -3508,11 +3508,20 @@ void DrawDevicePlots(void){
     float highlight_time = 0.0, highlight_val = 0.0;
     int valid = 1;
     hrrotherdata *hi, *hitime;
+    int itime;
 
     hi = hrrotherinfo+glui_hrr;
     hitime = hrrotherinfo+time_col;
+
+    if(update_avg==1){
+      TimeAverageDeviceData(hitime->vals, hi->vals_orig, hi->vals, hi->nvals);
+      update_avg = 0;
+    }
     highlight_time = global_times[itimes];
-    highlight_val  = hi->vals[CLAMP(itimes,0,hi->nvals-1)];
+    itime = GetInterval(highlight_time, hitime->vals, hitime->nvals);
+    itime = CLAMP(itime, 0, hitime->nvals-1);
+
+    highlight_val  = hi->vals[itime];
     DrawPlot(PLOT_ALL, xyz, device_plot_factor, hitime->vals, hi->vals, hi->nvals,
              highlight_time, highlight_val, valid, hi->valmin, hi->valmax, hi->label.longlabel, hi->label.unit);
   }

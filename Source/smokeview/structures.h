@@ -980,7 +980,7 @@ typedef struct _device {
 /* --------------------------  hrrotherdata ------------------------------------ */
 
 typedef struct _hrrotherdata {
-  float *vals, valmin, valmax;;
+  float *vals, *vals_orig, valmin, valmax;
   int nvals, base_col;
   flowlabels label;
 } hrrotherdata;

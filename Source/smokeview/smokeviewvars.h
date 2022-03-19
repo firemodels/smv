@@ -875,6 +875,7 @@ SVEXTERN int SVDECL(time_col, -1), SVDECL(hrr_col, -1), SVDECL(qradi_col, -1), S
 SVEXTERN int SVDECL(glui_hrr, 1);
 SVEXTERN int SVDECL(show_hrr2, 0);
 SVEXTERN float SVDECL(fuel_hoc, -1.0), SVDECL(fuel_hoc_default, -1.0);
+SVEXTERN int SVDECL(update_avg, 0);
 #endif
 SVEXTERN int SVDECL(ncsvinfo,0);
 SVEXTERN csvdata SVDECL(*csvinfo,NULL);

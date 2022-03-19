@@ -294,21 +294,13 @@ extern "C" void DeviceCB(int var){
   if(var==HRRPUV_PLOT){
     show_hrrpuv_plot = 1-show_hrrpuv_plot;
     ShowObjectsMenu(PLOT_HRRPUV);
-#ifdef pp_HRR
-    if(show_hrr2==1&&show_hrrpuv_plot==1){
-      show_hrr2 = 0;
-      CHECKBOX_show_hrr2->set_int_val(0);
-    }
-#endif
     return;
   }
 #ifdef pp_HRR
   if(var==HRRPUV2_PLOT){
-    if(show_hrr2==1&&show_hrrpuv_plot==1){
-     // show_hrrpuv_plot = 0;
-     // CHECKBOX_show_hrrpuv_plot->set_int_val(0);
-     // DeviceCB(HRRPUV_PLOT);
-    }
+    show_hrrpuv_plot = show_hrr2;
+    DeviceCB(HRRPUV_PLOT);
+    update_avg = 1;
   }
 #endif
   if(var == WINDROSE_UPDATE){
@@ -433,6 +425,9 @@ extern "C" void DeviceCB(int var){
       devicei->update_avg = 1;
     }
     hrrinfo->update_avg = 1;
+#ifdef pp_HRR
+    update_avg = 1;
+#endif
     break;
   case DEVICE_devicetypes:
     for(i = 0;i < ndevicetypes;i++){
@@ -767,6 +762,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show selected");
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show all");
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show all (trees)");
+#ifndef pp_HRR
       {
         float dev_tmax;
 
@@ -775,10 +771,11 @@ extern "C" void GluiDeviceSetup(int main_window){
           SPINNER_device_time_average->set_float_limits(0.0, dev_tmax);
       }
       CHECKBOX_show_hrrpuv_plot = glui_device->add_checkbox_to_panel(PANEL_plots, _("HRRPUV data"), &show_hrrpuv_plot,HRRPUV_PLOT, DeviceCB);
+#endif
 #ifdef pp_HRR
-      PANEL_plothrr = glui_device->add_panel_to_panel(PANEL_plots, "hrr spreadsheet data");
-      CHECKBOX_show_hrr2 = glui_device->add_checkbox_to_panel(PANEL_plothrr,_("show plot"),&show_hrr2, HRRPUV2_PLOT, DeviceCB);
-      LIST_hrrdata = glui_device->add_listbox_to_panel(PANEL_plothrr, "type:", &glui_hrr);
+      PANEL_plothrr = glui_device->add_panel_to_panel(PANEL_plots, "hrr data");
+      CHECKBOX_show_hrr2 = glui_device->add_checkbox_to_panel(PANEL_plothrr,_("show"),&show_hrr2, HRRPUV2_PLOT, DeviceCB);
+      LIST_hrrdata = glui_device->add_listbox_to_panel(PANEL_plothrr, "type:", &glui_hrr, DEVICE_TIMEAVERAGE, DeviceCB);
       for(i=0;i<nhrrotherinfo+nhrrhcinfo;i++){
         hrrotherdata *hi;
 
@@ -798,6 +795,13 @@ extern "C" void GluiDeviceSetup(int main_window){
       glui_device->add_spinner_to_panel(PANEL_plotproperties, _("z offset"), GLUI_SPINNER_FLOAT, device_xyz_offset+2);
       glui_device->add_spinner_to_panel(PANEL_plotproperties, _("line width"), GLUI_SPINNER_FLOAT, &device_plot_line_width);
       glui_device->add_spinner_to_panel(PANEL_plotproperties, _("point size"), GLUI_SPINNER_FLOAT, &device_plot_point_size);
+      {
+        float dev_tmax;
+
+        dev_tmax = GetDeviceTminTmax();
+        SPINNER_device_time_average = glui_device->add_spinner_to_panel(PANEL_plotproperties, _("average interval"), GLUI_SPINNER_FLOAT, &device_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
+        SPINNER_device_time_average->set_float_limits(0.0, dev_tmax);
+      }
 
       UpdateGluiDevices();
     }
