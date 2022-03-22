@@ -7609,11 +7609,7 @@ void DrawSlicePlots(void){
       valmax = MAX(sb->dev_max, sb->levels256[255]);
     }
     xyz[2] = 0.0;
-#ifdef pp_HRR
     if(show_hrr2==1)xyz[2] = 1.2*plot2d_size_factor;
-#else
-    if(showdevice_plot==1)xyz[2] = 1.2*plot2d_size_factor
-#endif
 
     DrawPlot(PLOT_ALL, xyz, plot2d_size_factor, devicei->times, devicei->vals, devicei->nvals,
              global_times[itimes], highlight_val, 1, valmin, valmax,

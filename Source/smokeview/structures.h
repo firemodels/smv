@@ -974,7 +974,6 @@ typedef struct _device {
   int valid;
 } devicedata;
 
-#ifdef pp_HRR
 /* --------------------------  hrrotherdata ------------------------------------ */
 
 typedef struct _hrrotherdata {
@@ -982,7 +981,6 @@ typedef struct _hrrotherdata {
   int nvals, base_col;
   flowlabels label;
 } hrrotherdata;
-#endif
 
 /* --------------------------  windrosedata ------------------------------------ */
 

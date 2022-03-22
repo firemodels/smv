@@ -38,8 +38,6 @@
 
 #define LENBUFFER 1024
 
-#ifdef pp_HRR
-
 /* ------------------ GetHrrCsvCol ------------------------ */
 
 int GetHrrCsvCol(char *label){
@@ -306,7 +304,6 @@ void ReadHRROther(int flag){
   FREEMEMORY(vals);
   fclose(stream);
 }
-#endif
 
 /* ------------------ ReadHRR ------------------------ */
 
@@ -318,9 +315,7 @@ void ReadHRR(int flag, int *errorcode){
   int display = 0;
   int ntimes_saved;
 
-#ifdef pp_HRR
   ReadHRROther(flag);
-#endif
 
   *errorcode = 0;
   if(hrrinfo!=NULL){

@@ -73,22 +73,16 @@ GLUI_Checkbox *CHECKBOX_showbeam_as_line = NULL;
 GLUI_Checkbox *CHECKBOX_use_beamcolor = NULL;
 GLUI_Checkbox **CHECKBOX_showz_windrose;
 GLUI_Checkbox *CHECKBOX_show_hrrpuv_plot=NULL;
-#ifdef pp_HRR
 GLUI_Checkbox *CHECKBOX_show_hrr2=NULL;
-#endif
 
 GLUI_EditText *EDIT_filter=NULL;
 
 GLUI_Listbox *LIST_devicetypes = NULL;
 GLUI_Listbox *LIST_open=NULL;
-#ifdef pp_HRR
 GLUI_Listbox *LIST_hrrdata=NULL;
-#endif
 
 GLUI_Panel *PANEL_plotslice=NULL;
-#ifdef pp_HRR
 GLUI_Panel *PANEL_plothrr=NULL;
-#endif
 GLUI_Panel *PANEL_objects=NULL;
 GLUI_Panel *PANEL_vectors=NULL;
 GLUI_Panel *PANEL_arrow_base=NULL;
@@ -303,13 +297,11 @@ extern "C" void DeviceCB(int var){
     ShowObjectsMenu(PLOT_HRRPUV);
     return;
   }
-#ifdef pp_HRR
   if(var==HRRPUV2_PLOT){
     show_hrrpuv_plot = show_hrr2;
     DeviceCB(HRRPUV_PLOT);
     update_avg = 1;
   }
-#endif
   if(var == WINDROSE_UPDATE){
     DeviceData2WindRose(nr_windrose, ntheta_windrose);
     return;
@@ -432,9 +424,7 @@ extern "C" void DeviceCB(int var){
       devicei->update_avg = 1;
     }
     hrrinfo->update_avg = 1;
-#ifdef pp_HRR
     update_avg = 1;
-#endif
     break;
   case DEVICE_devicetypes:
     for(i = 0;i < ndevicetypes;i++){
@@ -747,7 +737,6 @@ extern "C" void GluiDeviceSetup(int main_window){
       INSERT_ROLLOUT(ROLLOUT_device2Dplots, glui_device);
       ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_device2Dplots, PLOT2D_ROLLOUT, glui_device);
 
-#ifdef pp_HRR
       PANEL_plothrr = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "hrr plots");
       CHECKBOX_show_hrr2 = glui_device->add_checkbox_to_panel(PANEL_plothrr,_("show"),&show_hrr2, HRRPUV2_PLOT, DeviceCB);
       LIST_hrrdata = glui_device->add_listbox_to_panel(PANEL_plothrr, "type:", &glui_hrr, DEVICE_TIMEAVERAGE, DeviceCB);
@@ -761,7 +750,6 @@ extern "C" void GluiDeviceSetup(int main_window){
         }
       }
       LIST_hrrdata->set_int_val(glui_hrr);
-#endif
 
       PANEL_plotdevice = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "device plots/values");
       RADIO_showdevice_plot=glui_device->add_radiogroup_to_panel(PANEL_plotdevice, &showdevice_plot, SHOWDEVICEPLOT, DeviceCB);
@@ -783,16 +771,6 @@ extern "C" void GluiDeviceSetup(int main_window){
       CHECKBOX_device_4 = glui_device->add_checkbox_to_panel(ROLLOUT_values, _("Color"), &colordevice_val, COLORDEVICEVALS, DeviceCB);
       glui_device->add_spinner_to_panel(ROLLOUT_values, "min", GLUI_SPINNER_FLOAT, &device_valmin);
       glui_device->add_spinner_to_panel(ROLLOUT_values, "max", GLUI_SPINNER_FLOAT, &device_valmax);
-#ifndef pp_HRR
-      {
-        float dev_tmax;
-
-        dev_tmax = GetDeviceTminTmax();
-          SPINNER_device_time_average = glui_device->add_spinner_to_panel(ROLLOUT_device2Dplots, _("time average interval"), GLUI_SPINNER_FLOAT, &device_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
-          SPINNER_device_time_average->set_float_limits(0.0, dev_tmax);
-      }
-      CHECKBOX_show_hrrpuv_plot = glui_device->add_checkbox_to_panel(ROLLOUT_device2Dplots, _("HRRPUV data"), &show_hrrpuv_plot,HRRPUV_PLOT, DeviceCB);
-#endif
       PANEL_plotslice = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "slice plots");
       glui_device->add_checkbox_to_panel(PANEL_plotslice,_("show"),        &slice_show_plot,                  SLICE_PLOT, DeviceCB);
       SPINNER_slice_x = glui_device->add_spinner_to_panel(PANEL_plotslice, "x", GLUI_SPINNER_FLOAT, slice_xyz+0,   SLICE_PLOT, DeviceCB);

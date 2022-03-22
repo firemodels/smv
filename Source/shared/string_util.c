@@ -61,7 +61,6 @@ float RandAB(int seed, float minval, float maxval){
   return  minval + (maxval-minval)*(float)random_ints[seed]/(float)RAND_MAX;
 }
 
-#ifdef pp_HRR
 /* ----------------------- GetTokens ----------------------------- */
 
 int GetTokens(char *buffer, char **tokens){
@@ -77,7 +76,6 @@ int GetTokens(char *buffer, char **tokens){
   }
   return nt;
 }
-#endif
 
 /* ----------------------- FParseCSV ----------------------------- */
 
