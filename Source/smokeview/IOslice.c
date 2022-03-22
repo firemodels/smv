@@ -7564,7 +7564,6 @@ void Slice2Device(void){
     slicedata *slicei;
     devicedata *sdev;
     meshdata *dev_mesh;
-    int j, offset;
 
     slicei = sliceinfo+i;
     dev_mesh = meshinfo+slicei->blocknumber;
