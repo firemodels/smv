@@ -7522,12 +7522,15 @@ void Slice2Device(void){
     if(InMeshi(dev_mesh, slicei->idir, slice_xyz)==0)continue;
     sdev->valid = 1;
     FREEMEMORY(sdev->vals);
+    FREEMEMORY(sdev->vals_orig);
     NewMemory((void **)&(sdev->vals), slicei->ntimes*sizeof(float));
+    NewMemory((void **)&(sdev->vals_orig), slicei->ntimes*sizeof(float));
     sdev->nvals = slicei->ntimes;
     sdev->times = slicei->times;
     offset = GetSliceOffset(slicei, slice_xyz, sdev->xyz);
     for(j = 0; j<sdev->nvals; j++){
-      sdev->vals[j] = GetSliceVal(slicei, j, offset);
+      sdev->vals[j]      = GetSliceVal(slicei, j, offset);
+      sdev->vals_orig[j] = GetSliceVal(slicei, j, offset);
     }
   }
   for(i = 0; i<nslicebounds; i++){
@@ -7557,7 +7560,21 @@ void Slice2Device(void){
       }
     }
   }
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+    devicedata *sdev;
+    meshdata *dev_mesh;
+    int j, offset;
+
+    slicei = sliceinfo+i;
+    dev_mesh = meshinfo+slicei->blocknumber;
+    sdev = &(slicei->vals2d);
+    if(slicei->volslice==1||slicei->loaded==0||slicei->ntimes==0)continue;
+    if(InMeshi(dev_mesh, slicei->idir, slice_xyz)==0)continue;
+      TimeAveragePlot2DData(sdev->times, sdev->vals_orig, sdev->vals, sdev->nvals);
+  }
 }
+
 
 /* ------------------ DrawSlicePlots ------------------------ */
 
@@ -7603,11 +7620,12 @@ void DrawSlicePlots(void){
     }
     xyz[2] = 0.0;
 #ifdef pp_HRR
-    if(show_hrr2==1)xyz[2] = 1.2*device_plot_factor;
+    if(show_hrr2==1)xyz[2] = 1.2*plot2d_size_factor;
 #else
-    if(showdevice_plot==1)xyz[2] = 1.2*device_plot_factor
+    if(showdevice_plot==1)xyz[2] = 1.2*plot2d_size_factor
 #endif
-    DrawPlot(PLOT_ALL, xyz, slice_plot_factor, devicei->times, devicei->vals, devicei->nvals,
+
+    DrawPlot(PLOT_ALL, xyz, plot2d_size_factor, devicei->times, devicei->vals, devicei->nvals,
              global_times[itimes], highlight_val, 1, valmin, valmax,
              slicei->label.shortlabel, slicei->label.unit);
   }

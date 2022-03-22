@@ -1815,7 +1815,7 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   devicei->params=NULL;
   devicei->times=NULL;
   devicei->vals=NULL;
-  devicei->vals = NULL;
+  devicei->vals_orig = NULL;
   devicei->update_avg = 0;
   devicei->target_index = -1;
   devicei->global_valmin = 1.0;
@@ -5336,9 +5336,10 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->loadstatus = FILE_UNLOADED;
 #endif
 #ifdef pp_SLICE_PLOT
-  sd->vals2d.vals  = NULL;
-  sd->vals2d.times = NULL;
-  sd->vals2d.nvals = 0;
+  sd->vals2d.vals      = NULL;
+  sd->vals2d.vals_orig = NULL;
+  sd->vals2d.times     = NULL;
+  sd->vals2d.nvals     = 0;
 #endif
   sd->geom_offsets = NULL;
   sd->slcf_index = slcf_index;
@@ -11376,15 +11377,15 @@ int ReadIni2(char *inifile, int localfile){
 #ifdef pp_SLICE_PLOT
     if(Match(buffer, "SHOWSLICEPLOT")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f %f %f %i", slice_xyz, slice_xyz+1, slice_xyz+2, &slice_plot_factor, &slice_show_plot);
+      sscanf(buffer, " %f %f %f %f %i", slice_xyz, slice_xyz+1, slice_xyz+2, &plot2d_size_factor, &slice_show_plot);
       continue;
     }
 #endif
     if(Match(buffer, "SHOWDEVICEPLOTS")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %f %f %f %f %f %f",
-             &showdevice_plot, &showdevice_labels, &device_plot_factor, &device_plot_line_width, &device_plot_point_size,
-             device_xyz_offset, device_xyz_offset+1, device_xyz_offset+2
+             &showdevice_plot, &showd_plot2d_labels, &plot2d_size_factor, &plot2d_line_width, &plot2d_point_size,
+             plot2d_xyz_offset, plot2d_xyz_offset+1, plot2d_xyz_offset+2
       );
       update_glui_devices = 1;
       continue;
@@ -14708,8 +14709,8 @@ void WriteIniLocal(FILE *fileout){
   }
   fprintf(fileout, "SHOWDEVICEPLOTS\n");
   fprintf(fileout, " %i %i %f %f %f %f %f %f\n",
-          showdevice_plot, showdevice_labels, device_plot_factor, device_plot_line_width, device_plot_point_size,
-          device_xyz_offset[0], device_xyz_offset[1], device_xyz_offset[2]
+          showdevice_plot, showd_plot2d_labels, plot2d_size_factor, plot2d_line_width, plot2d_point_size,
+          plot2d_xyz_offset[0], plot2d_xyz_offset[1], plot2d_xyz_offset[2]
   );
   fprintf(fileout, "SHOWDEVICEVALS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n", showdevice_val, showvdevice_val, devicetypes_index, colordevice_val, vectortype, viswindrose, showdevice_type,showdevice_unit,showdevice_id);
@@ -14717,7 +14718,7 @@ void WriteIniLocal(FILE *fileout){
   fprintf(fileout, " %i\n", show_missing_objects);
 #ifdef pp_SLICE_PLOT
   fprintf(fileout, "SHOWSLICEPLOT\n");
-  fprintf(fileout, " %f %f %f %f %i\n", slice_xyz[0], slice_xyz[1], slice_xyz[2], slice_plot_factor, slice_show_plot);
+  fprintf(fileout, " %f %f %f %f %i\n", slice_xyz[0], slice_xyz[1], slice_xyz[2], plot2d_size_factor, slice_show_plot);
 #endif
   fprintf(fileout, "SMOKE3DCUTOFFS\n");
   fprintf(fileout, " %f %f\n", load_3dsmoke_cutoff, load_hrrpuv_cutoff);

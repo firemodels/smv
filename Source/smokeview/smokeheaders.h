@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals);
+
 EXTERNCPP void SplitCB(int var);
 
 #ifdef pp_REFRESH

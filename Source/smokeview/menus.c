@@ -9808,7 +9808,7 @@ updatemenu=0;
 
   CREATEMENU(datadialogmenu, DialogMenu);
   if(ndeviceinfo>0&&GetNumActiveDevices()>0){
-    glutAddMenuEntry(_("Devices/Objects/2D PLots..."), DIALOG_DEVICE);
+    glutAddMenuEntry(_("Devices/Objects/2D plots..."), DIALOG_DEVICE);
   }
   glutAddMenuEntry(_("Show/Hide..."), DIALOG_SHOWFILES);
   glutAddMenuEntry(_("Particle tracking..."), DIALOG_SHOOTER);
