@@ -9804,11 +9804,11 @@ updatemenu=0;
     glutAddMenuEntry(_("Trainer..."), DIALOG_TRAINER);
   }
 
-  /* --------------------------------datadialog menu -------------------------- */
+  /* --------------------------------datad ialog menu -------------------------- */
 
   CREATEMENU(datadialogmenu, DialogMenu);
   if(ndeviceinfo>0&&GetNumActiveDevices()>0){
-    glutAddMenuEntry(_("Devices/Objects..."), DIALOG_DEVICE);
+    glutAddMenuEntry(_("Devices/Objects/2D PLots..."), DIALOG_DEVICE);
   }
   glutAddMenuEntry(_("Show/Hide..."), DIALOG_SHOWFILES);
   glutAddMenuEntry(_("Particle tracking..."), DIALOG_SHOOTER);

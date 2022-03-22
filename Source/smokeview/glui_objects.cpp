@@ -91,7 +91,6 @@ GLUI_Panel *PANEL_vectors=NULL;
 GLUI_Panel *PANEL_arrow_base=NULL;
 GLUI_Panel *PANEL_arrow_height=NULL;
 GLUI_Panel *PANEL_values = NULL;
-GLUI_Panel *PANEL_plots = NULL;
 GLUI_Panel *PANEL_plotdevice = NULL;
 GLUI_Panel *PANEL_plotproperties = NULL;
 GLUI_Panel *PANEL_label3=NULL;
@@ -113,9 +112,11 @@ GLUI_RadioGroup *RADIO_windstate_windrose = NULL;
 GLUI_RadioGroup *RADIO_showdevice_plot = NULL;
 
 
+GLUI_Rollout *ROLLOUT_device2Dplots=NULL;
 GLUI_Rollout *ROLLOUT_showhide_windrose = NULL;
 GLUI_Rollout *ROLLOUT_properties = NULL;
 GLUI_Rollout *ROLLOUT_scale_windrose = NULL;
+GLUI_Rollout *ROLLOUT_2Dplots = NULL;
 GLUI_Rollout *ROLLOUT_devicevalues = NULL;
 GLUI_Rollout *ROLLOUT_velocityvectors = NULL;
 GLUI_Rollout *ROLLOUT_smvobjects=NULL;
@@ -143,8 +144,9 @@ GLUI_Spinner *SPINNER_windrose_next=NULL;
 #define FLOWVECTORS_ROLLOUT 1
 #define WINDROSE_ROLLOUT    2
 #define DEVICE_ROLLOUT      3
+#define PLOT2D_ROLLOUT      4
 
-procdata deviceprocinfo[4];
+procdata deviceprocinfo[5];
 int ndeviceprocinfo = 0;
 
 /* ------------------ Device_Rollout_CB ------------------------ */
@@ -536,13 +538,13 @@ extern "C" void GluiDeviceSetup(int main_window){
     glui_device->close();
     glui_device=NULL;
   }
-  glui_device = GLUI_Master.create_glui("Device/Objects",0,0,0);
+  glui_device = GLUI_Master.create_glui("Devices/Objects/2D plots",0,0,0);
   glui_device->hide();
 
   if(ndeviceinfo>0){
     int i;
 
-    PANEL_objects = glui_device->add_panel("Devices/Objects",false);
+    PANEL_objects = glui_device->add_panel("Devices/Objects/2D plots",false);
 
     ROLLOUT_smvobjects = glui_device->add_rollout_to_panel(PANEL_objects,_("Objects"),false, OBJECTS_ROLLOUT, Device_Rollout_CB);
     INSERT_ROLLOUT(ROLLOUT_smvobjects, glui_device);
@@ -755,8 +757,11 @@ extern "C" void GluiDeviceSetup(int main_window){
         glui_device->add_radiobutton_to_group(RADIO_devicetypes,devicetypes[i]->quantity);
       }
 
-      PANEL_plots = glui_device->add_panel_to_panel(ROLLOUT_devicevalues, "plots");
-      PANEL_plotdevice = glui_device->add_panel_to_panel(PANEL_plots, "device data");
+      ROLLOUT_device2Dplots = glui_device->add_rollout_to_panel(PANEL_objects, _("2D plots"), false, PLOT2D_ROLLOUT, Device_Rollout_CB);
+      INSERT_ROLLOUT(ROLLOUT_device2Dplots, glui_device);
+      ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_device2Dplots, PLOT2D_ROLLOUT, glui_device);
+
+      PANEL_plotdevice = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "device data");
       RADIO_showdevice_plot=glui_device->add_radiogroup_to_panel(PANEL_plotdevice, &showdevice_plot, SHOWDEVICEPLOT, DeviceCB);
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "hide");
       glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show selected");
@@ -767,13 +772,13 @@ extern "C" void GluiDeviceSetup(int main_window){
         float dev_tmax;
 
         dev_tmax = GetDeviceTminTmax();
-          SPINNER_device_time_average = glui_device->add_spinner_to_panel(PANEL_plots, _("time average interval"), GLUI_SPINNER_FLOAT, &device_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
+          SPINNER_device_time_average = glui_device->add_spinner_to_panel(ROLLOUT_device2Dplots, _("time average interval"), GLUI_SPINNER_FLOAT, &device_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
           SPINNER_device_time_average->set_float_limits(0.0, dev_tmax);
       }
-      CHECKBOX_show_hrrpuv_plot = glui_device->add_checkbox_to_panel(PANEL_plots, _("HRRPUV data"), &show_hrrpuv_plot,HRRPUV_PLOT, DeviceCB);
+      CHECKBOX_show_hrrpuv_plot = glui_device->add_checkbox_to_panel(ROLLOUT_device2Dplots, _("HRRPUV data"), &show_hrrpuv_plot,HRRPUV_PLOT, DeviceCB);
 #endif
 #ifdef pp_HRR
-      PANEL_plothrr = glui_device->add_panel_to_panel(PANEL_plots, "hrr data");
+      PANEL_plothrr = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "hrr data");
       CHECKBOX_show_hrr2 = glui_device->add_checkbox_to_panel(PANEL_plothrr,_("show"),&show_hrr2, HRRPUV2_PLOT, DeviceCB);
       LIST_hrrdata = glui_device->add_listbox_to_panel(PANEL_plothrr, "type:", &glui_hrr, DEVICE_TIMEAVERAGE, DeviceCB);
       for(i=0;i<nhrrotherinfo+nhrrhcinfo;i++){
@@ -787,7 +792,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       }
       LIST_hrrdata->set_int_val(glui_hrr);
 #endif
-      PANEL_plotproperties = glui_device->add_panel_to_panel(PANEL_plots, "properties");
+      PANEL_plotproperties = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "properties");
       glui_device->add_checkbox_to_panel(PANEL_plotproperties, _("labels"), &showdevice_labels);
       glui_device->add_spinner_to_panel(PANEL_plotproperties, _("size"), GLUI_SPINNER_FLOAT, &device_plot_factor);
       glui_device->add_spinner_to_panel(PANEL_plotproperties, _("x offset"), GLUI_SPINNER_FLOAT, device_xyz_offset);
