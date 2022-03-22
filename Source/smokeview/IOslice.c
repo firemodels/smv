@@ -7601,6 +7601,12 @@ void DrawSlicePlots(void){
       valmin = MIN(sb->dev_min, sb->levels256[0]);
       valmax = MAX(sb->dev_max, sb->levels256[255]);
     }
+    xyz[2] = 0.0;
+#ifdef pp_HRR
+    if(show_hrr2==1)xyz[2] = 1.2*device_plot_factor;
+#else
+    if(showdevice_plot==1)xyz[2] = 1.2*device_plot_factor
+#endif
     DrawPlot(PLOT_ALL, xyz, slice_plot_factor, devicei->times, devicei->vals, devicei->nvals,
              global_times[itimes], highlight_val, 1, valmin, valmax,
              slicei->label.shortlabel, slicei->label.unit);
