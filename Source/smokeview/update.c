@@ -1911,12 +1911,10 @@ void UpdateShowScene(void){
     update_smoke_alphas = 0;
     UpdateSmokeAlphas();
   }
-#ifdef pp_SLICE_PLOT
   if(update_slice2device==1){
     update_slice2device = 0;
     Slice2Device();
   }
-#endif
   if(open_movie_dialog==1){
     open_movie_dialog = 0;
     if(have_slurm==1&&nmovie_queues>0){

@@ -295,11 +295,9 @@ extern "C" void DeviceCB(int var){
   int i;
 
   updatemenu = 1;
-#ifdef pp_SLICE_PLOT
   if(var==SLICE_PLOT){
     Slice2Device();
   }
-#endif
   if(var==HRRPUV_PLOT){
     show_hrrpuv_plot = 1-show_hrrpuv_plot;
     ShowObjectsMenu(PLOT_HRRPUV);
@@ -795,7 +793,6 @@ extern "C" void GluiDeviceSetup(int main_window){
       }
       CHECKBOX_show_hrrpuv_plot = glui_device->add_checkbox_to_panel(ROLLOUT_device2Dplots, _("HRRPUV data"), &show_hrrpuv_plot,HRRPUV_PLOT, DeviceCB);
 #endif
-#ifdef pp_SLICE_PLOT
       PANEL_plotslice = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "slice plots");
       glui_device->add_checkbox_to_panel(PANEL_plotslice,_("show"),        &slice_show_plot,                  SLICE_PLOT, DeviceCB);
       SPINNER_slice_x = glui_device->add_spinner_to_panel(PANEL_plotslice, "x", GLUI_SPINNER_FLOAT, slice_xyz+0,   SLICE_PLOT, DeviceCB);
@@ -804,7 +801,6 @@ extern "C" void GluiDeviceSetup(int main_window){
       SPINNER_slice_x->set_float_limits(xbar0FDS, xbarFDS);
       SPINNER_slice_y->set_float_limits(ybar0FDS, ybarFDS);
       SPINNER_slice_z->set_float_limits(zbar0FDS, zbarFDS);
-#endif
 
       ROLLOUT_plotproperties = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "2D plot properties", false);
       glui_device->add_checkbox_to_panel(ROLLOUT_plotproperties, _("labels"), &showd_plot2d_labels);

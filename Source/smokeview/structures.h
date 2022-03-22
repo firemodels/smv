@@ -971,9 +971,7 @@ typedef struct _device {
   struct _vdevicedata *vdevice;
   int type, is_beam;
   int selected;
-#ifdef pp_SLICE_PLOT
   int valid;
-#endif
 } devicedata;
 
 #ifdef pp_HRR
@@ -1293,9 +1291,7 @@ typedef struct _slicedata {
   struct _patchdata *patchgeom;
   FILE_SIZE file_size;
   int *geom_offsets;
-#ifdef pp_SLICE_PLOT
   devicedata vals2d;
-#endif
 #ifdef pp_SLICETHREAD
   int loadstatus;
 #endif
@@ -1358,9 +1354,7 @@ typedef struct _boundsdata {
   float dlg_global_valmin, dlg_global_valmax;
   float line_contour_min;
   float line_contour_max;
-#ifdef pp_SLICE_PLOT
   float dev_min, dev_max;
-#endif
   int line_contour_num;
   char  colorlabels[12][11];
   float colorvalues[12];

@@ -4993,9 +4993,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     int set_valmin, set_valmax;
 
     update_slicefile_bounds = 1; // temporary fix to make sure bounds are always up to date
-#ifdef pp_SLICE_PLOT
     update_slice2device = 1;
-#endif
     if(update_slicefile_bounds==1){
       update_slicefile_bounds = 0;
       GetGlobalSliceBounds();
@@ -7416,9 +7414,6 @@ void SortLoadedSliceList(void){
   }
 }
 
-#ifdef pp_SLICE_PLOT
-
-
 /* ------------------ GetSliceOffset ------------------------ */
 
 int GetSliceOffset(slicedata *sd, float *xyz, float *device_xyz){
@@ -7577,10 +7572,6 @@ void Slice2Device(void){
 
 /* ------------------ DrawSlicePlots ------------------------ */
 
-void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
-              float highlight_x, float highlight_y, int valid,
-              float global_valmin, float global_valmax, char *quantity, char *unit);
-
 void DrawSlicePlots(void){
   int i;
 
@@ -7629,7 +7620,6 @@ void DrawSlicePlots(void){
              slicei->label.shortlabel, slicei->label.unit);
   }
 }
-#endif
 
 /* ------------------ DrawSliceFrame ------------------------ */
 

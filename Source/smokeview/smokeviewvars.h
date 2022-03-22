@@ -1623,7 +1623,6 @@ SVEXTERN int SVDECL(runhtmlscript, 0);
 SVEXTERN int SVDECL(runluascript,0);
 SVEXTERN int SVDECL(exit_on_script_crash,0);
 #endif
-#ifdef pp_SLICE_PLOT
 #ifdef INMAIN
 SVEXTERN float slice_xyz[3]={0.0,0.0,0.0};
 #else
@@ -1631,7 +1630,6 @@ SVEXTERN float slice_xyz[3];
 #endif
 SVEXTERN int   SVDECL(slice_show_plot, 0);
 SVEXTERN int   SVDECL(update_slice2device, 0);
-#endif
 SVEXTERN int SVDECL(script_multislice,0), SVDECL(script_multivslice,0), SVDECL(script_iso,0);
 SVEXTERN FILE SVDECL(*scriptoutstream,NULL);
 SVEXTERN char SVDECL(*log_filename,NULL);

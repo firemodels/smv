@@ -6,6 +6,9 @@
 #endif
 
 EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals);
+EXTERNCPP void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
+              float highlight_x, float highlight_y, int valid,
+              float global_valmin, float global_valmax, char *quantity, char *unit);
 
 EXTERNCPP void SplitCB(int var);
 
@@ -134,9 +137,7 @@ EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(void);
 EXTERNCPP void UpdateGlobalFEDSliceBounds(void);
 
-#ifdef pp_SLICE_PLOT
 EXTERNCPP void Slice2Device(void);
-#endif
 
 EXTERNCPP int InMeshi(meshdata *meshi, int dir, float *xyz);
 EXTERNCPP int InMesh(float *xyz);

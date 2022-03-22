@@ -2828,9 +2828,7 @@ GLUI_Rollout *ROLLOUT_slice_average = NULL;
 GLUI_Rollout *ROLLOUT_slice_histogram = NULL;
 GLUI_Rollout *ROLLOUT_line_contour = NULL;
 GLUI_Rollout *ROLLOUT_slicedups = NULL;
-#ifdef pp_SLICE_PLOT
 GLUI_Rollout *ROLLOUT_slice_2d_plots = NULL;
-#endif
 GLUI_Rollout *ROLLOUT_vector = NULL;
 GLUI_Rollout *ROLLOUT_isosurface = NULL;
 GLUI_Rollout *ROLLOUT_boundary_settings = NULL;
@@ -3070,9 +3068,7 @@ int      nisoprocinfo=0;
 #define SLICE_HISTOGRAM_ROLLOUT 5
 #define SLICE_DUP_ROLLOUT       6
 #define SLICE_SETTINGS_ROLLOUT  7
-#ifdef pp_SLICE_PLOT
 #define SLICE_2D_PLOTS          8
-#endif
 procdata  sliceprocinfo[9];
 int      nsliceprocinfo=0;
 

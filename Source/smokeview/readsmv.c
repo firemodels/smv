@@ -5335,12 +5335,10 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 #ifdef pp_SLICETHREAD
   sd->loadstatus = FILE_UNLOADED;
 #endif
-#ifdef pp_SLICE_PLOT
   sd->vals2d.vals      = NULL;
   sd->vals2d.vals_orig = NULL;
   sd->vals2d.times     = NULL;
   sd->vals2d.nvals     = 0;
-#endif
   sd->geom_offsets = NULL;
   sd->slcf_index = slcf_index;
   sd->finalize = 1;
@@ -11374,13 +11372,11 @@ int ReadIni2(char *inifile, int localfile){
       update_glui_devices = 1;
       continue;
     }
-#ifdef pp_SLICE_PLOT
     if(Match(buffer, "SHOWSLICEPLOT")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %f %f %f %f %i", slice_xyz, slice_xyz+1, slice_xyz+2, &plot2d_size_factor, &slice_show_plot);
       continue;
     }
-#endif
     if(Match(buffer, "SHOWDEVICEPLOTS")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %f %f %f %f %f %f",
@@ -14716,10 +14712,8 @@ void WriteIniLocal(FILE *fileout){
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n", showdevice_val, showvdevice_val, devicetypes_index, colordevice_val, vectortype, viswindrose, showdevice_type,showdevice_unit,showdevice_id);
   fprintf(fileout, "SHOWMISSINGOBJECTS\n");
   fprintf(fileout, " %i\n", show_missing_objects);
-#ifdef pp_SLICE_PLOT
   fprintf(fileout, "SHOWSLICEPLOT\n");
   fprintf(fileout, " %f %f %f %f %i\n", slice_xyz[0], slice_xyz[1], slice_xyz[2], plot2d_size_factor, slice_show_plot);
-#endif
   fprintf(fileout, "SMOKE3DCUTOFFS\n");
   fprintf(fileout, " %f %f\n", load_3dsmoke_cutoff, load_hrrpuv_cutoff);
   for(i = ntickinfo_smv; i < ntickinfo; i++){
