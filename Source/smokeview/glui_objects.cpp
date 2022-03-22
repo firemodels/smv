@@ -6,7 +6,7 @@
 #include GLUT_H
 #include <math.h>
 
-#include "smokeviewvars.h"fSP
+#include "smokeviewvars.h"
 
 #define DEVICE_sensorsize      20
 #define SHOWDEVICEVALS         26
