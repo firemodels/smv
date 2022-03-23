@@ -7626,11 +7626,9 @@ void DrawSliceFrame(){
   int jjj, nslicemax, blend_mode;
   int draw_slice;
 
-#ifdef pp_SLICE_PLOT
   if(slice_show_plot==1){
     DrawSlicePlots();
   }
-#endif
 
   if(use_tload_begin==1 && global_times[itimes]<tload_begin)return;
   if(use_tload_end==1   && global_times[itimes]>tload_end)return;
