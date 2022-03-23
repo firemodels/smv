@@ -102,7 +102,7 @@ GLUI_RadioGroup *RADIO_windrose_merge_type=NULL;
 GLUI_RadioGroup *RADIO_vectortype=NULL;
 GLUI_RadioGroup *RADIO_scale_windrose=NULL;
 GLUI_RadioGroup *RADIO_windstate_windrose = NULL;
-GLUI_RadioGroup *RADIO_showdevice_plot = NULL;
+GLUI_RadioGroup *RADIO_vis_device_plot = NULL;
 
 GLUI_Rollout *ROLLOUT_plotproperties = NULL;
 GLUI_Rollout *ROLLOUT_values = NULL;
@@ -168,7 +168,7 @@ extern "C" void UpdateVisHrrPlot(void){
 
 extern "C" void UpdateDeviceShow(void){
   if(CHECKBOX_showdevice_val!=NULL)CHECKBOX_showdevice_val->set_int_val(showdevice_val);
-  if(RADIO_showdevice_plot!=NULL)RADIO_showdevice_plot->set_int_val(showdevice_plot);
+  if(RADIO_vis_device_plot!=NULL)RADIO_vis_device_plot->set_int_val(vis_device_plot);
 }
 
 /* ------------------ UpdateWindRoseDevices ------------------------ */
@@ -435,24 +435,24 @@ extern "C" void DeviceCB(int var){
     break;
   case SHOWDEVICEPLOT:
     {
-      int showdevice_plot_temp;
+      int vis_device_plot_temp;
 
-      showdevice_plot_temp = showdevice_plot;
-      switch (showdevice_plot_temp){
+      vis_device_plot_temp = vis_device_plot;
+      switch (vis_device_plot_temp){
         case DEVICE_PLOT_HIDDEN:
-          showdevice_plot = DEVICE_PLOT_SHOW_ALL;
+          vis_device_plot = DEVICE_PLOT_SHOW_ALL;
           ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
           break;
         case DEVICE_PLOT_SHOW_SELECTED:
-          showdevice_plot = DEVICE_PLOT_HIDDEN;
+          vis_device_plot = DEVICE_PLOT_HIDDEN;
           ShowObjectsMenu(OBJECT_PLOT_SHOW_SELECTED);
           break;
         case DEVICE_PLOT_SHOW_ALL:
-          showdevice_plot = DEVICE_PLOT_HIDDEN;
+          vis_device_plot = DEVICE_PLOT_HIDDEN;
           ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
           break;
         case DEVICE_PLOT_SHOW_TREE_ALL:
-          showdevice_plot = DEVICE_PLOT_HIDDEN;
+          vis_device_plot = DEVICE_PLOT_HIDDEN;
           ShowObjectsMenu(OBJECT_PLOT_SHOW_TREE_ALL);
           break;
         default:
@@ -750,11 +750,11 @@ extern "C" void GluiDeviceSetup(int main_window){
       LIST_hrrdata->set_int_val(glui_hrr);
 
       PANEL_plotdevice = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "device plots/values");
-      RADIO_showdevice_plot=glui_device->add_radiogroup_to_panel(PANEL_plotdevice, &showdevice_plot, SHOWDEVICEPLOT, DeviceCB);
-      glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "hide");
-      glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show selected");
-      glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show all");
-      glui_device->add_radiobutton_to_group(RADIO_showdevice_plot, "show all (trees)");
+      RADIO_vis_device_plot=glui_device->add_radiogroup_to_panel(PANEL_plotdevice, &vis_device_plot, SHOWDEVICEPLOT, DeviceCB);
+      glui_device->add_radiobutton_to_group(RADIO_vis_device_plot, "hide");
+      glui_device->add_radiobutton_to_group(RADIO_vis_device_plot, "show selected");
+      glui_device->add_radiobutton_to_group(RADIO_vis_device_plot, "show all");
+      glui_device->add_radiobutton_to_group(RADIO_vis_device_plot, "show all (trees)");
       devicetypes_index = CLAMP(devicetypes_index, 0, ndevicetypes-1);
       LIST_devicetypes = glui_device->add_listbox_to_panel(PANEL_plotdevice, "type:", &devicetypes_index, DEVICE_devicetypes, DeviceCB);
       for(i = 0; i<ndevicetypes; i++){
@@ -770,7 +770,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       glui_device->add_spinner_to_panel(ROLLOUT_values, "min", GLUI_SPINNER_FLOAT, &device_valmin);
       glui_device->add_spinner_to_panel(ROLLOUT_values, "max", GLUI_SPINNER_FLOAT, &device_valmax);
       PANEL_plotslice = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "slice plots");
-      glui_device->add_checkbox_to_panel(PANEL_plotslice,_("show"),        &slice_show_plot,                  SLICE_PLOT, DeviceCB);
+      glui_device->add_checkbox_to_panel(PANEL_plotslice,_("show"),        &vis_slice_plot,                        SLICE_PLOT, DeviceCB);
       SPINNER_slice_x = glui_device->add_spinner_to_panel(PANEL_plotslice, "x", GLUI_SPINNER_FLOAT, slice_xyz+0,   SLICE_PLOT, DeviceCB);
       SPINNER_slice_y = glui_device->add_spinner_to_panel(PANEL_plotslice, "y", GLUI_SPINNER_FLOAT, slice_xyz+1,   SLICE_PLOT, DeviceCB);
       SPINNER_slice_z = glui_device->add_spinner_to_panel(PANEL_plotslice, "z", GLUI_SPINNER_FLOAT, slice_xyz+2,   SLICE_PLOT, DeviceCB);

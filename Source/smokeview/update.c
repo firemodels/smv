@@ -377,7 +377,7 @@ void UpdateShow(void){
 
   if(vis_hrr_plot==1&&hrrptr!=NULL)showhrrflag = 1;
 
-  if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
+  if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;
 
@@ -1166,7 +1166,7 @@ void UpdateTimes(void){
   if(vis_hrr_plot==1&&hrrptr!=NULL){
     MergeGlobalTimes(timeptr->vals, timeptr->nvals);
   }
-  if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
+  if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;
 
@@ -1583,7 +1583,7 @@ int GetPlotStateSub(int choice){
         stept = 1;
         return DYNAMIC_PLOTS;
       }
-      if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
+      if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
         for(i = 0; i<ndeviceinfo; i++){
           devicedata *devicei;
 

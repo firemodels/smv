@@ -3484,12 +3484,12 @@ void DrawHRRPlot(void){
 void DrawDevicePlots(void){
   int i;
 
-  if(showdevice_plot!=DEVICE_PLOT_HIDDEN){
+  if(vis_device_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;
 
       devicei = deviceinfo+i;
-      if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED&&devicei->selected==0)continue;
+      if(vis_device_plot==DEVICE_PLOT_SHOW_SELECTED&&devicei->selected==0)continue;
       if(devicei->times==NULL||devicei->vals==NULL)continue;
       if(devicei->update_avg==1){
         devicei->update_avg = 0;

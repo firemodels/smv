@@ -779,7 +779,6 @@ SVEXTERN int SVDECL(trainer_temp_n,0),SVDECL(trainer_oxy_n,0);
 SVEXTERN char SVDECL(*tr_name,NULL);
 SVEXTERN int SVDECL(showdevice_val,0), SVDECL(showvdevice_val,0),SVDECL(showd_plot2d_labels,1),SVDECL(colordevice_val,0),SVDECL(showdevice_id,0);
 SVEXTERN float SVDECL(plot2d_size_factor, 0.5), SVDECL(plot2d_line_width, 1.0), SVDECL(plot2d_point_size, 10.0);
-SVEXTERN int SVDECL(showdevice_plot, 0);
 SVEXTERN int SVDECL(select_device, 0);
 SVEXTERN int SVDECL(showdevice_type,1), SVDECL(showdevice_unit,1);
 SVEXTERN float SVDECL(device_valmin,0.0), SVDECL(device_valmax,1.0);
@@ -870,11 +869,14 @@ SVEXTERN int GPUvol_voltemp_offset;
 SVEXTERN int GPUvol_voltemp_factor;
 #endif
 
+SVEXTERN int SVDECL(vis_device_plot, 0);
+SVEXTERN int SVDECL(vis_hrr_plot, 0);
+SVEXTERN int SVDECL(vis_slice_plot, 0);
+
 SVEXTERN hrrdata SVDECL(*hrrinfo, NULL);
 SVEXTERN int SVDECL(nhrrinfo, 0), SVDECL(nhrrhcinfo, 0);
 SVEXTERN int SVDECL(time_col, -1), SVDECL(hrr_col, -1), SVDECL(qradi_col, -1), SVDECL(chirad_col, -1);
 SVEXTERN int SVDECL(glui_hrr, 1);
-SVEXTERN int SVDECL(vis_hrr_plot, 0);
 SVEXTERN float SVDECL(fuel_hoc, -1.0), SVDECL(fuel_hoc_default, -1.0);
 SVEXTERN int SVDECL(update_avg, 0);
 SVEXTERN int SVDECL(ncsvinfo,0);
@@ -1628,7 +1630,6 @@ SVEXTERN float slice_xyz[3]={0.0,0.0,0.0};
 #else
 SVEXTERN float slice_xyz[3];
 #endif
-SVEXTERN int   SVDECL(slice_show_plot, 0);
 SVEXTERN int   SVDECL(update_slice2device, 0);
 SVEXTERN int SVDECL(script_multislice,0), SVDECL(script_multivslice,0), SVDECL(script_iso,0);
 SVEXTERN FILE SVDECL(*scriptoutstream,NULL);

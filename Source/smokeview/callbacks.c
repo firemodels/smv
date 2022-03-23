@@ -1697,12 +1697,12 @@ void Keyboard(unsigned char key, int flag){
       switch (plot_option){
         case DEVNO_HRRNO: // device plots off
         case DEVNO_HRRYES:
-          showdevice_plot = DEVICE_PLOT_SHOW_ALL;
+          vis_device_plot = DEVICE_PLOT_SHOW_ALL;
           ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
           break;
         case DEVYES_HRRYES: // device plots on
         case DEVYES_HRRNO:
-          showdevice_plot = 0;
+          vis_device_plot = 0;
           ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
           break;
 	default:

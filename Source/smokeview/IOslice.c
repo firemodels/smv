@@ -7503,7 +7503,7 @@ void GetDevMinMax(devicedata *devi, float *valmin, float *valmax){
 void Slice2Device(void){
   int i;
 
-  if(slice_show_plot==0)return;
+  if(vis_slice_plot==0)return;
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
     devicedata *sdev;
@@ -7626,7 +7626,7 @@ void DrawSliceFrame(){
   int jjj, nslicemax, blend_mode;
   int draw_slice;
 
-  if(slice_show_plot==1){
+  if(vis_slice_plot==1){
     DrawSlicePlots();
   }
 

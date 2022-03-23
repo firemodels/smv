@@ -3297,8 +3297,8 @@ void LoadUnloadMenu(int value){
     if(nvolrenderinfo>0){
       UnLoadVolsmoke3DMenu(UNLOAD_ALL);
     }
-    if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
-      showdevice_plot = DEVICE_PLOT_HIDDEN;
+    if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
+      vis_device_plot = DEVICE_PLOT_HIDDEN;
       showdevice_val = 0;
       UpdateDeviceShow();
     }
@@ -6236,7 +6236,7 @@ void ShowObjectsMenu(int value){
   if(value>=0&&value<nobject_defs){
     objecti = object_defs[value];
     objecti->visible = 1 - objecti->visible;
-    if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
+    if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
       update_times = 1;
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       UpdateDeviceShow();
@@ -6263,11 +6263,11 @@ void ShowObjectsMenu(int value){
   }
   else if(value==OBJECT_PLOT_SHOW_TREE_ALL){
     update_times=1;
-    if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL){
-      showdevice_plot = DEVICE_PLOT_HIDDEN;
+    if(vis_device_plot==DEVICE_PLOT_SHOW_TREE_ALL){
+      vis_device_plot = DEVICE_PLOT_HIDDEN;
     }
     else{
-      showdevice_plot = DEVICE_PLOT_SHOW_TREE_ALL;
+      vis_device_plot = DEVICE_PLOT_SHOW_TREE_ALL;
       select_device = 1;
       ShowADeviceType();
     }
@@ -6283,11 +6283,11 @@ void ShowObjectsMenu(int value){
   }
   else if(value==OBJECT_PLOT_SHOW_ALL){
     update_times=1;
-    if(showdevice_plot==DEVICE_PLOT_SHOW_ALL){
-      showdevice_plot = DEVICE_PLOT_HIDDEN;
+    if(vis_device_plot==DEVICE_PLOT_SHOW_ALL){
+      vis_device_plot = DEVICE_PLOT_HIDDEN;
     }
     else{
-      showdevice_plot = DEVICE_PLOT_SHOW_ALL;
+      vis_device_plot = DEVICE_PLOT_SHOW_ALL;
       select_device = 1;
       ShowADeviceType();
     }
@@ -6296,11 +6296,11 @@ void ShowObjectsMenu(int value){
   }
   else if(value==OBJECT_PLOT_SHOW_SELECTED){
     update_times = 1;
-    if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED){
-      showdevice_plot = DEVICE_PLOT_HIDDEN;
+    if(vis_device_plot==DEVICE_PLOT_SHOW_SELECTED){
+      vis_device_plot = DEVICE_PLOT_HIDDEN;
     }
     else{
-      showdevice_plot = DEVICE_PLOT_SHOW_SELECTED;
+      vis_device_plot = DEVICE_PLOT_SHOW_SELECTED;
       select_device = 1;
       ShowADeviceType();
     }
@@ -7842,13 +7842,13 @@ updatemenu=0;
       GLUTADDSUBMENU(_("quantity"),devicetypemenu);
     }
     if(nobject_defs>0){
-      if(showdevice_plot==DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "*All devices",           OBJECT_PLOT_SHOW_ALL);
-      if(showdevice_plot!=DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "All devices",            OBJECT_PLOT_SHOW_ALL);
-      if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "*Selected devices",      OBJECT_PLOT_SHOW_SELECTED);
-      if(showdevice_plot!=DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "Selected devices",       OBJECT_PLOT_SHOW_SELECTED);
+      if(vis_device_plot==DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "*All devices",           OBJECT_PLOT_SHOW_ALL);
+      if(vis_device_plot!=DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "All devices",            OBJECT_PLOT_SHOW_ALL);
+      if(vis_device_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "*Selected devices",      OBJECT_PLOT_SHOW_SELECTED);
+      if(vis_device_plot!=DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "Selected devices",       OBJECT_PLOT_SHOW_SELECTED);
 #ifdef pp_ZTREE
-      if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "*All device trees",      OBJECT_PLOT_SHOW_TREE_ALL);
-      if(showdevice_plot!=DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "All device trees",       OBJECT_PLOT_SHOW_TREE_ALL);
+      if(vis_device_plot==DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "*All device trees",      OBJECT_PLOT_SHOW_TREE_ALL);
+      if(vis_device_plot!=DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "All device trees",       OBJECT_PLOT_SHOW_TREE_ALL);
 #endif
     }
     if(hrrptr!=NULL){
