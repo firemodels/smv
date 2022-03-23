@@ -1677,16 +1677,16 @@ void Keyboard(unsigned char key, int flag){
 #define DEVYES_HRRNO  2
 #define DEVNO_HRRYES  3
     case 'A':
-      if(hrrinfo==NULL&&ndeviceinfo==0)break;
-      if(hrrinfo!=NULL&&ndeviceinfo>0){
+      if(hrrptr==NULL&&ndeviceinfo==0)break;
+      if(hrrptr!=NULL&&ndeviceinfo>0){
         plot_option++;
         if(plot_option>3)plot_option = 0;
       }
       else{
         int plot_option_temp = DEVNO_HRRNO;
 
-        if(ndeviceinfo==0&&hrrinfo!=NULL&&plot_option==DEVNO_HRRNO)plot_option_temp = DEVNO_HRRYES;
-        if(ndeviceinfo>0&&hrrinfo==NULL&&plot_option==DEVNO_HRRNO)plot_option_temp = DEVYES_HRRNO;
+        if(ndeviceinfo==0&&hrrptr!=NULL&&plot_option==DEVNO_HRRNO)plot_option_temp = DEVNO_HRRYES;
+        if(ndeviceinfo>0&&hrrptr==NULL&&plot_option==DEVNO_HRRNO)plot_option_temp = DEVYES_HRRNO;
         plot_option = plot_option_temp;
       }
       // 0 - device no, hrr no

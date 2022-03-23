@@ -1199,17 +1199,6 @@ typedef struct _menudata {
   char label[256];
 } menudata;
 
-/* --------------------------  hrrdata ------------------------------------ */
-
-typedef struct _hrrdata {
-  char *file, hrrlabel[256];
-  int loaded, display, *timeslist, itime;
-  int update_avg;
-  float *times_csv, *times, *hrrval_csv, *hrrval;
-  float *hrrval_orig;
-  int ntimes, ntimes_csv;
-} hrrdata;
-
 /* --------------------------  slicedata ------------------------------------ */
 
 typedef struct _slicedata {

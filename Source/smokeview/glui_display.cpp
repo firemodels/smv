@@ -620,7 +620,7 @@ extern "C" void GluiLabelsSetup(int main_window){
   CHECKBOX_labels_frametimelabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Frame/time label"), &visFrameTimelabel, LABELS_label, LabelsCB);
   CHECKBOX_labels_framerate = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Frame rate"), &visFramerate, LABELS_label, LabelsCB);
   CHECKBOX_labels_gridloc = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Grid location"), &visgridloc, LABELS_label, LabelsCB);
-  CHECKBOX_labels_hrrlabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("HRR"), &visHRRlabel, HRR_label, LabelsCB);
+  CHECKBOX_labels_hrrlabel = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("HRR"), &vis_hrr_label, HRR_label, LabelsCB);
   CHECKBOX_labels_firecutoff = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Fire cutoff"), &show_firecutoff, FIRECUTOFF_label, LabelsCB);
 #ifdef pp_memstatus
   CHECKBOX_labels_availmemory = glui_labels->add_checkbox_to_panel(PANEL_gen1, _("Memory load"), &visAvailmemory, LABELS_label, LabelsCB);
@@ -1169,7 +1169,7 @@ extern "C" void LabelsCB(int var){
     LabelMenu(MENU_LABEL_framerate);
     break;
   case HRR_label:
-    visHRRlabel=1-visHRRlabel;
+    vis_hrr_label=1-vis_hrr_label;
     LabelMenu(MENU_LABEL_hrr);
     break;
   case LABELS_ticks:
@@ -1195,7 +1195,7 @@ extern "C" void LabelsCB(int var){
 
   if(CHECKBOX_LB_visLabels!=NULL)CHECKBOX_LB_visLabels->set_int_val(visLabels);
   if(CHECKBOX_visUSERticks!=NULL)CHECKBOX_visUSERticks->set_int_val(visUSERticks);
-  if(CHECKBOX_labels_hrrlabel!=NULL)CHECKBOX_labels_hrrlabel->set_int_val(visHRRlabel);
+  if(CHECKBOX_labels_hrrlabel!=NULL)CHECKBOX_labels_hrrlabel->set_int_val(vis_hrr_label);
   if(CHECKBOX_labels_firecutoff!=NULL)CHECKBOX_labels_firecutoff->set_int_val(show_firecutoff);
   if(CHECKBOX_labels_title!=NULL)CHECKBOX_labels_title->set_int_val(vis_title_smv_version);
   if(CHECKBOX_labels_fds_title!=NULL)CHECKBOX_labels_fds_title->set_int_val(vis_title_fds);

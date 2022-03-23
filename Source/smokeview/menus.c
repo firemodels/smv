@@ -797,10 +797,9 @@ void LabelMenu(int value){
     vis_slice_average=1;
     if(ntickinfo>0)visFDSticks=1;
     visgridloc=1;
-    visHRRlabel=1;
+    vis_hrr_label=1;
     show_firecutoff=1;
     visFramelabel=1;
-    if(hrrinfo != NULL&&hrrinfo->display != 1)UpdateHRRInfo(1);
     break;
    case MENU_LABEL_HideAll:
     visUSERticks=0;
@@ -817,9 +816,8 @@ void LabelMenu(int value){
     visTimelabel=0;
     visFramelabel=0;
     visMeshlabel=0;
-    visHRRlabel=0;
+    vis_hrr_label=0;
     show_firecutoff=0;
-    if(hrrinfo != NULL&&hrrinfo->display != 0)UpdateHRRInfo(0);
     if(ntickinfo>0)visFDSticks=0;
     visgridloc=0;
     vis_slice_average=0;
@@ -847,8 +845,7 @@ void LabelMenu(int value){
    case MENU_LABEL_framelabel:
      visFramelabel=1-visFramelabel;
      if(visFramelabel==1){
-       visHRRlabel=0;
-       UpdateHRRInfo(visHRRlabel);
+       vis_hrr_label=0;
      }
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     UpdateShow();
@@ -883,8 +880,7 @@ void LabelMenu(int value){
      vis_slice_average = 1 - vis_slice_average;
      break;
    case MENU_LABEL_hrr:
-     visHRRlabel=1-visHRRlabel;
-     UpdateHRRInfo(visHRRlabel);
+     vis_hrr_label=1-vis_hrr_label;
      break;
    case MENU_LABEL_firecutoff:
      show_firecutoff=1-show_firecutoff;
@@ -3261,9 +3257,6 @@ void LoadUnloadMenu(int value){
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"UNLOADALL\n");
     }
-    if(hrr_csv_filename!=NULL){
-      ReadHRR(UNLOAD, &errorcode);
-    }
     if(nvolrenderinfo>0){
       LoadVolsmoke3DMenu(UNLOAD_ALL);
     }
@@ -3320,7 +3313,7 @@ void LoadUnloadMenu(int value){
 
     LOCK_COMPRESS
     if(hrr_csv_filename!=NULL){
-      ReadHRR(LOAD, &errorcode);
+      ReadHRROther(LOAD);
     }
 
 
@@ -6283,9 +6276,8 @@ void ShowObjectsMenu(int value){
   }
   else if(value==PLOT_HRRPUV){
     show_hrrpuv_plot = 1-show_hrrpuv_plot;
-    UpdateShowHRRPUVPlot(show_hrrpuv_plot);
     if(show_hrrpuv_plot==1){
-      visHRRlabel = 0;
+      vis_hrr_label = 0;
       LabelMenu(MENU_LABEL_hrr);
     }
     plotstate=GetPlotState(DYNAMIC_PLOTS);
@@ -7847,8 +7839,7 @@ updatemenu=0;
       glutAddMenuEntry(qlabel, i);
     }
   }
-
-  if(nobject_defs>0||hrrinfo!=NULL){
+  if(nobject_defs>0||hrrptr!=NULL){
     CREATEMENU(showobjectsplotmenu,ShowObjectsMenu);
     if(ndevicetypes>0){
       GLUTADDSUBMENU(_("quantity"),devicetypemenu);
@@ -7863,7 +7854,7 @@ updatemenu=0;
       if(showdevice_plot!=DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "All device trees",       OBJECT_PLOT_SHOW_TREE_ALL);
 #endif
     }
-    if(hrrinfo!=NULL){
+    if(hrrptr!=NULL){
       if(show_hrrpuv_plot==1)glutAddMenuEntry("*HRRPUV", PLOT_HRRPUV);
       if(show_hrrpuv_plot==0)glutAddMenuEntry("HRRPUV", PLOT_HRRPUV);
     }
@@ -8028,9 +8019,9 @@ updatemenu=0;
     if(show_firecutoff == 0)glutAddMenuEntry(_("Temperature cutoff"), MENU_LABEL_firecutoff);
   }
 
-  if(hrrinfo != NULL){
-    if(visHRRlabel == 1)glutAddMenuEntry(_("*HRR"), MENU_LABEL_hrr);
-    if(visHRRlabel == 0)glutAddMenuEntry(_("HRR"), MENU_LABEL_hrr);
+  if(hrrptr != NULL){
+    if(vis_hrr_label == 1)glutAddMenuEntry(_("*HRR"), MENU_LABEL_hrr);
+    if(vis_hrr_label == 0)glutAddMenuEntry(_("HRR"), MENU_LABEL_hrr);
   }
 #ifdef pp_memstatus
   if(visAvailmemory == 1)glutAddMenuEntry(_("*Memory load"), MENU_LABEL_memload);

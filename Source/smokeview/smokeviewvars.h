@@ -35,6 +35,9 @@ SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
 #endif
 
+SVEXTERN char hrrlabel[256];
+SVEXTERN hrrotherdata SVDECL(*hrrptr, NULL), SVDECL(*timeptr, NULL);
+
 #ifdef pp_TERRAIN_SKIP
 SVEXTERN int SVDECL(terrain_skip, 1);
 #endif
@@ -872,7 +875,7 @@ SVEXTERN hrrotherdata SVDECL(*hrrotherinfo, NULL);
 SVEXTERN int SVDECL(nhrrotherinfo, 0), SVDECL(nhrrhcinfo, 0);
 SVEXTERN int SVDECL(time_col, -1), SVDECL(hrr_col, -1), SVDECL(qradi_col, -1), SVDECL(chirad_col, -1);
 SVEXTERN int SVDECL(glui_hrr, 1);
-SVEXTERN int SVDECL(show_hrr2, 0);
+SVEXTERN int SVDECL(vis_hrr_plot, 0);
 SVEXTERN float SVDECL(fuel_hoc, -1.0), SVDECL(fuel_hoc_default, -1.0);
 SVEXTERN int SVDECL(update_avg, 0);
 SVEXTERN int SVDECL(ncsvinfo,0);
@@ -1320,7 +1323,7 @@ SVEXTERN int SVDECL(update_visColorbars,0), visColorbarVertical_val, visColorbar
 SVEXTERN int SVDECL(visColorbarHorizontal, 0), SVDECL(visColorbarHorizontal_save, 0);
 SVEXTERN int SVDECL(visFullTitle, 1), SVDECL(visFramerate, 0);
 SVEXTERN int SVDECL(visFramelabel,1), SVDECL(visTimelabel,1);
-SVEXTERN int SVDECL(visHRRlabel,0);
+SVEXTERN int SVDECL(vis_hrr_label,0);
 SVEXTERN int SVDECL(visAvailmemory, 0);
 SVEXTERN int SVDECL(block_volsmoke,1),SVDECL(smoke3dVoldebug,0);
 SVEXTERN slicedata SVDECL(*sd_shown,NULL);
@@ -1634,7 +1637,6 @@ SVEXTERN char SVDECL(*log_filename,NULL);
 SVEXTERN FILE SVDECL(*LOG_FILENAME,NULL);
 SVEXTERN char SVDECL(*flushfile,NULL), SVDECL(*chidfilebase,NULL);
 SVEXTERN char SVDECL(*hrr_csv_filename,NULL),SVDECL(*devc_csv_filename,NULL),SVDECL(*exp_csv_filename,NULL);
-SVEXTERN hrrdata SVDECL(*hrrinfo,NULL);
 SVEXTERN char SVDECL(*smokezippath,NULL),SVDECL(*smokeviewpath,NULL);
 SVEXTERN char SVDECL(*INI_fds_filein,NULL), SVDECL(*fds_filein,NULL);
 SVEXTERN char SVDECL(*caseini_filename,NULL),SVDECL(*boundinfo_filename,NULL);

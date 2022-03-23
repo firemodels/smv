@@ -515,8 +515,11 @@ void ShowScene2(int mode){
   /* ++++++++++++++++++++++++ draw device plots +++++++++++++++++++++++++ */
 
   if(mode==DRAWSCENE && geom_bounding_box_mousedown==0){
-    if((show_hrrpuv_plot==1&&hrrinfo!=NULL)||showdevice_plot==DEVICE_PLOT_SHOW_ALL||showdevice_plot==DEVICE_PLOT_SHOW_SELECTED){
+    if(showdevice_plot==DEVICE_PLOT_SHOW_ALL||showdevice_plot==DEVICE_PLOT_SHOW_SELECTED){
       DrawDevicePlots();
+    }
+    if(vis_hrr_plot==1&&hrrptr!=NULL){
+      DrawHRRPlot();
     }
     if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL){
       DrawTreeDevicePlots();

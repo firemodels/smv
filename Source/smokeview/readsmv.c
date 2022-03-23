@@ -161,7 +161,11 @@ void ReadHRROther(int flag){
 // find column index of several quantities
 
   time_col  = GetHrrCsvCol("Time");
+  if(time_col>=0)timeptr = hrrotherinfo+time_col;
+
   hrr_col   = GetHrrCsvCol("HRR");
+  if(hrr_col>=0&&time_col>=0)hrrptr = hrrotherinfo+hrr_col;
+
   qradi_col = GetHrrCsvCol("Q_RADI");
   CheckMemory;
 
@@ -303,102 +307,6 @@ void ReadHRROther(int flag){
   FREEMEMORY(vals);
   FREEMEMORY(vals);
   fclose(stream);
-}
-
-/* ------------------ ReadHRR ------------------------ */
-
-void ReadHRR(int flag, int *errorcode){
-  FILE *HRRFILE;
-  int ntimeshrr, nfirst;
-  char buffer[LENBUFFER];
-  float *hrrtime, *hrrval;
-  int display = 0;
-  int ntimes_saved;
-
-  ReadHRROther(flag);
-
-  *errorcode = 0;
-  if(hrrinfo!=NULL){
-    display = hrrinfo->display;
-    FREEMEMORY(hrrinfo->times_csv);
-    FREEMEMORY(hrrinfo->times);
-    FREEMEMORY(hrrinfo->hrrval_csv);
-    FREEMEMORY(hrrinfo->hrrval);
-    FREEMEMORY(hrrinfo->hrrval_orig);
-    FREEMEMORY(hrrinfo->timeslist);
-  }
-  FREEMEMORY(hrrinfo);
-  if(flag==UNLOAD)return;
-
-  NewMemory((void **)&hrrinfo, sizeof(hrrdata));
-  hrrinfo->file = hrr_csv_filename;
-  hrrinfo->times_csv = NULL;
-  hrrinfo->times = NULL;
-  hrrinfo->timeslist = NULL;
-  hrrinfo->hrrval_csv = NULL;
-  hrrinfo->hrrval = NULL;
-  hrrinfo->hrrval_orig = NULL;
-  hrrinfo->ntimes_csv = 0;
-  hrrinfo->loaded = 1;
-  hrrinfo->display = display;
-  hrrinfo->itime = 0;
-
-  HRRFILE = fopen(hrrinfo->file, "r");
-  if(HRRFILE==NULL){
-    ReadHRR(UNLOAD, errorcode);
-    return;
-  }
-
-  // size data
-
-  ntimeshrr = 0;
-  nfirst = -1;
-  while(!feof(HRRFILE)){
-    if(fgets(buffer, LENBUFFER, HRRFILE)==NULL)break;
-    if(nfirst==-1&&strstr(buffer, ".")!=NULL)nfirst = ntimeshrr;
-    ntimeshrr++;
-  }
-  ntimes_saved = ntimeshrr;
-  ntimeshrr -= nfirst;
-
-  rewind(HRRFILE);
-  NewMemory((void **)&hrrinfo->times_csv, ntimeshrr*sizeof(float));
-  NewMemory((void **)&hrrinfo->hrrval_csv, ntimeshrr*sizeof(float));
-
-  // read data
-
-  hrrtime = hrrinfo->times_csv;
-  hrrval = hrrinfo->hrrval_csv;
-  ntimeshrr = 0;
-
-  // read no more than the number of lines found during first pass
-
-  while(ntimeshrr<ntimes_saved&&!feof(HRRFILE)){
-    if(fgets(buffer, LENBUFFER, HRRFILE)==NULL)break;
-    if(ntimeshrr<nfirst){
-      ntimeshrr++;
-      continue;
-    }
-    StripCommas(buffer);
-    sscanf(buffer, "%f %f", hrrtime, hrrval);
-    hrrtime++;
-    hrrval++;
-    ntimeshrr++;
-  }
-
-  hrrinfo->ntimes_csv = ntimeshrr-nfirst;
-  if(hrrinfo->ntimes_csv>0){
-    int i;
-
-    hrrval = hrrinfo->hrrval_csv;
-    hrr_valmin = hrrval[0];
-    hrr_valmax = hrr_valmin;
-    for(i = 1; i<hrrinfo->ntimes_csv; i++){
-      hrr_valmin = MIN(hrr_valmin, hrrval[i]);
-      hrr_valmax = MAX(hrr_valmax, hrrval[i]);
-    }
-  }
-  fclose(HRRFILE);
 }
 
 /* ------------------ InitProp ------------------------ */
@@ -10669,7 +10577,7 @@ typedef struct {
 
 // update csv data
 
-  if(hrr_csv_filename!=NULL)ReadHRR(LOAD, &errorcode);
+  if(hrr_csv_filename!=NULL)ReadHRROther(LOAD);
   ReadDeviceData(NULL,CSV_FDS,UNLOAD);
   ReadDeviceData(NULL,CSV_EXP,UNLOAD);
   for(i=0;i<ncsvinfo;i++){
@@ -11907,9 +11815,8 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWHRRLABEL") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &visHRRlabel);
-      ONEORZERO(visHRRlabel);
-      UpdateHRRInfo(visHRRlabel);
+      sscanf(buffer, "%i", &vis_hrr_label);
+      ONEORZERO(vis_hrr_label);
       continue;
     }
     if(Match(buffer, "SHOWHRRCUTOFF") == 1){
@@ -12785,7 +12692,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWHRRLABEL") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i ", &visHRRlabel);
+      sscanf(buffer, "%i ", &vis_hrr_label);
       continue;
     }
     if(Match(buffer, "RENDERFILETYPE") == 1){
@@ -15407,7 +15314,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWHMSTIMELABEL\n");
   fprintf(fileout, " %i\n", vishmsTimelabel);
   fprintf(fileout, "SHOWHRRLABEL\n");
-  fprintf(fileout, " %i\n", visHRRlabel);
+  fprintf(fileout, " %i\n", vis_hrr_label);
   fprintf(fileout, "SHOWISO\n");
   fprintf(fileout, " %i\n", visAIso);
   fprintf(fileout, "SHOWISONORMALS\n");

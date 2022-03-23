@@ -72,8 +72,7 @@ GLUI_Checkbox *CHECKBOX_vis_ztree = NULL;
 GLUI_Checkbox *CHECKBOX_showbeam_as_line = NULL;
 GLUI_Checkbox *CHECKBOX_use_beamcolor = NULL;
 GLUI_Checkbox **CHECKBOX_showz_windrose;
-GLUI_Checkbox *CHECKBOX_show_hrrpuv_plot=NULL;
-GLUI_Checkbox *CHECKBOX_show_hrr2=NULL;
+GLUI_Checkbox *CHECKBOX_vis_hrr_plot=NULL;
 
 GLUI_EditText *EDIT_filter=NULL;
 
@@ -149,12 +148,6 @@ int ndeviceprocinfo = 0;
 
 void Device_Rollout_CB(int var){
   ToggleRollout(deviceprocinfo, ndeviceprocinfo, var);
-}
-
-/* ------------------ UpdateShowHRRPUVPlot ------------------------ */
-
-extern "C" void UpdateShowHRRPUVPlot(int val){
-  if(CHECKBOX_show_hrrpuv_plot!=NULL)CHECKBOX_show_hrrpuv_plot->set_int_val(val);
 }
 
 /* ------------------ UpdateDeviceTypes ------------------------ */
@@ -298,8 +291,8 @@ extern "C" void DeviceCB(int var){
     return;
   }
   if(var==HRRPUV2_PLOT){
-    show_hrrpuv_plot = show_hrr2;
-    DeviceCB(HRRPUV_PLOT);
+    plotstate = GetPlotState(DYNAMIC_PLOTS);
+    update_times = 1;
     update_avg = 1;
   }
   if(var == WINDROSE_UPDATE){
@@ -423,7 +416,6 @@ extern "C" void DeviceCB(int var){
       devicei = deviceinfo+i;
       devicei->update_avg = 1;
     }
-    hrrinfo->update_avg = 1;
     update_avg = 1;
     break;
   case DEVICE_devicetypes:
@@ -738,7 +730,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_device2Dplots, PLOT2D_ROLLOUT, glui_device);
 
       PANEL_plothrr = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "hrr plots");
-      CHECKBOX_show_hrr2 = glui_device->add_checkbox_to_panel(PANEL_plothrr,_("show"),&show_hrr2, HRRPUV2_PLOT, DeviceCB);
+      CHECKBOX_vis_hrr_plot = glui_device->add_checkbox_to_panel(PANEL_plothrr,_("show"),&vis_hrr_plot, HRRPUV2_PLOT, DeviceCB);
       LIST_hrrdata = glui_device->add_listbox_to_panel(PANEL_plothrr, "type:", &glui_hrr, DEVICE_TIMEAVERAGE, DeviceCB);
       for(i=0;i<nhrrotherinfo+nhrrhcinfo;i++){
         hrrotherdata *hi;

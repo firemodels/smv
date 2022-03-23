@@ -3452,6 +3452,35 @@ void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals
   }
 }
 
+/* ----------------------- DrawHRRPlot ----------------------------- */
+
+void DrawHRRPlot(void){
+  int i;
+
+  if(vis_hrr_plot==1&&global_times!=NULL){
+    float xyz[] = {0.0,0.0,0.0};
+    float highlight_time = 0.0, highlight_val = 0.0;
+    int valid = 1;
+    hrrotherdata *hi, *hitime;
+    int itime;
+
+    hi = hrrotherinfo+glui_hrr;
+    hitime = hrrotherinfo+time_col;
+
+    if(update_avg==1){
+      TimeAveragePlot2DData(hitime->vals, hi->vals_orig, hi->vals, hi->nvals);
+      update_avg = 0;
+    }
+    highlight_time = global_times[itimes];
+    itime = GetInterval(highlight_time, hitime->vals, hitime->nvals);
+    itime = CLAMP(itime, 0, hitime->nvals-1);
+
+    highlight_val = hi->vals[itime];
+    DrawPlot(PLOT_ALL, xyz, plot2d_size_factor, hitime->vals, hi->vals, hi->nvals,
+             highlight_time, highlight_val, valid, hi->valmin, hi->valmax, hi->label.longlabel, hi->label.unit);
+  }
+}
+
 /* ----------------------- DrawDevicePlots ----------------------------- */
 
 void DrawDevicePlots(void){
@@ -3486,44 +3515,6 @@ void DrawDevicePlots(void){
         );
       }
     }
-  }
-  if(show_hrr2==0&&show_hrrpuv_plot==1&&hrrinfo!=NULL){
-    float xyz[] = {0.0,0.0,0.0};
-    char quantity[] = "HRR", unit[] = "kW";
-    int valid = 1;
-    float highlight_time = 0.0, highlight_val = 0.0;
-
-    highlight_time = global_times[itimes];
-    highlight_val = hrrinfo->hrrval[hrrinfo->itime];
-
-    if(hrrinfo->update_avg==1){
-      hrrinfo->update_avg = 0;
-      TimeAveragePlot2DData(hrrinfo->times, hrrinfo->hrrval_orig, hrrinfo->hrrval, hrrinfo->ntimes);
-    }
-    DrawPlot(PLOT_ALL, xyz, plot2d_size_factor, hrrinfo->times, hrrinfo->hrrval, hrrinfo->ntimes,
-             highlight_time, highlight_val, valid, hrr_valmin, hrr_valmax, quantity, unit);
-  }
-  if(show_hrr2==1){
-    float xyz[] = {0.0,0.0,0.0};
-    float highlight_time = 0.0, highlight_val = 0.0;
-    int valid = 1;
-    hrrotherdata *hi, *hitime;
-    int itime;
-
-    hi = hrrotherinfo+glui_hrr;
-    hitime = hrrotherinfo+time_col;
-
-    if(update_avg==1){
-      TimeAveragePlot2DData(hitime->vals, hi->vals_orig, hi->vals, hi->nvals);
-      update_avg = 0;
-    }
-    highlight_time = global_times[itimes];
-    itime = GetInterval(highlight_time, hitime->vals, hitime->nvals);
-    itime = CLAMP(itime, 0, hitime->nvals-1);
-
-    highlight_val  = hi->vals[itime];
-    DrawPlot(PLOT_ALL, xyz, plot2d_size_factor, hitime->vals, hi->vals, hi->nvals,
-             highlight_time, highlight_val, valid, hi->valmin, hi->valmax, hi->label.longlabel, hi->label.unit);
   }
 }
 
