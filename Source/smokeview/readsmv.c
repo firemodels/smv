@@ -54,6 +54,22 @@ int GetHrrCsvCol(char *label){
   return -1;
 }
 
+/* ----------------------- GetTokens ----------------------------- */
+
+int GetTokensBlank(char *buffer, char **tokens){
+
+  int nt = 0;
+  char *token;
+
+  TrimBack(buffer);
+  token = strtok(buffer, " ");
+  while(token!=NULL){
+    tokens[nt++] = token;
+    token = strtok(NULL, " ");
+  }
+  return nt;
+}
+
 /* ------------------ GetHoc ------------------------ */
 
 float GetHoc(void){
@@ -73,7 +89,7 @@ float GetHoc(void){
       float val;
 
       fgets(buffer, 255, stream);
-      ntokens = GetTokens(buffer, tokens);
+      ntokens = GetTokensBlank(buffer, tokens);
       token = tokens[ntokens-1];
       sscanf(token, "%f", &val);
       fclose(stream);

@@ -16,7 +16,7 @@ char label_prefix[100], label_suffix[100];
 
 /* ------------------ GetTokens ------------------------ */
 
-int GetTokens(unsigned char *tokens){
+int GetTokensComma(unsigned char *tokens){
   unsigned char *token;
   int ntokens=0;
 
@@ -46,13 +46,13 @@ void GetPixelData(FILE *stream, unsigned char *bytes, int *nbytes){
   unsigned char tokens[100];
   int ntokens;
 
-  ntokens = GetTokens(tokens);
+  ntokens = GetTokensComma(tokens);
   if(ntokens>0)memcpy(bytes, tokens, ntokens);
   *nbytes = ntokens;
 
   for(;;){
     if(fgets(buffer, LENBUFFER, stdin)==NULL)break;
-    ntokens = GetTokens(tokens);
+    ntokens = GetTokensComma(tokens);
     if(ntokens==0)return;
     memcpy(bytes+(*nbytes), tokens, ntokens);
     *nbytes += ntokens;
