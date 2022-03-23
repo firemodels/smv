@@ -26,8 +26,8 @@ void Usage(char *prog,int option){
 
   PRINTF("%s\n", release_title);
   PRINTF("%s\n\n", _("Visualize fire/smoke flow simulations."));
-  PRINTF("Usage: %s [options] casename", GetBaseFileName(buffer, prog));
-  PRINTF("%s\n\n");
+  PRINTF("Usage: %s [options] casename", prog);
+  PRINTF("\n\n");
   PRINTF("%s\n", _(" casename       - project id (file names without the extension)"));
   PRINTF("%s\n", _(" -bindir dir    - specify location of smokeview bin directory"));
   PRINTF("%s\n", _(" -ini           - output smokeview parameter values to smokeview.ini"));
@@ -882,6 +882,16 @@ int main(int argc, char **argv){
   InitRandAB(1000000);
   InitVars();
   ParseCommonOptions(argc, argv);
+  if(show_help==1){
+    printf("showing help 1\n");
+    Usage("smokeview", HELP_SUMMARY);
+    return 1;
+  }
+  if(show_help==2){
+    printf("showing help 2\n");
+    Usage("smokeview", HELP_ALL);
+    return 1;
+  }
   smv_filename = ParseCommandline(argc, argv);
 
   progname=argv[0];
@@ -889,10 +899,6 @@ int main(int argc, char **argv){
   if(smv_filename==NULL){
     DisplayVersionInfo("Smokeview ");
     SMV_EXIT(0);
-  }
-  if(show_help==1){
-    Usage("smokeview",HELP_SUMMARY);
-    return 1;
   }
 
   prog_fullpath = progname;
