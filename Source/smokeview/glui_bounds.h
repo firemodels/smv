@@ -67,7 +67,6 @@
 #define ISO_TRANSPARENCY_OPTION  216
 #define ISO_COLORBAR_LIST        217
 #define ISO_OUTLINE_IOFFSET      218
-#define TIMEBAR_DIGITS           219
 #define SET_FDS_TIMES            220
 
 #define ISO_TRANSPARENT_CONSTANT 0
