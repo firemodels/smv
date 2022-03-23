@@ -158,6 +158,12 @@ extern "C" void UpdateDeviceTypes(int val){
   updatemenu = 1;
 }
 
+/* ------------------ UpdateVisHrrPlot ------------------------ */
+
+extern "C" void UpdateVisHrrPlot(void){
+  if(CHECKBOX_vis_hrr_plot!=NULL)CHECKBOX_vis_hrr_plot->set_int_val(vis_hrr_plot);
+}
+
 /* ------------------ UpdateDeviceShow ------------------------ */
 
 extern "C" void UpdateDeviceShow(void){
@@ -286,7 +292,7 @@ extern "C" void DeviceCB(int var){
     Slice2Device();
   }
   if(var==HRRPUV_PLOT){
-    show_hrrpuv_plot = 1-show_hrrpuv_plot;
+    vis_hrr_plot = 1-vis_hrr_plot;
     ShowObjectsMenu(PLOT_HRRPUV);
     return;
   }

@@ -6275,11 +6275,8 @@ void ShowObjectsMenu(int value){
     UpdateDeviceShow();
   }
   else if(value==PLOT_HRRPUV){
-    show_hrrpuv_plot = 1-show_hrrpuv_plot;
-    if(show_hrrpuv_plot==1){
-      vis_hrr_label = 0;
-      LabelMenu(MENU_LABEL_hrr);
-    }
+    vis_hrr_plot = 1-vis_hrr_plot;
+    UpdateVisHrrPlot();    
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     UpdateShow();
     update_times = 1;
@@ -7855,8 +7852,8 @@ updatemenu=0;
 #endif
     }
     if(hrrptr!=NULL){
-      if(show_hrrpuv_plot==1)glutAddMenuEntry("*HRRPUV", PLOT_HRRPUV);
-      if(show_hrrpuv_plot==0)glutAddMenuEntry("HRRPUV", PLOT_HRRPUV);
+      if(vis_hrr_plot==1)glutAddMenuEntry("*HRRPUV", PLOT_HRRPUV);
+      if(vis_hrr_plot==0)glutAddMenuEntry("HRRPUV", PLOT_HRRPUV);
     }
 
     if(showdevice_val==1)glutAddMenuEntry(_("*Show values"), OBJECT_VALUES);

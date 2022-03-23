@@ -502,6 +502,8 @@ EXTERNCPP void MouseDragCB(int xm, int ym);
 EXTERNCPP void MenuStatusCB(int status, int x, int y);
 EXTERNCPP void IdleCB(void);
 
+SVEXTERN void UpdateVisHrrPlot(void);
+
 SVEXTERN void UpdateVectorWidgets(void);
 EXTERNCPP void UpdateGsliceParms(void);
 EXTERNCPP void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode);

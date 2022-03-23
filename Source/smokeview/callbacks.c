@@ -1713,12 +1713,12 @@ void Keyboard(unsigned char key, int flag){
       switch(plot_option){
         case DEVNO_HRRNO: // hrr plots off
         case DEVYES_HRRNO:
-          show_hrrpuv_plot = 1;
+          vis_hrr_plot = 1;
           ShowObjectsMenu(PLOT_HRRPUV);
           break;
         case DEVYES_HRRYES: // hrr plots on
         case DEVNO_HRRYES:
-          show_hrrpuv_plot = 0;
+          vis_hrr_plot = 0;
           ShowObjectsMenu(PLOT_HRRPUV);
           break;
 	default:
