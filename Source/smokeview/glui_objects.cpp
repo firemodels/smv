@@ -779,7 +779,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       SPINNER_slice_z->set_float_limits(zbar0FDS, zbarFDS);
 
       ROLLOUT_plotproperties = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "2D plot properties", false);
-      glui_device->add_checkbox_to_panel(ROLLOUT_plotproperties, _("labels"), &showd_plot2d_labels);
+      glui_device->add_checkbox_to_panel(ROLLOUT_plotproperties, _("plot labels"),                   &showd_plot2d_labels);
       glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("size"),       GLUI_SPINNER_FLOAT, &plot2d_size_factor);
       glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("x offset"),   GLUI_SPINNER_FLOAT,  plot2d_xyz_offset);
       glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("y offset"),   GLUI_SPINNER_FLOAT,  plot2d_xyz_offset+1);
