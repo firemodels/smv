@@ -7527,7 +7527,7 @@ void Slice2Device(void){
     offset = GetSliceOffset(slicei, slice_xyz, sdev->xyz);
     for(j = 0; j<sdev->nvals; j++){
       sdev->vals[j]      = GetSliceVal(slicei, j, offset);
-      sdev->vals_orig[j] = GetSliceVal(slicei, j, offset);
+      sdev->vals_orig[j] = sdev->vals[j];
     }
   }
   for(i = 0; i<nslicebounds; i++){
