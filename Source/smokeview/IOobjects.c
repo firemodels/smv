@@ -3455,8 +3455,6 @@ void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals
 /* ----------------------- DrawHRRPlot ----------------------------- */
 
 void DrawHRRPlot(void){
-  int i;
-
   if(vis_hrr_plot==1&&global_times!=NULL){
     float xyz[] = {0.0,0.0,0.0};
     float highlight_time = 0.0, highlight_val = 0.0;

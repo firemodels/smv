@@ -6041,7 +6041,6 @@ int ReadSMV(bufferstreamdata *stream){
   devicedata *devicecopy;
   int do_pass4=0, do_pass5=0;
   int roomdefined=0;
-  int errorcode;
   int noGRIDpresent=1,startpass;
   slicedata *sliceinfo_copy=NULL;
   int nisos_per_mesh=1;
