@@ -22,8 +22,6 @@
 /* ------------------ Usage ------------------------ */
 
 void Usage(char *prog,int option){
-  char buffer[1000];
-
   PRINTF("%s\n", release_title);
   PRINTF("%s\n\n", _("Visualize fire/smoke flow simulations."));
   PRINTF("Usage: %s [options] casename", prog);
