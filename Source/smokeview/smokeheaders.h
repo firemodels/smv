@@ -513,7 +513,7 @@ EXTERNCPP devicedata *GetDeviceFromLabel(char *label, int index);
 EXTERNCPP devicedata *GetCSVDeviceFromLabel(char *label, int index);
 EXTERNCPP void SetupGlut(int argc, char **argv);
 EXTERNCPP int GetNDevices(char *file);
-EXTERNCPP void ReadHRROther(int flag);
+EXTERNCPP void ReadHRR(int flag);
 EXTERNCPP void ReadDeviceData(char *file, int filetype, int flag);
 EXTERNCPP void SetupZoneDevs(void);
 EXTERNCPP void SetupDeviceData(void);

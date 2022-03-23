@@ -3313,7 +3313,7 @@ void LoadUnloadMenu(int value){
 
     LOCK_COMPRESS
     if(hrr_csv_filename!=NULL){
-      ReadHRROther(LOAD);
+      ReadHRR(LOAD);
     }
 
 

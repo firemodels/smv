@@ -974,13 +974,13 @@ typedef struct _device {
   int valid;
 } devicedata;
 
-/* --------------------------  hrrotherdata ------------------------------------ */
+/* --------------------------  hrrdata ------------------------------------ */
 
-typedef struct _hrrotherdata {
+typedef struct _hrrdata {
   float *vals, *vals_orig, valmin, valmax;
   int nvals, base_col;
   flowlabels label;
-} hrrotherdata;
+} hrrdata;
 
 /* --------------------------  windrosedata ------------------------------------ */
 

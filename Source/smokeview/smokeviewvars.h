@@ -36,7 +36,7 @@ SVEXTERN float geom_bounding_box[6];
 #endif
 
 SVEXTERN char hrrlabel[256];
-SVEXTERN hrrotherdata SVDECL(*hrrptr, NULL), SVDECL(*timeptr, NULL);
+SVEXTERN hrrdata SVDECL(*hrrptr, NULL), SVDECL(*timeptr, NULL);
 
 #ifdef pp_TERRAIN_SKIP
 SVEXTERN int SVDECL(terrain_skip, 1);
@@ -871,8 +871,8 @@ SVEXTERN int GPUvol_voltemp_offset;
 SVEXTERN int GPUvol_voltemp_factor;
 #endif
 
-SVEXTERN hrrotherdata SVDECL(*hrrotherinfo, NULL);
-SVEXTERN int SVDECL(nhrrotherinfo, 0), SVDECL(nhrrhcinfo, 0);
+SVEXTERN hrrdata SVDECL(*hrrinfo, NULL);
+SVEXTERN int SVDECL(nhrrinfo, 0), SVDECL(nhrrhcinfo, 0);
 SVEXTERN int SVDECL(time_col, -1), SVDECL(hrr_col, -1), SVDECL(qradi_col, -1), SVDECL(chirad_col, -1);
 SVEXTERN int SVDECL(glui_hrr, 1);
 SVEXTERN int SVDECL(vis_hrr_plot, 0);

@@ -43,11 +43,11 @@
 int GetHrrCsvCol(char *label){
   int i;
 
-  if(label==NULL||strlen(label)==0||nhrrotherinfo==0)return -1;
-  for(i = 0; i<nhrrotherinfo; i++){
-    hrrotherdata *hi;
+  if(label==NULL||strlen(label)==0||nhrrinfo==0)return -1;
+  for(i = 0; i<nhrrinfo; i++){
+    hrrdata *hi;
 
-    hi = hrrotherinfo+i;
+    hi = hrrinfo+i;
     if(hi->label.shortlabel==NULL)continue;
     if(strcmp(hi->label.shortlabel, label)==0)return i;
   }
@@ -86,7 +86,7 @@ float GetHoc(void){
 
 /* ------------------ ReadHRR ------------------------ */
 
-void ReadHRROther(int flag){
+void ReadHRR(int flag){
   FILE *stream;
   int nrows, ncols;
   char **labels, **units;
@@ -97,16 +97,16 @@ void ReadHRROther(int flag){
   char buffer[LENBUFFER], buffer_labels[LENBUFFER], buffer_units[LENBUFFER];
 
   fuel_hoc = GetHoc();
-  if(nhrrotherinfo>0){
-    for(i=0;i<nhrrotherinfo;i++){
-      hrrotherdata *hi;
+  if(nhrrinfo>0){
+    for(i=0;i<nhrrinfo;i++){
+      hrrdata *hi;
 
-      hi = hrrotherinfo + i;
+      hi = hrrinfo + i;
       FREEMEMORY(hi->vals);
       FREEMEMORY(hi->vals_orig);
     }
-    FREEMEMORY(hrrotherinfo);
-    nhrrotherinfo = 0;
+    FREEMEMORY(hrrinfo);
+    nhrrinfo = 0;
   }
   time_col  = -1;
   hrr_col   = -1;
@@ -117,21 +117,21 @@ void ReadHRROther(int flag){
   if(stream==NULL)return;
 
   GetRowCols(stream, &nrows, &ncols);
-  nhrrotherinfo = ncols;
+  nhrrinfo = ncols;
 
   // allocate memory
 
-  NewMemory((void **)&labels,         nhrrotherinfo*sizeof(char *));
-  NewMemory((void **)&units,          nhrrotherinfo*sizeof(char *));
-  NewMemory((void **)&hrrotherinfo, 2*nhrrotherinfo*sizeof(hrrotherdata));
-  NewMemory((void **)&vals,           nhrrotherinfo*sizeof(float));
-  NewMemory((void **)&valids,         nhrrotherinfo*sizeof(int));
+  NewMemory((void **)&labels,         nhrrinfo*sizeof(char *));
+  NewMemory((void **)&units,          nhrrinfo*sizeof(char *));
+  NewMemory((void **)&hrrinfo,        2*nhrrinfo*sizeof(hrrdata));
+  NewMemory((void **)&vals,           nhrrinfo*sizeof(float));
+  NewMemory((void **)&valids,         nhrrinfo*sizeof(int));
 
 // initalize each column
-  for(i = 0; i<2*nhrrotherinfo; i++){
-    hrrotherdata *hi;
+  for(i = 0; i<2*nhrrinfo; i++){
+    hrrdata *hi;
 
-    hi = hrrotherinfo+i;
+    hi = hrrinfo+i;
     NewMemory((void **)&hi->vals, (nrows-2)*sizeof(float));
     NewMemory((void **)&hi->vals_orig, (nrows-2)*sizeof(float));
     hi->base_col = -1;
@@ -148,10 +148,10 @@ void ReadHRROther(int flag){
   ParseCSV(buffer_labels, labels, &nlabels);
   CheckMemory;
 
-  for(i = 0; i<nhrrotherinfo; i++){
-    hrrotherdata *hi;
+  for(i = 0; i<nhrrinfo; i++){
+    hrrdata *hi;
 
-    hi = hrrotherinfo+i;
+    hi = hrrinfo+i;
     TrimBack(labels[i]);
     TrimBack(units[i]);
     SetLabels(&(hi->label), labels[i], labels[i], units[i]);
@@ -161,27 +161,27 @@ void ReadHRROther(int flag){
 // find column index of several quantities
 
   time_col  = GetHrrCsvCol("Time");
-  if(time_col>=0)timeptr = hrrotherinfo+time_col;
+  if(time_col>=0)timeptr = hrrinfo+time_col;
 
   hrr_col   = GetHrrCsvCol("HRR");
-  if(hrr_col>=0&&time_col>=0)hrrptr = hrrotherinfo+hrr_col;
+  if(hrr_col>=0&&time_col>=0)hrrptr = hrrinfo+hrr_col;
 
   qradi_col = GetHrrCsvCol("Q_RADI");
   CheckMemory;
 
 // define column for each MLR column by heat of combustion except for air and products
   nhrrhcinfo = 0;
-  for(i = 0; i<nhrrotherinfo; i++){
-    hrrotherdata *hi, *hi2;
+  for(i = 0; i<nhrrinfo; i++){
+    hrrdata *hi, *hi2;
 
-    hi = hrrotherinfo+i;
+    hi = hrrinfo+i;
     if(strlen(hi->label.longlabel)>3&&strncmp(hi->label.longlabel,"MLR_",4)==0){
       char label[256];
 
       if(strcmp(hi->label.longlabel, "MLR_AIR")==0)continue;
       if(strcmp(hi->label.longlabel, "MLR_PRODUCTS")==0)continue;
 
-      hi2 = hrrotherinfo + nhrrotherinfo + nhrrhcinfo;
+      hi2 = hrrinfo + nhrrinfo + nhrrhcinfo;
       hi2->base_col = i;
       strcpy(label, "HC*");
       strcat(label, hi->label.longlabel);
@@ -199,10 +199,10 @@ void ReadHRROther(int flag){
     if(strlen(buffer)==0)break;
     FParseCSV(buffer, vals, valids, ncols, &nvals);
     if(nvals<ncols)break;
-    for(i = 0; i<nhrrotherinfo; i++){
-      hrrotherdata *hi;
+    for(i = 0; i<nhrrinfo; i++){
+      hrrdata *hi;
 
-      hi = hrrotherinfo+i;
+      hi = hrrinfo+i;
       hi->vals[irow] = 0.0;
       if(valids[i]==1)hi->vals[irow] = vals[i];
     }
@@ -214,11 +214,11 @@ void ReadHRROther(int flag){
 //define column of hrr/qradi
   if(hrr_col>=0&qradi_col>=0){
     char label[256];
-    hrrotherdata *hi_chirad;
+    hrrdata *hi_chirad;
 
 
-    chirad_col = nhrrotherinfo+nhrrhcinfo;
-    hi_chirad = hrrotherinfo+chirad_col;
+    chirad_col = nhrrinfo+nhrrhcinfo;
+    hi_chirad = hrrinfo+chirad_col;
 
     strcpy(label, "CHIRAD");
     SetLabels(&(hi_chirad->label), label, label, "-");
@@ -228,16 +228,16 @@ void ReadHRROther(int flag){
   CheckMemory;
 
 // construct column for each MLR column by heat of combustion except for air and products
-  for(i = nhrrotherinfo; i<nhrrotherinfo+nhrrhcinfo; i++){
-    hrrotherdata *hi;
+  for(i = nhrrinfo; i<nhrrinfo+nhrrhcinfo; i++){
+    hrrdata *hi;
 
-    hi = hrrotherinfo+i;
+    hi = hrrinfo+i;
     hi->nvals = nrows-2;
     if(hi->base_col>=0){
-      hrrotherdata *hi_from;
+      hrrdata *hi_from;
       int j;
 
-      hi_from = hrrotherinfo+hi->base_col;
+      hi_from = hrrinfo+hi->base_col;
       memcpy(hi->vals, hi_from->vals, hi_from->nvals*sizeof(float));
       hi->nvals = hi_from->nvals;
       for(j=0;j<hi->nvals;j++){
@@ -249,11 +249,11 @@ void ReadHRROther(int flag){
 
 //construct column of qradi/hrr
   if(hrr_col>=0&qradi_col>=0){
-    hrrotherdata *hi_chirad, *hi_hrr, *hi_qradi;
+    hrrdata *hi_chirad, *hi_hrr, *hi_qradi;
 
-    hi_chirad = hrrotherinfo+chirad_col;
-    hi_hrr = hrrotherinfo+hrr_col;
-    hi_qradi = hrrotherinfo+qradi_col;
+    hi_chirad = hrrinfo+chirad_col;
+    hi_hrr = hrrinfo+hrr_col;
+    hi_qradi = hrrinfo+qradi_col;
     hi_chirad->nvals = MIN(hi_qradi->nvals, hi_hrr->nvals);
     for(i=0;i<hi_chirad->nvals;i++){
       if(hi_hrr->vals[i]!=0.0){
@@ -267,20 +267,20 @@ void ReadHRROther(int flag){
   CheckMemory;
 
 //compute vals into vals_orig
-  for(i = 0; i<nhrrotherinfo+nhrrhcinfo; i++){
-    hrrotherdata *hi;
+  for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
+    hrrdata *hi;
 
-    hi = hrrotherinfo+i;
+    hi = hrrinfo+i;
     memcpy(hi->vals_orig, hi->vals, hi->nvals*sizeof(float));
   }
 
 //compute min and max of each column
-  for(i = 0; i<nhrrotherinfo+nhrrhcinfo; i++){
-    hrrotherdata *hi;
+  for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
+    hrrdata *hi;
     float valmin, valmax;
     int j;
 
-    hi = hrrotherinfo+i;
+    hi = hrrinfo+i;
     hi->nvals = irow;
     valmin = hi->vals[0];
     valmax = valmin;
@@ -294,10 +294,10 @@ void ReadHRROther(int flag){
   CheckMemory;
 
 // free arrays that were not used
-  for(i = nhrrotherinfo+nhrrhcinfo; i<2*nhrrotherinfo; i++){
-    hrrotherdata *hi;
+  for(i = nhrrinfo+nhrrhcinfo; i<2*nhrrinfo; i++){
+    hrrdata *hi;
 
-    hi = hrrotherinfo+i;
+    hi = hrrinfo+i;
     FREEMEMORY(hi->vals);
     FREEMEMORY(hi->vals_orig);
   }
@@ -10576,7 +10576,7 @@ typedef struct {
 
 // update csv data
 
-  if(hrr_csv_filename!=NULL)ReadHRROther(LOAD);
+  if(hrr_csv_filename!=NULL)ReadHRR(LOAD);
   ReadDeviceData(NULL,CSV_FDS,UNLOAD);
   ReadDeviceData(NULL,CSV_EXP,UNLOAD);
   for(i=0;i<ncsvinfo;i++){

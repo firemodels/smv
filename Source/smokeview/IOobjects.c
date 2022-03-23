@@ -3459,11 +3459,11 @@ void DrawHRRPlot(void){
     float xyz[] = {0.0,0.0,0.0};
     float highlight_time = 0.0, highlight_val = 0.0;
     int valid = 1;
-    hrrotherdata *hi, *hitime;
+    hrrdata *hi, *hitime;
     int itime;
 
-    hi = hrrotherinfo+glui_hrr;
-    hitime = hrrotherinfo+time_col;
+    hi     = hrrinfo+glui_hrr;
+    hitime = hrrinfo+time_col;
 
     if(update_avg==1){
       TimeAveragePlot2DData(hitime->vals, hi->vals_orig, hi->vals, hi->nvals);
