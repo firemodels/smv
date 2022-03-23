@@ -7503,6 +7503,7 @@ void GetDevMinMax(devicedata *devi, float *valmin, float *valmax){
 void Slice2Device(void){
   int i;
 
+  if(slice_show_plot==0)return;
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
     devicedata *sdev;
@@ -7514,6 +7515,7 @@ void Slice2Device(void){
     sdev = &(slicei->vals2d);
     sdev->valid = 0;
     if(slicei->volslice==1||slicei->loaded==0||slicei->ntimes==0)continue;
+    if(slicei->slice_filetype==SLICE_GEOM)continue;
     if(InMeshi(dev_mesh, slicei->idir, slice_xyz)==0)continue;
     sdev->valid = 1;
     FREEMEMORY(sdev->vals);
