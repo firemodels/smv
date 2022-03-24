@@ -13,7 +13,6 @@
 #include "IOscript.h"
 #include "glui_smoke.h"
 #include "glui_motion.h"
-#include "glui_wui.h"
 
 /* ------------------ CompareFloat ------------------------ */
 
@@ -25,21 +24,6 @@ int CompareFloat( const void *arg1, const void *arg2 ){
   if( x< y)return -1;
   if( x> y)return 1;
   return 0;
-}
-
-/* ------------------ UpdateHRRInfo ------------------------ */
-
-void UpdateHRRInfo(int vis){
-  if(hrrinfo!=NULL&&hrrinfo->loaded==1){
-    hrrinfo->display = vis;
-    if(hrrinfo->display == 0)show_hrrpuv_plot = 0;
-  }
-  if(visHRRlabel == 0)show_hrrpuv_plot=0;
-
-  UpdateShowHRRPUVPlot(show_hrrpuv_plot);
-  plotstate = GetPlotState(DYNAMIC_PLOTS);
-  UpdateShow();
-  update_times = 1;
 }
 
 /* ------------------ UpdateFrameNumber ------------------------ */
@@ -58,9 +42,6 @@ void UpdateFrameNumber(int changetime){
         if(parti->loaded==0||parti->timeslist==NULL)continue;
         parti->itime=parti->timeslist[itimes];
       }
-    }
-    if(hrrinfo!=NULL&&hrrinfo->loaded==1&&hrrinfo->display==1&&hrrinfo->timeslist!=NULL){
-      hrrinfo->itime=hrrinfo->timeslist[itimes];
     }
     if(showvolrender==1){
       int imesh;
@@ -364,6 +345,7 @@ void UpdateShow(void){
   int i,evacflag,sliceflag,vsliceflag,partflag,patchflag,isoflag,smoke3dflag,tisoflag,showdeviceflag;
   int slicecolorbarflag;
   int shooter_flag;
+  int showhrrflag;
 
   if(update_fileload==1)UpdateFileLoad();
   showtime=0;
@@ -385,15 +367,16 @@ void UpdateShow(void){
   smoke3dflag=0;
   showtours=0;
   showdeviceflag = 0;
+  showhrrflag = 0;
   visTimeParticles=1; visTimeSlice=1; visTimeBoundary=1; visTimeZone=1; visTimeIso=1;
 
   drawing_boundary_files = 0;
 
   RenderTime=0;
-  if(visHRRlabel==1&&show_hrrpuv_plot==1&&hrrinfo!=NULL){
-    showdeviceflag = 1;
-  }
-  if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
+
+  if(vis_hrr_plot==1&&hrrptr!=NULL)showhrrflag = 1;
+
+  if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;
 
@@ -638,7 +621,7 @@ void UpdateShow(void){
   }
 
   if( plotstate==DYNAMIC_PLOTS &&
-    ( showdeviceflag==1 || sliceflag==1 || vsliceflag==1 || partflag==1 || patchflag==1 ||
+    ( showdeviceflag==1 || showhrrflag==1 || sliceflag==1 || vsliceflag==1 || partflag==1 || patchflag==1 ||
     shooter_flag==1|| smoke3dflag==1 || showtours==1 || evacflag==1 ||
     (ReadZoneFile==1&&visZone==1&&visTimeZone==1)||showvolrender==1
     )
@@ -779,12 +762,6 @@ void SynchTimes(void){
       tourj = tourinfo + j;
       if(tourj->display==0)continue;
       tourj->timeslist[n]=GetItime(n,tourj->timeslist,tourj->path_times,tourj->ntimes);
-    }
-
-    /* synchronize hrrpuv times */
-
-    if(hrrinfo!=NULL&&hrrinfo->loaded==1&&hrrinfo->display==1){
-      hrrinfo->timeslist[n]=GetItime(n,hrrinfo->timeslist,hrrinfo->times,hrrinfo->ntimes);
     }
 
   /* synchronize geometry times */
@@ -1185,10 +1162,10 @@ void UpdateTimes(void){
     MergeGlobalTimes(&tload_end, 1);
   }
 
-  if(visHRRlabel==1&&show_hrrpuv_plot==1&&hrrinfo!=NULL){
-    MergeGlobalTimes(hrrinfo->times_csv, hrrinfo->ntimes_csv);
+  if(vis_hrr_plot==1&&hrrptr!=NULL){
+    MergeGlobalTimes(timeptr->vals, timeptr->nvals);
   }
-  if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
+  if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;
 
@@ -1322,49 +1299,6 @@ void UpdateTimes(void){
     if(touri->display==0)continue;
     FREEMEMORY(touri->timeslist);
     if(nglobal_times>0)NewMemory((void **)&touri->timeslist,nglobal_times*sizeof(int));
-  }
-  if(hrrinfo!=NULL){
-    FREEMEMORY(hrrinfo->timeslist);
-    FREEMEMORY(hrrinfo->times);
-    FREEMEMORY(hrrinfo->hrrval);
-    FREEMEMORY(hrrinfo->hrrval_orig);
-    if(hrrinfo->loaded==1&&hrrinfo->display==1&&nglobal_times>0){
-      int jstart=0;
-
-      NewMemory((void **)&hrrinfo->timeslist,nglobal_times*sizeof(int));
-      NewMemory((void **)&hrrinfo->times,nglobal_times*sizeof(float));
-      NewMemory((void **)&hrrinfo->hrrval,nglobal_times*sizeof(float));
-      NewMemory((void **)&hrrinfo->hrrval_orig, nglobal_times*sizeof(float));
-      hrrinfo->ntimes=nglobal_times;
-      for(i=0;i<nglobal_times;i++){
-        int j, foundit;
-
-        foundit=0;
-        hrrinfo->times[i]=global_times[i];
-        for(j=jstart;j<hrrinfo->ntimes_csv-1;j++){
-          if(hrrinfo->times_csv[j]<=global_times[i]&&global_times[i]<hrrinfo->times_csv[j+1]){
-            float f1, tbot;
-
-            foundit=1;
-            tbot = hrrinfo->times_csv[j+1]-hrrinfo->times_csv[j];
-            if(tbot>0.0){
-              f1 = (global_times[i]-hrrinfo->times_csv[j])/tbot;
-            }
-            else{
-              f1=0.0;
-            }
-            hrrinfo->hrrval[i]=(1.0-f1)*hrrinfo->hrrval_csv[j]+f1*hrrinfo->hrrval_csv[j+1];
-            hrrinfo->hrrval_orig[i]=hrrinfo->hrrval[i];
-            jstart=j;
-            break;
-          }
-        }
-        if(foundit==0){
-          hrrinfo->hrrval[i]=hrrinfo->hrrval_csv[hrrinfo->ntimes_csv-1];
-          hrrinfo->hrrval_orig[i]=hrrinfo->hrrval[i];
-        }
-      }
-    }
   }
   FREEMEMORY(shooter_timeslist);
   if(visShooter!=0&&shooter_active==1){
@@ -1643,11 +1577,12 @@ int GetPlotStateSub(int choice){
       break;
     case DYNAMIC_PLOTS:
     case DYNAMIC_PLOTS_NORECURSE:
-      if(visHRRlabel==1&&show_hrrpuv_plot==1&&hrrinfo!=NULL){
+      if(vis_hrr_plot==1&&hrrptr!=NULL){
+
         stept = 1;
         return DYNAMIC_PLOTS;
       }
-      if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
+      if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
         for(i = 0; i<ndeviceinfo; i++){
           devicedata *devicei;
 
@@ -1910,6 +1845,10 @@ void UpdateShowScene(void){
   if(update_smoke_alphas==1){
     update_smoke_alphas = 0;
     UpdateSmokeAlphas();
+  }
+  if(update_slice2device==1){
+    update_slice2device = 0;
+    Slice2Device();
   }
   if(open_movie_dialog==1){
     open_movie_dialog = 0;

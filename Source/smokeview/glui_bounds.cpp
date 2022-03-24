@@ -1819,9 +1819,7 @@ extern "C" void SliceBoundsCPP_CB(int var){
           break;
         }
       }
-      float timer_update_slice_colors;
       INIT_PRINT_TIMER(timer_update_slice_colors);
-      PRINT_TIMER(timer_update_slice_colors, "null");
       UpdateSliceColors(last_slice);
       PRINT_TIMER(timer_update_slice_colors, "updateslicecolors");
       break;
@@ -2830,6 +2828,7 @@ GLUI_Rollout *ROLLOUT_slice_average = NULL;
 GLUI_Rollout *ROLLOUT_slice_histogram = NULL;
 GLUI_Rollout *ROLLOUT_line_contour = NULL;
 GLUI_Rollout *ROLLOUT_slicedups = NULL;
+GLUI_Rollout *ROLLOUT_slice_2d_plots = NULL;
 GLUI_Rollout *ROLLOUT_vector = NULL;
 GLUI_Rollout *ROLLOUT_isosurface = NULL;
 GLUI_Rollout *ROLLOUT_boundary_settings = NULL;
@@ -2893,9 +2892,6 @@ GLUI_Panel *PANEL_split3 = NULL;
 GLUI_Panel *PANEL_extreme = NULL, *PANEL_cb8 = NULL, *PANEL_cb7 = NULL;
 GLUI_Panel *PANEL_extreme_min = NULL, *PANEL_extreme_max = NULL;
 
-#ifdef pp_IIMEBAR_DIGITS
-GLUI_Spinner *SPINNER_ntimebar_digits = NULL;
-#endif
 GLUI_Spinner *SPINNER_sliceval_ndigits = NULL;
 GLUI_Spinner *SPINNER_npartthread_ids = NULL;
 GLUI_Spinner *SPINNER_iso_outline_ioffset = NULL;
@@ -3069,7 +3065,8 @@ int      nisoprocinfo=0;
 #define SLICE_HISTOGRAM_ROLLOUT 5
 #define SLICE_DUP_ROLLOUT       6
 #define SLICE_SETTINGS_ROLLOUT  7
-procdata  sliceprocinfo[8];
+#define SLICE_2D_PLOTS          8
+procdata  sliceprocinfo[9];
 int      nsliceprocinfo=0;
 
 //*** plot3dprocinfo entries
@@ -4071,10 +4068,6 @@ void TimeBoundCB(int var){
   case SET_TIME:
     SetTimeVal(glui_time);
     break;
-#ifdef pp_TIMEBAR_DIGITS
-  case TIMEBAR_DIGITS:
-    break;
-#endif
   case TBOUNDS_USE:
     if(use_tload_begin == 1){
       SPINNER_tload_begin->enable();
@@ -5041,11 +5034,6 @@ extern "C" void GluiBoundsSetup(int main_window){
   glui_bounds->add_column_to_panel(PANEL_time2c, false);
   CHECKBOX_use_tload_skip = glui_bounds->add_checkbox_to_panel(PANEL_time2c, "", &use_tload_skip, TBOUNDS_USE, TimeBoundCB);
   SPINNER_tload_skip->set_int_limits(0, 1000);
-
-#ifdef pp_TIMEBAR_DIGITS
-  SPINNER_ntimebar_digits = glui_bounds->add_spinner_to_panel(PANEL_time2, _("timebar digits:"), GLUI_SPINNER_INT, &ntimebar_digits, TIMEBAR_DIGITS, TimeBoundCB);
-  SPINNER_ntimebar_digits->set_int_limits(3, 8, GLUI_LIMIT_CLAMP);
-#endif
 
   glui_bounds->add_button_to_panel(PANEL_time2, _("Reload all data"), RELOAD_ALL_DATA, TimeBoundCB);
 #ifdef pp_LOAD_NEWDATA

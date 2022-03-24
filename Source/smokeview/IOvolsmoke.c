@@ -396,7 +396,6 @@ int IsBottomMesh(meshdata *mesh_from){
   xyz[0] = (boxmin[0]+boxmax[0])/2.0;
   xyz[1] = (boxmin[1]+boxmax[1])/2.0;
   xyz[2] = boxmin[2]-(boxmax[2]-boxmin[2])/100.0;
-  int InMesh(float *xyz);
   return_val = 1-InMesh(xyz);
   return return_val;
 }

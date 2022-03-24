@@ -797,10 +797,9 @@ void LabelMenu(int value){
     vis_slice_average=1;
     if(ntickinfo>0)visFDSticks=1;
     visgridloc=1;
-    visHRRlabel=1;
+    vis_hrr_label=1;
     show_firecutoff=1;
     visFramelabel=1;
-    if(hrrinfo != NULL&&hrrinfo->display != 1)UpdateHRRInfo(1);
     break;
    case MENU_LABEL_HideAll:
     visUSERticks=0;
@@ -817,9 +816,8 @@ void LabelMenu(int value){
     visTimelabel=0;
     visFramelabel=0;
     visMeshlabel=0;
-    visHRRlabel=0;
+    vis_hrr_label=0;
     show_firecutoff=0;
-    if(hrrinfo != NULL&&hrrinfo->display != 0)UpdateHRRInfo(0);
     if(ntickinfo>0)visFDSticks=0;
     visgridloc=0;
     vis_slice_average=0;
@@ -847,8 +845,7 @@ void LabelMenu(int value){
    case MENU_LABEL_framelabel:
      visFramelabel=1-visFramelabel;
      if(visFramelabel==1){
-       visHRRlabel=0;
-       UpdateHRRInfo(visHRRlabel);
+       vis_hrr_label=0;
      }
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     UpdateShow();
@@ -883,8 +880,7 @@ void LabelMenu(int value){
      vis_slice_average = 1 - vis_slice_average;
      break;
    case MENU_LABEL_hrr:
-     visHRRlabel=1-visHRRlabel;
-     UpdateHRRInfo(visHRRlabel);
+     vis_hrr_label=1-vis_hrr_label;
      break;
    case MENU_LABEL_firecutoff:
      show_firecutoff=1-show_firecutoff;
@@ -3261,9 +3257,6 @@ void LoadUnloadMenu(int value){
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"UNLOADALL\n");
     }
-    if(hrr_csv_filename!=NULL){
-      ReadHRR(UNLOAD, &errorcode);
-    }
     if(nvolrenderinfo>0){
       LoadVolsmoke3DMenu(UNLOAD_ALL);
     }
@@ -3304,8 +3297,8 @@ void LoadUnloadMenu(int value){
     if(nvolrenderinfo>0){
       UnLoadVolsmoke3DMenu(UNLOAD_ALL);
     }
-    if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
-      showdevice_plot = DEVICE_PLOT_HIDDEN;
+    if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
+      vis_device_plot = DEVICE_PLOT_HIDDEN;
       showdevice_val = 0;
       UpdateDeviceShow();
     }
@@ -3320,7 +3313,7 @@ void LoadUnloadMenu(int value){
 
     LOCK_COMPRESS
     if(hrr_csv_filename!=NULL){
-      ReadHRR(LOAD, &errorcode);
+      ReadHRR(LOAD);
     }
 
 
@@ -6243,7 +6236,7 @@ void ShowObjectsMenu(int value){
   if(value>=0&&value<nobject_defs){
     objecti = object_defs[value];
     objecti->visible = 1 - objecti->visible;
-    if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
+    if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
       update_times = 1;
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       UpdateDeviceShow();
@@ -6270,11 +6263,11 @@ void ShowObjectsMenu(int value){
   }
   else if(value==OBJECT_PLOT_SHOW_TREE_ALL){
     update_times=1;
-    if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL){
-      showdevice_plot = DEVICE_PLOT_HIDDEN;
+    if(vis_device_plot==DEVICE_PLOT_SHOW_TREE_ALL){
+      vis_device_plot = DEVICE_PLOT_HIDDEN;
     }
     else{
-      showdevice_plot = DEVICE_PLOT_SHOW_TREE_ALL;
+      vis_device_plot = DEVICE_PLOT_SHOW_TREE_ALL;
       select_device = 1;
       ShowADeviceType();
     }
@@ -6282,23 +6275,19 @@ void ShowObjectsMenu(int value){
     UpdateDeviceShow();
   }
   else if(value==PLOT_HRRPUV){
-    show_hrrpuv_plot = 1-show_hrrpuv_plot;
-    UpdateShowHRRPUVPlot(show_hrrpuv_plot);
-    if(show_hrrpuv_plot==1){
-      visHRRlabel = 0;
-      LabelMenu(MENU_LABEL_hrr);
-    }
+    vis_hrr_plot = 1-vis_hrr_plot;
+    UpdateVisHrrPlot();    
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     UpdateShow();
     update_times = 1;
   }
   else if(value==OBJECT_PLOT_SHOW_ALL){
     update_times=1;
-    if(showdevice_plot==DEVICE_PLOT_SHOW_ALL){
-      showdevice_plot = DEVICE_PLOT_HIDDEN;
+    if(vis_device_plot==DEVICE_PLOT_SHOW_ALL){
+      vis_device_plot = DEVICE_PLOT_HIDDEN;
     }
     else{
-      showdevice_plot = DEVICE_PLOT_SHOW_ALL;
+      vis_device_plot = DEVICE_PLOT_SHOW_ALL;
       select_device = 1;
       ShowADeviceType();
     }
@@ -6307,11 +6296,11 @@ void ShowObjectsMenu(int value){
   }
   else if(value==OBJECT_PLOT_SHOW_SELECTED){
     update_times = 1;
-    if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED){
-      showdevice_plot = DEVICE_PLOT_HIDDEN;
+    if(vis_device_plot==DEVICE_PLOT_SHOW_SELECTED){
+      vis_device_plot = DEVICE_PLOT_HIDDEN;
     }
     else{
-      showdevice_plot = DEVICE_PLOT_SHOW_SELECTED;
+      vis_device_plot = DEVICE_PLOT_SHOW_SELECTED;
       select_device = 1;
       ShowADeviceType();
     }
@@ -7847,25 +7836,24 @@ updatemenu=0;
       glutAddMenuEntry(qlabel, i);
     }
   }
-
-  if(nobject_defs>0||hrrinfo!=NULL){
+  if(nobject_defs>0||hrrptr!=NULL){
     CREATEMENU(showobjectsplotmenu,ShowObjectsMenu);
     if(ndevicetypes>0){
       GLUTADDSUBMENU(_("quantity"),devicetypemenu);
     }
     if(nobject_defs>0){
-      if(showdevice_plot==DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "*All devices",           OBJECT_PLOT_SHOW_ALL);
-      if(showdevice_plot!=DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "All devices",            OBJECT_PLOT_SHOW_ALL);
-      if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "*Selected devices",      OBJECT_PLOT_SHOW_SELECTED);
-      if(showdevice_plot!=DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "Selected devices",       OBJECT_PLOT_SHOW_SELECTED);
+      if(vis_device_plot==DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "*All devices",           OBJECT_PLOT_SHOW_ALL);
+      if(vis_device_plot!=DEVICE_PLOT_SHOW_ALL)glutAddMenuEntry(      "All devices",            OBJECT_PLOT_SHOW_ALL);
+      if(vis_device_plot==DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "*Selected devices",      OBJECT_PLOT_SHOW_SELECTED);
+      if(vis_device_plot!=DEVICE_PLOT_SHOW_SELECTED)glutAddMenuEntry( "Selected devices",       OBJECT_PLOT_SHOW_SELECTED);
 #ifdef pp_ZTREE
-      if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "*All device trees",      OBJECT_PLOT_SHOW_TREE_ALL);
-      if(showdevice_plot!=DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "All device trees",       OBJECT_PLOT_SHOW_TREE_ALL);
+      if(vis_device_plot==DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "*All device trees",      OBJECT_PLOT_SHOW_TREE_ALL);
+      if(vis_device_plot!=DEVICE_PLOT_SHOW_TREE_ALL)glutAddMenuEntry( "All device trees",       OBJECT_PLOT_SHOW_TREE_ALL);
 #endif
     }
-    if(hrrinfo!=NULL){
-      if(show_hrrpuv_plot==1)glutAddMenuEntry("*HRRPUV", PLOT_HRRPUV);
-      if(show_hrrpuv_plot==0)glutAddMenuEntry("HRRPUV", PLOT_HRRPUV);
+    if(hrrptr!=NULL){
+      if(vis_hrr_plot==1)glutAddMenuEntry("*HRRPUV", PLOT_HRRPUV);
+      if(vis_hrr_plot==0)glutAddMenuEntry("HRRPUV", PLOT_HRRPUV);
     }
 
     if(showdevice_val==1)glutAddMenuEntry(_("*Show values"), OBJECT_VALUES);
@@ -8028,9 +8016,9 @@ updatemenu=0;
     if(show_firecutoff == 0)glutAddMenuEntry(_("Temperature cutoff"), MENU_LABEL_firecutoff);
   }
 
-  if(hrrinfo != NULL){
-    if(visHRRlabel == 1)glutAddMenuEntry(_("*HRR"), MENU_LABEL_hrr);
-    if(visHRRlabel == 0)glutAddMenuEntry(_("HRR"), MENU_LABEL_hrr);
+  if(hrrptr != NULL){
+    if(vis_hrr_label == 1)glutAddMenuEntry(_("*HRR"), MENU_LABEL_hrr);
+    if(vis_hrr_label == 0)glutAddMenuEntry(_("HRR"), MENU_LABEL_hrr);
   }
 #ifdef pp_memstatus
   if(visAvailmemory == 1)glutAddMenuEntry(_("*Memory load"), MENU_LABEL_memload);
@@ -9804,11 +9792,11 @@ updatemenu=0;
     glutAddMenuEntry(_("Trainer..."), DIALOG_TRAINER);
   }
 
-  /* --------------------------------datadialog menu -------------------------- */
+  /* --------------------------------datad ialog menu -------------------------- */
 
   CREATEMENU(datadialogmenu, DialogMenu);
   if(ndeviceinfo>0&&GetNumActiveDevices()>0){
-    glutAddMenuEntry(_("Devices/Objects..."), DIALOG_DEVICE);
+    glutAddMenuEntry(_("Devices/Objects/2D plots..."), DIALOG_DEVICE);
   }
   glutAddMenuEntry(_("Show/Hide..."), DIALOG_SHOWFILES);
   glutAddMenuEntry(_("Particle tracking..."), DIALOG_SHOOTER);

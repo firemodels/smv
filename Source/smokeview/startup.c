@@ -259,19 +259,23 @@ int SetupCase(char *filename){
   }
 
   /* initialize units */
-
+  INIT_PRINT_TIMER(timer_start);
   InitUnits();
   InitUnitDefs();
   SetUnitVis();
+  PRINT_TIMER(timer_start, "init units");
 
   CheckMemory;
   readini_output = 0;
   ReadIni(NULL);
   readini_output = 1;
+  PRINT_TIMER(timer_start, "init ReadINI");
 
   ReadBoundINI();
+  PRINT_TIMER(timer_start, "ReadBoundINI");
 
   UpdateRGBColors(COLORBAR_INDEX_NONE);
+  PRINT_TIMER(timer_start, "UpdateRGBColors");
 
   if(use_graphics==0){
     SliceBoundsSetupNoGraphics();
@@ -280,6 +284,7 @@ int SetupCase(char *filename){
   glui_defined = 1;
   InitTranslate(smokeview_bindir, tr_name);
 
+  PRINT_TIMER(timer_start, "InitTranslate");
   if(ntourinfo==0)SetupTour();
   InitRolloutList();
   GluiColorbarSetup(mainwindow_id);
@@ -294,6 +299,7 @@ int SetupCase(char *filename){
   GluiAlertSetup(mainwindow_id);
   GluiStereoSetup(mainwindow_id);
   Glui3dSmokeSetup(mainwindow_id);
+  PRINT_TIMER(timer_start, "dialogs");
 
   UpdateLights(light_position0, light_position1);
 
@@ -313,6 +319,7 @@ int SetupCase(char *filename){
   }
   // initialize info header
   initialiseInfoHeader(&titleinfo, release_title, smv_githash, fds_githash, chidfilebase, fds_title);
+  PRINT_TIMER(timer_start, "glut routines");
   return 0;
 }
 
@@ -341,11 +348,28 @@ int GetScreenHeight(void){
 }
 #endif
 
+/* ------------------ GetHomeDir ------------------------ */
+
+char *GetHomeDir(){
+  char *homedir;
+
+#ifdef WIN32
+  homedir = getenv("userprofile");
+#else
+  homedir = getenv("HOME");
+#endif
+
+  if(homedir==NULL){
+    NewMemory((void **)&homedir, 2);
+    strcpy(homedir, ".");
+  }
+  return homedir;
+}
+
 /* ------------------ InitStartupDirs ------------------------ */
 
 void InitStartupDirs(void){
   char *homedir = NULL;
-  int freehome = 0;
 
 // get smokeview bin directory from argv[0] which contains the full path of the smokeview binary
 
@@ -367,17 +391,7 @@ void InitStartupDirs(void){
 
   startup_pass = 2;
 
-#ifdef WIN32
-  homedir = getenv("userprofile");
-#else
-  homedir = getenv("HOME");
-#endif
-
-  if(homedir==NULL){
-    NewMemory((void **)&homedir, 2);
-    freehome = 1;
-    strcpy(homedir, ".");
-  }
+  homedir = GetHomeDir();
 
   NewMemory((void **)&smokeview_scratchdir, strlen(homedir)+strlen(dirseparator)+strlen(".smokeview")+strlen(dirseparator)+1);
   strcpy(smokeview_scratchdir, homedir);
@@ -395,11 +409,6 @@ void InitStartupDirs(void){
 
   if(verbose_output==1)PRINTF("Scratch directory: %s\n", smokeview_scratchdir);
   if(verbose_output==1)PRINTF("    smokeview.ini: %s\n", smokeviewini_filename);
-
-  if(freehome==1){
-  // don't free homedir if it is a pointer defined by getenv
-    FREEMEMORY(homedir);
-  }
 
 #ifdef pp_OSX
   monitor_screen_height = GetScreenHeight();

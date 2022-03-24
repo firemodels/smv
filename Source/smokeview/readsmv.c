@@ -36,98 +36,293 @@
 #define ZVENT_1ROOM 1
 #define ZVENT_2ROOM 2
 
-/* ------------------ ReadHRR ------------------------ */
 #define LENBUFFER 1024
-void ReadHRR(int flag, int *errorcode){
-  FILE *HRRFILE;
-  int ntimeshrr, nfirst;
-  char buffer[LENBUFFER];
-  float *hrrtime, *hrrval;
-  int display = 0;
-  int ntimes_saved;
 
-  *errorcode = 0;
-  if(hrrinfo!=NULL){
-    display = hrrinfo->display;
-    FREEMEMORY(hrrinfo->times_csv);
-    FREEMEMORY(hrrinfo->times);
-    FREEMEMORY(hrrinfo->hrrval_csv);
-    FREEMEMORY(hrrinfo->hrrval);
-    FREEMEMORY(hrrinfo->hrrval_orig);
-    FREEMEMORY(hrrinfo->timeslist);
+/* ------------------ GetHrrCsvCol ------------------------ */
+
+int GetHrrCsvCol(char *label){
+  int i;
+
+  if(label==NULL||strlen(label)==0||nhrrinfo==0)return -1;
+  for(i = 0; i<nhrrinfo; i++){
+    hrrdata *hi;
+
+    hi = hrrinfo+i;
+    if(hi->label.shortlabel==NULL)continue;
+    if(strcmp(hi->label.shortlabel, label)==0)return i;
   }
-  FREEMEMORY(hrrinfo);
+  return -1;
+}
+
+/* ----------------------- GetTokens ----------------------------- */
+
+int GetTokensBlank(char *buffer, char **tokens){
+
+  int nt = 0;
+  char *token;
+
+  TrimBack(buffer);
+  token = strtok(buffer, " ");
+  while(token!=NULL){
+    tokens[nt++] = token;
+    token = strtok(NULL, " ");
+  }
+  return nt;
+}
+
+/* ------------------ GetHoc ------------------------ */
+
+float GetHoc(void){
+  char outfile[256], buffer[255];
+  FILE *stream;
+
+  strcpy(outfile, fdsprefix);
+  strcat(outfile, ".out");
+  stream = fopen(outfile, "r");
+  if(stream==NULL)return -1.0;
+
+  while(!feof(stream)){
+    fgets(buffer, 255, stream);
+    if(strstr(buffer, "Heat of Combustion")!=NULL){
+      char *tokens[256], *token;
+      int ntokens;
+      float val;
+
+      fgets(buffer, 255, stream);
+      ntokens = GetTokensBlank(buffer, tokens);
+      token = tokens[ntokens-1];
+      sscanf(token, "%f", &val);
+      fclose(stream);
+      return val;
+    }
+  }
+  fclose(stream);
+  return -1.0;
+}
+
+/* ------------------ ReadHRR ------------------------ */
+
+void ReadHRR(int flag){
+  FILE *stream;
+  int nrows, ncols;
+  char **labels, **units;
+  int nlabels, nunits, nvals;
+  float *vals;
+  int *valids;
+  int i, irow;
+  char buffer[LENBUFFER], buffer_labels[LENBUFFER], buffer_units[LENBUFFER];
+
+  fuel_hoc = GetHoc();
+  if(nhrrinfo>0){
+    for(i=0;i<nhrrinfo;i++){
+      hrrdata *hi;
+
+      hi = hrrinfo + i;
+      FREEMEMORY(hi->vals);
+      FREEMEMORY(hi->vals_orig);
+    }
+    FREEMEMORY(hrrinfo);
+    nhrrinfo = 0;
+  }
+  time_col  = -1;
+  hrr_col   = -1;
+  qradi_col = -1;
   if(flag==UNLOAD)return;
 
-  NewMemory((void **)&hrrinfo, sizeof(hrrdata));
-  hrrinfo->file = hrr_csv_filename;
-  hrrinfo->times_csv = NULL;
-  hrrinfo->times = NULL;
-  hrrinfo->timeslist = NULL;
-  hrrinfo->hrrval_csv = NULL;
-  hrrinfo->hrrval = NULL;
-  hrrinfo->hrrval_orig = NULL;
-  hrrinfo->ntimes_csv = 0;
-  hrrinfo->loaded = 1;
-  hrrinfo->display = display;
-  hrrinfo->itime = 0;
+  stream = fopen(hrr_csv_filename, "r");
+  if(stream==NULL)return;
 
-  HRRFILE = fopen(hrrinfo->file, "r");
-  if(HRRFILE==NULL){
-    ReadHRR(UNLOAD, errorcode);
-    return;
+  GetRowCols(stream, &nrows, &ncols);
+  nhrrinfo = ncols;
+
+  // allocate memory
+
+  NewMemory((void **)&labels,         nhrrinfo*sizeof(char *));
+  NewMemory((void **)&units,          nhrrinfo*sizeof(char *));
+  NewMemory((void **)&hrrinfo,      2*nhrrinfo*sizeof(hrrdata));
+  NewMemory((void **)&vals,           nhrrinfo*sizeof(float));
+  NewMemory((void **)&valids,         nhrrinfo*sizeof(int));
+
+// initialize each column
+  for(i = 0; i<2*nhrrinfo; i++){
+    hrrdata *hi;
+
+    hi = hrrinfo+i;
+    NewMemory((void **)&hi->vals, (nrows-2)*sizeof(float));
+    NewMemory((void **)&hi->vals_orig, (nrows-2)*sizeof(float));
+    hi->base_col = -1;
+    hi->nvals = nrows-2;
   }
+  CheckMemory;
 
-  // size data
+// setup labels and units
 
-  ntimeshrr = 0;
-  nfirst = -1;
-  while(!feof(HRRFILE)){
-    if(fgets(buffer, LENBUFFER, HRRFILE)==NULL)break;
-    if(nfirst==-1&&strstr(buffer, ".")!=NULL)nfirst = ntimeshrr;
-    ntimeshrr++;
+  fgets(buffer_units, LENBUFFER, stream);
+  ParseCSV(buffer_units, units, &nunits);
+
+  fgets(buffer_labels, LENBUFFER, stream);
+  ParseCSV(buffer_labels, labels, &nlabels);
+  CheckMemory;
+
+  for(i = 0; i<nhrrinfo; i++){
+    hrrdata *hi;
+
+    hi = hrrinfo+i;
+    TrimBack(labels[i]);
+    TrimBack(units[i]);
+    SetLabels(&(hi->label), labels[i], labels[i], units[i]);
   }
-  ntimes_saved = ntimeshrr;
-  ntimeshrr -= nfirst;
+  CheckMemory;
 
-  rewind(HRRFILE);
-  NewMemory((void **)&hrrinfo->times_csv, ntimeshrr*sizeof(float));
-  NewMemory((void **)&hrrinfo->hrrval_csv, ntimeshrr*sizeof(float));
+// find column index of several quantities
 
-  // read data
+  time_col  = GetHrrCsvCol("Time");
+  if(time_col>=0)timeptr = hrrinfo+time_col;
 
-  hrrtime = hrrinfo->times_csv;
-  hrrval = hrrinfo->hrrval_csv;
-  ntimeshrr = 0;
+  hrr_col   = GetHrrCsvCol("HRR");
+  if(hrr_col>=0&&time_col>=0)hrrptr = hrrinfo+hrr_col;
 
-  // read no more than the number of lines found during first pass
+  qradi_col = GetHrrCsvCol("Q_RADI");
+  CheckMemory;
 
-  while(ntimeshrr<ntimes_saved&&!feof(HRRFILE)){
-    if(fgets(buffer, LENBUFFER, HRRFILE)==NULL)break;
-    if(ntimeshrr<nfirst){
-      ntimeshrr++;
-      continue;
+// define column for each MLR column by heat of combustion except for air and products
+  nhrrhcinfo = 0;
+  for(i = 0; i<nhrrinfo; i++){
+    hrrdata *hi, *hi2;
+
+    hi = hrrinfo+i;
+    if(strlen(hi->label.longlabel)>3&&strncmp(hi->label.longlabel,"MLR_",4)==0){
+      char label[256];
+
+      if(strcmp(hi->label.longlabel, "MLR_AIR")==0)continue;
+      if(strcmp(hi->label.longlabel, "MLR_PRODUCTS")==0)continue;
+
+      hi2 = hrrinfo + nhrrinfo + nhrrhcinfo;
+      hi2->base_col = i;
+      strcpy(label, "HC*");
+      strcat(label, hi->label.longlabel);
+      SetLabels(&(hi2->label), label, label, hi->label.unit);
+      nhrrhcinfo++;
     }
-    StripCommas(buffer);
-    sscanf(buffer, "%f %f", hrrtime, hrrval);
-    hrrtime++;
-    hrrval++;
-    ntimeshrr++;
   }
+  CheckMemory;
 
-  hrrinfo->ntimes_csv = ntimeshrr-nfirst;
-  if(hrrinfo->ntimes_csv>0){
-    int i;
+// read in data
+  irow = 0;
+  while(!feof(stream)){
+    if(fgets(buffer, LENBUFFER, stream)==NULL)break;
+    TrimBack(buffer);
+    if(strlen(buffer)==0)break;
+    FParseCSV(buffer, vals, valids, ncols, &nvals);
+    if(nvals<ncols)break;
+    for(i = 0; i<nhrrinfo; i++){
+      hrrdata *hi;
 
-    hrrval = hrrinfo->hrrval_csv;
-    hrr_valmin = hrrval[0];
-    hrr_valmax = hrr_valmin;
-    for(i = 1; i<hrrinfo->ntimes_csv; i++){
-      hrr_valmin = MIN(hrr_valmin, hrrval[i]);
-      hrr_valmax = MAX(hrr_valmax, hrrval[i]);
+      hi = hrrinfo+i;
+      hi->vals[irow] = 0.0;
+      if(valids[i]==1)hi->vals[irow] = vals[i];
+    }
+    irow++;
+    if(irow>=nrows)break;
+  }
+  CheckMemory;
+
+//define column of hrr/qradi
+  if(hrr_col>=0&qradi_col>=0){
+    char label[256];
+    hrrdata *hi_chirad;
+
+
+    chirad_col = nhrrinfo+nhrrhcinfo;
+    hi_chirad = hrrinfo+chirad_col;
+
+    strcpy(label, "CHIRAD");
+    SetLabels(&(hi_chirad->label), label, label, "-");
+    hi_chirad->nvals = nrows - 2;
+    nhrrhcinfo++;
+  }
+  CheckMemory;
+
+// construct column for each MLR column by heat of combustion except for air and products
+  for(i = nhrrinfo; i<nhrrinfo+nhrrhcinfo; i++){
+    hrrdata *hi;
+
+    hi = hrrinfo+i;
+    hi->nvals = nrows-2;
+    if(hi->base_col>=0){
+      hrrdata *hi_from;
+      int j;
+
+      hi_from = hrrinfo+hi->base_col;
+      memcpy(hi->vals, hi_from->vals, hi_from->nvals*sizeof(float));
+      hi->nvals = hi_from->nvals;
+      for(j=0;j<hi->nvals;j++){
+        hi->vals[j] *= fuel_hoc;
+      }
     }
   }
-  fclose(HRRFILE);
+  CheckMemory;
+
+//construct column of qradi/hrr
+  if(hrr_col>=0&qradi_col>=0){
+    hrrdata *hi_chirad, *hi_hrr, *hi_qradi;
+
+    hi_chirad = hrrinfo+chirad_col;
+    hi_hrr = hrrinfo+hrr_col;
+    hi_qradi = hrrinfo+qradi_col;
+    hi_chirad->nvals = MIN(hi_qradi->nvals, hi_hrr->nvals);
+    for(i=0;i<hi_chirad->nvals;i++){
+      if(hi_hrr->vals[i]!=0.0){
+        hi_chirad->vals[i] = CLAMP(-hi_qradi->vals[i]/hi_hrr->vals[i],0.0,1.0);
+      }
+      else{
+        hi_chirad->vals[i] = 0.0;
+      }
+    }
+  }
+  CheckMemory;
+
+//compute vals into vals_orig
+  for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
+    hrrdata *hi;
+
+    hi = hrrinfo+i;
+    memcpy(hi->vals_orig, hi->vals, hi->nvals*sizeof(float));
+  }
+
+//compute min and max of each column
+  for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
+    hrrdata *hi;
+    float valmin, valmax;
+    int j;
+
+    hi = hrrinfo+i;
+    hi->nvals = irow;
+    valmin = hi->vals[0];
+    valmax = valmin;
+    for(j = 1; j<hi->nvals; j++){
+      valmin = MIN(valmin, hi->vals[j]);
+      valmax = MAX(valmax, hi->vals[j]);
+    }
+    hi->valmin = valmin;
+    hi->valmax = valmax;
+  }
+  CheckMemory;
+
+// free arrays that were not used
+  for(i = nhrrinfo+nhrrhcinfo; i<2*nhrrinfo; i++){
+    hrrdata *hi;
+
+    hi = hrrinfo+i;
+    FREEMEMORY(hi->vals);
+    FREEMEMORY(hi->vals_orig);
+  }
+  CheckMemory;
+  FREEMEMORY(units);
+  FREEMEMORY(labels);
+  FREEMEMORY(vals);
+  FREEMEMORY(vals);
+  fclose(stream);
 }
 
 /* ------------------ InitProp ------------------------ */
@@ -1539,7 +1734,7 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   devicei->params=NULL;
   devicei->times=NULL;
   devicei->vals=NULL;
-  devicei->vals = NULL;
+  devicei->vals_orig = NULL;
   devicei->update_avg = 0;
   devicei->target_index = -1;
   devicei->global_valmin = 1.0;
@@ -1870,11 +2065,8 @@ int IsTerrainTexture(texturedata *texti){
 void InitTextures0(void){
   // get texture filename from SURF and device info
   int i;
-  float texture_timer;
 
   INIT_PRINT_TIMER(texture_timer);
-  PRINT_TIMER(texture_timer, "null");
-
   ntextureinfo = 0;
   for(i=0;i<nsurfinfo;i++){
     surfdata *surfi;
@@ -2142,12 +2334,7 @@ void InitTextures0(void){
   /* ------------------ InitTextures ------------------------ */
 
 void InitTextures(int use_graphics_arg){
-  float total_texture_time;
-
   INIT_PRINT_TIMER(total_texture_time);
-  PRINT_TIMER(total_texture_time, "null");
-
-
   UpdateDeviceTextures();
   if(nsurfinfo>0||ndevice_texture_list>0){
     if(NewMemory((void **)&textureinfo, (nsurfinfo+ndevice_texture_list+nterrain_textures)*sizeof(texturedata))==0)return;
@@ -5067,6 +5254,10 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 #ifdef pp_SLICETHREAD
   sd->loadstatus = FILE_UNLOADED;
 #endif
+  sd->vals2d.vals      = NULL;
+  sd->vals2d.vals_orig = NULL;
+  sd->vals2d.times     = NULL;
+  sd->vals2d.nvals     = 0;
   sd->geom_offsets = NULL;
   sd->slcf_index = slcf_index;
   sd->finalize = 1;
@@ -5727,6 +5918,134 @@ void UpdateObstBoundingBox(float *XB){
   }
 }
 
+#ifdef pp_CACHE_FILEBOUNDS
+/* ------------------ GetSliceInfoIndex ------------------------ */
+
+char *GetSliceInfoFileptr(char *file){
+  int i;
+
+  for(i=0;i<nsliceinfo;i++){
+    slicedata *slicei;
+
+    slicei = sliceinfo + i;
+    if(strcmp(slicei->file, file)==0)return slicei->file;
+  }
+  return NULL;
+}
+
+/* ------------------ GetPatchInfoIndex ------------------------ */
+
+char *GetPatchInfoFileptr(char *file){
+  int i;
+
+  for(i=0;i<npatchinfo;i++){
+    patchdata *patchi;
+
+    patchi = patchinfo + i;
+    if(strcmp(patchi->file, file)==0)return patchi->file;
+  }
+  return NULL;
+}
+
+/* ------------------ UpdateFileBoundList ------------------------ */
+
+void UpdateFileBoundList(void){
+  int call_again=0;
+
+  if(nsliceinfo>0){
+    int i;
+    FILE *stream;
+
+    stream = fopen(bnds_slice_filename, "r");
+    if(stream!=NULL){
+      nsliceboundfileinfo = 0;
+      for(;;){
+        char buffer[255];
+
+        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
+        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
+        nsliceboundfileinfo++;
+      }
+      NewMemory((void **)&sliceboundfileinfo, nsliceboundfileinfo*sizeof(boundfiledata));
+      rewind(stream);
+
+      for(i=0;i<nsliceboundfileinfo;i++){
+        sliceboundfileinfo[i].file   = NULL;
+        sliceboundfileinfo[i].valmin = 1.0;
+        sliceboundfileinfo[i].valmax = 0.0;
+      }
+      for(i=0;i<nsliceboundfileinfo;i++){
+        char buffer[255];
+        float valmin, valmax;
+
+        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
+        sliceboundfileinfo[i].file=GetSliceInfoFileptr(TrimFrontBack(buffer));
+
+        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
+        sscanf(buffer, "%f %f", &valmin, &valmax);
+        sliceboundfileinfo[i].valmin = valmin;
+        sliceboundfileinfo[i].valmax = valmax;
+      }
+      fclose(stream);
+    }
+    else{
+      nsliceboundfileinfo = nsliceinfo;
+      NewMemory((void **)&sliceboundfileinfo, nsliceboundfileinfo*sizeof(boundfiledata));
+      void GetGlobalSliceBounds(void);
+      GetGlobalSliceBounds();
+      call_again = 1;
+    }
+  }
+  if(npatchinfo>0){
+    int i;
+    FILE *stream;
+
+    stream = fopen(bnds_patch_filename, "r");
+    if(stream!=NULL){
+      npatchboundfileinfo = 0;
+      for(;;){
+        char buffer[255];
+
+        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
+        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
+        npatchboundfileinfo++;
+      }
+      NewMemory((void **)&patchboundfileinfo, npatchboundfileinfo*sizeof(boundfiledata));
+      rewind(stream);
+
+      for(i=0;i<npatchboundfileinfo;i++){
+        patchboundfileinfo[i].file   = NULL;
+        patchboundfileinfo[i].valmin = 1.0;
+        patchboundfileinfo[i].valmax = 0.0;
+      }
+      for(i=0;i<npatchboundfileinfo;i++){
+        char buffer[255];
+        float valmin, valmax;
+
+        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
+        patchboundfileinfo[i].file=GetPatchInfoFileptr(TrimFrontBack(buffer));
+
+        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
+        sscanf(buffer, "%f %f", &valmin, &valmax);
+        patchboundfileinfo[i].valmin = valmin;
+        patchboundfileinfo[i].valmax = valmax;
+      }
+      fclose(stream);
+    }
+    else{
+      npatchboundfileinfo = npatchinfo;
+      NewMemory((void **)&patchboundfileinfo, npatchboundfileinfo*sizeof(boundfiledata));
+      void GetGlobalPatchBounds(void);
+      GetGlobalPatchBounds();
+      call_again = 1;
+    }
+  }
+  if(call_again == 1){
+    UpdateFileBoundList();
+  }
+}
+#endif
+
 /* ------------------ ReadSMV ------------------------ */
 
 int ReadSMV(bufferstreamdata *stream){
@@ -5738,7 +6057,6 @@ int ReadSMV(bufferstreamdata *stream){
   devicedata *devicecopy;
   int do_pass4=0, do_pass5=0;
   int roomdefined=0;
-  int errorcode;
   int noGRIDpresent=1,startpass;
   slicedata *sliceinfo_copy=NULL;
   int nisos_per_mesh=1;
@@ -5757,6 +6075,7 @@ int ReadSMV(bufferstreamdata *stream){
   char buffer[256], buffers[6][256];
   patchdata *patchgeom;
 
+  INIT_PRINT_TIMER(timer_readsmv);
   START_TIMER(processing_time);
 
   START_TIMER(getfilelist_time);
@@ -6053,6 +6372,7 @@ int ReadSMV(bufferstreamdata *stream){
   if(cadgeominfo!=NULL)FreeCADInfo();
 
   STOP_TIMER(pass0_time );
+  PRINT_TIMER(timer_readsmv, "readsmv setup");
 
 /*
    ************************************************************************
@@ -6068,7 +6388,7 @@ int ReadSMV(bufferstreamdata *stream){
   ntc_total=0;
   nspr_total=0;
   nheat_total=0;
-  if(verbose_output==1)PRINTF("%s","  pass 1\n");
+  PRINTF("%s","  pass 1\n");
   for(;;){
     if(FEOF(stream)!=0){
       BREAK;
@@ -6543,9 +6863,7 @@ int ReadSMV(bufferstreamdata *stream){
     }
 
   }
-
   STOP_TIMER(pass1_time);
-
 
 /*
    ************************************************************************
@@ -6831,6 +7149,7 @@ int ReadSMV(bufferstreamdata *stream){
     InitDefaultProp();
     npropinfo=1;
   }
+  PRINT_TIMER(timer_readsmv, "pass 1");
 
 /*
    ************************************************************************
@@ -6848,7 +7167,7 @@ int ReadSMV(bufferstreamdata *stream){
   if(noffset==0)ioffset=1;
 
   REWIND(stream);
-  if(verbose_output==1)PRINTF("%s","  pass 2\n");
+  PRINTF("%s","  pass 2\n");
   for(;;){
     if(FEOF(stream)!=0){
       BREAK;
@@ -8222,7 +8541,8 @@ int ReadSMV(bufferstreamdata *stream){
   }
   ndeviceinfo=0;
   REWIND(stream);
-  if(verbose_output==1)PRINTF("%s","  pass 3\n");
+  PRINTF("%s","  pass 3\n");
+  PRINT_TIMER(timer_readsmv, "pass 2");
 
   /*
    ************************************************************************
@@ -8694,6 +9014,7 @@ int ReadSMV(bufferstreamdata *stream){
   ioffset=0;
   npartclassinfo=0;
   if(noffset==0)ioffset=1;
+  PRINT_TIMER(timer_readsmv, "pass 3");
 
 /*
    ************************************************************************
@@ -8702,7 +9023,7 @@ int ReadSMV(bufferstreamdata *stream){
  */
 
   REWIND(stream);
-  if(verbose_output==1)PRINTF("%s","  pass 4\n");
+  PRINTF("%s","  pass 4\n");
   startpass=1;
   CheckMemory;
 
@@ -10086,6 +10407,7 @@ typedef struct {
     nOBST=0;
     iobst=0;
   }
+  PRINT_TIMER(timer_readsmv, "pass 4");
 
   /*
    ************************************************************************
@@ -10096,7 +10418,7 @@ typedef struct {
   REWIND(stream);
   if(do_pass4==1||(auto_terrain==1&&manual_terrain==0)){
     do_pass5 = 1;
-    if(verbose_output==1)PRINTF("%s","  pass 5\n");
+    PRINTF("%s","  pass 5\n");
   }
 
   while(((auto_terrain==1&&manual_terrain==0)||do_pass4==1)){
@@ -10217,6 +10539,7 @@ typedef struct {
       continue;
     }
   }
+  PRINT_TIMER(timer_readsmv, "pass 5");
   PrintMemoryInfo;
   if(do_pass5==1){
     STOP_TIMER(pass5_time);
@@ -10231,6 +10554,7 @@ typedef struct {
    ************************************************************************
  */
 
+  INIT_PRINT_TIMER(total_wrapup_time);
   if(update_filesizes==1){
     GetFileSizes();
     SMV_EXIT(0);
@@ -10239,8 +10563,7 @@ typedef struct {
   STOP_TIMER(processing_time);
   START_TIMER(wrapup_time);
 
-  if(verbose_output==1)PRINTF("  wrapping up\n");
-  float timer_readsmv;
+  PRINTF("  wrapping up\n");
 
   have_obsts = 0;
   for(i=0;i<nmeshes;i++){
@@ -10253,7 +10576,6 @@ typedef struct {
     }
   }
 
-  INIT_PRINT_TIMER(timer_readsmv);
   CheckMemory;
   UpdateIsoColors();
   CheckMemory;
@@ -10270,7 +10592,7 @@ typedef struct {
 
 // update csv data
 
-  if(hrr_csv_filename!=NULL)ReadHRR(LOAD, &errorcode);
+  if(hrr_csv_filename!=NULL)ReadHRR(LOAD);
   ReadDeviceData(NULL,CSV_FDS,UNLOAD);
   ReadDeviceData(NULL,CSV_EXP,UNLOAD);
   for(i=0;i<ncsvinfo;i++){
@@ -10430,6 +10752,10 @@ typedef struct {
 
   glui_rotation_index = ROTATE_ABOUT_FDS_CENTER;
 
+#ifdef pp_CACHE_FILEBOUNDS
+  UpdateFileBoundList();
+#endif
+  PRINT_TIMER(timer_readsmv, "UpdateFileBoundList");
   UpdateBoundInfo();
 
   UpdateObjectUsed();
@@ -10437,14 +10763,19 @@ typedef struct {
   // close .smv file
 
   UpdateSelectFaces();
+  PRINT_TIMER(timer_readsmv, "UpdateSelectFaces");
   UpdateSliceBoundIndexes();
+  PRINT_TIMER(timer_readsmv, "UpdateSliceBoundIndexes");
   UpdateSliceBoundLabels();
+  PRINT_TIMER(timer_readsmv, "UpdateSliceBoundLabels");
   UpdateIsoTypes();
+  PRINT_TIMER(timer_readsmv, "UpdateIsoTypes");
   UpdateBoundaryTypes();
+  PRINT_TIMER(timer_readsmv, "UpdateBoundaryTypes");
 
   InitNabors();
 
-  PRINT_TIMER(timer_readsmv, "update bound info");
+  PRINT_TIMER(timer_readsmv, "update nabors");
   UpdateTerrain(1); // xxslow
   UpdateTerrainColors();
   PRINT_TIMER(timer_readsmv, "UpdateTerrain");
@@ -10486,14 +10817,15 @@ typedef struct {
   InitVolRender();
   InitVolRenderSurface(FIRSTCALL);
   radius_windrose = 0.2*xyzmaxdiff;
+  PRINT_TIMER(timer_readsmv, "InitVolRender");
 
   ClassifyAllGeomMT();
 
   PRINT_TIMER(timer_readsmv, "null");
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
-  PRINT_TIMER(timer_readsmv, "UpdateTriangles");
   GetFaceInfo();
   GetBoxGeomCorners();
+  PRINT_TIMER(timer_readsmv, "update trianglesfaces");
 
 #ifdef pp_WUI_VAO
   have_terrain_vao = 0;
@@ -10515,10 +10847,8 @@ typedef struct {
   SetupMeshWalls();
   update_windrose = 1;
 
-  if(verbose_output==1){
-    PRINTF("%s", _("complete"));
-    PRINTF("\n\n");
-  }
+  PRINTF("%s", _("complete"));
+  PRINTF("\n\n");
   PrintMemoryInfo;
 
   STOP_TIMER(wrapup_time);
@@ -10543,6 +10873,7 @@ typedef struct {
   }
   STOP_TIMER(timer_startup);
   START_TIMER(timer_render);
+  PRINT_TIMER(total_wrapup_time, "total wrapup time");
   return 0;
 }
 
@@ -10959,11 +11290,16 @@ int ReadIni2(char *inifile, int localfile){
       update_glui_devices = 1;
       continue;
     }
+    if(Match(buffer, "SHOWSLICEPLOT")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %f %f %f %f %i", slice_xyz, slice_xyz+1, slice_xyz+2, &plot2d_size_factor, &vis_slice_plot);
+      continue;
+    }
     if(Match(buffer, "SHOWDEVICEPLOTS")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %f %f %f %f %f %f",
-             &showdevice_plot, &showdevice_labels, &device_plot_factor, &device_plot_line_width, &device_plot_point_size,
-             device_xyz_offset, device_xyz_offset+1, device_xyz_offset+2
+             &vis_device_plot, &showd_plot2d_labels, &plot2d_size_factor, &plot2d_line_width, &plot2d_point_size,
+             plot2d_xyz_offset, plot2d_xyz_offset+1, plot2d_xyz_offset+2
       );
       update_glui_devices = 1;
       continue;
@@ -11494,9 +11830,8 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWHRRLABEL") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &visHRRlabel);
-      ONEORZERO(visHRRlabel);
-      UpdateHRRInfo(visHRRlabel);
+      sscanf(buffer, "%i", &vis_hrr_label);
+      ONEORZERO(vis_hrr_label);
       continue;
     }
     if(Match(buffer, "SHOWHRRCUTOFF") == 1){
@@ -12099,6 +12434,11 @@ int ReadIni2(char *inifile, int localfile){
       tload_zipskip = tload_zipstep - 1;
       continue;
     }
+    if(Match(buffer, "SMOKELOAD")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %i", &use_smoke_thread, &nsmoke_threads);
+      continue;
+    }
     if(Match(buffer, "LOADINC") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i", &load_incremental);
@@ -12367,7 +12707,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWHRRLABEL") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i ", &visHRRlabel);
+      sscanf(buffer, "%i ", &vis_hrr_label);
       continue;
     }
     if(Match(buffer, "RENDERFILETYPE") == 1){
@@ -14282,13 +14622,15 @@ void WriteIniLocal(FILE *fileout){
   }
   fprintf(fileout, "SHOWDEVICEPLOTS\n");
   fprintf(fileout, " %i %i %f %f %f %f %f %f\n",
-          showdevice_plot, showdevice_labels, device_plot_factor, device_plot_line_width, device_plot_point_size,
-          device_xyz_offset[0], device_xyz_offset[1], device_xyz_offset[2]
+          vis_device_plot, showd_plot2d_labels, plot2d_size_factor, plot2d_line_width, plot2d_point_size,
+          plot2d_xyz_offset[0], plot2d_xyz_offset[1], plot2d_xyz_offset[2]
   );
   fprintf(fileout, "SHOWDEVICEVALS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n", showdevice_val, showvdevice_val, devicetypes_index, colordevice_val, vectortype, viswindrose, showdevice_type,showdevice_unit,showdevice_id);
   fprintf(fileout, "SHOWMISSINGOBJECTS\n");
   fprintf(fileout, " %i\n", show_missing_objects);
+  fprintf(fileout, "SHOWSLICEPLOT\n");
+  fprintf(fileout, " %f %f %f %f %i\n", slice_xyz[0], slice_xyz[1], slice_xyz[2], plot2d_size_factor, vis_slice_plot);
   fprintf(fileout, "SMOKE3DCUTOFFS\n");
   fprintf(fileout, " %f %f\n", load_3dsmoke_cutoff, load_hrrpuv_cutoff);
   for(i = ntickinfo_smv; i < ntickinfo; i++){
@@ -14821,6 +15163,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", show_fed_area);
   fprintf(fileout, "SLICEAVERAGE\n");
   fprintf(fileout, " %i %f %i\n", slice_average_flag, slice_average_interval, vis_slice_average);
+  fprintf(fileout, "SMOKELOAD\n");
+  fprintf(fileout, " %i %i\n", use_smoke_thread, nsmoke_threads);
   fprintf(fileout, "SLICEDATAOUT\n");
   fprintf(fileout, " %i \n", output_slicedata);
   fprintf(fileout, "USER_ROTATE\n");
@@ -14985,7 +15329,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "SHOWHMSTIMELABEL\n");
   fprintf(fileout, " %i\n", vishmsTimelabel);
   fprintf(fileout, "SHOWHRRLABEL\n");
-  fprintf(fileout, " %i\n", visHRRlabel);
+  fprintf(fileout, " %i\n", vis_hrr_label);
   fprintf(fileout, "SHOWISO\n");
   fprintf(fileout, " %i\n", visAIso);
   fprintf(fileout, "SHOWISONORMALS\n");

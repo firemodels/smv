@@ -260,7 +260,7 @@ void GetViewportInfo(void){
 
   doit=0;
   if(showtime==1){
-    if(visTimelabel == 1 || visFramelabel == 1 || visHRRlabel == 1 || visTimebar == 1)doit=1;
+    if(visTimelabel == 1 || visFramelabel == 1 || vis_hrr_label == 1 || visTimebar == 1)doit=1;
     if(doit==0&&show_firecutoff==1&&current_mesh!=NULL){
       if(hrrpuv_loaded==1||temp_loaded==1)doit=1;
     }
@@ -287,7 +287,7 @@ void GetViewportInfo(void){
 #endif
     VP_timebar.width  = screenWidth-VP_info.width-2*titlesafe_offset;
     temp_height = text_height + v_space;
-    if(visFramelabel==1||visHRRlabel==1||visAvailmemory==1)temp_height += (text_height+v_space);
+    if(visFramelabel==1||vis_hrr_label==1||visAvailmemory==1)temp_height += (text_height+v_space);
     VP_timebar.height = MAX(timebar_height + 2*v_space, temp_height);
     if(show_horizontal_colorbar==1)VP_timebar.height += hbar_height;
   }
@@ -880,7 +880,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
   timebar_right_width = MAX(MAX(framerate_width, memavail_width), memusage_width);
   timebar_right_width = MAX(timebar_right_width, delta);
 
-  if(visHRRlabel==1)hrr_width = GetStringWidth("HRR: 1000.0kW");
+  if(vis_hrr_label==1)hrr_width = GetStringWidth("HRR: 1000.0kW");
   if(visFrameTimelabel==1){
     if(visFramelabel==1)frame_width = GetStringWidth("Frame: 9999");
     if(visTimelabel==1)time_width = GetStringWidth("Time: 1234.11");
@@ -904,15 +904,15 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
     DrawHorizontalColorbars();
   }
 
-  if((visTimelabel == 1 || visFramelabel == 1 || visHRRlabel == 1 || visTimebar == 1) && showtime==1 && geom_bounding_box_mousedown==0){
+  if((visTimelabel == 1 || visFramelabel == 1 || vis_hrr_label == 1 || visTimebar == 1) && showtime==1 && geom_bounding_box_mousedown==0){
     if(visTimelabel==1){
       OutputText(VP_timebar.left,v_space, timelabel);
     }
-    if(visFramelabel==1&&(visHRRlabel==0||hrrinfo==NULL)){
+    if(visFramelabel==1&&(vis_hrr_label==0||hrrptr==NULL)){
       OutputText(VP_timebar.left,v_space+VP_timebar.text_height+v_space, framelabel);
     }
-    if(visHRRlabel==1&&hrrinfo!=NULL){
-      OutputText(VP_timebar.left,v_space+VP_timebar.text_height+v_space, hrrinfo->hrrlabel);
+    if(vis_hrr_label==1&&hrrptr!=NULL){
+      OutputText(VP_timebar.left,v_space+VP_timebar.text_height+v_space, hrrlabel);
     }
     if(visTimebar==1){
       int timebar_height;

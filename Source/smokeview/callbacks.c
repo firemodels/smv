@@ -1677,16 +1677,16 @@ void Keyboard(unsigned char key, int flag){
 #define DEVYES_HRRNO  2
 #define DEVNO_HRRYES  3
     case 'A':
-      if(hrrinfo==NULL&&ndeviceinfo==0)break;
-      if(hrrinfo!=NULL&&ndeviceinfo>0){
+      if(hrrptr==NULL&&ndeviceinfo==0)break;
+      if(hrrptr!=NULL&&ndeviceinfo>0){
         plot_option++;
         if(plot_option>3)plot_option = 0;
       }
       else{
         int plot_option_temp = DEVNO_HRRNO;
 
-        if(ndeviceinfo==0&&hrrinfo!=NULL&&plot_option==DEVNO_HRRNO)plot_option_temp = DEVNO_HRRYES;
-        if(ndeviceinfo>0&&hrrinfo==NULL&&plot_option==DEVNO_HRRNO)plot_option_temp = DEVYES_HRRNO;
+        if(ndeviceinfo==0&&hrrptr!=NULL&&plot_option==DEVNO_HRRNO)plot_option_temp = DEVNO_HRRYES;
+        if(ndeviceinfo>0&&hrrptr==NULL&&plot_option==DEVNO_HRRNO)plot_option_temp = DEVYES_HRRNO;
         plot_option = plot_option_temp;
       }
       // 0 - device no, hrr no
@@ -1697,12 +1697,12 @@ void Keyboard(unsigned char key, int flag){
       switch (plot_option){
         case DEVNO_HRRNO: // device plots off
         case DEVNO_HRRYES:
-          showdevice_plot = DEVICE_PLOT_SHOW_ALL;
+          vis_device_plot = DEVICE_PLOT_SHOW_ALL;
           ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
           break;
         case DEVYES_HRRYES: // device plots on
         case DEVYES_HRRNO:
-          showdevice_plot = 0;
+          vis_device_plot = 0;
           ShowObjectsMenu(OBJECT_PLOT_SHOW_ALL);
           break;
 	default:
@@ -1713,12 +1713,12 @@ void Keyboard(unsigned char key, int flag){
       switch(plot_option){
         case DEVNO_HRRNO: // hrr plots off
         case DEVYES_HRRNO:
-          show_hrrpuv_plot = 1;
+          vis_hrr_plot = 1;
           ShowObjectsMenu(PLOT_HRRPUV);
           break;
         case DEVYES_HRRYES: // hrr plots on
         case DEVNO_HRRYES:
-          show_hrrpuv_plot = 0;
+          vis_hrr_plot = 0;
           ShowObjectsMenu(PLOT_HRRPUV);
           break;
 	default:

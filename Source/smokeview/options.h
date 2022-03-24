@@ -17,7 +17,10 @@
 
 //*** options: all platforms
 
-#define pp_SMOKEBUFFER       // read 3d smoke files using memory bufffer i/o routines
+//#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds
+#define pp_THREADBUFFER
+//#define pp_SMOKEBUFFERPTR     // read 3d smoke files using memory buffe pointers
+#define pp_SMOKEBUFFER       // read 3d smoke files using memory buffer i/o routines
 //#define pp_GEOM_DEBUG        // debug out in geometry routines
 //#define pp_CRASH_TEST         // test detection of division by zero or use of undefined pointer
 //#define pp_SHOW_BOUND_MIRROR  // add menu for showing boundary files on mirror/open vents
@@ -29,7 +32,6 @@
 //#define pp_UPDATE_FILELOAD  // updates fileload variables when a file has been loaded or unloaded
 //#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
 //#define pp_LOAD_NEWDATA     // add button for loading new data
-//#define pp_TIMEBAR_DIGITS   // add widget for setting the number of time bar digits
 //#define pp_TERRAIN_UPDATE     // add button to update terrain buttons
 
 //#define pp_WUI_VAO            // use opengl vao objects for drawing terrain

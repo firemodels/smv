@@ -3324,7 +3324,7 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
   glTranslatef(-xbar0, -ybar0, -zbar0);
-  glTranslatef(device_xyz_offset[0], device_xyz_offset[1], device_xyz_offset[2]);
+  glTranslatef(plot2d_xyz_offset[0], plot2d_xyz_offset[1], plot2d_xyz_offset[2]);
 
   glTranslatef(origin[0], origin[1], origin[2]);
 
@@ -3338,7 +3338,7 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
   glScalef(xscale, 1.0, zscale);
   glTranslatef(-xmin, 0.0, -zmin);
   glColor3fv(foregroundcolor);
-  glLineWidth(device_plot_line_width);
+  glLineWidth(plot2d_line_width);
   glBegin(GL_LINES);
   for(i = 0; i<n-1; i++){
     glVertex3f(x[i],   0.0, z[i]);
@@ -3368,7 +3368,7 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
 
   float dfont = (float)GetFontHeight()/((float)screenHeight*zscale*factor*SCALE2SMV(1.0));
 
-  if(option == PLOT_ALL && showdevice_labels==1){
+  if(option == PLOT_ALL && showd_plot2d_labels==1){
     float zmid;
 
     zmid = (zmax-2.0*dfont+zmin)/2.0;
@@ -3381,7 +3381,7 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
 
   if(valid==1){
     glColor3f(1.0,0.0,0.0);
-    glPointSize(device_plot_point_size);
+    glPointSize(plot2d_point_size);
     glBegin(GL_POINTS);
     glVertex3f(highlight_x, 0.0, highlight_y);
     glEnd();
@@ -3390,9 +3390,9 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
   glPopMatrix();
 }
 
-/* ------------------ DeviceTimeAverage ------------------------ */
+/* ------------------ TimeAveragePlot2DData ------------------------ */
 
-void TimeAverageDeviceData(float *times, float *vals, float *vals_avg, int nvals){
+void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals){
   int i;
 
   if(nvals<=0)return;
@@ -3452,21 +3452,48 @@ void TimeAverageDeviceData(float *times, float *vals, float *vals_avg, int nvals
   }
 }
 
+/* ----------------------- DrawHRRPlot ----------------------------- */
+
+void DrawHRRPlot(void){
+  if(vis_hrr_plot==1&&global_times!=NULL){
+    float xyz[] = {0.0,0.0,0.0};
+    float highlight_time = 0.0, highlight_val = 0.0;
+    int valid = 1;
+    hrrdata *hi, *hitime;
+    int itime;
+
+    hi     = hrrinfo+glui_hrr;
+    hitime = hrrinfo+time_col;
+
+    if(update_avg==1){
+      TimeAveragePlot2DData(hitime->vals, hi->vals_orig, hi->vals, hi->nvals);
+      update_avg = 0;
+    }
+    highlight_time = global_times[itimes];
+    itime = GetInterval(highlight_time, hitime->vals, hitime->nvals);
+    itime = CLAMP(itime, 0, hitime->nvals-1);
+
+    highlight_val = hi->vals[itime];
+    DrawPlot(PLOT_ALL, xyz, plot2d_size_factor, hitime->vals, hi->vals, hi->nvals,
+             highlight_time, highlight_val, valid, hi->valmin, hi->valmax, hi->label.longlabel, hi->label.unit);
+  }
+}
+
 /* ----------------------- DrawDevicePlots ----------------------------- */
 
 void DrawDevicePlots(void){
   int i;
 
-  if(showdevice_plot!=DEVICE_PLOT_HIDDEN){
+  if(vis_device_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;
 
       devicei = deviceinfo+i;
-      if(showdevice_plot==DEVICE_PLOT_SHOW_SELECTED&&devicei->selected==0)continue;
+      if(vis_device_plot==DEVICE_PLOT_SHOW_SELECTED&&devicei->selected==0)continue;
       if(devicei->times==NULL||devicei->vals==NULL)continue;
       if(devicei->update_avg==1){
         devicei->update_avg = 0;
-        TimeAverageDeviceData(devicei->times, devicei->vals_orig, devicei->vals, devicei->nvals);
+        TimeAveragePlot2DData(devicei->times, devicei->vals_orig, devicei->vals, devicei->nvals);
       }
       if(devicei->nvals>1&&devicei->type2==devicetypes_index){
         int valid;
@@ -3480,28 +3507,12 @@ void DrawDevicePlots(void){
         if(devicei->global_valmin>devicei->global_valmax){
           GetGlobalDeviceBounds(devicei->type2);
         }
-        DrawPlot(PLOT_ALL, devicei->xyz, device_plot_factor, devicei->times, devicei->vals, devicei->nvals,
+        DrawPlot(PLOT_ALL, devicei->xyz, plot2d_size_factor, devicei->times, devicei->vals, devicei->nvals,
                  highlight_time, highlight_val, valid, devicei->global_valmin, devicei->global_valmax,
                  devicei->quantity, devicei->unit
         );
       }
     }
-  }
-  if(show_hrrpuv_plot==1&&hrrinfo!=NULL){
-    float xyz[] = {0.0,0.0,0.0};
-    char quantity[] = "HRR", unit[] = "kW";
-    int valid = 1;
-    float highlight_time = 0.0, highlight_val = 0.0;
-
-    highlight_time = global_times[itimes];
-    highlight_val = hrrinfo->hrrval[hrrinfo->itime];
-
-    if(hrrinfo->update_avg==1){
-      hrrinfo->update_avg = 0;
-      TimeAverageDeviceData(hrrinfo->times, hrrinfo->hrrval_orig, hrrinfo->hrrval, hrrinfo->ntimes);
-    }
-    DrawPlot(PLOT_ALL, xyz, device_plot_factor, hrrinfo->times, hrrinfo->hrrval, hrrinfo->ntimes,
-             highlight_time, highlight_val, valid, hrr_valmin, hrr_valmax, quantity, unit);
   }
 }
 
@@ -3538,7 +3549,7 @@ void DrawTreePlot(int first, int n){
     if(devicei->global_valmin>devicei->global_valmax){
       GetGlobalDeviceBounds(devicei->type2);
     }
-    DrawPlot(option, xyz, device_plot_factor, devicei->times, devicei->vals, devicei->nvals,
+    DrawPlot(option, xyz, plot2d_size_factor, devicei->times, devicei->vals, devicei->nvals,
              highlight_time, highlight_val, valid, devicei->global_valmin, devicei->global_valmax,
              devicei->quantity, devicei->unit
     );

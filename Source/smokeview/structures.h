@@ -157,6 +157,15 @@ typedef struct _boundata {
   int defined;
 } bounddata;
 
+/* --------------------------  boundfiledata ------------------------------------ */
+
+#ifdef pp_CACHE_FILEBOUNDS
+typedef struct _boundfiledata {
+  char *file;
+  float valmin, valmax;
+} boundfiledata;
+#endif
+
 /* --------------------------  propdata ------------------------------------ */
 #define PROPVARMAX 100
 typedef struct _propdata {
@@ -962,7 +971,16 @@ typedef struct _device {
   struct _vdevicedata *vdevice;
   int type, is_beam;
   int selected;
+  int valid;
 } devicedata;
+
+/* --------------------------  hrrdata ------------------------------------ */
+
+typedef struct _hrrdata {
+  float *vals, *vals_orig, valmin, valmax;
+  int nvals, base_col;
+  flowlabels label;
+} hrrdata;
 
 /* --------------------------  windrosedata ------------------------------------ */
 
@@ -1181,17 +1199,6 @@ typedef struct _menudata {
   char label[256];
 } menudata;
 
-/* --------------------------  hrrdata ------------------------------------ */
-
-typedef struct _hrrdata {
-  char *file, hrrlabel[256];
-  int loaded, display, *timeslist, itime;
-  int update_avg;
-  float *times_csv, *times, *hrrval_csv, *hrrval;
-  float *hrrval_orig;
-  int ntimes, ntimes_csv;
-} hrrdata;
-
 /* --------------------------  slicedata ------------------------------------ */
 
 typedef struct _slicedata {
@@ -1271,6 +1278,7 @@ typedef struct _slicedata {
   struct _patchdata *patchgeom;
   FILE_SIZE file_size;
   int *geom_offsets;
+  devicedata vals2d;
 #ifdef pp_SLICETHREAD
   int loadstatus;
 #endif
@@ -1333,6 +1341,7 @@ typedef struct _boundsdata {
   float dlg_global_valmin, dlg_global_valmax;
   float line_contour_min;
   float line_contour_max;
+  float dev_min, dev_max;
   int line_contour_num;
   char  colorlabels[12][11];
   float colorvalues[12];

@@ -4993,6 +4993,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     int set_valmin, set_valmax;
 
     update_slicefile_bounds = 1; // temporary fix to make sure bounds are always up to date
+    update_slice2device = 1;
     if(update_slicefile_bounds==1){
       update_slicefile_bounds = 0;
       GetGlobalSliceBounds();
@@ -7413,12 +7414,221 @@ void SortLoadedSliceList(void){
   }
 }
 
+/* ------------------ GetSliceOffset ------------------------ */
+
+int GetSliceOffset(slicedata *sd, float *xyz, float *device_xyz){
+  meshdata *slicemesh;
+  float *xplt, *yplt, *zplt;
+  int plotx, ploty, plotz;
+  int i, j, k, ii;
+  int ibar, jbar, kbar;
+  int nx, ny, nz;
+  int offset;
+
+  memcpy(device_xyz, xyz, 3*sizeof(float));
+  slicemesh = meshinfo+sd->blocknumber;
+  xplt = slicemesh->xplt_orig;
+  yplt = slicemesh->yplt_orig;
+  zplt = slicemesh->zplt_orig;
+  plotx = sd->is1;
+  ploty = sd->js1;
+  plotz = sd->ks1;
+  ibar = slicemesh->ibar;
+  jbar = slicemesh->jbar;
+  kbar = slicemesh->kbar;
+  nx = ibar + 1;
+  ny = jbar + 1;
+  nz = kbar + 1;
+  i=0;
+  j=0;
+  k=0;
+  for(ii=0;ii<nx;ii++){
+    if(xplt[ii]<=xyz[0]&&xyz[0]<=xplt[ii+1]){
+      i=ii;
+      break;
+    }
+  }
+  for(ii=0;ii<ny;ii++){
+    if(yplt[ii]<=xyz[1]&&xyz[1]<=yplt[ii+1]){
+      j=ii;
+      break;
+    }
+  }
+  for(ii=0;ii<nz;ii++){
+    if(zplt[ii]<=xyz[2]&&xyz[2]<=zplt[ii+1]){
+      k=ii;
+      break;
+    }
+  }
+  if(sd->volslice == 0 && sd->idir == XDIR){
+    offset = IJK_SLICE(plotx, j,  k);
+    device_xyz[0] = xplt[plotx];
+  }
+  if(sd->volslice == 0 && sd->idir == YDIR){
+    offset = IJK_SLICE(i,  ploty, k);
+    device_xyz[1] = yplt[ploty];
+  }
+  if(sd->volslice == 0 && sd->idir == ZDIR){
+    offset = IJK_SLICE(i,   j, plotz);
+    device_xyz[2] = zplt[plotz];
+  }
+  return offset;
+}
+
+/* ------------------ GetSliceVal ------------------------ */
+
+float GetSliceVal(slicedata *slicei, int itime, int offset){
+  float *qslice, sliceval;
+
+  qslice = slicei->qslicedata + itime*slicei->nsliceijk;
+  sliceval = qslice[offset];
+  return sliceval;
+}
+
+/* ------------------ GetDevMinMax ------------------------ */
+
+void GetDevMinMax(devicedata *devi, float *valmin, float *valmax){
+  int i;
+
+  *valmin = devi->vals[0];
+  *valmax = *valmin;
+  for(i = 1; i<devi->nvals; i++){
+    *valmin = MIN(*valmin, devi->vals[i]);
+    *valmax = MAX(*valmax, devi->vals[i]);
+  }
+}
+
+/* ------------------ Slice2Device ------------------------ */
+
+void Slice2Device(void){
+  int i;
+
+  if(vis_slice_plot==0)return;
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+    devicedata *sdev;
+    meshdata *dev_mesh;
+    int j, offset;
+
+    slicei = sliceinfo+i;
+    dev_mesh = meshinfo+slicei->blocknumber;
+    sdev = &(slicei->vals2d);
+    sdev->valid = 0;
+    if(slicei->volslice==1||slicei->loaded==0||slicei->ntimes==0)continue;
+    if(slicei->slice_filetype==SLICE_GEOM)continue;
+    if(InMeshi(dev_mesh, slicei->idir, slice_xyz)==0)continue;
+    sdev->valid = 1;
+    FREEMEMORY(sdev->vals);
+    FREEMEMORY(sdev->vals_orig);
+    NewMemory((void **)&(sdev->vals), slicei->ntimes*sizeof(float));
+    NewMemory((void **)&(sdev->vals_orig), slicei->ntimes*sizeof(float));
+    sdev->nvals = slicei->ntimes;
+    sdev->times = slicei->times;
+    offset = GetSliceOffset(slicei, slice_xyz, sdev->xyz);
+    for(j = 0; j<sdev->nvals; j++){
+      sdev->vals[j]      = GetSliceVal(slicei, j, offset);
+      sdev->vals_orig[j] = sdev->vals[j];
+    }
+  }
+  for(i = 0; i<nslicebounds; i++){
+    boundsdata *sb;
+    int j;
+
+    sb = slicebounds+i;
+    sb->dev_min = 1.0;
+    sb->dev_max = 0.0;
+
+    for(j = 0; j<nsliceinfo; j++){
+      slicedata *slicej;
+      devicedata *devicej;
+      float valmin, valmax;
+
+      slicej = sliceinfo+j;
+      devicej = &(slicej->vals2d);
+      if(slicej->loaded==0||devicej->valid==0||strcmp(sb->label->longlabel, slicej->label.longlabel)!=0)continue;
+      GetDevMinMax(devicej, &valmin, &valmax);
+      if(sb->dev_min>sb->dev_max){
+        sb->dev_min = valmin;
+        sb->dev_max = valmax;
+      }
+      else{
+        sb->dev_min = MIN(valmin, sb->dev_min);
+        sb->dev_max = MAX(valmax, sb->dev_max);
+      }
+    }
+  }
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+    devicedata *sdev;
+    meshdata *dev_mesh;
+
+    slicei = sliceinfo+i;
+    dev_mesh = meshinfo+slicei->blocknumber;
+    sdev = &(slicei->vals2d);
+    if(slicei->volslice==1||slicei->loaded==0||slicei->ntimes==0)continue;
+    if(InMeshi(dev_mesh, slicei->idir, slice_xyz)==0)continue;
+      TimeAveragePlot2DData(sdev->times, sdev->vals_orig, sdev->vals, sdev->nvals);
+  }
+}
+
+
+/* ------------------ DrawSlicePlots ------------------------ */
+
+void DrawSlicePlots(void){
+  int i;
+
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+    devicedata *devicei;
+    float valmin, valmax;
+    float highlight_val;
+    float xyz[3] = {0.0,0.0,0.0};
+
+    slicei = sliceinfo+i;
+    devicei = &(slicei->vals2d);
+    if(slicei->loaded==0||devicei->valid==0)continue;
+
+    highlight_val = devicei->vals[itimes];
+    glPushMatrix();
+    glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
+    glTranslatef(-xbar0,-ybar0,-zbar0);
+    glPointSize(10.0);
+    glBegin(GL_POINTS);
+    glColor3f(0.0,0.0,0.0);
+    glVertex3fv(devicei->xyz);
+    glEnd();
+    glPopMatrix();
+
+    boundsdata *sb;
+
+    sb = slicebounds + slicefile_labelindex;
+    if(sb->dev_min>sb->dev_max){
+      valmin = sb->levels256[0];
+      valmax = sb->levels256[255];
+    }
+    else{
+      valmin = MIN(sb->dev_min, sb->levels256[0]);
+      valmax = MAX(sb->dev_max, sb->levels256[255]);
+    }
+    xyz[2] = 0.0;
+    if(vis_hrr_plot==1)xyz[2] = 1.2*plot2d_size_factor;
+
+    DrawPlot(PLOT_ALL, xyz, plot2d_size_factor, devicei->times, devicei->vals, devicei->nvals,
+             global_times[itimes], highlight_val, 1, valmin, valmax,
+             slicei->label.shortlabel, slicei->label.unit);
+  }
+}
+
 /* ------------------ DrawSliceFrame ------------------------ */
 
 void DrawSliceFrame(){
   int ii;
   int jjj, nslicemax, blend_mode;
   int draw_slice;
+
+  if(vis_slice_plot==1){
+    DrawSlicePlots();
+  }
 
   if(use_tload_begin==1 && global_times[itimes]<tload_begin)return;
   if(use_tload_end==1   && global_times[itimes]>tload_end)return;
@@ -9118,15 +9328,6 @@ void InitSliceData(void){
     fileout = NULL;
 
   }
-}
-
-/* ------------------ GetSliceVal ------------------------ */
-
-float GetSliceVal(slicedata *sd, unsigned char ival){
-  float returnval;
-
-  returnval = (sd->valmax*ival + sd->valmin*(255-ival))/255.0;
-  return returnval;
 }
 
 /* ------------------ SliceData2Hist ------------------------ */

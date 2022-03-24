@@ -76,19 +76,24 @@ void UpdateTimeLabels(void){
     }
   }
 
-  if(hrrinfo!=NULL&&hrrinfo->hrrval!=NULL&&hrrinfo->display==1&&hrrinfo->loaded==1){
+  if(hrrptr!=NULL&&global_times!=NULL&&vis_hrr_label==1){
     float hrr;
+    int itime;
 
-    hrr = hrrinfo->hrrval[hrrinfo->itime];
+    itime = GetInterval(global_times[itimes], timeptr->vals, timeptr->nvals);
+    hrr = hrrptr->vals[itime];
     if(hrr<1.0){
-      sprintf(hrrinfo->hrrlabel,"HRR: %4.1f W",hrr*1000.0);
+      sprintf(hrrlabel,"HRR: %4.1f W",hrr*1000.0);
     }
     else if(hrr>1000.0){
-      sprintf(hrrinfo->hrrlabel,"HRR: %4.1f MW",hrr/1000.0);
+      sprintf(hrrlabel,"HRR: %4.1f MW",hrr/1000.0);
     }
     else{
-      sprintf(hrrinfo->hrrlabel,"HRR: %4.1f kW",hrr);
+      sprintf(hrrlabel,"HRR: %4.1f kW",hrr);
     }
+  }
+  else{
+    strcpy(hrrlabel, "");
   }
 }
 
@@ -1432,13 +1437,15 @@ void DrawVerticalColorbarReg(void){
     if(i == nrgb_full - 2)i3 = i;
     rgb_cb2 = rgb_full[i3];
 
-    glColor4fv(rgb_cb);
-    glVertex2f(vcolorbar_left_pos,  yy);
-    glVertex2f(vcolorbar_right_pos, yy);
+    if(rgb_cb[3]>0.0 && rgb_cb2[3]>0.0){
+      glColor4fv(rgb_cb);
+      glVertex2f(vcolorbar_left_pos, yy);
+      glVertex2f(vcolorbar_right_pos, yy);
 
-    glColor4fv(rgb_cb2);
-    glVertex2f(vcolorbar_right_pos, yy2);
-    glVertex2f(vcolorbar_left_pos,  yy2);
+      glColor4fv(rgb_cb2);
+      glVertex2f(vcolorbar_right_pos, yy2);
+      glVertex2f(vcolorbar_left_pos, yy2);
+    }
   }
   glEnd();
 }

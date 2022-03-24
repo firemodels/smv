@@ -16,20 +16,22 @@
 #ifdef pp_SMOKEBUFFER
 typedef bufferstreamdata MFILE;
 #define SKIP_SMOKE             fseek_buffer(SMOKE3DFILE->fileinfo, fortran_skip, SEEK_CUR)
-#define FOPEN_SMOKE(file,mode) FOPEN_RB(file)
-#define FREAD_SMOKE(a,b,c,d)   fread_buffer(a,b,c,d->fileinfo)
-#define FEOF_SMOKE(a)          feof_buffer(a->fileinfo)
-#define FSEEK_SMOKE(a,b,c)     fseek_buffer(a->fileinfo,b,c)
-#define FCLOSE_SMOKE(a)        fclose_buffer(a->fileinfo)
+#define FOPEN_SMOKE(file,mode,nthreads,use_threads) FOPEN_RB(file,nthreads,use_threads)
+#define FREAD_SMOKE(a,b,c,d)    fread_buffer(a,b,c,d->fileinfo)
+#define FREADPTR_SMOKE(a,b,c,d) freadptr_buffer(a,b,c,d->fileinfo)
+#define FEOF_SMOKE(a)           feof_buffer(a->fileinfo)
+#define FSEEK_SMOKE(a,b,c)      fseek_buffer(a->fileinfo,b,c)
+#define FCLOSE_SMOKE(a)         fclose_buffer(a->fileinfo)
 #else
 typedef FILE MFILE;
-#define MFILE                  FILE
-#define SKIP_SMOKE             FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
-#define FOPEN_SMOKE(file,mode) fopen(file,mode)
-#define FREAD_SMOKE(a,b,c,d)   fread(a,b,c,d)
-#define FEOF_SMOKE(a)          feof(a)
-#define FSEEK_SMOKE(a,b,c)     fseek(a,b,c)
-#define FCLOSE_SMOKE(a)        fclose(a)
+#define MFILE                   FILE
+#define SKIP_SMOKE              FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
+#define FOPEN_SMOKE(file,mode,nthreads,use_threads) fopen(file,mode)
+#define FREAD_SMOKE(a,b,c,d)    fread(a,b,c,d)
+#define FREADPTR_SMOKE(a,b,c,d) fread(a,b,c,d)
+#define FEOF_SMOKE(a)           feof(a)
+#define FSEEK_SMOKE(a,b,c)      fseek(a,b,c)
+#define FCLOSE_SMOKE(a)         fclose(a)
 #endif
 
 #define SKIP FSEEK( SMOKE3DFILE, fortran_skip, SEEK_CUR)
@@ -3691,7 +3693,7 @@ FILE *GetSmokeFileSize(char *smokefile, int fortran_skip, int version){
     SMOKE_SIZE = fopen(smoke_sizefilename, "w");
   }
   if(SMOKE_SIZE == NULL)return NULL;  // can't write size file in temp directory so give up
-  SMOKE3DFILE = FOPEN_SMOKE(smokefile, "rb");
+  SMOKE3DFILE = FOPEN_SMOKE(smokefile, "rb", nsmoke_threads, use_smoke_thread);
   if(SMOKE3DFILE == NULL){
     fclose(SMOKE_SIZE);
     return NULL;
@@ -4235,19 +4237,23 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
       ncomp_smoke_total_skipped_local += smoke3di->nchars_compressed_smoke_full[i];
     }
   }
+#ifndef pp_SMOKEBUFFERPTR
   if(NewResizeMemory(smoke3di->smoke_comp_all, ncomp_smoke_total_skipped_local*sizeof(unsigned char))==0){
     SetupSmoke3D(smoke3di, UNLOAD, iframe_arg, &error_local);
     *errorcode_arg = 1;
     fprintf(stderr, "\n*** Error: problems allocating memory for 3d smoke file: %s\n", smoke3di->file);
     return READSMOKE3D_RETURN;
   }
+#endif
   smoke3di->ncomp_smoke_total = ncomp_smoke_total_skipped_local;
 
   ncomp_smoke_total_local = 0;
   i = 0;
   for(ii = 0; ii<smoke3di->ntimes_full; ii++){
     if(smoke3di->use_smokeframe[ii]==1){
+#ifndef pp_SMOKEBUFFERPTR
       smoke3di->smokeframe_comp_list[i] = smoke3di->smoke_comp_all+ncomp_smoke_total_local;
+#endif
       ncomp_smoke_total_local += smoke3di->nchars_compressed_smoke[i];
       i++;
     }
@@ -4293,7 +4299,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
 
 //*** read in data
 
-  SMOKE3DFILE=FOPEN_SMOKE(smoke3di->file,"rb");
+  SMOKE3DFILE=FOPEN_SMOKE(smoke3di->file,"rb", nsmoke_threads, use_smoke_thread);
   if(SMOKE3DFILE==NULL){
     SetupSmoke3D(smoke3di,UNLOAD, iframe_arg, &error_local);
     *errorcode_arg =1;
@@ -4350,7 +4356,11 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
       float complevel_local;
 
       nframes_found_local++;
+#ifdef pp_SMOKEBUFFERPTR
+      SKIP_SMOKE;FREADPTR_SMOKE((void **)&(smoke3di->smokeframe_comp_list[iii]),1,smoke3di->nchars_compressed_smoke[iii],SMOKE3DFILE); SKIP_SMOKE;
+#else
       SKIP_SMOKE;FREAD_SMOKE(smoke3di->smokeframe_comp_list[iii],1,smoke3di->nchars_compressed_smoke[iii],SMOKE3DFILE); SKIP_SMOKE;
+#endif
       file_size_local +=4+smoke3di->nchars_compressed_smoke[iii]+4;
       iii++;
       CheckMemory;

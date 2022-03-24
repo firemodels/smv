@@ -515,10 +515,13 @@ void ShowScene2(int mode){
   /* ++++++++++++++++++++++++ draw device plots +++++++++++++++++++++++++ */
 
   if(mode==DRAWSCENE && geom_bounding_box_mousedown==0){
-    if((show_hrrpuv_plot==1&&hrrinfo!=NULL)||showdevice_plot==DEVICE_PLOT_SHOW_ALL||showdevice_plot==DEVICE_PLOT_SHOW_SELECTED){
+    if(vis_device_plot==DEVICE_PLOT_SHOW_ALL||vis_device_plot==DEVICE_PLOT_SHOW_SELECTED){
       DrawDevicePlots();
     }
-    if(showdevice_plot==DEVICE_PLOT_SHOW_TREE_ALL){
+    if(vis_hrr_plot==1&&hrrptr!=NULL){
+      DrawHRRPlot();
+    }
+    if(vis_device_plot==DEVICE_PLOT_SHOW_TREE_ALL){
       DrawTreeDevicePlots();
     }
   }
@@ -589,7 +592,9 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
 
   /* ++++++++++++++++++++++++ update variables as needed +++++++++++++++++++++++++ */
 
+  INIT_PRINT_TIMER(timer_showscene);
   UpdateShowScene();
+  PRINT_TIMER(timer_showscene, "UpdateShowScene");
   if(stereotype == STEREO_NONE || stereotype == STEREO_TIME)ClearBuffers(mode);
 
   /* ++++++++++++++++++++++++ setup viewports +++++++++++++++++++++++++ */

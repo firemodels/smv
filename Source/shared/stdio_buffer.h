@@ -24,7 +24,16 @@ typedef struct bufferstreamdata{
   filedata *fileinfo;
 } bufferstreamdata;
 
-EXTERNCPP bufferstreamdata *FOPEN_RB(char *file);
+/* --------------------------  _readbufferdata ------------------------------------ */
+
+typedef struct _readbufferdata {
+  char *filename, *buffer;
+  int start, size, returnval;
+} readbufferdata;
+
+
+EXTERNCPP void              ReadBufferi(readbufferdata *readbufferi);
+EXTERNCPP bufferstreamdata *FOPEN_RB(char *file, int ntheads, int use_threads);
 EXTERNCPP bufferstreamdata *GetSMVBuffer(char *file, char *file2);
 EXTERNCPP bufferstreamdata *CopySMVBuffer(bufferstreamdata *stream_in);
 EXTERNCPP int               AppendFileBuffer(filedata *file1, filedata *file2);

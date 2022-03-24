@@ -5,6 +5,11 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals);
+EXTERNCPP void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
+              float highlight_x, float highlight_y, int valid,
+              float global_valmin, float global_valmax, char *quantity, char *unit);
+
 EXTERNCPP void SplitCB(int var);
 
 #ifdef pp_REFRESH
@@ -75,6 +80,7 @@ EXTERNCPP void IncrementPartPropIndex(void);
 
 EXTERNCPP int GetStringWidth(char *string);
 EXTERNCPP void DrawDevicePlots(void);
+EXTERNCPP void DrawHRRPlot(void);
 EXTERNCPP void DrawTreeDevicePlots(void);
 EXTERNCPP int GetPercentileDraw(int type);
 EXTERNCPP int GetPlotState(int choice);
@@ -88,7 +94,6 @@ EXTERNCPP FILE_SIZE LoadVSliceMenu2(int val);
 EXTERNCPP void UpdateDeviceShow(void);
 EXTERNCPP void UpdateClipbounds(int set_i0, int *i0, int set_i1, int *i1, int maxi);
 EXTERNCPP int CompareFloat(const void *arg1, const void *arg2);
-EXTERNCPP void UpdateHRRInfo(int val);
 EXTERNCPP void ResetItimes0(void);
 EXTERNCPP void UpdateShow(void);
 EXTERNCPP void SynchTimes(void);
@@ -132,6 +137,11 @@ EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(void);
 EXTERNCPP void UpdateGlobalFEDSliceBounds(void);
 
+EXTERNCPP void Slice2Device(void);
+
+EXTERNCPP int InMeshi(meshdata *meshi, int dir, float *xyz);
+EXTERNCPP int InMesh(float *xyz);
+EXTERNCPP char *GetHomeDir(void);
 EXTERNCPP void SetPercentileDrawOff(void);
 EXTERNCPP void ClosePartFiles(void);
 EXTERNCPP void PartBoundsCPP_CB(int var);
@@ -492,6 +502,8 @@ EXTERNCPP void MouseDragCB(int xm, int ym);
 EXTERNCPP void MenuStatusCB(int status, int x, int y);
 EXTERNCPP void IdleCB(void);
 
+SVEXTERN void UpdateVisHrrPlot(void);
+
 SVEXTERN void UpdateVectorWidgets(void);
 EXTERNCPP void UpdateGsliceParms(void);
 EXTERNCPP void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode);
@@ -503,7 +515,7 @@ EXTERNCPP devicedata *GetDeviceFromLabel(char *label, int index);
 EXTERNCPP devicedata *GetCSVDeviceFromLabel(char *label, int index);
 EXTERNCPP void SetupGlut(int argc, char **argv);
 EXTERNCPP int GetNDevices(char *file);
-EXTERNCPP void ReadHRR(int flag, int *errorcode);
+EXTERNCPP void ReadHRR(int flag);
 EXTERNCPP void ReadDeviceData(char *file, int filetype, int flag);
 EXTERNCPP void SetupZoneDevs(void);
 EXTERNCPP void SetupDeviceData(void);

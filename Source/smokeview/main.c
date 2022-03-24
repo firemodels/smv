@@ -22,12 +22,10 @@
 /* ------------------ Usage ------------------------ */
 
 void Usage(char *prog,int option){
-  char buffer[1000];
-
   PRINTF("%s\n", release_title);
   PRINTF("%s\n\n", _("Visualize fire/smoke flow simulations."));
-  PRINTF("Usage: %s [options] casename", GetBaseFileName(buffer, prog));
-  PRINTF("%s\n\n");
+  PRINTF("Usage: %s [options] casename", prog);
+  PRINTF("\n\n");
   PRINTF("%s\n", _(" casename       - project id (file names without the extension)"));
   PRINTF("%s\n", _(" -bindir dir    - specify location of smokeview bin directory"));
   PRINTF("%s\n", _(" -ini           - output smokeview parameter values to smokeview.ini"));
@@ -344,6 +342,29 @@ char *ParseCommandline(int argc, char **argv){
   NewMemory((void **)&htmlslicecell_filename, len_casename+strlen("_slicecell.json")+1);
   STRCPY(htmlslicecell_filename, fdsprefix);
   STRCAT(htmlslicecell_filename, "_slicecell.json");
+
+#ifdef pp_CACHE_FILEBOUNDS
+  char frontdir[256];
+
+  if(Writable(".")==0){
+    strcpy(frontdir, GetHomeDir());
+    strcat(frontdir, dirseparator);
+  }
+  else{
+    strcpy(frontdir, "");
+  }
+  FREEMEMORY(bnds_slice_filename);
+  NewMemory((void **)&bnds_slice_filename, strlen(frontdir) + len_casename+strlen("_sf.bnds")+1);
+  STRCPY(bnds_slice_filename, frontdir);
+  STRCAT(bnds_slice_filename, fdsprefix);
+  STRCAT(bnds_slice_filename, "_sf.bnds");
+
+  FREEMEMORY(bnds_patch_filename);
+  NewMemory((void **)&bnds_patch_filename, strlen(frontdir) + len_casename+strlen("_bf.bnds")+1);
+  STRCPY(bnds_patch_filename, frontdir);
+  STRCAT(bnds_patch_filename, fdsprefix);
+  STRCAT(bnds_patch_filename, "_bf.bnds");
+#endif
 
   FREEMEMORY(boundinfo_filename);
   NewMemory((void **)&boundinfo_filename, len_casename + strlen(".binfo") + 1);
@@ -859,6 +880,16 @@ int main(int argc, char **argv){
   InitRandAB(1000000);
   InitVars();
   ParseCommonOptions(argc, argv);
+  if(show_help==1){
+    printf("showing help 1\n");
+    Usage("smokeview", HELP_SUMMARY);
+    return 1;
+  }
+  if(show_help==2){
+    printf("showing help 2\n");
+    Usage("smokeview", HELP_ALL);
+    return 1;
+  }
   smv_filename = ParseCommandline(argc, argv);
 
   progname=argv[0];
@@ -866,10 +897,6 @@ int main(int argc, char **argv){
   if(smv_filename==NULL){
     DisplayVersionInfo("Smokeview ");
     SMV_EXIT(0);
-  }
-  if(show_help==1){
-    Usage("smokeview",HELP_SUMMARY);
-    return 1;
   }
 
   prog_fullpath = progname;
@@ -904,16 +931,12 @@ int main(int argc, char **argv){
 
   return_code= SetupCase(smv_filename);
   if(return_code==0&&update_bounds==1){
-    float timer_update_bounds;
-
     INIT_PRINT_TIMER(timer_update_bounds);
     return_code=Update_Bounds();
     PRINT_TIMER(timer_update_bounds, "Update_Bounds");
   }
   if(return_code!=0)return 1;
   if(convert_ini==1){
-    float timer_read_ini;
-
     INIT_PRINT_TIMER(timer_read_ini);
     ReadIni(ini_from);
     PRINT_TIMER(timer_read_ini, "ReadIni");

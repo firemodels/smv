@@ -20,8 +20,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define OBJECT_PLOT_SHOW_SELECTED  -11
 #define OBJECT_PLOT_SHOW_TREE_ALL  -12
 
-#define PLOT_HRRPUV -13
+#define PLOT_HRRPUV           -13
 #define HRRPUV_PLOT            30
+#define HRRPUV2_PLOT           31
 
 #ifdef pp_OSX_HIGHRES
 #define GLUT_BITMAP_HELVETICA_20	(&glutBitmapHelvetica20)

@@ -35,6 +35,9 @@ SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
 #endif
 
+SVEXTERN char hrrlabel[256];
+SVEXTERN hrrdata SVDECL(*hrrptr, NULL), SVDECL(*timeptr, NULL);
+
 #ifdef pp_TERRAIN_SKIP
 SVEXTERN int SVDECL(terrain_skip, 1);
 #endif
@@ -48,6 +51,7 @@ SVEXTERN int SOOT_index, HRRPUV_index, TEMP_index, CO2_index;
 
 SVEXTERN int SVDECL(agl_offset_actual, 1);
 
+SVEXTERN int SVDECL(nsmoke_threads, 1), SVDECL(use_smoke_thread, 0);
 SVEXTERN int SVDECL(force_gray_smoke, 1);
 SVEXTERN int SVDECL(startup, 1);
 SVEXTERN int SVDECL(verbose_output, 0);
@@ -103,7 +107,6 @@ SVEXTERN slicemenudata SVDECL(**slicemenu_sorted, NULL);
 SVEXTERN int SVDECL(handle_slice_files, 1);
 SVEXTERN int SVDECL(plot_option, 0);
 SVEXTERN float hrr_valmin, hrr_valmax;
-SVEXTERN int SVDECL(show_hrrpuv_plot, 0);
 SVEXTERN int SVDECL(is_terrain_case, 0);
 SVEXTERN int SVDECL(update_adjust_y, 2);
 SVEXTERN int SVDECL(visFrameTimelabel, 1);
@@ -142,9 +145,9 @@ SVEXTERN char *cslice_label, *cpart_label, *cbound_label, *cplot3d_label;
 #endif
 
 #ifdef INMAIN
-SVEXTERN float device_xyz_offset[3] = {0.0, 0.0, 0.0};
+SVEXTERN float plot2d_xyz_offset[3] = {0.0, 0.0, 0.0};
 #else
-SVEXTERN float device_xyz_offset[3];
+SVEXTERN float plot2d_xyz_offset[3];
 #endif
 
 SVEXTERN int SVDECL(update_glui_devices, 0);
@@ -221,7 +224,6 @@ SVEXTERN int SVDECL(update_colorbar_digits, 0);
 
 SVEXTERN int SVDECL(show_bndf_mesh_interface, 0);
 SVEXTERN int SVDECL(ncolorlabel_digits, 4), SVDECL(ncolorlabel_padding, 0);
-SVEXTERN int SVDECL(ntimebar_digits, 3);
 SVEXTERN int SVDECL(ngridloc_digits, 4);
 SVEXTERN int SVDECL(ntick_decimals, 1);
 SVEXTERN int SVDECL(mpi_nprocesses, -1), SVDECL(mpi_iprocess,-1);
@@ -774,9 +776,8 @@ SVEXTERN int SVDECL(*trainer_temp_indexes,NULL),SVDECL(*trainer_oxy_indexes,NULL
 SVEXTERN int SVDECL(trainer_showall_mslice,0),SVDECL(trainer_cycle_mslice,1);
 SVEXTERN int SVDECL(trainer_temp_n,0),SVDECL(trainer_oxy_n,0);
 SVEXTERN char SVDECL(*tr_name,NULL);
-SVEXTERN int SVDECL(showdevice_val,0), SVDECL(showvdevice_val,0),SVDECL(showdevice_labels,1),SVDECL(colordevice_val,0),SVDECL(showdevice_id,0);
-SVEXTERN float SVDECL(device_plot_factor, 0.5), SVDECL(device_plot_line_width, 1.0), SVDECL(device_plot_point_size, 10.0);
-SVEXTERN int SVDECL(showdevice_plot, 0);
+SVEXTERN int SVDECL(showdevice_val,0), SVDECL(showvdevice_val,0),SVDECL(showd_plot2d_labels,1),SVDECL(colordevice_val,0),SVDECL(showdevice_id,0);
+SVEXTERN float SVDECL(plot2d_size_factor, 0.5), SVDECL(plot2d_line_width, 1.0), SVDECL(plot2d_point_size, 10.0);
 SVEXTERN int SVDECL(select_device, 0);
 SVEXTERN int SVDECL(showdevice_type,1), SVDECL(showdevice_unit,1);
 SVEXTERN float SVDECL(device_valmin,0.0), SVDECL(device_valmax,1.0);
@@ -867,6 +868,16 @@ SVEXTERN int GPUvol_voltemp_offset;
 SVEXTERN int GPUvol_voltemp_factor;
 #endif
 
+SVEXTERN int SVDECL(vis_device_plot, 0);
+SVEXTERN int SVDECL(vis_hrr_plot, 0);
+SVEXTERN int SVDECL(vis_slice_plot, 0);
+
+SVEXTERN hrrdata SVDECL(*hrrinfo, NULL);
+SVEXTERN int SVDECL(nhrrinfo, 0), SVDECL(nhrrhcinfo, 0);
+SVEXTERN int SVDECL(time_col, -1), SVDECL(hrr_col, -1), SVDECL(qradi_col, -1), SVDECL(chirad_col, -1);
+SVEXTERN int SVDECL(glui_hrr, 1);
+SVEXTERN float SVDECL(fuel_hoc, -1.0), SVDECL(fuel_hoc_default, -1.0);
+SVEXTERN int SVDECL(update_avg, 0);
 SVEXTERN int SVDECL(ncsvinfo,0);
 SVEXTERN csvdata SVDECL(*csvinfo,NULL);
 SVEXTERN int smoke_render_option;
@@ -1312,7 +1323,7 @@ SVEXTERN int SVDECL(update_visColorbars,0), visColorbarVertical_val, visColorbar
 SVEXTERN int SVDECL(visColorbarHorizontal, 0), SVDECL(visColorbarHorizontal_save, 0);
 SVEXTERN int SVDECL(visFullTitle, 1), SVDECL(visFramerate, 0);
 SVEXTERN int SVDECL(visFramelabel,1), SVDECL(visTimelabel,1);
-SVEXTERN int SVDECL(visHRRlabel,0);
+SVEXTERN int SVDECL(vis_hrr_label,0);
 SVEXTERN int SVDECL(visAvailmemory, 0);
 SVEXTERN int SVDECL(block_volsmoke,1),SVDECL(smoke3dVoldebug,0);
 SVEXTERN slicedata SVDECL(*sd_shown,NULL);
@@ -1613,16 +1624,29 @@ SVEXTERN int SVDECL(runhtmlscript, 0);
 SVEXTERN int SVDECL(runluascript,0);
 SVEXTERN int SVDECL(exit_on_script_crash,0);
 #endif
+#ifdef INMAIN
+SVEXTERN float slice_xyz[3]={0.0,0.0,0.0};
+#else
+SVEXTERN float slice_xyz[3];
+#endif
+SVEXTERN int   SVDECL(update_slice2device, 0);
 SVEXTERN int SVDECL(script_multislice,0), SVDECL(script_multivslice,0), SVDECL(script_iso,0);
 SVEXTERN FILE SVDECL(*scriptoutstream,NULL);
 SVEXTERN char SVDECL(*log_filename,NULL);
 SVEXTERN FILE SVDECL(*LOG_FILENAME,NULL);
 SVEXTERN char SVDECL(*flushfile,NULL), SVDECL(*chidfilebase,NULL);
 SVEXTERN char SVDECL(*hrr_csv_filename,NULL),SVDECL(*devc_csv_filename,NULL),SVDECL(*exp_csv_filename,NULL);
-SVEXTERN hrrdata SVDECL(*hrrinfo,NULL);
 SVEXTERN char SVDECL(*smokezippath,NULL),SVDECL(*smokeviewpath,NULL);
 SVEXTERN char SVDECL(*INI_fds_filein,NULL), SVDECL(*fds_filein,NULL);
 SVEXTERN char SVDECL(*caseini_filename,NULL),SVDECL(*boundinfo_filename,NULL);
+#ifdef pp_CACHE_FILEBOUNDS
+SVEXTERN char SVDECL(*bnds_slice_filename, NULL);
+SVEXTERN char SVDECL(*bnds_patch_filename, NULL);
+SVEXTERN boundfiledata SVDECL(*sliceboundfileinfo, NULL);
+SVEXTERN boundfiledata SVDECL(*patchboundfileinfo, NULL);
+SVEXTERN char SVDECL(**sorted_slice_list, NULL), SVDECL(**sorted_patch_list, NULL);
+SVEXTERN int nsliceboundfileinfo, npatchboundfileinfo;
+#endif
 SVEXTERN char SVDECL(*event_filename, NULL);
 SVEXTERN int SVDECL(event_file_exists,0);
 SVEXTERN char SVDECL(*zonelonglabels,NULL), SVDECL(*zoneshortlabels,NULL), SVDECL(*zoneunits,NULL);
