@@ -139,11 +139,11 @@ void ReadHRR(int flag){
 
   NewMemory((void **)&labels,         nhrrinfo*sizeof(char *));
   NewMemory((void **)&units,          nhrrinfo*sizeof(char *));
-  NewMemory((void **)&hrrinfo,        2*nhrrinfo*sizeof(hrrdata));
+  NewMemory((void **)&hrrinfo,      2*nhrrinfo*sizeof(hrrdata));
   NewMemory((void **)&vals,           nhrrinfo*sizeof(float));
   NewMemory((void **)&valids,         nhrrinfo*sizeof(int));
 
-// initalize each column
+// initialize each column
   for(i = 0; i<2*nhrrinfo; i++){
     hrrdata *hi;
 
