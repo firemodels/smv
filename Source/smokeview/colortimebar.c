@@ -1437,13 +1437,15 @@ void DrawVerticalColorbarReg(void){
     if(i == nrgb_full - 2)i3 = i;
     rgb_cb2 = rgb_full[i3];
 
-    glColor4fv(rgb_cb);
-    glVertex2f(vcolorbar_left_pos,  yy);
-    glVertex2f(vcolorbar_right_pos, yy);
+    if(rgb_cb[3]>0.0 && rgb_cb2[3]>0.0){
+      glColor4fv(rgb_cb);
+      glVertex2f(vcolorbar_left_pos, yy);
+      glVertex2f(vcolorbar_right_pos, yy);
 
-    glColor4fv(rgb_cb2);
-    glVertex2f(vcolorbar_right_pos, yy2);
-    glVertex2f(vcolorbar_left_pos,  yy2);
+      glColor4fv(rgb_cb2);
+      glVertex2f(vcolorbar_right_pos, yy2);
+      glVertex2f(vcolorbar_left_pos, yy2);
+    }
   }
   glEnd();
 }
