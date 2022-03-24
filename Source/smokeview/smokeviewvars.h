@@ -35,9 +35,6 @@ SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
 #endif
 
-SVEXTERN char hrrlabel[256];
-SVEXTERN hrrdata SVDECL(*hrrptr, NULL), SVDECL(*timeptr, NULL);
-
 #ifdef pp_TERRAIN_SKIP
 SVEXTERN int SVDECL(terrain_skip, 1);
 #endif
@@ -872,11 +869,15 @@ SVEXTERN int SVDECL(vis_device_plot, 0);
 SVEXTERN int SVDECL(vis_hrr_plot, 0);
 SVEXTERN int SVDECL(vis_slice_plot, 0);
 
-SVEXTERN hrrdata SVDECL(*hrrinfo, NULL);
-SVEXTERN int SVDECL(nhrrinfo, 0), SVDECL(nhrrhcinfo, 0);
-SVEXTERN int SVDECL(time_col, -1), SVDECL(hrr_col, -1), SVDECL(qradi_col, -1), SVDECL(chirad_col, -1);
+SVEXTERN char hrrlabel[256];
+SVEXTERN hrrdata SVDECL(*hrrinfo, NULL), SVDECL(*hrrptr, NULL), SVDECL(*timeptr, NULL);;
+SVEXTERN int SVDECL(nhrrinfo, 0);
+SVEXTERN int SVDECL(time_col, -1), SVDECL(hrr_col, -1);
 SVEXTERN int SVDECL(glui_hrr, 1);
+#ifdef pp_HRR_OTHER
 SVEXTERN float SVDECL(fuel_hoc, -1.0), SVDECL(fuel_hoc_default, -1.0);
+SVEXTERN int SVDECL(qradi_col, -1), SVDECL(chirad_col, -1), SVDECL(nhrrhcinfo, 0);
+#endif
 SVEXTERN int SVDECL(update_avg, 0);
 SVEXTERN int SVDECL(ncsvinfo,0);
 SVEXTERN csvdata SVDECL(*csvinfo,NULL);

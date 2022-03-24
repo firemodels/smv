@@ -70,6 +70,9 @@ int GetTokensBlank(char *buffer, char **tokens){
   return nt;
 }
 
+/* ------------------ ReadHRR ------------------------ */
+
+#ifdef pp_HRR_OTHER
 /* ------------------ GetHoc ------------------------ */
 
 float GetHoc(void){
@@ -321,9 +324,143 @@ void ReadHRR(int flag){
   FREEMEMORY(units);
   FREEMEMORY(labels);
   FREEMEMORY(vals);
-  FREEMEMORY(vals);
+  FREEMEMORY(valids);
   fclose(stream);
 }
+#else
+/* ------------------ ReadHRR ------------------------ */
+
+void ReadHRR(int flag){
+  FILE *stream;
+  char **labels, **units;
+  float *vals;
+  int nrows, ncols;
+  int nlabels, nunits, nvals;
+  int *valids;
+  int i, irow;
+  char buffer[LENBUFFER], buffer_labels[LENBUFFER], buffer_units[LENBUFFER];
+
+  if(nhrrinfo>0){
+    for(i = 0; i<nhrrinfo; i++){
+      hrrdata *hi;
+
+      hi = hrrinfo+i;
+      FREEMEMORY(hi->vals);
+      FREEMEMORY(hi->vals_orig);
+    }
+    FREEMEMORY(hrrinfo);
+    nhrrinfo = 0;
+  }
+  time_col = -1;
+  hrr_col = -1;
+  if(flag==UNLOAD)return;
+
+  stream = fopen(hrr_csv_filename, "r");
+  if(stream==NULL)return;
+
+  GetRowCols(stream, &nrows, &ncols);
+  nhrrinfo = ncols;
+
+  // allocate memory
+
+  NewMemory((void **)&labels,  nhrrinfo*sizeof(char *));
+  NewMemory((void **)&units,   nhrrinfo*sizeof(char *));
+  NewMemory((void **)&hrrinfo, nhrrinfo*sizeof(hrrdata));
+  NewMemory((void **)&vals,    nhrrinfo*sizeof(float));
+  NewMemory((void **)&valids,  nhrrinfo*sizeof(int));
+
+// initialize each column
+  for(i = 0; i<2*nhrrinfo; i++){
+    hrrdata *hi;
+
+    hi = hrrinfo+i;
+    NewMemory((void **)&hi->vals, (nrows-2)*sizeof(float));
+    NewMemory((void **)&hi->vals_orig, (nrows-2)*sizeof(float));
+    hi->nvals = nrows-2;
+  }
+  CheckMemory;
+
+// setup labels and units
+
+  fgets(buffer_units, LENBUFFER, stream);
+  ParseCSV(buffer_units, units, &nunits);
+
+  fgets(buffer_labels, LENBUFFER, stream);
+  ParseCSV(buffer_labels, labels, &nlabels);
+  CheckMemory;
+
+  for(i = 0; i<nhrrinfo; i++){
+    hrrdata *hi;
+
+    hi = hrrinfo+i;
+    TrimBack(labels[i]);
+    TrimBack(units[i]);
+    SetLabels(&(hi->label), labels[i], labels[i], units[i]);
+  }
+  CheckMemory;
+
+// find column index of several quantities
+
+  time_col = GetHrrCsvCol("Time");
+  if(time_col>=0)timeptr = hrrinfo+time_col;
+
+  hrr_col = GetHrrCsvCol("HRR");
+  if(hrr_col>=0&&time_col>=0)hrrptr = hrrinfo+hrr_col;
+
+// read in data
+  irow = 0;
+  while(!feof(stream)){
+    if(fgets(buffer, LENBUFFER, stream)==NULL)break;
+    TrimBack(buffer);
+    if(strlen(buffer)==0)break;
+    FParseCSV(buffer, vals, valids, ncols, &nvals);
+    if(nvals<ncols)break;
+    for(i = 0; i<nhrrinfo; i++){
+      hrrdata *hi;
+
+      hi = hrrinfo+i;
+      hi->vals[irow] = 0.0;
+      if(valids[i]==1)hi->vals[irow] = vals[i];
+    }
+    irow++;
+    if(irow>=nrows)break;
+  }
+  CheckMemory;
+
+//copy vals into vals_orig
+  for(i = 0; i<nhrrinfo; i++){
+    hrrdata *hi;
+
+    hi = hrrinfo+i;
+    memcpy(hi->vals_orig, hi->vals, hi->nvals*sizeof(float));
+  }
+
+//compute min and max of each column
+  for(i = 0; i<nhrrinfo; i++){
+    hrrdata *hi;
+    float valmin, valmax;
+    int j;
+
+    hi = hrrinfo+i;
+    hi->nvals = irow;
+    valmin = hi->vals[0];
+    valmax = valmin;
+    for(j = 1; j<hi->nvals; j++){
+      valmin = MIN(valmin, hi->vals[j]);
+      valmax = MAX(valmax, hi->vals[j]);
+    }
+    hi->valmin = valmin;
+    hi->valmax = valmax;
+  }
+  CheckMemory;
+
+  FREEMEMORY(units);
+  FREEMEMORY(labels);
+  FREEMEMORY(vals);
+  FREEMEMORY(valids);
+  fclose(stream);
+}
+#endif
 
 /* ------------------ InitProp ------------------------ */
 

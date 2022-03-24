@@ -738,7 +738,11 @@ extern "C" void GluiDeviceSetup(int main_window){
       PANEL_plothrr = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "hrr plots");
       CHECKBOX_vis_hrr_plot = glui_device->add_checkbox_to_panel(PANEL_plothrr,_("show"),&vis_hrr_plot, HRRPUV2_PLOT, DeviceCB);
       LIST_hrrdata = glui_device->add_listbox_to_panel(PANEL_plothrr, "type:", &glui_hrr, DEVICE_TIMEAVERAGE, DeviceCB);
-      for(i=0;i<nhrrinfo+nhrrhcinfo;i++){
+#ifdef pp_HRR_OTHER
+      for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
+#else
+      for(i=0;i<nhrrinfo;i++){
+#endif
         hrrdata *hi;
 
         hi = hrrinfo+i;
