@@ -791,12 +791,12 @@ extern "C" void GluiDeviceSetup(int main_window){
 
       ROLLOUT_plotproperties = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "2D plot properties", false);
       glui_device->add_checkbox_to_panel(ROLLOUT_plotproperties, _("plot labels"),                   &showd_plot2d_labels);
-      glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("size"),       GLUI_SPINNER_FLOAT, &plot2d_size_factor);
-      glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("x offset"),   GLUI_SPINNER_FLOAT,  plot2d_xyz_offset);
-      glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("y offset"),   GLUI_SPINNER_FLOAT,  plot2d_xyz_offset+1);
-      glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("z offset"),   GLUI_SPINNER_FLOAT,  plot2d_xyz_offset+2);
-      glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("line width"), GLUI_SPINNER_FLOAT, &plot2d_line_width);
-      glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("point size"), GLUI_SPINNER_FLOAT, &plot2d_point_size);
+      glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("size factor"), GLUI_SPINNER_FLOAT, &plot2d_size_factor);
+      glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("x offset"),    GLUI_SPINNER_FLOAT,  plot2d_xyz_offset);
+      glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("y offset"),    GLUI_SPINNER_FLOAT,  plot2d_xyz_offset+1);
+      glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("z offset"),    GLUI_SPINNER_FLOAT,  plot2d_xyz_offset+2);
+      glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("line width"),  GLUI_SPINNER_FLOAT, &plot2d_line_width);
+      glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("point size"),  GLUI_SPINNER_FLOAT, &plot2d_point_size);
       {
         float dev_tmax;
 
