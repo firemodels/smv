@@ -1894,11 +1894,69 @@ void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxd
   }
 }
 
+/* ------------------ SetBoxCorners  ------------------------ */
+
+void SetBoxCorners(float box_corners[8][3], float xmin, float xmax, float ymin, float ymax, float zmin, float zmax){
+  box_corners[0][0] = xmin;
+  box_corners[0][1] = ymin;
+  box_corners[0][2] = zmin;
+
+  box_corners[1][0] = xmax;
+  box_corners[1][1] = ymin;
+  box_corners[1][2] = zmin;
+
+  box_corners[2][0] = xmin;
+  box_corners[2][1] = ymax;
+  box_corners[2][2] = zmin;
+
+  box_corners[3][0] = xmax;
+  box_corners[3][1] = ymax;
+  box_corners[3][2] = zmin;
+
+  box_corners[4][0] = xmin;
+  box_corners[4][1] = ymin;
+  box_corners[4][2] = zmax;
+
+  box_corners[5][0] = xmax;
+  box_corners[5][1] = ymin;
+  box_corners[5][2] = zmax;
+
+  box_corners[6][0] = xmin;
+  box_corners[6][1] = ymax;
+  box_corners[6][2] = zmax;
+
+  box_corners[7][0] = xmax;
+  box_corners[7][1] = ymax;
+  box_corners[7][2] = zmax;
+}
+
 /* ------------------ GetMinMaxDepth  ------------------------ */
 
 void GetMinMaxDepth(float *min_depth, float *max_depth){
 
   DistPointBox(smv_eyepos, box_corners, min_depth, max_depth);
+
+  if(vis_hrr_plot == 1 || vis_slice_plot ==1){
+    float mn_depth, mx_depth;
+    float box_plot_corners[8][3];
+    float xmin, xmax;
+    float ymin, ymax;
+    float zmin, zmax;
+
+    xmin = xbar0FDS + SCALE2FDS(plot2d_xyz_offset[0]-1.0);
+    xmax = xmin + 2*SCALE2FDS(1.2);
+    ymin = ybar0FDS + SCALE2FDS(plot2d_xyz_offset[1]-1.0);
+    ymax = ymin + 2*SCALE2FDS(1.2);
+    zmin = zbar0FDS + SCALE2FDS(plot2d_xyz_offset[2]-1.0);
+    zmax = zmin + 2*SCALE2FDS(1.2);
+
+    SetBoxCorners(box_plot_corners, xmin, xmax, ymin, ymax, zmin, zmax);
+
+    DistPointBox(smv_eyepos, box_plot_corners, &mn_depth, &mx_depth);
+
+    *min_depth = MIN(mn_depth, *min_depth);
+    *max_depth = MIN(mx_depth, *max_depth);
+  }
 
   if(have_box_geom_corners==1){
     float mindist, maxdist;
