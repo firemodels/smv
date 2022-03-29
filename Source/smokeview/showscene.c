@@ -518,9 +518,11 @@ void ShowScene2(int mode){
     if(vis_device_plot==DEVICE_PLOT_SHOW_ALL||vis_device_plot==DEVICE_PLOT_SHOW_SELECTED){
       DrawDevicePlots();
     }
+#ifndef pp_HRR_PLOT2D
     if(vis_hrr_plot==1&&hrrptr!=NULL){
       DrawHRRPlot();
     }
+#endif
     if(vis_device_plot==DEVICE_PLOT_SHOW_TREE_ALL){
       DrawTreeDevicePlots();
     }
@@ -615,6 +617,16 @@ void ShowScene(int mode, int view_mode, int quad, GLint s_left, GLint s_down, sc
     if(VP_timebar.doit == 1){
       ViewportTimebar(quad, s_left, s_down);
       SNIFF_ERRORS("after ViewportTimebar");
+    }
+
+    if(VP_hrr_plot.doit==1){
+      ViewportHrrPlot(quad, s_left, s_down);
+      SNIFF_ERRORS("after ViewportHrrPlot");
+    }
+
+    if(VP_slice_plot.doit==1){
+      ViewportSlicePlot(quad, s_left, s_down);
+      SNIFF_ERRORS("after ViewportSlicePlot");
     }
 
     if(VP_vcolorbar.doit == 1){

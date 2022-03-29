@@ -7571,7 +7571,32 @@ void Slice2Device(void){
   }
 }
 
+#ifdef pp_HRR_PLOT2D
+/* ------------------ DrawSlicePlots ------------------------ */
 
+void DrawSlicePlots(void){
+  int i;
+
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+    devicedata *devicei;
+
+    slicei = sliceinfo+i;
+    devicei = &(slicei->vals2d);
+    if(slicei->loaded==0||devicei->valid==0)continue;
+
+    glPushMatrix();
+    glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
+    glTranslatef(-xbar0,-ybar0,-zbar0);
+    glPointSize(10.0);
+    glBegin(GL_POINTS);
+    glColor3f(0.0,0.0,0.0);
+    glVertex3fv(devicei->xyz);
+    glEnd();
+    glPopMatrix();
+  }
+}
+#else
 /* ------------------ DrawSlicePlots ------------------------ */
 
 void DrawSlicePlots(void){
@@ -7618,6 +7643,7 @@ void DrawSlicePlots(void){
              slicei->label.shortlabel, slicei->label.unit);
   }
 }
+#endif
 
 /* ------------------ DrawSliceFrame ------------------------ */
 
