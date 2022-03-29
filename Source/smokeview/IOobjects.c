@@ -7914,7 +7914,7 @@ void DrawPlot2D(int option, float *x, float *z, int n,
               float highlight_x, float highlight_y, int valid,
               float global_valmin, float global_valmax, char *quantity, char *unit,
               float left, float right, float down, float top){
-  float xmin, xmax, zmin, zmax, dx, dz;
+  float xmin, xmax, zmin, zmax, dx;
   float zmax_display;
   int i;
   char cvalmin[20], cvalmax[20], cval[20];
@@ -7944,7 +7944,6 @@ void DrawPlot2D(int option, float *x, float *z, int n,
   Float2String(cval,     highlight_y, ndigits, force_fixedpoint);
 
   dx = (xmax - xmin)/20.0;
-  dz = (zmax - zmin)/20.0;
 
   glPushMatrix();
 

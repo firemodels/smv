@@ -908,7 +908,6 @@ void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down) {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   if(vis_hrr_plot==1&&global_times!=NULL){
-    float xyz[] = {0.0,0.0,0.0};
     float highlight_time = 0.0, highlight_val = 0.0;
     int valid = 1;
     hrrdata *hi, *hitime;
@@ -2022,38 +2021,38 @@ void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxd
 
 /* ------------------ SetBoxCorners  ------------------------ */
 
-void SetBoxCorners(float box_corners[8][3], float xmin, float xmax, float ymin, float ymax, float zmin, float zmax){
-  box_corners[0][0] = xmin;
-  box_corners[0][1] = ymin;
-  box_corners[0][2] = zmin;
+void SetBoxCorners(float box[8][3], float xmin, float xmax, float ymin, float ymax, float zmin, float zmax){
+  box[0][0] = xmin;
+  box[0][1] = ymin;
+  box[0][2] = zmin;
 
-  box_corners[1][0] = xmax;
-  box_corners[1][1] = ymin;
-  box_corners[1][2] = zmin;
+  box[1][0] = xmax;
+  box[1][1] = ymin;
+  box[1][2] = zmin;
 
-  box_corners[2][0] = xmin;
-  box_corners[2][1] = ymax;
-  box_corners[2][2] = zmin;
+  box[2][0] = xmin;
+  box[2][1] = ymax;
+  box[2][2] = zmin;
 
-  box_corners[3][0] = xmax;
-  box_corners[3][1] = ymax;
-  box_corners[3][2] = zmin;
+  box[3][0] = xmax;
+  box[3][1] = ymax;
+  box[3][2] = zmin;
 
-  box_corners[4][0] = xmin;
-  box_corners[4][1] = ymin;
-  box_corners[4][2] = zmax;
+  box[4][0] = xmin;
+  box[4][1] = ymin;
+  box[4][2] = zmax;
 
-  box_corners[5][0] = xmax;
-  box_corners[5][1] = ymin;
-  box_corners[5][2] = zmax;
+  box[5][0] = xmax;
+  box[5][1] = ymin;
+  box[5][2] = zmax;
 
-  box_corners[6][0] = xmin;
-  box_corners[6][1] = ymax;
-  box_corners[6][2] = zmax;
+  box[6][0] = xmin;
+  box[6][1] = ymax;
+  box[6][2] = zmax;
 
-  box_corners[7][0] = xmax;
-  box_corners[7][1] = ymax;
-  box_corners[7][2] = zmax;
+  box[7][0] = xmax;
+  box[7][1] = ymax;
+  box[7][2] = zmax;
 }
 
 /* ------------------ GetMinMaxDepth  ------------------------ */
