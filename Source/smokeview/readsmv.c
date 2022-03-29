@@ -240,14 +240,15 @@ void ReadHRR(int flag){
     if(strlen(hi->label.longlabel)>3&&strncmp(hi->label.longlabel,"MLR_",4)==0){
       char label[256];
 
-      if(strstr(hi->label.longlabel, fuel_name)      ==NULL)continue;
-
-      hi2 = hrrinfo + nhrrinfo + nhrrhcinfo;
-      hi2->base_col = i;
-      strcpy(label, "HOC*");
-      strcat(label, hi->label.longlabel);
-      SetLabels(&(hi2->label), label, label, "kW");
-      nhrrhcinfo++;
+      if(strstr(hi->label.longlabel, fuel_name)!=NULL ||
+         strstr(hi->label.longlabel, "FUEL")!=NULL){
+        hi2 = hrrinfo + nhrrinfo + nhrrhcinfo;
+        hi2->base_col = i;
+        strcpy(label, "HOC*");
+        strcat(label, hi->label.longlabel);
+        SetLabels(&(hi2->label), label, label, "kW");
+        nhrrhcinfo++;
+      }
     }
   }
   CheckMemory;
