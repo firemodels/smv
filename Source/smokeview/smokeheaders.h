@@ -83,6 +83,9 @@ EXTERNCPP void UpdateColorbarControls2(void);
 EXTERNCPP void SetColorbarDigits(void);
 
 EXTERNCPP void IncrementPartPropIndex(void);
+#ifdef pp_HRR_OTHER
+EXTERNCPP void UpdateHoc(void);
+#endif
 
 EXTERNCPP int GetStringWidth(char *string);
 EXTERNCPP void DrawDevicePlots(void);

@@ -22,6 +22,10 @@
 #define DEVICE_RADIUS           7
 //#define HRRPUV_PLOT            30 put in smokeviewdef.h
 #define DEVICE_TIMEAVERAGE     31
+#ifdef pp_HRR_OTHER
+#define FUEL_HOC               32
+#define RESET_FUEL_HOC         33
+#endif
 
 
 #define WINDROSE_SHOW_FIRST   996
@@ -58,6 +62,9 @@ GLUI_Button *BUTTON_open_down=NULL ;
 GLUI_Button *BUTTON_device_1=NULL;
 GLUI_Button *BUTTON_device_2=NULL;
 GLUI_Button *BUTTON_update_windrose = NULL;
+#ifdef pp_HRR_OTHER
+GLUI_Button *BUTTON_reset_fuel_hoc = NULL;
+#endif
 
 GLUI_Checkbox *CHECKBOX_device_1=NULL;
 GLUI_Checkbox *CHECKBOX_showdevice_val=NULL;
@@ -118,6 +125,9 @@ GLUI_Rollout *ROLLOUT_windrose = NULL;
 GLUI_Rollout **ROLLOUT_showz_windrose;
 GLUI_Rollout *ROLLOUT_trees = NULL;
 
+#ifdef pp_HRR_OTHER
+GLUI_Spinner *SPINNER_fuel_hoc = NULL;
+#endif
 GLUI_Spinner *SPINNER_size_factor = NULL;
 GLUI_Spinner *SPINNER_slice_x = NULL;
 GLUI_Spinner *SPINNER_slice_y = NULL;
@@ -434,6 +444,20 @@ extern "C" void DeviceCB(int var){
       UpdateColorDevices();
     }
     break;
+#ifdef pp_HRR_OTHER
+  case RESET_FUEL_HOC:
+    fuel_hoc = fuel_hoc_default;
+    SPINNER_fuel_hoc->set_float_val(fuel_hoc);
+    DeviceCB(FUEL_HOC);
+    break;;
+  case FUEL_HOC:
+    if(fuel_hoc<0.0){
+      fuel_hoc = 0.0;
+      SPINNER_fuel_hoc->set_float_val(fuel_hoc);
+    }
+    UpdateHoc();
+    break;
+#endif
   case SHOWDEVICEPLOT:
     {
       int vis_device_plot_temp;
@@ -754,6 +778,12 @@ extern "C" void GluiDeviceSetup(int main_window){
           }
         }
         LIST_hrrdata->set_int_val(glui_hrr);
+#ifdef pp_HRR_OTHER
+        if(fuel_hoc>0.0){
+          SPINNER_fuel_hoc      = glui_device->add_spinner_to_panel(PANEL_plothrr, _("HOC (kJ/kg)"), GLUI_SPINNER_FLOAT, &fuel_hoc, FUEL_HOC, DeviceCB);
+          BUTTON_reset_fuel_hoc = glui_device->add_button_to_panel(PANEL_plothrr,  _("Reset HOC"), RESET_FUEL_HOC,DeviceCB);
+        }
+#endif
       }
 
       if(ndevicetypes>0){
