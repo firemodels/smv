@@ -118,6 +118,7 @@ GLUI_Rollout *ROLLOUT_windrose = NULL;
 GLUI_Rollout **ROLLOUT_showz_windrose;
 GLUI_Rollout *ROLLOUT_trees = NULL;
 
+GLUI_Spinner *SPINNER_size_factor = NULL;
 GLUI_Spinner *SPINNER_slice_x = NULL;
 GLUI_Spinner *SPINNER_slice_y = NULL;
 GLUI_Spinner *SPINNER_slice_z = NULL;
@@ -791,7 +792,8 @@ extern "C" void GluiDeviceSetup(int main_window){
 
       ROLLOUT_plotproperties = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "2D plot properties", false);
       glui_device->add_checkbox_to_panel(ROLLOUT_plotproperties, _("plot labels"),                   &showd_plot2d_labels);
-      glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("size factor"), GLUI_SPINNER_FLOAT, &plot2d_size_factor);
+      SPINNER_size_factor = glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("size factor"), GLUI_SPINNER_FLOAT, &plot2d_size_factor);
+      SPINNER_size_factor->set_float_limits(0.0,1.0);
       glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("x offset"),    GLUI_SPINNER_FLOAT,  plot2d_xyz_offset);
       glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("y offset"),    GLUI_SPINNER_FLOAT,  plot2d_xyz_offset+1);
       glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("z offset"),    GLUI_SPINNER_FLOAT,  plot2d_xyz_offset+2);
