@@ -2061,6 +2061,7 @@ void GetMinMaxDepth(float *min_depth, float *max_depth){
 
   DistPointBox(smv_eyepos, box_corners, min_depth, max_depth);
 
+  #ifndef  pp_HRR_PLOT2D
   if(vis_hrr_plot == 1 || vis_slice_plot ==1){
     float mn_depth, mx_depth;
     float box_plot_corners[8][3];
@@ -2082,6 +2083,7 @@ void GetMinMaxDepth(float *min_depth, float *max_depth){
     *min_depth = MIN(mn_depth, *min_depth);
     *max_depth = MIN(mx_depth, *max_depth);
   }
+#endif
 
   if(have_box_geom_corners==1){
     float mindist, maxdist;
