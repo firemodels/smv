@@ -85,6 +85,7 @@ void GetHoc(float *hoc, char *name){
   if(stream==NULL){
     *hoc = -1.0;
     strcpy(name, "");
+    return;
   }
 
   while(!feof(stream)){
