@@ -7,9 +7,9 @@
 
 EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals);
 #ifdef pp_HRR_PLOT2D
-void DrawPlot2D(int option, float *x, float *z, int n,
-                float highlight_x, float highlight_y, int valid,
-                float global_valmin, float global_valmax, char *quantity, char *unit,
+void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
+                float highlight_x, float highlight_y, float highlight_y2, int valid,
+                float global_valmin, float global_valmax, char *quantity, char *quantity2, char *unit,
                 float left, float right, float down, float top);
 #endif
 EXTERNCPP void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,

@@ -251,6 +251,7 @@ void ReadHRR(int flag){
       strcpy(label, "HOC*");
       strcat(label, hi->label.longlabel);
       SetLabels(&(hi2->label), label, label, "kW");
+      mlr_col = hi2-hrrinfo;
       have_mlr = 1;
       nhrrhcinfo++;
     }
