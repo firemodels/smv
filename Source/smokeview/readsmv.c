@@ -278,7 +278,7 @@ void ReadHRR(int flag){
   CheckMemory;
 
 //define column of hrr/qradi
-  if(hrr_col>=0&qradi_col>=0){
+  if(hrr_col>=0&&qradi_col>=0){
     char label[256];
     hrrdata *hi_chirad;
 
@@ -304,7 +304,7 @@ void ReadHRR(int flag){
   CheckMemory;
 
 //construct column of qradi/hrr
-  if(hrr_col>=0&qradi_col>=0){
+  if(hrr_col>=0&&qradi_col>=0){
     hrrdata *hi_chirad, *hi_hrr, *hi_qradi;
 
     hi_chirad = hrrinfo+chirad_col;

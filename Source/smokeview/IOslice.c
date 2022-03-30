@@ -6193,7 +6193,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
         if(z11<zbar0||z31<zbar0||z33<zbar0)draw123=0;
         if(z11<zbar0||z33<zbar0||z13<zbar0)draw134=0;
 
-        if(draw123==0&draw134==0)continue;
+        if(draw123==0&&draw134==0)continue;
 
         z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
         z31 = terrain_zmin+geom_vert_exag*(z31-terrain_zmin);
