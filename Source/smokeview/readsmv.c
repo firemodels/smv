@@ -83,7 +83,7 @@ void GetHoc(float *hoc, char *name){
   strcat(outfile, ".out");
   stream = fopen(outfile, "r");
   if(stream==NULL){
-    *hoc = -1.0;
+    *hoc = 0.0;
     strcpy(name, "");
     return;
   }
@@ -106,7 +106,7 @@ void GetHoc(float *hoc, char *name){
     }
   }
   fclose(stream);
-  *hoc = -1.0;
+  *hoc = 0.0;
   strcpy(name, "");
 }
 
@@ -240,16 +240,19 @@ void ReadHRR(int flag){
     hi = hrrinfo+i;
     if(strlen(hi->label.longlabel)>3&&strncmp(hi->label.longlabel,"MLR_",4)==0){
       char label[256];
+      int doit = 0;
 
-      if(strstr(hi->label.longlabel, fuel_name)!=NULL ||
-         strstr(hi->label.longlabel, "FUEL")!=NULL){
-        hi2 = hrrinfo + nhrrinfo + nhrrhcinfo;
-        hi2->base_col = i;
-        strcpy(label, "HOC*");
-        strcat(label, hi->label.longlabel);
-        SetLabels(&(hi2->label), label, label, "kW");
-        nhrrhcinfo++;
-      }
+      doit = 0;
+      if(strlen(fuel_name)>0&&strstr(hi->label.longlabel, fuel_name)!=NULL)doit = 1;;
+      if(doit==0&&strstr(hi->label.longlabel, "FUEL")!=NULL)doit = 1;
+      if(doit==0)continue;
+      hi2 = hrrinfo + nhrrinfo + nhrrhcinfo;
+      hi2->base_col = i;
+      strcpy(label, "HOC*");
+      strcat(label, hi->label.longlabel);
+      SetLabels(&(hi2->label), label, label, "kW");
+      have_mlr = 1;
+      nhrrhcinfo++;
     }
   }
   CheckMemory;
