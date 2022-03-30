@@ -303,6 +303,55 @@ void GetViewportInfo(void){
   VP_timebar.right = VP_timebar.left + VP_timebar.width;
   VP_timebar.top   = VP_timebar.down + VP_timebar.height;
 
+  // setup hrr plot viewport
+
+#ifdef pp_HRR_PLOT2D
+
+  int plot_width;
+
+  plot_width = MAX(75, plot2d_size_factor*screenWidth);
+
+  VP_hrr_plot.left  = 5+titlesafe_offset;
+  VP_hrr_plot.right = VP_hrr_plot.left + 2*plot_width;
+  VP_hrr_plot.down  = VP_timebar.top   + v_space;
+  VP_hrr_plot.top   = VP_hrr_plot.down + v_space + plot_width;
+  VP_hrr_plot.doit  = vis_hrr_plot;
+  VP_hrr_plot.text_height = text_height;
+  VP_hrr_plot.text_width  = text_width;
+  if(vis_hrr_plot==1){
+    VP_hrr_plot.width  = VP_hrr_plot.right-VP_hrr_plot.left;
+    VP_hrr_plot.height = VP_hrr_plot.top-VP_hrr_plot.down;
+  }
+  else{
+    VP_hrr_plot.width  = 0;
+    VP_hrr_plot.height = 0;
+  }
+
+  // setup slice plot viewport
+
+  VP_slice_plot.left  = 5+titlesafe_offset;
+  VP_slice_plot.right = VP_slice_plot.left+2*plot_width;
+  if(vis_hrr_plot==1){
+    VP_slice_plot.down = VP_hrr_plot.top+v_space;
+  }
+  else{
+    VP_slice_plot.down = VP_timebar.top+v_space;
+  }
+  VP_slice_plot.down += text_height;
+  VP_slice_plot.top         = VP_slice_plot.down + v_space + plot_width;
+  VP_slice_plot.doit        = vis_slice_plot;
+  VP_slice_plot.text_height = text_height;
+  VP_slice_plot.text_width  = text_width;
+  if(vis_slice_plot==1){
+    VP_slice_plot.width  = VP_slice_plot.right-VP_slice_plot.left;
+    VP_slice_plot.height = VP_slice_plot.top-VP_slice_plot.down;
+  }
+  else{
+    VP_slice_plot.width  = 0;
+    VP_slice_plot.height = 0;
+  }
+#endif
+
   // vertical colorbar viewport dimensions
 
   doit=1;
@@ -849,6 +898,82 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
       sprintf(meshlabel,"mesh: %i",imesh);
     }
     OutputText(VP_info.left+h_space,VP_info.down+v_space+info_lines*(v_space+VP_info.text_height), meshlabel);
+  }
+}
+
+/* ------------------------ ViewportHrrPlot ------------------------- */
+
+void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down) {
+  if(SubPortOrtho2(quad, &VP_hrr_plot, screen_left, screen_down)==0)return;
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  if(vis_hrr_plot==1&&global_times!=NULL){
+    float highlight_time = 0.0, highlight_val = 0.0;
+    int valid = 1;
+    hrrdata *hi, *hitime;
+    int itime;
+
+    hi = hrrinfo+glui_hrr;
+    hitime = hrrinfo+time_col;
+
+    if(update_avg==1){
+      TimeAveragePlot2DData(hitime->vals, hi->vals_orig, hi->vals, hi->nvals);
+      update_avg = 0;
+    }
+    highlight_time = global_times[itimes];
+    itime = GetInterval(highlight_time, hitime->vals, hitime->nvals);
+    itime = CLAMP(itime, 0, hitime->nvals-1);
+
+    highlight_val = hi->vals[itime];
+    DrawPlot2D(PLOT_ALL, hitime->vals, hi->vals, hi->nvals,
+               highlight_time, highlight_val, valid, hi->valmin, hi->valmax, hi->label.longlabel, hi->label.unit,
+               VP_hrr_plot.left, VP_hrr_plot.right, VP_hrr_plot.down, VP_hrr_plot.top);
+  }
+
+}
+
+/* ------------------------ ViewportSlicePlot ------------------------- */
+
+void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
+  if(SubPortOrtho2(quad, &VP_slice_plot, screen_left, screen_down)==0)return;
+  SNIFF_ERRORS("111");
+  glMatrixMode(GL_MODELVIEW);
+  SNIFF_ERRORS("222");
+  glLoadIdentity();
+  SNIFF_ERRORS("333");
+  if(vis_slice_plot==1&&global_times!=NULL){
+    int i;
+
+    for(i = 0; i<nsliceinfo; i++){
+      slicedata *slicei;
+      devicedata *devicei;
+      float valmin, valmax;
+      float highlight_val;
+
+      slicei = sliceinfo+i;
+      devicei = &(slicei->vals2d);
+      if(slicei->loaded==0||devicei->valid==0)continue;
+
+      highlight_val = devicei->vals[itimes];
+
+      boundsdata *sb;
+
+      sb = slicebounds + slicefile_labelindex;
+      if(sb->dev_min>sb->dev_max){
+        valmin = sb->levels256[0];
+        valmax = sb->levels256[255];
+      }
+      else{
+        valmin = MIN(sb->dev_min, sb->levels256[0]);
+        valmax = MAX(sb->dev_max, sb->levels256[255]);
+      }
+
+      DrawPlot2D(PLOT_ALL, devicei->times, devicei->vals, devicei->nvals,
+               global_times[itimes], highlight_val, 1, valmin, valmax,
+               slicei->label.shortlabel, slicei->label.unit,
+               VP_slice_plot.left, VP_slice_plot.right, VP_slice_plot.down, VP_slice_plot.top);
+      SNIFF_ERRORS("444");
+    }
   }
 }
 
@@ -1894,11 +2019,71 @@ void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxd
   }
 }
 
+/* ------------------ SetBoxCorners  ------------------------ */
+
+void SetBoxCorners(float box[8][3], float xmin, float xmax, float ymin, float ymax, float zmin, float zmax){
+  box[0][0] = xmin;
+  box[0][1] = ymin;
+  box[0][2] = zmin;
+
+  box[1][0] = xmax;
+  box[1][1] = ymin;
+  box[1][2] = zmin;
+
+  box[2][0] = xmin;
+  box[2][1] = ymax;
+  box[2][2] = zmin;
+
+  box[3][0] = xmax;
+  box[3][1] = ymax;
+  box[3][2] = zmin;
+
+  box[4][0] = xmin;
+  box[4][1] = ymin;
+  box[4][2] = zmax;
+
+  box[5][0] = xmax;
+  box[5][1] = ymin;
+  box[5][2] = zmax;
+
+  box[6][0] = xmin;
+  box[6][1] = ymax;
+  box[6][2] = zmax;
+
+  box[7][0] = xmax;
+  box[7][1] = ymax;
+  box[7][2] = zmax;
+}
+
 /* ------------------ GetMinMaxDepth  ------------------------ */
 
 void GetMinMaxDepth(float *min_depth, float *max_depth){
 
   DistPointBox(smv_eyepos, box_corners, min_depth, max_depth);
+
+  #ifndef  pp_HRR_PLOT2D
+  if(vis_hrr_plot == 1 || vis_slice_plot ==1){
+    float mn_depth, mx_depth;
+    float box_plot_corners[8][3];
+    float xmin, xmax;
+    float ymin, ymax;
+    float zmin, zmax;
+
+    xmin = xbar0FDS + SCALE2FDS(plot2d_xyz_offset[0]-1.0);
+    xmax = xmin + 2*SCALE2FDS(1.2);
+    ymin = ybar0FDS + SCALE2FDS(plot2d_xyz_offset[1]-1.0);
+    ymax = ymin + 2*SCALE2FDS(1.2);
+    zmin = zbar0FDS + SCALE2FDS(plot2d_xyz_offset[2]-1.0);
+    zmax = zmin + 2*SCALE2FDS(1.2);
+
+    SetBoxCorners(box_plot_corners, xmin, xmax, ymin, ymax, zmin, zmax);
+
+    DistPointBox(smv_eyepos, box_plot_corners, &mn_depth, &mx_depth);
+
+    *min_depth = MIN(mn_depth, *min_depth);
+    *max_depth = MIN(mx_depth, *max_depth);
+  }
+#endif
 
   if(have_box_geom_corners==1){
     float mindist, maxdist;

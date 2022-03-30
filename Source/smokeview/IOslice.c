@@ -6193,7 +6193,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
         if(z11<zbar0||z31<zbar0||z33<zbar0)draw123=0;
         if(z11<zbar0||z33<zbar0||z13<zbar0)draw134=0;
 
-        if(draw123==0&draw134==0)continue;
+        if(draw123==0&&draw134==0)continue;
 
         z11 = terrain_zmin+geom_vert_exag*(z11-terrain_zmin);
         z31 = terrain_zmin+geom_vert_exag*(z31-terrain_zmin);
@@ -7571,7 +7571,32 @@ void Slice2Device(void){
   }
 }
 
+#ifdef pp_HRR_PLOT2D
+/* ------------------ DrawSlicePlots ------------------------ */
 
+void DrawSlicePlots(void){
+  int i;
+
+  for(i = 0; i<nsliceinfo; i++){
+    slicedata *slicei;
+    devicedata *devicei;
+
+    slicei = sliceinfo+i;
+    devicei = &(slicei->vals2d);
+    if(slicei->loaded==0||devicei->valid==0)continue;
+
+    glPushMatrix();
+    glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
+    glTranslatef(-xbar0,-ybar0,-zbar0);
+    glPointSize(10.0);
+    glBegin(GL_POINTS);
+    glColor3f(0.0,0.0,0.0);
+    glVertex3fv(devicei->xyz);
+    glEnd();
+    glPopMatrix();
+  }
+}
+#else
 /* ------------------ DrawSlicePlots ------------------------ */
 
 void DrawSlicePlots(void){
@@ -7611,13 +7636,14 @@ void DrawSlicePlots(void){
       valmax = MAX(sb->dev_max, sb->levels256[255]);
     }
     xyz[2] = 0.0;
-    if(vis_hrr_plot==1)xyz[2] = 1.2*plot2d_size_factor;
+    if(vis_hrr_plot==1)xyz[2] = SCALE2FDS(1.2*plot2d_size_factor);
 
     DrawPlot(PLOT_ALL, xyz, plot2d_size_factor, devicei->times, devicei->vals, devicei->nvals,
              global_times[itimes], highlight_val, 1, valmin, valmax,
              slicei->label.shortlabel, slicei->label.unit);
   }
 }
+#endif
 
 /* ------------------ DrawSliceFrame ------------------------ */
 

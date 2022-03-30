@@ -35,9 +35,6 @@ SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
 #endif
 
-SVEXTERN char hrrlabel[256];
-SVEXTERN hrrdata SVDECL(*hrrptr, NULL), SVDECL(*timeptr, NULL);
-
 #ifdef pp_TERRAIN_SKIP
 SVEXTERN int SVDECL(terrain_skip, 1);
 #endif
@@ -144,6 +141,8 @@ SVEXTERN char *cslice_label = "Slice",  *cpart_label = "Part", *cbound_label = "
 SVEXTERN char *cslice_label, *cpart_label, *cbound_label, *cplot3d_label;
 #endif
 
+SVEXTERN float SVDECL(plot2d_size_factor, 0.15);
+SVEXTERN float SVDECL(plot2d_line_width, 1.0), SVDECL(plot2d_point_size, 10.0);
 #ifdef INMAIN
 SVEXTERN float plot2d_xyz_offset[3] = {0.0, 0.0, 0.0};
 #else
@@ -672,6 +671,8 @@ SVEXTERN int colorbar_label_width;
 SVEXTERN int timebar_left_width, timebar_right_width;
 SVEXTERN int SVDECL(h_space,2), SVDECL(v_space,2);
 SVEXTERN portdata VP_fullscreen, VP_title, VP_timebar, VP_vcolorbar, VP_scene, VP_info;
+SVEXTERN portdata VP_hrr_plot, VP_slice_plot;
+
 SVEXTERN int SVDECL(in_external,0);
 SVEXTERN int SVDECL(label_list_index,0);
 SVEXTERN labeldata LABEL_local, SVDECL(*LABEL_global_ptr,NULL), LABEL_default;
@@ -777,7 +778,6 @@ SVEXTERN int SVDECL(trainer_showall_mslice,0),SVDECL(trainer_cycle_mslice,1);
 SVEXTERN int SVDECL(trainer_temp_n,0),SVDECL(trainer_oxy_n,0);
 SVEXTERN char SVDECL(*tr_name,NULL);
 SVEXTERN int SVDECL(showdevice_val,0), SVDECL(showvdevice_val,0),SVDECL(showd_plot2d_labels,1),SVDECL(colordevice_val,0),SVDECL(showdevice_id,0);
-SVEXTERN float SVDECL(plot2d_size_factor, 0.5), SVDECL(plot2d_line_width, 1.0), SVDECL(plot2d_point_size, 10.0);
 SVEXTERN int SVDECL(select_device, 0);
 SVEXTERN int SVDECL(showdevice_type,1), SVDECL(showdevice_unit,1);
 SVEXTERN float SVDECL(device_valmin,0.0), SVDECL(device_valmax,1.0);
@@ -872,11 +872,17 @@ SVEXTERN int SVDECL(vis_device_plot, 0);
 SVEXTERN int SVDECL(vis_hrr_plot, 0);
 SVEXTERN int SVDECL(vis_slice_plot, 0);
 
-SVEXTERN hrrdata SVDECL(*hrrinfo, NULL);
-SVEXTERN int SVDECL(nhrrinfo, 0), SVDECL(nhrrhcinfo, 0);
-SVEXTERN int SVDECL(time_col, -1), SVDECL(hrr_col, -1), SVDECL(qradi_col, -1), SVDECL(chirad_col, -1);
+SVEXTERN char hrrlabel[256];
+SVEXTERN hrrdata SVDECL(*hrrinfo, NULL), SVDECL(*hrrptr, NULL), SVDECL(*timeptr, NULL);;
+SVEXTERN int SVDECL(nhrrinfo, 0);
+SVEXTERN int SVDECL(time_col, -1), SVDECL(hrr_col, -1);
 SVEXTERN int SVDECL(glui_hrr, 1);
+#ifdef pp_HRR_OTHER
 SVEXTERN float SVDECL(fuel_hoc, -1.0), SVDECL(fuel_hoc_default, -1.0);
+SVEXTERN char fuel_name[256];
+SVEXTERN int SVDECL(qradi_col, -1), SVDECL(chirad_col, -1), SVDECL(nhrrhcinfo, 0);
+SVEXTERN int SVDECL(have_mlr, 0);
+#endif
 SVEXTERN int SVDECL(update_avg, 0);
 SVEXTERN int SVDECL(ncsvinfo,0);
 SVEXTERN csvdata SVDECL(*csvinfo,NULL);

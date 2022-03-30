@@ -4624,7 +4624,7 @@ void LoadSmoke3DMenu(int value){
           smoke3ddata *smoke3dj;
 
           smoke3dj = smoke3dinfo+j;
-          if(smoke3dj->loaded==1&smoke3dj->extinct>0.0&&smoke3di->type!=smoke3dj->type){
+          if(smoke3dj->loaded==1&&smoke3dj->extinct>0.0&&smoke3di->type!=smoke3dj->type){
             PRINTF("Unloading %s(%s)\n", smoke3dj->file, smoke3dj->label.shortlabel);
             ReadSmoke3D(ALL_SMOKE_FRAMES, j, UNLOAD, FIRST_TIME, &errorcode);
             add_blank = 1;
@@ -4665,7 +4665,7 @@ void LoadSmoke3DMenu(int value){
           smoke3ddata *smoke3dj;
 
           smoke3dj = smoke3dinfo+j;
-          if(smoke3dj->loaded==1&smoke3dj->extinct>0.0&&smoke3di->type!=smoke3dj->type){
+          if(smoke3dj->loaded==1&&smoke3dj->extinct>0.0&&smoke3di->type!=smoke3dj->type){
             PRINTF("Unloading %s(%s)\n", smoke3dj->file, smoke3dj->label.shortlabel);
             ReadSmoke3D(ALL_SMOKE_FRAMES, j, UNLOAD, FIRST_TIME, &errorcode);
             add_blank = 1;

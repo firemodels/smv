@@ -151,7 +151,7 @@ char *updatelabel=NULL;
 /* ------------------ UpdateTerrainTexture ------------------------ */
 
 extern "C" void UpdateTerrainTexture(int val){
-  if(CHECKBOX_terrain_texture_show!=NULL&val>=0&&val<nterrain_textures){
+  if(CHECKBOX_terrain_texture_show!=NULL&&val>=0&&val<nterrain_textures){
     texturedata *texti;
 
     texti = terrain_textures+val;

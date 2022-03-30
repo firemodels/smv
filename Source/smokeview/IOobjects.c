@@ -3288,6 +3288,7 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
               float highlight_x, float highlight_y, int valid,
               float global_valmin, float global_valmax, char *quantity, char *unit){
   float xmin, xmax, zmin, zmax, dx, dz;
+  float zmax_display;
   float xscale=1.0, zscale=1.0;
   float origin[3];
   int i;
@@ -3308,23 +3309,27 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
     zmin = MIN(zmin, z[i]);
     zmax = MAX(zmax, z[i]);
   }
+  if(xmax==xmin)xmax=xmin+1.0;
   if(xmax>xmin)xscale = 1.0/(xmax-xmin);
+
   if(global_valmin<global_valmax){
     zmin = global_valmin;
     zmax = global_valmax;
   }
+  zmax_display = zmax;
+  if(zmax==zmin)zmax=zmin+1.0;
   if(zmax>zmin)zscale = 1.0/(zmax-zmin);
-  Float2String(cvalmin, zmin, ndigits, force_fixedpoint);
-  Float2String(cvalmax, zmax, ndigits, force_fixedpoint);
-  Float2String(cval, highlight_y, ndigits, force_fixedpoint);
+
+  Float2String(cvalmin, zmin,         ndigits, force_fixedpoint);
+  Float2String(cvalmax, zmax_display, ndigits, force_fixedpoint);
+  Float2String(cval,     highlight_y, ndigits, force_fixedpoint);
 
   dx = (xmax - xmin)/20.0;
   dz = (zmax - zmin)/20.0;
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
-  glTranslatef(-xbar0, -ybar0, -zbar0);
-  glTranslatef(plot2d_xyz_offset[0], plot2d_xyz_offset[1], plot2d_xyz_offset[2]);
+  glTranslatef(SCALE2FDS(plot2d_xyz_offset[0]), SCALE2FDS(plot2d_xyz_offset[1]), SCALE2FDS(plot2d_xyz_offset[2]));
 
   glTranslatef(origin[0], origin[1], origin[2]);
 
@@ -3334,7 +3339,7 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
   float elev = camera_current->az_elev[1];
   glRotatef(-elev, 1.0, 0.0, 0.0);
 
-  glScalef(factor, factor, factor);
+  glScalef(SCALE2FDS(factor), SCALE2FDS(factor), SCALE2FDS(factor));
   glScalef(xscale, 1.0, zscale);
   glTranslatef(-xmin, 0.0, -zmin);
   glColor3fv(foregroundcolor);
@@ -3366,17 +3371,17 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
   }
   glEnd();
 
-  float dfont = (float)GetFontHeight()/((float)screenHeight*zscale*factor*SCALE2SMV(1.0));
+  float dfont = (float)GetFontHeight()/((float)screenHeight*zscale*SCALE2FDS(factor)*SCALE2SMV(1.0));
 
   if(option == PLOT_ALL && showd_plot2d_labels==1){
     float zmid;
 
     zmid = (zmax-2.0*dfont+zmin)/2.0;
-    Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmin-0.5*dfont, cvalmin);
     Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-0.5*dfont, cvalmax);
+    Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-1.7*dfont, quantity);
+    Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-2.9*dfont, unit);
     Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmid-0.5*dfont, cval);
-    Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-1.6*dfont, quantity);
-    Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-2.7*dfont, unit);
+    Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmin-0.5*dfont, cvalmin);
   }
 
   if(valid==1){
@@ -3453,7 +3458,7 @@ void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals
 }
 
 /* ----------------------- DrawHRRPlot ----------------------------- */
-
+#ifndef pp_HRR_PLOT2D
 void DrawHRRPlot(void){
   if(vis_hrr_plot==1&&global_times!=NULL){
     float xyz[] = {0.0,0.0,0.0};
@@ -3478,6 +3483,7 @@ void DrawHRRPlot(void){
              highlight_time, highlight_val, valid, hi->valmin, hi->valmax, hi->label.longlabel, hi->label.unit);
   }
 }
+#endif
 
 /* ----------------------- DrawDevicePlots ----------------------------- */
 
@@ -7901,3 +7907,97 @@ void Normalize(float *xyz, int n){
     }
   }
 }
+
+#ifdef pp_HRR_PLOT2D
+  /* ------------------ DrawPlot2D ------------------------ */
+void DrawPlot2D(int option, float *x, float *z, int n,
+              float highlight_x, float highlight_y, int valid,
+              float global_valmin, float global_valmax, char *quantity, char *unit,
+              float left, float right, float down, float top){
+  float xmin, xmax, zmin, zmax, dx;
+  float zmax_display;
+  int i;
+  char cvalmin[20], cvalmax[20], cval[20];
+  int ndigits = 3;
+
+  xmin = x[0];
+  xmax = xmin;
+  zmin = z[0];
+  zmax = zmin;
+  for(i = 1; i<n; i++){
+    xmin = MIN(xmin, x[i]);
+    xmax = MAX(xmax, x[i]);
+    zmin = MIN(zmin, z[i]);
+    zmax = MAX(zmax, z[i]);
+  }
+  if(xmax==xmin)xmax=xmin+1.0;
+
+  if(global_valmin<global_valmax){
+    zmin = global_valmin;
+    zmax = global_valmax;
+  }
+  zmax_display = zmax;
+  if(zmax==zmin)zmax=zmin+1.0;
+
+  Float2String(cvalmin, zmin,         ndigits, force_fixedpoint);
+  Float2String(cvalmax, zmax_display, ndigits, force_fixedpoint);
+  Float2String(cval,     highlight_y, ndigits, force_fixedpoint);
+
+  dx = (xmax - xmin)/20.0;
+
+  glPushMatrix();
+
+  int plot_width = MAX(75, plot2d_size_factor*screenWidth);
+
+#define HSCALE2D(x) (5+(left) + plot_width*((x)-(xmin))/((xmax)-(xmin)))
+#define VSCALE2D(z) ((down) + plot_width*((z)-(zmin))/((zmax)-(zmin)))
+  glColor3fv(foregroundcolor);
+  glLineWidth(plot2d_line_width);
+  glBegin(GL_LINES);
+  for(i = 0; i<n-1; i++){
+    glVertex2f(HSCALE2D(x[i]),   VSCALE2D(z[i]));
+    glVertex2f(HSCALE2D(x[i+1]), VSCALE2D(z[i+1]));
+  }
+  if(option == PLOT_ALL){
+    glVertex2f(HSCALE2D(xmin), VSCALE2D(zmin));
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmin));
+
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmin));
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmax));
+
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmax));
+    glVertex2f(HSCALE2D(xmin), VSCALE2D(zmax));
+
+    glVertex2f(HSCALE2D(xmin), VSCALE2D(zmax));
+    glVertex2f(HSCALE2D(xmin), VSCALE2D(zmin));
+
+    glVertex2f(HSCALE2D(xmax),      VSCALE2D(zmax));
+    glVertex2f(HSCALE2D(xmax + dx), VSCALE2D(zmax));
+
+    glVertex2f(HSCALE2D(xmax),      VSCALE2D(zmin));
+    glVertex2f(HSCALE2D(xmax + dx), VSCALE2D(zmin));
+  }
+  glEnd();
+
+  float dfont = (float)GetFontHeight();
+
+  if(option == PLOT_ALL && showd_plot2d_labels==1){
+#define DFONTY dfont/2.0
+    OutputText(HSCALE2D(xmax), VSCALE2D(zmax)-0.5*dfont+DFONTY, cvalmax);
+    OutputText(HSCALE2D(xmax), VSCALE2D(zmax)-1.6*dfont+DFONTY, quantity);
+    OutputText(HSCALE2D(xmax), VSCALE2D(zmax)-2.7*dfont+DFONTY, unit);
+    OutputText(HSCALE2D(xmax), VSCALE2D(zmax)-3.8*dfont+DFONTY, cval);
+    OutputText(HSCALE2D(xmax), VSCALE2D(zmin), cvalmin);
+  }
+
+  if(valid==1){
+    glColor3f(1.0,0.0,0.0);
+    glPointSize(plot2d_point_size);
+    glBegin(GL_POINTS);
+    glVertex2f(HSCALE2D(highlight_x), VSCALE2D(highlight_y));
+    glEnd();
+  }
+  glPopMatrix();
+}
+#endif
+
