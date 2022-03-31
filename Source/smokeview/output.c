@@ -371,15 +371,13 @@ void OutputTextColor(float *fontcolor, float x, float y, char *string){
   char *c;
   float *fcolor;
 
-  fcolor = foregroundcolor;
+  if(string==NULL)return;
   if(fontcolor==NULL){
     fcolor = foregroundcolor;
   }
   else{
     fcolor = fontcolor;
   }
-
-  if(string==NULL)return;
   glColor3fv(fcolor);
   if(fontindex==SCALED_FONT){
     ScaleFont2D();

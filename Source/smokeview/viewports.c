@@ -908,16 +908,34 @@ void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down) {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   if(vis_hrr_plot==1&&global_times!=NULL){
-    float highlight_time = 0.0, highlight_val = 0.0;
+    float highlight_time = 0.0, highlight_val = 0.0, highlight_val2 = 0.0;
     int valid = 1;
-    hrrdata *hi, *hitime;
+    hrrdata *hi, *hi2=NULL, *hitime;
+    float *vals2=NULL;
     int itime;
+    char *quantity2=NULL;
+    float valmin, valmax;
 
-    hi = hrrinfo+glui_hrr;
+    if(hrr_col>=0&&mlr_col>=0&&hoc_hrr==1&&(glui_hrr==hrr_col||glui_hrr==mlr_col)){
+      hi = hrrinfo + hrr_col;
+      hi2 = hrrinfo + mlr_col;
+      vals2 = hi2->vals;
+      quantity2 = hi2->label.longlabel;
+      valmin = MIN(hi->valmin, hi2->valmin);
+      valmax = MAX(hi->valmax, hi2->valmax);
+    }
+    else{
+      hi = hrrinfo+glui_hrr;
+      valmin = hi->valmin;
+      valmax = hi->valmax;
+    }
     hitime = hrrinfo+time_col;
 
     if(update_avg==1){
       TimeAveragePlot2DData(hitime->vals, hi->vals_orig, hi->vals, hi->nvals);
+      if(hi2!=NULL){
+        TimeAveragePlot2DData(hitime->vals, hi2->vals_orig, hi2->vals, hi->nvals);
+      }
       update_avg = 0;
     }
     highlight_time = global_times[itimes];
@@ -925,8 +943,10 @@ void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down) {
     itime = CLAMP(itime, 0, hitime->nvals-1);
 
     highlight_val = hi->vals[itime];
-    DrawPlot2D(PLOT_ALL, hitime->vals, hi->vals, hi->nvals,
-               highlight_time, highlight_val, valid, hi->valmin, hi->valmax, hi->label.longlabel, hi->label.unit,
+    if(hi2!=NULL)highlight_val2 = hi2->vals[itime];
+
+    DrawPlot2D(PLOT_ALL, hitime->vals, hi->vals, vals2, hi->nvals,
+               highlight_time, highlight_val, highlight_val2, valid, valmin, valmax, hi->label.longlabel, quantity2, hi->label.unit,
                VP_hrr_plot.left, VP_hrr_plot.right, VP_hrr_plot.down, VP_hrr_plot.top);
   }
 
@@ -968,9 +988,9 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
         valmax = MAX(sb->dev_max, sb->levels256[255]);
       }
 
-      DrawPlot2D(PLOT_ALL, devicei->times, devicei->vals, devicei->nvals,
-               global_times[itimes], highlight_val, 1, valmin, valmax,
-               slicei->label.shortlabel, slicei->label.unit,
+      DrawPlot2D(PLOT_ALL, devicei->times, devicei->vals, NULL, devicei->nvals,
+               global_times[itimes], highlight_val, 0.0, 1, valmin, valmax,
+               slicei->label.shortlabel, slicei->label.unit, NULL,
                VP_slice_plot.left, VP_slice_plot.right, VP_slice_plot.down, VP_slice_plot.top);
       SNIFF_ERRORS("444");
     }
