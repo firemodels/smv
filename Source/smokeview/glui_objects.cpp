@@ -781,7 +781,7 @@ extern "C" void GluiDeviceSetup(int main_window){
 #ifdef pp_HRR_OTHER
         if(have_mlr==1){
           SPINNER_fuel_hoc      = glui_device->add_spinner_to_panel(PANEL_plothrr, _("HOC (kJ/kg)"), GLUI_SPINNER_FLOAT, &fuel_hoc, FUEL_HOC, DeviceCB);
-                                  glui_device->add_checkbox_to_panel(PANEL_plothrr, _("HRR and HOC*MLR_... plot"), &hoc_hrr);
+                                  glui_device->add_checkbox_to_panel(PANEL_plothrr, _("HRR and HOC*MLR_..."), &hoc_hrr);
           BUTTON_reset_fuel_hoc = glui_device->add_button_to_panel(PANEL_plothrr,  _("Reset HOC"), RESET_FUEL_HOC,DeviceCB);
         }
 #endif

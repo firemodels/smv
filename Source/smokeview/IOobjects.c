@@ -7917,7 +7917,7 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   float xmin, xmax, zmin, zmax, dx;
   float zmax_display;
   int i;
-  char cvalmin[20], cvalmax[20], cval[20], cval2[20];
+  char cvalmin[20], cvalmax[20], cval[20];
   int ndigits = 3;
 
   xmin = x[0];
@@ -7942,7 +7942,6 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   Float2String(cvalmin, zmin,         ndigits, force_fixedpoint);
   Float2String(cvalmax, zmax_display, ndigits, force_fixedpoint);
   Float2String(cval,     highlight_y, ndigits, force_fixedpoint);
-  if(z2!=NULL)Float2String(cval2, highlight_y2, ndigits, force_fixedpoint);
 
   dx = (xmax - xmin)/20.0;
 
@@ -7951,6 +7950,7 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   int plot_width = MAX(75, plot2d_size_factor*screenWidth);
 
 #define HSCALE2D(x) (5+(left) + plot_width*((x)-(xmin))/((xmax)-(xmin)))
+#define HSCALE2DLABEL(x) (10 + HSCALE2D(x))
 #define VSCALE2D(z) ((down) + plot_width*((z)-(zmin))/((zmax)-(zmin)))
   glColor3fv(foregroundcolor);
   glLineWidth(plot2d_line_width);
@@ -7991,36 +7991,40 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   float dfont = (float)GetFontHeight();
 
   if(option == PLOT_ALL && showd_plot2d_labels==1){
-    char label[256], val_label[256];
+    float dy;
 
 #define DFONTY dfont/2.0
-    strcpy(label, quantity);
-    if(quantity2!=NULL){
-      strcat(label, "/");
-      strcat(label, quantity2);
-    }
-    strcpy(val_label, cval);
+
+    dy = VSCALE2D(zmax)-0.5*dfont+DFONTY; OutputText(HSCALE2DLABEL(xmax),  dy, cvalmax);
+    dy -= 1.1*dfont;                      OutputText(HSCALE2DLABEL(xmax),  dy, quantity);
+    dy -= 1.1*dfont;                      OutputText(HSCALE2DLABEL(xmax),  dy, cval);
     if(z2!=NULL){
-      strcat(val_label, "/");
-      strcat(val_label, cval2);
+      float redcolor[3] = {1.0,0.0,0.0};
+      char cval2[255];
+
+      Float2String(cval2, highlight_y2, ndigits, force_fixedpoint);
+      dy -= 1.1*dfont; OutputTextColor(redcolor, HSCALE2DLABEL(xmax), dy, quantity2);
+      dy -= 1.1*dfont; OutputTextColor(redcolor, HSCALE2DLABEL(xmax), dy, cval2);
     }
-    OutputText(HSCALE2D(xmax), VSCALE2D(zmax)-0.5*dfont+DFONTY, cvalmax);
-    OutputText(HSCALE2D(xmax), VSCALE2D(zmax)-1.6*dfont+DFONTY, label);
-    OutputText(HSCALE2D(xmax), VSCALE2D(zmax)-2.7*dfont+DFONTY, unit);
-    OutputText(HSCALE2D(xmax), VSCALE2D(zmax)-3.8*dfont+DFONTY, val_label);
-    OutputText(HSCALE2D(xmax), VSCALE2D(zmin), cvalmin);
+    dy -= 1.1*dfont;                    OutputText(HSCALE2DLABEL(xmax), dy, unit);
+
+    OutputText(HSCALE2DLABEL(xmax), VSCALE2D(zmin), cvalmin);
   }
 
   if(valid==1){
     glPointSize(plot2d_point_size);
     glBegin(GL_POINTS);
-    glColor3fv(foregroundcolor);
-    glVertex2f(HSCALE2D(highlight_x), VSCALE2D(highlight_y));
-    if(z2!=NULL){
+    if(z2==NULL){
+      glColor3f(1.0, 0.0, 0.0);
+      glVertex2f(HSCALE2D(highlight_x), VSCALE2D(highlight_y));
+    }
+    else{
+      glColor3fv(foregroundcolor);
+      glVertex2f(HSCALE2D(highlight_x), VSCALE2D(highlight_y));
       glColor3f(1.0, 0.0, 0.0);
       glVertex2f(HSCALE2D(highlight_x), VSCALE2D(highlight_y2));
-      glColor3fv(foregroundcolor);
     }
+    glColor3fv(foregroundcolor);
     glEnd();
   }
   glPopMatrix();
