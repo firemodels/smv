@@ -8008,7 +8008,6 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
     dy = VSCALE2D(zmax)-1.5*dfont+DFONTY; OutputText(HSCALE2DLABEL(xmax),  dy, cvalmax);
     dy -= 1.1*dfont;                      OutputText(HSCALE2DLABEL(xmax),  dy, cval);
     if(z2!=NULL){
-      float redcolor[3] = {1.0,0.0,0.0};
       char cval2[255];
 
       Float2String(cval2, highlight_y2, ndigits, force_fixedpoint);
