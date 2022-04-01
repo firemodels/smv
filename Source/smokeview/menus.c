@@ -1503,6 +1503,9 @@ void DialogMenu(int value){
   case DIALOG_TRAINER:
     ShowGluiTrainer();
     break;
+  case DIALOG_2DPLOTS:
+    ShowGlui2DPlots();
+    break;
   case DIALOG_DEVICE:
     ShowGluiDevice();
     break;
@@ -6276,7 +6279,7 @@ void ShowObjectsMenu(int value){
   }
   else if(value==PLOT_HRRPUV){
     vis_hrr_plot = 1-vis_hrr_plot;
-    UpdateVisHrrPlot();    
+    UpdateVisHrrPlot();
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     UpdateShow();
     update_times = 1;
@@ -9796,7 +9799,10 @@ updatemenu=0;
 
   CREATEMENU(datadialogmenu, DialogMenu);
   if(ndeviceinfo>0&&GetNumActiveDevices()>0){
-    glutAddMenuEntry(_("Devices/Objects/2D plots..."), DIALOG_DEVICE);
+    glutAddMenuEntry(_("Devices/Objects"), DIALOG_DEVICE);
+  }
+  if((ndeviceinfo>0&&GetNumActiveDevices()>0)||nsliceinfo>0||nhrrinfo>0){
+    glutAddMenuEntry(_("2D plots"), DIALOG_2DPLOTS);
   }
   glutAddMenuEntry(_("Show/Hide..."), DIALOG_SHOWFILES);
   glutAddMenuEntry(_("Particle tracking..."), DIALOG_SHOOTER);
