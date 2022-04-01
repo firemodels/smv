@@ -313,7 +313,7 @@ extern "C" void DeviceCB(int var){
     update_avg = 1;
   }
   if(var == WINDROSE_UPDATE){
-    DeviceData2WindRose(nr_windrose, ntheta_windrose);
+    if(viswindrose==1)DeviceData2WindRose(nr_windrose, ntheta_windrose);
     return;
   }
   if(var==WINDROSE_SETPOS){
@@ -421,7 +421,7 @@ extern "C" void DeviceCB(int var){
     }
     break;
   case DEVICE_NBUCKETS:
-    DeviceData2WindRose(nr_windrose, ntheta_windrose);
+    if(viswindrose==1)DeviceData2WindRose(nr_windrose, ntheta_windrose);
     break;
   case DEVICE_show_orientation:
     updatemenu = 1;
@@ -624,7 +624,8 @@ extern "C" void GluiDeviceSetup(int main_window){
       ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_windrose, WINDROSE_ROLLOUT, glui_device);
 
 
-      glui_device->add_checkbox_to_panel(ROLLOUT_windrose, _("show"), &viswindrose);
+      glui_device->add_checkbox_to_panel(ROLLOUT_windrose, _("show"), &viswindrose, WINDROSE_UPDATE, DeviceCB);
+
 
       PANEL_show_windrose2 = glui_device->add_panel_to_panel(ROLLOUT_windrose, "merge data", true);
       PANEL_windrose_mergexyz = glui_device->add_panel_to_panel(PANEL_show_windrose2, "space", true);

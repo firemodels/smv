@@ -7121,7 +7121,7 @@ void SetupDeviceData(void){
   SetupZTreeDevices();
   UpdateColorDevices();
 
-  DeviceData2WindRose(nr_windrose,ntheta_windrose);
+  if(viswindrose==1)DeviceData2WindRose(nr_windrose,ntheta_windrose);
 
   FREEMEMORY(vals);
   FREEMEMORY(valids);
