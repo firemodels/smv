@@ -872,10 +872,22 @@ extern "C" void ShowGluiPlotDevice(void){
 
 }
 
+/* ------------------ ShowGlui2DPlots ------------------------ */
+
+extern "C" void ShowGlui2DPlots(void){
+  if(glui_device!=NULL&&ROLLOUT_device2Dplots!=NULL){
+    glui_device->show();
+    ROLLOUT_device2Dplots->open();
+  }
+}
+
 /* ------------------ ShowGluiDevice ------------------------ */
 
 extern "C" void ShowGluiDevice(void){
-  if(glui_device!=NULL)glui_device->show();
+  if(glui_device!=NULL&&ROLLOUT_smvobjects!=NULL){
+    glui_device->show();
+    ROLLOUT_smvobjects->open();
+  }
 }
 /* ------------------ OpenCB ------------------------ */
 

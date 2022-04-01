@@ -204,7 +204,7 @@ void GetViewportInfo(void){
     text_width =  MAX(18, (25.0/36.0)*(scaled_font2d_height2width*(float)scaled_font2d_height));
   }
 
-  // full screen viewport dimensions
+  // ------------------------------------ full screen viewport dimensions -----------------------------------------------------
 
   VP_fullscreen.left = 0;
   VP_fullscreen.down = 0;
@@ -214,7 +214,7 @@ void GetViewportInfo(void){
   VP_fullscreen.top = VP_fullscreen.down + VP_fullscreen.height;
   VP_info.doit = 1;
 
-  // INFO viewport dimensions
+  // ------------------------------------ INFO viewport dimensions -----------------------------------------------------
 
   doit=0;
   if(visMeshlabel==1){
@@ -256,7 +256,57 @@ void GetViewportInfo(void){
   VP_info.right = VP_info.left + VP_fullscreen.width;
   VP_fullscreen.top = VP_fullscreen.down + VP_info.height;
 
-  // timebar viewport dimensions
+  // ------------------------------------ hrr plot viewport dimensions -----------------------------------------------------
+
+#ifdef pp_HRR_PLOT2D
+
+  int plot_width;
+
+  plot_width = MAX(75, plot2d_size_factor*screenWidth);
+
+  VP_hrr_plot.left  = 5+titlesafe_offset;
+  VP_hrr_plot.right = VP_hrr_plot.left + plot_width + GetStringWidth("XXXXXX");
+  VP_hrr_plot.down  = v_space;
+  VP_hrr_plot.top   = VP_hrr_plot.down + v_space + plot_width  + 4*GetFontHeight();
+;
+  VP_hrr_plot.doit  = vis_hrr_plot;
+  VP_hrr_plot.text_height = text_height;
+  VP_hrr_plot.text_width  = text_width;
+  if(vis_hrr_plot==1){
+    VP_hrr_plot.width  = VP_hrr_plot.right-VP_hrr_plot.left;
+    VP_hrr_plot.height = VP_hrr_plot.top-VP_hrr_plot.down;
+  }
+  else{
+    VP_hrr_plot.width  = 0;
+    VP_hrr_plot.height = 0;
+  }
+
+  // ------------------------------------ slice plot viewport dimensions -----------------------------------------------------
+
+  VP_slice_plot.left  = 5+titlesafe_offset;
+  VP_slice_plot.right = VP_slice_plot.left + plot_width +  GetStringWidth("XXXXXX");
+  if(vis_hrr_plot==1){
+    VP_slice_plot.down = VP_hrr_plot.top+v_space;
+  }
+  else{
+    VP_slice_plot.down = VP_timebar.top+v_space;
+  }
+  VP_slice_plot.down += text_height;
+  VP_slice_plot.top         = VP_slice_plot.down + v_space + plot_width  + 4*GetFontHeight();
+  VP_slice_plot.doit        = vis_slice_plot;
+  VP_slice_plot.text_height = text_height;
+  VP_slice_plot.text_width  = text_width;
+  if(vis_slice_plot==1){
+    VP_slice_plot.width  = VP_slice_plot.right-VP_slice_plot.left;
+    VP_slice_plot.height = VP_slice_plot.top-VP_slice_plot.down;
+  }
+  else{
+    VP_slice_plot.width  = 0;
+    VP_slice_plot.height = 0;
+  }
+#endif
+
+  // ------------------------------------ timebar viewport dimensions -----------------------------------------------------
 
   doit=0;
   if(showtime==1){
@@ -270,6 +320,7 @@ void GetViewportInfo(void){
   if(show_horizontal_colorbar == 1||visAvailmemory==1)doit=1;
 
   VP_timebar.left = titlesafe_offset;
+  if(vis_hrr_plot==1 || vis_slice_plot==1)VP_timebar.left = VP_hrr_plot.right;
   VP_timebar.down = titlesafe_offset;
   VP_timebar.doit=doit;
   VP_timebar.text_height = text_height;
@@ -286,6 +337,7 @@ void GetViewportInfo(void){
   }
 #endif
     VP_timebar.width  = screenWidth-VP_info.width-2*titlesafe_offset;
+    if(vis_hrr_plot==1 || vis_slice_plot==1)VP_timebar.width -= (VP_hrr_plot.right - titlesafe_offset);
     temp_height = text_height + v_space;
     if(visFramelabel==1||vis_hrr_label==1||visAvailmemory==1)temp_height += (text_height+v_space);
     VP_timebar.height = MAX(timebar_height + 2*v_space, temp_height);
@@ -303,56 +355,7 @@ void GetViewportInfo(void){
   VP_timebar.right = VP_timebar.left + VP_timebar.width;
   VP_timebar.top   = VP_timebar.down + VP_timebar.height;
 
-  // setup hrr plot viewport
-
-#ifdef pp_HRR_PLOT2D
-
-  int plot_width;
-
-  plot_width = MAX(75, plot2d_size_factor*screenWidth);
-
-  VP_hrr_plot.left  = 5+titlesafe_offset;
-  VP_hrr_plot.right = VP_hrr_plot.left + 2*plot_width;
-  VP_hrr_plot.down  = VP_timebar.top   + v_space;
-  VP_hrr_plot.top   = VP_hrr_plot.down + v_space + plot_width;
-  VP_hrr_plot.doit  = vis_hrr_plot;
-  VP_hrr_plot.text_height = text_height;
-  VP_hrr_plot.text_width  = text_width;
-  if(vis_hrr_plot==1){
-    VP_hrr_plot.width  = VP_hrr_plot.right-VP_hrr_plot.left;
-    VP_hrr_plot.height = VP_hrr_plot.top-VP_hrr_plot.down;
-  }
-  else{
-    VP_hrr_plot.width  = 0;
-    VP_hrr_plot.height = 0;
-  }
-
-  // setup slice plot viewport
-
-  VP_slice_plot.left  = 5+titlesafe_offset;
-  VP_slice_plot.right = VP_slice_plot.left+2*plot_width;
-  if(vis_hrr_plot==1){
-    VP_slice_plot.down = VP_hrr_plot.top+v_space;
-  }
-  else{
-    VP_slice_plot.down = VP_timebar.top+v_space;
-  }
-  VP_slice_plot.down += text_height;
-  VP_slice_plot.top         = VP_slice_plot.down + v_space + plot_width;
-  VP_slice_plot.doit        = vis_slice_plot;
-  VP_slice_plot.text_height = text_height;
-  VP_slice_plot.text_width  = text_width;
-  if(vis_slice_plot==1){
-    VP_slice_plot.width  = VP_slice_plot.right-VP_slice_plot.left;
-    VP_slice_plot.height = VP_slice_plot.top-VP_slice_plot.down;
-  }
-  else{
-    VP_slice_plot.width  = 0;
-    VP_slice_plot.height = 0;
-  }
-#endif
-
-  // vertical colorbar viewport dimensions
+  // ------------------------------------ vertical colorbar viewport dimensions -----------------------------------------------------
 
   doit=1;
   if(showslice==1||(showvslice==1&&vslicecolorbarflag==1)){
@@ -386,7 +389,8 @@ void GetViewportInfo(void){
   VP_vcolorbar.right = VP_vcolorbar.left+VP_vcolorbar.width;
   VP_vcolorbar.top = VP_vcolorbar.down+VP_vcolorbar.height;
 
-  // title viewport dimensions
+  // ------------------------------------ title viewport dimensions -----------------------------------------------------
+
   titleinfo.left_margin = 0;
   titleinfo.top_margin = 0;
   titleinfo.bottom_margin = 5;
@@ -441,7 +445,7 @@ void GetViewportInfo(void){
   VP_title.right = VP_title.left + VP_title.width;
   VP_title.top = VP_title.down + VP_title.height;
 
-  // scene viewport dimensions
+  // ------------------------------------ scene viewport dimensions -----------------------------------------------------
 
   {
     int timebar_height;
@@ -452,11 +456,13 @@ void GetViewportInfo(void){
     VP_scene.text_height = text_height;
     VP_scene.text_width = text_width;
     VP_scene.left = titlesafe_offset;
+    if(vis_hrr_plot==1 || vis_slice_plot==1)VP_scene.left = VP_hrr_plot.right;
+
     VP_scene.down = titlesafe_offset + timebar_height;
-    VP_scene.width = MAX(1, screenWidth - 2 * titlesafe_offset - VP_vcolorbar.width);
+    VP_scene.right = screenWidth - 2 * titlesafe_offset - VP_vcolorbar.width;
+    VP_scene.width = MAX(1, VP_scene.right - VP_scene.left);
     if(dohist == 1)VP_scene.width += colorbar_label_width / 2;
     VP_scene.height = MAX(1, screenHeight - timebar_height - VP_title.height - 2 * titlesafe_offset);
-    VP_scene.right = VP_scene.left + VP_scene.width;
     VP_scene.top = VP_scene.down + VP_scene.height;
   }
 
@@ -990,7 +996,7 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
 
       DrawPlot2D(PLOT_ALL, devicei->times, devicei->vals, NULL, devicei->nvals,
                global_times[itimes], highlight_val, 0.0, 1, valmin, valmax,
-               slicei->label.shortlabel, slicei->label.unit, NULL,
+               slicei->label.shortlabel, NULL, slicei->label.unit,
                VP_slice_plot.left, VP_slice_plot.right, VP_slice_plot.down, VP_slice_plot.top);
       SNIFF_ERRORS("444");
     }

@@ -7918,7 +7918,10 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   float zmax_display;
   int i;
   char cvalmin[20], cvalmax[20], cval[20];
+  char tvalmin[20], tvalmax[20];
   int ndigits = 3;
+
+  float dfont = (float)GetFontHeight();
 
   xmin = x[0];
   xmax = xmin;
@@ -7939,6 +7942,8 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   zmax_display = zmax;
   if(zmax==zmin)zmax=zmin+1.0;
 
+  Float2String(tvalmin, global_times[0],         ndigits, force_fixedpoint);
+  Float2String(tvalmax, global_times[nglobal_times-1], ndigits, force_fixedpoint);
   Float2String(cvalmin, zmin,         ndigits, force_fixedpoint);
   Float2String(cvalmax, zmax_display, ndigits, force_fixedpoint);
   Float2String(cval,     highlight_y, ndigits, force_fixedpoint);
@@ -7951,7 +7956,7 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
 
 #define HSCALE2D(x) (5+(left) + plot_width*((x)-(xmin))/((xmax)-(xmin)))
 #define HSCALE2DLABEL(x) (10 + HSCALE2D(x))
-#define VSCALE2D(z) ((down) + plot_width*((z)-(zmin))/((zmax)-(zmin)))
+#define VSCALE2D(z) (dfont +(down) + plot_width*((z)-(zmin))/((zmax)-(zmin)))
   glColor3fv(foregroundcolor);
   glLineWidth(plot2d_line_width);
   glBegin(GL_LINES);
@@ -7988,27 +7993,32 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   }
   glEnd();
 
-  float dfont = (float)GetFontHeight();
-
   if(option == PLOT_ALL && showd_plot2d_labels==1){
     float dy;
 
 #define DFONTY dfont/2.0
+    if(z2!=NULL){
+      dy = VSCALE2D(zmax)+DFONTY; OutputText(HSCALE2DLABEL(xmin), dy, quantity2);
+      dy += 1.1*dfont; OutputTextColor(redcolor, HSCALE2DLABEL(xmin), dy, quantity);
+    }
+    else{
+      dy = VSCALE2D(zmax)+DFONTY; OutputText(HSCALE2DLABEL(xmin), dy, quantity);
+    }
 
-    dy = VSCALE2D(zmax)-0.5*dfont+DFONTY; OutputText(HSCALE2DLABEL(xmax),  dy, cvalmax);
-    dy -= 1.1*dfont;                      OutputText(HSCALE2DLABEL(xmax),  dy, quantity);
+    dy = VSCALE2D(zmax)-1.5*dfont+DFONTY; OutputText(HSCALE2DLABEL(xmax),  dy, cvalmax);
     dy -= 1.1*dfont;                      OutputText(HSCALE2DLABEL(xmax),  dy, cval);
     if(z2!=NULL){
       float redcolor[3] = {1.0,0.0,0.0};
       char cval2[255];
 
       Float2String(cval2, highlight_y2, ndigits, force_fixedpoint);
-      dy -= 1.1*dfont; OutputTextColor(redcolor, HSCALE2DLABEL(xmax), dy, quantity2);
       dy -= 1.1*dfont; OutputTextColor(redcolor, HSCALE2DLABEL(xmax), dy, cval2);
     }
     dy -= 1.1*dfont;                    OutputText(HSCALE2DLABEL(xmax), dy, unit);
 
     OutputText(HSCALE2DLABEL(xmax), VSCALE2D(zmin), cvalmin);
+    OutputText(HSCALE2DLABEL(xmin)-GetStringWidth("X"), VSCALE2D(zmin)-dfont, tvalmin);
+    OutputText(HSCALE2DLABEL(xmax)-GetStringWidth("X"), VSCALE2D(zmin)-dfont, tvalmax);
   }
 
   if(valid==1){

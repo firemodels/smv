@@ -977,6 +977,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define DIALOG_CLIP      18
 #define DIALOG_COLORBAR  23
 #define DIALOG_DEVICE    28
+#define DIALOG_2DPLOTS   46
 #define DIALOG_DISPLAY   22
 #define DIALOG_HIDEALL   -2
 #define DIALOG_MOTION    29
