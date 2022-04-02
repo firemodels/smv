@@ -11020,7 +11020,7 @@ typedef struct {
   UpdateEvents();
 
   SetupMeshWalls();
-  update_windrose = 1;
+  if(viswindrose==1)update_windrose = 1;
 
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");
@@ -11463,11 +11463,17 @@ int ReadIni2(char *inifile, int localfile){
         &showdevice_val, &showvdevice_val, &devicetypes_index, &colordevice_val, &vectortype, &viswindrose, &showdevice_type, &showdevice_unit,&showdevice_id);
       devicetypes_index = CLAMP(devicetypes_index, 0, ndevicetypes - 1);
       update_glui_devices = 1;
+      if(viswindrose==1)update_windrose = 1;
       continue;
     }
     if(Match(buffer, "SHOWSLICEPLOT")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %f %f %f %f %i", slice_xyz, slice_xyz+1, slice_xyz+2, &plot2d_size_factor, &vis_slice_plot);
+      continue;
+    }
+    if(Match(buffer, "SHOWHRRPLOT")==1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %f %f %i", &glui_hrr, &hoc_hrr, &fuel_hoc, &plot2d_size_factor, &vis_hrr_plot);
       continue;
     }
     if(Match(buffer, "SHOWDEVICEPLOTS")==1){
@@ -11576,6 +11582,8 @@ int ReadIni2(char *inifile, int localfile){
       xyzt[3]=MAX(xyzt[3],0.0);
     }
     if(Match(buffer, "WINDROSEDEVICE")==1){
+      float rad_windrose;
+
       fgets(buffer, 255, stream);
       sscanf(buffer," %i %i %i %i %i %i %i %i %i",
         &viswindrose, &showref_windrose, &windrose_xy_vis, &windrose_xz_vis, &windrose_yz_vis, &windstate_windrose, &showlabels_windrose,
@@ -11589,12 +11597,13 @@ int ReadIni2(char *inifile, int localfile){
       showlabels_windrose = CLAMP(showlabels_windrose, 0, 1);
       if(windrose_first < 0)windrose_first = 0;
       if(windrose_next < 1)windrose_next = 1;
+      if(viswindrose==1)update_windrose = 1;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer," %i %i %i %f %i %i",    &nr_windrose, &ntheta_windrose, &scale_windrose, &radius_windrose, &scale_increment_windrose, &scale_max_windrose);
+      sscanf(buffer," %i %i %i %f %i %i",    &nr_windrose, &ntheta_windrose, &scale_windrose, &rad_windrose, &scale_increment_windrose, &scale_max_windrose);
       nr_windrose              = ABS(nr_windrose);
       ntheta_windrose          = ABS(ntheta_windrose);
-      radius_windrose          = ABS(radius_windrose);
+      if(localfile==1)radius_windrose          = ABS(rad_windrose);
       scale_windrose           = CLAMP(scale_windrose,0,1);
       scale_increment_windrose = CLAMP(scale_increment_windrose, 1, 50);
       scale_max_windrose       = CLAMP(scale_max_windrose, 0, 100);
@@ -14802,6 +14811,8 @@ void WriteIniLocal(FILE *fileout){
   );
   fprintf(fileout, "SHOWDEVICEVALS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n", showdevice_val, showvdevice_val, devicetypes_index, colordevice_val, vectortype, viswindrose, showdevice_type,showdevice_unit,showdevice_id);
+  fprintf(fileout, "SHOWHRRPLOT\n");
+  fprintf(fileout, " %i %i %f %f %i", glui_hrr, hoc_hrr, fuel_hoc, plot2d_size_factor, vis_hrr_plot);
   fprintf(fileout, "SHOWMISSINGOBJECTS\n");
   fprintf(fileout, " %i\n", show_missing_objects);
   fprintf(fileout, "SHOWSLICEPLOT\n");
