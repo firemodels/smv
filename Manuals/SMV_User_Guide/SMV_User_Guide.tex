@@ -1795,7 +1795,7 @@ data when converting data to color. Variable types are determined from the files
 by FDS and are automatically recorded in the {\tt .smv}\ file. The
 data bounds are set in a pair of edit boxes. Radio buttons
 adjacent to the edit boxes determine what type of bounds should be
-applied.  
+applied.
 The \frameit{Update Colors}\ and \frameit{Reload Data} buttons
 as the names suggest allow one to update colors (without re-reading data files) or reload data.
 
@@ -3947,11 +3947,17 @@ c) blue-$>$red split&d) white-$>$black
 \end{tabular}
 \end{center}
 \caption[Colorbar Examples]{
-Colorbar Examples.  Several colorbars are presented both as a 1D strip
-of changing color, each color corresponding to a different
-data value and as a 3D path where the x, y, z spatial locations
-of a color node correspond to the red, green and blue components
-of the color at that node.}\ \label{figCOLORBAR_EXAMPLES}
+Colorbar Examples.  Each example shows a 1D strip
+of colors to the right and a corresponding path in RGB space to the left
+where the x, y, z path position
+represent the red, green, blue color component of the colorbar.
+Each color corresponds to a
+data value.
+The `blue->red split' colorbar is discontinuous useful for highlighting data
+values at the discontinuity.
+The other three colobars are continuous.
+}\
+\label{figCOLORBAR_EXAMPLES}
 \end{figure}
 
 \begin{figure}[bph]
@@ -3959,7 +3965,9 @@ of the color at that node.}\ \label{figCOLORBAR_EXAMPLES}
 \includegraphics[width=3.319444in]{\SMVfigdir/figCOLORBAR_EDITOR}
 \end{center}
 \caption[Colorbar Editor dialog box.]{ Colorbar
-Editor dialog box. One may create or edit existing colorbars by specifying a sequence of red/green/blue coordinates.  }\ \label{figCOLORBAR}
+Editor dialog box. One may create a new colorabr or edit an existing one by 
+specifying one or more colorbar node indices ranging from 0 to 255 and 
+red, green, blue color components for that indice again ranging from 0 to 255.  }\ \label{figCOLORBAR}
 \end{figure}
 
 \section{Using the Colorbar Editor}
@@ -3972,19 +3980,19 @@ Colorbar Editor dialog box.  The FDS simulation scene is hidden
 by default but may be shown along with the colorbar display by
 un-checking the {\em Hide scene}\ checkbox.
 
-The colorbar is represented visually in two ways.  First, as a series
-of colored nodes and lines within a unit cube. The cube has
-red (x direction), green (y direction) and blue (z direction) axes.
+The colorbar is represented visually in two ways.  First, a series
+of colored nodes and lines within a cube. The cube has three axes:
+red (x direction), green (y direction) and blue (z direction).
 The nodes and lines are a spatial representation of the colorbar where as
 stated earlier the r, g, b color components are mapped to x, y, z spatial
 coordinates.
 Second, as a rectangle with a series of colored squares and numbered
 indices
-displayed along side. (This rectangle is equivalent to the colorbar
-displayed beside a regular Smokeview scene).  The numbered indices indicate
-the position in the colorbar where the node color occurs.
+displayed along side. This rectangle is equivalent to the colorbar
+displayed beside a regular Smokeview scene.  The numbered indices indicate
+the position in the colorbar , from 0 to 255, where the node color occurs.
 Once the node indices and colors are defined, Smokeview interpolates to
-form a table of colors (256 rows, 3 columns).
+form a table of colors. The table has  256 rows and 3 columns.
 
 The Colorbar Editor dialog box contains a list of colorbars
 pre-defined by Smokeview and others if defined by the user. A new
@@ -4006,14 +4014,6 @@ colorbars created by the user) are saved in the Smokeview
 configuration (.ini) file.  The \frameit{Distribute nodes uniformly}\
 button is used as the name infers to distribute the individual colors
 of the colorbar uniformly along the colorbar path.
-
-The bottom portion of the Colorbar Editor dialog box is
-used to define colors for extreme data.  That is, data occurring
-below the specified minimum or above the specified maximum.  This
-data may be highlighted by selecting the {\em Highlight Extreme
-Data}\ checkbox. The color used to highlight this data may also be
-specified.  The colors defined using this dialog box are shown in
-the triangular regions at the top and bottom of the colorbar.
 
 \chapter{Smokeview - Demonstrator Mode}
 A simplified version of Smokeview may be invoked in order to present a fire
