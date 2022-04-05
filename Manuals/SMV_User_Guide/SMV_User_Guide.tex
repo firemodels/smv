@@ -3904,14 +3904,15 @@ VOLSMOKERENDERALL
 \chapter{Coloring Data}
 \label{chap:colorbar}
 \section{Overview}
-A colorbar is used to map
-data with color.  A colorbar is normally visualized by
-displaying its color in sequence forming a bar or rectangle.
-When designing a colorbar, it is convenient to also visualize it
-by thinking of color spatially associating red, green and
+A colorbar is used to link
+data values with particular colors.  A colorbar is normally visualized as a rectangle.
+When editimg a colorbar, it is convenient to visualize it
+by thinking of colors spatially associating red, green and
 blue color components with x, y and z spatial coordinates.  A colorbar
-may then be thought of as a path within a cube where the lower left bottom
-cube corner is colored black and the upper right top corner is colored
+may then be thought of as a path within a cube where the three axes of the cube 
+are red, green and blue.
+The lower left bottom of this cube 
+is then colored black and the upper right top corner is colored
 white.  Other corners are colored red, green, blue, cyan, magenta and
 yellow depending on their color components present.
 Figure \ref{figCOLORBAR_EXAMPLES}\ gives several examples of colorbars pre-defined
@@ -3992,7 +3993,7 @@ displayed along side. This rectangle is equivalent to the colorbar
 displayed beside a regular Smokeview scene.  The numbered indices indicate
 the position in the colorbar , from 0 to 255, where the node color occurs.
 Once the node indices and colors are defined, Smokeview interpolates to
-form a table of colors. The table has  256 rows and 3 columns.
+form a table of colors. This table has  256 rows and 3 columns.
 
 The Colorbar Editor dialog box contains a list of colorbars
 pre-defined by Smokeview and others if defined by the user. A new
