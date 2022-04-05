@@ -2107,9 +2107,26 @@ void GetMinMaxDepth(float *min_depth, float *max_depth){
     DistPointBox(smv_eyepos, box_plot_corners, &mn_depth, &mx_depth);
 
     *min_depth = MIN(mn_depth, *min_depth);
-    *max_depth = MIN(mx_depth, *max_depth);
+    *max_depth = MAX(mx_depth, *max_depth);
   }
 #endif
+  if(viscolorbarpath==1){
+    float box[8][3], mn_depth, mx_depth;
+    float xmin, xmax, ymin, ymax, zmin, zmax;
+#define BMIN -0.2
+#define BMAX 1.5
+    xmin = BMIN;
+    xmax = BMAX;
+    ymin = BMIN;
+    ymax = BMAX;
+    zmin = BMIN;
+    zmax = BMAX;
+    SetBoxCorners(box, xmin, xmax, ymin, ymax, zmin, zmax);
+    DistPointBox(smv_eyepos, box, &mn_depth, &mx_depth);
+
+    *min_depth = MIN(mn_depth, *min_depth);
+    *max_depth = MAX(mx_depth, *max_depth);
+  }
 
   if(have_box_geom_corners==1){
     float mindist, maxdist;
@@ -2211,7 +2228,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       fnear = MAX(min_depth-0.75, 0.001);
       ffar  = MAX(max_depth+0.1,  farclip);
     }
-  //  printf("min_depth=%f max_depth=%f, fnear=%f ffar=%f\n", min_depth, max_depth, fnear, ffar);
+    if(viscolorbarpath==1)ffar = MAX(ffar, 5.0);
   }
   aperture_temp = Zoom2Aperture(zoom);
 
