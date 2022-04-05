@@ -3947,14 +3947,16 @@ c) blue-$>$red split&d) white-$>$black
 \end{tabular}
 \end{center}
 \caption[Colorbar Examples]{
-Colorbar Examples.  Four colorbars are presented, each as a 1D strip
-of colors, each color corresponding to a different
-data value and as a 3D path where the x, y, z positions
-represent the red, green, blue color components.
+Colorbar Examples.  Each example shows a 1D strip
+of colors to the right and a corresponding path in RGB space to the left
+where the x, y, z path position
+represent the red, green, blue color component of the colorbar.
+Each color corresponds to a
+data value.
 The `blue->red split' colorbar is discontinuous useful for highlighting data
 values at the discontinuity.
 The other three colobars are continuous.
-}\ 
+}\
 \label{figCOLORBAR_EXAMPLES}
 \end{figure}
 
@@ -3963,7 +3965,9 @@ The other three colobars are continuous.
 \includegraphics[width=3.319444in]{\SMVfigdir/figCOLORBAR_EDITOR}
 \end{center}
 \caption[Colorbar Editor dialog box.]{ Colorbar
-Editor dialog box. One may create or edit existing colorbars by specifying a sequence of red/green/blue coordinates.  }\ \label{figCOLORBAR}
+Editor dialog box. One may create a new colorabr or edit an existing one by 
+specifying one or more colorbar node indices ranging from 0 to 255 and 
+red, green, blue color components for that indice again ranging from 0 to 255.  }\ \label{figCOLORBAR}
 \end{figure}
 
 \section{Using the Colorbar Editor}
@@ -3977,7 +3981,7 @@ by default but may be shown along with the colorbar display by
 un-checking the {\em Hide scene}\ checkbox.
 
 The colorbar is represented visually in two ways.  First, a series
-of colored nodes and lines within a cube. The cube has three axes: 
+of colored nodes and lines within a cube. The cube has three axes:
 red (x direction), green (y direction) and blue (z direction).
 The nodes and lines are a spatial representation of the colorbar where as
 stated earlier the r, g, b color components are mapped to x, y, z spatial
