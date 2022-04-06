@@ -881,7 +881,6 @@ int main(int argc, char **argv){
   InitVars();
   ParseCommonOptions(argc, argv);
   if(show_help==1){
-    printf("showing help 1\n");
     Usage("smokeview", HELP_SUMMARY);
     return 1;
   }

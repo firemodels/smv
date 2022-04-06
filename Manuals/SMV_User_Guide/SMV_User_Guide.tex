@@ -3905,9 +3905,11 @@ VOLSMOKERENDERALL
 \label{chap:colorbar}
 \section{Overview}
 A colorbar is used to link
-data values with particular colors.  A colorbar is normally visualized as a rectangle.
-When editimg a colorbar, it is convenient to visualize it
-by thinking of colors spatially associating red, green and
+colors with data values.  A colorbar is normally visualized as a rectangle
+with 256 rows and 3 columns.  The three columns in each row contain the red, green
+glue color components for a data value.
+When editing a colorbar, it is convenient to visualize it
+by thinking of colors spatially by associating red, green and
 blue color components with x, y and z spatial coordinates.  A colorbar
 may then be thought of as a path within a cube where the three axes of the cube
 are red, green and blue.
@@ -3926,15 +3928,10 @@ colorbar.  Though most colorbars paths are continuous, a colorbar
 path need not be.  Discontinuous colorbars
 are useful for highlighting regions in a simulation with a particular
 property, for example where the temperature exceeds the boiling point of
-water or in a topographic map where a shoreline (zero elevation) occurs.
+water or in a topographic map where a shoreline with zero elevation occurs.
 Figure \ref{figCOLORBAR_EXAMPLES}c
 gives an example of a colorbar with a break.  This colorbar jumps in the
 middle from a shade of cyan to a shade of yellow.
-
-%In Smokeview, a colorbar is represented internally
-%as a table
-%with 256 rows, each row having a red, green and blue entry
-%ranging from 0.0 to 1.0.
 
 \begin{figure}[bph]
 \begin{center}
@@ -3983,13 +3980,13 @@ un-checking the {\em Hide scene}\ checkbox.
 
 The colorbar is represented visually in two ways.  First, a series
 of colored nodes and lines within a cube. The cube has three axes:
-red (x direction), green (y direction) and blue (z direction).
+red along the x direction), green along the y direction and blue along the z direction.
 The nodes and lines are a spatial representation of the colorbar where as
-stated earlier the r, g, b color components are mapped to x, y, z spatial
+stated earlier the red, green, blue color components are mapped to x, y, z spatial
 coordinates.
-Second, as a rectangle with a series of colored squares and numbered
+The second way a colorbar is represented is as a rectangle with a series of colored squares and numbered
 indices
-displayed along side. This rectangle is equivalent to the colorbar
+displayed along the side. This rectangle is equivalent to the colorbar
 displayed beside a regular Smokeview scene.  The numbered indices indicate
 the position in the colorbar , from 0 to 255, where the node color occurs.
 Once the node indices and colors are defined, Smokeview interpolates to
@@ -4018,7 +4015,7 @@ of the colorbar uniformly along the colorbar path.
 
 A colorbar may also be created by adding a {\tt GCOLORBAR}\ entry to the {\tt casename.ini}\ file.
 The {\tt GCOLORBAR}\ keyword is documented in Appendix~\ref{sect:iniview}. {\tt GCOLORBAR}\
-entries that coild be used to define colorbars in Figure \ref{figCOLORBAR_EXAMPLES} are given by
+entries used to define colorbars in Figure \ref{figCOLORBAR_EXAMPLES} are given by
 \begin{lstlisting}
 GCOLORBAR
  4
