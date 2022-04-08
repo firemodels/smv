@@ -923,15 +923,15 @@ void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down) {
     float valmin, valmax;
 
     if(hrr_col>=0&&mlr_col>=0&&hoc_hrr==1&&(glui_hrr==hrr_col||glui_hrr==mlr_col)){
-      hi = hrrinfo + hrr_col;
-      hi2 = hrrinfo + mlr_col;
-      vals2 = hi2->vals;
+      hi        = hrrinfo + mlr_col;
+      hi2       = hrrinfo + hrr_col;
+      vals2     = hi2->vals;
       quantity2 = hi2->label.longlabel;
-      valmin = MIN(hi->valmin, hi2->valmin);
-      valmax = MAX(hi->valmax, hi2->valmax);
+      valmin    = MIN(hi->valmin, hi2->valmin);
+      valmax    = MAX(hi->valmax, hi2->valmax);
     }
     else{
-      hi = hrrinfo+glui_hrr;
+      hi     = hrrinfo+glui_hrr;
       valmin = hi->valmin;
       valmax = hi->valmax;
     }

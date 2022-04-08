@@ -7998,8 +7998,8 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
 
 #define DFONTY dfont/2.0
     if(z2!=NULL){
-      dy = VSCALE2D(zmax)+DFONTY; OutputText(HSCALE2DLABEL(xmin), dy, quantity2);
-      dy += 1.1*dfont; OutputTextColor(redcolor, HSCALE2DLABEL(xmin), dy, quantity);
+      dy = VSCALE2D(zmax)+DFONTY; OutputTextColor(redcolor,        HSCALE2DLABEL(xmin), dy, quantity2);
+      dy += 1.1*dfont;            OutputTextColor(foregroundcolor, HSCALE2DLABEL(xmin), dy, quantity);
     }
     else{
       dy = VSCALE2D(zmax)+DFONTY; OutputText(HSCALE2DLABEL(xmin), dy, quantity);
