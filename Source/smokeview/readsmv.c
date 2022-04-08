@@ -314,7 +314,7 @@ void ReadHRR(int flag){
     hi_chirad->nvals = MIN(hi_qradi->nvals, hi_hrr->nvals);
     for(i=0;i<hi_chirad->nvals;i++){
       if(hi_hrr->vals[i]!=0.0){
-        hi_chirad->vals[i] = CLAMP(-hi_qradi->vals[i]/hi_hrr->vals[i],0.0,1.0);
+        hi_chirad->vals[i] = -hi_qradi->vals[i]/hi_hrr->vals[i];
       }
       else{
         hi_chirad->vals[i] = 0.0;
