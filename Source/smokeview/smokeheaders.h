@@ -89,9 +89,6 @@ EXTERNCPP void UpdateHoc(void);
 
 EXTERNCPP int GetStringWidth(char *string);
 EXTERNCPP void DrawDevicePlots(void);
-#ifndef pp_HRR_PLOT2D
-EXTERNCPP void DrawHRRPlot(void);
-#endif
 EXTERNCPP void DrawTreeDevicePlots(void);
 EXTERNCPP int GetPercentileDraw(int type);
 EXTERNCPP int GetPlotState(int choice);

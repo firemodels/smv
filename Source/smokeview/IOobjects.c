@@ -3457,34 +3457,6 @@ void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals
   }
 }
 
-/* ----------------------- DrawHRRPlot ----------------------------- */
-#ifndef pp_HRR_PLOT2D
-void DrawHRRPlot(void){
-  if(vis_hrr_plot==1&&global_times!=NULL){
-    float xyz[] = {0.0,0.0,0.0};
-    float highlight_time = 0.0, highlight_val = 0.0;
-    int valid = 1;
-    hrrdata *hi, *hitime;
-    int itime;
-
-    hi     = hrrinfo+glui_hrr;
-    hitime = hrrinfo+time_col;
-
-    if(update_avg==1){
-      TimeAveragePlot2DData(hitime->vals, hi->vals_orig, hi->vals, hi->nvals);
-      update_avg = 0;
-    }
-    highlight_time = global_times[itimes];
-    itime = GetInterval(highlight_time, hitime->vals, hitime->nvals);
-    itime = CLAMP(itime, 0, hitime->nvals-1);
-
-    highlight_val = hi->vals[itime];
-    DrawPlot(PLOT_ALL, xyz, plot2d_size_factor, hitime->vals, hi->vals, hi->nvals,
-             highlight_time, highlight_val, valid, hi->valmin, hi->valmax, hi->label.longlabel, hi->label.unit);
-  }
-}
-#endif
-
 /* ----------------------- DrawDevicePlots ----------------------------- */
 
 void DrawDevicePlots(void){
@@ -7908,7 +7880,6 @@ void Normalize(float *xyz, int n){
   }
 }
 
-#ifdef pp_HRR_PLOT2D
   /* ------------------ DrawPlot2D ------------------------ */
 void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
               float highlight_x, float highlight_y, float highlight_y2, int valid,
@@ -8038,5 +8009,4 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   }
   glPopMatrix();
 }
-#endif
 

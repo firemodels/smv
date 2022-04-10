@@ -518,11 +518,6 @@ void ShowScene2(int mode){
     if(vis_device_plot==DEVICE_PLOT_SHOW_ALL||vis_device_plot==DEVICE_PLOT_SHOW_SELECTED){
       DrawDevicePlots();
     }
-#ifndef pp_HRR_PLOT2D
-    if(vis_hrr_plot==1&&hrrptr!=NULL){
-      DrawHRRPlot();
-    }
-#endif
     if(vis_device_plot==DEVICE_PLOT_SHOW_TREE_ALL){
       DrawTreeDevicePlots();
     }

@@ -7571,7 +7571,6 @@ void Slice2Device(void){
   }
 }
 
-#ifdef pp_HRR_PLOT2D
 /* ------------------ DrawSlicePlots ------------------------ */
 
 void DrawSlicePlots(void){
@@ -7596,54 +7595,6 @@ void DrawSlicePlots(void){
     glPopMatrix();
   }
 }
-#else
-/* ------------------ DrawSlicePlots ------------------------ */
-
-void DrawSlicePlots(void){
-  int i;
-
-  for(i = 0; i<nsliceinfo; i++){
-    slicedata *slicei;
-    devicedata *devicei;
-    float valmin, valmax;
-    float highlight_val;
-    float xyz[3] = {0.0,0.0,0.0};
-
-    slicei = sliceinfo+i;
-    devicei = &(slicei->vals2d);
-    if(slicei->loaded==0||devicei->valid==0)continue;
-
-    highlight_val = devicei->vals[itimes];
-    glPushMatrix();
-    glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
-    glTranslatef(-xbar0,-ybar0,-zbar0);
-    glPointSize(10.0);
-    glBegin(GL_POINTS);
-    glColor3f(0.0,0.0,0.0);
-    glVertex3fv(devicei->xyz);
-    glEnd();
-    glPopMatrix();
-
-    boundsdata *sb;
-
-    sb = slicebounds + slicefile_labelindex;
-    if(sb->dev_min>sb->dev_max){
-      valmin = sb->levels256[0];
-      valmax = sb->levels256[255];
-    }
-    else{
-      valmin = MIN(sb->dev_min, sb->levels256[0]);
-      valmax = MAX(sb->dev_max, sb->levels256[255]);
-    }
-    xyz[2] = 0.0;
-    if(vis_hrr_plot==1)xyz[2] = SCALE2FDS(1.2*plot2d_size_factor);
-
-    DrawPlot(PLOT_ALL, xyz, plot2d_size_factor, devicei->times, devicei->vals, devicei->nvals,
-             global_times[itimes], highlight_val, 1, valmin, valmax,
-             slicei->label.shortlabel, slicei->label.unit);
-  }
-}
-#endif
 
 /* ------------------ DrawSliceFrame ------------------------ */
 

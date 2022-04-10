@@ -258,8 +258,6 @@ void GetViewportInfo(void){
 
   // ------------------------------------ hrr plot viewport dimensions -----------------------------------------------------
 
-#ifdef pp_HRR_PLOT2D
-
   int plot_width;
 
   plot_width = MAX(75, plot2d_size_factor*screenWidth);
@@ -304,7 +302,6 @@ void GetViewportInfo(void){
     VP_slice_plot.width  = 0;
     VP_slice_plot.height = 0;
   }
-#endif
 
   // ------------------------------------ timebar viewport dimensions -----------------------------------------------------
 
@@ -2087,29 +2084,6 @@ void GetMinMaxDepth(float *min_depth, float *max_depth){
 
   DistPointBox(smv_eyepos, box_corners, min_depth, max_depth);
 
-  #ifndef  pp_HRR_PLOT2D
-  if(vis_hrr_plot == 1 || vis_slice_plot ==1){
-    float mn_depth, mx_depth;
-    float box_plot_corners[8][3];
-    float xmin, xmax;
-    float ymin, ymax;
-    float zmin, zmax;
-
-    xmin = xbar0FDS + SCALE2FDS(plot2d_xyz_offset[0]-1.0);
-    xmax = xmin + 2*SCALE2FDS(1.2);
-    ymin = ybar0FDS + SCALE2FDS(plot2d_xyz_offset[1]-1.0);
-    ymax = ymin + 2*SCALE2FDS(1.2);
-    zmin = zbar0FDS + SCALE2FDS(plot2d_xyz_offset[2]-1.0);
-    zmax = zmin + 2*SCALE2FDS(1.2);
-
-    SetBoxCorners(box_plot_corners, xmin, xmax, ymin, ymax, zmin, zmax);
-
-    DistPointBox(smv_eyepos, box_plot_corners, &mn_depth, &mx_depth);
-
-    *min_depth = MIN(mn_depth, *min_depth);
-    *max_depth = MAX(mx_depth, *max_depth);
-  }
-#endif
   if(viscolorbarpath==1){
     float box[8][3], mn_depth, mx_depth;
     float xmin, xmax, ymin, ymax, zmin, zmax;
