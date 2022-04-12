@@ -7414,9 +7414,72 @@ void SortLoadedSliceList(void){
   }
 }
 
-/* ------------------ GetSliceOffset ------------------------ */
+/* ------------------ GetSliceOffsetGeom ------------------------ */
+#ifdef pp_PLOT2D_SLICEGEOM
 
-int GetSliceOffset(slicedata *sd, float *xyz, float *device_xyz){
+int GetSliceOffsetGeom(slicedata *sd, float *xyz, float *device_xyz){
+  geomdata *geomi;
+  geomlistdata *geomlisti;
+  float dist_min;
+  float dx, dy, dz;
+  int offset;
+  int i;
+
+  geomi = sd->patchgeom->geominfo;
+  geomlisti = geomi->geomlistinfo-1;
+  if(sd->cell_center==1){
+    for(i = 0; i<geomlisti->ntriangles; i++){
+      tridata *trianglei;
+      float vert_avg[3];
+      vertdata **verts;
+      float dist2;
+
+      trianglei = geomlisti->triangles+i;
+      verts = trianglei->verts;
+      VERT_AVG3(verts[0]->xyz, verts[1]->xyz, verts[2]->xyz, vert_avg);
+      DIST3(vert_avg, xyz, dist2);
+      if(i==0){
+        dist_min = dist2;
+        memcpy(device_xyz, vert_avg, 3*sizeof(float));
+        offset = i;
+      }
+      else{
+        if(dist2<dist_min){
+          dist_min = dist2;
+          memcpy(device_xyz, vert_avg, 3*sizeof(float));
+          offset = i;
+        }
+      }
+    }
+  }
+  else{
+    for(i = 0; i<geomlisti->nverts; i++){
+      vertdata *verti;
+      float dist2;
+
+      verti = geomlisti->verts+i;
+      DIST3(verti->xyz, xyz, dist2);
+      if(i==0){
+        dist_min = dist2;
+        memcpy(device_xyz, verti->xyz, 3*sizeof(float));
+        offset = i;
+      }
+      else{
+        if(dist2<dist_min){
+          dist_min = dist2;
+          memcpy(device_xyz, verti->xyz, 3*sizeof(float));
+          offset = i;
+        }
+      }
+    }
+  }
+  return offset;
+}
+#endif
+
+/* ------------------ GetSliceOffsetReg ------------------------ */
+
+int GetSliceOffsetReg(slicedata *sd, float *xyz, float *device_xyz){
   meshdata *slicemesh;
   float *xplt, *yplt, *zplt;
   int plotx, ploty, plotz;
@@ -7475,13 +7538,44 @@ int GetSliceOffset(slicedata *sd, float *xyz, float *device_xyz){
   return offset;
 }
 
+/* ------------------ GetSliceOffset ------------------------ */
+
+int GetSliceOffset(slicedata *sd, float *xyz, float *device_xyz){
+  int offset;
+
+  if(sd->slice_filetype!=SLICE_GEOM){
+    offset = GetSliceOffsetReg(sd, xyz, device_xyz);
+  }
+#ifdef pp_PLOT2D_SLICEGEOM
+  else{
+    offset = GetSliceOffsetGeom(sd, xyz, device_xyz);
+  }
+#endif
+  return offset;
+}
+
 /* ------------------ GetSliceVal ------------------------ */
 
 float GetSliceVal(slicedata *slicei, int itime, int offset){
   float *qslice, sliceval;
 
-  qslice = slicei->qslicedata + itime*slicei->nsliceijk;
-  sliceval = qslice[offset];
+  if(slicei->slice_filetype!=SLICE_GEOM){
+    qslice = slicei->qslicedata + itime*slicei->nsliceijk;
+    sliceval = qslice[offset];
+  }
+#ifdef pp_PLOT2D_SLICEGEOM
+  else{
+    patchdata *patchgeom;
+
+    patchgeom = slicei->patchgeom;
+    if(patchgeom==NULL){
+      sliceval = 0.0;
+    }
+    else{
+      sliceval = patchgeom->geom_vals[offset+itime*patchgeom->geom_ndynamics[0]];
+    }
+  }
+#endif
   return sliceval;
 }
 
@@ -7515,7 +7609,9 @@ void Slice2Device(void){
     sdev = &(slicei->vals2d);
     sdev->valid = 0;
     if(slicei->volslice==1||slicei->loaded==0||slicei->ntimes==0)continue;
+#ifndef pp_PLOT2D_SLICEGEOM
     if(slicei->slice_filetype==SLICE_GEOM)continue;
+#endif
     if(InMeshi(dev_mesh, slicei->idir, slice_xyz)==0)continue;
     sdev->valid = 1;
     FREEMEMORY(sdev->vals);

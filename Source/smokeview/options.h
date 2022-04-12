@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+#define pp_PLOT2D_SLICEGEOM     // 2d plots - geometry slices
 //#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds
 #define pp_THREADBUFFER
 //#define pp_SMOKEBUFFERPTR     // read 3d smoke files using memory buffe pointers
