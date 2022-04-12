@@ -7486,16 +7486,25 @@ int GetSliceOffsetReg(slicedata *sd, float *xyz, float *device_xyz){
   int i, j, k, ii;
   int ibar, jbar, kbar;
   int nx, ny, nz;
-  int offset;
+  int offset=0;
 
   memcpy(device_xyz, xyz, 3*sizeof(float));
   slicemesh = meshinfo+sd->blocknumber;
   xplt = slicemesh->xplt_orig;
   yplt = slicemesh->yplt_orig;
   zplt = slicemesh->zplt_orig;
-  plotx = sd->is1;
-  ploty = sd->js1;
-  plotz = sd->ks1;
+  if(sd->volslice==0){
+    plotx = sd->is1;
+    ploty = sd->js1;
+    plotz = sd->ks1;
+  }
+#ifdef pp_PLOT2D_SLICE3D
+  else{
+    plotx = slicemesh->iplotx_all[iplotx_all];
+    ploty = slicemesh->iploty_all[iploty_all];
+    plotz = slicemesh->iplotz_all[iplotz_all];
+  }
+#endif
   ibar = slicemesh->ibar;
   jbar = slicemesh->jbar;
   kbar = slicemesh->kbar;
@@ -7523,16 +7532,28 @@ int GetSliceOffsetReg(slicedata *sd, float *xyz, float *device_xyz){
       break;
     }
   }
-  if(sd->volslice == 0 && sd->idir == XDIR){
-    offset = IJK_SLICE(plotx, j,  k);
+  if((sd->volslice == 0 && sd->idir == XDIR)
+#ifdef pp_PLOT2D_SLICE3D
+    || (sd->volslice == 1 && visx_all==1)
+#endif
+  ){
+    offset = IJK_SLICE(plotx, j, k);
     device_xyz[0] = xplt[plotx];
   }
-  if(sd->volslice == 0 && sd->idir == YDIR){
-    offset = IJK_SLICE(i,  ploty, k);
+  if((sd->volslice == 0 && sd->idir == YDIR)
+#ifdef pp_PLOT2D_SLICE3D
+    || (sd->volslice == 1 && visy_all==1)
+#endif
+  ){
+    offset = IJK_SLICE(i, ploty, k);
     device_xyz[1] = yplt[ploty];
   }
-  if(sd->volslice == 0 && sd->idir == ZDIR){
-    offset = IJK_SLICE(i,   j, plotz);
+  if((sd->volslice == 0 && sd->idir == ZDIR)
+#ifdef pp_PLOT2D_SLICE3D
+    || (sd->volslice == 1 && visz_all==1)
+#endif
+  ){
+    offset = IJK_SLICE(i, j, plotz);
     device_xyz[2] = zplt[plotz];
   }
   return offset;
@@ -7608,7 +7629,10 @@ void Slice2Device(void){
     dev_mesh = meshinfo+slicei->blocknumber;
     sdev = &(slicei->vals2d);
     sdev->valid = 0;
-    if(slicei->volslice==1||slicei->loaded==0||slicei->ntimes==0)continue;
+    if(slicei->loaded==0||slicei->ntimes==0)continue;
+#ifndef pp_PLOT2D_SLICE3D
+    if(slicei->volslice==1)continue;
+#endif
 #ifndef pp_PLOT2D_SLICEGEOM
     if(slicei->slice_filetype==SLICE_GEOM)continue;
 #endif

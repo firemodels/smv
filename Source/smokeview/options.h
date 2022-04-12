@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+#define pp_PLOT2D_SLICE3D       // 2d plots 3d slices
 #define pp_PLOT2D_SLICEGEOM     // 2d plots - geometry slices
 //#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds
 #define pp_THREADBUFFER
