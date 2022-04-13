@@ -143,7 +143,7 @@ EXTERNCPP void UpdateGlobalFEDSliceBounds(void);
 
 EXTERNCPP void Slice2Device(void);
 
-EXTERNCPP int InMeshi(meshdata *meshi, int dir, float *xyz);
+EXTERNCPP  void UpdateSliceXYZ(void);
 EXTERNCPP int InMesh(float *xyz);
 EXTERNCPP char *GetHomeDir(void);
 EXTERNCPP void SetPercentileDrawOff(void);

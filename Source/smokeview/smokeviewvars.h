@@ -23,8 +23,9 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(update_slicexyz, 0);
 SVEXTERN int SVDECL(update_splitcolorbar, 0);
-SVEXTERN int SVDECL(global_bounds_slice_plot, 0);
+SVEXTERN int SVDECL(slice_plot_bound_option, 1);
 #ifdef INMAIN
 SVEXTERN float obst_bounding_box[6] = {1.0,0.0,1.0,0.0,1.0,0.0};
 SVEXTERN float geom_bounding_box[6] = {1000000000.0, -1000000000.0,

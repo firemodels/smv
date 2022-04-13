@@ -1849,6 +1849,11 @@ void UpdateShowScene(void){
   if(update_slice2device==1){
     update_slice2device = 0;
     Slice2Device();
+    update_slicexyz = 1;
+  }
+  if(update_slicexyz==1){
+    update_slicexyz = 0;
+    UpdateSliceXYZ();
   }
   if(open_movie_dialog==1){
     open_movie_dialog = 0;

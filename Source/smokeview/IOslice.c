@@ -7613,6 +7613,74 @@ void GetDevMinMax(devicedata *devi, float *valmin, float *valmax){
   }
 }
 
+/* ------------------ InSliceMesh ------------------------ */
+
+int InSliceMesh(slicedata *slicei, float *xyz){
+  float *boxmin, *boxmax;
+  int dir;
+  meshdata *meshi;
+  int plotx, ploty, plotz;
+
+  meshi = meshinfo + slicei->blocknumber;
+  dir = slicei->idir;
+  boxmin = meshi->boxmin;
+  boxmax = meshi->boxmax;
+  if(slicei->volslice==0){
+    if(dir==XDIR){
+      if(xyz[1]<boxmin[1]||xyz[1]>boxmax[1])return 0;
+      if(xyz[2]<boxmin[2]||xyz[2]>boxmax[2])return 0;
+      return 1;
+    }
+    if(dir==YDIR){
+      if(xyz[0]<boxmin[0]||xyz[0]>boxmax[0])return 0;
+      if(xyz[2]<boxmin[2]||xyz[2]>boxmax[2])return 0;
+      return 1;
+    }
+    if(dir==ZDIR){
+      if(xyz[0]<boxmin[0]||xyz[0]>boxmax[0])return 0;
+      if(xyz[1]<boxmin[1]||xyz[1]>boxmax[1])return 0;
+      return 1;
+    }
+  }
+  else{
+    if(visx_all==1){
+      float dx;
+
+      if(xyz[1]<boxmin[1]||xyz[1]>boxmax[1]||xyz[2]<boxmin[2]||xyz[2]>boxmax[2])return 0;
+      plotx = meshi->iplotx_all[iplotx_all];
+      dx = meshi->xplt_orig[plotx];
+      if(dx<boxmin[0]||dx>boxmax[0])return 0;
+      xyz[0] = dx;
+      update_slicexyz = 1;
+      return 1;
+    }
+    if(visy_all==1){
+      float dy;
+
+      if(xyz[0]<boxmin[0]||xyz[0]>boxmax[0]||xyz[2]<boxmin[2]||xyz[2]>boxmax[2])return 0;
+      ploty = meshi->iploty_all[iploty_all];
+      dy = meshi->yplt_orig[ploty];
+      if(dy<boxmin[1]||dy>boxmax[1])return 0;
+      xyz[1] = dy;
+      update_slicexyz = 1;
+      return 1;
+    }
+    if(visz_all==1){
+      float dz;
+
+      if(xyz[0]<boxmin[0]||xyz[0]>boxmax[0]||xyz[1]<boxmin[1]||xyz[1]>boxmax[1])return 0;
+      plotz = meshi->iplotz_all[iplotz_all];
+      dz = meshi->zplt_orig[plotz];
+      if(dz<boxmin[2]||dz>boxmax[2])return 0;
+      xyz[2] = dz;
+      update_slicexyz = 1;
+      return 1;
+    }
+  }
+  return 1;
+}
+
+
 /* ------------------ Slice2Device ------------------------ */
 
 void Slice2Device(void){
@@ -7636,7 +7704,7 @@ void Slice2Device(void){
 #ifndef pp_PLOT2D_SLICEGEOM
     if(slicei->slice_filetype==SLICE_GEOM)continue;
 #endif
-    if(InMeshi(dev_mesh, slicei->idir, slice_xyz)==0)continue;
+    if(InSliceMesh(slicei, slice_xyz)==0)continue;
     sdev->valid = 1;
     FREEMEMORY(sdev->vals);
     FREEMEMORY(sdev->vals_orig);
@@ -7664,7 +7732,7 @@ void Slice2Device(void){
 
       slicej = sliceinfo+j;
       if(slicej->loaded==0||strcmp(sb->label->longlabel, slicej->label.longlabel)!=0)continue;
-      if(global_bounds_slice_plot==1){
+      if(slice_plot_bound_option==1){
         valmin = slicej->valmin_fds;
         valmax = slicej->valmax_fds;
       }
@@ -7697,8 +7765,8 @@ void Slice2Device(void){
 #ifndef pp_PLOT2D_SLICE3D
     if(slicei->volslice==1)continue;
 #endif
-    if(InMeshi(dev_mesh, slicei->idir, slice_xyz)==0)continue;
-      TimeAveragePlot2DData(sdev->times, sdev->vals_orig, sdev->vals, sdev->nvals);
+    if(InSliceMesh(slicei, slice_xyz)==0)continue;
+    TimeAveragePlot2DData(sdev->times, sdev->vals_orig, sdev->vals, sdev->nvals);
   }
 }
 

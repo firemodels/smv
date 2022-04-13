@@ -986,13 +986,13 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
       boundsdata *sb;
 
       sb = slicebounds + slicefile_labelindex;
-      if(sb->dev_min>sb->dev_max){
+      if(slice_plot_bound_option==1||sb->dev_min>sb->dev_max){
         valmin = sb->levels256[0];
         valmax = sb->levels256[255];
       }
       else{
-        valmin = MIN(sb->dev_min, sb->levels256[0]);
-        valmax = MAX(sb->dev_max, sb->levels256[255]);
+        valmin = sb->dev_min;
+        valmax = sb->dev_max;
       }
 
       DrawPlot2D(PLOT_ALL, devicei->times, devicei->vals, NULL, devicei->nvals,

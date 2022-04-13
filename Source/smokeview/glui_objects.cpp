@@ -175,6 +175,14 @@ extern "C" void UpdateDeviceShow(void){
   if(RADIO_vis_device_plot!=NULL)RADIO_vis_device_plot->set_int_val(vis_device_plot);
 }
 
+/* ------------------ UpdateSliceXYZ ------------------------ */
+
+extern "C" void UpdateSliceXYZ(void){
+  if(SPINNER_slice_x!=NULL)SPINNER_slice_x->set_float_val(slice_xyz[0]);
+  if(SPINNER_slice_y!=NULL)SPINNER_slice_y->set_float_val(slice_xyz[1]);
+  if(SPINNER_slice_z!=NULL)SPINNER_slice_z->set_float_val(slice_xyz[2]);
+}
+
 /* ------------------ UpdateWindRoseDevices ------------------------ */
 
 extern "C" void UpdateWindRoseDevices(int option){
@@ -807,7 +815,7 @@ extern "C" void GluiDeviceSetup(int main_window){
     if(nsliceinfo>0){
       PANEL_plotslice = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "slice plots");
       glui_device->add_checkbox_to_panel(PANEL_plotslice, _("show"), &vis_slice_plot, SLICE_PLOT, DeviceCB);
-      glui_device->add_checkbox_to_panel(PANEL_plotslice, _("bounds (entire slice)"), &global_bounds_slice_plot, SLICE_PLOT, DeviceCB);
+      glui_device->add_checkbox_to_panel(PANEL_plotslice, _("dialog bounds"), &slice_plot_bound_option, SLICE_PLOT, DeviceCB);
       SPINNER_slice_x = glui_device->add_spinner_to_panel(PANEL_plotslice, "x", GLUI_SPINNER_FLOAT, slice_xyz+0, SLICE_PLOT, DeviceCB);
       SPINNER_slice_y = glui_device->add_spinner_to_panel(PANEL_plotslice, "y", GLUI_SPINNER_FLOAT, slice_xyz+1, SLICE_PLOT, DeviceCB);
       SPINNER_slice_z = glui_device->add_spinner_to_panel(PANEL_plotslice, "z", GLUI_SPINNER_FLOAT, slice_xyz+2, SLICE_PLOT, DeviceCB);

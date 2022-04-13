@@ -2590,12 +2590,12 @@ void Keyboard(unsigned char key, int flag){
       plotstate = GetPlotState(STATIC_PLOTS);
       updatemenu = 1;
 #endif
-      if(visx_all==1)update_slice2device = 1;
+      if(visx_all==1||visy_all==1||visz_all==1)update_slice2device = 1;
       break;
     case 'y':
     case 'Y':
       visy_all = 1-visy_all;
-      if(visy_all==1)update_slice2device = 1;
+      if(visx_all==1||visy_all==1||visz_all==1)update_slice2device = 1;
       plotstate = GetPlotState(STATIC_PLOTS);
       updatemenu = 1;
       break;
@@ -2625,7 +2625,7 @@ void Keyboard(unsigned char key, int flag){
       plotstate = GetPlotState(STATIC_PLOTS);
       updatemenu = 1;
 #endif
-      if(visz_all==1)update_slice2device = 1;
+      if(visx_all==1||visy_all==1||visz_all==1)update_slice2device = 1;
       break;
     case '0':
       if(plotstate==DYNAMIC_PLOTS){
