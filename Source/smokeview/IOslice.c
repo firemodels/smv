@@ -7690,11 +7690,9 @@ void Slice2Device(void){
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
     devicedata *sdev;
-    meshdata *dev_mesh;
     int j, offset;
 
     slicei = sliceinfo+i;
-    dev_mesh = meshinfo+slicei->blocknumber;
     sdev = &(slicei->vals2d);
     sdev->valid = 0;
     if(slicei->loaded==0||slicei->ntimes==0)continue;
@@ -7756,10 +7754,8 @@ void Slice2Device(void){
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
     devicedata *sdev;
-    meshdata *dev_mesh;
 
     slicei = sliceinfo+i;
-    dev_mesh = meshinfo+slicei->blocknumber;
     sdev = &(slicei->vals2d);
     if(slicei->loaded==0||slicei->ntimes==0)continue;
 #ifndef pp_PLOT2D_SLICE3D
