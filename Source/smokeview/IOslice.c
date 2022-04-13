@@ -7660,17 +7660,19 @@ void Slice2Device(void){
 
     for(j = 0; j<nsliceinfo; j++){
       slicedata *slicej;
-      devicedata *devicej;
       float valmin, valmax;
 
       slicej = sliceinfo+j;
-      devicej = &(slicej->vals2d);
-      if(slicej->loaded==0||devicej->valid==0||strcmp(sb->label->longlabel, slicej->label.longlabel)!=0)continue;
+      if(slicej->loaded==0||strcmp(sb->label->longlabel, slicej->label.longlabel)!=0)continue;
       if(global_bounds_slice_plot==1){
         valmin = slicej->valmin_fds;
         valmax = slicej->valmax_fds;
       }
       else{
+        devicedata *devicej;
+
+        devicej = &(slicej->vals2d);
+        if(devicej->valid==0)continue;
         GetDevMinMax(devicej, &valmin, &valmax);
       }
       if(sb->dev_min>sb->dev_max){
