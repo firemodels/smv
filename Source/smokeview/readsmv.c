@@ -11331,7 +11331,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWSLICEPLOT")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f %f %f %i", slice_xyz, slice_xyz+1, slice_xyz+2, &plot2d_size_factor, &vis_slice_plot);
+      sscanf(buffer, " %f %f %f %f %i i", slice_xyz, slice_xyz+1, slice_xyz+2, &plot2d_size_factor, &vis_slice_plot, global_bounds_slice_plot);
       continue;
     }
     if(Match(buffer, "SHOWHRRPLOT")==1){
@@ -14679,7 +14679,7 @@ void WriteIniLocal(FILE *fileout){
   fprintf(fileout, "SHOWMISSINGOBJECTS\n");
   fprintf(fileout, " %i\n", show_missing_objects);
   fprintf(fileout, "SHOWSLICEPLOT\n");
-  fprintf(fileout, " %f %f %f %f %i\n", slice_xyz[0], slice_xyz[1], slice_xyz[2], plot2d_size_factor, vis_slice_plot);
+  fprintf(fileout, " %f %f %f %f %i %i\n", slice_xyz[0], slice_xyz[1], slice_xyz[2], plot2d_size_factor, vis_slice_plot, global_bounds_slice_plot);
   fprintf(fileout, "SMOKE3DCUTOFFS\n");
   fprintf(fileout, " %f %f\n", load_3dsmoke_cutoff, load_hrrpuv_cutoff);
   for(i = ntickinfo_smv; i < ntickinfo; i++){
