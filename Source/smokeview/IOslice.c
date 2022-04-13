@@ -7666,7 +7666,13 @@ void Slice2Device(void){
       slicej = sliceinfo+j;
       devicej = &(slicej->vals2d);
       if(slicej->loaded==0||devicej->valid==0||strcmp(sb->label->longlabel, slicej->label.longlabel)!=0)continue;
-      GetDevMinMax(devicej, &valmin, &valmax);
+      if(global_bounds_slice_plot==1){
+        valmin = slicej->valmin_fds;
+        valmax = slicej->valmax_fds;
+      }
+      else{
+        GetDevMinMax(devicej, &valmin, &valmax);
+      }
       if(sb->dev_min>sb->dev_max){
         sb->dev_min = valmin;
         sb->dev_max = valmax;
@@ -7685,7 +7691,10 @@ void Slice2Device(void){
     slicei = sliceinfo+i;
     dev_mesh = meshinfo+slicei->blocknumber;
     sdev = &(slicei->vals2d);
-    if(slicei->volslice==1||slicei->loaded==0||slicei->ntimes==0)continue;
+    if(slicei->loaded==0||slicei->ntimes==0)continue;
+#ifndef pp_PLOT2D_SLICE3D
+    if(slicei->volslice==1)continue;
+#endif
     if(InMeshi(dev_mesh, slicei->idir, slice_xyz)==0)continue;
       TimeAveragePlot2DData(sdev->times, sdev->vals_orig, sdev->vals, sdev->nvals);
   }
