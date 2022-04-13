@@ -6645,7 +6645,7 @@ void DrawVolSliceTexture(const slicedata *sd){
       float xmid;
       int i2;
 
-      i2 = MIN(i+slice_skipx, sd->is2);
+      i2 = MIN(i+slice_skipx, maxi);
 
       x1 = xplt[i];
       x3 = xplt[i2];
