@@ -815,7 +815,7 @@ extern "C" void GluiDeviceSetup(int main_window){
     if(nsliceinfo>0){
       PANEL_plotslice = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "slice plots");
       glui_device->add_checkbox_to_panel(PANEL_plotslice, _("show"), &vis_slice_plot, SLICE_PLOT, DeviceCB);
-      glui_device->add_checkbox_to_panel(PANEL_plotslice, _("dialog bounds"), &slice_plot_bound_option, SLICE_PLOT, DeviceCB);
+      glui_device->add_checkbox_to_panel(PANEL_plotslice, _("slice bounds"), &slice_plot_bound_option, SLICE_PLOT, DeviceCB);
       SPINNER_slice_x = glui_device->add_spinner_to_panel(PANEL_plotslice, "x", GLUI_SPINNER_FLOAT, slice_xyz+0, SLICE_PLOT, DeviceCB);
       SPINNER_slice_y = glui_device->add_spinner_to_panel(PANEL_plotslice, "y", GLUI_SPINNER_FLOAT, slice_xyz+1, SLICE_PLOT, DeviceCB);
       SPINNER_slice_z = glui_device->add_spinner_to_panel(PANEL_plotslice, "z", GLUI_SPINNER_FLOAT, slice_xyz+2, SLICE_PLOT, DeviceCB);
