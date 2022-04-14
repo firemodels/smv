@@ -7515,19 +7515,19 @@ int GetSliceOffsetReg(slicedata *sd, float *xyz, float *device_xyz){
   j=0;
   k=0;
   for(ii=0;ii<nx;ii++){
-    if(xplt[ii]<=xyz[0]&&xyz[0]<=xplt[ii+1]){
+    if((ii!=nx-1&&xplt[ii]<=xyz[0]&&xyz[0]<xplt[ii+1])||(ii == nx-1&&xyz[0]==xplt[nx-1])){
       i=ii;
       break;
     }
   }
   for(ii=0;ii<ny;ii++){
-    if(yplt[ii]<=xyz[1]&&xyz[1]<=yplt[ii+1]){
+    if((ii!=ny-1&&yplt[ii]<=xyz[1]&&xyz[1]<yplt[ii+1])||(ii == ny-1&&xyz[1]==yplt[ny-1])){
       j=ii;
       break;
     }
   }
   for(ii=0;ii<nz;ii++){
-    if(zplt[ii]<=xyz[2]&&xyz[2]<=zplt[ii+1]){
+    if((ii!=nz-1&&zplt[ii]<=xyz[2]&&xyz[2]<zplt[ii+1])||(ii == nz-1&&xyz[2]==zplt[nz-1])){
       k=ii;
       break;
     }
