@@ -977,10 +977,6 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
       slicei = sliceinfo+i;
       devicei = &(slicei->vals2d);
       if(slicei->loaded==0||devicei->valid==0)continue;
-#ifndef pp_PLOT2D_SLICEGEOM
-      if(slicei->slice_filetype==SLICE_GEOM)continue;
-#endif
-
 
       highlight_val = devicei->vals[itimes];
 
