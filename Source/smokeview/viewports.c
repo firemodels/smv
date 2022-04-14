@@ -949,7 +949,7 @@ void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down) {
     if(hi2!=NULL)highlight_val2 = hi2->vals[itime];
 
     DrawPlot2D(PLOT_ALL, hitime->vals, hi->vals, vals2, hi->nvals,
-               highlight_time, highlight_val, highlight_val2, valid, valmin, valmax, hi->label.longlabel, quantity2, hi->label.unit,
+               highlight_time, highlight_val, highlight_val2, valid, 0, valmin, valmax, hi->label.longlabel, quantity2, hi->label.unit,
                VP_hrr_plot.left, VP_hrr_plot.right, VP_hrr_plot.down, VP_hrr_plot.top);
   }
 
@@ -965,8 +965,9 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
   glLoadIdentity();
   SNIFF_ERRORS("333");
   if(vis_slice_plot==1&&global_times!=NULL){
-    int i;
+    int i, position;
 
+    position = 0;
     for(i = 0; i<nsliceinfo; i++){
       slicedata *slicei;
       devicedata *devicei;
@@ -996,9 +997,10 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
       }
 
       DrawPlot2D(PLOT_ALL, devicei->times, devicei->vals, NULL, devicei->nvals,
-               global_times[itimes], highlight_val, 0.0, 1, valmin, valmax,
+               global_times[itimes], highlight_val, 0.0, 1, position, valmin, valmax,
                slicei->label.shortlabel, NULL, slicei->label.unit,
                VP_slice_plot.left, VP_slice_plot.right, VP_slice_plot.down, VP_slice_plot.top);
+      position++;
       SNIFF_ERRORS("444");
     }
   }

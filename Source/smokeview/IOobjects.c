@@ -7882,7 +7882,7 @@ void Normalize(float *xyz, int n){
 
   /* ------------------ DrawPlot2D ------------------------ */
 void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
-              float highlight_x, float highlight_y, float highlight_y2, int valid,
+              float highlight_x, float highlight_y, float highlight_y2, int valid, int position,
               float global_valmin, float global_valmax, char *quantity, char *quantity2, char *unit,
               float left, float right, float down, float top){
   float xmin, xmax, zmin, zmax, dx;
@@ -7977,14 +7977,18 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
     }
 
     dy = VSCALE2D(zmax)-1.5*dfont+DFONTY; OutputText(HSCALE2DLABEL(xmax),  dy, cvalmax);
-    dy -= 1.1*dfont;                      OutputText(HSCALE2DLABEL(xmax),  dy, cval);
-    if(z2!=NULL){
+    dy -= 1.1*dfont;                    OutputText(HSCALE2DLABEL(xmax), dy, unit);
+    if(z2==NULL){
+      dy -= 1.1*dfont*(position+1);  
+      OutputText(HSCALE2DLABEL(xmax), dy, cval);
+    }
+    else{
       char cval2[255];
 
+      dy -= 1.1*dfont;                      OutputText(HSCALE2DLABEL(xmax), dy, cval);
       Float2String(cval2, highlight_y2, ndigits, force_fixedpoint);
       dy -= 1.1*dfont; OutputTextColor(redcolor, HSCALE2DLABEL(xmax), dy, cval2);
     }
-    dy -= 1.1*dfont;                    OutputText(HSCALE2DLABEL(xmax), dy, unit);
 
     OutputText(HSCALE2DLABEL(xmax), VSCALE2D(zmin), cvalmin);
     OutputText(HSCALE2DLABEL(xmin)-GetStringWidth("X"), VSCALE2D(zmin)-dfont, tvalmin);
