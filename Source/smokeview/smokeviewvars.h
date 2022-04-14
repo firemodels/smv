@@ -23,7 +23,9 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(update_slicexyz, 0);
 SVEXTERN int SVDECL(update_splitcolorbar, 0);
+SVEXTERN int SVDECL(slice_plot_bound_option, 1);
 #ifdef INMAIN
 SVEXTERN float obst_bounding_box[6] = {1.0,0.0,1.0,0.0,1.0,0.0};
 SVEXTERN float geom_bounding_box[6] = {1000000000.0, -1000000000.0,
@@ -877,13 +879,11 @@ SVEXTERN hrrdata SVDECL(*hrrinfo, NULL), SVDECL(*hrrptr, NULL), SVDECL(*timeptr,
 SVEXTERN int SVDECL(nhrrinfo, 0);
 SVEXTERN int SVDECL(time_col, -1), SVDECL(hrr_col, -1), SVDECL(mlr_col, -1);
 SVEXTERN int SVDECL(glui_hrr, 1);
-#ifdef pp_HRR_OTHER
 SVEXTERN float SVDECL(fuel_hoc, -1.0), SVDECL(fuel_hoc_default, -1.0);
 SVEXTERN char fuel_name[256];
 SVEXTERN int SVDECL(qradi_col, -1), SVDECL(chirad_col, -1), SVDECL(nhrrhcinfo, 0);
 SVEXTERN int SVDECL(have_mlr, 0);
 SVEXTERN int SVDECL(hoc_hrr, 0);
-#endif
 SVEXTERN int SVDECL(update_avg, 0);
 SVEXTERN int SVDECL(ncsvinfo,0);
 SVEXTERN csvdata SVDECL(*csvinfo,NULL);

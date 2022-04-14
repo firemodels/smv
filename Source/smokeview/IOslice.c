@@ -6645,7 +6645,7 @@ void DrawVolSliceTexture(const slicedata *sd){
       float xmid;
       int i2;
 
-      i2 = MIN(i+slice_skipx, sd->is2);
+      i2 = MIN(i+slice_skipx, maxi);
 
       x1 = xplt[i];
       x3 = xplt[i2];
@@ -7414,25 +7414,93 @@ void SortLoadedSliceList(void){
   }
 }
 
-/* ------------------ GetSliceOffset ------------------------ */
+/* ------------------ GetSliceOffsetGeom ------------------------ */
 
-int GetSliceOffset(slicedata *sd, float *xyz, float *device_xyz){
+int GetSliceOffsetGeom(slicedata *sd, float *xyz, float *device_xyz){
+  geomdata *geomi;
+  geomlistdata *geomlisti;
+  float dist_min;
+  float dx, dy, dz;
+  int offset;
+  int i;
+
+  geomi = sd->patchgeom->geominfo;
+  geomlisti = geomi->geomlistinfo-1;
+  if(sd->cell_center==1){
+    for(i = 0; i<geomlisti->ntriangles; i++){
+      tridata *trianglei;
+      float vert_avg[3];
+      vertdata **verts;
+      float dist2;
+
+      trianglei = geomlisti->triangles+i;
+      verts = trianglei->verts;
+      VERT_AVG3(verts[0]->xyz, verts[1]->xyz, verts[2]->xyz, vert_avg);
+      DIST3(vert_avg, xyz, dist2);
+      if(i==0){
+        dist_min = dist2;
+        memcpy(device_xyz, vert_avg, 3*sizeof(float));
+        offset = i;
+      }
+      else{
+        if(dist2<dist_min){
+          dist_min = dist2;
+          memcpy(device_xyz, vert_avg, 3*sizeof(float));
+          offset = i;
+        }
+      }
+    }
+  }
+  else{
+    for(i = 0; i<geomlisti->nverts; i++){
+      vertdata *verti;
+      float dist2;
+
+      verti = geomlisti->verts+i;
+      DIST3(verti->xyz, xyz, dist2);
+      if(i==0){
+        dist_min = dist2;
+        memcpy(device_xyz, verti->xyz, 3*sizeof(float));
+        offset = i;
+      }
+      else{
+        if(dist2<dist_min){
+          dist_min = dist2;
+          memcpy(device_xyz, verti->xyz, 3*sizeof(float));
+          offset = i;
+        }
+      }
+    }
+  }
+  return offset;
+}
+
+/* ------------------ GetSliceOffsetReg ------------------------ */
+
+int GetSliceOffsetReg(slicedata *sd, float *xyz, float *device_xyz){
   meshdata *slicemesh;
   float *xplt, *yplt, *zplt;
   int plotx, ploty, plotz;
   int i, j, k, ii;
   int ibar, jbar, kbar;
   int nx, ny, nz;
-  int offset;
+  int offset=0;
 
   memcpy(device_xyz, xyz, 3*sizeof(float));
   slicemesh = meshinfo+sd->blocknumber;
   xplt = slicemesh->xplt_orig;
   yplt = slicemesh->yplt_orig;
   zplt = slicemesh->zplt_orig;
-  plotx = sd->is1;
-  ploty = sd->js1;
-  plotz = sd->ks1;
+  if(sd->volslice==0){
+    plotx = sd->is1;
+    ploty = sd->js1;
+    plotz = sd->ks1;
+  }
+  else{
+    plotx = slicemesh->iplotx_all[iplotx_all];
+    ploty = slicemesh->iploty_all[iploty_all];
+    plotz = slicemesh->iplotz_all[iplotz_all];
+  }
   ibar = slicemesh->ibar;
   jbar = slicemesh->jbar;
   kbar = slicemesh->kbar;
@@ -7443,34 +7511,54 @@ int GetSliceOffset(slicedata *sd, float *xyz, float *device_xyz){
   j=0;
   k=0;
   for(ii=0;ii<nx;ii++){
-    if(xplt[ii]<=xyz[0]&&xyz[0]<=xplt[ii+1]){
+    if((ii!=nx-1&&xplt[ii]<=xyz[0]&&xyz[0]<xplt[ii+1])||(ii == nx-1&&xyz[0]==xplt[nx-1])){
       i=ii;
       break;
     }
   }
   for(ii=0;ii<ny;ii++){
-    if(yplt[ii]<=xyz[1]&&xyz[1]<=yplt[ii+1]){
+    if((ii!=ny-1&&yplt[ii]<=xyz[1]&&xyz[1]<yplt[ii+1])||(ii == ny-1&&xyz[1]==yplt[ny-1])){
       j=ii;
       break;
     }
   }
   for(ii=0;ii<nz;ii++){
-    if(zplt[ii]<=xyz[2]&&xyz[2]<=zplt[ii+1]){
+    if((ii!=nz-1&&zplt[ii]<=xyz[2]&&xyz[2]<zplt[ii+1])||(ii == nz-1&&xyz[2]==zplt[nz-1])){
       k=ii;
       break;
     }
   }
-  if(sd->volslice == 0 && sd->idir == XDIR){
-    offset = IJK_SLICE(plotx, j,  k);
+  if((sd->volslice == 0 && sd->idir == XDIR)
+    || (sd->volslice == 1 && visx_all==1)
+  ){
+    offset = IJK_SLICE(plotx, j, k);
     device_xyz[0] = xplt[plotx];
   }
-  if(sd->volslice == 0 && sd->idir == YDIR){
-    offset = IJK_SLICE(i,  ploty, k);
+  if((sd->volslice == 0 && sd->idir == YDIR)
+    || (sd->volslice == 1 && visy_all==1)
+  ){
+    offset = IJK_SLICE(i, ploty, k);
     device_xyz[1] = yplt[ploty];
   }
-  if(sd->volslice == 0 && sd->idir == ZDIR){
-    offset = IJK_SLICE(i,   j, plotz);
+  if((sd->volslice == 0 && sd->idir == ZDIR)
+    || (sd->volslice == 1 && visz_all==1)
+  ){
+    offset = IJK_SLICE(i, j, plotz);
     device_xyz[2] = zplt[plotz];
+  }
+  return offset;
+}
+
+/* ------------------ GetSliceOffset ------------------------ */
+
+int GetSliceOffset(slicedata *sd, float *xyz, float *device_xyz){
+  int offset;
+
+  if(sd->slice_filetype!=SLICE_GEOM){
+    offset = GetSliceOffsetReg(sd, xyz, device_xyz);
+  }
+  else{
+    offset = GetSliceOffsetGeom(sd, xyz, device_xyz);
   }
   return offset;
 }
@@ -7480,8 +7568,21 @@ int GetSliceOffset(slicedata *sd, float *xyz, float *device_xyz){
 float GetSliceVal(slicedata *slicei, int itime, int offset){
   float *qslice, sliceval;
 
-  qslice = slicei->qslicedata + itime*slicei->nsliceijk;
-  sliceval = qslice[offset];
+  if(slicei->slice_filetype!=SLICE_GEOM){
+    qslice = slicei->qslicedata + itime*slicei->nsliceijk;
+    sliceval = qslice[offset];
+  }
+  else{
+    patchdata *patchgeom;
+
+    patchgeom = slicei->patchgeom;
+    if(patchgeom==NULL){
+      sliceval = 0.0;
+    }
+    else{
+      sliceval = patchgeom->geom_vals[offset+itime*patchgeom->geom_ndynamics[0]];
+    }
+  }
   return sliceval;
 }
 
@@ -7498,6 +7599,74 @@ void GetDevMinMax(devicedata *devi, float *valmin, float *valmax){
   }
 }
 
+/* ------------------ InSliceMesh ------------------------ */
+
+int InSliceMesh(slicedata *slicei, float *xyz){
+  float *boxmin, *boxmax;
+  int dir;
+  meshdata *meshi;
+  int plotx, ploty, plotz;
+
+  meshi = meshinfo + slicei->blocknumber;
+  dir = slicei->idir;
+  boxmin = meshi->boxmin;
+  boxmax = meshi->boxmax;
+  if(slicei->volslice==0){
+    if(dir==XDIR){
+      if(xyz[1]<boxmin[1]||xyz[1]>boxmax[1])return 0;
+      if(xyz[2]<boxmin[2]||xyz[2]>boxmax[2])return 0;
+      return 1;
+    }
+    if(dir==YDIR){
+      if(xyz[0]<boxmin[0]||xyz[0]>boxmax[0])return 0;
+      if(xyz[2]<boxmin[2]||xyz[2]>boxmax[2])return 0;
+      return 1;
+    }
+    if(dir==ZDIR){
+      if(xyz[0]<boxmin[0]||xyz[0]>boxmax[0])return 0;
+      if(xyz[1]<boxmin[1]||xyz[1]>boxmax[1])return 0;
+      return 1;
+    }
+  }
+  else{
+    if(visx_all==1){
+      float dx;
+
+      if(xyz[1]<boxmin[1]||xyz[1]>boxmax[1]||xyz[2]<boxmin[2]||xyz[2]>boxmax[2])return 0;
+      plotx = meshi->iplotx_all[iplotx_all];
+      dx = meshi->xplt_orig[plotx];
+      if(dx<boxmin[0]||dx>boxmax[0])return 0;
+      xyz[0] = dx;
+      update_slicexyz = 1;
+      return 1;
+    }
+    if(visy_all==1){
+      float dy;
+
+      if(xyz[0]<boxmin[0]||xyz[0]>boxmax[0]||xyz[2]<boxmin[2]||xyz[2]>boxmax[2])return 0;
+      ploty = meshi->iploty_all[iploty_all];
+      dy = meshi->yplt_orig[ploty];
+      if(dy<boxmin[1]||dy>boxmax[1])return 0;
+      xyz[1] = dy;
+      update_slicexyz = 1;
+      return 1;
+    }
+    if(visz_all==1){
+      float dz;
+
+      if(xyz[0]<boxmin[0]||xyz[0]>boxmax[0]||xyz[1]<boxmin[1]||xyz[1]>boxmax[1])return 0;
+      plotz = meshi->iplotz_all[iplotz_all];
+      dz = meshi->zplt_orig[plotz];
+      if(dz<boxmin[2]||dz>boxmax[2])return 0;
+      xyz[2] = dz;
+      update_slicexyz = 1;
+      return 1;
+    }
+  }
+  return 1;
+}
+
+
 /* ------------------ Slice2Device ------------------------ */
 
 void Slice2Device(void){
@@ -7507,16 +7676,13 @@ void Slice2Device(void){
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
     devicedata *sdev;
-    meshdata *dev_mesh;
     int j, offset;
 
     slicei = sliceinfo+i;
-    dev_mesh = meshinfo+slicei->blocknumber;
     sdev = &(slicei->vals2d);
     sdev->valid = 0;
-    if(slicei->volslice==1||slicei->loaded==0||slicei->ntimes==0)continue;
-    if(slicei->slice_filetype==SLICE_GEOM)continue;
-    if(InMeshi(dev_mesh, slicei->idir, slice_xyz)==0)continue;
+    if(slicei->loaded==0||slicei->ntimes==0)continue;
+    if(InSliceMesh(slicei, slice_xyz)==0)continue;
     sdev->valid = 1;
     FREEMEMORY(sdev->vals);
     FREEMEMORY(sdev->vals_orig);
@@ -7540,13 +7706,21 @@ void Slice2Device(void){
 
     for(j = 0; j<nsliceinfo; j++){
       slicedata *slicej;
-      devicedata *devicej;
       float valmin, valmax;
 
       slicej = sliceinfo+j;
-      devicej = &(slicej->vals2d);
-      if(slicej->loaded==0||devicej->valid==0||strcmp(sb->label->longlabel, slicej->label.longlabel)!=0)continue;
-      GetDevMinMax(devicej, &valmin, &valmax);
+      if(slicej->loaded==0||strcmp(sb->label->longlabel, slicej->label.longlabel)!=0)continue;
+      if(slice_plot_bound_option==1){
+        valmin = slicej->valmin_fds;
+        valmax = slicej->valmax_fds;
+      }
+      else{
+        devicedata *devicej;
+
+        devicej = &(slicej->vals2d);
+        if(devicej->valid==0)continue;
+        GetDevMinMax(devicej, &valmin, &valmax);
+      }
       if(sb->dev_min>sb->dev_max){
         sb->dev_min = valmin;
         sb->dev_max = valmax;
@@ -7560,18 +7734,15 @@ void Slice2Device(void){
   for(i = 0; i<nsliceinfo; i++){
     slicedata *slicei;
     devicedata *sdev;
-    meshdata *dev_mesh;
 
     slicei = sliceinfo+i;
-    dev_mesh = meshinfo+slicei->blocknumber;
     sdev = &(slicei->vals2d);
-    if(slicei->volslice==1||slicei->loaded==0||slicei->ntimes==0)continue;
-    if(InMeshi(dev_mesh, slicei->idir, slice_xyz)==0)continue;
-      TimeAveragePlot2DData(sdev->times, sdev->vals_orig, sdev->vals, sdev->nvals);
+    if(slicei->loaded==0||slicei->ntimes==0)continue;
+    if(InSliceMesh(slicei, slice_xyz)==0)continue;
+    TimeAveragePlot2DData(sdev->times, sdev->vals_orig, sdev->vals, sdev->nvals);
   }
 }
 
-#ifdef pp_HRR_PLOT2D
 /* ------------------ DrawSlicePlots ------------------------ */
 
 void DrawSlicePlots(void){
@@ -7596,54 +7767,6 @@ void DrawSlicePlots(void){
     glPopMatrix();
   }
 }
-#else
-/* ------------------ DrawSlicePlots ------------------------ */
-
-void DrawSlicePlots(void){
-  int i;
-
-  for(i = 0; i<nsliceinfo; i++){
-    slicedata *slicei;
-    devicedata *devicei;
-    float valmin, valmax;
-    float highlight_val;
-    float xyz[3] = {0.0,0.0,0.0};
-
-    slicei = sliceinfo+i;
-    devicei = &(slicei->vals2d);
-    if(slicei->loaded==0||devicei->valid==0)continue;
-
-    highlight_val = devicei->vals[itimes];
-    glPushMatrix();
-    glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),vertical_factor*SCALE2SMV(1.0));
-    glTranslatef(-xbar0,-ybar0,-zbar0);
-    glPointSize(10.0);
-    glBegin(GL_POINTS);
-    glColor3f(0.0,0.0,0.0);
-    glVertex3fv(devicei->xyz);
-    glEnd();
-    glPopMatrix();
-
-    boundsdata *sb;
-
-    sb = slicebounds + slicefile_labelindex;
-    if(sb->dev_min>sb->dev_max){
-      valmin = sb->levels256[0];
-      valmax = sb->levels256[255];
-    }
-    else{
-      valmin = MIN(sb->dev_min, sb->levels256[0]);
-      valmax = MAX(sb->dev_max, sb->levels256[255]);
-    }
-    xyz[2] = 0.0;
-    if(vis_hrr_plot==1)xyz[2] = SCALE2FDS(1.2*plot2d_size_factor);
-
-    DrawPlot(PLOT_ALL, xyz, plot2d_size_factor, devicei->times, devicei->vals, devicei->nvals,
-             global_times[itimes], highlight_val, 1, valmin, valmax,
-             slicei->label.shortlabel, slicei->label.unit);
-  }
-}
-#endif
 
 /* ------------------ DrawSliceFrame ------------------------ */
 

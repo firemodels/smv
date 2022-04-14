@@ -979,9 +979,7 @@ typedef struct _device {
 typedef struct _hrrdata {
   float *vals, *vals_orig, valmin, valmax;
   int nvals;
-#ifdef pp_HRR_OTHER
   int base_col;
-#endif
   flowlabels label;
 } hrrdata;
 

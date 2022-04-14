@@ -258,8 +258,6 @@ void GetViewportInfo(void){
 
   // ------------------------------------ hrr plot viewport dimensions -----------------------------------------------------
 
-#ifdef pp_HRR_PLOT2D
-
   int plot_width;
 
   plot_width = MAX(75, plot2d_size_factor*screenWidth);
@@ -304,7 +302,6 @@ void GetViewportInfo(void){
     VP_slice_plot.width  = 0;
     VP_slice_plot.height = 0;
   }
-#endif
 
   // ------------------------------------ timebar viewport dimensions -----------------------------------------------------
 
@@ -907,6 +904,140 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
   }
 }
 
+  /* ------------------ DrawPlot2D ------------------------ */
+void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
+                float highlight_x, float highlight_y, float highlight_y2, int valid, int position,
+                float global_valmin, float global_valmax, char *quantity, char *quantity2, char *unit,
+                float left, float right, float down, float top){
+  float xmin, xmax, zmin, zmax, dx;
+  float zmax_display;
+  int i;
+  char cvalmin[20], cvalmax[20], cval[20];
+  char tvalmin[20], tvalmax[20];
+  int ndigits = 3;
+
+  float dfont = (float)GetFontHeight();
+
+  xmin = x[0];
+  xmax = xmin;
+  zmin = z[0];
+  zmax = zmin;
+  for(i = 1; i<n; i++){
+    xmin = MIN(xmin, x[i]);
+    xmax = MAX(xmax, x[i]);
+    zmin = MIN(zmin, z[i]);
+    zmax = MAX(zmax, z[i]);
+  }
+  if(xmax==xmin)xmax = xmin+1.0;
+
+  if(global_valmin<global_valmax){
+    zmin = global_valmin;
+    zmax = global_valmax;
+  }
+  zmax_display = zmax;
+  if(zmax==zmin)zmax = zmin+1.0;
+
+  Float2String(tvalmin, global_times[0], ndigits, force_fixedpoint);
+  Float2String(tvalmax, global_times[nglobal_times-1], ndigits, force_fixedpoint);
+  Float2String(cvalmin, zmin, ndigits, force_fixedpoint);
+  Float2String(cvalmax, zmax_display, ndigits, force_fixedpoint);
+  Float2String(cval, highlight_y, ndigits, force_fixedpoint);
+
+  dx = (xmax-xmin)/20.0;
+
+  glPushMatrix();
+
+  int plot_width = MAX(75, plot2d_size_factor*screenWidth);
+
+#define HSCALE2D(x) (5+(left) + plot_width*((x)-(xmin))/((xmax)-(xmin)))
+#define HSCALE2DLABEL(x) (10 + HSCALE2D(x))
+#define VSCALE2D(z) (dfont +(down) + plot_width*((z)-(zmin))/((zmax)-(zmin)))
+  glColor3fv(foregroundcolor);
+  glLineWidth(plot2d_line_width);
+  glBegin(GL_LINES);
+  for(i = 0; i<n-1; i++){
+    glVertex2f(HSCALE2D(x[i]), VSCALE2D(z[i]));
+    glVertex2f(HSCALE2D(x[i+1]), VSCALE2D(z[i+1]));
+  }
+  if(z2!=NULL){
+    glColor3f(1.0, 0.0, 0.0);
+    for(i = 0; i<n-1; i++){
+      glVertex2f(HSCALE2D(x[i]), VSCALE2D(z2[i]));
+      glVertex2f(HSCALE2D(x[i+1]), VSCALE2D(z2[i+1]));
+    }
+    glColor3fv(foregroundcolor);
+  }
+  if(option==PLOT_ALL){
+    glVertex2f(HSCALE2D(xmin), VSCALE2D(zmin));
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmin));
+
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmin));
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmax));
+
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmax));
+    glVertex2f(HSCALE2D(xmin), VSCALE2D(zmax));
+
+    glVertex2f(HSCALE2D(xmin), VSCALE2D(zmax));
+    glVertex2f(HSCALE2D(xmin), VSCALE2D(zmin));
+
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmax));
+    glVertex2f(HSCALE2D(xmax+dx), VSCALE2D(zmax));
+
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmin));
+    glVertex2f(HSCALE2D(xmax+dx), VSCALE2D(zmin));
+  }
+  glEnd();
+
+  if(option==PLOT_ALL&&showd_plot2d_labels==1){
+    float dy;
+
+#define DFONTY dfont/2.0
+    if(z2!=NULL){
+      dy = VSCALE2D(zmax)+DFONTY; OutputTextColor(redcolor, HSCALE2DLABEL(xmin), dy, quantity2);
+      dy += 1.1*dfont;            OutputTextColor(foregroundcolor, HSCALE2DLABEL(xmin), dy, quantity);
+    }
+    else{
+      dy = VSCALE2D(zmax)+DFONTY; OutputText(HSCALE2DLABEL(xmin), dy, quantity);
+    }
+
+    dy = VSCALE2D(zmax)-1.5*dfont+DFONTY; OutputText(HSCALE2DLABEL(xmax), dy, cvalmax);
+    dy -= 1.1*dfont;                    OutputText(HSCALE2DLABEL(xmax), dy, unit);
+    if(z2==NULL){
+      dy -= 1.1*dfont*(position+1);
+      OutputText(HSCALE2DLABEL(xmax), dy, cval);
+    }
+    else{
+      char cval2[255];
+
+      dy -= 1.1*dfont;                      OutputText(HSCALE2DLABEL(xmax), dy, cval);
+      Float2String(cval2, highlight_y2, ndigits, force_fixedpoint);
+      dy -= 1.1*dfont; OutputTextColor(redcolor, HSCALE2DLABEL(xmax), dy, cval2);
+    }
+
+    OutputText(HSCALE2DLABEL(xmax), VSCALE2D(zmin), cvalmin);
+    OutputText(HSCALE2DLABEL(xmin)-GetStringWidth("X"), VSCALE2D(zmin)-dfont, tvalmin);
+    OutputText(HSCALE2DLABEL(xmax)-GetStringWidth("X"), VSCALE2D(zmin)-dfont, tvalmax);
+  }
+
+  if(valid==1){
+    glPointSize(plot2d_point_size);
+    glBegin(GL_POINTS);
+    if(z2==NULL){
+      glColor3f(1.0, 0.0, 0.0);
+      glVertex2f(HSCALE2D(highlight_x), VSCALE2D(highlight_y));
+    }
+    else{
+      glColor3fv(foregroundcolor);
+      glVertex2f(HSCALE2D(highlight_x), VSCALE2D(highlight_y));
+      glColor3f(1.0, 0.0, 0.0);
+      glVertex2f(HSCALE2D(highlight_x), VSCALE2D(highlight_y2));
+    }
+    glColor3fv(foregroundcolor);
+    glEnd();
+  }
+  glPopMatrix();
+}
+
 /* ------------------------ ViewportHrrPlot ------------------------- */
 
 void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down) {
@@ -923,15 +1054,15 @@ void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down) {
     float valmin, valmax;
 
     if(hrr_col>=0&&mlr_col>=0&&hoc_hrr==1&&(glui_hrr==hrr_col||glui_hrr==mlr_col)){
-      hi = hrrinfo + hrr_col;
-      hi2 = hrrinfo + mlr_col;
-      vals2 = hi2->vals;
+      hi        = hrrinfo + mlr_col;
+      hi2       = hrrinfo + hrr_col;
+      vals2     = hi2->vals;
       quantity2 = hi2->label.longlabel;
-      valmin = MIN(hi->valmin, hi2->valmin);
-      valmax = MAX(hi->valmax, hi2->valmax);
+      valmin    = MIN(hi->valmin, hi2->valmin);
+      valmax    = MAX(hi->valmax, hi2->valmax);
     }
     else{
-      hi = hrrinfo+glui_hrr;
+      hi     = hrrinfo+glui_hrr;
       valmin = hi->valmin;
       valmax = hi->valmax;
     }
@@ -952,7 +1083,7 @@ void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down) {
     if(hi2!=NULL)highlight_val2 = hi2->vals[itime];
 
     DrawPlot2D(PLOT_ALL, hitime->vals, hi->vals, vals2, hi->nvals,
-               highlight_time, highlight_val, highlight_val2, valid, valmin, valmax, hi->label.longlabel, quantity2, hi->label.unit,
+               highlight_time, highlight_val, highlight_val2, valid, 0, valmin, valmax, hi->label.longlabel, quantity2, hi->label.unit,
                VP_hrr_plot.left, VP_hrr_plot.right, VP_hrr_plot.down, VP_hrr_plot.top);
   }
 
@@ -968,8 +1099,9 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
   glLoadIdentity();
   SNIFF_ERRORS("333");
   if(vis_slice_plot==1&&global_times!=NULL){
-    int i;
+    int i, position;
 
+    position = 0;
     for(i = 0; i<nsliceinfo; i++){
       slicedata *slicei;
       devicedata *devicei;
@@ -985,19 +1117,20 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
       boundsdata *sb;
 
       sb = slicebounds + slicefile_labelindex;
-      if(sb->dev_min>sb->dev_max){
+      if(slice_plot_bound_option==1||sb->dev_min>sb->dev_max){
         valmin = sb->levels256[0];
         valmax = sb->levels256[255];
       }
       else{
-        valmin = MIN(sb->dev_min, sb->levels256[0]);
-        valmax = MAX(sb->dev_max, sb->levels256[255]);
+        valmin = sb->dev_min;
+        valmax = sb->dev_max;
       }
 
       DrawPlot2D(PLOT_ALL, devicei->times, devicei->vals, NULL, devicei->nvals,
-               global_times[itimes], highlight_val, 0.0, 1, valmin, valmax,
+               global_times[itimes], highlight_val, 0.0, 1, position, valmin, valmax,
                slicei->label.shortlabel, NULL, slicei->label.unit,
                VP_slice_plot.left, VP_slice_plot.right, VP_slice_plot.down, VP_slice_plot.top);
+      position++;
       SNIFF_ERRORS("444");
     }
   }
@@ -2087,29 +2220,6 @@ void GetMinMaxDepth(float *min_depth, float *max_depth){
 
   DistPointBox(smv_eyepos, box_corners, min_depth, max_depth);
 
-  #ifndef  pp_HRR_PLOT2D
-  if(vis_hrr_plot == 1 || vis_slice_plot ==1){
-    float mn_depth, mx_depth;
-    float box_plot_corners[8][3];
-    float xmin, xmax;
-    float ymin, ymax;
-    float zmin, zmax;
-
-    xmin = xbar0FDS + SCALE2FDS(plot2d_xyz_offset[0]-1.0);
-    xmax = xmin + 2*SCALE2FDS(1.2);
-    ymin = ybar0FDS + SCALE2FDS(plot2d_xyz_offset[1]-1.0);
-    ymax = ymin + 2*SCALE2FDS(1.2);
-    zmin = zbar0FDS + SCALE2FDS(plot2d_xyz_offset[2]-1.0);
-    zmax = zmin + 2*SCALE2FDS(1.2);
-
-    SetBoxCorners(box_plot_corners, xmin, xmax, ymin, ymax, zmin, zmax);
-
-    DistPointBox(smv_eyepos, box_plot_corners, &mn_depth, &mx_depth);
-
-    *min_depth = MIN(mn_depth, *min_depth);
-    *max_depth = MAX(mx_depth, *max_depth);
-  }
-#endif
   if(viscolorbarpath==1){
     float box[8][3], mn_depth, mx_depth;
     float xmin, xmax, ymin, ymax, zmin, zmax;

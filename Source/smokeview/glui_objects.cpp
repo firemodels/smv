@@ -22,10 +22,8 @@
 #define DEVICE_RADIUS           7
 //#define HRRPUV_PLOT            30 put in smokeviewdef.h
 #define DEVICE_TIMEAVERAGE     31
-#ifdef pp_HRR_OTHER
 #define FUEL_HOC               32
 #define RESET_FUEL_HOC         33
-#endif
 
 
 #define WINDROSE_SHOW_FIRST   996
@@ -62,9 +60,7 @@ GLUI_Button *BUTTON_open_down=NULL ;
 GLUI_Button *BUTTON_device_1=NULL;
 GLUI_Button *BUTTON_device_2=NULL;
 GLUI_Button *BUTTON_update_windrose = NULL;
-#ifdef pp_HRR_OTHER
 GLUI_Button *BUTTON_reset_fuel_hoc = NULL;
-#endif
 
 GLUI_Checkbox *CHECKBOX_device_1=NULL;
 GLUI_Checkbox *CHECKBOX_showdevice_val=NULL;
@@ -124,9 +120,7 @@ GLUI_Rollout *ROLLOUT_windrose = NULL;
 GLUI_Rollout **ROLLOUT_showz_windrose;
 GLUI_Rollout *ROLLOUT_trees = NULL;
 
-#ifdef pp_HRR_OTHER
 GLUI_Spinner *SPINNER_fuel_hoc = NULL;
-#endif
 GLUI_Spinner *SPINNER_size_factor = NULL;
 GLUI_Spinner *SPINNER_slice_x = NULL;
 GLUI_Spinner *SPINNER_slice_y = NULL;
@@ -179,6 +173,14 @@ extern "C" void UpdateVisHrrPlot(void){
 extern "C" void UpdateDeviceShow(void){
   if(CHECKBOX_showdevice_val!=NULL)CHECKBOX_showdevice_val->set_int_val(showdevice_val);
   if(RADIO_vis_device_plot!=NULL)RADIO_vis_device_plot->set_int_val(vis_device_plot);
+}
+
+/* ------------------ UpdateSliceXYZ ------------------------ */
+
+extern "C" void UpdateSliceXYZ(void){
+  if(SPINNER_slice_x!=NULL)SPINNER_slice_x->set_float_val(slice_xyz[0]);
+  if(SPINNER_slice_y!=NULL)SPINNER_slice_y->set_float_val(slice_xyz[1]);
+  if(SPINNER_slice_z!=NULL)SPINNER_slice_z->set_float_val(slice_xyz[2]);
 }
 
 /* ------------------ UpdateWindRoseDevices ------------------------ */
@@ -443,7 +445,6 @@ extern "C" void DeviceCB(int var){
       UpdateColorDevices();
     }
     break;
-#ifdef pp_HRR_OTHER
   case RESET_FUEL_HOC:
     fuel_hoc = fuel_hoc_default;
     SPINNER_fuel_hoc->set_float_val(fuel_hoc);
@@ -456,7 +457,6 @@ extern "C" void DeviceCB(int var){
     }
     UpdateHoc();
     break;
-#endif
   case SHOWDEVICEPLOT:
     {
       int vis_device_plot_temp;
@@ -769,11 +769,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       PANEL_plothrr = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "hrr plots");
       CHECKBOX_vis_hrr_plot = glui_device->add_checkbox_to_panel(PANEL_plothrr, _("show"), &vis_hrr_plot, HRRPUV2_PLOT, DeviceCB);
       LIST_hrrdata = glui_device->add_listbox_to_panel(PANEL_plothrr, "type:", &glui_hrr, DEVICE_TIMEAVERAGE, DeviceCB);
-#ifdef pp_HRR_OTHER
       for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
-#else
-      for(i = 0; i<nhrrinfo; i++){
-#endif
         hrrdata *hi;
 
         hi = hrrinfo+i;
@@ -783,13 +779,11 @@ extern "C" void GluiDeviceSetup(int main_window){
         }
       }
       LIST_hrrdata->set_int_val(glui_hrr);
-#ifdef pp_HRR_OTHER
       if(have_mlr==1){
         SPINNER_fuel_hoc = glui_device->add_spinner_to_panel(PANEL_plothrr, _("HOC (kJ/kg)"), GLUI_SPINNER_FLOAT, &fuel_hoc, FUEL_HOC, DeviceCB);
         glui_device->add_checkbox_to_panel(PANEL_plothrr, _("HRR and HOC*MLR_..."), &hoc_hrr);
         BUTTON_reset_fuel_hoc = glui_device->add_button_to_panel(PANEL_plothrr, _("Reset HOC"), RESET_FUEL_HOC, DeviceCB);
       }
-#endif
     }
 
     if(ndevicetypes>0){
@@ -821,6 +815,7 @@ extern "C" void GluiDeviceSetup(int main_window){
     if(nsliceinfo>0){
       PANEL_plotslice = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "slice plots");
       glui_device->add_checkbox_to_panel(PANEL_plotslice, _("show"), &vis_slice_plot, SLICE_PLOT, DeviceCB);
+      glui_device->add_checkbox_to_panel(PANEL_plotslice, _("slice bounds"), &slice_plot_bound_option, SLICE_PLOT, DeviceCB);
       SPINNER_slice_x = glui_device->add_spinner_to_panel(PANEL_plotslice, "x", GLUI_SPINNER_FLOAT, slice_xyz+0, SLICE_PLOT, DeviceCB);
       SPINNER_slice_y = glui_device->add_spinner_to_panel(PANEL_plotslice, "y", GLUI_SPINNER_FLOAT, slice_xyz+1, SLICE_PLOT, DeviceCB);
       SPINNER_slice_z = glui_device->add_spinner_to_panel(PANEL_plotslice, "z", GLUI_SPINNER_FLOAT, slice_xyz+2, SLICE_PLOT, DeviceCB);

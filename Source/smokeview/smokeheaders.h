@@ -6,15 +6,6 @@
 #endif
 
 EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals);
-#ifdef pp_HRR_PLOT2D
-void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
-                float highlight_x, float highlight_y, float highlight_y2, int valid,
-                float global_valmin, float global_valmax, char *quantity, char *quantity2, char *unit,
-                float left, float right, float down, float top);
-#endif
-EXTERNCPP void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
-              float highlight_x, float highlight_y, int valid,
-              float global_valmin, float global_valmax, char *quantity, char *unit);
 
 EXTERNCPP void SplitCB(int var);
 
@@ -83,15 +74,10 @@ EXTERNCPP void UpdateColorbarControls2(void);
 EXTERNCPP void SetColorbarDigits(void);
 
 EXTERNCPP void IncrementPartPropIndex(void);
-#ifdef pp_HRR_OTHER
 EXTERNCPP void UpdateHoc(void);
-#endif
 
 EXTERNCPP int GetStringWidth(char *string);
 EXTERNCPP void DrawDevicePlots(void);
-#ifndef pp_HRR_PLOT2D
-EXTERNCPP void DrawHRRPlot(void);
-#endif
 EXTERNCPP void DrawTreeDevicePlots(void);
 EXTERNCPP int GetPercentileDraw(int type);
 EXTERNCPP int GetPlotState(int choice);
@@ -150,7 +136,7 @@ EXTERNCPP void UpdateGlobalFEDSliceBounds(void);
 
 EXTERNCPP void Slice2Device(void);
 
-EXTERNCPP int InMeshi(meshdata *meshi, int dir, float *xyz);
+EXTERNCPP  void UpdateSliceXYZ(void);
 EXTERNCPP int InMesh(float *xyz);
 EXTERNCPP char *GetHomeDir(void);
 EXTERNCPP void SetPercentileDrawOff(void);
