@@ -259,7 +259,7 @@ char *ParseCommandline(int argc, char **argv){
 
     openfile=0;
     filelength = 1024;
-    NewMemory((void **)&filename_local, (unsigned int)len_memory+4);
+    NewMemory((void **)&filename_local, (unsigned int)filelength);
     OpenSMVFile(filename_local,filelength,&openfile);
     if(openfile==1&&ResizeMemory((void **)&filename_local,strlen(filename_local)+1)!=0){
     }
