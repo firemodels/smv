@@ -324,10 +324,6 @@ options =
         local v = opt.argLines[1][1]
         return function () set_linewidth(v) end
         end
-    , PARTPOINTSIZE = function(opt)
-        local v = opt.argLines[1][1]
-        return function () set_partpointsize(v) end
-        end
     , PLOT3DLINEWIDTH = function(opt)
         local v = opt.argLines[1][1]
         return function () set_plot3dlinewidth(v) end
@@ -635,10 +631,6 @@ options =
         local a = opt.argLines[1][1]
         return function () set_showframerate(a) end
         end
-    , SHOWFRAMERATE = function(opt)
-        local a = opt.argLines[1][1]
-        return function () set_showframe(a) end
-        end
     , SHOWGRID = function(opt)
         local a = opt.argLines[1][1]
         return function () set_showgrid(a) end
@@ -828,21 +820,6 @@ options =
     , VECTORSKIP = function(opt)
         local a = opt.argLines[1][1]
         return function () set_vectorskip(a) end
-        end
-    , VOLSMOKE = function(opt)
-        local a = opt.argLines[1][1]
-        local b = opt.argLines[1][2]
-        local c = opt.argLines[1][3]
-        local d = opt.argLines[1][4]
-        local e = opt.argLines[1][5]
-        local f = opt.argLines[2][1]
-        local g = opt.argLines[2][1]
-        local h = opt.argLines[2][1]
-        local i = opt.argLines[2][1]
-        local j = opt.argLines[2][1]
-        local k = opt.argLines[2][1]
-        local l = opt.argLines[2][1]
-        return function () set_volsmoke(a, b, c, d, e, f, g, h, i, j, k, l) end
         end
     , ZOOM = function(opt)
         local a = opt.argLines[1][1]

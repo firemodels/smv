@@ -93,6 +93,10 @@ function camera.set(camera)
     if camera == nil then
         error("camera.set: camera does not exist")
     end
+    if type(camera) == "string" then
+        setviewpoint(camera)
+        return
+    end
     camera_set_rotation_type(camera.rotationType)
     camera_set_eyex(camera.eyePos.x)
     camera_set_eyey(camera.eyePos.y)

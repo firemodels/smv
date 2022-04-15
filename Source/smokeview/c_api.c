@@ -12,6 +12,8 @@
 #include "IOvolsmoke.h"
 #include "infoheader.h"
 
+#include "glui_bounds.h"
+
 #include "c_api.h"
 #include "gd.h"
 
@@ -46,6 +48,15 @@ int set_slice_bound_min(const char *slice_type, int set, float value) {
   }
   UpdateSliceBounds();
   SliceBoundCB(6); // TODO: remove constant
+  return 0;
+}
+
+int set_slice_bounds(const char *quantity, int set_valmin, float valmin, int set_valmax, float valmax) {
+  fprintf(stderr,"c_api: set_valmin: %d, set_valmax: %d, valmin: %f, valmax: %f\n",set_valmin,set_valmax,valmin,valmax);
+  char *quantity_var;
+  if(NewMemory((void **)&quantity_var, sizeof(char)*strlen(quantity)+1) == 0)return 2;
+  SetSliceBounds(set_valmin, valmin, set_valmax, valmax, quantity_var);
+  FREEMEMORY(quantity_var);
   return 0;
 }
 
@@ -295,7 +306,6 @@ int loadfile(const char *filename) {
       return errorcode;
     }
   }
-  npartframes_max=GetMinPartFrames(PARTFILE_LOADALL);
   for(i=0;i<npartinfo;i++){
     partdata *parti;
 
@@ -768,6 +778,41 @@ void set_slice_in_obst(int setting) {
 
 int get_slice_in_obst() {
 	return show_slice_in_obst;
+}
+
+int set_named_colorbar(const char *name) {
+  fprintf(stderr,"Setting colorbar to: %s\n", name);
+  for(int i=0;i<ncolorbars;i++){
+    if (strcmp(colorbarinfo[i].label,name)==0) {
+      set_colorbar(i);
+      return 0;
+    }
+  }
+  return 1;
+}
+
+void set_colorbar(int value) {
+  fprintf(stderr,"Setting colorbar to: %d\n", value);
+  colorbartype=value;
+  iso_colorbar_index=value;
+  iso_colorbar = colorbarinfo + iso_colorbar_index;
+  update_texturebar=1;
+  UpdateListIsoColorobar();
+  selectedcolorbar_index2=colorbartype;
+  UpdateCurrentColorbar(colorbarinfo+colorbartype);
+  UpdateColorbarType();
+  UpdateColorbarList2();
+  if(colorbartype == bw_colorbar_index){
+    setbwdata = 1;
+  }
+  else{
+    setbwdata = 0;
+  }
+  IsoBoundCB(ISO_COLORS);
+  SetLabelControls();
+  if (value>-10) {
+    UpdateRGBColors(COLORBAR_INDEX_NONE);
+  }
 }
 
 // colorbar visibility
@@ -1380,6 +1425,16 @@ void load3dsmoke(const char *smoke_type){
     }
   }
 
+  for(i = nsmoke3dinfo-1;i >=0;i--){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo + i;
+    if(MatchUpper(smoke3di->label.longlabel, smoke_type) == MATCH){
+      lastsmoke = i;
+      break;
+    }
+  }
+
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
 
@@ -1510,6 +1565,7 @@ void loadparticles(const char *name){
   UpdateFrameNumber(0);
   updatemenu=1;
 }
+
 /* ------------------ partclasscolor ------------------------ */
 
 void partclasscolor(const char *color){
@@ -1613,60 +1669,60 @@ void plot3dprops(int variable_index, int showvector, int vector_length_index,
 //
 // void script_showplot3ddata(int meshnumber, int plane_orientation, int display,
 //                            float position) {
-//   meshdata *meshi;
-//   int imesh, dir, showhide;
-//   float val;
-//   int isolevel;
-//
-//   imesh = scripti->ival-1;
-//   if(imesh<0||imesh>nmeshes-1)return;
-//
-//   meshi = meshinfo + imesh;
-//   update_current_mesh(meshi);
-//
-//   dir = scripti->ival2;
-//   if(dir<1)dir=1;
-//   if(dir>4)dir=4;
-//
-//   plotn=scripti->ival3;
-//
-//   showhide = scripti->ival4;
-//   val = scripti->fval;
-//
-//   switch(dir){
-//     case 1:
-//       visx_all=showhide;
-//       iplotx_all=get_index(val,1,plotx_all,nplotx_all);
-//       next_xindex(1,0);
-//       next_xindex(-1,0);
-//       break;
-//     case 2:
-//       visy_all=showhide;
-//       iploty_all=get_index(val,2,ploty_all,nploty_all);
-//       next_yindex(1,0);
-//       next_yindex(-1,0);
-//       break;
-//     case 3:
-//       visz_all=showhide;
-//       iplotz_all=get_index(val,3,plotz_all,nplotz_all);
-//       next_zindex(1,0);
-//       next_zindex(-1,0);
-//       break;
-//     case 4:
-//       isolevel=scripti->ival5;
-//       plotiso[plotn-1]=isolevel;
-//       updateshowstep(showhide,ISO);
-//       updatesurface();
-//       updatemenu=1;
-//       break;
-//     default:
-//       ASSERT(FFALSE);
-//       break;
-//   }
-//   updateplotslice(dir);
-//
-// }
+/* ------------------ ScriptShowPlot3dData ------------------------ */
 
+void ShowPlot3dData(int meshnumber, int plane_orientation, int display,
+                           int showhide, float position, int isolevel) {
+  meshdata *meshi;
+  int dir;
+  float val;
+
+  if(meshnumber<0||meshnumber>nmeshes-1)return;
+
+  meshi = meshinfo + meshnumber;
+  UpdateCurrentMesh(meshi);
+
+  dir = CLAMP(plane_orientation,XDIR,ISO);
+
+  plotn=display;
+  printf("show plotn: %d\n", plotn);
+  val = position;
+
+  switch(dir){
+    case XDIR:
+      visx_all=showhide;
+      iplotx_all=GetGridIndex(val,XDIR,plotx_all,nplotx_all);
+      NextXIndex(1,0);
+      NextXIndex(-1,0);
+      break;
+    case YDIR:
+      visy_all=showhide;
+      iploty_all=GetGridIndex(val,YDIR,ploty_all,nploty_all);
+      NextYIndex(1,0);
+      NextYIndex(-1,0);
+      break;
+    case ZDIR:
+      visz_all=showhide;
+      iplotz_all=GetGridIndex(val,ZDIR,plotz_all,nplotz_all);
+      NextZIndex(1,0);
+      NextZIndex(-1,0);
+      break;
+    case ISO:
+      plotiso[plotn-1]=isolevel;
+      UpdateShowStep(showhide,ISO);
+      UpdateSurface();
+      updatemenu=1;
+      break;
+    default:
+      ASSERT(FFALSE);
+      break;
+  }
+  UpdatePlotSlice(dir);
+  // UpdateAllPlotSlices();
+  // if(visiso==1&&cache_qdata==1)UpdateSurface();
+  // UpdatePlot3dListIndex();
+  // glutPostRedisplay();
+}
 
 /* ------------------ loadplot3d ------------------------ */
 
@@ -3805,13 +3861,13 @@ int set_compressauto(int v) {
 //   return 0;
 // } // PART5COLOR
 
-int set_propindex(int nvals, int vals[][2]) {
+int set_propindex(int nvals, int *vals) {
   int i;
   for(i = 0; i<nvals; i++){
     propdata *propi;
     int ind, val;
-    ind = vals[0][2];
-    val = vals[1][2];
+    ind = *(vals + (i*PROPINDEX_STRIDE+0));
+    val = *(vals + (i*PROPINDEX_STRIDE+1));
     if(ind<0 || ind>npropinfo - 1)return 0;
     propi = propinfo + ind;
     if(val<0 || val>propi->nsmokeview_ids - 1)return 0;
@@ -3860,7 +3916,7 @@ int set_shooter(float xyz[], float dxyz[], float uvw[],
   return 0;
 } // SHOOTER
 
-int set_showdevices(int ndevices_ini, const char **names) {
+int set_showdevices(int ndevices_ini, const char * const *names) {
   sv_object *obj_typei;
   int i;
   char tempname[255]; // temporary buffer to convert from const string
@@ -3945,7 +4001,7 @@ int set_c_particles(int minFlag, float minValue, int maxFlag, float maxValue,
    label = "";
   }
   int l = strlen(label);
-  char label_copy[l+1];
+  char *label_copy = malloc(sizeof(char)*(l+1));
   // convert to mutable string (mainly to avoid discard const warnings)
   strcpy(label_copy, label);
   if(npart5prop>0){
@@ -3961,6 +4017,7 @@ int set_c_particles(int minFlag, float minValue, int maxFlag, float maxValue,
       propi->chopmax = maxValue;
     }
   }
+  free(label_copy);
   return 0;
 }
 
@@ -4053,6 +4110,38 @@ int set_v_plot3d(int n3d, int minFlags[], int minVals[], int maxFlags[],
   return 0;
 } // V_PLOT3D
 
+int set_pl3d_bound_min(int pl3dValueIndex, int set, float value) {
+    printf("setting pl3d min bound ");
+    if(set) {printf("ON");} else {printf("OFF");}
+    printf(" with value of %f\n", value);
+    setp3min_all[pl3dValueIndex] = set;
+    p3min_all[pl3dValueIndex] = value;
+    // TODO: remove this reload and hardcoded value
+    Plot3DBoundCB(7);
+    return 0;
+}
+
+int set_pl3d_bound_max(int pl3dValueIndex, int set, float value) {
+    printf("setting pl3d max bound ");
+    if(set) {printf("ON");} else {printf("OFF");}
+    printf(" with value of %f\n", value);
+    setp3max_all[pl3dValueIndex] = set;
+    p3max_all[pl3dValueIndex] = value;
+    // TODO: remove this reload and hardcoded value
+    Plot3DBoundCB(7);
+    return 0;
+}
+
+// int find_pl3d_quantity_index(char *quantityName) {
+//   int i;
+//   for(i = 0; i<mxplot3dvars; i++){
+//      if(!strcmp(quantityName, plot3dinfo[i].menulabel)) {
+//        return i;
+//      }
+//   }
+//   return -1;
+// }
+
 int set_tload(int beginFlag, float beginVal, int endFlag, int endVal,
               int skipFlag, int skipVal) {
   use_tload_begin = beginFlag;
@@ -4070,7 +4159,7 @@ int set_v5_particles(int minFlag, float minValue, int maxFlag, float maxValue,
    label = "";
   }
   int l = strlen(label);
-  char label_copy[l+1];
+  char *label_copy = malloc(sizeof(char)*(l+1));
   // convert to mutable string (mainly to avoid discard const warnings)
   strcpy(label_copy, label);
   if(npart5prop>0){
@@ -4115,6 +4204,7 @@ int set_v5_particles(int minFlag, float minValue, int maxFlag, float maxValue,
       }
     }
   }
+  free(label_copy);
   return 0;
 }
 
