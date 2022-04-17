@@ -6,147 +6,7 @@
 #include <string.h>
 #include <math.h>
 
-// !  +++++++++++++++++++++++ BOXTETRA_ROUTINES ++++++++++++++++++++++++++
-
-// INTEGER, DIMENSION(0:3,0:5), TARGET :: BOX_PLANE2VERT
-
-// INTEGER, DIMENSION(0:3,0:5), TARGET :: BOX_PLANE2EDGE
-
-// INTEGER, DIMENSION(0:1,0:11), TARGET :: BOX_EDGE2VERT
-
-// INTEGER, DIMENSION(0:2,0:3), TARGET :: TETRA_PLANE2VERT
-
-// INTEGER, DIMENSION(0:2,0:3), TARGET :: TETRA_PLANE2EDGE
-
-// INTEGER, DIMENSION(0:1,0:5) :: TETRA_EDGE2VERT
-
-// INTEGER, PARAMETER :: MIN_X=0, MAX_X=1, MIN_Y=2, MAX_Y=3, MIN_Z=4, MAX_Z=5
-
-// INTEGER :: I, J
-
-// !       6-----------7
-// !      /.          /|
-// !    /  .        /  |
-// !   4-----------5   |
-// !   |   .       |   |
-// !   |   .       |   |
-// !   |   2.......|...3
-// !   |  .        |  /
-// !   | .         | /
-// !   |.          |/
-// !   0-----------1
-
-// ! BOX_PLANE2VERT(edge,plane)
-// DATA ( (BOX_PLANE2VERT(I,J), I=0,3),J=0,5) /&
-//   0,2,4,6,&
-//   1,3,5,7,&
-//   0,1,4,5,&
-//   2,3,6,7,&
-//   0,1,2,3,&
-//   4,5,6,7 &
-//   /
-
-// !       ------7------
-// !      /.           /
-// !     2 .         3 |
-// !    /  .        /  |
-// !   ------6------   |
-// !   |  10       |  11
-// !   |   .       |   |
-// !   |   .....5..|...|
-// !   8  .        9  /
-// !   | 0         | 1
-// !   |.          |/
-// !   |----4------|
-
-// DATA ( (BOX_PLANE2EDGE(I,J), I=0,3),J=0,5) /&
-//   0,2,8,10,&
-//   1,3,9,11,&
-//   4,6,8,9,&
-//   5,7,10,11,&
-//   0,1,4,5,&
-//   2,3,6,7 &
-//   /
-
-// !       6-----7-----7
-// !      /.           /
-// !     2 .         3 |
-// !    /  .        /  |
-// !   4-----6-----5   |
-// !   |  10       |  11
-// !   |   .       |   |
-// !   |   2....5..|...3
-// !   8  .        9  /
-// !   | 0         | 1
-// !   |.          |/
-// !   0----4------1
-// ! planes: 0-left 1-right 2-front 3-back 4-bottom 5-top
-// ! edges: 0-bottom left  1-bottom right 2-top left   3-top right
-// !        4-bottom front 5-bottom back  6-top front  7-top back
-// !        8-front left   9-front right 10-back left 11-back right
-// ! vertices: 0-bottom left front 1-bottom right front 2-bottom left back
-// 3-bottom right back !           4-top left front    5-top right front 6-top
-// left back    7-top right back
-
-//  DATA ( (BOX_EDGE2VERT(I,J), I=0,1), J=0,11) /&
-//   0,2,  1,3,  4,6,  5,7,&
-//   0,1,  2,3,  4,5,  6,7,&
-//   0,4,  1,5,  2,6,  3,7&
-//   /
-
-// !           3
-// !          /.\
-// !         / . \
-// !        /  5  \
-// !       /   .   \
-// !      3    2    4
-// !     /   .   .   \
-// !    /  2       1  \
-// !   / .           . \
-// !  0-------0---------1
-
-// DATA ( (TETRA_PLANE2VERT(I,J), I=0,2),J=0,3) /&
-//   0,3,1,&
-//   1,3,2,&
-//   0,2,3,&
-//   0,1,2&
-//   /
-
-// DATA ( (TETRA_PLANE2EDGE(I,J), I=0,2),J=0,3) /&
-//   0,3,4,&
-//   1,4,5,&
-//   2,5,3,& !double check (was 2 3 5)
-//   0,1,2&
-//   /
-
-//  DATA ( (TETRA_EDGE2VERT(I,J), I=0,1), J=0,5) /&
-//   0,1,  1,2,  2,0,&
-//   0,3,  1,3,  2,3&
-//   /
-
-// !  ------------------ TETRAHEDRON_VOLUME ------------------------
-
-// !              D1
-// !             /|\
-// !            / | \
-// !           /  |  \
-// !          /   |   \
-// !         /    |    \
-// !        /     B4    \
-// !       /     . .     \
-// !      /     .    .    \
-// !     /    .        .   \
-// !    /   .            .  \
-// !   /  .               .  \
-// !  / .                    .\
-// ! C2------------------------A3
-
 double tetrahedron_volume(double A[3], double B[3], double C[3], double D[3]) {
-
-  // ! determine the volume of a tetrahedron formed from vertices A, B, C and D
-
-  // REAL(EB), DIMENSION(0:2), INTENT(IN) :: A, B, C, D
-  // REAL(EB), DIMENSION(0:2) :: AMC, BMC, DMC, ACROSSB
   double AMC[3];
   double BMC[3];
   double DMC[3];
@@ -189,12 +49,6 @@ double distance3(double v1[3], double v2[3]) {
 // !  ------------------ GET_VERTTYPE ------------------------
 
 void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
-  // INTEGER, INTENT(IN) :: nverts, ntriangles
-
-  // INTEGER, INTENT(OUT), DIMENSION(nverts) :: vert_type
-
-  // INTEGER, INTENT(IN), DIMENSION(3*ntriangles), TARGET :: triangles
-
   // ! classify each vertex in a geometry as either interior or exterior
   // ! a vertex VI is interior if the vertices connected to I form a cycle or
   // loop ! ie VI is connected to v1, v2, v3 and v1 -> v2 -> v3 -> v1 ! if they
@@ -203,14 +57,7 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
   // ! exterior vertices (connected to a blockage or mesh boundary) won't be
   // moved or deleted
 
-  // INTEGER, DIMENSION(nverts) :: vert_count, triangle_count
-
-  // INTEGER :: I, J, K, vertj_index, TRIJ_INDEX, maxcount, vertk_index
-
-  // INTEGER, POINTER, DIMENSION(:) :: trii
   int *trii;
-
-  // INTEGER, DIMENSION(:,:), ALLOCATABLE :: vert_trilist
 
   // ! count number of triangles connected to each vertex
   int *triangle_count;
@@ -235,7 +82,6 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
   // ! vert_trilist(I,1) contains number of triangles connected to vertex I
   // ! vert_trilist(I,2-> ) contains the triangle indices
 
-  // ALLOCATE(vert_trilist(nverts,maxcount+1));
   int *vert_trilist;
   NewMemory((void **)&vert_trilist, nverts * (maxcount + 1));
   memset(vert_trilist, '\0', nverts * (maxcount + 1) * sizeof(*vert_trilist));
@@ -254,8 +100,7 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
     }
   }
 
-  // int *vert_type;
-  // NewMemory((void **)&vert_type,nverts);
+  NewMemory((void **)&vert_type,nverts);
   memset(vert_type, 1, nverts * sizeof(*vert_type));
 
   int *vert_count;
@@ -263,9 +108,7 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
   memset(vert_count, '\0', nverts * sizeof(*vert_count));
 
   // ! count vertices connected to each vertex
-  // vert_type[1:nverts] = 1;
   for (int i = 1; i < nverts; i++) {
-    // vert_count(1:nverts) = 0;
     memset(vert_count, 0, nverts * sizeof(*vert_count));
     for (int j = 1; j <= vert_trilist[i * nverts + 1];
          j++) { // loop over triangles connected to vertex I
@@ -296,16 +139,6 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
 
 void average_verts2(double v1[3], int v1type, double v2[3], int v2type,
                     double mesh_bounds[6], double *vavg) {
-  // REAL(EB), DIMENSION(3), INTENT(IN) :: V1, V2
-
-  // INTEGER, INTENT(IN) :: V1TYPE, V2TYPE
-
-  // REAL(EB), DIMENSION(6), INTENT(IN) :: mesh_bounds
-
-  // REAL(EB), DIMENSION(3), INTENT(OUT) :: vavg
-
-  // REAL(EB) :: BOXEPS
-
   double BOXEPS = 0.001;
 
   if (v1type == 0) {
@@ -358,16 +191,6 @@ void average_verts2(double v1[3], int v1type, double v2[3], int v2type,
 void average_verts3(double v1[3], int v1type, double v2[3], int v2type,
                     double v3[3], int v3type, double mesh_bounds[6],
                     double *vavg) {
-  // REAL(EB), DIMENSION(3), INTENT(IN) :: V1, V2, V3
-
-  // INTEGER, INTENT(IN) :: V1TYPE, V2TYPE, V3TYPE
-
-  // REAL(EB), DIMENSION(6), INTENT(IN) :: mesh_bounds
-
-  // REAL(EB), DIMENSION(3), INTENT(OUT) :: vavg
-
-  // REAL(EB) :: BOXEPS
-
   double BOXEPS = 0.001;
 
   if (v1type == 0) {
@@ -456,20 +279,12 @@ void decimate(double *VERTS, int nverts, int *FACES, int NFACES,
   double *VERTFROM;
   double *VERTTO;
 
-  // INTEGER, POINTER, DIMENSION(:) :: TRI_I, tri_from, tri_to
   int *tri_from;
   int *tri_to;
-  // INTEGER, DIMENSION(3) :: tri_new
   int tri_new[3];
-  // REAL(EB) :: D12, D13, D23
-
-  // INTEGER :: I, IFROM, ITO, iter, max_iter
   int ITO;
 
-  // REAL(EB), DIMENSION(3) :: vavg
   double vavg[3];
-
-  // LOGICAL :: have_small
   bool have_small = true;
   int max_iter = 4;
   int iter = 0;
@@ -483,7 +298,6 @@ void decimate(double *VERTS, int nverts, int *FACES, int NFACES,
     // !    V_DISCARD =  0  -  discard vertex
     // !    V_ORIGINAL = 1  -  vertex kept and not changed
 
-    //  vert_state(1:nverts) = V_ORIGINAL;
     memset(vert_state, V_ORIGINAL, nverts * sizeof(*vert_state));
 
     for (int i = 0; i < nverts; i++) {
