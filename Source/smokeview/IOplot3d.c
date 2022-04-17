@@ -7,6 +7,7 @@
 
 #include "smokeviewvars.h"
 #include "IOobjects.h"
+#include "getdata.h"
 
 /* ------------------ GetPlot3DHists ------------------------ */
 
@@ -336,7 +337,7 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   PRINTF("Loading plot3d data: %s",file);
   START_TIMER(read_time);
   if(p->compression_type==UNCOMPRESSED){
-    FORTgetplot3dq(file,&nx,&ny,&nz,meshi->qdata,&error,&isotest,plot3dfilelen);
+    getplot3dq(file,nx,ny,nz,meshi->qdata,&error,&isotest);
   }
   if(NewMemoryMemID((void **)&meshi->iqdata,numplot3dvars*ntotal*sizeof(unsigned char), p->memory_id)==0){
     *errorcode=1;

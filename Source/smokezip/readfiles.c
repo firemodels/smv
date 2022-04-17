@@ -580,7 +580,7 @@ int ReadSMV(char *smvfile){
           patchi->histogram->buckets_polar = NULL;
           lenfile = strlen(patchi->file);
           boundaryunitnumber=15;
-          FORTgetboundaryheader1(patchi->file,&boundaryunitnumber, &npatches, &error, lenfile);
+          getboundaryheader1(patchi->file,&boundaryunitnumber, &npatches, &error, lenfile);
           if(npatches>0){
             int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2, *patchdir, *patchsize;
             int i;
@@ -602,7 +602,7 @@ int ReadSMV(char *smvfile){
             patchi->patchdir=patchdir;
             patchi->npatches=npatches;
             patchi->patchsize=patchsize;
-            FORTgetboundaryheader2(&boundaryunitnumber, &version_local, &npatches, pi1, pi2, pj1, pj2, pk1, pk2, patchdir);
+            getboundaryheader2(&boundaryunitnumber, &version_local, &npatches, pi1, pi2, pj1, pj2, pk1, pk2, patchdir);
             for(i=0;i<npatches;i++){
               patchi->patchsize[i] = (pi2[i]+1-pi1[i])*(pj2[i]+1-pj1[i])*(pk2[i]+1-pk1[i]);
             }

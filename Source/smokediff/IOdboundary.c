@@ -190,10 +190,10 @@ void diff_boundaryes(FILE *stream_out){
     PRINTF("Subtracting %s from %s\n",fullfile2,fullfile1);
 
     len1=strlen(fullfile1);
-    FORTopenboundary(fullfile1,&unit1,&boundary1->version,&error1,len1);
+    openboundary(fullfile1,&unit1,&boundary1->version,&error1,len1);
 
     len2=strlen(fullfile2);
-    FORTopenboundary(fullfile2,&unit2,&boundary2->version,&error2,len2);
+    openboundary(fullfile2,&unit2,&boundary2->version,&error2,len2);
     error3 = 0;
 
     if(error1==0&&error2==0){
@@ -223,7 +223,7 @@ void diff_boundaryes(FILE *stream_out){
       }
       len3=strlen(outfile);
       size_sofar=0;
-      FORToutboundaryheader(outfile,&unit3,&npatches3,
+      outboundaryheader(outfile,&unit3,&npatches3,
         p3i1,p3i2,p3j1,p3j2,p3k1,p3k2,patchdir3,&error3,len3);
       PRINTF("  Progress: ");
       FFLUSH();
@@ -233,11 +233,11 @@ void diff_boundaryes(FILE *stream_out){
 
       ResetHistogram(boundary1->histogram,NULL,NULL);
 
-      FORTgetpatchdata(&unit1, &boundary1->npatches,
+      getpatchdata(&unit1, &boundary1->npatches,
         p1i1, p1i2, p1j1, p1j2, p1k1, p1k2, &patchtime1, pqq1, &npqq1, &file_size, &error1);
-      FORTgetpatchdata(&unit2, &boundary2->npatches,
+      getpatchdata(&unit2, &boundary2->npatches,
         p2i1, p2i2, p2j1, p2j2, p2k1, p2k2, &patchtime2a, pqq2a, &npqq2a, &file_size, &error2);
-      if(error2==0)FORTgetpatchdata(&unit2, &boundary2->npatches,
+      if(error2==0)getpatchdata(&unit2, &boundary2->npatches,
         p2i1, p2i2, p2j1, p2j2, p2k1, p2k2, &patchtime2b, pqq2b, &npqq2b, &file_size, &error2);
       for(;;){
         int iq;
@@ -251,7 +251,7 @@ void diff_boundaryes(FILE *stream_out){
             pqq2a[i]=pqq2b[i];
           }
           patchtime2a=patchtime2b;
-          FORTgetpatchdata(&unit2, &boundary2->npatches,
+          getpatchdata(&unit2, &boundary2->npatches,
             p2i1, p2i2, p2j1, p2j2, p2k1, p2k2, &patchtime2b, pqq2b, &npqq2b, &file_size, &error2);
           if(error2!=0)break;
         }
@@ -284,7 +284,7 @@ void diff_boundaryes(FILE *stream_out){
           }
         }
         UpdateHistogram(pqq1, NULL,nsize1, boundary1->histogram);
-        FORToutpatchframe(&unit3, &npatches3,
+        outpatchframe(&unit3, &npatches3,
                         p3i1, p3i2, p3j1, p3j2, p3k1, p3k2,
                         &patchtime1, pqq3, &error3);
         size_sofar+=nsize1*sizeof(float);
@@ -295,7 +295,7 @@ void diff_boundaryes(FILE *stream_out){
           FFLUSH();
         }
 
-        FORTgetpatchdata(&unit1, &boundary1->npatches,
+        getpatchdata(&unit1, &boundary1->npatches,
           p1i1, p1i2, p1j1, p1j2, p1k1, p1k2, &patchtime1, pqq1, &npqq1, &file_size, &error1);
       }
       PRINTF("\n");
@@ -321,8 +321,8 @@ void diff_boundaryes(FILE *stream_out){
     FREEMEMORY(p3k2);
     FREEMEMORY(patchdir3);
 
-    if(error1!=0)FORTclosefortranfile(&unit1);
-    if(error2!=0)FORTclosefortranfile(&unit2);
-    if(error3!=0)FORTclosefortranfile(&unit3);
+    if(error1!=0)closefortranfile(&unit1);
+    if(error2!=0)closefortranfile(&unit2);
+    if(error3!=0)closefortranfile(&unit3);
   }
 }

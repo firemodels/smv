@@ -143,12 +143,12 @@ void diff_plot3ds(FILE *stream_out){
     PRINTF("  Progress: reading %s,",fullfile1);
     FFLUSH();
 
-    FORTgetplot3dq(fullfile1,&nx,&ny,&nz,qframe1,&error1,&isotest,len1);
+    getplot3dq(fullfile1,&nx,&ny,&nz,qframe1,&error1,&isotest,len1);
     if(test_mode==1)isotest=2;
     PRINTF(" reading %s,",fullfile2);
     FFLUSH();
 
-    FORTgetplot3dq(fullfile2,&nx,&ny,&nz,qframe2,&error2,&isotest,len2);
+    getplot3dq(fullfile2,&nx,&ny,&nz,qframe2,&error2,&isotest,len2);
     PRINTF(" differencing data,");
     FFLUSH();
 
@@ -182,7 +182,7 @@ void diff_plot3ds(FILE *stream_out){
       fprintf(stream_out,"  %f %f %f %f\n",valmin,valmax,valmin_percentile,valmax_percentile);
     }
 
-    FORTplot3dout(outfile,&nx,&ny,&nz,qout,&error3,lenout);
+    plot3dout(outfile,&nx,&ny,&nz,qout,&error3,lenout);
     PRINTF(" completed.\n");
     FFLUSH();
 

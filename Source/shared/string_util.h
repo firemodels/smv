@@ -12,10 +12,8 @@
 
 // vvvvvvvvvvvvvvvvvvvvvvvv header files vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-#ifdef __MINGW32__
 #include <stdio.h>
 #include "options.h"
-#endif
 #include "file_util.h"
 
 // vvvvvvvvvvvvvvvvvvvvvvvv structures vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv

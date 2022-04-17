@@ -8,6 +8,7 @@
 #include "string_util.h"
 #include "smokeviewvars.h"
 #include "IOobjects.h"
+#include "getdata.h"
 
 /* ------------------ GetZoneSizeCSV ------------------------ */
 
@@ -945,7 +946,7 @@ void ReadZone(int ifile, int flag, int *errorcode){
     GetZoneSizeCSV(&nzone_times,&nrooms2,&nfires2,&nzhvents2,&nzvvents2,&nzmvents2,&ntargets_local, &error);
   }
   else{
-    FORTgetzonesize(file,&nzone_times,&nrooms2,&nfires2,&error,zonefilelen);
+    getzonesize(file,&nzone_times,&nrooms2,&nfires2,&error);
     nzhvents2=nzhvents;
     nzvvents2=nzvvents;
   }
@@ -1120,7 +1121,7 @@ void ReadZone(int ifile, int flag, int *errorcode){
                    &error);
   }
   else{
-    FORTgetzonedata(file,&nzone_times,&nrooms, &nfires, zone_times,zoneqfire,zonepr,zoneylay,zonetl,zonetu,&error,zonefilelen);
+    getzonedata(file,&nzone_times,&nrooms, &nfires, zone_times,zoneqfire,zonepr,zoneylay,zonetl,zonetu,&error);
   }
   CheckMemory;
 

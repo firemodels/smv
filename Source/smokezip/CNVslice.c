@@ -1003,7 +1003,7 @@ void UpdateSliceHist(void){
     lenfile=strlen(slicei->file);
 
     LOCK_COMPRESS;
-    FORTopenslice(slicei->file,&unit1,&is1,&is2,&js1,&js2,&ks1,&ks2,&error1,lenfile);
+    openslice(slicei->file,&unit1,&is1,&is2,&js1,&js2,&ks1,&ks2,&error1,lenfile);
     UNLOCK_COMPRESS;
 
     sliceframesize=(is2+1-is1)*(js2+1-js1)*(ks2+1-ks1);
@@ -1011,13 +1011,13 @@ void UpdateSliceHist(void){
     ResetHistogram(slicei->histogram,NULL,NULL);
     testslice=0;
     while(error1==0){
-      FORTgetsliceframe(&unit1, &is1, &is2, &js1, &js2, &ks1, &ks2, &slicetime1, sliceframe, &testslice,&error1);
+      getsliceframe(&unit1, &is1, &is2, &js1, &js2, &ks1, &ks2, &slicetime1, sliceframe, &testslice,&error1);
       UpdateHistogram(sliceframe,NULL,sliceframesize,slicei->histogram);
     }
     FREEMEMORY(sliceframe);
 
     LOCK_COMPRESS;
-    FORTclosefortranfile(&unit1);
+    closefortranfile(&unit1);
     UNLOCK_COMPRESS;
   }
 }

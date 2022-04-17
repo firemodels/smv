@@ -440,7 +440,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
         }
         slicei->filesize=filesize;
         lenfile=strlen(full_file);
-        FORTgetsliceparms(full_file,&is1,&is2,&js1,&js2,&ks1,&ks2,&ni,&nj,&nk,&slicei->volslice,&error,lenfile);
+        getsliceparms(full_file,&is1,&is2,&js1,&js2,&ks1,&ks2,&ni,&nj,&nk,&slicei->volslice,&error,lenfile);
         slicei->is1=is1;
         slicei->is2=is2;
         slicei->js1=js1;
@@ -524,7 +524,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
         boundaryi->filesize=filesize;
         lenfile=strlen(full_file);
         boundaryunitnumber=15;
-        FORTgetboundaryheader1(full_file,&boundaryunitnumber, &npatches, &error, lenfile);
+        getboundaryheader1(full_file,&boundaryunitnumber, &npatches, &error, lenfile);
         if(npatches>0){
           int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2, *patchdir, *patch2index, *patchsize, *qoffset;
           int i;
@@ -550,7 +550,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
           boundaryi->npatches=npatches;
           boundaryi->patchsize=patchsize;
           boundaryi->qoffset=qoffset;
-          FORTgetboundaryheader2(&boundaryunitnumber, &version_local, &npatches, pi1, pi2, pj1, pj2, pk1, pk2, patchdir);
+          getboundaryheader2(&boundaryunitnumber, &version_local, &npatches, pi1, pi2, pj1, pj2, pk1, pk2, patchdir);
           for(i=0;i<npatches;i++){
             boundaryi->patchsize[i] = (pi2[i]+1-pi1[i])*(pj2[i]+1-pj1[i])*(pk2[i]+1-pk1[i]);
             if(i==0){

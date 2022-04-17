@@ -567,7 +567,7 @@ void update_patch_hist(void){
     pk2 = patchi->pk2;
 
     LOCK_COMPRESS;
-    FORTopenboundary(patchi->file,&unit1,&patchi->version,&error1,lenfile);
+    openboundary(patchi->file,&unit1,&patchi->version,&error1,lenfile);
     UNLOCK_COMPRESS;
 
     patchframesize=0;
@@ -580,12 +580,12 @@ void update_patch_hist(void){
       int ndummy;
       int file_size;
 
-      FORTgetpatchdata(&unit1, &patchi->npatches,
+      getpatchdata(&unit1, &patchi->npatches,
         pi1, pi2, pj1, pj2, pk1, pk2, &patchtime1, patchframe, &ndummy,&file_size, &error1);
       UpdateHistogram(patchframe, NULL,patchframesize, patchi->histogram);
     }
     LOCK_COMPRESS;
-    FORTclosefortranfile(&unit1);
+    closefortranfile(&unit1);
     UNLOCK_COMPRESS;
     FREEMEMORY(patchframe);
   }

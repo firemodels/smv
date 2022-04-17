@@ -79,11 +79,6 @@ typedef struct {
   int closest;
 } orderdata;
 
-#define CCIsoSurface2File  _F(iso2file)
-#define CCIsoSurfaceT2File _F(isot2file)
-#define CCIsoHeader        _F(isoheader)
-#define CCTIsoHeader       _F(tisoheader)
-
 SV_EXTERN void CCIsoHeader(char *isofile,
                  char *isolonglabel, char *isoshortlabel, char *isounits,
                  float *levels, int *nlevels, int *error);

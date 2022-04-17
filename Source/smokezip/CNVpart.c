@@ -359,15 +359,15 @@ void convert_part(part *parti, int *thread_index){
 
   lenfile=strlen(parti->file);
   LOCK_COMPRESS;
-  FORTopenpart(parti->file,&unit,&error,lenfile);
+  openpart(parti->file,&unit,&error,lenfile);
   UNLOCK_COMPRESS;
 
-  FORTgetpartheader1(&unit,&nclasses,&fdsversion,&size);
+  getpartheader1(&unit,&nclasses,&fdsversion,&size);
   NewMemory((void **)&nquantities,nclasses*sizeof(int));
   NewMemory((void **)&npoints,nclasses*sizeof(int));
   sizebefore+=size;
 
-  FORTgetpartheader2(&unit,&nclasses,nquantities,&size);
+  getpartheader2(&unit,&nclasses,nquantities,&size);
   sizebefore+=size;
 
   fwrite(&one,4,1,partstream);           // write out a 1 to determine "endianness" when file is read in later
@@ -388,7 +388,7 @@ void convert_part(part *parti, int *thread_index){
     unsigned char *cbuff;
     int ncompressed_int, ncompressed_char;
 
-    FORTgetpartdataframe(&unit,&nclasses,nquantities,npoints,&time_local,tagdata,pdata,&size,&error);
+    getpartdataframe(&unit,&nclasses,nquantities,npoints,&time_local,tagdata,pdata,&size,&error);
     if(error!=0)break;
 
     fwrite(&time_local,4,1,partstream);
@@ -516,7 +516,7 @@ void convert_part(part *parti, int *thread_index){
   FREEMEMORY(char_buffer_compressed);
 
   LOCK_COMPRESS;
-  FORTclosefortranfile(&unit);
+  closefortranfile(&unit);
   UNLOCK_COMPRESS;
   fclose(partstream);
 //  fclose(partsizestream);
@@ -570,14 +570,14 @@ void Get_Part_Bounds(void){
     PRINTF("  Examining %s\n",parti->file);
     lenfile=strlen(parti->file);
     LOCK_COMPRESS;
-    FORTopenpart(parti->file,&unit,&error1,lenfile);
+    openpart(parti->file,&unit,&error1,lenfile);
     UNLOCK_COMPRESS;
 
-    FORTgetpartheader1(&unit,&nclasses,&fdsversion,&size);
+    getpartheader1(&unit,&nclasses,&fdsversion,&size);
     NewMemory((void **)&nquantities,nclasses*sizeof(int));
     NewMemory((void **)&npoints,nclasses*sizeof(int));
 
-    FORTgetpartheader2(&unit,&nclasses,nquantities,&size);
+    getpartheader2(&unit,&nclasses,nquantities,&size);
     nquantities_total=0;
     for(j=0;j<nclasses;j++){
       nquantities_total+=nquantities[j];
@@ -586,7 +586,7 @@ void Get_Part_Bounds(void){
       FREEMEMORY(nquantities);
       FREEMEMORY(npoints);
       LOCK_COMPRESS;
-      FORTclosefortranfile(&unit);
+      closefortranfile(&unit);
       UNLOCK_COMPRESS;
       continue;
     }
@@ -596,7 +596,7 @@ void Get_Part_Bounds(void){
       float *x, *y, *z, *vals;
       int k;
 
-      FORTgetpartdataframe(&unit,&nclasses,nquantities,npoints,&time_local,tagdata,pdata,&size,&error);
+      getpartdataframe(&unit,&nclasses,nquantities,npoints,&time_local,tagdata,pdata,&size,&error);
       if(error!=0)break;
 
       vals=pdata;
@@ -624,7 +624,7 @@ void Get_Part_Bounds(void){
     FREEMEMORY(npoints);
 
     LOCK_COMPRESS;
-    FORTclosefortranfile(&unit);
+    closefortranfile(&unit);
     UNLOCK_COMPRESS;
   }
 
@@ -702,14 +702,14 @@ void part2iso(part *parti, int *thread_index){
 
   len_partfile=strlen(parti->file);
   LOCK_COMPRESS;
-  FORTopenpart(parti->file,&unit,&error1,len_partfile);
+  openpart(parti->file,&unit,&error1,len_partfile);
   UNLOCK_COMPRESS;
 
-  FORTgetpartheader1(&unit,&nclasses,&fdsversion,&size);
+  getpartheader1(&unit,&nclasses,&fdsversion,&size);
   NewMemory((void **)&nquantities,nclasses*sizeof(int));
   NewMemory((void **)&npoints,nclasses*sizeof(int));
 
-  FORTgetpartheader2(&unit,&nclasses,nquantities,&size);
+  getpartheader2(&unit,&nclasses,nquantities,&size);
 
   partmesh = parti->partmesh;
 
@@ -843,7 +843,7 @@ void part2iso(part *parti, int *thread_index){
     float *x, *y, *z, *vals;
     int k;
 
-    FORTgetpartdataframe(&unit,&nclasses,nquantities,npoints,&time_local,tagdata,pdata,&size,&error);
+    getpartdataframe(&unit,&nclasses,nquantities,npoints,&time_local,tagdata,pdata,&size,&error);
 
     file_size+=size;
 
@@ -983,7 +983,7 @@ void part2iso(part *parti, int *thread_index){
   FREEMEMORY(partcount);
   FREEMEMORY(isofile);
   LOCK_COMPRESS;
-  FORTclosefortranfile(&unit);
+  closefortranfile(&unit);
   UNLOCK_COMPRESS;
 
   FREEMEMORY(pdata);
@@ -1057,14 +1057,14 @@ void part2object(part *parti, int *thread_index){
 
   len_partfile=strlen(parti->file);
   LOCK_COMPRESS;
-  FORTopenpart(parti->file,&unit,&error1,len_partfile);
+  openpart(parti->file,&unit,&error1,len_partfile);
   UNLOCK_COMPRESS;
 
-  FORTgetpartheader1(&unit,&nclasses,&fdsversion,&size);
+  getpartheader1(&unit,&nclasses,&fdsversion,&size);
   NewMemory((void **)&nquantities,nclasses*sizeof(int));
   NewMemory((void **)&npoints,nclasses*sizeof(int));
 
-  FORTgetpartheader2(&unit,&nclasses,nquantities,&size);
+  getpartheader2(&unit,&nclasses,nquantities,&size);
 
   partmesh = parti->partmesh;
 
@@ -1198,7 +1198,7 @@ void part2object(part *parti, int *thread_index){
     float *x, *y, *z, *vals;
     int k;
 
-    FORTgetpartdataframe(&unit,&nclasses,nquantities,npoints,&time_local,tagdata,pdata,&size,&error);
+    getpartdataframe(&unit,&nclasses,nquantities,npoints,&time_local,tagdata,pdata,&size,&error);
 
     file_size+=size;
 
@@ -1338,7 +1338,7 @@ void part2object(part *parti, int *thread_index){
   FREEMEMORY(partcount);
   FREEMEMORY(isofile);
   LOCK_COMPRESS;
-  FORTclosefortranfile(&unit);
+  closefortranfile(&unit);
   UNLOCK_COMPRESS;
 
   FREEMEMORY(pdata);
