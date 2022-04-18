@@ -1,5 +1,5 @@
 SOURCE_DIR = ../../../Source/
-INC_DIR = -I $(SOURCE_DIR)/mergepo -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared 
+INC_DIR = -I $(SOURCE_DIR)/mergepo -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared
 FILTERC =
 FILTERF =
 
@@ -42,29 +42,19 @@ no_target:
 	@echo \******** You did not specify a make target \********
 	@echo Use one of targets found in the Makefile
 
-.SUFFIXES: .F90 .c .obj .o .f90 .cpp
+.SUFFIXES: .c .obj .o .cpp
 
 .c.obj:
 	$(CC) -c $(CFLAGS) $(FILTERC) $(INC_DIR) $<
 .c.o:
 	$(CC) -c $(CFLAGS) $(FILTERC) $(INC_DIR) $<
-.F90.o:
-	$(FC) -c $(FFLAGS) $(FILTERF) $<
-.F90.obj:
-	$(FC) -c $(FFLAGS) $(FILTERF) $<
-.f90.obj:
-	$(FC) -c $(FFLAGS) $(FILTERF) $<
-.f90.o:
-	$(FC) -c $(FFLAGS) $(FILTERF) $<
-
-
 
 # ********  rules for each platform supported *************
 
 # ------------- win 64 ----------------
 
 intel_win_64 : CFLAGS    = -O2 /nologo -D X64 -D WIN32 -D PTW32_STATIC_LIB $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : LFLAGS    = 
+intel_win_64 : LFLAGS    =
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = mergepo_win_64.exe
 
@@ -74,7 +64,7 @@ intel_win_64 : $(objwin)
 # ------------- gnu 64 ----------------
 
 gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
-gnu_win_64 : LFLAGS    = 
+gnu_win_64 : LFLAGS    =
 gnu_win_64 : CC        = gcc
 gnu_win_64 : exe       = mergepo_win_64.exe
 

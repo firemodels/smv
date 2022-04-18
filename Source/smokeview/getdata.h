@@ -15,7 +15,6 @@
 
 void color2rgb(int rgb[3], const char *color);
 
-void ffseek(FILE *file, int *sizes, int nsizes, int mode, int *error);
 void getgeomdatasize(const char *filename, int *ntimes, int *nvars, int *error);
 void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
                  int *nfires, int *error);
@@ -53,7 +52,7 @@ void getgeomdata(const char *filename, int ntimes, int nvals, float *times,
 void getzonedata(const char *zonefilename, int *nzonet, int *nrooms,
                  int *nfires, float *zonet, float *zoneqfire, float *zonepr,
                  float *zoneylay, float *zonetl, float *zonetu, int *error);
-void skipdata(FILE *file, int skip);
+int skipdata(FILE *file, int skip);
 void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
                   int *pj2, int *pk1, int *pk2, float *patchtime, float *pqq,
                   int *npqq, int *file_size, int *error);

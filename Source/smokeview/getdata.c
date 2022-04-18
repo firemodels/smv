@@ -13,6 +13,14 @@
 #include "getdata.h"
 #include <errno.h>
 
+// As with the Fortran code preceding this, it is assumed that a float is 4
+// bytes for serialization/deserialization purposes. With C11 we can check this
+// using static assertions.
+#if __STDC_VERSION__ >= 201112L
+_Static_assert(CHAR_BIT == 8, "getdata.c assumes that CHAR_BIT == 8");
+_Static_assert(sizeof(float) == 4, "getdata.c assumes that float is 4 bytes");
+#endif
+
 #ifdef WIN32
 FILE *FOPEN(const char *file, const char *mode) {
   return _fsopen(file, mode, _SH_DENYNO);
@@ -22,7 +30,7 @@ FILE *FOPEN(const char *file, const char *mode) { return fopen(file, mode); }
 #endif
 
 int fortread(void *ptr, size_t size, size_t count, FILE *file) {
-  // TODO: check endianess
+  // TODO: check endianess, currently little-endian is assumed
   // Read record header
   uint32_t header = 0;
   size_t header_read = fread(&header, sizeof(header), 1, file);
@@ -34,12 +42,10 @@ int fortread(void *ptr, size_t size, size_t count, FILE *file) {
       fprintf(stderr, "Error reading from file: %s\n", strerror(errno));
     }
   }
-  // #ifdef pp_DEBUG
-  // TODO: need to decide if we should accept larger than expected records.
-  // #endif
   if (header_read != 1) return 1;
   if (header != (size * count)) {
-    fprintf(stderr, "Exported record of %ld bytes, found one of %d bytes\n",
+    // TODO: need to decide if we should accept larger than expected records.
+    fprintf(stderr, "Exported record of %lu bytes, found one of %lu bytes\n",
             size * count, header);
     return 2;
   }
@@ -52,10 +58,8 @@ int fortread(void *ptr, size_t size, size_t count, FILE *file) {
   size_t trailer_read = fread(&trailer, sizeof(trailer), 1, file);
   if (trailer_read != 1) return 4;
   if (trailer != (size * count)) return 5;
-  // #ifdef pp_DEBUG
   ASSERT(data_read == count);
   ASSERT(trailer == (size * count));
-  // #endif
   return 0;
 }
 
@@ -77,26 +81,15 @@ int fortwrite(void *ptr, size_t size, size_t count, FILE *file) {
   uint32_t trailer = size * count;
   size_t trailer_written = fwrite(&trailer, sizeof(trailer), 1, file);
   if (trailer_written != 1) return 4;
-  // #ifdef pp_DEBUG
   ASSERT(header == (size * count));
   ASSERT(data_written == count);
   ASSERT(trailer == (size * count));
-  // #endif
   return 0;
 }
 
 int fortseek(FILE *file, size_t size, size_t count, int whence) {
   return fseek(file, sizeof(uint32_t) + size * count + sizeof(uint32_t),
                whence);
-}
-
-//  ------------------ ffseek ------------------------
-void ffseek(FILE *file, int *sizes, int nsizes, int mode, int *error) {
-  long size = 0;
-  for (int i = 0; i < nsizes; i++) {
-    size += 4 + sizes[i] + 4;
-  }
-  *error = fseek(file, size, mode);
 }
 
 //  ------------------ getgeomdatasize ------------------------
@@ -114,8 +107,8 @@ void getgeomdatasize(const char *filename, int *ntimes, int *nvars,
   }
 
   *error = 0;
-  fortread(&one, 1, 1, file);
-  fortread(&version, 1, 1, file);
+  *error = fortread(&one, 1, 1, file);
+  *error = fortread(&version, 1, 1, file);
   ntimes = 0;
   nvars = 0;
   size_t error_local;
@@ -165,7 +158,7 @@ void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
   }
 
   nzonet = 0;
-  fortread(&version, sizeof(version), 1, file);
+  *error = fortread(&version, sizeof(version), 1, file);
   if (*error == 0) fortread(&nrooms, sizeof(nrooms), 1, file);
   if (*error == 0) fortread(&nfires, sizeof(nfires), 1, file);
   if (*error != 0) {
@@ -175,14 +168,14 @@ void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
   }
   while (1) {
     exit_all = 0;
-    fortread(&dummy, sizeof(dummy), 1, file);
+    *error = fortread(&dummy, sizeof(dummy), 1, file);
     if (*error != 0) {
       *error = 0;
       break;
     }
     uint32_t dummies[4];
     for (int i = 0; i < *nrooms; i++) {
-      fortread(dummies, sizeof(*dummies), 4, file);
+      *error = fortread(dummies, sizeof(*dummies), 4, file);
       if (*error == 0) continue;
       *error = 0;
       exit_all = 1;
@@ -192,7 +185,7 @@ void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
     // TODO: technically float is not fixed width here.
     float fdummies[2];
     for (int i = 0; i < *nfires; i++) {
-      fortread(fdummies, sizeof(*fdummies), 2, file);
+      *error = fortread(fdummies, sizeof(*fdummies), 2, file);
       if (*error == 0) continue;
       *error = 0;
       exit_all = 1;
@@ -208,7 +201,6 @@ void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
 
 void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
                     int *headersize, int *error) {
-  int sizes[3], nsizes;
 
   *error = 0;
   *file = FOPEN(patchfilename, "rb");
@@ -218,13 +210,10 @@ void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
     return;
   }
 
-  sizes[0] = 30;
-  sizes[1] = 30;
-  sizes[2] = 30;
-  nsizes = 3;
-  ffseek(*file, sizes, nsizes, SEEK_SET,
-         error); // skip over long, short and unit labels (each 30 characters in
-                 // length);
+  // skip over long, short and unit labels (each 30 characters in length);
+  *error = fortseek(*file, sizeof(char), 30, SEEK_SET);
+  *error = fortseek(*file, sizeof(char), 30, SEEK_CUR);
+  *error = fortseek(*file, sizeof(char), 30, SEEK_CUR);
   if (*error == 0) fortread(&npatch, sizeof(npatch), 1, *file);
   *headersize = 3 * (4 + 30 + 4) + 4 + 4 + 4;
 
@@ -340,12 +329,10 @@ void getsliceheader(const char *slicefilename, int *ip1, int *ip2, int *jp1,
     *error = 1;
     return;
   }
-  sizes[0] = 30;
-  sizes[1] = 30;
-  sizes[2] = 30;
-  nsizes = 3;
-
-  ffseek(file, sizes, nsizes, SEEK_SET, error);
+  // skip over long, short and unit labels (each 30 characters in length);
+  *error = fortseek(file, sizeof(char), 30, SEEK_SET);
+  *error = fortseek(file, sizeof(char), 30, SEEK_CUR);
+  *error = fortseek(file, sizeof(char), 30, SEEK_CUR);
 
   uint32_t ijkp[6] = {0};
   *error = fortread(ijkp, sizeof(*ijkp), 6, file);
@@ -373,7 +360,6 @@ void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
   bool load; // boolean
   int idir, joff, koff, volslice;
   int count;
-  int sizes[3], nsizes;
 
   *error = 0;
   nsteps = 0;
@@ -384,13 +370,12 @@ void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
     return;
   }
 
-  sizes[0] = 30;
-  sizes[1] = 30;
-  sizes[2] = 30;
-  nsizes = 3;
   *headersize = 3 * (4 + 30 + 4);
 
-  ffseek(file, sizes, nsizes, SEEK_SET, error);
+  // skip over long, short and unit labels (each 30 characters in length);
+  *error = fortseek(file, sizeof(char), 30, SEEK_SET);
+  *error = fortseek(file, sizeof(char), 30, SEEK_CUR);
+  *error = fortseek(file, sizeof(char), 30, SEEK_CUR);
 
   uint32_t ijkp[6] = {0};
   *error = fortread(ijkp, sizeof(*ijkp), 6, file);
@@ -418,10 +403,8 @@ void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
 
   count = -1;
   time_max = -1000000.0;
-  sizes[0] = 4 * nxsp * nysp * nzsp;
-  nsizes = 1;
   while (1) {
-    fortread(&timeval, sizeof(timeval), 1, file);
+    *error = fortread(&timeval, sizeof(timeval), 1, file);
     if (*error != 0) break;
     if ((settmin_s != 0 && timeval < tmin_s) || timeval <= time_max) {
       load = false;
@@ -430,7 +413,7 @@ void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
       time_max = timeval;
     }
     if (settmax_s != 0 && timeval > tmax_s) break;
-    ffseek(file, sizes, nsizes, SEEK_CUR, error);
+    *error = fortseek(file, sizeof(float), nxsp * nysp * nzsp, SEEK_CUR);
     count = count + 1;
     if ((count % sliceframestep) != 0) load = false;
     if (*error != 0) break;
@@ -658,28 +641,29 @@ void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
   pend = 0;
   tagend = 0;
   *error = 0;
-  fortread(time, sizeof(*time), 1, file);
+  *error = fortread(time, sizeof(*time), 1, file);
   *size = 4;
   if (*error != 0) return;
   for (int i = 0; i < nclasses; i++) {
-    fortread(&nparticles, sizeof(nparticles), 1, file);
+    *error = fortread(&nparticles, sizeof(nparticles), 1, file);
     if (*error != 0) return;
     npoints[i] = nparticles;
 
     pstart = pend + 1;
     pend = pstart + 3 * nparticles - 1;
-    fortread(&pdata[pstart], sizeof(pdata[0]), pend - pstart, file);
+    *error = fortread(&pdata[pstart], sizeof(pdata[0]), pend - pstart, file);
     if (*error != 0) return;
 
     tagstart = tagend + 1;
     tagend = tagstart + nparticles - 1;
-    fortread(&tagdata[tagstart], sizeof(tagdata[0]), tagend - tagstart, file);
+    *error = fortread(&tagdata[tagstart], sizeof(tagdata[0]), tagend - tagstart,
+                      file);
     if (*error != 0) return;
 
     if (nquantities[i] > 0) {
       pstart = pend + 1;
       pend = pstart + nparticles * nquantities[i] - 1;
-      fortread(&pdata[pstart], sizeof(pdata[0]), pend - pstart, file);
+      *error = fortread(&pdata[pstart], sizeof(pdata[0]), pend - pstart, file);
       if (*error != 0) return;
     }
     size = size + 4 + (4 * 3 * nparticles) + 4 * nparticles +
@@ -718,7 +702,7 @@ void getgeomdata(const char *filename, int ntimes, int nvals, float *times,
     file_size = file_size + (4 + 4 + 4);
     if (nread != 0) {
       int counts[4];
-      fortread(&counts, sizeof(*counts), 4, file);
+      *error = fortread(&counts, sizeof(*counts), 4, file);
       nvert_s = counts[0];
       ntri_s = counts[1];
       nvert_d = counts[2];
@@ -783,16 +767,16 @@ void getzonedata(const char *zonefilename, int *nzonet, int *nrooms,
     *error = 1;
     return;
   }
-  fortread(&version, sizeof(version), 1, file);
-  fortread(&idummy, sizeof(idummy), 1, file);
-  fortread(&idummy, sizeof(idummy), 1, file);
+  *error = fortread(&version, sizeof(version), 1, file);
+  *error = fortread(&idummy, sizeof(idummy), 1, file);
+  *error = fortread(&idummy, sizeof(idummy), 1, file);
   ii = 0;
   ii2 = 0;
   for (int j = 0; j < *nzonet; j++) {
-    fortread(&zonet[j], sizeof(zonet[j]), 1, file);
+    *error = fortread(&zonet[j], sizeof(zonet[j]), 1, file);
     for (int i = 0; i < *nrooms; i++) {
       float zonevals[4];
-      fortread(zonevals, sizeof(*zonevals), 4, file);
+      *error = fortread(zonevals, sizeof(*zonevals), 4, file);
       zonepr[ii] = zonevals[0];
       zoneylay[ii] = zonevals[1];
       zonetl[ii] = zonevals[2];
@@ -808,7 +792,7 @@ void getzonedata(const char *zonefilename, int *nzonet, int *nrooms,
     for (int i = 1; i <= *nfires; i++) {
       ii2 = ii2 + 1;
       float qdot_arr[2];
-      fortread(&qdot_arr, sizeof(*qdot_arr), 2, file);
+      *error = fortread(&qdot_arr, sizeof(*qdot_arr), 2, file);
       qdot = qdot_arr[1];
       zoneqfire[ii2] = qdot;
       if (*error != 0) {
@@ -826,13 +810,7 @@ void getzonedata(const char *zonefilename, int *nzonet, int *nrooms,
 
 // !  ------------------ skipdata ------------------------
 
-void skipdata(FILE *file, int skip) {
-  int error, sizes[1], nsizes;
-  sizes[0] = skip;
-  nsizes = 1l;
-  ffseek(file, sizes, nsizes, SEEK_CUR, &error);
-  return;
-}
+int skipdata(FILE *file, int skip) { return fortseek(file, 1, skip, SEEK_CUR); }
 
 // !  ------------------ getpatchdata ------------------------
 // TODO: distinguish between more error conditions
@@ -875,49 +853,48 @@ void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
 
 void getdata1(FILE *file, int *ipart, int *error) {
   int nspr, nv;
-  int ibar, jbar, kbar;
   int nb1;
   *error = 0;
 
   uint32_t s_arr[5];
-  fortread(s_arr, sizeof(*s_arr), 5, file);
+  *error = fortread(s_arr, sizeof(*s_arr), 5, file);
 
   if (*error != 0) return;
   uint32_t ijk[3];
-  fortread(ijk, sizeof(*ijk), 3, file);
-  ibar = ijk[0];
-  jbar = ijk[1];
-  kbar = ijk[2];
+  *error = fortread(ijk, sizeof(*ijk), 3, file);
+  int ibar = ijk[0];
+  int jbar = ijk[1];
+  int kbar = ijk[2];
 
   if (*error != 0) return;
 
   // Skip over irrelevant data.
-  fortseek(file, sizeof(float), ibar * jbar * kbar, SEEK_CUR);
+  *error = fortseek(file, sizeof(float), ibar * jbar * kbar, SEEK_CUR);
   if (*error != 0) return;
 
-  fortread(&nb1, sizeof(nb1), 1, file);
+  *error = fortread(&nb1, sizeof(nb1), 1, file);
   if (*error != 0) return;
 
   int idummy[7];
   for (int i = 1; i <= nb1; i++) {
-    fortread(idummy, sizeof(*idummy), 7, file);
+    *error = fortread(idummy, sizeof(*idummy), 7, file);
     if (*error != 0) return;
   }
 
-  fortread(&nv, sizeof(nv), 1, file);
+  *error = fortread(&nv, sizeof(nv), 1, file);
   if (*error != 0) return;
 
   for (int i = 1; i <= nv; i++) {
-    fortread(idummy, sizeof(*idummy), 7, file);
+    *error = fortread(idummy, sizeof(*idummy), 7, file);
     if (*error != 0) return;
   }
 
-  fortread(&nspr, sizeof(nspr), 1, file);
+  *error = fortread(&nspr, sizeof(nspr), 1, file);
   if (*error != 0) return;
 
   float dummy[3];
   for (int i = 1; i <= nspr; i++) {
-    fortread(dummy, sizeof(*dummy), 3, file);
+    *error = fortread(dummy, sizeof(*dummy), 3, file);
     if (*error != 0) return;
   }
 
@@ -1028,7 +1005,6 @@ void writeslicedata2(const char *slicefilename, const char *longlabel,
   char shortlabel30[31];
   char unitlabel30[31];
   int ibeg, iend, nframe;
-  int nxsp, nysp, nzsp;
 
   FILE *file = FOPEN(slicefilename, "wb");
 
@@ -1054,9 +1030,9 @@ void writeslicedata2(const char *slicefilename, const char *longlabel,
   ijk[5] = ks2;
   fortwrite(ijk, sizeof(*ijk), 6, file);
 
-  nxsp = is2 + 1 - is1;
-  nysp = js2 + 1 - js1;
-  nzsp = ks2 + 1 - ks1;
+  int nxsp = is2 + 1 - is1;
+  int nysp = js2 + 1 - js1;
+  int nzsp = ks2 + 1 - ks1;
   nframe = nxsp * nysp * nzsp;
   for (int i = 0; i < ntimes; i++) {
     fortwrite(&times[i], sizeof(times[i]), 1, file);
@@ -1075,18 +1051,17 @@ void writeslicedata2(const char *slicefilename, const char *longlabel,
 void getsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
                    int ks2, float *time, float *qframe, int testslice,
                    int *error) {
-  int nxsp, nysp, nzsp;
   float val, factor;
   int index;
   float ii, jj, kk;
 
-  nxsp = is2 + 1 - is1;
-  nysp = js2 + 1 - js1;
-  nzsp = ks2 + 1 - ks1;
+  int nxsp = is2 + 1 - is1;
+  int nysp = js2 + 1 - js1;
+  int nzsp = ks2 + 1 - ks1;
 
-  fortread(time, sizeof(*time), 1, file);
+  *error = fortread(time, sizeof(*time), 1, file);
   if (*error != 0) return;
-  fortread(qframe, sizeof(*qframe), nxsp * nysp * nysp, file);
+  *error = fortread(qframe, sizeof(*qframe), nxsp * nysp * nysp, file);
   if (testslice == 1 || testslice == 2) {
     factor = 1.0;
     if (testslice == 2) factor = 1.1;
@@ -1130,9 +1105,9 @@ void outsliceheader(const char *slicefilename, FILE **file, int ip1, int ip2,
   strncpy(shortlbl, "short                         ", 31);
   strncpy(unitlbl, "unit                          ", 31);
 
-  fortwrite(longlbl, 30, 1, *file);
-  fortwrite(shortlbl, 30, 1, *file);
-  fortwrite(unitlbl, 30, 1, *file);
+  *error = fortwrite(longlbl, 30, 1, *file);
+  *error = fortwrite(shortlbl, 30, 1, *file);
+  *error = fortwrite(unitlbl, 30, 1, *file);
 
   uint32_t ijk[6] = {0};
   ijk[0] = ip1;
@@ -1149,15 +1124,13 @@ void outsliceheader(const char *slicefilename, FILE **file, int ip1, int ip2,
 
 void outsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
                    int ks2, float time, float *qframe, int *error) {
-  int nxsp, nysp, nzsp;
+  int nxsp = is2 + 1 - is1;
+  int nysp = js2 + 1 - js1;
+  int nzsp = ks2 + 1 - ks1;
 
-  nxsp = is2 + 1 - is1;
-  nysp = js2 + 1 - js1;
-  nzsp = ks2 + 1 - ks1;
-
-  fortwrite(&time, sizeof(time), 1, file);
+  *error = fortwrite(&time, sizeof(time), 1, file);
   if (*error != 0) return;
-  fortwrite(qframe, sizeof(*qframe), nxsp * nysp * nzsp, file);
+  *error = fortwrite(qframe, sizeof(*qframe), nxsp * nysp * nzsp, file);
   return;
 }
 
@@ -1172,15 +1145,15 @@ void outboundaryheader(const char *boundaryfilename, FILE **file, int npatches,
   *file = FOPEN(boundaryfilename, "wb");
 
   strncpy(blank, "                              ", 31);
-  fortwrite(blank, 30, 1, *file);
-  fortwrite(blank, 30, 1, *file);
-  fortwrite(blank, 30, 1, *file);
-  fortwrite(&npatches, sizeof(npatches), 1, *file);
+  *error = fortwrite(blank, 30, 1, *file);
+  *error = fortwrite(blank, 30, 1, *file);
+  *error = fortwrite(blank, 30, 1, *file);
+  *error = fortwrite(&npatches, sizeof(npatches), 1, *file);
 
   uint32_t ijk[7] = {0};
   for (int n = 0; n < npatches; n++) {
     ijk[0] = pi1[n];
-    ijk[1] = pj1[n];
+    ijk[1] = pi2[n];
     ijk[2] = pj1[n];
     ijk[3] = pj2[n];
     ijk[4] = pk1[n];
@@ -1198,7 +1171,7 @@ void outpatchframe(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
                    int *pj2, int *pk1, int *pk2, float patchtime, float *pqq,
                    int *error) {
   int i1, i2, j1, j2, k1, k2, size, ibeg, iend;
-  fortwrite(&patchtime, sizeof(patchtime), 1, file);
+  *error = fortwrite(&patchtime, sizeof(patchtime), 1, file);
   ibeg = 1;
   for (int i = 0; i < npatch; i++) {
     i1 = pi1[i];
@@ -1219,28 +1192,26 @@ void outpatchframe(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
 
 void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq,
                 int *error, int isotest) {
-  FILE *file;
-
   float dummies[4];
   float dummy, qval;
 
   uint32_t npts[3];
   if (isotest == 0) {
     *error = 0;
-    file = FOPEN(qfilename, "rb");
+    FILE *file = FOPEN(qfilename, "rb");
     if (file == NULL) {
       PRINTF(" The file name, %s does not exist\n", qfilename);
-      fortread(&dummy, sizeof(dummy), 1, file);
+      *error = fortread(&dummy, sizeof(dummy), 1, file);
       exit(1);
     }
-    fortread(npts, sizeof(*npts), 3, file);
+    *error = fortread(npts, sizeof(*npts), 3, file);
     uint32_t nxpts = npts[0];
     uint32_t nypts = npts[1];
     uint32_t nzpts = npts[2];
     if (nx == nxpts && ny == nypts && nz == nzpts) {
       // TODO: determine what these values actually are.
-      fortread(dummies, sizeof(*dummies), 4, file);
-      fortread(qq, sizeof(*qq), nxpts * nypts * nzpts * 5, file);
+      *error = fortread(dummies, sizeof(*dummies), 4, file);
+      *error = fortread(qq, sizeof(*qq), nxpts * nypts * nzpts * 5, file);
 
     } else {
       *error = 1;
@@ -1252,9 +1223,9 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq,
     }
     fclose(file);
   } else {
-    for (int i = 1; i <= nx; i++) {
-      for (int j = 1; j <= ny; j++) {
-        for (int k = 1; k <= nz; k++) {
+    for (int i = 0; i < nx; i++) {
+      for (int j = 0; j < ny; j++) {
+        for (int k = 0; k < nz; k++) {
           qval = pow(i - nx / 2, 2) + pow(j - ny / 2, 2) + pow(k - nz / 2, 2);
           qval = sqrt(qval);
           if (isotest == 1) {
@@ -1276,26 +1247,25 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq,
     }
     *error = 0;
   }
-  fclose(file);
   return;
 }
 
 // !  ------------------ plot3dout ------------------------
 
 void plot3dout(const char *outfile, int nx, int ny, int nz, float *qout,
-               int *error3) {
+               int *error) {
   FILE *file = FOPEN(outfile, "wb");
 
   uint32_t nxyz[3];
   nxyz[0] = nx;
   nxyz[1] = ny;
   nxyz[2] = nz;
-  fortwrite(nxyz, sizeof(*nxyz), 3, file);
+  *error = fortwrite(nxyz, sizeof(*nxyz), 3, file);
 
   float dummies[4] = {0.0};
-  fortwrite(dummies, sizeof(*dummies), 4, file);
+  *error = fortwrite(dummies, sizeof(*dummies), 4, file);
 
-  fortwrite(qout, sizeof(*qout), nx * ny * nz * 5, file);
+  *error = fortwrite(qout, sizeof(*qout), nx * ny * nz * 5, file);
   fclose(file);
 
   return;

@@ -1,8 +1,8 @@
 #include "options.h"
 
-#include "gsmv.h"
 #include "MALLOCC.h"
 #include "datadefs.h"
+#include "gsmv.h"
 #include <math.h>
 #include <stdbool.h>
 #include <string.h>
@@ -51,7 +51,7 @@ double distance3(double v1[3], double v2[3]) {
 // !  ------------------ GET_VERTTYPE ------------------------
 
 void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
-   // ! classify each vertex in a geometry as either interior or exterior
+  // ! classify each vertex in a geometry as either interior or exterior
   // ! a vertex VI is interior if the vertices connected to I form a cycle or
   // loop ! ie VI is connected to v1, v2, v3 and v1 -> v2 -> v3 -> v1 ! if they
   // don't form a loop then it is an exterior vertex
@@ -66,7 +66,7 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
   memset(triangle_count, '\0', nverts * sizeof(*triangle_count));
   for (int i = 0; i < ntriangles; i++) {
     trii = &triangles[3 * i];
-    for (int j = 0; j < 3; i++) {
+    for (int j = 0; j < 3; j++) {
       int vertj_index = trii[j];
       if (vertj_index >= 1 && vertj_index <= nverts)
         triangle_count[vertj_index]++;

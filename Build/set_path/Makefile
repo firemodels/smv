@@ -42,7 +42,7 @@ no_target:
 	@echo \******** You did not specify a make target \********
 	@echo Use one of targets found in the Makefile
 
-.SUFFIXES: .F90 .c .obj .o .f90 .cpp
+.SUFFIXES: .c .obj .o .cpp
 
 .c.obj:
 	$(CC) -c $(CFLAGS) $(FILTERC) $(INC_DIR) $<
@@ -56,11 +56,10 @@ no_target:
 intel_win_64 : CFLAGS    = -D WIN32 -O2 /nologo $(GITINFO) $(INTEL_COMPINFO)
 intel_win_64 : CC        = $(I_CC)
 intel_win_64 : CPP       = $(I_CC)
-intel_win_64 : FC        = ifort
 intel_win_64 : exe       = set_path_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin) Advapi32.lib 
+	$(CPP) -o $(bin)/$(exe) $(objwin) Advapi32.lib
 
 # ------------- gnu win 64 ----------------
 
@@ -70,7 +69,7 @@ gnu_win_64 : CPP       = g++
 gnu_win_64 : exe       = set_path_win_64.exe
 
 gnu_win_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) 
+	$(CPP) -o $(bin)/$(exe) $(obj)
 
 #-------------- Clean Target to remove Object and Module files -----------
 
@@ -78,10 +77,9 @@ gnu_win_64 : $(obj)
 clean:
 	erase *.obj
 
-#-------------- compile sring_util.c so revision strings are updated -----------
+#-------------- compile string_util.c so revision strings are updated -----------
 
 string_util.o:  .FORCE
 string_util.obj:        .FORCE
 
 .FORCE:
-
