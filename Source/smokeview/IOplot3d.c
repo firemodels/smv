@@ -217,7 +217,6 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   int nloaded=0;
   int nx, ny, nz;
   int pn;
-  FILE_SIZE plot3dfilelen;
   FILE_SIZE file_size=0;
   float read_time, total_time;
 
@@ -333,11 +332,10 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
   }
 
   file_size= GetFileSizeSMV(file);
-  plot3dfilelen = strlen(file);
   PRINTF("Loading plot3d data: %s",file);
   START_TIMER(read_time);
   if(p->compression_type==UNCOMPRESSED){
-    getplot3dq(file,nx,ny,nz,meshi->qdata,&error,&isotest);
+    getplot3dq(file,nx,ny,nz,meshi->qdata,&error,isotest);
   }
   if(NewMemoryMemID((void **)&meshi->iqdata,numplot3dvars*ntotal*sizeof(unsigned char), p->memory_id)==0){
     *errorcode=1;

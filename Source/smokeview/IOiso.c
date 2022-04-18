@@ -288,10 +288,9 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
 
   if(isoi->dataflag==1){
     int filesize;
-    int lenfile, ntimes_local;
+    int ntimes_local;
     float *valptr;
 
-    lenfile = strlen(isoi->tfile);
     getgeomdatasize(isoi->tfile, &ntimes_local, &isoi->geom_nvals, &error);
 
     if(isoi->geom_nvals>0&&ntimes_local>0){

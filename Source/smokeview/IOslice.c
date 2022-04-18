@@ -837,7 +837,6 @@ int GetSliceHeader(char *comp_file, char *size_file, int compression_type,
 
 int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   slicedata *sd;
-  int slicefilelen;
   int headersize,framesize;
   int frame_size;
   long int skip_local;
@@ -853,7 +852,6 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
     FREEMEMORY(sd->times);
     return 0;
   }
-  slicefilelen = strlen(sd->file);
   if(frame_index_local==first_frame_index){
     if(sd->compression_type==UNCOMPRESSED){
 
