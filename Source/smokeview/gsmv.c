@@ -1,10 +1,11 @@
 #include "options.h"
+
 #include "gsmv.h"
 #include "MALLOCC.h"
-#include <stdbool.h>
 #include "datadefs.h"
-#include <string.h>
 #include <math.h>
+#include <stdbool.h>
+#include <string.h>
 
 double tetrahedron_volume(double A[3], double B[3], double C[3], double D[3]) {
   // ! determine the volume of a tetrahedron formed from vertices A, B, C and D
@@ -50,28 +51,14 @@ double distance3(double v1[3], double v2[3]) {
 // !  ------------------ GET_VERTTYPE ------------------------
 
 void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
-  // INTEGER, INTENT(IN) :: nverts, ntriangles
-
-  // INTEGER, INTENT(OUT), DIMENSION(nverts) :: vert_type
-
-  // INTEGER, INTENT(IN), DIMENSION(3*ntriangles), TARGET :: triangles
-
-  // ! classify each vertex in a geometry as either interior or exterior
+   // ! classify each vertex in a geometry as either interior or exterior
   // ! a vertex VI is interior if the vertices connected to I form a cycle or
   // loop ! ie VI is connected to v1, v2, v3 and v1 -> v2 -> v3 -> v1 ! if they
   // don't form a loop then it is an exterior vertex
 
   // ! exterior vertices (connected to a blockage or mesh boundary) won't be
   // moved or deleted
-
-  // INTEGER, DIMENSION(nverts) :: vert_count, triangle_count
-
-  // INTEGER :: I, J, K, vertj_index, TRIJ_INDEX, maxcount, vertk_index
-
-  // INTEGER, POINTER, DIMENSION(:) :: trii
   int *trii;
-
-  // INTEGER, DIMENSION(:,:), ALLOCATABLE :: vert_trilist
 
   // ! count number of triangles connected to each vertex
   int *triangle_count;
@@ -96,7 +83,6 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
   // ! vert_trilist(I,1) contains number of triangles connected to vertex I
   // ! vert_trilist(I,2-> ) contains the triangle indices
 
-  // ALLOCATE(vert_trilist(nverts,maxcount+1));
   int *vert_trilist;
   NewMemory((void **)&vert_trilist, nverts * (maxcount + 1));
   memset(vert_trilist, '\0', nverts * (maxcount + 1) * sizeof(*vert_trilist));
@@ -115,8 +101,6 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
     }
   }
 
-  // int *vert_type;
-  // NewMemory((void **)&vert_type,nverts);
   memset(vert_type, 1, nverts * sizeof(*vert_type));
 
   int *vert_count;
@@ -124,17 +108,14 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
   memset(vert_count, '\0', nverts * sizeof(*vert_count));
 
   // ! count vertices connected to each vertex
-  // vert_type[1:nverts] = 1;
   for (int i = 1; i < nverts; i++) {
-    // vert_count(1:nverts) = 0;
     memset(vert_count, 0, nverts * sizeof(*vert_count));
     for (int j = 1; j <= vert_trilist[i * nverts + 1];
          j++) { // loop over triangles connected to vertex I
       int trij_index = vert_trilist[i * nverts + j];
       for (int k = 1; k <= 3; k++) { // loop over vertices of triangle J
         int vertk_index = triangles[3 * trij_index - 3 + k];
-        if (vertk_index != i)
-          vert_count[vertk_index]++;
+        if (vertk_index != i) vert_count[vertk_index]++;
       }
     }
     for (int j = 1; j < nverts; j++) {
@@ -157,16 +138,6 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
 
 void average_verts2(double v1[3], int v1type, double v2[3], int v2type,
                     double mesh_bounds[6], double *vavg) {
-  // REAL(EB), DIMENSION(3), INTENT(IN) :: V1, V2
-
-  // INTEGER, INTENT(IN) :: V1TYPE, V2TYPE
-
-  // REAL(EB), DIMENSION(6), INTENT(IN) :: mesh_bounds
-
-  // REAL(EB), DIMENSION(3), INTENT(OUT) :: vavg
-
-  // REAL(EB) :: BOXEPS
-
   double BOXEPS = 0.001;
 
   if (v1type == 0) {
@@ -219,16 +190,6 @@ void average_verts2(double v1[3], int v1type, double v2[3], int v2type,
 void average_verts3(double v1[3], int v1type, double v2[3], int v2type,
                     double v3[3], int v3type, double mesh_bounds[6],
                     double *vavg) {
-  // REAL(EB), DIMENSION(3), INTENT(IN) :: V1, V2, V3
-
-  // INTEGER, INTENT(IN) :: V1TYPE, V2TYPE, V3TYPE
-
-  // REAL(EB), DIMENSION(6), INTENT(IN) :: mesh_bounds
-
-  // REAL(EB), DIMENSION(3), INTENT(OUT) :: vavg
-
-  // REAL(EB) :: BOXEPS
-
   double BOXEPS = 0.001;
 
   if (v1type == 0) {
@@ -317,20 +278,12 @@ void decimate(double *VERTS, int nverts, int *FACES, int NFACES,
   double *VERTFROM;
   double *VERTTO;
 
-  // INTEGER, POINTER, DIMENSION(:) :: TRI_I, tri_from, tri_to
   int *tri_from;
   int *tri_to;
-  // INTEGER, DIMENSION(3) :: tri_new
   int tri_new[3];
-  // REAL(EB) :: D12, D13, D23
-
-  // INTEGER :: I, IFROM, ITO, iter, max_iter
   int ITO;
-
-  // REAL(EB), DIMENSION(3) :: vavg
   double vavg[3];
 
-  // LOGICAL :: have_small
   bool have_small = true;
   int max_iter = 4;
   int iter = 0;

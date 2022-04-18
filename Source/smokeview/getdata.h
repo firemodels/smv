@@ -13,6 +13,8 @@
 #include "datadefs.h"
 #include "getdata.h"
 
+void color2rgb(int rgb[3], const char *color);
+
 void ffseek(FILE *file, int *sizes, int nsizes, int mode, int *error);
 void getgeomdatasize(const char *filename, int *ntimes, int *nvars, int *error);
 void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
