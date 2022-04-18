@@ -1521,7 +1521,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   UpdateBoundaryHist(patchi);
 
   if(patchi->compression_type==UNCOMPRESSED){
-    getpatchsizes1(file_unit,file,&meshi->npatches,&headersize,&error);
+    getpatchsizes1(&file_unit,file,&meshi->npatches,&headersize,&error);
     if(error!=0){
       ReadBoundary(ifile,UNLOAD,&error);
       *errorcode=1;
@@ -4714,7 +4714,7 @@ int UpdateBoundaryHist(patchdata *patchj){
     sum++;
 
     if (patchj->structured == YES) {
-      getboundaryheader1(patchi->file, unit1, &npatches, &error);
+      getboundaryheader1(patchi->file, &unit1, &npatches, &error);
       if (npatches == 0) {
         closefortranfile(unit1);
         continue;

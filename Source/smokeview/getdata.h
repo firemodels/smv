@@ -17,7 +17,7 @@ void ffseek(FILE *file, int *sizes, int nsizes, int mode, int *error);
 void getgeomdatasize(const char *filename, int *ntimes, int *nvars, int *error);
 void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
                  int *nfires, int *error);
-void getpatchsizes1(FILE *file, const char *patchfilename, int *npatch,
+void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
                     int *headersize, int *error);
 void getpatchsizes2(FILE *file, int version, int npatch, int *npatchsize,
                     int *pi1, int *pi2, int *pj1, int *pj2, int *pk1, int *pk2,
@@ -31,11 +31,11 @@ void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
                    int *nslicek, int *nsteps, int sliceframestep, int *error,
                    int settmin_s, int settmax_s, float tmin_s, float tmax_s,
                    int *headersize, int *framesize);
-FILE *openpart(const char *partfilename, int *fileunit, int *error);
-void openslice(const char *slicefilename, int *unitnum, int *is1, int *is2,
+FILE *openpart(const char *partfilename, int *error);
+void openslice(const char *slicefilename, FILE **file, int *is1, int *is2,
                int *js1, int *js2, int *ks1, int *ks2, int *error);
 void closefortranfile(FILE *unit);
-void getboundaryheader1(const char *boundaryfilename, FILE *file, int *npatch,
+void getboundaryheader1(const char *boundaryfilename, FILE **file, int *npatch,
                         int *error);
 void getboundaryheader2(FILE *file, int version, int npatch, int *pi1, int *pi2,
                         int *pj1, int *pj2, int *pk1, int *pk2, int *patchdir);
@@ -70,11 +70,11 @@ void getsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
                    int ks2, float *time, float *qframe, int testslice,
                    int *error);
 void endianout(const char *endianfilename);
-void outsliceheader(const char *slicefilename, FILE *file, int ip1, int ip2,
+void outsliceheader(const char *slicefilename, FILE **file, int ip1, int ip2,
                     int jp1, int jp2, int kp1, int kp2, int *error);
 void outsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
                    int ks2, float time, float *qframe, int *error);
-void outboundaryheader(const char *boundaryfilename, FILE *file, int npatches,
+void outboundaryheader(const char *boundaryfilename, FILE **file, int npatches,
                        int *pi1, int *pi2, int *pj1, int *pj2, int *pk1,
                        int *pk2, int *patchdir, int *error);
 void outpatchframe(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
