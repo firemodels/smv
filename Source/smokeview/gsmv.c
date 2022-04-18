@@ -1,12 +1,14 @@
 #include "options.h"
+
 #include "gsmv.h"
 #include "MALLOCC.h"
-#include <stdbool.h>
 #include "datadefs.h"
-#include <string.h>
 #include <math.h>
+#include <stdbool.h>
+#include <string.h>
 
 double tetrahedron_volume(double A[3], double B[3], double C[3], double D[3]) {
+  // ! determine the volume of a tetrahedron formed from vertices A, B, C and D
   double AMC[3];
   double BMC[3];
   double DMC[3];
@@ -49,14 +51,13 @@ double distance3(double v1[3], double v2[3]) {
 // !  ------------------ GET_VERTTYPE ------------------------
 
 void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
-  // ! classify each vertex in a geometry as either interior or exterior
+   // ! classify each vertex in a geometry as either interior or exterior
   // ! a vertex VI is interior if the vertices connected to I form a cycle or
   // loop ! ie VI is connected to v1, v2, v3 and v1 -> v2 -> v3 -> v1 ! if they
   // don't form a loop then it is an exterior vertex
 
   // ! exterior vertices (connected to a blockage or mesh boundary) won't be
   // moved or deleted
-
   int *trii;
 
   // ! count number of triangles connected to each vertex
@@ -100,7 +101,6 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
     }
   }
 
-  NewMemory((void **)&vert_type,nverts);
   memset(vert_type, 1, nverts * sizeof(*vert_type));
 
   int *vert_count;
@@ -115,8 +115,7 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
       int trij_index = vert_trilist[i * nverts + j];
       for (int k = 1; k <= 3; k++) { // loop over vertices of triangle J
         int vertk_index = triangles[3 * trij_index - 3 + k];
-        if (vertk_index != i)
-          vert_count[vertk_index]++;
+        if (vertk_index != i) vert_count[vertk_index]++;
       }
     }
     for (int j = 1; j < nverts; j++) {
@@ -283,8 +282,8 @@ void decimate(double *VERTS, int nverts, int *FACES, int NFACES,
   int *tri_to;
   int tri_new[3];
   int ITO;
-
   double vavg[3];
+
   bool have_small = true;
   int max_iter = 4;
   int iter = 0;

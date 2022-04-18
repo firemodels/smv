@@ -69,7 +69,7 @@ obj = main.o menus.o IOscript.o IOshooter.o glui_objects.o glui_shooter.o\
       startup.o glui_trainer.o shaders.o unit.o threader.o histogram.o translate.o update.o\
       viewports.o smv_geometry.o showscene.o glew.o infoheader.o  md5.o sha1.o sha256.o\
       stdio_m.o stdio_buffer.o \
-      gsmv.o getdata.o
+      gsmv.o getdata.o color2rgb.o
 
 incs = contourdefs.h glui_bounds.h glui_motion.h glui_smoke.h glui_tour.h infoheader.h \
        IOobjects.h IOscript.h IOvolsmoke.h lua_api.h options.h smokefortheaders.h smokeheaders.h smokeviewdefs.h \
@@ -471,14 +471,6 @@ string_util.o:	.FORCE
 string_util.obj:	.FORCE
 
 .FORCE:
-
-# *** Object Dependencies ***
-
-gsmv.o : fdsmodules.o
-getdata.o : gsmv.o fdsmodules.o
-
-gsmv.obj : fdsmodules.obj
-getdata.obj : gsmv.obj fdsmodules.obj
 
 # *** do a full rebuild if any header file has changed
 #

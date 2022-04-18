@@ -1,1 +1,2 @@
 BreakBeforeBraces: Attach
+AllowShortIfStatementsOnASingleLine: WithoutElse

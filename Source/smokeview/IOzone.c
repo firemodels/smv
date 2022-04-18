@@ -881,7 +881,6 @@ void GetZoneTempBounds(void){
 void ReadZone(int ifile, int flag, int *errorcode){
   int error,ntotal_rooms,ntotal_targets,i,j,ii;
   int nrooms2,nfires2,nzhvents2,nzvvents2,nzmvents2=0,ntargets_local=0;
-  size_t zonefilelen;
   zonedata *zonei;
   char *file;
 
@@ -939,7 +938,6 @@ void ReadZone(int ifile, int flag, int *errorcode){
     updatemenu=1;
     return;
   }
-  zonefilelen = strlen(file);
   if(zonei->csv==1){
     ReadDeviceData(zonei->file,CSV_CFAST,UNLOAD);
     ReadDeviceData(zonei->file,CSV_CFAST,LOAD);

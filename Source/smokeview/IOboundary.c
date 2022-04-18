@@ -1370,7 +1370,6 @@ void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *global_
 
 FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int error;
-  FILE_SIZE lenfile;
   int patchfilenum;
   float *xyzpatchcopy;
   float *xyzpatch_ignitecopy;
@@ -1398,7 +1397,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int ncompressed_buffer;
   char *file;
   float read_time, total_time;
-  FILE *file_unit;
+  FILE *file_unit = NULL;
   int wallcenter=0;
   FILE_SIZE return_filesize = 0;
 
@@ -1521,9 +1520,8 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
   UpdateBoundaryHist(patchi);
 
-  lenfile = strlen(file);
   if(patchi->compression_type==UNCOMPRESSED){
-    getpatchsizes1(file_unit,file,&meshi->npatches,&headersize,&error);
+    getpatchsizes1(&file_unit,file,&meshi->npatches,&headersize,&error);
     if(error!=0){
       ReadBoundary(ifile,UNLOAD,&error);
       *errorcode=1;
@@ -4686,8 +4684,7 @@ int UpdateBoundaryHist(patchdata *patchj){
   for(i=0;i<npatchinfo;i++){
     int npatches, error;
     patchdata *patchi;
-    FILE *unit1;
-    FILE_SIZE lenfile;
+    FILE *unit1 = NULL;
     int error1;
     int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2, *patchdir, *patchsize;
     float patchtime1, *patchframe;
@@ -4715,10 +4712,9 @@ int UpdateBoundaryHist(patchdata *patchj){
       first=0;
     }
     sum++;
-    lenfile=strlen(patchi->file);
 
     if (patchj->structured == YES) {
-      getboundaryheader1(patchi->file, unit1, &npatches, &error);
+      getboundaryheader1(patchi->file, &unit1, &npatches, &error);
       if (npatches == 0) {
         closefortranfile(unit1);
         continue;

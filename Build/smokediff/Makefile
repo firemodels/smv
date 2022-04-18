@@ -39,7 +39,7 @@ FORTLIBDIR = /opt/intel/composerxe/lib
 
 obj = assert.o dmalloc.o histogram.o IOdboundary.o IOdplot.o IOdslice.o main.o readsmv.o\
       file_util.o string_util.o utilities.o  md5.o sha1.o sha256.o stdio_buffer.o\
-      fdsmodules.o gsmv.o getdata.o
+      fdsmodules.o gsmv.o getdata.o color2rgb.o
 objwin = $(obj:.o=.obj)
 
 #*** General Purpose Rules ***
@@ -94,7 +94,7 @@ gnu_win_64 : CC        = gcc
 gnu_win_64 : FC        = gfortran
 gnu_win_64 : exe       = smokediff_win_64.exe
 
-gnu_win_64 : $(obj) 
+gnu_win_64 : $(obj)
 	$(FC) -o $(bin)/$(exe) $(LFLAGS) $(obj)
 
 LINUXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcore.a
@@ -103,7 +103,7 @@ LINUXFORTLIBS=$(IFORT_COMPILER_LIB)/libifcore.a
 
 gnu_linux_64 : FFLAGS    = -O0 -m64 -x f95-cpp-input -D pp_GCC -D pp_LINUX -ffree-form -frecord-marker=4 $(GNU_COMPINFO)
 gnu_linux_64 : CFLAGS    = -O0 -m64 -D pp_GCC -D pp_LINUX $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
-gnu_linux_64 : LFLAGS    = -m64
+gnu_linux_64 : LFLAGS    = -m64 -lm
 gnu_linux_64 : CC        = gcc
 gnu_linux_64 : FC        = gfortran
 gnu_linux_64 : exe       = smokediff_linux_64
@@ -115,7 +115,7 @@ gnu_linux_64 : $(obj)
 
 gnu_linux_64_db : FFLAGS    = -O0 -m64 -ggdb -Wall -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 -fcheck=all -fbacktrace
 gnu_linux_64_db : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings -D _DEBUG -D pp_LINUX -D pp_GCC $(GITINFO) $(GNU_COMPINFO) $(SMV_TESTFLAG)
-gnu_linux_64_db : LFLAGS    = -m64
+gnu_linux_64_db : LFLAGS    = -m64 -lm
 gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : FC        = gfortran
 gnu_linux_64_db : exe       = smokediff_linux_64_db
@@ -169,13 +169,13 @@ intel_linux_64_db : exe       = smokediff_linux_64_db
 
 intel_linux_64_db : $(obj)
 	$(CC) -o $(bin)/$(exe) -static-intel $(obj) -lifport $(LINUXFORTLIBS)
-	
+
 
 MACFORTLIBS=$(IFORT_COMPILER_LIB)/libifcoremt.a $(IFORT_COMPILER_LIB)/libifport.a
 
 # ------------- intel osx 64 ----------------
 
-intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_OSX -mmacosx-version-min=10.9  -stand:f18 
+intel_osx_64 : FFLAGS    = -O2 -m64 -fpp -D pp_OSX -mmacosx-version-min=10.9  -stand:f18
 intel_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(INTEL_COMPINFO) -mmacosx-version-min=10.9  $(SMV_TESTFLAG)
 intel_osx_64 : CC        = icc
 intel_osx_64 : FC        = ifort
@@ -209,17 +209,9 @@ string_util.obj:        .FORCE
 
 .FORCE:
 
-# *** Object Dependencies ***
-
-gsmv.o : fdsmodules.o
-getdata.o : gsmv.o fdsmodules.o
-
 # *** do a full rebuild if any header file has changed
 #
 $(obj) : $(incs)
 
 $(objwin) : $(incs)
-
-gsmv.obj : fdsmodules.obj
-getdata.obj : gsmv.obj fdsmodules.obj
 
