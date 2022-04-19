@@ -48,7 +48,7 @@ int fortread(void *ptr, size_t size, size_t count, FILE *file) {
   if (header_read != 1) return 1;
   if (header != (size * count)) {
     // TODO: need to decide if we should accept larger than expected records.
-    fprintf(stderr, "Expected record of %llu bytes, found one of %u bytes\n",
+    fprintf(stderr, "Expected record of %zu bytes, found one of %u bytes\n",
             size * count, header);
     return 2;
   }
