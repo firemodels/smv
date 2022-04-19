@@ -128,7 +128,7 @@ jobs:
           else
             cmake -B cbuild -DCMAKE_BUILD_TYPE=Release -DLUA=off -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11
           fi
-          cmake --build cbuild
+          cmake --build cbuild -j4
           cp cbuild/smokeview smokeview
       - name: Set exec suffix
         if: ${{ matrix.lua }} == lua
@@ -164,7 +164,7 @@ jobs:
           else
             cmake -B cbuild -DCMAKE_BUILD_TYPE=Release -DLUA=off
           fi
-          cmake --build cbuild
+          cmake --build cbuild -j4
           cp cbuild/smokeview smokeview
       - name: Set exec suffix
         if: ${{ matrix.lua }} == lua
@@ -354,7 +354,7 @@ jobs:
           ninja --version
           cmake --version
           cmake -B cbuild -G Ninja -DCMAKE_BUILD_TYPE=Release -DLUA=off
-          cmake --build cbuild
+          cmake --build cbuild -j4
           copy cbuild\smokeview.exe smokeview.exe
       - name: build smokeview
         if:  matrix.lua != 'lua'
@@ -366,7 +366,7 @@ jobs:
           ninja --version
           cmake --version
           cmake -B cbuild -G Ninja -DCMAKE_BUILD_TYPE=Release -DLUA=off
-          cmake --build cbuild
+          cmake --build cbuild -j4
           copy cbuild\smokeview.exe smokeview.exe
       - name: Set exec suffix
         if: ${{ matrix.lua }} == lua
@@ -410,7 +410,7 @@ jobs:
         run: |
           cmake --version
           cmake -B cbuild -DCMAKE_BUILD_TYPE=Release -DLUA=off
-          cmake --build cbuild --config Release
+          cmake --build cbuild -j4 --config Release
           copy cbuild\Release\smokeview.exe smokeview.exe
       - name: build smokeview
         if:  matrix.lua != 'lua'
@@ -420,7 +420,7 @@ jobs:
         run: |
           cmake --version
           cmake -B cbuild -DCMAKE_BUILD_TYPE=Release -DLUA=off
-          cmake --build cbuild --config Release
+          cmake --build cbuild -j4 --config Release
           copy cbuild\Release\smokeview.exe smokeview.exe
       - name: Set exec suffix
         if: ${{ matrix.lua }} == lua
