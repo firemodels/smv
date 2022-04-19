@@ -16,7 +16,6 @@ env:
   LINUX_FORTRAN_COMPONENTS_WEB: intel.oneapi.lin.ifort-compiler
   LINUX_DPCPP_COMPONENTS_WEB: intel.oneapi.lin.dpcpp-cpp-compiler
   MACOS_CPP_COMPONENTS: intel.oneapi.mac.cpp-compiler
-  MACOS_FORTRAN_COMPONENTS: intel.oneapi.mac.ifort-compiler
 
 jobs:
   build-macos:
@@ -88,7 +87,7 @@ jobs:
           LUA: ${{ matrix.lua }}
         run: |
           sudo apt-get update
-          sudo apt-get install build-essential gfortran freeglut3-dev libx11-dev libxmu-dev libxi-dev
+          sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev
           pushd Build/smokeview/gnu_linux_64
           if [[ "$LUA" == "lua" ]]; then
             ./make_smokeview_lua.sh
@@ -112,7 +111,7 @@ jobs:
       matrix:
         os: [macos-latest]
         lua:
-          - lua
+          # - lua
           - no-lua
     runs-on: ${{ matrix.os }}
     steps:
@@ -125,9 +124,9 @@ jobs:
           LUA: ${{ matrix.lua }}
         run: |
           if [[ "$LUA" == "lua" ]]; then
-            cmake -B cbuild -DCMAKE_BUILD_TYPE=Release -DLUA=on  -DCMAKE_Fortran_COMPILER=gfortran-11 -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11
+            cmake -B cbuild -DCMAKE_BUILD_TYPE=Release -DLUA=on  -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11
           else
-            cmake -B cbuild -DCMAKE_BUILD_TYPE=Release -DLUA=off -DCMAKE_Fortran_COMPILER=gfortran-11 -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11
+            cmake -B cbuild -DCMAKE_BUILD_TYPE=Release -DLUA=off -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11
           fi
           cmake --build cbuild
           cp cbuild/smokeview smokeview
@@ -147,7 +146,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         lua:
-          - lua
+          # - lua
           - no-lua
     runs-on: ${{ matrix.os }}
     steps:
@@ -159,7 +158,7 @@ jobs:
           PLATFORM: ${{ matrix.os }}
           LUA: ${{ matrix.lua }}
         run: |
-          sudo apt-get install build-essential gfortran freeglut3-dev libx11-dev libxmu-dev libxi-dev
+          sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev
           if [[ "$LUA" == "lua" ]]; then
             cmake -B cbuild -DCMAKE_BUILD_TYPE=Release -DLUA=on
           else
@@ -209,7 +208,7 @@ jobs:
         run: |
           source /opt/intel/oneapi/setvars.sh
           sudo apt-get update
-          sudo apt-get install build-essential gfortran freeglut3-dev libx11-dev libxmu-dev libxi-dev
+          sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev
           pushd Build/smokeview/intel_linux_64
           if [[ "$LUA" == "lua" ]]; then
             ./make_smokeview_lua.sh
@@ -320,7 +319,7 @@ jobs:
       fail-fast: false
       matrix:
         lua:
-          - lua
+          # - lua
           - no-lua
     runs-on: windows-2019
     defaults:
@@ -387,7 +386,7 @@ jobs:
       fail-fast: false
       matrix:
         lua:
-          - lua
+          # - lua
           - no-lua
     runs-on: windows-2022
     defaults:
