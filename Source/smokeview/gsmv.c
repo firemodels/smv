@@ -63,7 +63,7 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
   // ! count number of triangles connected to each vertex
   int *triangle_count;
   NewMemory((void **)&triangle_count, nverts);
-  memset(triangle_count, '\0', nverts * sizeof(*triangle_count));
+  memset(triangle_count, 0, nverts * sizeof(*triangle_count));
   for (int i = 0; i < ntriangles; i++) {
     trii = &triangles[3 * i];
     for (int j = 0; j < 3; j++) {
@@ -85,7 +85,7 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
 
   int *vert_trilist;
   NewMemory((void **)&vert_trilist, nverts * (maxcount + 1));
-  memset(vert_trilist, '\0', nverts * (maxcount + 1) * sizeof(*vert_trilist));
+  memset(vert_trilist, 0, nverts * (maxcount + 1) * sizeof(*vert_trilist));
 
   for (int i = 0; i < ntriangles; i++) {
     trii = &triangles[3 * i];
@@ -105,7 +105,7 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
 
   int *vert_count;
   NewMemory((void **)&vert_count, nverts);
-  memset(vert_count, '\0', nverts * sizeof(*vert_count));
+  memset(vert_count, 0, nverts * sizeof(*vert_count));
 
   // ! count vertices connected to each vertex
   for (int i = 1; i < nverts; i++) {

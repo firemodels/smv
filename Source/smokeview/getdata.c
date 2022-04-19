@@ -48,7 +48,7 @@ int fortread(void *ptr, size_t size, size_t count, FILE *file) {
   if (header_read != 1) return 1;
   if (header != (size * count)) {
     // TODO: need to decide if we should accept larger than expected records.
-    fprintf(stderr, "Expected record of %lu bytes, found one of %u bytes\n",
+    fprintf(stderr, "Expected record of %llu bytes, found one of %u bytes\n",
             size * count, header);
     return 2;
   }
@@ -112,8 +112,8 @@ void getgeomdatasize(const char *filename, int *ntimes, int *nvars,
   *error = 0;
   *error = fortread(&one, 1, 1, file);
   *error = fortread(&version, 1, 1, file);
-  ntimes = 0;
-  nvars = 0;
+  *ntimes = 0;
+  *nvars = 0;
   size_t error_local;
   uint32_t counts[4] = {0};
   while (1) {
@@ -136,8 +136,8 @@ void getgeomdatasize(const char *filename, int *ntimes, int *nvars,
     if (error_local != 0) {
       break;
     }
-    nvars = nvars + nvert_s + nvert_d + nface_s + nface_d;
-    ntimes = ntimes + 1;
+    *nvars += nvert_s + nvert_d + nface_s + nface_d;
+    ntimes++;
   }
   fclose(file);
 }
@@ -160,7 +160,7 @@ void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
     return;
   }
 
-  nzonet = 0;
+  *nzonet = 0;
   *error = fortread(&version, sizeof(version), 1, file);
   if (*error == 0) fortread(&nrooms, sizeof(nrooms), 1, file);
   if (*error == 0) fortread(&nfires, sizeof(nfires), 1, file);
@@ -195,7 +195,7 @@ void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
       break;
     }
     if (exit_all == 1) break;
-    nzonet = nzonet + 1;
+    (*nzonet)++;
   }
   fclose(file);
 }
@@ -217,7 +217,7 @@ void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
   *error = fortseek(*file, sizeof(char), 30, SEEK_SET);
   *error = fortseek(*file, sizeof(char), 30, SEEK_CUR);
   *error = fortseek(*file, sizeof(char), 30, SEEK_CUR);
-  if (*error == 0) fortread(&npatch, sizeof(npatch), 1, *file);
+  if (*error == 0) fortread(npatch, sizeof(*npatch), 1, *file);
   *headersize = 3 * (4 + 30 + 4) + 4 + 4 + 4;
 
   return;
@@ -251,11 +251,11 @@ void getpatchsizes2(FILE *file, int version, int npatch, int *npatchsize,
     int j2 = ijkp[3];
     int k1 = ijkp[4];
     int k2 = ijkp[5];
-    npatchsize = npatchsize + (i2 + 1 - i1) * (j2 + 1 - j1) * (k2 + 1 - k1);
+    *npatchsize += (i2 + 1 - i1) * (j2 + 1 - j1) * (k2 + 1 - k1);
   }
-  headersize = headersize + npatch * (4 + 6 * 4 + 4);
+  *headersize += npatch * (4 + 6 * 4 + 4);
   if (version == 1) {
-    headersize = headersize + npatch * 4;
+    *headersize += npatch * 4;
   }
   *framesize = 8 + 4 + 8 * npatch + (*npatchsize) * 4;
 
@@ -268,9 +268,9 @@ void getsliceparms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
                    int *jp2, int *kp1, int *kp2, int *ni, int *nj, int *nk,
                    int *slice3d, int *error) {
   int idir, joff, koff, volslice;
-  char longlbl[31];
-  char shortlbl[31];
-  char unitlbl[31];
+  char longlbl[31] = {0};
+  char shortlbl[31] = {0};
+  char unitlbl[31] = {0};
   int iip1, iip2;
 
   if (*ip1 == -1 || *ip2 == -1 || *jp1 == -1 || *jp2 == -1 || *kp1 == -1 ||
@@ -288,11 +288,8 @@ void getsliceparms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
       *error = 1;
       return;
     }
-    memset(longlbl, '\0', sizeof(longlbl));
     *error = fortread(longlbl, 30, 1, file);
-    memset(shortlbl, '\0', sizeof(shortlbl));
     *error = fortread(shortlbl, 30, 1, file);
-    memset(unitlbl, '\0', sizeof(unitlbl));
     *error = fortread(unitlbl, 30, 1, file);
 
     uint32_t ijkp[6] = {0};
@@ -364,7 +361,7 @@ void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
   int count;
 
   *error = 0;
-  nsteps = 0;
+  *nsteps = 0;
 
   FILE *file = FOPEN(slicefilename, "rb");
   if (file == NULL) {
@@ -388,7 +385,7 @@ void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
   kp1 = ijkp[4];
   kp2 = ijkp[5];
 
-  headersize = headersize + 4 + 6 * 4 + 4;
+  *headersize += 4 + 6 * 4 + 4;
   if (*error != 0) return;
 
   nxsp = ip2 + 1 - ip1;
@@ -419,7 +416,7 @@ void getslicesizes(const char *slicefilename, int *nslicei, int *nslicej,
     count = count + 1;
     if ((count % sliceframestep) != 0) load = false;
     if (*error != 0) break;
-    if (load) nsteps = nsteps + 1;
+    if (load) (*nsteps)++;
   }
   *error = 0;
   fclose(file);
@@ -441,20 +438,17 @@ FILE *openpart(const char *partfilename, int *error) {
 
 void openslice(const char *slicefilename, FILE **file, int *is1, int *is2,
                int *js1, int *js2, int *ks1, int *ks2, int *error) {
-  char longlbl[31];
-  char shortlbl[31];
-  char unitlbl[31];
+  char longlbl[31] = {0};
+  char shortlbl[31] = {0};
+  char unitlbl[31] = {0};
   *error = 0;
   *file = FOPEN(slicefilename, "rb");
   if (*file == NULL) {
     *error = 1;
     return;
   }
-  memset(longlbl, '\0', sizeof(longlbl));
   *error = fortread(longlbl, 30, 1, *file);
-  memset(shortlbl, '\0', sizeof(shortlbl));
   *error = fortread(shortlbl, 30, 1, *file);
-  memset(unitlbl, '\0', sizeof(unitlbl));
   *error = fortread(unitlbl, 30, 1, *file);
 
   uint32_t ijk[6] = {0};
@@ -480,9 +474,9 @@ void closefortranfile(FILE *unit) {
 
 void getboundaryheader1(const char *boundaryfilename, FILE **file, int *npatch,
                         int *error) {
-  char patchlonglabel[31];
-  char patchshortlabel[31];
-  char patchunit[31];
+  char patchlonglabel[31] = {0};
+  char patchshortlabel[31] = {0};
+  char patchunit[31] = {0};
 
   *error = 0;
   *file = FOPEN(boundaryfilename, "rb");
@@ -493,15 +487,12 @@ void getboundaryheader1(const char *boundaryfilename, FILE **file, int *npatch,
   }
 
   if (*error == 0) {
-    memset(patchlonglabel, '\0', sizeof(patchlonglabel));
     *error = fortread(patchlonglabel, 30, 1, *file);
   }
   if (*error == 0) {
-    memset(patchshortlabel, '\0', sizeof(patchshortlabel));
     *error = fortread(patchshortlabel, 30, 1, *file);
   }
   if (*error == 0) {
-    memset(patchunit, '\0', sizeof(patchunit));
     *error = fortread(patchunit, 30, 1, *file);
   }
   if (*error == 0) {
@@ -540,9 +531,9 @@ void getboundaryheader2(FILE *file, int version, int npatch, int *pi1, int *pi2,
 // !  ------------------ openboundary ------------------------
 
 FILE *openboundary(const char *boundaryfilename, int version, int *error) {
-  char patchlonglabel[31];
-  char patchshortlabel[31];
-  char patchunit[31];
+  char patchlonglabel[31] = {0};
+  char patchshortlabel[31] = {0};
+  char patchunit[31] = {0};
   *error = 0;
   int npatch;
   FILE *file = FOPEN(boundaryfilename, "rb");
@@ -552,15 +543,12 @@ FILE *openboundary(const char *boundaryfilename, int version, int *error) {
     return file;
   }
 
-  memset(patchlonglabel, '\0', sizeof(patchlonglabel));
   *error = fortread(patchlonglabel, 30, 1, file);
   if (*error != 0) goto end;
 
-  memset(patchshortlabel, '\0', sizeof(patchshortlabel));
   *error = fortread(patchshortlabel, 30, 1, file);
   if (*error != 0) goto end;
 
-  memset(patchunit, '\0', sizeof(patchunit));
   *error = fortread(patchunit, 30, 1, file);
   if (*error != 0) goto end;
 
@@ -608,19 +596,17 @@ void getpartheader1(FILE *file, int *nclasses, int *fdsversion, int *size) {
 // !  ------------------ getpartheader2 ------------------------
 
 void getpartheader2(FILE *file, int nclasses, int *nquantities, int *size) {
-  char clabel[31];
+  char clabel[31] = {0};
 
-  size = 0;
+  *size = 0;
 
   for (int i = 0; i < nclasses; i++) {
     int t[2] = {0};
     fortread(t, sizeof(*t), 2, file);
     nquantities[i] = t[0];
-    size = size + 4 + 2 * nquantities[i] * (4 + 30 + 4);
+    *size += 4 + 2 * nquantities[i] * (4 + 30 + 4);
     for (int j = 0; j < nquantities[i]; j++) {
-      memset(clabel, '\0', sizeof(clabel));
       fortread(clabel, 30, 1, file);
-      memset(clabel, '\0', sizeof(clabel));
       fortread(clabel, 30, 1, file);
     }
   }
@@ -666,7 +652,7 @@ void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
       *error = fortread(&pdata[pstart], sizeof(pdata[0]), pend - pstart, file);
       if (*error != 0) return;
     }
-    size = size + 4 + (4 * 3 * nparticles) + 4 * nparticles +
+    *size += 4 + (4 * 3 * nparticles) + 4 * nparticles +
            4 * nparticles * nquantities[i];
   }
   *error = 0;
@@ -678,7 +664,6 @@ void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
 void getgeomdata(const char *filename, int ntimes, int nvals, float *times,
                  int *nstatics, int *ndynamics, float *vals, int *file_size,
                  int *error) {
-  size_t nread;
   int one, nvars;
   int nvert_s, ntri_s, nvert_d, ntri_d;
   int version;
@@ -692,59 +677,59 @@ void getgeomdata(const char *filename, int ntimes, int nvals, float *times,
   }
 
   *error = 0;
-  nread = fortread(&one, 1, 1, file);
-  nread = fortread(&version, sizeof(version), 1, file);
+  *error = fortread(&one, 1, 1, file);
+  *error = fortread(&version, sizeof(version), 1, file);
   *file_size = 2 * (4 + 4 + 4);
   nvars = 0;
   for (int itime = 0; itime < ntimes; itime++) {
 
-    nread = fortread(&times[itime], sizeof(times[itime]), 1, file);
-    file_size = file_size + (4 + 4 + 4);
-    if (nread != 0) {
-      int counts[4];
+    *error = fortread(&times[itime], sizeof(times[itime]), 1, file);
+    *file_size += (4 + 4 + 4);
+    if (*error == 0) {
+      int counts[4] = {0};
       *error = fortread(&counts, sizeof(*counts), 4, file);
       nvert_s = counts[0];
       ntri_s = counts[1];
       nvert_d = counts[2];
       ntri_d = counts[3];
-      file_size = file_size + (4 + 4 * 4 + 4);
+      *file_size += (4 + 4 * 4 + 4);
       nstatics[itime] = nvert_s + ntri_s;
     }
 
-    if (nread != 0) {
+    if (*error == 0) {
       if (nvert_s > 0) {
-        nread = fortread(&vals[nvars], sizeof(vals[nvars]), nvert_s, file);
-        file_size = file_size + (4 + 4 * nvert_s + 4);
+        *error = fortread(&vals[nvars], sizeof(vals[nvars]), nvert_s, file);
+        *file_size += (4 + 4 * nvert_s + 4);
       }
       nvars = nvars + nvert_s;
     }
 
-    if (nread != 0) {
+    if (*error == 0) {
       if (ntri_s > 0) {
-        nread = fortread(&vals[nvars], sizeof(vals[nvars]), ntri_s, file);
-        file_size += (4 + 4 * ntri_s + 4);
+        *error = fortread(&vals[nvars], sizeof(vals[nvars]), ntri_s, file);
+        *file_size += (4 + 4 * ntri_s + 4);
       }
       nvars = nvars + ntri_s;
     }
 
     ndynamics[itime] = nvert_d + ntri_d;
-    if (nread != 0) {
+    if (*error == 0) {
       if (nvert_d > 0) {
-        nread = fortread(&vals[nvars], sizeof(vals[nvars]), nvert_d, file);
+        *error = fortread(&vals[nvars], sizeof(vals[nvars]), nvert_d, file);
         file_size += (4 + 4 * nvert_d + 4);
       }
       nvars = nvars + nvert_d;
     }
 
-    if (nread != 0) {
+    if (*error == 0) {
       if (ntri_d > 0) {
-        nread = fortread(&vals[nvars], sizeof(vals[nvars]), ntri_d, file);
-        file_size += (4 + 4 * ntri_d + 4);
+        *error = fortread(&vals[nvars], sizeof(vals[nvars]), ntri_d, file);
+        *file_size += (4 + 4 * ntri_d + 4);
       }
       nvars = nvars + ntri_d;
     }
 
-    if (nread == 0) {
+    if (*error != 0) {
       fclose(file);
       return;
     }
@@ -860,7 +845,7 @@ void getdata1(FILE *file, int *ipart, int *error) {
   *error = fortread(s_arr, sizeof(*s_arr), 5, file);
 
   if (*error != 0) return;
-  uint32_t ijk[3];
+  uint32_t ijk[3] = {0};
   *error = fortread(ijk, sizeof(*ijk), 3, file);
   int ibar = ijk[0];
   int jbar = ijk[1];
@@ -950,19 +935,16 @@ void getslicefiledirection(int *is1, int *is2, int *iis1, int *iis2, int *js1,
 void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
                     int js2, int ks1, int ks2, float *qdata, float *times,
                     int ntimes, int redirect_flag) {
-  char longlbl[31];
-  char shortlbl[31];
-  char unitlbl[31];
+  char longlbl[31] = {0};
+  char shortlbl[31] = {0};
+  char unitlbl[31] = {0};
   int ibeg, iend, nframe;
   int nxsp, nysp, nzsp;
 
   FILE *file = FOPEN(slicefilename, "wb");
 
-  memset(longlbl, '\0', sizeof(longlbl));
   strncpy(longlbl, " ", 30);
-  memset(shortlbl, '\0', sizeof(shortlbl));
   strncpy(shortlbl, " ", 30);
-  memset(unitlbl, '\0', sizeof(unitlbl));
   strncpy(unitlbl, " ", 30);
 
   fortwrite(longlbl, 30, 1, file);
@@ -1001,9 +983,9 @@ void writeslicedata2(const char *slicefilename, const char *longlabel,
                      const char *shortlabel, const char *unitlabel, int is1,
                      int is2, int js1, int js2, int ks1, int ks2, float *qdata,
                      float *times, int ntimes) {
-  char longlabel30[31];
-  char shortlabel30[31];
-  char unitlabel30[31];
+  char longlabel30[31] = {0};
+  char shortlabel30[31] = {0};
+  char unitlabel30[31] = {0};
   int ibeg, iend, nframe;
 
   FILE *file = FOPEN(slicefilename, "wb");
@@ -1195,7 +1177,7 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq,
   float dummies[4];
   float dummy, qval;
 
-  uint32_t npts[3];
+  uint32_t npts[3]={0};
   if (isotest == 0) {
     *error = 0;
     FILE *file = FOPEN(qfilename, "rb");
