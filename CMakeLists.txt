@@ -355,6 +355,5 @@ if ((NOT MACOSX) AND UNIX)
 endif()
 
 include(CTest)
-add_test(NAME "Execute smokediff" COMMAND smokediff)
-add_test(NAME "Execute smokeview" COMMAND smokeview)
-add_test(NAME "Execute smokezip" COMMAND smokezip)
+enable_testing()
+add_subdirectory(Tests)
