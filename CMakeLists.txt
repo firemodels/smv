@@ -115,18 +115,14 @@ if (WIN32)
     target_link_libraries(smokeview pthread_static)
     target_link_libraries(smokeview opengl32 glu32 gdi32 winmm comdlg32 hid)
     add_subdirectory(Source/pthreads)
-    set(CMAKE_Fortran_FLAGS "/iface:stdref /fpp -D WIN32 /fpscomp:general /stand:f18 -D pp_WIN_ONEAPI")
     target_include_directories(smokeview PRIVATE Source/glut_gl )
 else()
     target_include_directories(smokeview PRIVATE Source/glui_gl )
 endif ()
 
-if (UNIX)
-    set(CMAKE_Fortran_FLAGS "-O0 -m64 -ggdb -Wall -x f95-cpp-input -D pp_GCC -ffree-form -frecord-marker=4 -fcheck=all -fbacktrace")
-endif ()
 if ((NOT MACOSX) AND UNIX)
     add_definitions(-Dpp_LINUX)
-    target_link_libraries(smokeview pthread X11 Xmu GLU GL)
+    target_link_libraries(smokeview pthread X11 Xmu GLU GL m)
 endif()
 if (MACOSX)
     add_definitions(-Dpp_NOQUARTZ)
@@ -263,7 +259,7 @@ target_include_directories(mergepo PRIVATE
     Source/shared
 )
 
-
+if (WIN32)
 # set_path
 add_executable(set_path Source/set_path/main.c Source/shared/assert.c Source/shared/dmalloc.c Source/shared/file_util.c
     Source/shared/string_util.c Source/shared/md5.c Source/shared/sha1.c Source/shared/sha256.c
@@ -274,6 +270,7 @@ target_include_directories(set_path PRIVATE
     Source/set_path
     Source/shared
 )
+endif ()
 
 # sh2bat
 add_executable(sh2bat Source/sh2bat/sh2bat.c Source/shared/assert.c Source/shared/dmalloc.c Source/shared/file_util.c
