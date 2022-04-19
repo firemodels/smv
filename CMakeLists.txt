@@ -193,6 +193,10 @@ target_include_directories(background PRIVATE
     Source/shared
 )
 
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(background m)
+endif()
+
 # convert
 add_executable(convert Source/convert/main.c Source/shared/assert.c Source/shared/dmalloc.c Source/shared/file_util.c
     Source/shared/string_util.c Source/shared/md5.c Source/shared/sha1.c Source/shared/sha256.c
@@ -203,6 +207,10 @@ target_include_directories(convert PRIVATE
     Source/convert
     Source/shared
 )
+
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(convert m)
+endif()
 
 # env2mod
 add_executable(env2mod Source/env2mod/main.c Source/shared/assert.c Source/shared/dmalloc.c Source/shared/file_util.c
@@ -215,6 +223,10 @@ target_include_directories(env2mod PRIVATE
     Source/shared
 )
 
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(env2mod m)
+endif()
+
 # flush
 add_executable(flush Source/flush/main.c Source/shared/assert.c Source/shared/dmalloc.c Source/shared/file_util.c
     Source/shared/string_util.c Source/shared/md5.c Source/shared/sha1.c Source/shared/sha256.c
@@ -225,6 +237,10 @@ target_include_directories(flush PRIVATE
     Source/flush
     Source/shared
 )
+
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(flush m)
+endif()
 
 # get_time
 add_executable(get_time Source/get_time/get_time.c)
@@ -246,6 +262,10 @@ target_include_directories(hashfile PRIVATE
     Source/shared
 )
 
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(hashfile m)
+endif()
+
 # makepo
 add_executable(makepo Source/makepo/main.c Source/shared/assert.c Source/shared/dmalloc.c Source/shared/file_util.c
     Source/shared/string_util.c Source/shared/md5.c Source/shared/sha1.c Source/shared/sha256.c
@@ -257,6 +277,10 @@ target_include_directories(makepo PRIVATE
     Source/shared
 )
 
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(makepo m)
+endif()
+
 # mergepo
 add_executable(mergepo Source/mergepo/main.c Source/shared/assert.c Source/shared/dmalloc.c Source/shared/file_util.c
     Source/shared/string_util.c Source/shared/md5.c Source/shared/sha1.c Source/shared/sha256.c Source/shared/translate.c
@@ -267,6 +291,10 @@ target_include_directories(mergepo PRIVATE
     Source/mergepo
     Source/shared
 )
+
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(mergepo m)
+endif()
 
 if (WIN32)
 # set_path
@@ -292,6 +320,10 @@ target_include_directories(sh2bat PRIVATE
     Source/shared
 )
 
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(sh2bat m)
+endif()
+
 # timep
 add_executable(timep Source/timep/main.c Source/shared/assert.c Source/shared/dmalloc.c Source/shared/file_util.c
     Source/shared/string_util.c Source/shared/md5.c Source/shared/sha1.c Source/shared/sha256.c
@@ -303,6 +335,10 @@ target_include_directories(timep PRIVATE
     Source/shared
 )
 
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(timep m)
+endif()
+
 # wind2fds
 add_executable(wind2fds Source/wind2fds/main.c Source/shared/assert.c Source/shared/dmalloc.c Source/shared/file_util.c
     Source/shared/string_util.c Source/shared/md5.c Source/shared/sha1.c Source/shared/sha256.c
@@ -313,3 +349,7 @@ target_include_directories(wind2fds PRIVATE
     Source/wind2fds
     Source/shared
 )
+
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(wind2fds m)
+endif()
