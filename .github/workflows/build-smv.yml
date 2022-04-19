@@ -130,6 +130,13 @@ jobs:
           fi
           cmake --build cbuild -j4
           cp cbuild/smokeview smokeview
+      - name: Test
+        shell: bash
+        env:
+          PLATFORM: ${{ matrix.os }}
+          LUA: ${{ matrix.lua }}
+        run: |
+          ctest --test-dir cbuild -j10
       - name: Set exec suffix
         if: ${{ matrix.lua }} == lua
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
@@ -166,6 +173,13 @@ jobs:
           fi
           cmake --build cbuild -j4
           cp cbuild/smokeview smokeview
+      - name: Test
+        shell: bash
+        env:
+          PLATFORM: ${{ matrix.os }}
+          LUA: ${{ matrix.lua }}
+        run: |
+          ctest --test-dir cbuild -j10
       - name: Set exec suffix
         if: ${{ matrix.lua }} == lua
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
@@ -368,6 +382,13 @@ jobs:
           cmake -B cbuild -G Ninja -DCMAKE_BUILD_TYPE=Release -DLUA=off
           cmake --build cbuild -j4
           copy cbuild\smokeview.exe smokeview.exe
+      - name: Test
+        shell: bash
+        env:
+          PLATFORM: ${{ matrix.os }}
+          LUA: ${{ matrix.lua }}
+        run: |
+          ctest --test-dir cbuild -j10
       - name: Set exec suffix
         if: ${{ matrix.lua }} == lua
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
@@ -422,6 +443,13 @@ jobs:
           cmake -B cbuild -DCMAKE_BUILD_TYPE=Release -DLUA=off
           cmake --build cbuild -j4 --config Release
           copy cbuild\Release\smokeview.exe smokeview.exe
+      - name: Test
+        shell: bash
+        env:
+          PLATFORM: ${{ matrix.os }}
+          LUA: ${{ matrix.lua }}
+        run: |
+          ctest --test-dir cbuild -j10
       - name: Set exec suffix
         if: ${{ matrix.lua }} == lua
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV

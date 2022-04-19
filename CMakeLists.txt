@@ -353,3 +353,8 @@ target_include_directories(wind2fds PRIVATE
 if ((NOT MACOSX) AND UNIX)
     target_link_libraries(wind2fds m)
 endif()
+
+include(CTest)
+add_test(NAME "Execute smokediff" COMMAND smokediff)
+add_test(NAME "Execute smokeview" COMMAND smokeview)
+add_test(NAME "Execute smokezip" COMMAND smokezip)
