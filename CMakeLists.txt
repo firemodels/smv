@@ -136,7 +136,6 @@ add_executable(smokediff Source/shared/assert.c Source/shared/dmalloc.c Source/s
     Source/shared/md5.c Source/shared/sha1.c Source/shared/sha256.c Source/shared/stdio_buffer.c
     Source/smokeview/gsmv.c Source/smokeview/getdata.c Source/smokeview/color2rgb.c
 )
-
 target_include_directories(smokediff PRIVATE
     Source/smokediff
     Source/smokeview
@@ -146,6 +145,10 @@ target_include_directories(smokediff PRIVATE
 if (WIN32)
     target_include_directories(smokediff PRIVATE Source/pthreads)
 endif ()
+
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(smokediff m)
+endif()
 
 
 add_executable(smokezip Source/smokezip/main.c Source/smokezip/CNV3dsmoke.c Source/smokezip/CNVboundary.c
@@ -167,6 +170,10 @@ target_include_directories(smokezip PRIVATE
 target_link_libraries(smokezip
     zlib_static
 )
+
+if ((NOT MACOSX) AND UNIX)
+    target_link_libraries(smokezip m)
+endif()
 
 if (WIN32)
     target_include_directories(smokezip PRIVATE Source/pthreads)
