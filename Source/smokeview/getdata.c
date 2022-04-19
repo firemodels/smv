@@ -12,6 +12,9 @@
 #include "datadefs.h"
 #include "getdata.h"
 #include <errno.h>
+#if __STDC_VERSION__ >= 201112L
+#include <limits.h>
+#endif
 
 // As with the Fortran code preceding this, it is assumed that a float is 4
 // bytes for serialization/deserialization purposes. With C11 we can check this
@@ -45,7 +48,7 @@ int fortread(void *ptr, size_t size, size_t count, FILE *file) {
   if (header_read != 1) return 1;
   if (header != (size * count)) {
     // TODO: need to decide if we should accept larger than expected records.
-    fprintf(stderr, "Exported record of %lu bytes, found one of %lu bytes\n",
+    fprintf(stderr, "Expected record of %lu bytes, found one of %u bytes\n",
             size * count, header);
     return 2;
   }
@@ -321,7 +324,6 @@ void getsliceparms(const char *slicefilename, int *ip1, int *ip2, int *jp1,
 
 void getsliceheader(const char *slicefilename, int *ip1, int *ip2, int *jp1,
                     int *jp2, int *kp1, int *kp2, int *error) {
-  int nsizes, sizes[3];
 
   *error = 0;
   FILE *file = FOPEN(slicefilename, "rb");
@@ -543,7 +545,6 @@ FILE *openboundary(const char *boundaryfilename, int version, int *error) {
   char patchunit[31];
   *error = 0;
   int npatch;
-  int patchdir;
   FILE *file = FOPEN(boundaryfilename, "rb");
   if (file == NULL) {
     PRINTF(" The boundary file name, %s does not exist\n", boundaryfilename);
@@ -577,7 +578,6 @@ FILE *openboundary(const char *boundaryfilename, int version, int *error) {
       if (*error == 0) {
         *error = fortread(ijk, sizeof(*ijk), 9, file);
         if (*error) goto end;
-        patchdir = ijk[6];
       }
     }
   }
@@ -1061,7 +1061,7 @@ void getsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
 
   *error = fortread(time, sizeof(*time), 1, file);
   if (*error != 0) return;
-  *error = fortread(qframe, sizeof(*qframe), nxsp * nysp * nysp, file);
+  *error = fortread(qframe, sizeof(*qframe), nxsp * nysp * nzsp, file);
   if (testslice == 1 || testslice == 2) {
     factor = 1.0;
     if (testslice == 2) factor = 1.1;
