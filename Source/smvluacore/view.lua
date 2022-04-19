@@ -1,7 +1,7 @@
 
 
 
-view = {colorbar = {}, blockages = {}, color = {}}
+view = {colorbar = {}, blockages = {}, color = {}, titlebox = {}}
 _view = {
     -- colorbar = {
     --     get = function()
@@ -137,6 +137,29 @@ _colorbar = {
     }
 }
 setmetatable(view.colorbar, colorbar_mt)
+
+local titlebox_mt = {
+   -- get method
+   __index = function (t,k)
+       if type(_titlebox[k]) == "function" then
+           return _titlebox[k]
+       else
+           return _titlebox[k].get()
+       end
+   end,
+   -- set method
+   __newindex = function (t,k,v)
+       _titlebox[k].set(v)
+   end
+}
+
+_titlebox = {
+    add_line = function (line)
+            return add_title_line(line)
+        end
+
+}
+setmetatable(view.titlebox, titlebox_mt)
 
 local color_mt = {
    -- get method
