@@ -2,7 +2,7 @@
 # smokediff makefile
 
 SOURCE_DIR = ../../../Source
-INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokediff -I $(SOURCE_DIR)/pthreads
+INC_DIR = -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokediff
 FILTERC =
 FILTERF =
 

@@ -9,7 +9,7 @@ LIB_DIR = $(BUILD_DIR)/LIBS
 
 # Set the C standard we are using. Currently this is just the appropriate flag
 # for gcc and is not applied to other compilers.
-#C_STANDARD = -std=gnu89
+#C_STANDARD = -std=gnu99
 #CPP_STANDARD = -libstd=c++
 
 SMV_TESTFLAG =
