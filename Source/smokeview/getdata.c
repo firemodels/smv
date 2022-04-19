@@ -11,6 +11,7 @@
 #include "MALLOCC.h"
 #include "datadefs.h"
 #include "getdata.h"
+#include <ctype.h>
 #include <errno.h>
 #if __STDC_VERSION__ >= 201112L
 #include <limits.h>
@@ -31,6 +32,27 @@ FILE *FOPEN(const char *file, const char *mode) {
 #else
 FILE *FOPEN(const char *file, const char *mode) { return fopen(file, mode); }
 #endif
+
+/// TrimFrontConst duplicated here due to dependency problems.
+const char *TrimFrontConst_(const char *line) {
+  for (const char *c = line; c <= line + strlen(line) - 1; c++) {
+    if (!isspace((unsigned char)(*c))) return c;
+  }
+  return line;
+}
+
+/// TrimBack duplicated here due to dependency problems.
+void TrimBack_(char *line) {
+  if (line == NULL) return;
+  size_t len = strlen(line);
+  if (len == 0) return;
+  for (char *c = line + len - 1; c >= line; c--) {
+    if (isspace((unsigned char)(*c))) continue;
+    *(c + 1) = '\0';
+    return;
+  }
+  *line = '\0';
+}
 
 int fortread(void *ptr, size_t size, size_t count, FILE *file) {
   // TODO: check endianess, currently little-endian is assumed
@@ -104,7 +126,7 @@ void getgeomdatasize(const char *filename, int *ntimes, int *nvars,
   int nvert_s, nvert_d, nface_s, nface_d;
   FILE *file = FOPEN(filename, "rb");
   if (file == NULL) {
-    PRINTF(" The boundary element file name, %s does not exist\n", filename);
+    printf(" The boundary element file name, %s does not exist\n", filename);
     *error = 1;
     return;
   }
@@ -155,7 +177,7 @@ void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
   file = FOPEN(zonefilename, "rb");
 
   if (file == NULL) {
-    PRINTF(" The zone file name, %s does not exist\n", zonefilename);
+    printf(" The zone file name, %s does not exist\n", zonefilename);
     *error = 1;
     return;
   }
@@ -208,7 +230,7 @@ void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
   *error = 0;
   *file = FOPEN(patchfilename, "rb");
   if (file == NULL) {
-    PRINTF(" The boundary file name, %s does not exist\n", patchfilename);
+    printf(" The boundary file name, %s does not exist\n", patchfilename);
     *error = 1;
     return;
   }
@@ -481,7 +503,7 @@ void getboundaryheader1(const char *boundaryfilename, FILE **file, int *npatch,
   *error = 0;
   *file = FOPEN(boundaryfilename, "rb");
   if (*file == NULL) {
-    PRINTF(" The boundary file name, %s does not exist\n", boundaryfilename);
+    printf(" The boundary file name, %s does not exist\n", boundaryfilename);
     *error = 1;
     return;
   }
@@ -538,7 +560,7 @@ FILE *openboundary(const char *boundaryfilename, int version, int *error) {
   int npatch;
   FILE *file = FOPEN(boundaryfilename, "rb");
   if (file == NULL) {
-    PRINTF(" The boundary file name, %s does not exist\n", boundaryfilename);
+    printf(" The boundary file name, %s does not exist\n", boundaryfilename);
     *error = 1;
     return file;
   }
@@ -671,7 +693,7 @@ void getgeomdata(const char *filename, int ntimes, int nvals, float *times,
   *file_size = 0;
   FILE *file = FOPEN(filename, "rb");
   if (file == NULL) {
-    PRINTF(" The boundary element file name, %s does not exist\n", filename);
+    printf(" The boundary element file name, %s does not exist\n", filename);
     *error = 1;
     return;
   }
@@ -743,7 +765,7 @@ void getzonedata(const char *zonefilename, int *nzonet, int *nrooms,
 
   FILE *file = FOPEN(zonefilename, "rb");
   if (file == NULL) {
-    PRINTF(" The zone file name, %s does not exist\n", zonefilename);
+    printf(" The zone file name, %s does not exist\n", zonefilename);
     *error = 1;
     return;
   }
@@ -959,7 +981,7 @@ void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
   nysp = js2 + 1 - js1;
   nzsp = ks2 + 1 - ks1;
   nframe = nxsp * nysp * nzsp;
-  if (redirect_flag == 0) PRINTF("output slice data to %s\n", slicefilename);
+  if (redirect_flag == 0) printf("output slice data to %s\n", slicefilename);
   for (int i = 0; i < ntimes; i++) {
     fortwrite(&times[i], sizeof(times[i]), 1, file);
     ibeg = 1 + (i)*nframe;
@@ -987,12 +1009,12 @@ void writeslicedata2(const char *slicefilename, const char *longlabel,
 
   // Copy labels into smaller buffers, truncating if necessary. The separate
   // TrimFront and TrimBack steps are intentionally separate steps.
-  strncpy(longlabel30, TrimFrontConst(longlabel), 30);
-  TrimBack(longlabel30);
-  strncpy(shortlabel30, TrimFrontConst(shortlabel), 30);
-  TrimBack(shortlabel30);
-  strncpy(unitlabel30, TrimFrontConst(unitlabel), 30);
-  TrimBack(unitlabel30);
+  strncpy(longlabel30, TrimFrontConst_(longlabel), 30);
+  TrimBack_(longlabel30);
+  strncpy(shortlabel30, TrimFrontConst_(shortlabel), 30);
+  TrimBack_(shortlabel30);
+  strncpy(unitlabel30, TrimFrontConst_(unitlabel), 30);
+  TrimBack_(unitlabel30);
 
   fortwrite(longlabel30, 30, 1, file);
   fortwrite(shortlabel30, 30, 1, file);
@@ -1044,7 +1066,8 @@ void getsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
         float jj = 2.0 * ((nysp - 1) / 2.0 - j) / (nysp - 1.0);
         for (size_t i = 0; i < nxsp; i++) {
           float ii = 2.0 * ((nxsp - 1) / 2.0 - i) / (nxsp - 1.0);
-          float val = factor * (*time - 20.0) * (ii * ii + jj * jj + kk * kk) / 20.0;
+          float val =
+              factor * (*time - 20.0) * (ii * ii + jj * jj + kk * kk) / 20.0;
           size_t index = 1 + i + j * nxsp + k * nxsp * nysp;
           qframe[index] = val;
         }
@@ -1173,7 +1196,7 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq,
     *error = 0;
     FILE *file = FOPEN(qfilename, "rb");
     if (file == NULL) {
-      PRINTF(" The file name, %s does not exist\n", qfilename);
+      printf(" The file name, %s does not exist\n", qfilename);
       *error = fortread(&dummy, sizeof(dummy), 1, file);
       exit(1);
     }
@@ -1188,10 +1211,10 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq,
 
     } else {
       *error = 1;
-      PRINTF(" *** Fatal error in getplot3dq ***\n");
-      PRINTF(" Grid size found in plot3d file was: %d,%d,%d\n", nxpts, nypts,
+      printf(" *** Fatal error in getplot3dq ***\n");
+      printf(" Grid size found in plot3d file was: %d,%d,%d\n", nxpts, nypts,
              nzpts);
-      PRINTF(" Was expecting: %d,%d,%d\n", nx, ny, nz);
+      printf(" Was expecting: %d,%d,%d\n", nx, ny, nz);
       exit(1);
     }
     fclose(file);

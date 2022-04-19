@@ -1,17 +1,6 @@
 #ifndef GETDATA_H_DEFINED
 #define GETDATA_H_DEFINED
-#include "options.h"
-#include <math.h>
-#include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#ifdef WIN32
-#include <share.h>
-#endif
-#include "MALLOCC.h"
-#include "datadefs.h"
-#include "getdata.h"
 
 void getgeomdatasize(const char *filename, int *ntimes, int *nvars, int *error);
 void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
