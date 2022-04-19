@@ -172,7 +172,7 @@ target_link_libraries(smokezip
 )
 
 if ((NOT MACOSX) AND UNIX)
-    target_link_libraries(smokezip m)
+    target_link_libraries(smokezip pthread m)
 endif()
 
 if (WIN32)
