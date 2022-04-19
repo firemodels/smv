@@ -1028,28 +1028,24 @@ void writeslicedata2(const char *slicefilename, const char *longlabel,
 void getsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
                    int ks2, float *time, float *qframe, int testslice,
                    int *error) {
-  float val, factor;
-  int index;
-  float ii, jj, kk;
-
-  int nxsp = is2 + 1 - is1;
-  int nysp = js2 + 1 - js1;
-  int nzsp = ks2 + 1 - ks1;
+  size_t nxsp = is2 + 1 - is1;
+  size_t nysp = js2 + 1 - js1;
+  size_t nzsp = ks2 + 1 - ks1;
 
   *error = fortread(time, sizeof(*time), 1, file);
   if (*error != 0) return;
   *error = fortread(qframe, sizeof(*qframe), nxsp * nysp * nzsp, file);
   if (testslice == 1 || testslice == 2) {
-    factor = 1.0;
+    float factor = 1.0;
     if (testslice == 2) factor = 1.1;
-    for (int k = 0; k < nzsp; k++) {
-      kk = 2.0 * ((nzsp - 1) / 2.0 - k) / (nzsp - 1.0);
-      for (int j = 0; j < nysp; j++) {
-        jj = 2.0 * ((nysp - 1) / 2.0 - j) / (nysp - 1.0);
-        for (int i = 0; i < nxsp; i++) {
-          ii = 2.0 * ((nxsp - 1) / 2.0 - i) / (nxsp - 1.0);
-          val = factor * (*time - 20.0) * (ii * ii + jj * jj + kk * kk) / 20.0;
-          index = 1 + i + j * nxsp + k * nxsp * nysp;
+    for (size_t k = 0; k < nzsp; k++) {
+      float kk = 2.0 * ((nzsp - 1) / 2.0 - k) / (nzsp - 1.0);
+      for (size_t j = 0; j < nysp; j++) {
+        float jj = 2.0 * ((nysp - 1) / 2.0 - j) / (nysp - 1.0);
+        for (size_t i = 0; i < nxsp; i++) {
+          float ii = 2.0 * ((nxsp - 1) / 2.0 - i) / (nxsp - 1.0);
+          float val = factor * (*time - 20.0) * (ii * ii + jj * jj + kk * kk) / 20.0;
+          size_t index = 1 + i + j * nxsp + k * nxsp * nysp;
           qframe[index] = val;
         }
       }
