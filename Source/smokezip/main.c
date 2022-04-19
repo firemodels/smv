@@ -116,11 +116,11 @@ int main(int argc, char **argv){
   ParseCommonOptions(argc, argv);
   if(show_help!=0){
     Usage("smokezip",show_help);
-    return 1;
+    return 0;
   }
   if(show_version==1){
     PRINTVERSION("smokezip", argv[0]);
-    return 1;
+    return 0;
   }
 
   GLOBdoit_lighting=0;
@@ -195,7 +195,7 @@ int main(int argc, char **argv){
   filebase=NULL;
   if(argc==1){
     PRINTVERSION("Smokezip ",argv[0]);
-    return 1;
+    return 0;
   }
 
   for(i=1;i<argc;i++){
