@@ -653,7 +653,7 @@ void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
       if (*error != 0) return;
     }
     *size += 4 + (4 * 3 * nparticles) + 4 * nparticles +
-           4 * nparticles * nquantities[i];
+             4 * nparticles * nquantities[i];
   }
   *error = 0;
   return;
@@ -678,62 +678,57 @@ void getgeomdata(const char *filename, int ntimes, int nvals, float *times,
 
   *error = 0;
   *error = fortread(&one, 1, 1, file);
+  if (*error != 0) goto end;
   *error = fortread(&version, sizeof(version), 1, file);
+  if (*error != 0) goto end;
   *file_size = 2 * (4 + 4 + 4);
   nvars = 0;
   for (int itime = 0; itime < ntimes; itime++) {
 
     *error = fortread(&times[itime], sizeof(times[itime]), 1, file);
+    if (*error != 0) goto end;
     *file_size += (4 + 4 + 4);
-    if (*error == 0) {
-      int counts[4] = {0};
-      *error = fortread(&counts, sizeof(*counts), 4, file);
-      nvert_s = counts[0];
-      ntri_s = counts[1];
-      nvert_d = counts[2];
-      ntri_d = counts[3];
-      *file_size += (4 + 4 * 4 + 4);
-      nstatics[itime] = nvert_s + ntri_s;
-    }
 
-    if (*error == 0) {
-      if (nvert_s > 0) {
-        *error = fortread(&vals[nvars], sizeof(vals[nvars]), nvert_s, file);
-        *file_size += (4 + 4 * nvert_s + 4);
-      }
-      nvars = nvars + nvert_s;
-    }
+    int counts[4] = {0};
+    *error = fortread(&counts, sizeof(*counts), 4, file);
+    nvert_s = counts[0];
+    ntri_s = counts[1];
+    nvert_d = counts[2];
+    ntri_d = counts[3];
+    *file_size += (4 + 4 * 4 + 4);
+    nstatics[itime] = nvert_s + ntri_s;
 
-    if (*error == 0) {
-      if (ntri_s > 0) {
-        *error = fortread(&vals[nvars], sizeof(vals[nvars]), ntri_s, file);
-        *file_size += (4 + 4 * ntri_s + 4);
-      }
-      nvars = nvars + ntri_s;
+    if (nvert_s > 0) {
+      *error = fortread(&vals[nvars], sizeof(vals[nvars]), nvert_s, file);
+      if (*error != 0) goto end;
+      *file_size += (4 + 4 * nvert_s + 4);
     }
+    nvars = nvars + nvert_s;
+
+    if (ntri_s > 0) {
+      *error = fortread(&vals[nvars], sizeof(vals[nvars]), ntri_s, file);
+      if (*error != 0) goto end;
+      *file_size += (4 + 4 * ntri_s + 4);
+    }
+    nvars = nvars + ntri_s;
 
     ndynamics[itime] = nvert_d + ntri_d;
-    if (*error == 0) {
-      if (nvert_d > 0) {
-        *error = fortread(&vals[nvars], sizeof(vals[nvars]), nvert_d, file);
-        file_size += (4 + 4 * nvert_d + 4);
-      }
-      nvars = nvars + nvert_d;
+    if (nvert_d > 0) {
+      *error = fortread(&vals[nvars], sizeof(vals[nvars]), nvert_d, file);
+      if (*error != 0) goto end;
+      file_size += (4 + 4 * nvert_d + 4);
     }
+    nvars = nvars + nvert_d;
 
-    if (*error == 0) {
-      if (ntri_d > 0) {
-        *error = fortread(&vals[nvars], sizeof(vals[nvars]), ntri_d, file);
-        *file_size += (4 + 4 * ntri_d + 4);
-      }
-      nvars = nvars + ntri_d;
+    if (ntri_d > 0) {
+      *error = fortread(&vals[nvars], sizeof(vals[nvars]), ntri_d, file);
+      if (*error != 0) goto end;
+      *file_size += (4 + 4 * ntri_d + 4);
     }
-
-    if (*error != 0) {
-      fclose(file);
-      return;
-    }
+    nvars = nvars + ntri_d;
   }
+
+end:
   fclose(file);
   return;
 }
@@ -1177,7 +1172,7 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq,
   float dummies[4];
   float dummy, qval;
 
-  uint32_t npts[3]={0};
+  uint32_t npts[3] = {0};
   if (isotest == 0) {
     *error = 0;
     FILE *file = FOPEN(qfilename, "rb");

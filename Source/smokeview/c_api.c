@@ -973,11 +973,7 @@ void set_framelabel_visibility(int setting) {
   // so show timebar if necessary.
   if(visFramelabel==1)visTimebar=1;
   if(visFramelabel==1){
-    visHRRlabel=0;
-    if(hrrinfo!=NULL){
-      hrrinfo->display=visHRRlabel;
-      UpdateTimes();
-    }
+    vis_hrr_label=0;
   }
   if(visFramelabel==0)PRINTF("Frame label hidden\n");
   if(visFramelabel==1)PRINTF("Frame label visible\n");
@@ -993,11 +989,7 @@ void toggle_framelabel_visibility() {
   // so show timebar if necessary.
   if(visFramelabel==1)visTimebar=1;
     if(visFramelabel==1){
-      visHRRlabel=0;
-      if(hrrinfo!=NULL){
-        hrrinfo->display=visHRRlabel;
-        UpdateTimes();
-      }
+      vis_hrr_label=0;
   }
   if(visFramelabel==0)PRINTF("Frame label hidden\n");
   if(visFramelabel==1)PRINTF("Frame label visible\n");
@@ -1056,19 +1048,17 @@ void toggle_hrrcutoff_visibility() {
 
 // HRR label
 void set_hrrlabel_visibility(int setting) {
-  visHRRlabel = setting;
-  if (hrrinfo != NULL&&hrrinfo->display != 0)UpdateHRRInfo(0);
+  vis_hrr_label = setting;
   if(show_hrrcutoff_active==0)PRINTF("HRR label hidden\n");
   if(show_hrrcutoff_active==1)PRINTF("HRR label visible\n");
 }
 
 int get_hrrlabel_visibility() {
-  return visHRRlabel;
+  return vis_hrr_label;
 }
 
 void toggle_hrrlabel_visibility() {
-  visHRRlabel = 1 - visHRRlabel;
-  if (hrrinfo != NULL&&hrrinfo->display != 0)UpdateHRRInfo(0);
+  vis_hrr_label = 1 - vis_hrr_label;
   if(show_hrrcutoff_active==0)PRINTF("HRR label hidden\n");
   if(show_hrrcutoff_active==1)PRINTF("HRR label visible\n");
 }
@@ -1930,7 +1920,7 @@ void unloadall() {
     fprintf(scriptoutstream,"UNLOADALL\n");
   }
   if(hrr_csv_filename!=NULL){
-    ReadHRR(UNLOAD, &errorcode);
+    ReadHRR(UNLOAD);
   }
   if(nvolrenderinfo>0){
     LoadVolsmoke3DMenu(UNLOAD_ALL);
@@ -3071,7 +3061,7 @@ int set_showhmstimelabel(int v) {
 } // SHOWHMSTIMELABEL
 
 int set_showhrrcutoff(int v) {
-  visHRRlabel = v;
+  vis_hrr_label = v;
   return 0;
 } // SHOWHRRCUTOFF
 
