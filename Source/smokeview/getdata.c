@@ -1184,11 +1184,11 @@ void outpatchframe(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
   return;
 }
 
-// !  ------------------ getplot3dq ------------------------
-
+// !  ------------------ getplot3dq ------------------------ TODO: we don't need
+// to pass in the nx, ny, and nz values. This previously allowed us to allocate
+// prior to this function.
 void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq,
                 int *error, int isotest) {
-  float dummies[4];
   float dummy, qval;
 
   uint32_t npts[3] = {0};
@@ -1197,18 +1197,19 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq,
     FILE *file = FOPEN(qfilename, "rb");
     if (file == NULL) {
       printf(" The file name, %s does not exist\n", qfilename);
-      *error = fortread(&dummy, sizeof(dummy), 1, file);
       exit(1);
     }
     *error = fortread(npts, sizeof(*npts), 3, file);
+    if (*error) goto end;
     uint32_t nxpts = npts[0];
     uint32_t nypts = npts[1];
     uint32_t nzpts = npts[2];
     if (nx == nxpts && ny == nypts && nz == nzpts) {
-      // TODO: determine what these values actually are.
-      *error = fortread(dummies, sizeof(*dummies), 4, file);
+      float zeros[4];
+      *error = fortread(zeros, sizeof(*zeros), 4, file);
+      if (*error) goto end;
       *error = fortread(qq, sizeof(*qq), nxpts * nypts * nzpts * 5, file);
-
+      if (*error) goto end;
     } else {
       *error = 1;
       printf(" *** Fatal error in getplot3dq ***\n");
@@ -1217,6 +1218,7 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq,
       printf(" Was expecting: %d,%d,%d\n", nx, ny, nz);
       exit(1);
     }
+  end:
     fclose(file);
   } else {
     for (int i = 0; i < nx; i++) {
