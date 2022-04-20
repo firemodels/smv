@@ -449,7 +449,7 @@ jobs:
           PLATFORM: ${{ matrix.os }}
           LUA: ${{ matrix.lua }}
         run: |
-          ctest --test-dir cbuild -j10
+          ctest --test-dir cbuild -j10 -C Debug
       - name: Set exec suffix
         if: ${{ matrix.lua }} == lua
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
