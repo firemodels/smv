@@ -2,6 +2,9 @@
 #define GETDATA_H_DEFINED
 #include <stdio.h>
 
+// TODO: remove this as a public-facing API when possible
+int fortread(void *ptr, size_t size, size_t count, FILE *file);
+
 void getgeomdatasize(const char *filename, int *ntimes, int *nvars, int *error);
 void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
                  int *nfires, int *error);

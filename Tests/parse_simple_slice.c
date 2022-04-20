@@ -16,9 +16,7 @@ int main(int argc, char **argv) {
   size_t ny = j2 + 1 - j1;
   size_t nz = k2 + 1 - k1;
 
-  if (argc < 3) {
-    return 2;
-  }
+  if (argc < 3) return 2;
 
   size_t expected = atol(argv[2]);
 
@@ -33,8 +31,10 @@ int main(int argc, char **argv) {
     if (error != 0) break;
     count++;
   }
-  printf("count: %zu, expected: %zu\n",count,expected);
-  ASSERT(count == expected);
+  printf("count: %zu, expected: %zu\n", count, expected);
+  if (count != expected) {
+    return 1;
+  }
   FREEMEMORY(qframe);
   closefortranfile(file);
   return 0;

@@ -843,6 +843,7 @@ void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
     // TODO: hardcodes float size.
     file_size += 4 * size;
     if (*error != 0) {
+      // TODO: this function shouldn't close this file.
       fclose(file);
       break;
     }
