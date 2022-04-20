@@ -7,6 +7,7 @@
 #include "MALLOCC.h"
 #include "datadefs.h"
 #include "file_util.h"
+#include "../smokeview/getdata.h"
 
 /* ------------------ SetupPlot3D ------------------------ */
 
@@ -89,7 +90,6 @@ void diff_plot3ds(FILE *stream_out){
     float *qframe1, *qframe2, *qout;
     meshdata *plot3dmesh;
     int nx, ny, nz, nq;
-    int len1, len2, lenout;
     int isotest=0;
     FILE *stream;
     int error1, error2, error3;
@@ -132,9 +132,6 @@ void diff_plot3ds(FILE *stream_out){
     NewMemory((void **)&qframe2,nq*sizeof(float));
     NewMemory((void **)&qout,nq*sizeof(float));
 
-    len1=strlen(fullfile1);
-    len2=strlen(fullfile2);
-    lenout=strlen(outfile);
     isotest=0;
     PRINTF("Subtracting %s from %s\n",fullfile2,fullfile1);
     FFLUSH();
@@ -143,12 +140,12 @@ void diff_plot3ds(FILE *stream_out){
     PRINTF("  Progress: reading %s,",fullfile1);
     FFLUSH();
 
-    FORTgetplot3dq(fullfile1,&nx,&ny,&nz,qframe1,&error1,&isotest,len1);
+    getplot3dq(fullfile1,nx,ny,nz,qframe1,&error1,isotest);
     if(test_mode==1)isotest=2;
     PRINTF(" reading %s,",fullfile2);
     FFLUSH();
 
-    FORTgetplot3dq(fullfile2,&nx,&ny,&nz,qframe2,&error2,&isotest,len2);
+    getplot3dq(fullfile2,nx,ny,nz,qframe2,&error2,isotest);
     PRINTF(" differencing data,");
     FFLUSH();
 
@@ -182,7 +179,7 @@ void diff_plot3ds(FILE *stream_out){
       fprintf(stream_out,"  %f %f %f %f\n",valmin,valmax,valmin_percentile,valmax_percentile);
     }
 
-    FORTplot3dout(outfile,&nx,&ny,&nz,qout,&error3,lenout);
+    plot3dout(outfile,nx,ny,nz,qout,&error3);
     PRINTF(" completed.\n");
     FFLUSH();
 

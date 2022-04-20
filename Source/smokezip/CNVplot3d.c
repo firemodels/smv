@@ -8,6 +8,7 @@
 #include "svzip.h"
 #include "MALLOCC.h"
 #include "compress.h"
+#include "../smokeview/getdata.h"
 
 /* ------------------ convert_plot3d ------------------------ */
 
@@ -107,13 +108,11 @@ int ConvertPlot3D(plot3d *plot3di){
   }
   {
     int nx, ny, nz;
-    FILE_SIZE len;
     int error, isotest;
     int j;
     int framesize;
     int k,kk;
 
-    len=strlen(plot3d_file);
     CheckMemory;
     nx = plot3di->plot3d_mesh->ibar+1;
     ny = plot3di->plot3d_mesh->jbar+1;
@@ -127,7 +126,7 @@ int ConvertPlot3D(plot3d *plot3di){
     NewMemory((void **)&plot3dframe_compressed,1.1*5*framesize*sizeof(unsigned char));
     NewMemory((void **)&plot3dframe_uncompressed,5*framesize*sizeof(unsigned char));
 
-    FORTgetplot3dq(plot3d_file, &nx, &ny, &nz, plot3dframe_data, &error, &isotest, len);
+    getplot3dq(plot3d_file, nx, ny, nz, plot3dframe_data, &error, isotest);
     kk=0;
     for(j=0;j<5;j++){
       float valmin, valmax;

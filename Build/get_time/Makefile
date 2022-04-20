@@ -11,7 +11,7 @@ bin = .
 
 # Definition of the object variables
 
-obj =    get_time.o 
+obj =    get_time.o
 objwin = $(obj:.o=.obj)
 
 # main has to be compiled without optimization (on a Windows PC) otherwise errors occcur
@@ -23,20 +23,12 @@ no_target:
 	@echo \******** You did not specify a make target \********
 	@echo Use one of targets found in the Makefile
 
-.SUFFIXES: .F90 .c .obj .o .f90 .cpp
+.SUFFIXES: .c .obj .o .cpp
 
 .c.obj:
 	$(CC) -c $(CFLAGS) $(FILTERC) $(INC_DIR) $<
 .c.o:
 	$(CC) -c $(CFLAGS) $(FILTERC) $(INC_DIR) $<
-.F90.o:
-	$(FC) -c $(FFLAGS) $(FILTERF) $<
-.f90.obj:
-	$(FC) -c $(FFLAGS) $(FILTERF) $<
-.f90.o:
-	$(FC) -c $(FFLAGS) $(FILTERF) $<
-
-
 
 # ********  rules for each platform supported *************
 
@@ -48,7 +40,7 @@ intel_win_64 : CPP       = $(I_CC)
 intel_win_64 : exe       = get_time_win_64.exe
 
 intel_win_64 : $(objwin)
-	$(CPP) -o $(bin)/$(exe) $(objwin) 
+	$(CPP) -o $(bin)/$(exe) $(objwin)
 
 # ------------- gnu win 64 ----------------
 
@@ -58,4 +50,4 @@ gnu_win_64 : CPP       = g++
 gnu_win_64 : exe       = get_time_win_64.exe
 
 gnu_win_64 : $(obj)
-	$(CPP) -o $(bin)/$(exe) $(obj) 
+	$(CPP) -o $(bin)/$(exe) $(obj)

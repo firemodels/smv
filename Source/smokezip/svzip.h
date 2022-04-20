@@ -328,68 +328,6 @@ float atan3(float y, float x);
 void initvolrender(void);
 void GetSliceParmsC(char *file, int *ni, int *nj, int *nk);
 
-#ifdef pp_WIN_ONEAPI
-#define FORTgetpartheader1     _F(GETPARTHEADER1)
-#define FORTgetpartheader2     _F(GETPARTHEADER2)
-#define FORTgetpartdataframe   _F(GETPARTDATAFRAME)
-#define FORTclosefortranfile   _F(CLOSEFORTRANFILE)
-#define FORTgetboundaryheader1 _F(GETBOUNDARYHEADER1)
-#define FORTgetboundaryheader2 _F(GETBOUNDARYHEADER2)
-#define FORTopenboundary       _F(OPENBOUNDARY)
-#define FORTgetpatchdata       _F(GETPATCHDATA)
-#define FORTopenslice          _F(OPENSLICE)
-#define FORTopenpart           _F(OPENPART)
-#define FORTgetsliceframe      _F(GETSLICEFRAME)
-#define FORTgetplot3dq         _F(GETPLOT3DQ)
-#else
-#define FORTgetpartheader1     _F(getpartheader1)
-#define FORTgetpartheader2     _F(getpartheader2)
-#define FORTgetpartdataframe   _F(getpartdataframe)
-#define FORTclosefortranfile   _F(closefortranfile)
-#define FORTgetboundaryheader1 _F(getboundaryheader1)
-#define FORTgetboundaryheader2 _F(getboundaryheader2)
-#define FORTopenboundary       _F(openboundary)
-#define FORTgetpatchdata       _F(getpatchdata)
-#define FORTopenslice          _F(openslice)
-#define FORTopenpart           _F(openpart)
-#define FORTgetsliceframe      _F(getsliceframe)
-#define FORTgetplot3dq         _F(getplot3dq)
-#endif
-
-#ifdef WIN32
-#define STDCALLF extern void _stdcall
-#else
-#define STDCALLF extern void
-#endif
-
-STDCALLF FORTopenpart(char *partfilename, int *unit, int *error, FILE_SIZE lenfile);
-STDCALLF FORTgetpartheader1(int *unit, int *nclasses, int *fdsversion, int *size);
-STDCALLF FORTgetpartheader2(int *unit, int *nclasses, int *nquantities, int *size);
-STDCALLF FORTgetpartdataframe(int *unit, int *nclasses, int *nquantities, int *npoints, float *time, int *tagdata, float *pdata, int *size, int *error);
-
-STDCALLF FORTclosefortranfile(int *lunit);
-
-STDCALLF FORTgetpatchdata(int *lunit, int *npatch,int *pi1,int *pi2,int *pj1,int *pj2,int *pk1,int *pk2,
-                         float *patch_times,float *pqq, int *ndummy, int *file_size, int *error);
-STDCALLF FORTopenboundary(char *boundaryfilename, int *boundaryunitnumber,
-                         int *version, int *error, FILE_SIZE len);
-STDCALLF FORTgetboundaryheader1(char *boundaryfilename, int *boundaryunitnumber,
-                               int *npatch, int *error, FILE_SIZE lenfile);
-STDCALLF FORTgetboundaryheader2(int *boundaryunitnumber, int *version, int *npatches,
-                               int *pi1, int *pi2, int *pj1, int *pj2, int *pk1, int *pk2, int *patchdir);
-
-STDCALLF FORTgetsliceframe(int *lu11,
-                          int *is1,int *is2,int *js1,int *js2,int *ks1,int *ks2,
-                          float *time,float *qframe,int *slicetest, int *error);
-STDCALLF FORTopenslice(char *slicefilename, int *unit,
-                      int *is1, int *is2, int *js1, int *js2, int *ks1, int *ks2,
-                      int *error, FILE_SIZE lenfile);
-
-STDCALLF FORTgetplot3dq(char *qfilename, int *nx, int *ny, int *nz, float *qq, int *error, int *isotest, FILE_SIZE filelen);
-
-
-
-
 //***********************
 //************* variables
 //***********************

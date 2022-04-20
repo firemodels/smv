@@ -300,6 +300,20 @@ char *TrimFront(char *line){
   return line;
 }
 
+/* ------------------ TrimFrontConst ------------------------ */
+
+const char *TrimFrontConst(const char *line){
+
+//  returns first non-blank character at the begininn of line
+
+  const char *c;
+
+  for(c=line;c<=line+strlen(line)-1;c++){
+    if(!isspace((unsigned char)(*c)))return c;
+  }
+  return line;
+}
+
 /* ------------------ TrimZeros ------------------------ */
 
 void TrimZeros(char *line){
