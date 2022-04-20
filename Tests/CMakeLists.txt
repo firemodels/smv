@@ -14,9 +14,10 @@ add_executable(parse_simple_slice parse_simple_slice.c
 target_include_directories(parse_simple_slice PRIVATE
     ../Tests
     ../Source/shared
-    ../Source/pthreads
 )
-
+if (WIN32)
+    target_include_directories(parse_simple_slice PRIVATE ../Source/pthreads)
+endif()
 if ((NOT MACOSX) AND UNIX)
     target_link_libraries(parse_simple_slice m)
 endif()
@@ -31,9 +32,10 @@ add_executable(parse_simple_bndf parse_simple_bndf.c
 target_include_directories(parse_simple_bndf PRIVATE
     ../Tests
     ../Source/shared
-    ../Source/pthreads
 )
-
+if (WIN32)
+    target_include_directories(parse_simple_bndf PRIVATE ../Source/pthreads)
+endif()
 if ((NOT MACOSX) AND UNIX)
     target_link_libraries(parse_simple_bndf m)
 endif()
