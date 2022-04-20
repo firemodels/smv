@@ -641,13 +641,11 @@ void getpartheader2(FILE *file, int nclasses, int *nquantities, int *size) {
 void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
                       float *time, int *tagdata, float *pdata, int *size,
                       int *error) {
-  int pstart, pend;
-  int tagstart, tagend;
   int nparticles;
 
   *size = 0;
-  pend = 0;
-  tagend = 0;
+  int pstart = 0;
+  int tagstart = 0;
   *error = 0;
   *error = fortread(time, sizeof(*time), 1, file);
   *size = 4;
@@ -657,22 +655,23 @@ void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
     if (*error != 0) return;
     npoints[i] = nparticles;
 
-    pstart = pend + 1;
-    pend = pstart + 3 * nparticles - 1;
-    *error = fortread(&pdata[pstart], sizeof(pdata[0]), pend - pstart, file);
+    // get the particle data
+    int nvalues = 3 * nparticles;
+    *error = fortread(&pdata[pstart], sizeof(*pdata), nvalues, file);
     if (*error != 0) return;
+    pstart += nvalues;
 
-    tagstart = tagend + 1;
-    tagend = tagstart + nparticles - 1;
-    *error = fortread(&tagdata[tagstart], sizeof(tagdata[0]), tagend - tagstart,
-                      file);
+    // get tag data
+    int ntagvalues = tagstart + nparticles ;
+    *error = fortread(&tagdata[tagstart], sizeof(*tagdata), ntagvalues, file);
     if (*error != 0) return;
+    tagstart += ntagvalues;
 
     if (nquantities[i] > 0) {
-      pstart = pend + 1;
-      pend = pstart + nparticles * nquantities[i] - 1;
-      *error = fortread(&pdata[pstart], sizeof(pdata[0]), pend - pstart, file);
+      int nvalues = nparticles * nquantities[i];
+      *error = fortread(&pdata[pstart], sizeof(*pdata), nvalues, file);
       if (*error != 0) return;
+      pstart += nvalues;
     }
     *size += 4 + (4 * 3 * nparticles) + 4 * nparticles +
              4 * nparticles * nquantities[i];
