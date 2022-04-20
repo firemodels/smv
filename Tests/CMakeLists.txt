@@ -50,4 +50,4 @@ add_test(NAME "Simple Slice - Last Frame Half Truncated"
 # Arguments to this tests are <bndf path> <number of frames in bndf>
 # Simple slice is a finished slice file with 3 frames
 add_test(NAME "Simple BNDF - Complete"
-    COMMAND parse_simple_bndf ${CMAKE_SOURCE_DIR}/Tests/simple_bndf.bf 3)
+    COMMAND parse_simple_bndf ${CMAKE_SOURCE_DIR}/Tests/simple_bndf.bf 2)
