@@ -250,14 +250,14 @@ void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
 void getpatchsizes2(FILE *file, int version, int npatch, int *npatchsize,
                     int *pi1, int *pi2, int *pj1, int *pj2, int *pk1, int *pk2,
                     int *patchdir, int *headersize, int *framesize) {
-  uint32_t ijkp[7] = {0};
+  uint32_t ijkp[9] = {0};
 
   *npatchsize = 0;
   for (int n = 0; n < npatch; n++) {
     if (version == 0) {
       fortread(ijkp, sizeof(*ijkp), 6, file);
     } else {
-      fortread(ijkp, sizeof(*ijkp), 7, file);
+      fortread(ijkp, sizeof(*ijkp), 9, file);
       patchdir[n] = ijkp[6];
     }
     pi1[n] = ijkp[0];
