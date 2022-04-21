@@ -58,6 +58,8 @@ set(SMV_LUA_CORE
     Source/smvluacore/camera.lua Source/smvluacore/window.lua
 )
 
+add_definitions(-Dpp_CMAKE)
+
 target_link_libraries(smokeview
 #     ${GLUT_LIBRARIES}
 #     # ${GLUT_glut_LIBRARY_DEBUG}
