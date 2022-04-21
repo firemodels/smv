@@ -136,7 +136,7 @@ jobs:
           PLATFORM: ${{ matrix.os }}
           LUA: ${{ matrix.lua }}
         run: |
-          ctest --test-dir cbuild -j10
+          ctest --test-dir cbuild -j10 --output-on-failure
       - name: Set exec suffix
         if: ${{ matrix.lua }} == lua
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
@@ -179,7 +179,7 @@ jobs:
           PLATFORM: ${{ matrix.os }}
           LUA: ${{ matrix.lua }}
         run: |
-          ctest --test-dir cbuild -j10
+          ctest --test-dir cbuild -j10 --output-on-failure
       - name: Set exec suffix
         if: ${{ matrix.lua }} == lua
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
@@ -388,7 +388,7 @@ jobs:
           PLATFORM: ${{ matrix.os }}
           LUA: ${{ matrix.lua }}
         run: |
-          ctest --test-dir cbuild -j10
+          ctest --test-dir cbuild -j10 --output-on-failure
       - name: Set exec suffix
         if: ${{ matrix.lua }} == lua
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
@@ -449,7 +449,7 @@ jobs:
           PLATFORM: ${{ matrix.os }}
           LUA: ${{ matrix.lua }}
         run: |
-          ctest --test-dir cbuild -j10 -C Release
+          ctest --test-dir cbuild -j10 -C Release --output-on-failure
       - name: Set exec suffix
         if: ${{ matrix.lua }} == lua
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
