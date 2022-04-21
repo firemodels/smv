@@ -823,10 +823,7 @@ void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
   *error = 0;
   *error = fortread(patchtime, sizeof(*patchtime), 1, file);
   file_size = file_size + 4;
-  if (*error != 0) {
-    fclose(file);
-    return;
-  }
+  if (*error != 0) return;
   ibeg = 0;
   *npqq = 0;
   for (int i = 0; i < npatch; i++) {
@@ -841,11 +838,7 @@ void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
     *error = fortread(&pqq[ibeg], sizeof(*pqq), size, file);
     // TODO: hardcodes float size.
     file_size += 4 * size;
-    if (*error != 0) {
-      // TODO: this function shouldn't close this file.
-      fclose(file);
-      break;
-    }
+    if (*error != 0) break;
     ibeg += size;
   }
   return;

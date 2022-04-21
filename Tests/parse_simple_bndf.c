@@ -78,7 +78,6 @@ int main(int argc, char **argv) {
   if (i != n_expected_frames) {
     return 1;
   }
-  // TODO: `file` should be closed here but `getpatchdata` does it for us.
-  // closefortranfile(file);
+  closefortranfile(file);
   return 0;
 }
