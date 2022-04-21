@@ -5,65 +5,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-// TODO: This is an additional function to aid in testing. This should be
-// replaced by a better file IO API.
-int get_bndf_spec(const char *filename, int version, int *npatch, int **i1,
-                  int **i2, int **j1, int **j2, int **k1, int **k2) {
-  FILE *file = fopen(filename, "rb");
-  if (file == NULL) return 1;
-  char patchlonglabel[31] = {0};
-  char patchshortlabel[31] = {0};
-  char patchunit[31] = {0};
-  int error = 0;
-
-  error = fortread(patchlonglabel, 30, 1, file);
-  if (error != 0) goto end;
-
-  error = fortread(patchshortlabel, 30, 1, file);
-  if (error != 0) goto end;
-
-  error = fortread(patchunit, 30, 1, file);
-  if (error != 0) goto end;
-
-  error = fortread(npatch, sizeof(*npatch), 1, file);
-  if (error != 0) goto end;
-
-  NewMemory((void **)i1, (*npatch) * sizeof(**i1));
-  NewMemory((void **)i2, (*npatch) * sizeof(**i2));
-  NewMemory((void **)j1, (*npatch) * sizeof(**j1));
-  NewMemory((void **)j2, (*npatch) * sizeof(**j2));
-  NewMemory((void **)k1, (*npatch) * sizeof(**k1));
-  NewMemory((void **)k2, (*npatch) * sizeof(**k2));
-
-  uint32_t ijk[9] = {0};
-  for (int n = 0; n < *npatch; n++) {
-    if (version == 0) {
-      if (error == 0) {
-        error = fortread(ijk, sizeof(*ijk), 6, file);
-        if (error != 0) goto end;
-      }
-    } else {
-      if (error == 0) {
-        error = fortread(ijk, sizeof(*ijk), 9, file);
-        if (error) goto end;
-      }
-    }
-    (*i1)[n] = ijk[0];
-    (*i2)[n] = ijk[1];
-    (*j1)[n] = ijk[2];
-    (*j2)[n] = ijk[3];
-    (*k1)[n] = ijk[4];
-    (*k2)[n] = ijk[5];
-  }
-
-end:
-  if (file != NULL) {
-    fclose(file);
-  }
-
-  return error;
-}
-
 int main(int argc, char **argv) {
   initMALLOC();
   if (argc < 3) return 2;
@@ -78,11 +19,27 @@ int main(int argc, char **argv) {
   int *k1 = NULL;
   int *k2 = NULL;
   int *patchdir = NULL;
+  FILE *file;
   int npatches = 0;
-  error = get_bndf_spec(filename, boundary_version, &npatches, &i1, &i2, &j1,
-                        &j2, &k1, &k2);
+  int headersize = 0;
+  int npatchsize = 0;
+  int framesize = 0;
+  getpatchsizes1(&file, filename, &npatches, &headersize, &error);
+
+  NewMemory((void **)&i1, npatches * sizeof(*i1));
+  NewMemory((void **)&i2, npatches * sizeof(*i2));
+  NewMemory((void **)&j1, npatches * sizeof(*j1));
+  NewMemory((void **)&j2, npatches * sizeof(*j2));
+  NewMemory((void **)&k1, npatches * sizeof(*k1));
+  NewMemory((void **)&k2, npatches * sizeof(*k2));
+  NewMemory((void **)&patchdir, npatches * sizeof(*k2));
+
+  getpatchsizes2(file, boundary_version, npatches, &npatchsize, i1, i2, j1, j2,
+                 k1, k2, patchdir, &headersize, &framesize);
+  fclose(file);
+
   if (error) return error;
-  FILE *file = openboundary(filename, boundary_version, &error);
+  file = openboundary(filename, boundary_version, &error);
   if (error) return error;
   float patchtime = 0.0;
   int file_size = 0;
