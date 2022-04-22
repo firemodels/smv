@@ -5,8 +5,6 @@ project(smv LANGUAGES C CXX)
 
 set_property(GLOBAL PROPERTY C_STANDARD 99)
 
-# set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
-# set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 find_package(OpenGL REQUIRED)
@@ -114,7 +112,7 @@ endif ()
 
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_WIN32)
-    add_compile_definitions(PTW32_BUILD PTW32_STATIC_LIB GLEW_STATIC GLUT_STATIC_LIB pp_WIN_CLANG X64 pp_INTEL pp_WIN_CLANG _WIN32 WIN32 _CONSOLE)
+    add_compile_definitions(PTW32_BUILD PTW32_STATIC_LIB GLEW_STATIC X64 _WIN32 WIN32 _CONSOLE)
     target_include_directories(smokeview PRIVATE Source/pthreads)
     target_link_libraries(smokeview pthread_static)
     target_link_libraries(smokeview opengl32 glu32 gdi32 winmm comdlg32 hid)

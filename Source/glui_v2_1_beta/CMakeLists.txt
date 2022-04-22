@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 2.8.12)
 project(glui)
 set(PROJECT_VERSION 2.37)
 
-# find_package(GLUT REQUIRED)
 find_package(OpenGL REQUIRED)
 
 set(GLUI_SRCS

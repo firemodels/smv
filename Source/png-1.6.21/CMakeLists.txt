@@ -9,7 +9,6 @@ set(FILES
 
 include_directories(".")
 include_directories("../zlib128")
-#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -funroll-loops")
 add_library(png_static STATIC ${FILES})
 set_target_properties(png_static PROPERTIES OUTPUT_NAME "png")
 set(LIBNAME libpng12)

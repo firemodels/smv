@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 project(jpeg LANGUAGES C VERSION 5.2.1)
 
-
 # Put here the object file name for the correct system-dependent memory
 # manager file.  For Unix this is usually jmemnobs.o, but you may want
 # to use jmemansi.o or jmemname.o if you have limited swap space.
@@ -25,12 +24,6 @@ set(DLIBOBJECTS jdapimin.c jdapistd.c jdtrans.c jdatasrc.c
 set(LIBOBJECTS ${CLIBOBJECTS} ${DLIBOBJECTS} ${COMOBJECTS})
 set(JPEG_LIB_VERSION 62)
 
-# add_compile_definitions(PTW32_BUILD PTW32_STATIC_LIB)
-#TODO: only for windows (not gcc)
-# add_compile_definitions(HAVE_STRUCT_TIMESPEC)
-# add_library(lua_static STATIC ${LUA_LIB_SRCS})
-# set_target_properties(lua_static PROPERTIES OUTPUT_NAME "lua")
-# target_include_directories(lua_static PUBLIC "include")
 include_directories(".")
 add_library(jpeg_static STATIC ${LIBOBJECTS})
 set_target_properties(jpeg_static PROPERTIES OUTPUT_NAME "jpeg")
