@@ -22,6 +22,7 @@ GLUI_EditText *EDIT_vol_prefix=NULL;
 
 GLUI_Listbox *LISTBOX_VOL_tour=NULL;
 
+GLUI_Button *BUTTON_cutoff_defaults = NULL;
 GLUI_Button *BUTTON_volunload=NULL;
 GLUI_Button *BUTTON_startrender=NULL;
 GLUI_Button *BUTTON_cancelrender=NULL;
@@ -209,6 +210,12 @@ extern "C" void UpdateCO2ColorbarList(int value){
   co2_colorbar_index = CLAMP(value, 0, ncolorbars-1);
   if(LISTBOX_co2_colorbar!=NULL)LISTBOX_co2_colorbar->set_int_val(co2_colorbar_index);
   Smoke3dCB(CO2_COLORBAR_LIST);
+}
+
+/* ------------------ UpdateFireColorbarList ------------------------ */
+
+extern "C" void UpdateFireColorbarList(void){
+  if(LISTBOX_smoke_colorbar!=NULL)LISTBOX_smoke_colorbar->set_int_val(fire_colorbar_index);
 }
 
 /* ------------------ UpdateBackgroundFlip2 ------------------------ */
@@ -454,6 +461,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
     SPINNER_temperature_cutoff = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_cutoff, temp_cutoff_label, GLUI_SPINNER_FLOAT,
       &global_temp_cutoff, TEMP_CUTOFF, Smoke3dCB);
   }
+  BUTTON_cutoff_defaults = glui_3dsmoke->add_button_to_panel(PANEL_fire_cutoff, "Reset", CUTOFF_RESET, Smoke3dCB);
 
   ROLLOUT_opacity = glui_3dsmoke->add_rollout_to_panel(PANEL_overall, "smoke/fire opacity",false, FIREOPACITY_ROLLOUT, ColorRolloutCB);
   INSERT_ROLLOUT(ROLLOUT_opacity, glui_3dsmoke);
@@ -990,6 +998,12 @@ extern "C" void Smoke3dCB(int var){
       SPINNER_temperature_max->set_float_val(global_temp_max);
     }
     UpdateSmokeColormap(smoke_render_option);
+    break;
+  case CUTOFF_RESET:
+    global_hrrpuv_cutoff = global_hrrpuv_cutoff_default;
+    global_temp_cutoff = global_temp_cutoff_default;
+    SPINNER_temperature_cutoff->set_float_val(global_temp_cutoff);
+    SPINNER_hrrpuv_cutoff->set_float_val(global_hrrpuv_cutoff);
     break;
   case TEMP_CUTOFF:
     temp_min = (float)(10*(int)(global_temp_min/10.0) + 10.0);

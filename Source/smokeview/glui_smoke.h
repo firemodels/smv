@@ -74,5 +74,6 @@
 #define USE_OPACITY_DEPTH 93
 #define USE_OPACITY_MULTIPLIER 94
 #define SMOKE_EXTINCT 95
+#define CUTOFF_RESET 96
 #endif
 
