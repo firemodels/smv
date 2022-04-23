@@ -1,4 +1,4 @@
-name: Smokeview
+name: Scripts & Make Build
 on: [push, pull_request]
 env:
   WINDOWS_BASEKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/18418/w_BaseKit_p_2022.1.0.116_offline.exe
@@ -20,7 +20,6 @@ env:
 jobs:
   build-macos:
     name: intel_osx
-    if: "false" # ignore this job for now
     strategy:
       fail-fast: false
       matrix:
@@ -57,7 +56,7 @@ jobs:
             ./make_smokeview.sh
           fi
           popd
-          copy Build/smokeview/intel_osx_64/smokeview_osx_64 smokeview
+          cp Build/smokeview/intel_osx_64/smokeview_osx_64 smokeview
       - name: Set exec suffix
         if: ${{ matrix.lua }} == lua
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
@@ -66,7 +65,6 @@ jobs:
         with:
           name: smokeview-macos${{ env.exec_suffix }}
           path: smokeview
-
   build-linux-gnu:
     name: gnu_linux
     strategy:
@@ -104,94 +102,8 @@ jobs:
         with:
           name: smokeview-linux${{ env.exec_suffix }}
           path: smokeview
-  build-osx-gnu-cmake:
-    name: osx-cmake
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest]
-        lua:
-          # - lua
-          - no-lua
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Build
-        shell: bash
-        env:
-          PLATFORM: ${{ matrix.os }}
-          LUA: ${{ matrix.lua }}
-        run: |
-          if [[ "$LUA" == "lua" ]]; then
-            cmake -B cbuild -DCMAKE_BUILD_TYPE=Release -DLUA=on  -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11
-          else
-            cmake -B cbuild -DCMAKE_BUILD_TYPE=Release -DLUA=off -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11
-          fi
-          cmake --build cbuild -j4
-          cp cbuild/smokeview smokeview
-      - name: Test
-        shell: bash
-        env:
-          PLATFORM: ${{ matrix.os }}
-          LUA: ${{ matrix.lua }}
-        run: |
-          ctest --test-dir cbuild -j10 --output-on-failure
-      - name: Set exec suffix
-        if: ${{ matrix.lua }} == lua
-        run: echo "exec_suffix=-lua" >> $GITHUB_ENV
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: smokeview-osx${{ env.exec_suffix }}
-          path: smokeview
-
-  build-linux-gnu-cmake:
-    name: gnu_linux-cmake
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        lua:
-          # - lua
-          - no-lua
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Build
-        shell: bash
-        env:
-          PLATFORM: ${{ matrix.os }}
-          LUA: ${{ matrix.lua }}
-        run: |
-          sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev
-          if [[ "$LUA" == "lua" ]]; then
-            cmake -B cbuild -DCMAKE_BUILD_TYPE=Release -DLUA=on
-          else
-            cmake -B cbuild -DCMAKE_BUILD_TYPE=Release -DLUA=off
-          fi
-          cmake --build cbuild -j4
-          cp cbuild/smokeview smokeview
-      - name: Test
-        shell: bash
-        env:
-          PLATFORM: ${{ matrix.os }}
-          LUA: ${{ matrix.lua }}
-        run: |
-          ctest --test-dir cbuild -j10 --output-on-failure
-      - name: Set exec suffix
-        if: ${{ matrix.lua }} == lua
-        run: echo "exec_suffix=-lua" >> $GITHUB_ENV
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: smokeview-linux${{ env.exec_suffix }}
-          path: smokeview
-
   build-linux-intel:
     name: intel_linux
-    if: "false" # ignore this job for now
     strategy:
       fail-fast: false
       matrix:
@@ -230,7 +142,7 @@ jobs:
             ./make_smokeview.sh
           fi
           popd
-          copy Build/smokeview/intel_linux_64/smokeview_linux_64 smokeview
+          cp Build/smokeview/intel_linux_64/smokeview_linux_64 smokeview
       - name: Set exec suffix
         if: ${{ matrix.lua }} == lua
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
@@ -239,7 +151,6 @@ jobs:
         with:
           name: smokeview-linux${{ env.exec_suffix }}
           path: smokeview
-
   build-windows:
     name: intel_win
     strategy:
@@ -326,135 +237,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: smokeview-windows${{ env.exec_suffix }}
-          path: smokeview.exe
-  build-windows-cmake:
-    name: intel_win-cmake
-    strategy:
-      fail-fast: false
-      matrix:
-        lua:
-          # - lua
-          - no-lua
-    runs-on: windows-2019
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      # - name: cache install cpp
-      #   id: cache-install-cpp
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: C:\Program Files (x86)\Intel\oneAPI
-      #     key: install3-${{ env.WINDOWS_HPCKIT_URL }}-${{ env.WINDOWS_CPP_COMPONENTS }}-compiler-${{ hashFiles('**/.github/workflows/cache_exclude_windows.sh') }}
-      - name: install cpp
-        # if: steps.cache-install-cpp.outputs.cache-hit != 'true'
-        run: .github/workflows/install_windows_oneapi.bat $WINDOWS_HPCKIT_URL
-      - name: set LUA_SCRIPTING
-        shell: bash
-        run: echo "LUA_SCRIPTING=false" >> $GITHUB_ENV
-      - name: set LUA_SCRIPTING
-        if: ${{ matrix.lua }}
-        shell: bash
-        run: echo "LUA_SCRIPTING=true" >> $GITHUB_ENV
-      - name: build smokeview lua
-        if: matrix.lua == 'lua'
-        shell: cmd
-        env:
-          LUA: ${{ matrix.lua }}
-        run: |
-          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
-          ninja --version
-          cmake --version
-          cmake -B cbuild -G Ninja -DCMAKE_BUILD_TYPE=Release -DLUA=off
-          cmake --build cbuild -j4
-          copy cbuild\smokeview.exe smokeview.exe
-      - name: build smokeview
-        if:  matrix.lua != 'lua'
-        shell: cmd
-        env:
-          LUA: ${{ matrix.lua }}
-        run: |
-          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
-          ninja --version
-          cmake --version
-          cmake -B cbuild -G Ninja -DCMAKE_BUILD_TYPE=Release -DLUA=off
-          cmake --build cbuild -j4
-          copy cbuild\smokeview.exe smokeview.exe
-      - name: Test
-        shell: bash
-        env:
-          PLATFORM: ${{ matrix.os }}
-          LUA: ${{ matrix.lua }}
-        run: |
-          ctest --test-dir cbuild -j10 --output-on-failure
-      - name: Set exec suffix
-        if: ${{ matrix.lua }} == lua
-        run: echo "exec_suffix=-lua" >> $GITHUB_ENV
-      # - name: exclude unused files from cache
-      #   if: steps.cache-install.outputs.cache-hit != 'true'
-      #   shell: bash
-      #   run: .github/workflows/cache_exclude_windows.sh
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: smokeview-windows${{ env.exec_suffix }}
-          path: smokeview.exe
-  build-windows-cmake-msvc:
-    name: msvc_win-cmake
-    strategy:
-      fail-fast: false
-      matrix:
-        lua:
-          # - lua
-          - no-lua
-    runs-on: windows-2022
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: set LUA_SCRIPTING
-        shell: bash
-        run: echo "LUA_SCRIPTING=false" >> $GITHUB_ENV
-      - name: set LUA_SCRIPTING
-        if: ${{ matrix.lua }}
-        shell: bash
-        run: echo "LUA_SCRIPTING=true" >> $GITHUB_ENV
-      - name: build smokeview lua
-        if: matrix.lua == 'lua'
-        shell: cmd
-        env:
-          LUA: ${{ matrix.lua }}
-        run: |
-          cmake --version
-          cmake -B cbuild -DCMAKE_BUILD_TYPE=Release -DLUA=off
-          cmake --build cbuild -j4 --config Release
-          copy cbuild\Release\smokeview.exe smokeview.exe
-      - name: build smokeview
-        if:  matrix.lua != 'lua'
-        shell: cmd
-        env:
-          LUA: ${{ matrix.lua }}
-        run: |
-          cmake --version
-          cmake -B cbuild -DCMAKE_BUILD_TYPE=Release -DLUA=off
-          cmake --build cbuild -j4 --config Release
-          copy cbuild\Release\smokeview.exe smokeview.exe
-      - name: Test
-        shell: bash
-        env:
-          PLATFORM: ${{ matrix.os }}
-          LUA: ${{ matrix.lua }}
-        run: |
-          ctest --test-dir cbuild -j10 -C Release --output-on-failure
-      - name: Set exec suffix
-        if: ${{ matrix.lua }} == lua
-        run: echo "exec_suffix=-lua" >> $GITHUB_ENV
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: smokeview-windows-msvc-${{ env.exec_suffix }}
           path: smokeview.exe

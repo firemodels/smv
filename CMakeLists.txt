@@ -124,11 +124,12 @@ endif ()
 
 if ((NOT MACOSX) AND UNIX)
     add_definitions(-Dpp_LINUX)
-    target_link_libraries(smokeview pthread X11 Xmu GLU GL m)
+    target_link_libraries(smokeview pthread X11 Xmu GLU GL m stdc++)
 endif()
 if (MACOSX)
     add_definitions(-Dpp_NOQUARTZ)
     target_link_libraries(smokeview "-framework OpenGL" "-framework GLUT")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 endif ()
 
 # Other programs
