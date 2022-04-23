@@ -2412,6 +2412,7 @@ void UpdateDisplay(void){
   }
   if(update_fire_colorbar_index == 1){
     SmokeColorbarMenu(fire_colorbar_index_ini);
+    UpdateFireColorbarList();
     update_fire_colorbar_index = 0;
   }
   if(update_co2_colorbar_index==1){

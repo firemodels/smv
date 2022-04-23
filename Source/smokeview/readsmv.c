@@ -9127,7 +9127,8 @@ int ReadSMV(bufferstreamdata *stream){
       sscanf(buffer,"%i",&nhrrpuvcut);
       if(nhrrpuvcut>=1){
         FGETS(buffer,255,stream);
-        sscanf(buffer,"%f",&global_hrrpuv_cutoff);
+        sscanf(buffer,"%f",&global_hrrpuv_cutoff_default);
+        global_hrrpuv_cutoff = global_hrrpuv_cutoff_default;
         load_hrrpuv_cutoff = global_hrrpuv_cutoff;
         for(i=1;i<nhrrpuvcut;i++){
           FGETS(buffer,255,stream);
@@ -11277,7 +11278,12 @@ int ReadIni2(char *inifile, int localfile){
       for(ii=0;ii<12;ii++){
         colorsplit[ii] = CLAMP(colorsplit[ii],0,255);
       }
-      update_splitcolorbar = 1;
+      if(scriptinfo==NULL){
+        update_splitcolorbar = 1;
+      }
+      else{
+        SplitCB(SPLIT_COLORBAR);
+      }
       continue;
     }
     if(Match(buffer, "SHOWGRAVVECTOR") == 1) {
@@ -11425,6 +11431,7 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%f %f %f %f %f %f %f",
         &global_temp_min, &global_temp_cutoff, &global_temp_max, &fire_opacity_factor, &mass_extinct, &gpu_vol_factor, &nongpu_vol_factor);
+      global_temp_cutoff_default = global_temp_cutoff;
       ONEORZERO(glui_compress_volsmoke);
       ONEORZERO(use_multi_threading);
       ONEORZERO(load_at_rendertimes);
@@ -13627,6 +13634,12 @@ int ReadIni2(char *inifile, int localfile){
         smoke_albedo = CLAMP(smoke_albedo, 0.0, 1.0);
         continue;
       }
+      if(Match(buffer, "SMOKEPROP")==1){
+        if(fgets(buffer, 255, stream)==NULL)break;
+        sscanf(buffer, "%f %i %i", &glui_smoke3d_extinct,&use_opacity_depth, &use_opacity_multiplier);
+        glui_smoke3d_extinct_default = glui_smoke3d_extinct;
+        continue;
+      }
       if(Match(buffer, "FIRECOLOR") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%i %i %i", fire_color_int255, fire_color_int255+1, fire_color_int255+2);
@@ -13657,6 +13670,12 @@ int ReadIni2(char *inifile, int localfile){
          co2_color_int255[2] = CLAMP(co2_color_int255[2], 0, 255);
          continue;
        }
+      if(Match(buffer, "HRRPUVCUTOFF")==1){
+        if(fgets(buffer, 255, stream)==NULL)break;
+        sscanf(buffer, "%f", &global_hrrpuv_cutoff_default);
+        global_hrrpuv_cutoff = global_hrrpuv_cutoff_default;
+        continue;
+      }
       if(Match(buffer, "FIREDEPTH") == 1){
         if(fgets(buffer, 255, stream) == NULL)break;
         sscanf(buffer, "%f %f %f %i", &fire_halfdepth,&co2_halfdepth,&emission_factor,&use_fire_alpha);
@@ -15611,6 +15630,8 @@ void WriteIni(int flag,char *filename){
       }
     }
   }
+  fprintf(fileout, "HRRPUVCUTOFF\n");
+  fprintf(fileout, " %f\n", global_hrrpuv_cutoff);
   fprintf(fileout, "SHOWEXTREMEDATA\n");
   {
     int show_extremedata = 0;
@@ -15618,6 +15639,8 @@ void WriteIni(int flag,char *filename){
     if(show_extreme_mindata == 1 || show_extreme_maxdata == 1)show_extremedata = 1;
     fprintf(fileout, " %i %i %i\n", show_extremedata, show_extreme_mindata, show_extreme_maxdata);
   }
+  fprintf(fileout, "SLICESKIP\n");
+  fprintf(fileout, " %i %i %i %i\n", slice_skip, slice_skipx, slice_skipy, slice_skipz);
   fprintf(fileout, "SMOKECOLOR\n");
   fprintf(fileout, " %i %i %i %i\n", smoke_color_int255[0], smoke_color_int255[1], smoke_color_int255[2], force_gray_smoke);
   fprintf(fileout, "SMOKECULL\n");
@@ -15626,8 +15649,9 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, "SMOKEALBEDO\n");
     fprintf(fileout, " %f\n", smoke_albedo);
   }
-  fprintf(fileout, "SLICESKIP\n");
-  fprintf(fileout, " %i %i %i %i\n", slice_skip, slice_skipx, slice_skipy, slice_skipz);
+  fprintf(fileout, "SMOKEPROP\n");
+  fprintf(fileout, "%f %i %i", glui_smoke3d_extinct, use_opacity_depth, use_opacity_multiplier);
+  glui_smoke3d_extinct_default = glui_smoke3d_extinct;
   fprintf(fileout, "SMOKESKIP\n");
   fprintf(fileout," %i %i %i %i %i\n",smokeskipm1,smoke3d_skip, smoke3d_skipx, smoke3d_skipy, smoke3d_skipz);
 #ifdef pp_GPU
