@@ -13637,6 +13637,7 @@ int ReadIni2(char *inifile, int localfile){
       if(Match(buffer, "SMOKEPROP")==1){
         if(fgets(buffer, 255, stream)==NULL)break;
         sscanf(buffer, "%f %i %i", &glui_smoke3d_extinct,&use_opacity_depth, &use_opacity_multiplier);
+        glui_smoke3d_extinct_default = glui_smoke3d_extinct;
         continue;
       }
       if(Match(buffer, "FIRECOLOR") == 1){
@@ -15650,6 +15651,7 @@ void WriteIni(int flag,char *filename){
   }
   fprintf(fileout, "SMOKEPROP\n");
   fprintf(fileout, "%f %i %i", glui_smoke3d_extinct, use_opacity_depth, use_opacity_multiplier);
+  glui_smoke3d_extinct_default = glui_smoke3d_extinct;
   fprintf(fileout, "SMOKESKIP\n");
   fprintf(fileout," %i %i %i %i %i\n",smokeskipm1,smoke3d_skip, smoke3d_skipx, smoke3d_skipy, smoke3d_skipz);
 #ifdef pp_GPU

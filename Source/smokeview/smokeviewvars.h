@@ -55,6 +55,7 @@ SVEXTERN int SVDECL(force_gray_smoke, 1);
 SVEXTERN int SVDECL(startup, 1);
 SVEXTERN int SVDECL(verbose_output, 0);
 SVEXTERN float glui_smoke3d_extinct;
+SVEXTERN float glui_smoke3d_extinct_default;
 SVEXTERN int SVDECL(update_smoke_alphas, 0);
 SVEXTERN int SVDECL(max_colorbar_label_width, 0);
 SVEXTERN char SVDECL(**colorbar_labels,  NULL);

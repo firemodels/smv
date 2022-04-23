@@ -22,6 +22,8 @@ GLUI_EditText *EDIT_vol_prefix=NULL;
 
 GLUI_Listbox *LISTBOX_VOL_tour=NULL;
 
+GLUI_Button *BUTTON_fds_extinction_reset = NULL;
+GLUI_Button *BUTTON_smv_extinction_reset = NULL;
 GLUI_Button *BUTTON_cutoff_defaults = NULL;
 GLUI_Button *BUTTON_volunload=NULL;
 GLUI_Button *BUTTON_startrender=NULL;
@@ -470,6 +472,8 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   PANEL_smoke_opacity = glui_3dsmoke->add_panel_to_panel(ROLLOUT_opacity, "smoke");
   SPINNER_smoke3d_extinct2 = glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_opacity, _("Extinction (m2/kg)"),
                                                                 GLUI_SPINNER_FLOAT, &glui_smoke3d_extinct, SMOKE_EXTINCT, Smoke3dCB);
+  BUTTON_fds_extinction_reset = glui_3dsmoke->add_button_to_panel(PANEL_smoke_opacity, "Reset(fds extinct)", EXTINCTION_RESET_FDS, Smoke3dCB);
+  BUTTON_fds_extinction_reset = glui_3dsmoke->add_button_to_panel(PANEL_smoke_opacity, "Reset(saved extinct)", EXTINCTION_RESET_SMV, Smoke3dCB);
 
   PANEL_fire_opacity = glui_3dsmoke->add_panel_to_panel(ROLLOUT_opacity, "fire");
   glui_use_fire_alpha = 1-use_fire_alpha;
@@ -998,6 +1002,20 @@ extern "C" void Smoke3dCB(int var){
       SPINNER_temperature_max->set_float_val(global_temp_max);
     }
     UpdateSmokeColormap(smoke_render_option);
+    break;
+  case EXTINCTION_RESET_FDS:
+    if(SOOT_index>=0){
+      glui_smoke3d_extinct = smoke3dtypes[SOOT_index].extinction;
+      if(SPINNER_smoke3d_extinct2!=NULL)SPINNER_smoke3d_extinct2->set_float_val(glui_smoke3d_extinct);
+      if(SPINNER_smoke3d_extinct!=NULL)SPINNER_smoke3d_extinct->set_float_val(glui_smoke3d_extinct);
+      Smoke3dCB(SMOKE_EXTINCT);
+    }
+    break;
+  case EXTINCTION_RESET_SMV:
+    glui_smoke3d_extinct = glui_smoke3d_extinct_default;
+    if(SPINNER_smoke3d_extinct2!=NULL)SPINNER_smoke3d_extinct2->set_float_val(glui_smoke3d_extinct);
+    if(SPINNER_smoke3d_extinct!=NULL)SPINNER_smoke3d_extinct->set_float_val(glui_smoke3d_extinct);
+    Smoke3dCB(SMOKE_EXTINCT);
     break;
   case CUTOFF_RESET:
     global_hrrpuv_cutoff = global_hrrpuv_cutoff_default;
