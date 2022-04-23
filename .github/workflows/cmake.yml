@@ -20,7 +20,7 @@ env:
 
 jobs:
   build_unix_gcc:
-    name: build_unix_gcc
+    name: build ${{ matrix.os }} - lua=${{ matrix.lua }} - gcc
     strategy:
       fail-fast: false
       matrix:
@@ -51,8 +51,6 @@ jobs:
           echo "CXX=g++" >> $GITHUB_ENV
       - name: Build
         shell: bash
-        env:
-          LUA: ${{ matrix.lua }}
         run: |
           cmake -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
           cmake --build ${{github.workspace}}/cbuild -j4
@@ -60,81 +58,28 @@ jobs:
       - name: Test
         shell: bash
         working-directory: ${{github.workspace}}/cbuild
-        env:
-          LUA: ${{ matrix.lua }}
         run: |
           ctest -j10 --output-on-failure
       - name: Set exec suffix
-        if: ${{ matrix.lua }} == lua
+        if: ${{ matrix.lua }}
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
           name: smokeview-${{ runner.os }}-${{ env.exec_suffix }}
           path: smokeview
-  build_macos_intel:
-    name: build_macos_intel
+  build_unix_intel:
+    name: build ${{ matrix.os }} - lua=${{ matrix.lua }} - intel
     strategy:
       fail-fast: false
       matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
         lua:
           - on
           - off
-    runs-on: macos-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: prepare for cache restore
-        run: |
-          sudo mkdir -p /opt/intel
-          sudo chown $USER /opt/intel
-      # - name: cache install
-      #   id: cache-install
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: /opt/intel/oneapi
-      #     key: install2-${{ env.MACOS_HPCKIT_URL }}-${{ env.MACOS_CPP_COMPONENTS }}
-      - name: install
-        # if: steps.cache-install.outputs.cache-hit != 'true'
-        run: bash .github/workflows/install_macos_oneapi.sh $MACOS_HPCKIT_URL
-      - name: set macos compilers
-        if: runner.os == 'macOS'
-        shell: bash
-        run: |
-          echo "CC=icc" >> $GITHUB_ENV
-          echo "CXX=icpc" >> $GITHUB_ENV
-      - name: Build
-        shell: bash
-        env:
-          LUA: ${{ matrix.lua }}
-        run: |
-          cmake -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
-          cmake --build ${{github.workspace}}/cbuild -j4
-          cp ${{github.workspace}}/cbuild/smokeview smokeview
-      - name: Test
-        shell: bash
-        working-directory: ${{github.workspace}}/cbuild
-        env:
-          LUA: ${{ matrix.lua }}
-        run: |
-          ctest -j10 --output-on-failure
-      - name: Set exec suffix
-        if: ${{ matrix.lua }} == lua
-        run: echo "exec_suffix=-lua" >> $GITHUB_ENV
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: smokeview-${{ runner.os }}-${{ env.exec_suffix }}
-          path: smokeview
-  build_linux_intel:
-    name: build_linux_intel
-    strategy:
-      fail-fast: false
-      matrix:
-        lua:
-          - on
-          - off
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -143,14 +88,31 @@ jobs:
           sudo mkdir -p /opt/intel
           sudo chown $USER /opt/intel
       - name: cache install
-        id: cache-install
+        if: runner.os == 'macOS'
+        id: cache-install-macos
+        uses: actions/cache@v2
+        with:
+          path: /opt/intel/oneapi
+          key: install2-${{ env.MACOS_HPCKIT_URL }}-${{ env.MACOS_CPP_COMPONENTS }}
+      - name: cache install
+        if: runner.os == 'Linux'
+        id: cache-install-linux
         uses: actions/cache@v2
         with:
           path: /opt/intel/oneapi
           key: install2-${{ env.LINUX_HPCKIT_URL }}-${{ env.LINUX_CPP_COMPONENTS }}
       - name: install
-        if: steps.cache-install.outputs.cache-hit != 'true'
+        if: runner.os == 'macOS' && steps.cache-install-macos.outputs.cache-hit != 'true'
+        run: bash .github/workflows/install_macos_oneapi.sh $MACOS_HPCKIT_URL
+      - name: install
+        if: runner.os == 'Linux' && steps.cache-install-linux.outputs.cache-hit != 'true'
         run: bash .github/workflows/install_linux_oneapi.sh $LINUX_HPCKIT_URL
+      - name: set macos compilers
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          echo "CC=icc" >> $GITHUB_ENV
+          echo "CXX=icpc" >> $GITHUB_ENV
       - name: set linux intel compiler
         if: runner.os == 'Linux'
         shell: bash
@@ -159,11 +121,11 @@ jobs:
           echo "CXX=icx" >> $GITHUB_ENV
       - name: Build
         shell: bash
-        env:
-          PLATFORM: ${{ matrix.os }}
-          LUA: ${{ matrix.lua }}
+        if: runner.os == 'Linux'
+        run:  sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev libgl1-mesa-dev
+      - name: Build
+        shell: bash
         run: |
-          sudo apt-get install build-essential freeglut3-dev libx11-dev libxmu-dev libxi-dev libgl1-mesa-dev
           source /opt/intel/oneapi/setvars.sh
           cmake -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
           cmake --build ${{github.workspace}}/cbuild -j4
@@ -171,9 +133,6 @@ jobs:
       - name: Test
         shell: bash
         working-directory: ${{github.workspace}}/cbuild
-        env:
-          PLATFORM: ${{ matrix.os }}
-          LUA: ${{ matrix.lua }}
         run: |
           source /opt/intel/oneapi/setvars.sh
           ctest -j10 --output-on-failure
@@ -183,17 +142,19 @@ jobs:
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: smokeview-linux${{ env.exec_suffix }}
+          name: smokeview-${{ runner.os }}-${{ env.exec_suffix }}
           path: smokeview
   build_windows_intel:
-    name: build_windows_intel
+    name: build ${{ matrix.os }} - lua=${{ matrix.lua }} - intel
     strategy:
       fail-fast: false
       matrix:
+        os:
+          - windows-2019
         lua:
           - on
           - off
-    runs-on: windows-2019
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
         shell: bash
@@ -209,43 +170,18 @@ jobs:
       - name: install cpp
         # if: steps.cache-install-cpp.outputs.cache-hit != 'true'
         run: .github/workflows/install_windows_oneapi.bat $WINDOWS_HPCKIT_URL
-      - name: set LUA_SCRIPTING
-        shell: bash
-        run: echo "LUA_SCRIPTING=false" >> $GITHUB_ENV
-      - name: set LUA_SCRIPTING
-        if: ${{ matrix.lua }}
-        shell: bash
-        run: echo "LUA_SCRIPTING=true" >> $GITHUB_ENV
       - name: build smokeview lua
-        if: matrix.lua == 'lua'
         shell: cmd
-        env:
-          LUA: ${{ matrix.lua }}
         run: |
           call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
           ninja --version
           cmake --version
-          cmake -B ${{github.workspace}}\cbuild -G Ninja -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=on
-          cmake --build ${{github.workspace}}\cbuild -j4
-          copy ${{github.workspace}}\cbuild\smokeview.exe smokeview.exe
-      - name: build smokeview
-        if:  matrix.lua != 'lua'
-        shell: cmd
-        env:
-          LUA: ${{ matrix.lua }}
-        run: |
-          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
-          ninja --version
-          cmake --version
-          cmake -B ${{github.workspace}}\cbuild -G Ninja -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=off
+          cmake -B ${{github.workspace}}\cbuild -G Ninja -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
           cmake --build ${{github.workspace}}\cbuild -j4
           copy ${{github.workspace}}\cbuild\smokeview.exe smokeview.exe
       - name: Test
         shell: bash
         working-directory: ${{github.workspace}}/cbuild
-        env:
-          PLATFORM: ${{ matrix.os }}
-          LUA: ${{ matrix.lua }}
         run: |
           ctest -j10 --output-on-failure
       - name: Set exec suffix
@@ -261,47 +197,29 @@ jobs:
           name: smokeview-windows${{ env.exec_suffix }}
           path: smokeview.exe
   build_windows_msvc:
-    name: build_windows_msvc
+    name: build ${{ matrix.os }} - lua=${{ matrix.lua }} - msvc
     strategy:
       fail-fast: false
       matrix:
+        os:
+          - windows-2022
         lua:
           - on
           - off
-    runs-on: windows-2022
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
         shell: bash
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: set LUA_SCRIPTING
-        shell: bash
-        run: echo "LUA_SCRIPTING=false" >> $GITHUB_ENV
-      - name: set LUA_SCRIPTING
-        if: ${{ matrix.lua }}
-        shell: bash
-        run: echo "LUA_SCRIPTING=true" >> $GITHUB_ENV
       - name: build smokeview lua
-        if: matrix.lua == 'lua'
         shell: cmd
-        env:
-          LUA: ${{ matrix.lua }}
         run: |
           cmake --version
-          cmake -B ${{github.workspace}}\cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=off
+          cmake -B ${{github.workspace}}\cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
           cmake --build ${{github.workspace}}\cbuild -j4 --config ${{env.BUILD_TYPE}}
           copy ${{github.workspace}}\cbuild\Release\smokeview.exe smokeview.exe
-      - name: build smokeview
-        if:  matrix.lua != 'lua'
-        shell: cmd
-        env:
-          LUA: ${{ matrix.lua }}
-        run: |
-          cmake --version
-          cmake -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=off
-          cmake --build ${{github.workspace}}/cbuild -j4 --config ${{env.BUILD_TYPE}}
-          copy cbuild\Release\smokeview.exe smokeview.exe
       - name: Test
         shell: bash
         working-directory: ${{github.workspace}}/cbuild
@@ -310,7 +228,7 @@ jobs:
         run: |
           ctest -j10 -C ${{env.BUILD_TYPE}} --output-on-failure
       - name: Set exec suffix
-        if: ${{ matrix.lua }} == lua
+        if: ${{ matrix.lua }}
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
