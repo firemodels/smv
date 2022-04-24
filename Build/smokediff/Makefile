@@ -131,7 +131,7 @@ intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = smokediff_linux_64
 
 intel_linux_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) -static-intel $(obj) -lifport
+	$(CC) -o $(bin)/$(exe) -static-intel $(obj)
 
 # ------------- intel linux 64 db ----------------
 
@@ -140,7 +140,7 @@ intel_linux_64_db : CC        = $(I_ICC)
 intel_linux_64_db : exe       = smokediff_linux_64_db
 
 intel_linux_64_db : $(obj)
-	$(CC) -o $(bin)/$(exe) -static-intel $(obj) -lifport
+	$(CC) -o $(bin)/$(exe) -static-intel $(obj)
 
 
 # ------------- intel osx 64 ----------------

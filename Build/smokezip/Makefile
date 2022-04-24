@@ -41,7 +41,7 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 obj =    main.o CNV3dsmoke.o CNVboundary.o CNVpart.o CNVplot3d.o CNVslice.o assert.o \
          csphere.o dmalloc.o lightsmoke.o histogram.o readfiles.o utilities.o isobox.o\
          file_util.o string_util.o threader.o compress.o md5.o sha1.o sha256.o stdio_buffer.o\
-	 fdsmodules.o gsmv.o getdata.o color2rgb.o
+	 gsmv.o getdata.o color2rgb.o
 objwin = $(obj:.o=.obj)
 
 # main has to be compiled without optimization (on a Windows PC) otherwise errors occcur
@@ -127,7 +127,7 @@ gnu_osx_64_db : $(obj)
 # ------------- intel linux 64 ----------------
 
 intel_linux_64 : CFLAGS    = -O2 -m64 ${INC_DIR} -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO) $(SMV_TESTFLAG)
-intel_linux_64 : LFLAGS    = -lifport -L $(LIB_DIR)/intel_linux_64 -lz -lpthread -static-intel
+intel_linux_64 : LFLAGS    = -L $(LIB_DIR)/intel_linux_64 -lz -lpthread -static-intel
 intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = smokezip_linux_64
 
