@@ -1,17 +1,9 @@
 #ifndef GETDATA_H_DEFINED
 #define GETDATA_H_DEFINED
-#include "options.h"
-#include <math.h>
-#include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#ifdef WIN32
-#include <share.h>
-#endif
-#include "MALLOCC.h"
-#include "datadefs.h"
-#include "getdata.h"
+
+// TODO: remove this as a public-facing API when possible
+int fortread(void *ptr, size_t size, size_t count, FILE *file);
 
 void getgeomdatasize(const char *filename, int *ntimes, int *nvars, int *error);
 void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
