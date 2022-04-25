@@ -999,10 +999,7 @@ void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
   if (redirect_flag == 0) printf("output slice data to %s\n", slicefilename);
   int i;
   for (i = 0; i < ntimes; i++) {
-    float *qdata_in;
-
-    fortwrite(&times[i], sizeof(times[i]), 1, file);
-
+    fortwrite(times + i, sizeof(float), 1, file);
     fortwrite(qdata + i*nframe, sizeof(float), nframe, file);
   }
 
