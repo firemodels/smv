@@ -681,10 +681,10 @@ void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
     tagstart += ntagvalues;
 
     if (nquantities[i] > 0) {
-      int nvalues = nparticles * nquantities[i];
-      *error = fortread(&pdata[pstart], sizeof(*pdata), nvalues, file);
+      int nvalues2 = nparticles * nquantities[i];
+      *error = fortread(&pdata[pstart], sizeof(*pdata), nvalues2, file);
       if (*error != 0) return;
-      pstart += nvalues;
+      pstart += nvalues2;
     }
     *size += 4 + (4 * 3 * nparticles) + 4 * nparticles +
              4 * nparticles * nquantities[i];
@@ -970,7 +970,7 @@ void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
   char longlbl[31] = {0};
   char shortlbl[31] = {0};
   char unitlbl[31] = {0};
-  int ibeg, iend, nframe;
+  int nframe;
   int nxsp, nysp, nzsp;
 
   FILE *file = FOPEN(slicefilename, "wb");
@@ -999,10 +999,8 @@ void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
   if (redirect_flag == 0) printf("output slice data to %s\n", slicefilename);
   int i;
   for (i = 0; i < ntimes; i++) {
-    fortwrite(&times[i], sizeof(times[i]), 1, file);
-    ibeg = 1 + (i)*nframe;
-    iend = (i + 1) * nframe;
-    fortwrite(&qdata[ibeg], sizeof(*qdata), iend - ibeg, file);
+    fortwrite(times + i, sizeof(float), 1, file);
+    fortwrite(qdata + i*nframe, sizeof(float), nframe, file);
   }
 
   fclose(file);
