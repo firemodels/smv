@@ -4406,7 +4406,6 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   if(smoke3di->extinct>0.0){
     SOOT_index = GetSmoke3DType(smoke3di->label.shortlabel);
     update_smoke_alphas = 1;
-    glui_smoke3d_extinct = smoke3di->extinct;
 #define SMOKE_EXTINCT 95
     Smoke3dCB(SMOKE_EXTINCT);
   }
