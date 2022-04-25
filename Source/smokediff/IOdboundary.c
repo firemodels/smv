@@ -319,8 +319,8 @@ void diff_boundaryes(FILE *stream_out){
     FREEMEMORY(p3k2);
     FREEMEMORY(patchdir3);
 
-    if(error1==0&&unit1!=NULL)closefortranfile(unit1);
-    if(error2==0&&unit2!=NULL)closefortranfile(unit2);
-    if(error3==0&&unit3!=NULL)closefortranfile(unit3);
+    if(unit1!=NULL)closefortranfile(unit1);
+    if(unit2!=NULL)closefortranfile(unit2);
+    if(unit3!=NULL)closefortranfile(unit3);
   }
 }

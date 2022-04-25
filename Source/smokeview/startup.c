@@ -3,6 +3,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#ifdef pp_OSX
+#include <unistd.h>
+#endif
 #include "glew.h"
 #include GLUT_H
 

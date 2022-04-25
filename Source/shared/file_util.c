@@ -7,6 +7,9 @@
 #include <stdlib.h>
 #ifdef pp_OSX
 #include <unistd.h>
+#ifdef pp_LUA
+#include <sys/syslimits.h>
+#endif
 #endif
 #include <math.h>
 #ifdef WIN32

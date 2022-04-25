@@ -11,6 +11,7 @@
 #include "MALLOCC.h"
 #include "datadefs.h"
 #include "getdata.h"
+#include <ctype.h>
 #include <errno.h>
 #if __STDC_VERSION__ >= 201112L
 #include <limits.h>
@@ -31,6 +32,27 @@ FILE *FOPEN(const char *file, const char *mode) {
 #else
 FILE *FOPEN(const char *file, const char *mode) { return fopen(file, mode); }
 #endif
+
+/// TrimFrontConst duplicated here due to dependency problems.
+const char *TrimFrontConst_(const char *line) {
+  for (const char *c = line; c <= line + strlen(line) - 1; c++) {
+    if (!isspace((unsigned char)(*c))) return c;
+  }
+  return line;
+}
+
+/// TrimBack duplicated here due to dependency problems.
+void TrimBack_(char *line) {
+  if (line == NULL) return;
+  size_t len = strlen(line);
+  if (len == 0) return;
+  for (char *c = line + len - 1; c >= line; c--) {
+    if (isspace((unsigned char)(*c))) continue;
+    *(c + 1) = '\0';
+    return;
+  }
+  *line = '\0';
+}
 
 int fortread(void *ptr, size_t size, size_t count, FILE *file) {
   // TODO: check endianess, currently little-endian is assumed
@@ -104,7 +126,7 @@ void getgeomdatasize(const char *filename, int *ntimes, int *nvars,
   int nvert_s, nvert_d, nface_s, nface_d;
   FILE *file = FOPEN(filename, "rb");
   if (file == NULL) {
-    PRINTF(" The boundary element file name, %s does not exist\n", filename);
+    printf(" The boundary element file name, %s does not exist\n", filename);
     *error = 1;
     return;
   }
@@ -155,7 +177,7 @@ void getzonesize(const char *zonefilename, int *nzonet, int *nrooms,
   file = FOPEN(zonefilename, "rb");
 
   if (file == NULL) {
-    PRINTF(" The zone file name, %s does not exist\n", zonefilename);
+    printf(" The zone file name, %s does not exist\n", zonefilename);
     *error = 1;
     return;
   }
@@ -210,7 +232,7 @@ void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
   *error = 0;
   *file = FOPEN(patchfilename, "rb");
   if (file == NULL) {
-    PRINTF(" The boundary file name, %s does not exist\n", patchfilename);
+    printf(" The boundary file name, %s does not exist\n", patchfilename);
     *error = 1;
     return;
   }
@@ -230,7 +252,7 @@ void getpatchsizes1(FILE **file, const char *patchfilename, int *npatch,
 void getpatchsizes2(FILE *file, int version, int npatch, int *npatchsize,
                     int *pi1, int *pi2, int *pj1, int *pj2, int *pk1, int *pk2,
                     int *patchdir, int *headersize, int *framesize) {
-  uint32_t ijkp[7] = {0};
+  uint32_t ijkp[9] = {0};
 
   *npatchsize = 0;
 
@@ -239,7 +261,7 @@ void getpatchsizes2(FILE *file, int version, int npatch, int *npatchsize,
     if (version == 0) {
       fortread(ijkp, sizeof(*ijkp), 6, file);
     } else {
-      fortread(ijkp, sizeof(*ijkp), 7, file);
+      fortread(ijkp, sizeof(*ijkp), 9, file);
       patchdir[n] = ijkp[6];
     }
     pi1[n] = ijkp[0];
@@ -485,7 +507,7 @@ void getboundaryheader1(const char *boundaryfilename, FILE **file, int *npatch,
   *error = 0;
   *file = FOPEN(boundaryfilename, "rb");
   if (*file == NULL) {
-    PRINTF(" The boundary file name, %s does not exist\n", boundaryfilename);
+    printf(" The boundary file name, %s does not exist\n", boundaryfilename);
     *error = 1;
     return;
   }
@@ -544,7 +566,7 @@ FILE *openboundary(const char *boundaryfilename, int version, int *error) {
   int npatch;
   FILE *file = FOPEN(boundaryfilename, "rb");
   if (file == NULL) {
-    PRINTF(" The boundary file name, %s does not exist\n", boundaryfilename);
+    printf(" The boundary file name, %s does not exist\n", boundaryfilename);
     *error = 1;
     return file;
   }
@@ -630,13 +652,11 @@ void getpartheader2(FILE *file, int nclasses, int *nquantities, int *size) {
 void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
                       float *time, int *tagdata, float *pdata, int *size,
                       int *error) {
-  int pstart, pend;
-  int tagstart, tagend;
   int nparticles;
 
   *size = 0;
-  pend = 0;
-  tagend = 0;
+  int pstart = 0;
+  int tagstart = 0;
   *error = 0;
   *error = fortread(time, sizeof(*time), 1, file);
   *size = 4;
@@ -648,22 +668,23 @@ void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
     if (*error != 0) return;
     npoints[i] = nparticles;
 
-    pstart = pend + 1;
-    pend = pstart + 3 * nparticles - 1;
-    *error = fortread(&pdata[pstart], sizeof(pdata[0]), pend - pstart, file);
+    // get the particle data
+    int nvalues = 3 * nparticles;
+    *error = fortread(&pdata[pstart], sizeof(*pdata), nvalues, file);
     if (*error != 0) return;
+    pstart += nvalues;
 
-    tagstart = tagend + 1;
-    tagend = tagstart + nparticles - 1;
-    *error = fortread(&tagdata[tagstart], sizeof(tagdata[0]), tagend - tagstart,
-                      file);
+    // get tag data
+    int ntagvalues = tagstart + nparticles ;
+    *error = fortread(&tagdata[tagstart], sizeof(*tagdata), ntagvalues, file);
     if (*error != 0) return;
+    tagstart += ntagvalues;
 
     if (nquantities[i] > 0) {
-      pstart = pend + 1;
-      pend = pstart + nparticles * nquantities[i] - 1;
-      *error = fortread(&pdata[pstart], sizeof(pdata[0]), pend - pstart, file);
+      int nvalues = nparticles * nquantities[i];
+      *error = fortread(&pdata[pstart], sizeof(*pdata), nvalues, file);
       if (*error != 0) return;
+      pstart += nvalues;
     }
     *size += 4 + (4 * 3 * nparticles) + 4 * nparticles +
              4 * nparticles * nquantities[i];
@@ -684,7 +705,7 @@ void getgeomdata(const char *filename, int ntimes, int nvals, float *times,
   *file_size = 0;
   FILE *file = FOPEN(filename, "rb");
   if (file == NULL) {
-    PRINTF(" The boundary element file name, %s does not exist\n", filename);
+    printf(" The boundary element file name, %s does not exist\n", filename);
     *error = 1;
     return;
   }
@@ -758,7 +779,7 @@ void getzonedata(const char *zonefilename, int *nzonet, int *nrooms,
 
   FILE *file = FOPEN(zonefilename, "rb");
   if (file == NULL) {
-    PRINTF(" The zone file name, %s does not exist\n", zonefilename);
+    printf(" The zone file name, %s does not exist\n", zonefilename);
     *error = 1;
     return;
   }
@@ -821,13 +842,10 @@ void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
   *error = 0;
   *error = fortread(patchtime, sizeof(*patchtime), 1, file);
   file_size = file_size + 4;
-  if (*error != 0) {
-    fclose(file);
-    return;
-  }
+  if (*error != 0) return;
   ibeg = 0;
   *npqq = 0;
-  
+
   int i;
   for (i = 0; i < npatch; i++) {
     i1 = pi1[i];
@@ -841,10 +859,7 @@ void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
     *error = fortread(&pqq[ibeg], sizeof(*pqq), size, file);
     // TODO: hardcodes float size.
     file_size += 4 * size;
-    if (*error != 0) {
-      fclose(file);
-      break;
-    }
+    if (*error != 0) break;
     ibeg += size;
   }
   return;
@@ -981,8 +996,7 @@ void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
   nysp = js2 + 1 - js1;
   nzsp = ks2 + 1 - ks1;
   nframe = nxsp * nysp * nzsp;
-  if (redirect_flag == 0) PRINTF("output slice data to %s\n", slicefilename);
-
+  if (redirect_flag == 0) printf("output slice data to %s\n", slicefilename);
   int i;
   for (i = 0; i < ntimes; i++) {
     fortwrite(&times[i], sizeof(times[i]), 1, file);
@@ -1011,12 +1025,12 @@ void writeslicedata2(const char *slicefilename, const char *longlabel,
 
   // Copy labels into smaller buffers, truncating if necessary. The separate
   // TrimFront and TrimBack steps are intentionally separate steps.
-  strncpy(longlabel30, TrimFrontConst(longlabel), 30);
-  TrimBack(longlabel30);
-  strncpy(shortlabel30, TrimFrontConst(shortlabel), 30);
-  TrimBack(shortlabel30);
-  strncpy(unitlabel30, TrimFrontConst(unitlabel), 30);
-  TrimBack(unitlabel30);
+  strncpy(longlabel30, TrimFrontConst_(longlabel), 30);
+  TrimBack_(longlabel30);
+  strncpy(shortlabel30, TrimFrontConst_(shortlabel), 30);
+  TrimBack_(shortlabel30);
+  strncpy(unitlabel30, TrimFrontConst_(unitlabel), 30);
+  TrimBack_(unitlabel30);
 
   fortwrite(longlabel30, 30, 1, file);
   fortwrite(shortlabel30, 30, 1, file);
@@ -1076,7 +1090,8 @@ void getsliceframe(FILE *file, int is1, int is2, int js1, int js2, int ks1,
 	size_t i;
         for (i = 0; i < nxsp; i++) {
           float ii = 2.0 * ((nxsp - 1) / 2.0 - i) / (nxsp - 1.0);
-          float val = factor * (*time - 20.0) * (ii * ii + jj * jj + kk * kk) / 20.0;
+          float val =
+              factor * (*time - 20.0) * (ii * ii + jj * jj + kk * kk) / 20.0;
           size_t index = 1 + i + j * nxsp + k * nxsp * nysp;
           qframe[index] = val;
         }
@@ -1180,7 +1195,7 @@ void outpatchframe(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
   int i1, i2, j1, j2, k1, k2, size, ibeg, iend;
   *error = fortwrite(&patchtime, sizeof(patchtime), 1, file);
   ibeg = 1;
-  
+
   int i;
   for (i = 0; i < npatch; i++) {
     i1 = pi1[i];
@@ -1197,41 +1212,43 @@ void outpatchframe(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
   return;
 }
 
-// !  ------------------ getplot3dq ------------------------
-
+// !  ------------------ getplot3dq ------------------------ TODO: we don't need
+// to pass in the nx, ny, and nz values. This previously allowed us to allocate
+// prior to this function.
 void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq,
                 int *error, int isotest) {
-  float dummies[4];
-  float dummy, qval;
+  float qval;
 
   uint32_t npts[3] = {0};
   if (isotest == 0) {
     *error = 0;
     FILE *file = FOPEN(qfilename, "rb");
     if (file == NULL) {
-      PRINTF(" The file name, %s does not exist\n", qfilename);
-      *error = fortread(&dummy, sizeof(dummy), 1, file);
+      printf(" The file name, %s does not exist\n", qfilename);
       exit(1);
     }
     *error = fortread(npts, sizeof(*npts), 3, file);
+    if (*error) goto end;
     uint32_t nxpts = npts[0];
     uint32_t nypts = npts[1];
     uint32_t nzpts = npts[2];
     if (nx == nxpts && ny == nypts && nz == nzpts) {
-      // TODO: determine what these values actually are.
-      *error = fortread(dummies, sizeof(*dummies), 4, file);
+      float zeros[4];
+      *error = fortread(zeros, sizeof(*zeros), 4, file);
+      if (*error) goto end;
       *error = fortread(qq, sizeof(*qq), nxpts * nypts * nzpts * 5, file);
-
+      if (*error) goto end;
     } else {
       *error = 1;
-      PRINTF(" *** Fatal error in getplot3dq ***\n");
-      PRINTF(" Grid size found in plot3d file was: %d,%d,%d\n", nxpts, nypts,
+      printf(" *** Fatal error in getplot3dq ***\n");
+      printf(" Grid size found in plot3d file was: %d,%d,%d\n", nxpts, nypts,
              nzpts);
-      PRINTF(" Was expecting: %d,%d,%d\n", nx, ny, nz);
+      printf(" Was expecting: %d,%d,%d\n", nx, ny, nz);
       exit(1);
     }
+  end:
     fclose(file);
-  } 
+  }
   else {
     int i;
     for (i = 0; i < nx; i++) {
