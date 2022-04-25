@@ -970,7 +970,7 @@ void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
   char longlbl[31] = {0};
   char shortlbl[31] = {0};
   char unitlbl[31] = {0};
-  int ibeg, iend, nframe;
+  int ibeg, nframe;
   int nxsp, nysp, nzsp;
   float *qdata_out;
 
@@ -1005,7 +1005,6 @@ void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
 
     fortwrite(&times[i], sizeof(times[i]), 1, file);
     ibeg = i*nframe;
-    iend = (i + 1) * nframe;
 
     qdata_in = qdata + ibeg;
 
@@ -1022,12 +1021,12 @@ void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
 
         int kk;
         for (kk = 0; kk < nzsp; kk++) {
-        // convert from C memory layout (row major) to Fortran memory layout (column majorr)
-          qdata_out[CIJK(ii, jj, kk)] = qdata_in[FIJK(ii, jj, kk)];
+        // convert from C memory layout (row major) to Fortran memory layout (column major)
+          qdata_out[FIJK(ii, jj, kk)] = qdata_in[CIJK(ii, jj, kk)];
         }
       }
     }
-    fortwrite(qdata_in, sizeof(float), nframe, file);
+    fortwrite(qdata_out, sizeof(float), nframe, file);
   }
 
   fclose(file);
