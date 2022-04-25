@@ -73,7 +73,7 @@ obj = main.o menus.o IOscript.o IOshooter.o glui_objects.o glui_shooter.o\
 
 incs = contourdefs.h glui_bounds.h glui_motion.h glui_smoke.h glui_tour.h infoheader.h \
        IOobjects.h IOscript.h IOvolsmoke.h lua_api.h options.h smokefortheaders.h smokeheaders.h smokeviewdefs.h \
-       smokeviewvars.h structures.h threader.h viewports.h ASSERT.h csphere.h dirent_win.h histogram.h isodefs.h \
+       smokeviewvars.h structures.h threader.h viewports.h smv_assert.h csphere.h dirent_win.h histogram.h isodefs.h \
        MALLOCC.h pragmas.h stdio_buffer.h string_util.h compress.h datadefs.h file_util.h interp.h lint.h options_common.h \
        smv_endian.h stdio_m.h translate.h
 
