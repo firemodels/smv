@@ -681,10 +681,10 @@ void getpartdataframe(FILE *file, int nclasses, int *nquantities, int *npoints,
     tagstart += ntagvalues;
 
     if (nquantities[i] > 0) {
-      int nvalues = nparticles * nquantities[i];
-      *error = fortread(&pdata[pstart], sizeof(*pdata), nvalues, file);
+      int nvalues2 = nparticles * nquantities[i];
+      *error = fortread(&pdata[pstart], sizeof(*pdata), nvalues2, file);
       if (*error != 0) return;
-      pstart += nvalues;
+      pstart += nvalues2;
     }
     *size += 4 + (4 * 3 * nparticles) + 4 * nparticles +
              4 * nparticles * nquantities[i];
