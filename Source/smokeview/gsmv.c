@@ -64,9 +64,13 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
   int *triangle_count;
   NewMemory((void **)&triangle_count, nverts);
   memset(triangle_count, 0, nverts * sizeof(*triangle_count));
-  for (int i = 0; i < ntriangles; i++) {
+
+  int i;
+  for (i = 0; i < ntriangles; i++) {
     trii = &triangles[3 * i];
-    for (int j = 0; j < 3; j++) {
+
+    int j;
+    for (j = 0; j < 3; j++) {
       int vertj_index = trii[j];
       if (vertj_index >= 1 && vertj_index <= nverts)
         triangle_count[vertj_index]++;
@@ -74,7 +78,7 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
   }
 
   int maxcount = triangle_count[0];
-  for (int i = 1; i < nverts; i++) {
+  for (i = 1; i < nverts; i++) {
     maxcount = MAX(maxcount, triangle_count[i]);
   }
   FreeMemory(triangle_count);
@@ -87,9 +91,11 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
   NewMemory((void **)&vert_trilist, nverts * (maxcount + 1));
   memset(vert_trilist, 0, nverts * (maxcount + 1) * sizeof(*vert_trilist));
 
-  for (int i = 0; i < ntriangles; i++) {
+  for (i = 0; i < ntriangles; i++) {
     trii = &triangles[3 * i];
-    for (int j = 0; j < 3; j++) {
+
+    int j;
+    for (j = 0; j < 3; j++) {
       int vertj_index = trii[j];
       if (vertj_index >= 1 && vertj_index <= nverts) {
         vert_trilist[vertj_index * nverts +
@@ -108,17 +114,21 @@ void get_verttype(int nverts, int *triangles, int ntriangles, int *vert_type) {
   memset(vert_count, 0, nverts * sizeof(*vert_count));
 
   // ! count vertices connected to each vertex
-  for (int i = 1; i < nverts; i++) {
+  for (i = 1; i < nverts; i++) {
     memset(vert_count, 0, nverts * sizeof(*vert_count));
-    for (int j = 1; j <= vert_trilist[i * nverts + 1];
+
+    int j;
+    for (j = 1; j <= vert_trilist[i * nverts + 1];
          j++) { // loop over triangles connected to vertex I
       int trij_index = vert_trilist[i * nverts + j];
-      for (int k = 1; k <= 3; k++) { // loop over vertices of triangle J
+
+      int k;
+      for (k = 1; k <= 3; k++) { // loop over vertices of triangle J
         int vertk_index = triangles[3 * trij_index - 3 + k];
         if (vertk_index != i) vert_count[vertk_index]++;
       }
     }
-    for (int j = 1; j < nverts; j++) {
+    for (j = 1; j < nverts; j++) {
       if (vert_count[j] ==
           1) { // consider all vertices that are connected to vertex I
         vert_type[i] = 0; // if all of these neighbors have two neighbors among
@@ -299,7 +309,8 @@ void decimate(double *VERTS, int nverts, int *FACES, int NFACES,
 
     memset(vert_state, V_ORIGINAL, nverts * sizeof(*vert_state));
 
-    for (int i = 0; i < nverts; i++) {
+    int i;
+    for (i = 0; i < nverts; i++) {
       vert_map[i] = i;
     }
 
@@ -309,7 +320,7 @@ void decimate(double *VERTS, int nverts, int *FACES, int NFACES,
 
     // ! combine vertices that are close together
 
-    for (int i = 0; i < NFACES; i++) {
+    for (i = 0; i < NFACES; i++) {
       int *tri_i = &FACES[3 * i];
       V1 = &VERTS[3 * tri_i[0]];
       V2 = &VERTS[3 * tri_i[1]];
@@ -380,7 +391,7 @@ void decimate(double *VERTS, int nverts, int *FACES, int NFACES,
 
     // ! remap triangle vertices
 
-    for (int i = 0; i < NFACES; i++) {
+    for (i = 0; i < NFACES; i++) {
       int *tri_i = &FACES[3 * i];
       tri_i[0] = vert_map[tri_i[0]];
       tri_i[1] = vert_map[tri_i[1]];
@@ -390,7 +401,8 @@ void decimate(double *VERTS, int nverts, int *FACES, int NFACES,
     // ! construct new vertex list skipping over vertices that have been removed
 
     ITO = 0;
-    for (int IFROM = 0; IFROM < nverts; IFROM++) {
+    int IFROM;
+    for (IFROM = 0; IFROM < nverts; IFROM++) {
       if (vert_state[IFROM] != V_DISCARD) {
         ITO++;
         VERTFROM = &VERTS[3 * IFROM];
@@ -406,7 +418,7 @@ void decimate(double *VERTS, int nverts, int *FACES, int NFACES,
     // ! eliminate singular triangles (as a result of merged vertices)
 
     ITO = 0;
-    for (int IFROM = 0; IFROM < NFACES; IFROM++) {
+    for (IFROM = 0; IFROM < NFACES; IFROM++) {
       tri_from = &FACES[3 * IFROM];
       if (tri_from[0] != tri_from[1] && tri_from[0] != tri_from[2] &&
           tri_from[1] != tri_from[2]) {
