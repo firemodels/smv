@@ -970,9 +970,8 @@ void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
   char longlbl[31] = {0};
   char shortlbl[31] = {0};
   char unitlbl[31] = {0};
-  int ibeg, nframe;
+  int nframe;
   int nxsp, nysp, nzsp;
-  float *qdata_out;
 
   FILE *file = FOPEN(slicefilename, "wb");
 
@@ -997,40 +996,17 @@ void writeslicedata(const char *slicefilename, int is1, int is2, int js1,
   nysp = js2 + 1 - js1;
   nzsp = ks2 + 1 - ks1;
   nframe = nxsp * nysp * nzsp;
-  NewMemory((void **)&qdata_out, nframe*sizeof(float));
   if (redirect_flag == 0) printf("output slice data to %s\n", slicefilename);
   int i;
   for (i = 0; i < ntimes; i++) {
     float *qdata_in;
 
     fortwrite(&times[i], sizeof(times[i]), 1, file);
-    ibeg = i*nframe;
 
-    qdata_in = qdata + ibeg;
-
-//    C_val(i,j,k) = i*nj*nk + j*nk + k
-#define CIJK(i, j, k) (i * nysp * nzsp + j * nzsp + k)
-
-// Fort_val(i,j,k) = i + j*ni + k*ni*nj
-#define FIJK(i, j, k) (i+j*nxsp+k*nxsp*nysp)
-    int ii;
-    for (ii = 0; ii < nxsp; ii++) {
-
-      int jj;
-      for (jj = 0; jj < nysp; jj++) {
-
-        int kk;
-        for (kk = 0; kk < nzsp; kk++) {
-        // convert from C memory layout (row major) to Fortran memory layout (column major)
-          qdata_out[FIJK(ii, jj, kk)] = qdata_in[CIJK(ii, jj, kk)];
-        }
-      }
-    }
-    fortwrite(qdata_out, sizeof(float), nframe, file);
+    fortwrite(qdata + i*nframe, sizeof(float), nframe, file);
   }
 
   fclose(file);
-  FREEMEMORY(qdata_out);
 
   return;
 }
