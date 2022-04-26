@@ -10720,7 +10720,9 @@ typedef struct {
     }
   }
   if(npartinfo>=64){
+#ifdef pp_PART_MULTI
     part_multithread = 1;
+#endif
     partfast = 1;
   }
 
@@ -13316,6 +13318,9 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       if(current_script_command==NULL&&nevac==0){
         sscanf(buffer, "%i %i %i", &partfast, &part_multithread, &npartthread_ids);
+#ifndef pp_PART_MULTI
+        part_multithread = 0;
+#endif
       }
       continue;
     }

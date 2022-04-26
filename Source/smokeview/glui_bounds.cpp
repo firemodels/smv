@@ -4719,6 +4719,10 @@ extern "C" void GluiBoundsSetup(int main_window){
     CHECKBOX_partfast = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Fast loading"), &partfast, PARTFAST, PartBoundCB);
     CHECKBOX_part_multithread = glui_bounds->add_checkbox_to_panel(PANEL_partread, _("Parallel loading"), &part_multithread);
     SPINNER_npartthread_ids = glui_bounds->add_spinner_to_panel(PANEL_partread, _("Files loaded at once"), GLUI_SPINNER_INT, &npartthread_ids);
+#ifndef pp_PART_MULTI
+    CHECKBOX_part_multithread->disable();
+    SPINNER_npartthread_ids->disable();
+#endif
     if(npartinfo>1){
       SPINNER_npartthread_ids->set_int_limits(1,MIN(npartinfo,MAX_THREADS));
     }
@@ -5811,8 +5815,10 @@ void PartBoundCB(int var){
       CHECKBOX_part_multithread->set_int_val(part_multithread);
     }
     else{
+#ifndef pp_PART_MULTI
       CHECKBOX_part_multithread->enable();
       SPINNER_npartthread_ids->enable();
+#endif
       CHECKBOX_part_multithread->set_int_val(part_multithread);
     }
     updatemenu=1;
