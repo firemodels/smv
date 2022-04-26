@@ -329,7 +329,7 @@ endif
 # ------------- intel_osx_64 ----------------
 
 intel_osx_64 : CFLAGS    = -O0 -m64 -I $(SOURCE_DIR)/glui_gl -traceback -static-intel -D pp_OSX $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO) -mmacosx-version-min=10.9
-intel_osx_64 : C_STANDARDS    = -std=c99
+intel_osx_64 : C_STANDARD    = -std=c99
 intel_osx_64 : LIBLUA    =
 ifeq ($(LUA_SCRIPTING),true)
 intel_osx_64 : CFLAGS    += -D pp_LUA
