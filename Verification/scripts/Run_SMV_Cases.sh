@@ -95,7 +95,7 @@ case $OPTION in
    FDS_DEBUG=1
    ;;
   D)
-   FDSNEW=1
+   FDSNEW="1"
    ;;
   h)
    usage;
@@ -165,10 +165,15 @@ export FDSEXE=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${I
 export FDS=$FDSEXE
 export FDSMPI=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG
 export CFAST=$CFASTREPO/Build/CFAST/${COMPILER}_$PLATFORM/cfast7_$PLATFORM
-if [ "$FDSNEW" != "" ] then
+if [ "$FDSNEW" != "" ]; then
   QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh -j $JOBPREFIX"
+  if [ "$DEBUG" != "" ]; then
+    QFDSSH="$QFDSSH -T db "
+  fi
+  FDSPARM=
 else
   QFDSSH="$SVNROOT/smv/Utilities/Scripts/qfds.sh -j $JOBPREFIX"
+  FDSPARM="-e $FDSEXE"
 fi
 
 # Set queue to submit cases to
@@ -196,7 +201,7 @@ fi
 # run cases    
 
 export  RUNCFAST="$QFDSSH $INTEL2 -e $CFAST $QUEUE $STOPFDS"
-export      QFDS="$QFDSSH $INTEL2 -e $FDSEXE $OPENMPOPTS $QUEUE $STOPFDS"
+export      QFDS="$QFDSSH $INTEL2 $FDSPARM $OPENMPOPTS $QUEUE $STOPFDS"
 
 echo "" | $FDSEXE 2> $SVNROOT/smv/Manuals/SMV_User_Guide/SCRIPT_FIGURES/fds.version
 
