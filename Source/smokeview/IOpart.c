@@ -2221,7 +2221,18 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   }
   GetPartHeader(parti, &nf_all_local, NOT_FORCE, 1);
   CheckMemory;
+#ifdef PART_PAUSE
+  if(parti - partinfo < 5){
+    printf("\npause 5 s\n");
+    PauseTime(5.0);
+    printf("pause complete\n");
+  }
+  printf("before GetPartData\n");
   GetPartData(parti, nf_all_local, &file_size_local);
+  printf("after GetPartData\n);")
+#else
+  GetPartData(parti, nf_all_local, &file_size_local);
+#endif
   CheckMemory;
   LOCK_PART_LOAD;
   parti->loaded = 1;
