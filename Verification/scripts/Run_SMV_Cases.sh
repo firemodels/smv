@@ -43,7 +43,6 @@ echo ""
 echo "Options"
 echo "-c - cfast repo directory"
 echo "-d - use debug version of FDS"
-echo "-D - run using new fds Build directory structure"
 echo "-h - display this message"
 echo "-j p - specify a job prefix"
 echo "-J - use Intel MPI version of FDS"
@@ -79,12 +78,11 @@ cd ..
 SVNROOT=`pwd`/../..
 cd $SVNROOT
 SVNROOT=`pwd`
-FDSNEW=
 
 cd $CURDIR/..
 
 use_installed="0"
-while getopts 'c:dDhj:Jm:o:q:rsS:uWwY' OPTION
+while getopts 'c:dhj:Jm:o:q:rsS:uWwY' OPTION
 do
 case $OPTION in
   c)
@@ -93,9 +91,6 @@ case $OPTION in
   d)
    DEBUG=_db
    FDS_DEBUG=1
-   ;;
-  D)
-   FDSNEW="1"
    ;;
   h)
    usage;
@@ -165,16 +160,12 @@ export FDSEXE=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${I
 export FDS=$FDSEXE
 export FDSMPI=$SVNROOT/fds/Build/${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG/fds_${INTEL}mpi_${COMPILER}_$PLATFORM$DEBUG
 export CFAST=$CFASTREPO/Build/CFAST/${COMPILER}_$PLATFORM/cfast7_$PLATFORM
-if [ "$FDSNEW" != "" ]; then
-  QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh -j $JOBPREFIX"
-  if [ "$DEBUG" != "" ]; then
-    QFDSSH="$QFDSSH -T db "
-  fi
-  FDSPARM=
-else
-  QFDSSH="$SVNROOT/smv/Utilities/Scripts/qfds.sh -j $JOBPREFIX"
-  FDSPARM="-e $FDSEXE"
+
+QFDSSH="$SVNROOT/fds/Utilities/Scripts/qfds.sh -j $JOBPREFIX"
+if [ "$DEBUG" != "" ]; then
+  QFDSSH="$QFDSSH -T db "
 fi
+FDSPARM=
 
 # Set queue to submit cases to
 
