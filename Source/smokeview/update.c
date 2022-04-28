@@ -1885,7 +1885,13 @@ void UpdateShowScene(void){
   }
   if(update_generate_part_histograms==1){
     update_generate_part_histograms = 0;
+#ifdef pp_PART_PAUSE
+    printf("analyze part data\n");
     GeneratePartHistogramsMT();
+    printf("analyze part data complete\n");
+#else
+    GeneratePartHistogramsMT();
+#endif
     update_generate_part_histograms = -1;
   }
   if(update_stept==1){
@@ -2496,3 +2502,19 @@ void ShiftColorbars(void){
   }
   CheckMemory;
 }
+
+/* ------------------ PauseTime ------------------------ */
+
+void PauseTime(float pause_time){
+  float start_time;
+
+  // pause no more than 60 s
+  start_time = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
+  for(;;){
+    float delta_time;
+
+    delta_time = glutGet(GLUT_ELAPSED_TIME) / 1000.0 - start_time;
+    if(delta_time > pause_time || delta_time > 60.0)return;
+    }
+  }
+
