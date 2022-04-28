@@ -43,7 +43,7 @@ cd $CURDIR
 
 FDSEXE=$GITROOT/fds/Build/impi_intel$PLATFORM$size/fds_impi_intel$PLATFORM$size
 MAKEMOVIE="$GITROOT/smv/Utilities/Scripts/make_movie.sh"
-QFDS=$GITROOT/smv/Utilities/Scripts/qfds.sh
+QFDS=$GITROOT/fds/Utilities/Scripts/qfds.sh
 QSMV="$GITROOT/smv/Utilities/Scripts/qsmv.sh -j ${MOV_JOBPREFIX} $QUEUE"
 
 VDIR=$GITROOT/smv/Verification
