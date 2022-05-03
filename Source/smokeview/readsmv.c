@@ -9011,6 +9011,14 @@ int ReadSMV(bufferstreamdata *stream){
     FREEMEMORY(nexp_devices);
     devicecopy2=deviceinfo;
   }
+  for (i = 0; i < ndeviceinfo; i++) {
+    devicedata *devicei;
+
+    devicei = deviceinfo + i;
+    if (strcmp(devicei->label, "null") == 0) {
+      sprintf(devicei->label, "DEV%05i", i + 1);
+    }
+  }
 
   // define texture data structures by constructing a list of unique file names from surfinfo and devices
 
