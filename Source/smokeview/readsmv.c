@@ -1633,14 +1633,14 @@ void InitDevice(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float
   devicei->filetype    = -1;
   devicei->in_zone_csv = 0;
   devicei->in_devc_csv = 0;
-  devicei->labelptr    = devicei->label;
+  devicei->labelptr    = devicei->deviceID;
   devicei->color       = NULL;
   devicei->line_width  = 1.0;
   devicei->have_xyz    = 0;
   devicei->have_xyz1   = 0;
   devicei->have_xyz2   = 0;
   if(labelptr != NULL){
-    strcpy(devicei->label, labelptr);
+    strcpy(devicei->deviceID, labelptr);
   }
   if(STRCMP(devicei->object->label, "plane") == 0){
     float color[4];
@@ -1759,10 +1759,10 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
     strcpy(devicei->csvlabel,tok4);
   }
   if(strlen(tok1)>=4&&strncmp(tok1, "null",4)==0){
-    strcpy(devicei->label, "null");
+    strcpy(devicei->deviceID, "null");
   }
   else{
-    strcpy(devicei->label, tok1);
+    strcpy(devicei->deviceID, tok1);
   }
   devicei->object = GetSmvObjectType(tok1,missing_device);
   if(devicei->object==missing_device&&tok3!=NULL){
@@ -1800,7 +1800,7 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   }
   else{
     NewMemory((void **)&devicei->prop,sizeof(propdata));
-    InitProp(devicei->prop,1,devicei->label);
+    InitProp(devicei->prop,1,devicei->deviceID);
     devicei->prop->smv_object=devicei->object;
     devicei->prop->smv_objects[0]=devicei->prop->smv_object;
   }
@@ -1891,10 +1891,10 @@ void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
   }
 
   if(strlen(tok1)>=4&&strncmp(tok1, "null", 4)==0){
-    strcpy(devicei->label, "null");
+    strcpy(devicei->deviceID, "null");
   }
   else{
-    strcpy(devicei->label, tok1);
+    strcpy(devicei->deviceID, tok1);
   }
   devicei->object = GetSmvObjectType(tok1, missing_device);
   if(devicei->object==missing_device&&tok3!=NULL){
@@ -1929,7 +1929,7 @@ void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
   }
   else{
     NewMemory((void **)&devicei->prop, sizeof(propdata));
-    InitProp(devicei->prop, 1, devicei->label);
+    InitProp(devicei->prop, 1, devicei->deviceID);
     devicei->prop->smv_object = devicei->object;
     devicei->prop->smv_objects[0] = devicei->prop->smv_object;
   }
@@ -8703,7 +8703,7 @@ int ReadSMV(bufferstreamdata *stream){
           float *xyz, *xyznorm;
           FGETS(buffer,255,stream);
 
-          strcpy(devicecopy->label,"");
+          strcpy(devicecopy->deviceID,"");
           xyz = devicecopy->xyz;
           xyznorm = devicecopy->xyznorm;
           xyz[0]=0.0;
@@ -9010,6 +9010,14 @@ int ReadSMV(bufferstreamdata *stream){
     }
     FREEMEMORY(nexp_devices);
     devicecopy2=deviceinfo;
+  }
+  for (i = 0; i < ndeviceinfo; i++) {
+    devicedata *devicei;
+
+    devicei = deviceinfo + i;
+    if (strcmp(devicei->deviceID, "null") == 0) {
+      sprintf(devicei->deviceID, "DEV%05i", i + 1);
+    }
   }
 
   // define texture data structures by constructing a list of unique file names from surfinfo and devices

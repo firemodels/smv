@@ -1521,6 +1521,10 @@ SVEXTERN int SVDECL(ndeviceinfo,0),nvdeviceinfo,ndeviceinfo_exp;
 SVEXTERN float max_dev_vel;
 SVEXTERN int SVDECL(last_prop_display,-1);
 SVEXTERN int SVDECL(devicetypes_index,0);
+#ifdef pp_PLOT2D_NEW
+SVEXTERN int SVDECL(deviceIDs_index, 0);
+SVEXTERN int SVDECL(list_all_devices, 1);
+#endif
 SVEXTERN devicedata SVDECL(*deviceinfo,NULL);
 SVEXTERN vdevicedata SVDECL(*vdeviceinfo, NULL);
 SVEXTERN vdevicesortdata SVDECL(*vdevices_sorted, NULL);

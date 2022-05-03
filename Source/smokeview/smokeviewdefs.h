@@ -46,6 +46,10 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define VIEW_ZMAX                   -5
 
 #define DEVICE_devicetypes     28
+#ifdef pp_PLOT2D_NEW
+#define DEVICE_deviceIDs       30
+#endif
+
 
 #define DEVICE_PLOT_HIDDEN        0
 #define DEVICE_PLOT_SHOW_SELECTED 1
