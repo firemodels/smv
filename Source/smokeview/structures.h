@@ -971,6 +971,9 @@ typedef struct _device {
   struct _vdevicedata *vdevice;
   int type, is_beam;
   int selected;
+#ifdef pp_PLOT2D_NEW
+  int inlist;
+#endif
   int valid;
 } devicedata;
 
