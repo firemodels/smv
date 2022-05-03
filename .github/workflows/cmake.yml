@@ -55,11 +55,18 @@ jobs:
           cmake -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
           cmake --build ${{github.workspace}}/cbuild -j4
           cp ${{github.workspace}}/cbuild/smokeview smokeview
+      - name: Download test data
+        working-directory: ${{github.workspace}}/Tests
+        run: |
+          wget https://github.com/JakeOShannessy/fig/archive/06449f1db6f42c41f0d43d71f1c46513f98c7d3c.zip -O test-data.zip
+          unzip test-data.zip
+          mkdir -p fig
+          mv fig-06449f1db6f42c41f0d43d71f1c46513f98c7d3c/* fig
       - name: Test
         shell: bash
         working-directory: ${{github.workspace}}/cbuild
         run: |
-          ctest -j10 --output-on-failure
+          ctest -j10 --output-on-failure -V
       - name: Set exec suffix
         if: ${{ matrix.lua }}
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
@@ -130,6 +137,13 @@ jobs:
           cmake -B ${{github.workspace}}/cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
           cmake --build ${{github.workspace}}/cbuild -j4
           cp ${{github.workspace}}/cbuild/smokeview smokeview
+      - name: Download test data
+        working-directory: ${{github.workspace}}/Tests
+        run: |
+          wget https://github.com/JakeOShannessy/fig/archive/06449f1db6f42c41f0d43d71f1c46513f98c7d3c.zip -O test-data.zip
+          unzip test-data.zip
+          mkdir -p fig
+          mv fig-06449f1db6f42c41f0d43d71f1c46513f98c7d3c/* fig
       - name: Test
         shell: bash
         working-directory: ${{github.workspace}}/cbuild
@@ -179,6 +193,14 @@ jobs:
           cmake -B ${{github.workspace}}\cbuild -G Ninja -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
           cmake --build ${{github.workspace}}\cbuild -j4
           copy ${{github.workspace}}\cbuild\smokeview.exe smokeview.exe
+      - name: Download test data
+        working-directory: ${{github.workspace}}/Tests
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri https://github.com/JakeOShannessy/fig/archive/06449f1db6f42c41f0d43d71f1c46513f98c7d3c.zip -OutFile test-data.zip
+          Expand-Archive test-data.zip -DestinationPath .
+          mkdir fig
+          mv fig-06449f1db6f42c41f0d43d71f1c46513f98c7d3c/* fig
       - name: Test
         shell: bash
         working-directory: ${{github.workspace}}/cbuild
@@ -220,6 +242,14 @@ jobs:
           cmake -B ${{github.workspace}}\cbuild -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DLUA=${{ matrix.lua }}
           cmake --build ${{github.workspace}}\cbuild -j4 --config ${{env.BUILD_TYPE}}
           copy ${{github.workspace}}\cbuild\Release\smokeview.exe smokeview.exe
+      - name: Download test data
+        working-directory: ${{github.workspace}}/Tests
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri https://github.com/JakeOShannessy/fig/archive/06449f1db6f42c41f0d43d71f1c46513f98c7d3c.zip -OutFile test-data.zip
+          Expand-Archive test-data.zip -DestinationPath .
+          mkdir fig
+          mv fig-06449f1db6f42c41f0d43d71f1c46513f98c7d3c/* fig
       - name: Test
         shell: bash
         working-directory: ${{github.workspace}}/cbuild

@@ -83,24 +83,24 @@ endif()
 # Arguments to this tests are <slice path> <number of frames in slice>
 # Simple slice is a finished slice file with 3 frames
 add_test(NAME "Simple Slice - Complete"
-    COMMAND parse_simple_slice ${CMAKE_SOURCE_DIR}/Tests/simple_slice.sf 3)
+    COMMAND parse_simple_slice ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_slice.sf 3)
 # Simple slice is a finished slice file with the last of the three frames cut in
 # half (to simulate a partially written slice file)
 add_test(NAME "Simple Slice - Last Frame Half Truncated"
-    COMMAND parse_simple_slice ${CMAKE_SOURCE_DIR}/Tests/truncated_slice.sf 2)
+    COMMAND parse_simple_slice ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/truncated_slice.sf 2)
 
 # Arguments to this tests are <bndf path> <number of frames in bndf>
 # Simple slice is a finished slice file with 2 frames, why 2 frames for boundary
 # files?
 add_test(NAME "Simple BNDF - Complete"
-    COMMAND parse_simple_bndf ${CMAKE_SOURCE_DIR}/Tests/simple_bndf.bf 2)
+    COMMAND parse_simple_bndf ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_bndf.bf 2)
 
 # Arguments to this tests are <bndf path> <number of frames in bndf>
 # Simple slice is a finished slice file with 3 frames
 add_test(NAME "Simple PRT5 - Complete"
-COMMAND parse_simple_part ${CMAKE_SOURCE_DIR}/Tests/simple_part.prt5 3)
+COMMAND parse_simple_part ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_part.prt5 3)
 
 # Arguments to this tests are <bndf path> <number of frames in bndf>
 # Simple slice is a finished slice file with 3 frames
 add_test(NAME "Simple PL3d - Complete"
-COMMAND parse_simple_pl3d ${CMAKE_SOURCE_DIR}/Tests/simple_pl3d.q)
+COMMAND parse_simple_pl3d ${CMAKE_SOURCE_DIR}/Tests/fig/smv/Tests/simple_pl3d.q)
