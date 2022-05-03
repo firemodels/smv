@@ -25,6 +25,7 @@
 #include "MALLOCC.h"
 #include "datadefs.h"
 #include "file_util.h"
+#include "string_util.h"
 #ifdef pp_HASH
 #include "mbedtls/md5.h"
 #include "mbedtls/sha256.h"
