@@ -57,11 +57,7 @@ jobs:
           cp ${{github.workspace}}/cbuild/smokeview smokeview
       - name: Download test data
         working-directory: ${{github.workspace}}/Tests
-        run: |
-          wget https://github.com/JakeOShannessy/fig/archive/06449f1db6f42c41f0d43d71f1c46513f98c7d3c.zip -O test-data.zip
-          unzip test-data.zip
-          mkdir -p fig
-          mv fig-06449f1db6f42c41f0d43d71f1c46513f98c7d3c/* fig
+        run: ./get_test_data.sh
       - name: Test
         shell: bash
         working-directory: ${{github.workspace}}/cbuild
@@ -139,11 +135,7 @@ jobs:
           cp ${{github.workspace}}/cbuild/smokeview smokeview
       - name: Download test data
         working-directory: ${{github.workspace}}/Tests
-        run: |
-          wget https://github.com/JakeOShannessy/fig/archive/06449f1db6f42c41f0d43d71f1c46513f98c7d3c.zip -O test-data.zip
-          unzip test-data.zip
-          mkdir -p fig
-          mv fig-06449f1db6f42c41f0d43d71f1c46513f98c7d3c/* fig
+        run: ./get_test_data.sh
       - name: Test
         shell: bash
         working-directory: ${{github.workspace}}/cbuild
@@ -196,11 +188,7 @@ jobs:
       - name: Download test data
         working-directory: ${{github.workspace}}/Tests
         shell: pwsh
-        run: |
-          Invoke-WebRequest -Uri https://github.com/JakeOShannessy/fig/archive/06449f1db6f42c41f0d43d71f1c46513f98c7d3c.zip -OutFile test-data.zip
-          Expand-Archive test-data.zip -DestinationPath .
-          mkdir fig
-          mv fig-06449f1db6f42c41f0d43d71f1c46513f98c7d3c/* fig
+        run: .\get_test_data.ps1
       - name: Test
         shell: bash
         working-directory: ${{github.workspace}}/cbuild
@@ -245,11 +233,7 @@ jobs:
       - name: Download test data
         working-directory: ${{github.workspace}}/Tests
         shell: pwsh
-        run: |
-          Invoke-WebRequest -Uri https://github.com/JakeOShannessy/fig/archive/06449f1db6f42c41f0d43d71f1c46513f98c7d3c.zip -OutFile test-data.zip
-          Expand-Archive test-data.zip -DestinationPath .
-          mkdir fig
-          mv fig-06449f1db6f42c41f0d43d71f1c46513f98c7d3c/* fig
+        run: .\get_test_data.ps1
       - name: Test
         shell: bash
         working-directory: ${{github.workspace}}/cbuild
