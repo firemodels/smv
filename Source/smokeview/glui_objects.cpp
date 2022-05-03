@@ -455,22 +455,20 @@ extern "C" void DeviceCB(int var){
     if(LIST_deviceIDs == NULL)break;;
     for(i = 0; i < ndeviceinfo; i++){
       devicedata *devicei;
+      int inlist;
 
+      inlist = 0;
       devicei = deviceinfo + i;
-      if(devicei->inlist == 1){
-        devicei->inlist = 0;
-        LIST_deviceIDs->delete_item(i);
-        }
-      }
-    for(i = 0; i < ndeviceinfo; i++){
-      devicedata *devicei;
-
-      devicei = deviceinfo + i;
-      if(list_all_devices == 1 || strcmp(devicetypes[devicetypes_index]->quantity, devicei->quantity) == 0){
+      if(list_all_devices == 1 || strcmp(devicetypes[devicetypes_index]->quantity, devicei->quantity) == 0)inlist = 1;
+      if(inlist ==1 && devicei->inlist == 0){
         devicei->inlist = 1;
         LIST_deviceIDs->add_item(i, devicei->label);
-        }
       }
+      else if(inlist==0 && devicei->inlist == 1){
+        devicei->inlist = 0;
+        LIST_deviceIDs->delete_item(i);
+      }
+    }
 #endif
     break;
   case RESET_FUEL_HOC:
