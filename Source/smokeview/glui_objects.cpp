@@ -462,7 +462,7 @@ extern "C" void DeviceCB(int var){
       if(list_all_devices == 1 || strcmp(devicetypes[devicetypes_index]->quantity, devicei->quantity) == 0)inlist = 1;
       if(inlist ==1 && devicei->inlist == 0){
         devicei->inlist = 1;
-        LIST_deviceIDs->add_item(i, devicei->label);
+        LIST_deviceIDs->add_item(i, devicei->deviceID);
       }
       else if(inlist==0 && devicei->inlist == 1){
         devicei->inlist = 0;
@@ -826,7 +826,7 @@ extern "C" void GluiDeviceSetup(int main_window){
 
         devicei = deviceinfo + i;
         devicei->inlist = 1;
-        LIST_deviceIDs->add_item(i, devicei->label);
+        LIST_deviceIDs->add_item(i, devicei->deviceID);
       }
 #endif
       devicetypes_index = CLAMP(devicetypes_index, 0, ndevicetypes-1);

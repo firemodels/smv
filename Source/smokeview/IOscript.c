@@ -2577,10 +2577,10 @@ void ScriptShowSmokeSensors(void){
       if(STRCMP(devicei->object->label, "smokesensor") == 0){
         j++;
         if(j == nsmokesensors){
-          fprintf(stream_smokesensors, "%s\n",devicei->label);
+          fprintf(stream_smokesensors, "%s\n",devicei->deviceID);
         }
         else{
-          fprintf(stream_smokesensors, "%s,", devicei->label);
+          fprintf(stream_smokesensors, "%s,", devicei->deviceID);
         }
       }
     }
