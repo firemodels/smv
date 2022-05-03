@@ -9017,7 +9017,6 @@ int ReadSMV(bufferstreamdata *stream){
     devicei = deviceinfo + i;
     if (strcmp(devicei->label, "null") == 0) {
       sprintf(devicei->label, "DEV%05i", i + 1);
-      printf("%s\n", devicei->label);
     }
   }
 
