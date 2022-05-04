@@ -35,7 +35,9 @@ FILE *FOPEN(const char *file, const char *mode) { return fopen(file, mode); }
 
 /// TrimFrontConst duplicated here due to dependency problems.
 const char *TrimFrontConst_(const char *line) {
-  for (const char *c = line; c <= line + strlen(line) - 1; c++) {
+  const char *c;
+
+  for (c = line; c <= line + strlen(line) - 1; c++) {
     if (!isspace((unsigned char)(*c))) return c;
   }
   return line;
@@ -43,10 +45,12 @@ const char *TrimFrontConst_(const char *line) {
 
 /// TrimBack duplicated here due to dependency problems.
 void TrimBack_(char *line) {
+  char *c;
+
   if (line == NULL) return;
   size_t len = strlen(line);
   if (len == 0) return;
-  for (char *c = line + len - 1; c >= line; c--) {
+  for (c = line + len - 1; c >= line; c--) {
     if (isspace((unsigned char)(*c))) continue;
     *(c + 1) = '\0';
     return;
