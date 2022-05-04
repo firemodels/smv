@@ -1,11 +1,12 @@
 #include "options.h"
-#define IN_TRANSLATE
+#define IN_TRANSLATEstring
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include "MALLOCC.h"
 #include "translate.h"
+#include "string_util.h"
 
 /* ------------------ CompareTrdata ------------------------ */
 
