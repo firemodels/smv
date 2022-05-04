@@ -1,10 +1,10 @@
 name: CMake Build
 on: [push, pull_request]
 env:
-  WINDOWS_BASEKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/18418/w_BaseKit_p_2022.1.0.116_offline.exe
-  WINDOWS_HPCKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/18417/w_HPCKit_p_2022.1.0.93_offline.exe
-  LINUX_BASEKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/18445/l_BaseKit_p_2022.1.1.119_offline.sh
-  LINUX_HPCKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/18438/l_HPCKit_p_2022.1.1.97_offline.sh
+  WINDOWS_BASEKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/18599/w_BaseKit_p_2022.1.3.210_offline.exe
+  WINDOWS_HPCKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/18578/w_HPCKit_p_2022.1.3.145_offline.exe
+  LINUX_BASEKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/18487/l_BaseKit_p_2022.1.2.146_offline.sh
+  LINUX_HPCKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/18479/l_HPCKit_p_2022.1.2.117_offline.sh
   MACOS_HPCKIT_URL: https://registrationcenter-download.intel.com/akdlm/irc_nas/18341/m_HPCKit_p_2022.1.0.86_offline.dmg
   WINDOWS_CPP_COMPONENTS: intel.oneapi.win.cpp-compiler
   WINDOWS_FORTRAN_COMPONENTS: intel.oneapi.win.ifort-compiler
@@ -16,6 +16,9 @@ env:
   LINUX_FORTRAN_COMPONENTS_WEB: intel.oneapi.lin.ifort-compiler
   LINUX_DPCPP_COMPONENTS_WEB: intel.oneapi.lin.dpcpp-cpp-compiler
   MACOS_CPP_COMPONENTS: intel.oneapi.mac.cpp-compiler
+  MACOS_FORTRAN_COMPONENTS: intel.oneapi.mac.ifort-compiler
+  CACHE_NUMBER: 2
+  COMPILER_VERSION: 2022.0.3
   BUILD_TYPE: Release
 
 jobs:
@@ -167,15 +170,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      # - name: cache install cpp
-      #   id: cache-install-cpp
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: C:\Program Files (x86)\Intel\oneAPI
-      #     key: install3-${{ env.WINDOWS_HPCKIT_URL }}-${{ env.WINDOWS_CPP_COMPONENTS }}-compiler-${{ hashFiles('**/.github/workflows/cache_exclude_windows.sh') }}
-      - name: install cpp
-        # if: steps.cache-install-cpp.outputs.cache-hit != 'true'
-        run: .github/workflows/install_windows_oneapi.bat $WINDOWS_HPCKIT_URL
+      - name: cache install
+        id: cache-install
+        uses: actions/cache@v2
+        with:
+          path: |
+              C:\Program Files (x86)\Intel\oneAPI\setvars.bat
+              C:\Program Files (x86)\Intel\oneAPI\setvars-vcvarsall.bat
+              C:\Program Files (x86)\Intel\oneAPI\compiler
+          key: install-${{ env.CACHE_NUMBER }}-${{ env.WINDOWS_HPCKIT_URL }}-${{ env.WINDOWS_CPP_COMPONENTS }}-compiler-${{ hashFiles('**/scripts/cache_exclude_windows.sh') }}
+      - name: install
+        if: steps.cache-install.outputs.cache-hit != 'true'
+        run: .github/workflows/install_windows_oneapi.bat $WINDOWS_HPCKIT_URL $WINDOWS_CPP_COMPONENTS
+      - name: Make latest link
+        shell: cmd
+        run: |
+          rmdir "C:\Program Files (x86)\Intel\oneAPI\compiler\latest"
+          mklink /D "C:\Program Files (x86)\Intel\oneAPI\compiler\latest" "C:\Program Files (x86)\Intel\oneAPI\compiler\2022.0.3"
       - name: build smokeview lua
         shell: cmd
         run: |
@@ -197,10 +208,10 @@ jobs:
       - name: Set exec suffix
         if: ${{ matrix.lua }} == lua
         run: echo "exec_suffix=-lua" >> $GITHUB_ENV
-      # - name: exclude unused files from cache
-      #   if: steps.cache-install.outputs.cache-hit != 'true'
-      #   shell: bash
-      #   run: .github/workflows/cache_exclude_windows.sh
+      - name: exclude unused files from cache
+        if: steps.cache-install.outputs.cache-hit != 'true'
+        shell:  bash
+        run: .github/workflows/cache_exclude_windows.sh
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
