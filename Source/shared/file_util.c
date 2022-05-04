@@ -28,6 +28,8 @@
 #include <dirent.h>
 #endif
 #include "MALLOCC.h"
+#include "string_util.h"
+#include "file_util.h"
 
 FILE *alt_stdout=NULL;
 

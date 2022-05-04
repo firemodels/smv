@@ -92,6 +92,7 @@ int FileExistsOrig(char *filename);
 #define SEP '/'
 #endif
 
+#include "string_util.h"
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
