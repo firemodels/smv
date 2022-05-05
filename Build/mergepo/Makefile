@@ -83,11 +83,12 @@ intel_linux_64 : $(obj)
 # ------------- gnu linux 64 ----------------
 
 gcc_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
+gcc_linux_64 : LFLAGS    = -lm
 gcc_linux_64 : CC        = gcc
 gcc_linux_64 : exe       = mergepo_linux_64
 
 gcc_linux_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- intel osx 64 ----------------
 
