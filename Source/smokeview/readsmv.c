@@ -151,11 +151,13 @@ void ReadHRR(int flag){
   char **labels, **units;
   int nlabels, nunits, nvals;
   float *vals;
+  float fuel_hoc_local;
   int *valids;
   int i, irow;
   char buffer[LENBUFFER], buffer_labels[LENBUFFER], buffer_units[LENBUFFER];
 
-  GetHoc(&fuel_hoc, fuel_name);
+  GetHoc(&fuel_hoc_local, fuel_name);
+  if(fuel_hoc<0.0)fuel_hoc = fuel_hoc_local;
   fuel_hoc_default = fuel_hoc;
   if(nhrrinfo>0){
     for(i=0;i<nhrrinfo;i++){
@@ -6446,6 +6448,11 @@ int ReadSMV(bufferstreamdata *stream){
     */
 
 
+    if(Match(buffer, "HoC") == 1){
+      FGETS(buffer, 255, stream);
+      sscanf(buffer, "%f", &fuel_hoc);
+      continue;
+      }
     if(Match(buffer, "TITLE")==1){
       char *fds_title_local;
       int len_title;
