@@ -1,5 +1,5 @@
 #include "options.h"
-#include "ASSERT.h"
+#include "smv_assert.h"
 #include <stdio.h>
 #include <stdlib.h>
 
