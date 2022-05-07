@@ -879,6 +879,8 @@ SVEXTERN int SVDECL(vis_device_plot, 0);
 SVEXTERN int SVDECL(vis_hrr_plot, 0);
 SVEXTERN int SVDECL(vis_slice_plot, 0);
 
+SVEXTERN fueldata SVDECL(*fuelinfo, NULL);
+SVEXTERN int SVDECL(nfuelinfo, 0);
 SVEXTERN char hrrlabel[256];
 SVEXTERN hrrdata SVDECL(*hrrinfo, NULL), SVDECL(*hrrptr, NULL), SVDECL(*timeptr, NULL);;
 SVEXTERN int SVDECL(nhrrinfo, 0);

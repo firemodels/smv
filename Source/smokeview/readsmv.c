@@ -76,6 +76,11 @@ void GetHoc(float *hoc, char *name){
   char outfile[256], buffer[255];
   FILE *stream;
 
+  if(nfuelinfo > 0){
+    *hoc = fuelinfo->hoc;
+    strcpy(name, fuelinfo->fuel);
+    return;
+  }
   strcpy(outfile, fdsprefix);
   strcat(outfile, ".out");
   stream = fopen(outfile, "r");
@@ -156,8 +161,7 @@ void ReadHRR(int flag){
   int i, irow;
   char buffer[LENBUFFER], buffer_labels[LENBUFFER], buffer_units[LENBUFFER];
 
-  GetHoc(&fuel_hoc_local, fuel_name);
-  if(fuel_hoc<0.0)fuel_hoc = fuel_hoc_local;
+  GetHoc(&fuel_hoc, fuel_name);
   fuel_hoc_default = fuel_hoc;
   if(nhrrinfo>0){
     for(i=0;i<nhrrinfo;i++){
@@ -6449,10 +6453,57 @@ int ReadSMV(bufferstreamdata *stream){
 
 
     if(Match(buffer, "HoC") == 1){
+      int nfuelinfo_local;
+
       FGETS(buffer, 255, stream);
-      sscanf(buffer, "%f", &fuel_hoc);
-      continue;
+      sscanf(buffer, "%i", &nfuelinfo_local);
+      if(fuelinfo==NULL){
+        nfuelinfo = nfuelinfo_local;
+        NewMemory((void **)&fuelinfo, nfuelinfo*sizeof(fueldata));
       }
+      else{
+        nfuelinfo = MIN(nfuelinfo_local, nfuelinfo);
+        ResizeMemory((void **)&fuelinfo, nfuelinfo*sizeof(fueldata));
+      }
+
+      int i;
+      for(i=0; i<nfuelinfo_local; i++){
+        fueldata *fueli;
+
+        FGETS(buffer, 255, stream);
+        if(i<nfuelinfo){
+          fueli = fuelinfo + i;
+          sscanf(buffer, "%f", &(fueli->hoc));
+        }
+      }
+      continue;
+    }
+    if(Match(buffer, "FUEL") == 1){
+      int nfuelinfo_local;
+
+      FGETS(buffer, 255, stream);
+      sscanf(buffer, "%i", &nfuelinfo_local);
+      if(fuelinfo==NULL){
+        nfuelinfo = nfuelinfo_local;
+        NewMemory((void **)&fuelinfo, nfuelinfo*sizeof(fueldata));
+      }
+      else{
+        nfuelinfo = MIN(nfuelinfo_local, nfuelinfo);
+        ResizeMemory((void **)&fuelinfo, nfuelinfo*sizeof(fueldata));
+      }
+
+      int i;
+      for(i=0; i<nfuelinfo_local; i++){
+        fueldata *fueli;
+
+        FGETS(buffer, 255, stream);
+        if(i<nfuelinfo){
+          fueli = fuelinfo + i;
+          fueli->fuel = GetStringPtr(buffer);
+        }
+      }
+      continue;
+    }
     if(Match(buffer, "TITLE")==1){
       char *fds_title_local;
       int len_title;
