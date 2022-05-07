@@ -4059,7 +4059,10 @@ void SmokeWrapup(void){
   Smoke3dCB(UPDATE_SMOKEFIRE_COLORS);
   smoke_render_option = RENDER_SLICE;
   update_fire_alpha = 1;
-  Smoke3dCB(SMOKE_OPTIONS);
+#define USE_OPACITY_MULTIPLIER 94
+  have_fire  = HaveFireLoaded();
+  have_smoke = HaveSootLoaded();
+  Smoke3dCB(USE_OPACITY_MULTIPLIER);
   ForceIdle();
 }
 
