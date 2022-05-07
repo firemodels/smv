@@ -156,7 +156,6 @@ void ReadHRR(int flag){
   char **labels, **units;
   int nlabels, nunits, nvals;
   float *vals;
-  float fuel_hoc_local;
   int *valids;
   int i, irow;
   char buffer[LENBUFFER], buffer_labels[LENBUFFER], buffer_units[LENBUFFER];
@@ -6113,7 +6112,6 @@ int ReadSMV(bufferstreamdata *stream){
   int ibartemp=2, jbartemp=2, kbartemp=2;
 
   int setGRID=0;
-  int  i;
   int have_auto_terrain_image=0;
 
   char buffer[256], buffers[6][256];
@@ -6140,6 +6138,8 @@ int ReadSMV(bufferstreamdata *stream){
 
   FREEMEMORY(treeinfo);
   ntreeinfo=0;
+
+  int i;
   for(i=0;i<nterraininfo;i++){
     terraindata *terri;
 
@@ -6466,7 +6466,6 @@ int ReadSMV(bufferstreamdata *stream){
         ResizeMemory((void **)&fuelinfo, nfuelinfo*sizeof(fueldata));
       }
 
-      int i;
       for(i=0; i<nfuelinfo_local; i++){
         fueldata *fueli;
 
@@ -6492,7 +6491,6 @@ int ReadSMV(bufferstreamdata *stream){
         ResizeMemory((void **)&fuelinfo, nfuelinfo*sizeof(fueldata));
       }
 
-      int i;
       for(i=0; i<nfuelinfo_local; i++){
         fueldata *fueli;
 
