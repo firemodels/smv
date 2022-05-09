@@ -19,6 +19,13 @@ typedef struct _lanlistdata {
   char lang_name[32];
 } langlistdata;
 
+/* --------------------------  fueldata ------------------------------------ */
+
+typedef struct _fueldata{
+  char *fuel;
+  float hoc;
+} fueldata;
+
 /* --------------------------  procdata ------------------------------------ */
 #ifdef CPP
 typedef struct _procdata {
