@@ -76,6 +76,11 @@ void GetHoc(float *hoc, char *name){
   char outfile[256], buffer[255];
   FILE *stream;
 
+  if(nfuelinfo > 0){
+    *hoc = fuelinfo->hoc;
+    strcpy(name, fuelinfo->fuel);
+    return;
+  }
   strcpy(outfile, fdsprefix);
   strcat(outfile, ".out");
   stream = fopen(outfile, "r");
@@ -151,13 +156,11 @@ void ReadHRR(int flag){
   char **labels, **units;
   int nlabels, nunits, nvals;
   float *vals;
-  float fuel_hoc_local;
   int *valids;
   int i, irow;
   char buffer[LENBUFFER], buffer_labels[LENBUFFER], buffer_units[LENBUFFER];
 
-  GetHoc(&fuel_hoc_local, fuel_name);
-  if(fuel_hoc<0.0)fuel_hoc = fuel_hoc_local;
+  GetHoc(&fuel_hoc, fuel_name);
   fuel_hoc_default = fuel_hoc;
   if(nhrrinfo>0){
     for(i=0;i<nhrrinfo;i++){
@@ -6109,7 +6112,6 @@ int ReadSMV(bufferstreamdata *stream){
   int ibartemp=2, jbartemp=2, kbartemp=2;
 
   int setGRID=0;
-  int  i;
   int have_auto_terrain_image=0;
 
   char buffer[256], buffers[6][256];
@@ -6136,6 +6138,8 @@ int ReadSMV(bufferstreamdata *stream){
 
   FREEMEMORY(treeinfo);
   ntreeinfo=0;
+
+  int i;
   for(i=0;i<nterraininfo;i++){
     terraindata *terri;
 
@@ -6449,10 +6453,55 @@ int ReadSMV(bufferstreamdata *stream){
 
 
     if(Match(buffer, "HoC") == 1){
+      int nfuelinfo_local;
+
       FGETS(buffer, 255, stream);
-      sscanf(buffer, "%f", &fuel_hoc);
-      continue;
+      sscanf(buffer, "%i", &nfuelinfo_local);
+      if(fuelinfo==NULL){
+        nfuelinfo = nfuelinfo_local;
+        NewMemory((void **)&fuelinfo, nfuelinfo*sizeof(fueldata));
       }
+      else{
+        nfuelinfo = MIN(nfuelinfo_local, nfuelinfo);
+        ResizeMemory((void **)&fuelinfo, nfuelinfo*sizeof(fueldata));
+      }
+
+      for(i=0; i<nfuelinfo_local; i++){
+        fueldata *fueli;
+
+        FGETS(buffer, 255, stream);
+        if(i<nfuelinfo){
+          fueli = fuelinfo + i;
+          sscanf(buffer, "%f", &(fueli->hoc));
+        }
+      }
+      continue;
+    }
+    if(Match(buffer, "FUEL") == 1){
+      int nfuelinfo_local;
+
+      FGETS(buffer, 255, stream);
+      sscanf(buffer, "%i", &nfuelinfo_local);
+      if(fuelinfo==NULL){
+        nfuelinfo = nfuelinfo_local;
+        NewMemory((void **)&fuelinfo, nfuelinfo*sizeof(fueldata));
+      }
+      else{
+        nfuelinfo = MIN(nfuelinfo_local, nfuelinfo);
+        ResizeMemory((void **)&fuelinfo, nfuelinfo*sizeof(fueldata));
+      }
+
+      for(i=0; i<nfuelinfo_local; i++){
+        fueldata *fueli;
+
+        FGETS(buffer, 255, stream);
+        if(i<nfuelinfo){
+          fueli = fuelinfo + i;
+          fueli->fuel = GetStringPtr(buffer);
+        }
+      }
+      continue;
+    }
     if(Match(buffer, "TITLE")==1){
       char *fds_title_local;
       int len_title;
@@ -13654,9 +13703,15 @@ int ReadIni2(char *inifile, int localfile){
         smoke_albedo = CLAMP(smoke_albedo, 0.0, 1.0);
         continue;
       }
+      if(Match(buffer, "SMOKEFIREPROP") == 1){
+        if(fgets(buffer, 255, stream) == NULL)break;
+        sscanf(buffer, "%i %i", &use_opacity_depth_ini, &use_opacity_multiplier_ini);
+        use_opacity_ini = 1;
+        continue;
+        }
       if(Match(buffer, "SMOKEPROP")==1){
         if(fgets(buffer, 255, stream)==NULL)break;
-        sscanf(buffer, "%f %i %i", &glui_smoke3d_extinct,&use_opacity_depth, &use_opacity_multiplier);
+        sscanf(buffer, "%f", &glui_smoke3d_extinct);
         glui_smoke3d_extinct_default = glui_smoke3d_extinct;
         continue;
       }
@@ -15669,8 +15724,12 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, "SMOKEALBEDO\n");
     fprintf(fileout, " %f\n", smoke_albedo);
   }
+  if((have_fire == NO_FIRE && have_smoke == NO_SMOKE)||(have_fire != NO_FIRE && have_smoke != NO_SMOKE)){
+    fprintf(fileout, "SMOKEFIREPROP\n");
+    fprintf(fileout, " %i %i", use_opacity_depth, use_opacity_multiplier);
+  }
   fprintf(fileout, "SMOKEPROP\n");
-  fprintf(fileout, "%f %i %i", glui_smoke3d_extinct, use_opacity_depth, use_opacity_multiplier);
+  fprintf(fileout, "%f\n", glui_smoke3d_extinct);
   glui_smoke3d_extinct_default = glui_smoke3d_extinct;
   fprintf(fileout, "SMOKESKIP\n");
   fprintf(fileout," %i %i %i %i %i\n",smokeskipm1,smoke3d_skip, smoke3d_skipx, smoke3d_skipy, smoke3d_skipz);
