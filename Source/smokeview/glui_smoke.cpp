@@ -469,13 +469,13 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   INSERT_ROLLOUT(ROLLOUT_opacity, glui_3dsmoke);
   ADDPROCINFO(colorprocinfo, ncolorprocinfo, ROLLOUT_opacity, FIREOPACITY_ROLLOUT, glui_3dsmoke);
 
-  PANEL_smoke_opacity = glui_3dsmoke->add_panel_to_panel(ROLLOUT_opacity, "smoke");
+  PANEL_smoke_opacity = glui_3dsmoke->add_panel_to_panel(ROLLOUT_opacity, "smoke opacity");
   SPINNER_smoke3d_extinct2 = glui_3dsmoke->add_spinner_to_panel(PANEL_smoke_opacity, _("Extinction (m2/kg)"),
                                                                 GLUI_SPINNER_FLOAT, &glui_smoke3d_extinct, SMOKE_EXTINCT, Smoke3dCB);
   BUTTON_fds_extinction_reset = glui_3dsmoke->add_button_to_panel(PANEL_smoke_opacity, "Reset(fds extinct)", EXTINCTION_RESET_FDS, Smoke3dCB);
   BUTTON_fds_extinction_reset = glui_3dsmoke->add_button_to_panel(PANEL_smoke_opacity, "Reset(saved extinct)", EXTINCTION_RESET_SMV, Smoke3dCB);
 
-  PANEL_fire_opacity = glui_3dsmoke->add_panel_to_panel(ROLLOUT_opacity, "fire");
+  PANEL_fire_opacity = glui_3dsmoke->add_panel_to_panel(ROLLOUT_opacity, "fire opacity");
   glui_use_fire_alpha = 1-use_fire_alpha;
   if(glui_use_fire_alpha==0){
     use_opacity_depth      = 1;
@@ -490,7 +490,7 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   SPINNER_smoke3d_fire_halfdepth = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, "50% opacity at depth (m):", GLUI_SPINNER_FLOAT, &fire_halfdepth, UPDATE_SMOKEFIRE_COLORS, Smoke3dCB);
 
   CHECKBOX_use_opacity_multiplier = glui_3dsmoke->add_checkbox_to_panel(PANEL_fire_opacity, "set opacity multiplier (when smoke also loaded)",
-    &use_opacity_multiplier, USE_OPACITY_MULTIPLIER, Smoke3dCB);
+    &use_opacity_multiplier, USE_OPACITY_MULTIPLIER_CHECK, Smoke3dCB);
   SPINNER_emission_factor = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_opacity, "opacity multiplier:", GLUI_SPINNER_FLOAT, &emission_factor, USE_FIRE_ALPHA, Smoke3dCB);
   SPINNER_smoke3d_fire_halfdepth->set_float_limits(0.01, 100.0);
   Smoke3dCB(USE_OPACITY_DEPTH);
@@ -824,6 +824,10 @@ extern "C" void Smoke3dCB(int var){
     Smoke3dCB(UPDATE_SMOKEFIRE_COLORS_COMMON);
     glutPostRedisplay();
     break;
+  case USE_OPACITY_DEPTH_CHECK:
+    use_opacity_ini = 0;
+    Smoke3dCB(USE_OPACITY_DEPTH);
+    break;
   case USE_OPACITY_DEPTH:
     if(have_fire!=NO_FIRE&&have_smoke==NO_SMOKE){
       use_opacity_depth      = 1;
@@ -840,10 +844,24 @@ extern "C" void Smoke3dCB(int var){
     CHECKBOX_use_opacity_multiplier->set_int_val(use_opacity_multiplier);
     Smoke3dCB(USE_FIRE_ALPHA);
     break;
+  case USE_OPACITY_MULTIPLIER_CHECK:
+    use_opacity_ini = 0;
+    Smoke3dCB(USE_OPACITY_MULTIPLIER);
+    break;
   case USE_OPACITY_MULTIPLIER:
     if(have_fire!=NO_FIRE&&have_smoke==NO_SMOKE){
       use_opacity_depth      = 1;
       use_opacity_multiplier = 0;
+    }
+    if(have_fire != NO_FIRE && have_smoke != NO_SMOKE){
+      if(use_opacity_depth_ini == 1 && use_opacity_ini == 1){
+        use_opacity_depth = 1;
+        use_opacity_multiplier = 0;
+      }
+      else{
+        use_opacity_depth = 0;
+        use_opacity_multiplier = 1;
+      }
     }
     glui_use_fire_alpha = use_opacity_multiplier;
     use_opacity_depth =  1 - use_opacity_multiplier;

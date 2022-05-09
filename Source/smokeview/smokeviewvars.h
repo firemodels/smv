@@ -879,6 +879,8 @@ SVEXTERN int SVDECL(vis_device_plot, 0);
 SVEXTERN int SVDECL(vis_hrr_plot, 0);
 SVEXTERN int SVDECL(vis_slice_plot, 0);
 
+SVEXTERN fueldata SVDECL(*fuelinfo, NULL);
+SVEXTERN int SVDECL(nfuelinfo, 0);
 SVEXTERN char hrrlabel[256];
 SVEXTERN hrrdata SVDECL(*hrrinfo, NULL), SVDECL(*hrrptr, NULL), SVDECL(*timeptr, NULL);;
 SVEXTERN int SVDECL(nhrrinfo, 0);
@@ -1898,8 +1900,9 @@ SVEXTERN int smoke_color_int255[4];
 SVEXTERN int co2_color_int255[3];
 #endif
 
-SVEXTERN int SVDECL(use_opacity_depth, 1);
-SVEXTERN int SVDECL(use_opacity_multiplier, 0);
+SVEXTERN int SVDECL(use_opacity_depth, 1), SVDECL(use_opacity_depth_ini,-1);
+SVEXTERN int SVDECL(use_opacity_multiplier, 0), SVDECL(use_opacity_multiplier_ini, -1);
+SVEXTERN int SVDECL(use_opacity_ini, 0);
 
 SVEXTERN int SVDECL(update_smokefire_colors, 0);
 SVEXTERN float SVDECL(fire_halfdepth,0.3), SVDECL(fire_halfdepth2, 0.3), SVDECL(smoke_albedo, 0.3), SVDECL(smoke_albedo_base, 0.3);
