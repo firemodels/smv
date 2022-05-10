@@ -6,6 +6,7 @@
 #include <string.h>
 #include "MALLOCC.h"
 #include "translate.h"
+#include "string_util.h"
 
 /* ------------------ Usage ------------------------ */
 

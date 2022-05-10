@@ -769,10 +769,10 @@ int lua_get_devices(lua_State *L) {
   lua_createtable(L, 0, entries);
   int i;
   for (i = 0; i < entries; i++) {
-    lua_pushstring(L, infotable[i].label);
+    lua_pushstring(L, infotable[i].deviceID);
     lua_createtable(L, 0, 2);
 
-    lua_pushstring(L, infotable[i].label);
+    lua_pushstring(L, infotable[i].deviceID);
     lua_setfield(L, -2, "label");
 
     lua_settable(L, -3);
