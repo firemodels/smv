@@ -453,7 +453,9 @@ void GetViewportInfo(void){
     VP_scene.text_height = text_height;
     VP_scene.text_width = text_width;
     VP_scene.left = titlesafe_offset;
+#ifndef pp_PLOT2D_OVERLAP
     if(vis_hrr_plot==1 || vis_slice_plot==1)VP_scene.left = VP_hrr_plot.right;
+#endif
 
     VP_scene.down = titlesafe_offset + timebar_height;
     VP_scene.right = screenWidth - 2 * titlesafe_offset - VP_vcolorbar.width;

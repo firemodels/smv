@@ -18,6 +18,13 @@ typedef struct _lanlistdata {
   char lang_name[32];
 } langlistdata;
 
+/* --------------------------  fueldata ------------------------------------ */
+
+typedef struct _fueldata{
+  char *fuel;
+  float hoc;
+} fueldata;
+
 /* --------------------------  procdata ------------------------------------ */
 #ifdef CPP
 typedef struct _procdata {
@@ -936,7 +943,7 @@ typedef struct _sv_object {
 typedef struct _device {
   int active;
   int screenijk[3], visval, target_index;
-  char label[30], csvlabel[30], *labelptr;
+  char deviceID[30], csvlabel[30], *labelptr;
   char quantity[30], unit[30];
   float *times, *vals;
   float *vals_orig;
@@ -971,6 +978,9 @@ typedef struct _device {
   struct _vdevicedata *vdevice;
   int type, is_beam;
   int selected;
+#ifdef pp_PLOT2D_NEW
+  int inlist;
+#endif
   int valid;
 } devicedata;
 

@@ -586,8 +586,8 @@ void OutputDeviceVal(devicedata *devicei){
     }
     strcpy(label, "");
     sprintf(valuelabel, "%.1f",val);
-    if(showdevice_id==1&&strcmp(devicei->label,"null")!=0&&strlen(devicei->label)>0){
-      strcat(label, devicei->label);
+    if(showdevice_id==1&&strcmp(devicei->deviceID,"null")!=0&&strlen(devicei->deviceID)>0){
+      strcat(label, devicei->deviceID);
       strcat(label, ": ");
     }
     if(showdevice_type == 1){
@@ -3972,8 +3972,8 @@ void DrawDevices(int mode){
     if(devicei->object->visible == 0 || (devicei->prop != NULL&&devicei->prop->smv_object->visible == 0))continue;
     if(devicei->plane_surface != NULL)continue;
     if(isZoneFireModel == 1 && STRCMP(devicei->object->label, "target") == 0 && visSensor == 0)continue;
-    if(devicei->in_zone_csv == 1&&strcmp(devicei->label,"TARGET")!=0)continue;
-    if(isZoneFireModel == 1 && STRCMP(devicei->label, "TIME") == 0)continue;
+    if(devicei->in_zone_csv == 1&&strcmp(devicei->deviceID,"TARGET")!=0)continue;
+    if(isZoneFireModel == 1 && STRCMP(devicei->deviceID, "TIME") == 0)continue;
     save_use_displaylist = devicei->object->use_displaylist;
     tagval = ii + 1;
     if(select_device == 1 && show_mode == SELECTOBJECT){
@@ -5966,7 +5966,7 @@ devicedata *GetDeviceFromLabel(char *label,int index){
     devicedata *devicei;
 
     devicei = deviceinfo + i;
-    if(STRCMP(devicei->label,label)==0)return devicei;
+    if(STRCMP(devicei->deviceID,label)==0)return devicei;
   }
   return NULL;
 }
@@ -6603,14 +6603,14 @@ int IsDupDeviceLabel(int index, int direction){
     i2=ndeviceinfo;
   }
   dev_index = deviceinfo + index;
-  if(index<0||index>=ndeviceinfo||STRCMP(dev_index->label,"null")==0||dev_index->in_devc_csv==0)return 0;
+  if(index<0||index>=ndeviceinfo||STRCMP(dev_index->deviceID,"null")==0||dev_index->in_devc_csv==0)return 0;
 
   for(i=i1;i<i2;i++){
     devicedata *devi;
 
     devi = deviceinfo + i;
-    if(STRCMP(devi->label,"null")==0)continue;
-    if(STRCMP(dev_index->label,devi->label)==0)return 1;
+    if(STRCMP(devi->deviceID, "null")==0)continue;
+    if(STRCMP(dev_index->deviceID,devi->deviceID)==0)return 1;
   }
   return 0;
 }
@@ -6932,7 +6932,7 @@ void SetupDeviceData(void){
     devicedata *devi;
 
     devi = deviceinfo + i;
-    if(STRCMP(devi->label,"null")==0)continue;
+    if(STRCMP(devi->deviceID,"null")==0)continue;
     if(IsDupDeviceLabel(i,AFTER)==1){
       is_dup=1;
       break;
@@ -6946,9 +6946,9 @@ void SetupDeviceData(void){
       devicedata *devi;
 
       devi = deviceinfo + ii;
-      if(STRCMP(devi->label,"null")==0)continue;
+      if(STRCMP(devi->deviceID,"null")==0)continue;
       if(IsDupDeviceLabel(ii,BEFORE)==0&& IsDupDeviceLabel(ii,AFTER)==1){
-        fprintf(stderr," %s,",devi->label);
+        fprintf(stderr," %s,",devi->deviceID);
       }
     }
     fprintf(stderr," found in %s\n",fds_filein);
@@ -7376,7 +7376,7 @@ void UpdateDeviceTextures(void){
     devicei = deviceinfo + i;
 
     if(devicei->object==NULL){
-      devicei->object = GetSmvObjectType(devicei->label,missing_device);
+      devicei->object = GetSmvObjectType(devicei->deviceID,missing_device);
     }
   }
 

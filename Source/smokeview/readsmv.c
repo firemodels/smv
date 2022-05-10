@@ -76,6 +76,11 @@ void GetHoc(float *hoc, char *name){
   char outfile[256], buffer[255];
   FILE *stream;
 
+  if(nfuelinfo > 0){
+    *hoc = fuelinfo->hoc;
+    strcpy(name, fuelinfo->fuel);
+    return;
+  }
   strcpy(outfile, fdsprefix);
   strcat(outfile, ".out");
   stream = fopen(outfile, "r");
@@ -1633,14 +1638,14 @@ void InitDevice(devicedata *devicei, float *xyz, int is_beam, float *xyz1, float
   devicei->filetype    = -1;
   devicei->in_zone_csv = 0;
   devicei->in_devc_csv = 0;
-  devicei->labelptr    = devicei->label;
+  devicei->labelptr    = devicei->deviceID;
   devicei->color       = NULL;
   devicei->line_width  = 1.0;
   devicei->have_xyz    = 0;
   devicei->have_xyz1   = 0;
   devicei->have_xyz2   = 0;
   if(labelptr != NULL){
-    strcpy(devicei->label, labelptr);
+    strcpy(devicei->deviceID, labelptr);
   }
   if(STRCMP(devicei->object->label, "plane") == 0){
     float color[4];
@@ -1759,10 +1764,10 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
     strcpy(devicei->csvlabel,tok4);
   }
   if(strlen(tok1)>=4&&strncmp(tok1, "null",4)==0){
-    strcpy(devicei->label, "null");
+    strcpy(devicei->deviceID, "null");
   }
   else{
-    strcpy(devicei->label, tok1);
+    strcpy(devicei->deviceID, tok1);
   }
   devicei->object = GetSmvObjectType(tok1,missing_device);
   if(devicei->object==missing_device&&tok3!=NULL){
@@ -1800,7 +1805,7 @@ void ParseDevicekeyword(BFILE *stream, devicedata *devicei){
   }
   else{
     NewMemory((void **)&devicei->prop,sizeof(propdata));
-    InitProp(devicei->prop,1,devicei->label);
+    InitProp(devicei->prop,1,devicei->deviceID);
     devicei->prop->smv_object=devicei->object;
     devicei->prop->smv_objects[0]=devicei->prop->smv_object;
   }
@@ -1891,10 +1896,10 @@ void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
   }
 
   if(strlen(tok1)>=4&&strncmp(tok1, "null", 4)==0){
-    strcpy(devicei->label, "null");
+    strcpy(devicei->deviceID, "null");
   }
   else{
-    strcpy(devicei->label, tok1);
+    strcpy(devicei->deviceID, tok1);
   }
   devicei->object = GetSmvObjectType(tok1, missing_device);
   if(devicei->object==missing_device&&tok3!=NULL){
@@ -1929,7 +1934,7 @@ void ParseDevicekeyword2(FILE *stream, devicedata *devicei){
   }
   else{
     NewMemory((void **)&devicei->prop, sizeof(propdata));
-    InitProp(devicei->prop, 1, devicei->label);
+    InitProp(devicei->prop, 1, devicei->deviceID);
     devicei->prop->smv_object = devicei->object;
     devicei->prop->smv_objects[0] = devicei->prop->smv_object;
   }
@@ -6107,7 +6112,6 @@ int ReadSMV(bufferstreamdata *stream){
   int ibartemp=2, jbartemp=2, kbartemp=2;
 
   int setGRID=0;
-  int  i;
   int have_auto_terrain_image=0;
 
   char buffer[256], buffers[6][256];
@@ -6134,6 +6138,8 @@ int ReadSMV(bufferstreamdata *stream){
 
   FREEMEMORY(treeinfo);
   ntreeinfo=0;
+
+  int i;
   for(i=0;i<nterraininfo;i++){
     terraindata *terri;
 
@@ -6446,6 +6452,56 @@ int ReadSMV(bufferstreamdata *stream){
     */
 
 
+    if(Match(buffer, "HoC") == 1){
+      int nfuelinfo_local;
+
+      FGETS(buffer, 255, stream);
+      sscanf(buffer, "%i", &nfuelinfo_local);
+      if(fuelinfo==NULL){
+        nfuelinfo = nfuelinfo_local;
+        NewMemory((void **)&fuelinfo, nfuelinfo*sizeof(fueldata));
+      }
+      else{
+        nfuelinfo = MIN(nfuelinfo_local, nfuelinfo);
+        ResizeMemory((void **)&fuelinfo, nfuelinfo*sizeof(fueldata));
+      }
+
+      for(i=0; i<nfuelinfo_local; i++){
+        fueldata *fueli;
+
+        FGETS(buffer, 255, stream);
+        if(i<nfuelinfo){
+          fueli = fuelinfo + i;
+          sscanf(buffer, "%f", &(fueli->hoc));
+        }
+      }
+      continue;
+    }
+    if(Match(buffer, "FUEL") == 1){
+      int nfuelinfo_local;
+
+      FGETS(buffer, 255, stream);
+      sscanf(buffer, "%i", &nfuelinfo_local);
+      if(fuelinfo==NULL){
+        nfuelinfo = nfuelinfo_local;
+        NewMemory((void **)&fuelinfo, nfuelinfo*sizeof(fueldata));
+      }
+      else{
+        nfuelinfo = MIN(nfuelinfo_local, nfuelinfo);
+        ResizeMemory((void **)&fuelinfo, nfuelinfo*sizeof(fueldata));
+      }
+
+      for(i=0; i<nfuelinfo_local; i++){
+        fueldata *fueli;
+
+        FGETS(buffer, 255, stream);
+        if(i<nfuelinfo){
+          fueli = fuelinfo + i;
+          fueli->fuel = GetStringPtr(buffer);
+        }
+      }
+      continue;
+    }
     if(Match(buffer, "TITLE")==1){
       char *fds_title_local;
       int len_title;
@@ -8703,7 +8759,7 @@ int ReadSMV(bufferstreamdata *stream){
           float *xyz, *xyznorm;
           FGETS(buffer,255,stream);
 
-          strcpy(devicecopy->label,"");
+          strcpy(devicecopy->deviceID,"");
           xyz = devicecopy->xyz;
           xyznorm = devicecopy->xyznorm;
           xyz[0]=0.0;
@@ -9010,6 +9066,14 @@ int ReadSMV(bufferstreamdata *stream){
     }
     FREEMEMORY(nexp_devices);
     devicecopy2=deviceinfo;
+  }
+  for (i = 0; i < ndeviceinfo; i++) {
+    devicedata *devicei;
+
+    devicei = deviceinfo + i;
+    if (strcmp(devicei->deviceID, "null") == 0) {
+      sprintf(devicei->deviceID, "DEV%05i", i + 1);
+    }
   }
 
   // define texture data structures by constructing a list of unique file names from surfinfo and devices
@@ -10720,7 +10784,9 @@ typedef struct {
     }
   }
   if(npartinfo>=64){
+#ifdef pp_PART_MULTI
     part_multithread = 1;
+#endif
     partfast = 1;
   }
 
@@ -13316,6 +13382,9 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       if(current_script_command==NULL&&nevac==0){
         sscanf(buffer, "%i %i %i", &partfast, &part_multithread, &npartthread_ids);
+#ifndef pp_PART_MULTI
+        part_multithread = 0;
+#endif
       }
       continue;
     }
@@ -13634,9 +13703,15 @@ int ReadIni2(char *inifile, int localfile){
         smoke_albedo = CLAMP(smoke_albedo, 0.0, 1.0);
         continue;
       }
+      if(Match(buffer, "SMOKEFIREPROP") == 1){
+        if(fgets(buffer, 255, stream) == NULL)break;
+        sscanf(buffer, "%i %i", &use_opacity_depth_ini, &use_opacity_multiplier_ini);
+        use_opacity_ini = 1;
+        continue;
+        }
       if(Match(buffer, "SMOKEPROP")==1){
         if(fgets(buffer, 255, stream)==NULL)break;
-        sscanf(buffer, "%f %i %i", &glui_smoke3d_extinct,&use_opacity_depth, &use_opacity_multiplier);
+        sscanf(buffer, "%f", &glui_smoke3d_extinct);
         glui_smoke3d_extinct_default = glui_smoke3d_extinct;
         continue;
       }
@@ -15649,8 +15724,12 @@ void WriteIni(int flag,char *filename){
     fprintf(fileout, "SMOKEALBEDO\n");
     fprintf(fileout, " %f\n", smoke_albedo);
   }
+  if((have_fire == NO_FIRE && have_smoke == NO_SMOKE)||(have_fire != NO_FIRE && have_smoke != NO_SMOKE)){
+    fprintf(fileout, "SMOKEFIREPROP\n");
+    fprintf(fileout, " %i %i", use_opacity_depth, use_opacity_multiplier);
+  }
   fprintf(fileout, "SMOKEPROP\n");
-  fprintf(fileout, "%f %i %i", glui_smoke3d_extinct, use_opacity_depth, use_opacity_multiplier);
+  fprintf(fileout, "%f\n", glui_smoke3d_extinct);
   glui_smoke3d_extinct_default = glui_smoke3d_extinct;
   fprintf(fileout, "SMOKESKIP\n");
   fprintf(fileout," %i %i %i %i %i\n",smokeskipm1,smoke3d_skip, smoke3d_skipx, smoke3d_skipy, smoke3d_skipz);

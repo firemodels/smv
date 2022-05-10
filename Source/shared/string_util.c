@@ -969,6 +969,41 @@ char *GetIntLabel(int val, char *label){
   return label;
 }
 
+/* ------------------ GetStringPtr ------------------------ */
+
+char *GetStringPtr(char *buffer){
+  int len_buffer;
+  char *bufferptr;
+  int first=-1, last=-1, i;
+
+  if(buffer==NULL)return NULL;
+  if(strlen(buffer)==0)return NULL;
+
+  for(i=0; i<strlen(buffer); i++){
+    if(buffer[i]!=' '){
+      first = i;
+      break;
+    }
+  }
+  if(first<0)return NULL;;
+
+  for(i=strlen(buffer)-1;i>=0;i--){
+    if(buffer[i]!=' '){
+      last = i;
+      break;
+    }
+  }
+  if(last<=0)return NULL;
+
+  len_buffer = 1 + last - first;
+  NewMemory((void **)&bufferptr, len_buffer+1);
+  for(i=0; i<len_buffer; i++){
+    bufferptr[i] = buffer[first+i];
+  }
+  bufferptr[len_buffer] = 0;
+  return bufferptr;
+}
+
 /* ------------------ GetString ------------------------ */
 
 char *GetString(char *buffer){
