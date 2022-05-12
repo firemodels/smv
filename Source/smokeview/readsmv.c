@@ -176,7 +176,7 @@ void ReadHRR(int flag){
   time_col  = -1;
   hrr_col   = -1;
   qradi_col = -1;
-  if(flag==UNLOAD)return;
+  if(flag==UNLOAD||nhrrinfo==0)return;
 
   stream = fopen(hrr_csv_filename, "r");
   if(stream==NULL)return;

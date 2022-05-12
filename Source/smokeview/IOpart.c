@@ -1366,6 +1366,7 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
   datacopy_local = parti->data5;
   count_local =0;
   count2_local =-1;
+  parti->ntimes = 0;
   for(;;){
     int doit_local;
 
@@ -1479,6 +1480,7 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
           float *valmin_smv, *valmax_smv;
 
           FORTPART5READ_mv((void **)&(datacopy_local->rvals), nparts_local*numtypes_local[2*class_index]);
+          if(returncode==FAIL_m)goto wrapup;
 
 #ifdef pp_PART_TEST
           int iii, jjj;
@@ -1530,6 +1532,9 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
         datacopy_local++;
       }
       CheckMemory;
+    }
+    if(doit_local==1){
+      (parti->ntimes)++;
     }
     CheckMemory;
     if(first_frame_local==1)first_frame_local =0;
