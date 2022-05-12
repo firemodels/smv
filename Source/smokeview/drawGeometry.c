@@ -2116,7 +2116,6 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
       }
       faceptr->showtimelist_handle=&bc->showtimelist;
       faceptr->del=bc->del;
-      faceptr->invisible=bc->invisible;
       faceptr->surfinfo=bc->surf[j];
       faceptr->texture_origin=bc->texture_origin;
       faceptr->transparent=bc->transparent;
@@ -2126,7 +2125,6 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
       faceptr->hidden=0;
       faceptr->patchpresent=0;
       faceptr->del=0;
-      faceptr->invisible=0;
       faceptr->texture_origin=vi->texture_origin;
       faceptr->transparent=vi->transparent;
       if(faceptr->type2==OUTLINE_FRAME_face){
@@ -2180,12 +2178,10 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
         if(bc->surf[j]==surfacedefault){
          // faceptr->color=block_ambient2;
           faceptr->color=surfacedefault->color;  /* fix ?? */
-          faceptr->invisible=surfacedefault->invisible;
           faceptr->transparent=surfacedefault->transparent;
         }
         else{
           faceptr->color=bc->surf[j]->color;
-          faceptr->invisible=bc->surf[j]->invisible;
           faceptr->transparent=bc->surf[j]->transparent;
         }
         break;

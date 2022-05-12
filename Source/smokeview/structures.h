@@ -405,7 +405,6 @@ typedef struct _facedata {
   float xmin, xmax, ymin, ymax, zmin, zmax;
   int dir,hidden,dup;
   int del;
-  int invisible;
   int transparent;
   int patchpresent;
   struct _culldata *cullport;
