@@ -416,6 +416,7 @@ void GetPartColors(partdata *parti, int nlevel){
       partclassi = parti->partclassptr[j];
       rvals = datacopy->rvals;
       irvals = datacopy->irvals;
+      if(rvals==NULL || irvals==NULL)continue;
       for(k=2;k<partclassi->ntypes;k++){
         partpropdata *prop_id;
 
