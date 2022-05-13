@@ -1524,7 +1524,9 @@ SVEXTERN float max_dev_vel;
 SVEXTERN int SVDECL(last_prop_display,-1);
 SVEXTERN int SVDECL(devicetypes_index,0);
 #ifdef pp_PLOT2D_NEW
-SVEXTERN int SVDECL(deviceIDs_index, 0);
+SVEXTERN int SVDECL(devicetype1_index, 0);
+SVEXTERN int SVDECL(devtype1_index, 0);
+SVEXTERN int SVDECL(deviceID1_index, 0);
 SVEXTERN int SVDECL(list_all_devices, 1);
 #endif
 SVEXTERN devicedata SVDECL(*deviceinfo,NULL);

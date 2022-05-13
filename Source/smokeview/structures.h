@@ -978,7 +978,7 @@ typedef struct _device {
   int type, is_beam;
   int selected;
 #ifdef pp_PLOT2D_NEW
-  int inlist;
+  int inlist1;
 #endif
   int valid;
 } devicedata;
