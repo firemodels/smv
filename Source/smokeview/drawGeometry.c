@@ -3622,6 +3622,54 @@ facedata *GetFaceNabor(meshdata *meshi, facedata *facei, int dir){
       return facej;
     }
     break;
+  case MFRONT:
+    if(facei->jmin != 0 || facei->jmin != facei->jmax)return NULL;
+    for(j = 2; j < 6 * meshj->nbptrs; j += 6){
+      facedata *facej;
+
+      facej = meshj->faceinfo + j;
+      if(facej->jmin != meshj->jbar || facej->jmax != facej->jmin)continue;
+      if(facei->imin != facej->imin || facei->kmin != facej->kmin)continue;
+      if(facei->imax != facej->imax || facei->kmax != facej->kmax)continue;
+      return facej;
+    }
+    break;
+  case MBACK:
+    if(facei->jmin != meshi->jbar || facei->jmax != facei->jmin)return NULL;
+    for(j = 0; j < 6 * meshj->nbptrs; j += 6){
+      facedata *facej;
+
+      facej = meshj->faceinfo + j;
+      if(facej->jmin != meshj->jbar || facej->jmax != facej->jmin)continue;
+      if(facei->imin != facej->imin || facei->kmin != facej->kmin)continue;
+      if(facei->imax != facej->imax || facei->kmax != facej->kmax)continue;
+      return facej;
+    }
+    break;
+  case MLEFT:
+    if(facei->imin != 0 || facei->imin != facei->imax)return NULL;
+    for(j = 1; j < 6 * meshj->nbptrs; j += 6){
+      facedata *facej;
+
+      facej = meshj->faceinfo + j;
+      if(facej->imin != meshj->ibar || facej->imax != facej->imin)continue;
+      if(facei->kmin != facej->kmin || facei->jmin != facej->jmin)continue;
+      if(facei->kmax != facej->kmax || facei->jmax != facej->jmax)continue;
+      return facej;
+    }
+    break;
+  case MRIGHT:
+    if(facei->imin != meshi->ibar || facei->imax != facei->imin)return NULL;
+    for(j = 3; j < 6 * meshj->nbptrs; j += 6){
+      facedata *facej;
+
+      facej = meshj->faceinfo + j;
+      if(facej->imin != meshj->ibar || facej->imax != facej->imin)continue;
+      if(facei->kmin != facej->kmin || facei->jmin != facej->kmin)continue;
+      if(facei->kmax != facej->kmax || facei->jmax != facej->kmax)continue;
+      return facej;
+    }
+    break;
   }
   return NULL;
 }
@@ -3672,6 +3720,57 @@ void UpdateHiddenFaces(){
     meshdata *meshi;
 
     meshi = meshinfo + i;
+    // x plane faces
+    for(j = 3; j < 6 * meshi->nbptrs; j += 6){
+      facedata *facej;
+
+      facej = meshi->faceinfo + j;
+      if(facej->hidden == 0){
+        facedata *facej2;
+
+        facej2 = GetFaceNabor(meshi, facej, MLEFT);
+        if(facej2 != NULL){
+          facej->hidden = 1;
+          facej2->hidden = 1;
+        }
+      }
+
+      if(facej->hidden == 0){
+        facedata *facej2;
+
+        facej2 = GetFaceNabor(meshi, facej, MRIGHT);
+        if(facej2 != NULL){
+          facej->hidden = 1;
+          facej2->hidden = 1;
+        }
+      }
+    }
+    // y plane faces
+    for(j = 0; j < 6 * meshi->nbptrs; j += 6){
+      facedata *facej;
+
+      facej = meshi->faceinfo + j;
+      if(facej->hidden == 0){
+        facedata *facej2;
+
+        facej2 = GetFaceNabor(meshi, facej, MFRONT);
+        if(facej2 != NULL){
+          facej->hidden = 1;
+          facej2->hidden = 1;
+        }
+      }
+
+      if(facej->hidden == 0){
+        facedata *facej2;
+
+        facej2 = GetFaceNabor(meshi, facej, MBACK);
+        if(facej2 != NULL){
+          facej->hidden = 1;
+          facej2->hidden = 1;
+        }
+      }
+    }
+    // z plane faces
     for(j = 4; j < 6 * meshi->nbptrs; j += 6){
       facedata *facej;
 
