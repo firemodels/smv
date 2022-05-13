@@ -3670,6 +3670,9 @@ facedata *GetFaceNabor(meshdata *meshi, facedata *facei, int dir){
       return facej;
     }
     break;
+  default:
+    ASSERT(FFALSE);
+    break;
   }
   return NULL;
 }
