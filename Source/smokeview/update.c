@@ -1885,13 +1885,7 @@ void UpdateShowScene(void){
   }
   if(update_generate_part_histograms==1){
     update_generate_part_histograms = 0;
-#ifdef pp_PART_PAUSE
-    printf("analyze part data\n");
     GeneratePartHistogramsMT();
-    printf("analyze part data complete\n");
-#else
-    GeneratePartHistogramsMT();
-#endif
     update_generate_part_histograms = -1;
   }
   if(update_stept==1){
