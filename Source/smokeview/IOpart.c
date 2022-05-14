@@ -219,7 +219,7 @@ void DrawPart(const partdata *parti){
   int offset_terrain;
   propdata *prop;
 
-  if(parti->times[0] > global_times[itimes])return;
+  if(nglobal_times<1||parti->times[0] > global_times[itimes])return;
   if(nterraininfo > 0 && ABS(vertical_factor - 1.0) > 0.01){
     offset_terrain = 1;
   }

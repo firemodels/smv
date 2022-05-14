@@ -417,7 +417,7 @@ void GetPartColors(partdata *parti, int nlevel){
       rvals = datacopy->rvals;
       irvals = datacopy->irvals;
  // caused problems with coloring - might need in some form if crashes stil occur
-      if(rvals==NULL || irvals==NULL){
+      if(rvals==NULL || irvals==NULL || datacopy->npoints==0){
         datacopy++;
         continue;
       }
