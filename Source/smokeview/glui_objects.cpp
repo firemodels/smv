@@ -105,18 +105,14 @@ GLUI_Listbox *LIST_open=NULL;
 GLUI_Listbox *LIST_hrrdata=NULL;
 
 #ifdef pp_PLOT2D_NEW
-GLUI_Panel *PANEL_plotgeneral = NULL;
 GLUI_Panel *PANEL_plotgeneral_device = NULL;
 GLUI_Panel *PANEL_plotgeneral_hrr = NULL;
 GLUI_Panel *PANEL_plotgeneral_plot = NULL;
 #endif
-GLUI_Panel *PANEL_plotslice=NULL;
-GLUI_Panel *PANEL_plothrr=NULL;
 GLUI_Panel *PANEL_objects=NULL;
 GLUI_Panel *PANEL_vectors=NULL;
 GLUI_Panel *PANEL_arrow_base=NULL;
 GLUI_Panel *PANEL_arrow_height=NULL;
-GLUI_Panel *PANEL_plotdevice = NULL;
 GLUI_Panel *PANEL_label3=NULL;
 GLUI_Panel *PANEL_vector_type=NULL;
 GLUI_Panel *PANEL_beam=NULL;
@@ -125,7 +121,6 @@ GLUI_Panel *PANEL_wr1=NULL;
 GLUI_Panel *PANEL_windrose_merge = NULL;
 GLUI_Panel *PANEL_windrose_merget = NULL;
 GLUI_Panel *PANEL_windrose_mergexyz = NULL;
-GLUI_Panel *PANEL_plotproperties = NULL;
 
 GLUI_RadioGroup *RADIO_windrose_ttype = NULL;
 GLUI_RadioGroup *RADIO_windrose_merge_type=NULL;
@@ -134,6 +129,13 @@ GLUI_RadioGroup *RADIO_scale_windrose=NULL;
 GLUI_RadioGroup *RADIO_windstate_windrose = NULL;
 GLUI_RadioGroup *RADIO_vis_device_plot = NULL;
 
+#ifdef pp_PLOT2D_NEW
+GLUI_Rollout *ROLLOUT_plotgeneral = NULL;
+#endif
+GLUI_Rollout *ROLLOUT_plotslice=NULL;
+GLUI_Rollout *ROLLOUT_plothrr=NULL;
+GLUI_Rollout *ROLLOUT_plotdevice = NULL;
+GLUI_Rollout *ROLLOUT_plotproperties = NULL;
 GLUI_Rollout *ROLLOUT_values = NULL;
 GLUI_Rollout *ROLLOUT_device2Dplots=NULL;
 GLUI_Rollout *ROLLOUT_showhide_windrose = NULL;
@@ -862,9 +864,9 @@ extern "C" void GluiDeviceSetup(int main_window){
 
 #ifdef pp_PLOT2D_NEW
     if(nhrrinfo>0||ndevicetypes>0){
-        PANEL_plotgeneral = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "general");
+        ROLLOUT_plotgeneral = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "general", false);
         if(ndevicetypes>0){
-        PANEL_plotgeneral_device = glui_device->add_panel_to_panel(PANEL_plotgeneral, "device data");
+        PANEL_plotgeneral_device = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "device data");
         LIST_devID1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_device, "ID:", &deviceID1_index, GENPLOT_devID1, GenPlotCB);
         for(i = 0; i < ndeviceinfo; i++){
           devicedata *devicei;
@@ -883,7 +885,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       }
 
       if(nhrrinfo>0){
-        PANEL_plotgeneral_hrr = glui_device->add_panel_to_panel(PANEL_plotgeneral, "hrr data");
+        PANEL_plotgeneral_hrr = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "hrr data");
         LIST_hrrdata1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_hrr, "type:", &hrr1_index, GENPLOT_HRR1, GenPlotCB);
         for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
           hrrdata *hi;
@@ -897,13 +899,14 @@ extern "C" void GluiDeviceSetup(int main_window){
         glui_device->add_button_to_panel(PANEL_plotgeneral_hrr, _("Add"), GENPLOT_ADDHRR1, GenPlotCB);
       }
 
-      PANEL_plotgeneral_plot = glui_device->add_panel_to_panel(PANEL_plotgeneral, "plot");
+      PANEL_plotgeneral_plot = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "plot");
       LIST_plotlist1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_plot, "curves:", &plot_component1, GENPLOT_COMP1, GenPlotCB);
       glui_device->add_button_to_panel(PANEL_plotgeneral_plot, _("Remove"), GENPLOT_CLEAR1, DeviceCB);
       glui_device->add_button_to_panel(PANEL_plotgeneral_plot, _("Remove all"), GENPLOT_CLEARALL, DeviceCB);
       SPINNER_genplot_x = glui_device->add_spinner_to_panel(PANEL_plotgeneral_plot, "x", GLUI_SPINNER_FLOAT, genplot_xyz+0, GENPLOT_XYZ, GenPlotCB);
       SPINNER_genplot_y = glui_device->add_spinner_to_panel(PANEL_plotgeneral_plot, "y", GLUI_SPINNER_FLOAT, genplot_xyz+1, GENPLOT_XYZ, GenPlotCB);
       SPINNER_genplot_z = glui_device->add_spinner_to_panel(PANEL_plotgeneral_plot, "z", GLUI_SPINNER_FLOAT, genplot_xyz+2, GENPLOT_XYZ, GenPlotCB);
+
       float plot_xyz_delta;
       plot_xyz_delta = MAX(ABS(xbarFDS - xbar0FDS), ABS(ybarFDS - ybar0FDS));
       plot_xyz_delta = MAX(ABS(zbarFDS - zbar0FDS), plot_xyz_delta)/5.0;
@@ -916,22 +919,22 @@ extern "C" void GluiDeviceSetup(int main_window){
 #endif
 
     if(ndevicetypes>0){
-      PANEL_plotdevice = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "device");
-      RADIO_vis_device_plot = glui_device->add_radiogroup_to_panel(PANEL_plotdevice, &vis_device_plot, SHOWDEVICEPLOT, DeviceCB);
+      ROLLOUT_plotdevice = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "device", false);
+      RADIO_vis_device_plot = glui_device->add_radiogroup_to_panel(ROLLOUT_plotdevice, &vis_device_plot, SHOWDEVICEPLOT, DeviceCB);
       glui_device->add_radiobutton_to_group(RADIO_vis_device_plot, "hide");
       glui_device->add_radiobutton_to_group(RADIO_vis_device_plot, "show selected");
       glui_device->add_radiobutton_to_group(RADIO_vis_device_plot, "show all");
       glui_device->add_radiobutton_to_group(RADIO_vis_device_plot, "show all (trees)");
       devicetypes_index = CLAMP(devicetypes_index, 0, ndevicetypes-1);
-      LIST_devicetypes = glui_device->add_listbox_to_panel(PANEL_plotdevice, "type:", &devicetypes_index, DEVICE_devicetypes, DeviceCB);
+      LIST_devicetypes = glui_device->add_listbox_to_panel(ROLLOUT_plotdevice, "type:", &devicetypes_index, DEVICE_devicetypes, DeviceCB);
       for(i = 0; i<ndevicetypes; i++){
         LIST_devicetypes->add_item(i, devicetypes[i]->quantity);
       }
-      glui_device->add_spinner_to_panel(PANEL_plotdevice, _("x offset"), GLUI_SPINNER_FLOAT, plot2d_xyz_offset);
-      glui_device->add_spinner_to_panel(PANEL_plotdevice, _("y offset"), GLUI_SPINNER_FLOAT, plot2d_xyz_offset+1);
-      glui_device->add_spinner_to_panel(PANEL_plotdevice, _("z offset"), GLUI_SPINNER_FLOAT, plot2d_xyz_offset+2);
+      glui_device->add_spinner_to_panel(ROLLOUT_plotdevice, _("x offset"), GLUI_SPINNER_FLOAT, plot2d_xyz_offset);
+      glui_device->add_spinner_to_panel(ROLLOUT_plotdevice, _("y offset"), GLUI_SPINNER_FLOAT, plot2d_xyz_offset+1);
+      glui_device->add_spinner_to_panel(ROLLOUT_plotdevice, _("z offset"), GLUI_SPINNER_FLOAT, plot2d_xyz_offset+2);
 
-      ROLLOUT_values = glui_device->add_rollout_to_panel(PANEL_plotdevice, "values", false);
+      ROLLOUT_values = glui_device->add_rollout_to_panel(ROLLOUT_plotdevice, "values", false);
       CHECKBOX_showdevice_val = glui_device->add_checkbox_to_panel(ROLLOUT_values, _("Values"), &showdevice_val,  SHOWDEVICEVALS,  DeviceCB);
       CHECKBOX_device_1 = glui_device->add_checkbox_to_panel(ROLLOUT_values, _("Id"),           &showdevice_id,   SHOWDEVICEVALS,  DeviceCB);
       CHECKBOX_device_5 = glui_device->add_checkbox_to_panel(ROLLOUT_values, _("Type"),         &showdevice_type, SHOWDEVICEVALS,  DeviceCB);
@@ -942,9 +945,9 @@ extern "C" void GluiDeviceSetup(int main_window){
     }
 
     if(nhrrinfo>0){
-      PANEL_plothrr = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "hrr");
-      CHECKBOX_vis_hrr_plot = glui_device->add_checkbox_to_panel(PANEL_plothrr, _("show"), &vis_hrr_plot, HRRPUV2_PLOT, DeviceCB);
-      LIST_hrrdata = glui_device->add_listbox_to_panel(PANEL_plothrr, "type:", &glui_hrr, DEVICE_TIMEAVERAGE, DeviceCB);
+      ROLLOUT_plothrr = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "hrr", false);
+      CHECKBOX_vis_hrr_plot = glui_device->add_checkbox_to_panel(ROLLOUT_plothrr, _("show"), &vis_hrr_plot, HRRPUV2_PLOT, DeviceCB);
+      LIST_hrrdata = glui_device->add_listbox_to_panel(ROLLOUT_plothrr, "type:", &glui_hrr, DEVICE_TIMEAVERAGE, DeviceCB);
       for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
         hrrdata *hi;
 
@@ -956,34 +959,34 @@ extern "C" void GluiDeviceSetup(int main_window){
       }
       LIST_hrrdata->set_int_val(glui_hrr);
       if(have_mlr==1){
-        SPINNER_fuel_hoc = glui_device->add_spinner_to_panel(PANEL_plothrr, _("HOC (kJ/kg)"), GLUI_SPINNER_FLOAT, &fuel_hoc, FUEL_HOC, DeviceCB);
-        glui_device->add_checkbox_to_panel(PANEL_plothrr, _("HRR and HOC*MLR_..."), &hoc_hrr);
-        BUTTON_reset_fuel_hoc = glui_device->add_button_to_panel(PANEL_plothrr, _("Reset HOC"), RESET_FUEL_HOC, DeviceCB);
+        SPINNER_fuel_hoc = glui_device->add_spinner_to_panel(ROLLOUT_plothrr, _("HOC (kJ/kg)"), GLUI_SPINNER_FLOAT, &fuel_hoc, FUEL_HOC, DeviceCB);
+        glui_device->add_checkbox_to_panel(ROLLOUT_plothrr, _("HRR and HOC*MLR_..."), &hoc_hrr);
+        BUTTON_reset_fuel_hoc = glui_device->add_button_to_panel(ROLLOUT_plothrr, _("Reset HOC"), RESET_FUEL_HOC, DeviceCB);
       }
     }
     if(nsliceinfo>0){
-      PANEL_plotslice = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "slice");
-      glui_device->add_checkbox_to_panel(PANEL_plotslice, _("show"), &vis_slice_plot, SLICE_PLOT, DeviceCB);
-      glui_device->add_checkbox_to_panel(PANEL_plotslice, _("slice bounds"), &slice_plot_bound_option, SLICE_PLOT, DeviceCB);
-      SPINNER_slice_x = glui_device->add_spinner_to_panel(PANEL_plotslice, "x", GLUI_SPINNER_FLOAT, slice_xyz+0, SLICE_PLOT, DeviceCB);
-      SPINNER_slice_y = glui_device->add_spinner_to_panel(PANEL_plotslice, "y", GLUI_SPINNER_FLOAT, slice_xyz+1, SLICE_PLOT, DeviceCB);
-      SPINNER_slice_z = glui_device->add_spinner_to_panel(PANEL_plotslice, "z", GLUI_SPINNER_FLOAT, slice_xyz+2, SLICE_PLOT, DeviceCB);
+      ROLLOUT_plotslice = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "slice", false);
+      glui_device->add_checkbox_to_panel(ROLLOUT_plotslice, _("show"), &vis_slice_plot, SLICE_PLOT, DeviceCB);
+      glui_device->add_checkbox_to_panel(ROLLOUT_plotslice, _("slice bounds"), &slice_plot_bound_option, SLICE_PLOT, DeviceCB);
+      SPINNER_slice_x = glui_device->add_spinner_to_panel(ROLLOUT_plotslice, "x", GLUI_SPINNER_FLOAT, slice_xyz+0, SLICE_PLOT, DeviceCB);
+      SPINNER_slice_y = glui_device->add_spinner_to_panel(ROLLOUT_plotslice, "y", GLUI_SPINNER_FLOAT, slice_xyz+1, SLICE_PLOT, DeviceCB);
+      SPINNER_slice_z = glui_device->add_spinner_to_panel(ROLLOUT_plotslice, "z", GLUI_SPINNER_FLOAT, slice_xyz+2, SLICE_PLOT, DeviceCB);
       SPINNER_slice_x->set_float_limits(xbar0FDS, xbarFDS);
       SPINNER_slice_y->set_float_limits(ybar0FDS, ybarFDS);
       SPINNER_slice_z->set_float_limits(zbar0FDS, zbarFDS);
     }
 
-    PANEL_plotproperties = glui_device->add_panel_to_panel(ROLLOUT_device2Dplots, "properties", true);
-    glui_device->add_checkbox_to_panel(PANEL_plotproperties, _("plot labels"), &showd_plot2d_labels);
-    SPINNER_size_factor = glui_device->add_spinner_to_panel(PANEL_plotproperties, _("size factor"), GLUI_SPINNER_FLOAT, &plot2d_size_factor);
+    ROLLOUT_plotproperties = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "properties", false);
+    glui_device->add_checkbox_to_panel(ROLLOUT_plotproperties, _("plot labels"), &showd_plot2d_labels);
+    SPINNER_size_factor = glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("size factor"), GLUI_SPINNER_FLOAT, &plot2d_size_factor);
     SPINNER_size_factor->set_float_limits(0.0, 1.0);
-    glui_device->add_spinner_to_panel(PANEL_plotproperties, _("line width"), GLUI_SPINNER_FLOAT, &plot2d_line_width);
-    glui_device->add_spinner_to_panel(PANEL_plotproperties, _("point size"), GLUI_SPINNER_FLOAT, &plot2d_point_size);
+    glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("line width"), GLUI_SPINNER_FLOAT, &plot2d_line_width);
+    glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("point size"), GLUI_SPINNER_FLOAT, &plot2d_point_size);
     {
       float dev_tmax;
 
       dev_tmax = GetDeviceTminTmax();
-      SPINNER_device_time_average = glui_device->add_spinner_to_panel(PANEL_plotproperties, _("smoothing interval (s)"), GLUI_SPINNER_FLOAT, &device_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
+      SPINNER_device_time_average = glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("smoothing interval (s)"), GLUI_SPINNER_FLOAT, &device_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
       SPINNER_device_time_average->set_float_limits(0.0, dev_tmax);
     }
   }
