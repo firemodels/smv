@@ -3037,6 +3037,12 @@ void UpdateMeshCoords(void){
   ybarFDS  = ybar;
   zbarFDS  = zbar;
 
+#ifdef pp_PLOT2D_NEW
+  genplot_xyz[0] = xbar0FDS;
+  genplot_xyz[1] = ybar0FDS;
+  genplot_xyz[2] = zbar0FDS;
+#endif
+
   geomlistdata *geomlisti;
   if(geominfo!=NULL&&geominfo->geomlistinfo!=NULL){
     geomlisti = geominfo->geomlistinfo-1;
