@@ -1531,6 +1531,8 @@ SVEXTERN int SVDECL(hrr1_index, 0);
 SVEXTERN int SVDECL(show_genplot1, 0);
 SVEXTERN int SVDECL(list_all_devices, 1);
 SVEXTERN float genplot_xyz[3];
+SVEXTERN plot2ddata SVDECL(*plot2dinfo, NULL);
+SVEXTERN int SVDECL(nplot2dinfo, 0);
 #endif
 SVEXTERN devicedata SVDECL(*deviceinfo,NULL);
 SVEXTERN vdevicedata SVDECL(*vdeviceinfo, NULL);

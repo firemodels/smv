@@ -642,6 +642,33 @@ float GetDeviceTminTmax(void){
   return return_val;
 }
 
+#ifdef pp_PLOT2D_NEW
+
+/* ------------------ InitPlot2D ------------------------ */
+
+void InitPlot2D(int n){
+  int i;
+
+  NewMemory((void **)&plot2dinfo, n*sizeof(plot2ddata));
+  nplot2dinfo = n;
+  for(i = 0; i < n; i++){
+    plot2ddata *plot2di;
+
+    plot2di = plot2dinfo + i;
+    plot2di->ndevice_index = 0;
+    plot2di->nhrr_index = 0;
+    plot2di->show = 0;
+    plot2di->xyz[0] = xbar0FDS;
+    plot2di->xyz[1] = ybar0FDS;
+    plot2di->xyz[2] = zbar0FDS;
+    plot2di->device_index = NULL;
+    plot2di->hrr_index = NULL;
+    if(nhrrinfo > 0)NewMemory((void **)&(plot2di->hrr_index), nhrrinfo * sizeof(int));
+    if(ndeviceinfo > 0)NewMemory((void **)&(plot2di->device_index), ndeviceinfo * sizeof(int));
+  }
+}
+#endif
+
 /* ------------------ GluiDeviceSetup ------------------------ */
 
 extern "C" void GluiDeviceSetup(int main_window){
@@ -862,7 +889,8 @@ extern "C" void GluiDeviceSetup(int main_window){
 
 #ifdef pp_PLOT2D_NEW
     if(nhrrinfo>0||ndevicetypes>0){
-        ROLLOUT_plotgeneral = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "general", false);
+      InitPlot2D(1);
+      ROLLOUT_plotgeneral = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "general", false);
         if(ndevicetypes>0){
         PANEL_plotgeneral_device = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "device data");
         LIST_devID1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_device, "ID:", &deviceID1_index, GENPLOT_devID1, GenPlotCB);
