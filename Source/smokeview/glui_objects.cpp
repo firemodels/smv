@@ -337,9 +337,7 @@ void UpdateDevList(GLUI_Listbox *LIST_dev, int devtype_index, int list_all){
   if(LIST_dev == NULL)return;;
   for(i = 0; i < ndeviceinfo; i++){
     devicedata *devicei;
-    int inlist;
 
-    inlist = 0;
     devicei = deviceinfo + i;
     if(devicei->inlist1 == 1){
       devicei->inlist1 = 0;
