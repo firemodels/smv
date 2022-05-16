@@ -3364,22 +3364,22 @@ void DrawGenPlot(plot2ddata * plot2di){
     curve_index = plot2di->curve_index[i];
     if(curve_index<ndeviceinfo){
       if(dev_global_min>dev_global_max){
-        dev_global_min = plot2di->curve_min[i];
-        dev_global_max = plot2di->curve_max[i];
+        dev_global_min = plot2di->curve_min[curve_index];
+        dev_global_max = plot2di->curve_max[curve_index];
       }
       else{
-        dev_global_min = MIN(dev_global_min, plot2di->curve_min[i]);
-        dev_global_max = MIN(dev_global_max, plot2di->curve_max[i]);
+        dev_global_min = MIN(dev_global_min, plot2di->curve_min[curve_index]);
+        dev_global_max = MIN(dev_global_max, plot2di->curve_max[curve_index]);
       }
     }
     else{
       if(hrr_global_min>hrr_global_max){
-        hrr_global_min = plot2di->curve_min[i];
-        hrr_global_max = plot2di->curve_max[i];
+        hrr_global_min = plot2di->curve_min[curve_index];
+        hrr_global_max = plot2di->curve_max[curve_index];
       }
       else{
-        hrr_global_min = MIN(hrr_global_min, plot2di->curve_min[i]);
-        hrr_global_max = MIN(hrr_global_max, plot2di->curve_max[i]);
+        hrr_global_min = MIN(hrr_global_min, plot2di->curve_min[curve_index]);
+        hrr_global_max = MIN(hrr_global_max, plot2di->curve_max[curve_index]);
       }
     }
   }
