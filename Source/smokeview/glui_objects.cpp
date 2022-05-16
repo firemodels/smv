@@ -742,7 +742,57 @@ void InitPlot2D(int n){
     plot2di->xyz[1] = ybar0FDS;
     plot2di->xyz[2] = zbar0FDS;
     plot2di->curve_index = NULL;
-    if(nhrrinfo + ndeviceinfo > 0)NewMemory((void **)&(plot2di->curve_index), (ndeviceinfo+nhrrinfo) * sizeof(int));
+    if(nhrrinfo+ndeviceinfo>0){
+      NewMemory((void **)&(plot2di->curve_index), (ndeviceinfo+nhrrinfo)*sizeof(int));
+      NewMemory((void **)&(plot2di->curve_min),   (ndeviceinfo+nhrrinfo)*sizeof(float));
+      NewMemory((void **)&(plot2di->curve_max),   (ndeviceinfo+nhrrinfo)*sizeof(float));
+    }
+  }
+  for(i=0; i<ndeviceinfo; i++){
+    devicedata *devi;
+    int j;
+
+    devi = deviceinfo+i;
+    if(devi->nvals>0){
+      float valmin, valmax;
+
+      valmin = devi->vals[0];
+      valmax = valmin;
+      for(j=1; j<devi->nvals; j++){
+        valmin = MIN(valmin, devi->vals[j]);
+        valmax = MAX(valmax, devi->vals[j]);
+      }
+      for(j=0; j<n; j++){
+        plot2ddata *plot2dj;
+
+        plot2dj = plot2dinfo + j;
+        plot2dj->curve_min[i] = valmin;
+        plot2dj->curve_max[i] = valmax;
+      }
+    }
+  }
+  for(i=0; i<nhrrinfo; i++){
+    hrrdata *hrri;
+    int j;
+
+    hrri = hrrinfo+i;
+    if(hrri->nvals>0){
+      float valmin, valmax;
+
+      valmin = hrri->vals[0];
+      valmax = valmin;
+      for(j=1; j<hrri->nvals; j++){
+        valmin = MIN(valmin, hrri->vals[j]);
+        valmax = MAX(valmax, hrri->vals[j]);
+      }
+      for(j=0; j<n; j++){
+        plot2ddata *plot2dj;
+
+        plot2dj = plot2dinfo + j;
+        plot2dj->curve_min[i+ndeviceinfo] = valmin;
+        plot2dj->curve_max[i+ndeviceinfo] = valmax;
+      }
+    }
   }
 }
 #endif
@@ -968,7 +1018,7 @@ extern "C" void GluiDeviceSetup(int main_window){
 #ifdef pp_PLOT2D_NEW
     if(nhrrinfo>0||ndevicetypes>0){
       InitPlot2D(1);
-      ROLLOUT_plotgeneral = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "general", false);
+      ROLLOUT_plotgeneral = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "device+hrr", false);
         if(ndevicetypes>0){
         PANEL_plotgeneral_device = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "device data");
         LIST_devID1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_device, "ID:", &deviceID1_index, GENPLOT_devID1, GenPlotCB);
@@ -980,17 +1030,17 @@ extern "C" void GluiDeviceSetup(int main_window){
           LIST_devID1->add_item(i, devicei->deviceID);
         }
         devicetypes_index = CLAMP(devicetypes_index, 0, ndevicetypes-1);
-        LIST_devtype1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_device, "type:", &devtype1_index, GENPLOT_devtype1, GenPlotCB);
+        LIST_devtype1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_device, "show devices with quantity:", &devtype1_index, GENPLOT_devtype1, GenPlotCB);
         for(i = 0; i<ndevicetypes; i++){
           LIST_devtype1->add_item(i, devicetypes[i]->quantity);
         }
-        glui_device->add_checkbox_to_panel(PANEL_plotgeneral_device, _("list all devices"), &list_all_devices, GENPLOT_devtype1, GenPlotCB);
+        glui_device->add_checkbox_to_panel(PANEL_plotgeneral_device, _("show all devices"), &list_all_devices, GENPLOT_devtype1, GenPlotCB);
         glui_device->add_button_to_panel(PANEL_plotgeneral_device, _("Add to plot"), GENPLOT_ADDDEV1, GenPlotCB);
       }
 
       if(nhrrinfo>0){
         PANEL_plotgeneral_hrr = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "hrr data");
-        LIST_hrrdata1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_hrr, "type:", &hrr1_index, GENPLOT_HRR1, GenPlotCB);
+        LIST_hrrdata1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_hrr, "quantity:", &hrr1_index, GENPLOT_HRR1, GenPlotCB);
         for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
           hrrdata *hi;
 

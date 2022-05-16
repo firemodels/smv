@@ -3353,17 +3353,39 @@ void DrawGenCurve(float *xyz0, float factor, float *x, float *z, int n,
 
 /* ------------------ DrawGenPlot ------------------------ */
 
-//void DrawGenCurve(float *xyz0, float factor, float *x, float *z, int n,
-//                  float highlight_x, float highlight_y,
-//                  float global_valmin, float global_valmax){
-
 void DrawGenPlot(plot2ddata * plot2di){
   int i;
+  float dev_global_min=1.0, dev_global_max=0.0;
+  float hrr_global_min=1.0, hrr_global_max=0.0;
 
-  for(i=0; i<plot2di->ncurve_index;i++){
+  for(i = 0; i<plot2di->ncurve_index; i++){
+    int curve_index;
+
+    curve_index = plot2di->curve_index[i];
+    if(curve_index<ndeviceinfo){
+      if(dev_global_min>dev_global_max){
+        dev_global_min = plot2di->curve_min[i];
+        dev_global_max = plot2di->curve_max[i];
+      }
+      else{
+        dev_global_min = MIN(dev_global_min, plot2di->curve_min[i]);
+        dev_global_max = MIN(dev_global_max, plot2di->curve_max[i]);
+      }
+    }
+    else{
+      if(hrr_global_min>hrr_global_max){
+        hrr_global_min = plot2di->curve_min[i];
+        hrr_global_max = plot2di->curve_max[i];
+      }
+      else{
+        hrr_global_min = MIN(hrr_global_min, plot2di->curve_min[i]);
+        hrr_global_max = MIN(hrr_global_max, plot2di->curve_max[i]);
+      }
+    }
+  }
+  for(i = 0; i<plot2di->ncurve_index; i++){
     int curve_index;
     float highlight_time, highlight_val;
-    float global_valmin, global_valmax;
     int valid;
 
     curve_index = plot2di->curve_index[i];
@@ -3376,16 +3398,8 @@ void DrawGenPlot(plot2ddata * plot2di){
         highlight_val = GetDeviceVal(global_times[itimes], devi, &valid);
       }
       if(devi->nvals>0){
-        int j;
-
-        global_valmin = devi->vals[0];
-        global_valmax = global_valmin;
-        for(j=1; j<devi->nvals; j++){
-          global_valmin = MIN(global_valmin, devi->vals[j]);
-          global_valmax = MIN(global_valmax, devi->vals[j]);
-        }
         DrawGenCurve(plot2di->xyz, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
-                     highlight_time, highlight_val, global_valmin, global_valmax);
+                     highlight_time, highlight_val, dev_global_min, dev_global_max);
       }
     }
     else{
@@ -3403,16 +3417,8 @@ void DrawGenPlot(plot2ddata * plot2di){
         highlight_val = hrri->vals[itime];
         }
       if(hrri->nvals > 0){
-        int j;
-
-        global_valmin = hrri->vals[0];
-        global_valmax = global_valmin;
-        for(j = 1; j < hrri->nvals; j++){
-          global_valmin = MIN(global_valmin, hrri->vals[j]);
-          global_valmax = MIN(global_valmax, hrri->vals[j]);
-          }
         DrawGenCurve(plot2di->xyz, plot2d_size_factor, hrrinfo->vals, hrri->vals, hrri->nvals,
-                     highlight_time, highlight_val, global_valmin, global_valmax);
+                     highlight_time, highlight_val, hrr_global_min, hrr_global_max);
       }
     }
   }
