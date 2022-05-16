@@ -996,8 +996,7 @@ typedef struct _hrrdata {
 
 #ifdef pp_PLOT2D_NEW
 typedef struct _plot2ddata{
-  int *device_index, ndevice_index;
-  int *hrr_index, nhrr_index;
+  int *curve_index, ncurve_index;
   float xyz[3];
   int show;
 } plot2ddata;
