@@ -12684,6 +12684,11 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
+    if(Match(buffer, "PLOT2DHRRBOUNDS") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %f %i %f", &use_plot2d_hrr_min, &plot2d_hrr_min, &use_plot2d_hrr_max, &plot2d_hrr_max);
+      continue;
+    }
     if(Match(buffer, "P3DSURFACETYPE") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i ", &p3dsurfacetype);
@@ -15429,6 +15434,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", p3dsurfacetype);
   fprintf(fileout, "P3DSURFACESMOOTH\n");
   fprintf(fileout, " %i\n", p3dsurfacesmooth);
+  fprintf(fileout, "PLOT2DHRRBOUNDS\n");
+  fprintf(fileout, " %i %f %i %f\n", use_plot2d_hrr_min, plot2d_hrr_min, use_plot2d_hrr_max, plot2d_hrr_max);
   fprintf(fileout, "PROJECTION\n");
   fprintf(fileout, " %i\n", projection_type);
   fprintf(fileout, "SCALEDFONT\n");

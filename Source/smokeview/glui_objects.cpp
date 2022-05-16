@@ -113,6 +113,8 @@ GLUI_Panel *PANEL_plotgeneral_hrr = NULL;
 GLUI_Panel *PANEL_plotgeneral_plot = NULL;
 GLUI_Panel *PANEL_plotgeneral_position = NULL;
 #endif
+GLUI_Panel *PANEL_hrr_min = NULL;
+GLUI_Panel *PANEL_hrr_max = NULL;
 GLUI_Panel *PANEL_objects=NULL;
 GLUI_Panel *PANEL_vectors=NULL;
 GLUI_Panel *PANEL_arrow_base=NULL;
@@ -1116,6 +1118,17 @@ extern "C" void GluiDeviceSetup(int main_window){
         }
       }
       LIST_hrrdata->set_int_val(glui_hrr);
+
+      PANEL_hrr_min = glui_device->add_panel_to_panel(ROLLOUT_plothrr, "",false);
+      glui_device->add_spinner_to_panel(PANEL_hrr_min, "min", GLUI_SPINNER_FLOAT, &plot2d_hrr_min);
+      glui_device->add_column_to_panel(PANEL_hrr_min,false);
+      glui_device->add_checkbox_to_panel(PANEL_hrr_min, "set", &use_plot2d_hrr_min);
+
+      PANEL_hrr_max = glui_device->add_panel_to_panel(ROLLOUT_plothrr, "",false);
+      glui_device->add_spinner_to_panel(PANEL_hrr_max, "max", GLUI_SPINNER_FLOAT, &plot2d_hrr_max);
+      glui_device->add_column_to_panel(PANEL_hrr_max,false);
+      glui_device->add_checkbox_to_panel(PANEL_hrr_max, "set", &use_plot2d_hrr_max);
+
       if(have_mlr==1){
         SPINNER_fuel_hoc = glui_device->add_spinner_to_panel(ROLLOUT_plothrr, _("HOC (kJ/kg)"), GLUI_SPINNER_FLOAT, &fuel_hoc, FUEL_HOC, DeviceCB);
         glui_device->add_checkbox_to_panel(ROLLOUT_plothrr, _("HRR and HOC*MLR_..."), &hoc_hrr);
