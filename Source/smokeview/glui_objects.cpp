@@ -457,8 +457,10 @@ void GenPlotCB(int var){
     case GENPLOT_HRR1:
       break;
     case GENPLOT_SHOW1:
+      plot2dinfo[0].show = show_genplot1;
       break;
     case GENPLOT_XYZ:
+      memcpy(plot2dinfo[0].xyz, genplot_xyz, 3*sizeof(float));
       break;
     default:
       ASSERT(FFALSE);
@@ -729,7 +731,7 @@ void InitPlot2D(int n){
 
   NewMemory((void **)&plot2dinfo, n*sizeof(plot2ddata));
   nplot2dinfoMAX = n;
-  nplot2dinfo = 0;
+  nplot2dinfo = 1;
   for(i = 0; i < n; i++){
     plot2ddata *plot2di;
 
