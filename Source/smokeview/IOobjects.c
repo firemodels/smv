@@ -3284,9 +3284,37 @@ void GetGlobalDeviceBounds(int type){
 
 #ifdef pp_PLOT2D_NEW
 
+/* ------------------ HaveGenDev ------------------------ */
+
+int HaveGenDev(void){
+  int i;
+
+  for(i = 0; i<plot2dinfo->ncurve_index; i++){
+    int curve_index;
+
+    curve_index = plot2dinfo->curve_index[i];
+    if(curve_index<ndeviceinfo)return 1;
+  }
+  return 0;
+}
+
+/* ------------------ HaveGenHrr ------------------------ */
+
+int HaveGenHrr(void){
+  int i;
+
+  for(i = 0; i<plot2dinfo->ncurve_index; i++){
+    int curve_index;
+
+    curve_index = plot2dinfo->curve_index[i];
+    if(curve_index>=ndeviceinfo)return 1;
+  }
+  return 0;
+}
+
 /* ------------------ DrawPlot ------------------------ */
 
-void DrawGenCurve(float *xyz0, float factor, float *x, float *z, int n,
+void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int n,
               float highlight_x, float highlight_y,
               float global_valmin, float global_valmax){
   float xmin, xmax, zmin, zmax, dx, dz;
@@ -3347,7 +3375,33 @@ void DrawGenCurve(float *xyz0, float factor, float *x, float *z, int n,
     glVertex3f(x[i], 0.0, z[i]);
     glVertex3f(x[i + 1], 0.0, z[i + 1]);
   }
+  if(option == PLOT_ALL){
+    glVertex3f(xmin - dx, 0.0, zmin - dz);
+    glVertex3f(xmax + dx, 0.0, zmin - dz);
+
+    glVertex3f(xmax + dx, 0.0, zmin - dz);
+    glVertex3f(xmax + dx, 0.0, zmax + dz);
+
+    glVertex3f(xmax + dx, 0.0, zmax + dz);
+    glVertex3f(xmin - dx, 0.0, zmax + dz);
+
+    glVertex3f(xmin - dx, 0.0, zmax + dz);
+    glVertex3f(xmin - dx, 0.0, zmin - dz);
+
+    glVertex3f(xmax,      0.0, zmax);
+    glVertex3f(xmax + dx, 0.0, zmax);
+
+    glVertex3f(xmax,      0.0, zmin);
+    glVertex3f(xmax + dx, 0.0, zmin);
+  }
   glEnd();
+
+  glColor3f(1.0, 0.0, 0.0);
+  glPointSize(plot2d_point_size);
+  glBegin(GL_POINTS);
+  glVertex3f(highlight_x, 0.0, highlight_y);
+  glEnd();
+
   glPopMatrix();
 }
 
@@ -3357,6 +3411,7 @@ void DrawGenPlot(plot2ddata * plot2di){
   int i;
   float dev_global_min=1.0, dev_global_max=0.0;
   float hrr_global_min=1.0, hrr_global_max=0.0;
+  int first = 1;
 
   for(i = 0; i<plot2di->ncurve_index; i++){
     int curve_index;
@@ -3398,7 +3453,16 @@ void DrawGenPlot(plot2ddata * plot2di){
         highlight_val = GetDeviceVal(global_times[itimes], devi, &valid);
       }
       if(devi->nvals>0){
-        DrawGenCurve(plot2di->xyz, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
+        int option;
+
+        if(first == 1){
+          first = 0;
+          option = PLOT_ALL;
+        }
+        else{
+          option = PLOT_ONLY_DATA;
+        }
+        DrawGenCurve(option, plot2di->xyz, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
                      highlight_time, highlight_val, dev_global_min, dev_global_max);
       }
     }
@@ -3417,7 +3481,16 @@ void DrawGenPlot(plot2ddata * plot2di){
         highlight_val = hrri->vals[itime];
         }
       if(hrri->nvals > 0){
-        DrawGenCurve(plot2di->xyz, plot2d_size_factor, hrrinfo->vals, hrri->vals, hrri->nvals,
+        int option;
+
+        if(first == 1){
+          first = 0;
+          option = PLOT_ALL;
+        }
+        else{
+          option = PLOT_ONLY_DATA;
+        }
+        DrawGenCurve(option, plot2di->xyz, plot2d_size_factor, hrrinfo->vals, hrri->vals, hrri->nvals,
                      highlight_time, highlight_val, hrr_global_min, hrr_global_max);
       }
     }

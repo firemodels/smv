@@ -458,6 +458,8 @@ void GenPlotCB(int var){
       break;
     case GENPLOT_SHOW1:
       plot2dinfo[0].show = show_genplot1;
+      plotstate = GetPlotState(DYNAMIC_PLOTS);
+      update_times = 1;
       break;
     case GENPLOT_XYZ:
       memcpy(plot2dinfo[0].xyz, genplot_xyz, 3*sizeof(float));

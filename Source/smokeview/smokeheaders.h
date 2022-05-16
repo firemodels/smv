@@ -7,6 +7,8 @@
 
 #ifdef pp_PLOT2D_NEW
 EXTERNCPP void DrawGenPlots(void);
+EXTERNCPP int HaveGenDev(void);
+EXTERNCPP int HaveGenHrr(void);
 #endif
 
 EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals);
