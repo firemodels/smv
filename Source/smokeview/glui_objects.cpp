@@ -100,7 +100,7 @@ GLUI_EditText *EDIT_filter=NULL;
 #ifdef pp_PLOT2D_NEW
 GLUI_Listbox *LIST_devID1 = NULL;
 GLUI_Listbox *LIST_devtype1 = NULL;
-GLUI_Listbox *LIST_hrrdata1 = NULL;
+GLUI_Listbox *LIST_hrr1 = NULL;
 GLUI_Listbox *LIST_plotlist1 = NULL;
 #endif
 GLUI_Listbox *LIST_devicetypes = NULL;
@@ -340,11 +340,17 @@ void UpdateShowWindRoses(void) {
   int *device_index, ndevice_index;
   int *hrr_index, nhrr_index;
 
-void AddPlot2D(int type, int index){
+void AddPlot2D(int type){
   int i, have_index, nindex;
-  int offset = 0;
+  int offset = 0, index;
 
-  if(type == PLOT2D_HRR)offset = ndeviceinfo;
+  if(type == PLOT2D_HRR){
+    offset = ndeviceinfo;
+    index = LIST_hrr1->get_int_val();
+    }
+  else{
+    index = LIST_devID1->get_int_val();
+  }
   have_index = 0;
   for(i=0; i<plot2dinfo->ncurve_index; i++){
     if(plot2dinfo->curve_index[i] == index+offset){
@@ -443,10 +449,10 @@ void GenPlotCB(int var){
       UpdateDevList(LIST_devID1, devtype1_index, list_all_devices);
       break;
     case GENPLOT_ADDDEV1:
-      AddPlot2D(PLOT2D_DEV, deviceID1_index);
+      AddPlot2D(PLOT2D_DEV);
       break;
     case GENPLOT_ADDHRR1:
-      AddPlot2D(PLOT2D_HRR, hrr1_index);
+      AddPlot2D(PLOT2D_HRR);
       break;
     case GENPLOT_COMP1:
       break;
@@ -1044,14 +1050,14 @@ extern "C" void GluiDeviceSetup(int main_window){
 
       if(nhrrinfo>0){
         PANEL_plotgeneral_hrr = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "hrr data");
-        LIST_hrrdata1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_hrr, "quantity:", &hrr1_index, GENPLOT_HRR1, GenPlotCB);
+        LIST_hrr1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_hrr, "quantity:", &hrr1_index, GENPLOT_HRR1, GenPlotCB);
         for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
           hrrdata *hi;
 
           hi = hrrinfo+i;
           if(hi->label.shortlabel!=NULL){
             if(strcmp(hi->label.shortlabel, "Time")==0)continue;
-            LIST_hrrdata1->add_item(i, hi->label.shortlabel);
+            LIST_hrr1->add_item(i, hi->label.shortlabel);
           }
         }
         glui_device->add_button_to_panel(PANEL_plotgeneral_hrr, _("Add to plot"), GENPLOT_ADDHRR1, GenPlotCB);
