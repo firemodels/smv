@@ -1065,7 +1065,7 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
     float dt;
 
     dt = time_in[i]-time_in[i-1];
-    ASSERT(dt>=0.0);
+ //   ASSERT(dt>=0.0);
     dt_eps = MIN(dt_eps, ABS(dt)/2.0);
   }
   if(nglobal_times>1){
@@ -1073,7 +1073,7 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
       float dt;
 
       dt = global_times[i]-global_times[i-1];
-      ASSERT(dt>=0.0);
+  //    ASSERT(dt>=0.0);
       dt_eps = MIN(dt_eps, ABS(dt)/2.0);
     }
   }
@@ -1186,7 +1186,7 @@ void UpdateTimes(void){
       MergeGlobalTimes(hrrinfo->vals, hrrinfo->nvals);
     }
   }
-#endif  
+#endif
   if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;

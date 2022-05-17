@@ -3316,7 +3316,7 @@ int HaveGenHrr(void){
 
 void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int n,
               float highlight_x, float highlight_y,
-              float global_valmin, float global_valmax, float *plot_color){
+              float global_valmin, float global_valmax, float *plot_color, char *label, int position){
   float xmin, xmax, zmin, zmax, dx, dz;
   float xscale = 1.0, zscale = 1.0;
   float origin[3];
@@ -3395,23 +3395,21 @@ void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int
   glVertex3f(highlight_x, 0.0, highlight_y);
   glEnd();
 
-  if(option == PLOT_ALL && showd_plot2d_labels==1){
-//    float zmid;
-    char c_tmin[32], c_tmax[32];
-    float dfont = (float)GetFontHeight()/((float)screenHeight*zscale*SCALE2FDS(factor)*SCALE2SMV(1.0));
+  if(showd_plot2d_labels == 1){
+    float dfont = (float)GetFontHeight() / ((float)screenHeight * zscale * SCALE2FDS(factor) * SCALE2SMV(1.0));
 
+    if(option == PLOT_ALL){
+      char c_tmin[32], c_tmax[32];
 
- //   zmid = (zmax-2.0*dfont+zmin)/2.0;
-  //  Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-0.5*dfont, cvalmax);
-  //  Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-1.7*dfont, quantity);
-  //  Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-2.9*dfont, unit);
-  //  Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmid-0.5*dfont, cval);
-  //  Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmin-0.5*dfont, cvalmin);
-      Float2String(c_tmin, x[0],         ndigits, force_fixedpoint);
-      Output3Text(foregroundcolor, xmin-dx,          0.0, zmin-2.0*dfont, c_tmin);
+      Float2String(c_tmin, x[0], ndigits, force_fixedpoint);
+      Output3Text(foregroundcolor, xmin - dx, 0.0, zmin - 2.0 * dfont, c_tmin);
 
-      Float2String(c_tmax, x[n-1],         ndigits, force_fixedpoint);
-      Output3Text(foregroundcolor, xmax-dx,          0.0, zmin-2.0*dfont, c_tmax);
+      Float2String(c_tmax, x[n - 1], ndigits, force_fixedpoint);
+      Output3Text(foregroundcolor, xmax - dx, 0.0, zmin - 2.0 * dfont, c_tmax);
+    }
+    if(label != NULL){
+      Output3Text(plot_color, xmax + 2.0 * dx, 0.0, zmax - (0.5 + 1.2 * (float)position) * dfont, label);
+    }
   }
 
   glPopMatrix();
@@ -3454,6 +3452,7 @@ void DrawGenPlot(plot2ddata * plot2di){
       }
     }
   }
+  int position = 0;
   for(i = 0; i<plot2di->ncurve_index; i++){
     int curve_index;
     float highlight_time, highlight_val;
@@ -3478,8 +3477,13 @@ void DrawGenPlot(plot2ddata * plot2di){
         else{
           option = PLOT_ONLY_DATA;
         }
+        char label[256];
+        strcpy(label, devi->deviceID);
+       // strcat(label, "/");
+      //  strcat(label, devi->quantity);
         DrawGenCurve(option, plot2di->xyz, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
-                     highlight_time, highlight_val, dev_global_min, dev_global_max, foregroundcolor);
+                     highlight_time, highlight_val, dev_global_min, dev_global_max, foregroundcolor, label, position);
+        position++;
       }
     }
     else{
@@ -3508,7 +3512,8 @@ void DrawGenPlot(plot2ddata * plot2di){
           option = PLOT_ONLY_DATA;
         }
         DrawGenCurve(option, plot2di->xyz, plot2d_size_factor, hrrinfo->vals, hrri->vals, hrri->nvals,
-                     highlight_time, highlight_val, hrr_global_min, hrr_global_max, blue_color);
+                     highlight_time, highlight_val, hrr_global_min, hrr_global_max, blue_color, hrri->label.shortlabel, position);
+        position++;
       }
     }
   }
