@@ -3316,7 +3316,7 @@ int HaveGenHrr(void){
 
 void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int n,
               float highlight_x, float highlight_y,
-              float global_valmin, float global_valmax){
+              float global_valmin, float global_valmax, float *plot_color){
   float xmin, xmax, zmin, zmax, dx, dz;
   float zmax_display;
   float xscale = 1.0, zscale = 1.0;
@@ -3331,21 +3331,15 @@ void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int
 
   xmin = x[0];
   xmax = xmin;
-  zmin = z[0];
-  zmax = zmin;
   for(i = 1; i < n; i++){
     xmin = MIN(xmin, x[i]);
     xmax = MAX(xmax, x[i]);
-    zmin = MIN(zmin, z[i]);
-    zmax = MAX(zmax, z[i]);
     }
   if(xmax == xmin)xmax = xmin + 1.0;
   if(xmax > xmin)xscale = 1.0 / (xmax - xmin);
 
-  if(global_valmin < global_valmax){
-    zmin = global_valmin;
-    zmax = global_valmax;
-  }
+  zmin = global_valmin;
+  zmax = global_valmax;
   zmax_display = zmax;
   if(zmax == zmin)zmax = zmin + 1.0;
   if(zmax > zmin)zscale = 1.0 / (zmax - zmin);
@@ -3368,7 +3362,7 @@ void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int
   glScalef(SCALE2FDS(factor), SCALE2FDS(factor), SCALE2FDS(factor));
   glScalef(xscale, 1.0, zscale);
   glTranslatef(-xmin, 0.0, -zmin);
-  glColor3fv(foregroundcolor);
+  glColor3fv(plot_color);
   glLineWidth(plot2d_line_width);
   glBegin(GL_LINES);
   for(i = 0; i < n - 1; i++){
@@ -3376,6 +3370,7 @@ void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int
     glVertex3f(x[i + 1], 0.0, z[i + 1]);
   }
   if(option == PLOT_ALL){
+    glColor3fv(foregroundcolor);
     glVertex3f(xmin - dx, 0.0, zmin - dz);
     glVertex3f(xmax + dx, 0.0, zmin - dz);
 
@@ -3428,13 +3423,17 @@ void DrawGenPlot(plot2ddata * plot2di){
       }
     }
     else{
+      float vmin, vmax;
+
+      vmin = plot2di->curve_min[curve_index];
+      vmax = plot2di->curve_max[curve_index];
       if(hrr_global_min>hrr_global_max){
-        hrr_global_min = plot2di->curve_min[curve_index];
-        hrr_global_max = plot2di->curve_max[curve_index];
+        hrr_global_min = vmin;
+        hrr_global_max = vmax;
       }
       else{
-        hrr_global_min = MIN(hrr_global_min, plot2di->curve_min[curve_index]);
-        hrr_global_max = MIN(hrr_global_max, plot2di->curve_max[curve_index]);
+        hrr_global_min = MIN(hrr_global_min, vmin);
+        hrr_global_max = MAX(hrr_global_max, vmax);
       }
     }
   }
@@ -3463,7 +3462,7 @@ void DrawGenPlot(plot2ddata * plot2di){
           option = PLOT_ONLY_DATA;
         }
         DrawGenCurve(option, plot2di->xyz, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
-                     highlight_time, highlight_val, dev_global_min, dev_global_max);
+                     highlight_time, highlight_val, dev_global_min, dev_global_max, foregroundcolor);
       }
     }
     else{
@@ -3479,9 +3478,10 @@ void DrawGenPlot(plot2ddata * plot2di){
         itime = CLAMP(itime, 0, hrrinfo->nvals - 1);
 
         highlight_val = hrri->vals[itime];
-        }
+      }
       if(hrri->nvals > 0){
         int option;
+        float blue_color[3] = {0.0, 0.0, 1.0};
 
         if(first == 1){
           first = 0;
@@ -3491,7 +3491,7 @@ void DrawGenPlot(plot2ddata * plot2di){
           option = PLOT_ONLY_DATA;
         }
         DrawGenCurve(option, plot2di->xyz, plot2d_size_factor, hrrinfo->vals, hrri->vals, hrri->nvals,
-                     highlight_time, highlight_val, hrr_global_min, hrr_global_max);
+                     highlight_time, highlight_val, hrr_global_min, hrr_global_max, blue_color);
       }
     }
   }
