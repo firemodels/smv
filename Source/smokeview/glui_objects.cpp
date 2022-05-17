@@ -71,6 +71,11 @@ char gluiopen_filter2[sizeof(GLUI_String)];
 
 GLUI *glui_device=NULL;
 
+#ifdef pp_PLOT2D_NEW
+GLUI_Button *BUTTON_add_dev=NULL ;
+GLUI_Button *BUTTON_add_hrr=NULL ;
+GLUI_Button *BUTTON_remove_plot=NULL ;
+#endif
 GLUI_Button *BUTTON_open_down=NULL ;
 GLUI_Button *BUTTON_device_1=NULL;
 GLUI_Button *BUTTON_device_2=NULL;
@@ -108,6 +113,7 @@ GLUI_Listbox *LIST_open=NULL;
 GLUI_Listbox *LIST_hrrdata=NULL;
 
 #ifdef pp_PLOT2D_NEW
+GLUI_Panel *PANEL_plotdevice_select = NULL;
 GLUI_Panel *PANEL_plotgeneral_device = NULL;
 GLUI_Panel *PANEL_plotgeneral_hrr = NULL;
 GLUI_Panel *PANEL_plotgeneral_plot = NULL;
@@ -413,10 +419,10 @@ void RemovePlot2D(int index){
 
 /* ------------------ UpdateDevList ------------------------ */
 
-void UpdateDevList(GLUI_Listbox *LIST_dev, int devtype_index, int list_all){
+void UpdateDevList(GLUI_Listbox *LIST_dev, int devtype_index){
   int i;
 
-  if(LIST_dev == NULL)return;;
+  if(LIST_dev == NULL)return;
   for(i = 0; i < ndeviceinfo; i++){
     devicedata *devicei;
 
@@ -432,7 +438,7 @@ void UpdateDevList(GLUI_Listbox *LIST_dev, int devtype_index, int list_all){
 
     inlist = 0;
     devicei = deviceinfo + i;
-    if(list_all == 1 || strcmp(devicetypes[devtype_index]->quantity, devicei->quantity) == 0)inlist = 1;
+    if(devtype_index == -1 || strcmp(devicetypes[devtype_index]->quantity, devicei->quantity) == 0)inlist = 1;
     if(inlist == 1 && devicei->inlist1 == 0){
       devicei->inlist1 = 1;
       LIST_dev->add_item(i, devicei->deviceID);
@@ -443,18 +449,30 @@ void UpdateDevList(GLUI_Listbox *LIST_dev, int devtype_index, int list_all){
 
 void GenPlotCB(int var){
   switch (var){
+    char label[256];
+
     case GENPLOT_devID1:
+      strcpy(label, "Add ");
+      strcat(label, deviceinfo[deviceID1_index].deviceID);
+      strcat(label, " to plot");
+      BUTTON_add_dev->set_name(label);
       break;
     case GENPLOT_devtype1:
-      UpdateDevList(LIST_devID1, devtype1_index, list_all_devices);
+      UpdateDevList(LIST_devID1, devtype1_index);
       break;
     case GENPLOT_ADDDEV1:
       AddPlot2D(PLOT2D_DEV);
+      GenPlotCB(GENPLOT_COMP1);
       break;
     case GENPLOT_ADDHRR1:
       AddPlot2D(PLOT2D_HRR);
+      GenPlotCB(GENPLOT_COMP1);
       break;
     case GENPLOT_COMP1:
+      strcpy(label, "Remove ");
+      strcat(label, LIST_plotlist1->curr_text);
+      strcat(label, " from plot");
+      BUTTON_remove_plot->set_name(label);
       break;
     case GENPLOT_CLEAR1:
       RemovePlot2D(plot_component1);
@@ -463,6 +481,10 @@ void GenPlotCB(int var){
       RemovePlot2D(-1);
       break;
     case GENPLOT_HRR1:
+      strcpy(label, "Add ");
+      strcat(label, hrrinfo[hrr1_index].label.shortlabel);
+      strcat(label, " to plot");
+      BUTTON_add_hrr->set_name(label);
       break;
     case GENPLOT_SHOW1:
       plot2dinfo[0].show = show_genplot1;
@@ -1031,7 +1053,9 @@ extern "C" void GluiDeviceSetup(int main_window){
       ROLLOUT_plotgeneral = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "device+hrr", false);
         if(ndevicetypes>0){
         PANEL_plotgeneral_device = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "device data");
-        LIST_devID1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_device, "ID:", &deviceID1_index, GENPLOT_devID1, GenPlotCB);
+        PANEL_plotdevice_select = glui_device->add_panel_to_panel(PANEL_plotgeneral_device, "", false);
+        LIST_devID1 = glui_device->add_listbox_to_panel(PANEL_plotdevice_select, "select device:", &deviceID1_index, GENPLOT_devID1, GenPlotCB);
+        glui_device->add_column_to_panel(PANEL_plotdevice_select,false);
         for(i = 0; i < ndeviceinfo; i++){
           devicedata *devicei;
 
@@ -1040,17 +1064,19 @@ extern "C" void GluiDeviceSetup(int main_window){
           LIST_devID1->add_item(i, devicei->deviceID);
         }
         devicetypes_index = CLAMP(devicetypes_index, 0, ndevicetypes-1);
-        LIST_devtype1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_device, "show devices with quantity:", &devtype1_index, GENPLOT_devtype1, GenPlotCB);
+        LIST_devtype1 = glui_device->add_listbox_to_panel(PANEL_plotdevice_select, "device types:", &devtype1_index, GENPLOT_devtype1, GenPlotCB);
+        LIST_devtype1->add_item(-1, "All");
         for(i = 0; i<ndevicetypes; i++){
           LIST_devtype1->add_item(i, devicetypes[i]->quantity);
         }
-        glui_device->add_checkbox_to_panel(PANEL_plotgeneral_device, _("show all devices"), &list_all_devices, GENPLOT_devtype1, GenPlotCB);
-        glui_device->add_button_to_panel(PANEL_plotgeneral_device, _("Add to plot"), GENPLOT_ADDDEV1, GenPlotCB);
+        BUTTON_add_dev = glui_device->add_button_to_panel(PANEL_plotgeneral_device, _("Add to plot"), GENPLOT_ADDDEV1, GenPlotCB);
+        GenPlotCB(GENPLOT_devtype1);
+        GenPlotCB(GENPLOT_devID1);
       }
 
       if(nhrrinfo>0){
         PANEL_plotgeneral_hrr = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "hrr data");
-        LIST_hrr1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_hrr, "quantity:", &hrr1_index, GENPLOT_HRR1, GenPlotCB);
+        LIST_hrr1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_hrr, "select hrr quantity:", &hrr1_index, GENPLOT_HRR1, GenPlotCB);
         for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
           hrrdata *hi;
 
@@ -1060,15 +1086,17 @@ extern "C" void GluiDeviceSetup(int main_window){
             LIST_hrr1->add_item(i, hi->label.shortlabel);
           }
         }
-        glui_device->add_button_to_panel(PANEL_plotgeneral_hrr, _("Add to plot"), GENPLOT_ADDHRR1, GenPlotCB);
+        BUTTON_add_hrr = glui_device->add_button_to_panel(PANEL_plotgeneral_hrr, _("Add to plot"), GENPLOT_ADDHRR1, GenPlotCB);
+        GenPlotCB(GENPLOT_HRR1);
       }
 
       PANEL_plotgeneral_plot = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "plot");
-      LIST_plotlist1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_plot, "curves:", &plot_component1, GENPLOT_COMP1,    GenPlotCB);
+      LIST_plotlist1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_plot, "curve:", &plot_component1, GENPLOT_COMP1,    GenPlotCB);
       LIST_plotlist1->add_item(-1, "");
-      glui_device->add_button_to_panel(PANEL_plotgeneral_plot, _("Remove from plot"),                         GENPLOT_CLEAR1,   GenPlotCB);
+
+      BUTTON_remove_plot = glui_device->add_button_to_panel(PANEL_plotgeneral_plot, _("Remove from plot"),                      GENPLOT_CLEAR1,   GenPlotCB);
       glui_device->add_button_to_panel(PANEL_plotgeneral_plot, _("Remove all from plot"),                     GENPLOT_CLEARALL, GenPlotCB);
-      PANEL_plotgeneral_position = glui_device->add_panel_to_panel(PANEL_plotgeneral_plot, "position");
+      PANEL_plotgeneral_position = glui_device->add_panel_to_panel(PANEL_plotgeneral_plot, "plot position");
       SPINNER_genplot_x = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "x", GLUI_SPINNER_FLOAT, genplot_xyz+0, GENPLOT_XYZ, GenPlotCB);
       SPINNER_genplot_y = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "y", GLUI_SPINNER_FLOAT, genplot_xyz+1, GENPLOT_XYZ, GenPlotCB);
       SPINNER_genplot_z = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "z", GLUI_SPINNER_FLOAT, genplot_xyz+2, GENPLOT_XYZ, GenPlotCB);
@@ -1079,7 +1107,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       SPINNER_genplot_x->set_float_limits(xbar0FDS - plot_xyz_delta, xbarFDS + plot_xyz_delta);
       SPINNER_genplot_y->set_float_limits(ybar0FDS - plot_xyz_delta, ybarFDS + plot_xyz_delta);
       SPINNER_genplot_z->set_float_limits(zbar0FDS - plot_xyz_delta, zbarFDS + plot_xyz_delta);
-      CHECKBOX_show_genplot = glui_device->add_checkbox_to_panel(PANEL_plotgeneral_plot,"show", &show_genplot1,  GENPLOT_SHOW1, GenPlotCB);
+      CHECKBOX_show_genplot = glui_device->add_checkbox_to_panel(PANEL_plotgeneral_plot,"show plot", &show_genplot1,  GENPLOT_SHOW1, GenPlotCB);
       GenPlotCB(GENPLOT_devtype1);
     }
 #endif
