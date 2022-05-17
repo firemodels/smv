@@ -3397,6 +3397,25 @@ void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int
   glVertex3f(highlight_x, 0.0, highlight_y);
   glEnd();
 
+  if(option == PLOT_ALL && showd_plot2d_labels==1){
+    float zmid;
+    char c_tmin[32], c_tmax[32];
+    float dfont = (float)GetFontHeight()/((float)screenHeight*zscale*SCALE2FDS(factor)*SCALE2SMV(1.0));
+
+
+    zmid = (zmax-2.0*dfont+zmin)/2.0;
+  //  Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-0.5*dfont, cvalmax);
+  //  Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-1.7*dfont, quantity);
+  //  Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmax-2.9*dfont, unit);
+  //  Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmid-0.5*dfont, cval);
+  //  Output3Text(foregroundcolor, xmax + 2.0*dx, 0.0, zmin-0.5*dfont, cvalmin);
+      Float2String(c_tmin, x[0],         ndigits, force_fixedpoint);
+      Output3Text(foregroundcolor, xmin-dx,          0.0, zmin-2.0*dfont, c_tmin);
+
+      Float2String(c_tmax, x[n-1],         ndigits, force_fixedpoint);
+      Output3Text(foregroundcolor, xmax-dx,          0.0, zmin-2.0*dfont, c_tmax);
+  }
+
   glPopMatrix();
 }
 
