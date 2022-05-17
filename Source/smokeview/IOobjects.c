@@ -3411,7 +3411,6 @@ void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int
       Output3Text(plot_color, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
     }
   }
-
   glPopMatrix();
 }
 
@@ -3470,40 +3469,29 @@ void DrawGenPlot(plot2ddata * plot2di){
       if(devi->nvals>0){
         int option;
 
+        if(first == 1){
+          first = 0;
+          option = PLOT_ALL;
+        }
+        else{
+          option = PLOT_ONLY_DATA;
+        }
         char label[256];
-        float xyz[3], *xyzptr;
         strcpy(label, devi->deviceID);
-       // strcat(label, "/");
-      //  strcat(label, devi->quantity);
 
         float *color, blue_color[3] = {0.0,0.0,1.0};
         float dev_min, dev_max;
-        if(strcmp(label, "O2") != 0){
-          if(first == 1){
-            first = 0;
-            option = PLOT_ALL;
-            }
-          else{
-            option = PLOT_ONLY_DATA;
-            }
-          }
         if(strcmp(label, "O2") == 0){
           dev_min = 0.0;
           dev_max = 0.25;
           color = blue_color;
-          xyz[0] = plot2di->xyz[0];
-          xyz[1] = plot2di->xyz[1];
-          xyz[2] = plot2di->xyz[2]+1.2*SCALE2FDS(plot2d_size_factor);
-          xyzptr = xyz;
-          option = PLOT_ALL;
         }
         else{
           dev_min = dev_global_min;
           dev_max = dev_global_max;
           color = foregroundcolor;
-          xyzptr = plot2di->xyz;
         }
-        DrawGenCurve(option, xyzptr, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
+        DrawGenCurve(option, plot2di->xyz, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
                      highlight_time, highlight_val, dev_min, dev_max, color, label, position);
         position++;
       }
