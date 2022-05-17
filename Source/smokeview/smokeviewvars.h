@@ -1525,11 +1525,10 @@ SVEXTERN int SVDECL(last_prop_display,-1);
 SVEXTERN int SVDECL(devicetypes_index,0);
 #ifdef pp_PLOT2D_NEW
 SVEXTERN int SVDECL(plot_component1, 0);
-SVEXTERN int SVDECL(devtype1_index, 0);
+SVEXTERN int SVDECL(devtype1_index, -1);
 SVEXTERN int SVDECL(deviceID1_index, 0);
-SVEXTERN int SVDECL(hrr1_index, 0);
+SVEXTERN int SVDECL(hrr1_index, 1);
 SVEXTERN int SVDECL(show_genplot1, 0);
-SVEXTERN int SVDECL(list_all_devices, 1);
 SVEXTERN float genplot_xyz[3];
 SVEXTERN plot2ddata SVDECL(*plot2dinfo, NULL);
 SVEXTERN int SVDECL(nplot2dinfo, 0), SVDECL(nplot2dinfoMAX, 0);
