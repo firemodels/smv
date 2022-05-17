@@ -3408,7 +3408,7 @@ void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int
       Output3Text(foregroundcolor, xmax - dx, 0.0, zmin - 2.0 * dfont, c_tmax);
     }
     if(label != NULL){
-      Output3Text(plot_color, xmax + 2.0 * dx, 0.0, zmax - (0.5 + 1.2 * (float)position) * dfont, label);
+      Output3Text(plot_color, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
     }
   }
 
@@ -3434,7 +3434,7 @@ void DrawGenPlot(plot2ddata * plot2di){
       }
       else{
         dev_global_min = MIN(dev_global_min, plot2di->curve_min[curve_index]);
-        dev_global_max = MIN(dev_global_max, plot2di->curve_max[curve_index]);
+        dev_global_max = MAX(dev_global_max, plot2di->curve_max[curve_index]);
       }
     }
     else{
@@ -3481,8 +3481,21 @@ void DrawGenPlot(plot2ddata * plot2di){
         strcpy(label, devi->deviceID);
        // strcat(label, "/");
       //  strcat(label, devi->quantity);
+
+        float *color, blue_color[3] = {0.0,0.0,1.0};
+        float dev_min, dev_max;
+        if(strcmp(label, "O2") == 0){
+          dev_min = 0.0;
+          dev_max = 0.25;
+          color = blue_color;
+          }
+        else{
+          dev_min = dev_global_min;
+          dev_max = dev_global_max;
+          color = foregroundcolor;
+        }
         DrawGenCurve(option, plot2di->xyz, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
-                     highlight_time, highlight_val, dev_global_min, dev_global_max, foregroundcolor, label, position);
+                     highlight_time, highlight_val, dev_min, dev_max, color, label, position);
         position++;
       }
     }

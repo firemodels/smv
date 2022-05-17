@@ -1180,7 +1180,7 @@ void UpdateTimes(void){
 #ifdef pp_PLOT2D_NEW
   if(show_genplot1==1){
     if(HaveGenDev()==1){
-      MergeGlobalTimes(deviceinfo->vals, deviceinfo->nvals);
+      MergeGlobalTimes(deviceinfo->times, deviceinfo->nvals);
     }
     if(HaveGenHrr()==1){
       MergeGlobalTimes(hrrinfo->vals, hrrinfo->nvals);
