@@ -11435,7 +11435,7 @@ int ReadIni2(char *inifile, int localfile){
 #ifdef pp_PLOT2D_NEW
     if(Match(buffer, "SHOWGENPLOTS") == 1){
       char *token;
-      int j, count;
+      int count;
 
       fgets(buffer, 255, stream);
       sscanf(buffer, " %f %f %f %i", genplot_xyz, genplot_xyz+1, genplot_xyz+2, &show_genplot1);
