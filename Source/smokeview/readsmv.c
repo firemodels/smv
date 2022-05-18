@@ -6096,84 +6096,6 @@ void UpdateFileBoundList(void){
 }
 #endif
 
-#ifdef pp_PLOT2D_NEW
-
-/* ------------------ InitPlot2D ------------------------ */
-
-void InitPlot2D(int n){
-  int i;
-
-  if(ndeviceinfo==0 && nhrrinfo==0)return;
-  NewMemory((void **)&plot2dinfo, n * sizeof(plot2ddata));
-  nplot2dinfoMAX = n;
-  nplot2dinfo = 1;
-  for(i = 0; i < n; i++){
-    plot2ddata *plot2di;
-
-    plot2di                   = plot2dinfo + i;
-    plot2di->ncurve_index     = 0;
-    plot2di->ncurve_index_ini = 0;
-    plot2di->show             = 0;
-    plot2di->xyz[0]           = xbar0FDS;
-    plot2di->xyz[1]           = ybar0FDS;
-    plot2di->xyz[2]           = zbar0FDS;
-    plot2di->curve_index      = NULL;
-    if(nhrrinfo + ndeviceinfo > 0){
-      NewMemory((void **)&(plot2di->curve_index),     (ndeviceinfo + nhrrinfo) * sizeof(int));
-      NewMemory((void **)&(plot2di->curve_index_ini), (ndeviceinfo + nhrrinfo) * sizeof(int));
-      NewMemory((void **)&(plot2di->curve_min),       (ndeviceinfo + nhrrinfo) * sizeof(float));
-      NewMemory((void **)&(plot2di->curve_max),       (ndeviceinfo + nhrrinfo) * sizeof(float));
-    }
-  }
-  for(i = 0; i < ndeviceinfo; i++){
-    devicedata *devi;
-    int j;
-
-    devi = deviceinfo + i;
-    if(devi->nvals > 0){
-      float valmin, valmax;
-
-      valmin = devi->vals[0];
-      valmax = valmin;
-      for(j = 1; j < devi->nvals; j++){
-        valmin = MIN(valmin, devi->vals[j]);
-        valmax = MAX(valmax, devi->vals[j]);
-      }
-      for(j = 0; j < n; j++){
-        plot2ddata *plot2dj;
-
-        plot2dj = plot2dinfo + j;
-        plot2dj->curve_min[i] = valmin;
-        plot2dj->curve_max[i] = valmax;
-      }
-    }
-  }
-  for(i = 0; i < nhrrinfo; i++){
-    hrrdata *hrri;
-    int j;
-
-    hrri = hrrinfo + i;
-    if(hrri->nvals > 0){
-      float valmin, valmax;
-
-      valmin = hrri->vals[0];
-      valmax = valmin;
-      for(j = 1; j < hrri->nvals; j++){
-        valmin = MIN(valmin, hrri->vals[j]);
-        valmax = MAX(valmax, hrri->vals[j]);
-      }
-      for(j = 0; j < n; j++){
-        plot2ddata *plot2dj;
-
-        plot2dj = plot2dinfo + j;
-        plot2dj->curve_min[i + ndeviceinfo] = valmin;
-        plot2dj->curve_max[i + ndeviceinfo] = valmax;
-      }
-    }
-  }
-}
-#endif
-
 /* ------------------ ReadSMV ------------------------ */
 
 int ReadSMV(bufferstreamdata *stream){
@@ -11038,7 +10960,9 @@ typedef struct {
   if(viswindrose==1)update_windrose = 1;
 
 // initialize 2d plot data structures
-  InitPlot2D(1);
+#ifdef pp_PLOT2D_NEW
+  AddPlot2D();
+#endif
 
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");
@@ -11508,6 +11432,7 @@ int ReadIni2(char *inifile, int localfile){
       update_glui_devices = 1;
       continue;
     }
+#ifdef pp_PLOT2D_NEW
     if(Match(buffer, "SHOWGENPLOTS") == 1){
       char *token;
       int j, count;
@@ -11529,7 +11454,8 @@ int ReadIni2(char *inifile, int localfile){
       plot2dinfo->ncurve_index_ini = count;
       update_glui_devices = 1;
       continue;
-      }
+    }
+#endif
     if(Match(buffer, "SHOWMISSINGOBJECTS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &show_missing_objects);
@@ -14881,6 +14807,7 @@ void WriteIniLocal(FILE *fileout){
           vis_device_plot, showd_plot2d_labels, plot2d_size_factor, plot2d_line_width, plot2d_point_size,
           plot2d_xyz_offset[0], plot2d_xyz_offset[1], plot2d_xyz_offset[2], plot2d_font_spacing
   );
+#ifdef pp_PLOT2D_NEW
   fprintf(fileout, "SHOWGENPLOTS\n");
   fprintf(fileout, " %f %f %f %i\n", genplot_xyz[0], genplot_xyz[1], genplot_xyz[2], show_genplot1);
   fprintf(fileout, " ");
@@ -14888,6 +14815,7 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, " %i ", plot2dinfo->curve_index[i]);
   };
   fprintf(fileout, "\n");
+#endif
   fprintf(fileout, "SHOWDEVICEVALS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n", showdevice_val, showvdevice_val, devicetypes_index, colordevice_val, vectortype, viswindrose, showdevice_type,showdevice_unit,showdevice_id);
   fprintf(fileout, "SHOWHRRPLOT\n");
