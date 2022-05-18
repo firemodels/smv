@@ -3402,10 +3402,10 @@ void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int
       char c_tmin[32], c_tmax[32];
 
       Float2String(c_tmin, x[0], ndigits, force_fixedpoint);
-      Output3Text(foregroundcolor, xmin - dx, 0.0, zmin - 4.0 * dfont, c_tmin);
+      Output3Text(foregroundcolor, xmin - dx, 0.0, zmin - dz - 3.0 * dfont, c_tmin);
 
       Float2String(c_tmax, x[n - 1], ndigits, force_fixedpoint);
-      Output3Text(foregroundcolor, xmax - dx, 0.0, zmin - 4.0 * dfont, c_tmax);
+      Output3Text(foregroundcolor, xmax - dx, 0.0, zmin - dz - 3.0 * dfont, c_tmax);
     }
     if(label != NULL){
       Output3Text(plot_color, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
