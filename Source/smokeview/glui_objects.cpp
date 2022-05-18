@@ -469,10 +469,12 @@ void GenPlotCB(int var){
       GenPlotCB(GENPLOT_COMP1);
       break;
     case GENPLOT_COMP1:
-      strcpy(label, "Remove ");
-      strcat(label, LIST_plotlist1->curr_text);
-      strcat(label, " from plot");
-      BUTTON_remove_plot->set_name(label);
+      if(BUTTON_remove_plot != NULL){
+        strcpy(label, "Remove ");
+        strcat(label, LIST_plotlist1->curr_text);
+        strcat(label, " from plot");
+        BUTTON_remove_plot->set_name(label);
+      }
       break;
     case GENPLOT_CLEAR1:
       RemovePlot2D(plot_component1);
@@ -754,81 +756,6 @@ float GetDeviceTminTmax(void){
   return return_val;
 }
 
-#ifdef pp_PLOT2D_NEW
-
-/* ------------------ InitPlot2D ------------------------ */
-
-void InitPlot2D(int n){
-  int i;
-
-  NewMemory((void **)&plot2dinfo, n*sizeof(plot2ddata));
-  nplot2dinfoMAX = n;
-  nplot2dinfo = 1;
-  for(i = 0; i < n; i++){
-    plot2ddata *plot2di;
-
-    plot2di = plot2dinfo + i;
-    plot2di->ncurve_index = 0;
-    plot2di->show = 0;
-    plot2di->xyz[0] = xbar0FDS;
-    plot2di->xyz[1] = ybar0FDS;
-    plot2di->xyz[2] = zbar0FDS;
-    plot2di->curve_index = NULL;
-    if(nhrrinfo+ndeviceinfo>0){
-      NewMemory((void **)&(plot2di->curve_index), (ndeviceinfo+nhrrinfo)*sizeof(int));
-      NewMemory((void **)&(plot2di->curve_min),   (ndeviceinfo+nhrrinfo)*sizeof(float));
-      NewMemory((void **)&(plot2di->curve_max),   (ndeviceinfo+nhrrinfo)*sizeof(float));
-    }
-  }
-  for(i=0; i<ndeviceinfo; i++){
-    devicedata *devi;
-    int j;
-
-    devi = deviceinfo+i;
-    if(devi->nvals>0){
-      float valmin, valmax;
-
-      valmin = devi->vals[0];
-      valmax = valmin;
-      for(j=1; j<devi->nvals; j++){
-        valmin = MIN(valmin, devi->vals[j]);
-        valmax = MAX(valmax, devi->vals[j]);
-      }
-      for(j=0; j<n; j++){
-        plot2ddata *plot2dj;
-
-        plot2dj = plot2dinfo + j;
-        plot2dj->curve_min[i] = valmin;
-        plot2dj->curve_max[i] = valmax;
-      }
-    }
-  }
-  for(i=0; i<nhrrinfo; i++){
-    hrrdata *hrri;
-    int j;
-
-    hrri = hrrinfo+i;
-    if(hrri->nvals>0){
-      float valmin, valmax;
-
-      valmin = hrri->vals[0];
-      valmax = valmin;
-      for(j=1; j<hrri->nvals; j++){
-        valmin = MIN(valmin, hrri->vals[j]);
-        valmax = MAX(valmax, hrri->vals[j]);
-      }
-      for(j=0; j<n; j++){
-        plot2ddata *plot2dj;
-
-        plot2dj = plot2dinfo + j;
-        plot2dj->curve_min[i+ndeviceinfo] = valmin;
-        plot2dj->curve_max[i+ndeviceinfo] = valmax;
-      }
-    }
-  }
-}
-#endif
-
 /* ------------------ GluiDeviceSetup ------------------------ */
 
 extern "C" void GluiDeviceSetup(int main_window){
@@ -1049,7 +976,6 @@ extern "C" void GluiDeviceSetup(int main_window){
 
 #ifdef pp_PLOT2D_NEW
     if(nhrrinfo>0||ndevicetypes>0){
-      InitPlot2D(1);
       ROLLOUT_plotgeneral = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "device+hrr", false);
         if(ndevicetypes>0){
         PANEL_plotgeneral_device = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "device data");
@@ -1093,6 +1019,20 @@ extern "C" void GluiDeviceSetup(int main_window){
       PANEL_plotgeneral_plot = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "plot");
       LIST_plotlist1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_plot, "curve:", &plot_component1, GENPLOT_COMP1,    GenPlotCB);
       LIST_plotlist1->add_item(-1, "");
+      for(i = 0; i < plot2dinfo->ncurve_index_ini; i++){
+        int curv_index;
+
+        curv_index = plot2dinfo->curve_index_ini[i];
+        if(curv_index < ndeviceinfo){
+          LIST_devID1->set_int_val(curv_index);
+          AddPlot2D(PLOT2D_DEV);
+        }
+        else{
+          LIST_hrr1->set_int_val(curv_index-ndeviceinfo);
+          AddPlot2D(PLOT2D_HRR);
+        }
+        GenPlotCB(GENPLOT_COMP1);
+      }
 
       BUTTON_remove_plot = glui_device->add_button_to_panel(PANEL_plotgeneral_plot, _("Remove from plot"),                      GENPLOT_CLEAR1,   GenPlotCB);
       glui_device->add_button_to_panel(PANEL_plotgeneral_plot, _("Remove all from plot"),                     GENPLOT_CLEARALL, GenPlotCB);
@@ -1109,6 +1049,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       SPINNER_genplot_z->set_float_limits(zbar0FDS - plot_xyz_delta, zbarFDS + plot_xyz_delta);
       CHECKBOX_show_genplot = glui_device->add_checkbox_to_panel(PANEL_plotgeneral_plot,"show plot", &show_genplot1,  GENPLOT_SHOW1, GenPlotCB);
       GenPlotCB(GENPLOT_devtype1);
+      GenPlotCB(GENPLOT_SHOW1);
     }
 #endif
 
