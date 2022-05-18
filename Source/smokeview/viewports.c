@@ -909,7 +909,7 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
   /* ------------------ DrawPlot2D ------------------------ */
 void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
                 float highlight_x, float highlight_y, float highlight_y2, int valid, int position,
-                float global_valmin, float global_valmax, char *quantity, char *quantity2, char *unit,
+                int truncate_min, float global_valmin, int truncate_max, float global_valmax, char *quantity, char *quantity2, char *unit,
                 float left, float right, float down, float top){
   float xmin, xmax, zmin, zmax, dx;
   float zmax_display;
@@ -958,14 +958,38 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   glLineWidth(plot2d_line_width);
   glBegin(GL_LINES);
   for(i = 0; i<n-1; i++){
-    glVertex2f(HSCALE2D(x[i]), VSCALE2D(z[i]));
-    glVertex2f(HSCALE2D(x[i+1]), VSCALE2D(z[i+1]));
+    float val, val2;
+
+    val = z[i];
+    val2 = z[i + 1];
+    if(truncate_min == 1){
+      if(val<global_valmin)val = global_valmin;
+      if(val2<global_valmin)val2 = global_valmin;
+    }
+    if(truncate_max == 1){
+      if(val>global_valmax)val   = global_valmax;
+      if(val2>global_valmax)val2 = global_valmax;
+    }
+    glVertex2f(HSCALE2D(x[i]), VSCALE2D(val));
+    glVertex2f(HSCALE2D(x[i+1]), VSCALE2D(val2));
   }
   if(z2!=NULL){
     glColor3f(1.0, 0.0, 0.0);
     for(i = 0; i<n-1; i++){
-      glVertex2f(HSCALE2D(x[i]), VSCALE2D(z2[i]));
-      glVertex2f(HSCALE2D(x[i+1]), VSCALE2D(z2[i+1]));
+      float val, val2;
+
+      val = z2[i];
+      val2 = z2[i + 1];
+    if(truncate_min == 1){
+      if(val<global_valmin)val = global_valmin;
+      if(val2<global_valmin)val2 = global_valmin;
+    }
+    if(truncate_max == 1){
+      if(val>global_valmax)val = global_valmax;
+      if(val2>global_valmax)val2 = global_valmax;
+    }
+      glVertex2f(HSCALE2D(x[i]), VSCALE2D(val));
+      glVertex2f(HSCALE2D(x[i+1]), VSCALE2D(val2));
     }
     glColor3fv(foregroundcolor);
   }
@@ -1023,16 +1047,30 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
 
   if(valid==1){
     glPointSize(plot2d_point_size);
+
+    float val, val2;
+
+    val = highlight_y;
+    val2 = highlight_y2;
+    if(truncate_min == 1){
+      if(val<global_valmin)val = global_valmin;
+      if(val2<global_valmin)val2 = global_valmin;
+    }
+    if(truncate_max == 1){
+      if(val>global_valmax)val = global_valmax;
+      if(val2>global_valmax)val2 = global_valmax;
+    }
+
     glBegin(GL_POINTS);
     if(z2==NULL){
       glColor3f(1.0, 0.0, 0.0);
-      glVertex2f(HSCALE2D(highlight_x), VSCALE2D(highlight_y));
+      glVertex2f(HSCALE2D(highlight_x), VSCALE2D(val));
     }
     else{
       glColor3fv(foregroundcolor);
-      glVertex2f(HSCALE2D(highlight_x), VSCALE2D(highlight_y));
+      glVertex2f(HSCALE2D(highlight_x), VSCALE2D(val));
       glColor3f(1.0, 0.0, 0.0);
-      glVertex2f(HSCALE2D(highlight_x), VSCALE2D(highlight_y2));
+      glVertex2f(HSCALE2D(highlight_x), VSCALE2D(val2));
     }
     glColor3fv(foregroundcolor);
     glEnd();
@@ -1068,6 +1106,13 @@ void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down) {
       valmin = hi->valmin;
       valmax = hi->valmax;
     }
+    if(use_plot2d_hrr_min == 1){
+      valmin = plot2d_hrr_min;
+    }
+    if(use_plot2d_hrr_max == 1){
+      valmax = plot2d_hrr_max;
+    }
+
     hitime = hrrinfo+time_col;
 
     if(update_avg==1){
@@ -1085,7 +1130,7 @@ void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down) {
     if(hi2!=NULL)highlight_val2 = hi2->vals[itime];
 
     DrawPlot2D(PLOT_ALL, hitime->vals, hi->vals, vals2, hi->nvals,
-               highlight_time, highlight_val, highlight_val2, valid, 0, valmin, valmax, hi->label.longlabel, quantity2, hi->label.unit,
+               highlight_time, highlight_val, highlight_val2, valid, 0, use_plot2d_hrr_min, valmin, use_plot2d_hrr_max, valmax, hi->label.longlabel, quantity2, hi->label.unit,
                VP_hrr_plot.left, VP_hrr_plot.right, VP_hrr_plot.down, VP_hrr_plot.top);
   }
 
@@ -1129,7 +1174,7 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
       }
 
       DrawPlot2D(PLOT_ALL, devicei->times, devicei->vals, NULL, devicei->nvals,
-               global_times[itimes], highlight_val, 0.0, 1, position, valmin, valmax,
+               global_times[itimes], highlight_val, 0.0, 1, position, 0, valmin, 0, valmax,
                slicei->label.shortlabel, NULL, slicei->label.unit,
                VP_slice_plot.left, VP_slice_plot.right, VP_slice_plot.down, VP_slice_plot.top);
       position++;

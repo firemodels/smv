@@ -219,7 +219,7 @@ void DrawPart(const partdata *parti){
   int offset_terrain;
   propdata *prop;
 
-  if(parti->times[0] > global_times[itimes])return;
+  if(nglobal_times<1||parti->times[0] > global_times[itimes])return;
   if(nterraininfo > 0 && ABS(vertical_factor - 1.0) > 0.01){
     offset_terrain = 1;
   }
@@ -2115,9 +2115,6 @@ void UpdatePartColors(partdata *parti){
 void FinalizePartLoad(partdata *parti){
   int j;
 
-#ifdef pp_PART_PAUSE
-  printf("wrapping up particle load\n");
-#endif
   for(j = 0; j<npartinfo; j++){
     partdata *partj;
 
@@ -2144,9 +2141,6 @@ void FinalizePartLoad(partdata *parti){
     update_generate_part_histograms = 1;
   }
   if(cache_part_data==1){
-#ifdef pp_PART_PAUSE
-    printf("   updating particlecolors\n");
-#endif
     SetPercentilePartBounds();
     for(j = 0; j<npartinfo; j++){
       partdata *partj;
@@ -2156,14 +2150,8 @@ void FinalizePartLoad(partdata *parti){
         UpdatePartColors(partj);
       }
     }
-#ifdef pp_PART_PAUSE
-    printf("   updating particlecolors complete\n");
-#endif
   }
 #define BOUND_PERCENTILE_DRAW          120
-#ifdef pp_PART_PAUSE
-  printf("   particle final wrapup\n");
-#endif
   PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
   parttype = 0;
   ParticlePropShowMenu(part5colorindex);
@@ -2172,12 +2160,6 @@ void FinalizePartLoad(partdata *parti){
   UpdatePart5Extremes();
   updatemenu = 1;
   ForceIdle();
-#ifdef pp_PART_PAUSE
-  printf("   particle final wrapup complete\n");
-#endif
-#ifdef pp_PART_PAUSE
-  printf("particle load wrapup complete\n");
-#endif
   glutPostRedisplay();
 }
 
@@ -2244,18 +2226,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   }
   GetPartHeader(parti, &nf_all_local, NOT_FORCE, 1);
   CheckMemory;
-#ifdef pp_PART_PAUSE
-  if(parti - partinfo < 1){
-    printf("\npause 10 s\n");
-    PauseTime(10.0);
-    printf("pause complete\n");
-  }
-  printf("before GetPartData\n");
   GetPartData(parti, nf_all_local, &file_size_local);
-  printf("after GetPartData\n");
-#else
-  GetPartData(parti, nf_all_local, &file_size_local);
-#endif
   CheckMemory;
   LOCK_PART_LOAD;
   parti->loaded = 1;

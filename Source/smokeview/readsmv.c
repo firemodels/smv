@@ -176,7 +176,7 @@ void ReadHRR(int flag){
   time_col  = -1;
   hrr_col   = -1;
   qradi_col = -1;
-  if(flag==UNLOAD||nhrrinfo==0)return;
+  if(flag==UNLOAD)return;
 
   stream = fopen(hrr_csv_filename, "r");
   if(stream==NULL)return;
@@ -184,6 +184,7 @@ void ReadHRR(int flag){
   GetRowCols(stream, &nrows, &ncols);
   nhrrinfo = ncols;
 
+  if(nhrrinfo == 0)return;
   // allocate memory
 
   NewMemory((void **)&labels,         nhrrinfo*sizeof(char *));
@@ -3035,6 +3036,12 @@ void UpdateMeshCoords(void){
   xbarFDS  = xbar;
   ybarFDS  = ybar;
   zbarFDS  = zbar;
+
+#ifdef pp_PLOT2D_NEW
+  genplot_xyz[0] = xbar0FDS;
+  genplot_xyz[1] = ybar0FDS;
+  genplot_xyz[2] = zbar0FDS;
+#endif
 
   geomlistdata *geomlisti;
   if(geominfo!=NULL&&geominfo->geomlistinfo!=NULL){
@@ -9072,7 +9079,7 @@ int ReadSMV(bufferstreamdata *stream){
 
     devicei = deviceinfo + i;
     if (strcmp(devicei->deviceID, "null") == 0) {
-      sprintf(devicei->deviceID, "DEV%05i", i + 1);
+      sprintf(devicei->deviceID, "DEV%03i", i + 1);
     }
   }
 
@@ -11413,9 +11420,9 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWDEVICEPLOTS")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %f %f %f %f %f %f",
+      sscanf(buffer, " %i %i %f %f %f %f %f %f %f",
              &vis_device_plot, &showd_plot2d_labels, &plot2d_size_factor, &plot2d_line_width, &plot2d_point_size,
-             plot2d_xyz_offset, plot2d_xyz_offset+1, plot2d_xyz_offset+2
+             plot2d_xyz_offset, plot2d_xyz_offset+1, plot2d_xyz_offset+2, &plot2d_font_spacing
       );
       update_glui_devices = 1;
       continue;
@@ -12675,6 +12682,11 @@ int ReadIni2(char *inifile, int localfile){
         sscanf(buffer, "%f %f %f ", rgb_ini_copy, rgb_ini_copy + 1, rgb_ini_copy + 2);
         rgb_ini_copy += 3;
       }
+      continue;
+    }
+    if(Match(buffer, "PLOT2DHRRBOUNDS") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %f %i %f", &use_plot2d_hrr_min, &plot2d_hrr_min, &use_plot2d_hrr_max, &plot2d_hrr_max);
       continue;
     }
     if(Match(buffer, "P3DSURFACETYPE") == 1){
@@ -14762,9 +14774,9 @@ void WriteIniLocal(FILE *fileout){
     }
   }
   fprintf(fileout, "SHOWDEVICEPLOTS\n");
-  fprintf(fileout, " %i %i %f %f %f %f %f %f\n",
+  fprintf(fileout, " %i %i %f %f %f %f %f %f %f\n",
           vis_device_plot, showd_plot2d_labels, plot2d_size_factor, plot2d_line_width, plot2d_point_size,
-          plot2d_xyz_offset[0], plot2d_xyz_offset[1], plot2d_xyz_offset[2]
+          plot2d_xyz_offset[0], plot2d_xyz_offset[1], plot2d_xyz_offset[2], plot2d_font_spacing
   );
   fprintf(fileout, "SHOWDEVICEVALS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n", showdevice_val, showvdevice_val, devicetypes_index, colordevice_val, vectortype, viswindrose, showdevice_type,showdevice_unit,showdevice_id);
@@ -15422,6 +15434,8 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", p3dsurfacetype);
   fprintf(fileout, "P3DSURFACESMOOTH\n");
   fprintf(fileout, " %i\n", p3dsurfacesmooth);
+  fprintf(fileout, "PLOT2DHRRBOUNDS\n");
+  fprintf(fileout, " %i %f %i %f\n", use_plot2d_hrr_min, plot2d_hrr_min, use_plot2d_hrr_max, plot2d_hrr_max);
   fprintf(fileout, "PROJECTION\n");
   fprintf(fileout, " %i\n", projection_type);
   fprintf(fileout, "SCALEDFONT\n");

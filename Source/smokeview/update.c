@@ -343,6 +343,9 @@ void UpdateFileLoad(void){
 
 void UpdateShow(void){
   int i,evacflag,sliceflag,vsliceflag,partflag,patchflag,isoflag,smoke3dflag,tisoflag,showdeviceflag;
+#ifdef pp_PLOT2D_NEW
+  int show_genplot1fag;
+#endif
   int slicecolorbarflag;
   int shooter_flag;
   int showhrrflag;
@@ -368,6 +371,9 @@ void UpdateShow(void){
   showtours=0;
   showdeviceflag = 0;
   showhrrflag = 0;
+#ifdef pp_PLOT2D_NEW
+  show_genplot1fag = 0;
+#endif
   visTimeParticles=1; visTimeSlice=1; visTimeBoundary=1; visTimeZone=1; visTimeIso=1;
 
   drawing_boundary_files = 0;
@@ -375,6 +381,9 @@ void UpdateShow(void){
   RenderTime=0;
 
   if(vis_hrr_plot==1&&hrrptr!=NULL)showhrrflag = 1;
+#ifdef pp_PLOT2D_NEW
+  if(show_genplot1==1)show_genplot1fag = 1;
+#endif
 
   if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
@@ -623,6 +632,9 @@ void UpdateShow(void){
   if( plotstate==DYNAMIC_PLOTS &&
     ( showdeviceflag==1 || showhrrflag==1 || sliceflag==1 || vsliceflag==1 || partflag==1 || patchflag==1 ||
     shooter_flag==1|| smoke3dflag==1 || showtours==1 || evacflag==1 ||
+#ifdef pp_PLOT2D_NEW
+    show_genplot1fag == 1 ||
+#endif
     (ReadZoneFile==1&&visZone==1&&visTimeZone==1)||showvolrender==1
     )
     )showtime=1;
@@ -1053,7 +1065,7 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
     float dt;
 
     dt = time_in[i]-time_in[i-1];
-    ASSERT(dt>=0.0);
+ //   ASSERT(dt>=0.0);
     dt_eps = MIN(dt_eps, ABS(dt)/2.0);
   }
   if(nglobal_times>1){
@@ -1061,7 +1073,7 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
       float dt;
 
       dt = global_times[i]-global_times[i-1];
-      ASSERT(dt>=0.0);
+  //    ASSERT(dt>=0.0);
       dt_eps = MIN(dt_eps, ABS(dt)/2.0);
     }
   }
@@ -1165,6 +1177,16 @@ void UpdateTimes(void){
   if(vis_hrr_plot==1&&hrrptr!=NULL){
     MergeGlobalTimes(timeptr->vals, timeptr->nvals);
   }
+#ifdef pp_PLOT2D_NEW
+  if(show_genplot1==1){
+    if(HaveGenDev()==1){
+      MergeGlobalTimes(deviceinfo->times, deviceinfo->nvals);
+    }
+    if(HaveGenHrr()==1){
+      MergeGlobalTimes(hrrinfo->vals, hrrinfo->nvals);
+    }
+  }
+#endif
   if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;
@@ -1582,6 +1604,13 @@ int GetPlotStateSub(int choice){
         stept = 1;
         return DYNAMIC_PLOTS;
       }
+#ifdef pp_PLOT2D_NEW
+      if(show_genplot1==1){
+
+        stept = 1;
+        return DYNAMIC_PLOTS;
+      }
+#endif
       if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
         for(i = 0; i<ndeviceinfo; i++){
           devicedata *devicei;
@@ -1885,13 +1914,7 @@ void UpdateShowScene(void){
   }
   if(update_generate_part_histograms==1){
     update_generate_part_histograms = 0;
-#ifdef pp_PART_PAUSE
-    printf("analyze part data\n");
     GeneratePartHistogramsMT();
-    printf("analyze part data complete\n");
-#else
-    GeneratePartHistogramsMT();
-#endif
     update_generate_part_histograms = -1;
   }
   if(update_stept==1){
