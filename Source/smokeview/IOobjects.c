@@ -3282,6 +3282,268 @@ void GetGlobalDeviceBounds(int type){
   }
 }
 
+#ifdef pp_PLOT2D_NEW
+
+/* ------------------ HaveGenDev ------------------------ */
+
+int HaveGenDev(void){
+  int i;
+
+  for(i = 0; i<plot2dinfo->ncurve_index; i++){
+    int curve_index;
+
+    curve_index = plot2dinfo->curve_index[i];
+    if(curve_index<ndeviceinfo)return 1;
+  }
+  return 0;
+}
+
+/* ------------------ HaveGenHrr ------------------------ */
+
+int HaveGenHrr(void){
+  int i;
+
+  for(i = 0; i<plot2dinfo->ncurve_index; i++){
+    int curve_index;
+
+    curve_index = plot2dinfo->curve_index[i];
+    if(curve_index>=ndeviceinfo)return 1;
+  }
+  return 0;
+}
+
+/* ------------------ DrawPlot ------------------------ */
+
+void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int n,
+              float highlight_x, float highlight_y,
+              float global_valmin, float global_valmax, float *plot_color, char *label, int position){
+  float xmin, xmax, zmin, zmax, dx, dz;
+  float xscale = 1.0, zscale = 1.0;
+  float origin[3];
+  int i;
+//  char cvalmin[20], cvalmax[20], cval[20];
+  int ndigits = 3;
+
+  origin[0] = xyz0[0];
+  origin[1] = xyz0[1];
+  origin[2] = xyz0[2];
+
+  xmin = x[0];
+  xmax = xmin;
+  for(i = 1; i < n; i++){
+    xmin = MIN(xmin, x[i]);
+    xmax = MAX(xmax, x[i]);
+    }
+  if(xmax == xmin)xmax = xmin + 1.0;
+  if(xmax > xmin)xscale = 1.0 / (xmax - xmin);
+
+  zmin = global_valmin;
+  zmax = global_valmax;
+  if(zmax == zmin)zmax = zmin + 1.0;
+  if(zmax > zmin)zscale = 1.0 / (zmax - zmin);
+
+  dx = (xmax - xmin) / 20.0;
+  dz = (zmax - zmin) / 20.0;
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
+  glTranslatef(SCALE2FDS(plot2d_xyz_offset[0]), SCALE2FDS(plot2d_xyz_offset[1]), SCALE2FDS(plot2d_xyz_offset[2]));
+
+  glTranslatef(origin[0], origin[1], origin[2]);
+
+  float az = camera_current->az_elev[0];
+  glRotatef(-az, 0.0, 0.0, 1.0);
+
+  float elev = camera_current->az_elev[1];
+  glRotatef(-elev, 1.0, 0.0, 0.0);
+
+  glScalef(SCALE2FDS(factor), SCALE2FDS(factor), SCALE2FDS(factor));
+  glScalef(xscale, 1.0, zscale);
+  glTranslatef(-xmin, 0.0, -zmin);
+  glColor3fv(plot_color);
+  glLineWidth(plot2d_line_width);
+  glBegin(GL_LINES);
+  for(i = 0; i < n - 1; i++){
+    glVertex3f(x[i], 0.0, z[i]);
+    glVertex3f(x[i + 1], 0.0, z[i + 1]);
+  }
+  if(option == PLOT_ALL){
+    glColor3fv(foregroundcolor);
+    glVertex3f(xmin - dx, 0.0, zmin - dz);
+    glVertex3f(xmax + dx, 0.0, zmin - dz);
+
+    glVertex3f(xmax + dx, 0.0, zmin - dz);
+    glVertex3f(xmax + dx, 0.0, zmax + dz);
+
+    glVertex3f(xmax + dx, 0.0, zmax + dz);
+    glVertex3f(xmin - dx, 0.0, zmax + dz);
+
+    glVertex3f(xmin - dx, 0.0, zmax + dz);
+    glVertex3f(xmin - dx, 0.0, zmin - dz);
+
+    glVertex3f(xmax,      0.0, zmax);
+    glVertex3f(xmax + dx, 0.0, zmax);
+
+    glVertex3f(xmax,      0.0, zmin);
+    glVertex3f(xmax + dx, 0.0, zmin);
+  }
+  glEnd();
+
+  glColor3f(1.0, 0.0, 0.0);
+  glPointSize(plot2d_point_size);
+  glBegin(GL_POINTS);
+  glVertex3f(highlight_x, 0.0, highlight_y);
+  glEnd();
+
+  if(showd_plot2d_labels == 1){
+    float dfont = (float)GetFontHeight() / ((float)screenHeight * zscale * SCALE2FDS(factor) * SCALE2SMV(1.0));
+
+    if(option == PLOT_ALL){
+      char c_tmin[32], c_tmax[32];
+
+      Float2String(c_tmin, x[0], ndigits, force_fixedpoint);
+      Output3Text(foregroundcolor, xmin - dx, 0.0, zmin - 3.0 * dfont, c_tmin);
+
+      Float2String(c_tmax, x[n - 1], ndigits, force_fixedpoint);
+      Output3Text(foregroundcolor, xmax - dx, 0.0, zmin - 3.0 * dfont, c_tmax);
+    }
+    if(label != NULL){
+      Output3Text(plot_color, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
+    }
+  }
+  glPopMatrix();
+}
+
+/* ------------------ DrawGenPlot ------------------------ */
+
+void DrawGenPlot(plot2ddata * plot2di){
+  int i;
+  float dev_global_min=1.0, dev_global_max=0.0;
+  float hrr_global_min=1.0, hrr_global_max=0.0;
+  int first = 1;
+
+  for(i = 0; i<plot2di->ncurve_index; i++){
+    int curve_index;
+
+    curve_index = plot2di->curve_index[i];
+    if(curve_index<ndeviceinfo){
+      if(dev_global_min>dev_global_max){
+        dev_global_min = plot2di->curve_min[curve_index];
+        dev_global_max = plot2di->curve_max[curve_index];
+      }
+      else{
+        dev_global_min = MIN(dev_global_min, plot2di->curve_min[curve_index]);
+        dev_global_max = MAX(dev_global_max, plot2di->curve_max[curve_index]);
+      }
+    }
+    else{
+      float vmin, vmax;
+
+      vmin = plot2di->curve_min[curve_index];
+      vmax = plot2di->curve_max[curve_index];
+      if(hrr_global_min>hrr_global_max){
+        hrr_global_min = vmin;
+        hrr_global_max = vmax;
+      }
+      else{
+        hrr_global_min = MIN(hrr_global_min, vmin);
+        hrr_global_max = MAX(hrr_global_max, vmax);
+      }
+    }
+  }
+  int position = 0;
+  for(i = 0; i<plot2di->ncurve_index; i++){
+    int curve_index;
+    float highlight_time, highlight_val;
+    int valid;
+
+    curve_index = plot2di->curve_index[i];
+    if(curve_index < ndeviceinfo){
+      devicedata *devi;
+
+      devi = deviceinfo + curve_index;
+      if(global_times!=NULL){
+        highlight_time = global_times[itimes];
+        highlight_val = GetDeviceVal(global_times[itimes], devi, &valid);
+      }
+      if(devi->nvals>0){
+        int option;
+
+        if(first == 1){
+          first = 0;
+          option = PLOT_ALL;
+        }
+        else{
+          option = PLOT_ONLY_DATA;
+        }
+        char label[256];
+        strcpy(label, devi->deviceID);
+
+        float *color, blue_color[3] = {0.0,0.0,1.0};
+        float dev_min, dev_max;
+        if(strcmp(label, "O2") == 0){
+          dev_min = 0.0;
+          dev_max = 0.25;
+          color = blue_color;
+        }
+        else{
+          dev_min = dev_global_min;
+          dev_max = dev_global_max;
+          color = foregroundcolor;
+        }
+        DrawGenCurve(option, plot2di->xyz, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
+                     highlight_time, highlight_val, dev_min, dev_max, color, label, position);
+        position++;
+      }
+    }
+    else{
+      hrrdata *hrri;
+
+      curve_index -= ndeviceinfo;
+      hrri = hrrinfo + curve_index;
+      if(global_times != NULL){
+        int itime;
+
+        highlight_time = global_times[itimes];
+        itime = GetInterval(highlight_time, hrrinfo->vals, hrrinfo->nvals);
+        itime = CLAMP(itime, 0, hrrinfo->nvals - 1);
+
+        highlight_val = hrri->vals[itime];
+      }
+      if(hrri->nvals > 0){
+        int option;
+        float blue_color[3] = {0.0, 0.0, 1.0};
+
+        if(first == 1){
+          first = 0;
+          option = PLOT_ALL;
+        }
+        else{
+          option = PLOT_ONLY_DATA;
+        }
+        DrawGenCurve(option, plot2di->xyz, plot2d_size_factor, hrrinfo->vals, hrri->vals, hrri->nvals,
+                     highlight_time, highlight_val, hrr_global_min, hrr_global_max, blue_color, hrri->label.shortlabel, position);
+        position++;
+      }
+    }
+  }
+}
+
+  /* ------------------ DrawGenPlots ------------------------ */
+
+void DrawGenPlots(void){
+  int i;
+
+  for(i=0; i<nplot2dinfo; i++){
+    plot2ddata *plot2di;
+
+    plot2di = plot2dinfo + i;
+    if(plot2di->show==0)continue;
+    DrawGenPlot(plot2di);
+  }
+}
+#endif
+
   /* ------------------ DrawPlot ------------------------ */
 
 void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,

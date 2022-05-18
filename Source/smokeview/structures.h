@@ -405,7 +405,6 @@ typedef struct _facedata {
   float xmin, xmax, ymin, ymax, zmin, zmax;
   int dir,hidden,dup;
   int del;
-  int invisible;
   int transparent;
   int patchpresent;
   struct _culldata *cullport;
@@ -979,7 +978,7 @@ typedef struct _device {
   int type, is_beam;
   int selected;
 #ifdef pp_PLOT2D_NEW
-  int inlist;
+  int inlist1;
 #endif
   int valid;
 } devicedata;
@@ -992,6 +991,17 @@ typedef struct _hrrdata {
   int base_col;
   flowlabels label;
 } hrrdata;
+
+/* --------------------------  plot2ddata ------------------------------------ */
+
+#ifdef pp_PLOT2D_NEW
+typedef struct _plot2ddata{
+  int *curve_index, ncurve_index;
+  float *curve_min, *curve_max;
+  float xyz[3];
+  int show;
+} plot2ddata;
+#endif
 
 /* --------------------------  windrosedata ------------------------------------ */
 

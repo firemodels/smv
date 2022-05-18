@@ -523,6 +523,16 @@ void ShowScene2(int mode){
     }
   }
 
+  /* ++++++++++++++++++++++++ draw general plots +++++++++++++++++++++++++ */
+
+#ifdef pp_PLOT2D_NEW
+  if(mode == DRAWSCENE && geom_bounding_box_mousedown == 0){
+    if(show_genplot1==1){
+      DrawGenPlots();
+    }
+  }
+#endif
+
   /* ++++++++++++++++++++++++ draw zone fire modeling info +++++++++++++++++++++++++ */
 
   if(nrooms>0 && showzone == 1){
