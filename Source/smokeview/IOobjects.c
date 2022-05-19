@@ -3290,10 +3290,10 @@ void GetGlobalDeviceBounds(int type){
 int HaveGenDev(void){
   int i;
 
-  for(i = 0; i<plot2dinfo->ncurve_index; i++){
+  for(i = 0; i<plot2dinfo->ncurve_indexes; i++){
     int curve_index;
 
-    curve_index = plot2dinfo->curve_index[i];
+    curve_index = plot2dinfo->curve_indexes[i];
     if(curve_index<ndeviceinfo)return 1;
   }
   return 0;
@@ -3304,10 +3304,10 @@ int HaveGenDev(void){
 int HaveGenHrr(void){
   int i;
 
-  for(i = 0; i<plot2dinfo->ncurve_index; i++){
+  for(i = 0; i<plot2dinfo->ncurve_indexes; i++){
     int curve_index;
 
-    curve_index = plot2dinfo->curve_index[i];
+    curve_index = plot2dinfo->curve_indexes[i];
     if(curve_index>=ndeviceinfo)return 1;
   }
   return 0;
@@ -3403,10 +3403,10 @@ void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int
       char c_tmin[32], c_tmax[32];
 
       Float2String(c_tmin, x[0], ndigits, force_fixedpoint);
-      Output3Text(foregroundcolor, xmin - dx, 0.0, zmin - 3.0 * dfont, c_tmin);
+      Output3Text(foregroundcolor, xmin - dx, 0.0, zmin - dz - 3.0 * dfont, c_tmin);
 
       Float2String(c_tmax, x[n - 1], ndigits, force_fixedpoint);
-      Output3Text(foregroundcolor, xmax - dx, 0.0, zmin - 3.0 * dfont, c_tmax);
+      Output3Text(foregroundcolor, xmax - dx, 0.0, zmin - dz - 3.0 * dfont, c_tmax);
     }
     if(label != NULL){
       Output3Text(plot_color, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
@@ -3423,10 +3423,10 @@ void DrawGenPlot(plot2ddata * plot2di){
   float hrr_global_min=1.0, hrr_global_max=0.0;
   int first = 1;
 
-  for(i = 0; i<plot2di->ncurve_index; i++){
+  for(i = 0; i<plot2di->ncurve_indexes; i++){
     int curve_index;
 
-    curve_index = plot2di->curve_index[i];
+    curve_index = plot2di->curve_indexes[i];
     if(curve_index<ndeviceinfo){
       if(dev_global_min>dev_global_max){
         dev_global_min = plot2di->curve_min[curve_index];
@@ -3453,12 +3453,12 @@ void DrawGenPlot(plot2ddata * plot2di){
     }
   }
   int position = 0;
-  for(i = 0; i<plot2di->ncurve_index; i++){
+  for(i = 0; i<plot2di->ncurve_indexes; i++){
     int curve_index;
     float highlight_time, highlight_val;
     int valid;
 
-    curve_index = plot2di->curve_index[i];
+    curve_index = plot2di->curve_indexes[i];
     if(curve_index < ndeviceinfo){
       devicedata *devi;
 
@@ -3533,15 +3533,8 @@ void DrawGenPlot(plot2ddata * plot2di){
   /* ------------------ DrawGenPlots ------------------------ */
 
 void DrawGenPlots(void){
-  int i;
-
-  for(i=0; i<nplot2dinfo; i++){
-    plot2ddata *plot2di;
-
-    plot2di = plot2dinfo + i;
-    if(plot2di->show==0)continue;
-    DrawGenPlot(plot2di);
-  }
+  if(plot2dinfo->show==0)return;
+   DrawGenPlot(plot2dinfo);
 }
 #endif
 

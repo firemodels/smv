@@ -995,10 +995,12 @@ typedef struct _hrrdata {
 
 /* --------------------------  plot2ddata ------------------------------------ */
 
+#define MAX_PLOT2D_CURVES 100
 #ifdef pp_PLOT2D_NEW
 typedef struct _plot2ddata{
-  int *curve_index, ncurve_index;
-  float *curve_min, *curve_max;
+  int curve_indexes[MAX_PLOT2D_CURVES], curve_indexes_ini[MAX_PLOT2D_CURVES], ncurve_indexes, ncurve_indexes_ini;
+  int curve_index, plot_index;
+  float curve_min[MAX_PLOT2D_CURVES], curve_max[MAX_PLOT2D_CURVES];
   float xyz[3];
   int show;
 } plot2ddata;
