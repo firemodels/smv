@@ -3038,9 +3038,9 @@ void UpdateMeshCoords(void){
   zbarFDS  = zbar;
 
 #ifdef pp_PLOT2D_NEW
-  genplot_xyz[0] = xbar0FDS;
-  genplot_xyz[1] = ybar0FDS;
-  genplot_xyz[2] = zbar0FDS;
+  glui_plot2d_xyz[0] = xbar0FDS;
+  glui_plot2d_xyz[1] = ybar0FDS;
+  glui_plot2d_xyz[2] = zbar0FDS;
 #endif
 
   geomlistdata *geomlisti;
@@ -10959,6 +10959,13 @@ typedef struct {
   SetupMeshWalls();
   if(viswindrose==1)update_windrose = 1;
 
+// initialize 2d plot data structures
+#ifdef pp_PLOT2D_NEW
+  void InitPlot2D(plot2ddata *plot2di, int plot_index);
+  NewMemory((void **)&plot2dinfo, sizeof(plot2ddata));
+  InitPlot2D(plot2dinfo, 0);
+#endif
+
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");
   PrintMemoryInfo;
@@ -11427,6 +11434,30 @@ int ReadIni2(char *inifile, int localfile){
       update_glui_devices = 1;
       continue;
     }
+#ifdef pp_PLOT2D_NEW
+    if(Match(buffer, "SHOWGENPLOTS") == 1){
+      char *token;
+      int count;
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %f %f %f %i", glui_plot2d_xyz, glui_plot2d_xyz+1, glui_plot2d_xyz+2, &show_genplot1);
+
+      fgets(buffer, 255, stream);
+      TrimBack(buffer);
+      token = strtok(buffer, " ");
+      count = 0;
+      while(token != NULL){
+        int curv_index;
+
+        sscanf(token, "%i", &curv_index);
+        plot2dinfo->curve_indexes_ini[count++] = curv_index;
+        token = strtok(NULL, " ");
+      }
+      plot2dinfo->ncurve_indexes_ini = count;
+      update_glui_devices = 1;
+      continue;
+    }
+#endif
     if(Match(buffer, "SHOWMISSINGOBJECTS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &show_missing_objects);
@@ -14778,6 +14809,15 @@ void WriteIniLocal(FILE *fileout){
           vis_device_plot, showd_plot2d_labels, plot2d_size_factor, plot2d_line_width, plot2d_point_size,
           plot2d_xyz_offset[0], plot2d_xyz_offset[1], plot2d_xyz_offset[2], plot2d_font_spacing
   );
+#ifdef pp_PLOT2D_NEW
+  fprintf(fileout, "SHOWGENPLOTS\n");
+  fprintf(fileout, " %f %f %f %i\n", glui_plot2d_xyz[0], glui_plot2d_xyz[1], glui_plot2d_xyz[2], show_genplot1);
+  fprintf(fileout, " ");
+  for(i = 0; i < plot2dinfo->ncurve_indexes; i++){
+    fprintf(fileout, " %i ", plot2dinfo->curve_indexes[i]);
+  };
+  fprintf(fileout, "\n");
+#endif
   fprintf(fileout, "SHOWDEVICEVALS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n", showdevice_val, showvdevice_val, devicetypes_index, colordevice_val, vectortype, viswindrose, showdevice_type,showdevice_unit,showdevice_id);
   fprintf(fileout, "SHOWHRRPLOT\n");
