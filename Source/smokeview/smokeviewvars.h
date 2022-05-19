@@ -1524,13 +1524,13 @@ SVEXTERN float max_dev_vel;
 SVEXTERN int SVDECL(last_prop_display,-1);
 SVEXTERN int SVDECL(devicetypes_index,0);
 #ifdef pp_PLOT2D_NEW
-SVEXTERN int SVDECL(plot_component1, 0);
+SVEXTERN int SVDECL(glui_plot2d_curve_index, 0);
 SVEXTERN int SVDECL(devtype1_index, -1);
 SVEXTERN int SVDECL(deviceID1_index, 0);
 SVEXTERN int SVDECL(hrr1_index, 1);
 SVEXTERN int SVDECL(show_genplot1, 0);
-SVEXTERN float genplot_xyz[3];
-SVEXTERN plot2ddata SVDECL(*plot2dinfo, NULL);
+SVEXTERN float glui_plot2d_xyz[3];
+SVEXTERN plot2ddata SVDECL(*plot2dinfo, NULL), SVDECL(*glui_plot2dinfo, NULL);;
 SVEXTERN int SVDECL(nplot2dinfo, 0), SVDECL(iplot2dinfo, 0);
 #endif
 SVEXTERN float SVDECL(plot2d_hrr_min,0.0), SVDECL(plot2d_hrr_max,1.0);

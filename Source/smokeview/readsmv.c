@@ -3038,9 +3038,9 @@ void UpdateMeshCoords(void){
   zbarFDS  = zbar;
 
 #ifdef pp_PLOT2D_NEW
-  genplot_xyz[0] = xbar0FDS;
-  genplot_xyz[1] = ybar0FDS;
-  genplot_xyz[2] = zbar0FDS;
+  glui_plot2d_xyz[0] = xbar0FDS;
+  glui_plot2d_xyz[1] = ybar0FDS;
+  glui_plot2d_xyz[2] = zbar0FDS;
 #endif
 
   geomlistdata *geomlisti;
@@ -10961,7 +10961,9 @@ typedef struct {
 
 // initialize 2d plot data structures
 #ifdef pp_PLOT2D_NEW
-  AddPlot2D();
+  void InitPlot2D(plot2ddata *plot2di, int plot_index);
+  NewMemory((void **)&plot2dinfo, sizeof(plot2ddata));
+  InitPlot2D(plot2dinfo, 0);
 #endif
 
   PRINTF("%s", _("complete"));
@@ -11438,7 +11440,7 @@ int ReadIni2(char *inifile, int localfile){
       int count;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f %f %i", genplot_xyz, genplot_xyz+1, genplot_xyz+2, &show_genplot1);
+      sscanf(buffer, " %f %f %f %i", glui_plot2d_xyz, glui_plot2d_xyz+1, glui_plot2d_xyz+2, &show_genplot1);
 
       fgets(buffer, 255, stream);
       TrimBack(buffer);
@@ -11448,10 +11450,10 @@ int ReadIni2(char *inifile, int localfile){
         int curv_index;
 
         sscanf(token, "%i", &curv_index);
-        plot2dinfo->curve_index_ini[count++] = curv_index;
+        plot2dinfo->curve_indexes_ini[count++] = curv_index;
         token = strtok(NULL, " ");
       }
-      plot2dinfo->ncurve_index_ini = count;
+      plot2dinfo->ncurve_indexes_ini = count;
       update_glui_devices = 1;
       continue;
     }
@@ -14809,10 +14811,10 @@ void WriteIniLocal(FILE *fileout){
   );
 #ifdef pp_PLOT2D_NEW
   fprintf(fileout, "SHOWGENPLOTS\n");
-  fprintf(fileout, " %f %f %f %i\n", genplot_xyz[0], genplot_xyz[1], genplot_xyz[2], show_genplot1);
+  fprintf(fileout, " %f %f %f %i\n", glui_plot2d_xyz[0], glui_plot2d_xyz[1], glui_plot2d_xyz[2], show_genplot1);
   fprintf(fileout, " ");
-  for(i = 0; i < plot2dinfo->ncurve_index; i++){
-    fprintf(fileout, " %i ", plot2dinfo->curve_index[i]);
+  for(i = 0; i < plot2dinfo->ncurve_indexes; i++){
+    fprintf(fileout, " %i ", plot2dinfo->curve_indexes[i]);
   };
   fprintf(fileout, "\n");
 #endif
