@@ -26,18 +26,19 @@
 #define RESET_FUEL_HOC         33
 
 #ifdef pp_PLOT2D_NEW
-#define GENPLOT_devID1        101
-#define GENPLOT_devtype1      102
+#define GENPLOT_SELECT_DEVICE 101
+#define GENPLOT_DEVICE_TYPE   102
 #define GENPLOT_ADD_DEVCURVE  103
 #define GENPLOT_ADD_HRRCURVE  104
-#define GENPLOT_COMP1         105
+#define GENPLOT_SELECT_CURVE  105
 #define GENPLOT_REM_CURVE     106
 #define GENPLOT_REM_ALLCURVES 107
-#define GENPLOT_HRR1          108
-#define GENPLOT_SHOW1         109
+#define GENPLOT_HRR_TYPE      108
+#define GENPLOT_SHOW_PLOT     109
 #define GENPLOT_XYZ           110
 #define GENPLOT_ADD_PLOT      111
 #define GENPLOT_REM_PLOT      112
+#define GENPLOT_SELECT_PLOT   113
 
 #define PLOT2D_DEV              0
 #define PLOT2D_HRR              1
@@ -360,6 +361,7 @@ extern "C" void InitPlot2D(plot2ddata *plot2di, int plot_index){
   plot2di->xyz[1]           = ybar0FDS;
   plot2di->xyz[2]           = zbar0FDS;
   plot2di->plot_index       = plot_index;
+  plot2di->curve_index      = 0;
 
   for(i = 0; i < ndeviceinfo; i++){
     devicedata *devi;
@@ -441,7 +443,7 @@ void Plot2D2Glui(void){
 
 /* ------------------ AddCurve ------------------------ */
 
-void AddCurve(int type){
+void AddCurve(plot2ddata *plot2di, int type){
   int i, have_index, nindex;
   int offset = 0, index;
 
@@ -453,8 +455,8 @@ void AddCurve(int type){
     index = LIST_devID1->get_int_val();
   }
   have_index = 0;
-  for(i=0; i<glui_plot2d->ncurve_indexes; i++){
-    if(glui_plot2d->curve_indexes[i] == index+offset){
+  for(i=0; i< plot2di->ncurve_indexes; i++){
+    if(plot2di->curve_indexes[i] == index+offset){
       have_index = 1;
       break;
     }
@@ -462,10 +464,10 @@ void AddCurve(int type){
   if(have_index == 0){
     char label[255];
 
-    nindex = glui_plot2d->ncurve_indexes;
-    glui_plot2d->curve_indexes[nindex] = offset + index;
+    nindex = plot2di->ncurve_indexes;
+    plot2di->curve_indexes[nindex] = offset + index;
     nindex++;
-    glui_plot2d->ncurve_indexes = nindex;
+    plot2di->ncurve_indexes = nindex;
     if(type == PLOT2D_DEV){
       strcpy(label, "dev/");
       strcat(label, deviceinfo[index].labelptr);
@@ -481,14 +483,14 @@ void AddCurve(int type){
 
 /* ------------------ RemoveCurve ------------------------ */
 
-void RemoveCurve(int index){
+void RemoveCurve(plot2ddata *plot2di, int index){
   if(index<0){
     int i;
 
-    for(i=0;i<glui_plot2d->ncurve_indexes; i++){
-      LIST_plotcurves->delete_item(glui_plot2d->curve_indexes[i]);
+    for(i=0;i< plot2di->ncurve_indexes; i++){
+      LIST_plotcurves->delete_item(plot2di->curve_indexes[i]);
     }
-    glui_plot2d->ncurve_indexes = 0;
+    plot2di->ncurve_indexes = 0;
     LIST_plotcurves->set_int_val(-1);
   }
   else{
@@ -497,14 +499,14 @@ void RemoveCurve(int index){
     LIST_plotcurves->delete_item(index);
 
     ii = 0;
-    for(i = 0; i < glui_plot2d->ncurve_indexes; i++){
-      if(glui_plot2d->curve_indexes[i] == index)continue;
-      if(i != ii)glui_plot2d->curve_indexes[ii] = glui_plot2d->curve_indexes[i];
+    for(i = 0; i < plot2di->ncurve_indexes; i++){
+      if(plot2di->curve_indexes[i] == index)continue;
+      if(i != ii)plot2di->curve_indexes[ii] = plot2di->curve_indexes[i];
       ii++;
     }
-    (glui_plot2d->ncurve_indexes)--;
-    if(glui_plot2d->ncurve_indexes > 0){
-      LIST_plotcurves->set_int_val(glui_plot2d->curve_indexes[0]);
+    (plot2di->ncurve_indexes)--;
+    if(plot2di->ncurve_indexes > 0){
+      LIST_plotcurves->set_int_val(plot2di->curve_indexes[0]);
     }
     else{
       LIST_plotcurves->set_int_val(-1);
@@ -546,24 +548,24 @@ void GenPlotCB(int var){
   switch (var){
     char label[256];
 
-    case GENPLOT_devID1:
+    case GENPLOT_SELECT_DEVICE:
       strcpy(label, "Add ");
       strcat(label, deviceinfo[deviceID1_index].deviceID);
       strcat(label, " to plot");
       BUTTON_add_dev->set_name(label);
       break;
-    case GENPLOT_devtype1:
+    case GENPLOT_DEVICE_TYPE:
       UpdateDevList(LIST_devID1, devtype1_index);
       break;
     case GENPLOT_ADD_DEVCURVE:
-      AddCurve(PLOT2D_DEV);
-      GenPlotCB(GENPLOT_COMP1);
+      AddCurve(glui_plot2d, PLOT2D_DEV);
+      GenPlotCB(GENPLOT_SELECT_CURVE);
       break;
     case GENPLOT_ADD_HRRCURVE:
-      AddCurve(PLOT2D_HRR);
-      GenPlotCB(GENPLOT_COMP1);
+      AddCurve(glui_plot2d, PLOT2D_HRR);
+      GenPlotCB(GENPLOT_SELECT_CURVE);
       break;
-    case GENPLOT_COMP1:
+    case GENPLOT_SELECT_CURVE:
       if(BUTTON_remove_curve != NULL){
         strcpy(label, "Remove ");
         strcat(label, LIST_plotcurves->curr_text);
@@ -572,25 +574,22 @@ void GenPlotCB(int var){
       }
       break;
     case GENPLOT_REM_CURVE:
-      RemoveCurve(glui_plot2d_curve_index);
-      glui_plot2d->curve_index = glui_plot2d_curve_index;
+      RemoveCurve(glui_plot2d, glui_plot2d->curve_index);
       break;
     case GENPLOT_REM_ALLCURVES:
-      RemoveCurve(-1);
+      RemoveCurve(glui_plot2d, -1);
       break;
-    case GENPLOT_HRR1:
+    case GENPLOT_HRR_TYPE:
       strcpy(label, "Add ");
       strcat(label, hrrinfo[hrr1_index].label.shortlabel);
       strcat(label, " to plot");
       BUTTON_add_hrr->set_name(label);
       break;
-    case GENPLOT_SHOW1:
-      glui_plot2d[0].show = show_genplot1;
+    case GENPLOT_SHOW_PLOT:
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       update_times = 1;
       break;
     case GENPLOT_XYZ:
-      memcpy(glui_plot2d[0].xyz, glui_plot2d_xyz, 3*sizeof(float));
       break;
     default:
       ASSERT(FFALSE);
@@ -852,6 +851,28 @@ float GetDeviceTminTmax(void){
   return return_val;
 }
 
+/* ------------------ MakeCurveList ------------------------ */
+
+void MakeCurveList(plot2ddata *plot2di, int option){
+  int i;
+
+  if(option == 1)LIST_plotcurves->add_item(-1, "");
+  for(i = 0; i < plot2di->ncurve_indexes_ini; i++){
+    int curv_index;
+
+    curv_index = plot2di->curve_indexes_ini[i];
+    if(curv_index < ndeviceinfo){
+      LIST_devID1->set_int_val(curv_index);
+      AddCurve(plot2di, PLOT2D_DEV);
+      }
+    else{
+      LIST_hrr1->set_int_val(curv_index - ndeviceinfo);
+      AddCurve(plot2di, PLOT2D_HRR);
+      }
+    GenPlotCB(GENPLOT_SELECT_CURVE);
+    }
+  }
+
 /* ------------------ GluiDeviceSetup ------------------------ */
 
 extern "C" void GluiDeviceSetup(int main_window){
@@ -1076,7 +1097,7 @@ extern "C" void GluiDeviceSetup(int main_window){
         if(ndevicetypes>0){
         PANEL_plotgeneral_device = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "device data");
         PANEL_plotdevice_select = glui_device->add_panel_to_panel(PANEL_plotgeneral_device, "", false);
-        LIST_devID1 = glui_device->add_listbox_to_panel(PANEL_plotdevice_select, "select device:", &deviceID1_index, GENPLOT_devID1, GenPlotCB);
+        LIST_devID1 = glui_device->add_listbox_to_panel(PANEL_plotdevice_select, "select device:", &deviceID1_index, GENPLOT_SELECT_DEVICE, GenPlotCB);
         glui_device->add_column_to_panel(PANEL_plotdevice_select,false);
         for(i = 0; i < ndeviceinfo; i++){
           devicedata *devicei;
@@ -1086,19 +1107,19 @@ extern "C" void GluiDeviceSetup(int main_window){
           LIST_devID1->add_item(i, devicei->deviceID);
         }
         devicetypes_index = CLAMP(devicetypes_index, 0, ndevicetypes-1);
-        LIST_devtype1 = glui_device->add_listbox_to_panel(PANEL_plotdevice_select, "device types:", &devtype1_index, GENPLOT_devtype1, GenPlotCB);
+        LIST_devtype1 = glui_device->add_listbox_to_panel(PANEL_plotdevice_select, "device types:", &devtype1_index, GENPLOT_DEVICE_TYPE, GenPlotCB);
         LIST_devtype1->add_item(-1, "All");
         for(i = 0; i<ndevicetypes; i++){
           LIST_devtype1->add_item(i, devicetypes[i]->quantity);
         }
         BUTTON_add_dev = glui_device->add_button_to_panel(PANEL_plotgeneral_device, _("Add to plot"), GENPLOT_ADD_DEVCURVE, GenPlotCB);
-        GenPlotCB(GENPLOT_devtype1);
-        GenPlotCB(GENPLOT_devID1);
+        GenPlotCB(GENPLOT_DEVICE_TYPE);
+        GenPlotCB(GENPLOT_SELECT_DEVICE);
       }
 
       if(nhrrinfo>0){
         PANEL_plotgeneral_hrr = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "hrr data");
-        LIST_hrr1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_hrr, "select hrr quantity:", &hrr1_index, GENPLOT_HRR1, GenPlotCB);
+        LIST_hrr1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_hrr, "select hrr quantity:", &hrr1_index, GENPLOT_HRR_TYPE, GenPlotCB);
         for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
           hrrdata *hi;
 
@@ -1109,37 +1130,23 @@ extern "C" void GluiDeviceSetup(int main_window){
           }
         }
         BUTTON_add_hrr = glui_device->add_button_to_panel(PANEL_plotgeneral_hrr, _("Add to plot"), GENPLOT_ADD_HRRCURVE, GenPlotCB);
-        GenPlotCB(GENPLOT_HRR1);
+        GenPlotCB(GENPLOT_HRR_TYPE);
       }
 
       PANEL_plotgeneral_plot = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "plot");
       BUTTON_add_plot = glui_device->add_button_to_panel(PANEL_plotgeneral_plot, _("Add plot"),                  GENPLOT_ADD_PLOT,     GenPlotCB);
       BUTTON_rem_plot = glui_device->add_button_to_panel(PANEL_plotgeneral_plot, _("Remove plot"),               GENPLOT_REM_PLOT,     GenPlotCB);
-      LIST_plots      = glui_device->add_listbox_to_panel(PANEL_plotgeneral_plot, "select plot:", &iplot2dinfo,  GENPLOT_COMP1,        GenPlotCB);
+      LIST_plots      = glui_device->add_listbox_to_panel(PANEL_plotgeneral_plot, "select plot:", &iplot2dinfo,  GENPLOT_SELECT_PLOT,  GenPlotCB);
 
-      LIST_plotcurves = glui_device->add_listbox_to_panel(PANEL_plotgeneral_plot, "curve:", &glui_plot2d_curve_index,    GENPLOT_COMP1,    GenPlotCB);
-      LIST_plotcurves->add_item(-1, "");
-      for(i = 0; i < glui_plot2d->ncurve_indexes_ini; i++){
-        int curv_index;
-
-        curv_index = glui_plot2d->curve_indexes_ini[i];
-        if(curv_index < ndeviceinfo){
-          LIST_devID1->set_int_val(curv_index);
-          AddCurve(PLOT2D_DEV);
-        }
-        else{
-          LIST_hrr1->set_int_val(curv_index-ndeviceinfo);
-          AddCurve(PLOT2D_HRR);
-        }
-        GenPlotCB(GENPLOT_COMP1);
-      }
+      LIST_plotcurves = glui_device->add_listbox_to_panel(PANEL_plotgeneral_plot, "curve:", &glui_plot2d->curve_index, GENPLOT_SELECT_CURVE, GenPlotCB);
+      MakeCurveList(glui_plot2d, 1);
 
       BUTTON_remove_curve = glui_device->add_button_to_panel(PANEL_plotgeneral_plot, _("Remove from plot"),    GENPLOT_REM_CURVE,     GenPlotCB);
       glui_device->add_button_to_panel(PANEL_plotgeneral_plot, _("Remove all curves"),                         GENPLOT_REM_ALLCURVES, GenPlotCB);
       PANEL_plotgeneral_position = glui_device->add_panel_to_panel(PANEL_plotgeneral_plot, "plot position");
-      SPINNER_genplot_x = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "x", GLUI_SPINNER_FLOAT, glui_plot2d_xyz+0, GENPLOT_XYZ, GenPlotCB);
-      SPINNER_genplot_y = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "y", GLUI_SPINNER_FLOAT, glui_plot2d_xyz+1, GENPLOT_XYZ, GenPlotCB);
-      SPINNER_genplot_z = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "z", GLUI_SPINNER_FLOAT, glui_plot2d_xyz+2, GENPLOT_XYZ, GenPlotCB);
+      SPINNER_genplot_x = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "x", GLUI_SPINNER_FLOAT, glui_plot2d->xyz+0, GENPLOT_XYZ, GenPlotCB);
+      SPINNER_genplot_y = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "y", GLUI_SPINNER_FLOAT, glui_plot2d->xyz+1, GENPLOT_XYZ, GenPlotCB);
+      SPINNER_genplot_z = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "z", GLUI_SPINNER_FLOAT, glui_plot2d->xyz+2, GENPLOT_XYZ, GenPlotCB);
 
       float plot_xyz_delta;
       plot_xyz_delta = MAX(ABS(xbarFDS - xbar0FDS), ABS(ybarFDS - ybar0FDS));
@@ -1147,9 +1154,9 @@ extern "C" void GluiDeviceSetup(int main_window){
       SPINNER_genplot_x->set_float_limits(xbar0FDS - plot_xyz_delta, xbarFDS + plot_xyz_delta);
       SPINNER_genplot_y->set_float_limits(ybar0FDS - plot_xyz_delta, ybarFDS + plot_xyz_delta);
       SPINNER_genplot_z->set_float_limits(zbar0FDS - plot_xyz_delta, zbarFDS + plot_xyz_delta);
-      CHECKBOX_show_genplot = glui_device->add_checkbox_to_panel(PANEL_plotgeneral_plot,"show plot", &show_genplot1,  GENPLOT_SHOW1, GenPlotCB);
-      GenPlotCB(GENPLOT_devtype1);
-      GenPlotCB(GENPLOT_SHOW1);
+      CHECKBOX_show_genplot = glui_device->add_checkbox_to_panel(PANEL_plotgeneral_plot,"show plot", &(glui_plot2d->show),  GENPLOT_SHOW_PLOT, GenPlotCB);
+      GenPlotCB(GENPLOT_DEVICE_TYPE);
+      GenPlotCB(GENPLOT_SHOW_PLOT);
     }
 #endif
 

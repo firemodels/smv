@@ -527,7 +527,7 @@ void ShowScene2(int mode){
 
 #ifdef pp_PLOT2D_NEW
   if(mode == DRAWSCENE && geom_bounding_box_mousedown == 0){
-    if(show_genplot1==1){
+    if(glui_plot2d->show==1){
       DrawGenPlots();
     }
   }

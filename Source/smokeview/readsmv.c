@@ -3037,12 +3037,6 @@ void UpdateMeshCoords(void){
   ybarFDS  = ybar;
   zbarFDS  = zbar;
 
-#ifdef pp_PLOT2D_NEW
-  glui_plot2d_xyz[0] = xbar0FDS;
-  glui_plot2d_xyz[1] = ybar0FDS;
-  glui_plot2d_xyz[2] = zbar0FDS;
-#endif
-
   geomlistdata *geomlisti;
   if(geominfo!=NULL&&geominfo->geomlistinfo!=NULL){
     geomlisti = geominfo->geomlistinfo-1;
@@ -11440,7 +11434,7 @@ int ReadIni2(char *inifile, int localfile){
       int count;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f %f %i", glui_plot2d_xyz, glui_plot2d_xyz+1, glui_plot2d_xyz+2, &show_genplot1);
+      sscanf(buffer, " %f %f %f %i", glui_plot2d->xyz, glui_plot2d->xyz+1, glui_plot2d->xyz+2, &glui_plot2d->show);
 
       fgets(buffer, 255, stream);
       TrimBack(buffer);
@@ -14811,7 +14805,7 @@ void WriteIniLocal(FILE *fileout){
   );
 #ifdef pp_PLOT2D_NEW
   fprintf(fileout, "SHOWGENPLOTS\n");
-  fprintf(fileout, " %f %f %f %i\n", glui_plot2d_xyz[0], glui_plot2d_xyz[1], glui_plot2d_xyz[2], show_genplot1);
+  fprintf(fileout, " %f %f %f %i\n", glui_plot2d->xyz[0], glui_plot2d->xyz[1], glui_plot2d->xyz[2], glui_plot2d->show);
   fprintf(fileout, " ");
   for(i = 0; i < glui_plot2d->ncurve_indexes; i++){
     fprintf(fileout, " %i ", glui_plot2d->curve_indexes[i]);

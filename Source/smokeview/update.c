@@ -371,9 +371,6 @@ void UpdateShow(void){
   showtours=0;
   showdeviceflag = 0;
   showhrrflag = 0;
-#ifdef pp_PLOT2D_NEW
-  show_genplot1fag = 0;
-#endif
   visTimeParticles=1; visTimeSlice=1; visTimeBoundary=1; visTimeZone=1; visTimeIso=1;
 
   drawing_boundary_files = 0;
@@ -381,9 +378,6 @@ void UpdateShow(void){
   RenderTime=0;
 
   if(vis_hrr_plot==1&&hrrptr!=NULL)showhrrflag = 1;
-#ifdef pp_PLOT2D_NEW
-  if(show_genplot1==1)show_genplot1fag = 1;
-#endif
 
   if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
@@ -633,7 +627,7 @@ void UpdateShow(void){
     ( showdeviceflag==1 || showhrrflag==1 || sliceflag==1 || vsliceflag==1 || partflag==1 || patchflag==1 ||
     shooter_flag==1|| smoke3dflag==1 || showtours==1 || evacflag==1 ||
 #ifdef pp_PLOT2D_NEW
-    show_genplot1fag == 1 ||
+    glui_plot2d->show == 1 ||
 #endif
     (ReadZoneFile==1&&visZone==1&&visTimeZone==1)||showvolrender==1
     )
@@ -1178,7 +1172,7 @@ void UpdateTimes(void){
     MergeGlobalTimes(timeptr->vals, timeptr->nvals);
   }
 #ifdef pp_PLOT2D_NEW
-  if(show_genplot1==1){
+  if(glui_plot2d->show==1){
     if(HaveGenDev()==1){
       MergeGlobalTimes(deviceinfo->times, deviceinfo->nvals);
     }
@@ -1605,7 +1599,7 @@ int GetPlotStateSub(int choice){
         return DYNAMIC_PLOTS;
       }
 #ifdef pp_PLOT2D_NEW
-      if(show_genplot1==1){
+      if(glui_plot2d->show==1){
 
         stept = 1;
         return DYNAMIC_PLOTS;
