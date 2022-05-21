@@ -851,6 +851,7 @@ float GetDeviceTminTmax(void){
   return return_val;
 }
 
+#ifdef pp_PLOT2D_NEW
 /* ------------------ MakeCurveList ------------------------ */
 
 void MakeCurveList(plot2ddata *plot2di, int option){
@@ -872,6 +873,7 @@ void MakeCurveList(plot2ddata *plot2di, int option){
     GenPlotCB(GENPLOT_SELECT_CURVE);
     }
   }
+#endif
 
 /* ------------------ GluiDeviceSetup ------------------------ */
 

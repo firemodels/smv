@@ -343,9 +343,6 @@ void UpdateFileLoad(void){
 
 void UpdateShow(void){
   int i,evacflag,sliceflag,vsliceflag,partflag,patchflag,isoflag,smoke3dflag,tisoflag,showdeviceflag;
-#ifdef pp_PLOT2D_NEW
-  int show_genplot1fag;
-#endif
   int slicecolorbarflag;
   int shooter_flag;
   int showhrrflag;
