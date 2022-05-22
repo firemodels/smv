@@ -11432,22 +11432,45 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "SHOWGENPLOTS") == 1){
       char *token;
       int count;
+      int *color;
+
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f %f %i", glui_plot2dinfo->xyz, glui_plot2dinfo->xyz+1, glui_plot2dinfo->xyz+2, &glui_plot2dinfo->show);
+      sscanf(buffer, " %i", &nplot2dini);
 
-      fgets(buffer, 255, stream);
-      TrimBack(buffer);
-      token = strtok(buffer, " ");
-      count = 0;
-      while(token != NULL){
-        int curv_index;
+      FREEMEMORY(plot2dini);
 
-        sscanf(token, "%i", &curv_index);
-        glui_plot2dinfo->curve_indexes_ini[count++] = curv_index;
-        token = strtok(NULL, " ");
+      if(nplot2dini==0)continue;
+      NewMemory((void **)&plot2dini, nplot2dini*sizeof(plot2ddata));
+
+
+      for(i=0;i<nplot2dini;i++){
+        plot2ddata *plot2di;
+        int *color;
+
+        plot2di = plot2dini + i;
+        color = plot2di->color;
+        fgets(buffer, 255, stream);
+        sscanf(buffer, " %f %f %f %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show);
+        fgets(buffer, 255, stream);
+        sscanf(buffer, " %i %i %i",    color, color+1, color+2);
+
+        fgets(buffer, 255, stream);
+        TrimBack(buffer);
+        token = strtok(buffer, " ");
+        count = 0;
+        while(token != NULL){
+          int curv_index;
+
+          sscanf(token, "%i", &curv_index);
+          plot2di->curve_indexes[count++] = curv_index;
+          token = strtok(NULL, " ");
+        }
+        plot2di->ncurve_indexes = count;
+void UpdateCurveBounds(plot2ddata *plot2di);
+       UpdateCurveBounds(plot2di);
+
       }
-      glui_plot2dinfo->ncurve_indexes_ini = count;
       update_glui_devices = 1;
       continue;
     }
@@ -14805,12 +14828,22 @@ void WriteIniLocal(FILE *fileout){
   );
 #ifdef pp_PLOT2D_NEW
   fprintf(fileout, "SHOWGENPLOTS\n");
-  fprintf(fileout, " %f %f %f %i\n", glui_plot2dinfo->xyz[0], glui_plot2dinfo->xyz[1], glui_plot2dinfo->xyz[2], glui_plot2dinfo->show);
-  fprintf(fileout, " ");
-  for(i = 0; i < glui_plot2dinfo->ncurve_indexes; i++){
-    fprintf(fileout, " %i ", glui_plot2dinfo->curve_indexes[i]);
-  };
-  fprintf(fileout, "\n");
+  fprintf(fileout, " %i\n", nplot2dinfo);
+  for(i=0; i<nplot2dinfo; i++){
+    plot2ddata *plot2di;
+    int *color;
+    int j;
+
+    plot2di = plot2dinfo + i;
+    color = plot2di->color;
+    fprintf(fileout, " %f %f %f %i\n", plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show);
+    fprintf(fileout, " %i %i %i\n",    color[0], color[1], color[2]);
+    fprintf(fileout, " ");
+    for(j = 0; j < plot2di->ncurve_indexes; j++){
+      fprintf(fileout, " %i ", plot2di->curve_indexes[j]);
+    };
+    fprintf(fileout, "\n");
+  }
 #endif
   fprintf(fileout, "SHOWDEVICEVALS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n", showdevice_val, showvdevice_val, devicetypes_index, colordevice_val, vectortype, viswindrose, showdevice_type,showdevice_unit,showdevice_id);

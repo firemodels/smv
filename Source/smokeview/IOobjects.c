@@ -3410,7 +3410,9 @@ void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int
     if(label != NULL){
       float p2_color[3];
 
-      p2_color[0] =(float) plot_color[0]/255.0;
+      p2_color[0] = (float)plot_color[0]/255.0;
+      p2_color[1] = (float)plot_color[1]/255.0;
+      p2_color[2] = (float)plot_color[2]/255.0;
       Output3Text(p2_color, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
     }
   }

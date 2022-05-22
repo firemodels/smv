@@ -352,6 +352,49 @@ void UpdateShowWindRoses(void) {
 
 #ifdef pp_PLOT2D_NEW
 
+/* ------------------ UpdateCurveBounds ------------------------ */
+
+extern "C" void UpdateCurveBounds(plot2ddata *plot2di){
+  int i;
+
+  for(i = 0; i < ndeviceinfo; i++){
+    devicedata *devi;
+    int j;
+
+    devi = deviceinfo + i;
+    if(devi->nvals > 0){
+      float valmin, valmax;
+
+      valmin = devi->vals[0];
+      valmax = valmin;
+      for(j = 1; j < devi->nvals; j++){
+        valmin = MIN(valmin, devi->vals[j]);
+        valmax = MAX(valmax, devi->vals[j]);
+        }
+      plot2di->curve_min[i] = valmin;
+      plot2di->curve_max[i] = valmax;
+      }
+    }
+  for(i = 0; i < nhrrinfo; i++){
+    hrrdata *hrri;
+    int j;
+
+    hrri = hrrinfo + i;
+    if(hrri->nvals > 0){
+      float valmin, valmax;
+
+      valmin = hrri->vals[0];
+      valmax = valmin;
+      for(j = 1; j < hrri->nvals; j++){
+        valmin = MIN(valmin, hrri->vals[j]);
+        valmax = MAX(valmax, hrri->vals[j]);
+        }
+      plot2di->curve_min[i + ndeviceinfo] = valmin;
+      plot2di->curve_max[i + ndeviceinfo] = valmax;
+      }
+    }
+  }
+
 /* ------------------ InitPlot2D ------------------------ */
 
 extern "C" void InitPlot2D(plot2ddata *plot2di, int plot_index){
@@ -369,43 +412,8 @@ extern "C" void InitPlot2D(plot2ddata *plot2di, int plot_index){
   plot2di->color[2]         = 0;
   plot2di->plot_index       = plot_index;
   plot2di->curve_index      = 0;
+  UpdateCurveBounds(plot2di);
 
-  for(i = 0; i < ndeviceinfo; i++){
-    devicedata *devi;
-    int j;
-
-    devi = deviceinfo + i;
-    if(devi->nvals > 0){
-      float valmin, valmax;
-
-      valmin = devi->vals[0];
-      valmax = valmin;
-      for(j = 1; j < devi->nvals; j++){
-        valmin = MIN(valmin, devi->vals[j]);
-        valmax = MAX(valmax, devi->vals[j]);
-      }
-      plot2di->curve_min[i] = valmin;
-      plot2di->curve_max[i] = valmax;
-    }
-  }
-  for(i = 0; i < nhrrinfo; i++){
-    hrrdata *hrri;
-    int j;
-
-    hrri = hrrinfo + i;
-    if(hrri->nvals > 0){
-      float valmin, valmax;
-
-      valmin = hrri->vals[0];
-      valmax = valmin;
-      for(j = 1; j < hrri->nvals; j++){
-        valmin = MIN(valmin, hrri->vals[j]);
-        valmax = MAX(valmax, hrri->vals[j]);
-      }
-      plot2di->curve_min[i + ndeviceinfo] = valmin;
-      plot2di->curve_max[i + ndeviceinfo] = valmax;
-    }
-  }
 }
 
 /* ------------------ RemoveCurve ------------------------ */
@@ -416,7 +424,6 @@ void RemoveCurve(plot2ddata *plot2di, int index){
 
     for(i = 0; i < plot2di->ncurve_indexes; i++){
       LIST_plotcurves->delete_item(plot2di->curve_indexes[i]);
-      plot2di->curve_indexes[i] = -2;
     }
     plot2di->ncurve_indexes = 0;
     LIST_plotcurves->set_int_val(-1);
@@ -514,6 +521,7 @@ void Plot2D2Glui(int index){
   memcpy(glui_plot2dinfo, plot2dinfo + index, sizeof(plot2ddata));
   memcpy(glui_plot2dinfo->curve_indexes_ini, glui_plot2dinfo->curve_indexes, glui_plot2dinfo->ncurve_indexes * sizeof(float));
   glui_plot2dinfo->ncurve_indexes_ini = glui_plot2dinfo->ncurve_indexes;
+  glui_plot2dinfo->ncurve_indexes = 0;
   MakeCurveList(glui_plot2dinfo, 0);
   LIST_plotcurves->set_int_val(glui_plot2dinfo->curve_index);
   SPINNER_genplot_x->set_float_val(glui_plot2dinfo->xyz[0]);
@@ -1222,9 +1230,25 @@ extern "C" void GluiDeviceSetup(int main_window){
       SPINNER_genplot_green->set_int_limits(0,255);
       SPINNER_genplot_blue->set_int_limits(0,255);
       CHECKBOX_show_genplot = glui_device->add_checkbox_to_panel(PANEL_plotgeneral_plot,"show plot", &(glui_plot2dinfo->show),  GENPLOT_SHOW_PLOT, GenPlotCB);
+
+      if(nplot2dini>0){
+        nplot2dinfo = nplot2dini;
+        NewMemory((void **)&plot2dinfo, nplot2dinfo*sizeof(plot2ddata));
+        memcpy(plot2dinfo, plot2dini,   nplot2dinfo*sizeof(plot2ddata));
+        for(i = 0; i < nplot2dini; i++){
+          char label[32];
+          plot2ddata *plot2di;
+
+          plot2di = plot2dinfo + i;
+          sprintf(label, "%i", i);
+          LIST_plots->add_item(i, label);
+     //     UpdateCurveBounds(plot2di);
+        }
+        LIST_plots->set_int_val(0);
+        GenPlotCB(GENPLOT_SELECT_PLOT);
+      }
       GenPlotCB(GENPLOT_DEVICE_TYPE);
       GenPlotCB(GENPLOT_SHOW_PLOT);
-      AddPlot2D(glui_plot2dinfo);
     }
 #endif
 
