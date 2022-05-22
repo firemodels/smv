@@ -503,8 +503,6 @@ void MakeCurveList(plot2ddata *plot2di, int option){
 /* ------------------ Plot2D2Glui ------------------------ */
 
 void Plot2D2Glui(int index){
-  int i;
-
   RemoveCurve(glui_plot2dinfo, -1);
   memcpy(glui_plot2dinfo, plot2dinfo + index, sizeof(plot2ddata));
   memcpy(glui_plot2dinfo->curve_indexes_ini, glui_plot2dinfo->curve_indexes, glui_plot2dinfo->ncurve_indexes * sizeof(float));
