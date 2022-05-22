@@ -3289,10 +3289,10 @@ void GetGlobalDeviceBounds(int type){
 int HaveGenDev(void){
   int i;
 
-  for(i = 0; i<glui_plot2d->ncurve_indexes; i++){
+  for(i = 0; i<glui_plot2dinfo->ncurve_indexes; i++){
     int curve_index;
 
-    curve_index = glui_plot2d->curve_indexes[i];
+    curve_index = glui_plot2dinfo->curve_indexes[i];
     if(curve_index<ndeviceinfo)return 1;
   }
   return 0;
@@ -3303,10 +3303,10 @@ int HaveGenDev(void){
 int HaveGenHrr(void){
   int i;
 
-  for(i = 0; i<glui_plot2d->ncurve_indexes; i++){
+  for(i = 0; i<glui_plot2dinfo->ncurve_indexes; i++){
     int curve_index;
 
-    curve_index = glui_plot2d->curve_indexes[i];
+    curve_index = glui_plot2dinfo->curve_indexes[i];
     if(curve_index>=ndeviceinfo)return 1;
   }
   return 0;
@@ -3532,8 +3532,16 @@ void DrawGenPlot(plot2ddata * plot2di){
   /* ------------------ DrawGenPlots ------------------------ */
 
 void DrawGenPlots(void){
-  if(glui_plot2d->show==0)return;
-   DrawGenPlot(glui_plot2d);
+  int i;
+
+  for(i = 0; i < nplot2dinfo;i++){
+    plot2ddata *plot2di;
+
+    plot2di = plot2dinfo + i;
+    if(plot2di->show == 1){
+      DrawGenPlot(plot2di);
+    }
+  }
 }
 #endif
 

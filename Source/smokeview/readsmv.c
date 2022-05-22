@@ -10956,8 +10956,8 @@ typedef struct {
 // initialize 2d plot data structures
 #ifdef pp_PLOT2D_NEW
   void InitPlot2D(plot2ddata *plot2di, int plot_index);
-  NewMemory((void **)&glui_plot2d, sizeof(plot2ddata));
-  InitPlot2D(glui_plot2d, 0);
+  NewMemory((void **)&glui_plot2dinfo, sizeof(plot2ddata));
+  InitPlot2D(glui_plot2dinfo, 0);
 #endif
 
   PRINTF("%s", _("complete"));
@@ -11434,7 +11434,7 @@ int ReadIni2(char *inifile, int localfile){
       int count;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f %f %i", glui_plot2d->xyz, glui_plot2d->xyz+1, glui_plot2d->xyz+2, &glui_plot2d->show);
+      sscanf(buffer, " %f %f %f %i", glui_plot2dinfo->xyz, glui_plot2dinfo->xyz+1, glui_plot2dinfo->xyz+2, &glui_plot2dinfo->show);
 
       fgets(buffer, 255, stream);
       TrimBack(buffer);
@@ -11444,10 +11444,10 @@ int ReadIni2(char *inifile, int localfile){
         int curv_index;
 
         sscanf(token, "%i", &curv_index);
-        glui_plot2d->curve_indexes_ini[count++] = curv_index;
+        glui_plot2dinfo->curve_indexes_ini[count++] = curv_index;
         token = strtok(NULL, " ");
       }
-      glui_plot2d->ncurve_indexes_ini = count;
+      glui_plot2dinfo->ncurve_indexes_ini = count;
       update_glui_devices = 1;
       continue;
     }
@@ -14805,10 +14805,10 @@ void WriteIniLocal(FILE *fileout){
   );
 #ifdef pp_PLOT2D_NEW
   fprintf(fileout, "SHOWGENPLOTS\n");
-  fprintf(fileout, " %f %f %f %i\n", glui_plot2d->xyz[0], glui_plot2d->xyz[1], glui_plot2d->xyz[2], glui_plot2d->show);
+  fprintf(fileout, " %f %f %f %i\n", glui_plot2dinfo->xyz[0], glui_plot2dinfo->xyz[1], glui_plot2dinfo->xyz[2], glui_plot2dinfo->show);
   fprintf(fileout, " ");
-  for(i = 0; i < glui_plot2d->ncurve_indexes; i++){
-    fprintf(fileout, " %i ", glui_plot2d->curve_indexes[i]);
+  for(i = 0; i < glui_plot2dinfo->ncurve_indexes; i++){
+    fprintf(fileout, " %i ", glui_plot2dinfo->curve_indexes[i]);
   };
   fprintf(fileout, "\n");
 #endif

@@ -6,7 +6,6 @@
 #endif
 
 #ifdef pp_PLOT2D_NEW
-EXTERNCPP void AddPlot2D(void);
 EXTERNCPP void DrawGenPlots(void);
 EXTERNCPP int HaveGenDev(void);
 EXTERNCPP int HaveGenHrr(void);

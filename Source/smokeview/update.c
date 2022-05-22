@@ -624,7 +624,7 @@ void UpdateShow(void){
     ( showdeviceflag==1 || showhrrflag==1 || sliceflag==1 || vsliceflag==1 || partflag==1 || patchflag==1 ||
     shooter_flag==1|| smoke3dflag==1 || showtours==1 || evacflag==1 ||
 #ifdef pp_PLOT2D_NEW
-    glui_plot2d->show == 1 ||
+    glui_plot2dinfo->show == 1 ||
 #endif
     (ReadZoneFile==1&&visZone==1&&visTimeZone==1)||showvolrender==1
     )
@@ -1169,7 +1169,7 @@ void UpdateTimes(void){
     MergeGlobalTimes(timeptr->vals, timeptr->nvals);
   }
 #ifdef pp_PLOT2D_NEW
-  if(glui_plot2d->show==1){
+  if(glui_plot2dinfo->show==1){
     if(HaveGenDev()==1){
       MergeGlobalTimes(deviceinfo->times, deviceinfo->nvals);
     }
@@ -1596,7 +1596,7 @@ int GetPlotStateSub(int choice){
         return DYNAMIC_PLOTS;
       }
 #ifdef pp_PLOT2D_NEW
-      if(glui_plot2d->show==1){
+      if(glui_plot2dinfo->show==1){
 
         stept = 1;
         return DYNAMIC_PLOTS;
