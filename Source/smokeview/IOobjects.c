@@ -3484,7 +3484,6 @@ void DrawGenPlot(plot2ddata * plot2di){
         char label[256];
         strcpy(label, devi->deviceID);
 
-        float *color, blue_color[3] = {0.0,0.0,1.0};
         float dev_min, dev_max;
         if(strcmp(label, "O2") == 0){
           dev_min = 0.0;
@@ -3515,7 +3514,6 @@ void DrawGenPlot(plot2ddata * plot2di){
       }
       if(hrri->nvals > 0){
         int option;
-        float blue_color[3] = {0.0, 0.0, 1.0};
 
         if(first == 1){
           first = 0;

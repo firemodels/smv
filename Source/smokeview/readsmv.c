@@ -11432,8 +11432,6 @@ int ReadIni2(char *inifile, int localfile){
     if(Match(buffer, "SHOWGENPLOTS") == 1){
       char *token;
       int count;
-      int *color;
-
 
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &nplot2dini);
@@ -11442,7 +11440,6 @@ int ReadIni2(char *inifile, int localfile){
 
       if(nplot2dini==0)continue;
       NewMemory((void **)&plot2dini, nplot2dini*sizeof(plot2ddata));
-
 
       for(i=0;i<nplot2dini;i++){
         plot2ddata *plot2di;

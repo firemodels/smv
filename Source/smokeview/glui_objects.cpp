@@ -398,8 +398,6 @@ extern "C" void UpdateCurveBounds(plot2ddata *plot2di){
 /* ------------------ InitPlot2D ------------------------ */
 
 extern "C" void InitPlot2D(plot2ddata *plot2di, int plot_index){
-  int i;
-
   if(ndeviceinfo==0 && nhrrinfo==0)return;
   plot2di->ncurve_indexes     = 0;
   plot2di->ncurve_indexes_ini = 0;
@@ -1237,12 +1235,9 @@ extern "C" void GluiDeviceSetup(int main_window){
         memcpy(plot2dinfo, plot2dini,   nplot2dinfo*sizeof(plot2ddata));
         for(i = 0; i < nplot2dini; i++){
           char label[32];
-          plot2ddata *plot2di;
 
-          plot2di = plot2dinfo + i;
           sprintf(label, "%i", i);
           LIST_plots->add_item(i, label);
-     //     UpdateCurveBounds(plot2di);
         }
         LIST_plots->set_int_val(0);
         GenPlotCB(GENPLOT_SELECT_PLOT);
