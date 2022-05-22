@@ -124,6 +124,7 @@ GLUI_Panel *PANEL_plotgeneral_device = NULL;
 GLUI_Panel *PANEL_plotgeneral_hrr = NULL;
 GLUI_Panel *PANEL_plotgeneral_plot = NULL;
 GLUI_Panel *PANEL_plotgeneral_position = NULL;
+GLUI_Panel *PANEL_plotgeneral_color = NULL;
 #endif
 GLUI_Panel *PANEL_hrr_min = NULL;
 GLUI_Panel *PANEL_hrr_max = NULL;
@@ -171,6 +172,9 @@ GLUI_Rollout *ROLLOUT_trees = NULL;
 GLUI_Spinner *SPINNER_genplot_x = NULL;
 GLUI_Spinner *SPINNER_genplot_y = NULL;
 GLUI_Spinner *SPINNER_genplot_z = NULL;
+GLUI_Spinner *SPINNER_genplot_red = NULL;
+GLUI_Spinner *SPINNER_genplot_green = NULL;
+GLUI_Spinner *SPINNER_genplot_blue = NULL;
 #endif
 GLUI_Spinner *SPINNER_fuel_hoc = NULL;
 GLUI_Spinner *SPINNER_size_factor = NULL;
@@ -360,6 +364,9 @@ extern "C" void InitPlot2D(plot2ddata *plot2di, int plot_index){
   plot2di->xyz[0]           = xbar0FDS;
   plot2di->xyz[1]           = ybar0FDS;
   plot2di->xyz[2]           = zbar0FDS;
+  plot2di->color[0]         = 0;
+  plot2di->color[1]         = 0;
+  plot2di->color[2]         = 0;
   plot2di->plot_index       = plot_index;
   plot2di->curve_index      = 0;
 
@@ -514,6 +521,9 @@ void Plot2D2Glui(int index){
   SPINNER_genplot_x->set_float_val(glui_plot2dinfo->xyz[0]);
   SPINNER_genplot_y->set_float_val(glui_plot2dinfo->xyz[1]);
   SPINNER_genplot_z->set_float_val(glui_plot2dinfo->xyz[2]);
+  SPINNER_genplot_red->set_int_val(glui_plot2dinfo->color[0]);
+  SPINNER_genplot_green->set_int_val(glui_plot2dinfo->color[1]);
+  SPINNER_genplot_blue->set_int_val(glui_plot2dinfo->color[2]);
   CHECKBOX_show_genplot->set_int_val(glui_plot2dinfo->show);
 }
 
@@ -1206,6 +1216,13 @@ extern "C" void GluiDeviceSetup(int main_window){
       SPINNER_genplot_y = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "y", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+1, GENPLOT_XYZ, GenPlotCB);
       SPINNER_genplot_z = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "z", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+2, GENPLOT_XYZ, GenPlotCB);
 
+      PANEL_plotgeneral_color = glui_device->add_panel_to_panel(PANEL_plotgeneral_plot, "plot color");
+      SPINNER_genplot_red     = glui_device->add_spinner_to_panel(PANEL_plotgeneral_color, "x", GLUI_SPINNER_INT, glui_plot2dinfo->color + 0, GENPLOT_XYZ, GenPlotCB);
+      SPINNER_genplot_green   = glui_device->add_spinner_to_panel(PANEL_plotgeneral_color, "y", GLUI_SPINNER_INT, glui_plot2dinfo->color + 1, GENPLOT_XYZ, GenPlotCB);
+      SPINNER_genplot_blue    = glui_device->add_spinner_to_panel(PANEL_plotgeneral_color, "z", GLUI_SPINNER_INT, glui_plot2dinfo->color + 2, GENPLOT_XYZ, GenPlotCB);
+      SPINNER_genplot_red->set_int_limits(0,255);
+      SPINNER_genplot_green->set_int_limits(0,255);
+      SPINNER_genplot_blue->set_int_limits(0,255);
       CHECKBOX_show_genplot = glui_device->add_checkbox_to_panel(PANEL_plotgeneral_plot,"show plot", &(glui_plot2dinfo->show),  GENPLOT_SHOW_PLOT, GenPlotCB);
       GenPlotCB(GENPLOT_DEVICE_TYPE);
       GenPlotCB(GENPLOT_SHOW_PLOT);

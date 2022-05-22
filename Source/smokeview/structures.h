@@ -1002,6 +1002,7 @@ typedef struct _plot2ddata{
   int curve_index, plot_index;
   float curve_min[MAX_PLOT2D_CURVES], curve_max[MAX_PLOT2D_CURVES];
   float xyz[3];
+  int color[3];
   int show;
 } plot2ddata;
 #endif
