@@ -1181,7 +1181,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       if(ndevicetypes > 0){
         PANEL_plotgeneral_device = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "", false);
         PANEL_plotdevice_select = glui_device->add_panel_to_panel(PANEL_plotgeneral_device, "", false);
-        LIST_devID1 = glui_device->add_listbox_to_panel(PANEL_plotdevice_select, "select device ID:", &glui_device_index, GENPLOT_SELECT_DEVICE, GenPlotCB);
+        LIST_devID1 = glui_device->add_listbox_to_panel(PANEL_plotdevice_select, "device ID:", &glui_device_index, GENPLOT_SELECT_DEVICE, GenPlotCB);
         glui_device->add_column_to_panel(PANEL_plotdevice_select, false);
         BUTTON_add_dev = glui_device->add_button_to_panel(PANEL_plotdevice_select, _("Add to plot"), GENPLOT_ADD_DEVCURVE, GenPlotCB);
         for(i = 0; i < ndeviceinfo; i++){
@@ -1204,7 +1204,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       }
       if(nhrrinfo > 0){
         PANEL_plotgeneral_hrr = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "", false);
-        LIST_hrr1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_hrr, "select hrr quantity:", &glui_hrr_index, GENPLOT_HRR_TYPE, GenPlotCB);
+        LIST_hrr1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_hrr, "hrr quantity:", &glui_hrr_index, GENPLOT_HRR_TYPE, GenPlotCB);
         for(i = 0; i < nhrrinfo + nhrrhcinfo; i++){
           hrrdata *hi;
 
