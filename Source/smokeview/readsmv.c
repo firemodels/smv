@@ -11446,6 +11446,9 @@ int ReadIni2(char *inifile, int localfile){
         int *color;
 
         plot2di = plot2dini + i;
+        plot2di->plot_index = i;
+        sprintf(plot2di->plot_label, "%i", i + 1);
+        plot2d_count++;
         color = plot2di->color;
         fgets(buffer, 255, stream);
         sscanf(buffer, " %f %f %f %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show);

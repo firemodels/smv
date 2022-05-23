@@ -1528,7 +1528,7 @@ SVEXTERN int SVDECL(glui_device_quantity_index, -1);
 SVEXTERN int SVDECL(glui_device_index, 0);
 SVEXTERN int SVDECL(glui_hrr_index, 1);
 SVEXTERN plot2ddata SVDECL(*glui_plot2dinfo, NULL), SVDECL(*plot2dinfo, NULL), SVDECL(*plot2dini, NULL);
-SVEXTERN int SVDECL(nplot2dinfo, 0), SVDECL(iplot2dinfo, 0), SVDECL(nplot2dini, 0);
+SVEXTERN int SVDECL(nplot2dinfo, 0), SVDECL(iplot2dinfo, 0), SVDECL(nplot2dini, 0), SVDECL(plot2d_count, 0);
 #endif
 SVEXTERN float SVDECL(plot2d_hrr_min,0.0), SVDECL(plot2d_hrr_max,1.0);
 SVEXTERN int SVDECL(use_plot2d_hrr_min, 0);

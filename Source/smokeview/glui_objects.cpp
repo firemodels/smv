@@ -535,9 +535,9 @@ void Plot2D2Glui(int index){
   CHECKBOX_show_genplot->set_int_val(glui_plot2dinfo->show);
 }
 
-/* ------------------ AddPlot2D ------------------------ */
+/* ------------------ AddPlot ------------------------ */
 
-extern "C" void AddPlot2D(plot2ddata *plot2di){
+extern "C" void AddPlot(plot2ddata *plot2di){
   char label[32];
 
   nplot2dinfo++;
@@ -552,22 +552,31 @@ extern "C" void AddPlot2D(plot2ddata *plot2di){
     InitPlot2D(plot2dinfo + iplot2dinfo, nplot2dinfo);
   }
   else{
+    plot2di->plot_index = nplot2dinfo-1;
     if(plot2dinfo + iplot2dinfo != plot2di){
       memcpy(plot2dinfo + iplot2dinfo, plot2di, sizeof(plot2ddata));
     }
   }
   Plot2D2Glui(iplot2dinfo);
-  sprintf(label, "%i", iplot2dinfo);
+  plot2d_count++;
+  sprintf(label, "%i", plot2d_count);
+  strcpy(plot2dinfo[iplot2dinfo].plot_label, label);
   LIST_plots->add_item(iplot2dinfo, label);
   LIST_plots->set_int_val(iplot2dinfo);
 }
 
-/* ------------------ DeletePlot2D ------------------------ */
+/* ------------------ RemovePlot ------------------------ */
 
-void DeletePlot2D(int i){
+void RemovePlot(int i){
   int ii;
 
-  if(nplot2dinfo <= 0)return;
+  if(nplot2dinfo <= 0||i==-1)return;
+  for(ii = 0; ii < nplot2dinfo; ii++){
+    plot2ddata *plot2di;
+
+    plot2di = plot2dinfo + ii;
+    LIST_plots->delete_item(plot2di->plot_label);
+  }
   for(ii=i+1;ii<nplot2dinfo;ii++){
     memcpy(plot2dinfo+ii-1, plot2dinfo+ii, sizeof(plot2ddata));
   }
@@ -575,19 +584,22 @@ void DeletePlot2D(int i){
   if(nplot2dinfo==0){
     FREEMEMORY(plot2dinfo);
   }
-  else{
-    ResizeMemory((void **)&plot2dinfo, nplot2dinfo*sizeof(plot2ddata));
-  }
   if(nplot2dinfo>0){
-    if(i<nplot2dinfo){
-      iplot2dinfo = i;
-    }
-    else{
-      iplot2dinfo = 0;
+    iplot2dinfo = 0;
+    for(ii = 0; ii < nplot2dinfo; ii++){
+      plot2ddata *plot2di;
+      char label[32];
+
+      plot2di = plot2dinfo + ii;
+      LIST_plots->add_item(ii, plot2di->plot_label);
     }
     Plot2D2Glui(iplot2dinfo);
-    LIST_plots->delete_item(i);
+    LIST_plots->set_int_val(-1);
+    iplot2dinfo = 0;
     LIST_plots->set_int_val(iplot2dinfo);
+  }
+  else{
+    LIST_plots->set_int_val(-1);
   }
 }
 
@@ -684,10 +696,10 @@ void GenPlotCB(int var){
       Plot2D2Glui(iplot2dinfo);
       break;
     case GENPLOT_ADD_PLOT:
-      AddPlot2D(NULL);
+      AddPlot(NULL);
       break;
     case GENPLOT_REM_PLOT:
-      DeletePlot2D(iplot2dinfo);
+      RemovePlot(iplot2dinfo);
       break;
     default:
       ASSERT(FFALSE);
@@ -1179,6 +1191,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       BUTTON_rem_plot = glui_device->add_button_to_panel(PANEL_plot1, _("Remove plot"),               GENPLOT_REM_PLOT,     GenPlotCB);
       glui_device->add_column_to_panel(PANEL_plot1, false);
       CHECKBOX_show_genplot = glui_device->add_checkbox_to_panel(PANEL_plot1, "show plot", &(glui_plot2dinfo->show), GENPLOT_SHOW_PLOT, GenPlotCB);
+      LIST_plots->add_item(-1, "");
 
       if(ndevicetypes > 0){
         PANEL_plotgeneral_device = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "", false);
@@ -1250,10 +1263,10 @@ extern "C" void GluiDeviceSetup(int main_window){
         NewMemory((void **)&plot2dinfo, nplot2dinfo*sizeof(plot2ddata));
         memcpy(plot2dinfo, plot2dini,   nplot2dinfo*sizeof(plot2ddata));
         for(i = 0; i < nplot2dini; i++){
-          char label[32];
+          plot2ddata *plot2di;
 
-          sprintf(label, "%i", i);
-          LIST_plots->add_item(i, label);
+          plot2di = plot2dinfo + i;
+          LIST_plots->add_item(i, plot2di->plot_label);
         }
         LIST_plots->set_int_val(0);
         GenPlotCB(GENPLOT_SELECT_PLOT);
