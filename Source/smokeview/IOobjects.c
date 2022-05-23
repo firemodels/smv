@@ -3494,7 +3494,7 @@ void DrawGenPlot(plot2ddata * plot2di){
           dev_max = dev_global_max;
         }
         DrawGenCurve(option, plot2di->xyz, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
-                     highlight_time, highlight_val, dev_min, dev_max, plot2di->color, label, position);
+                     highlight_time, highlight_val, dev_min, dev_max, plot2di->curve_colors+3*curve_index, label, position);
         position++;
       }
     }
@@ -3523,7 +3523,7 @@ void DrawGenPlot(plot2ddata * plot2di){
           option = PLOT_ONLY_DATA;
         }
         DrawGenCurve(option, plot2di->xyz, plot2d_size_factor, hrrinfo->vals, hrri->vals, hrri->nvals,
-                     highlight_time, highlight_val, hrr_global_min, hrr_global_max, plot2di->color, hrri->label.shortlabel, position);
+                     highlight_time, highlight_val, hrr_global_min, hrr_global_max, plot2di->curve_colors+3*curve_index, hrri->label.shortlabel, position);
         position++;
       }
     }

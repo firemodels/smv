@@ -11443,32 +11443,24 @@ int ReadIni2(char *inifile, int localfile){
 
       for(i=0;i<nplot2dini;i++){
         plot2ddata *plot2di;
-        int *color;
+        int j;
 
         plot2di = plot2dini + i;
         plot2di->plot_index = i;
-        sprintf(plot2di->plot_label, "%i", i + 1);
         plot2d_count++;
-        color = plot2di->color;
+        sprintf(plot2di->plot_label, "%i", plot2d_count);
         fgets(buffer, 255, stream);
-        sscanf(buffer, " %f %f %f %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show);
-        fgets(buffer, 255, stream);
-        sscanf(buffer, " %i %i %i",    color, color+1, color+2);
+        sscanf(buffer, " %f %f %f %i %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->ncurve_indexes);
+        for(j=0; j<plot2di->ncurve_indexes; j++){
+          int color[3], *color2;
 
-        fgets(buffer, 255, stream);
-        TrimBack(buffer);
-        token = strtok(buffer, " ");
-        count = 0;
-        while(token != NULL){
-          int curv_index;
-
-          sscanf(token, "%i", &curv_index);
-          plot2di->curve_indexes[count++] = curv_index;
-          token = strtok(NULL, " ");
-        }
-        plot2di->ncurve_indexes = count;
-void UpdateCurveBounds(plot2ddata *plot2di);
-       UpdateCurveBounds(plot2di);
+          fgets(buffer, 255, stream);
+          sscanf(buffer, " %i %i %i %i",    plot2di->curve_indexes + j, color, color+1, color+2);
+          color2 = plot2di->curve_colors + 3 * plot2di->curve_indexes[j];
+          memcpy(color2, color, 3 * sizeof(int));
+          }
+void UpdateCurveBounds(plot2ddata *plot2di, int option);
+       UpdateCurveBounds(plot2di, 0);
 
       }
       update_glui_devices = 1;
@@ -14831,18 +14823,16 @@ void WriteIniLocal(FILE *fileout){
   fprintf(fileout, " %i\n", nplot2dinfo);
   for(i=0; i<nplot2dinfo; i++){
     plot2ddata *plot2di;
-    int *color;
     int j;
 
     plot2di = plot2dinfo + i;
-    color = plot2di->color;
-    fprintf(fileout, " %f %f %f %i\n", plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show);
-    fprintf(fileout, " %i %i %i\n",    color[0], color[1], color[2]);
-    fprintf(fileout, " ");
+    fprintf(fileout, " %f %f %f %i %i\n", plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->ncurve_indexes);
     for(j = 0; j < plot2di->ncurve_indexes; j++){
-      fprintf(fileout, " %i ", plot2di->curve_indexes[j]);
+      int *color;
+
+      color = plot2di->curve_colors+3*plot2di->curve_indexes[j];
+      fprintf(fileout, " %i %i %i %i\n", plot2di->curve_indexes[j], color[0], color[1], color[2]);
     };
-    fprintf(fileout, "\n");
   }
 #endif
   fprintf(fileout, "SHOWDEVICEVALS\n");
