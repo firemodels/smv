@@ -708,6 +708,9 @@ void GenPlotCB(int var){
       break;
     case GENPLOT_SELECT_PLOT:
       Plot2D2Glui(iplot2dinfo);
+      strcpy(label, "Remove plot ");
+      strcat(label, plot2dinfo[iplot2dinfo].plot_label);
+      BUTTON_rem_plot->set_name(label);
       break;
     case GENPLOT_ADD_PLOT:
       AddPlot(NULL);
@@ -1195,7 +1198,7 @@ extern "C" void GluiDeviceSetup(int main_window){
 
 #ifdef pp_PLOT2D_NEW
     if(nhrrinfo>0||ndevicetypes>0){
-      ROLLOUT_plotgeneral = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "device+hrr", false);
+      ROLLOUT_plotgeneral = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "device and/or hrr data", false);
 
       PANEL_plot1 = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "", false);
       LIST_plots = glui_device->add_listbox_to_panel(PANEL_plot1, "select plot:", &iplot2dinfo, GENPLOT_SELECT_PLOT, GenPlotCB);
@@ -1219,7 +1222,7 @@ extern "C" void GluiDeviceSetup(int main_window){
           devicei = deviceinfo + i;
           devicei->inlist1 = 1;
           LIST_devID1->add_item(i, devicei->deviceID);
-          }
+        }
         devicetypes_index = CLAMP(devicetypes_index, 0, ndevicetypes - 1);
 #ifdef pp_DEVICE_TYPEX
         LIST_devtype1 = glui_device->add_listbox_to_panel(PANEL_plotdevice_select, "device types:", &glui_device_quantity_index, GENPLOT_DEVICE_TYPE, GenPlotCB);
@@ -1291,7 +1294,7 @@ extern "C" void GluiDeviceSetup(int main_window){
 #endif
 
     if(ndevicetypes>0){
-      ROLLOUT_plotdevice = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "device", false);
+      ROLLOUT_plotdevice = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "device data", false);
       RADIO_vis_device_plot = glui_device->add_radiogroup_to_panel(ROLLOUT_plotdevice, &vis_device_plot, SHOWDEVICEPLOT, DeviceCB);
       glui_device->add_radiobutton_to_group(RADIO_vis_device_plot, "hide");
       glui_device->add_radiobutton_to_group(RADIO_vis_device_plot, "show selected");
@@ -1317,7 +1320,7 @@ extern "C" void GluiDeviceSetup(int main_window){
     }
 
     if(nhrrinfo>0){
-      ROLLOUT_plothrr = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "hrr", false);
+      ROLLOUT_plothrr = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "hrr data", false);
       CHECKBOX_vis_hrr_plot = glui_device->add_checkbox_to_panel(ROLLOUT_plothrr, _("show"), &vis_hrr_plot, HRRPUV2_PLOT, DeviceCB);
       LIST_hrrdata = glui_device->add_listbox_to_panel(ROLLOUT_plothrr, "type:", &glui_hrr, DEVICE_TIMEAVERAGE, DeviceCB);
       for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
