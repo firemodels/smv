@@ -3501,8 +3501,7 @@ void DrawGenPlot(plot2ddata * plot2di){
     else{
       hrrdata *hrri;
 
-      curve_index -= ndeviceinfo;
-      hrri = hrrinfo + curve_index;
+      hrri = hrrinfo + curve_index - ndeviceinfo;
       if(global_times != NULL){
         int itime;
 
