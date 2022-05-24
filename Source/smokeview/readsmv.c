@@ -11443,12 +11443,17 @@ int ReadIni2(char *inifile, int localfile){
 
       for(i=0;i<nplot2dini;i++){
         plot2ddata *plot2di;
+        char *labelptr;
         int j;
 
         plot2di = plot2dini + i;
         plot2di->plot_index = i;
         plot2d_count++;
-        sprintf(plot2di->plot_label, "plot %i", plot2d_count);
+        fgets(buffer, 255, stream);
+        TrimBack(buffer);
+        labelptr = TrimFront(buffer);
+        strcpy(plot2di->plot_label, labelptr);
+
         fgets(buffer, 255, stream);
         sscanf(buffer, " %f %f %f %i %i %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->show_title, &plot2di->ncurve_indexes);
         for(j=0; j<plot2di->ncurve_indexes; j++){
@@ -14826,6 +14831,7 @@ void WriteIniLocal(FILE *fileout){
     int j;
 
     plot2di = plot2dinfo + i;
+    fprintf(fileout, " %s\n", plot2di->plot_label);
     fprintf(fileout, " %f %f %f %i %i %i\n", plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->show_title, plot2di->ncurve_indexes);
     for(j = 0; j < plot2di->ncurve_indexes; j++){
       int *color;
