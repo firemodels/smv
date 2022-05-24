@@ -40,6 +40,7 @@
 #define GENPLOT_REM_PLOT      112
 #define GENPLOT_SELECT_PLOT   113
 #define GENPLOT_PLOT_LABEL    114
+#define GENPLOT_SET_POS       115
 
 #define PLOT2D_DEV              0
 #define PLOT2D_HRR              1
@@ -78,6 +79,7 @@ GLUI *glui_device=NULL;
 #ifdef pp_PLOT2D_NEW
 GLUI_EditText *EDIT_plot_label = NULL;
 
+GLUI_Button *BUTTON_plot_position = NULL;
 GLUI_Button *BUTTON_add_dev=NULL ;
 GLUI_Button *BUTTON_add_hrr=NULL ;
 GLUI_Button *BUTTON_remove_curve=NULL ;
@@ -714,6 +716,20 @@ void GenPlotCB(int var){
         strcat(label, " color");
         PANEL_plotgeneral_color->set_name(label);
       }
+      if(BUTTON_plot_position != NULL){
+        if(glui_plot2dinfo->curve_index<ndeviceinfo){
+          BUTTON_plot_position->enable();
+          strcpy(label, "Set to ");
+          strcat(label, LIST_plotcurves->curr_text);
+          strcat(label, " location");
+          BUTTON_plot_position->set_name(label);
+        }
+        else{
+          BUTTON_plot_position->disable();
+          strcpy(label, "Set to device location");
+          BUTTON_plot_position->set_name(label);
+        }
+      }
       break;
     case GENPLOT_REM_CURVE:
       RemoveCurve(glui_plot2dinfo, glui_plot2dinfo->curve_index);
@@ -744,6 +760,18 @@ void GenPlotCB(int var){
         int iplot2dinfo_save = iplot2dinfo;
         LIST_plots->set_int_val(-1);
         LIST_plots->set_int_val(iplot2dinfo_save);
+      }
+      break;
+    case GENPLOT_SET_POS:
+      if(glui_plot2dinfo->curve_index<ndeviceinfo){
+        float *plot_xyz;
+
+        plot_xyz = deviceinfo[glui_plot2dinfo->curve_index].xyz;
+        memcpy(glui_plot2dinfo->xyz, plot_xyz, 3 * sizeof(float));
+        SPINNER_genplot_x->set_float_val(plot_xyz[0]);
+        SPINNER_genplot_y->set_float_val(plot_xyz[1]);
+        SPINNER_genplot_z->set_float_val(plot_xyz[2]);
+        Glui2Plot2D(iplot2dinfo);
       }
       break;
     case GENPLOT_SELECT_PLOT:
@@ -1277,9 +1305,10 @@ extern "C" void GluiDeviceSetup(int main_window){
 
       glui_device->add_column_to_panel(PANEL_plot8, false);
       PANEL_plotgeneral_position = glui_device->add_panel_to_panel(PANEL_plot8, "plot position");
-      SPINNER_genplot_x = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "x", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+0, GENPLOT_XYZ, GenPlotCB);
-      SPINNER_genplot_y = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "y", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+1, GENPLOT_XYZ, GenPlotCB);
-      SPINNER_genplot_z = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "z", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+2, GENPLOT_XYZ, GenPlotCB);
+      SPINNER_genplot_x          = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "x", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+0, GENPLOT_XYZ, GenPlotCB);
+      SPINNER_genplot_y          = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "y", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+1, GENPLOT_XYZ, GenPlotCB);
+      SPINNER_genplot_z          = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "z", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+2, GENPLOT_XYZ, GenPlotCB);
+      BUTTON_plot_position       = glui_device->add_button_to_panel(PANEL_plotgeneral_position, _("Set to device location"),                         GENPLOT_SET_POS, GenPlotCB);
 
       PANEL_plot5 = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "", 0);
       PANEL_plot4 = glui_device->add_panel_to_panel(PANEL_plot5, "add curve to plot");
