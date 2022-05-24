@@ -11430,9 +11430,6 @@ int ReadIni2(char *inifile, int localfile){
     }
 #ifdef pp_PLOT2D_NEW
     if(Match(buffer, "SHOWGENPLOTS") == 1){
-      char *token;
-      int count;
-
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &nplot2dini);
 

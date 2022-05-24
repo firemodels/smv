@@ -612,7 +612,6 @@ void RemovePlot(int i){
     iplot2dinfo = 0;
     for(ii = 0; ii < nplot2dinfo; ii++){
       plot2ddata *plot2di;
-      char label[32];
 
       plot2di = plot2dinfo + ii;
       LIST_plots->add_item(ii, plot2di->plot_label);
