@@ -11448,9 +11448,9 @@ int ReadIni2(char *inifile, int localfile){
         plot2di = plot2dini + i;
         plot2di->plot_index = i;
         plot2d_count++;
-        sprintf(plot2di->plot_label, "%i", plot2d_count);
+        sprintf(plot2di->plot_label, "plot %i", plot2d_count);
         fgets(buffer, 255, stream);
-        sscanf(buffer, " %f %f %f %i %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->ncurve_indexes);
+        sscanf(buffer, " %f %f %f %i %i %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->show_title, &plot2di->ncurve_indexes);
         for(j=0; j<plot2di->ncurve_indexes; j++){
           int color[3], *color2;
 
@@ -11458,7 +11458,7 @@ int ReadIni2(char *inifile, int localfile){
           sscanf(buffer, " %i %i %i %i",    plot2di->curve_indexes + j, color, color+1, color+2);
           color2 = plot2di->curve_colors + 3 * plot2di->curve_indexes[j];
           memcpy(color2, color, 3 * sizeof(int));
-          }
+        }
 void UpdateCurveBounds(plot2ddata *plot2di, int option);
        UpdateCurveBounds(plot2di, 0);
 
@@ -14826,7 +14826,7 @@ void WriteIniLocal(FILE *fileout){
     int j;
 
     plot2di = plot2dinfo + i;
-    fprintf(fileout, " %f %f %f %i %i\n", plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->ncurve_indexes);
+    fprintf(fileout, " %f %f %f %i %i %i\n", plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->show_title, plot2di->ncurve_indexes);
     for(j = 0; j < plot2di->ncurve_indexes; j++){
       int *color;
 

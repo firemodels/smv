@@ -1004,7 +1004,7 @@ typedef struct _plot2ddata{
   float curve_min[MAX_PLOT2D_CURVES], curve_max[MAX_PLOT2D_CURVES];
   int curve_colors[3*MAX_PLOT2D_CURVES];
   float xyz[3];
-  int show;
+  int show, show_title;
 } plot2ddata;
 #endif
 

@@ -3316,7 +3316,7 @@ int HaveGenHrr(void){
 
 void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int n,
               float highlight_x, float highlight_y,
-              float global_valmin, float global_valmax, int *plot_color, char *label, int position){
+              float global_valmin, float global_valmax, int *plot_color, char *label, int position, char *title, int show_title){
   float xmin, xmax, zmin, zmax, dx, dz;
   float xscale = 1.0, zscale = 1.0;
   float origin[3];
@@ -3406,6 +3406,9 @@ void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int
 
       Float2String(c_tmax, x[n - 1], ndigits, force_fixedpoint);
       Output3Text(foregroundcolor, xmax - dx, 0.0, zmin - dz - 3.0 * dfont, c_tmax);
+      if(show_title==1){
+        Output3Text(foregroundcolor, xmin, 0.0, zmax + 1.5*dz, title);
+      }
     }
     if(label != NULL){
       float p2_color[3];
@@ -3494,7 +3497,7 @@ void DrawGenPlot(plot2ddata * plot2di){
           dev_max = dev_global_max;
         }
         DrawGenCurve(option, plot2di->xyz, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
-                     highlight_time, highlight_val, dev_min, dev_max, plot2di->curve_colors+3*curve_index, label, position);
+                     highlight_time, highlight_val, dev_min, dev_max, plot2di->curve_colors+3*curve_index, label, position, plot2di->plot_label, plot2di->show_title);
         position++;
       }
     }
@@ -3522,7 +3525,7 @@ void DrawGenPlot(plot2ddata * plot2di){
           option = PLOT_ONLY_DATA;
         }
         DrawGenCurve(option, plot2di->xyz, plot2d_size_factor, hrrinfo->vals, hrri->vals, hrri->nvals,
-                     highlight_time, highlight_val, hrr_global_min, hrr_global_max, plot2di->curve_colors+3*curve_index, hrri->label.shortlabel, position);
+                     highlight_time, highlight_val, hrr_global_min, hrr_global_max, plot2di->curve_colors+3*curve_index, hrri->label.shortlabel, position, plot2di->plot_label, plot2di->show_title);
         position++;
       }
     }
