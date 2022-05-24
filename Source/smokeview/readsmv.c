@@ -3037,12 +3037,6 @@ void UpdateMeshCoords(void){
   ybarFDS  = ybar;
   zbarFDS  = zbar;
 
-#ifdef pp_PLOT2D_NEW
-  glui_plot2d_xyz[0] = xbar0FDS;
-  glui_plot2d_xyz[1] = ybar0FDS;
-  glui_plot2d_xyz[2] = zbar0FDS;
-#endif
-
   geomlistdata *geomlisti;
   if(geominfo!=NULL&&geominfo->geomlistinfo!=NULL){
     geomlisti = geominfo->geomlistinfo-1;
@@ -10962,8 +10956,8 @@ typedef struct {
 // initialize 2d plot data structures
 #ifdef pp_PLOT2D_NEW
   void InitPlot2D(plot2ddata *plot2di, int plot_index);
-  NewMemory((void **)&plot2dinfo, sizeof(plot2ddata));
-  InitPlot2D(plot2dinfo, 0);
+  NewMemory((void **)&glui_plot2dinfo, sizeof(plot2ddata));
+  InitPlot2D(glui_plot2dinfo, 0);
 #endif
 
   PRINTF("%s", _("complete"));
@@ -11436,24 +11430,41 @@ int ReadIni2(char *inifile, int localfile){
     }
 #ifdef pp_PLOT2D_NEW
     if(Match(buffer, "SHOWGENPLOTS") == 1){
-      char *token;
-      int count;
-
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %f %f %f %i", glui_plot2d_xyz, glui_plot2d_xyz+1, glui_plot2d_xyz+2, &show_genplot1);
+      sscanf(buffer, " %i", &nplot2dini);
 
-      fgets(buffer, 255, stream);
-      TrimBack(buffer);
-      token = strtok(buffer, " ");
-      count = 0;
-      while(token != NULL){
-        int curv_index;
+      FREEMEMORY(plot2dini);
 
-        sscanf(token, "%i", &curv_index);
-        plot2dinfo->curve_indexes_ini[count++] = curv_index;
-        token = strtok(NULL, " ");
+      if(nplot2dini==0)continue;
+      NewMemory((void **)&plot2dini, nplot2dini*sizeof(plot2ddata));
+
+      for(i=0;i<nplot2dini;i++){
+        plot2ddata *plot2di;
+        char *labelptr;
+        int j;
+
+        plot2di = plot2dini + i;
+        plot2di->plot_index = i;
+        plot2d_count++;
+        fgets(buffer, 255, stream);
+        TrimBack(buffer);
+        labelptr = TrimFront(buffer);
+        strcpy(plot2di->plot_label, labelptr);
+
+        fgets(buffer, 255, stream);
+        sscanf(buffer, " %f %f %f %i %i %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->show_title, &plot2di->ncurve_indexes);
+        for(j=0; j<plot2di->ncurve_indexes; j++){
+          int color[3], *color2;
+
+          fgets(buffer, 255, stream);
+          sscanf(buffer, " %i %i %i %i",    plot2di->curve_indexes + j, color, color+1, color+2);
+          color2 = plot2di->curve_colors + 3 * plot2di->curve_indexes[j];
+          memcpy(color2, color, 3 * sizeof(int));
+        }
+void UpdateCurveBounds(plot2ddata *plot2di, int option);
+       UpdateCurveBounds(plot2di, 0);
+
       }
-      plot2dinfo->ncurve_indexes_ini = count;
       update_glui_devices = 1;
       continue;
     }
@@ -14811,12 +14822,21 @@ void WriteIniLocal(FILE *fileout){
   );
 #ifdef pp_PLOT2D_NEW
   fprintf(fileout, "SHOWGENPLOTS\n");
-  fprintf(fileout, " %f %f %f %i\n", glui_plot2d_xyz[0], glui_plot2d_xyz[1], glui_plot2d_xyz[2], show_genplot1);
-  fprintf(fileout, " ");
-  for(i = 0; i < plot2dinfo->ncurve_indexes; i++){
-    fprintf(fileout, " %i ", plot2dinfo->curve_indexes[i]);
-  };
-  fprintf(fileout, "\n");
+  fprintf(fileout, " %i\n", nplot2dinfo);
+  for(i=0; i<nplot2dinfo; i++){
+    plot2ddata *plot2di;
+    int j;
+
+    plot2di = plot2dinfo + i;
+    fprintf(fileout, " %s\n", plot2di->plot_label);
+    fprintf(fileout, " %f %f %f %i %i %i\n", plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->show_title, plot2di->ncurve_indexes);
+    for(j = 0; j < plot2di->ncurve_indexes; j++){
+      int *color;
+
+      color = plot2di->curve_colors+3*plot2di->curve_indexes[j];
+      fprintf(fileout, " %i %i %i %i\n", plot2di->curve_indexes[j], color[0], color[1], color[2]);
+    };
+  }
 #endif
   fprintf(fileout, "SHOWDEVICEVALS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n", showdevice_val, showvdevice_val, devicetypes_index, colordevice_val, vectortype, viswindrose, showdevice_type,showdevice_unit,showdevice_id);
