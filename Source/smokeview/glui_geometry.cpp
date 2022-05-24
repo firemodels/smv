@@ -8,6 +8,14 @@
 
 #include "smokeviewvars.h"
 
+//*** geomprocinfo entries
+#define STRUCTURED_ROLLOUT     0
+#define UNSTRUCTURED_ROLLOUT   1
+#define IMMERSED_DIAGNOSTICS   2
+
+procdata  geomprocinfo[3];
+int      ngeomprocinfo = 0;
+
 #define XMIN_SPIN             20
 #define YMIN_SPIN             21
 #define ZMIN_SPIN             22
@@ -18,10 +26,7 @@
 #define RADIO_WALL            32
 #define SAVE_SETTINGS_GEOM    33
 #define VISAXISLABELS         34
-#define GEOM_MAX_ANGLE        36
-#define GEOM_OUTLINE_IOFFSET  37
 #define GEOM_IVECFACTOR       38
-#define SHOW_TEXTURE_2D_IMAGE 39
 #define SHOW_TEXTURE_1D_IMAGE 40
 #define TERRAIN_ZMIN          41
 #define TERRAIN_ZMAX          42
@@ -29,15 +34,20 @@
 #define TERRAIN_ZLEVEL        44
 #define SHOW_ZLEVEL           45
 #define GEOM_VERT_EXAG        46
-#define RESET_GEOM_OFFSET     47
 #define UPDATE_GEOM           48
 #define SURF_SET              49
 #define SURF_GET              50
-
-GLUI_Checkbox *CHECKBOX_cfaces = NULL;
-#ifdef pp_HAVE_CFACE_NORMALS
-GLUI_Checkbox *CHECKBOX_show_cface_normals = NULL;
+#define SHOWONLY_TOP          51
+#define GEOM_FDS_DOMAIN       52
+#ifdef pp_TERRAIN_UPDATE
+#define UPDATE_NORMALS        53
 #endif
+
+GLUI_Checkbox *CHECKBOX_showgeom_inside_domain = NULL;
+GLUI_Checkbox *CHECKBOX_showgeom_outside_domain = NULL;
+GLUI_Checkbox **CHECKBOX_terrain_texture_show = NULL;
+GLUI_Checkbox *CHECKBOX_cfaces = NULL;
+GLUI_Checkbox *CHECKBOX_show_cface_normals = NULL;
 GLUI_Checkbox *CHECKBOX_show_zlevel = NULL;
 GLUI_Checkbox *CHECKBOX_surface_solid=NULL, *CHECKBOX_surface_outline=NULL, *CHECKBOX_surface_points = NULL;
 GLUI_Checkbox *CHECKBOX_geom_force_transparent = NULL;
@@ -48,7 +58,7 @@ GLUI_Checkbox *CHECKBOX_smooth_geom_normal = NULL;
 GLUI_Checkbox *CHECKBOX_volumes_interior=NULL;
 GLUI_Checkbox *CHECKBOX_volumes_exterior=NULL;
 GLUI_Checkbox *CHECKBOX_show_texture_1dimage = NULL;
-GLUI_Checkbox *CHECKBOX_show_texture_2dimage = NULL;
+GLUI_Checkbox *CHECKBOX_showonly_top = NULL;
 
 GLUI_RadioGroup *RADIO_select_geom = NULL;
 GLUI_RadioGroup *RADIO_cface_type = NULL;
@@ -64,32 +74,25 @@ GLUI_StaticText *STATIC_dist=NULL;
 GLUI_StaticText *STATIC_tri_area = NULL;
 
 GLUI_Checkbox *CHECKBOX_use_surf_color=NULL;
-GLUI_Checkbox *CHECKBOX_highlight_edge0=NULL;
-GLUI_Checkbox *CHECKBOX_highlight_edge1=NULL;
-GLUI_Checkbox *CHECKBOX_highlight_edge2=NULL;
-GLUI_Checkbox *CHECKBOX_highlight_edgeother=NULL;
-GLUI_Checkbox *CHECKBOX_highlight_vertexdup = NULL;
 
 GLUI_Rollout *ROLLOUT_geomtest=NULL;
-GLUI_Rollout *ROLLOUT_geomtest2 = NULL;
 GLUI_Rollout *ROLLOUT_geom_rgbs = NULL;
 GLUI_Rollout *ROLLOUT_geom_properties=NULL;
 GLUI_Panel *PANEL_surf_color = NULL;
 GLUI_Panel *PANEL_surf_axis = NULL;
 GLUI_Panel *PANEL_surf_coloraxis = NULL;
 
+GLUI_Panel *PANEL_face_cface = NULL;
+GLUI_Panel *PANEL_elevation_color = NULL;
+GLUI_Panel *PANEL_geom_offset_outline = NULL;
+GLUI_Panel *PANEL_geom_close = NULL;
 GLUI_Panel *PANEL_geom_transparency = NULL;
 GLUI_Panel *PANEL_normals = NULL;
 
 GLUI_Spinner *SPINNER_geom_transparency=NULL;
-GLUI_Spinner *SPINNER_geom_max_angle = NULL;
-GLUI_Spinner *SPINNER_geom_outline_ioffset=NULL;
 GLUI_Spinner *SPINNER_geom_ivecfactor = NULL;
 GLUI_Spinner *SPINNER_geom_vert_exag=NULL;
 GLUI_Spinner *SPINNER_geom_zmin = NULL, *SPINNER_geom_zmax = NULL, *SPINNER_geom_zlevel=NULL;
-GLUI_Spinner *SPINNER_geom_delx = NULL;
-GLUI_Spinner *SPINNER_geom_dely = NULL;
-GLUI_Spinner *SPINNER_geom_delz = NULL;
 GLUI_Spinner *SPINNER_geom_vertex1_rgb[3]  = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_vertex2_rgb[3]  = {NULL, NULL, NULL};
 GLUI_Spinner *SPINNER_geom_triangle_rgb[3] = {NULL, NULL, NULL};
@@ -115,22 +118,24 @@ GLUI_EditText *EDIT_xmax=NULL, *EDIT_ymax=NULL, *EDIT_zmax=NULL;
 GLUI_Listbox *LIST_obst_surface[7]={NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 GLUI_Listbox *LIST_geom_surface=NULL;
 
+GLUI_Panel *PANEL_geomtest2 = NULL;
 GLUI_Panel *PANEL_cfaces = NULL;
 GLUI_Panel *PANEL_obj_select=NULL,*PANEL_faces=NULL,*PANEL_triangles=NULL,*PANEL_volumes=NULL,*PANEL_geom_showhide;
 GLUI_Panel *PANEL_boundingbox = NULL;
-GLUI_Panel *PANEL_properties_surf = NULL;
-GLUI_Panel *PANEL_properties_vertex = NULL;
-GLUI_Panel *PANEL_properties_triangle = NULL;
 GLUI_Panel *PANEL_vertex1_rgb = NULL;
 GLUI_Panel *PANEL_vertex2_rgb = NULL;
 GLUI_Panel *PANEL_triangle_rgb = NULL;
+GLUI_Panel *PANEL_properties_surf = NULL;
+GLUI_Panel *PANEL_properties_triangle = NULL;
+GLUI_Panel *PANEL_properties_vertex = NULL;
 GLUI_Panel *PANEL_properties2 = NULL;
 GLUI_Panel *PANEL_obj_stretch2=NULL,*PANEL_obj_stretch3=NULL, *PANEL_obj_stretch4=NULL;
 GLUI_Panel *PANEL_geomedgecheck=NULL;
 GLUI_Panel *PANEL_group1=NULL;
 GLUI_Panel *PANEL_geom_offset=NULL;
+GLUI_Panel *PANEL_terrain_images = NULL;
+GLUI_Panel *PANEL_geom_show = NULL;
 
-GLUI_Rollout *ROLLOUT_geomcheck=NULL;
 GLUI_Rollout *ROLLOUT_structured=NULL;
 GLUI_Rollout *ROLLOUT_unstructured=NULL;
 
@@ -143,10 +148,41 @@ GLUI_StaticText *STATIC_label=NULL;
 char a_updatelabel[1000];
 char *updatelabel=NULL;
 
+/* ------------------ UpdateTerrainTexture ------------------------ */
+
+extern "C" void UpdateTerrainTexture(int val){
+  if(CHECKBOX_terrain_texture_show!=NULL&&val>=0&&val<nterrain_textures){
+    texturedata *texti;
+
+    texti = terrain_textures+val;
+    if(texti->loaded==1&&CHECKBOX_terrain_texture_show[val]!=NULL){
+      CHECKBOX_terrain_texture_show[val]->set_int_val(texti->display);
+    }
+  }
+}
+
+/* ------------------ TerrainTextureCB ------------------------ */
+
+void TerrainTextureCB(int val){
+  updatemenu = 1;
+}
+
+/* ------------------ GeomRolloutCB ------------------------ */
+
+void GeomRolloutCB(int var){
+  ToggleRollout(geomprocinfo, ngeomprocinfo, var);
+}
+
 /* ------------------ UpdateSelectGeom ------------------------ */
 
 extern "C" void UpdateSelectGeom(void){
   RADIO_select_geom->set_int_val(select_geom);
+}
+
+/* ------------------ UpdateShowOnlyTop ------------------------ */
+
+extern "C" void UpdateShowOnlyTop(void){
+  if(CHECKBOX_showonly_top!=NULL)CHECKBOX_showonly_top->set_int_val(terrain_showonly_top);
 }
 
 /* ------------------ UpdateWhereFaceVolumes ------------------------ */
@@ -154,16 +190,18 @@ extern "C" void UpdateSelectGeom(void){
 extern "C" void UpdateWhereFaceVolumes(void){
   if(CHECKBOX_volumes_interior != NULL)CHECKBOX_volumes_interior->set_int_val(show_volumes_interior);
   if(CHECKBOX_volumes_exterior != NULL)CHECKBOX_volumes_exterior->set_int_val(show_volumes_exterior);
+  if(CHECKBOX_showgeom_inside_domain!=NULL)CHECKBOX_showgeom_inside_domain->set_int_val(showgeom_inside_domain);
+  if(CHECKBOX_showgeom_outside_domain!=NULL)CHECKBOX_showgeom_outside_domain->set_int_val(showgeom_outside_domain);
 }
 
 /* ------------------ UpdateGluiCfaces ------------------------ */
 
 extern "C" void UpdateGluiCfaces(void){
   glui_use_cfaces = use_cfaces;
-  if(CHECKBOX_cfaces!=NULL)CHECKBOX_cfaces->set_int_val(use_cfaces);
-#ifdef pp_HAVE_CFACE_NORMALS
+  if(CHECKBOX_cfaces!=NULL){
+    CHECKBOX_cfaces->set_int_val(use_cfaces);
+  }
   if(CHECKBOX_show_cface_normals!=NULL)CHECKBOX_show_cface_normals->set_int_val(show_cface_normals);
-#endif
 }
 
 /* ------------------ UpdateGeomBoundingBox ------------------------ */
@@ -215,22 +253,6 @@ int HaveTexture(void){
 
     texti = textureinfo + i;
     if(texti->loaded == 1 && texti->used == 1)return 1;
-  }
-  return 0;
-}
-
-/* ------------------ GetTextureShow ------------------------ */
-
-int GetTextureShow(void){
-  int i;
-
-  for(i = 0; i<ntextureinfo; i++){
-    texturedata *texti;
-
-    texti = textureinfo+i;
-    if(texti->loaded==1&&texti->used==1){
-      if(texti->display == 1)return 1;
-    }
   }
   return 0;
 }
@@ -299,7 +321,6 @@ extern "C" void UpdateVertexInfo(float *xyz1, float *xyz2){
   }
   if(xyz1!=NULL&&xyz2!=NULL){
     float dx, dy, dz, dist;
-    char label[100];
 
     dx = xyz1[0]-xyz2[0];
     dy = xyz1[1]-xyz2[1];
@@ -318,7 +339,6 @@ extern "C" void UpdateVertexInfo(float *xyz1, float *xyz2){
 extern "C" void GluiGeometrySetup(int main_window){
   int ibar,jbar,kbar;
   float *xplt_orig, *yplt_orig, *zplt_orig;
-  surfdata *surfi;
   char *surfacelabel;
   int i;
 
@@ -337,8 +357,10 @@ extern "C" void GluiGeometrySetup(int main_window){
   if(showedit_dialog==0)glui_geometry->hide();
 
   if(have_obsts == 1){
-    ROLLOUT_structured = glui_geometry->add_rollout("Structured", false);
+    ROLLOUT_structured = glui_geometry->add_rollout("Structured", false, STRUCTURED_ROLLOUT, GeomRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_structured, glui_geometry);
+    ADDPROCINFO(geomprocinfo, ngeomprocinfo, ROLLOUT_structured, STRUCTURED_ROLLOUT, glui_geometry);
+
     if(structured_isopen==1)ROLLOUT_structured->open();
     PANEL_obj_select = glui_geometry->add_panel_to_panel(ROLLOUT_structured, "SURFs");
 
@@ -352,6 +374,8 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_obst_surface[DOWN_X] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Left"), surface_indices+DOWN_X, UPDATE_LIST, ObjectCB);
       LIST_obst_surface[DOWN_X]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
         surfi = surfinfo+sorted_surfidlist[i];
         if(surfi->used_by_obst!=1)continue;
         if(surfi->obst_surface==0)continue;
@@ -362,6 +386,8 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_obst_surface[UP_X] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Right"), surface_indices+UP_X, UPDATE_LIST, ObjectCB);
       LIST_obst_surface[UP_X]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
         surfi = surfinfo+sorted_surfidlist[i];
         if(surfi->used_by_obst!=1)continue;
         if(surfi->obst_surface==0)continue;
@@ -372,6 +398,8 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_obst_surface[DOWN_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Front"), surface_indices+DOWN_Y, UPDATE_LIST, ObjectCB);
       LIST_obst_surface[DOWN_Y]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
         surfi = surfinfo+sorted_surfidlist[i];
         if(surfi->used_by_obst!=1)continue;
         if(surfi->obst_surface==0)continue;
@@ -382,6 +410,8 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_obst_surface[UP_Y] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Back"), surface_indices+UP_Y, UPDATE_LIST, ObjectCB);
       LIST_obst_surface[UP_Y]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
         surfi = surfinfo+sorted_surfidlist[i];
         if(surfi->used_by_obst!=1)continue;
         if(surfi->obst_surface==0)continue;
@@ -392,6 +422,8 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_obst_surface[DOWN_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Down"), surface_indices+DOWN_Z, UPDATE_LIST, ObjectCB);
       LIST_obst_surface[DOWN_Z]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
         surfi = surfinfo+sorted_surfidlist[i];
         if(surfi->used_by_obst!=1)continue;
         if(surfi->obst_surface==0)continue;
@@ -402,6 +434,8 @@ extern "C" void GluiGeometrySetup(int main_window){
       LIST_obst_surface[UP_Z] = glui_geometry->add_listbox_to_panel(PANEL_faces, _("Up"), surface_indices+UP_Z, UPDATE_LIST, ObjectCB);
       LIST_obst_surface[UP_Z]->set_w(260);
       for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
         surfi = surfinfo+sorted_surfidlist[i];
         if(surfi->used_by_obst!=1)continue;
         if(surfi->obst_surface==0)continue;
@@ -468,8 +502,9 @@ extern "C" void GluiGeometrySetup(int main_window){
   }
 
   if(ngeominfo>0){
-    ROLLOUT_unstructured = glui_geometry->add_rollout("Immersed", false);
+    ROLLOUT_unstructured = glui_geometry->add_rollout("Immersed", false, UNSTRUCTURED_ROLLOUT, GeomRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_unstructured, glui_geometry);
+    ADDPROCINFO(geomprocinfo, ngeomprocinfo, ROLLOUT_unstructured, UNSTRUCTURED_ROLLOUT, glui_geometry);
     if(unstructured_isopen==1)ROLLOUT_unstructured->open();
 
     for(i = 0; i<nmeshes; i++){
@@ -484,36 +519,55 @@ extern "C" void GluiGeometrySetup(int main_window){
 
     PANEL_geom_showhide = glui_geometry->add_panel_to_panel(ROLLOUT_unstructured, "", GLUI_PANEL_NONE);
     PANEL_group1 = glui_geometry->add_panel_to_panel(PANEL_geom_showhide, "", GLUI_PANEL_NONE);
-    PANEL_triangles = glui_geometry->add_panel_to_panel(PANEL_group1, "faces");
-    CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "shaded", &show_faces_shaded, VOL_SHOWHIDE, VolumeCB);
+    PANEL_face_cface = glui_geometry->add_panel_to_panel(PANEL_group1, "", GLUI_PANEL_NONE);
+    PANEL_face_cface->set_alignment(GLUI_ALIGN_LEFT);
+    PANEL_triangles = glui_geometry->add_panel_to_panel(PANEL_face_cface, "faces");
+    PANEL_triangles->set_alignment(GLUI_ALIGN_LEFT);
+    CHECKBOX_surface_solid = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "solid", &show_faces_shaded, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_surface_outline = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "outline", &show_faces_outline, VOL_SHOWHIDE, VolumeCB);
     CHECKBOX_surface_points = glui_geometry->add_checkbox_to_panel(PANEL_triangles, "points", &show_geom_verts, VOL_SHOWHIDE, VolumeCB);
 
-    PANEL_boundingbox = glui_geometry->add_panel_to_panel(PANEL_triangles, "show bounding box");
-    RADIO_show_geom_boundingbox = glui_geometry->add_radiogroup_to_panel(PANEL_boundingbox, &show_geom_boundingbox, GEOM_BOUNDING_BOX, VolumeCB);
-    glui_geometry->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "always");
-    glui_geometry->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "when mouse is pressed");
-    glui_geometry->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "never");
-
     if(ncgeominfo>0){
-      PANEL_cfaces = glui_geometry->add_panel_to_panel(PANEL_triangles, "cfaces");
+      glui_geometry->add_column_to_panel(PANEL_face_cface, false);
+      PANEL_cfaces = glui_geometry->add_panel_to_panel(PANEL_face_cface, "cfaces");
+      PANEL_cfaces->set_alignment(GLUI_ALIGN_LEFT);
       CHECKBOX_cfaces = glui_geometry->add_checkbox_to_panel(PANEL_cfaces, "show", &glui_use_cfaces, VOL_USE_CFACES, VolumeCB);
       RADIO_cface_type = glui_geometry->add_radiogroup_to_panel(PANEL_cfaces, &geom_cface_type);
       glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "triangles");
       glui_geometry->add_radiobutton_to_group(RADIO_cface_type, "polygons");
       VolumeCB(VOL_USE_CFACES);
-#ifdef pp_HAVE_CFACE_NORMALS
       if(have_cface_normals==CFACE_NORMALS_YES){
-        CHECKBOX_show_cface_normals = glui_geometry->add_checkbox_to_panel(PANEL_cfaces, "normals", &show_cface_normals);
+        CHECKBOX_show_cface_normals = glui_geometry->add_checkbox_to_panel(PANEL_cfaces, "normal vectors", &show_cface_normals);
       }
-#endif
     }
-    glui_geometry->add_spinner_to_panel(PANEL_triangles, "line width", GLUI_SPINNER_FLOAT, &geom_linewidth);
-    glui_geometry->add_spinner_to_panel(PANEL_triangles, "point size", GLUI_SPINNER_FLOAT, &geom_pointsize);
-    PANEL_geom_transparency = glui_geometry->add_panel_to_panel(PANEL_triangles, "transparency");
+
+    PANEL_geom_offset_outline = glui_geometry->add_panel_to_panel(PANEL_group1, "offset outline/points");
+    PANEL_geom_offset_outline->set_alignment(GLUI_ALIGN_LEFT);
+    glui_geometry->add_spinner_to_panel(PANEL_geom_offset_outline, "normal", GLUI_SPINNER_FLOAT, &geom_norm_offset);
+    glui_geometry->add_spinner_to_panel(PANEL_geom_offset_outline, "vertical", GLUI_SPINNER_FLOAT, &geom_dz_offset);
+
+    PANEL_boundingbox = glui_geometry->add_panel_to_panel(PANEL_group1, "show bounding box");
+    PANEL_boundingbox->set_alignment(GLUI_ALIGN_LEFT);
+    RADIO_show_geom_boundingbox = glui_geometry->add_radiogroup_to_panel(PANEL_boundingbox, &show_geom_boundingbox, GEOM_BOUNDING_BOX, VolumeCB);
+    glui_geometry->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "always");
+    glui_geometry->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "when mouse is pressed");
+    glui_geometry->add_radiobutton_to_group(RADIO_show_geom_boundingbox, "never");
+
+    PANEL_geom_transparency = glui_geometry->add_panel_to_panel(PANEL_group1, "transparency");
+    PANEL_geom_transparency->set_alignment(GLUI_ALIGN_LEFT);
     CHECKBOX_geom_force_transparent = glui_geometry->add_checkbox_to_panel(PANEL_geom_transparency, "force", &geom_force_transparent);
     SPINNER_geom_transparency = glui_geometry->add_spinner_to_panel(PANEL_geom_transparency, "level", GLUI_SPINNER_FLOAT, &geom_transparency);
     SPINNER_geom_transparency->set_float_limits(0.0, 1.0);
+
+    PANEL_normals = glui_geometry->add_panel_to_panel(PANEL_group1, "normals");
+    PANEL_normals->set_alignment(GLUI_ALIGN_LEFT);
+    GLUI_Panel *PANEL_show_smooth = glui_geometry->add_panel_to_panel(PANEL_normals, "", GLUI_PANEL_NONE);
+    CHECKBOX_show_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_show_smooth, "show", &show_geom_normal);
+    glui_geometry->add_column_to_panel(PANEL_show_smooth, false);
+    CHECKBOX_smooth_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_show_smooth, "smooth", &smooth_geom_normal);
+    SPINNER_geom_ivecfactor = glui_geometry->add_spinner_to_panel(PANEL_normals, "length", GLUI_SPINNER_INT, &geom_ivecfactor, GEOM_IVECFACTOR, VolumeCB);
+    SPINNER_geom_ivecfactor->set_int_limits(0, 200);
+
 
     glui_geometry->add_column_to_panel(PANEL_group1, false);
 
@@ -526,7 +580,10 @@ extern "C" void GluiGeometrySetup(int main_window){
     }
 
     UpdateGeomAreas();
-    ROLLOUT_geom_properties = glui_geometry->add_rollout_to_panel(PANEL_geom_showhide, "properties",false);
+
+    ROLLOUT_geom_properties = glui_geometry->add_rollout("Immersed diagnostics",false, IMMERSED_DIAGNOSTICS, GeomRolloutCB);
+    INSERT_ROLLOUT(ROLLOUT_geom_properties, glui_geometry);
+    ADDPROCINFO(geomprocinfo, ngeomprocinfo, ROLLOUT_geom_properties, IMMERSED_DIAGNOSTICS, glui_geometry);
     PANEL_properties2 = glui_geometry->add_panel_to_panel(ROLLOUT_geom_properties,"",GLUI_PANEL_NONE);
 
     RADIO_select_geom = glui_geometry->add_radiogroup_to_panel(PANEL_properties2, &select_geom, SELECT_GEOM,VolumeCB);
@@ -621,68 +678,70 @@ extern "C" void GluiGeometrySetup(int main_window){
       SPINNER_geom_triangle_rgb[i]->set_int_limits(0, 255);
     }
 
-    ROLLOUT_geomtest2 = glui_geometry->add_rollout_to_panel(ROLLOUT_unstructured, "parameters", false);
-    INSERT_ROLLOUT(ROLLOUT_geomtest2, glui_geometry);
-    SPINNER_geom_vert_exag = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "vertical exaggeration", GLUI_SPINNER_FLOAT, &geom_vert_exag, GEOM_VERT_EXAG, VolumeCB);
+    PANEL_geom_show = glui_geometry->add_panel_to_panel(PANEL_group1, "show");
+    PANEL_geom_show->set_alignment(GLUI_ALIGN_LEFT);
+    if(terrain_nindices>0){
+      CHECKBOX_showonly_top = glui_geometry->add_checkbox_to_panel(PANEL_geom_show, "only top surface", &terrain_showonly_top, SHOWONLY_TOP, VolumeCB);
+#ifdef pp_TERRAIN_UPDATE
+      glui_geometry->add_button_to_panel(PANEL_geom_show, _("Update normals"), UPDATE_NORMALS, VolumeCB);
+#endif
+    }
+    CHECKBOX_showgeom_inside_domain = glui_geometry->add_checkbox_to_panel(PANEL_geom_show, "inside FDS domain", &showgeom_inside_domain, GEOM_FDS_DOMAIN, VolumeCB);
+    CHECKBOX_showgeom_outside_domain = glui_geometry->add_checkbox_to_panel(PANEL_geom_show, "outside FDS domain", &showgeom_outside_domain, GEOM_FDS_DOMAIN, VolumeCB);
+    glui_geometry->add_checkbox_to_panel(PANEL_geom_show, "geometry and boundary files", &glui_show_geom_bndf, UPDATE_GEOM, VolumeCB);
+
+    PANEL_geomtest2 = glui_geometry->add_panel_to_panel(PANEL_group1, "settings");
+    PANEL_geomtest2->set_alignment(GLUI_ALIGN_LEFT);
+
+    glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "line width", GLUI_SPINNER_FLOAT, &geom_linewidth);
+    glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "point size", GLUI_SPINNER_FLOAT, &geom_pointsize);
+
+    SPINNER_geom_vert_exag = glui_geometry->add_spinner_to_panel(PANEL_geomtest2, "vertical exaggeration", GLUI_SPINNER_FLOAT, &geom_vert_exag, GEOM_VERT_EXAG, VolumeCB);
     SPINNER_geom_vert_exag->set_float_limits(0.1, 10.0);
-    CHECKBOX_show_texture_1dimage = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "show elevation color", &show_texture_1dimage, SHOW_TEXTURE_1D_IMAGE, VolumeCB);
+
+    if(nterrain_textures>0){
+      NewMemory((void **)&CHECKBOX_terrain_texture_show, sizeof(GLUI_Checkbox *)*nterrain_textures);
+      PANEL_terrain_images = glui_geometry->add_panel_to_panel(PANEL_group1, "terrain images");
+      for(i = 0; i<nterrain_textures; i++){
+        texturedata *texti;
+
+        texti = terrain_textures+i;
+        if(texti->loaded==1){
+          CHECKBOX_terrain_texture_show[i] = glui_geometry->add_checkbox_to_panel(PANEL_terrain_images, texti->file, &(texti->display), i, TerrainTextureCB);
+        }
+        else{
+          CHECKBOX_terrain_texture_show[i] = NULL;
+        }
+      }
+    }
+
+    PANEL_elevation_color = glui_geometry->add_panel_to_panel(PANEL_group1, "color by elevation");
+    PANEL_elevation_color->set_alignment(GLUI_ALIGN_LEFT);
+    CHECKBOX_show_texture_1dimage = glui_geometry->add_checkbox_to_panel(PANEL_elevation_color, "show elevation colors", &show_texture_1dimage, SHOW_TEXTURE_1D_IMAGE, VolumeCB);
+    terrain_zlevel = (terrain_zmin+terrain_zmax)/2.0;
+    CHECKBOX_show_zlevel = glui_geometry->add_checkbox_to_panel(PANEL_elevation_color, "hilight elevation", &show_zlevel, SHOW_ZLEVEL, VolumeCB);
 
     GetGeomZBounds(&terrain_zmin, &terrain_zmax);
-    SPINNER_geom_zmin = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "zmin", GLUI_SPINNER_FLOAT, &terrain_zmin, TERRAIN_ZMIN, VolumeCB);
+    SPINNER_geom_zmin = glui_geometry->add_spinner_to_panel(PANEL_elevation_color, "zmin", GLUI_SPINNER_FLOAT, &terrain_zmin, TERRAIN_ZMIN, VolumeCB);
     SPINNER_geom_zmin->set_float_limits(zbar0ORIG, zbarORIG);
 
-    SPINNER_geom_zmax = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "zmax", GLUI_SPINNER_FLOAT, &terrain_zmax, TERRAIN_ZMAX, VolumeCB);
+    SPINNER_geom_zmax = glui_geometry->add_spinner_to_panel(PANEL_elevation_color, "zmax", GLUI_SPINNER_FLOAT, &terrain_zmax, TERRAIN_ZMAX, VolumeCB);
     SPINNER_geom_zmax->set_float_limits(zbar0ORIG, zbarORIG);
 
-    terrain_zlevel = (terrain_zmin + terrain_zmax) / 2.0;
-    CHECKBOX_show_zlevel = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "show zlevel", &show_zlevel, SHOW_ZLEVEL, VolumeCB);
-    SPINNER_geom_zlevel = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "zlevel", GLUI_SPINNER_FLOAT, &terrain_zlevel, TERRAIN_ZLEVEL, VolumeCB);
+    SPINNER_geom_zlevel = glui_geometry->add_spinner_to_panel(PANEL_elevation_color, "elevation", GLUI_SPINNER_FLOAT, &terrain_zlevel, TERRAIN_ZLEVEL, VolumeCB);
     SPINNER_geom_zlevel->set_float_limits(zbar0ORIG, zbarORIG);
 
     VolumeCB(GEOM_VERT_EXAG);
-    BUTTON_reset_zbounds = glui_geometry->add_button_to_panel(ROLLOUT_geomtest2, _("Reset zmin/zmax"), RESET_ZBOUNDS, VolumeCB);
-
-    if(HaveTexture() == 1){
-      show_texture_2dimage = GetTextureShow();
-      CHECKBOX_show_texture_2dimage = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "image", &show_texture_2dimage, SHOW_TEXTURE_2D_IMAGE, VolumeCB);
-      VolumeCB(SHOW_TEXTURE_2D_IMAGE);
-    }
-
-    glui_geometry->add_checkbox_to_panel(ROLLOUT_geomtest2, "use max angle", &use_max_angle, GEOM_MAX_ANGLE, VolumeCB);
-    SPINNER_geom_max_angle = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "max angle", GLUI_SPINNER_FLOAT, &geom_max_angle, GEOM_MAX_ANGLE, VolumeCB);
-    SPINNER_geom_max_angle->set_float_limits(0.0, 180.0);
-    SPINNER_geom_outline_ioffset = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "outline offset", GLUI_SPINNER_INT, &geom_outline_ioffset, GEOM_OUTLINE_IOFFSET, VolumeCB);
-    SPINNER_geom_outline_ioffset->set_int_limits(0, 200);
-    SPINNER_face_factor = glui_geometry->add_spinner_to_panel(ROLLOUT_geomtest2, "face factor", GLUI_SPINNER_FLOAT, &face_factor);
-    SPINNER_face_factor->set_float_limits(0.0, 0.5);
-
-    PANEL_geom_offset = glui_geometry->add_panel_to_panel(PANEL_group1, "offset");
-    SPINNER_geom_delx = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dx", GLUI_SPINNER_FLOAT, &geom_delx);
-    SPINNER_geom_dely = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dy", GLUI_SPINNER_FLOAT, &geom_dely);
-    SPINNER_geom_delz = glui_geometry->add_spinner_to_panel(PANEL_geom_offset, "dz", GLUI_SPINNER_FLOAT, &geom_delz);
-    glui_geometry->add_checkbox_to_panel(PANEL_geom_offset, "show geometry and boundary files", &glui_show_geom_bndf, UPDATE_GEOM, VolumeCB);
-    BUTTON_reset_offset = glui_geometry->add_button_to_panel(PANEL_geom_offset, _("Reset"), RESET_GEOM_OFFSET, VolumeCB);
-
-    PANEL_normals = glui_geometry->add_panel_to_panel(PANEL_group1, "normals");
-    CHECKBOX_show_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_normals, "show", &show_geom_normal);
-    CHECKBOX_smooth_geom_normal = glui_geometry->add_checkbox_to_panel(PANEL_normals, "smooth", &smooth_geom_normal);
-    SPINNER_geom_ivecfactor = glui_geometry->add_spinner_to_panel(PANEL_normals, "length", GLUI_SPINNER_INT, &geom_ivecfactor, GEOM_IVECFACTOR, VolumeCB);
-    SPINNER_geom_ivecfactor->set_int_limits(0, 200);
-
-    ROLLOUT_geomcheck = glui_geometry->add_rollout_to_panel(ROLLOUT_unstructured, "checks", false);
-    INSERT_ROLLOUT(ROLLOUT_geomcheck, glui_geometry);
-    PANEL_geomedgecheck = glui_geometry->add_panel_to_panel(ROLLOUT_geomcheck, "edges - connected triangles");
-    CHECKBOX_highlight_edge0 = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "0", &highlight_edge0);
-    CHECKBOX_highlight_edge1 = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "1", &highlight_edge1);
-    CHECKBOX_highlight_edge2 = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "2", &highlight_edge2);
-    CHECKBOX_highlight_edgeother = glui_geometry->add_checkbox_to_panel(PANEL_geomedgecheck, "3 or more", &highlight_edgeother);
-
-    CHECKBOX_highlight_vertexdup = glui_geometry->add_checkbox_to_panel(ROLLOUT_geomcheck, "duplicate vertices", &highlight_vertexdup);
+    BUTTON_reset_zbounds = glui_geometry->add_button_to_panel(PANEL_elevation_color, _("Reset zmin/zmax"), RESET_ZBOUNDS, VolumeCB);
   }
 
-  glui_geometry->add_separator();
-  glui_geometry->add_button(_("Save settings"),SAVE_SETTINGS_GEOM, BlockeditDlgCB);
-  BUTTON_blockage_1=glui_geometry->add_button(_("Close"),CLOSE_WINDOW, BlockeditDlgCB);
+  PANEL_geom_close = glui_geometry->add_panel("", GLUI_PANEL_NONE);
+
+  glui_geometry->add_button_to_panel(PANEL_geom_close, _("Save settings"), SAVE_SETTINGS_GEOM, BlockeditDlgCB);
+
+  glui_geometry->add_column_to_panel(PANEL_geom_close, false);
+
+  BUTTON_blockage_1=glui_geometry->add_button_to_panel(PANEL_geom_close, _("Close"),CLOSE_WINDOW, BlockeditDlgCB);
 #ifdef pp_CLOSEOFF
   BUTTON_blockage_1->disable();
 #endif
@@ -719,7 +778,6 @@ extern "C" void VolumeCB(int var){
         SPINNER_surf_axis[0]->set_int_val(glui_surf_axis[0]);
         SPINNER_surf_axis[1]->set_int_val(glui_surf_axis[1]);
         SPINNER_surf_axis[2]->set_int_val(glui_surf_axis[2]);
-
         break;
       }
     }
@@ -761,24 +819,34 @@ extern "C" void VolumeCB(int var){
     case GEOM_PROP_VERTEX1:
     case GEOM_PROP_VERTEX2:
       selected_geom_triangle = -1;
+    default:
+      ASSERT(FFALSE);
+      break;
     }
     break;
   case UPDATE_GEOM:
     show_geom_bndf = glui_show_geom_bndf;
     update_times = 1;
     break;
-  case RESET_GEOM_OFFSET:
-    geom_delx = 0.0;
-    geom_dely = 0.0;
-    geom_delz = 0.0;
-    SPINNER_geom_delx->set_float_val(geom_delx);
-    SPINNER_geom_dely->set_float_val(geom_dely);
-    SPINNER_geom_delz->set_float_val(geom_delz);
-    break;
   case GEOM_VERT_EXAG:
     UpdateGeomNormals();
     break;
+  case GEOM_FDS_DOMAIN:
+  case SHOWONLY_TOP:
+    updatemenu = 1;
+    break;
+#ifdef pp_TERRAIN_UPDATE
+  case UPDATE_NORMALS:
+    terrain_update_normals = 1;
+    GLUTPOSTREDISPLAY;
+    break;
+#endif
   case SHOW_ZLEVEL:
+    if(show_texture_1dimage==0&&show_zlevel==1){
+      show_texture_1dimage = 1;
+      CHECKBOX_show_texture_1dimage->set_int_val(show_texture_1dimage);
+      VolumeCB(SHOW_TEXTURE_1D_IMAGE);
+    }
   case TERRAIN_ZLEVEL:
     UpdateChopColors();
   break;
@@ -796,41 +864,21 @@ extern "C" void VolumeCB(int var){
     SPINNER_geom_zlevel->set_float_limits(terrain_zmin, terrain_zmax);
     UpdateChopColors();
   case SHOW_TEXTURE_1D_IMAGE:
-    if(show_texture_1dimage == 1 && show_texture_2dimage == 1){
-      show_texture_2dimage=0;
-      VolumeCB(SHOW_TEXTURE_2D_IMAGE);
-      if(CHECKBOX_show_texture_2dimage!=NULL&&CHECKBOX_show_texture_2dimage->get_int_val() == 1)CHECKBOX_show_texture_2dimage->set_int_val(0);
-    }
-    break;
-  case SHOW_TEXTURE_2D_IMAGE:
-    if(show_texture_1dimage==1&&show_texture_2dimage==1){
-      show_texture_1dimage=0;
-      if(CHECKBOX_show_texture_1dimage->get_int_val() == 1)CHECKBOX_show_texture_1dimage->set_int_val(0);
-    }
-    for(i = 0; i<ntextureinfo; i++){
-      texturedata *texti;
+    if(show_texture_1dimage == 1&&nterrain_textures>0){
+      for(i=0; i<nterrain_textures; i++){
+        texturedata *texti;
 
-      texti = textureinfo+i;
-      if(texti->loaded==1&&texti->used==1){
-        texti->display = 1 - show_texture_2dimage;
-        TextureShowMenu(i);
-        if(CHECKBOX_show_texture_2dimage != NULL){
-          if(texti->display == 1 && CHECKBOX_show_texture_2dimage->get_int_val() == 0)CHECKBOX_show_texture_2dimage->set_int_val(1);
-          if(texti->display == 0 && CHECKBOX_show_texture_2dimage->get_int_val() == 1)CHECKBOX_show_texture_2dimage->set_int_val(0);
+        texti = terrain_textures+i;
+        if(texti->loaded==1){
+          texti->display = 0;
+          UpdateTerrainTexture(i);
         }
-        break;
       }
+      updatemenu = 1;
     }
     break;
   case GEOM_IVECFACTOR:
     geom_vecfactor = (float)geom_ivecfactor/1000.0;
-    break;
-  case GEOM_MAX_ANGLE:
-    cos_geom_max_angle=cos(DEG2RAD*geom_max_angle);
-    UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_NORMALS);
-    break;
-  case GEOM_OUTLINE_IOFFSET:
-    geom_outline_offset = (float)geom_outline_ioffset/1000.0;
     break;
     // update_volbox_controls=1;
     // face_vis
@@ -842,6 +890,11 @@ extern "C" void VolumeCB(int var){
     updatemenu=1;
     break;
   case VOL_USE_CFACES:
+    if(glui_use_cfaces==1&&show_faces_outline==0){
+      show_faces_outline = 1;
+      CHECKBOX_surface_outline->set_int_val(1);
+      VolumeCB(VOL_SHOWHIDE);
+    }
     blocklocation--;
     use_cfaces = 1 - glui_use_cfaces;
     Keyboard('q',FROM_SMOKEVIEW);
@@ -870,7 +923,15 @@ extern "C" void ShowGluiGeometry(void){
   showedit_dialog=1;
   blockageSelect=1;
   UpdateBlockVals(NOT_SELECT_BLOCKS);
-  if(glui_geometry!=NULL)glui_geometry->show();
+  if(glui_geometry!=NULL){
+    glui_geometry->show();
+    if(ROLLOUT_unstructured!=NULL&&ROLLOUT_structured==NULL){
+      ROLLOUT_unstructured->open();
+    }
+    else if(ROLLOUT_structured!=NULL&&ROLLOUT_unstructured==NULL){
+      ROLLOUT_structured->open();
+    }
+  }
 }
 
 /* ------------------ UpdateBlockVals ------------------------ */

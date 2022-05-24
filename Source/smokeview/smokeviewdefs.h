@@ -1,11 +1,13 @@
 #ifndef SMOKEVIEWDEFS_H_DEFINED
 #define SMOKEVIEWDEFS_H_DEFINED
 #ifdef pp_SNIFF_ERROR
-void _Sniff_Errors(char *whereat, char *file, int line);
+EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define SNIFF_ERRORS(f) _Sniff_Errors(f,__FILE__,__LINE__)
 #else
 #define SNIFF_ERRORS(f)
 #endif
+
+#define SPLIT_COLORBAR         1
 
 #define LABELS_vcolorbar 34
 #define LABELS_hcolorbar 35
@@ -18,8 +20,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define OBJECT_PLOT_SHOW_SELECTED  -11
 #define OBJECT_PLOT_SHOW_TREE_ALL  -12
 
-#define PLOT_HRRPUV -13
+#define PLOT_HRRPUV           -13
 #define HRRPUV_PLOT            30
+#define HRRPUV2_PLOT           31
 
 #ifdef pp_OSX_HIGHRES
 #define GLUT_BITMAP_HELVETICA_20	(&glutBitmapHelvetica20)
@@ -43,6 +46,10 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define VIEW_ZMAX                   -5
 
 #define DEVICE_devicetypes     28
+#ifdef pp_PLOT2D_NEW
+#define DEVICE_deviceIDs       30
+#endif
+
 
 #define DEVICE_PLOT_HIDDEN        0
 #define DEVICE_PLOT_SHOW_SELECTED 1
@@ -74,10 +81,8 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MINMAX_LOADED 1
 #define MINMAX_INI    2
 
-#ifdef pp_HAVE_CFACE_NORMALS
 #define CFACE_NORMALS_NO  0
 #define CFACE_NORMALS_YES 1
-#endif
 
 #define SHOW_BOUNDING_BOX_ALWAYS     0
 #define SHOW_BOUNDING_BOX_MOUSE_DOWN 1
@@ -131,6 +136,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define MUP    5
 #define MEPS   0.1
 
+#define NO_SMOKE -1
+#define NO_FIRE  -1
+
 #define GLUTPOSTREDISPLAY  if(use_graphics==1)glutPostRedisplay()
 #define GLUTSETCURSOR(val) if(use_graphics==1)glutSetCursor(val)
 
@@ -180,6 +188,8 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 
 #define ROTATE_ABOUT_USER_CENTER     -1
 #define ROTATE_ABOUT_CLIPPING_CENTER -2
+#define ROTATE_ABOUT_FDS_CENTER      -3
+#define ROTATE_ABOUT_WORLD_CENTER    -4
 
 #define ONLY_IN_GAS   0
 #define GAS_AND_SOLID 1
@@ -295,20 +305,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define UPDATE_SMOKEFIRE_COLORS 54
 #endif
 
-#define MAXSMOKETYPES 4
-#define SOOT          0
-#define HRRPUV        1
-#define TEMP          2
-#define CO2           3
-#define SOOT_2        1
-#define HRRPUV_2      2
-#define TEMP_2        4
-#define CO2_2         8
-
-#define VSOOT 0
-#define VFIRE 1
-#define VCO2  2
-
 #define NELEV_ZONE 100
 
 #define UPDATE_ISO_OFF        0
@@ -346,9 +342,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 
 #define ADD_KEYFRAME     1
 #define DELETE_KEYFRAME -1
-
-#define REL_VIEW 0
-#define ABS_VIEW 1
 
 #define IS_AVATAR     1
 #define IS_NOT_AVATAR 0
@@ -431,9 +424,9 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 
 #define MAX_CELL_TYPES 3
 
-#define IMMERSED_POLYGON  0
-#define IMMERSED_TRIANGLE 1
-#define IMMERSED_HIDDEN   2
+#define OUTLINE_POLYGON  0
+#define OUTLINE_TRIANGLE 1
+#define OUTLINE_HIDDEN   2
 
 #define EMBED_YES 0
 #define EMBED_NO  1
@@ -447,10 +440,11 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define KEY_SHIFT 3
 #define KEY_NONE  2
 
-#define noGridnoProbe 0
-#define GridnoProbe   1
-#define GridProbe     2
-#define noGridProbe   3
+#define NOGRID_NOPROBE 0
+#define GRID_NOPROBE   1
+#define GRID_PROBE     2
+#define NOGRID_PROBE   3
+#define NOGRID_PROBE2  4
 
 #define FROM_SMOKEVIEW     0
 #define FROM_CALLBACK      1
@@ -477,6 +471,17 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define TERRAIN_2D_LINE    2
 #define TERRAIN_3D_MAP     3
 #define TERRAIN_HIDDEN     4
+#ifdef pp_TERRAIN_SKIP
+#define TERRAIN_SKIP       5
+#endif
+#define TERRAIN_TOP        6
+#ifdef pp_TERRAIN_DEBUG
+#define TERRAIN_DEBUG      7
+#endif
+
+#define TERRAIN_TOP_SIDE      0
+#define TERRAIN_BOTTOM_SIDE   1
+#define TERRAIN_BOTH_SIDES    2
 
 #define CSV_FDS   0
 #define CSV_CFAST 1
@@ -785,10 +790,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define RENDER_RESOLUTION_HIGH    3
 #define RENDER_RESOLUTION_360     4
 
-#define SMOKE3D_ORIG  0
-#define SMOKE3D_NEW   1
-#define SMOKE3D_DIAG  2
-
 #define SMOKE_OUTLINE_TRIANGLE 0
 #define SMOKE_TRIANGULATION    1
 #define SMOKE_OUTLINE_POLYGON  2
@@ -890,6 +891,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define COLORBAR_TOGGLE_BW_DATA  -21
 #define MENU_COLORBAR_SETTINGS   -22
 #define USE_LIGHTING             -25
+#define TOGGLE_LIGHTING          -26
 
 #define LOAD        0
 #define UNLOAD      1
@@ -979,6 +981,7 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define DIALOG_CLIP      18
 #define DIALOG_COLORBAR  23
 #define DIALOG_DEVICE    28
+#define DIALOG_2DPLOTS   46
 #define DIALOG_DISPLAY   22
 #define DIALOG_HIDEALL   -2
 #define DIALOG_MOTION    29
@@ -991,7 +994,6 @@ void _Sniff_Errors(char *whereat, char *file, int line);
 #define DIALOG_TOUR_SHOW 21
 #define DIALOG_TOUR_HIDE 44
 #define DIALOG_TRAINER   25
-#define DIALOG_WUI       26
 #define DIALOG_SHOWFILES 33
 #define DIALOG_SCRIPT    32
 #define DIALOG_CONFIG    34

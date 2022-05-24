@@ -1,7 +1,9 @@
 .SUFFIXES: .c .cpp .o .obj
 
-COMPILER=icc
-COMPILER2=icc
+#COMPILER=icx
+#COMPILER2=icx
+COMPILER=icx
+COMPILER2=icx
 CC=${COMPILER}
 CPP=${COMPILER2}
 

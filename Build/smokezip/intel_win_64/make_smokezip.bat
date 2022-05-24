@@ -11,9 +11,7 @@ call ..\..\..\Utilities\Scripts\setup_intel_compilers.bat
 Title Building smokezip for 64 bit Windows
 
 set SMV_TESTFLAG=
-IF NOT DEFINED ONEAPI_ROOT goto skip_oneapi
-  set SMV_TESTFLAG=%SMV_TESTFLAG% -D pp_WIN_ONEAPI
-:skip_oneapi
+if x%ONEAPI_FORT_CAPS% == x1 set SMV_TESTFLAG=%SMV_TESTFLAG% -D pp_WIN_ONEAPI
 
 erase *.obj *.mod *.exe
 make SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG%" -f ..\Makefile intel_win_64

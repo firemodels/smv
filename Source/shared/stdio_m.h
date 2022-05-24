@@ -9,6 +9,9 @@ typedef struct {
 
 #define PASS_m 0
 #define FAIL_m 1
+#ifndef FFALSE
+#define FFALSE 0
+#endif
 
 void   fclose_m(FILE_m *stream_m);
 char   *fgets_m(char * str, int num, FILE_m *stream_m);

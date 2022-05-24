@@ -1,5 +1,9 @@
 #include "gd.h"
 
+void set_colorbar(int value);
+int set_named_colorbar(const char *name);
+
+int set_slice_bounds(const char *slice_type, int set_min, float value_min, int set_max, float value_max);
 int set_slice_bound_min(const char *slice_type, int set, float value);
 int set_slice_bound_max(const char *slice_type, int set, float value);
 float get_slice_bound_min(const char *slice_type);
@@ -13,6 +17,8 @@ void renderclip(int flag, int left, int right, int bottom, int top);
 int render(const char *filename);
 void gsliceview(int data, int show_triangles, int show_triangulation,
                 int show_normal);
+void ShowPlot3dData(int meshnumber, int plane_orientation, int display,
+                           int showhide, float position, int isolevel);
 void gslicepos(float x, float y, float z);
 void gsliceorien(float az, float elev);
 void settourkeyframe(float keyframe_time);
@@ -253,7 +259,9 @@ int set_flip(int setting); // FLIP
 int set_foregroundcolor(float r, float g, float b); // FOREGROUNDCOLOR
 int set_heatoffcolor(float r, float g, float b); // HEATOFFCOLOR
 int set_heatoncolor(float r, float g, float b); // HEATONCOLOR
-int set_isocolors(float shininess, float default_opaueness, float specular[3], int nlevels, float colors[][4]);
+int set_isocolors(float shininess, float transparency, int transparency_option,
+                  int opacity_change, float specular[3], int n_colors,
+                  float colors[][4]);
 int set_colortable(int ncolors, int colors[][4], char **names);
 int set_lightpos0(float x, float y, float z, float w); // LIGHTPOS0
 int set_lightpos1(float x, float y, float z, float w); // LIGHTPOS1
@@ -284,7 +292,7 @@ int set_sprinklerabssize(float v); // SPRINKLERABSSIZE
 int set_streaklinewidth(float v); // STREAKLINEWIDTH
 int set_ticklinewidth(float v); // TICKLINEWIDTH
 int set_usenewdrawface(int v); // USENEWDRAWFACE
-int set_veclength(int a, float b, float c); // VECLENGTH
+int set_veclength(float vf, int vec_uniform_length_in, int vec_uniform_spacing_in); // VECLENGTH
 int set_vectorlinewidth(float a, float b); // VECTORLINEWIDTH
 int set_vectorpointsize(float v); // VECTORPOINTSIZE
 int set_ventlinewidth(float v); // VENTLINEWIDTH
@@ -324,7 +332,6 @@ int set_eyey(float v); // EYEY
 int set_eyez(float v); // EYEZ
 int set_fontsize(int v); // FONTSIZE
 int set_frameratevalue(int v); // FRAMERATEVALUE
-int set_geomdiags(int structured, int unstructured, int diagnostics); // GEOMDIAGS
 // GEOMSHOW
 int set_showfaces_interior(int v);
 int set_showfaces_exterior(int v);
@@ -488,12 +495,12 @@ int set_msliceauto(int n, int vals[]); // MSLICEAUTO
 int set_compressauto(int v); // COMPRESSAUTO
 int set_part5propdisp(int vals[]); // PART5PROPDISP
 int set_part5color(int v); // PART5COLOR
-int set_propindex(int nvals, int vals[][2]); // PROPINDEX
+int set_propindex(int nvals, int *vals); // PROPINDEX
 int set_shooter(float xyz[], float dxyz[], float uvw[],
                 float velmag, float veldir, float pointsize,
                 int fps, int vel_type, int nparts, int vis, int cont_update,
                 float duration, float v_inf); // SHOOTER
-int set_showdevices(int n, const char **names); // SHOWDEVICES
+int set_showdevices(int n, const char *const *names); // SHOWDEVICES
 int set_showdevicevals(int showdeviceval, int showvdeviceval,
     int devicetypes_index, int colordeviceval, int vectortype, int vispilot,
     int showdevicetype, int showdeviceunit); // SHOWDEVICEVALS
@@ -508,7 +515,7 @@ int set_c_slice(int minFlag, float minValue, int maxFlag, float maxValue,
                     const char *label); // C_SLICE
 int set_cache_boundarydata(int setting); // CACHE_BOUNDARYDATA
 int set_cache_qdata(int setting); // CACHE_QDATA
-int set_percentilelevel(int setting); // PERCENTILELEVEL
+int set_percentilelevel(float percentile_level_min, float p_level_max); // PERCENTILELEVEL
 int set_timeoffset(int setting); // TIMEOFFSET
 int set_patchdataout(int outputFlag, float tmin, float tmax, float xmin,
                      float xmax, float ymin, float ymax, float zmin,
@@ -517,6 +524,8 @@ int set_c_plot3d(int n3d, int minFlags[], int minVals[], int maxFlags[],
                  int maxVals[]); // C_PLOT3D
 int set_v_plot3d(int n3d, int minFlags[], int minVals[], int maxFlags[],
                  int maxVals[]); // V_PLOT3D
+int set_pl3d_bound_min(int pl3dValueIndex, int set, float value);
+int set_pl3d_bound_max(int pl3dValueIndex, int set, float value);
 int set_tload(int beginFlag, float beginVal, int endFlag, int endVal,
               int skipFlag, int skipVal); // TLOAD
 int set_v5_particles(int minFlag, float minValue, int maxFlag, float maxValue,
@@ -547,3 +556,5 @@ int show_smoke3d_hideall();
 int show_slices_showall();
 int show_slices_hideall();
 int RenderFrameLuaVar(int view_mode, gdImagePtr *RENDERimage);
+
+#define PROPINDEX_STRIDE 2

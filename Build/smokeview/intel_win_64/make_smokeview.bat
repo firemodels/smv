@@ -19,11 +19,9 @@ if "%release%" == "-r" goto endif
   set SMV_TESTSTRING=test_
 :endif
 
-IF NOT DEFINED ONEAPI_ROOT goto skip_oneapi
-  set SMV_TESTFLAG=%SMV_TESTFLAG% -D pp_WIN_ONEAPI
-:skip_oneapi
-
 if NOT x%GLUT% == xfreeglut set GLUT=glut
+
+if x%ONEAPI_FORT_CAPS% == x1 set SMV_TESTFLAG=%SMV_TESTFLAG% -D pp_WIN_ONEAPI
 
 if x%inc% == xinc goto skip_inc
 erase *.obj *.mod *.exe 2> Nul

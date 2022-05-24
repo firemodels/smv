@@ -12,7 +12,7 @@
 #include "IOobjects.h"
 
 #define ijnode2(i,j) ((nxcell+1)*(j) + (i))
-#define ijnode3(i,j) ((nycell+1)*(i) + (j))
+
 #define FORTWUIREAD(var,size) FSEEK(WUIFILE,4,SEEK_CUR);\
                            returncode=fread(var,4,size,WUIFILE);\
                            FSEEK(WUIFILE,4,SEEK_CUR)
@@ -64,7 +64,7 @@ void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigne
     terrain_vertices[9*i+0] = xyz[0];
     terrain_vertices[9*i+1] = xyz[1];
     terrain_vertices[9*i+2] = xyz[2];
-    terrain_vertices[9*i+3] = verti->vert_norm[0];;
+    terrain_vertices[9*i+3] = verti->vert_norm[0];
     terrain_vertices[9*i+4] = verti->vert_norm[1];
     terrain_vertices[9*i+5] = verti->vert_norm[2];
     terrain_tvertices[2*i+0] = (xyz[0]-terrain_xmin)/(terrain_xmax-terrain_xmin);
@@ -277,6 +277,34 @@ void DrawTerrainGeomGPU(void){
 
 #endif
 
+/* ------------------ InDomain ------------------------ */
+
+int InDomain(float *v1, float *v2, float *v3){
+  int inside1 = 0, inside2 = 0, inside3 = 0;
+  float vmid[3];
+
+  if(v1[0]>=xbar0FDS&&v1[0]<=xbarFDS&&
+     v1[1]>=ybar0FDS&&v1[1]<=ybarFDS&&
+     v1[2]>=zbar0FDS&&v1[2]<=zbarFDS)inside1=1;
+
+  if(v2[0]>=xbar0FDS&&v2[0]<=xbarFDS&&
+     v2[1]>=ybar0FDS&&v2[1]<=ybarFDS&&
+     v2[2]>=zbar0FDS&&v2[2]<=zbarFDS)inside2 = 1;
+
+  if(v3[0]>=xbar0FDS&&v3[0]<=xbarFDS&&
+     v3[1]>=ybar0FDS&&v3[1]<=ybarFDS&&
+     v3[2]>=zbar0FDS&&v3[2]<=zbarFDS)inside3 = 1;
+  if(inside1==1&&inside2==1&&inside3==1)return 1; // all points are inside
+  if(inside1==0&&inside2==0&&inside3==0)return 0; // all points are outside
+  vmid[0] = (v1[0]+v2[0]+v3[0])/3.0;
+  vmid[1] = (v1[1]+v2[1]+v3[1])/3.0;
+  vmid[2] = (v1[2]+v2[2]+v3[2])/3.0;
+  if(vmid[0]>=xbar0FDS&&vmid[0]<=xbarFDS&&
+     vmid[1]>=ybar0FDS&&vmid[1]<=ybarFDS&&
+     vmid[2]>=zbar0FDS&&vmid[2]<=zbarFDS)return 1; // center is inside
+  return 0;                                        // center is outside
+}
+
 /* ------------------ DrawTerrainGeom ------------------------ */
 
 void DrawTerrainGeom(int option){
@@ -286,6 +314,7 @@ void DrawTerrainGeom(int option){
   float terrain_specular[4] = {0.8, 0.8, 0.8, 1.0};
   float neutral_color[4] = {0.91, 0.91, 0.76, 1.0};
   int draw_surface = 1, draw_texture=0;
+  int showgeom_inside_domain_local;
 
   if(terrain_nindices<=0)return;
   if(show_geom_boundingbox==SHOW_BOUNDING_BOX_ALWAYS||geom_bounding_box_mousedown==1){
@@ -302,6 +331,10 @@ void DrawTerrainGeom(int option){
       if(texti->is_transparent==0)draw_surface = 0; // don't draw a surface if we are drawing a texture
     }
   }
+
+  showgeom_inside_domain_local = showgeom_inside_domain;
+  if(drawing_boundary_files==1)showgeom_inside_domain_local = 0; // hide terrain within FDS domain if drawing boundary files
+
   if(option==DRAW_TRANSPARENT&&draw_texture==0)return;
 
   glEnable(GL_NORMALIZE);
@@ -321,46 +354,93 @@ void DrawTerrainGeom(int option){
     //*** surface
 
     if(show_faces_shaded==1&&draw_surface==1){
+      if(show_texture_1dimage==1){
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+        glEnable(GL_TEXTURE_1D);
+        glBindTexture(GL_TEXTURE_1D, terrain_colorbar_id);
+      }
       glBegin(GL_TRIANGLES);
 
       // surface
       for(i = 0; i<terrain_nindices/3; i++){
         float *v1, *v2, *v3;
+        float v1o[3], v2o[3], v3o[3];
         float *c1;
         float *n1, *n2, *n3;
+        int j;
         unsigned int *ind;
+        int inside_domain=0, outside_domain=1;
 
         ind = terrain_indices+3*i;
 
         c1 = terrain_colors+3*i;
 
         v1 = terrain_vertices+9*ind[0];
+        v2 = terrain_vertices+9*ind[1];
+        v3 = terrain_vertices+9*ind[2];
+        for(j = 0; j<3; j++){
+          v1o[j] = v1[j];
+          v2o[j] = v2[j];
+          v3o[j] = v3[j];
+          if(j==2){
+            v1o[j] = terrain_zmin+geom_vert_exag*(v1o[j]-terrain_zmin);
+            v2o[j] = terrain_zmin+geom_vert_exag*(v2o[j]-terrain_zmin);
+            v3o[j] = terrain_zmin+geom_vert_exag*(v3o[j]-terrain_zmin);
+          }
+        }
+
+        if(showgeom_inside_domain_local==0||showgeom_outside_domain==0){
+          inside_domain = InDomain(v1, v2, v3);
+          outside_domain = 1-inside_domain;
+        }
+
+        if(showgeom_inside_domain_local==0&&inside_domain==1)continue;
+        if(showgeom_outside_domain==0&&outside_domain==1)continue;
+
         n1 = v1+3;
         if(terrain_showonly_top==1&&n1[2]<0.0)continue;
-        glColor3fv(c1);
-        glNormal3fv(n1);
-        glVertex3fv(v1);
 
-        v2 = terrain_vertices+9*ind[1];
+        if(show_texture_1dimage==0)glColor3fv(c1);
+        glNormal3fv(n1);
+        if(show_texture_1dimage==1){
+          float texture_z;
+
+          texture_z = (v1[2]-terrain_zmin)/(terrain_zmax-terrain_zmin);
+          glTexCoord1f(texture_z);
+        }
+        glVertex3fv(v1o);
+
         n2 = v2+3;
         glNormal3fv(n2);
-        glVertex3fv(v2);
+        if(show_texture_1dimage==1){
+          float texture_z;
 
-        v3 = terrain_vertices+9*ind[2];
+          texture_z = (v2[2]-terrain_zmin)/(terrain_zmax-terrain_zmin);
+          glTexCoord1f(texture_z);
+        }
+        glVertex3fv(v2o);
+
         n3 = v3+3;
         glNormal3fv(n3);
-        glVertex3fv(v3);
+        if(show_texture_1dimage==1){
+          float texture_z;
+
+          texture_z = (v3[2]-terrain_zmin)/(terrain_zmax-terrain_zmin);
+          glTexCoord1f(texture_z);
+        }
+        glVertex3fv(v3o);
       }
       glEnd();
+      if(show_texture_1dimage == 1)glDisable(GL_TEXTURE_1D);
     }
 
 #define FDS_OFFSET 0.005
 
     //*** edges
 
-    if(terrain_show_geometry_outline==1){
+    if(show_faces_outline==1){
       glPushMatrix();
-      glTranslatef(geom_delx, geom_dely, geom_delz);
+      glTranslatef(0.0, 0.0, geom_dz_offset);
       glLineWidth(geom_linewidth);
       glBegin(GL_LINES);
 
@@ -368,6 +448,7 @@ void DrawTerrainGeom(int option){
       glColor3fv(foregroundcolor);
       for(i = 0; i<terrain_nfaces; i++){
         int j;
+        int inside_domain=0, outside_domain=1;
 
         float *v1, *v2, *v3;
         float v1o[3], v2o[3], v3o[3];
@@ -379,6 +460,15 @@ void DrawTerrainGeom(int option){
         v1 = terrain_vertices+9*ind[0];
         v2 = terrain_vertices+9*ind[1];
         v3 = terrain_vertices+9*ind[2];
+
+        if(showgeom_inside_domain_local==0||showgeom_outside_domain==0){
+          inside_domain = InDomain(v1, v2, v3);
+          outside_domain = 1-inside_domain;
+        }
+
+        if(showgeom_inside_domain_local==0&&inside_domain==1)continue;
+        if(showgeom_outside_domain==0&&outside_domain==1)continue;
+
         n1 = v1+3;
         n2 = v2+3;
         n3 = v3+3;
@@ -388,6 +478,11 @@ void DrawTerrainGeom(int option){
           v1o[j] = v1[j]+SCALE2FDS(FDS_OFFSET*n1[j]);
           v2o[j] = v2[j]+SCALE2FDS(FDS_OFFSET*n2[j]);
           v3o[j] = v3[j]+SCALE2FDS(FDS_OFFSET*n3[j]);
+          if(j==2){
+            v1o[j] = terrain_zmin+geom_vert_exag*(v1o[j]-terrain_zmin);
+            v2o[j] = terrain_zmin+geom_vert_exag*(v2o[j]-terrain_zmin);
+            v3o[j] = terrain_zmin+geom_vert_exag*(v3o[j]-terrain_zmin);
+          }
         }
 
         glVertex3fv(v1o);
@@ -405,9 +500,9 @@ void DrawTerrainGeom(int option){
 
     //*** vertices
 
-    if(terrain_show_geometry_points==1){
+    if(show_geom_verts==1){
       glPushMatrix();
-      glTranslatef(geom_delx, geom_dely, geom_delz);
+      glTranslatef(0.0, 0.0, geom_dz_offset);
       glPointSize(geom_pointsize);
       glBegin(GL_POINTS);
 
@@ -415,6 +510,7 @@ void DrawTerrainGeom(int option){
       glColor3fv(foregroundcolor);
       for(i = 0; i<terrain_nfaces; i++){
         int j;
+        int inside_domain=0, outside_domain=1;
 
         float *v1, *v2, *v3;
         float v1o[3], v2o[3], v3o[3];
@@ -426,6 +522,15 @@ void DrawTerrainGeom(int option){
         v1 = terrain_vertices+9*ind[0];
         v2 = terrain_vertices+9*ind[1];
         v3 = terrain_vertices+9*ind[2];
+
+        if(showgeom_inside_domain_local==0||showgeom_outside_domain==0){
+          inside_domain = InDomain(v1, v2, v3);
+          outside_domain = 1-inside_domain;
+        }
+
+        if(showgeom_inside_domain_local==0&&inside_domain==1)continue;
+        if(showgeom_outside_domain==0&&outside_domain==1)continue;
+
         n1 = v1+3;
         n2 = v2+3;
         n3 = v3+3;
@@ -435,6 +540,11 @@ void DrawTerrainGeom(int option){
           v1o[j] = v1[j]+SCALE2FDS(FDS_OFFSET*n1[j]);
           v2o[j] = v2[j]+SCALE2FDS(FDS_OFFSET*n2[j]);
           v3o[j] = v3[j]+SCALE2FDS(FDS_OFFSET*n3[j]);
+          if(j==2){
+            v1o[j] = terrain_zmin+geom_vert_exag*(v1o[j]-terrain_zmin);
+            v2o[j] = terrain_zmin+geom_vert_exag*(v2o[j]-terrain_zmin);
+            v3o[j] = terrain_zmin+geom_vert_exag*(v3o[j]-terrain_zmin);
+          }
         }
 
         glVertex3fv(v1o);
@@ -453,14 +563,39 @@ void DrawTerrainGeom(int option){
       // surface
       for(i = 0; i<terrain_nindices/3; i++){
         float *v1, *v2, *v3;
+        float v1o[3], v2o[3], v3o[3];
         float *n1, *n2, *n3;
+        int j;
         unsigned int *ind;
         float n1n[3], n2n[3], n3n[3];
+        int inside_domain=0, outside_domain=1;
 
         ind = terrain_indices+3*i;
 
 
         v1 = terrain_vertices+9*ind[0];
+        v2 = terrain_vertices+9*ind[1];
+        v3 = terrain_vertices+9*ind[2];
+
+        for(j = 0; j<3; j++){
+          v1o[j] = v1[j];
+          v2o[j] = v2[j];
+          v3o[j] = v3[j];
+          if(j==2){
+            v1o[j] = terrain_zmin+geom_vert_exag*(v1o[j]-terrain_zmin);
+            v2o[j] = terrain_zmin+geom_vert_exag*(v2o[j]-terrain_zmin);
+            v3o[j] = terrain_zmin+geom_vert_exag*(v3o[j]-terrain_zmin);
+          }
+        }
+
+        if(showgeom_inside_domain_local==0||showgeom_outside_domain==0){
+          inside_domain = InDomain(v1, v2, v3);
+          outside_domain = 1-inside_domain;
+        }
+
+        if(showgeom_inside_domain_local==0&&inside_domain==1)continue;
+        if(showgeom_outside_domain==0&&outside_domain==1)continue;
+
         n1 = v1+3;
         if(n1[2]<0.0)continue;
         n1n[0] = -n1[0];
@@ -469,56 +604,77 @@ void DrawTerrainGeom(int option){
         glColor4fv(neutral_color);
 
         glNormal3fv(n1n);
-        glVertex3fv(v1);
+        glVertex3fv(v1o);
 
-        v3 = terrain_vertices+9*ind[2];
         n3 = v3+3;
         n3n[0] = -n3[0];
         n3n[1] = -n3[1];
         n3n[2] = -n3[2];
         glNormal3fv(n3n);
-        glVertex3fv(v3);
+        glVertex3fv(v3o);
 
-        v2 = terrain_vertices+9*ind[1];
         n2 = v2+3;
         n2n[0] = -n2[0];
         n2n[1] = -n2[1];
         n2n[2] = -n2[2];
         glNormal3fv(n2n);
-        glVertex3fv(v2);
+        glVertex3fv(v2o);
       }
       glEnd();
     }
 
     //*** draw sides in a neutral color
 
-      if(terrain_showonly_top==0&&(show_faces_shaded==1||draw_texture==1)){
+    if(terrain_showonly_top==0&&(show_faces_shaded==1||draw_texture==1)){
       glBegin(GL_TRIANGLES);
 
       // surface
       for(i = 0; i<terrain_nindices/3; i++){
         float *v1, *v2, *v3;
+        float v1o[3], v2o[3], v3o[3];
+        int j;
         float *n1, *n2, *n3;
         unsigned int *ind;
+        int inside_domain=0, outside_domain=1;
 
         ind = terrain_indices+3*i;
 
         v1 = terrain_vertices+9*ind[0];
+        v2 = terrain_vertices+9*ind[1];
+        v3 = terrain_vertices+9*ind[2];
+
+        for(j = 0; j<3; j++){
+          v1o[j] = v1[j];
+          v2o[j] = v2[j];
+          v3o[j] = v3[j];
+          if(j==2){
+            v1o[j] = terrain_zmin+geom_vert_exag*(v1o[j]-terrain_zmin);
+            v2o[j] = terrain_zmin+geom_vert_exag*(v2o[j]-terrain_zmin);
+            v3o[j] = terrain_zmin+geom_vert_exag*(v3o[j]-terrain_zmin);
+          }
+        }
+
+        if(showgeom_inside_domain_local==0||showgeom_outside_domain==0){
+          inside_domain = InDomain(v1, v2, v3);
+          outside_domain = 1-inside_domain;
+        }
+
+        if(showgeom_inside_domain_local==0&&inside_domain==1)continue;
+        if(showgeom_outside_domain==0&&outside_domain==1)continue;
+
         n1 = v1+3;
         if(n1[2]>=0.0)continue;
         glColor4fv(neutral_color);
         glNormal3fv(n1);
-        glVertex3fv(v1);
+        glVertex3fv(v1o);
 
-        v2 = terrain_vertices+9*ind[1];
         n2 = v2+3;
         glNormal3fv(n2);
-        glVertex3fv(v2);
+        glVertex3fv(v2o);
 
-        v3 = terrain_vertices+9*ind[2];
         n3 = v3+3;
         glNormal3fv(n3);
-        glVertex3fv(v3);
+        glVertex3fv(v3o);
       }
       glEnd();
     }
@@ -539,11 +695,12 @@ void DrawTerrainGeom(int option){
       }
     }
 
-    TransparentOn();
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     glEnable(GL_TEXTURE_2D);
 
-    int count = 0;
+    int count = 1;
+    int is_transparent=0;
+    TransparentOff();
     for(ii = -1; ii<nterrain_textures; ii++){
       float dz;
       texturedata *texti;
@@ -561,45 +718,79 @@ void DrawTerrainGeom(int option){
       dz = SCALE2FDS((float)(count)*FDS_OFFSET);
       count++;
 
+      if(texti->is_transparent==1){
+        if(is_transparent==0){
+          is_transparent = 1;
+          TransparentOn();
+        }
+      }
+      else{
+        if(is_transparent==1){
+          is_transparent = 0;
+          TransparentOff();
+        }
+      }
       glBindTexture(GL_TEXTURE_2D, texti->name);
 
       glBegin(GL_TRIANGLES);
 
       for(i = 0; i<terrain_nindices/3; i++){
         float *v1, *v2, *v3;
+        float v1o[3], v2o[3], v3o[3];
         float *n1, *n2, *n3;
         float *t1, *t2, *t3;
+        int j;
         unsigned int *ind;
+        int inside_domain=0, outside_domain=1;
 
         ind = terrain_indices+3*i;
 
         v1 = terrain_vertices+9*ind[0];
+        v2 = terrain_vertices+9*ind[1];
+        v3 = terrain_vertices+9*ind[2];
+
+        for(j = 0; j<3; j++){
+          v1o[j] = v1[j];
+          v2o[j] = v2[j];
+          v3o[j] = v3[j];
+          if(j==2){
+            v1o[j] = terrain_zmin+geom_vert_exag*(v1o[j]-terrain_zmin);
+            v2o[j] = terrain_zmin+geom_vert_exag*(v2o[j]-terrain_zmin);
+            v3o[j] = terrain_zmin+geom_vert_exag*(v3o[j]-terrain_zmin);
+          }
+        }
+
+        if(showgeom_inside_domain_local==0||showgeom_outside_domain==0){
+          inside_domain = InDomain(v1, v2, v3);
+          outside_domain = 1-inside_domain;
+        }
+
+        if(showgeom_inside_domain_local==0&&inside_domain==1)continue;
+        if(showgeom_outside_domain==0&&outside_domain==1)continue;
+
         t1 = terrain_tvertices+2*ind[0];
         n1 = v1+3;
         if(n1[2]<0.0)continue;
         glNormal3fv(n1);
         glTexCoord2fv(t1);
-        glVertex3f(v1[0], v1[1], v1[2]+dz);
+        glVertex3f(v1o[0], v1o[1], v1o[2]+dz);
 
-        v2 = terrain_vertices+9*ind[1];
         t2 = terrain_tvertices+2*ind[1];
         n2 = v2+3;
         glTexCoord2fv(t2);
         glNormal3fv(n2);
-        glVertex3f(v2[0], v2[1], v2[2]+dz);
+        glVertex3f(v2o[0], v2o[1], v2o[2]+dz);
 
-        v3 = terrain_vertices+9*ind[2];
         t3 = terrain_tvertices+2*ind[2];
         n3 = v3+3;
         glTexCoord2fv(t3);
         glNormal3fv(n3);
-        glVertex3f(v3[0], v3[1], v3[2]+dz);
+        glVertex3f(v3o[0], v3o[1], v3o[2]+dz);
       }
       glEnd();
-
     }
     glDisable(GL_TEXTURE_2D);
-    TransparentOff();
+    if(is_transparent==1)TransparentOff();
   }
 
   glPopMatrix();
@@ -988,7 +1179,7 @@ void ComputeTerrainNormalsAuto(void){
 
         zval = (val1*loc1 + val2*loc2 + val3*loc3 + val4*loc4)/(float)MAX(1,count);
 
-        znode[ijnode3(i,j)]=zval;
+        znode[IJ2(i,j)]=zval;
         zval_offset = SCALE2SMV((val1_offset*loc1 + val2_offset*loc2 + val3_offset*loc3 + val4_offset*loc4))/(float)MAX(1,count);
 
         *znode_offset++=zval_offset;
@@ -1076,7 +1267,7 @@ void ComputeTerrainNormalsAuto(void){
      //     -dzdx -dzdy 1
 
         //znormal = terri->znormal + 3*ijnode2(i,j);
-        uc_znormal = terri->uc_znormal + ijnode3(i,j);
+        uc_znormal = terri->uc_znormal + IJ2(i,j);
         znormal3[0] = -dzdx;
         znormal3[1] = -dzdy;
         znormal3[2] = 1.0;
@@ -1137,6 +1328,7 @@ int GetTerrainData(char *file, terraindata *terri){
 //    WRITE(LU_TERRAIN(NM)) Z_TERRAIN
 
   FORTWUIREAD(&zmin_cutoff, 1);
+  zmin_cutoff = zbar0;
   zmin_cutoff -= 0.1;
   terri->zmin_cutoff = zmin_cutoff;
   FORTWUIREAD(ijbar, 2);
@@ -1173,13 +1365,16 @@ int GetTerrainData(char *file, terraindata *terri){
 void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xmax, int nx, float ymin, float ymax, int ny,
                        int allocate_memory){
   float dx, dy;
-  float *x, *y, *z;
-  int nxcell;
-  int i,j;
-  int ij;
+  float *x, *y;
+  int i;
 
   if(meshi!=NULL){
-    meshi->terrain=terri;
+    meshi->terrain = terri;
+    meshi->nznodes = (nx+1)*(ny+1);
+    if(allocate_memory==1){
+      meshi->nznodes = (nx+1)*(ny+1);
+      NewMemory((void **)&meshi->znodes_complete, (nx+1)*(ny+1)*sizeof(float));
+    }
   }
 
   if(terri==NULL)return;
@@ -1223,22 +1418,6 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
   }
   y[ny] = ymax;
 
-  z=terri->zcell;
-
-  nxcell = nx;
-  if(meshi->zcell!=NULL){
-    for(j=0;j<ny;j++){
-      for(i=0;i<nx;i++){
-        float zval;
-
-        ij = IJCELL2(i,j);
-        zval=meshi->zcell[ij];
-        zterrain_min = MIN(zval,zterrain_min);
-        zterrain_max = MAX(zval,zterrain_max);
-        z[ij]=zval;
-      }
-    }
-  }
   if(terri->file!=NULL&&terri->defined==0){
     GetTerrainData(terri->file, terri);
     terri->defined = 1;
@@ -1247,8 +1426,8 @@ void InitTerrainZNode(meshdata *meshi, terraindata *terri, float xmin, float xma
 
 /* ------------------ DrawTerrainOBST ------------------------ */
 
-void DrawTerrainOBST(terraindata *terri){
-  float *znode, *zn;
+void DrawTerrainOBST(terraindata *terri, int flag){
+  float *znode;
   unsigned char *uc_znormal;
   int nycell;
   int i, j;
@@ -1256,15 +1435,16 @@ void DrawTerrainOBST(terraindata *terri){
   float terrain_color[4];
   float terrain_shininess=100.0;
   float terrain_specular[4]={0.8,0.8,0.8,1.0};
+  float zcut;
 
 #define ZOFFSET 0.001
-
-  if(terri->terrain_mesh->is_bottom==0)return;
 
   terrain_color[0]=0.47843;
   terrain_color[1]=0.45882;
   terrain_color[2]=0.18824;
   terrain_color[3]=1.0;
+
+  zcut = terri->zmin_cutoff;
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
@@ -1276,7 +1456,7 @@ void DrawTerrainOBST(terraindata *terri){
   glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,terrain_specular);
   glEnable(GL_COLOR_MATERIAL);
 
-  glBegin(GL_QUADS);
+  glBegin(GL_TRIANGLES);
   uc_znormal = terri->uc_znormal;
   znode = terri->znode;
   nycell = terri->jbar;
@@ -1289,35 +1469,90 @@ void DrawTerrainOBST(terraindata *terri){
     jp1 = j + 1;
 
     for(i=0;i<terri->ibar;i++){
-      unsigned char *uc_zn;
+      unsigned char *uc_zn1, *uc_zn2, *uc_zn3, *uc_zn4;
       int ip1;
-      float zval;
+      float zval1, zval2, zval3, zval4;
+      float *zn1, *zn2, *zn3, *zn4;
+      int skip123, skip134;
 
       ip1 = i + 1;
-      uc_zn = uc_znormal+ijnode3(i,j);
-      zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
 
-      glNormal3fv(zn);
-      zval = znode[ijnode3(i,j)]+ZOFFSET;
-      glVertex3f(x[i],y[j],zval);
+      zval1 = znode[IJ2(i, j)];
+      zval2 = znode[IJ2(ip1, j)];
+      zval3 = znode[IJ2(ip1, jp1)];
+      zval4 = znode[IJ2(i, jp1)];
 
-      uc_zn = uc_znormal+ijnode3(ip1,j);
-      zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
-      glNormal3fv(zn);
-      zval = znode[ijnode3(ip1,j)]+ZOFFSET;
-      glVertex3f(x[i+1],y[j],zval);
+      if(zval1<zcut&&zval2<zcut&&zval3<zcut&&zval4<zcut)continue;
 
-      uc_zn = uc_znormal+ijnode3(ip1,jp1);
-      zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
-      glNormal3fv(zn);
-      zval = znode[ijnode3(ip1,jp1)]+ZOFFSET;
-      glVertex3f(x[i+1],y[j+1],zval);
+      skip123 = 0;
+      skip134 = 0;
+      if(zval1<zcut||zval2<zcut||zval3<zcut)skip123=1;
+      if(zval1<zcut||zval3<zcut||zval4<zcut)skip134=1;
 
-      uc_zn = uc_znormal+ijnode3(i,jp1);
-      zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
-      glNormal3fv(zn);
-      zval = znode[ijnode3(i,jp1)]+ZOFFSET;
-      glVertex3f(x[i],y[j+1],zval);
+      zval1 += ZOFFSET;
+      zval2 += ZOFFSET;
+      zval3 += ZOFFSET;
+      zval4 += ZOFFSET;
+
+      uc_zn1 = uc_znormal+IJ2(i,j);
+      zn1 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn1));
+
+      uc_zn2 = uc_znormal+IJ2(ip1, j);
+      zn2 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn2));
+
+      uc_zn3 = uc_znormal+IJ2(ip1, jp1);
+      zn3 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn3));
+
+      uc_zn4 = uc_znormal+IJ2(i, jp1);
+      zn4 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn4));
+
+      if(flag==TERRAIN_TOP_SIDE||flag==TERRAIN_BOTH_SIDES){
+        if(skip123==0){
+          glNormal3fv(zn1);
+          glVertex3f(x[i], y[j], zval1);
+
+          glNormal3fv(zn2);
+          glVertex3f(x[i+1], y[j], zval2);
+
+          glNormal3fv(zn3);
+          glVertex3f(x[i+1], y[j+1], zval3);
+        }
+
+        if(skip134==0){
+          glNormal3fv(zn1);
+          glVertex3f(x[i], y[j], zval1);
+
+          glNormal3fv(zn3);
+          glVertex3f(x[i+1], y[j+1], zval3);
+
+          glNormal3fv(zn4);
+          glVertex3f(x[i], y[j+1], zval4);
+        }
+      }
+
+      if(flag==TERRAIN_BOTTOM_SIDE||flag==TERRAIN_BOTH_SIDES){
+        if(skip134==0){
+          glNormal3fv(zn1);
+          glVertex3f(x[i], y[j], zval1);
+
+          glNormal3fv(zn4);
+          glVertex3f(x[i], y[j+1], zval4);
+
+          glNormal3fv(zn3);
+          glVertex3f(x[i+1], y[j+1], zval3);
+        }
+
+        if(skip123==0){
+          glNormal3fv(zn1);
+          glVertex3f(x[i], y[j], zval1);
+
+          glNormal3fv(zn3);
+          glVertex3f(x[i+1], y[j+1], zval3);
+
+          glNormal3fv(zn2);
+          glVertex3f(x[i+1], y[j], zval2);
+        }
+      }
     }
   }
   glEnd();
@@ -1338,10 +1573,10 @@ void DrawTerrainOBST(terraindata *terri){
         for(i = 0; i<terri->ibar; i++){
           float zval11, zval13, zval33, zval31;
 
-          zval11 = znode[ijnode3(i,     j)]+ZOFFSET;
-          zval31 = znode[ijnode3(i+1,   j)]+ZOFFSET;
-          zval33 = znode[ijnode3(i+1, j+1)]+ZOFFSET;
-          zval13 = znode[ijnode3(i,   j+1)]+ZOFFSET;
+          zval11 = znode[IJ2(i,     j)]+ZOFFSET;
+          zval31 = znode[IJ2(i+1,   j)]+ZOFFSET;
+          zval33 = znode[IJ2(i+1, j+1)]+ZOFFSET;
+          zval13 = znode[IJ2(i,   j+1)]+ZOFFSET;
 
           glVertex3f(x[i],   y[j],   zval11);
           glVertex3f(x[i+1], y[j],   zval31);
@@ -1361,11 +1596,11 @@ void DrawTerrainOBST(terraindata *terri){
       for(j = 0; j<terri->jbar; j+=MAX(ABS(terrain_normal_skip),1)){
         for(i = 0; i<terri->ibar; i+= MAX(ABS(terrain_normal_skip), 1)){
           unsigned char *uc_zn;
-          float zval11;
+          float zval11, *zn;
 
-          zval11 = znode[ijnode3(i,     j)]+ZOFFSET;
+          zval11 = znode[IJ2(i,     j)]+ZOFFSET;
 
-          uc_zn = uc_znormal+ijnode3(i, j);
+          uc_zn = uc_znormal+IJ2(i, j);
           zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
 
           glVertex3f(x[i], y[j], zval11);
@@ -1381,17 +1616,166 @@ void DrawTerrainOBST(terraindata *terri){
 
 }
 
+/* ------------------ DrawTerrainOBSTSides ------------------------ */
+
+void DrawTerrainOBSTSides(meshdata *meshi){
+  float *znode;
+  int nycell;
+  int i, j;
+  float *x, *y;
+  float terrain_color[4];
+  terraindata *terri;
+  int ibar, jbar;
+  float zcutoff;
+
+  terri = meshi->terrain;
+  if(terri!=NULL){
+    zcutoff = terri->zmin_cutoff;
+  }
+  else{
+    zcutoff = meshi->zplt_orig[0]-0.1;
+  }
+
+  terrain_color[0] = 0.47843;
+  terrain_color[1] = 0.45882;
+  terrain_color[2] = 0.18824;
+  terrain_color[3] = 1.0;
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(mscale[0]), SCALE2SMV(mscale[1]), vertical_factor*SCALE2SMV(mscale[2]));
+  glTranslatef(-xbar0, -ybar0, -zbar0);
+
+  ENABLE_LIGHTING;
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &block_shininess);
+
+  glEnable(GL_COLOR_MATERIAL);
+  glColor4fv(terrain_color);
+  glBegin(GL_TRIANGLES);
+  znode = NULL;
+  if(terri!=NULL)znode = terri->znode;
+  nycell = meshi->jbar;
+  ibar   = meshi->ibar;
+  jbar   = meshi->jbar;
+  x      = meshi->xplt_orig;
+  y      = meshi->yplt_orig;
+
+  if(meshi->is_extface[0]==MESH_EXT&&znode!=NULL){
+    float zij, zijp1;
+
+    i = 0;
+    for(j = 0; j<jbar; j++){
+      zij   = znode[IJ2(i, j)];
+      zijp1 = znode[IJ2(i, j+1)];
+      if(zij>zcutoff){
+        glVertex3f(x[i], y[j],   zbar0);
+        glVertex3f(x[i], y[j],   zij);
+        glVertex3f(x[i], y[j+1], zbar0);
+      }
+
+      if(zij<zcutoff&&zijp1<zcutoff)continue;
+      if(zij<zcutoff)zij = zijp1;
+      if(zijp1<zcutoff)zijp1 = zij;
+      glVertex3f(x[i], y[j+1], zbar0);
+      glVertex3f(x[i], y[j],   zij);
+      glVertex3f(x[i], y[j+1], zijp1);
+    }
+  }
+  if(meshi->is_extface[1]==MESH_EXT&&znode!=NULL){
+    float zij, zijp1;
+
+    i = ibar;
+    for(j = 0; j<jbar; j++){
+      zij   = znode[IJ2(i, j)];
+      zijp1 = znode[IJ2(i, j+1)];
+
+      if(zijp1>zcutoff){
+        glVertex3f(x[i], y[j],   zbar0);
+        glVertex3f(x[i], y[j+1], zbar0);
+        glVertex3f(x[i], y[j+1], zijp1);
+      }
+
+      if(zij<zcutoff&&zijp1<zcutoff)continue;
+      if(zij<zcutoff)zij = zijp1;
+      if(zijp1<zcutoff)zijp1 = zij;
+      glVertex3f(x[i], y[j],   zbar0);
+      glVertex3f(x[i], y[j+1], zijp1);
+      glVertex3f(x[i], y[j],   zij);
+    }
+  }
+  if(meshi->is_extface[2]==MESH_EXT&&znode!=NULL){
+    float zij, zip1j;
+
+    j = 0;
+    for(i = 0; i<ibar; i++){
+      zij   = znode[IJ2(i, j)];
+      zip1j = znode[IJ2(i+1, j)];
+      if(zip1j>zcutoff){
+        glVertex3f(x[i],   y[j], zbar0);
+        glVertex3f(x[i+1], y[j], zbar0);
+        glVertex3f(x[i+1], y[j], zip1j);
+      }
+
+      if(zij<zcutoff&&zip1j<zcutoff)continue;
+      if(zij<zcutoff)zij = zip1j;
+      if(zip1j<zcutoff)zip1j = zij;
+      glVertex3f(x[i],   y[j], zbar0);
+      glVertex3f(x[i+1], y[j], zip1j);
+      glVertex3f(x[i],   y[j], zij);
+    }
+  }
+  if(meshi->is_extface[3]==MESH_EXT&&znode!=NULL){
+    float zij, zip1j;
+
+    j = jbar;
+    for(i = 0; i<ibar; i++){
+      zij   = znode[IJ2(i, j)];
+      zip1j = znode[IJ2(i+1, j)];
+      if(zip1j>zcutoff){
+        glVertex3f(x[i],   y[j], zbar0);
+        glVertex3f(x[i+1], y[j], zip1j);
+        glVertex3f(x[i+1], y[j], zbar0);
+      }
+
+      if(zij<zcutoff&&zip1j<zcutoff)continue;
+      if(zij<zcutoff)zij = zip1j;
+      if(zip1j<zcutoff)zip1j = zij;
+      glVertex3f(x[i],   y[j], zbar0);
+      glVertex3f(x[i],   y[j], zij);
+      glVertex3f(x[i+1], y[j], zip1j);
+    }
+  }
+  if(meshi->is_extface[4]==MESH_EXT){
+    for(i = 0; i<ibar; i++){
+      glVertex3f(x[0],    y[0],    meshi->zplt_orig[0]);
+      glVertex3f(x[ibar], y[jbar], meshi->zplt_orig[0]);
+      glVertex3f(x[ibar], y[0],    meshi->zplt_orig[0]);
+
+      glVertex3f(x[0],    y[0],    meshi->zplt_orig[0]);
+      glVertex3f(x[0],    y[jbar], meshi->zplt_orig[0]);
+      glVertex3f(x[ibar], y[jbar], meshi->zplt_orig[0]);
+    }
+  }
+  glEnd();
+
+  glDisable(GL_COLOR_MATERIAL);
+  DISABLE_LIGHTING;
+
+  glPopMatrix();
+}
+
 /* ------------------ DrawTerrainOBSTTexture ------------------------ */
 
 void DrawTerrainOBSTTexture(terraindata *terri){
   float *znode;
-  unsigned char *uc_znormal, *uc_zn;
+  unsigned char *uc_znormal;
   int nxcell,nycell;
   int i, j;
   float *x, *y;
   float terrain_color[4];
+  float zcut;
 
-  if(terri->terrain_mesh->is_bottom==0)return;
+  zcut = terri->zmin_cutoff;
+
 
   terrain_color[0]=1.0;
   terrain_color[1]=1.0;
@@ -1410,7 +1794,7 @@ void DrawTerrainOBSTTexture(terraindata *terri){
 
   glEnable(GL_COLOR_MATERIAL);
   glColor4fv(terrain_color);
-  glBegin(GL_QUADS);
+  glBegin(GL_TRIANGLES);
   uc_znormal = terri->uc_znormal;
   znode = terri->znode;
   nxcell = terri->ibar;
@@ -1420,43 +1804,106 @@ void DrawTerrainOBSTTexture(terraindata *terri){
   for(j=0;j<terri->jbar;j++){
     int jp1;
     float ty,typ1;
+    unsigned char *uc_zn1, *uc_zn2, *uc_zn3, *uc_zn4;
 
     jp1 = j + 1;
     ty = (y[j]-ybar0ORIG)/(ybarORIG-ybar0ORIG);
     typ1 = (y[j+1]-ybar0ORIG)/(ybarORIG-ybar0ORIG);
 
     for(i=0;i<terri->ibar;i++){
-      float *zn;
+      float *zn1, *zn2, *zn3, *zn4;
+      float zval1, zval2, zval3, zval4;
       int ip1;
       float tx,txp1;
+      int skip123=0, skip134=0;
 
       ip1 = i + 1;
+
       tx = (x[i]-xbar0ORIG)/(xbarORIG-xbar0ORIG);
       txp1 = (x[i+1]-xbar0ORIG)/(xbarORIG-xbar0ORIG);
 
-      uc_zn = uc_znormal+ijnode2(i,j);
-      zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
-      glNormal3fv(zn);
-      glTexCoord2f(tx,ty);
-      glVertex3f(x[i],y[j],znode[ijnode3(i,j)]);
+      uc_zn1 = uc_znormal+ijnode2(i,j);
+      zn1 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn1));
+      zval1 = znode[IJ2(i, j)];
 
-      uc_zn = uc_znormal+ijnode2(ip1,j);
-      zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
-      glNormal3fv(zn);
-      glTexCoord2f(txp1,ty);
-      glVertex3f(x[i+1],y[j],znode[ijnode3(ip1,j)]);
+      uc_zn2 = uc_znormal+ijnode2(ip1, j);
+      zn2 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn2));
+      zval2 = znode[IJ2(ip1, j)];
 
-      uc_zn = uc_znormal+ijnode2(ip1,jp1);
-      zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
-      glNormal3fv(zn);
-      glTexCoord2f(txp1,typ1);
-      glVertex3f(x[i+1],y[j+1],znode[ijnode3(ip1,jp1)]);
+      uc_zn3 = uc_znormal+ijnode2(ip1, jp1);
+      zn3 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn3));
+      zval3 = znode[IJ2(ip1, jp1)];
 
-      uc_zn = uc_znormal+ijnode2(i,jp1);
-      zn = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn));
-      glNormal3fv(zn);
-      glTexCoord2f(tx,typ1);
-      glVertex3f(x[i],y[j+1],znode[ijnode3(i,jp1)]);
+      uc_zn4 = uc_znormal+ijnode2(i, jp1);
+      zn4 = GetNormalVectorPtr(wui_sphereinfo, (unsigned int)(*uc_zn4));
+      zval4 = znode[IJ2(i, jp1)];
+
+      if(zval1<zcut&&zval2<zcut&&zval3<zcut&&zval4<zcut)continue;
+
+      skip123 = 0;
+      skip134 = 0;
+      if(zval1<zcut||zval2<zcut||zval3<zcut)skip123=1;
+      if(zval1<zcut||zval3<zcut||zval4<zcut)skip134=1;
+
+      if(skip123==0){
+        glNormal3fv(zn1);
+        glTexCoord2f(tx,ty);
+        glVertex3f(x[i],y[j],zval1);
+
+
+        glNormal3fv(zn2);
+        glTexCoord2f(txp1,ty);
+        glVertex3f(x[i+1],y[j],zval2);
+
+
+        glNormal3fv(zn3);
+        glTexCoord2f(txp1,typ1);
+        glVertex3f(x[i+1],y[j+1],zval3);
+      }
+
+      if(skip134==0){
+        glNormal3fv(zn1);
+        glTexCoord2f(tx,ty);
+        glVertex3f(x[i],y[j],zval1);
+
+        glNormal3fv(zn3);
+        glTexCoord2f(txp1,typ1);
+        glVertex3f(x[i+1],y[j+1],zval3);
+
+        glNormal3fv(zn4);
+        glTexCoord2f(tx,typ1);
+        glVertex3f(x[i],y[j+1],zval4);
+      }
+
+      if(terrain_showonly_top==1){
+        if(skip134==0){
+          glNormal3fv(zn1);
+          glTexCoord2f(tx,ty);
+          glVertex3f(x[i],y[j],zval1);
+
+          glNormal3fv(zn4);
+          glTexCoord2f(tx,typ1);
+          glVertex3f(x[i],y[j+1],zval4);
+
+          glNormal3fv(zn3);
+          glTexCoord2f(txp1,typ1);
+          glVertex3f(x[i+1],y[j+1],zval3);
+        }
+
+        if(skip123==0){
+          glNormal3fv(zn1);
+          glTexCoord2f(tx,ty);
+          glVertex3f(x[i],y[j],zval1);
+
+          glNormal3fv(zn3);
+          glTexCoord2f(txp1,typ1);
+          glVertex3f(x[i+1],y[j+1],zval3);
+
+          glNormal3fv(zn2);
+          glTexCoord2f(txp1,ty);
+          glVertex3f(x[i+1],y[j],zval2);
+        }
+      }
     }
   }
   glEnd();
@@ -1467,6 +1914,7 @@ void DrawTerrainOBSTTexture(terraindata *terri){
   DISABLE_LIGHTING;
 
   glPopMatrix();
+  //if(terrain_showonly_top==1)DrawTerrainOBST(terri, TERRAIN_BOTTOM_SIDE);
 
 }
 
@@ -1521,9 +1969,23 @@ int GetTerrainSize(char *file, float *xmin, float *xmax, int *nx, float *ymin, f
   return 0;
 }
 
+/* ------------------ GetTerrainElev ------------------------ */
+
+float GetTerrainElev(meshdata *meshi, int index){
+  for(;;){
+    if(meshi==NULL)return zbar0-2.0;
+    if(meshi->terrain==NULL||meshi->terrain->znode[index]<zbar0){
+      meshi = meshi->nabors[MDOWN];
+    }
+    else{
+      return meshi->terrain->znode[index];
+    }
+  }
+}
+
 /* ------------------ UpdateTerrain ------------------------ */
 
-void UpdateTerrain(int allocate_memory, float vertical_factor_local){
+void UpdateTerrain(int allocate_memory){
   if(auto_terrain==1||manual_terrain==1){
     int i;
 
@@ -1571,6 +2033,47 @@ void UpdateTerrain(int allocate_memory, float vertical_factor_local){
       ComputeTerrainNormalsManual();
     }
   }
+  if(allocate_memory==1){
+    int i;
+
+    for(i = 0; i<nmeshes; i++){
+      meshdata *meshi;
+      int ii;
+
+      meshi = meshinfo+i;
+      // compute elevations for terrain in each mesh
+      // really only need to do this for one mesh in a column but computation isquick and doesn't take a lot of space
+      // so doing it for all meshes keeps code simpler
+      for(ii = 0; ii<meshi->nznodes; ii++){
+        meshi->znodes_complete[ii] = GetTerrainElev(meshi, ii);
+      }
+    }
+    for(i=0; i<nsliceinfo; i++){
+      slicedata *slicei;
+      meshdata *meshi;
+      float zmin, zmax;
+      float agl;
+      int ii;
+
+      slicei = sliceinfo + i;
+      if(slicei->slice_filetype!=SLICE_TERRAIN)continue;
+      meshi = meshinfo + slicei->blocknumber;
+      zmin = meshi->zplt_orig[0];
+      zmax = meshi->zplt_orig[meshi->kbar];
+      agl = slicei->above_ground_level;
+      for(ii = 0; ii<meshi->nznodes; ii++){
+        float zslice, zterrain;
+
+        zterrain = meshi->znodes_complete[ii];
+        zslice   = zterrain+agl;
+        if(zterrain>=zbar0&&zslice>=zmin&&zslice<=zmax){
+          slicei->have_agl_data = 1;
+          break;
+        }
+      }
+    }
+    CheckMemory;
+  }
   if(nterraininfo>0){
     int imesh;
 
@@ -1579,6 +2082,8 @@ void UpdateTerrain(int allocate_memory, float vertical_factor_local){
       terraindata *terri;
       float *znode, *znode_scaled;
       int i, j;
+      float mesh_zmin, mesh_zmax;
+      float t_zmin, t_zmax;
 
       meshi=meshinfo + imesh;
       terri = meshi->terrain;
@@ -1586,12 +2091,32 @@ void UpdateTerrain(int allocate_memory, float vertical_factor_local){
       terri->terrain_mesh = meshi;
       znode = terri->znode;
       znode_scaled = terri->znode_scaled;
+      t_zmin=1.0;
+      t_zmax=0.0;
+      mesh_zmin = meshi->zplt_orig[0];
+      mesh_zmax = meshi->zplt_orig[meshi->kbar];
 
       for(j=0;j<=terri->jbar;j++){
         for(i=0;i<=terri->ibar;i++){
           *znode_scaled = NORMALIZE_Z(*znode);
+          if(*znode>=mesh_zmin&&*znode<=mesh_zmax){
+            if(t_zmin>t_zmax){
+              t_zmin = *znode;
+              t_zmax = *znode;
+            }
+            else{
+              t_zmin = MIN(*znode, t_zmin);
+              t_zmax = MAX(*znode, t_zmax);
+            }
+          }
           znode++;
           znode_scaled++;
+        }
+      }
+      if(t_zmin<t_zmax){
+        for(j=0; j<4; j++){
+          meshi->verts[   3*j+2] = t_zmin;
+          meshi->verts[12+3*j+2] = t_zmax;
         }
       }
     }
@@ -1621,123 +2146,5 @@ void UpdateTerrainOptions(void){
     visOpenVents=0;
     visDummyVents=0;
     updatemenu=1;
-  }
-}
-
-/* ------------------ GetMeshZCell ------------------------ */
-
-float GetMeshZCell(meshdata *meshi, float xval, float yval, int *valid){
-  float *xplt, *yplt, *zcell;
-  float dx, dy;
-  int ibar, jbar;
-  int ival, jval;
-  float zval;
-  int nxcell;
-
-  *valid = 0;
-  if(meshi==NULL||meshi->zcell==NULL)return 0.0;
-  xplt = meshi->xplt_orig;
-  yplt = meshi->yplt_orig;
-  ibar = meshi->ibar;
-  jbar = meshi->jbar;
-  nxcell = ibar;
-  if(xval<xplt[0]||xval>xplt[ibar])return 0.0;
-  if(yval<yplt[0]||yval>yplt[jbar])return 0.0;
-
-  dx = xplt[1]-xplt[0];
-  dy = yplt[1]-yplt[0];
-  ival = (xval-xplt[0])/dx;
-  if(ival>=ibar)ival = ibar-1;
-  jval = (yval-yplt[0])/dy;
-  if(jval>=jbar)jval = jbar-1;
-  zcell = meshi->zcell;
-  zval = zcell[IJCELL2(ival, jval)];
-  *valid = 1;
-  return zval;
-}
-
-/* ------------------ UpdateMeshTerrain ------------------------ */
-void UpdateMeshTerrain(void){
-  int i;
-
-  if(nterraininfo<=0||ngeominfo>0)return;
-  for(i = 0; i<nmeshes; i++){
-    int j;
-    meshdata *meshi;
-
-    meshi = meshinfo+i;
-
-    for(j = 0; j<nmeshes; j++){
-      meshdata *meshj;
-
-      meshj = meshinfo+j;
-      if(meshi==meshj||meshj->above!=NULL)continue;
-
-#define MUP 5
-      if(MeshConnect(meshi, MUP, meshj)==1){
-        meshi->above = meshj;
-        break;
-      }
-    }
-  }
-  for(i=0;i<nmeshes;i++){
-    meshdata *meshi;
-    meshdata *meshj=NULL;
-    int ii, jj;
-    float *x, *y, *z;
-    float xyz[3];
-
-    meshi = meshinfo + i;
-
-    meshi->is_bottom=1;
-
-    x = meshi->xplt_orig;
-    y = meshi->yplt_orig;
-    z = meshi->zplt_orig;
-
-    xyz[2] = z[0] - (z[1]-z[0])/2.0;
-
-    for(ii=0;ii<meshi->ibar;ii++){
-      xyz[0]=x[ii];
-      for(jj=0;jj<meshi->jbar;jj++){
-        xyz[1]=y[jj];
-        meshj = GetMesh(xyz,meshj);
-        if(meshj==NULL||meshj==meshi)continue;
-        meshi->is_bottom=0;
-        break;
-      }
-      if(meshi->is_bottom==0)break;
-    }
-  }
-
-  // compute z level above bottom mesh
-
-  for(i=0;i<nmeshes;i++){ // xxslow
-    meshdata *meshi;
-    int ii;
-    float xyz[3], *x, *y;
-    float *zcell;
-    int nxcell;
-
-    meshi = meshinfo + i;
-    if(meshi->is_bottom==0)continue;
-    x = meshi->xplt_orig;
-    y = meshi->yplt_orig;
-    nxcell = meshi->ibar;
-    zcell = meshi->zcell;
-    for(ii=0;ii<meshi->ibar;ii++){
-      int jj;
-
-      xyz[0]=x[ii];
-      for(jj=0;jj<meshi->jbar;jj++){
-        int ij, valid;
-        float zz;
-
-        ij = IJCELL2(ii, jj);
-        xyz[1]=y[jj];
-        zz= GetMeshZCell(meshi->above, xyz[0],xyz[1], &valid);
-        if(valid==1&&zz>zcell[ij])zcell[ij]=zz;
-      }
-    }
   }
 }

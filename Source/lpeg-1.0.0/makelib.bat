@@ -1,6 +1,6 @@
 @echo off
 setlocal
-call "%VS_COMPILER%\vcvarsall" x86_amd64
-erase *.o *.lib
-make lpeg.lib
+erase *.o *.lib *.dll
+make lpeg.dll CC=icx RANLIB=dir
+exit
 endlocal

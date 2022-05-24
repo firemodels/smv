@@ -13,7 +13,6 @@
 #include "IOscript.h"
 #include "glui_smoke.h"
 #include "glui_motion.h"
-#include "glui_wui.h"
 
 /* ------------------ CompareFloat ------------------------ */
 
@@ -25,21 +24,6 @@ int CompareFloat( const void *arg1, const void *arg2 ){
   if( x< y)return -1;
   if( x> y)return 1;
   return 0;
-}
-
-/* ------------------ UpdateHRRInfo ------------------------ */
-
-void UpdateHRRInfo(int vis){
-  if(hrrinfo!=NULL&&hrrinfo->loaded==1){
-    hrrinfo->display = vis;
-    if(hrrinfo->display == 0)show_hrrpuv_plot = 0;
-  }
-  if(visHRRlabel == 0)show_hrrpuv_plot=0;
-
-  UpdateShowHRRPUVPlot(show_hrrpuv_plot);
-  plotstate = GetPlotState(DYNAMIC_PLOTS);
-  UpdateShow();
-  update_times = 1;
 }
 
 /* ------------------ UpdateFrameNumber ------------------------ */
@@ -58,9 +42,6 @@ void UpdateFrameNumber(int changetime){
         if(parti->loaded==0||parti->timeslist==NULL)continue;
         parti->itime=parti->timeslist[itimes];
       }
-    }
-    if(hrrinfo!=NULL&&hrrinfo->loaded==1&&hrrinfo->display==1&&hrrinfo->timeslist!=NULL){
-      hrrinfo->itime=hrrinfo->timeslist[itimes];
     }
     if(showvolrender==1){
       int imesh;
@@ -174,12 +155,15 @@ void UpdateFrameNumber(int changetime){
           else{
             patchi->geom_itime = patchi->geom_timeslist[itimes];
           }
-          patchi->geom_ival_static = patchi->geom_ivals_static[patchi->geom_itime];
+          patchi->geom_val_static   = patchi->geom_vals_static[patchi->geom_itime];
+          patchi->geom_ival_static  = patchi->geom_ivals_static[patchi->geom_itime];
           patchi->geom_ival_dynamic = patchi->geom_ivals_dynamic[patchi->geom_itime];
-          patchi->geom_nval_static = patchi->geom_nstatics[patchi->geom_itime];
+          patchi->geom_val_static   = patchi->geom_vals_static[patchi->geom_itime];
+          patchi->geom_val_dynamic  = patchi->geom_vals_dynamic[patchi->geom_itime];
+          patchi->geom_nval_static  = patchi->geom_nstatics[patchi->geom_itime];
           patchi->geom_nval_dynamic = patchi->geom_ndynamics[patchi->geom_itime];
-          sd->itime = patchi->geom_timeslist[itimes];
-          slice_time = sd->itime;
+          sd->itime                 = patchi->geom_timeslist[itimes];
+          slice_time                = sd->itime;
         }
         else{
           if(sd->timeslist == NULL)continue;
@@ -213,10 +197,8 @@ void UpdateFrameNumber(int changetime){
             UpdateSmoke3D(smoke3di);
           }
         }
-        if(use_newsmoke==SMOKE3D_ORIG||use_newsmoke==SMOKE3D_NEW){
-          MergeSmoke3D(NULL);
-          PrintMemoryInfo;
-        }
+        MergeSmoke3D(NULL);
+        PrintMemoryInfo;
       }
     }
     if(showpatch==1){
@@ -361,11 +343,14 @@ void UpdateFileLoad(void){
 
 void UpdateShow(void){
   int i,evacflag,sliceflag,vsliceflag,partflag,patchflag,isoflag,smoke3dflag,tisoflag,showdeviceflag;
+#ifdef pp_PLOT2D_NEW
+  int show_genplot1fag;
+#endif
   int slicecolorbarflag;
   int shooter_flag;
+  int showhrrflag;
 
   if(update_fileload==1)UpdateFileLoad();
-  have_fire = HaveFire();
   showtime=0;
   showtime2=0;
   showplot3d=0;
@@ -385,29 +370,22 @@ void UpdateShow(void){
   smoke3dflag=0;
   showtours=0;
   showdeviceflag = 0;
+  showhrrflag = 0;
+#ifdef pp_PLOT2D_NEW
+  show_genplot1fag = 0;
+#endif
   visTimeParticles=1; visTimeSlice=1; visTimeBoundary=1; visTimeZone=1; visTimeIso=1;
 
+  drawing_boundary_files = 0;
+
   RenderTime=0;
-  if(global_times!=NULL){
-    if(settmin_p==1&&global_times[itimes]<tmin_p)visTimeParticles=0;
-    if(settmax_p==1&&global_times[itimes]>tmax_p)visTimeParticles=0;
 
-    if(settmin_s==1&&global_times[itimes]<tmin_s)visTimeSlice=0;
-    if(settmax_s==1&&global_times[itimes]>tmax_s)visTimeSlice=0;
+  if(vis_hrr_plot==1&&hrrptr!=NULL)showhrrflag = 1;
+#ifdef pp_PLOT2D_NEW
+  if(show_genplot1==1)show_genplot1fag = 1;
+#endif
 
-    if(settmin_i==1&&global_times[itimes]<tmin_i)visTimeIso=0;
-    if(settmax_i==1&&global_times[itimes]>tmax_i)visTimeIso=0;
-
-    if(settmin_b==1&&global_times[itimes]<tmin_b)visTimeBoundary=0;
-    if(settmax_b==1&&global_times[itimes]>tmax_b)visTimeBoundary=0;
-
-    if(settmin_z==1&&global_times[itimes]<tmin_z)visTimeZone=0;
-    if(settmax_z==1&&global_times[itimes]>tmax_z)visTimeZone=0;
-  }
-  if(visHRRlabel==1&&show_hrrpuv_plot==1&&hrrinfo!=NULL){
-    showdeviceflag = 1;
-  }
-  if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
+  if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;
 
@@ -652,8 +630,11 @@ void UpdateShow(void){
   }
 
   if( plotstate==DYNAMIC_PLOTS &&
-    ( showdeviceflag==1 || sliceflag==1 || vsliceflag==1 || partflag==1 || patchflag==1 ||
+    ( showdeviceflag==1 || showhrrflag==1 || sliceflag==1 || vsliceflag==1 || partflag==1 || patchflag==1 ||
     shooter_flag==1|| smoke3dflag==1 || showtours==1 || evacflag==1 ||
+#ifdef pp_PLOT2D_NEW
+    show_genplot1fag == 1 ||
+#endif
     (ReadZoneFile==1&&visZone==1&&visTimeZone==1)||showvolrender==1
     )
     )showtime=1;
@@ -669,6 +650,8 @@ void UpdateShow(void){
       }
     }
     if(patchflag==1)showpatch=1;
+    drawing_boundary_files = showpatch;
+
     for(i=0;i<nmeshes;i++){
       meshdata *meshi;
 
@@ -791,12 +774,6 @@ void SynchTimes(void){
       tourj = tourinfo + j;
       if(tourj->display==0)continue;
       tourj->timeslist[n]=GetItime(n,tourj->timeslist,tourj->path_times,tourj->ntimes);
-    }
-
-    /* synchronize hrrpuv times */
-
-    if(hrrinfo!=NULL&&hrrinfo->loaded==1&&hrrinfo->display==1){
-      hrrinfo->timeslist[n]=GetItime(n,hrrinfo->timeslist,hrrinfo->times,hrrinfo->ntimes);
     }
 
   /* synchronize geometry times */
@@ -1071,17 +1048,107 @@ void ConvertSsf(void){
   }
 }
 
+  /* ------------------ MergeGlobalTimes ------------------------ */
+
+void MergeGlobalTimes(float *time_in, int ntimes_in){
+  int left, right, nbuffer, i;
+  float dt_eps;
+
+  if(ntimes_in<=0){
+    nglobal_times = 0;
+    return;
+  }
+
+  // when adding a time to current list assume it is already there if it closer than dt_es
+  dt_eps = 0.001;
+  for(i = 1; i<ntimes_in; i++){
+    float dt;
+
+    dt = time_in[i]-time_in[i-1];
+ //   ASSERT(dt>=0.0);
+    dt_eps = MIN(dt_eps, ABS(dt)/2.0);
+  }
+  if(nglobal_times>1){
+    for(i = 1; i<nglobal_times; i++){
+      float dt;
+
+      dt = global_times[i]-global_times[i-1];
+  //    ASSERT(dt>=0.0);
+      dt_eps = MIN(dt_eps, ABS(dt)/2.0);
+    }
+  }
+
+  // add time_in values to global_times the first time
+  if(global_times==NULL || nglobal_times<=0){
+    if(global_times==NULL){
+      NewMemory((void **)&global_times, ntimes_in*sizeof(float));
+    }
+    memcpy(global_times, time_in, ntimes_in*sizeof(float));
+    nglobal_times = ntimes_in;
+    return;
+  }
+
+// allocate buffer for merged times
+  if(nglobal_times+ntimes_in>ntimes_buffer){
+    ntimes_buffer = nglobal_times+ntimes_in+1000;
+    FREEMEMORY(times_buffer);
+    NewMemory((void **)&times_buffer, ntimes_buffer*sizeof(float));
+  }
+
+  // merge global_times and times_in into times_buffer
+  for(left=0,right=0,nbuffer=0;left<nglobal_times||right<ntimes_in;){
+    float minval;
+
+    if(left>=nglobal_times){
+      minval = time_in[right++];
+    }
+    else if(right>=ntimes_in){
+      minval = global_times[left++];
+    }
+    else{
+      float lval, rval;
+
+      lval = global_times[left];
+      rval = time_in[right];
+      if(lval<rval){
+        minval = lval;
+        left++;
+      }
+      else{
+        minval = rval;
+        right++;
+      }
+    }
+    if(nbuffer==0||minval>times_buffer[nbuffer-1]+dt_eps){
+      times_buffer[nbuffer++] = minval;
+    }
+  }
+
+  // copy merged times array back into original global_times array
+  if(nbuffer>nglobal_times){
+    FREEMEMORY(global_times);
+    NewMemory((void **)&global_times, nbuffer*sizeof(float));
+  }
+  memcpy(global_times, times_buffer, nbuffer*sizeof(float));
+
+  nglobal_times = nbuffer;
+}
+
   /* ------------------ UpdateTimes ------------------------ */
 
 void UpdateTimes(void){
   int i;
-  float global_timemin=1000000000.0, global_timemax=-1000000000.0;
 
   GetGeomInfoPtrs(0);
 
   UpdateShow();
   CheckMemory;
   nglobal_times = 0;
+
+  FREEMEMORY(global_times);
+  nglobal_times = 0;
+  FREEMEMORY(times_buffer);
+  ntimes_buffer = 0;
 
   // determine min time, max time and number of times
 
@@ -1092,27 +1159,42 @@ void UpdateTimes(void){
     float ss_tmin = ss->fval2;
     float ss_tmax = ss->fval3;
     if(ss_tmin<=ss_tmax){
-      nglobal_times = MAX(nglobal_times, 1);
-      global_timemin = MIN(global_timemin, ss_tmin);
-      global_timemax = MAX(global_timemax, ss_tmax);
+      float stimes[2];
+
+      stimes[0] = ss_tmin;
+      stimes[1] = ss_tmax;
+      MergeGlobalTimes(stimes, 2);
     }
   }
 
-  if(visHRRlabel==1&&show_hrrpuv_plot==1&&hrrinfo!=NULL){
-    nglobal_times = MAX(nglobal_times, hrrinfo->ntimes_csv);
-    global_timemin = MIN(global_timemin, hrrinfo->times_csv[0]);
-    global_timemax = MAX(global_timemax, hrrinfo->times_csv[hrrinfo->ntimes_csv-1]);
+  if(use_tload_begin==1){
+    MergeGlobalTimes(&tload_begin, 1);
   }
-  if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
+  if(use_tload_end==1){
+    MergeGlobalTimes(&tload_end, 1);
+  }
+
+  if(vis_hrr_plot==1&&hrrptr!=NULL){
+    MergeGlobalTimes(timeptr->vals, timeptr->nvals);
+  }
+#ifdef pp_PLOT2D_NEW
+  if(show_genplot1==1){
+    if(HaveGenDev()==1){
+      MergeGlobalTimes(deviceinfo->times, deviceinfo->nvals);
+    }
+    if(HaveGenHrr()==1){
+      MergeGlobalTimes(hrrinfo->vals, hrrinfo->nvals);
+    }
+  }
+#endif
+  if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;
 
       devicei = deviceinfo+i;
       if(devicei->object->visible==0||devicei->nvals==0)continue;
       if(devicei->type2==devicetypes_index){
-        nglobal_times = MAX(nglobal_times, devicei->nvals);
-        global_timemin = MIN(global_timemin, devicei->times[0]);
-        global_timemax = MAX(global_timemax, devicei->times[devicei->nvals-1]);
+        MergeGlobalTimes(devicei->times, devicei->nvals);
       }
     }
   }
@@ -1122,9 +1204,7 @@ void UpdateTimes(void){
 
     geomi = geominfoptrs[i];
     if(geomi->loaded==0||geomi->display==0||geomi->ntimes<=1)continue;
-    nglobal_times = MAX(nglobal_times,geomi->ntimes);
-    global_timemin = MIN(global_timemin, geomi->times[0]);
-    global_timemax = MAX(global_timemax, geomi->times[geomi->ntimes-1]);
+    MergeGlobalTimes(geomi->times, geomi->ntimes);
   }
   if(visShooter!=0&&shooter_active==1){
     nglobal_times = MAX(nglobal_times,nshooter_frames);
@@ -1134,18 +1214,14 @@ void UpdateTimes(void){
 
     parti = partinfo + i;
     if(parti->loaded==0)continue;
-    nglobal_times = MAX(nglobal_times, parti->ntimes);
-    global_timemin = MIN(global_timemin, parti->times[0]);
-    global_timemax = MAX(global_timemax, parti->times[parti->ntimes-1]);
+    MergeGlobalTimes(parti->times, parti->ntimes);
   }
   for(i=0;i<nsliceinfo;i++){
     slicedata *sd;
 
     sd=sliceinfo+i;
     if(sd->loaded==1||sd->vloaded==1){
-      nglobal_times = MAX(nglobal_times,sd->ntimes);
-      global_timemin = MIN(global_timemin, sd->times[0]);
-      global_timemax = MAX(global_timemax, sd->times[sd->ntimes-1]);
+      MergeGlobalTimes(sd->times, sd->ntimes);
     }
   }
   for(i=0;i<npatchinfo;i++){
@@ -1153,9 +1229,7 @@ void UpdateTimes(void){
 
     patchi = patchinfo + i;
     if(patchi->loaded==1&&patchi->structured == NO){
-      nglobal_times = MAX(nglobal_times, patchi->ngeom_times);
-      global_timemin = MIN(global_timemin, patchi->geom_times[0]);
-      global_timemax = MAX(global_timemax, patchi->geom_times[patchi->ngeom_times-1]);
+      MergeGlobalTimes(patchi->geom_times, patchi->ngeom_times);
     }
   }
   for(i=0;i<nmeshes;i++){
@@ -1168,16 +1242,12 @@ void UpdateTimes(void){
     if(filenum!=-1){
       patchi=patchinfo+filenum;
       if(patchi->loaded==1&&patchi->structured == YES){
-        nglobal_times = MAX(nglobal_times, meshi->npatch_times);
-        global_timemin = MIN(global_timemin, meshi->patch_times[0]);
-        global_timemax = MAX(global_timemax, meshi->patch_times[meshi->npatch_times-1]);
+        MergeGlobalTimes(meshi->patch_times, meshi->npatch_times);
       }
     }
   }
   if(ReadZoneFile==1&&visZone==1){
-    nglobal_times = MAX(nglobal_times, nzone_times);
-    global_timemin = MIN(global_timemin, zone_times[0]);
-    global_timemax = MAX(global_timemax, zone_times[nzone_times-1]);
+    MergeGlobalTimes(zone_times, nzone_times);
   }
   if(ReadIsoFile==1&&visAIso!=0){
     for(i=0;i<nisoinfo;i++){
@@ -1187,9 +1257,7 @@ void UpdateTimes(void){
       ib = isoinfo+i;
       if(ib->geomflag==1||ib->loaded==0)continue;
       meshi=meshinfo + ib->blocknumber;
-      nglobal_times = MAX(nglobal_times, meshi->niso_times);
-      global_timemin = MIN(global_timemin, meshi->iso_times[0]);
-      global_timemax = MAX(global_timemax, meshi->iso_times[meshi->niso_times-1]);
+      MergeGlobalTimes(meshi->iso_times, meshi->niso_times);
     }
   }
   if(nvolrenderinfo>0){
@@ -1201,9 +1269,7 @@ void UpdateTimes(void){
       vr = &meshi->volrenderinfo;
       if(vr->fireslice==NULL||vr->smokeslice==NULL)continue;
       if(vr->loaded==0||vr->display==0)continue;
-      nglobal_times = MAX(nglobal_times, vr->ntimes);
-      global_timemin = MIN(global_timemin, vr->times[0]);
-      global_timemax = MAX(global_timemax, vr->times[vr->ntimes-1]);
+      MergeGlobalTimes(vr->times, vr->ntimes);
     }
   }
   {
@@ -1213,9 +1279,7 @@ void UpdateTimes(void){
       for(i=0;i<nsmoke3dinfo;i++){
         smoke3di = smoke3dinfo + i;
         if(smoke3di->loaded==0)continue;
-        nglobal_times = MAX(nglobal_times, smoke3di->ntimes);
-        global_timemin = MIN(global_timemin, smoke3di->times[0]);
-        global_timemax = MAX(global_timemax, smoke3di->times[smoke3di->ntimes-1]);
+        MergeGlobalTimes(smoke3di->times, smoke3di->ntimes);
       }
     }
   }
@@ -1225,34 +1289,7 @@ void UpdateTimes(void){
 
     touri = tourinfo + i;
     if(touri->display==0)continue;
-    nglobal_times = MAX(nglobal_times, touri->ntimes);
-    global_timemin = MIN(global_timemin, touri->path_times[0]);
-    global_timemax = MAX(global_timemax, touri->path_times[touri->ntimes-1]);
-  }
-  CheckMemory;
-
-  // setup global_times array
-
-  FREEMEMORY(global_times);
-
-  if(ReadZoneFile==1&&visZone==1){
-    nglobal_times = nzone_times;
-  }
-  if(nglobal_times>0){
-    int i;
-    NewMemory((void **)&global_times, nglobal_times*sizeof(float));
-    global_times[0] = global_timemin;
-    for(i = 1; i<nglobal_times; i++){
-      float f1;
-
-      f1 = (float)i/(float)(nglobal_times-1);
-      global_times[i] = (1.0-f1)*global_timemin+f1*global_timemax;
-    }
-  }
-  if(ReadZoneFile==1&&visZone==1){
-    for(i = 0; i<nglobal_times; i++){
-      global_times[i] = zone_times[i];
-    }
+    MergeGlobalTimes(touri->path_times, touri->ntimes);
   }
 
   CheckMemory;
@@ -1284,49 +1321,6 @@ void UpdateTimes(void){
     if(touri->display==0)continue;
     FREEMEMORY(touri->timeslist);
     if(nglobal_times>0)NewMemory((void **)&touri->timeslist,nglobal_times*sizeof(int));
-  }
-  if(hrrinfo!=NULL){
-    FREEMEMORY(hrrinfo->timeslist);
-    FREEMEMORY(hrrinfo->times);
-    FREEMEMORY(hrrinfo->hrrval);
-    FREEMEMORY(hrrinfo->hrrval_orig);
-    if(hrrinfo->loaded==1&&hrrinfo->display==1&&nglobal_times>0){
-      int jstart=0;
-
-      NewMemory((void **)&hrrinfo->timeslist,nglobal_times*sizeof(int));
-      NewMemory((void **)&hrrinfo->times,nglobal_times*sizeof(float));
-      NewMemory((void **)&hrrinfo->hrrval,nglobal_times*sizeof(float));
-      NewMemory((void **)&hrrinfo->hrrval_orig, nglobal_times*sizeof(float));
-      hrrinfo->ntimes=nglobal_times;
-      for(i=0;i<nglobal_times;i++){
-        int j, foundit;
-
-        foundit=0;
-        hrrinfo->times[i]=global_times[i];
-        for(j=jstart;j<hrrinfo->ntimes_csv-1;j++){
-          if(hrrinfo->times_csv[j]<=global_times[i]&&global_times[i]<hrrinfo->times_csv[j+1]){
-            float f1, tbot;
-
-            foundit=1;
-            tbot = hrrinfo->times_csv[j+1]-hrrinfo->times_csv[j];
-            if(tbot>0.0){
-              f1 = (global_times[i]-hrrinfo->times_csv[j])/tbot;
-            }
-            else{
-              f1=0.0;
-            }
-            hrrinfo->hrrval[i]=(1.0-f1)*hrrinfo->hrrval_csv[j]+f1*hrrinfo->hrrval_csv[j+1];
-            hrrinfo->hrrval_orig[i]=hrrinfo->hrrval[i];
-            jstart=j;
-            break;
-          }
-        }
-        if(foundit==0){
-          hrrinfo->hrrval[i]=hrrinfo->hrrval_csv[hrrinfo->ntimes_csv-1];
-          hrrinfo->hrrval_orig[i]=hrrinfo->hrrval[i];
-        }
-      }
-    }
   }
   FREEMEMORY(shooter_timeslist);
   if(visShooter!=0&&shooter_active==1){
@@ -1605,11 +1599,19 @@ int GetPlotStateSub(int choice){
       break;
     case DYNAMIC_PLOTS:
     case DYNAMIC_PLOTS_NORECURSE:
-      if(visHRRlabel==1&&show_hrrpuv_plot==1&&hrrinfo!=NULL){
+      if(vis_hrr_plot==1&&hrrptr!=NULL){
+
         stept = 1;
         return DYNAMIC_PLOTS;
       }
-      if(showdevice_val==1||showdevice_plot!=DEVICE_PLOT_HIDDEN){
+#ifdef pp_PLOT2D_NEW
+      if(show_genplot1==1){
+
+        stept = 1;
+        return DYNAMIC_PLOTS;
+      }
+#endif
+      if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
         for(i = 0; i<ndeviceinfo; i++){
           devicedata *devicei;
 
@@ -1833,9 +1835,55 @@ void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo){
   UpdateColorTableList(ncolortableinfo_old);
 }
 
+/* ------------------ HaveFire ------------------------ */
+
+int HaveFireLoaded(void) {
+  int i;
+
+  for(i = 0; i<nsmoke3dinfo; i++) {
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo+i;
+    if(smoke3di->loaded==1) {
+      if(smoke3di->type==HRRPUV_index)return HRRPUV_index;
+      if(smoke3di->type==TEMP_index)return TEMP_index;
+    }
+  }
+  return NO_FIRE;
+}
+
+/* ------------------ HaveSoot ------------------------ */
+
+int HaveSootLoaded(void) {
+  int i;
+
+  for(i = 0; i<nsmoke3dinfo; i++) {
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo+i;
+    if(smoke3di->loaded==1&&smoke3di->extinct>0.0)return GetSmoke3DType(smoke3di->label.shortlabel);;
+  }
+  return NO_SMOKE;
+}
+
 /* ------------------ UpdateShowScene ------------------------ */
 
 void UpdateShowScene(void){
+  have_fire  = HaveFireLoaded();
+  have_smoke = HaveSootLoaded();
+  if(update_smoke_alphas==1){
+    update_smoke_alphas = 0;
+    UpdateSmokeAlphas();
+  }
+  if(update_slice2device==1){
+    update_slice2device = 0;
+    Slice2Device();
+    update_slicexyz = 1;
+  }
+  if(update_slicexyz==1){
+    update_slicexyz = 0;
+    UpdateSliceXYZ();
+  }
   if(open_movie_dialog==1){
     open_movie_dialog = 0;
     if(have_slurm==1&&nmovie_queues>0){
@@ -1844,6 +1892,25 @@ void UpdateShowScene(void){
     else{
       ShowGluiMotion(DIALOG_MOVIE);
     }
+  }
+  if(terrain_update_normals==1&&ngeominfo>0){
+    int sizeof_vertices, sizeof_indices;
+
+    terrain_update_normals = 0;
+    UpdateAllGeomTriangles();
+    if(auto_terrain==1){
+      GenerateTerrainGeom(&terrain_vertices, &sizeof_vertices, &terrain_indices, &sizeof_indices, &terrain_nindices);
+    }
+  }
+  if(update_smokefire_colors==1){
+    update_smokefire_colors = 0;
+    Smoke3dCB(UPDATE_SMOKEFIRE_COLORS);
+    Smoke3dCB(UPDATE_SMOKEFIRE_COLORS2);
+    Smoke3dCB(USE_OPACITY_DEPTH);
+  }
+  if(update_splitcolorbar==1){
+    SplitCB(SPLIT_COLORBAR);
+    update_splitcolorbar = 0;
   }
   if(update_generate_part_histograms==1){
     update_generate_part_histograms = 0;
@@ -1872,13 +1939,14 @@ void UpdateShowScene(void){
     update_times = 0;
     UpdateTimes();
   }
-  if(update_smoketype_vals==1){
-    update_smoketype_vals = 0;
-    Smoke3dCB(SMOKE_NEW);
-    Smoke3dCB(SMOKE_DELTA_MULTIPLE);
+  if(update_device==1){
+    update_device = 0;
+    if(HaveSmokeSensor()==1){
+      use_lighting = 0;
+      update_use_lighting = 1;
+    }
   }
   if(update_use_lighting==1){
-    use_lighting = 1-use_lighting_ini;
     ColorbarMenu(USE_LIGHTING);
     update_use_lighting = 0;
   }
@@ -1921,12 +1989,12 @@ void UpdateShowScene(void){
   }
   if(update_rotation_center == 1){
     camera_current->rotation_index = glui_rotation_index;
-    SceneMotionCB(MESH_LIST);
+    SceneMotionCB(ROTATE_ABOUT);
     update_rotation_center = 0;
   }
   if(update_rotation_center_ini == 1){
     camera_current->rotation_index = glui_rotation_index_ini;
-    SceneMotionCB(MESH_LIST);
+    SceneMotionCB(ROTATE_ABOUT);
     update_rotation_center_ini = 0;
   }
   if(camera_current->dirty == 1){
@@ -2265,6 +2333,7 @@ void OutputBounds(void){
 
 void UpdateDisplay(void){
 
+  SNIFF_ERRORS("UpdateDisplay: start");
   LOCK_IBLANK;
   if(update_adjust_y>0){
     AdjustY(camera_current);
@@ -2334,10 +2403,6 @@ void UpdateDisplay(void){
     }
     update_colorbartype = 0;
   }
-  if(update_fire_line == 1){
-    WuiCB(TERRAIN_FIRE_LINE_UPDATE);
-    update_fire_line = 0;
-  }
   if(updatezoommenu == 1 || first_display > 0){
     if(first_display > 0)first_display--;
     updatezoommenu = 0;
@@ -2376,6 +2441,7 @@ void UpdateDisplay(void){
   }
   if(update_fire_colorbar_index == 1){
     SmokeColorbarMenu(fire_colorbar_index_ini);
+    UpdateFireColorbarList();
     update_fire_colorbar_index = 0;
   }
   if(update_co2_colorbar_index==1){
@@ -2405,11 +2471,18 @@ void UpdateDisplay(void){
     update_percentile_mode = 0;
     SetPercentileMode(percentile_mode);
   }
+  if(update_colorbar_digits==1){
+    update_colorbar_digits = 0;
+    SetColorbarDigitsCPP(ncolorlabel_digits);
+    SetColorbarDigits();
+  }
   if(update_visColorbars==1){
     update_visColorbars = 0;
     visColorbarVertical = visColorbarVertical_val;
     visColorbarHorizontal = visColorbarHorizontal_val;
     vis_colorbar = GetColorbarState();
+    UpdateColorbarControls();
+    UpdateColorbarControls2();
     updatemenu = 1;
   }
   if(update_windrose==1){
@@ -2452,3 +2525,19 @@ void ShiftColorbars(void){
   }
   CheckMemory;
 }
+
+/* ------------------ PauseTime ------------------------ */
+
+void PauseTime(float pause_time){
+  float start_time;
+
+  // pause no more than 60 s
+  start_time = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
+  for(;;){
+    float delta_time;
+
+    delta_time = glutGet(GLUT_ELAPSED_TIME) / 1000.0 - start_time;
+    if(delta_time > pause_time || delta_time > 60.0)return;
+    }
+  }
+

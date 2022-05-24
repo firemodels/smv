@@ -188,6 +188,7 @@ void StartScript(void){
   current_script_command=scriptinfo-1;
   iso_multithread_save = iso_multithread;
   iso_multithread = 0;
+  viewpoint_script_ptr = NULL;
 }
 
 /* ------------------ GetCharPointer ------------------------ */
@@ -250,6 +251,7 @@ void InitScriptI(scriptdata *scripti, int command,char *label){
   scripti->pbxyz_dir     = 0;
   scripti->cell_centered = 0;
   scripti->vector        = 0;
+  strcpy(scripti->quantity2, "");
 }
 
 /* ------------------ GetScriptKeywordIndex ------------------------ */
@@ -318,11 +320,12 @@ int GetScriptKeywordIndex(char *keyword){
   if(MatchUpper(keyword,"SCENECLIP") == MATCH)return SCRIPT_SCENECLIP;
   if(MatchUpper(keyword,"SETTOURKEYFRAME") == MATCH)return SCRIPT_SETTOURKEYFRAME;
   if(MatchUpper(keyword,"SETTIMEVAL") == MATCH)return SCRIPT_SETTIMEVAL;                 // documented
+  if(MatchUpper(keyword,"SETSLICEBOUNDS")==MATCH)return SCRIPT_SETSLICEBOUNDS;
+  if(MatchUpper(keyword,"SETBOUNDBOUNDS")==MATCH)return SCRIPT_SETBOUNDBOUNDS;
   if(MatchUpper(keyword,"SETTOURVIEW") == MATCH)return SCRIPT_SETTOURVIEW;
   if(MatchUpper(keyword,"SETVIEWPOINT") == MATCH)return SCRIPT_SETVIEWPOINT;             // documented
   if(MatchUpper(keyword,"SHOWPLOT3DDATA") == MATCH)return SCRIPT_SHOWPLOT3DDATA;         // documented
   if(MatchUpper(keyword,"SHOWSMOKESENSORS")==MATCH)return SCRIPT_SHOWSMOKESENSORS;
-  if(MatchUpper(keyword,"SMOKEFRAMES")==MATCH)return SCRIPT_SMOKEFRAMES;
   if(MatchUpper(keyword,"UNLOADALL") == MATCH)return SCRIPT_UNLOADALL;                   // documented
   if(MatchUpper(keyword,"UNLOADTOUR") == MATCH)return SCRIPT_UNLOADTOUR;                 // documented
   if(MatchUpper(keyword,"VOLSMOKERENDERALL") == MATCH)return SCRIPT_VOLSMOKERENDERALL;   // documented
@@ -338,7 +341,7 @@ int GetScriptKeywordIndex(char *keyword){
 void GetXYZ(char *buffer,int *ival){
   int i;
 
-  for(i=0;i<strlen(buffer);i++){
+  for(i=0;i<(int)strlen(buffer);i++){
     char *c;
 
     c = buffer+i;
@@ -405,7 +408,6 @@ sscanf(buffptr, "%i", &scripti->ival)
 SETbuffer;\
 sscanf(buffptr, "%i", &scripti->ival2)
 
-#ifndef pp_DEG
 /* ------------------ RemoveDeg ------------------------ */
 
 void RemoveDeg(char *string){
@@ -422,7 +424,6 @@ void RemoveDeg(char *string){
   }
   string[ii] = 0;
 }
-#endif
 
 #define TOKEN_UNKNOWN -1
 #define TOKEN_INT      0
@@ -496,6 +497,9 @@ int ParseTokens(char *buffer, char **keywords, int *type, int nkeywords, int *to
           return 0;
         }
         break;
+      default:
+	ASSERT(FFALSE);
+	break;
     }
   }
   return i;
@@ -540,10 +544,6 @@ int CompileScript(char *scriptfile){
     if(GetScriptKeywordIndex(buffer)!=SCRIPT_UNKNOWN)nscriptinfo++;
   }
 
-#ifdef pp_SCRIPT_SETVIEW
-  nscriptinfo++;
-#endif
-
   if(nscriptinfo==0){
     fclose(stream);
     fprintf(stderr,"*** Error: scriptfile has no usable commands\n");
@@ -552,19 +552,7 @@ int CompileScript(char *scriptfile){
 
 NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 
-#ifdef pp_SCRIPT_SETVIEW
-  // add a SETVIEWPOINT command for the default view point at the beginning of thes script
-  {
-    char label[20];
-
-    strcpy(label, "SETVIEWPOINT");
-    InitScriptI(scriptinfo, SCRIPT_SETVIEWPOINT, label);
-    scriptinfo->cval = GetCharPointer(viewpoint_label_startup);
-  }
-  nscriptinfo=1;
-#else
   nscriptinfo=0;
-#endif
 
   /*
    ************************************************************************
@@ -801,9 +789,7 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 //  mesh number (int)
       case SCRIPT_LOADISOM:
         SETcval;
-#ifndef pp_DEG
         RemoveDeg(scripti->cval);
-#endif
         scripti->ival = 1;
         SETival;
         scripti->need_graphics = 0;
@@ -1065,6 +1051,9 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
               case KW_CELL_CENTERED:
                 scripti->cell_centered = itokens[i];
                 break;
+	      default:
+		ASSERT(FFALSE);
+		break;
             }
           }
           if(scripti->id==NULL){
@@ -1141,6 +1130,20 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         scripti->need_graphics = 0;
         break;
 
+// SETBOUNDBOUNDS
+//  type (char) ivalmin (int) valmin (float) ivalmax (int) valmax quantity (char)
+      case SCRIPT_SETBOUNDBOUNDS:
+        SETbuffer;
+        sscanf(buffer," %i %f %i %f, %s",&scripti->ival,&scripti->fval, &scripti->ival2,&scripti->fval2, scripti->quantity2);
+        break;
+
+// SETSLICEBOUNDS
+//  type (char) ivalmin (int) valmin (float) ivalmax (int) valmax quantity (char)
+      case SCRIPT_SETSLICEBOUNDS:
+        SETbuffer;
+        sscanf(buffer," %i %f %i %f, %s",&scripti->ival,&scripti->fval, &scripti->ival2,&scripti->fval2, scripti->quantity2);
+        break;
+
 // SETTOURVIEW
 //   viewtype  showpath showtour_locus tension
       case SCRIPT_SETTOURVIEW:
@@ -1152,13 +1155,6 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
 //  time (float)
       case SCRIPT_SETTOURKEYFRAME:
         SETfval;
-        break;
-
-// SMOKEFRAMES
-//  num (int) usesubset (int)
-      case SCRIPT_SMOKEFRAMES:
-        SETbuffer;
-        sscanf(buffer,"%i %i %i",&scripti->ival,&scripti->ival2,&scripti->ival3);
         break;
 
 // RGBTEST
@@ -1197,6 +1193,9 @@ NewMemory((void **)&scriptinfo, nscriptinfo*sizeof(scriptdata));
         SETbuffer;
         sscanf(buffer,"%f %f",&scripti->fval,&scripti->fval2);
         break;
+      default:
+	ASSERT(FFALSE);
+	break;
     }
     if(scriptEOF==1)break;
     if(keyword_index!=SCRIPT_UNKNOWN&&fatal_error==0)nscriptinfo++;
@@ -1809,6 +1808,8 @@ int SliceMatch(scriptdata *scripti, slicedata *slicei){
   ASSERT(scripti->quantity!=NULL);
   if(scripti->quantity==NULL)return 0;  // should never happen
   if(scripti->quantity!=NULL&&strncmp(scripti->quantity, slicei->label.longlabel,strlen(scripti->quantity))!=0)return 0;
+  if(scripti->cell_centered==0&&slicei->slice_filetype==SLICE_CELL_CENTER)return 0;
+  if(scripti->cell_centered==1&&slicei->slice_filetype!=SLICE_CELL_CENTER)return 0;
   if(scripti->pbxyz_dir==0){
     int *min, *max;
     meshdata *meshi;
@@ -1877,19 +1878,20 @@ void ScriptLoadVSLCF(scriptdata *scripti){
     if(SliceMatch(scripti, slicei)==0)continue;
 
     for(j=0;j<mvslicei->nvslices;j++){
-      vslicedata *vslicei;
+      vslicedata *vslicej;
       int finalize_save;
 
-      vslicei = vsliceinfo+mvslicei->ivslices[j];
-      finalize_save = vslicei->finalize;
+      vslicej = vsliceinfo+mvslicei->ivslices[j];
+//save finalize
+      finalize_save = vslicej->finalize;
       if(j==mvslicei->nvslices-1){
-        vslicei->finalize = 1;
+        vslicej->finalize = 1;
       }
       else{
-        vslicei->finalize = 0;
+        vslicej->finalize = 0;
       }
       LoadVSliceMenu(mvslicei->ivslices[j]);
-      vslicei->finalize = finalize_save;
+      vslicej->finalize = finalize_save;
       count++;
     }
     break;
@@ -1998,18 +2000,18 @@ void ScriptLoadSlice(scriptdata *scripti){
     for(j=0;j<mslicei->nslices;j++){
       slicedata *slicej;
       int finalize_save;
-      slicedata *slicei;
 
-      slicei = sliceinfo+mslicei->islices[j];
-      finalize_save = slicei->finalize;
+      slicej = sliceinfo+mslicei->islices[j];
+//save finalize
+      finalize_save = slicej->finalize;
       if(j==mslicei->nslices-1){
-        slicei->finalize = 1;
+        slicej->finalize = 1;
       }
       else{
-        slicei->finalize = 0;
+        slicej->finalize = 0;
       }
       LoadSliceMenu(mslicei->islices[j]);
-      slicei->finalize = finalize_save;
+      slicej->finalize = finalize_save;
       FREEMEMORY(loaded_file);
       slicej = sliceinfo + mslicei->islices[j];
       if(slicej->file != NULL&&strlen(slicej->file) > 0){
@@ -2152,10 +2154,16 @@ void ScriptLoadSliceRender(scriptdata *scripti){
       SetSliceGlobalBounds(shortlabel);
     }
     frames_total = GetNSliceGeomFrames(scripti);
+    frame360 = 0;
   }
   else{
     frame_current = scripti->ival4;
-    frame_current += frame_skip;
+    if(frame_current==frame_start&&frame360==0&&render_mode==RENDER_360){ // output first frame twice - work around for a bug causing first frame to be output incorrectly
+      frame360 = 1;
+    }
+    else{
+      frame_current += frame_skip;
+    }
   }
   script_itime = frame_current;
   script_render_flag = 1;
@@ -2195,17 +2203,17 @@ void ScriptLoadSliceRender(scriptdata *scripti){
     for(j = 0; j<mslicei->nslices; j++){
       slicedata *slicej;
       int finalize_save;
-      slicedata *slicei;
       float time_value;
       FILE_SIZE slicefile_size;
 
-      slicei = sliceinfo+mslicei->islices[j];
-      finalize_save = slicei->finalize;
+      slicej = sliceinfo+mslicei->islices[j];
+//save finalize
+      finalize_save = slicej->finalize;
       if(j==mslicei->nslices-1){
-        slicei->finalize = 1;
+        slicej->finalize = 1;
       }
       else{
-        slicei->finalize = 0;
+        slicej->finalize = 0;
       }
       if(frame_current>=frames_total){
         scripti->exit = 1;
@@ -2227,9 +2235,9 @@ void ScriptLoadSliceRender(scriptdata *scripti){
       scripti->fval4 = time_value;
       CheckMemory;
 
-      slicei->finalize = finalize_save;
+//save finalize
+      slicej->finalize = finalize_save;
       FREEMEMORY(loaded_file);
-      slicej = sliceinfo+mslicei->islices[j];
       if(slicej->file!=NULL&&strlen(slicej->file)>0){
         NewMemory((void **)&loaded_file, strlen(slicej->file)+1);
         strcpy(loaded_file, slicej->file);
@@ -2324,19 +2332,20 @@ void ScriptLoadVSlice(scriptdata *scripti){
       if(ABS(slicei->position_orig - scripti->fval) > slicei->delta_orig)continue;
     }
     for(j=0;j<mvslicei->nvslices;j++){
-      vslicedata *vslicei;
+      vslicedata *vslicej;
       int finalize_save;
 
-      vslicei = vsliceinfo+mvslicei->ivslices[j];
-      finalize_save = vslicei->finalize;
+      vslicej = vsliceinfo+mvslicei->ivslices[j];
+//save finalize
+      finalize_save = vslicej->finalize;
       if(j==mvslicei->nvslices-1){
-        vslicei->finalize = 1;
+        vslicej->finalize = 1;
       }
       else{
-        vslicei->finalize = 0;
+        vslicej->finalize = 0;
       }
       LoadVSliceMenu(mvslicei->ivslices[j]);
-      vslicei->finalize = finalize_save;
+      vslicej->finalize = finalize_save;
       count++;
     }
     break;
@@ -2528,7 +2537,7 @@ void ScriptPlot3dProps(scriptdata *scripti){
 
 /* ------------------ ScriptShowSmokeSensors ------------------------ */
 
-void ScriptShowSmokeSensors(scriptdata *scripti){
+void ScriptShowSmokeSensors(void){
   int i,j;
   FILE *stream_smokesensors;
   int nsmokesensors;
@@ -2568,10 +2577,10 @@ void ScriptShowSmokeSensors(scriptdata *scripti){
       if(STRCMP(devicei->object->label, "smokesensor") == 0){
         j++;
         if(j == nsmokesensors){
-          fprintf(stream_smokesensors, "%s\n",devicei->label);
+          fprintf(stream_smokesensors, "%s\n",devicei->deviceID);
         }
         else{
-          fprintf(stream_smokesensors, "%s,", devicei->label);
+          fprintf(stream_smokesensors, "%s,", devicei->deviceID);
         }
       }
     }
@@ -2891,10 +2900,10 @@ void ScriptSetTourKeyFrame(scriptdata *scripti){
 
     if(keyj==(touri->first_frame).next){
       minkey=keyj;
-      minkeytime=ABS(keyframe_time-keyj->nodeval.time);
+      minkeytime = ABS(keyframe_time-keyj->time);
       continue;
     }
-    diff_time=ABS(keyframe_time-keyj->nodeval.time);
+    diff_time = ABS(keyframe_time-keyj->time);
     if(diff_time<minkeytime){
       minkey=keyj;
       minkeytime=diff_time;
@@ -2917,22 +2926,48 @@ void ScriptSetTourView(scriptdata *scripti){
   switch(scripti->ival2){
     case 0:
       viewtourfrompath=0;
-      keyframe_snap=0;
       break;
     case 1:
       viewtourfrompath=1;
-      keyframe_snap=0;
       break;
     case 2:
       viewtourfrompath=0;
-      keyframe_snap=1;
       break;
     default:
       viewtourfrompath=0;
-      keyframe_snap=0;
       break;
   }
   UpdateTourState();
+}
+
+/* ------------------ ScriptSetSliceBounds ------------------------ */
+
+void ScriptSetSliceBounds(scriptdata *scripti){
+  int set_valmin, set_valmax;
+  float valmin, valmax;
+  char *quantity;
+
+  set_valmin = scripti->ival;
+  set_valmax = scripti->ival2;
+  valmin = scripti->fval;
+  valmax = scripti->fval2;
+  quantity = scripti->quantity2;
+  SetSliceBounds(set_valmin, valmin, set_valmax, valmax, quantity);
+}
+
+/* ------------------ ScriptSetBoundBounds ------------------------ */
+
+void ScriptSetBoundBounds(scriptdata *scripti){
+  int set_valmin, set_valmax;
+  float valmin, valmax;
+  char *quantity;
+
+  set_valmin = scripti->ival;
+  set_valmax = scripti->ival2;
+  valmin = scripti->fval;
+  valmax = scripti->fval2;
+  quantity = scripti->quantity2;
+  SetBoundBounds(set_valmin, valmin, set_valmax, valmax, quantity);
 }
 
 /* ------------------ ScriptSetTimeVal ------------------------ */
@@ -3087,15 +3122,6 @@ void SetTimeVal(float timeval){
   }
 }
 
-/* ------------------ ScriptSmokeframes ------------------------ */
-
-void ScriptSmokeframes(scriptdata *scripti){
-  smoke_num = scripti->ival;
-  smoke_subset = scripti->ival2;
-  use_newsmoke = scripti->ival3;
-  Smoke3dCB(SMOKE_NEW);
-}
-
 /* ------------------ ScriptRGBtest ------------------------ */
 
 void ScriptRGBtest(scriptdata *scripti){
@@ -3109,6 +3135,7 @@ void ScriptRGBtest(scriptdata *scripti){
   rgb_test_rgb[2] = scripti->ival3;
   rgb_test_delta  = scripti->ival4;
   use_lighting = 0;
+  update_use_lighting = 1;
 }
 
 /* ------------------ ScriptSetViewpoint ------------------------ */
@@ -3119,10 +3146,14 @@ void ScriptSetViewpoint(scriptdata *scripti){
   viewpoint = scripti->cval;
   update_viewpoint_script = 3;
   strcpy(viewpoint_script, viewpoint);
+  viewpoint_script_ptr = NULL;
   PRINTF("script: set viewpoint to %s\n\n",viewpoint);
   if(GetCamera(viewpoint) == NULL){
     fprintf(stderr, "*** Error: The viewpoint %s was not found\n", viewpoint);
     if(stderr2!=NULL)fprintf(stderr2, "*** Error: The viewpoint %s was not found\n", viewpoint);
+  }
+  else{
+    viewpoint_script_ptr = viewpoint_script;
   }
 }
 
@@ -3168,6 +3199,9 @@ void ScriptViewXYZMINMAXOrtho(int command){
     zaxis_angles[1] =  0.0;
     zaxis_angles[2] =  0.0;
     break;
+  default:
+    ASSERT(FFALSE);
+    break;
   }
   ResetGluiView(EXTERNAL_VIEW);
   use_customview=0;
@@ -3196,6 +3230,9 @@ void ScriptViewXYZMINMAXPersp(int command){
     break;
   case SCRIPT_VIEWZMAX:
     ResetDefaultMenu(VIEW_ZMAX);
+    break;
+  default:
+    ASSERT(FFALSE);
     break;
   }
 }
@@ -3462,7 +3499,7 @@ int RunScriptCommand(scriptdata *script_command){
       ScriptPartClassColor(scripti);
       break;
     case SCRIPT_SHOWSMOKESENSORS:
-      ScriptShowSmokeSensors(scripti);
+      ScriptShowSmokeSensors();
       break;
     case SCRIPT_SHOWPLOT3DDATA:
       ScriptShowPlot3dData(scripti);
@@ -3545,6 +3582,12 @@ int RunScriptCommand(scriptdata *script_command){
       returnval=1;
       ScriptSetTimeVal(scripti);
       break;
+    case SCRIPT_SETSLICEBOUNDS:
+      ScriptSetSliceBounds(scripti);
+      break;
+    case SCRIPT_SETBOUNDBOUNDS:
+      ScriptSetBoundBounds(scripti);
+      break;
     case SCRIPT_SETTOURVIEW:
       ScriptSetTourView(scripti);
       break;
@@ -3553,9 +3596,6 @@ int RunScriptCommand(scriptdata *script_command){
       break;
     case SCRIPT_SETVIEWPOINT:
       ScriptSetViewpoint(scripti);
-      break;
-    case SCRIPT_SMOKEFRAMES:
-      ScriptSmokeframes(scripti);
       break;
     case SCRIPT_RGBTEST:
       ScriptRGBtest(scripti);

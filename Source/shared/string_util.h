@@ -37,10 +37,25 @@ typedef struct {
 #define LABEL_EOF 1
 #define LABEL_ERR 2
 
+// avoid compiler warnings on C11 and later
+#ifdef pp_C11
+
+#ifdef pp_OSX_HIGHRES
+// 90 - 256
+#define DEG_SYMBOL -160
+#else
+// 176 - 256
+#define DEG_SYMBOL -80
+#endif
+
+#else
+
 #ifdef pp_OSX_HIGHRES
 #define DEG_SYMBOL 96
 #else
 #define DEG_SYMBOL 176
+#endif
+
 #endif
 
 #ifdef pp_HASH
@@ -59,6 +74,7 @@ typedef struct {
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
+EXTERNCPP char          *GetStringPtr(char *buffer);
 EXTERNCPP char          *GetFloatLabel(float val, char *label);
 EXTERNCPP char          *GetIntLabel(int val, char *label);
 EXTERNCPP char          *AppendString(char *S1, char *S2);
@@ -103,6 +119,8 @@ EXTERNCPP void           TrimBack(char *line);
 EXTERNCPP void           TrimCommas(char *line);
 EXTERNCPP char          *TrimFront(char *line);
 EXTERNCPP void           TrimZeros(char *line);
+EXTERNCPP char          *TrimFrontZeros(char *line);
+
 EXTERNCPP void           TrimMZeros(char *line);
 EXTERNCPP char          *Strstr(char *c, char *key);
 EXTERNCPP char          *STRSTR(char *c, const char *key);
@@ -110,6 +128,7 @@ EXTERNCPP void           ScaleString(const char *stringfrom, char *stringto, con
 EXTERNCPP void           ScaleFloat2String(float floatfrom, char *stringto, const float *scale);
 EXTERNCPP void           Num2String(char *string, float tval);
 EXTERNCPP void           Float2String(char *string, float tval, int ndecimals, int fixed_point);
+EXTERNCPP void           Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixedpoint_labels, int exponential_labels, char *exp_offset_label);
 EXTERNCPP char          *TrimFrontBack(char *buffer);
 EXTERNCPP int            STRCMP(const char *s1, const char *s2);
 EXTERNCPP char          *GetChid(char *file, char *buffer);

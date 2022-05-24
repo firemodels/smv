@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "string_util.h"
-#include "MALLOC.h"
-     
+#include "MALLOCC.h"
+
 int add_msgstring=0;
 int add_comments=0;
 
@@ -105,7 +105,7 @@ int main(int argc, char **argv){
       beg+=3;
       for(beg2=beg;beg2<buffer+sizeof(buffer);beg2++){
         char c;
-   
+
         c = *beg2;
         if((c>='a'&&c<='z')||(c>='A'&&c<='Z'))break;
         if((c=='1'||c=='2'||c=='3')&&(beg2[1]=='D'||beg2[1]=='d')){

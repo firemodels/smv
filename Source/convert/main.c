@@ -16,7 +16,7 @@ char label_prefix[100], label_suffix[100];
 
 /* ------------------ GetTokens ------------------------ */
 
-int GetTokens(unsigned char *tokens){
+int GetTokensComma(unsigned char *tokens){
   unsigned char *token;
   int ntokens=0;
 
@@ -28,7 +28,7 @@ int GetTokens(unsigned char *tokens){
     if(token==NULL)return ntokens;
     token = (unsigned char *)TrimFrontBack((char *)token);
     if(strlen((char *)token)==0)return ntokens;
-    sscanf(token, "%i", &val);
+    sscanf((const char *)token, "%i", &val);
     tokens[ntokens] = val;
     ntokens++;
     token = (unsigned char *)strtok(NULL, ",");
@@ -46,13 +46,13 @@ void GetPixelData(FILE *stream, unsigned char *bytes, int *nbytes){
   unsigned char tokens[100];
   int ntokens;
 
-  ntokens = GetTokens(tokens);
+  ntokens = GetTokensComma(tokens);
   if(ntokens>0)memcpy(bytes, tokens, ntokens);
   *nbytes = ntokens;
 
   for(;;){
     if(fgets(buffer, LENBUFFER, stdin)==NULL)break;
-    ntokens = GetTokens(tokens);
+    ntokens = GetTokensComma(tokens);
     if(ntokens==0)return;
     memcpy(bytes+(*nbytes), tokens, ntokens);
     *nbytes += ntokens;
@@ -217,7 +217,7 @@ void AdjustBytes(unsigned char *bytes, int i11, int i21, int i31, int i41){
 void OutputPixelDataInfo(unsigned char *bytes, int nbytes, int *byte_types, int ncols_data, int nrows_out, int ncols_out){
   int i, count=0;
 
-  if(1==0){ 
+  if(1==0){
     for(i = 0; i<nrows_out-4; i+=2){
       int j;
 

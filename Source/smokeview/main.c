@@ -10,6 +10,10 @@
 #include "string_util.h"
 #include "smokeviewvars.h"
 
+#ifdef WIN32
+#include <direct.h>
+#endif
+
 #ifdef pp_LUA
 #include "c_api.h"
 #include "lua_api.h"
@@ -18,12 +22,10 @@
 /* ------------------ Usage ------------------------ */
 
 void Usage(char *prog,int option){
-  char buffer[1000];
-
   PRINTF("%s\n", release_title);
   PRINTF("%s\n\n", _("Visualize fire/smoke flow simulations."));
-  PRINTF("Usage: %s [options] casename", GetBaseFileName(buffer, prog));
-  PRINTF("%s\n\n");
+  PRINTF("Usage: %s [options] casename", prog);
+  PRINTF("\n\n");
   PRINTF("%s\n", _(" casename       - project id (file names without the extension)"));
   PRINTF("%s\n", _(" -bindir dir    - specify location of smokeview bin directory"));
   PRINTF("%s\n", _(" -ini           - output smokeview parameter values to smokeview.ini"));
@@ -92,9 +94,6 @@ void Usage(char *prog,int option){
 #endif
 #ifdef pp_COMPRESS
     strcat(label, ", pp_COMPRESS");
-#endif
-#ifdef pp_DEG
-    strcat(label, ", pp_DEG");
 #endif
 #ifdef pp_DRAWISO
     strcat(label, ", pp_DRAWISO");
@@ -260,7 +259,7 @@ char *ParseCommandline(int argc, char **argv){
 
     openfile=0;
     filelength = 1024;
-    NewMemory((void **)&filename_local, (unsigned int)len_memory+4);
+    NewMemory((void **)&filename_local, (unsigned int)filelength);
     OpenSMVFile(filename_local,filelength,&openfile);
     if(openfile==1&&ResizeMemory((void **)&filename_local,strlen(filename_local)+1)!=0){
     }
@@ -343,6 +342,29 @@ char *ParseCommandline(int argc, char **argv){
   NewMemory((void **)&htmlslicecell_filename, len_casename+strlen("_slicecell.json")+1);
   STRCPY(htmlslicecell_filename, fdsprefix);
   STRCAT(htmlslicecell_filename, "_slicecell.json");
+
+#ifdef pp_CACHE_FILEBOUNDS
+  char frontdir[256];
+
+  if(Writable(".")==0){
+    strcpy(frontdir, GetHomeDir());
+    strcat(frontdir, dirseparator);
+  }
+  else{
+    strcpy(frontdir, "");
+  }
+  FREEMEMORY(bnds_slice_filename);
+  NewMemory((void **)&bnds_slice_filename, strlen(frontdir) + len_casename+strlen("_sf.bnds")+1);
+  STRCPY(bnds_slice_filename, frontdir);
+  STRCAT(bnds_slice_filename, fdsprefix);
+  STRCAT(bnds_slice_filename, "_sf.bnds");
+
+  FREEMEMORY(bnds_patch_filename);
+  NewMemory((void **)&bnds_patch_filename, strlen(frontdir) + len_casename+strlen("_bf.bnds")+1);
+  STRCPY(bnds_patch_filename, frontdir);
+  STRCAT(bnds_patch_filename, fdsprefix);
+  STRCAT(bnds_patch_filename, "_bf.bnds");
+#endif
 
   FREEMEMORY(boundinfo_filename);
   NewMemory((void **)&boundinfo_filename, len_casename + strlen(".binfo") + 1);
@@ -584,6 +606,9 @@ char *ParseCommandline(int argc, char **argv){
     }
     else if(strncmp(argv[i], "-fed", 4) == 0){
       compute_fed = 1;
+    }
+    else if(strncmp(argv[i], "-verbose", 8)==0){
+      verbose_output = 1;
     }
     else if(strncmp(argv[i], "-outline", 8)==0){
       show_geom_boundingbox = SHOW_BOUNDING_BOX_ALWAYS;
@@ -855,6 +880,15 @@ int main(int argc, char **argv){
   InitRandAB(1000000);
   InitVars();
   ParseCommonOptions(argc, argv);
+  if(show_help==1){
+    Usage("smokeview", HELP_SUMMARY);
+    return 1;
+  }
+  if(show_help==2){
+    printf("showing help 2\n");
+    Usage("smokeview", HELP_ALL);
+    return 1;
+  }
   smv_filename = ParseCommandline(argc, argv);
 
   progname=argv[0];
@@ -862,10 +896,6 @@ int main(int argc, char **argv){
   if(smv_filename==NULL){
     DisplayVersionInfo("Smokeview ");
     SMV_EXIT(0);
-  }
-  if(show_help==1){
-    Usage("smokeview",HELP_SUMMARY);
-    return 1;
   }
 
   prog_fullpath = progname;
@@ -900,16 +930,12 @@ int main(int argc, char **argv){
 
   return_code= SetupCase(smv_filename);
   if(return_code==0&&update_bounds==1){
-    float timer_update_bounds;
-
     INIT_PRINT_TIMER(timer_update_bounds);
     return_code=Update_Bounds();
     PRINT_TIMER(timer_update_bounds, "Update_Bounds");
   }
   if(return_code!=0)return 1;
   if(convert_ini==1){
-    float timer_read_ini;
-
     INIT_PRINT_TIMER(timer_read_ini);
     ReadIni(ini_from);
     PRINT_TIMER(timer_read_ini, "ReadIni");
@@ -925,7 +951,6 @@ int main(int argc, char **argv){
     return 0;
   }
   PRINTF("Startup time: %.1f s\n", startup_time);
-  PRINTF("\n");
 
   glutMainLoop();
   return 0;

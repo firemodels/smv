@@ -9,6 +9,9 @@ INC_DIR =  -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/env2mod
 FILTERC =
 FILTERF =
 
+# Intel compiler definitions
+include ../../scripts/intel_compiler.mak
+
 VPATH = $(SOURCE_DIR)/env2mod $(SOURCE_DIR)/shared  
 bin = .
 
@@ -52,7 +55,7 @@ no_target:
 # ------------- intel win 64 ----------------
 
 intel_win_64 : CFLAGS    = -Od -D WIN32 /nologo $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : CC        = icl
+intel_win_64 : CC        = $(I_CC)
 intel_win_64 : exe       = env2mod_win_64.exe
 
 intel_win_64 : $(objwin)
@@ -94,7 +97,7 @@ gnu_linux_64_db : $(obj)
 
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
 intel_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(INTEL_COMPINFO)
-intel_linux_64 : CC        = icc
+intel_linux_64 : CC        = $(I_ICC)
 intel_linux_64 : exe       = env2mod_linux_64
 
 intel_linux_64 : $(obj)

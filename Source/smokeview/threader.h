@@ -17,6 +17,7 @@
 // setup LOCKS
 
 #ifdef pp_THREAD
+  MMEXTERN pthread_mutex_t mutexSLICE_BOUND,mutexPATCH_BOUND,mutexPART2ISO,mutexPRINT,mutexMEM;
 
   #define LOCK_READALLGEOM     pthread_mutex_lock(&mutexREADALLGEOM);
   #define UNLOCK_READALLGEOM   pthread_mutex_unlock(&mutexREADALLGEOM);
@@ -108,6 +109,7 @@ MT_EXTERN pthread_t read_volsmoke_id;
 MT_EXTERN pthread_t triangles_id;
 MT_EXTERN pthread_t partthread_ids[MAX_THREADS];
 MT_EXTERN pthread_t generate_part_histogram_id;
+MT_EXTERN pthread_t *readbuffer_ids;
 #ifdef pp_SLICETHREAD
 MT_EXTERN pthread_t slicethread_ids[MAX_THREADS];
 #endif

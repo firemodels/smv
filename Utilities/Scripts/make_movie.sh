@@ -9,8 +9,9 @@ wait_cases_end()
   while [[ `qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep ${JOBPREFIX} | grep -v 'C$'` != '' ]]; do
      JOBS_REMAINING=`qstat -a | awk '{print $2 $4 $10}' | grep $(whoami) | grep ${JOBPREFIX} | grep -v 'C$' | wc -l`
      echo "Waiting for ${JOBS_REMAINING} cases to complete."
-     sleep 3
+     sleep 1
   done
+  TRENDER=$SECONDS
 }
 
 if [ $# -lt 1 ] ; then
@@ -90,6 +91,9 @@ cd $indir
 echoerr Creating the movie file $outdir/$moviename
 ffmpeg -y -r 30 -i $base$underscore%04d.png -vcodec libx264 -pix_fmt yuv420p $outdir/$moviename
 if [ -e $outdir/$moviename ]; then
+  if [ "$TRENDER" != "" ]; then
+    echoerr "images rendered in $TRENDER s"
+  fi
   echoerr The movie file $outdir/$moviename was created.
 else
   echoerr "***error ffmpeg failed to create the movie file $outdir/$moviename"

@@ -5,7 +5,7 @@
 
 /* ------------------ _Assert ------------------------ */
 
-void _Assert(char *filename, unsigned linenumber){
+void _Assert(const char *filename, unsigned linenumber){
   /*! \fn void _Assert(char *filename, unsigned linenumber)
       \brief displays the filename and line number if an assert is thrown
   */

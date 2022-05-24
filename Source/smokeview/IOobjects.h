@@ -282,6 +282,7 @@
 #define TOKEN_STRING 3
 #define TOKEN_TEXTURE 4
 
+void DrawBox2(float *origin, float *dxyz, float *color, int draw_outline);
 void DrawCone(float d1, float height, unsigned char *rgbcolor);
 void DrawTruncCone(float d1, float d2, float height, unsigned char *rgbcolor);
 void DrawSphere(float diameter, unsigned char *rgbcolor);

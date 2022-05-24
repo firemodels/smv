@@ -61,6 +61,16 @@ void CompressSVZip2(void){
 }
 
 #ifdef pp_THREAD
+/* ------------------ LockUnlockCompress ------------------------ */
+
+void LockUnlockCompress(int flag){
+  if(flag==1){
+    LOCK_COMPRESS;
+  }
+  else{
+    UNLOCK_COMPRESS;
+  }
+}
  /* ------------------ MtCompressSVZip ------------------------ */
 
 void *MtCompressSVZip(void *arg){
@@ -284,7 +294,88 @@ void GetAllPartBoundsMT(void){
 }
 #endif
 
-//***************************** multi threading triangle update ***********************************
+#ifdef pp_THREAD
+/* ------------------ MtReadBufferi ------------------------ */
+
+void *MtReadBufferi(void *arg){
+  ReadBufferi(arg);
+  pthread_exit(NULL);
+  return NULL;
+}
+#endif
+
+#ifdef pp_THREADBUFFER
+/* ------------------ ReadBuffer ------------------------ */
+
+int ReadBuffer(char *filename, int filesize, char *buffer, int nthreads, int use_multithread){
+  int i, filesizei, returnval;
+  readbufferdata *readbufferinfo;
+
+  returnval = 1;
+  filesizei = filesize/nthreads;
+
+  NewMemory((void **)&readbufferinfo, nthreads*sizeof(readbufferdata));
+#ifdef pp_THREAD
+  if(use_multithread==1&&nthreads>1){
+    NewMemory((void **)&readbuffer_ids, nthreads*sizeof(pthread_t));
+  }
+#endif
+
+  for(i = 0; i<nthreads; i++){
+    readbufferdata *readbufferi;
+    int start, end;
+
+    start = i*filesizei;
+    if(i==nthreads-1){
+      end = filesize;
+    }
+    else{
+      end = start+filesizei;
+    }
+    if(end>filesize)end = filesize;;
+
+    readbufferi = readbufferinfo+i;
+    readbufferi->buffer = buffer;
+    readbufferi->filename = filename;
+    readbufferi->start = start;
+    readbufferi->size = end-start;
+#ifdef pp_THREAD
+    if(use_multithread==1&&nthreads>1){
+      pthread_create(readbuffer_ids+i, NULL, MtReadBufferi, readbufferi);
+    }
+    else{
+      ReadBufferi(readbufferi);
+    }
+  }
+  if(use_multithread==1&&nthreads>1){
+    for(i = 0; i<nthreads; i++){
+      pthread_join(readbuffer_ids[i], NULL);
+    }
+  }
+#else
+    ReadBufferi(readbufferi);
+  }
+#endif
+  for(i = 0; i<nthreads; i++){
+    readbufferdata *readbufferi;
+
+    readbufferi = readbufferinfo+i;
+    if(readbufferi->returnval==0){
+      returnval = 0;
+      break;
+    }
+  }
+  FREEMEMORY(readbufferinfo);
+#ifdef pp_THREAD
+  if(use_multithread==1&&nthreads>1){
+    FREEMEMORY(readbuffer_ids);
+  }
+#endif
+  return returnval;
+}
+#endif
+
+  //***************************** multi threading triangle update ***********************************
 
 /* ------------------ MtUpdateTriangles ------------------------ */
 

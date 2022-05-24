@@ -327,7 +327,7 @@ extern "C" void GluiTrainerSetup(int main_window){
   glui_trainer->set_main_gfx_window( main_window );
   PANEL_smokeview = glui_trainer->add_panel(_("Data"));
   BUTTON_smoke3d = glui_trainer->add_button_to_panel(PANEL_smokeview,_("Smoke/Fire"),LOAD_SMOKE,TrainerCB);
-  if(AnySmoke(NULL)==0)BUTTON_smoke3d->disable();
+  if(AnySmoke()==0)BUTTON_smoke3d->disable();
   BUTTON_temp = glui_trainer->add_button_to_panel(PANEL_smokeview,_("Temperature"),LOAD_TEMP,TrainerCB);
   if(AnySlices("TEMPERATURE")==0)BUTTON_temp->disable();
   BUTTON_oxy = glui_trainer->add_button_to_panel(PANEL_smokeview,_("Oxygen"),LOAD_OXY,TrainerCB);

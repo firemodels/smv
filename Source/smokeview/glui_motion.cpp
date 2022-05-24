@@ -18,13 +18,8 @@
 #undef ROTATE_TRANSLATE
 #endif
 
-#ifdef pp_DEG
-unsigned char deg360[] = { '3','6','0',DEG_SYMBOL,0 };
-unsigned char deg90[] = {'9', '0', DEG_SYMBOL, 0};
-#else
 unsigned char deg360[] = { '3','6','0',0 };
 unsigned char deg90[] = {'9', '0', 0};
-#endif
 
 GLUI *glui_motion=NULL;
 
@@ -177,7 +172,10 @@ GLUI_Button *BUTTON_make_movie_batch=NULL;
 GLUI_Button *BUTTON_rotate90=NULL;
 GLUI_Button *BUTTON_90_z=NULL,*BUTTON_eyelevel=NULL, *BUTTON_floorlevel=NULL, *BUTTON_reset_saved_view=NULL;
 GLUI_Button *BUTTON_replace_view=NULL,*BUTTON_add_view=NULL,*BUTTON_delete_view=NULL;
-GLUI_Button *BUTTON_startup=NULL,*BUTTON_cycle_views=NULL;
+GLUI_Button *BUTTON_startup = NULL;
+GLUI_Button *BUTTON_cycle_views_user    = NULL;
+GLUI_Button *BUTTON_cycle_views_default = NULL;
+GLUI_Button *BUTTON_cycle_views_all     = NULL;
 GLUI_Button *BUTTON_snap=NULL;
 GLUI_Button *BUTTON_render_start=NULL ;
 GLUI_Button *BUTTON_motion_1=NULL;
@@ -199,7 +197,7 @@ GLUI_Listbox *LIST_movie_slice_index=NULL;
 GLUI_Listbox *LIST_movie_queue_index=NULL;
 GLUI_Listbox *LIST_viewpoints=NULL;
 GLUI_Listbox *LIST_windowsize=NULL;
-GLUI_Listbox *LIST_mesh2=NULL;
+GLUI_Listbox *LIST_rotate_about=NULL;
 GLUI_Listbox *LIST_render_skip=NULL;
 
 rolloutlistdata first_rollout, last_rollout;
@@ -418,8 +416,8 @@ extern "C" void UpdateShowRotationCenter(void){
 /* ------------------ UpdateGluiRotateAbout ------------------------ */
 
 void UpdateGluiRotateAbout(int val){
-  if(LIST_mesh2 != NULL)LIST_mesh2->set_int_val(val);
-  SceneMotionCB(MESH_LIST);
+  if(LIST_rotate_about != NULL)LIST_rotate_about->set_int_val(val);
+  SceneMotionCB(ROTATE_ABOUT);
 }
 
 /* ------------------ UpdateShowGravityVector ------------------------ */
@@ -470,6 +468,9 @@ void MovieCB(int val){
 
       strcpy(movie_ini_filename, movie_basename);
       strcat(movie_ini_filename, ".ini");
+      break;
+    default:
+      ASSERT(FFALSE);
       break;
   }
 }
@@ -715,7 +716,7 @@ void Camera2Quat(cameradata *ca, float *quat, float *rotation){
 /* ------------------ EnableDisableViews ------------------------ */
 
 void EnableDisableViews(void){
-  int ival;
+  int i, ival, have_user;
   cameradata *cex;
 
   ival = LIST_viewpoints->get_int_val();
@@ -727,11 +728,33 @@ void EnableDisableViews(void){
     cex = cex->next; // skip over first
     cex = cex->next; // skip over external
     if(cex->next == NULL){
-      BUTTON_cycle_views->disable();
+      BUTTON_cycle_views_user->disable();
+      BUTTON_cycle_views_default->disable();
+      BUTTON_cycle_views_all->disable();
     }
     else{
-      BUTTON_cycle_views->enable();
+      BUTTON_cycle_views_user->enable();
+      BUTTON_cycle_views_default->enable();
+      BUTTON_cycle_views_all->enable();
     }
+  }
+  have_user = 0;
+  for(i = 0; i<ncameras_sorted; i++){
+    cameradata *ca;
+
+    ca = cameras_sorted[i];
+    if(ca->view_id>1){
+      have_user = 1;
+      break;
+    }
+  }
+  if(have_user==0){
+    BUTTON_cycle_views_user->disable();
+    BUTTON_cycle_views_all->disable();
+  }
+  else{
+    BUTTON_cycle_views_user->enable();
+    BUTTON_cycle_views_all->enable();
   }
   if(ival<=1){
     BUTTON_replace_view->disable();
@@ -760,6 +783,42 @@ extern "C" void SetCurrentViewPoint(char *viewpoint_label){
       break;
     }
   }
+}
+
+/* ------------------ NextViewpoint ------------------------ */
+
+int NextViewpoint(int this_view, int view_type){
+  int i, istart;
+
+  istart = ncameras_sorted-1;
+  for(i = 0; i<ncameras_sorted; i++){
+    cameradata *ca;
+
+    ca = cameras_sorted[i];
+    if(ca->view_id==this_view){
+      istart = i;
+      break;
+    }
+  }
+  for(i = istart+1; i<2*ncameras_sorted; i++){
+    cameradata *ca;
+    int ii;
+
+    ii = i%ncameras_sorted;
+    ca = cameras_sorted[ii];
+    if(view_type==CYCLEVIEWS_ALL){
+      return ca->view_id;
+    }
+    else if(view_type==CYCLEVIEWS_USER){
+      if(ca->view_id<=1)continue;
+      return ca->view_id;
+    }
+    else{
+      if(ca->view_id>1)continue;
+      return ca->view_id;
+    }
+  }
+  return cameras_sorted[istart+1]->view_id;
 }
 
 /* ------------------ ViewpointCB ------------------------ */
@@ -810,7 +869,6 @@ extern "C" void ViewpointCB(int var){
   case REPLACE_CURRENT_VIEW:
     {
       int current_view_id=-1;
-      cameradata *cex;
 
       cex = &camera_list_first;
       cex = cex->next;
@@ -887,7 +945,12 @@ extern "C" void ViewpointCB(int var){
       LIST_viewpoints->set_int_val(0);
       selected_view = 0;
     }
-    ViewpointCB(RESTORE_VIEW);
+    if(selected_view<=1){
+      ResetDefaultMenu(selected_view);
+    }
+    else{
+      ResetGluiView(selected_view);
+    }
     EnableDisableViews();
     break;
   case RESTORE_VIEW:
@@ -936,37 +999,19 @@ extern "C" void ViewpointCB(int var){
     selected_view = startup_view_ini;
     WriteIni(LOCAL_INI, NULL);
     break;
-  case CYCLEVIEWS:
+  case CYCLEVIEWS_USER:
+  case CYCLEVIEWS_DEFAULT:
+  case CYCLEVIEWS_ALL:
     ival = LIST_viewpoints->get_int_val();
-    selected_view = ival;
-    cex = &camera_list_first;
-    cex = cex->next;
-    cex = cex->next;
-    if(ival<=1){
-      cex = cex->next;
-      if(cex->next==NULL)return;
-      ival = cex->view_id;
-    }
-    else{
-      for(ca = cex; ca->next!=NULL; ca = ca->next){
-        if(ca->view_id==ival)break;
-      }
-      cex = ca->next;
-      if(cex->next==NULL){
-        cex = &camera_list_first;
-        cex = cex->next;
-        cex = cex->next;
-        cex = cex->next;
-        if(cex->next==NULL)return;
-        ival = cex->view_id;
-      }
-      else{
-        ival = cex->view_id;
-      }
-    }
+    ival = NextViewpoint(ival, var);
     LIST_viewpoints->set_int_val(ival);
     selected_view = ival;
-    ViewpointCB(RESTORE_VIEW);
+    if(ival<=1){
+      ResetDefaultMenu(ival);
+    }
+    else{
+      ResetGluiView(ival);
+    }
     break;
   default:
     ASSERT(FFALSE);
@@ -1038,7 +1083,7 @@ extern "C" void UpdateGluiViewpointList(void){
   for(ca=camera_list_first.next;ca->next!=NULL;ca=ca->next){
     LIST_viewpoints->delete_item(ca->name);
   }
-  SortCameras();
+  SortCamerasID();
   for(i = 0; i < ncameras_sorted;i++){
     ca = cameras_sorted[i];
     LIST_viewpoints->add_item(ca->view_id, ca->name);
@@ -1075,7 +1120,9 @@ extern "C" void GluiMotionSetup(int main_window){
   int i;
 #define TRANSLATE_SPEED 0.005
   int *rotation_index;
+#ifdef ROTATE_TRANSLATE
   float *eye_xyz;
+#endif
 
   if(camera_label!=NULL){
     FREEMEMORY(camera_label);
@@ -1084,7 +1131,9 @@ extern "C" void GluiMotionSetup(int main_window){
 
   strcpy(camera_label,"current");
 
+#ifdef ROTATE_TRANSLATE
   eye_xyz=camera_current->eye;
+#endif
 
   if(glui_motion!=NULL){
     glui_motion->close();
@@ -1166,31 +1215,31 @@ extern "C" void GluiMotionSetup(int main_window){
   rotation_index=&camera_current->rotation_index;
   *rotation_index=glui_rotation_index_ini;
 
-  LIST_mesh2 = glui_motion->add_listbox_to_panel(ROLLOUT_rotation_type,_("Rotate about:"),rotation_index,MESH_LIST,SceneMotionCB);
-  LIST_mesh2->add_item(ROTATE_ABOUT_CLIPPING_CENTER, _("center of clipping planes"));
-  LIST_mesh2->add_item(ROTATE_ABOUT_USER_CENTER,_("user specified center"));
-  for(i=0;i<nmeshes;i++){
-    meshdata *meshi;
-
-    meshi = meshinfo + i;
-    LIST_mesh2->add_item(i,meshi->label);
+  LIST_rotate_about = glui_motion->add_listbox_to_panel(ROLLOUT_rotation_type,_("Rotate about:"), rotation_index, ROTATE_ABOUT,SceneMotionCB);
+  LIST_rotate_about->add_item(ROTATE_ABOUT_CLIPPING_CENTER, _("center of clipping planes"));
+  LIST_rotate_about->add_item(ROTATE_ABOUT_USER_CENTER,_("user specified center"));
+  if(have_geom_bb==1){
+    LIST_rotate_about->add_item(ROTATE_ABOUT_FDS_CENTER, _("FDS domain center"));
+    LIST_rotate_about->add_item(ROTATE_ABOUT_WORLD_CENTER, _("FDS+Geometry domain center"));
   }
-  LIST_mesh2->add_item(nmeshes,_("world center"));
-  LIST_mesh2->set_int_val(*rotation_index);
+  else{
+    LIST_rotate_about->add_item(ROTATE_ABOUT_WORLD_CENTER, _("FDS domain center"));
+  }
+  LIST_rotate_about->set_int_val(ROTATE_ABOUT_WORLD_CENTER);
 
   PANEL_user_center = glui_motion->add_panel_to_panel(ROLLOUT_rotation_type, "rotation center");
   CHECKBOX_show_rotation_center=glui_motion->add_checkbox_to_panel(PANEL_user_center,_("Show"),&show_rotation_center, CLIP_SHOW_ROTATE, SceneMotionCB);
   xcenCUSTOMsmv = DENORMALIZE_X(xcenCUSTOM);
   ycenCUSTOMsmv = DENORMALIZE_Y(ycenCUSTOM);
   zcenCUSTOMsmv = DENORMALIZE_Z(zcenCUSTOM);
-  SPINNER_xcenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"x:",GLUI_SPINNER_FLOAT,&xcenCUSTOMsmv,CUSTOM_ROTATION_X,SceneMotionCB);
-  SPINNER_ycenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"y:",GLUI_SPINNER_FLOAT,&ycenCUSTOMsmv,CUSTOM_ROTATION_Y,SceneMotionCB);
-  SPINNER_zcenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"z:",GLUI_SPINNER_FLOAT,&zcenCUSTOMsmv,CUSTOM_ROTATION_Z,SceneMotionCB);
+  SPINNER_xcenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"x:",GLUI_SPINNER_FLOAT,&xcenCUSTOMsmv, CUSTOM_ROTATION_XYZ,SceneMotionCB);
+  SPINNER_ycenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"y:",GLUI_SPINNER_FLOAT,&ycenCUSTOMsmv, CUSTOM_ROTATION_XYZ,SceneMotionCB);
+  SPINNER_zcenCUSTOM=glui_motion->add_spinner_to_panel(PANEL_user_center,"z:",GLUI_SPINNER_FLOAT,&zcenCUSTOMsmv, CUSTOM_ROTATION_XYZ,SceneMotionCB);
   SPINNER_xcenCUSTOM->set_float_limits(DENORMALIZE_X(0.0),DENORMALIZE_X(1.0));
   SPINNER_ycenCUSTOM->set_float_limits(DENORMALIZE_Y(0.0),DENORMALIZE_Y(1.0));
   SPINNER_zcenCUSTOM->set_float_limits(DENORMALIZE_Z(0.0),DENORMALIZE_Z(1.0));
 
-  SceneMotionCB(MESH_LIST);
+  SceneMotionCB(ROTATE_ABOUT);
 
   PANEL_anglebuttons = glui_motion->add_panel_to_panel(ROLLOUT_rotation_type,"",GLUI_PANEL_NONE);
   BUTTON_90_z=glui_motion->add_button_to_panel(PANEL_anglebuttons,"90 deg",EYE_ROTATE_90,SceneMotionCB);
@@ -1257,7 +1306,7 @@ extern "C" void GluiMotionSetup(int main_window){
   }
 
   PANEL_gslice_center = glui_motion->add_panel_to_panel(ROLLOUT_gslice,_("rotation center"),true);
-  SPINNER_gslice_center_x=glui_motion->add_spinner_to_panel(PANEL_gslice_center,"x:",GLUI_SPINNER_FLOAT,gslice_xyz,GSLICE_TRANSLATE, GSliceCB);
+  SPINNER_gslice_center_x=glui_motion->add_spinner_to_panel(PANEL_gslice_center,"x:",GLUI_SPINNER_FLOAT,gslice_xyz,  GSLICE_TRANSLATE, GSliceCB);
   SPINNER_gslice_center_y=glui_motion->add_spinner_to_panel(PANEL_gslice_center,"y:",GLUI_SPINNER_FLOAT,gslice_xyz+1,GSLICE_TRANSLATE, GSliceCB);
   SPINNER_gslice_center_z=glui_motion->add_spinner_to_panel(PANEL_gslice_center,"z:",GLUI_SPINNER_FLOAT,gslice_xyz+2,GSLICE_TRANSLATE, GSliceCB);
   SPINNER_gslice_center_x->set_float_limits(xbar0,DENORMALIZE_X(xbar),GLUI_LIMIT_CLAMP);
@@ -1296,14 +1345,16 @@ extern "C" void GluiMotionSetup(int main_window){
 
   BUTTON_delete_view = glui_motion->add_button_to_panel(PANEL_reset1, _("Delete"), DELETE_VIEW, ViewpointCB);
   delete_view_is_disabled = 0;
-  BUTTON_startup = glui_motion->add_button_to_panel(PANEL_reset1, _("Apply at startup"), STARTUP, ViewpointCB);
-  BUTTON_cycle_views = glui_motion->add_button_to_panel(PANEL_reset1, _("Cycle"), CYCLEVIEWS, ViewpointCB);
+  BUTTON_cycle_views_default = glui_motion->add_button_to_panel(PANEL_reset1, _("Cycle Default"), CYCLEVIEWS_DEFAULT, ViewpointCB);
+  BUTTON_cycle_views_user    = glui_motion->add_button_to_panel(PANEL_reset1, _("Cycle User"),    CYCLEVIEWS_USER,    ViewpointCB);
+  BUTTON_cycle_views_all     = glui_motion->add_button_to_panel(PANEL_reset1, _("Cycle All"),     CYCLEVIEWS_ALL,     ViewpointCB);
 
   glui_motion->add_column_to_panel(PANEL_reset, true);
   PANEL_reset2 = glui_motion->add_panel_to_panel(PANEL_reset, "", false);
 
-  BUTTON_replace_view = glui_motion->add_button_to_panel(PANEL_reset2, _("Replace"), REPLACE_VIEW, ViewpointCB);
   BUTTON_add_view = glui_motion->add_button_to_panel(PANEL_reset2, _("Add"), ADD_VIEW, ViewpointCB);
+  BUTTON_replace_view = glui_motion->add_button_to_panel(PANEL_reset2, _("Replace"), REPLACE_VIEW, ViewpointCB);
+  BUTTON_startup = glui_motion->add_button_to_panel(PANEL_reset2, _("Apply at startup"),  STARTUP,            ViewpointCB);
   EDIT_view_label = glui_motion->add_edittext_to_panel(PANEL_reset2, _("Edit:"), GLUI_EDITTEXT_TEXT, camera_label, LABEL_VIEW, ViewpointCB);
 
   ROLLOUT_projection = glui_motion->add_rollout_to_panel(ROLLOUT_viewA,_("Window properties"), false,WINDOW_ROLLOUT,MotionRolloutCB);
@@ -1564,7 +1615,7 @@ extern "C" void GluiMotionSetup(int main_window){
 
     LIST_movie_slice_index = glui_motion->add_listbox_to_panel(ROLLOUT_make_movie_batch, "slice:", &movie_slice_index, MOVIE_SLICE_INDEX, MovieCB);
     for(i = 0; i<nslicemenuinfo; i++){
-      char *cdir[] = {" ", "x=", "y=", "z=", " "};
+      const char *cdir[] = {" ", "x=", "y=", "z=", " "};
       slicedata *slicei;
       slicemenudata *slicemi;
       char label[100], *quantity, cposition[25];
@@ -1666,10 +1717,15 @@ extern "C" void UpdateWindowSizeList(void){
 /* ------------------ UpdateTranslate ------------------------ */
 
 extern "C" void UpdateTranslate(void){
-  float *eye_xyz,*az_elev;
+  float *eye_xyz;
+#ifdef ROTATE_TRANSLATE
+  float *az_elev;
+#endif
 
   eye_xyz = camera_current->eye;
+#ifdef ROTATE_TRANSLATE
   az_elev = camera_current->az_elev;
+#endif
 
   d_eye_xyz[0]=eye_xyz[0]-eye_xyz0[0];
   d_eye_xyz[1]=eye_xyz[1]-eye_xyz0[1];
@@ -1700,7 +1756,6 @@ extern "C" void UpdateTranslate(void){
 /* ------------------ UpdateRotationIndex ------------------------ */
 
 extern "C" void UpdateRotationIndex(int val){
-  float *az_elev;
   int *rotation_index;
 
   rotation_index = &camera_current->rotation_index;
@@ -1727,6 +1782,11 @@ extern "C" void UpdateRotationIndex(int val){
         camera_current->ycen = ycenCUSTOM;
         camera_current->zcen = zcenCUSTOM;
       }
+      else if(*rotation_index==ROTATE_ABOUT_FDS_CENTER){
+        camera_current->xcen = NORMALIZE_X((xbar0FDS + xbarFDS)/2.0);
+        camera_current->ycen = NORMALIZE_Y((ybar0FDS + ybarFDS)/2.0);
+        camera_current->zcen = NORMALIZE_Z((zbar0FDS + zbarFDS)/2.0);
+      }
       else{
         camera_current->xcen = ((camera_current->clip_xmin == 1 ? clipinfo.xmin : xbar0ORIG) + (camera_current->clip_xmax == 1 ? clipinfo.xmax : xbarORIG)) / 2.0;
         camera_current->ycen = ((camera_current->clip_ymin == 1 ? clipinfo.ymin : ybar0ORIG) + (camera_current->clip_ymax == 1 ? clipinfo.ymax : ybarORIG)) / 2.0;
@@ -1737,26 +1797,26 @@ extern "C" void UpdateRotationIndex(int val){
       }
     }
   }
+
+  xcenCUSTOM = camera_current->xcen;
+  ycenCUSTOM = camera_current->ycen;
+  zcenCUSTOM = camera_current->zcen;
+  xcenCUSTOMsmv = DENORMALIZE_X(xcenCUSTOM);
+  ycenCUSTOMsmv = DENORMALIZE_Y(ycenCUSTOM);
+  zcenCUSTOMsmv = DENORMALIZE_Z(zcenCUSTOM);
+  if(SPINNER_xcenCUSTOM!=NULL)SPINNER_xcenCUSTOM->set_float_val(xcenCUSTOMsmv);
+  if(SPINNER_ycenCUSTOM!=NULL)SPINNER_ycenCUSTOM->set_float_val(ycenCUSTOMsmv);
+  if(SPINNER_zcenCUSTOM!=NULL)SPINNER_zcenCUSTOM->set_float_val(zcenCUSTOMsmv);
+
   if(*rotation_index!=ROTATE_ABOUT_USER_CENTER){
-    xcenCUSTOM = camera_current->xcen;
-    ycenCUSTOM = camera_current->ycen;
-    zcenCUSTOM = camera_current->zcen;
-    xcenCUSTOMsmv = DENORMALIZE_X(xcenCUSTOM);
-    ycenCUSTOMsmv = DENORMALIZE_Y(ycenCUSTOM);
-    zcenCUSTOMsmv = DENORMALIZE_Z(zcenCUSTOM);
-    if(SPINNER_xcenCUSTOM!=NULL)SPINNER_xcenCUSTOM->set_float_val(xcenCUSTOMsmv);
-    if(SPINNER_ycenCUSTOM!=NULL)SPINNER_ycenCUSTOM->set_float_val(ycenCUSTOMsmv);
-    if(SPINNER_zcenCUSTOM!=NULL)SPINNER_zcenCUSTOM->set_float_val(zcenCUSTOMsmv);
+    float *az_elev;
+
+    az_elev = camera_current->az_elev;
+    az_elev[0]                 = 0.0;
+    az_elev[1]                 = 0.0;
+    camera_current->azimuth    = 0.0;
+    camera_current->view_angle = 0.0;
   }
-
-  az_elev = camera_current->az_elev;
-
-  az_elev[0]=0.;
-  az_elev[1]=0.;
-
-  camera_current->azimuth=0.0;
-
-  camera_current->view_angle=0.0;
 
   UpdateMeshList1(val);
 
@@ -1802,7 +1862,7 @@ extern "C" void ShowHideTranslate(int var){
     if(RADIO_rotation_type!=NULL)RADIO_rotation_type->set_int_val(rotation_type);
     if(BUTTON_eyelevel!=NULL)BUTTON_eyelevel->disable();
     if(BUTTON_floorlevel!=NULL)BUTTON_floorlevel->disable();
-    if(LIST_mesh2!=NULL)LIST_mesh2->enable();
+    if(LIST_rotate_about!=NULL)LIST_rotate_about->enable();
     if(CHECKBOX_show_rotation_center!=NULL)CHECKBOX_show_rotation_center->enable();
     if(BUTTON_snap!=NULL)BUTTON_snap->enable();
     break;
@@ -1818,7 +1878,7 @@ extern "C" void ShowHideTranslate(int var){
     if(RADIO_rotation_type!=NULL)RADIO_rotation_type->set_int_val(rotation_type);
     if(BUTTON_eyelevel!=NULL)BUTTON_eyelevel->disable();
     if(BUTTON_floorlevel!=NULL)BUTTON_floorlevel->disable();
-    if(LIST_mesh2!=NULL)LIST_mesh2->enable();
+    if(LIST_rotate_about!=NULL)LIST_rotate_about->enable();
     if(CHECKBOX_show_rotation_center!=NULL)CHECKBOX_show_rotation_center->enable();
     if(BUTTON_snap!=NULL)BUTTON_snap->enable();
     break;
@@ -1834,7 +1894,7 @@ extern "C" void ShowHideTranslate(int var){
     if(RADIO_rotation_type!=NULL)RADIO_rotation_type->set_int_val(rotation_type);
     if(BUTTON_eyelevel!=NULL)BUTTON_eyelevel->enable();
     if(BUTTON_floorlevel!=NULL)BUTTON_floorlevel->enable();
-    if(LIST_mesh2!=NULL)LIST_mesh2->disable();
+    if(LIST_rotate_about!=NULL)LIST_rotate_about->disable();
     if(CHECKBOX_show_rotation_center!=NULL)CHECKBOX_show_rotation_center->disable();
     if(BUTTON_snap!=NULL)BUTTON_snap->disable();
     break;
@@ -1850,7 +1910,7 @@ extern "C" void ShowHideTranslate(int var){
     if(RADIO_rotation_type!=NULL)RADIO_rotation_type->set_int_val(rotation_type);
     if(BUTTON_eyelevel!=NULL)BUTTON_eyelevel->disable();
     if(BUTTON_floorlevel!=NULL)BUTTON_floorlevel->disable();
-    if(LIST_mesh2!=NULL)LIST_mesh2->enable();
+    if(LIST_rotate_about!=NULL)LIST_rotate_about->enable();
     if(CHECKBOX_show_rotation_center!=NULL)CHECKBOX_show_rotation_center->enable();
     if(BUTTON_snap!=NULL)BUTTON_snap->enable();
     break;
@@ -2037,9 +2097,9 @@ extern "C" void SceneMotionCB(int var){
       return;
     case ROTATE_2AXIS:
       if(rotation_type==ROTATION_2AXIS){
+#ifdef ROTATE_TRANSLATE
         float *az_elev;
 
-#ifdef ROTATE_TRANSLATE
         az_elev = camera_current->az_elev;
         az_elev[0] = ROTATE_2axis->get_x();
         az_elev[1] = -ROTATE_2axis->get_y();
@@ -2121,7 +2181,7 @@ extern "C" void SceneMotionCB(int var){
 #ifdef pp_OSX
 #ifndef pp_QUART
       glui_screenWidth  /= 2;
-      glui_screenHeight /=2;
+      glui_screenHeight /= 2;
 #endif
 #endif
       SetScreenSize(&glui_screenWidth, &glui_screenHeight);
@@ -2142,19 +2202,13 @@ extern "C" void SceneMotionCB(int var){
     case FLOORLEVEL:
       desired_view_height=0.6;
       break;
-    case CUSTOM_ROTATION_X:
+    case CUSTOM_ROTATION_XYZ:
       xcenCUSTOM = NORMALIZE_X(xcenCUSTOMsmv);
-      UpdateRotationIndex(ROTATE_ABOUT_USER_CENTER);
-      break;
-    case CUSTOM_ROTATION_Y:
       ycenCUSTOM = NORMALIZE_Y(ycenCUSTOMsmv);
-      UpdateRotationIndex(ROTATE_ABOUT_USER_CENTER);
-      break;
-    case CUSTOM_ROTATION_Z:
       zcenCUSTOM = NORMALIZE_Z(zcenCUSTOMsmv);
       UpdateRotationIndex(ROTATE_ABOUT_USER_CENTER);
       break;
-    case MESH_LIST:
+    case ROTATE_ABOUT:
       glui_rotation_index = *rotation_index;
       if(*rotation_index==ROTATE_ABOUT_USER_CENTER){
         custom_worldcenter=1;
@@ -2162,8 +2216,19 @@ extern "C" void SceneMotionCB(int var){
         SPINNER_ycenCUSTOM->enable();
         SPINNER_zcenCUSTOM->enable();
       }
+      else if(*rotation_index==ROTATE_ABOUT_FDS_CENTER){
+        custom_worldcenter = 1;
+        SPINNER_xcenCUSTOM->disable();
+        SPINNER_ycenCUSTOM->disable();
+        SPINNER_zcenCUSTOM->disable();
+      }
       else if(*rotation_index==ROTATE_ABOUT_CLIPPING_CENTER){
         custom_worldcenter = 1;
+        SPINNER_xcenCUSTOM->disable();
+        SPINNER_ycenCUSTOM->disable();
+        SPINNER_zcenCUSTOM->disable();
+      }
+      else if(*rotation_index==ROTATE_ABOUT_WORLD_CENTER){
         SPINNER_xcenCUSTOM->disable();
         SPINNER_ycenCUSTOM->disable();
         SPINNER_zcenCUSTOM->disable();
@@ -2181,12 +2246,19 @@ extern "C" void SceneMotionCB(int var){
       else if(*rotation_index==ROTATE_ABOUT_USER_CENTER){
         UpdateRotationIndex(ROTATE_ABOUT_USER_CENTER);
       }
+      else if(*rotation_index==ROTATE_ABOUT_FDS_CENTER){
+        UpdateRotationIndex(ROTATE_ABOUT_FDS_CENTER);
+      }
       else if(*rotation_index==ROTATE_ABOUT_CLIPPING_CENTER){
         UpdateRotationIndex(ROTATE_ABOUT_CLIPPING_CENTER);
       }
+      else if(*rotation_index==ROTATE_ABOUT_WORLD_CENTER){
+        UpdateCurrentMesh(meshinfo);
+        UpdateRotationIndex(ROTATE_ABOUT_WORLD_CENTER);
+      }
       else{
         UpdateCurrentMesh(meshinfo);
-        UpdateRotationIndex(nmeshes);
+        UpdateRotationIndex(ROTATE_ABOUT_WORLD_CENTER);
       }
       update_rotation_center=1;
       return;
@@ -2356,9 +2428,7 @@ extern "C" void SceneMotionCB(int var){
     case WINDOW_RESIZE:
     case WINDOWSIZE_LIST:
     case SNAPSCENE:
-    case CUSTOM_ROTATION_X:
-    case CUSTOM_ROTATION_Y:
-    case CUSTOM_ROTATION_Z:
+    case CUSTOM_ROTATION_XYZ:
     case ROTATE_2AXIS:
     case WINDOW_COLORS:
     case COLOR_FLIP:
@@ -2372,8 +2442,8 @@ extern "C" void SceneMotionCB(int var){
 /* ------------------ UpdateMeshList1 ------------------------ */
 
 extern "C" void UpdateMeshList1(int val){
-  if(LIST_mesh2==NULL)return;
-  LIST_mesh2->set_int_val(val);
+  if(LIST_rotate_about==NULL)return;
+  LIST_rotate_about->set_int_val(val);
   if(val>=0&&val<nmeshes){
     RADIO_rotation_type->set_int_val(ROTATION_2AXIS);
     HandleRotationType(ROTATION_2AXIS);
@@ -2671,6 +2741,9 @@ void RenderCB(int var){
         RenderCB(RENDER_RESOLUTION);
         RenderCB(RENDER_START_360);
         break;
+      default:
+	ASSERT(FFALSE);
+	break;
       }
     break;
     case RENDER_START_HIGHRES:

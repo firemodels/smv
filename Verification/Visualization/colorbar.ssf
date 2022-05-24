@@ -4,36 +4,30 @@ RENDERDIR
 //  colorbar_01.sf
 LOADSLCF
  QUANTITY='TEMPERATURE' PBY=0.6
-SETTIMEVAL
- 9.961175
 LOADINIFILE
  colorbar_low.ini
 SETVIEWPOINT
  view 1
-SETVIEWPOINT
- view 1
+SETTIMEVAL
+ 9.961175
 RENDERONCE
  colorbar_low
-RENDERONCE
- colorbar_low
+
 LOADINIFILE
  colorbar_med.ini
 SETVIEWPOINT
  view 1
-SETVIEWPOINT
- view 1
+SETTIMEVAL
+ 9.961175
 RENDERONCE
  colorbar_med
-RENDERONCE
- colorbar_med
+
 LOADINIFILE
  colorbar_high.ini
+SETTIMEVAL
+ 9.961175
 SETVIEWPOINT
  view 1
-SETVIEWPOINT
- view 1
-RENDERONCE
- colorbar_high
 RENDERONCE
  colorbar_high
 

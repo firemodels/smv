@@ -77,7 +77,7 @@ void    GLUI_RadioGroup::draw_group( int translate )
 
 /****************************** GLUI_RadioGroup::set_name() **********/
 
-void    GLUI_RadioGroup::set_name( char *text )
+void    GLUI_RadioGroup::set_name( const char *text )
 {
   strncpy(name,text,sizeof(GLUI_String));
 

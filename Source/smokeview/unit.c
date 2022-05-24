@@ -256,10 +256,10 @@ void InitUnits(void){
 
   NewMemory((void **)&(ut->units),ut->nunits*sizeof(f_unit));
   units=ut->units;
-  strcpy(units[0].unit,degC);
+  strcpy(units[0].unit,(const char *)degC);
   units[0].scale[0]=1.0;
   units[0].scale[1]=0.0;
-  strcpy(units[1].unit,degF);
+  strcpy(units[1].unit,(const char *)degF);
   units[1].scale[0]=1.8;
   units[1].scale[1]=32.0;
   strcpy(units[2].unit,"K");

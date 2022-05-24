@@ -1,3 +1,3 @@
 #!/bin/bash
-rm -f *.o
-make -f ../Makefile gnu_linux_64_db
+rm -f *.o *.mod
+make -f -j 4 ../Makefile gnu_linux_64_db

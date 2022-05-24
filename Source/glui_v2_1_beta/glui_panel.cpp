@@ -125,7 +125,7 @@ void    GLUI_Panel::draw( int x, int y )
 
 /****************************** GLUI_Panel::set_name() **********/
 
-void    GLUI_Panel::set_name( char *new_name )
+void    GLUI_Panel::set_name( const char *new_name )
 {
   strncpy(name,new_name,sizeof(GLUI_String));
 

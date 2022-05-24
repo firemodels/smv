@@ -1086,14 +1086,14 @@ void GetBoundaryDataZlib(patchdata *patchi, unsigned char *data, int ndata,
       local_count++;
     }
     if(fread(&compressed_size, 4, 1, stream)==0)break;
-    if(skip_frame==0&&local_count%boundframestep==0){
+    if(skip_frame==0&&local_count%tload_step==0){
       if(fread(datacopy, 1, compressed_size, stream)==0)break;
     }
     else{
       FSEEK(stream, compressed_size, SEEK_CUR);
     }
 
-    if(skip_frame==1||local_count%boundframestep!=0)continue;
+    if(skip_frame==1||local_count%tload_step!=0)continue;
     i++;
     if(i>=ntimes_local)break;
     ASSERT(i<ntimes_local);
@@ -1294,7 +1294,7 @@ void GetBoundarySizeInfo(patchdata *patchi, int *nframes, int *buffersize){
     if(frame_skip==1)continue;
 
     local_count++;
-    if(local_count%boundframestep!=0)continue;
+    if(local_count%tload_step!=0)continue;
 
     nf++;
     bsize += compressed_size;
@@ -1358,6 +1358,9 @@ void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *global_
       case PATCH_GEOMETRY_SLICE:
         continue;
         break;
+      default:
+	ASSERT(FFALSE);
+	break;
     }
   }
 }
@@ -2152,7 +2155,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         FORTskipdata(&file_unit,&framesizes);
         local_first = 0;
       }
-      for(n=0;n<boundframestep;n++){
+      for(n=0;n<tload_step;n++){
         if(error==0){
           int npatchval_iframe;
           int filesize;
@@ -2221,11 +2224,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     }
     CheckMemory;
     if(error!=0)break;
-    if(settmax_b!=0&&*meshi->patch_timesi>tmax_b)break;
+    if(use_tload_end!=0&&*meshi->patch_timesi>tload_end)break;
 
     switch(loadpatchbysteps){
       case UNCOMPRESSED_ALLFRAMES:
-        if(!(settmin_b!=0&&*meshi->patch_timesi<tmin_b)){
+        if(!(use_tload_begin!=0&&*meshi->patch_timesi<tload_begin)){
            meshi->npatch_times++;
           patchi->ntimes=meshi->npatch_times;
           if(meshi->npatch_times + 1 > maxtimes_boundary){
@@ -2315,8 +2318,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       }
     }
     GetBoundaryColors3(patchi, meshi->patchval, patchstart, npatchvals, meshi->cpatchval,
-      glui_setpatchmin, &glui_patchmin, glui_setpatchmax, &glui_patchmax,
-      &patchmin_global, &patchmax_global,
+      &glui_patchmin, &glui_patchmax,
       nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
       &patchi->extreme_min, &patchi->extreme_max);
     break;
@@ -2547,17 +2549,17 @@ FILE_SIZE GetGeomData(char *filename, int ntimes, int nvals, float *times, int *
     fseek(stream, geom_offsets[time_frame], SEEK_CUR);
   }
   for(iframe = frame_start; iframe<frame_stop; iframe++){
-    int nvals[4];
+    int nvals_local[4];
 
     FORTREAD(&time, 1, stream);
     if(time_frame==ALL_FRAMES||time_frame==iframe)times[count] = time;
     if(returncode==0)break;
     file_size += (4+4+4);
-    FORTREAD(nvals, 4, stream);
-    nvert_s = nvals[0];
-    ntri_s = nvals[1];
-    nvert_d = nvals[2];
-    ntri_d = nvals[3];
+    FORTREAD(nvals_local, 4, stream);
+    nvert_s = nvals_local[0];
+    ntri_s = nvals_local[1];
+    nvert_d = nvals_local[2];
+    ntri_d = nvals_local[3];
     file_size += (4+4*4+4);
     if(time_frame==ALL_FRAMES||time_frame==iframe)nstatics[count] = nvert_s+ntri_s;
 
@@ -2626,7 +2628,6 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   int ntimes_local;
   int i;
   int nvals;
-  float patchmin_global, patchmax_global;
   int n;
   int error;
   FILE_SIZE return_filesize = 0;
@@ -2653,6 +2654,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   if(slicei != NULL){
     slicei->loaded = 0;
     slicei->display = 0;
+    slicei->vloaded = 0;
     slicei->ntimes = 0;
     slicei->times = NULL;
   }
@@ -2662,6 +2664,8 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   FREEMEMORY(patchi->geom_ndynamics);
   FREEMEMORY(patchi->geom_ivals_static);
   FREEMEMORY(patchi->geom_ivals_dynamic);
+  FREEMEMORY(patchi->geom_vals_static);
+  FREEMEMORY(patchi->geom_vals_dynamic);
   FREEMEMORY(patchi->geom_vals);
   FREEMEMORY(patchi->geom_ivals);
   FREEMEMORY(patchi->geom_times);
@@ -2710,6 +2714,8 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     NewMemory((void **)&patchi->geom_times, ntimes_local*sizeof(float));
     NewMemory((void **)&patchi->geom_ivals_static, ntimes_local*sizeof(int *));
     NewMemory((void **)&patchi->geom_ivals_dynamic, ntimes_local*sizeof(int *));
+    NewMemory((void **)&patchi->geom_vals_static, ntimes_local*sizeof(float *));
+    NewMemory((void **)&patchi->geom_vals_dynamic, ntimes_local*sizeof(float *));
   }
   if(nvals>0){
     NewMemory((void **)&patchi->geom_vals, nvals*sizeof(float));
@@ -2740,8 +2746,15 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
   patchi->geom_ivals_static[0] = patchi->geom_ivals;
   patchi->geom_ivals_dynamic[0] = patchi->geom_ivals_static[0]+patchi->geom_nstatics[0];
   for(i = 1;i<ntimes_local;i++){
-    patchi->geom_ivals_static[i] = patchi->geom_ivals_dynamic[i-1]+patchi->geom_ndynamics[i-1];
-    patchi->geom_ivals_dynamic[i] = patchi->geom_ivals_static[i]+patchi->geom_nstatics[i];
+    patchi->geom_ivals_static[i]  = patchi->geom_ivals_dynamic[i-1] + patchi->geom_ndynamics[i-1];
+    patchi->geom_ivals_dynamic[i] = patchi->geom_ivals_static[i]    + patchi->geom_nstatics[i];
+  }
+
+  patchi->geom_vals_static[0]  = patchi->geom_vals;
+  patchi->geom_vals_dynamic[0] = patchi->geom_vals_static[0] + patchi->geom_nstatics[0];
+  for(i = 1; i<ntimes_local; i++){
+    patchi->geom_vals_static[i]  = patchi->geom_vals_dynamic[i-1] + patchi->geom_ndynamics[i-1];
+    patchi->geom_vals_dynamic[i] = patchi->geom_vals_static[i]    + patchi->geom_nstatics[i];
   }
 
   patchi->loaded = 1;
@@ -2775,8 +2788,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
 
     GetMinMax(BOUND_PATCH, label, &set_valmin, &valmin, &set_valmax, &valmax);
     GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
-      set_valmin, &valmin, set_valmax, &valmax,
-      &patchmin_global, &patchmax_global,
+      &valmin, &valmax,
       nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
       &patchi->extreme_min, &patchi->extreme_max);
     if(cache_boundary_data==0){
@@ -2792,6 +2804,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     sb = slicebounds + slicetype;
     sb->label = &(slicei->label);
 
+    HideSlices(slicei->label.longlabel);
     slicei->loaded = 1;
     slicei->display = 1;
     slicei->ntimes = patchi->ngeom_times;
@@ -2804,16 +2817,16 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     slicei->valmin_smv = qmin;
     slicei->valmax_smv = qmax;
     if(slice_average_flag==1){
-      int data_per_timestep, nvals, ntimes;
+      int data_per_timestep, nvals2, ntimes;
       float *vals, *times;
 
       show_slice_average = 1;
       vals = slicei->patchgeom->geom_vals;
-      nvals = slicei->patchgeom->geom_nvals;
+      nvals2 = slicei->patchgeom->geom_nvals;
       times = patchi->geom_times;
       ntimes = patchi->ngeom_times;
-      data_per_timestep = nvals/ntimes;
-      if(TimeAverageData(vals, vals, nvals, data_per_timestep, times, ntimes, slice_average_interval)==1){
+      data_per_timestep = nvals2/ntimes;
+      if(TimeAverageData(vals, vals, nvals2, data_per_timestep, times, ntimes, slice_average_interval)==1){
         show_slice_average = 0;
       }
     }
@@ -2900,6 +2913,7 @@ FILE_SIZE ReadGeomData(patchdata *patchi, slicedata *slicei, int load_flag, int 
     }
     UpdateUnitDefs();
     UpdateTimes();
+    force_redisplay = 1;
     UpdateFrameNumber(1);
   }
   stept = 1;
@@ -2968,7 +2982,7 @@ void GLUI2GlobalBoundaryBounds(const char *key){
     patchdata *patchi;
 
     patchi = patchinfo + i;
-    if(strcmp(patchi->label.shortlabel,key)==0){
+    if(strcmp(key,"")==0||strcmp(patchi->label.shortlabel,key)==0){
       patchi->valmin = glui_patchmin;
       patchi->valmax = glui_patchmax;
 
@@ -4251,6 +4265,9 @@ void DrawBoundaryFrame(int flag){
   meshdata *meshi;
   int i;
 
+  if(use_tload_begin==1 && global_times[itimes]<tload_begin)return;
+  if(use_tload_end==1   && global_times[itimes]>tload_end)return;
+
   for(i=0;i<npatchinfo;i++){
     patchdata *patchi;
 
@@ -4258,14 +4275,14 @@ void DrawBoundaryFrame(int flag){
     if(patchi->structured == NO && patchi->loaded == 1 && patchi->display == 1){
       if(flag == DRAW_OPAQUE){
         if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
-          DrawGeomData(flag, patchi, GEOM_STATIC);
-//          DrawGeomData(flag, patchi, GEOM_DYNAMIC); // only allow boundary files that do not move for now
+          DrawGeomData(flag, NULL, patchi, GEOM_STATIC);
+//          DrawGeomData(flag, NULL, patchi, GEOM_DYNAMIC); // only allow boundary files that do not move for now
         }
       }
       else{
         if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
-          DrawGeomData(flag, patchi, GEOM_STATIC);
-          DrawGeomData(flag, patchi, GEOM_DYNAMIC);
+          DrawGeomData(flag, NULL, patchi, GEOM_STATIC);
+          DrawGeomData(flag, NULL, patchi, GEOM_DYNAMIC);
         }
       }
     }
@@ -4458,8 +4475,8 @@ int CompareMeshResolution(int dir, meshdata *meshi, meshdata *meshj){
   float grid_eps;
   float *dxyzi, *dxyzj;
 
-  dxyzi = meshi->dxyz;
-  dxyzj = meshj->dxyz;
+  dxyzi = meshi->dxyz_orig;
+  dxyzj = meshj->dxyz_orig;
   grid_eps = MIN(dxyzi[dir],dxyzj[dir])/2.0;
 
   if(ABS(dxyzi[dir]-dxyzj[dir]) < grid_eps)return 0;
@@ -4499,7 +4516,7 @@ int IsBoundaryDuplicate(patchdata *patchi, int flag){
     if((patchi->dir != patchj->dir)||patchj->dir==0)continue;
     if(strcmp(labeli->longlabel, labelj->longlabel) != 0)continue;
 
-    grid_eps = MAX(meshi->dxyz[patchi->dir],meshj->dxyz[patchi->dir]);
+    grid_eps = MAX(meshi->dxyz_orig[patchi->dir],meshj->dxyz_orig[patchi->dir]);
 
     xyzminj = patchj->xyz_min;
     xyzmaxj = patchj->xyz_max;

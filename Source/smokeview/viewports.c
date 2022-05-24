@@ -23,8 +23,10 @@ int GetStringWidth(char *string){
   if(string==NULL)return 0;
   switch(fontindex){
     case SMALL_FONT:
-      length = strlen(string);
-      length *= (288.0/235.0)*glutBitmapWidth(GLUT_BITMAP_HELVETICA_10, 'a');
+      for(c=string;*c!='\0';c++){
+        length += glutBitmapWidth(GLUT_BITMAP_HELVETICA_10, *c);
+      }
+      length *= (288.0/235.0);
 #ifdef pp_OSX_HIGHRES
       if(double_scale==1){
         length *= 2;
@@ -32,8 +34,10 @@ int GetStringWidth(char *string){
 #endif
       break;
     case LARGE_FONT:
-      length = strlen(string);
-      length *= (416.0/423.0)*glutBitmapWidth(GLUT_BITMAP_HELVETICA_18, 'a');
+      for(c=string;*c!='\0';c++){
+        length += glutBitmapWidth(GLUT_BITMAP_HELVETICA_18, *c);
+      }
+      length *= (416.0/423.0);
 #ifdef pp_OSX_HIGHRES
       if(double_scale==1){
         length *= 2;
@@ -62,23 +66,15 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
   *boundary_label_width = 0;
   *part_label_width     = 0;
   *plot3d_label_width   = 0;
-  *zone_label_width    = 0;
+  *zone_label_width     = 0;
 
   if(show_slice_colorbar_local==1){
     char slicecolorlabel[256];
-    float tttmin, tttmax;
     boundsdata *sb;
-    float slicerange;
-    int i;
 
     sb = slicebounds + slicefile_labelindex;
 
-    tttmin = sb->levels256[0];
-    tttmax = sb->levels256[255];
-    slicerange = tttmax - tttmin;
-
-    strcpy(slicecolorlabel, "SLICEA");
-    *slice_label_width = MAX(*slice_label_width, GetStringWidth(slicecolorlabel));
+    *slice_label_width = MAX(*slice_label_width, GetStringWidth("SLICEA"));
 
     strcpy(slicecolorlabel, sb->label->unit);
     strcat(slicecolorlabel, "A");
@@ -87,31 +83,15 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
     strcpy(slicecolorlabel, sb->label->shortlabel);
     strcat(slicecolorlabel, "A");
     *slice_label_width = MAX(*slice_label_width, GetStringWidth(slicecolorlabel));
-
-    for(i = 0; i < nrgb - 1; i++){
-      float val;
-
-      val = tttmin+i*slicerange/(nrgb-2);
-      Float2String(slicecolorlabel, val, ncolorlabel_digits, force_fixedpoint);
-      strcat(slicecolorlabel,"A");
-      *slice_label_width = MAX(*slice_label_width, GetStringWidth(slicecolorlabel));
-    }
   }
 
   if(showpatch == 1 && wall_cell_color_flag == 0){
-    float patchrange, tttmin, tttmax;
-    int i;
     patchdata *patchi;
     char boundary_colorlabel[256];
 
-    tttmin = boundarylevels256[0];
-    tttmax = boundarylevels256[255];
-    patchrange = tttmax-tttmin;
-
     patchi = patchinfo+boundarytypes[iboundarytype];
 
-    strcpy(boundary_colorlabel, "BNDRYA");
-    *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
+    *boundary_label_width = MAX(*boundary_label_width, GetStringWidth("BNDRYA"));
 
     strcpy(boundary_colorlabel, patchi->label.unit);
     strcat(boundary_colorlabel, "A");
@@ -120,31 +100,13 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
     strcpy(boundary_colorlabel, patchi->label.shortlabel);
     strcat(boundary_colorlabel, "A");
     *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
-
-    for(i = 0; i<nrgb-1; i++){
-      float val;
-
-      val = tttmin+i*patchrange/(nrgb-2);
-      Float2String(boundary_colorlabel, val, ncolorlabel_digits, force_fixedpoint);
-      strcat(boundary_colorlabel,"A");
-      *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
-    }
   }
 
   if(showevac_colorbar == 1 || (showsmoke == 1 && parttype != 0)){
-    int i;
-    float *partlevels256_ptr;
-    float tttmin, tttmax, partrange;
     char partcolorlabel[256];
 
-    partlevels256_ptr = partlevels256;
-    if(global_prop_index>= 0 &&global_prop_index < npart5prop){
-      partlevels256_ptr = part5propinfo[global_prop_index].ppartlevels256;
-    }
-
     if(parttype!=0){
-      strcpy(partcolorlabel, "PARTA");
-      *part_label_width = MAX(*part_label_width, GetStringWidth(partcolorlabel));
+      *part_label_width = MAX(*part_label_width, GetStringWidth("PARTA"));
 
       strcpy(partcolorlabel, partshortlabel);
       strcat(partcolorlabel, "A");
@@ -154,81 +116,18 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
       strcat(partcolorlabel, "A");
       *part_label_width = MAX(*part_label_width, GetStringWidth(partcolorlabel));
     }
-
-
-    tttmin = partlevels256_ptr[0];
-    tttmax = partlevels256_ptr[255];
-    partrange = tttmax - tttmin;
-
-    for(i = 0; i < nrgb - 1; i++){
-      float val;
-
-      val = tttmin + i*partrange / (nrgb - 2);
-      Float2String(partcolorlabel, val, ncolorlabel_digits, force_fixedpoint);
-      strcat(partcolorlabel,"A");
-      *part_label_width = MAX(*part_label_width, GetStringWidth(partcolorlabel));
-    }
   }
 
   if(showcfast_local==1){
-    char zonecolorlabel[256];
-    float zonerange, tttmin, tttmax;
-    int i;
-
-    tttmin = zonelevels256[0];
-    tttmax = zonelevels256[255];
-    zonerange = tttmax-tttmin;
-
-    strcpy(zonecolorlabel, "ZoneA");
-    *zone_label_width = MAX(*zone_label_width, GetStringWidth(zonecolorlabel));
-
-    strcpy(zonecolorlabel, "TempA");
-    *zone_label_width = MAX(*zone_label_width, GetStringWidth(zonecolorlabel));
-
-    for(i = 0; i<nrgb-1; i++){
-      float val;
-
-      val = tttmin+(i-1)*zonerange/(nrgb-2);
-      Float2String(zonecolorlabel, val, ncolorlabel_digits, force_fixedpoint);
-      strcat(zonecolorlabel, "A");
-      *zone_label_width = MAX(*zone_label_width, GetStringWidth(zonecolorlabel));
-    }
-    SNIFF_ERRORS("after zone left labels");
-    glPopMatrix();
+    *zone_label_width = MAX(*zone_label_width, GetStringWidth("ZoneA"));
+    *zone_label_width = MAX(*zone_label_width, GetStringWidth("TempA"));
   }
 
   if(showplot3d==1){
-    char plot3dcolorlabel[256];
-    int i;
-
-    strcpy(plot3dcolorlabel, "Plot3DA");
-    *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
-
-    strcpy(plot3dcolorlabel, "SpeedA");
-    *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
-
-    strcpy(plot3dcolorlabel, "hrrpuvA");
-    *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
-
-    strcpy(plot3dcolorlabel, "U-VELA");
-    *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
-
-    float *p3lev;
-    float plot3drange, tttmin, tttmax;
-
-    p3lev = p3levels256[plotn-1];
-    tttmin = p3lev[0];
-    tttmax = p3lev[255];
-    plot3drange = tttmax-tttmin;
-
-    for(i = 0; i<nrgb-1; i++){
-      float val;
-
-      val = tttmin+i*plot3drange/(nrgb-2);
-      Float2String(plot3dcolorlabel, val, ncolorlabel_digits, force_fixedpoint);
-      strcat(plot3dcolorlabel, "A");
-      *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth(plot3dcolorlabel));
-    }
+    *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth("Plot3DA"));
+    *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth("SpeedA"));
+    *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth("hrrpuvA"));
+    *plot3d_label_width = MAX(*plot3d_label_width, GetStringWidth("U-VELA"));
   }
 }
 
@@ -253,6 +152,8 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
     max_width = MAX(max_width, boundary_label_width);
     max_width = MAX(max_width, plot3d_label_width);
     max_width = MAX(max_width, zone_label_width);
+    max_width = MAX(max_width, max_colorbar_label_width+1);
+
     return max_width;
   }
 
@@ -303,7 +204,7 @@ void GetViewportInfo(void){
     text_width =  MAX(18, (25.0/36.0)*(scaled_font2d_height2width*(float)scaled_font2d_height));
   }
 
-  // full screen viewport dimensions
+  // ------------------------------------ full screen viewport dimensions -----------------------------------------------------
 
   VP_fullscreen.left = 0;
   VP_fullscreen.down = 0;
@@ -313,26 +214,26 @@ void GetViewportInfo(void){
   VP_fullscreen.top = VP_fullscreen.down + VP_fullscreen.height;
   VP_info.doit = 1;
 
-  // INFO viewport dimensions
+  // ------------------------------------ INFO viewport dimensions -----------------------------------------------------
 
   doit=0;
   if(visMeshlabel==1){
     ninfo_lines++;
     doit=1;
   }
-  if(((showplot3d==1||visGrid!=noGridnoProbe)&&visx_all==1)||visGrid==noGridProbe||visGrid==GridProbe){
+  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visx_all==1)||visGrid==NOGRID_PROBE||visGrid==GRID_PROBE){
     if(visgridloc==1){
       ninfo_lines++;
       doit=1;
     }
   }
-  if(((showplot3d==1||visGrid!=noGridnoProbe)&&visy_all==1)||visGrid==GridProbe||visGrid==noGridProbe){
+  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visy_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
     if(visgridloc==1){
       ninfo_lines++;
       doit=1;
     }
   }
-  if(((showplot3d==1||visGrid!=noGridnoProbe)&&visz_all==1)||visGrid==GridProbe||visGrid==noGridProbe){
+  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visz_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
     if(visgridloc==1){
       ninfo_lines++;
       doit=1;
@@ -355,11 +256,58 @@ void GetViewportInfo(void){
   VP_info.right = VP_info.left + VP_fullscreen.width;
   VP_fullscreen.top = VP_fullscreen.down + VP_info.height;
 
-  // timebar viewport dimensions
+  // ------------------------------------ hrr plot viewport dimensions -----------------------------------------------------
+
+  int plot_width;
+
+  plot_width = MAX(75, plot2d_size_factor*screenWidth);
+
+  VP_hrr_plot.left  = 5+titlesafe_offset;
+  VP_hrr_plot.right = VP_hrr_plot.left + plot_width + GetStringWidth("XXXXXX");
+  VP_hrr_plot.down  = v_space;
+  VP_hrr_plot.top   = VP_hrr_plot.down + v_space + plot_width  + 4*GetFontHeight();
+;
+  VP_hrr_plot.doit  = vis_hrr_plot;
+  VP_hrr_plot.text_height = text_height;
+  VP_hrr_plot.text_width  = text_width;
+  if(vis_hrr_plot==1){
+    VP_hrr_plot.width  = VP_hrr_plot.right-VP_hrr_plot.left;
+    VP_hrr_plot.height = VP_hrr_plot.top-VP_hrr_plot.down;
+  }
+  else{
+    VP_hrr_plot.width  = 0;
+    VP_hrr_plot.height = 0;
+  }
+
+  // ------------------------------------ slice plot viewport dimensions -----------------------------------------------------
+
+  VP_slice_plot.left  = 5+titlesafe_offset;
+  VP_slice_plot.right = VP_slice_plot.left + plot_width +  GetStringWidth("XXXXXX");
+  if(vis_hrr_plot==1){
+    VP_slice_plot.down = VP_hrr_plot.top+v_space;
+  }
+  else{
+    VP_slice_plot.down = VP_timebar.top+v_space;
+  }
+  VP_slice_plot.down += text_height;
+  VP_slice_plot.top         = VP_slice_plot.down + v_space + plot_width  + 4*GetFontHeight();
+  VP_slice_plot.doit        = vis_slice_plot;
+  VP_slice_plot.text_height = text_height;
+  VP_slice_plot.text_width  = text_width;
+  if(vis_slice_plot==1){
+    VP_slice_plot.width  = VP_slice_plot.right-VP_slice_plot.left;
+    VP_slice_plot.height = VP_slice_plot.top-VP_slice_plot.down;
+  }
+  else{
+    VP_slice_plot.width  = 0;
+    VP_slice_plot.height = 0;
+  }
+
+  // ------------------------------------ timebar viewport dimensions -----------------------------------------------------
 
   doit=0;
   if(showtime==1){
-    if(visTimelabel == 1 || visFramelabel == 1 || visHRRlabel == 1 || visTimebar == 1)doit=1;
+    if(visTimelabel == 1 || visFramelabel == 1 || vis_hrr_label == 1 || visTimebar == 1)doit=1;
     if(doit==0&&show_firecutoff==1&&current_mesh!=NULL){
       if(hrrpuv_loaded==1||temp_loaded==1)doit=1;
     }
@@ -369,6 +317,7 @@ void GetViewportInfo(void){
   if(show_horizontal_colorbar == 1||visAvailmemory==1)doit=1;
 
   VP_timebar.left = titlesafe_offset;
+  if(vis_hrr_plot==1 || vis_slice_plot==1)VP_timebar.left = VP_hrr_plot.right;
   VP_timebar.down = titlesafe_offset;
   VP_timebar.doit=doit;
   VP_timebar.text_height = text_height;
@@ -385,8 +334,9 @@ void GetViewportInfo(void){
   }
 #endif
     VP_timebar.width  = screenWidth-VP_info.width-2*titlesafe_offset;
+    if(vis_hrr_plot==1 || vis_slice_plot==1)VP_timebar.width -= (VP_hrr_plot.right - titlesafe_offset);
     temp_height = text_height + v_space;
-    if(visFramelabel==1||visHRRlabel==1||visAvailmemory==1)temp_height += (text_height+v_space);
+    if(visFramelabel==1||vis_hrr_label==1||visAvailmemory==1)temp_height += (text_height+v_space);
     VP_timebar.height = MAX(timebar_height + 2*v_space, temp_height);
     if(show_horizontal_colorbar==1)VP_timebar.height += hbar_height;
   }
@@ -402,7 +352,7 @@ void GetViewportInfo(void){
   VP_timebar.right = VP_timebar.left + VP_timebar.width;
   VP_timebar.top   = VP_timebar.down + VP_timebar.height;
 
-  // vertical colorbar viewport dimensions
+  // ------------------------------------ vertical colorbar viewport dimensions -----------------------------------------------------
 
   doit=1;
   if(showslice==1||(showvslice==1&&vslicecolorbarflag==1)){
@@ -436,7 +386,8 @@ void GetViewportInfo(void){
   VP_vcolorbar.right = VP_vcolorbar.left+VP_vcolorbar.width;
   VP_vcolorbar.top = VP_vcolorbar.down+VP_vcolorbar.height;
 
-  // title viewport dimensions
+  // ------------------------------------ title viewport dimensions -----------------------------------------------------
+
   titleinfo.left_margin = 0;
   titleinfo.top_margin = 0;
   titleinfo.bottom_margin = 5;
@@ -491,7 +442,7 @@ void GetViewportInfo(void){
   VP_title.right = VP_title.left + VP_title.width;
   VP_title.top = VP_title.down + VP_title.height;
 
-  // scene viewport dimensions
+  // ------------------------------------ scene viewport dimensions -----------------------------------------------------
 
   {
     int timebar_height;
@@ -502,11 +453,15 @@ void GetViewportInfo(void){
     VP_scene.text_height = text_height;
     VP_scene.text_width = text_width;
     VP_scene.left = titlesafe_offset;
+#ifndef pp_PLOT2D_OVERLAP
+    if(vis_hrr_plot==1 || vis_slice_plot==1)VP_scene.left = VP_hrr_plot.right;
+#endif
+
     VP_scene.down = titlesafe_offset + timebar_height;
-    VP_scene.width = MAX(1, screenWidth - 2 * titlesafe_offset - VP_vcolorbar.width);
+    VP_scene.right = screenWidth - 2 * titlesafe_offset - VP_vcolorbar.width;
+    VP_scene.width = MAX(1, VP_scene.right - VP_scene.left);
     if(dohist == 1)VP_scene.width += colorbar_label_width / 2;
     VP_scene.height = MAX(1, screenHeight - timebar_height - VP_title.height - 2 * titlesafe_offset);
-    VP_scene.right = VP_scene.left + VP_scene.width;
     VP_scene.top = VP_scene.down + VP_scene.height;
   }
 
@@ -882,13 +837,13 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  if((showplot3d==1||visGrid!=noGridnoProbe)&&(visx_all==1||visy_all||visz_all||visGrid==GridProbe||visGrid==noGridProbe)){
+  if((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&(visx_all==1||visy_all||visz_all||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE)){
     xyz[0]=DENORMALIZE_X(plotx_all[iplotx_all]);
     xyz[1]=DENORMALIZE_Y(ploty_all[iploty_all]);
     xyz[2]=DENORMALIZE_Z(plotz_all[iplotz_all]);
     mesh_xyz= GetMeshNoFail(xyz);
   }
-  if(((showplot3d==1||visGrid!=noGridnoProbe)&&visx_all==1)||visGrid==noGridProbe||visGrid==GridProbe){
+  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visx_all==1)||visGrid==NOGRID_PROBE||visGrid==GRID_PROBE){
     int iplotval;
     char buff_label[128], *buff_label_ptr;
 
@@ -904,7 +859,7 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
       info_lines++;
     }
   }
-  if(((showplot3d==1||visGrid!=noGridnoProbe)&&visy_all==1)||visGrid==GridProbe||visGrid==noGridProbe){
+  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visy_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
     int iplotval;
     char buff_label[128], *buff_label_ptr;
 
@@ -919,7 +874,7 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
       info_lines++;
     }
   }
-  if(((showplot3d==1||visGrid!=noGridnoProbe)&&visz_all==1)||visGrid==GridProbe||visGrid==noGridProbe){
+  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visz_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
     int iplotval;
     char buff_label[128], *buff_label_ptr;
 
@@ -951,6 +906,283 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
   }
 }
 
+  /* ------------------ DrawPlot2D ------------------------ */
+void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
+                float highlight_x, float highlight_y, float highlight_y2, int valid, int position,
+                int truncate_min, float global_valmin, int truncate_max, float global_valmax, char *quantity, char *quantity2, char *unit,
+                float left, float right, float down, float top){
+  float xmin, xmax, zmin, zmax, dx;
+  float zmax_display;
+  int i;
+  char cvalmin[20], cvalmax[20], cval[20];
+  char tvalmin[20], tvalmax[20];
+  int ndigits = 3;
+
+  float dfont = (float)GetFontHeight();
+
+  xmin = x[0];
+  xmax = xmin;
+  zmin = z[0];
+  zmax = zmin;
+  for(i = 1; i<n; i++){
+    xmin = MIN(xmin, x[i]);
+    xmax = MAX(xmax, x[i]);
+    zmin = MIN(zmin, z[i]);
+    zmax = MAX(zmax, z[i]);
+  }
+  if(xmax==xmin)xmax = xmin+1.0;
+
+  if(global_valmin<global_valmax){
+    zmin = global_valmin;
+    zmax = global_valmax;
+  }
+  zmax_display = zmax;
+  if(zmax==zmin)zmax = zmin+1.0;
+
+  Float2String(tvalmin, global_times[0], ndigits, force_fixedpoint);
+  Float2String(tvalmax, global_times[nglobal_times-1], ndigits, force_fixedpoint);
+  Float2String(cvalmin, zmin, ndigits, force_fixedpoint);
+  Float2String(cvalmax, zmax_display, ndigits, force_fixedpoint);
+  Float2String(cval, highlight_y, ndigits, force_fixedpoint);
+
+  dx = (xmax-xmin)/20.0;
+
+  glPushMatrix();
+
+  int plot_width = MAX(75, plot2d_size_factor*screenWidth);
+
+#define HSCALE2D(x) (5+(left) + plot_width*((x)-(xmin))/((xmax)-(xmin)))
+#define HSCALE2DLABEL(x) (10 + HSCALE2D(x))
+#define VSCALE2D(z) (dfont +(down) + plot_width*((z)-(zmin))/((zmax)-(zmin)))
+  glColor3fv(foregroundcolor);
+  glLineWidth(plot2d_line_width);
+  glBegin(GL_LINES);
+  for(i = 0; i<n-1; i++){
+    float val, val2;
+
+    val = z[i];
+    val2 = z[i + 1];
+    if(truncate_min == 1){
+      if(val<global_valmin)val = global_valmin;
+      if(val2<global_valmin)val2 = global_valmin;
+    }
+    if(truncate_max == 1){
+      if(val>global_valmax)val   = global_valmax;
+      if(val2>global_valmax)val2 = global_valmax;
+    }
+    glVertex2f(HSCALE2D(x[i]), VSCALE2D(val));
+    glVertex2f(HSCALE2D(x[i+1]), VSCALE2D(val2));
+  }
+  if(z2!=NULL){
+    glColor3f(1.0, 0.0, 0.0);
+    for(i = 0; i<n-1; i++){
+      float val, val2;
+
+      val = z2[i];
+      val2 = z2[i + 1];
+    if(truncate_min == 1){
+      if(val<global_valmin)val = global_valmin;
+      if(val2<global_valmin)val2 = global_valmin;
+    }
+    if(truncate_max == 1){
+      if(val>global_valmax)val = global_valmax;
+      if(val2>global_valmax)val2 = global_valmax;
+    }
+      glVertex2f(HSCALE2D(x[i]), VSCALE2D(val));
+      glVertex2f(HSCALE2D(x[i+1]), VSCALE2D(val2));
+    }
+    glColor3fv(foregroundcolor);
+  }
+  if(option==PLOT_ALL){
+    glVertex2f(HSCALE2D(xmin), VSCALE2D(zmin));
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmin));
+
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmin));
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmax));
+
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmax));
+    glVertex2f(HSCALE2D(xmin), VSCALE2D(zmax));
+
+    glVertex2f(HSCALE2D(xmin), VSCALE2D(zmax));
+    glVertex2f(HSCALE2D(xmin), VSCALE2D(zmin));
+
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmax));
+    glVertex2f(HSCALE2D(xmax+dx), VSCALE2D(zmax));
+
+    glVertex2f(HSCALE2D(xmax), VSCALE2D(zmin));
+    glVertex2f(HSCALE2D(xmax+dx), VSCALE2D(zmin));
+  }
+  glEnd();
+
+  if(option==PLOT_ALL&&showd_plot2d_labels==1){
+    float dy;
+
+#define DFONTY dfont/2.0
+    if(z2!=NULL){
+      dy = VSCALE2D(zmax)+DFONTY; OutputTextColor(redcolor, HSCALE2DLABEL(xmin), dy, quantity2);
+      dy += 1.1*dfont;            OutputTextColor(foregroundcolor, HSCALE2DLABEL(xmin), dy, quantity);
+    }
+    else{
+      dy = VSCALE2D(zmax)+DFONTY; OutputText(HSCALE2DLABEL(xmin), dy, quantity);
+    }
+
+    dy = VSCALE2D(zmax)-1.5*dfont+DFONTY; OutputText(HSCALE2DLABEL(xmax), dy, cvalmax);
+    dy -= 1.1*dfont;                    OutputText(HSCALE2DLABEL(xmax), dy, unit);
+    if(z2==NULL){
+      dy -= 1.1*dfont*(position+1);
+      OutputText(HSCALE2DLABEL(xmax), dy, cval);
+    }
+    else{
+      char cval2[255];
+
+      dy -= 1.1*dfont;                      OutputText(HSCALE2DLABEL(xmax), dy, cval);
+      Float2String(cval2, highlight_y2, ndigits, force_fixedpoint);
+      dy -= 1.1*dfont; OutputTextColor(redcolor, HSCALE2DLABEL(xmax), dy, cval2);
+    }
+
+    OutputText(HSCALE2DLABEL(xmax), VSCALE2D(zmin), cvalmin);
+    OutputText(HSCALE2DLABEL(xmin)-GetStringWidth("X"), VSCALE2D(zmin)-dfont, tvalmin);
+    OutputText(HSCALE2DLABEL(xmax)-GetStringWidth("X"), VSCALE2D(zmin)-dfont, tvalmax);
+  }
+
+  if(valid==1){
+    glPointSize(plot2d_point_size);
+
+    float val, val2;
+
+    val = highlight_y;
+    val2 = highlight_y2;
+    if(truncate_min == 1){
+      if(val<global_valmin)val = global_valmin;
+      if(val2<global_valmin)val2 = global_valmin;
+    }
+    if(truncate_max == 1){
+      if(val>global_valmax)val = global_valmax;
+      if(val2>global_valmax)val2 = global_valmax;
+    }
+
+    glBegin(GL_POINTS);
+    if(z2==NULL){
+      glColor3f(1.0, 0.0, 0.0);
+      glVertex2f(HSCALE2D(highlight_x), VSCALE2D(val));
+    }
+    else{
+      glColor3fv(foregroundcolor);
+      glVertex2f(HSCALE2D(highlight_x), VSCALE2D(val));
+      glColor3f(1.0, 0.0, 0.0);
+      glVertex2f(HSCALE2D(highlight_x), VSCALE2D(val2));
+    }
+    glColor3fv(foregroundcolor);
+    glEnd();
+  }
+  glPopMatrix();
+}
+
+/* ------------------------ ViewportHrrPlot ------------------------- */
+
+void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down) {
+  if(SubPortOrtho2(quad, &VP_hrr_plot, screen_left, screen_down)==0)return;
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  if(vis_hrr_plot==1&&global_times!=NULL){
+    float highlight_time = 0.0, highlight_val = 0.0, highlight_val2 = 0.0;
+    int valid = 1;
+    hrrdata *hi, *hi2=NULL, *hitime;
+    float *vals2=NULL;
+    int itime;
+    char *quantity2=NULL;
+    float valmin, valmax;
+
+    if(hrr_col>=0&&mlr_col>=0&&hoc_hrr==1&&(glui_hrr==hrr_col||glui_hrr==mlr_col)){
+      hi        = hrrinfo + mlr_col;
+      hi2       = hrrinfo + hrr_col;
+      vals2     = hi2->vals;
+      quantity2 = hi2->label.longlabel;
+      valmin    = MIN(hi->valmin, hi2->valmin);
+      valmax    = MAX(hi->valmax, hi2->valmax);
+    }
+    else{
+      hi     = hrrinfo+glui_hrr;
+      valmin = hi->valmin;
+      valmax = hi->valmax;
+    }
+    if(use_plot2d_hrr_min == 1){
+      valmin = plot2d_hrr_min;
+    }
+    if(use_plot2d_hrr_max == 1){
+      valmax = plot2d_hrr_max;
+    }
+
+    hitime = hrrinfo+time_col;
+
+    if(update_avg==1){
+      TimeAveragePlot2DData(hitime->vals, hi->vals_orig, hi->vals, hi->nvals);
+      if(hi2!=NULL){
+        TimeAveragePlot2DData(hitime->vals, hi2->vals_orig, hi2->vals, hi->nvals);
+      }
+      update_avg = 0;
+    }
+    highlight_time = global_times[itimes];
+    itime = GetInterval(highlight_time, hitime->vals, hitime->nvals);
+    itime = CLAMP(itime, 0, hitime->nvals-1);
+
+    highlight_val = hi->vals[itime];
+    if(hi2!=NULL)highlight_val2 = hi2->vals[itime];
+
+    DrawPlot2D(PLOT_ALL, hitime->vals, hi->vals, vals2, hi->nvals,
+               highlight_time, highlight_val, highlight_val2, valid, 0, use_plot2d_hrr_min, valmin, use_plot2d_hrr_max, valmax, hi->label.longlabel, quantity2, hi->label.unit,
+               VP_hrr_plot.left, VP_hrr_plot.right, VP_hrr_plot.down, VP_hrr_plot.top);
+  }
+
+}
+
+/* ------------------------ ViewportSlicePlot ------------------------- */
+
+void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
+  if(SubPortOrtho2(quad, &VP_slice_plot, screen_left, screen_down)==0)return;
+  SNIFF_ERRORS("111");
+  glMatrixMode(GL_MODELVIEW);
+  SNIFF_ERRORS("222");
+  glLoadIdentity();
+  SNIFF_ERRORS("333");
+  if(vis_slice_plot==1&&global_times!=NULL){
+    int i, position;
+
+    position = 0;
+    for(i = 0; i<nsliceinfo; i++){
+      slicedata *slicei;
+      devicedata *devicei;
+      float valmin, valmax;
+      float highlight_val;
+
+      slicei = sliceinfo+i;
+      devicei = &(slicei->vals2d);
+      if(slicei->loaded==0||devicei->valid==0)continue;
+
+      highlight_val = devicei->vals[itimes];
+
+      boundsdata *sb;
+
+      sb = slicebounds + slicefile_labelindex;
+      if(slice_plot_bound_option==1||sb->dev_min>sb->dev_max){
+        valmin = sb->levels256[0];
+        valmax = sb->levels256[255];
+      }
+      else{
+        valmin = sb->dev_min;
+        valmax = sb->dev_max;
+      }
+
+      DrawPlot2D(PLOT_ALL, devicei->times, devicei->vals, NULL, devicei->nvals,
+               global_times[itimes], highlight_val, 0.0, 1, position, 0, valmin, 0, valmax,
+               slicei->label.shortlabel, NULL, slicei->label.unit,
+               VP_slice_plot.left, VP_slice_plot.right, VP_slice_plot.down, VP_slice_plot.top);
+      position++;
+      SNIFF_ERRORS("444");
+    }
+  }
+}
+
 /* ------------------------ ViewportTimebar ------------------------- */
 
 void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
@@ -979,7 +1211,7 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
   timebar_right_width = MAX(MAX(framerate_width, memavail_width), memusage_width);
   timebar_right_width = MAX(timebar_right_width, delta);
 
-  if(visHRRlabel==1)hrr_width = GetStringWidth("HRR: 1000.0kW");
+  if(vis_hrr_label==1)hrr_width = GetStringWidth("HRR: 1000.0kW");
   if(visFrameTimelabel==1){
     if(visFramelabel==1)frame_width = GetStringWidth("Frame: 9999");
     if(visTimelabel==1)time_width = GetStringWidth("Time: 1234.11");
@@ -1003,15 +1235,15 @@ void ViewportTimebar(int quad, GLint screen_left, GLint screen_down) {
     DrawHorizontalColorbars();
   }
 
-  if((visTimelabel == 1 || visFramelabel == 1 || visHRRlabel == 1 || visTimebar == 1) && showtime==1 && geom_bounding_box_mousedown==0){
+  if((visTimelabel == 1 || visFramelabel == 1 || vis_hrr_label == 1 || visTimebar == 1) && showtime==1 && geom_bounding_box_mousedown==0){
     if(visTimelabel==1){
       OutputText(VP_timebar.left,v_space, timelabel);
     }
-    if(visFramelabel==1&&(visHRRlabel==0||hrrinfo==NULL)){
+    if(visFramelabel==1&&(vis_hrr_label==0||hrrptr==NULL)){
       OutputText(VP_timebar.left,v_space+VP_timebar.text_height+v_space, framelabel);
     }
-    if(visHRRlabel==1&&hrrinfo!=NULL){
-      OutputText(VP_timebar.left,v_space+VP_timebar.text_height+v_space, hrrinfo->hrrlabel);
+    if(vis_hrr_label==1&&hrrptr!=NULL){
+      OutputText(VP_timebar.left,v_space+VP_timebar.text_height+v_space, hrrlabel);
     }
     if(visTimebar==1){
       int timebar_height;
@@ -1586,25 +1818,6 @@ void GetSmokeDir(float *mm){
 
     minangle = 1000.0;
     iminangle = -10;
-    meshj->dx = meshj->xplt_orig[1] - meshj->xplt_orig[0];
-    meshj->dy = meshj->yplt_orig[1] - meshj->yplt_orig[0];
-    meshj->dz = meshj->zplt_orig[1] - meshj->zplt_orig[0];
-    meshj->dxyz[0] = meshj->dx;
-    meshj->dxyz[1] = meshj->dy;
-    meshj->dxyz[2] = meshj->dz;
-    meshj->dxy = meshj->dx*meshj->dx + meshj->dy*meshj->dy;
-    meshj->dxy = sqrt(meshj->dxy) / 2.0;
-    meshj->dxz = meshj->dx*meshj->dx + meshj->dz*meshj->dz;
-    meshj->dxz = sqrt(meshj->dxz) / 2.0;
-    meshj->dyz = meshj->dy*meshj->dy + meshj->dz*meshj->dz;
-    meshj->dyz = sqrt(meshj->dyz) / 2.0;
-
-    meshj->dy /= meshj->dx;
-    meshj->dz /= meshj->dx;
-    meshj->dxy /= meshj->dx;
-    meshj->dxz /= meshj->dx;
-    meshj->dyz /= meshj->dx;
-    meshj->dx = 1.0;
 
     for(i = -9;i <= 9;i++){
       if(i == 0)continue;
@@ -1936,7 +2149,7 @@ float DistPointLineSeg(float *point, float *xyz1, float *xyz2){
 void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxdist){
   int i, j, k;
   float xmin, xmax, ymin, ymax, zmin, zmax;
-  float minval, maxval, dist;
+  float minval, maxval;
   float dx, dy, dz;
 
   //         6------------7
@@ -1958,110 +2171,147 @@ void DistPointBox(float *point, float corners[8][3], float *mindist, float *maxd
   zmin = corners[0][2];
   zmax = corners[4][2];
 
-#define NIJK 5
+#define NIJK 10
 
   dx = (xmax - xmin)/(float)(NIJK-1);
   dy = (ymax - ymin)/(float)(NIJK-1);
   dz = (zmax - zmin)/(float)(NIJK-1);
+  minval = 1.0;
+  maxval = 0.0;
+  for(k = 0; k<NIJK; k++){
+    float xyz[3];
 
-  dist = DistPtXYZ(point, xmin, ymin, zmin);
-  minval = dist;
-  maxval = dist;
-  for(i = 0; i<NIJK; i++){
-    float xx;
-
-    xx = xmin+(float)i*dx;
-
+    xyz[2] = zmin+k*dz;
     for(j = 0; j<NIJK; j++){
-      float yy;
-      float dist;
+      xyz[1] = ymin+j*dy;
+      for(i = 0; i<NIJK; i++){
+        float dist;
 
-      yy     = ymin+(float)j*dy;
-      dist   = DistPtXYZ(point, xx, yy, zmin);
-      minval = MIN(minval, dist);
-      maxval = MAX(maxval, dist);
-
-      dist   = DistPtXYZ(point, xx, yy, zmax);
-      minval = MIN(minval, dist);
-      maxval = MAX(maxval, dist);
+        xyz[0] = xmin+i*dx;
+     //   if(PointInFrustum(xyz)==0)continue;
+        dist   = DistPtXYZ(point, xyz[0], xyz[1], xyz[2]);
+        if(minval>maxval){
+          minval = dist;
+          maxval = dist;
+        }
+        else{
+          minval = MIN(minval, dist);
+          maxval = MAX(maxval, dist);
+        }
+      }
     }
   }
+  if(minval<=maxval){
+    *mindist = minval;
+    *maxdist = maxval;
+  }
+  else{
+    float dist[8];
 
-  for(i = 0; i<NIJK; i++){
-    float xx;
-
-    xx = xmin+(float)i*dx;
-
-    for(k = 0; k<NIJK; k++){
-      float zz;
-      float dist;
-
-      zz     = zmin+(float)k*dz;
-      dist   = DistPtXYZ(point, xx, ymin, zz);
-      minval = MIN(minval, dist);
-      maxval = MAX(maxval, dist);
-
-      dist   = DistPtXYZ(point, xx, ymax, zz);
-      minval = MIN(minval, dist);
-      maxval = MAX(maxval, dist);
+    dist[0] = DistPtXYZ(point, xmin, ymin, zmin);
+    dist[1] = DistPtXYZ(point, xmin, ymax, zmin);
+    dist[2] = DistPtXYZ(point, xmax, ymin, zmin);
+    dist[3] = DistPtXYZ(point, xmax, ymax, zmin);
+    dist[4] = DistPtXYZ(point, xmin, ymin, zmax);
+    dist[5] = DistPtXYZ(point, xmin, ymax, zmax);
+    dist[6] = DistPtXYZ(point, xmax, ymin, zmax);
+    dist[7] = DistPtXYZ(point, xmax, ymax, zmax);
+    *mindist = dist[0];
+    *maxdist = dist[0];
+    for(i = 1; i<8; i++){
+      *mindist = MIN(*mindist, dist[i]);
+      *maxdist = MAX(*maxdist, dist[i]);
     }
   }
+}
 
-  for(j = 0; j<NIJK; j++){
-    float yy;
+/* ------------------ SetBoxCorners  ------------------------ */
 
-    yy = ymin+(float)j*dy;
+void SetBoxCorners(float box[8][3], float xmin, float xmax, float ymin, float ymax, float zmin, float zmax){
+  box[0][0] = xmin;
+  box[0][1] = ymin;
+  box[0][2] = zmin;
 
-    for(k = 0; k<NIJK; k++){
-      float zz;
-      float dist;
+  box[1][0] = xmax;
+  box[1][1] = ymin;
+  box[1][2] = zmin;
 
-      zz     = zmin+(float)k*dz;
-      dist   = DistPtXYZ(point, xmin, yy, zz);
-      minval = MIN(minval, dist);
-      maxval = MAX(maxval, dist);
+  box[2][0] = xmin;
+  box[2][1] = ymax;
+  box[2][2] = zmin;
 
-      dist   = DistPtXYZ(point, xmax, yy, zz);
-      minval = MIN(minval, dist);
-      maxval = MAX(maxval, dist);
-    }
-  }
+  box[3][0] = xmax;
+  box[3][1] = ymax;
+  box[3][2] = zmin;
 
-  *mindist = minval;
-  *maxdist = maxval;
+  box[4][0] = xmin;
+  box[4][1] = ymin;
+  box[4][2] = zmax;
+
+  box[5][0] = xmax;
+  box[5][1] = ymin;
+  box[5][2] = zmax;
+
+  box[6][0] = xmin;
+  box[6][1] = ymax;
+  box[6][2] = zmax;
+
+  box[7][0] = xmax;
+  box[7][1] = ymax;
+  box[7][2] = zmax;
 }
 
 /* ------------------ GetMinMaxDepth  ------------------------ */
 
-void GetMinMaxDepth(float *eye, float *min_depth, float *max_depth){
-  int i;
-  float depth, dx, dy, dz;
+void GetMinMaxDepth(float *min_depth, float *max_depth){
 
   DistPointBox(smv_eyepos, box_corners, min_depth, max_depth);
+
+  if(viscolorbarpath==1){
+    float box[8][3], mn_depth, mx_depth;
+    float xmin, xmax, ymin, ymax, zmin, zmax;
+#define BMIN -0.2
+#define BMAX 1.5
+    xmin = BMIN;
+    xmax = BMAX;
+    ymin = BMIN;
+    ymax = BMAX;
+    zmin = BMIN;
+    zmax = BMAX;
+    SetBoxCorners(box, xmin, xmax, ymin, ymax, zmin, zmax);
+    DistPointBox(smv_eyepos, box, &mn_depth, &mx_depth);
+
+    *min_depth = MIN(mn_depth, *min_depth);
+    *max_depth = MAX(mx_depth, *max_depth);
+  }
 
   if(have_box_geom_corners==1){
     float mindist, maxdist;
 
     DistPointBox(smv_eyepos, box_geom_corners, &mindist, &maxdist);
-    *min_depth = MAX(*min_depth, mindist);
+    *min_depth = MIN(*min_depth, mindist);
     *max_depth = MAX(*max_depth, maxdist);
   }
 
   // get distance to each tour node
 
   if(edittour==1){
+    int i;
+
     for(i = 0; i<ntourinfo; i++){
       tourdata *touri;
       keyframe *keyj;
 
       touri = tourinfo+i;
       for(keyj = (touri->first_frame).next; keyj->next!=NULL; keyj = keyj->next){
-        dx = NORMALIZE_X(keyj->eye[0])-smv_eyepos[0];
-        dy = NORMALIZE_Y(keyj->eye[1])-smv_eyepos[1];
-        dz = NORMALIZE_Z(keyj->eye[2])-smv_eyepos[2];
-        depth = sqrt(dx*dx+dy*dy+dz*dz);
-        *min_depth = MIN(*min_depth, depth);
-        *max_depth = MAX(*max_depth, depth);
+        float dist, dx, dy, dz;
+
+        dx = NORMALIZE_X(keyj->xyz_fds[0])-smv_eyepos[0];
+        dy = NORMALIZE_Y(keyj->xyz_fds[1])-smv_eyepos[1];
+        dz = NORMALIZE_Z(keyj->xyz_fds[2])-smv_eyepos[2];
+        dist = sqrt(dx*dx+dy*dy+dz*dz);
+        *min_depth = MIN(*min_depth, dist);
+        *max_depth = MAX(*max_depth, dist);
       }
     }
   }
@@ -2089,22 +2339,17 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     VP_scene.width=screenWidth;
   }
   if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
-    if((viewtourfrompath==1&&selectedtour_index>=0)||keyframe_snap==1){
+    if((tour_snap==1||viewtourfrompath==1)&&selectedtour_index>=0){
       tourdata *touri;
-      pathdata *pj;
 
       touri = tourinfo + selectedtour_index;
-      frame_index = GetTourFrame(touri,itimes);
-      if(keyframe_snap==1&&selected_frame!=NULL){
-        pj=&selected_frame->nodeval;
+      if(tour_snap==1){
+        SetTourXYZView(tour_snap_time, touri);
       }
       else{
-        pj = touri->pathnodes + frame_index;
+        SetTourXYZView(global_times[itimes], touri);
       }
-
-      camera_current->eye[0]=pj->eye[0];
-      camera_current->eye[1]=pj->eye[1];
-      camera_current->eye[2]=pj->eye[2];
+      memcpy(camera_current->eye, touri->xyz_smv, 3*sizeof(float));
       camera_current->az_elev[1]=0.0;
       camera_current->az_elev[0]=0.0;
      }
@@ -2131,35 +2376,18 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
   else{
     float min_depth, max_depth;
 
-    GetMinMaxDepth(smv_eyepos, &min_depth, &max_depth);
+    GetMinMaxDepth(&min_depth, &max_depth);
     if(is_terrain_case==1){
-      fnear = MAX(min_depth-0.75, 0.00001);
+      fnear = MAX(min_depth  -0.1,     0.00001);
+      ffar  = MAX(max_depth + 0.1, fnear+2.0);
     }
     else{
       fnear = MAX(min_depth-0.75, 0.001);
+      ffar  = MAX(max_depth+0.1,  farclip);
     }
-    ffar  = MAX(    max_depth+0.1, farclip);
+    if(viscolorbarpath==1)ffar = MAX(ffar, 5.0);
   }
-
   aperture_temp = Zoom2Aperture(zoom);
-
-  if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
-    if((viewtourfrompath==1&&selectedtour_index>=0)||keyframe_snap==1){
-      tourdata *touri;
-      pathdata *pj;
-
-      touri = tourinfo + selectedtour_index;
-      frame_index = GetTourFrame(touri,itimes);
-      if(keyframe_snap==1&&selected_frame!=NULL){
-        pj=&selected_frame->nodeval;
-      }
-      else{
-        pj = touri->pathnodes + frame_index;
-      }
-
-      aperture_temp=Zoom2Aperture(pj->zoom);
-    }
-  }
 
   widthdiv2 = fnear*tan(0.5*aperture_temp*DEG2RAD);
   fleft = -widthdiv2;
@@ -2237,22 +2465,19 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     /* set view direction for virtual tour */
     {
       tourdata *touri;
-      pathdata *pj;
 
       if(plotstate==DYNAMIC_PLOTS&&selected_tour!=NULL&&selected_tour->timeslist!=NULL){
-        if((viewtourfrompath==1&&selectedtour_index>=0)||keyframe_snap==1){
+        if((tour_snap==1||viewtourfrompath==1)&&selectedtour_index>=0){
           touri = tourinfo + selectedtour_index;
-          frame_index = GetTourFrame(touri,itimes);
-          if(keyframe_snap==1&&selected_frame!=NULL){
-            pj=&selected_frame->nodeval;
+          if(tour_snap==1){
+            SetTourXYZView(tour_snap_time, touri);
           }
           else{
-            pj = touri->pathnodes + frame_index;
+            SetTourXYZView(global_times[itimes], touri);
           }
-
-          viewx = pj->tour_view[0]+dEyeSeparation[0];
-          viewy = pj->tour_view[1]-dEyeSeparation[1];
-          viewz = pj->tour_view[2];
+          viewx = touri->view_smv[0]+dEyeSeparation[0];
+          viewy = touri->view_smv[1]-dEyeSeparation[1];
+          viewz = touri->view_smv[2];
           use_tour = 1;
         }
       }
@@ -2316,18 +2541,40 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
       glMultMatrixf(quat_rotation);
     }
     else{
+
+// rotate 90 deg clockwise about the y axis
+// X axis -> -Z axis
+//-X axis ->  Z axis
+// Y axis fixed
+// Z axis -> X axis
+
+#ifdef pp_WIN_CLANG
+      float     x_axis[3] = {0.0,  0.0, -1.0};
+      float neg_x_axis[3] = {0.0,  0.0,  1.0};
+      float     z_axis[3] = {1.0,  0.0,  0.0};
+#else
+      float     x_axis[3] = { 1.0, 0.0, 0.0};
+      float neg_x_axis[3] = {-1.0, 0.0, 0.0};
+      float     z_axis[3] = { 0.0, 0.0, 1.0};
+#endif
+      float     y_axis[3] = {0.0,  1.0,  0.0};
+      float neg_y_axis[3] = {0.0, -1.0,  0.0};
+
+#ifdef pp_WIN_CLANG
+      glRotatef(-90.0, y_axis[0], y_axis[1], y_axis[2]);
+#endif
       if(use_tour == 0){
         float azimuth, elevation;
 
         elevation = camera_current->az_elev[1];
-        azimuth = camera_current->az_elev[0];
+        azimuth   = camera_current->az_elev[0];
         if(rotation_type == ROTATION_2AXIS){
-          if(rotation_axis==1)glRotatef(elevation, 1.0, 0.0, 0.0);  /* rotate about x axis */
-          if(rotation_axis==-1)glRotatef(elevation, -1.0, 0.0, 0.0);  /* rotate about x axis */
-          if(rotation_axis==2)glRotatef(elevation, 0.0, 1.0, 0.0);  /* rotate about y axis */
-          if(rotation_axis==-2)glRotatef(elevation, 0.0, -1.0, 0.0);  /* rotate about y axis */
+          if(rotation_axis==1)glRotatef(elevation,      x_axis[0],     x_axis[1],     x_axis[2]);  // rotate about  x axis
+          if(rotation_axis==-1)glRotatef(elevation, neg_x_axis[0], neg_x_axis[1], neg_x_axis[2]);  // rotate about -x axis
+          if(rotation_axis==2)glRotatef(elevation,      y_axis[0],     y_axis[1],     y_axis[2]);  // rotate about  y axis
+          if(rotation_axis==-2)glRotatef(elevation, neg_y_axis[0], neg_y_axis[1], neg_y_axis[2]);  // rotate about -y axis
         }
-        glRotatef(azimuth, 0.0, 0.0, 1.0);      /* rotate about z axis */
+        glRotatef(azimuth, z_axis[0], z_axis[1], z_axis[2]);      /* rotate about z axis */
       }
     }
     {
@@ -2365,14 +2612,7 @@ void ViewportScene(int quad, int view_mode, GLint screen_left, GLint screen_down
     }
     if(nsmoke3dinfo>0&&show3dsmoke==1){
       SortSmoke3dinfo();
-#ifdef pp_GPUSMOKE
-      if(use_newsmoke==SMOKE3D_ORIG||smoke_mesh_aligned==1)GetSmokeDir(modelview_scratch);
-      if(update_smokeplanes==1||use_newsmoke==SMOKE3D_NEW){
-        UpdateSmoke3DPlanes(smoke3d_delta_perp, smoke3d_delta_par);
-      }
-#else
       GetSmokeDir(modelview_scratch);
-#endif
       SNIFF_ERRORS("after GetSmokeDir");
     }
     else if(showslice==1&&(showall_3dslices==1||nslice_loaded>1)){

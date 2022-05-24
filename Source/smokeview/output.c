@@ -17,25 +17,21 @@
 
 /* ------------------ PrintTime ------------------------ */
 
-void PrintTime(char *filepath, int line, float *timer, char *label){
+void PrintTime(const char *filepath, int line, float *timer, const char *label){
   char *file;
 
   if(show_timings==0)return;
   file = strrchr(filepath, '\\');
   if(file==NULL)file = strrchr(filepath, '/');
   if(file==NULL){
-    file = filepath;
+    file = (char *)filepath;
   }
   else{
     file++;
   }
-  if(*timer>0.0){
-    if(strcmp(label, "null") != 0){
-      STOP_TIMER(*timer);
-      if(*timer>0.1){
-        printf("%s/%i/%s %.1f s\n", file, line, label, *timer);
-      }
-    }
+  if(label!=NULL){
+    STOP_TIMER(*timer);
+    if(*timer>0.1)printf("%s/%i/%s %.1f s\n", file, line, label, *timer);
   }
   START_TIMER(*timer);
 }
@@ -302,14 +298,9 @@ void OutputSText2r(float x, float y, float z, char *string){
 
 void OutputSText2(float x, float y, float z, char *string){
   char *c;
-  int total_width=0;
   float scale_x, scale_y;
 
   if(string==NULL)return;
-  total_width=0;
-  for(c=string; *c != '\0'; c++){
-    total_width+=glutStrokeWidth(GLUT_STROKE_ROMAN,*c);
-  }
   glPushMatrix();
   scale_x = (25.0/36.0)*port_unit_width*(scaled_font2d_height2width*(float)scaled_font2d_height/(float)104.76)/(float)port_pixel_width;
   scale_y = (12.0/18.0)*(25.0/18.0)*port_unit_height*((float)scaled_font2d_height/(float)152.38)/(float)port_pixel_height;
@@ -331,7 +322,12 @@ void OutputSText2(float x, float y, float z, char *string){
 void Output3Val(float x, float y, float z, float val){
   char string[256];
 
-  sprintf(string,"%f",val);
+  if(sliceval_ndigits>0){
+    Float2String(string, val, sliceval_ndigits, 0);
+  }
+  else{
+    sprintf(string, "%f", val);
+  }
   TrimZeros(string);
   Output3Text(foregroundcolor,x,y,z,string);
 }
@@ -375,15 +371,13 @@ void OutputTextColor(float *fontcolor, float x, float y, char *string){
   char *c;
   float *fcolor;
 
-  fcolor = foregroundcolor;
+  if(string==NULL)return;
   if(fontcolor==NULL){
     fcolor = foregroundcolor;
   }
   else{
     fcolor = fontcolor;
   }
-
-  if(string==NULL)return;
   glColor3fv(fcolor);
   if(fontindex==SCALED_FONT){
     ScaleFont2D();

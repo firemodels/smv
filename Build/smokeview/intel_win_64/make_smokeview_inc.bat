@@ -12,9 +12,7 @@ if "%1" NEQ "-t" goto endif
   set SMV_TESTSTRING=test_
 :endif
 
-IF NOT DEFINED ONEAPI_ROOT goto skip_oneapi
-  set SMV_TESTFLAG=%SMV_TESTFLAG% -D pp_WIN_ONEAPI
-:skip_oneapi
+if x%ONEAPI_FORT_CAPS% == x1 set SMV_TESTFLAG=%SMV_TESTFLAG% -D pp_WIN_ONEAPI
 
 erase *.exe 2> Nul
 make SHELL="%ComSpec%" SMV_TESTFLAG="%SMV_TESTFLAG%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win_64

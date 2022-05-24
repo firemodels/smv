@@ -317,6 +317,18 @@ void TrimZeros(char *line){
   line[0] = '\0';
 }
 
+/* ------------------ TrimFrontZeros ------------------------ */
+
+char *TrimFrontZeros(char *line){
+  char *c;
+
+  for(c = line; c<line+strlen(line); c++){
+    if(c[0]!='0')return c;
+    if(c[0]=='0'&&c[1]=='.')return c;
+  }
+  return line;;
+}
+
 /* ------------------ TrimMZeros ------------------------ */
 
 void TrimMZeros(char *line){
@@ -378,24 +390,18 @@ void ScaleString(const char *stringfrom, char *stringto, const float *scale){
   Num2String(stringto,val);
 }
 
-/* ------------------ ScaleFloat ------------------------ */
+/* ------------------ ScaleFloat2Float ------------------------ */
 
 float ScaleFloat2Float(float floatfrom, const float *scale){
-  float val;
-
-  val = floatfrom;
-  if(scale!=NULL)val = scale[0]*val+scale[1];
-  return val;
+  if(scale!=NULL)floatfrom = scale[0]*floatfrom+scale[1];
+  return floatfrom;
 }
 
 /* ------------------ ScaleFloat2String ------------------------ */
 
 void ScaleFloat2String(float floatfrom, char *stringto, const float *scale){
-  float val;
-
-  val = floatfrom;
-  if(scale!=NULL)val = scale[0]*val+scale[1];
-  Num2String(stringto,val);
+  if(scale!=NULL)floatfrom = scale[0]*floatfrom+scale[1];
+  Num2String(stringto, floatfrom);
 }
 
 /* ------------------ GetFormat ------------------------ */
@@ -406,13 +412,181 @@ char *GetFormat(int bef, int aft, char *format){
   return format;
 }
 
+/* ------------------ GetMantissaExponent ------------------------ */
+
+float GetMantissaExponent(float x, int *exp10){
+  float xabs, mantissa;
+
+  xabs = ABS((double)x);
+  if(x==0.0f){
+    *exp10=0;
+    return 0.0f;
+  }
+  mantissa = log10((double)xabs);
+  *exp10 = (int)floor((double)mantissa);
+
+  mantissa = pow((double)10.0f,(double)mantissa-(double)*exp10);
+  if(x<0)mantissa = -mantissa;
+  return mantissa;
+}
+
+/* ------------------ GetCMantissaExponent ------------------------ */
+
+float GetCMantissaExponent(char *cval, int *exp10){
+  double x, xabs, mantissa;
+
+  sscanf(cval, "%lf", &x);
+
+  xabs = ABS((double)x);
+  if(x==0.0f){
+    *exp10=0;
+    return 0.0f;
+  }
+  mantissa = log10((double)xabs);
+  *exp10 = (int)floor((double)mantissa);
+
+  mantissa = pow((double)10.0f,(double)mantissa-(double)*exp10);
+  if(x<0)mantissa = -mantissa;
+  return (float)mantissa;
+}
+
+/* ------------------ RoundDecimalPos ------------------------ */
+
+void RoundDecimalPos(float val, char *cval, int decimalpos){
+  int i, lastdigit, nextpos = 0;
+  char label[256], *period;
+
+  val = ABS(val);
+  if(val>=1.0){
+    strcpy(label, "0");
+    sprintf(label+1, "%.12f", val);
+  }
+  else{
+    sprintf(label, "%.12f", val);
+  }
+  period = strchr(label, '.');
+  if(period==NULL){
+    strcat(label, ".0");
+    period = strchr(label, '.');
+  }
+  lastdigit = CLAMP(period-label+decimalpos, 0, strlen(label)-1);
+  nextpos = lastdigit+1;
+  if(label[nextpos]=='.')nextpos++;
+  label[nextpos] += 5;
+  for(i = nextpos; i>0; i--){
+    if(label[i]>'9'){
+      label[i] -= 10;
+      if(label[i-1]=='.')i--;
+      label[i-1]++;
+    }
+    else{
+      if(label[i]=='.')i--;
+    }
+  }
+  label[255] = 0;
+  for(i = nextpos; i<strlen(label); i++){
+    if(label[i]!='.')label[i] = '0';
+  }
+  TrimZeros(label);
+  strcpy(cval, TrimFrontZeros(label));
+}
+
+/* ------------------ RoundDecimal ------------------------ */
+
+void RoundDecimal(float val, char *cval, int ndigits){
+  if(val>0.0){
+    RoundDecimalPos(val, cval, ndigits);
+  }
+  else if(val==0.0){
+    strcpy(cval, "0.0");
+  }
+  else{
+    char label[30];
+    int signval;
+
+    signval = SIGN(val);
+    RoundDecimalPos(ABS(val), label, ndigits);
+    strcpy(cval, "");
+    if(signval<0.0&&strcmp(label,"0.0")!=0)strcat(cval, "-");
+    strcat(cval, label);
+  }
+  return;
+}
+
+/* ------------------ RoundPos ------------------------ */
+
+void RoundPos(float val, char *cval, int ndigits){
+  int i, count = 0, firstdigit=-1, lastdigit = 0;
+  char label[256];
+
+  val = ABS(val);
+  if(val>=1.0){
+    strcpy(label, "0");
+    sprintf(label+1, "%.12f", val);
+  }
+  else{
+    sprintf(label, "%.12f", val);
+  }
+  if(strchr(label, '.')==NULL){
+    strcat(label, ".0");
+  }
+  for(i = 0; i<(int)strlen(label); i++){
+    lastdigit++;
+    if(label[i]>='0'&&label[i]<='9'){
+      if(label[i]!='0'&&firstdigit<0)firstdigit = i;
+      if(firstdigit>=0)count++;
+      if(count>=ndigits)break;
+    }
+  }
+  if(label[lastdigit]=='.')lastdigit++;
+  label[lastdigit] += 5;
+  for(i = lastdigit; i>0; i--){
+    if(label[i]>'9'){
+      label[i] -= 10;
+      if(label[i-1]=='.')i--;
+      label[i-1]++;
+    }
+    else{
+      if(label[i]=='.')i--;
+    }
+  }
+  label[255] = 0;
+  for(i = lastdigit; i<strlen(label);i++){
+    if(label[i]!='.')label[i] = '0';
+  }
+  TrimZeros(label);
+  strcpy(cval, TrimFrontZeros(label));
+}
+
+/* ------------------ Round ------------------------ */
+
+void Round(float val, char *cval, int ndigits){
+  if(val>0.0){
+    RoundPos(val, cval, ndigits);
+  }
+  else if(val==0.0){
+    strcpy(cval, "0.0");
+  }
+  else{
+    char label[30];
+    int signval;
+
+    signval = SIGN(val);
+    RoundPos(ABS(val), label, ndigits);
+    strcpy(cval, "");
+    if(signval<0.0&&strcmp(label, "0.0")!=0)strcat(cval, "-");
+    strcat(cval, label);
+  }
+  return;
+}
+
 /* ------------------ Truncate ------------------------ */
 
 void Truncate(float val, char *cval, int ndigits){
   int i, count=0, have_period=0;
 
   sprintf(cval,"%f",val);
-  for(i = 0; i<strlen(cval); i++){
+  for(i = 0; i<(int)strlen(cval); i++){
     if(cval[i]=='.')have_period = 1;
     if(cval[i]=='.'||cval[i]=='-'||cval[i]=='+')continue;
     count++;
@@ -428,6 +602,136 @@ void Truncate(float val, char *cval, int ndigits){
   }
 }
 
+/* ------------------ ShiftDecimal ------------------------ */
+
+void ShiftDecimal(char *cval, int nshift){
+  int i, ii, iperiod;
+  char *period, cvalcopy[100], cvalcopy2[100], *trim;
+
+  period = strchr(cval, '.');
+  if(period==NULL)strcat(cval, ".");
+
+  ii = 0;
+  if(nshift<0){
+    for(i = 0; i<ABS(nshift); i++){
+      cvalcopy[ii++] = '0';
+    }
+  }
+  for(i = 0; i<strlen(cval); i++){
+    if(cval[i]=='.'){
+      iperiod = i;
+      continue;
+    }
+    cvalcopy[ii++] = cval[i];
+  }
+  if(nshift>0){
+    for(i=0; i<nshift; i++){
+      cvalcopy[ii++] = '0';
+    }
+  }
+  cvalcopy[ii] = 0;
+  if(nshift>0)iperiod += nshift;
+
+  ii = 0;
+  for(i = 0; i<iperiod; i++){
+    cvalcopy2[i] = cvalcopy[i];
+  }
+  cvalcopy2[iperiod] = '.';
+  for(i = iperiod; i<strlen(cvalcopy); i++){
+    cvalcopy2[i+1] = cvalcopy[i];
+  }
+  cvalcopy2[i+1] = 0;
+
+  TrimZeros(cvalcopy2);
+  trim = TrimFrontZeros(cvalcopy2);
+  strcpy(cval, trim);
+}
+
+/* ------------------ Floats2Strings ------------------------ */
+
+void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixedpoint_labels, int exponential_labels, char *exp_offset_label){
+  int exponent, exponent_min, exponent_max, exponent_val;
+  int i;
+  float valmax;
+  int exp_offset;
+  int doit;
+
+  valmax = MAX(ABS(vals[0]), ABS(vals[nvals-1]));
+
+  GetMantissaExponent(valmax, &exponent_max);
+  for(i=0; i<nvals; i++){
+    float val;
+    int ndecimals;
+
+    val = vals[i];
+    GetMantissaExponent(val, &exponent_val);
+    ndecimals = ndigits-1-exponent_max;
+    if(ndecimals<=0)ndecimals--;
+    RoundDecimal(val, c_vals[i], ndecimals);
+  }
+
+  exponent_min = 1;
+  exponent_max = 0;
+  for(i=0; i<nvals; i++){
+    float mantissa;
+
+    mantissa = GetCMantissaExponent(c_vals[i], &exponent);
+    if(ABS(mantissa)==0.0)continue;
+    if(exponent_max<exponent_min){
+      exponent_min = exponent;
+      exponent_max = exponent;
+    }
+    else{
+      exponent_min = MIN(exponent_min, exponent);
+      exponent_max = MAX(exponent_max, exponent);
+    }
+  }
+
+  exp_offset = (exponent_min/3)*3;
+
+  doit = 1;
+  if(exponent_min>4  && ndigits>=exponent_min)doit = 0;
+  if(exponent_max<-4 && ndigits>=ABS(exponent_max))doit = 0;
+  if(fixedpoint_labels==1)doit = 1;
+  if(exponential_labels==1)doit = 0;
+
+  if(doit==1){
+    if(ABS(exp_offset)>=3){
+      sprintf(exp_offset_label, "*10^%i", exp_offset);
+    }
+    else{
+      exp_offset = 0;
+      strcpy(exp_offset_label, "");
+    }
+    for(i=0; i<nvals; i++){
+      ShiftDecimal(c_vals[i], -exp_offset);
+    }
+  }
+  else{
+    int exp1, exp2;
+
+    strcpy(exp_offset_label, "");
+    GetCMantissaExponent(c_vals[0],       &exp1);
+    GetCMantissaExponent(c_vals[nvals-1], &exp2);
+    exponent_max = MAX(exp1, exp2);
+    for(i=0; i<nvals; i++){
+      float mantissa;
+      char c_mantissa[20];
+
+      mantissa = GetCMantissaExponent(c_vals[i], &exponent);
+      Round(mantissa, c_mantissa, ndigits - (exponent_max-exponent));
+      TrimZeros(c_mantissa);
+      if(strcmp(c_mantissa, "0.0")==0 || strcmp(c_mantissa, "-0.0")==0){
+        strcpy(c_vals[i], "0.0");
+      }
+      else{
+        sprintf(c_vals[i], "%sE%i ", c_mantissa, exponent);
+      }
+    }
+  }
+}
+
+
 /* ------------------ Float2String ------------------------ */
 
 void Float2String(char *c_val, float val, int ndigits, int fixedpoint_labels){
@@ -436,7 +740,7 @@ void Float2String(char *c_val, float val, int ndigits, int fixedpoint_labels){
 
   mantissa = GetMantissaExponent(ABS(val), &exponent);
   mantissa += 5.0*pow(10.0,-ndigits);
-  if(exponent>=0&&exponent<5||fixedpoint_labels==1){
+  if((exponent>=0&&exponent<5)||fixedpoint_labels==1||(ABS(val)<1000.0)){
     char c_abs_val[32];
 
     val = SIGN(val)*mantissa*pow(10.0,exponent);
@@ -621,24 +925,6 @@ void Array2String(float *vals, int nvals, char *string){
   strcat(string,cval);
 }
 
-/* ------------------ GetMantissaExponent ------------------------ */
-
-float GetMantissaExponent(float x, int *exp10){
-  float xabs, mantissa;
-
-  xabs = ABS((double)x);
-  if(x==0.0f){
-    *exp10=0;
-    return 0.0f;
-  }
-  mantissa = log10((double)xabs);
-  *exp10 = (int)floor((double)mantissa);
-
-  mantissa = pow((double)10.0f,(double)mantissa-(double)*exp10);
-  if(x<0)mantissa = -mantissa;
-  return mantissa;
-}
-
 /* ------------------ GetFloatLabel ------------------------ */
 
 char *GetFloatLabel(float val, char *label){
@@ -667,6 +953,41 @@ char *GetIntLabel(int val, char *label){
     sprintf(label, "%i", val);
   }
   return label;
+}
+
+/* ------------------ GetStringPtr ------------------------ */
+
+char *GetStringPtr(char *buffer){
+  int len_buffer;
+  char *bufferptr;
+  int first=-1, last=-1, i;
+
+  if(buffer==NULL)return NULL;
+  if(strlen(buffer)==0)return NULL;
+
+  for(i=0; i<strlen(buffer); i++){
+    if(buffer[i]!=' '){
+      first = i;
+      break;
+    }
+  }
+  if(first<0)return NULL;;
+
+  for(i=strlen(buffer)-1;i>=0;i--){
+    if(buffer[i]!=' '){
+      last = i;
+      break;
+    }
+  }
+  if(last<=0)return NULL;
+
+  len_buffer = 1 + last - first;
+  NewMemory((void **)&bufferptr, len_buffer+1);
+  for(i=0; i<len_buffer; i++){
+    bufferptr[i] = buffer[first+i];
+  }
+  bufferptr[len_buffer] = 0;
+  return bufferptr;
 }
 
 /* ------------------ GetString ------------------------ */
@@ -713,6 +1034,8 @@ char *Time2TimeLabel(float sv_time, float dt, char *timelabel, int fixed_point){
   TrimBack(timelabel);
   timelabelptr=TrimFront(timelabel);
   return timelabelptr;
+//  RoundDecimal(sv_time, timelabel, 4);
+//  return timelabel;
 }
 
 /* ------------------ Match ------------------------ */
@@ -1007,24 +1330,9 @@ int ReadLabelsBNDS(flowlabels *flowlabel, BFILE *stream, char *bufferD, char *bu
   TrimBack(buffer);
   len = strlen(buffer) + 1;// allow room for deg C symbol in case it is present
   if(NewMemory((void *)&flowlabel->unit, (unsigned int)(len + 1)) == 0)return LABEL_ERR;
-#ifdef pp_DEG
-  if(strlen(buffer) == 1 && strcmp(buffer, "C") == 0){
-    unsigned char *unit;
-
-    unit = (unsigned char *)flowlabel->unit;
-    unit[0] = DEG_SYMBOL;
-    unit[1] = 'C';
-    unit[2] = '\0';
-  }
-  else{
-    STRCPY(flowlabel->unit, buffer);
-  }
-#else
   STRCPY(flowlabel->unit, buffer);
-#endif
   return LABEL_OK;
 }
-
 
 /* ------------------ ReadLabels ------------------------ */
 
@@ -1076,21 +1384,7 @@ int ReadLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label){
   len = strlen(buffer)+1;// allow room for deg C symbol in case it is present
   if(flowlabel!=NULL){
     if(NewMemory((void *)&flowlabel->unit, (unsigned int)(len+1))==0)return LABEL_ERR;
-#ifdef pp_DEG
-    if(strlen(buffer)==1&&strcmp(buffer, "C")==0){
-      unsigned char *unit;
-
-      unit = (unsigned char *)flowlabel->unit;
-      unit[0] = DEG_SYMBOL;
-      unit[1] = 'C';
-      unit[2] = '\0';
-    }
-    else{
-      STRCPY(flowlabel->unit, buffer);
-    }
-#else
     STRCPY(flowlabel->unit, buffer);
-#endif
   }
   return return_val;
 }
@@ -1146,21 +1440,7 @@ int ReadPlot3DLabels(flowlabels *flowlabel, BFILE *stream, char *suffix_label, c
   len=strlen(buffer)+1;// allow room for deg C symbol in case it is present
   if(flowlabel!=NULL){
     flowlabel->unit = labels_static + 2*MAXPLOT3DLABELSIZE;
-#ifdef pp_DEG
-    if(strlen(buffer)==1&&strcmp(buffer, "C")==0){
-      unsigned char *unit;
-
-      unit = (unsigned char *)flowlabel->unit;
-      unit[0] = DEG_SYMBOL;
-      unit[1] = 'C';
-      unit[2] = '\0';
-    }
-    else{
-      STRCPY(flowlabel->unit, buffer);
-    }
-#else
     STRCPY(flowlabel->unit, buffer);
-#endif
   }
   return return_val;
 }
@@ -1687,7 +1967,7 @@ void PRINTversion(char *progname){
 #endif
 #ifdef WIN32
   PRINTF("Platform         : WIN64 ");
-#ifdef __INTEL_COMPILER
+#ifdef INTEL_COMPILER_ANY
   PRINTF(" (Intel C/C++)");
 #endif
   PRINTF("\n");

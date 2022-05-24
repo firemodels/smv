@@ -14,7 +14,7 @@
 
 /* ------------------ _Sniff_Errors ------------------------ */
 #ifdef pp_SNIFF_ERROR
-void _Sniff_Errors(char *whereat, char *file, int line){
+void _Sniff_Errors(const char *whereat, const char *file, int line){
   int error;
 
   while((error=glGetError())!=GL_NO_ERROR){
@@ -243,11 +243,13 @@ void DisplayVersionInfo(char *progname){
     }
 #endif
   }
+#ifdef pp_COMPRESS
   if(smokezippath!=NULL){
-    PRINTF("Smokezip         : %s\n",smokezippath);
+    if(verbose_output==1)PRINTF("Smokezip         : %s\n",smokezippath);
   }
+#endif
   if(texturedir!=NULL){
-    PRINTF("Texture directory: %s\n",texturedir);
+    if(verbose_output==1)PRINTF("Texture directory: %s\n",texturedir);
   }
 }
 

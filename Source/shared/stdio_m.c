@@ -167,6 +167,9 @@ int fseek_m(FILE_m *stream_m, long int offset, int whence){
     case SEEK_END:
       stream_m->buffer = stream_m->buffer_end + offset;
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
     }
     if(stream_m->buffer-stream_m->buffer_beg<0||stream_m->buffer-stream_m->buffer_end>=0)return_val = FAIL_m;
   }

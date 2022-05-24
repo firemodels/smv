@@ -48,7 +48,7 @@ int clearTitleLines(titledata *titleinfo_ptr) {
 }
 
  /* ------------------------ initialiseInfoHeader --------------------------- */
- 
+
 int initialiseInfoHeader(titledata *titleinfo_ptr,
                          char *release_title_string, char *smv_githash_string,
                          char *fds_githash_string, char *chidfilebase_string, char *fds_title_arg) {
@@ -79,7 +79,7 @@ int initialiseInfoHeader(titledata *titleinfo_ptr,
 }
 
  /* ------------------------ renderInfoHeader --------------------------- */
- 
+
 int renderInfoHeader(titledata *titleinfo_ptr) {
   float left, textdown;
 

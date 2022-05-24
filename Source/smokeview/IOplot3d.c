@@ -13,7 +13,7 @@
 void GetPlot3DHists(plot3ddata *p){
   int i;
 
-  for(i = 0; i<MAXPLOT3DVARS; i++){
+  for(i = 0; i<p->nvars; i++){
     histogramdata *histi;
     float *vals;
     int nvals;
@@ -54,7 +54,7 @@ void MergePlot3DHistograms(void){
 
     plot3di = plot3dinfo+i;
     if(plot3di->loaded==0)continue;
-    for(k = 0; k<MAXPLOT3DVARS; k++){
+    for(k = 0; k<plot3di->nvars; k++){
       MergeHistogram(full_plot3D_histograms+k, plot3di->histograms[k], MERGE_BOUNDS);
     }
   }
@@ -148,7 +148,7 @@ void  UpdatePlot3DColors(int ifile, int *errorcode){
     }
 
     GetPlot3DColors(nn,
-                    setp3min_all[nn], p3min_all + nn, setp3max_all[nn], p3max_all + nn,
+                    p3min_all + nn, p3max_all + nn,
                     nrgb_full, nrgb - 1, *(colorlabelp3 + nn), *(colorlabeliso + nn), p3levels[nn], p3levels256[nn],
                     plot3dinfo[ifile].extreme_min + nn, plot3dinfo[ifile].extreme_max + nn);
   }
@@ -167,7 +167,7 @@ int GetPlot3DBounds(plot3ddata *plot3di){
   ntotal = (meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
   iblank = meshi->c_iblank_node;
 
-  for(i = 0; i<MAXPLOT3DVARS; i++){
+  for(i = 0; i<plot3di->nvars; i++){
     int n;
 
     valmin = 1000000000.;
@@ -418,7 +418,6 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
       if(setp3min_all[nn]!=SET_MIN&&setp3min_all[nn]!=CHOP_MIN)setp3min_all[nn]=SET_MIN;
       if(setp3max_all[nn]!=SET_MAX&&setp3max_all[nn]!=CHOP_MAX)setp3max_all[nn]=SET_MAX;
     }
-    UpdateGlui();
   }
 
   GetPlot3DHists(p);
@@ -582,7 +581,7 @@ void DrawPlot3dTexture(meshdata *meshi){
   if(visiso==1){
     DrawStaticIso(currentsurfptr,p3dsurfacetype,p3dsurfacesmooth,2,0,plot3dlinewidth);
     if(surfincrement!=0)DrawStaticIso(currentsurf2ptr,p3dsurfacetype,p3dsurfacesmooth,2,0,plot3dlinewidth);
-    if(visGrid!=noGridnoProbe){
+    if(visGrid!=NOGRID_NOPROBE){
       if(use_transparency_data==1)TransparentOff();
       if(cullfaces==1)glEnable(GL_CULL_FACE);
       return;
@@ -961,7 +960,6 @@ void UpdateSurface(void){
 
   if(nplot3dloaded==0)return;
   for(i=0;i<nmeshes;i++){
-    float dlevel=-1.0;
     meshdata *meshi;
 
     meshi = meshinfo+i;
@@ -991,7 +989,7 @@ void UpdateSurface(void){
     isolevelindex2=colorindex;
     FreeSurface(currentsurfptr);
     InitIsoSurface(currentsurfptr, level, rgb_plot3d_contour[colorindex],-999);
-    GetIsoSurface(currentsurfptr,qdata+(plotn-1)*plot3dsize,NULL,iblank_cell,level,dlevel,
+    GetIsoSurface(currentsurfptr,qdata+(plotn-1)*plot3dsize,NULL,iblank_cell,level,
       xplt,ibar+1,yplt,jbar+1,zplt,kbar+1);
     GetNormalSurface(currentsurfptr);
     CompressIsoSurface(currentsurfptr,1,
@@ -1007,7 +1005,7 @@ void UpdateSurface(void){
       level2 = p3min_all[plotn-1] + colorindex2*(p3max_all[plotn-1]-p3min_all[plotn-1])/((float)nrgb-2.0f);
       FreeSurface(currentsurf2ptr);
       InitIsoSurface(currentsurf2ptr, level2, rgb_plot3d_contour[colorindex2],-999);
-      GetIsoSurface(currentsurf2ptr,qdata+(plotn-1)*plot3dsize,NULL,iblank_cell,level2,dlevel,
+      GetIsoSurface(currentsurf2ptr,qdata+(plotn-1)*plot3dsize,NULL,iblank_cell,level2,
         xplt,ibar+1,yplt,jbar+1,zplt,kbar+1);
       GetNormalSurface(currentsurf2ptr);
       CompressIsoSurface(currentsurf2ptr,1,
@@ -1496,7 +1494,7 @@ void DrawGrid(const meshdata *meshi){
   // 2 grid, pointer
   // 3 no grid, pointer
 
-  if(visGrid==noGridProbe||visGrid==GridProbe){
+  if(visGrid==NOGRID_PROBE||visGrid==GRID_PROBE){
     if(plotx>=0&&ploty>=0&&plotz>=0){
       unsigned char pcolor[4];
 
@@ -1509,8 +1507,29 @@ void DrawGrid(const meshdata *meshi){
       glPopMatrix();
     }
   }
+  if(visGrid==NOGRID_PROBE2){
+    if(plotx>=0&&ploty>=0&&plotz>=0){
+      int ii1, ii2, jj1, jj2, kk1, kk2;
+
+      ii1 = iplotx_all;
+      if(ii1+1>nplotx_all-1)ii1 = nplotx_all-2;
+      ii2 = ii1+1;
+      jj1 = iploty_all;
+      if(jj1+1>nploty_all-1)jj1 = nploty_all-2;
+      jj2 = jj1+1;
+      kk1 = iplotz_all;
+      if(kk1+1>nplotz_all-1)kk1 = nplotz_all-2;
+      kk2 = kk1+1;
+
+      float origin[3] = {plotx_all[ii1], ploty_all[jj1], plotz_all[kk1]};
+      float dxyz[3] = {plotx_all[ii2]-plotx_all[ii1],
+                       ploty_all[jj2]-ploty_all[jj1],
+                       plotz_all[kk2]-plotz_all[kk1]};
+      DrawBox2(origin, dxyz, foregroundcolor, 1);
+    }
+  }
   if(visx_all==0&&visy_all==0&&visz_all==0)return;
-  if(visGrid==GridProbe||visGrid==GridnoProbe){
+  if(visGrid==GRID_PROBE||visGrid==GRID_NOPROBE){
     AntiAliasLine(ON);
     glLineWidth(gridlinewidth);
     if(meshi->meshrgb_ptr!=NULL){
