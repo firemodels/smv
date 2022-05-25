@@ -3445,17 +3445,13 @@ void DrawGenPlot(plot2ddata * plot2di){
       }
     }
     else{
-      float vmin, vmax;
-
-      vmin = plot2di->curve_min[curve_index];
-      vmax = plot2di->curve_max[curve_index];
       if(hrr_global_min>hrr_global_max){
-        hrr_global_min = vmin;
-        hrr_global_max = vmax;
+        hrr_global_min = plot2di->curve_min[curve_index];
+        hrr_global_max = plot2di->curve_max[curve_index];
       }
       else{
-        hrr_global_min = MIN(hrr_global_min, vmin);
-        hrr_global_max = MAX(hrr_global_max, vmax);
+        hrr_global_min = MIN(hrr_global_min, plot2di->curve_min[curve_index]);
+        hrr_global_max = MAX(hrr_global_max, plot2di->curve_max[curve_index]);
       }
     }
   }
