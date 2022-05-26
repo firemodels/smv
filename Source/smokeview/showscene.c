@@ -526,10 +526,9 @@ void ShowScene2(int mode){
   /* ++++++++++++++++++++++++ draw general plots +++++++++++++++++++++++++ */
 
 #ifdef pp_PLOT2D_NEW
-  if(mode == DRAWSCENE && geom_bounding_box_mousedown == 0){
-    if(show_genplot1==1){
-      DrawGenPlots();
-    }
+  if(mode == DRAWSCENE){
+    DrawGenPlots();
+    SNIFF_ERRORS("after DrawGenPlots");
   }
 #endif
 
@@ -546,6 +545,7 @@ void ShowScene2(int mode){
   if(showpatch == 1 && geom_bounding_box_mousedown==0){
     CLIP_VALS;
     DrawBoundaryFrame(DRAW_TRANSPARENT);
+    SNIFF_ERRORS("after DrawBoundaryFrame");
   }
 
   /* ++++++++++++++++++++++++ draw slice files +++++++++++++++++++++++++ */
@@ -567,24 +567,24 @@ void ShowScene2(int mode){
   CLIP_GEOMETRY;
   if(geom_bounding_box_mousedown==0){
     DrawBlockages(mode, DRAW_TRANSPARENT);
+    SNIFF_ERRORS("after drawBlockages");
   }
-  SNIFF_ERRORS("after drawBlokcages");
 
   /* ++++++++++++++++++++++++ draw vector slice files +++++++++++++++++++++++++ */
 
   if(showvslice == 1 && geom_bounding_box_mousedown==0){
     CLIP_VALS;
     DrawVSliceFrame();
+    SNIFF_ERRORS("after drawvslice");
   }
-  SNIFF_ERRORS("after drawvslice");
 
   /* ++++++++++++++++++++++++ draw plot3d files +++++++++++++++++++++++++ */
 
   if(showplot3d == 1 && geom_bounding_box_mousedown==0){
     CLIP_VALS;
     DrawPlot3dFrame();
+    SNIFF_ERRORS("after DrawPlot3dFrame");
   }
-  SNIFF_ERRORS("after DrawPlot3dFrame");
 }
 
 /* ------------------ ShowScene ------------------------ */

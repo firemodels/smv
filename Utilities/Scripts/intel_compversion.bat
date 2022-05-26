@@ -1,10 +1,19 @@
 @echo off
+set arg1=%1
 call :is_file_installed head|| exit /b 1
 call :is_file_installed sed || exit /b 1
 call :is_file_installed gawk|| exit /b 1
 call :is_file_installed icl || exit /b 1
 
 set ICL=icx
+if x%arg1% == x goto endif1
+if %arg1% == icl goto else1
+set ICL=icx
+goto endif1
+:else1
+set ICL=%arg1%
+:endif1
+
 set CTYPE=DPC++/C++
 if "x%INTEL_ICC%" == "x" goto skip_setintel
   set ICL=%INTEL_ICC%
