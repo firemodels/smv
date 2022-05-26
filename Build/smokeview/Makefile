@@ -35,7 +35,7 @@ endif
 GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)-$(GIT_BRANCH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")
-  INTEL_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\intel_compversion)
+  INTEL_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\intel_compversion icl)
   GNU_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\gnu_compversion)
 else
   INTEL_COMPVERSION := $(shell ../../../Utilities/Scripts/intel_compversion.sh)
