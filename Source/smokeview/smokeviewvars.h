@@ -1531,6 +1531,12 @@ SVEXTERN int glui_curve_colors[3];
 SVEXTERN float SVDECL(glui_curve_linewidth, 1.0);
 SVEXTERN plot2ddata SVDECL(*glui_plot2dinfo, NULL), SVDECL(*plot2dinfo, NULL), SVDECL(*plot2dini, NULL);
 SVEXTERN int SVDECL(nplot2dinfo, 0), SVDECL(iplot2dinfo, 0), SVDECL(nplot2dini, 0), SVDECL(plot2d_count, 0);
+SVEXTERN int SVDECL(glui_curve_use_factors, 0);
+#ifdef INMAIN
+SVEXTERN float glui_curve_factors[2]={1.0,0.0};
+#else
+SVEXTERN float glui_curve_factors[2];
+#endif
 #endif
 SVEXTERN float SVDECL(plot2d_hrr_min,0.0), SVDECL(plot2d_hrr_max,1.0);
 SVEXTERN int SVDECL(use_plot2d_hrr_min, 0);

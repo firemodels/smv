@@ -11456,14 +11456,26 @@ int ReadIni2(char *inifile, int localfile){
         for(j=0; j<plot2di->ncurve_indexes; j++){
           int color[3], *color2;
           float linewidth1, *linewidth2;
+          float curve_factors[2];
+          int curve_use_factors;
+          float *curve_factors2;
+          int *curve_use_factors2;
 
           fgets(buffer, 255, stream);
+          TrimBack(buffer);
           linewidth1 = 1.0;
-          sscanf(buffer, " %i %i %i %i %f",    plot2di->curve_indexes + j, color, color+1, color+2, &linewidth1);
-          color2     = plot2di->curve_colors       + 3 * plot2di->curve_indexes[j];
-          linewidth2 = plot2di->curve_linewidths   +     plot2di->curve_indexes[j];
+          curve_factors[0] = 1.0;
+          curve_factors[1] = 0.0;
+          curve_use_factors = 0;
+          sscanf(buffer, " %i %i %i %i %f %f %f %i",    plot2di->curve_indexes + j, color, color+1, color+2, &linewidth1, curve_factors, curve_factors+1, &curve_use_factors);
+          color2             = plot2di->curve_colors      + 3*plot2di->curve_indexes[j];
+          linewidth2         = plot2di->curve_linewidths  +   plot2di->curve_indexes[j];
+          curve_factors2     = plot2di->curve_factors     + 2*plot2di->curve_indexes[j];
+          curve_use_factors2 = plot2di->curve_use_factors +   plot2di->curve_indexes[j];
           memcpy(color2, color, 3 * sizeof(int));
           *linewidth2 = linewidth1;
+          memcpy(curve_factors2, curve_factors, 2*sizeof(float));
+          *curve_use_factors2 = curve_use_factors;
         }
 void UpdateCurveBounds(plot2ddata *plot2di, int option);
        UpdateCurveBounds(plot2di, 0);
@@ -14836,11 +14848,15 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, " %f %f %f %i %i %i\n", plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->show_title, plot2di->ncurve_indexes);
     for(j = 0; j < plot2di->ncurve_indexes; j++){
       int *color;
-      float *linewidth1;
+      float *linewidth1, *curve_factors;
+      int *curve_use_factors;
 
-      color      = plot2di->curve_colors + 3*plot2di->curve_indexes[j];
-      linewidth1 = plot2di->curve_linewidths   +   plot2di->curve_indexes[j];
-      fprintf(fileout, " %i %i %i %i %f\n", plot2di->curve_indexes[j], color[0], color[1], color[2], *linewidth1);
+      color             = plot2di->curve_colors      + 3*plot2di->curve_indexes[j];
+      linewidth1        = plot2di->curve_linewidths  +   plot2di->curve_indexes[j];
+      curve_factors     = plot2di->curve_factors     + 2*plot2di->curve_indexes[j];
+      curve_use_factors = plot2di->curve_use_factors +   plot2di->curve_indexes[j];
+      fprintf(fileout, " %i %i %i %i %f %f %f %i\n", plot2di->curve_indexes[j], color[0], color[1], color[2], *linewidth1,
+                                                     curve_factors[0], curve_factors[1], *curve_use_factors);
     };
   }
 #endif
