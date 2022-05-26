@@ -1529,6 +1529,8 @@ SVEXTERN int SVDECL(glui_device_index, 0);
 SVEXTERN int SVDECL(glui_hrr_index, 1);
 SVEXTERN int glui_curve_colors[3];
 SVEXTERN float SVDECL(glui_curve_linewidth, 1.0);
+SVEXTERN float SVDECL(glui_curve_usermin, 1.0), SVDECL(glui_curve_usermax, 0.0);
+SVEXTERN int SVDECL(glui_curve_use_usermin, 0), SVDECL(glui_curve_use_usermax, 0);
 SVEXTERN plot2ddata SVDECL(*glui_plot2dinfo, NULL), SVDECL(*plot2dinfo, NULL), SVDECL(*plot2dini, NULL);
 SVEXTERN int SVDECL(nplot2dinfo, 0), SVDECL(iplot2dinfo, 0), SVDECL(nplot2dini, 0), SVDECL(plot2d_count, 0);
 SVEXTERN int SVDECL(glui_curve_use_factors, 0);

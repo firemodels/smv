@@ -11468,6 +11468,7 @@ int ReadIni2(char *inifile, int localfile){
           curve_factors[1] = 0.0;
           curve_use_factors = 0;
           sscanf(buffer, " %i %i %i %i %f %f %f %i",    plot2di->curve_indexes + j, color, color+1, color+2, &linewidth1, curve_factors, curve_factors+1, &curve_use_factors);
+
           color2             = plot2di->curve_colors      + 3*plot2di->curve_indexes[j];
           linewidth2         = plot2di->curve_linewidths  +   plot2di->curve_indexes[j];
           curve_factors2     = plot2di->curve_factors     + 2*plot2di->curve_indexes[j];
@@ -11476,7 +11477,17 @@ int ReadIni2(char *inifile, int localfile){
           *linewidth2 = linewidth1;
           memcpy(curve_factors2, curve_factors, 2*sizeof(float));
           *curve_use_factors2 = curve_use_factors;
-        }
+
+          float *valmin2, *valmax2;
+          int *use_valmin2, *use_valmax2;
+          use_valmin2             = plot2di->curve_use_usermin + plot2di->curve_indexes[j];
+          use_valmax2             = plot2di->curve_use_usermax + plot2di->curve_indexes[j];
+          valmin2             = plot2di->curve_usermin + plot2di->curve_indexes[j];
+          valmax2             = plot2di->curve_usermax + plot2di->curve_indexes[j];
+          fgets(buffer, 255, stream);
+          TrimBack(buffer);
+          sscanf(buffer, " %i %f %i %f", use_valmin2, valmin2, use_valmax2, valmax2);
+}
 void UpdateCurveBounds(plot2ddata *plot2di, int option);
        UpdateCurveBounds(plot2di, 0);
 
@@ -14857,6 +14868,14 @@ void WriteIniLocal(FILE *fileout){
       curve_use_factors = plot2di->curve_use_factors +   plot2di->curve_indexes[j];
       fprintf(fileout, " %i %i %i %i %f %f %f %i\n", plot2di->curve_indexes[j], color[0], color[1], color[2], *linewidth1,
                                                      curve_factors[0], curve_factors[1], *curve_use_factors);
+
+      int *use_valmin2, *use_valmax2;
+      float *valmin2, *valmax2;
+      use_valmin2             = plot2di->curve_use_usermin + plot2di->curve_indexes[j];
+      use_valmax2             = plot2di->curve_use_usermax + plot2di->curve_indexes[j];
+      valmin2             = plot2di->curve_usermin + plot2di->curve_indexes[j];
+      valmax2             = plot2di->curve_usermax + plot2di->curve_indexes[j];
+      fprintf(fileout, " %i %f %i %f\n", *valmin2, *valmin2, *valmax2, *valmax2);
     };
   }
 #endif
