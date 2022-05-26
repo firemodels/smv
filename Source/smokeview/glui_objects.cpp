@@ -125,20 +125,20 @@ GLUI_Listbox *LIST_open=NULL;
 GLUI_Listbox *LIST_hrrdata=NULL;
 
 #ifdef pp_PLOT2D_NEW
+GLUI_Panel *PANEL_plot_title=NULL;
 GLUI_Panel *PANEL_plot1 = NULL;
-GLUI_Panel *PANEL_plot2 = NULL;
+GLUI_Panel *PANEL_curve_properties = NULL;
 GLUI_Panel *PANEL_plot3 = NULL;
-GLUI_Panel *PANEL_plot4 = NULL;
+GLUI_Panel *PANEL_add_curve = NULL;
 GLUI_Panel *PANEL_plot5 = NULL;
-GLUI_Panel *PANEL_plot6 = NULL;
-GLUI_Panel *PANEL_plot7 = NULL;
+GLUI_Panel *PANEL_plots = NULL;
 GLUI_Panel *PANEL_plot8 = NULL;
 
 GLUI_Panel *PANEL_plotdevice_select = NULL;
 GLUI_Panel *PANEL_plotgeneral_device = NULL;
 GLUI_Panel *PANEL_plotgeneral_hrr = NULL;
 GLUI_Panel *PANEL_plotgeneral_plot = NULL;
-GLUI_Panel *PANEL_plotgeneral_position = NULL;
+GLUI_Panel *PANEL_plot_position = NULL;
 GLUI_Panel *PANEL_plotgeneral_color = NULL;
 #endif
 GLUI_Panel *PANEL_hrr_min = NULL;
@@ -693,11 +693,14 @@ void GenPlotCB(int var){
       AddCurve(glui_plot2dinfo, PLOT2D_DEV, 0);
       GenPlotCB(GENPLOT_SELECT_CURVE);
       Glui2Plot2D(iplot2dinfo);
+      if(PANEL_curve_properties!=NULL)PANEL_curve_properties->enable();
+      if(glui_plot2dinfo->ncurve_indexes > 0 && glui_plot2dinfo->curve_index<ndeviceinfo)BUTTON_plot_position->enable();
       break;
     case GENPLOT_ADD_HRRCURVE:
       AddCurve(glui_plot2dinfo, PLOT2D_HRR, 0);
       GenPlotCB(GENPLOT_SELECT_CURVE);
       Glui2Plot2D(iplot2dinfo);
+      if(PANEL_curve_properties!=NULL)PANEL_curve_properties->enable();
       break;
     case GENPLOT_SELECT_CURVE:
       memcpy(glui_curve_colors, glui_plot2dinfo->curve_colors + 3*glui_plot2dinfo->curve_index, 3*sizeof(int));
@@ -733,10 +736,21 @@ void GenPlotCB(int var){
     case GENPLOT_REM_CURVE:
       RemoveCurve(glui_plot2dinfo, glui_plot2dinfo->curve_index);
       Glui2Plot2D(iplot2dinfo);
+      if(nplot2dinfo == 0){
+        PANEL_curve_properties->disable();
+        BUTTON_plot_position->disable();
+      }
+      if(nplot2dinfo > 0 && glui_plot2dinfo->ncurve_indexes == 0)PANEL_curve_properties->disable();
+      if(nplot2dinfo > 0){
+        if(glui_plot2dinfo->ncurve_indexes == 0 || glui_plot2dinfo->curve_index>=ndeviceinfo)BUTTON_plot_position->disable();
+      }
       break;
     case GENPLOT_REM_ALLCURVES:
       RemoveCurve(glui_plot2dinfo, -1);
       Glui2Plot2D(iplot2dinfo);
+      if(nplot2dinfo == 0)PANEL_curve_properties->disable();
+      if(nplot2dinfo > 0 && glui_plot2dinfo->ncurve_indexes == 0)PANEL_curve_properties->disable();
+      PANEL_curve_properties->disable();
       break;
     case GENPLOT_HRR_TYPE:
       strcpy(label, "Add ");
@@ -791,6 +805,16 @@ void GenPlotCB(int var){
       strcpy(label, "Remove plot: ");
       strcat(label, plot2dinfo[iplot2dinfo].plot_label);
       BUTTON_rem_plot->set_name(label);
+      if(PANEL_add_curve!=NULL)PANEL_add_curve->enable();
+      if(PANEL_plot_position!=NULL)PANEL_plot_position->enable();
+      if(PANEL_plot_title!=NULL)PANEL_plot_title->enable();
+      if(glui_plot2dinfo->ncurve_indexes==0){
+        if(PANEL_curve_properties!=NULL)PANEL_curve_properties->disable();
+      }
+      else{
+        if(PANEL_curve_properties!=NULL)PANEL_curve_properties->enable();
+      }
+      if(glui_plot2dinfo->ncurve_indexes == 0 || glui_plot2dinfo->curve_index>=ndeviceinfo)BUTTON_plot_position->disable();
       break;
     case GENPLOT_REM_PLOT:
       RemovePlot(iplot2dinfo);
@@ -805,6 +829,16 @@ void GenPlotCB(int var){
         strcpy(label, "Remove plot");
       }
       BUTTON_rem_plot->set_name(label);
+      if(nplot2dinfo==0){
+        if(PANEL_add_curve!=NULL)PANEL_add_curve->disable();
+        if(PANEL_plot_position!=NULL)PANEL_plot_position->disable();
+        if(PANEL_curve_properties!=NULL)PANEL_curve_properties->disable();
+        if(PANEL_plot_title!=NULL)PANEL_plot_title->disable();
+      }
+      if(nplot2dinfo > 0){
+        if(glui_plot2dinfo->ncurve_indexes == 0 || glui_plot2dinfo->curve_index>=ndeviceinfo)BUTTON_plot_position->disable();
+        if(glui_plot2dinfo->ncurve_indexes > 0 && glui_plot2dinfo->curve_index<ndeviceinfo)BUTTON_plot_position->enable();
+      }
       break;
     default:
       ASSERT(FFALSE);
@@ -1289,35 +1323,34 @@ extern "C" void GluiDeviceSetup(int main_window){
       ROLLOUT_plotgeneral = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "device and hrr comparison plots", false);
 
       PANEL_plot8 = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "", 0);
-      PANEL_plot6 = glui_device->add_panel_to_panel(PANEL_plot8, "plots");
-      PANEL_plot1 = glui_device->add_panel_to_panel(PANEL_plot6, "", false);
-      LIST_plots = glui_device->add_listbox_to_panel(PANEL_plot1, "select plot:", &iplot2dinfo, GENPLOT_SELECT_PLOT, GenPlotCB);
-      BUTTON_add_plot = glui_device->add_button_to_panel(PANEL_plot1, _("Add plot"),            GENPLOT_ADD_PLOT,     GenPlotCB);
-      BUTTON_rem_plot = glui_device->add_button_to_panel(PANEL_plot1, _("Remove plot"),         GENPLOT_REM_PLOT,     GenPlotCB);
 
-      glui_device->add_column_to_panel(PANEL_plot6, false);
-
-      PANEL_plot7 = glui_device->add_panel_to_panel(PANEL_plot6, "", false);
-      CHECKBOX_show_genplot = glui_device->add_checkbox_to_panel(PANEL_plot7, "show plot", &(glui_plot2dinfo->show), GENPLOT_SHOW_PLOT, GenPlotCB);
+      PANEL_plots = glui_device->add_panel_to_panel(PANEL_plot8, "plots");
+      BUTTON_add_plot = glui_device->add_button_to_panel(PANEL_plots, _("New"),            GENPLOT_ADD_PLOT,     GenPlotCB);
+      BUTTON_rem_plot = glui_device->add_button_to_panel(PANEL_plots, _("Remove"),         GENPLOT_REM_PLOT,     GenPlotCB);
+      LIST_plots = glui_device->add_listbox_to_panel(PANEL_plots, "select:", &iplot2dinfo, GENPLOT_SELECT_PLOT, GenPlotCB);
       LIST_plots->add_item(-1, "");
-
-      EDIT_plot_label = glui_device->add_edittext_to_panel(PANEL_plot7, "plot title:", GLUI_EDITTEXT_TEXT, glui_plot2dinfo->plot_label, GENPLOT_PLOT_LABEL, GenPlotCB);
-      glui_device->add_button_to_panel(PANEL_plot7, _("Apply plot title"), GENPLOT_PLOT_LABEL, GenPlotCB);
-      CHECKBOX_show_title = glui_device->add_checkbox_to_panel(PANEL_plot7, "show plot title", &(glui_plot2dinfo->show_title), GENPLOT_PLOT_LABEL, GenPlotCB);
+      CHECKBOX_show_genplot = glui_device->add_checkbox_to_panel(PANEL_plots, "show", &(glui_plot2dinfo->show), GENPLOT_SHOW_PLOT, GenPlotCB);
 
       glui_device->add_column_to_panel(PANEL_plot8, false);
-      PANEL_plotgeneral_position = glui_device->add_panel_to_panel(PANEL_plot8, "plot position");
-      SPINNER_genplot_x          = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "x", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+0, GENPLOT_XYZ, GenPlotCB);
-      SPINNER_genplot_y          = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "y", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+1, GENPLOT_XYZ, GenPlotCB);
-      SPINNER_genplot_z          = glui_device->add_spinner_to_panel(PANEL_plotgeneral_position, "z", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+2, GENPLOT_XYZ, GenPlotCB);
-      BUTTON_plot_position       = glui_device->add_button_to_panel(PANEL_plotgeneral_position, _("Set to device location"),                         GENPLOT_SET_POS, GenPlotCB);
+
+      PANEL_plot_title = glui_device->add_panel_to_panel(PANEL_plot8, "plot title");
+      EDIT_plot_label = glui_device->add_edittext_to_panel(PANEL_plot_title, "edit:", GLUI_EDITTEXT_TEXT, glui_plot2dinfo->plot_label, GENPLOT_PLOT_LABEL, GenPlotCB);
+      glui_device->add_button_to_panel(PANEL_plot_title, _("Apply"), GENPLOT_PLOT_LABEL, GenPlotCB);
+      CHECKBOX_show_title = glui_device->add_checkbox_to_panel(PANEL_plot_title, "show", &(glui_plot2dinfo->show_title), GENPLOT_PLOT_LABEL, GenPlotCB);
+
+      glui_device->add_column_to_panel(PANEL_plot8, false);
+      PANEL_plot_position = glui_device->add_panel_to_panel(PANEL_plot8, "plot position");
+      SPINNER_genplot_x          = glui_device->add_spinner_to_panel(PANEL_plot_position, "x", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+0, GENPLOT_XYZ, GenPlotCB);
+      SPINNER_genplot_y          = glui_device->add_spinner_to_panel(PANEL_plot_position, "y", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+1, GENPLOT_XYZ, GenPlotCB);
+      SPINNER_genplot_z          = glui_device->add_spinner_to_panel(PANEL_plot_position, "z", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+2, GENPLOT_XYZ, GenPlotCB);
+      BUTTON_plot_position       = glui_device->add_button_to_panel(PANEL_plot_position, _("Set to device location"),                         GENPLOT_SET_POS, GenPlotCB);
 
       PANEL_plot5 = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "", 0);
-      PANEL_plot4 = glui_device->add_panel_to_panel(PANEL_plot5, "add curves to plot");
+      PANEL_add_curve = glui_device->add_panel_to_panel(PANEL_plot5, "add curves to plot");
       glui_device->add_column_to_panel(PANEL_plot5, false);
 
       if(ndevicetypes > 0){
-        PANEL_plotgeneral_device = glui_device->add_panel_to_panel(PANEL_plot4, "", false);
+        PANEL_plotgeneral_device = glui_device->add_panel_to_panel(PANEL_add_curve, "", false);
         PANEL_plotdevice_select = glui_device->add_panel_to_panel(PANEL_plotgeneral_device, "", false);
         LIST_devID1 = glui_device->add_listbox_to_panel(PANEL_plotdevice_select, "device ID:", &glui_device_index, GENPLOT_SELECT_DEVICE, GenPlotCB);
         BUTTON_add_dev = glui_device->add_button_to_panel(PANEL_plotdevice_select, _("Add"), GENPLOT_ADD_DEVCURVE, GenPlotCB);
@@ -1338,7 +1371,7 @@ extern "C" void GluiDeviceSetup(int main_window){
         GenPlotCB(GENPLOT_SELECT_DEVICE);
       }
       if(nhrrinfo > 0){
-        PANEL_plotgeneral_hrr = glui_device->add_panel_to_panel(PANEL_plot4, "", false);
+        PANEL_plotgeneral_hrr = glui_device->add_panel_to_panel(PANEL_add_curve, "", false);
         LIST_hrr1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_hrr, "hrr quantity:", &glui_hrr_index, GENPLOT_HRR_TYPE, GenPlotCB);
         for(i = 0; i < nhrrinfo + nhrrhcinfo; i++){
           hrrdata *hi;
@@ -1352,15 +1385,24 @@ extern "C" void GluiDeviceSetup(int main_window){
         BUTTON_add_hrr = glui_device->add_button_to_panel(PANEL_plotgeneral_hrr, _("Add"), GENPLOT_ADD_HRRCURVE, GenPlotCB);
         GenPlotCB(GENPLOT_HRR_TYPE);
       }
-      glui_device->add_column_to_panel(PANEL_plot4, false);
+      if(nplot2dinfo==0){
+        if(PANEL_add_curve!=NULL)PANEL_add_curve->disable();
+        if(PANEL_plot_position!=NULL)PANEL_plot_position->disable();
+        if(PANEL_plot_title!=NULL)PANEL_plot_title->disable();
+      }
+      if(nplot2dinfo > 0){
+        if(glui_plot2dinfo->ncurve_indexes == 0 || glui_plot2dinfo->curve_index>=ndeviceinfo)BUTTON_plot_position->disable();
+      }
+      glui_device->add_column_to_panel(PANEL_add_curve, false);
 
-      PANEL_plot2 = glui_device->add_panel_to_panel(PANEL_plot5, "modify plot curves");
-      BUTTON_remove_curve = glui_device->add_button_to_panel(PANEL_plot2, _("Remove from plot"), GENPLOT_REM_CURVE, GenPlotCB);
-      glui_device->add_button_to_panel(PANEL_plot2, _("Remove all curves"), GENPLOT_REM_ALLCURVES, GenPlotCB);
-      LIST_plotcurves = glui_device->add_listbox_to_panel(PANEL_plot2, "", &glui_plot2dinfo->curve_index, GENPLOT_SELECT_CURVE, GenPlotCB);
+      PANEL_curve_properties = glui_device->add_panel_to_panel(PANEL_plot5, "plot curve properties");
+      if(nplot2dinfo > 0 && glui_plot2dinfo->ncurve_indexes == 0)PANEL_curve_properties->disable();
+      BUTTON_remove_curve = glui_device->add_button_to_panel(PANEL_curve_properties, _("Remove from plot"), GENPLOT_REM_CURVE, GenPlotCB);
+      glui_device->add_button_to_panel(PANEL_curve_properties, _("Remove all curves"), GENPLOT_REM_ALLCURVES, GenPlotCB);
+      LIST_plotcurves = glui_device->add_listbox_to_panel(PANEL_curve_properties, "", &glui_plot2dinfo->curve_index, GENPLOT_SELECT_CURVE, GenPlotCB);
       RemoveCurve(glui_plot2dinfo, -1);
       MakeCurveList(glui_plot2dinfo, 1);
-      PANEL_plot3 = glui_device->add_panel_to_panel(PANEL_plot2, "", false);
+      PANEL_plot3 = glui_device->add_panel_to_panel(PANEL_curve_properties, "", false);
       PANEL_plotgeneral_color = glui_device->add_panel_to_panel(PANEL_plot3, "plot curve color");
       SPINNER_genplot_red = glui_device->add_spinner_to_panel(PANEL_plotgeneral_color, "red", GLUI_SPINNER_INT, glui_curve_colors + 0, GENPLOT_XYZ, GenPlotCB);
       SPINNER_genplot_green = glui_device->add_spinner_to_panel(PANEL_plotgeneral_color, "green", GLUI_SPINNER_INT, glui_curve_colors + 1, GENPLOT_XYZ, GenPlotCB);
@@ -1385,6 +1427,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       GenPlotCB(GENPLOT_DEVICE_TYPE);
       GenPlotCB(GENPLOT_SHOW_PLOT);
     }
+    if(nplot2dinfo == 0)PANEL_curve_properties->disable();
 #endif
 
     if(ndevicetypes>0){
