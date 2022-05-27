@@ -744,6 +744,36 @@ void UpdateCurveControls(void){
   SPINNER_genplot_usermax->set_float_val(glui_curve_usermax);
 }
 
+/* ------------------ EnableDisablePlot2D ------------------------ */
+
+void EnableDisablePlot2D(void){
+  if(plot2d_dialogs_defined == 0)return;
+  if(nplot2dinfo == 0){
+    PANEL_add_curve->disable();
+    PANEL_plot_position->disable();
+    PANEL_plot_title->disable();
+    PANEL_curve_properties->disable();
+  }
+  else{
+    PANEL_plot_position->enable();
+    PANEL_plot_title->enable();
+    PANEL_add_curve->enable();
+
+    if(glui_plot2dinfo->ncurve_indexes == 0){
+      PANEL_curve_properties->disable();
+    }
+    else{
+      PANEL_curve_properties->enable();
+    }
+    if(glui_plot2dinfo->ncurve_indexes > 0 && glui_plot2dinfo->curve_index < ndeviceinfo){
+      BUTTON_plot_position->enable();
+    }
+    else{
+      BUTTON_plot_position->disable();
+    }
+  }
+}
+
 /* ------------------ GenPlotCB ------------------------ */
 
 void GenPlotCB(int var){
@@ -769,7 +799,7 @@ void GenPlotCB(int var){
       AddCurve(glui_plot2dinfo, PLOT2D_HRR, 0);
       GenPlotCB(GENPLOT_SELECT_CURVE);
       Glui2Plot2D(iplot2dinfo);
-      if(PANEL_curve_properties!=NULL)PANEL_curve_properties->enable();
+      EnableDisablePlot2D();
       break;
     case GENPLOT_SELECT_CURVE:
       memcpy(glui_curve_colors, glui_plot2dinfo->curve_colors + 3*glui_plot2dinfo->curve_index, 3*sizeof(int));
@@ -809,21 +839,12 @@ void GenPlotCB(int var){
     case GENPLOT_REM_CURVE:
       RemoveCurve(glui_plot2dinfo, glui_plot2dinfo->curve_index);
       Glui2Plot2D(iplot2dinfo);
-      if(nplot2dinfo == 0){
-        PANEL_curve_properties->disable();
-        BUTTON_plot_position->disable();
-      }
-      if(nplot2dinfo > 0 && glui_plot2dinfo->ncurve_indexes == 0)PANEL_curve_properties->disable();
-      if(nplot2dinfo > 0){
-        if(glui_plot2dinfo->ncurve_indexes == 0 || glui_plot2dinfo->curve_index>=ndeviceinfo)BUTTON_plot_position->disable();
-      }
+      EnableDisablePlot2D();
       break;
     case GENPLOT_REM_ALLCURVES:
       RemoveCurve(glui_plot2dinfo, -1);
       Glui2Plot2D(iplot2dinfo);
-      if(nplot2dinfo == 0)PANEL_curve_properties->disable();
-      if(nplot2dinfo > 0 && glui_plot2dinfo->ncurve_indexes == 0)PANEL_curve_properties->disable();
-      PANEL_curve_properties->disable();
+      EnableDisablePlot2D();
       break;
     case GENPLOT_HRR_TYPE:
       strcpy(label, "Add ");
@@ -874,6 +895,8 @@ void GenPlotCB(int var){
         strcat(label, plot2dinfo[iplot2dinfo].plot_label);
         BUTTON_rem_plot->set_name(label);
       }
+      GenPlotCB(GENPLOT_SELECT_DEVICE);
+      GenPlotCB(GENPLOT_HRR_TYPE);
       break;
     case GENPLOT_ADD_PLOT:
       AddPlot(NULL);
@@ -885,16 +908,9 @@ void GenPlotCB(int var){
       strcpy(label, "Remove plot: ");
       strcat(label, plot2dinfo[iplot2dinfo].plot_label);
       BUTTON_rem_plot->set_name(label);
-      if(PANEL_add_curve!=NULL)PANEL_add_curve->enable();
-      if(PANEL_plot_position!=NULL)PANEL_plot_position->enable();
-      if(PANEL_plot_title!=NULL)PANEL_plot_title->enable();
-      if(glui_plot2dinfo->ncurve_indexes==0){
-        if(PANEL_curve_properties!=NULL)PANEL_curve_properties->disable();
-      }
-      else{
-        if(PANEL_curve_properties!=NULL)PANEL_curve_properties->enable();
-      }
-      if(glui_plot2dinfo->ncurve_indexes == 0 || glui_plot2dinfo->curve_index>=ndeviceinfo)BUTTON_plot_position->disable();
+      EnableDisablePlot2D();
+      GenPlotCB(GENPLOT_SELECT_DEVICE);
+      GenPlotCB(GENPLOT_HRR_TYPE);
       break;
     case GENPLOT_REM_PLOT:
       RemovePlot(iplot2dinfo);
@@ -909,16 +925,7 @@ void GenPlotCB(int var){
         strcpy(label, "Remove plot");
       }
       BUTTON_rem_plot->set_name(label);
-      if(nplot2dinfo==0){
-        if(PANEL_add_curve!=NULL)PANEL_add_curve->disable();
-        if(PANEL_plot_position!=NULL)PANEL_plot_position->disable();
-        if(PANEL_curve_properties!=NULL)PANEL_curve_properties->disable();
-        if(PANEL_plot_title!=NULL)PANEL_plot_title->disable();
-      }
-      if(nplot2dinfo > 0){
-        if(glui_plot2dinfo->ncurve_indexes == 0 || glui_plot2dinfo->curve_index>=ndeviceinfo)BUTTON_plot_position->disable();
-        if(glui_plot2dinfo->ncurve_indexes > 0 && glui_plot2dinfo->curve_index<ndeviceinfo)BUTTON_plot_position->enable();
-      }
+      EnableDisablePlot2D();
       break;
     default:
       ASSERT(FFALSE);
@@ -1529,7 +1536,8 @@ extern "C" void GluiDeviceSetup(int main_window){
       GenPlotCB(GENPLOT_DEVICE_TYPE);
       GenPlotCB(GENPLOT_SHOW_PLOT);
     }
-    if(nplot2dinfo == 0)PANEL_curve_properties->disable();
+    plot2d_dialogs_defined = 1;
+    EnableDisablePlot2D();
 #endif
 
     if(ndevicetypes>0){

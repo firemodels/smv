@@ -1524,6 +1524,7 @@ SVEXTERN float max_dev_vel;
 SVEXTERN int SVDECL(last_prop_display,-1);
 SVEXTERN int SVDECL(devicetypes_index,0);
 #ifdef pp_PLOT2D_NEW
+SVEXTERN int SVDECL(plot2d_dialogs_defined, 0);
 SVEXTERN int SVDECL(glui_device_quantity_index, -1);
 SVEXTERN int SVDECL(glui_device_index, 0);
 SVEXTERN int SVDECL(glui_hrr_index, 1);

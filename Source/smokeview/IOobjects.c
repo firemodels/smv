@@ -3403,7 +3403,12 @@ void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int
   glColor3f(1.0, 0.0, 0.0);
   glPointSize(plot2d_point_size);
   glBegin(GL_POINTS);
-  glVertex3f(highlight_x, 0.0, highlight_y);
+  if(use_plot_factors == 1){
+    glVertex3f(highlight_x, 0.0, plot_factors[0] * highlight_y + plot_factors[1]);
+  }
+  else{
+    glVertex3f(highlight_x, 0.0, highlight_y);
+  }
   glEnd();
 
   if(showd_plot2d_labels == 1){
