@@ -7161,9 +7161,9 @@ void SetupPlot2DUnitData(void){
           skip_dev = 1;
           break;
         }
-        if(skip_dev==1)continue;
-        deviceunits[ndeviceunits++] = devi;
       }
+      if(skip_dev==1)continue;
+      deviceunits[ndeviceunits++] = devi;
     }
   }
   //setup hrrunits
@@ -7189,9 +7189,9 @@ void SetupPlot2DUnitData(void){
           skip_hrr = 1;
           break;
         }
-        if(skip_hrr==1)continue;
-        hrrunits[nhrrunits++] = hrri;
       }
+      if(skip_hrr==1)continue;
+      hrrunits[nhrrunits++] = hrri;
     }
   }
 }

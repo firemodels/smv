@@ -118,7 +118,7 @@ GLUI_EditText *EDIT_filter=NULL;
 
 #ifdef pp_PLOT2D_NEW
 GLUI_Listbox *LIST_devID1 = NULL;
-GLUI_Listbox *LIST_devtype1 = NULL;
+GLUI_Listbox *LIST_devunit1 = NULL;
 GLUI_Listbox *LIST_hrr1 = NULL;
 GLUI_Listbox *LIST_plotcurves = NULL;
 GLUI_Listbox *LIST_plots = NULL;
@@ -699,7 +699,7 @@ void Glui2Plot2D(int index){
 
 /* ------------------ UpdateDevList ------------------------ */
 
-void UpdateDevList(GLUI_Listbox *LIST_dev, int devtype_index){
+void UpdateDevList(GLUI_Listbox *LIST_dev, int devunit_index){
   int i;
   int listval;
 
@@ -720,7 +720,7 @@ void UpdateDevList(GLUI_Listbox *LIST_dev, int devtype_index){
 
     inlist = 0;
     devicei = deviceinfo + i;
-    if(devtype_index == -1 || strcmp(devicetypes[devtype_index]->quantity, devicei->quantity) == 0)inlist = 1;
+    if(devunit_index == -1 || strcmp(deviceunits[devunit_index]->unit, devicei->unit) == 0)inlist = 1;
     if(inlist == 1 && devicei->inlist1 == 0){
       char label[350];
 
@@ -739,7 +739,7 @@ void UpdateDevList(GLUI_Listbox *LIST_dev, int devtype_index){
 
     inlist = 0;
     devicei = deviceinfo+i;
-    if(devtype_index==-1||strcmp(devicetypes[devtype_index]->quantity, devicei->quantity)==0)inlist = 1;
+    if(devunit_index==-1||strcmp(deviceunits[devunit_index]->unit, devicei->unit)==0)inlist = 1;
     if(inlist==1&&devicei->inlist1==0){
       char label[350];
 
@@ -880,7 +880,7 @@ void GenPlotCB(int var){
       BUTTON_add_dev->set_name(label);
       break;
     case GENPLOT_DEVICE_TYPE:
-      UpdateDevList(LIST_devID1, glui_device_quantity_index);
+      UpdateDevList(LIST_devID1, glui_device_unit_index);
       break;
     case GENPLOT_SELECT_HRR:
       strcpy(label, "Add ");
@@ -893,7 +893,7 @@ void GenPlotCB(int var){
       Glui2Plot2D(iplot2dinfo);
       if(PANEL_curve_properties!=NULL)PANEL_curve_properties->enable();
       if(glui_plot2dinfo->ncurve_indexes > 0 && glui_plot2dinfo->curve_index<ndeviceinfo)BUTTON_plot_position->enable();
-      UpdateDevList(LIST_devID1, glui_device_quantity_index);
+      UpdateDevList(LIST_devID1, glui_device_unit_index);
       break;
     case GENPLOT_ADD_HRRCURVE:
       AddCurve(glui_plot2dinfo, PLOT2D_HRR, 0);
@@ -941,14 +941,14 @@ void GenPlotCB(int var){
       RemoveCurve(glui_plot2dinfo, glui_plot2dinfo->curve_index);
       Glui2Plot2D(iplot2dinfo);
       EnableDisablePlot2D();
-      UpdateDevList(LIST_devID1, glui_device_quantity_index);
+      UpdateDevList(LIST_devID1, glui_device_unit_index);
       UpdateHRRList(LIST_hrr1);
       break;
     case GENPLOT_REM_ALLCURVES:
       RemoveCurve(glui_plot2dinfo, -1);
       Glui2Plot2D(iplot2dinfo);
       EnableDisablePlot2D();
-      UpdateDevList(LIST_devID1, glui_device_quantity_index);
+      UpdateDevList(LIST_devID1, glui_device_unit_index);
       UpdateHRRList(LIST_hrr1);
       break;
     case GENPLOT_SHOW_PLOT:
@@ -998,7 +998,7 @@ void GenPlotCB(int var){
         strcat(label, " curve properties");
         PANEL_curve_properties->set_name(label);
       }
-      UpdateDevList(LIST_devID1, glui_device_quantity_index);
+      UpdateDevList(LIST_devID1, glui_device_unit_index);
       UpdateHRRList(LIST_hrr1);
       GenPlotCB(GENPLOT_SELECT_DEVICE);
       GenPlotCB(GENPLOT_SELECT_HRR);
@@ -1014,7 +1014,7 @@ void GenPlotCB(int var){
       strcat(label, plot2dinfo[iplot2dinfo].plot_label);
       BUTTON_rem_plot->set_name(label);
       EnableDisablePlot2D();
-      UpdateDevList(LIST_devID1, glui_device_quantity_index);
+      UpdateDevList(LIST_devID1, glui_device_unit_index);
       UpdateHRRList(LIST_hrr1);
       GenPlotCB(GENPLOT_SELECT_PLOT);
       GenPlotCB(GENPLOT_SELECT_DEVICE);
@@ -1035,7 +1035,7 @@ void GenPlotCB(int var){
       BUTTON_rem_plot->set_name(label);
       EnableDisablePlot2D();
       GenPlotCB(GENPLOT_SELECT_PLOT);
-      UpdateDevList(LIST_devID1, glui_device_quantity_index);
+      UpdateDevList(LIST_devID1, glui_device_unit_index);
       UpdateHRRList(LIST_hrr1);
       break;
     default:
@@ -1560,10 +1560,10 @@ extern "C" void GluiDeviceSetup(int main_window){
           LIST_devID1->add_item(i, devicei->deviceID);
         }
         devicetypes_index = CLAMP(devicetypes_index, 0, ndevicetypes - 1);
-        LIST_devtype1 = glui_device->add_listbox_to_panel(PANEL_plotdevice_select, "device types:", &glui_device_quantity_index, GENPLOT_DEVICE_TYPE, GenPlotCB);
-        LIST_devtype1->add_item(-1, "All");
-        for(i = 0; i < ndevicetypes; i++){
-          LIST_devtype1->add_item(i, devicetypes[i]->quantity);
+        LIST_devunit1 = glui_device->add_listbox_to_panel(PANEL_plotdevice_select, "show devices with units:", &glui_device_unit_index, GENPLOT_DEVICE_TYPE, GenPlotCB);
+        LIST_devunit1->add_item(-1, "All");
+        for(i = 0; i < ndeviceunits; i++){
+          LIST_devunit1->add_item(i, deviceunits[i]->unit);
         }
         GenPlotCB(GENPLOT_DEVICE_TYPE);
         GenPlotCB(GENPLOT_SELECT_DEVICE);
