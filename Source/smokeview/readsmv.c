@@ -14875,7 +14875,7 @@ void WriteIniLocal(FILE *fileout){
       use_valmax2             = plot2di->curve_use_usermax + plot2di->curve_indexes[j];
       valmin2             = plot2di->curve_usermin + plot2di->curve_indexes[j];
       valmax2             = plot2di->curve_usermax + plot2di->curve_indexes[j];
-      fprintf(fileout, " %i %f %i %f\n", *valmin2, *valmin2, *valmax2, *valmax2);
+      fprintf(fileout, " %i %f %i %f\n", *use_valmin2, *valmin2, *use_valmax2, *valmax2);
     };
   }
 #endif
