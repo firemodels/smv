@@ -10707,6 +10707,9 @@ typedef struct {
     if(csvi->type==CSVTYPE_EXT)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
   SetupDeviceData();
+#ifdef pp_PLOT2D_NEW
+  SetupPlot2DUnitData();
+#endif
   if(nzoneinfo>0)SetupZoneDevs();
 
 #ifdef pp_THREAD

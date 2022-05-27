@@ -529,6 +529,9 @@ EXTERNCPP void ReadHRR(int flag);
 EXTERNCPP void ReadDeviceData(char *file, int filetype, int flag);
 EXTERNCPP void SetupZoneDevs(void);
 EXTERNCPP void SetupDeviceData(void);
+#ifdef pp_PLOT2D_NEW
+EXTERNCPP void SetupPlot2DUnitData(void);
+#endif
 EXTERNCPP void DrawCGeom(int flag, geomdata *cgeom);
 EXTERNCPP void DrawGeom(int flag,int frameflag);
 EXTERNCPP void RemoveDupBlockages(void);

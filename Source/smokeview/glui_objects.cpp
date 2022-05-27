@@ -925,7 +925,7 @@ void GenPlotCB(int var){
       if(BUTTON_plot_position != NULL){
         if(glui_plot2dinfo->curve_index<ndeviceinfo){
           BUTTON_plot_position->enable();
-          strcpy(label, "Set to ");
+          strcpy(label, "x,y,z ");
           strcat(label, LIST_plotcurves->curr_text);
           strcat(label, " location");
           BUTTON_plot_position->set_name(label);
@@ -989,11 +989,14 @@ void GenPlotCB(int var){
       }
       break;
     case GENPLOT_SELECT_PLOT:
-      if(iplot2dinfo >= 0){
+      if(iplot2dinfo >= 0&&iplot2dinfo<nplot2dinfo){
         Plot2D2Glui(iplot2dinfo);
         strcpy(label, "Remove plot: ");
         strcat(label, plot2dinfo[iplot2dinfo].plot_label);
         BUTTON_rem_plot->set_name(label);
+        strcpy(label, plot2dinfo[iplot2dinfo].plot_label);
+        strcat(label, " curve properties");
+        PANEL_curve_properties->set_name(label);
       }
       UpdateDevList(LIST_devID1, glui_device_quantity_index);
       UpdateHRRList(LIST_hrr1);
@@ -1013,12 +1016,13 @@ void GenPlotCB(int var){
       EnableDisablePlot2D();
       UpdateDevList(LIST_devID1, glui_device_quantity_index);
       UpdateHRRList(LIST_hrr1);
+      GenPlotCB(GENPLOT_SELECT_PLOT);
       GenPlotCB(GENPLOT_SELECT_DEVICE);
       GenPlotCB(GENPLOT_SELECT_HRR);
       break;
     case GENPLOT_REM_PLOT:
       RemovePlot(iplot2dinfo);
-      if(iplot2dinfo>=0){
+      if(iplot2dinfo>=0&&iplot2dinfo<nplot2dinfo){
         int iplot2dinfo_save = iplot2dinfo;
         LIST_plots->set_int_val(-1);
         LIST_plots->set_int_val(iplot2dinfo_save);
@@ -1030,6 +1034,7 @@ void GenPlotCB(int var){
       }
       BUTTON_rem_plot->set_name(label);
       EnableDisablePlot2D();
+      GenPlotCB(GENPLOT_SELECT_PLOT);
       UpdateDevList(LIST_devID1, glui_device_quantity_index);
       UpdateHRRList(LIST_hrr1);
       break;

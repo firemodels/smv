@@ -3376,6 +3376,7 @@ void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int
     }
   }
   glEnd();
+  SNIFF_ERRORS("after DrawGenCurve 1");
   if(option == PLOT_ALL){
     glColor3fv(foregroundcolor);
     glLineWidth(plot2d_line_width);
@@ -3398,6 +3399,7 @@ void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int
     glVertex3f(xmax,      0.0, zmin);
     glVertex3f(xmax + dx, 0.0, zmin);
     glEnd();
+    SNIFF_ERRORS("after DrawGenCurve 2");
   }
 
   glColor3f(1.0, 0.0, 0.0);
@@ -3410,6 +3412,7 @@ void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int
     glVertex3f(highlight_x, 0.0, highlight_y);
   }
   glEnd();
+  SNIFF_ERRORS("after DrawGenCurve 3");
 
   if(showd_plot2d_labels == 1){
     float dfont = (float)GetFontHeight() / ((float)screenHeight * zscale * SCALE2FDS(factor) * SCALE2SMV(1.0));
@@ -3425,6 +3428,7 @@ void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int
       if(show_title==1){
         Output3Text(foregroundcolor, xmin, 0.0, zmax + 1.5*dz, title);
       }
+      SNIFF_ERRORS("after DrawGenCurve 4");
     }
     if(label != NULL){
       float p2_color[3];
@@ -3433,9 +3437,11 @@ void DrawGenCurve(int option, float *xyz0, float factor, float *x, float *z, int
       p2_color[1] = (float)plot_color[1]/255.0;
       p2_color[2] = (float)plot_color[2]/255.0;
       Output3Text(p2_color, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
+      SNIFF_ERRORS("after DrawGenCurve 5");
     }
   }
   glPopMatrix();
+  SNIFF_ERRORS("after DrawGenCurve end");
 }
 
 /* ------------------ DrawGenPlot ------------------------ */
@@ -7128,6 +7134,69 @@ void DeviceData2WindRose(int nr, int ntheta){
   }
 }
 
+/* ----------------------- SetupPlot2DUnitData ----------------------------- */
+#ifdef pp_PLOT2D_NEW
+void SetupPlot2DUnitData(void){
+
+  //setup deviceunits
+  if(ndeviceinfo>0){
+    int i;
+
+    ndeviceunits = 0;
+    FREEMEMORY(deviceunits);
+    NewMemory((void **)&deviceunits, ndeviceinfo*sizeof(devicedata *));
+    for(i = 0; i<ndeviceinfo; i++){
+      int j;
+      devicedata *devi;
+      int skip_dev;
+
+      devi = deviceinfo+i;
+      if(devi->nvals==0||strlen(devi->quantity)==0||strlen(devi->unit)==0)continue;
+      skip_dev = 0;
+      for(j = 0; j<ndeviceunits; j++){
+        devicedata *devj;
+
+        devj = deviceunits[j];
+        if(strcmp(devi->unit, devj->unit)==0){
+          skip_dev = 1;
+          break;
+        }
+        if(skip_dev==1)continue;
+        deviceunits[ndeviceunits++] = devi;
+      }
+    }
+  }
+  //setup hrrunits
+  if(nhrrinfo>0){
+    int i;
+
+    nhrrunits = 0;
+    FREEMEMORY(hrrunits);
+    NewMemory((void **)&hrrunits, nhrrinfo*sizeof(hrrdata *));
+    for(i = 0; i<nhrrinfo; i++){
+      int j;
+      hrrdata *hrri;
+      int skip_hrr;
+
+      hrri = hrrinfo+i;
+      if(hrri->nvals==0||strlen(hrri->label.shortlabel)==0||strlen(hrri->label.unit)==0)continue;
+      skip_hrr = 0;
+      for(j = 0; j<nhrrunits; j++){
+        hrrdata *hrrj;
+
+        hrrj = hrrunits[j];
+        if(strcmp(hrri->label.unit, hrrj->label.unit)==0){
+          skip_hrr = 1;
+          break;
+        }
+        if(skip_hrr==1)continue;
+        hrrunits[nhrrunits++] = hrri;
+      }
+    }
+  }
+}
+#endif
+
 /* ----------------------- SetupDeviceData ----------------------------- */
 
 void SetupDeviceData(void){
@@ -7324,6 +7393,7 @@ void SetupDeviceData(void){
     }
   }
 
+  //setup devicetypes
   if(ndeviceinfo>0){
     ndevicetypes=0;
     FREEMEMORY(devicetypes);
