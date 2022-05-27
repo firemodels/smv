@@ -725,10 +725,30 @@ void UpdateDevList(GLUI_Listbox *LIST_dev, int devtype_index){
       char label[350];
 
       strcpy(label, "");
-      if(InPlot(glui_plot2dinfo, PLOT2D_DEV, i)==1)strcat(label, "*");
-      strcat(label, devicei->deviceID);
-      devicei->inlist1 = 1;
-      LIST_dev->add_item(i, label);
+      if(InPlot(glui_plot2dinfo, PLOT2D_DEV, i)==1){
+        strcat(label, "*");
+        strcat(label, devicei->deviceID);
+        devicei->inlist1 = 1;
+        LIST_dev->add_item(i, label);
+      }
+    }
+  }
+  for(i = 0; i<ndeviceinfo; i++){
+    devicedata *devicei;
+    int inlist;
+
+    inlist = 0;
+    devicei = deviceinfo+i;
+    if(devtype_index==-1||strcmp(devicetypes[devtype_index]->quantity, devicei->quantity)==0)inlist = 1;
+    if(inlist==1&&devicei->inlist1==0){
+      char label[350];
+
+      strcpy(label, "");
+      if(InPlot(glui_plot2dinfo, PLOT2D_DEV, i)!=1){
+        strcat(label, devicei->deviceID);
+        devicei->inlist1 = 1;
+        LIST_dev->add_item(i, label);
+      }
     }
   }
   LIST_dev->set_int_val(listval);
@@ -760,10 +780,28 @@ void UpdateHRRList(GLUI_Listbox *LIST_hrr){
       char label[350];
 
       strcpy(label, "");
-      if(InPlot(glui_plot2dinfo, PLOT2D_HRR, i) == 1)strcat(label, "*");
-      strcat(label, hrri->label.shortlabel);
-      hrri->inlist1 = 1;
-      LIST_hrr->add_item(i, label);
+      if(InPlot(glui_plot2dinfo, PLOT2D_HRR, i)==1){
+        strcat(label, "*");
+        strcat(label, hrri->label.shortlabel);
+        hrri->inlist1 = 1;
+        LIST_hrr->add_item(i, label);
+      }
+    }
+  }
+  for(i = 0; i<nhrrinfo; i++){
+    hrrdata *hrri;
+
+    hrri = hrrinfo+i;
+    if(strcmp(hrri->label.shortlabel, "Time")==0)continue;
+    if(hrri->inlist1==0){
+      char label[350];
+
+      strcpy(label, "");
+      if(InPlot(glui_plot2dinfo, PLOT2D_HRR, i)!=1){
+        strcat(label, hrri->label.shortlabel);
+        hrri->inlist1 = 1;
+        LIST_hrr->add_item(i, label);
+      }
     }
   }
   LIST_hrr->set_int_val(listval);
@@ -957,6 +995,8 @@ void GenPlotCB(int var){
         strcat(label, plot2dinfo[iplot2dinfo].plot_label);
         BUTTON_rem_plot->set_name(label);
       }
+      UpdateDevList(LIST_devID1, glui_device_quantity_index);
+      UpdateHRRList(LIST_hrr1);
       GenPlotCB(GENPLOT_SELECT_DEVICE);
       GenPlotCB(GENPLOT_SELECT_HRR);
       break;
@@ -971,6 +1011,8 @@ void GenPlotCB(int var){
       strcat(label, plot2dinfo[iplot2dinfo].plot_label);
       BUTTON_rem_plot->set_name(label);
       EnableDisablePlot2D();
+      UpdateDevList(LIST_devID1, glui_device_quantity_index);
+      UpdateHRRList(LIST_hrr1);
       GenPlotCB(GENPLOT_SELECT_DEVICE);
       GenPlotCB(GENPLOT_SELECT_HRR);
       break;
@@ -988,6 +1030,8 @@ void GenPlotCB(int var){
       }
       BUTTON_rem_plot->set_name(label);
       EnableDisablePlot2D();
+      UpdateDevList(LIST_devID1, glui_device_quantity_index);
+      UpdateHRRList(LIST_hrr1);
       break;
     default:
       ASSERT(FFALSE);
