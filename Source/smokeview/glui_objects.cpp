@@ -514,7 +514,7 @@ void AddCurve(plot2ddata *plot2di, int type, int force){
     index = LIST_devID1->get_int_val();
   }
   have_index = 0;
-  if(force = 0){
+  if(force == 0){
     for(i = 0; i < plot2di->ncurve_indexes; i++){
       if(plot2di->curve_indexes[i] == index + offset){
         have_index = 1;
