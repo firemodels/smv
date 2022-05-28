@@ -26,22 +26,22 @@
 #define RESET_FUEL_HOC         33
 
 #ifdef pp_PLOT2D_NEW
-#define GENPLOT_SELECT_DEVICE 101
-#define GENPLOT_HRR_TYPE      102
-#define GENPLOT_ADD_DEVCURVE  103
-#define GENPLOT_ADD_HRRCURVE  104
-#define GENPLOT_SELECT_CURVE  105
-#define GENPLOT_REM_CURVE     106
-#define GENPLOT_REM_ALLCURVES 107
-#define GENPLOT_SELECT_HRR    108
-#define GENPLOT_SHOW_PLOT     109
-#define GENPLOT_XYZ           110
-#define GENPLOT_ADD_PLOT      111
-#define GENPLOT_REM_PLOT      112
-#define GENPLOT_SELECT_PLOT   113
-#define GENPLOT_PLOT_LABEL    114
-#define GENPLOT_SET_POS       115
-#define GENPLOT_DEV_TYPE      116
+#define GENPLOT_ADD_PLOT      101
+#define GENPLOT_ADD_DEVCURVE  102
+#define GENPLOT_ADD_HRRCURVE  103
+#define GENPLOT_REM_PLOT      104
+#define GENPLOT_REM_CURVE     105
+#define GENPLOT_REM_ALLCURVES 106
+#define GENPLOT_SELECT_PLOT   107
+#define GENPLOT_SELECT_CURVE  108
+#define GENPLOT_SELECT_DEVICE 109
+#define GENPLOT_SELECT_HRR    110
+#define GENPLOT_DEV_TYPE      111
+#define GENPLOT_HRR_TYPE      112
+#define GENPLOT_SHOW_PLOT     113
+#define GENPLOT_XYZ           114
+#define GENPLOT_PLOT_LABEL    115
+#define GENPLOT_SET_POS       116
 
 #define PLOT2D_DEV              0
 #define PLOT2D_HRR              1
@@ -699,9 +699,9 @@ void Glui2Plot2D(int index){
   if(plot2dinfo!=NULL)memcpy(plot2dinfo + index, glui_plot2dinfo, sizeof(plot2ddata));
 }
 
-/* ------------------ UpdateDevList ------------------------ */
+/* ------------------ UpdateUnitList ------------------------ */
 
-void UpdateDevList(GLUI_Listbox *LIST_dev, int devunit_index, int type){
+void UpdateUnitList(GLUI_Listbox *LIST_dev, int devunit_index, int type){
   int i, listval, nitems;
 
   if(LIST_dev == NULL)return;
@@ -867,11 +867,11 @@ void GenPlotCB(int var){
       BUTTON_add_dev->set_name(label);
       break;
     case GENPLOT_HRR_TYPE:
-      UpdateDevList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
+      UpdateUnitList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
       GenPlotCB(GENPLOT_SELECT_HRR);
       break;
     case GENPLOT_DEV_TYPE:
-      UpdateDevList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
+      UpdateUnitList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
       GenPlotCB(GENPLOT_SELECT_DEVICE);
       break;
     case GENPLOT_SELECT_HRR:
@@ -885,14 +885,14 @@ void GenPlotCB(int var){
       Glui2Plot2D(iplot2dinfo);
       if(PANEL_curve_properties!=NULL)PANEL_curve_properties->enable();
       if(glui_plot2dinfo->ncurve_indexes > 0 && glui_plot2dinfo->curve_index<ndeviceinfo)BUTTON_plot_position->enable();
-      UpdateDevList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
+      UpdateUnitList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
       break;
     case GENPLOT_ADD_HRRCURVE:
       AddCurve(glui_plot2dinfo, PLOT2D_HRR, 0);
       GenPlotCB(GENPLOT_SELECT_CURVE);
       Glui2Plot2D(iplot2dinfo);
       EnableDisablePlot2D();
-      UpdateDevList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
+      UpdateUnitList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
       break;
     case GENPLOT_SELECT_CURVE:
       memcpy(glui_curve_colors, glui_plot2dinfo->curve_colors + 3*glui_plot2dinfo->curve_index, 3*sizeof(int));
@@ -933,15 +933,15 @@ void GenPlotCB(int var){
       RemoveCurve(glui_plot2dinfo, glui_plot2dinfo->curve_index);
       Glui2Plot2D(iplot2dinfo);
       EnableDisablePlot2D();
-      UpdateDevList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
-      UpdateDevList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
+      UpdateUnitList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
+      UpdateUnitList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
       break;
     case GENPLOT_REM_ALLCURVES:
       RemoveCurve(glui_plot2dinfo, -1);
       Glui2Plot2D(iplot2dinfo);
       EnableDisablePlot2D();
-      UpdateDevList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
-      UpdateDevList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
+      UpdateUnitList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
+      UpdateUnitList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
       break;
     case GENPLOT_SHOW_PLOT:
       Glui2Plot2D(iplot2dinfo);
@@ -990,8 +990,8 @@ void GenPlotCB(int var){
         strcat(label, " curve properties");
         PANEL_curve_properties->set_name(label);
       }
-      UpdateDevList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
-      UpdateDevList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
+      UpdateUnitList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
+      UpdateUnitList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
       GenPlotCB(GENPLOT_SELECT_DEVICE);
       GenPlotCB(GENPLOT_SELECT_HRR);
       break;
@@ -1006,8 +1006,8 @@ void GenPlotCB(int var){
       strcat(label, plot2dinfo[iplot2dinfo].plot_label);
       BUTTON_rem_plot->set_name(label);
       EnableDisablePlot2D();
-      UpdateDevList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
-      UpdateDevList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
+      UpdateUnitList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
+      UpdateUnitList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
       GenPlotCB(GENPLOT_SELECT_PLOT);
       GenPlotCB(GENPLOT_SELECT_DEVICE);
       GenPlotCB(GENPLOT_SELECT_HRR);
@@ -1027,8 +1027,8 @@ void GenPlotCB(int var){
       BUTTON_rem_plot->set_name(label);
       EnableDisablePlot2D();
       GenPlotCB(GENPLOT_SELECT_PLOT);
-      UpdateDevList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
-      UpdateDevList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
+      UpdateUnitList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
+      UpdateUnitList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
       break;
     default:
       ASSERT(FFALSE);
