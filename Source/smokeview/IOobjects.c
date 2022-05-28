@@ -7180,6 +7180,7 @@ void SetupPlot2DUnitData(void){
 
       hrri = hrrinfo+i;
       if(hrri->nvals==0||strlen(hrri->label.shortlabel)==0||strlen(hrri->label.unit)==0)continue;
+      if(STRCMP(hrri->label.shortlabel, "Time") == 0)continue;
       skip_hrr = 0;
       for(j = 0; j<nhrrunits; j++){
         hrrdata *hrrj;

@@ -709,7 +709,7 @@ void UpdateDevList(GLUI_Listbox *LIST_dev, int devunit_index, int type){
     nitems = ndeviceinfo;
   }
   else{
-    nitems = nhrrinfo;
+    nitems = nhrrinfo + nhrrhcinfo;
   }
   listval  = LIST_dev->get_int_val();
   for(i = 0; i < nitems; i++){
@@ -731,7 +731,7 @@ void UpdateDevList(GLUI_Listbox *LIST_dev, int devunit_index, int type){
       LIST_dev->delete_item(i);
     }
   }
-  for(i = 0; i < ndeviceinfo; i++){
+  for(i = 0; i < nitems; i++){
     int inlist, inlist1;
 
     inlist = 0;
@@ -740,6 +740,7 @@ void UpdateDevList(GLUI_Listbox *LIST_dev, int devunit_index, int type){
       inlist1 = deviceinfo[i].inlist1;
     }
     else{
+      if(STRCMP(hrrinfo[i].label.shortlabel, "Time") == 0)continue;
       if(devunit_index == -1 || strcmp(hrrunits[devunit_index]->label.unit, hrrinfo[i].label.unit) == 0)inlist = 1;
       inlist1 = hrrinfo[i].inlist1;
     }
@@ -761,7 +762,7 @@ void UpdateDevList(GLUI_Listbox *LIST_dev, int devunit_index, int type){
       }
     }
   }
-  for(i = 0; i<ndeviceinfo; i++){
+  for(i = 0; i<nitems; i++){
     int inlist, inlist1;
 
     inlist = 0;
@@ -770,7 +771,8 @@ void UpdateDevList(GLUI_Listbox *LIST_dev, int devunit_index, int type){
       inlist1 = deviceinfo[i].inlist1;
     }
     else{
-      if(devunit_index==-1||strcmp(hrrunits[devunit_index]->label.unit, hrrinfo[i].label.unit)==0)inlist = 1;
+      if(STRCMP(hrrinfo[i].label.shortlabel, "Time") == 0)continue;
+      if(devunit_index == -1 || strcmp(hrrunits[devunit_index]->label.unit, hrrinfo[i].label.unit) == 0)inlist = 1;
       inlist1 = hrrinfo[i].inlist1;
     }
     if(inlist==1&&inlist1==0){
@@ -792,60 +794,6 @@ void UpdateDevList(GLUI_Listbox *LIST_dev, int devunit_index, int type){
   }
   LIST_dev->set_int_val(listval);
 }
-
-/* ------------------ UpdateHRRList ------------------------ */
-
-void UpdateHRRList(GLUI_Listbox *LIST_hrr){
-  int i;
-  int listval;
-
-  listval = LIST_hrr->get_int_val();
-  if(LIST_hrr == NULL)return;
-  for(i = 0; i < ndeviceinfo; i++){
-    hrrdata *hrri;
-
-    hrri = hrrinfo + i;
-    if(hrri->inlist1 == 1){
-      hrri->inlist1 = 0;
-      LIST_hrr->delete_item(i);
-    }
-  }
-  for(i = 0; i < nhrrinfo; i++){
-    hrrdata *hrri;
-
-    hrri = hrrinfo + i;
-    if(strcmp(hrri->label.shortlabel, "Time") == 0)continue;
-    if(hrri->inlist1 == 0){
-      char label[350];
-
-      strcpy(label, "");
-      if(InPlot(glui_plot2dinfo, PLOT2D_HRR, i)==1){
-        strcat(label, "*");
-        strcat(label, hrri->label.shortlabel);
-        hrri->inlist1 = 1;
-        LIST_hrr->add_item(i, label);
-      }
-    }
-  }
-  for(i = 0; i<nhrrinfo; i++){
-    hrrdata *hrri;
-
-    hrri = hrrinfo+i;
-    if(strcmp(hrri->label.shortlabel, "Time")==0)continue;
-    if(hrri->inlist1==0){
-      char label[350];
-
-      strcpy(label, "");
-      if(InPlot(glui_plot2dinfo, PLOT2D_HRR, i)!=1){
-        strcat(label, hrri->label.shortlabel);
-        hrri->inlist1 = 1;
-        LIST_hrr->add_item(i, label);
-      }
-    }
-  }
-  LIST_hrr->set_int_val(listval);
-}
-
 
 /* ------------------ UpdatePlotList ------------------------ */
 
@@ -919,9 +867,12 @@ void GenPlotCB(int var){
       BUTTON_add_dev->set_name(label);
       break;
     case GENPLOT_HRR_TYPE:
+      UpdateDevList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
+      GenPlotCB(GENPLOT_SELECT_HRR);
       break;
     case GENPLOT_DEV_TYPE:
       UpdateDevList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
+      GenPlotCB(GENPLOT_SELECT_DEVICE);
       break;
     case GENPLOT_SELECT_HRR:
       strcpy(label, "Add ");
@@ -941,7 +892,7 @@ void GenPlotCB(int var){
       GenPlotCB(GENPLOT_SELECT_CURVE);
       Glui2Plot2D(iplot2dinfo);
       EnableDisablePlot2D();
-      UpdateHRRList(LIST_hrr1);
+      UpdateDevList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
       break;
     case GENPLOT_SELECT_CURVE:
       memcpy(glui_curve_colors, glui_plot2dinfo->curve_colors + 3*glui_plot2dinfo->curve_index, 3*sizeof(int));
@@ -983,14 +934,14 @@ void GenPlotCB(int var){
       Glui2Plot2D(iplot2dinfo);
       EnableDisablePlot2D();
       UpdateDevList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
-      UpdateHRRList(LIST_hrr1);
+      UpdateDevList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
       break;
     case GENPLOT_REM_ALLCURVES:
       RemoveCurve(glui_plot2dinfo, -1);
       Glui2Plot2D(iplot2dinfo);
       EnableDisablePlot2D();
       UpdateDevList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
-      UpdateHRRList(LIST_hrr1);
+      UpdateDevList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
       break;
     case GENPLOT_SHOW_PLOT:
       Glui2Plot2D(iplot2dinfo);
@@ -1040,7 +991,7 @@ void GenPlotCB(int var){
         PANEL_curve_properties->set_name(label);
       }
       UpdateDevList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
-      UpdateHRRList(LIST_hrr1);
+      UpdateDevList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
       GenPlotCB(GENPLOT_SELECT_DEVICE);
       GenPlotCB(GENPLOT_SELECT_HRR);
       break;
@@ -1056,7 +1007,7 @@ void GenPlotCB(int var){
       BUTTON_rem_plot->set_name(label);
       EnableDisablePlot2D();
       UpdateDevList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
-      UpdateHRRList(LIST_hrr1);
+      UpdateDevList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
       GenPlotCB(GENPLOT_SELECT_PLOT);
       GenPlotCB(GENPLOT_SELECT_DEVICE);
       GenPlotCB(GENPLOT_SELECT_HRR);
@@ -1077,7 +1028,7 @@ void GenPlotCB(int var){
       EnableDisablePlot2D();
       GenPlotCB(GENPLOT_SELECT_PLOT);
       UpdateDevList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
-      UpdateHRRList(LIST_hrr1);
+      UpdateDevList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
       break;
     default:
       ASSERT(FFALSE);
