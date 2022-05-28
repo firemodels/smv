@@ -1534,6 +1534,7 @@ SVEXTERN int SVDECL(deviceunits_index, 0);
 SVEXTERN int SVDECL(plot2d_dialogs_defined, 0);
 SVEXTERN int SVDECL(glui_device_unit_index, -1);
 SVEXTERN int SVDECL(glui_device_index, 0);
+SVEXTERN int SVDECL(glui_hrr_unit_index, -1);
 SVEXTERN int SVDECL(glui_hrr_index, 1);
 SVEXTERN int glui_curve_colors[3];
 SVEXTERN float SVDECL(glui_curve_linewidth, 1.0);
