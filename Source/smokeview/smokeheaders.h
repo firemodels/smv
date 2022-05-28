@@ -9,6 +9,7 @@
 EXTERNCPP void DrawGenPlots(void);
 EXTERNCPP int HaveGenDev(void);
 EXTERNCPP int HaveGenHrr(void);
+EXTERNCPP void ShowPlot2D(void);
 #endif
 
 EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals);

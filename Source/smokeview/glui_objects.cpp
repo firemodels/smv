@@ -855,6 +855,19 @@ void EnableDisablePlot2D(void){
   }
 }
 
+/* ------------------ ShowPlot2D ------------------------ */
+
+extern "C" void ShowPlot2D(void){
+  if(glui_device!=NULL&&ROLLOUT_plotgeneral!=NULL){
+    glui_device->show();
+    ROLLOUT_plotgeneral->enable();
+    EnableDisablePlot2D();
+    ROLLOUT_device2Dplots->open();
+    ROLLOUT_plotgeneral->open();
+    ROLLOUT_plotgeneral->set_name("device and hrr comparison plots");
+  }
+}
+
 /* ------------------ GenPlotCB ------------------------ */
 
 void GenPlotCB(int var){
@@ -1504,13 +1517,14 @@ extern "C" void GluiDeviceSetup(int main_window){
   }
   if(nhrrinfo>0||ndevicetypes>0||nsliceinfo>0){
     int i;
+
     ROLLOUT_device2Dplots = glui_device->add_rollout(_("2D plots"), false, PLOT2D_ROLLOUT, Device_Rollout_CB);
     INSERT_ROLLOUT(ROLLOUT_device2Dplots, glui_device);
     ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_device2Dplots, PLOT2D_ROLLOUT, glui_device);
 
 #ifdef pp_PLOT2D_NEW
     if(nhrrinfo>0||ndevicetypes>0){
-      ROLLOUT_plotgeneral = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "device and hrr comparison plots", false);
+      ROLLOUT_plotgeneral = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "", false);
 
       PANEL_plot8 = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "", 0);
 
@@ -1648,6 +1662,7 @@ extern "C" void GluiDeviceSetup(int main_window){
     }
     plot2d_dialogs_defined = 1;
     EnableDisablePlot2D();
+    ROLLOUT_plotgeneral->disable();
 #endif
 
     if(ndevicetypes>0){
