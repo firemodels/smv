@@ -3315,6 +3315,7 @@ int HaveGenHrr(void){
 /* ------------------ DrawPlot ------------------------ */
 #define AXIS_LEFT  0
 #define AXIS_RIGHT 1
+#define AXIS_NONE  2
 void DrawGenCurve(int option, plot2ddata *plot2di, int curve_index, float size_factor,
               float *x, float *z, int n, float x_cur, float z_cur, float zmin, float zmax,
               char *label, int position, int axis_side){
@@ -3440,7 +3441,12 @@ void DrawGenCurve(int option, plot2ddata *plot2di, int curve_index, float size_f
       p2_color[0] = (float)plot_color[0]/255.0;
       p2_color[1] = (float)plot_color[1]/255.0;
       p2_color[2] = (float)plot_color[2]/255.0;
-      Output3Text(p2_color, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
+      if(axis_side == AXIS_RIGHT){
+        Output3Text(p2_color, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
+      }
+      else{
+        Output3Text(p2_color, xmin - 7.0*dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
+      }
       SNIFF_ERRORS("after DrawGenCurve 5");
     }
   }
@@ -3452,42 +3458,107 @@ void DrawGenCurve(int option, plot2ddata *plot2di, int curve_index, float size_f
 
 void DrawGenPlot(plot2ddata * plot2di){
   int i;
-  float dev_global_min=1.0, dev_global_max=0.0;
-  float hrr_global_min=1.0, hrr_global_max=0.0;
-  int first = 1;
+  char *axis_right_unit = NULL, *axis_left_unit = NULL;
+  float axis_left_min   = 1.0,  axis_left_max  = 0.0;
+  float axis_right_min  = 1.0,  axis_right_max = 0.0;
+  int left_position  = 0;
+  int right_position = 0;
 
-  for(i = 0; i<plot2di->ncurve_indexes; i++){
+  for(i = 0; i < plot2di->ncurve_indexes; i++){
     int curve_index;
+    char *unit;
 
     curve_index = plot2di->curve_indexes[i];
-    if(curve_index<ndeviceinfo){
-      if(dev_global_min>dev_global_max){
-        dev_global_min = plot2di->curve_min[curve_index];
-        dev_global_max = plot2di->curve_max[curve_index];
-      }
-      else{
-        dev_global_min = MIN(dev_global_min, plot2di->curve_min[curve_index]);
-        dev_global_max = MAX(dev_global_max, plot2di->curve_max[curve_index]);
-      }
+    if(curve_index < ndeviceinfo){
+      unit = deviceinfo[curve_index].unit;
     }
     else{
-      if(hrr_global_min>hrr_global_max){
-        hrr_global_min = plot2di->curve_min[curve_index];
-        hrr_global_max = plot2di->curve_max[curve_index];
+      unit = hrrinfo[curve_index - ndeviceinfo].label.unit;
+    }
+    if(unit==NULL||strlen(unit)==0)continue;
+    if(axis_right_unit == NULL){
+      axis_right_unit = unit;
+      continue;
+    }
+    if(strcmp(unit, axis_right_unit) != 0){
+      axis_left_unit = unit;
+      break;
+    }
+  }
+
+  for(i = 0; i < plot2di->ncurve_indexes; i++){
+    int curve_index;
+    float valmin, valmax;
+    char *unit;
+
+    curve_index = plot2di->curve_indexes[i];
+    valmin = plot2di->curve_min[curve_index];
+    valmax = plot2di->curve_max[curve_index];
+    if(curve_index < ndeviceinfo){
+      unit = deviceinfo[curve_index].unit;
+    }
+    else{
+      unit = hrrinfo[curve_index - ndeviceinfo].label.unit;
+    }
+    if(axis_right_unit!=NULL&&strcmp(unit, axis_right_unit) == 0){
+      if(axis_right_min>axis_right_max){
+        axis_right_min = valmin;
+        axis_right_max = valmax;
       }
       else{
-        hrr_global_min = MIN(hrr_global_min, plot2di->curve_min[curve_index]);
-        hrr_global_max = MAX(hrr_global_max, plot2di->curve_max[curve_index]);
+        axis_right_min = MIN(axis_right_min,valmin);
+        axis_right_max = MAX(axis_right_max,valmax);
+      }
+    }
+    if(axis_left_unit!=NULL&&strcmp(unit, axis_left_unit) == 0){
+      if(axis_left_min>axis_left_max){
+        axis_left_min = valmin;
+        axis_left_max = valmax;
+      }
+      else{
+        axis_left_min = MIN(axis_left_min,valmin);
+        axis_left_max = MAX(axis_left_max,valmax);
       }
     }
   }
-  int position = 0;
   for(i = 0; i<plot2di->ncurve_indexes; i++){
     int curve_index;
     float highlight_time, highlight_val;
     int valid;
+    char *unit;
+    float valmin, valmax;
+    int option, position, side;
 
+    if(axis_right_unit == NULL)break;
     curve_index = plot2di->curve_indexes[i];
+    if(curve_index < ndeviceinfo){
+      unit = deviceinfo[curve_index].unit;
+    }
+    else{
+      unit = hrrinfo[curve_index - ndeviceinfo].label.unit;
+    }
+    if(unit==NULL)continue;
+    if(strcmp(unit, axis_right_unit) == 0){
+      right_position++;
+      position = right_position;
+      valmin   = axis_right_min;
+      valmax   = axis_right_max;
+      side     = AXIS_RIGHT;
+    }
+    else{
+      if(axis_left_unit == NULL || strcmp(unit, axis_left_unit) != 0)continue;
+      left_position++;
+      position = left_position;
+      valmin   = axis_left_min;
+      valmax   = axis_left_max;
+      side     = AXIS_LEFT;
+    }
+    if(position == 1){
+      option = PLOT_ALL;
+    }
+    else{
+       option = PLOT_ONLY_DATA;
+    }
     if(curve_index < ndeviceinfo){
       devicedata *devi;
 
@@ -3497,31 +3568,9 @@ void DrawGenPlot(plot2ddata * plot2di){
         highlight_val = GetDeviceVal(global_times[itimes], devi, &valid);
       }
       if(devi->nvals>0){
-        int option;
-
-        if(first == 1){
-          first = 0;
-          option = PLOT_ALL;
-        }
-        else{
-          option = PLOT_ONLY_DATA;
-        }
-        char label[256];
-        strcpy(label, devi->deviceID);
-
-        float dev_min, dev_max;
-        if(strcmp(label, "O2") == 0){
-          dev_min = 0.0;
-          dev_max = 0.25;
-        }
-        else{
-          dev_min = dev_global_min;
-          dev_max = dev_global_max;
-        }
         DrawGenCurve(option, plot2di, curve_index, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
-                     highlight_time, highlight_val, dev_min, dev_max,
-                     label, position, AXIS_RIGHT);
-        position++;
+                     highlight_time, highlight_val, valmin, valmax,
+                     devi->deviceID, position, side);
       }
     }
     else{
@@ -3538,19 +3587,9 @@ void DrawGenPlot(plot2ddata * plot2di){
         highlight_val = hrri->vals[itime];
       }
       if(hrri->nvals > 0){
-        int option;
-
-        if(first == 1){
-          first = 0;
-          option = PLOT_ALL;
-        }
-        else{
-          option = PLOT_ONLY_DATA;
-        }
         DrawGenCurve(option, plot2di, curve_index, plot2d_size_factor, hrrinfo->vals, hrri->vals, hrri->nvals,
-                     highlight_time, highlight_val, hrr_global_min, hrr_global_max,
-                     hrri->label.shortlabel, position, AXIS_RIGHT);
-        position++;
+                     highlight_time, highlight_val, valmin, valmax,
+                     hrri->label.shortlabel, position, side);
       }
     }
   }
