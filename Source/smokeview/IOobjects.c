@@ -3445,7 +3445,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, int curve_index, float size_f
         Output3Text(p2_color, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
       }
       else{
-        Output3Text(p2_color, xmin - 7.0*dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
+        Output3TextRight(p2_color, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label, 3);
       }
       SNIFF_ERRORS("after DrawGenCurve 5");
     }

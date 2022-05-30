@@ -118,7 +118,7 @@ void UpdateHoc(void){
   int i;
 
 // construct column for each MLR column by heat of combustion except for air and products
-  for(i = nhrrinfo; i<nhrrinfo+nhrrhcinfo; i++){
+  for(i = nhrrinfo-nhrrhcinfo; i<nhrrinfo; i++){
     hrrdata *hi;
 
     hi = hrrinfo+i;
@@ -297,8 +297,9 @@ void ReadHRR(int flag){
   }
   CheckMemory;
 
+  nhrrinfo += nhrrhcinfo;
 // construct column for each MLR column by heat of combustion except for air and products
-  for(i = nhrrinfo; i<nhrrinfo+nhrrhcinfo; i++){
+  for(i = nhrrinfo- nhrrhcinfo; i<nhrrinfo; i++){
     hrrdata *hi;
 
     hi = hrrinfo+i;
@@ -327,7 +328,7 @@ void ReadHRR(int flag){
   CheckMemory;
 
 //compute vals into vals_orig
-  for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
+  for(i = 0; i<nhrrinfo; i++){
     hrrdata *hi;
 
     hi = hrrinfo+i;
@@ -335,7 +336,7 @@ void ReadHRR(int flag){
   }
 
 //compute min and max of each column
-  for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
+  for(i = 0; i<nhrrinfo; i++){
     hrrdata *hi;
     float valmin, valmax;
     int j;
@@ -354,7 +355,7 @@ void ReadHRR(int flag){
   CheckMemory;
 
 // free arrays that were not used
-  for(i = nhrrinfo+nhrrhcinfo; i<2*nhrrinfo; i++){
+  for(i = nhrrinfo; i<2*(nhrrinfo-nhrrhcinfo); i++){
     hrrdata *hi;
 
     hi = hrrinfo+i;

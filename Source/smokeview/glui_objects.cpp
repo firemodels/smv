@@ -709,7 +709,7 @@ void UpdateUnitList(GLUI_Listbox *LIST_dev, int devunit_index, int type){
     nitems = ndeviceinfo;
   }
   else{
-    nitems = nhrrinfo + nhrrhcinfo;
+    nitems = nhrrinfo;
   }
   listval  = LIST_dev->get_int_val();
   for(i = 0; i < nitems; i++){
@@ -755,8 +755,8 @@ void UpdateUnitList(GLUI_Listbox *LIST_dev, int devunit_index, int type){
           deviceinfo[i].inlist1 = 1;
         }
         else{
-          strcat(label, deviceinfo[i].deviceID);
-          deviceinfo[i].inlist1 = 1;
+          strcat(label, hrrinfo[i].label.shortlabel);
+          hrrinfo[i].inlist1 = 1;
         }
         LIST_dev->add_item(i, label);
       }
@@ -1578,7 +1578,7 @@ extern "C" void GluiDeviceSetup(int main_window){
         glui_device->add_separator_to_panel(PANEL_add_curve);
         PANEL_plotgeneral_hrr = glui_device->add_panel_to_panel(PANEL_add_curve, "", false);
         LIST_hrr1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_hrr, "hrr quantity:", &glui_hrr_index, GENPLOT_SELECT_HRR, GenPlotCB);
-        for(i = 0; i < nhrrinfo + nhrrhcinfo; i++){
+        for(i = 0; i < nhrrinfo; i++){
           hrrdata *hi;
 
           hi = hrrinfo + i;
@@ -1695,7 +1695,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       ROLLOUT_plothrr = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "hrr plots", false);
       CHECKBOX_vis_hrr_plot = glui_device->add_checkbox_to_panel(ROLLOUT_plothrr, _("show"), &vis_hrr_plot, HRRPUV2_PLOT, DeviceCB);
       LIST_hrrdata = glui_device->add_listbox_to_panel(ROLLOUT_plothrr, "type:", &glui_hrr, DEVICE_TIMEAVERAGE, DeviceCB);
-      for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
+      for(i = 0; i<nhrrinfo; i++){
         hrrdata *hi;
 
         hi = hrrinfo+i;
