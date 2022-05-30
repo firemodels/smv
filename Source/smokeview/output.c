@@ -359,8 +359,6 @@ void Output3Text(float *color, float x, float y, float z, char *string){
 float GetCharAdvance(GLUTbitmapFont font, int c){
   const BitmapCharRec *ch;
   BitmapFontPtr fontinfo;
-  GLint swapbytes, lsbfirst, rowlength;
-  GLint skiprows, skippixels, alignment;
 
 #if defined(_WIN32)
   extern void *__glutFont(void *font);
