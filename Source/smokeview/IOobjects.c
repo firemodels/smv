@@ -3318,7 +3318,7 @@ int HaveGenHrr(void){
 #define AXIS_NONE  2
 void DrawGenCurve(int option, plot2ddata *plot2di, int curve_index, float size_factor,
               float *x, float *z, int n, float x_cur, float z_cur, float zmin, float zmax,
-              char *label, int position, int axis_side){
+              char *label, int position, int axis_side, char *unit){
   float xmin, xmax, dx, dz;
   float xscale = 1.0, zscale = 1.0;
   int i, ndigits = 3;
@@ -3449,6 +3449,14 @@ void DrawGenCurve(int option, plot2ddata *plot2di, int curve_index, float size_f
       }
       SNIFF_ERRORS("after DrawGenCurve 5");
     }
+    if(unit!=NULL){
+      if(axis_side == AXIS_RIGHT){
+        Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)(position+1)) * dfont, unit);
+      }
+      else{
+        Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)(position+1)) * dfont, unit, 3);
+      }
+    }
   }
   glPopMatrix();
   SNIFF_ERRORS("after DrawGenCurve end");
@@ -3463,6 +3471,7 @@ void DrawGenPlot(plot2ddata * plot2di){
   float axis_right_min  = 1.0,  axis_right_max = 0.0;
   int left_position  = 0;
   int right_position = 0;
+  int unit_left_index=0, unit_right_index=0;
 
   for(i = 0; i < plot2di->ncurve_indexes; i++){
     int curve_index;
@@ -3483,6 +3492,27 @@ void DrawGenPlot(plot2ddata * plot2di){
     if(strcmp(unit, axis_right_unit) != 0){
       axis_left_unit = unit;
       break;
+    }
+  }
+  for(i = 0; i < plot2di->ncurve_indexes; i++){
+    int curve_index;
+    char *unit;
+
+    curve_index = plot2di->curve_indexes[i];
+    if(curve_index < ndeviceinfo){
+      unit = deviceinfo[curve_index].unit;
+    }
+    else{
+      unit = hrrinfo[curve_index - ndeviceinfo].label.unit;
+    }
+    if(unit == NULL || strlen(unit) == 0)continue;
+    if(axis_right_unit != NULL && strcmp(axis_right_unit, unit) == 0){
+      unit_right_index = i;
+      continue;
+    }
+    if(axis_left_unit != NULL && strcmp(axis_left_unit, unit) == 0){
+      unit_left_index = i;
+      continue;
     }
   }
 
@@ -3528,6 +3558,7 @@ void DrawGenPlot(plot2ddata * plot2di){
     char *unit;
     float valmin, valmax;
     int option, position, side;
+    char *unit_display;
 
     if(axis_right_unit == NULL)break;
     curve_index = plot2di->curve_indexes[i];
@@ -3538,12 +3569,14 @@ void DrawGenPlot(plot2ddata * plot2di){
       unit = hrrinfo[curve_index - ndeviceinfo].label.unit;
     }
     if(unit==NULL)continue;
+    unit_display = NULL;
     if(strcmp(unit, axis_right_unit) == 0){
       right_position++;
       position = right_position;
       valmin   = axis_right_min;
       valmax   = axis_right_max;
       side     = AXIS_RIGHT;
+      if(unit_right_index==i)unit_display = unit;
     }
     else{
       if(axis_left_unit == NULL || strcmp(unit, axis_left_unit) != 0)continue;
@@ -3552,6 +3585,7 @@ void DrawGenPlot(plot2ddata * plot2di){
       valmin   = axis_left_min;
       valmax   = axis_left_max;
       side     = AXIS_LEFT;
+      if(unit_left_index==i)unit_display = unit;
     }
     if(position == 1){
       option = PLOT_ALL;
@@ -3570,7 +3604,7 @@ void DrawGenPlot(plot2ddata * plot2di){
       if(devi->nvals>0){
         DrawGenCurve(option, plot2di, curve_index, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
                      highlight_time, highlight_val, valmin, valmax,
-                     devi->deviceID, position, side);
+                     devi->deviceID, position, side, unit_display);
       }
     }
     else{
@@ -3589,7 +3623,7 @@ void DrawGenPlot(plot2ddata * plot2di){
       if(hrri->nvals > 0){
         DrawGenCurve(option, plot2di, curve_index, plot2d_size_factor, hrrinfo->vals, hrri->vals, hrri->nvals,
                      highlight_time, highlight_val, valmin, valmax,
-                     hrri->label.shortlabel, position, side);
+                     hrri->label.shortlabel, position, side, unit_display);
       }
     }
   }
