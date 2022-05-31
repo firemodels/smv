@@ -1659,10 +1659,10 @@ extern "C" void GluiDeviceSetup(int main_window){
       }
       GenPlotCB(GENPLOT_DEV_TYPE);
       GenPlotCB(GENPLOT_SHOW_PLOT);
+      plot2d_dialogs_defined = 1;
+      EnableDisablePlot2D();
+      ROLLOUT_plotgeneral->disable();
     }
-    plot2d_dialogs_defined = 1;
-    EnableDisablePlot2D();
-    ROLLOUT_plotgeneral->disable();
 #endif
 
     if(ndevicetypes>0){
