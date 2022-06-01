@@ -473,10 +473,7 @@ void Output3TextRight(float *color, float x, float y, float z, char *string, flo
         glutBitmapCharacterShiftLeft(font_ptr, blank, -blank_advance);
       }
     }
-   // for(i = strlen(string) - 1; i >= 0;i--){
     for(i = 0; i<strlen(string); i++){
-      float advance;
-
       c = string + i;
       glutBitmapCharacter(font_ptr, (unsigned char)*c);
     }

@@ -208,7 +208,7 @@ void DrawGenPlot(plot2ddata * plot2di){
 
   for(i = 0; i < plot2di->ncurve_indexes; i++){
     int curve_index;
-    char *unit, label;
+    char *unit;
 
     curve_index = plot2di->curve[i].index;
     if(curve_index < ndeviceinfo){
@@ -254,7 +254,7 @@ void DrawGenPlot(plot2ddata * plot2di){
   for(i = 0; i < plot2di->ncurve_indexes; i++){
     int curve_index;
     float valmin, valmax;
-    char *unit, label;
+    char *unit;
     curvedata *curve;
 
     curve_index = plot2di->curve[i].index;
