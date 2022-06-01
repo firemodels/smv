@@ -1013,6 +1013,8 @@ EXTERNCPP void ReadFed(int ifile, int time_frame, float *time_value, int flag, i
 EXTERNCPP FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
 EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);
 
+EXTERNCPP void GetGlobalDeviceBounds(int type);
+EXTERNCPP float GetDeviceVal(float time_local, devicedata *devicei, int *valid);
 EXTERNCPP void InitMenus(int unload);
 int ReadSMV(bufferstreamdata *stream);
 EXTERNCPP void ReadSMVDynamic(char *file);
