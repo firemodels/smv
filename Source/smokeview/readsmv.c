@@ -11458,12 +11458,10 @@ int ReadIni2(char *inifile, int localfile){
         fgets(buffer, 255, stream);
         sscanf(buffer, " %f %f %f %i %i %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->show_title, &plot2di->ncurve_indexes);
         for(j=0; j<plot2di->ncurve_indexes; j++){
-          int color[3], *color2;
-          float linewidth1, *linewidth2;
+          int color[3];
+          float linewidth1;
           float curve_factors[2];
           int curve_use_factors;
-          float *curve_factors2;
-          int *curve_use_factors2;
           int index;
           curvedata *curve;
 
