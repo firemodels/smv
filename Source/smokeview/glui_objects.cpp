@@ -434,7 +434,7 @@ int InPlot(plot2ddata *plot2di, int type, int index){
   /* ------------------ AddCurve ------------------------ */
 
 void AddCurve(plot2ddata *plot2di, int type, int force){
-  int i, have_index, nindex;
+  int have_index, nindex;
   int offset = 0, index;
 
   if(type == PLOT2D_HRR){
@@ -781,7 +781,7 @@ extern "C" void ShowPlot2D(void){
 void GenPlotCB(int var){
   switch (var){
     char label[256];
-    int index, offset;
+    int index;
     curvedata *curve;
 
     case GENPLOT_SELECT_DEVICE_CLICK:
