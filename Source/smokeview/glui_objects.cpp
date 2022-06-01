@@ -122,6 +122,7 @@ GLUI_Listbox *LIST_devunit1 = NULL;
 GLUI_Listbox *LIST_hrr1 = NULL;
 GLUI_Listbox *LIST_hrrunit1 = NULL;
 GLUI_Listbox *LIST_plots = NULL;
+GLUI_Listbox *LIST_plotcurves = NULL;
 #endif
 GLUI_Listbox *LIST_devicetypes = NULL;
 GLUI_Listbox *LIST_open=NULL;
@@ -382,8 +383,22 @@ void UpdateShowWindRoses(void) {
 /* ------------------ RemoveCurve ------------------------ */
 
 void RemoveCurve(plot2ddata *plot2di, int index){
-  if(index >= 0){
+  if(index < 0){
+    int i;
+
+    for(i = 0; i < plot2di->ncurve_indexes; i++){
+      curvedata *curve;
+
+      curve = plot2di->curve+i;
+      LIST_plotcurves->delete_item(curve->index);
+    }
+    plot2di->ncurve_indexes = 0;
+    LIST_plotcurves->set_int_val(-1);
+    }
+  else{
     int i, ii;
+
+    LIST_plotcurves->delete_item(index);
 
     ii = 0;
     for(i = 0; i < plot2di->ncurve_indexes; i++){
@@ -395,6 +410,12 @@ void RemoveCurve(plot2ddata *plot2di, int index){
       ii++;
     }
     (plot2di->ncurve_indexes)--;
+    if(plot2di->ncurve_indexes > 0){
+      LIST_plotcurves->set_int_val(plot2di->curve[0].index);
+    }
+    else{
+      LIST_plotcurves->set_int_val(-1);
+    }
   }
 }
 
@@ -442,6 +463,8 @@ void AddCurve(plot2ddata *plot2di, int type, int force){
       strcpy(label, "hrr/");
       strcat(label, hrrinfo[index].label.shortlabel);
     }
+    LIST_plotcurves->add_item(offset + index, label);
+    LIST_plotcurves->set_int_val(offset + index);
   }
 }
 
@@ -451,6 +474,7 @@ void GenPlotCB(int var);
 void MakeCurveList(plot2ddata *plot2di, int option){
   int i;
 
+  if(option == 1)LIST_plotcurves->add_item(-1, "");
   for(i = 0; i < plot2di->ncurve_indexes_ini; i++){
     int curv_index;
 
@@ -1503,6 +1527,7 @@ extern "C" void GluiDeviceSetup(int main_window){
 
       PANEL_curve_properties = glui_device->add_panel_to_panel(PANEL_plot5, "curve properties");
       if(nplot2dinfo > 0 && glui_plot2dinfo->ncurve_indexes == 0)PANEL_curve_properties->disable();
+      LIST_plotcurves = glui_device->add_listbox_to_panel(PANEL_curve_properties, "select:", &glui_plot2dinfo->curve_index, GENPLOT_SELECT_CURVE, GenPlotCB);
       RemoveCurve(glui_plot2dinfo, -1);
       MakeCurveList(glui_plot2dinfo, 1);
 
