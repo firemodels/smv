@@ -885,6 +885,7 @@ void GenPlotCB(int var){
     curvedata *curve;
 
     case GENPLOT_SELECT_DEVICE:
+      if(deviceinfo == NULL || BUTTON_add_dev == NULL)break;
       strcpy(label, "Add ");
       strcat(label, deviceinfo[glui_device_index].deviceID);
       BUTTON_add_dev->set_name(label);
@@ -898,6 +899,7 @@ void GenPlotCB(int var){
       GenPlotCB(GENPLOT_SELECT_DEVICE);
       break;
     case GENPLOT_SELECT_HRR:
+      if(hrrinfo == NULL || BUTTON_add_hrr == NULL)break;
       strcpy(label, "Add ");
       strcat(label, hrrinfo[glui_hrr_index].label.shortlabel);
       BUTTON_add_hrr->set_name(label);
@@ -1656,7 +1658,7 @@ extern "C" void GluiDeviceSetup(int main_window){
         LIST_plots->set_int_val(0);
         GenPlotCB(GENPLOT_SELECT_PLOT);
       }
-      GenPlotCB(GENPLOT_DEV_TYPE);
+      if(ndevicetypes>0)GenPlotCB(GENPLOT_DEV_TYPE);
       GenPlotCB(GENPLOT_SHOW_PLOT);
       plot2d_dialogs_defined = 1;
       EnableDisablePlot2D();
