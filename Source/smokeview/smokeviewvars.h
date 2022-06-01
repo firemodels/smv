@@ -145,7 +145,7 @@ SVEXTERN char *cslice_label, *cpart_label, *cbound_label, *cplot3d_label;
 #endif
 
 SVEXTERN float SVDECL(plot2d_size_factor, 0.15), SVDECL(plot2d_font_spacing, 1.2);
-SVEXTERN float SVDECL(plot2d_line_width, 1.0), SVDECL(plot2d_point_size, 10.0);
+SVEXTERN float SVDECL(plot2d_line_width, 1.0), SVDECL(plot2d_point_size, 5.0);
 #ifdef INMAIN
 SVEXTERN float plot2d_xyz_offset[3] = {0.0, 0.0, 0.0};
 #else
@@ -1536,18 +1536,9 @@ SVEXTERN int SVDECL(glui_device_unit_index, -1);
 SVEXTERN int SVDECL(glui_device_index, 0);
 SVEXTERN int SVDECL(glui_hrr_unit_index, -1);
 SVEXTERN int SVDECL(glui_hrr_index, 1);
-SVEXTERN int glui_curve_colors[3];
-SVEXTERN float SVDECL(glui_curve_linewidth, 1.0);
-SVEXTERN float SVDECL(glui_curve_usermin, 1.0), SVDECL(glui_curve_usermax, 0.0);
-SVEXTERN int SVDECL(glui_curve_use_usermin, 0), SVDECL(glui_curve_use_usermax, 0);
 SVEXTERN plot2ddata SVDECL(*glui_plot2dinfo, NULL), SVDECL(*plot2dinfo, NULL), SVDECL(*plot2dini, NULL);
 SVEXTERN int SVDECL(nplot2dinfo, 0), SVDECL(iplot2dinfo, 0), SVDECL(nplot2dini, 0), SVDECL(plot2d_count, 0);
-SVEXTERN int SVDECL(glui_curve_use_factors, 0);
-#ifdef INMAIN
-SVEXTERN float glui_curve_factors[2]={1.0,0.0};
-#else
-SVEXTERN float glui_curve_factors[2];
-#endif
+SVEXTERN curvedata glui_curve, glui_curve_default;
 #endif
 SVEXTERN float SVDECL(plot2d_hrr_min,0.0), SVDECL(plot2d_hrr_max,1.0);
 SVEXTERN int SVDECL(use_plot2d_hrr_min, 0);

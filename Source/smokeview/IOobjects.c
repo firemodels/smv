@@ -3290,10 +3290,7 @@ int HaveGenDev(void){
   int i;
 
   for(i = 0; i<glui_plot2dinfo->ncurve_indexes; i++){
-    int curve_index;
-
-    curve_index = glui_plot2dinfo->curve_indexes[i];
-    if(curve_index<ndeviceinfo)return 1;
+    if(glui_plot2dinfo->curve[i].index<ndeviceinfo)return 1;
   }
   return 0;
 }
@@ -3304,10 +3301,7 @@ int HaveGenHrr(void){
   int i;
 
   for(i = 0; i<glui_plot2dinfo->ncurve_indexes; i++){
-    int curve_index;
-
-    curve_index = glui_plot2dinfo->curve_indexes[i];
-    if(curve_index>=ndeviceinfo)return 1;
+    if(glui_plot2dinfo->curve[i].index>=ndeviceinfo)return 1;
   }
   return 0;
 }
@@ -3316,7 +3310,7 @@ int HaveGenHrr(void){
 #define AXIS_LEFT  0
 #define AXIS_RIGHT 1
 #define AXIS_NONE  2
-void DrawGenCurve(int option, plot2ddata *plot2di, int curve_index, float size_factor,
+void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_factor,
               float *x, float *z, int n, float x_cur, float z_cur, float zmin, float zmax,
               char *label, int position, int axis_side, char *unit){
   float xmin, xmax, dx, dz;
@@ -3328,10 +3322,10 @@ void DrawGenCurve(int option, plot2ddata *plot2di, int curve_index, float size_f
   char *title;
 
   xyz0             = plot2di->xyz;
-  plot_color       = plot2di->curve_colors+3*curve_index;
-  linewidth_arg    = plot2di->curve_linewidths[curve_index];
-  plot_factors     = plot2di->curve_factors + 2*curve_index;
-  use_plot_factors = plot2di->curve_use_factors[curve_index];
+  plot_color       = curve->color;
+  linewidth_arg    = curve->linewidth;
+  plot_factors     = curve->factors;
+  use_plot_factors = curve->use_factors;
   title            = plot2di->plot_label;
   show_title       = plot2di->show_title;
 
@@ -3477,7 +3471,7 @@ void DrawGenPlot(plot2ddata * plot2di){
     int curve_index;
     char *unit;
 
-    curve_index = plot2di->curve_indexes[i];
+    curve_index = plot2di->curve[i].index;
     if(curve_index < ndeviceinfo){
       unit = deviceinfo[curve_index].unit;
     }
@@ -3498,7 +3492,7 @@ void DrawGenPlot(plot2ddata * plot2di){
     int curve_index;
     char *unit;
 
-    curve_index = plot2di->curve_indexes[i];
+    curve_index = plot2di->curve[i].index;
     if(curve_index < ndeviceinfo){
       unit = deviceinfo[curve_index].unit;
     }
@@ -3520,10 +3514,12 @@ void DrawGenPlot(plot2ddata * plot2di){
     int curve_index;
     float valmin, valmax;
     char *unit;
+    curvedata *curve;
 
-    curve_index = plot2di->curve_indexes[i];
-    valmin = plot2di->curve_min[curve_index];
-    valmax = plot2di->curve_max[curve_index];
+    curve_index = plot2di->curve[i].index;
+    curve = plot2di->curve + curve_index;
+    valmin = curve->valmin;
+    valmax = curve->valmax;
     if(curve_index < ndeviceinfo){
       unit = deviceinfo[curve_index].unit;
     }
@@ -3559,9 +3555,11 @@ void DrawGenPlot(plot2ddata * plot2di){
     float valmin, valmax;
     int option, position, side;
     char *unit_display;
+    curvedata *curve;
 
     if(axis_right_unit == NULL)break;
-    curve_index = plot2di->curve_indexes[i];
+    curve_index = plot2di->curve[i].index;
+    curve = plot2di->curve + curve_index;
     if(curve_index < ndeviceinfo){
       unit = deviceinfo[curve_index].unit;
     }
@@ -3602,7 +3600,7 @@ void DrawGenPlot(plot2ddata * plot2di){
         highlight_val = GetDeviceVal(global_times[itimes], devi, &valid);
       }
       if(devi->nvals>0){
-        DrawGenCurve(option, plot2di, curve_index, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
+        DrawGenCurve(option, plot2di, curve, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
                      highlight_time, highlight_val, valmin, valmax,
                      devi->deviceID, position, side, unit_display);
       }
@@ -3621,7 +3619,7 @@ void DrawGenPlot(plot2ddata * plot2di){
         highlight_val = hrri->vals[itime];
       }
       if(hrri->nvals > 0){
-        DrawGenCurve(option, plot2di, curve_index, plot2d_size_factor, hrrinfo->vals, hrri->vals, hrri->nvals,
+        DrawGenCurve(option, plot2di, curve, plot2d_size_factor, hrrinfo->vals, hrri->vals, hrri->nvals,
                      highlight_time, highlight_val, valmin, valmax,
                      hrri->label.shortlabel, position, side, unit_display);
       }

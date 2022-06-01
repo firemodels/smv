@@ -993,24 +993,25 @@ typedef struct _hrrdata {
   flowlabels label;
 } hrrdata;
 
-/* --------------------------  plot2ddata ------------------------------------ */
+/* --------------------------  curvedata ------------------------------------ */
 
 #ifdef pp_PLOT2D_NEW
-#define MAX_PLOT2D_CURVES 100
+typedef struct _curvedata{
+  int index, index_ini, use_usermin, use_usermax, use_factors, color[3];
+  float valmin, valmax,  usermin, usermax;
+  float linewidth;
+  float factors[2];
+} curvedata;
+
+/* --------------------------  plot2ddata ------------------------------------ */
+
 typedef struct _plot2ddata{
-  int curve_indexes[MAX_PLOT2D_CURVES],     ncurve_indexes;
-  int curve_indexes_ini[MAX_PLOT2D_CURVES], ncurve_indexes_ini;
-  int curve_index, plot_index;
   char plot_label[350];
-  float curve_min[MAX_PLOT2D_CURVES], curve_max[MAX_PLOT2D_CURVES];
-  float curve_usermin[MAX_PLOT2D_CURVES], curve_usermax[MAX_PLOT2D_CURVES];
-  int curve_use_usermin[MAX_PLOT2D_CURVES], curve_use_usermax[MAX_PLOT2D_CURVES];
-  float curve_linewidths[MAX_PLOT2D_CURVES];
-  float curve_factors[2*MAX_PLOT2D_CURVES];
-  int curve_use_factors[MAX_PLOT2D_CURVES];
-  int curve_colors[3*MAX_PLOT2D_CURVES];
-  float xyz[3];
+  int ncurve_indexes, ncurve_indexes_ini;
+  int curve_index, plot_index;
   int show, show_title;
+  curvedata *curve;
+  float xyz[3];
 } plot2ddata;
 #endif
 
