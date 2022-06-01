@@ -447,9 +447,9 @@ extern "C" void UpdateCurveBounds(plot2ddata *plot2di, int option){
         valmax = MAX(valmax, hrri->vals[j]);
       }
       curve->valmin = valmin;
-      curve->valmax = valmin;
+      curve->valmax = valmax;
       curve->usermin = valmin;
-      curve->usermax = valmin;
+      curve->usermax = valmax;
       curve->use_usermin = 0;
       curve->use_usermax = 0;
     }
