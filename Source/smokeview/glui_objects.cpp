@@ -820,6 +820,9 @@ void GenPlotCB(int var){
       if(PANEL_curve_properties!=NULL)PANEL_curve_properties->enable();
       if(glui_plot2dinfo->ncurve_indexes > 0 && glui_plot2dinfo->curve_index<ndeviceinfo)BUTTON_plot_position->enable();
       UpdateUnitList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
+      if(glui_plot2dinfo->show){
+        GenPlotCB(GENPLOT_SHOW_PLOT);
+      }
       break;
     case GENPLOT_ADD_HRRCURVE:
       AddCurve(glui_plot2dinfo, PLOT2D_HRR, 0);
@@ -827,6 +830,9 @@ void GenPlotCB(int var){
       Glui2Plot2D(iplot2dinfo);
       EnableDisablePlot2D();
       UpdateUnitList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
+      if(glui_plot2dinfo->show){
+        GenPlotCB(GENPLOT_SHOW_PLOT);
+      }
       break;
     case GENPLOT_SELECT_CURVE:
       index = glui_plot2dinfo->curve_index;
