@@ -1024,11 +1024,12 @@ EXTERNCPP void OutputAxisLabels(void);
 EXTERNCPP void OutputLargeText(float x, float y, char *string);
 EXTERNCPP void OutputText(float x, float y, char *string);
 EXTERNCPP void OutputTextColor(float *fontcolor, float x, float y, char *string);
-EXTERNCPP void Output3TextRight(float *color, float x, float y, float z, char *string, int pad);
+EXTERNCPP void Output3TextRight(float *color, float x, float y, float z, char *string, float pad_length);
 EXTERNCPP void Output3Text(float *color, float x, float y, float z, char *string);
 EXTERNCPP void Output3Val(float x, float y, float z, float val);
 EXTERNCPP void OutputBarText(float x, float y, const GLfloat *color, char *string);
-EXTERNCPP void UpdateChar(void);
+EXTERNCPP float GetStringLength(char *string);
+  EXTERNCPP void UpdateChar(void);
 EXTERNCPP void UpdateTracers(void);
 EXTERNCPP void UpdateGslicePlanes(void);
 

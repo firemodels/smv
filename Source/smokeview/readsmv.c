@@ -11453,6 +11453,7 @@ int ReadIni2(char *inifile, int localfile){
         TrimBack(buffer);
         labelptr = TrimFront(buffer);
         strcpy(plot2di->plot_label, labelptr);
+        NewMemory((void **)&(plot2di->curve), (ndeviceinfo+nhrrinfo) * sizeof(curvedata));
 
         fgets(buffer, 255, stream);
         sscanf(buffer, " %f %f %f %i %i %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->show_title, &plot2di->ncurve_indexes);

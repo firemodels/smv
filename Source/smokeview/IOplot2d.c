@@ -37,7 +37,7 @@ int HaveGenHrr(void){
 #define AXIS_NONE  2
 void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_factor,
               float *x, float *z, int n, float x_cur, float z_cur, float zmin, float zmax,
-              char *label, int position, int axis_side, char *unit){
+              char *label, int position, int axis_side, char *unit, float pad_length){
   float xmin, xmax, dx, dz;
   float xscale = 1.0, zscale = 1.0;
   int i, ndigits = 3;
@@ -171,13 +171,13 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
       p2_color[2] = (float)plot_color[2]/255.0;
       if(axis_side == AXIS_LEFT){
         Output3Text(p2_color, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2);
-        Output3Text(p2_color, xmax + 2.0 * dx, 0.0, zmin,  c_zmin);
-        Output3Text(p2_color, xmax + 2.0 * dx, 0.0, zmax , c_zmax);
+        Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmin,  c_zmin);
+        Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax , c_zmax);
         }
       else{
-        Output3TextRight(p2_color, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2, 3);
-        Output3TextRight(p2_color, xmin - dx, 0.0, zmin,  c_zmin, 3);
-        Output3TextRight(p2_color, xmin - dx, 0.0, zmax , c_zmax, 3);
+        Output3TextRight(p2_color, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2, pad_length);
+        Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmin,  c_zmin, pad_length);
+        Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax , c_zmax, pad_length);
         }
       SNIFF_ERRORS("after DrawGenCurve 5");
     }
@@ -186,7 +186,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
         Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)(position+1)) * dfont, unit);
       }
       else{
-        Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)(position+1)) * dfont, unit, 3);
+        Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)(position+1)) * dfont, unit, pad_length);
       }
     }
   }
@@ -204,10 +204,11 @@ void DrawGenPlot(plot2ddata * plot2di){
   int left_position  = 0;
   int right_position = 0;
   int unit_left_index=0, unit_right_index=0;
+  float pad_length = 0.0;
 
   for(i = 0; i < plot2di->ncurve_indexes; i++){
     int curve_index;
-    char *unit;
+    char *unit, label;
 
     curve_index = plot2di->curve[i].index;
     if(curve_index < ndeviceinfo){
@@ -228,18 +229,21 @@ void DrawGenPlot(plot2ddata * plot2di){
   }
   for(i = 0; i < plot2di->ncurve_indexes; i++){
     int curve_index;
-    char *unit;
+    char *unit, *label;
 
     curve_index = plot2di->curve[i].index;
     if(curve_index < ndeviceinfo){
       unit = deviceinfo[curve_index].unit;
+      label = deviceinfo[curve_index].quantity;
     }
     else{
       unit = hrrinfo[curve_index - ndeviceinfo].label.unit;
-    }
+      label = hrrinfo[curve_index - ndeviceinfo].label.shortlabel;
+      }
     if(unit == NULL || strlen(unit) == 0)continue;
     if(axis_right_unit != NULL && strcmp(axis_right_unit, unit) == 0){
       unit_right_index = i;
+      pad_length = MAX(pad_length, GetStringLength(label));
       continue;
     }
     if(axis_left_unit != NULL && strcmp(axis_left_unit, unit) == 0){
@@ -247,11 +251,10 @@ void DrawGenPlot(plot2ddata * plot2di){
       continue;
     }
   }
-
   for(i = 0; i < plot2di->ncurve_indexes; i++){
     int curve_index;
     float valmin, valmax;
-    char *unit;
+    char *unit, label;
     curvedata *curve;
 
     curve_index = plot2di->curve[i].index;
@@ -340,7 +343,7 @@ void DrawGenPlot(plot2ddata * plot2di){
       if(devi->nvals>0){
         DrawGenCurve(option, plot2di, curve, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
                      highlight_time, highlight_val, valmin, valmax,
-                     devi->deviceID, position, side, unit_display);
+                     devi->deviceID, position, side, unit_display, pad_length);
       }
     }
     else{
@@ -359,7 +362,7 @@ void DrawGenPlot(plot2ddata * plot2di){
       if(hrri->nvals > 0){
         DrawGenCurve(option, plot2di, curve, plot2d_size_factor, hrrinfo->vals, hrri->vals, hrri->nvals,
                      highlight_time, highlight_val, valmin, valmax,
-                     hrri->label.shortlabel, position, side, unit_display);
+                     hrri->label.shortlabel, position, side, unit_display, pad_length);
       }
     }
   }

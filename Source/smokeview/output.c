@@ -379,6 +379,23 @@ float GetCharAdvance(GLUTbitmapFont font, int c){
   }
 }
 
+/* ------------------ GetStringLength ------------------------ */
+
+float GetStringLength(char *string){
+  float length = 0.0;
+  int i;
+
+  if(string == NULL || strlen(string) == 0)return length;
+
+  for(i = 0; i < strlen(string); i++){
+    char *c;
+
+    c = string + i;
+    length += GetCharAdvance(font_ptr, *c);
+  }
+  return length;
+}
+
 /* ------------------ glutBitmapCharacterShiftLeft ------------------------ */
 
 void glutBitmapCharacterShiftLeft(GLUTbitmapFont font, int c, float advance){
@@ -430,7 +447,7 @@ void glutBitmapCharacterShiftLeft(GLUTbitmapFont font, int c, float advance){
 
 /* ------------------ Output3TextRight ------------------------ */
 
-void Output3TextRight(float *color, float x, float y, float z, char *string, int pad){
+void Output3TextRight(float *color, float x, float y, float z, char *string, float pad_length){
   char *c;
 
   if(string == NULL)return;
@@ -448,24 +465,20 @@ void Output3TextRight(float *color, float x, float y, float z, char *string, int
     blank = ' ';
     glRasterPos3f(x, y, z);
     blank_advance = GetCharAdvance(font_ptr, blank);
-    for(i = 0; i < pad; i++){
-      glutBitmapCharacterShiftLeft(font_ptr, blank, -blank_advance);
+    int count;
+
+    count = pad_length / blank_advance + 1;
+    if(pad_length > 0.0){
+      for(i = 0; i < count; i++){
+        glutBitmapCharacterShiftLeft(font_ptr, blank, -blank_advance);
+      }
     }
    // for(i = strlen(string) - 1; i >= 0;i--){
-    for(i=strlen(string)-1;i>=0;i--){
+    for(i = 0; i<strlen(string); i++){
       float advance;
 
       c = string + i;
-      if(i>0){
-        char *cm1;
-
-        cm1 = string + i - 1;
-        advance = GetCharAdvance(font_ptr, (unsigned char)*cm1);
-      }
-      else{
-        advance = GetCharAdvance(font_ptr, (unsigned char)*c);
-      }
-      glutBitmapCharacterShiftLeft(font_ptr, (unsigned char)*c, -advance);
+      glutBitmapCharacter(font_ptr, (unsigned char)*c);
     }
   }
 }
