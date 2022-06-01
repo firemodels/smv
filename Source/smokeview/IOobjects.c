@@ -3380,23 +3380,23 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
     glColor3fv(foregroundcolor);
     glLineWidth(plot2d_line_width);
     glBegin(GL_LINES);
-    glVertex3f(xmin - dx, 0.0, zmin - dz);
-    glVertex3f(xmax + dx, 0.0, zmin - dz);
+    glVertex3f(xmin, 0.0, zmin);
+    glVertex3f(xmax, 0.0, zmin);
 
-    glVertex3f(xmax + dx, 0.0, zmin - dz);
-    glVertex3f(xmax + dx, 0.0, zmax + dz);
+    glVertex3f(xmax, 0.0, zmin);
+    glVertex3f(xmax, 0.0, zmax);
 
-    glVertex3f(xmax + dx, 0.0, zmax + dz);
-    glVertex3f(xmin - dx, 0.0, zmax + dz);
+    glVertex3f(xmax, 0.0, zmax);
+    glVertex3f(xmin, 0.0, zmax);
 
-    glVertex3f(xmin - dx, 0.0, zmax + dz);
-    glVertex3f(xmin - dx, 0.0, zmin - dz);
+    glVertex3f(xmin, 0.0, zmax);
+    glVertex3f(xmin, 0.0, zmin);
 
-    glVertex3f(xmax,      0.0, zmax);
-    glVertex3f(xmax + dx, 0.0, zmax);
+    glVertex3f(xmax, 0.0, zmax);
+    glVertex3f(xmax, 0.0, zmax);
 
-    glVertex3f(xmax,      0.0, zmin);
-    glVertex3f(xmax + dx, 0.0, zmin);
+    glVertex3f(xmax, 0.0, zmin);
+    glVertex3f(xmax, 0.0, zmin);
     glEnd();
     SNIFF_ERRORS("after DrawGenCurve 2");
   }
