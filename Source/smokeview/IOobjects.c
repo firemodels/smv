@@ -3420,10 +3420,10 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
       char c_tmin[32], c_tmax[32];
 
       Float2String(c_tmin, x[0], ndigits, force_fixedpoint);
-      Output3Text(foregroundcolor, xmin - dx, 0.0, zmin - 2.0*dz - dfont, c_tmin);
+      Output3Text(foregroundcolor, xmin, 0.0, zmin - dz - dfont, c_tmin);
 
       Float2String(c_tmax, x[n - 1], ndigits, force_fixedpoint);
-      Output3Text(foregroundcolor, xmax - dx, 0.0, zmin - 2.0*dz - dfont, c_tmax);
+      Output3Text(foregroundcolor, xmax, 0.0, zmin - dz - dfont, c_tmax);
       if(show_title==1){
         Output3Text(foregroundcolor, xmin, 0.0, zmax + 1.5*dz, title);
       }
@@ -3435,7 +3435,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
       p2_color[0] = (float)plot_color[0]/255.0;
       p2_color[1] = (float)plot_color[1]/255.0;
       p2_color[2] = (float)plot_color[2]/255.0;
-      if(axis_side == AXIS_RIGHT){
+      if(axis_side == AXIS_LEFT){
         Output3Text(p2_color, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
       }
       else{
@@ -3444,7 +3444,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
       SNIFF_ERRORS("after DrawGenCurve 5");
     }
     if(unit!=NULL){
-      if(axis_side == AXIS_RIGHT){
+      if(axis_side == AXIS_LEFT){
         Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)(position+1)) * dfont, unit);
       }
       else{
