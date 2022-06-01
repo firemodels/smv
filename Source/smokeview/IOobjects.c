@@ -3431,15 +3431,21 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
     }
     if(label != NULL){
       float p2_color[3];
+      char label2[64], c_zcur[32];
+
+      Float2String(c_zcur, z_cur, ndigits, force_fixedpoint);
+      strcpy(label2, label);
+      strcat(label2, "/");
+      strcat(label2, c_zcur);
 
       p2_color[0] = (float)plot_color[0]/255.0;
       p2_color[1] = (float)plot_color[1]/255.0;
       p2_color[2] = (float)plot_color[2]/255.0;
       if(axis_side == AXIS_LEFT){
-        Output3Text(p2_color, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
+        Output3Text(p2_color, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2);
       }
       else{
-        Output3TextRight(p2_color, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label, 3);
+        Output3TextRight(p2_color, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2, 3);
       }
       SNIFF_ERRORS("after DrawGenCurve 5");
     }
