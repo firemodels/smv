@@ -141,6 +141,8 @@ GLUI_Panel *PANEL_add_curve = NULL;
 GLUI_Panel *PANEL_plot5 = NULL;
 GLUI_Panel *PANEL_plots = NULL;
 GLUI_Panel *PANEL_plot8 = NULL;
+GLUI_Panel *PANEL_plot9 = NULL;
+GLUI_Panel *PANEL_plot10 = NULL;
 
 GLUI_Panel *PANEL_plotdevice_select = NULL;
 GLUI_Panel *PANEL_plotgeneral_device = NULL;
@@ -772,7 +774,6 @@ extern "C" void ShowPlot2D(void){
     EnableDisablePlot2D();
     ROLLOUT_device2Dplots->open();
     ROLLOUT_plotgeneral->open();
-    ROLLOUT_plotgeneral->set_name("device and hrr comparison plots");
   }
 }
 
@@ -1442,7 +1443,7 @@ extern "C" void GluiDeviceSetup(int main_window){
 
 #ifdef pp_PLOT2D_NEW
     if(nhrrinfo>0||ndevicetypes>0){
-      ROLLOUT_plotgeneral = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "", false);
+      ROLLOUT_plotgeneral = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "device/hrr comparison plots", false);
 
       PANEL_plot8 = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "", 0);
 
@@ -1469,12 +1470,12 @@ extern "C" void GluiDeviceSetup(int main_window){
 
       PANEL_plot5 = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "", 0);
       PANEL_add_curve = glui_device->add_panel_to_panel(PANEL_plot5, "add/remove curves");
-      glui_device->add_column_to_panel(PANEL_plot5, false);
 
       if(ndevicetypes > 0){
         PANEL_plotgeneral_device = glui_device->add_panel_to_panel(PANEL_add_curve, "", false);
         PANEL_plotdevice_select = glui_device->add_panel_to_panel(PANEL_plotgeneral_device, "", false);
-        LIST_devID1 = glui_device->add_listbox_to_panel(PANEL_plotdevice_select, "device ID:", &glui_device_index, GENPLOT_SELECT_DEVICE_CLICK, GenPlotCB);
+        PANEL_plot9 = glui_device->add_panel_to_panel(PANEL_plotdevice_select, "", 0);
+        LIST_devID1 = glui_device->add_listbox_to_panel(PANEL_plot9, "add/remove device file data:", &glui_device_index, GENPLOT_SELECT_DEVICE_CLICK, GenPlotCB);
         for(i = 0; i < ndeviceinfo; i++){
           devicedata *devicei;
 
@@ -1483,8 +1484,9 @@ extern "C" void GluiDeviceSetup(int main_window){
           LIST_devID1->add_item(i, devicei->deviceID);
         }
         devicetypes_index = CLAMP(devicetypes_index, 0, ndevicetypes - 1);
-        LIST_devunit1 = glui_device->add_listbox_to_panel(PANEL_plotdevice_select, "show devices with units:", &glui_device_unit_index, GENPLOT_DEV_TYPE, GenPlotCB);
-        LIST_devunit1->add_item(-1, "All");
+        glui_device->add_column_to_panel(PANEL_plot9, false);
+        LIST_devunit1 = glui_device->add_listbox_to_panel(PANEL_plot9, "using", &glui_device_unit_index, GENPLOT_DEV_TYPE, GenPlotCB);
+        LIST_devunit1->add_item(-1, "any unit");
         for(i = 0; i < ndeviceunits; i++){
           LIST_devunit1->add_item(i, deviceunits[i]->unit);
         }
@@ -1492,9 +1494,9 @@ extern "C" void GluiDeviceSetup(int main_window){
         GenPlotCB(GENPLOT_SELECT_DEVICE);
       }
       if(nhrrinfo > 0){
-        glui_device->add_separator_to_panel(PANEL_add_curve);
         PANEL_plotgeneral_hrr = glui_device->add_panel_to_panel(PANEL_add_curve, "", false);
-        LIST_hrr1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_hrr, "hrr quantity:", &glui_hrr_index, GENPLOT_SELECT_HRR_CLICK, GenPlotCB);
+        PANEL_plot10 = glui_device->add_panel_to_panel(PANEL_plotgeneral_hrr, "", 0);
+        LIST_hrr1 = glui_device->add_listbox_to_panel(PANEL_plot10, "add/remove hrr file data:", &glui_hrr_index, GENPLOT_SELECT_HRR_CLICK, GenPlotCB);
         for(i = 0; i < nhrrinfo; i++){
           hrrdata *hi;
 
@@ -1506,8 +1508,9 @@ extern "C" void GluiDeviceSetup(int main_window){
             LIST_hrr1->add_item(i, hi->label.shortlabel);
           }
         }
-        LIST_hrrunit1 = glui_device->add_listbox_to_panel(PANEL_plotgeneral_hrr, "show hrr data with units:", &glui_hrr_unit_index, GENPLOT_HRR_TYPE, GenPlotCB);
-        LIST_hrrunit1->add_item(-1, "All");
+        glui_device->add_column_to_panel(PANEL_plot10, false);
+        LIST_hrrunit1 = glui_device->add_listbox_to_panel(PANEL_plot10, "using", &glui_hrr_unit_index, GENPLOT_HRR_TYPE, GenPlotCB);
+        LIST_hrrunit1->add_item(-1, "any unit");
         for(i = 0; i < nhrrunits; i++){
           LIST_hrrunit1->add_item(i, hrrunits[i]->label.unit);
         }
@@ -1523,7 +1526,6 @@ extern "C" void GluiDeviceSetup(int main_window){
       if(nplot2dinfo > 0){
         if(glui_plot2dinfo->ncurve_indexes == 0 || glui_plot2dinfo->curve_index>=ndeviceinfo)BUTTON_plot_position->disable();
       }
-      glui_device->add_column_to_panel(PANEL_add_curve, false);
 
       PANEL_curve_properties = glui_device->add_panel_to_panel(PANEL_plot5, "curve properties");
       if(nplot2dinfo > 0 && glui_plot2dinfo->ncurve_indexes == 0)PANEL_curve_properties->disable();
@@ -1542,6 +1544,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       SPINNER_genplot_linewidth = glui_device->add_spinner_to_panel(PANEL_curve_properties, "line width", GLUI_SPINNER_FLOAT, &(glui_curve.linewidth), GENPLOT_XYZ, GenPlotCB);
       SPINNER_genplot_linewidth->set_float_limits(1.0,10.0);
 
+      glui_device->add_column_to_panel(PANEL_curve_properties, false);
       PANEL_curve_bounds = glui_device->add_panel_to_panel(PANEL_curve_properties, "bounds");
       PANEL_curve_usermin = glui_device->add_panel_to_panel(PANEL_curve_bounds, "", 0);
       SPINNER_genplot_usermin      = glui_device->add_spinner_to_panel(PANEL_curve_usermin, "min",       GLUI_SPINNER_FLOAT, &(glui_curve.usermin),     GENPLOT_XYZ, GenPlotCB);
@@ -1575,7 +1578,6 @@ extern "C" void GluiDeviceSetup(int main_window){
       GenPlotCB(GENPLOT_SHOW_PLOT);
       plot2d_dialogs_defined = 1;
       EnableDisablePlot2D();
-      ROLLOUT_plotgeneral->disable();
     }
 #endif
 
