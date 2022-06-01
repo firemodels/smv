@@ -6,6 +6,7 @@
 #endif
 
 #ifdef pp_PLOT2D_NEW
+EXTERNCPP void InitPlot2D(plot2ddata *plot2di, int plot_index);
 EXTERNCPP void DrawGenPlots(void);
 EXTERNCPP int HaveGenDev(void);
 EXTERNCPP int HaveGenHrr(void);

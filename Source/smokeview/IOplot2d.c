@@ -435,6 +435,98 @@ void SetupPlot2DUnitData(void){
     }
   }
 }
+
+/* ------------------ UpdateCurveBounds ------------------------ */
+
+void UpdateCurveBounds(plot2ddata * plot2di, int option){
+  int i;
+
+  for(i = 0; i < ndeviceinfo; i++){
+    devicedata *devi;
+    int j;
+    curvedata *curve;
+
+    devi = deviceinfo + i;
+    curve = plot2di->curve + i;
+    if(option == 1){
+      curve->color[0] = 0;
+      curve->color[1] = 0;
+      curve->color[2] = 0;
+      curve->linewidth = 1.0;
+      curve->factors[0] = 1.0;
+      curve->factors[1] = 0.0;
+      curve->use_factors = 0;
+      }
+    if(devi->nvals > 0){
+      float valmin, valmax;
+
+      valmin = devi->vals[0];
+      valmax = valmin;
+      for(j = 1; j < devi->nvals; j++){
+        valmin = MIN(valmin, devi->vals[j]);
+        valmax = MAX(valmax, devi->vals[j]);
+        }
+      curve->valmin = valmin;
+      curve->valmax = valmax;
+      curve->usermin = valmin;
+      curve->usermax = valmax;
+      curve->use_usermin = 0;
+      curve->use_usermax = 0;
+      }
+    }
+  for(i = 0; i < nhrrinfo; i++){
+    hrrdata *hrri;
+    int j;
+    curvedata *curve;
+
+    curve = plot2di->curve + i + ndeviceinfo;
+    hrri = hrrinfo + i;
+    if(option == 1){
+      curve->color[0] = 0;
+      curve->color[1] = 0;
+      curve->color[2] = 0;
+      curve->linewidth = 1.0;
+      curve->factors[0] = 1.0;
+      curve->factors[1] = 0.0;
+      curve->use_factors = 0;
+      }
+    if(hrri->nvals > 0){
+      float valmin, valmax;
+
+      valmin = hrri->vals[0];
+      valmax = valmin;
+      for(j = 1; j < hrri->nvals; j++){
+        valmin = MIN(valmin, hrri->vals[j]);
+        valmax = MAX(valmax, hrri->vals[j]);
+        }
+      curve->valmin = valmin;
+      curve->valmax = valmax;
+      curve->usermin = valmin;
+      curve->usermax = valmax;
+      curve->use_usermin = 0;
+      curve->use_usermax = 0;
+      }
+    }
+  }
+
+/* ------------------ InitPlot2D ------------------------ */
+
+void InitPlot2D(plot2ddata * plot2di, int plot_index){
+  if(ndeviceinfo == 0 && nhrrinfo == 0)return;
+  plot2di->ncurve_indexes = 0;
+  plot2di->ncurve_indexes_ini = 0;
+  plot2di->show = 0;
+  plot2di->show_title = 0;
+  plot2di->xyz[0] = xbar0FDS;
+  plot2di->xyz[1] = ybar0FDS;
+  plot2di->xyz[2] = zbar0FDS;
+  plot2di->plot_index = plot_index;
+  sprintf(plot2di->plot_label, "plot %i", plot_index);
+  plot2di->curve_index = 0;
+  NewMemory((void **)&(plot2di->curve), (ndeviceinfo + nhrrinfo) * sizeof(curvedata));
+  UpdateCurveBounds(plot2di, 1);
+  }
+
 #endif
 
   /* ------------------ DrawPlot ------------------------ */

@@ -10959,7 +10959,6 @@ typedef struct {
 
 // initialize 2d plot data structures
 #ifdef pp_PLOT2D_NEW
-  void InitPlot2D(plot2ddata *plot2di, int plot_index);
   NewMemory((void **)&glui_plot2dinfo, sizeof(plot2ddata));
   InitPlot2D(glui_plot2dinfo, 0);
 #endif
