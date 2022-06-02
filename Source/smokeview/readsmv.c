@@ -118,7 +118,7 @@ void UpdateHoc(void){
   int i;
 
 // construct column for each MLR column by heat of combustion except for air and products
-  for(i = nhrrinfo; i<nhrrinfo+nhrrhcinfo; i++){
+  for(i = nhrrinfo-nhrrhcinfo; i<nhrrinfo; i++){
     hrrdata *hi;
 
     hi = hrrinfo+i;
@@ -297,8 +297,9 @@ void ReadHRR(int flag){
   }
   CheckMemory;
 
+  nhrrinfo += nhrrhcinfo;
 // construct column for each MLR column by heat of combustion except for air and products
-  for(i = nhrrinfo; i<nhrrinfo+nhrrhcinfo; i++){
+  for(i = nhrrinfo- nhrrhcinfo; i<nhrrinfo; i++){
     hrrdata *hi;
 
     hi = hrrinfo+i;
@@ -327,7 +328,7 @@ void ReadHRR(int flag){
   CheckMemory;
 
 //compute vals into vals_orig
-  for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
+  for(i = 0; i<nhrrinfo; i++){
     hrrdata *hi;
 
     hi = hrrinfo+i;
@@ -335,7 +336,7 @@ void ReadHRR(int flag){
   }
 
 //compute min and max of each column
-  for(i = 0; i<nhrrinfo+nhrrhcinfo; i++){
+  for(i = 0; i<nhrrinfo; i++){
     hrrdata *hi;
     float valmin, valmax;
     int j;
@@ -354,7 +355,7 @@ void ReadHRR(int flag){
   CheckMemory;
 
 // free arrays that were not used
-  for(i = nhrrinfo+nhrrhcinfo; i<2*nhrrinfo; i++){
+  for(i = nhrrinfo; i<2*(nhrrinfo-nhrrhcinfo); i++){
     hrrdata *hi;
 
     hi = hrrinfo+i;
@@ -10707,6 +10708,9 @@ typedef struct {
     if(csvi->type==CSVTYPE_EXT)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
   SetupDeviceData();
+#ifdef pp_PLOT2D_NEW
+  SetupPlot2DUnitData();
+#endif
   if(nzoneinfo>0)SetupZoneDevs();
 
 #ifdef pp_THREAD
@@ -10955,7 +10959,6 @@ typedef struct {
 
 // initialize 2d plot data structures
 #ifdef pp_PLOT2D_NEW
-  void InitPlot2D(plot2ddata *plot2di, int plot_index);
   NewMemory((void **)&glui_plot2dinfo, sizeof(plot2ddata));
   InitPlot2D(glui_plot2dinfo, 0);
 #endif
@@ -11450,24 +11453,48 @@ int ReadIni2(char *inifile, int localfile){
         TrimBack(buffer);
         labelptr = TrimFront(buffer);
         strcpy(plot2di->plot_label, labelptr);
+        NewMemory((void **)&(plot2di->curve), (ndeviceinfo+nhrrinfo) * sizeof(curvedata));
 
         fgets(buffer, 255, stream);
         sscanf(buffer, " %f %f %f %i %i %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->show_title, &plot2di->ncurve_indexes);
         for(j=0; j<plot2di->ncurve_indexes; j++){
-          int color[3], *color2;
-          float linewidth1, *linewidth2;
+          int color[3];
+          float linewidth1;
+          float curve_factors[2];
+          int curve_use_factors;
+          int index;
+          curvedata *curve;
 
           fgets(buffer, 255, stream);
+          TrimBack(buffer);
           linewidth1 = 1.0;
-          sscanf(buffer, " %i %i %i %i %f",    plot2di->curve_indexes + j, color, color+1, color+2, &linewidth1);
-          color2     = plot2di->curve_colors       + 3 * plot2di->curve_indexes[j];
-          linewidth2 = plot2di->curve_linewidths   +     plot2di->curve_indexes[j];
-          memcpy(color2, color, 3 * sizeof(int));
-          *linewidth2 = linewidth1;
+          curve_factors[0] = 1.0;
+          curve_factors[1] = 0.0;
+          curve_use_factors = 0;
+          sscanf(buffer, " %i %i %i %i %f %f %f %i",    &index, color, color+1, color+2, &linewidth1, curve_factors, curve_factors+1, &curve_use_factors);
+
+          plot2di->curve[j].index           = index;
+          curve = plot2di->curve+index;
+          curve->color[0]    = color[0];
+          curve->color[1]    = color[1];
+          curve->color[2]    = color[2];
+          curve->linewidth   = linewidth1;
+          curve->factors[0]  = curve_factors[0];
+          curve->factors[1]  = curve_factors[1];
+          curve->use_factors = curve_use_factors;
+
+          float *valmin2, *valmax2;
+          int *use_valmin2, *use_valmax2;
+          use_valmin2         = &(curve->use_usermin);
+          use_valmax2         = &(curve->use_usermax);
+          valmin2             = &(curve->usermin);
+          valmax2             = &(curve->usermax);
+          fgets(buffer, 255, stream);
+          TrimBack(buffer);
+          sscanf(buffer, " %i %f %i %f", use_valmin2, valmin2, use_valmax2, valmax2);
         }
 void UpdateCurveBounds(plot2ddata *plot2di, int option);
        UpdateCurveBounds(plot2di, 0);
-
       }
       update_glui_devices = 1;
       continue;
@@ -14836,11 +14863,28 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, " %f %f %f %i %i %i\n", plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->show_title, plot2di->ncurve_indexes);
     for(j = 0; j < plot2di->ncurve_indexes; j++){
       int *color;
-      float *linewidth1;
+      float linewidth1, *curve_factors;
+      int curve_use_factors;
+      int index;
+      curvedata *curve;
 
-      color      = plot2di->curve_colors + 3*plot2di->curve_indexes[j];
-      linewidth1 = plot2di->curve_linewidths   +   plot2di->curve_indexes[j];
-      fprintf(fileout, " %i %i %i %i %f\n", plot2di->curve_indexes[j], color[0], color[1], color[2], *linewidth1);
+      index             = plot2di->curve[j].index;
+      curve             = plot2di->curve+index;
+      color             = curve->color;
+      linewidth1        = curve->linewidth;
+      curve_factors     = curve->factors;
+      curve_use_factors = curve->use_factors;
+      fprintf(fileout, " %i %i %i %i %f %f %f %i\n", index, color[0], color[1], color[2], linewidth1,
+                                                     curve_factors[0], curve_factors[1], curve_use_factors);
+
+      int use_valmin2, use_valmax2;
+      float valmin2, valmax2;
+
+      use_valmin2 = curve->use_usermin;
+      use_valmax2 = curve->use_usermax;
+      valmin2     = curve->usermin;
+      valmax2     = curve->usermax;
+      fprintf(fileout, " %i %f %i %f\n", use_valmin2, valmin2, use_valmax2, valmax2);
     };
   }
 #endif
