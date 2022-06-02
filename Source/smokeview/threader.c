@@ -104,41 +104,6 @@ typedef struct _slicethreaddata {
   FILE_SIZE file_size;
 } slicethreaddata;
 
-FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_value);
-
-/* ------------------ LoadAllMSlicesMT ------------------------ */
-
-FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei,  int *fcount){
-  FILE_SIZE file_size = 0;
-  int file_count = 0;
-  int i;
-//  slicethreaddata slicethreadinfo[MAX_THREADS];
-
-  file_count = 0;
-  file_size = 0;
-  for(i = 0; i<mslicei->nslices; i++){
-    slicedata *slicei;
-    int set_slicecolor;
-
-    slicei = sliceinfo+mslicei->islices[i];
-    set_slicecolor = DEFER_SLICECOLOR;
-
-    slicei->finalize = 0;
-    if(last_slice==mslicei->islices[i]){
-      slicei->finalize = 1;
-      set_slicecolor = SET_SLICECOLOR;
-    }
-    if(slicei->skipdup==0&&last_slice!=mslicei->islices[i]){
-      file_size += LoadSlicei(set_slicecolor, mslicei->islices[i], ALL_FRAMES, NULL);
-      file_count++;
-    }
-  }
-  file_size += LoadSlicei(SET_SLICECOLOR, last_slice, ALL_FRAMES, NULL);
-  file_count++;
-  *fcount = file_count;
-  return file_size;
-}
-
 /* ------------------ MtLoadAllPartFiles ------------------------ */
 
 void *MtLoadAllPartFiles(void *arg){
@@ -196,6 +161,41 @@ void LoadAllPartFilesMT(int partnum){
   LoadAllPartFiles(partnum);
 }
 #endif
+
+FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_value);
+
+/* ------------------ LoadAllMSlicesMT ------------------------ */
+
+FILE_SIZE LoadAllMSlicesMT(int last_slice, multislicedata *mslicei, int *fcount){
+  FILE_SIZE file_size = 0;
+  int file_count = 0;
+  int i;
+  //  slicethreaddata slicethreadinfo[MAX_THREADS];
+
+  file_count = 0;
+  file_size = 0;
+  for(i = 0; i < mslicei->nslices; i++){
+    slicedata *slicei;
+    int set_slicecolor;
+
+    slicei = sliceinfo + mslicei->islices[i];
+    set_slicecolor = DEFER_SLICECOLOR;
+
+    slicei->finalize = 0;
+    if(last_slice == mslicei->islices[i]){
+      slicei->finalize = 1;
+      set_slicecolor = SET_SLICECOLOR;
+      }
+    if(slicei->skipdup == 0 && last_slice != mslicei->islices[i]){
+      file_size += LoadSlicei(set_slicecolor, mslicei->islices[i], ALL_FRAMES, NULL);
+      file_count++;
+      }
+    }
+  file_size += LoadSlicei(SET_SLICECOLOR, last_slice, ALL_FRAMES, NULL);
+  file_count++;
+  *fcount = file_count;
+  return file_size;
+  }
 
 #ifdef pp_THREAD
 /* ------------------ MtClassifyAllGeom ------------------------ */
@@ -257,6 +257,18 @@ void *MTGeneratePartHistograms(void *arg){
 
 void GeneratePartHistogramsMT(void){
   pthread_create(&generate_part_histogram_id, NULL, MTGeneratePartHistograms, NULL);
+}
+#else
+void GeneratePartHistogramsMT(void){
+  GeneratePartHistograms();
+}
+void ClassifyAllGeomMT(void){
+  SetupReadAllGeom();
+  ClassifyAllGeom();
+}
+void ReadAllGeomMT(void){
+  SetupReadAllGeom();
+  ReadAllGeom();
 }
 #endif
 
@@ -485,7 +497,6 @@ void MakeIBlankAll(void){
 void MakeIBlankAll(void){
   MakeIBlank();
   SetCVentDirs();
-  update_set_vents=1;
 }
 #endif
 
@@ -522,7 +533,7 @@ void PSystem(char *commandline){
 }
 #else
 void PSystem(char *commandline){
-  system(commandline)
+  system(commandline);
 }
 #endif
 

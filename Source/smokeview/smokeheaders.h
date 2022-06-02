@@ -6,9 +6,13 @@
 #endif
 
 #ifdef pp_PLOT2D_NEW
+EXTERNCPP int GenDevShow(void);
+EXTERNCPP int GenHrrShow(void);
+EXTERNCPP void InitPlot2D(plot2ddata *plot2di, int plot_index);
 EXTERNCPP void DrawGenPlots(void);
 EXTERNCPP int HaveGenDev(void);
 EXTERNCPP int HaveGenHrr(void);
+EXTERNCPP void ShowPlot2D(void);
 #endif
 
 EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals);
@@ -529,6 +533,9 @@ EXTERNCPP void ReadHRR(int flag);
 EXTERNCPP void ReadDeviceData(char *file, int filetype, int flag);
 EXTERNCPP void SetupZoneDevs(void);
 EXTERNCPP void SetupDeviceData(void);
+#ifdef pp_PLOT2D_NEW
+EXTERNCPP void SetupPlot2DUnitData(void);
+#endif
 EXTERNCPP void DrawCGeom(int flag, geomdata *cgeom);
 EXTERNCPP void DrawGeom(int flag,int frameflag);
 EXTERNCPP void RemoveDupBlockages(void);
@@ -1009,6 +1016,8 @@ EXTERNCPP void ReadFed(int ifile, int time_frame, float *time_value, int flag, i
 EXTERNCPP FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode);
 EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_frame_index, int *errorcode);
 
+EXTERNCPP void GetGlobalDeviceBounds(int type);
+EXTERNCPP float GetDeviceVal(float time_local, devicedata *devicei, int *valid);
 EXTERNCPP void InitMenus(int unload);
 int ReadSMV(bufferstreamdata *stream);
 EXTERNCPP void ReadSMVDynamic(char *file);
@@ -1017,10 +1026,12 @@ EXTERNCPP void OutputAxisLabels(void);
 EXTERNCPP void OutputLargeText(float x, float y, char *string);
 EXTERNCPP void OutputText(float x, float y, char *string);
 EXTERNCPP void OutputTextColor(float *fontcolor, float x, float y, char *string);
+EXTERNCPP void Output3TextRight(float *color, float x, float y, float z, char *string, float pad_length);
 EXTERNCPP void Output3Text(float *color, float x, float y, float z, char *string);
 EXTERNCPP void Output3Val(float x, float y, float z, float val);
 EXTERNCPP void OutputBarText(float x, float y, const GLfloat *color, char *string);
-EXTERNCPP void UpdateChar(void);
+EXTERNCPP float GetStringLength(char *string);
+  EXTERNCPP void UpdateChar(void);
 EXTERNCPP void UpdateTracers(void);
 EXTERNCPP void UpdateGslicePlanes(void);
 

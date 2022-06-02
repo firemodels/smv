@@ -988,24 +988,31 @@ typedef struct _device {
 
 typedef struct _hrrdata {
   float *vals, *vals_orig, valmin, valmax;
+  int inlist1;
   int nvals;
   int base_col;
   flowlabels label;
 } hrrdata;
 
+/* --------------------------  curvedata ------------------------------------ */
+
+#ifdef pp_PLOT2D_NEW
+typedef struct _curvedata{
+  int index, index_ini, use_usermin, use_usermax, use_factors, color[3];
+  float valmin, valmax,  usermin, usermax;
+  float linewidth;
+  float factors[2];
+} curvedata;
+
 /* --------------------------  plot2ddata ------------------------------------ */
 
-#define MAX_PLOT2D_CURVES 100
-#ifdef pp_PLOT2D_NEW
 typedef struct _plot2ddata{
-  int curve_indexes[MAX_PLOT2D_CURVES],     ncurve_indexes;
-  int curve_indexes_ini[MAX_PLOT2D_CURVES], ncurve_indexes_ini;
-  int curve_index, plot_index;
   char plot_label[350];
-  float curve_min[MAX_PLOT2D_CURVES], curve_max[MAX_PLOT2D_CURVES], curve_linewidths[MAX_PLOT2D_CURVES];
-  int curve_colors[3*MAX_PLOT2D_CURVES];
-  float xyz[3];
+  int ncurve_indexes, ncurve_indexes_ini;
+  int curve_index, plot_index;
   int show, show_title;
+  curvedata *curve;
+  float xyz[3];
 } plot2ddata;
 #endif
 
