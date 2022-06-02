@@ -8,6 +8,45 @@
 #include "smokeviewvars.h"
 
 #ifdef pp_PLOT2D_NEW
+/* ------------------ HaveGenDevShow ------------------------ */
+
+int GenDevShow(void){
+  int i;
+
+  for(i = 0; i < nplot2dinfo; i++){
+    plot2ddata *plot2di;
+
+    plot2di = plot2dinfo + i;
+    if(plot2di->show == 1){
+      int j;
+
+      for(j = 0; j < plot2di->ncurve_indexes; j++){
+        if(plot2di->curve[j].index<ndeviceinfo)return 1;
+      }
+    }
+  }
+  return 0;
+}
+
+/* ------------------ HaveGenHrrShow ------------------------ */
+
+int GenHrrShow(void){
+  int i;
+
+  for(i = 0; i < nplot2dinfo; i++){
+    plot2ddata *plot2di;
+
+    plot2di = plot2dinfo + i;
+    if(plot2di->show == 1){
+      int j;
+
+      for(j = 0; j < plot2di->ncurve_indexes; j++){
+        if(plot2di->curve[j].index>=ndeviceinfo)return 1;
+      }
+    }
+  }
+  return 0;
+}
 
 /* ------------------ HaveGenDev ------------------------ */
 
