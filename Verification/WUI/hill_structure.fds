@@ -25,7 +25,7 @@ cMESH IJK=50,50,25, XB=0,50,-25,25,0,25 /
 &SURF ID = 'GRASS'
       MATL_ID(1,1) = 'Dry Grass'
       MATL_ID(2,1) = 'Soil'
-      PACKING_RATIO = 0.0012
+      MASS_PER_VOLUME(1) = 0.6144
       THICKNESS(1:2) = 0.51,0.1
       MOISTURE_FRACTION(1) = 0.06
       SURFACE_VOLUME_RATIO(1)  = 12240
