@@ -6545,12 +6545,11 @@ int ReadSMV(bufferstreamdata *stream){
       continue;
     }
     if(Match(buffer,"CSVF") == 1){
-      char *file_ptr,*type_ptr;
+      char *file_ptr;
       char buffer2[256];
 
       FGETS(buffer,255,stream);
       TrimBack(buffer);
-      type_ptr=TrimFront(buffer);
 
       FGETS(buffer2,255,stream);
       TrimBack(buffer2);
