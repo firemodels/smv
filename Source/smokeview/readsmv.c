@@ -6545,7 +6545,6 @@ int ReadSMV(bufferstreamdata *stream){
       continue;
     }
     if(Match(buffer,"CSVF") == 1){
-      int nfiles;
       char *file_ptr,*type_ptr;
       char buffer2[256];
 
@@ -6556,25 +6555,7 @@ int ReadSMV(bufferstreamdata *stream){
       FGETS(buffer2,255,stream);
       TrimBack(buffer2);
       file_ptr=TrimFront(buffer2);
-      nfiles=1;
-      if(strcmp(type_ptr,"hrr")==0){
-        if(FILE_EXISTS_CASEDIR(file_ptr)==NO)nfiles=0;
-      }
-      else if(strcmp(type_ptr,"devc")==0){
-        if(FILE_EXISTS_CASEDIR(file_ptr)==NO)nfiles=0;
-      }
-      else if(strcmp(type_ptr,"ext")==0){
-        if(strchr(file_ptr,'*')==NULL){
-          if(FILE_EXISTS_CASEDIR(file_ptr)==NO)nfiles=0;
-        }
-        else{
-          nfiles = GetFileListSize(".",file_ptr);
-        }
-      }
-      else{
-        nfiles=0;
-      }
-      ncsvinfo+=nfiles;
+      if(FILE_EXISTS_CASEDIR(file_ptr)==YES)ncsvinfo++;
       continue;
     }
     if(Match(buffer, "CGEOM")==1){
@@ -7291,7 +7272,6 @@ int ReadSMV(bufferstreamdata *stream){
     if(Match(buffer,"CSVF") == 1){
       csvdata *csvi;
       char *type_ptr, *file_ptr;
-      int nfiles=1;
       char buffer2[256];
 
       if(FGETS(buffer,255,stream)==NULL){
@@ -7305,84 +7285,18 @@ int ReadSMV(bufferstreamdata *stream){
       }
       TrimBack(buffer2);
       file_ptr=TrimFront(buffer2);
-      nfiles=1;
-      if(strcmp(type_ptr,"hrr")==0){
-        if(FILE_EXISTS_CASEDIR(file_ptr)==NO)nfiles=0;
-      }
-      else if(strcmp(type_ptr,"devc")==0){
-        if(FILE_EXISTS_CASEDIR(file_ptr)==NO)nfiles=0;
-      }
-      else if(strcmp(type_ptr,"ext")==0){
-        if(strchr(file_ptr,'*')==NULL){
-          if(FILE_EXISTS_CASEDIR(file_ptr)==NO)nfiles=0;
-        }
-        else{
-          nfiles = GetFileListSize(".",file_ptr);
-        }
-      }
-      else{
-        nfiles=0;
-      }
-      if(nfiles==0)continue;
+      if(FILE_EXISTS_CASEDIR(file_ptr) == NO)continue;
 
       csvi = csvinfo + ncsvinfo;
 
       csvi->loaded=0;
       csvi->display=0;
 
-      if(strcmp(type_ptr,"hrr")==0){
-        if(FILE_EXISTS_CASEDIR(file_ptr)==YES){
-          csvi->type=CSVTYPE_HRR;
-          NewMemory((void **)&csvi->file,strlen(file_ptr)+1);
-          strcpy(csvi->file,file_ptr);
-        }
-        else{
-          nfiles=0;
-        }
-      }
-      else if(strcmp(type_ptr,"devc")==0){
-        if(FILE_EXISTS_CASEDIR(file_ptr)==YES){
-          csvi->type=CSVTYPE_DEVC;
-          NewMemory((void **)&csvi->file,strlen(file_ptr)+1);
-          strcpy(csvi->file,file_ptr);
-        }
-        else{
-          nfiles=0;
-        }
-      }
-      else if(strcmp(type_ptr,"ext")==0){
-        if(strchr(file_ptr,'*')==NULL){
-          if(FILE_EXISTS_CASEDIR(file_ptr)==YES){
-            csvi->type=CSVTYPE_EXT;
-            NewMemory((void **)&csvi->file,strlen(file_ptr)+1);
-            strcpy(csvi->file,file_ptr);
-          }
-          else{
-            nfiles=0;
-          }
-        }
-        else{
-          filelistdata *filelist;
-          int nfilelist;
+      NewMemory((void **)&csvi->file, strlen(file_ptr) + 1);
+      strcpy(csvi->file, file_ptr);
+      strcpy(csvi->c_type, type_ptr);
 
-          nfilelist = GetFileListSize(".",file_ptr);
-          nfiles= MakeFileList(".",file_ptr,nfilelist,NO,&filelist);
-          for(i=0;i<nfiles;i++){
-            csvi = csvinfo + ncsvinfo + i;
-            csvi->loaded=0;
-            csvi->display=0;
-            csvi->type=CSVTYPE_EXT;
-            NewMemory((void **)&csvi->file,strlen(filelist[i].file)+1);
-            strcpy(csvi->file,filelist[i].file);
-          }
-          FreeFileList(filelist,&nfilelist);
-        }
-      }
-      else{
-        nfiles=0;
-      }
-
-      ncsvinfo+=nfiles;
+      ncsvinfo++;
       continue;
     }
   /*
@@ -9041,7 +8955,7 @@ int ReadSMV(bufferstreamdata *stream){
       csvdata *csvi;
 
       csvi = csvinfo + i;
-      if(csvi->type==CSVTYPE_EXT){
+      if(strcmp(csvi->c_type, "ext") == 0){
         nexp_devices[i] = GetNDevices(csvi->file);
         ndeviceinfo_exp += nexp_devices[i];
       }
@@ -9061,7 +8975,7 @@ int ReadSMV(bufferstreamdata *stream){
       csvdata *csvi;
 
       csvi = csvinfo + i;
-      if(csvi->type==CSVTYPE_EXT){
+      if(strcmp(csvi->c_type, "ext") == 0){
         ReadDeviceHeader(csvi->file,devicecopy2,nexp_devices[i]);
         devicecopy2 += nexp_devices[i];
       }
@@ -10704,8 +10618,8 @@ typedef struct {
     csvdata *csvi;
 
     csvi = csvinfo + i;
-    if(csvi->type==CSVTYPE_DEVC)ReadDeviceData(csvi->file,CSV_FDS,LOAD);
-    if(csvi->type==CSVTYPE_EXT)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
+    if(strcmp(csvi->c_type, "devc")==0)ReadDeviceData(csvi->file,CSV_FDS,LOAD);
+    if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
   SetupDeviceData();
 #ifdef pp_PLOT2D_NEW

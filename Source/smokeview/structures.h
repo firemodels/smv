@@ -39,6 +39,7 @@ typedef struct _csvdata {
   char *file;
   int loaded, display;
   int type;
+  char c_type[32];
 } csvdata;
 
 /* --------------------------  vertdata ------------------------------------ */
