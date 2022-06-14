@@ -33,14 +33,15 @@ typedef struct _procdata {
   int rollout_id;
 } procdata;
 #endif
-/* --------------------------  csvdata ------------------------------------ */
 
-typedef struct _csvdata {
+/* --------------------------  _csvfiledata ------------------------------------ */
+
+typedef struct _csvfiledata {
   char *file;
   int loaded, display;
   int type;
   char c_type[32];
-} csvdata;
+} csvfiledata;
 
 /* --------------------------  vertdata ------------------------------------ */
 

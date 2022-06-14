@@ -898,8 +898,8 @@ SVEXTERN int SVDECL(qradi_col, -1), SVDECL(chirad_col, -1), SVDECL(nhrrhcinfo, 0
 SVEXTERN int SVDECL(have_mlr, 0);
 SVEXTERN int SVDECL(hoc_hrr, 0);
 SVEXTERN int SVDECL(update_avg, 0);
-SVEXTERN int SVDECL(ncsvinfo,0);
-SVEXTERN csvdata SVDECL(*csvinfo,NULL);
+SVEXTERN int SVDECL(ncsvfileinfo,0);
+SVEXTERN csvfiledata SVDECL(*csvfileinfo,NULL);
 SVEXTERN int smoke_render_option;
 SVEXTERN float fnear, ffar;
 SVEXTERN float partfacedir[3];

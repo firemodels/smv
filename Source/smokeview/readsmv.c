@@ -6165,16 +6165,16 @@ int ReadSMV(bufferstreamdata *stream){
 
   ntotal_blockages=0;
 
-  if(ncsvinfo>0){
-    csvdata *csvi;
+  if(ncsvfileinfo>0){
+    csvfiledata *csvi;
 
-    for(i=0;i<ncsvinfo;i++){
-      csvi = csvinfo + i;
+    for(i=0;i<ncsvfileinfo;i++){
+      csvi = csvfileinfo + i;
       FREEMEMORY(csvi->file);
     }
-    FREEMEMORY(csvinfo);
+    FREEMEMORY(csvfileinfo);
   }
-  ncsvinfo=0;
+  ncsvfileinfo=0;
 
   if(ngeominfo>0){
     for(i=0;i<ngeominfo;i++){
@@ -6554,7 +6554,7 @@ int ReadSMV(bufferstreamdata *stream){
       FGETS(buffer2,255,stream);
       TrimBack(buffer2);
       file_ptr=TrimFront(buffer2);
-      if(FILE_EXISTS_CASEDIR(file_ptr)==YES)ncsvinfo++;
+      if(FILE_EXISTS_CASEDIR(file_ptr)==YES)ncsvfileinfo++;
       continue;
     }
     if(Match(buffer, "CGEOM")==1){
@@ -6958,9 +6958,9 @@ int ReadSMV(bufferstreamdata *stream){
    strcpy(fds_githash,"unknown");
  }
  if(nisoinfo>0&&nmeshes>0)nisos_per_mesh = MAX(nisoinfo / nmeshes,1);
- if(ncsvinfo > 0){
-   NewMemory((void **)&csvinfo,ncsvinfo*sizeof(csvdata));
-   ncsvinfo=0;
+ if(ncsvfileinfo > 0){
+   NewMemory((void **)&csvfileinfo,ncsvfileinfo*sizeof(csvfiledata));
+   ncsvfileinfo=0;
  }
  if(ngeominfo>0){
    NewMemory((void **)&geominfo,ngeominfo*sizeof(geomdata));
@@ -7269,7 +7269,7 @@ int ReadSMV(bufferstreamdata *stream){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(Match(buffer,"CSVF") == 1){
-      csvdata *csvi;
+      csvfiledata *csvi;
       char *type_ptr, *file_ptr;
       char buffer2[256];
 
@@ -7286,7 +7286,7 @@ int ReadSMV(bufferstreamdata *stream){
       file_ptr=TrimFront(buffer2);
       if(FILE_EXISTS_CASEDIR(file_ptr) == NO)continue;
 
-      csvi = csvinfo + ncsvinfo;
+      csvi = csvfileinfo + ncsvfileinfo;
 
       csvi->loaded=0;
       csvi->display=0;
@@ -7295,7 +7295,7 @@ int ReadSMV(bufferstreamdata *stream){
       strcpy(csvi->file, file_ptr);
       strcpy(csvi->c_type, type_ptr);
 
-      ncsvinfo++;
+      ncsvfileinfo++;
       continue;
     }
   /*
@@ -8945,15 +8945,15 @@ int ReadSMV(bufferstreamdata *stream){
 
   // look for DEVICE entries in "experimental" spread sheet files
 
-  if(ncsvinfo>0){
+  if(ncsvfileinfo>0){
     int *nexp_devices=NULL;
     devicedata *devicecopy2;
 
-    NewMemory((void **)&nexp_devices,ncsvinfo*sizeof(int));
-    for(i=0;i<ncsvinfo;i++){
-      csvdata *csvi;
+    NewMemory((void **)&nexp_devices,ncsvfileinfo*sizeof(int));
+    for(i=0;i<ncsvfileinfo;i++){
+      csvfiledata *csvi;
 
-      csvi = csvinfo + i;
+      csvi = csvfileinfo + i;
       if(strcmp(csvi->c_type, "ext") == 0){
         nexp_devices[i] = GetNDevices(csvi->file);
         ndeviceinfo_exp += nexp_devices[i];
@@ -8970,10 +8970,10 @@ int ReadSMV(bufferstreamdata *stream){
     devicecopy2 = deviceinfo+ndeviceinfo;
     ndeviceinfo+=ndeviceinfo_exp;
 
-    for(i=0;i<ncsvinfo;i++){
-      csvdata *csvi;
+    for(i=0;i<ncsvfileinfo;i++){
+      csvfiledata *csvi;
 
-      csvi = csvinfo + i;
+      csvi = csvfileinfo + i;
       if(strcmp(csvi->c_type, "ext") == 0){
         ReadDeviceHeader(csvi->file,devicecopy2,nexp_devices[i]);
         devicecopy2 += nexp_devices[i];
@@ -10613,10 +10613,10 @@ typedef struct {
   if(hrr_csv_filename!=NULL)ReadHRR(LOAD);
   ReadDeviceData(NULL,CSV_FDS,UNLOAD);
   ReadDeviceData(NULL,CSV_EXP,UNLOAD);
-  for(i=0;i<ncsvinfo;i++){
-    csvdata *csvi;
+  for(i=0;i<ncsvfileinfo;i++){
+    csvfiledata *csvi;
 
-    csvi = csvinfo + i;
+    csvi = csvfileinfo + i;
     if(strcmp(csvi->c_type, "devc")==0)ReadDeviceData(csvi->file,CSV_FDS,LOAD);
     if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
