@@ -148,13 +148,35 @@ void UpdateHoc(void){
   }
 }
 
-/* ------------------ ReadCSV ------------------------ */
 #ifdef pp_PLOT2D_GEN
+
+/* ------------------ ReadCSV ------------------------ */
+
+int IsDimensionless(char *unit){
+// unit is dimensionless if unit is NULL, unit is blank or
+// the same characters occur before and after the first slash '/'
+  char *slash, *tok1, *tok2;
+  char unit2[64];
+
+  if(unit==NULL || strlen(unit)==0)return 1;
+  strcpy(unit2, unit);
+  slash = strchr(unit2, '/');
+  if(slash == NULL)return 0;
+  tok1 = unit2;
+  tok2 = slash+1;
+  slash[0]=0;
+  if(strcmp(tok1, tok2)==0)return 1;
+  return 0;
+}
+
+/* ------------------ ReadCSV ------------------------ */
+
 void ReadCSV(csvfiledata *csvfi, int flag){
   FILE *stream;
   int nrows, ncols;
   int nunits, nlabels;
   char buffer[LENBUFFER], buffer_labels[LENBUFFER], buffer_units[LENBUFFER];
+  char *buffptr;
   char **labels, **units;
   float *vals;
   int *valids;
@@ -206,13 +228,23 @@ void ReadCSV(csvfiledata *csvfi, int flag){
   ParseCSV(buffer_labels, labels,    &nlabels);
   CheckMemory;
 
+  plot2d_max_columns = MAX(plot2d_max_columns, csvfi->ncsvinfo);
   for(i=0; i<csvfi->ncsvinfo; i++){
     csvdata *ci;
+    char label[64];
+    char *unit;
 
     ci = csvfi->csvinfo + i;
     TrimBack(labels[i]);
-    TrimBack(units[i]);
-    SetLabels(&(ci->label), labels[i], labels[i], units[i]);
+    strcpy(label, labels[i]);
+    buffptr = TrimFrontBack(label);
+    if(strcmp(buffptr, "null") == 0){
+      sprintf(label, "%s%03i", csvfi->c_type, i + 1);
+    }
+
+    unit = TrimFrontBack(units[i]);
+    ci->dimensionless = IsDimensionless(unit);
+    SetLabels(&(ci->label), label, label, unit);
   }
   CheckMemory;
 
@@ -223,7 +255,7 @@ void ReadCSV(csvfiledata *csvfi, int flag){
     csvdata *ci;
 
     ci = csvfi->csvinfo + i;
-    if(strcmp(ci->label.shortlabel, "Time") == 0){
+    if(strcmp(ci->label.shortlabel, "Time") == 0  || strcmp(ci->label.shortlabel, "Simulation Time") == 0){
       csvfi->time = ci;
       break;
     }

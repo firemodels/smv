@@ -46,6 +46,8 @@
 #define GENPLOT_SELECT_HRR_CLICK    118
 #ifdef pp_PLOT2D_GEN
 #define GENPLOT_SELECT_CSV_FILE     119
+#define GENPLOT_CSV_TYPE            120
+#define GENPLOT_SELECT_CSV_CLICK    121
 #endif
 
 #define PLOT2D_DEV              0
@@ -121,6 +123,8 @@ GLUI_EditText *EDIT_filter=NULL;
 
 #ifdef pp_PLOT2D_GEN
 GLUI_Listbox *LIST_csvfile = NULL;
+GLUI_Listbox *LIST_csvID    = NULL;
+GLUI_Listbox *LIST_csvunits = NULL;
 #endif
 #ifdef pp_PLOT2D_NEW
 GLUI_Listbox *LIST_devID1 = NULL;
@@ -134,6 +138,10 @@ GLUI_Listbox *LIST_devicetypes = NULL;
 GLUI_Listbox *LIST_open=NULL;
 GLUI_Listbox *LIST_hrrdata=NULL;
 
+#ifdef pp_PLOT2D_GEN
+GLUI_Panel *PANEL_csv = NULL;
+GLUI_Panel *PANEL_csv2 = NULL;
+#endif
 #ifdef pp_PLOT2D_NEW
 GLUI_Panel *PANEL_curve_color = NULL;
 GLUI_Panel *PANEL_curve_bounds = NULL;
@@ -147,13 +155,14 @@ GLUI_Panel *PANEL_add_curve = NULL;
 GLUI_Panel *PANEL_plot5 = NULL;
 GLUI_Panel *PANEL_plots = NULL;
 GLUI_Panel *PANEL_plot8 = NULL;
+#ifndef pp_PLOT2D_GEN
 GLUI_Panel *PANEL_plot9 = NULL;
 GLUI_Panel *PANEL_plot10 = NULL;
-
 GLUI_Panel *PANEL_plotdevice_select = NULL;
 GLUI_Panel *PANEL_plotgeneral_device = NULL;
 GLUI_Panel *PANEL_plotgeneral_hrr = NULL;
 GLUI_Panel *PANEL_plotgeneral_plot = NULL;
+#endif
 GLUI_Panel *PANEL_plot_position = NULL;
 #endif
 GLUI_Panel *PANEL_hrr_min = NULL;
@@ -784,6 +793,133 @@ extern "C" void ShowPlot2D(void){
   }
 }
 
+#ifdef pp_PLOT2D_GEN
+/* ------------------ FilterList ------------------------ */
+
+void FilterList(void){
+  int i;
+  char label[256];
+
+  char unit_label[256];
+  int unit_id;
+
+  for(i=0; i<plot2d_max_columns; i++){
+    LIST_csvID->delete_item(i);
+  }
+  {
+    csvfiledata *csvfi;
+
+    csvfi = csvfileinfo + glui_csv_type;
+    unit_id = LIST_csvunits->get_int_val();
+    strcpy(unit_label, "all");
+    if(unit_id >= 0){
+      csvdata *csvunit;
+
+      csvunit = csvfi->csvinfo + unit_id;
+      if(csvunit->dimensionless == 0){
+        strcpy(unit_label, csvunit->label.unit);
+      }
+      else{
+        strcpy(unit_label, "dimensionless");
+      }
+    }
+    for(i = 0; i < csvfi->ncsvinfo; i++){
+      csvdata *csvi;
+
+      csvi = csvfi->csvinfo + i;
+      if(csvi == csvfi->time)continue;
+      if(strcmp(unit_label, "all") == 0){
+        LIST_csvID->add_item(i, csvi->label.shortlabel);
+        continue;
+      }
+      if(csvi->dimensionless == 1 && strcmp(unit_label, "dimensionless")==0){
+        LIST_csvID->add_item(i, csvi->label.shortlabel);
+        continue;
+      }
+      if(csvi->dimensionless == 0 && strcmp(unit_label, csvi->label.unit) == 0){
+        LIST_csvID->add_item(i, csvi->label.shortlabel);
+        continue;
+      }
+    }
+  }
+}
+
+/* ------------------ UpdateCvsList ------------------------ */
+
+void UpdateCvsList(void){
+  int i;
+  char label[256];
+
+  for(i=0; i<plot2d_max_columns; i++){
+    LIST_csvID->delete_item(i);
+  }
+  {
+    csvfiledata *csvfi;
+
+    csvfi = csvfileinfo + glui_csv_type;
+    for(i = 0; i < csvfi->ncsvinfo; i++){
+      csvdata *csvi;
+
+      csvi = csvfi->csvinfo + i;
+      if(csvi == csvfi->time)continue;
+      LIST_csvID->add_item(i, csvi->label.shortlabel);
+    }
+    strcpy(label, "add/remove ");
+    strcat(label, csvfi->c_type);
+    strcat(label, " data");
+    LIST_csvID->set_name(label);
+  }
+
+  for(i=0; i<plot2d_max_columns; i++){
+    LIST_csvunits->delete_item(i);
+  }
+  {
+    csvfiledata *csvfi;
+
+    csvfi = csvfileinfo + glui_csv_type;
+    for(i = 0; i < csvfi->ncsvinfo; i++){
+      csvdata *csvi;
+      int dup_unit, j;
+
+      dup_unit = 0;
+      csvi = csvfi->csvinfo + i;
+      if(csvi == csvfi->time)continue;
+      for(j=0; j<i; j++){
+        csvdata *csvj;
+
+        csvj = csvfi->csvinfo + j;
+        if(csvj == csvfi->time)continue;
+        if(csvi->dimensionless==0){
+          if(strcmp(csvi->label.unit, csvj->label.unit) == 0){
+            dup_unit = 1;
+            break;
+          }
+        }
+        else{
+          if(csvj->dimensionless==1){
+            dup_unit = 1;
+            break;
+          }
+        }
+      }
+      if(dup_unit == 0){
+        if(csvi->dimensionless==0){
+          LIST_csvunits->add_item(i, csvi->label.unit);
+        }
+        else{
+          LIST_csvunits->add_item(i, "dimensionless");
+        }
+      }
+    }
+    strcpy(label, "add/remove ");
+    strcat(label, csvfi->c_type);
+    strcat(label, " data");
+    LIST_csvID->set_name(label);
+    LIST_csvunits->set_int_val(-1);
+  }
+}
+#endif
+
 /* ------------------ GenPlotCB ------------------------ */
 
 void GenPlotCB(int var){
@@ -793,7 +929,13 @@ void GenPlotCB(int var){
     curvedata *curve;
 
 #ifdef pp_PLOT2D_GEN
+    case GENPLOT_SELECT_CSV_CLICK:
+      break;
     case GENPLOT_SELECT_CSV_FILE:
+      UpdateCvsList();
+      break;
+    case GENPLOT_CSV_TYPE:
+      FilterList();
       break;
 #endif
     case GENPLOT_SELECT_DEVICE_CLICK:
@@ -1484,13 +1626,21 @@ extern "C" void GluiDeviceSetup(int main_window){
 
 #ifdef pp_PLOT2D_GEN
       if(ncsvfileinfo > 0){
-        LIST_csvfile = glui_device->add_listbox_to_panel(PANEL_plot9, "csv file type:", &glui_csv_type, GENPLOT_SELECT_CSV_FILE, GenPlotCB);
+        PANEL_csv = glui_device->add_panel_to_panel(PANEL_add_curve, "", 0);
+        LIST_csvfile = glui_device->add_listbox_to_panel(PANEL_csv, "curve type:", &glui_csv_type, GENPLOT_SELECT_CSV_FILE, GenPlotCB);
         for(i = 0; i < ncsvfileinfo; i++){
           csvfiledata *csvfi;
 
           csvfi = csvfileinfo + i;
           LIST_csvfile->add_item(i, csvfi->c_type);
         }
+        PANEL_csv2 = glui_device->add_panel_to_panel(PANEL_add_curve, "", 0);
+        LIST_csvID = glui_device->add_listbox_to_panel(PANEL_csv2, "add/remove csv file data:", &icsv_cols, GENPLOT_SELECT_CSV_CLICK, GenPlotCB);
+        glui_device->add_column_to_panel(PANEL_csv2, false);
+        LIST_csvunits = glui_device->add_listbox_to_panel(PANEL_csv2, "", &icsv_units, GENPLOT_CSV_TYPE, GenPlotCB);
+        LIST_csvunits->add_item(-1, "all");
+        GenPlotCB(GENPLOT_SELECT_CSV_FILE);
+        GenPlotCB(GENPLOT_CSV_TYPE);
       }
 #else
       if(ndevicetypes > 0){
