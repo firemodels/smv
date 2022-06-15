@@ -231,8 +231,6 @@ void ReadCSV(csvfiledata *csvfi, int flag){
 
   for(i = 0; i < csvfi->ncsvinfo; i++){
     csvdata *ci;
-    float valmin, valmax;
-    int j;
 
     ci = csvfi->csvinfo + i;
     ci->valmin = 1.0;
@@ -292,8 +290,6 @@ void ReadAllCSV(int flag){
   int i;
 
   for(i=0; i<ncsvfileinfo; i++){
-    csvfiledata *csvfi;
-
     ReadCSV(csvfileinfo + i, flag);
   }
 }
