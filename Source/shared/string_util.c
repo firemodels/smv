@@ -110,7 +110,7 @@ void ParseCSV(char *buffer, char **tokens, int *ntokens){
     if(inside_quote==0&&buffer[i]==',')buffer[i]=0;
   }
   tokens[nt++]=buffer;
-  for(i=1;i<lenbuffer;i++){
+  for(i=0;i<lenbuffer;i++){
     if(buffer[i]==0){
       tokens[nt++]=buffer+i+1;
     }
