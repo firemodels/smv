@@ -148,6 +148,157 @@ void UpdateHoc(void){
   }
 }
 
+/* ------------------ ReadCSV ------------------------ */
+#ifdef pp_PLOT2D_GEN
+void ReadCSV(csvfiledata *csvfi, int flag){
+  FILE *stream;
+  int nrows, ncols;
+  int nunits, nlabels;
+  char buffer[LENBUFFER], buffer_labels[LENBUFFER], buffer_units[LENBUFFER];
+  char **labels, **units;
+  float *vals;
+  int *valids;
+  int i;
+
+  for(i=0; i<csvfi->ncsvinfo; i++){
+    csvdata *ci;
+
+    ci = csvfi->csvinfo + i;
+    FREEMEMORY(ci->vals);
+    FREEMEMORY(ci->vals_orig);
+  }
+  FREEMEMORY(csvfi->csvinfo);
+  if(flag == UNLOAD)return;
+
+  stream = fopen(csvfi->file, "r");
+  if(stream == NULL)return;
+
+  GetRowCols(stream, &nrows, &ncols);
+  csvfi->ncsvinfo = ncols;
+
+  // allocate memory
+
+  NewMemory((void **)&(csvfi->csvinfo), csvfi->ncsvinfo*sizeof(csvdata));
+  NewMemory((void **)&labels,           csvfi->ncsvinfo*sizeof(char *));
+  NewMemory((void **)&units,            csvfi->ncsvinfo*sizeof(char *));
+  NewMemory((void **)&vals,             csvfi->ncsvinfo*sizeof(float));
+  NewMemory((void **)&valids,           csvfi->ncsvinfo*sizeof(int));
+
+  // initialize each column
+  for(i=0; i<csvfi->ncsvinfo; i++){
+    csvdata *ci;
+
+    ci = csvfi->csvinfo + i;
+    ci->nvals = nrows-2;
+    NewMemory((void **)&ci->vals,      ci->nvals*sizeof(csvdata));
+    NewMemory((void **)&ci->vals_orig, ci->nvals*sizeof(csvdata));
+  }
+  CheckMemory;
+
+  // setup labels and units
+
+  fgets(buffer_units,    LENBUFFER, stream);
+  TrimBack(buffer_units);
+  ParseCSV(buffer_units, units,     &nunits);
+
+  fgets(buffer_labels,    LENBUFFER, stream);
+  TrimBack(buffer_labels);
+  ParseCSV(buffer_labels, labels,    &nlabels);
+  CheckMemory;
+
+  for(i=0; i<csvfi->ncsvinfo; i++){
+    csvdata *ci;
+
+    ci = csvfi->csvinfo + i;
+    TrimBack(labels[i]);
+    TrimBack(units[i]);
+    SetLabels(&(ci->label), labels[i], labels[i], units[i]);
+  }
+  CheckMemory;
+
+  // find Time column index
+
+  csvfi->time = NULL;
+  for(i=0; i<csvfi->ncsvinfo; i++){
+    csvdata *ci;
+
+    ci = csvfi->csvinfo + i;
+    if(strcmp(ci->label.shortlabel, "Time") == 0){
+      csvfi->time = ci;
+      break;
+    }
+  }
+
+  for(i = 0; i < csvfi->ncsvinfo; i++){
+    csvdata *ci;
+    float valmin, valmax;
+    int j;
+
+    ci = csvfi->csvinfo + i;
+    ci->valmin = 1.0;
+    ci->valmax = 0.0;
+  }
+  // read in data
+  int irow;
+  irow = 0;
+  while(!feof(stream)){
+    if(fgets(buffer, LENBUFFER, stream) == NULL)break;
+    TrimBack(buffer);
+    if(strlen(buffer) == 0)break;
+    int nvals;
+    FParseCSV(buffer, vals, valids, ncols, &nvals);
+    if(nvals < ncols)break;
+    for(i=0; i<csvfi->ncsvinfo; i++){
+      csvdata *ci;
+
+      ci = csvfi->csvinfo + i;
+      ci->vals[irow] = 0.0;
+      if(valids[i] == 1){
+        ci->vals[irow] = vals[i];
+        if(ci->valmin > ci->valmax){
+          ci->valmin = vals[i];
+          ci->valmax = vals[i];
+        }
+        else{
+          ci->valmin = MIN(ci->valmin, vals[i]);
+          ci->valmax = MAX(ci->valmax, vals[i]);
+        }
+      }
+    }
+    irow++;
+    if(irow >= nrows)break;
+  }
+  CheckMemory;
+
+  //copy vals into vals_orig
+  for(i=0; i<csvfi->ncsvinfo; i++){
+    csvdata *ci;
+
+    ci = csvfi->csvinfo + i;
+    memcpy(ci->vals_orig, ci->vals, ci->nvals*sizeof(float));
+  }
+
+  CheckMemory;
+  FREEMEMORY(units);
+  FREEMEMORY(labels);
+  FREEMEMORY(vals);
+  FREEMEMORY(valids);
+  fclose(stream);
+}
+
+/* ------------------ ReadAllCSV ------------------------ */
+
+void ReadAllCSV(int flag){
+  int i;
+
+  for(i=0; i<ncsvfileinfo; i++){
+    csvfiledata *csvfi;
+
+    ReadCSV(csvfileinfo + i, flag);
+  }
+}
+#endif
+
 /* ------------------ ReadHRR ------------------------ */
 
 void ReadHRR(int flag){
@@ -7288,8 +7439,13 @@ int ReadSMV(bufferstreamdata *stream){
 
       csvi = csvfileinfo + ncsvfileinfo;
 
-      csvi->loaded=0;
-      csvi->display=0;
+      csvi->loaded   = 0;
+      csvi->display  = 0;
+#ifdef pp_PLOT2D_GEN
+      csvi->time     = NULL;
+      csvi->ncsvinfo = 0;
+      csvi->csvinfo  = NULL;
+#endif
 
       NewMemory((void **)&csvi->file, strlen(file_ptr) + 1);
       strcpy(csvi->file, file_ptr);
@@ -10621,6 +10777,9 @@ typedef struct {
     if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
   SetupDeviceData();
+#ifdef pp_PLOT2D_GEN
+  ReadAllCSV(LOAD);
+#endif
 #ifdef pp_PLOT2D_NEW
   SetupPlot2DUnitData();
 #endif

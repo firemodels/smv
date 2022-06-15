@@ -44,6 +44,9 @@
 #define GENPLOT_SET_POS             116
 #define GENPLOT_SELECT_DEVICE_CLICK 117
 #define GENPLOT_SELECT_HRR_CLICK    118
+#ifdef pp_PLOT2D_GEN
+#define GENPLOT_SELECT_CSV_FILE     119
+#endif
 
 #define PLOT2D_DEV              0
 #define PLOT2D_HRR              1
@@ -116,6 +119,9 @@ GLUI_Checkbox *CHECKBOX_vis_hrr_plot=NULL;
 
 GLUI_EditText *EDIT_filter=NULL;
 
+#ifdef pp_PLOT2D_GEN
+GLUI_Listbox *LIST_csvfile = NULL;
+#endif
 #ifdef pp_PLOT2D_NEW
 GLUI_Listbox *LIST_devID1 = NULL;
 GLUI_Listbox *LIST_devunit1 = NULL;
@@ -786,6 +792,10 @@ void GenPlotCB(int var){
     int index;
     curvedata *curve;
 
+#ifdef pp_PLOT2D_GEN
+    case GENPLOT_SELECT_CSV_FILE:
+      break;
+#endif
     case GENPLOT_SELECT_DEVICE_CLICK:
       GenPlotCB(GENPLOT_SELECT_DEVICE);
       index = LIST_devID1->get_int_val();
@@ -1472,6 +1482,17 @@ extern "C" void GluiDeviceSetup(int main_window){
       PANEL_plot5 = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "", 0);
       PANEL_add_curve = glui_device->add_panel_to_panel(PANEL_plot5, "add/remove curves");
 
+#ifdef pp_PLOT2D_GEN
+      if(ncsvfileinfo > 0){
+        LIST_csvfile = glui_device->add_listbox_to_panel(PANEL_plot9, "csv file type:", &glui_csv_type, GENPLOT_SELECT_CSV_FILE, GenPlotCB);
+        for(i = 0; i < ncsvfileinfo; i++){
+          csvfiledata *csvfi;
+
+          csvfi = csvfileinfo + i;
+          LIST_csvfile->add_item(i, csvfi->c_type);
+        }
+      }
+#else
       if(ndevicetypes > 0){
         PANEL_plotgeneral_device = glui_device->add_panel_to_panel(PANEL_add_curve, "", false);
         PANEL_plotdevice_select = glui_device->add_panel_to_panel(PANEL_plotgeneral_device, "", false);
@@ -1516,9 +1537,9 @@ extern "C" void GluiDeviceSetup(int main_window){
           LIST_hrrunit1->add_item(i, hrrunits[i]->label.unit);
         }
         GenPlotCB(GENPLOT_SELECT_HRR);
-        glui_device->add_button_to_panel(PANEL_plotgeneral_hrr, _("Remove all curves"), GENPLOT_REM_ALLCURVES, GenPlotCB);
-
       }
+#endif
+      glui_device->add_button_to_panel(PANEL_add_curve, _("Remove all curves"), GENPLOT_REM_ALLCURVES, GenPlotCB);
       if(nplot2dinfo==0){
         if(PANEL_add_curve!=NULL)PANEL_add_curve->disable();
         if(PANEL_plot_position!=NULL)PANEL_plot_position->disable();

@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+//#define pp_PLOT2D_GEN       // general 2d plot
 #define pp_PLOT2D_NEW       // allow multiple curves on a device 2d plot
 #define pp_PLOT2D_OVERLAP   // allow scene to overlap 2d plot region
 #define pp_PART_MULTI        // load particles in parallel

@@ -34,12 +34,25 @@ typedef struct _procdata {
 } procdata;
 #endif
 
+/* --------------------------  csvdata ------------------------------------ */
+#ifdef pp_PLOT2D_GEN
+typedef struct _csvdata{
+  flowlabels label;
+  float val, *vals, *vals_orig;
+  float valmin, valmax;
+  int nvals;
+} csvdata;
+#endif
+
 /* --------------------------  _csvfiledata ------------------------------------ */
 
 typedef struct _csvfiledata {
   char *file;
+#ifdef pp_PLOT2D_GEN
+  csvdata *csvinfo, *time;
+  int ncsvinfo;
+#endif
   int loaded, display;
-  int type;
   char c_type[32];
 } csvfiledata;
 
