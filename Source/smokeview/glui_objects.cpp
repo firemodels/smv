@@ -489,20 +489,25 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int force){
   have_plot = 0;
   if(force == 0)have_plot = InCSVPlot(plot2di, c_type, index);
   nplots = plot2di->ncurves;
-  if(have_plot == 0 && nplots<PLOT2D_MAX_CURVES){
-    char label[255];
+  if(have_plot == 1){
+    GenPlotCB(GENPLOT_REM_CURVE);
+  }
+  else{
+    if(nplots < PLOT2D_MAX_CURVES){
+      char label[255];
 
-    plot2di->curve[nplots].index   = index;
-    plot2di->curve[nplots].f_index = glui_csv_type;
-    strcpy(plot2di->curve[nplots].c_type, c_type);
-    nplots++;
-    plot2di->ncurves        = nplots;
-    strcpy(label, c_type);
-    strcat(label, "/");
-    strcat(label, csvi->label.shortlabel);
+      plot2di->curve[nplots].index = index;
+      plot2di->curve[nplots].f_index = glui_csv_type;
+      strcpy(plot2di->curve[nplots].c_type, c_type);
+      nplots++;
+      plot2di->ncurves = nplots;
+      strcpy(label, c_type);
+      strcat(label, "/");
+      strcat(label, csvi->label.shortlabel);
 
-    LIST_plotcurves->add_item(nplots, label);
-    LIST_plotcurves->set_int_val(nplots);
+      LIST_plotcurves->add_item(nplots, label);
+      LIST_plotcurves->set_int_val(nplots);
+    }
   }
 }
 #endif
