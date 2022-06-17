@@ -261,7 +261,6 @@ char *GetPlotShortLabel(plot2ddata *plot2di, int i){
 
 float GetCSVVal(float t, float *times, float *vals, int nvals){
   int beg, mid, end;
-  float val_beg, val_mid, val_end;
 
   if(t<times[0])return vals[0];
   if(t>times[nvals-1])return vals[nvals-1];
@@ -399,9 +398,7 @@ void DrawGenPlot(plot2ddata *plot2di){
     }
   }
   for(i = 0; i<plot2di->ncurves; i++){
-    int curve_index;
     float highlight_time, highlight_val;
-    int valid;
     char *unit;
     float valmin, valmax;
     int option, position, side;
@@ -584,7 +581,6 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
 
   if(option==1){
     for(i = 0; i<PLOT2D_MAX_CURVES; i++){
-      int j;
       curvedata *curve;
 
       curve = plot2di->curve+i;
@@ -627,7 +623,6 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
     plot2di->bounds_defined = 1;
   }
   for(i = 0; i<plot2di->ncurves; i++){
-    int j;
     curvedata   *curve;
     csvfiledata *csvfi;
     csvdata     *csvi;
