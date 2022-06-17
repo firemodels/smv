@@ -294,7 +294,6 @@ void DrawGenPlot(plot2ddata *plot2di){
   int unit_left_index=0, unit_right_index=0;
   float pad_length = 0.0;
 
-  void UpdateCurveBounds(plot2ddata*plot2di, int flag);
   if(plot2di->bounds_defined==0)UpdateCurveBounds(plot2di, 1);
   for(i = 0; i<plot2di->ncurves; i++){
     char *unit;
@@ -332,8 +331,8 @@ void DrawGenPlot(plot2ddata *plot2di){
     curvedata *curve;
 
     curve = plot2di->curve+i;
-    valmin = curve->valmin;
-    valmax = curve->valmax;
+    valmin = curve->vmin;
+    valmax = curve->vmax;
     unit = GetPlotUnit(plot2di, i);
     if(axis_right_unit!=NULL&&strcmp(unit, axis_right_unit) == 0){
       if(axis_right_min>axis_right_max){
@@ -538,12 +537,15 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
 
     curve = plot2di->curve+i;
     csvi = GetCsv(curve->csv_file_index, curve->csv_col_index, NULL);
-    curve->valmin = csvi->valmin;
-    curve->valmax = csvi->valmax;
-    curve->usermin = csvi->valmin;
-    curve->usermax = csvi->valmax;
-    curve->use_usermin = 0;
-    curve->use_usermax = 0;
+    curve->vmin = csvi->valmin;
+    curve->vmax = csvi->valmax;
+  }
+  for(i = plot2di->ncurves; i < PLOT2D_MAX_CURVES;  i++){
+    curvedata *curve;
+
+    curve              = plot2di->curve + i;
+    curve->vmin      = 0.0;
+    curve->vmax      = 1.0;
   }
 }
 

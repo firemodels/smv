@@ -11576,19 +11576,7 @@ int ReadIni2(char *inifile, int localfile){
           curve->factors[0]  = curve_factors[0];
           curve->factors[1]  = curve_factors[1];
           curve->use_factors = curve_use_factors;
-
-          float *valmin2, *valmax2;
-          int *use_valmin2, *use_valmax2;
-          use_valmin2         = &(curve->use_usermin);
-          use_valmax2         = &(curve->use_usermax);
-          valmin2             = &(curve->usermin);
-          valmax2             = &(curve->usermax);
-          fgets(buffer, 255, stream);
-          TrimBack(buffer);
-          sscanf(buffer, " %i %f %i %f", use_valmin2, valmin2, use_valmax2, valmax2);
         }
-void UpdateCurveBounds(plot2ddata *plot2di, int option);
-       UpdateCurveBounds(plot2di, 0);
       }
       update_glui_devices = 1;
       continue;
@@ -14970,15 +14958,6 @@ void WriteIniLocal(FILE *fileout){
       curve_use_factors = curve->use_factors;
       fprintf(fileout, " %i %i %i %i %f %f %f %i\n", index, color[0], color[1], color[2], linewidth1,
                                                      curve_factors[0], curve_factors[1], curve_use_factors);
-
-      int use_valmin2, use_valmax2;
-      float valmin2, valmax2;
-
-      use_valmin2 = curve->use_usermin;
-      use_valmax2 = curve->use_usermax;
-      valmin2     = curve->usermin;
-      valmax2     = curve->usermax;
-      fprintf(fileout, " %i %f %i %f\n", use_valmin2, valmin2, use_valmax2, valmax2);
     };
   }
 #endif

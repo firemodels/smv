@@ -537,6 +537,7 @@ EXTERNCPP void ReadDeviceData(char *file, int filetype, int flag);
 EXTERNCPP void SetupZoneDevs(void);
 EXTERNCPP void SetupDeviceData(void);
 #ifdef pp_PLOT2D_NEW
+EXTERNCPP void UpdateCurveBounds(plot2ddata *plot2di, int flag);
 EXTERNCPP csvdata *GetCsv(int file_index, int col_index, csvfiledata **csvf_ptr);
 EXTERNCPP csvdata *GetCurrentCsv(int i, csvfiledata **csvf_ptr);
 EXTERNCPP void SetupPlot2DUnitData(void);
