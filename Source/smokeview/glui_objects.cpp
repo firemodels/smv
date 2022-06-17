@@ -1451,9 +1451,9 @@ extern "C" void GluiDeviceSetup(int main_window){
       MakeCurveList(glui_plot2dinfo, 1);
 
       PANEL_curve_color = glui_device->add_panel_to_panel(PANEL_curve_properties, "color");
-      SPINNER_genplot_red = glui_device->add_spinner_to_panel(PANEL_curve_color, "red", GLUI_SPINNER_INT, glui_curve.color + 0, GENPLOT_XYZ, GenPlotCB);
+      SPINNER_genplot_red   = glui_device->add_spinner_to_panel(PANEL_curve_color, "red",   GLUI_SPINNER_INT, glui_curve.color + 0, GENPLOT_XYZ, GenPlotCB);
       SPINNER_genplot_green = glui_device->add_spinner_to_panel(PANEL_curve_color, "green", GLUI_SPINNER_INT, glui_curve.color + 1, GENPLOT_XYZ, GenPlotCB);
-      SPINNER_genplot_blue = glui_device->add_spinner_to_panel(PANEL_curve_color, "blue", GLUI_SPINNER_INT, glui_curve.color + 2, GENPLOT_XYZ, GenPlotCB);
+      SPINNER_genplot_blue  = glui_device->add_spinner_to_panel(PANEL_curve_color, "blue",  GLUI_SPINNER_INT, glui_curve.color + 2, GENPLOT_XYZ, GenPlotCB);
       SPINNER_genplot_red->set_int_limits(0, 255);
       SPINNER_genplot_green->set_int_limits(0, 255);
       SPINNER_genplot_blue->set_int_limits(0, 255);

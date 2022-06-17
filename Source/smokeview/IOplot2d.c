@@ -103,6 +103,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   float *xyz0, linewidth_arg, *plot_factors;
   int *plot_color, use_plot_factors, show_title;
   char *title;
+  float fplot_color[3];
 
   SNIFF_ERRORS("after DrawGenCurve 1 - beginning");
   xyz0             = plot2di->xyz;
@@ -112,6 +113,9 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   use_plot_factors = curve->use_factors;
   title            = plot2di->plot_label;
   show_title       = plot2di->show_title;
+  fplot_color[0] = (float)plot_color[0] / 255.0;
+  fplot_color[1] = (float)plot_color[1] / 255.0;
+  fplot_color[2] = (float)plot_color[2] / 255.0;
 
   xmin = x[0];
   xmax = xmin;
@@ -220,12 +224,12 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
       Float2String(c_zmin, zmin, ndigits, force_fixedpoint);
       Float2String(c_zmax, zmax, ndigits, force_fixedpoint);
       if(axis_side == AXIS_LEFT){
-        Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
+        Output3Text(fplot_color,     xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
         Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmin,  c_zmin);
         Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax , c_zmax);
         }
       else{
-        Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label, pad_length);
+        Output3TextRight(fplot_color,      xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label, pad_length);
         Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmin,  c_zmin, pad_length);
         Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax , c_zmax, pad_length);
       }
@@ -296,7 +300,7 @@ void DrawGenPlot(plot2ddata *plot2di){
   int unit_left_index=0, unit_right_index=0;
   float pad_length = 0.0;
 
-  if(plot2di->bounds_defined==0)UpdateCurveBounds(plot2di, 1);
+  if(plot2di->bounds_defined==0)UpdateCurveBounds(plot2di, 0);
   for(i = 0; i<plot2di->ncurves; i++){
     char *unit;
 
