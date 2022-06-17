@@ -76,7 +76,7 @@ int HaveGenHrr(void){
 #define AXIS_NONE  2
 void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_factor,
               float *x, float *z, int n, float x_cur, float z_cur, float zmin, float zmax,
-              char *label, int position, int axis_side, char *unit, float pad_length){
+              int axis_side, char *unit, float pad_length){
   float xmin, xmax, dx, dz;
   float xscale = 1.0, zscale = 1.0;
   int i, ndigits = 3;
@@ -195,7 +195,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
       }
       SNIFF_ERRORS("after DrawGenCurve 4");
     }
-    if(label != NULL){
+    {
       char c_zmin[32], c_zmax[32];
 
       Float2String(c_zmin, zmin, ndigits, force_fixedpoint);
@@ -212,10 +212,10 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
     }
     if(unit!=NULL){
       if(axis_side == AXIS_LEFT){
-        Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)(position+1)) * dfont, unit);
+        Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing)*dfont, unit);
       }
       else{
-        Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)(position+1)) * dfont, unit, pad_length);
+        Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing)*dfont, unit, pad_length);
       }
     }
   }
@@ -455,8 +455,7 @@ void DrawGenPlot(plot2ddata *plot2di){
       highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, csvi->vals, csvi->nvals);
     }
     DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, csvi->vals, csvi->nvals,
-                 highlight_time, highlight_val, valmin, valmax,
-                 csvi->label.shortlabel, position, side, unit_display, pad_length);
+                 highlight_time, highlight_val, valmin, valmax, side, unit_display, pad_length);
 #else
     if(curve_index < ndeviceinfo){
       devicedata *devi;
@@ -468,8 +467,7 @@ void DrawGenPlot(plot2ddata *plot2di){
       }
       if(devi->nvals>0){
         DrawGenCurve(option, plot2di, curve, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
-                     highlight_time, highlight_val, valmin, valmax,
-                     devi->deviceID, position, side, unit_display, pad_length);
+                     highlight_time, highlight_val, valmin, valmax, side, unit_display, pad_length);
       }
     }
     else{
@@ -487,8 +485,7 @@ void DrawGenPlot(plot2ddata *plot2di){
       }
       if(hrri->nvals > 0){
         DrawGenCurve(option, plot2di, curve, plot2d_size_factor, hrrinfo->vals, hrri->vals, hrri->nvals,
-                     highlight_time, highlight_val, valmin, valmax,
-                     hrri->label.shortlabel, position, side, unit_display, pad_length);
+                     highlight_time, highlight_val, valmin, valmax, side, unit_display, pad_length);
       }
     }
 #endif
