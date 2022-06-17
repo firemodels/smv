@@ -390,7 +390,7 @@ void RemoveCurve(plot2ddata *plot2di, int index){
       curvedata *curve;
 
       curve = plot2di->curve+i;
-      if(curve->index == index)continue;
+      if(curve->csv_col_index == index)continue;
       if(i != ii){
         memcpy(plot2di->curve + ii, plot2di->curve + i, sizeof(curvedata));
       }
@@ -398,7 +398,7 @@ void RemoveCurve(plot2ddata *plot2di, int index){
     }
     (plot2di->ncurves)--;
     if(plot2di->ncurves > 0){
-      LIST_plotcurves->set_int_val(plot2di->curve[0].index);
+      LIST_plotcurves->set_int_val(plot2di->curve[0].csv_col_index);
     }
     else{
       LIST_plotcurves->set_int_val(-1);
@@ -412,7 +412,7 @@ int InCSVPlot(plot2ddata *plot2di, char *c_type, int index){
   int i;
 
   for(i = 0; i < plot2di->ncurves; i++){
-    if(plot2di->curve[i].index != index)continue;
+    if(plot2di->curve[i].csv_col_index != index)continue;
     if(strcmp(plot2di->curve[i].c_type, c_type)!=0)continue;
     return 1;
   }
@@ -427,7 +427,7 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int force){
   csvdata *csvi;
   char *c_type;
 
-  csvfi = csvfileinfo + glui_csv_type;
+  csvfi = csvfileinfo + glui_csv_file_index;
   csvi = csvfi->csvinfo + index;
   c_type = csvfi->c_type;
 
@@ -441,8 +441,8 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int force){
     if(nplots < PLOT2D_MAX_CURVES){
       char label[255];
 
-      plot2di->curve[nplots].index = index;
-      plot2di->curve[nplots].f_index = glui_csv_type;
+      plot2di->curve[nplots].csv_col_index = index;
+      plot2di->curve[nplots].csv_file_index = glui_csv_file_index;
       strcpy(plot2di->curve[nplots].c_type, c_type);
       nplots++;
       plot2di->ncurves = nplots;
@@ -465,7 +465,7 @@ void MakeCurveList(plot2ddata *plot2di, int option){
   for(i = 0; i < plot2di->ncurves_ini; i++){
     int curv_index;
 
-    curv_index = plot2di->curve[i].index_ini;
+    curv_index = plot2di->curve[i].csv_col_index_ini;
     AddCSVCurve(plot2di, curv_index, 1);
     GenPlotCB(GENPLOT_SELECT_CURVE);
   }
@@ -481,7 +481,7 @@ void Plot2D2Glui(int index){
 
   int i;
   for(i=0;i<glui_plot2dinfo->ncurves; i++){
-    glui_plot2dinfo->curve[i].index_ini = glui_plot2dinfo->curve[i].index;
+    glui_plot2dinfo->curve[i].csv_col_index_ini = glui_plot2dinfo->curve[i].csv_col_index;
   }
   glui_plot2dinfo->ncurves_ini = glui_plot2dinfo->ncurves;
   glui_plot2dinfo->ncurves = 0;
@@ -658,7 +658,7 @@ void FilterList(void){
   {
     csvfiledata *csvfi;
 
-    csvfi = csvfileinfo + glui_csv_type;
+    csvfi = csvfileinfo + glui_csv_file_index;
     unit_id = LIST_csvunits->get_int_val();
     strcpy(unit_label, "all");
     if(unit_id >= 0){
@@ -705,7 +705,7 @@ void UpdateCvsList(void){
   {
     csvfiledata *csvfi;
 
-    csvfi = csvfileinfo + glui_csv_type;
+    csvfi = csvfileinfo + glui_csv_file_index;
     for(i = 0; i < csvfi->ncsvinfo; i++){
       csvdata *csvi;
 
@@ -725,7 +725,7 @@ void UpdateCvsList(void){
   {
     csvfiledata *csvfi;
 
-    csvfi = csvfileinfo + glui_csv_type;
+    csvfi = csvfileinfo + glui_csv_file_index;
     for(i = 0; i < csvfi->ncsvinfo; i++){
       csvdata *csvi;
       int dup_unit, j;
@@ -1396,7 +1396,7 @@ extern "C" void GluiDeviceSetup(int main_window){
 
       if(ncsvfileinfo > 0){
         PANEL_csv = glui_device->add_panel_to_panel(PANEL_add_curve, "", 0);
-        LIST_csvfile = glui_device->add_listbox_to_panel(PANEL_csv, "curve type:", &glui_csv_type, GENPLOT_SELECT_CSV_FILE, GenPlotCB);
+        LIST_csvfile = glui_device->add_listbox_to_panel(PANEL_csv, "curve type:", &glui_csv_file_index, GENPLOT_SELECT_CSV_FILE, GenPlotCB);
         for(i = 0; i < ncsvfileinfo; i++){
           csvfiledata *csvfi;
 

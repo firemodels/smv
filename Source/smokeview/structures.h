@@ -1010,8 +1010,9 @@ typedef struct _hrrdata {
 #ifdef pp_PLOT2D_NEW
 typedef struct _curvedata{
   char c_type[64];
-  int f_index;
-  int index, index_ini, use_usermin, use_usermax, use_factors, color[3];
+  int csv_file_index;
+  int csv_col_index, csv_col_index_ini;
+  int use_usermin, use_usermax, use_factors, color[3];
   float valmin, valmax,  usermin, usermax;
   float linewidth;
   float factors[2];

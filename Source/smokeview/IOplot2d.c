@@ -21,7 +21,7 @@ int GenDevShow(void){
       int j;
 
       for(j = 0; j < plot2di->ncurves; j++){
-        if(plot2di->curve[j].index<ndeviceinfo)return 1;
+        if(plot2di->curve[j].csv_col_index<ndeviceinfo)return 1;
       }
     }
   }
@@ -41,7 +41,7 @@ int GenHrrShow(void){
       int j;
 
       for(j = 0; j < plot2di->ncurves; j++){
-        if(plot2di->curve[j].index>=ndeviceinfo)return 1;
+        if(plot2di->curve[j].csv_col_index>=ndeviceinfo)return 1;
       }
     }
   }
@@ -54,7 +54,7 @@ int HaveGenDev(void){
   int i;
 
   for(i = 0; i<glui_plot2dinfo->ncurves; i++){
-    if(glui_plot2dinfo->curve[i].index<ndeviceinfo)return 1;
+    if(glui_plot2dinfo->curve[i].csv_col_index<ndeviceinfo)return 1;
   }
   return 0;
 }
@@ -65,7 +65,7 @@ int HaveGenHrr(void){
   int i;
 
   for(i = 0; i<glui_plot2dinfo->ncurves; i++){
-    if(glui_plot2dinfo->curve[i].index>=ndeviceinfo)return 1;
+    if(glui_plot2dinfo->curve[i].csv_col_index>=ndeviceinfo)return 1;
   }
   return 0;
 }
@@ -231,8 +231,8 @@ char *GetPlotUnit(plot2ddata *plot2di, int i){
   int fcurve_index, curve_index;
   char *unit;
 
-  curve_index  = plot2di->curve[i].index;
-  fcurve_index = plot2di->curve[i].f_index;
+  curve_index  = plot2di->curve[i].csv_col_index;
+  fcurve_index = plot2di->curve[i].csv_file_index;
   csvfi        = csvfileinfo + fcurve_index;
   csvi         = csvfi->csvinfo + curve_index;
   unit         = csvi->label.unit;
@@ -247,8 +247,8 @@ char *GetPlotShortLabel(plot2ddata *plot2di, int i){
   int fcurve_index, curve_index;
   char *shortlabel;
 
-  curve_index  = plot2di->curve[i].index;
-  fcurve_index = plot2di->curve[i].f_index;
+  curve_index  = plot2di->curve[i].csv_col_index;
+  fcurve_index = plot2di->curve[i].csv_file_index;
   csvfi        = csvfileinfo + fcurve_index;
   csvi         = csvfi->csvinfo + curve_index;
   shortlabel   = csvi->label.shortlabel;
@@ -390,8 +390,8 @@ void DrawGenPlot(plot2ddata *plot2di){
     csvdata *csvi;
 
     curve = plot2di->curve + i;
-    csvfi = csvfileinfo + curve->f_index;
-    csvi = csvfi->csvinfo + curve->index;
+    csvfi = csvfileinfo + curve->csv_file_index;
+    csvi = csvfi->csvinfo + curve->csv_col_index;
     if(global_times != NULL){
       highlight_time = global_times[itimes];
       highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, csvi->vals, csvi->nvals);
@@ -533,8 +533,8 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
     csvdata     *csvi;
 
     curve = plot2di->curve+i;
-    csvfi = csvfileinfo    + curve->f_index;
-    csvi  = csvfi->csvinfo + curve->index;
+    csvfi = csvfileinfo    + curve->csv_file_index;
+    csvi  = csvfi->csvinfo + curve->csv_col_index;
     curve->valmin = csvi->valmin;
     curve->valmax = csvi->valmax;
     curve->usermin = csvi->valmin;
