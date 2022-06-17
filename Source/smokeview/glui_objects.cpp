@@ -719,7 +719,6 @@ void UpdateCvsList(void){
     LIST_csvunits->delete_item(i);
   }
   for(i = 0; i < csvfi->ncsvinfo; i++){
-    csvfiledata *csvfi;
     csvdata *csvi;
     int dup_unit, j;
 
