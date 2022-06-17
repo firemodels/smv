@@ -877,7 +877,6 @@ extern "C" void ShowPlot2D(void){
 
 void FilterList(void){
   int i;
-  char label[256];
 
   char unit_label[256];
   int unit_id;
