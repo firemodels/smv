@@ -11553,11 +11553,13 @@ int ReadIni2(char *inifile, int localfile){
         TrimBack(buffer);
         labelptr = TrimFront(buffer);
         strcpy(plot2di->plot_label, labelptr);
+#ifndef pp_PLOT2D_GEN
         NewMemory((void **)&(plot2di->curve), (ndeviceinfo+nhrrinfo) * sizeof(curvedata));
+#endif
 
         fgets(buffer, 255, stream);
-        sscanf(buffer, " %f %f %f %i %i %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->show_title, &plot2di->ncurve_indexes);
-        for(j=0; j<plot2di->ncurve_indexes; j++){
+        sscanf(buffer, " %f %f %f %i %i %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->show_title, &plot2di->ncurves);
+        for(j=0; j<plot2di->ncurves; j++){
           int color[3];
           float linewidth1;
           float curve_factors[2];
@@ -14960,8 +14962,8 @@ void WriteIniLocal(FILE *fileout){
 
     plot2di = plot2dinfo + i;
     fprintf(fileout, " %s\n", plot2di->plot_label);
-    fprintf(fileout, " %f %f %f %i %i %i\n", plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->show_title, plot2di->ncurve_indexes);
-    for(j = 0; j < plot2di->ncurve_indexes; j++){
+    fprintf(fileout, " %f %f %f %i %i %i\n", plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->show_title, plot2di->ncurves);
+    for(j = 0; j < plot2di->ncurves; j++){
       int *color;
       float linewidth1, *curve_factors;
       int curve_use_factors;

@@ -1013,6 +1013,10 @@ typedef struct _hrrdata {
 
 #ifdef pp_PLOT2D_NEW
 typedef struct _curvedata{
+#ifdef pp_PLOT2D_GEN
+  char c_type[64];
+  int f_index;
+#endif
   int index, index_ini, use_usermin, use_usermax, use_factors, color[3];
   float valmin, valmax,  usermin, usermax;
   float linewidth;
@@ -1021,12 +1025,18 @@ typedef struct _curvedata{
 
 /* --------------------------  plot2ddata ------------------------------------ */
 
+#define PLOT2D_MAX_CURVES 50
 typedef struct _plot2ddata{
   char plot_label[350];
-  int ncurve_indexes, ncurve_indexes_ini;
+  int ncurves, ncurves_ini;
   int curve_index, plot_index;
   int show, show_title;
+#ifdef pp_PLOT2D_GEN
+  curvedata curve[PLOT2D_MAX_CURVES];
+  int bounds_defined;
+#else
   curvedata *curve;
+#endif
   float xyz[3];
 } plot2ddata;
 #endif
