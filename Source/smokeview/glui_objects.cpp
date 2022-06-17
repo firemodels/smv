@@ -381,12 +381,10 @@ void RemoveCurve(plot2ddata *plot2di, int index){
     LIST_plotcurves->set_int_val(-1);
   }
   else{
-    int i, ii;
-
     LIST_plotcurves->delete_item(index);
 //    (0,...,i-1,i+1,...,n-1)
-    if(plot2di->ncurves>i+1){
-      memmove(plot2di->curve + i, plot2di->curve + i+1, (plot2di->ncurves-i-1)*sizeof(curvedata));
+    if(plot2di->ncurves>index+1){
+      memmove(plot2di->curve + index, plot2di->curve + index+1, (plot2di->ncurves-index-1)*sizeof(curvedata));
     }
     (plot2di->ncurves)--;
     LIST_plotcurves->set_int_val(-1);
