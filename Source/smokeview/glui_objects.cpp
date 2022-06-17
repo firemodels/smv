@@ -38,7 +38,7 @@
 #define GENPLOT_PLOT_LABEL          110
 #define GENPLOT_SET_POS             111
 #define GENPLOT_CSV_TYPE            112
-#define GENPLOT_SELECT_CSV_CLICK    113
+#define GENPLOT_ADD_CURVE           113
 #endif
 
 #define WINDROSE_SHOW_FIRST   996
@@ -384,24 +384,17 @@ void RemoveCurve(plot2ddata *plot2di, int index){
     int i, ii;
 
     LIST_plotcurves->delete_item(index);
-
-    ii = 0;
-    for(i = 0; i < plot2di->ncurves; i++){
-      curvedata *curve;
-
-      curve = plot2di->curve+i;
-      if(curve->csv_col_index == index)continue;
-      if(i != ii){
-        memcpy(plot2di->curve + ii, plot2di->curve + i, sizeof(curvedata));
-      }
-      ii++;
+//    (0,...,i-1,i+1,...,n-1)
+    if(plot2di->ncurves>i+1){
+      memmove(plot2di->curve + i, plot2di->curve + i+1, (plot2di->ncurves-i-1)*sizeof(curvedata));
     }
     (plot2di->ncurves)--;
+    LIST_plotcurves->set_int_val(-1);
     if(plot2di->ncurves > 0){
-      LIST_plotcurves->set_int_val(plot2di->curve[0].csv_col_index);
-    }
-    else{
-      LIST_plotcurves->set_int_val(-1);
+      int index2;
+
+      index2 = CLAMP(index, 0, plot2di->ncurves-1);
+      LIST_plotcurves->set_int_val(index2);
     }
   }
 }
@@ -433,31 +426,26 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int force){
   have_plot = 0;
   if(force == 0)have_plot = InCSVPlot(plot2di, c_type, index);
   nplots = plot2di->ncurves;
-  if(have_plot == 1){
-    GenPlotCB(GENPLOT_REM_CURVE);
-  }
-  else{
-    if(nplots < PLOT2D_MAX_CURVES){
-      char label[255];
-      curvedata *curve;
+  if(have_plot == 0 && nplots < PLOT2D_MAX_CURVES){
+    char label[255];
+    curvedata *curve;
 
-      curve = plot2di->curve + nplots;
-      curve->vmax = csvi->valmax;
-      curve->vmin = csvi->valmin;
-      curve->csv_col_index = index;
-      curve->csv_file_index = glui_csv_file_index;
-      strcpy(curve->c_type, c_type);
-      plot2di->ncurves = nplots+1;
-      strcpy(label, c_type);
-      strcat(label, "/");
-      strcat(label, csvi->label.shortlabel);
+    curve = plot2di->curve + nplots;
+    curve->vmax = csvi->valmax;
+    curve->vmin = csvi->valmin;
+    curve->csv_col_index = index;
+    curve->csv_file_index = glui_csv_file_index;
+    strcpy(curve->c_type, c_type);
+    plot2di->ncurves = nplots+1;
+    strcpy(label, c_type);
+    strcat(label, "/");
+    strcat(label, csvi->label.shortlabel);
 
-      LIST_plotcurves->add_item(nplots, label);
-      LIST_plotcurves->set_int_val(nplots);
-      memcpy(&glui_curve, curve, sizeof(curvedata));
-      nplots++;
-      UpdateCurveControls();
-    }
+    LIST_plotcurves->add_item(nplots, label);
+    LIST_plotcurves->set_int_val(nplots);
+    memcpy(&glui_curve, curve, sizeof(curvedata));
+    nplots++;
+    UpdateCurveControls();
   }
 }
 
@@ -797,7 +785,7 @@ void GenPlotCB(int var){
     curvedata *curve;
     int curve_id;
 
-    case GENPLOT_SELECT_CSV_CLICK:
+    case GENPLOT_ADD_CURVE:
       curve_id = LIST_csvID->get_int_val();
       AddCSVCurve(glui_plot2dinfo, curve_id, 0);
       Glui2Plot2D(iplot2dinfo);
@@ -823,6 +811,9 @@ void GenPlotCB(int var){
           strcpy(label, "Set to device location");
           BUTTON_plot_position->set_name(label);
         }
+      }
+      if(glui_remove_selected_curve==1){
+        GenPlotCB(GENPLOT_REM_CURVE);
       }
       break;
     case GENPLOT_REM_CURVE:
@@ -1406,7 +1397,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       PANEL_plots = glui_device->add_panel_to_panel(PANEL_plot8, "plots");
       BUTTON_add_plot = glui_device->add_button_to_panel(PANEL_plots, _("New"),            GENPLOT_ADD_PLOT,     GenPlotCB);
       BUTTON_rem_plot = glui_device->add_button_to_panel(PANEL_plots, _("Remove"),         GENPLOT_REM_PLOT,     GenPlotCB);
-      LIST_plots = glui_device->add_listbox_to_panel(PANEL_plots, "select:", &iplot2dinfo, GENPLOT_SELECT_PLOT, GenPlotCB);
+      LIST_plots = glui_device->add_listbox_to_panel(PANEL_plots, "select:", &iplot2dinfo, GENPLOT_SELECT_PLOT,  GenPlotCB);
       LIST_plots->add_item(-1, "");
       CHECKBOX_show_genplot = glui_device->add_checkbox_to_panel(PANEL_plots, "show", &(glui_plot2dinfo->show), GENPLOT_SHOW_PLOT, GenPlotCB);
 
@@ -1437,8 +1428,8 @@ extern "C" void GluiDeviceSetup(int main_window){
           LIST_csvfile->add_item(i, csvfi->c_type);
         }
         PANEL_csv2 = glui_device->add_panel_to_panel(PANEL_add_curve, "");
-        LIST_csvID = glui_device->add_listbox_to_panel(PANEL_csv2, "curves:", &icsv_cols, GENPLOT_SELECT_CSV_CLICK, GenPlotCB);
-        LIST_csvunits = glui_device->add_listbox_to_panel(PANEL_csv2, "show", &icsv_units, GENPLOT_CSV_TYPE, GenPlotCB);
+        LIST_csvID = glui_device->add_listbox_to_panel(PANEL_csv2, "curves:", &icsv_cols,  GENPLOT_ADD_CURVE, GenPlotCB);
+        LIST_csvunits = glui_device->add_listbox_to_panel(PANEL_csv2, "show", &icsv_units, GENPLOT_CSV_TYPE,  GenPlotCB);
         LIST_csvunits->add_item(-1, "all");
         GenPlotCB(GENPLOT_SELECT_CSV_FILE);
         GenPlotCB(GENPLOT_CSV_TYPE);
