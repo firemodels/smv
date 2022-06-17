@@ -27,27 +27,18 @@
 
 #ifdef pp_PLOT2D_NEW
 #define GENPLOT_ADD_PLOT            101
-#define GENPLOT_ADD_DEVCURVE        102
-#define GENPLOT_ADD_HRRCURVE        103
-#define GENPLOT_REM_PLOT            104
-#define GENPLOT_REM_CURVE           105
-#define GENPLOT_REM_ALLCURVES       106
-#define GENPLOT_SELECT_PLOT         107
-#define GENPLOT_SELECT_CURVE        108
-#define GENPLOT_DEV_TYPE            109
-#define GENPLOT_HRR_TYPE            110
-#define GENPLOT_SHOW_PLOT           111
-#define GENPLOT_XYZ                 112
-#define GENPLOT_PLOT_LABEL          113
-#define GENPLOT_SET_POS             114
-#define GENPLOT_SELECT_DEVICE_CLICK 115
-#define GENPLOT_SELECT_HRR_CLICK    116
-#define GENPLOT_SELECT_CSV_FILE     117
-#define GENPLOT_CSV_TYPE            118
-#define GENPLOT_SELECT_CSV_CLICK    119
-
-#define PLOT2D_DEV              0
-#define PLOT2D_HRR              1
+#define GENPLOT_REM_PLOT            102
+#define GENPLOT_REM_CURVE           103
+#define GENPLOT_REM_ALLCURVES       104
+#define GENPLOT_SELECT_CSV_FILE     105
+#define GENPLOT_SELECT_PLOT         106
+#define GENPLOT_SELECT_CURVE        107
+#define GENPLOT_SHOW_PLOT           108
+#define GENPLOT_XYZ                 109
+#define GENPLOT_PLOT_LABEL          110
+#define GENPLOT_SET_POS             111
+#define GENPLOT_CSV_TYPE            112
+#define GENPLOT_SELECT_CSV_CLICK    113
 #endif
 
 #define WINDROSE_SHOW_FIRST   996
@@ -121,12 +112,6 @@ GLUI_EditText *EDIT_filter=NULL;
 GLUI_Listbox *LIST_csvfile = NULL;
 GLUI_Listbox *LIST_csvID    = NULL;
 GLUI_Listbox *LIST_csvunits = NULL;
-#endif
-#ifdef pp_PLOT2D_NEW
-GLUI_Listbox *LIST_devID1 = NULL;
-GLUI_Listbox *LIST_devunit1 = NULL;
-GLUI_Listbox *LIST_hrr1 = NULL;
-GLUI_Listbox *LIST_hrrunit1 = NULL;
 GLUI_Listbox *LIST_plots = NULL;
 GLUI_Listbox *LIST_plotcurves = NULL;
 #endif
@@ -199,8 +184,6 @@ GLUI_Rollout *ROLLOUT_trees = NULL;
 GLUI_Spinner *SPINNER_genplot_usermin = NULL;
 GLUI_Spinner *SPINNER_genplot_usermax = NULL;
 
-GLUI_Spinner *SPINNER_genplot_factor1 = NULL;
-GLUI_Spinner *SPINNER_genplot_factor2 = NULL;
 GLUI_Spinner *SPINNER_genplot_x = NULL;
 GLUI_Spinner *SPINNER_genplot_y = NULL;
 GLUI_Spinner *SPINNER_genplot_z = NULL;
@@ -436,18 +419,6 @@ int InCSVPlot(plot2ddata *plot2di, char *c_type, int index){
   return 0;
 }
 
-/* ------------------ InPlot ------------------------ */
-
-int InPlot(plot2ddata *plot2di, int type, int index){
-  int i, offset = 0;
-
-  if(type == PLOT2D_HRR)offset = ndeviceinfo;
-  for(i = 0; i < plot2di->ncurves; i++){
-    if(plot2di->curve[i].index == index + offset)return 1;
-    }
-  return 0;
-}
-
 /* ------------------ AddCSVCurve ------------------------ */
 
 void AddCSVCurve(plot2ddata *plot2di, int index, int force){
@@ -482,41 +453,6 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int force){
       LIST_plotcurves->add_item(nplots, label);
       LIST_plotcurves->set_int_val(nplots);
     }
-  }
-}
-
-/* ------------------ AddCurve ------------------------ */
-
-void AddCurve(plot2ddata *plot2di, int type, int force){
-  int have_index;
-  int offset = 0, index;
-
-  if(type == PLOT2D_HRR){
-    offset = ndeviceinfo;
-    index = LIST_hrr1->get_int_val();
-    }
-  else{
-    index = LIST_devID1->get_int_val();
-  }
-  have_index = 0;
-  if(force == 0){
-    have_index = InPlot(plot2di, type, index);
-  }
-  if(have_index == 0){
-    char label[255];
-
-    plot2di->curve[plot2di->ncurves].index = offset + index;
-    (plot2di->ncurves)++;
-    if(type == PLOT2D_DEV){
-      strcpy(label, "dev/");
-      strcat(label, deviceinfo[index].labelptr);
-    }
-    else{
-      strcpy(label, "hrr/");
-      strcat(label, hrrinfo[index].label.shortlabel);
-    }
-    LIST_plotcurves->add_item(offset + index, label);
-    LIST_plotcurves->set_int_val(offset + index);
   }
 }
 
@@ -636,102 +572,6 @@ void Glui2Plot2D(int index){
     plot2di = plot2dinfo + index;
     memcpy(plot2di, glui_plot2dinfo, sizeof(plot2ddata));
   }
-}
-
-/* ------------------ UpdateUnitList ------------------------ */
-
-void UpdateUnitList(GLUI_Listbox *LIST_dev, int devunit_index, int type){
-  int i, listval, nitems;
-
-  if(LIST_dev == NULL)return;
-  if(type==PLOT2D_DEV){
-    nitems = ndeviceinfo;
-  }
-  else{
-    nitems = nhrrinfo;
-  }
-  listval  = LIST_dev->get_int_val();
-  for(i = 0; i < nitems; i++){
-    int inlist1;
-
-    if(type==PLOT2D_DEV){
-      inlist1 = deviceinfo[i].inlist1;
-    }
-    else{
-      inlist1 = hrrinfo[i].inlist1;
-    }
-    if(inlist1 == 1){
-      if(type == PLOT2D_DEV){
-        deviceinfo[i].inlist1 = 0;
-      }
-      else{
-        hrrinfo[i].inlist1 = 0;
-      }
-      LIST_dev->delete_item(i);
-    }
-  }
-  for(i = 0; i < nitems; i++){
-    int inlist, inlist1;
-
-    inlist = 0;
-    if(type==PLOT2D_DEV){
-      if(devunit_index == -1 || strcmp(deviceunits[devunit_index]->unit, deviceinfo[i].unit) == 0)inlist = 1;
-      inlist1 = deviceinfo[i].inlist1;
-    }
-    else{
-      if(STRCMP(hrrinfo[i].label.shortlabel, "Time") == 0)continue;
-      if(devunit_index == -1 || strcmp(hrrunits[devunit_index]->label.unit, hrrinfo[i].label.unit) == 0)inlist = 1;
-      inlist1 = hrrinfo[i].inlist1;
-    }
-    if(inlist == 1 && inlist1 == 0){
-      char label[350];
-
-      strcpy(label, "");
-      if(InPlot(glui_plot2dinfo, type, i)==1){
-        strcat(label, "*");
-        if(type==PLOT2D_DEV){
-          strcat(label, deviceinfo[i].deviceID);
-          deviceinfo[i].inlist1 = 1;
-        }
-        else{
-          strcat(label, hrrinfo[i].label.shortlabel);
-          hrrinfo[i].inlist1 = 1;
-        }
-        LIST_dev->add_item(i, label);
-      }
-    }
-  }
-  for(i = 0; i<nitems; i++){
-    int inlist, inlist1;
-
-    inlist = 0;
-    if(type==PLOT2D_DEV){
-      if(devunit_index==-1||strcmp(deviceunits[devunit_index]->unit, deviceinfo[i].unit)==0)inlist = 1;
-      inlist1 = deviceinfo[i].inlist1;
-    }
-    else{
-      if(STRCMP(hrrinfo[i].label.shortlabel, "Time") == 0)continue;
-      if(devunit_index == -1 || strcmp(hrrunits[devunit_index]->label.unit, hrrinfo[i].label.unit) == 0)inlist = 1;
-      inlist1 = hrrinfo[i].inlist1;
-    }
-    if(inlist==1&&inlist1==0){
-      char label[350];
-
-      strcpy(label, "");
-      if(InPlot(glui_plot2dinfo, type, i)!=1){
-        if(type==PLOT2D_DEV){
-          strcat(label, deviceinfo[i].deviceID);
-          deviceinfo[i].inlist1 = 1;
-        }
-        else{
-          strcat(label, hrrinfo[i].label.shortlabel);
-          hrrinfo[i].inlist1 = 1;
-        }
-        LIST_dev->add_item(i, label);
-      }
-    }
-  }
-  LIST_dev->set_int_val(listval);
 }
 
 /* ------------------ UpdatePlotList ------------------------ */
@@ -947,63 +787,6 @@ void GenPlotCB(int var){
     case GENPLOT_CSV_TYPE:
       FilterList();
       break;
-    case GENPLOT_SELECT_DEVICE_CLICK:
-      index = LIST_devID1->get_int_val();
-      if(InPlot(glui_plot2dinfo, PLOT2D_DEV, index) == 0){
-        if(glui_plot2dinfo->show == 0){
-          glui_plot2dinfo->show = 1;
-          CHECKBOX_show_genplot->set_int_val(glui_plot2dinfo->show);
-          GenPlotCB(GENPLOT_SHOW_PLOT);
-        }
-        GenPlotCB(GENPLOT_ADD_DEVCURVE);
-      }
-      else{
-        glui_plot2dinfo->curve_index = index;
-        GenPlotCB(GENPLOT_REM_CURVE);
-      }
-      break;
-    case GENPLOT_SELECT_HRR_CLICK:
-      index = LIST_hrr1->get_int_val();
-      if(InPlot(glui_plot2dinfo, PLOT2D_HRR, index) == 0){
-        if(glui_plot2dinfo->show == 0){
-          glui_plot2dinfo->show = 1;
-          CHECKBOX_show_genplot->set_int_val(glui_plot2dinfo->show);
-          GenPlotCB(GENPLOT_SHOW_PLOT);
-        }
-        GenPlotCB(GENPLOT_ADD_HRRCURVE);
-      }
-      else{
-        glui_plot2dinfo->curve_index = index+ndeviceinfo;
-        GenPlotCB(GENPLOT_REM_CURVE);
-      }
-      break;
-    case GENPLOT_HRR_TYPE:
-      UpdateUnitList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
-      break;
-    case GENPLOT_DEV_TYPE:
-      UpdateUnitList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
-      break;
-    case GENPLOT_ADD_DEVCURVE:
-      AddCurve(glui_plot2dinfo, PLOT2D_DEV, 0);
-      GenPlotCB(GENPLOT_SELECT_CURVE);
-      Glui2Plot2D(iplot2dinfo);
-      if(PANEL_curve_properties!=NULL)PANEL_curve_properties->enable();
-      if(glui_plot2dinfo->ncurves > 0 && glui_plot2dinfo->curve_index<ndeviceinfo)BUTTON_plot_position->enable();
-      UpdateUnitList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
-      if(glui_plot2dinfo->show==1){
-        GenPlotCB(GENPLOT_SHOW_PLOT);
-      }
-      break;
-    case GENPLOT_ADD_HRRCURVE:
-      AddCurve(glui_plot2dinfo, PLOT2D_HRR, 0);
-      GenPlotCB(GENPLOT_SELECT_CURVE);
-      Glui2Plot2D(iplot2dinfo);
-      EnableDisablePlot2D();
-      UpdateUnitList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
-      if(glui_plot2dinfo->show){
-        GenPlotCB(GENPLOT_SHOW_PLOT);
-      }
-      break;
     case GENPLOT_SELECT_CURVE:
       index = glui_plot2dinfo->curve_index;
       curve = glui_plot2dinfo->curve + index;
@@ -1024,15 +807,11 @@ void GenPlotCB(int var){
       RemoveCurve(glui_plot2dinfo, glui_plot2dinfo->curve_index);
       Glui2Plot2D(iplot2dinfo);
       EnableDisablePlot2D();
-      UpdateUnitList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
-      UpdateUnitList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
       break;
     case GENPLOT_REM_ALLCURVES:
       RemoveCurve(glui_plot2dinfo, -1);
       Glui2Plot2D(iplot2dinfo);
       EnableDisablePlot2D();
-      UpdateUnitList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
-      UpdateUnitList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
       break;
     case GENPLOT_SHOW_PLOT:
       Glui2Plot2D(iplot2dinfo);
@@ -1088,8 +867,6 @@ void GenPlotCB(int var){
       strcat(label, plot2dinfo[iplot2dinfo].plot_label);
       BUTTON_rem_plot->set_name(label);
       EnableDisablePlot2D();
-      UpdateUnitList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
-      UpdateUnitList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
       GenPlotCB(GENPLOT_SELECT_PLOT);
       break;
     case GENPLOT_REM_PLOT:
@@ -1107,8 +884,6 @@ void GenPlotCB(int var){
       BUTTON_rem_plot->set_name(label);
       EnableDisablePlot2D();
       GenPlotCB(GENPLOT_SELECT_PLOT);
-      UpdateUnitList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
-      UpdateUnitList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
       break;
     default:
       ASSERT(FFALSE);
@@ -1689,7 +1464,6 @@ extern "C" void GluiDeviceSetup(int main_window){
         LIST_plots->set_int_val(0);
         GenPlotCB(GENPLOT_SELECT_PLOT);
       }
-      if(ndevicetypes>0)GenPlotCB(GENPLOT_DEV_TYPE);
       GenPlotCB(GENPLOT_SHOW_PLOT);
       plot2d_dialogs_defined = 1;
       EnableDisablePlot2D();
