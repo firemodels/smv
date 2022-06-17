@@ -8,6 +8,25 @@
 #include "smokeviewvars.h"
 
 #ifdef pp_PLOT2D_NEW
+
+/* ------------------ GetCurrentCsv ------------------------ */
+
+csvdata *GetCsv(int file_index, int col_index, csvfiledata **csvf_ptr){
+  csvfiledata *csvfi;
+  csvdata *csvi;
+
+  csvfi = csvfileinfo    + file_index;
+  csvi  = csvfi->csvinfo + col_index;
+  if(csvf_ptr != NULL)*csvf_ptr = csvfi;
+  return csvi;
+}
+
+/* ------------------ GetCurrentCsv ------------------------ */
+
+csvdata *GetCurrentCsv(int col_index, csvfiledata **csvf_ptr){
+  return GetCsv(glui_csv_file_index, col_index, csvf_ptr);
+}
+
 /* ------------------ HaveGenDevShow ------------------------ */
 
 int GenDevShow(void){
@@ -226,33 +245,19 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
 /* ------------------ GetPlotUnit ------------------------ */
 
 char *GetPlotUnit(plot2ddata *plot2di, int i){
-  csvfiledata *csvfi;
   csvdata *csvi;
-  int fcurve_index, curve_index;
-  char *unit;
 
-  curve_index  = plot2di->curve[i].csv_col_index;
-  fcurve_index = plot2di->curve[i].csv_file_index;
-  csvfi        = csvfileinfo + fcurve_index;
-  csvi         = csvfi->csvinfo + curve_index;
-  unit         = csvi->label.unit;
-  return unit;
+  csvi = GetCsv(plot2di->curve[i].csv_file_index, plot2di->curve[i].csv_col_index, NULL);
+  return csvi->label.unit;
 }
 
 /* ------------------ GetPlotShortLabel ------------------------ */
 
 char *GetPlotShortLabel(plot2ddata *plot2di, int i){
-  csvfiledata *csvfi;
   csvdata *csvi;
-  int fcurve_index, curve_index;
-  char *shortlabel;
 
-  curve_index  = plot2di->curve[i].csv_col_index;
-  fcurve_index = plot2di->curve[i].csv_file_index;
-  csvfi        = csvfileinfo + fcurve_index;
-  csvi         = csvfi->csvinfo + curve_index;
-  shortlabel   = csvi->label.shortlabel;
-  return shortlabel;
+  csvi = GetCsv(plot2di->curve[i].csv_file_index, plot2di->curve[i].csv_col_index, NULL);
+  return csvi->label.shortlabel;
 }
 
 /* ------------------ GetCSVVal ------------------------ */
@@ -390,8 +395,8 @@ void DrawGenPlot(plot2ddata *plot2di){
     csvdata *csvi;
 
     curve = plot2di->curve + i;
-    csvfi = csvfileinfo + curve->csv_file_index;
-    csvi = csvfi->csvinfo + curve->csv_col_index;
+    csvi = GetCsv(curve->csv_file_index, curve->csv_col_index, &csvfi);
+
     if(global_times != NULL){
       highlight_time = global_times[itimes];
       highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, csvi->vals, csvi->nvals);
@@ -529,12 +534,10 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
   }
   for(i = 0; i<plot2di->ncurves; i++){
     curvedata   *curve;
-    csvfiledata *csvfi;
     csvdata     *csvi;
 
     curve = plot2di->curve+i;
-    csvfi = csvfileinfo    + curve->csv_file_index;
-    csvi  = csvfi->csvinfo + curve->csv_col_index;
+    csvi = GetCsv(curve->csv_file_index, curve->csv_col_index, NULL);
     curve->valmin = csvi->valmin;
     curve->valmax = csvi->valmax;
     curve->usermin = csvi->valmin;

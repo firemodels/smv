@@ -427,8 +427,7 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int force){
   csvdata *csvi;
   char *c_type;
 
-  csvfi = csvfileinfo + glui_csv_file_index;
-  csvi = csvfi->csvinfo + index;
+  csvi = GetCurrentCsv(index, &csvfi);
   c_type = csvfi->c_type;
 
   have_plot = 0;
@@ -658,13 +657,13 @@ void FilterList(void){
   {
     csvfiledata *csvfi;
 
-    csvfi = csvfileinfo + glui_csv_file_index;
+    GetCurrentCsv(0, &csvfi);
     unit_id = LIST_csvunits->get_int_val();
     strcpy(unit_label, "all");
     if(unit_id >= 0){
       csvdata *csvunit;
 
-      csvunit = csvfi->csvinfo + unit_id;
+      csvunit = GetCurrentCsv(unit_id, NULL);
       if(csvunit->dimensionless == 0){
         strcpy(unit_label, csvunit->label.unit);
       }
@@ -675,7 +674,7 @@ void FilterList(void){
     for(i = 0; i < csvfi->ncsvinfo; i++){
       csvdata *csvi;
 
-      csvi = csvfi->csvinfo + i;
+      csvi = GetCurrentCsv(i, NULL);
       if(csvi == csvfi->time)continue;
       if(strcmp(unit_label, "all") == 0){
         LIST_csvID->add_item(i, csvi->label.shortlabel);
@@ -698,74 +697,67 @@ void FilterList(void){
 void UpdateCvsList(void){
   int i;
   char label[256];
+  csvfiledata *csvfi;
 
   for(i=0; i<plot2d_max_columns; i++){
     LIST_csvID->delete_item(i);
   }
-  {
-    csvfiledata *csvfi;
+  GetCurrentCsv(0, &csvfi);
+  for(i = 0; i < csvfi->ncsvinfo; i++){
+    csvdata *csvi;
 
-    csvfi = csvfileinfo + glui_csv_file_index;
-    for(i = 0; i < csvfi->ncsvinfo; i++){
-      csvdata *csvi;
-
-      csvi = csvfi->csvinfo + i;
-      if(csvi == csvfi->time)continue;
-      LIST_csvID->add_item(i, csvi->label.shortlabel);
-    }
-    strcpy(label, "add/remove ");
-    strcat(label, csvfi->c_type);
-    strcat(label, " data");
-    LIST_csvID->set_name(label);
+    csvi = GetCurrentCsv(i, NULL);
+    if(csvi == csvfi->time)continue;
+    LIST_csvID->add_item(i, csvi->label.shortlabel);
   }
+  strcpy(label, "add/remove ");
+  strcat(label, csvfi->c_type);
+  strcat(label, " data");
+  LIST_csvID->set_name(label);
 
   for(i=0; i<plot2d_max_columns; i++){
     LIST_csvunits->delete_item(i);
   }
-  {
+  for(i = 0; i < csvfi->ncsvinfo; i++){
     csvfiledata *csvfi;
+    csvdata *csvi;
+    int dup_unit, j;
 
-    csvfi = csvfileinfo + glui_csv_file_index;
-    for(i = 0; i < csvfi->ncsvinfo; i++){
-      csvdata *csvi;
-      int dup_unit, j;
+    csvi = GetCurrentCsv(i, NULL);
+    dup_unit = 0;
+    if(csvi == csvfi->time)continue;
+    for(j=0; j<i; j++){
+      csvdata *csvj;
 
-      dup_unit = 0;
-      csvi = csvfi->csvinfo + i;
-      if(csvi == csvfi->time)continue;
-      for(j=0; j<i; j++){
-        csvdata *csvj;
-
-        csvj = csvfi->csvinfo + j;
-        if(csvj == csvfi->time)continue;
-        if(csvi->dimensionless==0){
-          if(strcmp(csvi->label.unit, csvj->label.unit) == 0){
-            dup_unit = 1;
-            break;
-          }
-        }
-        else{
-          if(csvj->dimensionless==1){
-            dup_unit = 1;
-            break;
-          }
+      csvj = GetCurrentCsv(j, NULL);
+      if(csvj == csvfi->time)continue;
+      if(csvi->dimensionless==0){
+        if(strcmp(csvi->label.unit, csvj->label.unit) == 0){
+          dup_unit = 1;
+          break;
         }
       }
-      if(dup_unit == 0){
-        if(csvi->dimensionless==0){
-          LIST_csvunits->add_item(i, csvi->label.unit);
-        }
-        else{
-          LIST_csvunits->add_item(i, "dimensionless");
+      else{
+        if(csvj->dimensionless==1){
+          dup_unit = 1;
+          break;
         }
       }
     }
-    strcpy(label, "add/remove ");
-    strcat(label, csvfi->c_type);
-    strcat(label, " data");
-    LIST_csvID->set_name(label);
-    LIST_csvunits->set_int_val(-1);
+    if(dup_unit == 0){
+      if(csvi->dimensionless==0){
+        LIST_csvunits->add_item(i, csvi->label.unit);
+      }
+      else{
+        LIST_csvunits->add_item(i, "dimensionless");
+      }
+    }
   }
+  strcpy(label, "add/remove ");
+  strcat(label, csvfi->c_type);
+  strcat(label, " data");
+  LIST_csvID->set_name(label);
+  LIST_csvunits->set_int_val(-1);
 }
 
 /* ------------------ GenPlotCB ------------------------ */
