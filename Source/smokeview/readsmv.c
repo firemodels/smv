@@ -148,8 +148,7 @@ void UpdateHoc(void){
   }
 }
 
-#ifdef pp_PLOT2D_GEN
-
+#ifdef pp_PLOT2D_NEW
 /* ------------------ ReadCSV ------------------------ */
 
 int IsDimensionless(char *unit){
@@ -7469,11 +7468,9 @@ int ReadSMV(bufferstreamdata *stream){
 
       csvi->loaded   = 0;
       csvi->display  = 0;
-#ifdef pp_PLOT2D_GEN
       csvi->time     = NULL;
       csvi->ncsvinfo = 0;
       csvi->csvinfo  = NULL;
-#endif
 
       NewMemory((void **)&csvi->file, strlen(file_ptr) + 1);
       strcpy(csvi->file, file_ptr);
@@ -10805,10 +10802,8 @@ typedef struct {
     if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
   SetupDeviceData();
-#ifdef pp_PLOT2D_GEN
-  ReadAllCSV(LOAD);
-#endif
 #ifdef pp_PLOT2D_NEW
+  ReadAllCSV(LOAD);
   SetupPlot2DUnitData();
 #endif
   if(nzoneinfo>0)SetupZoneDevs();
@@ -11553,9 +11548,6 @@ int ReadIni2(char *inifile, int localfile){
         TrimBack(buffer);
         labelptr = TrimFront(buffer);
         strcpy(plot2di->plot_label, labelptr);
-#ifndef pp_PLOT2D_GEN
-        NewMemory((void **)&(plot2di->curve), (ndeviceinfo+nhrrinfo) * sizeof(curvedata));
-#endif
 
         fgets(buffer, 255, stream);
         sscanf(buffer, " %f %f %f %i %i %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->show_title, &plot2di->ncurves);

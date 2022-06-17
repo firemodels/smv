@@ -1529,12 +1529,10 @@ SVEXTERN int SVDECL(ndeviceinfo,0),nvdeviceinfo,ndeviceinfo_exp;
 SVEXTERN float max_dev_vel;
 SVEXTERN int SVDECL(last_prop_display,-1);
 SVEXTERN int SVDECL(devicetypes_index,0);
-#ifdef pp_PLOT2D_GEN
+#ifdef pp_PLOT2D_NEW
 SVEXTERN int SVDECL(glui_csv_type, 0);
 SVEXTERN int SVDECL(icsv_cols, 0), SVDECL(icsv_units, 0);
 SVEXTERN int SVDECL(plot2d_max_columns, 0);
-#endif
-#ifdef pp_PLOT2D_NEW
 SVEXTERN int SVDECL(deviceunits_index, 0);
 SVEXTERN int SVDECL(plot2d_dialogs_defined, 0);
 SVEXTERN int SVDECL(glui_device_unit_index, -1);

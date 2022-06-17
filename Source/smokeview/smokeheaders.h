@@ -15,8 +15,6 @@ EXTERNCPP void DrawGenPlots(void);
 EXTERNCPP int HaveGenDev(void);
 EXTERNCPP int HaveGenHrr(void);
 EXTERNCPP void ShowPlot2D(void);
-#endif
-#ifdef pp_PLOT2D_GEN
 EXTERNCPP void ReadAllCSV(int flag);
 #endif
 

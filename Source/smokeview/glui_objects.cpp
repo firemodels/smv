@@ -34,19 +34,17 @@
 #define GENPLOT_REM_ALLCURVES       106
 #define GENPLOT_SELECT_PLOT         107
 #define GENPLOT_SELECT_CURVE        108
-#define GENPLOT_DEV_TYPE            111
-#define GENPLOT_HRR_TYPE            112
-#define GENPLOT_SHOW_PLOT           113
-#define GENPLOT_XYZ                 114
-#define GENPLOT_PLOT_LABEL          115
-#define GENPLOT_SET_POS             116
-#define GENPLOT_SELECT_DEVICE_CLICK 117
-#define GENPLOT_SELECT_HRR_CLICK    118
-#ifdef pp_PLOT2D_GEN
-#define GENPLOT_SELECT_CSV_FILE     119
-#define GENPLOT_CSV_TYPE            120
-#define GENPLOT_SELECT_CSV_CLICK    121
-#endif
+#define GENPLOT_DEV_TYPE            109
+#define GENPLOT_HRR_TYPE            110
+#define GENPLOT_SHOW_PLOT           111
+#define GENPLOT_XYZ                 112
+#define GENPLOT_PLOT_LABEL          113
+#define GENPLOT_SET_POS             114
+#define GENPLOT_SELECT_DEVICE_CLICK 115
+#define GENPLOT_SELECT_HRR_CLICK    116
+#define GENPLOT_SELECT_CSV_FILE     117
+#define GENPLOT_CSV_TYPE            118
+#define GENPLOT_SELECT_CSV_CLICK    119
 
 #define PLOT2D_DEV              0
 #define PLOT2D_HRR              1
@@ -119,7 +117,7 @@ GLUI_Checkbox *CHECKBOX_vis_hrr_plot=NULL;
 
 GLUI_EditText *EDIT_filter=NULL;
 
-#ifdef pp_PLOT2D_GEN
+#ifdef pp_PLOT2D_NEW
 GLUI_Listbox *LIST_csvfile = NULL;
 GLUI_Listbox *LIST_csvID    = NULL;
 GLUI_Listbox *LIST_csvunits = NULL;
@@ -136,7 +134,7 @@ GLUI_Listbox *LIST_devicetypes = NULL;
 GLUI_Listbox *LIST_open=NULL;
 GLUI_Listbox *LIST_hrrdata=NULL;
 
-#ifdef pp_PLOT2D_GEN
+#ifdef pp_PLOT2D_NEW
 GLUI_Panel *PANEL_csv = NULL;
 GLUI_Panel *PANEL_csv2 = NULL;
 #endif
@@ -153,14 +151,6 @@ GLUI_Panel *PANEL_add_curve = NULL;
 GLUI_Panel *PANEL_plot5 = NULL;
 GLUI_Panel *PANEL_plots = NULL;
 GLUI_Panel *PANEL_plot8 = NULL;
-#ifndef pp_PLOT2D_GEN
-GLUI_Panel *PANEL_plot9 = NULL;
-GLUI_Panel *PANEL_plot10 = NULL;
-GLUI_Panel *PANEL_plotdevice_select = NULL;
-GLUI_Panel *PANEL_plotgeneral_device = NULL;
-GLUI_Panel *PANEL_plotgeneral_hrr = NULL;
-GLUI_Panel *PANEL_plotgeneral_plot = NULL;
-#endif
 GLUI_Panel *PANEL_plot_position = NULL;
 #endif
 GLUI_Panel *PANEL_hrr_min = NULL;
@@ -401,18 +391,9 @@ void RemoveCurve(plot2ddata *plot2di, int index){
   if(index < 0){
     int i;
 
-#ifdef pp_PLOT2D_GEN
     for(i = 0; i < PLOT2D_MAX_CURVES; i++){
       LIST_plotcurves->delete_item(i);
     }
-#else
-    for(i = 0; i < plot2di->ncurves; i++){
-      curvedata *curve;
-
-      curve = plot2di->curve + i;
-      LIST_plotcurves->delete_item(curve->index);
-    }
-#endif
     plot2di->ncurves = 0;
     LIST_plotcurves->set_int_val(-1);
   }
@@ -428,11 +409,7 @@ void RemoveCurve(plot2ddata *plot2di, int index){
       curve = plot2di->curve+i;
       if(curve->index == index)continue;
       if(i != ii){
-#ifdef pp_PLOT2D_GEN
         memcpy(plot2di->curve + ii, plot2di->curve + i, sizeof(curvedata));
-#else
-        plot2di->curve[ii].index = plot2di->curve[i].index;
-#endif
       }
       ii++;
     }
@@ -446,7 +423,6 @@ void RemoveCurve(plot2ddata *plot2di, int index){
   }
 }
 
-#ifdef pp_PLOT2D_GEN
 /* ------------------ InCSVPlot ------------------------ */
 
 int InCSVPlot(plot2ddata *plot2di, char *c_type, int index){
@@ -459,7 +435,6 @@ int InCSVPlot(plot2ddata *plot2di, char *c_type, int index){
   }
   return 0;
 }
-#endif
 
 /* ------------------ InPlot ------------------------ */
 
@@ -473,7 +448,6 @@ int InPlot(plot2ddata *plot2di, int type, int index){
   return 0;
 }
 
-#ifdef pp_PLOT2D_GEN
 /* ------------------ AddCSVCurve ------------------------ */
 
 void AddCSVCurve(plot2ddata *plot2di, int index, int force){
@@ -510,7 +484,6 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int force){
     }
   }
 }
-#endif
 
 /* ------------------ AddCurve ------------------------ */
 
@@ -553,52 +526,22 @@ void MakeCurveList(plot2ddata *plot2di, int option){
   int i;
 
   if(option == 1)LIST_plotcurves->add_item(-1, "");
-#ifdef pp_PLOT2D_GEN
   for(i = 0; i < plot2di->ncurves_ini; i++){
     int curv_index;
 
     curv_index = plot2di->curve[i].index_ini;
     AddCSVCurve(plot2di, curv_index, 1);
     GenPlotCB(GENPLOT_SELECT_CURVE);
-    }
-#else
-  for(i = 0; i < plot2di->ncurves_ini; i++){
-    int curv_index;
-
-    curv_index = plot2di->curve[i].index_ini;
-    if(curv_index < ndeviceinfo){
-      LIST_devID1->set_int_val(curv_index);
-      AddCurve(plot2di, PLOT2D_DEV, 1);
-    }
-    else{
-      LIST_hrr1->set_int_val(curv_index - ndeviceinfo);
-      AddCurve(plot2di, PLOT2D_HRR, 1);
-    }
-    GenPlotCB(GENPLOT_SELECT_CURVE);
   }
-#endif
 }
 
 /* ------------------ Plot2D2Glui ------------------------ */
 
 void Plot2D2Glui(int index){
-#ifndef pp_PLOT2D_GEN
-  curvedata *curve_save, *curve_from, *curve_to;
-#endif
-
   if(index >= nplot2dinfo)return;
   RemoveCurve(glui_plot2dinfo, -1);
 
-#ifdef pp_PLOT2D_GEN
   memcpy(glui_plot2dinfo, plot2dinfo + index, sizeof(plot2ddata));
-#else
-  curve_save = glui_plot2dinfo->curve;
-  memcpy(glui_plot2dinfo, plot2dinfo + index, sizeof(plot2ddata));
-  glui_plot2dinfo->curve = curve_save;
-  curve_from = plot2dinfo[index].curve;
-  curve_to = glui_plot2dinfo->curve;
-  memcpy(curve_to, curve_from, (ndeviceinfo + nhrrinfo) * sizeof(curvedata));
-#endif
 
   int i;
   for(i=0;i<glui_plot2dinfo->ncurves; i++){
@@ -610,7 +553,6 @@ void Plot2D2Glui(int index){
   SPINNER_genplot_x->set_float_val(glui_plot2dinfo->xyz[0]);
   SPINNER_genplot_y->set_float_val(glui_plot2dinfo->xyz[1]);
   SPINNER_genplot_z->set_float_val(glui_plot2dinfo->xyz[2]);
-
 
   if(glui_plot2dinfo->curve_index >= 0){
     curvedata *curve;
@@ -689,20 +631,10 @@ void RemovePlot(int i){
 
 void Glui2Plot2D(int index){
   if(plot2dinfo != NULL){
-#ifndef pp_PLOT2D_GEN
-    curvedata *curve_save;
-#endif
     plot2ddata *plot2di;
 
     plot2di = plot2dinfo + index;
-#ifdef pp_PLOT2D_GEN
     memcpy(plot2di, glui_plot2dinfo, sizeof(plot2ddata));
-#else
-    curve_save = plot2di->curve;
-    memcpy(plot2di, glui_plot2dinfo, sizeof(plot2ddata));
-    plot2di->curve = curve_save;
-    memcpy(curve_save, glui_plot2dinfo->curve, (ndeviceinfo + nhrrinfo) * sizeof(curvedata));
-#endif
   }
 }
 
@@ -823,11 +755,6 @@ void UpdateCurveControls(void){
   SPINNER_genplot_green->set_int_val(glui_curve.color[1]);
   SPINNER_genplot_blue->set_int_val(glui_curve.color[2]);
   SPINNER_genplot_linewidth->set_float_val(glui_curve.linewidth);
-#ifndef pp_PLOT2D_GEN
-  SPINNER_genplot_factor1->set_float_val(glui_curve.factors[0]);
-  SPINNER_genplot_factor2->set_float_val(glui_curve.factors[1]);
-  CHECKBOX_genplot_use_factors->set_int_val(glui_curve.use_factors);
-#endif
   CHECKBOX_genplot_use_usermin->set_int_val(glui_curve.use_usermin);
   SPINNER_genplot_usermin->set_float_val(glui_curve.usermin);
   CHECKBOX_genplot_use_usermax->set_int_val(glui_curve.use_usermax);
@@ -877,7 +804,6 @@ extern "C" void ShowPlot2D(void){
   }
 }
 
-#ifdef pp_PLOT2D_GEN
 /* ------------------ FilterList ------------------------ */
 
 void FilterList(void){
@@ -1001,7 +927,6 @@ void UpdateCvsList(void){
     LIST_csvunits->set_int_val(-1);
   }
 }
-#endif
 
 /* ------------------ GenPlotCB ------------------------ */
 
@@ -1011,7 +936,6 @@ void GenPlotCB(int var){
     int index;
     curvedata *curve;
 
-#ifdef pp_PLOT2D_GEN
     case GENPLOT_SELECT_CSV_CLICK:
       AddCSVCurve(glui_plot2dinfo, LIST_csvID->get_int_val(), 0);
       Glui2Plot2D(iplot2dinfo);
@@ -1023,7 +947,6 @@ void GenPlotCB(int var){
     case GENPLOT_CSV_TYPE:
       FilterList();
       break;
-#endif
     case GENPLOT_SELECT_DEVICE_CLICK:
       index = LIST_devID1->get_int_val();
       if(InPlot(glui_plot2dinfo, PLOT2D_DEV, index) == 0){
@@ -1153,10 +1076,6 @@ void GenPlotCB(int var){
         strcat(label, " curve properties");
         PANEL_curve_properties->set_name(label);
       }
-#ifndef pp_PLOT2D_GEN
-      UpdateUnitList(LIST_devID1, glui_device_unit_index, PLOT2D_DEV);
-      UpdateUnitList(LIST_hrr1, glui_hrr_unit_index, PLOT2D_HRR);
-#endif
       break;
     case GENPLOT_ADD_PLOT:
       AddPlot();
@@ -1700,7 +1619,6 @@ extern "C" void GluiDeviceSetup(int main_window){
       PANEL_plot5 = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "", 0);
       PANEL_add_curve = glui_device->add_panel_to_panel(PANEL_plot5, "add/remove curves");
 
-#ifdef pp_PLOT2D_GEN
       if(ncsvfileinfo > 0){
         PANEL_csv = glui_device->add_panel_to_panel(PANEL_add_curve, "", 0);
         LIST_csvfile = glui_device->add_listbox_to_panel(PANEL_csv, "curve type:", &glui_csv_type, GENPLOT_SELECT_CSV_FILE, GenPlotCB);
@@ -1718,51 +1636,6 @@ extern "C" void GluiDeviceSetup(int main_window){
         GenPlotCB(GENPLOT_SELECT_CSV_FILE);
         GenPlotCB(GENPLOT_CSV_TYPE);
       }
-#else
-      if(ndevicetypes > 0){
-        PANEL_plotgeneral_device = glui_device->add_panel_to_panel(PANEL_add_curve, "", false);
-        PANEL_plotdevice_select = glui_device->add_panel_to_panel(PANEL_plotgeneral_device, "", false);
-        PANEL_plot9 = glui_device->add_panel_to_panel(PANEL_plotdevice_select, "", 0);
-        LIST_devID1 = glui_device->add_listbox_to_panel(PANEL_plot9, "add/remove device file data:", &glui_device_index, GENPLOT_SELECT_DEVICE_CLICK, GenPlotCB);
-        for(i = 0; i < ndeviceinfo; i++){
-          devicedata *devicei;
-
-          devicei = deviceinfo + i;
-          devicei->inlist1 = 1;
-          LIST_devID1->add_item(i, devicei->deviceID);
-        }
-        devicetypes_index = CLAMP(devicetypes_index, 0, ndevicetypes - 1);
-        glui_device->add_column_to_panel(PANEL_plot9, false);
-        LIST_devunit1 = glui_device->add_listbox_to_panel(PANEL_plot9, "", &glui_device_unit_index, GENPLOT_DEV_TYPE, GenPlotCB);
-        LIST_devunit1->add_item(-1, "(all data)");
-        for(i = 0; i < ndeviceunits; i++){
-          LIST_devunit1->add_item(i, deviceunits[i]->unit);
-        }
-        GenPlotCB(GENPLOT_DEV_TYPE);
-      }
-      if(nhrrinfo > 0){
-        PANEL_plotgeneral_hrr = glui_device->add_panel_to_panel(PANEL_add_curve, "", false);
-        PANEL_plot10 = glui_device->add_panel_to_panel(PANEL_plotgeneral_hrr, "", 0);
-        LIST_hrr1 = glui_device->add_listbox_to_panel(PANEL_plot10, "add/remove hrr file data:", &glui_hrr_index, GENPLOT_SELECT_HRR_CLICK, GenPlotCB);
-        for(i = 0; i < nhrrinfo; i++){
-          hrrdata *hi;
-
-          hi = hrrinfo + i;
-          hi->inlist1 = 0;
-          if(hi->label.shortlabel != NULL){
-            if(strcmp(hi->label.shortlabel, "Time") == 0)continue;
-            hi->inlist1 = 1;
-            LIST_hrr1->add_item(i, hi->label.shortlabel);
-          }
-        }
-        glui_device->add_column_to_panel(PANEL_plot10, false);
-        LIST_hrrunit1 = glui_device->add_listbox_to_panel(PANEL_plot10, "", &glui_hrr_unit_index, GENPLOT_HRR_TYPE, GenPlotCB);
-        LIST_hrrunit1->add_item(-1, "(all data)");
-        for(i = 0; i < nhrrunits; i++){
-          LIST_hrrunit1->add_item(i, hrrunits[i]->label.unit);
-        }
-      }
-#endif
       glui_device->add_button_to_panel(PANEL_add_curve, _("Remove all curves"), GENPLOT_REM_ALLCURVES, GenPlotCB);
       if(nplot2dinfo==0){
         if(PANEL_add_curve!=NULL)PANEL_add_curve->disable();
@@ -1776,9 +1649,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       PANEL_curve_properties = glui_device->add_panel_to_panel(PANEL_plot5, "curve properties");
       if(nplot2dinfo > 0 && glui_plot2dinfo->ncurves == 0)PANEL_curve_properties->disable();
       LIST_plotcurves = glui_device->add_listbox_to_panel(PANEL_curve_properties, "select:", &glui_plot2dinfo->curve_index, GENPLOT_SELECT_CURVE, GenPlotCB);
-#ifdef pp_PLOT2D_GEN
       LIST_plotcurves->add_item(-1, "");
-#endif
       RemoveCurve(glui_plot2dinfo, -1);
       MakeCurveList(glui_plot2dinfo, 1);
 
@@ -1804,13 +1675,6 @@ extern "C" void GluiDeviceSetup(int main_window){
       SPINNER_genplot_usermax      = glui_device->add_spinner_to_panel(PANEL_curve_usermax, "max",       GLUI_SPINNER_FLOAT, &(glui_curve.usermax),     GENPLOT_XYZ, GenPlotCB);
       glui_device->add_column_to_panel(PANEL_curve_usermax, false);
       CHECKBOX_genplot_use_usermax = glui_device->add_checkbox_to_panel(PANEL_curve_usermax, "use", &(glui_curve.use_usermax), GENPLOT_XYZ, GenPlotCB);
-
-#ifndef pp_PLOT2D_GEN
-      PANEL_modify_curve = glui_device->add_panel_to_panel(PANEL_curve_properties, "modify curve");
-      SPINNER_genplot_factor1 = glui_device->add_spinner_to_panel(PANEL_modify_curve,        "M", GLUI_SPINNER_FLOAT,glui_curve.factors, GENPLOT_XYZ, GenPlotCB);
-      SPINNER_genplot_factor2 = glui_device->add_spinner_to_panel(PANEL_modify_curve,        "B", GLUI_SPINNER_FLOAT, glui_curve.factors+1, GENPLOT_XYZ, GenPlotCB);
-      CHECKBOX_genplot_use_factors = glui_device->add_checkbox_to_panel(PANEL_modify_curve, "M*curve+B", &(glui_curve.use_factors), GENPLOT_XYZ, GenPlotCB);
-#endif
 
       if(nplot2dini>0){
         nplot2dinfo = nplot2dini;

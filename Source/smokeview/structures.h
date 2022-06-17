@@ -35,7 +35,6 @@ typedef struct _procdata {
 #endif
 
 /* --------------------------  csvdata ------------------------------------ */
-#ifdef pp_PLOT2D_GEN
 typedef struct _csvdata{
   flowlabels label;
   float val, *vals, *vals_orig;
@@ -43,16 +42,13 @@ typedef struct _csvdata{
   int nvals;
   int dimensionless;
 } csvdata;
-#endif
 
 /* --------------------------  _csvfiledata ------------------------------------ */
 
 typedef struct _csvfiledata {
   char *file;
-#ifdef pp_PLOT2D_GEN
   csvdata *csvinfo, *time;
   int ncsvinfo;
-#endif
   int loaded, display;
   char c_type[32];
 } csvfiledata;
@@ -1013,10 +1009,8 @@ typedef struct _hrrdata {
 
 #ifdef pp_PLOT2D_NEW
 typedef struct _curvedata{
-#ifdef pp_PLOT2D_GEN
   char c_type[64];
   int f_index;
-#endif
   int index, index_ini, use_usermin, use_usermax, use_factors, color[3];
   float valmin, valmax,  usermin, usermax;
   float linewidth;
@@ -1031,12 +1025,8 @@ typedef struct _plot2ddata{
   int ncurves, ncurves_ini;
   int curve_index, plot_index;
   int show, show_title;
-#ifdef pp_PLOT2D_GEN
   curvedata curve[PLOT2D_MAX_CURVES];
   int bounds_defined;
-#else
-  curvedata *curve;
-#endif
   float xyz[3];
 } plot2ddata;
 #endif
