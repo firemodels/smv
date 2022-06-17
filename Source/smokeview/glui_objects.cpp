@@ -792,7 +792,6 @@ void UpdateCvsList(void){
 void GenPlotCB(int var){
   switch (var){
     char label[256];
-    char label2[256];
     int index;
     curvedata *curve;
     int curve_id;
