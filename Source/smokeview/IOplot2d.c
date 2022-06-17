@@ -95,7 +95,7 @@ int HaveGenHrr(void){
 #define AXIS_NONE  2
 void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_factor,
               float *x, float *z, int n, float x_cur, float z_cur, float zmin, float zmax,
-              int axis_side, char *unit, float pad_length){
+              int axis_side, int position, char *label, char *unit, float pad_length){
   float xmin, xmax, dx, dz;
   float xscale = 1.0, zscale = 1.0;
   int i, ndigits = 3;
@@ -220,21 +220,23 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
       Float2String(c_zmin, zmin, ndigits, force_fixedpoint);
       Float2String(c_zmax, zmax, ndigits, force_fixedpoint);
       if(axis_side == AXIS_LEFT){
+        Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
         Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmin,  c_zmin);
         Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax , c_zmax);
         }
       else{
+        Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label, pad_length);
         Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmin,  c_zmin, pad_length);
         Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax , c_zmax, pad_length);
-        }
+      }
       SNIFF_ERRORS("after DrawGenCurve 5");
     }
     if(unit!=NULL){
       if(axis_side == AXIS_LEFT){
-        Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing)*dfont, unit);
+        Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing*(float)(position + 1))*dfont, unit);
       }
       else{
-        Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing)*dfont, unit, pad_length);
+        Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing*(float)(position + 1))*dfont, unit, pad_length);
       }
     }
   }
@@ -357,7 +359,7 @@ void DrawGenPlot(plot2ddata *plot2di){
   }
   for(i = 0; i<plot2di->ncurves; i++){
     float highlight_time, highlight_val;
-    char *unit;
+    char *unit, *shortlabel;
     float valmin, valmax;
     int option, position, side;
     char *unit_display;
@@ -400,8 +402,10 @@ void DrawGenPlot(plot2ddata *plot2di){
       highlight_time = global_times[itimes];
       highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, csvi->vals, csvi->nvals);
     }
+    shortlabel = GetPlotShortLabel(plot2di, i);
     DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, csvi->vals, csvi->nvals,
-                 highlight_time, highlight_val, valmin, valmax, side, unit_display, pad_length);
+                 highlight_time, highlight_val, valmin, valmax, side,
+                 position, shortlabel, unit_display, pad_length);
   }
 }
 
