@@ -250,19 +250,19 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
 
 /* ------------------ GetPlotUnit ------------------------ */
 
-char *GetPlotUnit(plot2ddata *plot2di, int i){
+char *GetPlotUnit(plot2ddata *plot2di, int curv_index){
   csvdata *csvi;
 
-  csvi = GetCsv(plot2di->curve[i].csv_file_index, plot2di->curve[i].csv_col_index, NULL);
+  csvi = GetCsv(plot2di->curve[curv_index].csv_file_index, plot2di->curve[curv_index].csv_col_index, NULL);
   return csvi->label.unit;
 }
 
 /* ------------------ GetPlotShortLabel ------------------------ */
 
-char *GetPlotShortLabel(plot2ddata *plot2di, int i){
+char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index){
   csvdata *csvi;
 
-  csvi = GetCsv(plot2di->curve[i].csv_file_index, plot2di->curve[i].csv_col_index, NULL);
+  csvi = GetCsv(plot2di->curve[curv_index].csv_file_index, plot2di->curve[curv_index].csv_col_index, NULL);
   return csvi->label.shortlabel;
 }
 

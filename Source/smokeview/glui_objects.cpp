@@ -368,33 +368,54 @@ void UpdateShowWindRoses(void) {
 
 #ifdef pp_PLOT2D_NEW
 
+/* ------------------ PrintPlotInfo ------------------------ */
+
+#ifdef pp_PLOT2D_DEBUG
+void PrintPlot2dInfo(void){
+  int i;
+
+  for(i=0; i<nplot2dinfo; i++){
+    int j;
+    plot2ddata *plot2di;
+
+    plot2di = plot2dinfo + i;
+    for(j = 0; j < plot2di->ncurves; j++){
+      char *label;
+
+      label = GetPlotShortLabel(plot2di, j);
+      printf("plot: %i, curve: %i, label: %s\n",i, j, label);
+    }
+  }
+}
+#endif
+
 /* ------------------ RemoveCurve ------------------------ */
 
 void RemoveCurve(plot2ddata *plot2di, int index){
-  if(index < 0){
-    int i;
+  int i;
 
-    for(i = 0; i < PLOT2D_MAX_CURVES; i++){
-      LIST_plotcurves->delete_item(i);
-    }
+  for(i = 0; i < PLOT2D_MAX_CURVES; i++){
+    LIST_plotcurves->delete_item(i);
+  }
+  if(index < 0){
     plot2di->ncurves = 0;
     LIST_plotcurves->set_int_val(-1);
   }
-  else{
-    LIST_plotcurves->delete_item(index);
 //    (0,...,i-1,i+1,...,n-1)
-    if(plot2di->ncurves>index+1){
-      memmove(plot2di->curve + index, plot2di->curve + index+1, (plot2di->ncurves-index-1)*sizeof(curvedata));
-    }
-    (plot2di->ncurves)--;
-    LIST_plotcurves->set_int_val(-1);
-    if(plot2di->ncurves > 0){
-      int index2;
-
-      index2 = CLAMP(index, 0, plot2di->ncurves-1);
-      LIST_plotcurves->set_int_val(index2);
-    }
+  if(plot2di->ncurves>index+1){
+    memmove(plot2di->curve + index, plot2di->curve + index+1, (plot2di->ncurves-index-1)*sizeof(curvedata));
   }
+  (plot2di->ncurves)--;
+  for(i = 0; i < plot2di->ncurves; i++){
+    char *label;
+
+    label = GetPlotShortLabel(plot2di, i);
+    LIST_plotcurves->add_item(i, label);
+  }
+  LIST_plotcurves->set_int_val(-1);
+  index=-1;
+  if(plot2di->ncurves > 0)index = CLAMP(index-1, 0, plot2di->ncurves-1);
+  LIST_plotcurves->set_int_val(index);
 }
 
 /* ------------------ InCSVPlot ------------------------ */
@@ -783,10 +804,18 @@ void GenPlotCB(int var){
     int curve_id;
 
     case GENPLOT_ADD_CURVE:
+#ifdef pp_PLOT2D_DEBUG
+      printf("before add *********************\n");
+      PrintPlot2dInfo();
+#endif
       curve_id = LIST_csvID->get_int_val();
       AddCSVCurve(glui_plot2dinfo, curve_id, 0);
       Glui2Plot2D(iplot2dinfo);
       EnableDisablePlot2D();
+#ifdef pp_PLOT2D_DEBUG
+      printf("after add *********************\n");
+      PrintPlot2dInfo();
+#endif
       break;
     case GENPLOT_SELECT_CSV_FILE:
       UpdateCvsList();
@@ -814,8 +843,18 @@ void GenPlotCB(int var){
       }
       break;
     case GENPLOT_REM_CURVE:
+#ifdef pp_PLOT2D_DEBUG
+  printf("before remove*******************\n");
+  PrintPlot2dInfo();
+  printf("*******************\n");
+#endif
       RemoveCurve(glui_plot2dinfo, glui_plot2dinfo->curve_index);
       Glui2Plot2D(iplot2dinfo);
+#ifdef pp_PLOT2D_ removev DEBUG
+  printf("after*******************\n");
+  PrintPlot2dInfo();
+  printf("*******************\n");
+#endif
       EnableDisablePlot2D();
       break;
     case GENPLOT_REM_ALLCURVES:
