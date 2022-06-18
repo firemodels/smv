@@ -36,8 +36,6 @@
 #define ZVENT_1ROOM 1
 #define ZVENT_2ROOM 2
 
-#define LENBUFFER 10000
-
 /* ------------------ GetHrrCsvCol ------------------------ */
 
 int GetHrrCsvCol(char *label){
@@ -174,11 +172,12 @@ void ReadCSV(csvfiledata *csvfi, int flag){
   FILE *stream;
   int nrows, ncols;
   int nunits, nlabels;
-  char buffer[LENBUFFER], buffer_labels[LENBUFFER], buffer_units[LENBUFFER];
+  char *buffer, *buffer_labels, *buffer_units;
   char *buffptr;
   char **labels, **units;
   float *vals;
   int *valids;
+  int len_buffer;
   int i;
 
   for(i=0; i<csvfi->ncsvinfo; i++){
@@ -194,10 +193,14 @@ void ReadCSV(csvfiledata *csvfi, int flag){
   stream = fopen(csvfi->file, "r");
   if(stream == NULL)return;
 
-  GetRowCols(stream, &nrows, &ncols);
+  len_buffer = GetRowCols(stream, &nrows, &ncols);
+  len_buffer = MAX(len_buffer + 100, 1000);
   csvfi->ncsvinfo = ncols;
 
   // allocate memory
+  NewMemory((void **)&(buffer),        len_buffer);
+  NewMemory((void **)&(buffer_labels), len_buffer);
+  NewMemory((void **)&(buffer_units),  len_buffer);
 
   NewMemory((void **)&(csvfi->csvinfo), csvfi->ncsvinfo*sizeof(csvdata));
   NewMemory((void **)&labels,           csvfi->ncsvinfo*sizeof(char *));
@@ -218,11 +221,11 @@ void ReadCSV(csvfiledata *csvfi, int flag){
 
   // setup labels and units
 
-  fgets(buffer_units,    LENBUFFER, stream);
+  fgets(buffer_units,    len_buffer, stream);
   TrimBack(buffer_units);
   ParseCSV(buffer_units, units,     &nunits);
 
-  fgets(buffer_labels,    LENBUFFER, stream);
+  fgets(buffer_labels,    len_buffer, stream);
   TrimBack(buffer_labels);
   ParseCSV(buffer_labels, labels,    &nlabels);
   CheckMemory;
@@ -271,7 +274,7 @@ void ReadCSV(csvfiledata *csvfi, int flag){
   int irow;
   irow = 0;
   while(!feof(stream)){
-    if(fgets(buffer, LENBUFFER, stream) == NULL)break;
+    if(fgets(buffer, len_buffer, stream) == NULL)break;
     TrimBack(buffer);
     if(strlen(buffer) == 0)break;
     int nvals;
@@ -312,6 +315,10 @@ void ReadCSV(csvfiledata *csvfi, int flag){
   FREEMEMORY(labels);
   FREEMEMORY(vals);
   FREEMEMORY(valids);
+  FREEMEMORY(buffer);
+  FREEMEMORY(buffer_labels);
+  FREEMEMORY(buffer_units);
+
   fclose(stream);
 }
 
@@ -336,7 +343,8 @@ void ReadHRR(int flag){
   float *vals;
   int *valids;
   int i, irow;
-  char buffer[LENBUFFER], buffer_labels[LENBUFFER], buffer_units[LENBUFFER];
+  char *buffer, *buffer_labels, *buffer_units;
+  int len_buffer;
 
   GetHoc(&fuel_hoc, fuel_name);
   fuel_hoc_default = fuel_hoc;
@@ -359,11 +367,16 @@ void ReadHRR(int flag){
   stream = fopen(hrr_csv_filename, "r");
   if(stream==NULL)return;
 
-  GetRowCols(stream, &nrows, &ncols);
+  len_buffer = GetRowCols(stream, &nrows, &ncols);
+  len_buffer = MAX(len_buffer + 100, 1000);
   nhrrinfo = ncols;
 
   if(nhrrinfo == 0)return;
   // allocate memory
+
+  NewMemory((void **)&(buffer),        len_buffer);
+  NewMemory((void **)&(buffer_labels), len_buffer);
+  NewMemory((void **)&(buffer_units),  len_buffer);
 
   NewMemory((void **)&labels,         nhrrinfo*sizeof(char *));
   NewMemory((void **)&units,          nhrrinfo*sizeof(char *));
@@ -385,10 +398,10 @@ void ReadHRR(int flag){
 
 // setup labels and units
 
-  fgets(buffer_units, LENBUFFER, stream);
+  fgets(buffer_units, len_buffer, stream);
   ParseCSV(buffer_units, units, &nunits);
 
-  fgets(buffer_labels, LENBUFFER, stream);
+  fgets(buffer_labels, len_buffer, stream);
   ParseCSV(buffer_labels, labels, &nlabels);
   CheckMemory;
 
@@ -442,7 +455,7 @@ void ReadHRR(int flag){
 // read in data
   irow = 0;
   while(!feof(stream)){
-    if(fgets(buffer, LENBUFFER, stream)==NULL)break;
+    if(fgets(buffer, len_buffer, stream)==NULL)break;
     TrimBack(buffer);
     if(strlen(buffer)==0)break;
     FParseCSV(buffer, vals, valids, ncols, &nvals);
@@ -541,6 +554,10 @@ void ReadHRR(int flag){
     FREEMEMORY(hi->vals_orig);
   }
   CheckMemory;
+  FREEMEMORY(buffer);
+  FREEMEMORY(buffer_labels);
+  FREEMEMORY(buffer_units);
+
   FREEMEMORY(units);
   FREEMEMORY(labels);
   FREEMEMORY(vals);
