@@ -88,7 +88,8 @@ GLUI_Button *BUTTON_reset_fuel_hoc = NULL;
 GLUI_Checkbox *CHECKBOX_genplot_use_usermin = NULL;
 GLUI_Checkbox *CHECKBOX_genplot_use_usermax = NULL;
 GLUI_Checkbox *CHECKBOX_show_genplot = NULL;
-GLUI_Checkbox *CHECKBOX_show_title   = NULL;
+GLUI_Checkbox *CHECKBOX_show_title = NULL;
+GLUI_Checkbox *CHECKBOX_show_curve_labels   = NULL;
 GLUI_Checkbox *CHECKBOX_genplot_use_factors  = NULL;
 #endif
 GLUI_Checkbox *CHECKBOX_device_1=NULL;
@@ -513,6 +514,7 @@ void Plot2D2Glui(int index){
   CHECKBOX_show_genplot->set_int_val(glui_plot2dinfo->show);
   EDIT_plot_label->set_text(glui_plot2dinfo->plot_label);
   CHECKBOX_show_title->set_int_val(glui_plot2dinfo->show_title);
+  CHECKBOX_show_curve_labels->set_int_val(glui_plot2dinfo->show_curve_labels);
   UpdateCurveControls();
 }
 
@@ -1439,10 +1441,11 @@ extern "C" void GluiDeviceSetup(int main_window){
 
       glui_device->add_column_to_panel(PANEL_plot8, false);
 
-      PANEL_plot_title = glui_device->add_panel_to_panel(PANEL_plot8, "plot title");
-      EDIT_plot_label = glui_device->add_edittext_to_panel(PANEL_plot_title, "edit:", GLUI_EDITTEXT_TEXT, glui_plot2dinfo->plot_label, GENPLOT_PLOT_LABEL, GenPlotCB);
+      PANEL_plot_title = glui_device->add_panel_to_panel(PANEL_plot8, "labels");
+      EDIT_plot_label = glui_device->add_edittext_to_panel(PANEL_plot_title, "edit title:", GLUI_EDITTEXT_TEXT, glui_plot2dinfo->plot_label, GENPLOT_PLOT_LABEL, GenPlotCB);
       glui_device->add_button_to_panel(PANEL_plot_title, _("Apply"), GENPLOT_PLOT_LABEL, GenPlotCB);
-      CHECKBOX_show_title = glui_device->add_checkbox_to_panel(PANEL_plot_title, "show", &(glui_plot2dinfo->show_title), GENPLOT_PLOT_LABEL, GenPlotCB);
+      CHECKBOX_show_title       = glui_device->add_checkbox_to_panel(PANEL_plot_title, "show title", &(glui_plot2dinfo->show_title), GENPLOT_PLOT_LABEL, GenPlotCB);
+      CHECKBOX_show_curve_labels = glui_device->add_checkbox_to_panel(PANEL_plot_title, "show curve labels", &(glui_plot2dinfo->show_curve_labels), GENPLOT_PLOT_LABEL, GenPlotCB);
 
       glui_device->add_column_to_panel(PANEL_plot8, false);
       PANEL_plot_position = glui_device->add_panel_to_panel(PANEL_plot8, "plot position");
