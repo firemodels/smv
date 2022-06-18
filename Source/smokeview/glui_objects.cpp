@@ -30,15 +30,16 @@
 #define GENPLOT_REM_PLOT            102
 #define GENPLOT_REM_CURVE           103
 #define GENPLOT_REM_ALLCURVES       104
-#define GENPLOT_SELECT_CSV_FILE     105
-#define GENPLOT_SELECT_PLOT         106
-#define GENPLOT_SELECT_CURVE        107
-#define GENPLOT_SHOW_PLOT           108
-#define GENPLOT_XYZ                 109
-#define GENPLOT_PLOT_LABEL          110
-#define GENPLOT_SET_POS             111
-#define GENPLOT_CSV_TYPE            112
-#define GENPLOT_ADD_CURVE           113
+#define GENPLOT_REM_SELECTEDCURVE   105
+#define GENPLOT_SELECT_CSV_FILE     106
+#define GENPLOT_SELECT_PLOT         107
+#define GENPLOT_SELECT_CURVE        108
+#define GENPLOT_SHOW_PLOT           109
+#define GENPLOT_XYZ                 110
+#define GENPLOT_PLOT_LABEL          111
+#define GENPLOT_SET_POS             112
+#define GENPLOT_CSV_TYPE            113
+#define GENPLOT_ADD_CURVE           114
 #endif
 
 #define WINDROSE_SHOW_FIRST   996
@@ -123,6 +124,7 @@ GLUI_Listbox *LIST_hrrdata=NULL;
 #ifdef pp_PLOT2D_NEW
 GLUI_Panel *PANEL_csv = NULL;
 GLUI_Panel *PANEL_csv2 = NULL;
+GLUI_Panel *PANEL_remove_curve = NULL;
 #endif
 #ifdef pp_PLOT2D_NEW
 GLUI_Panel *PANEL_curve_color = NULL;
@@ -859,6 +861,13 @@ void GenPlotCB(int var){
 #endif
       EnableDisablePlot2D();
       break;
+    case GENPLOT_REM_SELECTEDCURVE:
+      glui_remove_selected_curve = 1;
+      GenPlotCB(GENPLOT_SELECT_CURVE);
+      glui_remove_selected_curve = 0;
+      Glui2Plot2D(iplot2dinfo);
+      EnableDisablePlot2D();
+      break;
     case GENPLOT_REM_ALLCURVES:
       RemoveCurve(glui_plot2dinfo, -1);
       Glui2Plot2D(iplot2dinfo);
@@ -1490,6 +1499,15 @@ extern "C" void GluiDeviceSetup(int main_window){
       RemoveCurve(glui_plot2dinfo, -1);
       MakeCurveList(glui_plot2dinfo, 1);
 
+      PANEL_remove_curve = glui_device->add_panel_to_panel(PANEL_curve_properties, "remove curve(s)");
+      glui_device->add_button_to_panel(PANEL_remove_curve, _("selected"), GENPLOT_REM_SELECTEDCURVE, GenPlotCB);
+      glui_device->add_button_to_panel(PANEL_remove_curve, _("all"), GENPLOT_REM_ALLCURVES, GenPlotCB);
+
+      SPINNER_genplot_linewidth = glui_device->add_spinner_to_panel(PANEL_curve_properties, "line width", GLUI_SPINNER_FLOAT, &(glui_curve.linewidth), GENPLOT_XYZ, GenPlotCB);
+      SPINNER_genplot_linewidth->set_float_limits(1.0,10.0);
+
+      glui_device->add_column_to_panel(PANEL_curve_properties, false);
+
       PANEL_curve_color = glui_device->add_panel_to_panel(PANEL_curve_properties, "color");
       SPINNER_genplot_red   = glui_device->add_spinner_to_panel(PANEL_curve_color, "red",   GLUI_SPINNER_INT, glui_curve.color + 0, GENPLOT_XYZ, GenPlotCB);
       SPINNER_genplot_green = glui_device->add_spinner_to_panel(PANEL_curve_color, "green", GLUI_SPINNER_INT, glui_curve.color + 1, GENPLOT_XYZ, GenPlotCB);
@@ -1498,15 +1516,9 @@ extern "C" void GluiDeviceSetup(int main_window){
       SPINNER_genplot_green->set_int_limits(0, 255);
       SPINNER_genplot_blue->set_int_limits(0, 255);
 
-      glui_device->add_column_to_panel(PANEL_curve_properties, false);
-      glui_device->add_checkbox_to_panel(PANEL_curve_properties, _("remove selected curve"), &glui_remove_selected_curve);
-      glui_device->add_button_to_panel(PANEL_curve_properties, _("Remove all curves"), GENPLOT_REM_ALLCURVES, GenPlotCB);
       PANEL_curve_bounds = glui_device->add_panel_to_panel(PANEL_curve_properties, "bounds");
       SPINNER_genplot_vmin      = glui_device->add_spinner_to_panel(PANEL_curve_bounds, "min",       GLUI_SPINNER_FLOAT, &(glui_curve.vmin),     GENPLOT_XYZ, GenPlotCB);
       SPINNER_genplot_vmax      = glui_device->add_spinner_to_panel(PANEL_curve_bounds, "max",       GLUI_SPINNER_FLOAT, &(glui_curve.vmax),     GENPLOT_XYZ, GenPlotCB);
-
-      SPINNER_genplot_linewidth = glui_device->add_spinner_to_panel(PANEL_curve_properties, "line width", GLUI_SPINNER_FLOAT, &(glui_curve.linewidth), GENPLOT_XYZ, GenPlotCB);
-      SPINNER_genplot_linewidth->set_float_limits(1.0,10.0);
 
       if(nplot2dini>0){
         nplot2dinfo = nplot2dini;
