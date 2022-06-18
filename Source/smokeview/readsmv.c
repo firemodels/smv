@@ -36,7 +36,7 @@
 #define ZVENT_1ROOM 1
 #define ZVENT_2ROOM 2
 
-#define LENBUFFER 1024
+#define LENBUFFER 10000
 
 /* ------------------ GetHrrCsvCol ------------------------ */
 
