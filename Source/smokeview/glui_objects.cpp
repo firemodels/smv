@@ -850,7 +850,7 @@ void GenPlotCB(int var){
 #endif
       RemoveCurve(glui_plot2dinfo, glui_plot2dinfo->curve_index);
       Glui2Plot2D(iplot2dinfo);
-#ifdef pp_PLOT2D_ removev DEBUG
+#ifdef pp_PLOT2D_DEBUG
   printf("after*******************\n");
   PrintPlot2dInfo();
   printf("*******************\n");
