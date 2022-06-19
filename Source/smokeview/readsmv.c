@@ -245,6 +245,8 @@ void ReadCSV(csvfiledata *csvfi, int flag){
     }
 
     unit = TrimFrontBack(units[i]);
+    ci->skip = 0;
+    if(strcmp(unit, "status") == 0)ci->skip = 1;
     ci->dimensionless = IsDimensionless(unit);
     SetLabels(&(ci->label), label, label, unit);
   }
@@ -295,6 +297,9 @@ void ReadCSV(csvfiledata *csvfi, int flag){
           ci->valmin = MIN(ci->valmin, vals[i]);
           ci->valmax = MAX(ci->valmax, vals[i]);
         }
+      }
+      if(irow==0 && valids[i] == 0){
+        ci->skip = 1;
       }
     }
     irow++;

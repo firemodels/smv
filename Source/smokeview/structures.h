@@ -40,7 +40,7 @@ typedef struct _csvdata{
   float val, *vals, *vals_orig;
   float valmin, valmax;
   int nvals;
-  int dimensionless;
+  int dimensionless, skip;
 } csvdata;
 
 /* --------------------------  _csvfiledata ------------------------------------ */

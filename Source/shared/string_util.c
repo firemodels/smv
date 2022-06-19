@@ -73,7 +73,7 @@ void FParseCSV(char *buffer, float *vals, int *valids, int ncols, int *ntokens){
 
   token=strtok(buffer,",");
   while(token!=NULL&&nt<ncols){
-    if(STRCMP(token,"NULL")==0){
+    if(STRCMP(token,"NULL")==0||strchr(token, ':')!=NULL){
       valids[nt]=0;
       vals[nt]=0.0;
     }

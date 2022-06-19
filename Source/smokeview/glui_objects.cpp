@@ -705,17 +705,19 @@ void FilterList(void){
 
       csvi = GetCurrentCsv(i, NULL);
       if(csvi == csvfi->time)continue;
-      if(strcmp(unit_label, "all") == 0){
-        LIST_csvID->add_item(i, csvi->label.shortlabel);
-        continue;
-      }
-      if(csvi->dimensionless == 1 && strcmp(unit_label, "dimensionless")==0){
-        LIST_csvID->add_item(i, csvi->label.shortlabel);
-        continue;
-      }
-      if(csvi->dimensionless == 0 && strcmp(unit_label, csvi->label.unit) == 0){
-        LIST_csvID->add_item(i, csvi->label.shortlabel);
-        continue;
+      if(csvi->skip == 0){
+        if(strcmp(unit_label, "all") == 0){
+          LIST_csvID->add_item(i, csvi->label.shortlabel);
+          continue;
+        }
+        if(csvi->dimensionless == 1 && strcmp(unit_label, "dimensionless")==0){
+          LIST_csvID->add_item(i, csvi->label.shortlabel);
+          continue;
+        }
+        if(csvi->dimensionless == 0 && strcmp(unit_label, csvi->label.unit) == 0){
+          LIST_csvID->add_item(i, csvi->label.shortlabel);
+          continue;
+        }
       }
     }
   }
@@ -737,7 +739,7 @@ void UpdateCvsList(void){
     csvdata *csvi;
 
     csvi = GetCurrentCsv(i, NULL);
-    if(csvi == csvfi->time)continue;
+    if(csvi == csvfi->time||csvi->skip==1)continue;
     LIST_csvID->add_item(i, csvi->label.shortlabel);
   }
   strcpy(label, "add");
@@ -1128,7 +1130,7 @@ extern "C" void DeviceCB(int var){
     fuel_hoc = fuel_hoc_default;
     SPINNER_fuel_hoc->set_float_val(fuel_hoc);
     DeviceCB(FUEL_HOC);
-    break;;
+    break;
   case FUEL_HOC:
     if(fuel_hoc<0.0){
       fuel_hoc = 0.0;
