@@ -184,9 +184,6 @@ GLUI_Rollout **ROLLOUT_showz_windrose;
 GLUI_Rollout *ROLLOUT_trees = NULL;
 
 #ifdef pp_PLOT2D_NEW
-GLUI_Spinner *SPINNER_genplot_vmin = NULL;
-GLUI_Spinner *SPINNER_genplot_vmax = NULL;
-
 GLUI_Spinner *SPINNER_genplot_x = NULL;
 GLUI_Spinner *SPINNER_genplot_y = NULL;
 GLUI_Spinner *SPINNER_genplot_z = NULL;
@@ -214,6 +211,11 @@ GLUI_Spinner *SPINNER_scale_increment_windrose = NULL;
 GLUI_Spinner *SPINNER_scale_max_windrose = NULL;
 GLUI_Spinner *SPINNER_windrose_first=NULL;
 GLUI_Spinner *SPINNER_windrose_next=NULL;
+
+#ifdef pp_PLOT2D_NEW
+GLUI_StaticText *STATIC_curv_min = NULL;
+GLUI_StaticText *STATIC_curv_max = NULL;
+#endif
 
 #define OBJECTS_ROLLOUT     0
 #define FLOWVECTORS_ROLLOUT 1
@@ -613,8 +615,18 @@ void UpdateCurveControls(void){
   SPINNER_genplot_green->set_int_val(glui_curve.color[1]);
   SPINNER_genplot_blue->set_int_val(glui_curve.color[2]);
   SPINNER_genplot_linewidth->set_float_val(glui_curve.linewidth);
-  SPINNER_genplot_vmin->set_float_val(glui_curve.vmin);
-  SPINNER_genplot_vmax->set_float_val(glui_curve.vmax);
+
+  char label[100], cval[100];
+  int ndigits = 6;
+  strcpy(label, "min: ");
+  Float2String(cval, glui_curve.vmin, ndigits, force_fixedpoint);
+  strcat(label, cval);
+  STATIC_curv_min->set_name(label);
+
+  strcpy(label, "max: ");
+  Float2String(cval, glui_curve.vmax, ndigits, force_fixedpoint);
+  strcat(label, cval);
+  STATIC_curv_max->set_name(label);
 }
 
 /* ------------------ EnableDisablePlot2D ------------------------ */
@@ -631,14 +643,12 @@ void EnableDisablePlot2D(void){
     PANEL_plot_position->enable();
     PANEL_plot_title->enable();
     PANEL_add_curve->enable();
-    PANEL_curve_bounds->disable();
 
     if(glui_plot2dinfo->ncurves == 0){
       PANEL_curve_properties->disable();
     }
     else{
       PANEL_curve_properties->enable();
-      PANEL_curve_bounds->disable();
     }
     if(glui_plot2dinfo->ncurves > 0 && glui_plot2dinfo->curve_index < ndeviceinfo){
       BUTTON_plot_position->enable();
@@ -1517,8 +1527,8 @@ extern "C" void GluiDeviceSetup(int main_window){
       SPINNER_genplot_blue->set_int_limits(0, 255);
 
       PANEL_curve_bounds = glui_device->add_panel_to_panel(PANEL_curve_properties, "bounds");
-      SPINNER_genplot_vmin      = glui_device->add_spinner_to_panel(PANEL_curve_bounds, "min",       GLUI_SPINNER_FLOAT, &(glui_curve.vmin),     GENPLOT_XYZ, GenPlotCB);
-      SPINNER_genplot_vmax      = glui_device->add_spinner_to_panel(PANEL_curve_bounds, "max",       GLUI_SPINNER_FLOAT, &(glui_curve.vmax),     GENPLOT_XYZ, GenPlotCB);
+      STATIC_curv_min = glui_device->add_statictext_to_panel(PANEL_curve_bounds, "min: 0.0");
+      STATIC_curv_max = glui_device->add_statictext_to_panel(PANEL_curve_bounds, "max: 0.0");
 
       if(nplot2dini>0){
         nplot2dinfo = nplot2dini;
