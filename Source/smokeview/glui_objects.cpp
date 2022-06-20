@@ -88,10 +88,11 @@ GLUI_Button *BUTTON_reset_fuel_hoc = NULL;
 #ifdef pp_PLOT2D_NEW
 GLUI_Checkbox *CHECKBOX_genplot_use_usermin = NULL;
 GLUI_Checkbox *CHECKBOX_genplot_use_usermax = NULL;
-GLUI_Checkbox *CHECKBOX_show_genplot = NULL;
-GLUI_Checkbox *CHECKBOX_show_title = NULL;
+GLUI_Checkbox *CHECKBOX_show_genplot        = NULL;
+GLUI_Checkbox *CHECKBOX_show_title          = NULL;
 GLUI_Checkbox *CHECKBOX_show_curve_labels   = NULL;
-GLUI_Checkbox *CHECKBOX_genplot_use_factors  = NULL;
+GLUI_Checkbox *CHECKBOX_show_curve_values   = NULL;
+GLUI_Checkbox *CHECKBOX_genplot_use_factors = NULL;
 #endif
 GLUI_Checkbox *CHECKBOX_device_1=NULL;
 GLUI_Checkbox *CHECKBOX_showdevice_val=NULL;
@@ -519,6 +520,7 @@ void Plot2D2Glui(int index){
   EDIT_plot_label->set_text(glui_plot2dinfo->plot_label);
   CHECKBOX_show_title->set_int_val(glui_plot2dinfo->show_title);
   CHECKBOX_show_curve_labels->set_int_val(glui_plot2dinfo->show_curve_labels);
+  CHECKBOX_show_curve_values->set_int_val(glui_plot2dinfo->show_curve_values);
   UpdateCurveControls(NULL);
 }
 
@@ -1474,11 +1476,12 @@ extern "C" void GluiDeviceSetup(int main_window){
 
       glui_device->add_column_to_panel(PANEL_plot8, false);
 
-      PANEL_plot_title = glui_device->add_panel_to_panel(PANEL_plot8, "labels");
+      PANEL_plot_title = glui_device->add_panel_to_panel(PANEL_plot8, "plot labels");
       EDIT_plot_label = glui_device->add_edittext_to_panel(PANEL_plot_title, "edit title:", GLUI_EDITTEXT_TEXT, glui_plot2dinfo->plot_label, GENPLOT_PLOT_LABEL, GenPlotCB);
       glui_device->add_button_to_panel(PANEL_plot_title, _("Apply"), GENPLOT_PLOT_LABEL, GenPlotCB);
       CHECKBOX_show_title       = glui_device->add_checkbox_to_panel(PANEL_plot_title, "show title", &(glui_plot2dinfo->show_title), GENPLOT_PLOT_LABEL, GenPlotCB);
       CHECKBOX_show_curve_labels = glui_device->add_checkbox_to_panel(PANEL_plot_title, "show curve labels", &(glui_plot2dinfo->show_curve_labels), GENPLOT_PLOT_LABEL, GenPlotCB);
+      CHECKBOX_show_curve_values = glui_device->add_checkbox_to_panel(PANEL_plot_title, "show curve values", &(glui_plot2dinfo->show_curve_values), GENPLOT_PLOT_LABEL, GenPlotCB);
 
       glui_device->add_column_to_panel(PANEL_plot8, false);
       PANEL_plot_position = glui_device->add_panel_to_panel(PANEL_plot8, "plot position");
@@ -1527,7 +1530,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       glui_device->add_button_to_panel(PANEL_remove_curve, _("selected"), GENPLOT_REM_SELECTEDCURVE, GenPlotCB);
       glui_device->add_button_to_panel(PANEL_remove_curve, _("all"), GENPLOT_REM_ALLCURVES, GenPlotCB);
 
-      PANEL_curve_bounds = glui_device->add_panel_to_panel(PANEL_curve_properties, "bounds");
+      PANEL_curve_bounds = glui_device->add_panel_to_panel(PANEL_curve_properties, "", 0);
       STATIC_curv_min = glui_device->add_statictext_to_panel(PANEL_curve_bounds, "min: 0.0");
       STATIC_curv_max = glui_device->add_statictext_to_panel(PANEL_curve_bounds, "max: 0.0");
 

@@ -101,7 +101,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   int i, ndigits = 3;
 
   float *xyz0, linewidth_arg, *plot_factors;
-  int *plot_color, use_plot_factors, show_title, show_curve_labels;
+  int *plot_color, use_plot_factors, show_title, show_curve_labels, show_curve_values;
   char *title;
   float fplot_color[3];
 
@@ -114,6 +114,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   title             = plot2di->plot_label;
   show_title        = plot2di->show_title;
   show_curve_labels = plot2di->show_curve_labels;
+  show_curve_values = plot2di->show_curve_values;
   fplot_color[0]    = (float)plot_color[0] / 255.0;
   fplot_color[1]    = (float)plot_color[1] / 255.0;
   fplot_color[2]    = (float)plot_color[2] / 255.0;
@@ -220,17 +221,34 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
       SNIFF_ERRORS("after DrawGenCurve 4");
     }
     {
-      char c_zmin[32], c_zmax[32];
+      char c_zmin[32], c_zmax[32], c_zcur[32];
+      char label2[256];
 
-      Float2String(c_zmin, zmin, ndigits, force_fixedpoint);
-      Float2String(c_zmax, zmax, ndigits, force_fixedpoint);
+      Float2String(c_zmin, zmin,  ndigits, force_fixedpoint);
+      Float2String(c_zmax, zmax,  ndigits, force_fixedpoint);
+      if(show_curve_values==1)Float2String(c_zcur, z_cur, ndigits, force_fixedpoint);
+      strcpy(label2, "");
+      if(show_curve_labels==1){
+        strcat(label2, label);
+        if(show_curve_values==1)strcat(label2, "/");
+      }
+      if(show_curve_values==1){
+        strcat(label2, c_zcur);
+        pad_length = GetStringLength(label2);
+      }
       if(axis_side == AXIS_LEFT){
-        if(show_curve_labels==1)Output3Text(fplot_color,     xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label);
+        if(show_curve_labels==1 || show_curve_values==1){
+          Output3Text(fplot_color,     xmax + 2.0 * dx,
+                      0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2);
+        }
         Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmin,  c_zmin);
         Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax , c_zmax);
         }
       else{
-        if(show_curve_labels == 1)Output3TextRight(fplot_color,      xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label, pad_length);
+        if(show_curve_labels==1 || show_curve_values==1){
+          Output3TextRight(fplot_color,      xmin - dx,
+                           0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2, pad_length);
+        }
         Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmin,  c_zmin, pad_length);
         Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax , c_zmax, pad_length);
       }
@@ -565,6 +583,7 @@ void InitPlot2D(plot2ddata *plot2di, int plot_index){
   plot2di->show = 0;
   plot2di->show_title = 0;
   plot2di->show_curve_labels = 0;
+  plot2di->show_curve_values = 0;
   plot2di->xyz[0] = xbar0FDS;
   plot2di->xyz[1] = ybar0FDS;
   plot2di->xyz[2] = zbar0FDS;
