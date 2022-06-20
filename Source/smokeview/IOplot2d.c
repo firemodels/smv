@@ -306,7 +306,6 @@ void DrawGenPlot(plot2ddata *plot2di){
     char *unit;
 
     unit = GetPlotUnit(plot2di, i);
-    if(unit==NULL||strlen(unit)==0)continue;
     if(axis_right_unit == NULL){
       axis_right_unit = unit;
       continue;
@@ -321,7 +320,6 @@ void DrawGenPlot(plot2ddata *plot2di){
 
     unit  = GetPlotUnit(plot2di, i);
     label = GetPlotShortLabel(plot2di, i);
-    if(unit == NULL || strlen(unit) == 0)continue;
     if(axis_right_unit != NULL && strcmp(axis_right_unit, unit) == 0){
       unit_right_index = i;
       pad_length = MAX(pad_length, GetStringLength(label));
