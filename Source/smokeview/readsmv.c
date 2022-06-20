@@ -202,6 +202,25 @@ void ReadCSV(csvfiledata *csvfi, int flag){
   NewMemory((void **)&(buffer_labels), len_buffer);
   NewMemory((void **)&(buffer_units),  len_buffer);
 
+  if(strcmp(csvfi->c_type, "ext") == 0){
+    fgets(buffer, len_buffer, stream);
+    if(feof(stream)){
+      FREEMEMORY(buffer);
+      FREEMEMORY(buffer_labels);
+      FREEMEMORY(buffer_units);
+      return;
+    }
+    while(strstr(buffer, "//DATA") == NULL){
+      fgets(buffer, len_buffer, stream);
+      if(feof(stream)){
+        FREEMEMORY(buffer);
+        FREEMEMORY(buffer_labels);
+        FREEMEMORY(buffer_units);
+        return;
+      }
+    }
+  }
+
   NewMemory((void **)&(csvfi->csvinfo), csvfi->ncsvinfo*sizeof(csvdata));
   NewMemory((void **)&labels,           csvfi->ncsvinfo*sizeof(char *));
   NewMemory((void **)&units,            csvfi->ncsvinfo*sizeof(char *));
@@ -259,7 +278,7 @@ void ReadCSV(csvfiledata *csvfi, int flag){
     csvdata *ci;
 
     ci = csvfi->csvinfo + i;
-    if(strcmp(ci->label.shortlabel, "Time") == 0  || strcmp(ci->label.shortlabel, "Simulation Time") == 0){
+    if(strcmp(ci->label.shortlabel, "Time") == 0  || strcmp(ci->label.shortlabel, "time") == 0  || strcmp(ci->label.shortlabel, "Simulation Time") == 0){
       csvfi->time = ci;
       break;
     }
