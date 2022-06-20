@@ -850,6 +850,7 @@ void GenPlotCB(int var){
       break;
     case GENPLOT_SELECT_CURVE:
       index = glui_plot2dinfo->curve_index;
+      if(index < 0)break;
       curve = glui_plot2dinfo->curve + index;
       memcpy(&glui_curve, curve, sizeof(curvedata));
       char *unit;
