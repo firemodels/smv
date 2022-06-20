@@ -469,7 +469,7 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int force){
     LIST_plotcurves->set_int_val(nplots);
     memcpy(&glui_curve, curve, sizeof(curvedata));
     nplots++;
-    UpdateCurveControls();
+    UpdateCurveControls(csvi->label.unit);
   }
 }
 
@@ -519,7 +519,7 @@ void Plot2D2Glui(int index){
   EDIT_plot_label->set_text(glui_plot2dinfo->plot_label);
   CHECKBOX_show_title->set_int_val(glui_plot2dinfo->show_title);
   CHECKBOX_show_curve_labels->set_int_val(glui_plot2dinfo->show_curve_labels);
-  UpdateCurveControls();
+  UpdateCurveControls(NULL);
 }
 
 /* ------------------ AddPlot ------------------------ */
@@ -543,7 +543,7 @@ extern "C" void AddPlot(void){
   LIST_plots->add_item(iplot2dinfo, label);
   LIST_plots->set_int_val(iplot2dinfo);
   memcpy(&glui_curve, &glui_curve_default, sizeof(curvedata));
-  UpdateCurveControls();
+  UpdateCurveControls(NULL);
   }
 
 /* ------------------ RemovePlot ------------------------ */
@@ -610,7 +610,8 @@ void UpdatePlotList(void){
 
 /* ------------------ UpdateCurveControls ------------------------ */
 
-void UpdateCurveControls(void){
+
+void UpdateCurveControls(char *unit){
   SPINNER_genplot_red->set_int_val(glui_curve.color[0]);
   SPINNER_genplot_green->set_int_val(glui_curve.color[1]);
   SPINNER_genplot_blue->set_int_val(glui_curve.color[2]);
@@ -621,11 +622,19 @@ void UpdateCurveControls(void){
   strcpy(label, "min: ");
   Float2String(cval, glui_curve.vmin, ndigits, force_fixedpoint);
   strcat(label, cval);
+  if(unit != NULL){
+    strcat(label, " ");
+    strcat(label, unit);
+    }
   STATIC_curv_min->set_name(label);
 
   strcpy(label, "max: ");
   Float2String(cval, glui_curve.vmax, ndigits, force_fixedpoint);
   strcat(label, cval);
+  if(unit != NULL){
+    strcat(label, " ");
+    strcat(label, unit);
+  }
   STATIC_curv_max->set_name(label);
 }
 
@@ -843,7 +852,9 @@ void GenPlotCB(int var){
       index = glui_plot2dinfo->curve_index;
       curve = glui_plot2dinfo->curve + index;
       memcpy(&glui_curve, curve, sizeof(curvedata));
-      UpdateCurveControls();
+      char *unit;
+      unit = GetPlotUnit(glui_plot2dinfo, index);
+      UpdateCurveControls(unit);
       if(BUTTON_plot_position != NULL){
         if(glui_plot2dinfo->curve_index<ndeviceinfo){
           BUTTON_plot_position->enable();
@@ -1515,8 +1526,9 @@ extern "C" void GluiDeviceSetup(int main_window){
       glui_device->add_button_to_panel(PANEL_remove_curve, _("selected"), GENPLOT_REM_SELECTEDCURVE, GenPlotCB);
       glui_device->add_button_to_panel(PANEL_remove_curve, _("all"), GENPLOT_REM_ALLCURVES, GenPlotCB);
 
-      SPINNER_genplot_linewidth = glui_device->add_spinner_to_panel(PANEL_curve_properties, "line width", GLUI_SPINNER_FLOAT, &(glui_curve.linewidth), GENPLOT_XYZ, GenPlotCB);
-      SPINNER_genplot_linewidth->set_float_limits(1.0,10.0);
+      PANEL_curve_bounds = glui_device->add_panel_to_panel(PANEL_curve_properties, "bounds");
+      STATIC_curv_min = glui_device->add_statictext_to_panel(PANEL_curve_bounds, "min: 0.0");
+      STATIC_curv_max = glui_device->add_statictext_to_panel(PANEL_curve_bounds, "max: 0.0");
 
       glui_device->add_column_to_panel(PANEL_curve_properties, false);
 
@@ -1528,9 +1540,8 @@ extern "C" void GluiDeviceSetup(int main_window){
       SPINNER_genplot_green->set_int_limits(0, 255);
       SPINNER_genplot_blue->set_int_limits(0, 255);
 
-      PANEL_curve_bounds = glui_device->add_panel_to_panel(PANEL_curve_properties, "bounds");
-      STATIC_curv_min = glui_device->add_statictext_to_panel(PANEL_curve_bounds, "min: 0.0");
-      STATIC_curv_max = glui_device->add_statictext_to_panel(PANEL_curve_bounds, "max: 0.0");
+      SPINNER_genplot_linewidth = glui_device->add_spinner_to_panel(PANEL_curve_properties, "line width", GLUI_SPINNER_FLOAT, &(glui_curve.linewidth), GENPLOT_XYZ, GenPlotCB);
+      SPINNER_genplot_linewidth->set_float_limits(1.0, 10.0);
 
       if(nplot2dini>0){
         nplot2dinfo = nplot2dini;

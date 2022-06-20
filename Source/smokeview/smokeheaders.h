@@ -6,8 +6,9 @@
 #endif
 
 #ifdef pp_PLOT2D_NEW
+EXTERNCPP char *GetPlotUnit(plot2ddata * plot2di, int curv_index);
 EXTERNCPP void GenPlotCB(int var);
-EXTERNCPP void UpdateCurveControls(void);
+EXTERNCPP void UpdateCurveControls(char *unit);
 EXTERNCPP int GenDevShow(void);
 EXTERNCPP int GenHrrShow(void);
 EXTERNCPP void InitPlot2D(plot2ddata *plot2di, int plot_index);
