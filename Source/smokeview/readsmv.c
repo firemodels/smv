@@ -36,8 +36,6 @@
 #define ZVENT_1ROOM 1
 #define ZVENT_2ROOM 2
 
-#define LENBUFFER 1024
-
 /* ------------------ GetHrrCsvCol ------------------------ */
 
 int GetHrrCsvCol(char *label){
@@ -148,6 +146,217 @@ void UpdateHoc(void){
   }
 }
 
+#ifdef pp_PLOT2D_NEW
+/* ------------------ ReadCSV ------------------------ */
+
+int IsDimensionless(char *unit){
+// unit is dimensionless if unit is NULL, unit is blank or
+// the same characters occur before and after the first slash '/'
+  char *slash, *tok1, *tok2;
+  char unit2[64];
+
+  if(unit==NULL || strlen(unit)==0)return 1;
+  strcpy(unit2, unit);
+  slash = strchr(unit2, '/');
+  if(slash == NULL)return 0;
+  tok1 = unit2;
+  tok2 = slash+1;
+  slash[0]=0;
+  if(strcmp(tok1, tok2)==0)return 1;
+  return 0;
+}
+
+/* ------------------ ReadCSV ------------------------ */
+
+void ReadCSV(csvfiledata *csvfi, int flag){
+  FILE *stream;
+  int nrows, ncols;
+  int nunits, nlabels;
+  char *buffer, *buffer_labels, *buffer_units;
+  char *buffptr;
+  char **labels, **units;
+  float *vals;
+  int *valids;
+  int len_buffer;
+  int i;
+
+  for(i=0; i<csvfi->ncsvinfo; i++){
+    csvdata *ci;
+
+    ci = csvfi->csvinfo + i;
+    FREEMEMORY(ci->vals);
+    FREEMEMORY(ci->vals_orig);
+  }
+  FREEMEMORY(csvfi->csvinfo);
+  if(flag == UNLOAD)return;
+
+  stream = fopen(csvfi->file, "r");
+  if(stream == NULL)return;
+
+  len_buffer = GetRowCols(stream, &nrows, &ncols);
+  len_buffer = MAX(len_buffer + 100, 1000);
+  csvfi->ncsvinfo = ncols;
+
+  // allocate memory
+  NewMemory((void **)&(buffer),        len_buffer);
+  NewMemory((void **)&(buffer_labels), len_buffer);
+  NewMemory((void **)&(buffer_units),  len_buffer);
+
+  if(strcmp(csvfi->c_type, "ext") == 0){
+    fgets(buffer, len_buffer, stream);
+    if(feof(stream)){
+      FREEMEMORY(buffer);
+      FREEMEMORY(buffer_labels);
+      FREEMEMORY(buffer_units);
+      return;
+    }
+    while(strstr(buffer, "//DATA") == NULL){
+      fgets(buffer, len_buffer, stream);
+      if(feof(stream)){
+        FREEMEMORY(buffer);
+        FREEMEMORY(buffer_labels);
+        FREEMEMORY(buffer_units);
+        return;
+      }
+    }
+  }
+
+  NewMemory((void **)&(csvfi->csvinfo), csvfi->ncsvinfo*sizeof(csvdata));
+  NewMemory((void **)&labels,           csvfi->ncsvinfo*sizeof(char *));
+  NewMemory((void **)&units,            csvfi->ncsvinfo*sizeof(char *));
+  NewMemory((void **)&vals,             csvfi->ncsvinfo*sizeof(float));
+  NewMemory((void **)&valids,           csvfi->ncsvinfo*sizeof(int));
+
+  // initialize each column
+  for(i=0; i<csvfi->ncsvinfo; i++){
+    csvdata *ci;
+
+    ci = csvfi->csvinfo + i;
+    ci->nvals = nrows-2;
+    NewMemory((void **)&ci->vals,      ci->nvals*sizeof(csvdata));
+    NewMemory((void **)&ci->vals_orig, ci->nvals*sizeof(csvdata));
+  }
+  CheckMemory;
+
+  // setup labels and units
+
+  fgets(buffer_units,    len_buffer, stream);
+  TrimBack(buffer_units);
+  ParseCSV(buffer_units, units,     &nunits);
+
+  fgets(buffer_labels,    len_buffer, stream);
+  TrimBack(buffer_labels);
+  ParseCSV(buffer_labels, labels,    &nlabels);
+  CheckMemory;
+
+  plot2d_max_columns = MAX(plot2d_max_columns, csvfi->ncsvinfo);
+  for(i=0; i<csvfi->ncsvinfo; i++){
+    csvdata *ci;
+    char label[64];
+    char *unit;
+
+    ci = csvfi->csvinfo + i;
+    TrimBack(labels[i]);
+    strcpy(label, labels[i]);
+    buffptr = TrimFrontBack(label);
+    if(strcmp(buffptr, "null") == 0){
+      sprintf(label, "%s%03i", csvfi->c_type, i + 1);
+    }
+
+    unit = TrimFrontBack(units[i]);
+    ci->skip = 0;
+    if(strcmp(unit, "status") == 0)ci->skip = 1;
+    ci->dimensionless = IsDimensionless(unit);
+    SetLabels(&(ci->label), label, label, unit);
+  }
+  CheckMemory;
+
+  // find Time column index
+
+  csvfi->time = NULL;
+  for(i=0; i<csvfi->ncsvinfo; i++){
+    csvdata *ci;
+
+    ci = csvfi->csvinfo + i;
+    if(strcmp(ci->label.shortlabel, "Time") == 0  || strcmp(ci->label.shortlabel, "time") == 0  || strcmp(ci->label.shortlabel, "Simulation Time") == 0){
+      csvfi->time = ci;
+      break;
+    }
+  }
+
+  for(i = 0; i < csvfi->ncsvinfo; i++){
+    csvdata *ci;
+
+    ci = csvfi->csvinfo + i;
+    ci->valmin = 1.0;
+    ci->valmax = 0.0;
+  }
+  // read in data
+  int irow;
+  irow = 0;
+  while(!feof(stream)){
+    if(fgets(buffer, len_buffer, stream) == NULL)break;
+    TrimBack(buffer);
+    if(strlen(buffer) == 0)break;
+    int nvals;
+    FParseCSV(buffer, vals, valids, ncols, &nvals);
+    if(nvals < ncols)break;
+    for(i=0; i<csvfi->ncsvinfo; i++){
+      csvdata *ci;
+
+      ci = csvfi->csvinfo + i;
+      ci->vals[irow] = 0.0;
+      if(valids[i] == 1){
+        ci->vals[irow] = vals[i];
+        if(ci->valmin > ci->valmax){
+          ci->valmin = vals[i];
+          ci->valmax = vals[i];
+        }
+        else{
+          ci->valmin = MIN(ci->valmin, vals[i]);
+          ci->valmax = MAX(ci->valmax, vals[i]);
+        }
+      }
+      if(irow==0 && valids[i] == 0){
+        ci->skip = 1;
+      }
+    }
+    irow++;
+    if(irow >= nrows)break;
+  }
+  CheckMemory;
+
+  //copy vals into vals_orig
+  for(i=0; i<csvfi->ncsvinfo; i++){
+    csvdata *ci;
+
+    ci = csvfi->csvinfo + i;
+    memcpy(ci->vals_orig, ci->vals, ci->nvals*sizeof(float));
+  }
+
+  CheckMemory;
+  FREEMEMORY(units);
+  FREEMEMORY(labels);
+  FREEMEMORY(vals);
+  FREEMEMORY(valids);
+  FREEMEMORY(buffer);
+  FREEMEMORY(buffer_labels);
+  FREEMEMORY(buffer_units);
+
+  fclose(stream);
+}
+
+/* ------------------ ReadAllCSV ------------------------ */
+
+void ReadAllCSV(int flag){
+  int i;
+
+  for(i=0; i<ncsvfileinfo; i++){
+    ReadCSV(csvfileinfo + i, flag);
+  }
+}
+#endif
+
 /* ------------------ ReadHRR ------------------------ */
 
 void ReadHRR(int flag){
@@ -158,7 +367,8 @@ void ReadHRR(int flag){
   float *vals;
   int *valids;
   int i, irow;
-  char buffer[LENBUFFER], buffer_labels[LENBUFFER], buffer_units[LENBUFFER];
+  char *buffer, *buffer_labels, *buffer_units;
+  int len_buffer;
 
   GetHoc(&fuel_hoc, fuel_name);
   fuel_hoc_default = fuel_hoc;
@@ -181,11 +391,16 @@ void ReadHRR(int flag){
   stream = fopen(hrr_csv_filename, "r");
   if(stream==NULL)return;
 
-  GetRowCols(stream, &nrows, &ncols);
+  len_buffer = GetRowCols(stream, &nrows, &ncols);
+  len_buffer = MAX(len_buffer + 100, 1000);
   nhrrinfo = ncols;
 
   if(nhrrinfo == 0)return;
   // allocate memory
+
+  NewMemory((void **)&(buffer),        len_buffer);
+  NewMemory((void **)&(buffer_labels), len_buffer);
+  NewMemory((void **)&(buffer_units),  len_buffer);
 
   NewMemory((void **)&labels,         nhrrinfo*sizeof(char *));
   NewMemory((void **)&units,          nhrrinfo*sizeof(char *));
@@ -207,10 +422,10 @@ void ReadHRR(int flag){
 
 // setup labels and units
 
-  fgets(buffer_units, LENBUFFER, stream);
+  fgets(buffer_units, len_buffer, stream);
   ParseCSV(buffer_units, units, &nunits);
 
-  fgets(buffer_labels, LENBUFFER, stream);
+  fgets(buffer_labels, len_buffer, stream);
   ParseCSV(buffer_labels, labels, &nlabels);
   CheckMemory;
 
@@ -264,7 +479,7 @@ void ReadHRR(int flag){
 // read in data
   irow = 0;
   while(!feof(stream)){
-    if(fgets(buffer, LENBUFFER, stream)==NULL)break;
+    if(fgets(buffer, len_buffer, stream)==NULL)break;
     TrimBack(buffer);
     if(strlen(buffer)==0)break;
     FParseCSV(buffer, vals, valids, ncols, &nvals);
@@ -363,6 +578,10 @@ void ReadHRR(int flag){
     FREEMEMORY(hi->vals_orig);
   }
   CheckMemory;
+  FREEMEMORY(buffer);
+  FREEMEMORY(buffer_labels);
+  FREEMEMORY(buffer_units);
+
   FREEMEMORY(units);
   FREEMEMORY(labels);
   FREEMEMORY(vals);
@@ -6165,16 +6384,16 @@ int ReadSMV(bufferstreamdata *stream){
 
   ntotal_blockages=0;
 
-  if(ncsvinfo>0){
-    csvdata *csvi;
+  if(ncsvfileinfo>0){
+    csvfiledata *csvi;
 
-    for(i=0;i<ncsvinfo;i++){
-      csvi = csvinfo + i;
+    for(i=0;i<ncsvfileinfo;i++){
+      csvi = csvfileinfo + i;
       FREEMEMORY(csvi->file);
     }
-    FREEMEMORY(csvinfo);
+    FREEMEMORY(csvfileinfo);
   }
-  ncsvinfo=0;
+  ncsvfileinfo=0;
 
   if(ngeominfo>0){
     for(i=0;i<ngeominfo;i++){
@@ -6545,36 +6764,16 @@ int ReadSMV(bufferstreamdata *stream){
       continue;
     }
     if(Match(buffer,"CSVF") == 1){
-      int nfiles;
-      char *file_ptr,*type_ptr;
+      char *file_ptr;
       char buffer2[256];
 
       FGETS(buffer,255,stream);
       TrimBack(buffer);
-      type_ptr=TrimFront(buffer);
 
       FGETS(buffer2,255,stream);
       TrimBack(buffer2);
       file_ptr=TrimFront(buffer2);
-      nfiles=1;
-      if(strcmp(type_ptr,"hrr")==0){
-        if(FILE_EXISTS_CASEDIR(file_ptr)==NO)nfiles=0;
-      }
-      else if(strcmp(type_ptr,"devc")==0){
-        if(FILE_EXISTS_CASEDIR(file_ptr)==NO)nfiles=0;
-      }
-      else if(strcmp(type_ptr,"ext")==0){
-        if(strchr(file_ptr,'*')==NULL){
-          if(FILE_EXISTS_CASEDIR(file_ptr)==NO)nfiles=0;
-        }
-        else{
-          nfiles = GetFileListSize(".",file_ptr);
-        }
-      }
-      else{
-        nfiles=0;
-      }
-      ncsvinfo+=nfiles;
+      if(FILE_EXISTS_CASEDIR(file_ptr)==YES)ncsvfileinfo++;
       continue;
     }
     if(Match(buffer, "CGEOM")==1){
@@ -6978,9 +7177,9 @@ int ReadSMV(bufferstreamdata *stream){
    strcpy(fds_githash,"unknown");
  }
  if(nisoinfo>0&&nmeshes>0)nisos_per_mesh = MAX(nisoinfo / nmeshes,1);
- if(ncsvinfo > 0){
-   NewMemory((void **)&csvinfo,ncsvinfo*sizeof(csvdata));
-   ncsvinfo=0;
+ if(ncsvfileinfo > 0){
+   NewMemory((void **)&csvfileinfo,ncsvfileinfo*sizeof(csvfiledata));
+   ncsvfileinfo=0;
  }
  if(ngeominfo>0){
    NewMemory((void **)&geominfo,ngeominfo*sizeof(geomdata));
@@ -7289,9 +7488,8 @@ int ReadSMV(bufferstreamdata *stream){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(Match(buffer,"CSVF") == 1){
-      csvdata *csvi;
+      csvfiledata *csvi;
       char *type_ptr, *file_ptr;
-      int nfiles=1;
       char buffer2[256];
 
       if(FGETS(buffer,255,stream)==NULL){
@@ -7305,84 +7503,21 @@ int ReadSMV(bufferstreamdata *stream){
       }
       TrimBack(buffer2);
       file_ptr=TrimFront(buffer2);
-      nfiles=1;
-      if(strcmp(type_ptr,"hrr")==0){
-        if(FILE_EXISTS_CASEDIR(file_ptr)==NO)nfiles=0;
-      }
-      else if(strcmp(type_ptr,"devc")==0){
-        if(FILE_EXISTS_CASEDIR(file_ptr)==NO)nfiles=0;
-      }
-      else if(strcmp(type_ptr,"ext")==0){
-        if(strchr(file_ptr,'*')==NULL){
-          if(FILE_EXISTS_CASEDIR(file_ptr)==NO)nfiles=0;
-        }
-        else{
-          nfiles = GetFileListSize(".",file_ptr);
-        }
-      }
-      else{
-        nfiles=0;
-      }
-      if(nfiles==0)continue;
+      if(FILE_EXISTS_CASEDIR(file_ptr) == NO)continue;
 
-      csvi = csvinfo + ncsvinfo;
+      csvi = csvfileinfo + ncsvfileinfo;
 
-      csvi->loaded=0;
-      csvi->display=0;
+      csvi->loaded   = 0;
+      csvi->display  = 0;
+      csvi->time     = NULL;
+      csvi->ncsvinfo = 0;
+      csvi->csvinfo  = NULL;
 
-      if(strcmp(type_ptr,"hrr")==0){
-        if(FILE_EXISTS_CASEDIR(file_ptr)==YES){
-          csvi->type=CSVTYPE_HRR;
-          NewMemory((void **)&csvi->file,strlen(file_ptr)+1);
-          strcpy(csvi->file,file_ptr);
-        }
-        else{
-          nfiles=0;
-        }
-      }
-      else if(strcmp(type_ptr,"devc")==0){
-        if(FILE_EXISTS_CASEDIR(file_ptr)==YES){
-          csvi->type=CSVTYPE_DEVC;
-          NewMemory((void **)&csvi->file,strlen(file_ptr)+1);
-          strcpy(csvi->file,file_ptr);
-        }
-        else{
-          nfiles=0;
-        }
-      }
-      else if(strcmp(type_ptr,"ext")==0){
-        if(strchr(file_ptr,'*')==NULL){
-          if(FILE_EXISTS_CASEDIR(file_ptr)==YES){
-            csvi->type=CSVTYPE_EXT;
-            NewMemory((void **)&csvi->file,strlen(file_ptr)+1);
-            strcpy(csvi->file,file_ptr);
-          }
-          else{
-            nfiles=0;
-          }
-        }
-        else{
-          filelistdata *filelist;
-          int nfilelist;
+      NewMemory((void **)&csvi->file, strlen(file_ptr) + 1);
+      strcpy(csvi->file, file_ptr);
+      strcpy(csvi->c_type, type_ptr);
 
-          nfilelist = GetFileListSize(".",file_ptr);
-          nfiles= MakeFileList(".",file_ptr,nfilelist,NO,&filelist);
-          for(i=0;i<nfiles;i++){
-            csvi = csvinfo + ncsvinfo + i;
-            csvi->loaded=0;
-            csvi->display=0;
-            csvi->type=CSVTYPE_EXT;
-            NewMemory((void **)&csvi->file,strlen(filelist[i].file)+1);
-            strcpy(csvi->file,filelist[i].file);
-          }
-          FreeFileList(filelist,&nfilelist);
-        }
-      }
-      else{
-        nfiles=0;
-      }
-
-      ncsvinfo+=nfiles;
+      ncsvfileinfo++;
       continue;
     }
   /*
@@ -9032,16 +9167,16 @@ int ReadSMV(bufferstreamdata *stream){
 
   // look for DEVICE entries in "experimental" spread sheet files
 
-  if(ncsvinfo>0){
+  if(ncsvfileinfo>0){
     int *nexp_devices=NULL;
     devicedata *devicecopy2;
 
-    NewMemory((void **)&nexp_devices,ncsvinfo*sizeof(int));
-    for(i=0;i<ncsvinfo;i++){
-      csvdata *csvi;
+    NewMemory((void **)&nexp_devices,ncsvfileinfo*sizeof(int));
+    for(i=0;i<ncsvfileinfo;i++){
+      csvfiledata *csvi;
 
-      csvi = csvinfo + i;
-      if(csvi->type==CSVTYPE_EXT){
+      csvi = csvfileinfo + i;
+      if(strcmp(csvi->c_type, "ext") == 0){
         nexp_devices[i] = GetNDevices(csvi->file);
         ndeviceinfo_exp += nexp_devices[i];
       }
@@ -9057,11 +9192,11 @@ int ReadSMV(bufferstreamdata *stream){
     devicecopy2 = deviceinfo+ndeviceinfo;
     ndeviceinfo+=ndeviceinfo_exp;
 
-    for(i=0;i<ncsvinfo;i++){
-      csvdata *csvi;
+    for(i=0;i<ncsvfileinfo;i++){
+      csvfiledata *csvi;
 
-      csvi = csvinfo + i;
-      if(csvi->type==CSVTYPE_EXT){
+      csvi = csvfileinfo + i;
+      if(strcmp(csvi->c_type, "ext") == 0){
         ReadDeviceHeader(csvi->file,devicecopy2,nexp_devices[i]);
         devicecopy2 += nexp_devices[i];
       }
@@ -10700,15 +10835,16 @@ typedef struct {
   if(hrr_csv_filename!=NULL)ReadHRR(LOAD);
   ReadDeviceData(NULL,CSV_FDS,UNLOAD);
   ReadDeviceData(NULL,CSV_EXP,UNLOAD);
-  for(i=0;i<ncsvinfo;i++){
-    csvdata *csvi;
+  for(i=0;i<ncsvfileinfo;i++){
+    csvfiledata *csvi;
 
-    csvi = csvinfo + i;
-    if(csvi->type==CSVTYPE_DEVC)ReadDeviceData(csvi->file,CSV_FDS,LOAD);
-    if(csvi->type==CSVTYPE_EXT)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
+    csvi = csvfileinfo + i;
+    if(strcmp(csvi->c_type, "devc")==0)ReadDeviceData(csvi->file,CSV_FDS,LOAD);
+    if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
   SetupDeviceData();
 #ifdef pp_PLOT2D_NEW
+  ReadAllCSV(LOAD);
   SetupPlot2DUnitData();
 #endif
   if(nzoneinfo>0)SetupZoneDevs();
@@ -11453,11 +11589,18 @@ int ReadIni2(char *inifile, int localfile){
         TrimBack(buffer);
         labelptr = TrimFront(buffer);
         strcpy(plot2di->plot_label, labelptr);
-        NewMemory((void **)&(plot2di->curve), (ndeviceinfo+nhrrinfo) * sizeof(curvedata));
 
         fgets(buffer, 255, stream);
-        sscanf(buffer, " %f %f %f %i %i %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->show_title, &plot2di->ncurve_indexes);
-        for(j=0; j<plot2di->ncurve_indexes; j++){
+        sscanf(buffer, " %f %f %f %i %i %i %i %i",
+                       plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->show_title,
+                       &plot2di->ncurves, &plot2di->show_curve_labels, &plot2di->show_curve_values);
+#ifdef pp_PLOT2D_BOUNDS
+        fgets(buffer, 255, stream);
+        sscanf(buffer, " %f %i %f %i %f %i %f %i ",
+               plot2di->valmin,   plot2di->use_valmin,   plot2di->valmax,   plot2di->use_valmax,
+               plot2di->valmin+1, plot2di->use_valmin+1, plot2di->valmax+1, plot2di->use_valmax+1);
+#endif
+        for(j=0; j<plot2di->ncurves; j++){
           int color[3];
           float linewidth1;
           float curve_factors[2];
@@ -11473,7 +11616,7 @@ int ReadIni2(char *inifile, int localfile){
           curve_use_factors = 0;
           sscanf(buffer, " %i %i %i %i %f %f %f %i",    &index, color, color+1, color+2, &linewidth1, curve_factors, curve_factors+1, &curve_use_factors);
 
-          plot2di->curve[j].index           = index;
+          plot2di->curve[j].csv_col_index = index;
           curve = plot2di->curve+index;
           curve->color[0]    = color[0];
           curve->color[1]    = color[1];
@@ -11482,19 +11625,7 @@ int ReadIni2(char *inifile, int localfile){
           curve->factors[0]  = curve_factors[0];
           curve->factors[1]  = curve_factors[1];
           curve->use_factors = curve_use_factors;
-
-          float *valmin2, *valmax2;
-          int *use_valmin2, *use_valmax2;
-          use_valmin2         = &(curve->use_usermin);
-          use_valmax2         = &(curve->use_usermax);
-          valmin2             = &(curve->usermin);
-          valmax2             = &(curve->usermax);
-          fgets(buffer, 255, stream);
-          TrimBack(buffer);
-          sscanf(buffer, " %i %f %i %f", use_valmin2, valmin2, use_valmax2, valmax2);
         }
-void UpdateCurveBounds(plot2ddata *plot2di, int option);
-       UpdateCurveBounds(plot2di, 0);
       }
       update_glui_devices = 1;
       continue;
@@ -14860,15 +14991,23 @@ void WriteIniLocal(FILE *fileout){
 
     plot2di = plot2dinfo + i;
     fprintf(fileout, " %s\n", plot2di->plot_label);
-    fprintf(fileout, " %f %f %f %i %i %i\n", plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->show_title, plot2di->ncurve_indexes);
-    for(j = 0; j < plot2di->ncurve_indexes; j++){
+    fprintf(fileout, " %f %f %f %i %i %i %i %i\n",
+                     plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->show_title,
+                     plot2di->ncurves, plot2di->show_curve_labels, plot2di->show_curve_values);
+#ifdef pp_PLOT2D_BOUNDS
+    fprintf(fileout, " %f %i %f %i %f %i %f %i\n",
+            plot2di->valmin[0], plot2di->use_valmin[0], plot2di->valmax[0], plot2di->use_valmax[0],
+            plot2di->valmin[1], plot2di->use_valmin[1], plot2di->valmax[1], plot2di->use_valmax[1]
+            );
+#endif
+    for(j = 0; j < plot2di->ncurves; j++){
       int *color;
       float linewidth1, *curve_factors;
       int curve_use_factors;
       int index;
       curvedata *curve;
 
-      index             = plot2di->curve[j].index;
+      index             = plot2di->curve[j].csv_col_index;
       curve             = plot2di->curve+index;
       color             = curve->color;
       linewidth1        = curve->linewidth;
@@ -14876,15 +15015,6 @@ void WriteIniLocal(FILE *fileout){
       curve_use_factors = curve->use_factors;
       fprintf(fileout, " %i %i %i %i %f %f %f %i\n", index, color[0], color[1], color[2], linewidth1,
                                                      curve_factors[0], curve_factors[1], curve_use_factors);
-
-      int use_valmin2, use_valmax2;
-      float valmin2, valmax2;
-
-      use_valmin2 = curve->use_usermin;
-      use_valmax2 = curve->use_usermax;
-      valmin2     = curve->usermin;
-      valmax2     = curve->usermax;
-      fprintf(fileout, " %i %f %i %f\n", use_valmin2, valmin2, use_valmax2, valmax2);
     };
   }
 #endif

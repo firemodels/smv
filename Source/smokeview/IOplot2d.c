@@ -8,6 +8,25 @@
 #include "smokeviewvars.h"
 
 #ifdef pp_PLOT2D_NEW
+
+/* ------------------ GetCurrentCsv ------------------------ */
+
+csvdata *GetCsv(int file_index, int col_index, csvfiledata **csvf_ptr){
+  csvfiledata *csvfi;
+  csvdata *csvi;
+
+  csvfi = csvfileinfo    + file_index;
+  csvi  = csvfi->csvinfo + col_index;
+  if(csvf_ptr != NULL)*csvf_ptr = csvfi;
+  return csvi;
+}
+
+/* ------------------ GetCurrentCsv ------------------------ */
+
+csvdata *GetCurrentCsv(int col_index, csvfiledata **csvf_ptr){
+  return GetCsv(glui_csv_file_index, col_index, csvf_ptr);
+}
+
 /* ------------------ HaveGenDevShow ------------------------ */
 
 int GenDevShow(void){
@@ -20,8 +39,8 @@ int GenDevShow(void){
     if(plot2di->show == 1){
       int j;
 
-      for(j = 0; j < plot2di->ncurve_indexes; j++){
-        if(plot2di->curve[j].index<ndeviceinfo)return 1;
+      for(j = 0; j < plot2di->ncurves; j++){
+        if(plot2di->curve[j].csv_col_index<ndeviceinfo)return 1;
       }
     }
   }
@@ -40,8 +59,8 @@ int GenHrrShow(void){
     if(plot2di->show == 1){
       int j;
 
-      for(j = 0; j < plot2di->ncurve_indexes; j++){
-        if(plot2di->curve[j].index>=ndeviceinfo)return 1;
+      for(j = 0; j < plot2di->ncurves; j++){
+        if(plot2di->curve[j].csv_col_index>=ndeviceinfo)return 1;
       }
     }
   }
@@ -53,8 +72,8 @@ int GenHrrShow(void){
 int HaveGenDev(void){
   int i;
 
-  for(i = 0; i<glui_plot2dinfo->ncurve_indexes; i++){
-    if(glui_plot2dinfo->curve[i].index<ndeviceinfo)return 1;
+  for(i = 0; i<glui_plot2dinfo->ncurves; i++){
+    if(glui_plot2dinfo->curve[i].csv_col_index<ndeviceinfo)return 1;
   }
   return 0;
 }
@@ -64,8 +83,8 @@ int HaveGenDev(void){
 int HaveGenHrr(void){
   int i;
 
-  for(i = 0; i<glui_plot2dinfo->ncurve_indexes; i++){
-    if(glui_plot2dinfo->curve[i].index>=ndeviceinfo)return 1;
+  for(i = 0; i<glui_plot2dinfo->ncurves; i++){
+    if(glui_plot2dinfo->curve[i].csv_col_index>=ndeviceinfo)return 1;
   }
   return 0;
 }
@@ -76,22 +95,29 @@ int HaveGenHrr(void){
 #define AXIS_NONE  2
 void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_factor,
               float *x, float *z, int n, float x_cur, float z_cur, float zmin, float zmax,
-              char *label, int position, int axis_side, char *unit, float pad_length){
+              int axis_side, int position, char *label, char *unit, float pad_length){
   float xmin, xmax, dx, dz;
   float xscale = 1.0, zscale = 1.0;
   int i, ndigits = 3;
 
   float *xyz0, linewidth_arg, *plot_factors;
-  int *plot_color, use_plot_factors, show_title;
+  int *plot_color, use_plot_factors, show_title, show_curve_labels, show_curve_values;
   char *title;
+  float fplot_color[3];
 
-  xyz0             = plot2di->xyz;
-  plot_color       = curve->color;
-  linewidth_arg    = curve->linewidth;
-  plot_factors     = curve->factors;
-  use_plot_factors = curve->use_factors;
-  title            = plot2di->plot_label;
-  show_title       = plot2di->show_title;
+  SNIFF_ERRORS("after DrawGenCurve 1 - beginning");
+  xyz0              = plot2di->xyz;
+  plot_color        = curve->color;
+  linewidth_arg     = curve->linewidth;
+  plot_factors      = curve->factors;
+  use_plot_factors  = curve->use_factors;
+  title             = plot2di->plot_label;
+  show_title        = plot2di->show_title;
+  show_curve_labels = plot2di->show_curve_labels;
+  show_curve_values = plot2di->show_curve_values;
+  fplot_color[0]    = (float)plot_color[0] / 255.0;
+  fplot_color[1]    = (float)plot_color[1] / 255.0;
+  fplot_color[2]    = (float)plot_color[2] / 255.0;
 
   xmin = x[0];
   xmax = xmin;
@@ -125,6 +151,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   glTranslatef(-xmin, 0.0, -zmin);
   glColor3ub((unsigned char)plot_color[0], (unsigned char)plot_color[1], (unsigned char)plot_color[2] );
   glLineWidth(linewidth_arg);
+  SNIFF_ERRORS("after DrawGenCurve 1 - before");
   glBegin(GL_LINES);
   if(use_plot_factors == 1){
     for(i = 0; i < n - 1; i++){
@@ -139,7 +166,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
     }
   }
   glEnd();
-  SNIFF_ERRORS("after DrawGenCurve 1");
+  SNIFF_ERRORS("after DrawGenCurve 1 - after");
   if(option == PLOT_ALL){
     glColor3fv(foregroundcolor);
     glLineWidth(plot2d_line_width);
@@ -193,39 +220,46 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
       }
       SNIFF_ERRORS("after DrawGenCurve 4");
     }
-    if(label != NULL){
-      float p2_color[3];
-      char label2[64], c_zcur[32];
-      char c_zmin[32], c_zmax[32];
+    {
+      char c_zmin[32], c_zmax[32], c_zcur[32];
+      char label2[256];
 
-      Float2String(c_zmin, zmin, ndigits, force_fixedpoint);
-      Float2String(c_zmax, zmax, ndigits, force_fixedpoint);
-      Float2String(c_zcur, z_cur, ndigits, force_fixedpoint);
-      strcpy(label2, label);
-      strcat(label2, "/");
-      strcat(label2, c_zcur);
-
-      p2_color[0] = (float)plot_color[0]/255.0;
-      p2_color[1] = (float)plot_color[1]/255.0;
-      p2_color[2] = (float)plot_color[2]/255.0;
+      Float2String(c_zmin, zmin,  ndigits, force_fixedpoint);
+      Float2String(c_zmax, zmax,  ndigits, force_fixedpoint);
+      if(show_curve_values==1)Float2String(c_zcur, z_cur, ndigits, force_fixedpoint);
+      strcpy(label2, "");
+      if(show_curve_labels==1){
+        strcat(label2, label);
+        if(show_curve_values==1)strcat(label2, "/");
+      }
+      if(show_curve_values==1){
+        strcat(label2, c_zcur);
+        pad_length = GetStringLength(label2);
+      }
       if(axis_side == AXIS_LEFT){
-        Output3Text(p2_color, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2);
+        if(show_curve_labels==1 || show_curve_values==1){
+          Output3Text(fplot_color,     xmax + 2.0 * dx,
+                      0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2);
+        }
         Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmin,  c_zmin);
         Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax , c_zmax);
         }
       else{
-        Output3TextRight(p2_color, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2, pad_length);
+        if(show_curve_labels==1 || show_curve_values==1){
+          Output3TextRight(fplot_color,      xmin - dx,
+                           0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2, pad_length);
+        }
         Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmin,  c_zmin, pad_length);
         Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax , c_zmax, pad_length);
-        }
+      }
       SNIFF_ERRORS("after DrawGenCurve 5");
     }
     if(unit!=NULL){
       if(axis_side == AXIS_LEFT){
-        Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)(position+1)) * dfont, unit);
+        Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing*(float)(position + 1))*dfont, unit);
       }
       else{
-        Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing * (float)(position+1)) * dfont, unit, pad_length);
+        Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing*(float)(position + 1))*dfont, unit, pad_length);
       }
     }
   }
@@ -233,9 +267,49 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   SNIFF_ERRORS("after DrawGenCurve end");
 }
 
+/* ------------------ GetPlotUnit ------------------------ */
+
+char *GetPlotUnit(plot2ddata *plot2di, int curv_index){
+  csvdata *csvi;
+
+  csvi = GetCsv(plot2di->curve[curv_index].csv_file_index, plot2di->curve[curv_index].csv_col_index, NULL);
+  return csvi->label.unit;
+}
+
+/* ------------------ GetPlotShortLabel ------------------------ */
+
+char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index){
+  csvdata *csvi;
+
+  csvi = GetCsv(plot2di->curve[curv_index].csv_file_index, plot2di->curve[curv_index].csv_col_index, NULL);
+  return csvi->label.shortlabel;
+}
+
+/* ------------------ GetCSVVal ------------------------ */
+
+float GetCSVVal(float t, float *times, float *vals, int nvals){
+  int beg, mid, end;
+
+  if(t<times[0])return vals[0];
+  if(t>times[nvals-1])return vals[nvals-1];
+  beg = 0;
+  end = nvals-1;
+  mid = (beg+end)/2;
+  while(end-beg>1){
+    mid = (beg+end)/2;
+    if(t<times[mid]){
+      end = mid;
+    }
+    else{
+      beg = mid;
+    }
+  }
+  return vals[mid];
+}
+
 /* ------------------ DrawGenPlot ------------------------ */
 
-void DrawGenPlot(plot2ddata * plot2di){
+void DrawGenPlot(plot2ddata *plot2di){
   int i;
   char *axis_right_unit = NULL, *axis_left_unit = NULL;
   float axis_left_min   = 1.0,  axis_left_max  = 0.0;
@@ -245,18 +319,11 @@ void DrawGenPlot(plot2ddata * plot2di){
   int unit_left_index=0, unit_right_index=0;
   float pad_length = 0.0;
 
-  for(i = 0; i < plot2di->ncurve_indexes; i++){
-    int curve_index;
+  if(plot2di->bounds_defined==0)UpdateCurveBounds(plot2di, 0);
+  for(i = 0; i<plot2di->ncurves; i++){
     char *unit;
 
-    curve_index = plot2di->curve[i].index;
-    if(curve_index < ndeviceinfo){
-      unit = deviceinfo[curve_index].unit;
-    }
-    else{
-      unit = hrrinfo[curve_index - ndeviceinfo].label.unit;
-    }
-    if(unit==NULL||strlen(unit)==0)continue;
+    unit = GetPlotUnit(plot2di, i);
     if(axis_right_unit == NULL){
       axis_right_unit = unit;
       continue;
@@ -266,20 +333,11 @@ void DrawGenPlot(plot2ddata * plot2di){
       break;
     }
   }
-  for(i = 0; i < plot2di->ncurve_indexes; i++){
-    int curve_index;
+  for(i = 0; i < plot2di->ncurves; i++){
     char *unit, *label;
 
-    curve_index = plot2di->curve[i].index;
-    if(curve_index < ndeviceinfo){
-      unit = deviceinfo[curve_index].unit;
-      label = deviceinfo[curve_index].quantity;
-    }
-    else{
-      unit = hrrinfo[curve_index - ndeviceinfo].label.unit;
-      label = hrrinfo[curve_index - ndeviceinfo].label.shortlabel;
-      }
-    if(unit == NULL || strlen(unit) == 0)continue;
+    unit  = GetPlotUnit(plot2di, i);
+    label = GetPlotShortLabel(plot2di, i);
     if(axis_right_unit != NULL && strcmp(axis_right_unit, unit) == 0){
       unit_right_index = i;
       pad_length = MAX(pad_length, GetStringLength(label));
@@ -290,22 +348,15 @@ void DrawGenPlot(plot2ddata * plot2di){
       continue;
     }
   }
-  for(i = 0; i < plot2di->ncurve_indexes; i++){
-    int curve_index;
+  for(i = 0; i < plot2di->ncurves; i++){
     float valmin, valmax;
     char *unit;
     curvedata *curve;
 
-    curve_index = plot2di->curve[i].index;
-    curve = plot2di->curve + curve_index;
-    valmin = curve->valmin;
-    valmax = curve->valmax;
-    if(curve_index < ndeviceinfo){
-      unit = deviceinfo[curve_index].unit;
-    }
-    else{
-      unit = hrrinfo[curve_index - ndeviceinfo].label.unit;
-    }
+    curve = plot2di->curve+i;
+    valmin = curve->vmin;
+    valmax = curve->vmax;
+    unit = GetPlotUnit(plot2di, i);
     if(axis_right_unit!=NULL&&strcmp(unit, axis_right_unit) == 0){
       if(axis_right_min>axis_right_max){
         axis_right_min = valmin;
@@ -327,25 +378,16 @@ void DrawGenPlot(plot2ddata * plot2di){
       }
     }
   }
-  for(i = 0; i<plot2di->ncurve_indexes; i++){
-    int curve_index;
+  for(i = 0; i<plot2di->ncurves; i++){
     float highlight_time, highlight_val;
-    int valid;
-    char *unit;
+    char *unit, *shortlabel;
     float valmin, valmax;
     int option, position, side;
     char *unit_display;
     curvedata *curve;
 
     if(axis_right_unit == NULL)break;
-    curve_index = plot2di->curve[i].index;
-    curve = plot2di->curve + curve_index;
-    if(curve_index < ndeviceinfo){
-      unit = deviceinfo[curve_index].unit;
-    }
-    else{
-      unit = hrrinfo[curve_index - ndeviceinfo].label.unit;
-    }
+    unit = GetPlotUnit(plot2di, i);
     if(unit==NULL)continue;
     unit_display = NULL;
     if(strcmp(unit, axis_right_unit) == 0){
@@ -369,41 +411,22 @@ void DrawGenPlot(plot2ddata * plot2di){
       option = PLOT_ALL;
     }
     else{
-       option = PLOT_ONLY_DATA;
+      option = PLOT_ONLY_DATA;
     }
-    if(curve_index < ndeviceinfo){
-      devicedata *devi;
+    csvfiledata *csvfi;
+    csvdata *csvi;
 
-      devi = deviceinfo + curve_index;
-      if(global_times!=NULL){
-        highlight_time = global_times[itimes];
-        highlight_val = GetDeviceVal(global_times[itimes], devi, &valid);
-      }
-      if(devi->nvals>0){
-        DrawGenCurve(option, plot2di, curve, plot2d_size_factor, devi->times, devi->vals, devi->nvals,
-                     highlight_time, highlight_val, valmin, valmax,
-                     devi->deviceID, position, side, unit_display, pad_length);
-      }
+    curve = plot2di->curve + i;
+    csvi = GetCsv(curve->csv_file_index, curve->csv_col_index, &csvfi);
+
+    if(global_times != NULL){
+      highlight_time = global_times[itimes];
+      highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, csvi->vals, csvi->nvals);
     }
-    else{
-      hrrdata *hrri;
-
-      hrri = hrrinfo + curve_index - ndeviceinfo;
-      if(global_times != NULL){
-        int itime;
-
-        highlight_time = global_times[itimes];
-        itime = GetInterval(highlight_time, hrrinfo->vals, hrrinfo->nvals);
-        itime = CLAMP(itime, 0, hrrinfo->nvals - 1);
-
-        highlight_val = hrri->vals[itime];
-      }
-      if(hrri->nvals > 0){
-        DrawGenCurve(option, plot2di, curve, plot2d_size_factor, hrrinfo->vals, hrri->vals, hrri->nvals,
-                     highlight_time, highlight_val, valmin, valmax,
-                     hrri->label.shortlabel, position, side, unit_display, pad_length);
-      }
-    }
+    shortlabel = GetPlotShortLabel(plot2di, i);
+    DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, csvi->vals, csvi->nvals,
+                 highlight_time, highlight_val, valmin, valmax, side,
+                 position, shortlabel, unit_display, pad_length);
   }
 }
 
@@ -487,17 +510,14 @@ void SetupPlot2DUnitData(void){
 
 /* ------------------ UpdateCurveBounds ------------------------ */
 
-void UpdateCurveBounds(plot2ddata * plot2di, int option){
+void UpdateCurveBounds(plot2ddata *plot2di, int option){
   int i;
 
-  for(i = 0; i < ndeviceinfo; i++){
-    devicedata *devi;
-    int j;
-    curvedata *curve;
+  if(option==1){
+    for(i = 0; i<PLOT2D_MAX_CURVES; i++){
+      curvedata *curve;
 
-    devi = deviceinfo + i;
-    curve = plot2di->curve + i;
-    if(option == 1){
+      curve = plot2di->curve+i;
       curve->color[0] = 0;
       curve->color[1] = 0;
       curve->color[2] = 0;
@@ -505,74 +525,81 @@ void UpdateCurveBounds(plot2ddata * plot2di, int option){
       curve->factors[0] = 1.0;
       curve->factors[1] = 0.0;
       curve->use_factors = 0;
-      }
-    if(devi->nvals > 0){
-      float valmin, valmax;
-
-      valmin = devi->vals[0];
-      valmax = valmin;
-      for(j = 1; j < devi->nvals; j++){
-        valmin = MIN(valmin, devi->vals[j]);
-        valmax = MAX(valmax, devi->vals[j]);
-        }
-      curve->valmin = valmin;
-      curve->valmax = valmax;
-      curve->usermin = valmin;
-      curve->usermax = valmax;
-      curve->use_usermin = 0;
-      curve->use_usermax = 0;
-      }
-    }
-  for(i = 0; i < nhrrinfo; i++){
-    hrrdata *hrri;
-    int j;
-    curvedata *curve;
-
-    curve = plot2di->curve + i + ndeviceinfo;
-    hrri = hrrinfo + i;
-    if(option == 1){
-      curve->color[0] = 0;
-      curve->color[1] = 0;
-      curve->color[2] = 0;
-      curve->linewidth = 1.0;
-      curve->factors[0] = 1.0;
-      curve->factors[1] = 0.0;
-      curve->use_factors = 0;
-      }
-    if(hrri->nvals > 0){
-      float valmin, valmax;
-
-      valmin = hrri->vals[0];
-      valmax = valmin;
-      for(j = 1; j < hrri->nvals; j++){
-        valmin = MIN(valmin, hrri->vals[j]);
-        valmax = MAX(valmax, hrri->vals[j]);
-        }
-      curve->valmin = valmin;
-      curve->valmax = valmax;
-      curve->usermin = valmin;
-      curve->usermax = valmax;
-      curve->use_usermin = 0;
-      curve->use_usermax = 0;
-      }
     }
   }
 
+  for(i=0; i< ncsvfileinfo; i++){
+    int j;
+    csvfiledata *csvfi;
+
+    csvfi = csvfileinfo + i;
+    for(j=0; j<csvfi->ncsvinfo; j++){
+      csvdata *csvi;
+      float valmin, valmax;
+      int k;
+
+      csvi = csvfi->csvinfo + j;
+      valmin = csvi->vals[0];
+      valmax = valmin;
+      for(k=1; k<csvi->nvals; k++){
+        valmin = MIN(valmin, csvi->vals[k]);
+        valmax = MAX(valmax, csvi->vals[k]);
+      }
+      csvi->valmin = valmin;
+      csvi->valmax = valmax;
+    }
+  }
+
+  if(plot2di->ncurves == 0){
+    plot2di->bounds_defined = 0;
+  }
+  else{
+    plot2di->bounds_defined = 1;
+  }
+  for(i = 0; i<plot2di->ncurves; i++){
+    curvedata   *curve;
+    csvdata     *csvi;
+
+    curve = plot2di->curve+i;
+    csvi = GetCsv(curve->csv_file_index, curve->csv_col_index, NULL);
+    curve->vmin = csvi->valmin;
+    curve->vmax = csvi->valmax;
+  }
+  for(i = plot2di->ncurves; i < PLOT2D_MAX_CURVES;  i++){
+    curvedata *curve;
+
+    curve              = plot2di->curve + i;
+    curve->vmin      = 0.0;
+    curve->vmax      = 1.0;
+  }
+}
+
 /* ------------------ InitPlot2D ------------------------ */
 
-void InitPlot2D(plot2ddata * plot2di, int plot_index){
+void InitPlot2D(plot2ddata *plot2di, int plot_index){
   if(ndeviceinfo == 0 && nhrrinfo == 0)return;
-  plot2di->ncurve_indexes = 0;
-  plot2di->ncurve_indexes_ini = 0;
+  plot2di->ncurves = 0;
+  plot2di->ncurves_ini = 0;
   plot2di->show = 0;
   plot2di->show_title = 0;
+  plot2di->show_curve_labels = 0;
+  plot2di->show_curve_values = 0;
   plot2di->xyz[0] = xbar0FDS;
   plot2di->xyz[1] = ybar0FDS;
   plot2di->xyz[2] = zbar0FDS;
+#ifdef pp_PLOT2D_BOUNDS
+  plot2di->use_valmin[0] = 0;
+  plot2di->use_valmin[1] = 0;
+  plot2di->use_valmax[0] = 0;
+  plot2di->use_valmax[1] = 0;
+  plot2di->valmin[0] = 0.0;
+  plot2di->valmin[1] = 0.0;
+  plot2di->valmax[0] = 1.0;
+  plot2di->valmax[1] = 1.0;
+#endif
   plot2di->plot_index = plot_index;
   sprintf(plot2di->plot_label, "plot %i", plot_index);
   plot2di->curve_index = 0;
-  NewMemory((void **)&(plot2di->curve), (ndeviceinfo + nhrrinfo) * sizeof(curvedata));
   UpdateCurveBounds(plot2di, 1);
   }
 
