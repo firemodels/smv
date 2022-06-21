@@ -172,7 +172,6 @@ GLUI_StaticText *STATIC_globalframelimit_max = NULL;
 GLUI_StaticText *STATIC_timelimit_min = NULL;
 GLUI_StaticText *STATIC_timelimit_max = NULL;
 
-
 #define VOLRENDER_ROLLOUT   0
 #define SLICERENDER_ROLLOUT 1
 #define MESH_ROLLOUT        2

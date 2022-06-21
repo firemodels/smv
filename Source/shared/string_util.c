@@ -73,7 +73,7 @@ void FParseCSV(char *buffer, float *vals, int *valids, int ncols, int *ntokens){
 
   token=strtok(buffer,",");
   while(token!=NULL&&nt<ncols){
-    if(STRCMP(token,"NULL")==0){
+    if(STRCMP(token,"NULL")==0||strchr(token, ':')!=NULL){
       valids[nt]=0;
       vals[nt]=0.0;
     }
@@ -110,7 +110,7 @@ void ParseCSV(char *buffer, char **tokens, int *ntokens){
     if(inside_quote==0&&buffer[i]==',')buffer[i]=0;
   }
   tokens[nt++]=buffer;
-  for(i=1;i<lenbuffer;i++){
+  for(i=0;i<lenbuffer;i++){
     if(buffer[i]==0){
       tokens[nt++]=buffer+i+1;
     }
