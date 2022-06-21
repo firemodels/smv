@@ -1026,6 +1026,10 @@ typedef struct _plot2ddata{
   int ncurves, ncurves_ini;
   int curve_index, plot_index;
   int show, show_title, show_curve_labels, show_curve_values;
+#ifdef pp_PLOT2D_BOUNDS
+  float valmin[2],     valmax[2];
+  int   use_valmin[2], use_valmax[2];
+#endif
   curvedata curve[PLOT2D_MAX_CURVES];
   int bounds_defined;
   float xyz[3];

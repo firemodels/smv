@@ -11594,6 +11594,12 @@ int ReadIni2(char *inifile, int localfile){
         sscanf(buffer, " %f %f %f %i %i %i %i %i",
                        plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->show_title,
                        &plot2di->ncurves, &plot2di->show_curve_labels, &plot2di->show_curve_values);
+#ifdef pp_PLOT2D_BOUNDS
+        fgets(buffer, 255, stream);
+        sscanf(buffer, " %f %i %f %i %f %i %f %i ",
+               plot2di->valmin,   plot2di->use_valmin,   plot2di->valmax,   plot2di->use_valmax,
+               plot2di->valmin+1, plot2di->use_valmin+1, plot2di->valmax+1, plot2di->use_valmax+1);
+#endif
         for(j=0; j<plot2di->ncurves; j++){
           int color[3];
           float linewidth1;
@@ -14988,6 +14994,12 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, " %f %f %f %i %i %i %i %i\n",
                      plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->show_title,
                      plot2di->ncurves, plot2di->show_curve_labels, plot2di->show_curve_values);
+#ifdef pp_PLOT2D_BOUNDS
+    fprintf(fileout, " %f %i %f %i %f %i %f %i\n",
+            plot2di->valmin[0], plot2di->use_valmin[0], plot2di->valmax[0], plot2di->use_valmax[0],
+            plot2di->valmin[1], plot2di->use_valmin[1], plot2di->valmax[1], plot2di->use_valmax[1]
+            );
+#endif
     for(j = 0; j < plot2di->ncurves; j++){
       int *color;
       float linewidth1, *curve_factors;

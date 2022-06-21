@@ -587,6 +587,16 @@ void InitPlot2D(plot2ddata *plot2di, int plot_index){
   plot2di->xyz[0] = xbar0FDS;
   plot2di->xyz[1] = ybar0FDS;
   plot2di->xyz[2] = zbar0FDS;
+#ifdef pp_PLOT2D_BOUNDS
+  plot2di->use_valmin[0] = 0;
+  plot2di->use_valmin[1] = 0;
+  plot2di->use_valmax[0] = 0;
+  plot2di->use_valmax[1] = 0;
+  plot2di->valmin[0] = 0.0;
+  plot2di->valmin[1] = 0.0;
+  plot2di->valmax[0] = 1.0;
+  plot2di->valmax[1] = 1.0;
+#endif
   plot2di->plot_index = plot_index;
   sprintf(plot2di->plot_label, "plot %i", plot_index);
   plot2di->curve_index = 0;

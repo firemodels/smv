@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+//#define pp_PLOT2D_BOUNDS     // 2d plot widgets for setting bounds
 //#define pp_PLOT2D_DEBUG     // 2d plot debug output
 #define pp_PLOT2D_NEW       // allow multiple curves on a single 2d plot
 #define pp_PLOT2D_OVERLAP   // allow scene to overlap 2d plot region
