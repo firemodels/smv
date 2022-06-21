@@ -34,13 +34,25 @@ typedef struct _procdata {
   int rollout_id;
 } procdata;
 #endif
-/* --------------------------  csvdata ------------------------------------ */
 
-typedef struct _csvdata {
-  char *file;
-  int loaded, display;
-  int type;
+/* --------------------------  csvdata ------------------------------------ */
+typedef struct _csvdata{
+  flowlabels label;
+  float val, *vals, *vals_orig;
+  float valmin, valmax;
+  int nvals;
+  int dimensionless, skip;
 } csvdata;
+
+/* --------------------------  _csvfiledata ------------------------------------ */
+
+typedef struct _csvfiledata {
+  char *file;
+  csvdata *csvinfo, *time;
+  int ncsvinfo;
+  int loaded, display;
+  char c_type[32];
+} csvfiledata;
 
 /* --------------------------  vertdata ------------------------------------ */
 
@@ -998,20 +1010,29 @@ typedef struct _hrrdata {
 
 #ifdef pp_PLOT2D_NEW
 typedef struct _curvedata{
-  int index, index_ini, use_usermin, use_usermax, use_factors, color[3];
-  float valmin, valmax,  usermin, usermax;
+  char c_type[64];
+  int csv_file_index;
+  int csv_col_index, csv_col_index_ini;
+  int use_factors, color[3];
+  float vmin, vmax;
   float linewidth;
   float factors[2];
 } curvedata;
 
 /* --------------------------  plot2ddata ------------------------------------ */
 
+#define PLOT2D_MAX_CURVES 50
 typedef struct _plot2ddata{
   char plot_label[350];
-  int ncurve_indexes, ncurve_indexes_ini;
+  int ncurves, ncurves_ini;
   int curve_index, plot_index;
-  int show, show_title;
-  curvedata *curve;
+  int show, show_title, show_curve_labels, show_curve_values;
+#ifdef pp_PLOT2D_BOUNDS
+  float valmin[2],     valmax[2];
+  int   use_valmin[2], use_valmax[2];
+#endif
+  curvedata curve[PLOT2D_MAX_CURVES];
+  int bounds_defined;
   float xyz[3];
 } plot2ddata;
 #endif
