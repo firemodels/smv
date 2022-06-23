@@ -272,7 +272,7 @@ void ShowScene2(int mode){
     SNIFF_ERRORS("DrawBlockages");
   }
 
-  /* ++++++++++++++++++++++++ draw triangles +++++++++++++++++++++++++ */
+  /* ++++++++++++++++++++++++ draw opaque cfaces +++++++++++++++++++++++++ */
 
   if(ngeominfoptrs>0){
     CLIP_GEOMETRY;
@@ -460,19 +460,25 @@ void ShowScene2(int mode){
 #endif
   }
 
-  /* ++++++++++++++++++++++++ draw triangles +++++++++++++++++++++++++ */
+  /* ++++++++++++++++++++++++ draw transparent cfaces +++++++++++++++++++++++++ */
 
-  if(ncgeominfo>0){
-    if(use_cfaces==1){
+  if(ncgeominfo > 0){
+    if(use_cfaces == 1){
       int i;
 
-      for(i = 0; i<ncgeominfo; i++){
+      for(i = 0; i < ncgeominfo; i++){
         geomdata *geomi;
 
-        geomi = cgeominfo+i;
+        geomi = cgeominfo + i;
         DrawCGeom(DRAW_TRANSPARENT, geomi);
       }
     }
+  }
+
+  /* ++++++++++++++++++++++++ draw transparent iso-surfaces +++++++++++++++++++++++++ */
+
+  if(ngeominfoptrs>0){
+    CLIP_GEOMETRY;
     DrawGeom(DRAW_TRANSPARENT, GEOM_STATIC);
     DrawGeom(DRAW_TRANSPARENT, GEOM_DYNAMIC);
   }
