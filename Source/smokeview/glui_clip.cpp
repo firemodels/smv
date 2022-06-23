@@ -171,7 +171,6 @@ void ClipCB(int var){
   case SPINNER_zlower:
   case SPINNER_zupper:
     updatefacelists = 1;
-    reset_clipvals = 0;
     break;
   default:
     ASSERT(FFALSE);
@@ -204,7 +203,6 @@ void ClipCB(int var){
     camera_current->ymax = clipinfo.ymax;
     camera_current->zmin = clipinfo.zmin;
     camera_current->zmax = clipinfo.zmax;
-    reset_clipvals = 0;
     break;
   default:
     ASSERT(FFALSE);
