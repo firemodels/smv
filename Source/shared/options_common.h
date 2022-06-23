@@ -7,11 +7,8 @@
 #define pp_HASH   // md5, sha1 and sha255 hashing
 #endif
 
-#ifndef pp_GCC
-#define INTEL_LLVM_COMPILER_FORCE
 #ifdef __INTEL_COMPILER
 #define INTEL_COMPILER_ANY
-#endif
 #endif
 
 #ifdef __INTEL_LLVM_COMPILER
@@ -33,6 +30,11 @@
 #define HAVE_MSVS
 #define INTEL_WIN_COMPILER
 #endif
+#endif
+
+// Microsofts MSVC has timespec defined
+#ifdef _MSC_VER
+#define HAVE_STRUCT_TIMESPEC
 #endif
 
 //*** options: windows
