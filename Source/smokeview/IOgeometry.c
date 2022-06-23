@@ -614,6 +614,7 @@ void DrawGeom(int flag, int timestate){
 
         trianglei = tris[i];
         use_select_color = 0;
+        if(use_cfaces==1&&trianglei->geomtype==GEOM_GEOM)continue;
         if(select_geom==GEOM_PROP_TRIANGLE||select_geom==GEOM_PROP_SURF){
           if(trianglei->geomtype==GEOM_ISO)continue;
           if(select_geom==GEOM_PROP_TRIANGLE&&selected_geom_triangle==i)use_select_color = 1;
@@ -803,6 +804,7 @@ void DrawGeom(int flag, int timestate){
         int j;
 
         trianglei = tris[i];
+        if(use_cfaces==1&&trianglei->geomtype==GEOM_GEOM)continue;
         if(trianglei->geomtype!=GEOM_ISO){
           if(trianglei->outside_domain==0&&showgeom_inside_domain==0)continue;
           if(trianglei->outside_domain==1&&showgeom_outside_domain==0)continue;
@@ -2789,6 +2791,7 @@ FILE_SIZE ReadGeom2(geomdata *geomi, int load_flag, int type){
 
         CheckMemory;
         surfi = surfinfo;
+        triangles[ii].geomtype = type;
         switch(type){
         case GEOM_CGEOM:
           surfi=surfinfo + CLAMP(surf_ind[ii],0,nsurfinfo-1);
