@@ -325,8 +325,8 @@ void CopyCamera(cameradata *to, cameradata *from){
     UpdateGluiZoom();
   }
   to->dirty=1;
-  if(to==camera_current&&updateclipvals==0){
-    Cam2Clip(camera_current);
+  if(to == camera_current && updateclipvals == 0){
+    if(clip_mode==0)Cam2Clip(camera_current);
   }
   if(to==camera_current&&to->quat_defined==1){
     quat_general[0]=to->quaternion[0];
