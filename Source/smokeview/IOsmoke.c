@@ -4191,7 +4191,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
   if(smoke3di->maxval>=0.0){
     int return_flag_local = 0;
 
-    if(smoke3di->type==HRRPUV_index&&smoke3di->maxval<=load_hrrpuv_cutoff){
+    if(smoke3di->type==HRRPUV_index && smoke3di->maxval<=load_hrrpuv_cutoff && override_3dsmoke_cutoff==0){
       SetupSmoke3D(smoke3di, UNLOAD, iframe_arg, &error_local);
       *errorcode_arg = 0;
       if(iframe_arg==ALL_SMOKE_FRAMES){
@@ -4406,11 +4406,15 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
 
   if(iframe_arg==ALL_SMOKE_FRAMES){
     if(file_size_local>1000000){
-      PRINTF(" - %.1f MB/%.1f s\n", (float)file_size_local/1000000., total_time_local);
+      PRINTF(" - %.1f MB/%.1f s", (float)file_size_local/1000000., total_time_local);
     }
     else{
-      PRINTF(" - %.0f kB/%.1f s\n", (float)file_size_local/1000., total_time_local);
+      PRINTF(" - %.0f kB/%.1f s", (float)file_size_local/1000., total_time_local);
     }
+    char max_label[256];
+
+    Float2String(max_label, smoke3di->maxval, 4, 0);
+    PRINTF(" - max: %s\n", max_label);
     PrintMemoryInfo;
   }
   if(smoke3di->extinct>0.0){
