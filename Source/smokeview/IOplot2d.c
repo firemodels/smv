@@ -418,6 +418,14 @@ void DrawGenPlot(plot2ddata *plot2di){
     else{
       option = PLOT_ONLY_DATA;
     }
+    if(side == AXIS_LEFT){
+      if(plot2di->use_valmax[1] == 1)valmax = plot2di->valmax[1];
+      if(plot2di->use_valmin[1] == 1)valmin = plot2di->valmin[1];
+    }
+    if(side == AXIS_RIGHT){
+      if(plot2di->use_valmax[0] == 1)valmax = plot2di->valmax[0];
+      if(plot2di->use_valmin[0] == 1)valmin = plot2di->valmin[0];
+    }
     csvfiledata *csvfi;
     csvdata *csvi;
 
