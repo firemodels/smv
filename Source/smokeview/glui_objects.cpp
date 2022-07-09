@@ -1490,8 +1490,7 @@ extern "C" void GluiDeviceSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_device2Dplots, glui_device);
     ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_device2Dplots, PLOT2D_ROLLOUT, glui_device);
 
-    //xxx check if statement
-    if(nhrrinfo>0||ndevicetypes>0){
+    if(ncsvfileinfo>0){
       ROLLOUT_plotgeneral = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "", false);
 
       PANEL_plot8 = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "", 0);
