@@ -122,6 +122,7 @@ GLUI_Listbox *LIST_open=NULL;
 GLUI_Listbox *LIST_hrrdata=NULL;
 
 #ifdef pp_PLOT2D_BOUNDS
+GLUI_Panel *PANEL_plot_bounds = NULL;
 GLUI_Panel *PANEL_bound1 = NULL;
 GLUI_Panel *PANEL_bound1a = NULL;
 GLUI_Panel *PANEL_bound1b = NULL;
@@ -1502,6 +1503,11 @@ extern "C" void GluiDeviceSetup(int main_window){
       LIST_plots->add_item(-1, "");
       CHECKBOX_show_genplot = glui_device->add_checkbox_to_panel(PANEL_plots, "show", &(glui_plot2dinfo->show), GENPLOT_SHOW_PLOT, GenPlotCB);
 
+      PANEL_plot_position = glui_device->add_panel_to_panel(PANEL_plot8, "plot position");
+      SPINNER_genplot_x = glui_device->add_spinner_to_panel(PANEL_plot_position, "x", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz + 0, GENPLOT_XYZ, GenPlotCB);
+      SPINNER_genplot_y = glui_device->add_spinner_to_panel(PANEL_plot_position, "y", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz + 1, GENPLOT_XYZ, GenPlotCB);
+      SPINNER_genplot_z = glui_device->add_spinner_to_panel(PANEL_plot_position, "z", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz + 2, GENPLOT_XYZ, GenPlotCB);
+      BUTTON_plot_position = glui_device->add_button_to_panel(PANEL_plot_position, _("Set to device location"), GENPLOT_SET_POS, GenPlotCB);
       glui_device->add_column_to_panel(PANEL_plot8, false);
 
       PANEL_plot_title = glui_device->add_panel_to_panel(PANEL_plot8, "plot labels");
@@ -1512,36 +1518,31 @@ extern "C" void GluiDeviceSetup(int main_window){
       CHECKBOX_show_curve_values = glui_device->add_checkbox_to_panel(PANEL_plot_title, "show curve values", &(glui_plot2dinfo->show_curve_values), GENPLOT_PLOT_LABEL, GenPlotCB);
 
 #ifdef pp_PLOT2D_BOUNDS
-      PANEL_bound1 = glui_device->add_panel_to_panel(PANEL_plot_title, "bound1");
+      PANEL_plot_bounds = glui_device->add_panel_to_panel(PANEL_plot_title, "bounds");
+      PANEL_bound1 = glui_device->add_panel_to_panel(PANEL_plot_bounds, "bound1");
       PANEL_bound1a = glui_device->add_panel_to_panel(PANEL_bound1, "",0);
 
-      SPINNER_genplot_valmin[0] = glui_device->add_spinner_to_panel(PANEL_bound1a, "max 1", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmax, GENPLOT_PLOT_MINMAX, GenPlotCB);
+      SPINNER_genplot_valmin[0] = glui_device->add_spinner_to_panel(PANEL_bound1a, "max", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmax, GENPLOT_PLOT_MINMAX, GenPlotCB);
       glui_device->add_column_to_panel(PANEL_bound1a, 0);
-      CHECKBOX_genplot_use_valmin[0] = glui_device->add_checkbox_to_panel(PANEL_bound1a, "use max 1", glui_plot2dinfo->use_valmax, GENPLOT_PLOT_MINMAX, GenPlotCB);
+      CHECKBOX_genplot_use_valmin[0] = glui_device->add_checkbox_to_panel(PANEL_bound1a, "use max", glui_plot2dinfo->use_valmax, GENPLOT_PLOT_MINMAX, GenPlotCB);
 
       PANEL_bound1b = glui_device->add_panel_to_panel(PANEL_bound1, "",0);
-      SPINNER_genplot_valmax[0] = glui_device->add_spinner_to_panel(PANEL_bound1b, "min 1", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmin, GENPLOT_PLOT_MINMAX, GenPlotCB);
+      SPINNER_genplot_valmax[0] = glui_device->add_spinner_to_panel(PANEL_bound1b, "min", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmin, GENPLOT_PLOT_MINMAX, GenPlotCB);
       glui_device->add_column_to_panel(PANEL_bound1b, 0);
-      CHECKBOX_genplot_use_valmax[0] = glui_device->add_checkbox_to_panel(PANEL_bound1b, "use min 1", glui_plot2dinfo->use_valmin, GENPLOT_PLOT_MINMAX, GenPlotCB);
+      CHECKBOX_genplot_use_valmax[0] = glui_device->add_checkbox_to_panel(PANEL_bound1b, "use min", glui_plot2dinfo->use_valmin, GENPLOT_PLOT_MINMAX, GenPlotCB);
 
-      PANEL_bound2 = glui_device->add_panel_to_panel(PANEL_plot_title, "bound2");
+      PANEL_bound2 = glui_device->add_panel_to_panel(PANEL_plot_bounds, "bound2");
       PANEL_bound2a = glui_device->add_panel_to_panel(PANEL_bound2, "",0);
 
-      SPINNER_genplot_valmin[1] = glui_device->add_spinner_to_panel(PANEL_bound2a, "max 2", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmax+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
+      SPINNER_genplot_valmin[1] = glui_device->add_spinner_to_panel(PANEL_bound2a, "max", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmax+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
       glui_device->add_column_to_panel(PANEL_bound2a, 0);
-      CHECKBOX_genplot_use_valmin[1] = glui_device->add_checkbox_to_panel(PANEL_bound2a, "use max 2", glui_plot2dinfo->use_valmax+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
+      CHECKBOX_genplot_use_valmin[1] = glui_device->add_checkbox_to_panel(PANEL_bound2a, "use max", glui_plot2dinfo->use_valmax+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
 
       PANEL_bound2b = glui_device->add_panel_to_panel(PANEL_bound2, "",0);
-      SPINNER_genplot_valmax[1] = glui_device->add_spinner_to_panel(PANEL_bound2b, "min 2", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmin+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
+      SPINNER_genplot_valmax[1] = glui_device->add_spinner_to_panel(PANEL_bound2b, "min", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmin+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
       glui_device->add_column_to_panel(PANEL_bound2b, 0);
-      CHECKBOX_genplot_use_valmax[1] = glui_device->add_checkbox_to_panel(PANEL_bound2b, "use min 2", glui_plot2dinfo->use_valmin+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
+      CHECKBOX_genplot_use_valmax[1] = glui_device->add_checkbox_to_panel(PANEL_bound2b, "use min", glui_plot2dinfo->use_valmin+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
 #endif
-      glui_device->add_column_to_panel(PANEL_plot8, false);
-      PANEL_plot_position = glui_device->add_panel_to_panel(PANEL_plot8, "plot position");
-      SPINNER_genplot_x          = glui_device->add_spinner_to_panel(PANEL_plot_position, "x", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+0, GENPLOT_XYZ, GenPlotCB);
-      SPINNER_genplot_y          = glui_device->add_spinner_to_panel(PANEL_plot_position, "y", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+1, GENPLOT_XYZ, GenPlotCB);
-      SPINNER_genplot_z          = glui_device->add_spinner_to_panel(PANEL_plot_position, "z", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+2, GENPLOT_XYZ, GenPlotCB);
-      BUTTON_plot_position       = glui_device->add_button_to_panel(PANEL_plot_position, _("Set to device location"),                         GENPLOT_SET_POS, GenPlotCB);
 
       PANEL_plot5 = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "", 0);
       PANEL_add_curve = glui_device->add_panel_to_panel(PANEL_plot5, "");
