@@ -1543,7 +1543,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       PANEL_plot8 = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "", 0);
 
       PANEL_plots = glui_device->add_panel_to_panel(PANEL_plot8, "plots");
-      BUTTON_add_plot = glui_device->add_button_to_panel(PANEL_plots, _("New"),            GENPLOT_ADD_PLOT,     GenPlotCB);
+      BUTTON_add_plot = glui_device->add_button_to_panel(PANEL_plots, _("New plot"),            GENPLOT_ADD_PLOT,     GenPlotCB);
       BUTTON_rem_plot = glui_device->add_button_to_panel(PANEL_plots, _("Remove"),         GENPLOT_REM_PLOT,     GenPlotCB);
       LIST_plots = glui_device->add_listbox_to_panel(PANEL_plots, "select:", &iplot2dinfo, GENPLOT_SELECT_PLOT,  GenPlotCB);
       LIST_plots->add_item(-1, "");
