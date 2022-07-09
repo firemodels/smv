@@ -879,6 +879,12 @@ void GenPlotCB(int var){
       break;
     case GENPLOT_CSV_TYPE:
       FilterList();
+      if(icsv_units==-1){
+        LIST_csvunits->set_name("show all curves");
+      }
+      else{
+        LIST_csvunits->set_name("only show curves with units:");
+      }
       break;
     case GENPLOT_SELECT_CURVE:
       index = glui_plot2dinfo->curve_index;
@@ -1586,8 +1592,8 @@ extern "C" void GluiDeviceSetup(int main_window){
       glui_device->add_button_to_panel(PANEL_remove_curve, _("all"), GENPLOT_REM_ALLCURVES, GenPlotCB);
 
       PANEL_curve_bounds = glui_device->add_panel_to_panel(PANEL_curve_properties, "", 0);
-      STATIC_curv_min = glui_device->add_statictext_to_panel(PANEL_curve_bounds, "min: 0.0");
       STATIC_curv_max = glui_device->add_statictext_to_panel(PANEL_curve_bounds, "max: 0.0");
+      STATIC_curv_min = glui_device->add_statictext_to_panel(PANEL_curve_bounds, "min: 0.0");
 
       glui_device->add_column_to_panel(PANEL_curve_properties, false);
 
