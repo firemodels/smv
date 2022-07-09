@@ -791,12 +791,26 @@ SVEXTERN int SVDECL(showdevice_type,1), SVDECL(showdevice_unit,1);
 SVEXTERN float SVDECL(device_valmin,0.0), SVDECL(device_valmax,1.0);
 SVEXTERN devicedata SVDECL(**devicetypes,NULL);
 SVEXTERN int SVDECL(ndevicetypes,0);
-#ifdef pp_PLOT2D_NEW
+
+// gen plot varables
+SVEXTERN int SVDECL(glui_remove_selected_curve, 0);
+SVEXTERN int SVDECL(glui_csv_file_index, 0);
+SVEXTERN int SVDECL(icsv_cols, 0), SVDECL(icsv_units, 0);
+SVEXTERN int SVDECL(plot2d_max_columns, 0);
+SVEXTERN int SVDECL(deviceunits_index, 0);
+SVEXTERN int SVDECL(plot2d_dialogs_defined, 0);
+SVEXTERN int SVDECL(glui_device_unit_index, -1);
+SVEXTERN int SVDECL(glui_device_index, 0);
+SVEXTERN int SVDECL(glui_hrr_unit_index, -1);
+SVEXTERN int SVDECL(glui_hrr_index, 1);
+SVEXTERN plot2ddata SVDECL(*glui_plot2dinfo, NULL), SVDECL(*plot2dinfo, NULL), SVDECL(*plot2dini, NULL);
+SVEXTERN int SVDECL(nplot2dinfo, 0), SVDECL(iplot2dinfo, 0), SVDECL(nplot2dini, 0), SVDECL(plot2d_count, 0);
+SVEXTERN curvedata glui_curve, glui_curve_default;
 SVEXTERN devicedata SVDECL(**deviceunits, NULL);
 SVEXTERN int SVDECL(ndeviceunits, 0);
 SVEXTERN hrrdata SVDECL(**hrrunits, NULL);
 SVEXTERN int SVDECL(nhrrunits, 0);
-#endif
+
 SVEXTERN int SVDECL(sort_geometry,1),SVDECL(sort_transparent_faces,0);
 SVEXTERN isotri SVDECL(***iso_trans_list,NULL),SVDECL(***iso_opaques_list,NULL);
 SVEXTERN int SVDECL(*niso_trans_list,NULL),SVDECL(*niso_opaques_list,NULL);
@@ -1530,21 +1544,7 @@ SVEXTERN int SVDECL(ndeviceinfo,0),nvdeviceinfo,ndeviceinfo_exp;
 SVEXTERN float max_dev_vel;
 SVEXTERN int SVDECL(last_prop_display,-1);
 SVEXTERN int SVDECL(devicetypes_index,0);
-#ifdef pp_PLOT2D_NEW
-SVEXTERN int SVDECL(glui_remove_selected_curve, 0);
-SVEXTERN int SVDECL(glui_csv_file_index, 0);
-SVEXTERN int SVDECL(icsv_cols, 0), SVDECL(icsv_units, 0);
-SVEXTERN int SVDECL(plot2d_max_columns, 0);
-SVEXTERN int SVDECL(deviceunits_index, 0);
-SVEXTERN int SVDECL(plot2d_dialogs_defined, 0);
-SVEXTERN int SVDECL(glui_device_unit_index, -1);
-SVEXTERN int SVDECL(glui_device_index, 0);
-SVEXTERN int SVDECL(glui_hrr_unit_index, -1);
-SVEXTERN int SVDECL(glui_hrr_index, 1);
-SVEXTERN plot2ddata SVDECL(*glui_plot2dinfo, NULL), SVDECL(*plot2dinfo, NULL), SVDECL(*plot2dini, NULL);
-SVEXTERN int SVDECL(nplot2dinfo, 0), SVDECL(iplot2dinfo, 0), SVDECL(nplot2dini, 0), SVDECL(plot2d_count, 0);
-SVEXTERN curvedata glui_curve, glui_curve_default;
-#endif
+
 SVEXTERN float SVDECL(plot2d_hrr_min,0.0), SVDECL(plot2d_hrr_max,1.0);
 SVEXTERN int SVDECL(use_plot2d_hrr_min, 0);
 SVEXTERN int SVDECL(use_plot2d_hrr_max, 0);

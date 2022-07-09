@@ -25,7 +25,6 @@
 #define FUEL_HOC               32
 #define RESET_FUEL_HOC         33
 
-#ifdef pp_PLOT2D_NEW
 #define GENPLOT_ADD_PLOT            101
 #define GENPLOT_REM_PLOT            102
 #define GENPLOT_REM_CURVE           103
@@ -42,7 +41,6 @@
 #define GENPLOT_ADD_CURVE           114
 #ifdef pp_PLOT2D_BOUNDS
 #define GENPLOT_PLOT_MINMAX         115
-#endif
 #endif
 
 #define WINDROSE_SHOW_FIRST   996
@@ -75,20 +73,17 @@ char gluiopen_filter2[sizeof(GLUI_String)];
 
 GLUI *glui_device=NULL;
 
-#ifdef pp_PLOT2D_NEW
 GLUI_EditText *EDIT_plot_label = NULL;
 
 GLUI_Button *BUTTON_plot_position = NULL;
 GLUI_Button *BUTTON_add_plot = NULL;
 GLUI_Button *BUTTON_rem_plot = NULL;
-#endif
 GLUI_Button *BUTTON_open_down=NULL ;
 GLUI_Button *BUTTON_device_1=NULL;
 GLUI_Button *BUTTON_device_2=NULL;
 GLUI_Button *BUTTON_update_windrose = NULL;
 GLUI_Button *BUTTON_reset_fuel_hoc = NULL;
 
-#ifdef pp_PLOT2D_NEW
 GLUI_Checkbox *CHECKBOX_genplot_use_usermin = NULL;
 GLUI_Checkbox *CHECKBOX_genplot_use_usermax = NULL;
 GLUI_Checkbox *CHECKBOX_show_genplot        = NULL;
@@ -99,7 +94,6 @@ GLUI_Checkbox *CHECKBOX_genplot_use_factors = NULL;
 #ifdef pp_PLOT2D_BOUNDS
 GLUI_Checkbox *CHECKBOX_genplot_use_valmin[2];
 GLUI_Checkbox *CHECKBOX_genplot_use_valmax[2];
-#endif
 #endif
 GLUI_Checkbox *CHECKBOX_device_1=NULL;
 GLUI_Checkbox *CHECKBOX_showdevice_val=NULL;
@@ -118,18 +112,15 @@ GLUI_Checkbox *CHECKBOX_vis_hrr_plot=NULL;
 
 GLUI_EditText *EDIT_filter=NULL;
 
-#ifdef pp_PLOT2D_NEW
 GLUI_Listbox *LIST_csvfile = NULL;
 GLUI_Listbox *LIST_csvID    = NULL;
 GLUI_Listbox *LIST_csvunits = NULL;
 GLUI_Listbox *LIST_plots = NULL;
 GLUI_Listbox *LIST_plotcurves = NULL;
-#endif
 GLUI_Listbox *LIST_devicetypes = NULL;
 GLUI_Listbox *LIST_open=NULL;
 GLUI_Listbox *LIST_hrrdata=NULL;
 
-#ifdef pp_PLOT2D_NEW
 #ifdef pp_PLOT2D_BOUNDS
 GLUI_Panel *PANEL_bound1 = NULL;
 GLUI_Panel *PANEL_bound1a = NULL;
@@ -154,7 +145,6 @@ GLUI_Panel *PANEL_plot5 = NULL;
 GLUI_Panel *PANEL_plots = NULL;
 GLUI_Panel *PANEL_plot8 = NULL;
 GLUI_Panel *PANEL_plot_position = NULL;
-#endif
 GLUI_Panel *PANEL_hrr_min = NULL;
 GLUI_Panel *PANEL_hrr_max = NULL;
 GLUI_Panel *PANEL_objects=NULL;
@@ -177,9 +167,7 @@ GLUI_RadioGroup *RADIO_scale_windrose=NULL;
 GLUI_RadioGroup *RADIO_windstate_windrose = NULL;
 GLUI_RadioGroup *RADIO_vis_device_plot = NULL;
 
-#ifdef pp_PLOT2D_NEW
 GLUI_Rollout *ROLLOUT_plotgeneral = NULL;
-#endif
 GLUI_Rollout *ROLLOUT_plotslice=NULL;
 GLUI_Rollout *ROLLOUT_plothrr=NULL;
 GLUI_Rollout *ROLLOUT_plotdevice = NULL;
@@ -197,7 +185,6 @@ GLUI_Rollout *ROLLOUT_windrose = NULL;
 GLUI_Rollout **ROLLOUT_showz_windrose;
 GLUI_Rollout *ROLLOUT_trees = NULL;
 
-#ifdef pp_PLOT2D_NEW
 GLUI_Spinner *SPINNER_genplot_x = NULL;
 GLUI_Spinner *SPINNER_genplot_y = NULL;
 GLUI_Spinner *SPINNER_genplot_z = NULL;
@@ -208,7 +195,6 @@ GLUI_Spinner *SPINNER_genplot_linewidth = NULL;
 #ifdef pp_PLOT2D_BOUNDS
 GLUI_Spinner *SPINNER_genplot_valmin[2];
 GLUI_Spinner *SPINNER_genplot_valmax[2];
-#endif
 #endif
 GLUI_Spinner *SPINNER_fuel_hoc = NULL;
 GLUI_Spinner *SPINNER_size_factor = NULL;
@@ -230,10 +216,8 @@ GLUI_Spinner *SPINNER_scale_max_windrose = NULL;
 GLUI_Spinner *SPINNER_windrose_first=NULL;
 GLUI_Spinner *SPINNER_windrose_next=NULL;
 
-#ifdef pp_PLOT2D_NEW
 GLUI_StaticText *STATIC_curv_min = NULL;
 GLUI_StaticText *STATIC_curv_max = NULL;
-#endif
 
 #define OBJECTS_ROLLOUT     0
 #define FLOWVECTORS_ROLLOUT 1
@@ -388,8 +372,6 @@ void UpdateShowWindRoses(void) {
     }
   }
 }
-
-#ifdef pp_PLOT2D_NEW
 
 /* ------------------ PrintPlotInfo ------------------------ */
 
@@ -1035,7 +1017,6 @@ void GenPlotCB(int var){
       break;
   }
 }
-#endif
 
 /* ------------------ DeviceCB ------------------------ */
 
@@ -1509,7 +1490,7 @@ extern "C" void GluiDeviceSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_device2Dplots, glui_device);
     ADDPROCINFO(deviceprocinfo, ndeviceprocinfo, ROLLOUT_device2Dplots, PLOT2D_ROLLOUT, glui_device);
 
-#ifdef pp_PLOT2D_NEW
+    //xxx check if statement
     if(nhrrinfo>0||ndevicetypes>0){
       ROLLOUT_plotgeneral = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "", false);
 
@@ -1638,7 +1619,6 @@ extern "C" void GluiDeviceSetup(int main_window){
       EnableDisablePlot2D();
       ROLLOUT_plotgeneral->disable();
     }
-#endif
 
     if(ndevicetypes>0){
       ROLLOUT_plotdevice = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "devc trees/values", false);

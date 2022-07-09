@@ -989,9 +989,7 @@ typedef struct _device {
   struct _vdevicedata *vdevice;
   int type, is_beam;
   int selected;
-#ifdef pp_PLOT2D_NEW
   int inlist1;
-#endif
   int valid;
 } devicedata;
 
@@ -1007,7 +1005,6 @@ typedef struct _hrrdata {
 
 /* --------------------------  curvedata ------------------------------------ */
 
-#ifdef pp_PLOT2D_NEW
 typedef struct _curvedata{
   char c_type[64];
   int csv_file_index;
@@ -1034,7 +1031,6 @@ typedef struct _plot2ddata{
   int bounds_defined;
   float xyz[3];
 } plot2ddata;
-#endif
 
 /* --------------------------  windrosedata ------------------------------------ */
 

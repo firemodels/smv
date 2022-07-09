@@ -132,7 +132,6 @@ void InitMisc(void){
   mat_ambient2[3] = 1.0;
   mat_specular2[3] = 1.0;
 
-#ifdef pp_PLOT2D_NEW
   glui_curve_default.color[0]    = 0;
   glui_curve_default.color[1]    = 0;
   glui_curve_default.color[2]    = 0;
@@ -143,8 +142,6 @@ void InitMisc(void){
   glui_curve_default.factors[0]  = 1.0;
   glui_curve_default.factors[1]  = 0.0;
   memcpy(&glui_curve, &glui_curve_default, sizeof(curvedata));
-#endif
-
 
   ResetGluiView(startup_view_ini);
   UpdateShow();

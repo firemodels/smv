@@ -7,8 +7,6 @@
 #include "datadefs.h"
 #include "smokeviewvars.h"
 
-#ifdef pp_PLOT2D_NEW
-
 /* ------------------ GetCurrentCsv ------------------------ */
 
 csvdata *GetCsv(int file_index, int col_index, csvfiledata **csvf_ptr){
@@ -609,8 +607,6 @@ void InitPlot2D(plot2ddata *plot2di, int plot_index){
   plot2di->curve_index = 0;
   UpdateCurveBounds(plot2di, 1);
   }
-
-#endif
 
   /* ------------------ DrawPlot ------------------------ */
 

@@ -19,7 +19,6 @@
 
 //#define pp_PLOT2D_BOUNDS     // 2d plot widgets for setting bounds
 //#define pp_PLOT2D_DEBUG     // 2d plot debug output
-#define pp_PLOT2D_NEW       // allow multiple curves on a single 2d plot
 #define pp_PART_MULTI        // load particles in parallel
 //#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds
 #define pp_THREADBUFFER

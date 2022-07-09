@@ -5,7 +5,7 @@
 #include "gd.h"
 #endif
 
-#ifdef pp_PLOT2D_NEW
+// gen plot routines
 EXTERNCPP char *GetPlotUnit(plot2ddata * plot2di, int curv_index);
 EXTERNCPP void GenPlotCB(int var);
 EXTERNCPP void UpdateCurveControls(char *unit);
@@ -17,7 +17,11 @@ EXTERNCPP int HaveGenDev(void);
 EXTERNCPP int HaveGenHrr(void);
 EXTERNCPP void ShowPlot2D(void);
 EXTERNCPP void ReadAllCSV(int flag);
-#endif
+EXTERNCPP char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index);
+EXTERNCPP void UpdateCurveBounds(plot2ddata * plot2di, int flag);
+EXTERNCPP csvdata *GetCsv(int file_index, int col_index, csvfiledata **csvf_ptr);
+EXTERNCPP csvdata *GetCurrentCsv(int i, csvfiledata **csvf_ptr);
+EXTERNCPP void SetupPlot2DUnitData(void);
 
 EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals);
 
@@ -537,13 +541,7 @@ EXTERNCPP void ReadHRR(int flag);
 EXTERNCPP void ReadDeviceData(char *file, int filetype, int flag);
 EXTERNCPP void SetupZoneDevs(void);
 EXTERNCPP void SetupDeviceData(void);
-#ifdef pp_PLOT2D_NEW
-EXTERNCPP char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index);
-EXTERNCPP void UpdateCurveBounds(plot2ddata * plot2di, int flag);
-EXTERNCPP csvdata *GetCsv(int file_index, int col_index, csvfiledata **csvf_ptr);
-EXTERNCPP csvdata *GetCurrentCsv(int i, csvfiledata **csvf_ptr);
-EXTERNCPP void SetupPlot2DUnitData(void);
-#endif
+
 EXTERNCPP void DrawCGeom(int flag, geomdata *cgeom);
 EXTERNCPP void DrawGeom(int flag,int frameflag);
 EXTERNCPP void RemoveDupBlockages(void);

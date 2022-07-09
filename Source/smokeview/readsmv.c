@@ -146,7 +146,6 @@ void UpdateHoc(void){
   }
 }
 
-#ifdef pp_PLOT2D_NEW
 /* ------------------ ReadCSV ------------------------ */
 
 int IsDimensionless(char *unit){
@@ -355,7 +354,6 @@ void ReadAllCSV(int flag){
     ReadCSV(csvfileinfo + i, flag);
   }
 }
-#endif
 
 /* ------------------ ReadHRR ------------------------ */
 
@@ -10843,10 +10841,8 @@ typedef struct {
     if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
   SetupDeviceData();
-#ifdef pp_PLOT2D_NEW
   ReadAllCSV(LOAD);
   SetupPlot2DUnitData();
-#endif
   if(nzoneinfo>0)SetupZoneDevs();
 
 #ifdef pp_THREAD
@@ -11094,10 +11090,8 @@ typedef struct {
   if(viswindrose==1)update_windrose = 1;
 
 // initialize 2d plot data structures
-#ifdef pp_PLOT2D_NEW
   NewMemory((void **)&glui_plot2dinfo, sizeof(plot2ddata));
   InitPlot2D(glui_plot2dinfo, 0);
-#endif
 
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");
@@ -11567,7 +11561,6 @@ int ReadIni2(char *inifile, int localfile){
       update_glui_devices = 1;
       continue;
     }
-#ifdef pp_PLOT2D_NEW
     if(Match(buffer, "SHOWGENPLOTS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &nplot2dini);
@@ -11630,7 +11623,6 @@ int ReadIni2(char *inifile, int localfile){
       update_glui_devices = 1;
       continue;
     }
-#endif
     if(Match(buffer, "SHOWMISSINGOBJECTS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &show_missing_objects);
@@ -14982,7 +14974,6 @@ void WriteIniLocal(FILE *fileout){
           vis_device_plot, showd_plot2d_labels, plot2d_size_factor, plot2d_line_width, plot2d_point_size,
           plot2d_xyz_offset[0], plot2d_xyz_offset[1], plot2d_xyz_offset[2], plot2d_font_spacing
   );
-#ifdef pp_PLOT2D_NEW
   fprintf(fileout, "SHOWGENPLOTS\n");
   fprintf(fileout, " %i\n", nplot2dinfo);
   for(i=0; i<nplot2dinfo; i++){
@@ -15017,7 +15008,6 @@ void WriteIniLocal(FILE *fileout){
                                                      curve_factors[0], curve_factors[1], curve_use_factors);
     };
   }
-#endif
   fprintf(fileout, "SHOWDEVICEVALS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n", showdevice_val, showvdevice_val, devicetypes_index, colordevice_val, vectortype, viswindrose, showdevice_type,showdevice_unit,showdevice_id);
   fprintf(fileout, "SHOWHRRPLOT\n");
