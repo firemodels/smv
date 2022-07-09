@@ -699,12 +699,24 @@ void EnableDisablePlot2D(void){
 
 extern "C" void ShowPlot2D(void){
   if(glui_device != NULL && ROLLOUT_plotgeneral != NULL){
+    char label[1024];
+    int i;
+
     glui_device->show();
     ROLLOUT_plotgeneral->enable();
     EnableDisablePlot2D();
     ROLLOUT_device2Dplots->open();
     ROLLOUT_plotgeneral->open();
-    ROLLOUT_plotgeneral->set_name("device/hrr comparison plots");
+    strcpy(label, "2D ");
+    for(i = 0; i < ncsvfileinfo; i++){
+      csvfiledata *csvfi;
+
+      csvfi = csvfileinfo + i;
+      strcat(label, csvfi->c_type);
+      if(i<ncsvfileinfo-1)strcat(label, "/");
+    }
+    strcat(label, " plots");
+    ROLLOUT_plotgeneral->set_name(label);
   }
 }
 
@@ -1629,7 +1641,7 @@ extern "C" void GluiDeviceSetup(int main_window){
 #endif
 
     if(ndevicetypes>0){
-      ROLLOUT_plotdevice = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "device plots", false);
+      ROLLOUT_plotdevice = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "2D devc plots", false);
       RADIO_vis_device_plot = glui_device->add_radiogroup_to_panel(ROLLOUT_plotdevice, &vis_device_plot, SHOWDEVICEPLOT, DeviceCB);
       glui_device->add_radiobutton_to_group(RADIO_vis_device_plot, "hide");
       glui_device->add_radiobutton_to_group(RADIO_vis_device_plot, "show selected");
@@ -1655,7 +1667,7 @@ extern "C" void GluiDeviceSetup(int main_window){
     }
 
     if(nhrrinfo>0){
-      ROLLOUT_plothrr = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "hrr plots", false);
+      ROLLOUT_plothrr = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "2D hrr plots", false);
       CHECKBOX_vis_hrr_plot = glui_device->add_checkbox_to_panel(ROLLOUT_plothrr, _("show"), &vis_hrr_plot, HRRPUV2_PLOT, DeviceCB);
       LIST_hrrdata = glui_device->add_listbox_to_panel(ROLLOUT_plothrr, "type:", &glui_hrr, DEVICE_TIMEAVERAGE, DeviceCB);
       for(i = 0; i<nhrrinfo; i++){
@@ -1686,7 +1698,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       }
     }
     if(nsliceinfo>0){
-      ROLLOUT_plotslice = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "slice", false);
+      ROLLOUT_plotslice = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "2D slice plots", false);
       glui_device->add_checkbox_to_panel(ROLLOUT_plotslice, _("show"), &vis_slice_plot, SLICE_PLOT, DeviceCB);
       glui_device->add_checkbox_to_panel(ROLLOUT_plotslice, _("slice bounds"), &slice_plot_bound_option, SLICE_PLOT, DeviceCB);
       SPINNER_slice_x = glui_device->add_spinner_to_panel(ROLLOUT_plotslice, "x", GLUI_SPINNER_FLOAT, slice_xyz+0, SLICE_PLOT, DeviceCB);
@@ -1697,7 +1709,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       SPINNER_slice_z->set_float_limits(zbar0FDS, zbarFDS);
     }
 
-    ROLLOUT_plotproperties = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "properties", false);
+    ROLLOUT_plotproperties = glui_device->add_rollout_to_panel(ROLLOUT_device2Dplots, "2D plot properties", false);
     glui_device->add_checkbox_to_panel(ROLLOUT_plotproperties, _("plot labels"), &showd_plot2d_labels);
     SPINNER_size_factor = glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("size factor"), GLUI_SPINNER_FLOAT, &plot2d_size_factor);
                           glui_device->add_spinner_to_panel(ROLLOUT_plotproperties, _("font spacing"), GLUI_SPINNER_FLOAT, &plot2d_font_spacing);
