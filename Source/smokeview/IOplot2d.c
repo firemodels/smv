@@ -232,9 +232,10 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
         strcat(label2, label);
         if(show_curve_values==1)strcat(label2, "/");
       }
+      int pad_length_val;
       if(show_curve_values==1){
         strcat(label2, c_zcur);
-        pad_length = GetStringLength(label2);
+        pad_length_val = GetStringLength(label2);
       }
       if(axis_side == AXIS_LEFT){
         if(show_curve_labels==1 || show_curve_values==1){
@@ -246,8 +247,14 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
         }
       else{
         if(show_curve_labels==1 || show_curve_values==1){
-          Output3TextRight(fplot_color,      xmin - dx,
-                           0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2, pad_length);
+          if(show_curve_values==1){
+            Output3TextRight(fplot_color,      xmin - dx,
+                             0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2, pad_length_val);
+          }
+          else{
+            Output3TextRight(fplot_color,      xmin - dx,
+                             0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2, pad_length);
+          }
         }
         Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmin,  c_zmin, pad_length);
         Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax , c_zmax, pad_length);
