@@ -856,27 +856,27 @@ void SetPlot2DBoundLabels(plot2ddata *plot2di){
     char *unit;
 
     unit = GetPlotUnit(plot2di, i);
-    if(axis_right_unit == NULL){
-      axis_right_unit = unit;
+    if(axis_left_unit == NULL){
+      axis_left_unit = unit;
       continue;
     }
-    if(strcmp(unit, axis_right_unit) != 0){
-      axis_left_unit = unit;
+    if(strcmp(unit, axis_left_unit) != 0){
+      axis_right_unit = unit;
       break;
     }
   }
   char label[256];
 
   strcpy(label, "bound (left axis)");
-  if(axis_right_unit != NULL){
-    strcpy(label, axis_right_unit);
+  if(axis_left_unit != NULL){
+    strcpy(label, axis_left_unit);
     strcat(label, " (left axis)");
   }
   PANEL_bound1->set_name(label);
 
   strcpy(label, "bound (right axis)");
-  if(axis_left_unit != NULL){
-    strcpy(label, axis_left_unit);
+  if(axis_right_unit != NULL){
+    strcpy(label, axis_right_unit);
     strcat(label, " (right axis)");
   }
   PANEL_bound2->set_name(label);
