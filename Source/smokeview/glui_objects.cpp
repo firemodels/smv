@@ -1515,26 +1515,26 @@ extern "C" void GluiDeviceSetup(int main_window){
       PANEL_bound1 = glui_device->add_panel_to_panel(PANEL_plot_title, "bound1");
       PANEL_bound1a = glui_device->add_panel_to_panel(PANEL_bound1, "",0);
 
-      SPINNER_genplot_valmin[0] = glui_device->add_spinner_to_panel(PANEL_bound1a, "min 1", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmin, GENPLOT_PLOT_MINMAX, GenPlotCB);
+      SPINNER_genplot_valmin[0] = glui_device->add_spinner_to_panel(PANEL_bound1a, "max 1", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmax, GENPLOT_PLOT_MINMAX, GenPlotCB);
       glui_device->add_column_to_panel(PANEL_bound1a, 0);
-      CHECKBOX_genplot_use_valmin[0] = glui_device->add_checkbox_to_panel(PANEL_bound1a, "use min 1", glui_plot2dinfo->use_valmin, GENPLOT_PLOT_MINMAX, GenPlotCB);
+      CHECKBOX_genplot_use_valmin[0] = glui_device->add_checkbox_to_panel(PANEL_bound1a, "use max 1", glui_plot2dinfo->use_valmax, GENPLOT_PLOT_MINMAX, GenPlotCB);
 
       PANEL_bound1b = glui_device->add_panel_to_panel(PANEL_bound1, "",0);
-      SPINNER_genplot_valmax[0] = glui_device->add_spinner_to_panel(PANEL_bound1b, "max 1", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmax, GENPLOT_PLOT_MINMAX, GenPlotCB);
+      SPINNER_genplot_valmax[0] = glui_device->add_spinner_to_panel(PANEL_bound1b, "min 1", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmin, GENPLOT_PLOT_MINMAX, GenPlotCB);
       glui_device->add_column_to_panel(PANEL_bound1b, 0);
-      CHECKBOX_genplot_use_valmax[0] = glui_device->add_checkbox_to_panel(PANEL_bound1b, "use max 1", glui_plot2dinfo->use_valmax, GENPLOT_PLOT_MINMAX, GenPlotCB);
+      CHECKBOX_genplot_use_valmax[0] = glui_device->add_checkbox_to_panel(PANEL_bound1b, "use min 1", glui_plot2dinfo->use_valmin, GENPLOT_PLOT_MINMAX, GenPlotCB);
 
       PANEL_bound2 = glui_device->add_panel_to_panel(PANEL_plot_title, "bound2");
       PANEL_bound2a = glui_device->add_panel_to_panel(PANEL_bound2, "",0);
 
-      SPINNER_genplot_valmin[1] = glui_device->add_spinner_to_panel(PANEL_bound2a, "min 2", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmin+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
+      SPINNER_genplot_valmin[1] = glui_device->add_spinner_to_panel(PANEL_bound2a, "max 2", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmax+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
       glui_device->add_column_to_panel(PANEL_bound2a, 0);
-      CHECKBOX_genplot_use_valmin[1] = glui_device->add_checkbox_to_panel(PANEL_bound2a, "use min 2", glui_plot2dinfo->use_valmin+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
+      CHECKBOX_genplot_use_valmin[1] = glui_device->add_checkbox_to_panel(PANEL_bound2a, "use max 2", glui_plot2dinfo->use_valmax+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
 
       PANEL_bound2b = glui_device->add_panel_to_panel(PANEL_bound2, "",0);
-      SPINNER_genplot_valmax[1] = glui_device->add_spinner_to_panel(PANEL_bound2b, "max 2", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmax+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
+      SPINNER_genplot_valmax[1] = glui_device->add_spinner_to_panel(PANEL_bound2b, "min 2", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmin+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
       glui_device->add_column_to_panel(PANEL_bound2b, 0);
-      CHECKBOX_genplot_use_valmax[1] = glui_device->add_checkbox_to_panel(PANEL_bound2b, "use max 2", glui_plot2dinfo->use_valmax+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
+      CHECKBOX_genplot_use_valmax[1] = glui_device->add_checkbox_to_panel(PANEL_bound2b, "use min 2", glui_plot2dinfo->use_valmin+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
 #endif
       glui_device->add_column_to_panel(PANEL_plot8, false);
       PANEL_plot_position = glui_device->add_panel_to_panel(PANEL_plot8, "plot position");
