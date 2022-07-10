@@ -462,6 +462,12 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int force){
     curve->vmin = csvi->valmin;
     curve->csv_col_index = index;
     curve->csv_file_index = glui_csv_file_index;
+    if(force==0){
+      curve->color[0] = glui_curve.color[0];
+      curve->color[1] = glui_curve.color[1];
+      curve->color[2] = glui_curve.color[2];
+      curve->linewidth = glui_curve.linewidth;
+    }
     strcpy(curve->c_type, c_type);
     plot2di->ncurves = nplots+1;
     strcpy(label, c_type);
