@@ -849,6 +849,8 @@ void SetPlot2DBoundLabels(plot2ddata *plot2di){
   if(plot2dinfo == NULL){
     PANEL_bound1->set_name("bound1 (left axis)");
     PANEL_bound2->set_name("bound2 (right axis)");
+    PANEL_bound1->disable();
+    PANEL_bound2->disable();
     return;
   }
   for(i = 0; i < plot2di->ncurves; i++){
@@ -866,17 +868,25 @@ void SetPlot2DBoundLabels(plot2ddata *plot2di){
   }
   char label[256];
 
-  strcpy(label, "bound (left axis)");
   if(axis_left_unit != NULL){
     strcpy(label, axis_left_unit);
     strcat(label, " (left axis)");
+    PANEL_bound1->enable();
+  }
+  else{
+    strcpy(label, "bound (left axis)");
+    PANEL_bound1->disable();
   }
   PANEL_bound1->set_name(label);
 
-  strcpy(label, "bound (right axis)");
   if(axis_right_unit != NULL){
     strcpy(label, axis_right_unit);
     strcat(label, " (right axis)");
+    PANEL_bound2->enable();
+  }
+  else{
+    strcpy(label, "bound (right axis)");
+    PANEL_bound2->disable();
   }
   PANEL_bound2->set_name(label);
 }
@@ -1041,6 +1051,7 @@ void GenPlotCB(int var){
       BUTTON_rem_plot->set_name(label);
       EnableDisablePlot2D();
       GenPlotCB(GENPLOT_SELECT_PLOT);
+      SetPlot2DBoundLabels(plot2dinfo + iplot2dinfo);
       break;
     case GENPLOT_REM_PLOT:
       RemovePlot(iplot2dinfo);
@@ -1050,9 +1061,11 @@ void GenPlotCB(int var){
         LIST_plots->set_int_val(iplot2dinfo_save);
         strcpy(label, "Remove plot: ");
         strcat(label, plot2dinfo[iplot2dinfo].plot_label);
+        SetPlot2DBoundLabels(plot2dinfo + iplot2dinfo);
       }
       else{
         strcpy(label, "Remove plot");
+        SetPlot2DBoundLabels(NULL);
       }
       BUTTON_rem_plot->set_name(label);
       EnableDisablePlot2D();
@@ -1563,7 +1576,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       CHECKBOX_show_curve_values = glui_device->add_checkbox_to_panel(PANEL_plot_title, "show curve values", &(glui_plot2dinfo->show_curve_values), GENPLOT_PLOT_LABEL, GenPlotCB);
 
 #ifdef pp_PLOT2D_BOUNDS
-      PANEL_plot_bounds = glui_device->add_panel_to_panel(PANEL_plot_title, "plot bounds");
+      PANEL_plot_bounds = glui_device->add_panel_to_panel(PANEL_plot8, "plot bounds");
 
       PANEL_bound1 = glui_device->add_panel_to_panel(PANEL_plot_bounds, "bound1");
 
