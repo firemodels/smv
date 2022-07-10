@@ -135,7 +135,6 @@ GLUI_Panel *PANEL_bound2b = NULL;
 #endif
 GLUI_Panel *PANEL_csv = NULL;
 GLUI_Panel *PANEL_csv2 = NULL;
-GLUI_Panel *PANEL_remove_curve = NULL;
 GLUI_Panel *PANEL_curve_color = NULL;
 GLUI_Panel *PANEL_curve_bounds = NULL;
 GLUI_Panel *PANEL_curve_usermin = NULL;
@@ -1680,9 +1679,8 @@ extern "C" void GluiDeviceSetup(int main_window){
       RemoveCurve(glui_plot2dinfo, -1);
       MakeCurveList(glui_plot2dinfo, 1);
 
-      PANEL_remove_curve = glui_device->add_panel_to_panel(PANEL_curve_properties, "remove curve(s)");
-      glui_device->add_button_to_panel(PANEL_remove_curve, _("selected"), GENPLOT_REM_SELECTEDCURVE, GenPlotCB);
-      glui_device->add_button_to_panel(PANEL_remove_curve, _("all"), GENPLOT_REM_ALLCURVES, GenPlotCB);
+      glui_device->add_button_to_panel(PANEL_curve_properties, _("Remove selected curve"), GENPLOT_REM_SELECTEDCURVE, GenPlotCB);
+      glui_device->add_button_to_panel(PANEL_curve_properties, _("Remove all curves"),     GENPLOT_REM_ALLCURVES, GenPlotCB);
 
       PANEL_curve_bounds = glui_device->add_panel_to_panel(PANEL_curve_properties, "", 0);
       STATIC_curv_max = glui_device->add_statictext_to_panel(PANEL_curve_bounds, "max: 0.0");
