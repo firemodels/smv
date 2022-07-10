@@ -6,6 +6,10 @@
 #endif
 
 // gen plot routines
+
+#ifdef pp_PLOT2D_BOUNDS
+EXTERNCPP void GetPlot2DBounds(plot2ddata *plot2di, float *valmin, float *valmax);
+#endif
 EXTERNCPP char *GetPlotUnit(plot2ddata * plot2di, int curv_index);
 EXTERNCPP void GenPlotCB(int var);
 EXTERNCPP void UpdateCurveControls(char *unit);

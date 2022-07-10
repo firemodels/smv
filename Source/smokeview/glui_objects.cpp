@@ -41,6 +41,7 @@
 #define GENPLOT_ADD_CURVE           114
 #ifdef pp_PLOT2D_BOUNDS
 #define GENPLOT_PLOT_MINMAX         115
+#define GENPLOT_RESET_BOUNDS        116
 #endif
 
 #define WINDROSE_SHOW_FIRST   996
@@ -83,6 +84,9 @@ GLUI_Button *BUTTON_device_1=NULL;
 GLUI_Button *BUTTON_device_2=NULL;
 GLUI_Button *BUTTON_update_windrose = NULL;
 GLUI_Button *BUTTON_reset_fuel_hoc = NULL;
+#ifdef pp_PLOT2D_BOUNDS
+GLUI_Button *BUTTON_reset_plot2d_bounds = NULL;
+#endif
 
 GLUI_Checkbox *CHECKBOX_genplot_use_usermin = NULL;
 GLUI_Checkbox *CHECKBOX_genplot_use_usermax = NULL;
@@ -841,7 +845,7 @@ void UpdateCvsList(void){
 }
 
 /* ------------------ SetPlot2DBoundLabels ------------------------ */
-
+#ifdef pp_PLOT2D_BOUNDS
 void SetPlot2DBoundLabels(plot2ddata *plot2di){
   int i;
   char *axis_right_unit = NULL, *axis_left_unit = NULL;
@@ -889,7 +893,14 @@ void SetPlot2DBoundLabels(plot2ddata *plot2di){
     PANEL_bound2->disable();
   }
   PANEL_bound2->set_name(label);
+  if(axis_left_unit!=NULL||axis_right_unit!=NULL){
+    BUTTON_reset_plot2d_bounds->enable();
+  }
+  else{
+    BUTTON_reset_plot2d_bounds->enable();
+  }
 }
+#endif
 
 /* ------------------ GenPlotCB ------------------------ */
 
@@ -901,6 +912,17 @@ void GenPlotCB(int var){
     int curve_id;
 
 #ifdef pp_PLOT2D_BOUNDS
+    case GENPLOT_RESET_BOUNDS:
+      plot2ddata *plot2di;
+      int i;
+
+      plot2di = plot2dinfo + iplot2dinfo;
+      GetPlot2DBounds(plot2di, plot2di->valmin, plot2di->valmax);
+      for(i=0;i<2;i++){
+        SPINNER_genplot_valmin[i]->set_float_val(plot2di->valmin[i]);
+        SPINNER_genplot_valmax[i]->set_float_val(plot2di->valmax[i]);
+      }
+      break;
     case GENPLOT_PLOT_MINMAX:
       Glui2Plot2D(iplot2dinfo);
       break;
@@ -918,7 +940,9 @@ void GenPlotCB(int var){
       printf("after add *********************\n");
       PrintPlot2dInfo();
 #endif
+#ifdef pp_PLOT2D_BOUNDS
       SetPlot2DBoundLabels(plot2dinfo + iplot2dinfo);
+#endif
       break;
     case GENPLOT_SELECT_CSV_FILE:
       UpdateCvsList();
@@ -953,7 +977,9 @@ void GenPlotCB(int var){
       if(glui_remove_selected_curve==1){
         GenPlotCB(GENPLOT_REM_CURVE);
       }
-      SetPlot2DBoundLabels(plot2dinfo + iplot2dinfo);
+#ifdef pp_PLOT2D_BOUNDS
+      SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
+#endif
       break;
     case GENPLOT_REM_CURVE:
 #ifdef pp_PLOT2D_DEBUG
@@ -969,7 +995,9 @@ void GenPlotCB(int var){
   printf("*******************\n");
 #endif
       EnableDisablePlot2D();
-      SetPlot2DBoundLabels(plot2dinfo + iplot2dinfo);
+#ifdef pp_PLOT2D_BOUNDS
+      SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
+#endif
       break;
     case GENPLOT_REM_SELECTEDCURVE:
       glui_remove_selected_curve = 1;
@@ -982,7 +1010,9 @@ void GenPlotCB(int var){
       RemoveCurve(glui_plot2dinfo, -1);
       Glui2Plot2D(iplot2dinfo);
       EnableDisablePlot2D();
-      SetPlot2DBoundLabels(plot2dinfo + iplot2dinfo);
+#ifdef pp_PLOT2D_BOUNDS
+      SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
+#endif
       break;
     case GENPLOT_SHOW_PLOT:
       Glui2Plot2D(iplot2dinfo);
@@ -1036,7 +1066,9 @@ void GenPlotCB(int var){
           strcat(label, " curves");
         }
         PANEL_add_curve->set_name(label);
-        SetPlot2DBoundLabels(plot2dinfo + iplot2dinfo);
+#ifdef pp_PLOT2D_BOUNDS
+        SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
+#endif
       }
       break;
     case GENPLOT_ADD_PLOT:
@@ -1051,7 +1083,9 @@ void GenPlotCB(int var){
       BUTTON_rem_plot->set_name(label);
       EnableDisablePlot2D();
       GenPlotCB(GENPLOT_SELECT_PLOT);
-      SetPlot2DBoundLabels(plot2dinfo + iplot2dinfo);
+#ifdef pp_PLOT2D_BOUNDS
+      SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
+#endif
       break;
     case GENPLOT_REM_PLOT:
       RemovePlot(iplot2dinfo);
@@ -1061,11 +1095,15 @@ void GenPlotCB(int var){
         LIST_plots->set_int_val(iplot2dinfo_save);
         strcpy(label, "Remove plot: ");
         strcat(label, plot2dinfo[iplot2dinfo].plot_label);
-        SetPlot2DBoundLabels(plot2dinfo + iplot2dinfo);
+#ifdef pp_PLOT2D_BOUNDS
+        SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
+#endif
       }
       else{
         strcpy(label, "Remove plot");
-        SetPlot2DBoundLabels(NULL);
+#ifdef pp_PLOT2D_BOUNDS
+        SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
+#endif
       }
       BUTTON_rem_plot->set_name(label);
       EnableDisablePlot2D();
@@ -1602,6 +1640,8 @@ extern "C" void GluiDeviceSetup(int main_window){
       glui_device->add_column_to_panel(PANEL_bound2b, 0);
       CHECKBOX_genplot_use_valmin[1] = glui_device->add_checkbox_to_panel(PANEL_bound2b, "use min", glui_plot2dinfo->use_valmin+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
       SetPlot2DBoundLabels(plot2dinfo);
+
+      BUTTON_reset_plot2d_bounds = glui_device->add_button_to_panel(PANEL_plot_bounds, "Reset bounds", GENPLOT_RESET_BOUNDS, GenPlotCB);
 #endif
 
       PANEL_plot5 = glui_device->add_panel_to_panel(ROLLOUT_plotgeneral, "", 0);

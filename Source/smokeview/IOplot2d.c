@@ -403,6 +403,7 @@ void DrawGenPlot(plot2ddata *plot2di){
     else{
       option = PLOT_ONLY_DATA;
     }
+#ifdef pp_PLOT2D_BOUNDS
     if(side == AXIS_LEFT){
       if(plot2di->use_valmax[1] == 1)valmax = plot2di->valmax[1];
       if(plot2di->use_valmin[1] == 1)valmin = plot2di->valmin[1];
@@ -411,6 +412,7 @@ void DrawGenPlot(plot2ddata *plot2di){
       if(plot2di->use_valmax[0] == 1)valmax = plot2di->valmax[0];
       if(plot2di->use_valmin[0] == 1)valmin = plot2di->valmin[0];
     }
+#endif
     csvfiledata *csvfi;
     csvdata *csvi;
 
@@ -568,6 +570,66 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
     curve->vmax      = 1.0;
   }
 }
+
+/* ------------------ GetPlot2DBounds ------------------------ */
+
+#ifdef pp_PLOT2D_BOUNDS
+void GetPlot2DBounds(plot2ddata *plot2di, float *valmin, float *valmax){
+  int i;
+  char *axis_right_unit = NULL, *axis_left_unit = NULL;
+  float axis_left_min = 1.0, axis_left_max = 0.0;
+  float axis_right_min = 1.0, axis_right_max = 0.0;
+
+  if(plot2di->bounds_defined==0)UpdateCurveBounds(plot2di, 0);
+  for(i = 0; i<plot2di->ncurves; i++){
+    char *unit;
+
+    unit = GetPlotUnit(plot2di, i);
+    if(axis_right_unit==NULL){
+      axis_right_unit = unit;
+      continue;
+    }
+    if(strcmp(unit, axis_right_unit)!=0){
+      axis_left_unit = unit;
+      break;
+    }
+  }
+  for(i = 0; i<plot2di->ncurves; i++){
+    float valmin, valmax;
+    char *unit;
+    curvedata *curve;
+
+    curve = plot2di->curve+i;
+    valmin = curve->vmin;
+    valmax = curve->vmax;
+    unit = GetPlotUnit(plot2di, i);
+    if(axis_right_unit!=NULL&&strcmp(unit, axis_right_unit)==0){
+      if(axis_right_min>axis_right_max){
+        axis_right_min = valmin;
+        axis_right_max = valmax;
+      }
+      else{
+        axis_right_min = MIN(axis_right_min, valmin);
+        axis_right_max = MAX(axis_right_max, valmax);
+      }
+    }
+    if(axis_left_unit!=NULL&&strcmp(unit, axis_left_unit)==0){
+      if(axis_left_min>axis_left_max){
+        axis_left_min = valmin;
+        axis_left_max = valmax;
+      }
+      else{
+        axis_left_min = MIN(axis_left_min, valmin);
+        axis_left_max = MAX(axis_left_max, valmax);
+      }
+    }
+  }
+  valmin[0] = axis_right_min;
+  valmin[1] = axis_left_min;
+  valmax[0] = axis_right_max;
+  valmax[1] = axis_left_max;
+}
+#endif
 
 /* ------------------ InitPlot2D ------------------------ */
 
