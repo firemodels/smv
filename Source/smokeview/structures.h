@@ -1007,12 +1007,9 @@ typedef struct _hrrdata {
 
 typedef struct _curvedata{
   char c_type[64];
-  int csv_file_index;
-  int csv_col_index, csv_col_index_ini;
-  int use_factors, color[3];
+  int csv_file_index, csv_col_index, csv_col_index_ini, color[3];
   float vmin, vmax;
   float linewidth;
-  float factors[2];
 } curvedata;
 
 /* --------------------------  plot2ddata ------------------------------------ */

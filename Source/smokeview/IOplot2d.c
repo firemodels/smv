@@ -98,8 +98,8 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   float xscale = 1.0, zscale = 1.0;
   int i, ndigits = 3;
 
-  float *xyz0, linewidth_arg, *plot_factors;
-  int *plot_color, use_plot_factors, show_title, show_curve_labels, show_curve_values;
+  float *xyz0, linewidth_arg;
+  int *plot_color, show_title, show_curve_labels, show_curve_values;
   char *title;
   float fplot_color[3];
 
@@ -107,8 +107,6 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   xyz0              = plot2di->xyz;
   plot_color        = curve->color;
   linewidth_arg     = curve->linewidth;
-  plot_factors      = curve->factors;
-  use_plot_factors  = curve->use_factors;
   title             = plot2di->plot_label;
   show_title        = plot2di->show_title;
   show_curve_labels = plot2di->show_curve_labels;
@@ -151,17 +149,9 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   glLineWidth(linewidth_arg);
   SNIFF_ERRORS("after DrawGenCurve 1 - before");
   glBegin(GL_LINES);
-  if(use_plot_factors == 1){
-    for(i = 0; i < n - 1; i++){
-      glVertex3f(    x[i], 0.0, plot_factors[0]*z[i]   + plot_factors[1]);
-      glVertex3f(x[i + 1], 0.0, plot_factors[0]*z[i+1] + plot_factors[1]);
-    }
-  }
-  else{
-    for(i = 0; i < n - 1; i++){
-      glVertex3f(x[i], 0.0, z[i]);
-      glVertex3f(x[i + 1], 0.0, z[i + 1]);
-    }
+  for(i = 0; i < n - 1; i++){
+    glVertex3f(x[i], 0.0, z[i]);
+    glVertex3f(x[i + 1], 0.0, z[i + 1]);
   }
   glEnd();
   SNIFF_ERRORS("after DrawGenCurve 1 - after");
@@ -193,12 +183,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   glColor3f(1.0, 0.0, 0.0);
   glPointSize(plot2d_point_size);
   glBegin(GL_POINTS);
-  if(use_plot_factors == 1){
-    glVertex3f(x_cur, 0.0, plot_factors[0] * z_cur + plot_factors[1]);
-  }
-  else{
-    glVertex3f(x_cur, 0.0, z_cur);
-  }
+  glVertex3f(x_cur, 0.0, z_cur);
   glEnd();
   SNIFF_ERRORS("after DrawGenCurve 3");
 
@@ -535,9 +520,6 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
       curve->color[1] = 0;
       curve->color[2] = 0;
       curve->linewidth = 1.0;
-      curve->factors[0] = 1.0;
-      curve->factors[1] = 0.0;
-      curve->use_factors = 0;
     }
   }
 

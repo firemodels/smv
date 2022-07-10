@@ -11596,28 +11596,21 @@ int ReadIni2(char *inifile, int localfile){
         for(j=0; j<plot2di->ncurves; j++){
           int color[3];
           float linewidth1;
-          float curve_factors[2];
-          int curve_use_factors;
-          int index;
+          int file_index, col_index;
           curvedata *curve;
 
           fgets(buffer, 255, stream);
           TrimBack(buffer);
           linewidth1 = 1.0;
-          curve_factors[0] = 1.0;
-          curve_factors[1] = 0.0;
-          curve_use_factors = 0;
-          sscanf(buffer, " %i %i %i %i %f %f %f %i",    &index, color, color+1, color+2, &linewidth1, curve_factors, curve_factors+1, &curve_use_factors);
+          sscanf(buffer, " %i %i %i %i %i %f",    &file_index, &col_index, color, color+1, color+2, &linewidth1);
 
-          plot2di->curve[j].csv_col_index = index;
-          curve = plot2di->curve+index;
-          curve->color[0]    = color[0];
-          curve->color[1]    = color[1];
-          curve->color[2]    = color[2];
-          curve->linewidth   = linewidth1;
-          curve->factors[0]  = curve_factors[0];
-          curve->factors[1]  = curve_factors[1];
-          curve->use_factors = curve_use_factors;
+          plot2di->curve[j].csv_file_index = file_index;
+          plot2di->curve[j].csv_col_index  = col_index;
+          curve                            = plot2di->curve+j;
+          curve->color[0]                  = color[0];
+          curve->color[1]                  = color[1];
+          curve->color[2]                  = color[2];
+          curve->linewidth                 = linewidth1;
         }
       }
       update_glui_devices = 1;
@@ -14993,19 +14986,16 @@ void WriteIniLocal(FILE *fileout){
 #endif
     for(j = 0; j < plot2di->ncurves; j++){
       int *color;
-      float linewidth1, *curve_factors;
-      int curve_use_factors;
-      int index;
+      float linewidth1;
+      int file_index, col_index;
       curvedata *curve;
 
-      index             = plot2di->curve[j].csv_col_index;
-      curve             = plot2di->curve+index;
+      file_index        = plot2di->curve[j].csv_file_index;
+      col_index         = plot2di->curve[j].csv_col_index;
+      curve             = plot2di->curve+j;
       color             = curve->color;
       linewidth1        = curve->linewidth;
-      curve_factors     = curve->factors;
-      curve_use_factors = curve->use_factors;
-      fprintf(fileout, " %i %i %i %i %f %f %f %i\n", index, color[0], color[1], color[2], linewidth1,
-                                                     curve_factors[0], curve_factors[1], curve_use_factors);
+      fprintf(fileout, " %i %i %i %i %i %f\n", file_index, col_index, color[0], color[1], color[2], linewidth1);
     };
   }
   fprintf(fileout, "SHOWDEVICEVALS\n");

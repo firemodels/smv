@@ -90,7 +90,6 @@ GLUI_Checkbox *CHECKBOX_show_genplot        = NULL;
 GLUI_Checkbox *CHECKBOX_show_title          = NULL;
 GLUI_Checkbox *CHECKBOX_show_curve_labels   = NULL;
 GLUI_Checkbox *CHECKBOX_show_curve_values   = NULL;
-GLUI_Checkbox *CHECKBOX_genplot_use_factors = NULL;
 #ifdef pp_PLOT2D_BOUNDS
 GLUI_Checkbox *CHECKBOX_genplot_use_valmin[2];
 GLUI_Checkbox *CHECKBOX_genplot_use_valmax[2];
