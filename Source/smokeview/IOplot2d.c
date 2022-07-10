@@ -595,32 +595,32 @@ void GetPlot2DBounds(plot2ddata *plot2di, float *valmin, float *valmax){
     }
   }
   for(i = 0; i<plot2di->ncurves; i++){
-    float valmin, valmax;
+    float vmin, vmax;
     char *unit;
     curvedata *curve;
 
     curve = plot2di->curve+i;
-    valmin = curve->vmin;
-    valmax = curve->vmax;
+    vmin = curve->vmin;
+    vmax = curve->vmax;
     unit = GetPlotUnit(plot2di, i);
     if(axis_right_unit!=NULL&&strcmp(unit, axis_right_unit)==0){
       if(axis_right_min>axis_right_max){
-        axis_right_min = valmin;
-        axis_right_max = valmax;
+        axis_right_min = vmin;
+        axis_right_max = vmax;
       }
       else{
-        axis_right_min = MIN(axis_right_min, valmin);
-        axis_right_max = MAX(axis_right_max, valmax);
+        axis_right_min = MIN(axis_right_min, vmin);
+        axis_right_max = MAX(axis_right_max, vmax);
       }
     }
     if(axis_left_unit!=NULL&&strcmp(unit, axis_left_unit)==0){
       if(axis_left_min>axis_left_max){
-        axis_left_min = valmin;
-        axis_left_max = valmax;
+        axis_left_min = vmin;
+        axis_left_max = vmax;
       }
       else{
-        axis_left_min = MIN(axis_left_min, valmin);
-        axis_left_max = MAX(axis_left_max, valmax);
+        axis_left_min = MIN(axis_left_min, vmin);
+        axis_left_max = MAX(axis_left_max, vmax);
       }
     }
   }
