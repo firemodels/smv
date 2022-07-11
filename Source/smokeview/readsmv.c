@@ -146,7 +146,6 @@ void UpdateHoc(void){
   }
 }
 
-#ifdef pp_PLOT2D_NEW
 /* ------------------ ReadCSV ------------------------ */
 
 int IsDimensionless(char *unit){
@@ -355,7 +354,6 @@ void ReadAllCSV(int flag){
     ReadCSV(csvfileinfo + i, flag);
   }
 }
-#endif
 
 /* ------------------ ReadHRR ------------------------ */
 
@@ -10843,10 +10841,8 @@ typedef struct {
     if(strcmp(csvi->c_type, "ext") == 0)ReadDeviceData(csvi->file,CSV_EXP,LOAD);
   }
   SetupDeviceData();
-#ifdef pp_PLOT2D_NEW
   ReadAllCSV(LOAD);
   SetupPlot2DUnitData();
-#endif
   if(nzoneinfo>0)SetupZoneDevs();
 
 #ifdef pp_THREAD
@@ -11094,10 +11090,8 @@ typedef struct {
   if(viswindrose==1)update_windrose = 1;
 
 // initialize 2d plot data structures
-#ifdef pp_PLOT2D_NEW
   NewMemory((void **)&glui_plot2dinfo, sizeof(plot2ddata));
   InitPlot2D(glui_plot2dinfo, 0);
-#endif
 
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");
@@ -11567,7 +11561,6 @@ int ReadIni2(char *inifile, int localfile){
       update_glui_devices = 1;
       continue;
     }
-#ifdef pp_PLOT2D_NEW
     if(Match(buffer, "SHOWGENPLOTS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &nplot2dini);
@@ -11594,43 +11587,33 @@ int ReadIni2(char *inifile, int localfile){
         sscanf(buffer, " %f %f %f %i %i %i %i %i",
                        plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->show_title,
                        &plot2di->ncurves, &plot2di->show_curve_labels, &plot2di->show_curve_values);
-#ifdef pp_PLOT2D_BOUNDS
         fgets(buffer, 255, stream);
         sscanf(buffer, " %f %i %f %i %f %i %f %i ",
                plot2di->valmin,   plot2di->use_valmin,   plot2di->valmax,   plot2di->use_valmax,
                plot2di->valmin+1, plot2di->use_valmin+1, plot2di->valmax+1, plot2di->use_valmax+1);
-#endif
         for(j=0; j<plot2di->ncurves; j++){
           int color[3];
           float linewidth1;
-          float curve_factors[2];
-          int curve_use_factors;
-          int index;
+          int file_index, col_index;
           curvedata *curve;
 
           fgets(buffer, 255, stream);
           TrimBack(buffer);
           linewidth1 = 1.0;
-          curve_factors[0] = 1.0;
-          curve_factors[1] = 0.0;
-          curve_use_factors = 0;
-          sscanf(buffer, " %i %i %i %i %f %f %f %i",    &index, color, color+1, color+2, &linewidth1, curve_factors, curve_factors+1, &curve_use_factors);
+          sscanf(buffer, " %i %i %i %i %i %f",    &file_index, &col_index, color, color+1, color+2, &linewidth1);
 
-          plot2di->curve[j].csv_col_index = index;
-          curve = plot2di->curve+index;
-          curve->color[0]    = color[0];
-          curve->color[1]    = color[1];
-          curve->color[2]    = color[2];
-          curve->linewidth   = linewidth1;
-          curve->factors[0]  = curve_factors[0];
-          curve->factors[1]  = curve_factors[1];
-          curve->use_factors = curve_use_factors;
+          plot2di->curve[j].csv_file_index = file_index;
+          plot2di->curve[j].csv_col_index  = col_index;
+          curve                            = plot2di->curve+j;
+          curve->color[0]                  = color[0];
+          curve->color[1]                  = color[1];
+          curve->color[2]                  = color[2];
+          curve->linewidth                 = linewidth1;
         }
       }
       update_glui_devices = 1;
       continue;
     }
-#endif
     if(Match(buffer, "SHOWMISSINGOBJECTS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &show_missing_objects);
@@ -14982,7 +14965,6 @@ void WriteIniLocal(FILE *fileout){
           vis_device_plot, showd_plot2d_labels, plot2d_size_factor, plot2d_line_width, plot2d_point_size,
           plot2d_xyz_offset[0], plot2d_xyz_offset[1], plot2d_xyz_offset[2], plot2d_font_spacing
   );
-#ifdef pp_PLOT2D_NEW
   fprintf(fileout, "SHOWGENPLOTS\n");
   fprintf(fileout, " %i\n", nplot2dinfo);
   for(i=0; i<nplot2dinfo; i++){
@@ -14994,30 +14976,24 @@ void WriteIniLocal(FILE *fileout){
     fprintf(fileout, " %f %f %f %i %i %i %i %i\n",
                      plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->show_title,
                      plot2di->ncurves, plot2di->show_curve_labels, plot2di->show_curve_values);
-#ifdef pp_PLOT2D_BOUNDS
     fprintf(fileout, " %f %i %f %i %f %i %f %i\n",
             plot2di->valmin[0], plot2di->use_valmin[0], plot2di->valmax[0], plot2di->use_valmax[0],
             plot2di->valmin[1], plot2di->use_valmin[1], plot2di->valmax[1], plot2di->use_valmax[1]
             );
-#endif
     for(j = 0; j < plot2di->ncurves; j++){
       int *color;
-      float linewidth1, *curve_factors;
-      int curve_use_factors;
-      int index;
+      float linewidth1;
+      int file_index, col_index;
       curvedata *curve;
 
-      index             = plot2di->curve[j].csv_col_index;
-      curve             = plot2di->curve+index;
+      file_index        = plot2di->curve[j].csv_file_index;
+      col_index         = plot2di->curve[j].csv_col_index;
+      curve             = plot2di->curve+j;
       color             = curve->color;
       linewidth1        = curve->linewidth;
-      curve_factors     = curve->factors;
-      curve_use_factors = curve->use_factors;
-      fprintf(fileout, " %i %i %i %i %f %f %f %i\n", index, color[0], color[1], color[2], linewidth1,
-                                                     curve_factors[0], curve_factors[1], curve_use_factors);
+      fprintf(fileout, " %i %i %i %i %i %f\n", file_index, col_index, color[0], color[1], color[2], linewidth1);
     };
   }
-#endif
   fprintf(fileout, "SHOWDEVICEVALS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n", showdevice_val, showvdevice_val, devicetypes_index, colordevice_val, vectortype, viswindrose, showdevice_type,showdevice_unit,showdevice_id);
   fprintf(fileout, "SHOWHRRPLOT\n");

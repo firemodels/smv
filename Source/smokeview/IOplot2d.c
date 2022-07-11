@@ -7,8 +7,6 @@
 #include "datadefs.h"
 #include "smokeviewvars.h"
 
-#ifdef pp_PLOT2D_NEW
-
 /* ------------------ GetCurrentCsv ------------------------ */
 
 csvdata *GetCsv(int file_index, int col_index, csvfiledata **csvf_ptr){
@@ -100,8 +98,8 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   float xscale = 1.0, zscale = 1.0;
   int i, ndigits = 3;
 
-  float *xyz0, linewidth_arg, *plot_factors;
-  int *plot_color, use_plot_factors, show_title, show_curve_labels, show_curve_values;
+  float *xyz0, linewidth_arg;
+  int *plot_color, show_title, show_curve_labels, show_curve_values;
   char *title;
   float fplot_color[3];
 
@@ -109,8 +107,6 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   xyz0              = plot2di->xyz;
   plot_color        = curve->color;
   linewidth_arg     = curve->linewidth;
-  plot_factors      = curve->factors;
-  use_plot_factors  = curve->use_factors;
   title             = plot2di->plot_label;
   show_title        = plot2di->show_title;
   show_curve_labels = plot2di->show_curve_labels;
@@ -153,17 +149,9 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   glLineWidth(linewidth_arg);
   SNIFF_ERRORS("after DrawGenCurve 1 - before");
   glBegin(GL_LINES);
-  if(use_plot_factors == 1){
-    for(i = 0; i < n - 1; i++){
-      glVertex3f(    x[i], 0.0, plot_factors[0]*z[i]   + plot_factors[1]);
-      glVertex3f(x[i + 1], 0.0, plot_factors[0]*z[i+1] + plot_factors[1]);
-    }
-  }
-  else{
-    for(i = 0; i < n - 1; i++){
-      glVertex3f(x[i], 0.0, z[i]);
-      glVertex3f(x[i + 1], 0.0, z[i + 1]);
-    }
+  for(i = 0; i < n - 1; i++){
+    glVertex3f(x[i], 0.0, z[i]);
+    glVertex3f(x[i + 1], 0.0, z[i + 1]);
   }
   glEnd();
   SNIFF_ERRORS("after DrawGenCurve 1 - after");
@@ -195,12 +183,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   glColor3f(1.0, 0.0, 0.0);
   glPointSize(plot2d_point_size);
   glBegin(GL_POINTS);
-  if(use_plot_factors == 1){
-    glVertex3f(x_cur, 0.0, plot_factors[0] * z_cur + plot_factors[1]);
-  }
-  else{
-    glVertex3f(x_cur, 0.0, z_cur);
-  }
+  glVertex3f(x_cur, 0.0, z_cur);
   glEnd();
   SNIFF_ERRORS("after DrawGenCurve 3");
 
@@ -232,9 +215,10 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
         strcat(label2, label);
         if(show_curve_values==1)strcat(label2, "/");
       }
+      int pad_length_val;
       if(show_curve_values==1){
         strcat(label2, c_zcur);
-        pad_length = GetStringLength(label2);
+        pad_length_val = GetStringLength(label2);
       }
       if(axis_side == AXIS_LEFT){
         if(show_curve_labels==1 || show_curve_values==1){
@@ -246,8 +230,14 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
         }
       else{
         if(show_curve_labels==1 || show_curve_values==1){
-          Output3TextRight(fplot_color,      xmin - dx,
-                           0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2, pad_length);
+          if(show_curve_values==1){
+            Output3TextRight(fplot_color,      xmin - dx,
+                             0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2, pad_length_val);
+          }
+          else{
+            Output3TextRight(fplot_color,      xmin - dx,
+                             0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2, pad_length);
+          }
         }
         Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmin,  c_zmin, pad_length);
         Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax , c_zmax, pad_length);
@@ -413,6 +403,14 @@ void DrawGenPlot(plot2ddata *plot2di){
     else{
       option = PLOT_ONLY_DATA;
     }
+    if(side == AXIS_LEFT){
+      if(plot2di->use_valmax[1] == 1)valmax = plot2di->valmax[1];
+      if(plot2di->use_valmin[1] == 1)valmin = plot2di->valmin[1];
+    }
+    if(side == AXIS_RIGHT){
+      if(plot2di->use_valmax[0] == 1)valmax = plot2di->valmax[0];
+      if(plot2di->use_valmin[0] == 1)valmin = plot2di->valmin[0];
+    }
     csvfiledata *csvfi;
     csvdata *csvi;
 
@@ -522,9 +520,6 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
       curve->color[1] = 0;
       curve->color[2] = 0;
       curve->linewidth = 1.0;
-      curve->factors[0] = 1.0;
-      curve->factors[1] = 0.0;
-      curve->use_factors = 0;
     }
   }
 
@@ -574,6 +569,64 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
   }
 }
 
+/* ------------------ GetPlot2DBounds ------------------------ */
+
+void GetPlot2DBounds(plot2ddata *plot2di, float *valmin, float *valmax){
+  int i;
+  char *axis_right_unit = NULL, *axis_left_unit = NULL;
+  float axis_left_min = 1.0, axis_left_max = 0.0;
+  float axis_right_min = 1.0, axis_right_max = 0.0;
+
+  if(plot2di->bounds_defined==0)UpdateCurveBounds(plot2di, 0);
+  for(i = 0; i<plot2di->ncurves; i++){
+    char *unit;
+
+    unit = GetPlotUnit(plot2di, i);
+    if(axis_right_unit==NULL){
+      axis_right_unit = unit;
+      continue;
+    }
+    if(strcmp(unit, axis_right_unit)!=0){
+      axis_left_unit = unit;
+      break;
+    }
+  }
+  for(i = 0; i<plot2di->ncurves; i++){
+    float vmin, vmax;
+    char *unit;
+    curvedata *curve;
+
+    curve = plot2di->curve+i;
+    vmin = curve->vmin;
+    vmax = curve->vmax;
+    unit = GetPlotUnit(plot2di, i);
+    if(axis_right_unit!=NULL&&strcmp(unit, axis_right_unit)==0){
+      if(axis_right_min>axis_right_max){
+        axis_right_min = vmin;
+        axis_right_max = vmax;
+      }
+      else{
+        axis_right_min = MIN(axis_right_min, vmin);
+        axis_right_max = MAX(axis_right_max, vmax);
+      }
+    }
+    if(axis_left_unit!=NULL&&strcmp(unit, axis_left_unit)==0){
+      if(axis_left_min>axis_left_max){
+        axis_left_min = vmin;
+        axis_left_max = vmax;
+      }
+      else{
+        axis_left_min = MIN(axis_left_min, vmin);
+        axis_left_max = MAX(axis_left_max, vmax);
+      }
+    }
+  }
+  valmin[0] = axis_right_min;
+  valmin[1] = axis_left_min;
+  valmax[0] = axis_right_max;
+  valmax[1] = axis_left_max;
+}
+
 /* ------------------ InitPlot2D ------------------------ */
 
 void InitPlot2D(plot2ddata *plot2di, int plot_index){
@@ -587,7 +640,6 @@ void InitPlot2D(plot2ddata *plot2di, int plot_index){
   plot2di->xyz[0] = xbar0FDS;
   plot2di->xyz[1] = ybar0FDS;
   plot2di->xyz[2] = zbar0FDS;
-#ifdef pp_PLOT2D_BOUNDS
   plot2di->use_valmin[0] = 0;
   plot2di->use_valmin[1] = 0;
   plot2di->use_valmax[0] = 0;
@@ -596,14 +648,11 @@ void InitPlot2D(plot2ddata *plot2di, int plot_index){
   plot2di->valmin[1] = 0.0;
   plot2di->valmax[0] = 1.0;
   plot2di->valmax[1] = 1.0;
-#endif
   plot2di->plot_index = plot_index;
   sprintf(plot2di->plot_label, "plot %i", plot_index);
   plot2di->curve_index = 0;
   UpdateCurveBounds(plot2di, 1);
   }
-
-#endif
 
   /* ------------------ DrawPlot ------------------------ */
 

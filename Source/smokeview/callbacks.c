@@ -2653,11 +2653,9 @@ void Keyboard(unsigned char key, int flag){
     case '!':
       SnapScene();
       break;
-#ifdef pp_PLOT2D_NEW
     case '"':
       ShowPlot2D();
       break;
-#endif
     case '@':
       show_slice_values_all_regions = 1 - show_slice_values_all_regions;
       if(show_slice_values_all_regions==1){
