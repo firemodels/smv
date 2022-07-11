@@ -989,9 +989,7 @@ typedef struct _device {
   struct _vdevicedata *vdevice;
   int type, is_beam;
   int selected;
-#ifdef pp_PLOT2D_NEW
   int inlist1;
-#endif
   int valid;
 } devicedata;
 
@@ -1007,15 +1005,11 @@ typedef struct _hrrdata {
 
 /* --------------------------  curvedata ------------------------------------ */
 
-#ifdef pp_PLOT2D_NEW
 typedef struct _curvedata{
   char c_type[64];
-  int csv_file_index;
-  int csv_col_index, csv_col_index_ini;
-  int use_factors, color[3];
+  int csv_file_index, csv_col_index, csv_col_index_ini, color[3];
   float vmin, vmax;
   float linewidth;
-  float factors[2];
 } curvedata;
 
 /* --------------------------  plot2ddata ------------------------------------ */
@@ -1026,15 +1020,12 @@ typedef struct _plot2ddata{
   int ncurves, ncurves_ini;
   int curve_index, plot_index;
   int show, show_title, show_curve_labels, show_curve_values;
-#ifdef pp_PLOT2D_BOUNDS
   float valmin[2],     valmax[2];
   int   use_valmin[2], use_valmax[2];
-#endif
   curvedata curve[PLOT2D_MAX_CURVES];
   int bounds_defined;
   float xyz[3];
 } plot2ddata;
-#endif
 
 /* --------------------------  windrosedata ------------------------------------ */
 
