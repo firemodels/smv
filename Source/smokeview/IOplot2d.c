@@ -403,7 +403,6 @@ void DrawGenPlot(plot2ddata *plot2di){
     else{
       option = PLOT_ONLY_DATA;
     }
-#ifdef pp_PLOT2D_BOUNDS
     if(side == AXIS_LEFT){
       if(plot2di->use_valmax[1] == 1)valmax = plot2di->valmax[1];
       if(plot2di->use_valmin[1] == 1)valmin = plot2di->valmin[1];
@@ -412,7 +411,6 @@ void DrawGenPlot(plot2ddata *plot2di){
       if(plot2di->use_valmax[0] == 1)valmax = plot2di->valmax[0];
       if(plot2di->use_valmin[0] == 1)valmin = plot2di->valmin[0];
     }
-#endif
     csvfiledata *csvfi;
     csvdata *csvi;
 
@@ -573,7 +571,6 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
 
 /* ------------------ GetPlot2DBounds ------------------------ */
 
-#ifdef pp_PLOT2D_BOUNDS
 void GetPlot2DBounds(plot2ddata *plot2di, float *valmin, float *valmax){
   int i;
   char *axis_right_unit = NULL, *axis_left_unit = NULL;
@@ -629,7 +626,6 @@ void GetPlot2DBounds(plot2ddata *plot2di, float *valmin, float *valmax){
   valmax[0] = axis_right_max;
   valmax[1] = axis_left_max;
 }
-#endif
 
 /* ------------------ InitPlot2D ------------------------ */
 
@@ -644,7 +640,6 @@ void InitPlot2D(plot2ddata *plot2di, int plot_index){
   plot2di->xyz[0] = xbar0FDS;
   plot2di->xyz[1] = ybar0FDS;
   plot2di->xyz[2] = zbar0FDS;
-#ifdef pp_PLOT2D_BOUNDS
   plot2di->use_valmin[0] = 0;
   plot2di->use_valmin[1] = 0;
   plot2di->use_valmax[0] = 0;
@@ -653,7 +648,6 @@ void InitPlot2D(plot2ddata *plot2di, int plot_index){
   plot2di->valmin[1] = 0.0;
   plot2di->valmax[0] = 1.0;
   plot2di->valmax[1] = 1.0;
-#endif
   plot2di->plot_index = plot_index;
   sprintf(plot2di->plot_label, "plot %i", plot_index);
   plot2di->curve_index = 0;
