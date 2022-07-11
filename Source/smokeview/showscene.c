@@ -529,12 +529,10 @@ void ShowScene2(int mode){
 
   /* ++++++++++++++++++++++++ draw general plots +++++++++++++++++++++++++ */
 
-#ifdef pp_PLOT2D_NEW
   if(mode == DRAWSCENE){
     DrawGenPlots();
     SNIFF_ERRORS("after DrawGenPlots");
   }
-#endif
 
   /* ++++++++++++++++++++++++ draw zone fire modeling info +++++++++++++++++++++++++ */
 

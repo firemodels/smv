@@ -346,9 +346,7 @@ void UpdateShow(void){
   int slicecolorbarflag;
   int shooter_flag;
   int showhrrflag;
-#ifdef pp_PLOT2D_NEW
   int plot2dflag;
-#endif
 
   if(update_fileload==1)UpdateFileLoad();
   showtime=0;
@@ -605,10 +603,8 @@ void UpdateShow(void){
   }
   ReadPartFile = partflag;
 
-#ifdef pp_PLOT2D_NEW
   plot2dflag = 0;
   if(GenDevShow() == 1 || GenHrrShow() == 1)plot2dflag = 1;
-#endif
 
   evacflag=0;
   if(visEvac==1&&visTimeEvac==1){
@@ -631,9 +627,7 @@ void UpdateShow(void){
   if( plotstate==DYNAMIC_PLOTS &&
     ( showdeviceflag==1 || showhrrflag==1 || sliceflag==1 || vsliceflag==1 || partflag==1 || patchflag==1 ||
     shooter_flag==1|| smoke3dflag==1 || showtours==1 || evacflag==1 ||
-#ifdef pp_PLOT2D_NEW
     plot2dflag == 1 ||
-#endif
     (ReadZoneFile==1&&visZone==1&&visTimeZone==1)||showvolrender==1
     )
     )showtime=1;
@@ -1176,14 +1170,12 @@ void UpdateTimes(void){
   if(vis_hrr_plot==1&&hrrptr!=NULL){
     MergeGlobalTimes(timeptr->vals, timeptr->nvals);
   }
-#ifdef pp_PLOT2D_NEW
   if(GenDevShow()==1){
     MergeGlobalTimes(deviceinfo->times, deviceinfo->nvals);
   }
   if(GenHrrShow()==1){
     MergeGlobalTimes(hrrinfo->vals, hrrinfo->nvals);
   }
-#endif
   if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
       devicedata *devicei;
@@ -1601,12 +1593,10 @@ int GetPlotStateSub(int choice){
         stept = 1;
         return DYNAMIC_PLOTS;
       }
-#ifdef pp_PLOT2D_NEW
       if(GenDevShow() == 1 || GenHrrShow() == 1){
         stept = 1;
         return DYNAMIC_PLOTS;
       }
-#endif
       if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
         for(i = 0; i<ndeviceinfo; i++){
           devicedata *devicei;
