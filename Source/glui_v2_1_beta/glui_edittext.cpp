@@ -711,6 +711,8 @@ void   GLUI_EditText::update_and_draw_text( void )
 
 int    GLUI_EditText::special_handler( int key,int modifiers )
 {
+  int select_all = 0;
+
   if ( NOT glui )
     return false;
 
@@ -735,19 +737,28 @@ int    GLUI_EditText::special_handler( int key,int modifiers )
       insertion_pt++;
     }
   }
-  else if ( key == GLUT_KEY_HOME ) {
-    insertion_pt = 0;
+  else if(key==GLUT_KEY_HOME) {
+    if((modifiers&GLUT_ACTIVE_CTRL)!=0) {
+      insertion_pt = (int)strlen(text);
+      sel_start = 0;
+      sel_end = insertion_pt;
+      select_all = 1;
+    }
+    else{
+      insertion_pt = 0;
+    }
   }
-  else if ( key == GLUT_KEY_END ) {
-    insertion_pt = (int)strlen( text );
+  else if(key==GLUT_KEY_END) {
+    insertion_pt = (int)strlen(text);
   }
 
   /*** Update selection if shift key is down ***/
-  if ( (modifiers & GLUT_ACTIVE_SHIFT ) != 0 )
-    sel_end = insertion_pt;
-  else
-    sel_start = sel_end = insertion_pt;
-
+  if(select_all==0){
+    if((modifiers&GLUT_ACTIVE_SHIFT)!=0)
+      sel_end = insertion_pt;
+    else
+      sel_start = sel_end = insertion_pt;
+  }
 
   CLAMP( insertion_pt, 0, (int)strlen( text )); /* Make sure insertion_pt
 						   is in bounds */
