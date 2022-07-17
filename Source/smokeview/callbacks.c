@@ -2136,12 +2136,17 @@ void Keyboard(unsigned char key, int flag){
         visGrid = NOGRID_PROBE2;
         Keyboard('g', FROM_SMOKEVIEW);
       }
-      printf("command line clipping ");
       if(clip_commandline==1){
-        printf("on\n");
+        printf("\n");
+        printf("command line clipping on\n");
+        prirntf(" use W key to toggle clipping mode: disabled, clip blockages and data, clip blockgaes, clip data\n");
+        printf("  use x/y/z keys to activate/deactivate lower x/y/z clipping planes\n");
+        printf("  use X/Y/Z keys to activate/deactivate upper x/y/z clipping planes\n");
+        printf("  use cursor and page down/up keys to move lower clipping planes\n");
+        printf("  use SHIFT cursor and page down/up keys to move upper clipping planes\n");
       }
       else{
-        printf("off\n");
+        printf("command line clipping off\n");
       }
       break;
     case 'n':
