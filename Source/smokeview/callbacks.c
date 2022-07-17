@@ -66,6 +66,13 @@ void NextXIndex(int inc,int flag){
       first=0;
       if(flag==1)iplotx_all=nplotx_all-1;
       if(flag==-1)iplotx_all=0;
+      if(clip_commandline==1){
+        float value;
+
+        value = clipinfo.xmin;
+        if(special_modifier==1)value = clipinfo.xmax;
+        iplotx_all = GetGridIndex(value, XDIR, plotx_all, nplotx_all);
+      }
       if(flag==0)iplotx_all+=inc;
     }
     else{
@@ -121,6 +128,13 @@ void NextYIndex(int inc,int flag){
       first=0;
       if(flag==1)iploty_all=nploty_all-1;
       if(flag==-1)iploty_all=0;
+      if(clip_commandline==1){
+        float value;
+
+        value = clipinfo.ymin;
+        if(special_modifier==1)value = clipinfo.ymax;
+        iploty_all = GetGridIndex(value, YDIR, ploty_all, nploty_all);
+      }
       if(flag==0)iploty_all+=inc;
     }
     else{
@@ -176,6 +190,13 @@ void NextZIndex(int inc,int flag){
       first=0;
       if(flag==1)iplotz_all=nplotz_all-1;
       if(flag==-1)iplotz_all=0;
+      if(clip_commandline==1){
+        float value;
+
+        value = clipinfo.zmin;
+        if(special_modifier==1)value = clipinfo.zmax;
+        iplotz_all = GetGridIndex(value, ZDIR, plotz_all, nplotz_all);
+      }
       if(flag==0)iplotz_all+=inc;
     }
     else{
@@ -2618,13 +2639,19 @@ void Keyboard(unsigned char key, int flag){
         if(key2=='x'){
           clipinfo.clip_xmin = 1-clipinfo.clip_xmin;
           printf("lower x clipping plane ");
-          if(clipinfo.clip_xmin==1)printf("on\n");
+          if(clipinfo.clip_xmin==1){
+            iplotx_all = GetGridIndex(clipinfo.xmin, XDIR, plotx_all, nplotx_all);
+            printf("on\n");
+          }
           if(clipinfo.clip_xmin==0)printf("off\n");
         }
         if(key2=='X'){
           clipinfo.clip_xmax = 1-clipinfo.clip_xmax;
           printf("upper x clipping plane ");
-          if(clipinfo.clip_xmax==1)printf("on\n");
+          if(clipinfo.clip_xmax==1){
+            printf("on\n");
+            iplotx_all = GetGridIndex(clipinfo.xmax, XDIR, plotx_all, nplotx_all);
+          }
           if(clipinfo.clip_xmax==0)printf("off\n");
         }
         Update_Glui_Clip();
@@ -2652,13 +2679,19 @@ void Keyboard(unsigned char key, int flag){
         if(key2=='y'){
           clipinfo.clip_ymin = 1-clipinfo.clip_ymin;
           printf("lower y clipping plane ");
-          if(clipinfo.clip_ymin==1)printf("on\n");
+          if(clipinfo.clip_ymin==1){
+            iploty_all = GetGridIndex(clipinfo.ymin, YDIR, ploty_all, nploty_all);
+            printf("on\n");
+          }
           if(clipinfo.clip_ymin==0)printf("off\n");
         }
         if(key2=='Y'){
           clipinfo.clip_ymax = 1-clipinfo.clip_ymax;
           printf("upper y clipping plane ");
-          if(clipinfo.clip_ymax==1)printf("on\n");
+          if(clipinfo.clip_ymax==1){
+            iploty_all = GetGridIndex(clipinfo.ymax, YDIR, ploty_all, nploty_all);
+            printf("on\n");
+          }
           if(clipinfo.clip_ymax==0)printf("off\n");
         }
         Update_Glui_Clip();
@@ -2673,7 +2706,10 @@ void Keyboard(unsigned char key, int flag){
         if(key2=='Z'){
           clipinfo.clip_zmax = 1-clipinfo.clip_zmax;
           printf("upper z clipping plane ");
-          if(clipinfo.clip_zmax==1)printf("on\n");
+          if(clipinfo.clip_zmax==1){
+            iplotz_all = GetGridIndex(clipinfo.zmax, ZDIR, plotz_all, nplotz_all);
+            printf("on\n");
+          }
           if(clipinfo.clip_zmax==0)printf("off\n");
         }
         Update_Glui_Clip();
@@ -2693,7 +2729,10 @@ void Keyboard(unsigned char key, int flag){
         if(key2=='z'){
           clipinfo.clip_zmin = 1-clipinfo.clip_zmin;
           printf("lower z clipping plane ");
-          if(clipinfo.clip_zmin==1)printf("on\n");
+          if(clipinfo.clip_zmin==1){
+            iplotz_all = GetGridIndex(clipinfo.zmin, ZDIR, plotz_all, nplotz_all);
+            printf("on\n");
+          }
           if(clipinfo.clip_zmin==0)printf("off\n");
         }
         Update_Glui_Clip();
