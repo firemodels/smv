@@ -2593,6 +2593,9 @@ void Keyboard(unsigned char key, int flag){
         case 3:
           printf("Clip data\n");
           break;
+	default:
+	  ASSERT(FFALSE);
+	  break;
       }
       UpdateClipAll();
       break;
@@ -3119,6 +3122,9 @@ float SetClipVal(int flag){
         plotz = meshi->iplotz_all[iplotz_all];
         if(plotz>=0)return zplt[plotz];
         break;
+      default:
+	ASSERT(FFALSE);
+	break;
     }
   }
   return 0.0;
