@@ -2139,7 +2139,7 @@ void Keyboard(unsigned char key, int flag){
       if(clip_commandline==1){
         printf("\n");
         printf("command line clipping on\n");
-        prirntf(" use W key to toggle clipping mode: disabled, clip blockages and data, clip blockgaes, clip data\n");
+        printf("  use the W key to toggle clipping mode: disabled, clip blockages and data, clip blockages, clip data\n");
         printf("  use x/y/z keys to activate/deactivate lower x/y/z clipping planes\n");
         printf("  use X/Y/Z keys to activate/deactivate upper x/y/z clipping planes\n");
         printf("  use cursor and page down/up keys to move lower clipping planes\n");
@@ -2617,17 +2617,17 @@ void Keyboard(unsigned char key, int flag){
       if(clip_commandline==1){
         if(key2=='x'){
           clipinfo.clip_xmin = 1-clipinfo.clip_xmin;
-          clip_index = 1;
-          if(clipinfo.clip_xmin==1)clip_index = 0;
+          printf("lower x clipping plane ");
+          if(clipinfo.clip_xmin==1)printf("on\n");
+          if(clipinfo.clip_xmin==0)printf("off\n");
         }
         if(key2=='X'){
           clipinfo.clip_xmax = 1-clipinfo.clip_xmax;
-          clip_index = 0;
-          if(clipinfo.clip_xmax==1)clip_index = 1;
+          printf("upper x clipping plane ");
+          if(clipinfo.clip_xmax==1)printf("on\n");
+          if(clipinfo.clip_xmax==0)printf("off\n");
         }
         Update_Glui_Clip();
-        if(clip_index==0)printf("modify clipping planes: xmin, ymin, zmin\n");
-        if(clip_index==1)printf("modify clipping planes: xmax, ymax, zmax\n");
       }
 #ifdef pp_DIALOG_SHORTCUTS
       if(keystate==GLUT_ACTIVE_ALT){
@@ -2651,17 +2651,17 @@ void Keyboard(unsigned char key, int flag){
       if(clip_commandline==1){
         if(key2=='y'){
           clipinfo.clip_ymin = 1-clipinfo.clip_ymin;
-          clip_index = 1;
-          if(clipinfo.clip_ymin==1)clip_index = 0;
+          printf("lower y clipping plane ");
+          if(clipinfo.clip_ymin==1)printf("on\n");
+          if(clipinfo.clip_ymin==0)printf("off\n");
         }
         if(key2=='Y'){
           clipinfo.clip_ymax = 1-clipinfo.clip_ymax;
-          clip_index = 0;
-          if(clipinfo.clip_ymax==1)clip_index = 1;
+          printf("upper y clipping plane ");
+          if(clipinfo.clip_ymax==1)printf("on\n");
+          if(clipinfo.clip_ymax==0)printf("off\n");
         }
         Update_Glui_Clip();
-        if(clip_index==0)printf("modify clipping planes: xmin, ymin, zmin\n");
-        if(clip_index==1)printf("modify clipping planes: xmax, ymax, zmax\n");
       }
       visy_all = 1-visy_all;
       if(visx_all==1||visy_all==1||visz_all==1)update_slice2device = 1;
@@ -2672,12 +2672,11 @@ void Keyboard(unsigned char key, int flag){
       if(clip_commandline==1){
         if(key2=='Z'){
           clipinfo.clip_zmax = 1-clipinfo.clip_zmax;
-          clip_index = 0;
-          if(clipinfo.clip_zmax==1)clip_index = 1;
+          printf("upper z clipping plane ");
+          if(clipinfo.clip_zmax==1)printf("on\n");
+          if(clipinfo.clip_zmax==0)printf("off\n");
         }
         Update_Glui_Clip();
-        if(clip_index==0)printf("modify clipping planes: xmin, ymin, zmin\n");
-        if(clip_index==1)printf("modify clipping planes: xmax, ymax, zmax\n");
       }
       rotate_center = 1-rotate_center;
       if(rotate_center==1&&have_geom_bb==1){
@@ -2693,12 +2692,11 @@ void Keyboard(unsigned char key, int flag){
       if(clip_commandline==1){
         if(key2=='z'){
           clipinfo.clip_zmin = 1-clipinfo.clip_zmin;
-          clip_index = 1;
-          if(clipinfo.clip_zmin==1)clip_index = 0;
+          printf("lower z clipping plane ");
+          if(clipinfo.clip_zmin==1)printf("on\n");
+          if(clipinfo.clip_zmin==0)printf("off\n");
         }
         Update_Glui_Clip();
-        if(clip_index==0)printf("modify clipping planes: xmin, ymin, zmin\n");
-        if(clip_index==1)printf("modify clipping planes: xmax, ymax, zmax\n");
       }
 #ifdef pp_DIALOG_SHORTCUTS
       if(keystate==GLUT_ACTIVE_ALT){
@@ -3161,7 +3159,7 @@ void HandlePLOT3DKeys(int  key){
     visx_all=1;
     NextXIndex(-1,0);
     iplot_state=XDIR;
-    if(clip_commandline==1&&clip_index!=-1){
+    if(clip_commandline==1){
       if(special_modifier==GLUT_ACTIVE_SHIFT){
         clipinfo.xmax = SetClipVal(0);
       }
@@ -3175,7 +3173,7 @@ void HandlePLOT3DKeys(int  key){
     visx_all=1;
     NextXIndex(1,0);
     iplot_state=XDIR;
-    if(clip_commandline==1&&clip_index!=-1){
+    if(clip_commandline==1){
       if(special_modifier==GLUT_ACTIVE_SHIFT){
         clipinfo.xmax = SetClipVal(0);
       }
@@ -3189,7 +3187,7 @@ void HandlePLOT3DKeys(int  key){
     visy_all=1;
     NextYIndex(-1,0);
     iplot_state=YDIR;
-    if(clip_commandline==1&&clip_index!=-1){
+    if(clip_commandline==1){
       if(special_modifier==GLUT_ACTIVE_SHIFT){
         clipinfo.ymax = SetClipVal(1);
       }
@@ -3203,7 +3201,7 @@ void HandlePLOT3DKeys(int  key){
     visy_all=1;
     NextYIndex(1,0);
     iplot_state=YDIR;
-    if(clip_commandline==1&&clip_index!=-1){
+    if(clip_commandline==1){
       if(special_modifier==GLUT_ACTIVE_SHIFT){
         clipinfo.ymax = SetClipVal(1);
       }
@@ -3217,7 +3215,7 @@ void HandlePLOT3DKeys(int  key){
     visz_all=1;
     NextZIndex(-1,0);
     iplot_state=ZDIR;
-    if(clip_commandline==1&&clip_index!=-1){
+    if(clip_commandline==1){
       if(special_modifier==GLUT_ACTIVE_SHIFT){
         clipinfo.zmax = SetClipVal(2);
       }
@@ -3231,7 +3229,7 @@ void HandlePLOT3DKeys(int  key){
     visz_all=1;
     NextZIndex(1,0);
     iplot_state=ZDIR;
-    if(clip_commandline==1&&clip_index!=-1){
+    if(clip_commandline==1){
       if(special_modifier==GLUT_ACTIVE_SHIFT){
         clipinfo.zmax = SetClipVal(1);
       }
