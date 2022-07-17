@@ -3087,9 +3087,7 @@ void SpecialKeyboardCB(int key, int x, int y){
 #define P3_MODE 1
   int keymode=EYE_MODE;
 
-  int modifier;
-
-  modifier = glutGetModifiers();
+  special_modifier = glutGetModifiers() & GLUT_ACTIVE_SHIFT;
 
   glutPostRedisplay();
 
@@ -3159,8 +3157,12 @@ void HandlePLOT3DKeys(int  key){
     NextXIndex(-1,0);
     iplot_state=XDIR;
     if(clip_commandline==1&&clip_index!=-1){
-      if(clip_index==0)clipinfo.xmin = SetClipVal(0);
-      if(clip_index==1)clipinfo.xmax = SetClipVal(0);
+      if(special_modifier==GLUT_ACTIVE_SHIFT){
+        clipinfo.xmax = SetClipVal(0);
+      }
+      else{
+        clipinfo.xmin = SetClipVal(0);
+      }
       Update_Glui_Clip();
     }
     break;
@@ -3169,8 +3171,12 @@ void HandlePLOT3DKeys(int  key){
     NextXIndex(1,0);
     iplot_state=XDIR;
     if(clip_commandline==1&&clip_index!=-1){
-      if(clip_index==0)clipinfo.xmin = SetClipVal(0);
-      if(clip_index==1)clipinfo.xmax = SetClipVal(0);
+      if(special_modifier==GLUT_ACTIVE_SHIFT){
+        clipinfo.xmax = SetClipVal(0);
+      }
+      else{
+        clipinfo.xmin = SetClipVal(0);
+      }
       Update_Glui_Clip();
     }
     break;
@@ -3179,8 +3185,12 @@ void HandlePLOT3DKeys(int  key){
     NextYIndex(-1,0);
     iplot_state=YDIR;
     if(clip_commandline==1&&clip_index!=-1){
-      if(clip_index==0)clipinfo.ymin = SetClipVal(1);
-      if(clip_index==1)clipinfo.ymax = SetClipVal(1);
+      if(special_modifier==GLUT_ACTIVE_SHIFT){
+        clipinfo.ymax = SetClipVal(1);
+      }
+      else{
+        clipinfo.ymin = SetClipVal(1);
+      }
       Update_Glui_Clip();
     }
     break;
@@ -3189,8 +3199,12 @@ void HandlePLOT3DKeys(int  key){
     NextYIndex(1,0);
     iplot_state=YDIR;
     if(clip_commandline==1&&clip_index!=-1){
-      if(clip_index==0)clipinfo.ymin = SetClipVal(1);
-      if(clip_index==1)clipinfo.ymax = SetClipVal(1);
+      if(special_modifier==GLUT_ACTIVE_SHIFT){
+        clipinfo.ymax = SetClipVal(1);
+      }
+      else{
+        clipinfo.ymin = SetClipVal(1);
+      }
       Update_Glui_Clip();
     }
     break;
@@ -3199,8 +3213,12 @@ void HandlePLOT3DKeys(int  key){
     NextZIndex(-1,0);
     iplot_state=ZDIR;
     if(clip_commandline==1&&clip_index!=-1){
-      if(clip_index==0)clipinfo.zmin = SetClipVal(2);
-      if(clip_index==1)clipinfo.zmax = SetClipVal(2);
+      if(special_modifier==GLUT_ACTIVE_SHIFT){
+        clipinfo.zmax = SetClipVal(2);
+      }
+      else{
+        clipinfo.zmin = SetClipVal(2);
+      }
       Update_Glui_Clip();
     }
     break;
@@ -3209,8 +3227,12 @@ void HandlePLOT3DKeys(int  key){
     NextZIndex(1,0);
     iplot_state=ZDIR;
     if(clip_commandline==1&&clip_index!=-1){
-      if(clip_index==0)clipinfo.zmin = SetClipVal(2);
-      if(clip_index==1)clipinfo.zmax = SetClipVal(2);
+      if(special_modifier==GLUT_ACTIVE_SHIFT){
+        clipinfo.zmax = SetClipVal(1);
+      }
+      else{
+        clipinfo.zmin = SetClipVal(1);
+      }
       Update_Glui_Clip();
     }
     break;
