@@ -23,7 +23,7 @@
 #include "glutbitmap.h"
 #endif
 
-SVEXTERN int SVDECL(clip_commandline, 0), SVDECL(clip_index, -1);
+SVEXTERN int SVDECL(clip_commandline, 0), SVDECL(clip_index, -1), SVDECL(reset_grid, 0);;
 SVEXTERN int SVDECL(update_slicexyz, 0);
 SVEXTERN int SVDECL(update_splitcolorbar, 0);
 SVEXTERN int SVDECL(slice_plot_bound_option, 1);

@@ -2128,6 +2128,15 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'M':
       clip_commandline = 1-clip_commandline;
+      if(clip_commandline==1&&visGrid==0){
+        Keyboard('g', FROM_SMOKEVIEW);
+        reset_grid = 1;
+      }
+      if(clip_commandline==0&&reset_grid == 1){
+        visGrid = NOGRID_PROBE2;
+        reset_grid = 0;
+        Keyboard('g', FROM_SMOKEVIEW);
+      }
       printf("command line clipping ");
       if(clip_commandline==1){
         printf("on\n");
