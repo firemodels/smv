@@ -2111,7 +2111,6 @@ void Keyboard(unsigned char key, int flag){
       UnloadSliceMenu(UNLOAD_LAST);
       break;
     case 'm':
-    case 'M':
       switch(keystate){
       case GLUT_ACTIVE_ALT:
 #ifdef pp_DIALOG_SHORTCUTS
@@ -2125,6 +2124,16 @@ void Keyboard(unsigned char key, int flag){
           if(highlight_mesh>nmeshes-1)highlight_mesh=0;
           UpdateCurrentMesh(meshinfo+highlight_mesh);
         }
+      }
+      break;
+    case 'M':
+      clip_commandline = 1-clip_commandline;
+      printf("command line clipping ");
+      if(clip_commandline==1){
+        printf("on\n");
+      }
+      else{
+        printf("off\n");
       }
       break;
     case 'n':
@@ -2571,10 +2580,37 @@ void Keyboard(unsigned char key, int flag){
     case 'W':
       clip_mode++;
       if(clip_mode>CLIP_MAX)clip_mode=0;
+      switch(clip_mode){
+        case 0:
+          printf("Clipping disabled\n");
+          break;
+        case 1:
+          printf("Clip blockages and data\n");
+          break;
+        case 2:
+          printf("Clip blockages\n");
+          break;
+        case 3:
+          printf("Clip data\n");
+          break;
+      }
       UpdateClipAll();
       break;
     case 'x':
     case 'X':
+      if(clip_commandline==1){
+        if(key2=='x'){
+          clipinfo.clip_xmin = 1-clipinfo.clip_xmin;
+          clip_index = -1;
+          if(clipinfo.clip_xmin==1)clip_index = 0;
+        }
+        if(key2=='X'){
+          clipinfo.clip_xmax = 1-clipinfo.clip_xmax;
+          clip_index = -1;
+          if(clipinfo.clip_xmax==1)clip_index = 1;
+        }
+        Update_Glui_Clip();
+      }
 #ifdef pp_DIALOG_SHORTCUTS
       if(keystate==GLUT_ACTIVE_ALT){
         if(key2=='x')DialogMenu(DIALOG_HIDEALL);
@@ -2594,12 +2630,33 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'y':
     case 'Y':
+      if(clip_commandline==1){
+        if(key2=='y'){
+          clipinfo.clip_ymin = 1-clipinfo.clip_ymin;
+          clip_index = -1;
+          if(clipinfo.clip_ymin==1)clip_index = 0;
+        }
+        if(key2=='Y'){
+          clipinfo.clip_ymax = 1-clipinfo.clip_ymax;
+          clip_index = -1;
+          if(clipinfo.clip_ymax==1)clip_index = 1;
+        }
+        Update_Glui_Clip();
+      }
       visy_all = 1-visy_all;
       if(visx_all==1||visy_all==1||visz_all==1)update_slice2device = 1;
       plotstate = GetPlotState(STATIC_PLOTS);
       updatemenu = 1;
       break;
     case 'Z':
+      if(clip_commandline==1){
+        if(key2=='Z'){
+          clipinfo.clip_zmax = 1-clipinfo.clip_zmax;
+          clip_index = -1;
+          if(clipinfo.clip_zmax==1)clip_index = 1;
+        }
+        Update_Glui_Clip();
+      }
       rotate_center = 1-rotate_center;
       if(rotate_center==1&&have_geom_bb==1){
         printf("rotate about FDS+GEOM center\n");
@@ -2611,6 +2668,14 @@ void Keyboard(unsigned char key, int flag){
       }
       break;
     case 'z':
+      if(clip_commandline==1){
+        if(key2=='z'){
+          clipinfo.clip_zmin = 1-clipinfo.clip_zmin;
+          clip_index = -1;
+          if(clipinfo.clip_zmin==1)clip_index = 0;
+        }
+        Update_Glui_Clip();
+      }
 #ifdef pp_DIALOG_SHORTCUTS
       if(keystate==GLUT_ACTIVE_ALT){
         DialogMenu(DIALOG_SMOKEZIP); // compress dialog
@@ -3026,6 +3091,39 @@ void SpecialKeyboardCB(int key, int x, int y){
   }
 }
 
+/* ------------------ SetClipVals ------------------------ */
+
+float SetClipVal(int flag){
+  int i;
+
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+    float *xplt, *yplt, *zplt;
+    int plotx, ploty, plotz;
+
+    meshi = meshinfo+i;
+
+    switch(flag){
+      case 0:
+        xplt = meshi->xplt_orig;
+        plotx = meshi->iplotx_all[iplotx_all];
+        if(plotx>=0)return xplt[plotx];
+        break;
+      case 1:
+        yplt = meshi->yplt_orig;
+        ploty = meshi->iploty_all[iploty_all];
+        if(ploty>=0)return yplt[ploty];
+        break;
+      case 2:
+        zplt = meshi->zplt_orig;
+        plotz = meshi->iplotz_all[iplotz_all];
+        if(plotz>=0)return zplt[plotz];
+        break;
+    }
+  }
+  return 0.0;
+}
+
 /* ------------------ HandlePLOT3DKeys ------------------------ */
 
 void HandlePLOT3DKeys(int  key){
@@ -3034,31 +3132,61 @@ void HandlePLOT3DKeys(int  key){
     visx_all=1;
     NextXIndex(-1,0);
     iplot_state=XDIR;
+    if(clip_commandline==1&&clip_index!=-1){
+      if(clip_index==0)clipinfo.xmin = SetClipVal(0);
+      if(clip_index==1)clipinfo.xmax = SetClipVal(0);
+      Update_Glui_Clip();
+    }
     break;
   case GLUT_KEY_RIGHT:
     visx_all=1;
     NextXIndex(1,0);
     iplot_state=XDIR;
+    if(clip_commandline==1&&clip_index!=-1){
+      if(clip_index==0)clipinfo.xmin = SetClipVal(0);
+      if(clip_index==1)clipinfo.xmax = SetClipVal(0);
+      Update_Glui_Clip();
+    }
     break;
   case GLUT_KEY_DOWN:
     visy_all=1;
     NextYIndex(-1,0);
     iplot_state=YDIR;
+    if(clip_commandline==1&&clip_index!=-1){
+      if(clip_index==0)clipinfo.ymin = SetClipVal(1);
+      if(clip_index==1)clipinfo.ymax = SetClipVal(1);
+      Update_Glui_Clip();
+    }
     break;
   case GLUT_KEY_UP:
     visy_all=1;
     NextYIndex(1,0);
     iplot_state=YDIR;
+    if(clip_commandline==1&&clip_index!=-1){
+      if(clip_index==0)clipinfo.ymin = SetClipVal(1);
+      if(clip_index==1)clipinfo.ymax = SetClipVal(1);
+      Update_Glui_Clip();
+    }
     break;
   case GLUT_KEY_PAGE_DOWN:
     visz_all=1;
     NextZIndex(-1,0);
     iplot_state=ZDIR;
+    if(clip_commandline==1&&clip_index!=-1){
+      if(clip_index==0)clipinfo.zmin = SetClipVal(2);
+      if(clip_index==1)clipinfo.zmax = SetClipVal(2);
+      Update_Glui_Clip();
+    }
     break;
   case GLUT_KEY_PAGE_UP:
     visz_all=1;
     NextZIndex(1,0);
     iplot_state=ZDIR;
+    if(clip_commandline==1&&clip_index!=-1){
+      if(clip_index==0)clipinfo.zmin = SetClipVal(2);
+      if(clip_index==1)clipinfo.zmax = SetClipVal(2);
+      Update_Glui_Clip();
+    }
     break;
   case GLUT_KEY_HOME:
     switch(iplot_state){
