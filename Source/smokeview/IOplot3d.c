@@ -1539,34 +1539,45 @@ void DrawGrid(const meshdata *meshi){
     }
     glBegin(GL_LINES);
 
+    int skipi, skipj, skipk;
+
+    skipi = 1;
+    skipj = 1;
+    skipk = 1;
+    if(clip_commandline==1){
+      skipi = ibar;
+      skipj = jbar;
+      skipk = kbar;
+    }
+
     if(visx_all==1&&plotx>=0){
-      for(j=0;j<jbar+1;j++){
+      for(j=0;j<jbar+1;j+=skipj){
         glVertex3f(xplt[plotx],yplt[j],zplt[0]);
         glVertex3f(xplt[plotx],yplt[j],zplt[kbar]);
       }
-      for(k=0;k<kbar+1;k++){
+      for(k=0;k<kbar+1;k+=skipk){
         glVertex3f(xplt[plotx],yplt[0],zplt[k]);
         glVertex3f(xplt[plotx],yplt[jbar],zplt[k]);
       }
     }
 
     if(visy_all==1&&ploty>=0){
-      for(i=0;i<ibar+1;i++){
+      for(i=0;i<ibar+1;i+=skipi){
         glVertex3f(xplt[i],yplt[ploty],zplt[0]);
         glVertex3f(xplt[i],yplt[ploty],zplt[kbar]);
       }
-      for(k=0;k<kbar+1;k++){
+      for(k=0;k<kbar+1;k+=skipk){
         glVertex3f(   xplt[0],yplt[ploty],zplt[k]);
         glVertex3f(xplt[ibar],yplt[ploty],zplt[k]);
       }
     }
 
     if(visz_all==1&&plotz>=0){
-      for(i=0;i<ibar+1;i++){
+      for(i=0;i<ibar+1;i+=skipi){
         glVertex3f(xplt[i],   yplt[0],zplt[plotz]);
         glVertex3f(xplt[i],yplt[jbar],zplt[plotz]);
       }
-      for(j=0;j<jbar+1;j++){
+      for(j=0;j<jbar+1;j+=skipj){
         glVertex3f(xplt[0],yplt[j],zplt[plotz]);
         glVertex3f(xplt[ibar],yplt[j],zplt[plotz]);
       }
