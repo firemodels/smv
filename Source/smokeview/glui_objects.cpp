@@ -118,7 +118,6 @@ GLUI_Listbox *LIST_devicetypes = NULL;
 GLUI_Listbox *LIST_open=NULL;
 GLUI_Listbox *LIST_hrrdata=NULL;
 
-GLUI_Panel *PANEL_plot_bounds = NULL;
 GLUI_Panel *PANEL_bound1 = NULL;
 GLUI_Panel *PANEL_bound1a = NULL;
 GLUI_Panel *PANEL_bound1b = NULL;
@@ -161,6 +160,7 @@ GLUI_RadioGroup *RADIO_scale_windrose=NULL;
 GLUI_RadioGroup *RADIO_windstate_windrose = NULL;
 GLUI_RadioGroup *RADIO_vis_device_plot = NULL;
 
+GLUI_Rollout *ROLLOUT_plot_bounds = NULL;
 GLUI_Rollout *ROLLOUT_plotgeneral = NULL;
 GLUI_Rollout *ROLLOUT_plotslice=NULL;
 GLUI_Rollout *ROLLOUT_plothrr=NULL;
@@ -677,24 +677,10 @@ void EnableDisablePlot2D(void){
 
 extern "C" void ShowPlot2D(void){
   if(glui_device != NULL && ROLLOUT_plotgeneral != NULL){
-    char label[1024];
-    int i;
-
     glui_device->show();
-    ROLLOUT_plotgeneral->enable();
     EnableDisablePlot2D();
     ROLLOUT_device2Dplots->open();
     ROLLOUT_plotgeneral->open();
-    strcpy(label, "");
-    for(i = 0; i < ncsvfileinfo; i++){
-      csvfiledata *csvfi;
-
-      csvfi = csvfileinfo + i;
-      strcat(label, csvfi->c_type);
-      if(i<ncsvfileinfo-1)strcat(label, "/");
-    }
-    strcat(label, "");
-    ROLLOUT_plotgeneral->set_name(label);
   }
 }
 
@@ -1645,9 +1631,9 @@ extern "C" void GluiDeviceSetup(int main_window){
       SPINNER_genplot_linewidth = glui_device->add_spinner_to_panel(PANEL_curve_properties, "line width", GLUI_SPINNER_FLOAT, &(glui_curve.linewidth), GENPLOT_XYZ, GenPlotCB);
       SPINNER_genplot_linewidth->set_float_limits(1.0, 10.0);
 
-      PANEL_plot_bounds = glui_device->add_panel_to_panel(PANEL_plot5, "plot bounds");
+      ROLLOUT_plot_bounds = glui_device->add_rollout_to_panel(PANEL_plot5, "plot bounds", false);
 
-      PANEL_bound1 = glui_device->add_panel_to_panel(PANEL_plot_bounds, "bound1");
+      PANEL_bound1 = glui_device->add_panel_to_panel(ROLLOUT_plot_bounds, "bound1");
 
       PANEL_bound1a = glui_device->add_panel_to_panel(PANEL_bound1, "", 0);
       SPINNER_genplot_valmax[0] = glui_device->add_spinner_to_panel(PANEL_bound1a, "max", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmax, GENPLOT_PLOT_MINMAX, GenPlotCB);
@@ -1659,7 +1645,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       glui_device->add_column_to_panel(PANEL_bound1b, 0);
       CHECKBOX_genplot_use_valmin[0] = glui_device->add_checkbox_to_panel(PANEL_bound1b, "use min", glui_plot2dinfo->use_valmin, GENPLOT_PLOT_MINMAX, GenPlotCB);
 
-      PANEL_bound2 = glui_device->add_panel_to_panel(PANEL_plot_bounds, "bound2");
+      PANEL_bound2 = glui_device->add_panel_to_panel(ROLLOUT_plot_bounds, "bound2");
 
       PANEL_bound2a = glui_device->add_panel_to_panel(PANEL_bound2, "", 0);
       SPINNER_genplot_valmax[1] = glui_device->add_spinner_to_panel(PANEL_bound2a, "max", GLUI_SPINNER_FLOAT, glui_plot2dinfo->valmax+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
@@ -1672,7 +1658,7 @@ extern "C" void GluiDeviceSetup(int main_window){
       CHECKBOX_genplot_use_valmin[1] = glui_device->add_checkbox_to_panel(PANEL_bound2b, "use min", glui_plot2dinfo->use_valmin+1, GENPLOT_PLOT_MINMAX, GenPlotCB);
       SetPlot2DBoundLabels(plot2dinfo);
 
-      BUTTON_reset_plot2d_bounds = glui_device->add_button_to_panel(PANEL_plot_bounds, "Reset bounds", GENPLOT_RESET_BOUNDS, GenPlotCB);
+      BUTTON_reset_plot2d_bounds = glui_device->add_button_to_panel(ROLLOUT_plot_bounds, "Reset bounds", GENPLOT_RESET_BOUNDS, GenPlotCB);
 
       if(nplot2dini>0){
         nplot2dinfo = nplot2dini;
@@ -1690,7 +1676,19 @@ extern "C" void GluiDeviceSetup(int main_window){
       GenPlotCB(GENPLOT_SHOW_PLOT);
       plot2d_dialogs_defined = 1;
       EnableDisablePlot2D();
-      ROLLOUT_plotgeneral->disable();
+      char label[1024];
+
+      ROLLOUT_plotgeneral->enable();
+      strcpy(label, "");
+      for(i = 0; i < ncsvfileinfo; i++){
+        csvfiledata *csvfi;
+
+        csvfi = csvfileinfo + i;
+        strcat(label, csvfi->c_type);
+        if(i<ncsvfileinfo-1)strcat(label, "/");
+      }
+      strcat(label, "");
+      ROLLOUT_plotgeneral->set_name(label);
     }
 
     if(ndevicetypes>0){
