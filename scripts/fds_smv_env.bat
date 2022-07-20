@@ -2,13 +2,13 @@
 
 :: ---- FDS and smokeview version ----
 
-set fds_version=FDS6.7.7
-set fds_tag=FDS6.7.7
-set fds_versionbase=6.7.7
+set fds_version=FDS6.7.9
+set fds_tag=FDS6.7.9
+set fds_versionbase=6.7.9
 
-set smv_version=SMV6.7.18
-set smv_tag=SMV6.7.18
-set smv_versionbase=6.7.18
+set smv_version=SMV6.7.21
+set smv_tag=SMV6.7.21
+set smv_versionbase=6.7.21
 
 set fds_edition=FDS6
 set fds_debug=0
@@ -29,7 +29,7 @@ if exist %userprofile%\.bundle\fds_revision.txt (
 
 :: ---- log entry date ----
 
-set smvlogdate="10-May-2022"
+set smvlogdate="21-June-2022"
 
 :: ---- repo locations ----
 
@@ -61,7 +61,7 @@ set osx_comp_version=oneapi
 
 :: ---- INTEL compiler version ----
 
-set INTELVERSION=INTELoneapiu4
+set INTELVERSION=INTELoneapi1p6
 
 :: ---- Guide locations ----
 
