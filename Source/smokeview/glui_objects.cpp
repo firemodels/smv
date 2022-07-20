@@ -1278,7 +1278,12 @@ extern "C" void DeviceCB(int var){
   case COLORDEVICEVALS:
     update_times=1;
 #ifndef pp_PLOT2D_DEV
-    vis_device_plot = 1;
+    if(showdevice_val==1){
+      vis_device_plot = 1;
+    }
+    else{
+      vis_device_plot = 0;
+    }
     DeviceCB(SHOWDEVICEPLOT);
     plotstate=GetPlotState(DYNAMIC_PLOTS);
 #endif
