@@ -3270,10 +3270,10 @@ void HandlePLOT3DKeys(int  key){
     iplot_state=ZDIR;
     if(clip_commandline==1){
       if(special_modifier==GLUT_ACTIVE_SHIFT){
-        clipinfo.zmax = SetClipVal(1);
+        clipinfo.zmax = SetClipVal(2);
       }
       else{
-        clipinfo.zmin = SetClipVal(1);
+        clipinfo.zmin = SetClipVal(2);
       }
       Update_Glui_Clip();
     }
