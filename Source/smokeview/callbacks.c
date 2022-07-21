@@ -2154,10 +2154,14 @@ void Keyboard(unsigned char key, int flag){
         Keyboard('g', FROM_SMOKEVIEW);
         clip_mode = 0;
         Keyboard('W', FROM_SMOKEVIEW);
+        visgridloc = 1;
+        updatemenu = 1;
       }
       if(clip_commandline==0){
         visGrid = NOGRID_PROBE2;
         Keyboard('g', FROM_SMOKEVIEW);
+        visgridloc = 0;
+        updatemenu = 1;
       }
       if(clip_commandline==1){
         printf("\n");
