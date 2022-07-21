@@ -416,7 +416,7 @@ EXTERNCPP void SetGLuiViewListManual(void);
 EXTERNCPP void UpdateGluiStereo(void);
 EXTERNCPP void UpdateGluiStreakValue(float rvalue);
 EXTERNCPP void UpdateGluiZoom(void);
-EXTERNCPP void Update_Glui_Clip(void);
+EXTERNCPP void UpdateGluiClip(void);
 
 EXTERNCPP void ShowGluiAlert(void);
 EXTERNCPP void HideGluiAlert(void);

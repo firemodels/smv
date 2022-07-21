@@ -1653,6 +1653,19 @@ int GetPlot3DTimeList(int inc){
   return return_val;
 }
 
+/* ------------------ UpdateGridClip ------------------------ */
+
+void UpdateGridClip(int flag){
+  if(clip_commandline==1){
+    if(flag==0)visx_all = clipinfo.clip_xmin;
+    if(flag==1)visx_all = clipinfo.clip_xmax;
+    if(flag==2)visy_all = clipinfo.clip_ymin;
+    if(flag==3)visy_all = clipinfo.clip_ymax;
+    if(flag==4)visz_all = clipinfo.clip_ymin;
+    if(flag==5)visz_all = clipinfo.clip_ymax;
+  }
+}
+
 /* ------------------ Keyboard ------------------------ */
 
 void Keyboard(unsigned char key, int flag){
@@ -2156,6 +2169,10 @@ void Keyboard(unsigned char key, int flag){
         Keyboard('W', FROM_SMOKEVIEW);
         visgridloc = 1;
         updatemenu = 1;
+        UpdateGridClip(0);
+        UpdateGridClip(1);
+        UpdateGridClip(2);
+        UpdateGluiClip();
       }
       if(clip_commandline==0){
         visGrid = NOGRID_PROBE2;
@@ -2660,7 +2677,7 @@ void Keyboard(unsigned char key, int flag){
           }
           if(clipinfo.clip_xmax==0)printf("off\n");
         }
-        Update_Glui_Clip();
+        UpdateGluiClip();
       }
 #ifdef pp_DIALOG_SHORTCUTS
       if(keystate==GLUT_ACTIVE_ALT){
@@ -2700,7 +2717,7 @@ void Keyboard(unsigned char key, int flag){
           }
           if(clipinfo.clip_ymax==0)printf("off\n");
         }
-        Update_Glui_Clip();
+        UpdateGluiClip();
       }
       visy_all = 1-visy_all;
       if(visx_all==1||visy_all==1||visz_all==1)update_slice2device = 1;
@@ -2718,7 +2735,7 @@ void Keyboard(unsigned char key, int flag){
           }
           if(clipinfo.clip_zmax==0)printf("off\n");
         }
-        Update_Glui_Clip();
+        UpdateGluiClip();
       }
       rotate_center = 1-rotate_center;
       if(rotate_center==1&&have_geom_bb==1){
@@ -2741,7 +2758,7 @@ void Keyboard(unsigned char key, int flag){
           }
           if(clipinfo.clip_zmin==0)printf("off\n");
         }
-        Update_Glui_Clip();
+        UpdateGluiClip();
       }
 #ifdef pp_DIALOG_SHORTCUTS
       if(keystate==GLUT_ACTIVE_ALT){
@@ -3244,7 +3261,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.xmin = SetClipVal(0);
       }
-      Update_Glui_Clip();
+      UpdateGluiClip();
     }
     break;
   case GLUT_KEY_RIGHT:
@@ -3258,7 +3275,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.xmin = SetClipVal(0);
       }
-      Update_Glui_Clip();
+      UpdateGluiClip();
     }
     break;
   case GLUT_KEY_DOWN:
@@ -3272,7 +3289,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.ymin = SetClipVal(1);
       }
-      Update_Glui_Clip();
+      UpdateGluiClip();
     }
     break;
   case GLUT_KEY_UP:
@@ -3286,7 +3303,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.ymin = SetClipVal(1);
       }
-      Update_Glui_Clip();
+      UpdateGluiClip();
     }
     break;
   case GLUT_KEY_PAGE_DOWN:
@@ -3300,7 +3317,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.zmin = SetClipVal(2);
       }
-      Update_Glui_Clip();
+      UpdateGluiClip();
     }
     break;
   case GLUT_KEY_PAGE_UP:
@@ -3314,7 +3331,7 @@ void HandlePLOT3DKeys(int  key){
       else{
         clipinfo.zmin = SetClipVal(2);
       }
-      Update_Glui_Clip();
+      UpdateGluiClip();
     }
     break;
   case GLUT_KEY_HOME:
