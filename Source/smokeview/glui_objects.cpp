@@ -1348,8 +1348,6 @@ float GetDeviceTminTmax(void){
 /* ------------------ GluiPlot2DSetup ------------------------ */
 
 extern "C" void GluiPlot2DSetup(int main_window){
-  int i;
-
   if(glui_plot2d!=NULL){
     glui_plot2d->close();
     glui_plot2d = NULL;
@@ -1532,6 +1530,8 @@ extern "C" void GluiPlot2DSetup(int main_window){
 #endif
 
   if(nhrrinfo>0){
+    int i;
+
     ROLLOUT_plothrr = glui_plot2d->add_rollout("hrr/HOC", false);
     CHECKBOX_vis_hrr_plot = glui_plot2d->add_checkbox_to_panel(ROLLOUT_plothrr, _("show"), &vis_hrr_plot, HRRPUV2_PLOT, DeviceCB);
     LIST_hrrdata = glui_plot2d->add_listbox_to_panel(ROLLOUT_plothrr, "type:", &glui_hrr, DEVICE_TIMEAVERAGE, DeviceCB);
