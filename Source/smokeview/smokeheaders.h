@@ -389,6 +389,7 @@ EXTERNCPP void GluiBoundsSetup(int main_window);
 EXTERNCPP void GluiClipSetup(int main_window);
 EXTERNCPP void GluiColorbarSetup(int main_window);
 EXTERNCPP void GluiDeviceSetup(int main_window);
+EXTERNCPP void GluiPlot2DSetup(int main_window);
 EXTERNCPP void GluiGeometrySetup(int main_window);
 EXTERNCPP void GluiLabelsSetup(int main_window);
 EXTERNCPP void GluiMotionSetup(int main_window);
@@ -415,7 +416,7 @@ EXTERNCPP void SetGLuiViewListManual(void);
 EXTERNCPP void UpdateGluiStereo(void);
 EXTERNCPP void UpdateGluiStreakValue(float rvalue);
 EXTERNCPP void UpdateGluiZoom(void);
-EXTERNCPP void Update_Glui_Clip(void);
+EXTERNCPP void UpdateGluiClip(void);
 
 EXTERNCPP void ShowGluiAlert(void);
 EXTERNCPP void HideGluiAlert(void);

@@ -303,6 +303,7 @@ int SetupCase(char *filename){
   GluiClipSetup(mainwindow_id);
   GluiLabelsSetup(mainwindow_id);
   GluiDeviceSetup(mainwindow_id);
+  GluiPlot2DSetup(mainwindow_id);
   GluiTourSetup(mainwindow_id);
   GluiAlertSetup(mainwindow_id);
   GluiStereoSetup(mainwindow_id);
