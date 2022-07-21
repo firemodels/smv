@@ -2152,6 +2152,8 @@ void Keyboard(unsigned char key, int flag){
       if(clip_commandline==1){
         visGrid = 0;
         Keyboard('g', FROM_SMOKEVIEW);
+        clip_mode = 0;
+        Keyboard('W', FROM_SMOKEVIEW);
       }
       if(clip_commandline==0){
         visGrid = NOGRID_PROBE2;
@@ -3193,6 +3195,39 @@ float SetClipVal(int flag){
 /* ------------------ HandlePLOT3DKeys ------------------------ */
 
 void HandlePLOT3DKeys(int  key){
+  if(clip_commandline==1){
+    switch(key){
+      case GLUT_KEY_LEFT:
+      case GLUT_KEY_RIGHT:
+        if(special_modifier==GLUT_ACTIVE_SHIFT){
+          clipinfo.clip_xmax = 1;
+        }
+        else{
+          clipinfo.clip_xmin = 1;
+        }
+        break;
+      case GLUT_KEY_DOWN:
+      case GLUT_KEY_UP:
+        if(special_modifier==GLUT_ACTIVE_SHIFT){
+          clipinfo.clip_ymax = 1;
+        }
+        else{
+          clipinfo.clip_ymin = 1;
+        }
+        break;
+      case GLUT_KEY_PAGE_DOWN:
+      case GLUT_KEY_PAGE_UP:
+        if(special_modifier==GLUT_ACTIVE_SHIFT){
+          clipinfo.clip_zmax = 1;
+        }
+        else{
+          clipinfo.clip_zmin = 1;
+        }
+        break;
+      default:
+        break;
+    }
+  }
   switch(key){
   case GLUT_KEY_LEFT:
     visx_all=1;
