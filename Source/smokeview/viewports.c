@@ -183,7 +183,12 @@ void GetViewportInfo(void){
     show_vertical_colorbar = 0;
   }
 
-  info_width = GetStringWidth("y: 115, 11.55 m");
+  if(clip_commandline==1){
+    info_width = GetStringWidth("x: xxxx.x m -> yyyy.y m");
+  }
+  else{
+    info_width = GetStringWidth("y: 115, 11.55 m");
+  }
 
   colorbar_label_width = MaxColorbarLabelWidth(ncolorlabel_padding);
 
@@ -221,19 +226,19 @@ void GetViewportInfo(void){
     ninfo_lines++;
     doit=1;
   }
-  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visx_all==1)||visGrid==NOGRID_PROBE||visGrid==GRID_PROBE){
+  if(clip_commandline==1||((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visx_all==1)||visGrid==NOGRID_PROBE||visGrid==GRID_PROBE){
     if(visgridloc==1){
       ninfo_lines++;
       doit=1;
     }
   }
-  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visy_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
+  if(clip_commandline==1||((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visy_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
     if(visgridloc==1){
       ninfo_lines++;
       doit=1;
     }
   }
-  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visz_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
+  if(clip_commandline==1||((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visz_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
     if(visgridloc==1){
       ninfo_lines++;
       doit=1;
@@ -821,6 +826,67 @@ void ViewportClip(int quad, GLint screen_left, GLint screen_down){
    glEnd();
 }
 
+ /* ------------------------ GetClipLabel ------------------------- */
+
+void GetClipLabel(char *buffer, int flag){
+  char buffer1[256], buffer2[256];
+
+  switch(flag){
+    case 0:
+      if(clipinfo.clip_xmin==1){
+        Float2String(buffer1, clipinfo.xmin, ngridloc_digits, FORCE_FIXEDPOINT_YES);
+      }
+      else{
+        Float2String(buffer1, DENORMALIZE_X(plotx_all[0]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
+      }
+      if(clipinfo.clip_xmax==1){
+        Float2String(buffer2, clipinfo.xmax, ngridloc_digits, FORCE_FIXEDPOINT_YES);
+      }
+      else{
+        Float2String(buffer2, DENORMALIZE_X(plotx_all[nplotx_all-1]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
+      }
+      strcpy(buffer, "x: ");
+      break;
+    case 1:
+      if(clipinfo.clip_ymin==1){
+        Float2String(buffer1, clipinfo.ymin, ngridloc_digits, FORCE_FIXEDPOINT_YES);
+      }
+      else{
+        Float2String(buffer1, DENORMALIZE_Y(ploty_all[0]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
+      }
+      if(clipinfo.clip_ymax==1){
+        Float2String(buffer2, clipinfo.ymax, ngridloc_digits, FORCE_FIXEDPOINT_YES);
+      }
+      else{
+        Float2String(buffer2, DENORMALIZE_Y(ploty_all[nploty_all-1]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
+      }
+      strcpy(buffer, "y: ");
+      break;
+    case 2:
+      if(clipinfo.clip_zmin==1){
+        Float2String(buffer1, clipinfo.zmin, ngridloc_digits, FORCE_FIXEDPOINT_YES);
+      }
+      else{
+        Float2String(buffer1, DENORMALIZE_Z(plotz_all[0]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
+      }
+      if(clipinfo.clip_zmax==1){
+        Float2String(buffer2, clipinfo.zmax, ngridloc_digits, FORCE_FIXEDPOINT_YES);
+      }
+      else{
+        Float2String(buffer2, DENORMALIZE_Z(plotz_all[nplotz_all-1]), ngridloc_digits, FORCE_FIXEDPOINT_YES);
+      }
+      strcpy(buffer, "z: ");
+      break;
+    default:
+      break;
+  }
+  strcat(buffer, buffer1);
+  strcat(buffer, " m, -> ");
+  strcat(buffer, buffer2);
+  strcat(buffer," m");
+}
+
+
  /* ------------------------ ViewportInfo ------------------------- */
 
 void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
@@ -834,54 +900,69 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  if((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&(visx_all==1||visy_all||visz_all||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE)){
+  if(clip_commandline==1||(showplot3d==1||visGrid!=NOGRID_NOPROBE)&&(visx_all==1||visy_all||visz_all||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE)){
     xyz[0]=DENORMALIZE_X(plotx_all[iplotx_all]);
     xyz[1]=DENORMALIZE_Y(ploty_all[iploty_all]);
     xyz[2]=DENORMALIZE_Z(plotz_all[iplotz_all]);
     mesh_xyz= GetMeshNoFail(xyz);
   }
-  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visx_all==1)||visGrid==NOGRID_PROBE||visGrid==GRID_PROBE){
+  if(clip_commandline==1||((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visx_all==1)||visGrid==NOGRID_PROBE||visGrid==GRID_PROBE){
     int iplotval;
     char buff_label[128], *buff_label_ptr;
 
 
     iplotval=mesh_xyz->iplotx_all[iplotx_all];
     buff_label_ptr = buff_label;
-    Float2String(buff_label_ptr, xyz[0], ngridloc_digits, FORCE_FIXEDPOINT_YES);
-    strcat(buff_label," m");
-    sprintf(slicelabel,"x: %i, ",iplotval);
-    strcat(slicelabel,buff_label);
-    if(visgridloc==1){
+    if(clip_commandline==1){
+      GetClipLabel(slicelabel, 0);
+    }
+    else{
+      Float2String(buff_label_ptr, xyz[0], ngridloc_digits, FORCE_FIXEDPOINT_YES);
+      strcat(buff_label," m");
+      sprintf(slicelabel,"x: %i, ",iplotval);
+      strcat(slicelabel,buff_label);
+    }
+    if(clip_commandline==1||visgridloc==1){
       OutputText(VP_info.left+h_space,VP_info.down+v_space, slicelabel);
       info_lines++;
     }
   }
-  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visy_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
+  if(clip_commandline==1||((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visy_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
     int iplotval;
     char buff_label[128], *buff_label_ptr;
 
     iplotval=mesh_xyz->iploty_all[iploty_all];
     buff_label_ptr = buff_label;
-    Float2String(buff_label_ptr, xyz[1], ngridloc_digits, FORCE_FIXEDPOINT_YES);
-    strcat(buff_label," m");
-    sprintf(slicelabel,"y: %i, ",iplotval);
-    strcat(slicelabel,buff_label);
-    if(visgridloc==1){
+    if(clip_commandline==1){
+      GetClipLabel(slicelabel, 1);
+    }
+    else{
+      Float2String(buff_label_ptr, xyz[1], ngridloc_digits, FORCE_FIXEDPOINT_YES);
+      strcat(buff_label," m");
+      sprintf(slicelabel,"y: %i, ",iplotval);
+      strcat(slicelabel,buff_label);
+    }
+    if(clip_commandline==1||visgridloc==1){
       OutputText(VP_info.left+h_space,VP_info.down+v_space+info_lines*(v_space+VP_info.text_height), slicelabel);
       info_lines++;
     }
   }
-  if(((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visz_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
+  if(clip_commandline==1||((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visz_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
     int iplotval;
     char buff_label[128], *buff_label_ptr;
 
     iplotval=mesh_xyz->iplotz_all[iplotz_all];
     buff_label_ptr = buff_label;
-    Float2String(buff_label_ptr, xyz[2], ngridloc_digits, FORCE_FIXEDPOINT_YES);
-    strcat(buff_label," m");
-    sprintf(slicelabel,"z: %i, ",iplotval);
-    strcat(slicelabel,buff_label);
-    if(visgridloc==1){
+    if(clip_commandline==1){
+      GetClipLabel(slicelabel, 2);
+    }
+    else{
+      Float2String(buff_label_ptr, xyz[2], ngridloc_digits, FORCE_FIXEDPOINT_YES);
+      strcat(buff_label," m");
+      sprintf(slicelabel,"z: %i, ",iplotval);
+      strcat(slicelabel,buff_label);
+    }
+    if(clip_commandline==1||visgridloc==1){
       OutputText(VP_info.left+h_space,VP_info.down+v_space+info_lines*(v_space+VP_info.text_height), slicelabel);
       info_lines++;
     }
