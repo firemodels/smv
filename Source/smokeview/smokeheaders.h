@@ -389,6 +389,7 @@ EXTERNCPP void GluiBoundsSetup(int main_window);
 EXTERNCPP void GluiClipSetup(int main_window);
 EXTERNCPP void GluiColorbarSetup(int main_window);
 EXTERNCPP void GluiDeviceSetup(int main_window);
+EXTERNCPP void GluiPlot2DSetup(int main_window);
 EXTERNCPP void GluiGeometrySetup(int main_window);
 EXTERNCPP void GluiLabelsSetup(int main_window);
 EXTERNCPP void GluiMotionSetup(int main_window);
