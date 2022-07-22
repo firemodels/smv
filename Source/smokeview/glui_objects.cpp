@@ -41,10 +41,10 @@
 #define GENPLOT_ADD_CURVE           114
 #define GENPLOT_PLOT_MINMAX         115
 #define GENPLOT_RESET_BOUNDS        116
-#define GENPLOT_FUEL_HOC            117
+#define GENPLOT_CURVE_FACTOR        117
 #define GENPLOT_RESET_FUEL_HOC      118
 #define GENPLOT_RESET_FUEL_1P0      119
-#define GENPLOT_APPLY_FUEL_HOC      120
+#define GENPLOT_APPLY_CURVE_FACTOR  120
 #define GENPLOT_SAVE                121
 #define GENPLOT_CLOSE               122
 
@@ -127,6 +127,7 @@ GLUI_Listbox *LIST_devicetypes = NULL;
 GLUI_Listbox *LIST_open=NULL;
 GLUI_Listbox *LIST_hrrdata=NULL;
 
+GLUI_Panel *PANEL_curve_factor = NULL;
 GLUI_Panel *PANEL_plot2d_label3 = NULL;
 GLUI_Panel *PANEL_bound1 = NULL;
 GLUI_Panel *PANEL_bound1a = NULL;
@@ -903,6 +904,7 @@ void SetPlot2DBoundLabels(plot2ddata *plot2di){
 /* ------------------ GenPlotCB ------------------------ */
 
 void GenPlotCB(int var){
+  GLUTPOSTREDISPLAY;
   switch (var){
     char label[256];
     int index;
@@ -1091,13 +1093,17 @@ void GenPlotCB(int var){
       break;
     case GENPLOT_RESET_FUEL_1P0:
       SPINNER_curve_factor->set_float_val(1.0);
-      GenPlotCB(GENPLOT_FUEL_HOC);
+      GenPlotCB(GENPLOT_CURVE_FACTOR);
       break;
     case GENPLOT_RESET_FUEL_HOC:
       SPINNER_curve_factor->set_float_val(MAX(0.0,fuel_hoc_default));
-      GenPlotCB(GENPLOT_FUEL_HOC);
+      GenPlotCB(GENPLOT_CURVE_FACTOR);
       break;
-    case GENPLOT_FUEL_HOC:
+    case GENPLOT_CURVE_FACTOR:
+      if(glui_curve.curve_factor<0.0){
+        glui_curve.curve_factor = 0.00001;
+        SPINNER_curve_factor->set_float_val(glui_curve.curve_factor);
+      }
       index = glui_plot2dinfo->curve_index;
       curve = glui_plot2dinfo->curve+index;
       memcpy(curve, &glui_curve, sizeof(curvedata));
@@ -1109,7 +1115,8 @@ void GenPlotCB(int var){
     case GENPLOT_CLOSE:
       glui_plot2d->hide();
       break;
-    case GENPLOT_APPLY_FUEL_HOC:
+    case GENPLOT_APPLY_CURVE_FACTOR:
+      GenPlotCB(GENPLOT_CURVE_FACTOR);
       break;
     default:
       ASSERT(FFALSE);
@@ -1459,16 +1466,13 @@ extern "C" void GluiPlot2DSetup(int main_window){
       glui_plot2d->add_button_to_panel(PANEL_curve_properties, _("Remove selected curve"), GENPLOT_REM_SELECTEDCURVE, GenPlotCB);
       glui_plot2d->add_button_to_panel(PANEL_curve_properties, _("Remove all curves"), GENPLOT_REM_ALLCURVES, GenPlotCB);
 
+      PANEL_curve_factor = glui_plot2d->add_panel_to_panel(PANEL_curve_properties, "scale curve");
       glui_curve.curve_factor       = 1.0;
       glui_curve.apply_curve_factor = 0;
-      SPINNER_curve_factor = glui_plot2d->add_spinner_to_panel(PANEL_curve_properties,     "factor", GLUI_SPINNER_FLOAT, &glui_curve.curve_factor, GENPLOT_FUEL_HOC, GenPlotCB);
-      glui_plot2d->add_button_to_panel(PANEL_curve_properties, "Reset factor(HOC)",   GENPLOT_RESET_FUEL_HOC, GenPlotCB);
-      glui_plot2d->add_button_to_panel(PANEL_curve_properties, "Reset factor(1.0)",   GENPLOT_RESET_FUEL_1P0, GenPlotCB);
-      CHECKBOX_curve_apply_factor = glui_plot2d->add_checkbox_to_panel(PANEL_curve_properties, "Apply factor to selected curve", &glui_curve.apply_curve_factor,   GENPLOT_APPLY_FUEL_HOC, GenPlotCB);
-
-      PANEL_curve_bounds = glui_plot2d->add_panel_to_panel(PANEL_curve_properties, "", 0);
-      STATIC_curv_max = glui_plot2d->add_statictext_to_panel(PANEL_curve_bounds, "max: 0.0");
-      STATIC_curv_min = glui_plot2d->add_statictext_to_panel(PANEL_curve_bounds, "min: 0.0");
+      SPINNER_curve_factor = glui_plot2d->add_spinner_to_panel(PANEL_curve_factor,     "factor", GLUI_SPINNER_FLOAT, &glui_curve.curve_factor, GENPLOT_CURVE_FACTOR, GenPlotCB);
+      CHECKBOX_curve_apply_factor = glui_plot2d->add_checkbox_to_panel(PANEL_curve_factor, "Apply factor to selected curve", &glui_curve.apply_curve_factor,   GENPLOT_APPLY_CURVE_FACTOR, GenPlotCB);
+      glui_plot2d->add_button_to_panel(PANEL_curve_factor, "Reset factor(HOC)",   GENPLOT_RESET_FUEL_HOC, GenPlotCB);
+      glui_plot2d->add_button_to_panel(PANEL_curve_factor, "Reset factor(1.0)",   GENPLOT_RESET_FUEL_1P0, GenPlotCB);
 
       glui_plot2d->add_column_to_panel(PANEL_curve_properties, false);
 
@@ -1482,6 +1486,10 @@ extern "C" void GluiPlot2DSetup(int main_window){
 
       SPINNER_genplot_linewidth = glui_plot2d->add_spinner_to_panel(PANEL_curve_properties, "line width", GLUI_SPINNER_FLOAT, &(glui_curve.linewidth), GENPLOT_XYZ, GenPlotCB);
       SPINNER_genplot_linewidth->set_float_limits(1.0, 10.0);
+
+      PANEL_curve_bounds = glui_plot2d->add_panel_to_panel(PANEL_curve_properties, "", 0);
+      STATIC_curv_max = glui_plot2d->add_statictext_to_panel(PANEL_curve_bounds, "max: 0.0");
+      STATIC_curv_min = glui_plot2d->add_statictext_to_panel(PANEL_curve_bounds, "min: 0.0");
 
       ROLLOUT_plot_bounds = glui_plot2d->add_rollout_to_panel(PANEL_plot5, "plot bounds", false);
 
