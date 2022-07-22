@@ -174,7 +174,6 @@ GLUI_RadioGroup *RADIO_vis_device_plot = NULL;
 #endif
 
 GLUI_Rollout *ROLLOUT_plot_bounds = NULL;
-GLUI_Rollout *ROLLOUT_plotgeneral = NULL;
 GLUI_Rollout *ROLLOUT_plothrr=NULL;
 GLUI_Rollout *ROLLOUT_plotdevice = NULL;
 GLUI_Rollout *ROLLOUT_plotproperties = NULL;
@@ -686,10 +685,9 @@ void EnableDisablePlot2D(void){
 /* ------------------ ShowPlot2D ------------------------ */
 
 extern "C" void ShowPlot2D(void){
-  if(glui_plot2d != NULL && ROLLOUT_plotgeneral != NULL){
+  if(glui_plot2d != NULL){
     glui_plot2d->show();
     EnableDisablePlot2D();
-    ROLLOUT_plotgeneral->open();
   }
 }
 
@@ -1385,9 +1383,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
     int i;
 
     if(ncsvfileinfo>0){
-      ROLLOUT_plotgeneral = glui_plot2d->add_rollout("", false);
-
-      PANEL_plot8 = glui_plot2d->add_panel_to_panel(ROLLOUT_plotgeneral, "", 0);
+      PANEL_plot8 = glui_plot2d->add_panel("", 0);
 
       PANEL_plots = glui_plot2d->add_panel_to_panel(PANEL_plot8, "add/remove/select plot");
       BUTTON_add_plot = glui_plot2d->add_button_to_panel(PANEL_plots, _("New plot"), GENPLOT_ADD_PLOT, GenPlotCB);
@@ -1429,7 +1425,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
       CHECKBOX_show_curve_values = glui_plot2d->add_checkbox_to_panel(PANEL_plot_title, "show curve values", &(glui_plot2dinfo->show_curve_values), GENPLOT_PLOT_LABEL, GenPlotCB);
 
 
-      PANEL_plot5 = glui_plot2d->add_panel_to_panel(ROLLOUT_plotgeneral, "", 0);
+      PANEL_plot5 = glui_plot2d->add_panel("", 0);
 
       if(nplot2dinfo==0){
         if(PANEL_add_curve!=NULL)PANEL_add_curve->disable();
@@ -1536,19 +1532,6 @@ extern "C" void GluiPlot2DSetup(int main_window){
       GenPlotCB(GENPLOT_SHOW_PLOT);
       plot2d_dialogs_defined = 1;
       EnableDisablePlot2D();
-      char label[1024];
-
-      ROLLOUT_plotgeneral->enable();
-      strcpy(label, "");
-      for(i = 0; i<ncsvfileinfo; i++){
-        csvfiledata *csvfi;
-
-        csvfi = csvfileinfo+i;
-        strcat(label, csvfi->c_type);
-        if(i<ncsvfileinfo-1)strcat(label, "/");
-      }
-      strcat(label, "");
-      ROLLOUT_plotgeneral->set_name(label);
     }
   }
 #ifdef pp_PLOT2D_DEV
