@@ -469,12 +469,12 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int force){
     curve->csv_col_index = index;
     curve->csv_file_index = glui_csv_file_index;
     if(force==0){
-      curve->color[0] = glui_curve.color[0];
-      curve->color[1] = glui_curve.color[1];
-      curve->color[2] = glui_curve.color[2];
-      curve->linewidth = glui_curve.linewidth;
-      curve->factor = glui_curve.factor;
-      curve->apply_factor = glui_curve.apply_factor;
+      curve->color[0]           = glui_curve.color[0];
+      curve->color[1]           = glui_curve.color[1];
+      curve->color[2]           = glui_curve.color[2];
+      curve->linewidth          = glui_curve.linewidth;
+      curve->curve_factor       = glui_curve.curve_factor;
+      curve->apply_curve_factor = glui_curve.apply_curve_factor;
     }
     strcpy(curve->c_type, c_type);
     plot2di->ncurves = nplots+1;
@@ -640,8 +640,8 @@ void UpdateCurveControls(char *unit){
   SPINNER_genplot_green->set_int_val(glui_curve.color[1]);
   SPINNER_genplot_blue->set_int_val(glui_curve.color[2]);
   SPINNER_genplot_linewidth->set_float_val(glui_curve.linewidth);
-  SPINNER_curve_factor->set_float_val(glui_curve.factor);
-  CHECKBOX_curve_apply_factor->set_int_val(glui_curve.apply_factor);
+  SPINNER_curve_factor->set_float_val(glui_curve.curve_factor);
+  CHECKBOX_curve_apply_factor->set_int_val(glui_curve.apply_curve_factor);
 
   char label[100], cval[100];
   int ndigits = 6;
@@ -1459,12 +1459,12 @@ extern "C" void GluiPlot2DSetup(int main_window){
       glui_plot2d->add_button_to_panel(PANEL_curve_properties, _("Remove selected curve"), GENPLOT_REM_SELECTEDCURVE, GenPlotCB);
       glui_plot2d->add_button_to_panel(PANEL_curve_properties, _("Remove all curves"), GENPLOT_REM_ALLCURVES, GenPlotCB);
 
-      glui_curve.factor = 1.0;
-      glui_curve.apply_factor = 0;
-      SPINNER_curve_factor = glui_plot2d->add_spinner_to_panel(PANEL_curve_properties,     "factor", GLUI_SPINNER_FLOAT, &glui_curve.factor, GENPLOT_FUEL_HOC, GenPlotCB);
+      glui_curve.curve_factor       = 1.0;
+      glui_curve.apply_curve_factor = 0;
+      SPINNER_curve_factor = glui_plot2d->add_spinner_to_panel(PANEL_curve_properties,     "factor", GLUI_SPINNER_FLOAT, &glui_curve.curve_factor, GENPLOT_FUEL_HOC, GenPlotCB);
       glui_plot2d->add_button_to_panel(PANEL_curve_properties, "Reset factor(HOC)",   GENPLOT_RESET_FUEL_HOC, GenPlotCB);
       glui_plot2d->add_button_to_panel(PANEL_curve_properties, "Reset factor(1.0)",   GENPLOT_RESET_FUEL_1P0, GenPlotCB);
-      CHECKBOX_curve_apply_factor = glui_plot2d->add_checkbox_to_panel(PANEL_curve_properties, "Apply factor to selected curve", &glui_curve.apply_factor,   GENPLOT_APPLY_FUEL_HOC, GenPlotCB);
+      CHECKBOX_curve_apply_factor = glui_plot2d->add_checkbox_to_panel(PANEL_curve_properties, "Apply factor to selected curve", &glui_curve.apply_curve_factor,   GENPLOT_APPLY_FUEL_HOC, GenPlotCB);
 
       PANEL_curve_bounds = glui_plot2d->add_panel_to_panel(PANEL_curve_properties, "", 0);
       STATIC_curv_max = glui_plot2d->add_statictext_to_panel(PANEL_curve_bounds, "max: 0.0");

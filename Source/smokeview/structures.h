@@ -1010,8 +1010,8 @@ typedef struct _curvedata{
 // UpdateCurveBounds in IOplot2d.c
   char c_type[64];
   int csv_file_index, csv_col_index, csv_col_index_ini, color[3];
-  int apply_factor;
-  float factor;
+  int apply_curve_factor;
+  float curve_factor;
   float vmin, vmax;
   float linewidth;
 } curvedata;

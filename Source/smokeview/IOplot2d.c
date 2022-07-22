@@ -307,12 +307,12 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
       curvedata *curve;
 
       curve = plot2di->curve+i;
-      curve->color[0] = 0;
-      curve->color[1] = 0;
-      curve->color[2] = 0;
-      curve->linewidth = 1.0;
-      curve->apply_factor = 0;
-      curve->factor = 1.0;
+      curve->color[0]           = 0;
+      curve->color[1]           = 0;
+      curve->color[2]           = 0;
+      curve->linewidth          = 1.0;
+      curve->apply_curve_factor = 0;
+      curve->curve_factor       = 1.0;
     }
   }
   for(i = 0; i<ncsvfileinfo; i++){

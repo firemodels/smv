@@ -11613,8 +11613,8 @@ int ReadIni2(char *inifile, int localfile){
           curve->color[1]                  = color[1];
           curve->color[2]                  = color[2];
           curve->linewidth                 = linewidth1;
-          curve->factor                    = factor;
-          curve->apply_factor              = apply_factor;
+          curve->curve_factor              = factor;
+          curve->apply_curve_factor        = apply_factor;
         }
       }
       update_glui_devices = 1;
@@ -14999,8 +14999,8 @@ void WriteIniLocal(FILE *fileout){
       curve             = plot2di->curve+j;
       color             = curve->color;
       linewidth1        = curve->linewidth;
-      factor            = curve->factor;
-      apply_factor      = curve->apply_factor;
+      factor            = curve->curve_factor;
+      apply_factor      = curve->apply_curve_factor;
       fprintf(fileout, " %i %i %i %i %i %f %f %i\n", file_index, col_index, color[0], color[1], color[2], linewidth1, factor, apply_factor);
     };
   }
