@@ -175,7 +175,6 @@ GLUI_RadioGroup *RADIO_vis_device_plot = NULL;
 
 GLUI_Rollout *ROLLOUT_plot_bounds = NULL;
 GLUI_Rollout *ROLLOUT_plotgeneral = NULL;
-GLUI_Rollout *ROLLOUT_plotslice=NULL;
 GLUI_Rollout *ROLLOUT_plothrr=NULL;
 GLUI_Rollout *ROLLOUT_plotdevice = NULL;
 GLUI_Rollout *ROLLOUT_plotproperties = NULL;
@@ -204,9 +203,6 @@ GLUI_Spinner *SPINNER_genplot_valmax[2];
 GLUI_Spinner *SPINNER_fuel_hoc = NULL;
 GLUI_Spinner *SPINNER_curve_factor = NULL;
 GLUI_Spinner *SPINNER_size_factor = NULL;
-GLUI_Spinner *SPINNER_slice_x = NULL;
-GLUI_Spinner *SPINNER_slice_y = NULL;
-GLUI_Spinner *SPINNER_slice_z = NULL;
 GLUI_Spinner *SPINNER_device_time_average = NULL;
 GLUI_Spinner *SPINNER_windrose_merge_dxyzt[6];
 GLUI_Spinner *SPINNER_sensorrelsize=NULL;
@@ -262,14 +258,6 @@ extern "C" void UpdateDeviceShow(void){
 #ifdef pp_PLOT2D_DEV
   if(RADIO_vis_device_plot!=NULL)RADIO_vis_device_plot->set_int_val(vis_device_plot);
 #endif
-}
-
-/* ------------------ UpdateSliceXYZ ------------------------ */
-
-extern "C" void UpdateSliceXYZ(void){
-  if(SPINNER_slice_x!=NULL)SPINNER_slice_x->set_float_val(slice_xyz[0]);
-  if(SPINNER_slice_y!=NULL)SPINNER_slice_y->set_float_val(slice_xyz[1]);
-  if(SPINNER_slice_z!=NULL)SPINNER_slice_z->set_float_val(slice_xyz[2]);
 }
 
 /* ------------------ UpdateWindRoseDevices ------------------------ */
@@ -1130,9 +1118,6 @@ extern "C" void DeviceCB(int var){
   int i;
 
   updatemenu = 1;
-  if(var==SLICE_PLOT){
-    Slice2Device();
-  }
   if(var==HRRPUV_PLOT){
     vis_hrr_plot = 1-vis_hrr_plot;
     ShowObjectsMenu(PLOT_HRRPUV);
@@ -1610,17 +1595,6 @@ extern "C" void GluiPlot2DSetup(int main_window){
       glui_plot2d->add_checkbox_to_panel(ROLLOUT_plothrr, _("HRR and HOC*MLR_..."), &hoc_hrr);
       glui_plot2d->add_button_to_panel(ROLLOUT_plothrr, _("Reset HOC"), RESET_FUEL_HOC, DeviceCB);
     }
-  }
-  if(nsliceinfo>0){
-    ROLLOUT_plotslice = glui_plot2d->add_rollout("slice", false);
-    glui_plot2d->add_checkbox_to_panel(ROLLOUT_plotslice, _("show"), &vis_slice_plot, SLICE_PLOT, DeviceCB);
-    glui_plot2d->add_checkbox_to_panel(ROLLOUT_plotslice, _("slice bounds"), &slice_plot_bound_option, SLICE_PLOT, DeviceCB);
-    SPINNER_slice_x = glui_plot2d->add_spinner_to_panel(ROLLOUT_plotslice, "x", GLUI_SPINNER_FLOAT, slice_xyz+0, SLICE_PLOT, DeviceCB);
-    SPINNER_slice_y = glui_plot2d->add_spinner_to_panel(ROLLOUT_plotslice, "y", GLUI_SPINNER_FLOAT, slice_xyz+1, SLICE_PLOT, DeviceCB);
-    SPINNER_slice_z = glui_plot2d->add_spinner_to_panel(ROLLOUT_plotslice, "z", GLUI_SPINNER_FLOAT, slice_xyz+2, SLICE_PLOT, DeviceCB);
-    SPINNER_slice_x->set_float_limits(xbar0FDS, xbarFDS);
-    SPINNER_slice_y->set_float_limits(ybar0FDS, ybarFDS);
-    SPINNER_slice_z->set_float_limits(zbar0FDS, zbarFDS);
   }
 
   ROLLOUT_plotproperties = glui_plot2d->add_rollout("plot properties", false);

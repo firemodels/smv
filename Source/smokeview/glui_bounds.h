@@ -68,6 +68,7 @@
 #define ISO_COLORBAR_LIST        217
 #define ISO_OUTLINE_IOFFSET      218
 #define SET_FDS_TIMES            220
+#define SLICE_PLOT               221
 
 #define ISO_TRANSPARENT_CONSTANT 0
 #define ISO_TRANSPARENT_VARYING  1
