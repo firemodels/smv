@@ -1505,6 +1505,21 @@ extern "C" void GluiPlot2DSetup(int main_window){
 
       BUTTON_reset_plot2d_bounds = glui_plot2d->add_button_to_panel(ROLLOUT_plot_bounds, "Reset bounds", GENPLOT_RESET_BOUNDS, GenPlotCB);
 
+      ROLLOUT_plotproperties = glui_plot2d->add_rollout_to_panel(PANEL_plot5, "plot properties", false);
+      glui_plot2d->add_checkbox_to_panel(ROLLOUT_plotproperties, _("plot labels"), &showd_plot2d_labels);
+      SPINNER_size_factor = glui_plot2d->add_spinner_to_panel(ROLLOUT_plotproperties, _("size factor"), GLUI_SPINNER_FLOAT, &plot2d_size_factor);
+      glui_plot2d->add_spinner_to_panel(ROLLOUT_plotproperties, _("font spacing"), GLUI_SPINNER_FLOAT, &plot2d_font_spacing);
+      SPINNER_size_factor->set_float_limits(0.0, 1.0);
+      glui_plot2d->add_spinner_to_panel(ROLLOUT_plotproperties, _("line width"), GLUI_SPINNER_FLOAT, &plot2d_line_width);
+      glui_plot2d->add_spinner_to_panel(ROLLOUT_plotproperties, _("point size"), GLUI_SPINNER_FLOAT, &plot2d_point_size);
+      {
+        float dev_tmax;
+
+        dev_tmax = GetDeviceTminTmax();
+        SPINNER_device_time_average = glui_plot2d->add_spinner_to_panel(ROLLOUT_plotproperties, _("smoothing interval (s)"), GLUI_SPINNER_FLOAT, &device_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
+        SPINNER_device_time_average->set_float_limits(0.0, dev_tmax);
+      }
+
       if(nplot2dini>0){
         nplot2dinfo = nplot2dini;
         NewMemory((void **)&plot2dinfo, nplot2dinfo*sizeof(plot2ddata));
@@ -1597,20 +1612,6 @@ extern "C" void GluiPlot2DSetup(int main_window){
     }
   }
 
-  ROLLOUT_plotproperties = glui_plot2d->add_rollout("plot properties", false);
-  glui_plot2d->add_checkbox_to_panel(ROLLOUT_plotproperties, _("plot labels"), &showd_plot2d_labels);
-  SPINNER_size_factor = glui_plot2d->add_spinner_to_panel(ROLLOUT_plotproperties, _("size factor"), GLUI_SPINNER_FLOAT, &plot2d_size_factor);
-                        glui_plot2d->add_spinner_to_panel(ROLLOUT_plotproperties, _("font spacing"), GLUI_SPINNER_FLOAT, &plot2d_font_spacing);
-  SPINNER_size_factor->set_float_limits(0.0, 1.0);
-  glui_plot2d->add_spinner_to_panel(ROLLOUT_plotproperties, _("line width"), GLUI_SPINNER_FLOAT, &plot2d_line_width);
-  glui_plot2d->add_spinner_to_panel(ROLLOUT_plotproperties, _("point size"), GLUI_SPINNER_FLOAT, &plot2d_point_size);
-  {
-    float dev_tmax;
-
-     dev_tmax = GetDeviceTminTmax();
-    SPINNER_device_time_average = glui_plot2d->add_spinner_to_panel(ROLLOUT_plotproperties, _("smoothing interval (s)"), GLUI_SPINNER_FLOAT, &device_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
-    SPINNER_device_time_average->set_float_limits(0.0, dev_tmax);
-  }
   PANEL_plot2d_label3 = glui_plot2d->add_panel("",false);
   glui_plot2d->add_column_to_panel(PANEL_plot2d_label3,false);
 
