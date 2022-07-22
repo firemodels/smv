@@ -20,7 +20,6 @@ EXTERNCPP int HaveGenHrr(void);
 EXTERNCPP void ShowPlot2D(void);
 EXTERNCPP void ReadAllCSV(int flag);
 EXTERNCPP char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index);
-EXTERNCPP void UpdateCurveBounds(plot2ddata * plot2di, int flag);
 EXTERNCPP csvdata *GetCsv(int file_index, int col_index, csvfiledata **csvf_ptr);
 EXTERNCPP csvdata *GetCurrentCsv(int i, csvfiledata **csvf_ptr);
 EXTERNCPP void SetupPlot2DUnitData(void);

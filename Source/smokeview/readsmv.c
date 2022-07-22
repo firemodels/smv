@@ -11596,11 +11596,15 @@ int ReadIni2(char *inifile, int localfile){
           float linewidth1;
           int file_index, col_index;
           curvedata *curve;
+          float factor;
+          int apply_factor;
 
           fgets(buffer, 255, stream);
           TrimBack(buffer);
           linewidth1 = 1.0;
-          sscanf(buffer, " %i %i %i %i %i %f",    &file_index, &col_index, color, color+1, color+2, &linewidth1);
+          factor = 1.0;
+          apply_factor = 0;
+          sscanf(buffer, " %i %i %i %i %i %f %f %i",    &file_index, &col_index, color, color+1, color+2, &linewidth1, &factor, &apply_factor);
 
           plot2di->curve[j].csv_file_index = file_index;
           plot2di->curve[j].csv_col_index  = col_index;
@@ -11609,6 +11613,8 @@ int ReadIni2(char *inifile, int localfile){
           curve->color[1]                  = color[1];
           curve->color[2]                  = color[2];
           curve->linewidth                 = linewidth1;
+          curve->factor                    = factor;
+          curve->apply_factor              = apply_factor;
         }
       }
       update_glui_devices = 1;
@@ -14985,13 +14991,17 @@ void WriteIniLocal(FILE *fileout){
       float linewidth1;
       int file_index, col_index;
       curvedata *curve;
+      float factor;
+      int apply_factor;
 
       file_index        = plot2di->curve[j].csv_file_index;
       col_index         = plot2di->curve[j].csv_col_index;
       curve             = plot2di->curve+j;
       color             = curve->color;
       linewidth1        = curve->linewidth;
-      fprintf(fileout, " %i %i %i %i %i %f\n", file_index, col_index, color[0], color[1], color[2], linewidth1);
+      factor            = curve->factor;
+      apply_factor      = curve->apply_factor;
+      fprintf(fileout, " %i %i %i %i %i %f %f %i\n", file_index, col_index, color[0], color[1], color[2], linewidth1, factor, apply_factor);
     };
   }
   fprintf(fileout, "SHOWDEVICEVALS\n");

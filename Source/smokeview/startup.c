@@ -136,8 +136,10 @@ void InitMisc(void){
   glui_curve_default.color[1]    = 0;
   glui_curve_default.color[2]    = 0;
   glui_curve_default.linewidth   = 1.0;
-  glui_curve_default.vmin     = 0.0;
-  glui_curve_default.vmax     = 1.0;
+  glui_curve_default.vmin        = 0.0;
+  glui_curve_default.vmax        = 1.0;
+  glui_curve_default.factor      = 1.0;
+  glui_curve_default.apply_factor = 0;
   memcpy(&glui_curve, &glui_curve_default, sizeof(curvedata));
 
   ResetGluiView(startup_view_ini);

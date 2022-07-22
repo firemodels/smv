@@ -41,6 +41,12 @@
 #define GENPLOT_ADD_CURVE           114
 #define GENPLOT_PLOT_MINMAX         115
 #define GENPLOT_RESET_BOUNDS        116
+#define GENPLOT_FUEL_HOC            117
+#define GENPLOT_RESET_FUEL_HOC      118
+#define GENPLOT_RESET_FUEL_1P0      119
+#define GENPLOT_APPLY_FUEL_HOC      120
+#define GENPLOT_SAVE                121
+#define GENPLOT_CLOSE               122
 
 #define WINDROSE_SHOW_FIRST   996
 #define WINDROSE_SHOW_NEXT    997
@@ -79,10 +85,9 @@ GLUI_Button *BUTTON_plot_position = NULL;
 GLUI_Button *BUTTON_add_plot = NULL;
 GLUI_Button *BUTTON_rem_plot = NULL;
 GLUI_Button *BUTTON_open_down=NULL ;
-GLUI_Button *BUTTON_device_1=NULL;
 GLUI_Button *BUTTON_device_2=NULL;
+GLUI_Button *BUTTON_plot2d_2=NULL;
 GLUI_Button *BUTTON_update_windrose = NULL;
-GLUI_Button *BUTTON_reset_fuel_hoc = NULL;
 GLUI_Button *BUTTON_reset_plot2d_bounds = NULL;
 
 GLUI_Checkbox *CHECKBOX_genplot_use_usermin = NULL;
@@ -107,6 +112,7 @@ GLUI_Checkbox *CHECKBOX_showbeam_as_line = NULL;
 GLUI_Checkbox *CHECKBOX_use_beamcolor = NULL;
 GLUI_Checkbox **CHECKBOX_showz_windrose;
 GLUI_Checkbox *CHECKBOX_vis_hrr_plot=NULL;
+GLUI_Checkbox *CHECKBOX_curve_apply_factor = NULL;
 
 GLUI_EditText *EDIT_filter=NULL;
 
@@ -121,6 +127,7 @@ GLUI_Listbox *LIST_devicetypes = NULL;
 GLUI_Listbox *LIST_open=NULL;
 GLUI_Listbox *LIST_hrrdata=NULL;
 
+GLUI_Panel *PANEL_plot2d_label3 = NULL;
 GLUI_Panel *PANEL_bound1 = NULL;
 GLUI_Panel *PANEL_bound1a = NULL;
 GLUI_Panel *PANEL_bound1b = NULL;
@@ -194,6 +201,7 @@ GLUI_Spinner *SPINNER_genplot_linewidth = NULL;
 GLUI_Spinner *SPINNER_genplot_valmin[2];
 GLUI_Spinner *SPINNER_genplot_valmax[2];
 GLUI_Spinner *SPINNER_fuel_hoc = NULL;
+GLUI_Spinner *SPINNER_curve_factor = NULL;
 GLUI_Spinner *SPINNER_size_factor = NULL;
 GLUI_Spinner *SPINNER_slice_x = NULL;
 GLUI_Spinner *SPINNER_slice_y = NULL;
@@ -465,6 +473,8 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int force){
       curve->color[1] = glui_curve.color[1];
       curve->color[2] = glui_curve.color[2];
       curve->linewidth = glui_curve.linewidth;
+      curve->factor = glui_curve.factor;
+      curve->apply_factor = glui_curve.apply_factor;
     }
     strcpy(curve->c_type, c_type);
     plot2di->ncurves = nplots+1;
@@ -630,6 +640,8 @@ void UpdateCurveControls(char *unit){
   SPINNER_genplot_green->set_int_val(glui_curve.color[1]);
   SPINNER_genplot_blue->set_int_val(glui_curve.color[2]);
   SPINNER_genplot_linewidth->set_float_val(glui_curve.linewidth);
+  SPINNER_curve_factor->set_float_val(glui_curve.factor);
+  CHECKBOX_curve_apply_factor->set_int_val(glui_curve.apply_factor);
 
   char label[100], cval[100];
   int ndigits = 6;
@@ -1077,6 +1089,28 @@ void GenPlotCB(int var){
       EnableDisablePlot2D();
       GenPlotCB(GENPLOT_SELECT_PLOT);
       break;
+    case GENPLOT_RESET_FUEL_1P0:
+      SPINNER_curve_factor->set_float_val(1.0);
+      GenPlotCB(GENPLOT_FUEL_HOC);
+      break;
+    case GENPLOT_RESET_FUEL_HOC:
+      SPINNER_curve_factor->set_float_val(MAX(0.0,fuel_hoc_default));
+      GenPlotCB(GENPLOT_FUEL_HOC);
+      break;
+    case GENPLOT_FUEL_HOC:
+      index = glui_plot2dinfo->curve_index;
+      curve = glui_plot2dinfo->curve+index;
+      memcpy(curve, &glui_curve, sizeof(curvedata));
+      Glui2Plot2D(iplot2dinfo);
+      break;
+    case GENPLOT_SAVE:
+      WriteIni(LOCAL_INI, NULL);
+      break;
+    case GENPLOT_CLOSE:
+      glui_plot2d->hide();
+      break;
+    case GENPLOT_APPLY_FUEL_HOC:
+      break;
     default:
       ASSERT(FFALSE);
       break;
@@ -1425,6 +1459,13 @@ extern "C" void GluiPlot2DSetup(int main_window){
       glui_plot2d->add_button_to_panel(PANEL_curve_properties, _("Remove selected curve"), GENPLOT_REM_SELECTEDCURVE, GenPlotCB);
       glui_plot2d->add_button_to_panel(PANEL_curve_properties, _("Remove all curves"), GENPLOT_REM_ALLCURVES, GenPlotCB);
 
+      glui_curve.factor = 1.0;
+      glui_curve.apply_factor = 0;
+      SPINNER_curve_factor = glui_plot2d->add_spinner_to_panel(PANEL_curve_properties,     "factor", GLUI_SPINNER_FLOAT, &glui_curve.factor, GENPLOT_FUEL_HOC, GenPlotCB);
+      glui_plot2d->add_button_to_panel(PANEL_curve_properties, "Reset factor(HOC)",   GENPLOT_RESET_FUEL_HOC, GenPlotCB);
+      glui_plot2d->add_button_to_panel(PANEL_curve_properties, "Reset factor(1.0)",   GENPLOT_RESET_FUEL_1P0, GenPlotCB);
+      CHECKBOX_curve_apply_factor = glui_plot2d->add_checkbox_to_panel(PANEL_curve_properties, "Apply factor to selected curve", &glui_curve.apply_factor,   GENPLOT_APPLY_FUEL_HOC, GenPlotCB);
+
       PANEL_curve_bounds = glui_plot2d->add_panel_to_panel(PANEL_curve_properties, "", 0);
       STATIC_curv_max = glui_plot2d->add_statictext_to_panel(PANEL_curve_bounds, "max: 0.0");
       STATIC_curv_min = glui_plot2d->add_statictext_to_panel(PANEL_curve_bounds, "min: 0.0");
@@ -1559,7 +1600,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
     if(have_mlr==1){
       SPINNER_fuel_hoc = glui_plot2d->add_spinner_to_panel(ROLLOUT_plothrr, _("HOC (kJ/kg)"), GLUI_SPINNER_FLOAT, &fuel_hoc, FUEL_HOC, DeviceCB);
       glui_plot2d->add_checkbox_to_panel(ROLLOUT_plothrr, _("HRR and HOC*MLR_..."), &hoc_hrr);
-      BUTTON_reset_fuel_hoc = glui_plot2d->add_button_to_panel(ROLLOUT_plothrr, _("Reset HOC"), RESET_FUEL_HOC, DeviceCB);
+      glui_plot2d->add_button_to_panel(ROLLOUT_plothrr, _("Reset HOC"), RESET_FUEL_HOC, DeviceCB);
     }
   }
   if(nsliceinfo>0){
@@ -1588,6 +1629,16 @@ extern "C" void GluiPlot2DSetup(int main_window){
     SPINNER_device_time_average = glui_plot2d->add_spinner_to_panel(ROLLOUT_plotproperties, _("smoothing interval (s)"), GLUI_SPINNER_FLOAT, &device_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
     SPINNER_device_time_average->set_float_limits(0.0, dev_tmax);
   }
+  PANEL_plot2d_label3 = glui_plot2d->add_panel("",false);
+  glui_plot2d->add_column_to_panel(PANEL_plot2d_label3,false);
+
+  glui_plot2d->add_button_to_panel(PANEL_plot2d_label3,_("Save settings"),GENPLOT_SAVE,GenPlotCB);
+  glui_plot2d->add_column_to_panel(PANEL_plot2d_label3,false);
+
+  BUTTON_plot2d_2 = glui_plot2d->add_button_to_panel(PANEL_plot2d_label3,_("Close"),GENPLOT_CLOSE,GenPlotCB);
+#ifdef pp_CLOSEOFF
+  BUTTON_plot2d_2->disable();
+#endif
 }
 
 /* ------------------ GluiDeviceSetup ------------------------ */
@@ -1819,7 +1870,7 @@ extern "C" void GluiDeviceSetup(int main_window){
   PANEL_label3 = glui_device->add_panel("",false);
   glui_device->add_column_to_panel(PANEL_label3,false);
 
-  BUTTON_device_1=glui_device->add_button_to_panel(PANEL_label3,_("Save settings"),SAVE_SETTINGS_OBJECTS,DeviceCB);
+  glui_device->add_button_to_panel(PANEL_label3,_("Save settings"),SAVE_SETTINGS_OBJECTS,DeviceCB);
   glui_device->add_column_to_panel(PANEL_label3,false);
 
   BUTTON_device_2=glui_device->add_button_to_panel(PANEL_label3,_("Close"),DEVICE_close,DeviceCB);

@@ -297,6 +297,70 @@ float GetCSVVal(float t, float *times, float *vals, int nvals){
   return vals[mid];
 }
 
+/* ------------------ UpdateCurveBounds ------------------------ */
+
+void UpdateCurveBounds(plot2ddata *plot2di, int option){
+  int i;
+
+  if(option==1){
+    for(i = 0; i<PLOT2D_MAX_CURVES; i++){
+      curvedata *curve;
+
+      curve = plot2di->curve+i;
+      curve->color[0] = 0;
+      curve->color[1] = 0;
+      curve->color[2] = 0;
+      curve->linewidth = 1.0;
+      curve->apply_factor = 0;
+      curve->factor = 1.0;
+    }
+  }
+  for(i = 0; i<ncsvfileinfo; i++){
+    int j;
+    csvfiledata *csvfi;
+
+    csvfi = csvfileinfo+i;
+    for(j = 0; j<csvfi->ncsvinfo; j++){
+      csvdata *csvi;
+      float valmin, valmax;
+      int k;
+
+      csvi = csvfi->csvinfo+j;
+      valmin = csvi->vals[0];
+      valmax = valmin;
+      for(k = 1; k<csvi->nvals; k++){
+        valmin = MIN(valmin, csvi->vals[k]);
+        valmax = MAX(valmax, csvi->vals[k]);
+      }
+      csvi->valmin = valmin;
+      csvi->valmax = valmax;
+    }
+  }
+
+  if(plot2di->ncurves==0){
+    plot2di->bounds_defined = 0;
+  }
+  else{
+    plot2di->bounds_defined = 1;
+  }
+  for(i = 0; i<plot2di->ncurves; i++){
+    curvedata *curve;
+    csvdata *csvi;
+
+    curve = plot2di->curve+i;
+    csvi = GetCsv(curve->csv_file_index, curve->csv_col_index, NULL);
+    curve->vmin = csvi->valmin;
+    curve->vmax = csvi->valmax;
+  }
+  for(i = plot2di->ncurves; i<PLOT2D_MAX_CURVES; i++){
+    curvedata *curve;
+
+    curve = plot2di->curve+i;
+    curve->vmin = 0.0;
+    curve->vmax = 1.0;
+  }
+}
+
 /* ------------------ DrawGenPlot ------------------------ */
 
 void DrawGenPlot(plot2ddata *plot2di){
@@ -503,69 +567,6 @@ void SetupPlot2DUnitData(void){
       if(skip_hrr == 1)continue;
       hrrunits[nhrrunits++] = hrri;
     }
-  }
-}
-
-/* ------------------ UpdateCurveBounds ------------------------ */
-
-void UpdateCurveBounds(plot2ddata *plot2di, int option){
-  int i;
-
-  if(option==1){
-    for(i = 0; i<PLOT2D_MAX_CURVES; i++){
-      curvedata *curve;
-
-      curve = plot2di->curve+i;
-      curve->color[0] = 0;
-      curve->color[1] = 0;
-      curve->color[2] = 0;
-      curve->linewidth = 1.0;
-    }
-  }
-
-  for(i=0; i< ncsvfileinfo; i++){
-    int j;
-    csvfiledata *csvfi;
-
-    csvfi = csvfileinfo + i;
-    for(j=0; j<csvfi->ncsvinfo; j++){
-      csvdata *csvi;
-      float valmin, valmax;
-      int k;
-
-      csvi = csvfi->csvinfo + j;
-      valmin = csvi->vals[0];
-      valmax = valmin;
-      for(k=1; k<csvi->nvals; k++){
-        valmin = MIN(valmin, csvi->vals[k]);
-        valmax = MAX(valmax, csvi->vals[k]);
-      }
-      csvi->valmin = valmin;
-      csvi->valmax = valmax;
-    }
-  }
-
-  if(plot2di->ncurves == 0){
-    plot2di->bounds_defined = 0;
-  }
-  else{
-    plot2di->bounds_defined = 1;
-  }
-  for(i = 0; i<plot2di->ncurves; i++){
-    curvedata   *curve;
-    csvdata     *csvi;
-
-    curve = plot2di->curve+i;
-    csvi = GetCsv(curve->csv_file_index, curve->csv_col_index, NULL);
-    curve->vmin = csvi->valmin;
-    curve->vmax = csvi->valmax;
-  }
-  for(i = plot2di->ncurves; i < PLOT2D_MAX_CURVES;  i++){
-    curvedata *curve;
-
-    curve              = plot2di->curve + i;
-    curve->vmin      = 0.0;
-    curve->vmax      = 1.0;
   }
 }
 
