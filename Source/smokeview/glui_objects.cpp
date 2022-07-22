@@ -111,7 +111,9 @@ GLUI_Checkbox *CHECKBOX_vis_ztree = NULL;
 GLUI_Checkbox *CHECKBOX_showbeam_as_line = NULL;
 GLUI_Checkbox *CHECKBOX_use_beamcolor = NULL;
 GLUI_Checkbox **CHECKBOX_showz_windrose;
+#ifdef pp_PLOT2D_HRR
 GLUI_Checkbox *CHECKBOX_vis_hrr_plot=NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_curve_apply_factor = NULL;
 
 GLUI_EditText *EDIT_filter=NULL;
@@ -122,7 +124,9 @@ GLUI_Listbox *LIST_csvunits = NULL;
 GLUI_Listbox *LIST_plots = NULL;
 GLUI_Listbox *LIST_plotcurves = NULL;
 GLUI_Listbox *LIST_open=NULL;
+#ifdef pp_PLOT2D_HRR
 GLUI_Listbox *LIST_hrrdata=NULL;
+#endif
 
 GLUI_Panel *PANEL_curve_factor = NULL;
 GLUI_Panel *PANEL_plot2d_label3 = NULL;
@@ -146,8 +150,10 @@ GLUI_Panel *PANEL_plot5 = NULL;
 GLUI_Panel *PANEL_plots = NULL;
 GLUI_Panel *PANEL_plot8 = NULL;
 GLUI_Panel *PANEL_plot_position = NULL;
+#ifdef pp_PLOT2D_HRR
 GLUI_Panel *PANEL_hrr_min = NULL;
 GLUI_Panel *PANEL_hrr_max = NULL;
+#endif
 GLUI_Panel *PANEL_objects=NULL;
 GLUI_Panel *PANEL_vectors=NULL;
 GLUI_Panel *PANEL_arrow_base=NULL;
@@ -168,7 +174,9 @@ GLUI_RadioGroup *RADIO_scale_windrose=NULL;
 GLUI_RadioGroup *RADIO_windstate_windrose = NULL;
 
 GLUI_Rollout *ROLLOUT_plot_bounds = NULL;
+#ifdef pp_PLOT2D_HRR
 GLUI_Rollout *ROLLOUT_plothrr=NULL;
+#endif
 GLUI_Rollout *ROLLOUT_plotdevice = NULL;
 GLUI_Rollout *ROLLOUT_plotproperties = NULL;
 GLUI_Rollout *ROLLOUT_values = NULL;
@@ -193,7 +201,9 @@ GLUI_Spinner *SPINNER_genplot_blue = NULL;
 GLUI_Spinner *SPINNER_genplot_linewidth = NULL;
 GLUI_Spinner *SPINNER_genplot_valmin[2];
 GLUI_Spinner *SPINNER_genplot_valmax[2];
+#ifdef pp_PLOT2D_HRR
 GLUI_Spinner *SPINNER_fuel_hoc = NULL;
+#endif
 GLUI_Spinner *SPINNER_curve_factor = NULL;
 GLUI_Spinner *SPINNER_size_factor = NULL;
 GLUI_Spinner *SPINNER_device_time_average = NULL;
@@ -237,9 +247,11 @@ extern "C" void UpdateDeviceTypes(int val){
 
 /* ------------------ UpdateVisHrrPlot ------------------------ */
 
+#ifdef pp_PLOT2D_HRR
 extern "C" void UpdateVisHrrPlot(void){
   if(CHECKBOX_vis_hrr_plot!=NULL)CHECKBOX_vis_hrr_plot->set_int_val(vis_hrr_plot);
 }
+#endif
 
 /* ------------------ UpdateDeviceShow ------------------------ */
 
@@ -1246,6 +1258,7 @@ extern "C" void DeviceCB(int var){
       UpdateColorDevices();
     }
     break;
+#ifdef pp_PLOT2D_HRR
   case RESET_FUEL_HOC:
     fuel_hoc = fuel_hoc_default;
     SPINNER_fuel_hoc->set_float_val(fuel_hoc);
@@ -1258,6 +1271,7 @@ extern "C" void DeviceCB(int var){
     }
     UpdateHoc();
     break;
+#endif
   case SHOWDEVICEPLOT:
     {
       int vis_device_plot_temp;
@@ -1519,6 +1533,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
     EnableDisablePlot2D();
   }
 
+#ifdef pp_PLOT2D_HRR
   if(nhrrinfo>0){
     int i;
 
@@ -1552,6 +1567,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
       glui_plot2d->add_button_to_panel(ROLLOUT_plothrr, _("Reset HOC"), RESET_FUEL_HOC, DeviceCB);
     }
   }
+#endif
 
   PANEL_plot2d_label3 = glui_plot2d->add_panel("",false);
   glui_plot2d->add_column_to_panel(PANEL_plot2d_label3,false);

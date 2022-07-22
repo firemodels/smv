@@ -526,7 +526,9 @@ EXTERNCPP void MouseDragCB(int xm, int ym);
 EXTERNCPP void MenuStatusCB(int status, int x, int y);
 EXTERNCPP void IdleCB(void);
 
+#ifdef pp_PLOT2D_HRR
 SVEXTERN void UpdateVisHrrPlot(void);
+#endif
 
 SVEXTERN void UpdateVectorWidgets(void);
 EXTERNCPP void UpdateGsliceParms(void);
