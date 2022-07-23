@@ -993,6 +993,7 @@ void GenPlotCB(int var){
     case GENPLOT_SHOW_PLOT:
       Glui2Plot2D(iplot2dinfo);
       plotstate = GetPlotState(DYNAMIC_PLOTS);
+      ForceIdle();
       update_times = 1;
       break;
     case GENPLOT_XYZ:
