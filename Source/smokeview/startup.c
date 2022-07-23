@@ -140,6 +140,8 @@ void InitMisc(void){
   glui_curve_default.vmax               = 1.0;
   glui_curve_default.curve_factor       = 1.0;
   glui_curve_default.apply_curve_factor = 0;
+  glui_curve_default.update_avg         = 0;
+  glui_curve_default.vals               = NULL;
   memcpy(&glui_curve, &glui_curve_default, sizeof(curvedata));
 
   ResetGluiView(startup_view_ini);

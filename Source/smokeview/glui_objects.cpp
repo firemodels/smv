@@ -373,6 +373,7 @@ void PrintPlot2dInfo(void){
 
 void RemoveCurve(plot2ddata *plot2di, int index){
   int i;
+  curvedata *curve;
 
   for(i = 0; i < PLOT2D_MAX_CURVES; i++){
     LIST_plotcurves->delete_item(i);
@@ -381,9 +382,11 @@ void RemoveCurve(plot2ddata *plot2di, int index){
     plot2di->ncurves = 0;
     LIST_plotcurves->set_int_val(-1);
   }
+  curve = plot2di->curve+index;
+  FREEMEMORY(curve->vals);
 //    (0,...,i-1,i+1,...,n-1)
   if(plot2di->ncurves>index+1){
-    memmove(plot2di->curve + index, plot2di->curve + index+1, (plot2di->ncurves-index-1)*sizeof(curvedata));
+    memmove(curve, curve+1, (plot2di->ncurves-index-1)*sizeof(curvedata));
   }
   (plot2di->ncurves)--;
   for(i = 0; i < plot2di->ncurves; i++){
@@ -441,6 +444,8 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int force){
       curve->linewidth          = glui_curve.linewidth;
       curve->curve_factor       = glui_curve.curve_factor;
       curve->apply_curve_factor = glui_curve.apply_curve_factor;
+      curve->vals               = glui_curve.vals;
+      curve->update_avg         = glui_curve.update_avg;
     }
     strcpy(curve->c_type, c_type);
     plot2di->ncurves = nplots+1;
@@ -901,6 +906,7 @@ void GenPlotCB(int var){
       PrintPlot2dInfo();
 #endif
       SetPlot2DBoundLabels(plot2dinfo + iplot2dinfo);
+      DeviceCB(DEVICE_TIMEAVERAGE);
       break;
     case GENPLOT_SELECT_CSV_FILE:
       UpdateCvsList();
@@ -1223,6 +1229,18 @@ extern "C" void DeviceCB(int var){
 
       devicei = deviceinfo+i;
       devicei->update_avg = 1;
+    }
+    for(i = 0; i<nplot2dinfo; i++){
+      plot2ddata *plot2di;
+      int j;
+
+      plot2di = plot2dinfo+i;
+      for(j = 0; j<plot2di->ncurves; j++){
+        curvedata *curvej;
+
+        curvej = plot2di->curve + j;
+        curvej->update_avg = 1;
+      }
     }
     update_avg = 1;
     break;

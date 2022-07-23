@@ -104,6 +104,8 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   float fplot_color[3];
   float curve_factor;
   int apply_curve_factor;
+  int update_average;;
+  float *vals;
 
   SNIFF_ERRORS("after DrawGenCurve 1 - beginning");
   xyz0               = plot2di->xyz;
@@ -118,6 +120,8 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   fplot_color[2]     = (float)plot_color[2] / 255.0;
   curve_factor       = curve->curve_factor;
   apply_curve_factor = curve->apply_curve_factor;
+  update_average     = curve->update_avg;
+  vals               = curve->vals;
 
   xmin = x[0];
   xmax = xmin;
@@ -327,6 +331,8 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
       curve->linewidth          = 1.0;
       curve->apply_curve_factor = 0;
       curve->curve_factor       = 1.0;
+      curve->update_avg         = 0;
+      curve->vals               = NULL;
     }
   }
   for(i = 0; i<ncsvfileinfo; i++){
@@ -504,7 +510,20 @@ void DrawGenPlot(plot2ddata *plot2di){
       highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, csvi->vals, csvi->nvals);
     }
     shortlabel = GetPlotShortLabel(plot2di, i);
-    DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, csvi->vals, csvi->nvals,
+    float *vals;
+    if(curve->vals==NULL){
+      NewMemory((void **)&curve->vals, csvi->nvals * sizeof(devicedata *));
+    }
+    if(curve->update_avg==1||device_time_average>0.0){
+      if(curve->update_avg==1){
+        curve->update_avg = 0;
+        TimeAveragePlot2DData(csvfi->time->vals, csvi->vals, curve->vals, csvi->nvals);
+      }
+    }
+    else{
+      memcpy(curve->vals, csvi->vals, csvi->nvals*sizeof(float));
+    }
+    DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, curve->vals, csvi->nvals,
                  highlight_time, highlight_val, valmin, valmax, side,
                  position, shortlabel, unit_display, pad_length);
   }
