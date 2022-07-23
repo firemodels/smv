@@ -104,8 +104,6 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   float fplot_color[3];
   float curve_factor;
   int apply_curve_factor;
-  int update_average;;
-  float *vals;
 
   SNIFF_ERRORS("after DrawGenCurve 1 - beginning");
   xyz0               = plot2di->xyz;
@@ -120,8 +118,6 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   fplot_color[2]     = (float)plot_color[2] / 255.0;
   curve_factor       = curve->curve_factor;
   apply_curve_factor = curve->apply_curve_factor;
-  update_average     = curve->update_avg;
-  vals               = curve->vals;
 
   xmin = x[0];
   xmax = xmin;
@@ -510,7 +506,6 @@ void DrawGenPlot(plot2ddata *plot2di){
       highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, csvi->vals, csvi->nvals);
     }
     shortlabel = GetPlotShortLabel(plot2di, i);
-    float *vals;
     if(curve->vals==NULL){
       NewMemory((void **)&curve->vals, csvi->nvals * sizeof(devicedata *));
     }
