@@ -17,7 +17,6 @@
 
 //*** options: all platforms
 
-//#define pp_PLOT2D_HRR     // old hrr plotting dialog box
 //#define pp_PLOT2D_DEBUG     // 2d plot debug output
 #define pp_PART_MULTI        // load particles in parallel
 //#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds

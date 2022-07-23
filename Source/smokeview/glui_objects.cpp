@@ -111,9 +111,6 @@ GLUI_Checkbox *CHECKBOX_vis_ztree = NULL;
 GLUI_Checkbox *CHECKBOX_showbeam_as_line = NULL;
 GLUI_Checkbox *CHECKBOX_use_beamcolor = NULL;
 GLUI_Checkbox **CHECKBOX_showz_windrose;
-#ifdef pp_PLOT2D_HRR
-GLUI_Checkbox *CHECKBOX_vis_hrr_plot=NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_curve_apply_factor = NULL;
 
 GLUI_EditText *EDIT_filter=NULL;
@@ -124,9 +121,6 @@ GLUI_Listbox *LIST_csvunits = NULL;
 GLUI_Listbox *LIST_plots = NULL;
 GLUI_Listbox *LIST_plotcurves = NULL;
 GLUI_Listbox *LIST_open=NULL;
-#ifdef pp_PLOT2D_HRR
-GLUI_Listbox *LIST_hrrdata=NULL;
-#endif
 
 GLUI_Panel *PANEL_plotproperties = NULL;
 GLUI_Panel *PANEL_newplot = NULL;
@@ -153,10 +147,6 @@ GLUI_Panel *PANEL_plot5 = NULL;
 GLUI_Panel *PANEL_plots = NULL;
 GLUI_Panel *PANEL_plot8 = NULL;
 GLUI_Panel *PANEL_plot_position = NULL;
-#ifdef pp_PLOT2D_HRR
-GLUI_Panel *PANEL_hrr_min = NULL;
-GLUI_Panel *PANEL_hrr_max = NULL;
-#endif
 GLUI_Panel *PANEL_objects=NULL;
 GLUI_Panel *PANEL_vectors=NULL;
 GLUI_Panel *PANEL_arrow_base=NULL;
@@ -176,9 +166,6 @@ GLUI_RadioGroup *RADIO_vectortype=NULL;
 GLUI_RadioGroup *RADIO_scale_windrose=NULL;
 GLUI_RadioGroup *RADIO_windstate_windrose = NULL;
 
-#ifdef pp_PLOT2D_HRR
-GLUI_Rollout *ROLLOUT_plothrr=NULL;
-#endif
 GLUI_Rollout *ROLLOUT_plotdevice = NULL;
 GLUI_Rollout *ROLLOUT_plotproperties = NULL;
 GLUI_Rollout *ROLLOUT_values = NULL;
@@ -203,9 +190,6 @@ GLUI_Spinner *SPINNER_genplot_blue = NULL;
 GLUI_Spinner *SPINNER_genplot_linewidth = NULL;
 GLUI_Spinner *SPINNER_genplot_valmin[2];
 GLUI_Spinner *SPINNER_genplot_valmax[2];
-#ifdef pp_PLOT2D_HRR
-GLUI_Spinner *SPINNER_fuel_hoc = NULL;
-#endif
 GLUI_Spinner *SPINNER_curve_factor = NULL;
 GLUI_Spinner *SPINNER_size_factor = NULL;
 GLUI_Spinner *SPINNER_device_time_average = NULL;
@@ -246,14 +230,6 @@ extern "C" void UpdateDeviceTypes(int val){
   devicetypes_index = val;
   updatemenu = 1;
 }
-
-/* ------------------ UpdateVisHrrPlot ------------------------ */
-
-#ifdef pp_PLOT2D_HRR
-extern "C" void UpdateVisHrrPlot(void){
-  if(CHECKBOX_vis_hrr_plot!=NULL)CHECKBOX_vis_hrr_plot->set_int_val(vis_hrr_plot);
-}
-#endif
 
 /* ------------------ UpdateDeviceShow ------------------------ */
 
@@ -1259,20 +1235,6 @@ extern "C" void DeviceCB(int var){
       UpdateColorDevices();
     }
     break;
-#ifdef pp_PLOT2D_HRR
-  case RESET_FUEL_HOC:
-    fuel_hoc = fuel_hoc_default;
-    SPINNER_fuel_hoc->set_float_val(fuel_hoc);
-    DeviceCB(FUEL_HOC);
-    break;
-  case FUEL_HOC:
-    if(fuel_hoc<0.0){
-      fuel_hoc = 0.0;
-      SPINNER_fuel_hoc->set_float_val(fuel_hoc);
-    }
-    UpdateHoc();
-    break;
-#endif
   case SHOWDEVICEPLOT:
     {
       int vis_device_plot_temp;
@@ -1534,42 +1496,6 @@ extern "C" void GluiPlot2DSetup(int main_window){
     plot2d_dialogs_defined = 1;
     EnableDisablePlot2D();
   }
-
-#ifdef pp_PLOT2D_HRR
-  if(nhrrinfo>0){
-    int i;
-
-    ROLLOUT_plothrr = glui_plot2d->add_rollout("hrr/HOC", false);
-    CHECKBOX_vis_hrr_plot = glui_plot2d->add_checkbox_to_panel(ROLLOUT_plothrr, _("show"), &vis_hrr_plot, HRRPUV2_PLOT, DeviceCB);
-    LIST_hrrdata = glui_plot2d->add_listbox_to_panel(ROLLOUT_plothrr, "type:", &glui_hrr, DEVICE_TIMEAVERAGE, DeviceCB);
-    for(i = 0; i<nhrrinfo; i++){
-      hrrdata *hi;
-
-      hi = hrrinfo+i;
-      if(hi->label.shortlabel!=NULL){
-        if(strcmp(hi->label.shortlabel, "Time")==0)continue;
-        LIST_hrrdata->add_item(i, hi->label.shortlabel);
-      }
-    }
-    LIST_hrrdata->set_int_val(glui_hrr);
-
-    PANEL_hrr_min = glui_plot2d->add_panel_to_panel(ROLLOUT_plothrr, "",false);
-    glui_plot2d->add_spinner_to_panel(PANEL_hrr_min, "min", GLUI_SPINNER_FLOAT, &plot2d_hrr_min);
-    glui_plot2d->add_column_to_panel(PANEL_hrr_min,false);
-    glui_plot2d->add_checkbox_to_panel(PANEL_hrr_min, "set", &use_plot2d_hrr_min);
-
-    PANEL_hrr_max = glui_plot2d->add_panel_to_panel(ROLLOUT_plothrr, "",false);
-    glui_plot2d->add_spinner_to_panel(PANEL_hrr_max, "max", GLUI_SPINNER_FLOAT, &plot2d_hrr_max);
-    glui_plot2d->add_column_to_panel(PANEL_hrr_max,false);
-    glui_plot2d->add_checkbox_to_panel(PANEL_hrr_max, "set", &use_plot2d_hrr_max);
-
-    if(have_mlr==1){
-      SPINNER_fuel_hoc = glui_plot2d->add_spinner_to_panel(ROLLOUT_plothrr, _("HOC (kJ/kg)"), GLUI_SPINNER_FLOAT, &fuel_hoc, FUEL_HOC, DeviceCB);
-      glui_plot2d->add_checkbox_to_panel(ROLLOUT_plothrr, _("HRR and HOC*MLR_..."), &hoc_hrr);
-      glui_plot2d->add_button_to_panel(ROLLOUT_plothrr, _("Reset HOC"), RESET_FUEL_HOC, DeviceCB);
-    }
-  }
-#endif
 
   PANEL_plot2d_label3 = glui_plot2d->add_panel("",false);
   glui_plot2d->add_column_to_panel(PANEL_plot2d_label3,false);

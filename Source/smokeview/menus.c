@@ -6279,9 +6279,6 @@ void ShowObjectsMenu(int value){
   }
   else if(value==PLOT_HRRPUV){
     vis_hrr_plot = 1-vis_hrr_plot;
-#ifdef pp_PLOT2D_HRR
-    UpdateVisHrrPlot();
-#endif
     plotstate=GetPlotState(DYNAMIC_PLOTS);
     UpdateShow();
     update_times = 1;
