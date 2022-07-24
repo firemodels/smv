@@ -174,7 +174,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   SNIFF_ERRORS("after DrawGenCurve 1 - after");
   if(option == PLOT_ALL){
     glColor3fv(foregroundcolor);
-    glLineWidth(plot2d_line_width);
+    glLineWidth(plot2d_frame_width);
     glBegin(GL_LINES);
     glVertex3f(xmin, 0.0, zmin);
     glVertex3f(xmax, 0.0, zmin);

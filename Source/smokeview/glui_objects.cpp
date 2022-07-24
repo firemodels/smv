@@ -1411,7 +1411,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
     CHECKBOX_show_curve_values = glui_plot2d->add_checkbox_to_panel(PANEL_plot_labels, "show curve values", &(glui_plot2dinfo->show_curve_values), GENPLOT_PLOT_LABEL, GenPlotCB);
 
     PANEL_allplotproperties = glui_plot2d->add_panel_to_panel(PANEL_genplot, "plot properties(all plots)");
-    glui_plot2d->add_spinner_to_panel(PANEL_allplotproperties, _("frame width"), GLUI_SPINNER_FLOAT, &plot2d_line_width);
+    glui_plot2d->add_spinner_to_panel(PANEL_allplotproperties, _("frame width"), GLUI_SPINNER_FLOAT, &plot2d_frame_width);
     SPINNER_size_factor = glui_plot2d->add_spinner_to_panel(PANEL_allplotproperties, _("size factor"), GLUI_SPINNER_FLOAT, &plot2d_size_factor);
     SPINNER_size_factor->set_float_limits(0.0, 1.0);
     glui_plot2d->add_column_to_panel(PANEL_allplotproperties, false);

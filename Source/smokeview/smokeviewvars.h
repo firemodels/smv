@@ -146,7 +146,7 @@ SVEXTERN char *cslice_label, *cpart_label, *cbound_label, *cplot3d_label;
 #endif
 
 SVEXTERN float SVDECL(plot2d_size_factor, 0.15), SVDECL(plot2d_font_spacing, 1.2);
-SVEXTERN float SVDECL(plot2d_line_width, 1.0), SVDECL(plot2d_point_size, 5.0);
+SVEXTERN float SVDECL(plot2d_line_width, 1.0), SVDECL(plot2d_point_size, 5.0), SVDECL(plot2d_frame_width, 1.0);
 #ifdef INMAIN
 SVEXTERN float plot2d_xyz_offset[3] = {0.0, 0.0, 0.0};
 #else
@@ -1547,8 +1547,6 @@ SVEXTERN int SVDECL(last_prop_display,-1);
 SVEXTERN int SVDECL(devicetypes_index,0);
 
 SVEXTERN float SVDECL(plot2d_hrr_min,0.0), SVDECL(plot2d_hrr_max,1.0);
-SVEXTERN int SVDECL(use_plot2d_hrr_min, 0);
-SVEXTERN int SVDECL(use_plot2d_hrr_max, 0);
 SVEXTERN devicedata SVDECL(*deviceinfo,NULL);
 SVEXTERN vdevicedata SVDECL(*vdeviceinfo, NULL);
 SVEXTERN vdevicesortdata SVDECL(*vdevices_sorted, NULL);
