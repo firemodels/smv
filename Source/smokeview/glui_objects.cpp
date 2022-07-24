@@ -47,6 +47,7 @@
 #define GENPLOT_APPLY_CURVE_FACTOR  120
 #define GENPLOT_SAVE                121
 #define GENPLOT_CLOSE               122
+#define GENPLOT_PLOT_SIZE           123
 
 #define WINDROSE_SHOW_FIRST   996
 #define WINDROSE_SHOW_NEXT    997
@@ -189,7 +190,7 @@ GLUI_Spinner *SPINNER_genplot_valmin[2];
 GLUI_Spinner *SPINNER_genplot_valmax[2];
 GLUI_Spinner *SPINNER_curve_factor = NULL;
 GLUI_Spinner *SPINNER_size_factor = NULL;
-GLUI_Spinner *SPINNER_device_time_average = NULL;
+GLUI_Spinner *SPINNER_plot2d_time_average = NULL;
 GLUI_Spinner *SPINNER_windrose_merge_dxyzt[6];
 GLUI_Spinner *SPINNER_sensorrelsize=NULL;
 GLUI_Spinner *SPINNER_orientation_scale=NULL;
@@ -214,6 +215,13 @@ GLUI_StaticText *STATIC_curv_max = NULL;
 
 procdata deviceprocinfo[4];
 int ndeviceprocinfo = 0;
+
+/* ------------------ UpdatePlot2DSize ------------------------ */
+
+extern "C" void UpdatePlot2DSize(void){
+  if(SPINNER_size_factor!=NULL)SPINNER_size_factor->set_float_val(plot2d_size_factor);
+  if(SPINNER_plot2d_time_average!=NULL)SPINNER_plot2d_time_average->set_float_val(plot2d_time_average);
+}
 
 /* ------------------ Device_Rollout_CB ------------------------ */
 
@@ -981,6 +989,12 @@ void GenPlotCB(int var){
       memcpy(curve, &glui_curve, sizeof(curvedata));
       Glui2Plot2D(iplot2dinfo);
       break;
+    case GENPLOT_PLOT_SIZE:
+      if(plot2d_size_factor<0.0){
+        plot2d_size_factor = 0.0;
+        UpdatePlot2DSize();
+      }
+      break;
     case GENPLOT_PLOT_LABEL:
       UpdatePlotList();
       Glui2Plot2D(iplot2dinfo);
@@ -1245,6 +1259,7 @@ extern "C" void DeviceCB(int var){
       }
     }
     update_avg = 1;
+    UpdatePlot2DSize2();
     break;
   case DEVICE_devicetypes:
     for(i = 0;i < ndevicetypes;i++){
@@ -1412,8 +1427,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
 
     PANEL_allplotproperties = glui_plot2d->add_panel_to_panel(PANEL_genplot, "plot properties(all plots)");
     glui_plot2d->add_spinner_to_panel(PANEL_allplotproperties, _("frame width"), GLUI_SPINNER_FLOAT, &plot2d_frame_width);
-    SPINNER_size_factor = glui_plot2d->add_spinner_to_panel(PANEL_allplotproperties, _("size factor"), GLUI_SPINNER_FLOAT, &plot2d_size_factor);
-    SPINNER_size_factor->set_float_limits(0.0, 1.0);
+    SPINNER_size_factor = glui_plot2d->add_spinner_to_panel(PANEL_allplotproperties, _("size factor"), GLUI_SPINNER_FLOAT, &plot2d_size_factor, GENPLOT_PLOT_SIZE, GenPlotCB);
     glui_plot2d->add_column_to_panel(PANEL_allplotproperties, false);
 
     glui_plot2d->add_spinner_to_panel(PANEL_allplotproperties, _("font spacing"), GLUI_SPINNER_FLOAT, &plot2d_font_spacing);
@@ -1421,8 +1435,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
       float dev_tmax;
 
       dev_tmax = GetDeviceTminTmax();
-      SPINNER_device_time_average = glui_plot2d->add_spinner_to_panel(PANEL_allplotproperties, _("smoothing interval (s)"), GLUI_SPINNER_FLOAT, &device_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
-      SPINNER_device_time_average->set_float_limits(0.0, dev_tmax);
+      SPINNER_plot2d_time_average = glui_plot2d->add_spinner_to_panel(PANEL_allplotproperties, _("smoothing interval (s)"), GLUI_SPINNER_FLOAT, &plot2d_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
     }
 
     if(nplot2dinfo==0){

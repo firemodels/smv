@@ -522,7 +522,7 @@ void DrawGenPlot(plot2ddata *plot2di){
     if(curve->vals==NULL){
       NewMemory((void **)&curve->vals, csvi->nvals * sizeof(devicedata *));
     }
-    if(curve->update_avg==1||device_time_average>0.0){
+    if(curve->update_avg==1||plot2d_time_average>0.0){
       if(curve->update_avg==1){
         curve->update_avg = 0;
         TimeAveragePlot2DData(csvfi->time->vals, csvi->vals, curve->vals, csvi->nvals);
@@ -819,7 +819,7 @@ void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals
   int i;
 
   if(nvals<=0)return;
-  if(times[nvals-1]<=device_time_average){
+  if(times[nvals-1]<=plot2d_time_average){
     float sum = 0.0;
 
     for(i = 0; i<nvals; i++){
@@ -838,17 +838,17 @@ void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals
     int j;
     int count;
 
-    if(times[i]>=device_time_average/2.0&&times[i]<=times[nvals-1]-device_time_average/2.0){
-      tlower = times[i]-device_time_average/2.0;
-      tupper = tlower+device_time_average;
+    if(times[i]>=plot2d_time_average/2.0&&times[i]<=times[nvals-1]-plot2d_time_average/2.0){
+      tlower = times[i]-plot2d_time_average/2.0;
+      tupper = tlower+plot2d_time_average;
     }
-    else if(times[i]<=device_time_average/2.0){
+    else if(times[i]<=plot2d_time_average/2.0){
       tlower = times[0];
-      tupper = tlower+device_time_average;
+      tupper = tlower+plot2d_time_average;
     }
     else{
       tupper = times[nvals-1];
-      tlower = tupper-device_time_average;
+      tlower = tupper-plot2d_time_average;
     }
     for(j = i; j>=0; j--){
       ilower = j;
