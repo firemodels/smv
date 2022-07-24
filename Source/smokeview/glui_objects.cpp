@@ -1437,12 +1437,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
     glui_plot2d->add_column_to_panel(PANEL_allplotproperties, false);
 
     glui_plot2d->add_spinner_to_panel(PANEL_allplotproperties, _("font spacing"), GLUI_SPINNER_FLOAT, &plot2d_font_spacing);
-    {
-      float dev_tmax;
-
-      dev_tmax = GetDeviceTminTmax();
-      SPINNER_plot2d_time_average = glui_plot2d->add_spinner_to_panel(PANEL_allplotproperties, _("smoothing interval (s)"), GLUI_SPINNER_FLOAT, &plot2d_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
-    }
+    SPINNER_plot2d_time_average = glui_plot2d->add_spinner_to_panel(PANEL_allplotproperties, _("smoothing interval (s)"), GLUI_SPINNER_FLOAT, &plot2d_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
 
     if(nplot2dinfo==0){
       if(PANEL_add_curve!=NULL)PANEL_add_curve->disable();
