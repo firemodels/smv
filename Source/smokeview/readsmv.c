@@ -345,14 +345,33 @@ void ReadCSV(csvfiledata *csvfi, int flag){
   fclose(stream);
 }
 
+/* ------------------ CompareCSV ------------------------ */
+
+int CompareCSV( const void *arg1, const void *arg2 ){
+  csvfiledata *csvi, *csvj;
+
+  csvi = (csvfiledata *)arg1;
+  csvj = (csvfiledata *)arg2;
+
+  return strcmp(csvi->c_type, csvj->c_type);
+}
+
+
 /* ------------------ ReadAllCSV ------------------------ */
 
 void ReadAllCSV(int flag){
   int i;
+  csvfiledata *csvfilecopy=NULL;
+
+  if(ncsvfileinfo==0)return;
+  NewMemory((void **)&(csvfilecopy), ncsvfileinfo*sizeof(csvfiledata));
 
   for(i=0; i<ncsvfileinfo; i++){
     ReadCSV(csvfileinfo + i, flag);
   }
+  memcpy(csvfilecopy, csvfileinfo, ncsvfileinfo*sizeof(csvfiledata));
+  qsort((csvfiledata *)csvfilecopy, ncsvfileinfo, sizeof(csvfiledata), CompareCSV);
+  memcpy(csvfileinfo, csvfilecopy, ncsvfileinfo*sizeof(csvfiledata));
 }
 
 /* ------------------ ReadHRR ------------------------ */
