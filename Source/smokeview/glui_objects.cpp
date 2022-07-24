@@ -94,8 +94,10 @@ GLUI_Button *BUTTON_reset_plot2d_bounds = NULL;
 GLUI_Checkbox *CHECKBOX_genplot_use_usermin = NULL;
 GLUI_Checkbox *CHECKBOX_genplot_use_usermax = NULL;
 GLUI_Checkbox *CHECKBOX_show_genplot        = NULL;
-GLUI_Checkbox *CHECKBOX_show_title          = NULL;
+GLUI_Checkbox *CHECKBOX_show_plot_title          = NULL;
 GLUI_Checkbox *CHECKBOX_show_curve_labels   = NULL;
+GLUI_Checkbox *CHECKBOX_show_xaxis_labels    = NULL;
+GLUI_Checkbox *CHECKBOX_show_yaxis_labels    = NULL;
 GLUI_Checkbox *CHECKBOX_show_curve_values   = NULL;
 GLUI_Checkbox *CHECKBOX_genplot_use_valmin[2];
 GLUI_Checkbox *CHECKBOX_genplot_use_valmax[2];
@@ -510,7 +512,9 @@ void Plot2D2Glui(int index){
   }
   CHECKBOX_show_genplot->set_int_val(glui_plot2dinfo->show);
   EDIT_plot_label->set_text(glui_plot2dinfo->plot_label);
-  CHECKBOX_show_title->set_int_val(glui_plot2dinfo->show_title);
+  CHECKBOX_show_plot_title->set_int_val(glui_plot2dinfo->show_plot_title);
+  CHECKBOX_show_yaxis_labels->set_int_val(glui_plot2dinfo->show_yaxis_labels);
+  CHECKBOX_show_xaxis_labels->set_int_val(glui_plot2dinfo->show_xaxis_labels);
   CHECKBOX_show_curve_labels->set_int_val(glui_plot2dinfo->show_curve_labels);
   CHECKBOX_show_curve_values->set_int_val(glui_plot2dinfo->show_curve_values);
   for(i = 0; i < 2; i++){
@@ -1421,9 +1425,11 @@ extern "C" void GluiPlot2DSetup(int main_window){
     PANEL_plot_labels = glui_plot2d->add_panel_to_panel(PANEL_plotproperties, "labels");
     EDIT_plot_label = glui_plot2d->add_edittext_to_panel(PANEL_plot_labels, "edit title:", GLUI_EDITTEXT_TEXT, glui_plot2dinfo->plot_label, GENPLOT_PLOT_LABEL, GenPlotCB);
     glui_plot2d->add_button_to_panel(PANEL_plot_labels, _("Apply"), GENPLOT_PLOT_LABEL, GenPlotCB);
-    CHECKBOX_show_title = glui_plot2d->add_checkbox_to_panel(PANEL_plot_labels, "show title", &(glui_plot2dinfo->show_title), GENPLOT_PLOT_LABEL, GenPlotCB);
-    CHECKBOX_show_curve_labels = glui_plot2d->add_checkbox_to_panel(PANEL_plot_labels, "show curve labels", &(glui_plot2dinfo->show_curve_labels), GENPLOT_PLOT_LABEL, GenPlotCB);
-    CHECKBOX_show_curve_values = glui_plot2d->add_checkbox_to_panel(PANEL_plot_labels, "show curve values", &(glui_plot2dinfo->show_curve_values), GENPLOT_PLOT_LABEL, GenPlotCB);
+    CHECKBOX_show_plot_title = glui_plot2d->add_checkbox_to_panel(PANEL_plot_labels, "title", &(glui_plot2dinfo->show_plot_title), GENPLOT_PLOT_LABEL, GenPlotCB);
+    CHECKBOX_show_yaxis_labels = glui_plot2d->add_checkbox_to_panel(PANEL_plot_labels, "yaxis labels", &(glui_plot2dinfo->show_yaxis_labels), GENPLOT_PLOT_LABEL, GenPlotCB);
+    CHECKBOX_show_xaxis_labels = glui_plot2d->add_checkbox_to_panel(PANEL_plot_labels, "xaxis labels", &(glui_plot2dinfo->show_xaxis_labels), GENPLOT_PLOT_LABEL, GenPlotCB);
+    CHECKBOX_show_curve_labels = glui_plot2d->add_checkbox_to_panel(PANEL_plot_labels, "curve labels", &(glui_plot2dinfo->show_curve_labels), GENPLOT_PLOT_LABEL, GenPlotCB);
+    CHECKBOX_show_curve_values = glui_plot2d->add_checkbox_to_panel(PANEL_plot_labels, "curve values", &(glui_plot2dinfo->show_curve_values), GENPLOT_PLOT_LABEL, GenPlotCB);
 
     PANEL_allplotproperties = glui_plot2d->add_panel_to_panel(PANEL_genplot, "plot properties(all plots)");
     glui_plot2d->add_spinner_to_panel(PANEL_allplotproperties, _("frame width"), GLUI_SPINNER_FLOAT, &plot2d_frame_width);

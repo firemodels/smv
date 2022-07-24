@@ -1076,20 +1076,29 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   }
   glEnd();
 
-  if(option==PLOT_ALL&&show_plot2d_labels==1){
+  if(option==PLOT_ALL&&show_plot2d_title==1){
     float dy;
 
 #define DFONTY dfont/2.0
     if(z2!=NULL){
-      dy = VSCALE2D(zmax)+DFONTY; OutputTextColor(redcolor, HSCALE2DLABEL(xmin), dy, quantity2);
-      dy += 1.1*dfont;            OutputTextColor(foregroundcolor, HSCALE2DLABEL(xmin), dy, quantity);
+      dy = VSCALE2D(zmax)+DFONTY;
+      OutputTextColor(redcolor, HSCALE2DLABEL(xmin), dy, quantity2);
+      dy += 1.1*dfont;
+      OutputTextColor(foregroundcolor, HSCALE2DLABEL(xmin), dy, quantity);
     }
     else{
-      dy = VSCALE2D(zmax)+DFONTY; OutputText(HSCALE2DLABEL(xmin), dy, quantity);
+      dy = VSCALE2D(zmax)+DFONTY;
+      OutputText(HSCALE2DLABEL(xmin), dy, quantity);
     }
+  }
 
-    dy = VSCALE2D(zmax)-1.5*dfont+DFONTY; OutputText(HSCALE2DLABEL(xmax), dy, cvalmax);
-    dy -= 1.1*dfont;                    OutputText(HSCALE2DLABEL(xmax), dy, unit);
+  if(option==PLOT_ALL&&show_plot2d_ylabels==1){
+    float dy;
+
+    dy = VSCALE2D(zmax)-1.5*dfont+DFONTY;
+    OutputText(HSCALE2DLABEL(xmax), dy, cvalmax);
+    dy -= 1.1*dfont;
+    OutputText(HSCALE2DLABEL(xmax), dy, unit);
     if(z2==NULL){
       dy -= 1.1*dfont*(position+1);
       OutputText(HSCALE2DLABEL(xmax), dy, cval);
@@ -1097,12 +1106,15 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
     else{
       char cval2[255];
 
-      dy -= 1.1*dfont;                      OutputText(HSCALE2DLABEL(xmax), dy, cval);
+      dy -= 1.1*dfont;
+      OutputText(HSCALE2DLABEL(xmax), dy, cval);
       Float2String(cval2, highlight_y2, ndigits, force_fixedpoint);
-      dy -= 1.1*dfont; OutputTextColor(redcolor, HSCALE2DLABEL(xmax), dy, cval2);
+      dy -= 1.1*dfont;
+      OutputTextColor(redcolor, HSCALE2DLABEL(xmax), dy, cval2);
     }
-
     OutputText(HSCALE2DLABEL(xmax), VSCALE2D(zmin), cvalmin);
+  }
+  if(option==PLOT_ALL&&show_plot2d_xlabels==1){
     OutputText(HSCALE2DLABEL(xmin)-GetStringWidth("X"), VSCALE2D(zmin)-dfont, tvalmin);
     OutputText(HSCALE2DLABEL(xmax)-GetStringWidth("X"), VSCALE2D(zmin)-dfont, tvalmax);
   }

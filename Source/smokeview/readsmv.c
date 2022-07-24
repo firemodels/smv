@@ -11554,8 +11554,8 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWDEVICEPLOTS")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %f %f %f %f %f %f %f",
-             &vis_device_plot, &show_plot2d_labels, &plot2d_size_factor, &plot2d_line_width, &plot2d_point_size,
+      sscanf(buffer, " %i %i %i %f %f %f %f %f %f %f",
+             &vis_device_plot, &show_plot2d_xlabels, &show_plot2d_ylabels, &plot2d_size_factor, &plot2d_line_width, &plot2d_point_size,
              plot2d_xyz_offset, plot2d_xyz_offset+1, plot2d_xyz_offset+2, &plot2d_font_spacing
       );
       update_glui_devices = 1;
@@ -11584,9 +11584,10 @@ int ReadIni2(char *inifile, int localfile){
         strcpy(plot2di->plot_label, labelptr);
 
         fgets(buffer, 255, stream);
-        sscanf(buffer, " %f %f %f %i %i %i %i %i",
-                       plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->show_title,
-                       &plot2di->ncurves, &plot2di->show_curve_labels, &plot2di->show_curve_values);
+        sscanf(buffer, " %f %f %f %i %i %i %i %i %i %i",
+                       plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->show_plot_title,
+                       &plot2di->ncurves, &plot2di->show_curve_labels, &plot2di->show_curve_values,
+                       &plot2di->show_xaxis_labels, &plot2di->show_yaxis_labels);
         fgets(buffer, 255, stream);
         sscanf(buffer, " %f %i %f %i %f %i %f %i ",
                plot2di->valmin,   plot2di->use_valmin,   plot2di->valmax,   plot2di->use_valmax,
@@ -14969,8 +14970,8 @@ void WriteIniLocal(FILE *fileout){
     }
   }
   fprintf(fileout, "SHOWDEVICEPLOTS\n");
-  fprintf(fileout, " %i %i %f %f %f %f %f %f %f\n",
-          vis_device_plot, show_plot2d_labels, plot2d_size_factor, plot2d_line_width, plot2d_point_size,
+  fprintf(fileout, " %i %i %i %f %f %f %f %f %f %f\n",
+          vis_device_plot, show_plot2d_xlabels, show_plot2d_ylabels, plot2d_size_factor, plot2d_line_width, plot2d_point_size,
           plot2d_xyz_offset[0], plot2d_xyz_offset[1], plot2d_xyz_offset[2], plot2d_font_spacing
   );
   fprintf(fileout, "SHOWGENPLOTS\n");
@@ -14981,9 +14982,10 @@ void WriteIniLocal(FILE *fileout){
 
     plot2di = plot2dinfo + i;
     fprintf(fileout, " %s\n", plot2di->plot_label);
-    fprintf(fileout, " %f %f %f %i %i %i %i %i\n",
-                     plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->show_title,
-                     plot2di->ncurves, plot2di->show_curve_labels, plot2di->show_curve_values);
+    fprintf(fileout, " %f %f %f %i %i %i %i %i %i %i\n",
+                     plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->show_plot_title,
+                     plot2di->ncurves, plot2di->show_curve_labels, plot2di->show_curve_values,
+                     plot2di->show_xaxis_labels, plot2di->show_yaxis_labels);
     fprintf(fileout, " %f %i %f %i %f %i %f %i\n",
             plot2di->valmin[0], plot2di->use_valmin[0], plot2di->valmax[0], plot2di->use_valmax[0],
             plot2di->valmin[1], plot2di->use_valmin[1], plot2di->valmax[1], plot2di->use_valmax[1]

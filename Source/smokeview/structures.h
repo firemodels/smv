@@ -1025,7 +1025,7 @@ typedef struct _plot2ddata{
   char plot_label[350];
   int ncurves, ncurves_ini;
   int curve_index, plot_index;
-  int show, show_title, show_curve_labels, show_curve_values;
+  int show, show_plot_title, show_curve_labels, show_curve_values, show_xaxis_labels, show_yaxis_labels;
   float valmin[2],     valmax[2];
   int   use_valmin[2], use_valmax[2];
   curvedata curve[PLOT2D_MAX_CURVES];
