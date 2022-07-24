@@ -520,10 +520,6 @@ void DrawGenPlot(plot2ddata *plot2di){
     curve = plot2di->curve + i;
     csvi = GetCsv(curve->csv_file_index, curve->csv_col_index, &csvfi);
 
-    if(global_times != NULL){
-      highlight_time = global_times[itimes];
-      highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, csvi->vals, csvi->nvals);
-    }
     shortlabel = GetPlotShortLabel(plot2di, i);
     if(curve->vals==NULL){
       NewMemory((void **)&curve->vals, csvi->nvals * sizeof(devicedata *));
@@ -536,6 +532,10 @@ void DrawGenPlot(plot2ddata *plot2di){
     }
     else{
       memcpy(curve->vals, csvi->vals, csvi->nvals*sizeof(float));
+    }
+    if(global_times!=NULL){
+      highlight_time = global_times[itimes];
+      highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, curve->vals, csvi->nvals);
     }
     DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, curve->vals, csvi->nvals,
                  highlight_time, highlight_val, valmin, valmax, side,
