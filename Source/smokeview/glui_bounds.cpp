@@ -4909,7 +4909,7 @@ extern "C" void GluiBoundsSetup(int main_window){
       SPINNER_size_factor2 = glui_bounds->add_spinner_to_panel(ROLLOUT_plotslice, _("size factor"), GLUI_SPINNER_FLOAT, &plot2d_size_factor, SLICE_SIZE, SliceBoundCB);
       SPINNER_size_factor2->set_float_limits(0.0, 1.0);
       SPINNER_plot2d_time_average2 = glui_bounds->add_spinner_to_panel(ROLLOUT_plotslice, _("smoothing interval (s)"), GLUI_SPINNER_FLOAT, &plot2d_time_average, SLICE_SIZE, SliceBoundCB);
-      glui_bounds->add_checkbox_to_panel(ROLLOUT_plotslice,   "show labels",  &showd_plot2d_labels);
+      glui_bounds->add_checkbox_to_panel(ROLLOUT_plotslice,   "show labels",  &show_plot2d_labels);
     }
 
     if(nslicedups>0){

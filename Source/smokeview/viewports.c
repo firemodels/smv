@@ -1076,7 +1076,7 @@ void DrawPlot2D(int option, float *x, float *z, float *z2, int n,
   }
   glEnd();
 
-  if(option==PLOT_ALL&&showd_plot2d_labels==1){
+  if(option==PLOT_ALL&&show_plot2d_labels==1){
     float dy;
 
 #define DFONTY dfont/2.0
