@@ -1219,7 +1219,10 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
         valmin = sb->dev_min;
         valmax = sb->dev_max;
       }
-
+      if(update_avg==1){
+        TimeAveragePlot2DData(devicei->times, devicei->vals_orig, devicei->vals, devicei->nvals);
+        update_avg = 0;
+      }
       DrawPlot2D(PLOT_ALL, devicei->times, devicei->vals, NULL, devicei->nvals,
                global_times[itimes], highlight_val, 0.0, 1, position, valmin, valmax,
                slicei->label.shortlabel, NULL, slicei->label.unit,
