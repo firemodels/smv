@@ -2960,6 +2960,13 @@ GLUI_Checkbox *CHECKBOX_show_iso_shaded=NULL;
 GLUI_Checkbox *CHECKBOX_show_iso_outline=NULL;
 GLUI_Checkbox *CHECKBOX_show_iso_points=NULL;
 
+GLUI_Rollout *ROLLOUT_plotslice = NULL;
+GLUI_Spinner *SPINNER_slice_x   = NULL;
+GLUI_Spinner *SPINNER_slice_y   = NULL;
+GLUI_Spinner *SPINNER_slice_z   = NULL;
+GLUI_Spinner *SPINNER_size_factor2         = NULL;
+GLUI_Spinner *SPINNER_plot2d_time_average2 = NULL;
+
 GLUI_Checkbox *CHECKBOX_slice_load_incremental=NULL;
 GLUI_Checkbox *CHECKBOX_histogram_show_numbers=NULL;
 GLUI_Checkbox *CHECKBOX_histogram_show_graph=NULL;
@@ -3108,6 +3115,13 @@ int      nparticleprocinfo=0;
 
 procdata  subboundprocinfo[5];
 int       nsubboundprocinfo=0;
+
+/* ------------------ UpdatePlot2DSize2 ------------------------ */
+
+extern "C" void UpdatePlot2DSize2(void){
+  if(SPINNER_size_factor2!=NULL)SPINNER_size_factor2->set_float_val(plot2d_size_factor);
+  if(SPINNER_plot2d_time_average2!=NULL)SPINNER_plot2d_time_average2->set_float_val(plot2d_time_average);
+}
 
 #ifdef pp_REFRESH
 /* ------------------ RefreshGluiDialogs ------------------------ */
@@ -4288,6 +4302,14 @@ void ScriptCB(int var){
   }
 }
 
+/* ------------------ UpdateSliceXYZ ------------------------ */
+
+extern "C" void UpdateSliceXYZ(void){
+  if(SPINNER_slice_x!=NULL)SPINNER_slice_x->set_float_val(slice_xyz[0]);
+  if(SPINNER_slice_y!=NULL)SPINNER_slice_y->set_float_val(slice_xyz[1]);
+  if(SPINNER_slice_z!=NULL)SPINNER_slice_z->set_float_val(slice_xyz[2]);
+}
+
 /* ------------------ GluiBoundsSetup ------------------------ */
 
 extern "C" void GluiBoundsSetup(int main_window){
@@ -4561,7 +4583,6 @@ extern "C" void GluiBoundsSetup(int main_window){
       BoundBoundCB(SHOWCHAR);
     }
     CHECKBOX_showpatch_both = glui_bounds->add_checkbox_to_panel(ROLLOUT_boundary_settings, _("Display exterior data"), &showpatch_both, SHOWPATCH_BOTH, BoundBoundCB);
-
 
     if(nboundaryslicedups > 0){
       ROLLOUT_boundary_duplicates = glui_bounds->add_rollout_to_panel(ROLLOUT_bound, "Duplicates", false,BOUNDARY_DUPLICATE_ROLLOUT,SubBoundRolloutCB);
@@ -4873,6 +4894,24 @@ extern "C" void GluiBoundsSetup(int main_window){
     if(n_embedded_meshes>0){
       glui_bounds->add_column_to_panel(PANEL_slice_buttonsB, false);
       CHECKBOX_skip_subslice=glui_bounds->add_checkbox_to_panel(PANEL_slice_buttonsB,_("Skip coarse sub-slice"),&skip_slice_in_embedded_mesh);
+    }
+
+    if(nsliceinfo>0){
+      ROLLOUT_plotslice = glui_bounds->add_rollout_to_panel(PANEL_slice_buttonsB, "2D plots", false);
+      glui_bounds->add_checkbox_to_panel(ROLLOUT_plotslice, _("show"), &vis_slice_plot,                            SLICE_PLOT, SliceBoundCB);
+      glui_bounds->add_checkbox_to_panel(ROLLOUT_plotslice, _("slice bounds"), &slice_plot_bound_option,           SLICE_PLOT, SliceBoundCB);
+      SPINNER_slice_x = glui_bounds->add_spinner_to_panel(ROLLOUT_plotslice, "x", GLUI_SPINNER_FLOAT, slice_xyz+0, SLICE_PLOT, SliceBoundCB);
+      SPINNER_slice_y = glui_bounds->add_spinner_to_panel(ROLLOUT_plotslice, "y", GLUI_SPINNER_FLOAT, slice_xyz+1, SLICE_PLOT, SliceBoundCB);
+      SPINNER_slice_z = glui_bounds->add_spinner_to_panel(ROLLOUT_plotslice, "z", GLUI_SPINNER_FLOAT, slice_xyz+2, SLICE_PLOT, SliceBoundCB);
+      SPINNER_slice_x->set_float_limits(xbar0FDS, xbarFDS);
+      SPINNER_slice_y->set_float_limits(ybar0FDS, ybarFDS);
+      SPINNER_slice_z->set_float_limits(zbar0FDS, zbarFDS);
+      SPINNER_size_factor2 = glui_bounds->add_spinner_to_panel(ROLLOUT_plotslice, _("size factor"), GLUI_SPINNER_FLOAT, &plot2d_size_factor, SLICE_SIZE, SliceBoundCB);
+      SPINNER_size_factor2->set_float_limits(0.0, 1.0);
+      SPINNER_plot2d_time_average2 = glui_bounds->add_spinner_to_panel(ROLLOUT_plotslice, _("smoothing interval (s)"), GLUI_SPINNER_FLOAT, &plot2d_time_average, SLICE_SIZE, SliceBoundCB);
+      glui_bounds->add_checkbox_to_panel(ROLLOUT_plotslice, "show title",         &show_plot2d_title);
+      glui_bounds->add_checkbox_to_panel(ROLLOUT_plotslice, "show y axis labels", &show_plot2d_ylabels);
+      glui_bounds->add_checkbox_to_panel(ROLLOUT_plotslice, "show x axis labels", &show_plot2d_xlabels);
     }
 
     if(nslicedups>0){
@@ -5923,6 +5962,20 @@ extern "C" void SliceBoundCB(int var){
     ColorbarGlobal2Local();
   }
   switch(var){
+    case SLICE_SIZE:
+      update_avg = 1;
+// also defined in glui_obects.cpp
+#define DEVICE_TIMEAVERAGE 31
+      DeviceCB(DEVICE_TIMEAVERAGE);
+      if(plot2d_size_factor<0){
+        plot2d_size_factor = 0.0;
+        UpdatePlot2DSize2();
+      }
+      UpdatePlot2DSize();
+      break;
+    case SLICE_PLOT:
+      Slice2Device();
+      break;
     case UPDATE_HISTOGRAM:
       update_slice_hists = 1;
       histograms_defined = 0;

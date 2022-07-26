@@ -389,9 +389,9 @@ extern "C" void ShowGluiClip(void){
   if(glui_clip!=NULL)glui_clip->show();
 }
 
-/* ------------------ Update_Glui_Clip ------------------------ */
+/* ------------------ UpdateGluiClip ------------------------ */
 
-extern "C" void Update_Glui_Clip(void){
+extern "C" void UpdateGluiClip(void){
   if(CHECKBOX_clip_xmin!=NULL&&CHECKBOX_clip_ymin!=NULL&&CHECKBOX_clip_zmin!=NULL&&
      CHECKBOX_clip_xmax!=NULL&&CHECKBOX_clip_ymax!=NULL&&CHECKBOX_clip_zmax!=NULL){
 

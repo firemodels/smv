@@ -135,12 +135,16 @@ void InitMisc(void){
   mat_ambient2[3] = 1.0;
   mat_specular2[3] = 1.0;
 
-  glui_curve_default.color[0]    = 0;
-  glui_curve_default.color[1]    = 0;
-  glui_curve_default.color[2]    = 0;
-  glui_curve_default.linewidth   = 1.0;
-  glui_curve_default.vmin     = 0.0;
-  glui_curve_default.vmax     = 1.0;
+  glui_curve_default.color[0]           = 0;
+  glui_curve_default.color[1]           = 0;
+  glui_curve_default.color[2]           = 0;
+  glui_curve_default.linewidth          = 1.0;
+  glui_curve_default.vmin               = 0.0;
+  glui_curve_default.vmax               = 1.0;
+  glui_curve_default.curve_factor       = 1.0;
+  glui_curve_default.apply_curve_factor = 0;
+  glui_curve_default.update_avg         = 0;
+  glui_curve_default.vals               = NULL;
   memcpy(&glui_curve, &glui_curve_default, sizeof(curvedata));
 
   ResetGluiView(startup_view_ini);
@@ -306,6 +310,7 @@ int SetupCase(char *filename){
   GluiClipSetup(mainwindow_id);
   GluiLabelsSetup(mainwindow_id);
   GluiDeviceSetup(mainwindow_id);
+  GluiPlot2DSetup(mainwindow_id);
   GluiTourSetup(mainwindow_id);
   GluiAlertSetup(mainwindow_id);
   GluiStereoSetup(mainwindow_id);

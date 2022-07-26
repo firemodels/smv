@@ -990,7 +990,9 @@ typedef struct _device {
   struct _vdevicedata *vdevice;
   int type, is_beam;
   int selected;
-  int inlist1;
+#ifdef pp_PLOT2D_DEV
+  int inlist;
+#endif
   int valid;
 } devicedata;
 
@@ -1007,9 +1009,15 @@ typedef struct _hrrdata {
 /* --------------------------  curvedata ------------------------------------ */
 
 typedef struct _curvedata{
+// when updating curve variables look for occurrences of color in glui_objects.cpp and in
+// UpdateCurveBounds in IOplot2d.c
   char c_type[64];
   int csv_file_index, csv_col_index, csv_col_index_ini, color[3];
+  int apply_curve_factor;
+  float curve_factor;
   float vmin, vmax;
+  float *vals;
+  int update_avg;
   float linewidth;
 } curvedata;
 
@@ -1020,7 +1028,7 @@ typedef struct _plot2ddata{
   char plot_label[350];
   int ncurves, ncurves_ini;
   int curve_index, plot_index;
-  int show, show_title, show_curve_labels, show_curve_values;
+  int show, show_plot_title, show_curve_labels, show_curve_values, show_xaxis_labels, show_yaxis_labels;
   float valmin[2],     valmax[2];
   int   use_valmin[2], use_valmax[2];
   curvedata curve[PLOT2D_MAX_CURVES];

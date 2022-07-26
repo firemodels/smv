@@ -311,7 +311,7 @@ void InitCamera(cameradata *ci,char *name){
     clipinfo.xmax = cam->xmax;
     clipinfo.ymax = cam->ymax;
     clipinfo.zmax = cam->zmax;
-    Update_Glui_Clip();
+    UpdateGluiClip();
 
   }
 
