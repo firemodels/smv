@@ -103,6 +103,19 @@ ifeq ($(LUA_SCRIPTING),true)
 INC += -I $(SOURCE_DIR)/lua-5.3.1/src
 endif
 
+SMVLUACORE_DIR = $(SOURCE_DIR)/smvluacore
+SMVLUACORE_FILES = $(SMVLUACORE_DIR)/smv.lua $(SMVLUACORE_DIR)/ssf.lua \
+	$(SMVLUACORE_DIR)/ssfparser.lua $(SMVLUACORE_DIR)/ssfcommands.lua \
+	$(SMVLUACORE_DIR)/clipping.lua $(SMVLUACORE_DIR)/bounds.lua \
+	$(SMVLUACORE_DIR)/render.lua $(SMVLUACORE_DIR)/load.lua \
+	$(SMVLUACORE_DIR)/view.lua $(SMVLUACORE_DIR)/tour.lua \
+	$(SMVLUACORE_DIR)/iniparser.lua $(SMVLUACORE_DIR)/inioptions.lua \
+	$(SMVLUACORE_DIR)/unload.lua $(SMVLUACORE_DIR)/constants.lua \
+	$(SMVLUACORE_DIR)/gnuplot.lua $(SMVLUACORE_DIR)/plot.lua \
+	$(SMVLUACORE_DIR)/pl3d.lua \
+	$(SMVLUACORE_DIR)/camera.lua $(SMVLUACORE_DIR)/window.lua
+SMVLUALIB_FILES = $(LIB_DIR_PLAT)/lfs$(DYNLIB_EXT)
+
 smvluacore: $(SMVLUACORE_FILES) $(SMVLUALIB_FILES)
 	cp $(SMVLUACORE_FILES) .
 	cp $(SMVLUALIB_FILES) .
@@ -427,21 +440,6 @@ gnu_osx_64 : exe       = smokeview_osx_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
 gnu_osx_64 : $(obj)
 	$(CPP) -o $(bin)/$(exe) $(obj) $(LFLAGS)
-
-
-# ------------ Define Lua scripting dependencies -----------------------
-SMVLUACORE_DIR = $(SOURCE_DIR)/smvluacore
-SMVLUACORE_FILES = $(SMVLUACORE_DIR)/smv.lua $(SMVLUACORE_DIR)/ssf.lua \
-	$(SMVLUACORE_DIR)/ssfparser.lua $(SMVLUACORE_DIR)/ssfcommands.lua \
-	$(SMVLUACORE_DIR)/clipping.lua $(SMVLUACORE_DIR)/bounds.lua \
-	$(SMVLUACORE_DIR)/render.lua $(SMVLUACORE_DIR)/load.lua \
-	$(SMVLUACORE_DIR)/view.lua $(SMVLUACORE_DIR)/tour.lua \
-	$(SMVLUACORE_DIR)/iniparser.lua $(SMVLUACORE_DIR)/inioptions.lua \
-	$(SMVLUACORE_DIR)/unload.lua $(SMVLUACORE_DIR)/constants.lua \
-	$(SMVLUACORE_DIR)/gnuplot.lua $(SMVLUACORE_DIR)/plot.lua \
-	$(SMVLUACORE_DIR)/pl3d.lua \
-	$(SMVLUACORE_DIR)/camera.lua $(SMVLUACORE_DIR)/window.lua
-SMVLUALIB_FILES = $(LIB_DIR_PLAT)/lfs$(DYNLIB_EXT)
 
 #-------------- Clean Target to remove Object and Module files -----------
 
