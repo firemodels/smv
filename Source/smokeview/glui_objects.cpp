@@ -48,6 +48,10 @@
 #define GENPLOT_SAVE                121
 #define GENPLOT_CLOSE               122
 #define GENPLOT_PLOT_SIZE           123
+#ifdef pp_PLOT2D_DEV
+#define GENPLOT_ADD_DEV_PLOTS       124
+#define GENPLOT_SELECT_DEV_PLOTS    125
+#endif
 
 #define WINDROSE_SHOW_FIRST   996
 #define WINDROSE_SHOW_NEXT    997
@@ -84,6 +88,9 @@ GLUI_EditText *EDIT_plot_label = NULL;
 
 GLUI_Button *BUTTON_plot_position = NULL;
 GLUI_Button *BUTTON_add_plot = NULL;
+#ifdef pp_PLOT2D_DEV
+GLUI_Button *BUTTON_add_dev_plots = NULL;
+#endif
 GLUI_Button *BUTTON_rem_plot = NULL;
 GLUI_Button *BUTTON_open_down=NULL ;
 GLUI_Button *BUTTON_device_2=NULL;
@@ -124,6 +131,9 @@ GLUI_Listbox *LIST_csvunits = NULL;
 GLUI_Listbox *LIST_plots = NULL;
 GLUI_Listbox *LIST_plotcurves = NULL;
 GLUI_Listbox *LIST_open=NULL;
+#ifdef pp_PLOT2D_DEV
+GLUI_Listbox *LIST_plot_dev = NULL;
+#endif
 
 GLUI_Panel *PANEL_allplotproperties = NULL;
 GLUI_Panel *PANEL_plotproperties = NULL;
@@ -1049,6 +1059,41 @@ void GenPlotCB(int var){
         SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
       }
       break;
+#ifdef pp_PLOT2D_DEV
+    case GENPLOT_ADD_DEV_PLOTS:
+      char *dev_quant;
+
+      dev_quant = deviceinfo[ideviceinfo].quantity;
+      glui_csv_file_index = 0;
+      LIST_csvfile->set_int_val(glui_csv_file_index);
+      GenPlotCB(GENPLOT_SELECT_CSV_FILE);
+      for(i=0;i<ndeviceinfo;i++){
+        devicedata *devi;
+
+        devi = deviceinfo + i;
+        if(strcmp(devi->quantity, dev_quant)!=0)continue;
+        GenPlotCB(GENPLOT_ADD_PLOT);
+
+        icsv_cols = devi - deviceinfo;
+        LIST_csvID->set_int_val(icsv_cols);
+        GenPlotCB(GENPLOT_ADD_CURVE);
+
+        SPINNER_genplot_x->set_float_val(devi->xyz[0]);
+        SPINNER_genplot_y->set_float_val(devi->xyz[1]);
+        SPINNER_genplot_z->set_float_val(devi->xyz[2]);
+        GenPlotCB(GENPLOT_XYZ);
+
+        CHECKBOX_show_genplot->set_int_val(1);
+        GenPlotCB(GENPLOT_SHOW_PLOT);
+      }
+      break;
+    case GENPLOT_SELECT_DEV_PLOTS:
+      strcpy(label, "Add all ");
+      strcat(label, deviceinfo[ideviceinfo].quantity);
+      strcat(label, " device plots");
+      BUTTON_add_dev_plots->set_name(label);
+      break;
+#endif
     case GENPLOT_ADD_PLOT:
       AddPlot();
       {
@@ -1372,6 +1417,21 @@ float GetDeviceTminTmax(void){
   return return_val;
 }
 
+/* ------------------ InDevList ------------------------ */
+#ifdef pp_PLOT2D_DEV
+int InDevList(devicedata *devi, int n){
+  int j;
+
+  for(j = 0; j<n; j++){
+    devicedata *devj;
+
+    devj = deviceinfo+j;
+    if(strcmp(devi->quantity, devj->quantity)==0&&devj->inlist==1)return 1;
+  }
+  return 0;
+}
+#endif
+
 /* ------------------ GluiPlot2DSetup ------------------------ */
 
 extern "C" void GluiPlot2DSetup(int main_window){
@@ -1391,6 +1451,33 @@ extern "C" void GluiPlot2DSetup(int main_window){
 
     PANEL_plots = glui_plot2d->add_panel_to_panel(PANEL_newplot, "add/remove/select plot");
     BUTTON_add_plot = glui_plot2d->add_button_to_panel(PANEL_plots, _("New plot"), GENPLOT_ADD_PLOT, GenPlotCB);
+
+#ifdef pp_PLOT2D_DEV
+    if(ndeviceinfo>0){
+      for(i = 0; i<ndeviceinfo; i++){
+        devicedata *devi;
+
+        devi = deviceinfo+i;
+        devi->inlist = 0;;
+      }
+      for(i = 0; i<ndeviceinfo; i++){
+        devicedata *devi;
+        int j;
+
+        devi = deviceinfo+i;
+        devi->inlist = 1-InDevList(devi, i);
+      }
+      BUTTON_add_dev_plots = glui_plot2d->add_button_to_panel(PANEL_plots, _("Add all device plots"), GENPLOT_ADD_DEV_PLOTS, GenPlotCB);
+      LIST_plot_dev = glui_plot2d->add_listbox_to_panel(PANEL_plots, "select dev quantity:", &ideviceinfo, GENPLOT_SELECT_DEV_PLOTS, GenPlotCB);
+      GenPlotCB(GENPLOT_SELECT_DEV_PLOTS);
+      for(i = 0; i<ndeviceinfo; i++){
+        devicedata *devi;
+
+        devi = deviceinfo+i;
+        if(devi->inlist==1)LIST_plot_dev->add_item(i, devi->quantity);
+      }
+    }
+#endif
     BUTTON_rem_plot = glui_plot2d->add_button_to_panel(PANEL_plots, _("Remove"), GENPLOT_REM_PLOT, GenPlotCB);
     LIST_plots = glui_plot2d->add_listbox_to_panel(PANEL_plots, "select:", &iplot2dinfo, GENPLOT_SELECT_PLOT, GenPlotCB);
     LIST_plots->add_item(-1, "");
