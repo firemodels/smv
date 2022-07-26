@@ -42,19 +42,9 @@ add_executable(smokeview Source/smokeview/main.c Source/smokeview/menus.c Source
     Source/smokeview/viewports.c Source/smokeview/smv_geometry.c Source/smokeview/showscene.c Source/glew/glew.c Source/smokeview/infoheader.c  Source/shared/md5.c Source/shared/sha1.c Source/shared/sha256.c
     Source/shared/stdio_m.c Source/shared/stdio_buffer.c
     Source/smokeview/gsmv.c Source/smokeview/getdata.c Source/smokeview/color2rgb.c
+    Source/smokeview/IOplot2d.c
 )
 # target_include_directories(smokeview PRIVATE ${OPENGL_INCLUDE_DIRS}  )
-
-set(SMV_LUA_CORE
-    Source/smvluacore/smv.lua Source/smvluacore/ssf.lua
-    Source/smvluacore/ssfparser.lua Source/smvluacore/ssfcommands.lua
-    Source/smvluacore/clipping.lua Source/smvluacore/bounds.lua
-    Source/smvluacore/render.lua Source/smvluacore/load.lua
-    Source/smvluacore/view.lua Source/smvluacore/tour.lua
-    Source/smvluacore/iniparser.lua Source/smvluacore/inioptions.lua
-    Source/smvluacore/unload.lua Source/smvluacore/constants.lua
-    Source/smvluacore/camera.lua Source/smvluacore/window.lua
-)
 
 add_definitions(-Dpp_CMAKE)
 
@@ -95,7 +85,7 @@ if (BETA)
     add_compile_definitions(pp_BETA)
 endif ()
 
-option(LUA "Include lua scripting" off)
+option(LUA "Include lua scripting" on)
 if (LUA)
     add_definitions(-Dpp_LUA)
     add_subdirectory(Source/lua-5.3.1)
@@ -105,9 +95,34 @@ if (LUA)
     target_sources(smokeview PRIVATE Source/smokeview/lua_api.c Source/smokeview/c_api.c)
     target_include_directories(smokeview PRIVATE Source/lua-5.3.1/src)
     target_link_libraries(smokeview lua_shared)
-    foreach( file_i ${SMV_LUA_CORE})
-        configure_file(${file_i} . COPYONLY)
-    endforeach( file_i )
+
+    target_sources(smokeview PUBLIC
+        Source/smvluacore/smv.lua Source/smvluacore/ssf.lua
+        Source/smvluacore/ssfparser.lua Source/smvluacore/ssfcommands.lua
+        Source/smvluacore/clipping.lua Source/smvluacore/bounds.lua
+        Source/smvluacore/render.lua Source/smvluacore/load.lua
+        Source/smvluacore/view.lua Source/smvluacore/tour.lua
+        Source/smvluacore/iniparser.lua Source/smvluacore/inioptions.lua
+        Source/smvluacore/unload.lua Source/smvluacore/constants.lua
+        Source/smvluacore/camera.lua Source/smvluacore/window.lua
+    )
+    install(
+        # TARGETS smokeview
+        FILES
+        Source/smvluacore/smv.lua Source/smvluacore/ssf.lua
+        Source/smvluacore/ssfparser.lua Source/smvluacore/ssfcommands.lua
+        Source/smvluacore/clipping.lua Source/smvluacore/bounds.lua
+        Source/smvluacore/render.lua Source/smvluacore/load.lua
+        Source/smvluacore/view.lua Source/smvluacore/tour.lua
+        Source/smvluacore/iniparser.lua Source/smvluacore/inioptions.lua
+        Source/smvluacore/unload.lua Source/smvluacore/constants.lua
+        Source/smvluacore/camera.lua Source/smvluacore/window.lua
+        DESTINATION bin
+        # RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        # PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+
+
 endif ()
 
 if (WIN32)
@@ -132,7 +147,13 @@ if (MACOSX)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 endif ()
 
+install(TARGETS smokeview
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+
 # Other programs
+# smokediff
 add_executable(smokediff Source/shared/assert.c Source/shared/dmalloc.c Source/shared/histogram.c
     Source/smokediff/IOdboundary.c Source/smokediff/IOdplot.c Source/smokediff/IOdslice.c Source/smokediff/main.c
     Source/smokediff/readsmv.c Source/shared/file_util.c Source/shared/string_util.c Source/smokediff/utilities.c
@@ -153,7 +174,11 @@ if ((NOT MACOSX) AND UNIX)
     target_link_libraries(smokediff m)
 endif()
 
+install(TARGETS smokediff
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
+# smokezip
 add_executable(smokezip Source/smokezip/main.c Source/smokezip/CNV3dsmoke.c Source/smokezip/CNVboundary.c
     Source/smokezip/CNVpart.c Source/smokezip/CNVplot3d.c Source/smokezip/CNVslice.c Source/shared/assert.c
     Source/shared/csphere.c Source/shared/dmalloc.c Source/smokezip/lightsmoke.c Source/shared/histogram.c
@@ -182,6 +207,11 @@ if (WIN32)
     target_include_directories(smokezip PRIVATE Source/pthreads)
     target_link_libraries(smokezip pthread_static)
 endif ()
+
+install(TARGETS smokezip
+    RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
 
 # background
 add_executable(background Source/background/main.c Source/shared/assert.c Source/shared/dmalloc.c Source/shared/file_util.c
