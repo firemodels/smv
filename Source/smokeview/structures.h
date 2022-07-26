@@ -35,6 +35,18 @@ typedef struct _procdata {
 } procdata;
 #endif
 
+typedef struct {
+  char name[256];
+  char units[256];
+  size_t nvalues;
+  float *values;
+} vector;
+
+typedef struct {
+  vector *x;
+  vector *y;
+} dvector;
+
 /* --------------------------  csvdata ------------------------------------ */
 typedef struct _csvdata{
   flowlabels label;
@@ -52,6 +64,8 @@ typedef struct _csvfiledata {
   int ncsvinfo;
   int loaded, display;
   char c_type[32];
+  size_t nvectors;
+  dvector *vectors;
 } csvfiledata;
 
 /* --------------------------  vertdata ------------------------------------ */
