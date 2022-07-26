@@ -86,7 +86,7 @@ if(LUA_BUILD_BINARY)
     include(CheckIncludeFile)
     CHECK_INCLUDE_FILE("readline/readline.h" HAVE_READLINE_READLINE_H)
     add_executable(lua "src/lua.c")
-    target_link_libraries(lua PUBLIC lua_static)
+    target_link_libraries(lua PUBLIC lua_shared)
     set_target_properties(lua PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}
     )
@@ -94,10 +94,17 @@ if(LUA_BUILD_BINARY)
         target_compile_definitions(lua PUBLIC "LUA_USE_READLINE")
         target_link_libraries(lua PUBLIC readline)
     endif()
+    if (UNIX AND NOT(EMSCRIPTEN))
+        target_link_libraries(lua PUBLIC ${LIBM})
+    endif()
+    install(TARGETS lua
+        RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
 endif()
 if(LUA_BUILD_COMPILER)
     add_executable(luac "src/luac.c")
-    target_link_libraries(luac PUBLIC lua_static)
+    target_link_libraries(luac PUBLIC lua_shared)
     set_target_properties(luac PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}
     )
@@ -109,3 +116,7 @@ if (WIN32)
     # set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-string-plus-int")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 endif ()
+
+install(TARGETS lua_shared
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

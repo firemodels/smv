@@ -1,4 +1,3 @@
-#ifdef pp_LUA
 
 #include <stdio.h>
 #include <string.h>
@@ -163,6 +162,9 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
   // Load information about smokeview into the lua interpreter.
   lua_initsmvproginfo(L);
 
+  if (smv_filename==NULL) {
+    return 0;
+  }
   lua_pushstring(L, smv_filename);
   // TODO: only set up a case if one is specified, otherwise leave it to the
   // interpreter to call this.
@@ -787,7 +789,7 @@ int access_csventry_prop(lua_State *L) {
   int index = lua_tonumber(L, -1);
   const char *field = lua_tostring(L, 2);
   if (strcmp(field,"loaded")==0) {
-    lua_pushboolean(L, csvinfo[index].loaded);
+    lua_pushboolean(L, csvfileinfo[index].loaded);
     return 1;
   } else {
     return 0;
@@ -5512,8 +5514,9 @@ lua_State *initLua() {
 
   // luaL_requiref (L, "smv", luaopen_smv, 1)
   int smv_loaded_err = luaL_dostring(L, "require(\"smv\")");
-  if (smv_loaded_err) {
+  if (smv_loaded_err != LUA_OK) {
     fprintf(stderr, "Failed to load smv (lua)\n");
+    lua_pop(L,1);
   }
   // luaL_loadfile(L, "smv.lua");
   // int luaL_1dofile (lua_State *L, const char *filename);
@@ -5749,4 +5752,3 @@ int runLuaScript() {
   }
   return yieldOrOk;
 }
-#endif
