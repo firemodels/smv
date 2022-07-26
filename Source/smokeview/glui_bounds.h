@@ -58,7 +58,6 @@
 #define SLICE_VECTORSKIP 210
 #define PLOT3D_VECTORSKIP 211
 #define UPDATE_SLICEDUPS 212
-#define SLICE_PLOT               221
 #define UPDATE_HISTOGRAM 213
 #define INIT_HISTOGRAM 214
 #define UPDATE_BOUNDARYSLICEDUPS 215
@@ -68,6 +67,8 @@
 #define ISO_COLORBAR_LIST        217
 #define ISO_OUTLINE_IOFFSET      218
 #define SET_FDS_TIMES            220
+#define SLICE_PLOT               221
+#define SLICE_SIZE               222
 
 #define ISO_TRANSPARENT_CONSTANT 0
 #define ISO_TRANSPARENT_VARYING  1

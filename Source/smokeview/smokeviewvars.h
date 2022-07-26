@@ -89,7 +89,7 @@ SVEXTERN float SVDECL(timer_startup, 0.0), SVDECL(timer_render, -1.0);
 SVEXTERN int SVDECL(frames_total, 0 );
 SVEXTERN int SVDECL(open_movie_dialog, 0);
 SVEXTERN int SVDECL(geom_bounding_box_mousedown, 0);
-SVEXTERN float SVDECL(device_time_average, 0.0);
+SVEXTERN float SVDECL(plot2d_time_average, 0.0);
 #ifdef pp_REFRESH
 SVEXTERN int SVDECL(periodic_refresh, 0), SVDECL(update_refresh, 1);
 SVEXTERN int SVDECL(glui_refresh_rate, 10), SVDECL(glui_refresh_rate_old, 10), SVDECL(refresh_interval, 100);
@@ -146,7 +146,7 @@ SVEXTERN char *cslice_label, *cpart_label, *cbound_label, *cplot3d_label;
 #endif
 
 SVEXTERN float SVDECL(plot2d_size_factor, 0.15), SVDECL(plot2d_font_spacing, 1.2);
-SVEXTERN float SVDECL(plot2d_line_width, 1.0), SVDECL(plot2d_point_size, 5.0);
+SVEXTERN float SVDECL(plot2d_line_width, 1.0), SVDECL(plot2d_point_size, 5.0), SVDECL(plot2d_frame_width, 1.0);
 #ifdef INMAIN
 SVEXTERN float plot2d_xyz_offset[3] = {0.0, 0.0, 0.0};
 #else
@@ -786,7 +786,9 @@ SVEXTERN int SVDECL(*trainer_temp_indexes,NULL),SVDECL(*trainer_oxy_indexes,NULL
 SVEXTERN int SVDECL(trainer_showall_mslice,0),SVDECL(trainer_cycle_mslice,1);
 SVEXTERN int SVDECL(trainer_temp_n,0),SVDECL(trainer_oxy_n,0);
 SVEXTERN char SVDECL(*tr_name,NULL);
-SVEXTERN int SVDECL(showdevice_val,0), SVDECL(showvdevice_val,0),SVDECL(showd_plot2d_labels,1),SVDECL(colordevice_val,0),SVDECL(showdevice_id,0);
+SVEXTERN int SVDECL(showdevice_val, 0), SVDECL(showvdevice_val, 0);
+SVEXTERN int SVDECL(show_plot2d_xlabels, 1), SVDECL(show_plot2d_ylabels, 1), SVDECL(show_plot2d_title, 1);
+SVEXTERN int SVDECL(colordevice_val, 0), SVDECL(showdevice_id, 0);
 SVEXTERN int SVDECL(select_device, 0);
 SVEXTERN int SVDECL(showdevice_type,1), SVDECL(showdevice_unit,1);
 SVEXTERN float SVDECL(device_valmin,0.0), SVDECL(device_valmax,1.0);
@@ -1547,8 +1549,6 @@ SVEXTERN int SVDECL(last_prop_display,-1);
 SVEXTERN int SVDECL(devicetypes_index,0);
 
 SVEXTERN float SVDECL(plot2d_hrr_min,0.0), SVDECL(plot2d_hrr_max,1.0);
-SVEXTERN int SVDECL(use_plot2d_hrr_min, 0);
-SVEXTERN int SVDECL(use_plot2d_hrr_max, 0);
 SVEXTERN devicedata SVDECL(*deviceinfo,NULL);
 SVEXTERN vdevicedata SVDECL(*vdeviceinfo, NULL);
 SVEXTERN vdevicesortdata SVDECL(*vdevices_sorted, NULL);

@@ -345,14 +345,33 @@ void ReadCSV(csvfiledata *csvfi, int flag){
   fclose(stream);
 }
 
+/* ------------------ CompareCSV ------------------------ */
+
+int CompareCSV( const void *arg1, const void *arg2 ){
+  csvfiledata *csvi, *csvj;
+
+  csvi = (csvfiledata *)arg1;
+  csvj = (csvfiledata *)arg2;
+
+  return strcmp(csvi->c_type, csvj->c_type);
+}
+
+
 /* ------------------ ReadAllCSV ------------------------ */
 
 void ReadAllCSV(int flag){
   int i;
+  csvfiledata *csvfilecopy=NULL;
+
+  if(ncsvfileinfo==0)return;
+  NewMemory((void **)&(csvfilecopy), ncsvfileinfo*sizeof(csvfiledata));
 
   for(i=0; i<ncsvfileinfo; i++){
     ReadCSV(csvfileinfo + i, flag);
   }
+  memcpy(csvfilecopy, csvfileinfo, ncsvfileinfo*sizeof(csvfiledata));
+  qsort((csvfiledata *)csvfilecopy, ncsvfileinfo, sizeof(csvfiledata), CompareCSV);
+  memcpy(csvfileinfo, csvfilecopy, ncsvfileinfo*sizeof(csvfiledata));
 }
 
 /* ------------------ ReadHRR ------------------------ */
@@ -11554,8 +11573,8 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(Match(buffer, "SHOWDEVICEPLOTS")==1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %f %f %f %f %f %f %f",
-             &vis_device_plot, &showd_plot2d_labels, &plot2d_size_factor, &plot2d_line_width, &plot2d_point_size,
+      sscanf(buffer, " %i %i %i %f %f %f %f %f %f %f",
+             &vis_device_plot, &show_plot2d_xlabels, &show_plot2d_ylabels, &plot2d_size_factor, &plot2d_line_width, &plot2d_point_size,
              plot2d_xyz_offset, plot2d_xyz_offset+1, plot2d_xyz_offset+2, &plot2d_font_spacing
       );
       update_glui_devices = 1;
@@ -11584,9 +11603,10 @@ int ReadIni2(char *inifile, int localfile){
         strcpy(plot2di->plot_label, labelptr);
 
         fgets(buffer, 255, stream);
-        sscanf(buffer, " %f %f %f %i %i %i %i %i",
-                       plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->show_title,
-                       &plot2di->ncurves, &plot2di->show_curve_labels, &plot2di->show_curve_values);
+        sscanf(buffer, " %f %f %f %i %i %i %i %i %i %i",
+                       plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->show_plot_title,
+                       &plot2di->ncurves, &plot2di->show_curve_labels, &plot2di->show_curve_values,
+                       &plot2di->show_xaxis_labels, &plot2di->show_yaxis_labels);
         fgets(buffer, 255, stream);
         sscanf(buffer, " %f %i %f %i %f %i %f %i ",
                plot2di->valmin,   plot2di->use_valmin,   plot2di->valmax,   plot2di->use_valmax,
@@ -11596,11 +11616,15 @@ int ReadIni2(char *inifile, int localfile){
           float linewidth1;
           int file_index, col_index;
           curvedata *curve;
+          float factor;
+          int apply_factor;
 
           fgets(buffer, 255, stream);
           TrimBack(buffer);
           linewidth1 = 1.0;
-          sscanf(buffer, " %i %i %i %i %i %f",    &file_index, &col_index, color, color+1, color+2, &linewidth1);
+          factor = 1.0;
+          apply_factor = 0;
+          sscanf(buffer, " %i %i %i %i %i %f %f %i",    &file_index, &col_index, color, color+1, color+2, &linewidth1, &factor, &apply_factor);
 
           plot2di->curve[j].csv_file_index = file_index;
           plot2di->curve[j].csv_col_index  = col_index;
@@ -11609,6 +11633,8 @@ int ReadIni2(char *inifile, int localfile){
           curve->color[1]                  = color[1];
           curve->color[2]                  = color[2];
           curve->linewidth                 = linewidth1;
+          curve->curve_factor              = factor;
+          curve->apply_curve_factor        = apply_factor;
         }
       }
       update_glui_devices = 1;
@@ -12872,8 +12898,10 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
     if(Match(buffer, "PLOT2DHRRBOUNDS") == 1){
+      int dummy;
+
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %f %i %f", &use_plot2d_hrr_min, &plot2d_hrr_min, &use_plot2d_hrr_max, &plot2d_hrr_max);
+      sscanf(buffer, "%i %f %i %f", &dummy, &plot2d_hrr_min, &dummy, &plot2d_hrr_max);
       continue;
     }
     if(Match(buffer, "P3DSURFACETYPE") == 1){
@@ -14961,8 +14989,8 @@ void WriteIniLocal(FILE *fileout){
     }
   }
   fprintf(fileout, "SHOWDEVICEPLOTS\n");
-  fprintf(fileout, " %i %i %f %f %f %f %f %f %f\n",
-          vis_device_plot, showd_plot2d_labels, plot2d_size_factor, plot2d_line_width, plot2d_point_size,
+  fprintf(fileout, " %i %i %i %f %f %f %f %f %f %f\n",
+          vis_device_plot, show_plot2d_xlabels, show_plot2d_ylabels, plot2d_size_factor, plot2d_line_width, plot2d_point_size,
           plot2d_xyz_offset[0], plot2d_xyz_offset[1], plot2d_xyz_offset[2], plot2d_font_spacing
   );
   fprintf(fileout, "SHOWGENPLOTS\n");
@@ -14973,9 +15001,10 @@ void WriteIniLocal(FILE *fileout){
 
     plot2di = plot2dinfo + i;
     fprintf(fileout, " %s\n", plot2di->plot_label);
-    fprintf(fileout, " %f %f %f %i %i %i %i %i\n",
-                     plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->show_title,
-                     plot2di->ncurves, plot2di->show_curve_labels, plot2di->show_curve_values);
+    fprintf(fileout, " %f %f %f %i %i %i %i %i %i %i\n",
+                     plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->show_plot_title,
+                     plot2di->ncurves, plot2di->show_curve_labels, plot2di->show_curve_values,
+                     plot2di->show_xaxis_labels, plot2di->show_yaxis_labels);
     fprintf(fileout, " %f %i %f %i %f %i %f %i\n",
             plot2di->valmin[0], plot2di->use_valmin[0], plot2di->valmax[0], plot2di->use_valmax[0],
             plot2di->valmin[1], plot2di->use_valmin[1], plot2di->valmax[1], plot2di->use_valmax[1]
@@ -14985,13 +15014,17 @@ void WriteIniLocal(FILE *fileout){
       float linewidth1;
       int file_index, col_index;
       curvedata *curve;
+      float factor;
+      int apply_factor;
 
       file_index        = plot2di->curve[j].csv_file_index;
       col_index         = plot2di->curve[j].csv_col_index;
       curve             = plot2di->curve+j;
       color             = curve->color;
       linewidth1        = curve->linewidth;
-      fprintf(fileout, " %i %i %i %i %i %f\n", file_index, col_index, color[0], color[1], color[2], linewidth1);
+      factor            = curve->curve_factor;
+      apply_factor      = curve->apply_curve_factor;
+      fprintf(fileout, " %i %i %i %i %i %f %f %i\n", file_index, col_index, color[0], color[1], color[2], linewidth1, factor, apply_factor);
     };
   }
   fprintf(fileout, "SHOWDEVICEVALS\n");
@@ -15651,7 +15684,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, "P3DSURFACESMOOTH\n");
   fprintf(fileout, " %i\n", p3dsurfacesmooth);
   fprintf(fileout, "PLOT2DHRRBOUNDS\n");
-  fprintf(fileout, " %i %f %i %f\n", use_plot2d_hrr_min, plot2d_hrr_min, use_plot2d_hrr_max, plot2d_hrr_max);
+  fprintf(fileout, " %i %f %i %f\n", 0, plot2d_hrr_min, 0, plot2d_hrr_max);
   fprintf(fileout, "PROJECTION\n");
   fprintf(fileout, " %i\n", projection_type);
   fprintf(fileout, "SCALEDFONT\n");

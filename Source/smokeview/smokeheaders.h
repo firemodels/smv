@@ -20,7 +20,6 @@ EXTERNCPP int HaveGenHrr(void);
 EXTERNCPP void ShowPlot2D(void);
 EXTERNCPP void ReadAllCSV(int flag);
 EXTERNCPP char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index);
-EXTERNCPP void UpdateCurveBounds(plot2ddata * plot2di, int flag);
 EXTERNCPP csvdata *GetCsv(int file_index, int col_index, csvfiledata **csvf_ptr);
 EXTERNCPP csvdata *GetCurrentCsv(int i, csvfiledata **csvf_ptr);
 EXTERNCPP void SetupPlot2DUnitData(void);
@@ -527,8 +526,8 @@ EXTERNCPP void MouseDragCB(int xm, int ym);
 EXTERNCPP void MenuStatusCB(int status, int x, int y);
 EXTERNCPP void IdleCB(void);
 
-SVEXTERN void UpdateVisHrrPlot(void);
-
+SVEXTERN void UpdatePlot2DSize(void);
+SVEXTERN void UpdatePlot2DSize2(void);
 SVEXTERN void UpdateVectorWidgets(void);
 EXTERNCPP void UpdateGsliceParms(void);
 EXTERNCPP void ReadIsoOrig(const char *file, int ifile, int flag, int *errorcode);
