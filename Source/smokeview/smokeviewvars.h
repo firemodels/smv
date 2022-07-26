@@ -794,6 +794,9 @@ SVEXTERN int SVDECL(showdevice_type,1), SVDECL(showdevice_unit,1);
 SVEXTERN float SVDECL(device_valmin,0.0), SVDECL(device_valmax,1.0);
 SVEXTERN devicedata SVDECL(**devicetypes,NULL);
 SVEXTERN int SVDECL(ndevicetypes,0);
+#ifdef pp_PLOT2D_DEV
+SVEXTERN int SVDECL(ideviceinfo, 0);
+#endif
 
 // gen plot varables
 SVEXTERN int SVDECL(glui_remove_selected_curve, 0);
