@@ -82,7 +82,7 @@ obj += resource.o
 endif
 
 ifeq ($(LUA_SCRIPTING),true)
-obj += c_api.o lua_api.o csv.o
+obj += c_api.o lua_api.o
 incs += c_api.h
 endif
 
