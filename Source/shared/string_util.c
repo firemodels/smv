@@ -116,6 +116,13 @@ void ParseCSV(char *buffer, char **tokens, int *ntokens){
     }
   }
   *ntokens=nt;
+  for(i = 0; i<nt; i++){
+    char *token;
+
+    token = tokens[i];
+    token = TrimFrontBack(token);
+    tokens[i] = token;
+  }
 }
 
 /* ------------------ GetRowCols ------------------------ */
