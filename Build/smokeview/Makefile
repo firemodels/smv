@@ -111,10 +111,14 @@ SMVLUACORE_FILES = $(SMVLUACORE_DIR)/smv.lua $(SMVLUACORE_DIR)/ssf.lua \
 	$(SMVLUACORE_DIR)/view.lua $(SMVLUACORE_DIR)/tour.lua \
 	$(SMVLUACORE_DIR)/iniparser.lua $(SMVLUACORE_DIR)/inioptions.lua \
 	$(SMVLUACORE_DIR)/unload.lua $(SMVLUACORE_DIR)/constants.lua \
+	$(SMVLUACORE_DIR)/gnuplot.lua $(SMVLUACORE_DIR)/plot.lua \
+	$(SMVLUACORE_DIR)/pl3d.lua \
 	$(SMVLUACORE_DIR)/camera.lua $(SMVLUACORE_DIR)/window.lua
+SMVLUALIB_FILES = $(LIB_DIR_PLAT)/lfs$(DYNLIB_EXT)
 
-smvluacore: $(SMVLUACORE_FILES)
+smvluacore: $(SMVLUACORE_FILES) $(SMVLUALIB_FILES)
 	cp $(SMVLUACORE_FILES) .
+	cp $(SMVLUALIB_FILES) .
 # cannot use $^ here
 
 #*** General Purpose Rules ***
@@ -167,6 +171,7 @@ WIN32_LIBS = user32.lib gdi32.lib comdlg32.lib shell32.lib
 
 # ------------- intel_win_64_db ----------------
 
+intel_win_64_db : DYNLIB_EXT = .dll
 intel_win_64_db : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
 intel_win_64_db : CFLAGS    = /Od /W4 /debug:full /Zi -D pp_INTEL -D _DEBUG -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(GLUT),freeglut)
@@ -187,6 +192,7 @@ intel_win_64_db : $(objwin)
 
 # ------------- intel_win_64 ----------------
 
+intel_win_64 : DYNLIB_EXT = .dll
 intel_win_64 : INC += $(WININC) -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/smokeview
 intel_win_64 : CFLAGS    = -O1 -D pp_INTEL -D WIN32 -D _CONSOLE -D X64 -D GLEW_STATIC -D PTW32_STATIC_LIB $(SMV_TESTFLAG) $(GITINFO) $(INTEL_COMPINFO)
 ifeq ($(GLUT),freeglut)
@@ -195,6 +201,7 @@ endif
 ifeq ($(LUA_SCRIPTING),true)
 intel_win_64 : CFLAGS    += -D pp_LUA
 intel_win_64 : SMVLUACORE_FILES += $(SMV_WIN_LIBDIR)\lpeg.dll
+intel_win_64 : SMVLUACORE_FILES += $(SMV_WIN_LIBDIR)\lua.dll
 endif
 intel_win_64 : LFLAGS    = /F32768000 -D FREEGLUT_STATIC
 # icx and ifx
@@ -255,6 +262,7 @@ SYSTEM_LIBS_LINUX = -lpthread -lX11 -lXmu -lGLU -lGL -lm -lrt
 
 # ------------- intel_linux_64 ----------------
 
+intel_linux_64 : DYNLIB_EXT = .so
 intel_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/intel_linux_64
 intel_linux_64 : CFLAGS    = -O0 -traceback -m64 -D pp_LINUX $(SMV_TESTFLAG) $(SMV_PROFILEFLAG) $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64 : LIBLUA    =
@@ -304,11 +312,13 @@ gnu_linux_64_db : $(obj)
 
 # ------------- gnu_linux_64 ----------------
 
+gnu_linux_64 : DYNLIB_EXT = .so
 gnu_linux_64 : LIB_DIR_PLAT = $(LIB_DIR)/gnu_linux_64
 gnu_linux_64 : CFLAGS    = -O0 -m64 -ggdb -Wall -Wno-parentheses -Wno-unknown-pragmas -Wno-comment -Wno-write-strings           -D pp_LINUX -D pp_GCC $(SMV_TESTFLAG) $(GNU_COMPINFO) $(GITINFO) $(SMV_PROFILEFLAG)
 ifeq ($(LUA_SCRIPTING),true)
 gnu_linux_64 : CFLAGS    += -D pp_LUA
 gnu_linux_64 : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
+gnu_linux_64 : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lua.so
 endif
 gnu_linux_64 : LFLAGS    = -m64 $(SMV_PROFILEFLAG)
 gnu_linux_64 : CC        = gcc

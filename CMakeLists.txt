@@ -90,7 +90,7 @@ if (LUA)
     add_definitions(-Dpp_LUA)
     add_subdirectory(Source/lua-5.3.1)
     add_subdirectory(Source/lpeg-1.0.0)
-    # add_subdirectory(Source/lfs/luafilesystem-1_8_0)
+    add_subdirectory(Source/lfs/luafilesystem-1_8_0)
     # If we are including the lua interpreter, include the appropriate sources.
     target_sources(smokeview PRIVATE Source/smokeview/lua_api.c Source/smokeview/c_api.c)
     target_include_directories(smokeview PRIVATE Source/lua-5.3.1/src)
@@ -104,6 +104,8 @@ if (LUA)
         Source/smvluacore/view.lua Source/smvluacore/tour.lua
         Source/smvluacore/iniparser.lua Source/smvluacore/inioptions.lua
         Source/smvluacore/unload.lua Source/smvluacore/constants.lua
+        Source/smvluacore/gnuplot.lua Source/smvluacore/plot.lua
+        Source/smvluacore/pl3d.lua Source/smvluacore/json.lua
         Source/smvluacore/camera.lua Source/smvluacore/window.lua
     )
     install(
@@ -116,6 +118,8 @@ if (LUA)
         Source/smvluacore/view.lua Source/smvluacore/tour.lua
         Source/smvluacore/iniparser.lua Source/smvluacore/inioptions.lua
         Source/smvluacore/unload.lua Source/smvluacore/constants.lua
+        Source/smvluacore/gnuplot.lua Source/smvluacore/plot.lua
+        Source/smvluacore/pl3d.lua Source/smvluacore/json.lua
         Source/smvluacore/camera.lua Source/smvluacore/window.lua
         DESTINATION bin
         # RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
