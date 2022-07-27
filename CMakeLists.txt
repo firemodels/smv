@@ -90,7 +90,7 @@ if (LUA)
     add_definitions(-Dpp_LUA)
     add_subdirectory(Source/lua-5.3.1)
     add_subdirectory(Source/lpeg-1.0.0)
-    # add_subdirectory(Source/lfs/luafilesystem-1_8_0)
+    add_subdirectory(Source/lfs/luafilesystem-1_8_0)
     # If we are including the lua interpreter, include the appropriate sources.
     target_sources(smokeview PRIVATE Source/smokeview/lua_api.c Source/smokeview/c_api.c)
     target_include_directories(smokeview PRIVATE Source/lua-5.3.1/src)
