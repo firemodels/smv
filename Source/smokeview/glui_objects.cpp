@@ -674,12 +674,6 @@ void EnableDisablePlot2D(void){
     else{
       PANEL_curve_properties->enable();
     }
-    if(glui_plot2dinfo->ncurves > 0 && glui_plot2dinfo->curve_index < ndeviceinfo){
-      BUTTON_plot_position->enable();
-    }
-    else{
-      BUTTON_plot_position->disable();
-    }
   }
 }
 
@@ -830,6 +824,15 @@ void UpdateCvsList(void){
   LIST_csvID->set_name(label2);
 
   LIST_csvunits->set_int_val(-1);
+
+  if(BUTTON_plot_position!=NULL){
+    if(strcmp(csvfi->c_type, "devc")==0){
+      BUTTON_plot_position->enable();
+    }
+    else{
+      BUTTON_plot_position->disable();
+    }
+  }
 }
 
 /* ------------------ SetPlot2DBoundLabels ------------------------ */
@@ -950,10 +953,8 @@ void GenPlotCB(int var){
       UpdateCurveControls(unit);
       if(BUTTON_plot_position != NULL){
         if(glui_plot2dinfo->curve_index<ndeviceinfo){
-          BUTTON_plot_position->enable();
         }
         else{
-          BUTTON_plot_position->disable();
           strcpy(label, "Set to device location");
           BUTTON_plot_position->set_name(label);
         }
@@ -1533,9 +1534,6 @@ extern "C" void GluiPlot2DSetup(int main_window){
       if(PANEL_add_curve!=NULL)PANEL_add_curve->disable();
       if(PANEL_plot_position!=NULL)PANEL_plot_position->disable();
       if(PANEL_plot_labels!=NULL)PANEL_plot_labels->disable();
-    }
-    if(nplot2dinfo>0){
-      if(glui_plot2dinfo->ncurves==0||glui_plot2dinfo->curve_index>=ndeviceinfo)BUTTON_plot_position->disable();
     }
 
     memcpy(&glui_curve, &glui_curve_default, sizeof(curvedata));
