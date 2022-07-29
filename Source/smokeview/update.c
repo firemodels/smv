@@ -1198,6 +1198,17 @@ void UpdateTimes(void){
   if(visShooter!=0&&shooter_active==1){
     nglobal_times = MAX(nglobal_times,nshooter_frames);
   }
+  for(i = 0; i<nplot3dinfo; i++){
+    plot3ddata *pd;
+
+    pd = plot3dinfo+i;
+    if(pd->loaded==1){
+      float ptime[1];
+
+      ptime[0] = pd->time;
+      MergeGlobalTimes(ptime, 1);
+    }
+  }
   for(i=0;i<npartinfo;i++){
     partdata *parti;
 
