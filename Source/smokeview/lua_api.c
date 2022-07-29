@@ -893,7 +893,7 @@ int lua_get_csventry(lua_State *L) {
       // printf("adding: %s\n", csventry->vectors[j].y->name);
 
       lua_create_vector(L, csventry->time, &(csventry->csvinfo[j]));
-      lua_setfield(L, -2, TrimFront(csventry->csvinfo[j].label.longlabel));
+      lua_setfield(L, -2, csventry->csvinfo[j].label.longlabel);
     }
     lua_setfield(L, -2, "vectors");
   }
