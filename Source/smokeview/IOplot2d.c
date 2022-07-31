@@ -414,10 +414,9 @@ void DrawGenPlot(plot2ddata *plot2di){
     }
   }
   for(i = 0; i < plot2di->ncurves; i++){
-    char *unit, *label;
+    char *unit;
 
     unit  = GetPlotUnit(plot2di, i);
-    label = GetPlotShortLabel(plot2di, i);
     if(axis_right_unit != NULL && strcmp(axis_right_unit, unit) == 0){
       unit_right_index = i;
       continue;
