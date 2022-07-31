@@ -1504,7 +1504,7 @@ void DialogMenu(int value){
     ShowGluiTrainer();
     break;
   case DIALOG_2DPLOTS:
-    ShowGlui2DPlots();
+    ShowPlot2D();
     break;
   case DIALOG_DEVICE:
     ShowGluiDevice();

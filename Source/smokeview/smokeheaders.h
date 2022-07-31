@@ -433,7 +433,6 @@ EXTERNCPP void HideGluiClip(void);
 EXTERNCPP void ShowGluiDisplay(int menu_id);
 EXTERNCPP void ShowGluiDevice(void);
 EXTERNCPP void ShowGluiPlotDevice(void);
-EXTERNCPP void ShowGlui2DPlots(void);
 EXTERNCPP void HideGluiDevice(void);
 EXTERNCPP void SetLabelControls(void);
 EXTERNCPP void SetLabelControls2(void);

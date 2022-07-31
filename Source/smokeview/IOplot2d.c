@@ -685,7 +685,7 @@ void InitPlot2D(plot2ddata *plot2di, int plot_index){
   if(ndeviceinfo == 0 && nhrrinfo == 0)return;
   plot2di->ncurves = 0;
   plot2di->ncurves_ini = 0;
-  plot2di->show = 0;
+  plot2di->show = 1;
   plot2di->show_plot_title = 0;
   plot2di->show_yaxis_labels = 1;
   plot2di->show_xaxis_labels = 1;
