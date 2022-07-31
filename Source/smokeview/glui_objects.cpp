@@ -25,6 +25,9 @@
 #define FUEL_HOC               32
 #define RESET_FUEL_HOC         33
 
+#define NEW_CURVE      0
+#define EXISTING_CURVE 1
+
 #define GENPLOT_ADD_PLOT            101
 #define GENPLOT_REM_PLOT            102
 #define GENPLOT_SHOW_PLOT           103
@@ -440,7 +443,7 @@ int InCSVPlot(plot2ddata *plot2di, char *c_type, int index){
 
 /* ------------------ AddCSVCurve ------------------------ */
 
-void AddCSVCurve(plot2ddata *plot2di, int index, int force){
+void AddCSVCurve(plot2ddata *plot2di, int index, int option){
   int have_plot, nplots;
   csvfiledata *csvfi;
   csvdata *csvi;
@@ -450,7 +453,7 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int force){
   c_type = csvfi->c_type;
 
   have_plot = 0;
-  if(force == 0)have_plot = InCSVPlot(plot2di, c_type, index);
+  if(option == NEW_CURVE)have_plot = InCSVPlot(plot2di, c_type, index);
   nplots = plot2di->ncurves;
   if(have_plot == 0 && nplots < PLOT2D_MAX_CURVES){
     char label[255];
@@ -461,15 +464,15 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int force){
     curve->vmin = csvi->valmin;
     curve->csv_col_index = index;
     curve->csv_file_index = glui_csv_file_index;
-    if(force==0){
-      curve->color[0]           = glui_curve.color[0];
-      curve->color[1]           = glui_curve.color[1];
-      curve->color[2]           = glui_curve.color[2];
-      curve->linewidth          = glui_curve.linewidth;
-      curve->curve_factor       = glui_curve.curve_factor;
-      curve->apply_curve_factor = glui_curve.apply_curve_factor;
-      curve->vals               = glui_curve.vals;
-      curve->update_avg         = glui_curve.update_avg;
+    if(option==NEW_CURVE){
+      curve->color[0]           = glui_curve_default.color[0];
+      curve->color[1]           = glui_curve_default.color[1];
+      curve->color[2]           = glui_curve_default.color[2];
+      curve->linewidth          = glui_curve_default.linewidth;
+      curve->curve_factor       = glui_curve_default.curve_factor;
+      curve->apply_curve_factor = glui_curve_default.apply_curve_factor;
+      curve->vals               = glui_curve_default.vals;
+      curve->update_avg         = glui_curve_default.update_avg;
     }
     strcpy(curve->c_type, c_type);
     plot2di->ncurves = nplots+1;
@@ -495,7 +498,7 @@ void MakeCurveList(plot2ddata *plot2di, int option){
     int curv_index;
 
     curv_index = plot2di->curve[i].csv_col_index_ini;
-    AddCSVCurve(plot2di, curv_index, 1);
+    AddCSVCurve(plot2di, curv_index, EXISTING_CURVE);
     GenPlotCB(GENPLOT_SELECT_CURVE);
   }
 }
@@ -927,7 +930,7 @@ void GenPlotCB(int var){
       PrintPlot2dInfo();
 #endif
       curve_id = LIST_csvID->get_int_val();
-      AddCSVCurve(glui_plot2dinfo, curve_id, 0);
+      AddCSVCurve(glui_plot2dinfo, curve_id, NEW_CURVE);
       Glui2Plot2D(iplot2dinfo);
       EnableDisablePlot2D();
 #ifdef pp_PLOT2D_DEBUG
