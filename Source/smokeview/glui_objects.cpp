@@ -1010,6 +1010,7 @@ void GenPlotCB(int var){
       curve = glui_plot2dinfo->curve+index;
       memcpy(curve, &glui_curve, sizeof(curvedata));
       Glui2Plot2D(iplot2dinfo);
+      DeviceCB(DEVICE_TIMEAVERAGE);
       break;
     case GENPLOT_PLOT_SIZE:
       if(plot2d_size_factor<0.0){
