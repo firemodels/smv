@@ -27,31 +27,37 @@
 
 #define GENPLOT_ADD_PLOT            101
 #define GENPLOT_REM_PLOT            102
-#define GENPLOT_REM_CURVE           103
-#define GENPLOT_REM_ALLCURVES       104
-#define GENPLOT_REM_SELECTEDCURVE   105
-#define GENPLOT_SELECT_CSV_FILE     106
-#define GENPLOT_SELECT_PLOT         107
-#define GENPLOT_SELECT_CURVE        108
-#define GENPLOT_SHOW_PLOT           109
-#define GENPLOT_XYZ                 110
-#define GENPLOT_PLOT_LABEL          111
-#define GENPLOT_SET_POS             112
-#define GENPLOT_CSV_TYPE            113
-#define GENPLOT_ADD_CURVE           114
-#define GENPLOT_PLOT_MINMAX         115
-#define GENPLOT_RESET_BOUNDS        116
-#define GENPLOT_CURVE_FACTOR        117
-#define GENPLOT_RESET_FUEL_HOC      118
-#define GENPLOT_RESET_FUEL_1P0      119
-#define GENPLOT_APPLY_CURVE_FACTOR  120
-#define GENPLOT_SAVE                121
-#define GENPLOT_CLOSE               122
-#define GENPLOT_PLOT_SIZE           123
+#define GENPLOT_SHOW_PLOT           103
+#define GENPLOT_SELECT_PLOT         104
 #ifdef pp_PLOT2D_DEV
-#define GENPLOT_ADD_DEV_PLOTS       124
-#define GENPLOT_SELECT_DEV_PLOTS    125
+#define GENPLOT_ADD_DEV_PLOTS       105
+#define GENPLOT_SELECT_DEV_PLOTS    106
 #endif
+
+#define GENPLOT_PLOT_SIZE           110
+#define GENPLOT_SET_PLOTPOS         111
+#define GENPLOT_PLOT_LABEL          112
+#define GENPLOT_PLOT_MINMAX         113
+#define GENPLOT_RESET_BOUNDS        114
+
+#define GENPLOT_SELECT_CSV_FILE     121
+#define GENPLOT_CSV_TYPE            122
+
+#define GENPLOT_ADD_CURVE           131
+#define GENPLOT_REM_CURVE           132
+#define GENPLOT_REM_ALLCURVES       133
+#define GENPLOT_REM_SELECTEDCURVE   134
+#define GENPLOT_SELECT_CURVE        135
+
+#define GENPLOT_APPLY_CURVE_FACTOR  141
+#define GENPLOT_CURVE_FACTOR        142
+
+#define GENPLOT_XYZ                 151
+#define GENPLOT_RESET_FUEL_HOC      152
+#define GENPLOT_RESET_FUEL_1P0      153
+
+#define GENPLOT_SAVE                161
+#define GENPLOT_CLOSE               162
 
 #define WINDROSE_SHOW_FIRST   996
 #define WINDROSE_SHOW_NEXT    997
@@ -1020,7 +1026,7 @@ void GenPlotCB(int var){
         LIST_plots->set_int_val(iplot2dinfo_save);
       }
       break;
-    case GENPLOT_SET_POS:
+    case GENPLOT_SET_PLOTPOS:
       if(glui_plot2dinfo->curve_index<ndeviceinfo){
         float *plot_xyz;
 
@@ -1505,7 +1511,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
     SPINNER_genplot_x = glui_plot2d->add_spinner_to_panel(PANEL_plot_position, "x", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+0, GENPLOT_XYZ, GenPlotCB);
     SPINNER_genplot_y = glui_plot2d->add_spinner_to_panel(PANEL_plot_position, "y", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+1, GENPLOT_XYZ, GenPlotCB);
     SPINNER_genplot_z = glui_plot2d->add_spinner_to_panel(PANEL_plot_position, "z", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+2, GENPLOT_XYZ, GenPlotCB);
-    BUTTON_plot_position = glui_plot2d->add_button_to_panel(PANEL_plot_position, _("Set to device location"), GENPLOT_SET_POS, GenPlotCB);
+    BUTTON_plot_position = glui_plot2d->add_button_to_panel(PANEL_plot_position, _("Set to device location"), GENPLOT_SET_PLOTPOS, GenPlotCB);
 
   //  glui_plot2d->add_column_to_panel(PANEL_genplot, false);
 
