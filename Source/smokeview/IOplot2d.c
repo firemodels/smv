@@ -93,7 +93,7 @@ int HaveGenHrr(void){
 #define AXIS_NONE  2
 void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_factor,
               float *x, float *z, int n, float x_cur, float z_cur, float zmin, float zmax,
-              int axis_side, int position, char *label, char *unit, float pad_length){
+              int axis_side, int position, char *label, char *unit){
   float xmin, xmax, dx, dz;
   float xscale = 1.0, zscale = 1.0;
   int i, ndigits = 3;
@@ -110,11 +110,11 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   plot_color         = curve->color;
   linewidth_arg      = curve->linewidth;
   title              = plot2di->plot_label;
-  show_plot_title    = plot2di->show_plot_title;
-  show_yaxis_labels   = plot2di->show_yaxis_labels;
-  show_xaxis_labels   = plot2di->show_xaxis_labels;
-  show_curve_labels  = plot2di->show_curve_labels;
-  show_curve_values  = plot2di->show_curve_values;
+  show_plot_title    = plot2d_show_plot_title;
+  show_yaxis_labels  = plot2d_show_yaxis_labels;
+  show_xaxis_labels  = plot2d_show_xaxis_labels;
+  show_curve_labels  = plot2d_show_curve_labels;
+  show_curve_values  = plot2d_show_curve_values;
   fplot_color[0]     = (float)plot_color[0] / 255.0;
   fplot_color[1]     = (float)plot_color[1] / 255.0;
   fplot_color[2]     = (float)plot_color[2] / 255.0;
@@ -240,14 +240,12 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
       Float2String(c_zmax, zmax,  ndigits, force_fixedpoint);
       if(show_curve_values==1)Float2String(c_zcur, z_cur, ndigits, force_fixedpoint);
       strcpy(label2, "");
-      if(show_curve_labels==1){
-        strcat(label2, label);
-        if(show_curve_values==1)strcat(label2, "/");
-      }
-      int pad_length_val;
       if(show_curve_values==1){
         strcat(label2, c_zcur);
-        pad_length_val = GetStringLength(label2);
+        if(show_curve_labels==1)strcat(label2, "/");
+      }
+      if(show_curve_labels==1){
+        strcat(label2, label);
       }
       if(axis_side==AXIS_LEFT){
         if(show_curve_labels==1||show_curve_values==1){
@@ -261,18 +259,12 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
       }
       else{
         if(show_curve_labels==1 || show_curve_values==1){
-          if(show_curve_values==1){
             Output3TextRight(fplot_color,      xmin - dx,
-                             0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2, pad_length_val);
-          }
-          else{
-            Output3TextRight(fplot_color,      xmin - dx,
-                             0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2, pad_length);
-          }
+                             0.0, zmax - (0.5 + plot2d_font_spacing * (float)position) * dfont, label2, GetStringLength(label2));
         }
         if(show_yaxis_labels==1){
-          Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmin,  c_zmin, pad_length);
-          Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax , c_zmax, pad_length);
+          Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmin,  c_zmin, GetStringLength(c_zmin));
+          Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax , c_zmax, GetStringLength(c_zmax));
         }
       }
       SNIFF_ERRORS("after DrawGenCurve 5");
@@ -282,7 +274,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
         Output3Text(foregroundcolor, xmax + 2.0 * dx, 0.0, zmax - (0.5 + plot2d_font_spacing*(float)(position + 1))*dfont, unit);
       }
       else{
-        Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing*(float)(position + 1))*dfont, unit, pad_length);
+        Output3TextRight(foregroundcolor, xmin - dx, 0.0, zmax - (0.5 + plot2d_font_spacing*(float)(position + 1))*dfont, unit, GetStringLength(unit));
       }
     }
   }
@@ -406,7 +398,6 @@ void DrawGenPlot(plot2ddata *plot2di){
   int left_position  = 0;
   int right_position = 0;
   int unit_left_index=0, unit_right_index=0;
-  float pad_length = 0.0;
 
   if(plot2di->bounds_defined==0)UpdateCurveBounds(plot2di, 0);
   for(i = 0; i<plot2di->ncurves; i++){
@@ -423,13 +414,11 @@ void DrawGenPlot(plot2ddata *plot2di){
     }
   }
   for(i = 0; i < plot2di->ncurves; i++){
-    char *unit, *label;
+    char *unit;
 
     unit  = GetPlotUnit(plot2di, i);
-    label = GetPlotShortLabel(plot2di, i);
     if(axis_right_unit != NULL && strcmp(axis_right_unit, unit) == 0){
       unit_right_index = i;
-      pad_length = MAX(pad_length, GetStringLength(label));
       continue;
     }
     if(axis_left_unit != NULL && strcmp(axis_left_unit, unit) == 0){
@@ -539,7 +528,7 @@ void DrawGenPlot(plot2ddata *plot2di){
     }
     DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, curve->vals, csvi->nvals,
                  highlight_time, highlight_val, valmin, valmax, side,
-                 position, shortlabel, unit_display, pad_length);
+                 position, shortlabel, unit_display);
   }
 }
 
@@ -686,11 +675,6 @@ void InitPlot2D(plot2ddata *plot2di, int plot_index){
   plot2di->ncurves = 0;
   plot2di->ncurves_ini = 0;
   plot2di->show = 1;
-  plot2di->show_plot_title = 0;
-  plot2di->show_yaxis_labels = 1;
-  plot2di->show_xaxis_labels = 1;
-  plot2di->show_curve_labels = 0;
-  plot2di->show_curve_values = 0;
   plot2di->xyz[0] = xbar0FDS;
   plot2di->xyz[1] = ybar0FDS;
   plot2di->xyz[2] = zbar0FDS;

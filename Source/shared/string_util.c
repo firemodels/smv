@@ -753,6 +753,16 @@ void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixe
   }
 }
 
+/* ------------------ IsZero ------------------------ */
+
+int IsZero(char *cnum){
+  int i;
+
+  for(i = 0; i<strlen(cnum); i++){
+    if(cnum[i]!='0'&&cnum[i]!='.')return 0;
+  }
+  return 1;
+}
 
 /* ------------------ Float2String ------------------------ */
 
@@ -765,11 +775,13 @@ void Float2String(char *c_val, float val, int ndigits, int fixedpoint_labels){
   if((exponent>=0&&exponent<5)||fixedpoint_labels==1||(ABS(val)<1000.0)){
     char c_abs_val[32];
 
-    val = SIGN(val)*mantissa*pow(10.0,exponent);
+    val = SIGN(val)*mantissa*pow(10.0, exponent);
     Truncate(ABS(val), c_abs_val, ndigits);
     TrimZeros(c_abs_val);
-    strcpy(c_val,"");
-    if(val<0.0)strcat(c_val,"-");
+    strcpy(c_val, "");
+    if(IsZero(c_abs_val)==0){
+      if(val<0.0)strcat(c_val, "-");
+    }
     strcat(c_val,c_abs_val);
   }
   else{

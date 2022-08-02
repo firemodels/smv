@@ -799,6 +799,12 @@ SVEXTERN int SVDECL(ideviceinfo, 0);
 #endif
 
 // gen plot varables
+SVEXTERN int SVDECL(plot2d_show_plot_title,   0);
+SVEXTERN int SVDECL(plot2d_show_yaxis_labels, 1);
+SVEXTERN int SVDECL(plot2d_show_xaxis_labels, 1);
+SVEXTERN int SVDECL(plot2d_show_curve_labels, 1);
+SVEXTERN int SVDECL(plot2d_show_curve_values, 0);
+
 SVEXTERN int SVDECL(glui_remove_selected_curve, 0);
 SVEXTERN int SVDECL(glui_csv_file_index, 0);
 SVEXTERN int SVDECL(icsv_cols, 0), SVDECL(icsv_units, 0);
