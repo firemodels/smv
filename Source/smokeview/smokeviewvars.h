@@ -798,7 +798,7 @@ SVEXTERN int SVDECL(ndevicetypes,0);
 SVEXTERN int SVDECL(ideviceinfo, 0);
 #endif
 
-// gen plot varables
+// gen plot variables
 SVEXTERN int SVDECL(plot2d_show_plot_title,   0);
 SVEXTERN int SVDECL(plot2d_show_yaxis_labels, 1);
 SVEXTERN int SVDECL(plot2d_show_xaxis_labels, 1);
