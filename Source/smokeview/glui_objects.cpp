@@ -465,8 +465,8 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int option){
     curve->vmax = csvi->valmax;
     curve->vmin = csvi->valmin;
     curve->csv_col_index = index;
-    curve->csv_file_index = glui_csv_file_index;
     if(option==NEW_CURVE){
+      curve->csv_file_index     = glui_csv_file_index;
       curve->color[0]           = glui_curve_default.color[0];
       curve->color[1]           = glui_curve_default.color[1];
       curve->color[2]           = glui_curve_default.color[2];
@@ -475,6 +475,11 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int option){
       curve->apply_curve_factor = glui_curve_default.apply_curve_factor;
       curve->vals               = glui_curve_default.vals;
       curve->update_avg         = glui_curve_default.update_avg;
+    }
+    else{
+      csvfi  = csvfileinfo+curve->csv_file_index;
+      c_type = curve->c_type;
+      csvi   = csvfi->csvinfo+curve->csv_col_index;
     }
     strcpy(curve->c_type, c_type);
     plot2di->ncurves = nplots+1;
@@ -1041,12 +1046,15 @@ void GenPlotCB(int var){
       break;
     case GENPLOT_SELECT_PLOT:
       if(iplot2dinfo >= 0&&iplot2dinfo<nplot2dinfo){
+        plot2ddata *plot2di;
+
+        plot2di = plot2dinfo+iplot2dinfo;
         Plot2D2Glui(iplot2dinfo);
         strcpy(label, "Remove plot: ");
-        strcat(label, plot2dinfo[iplot2dinfo].plot_label);
+        strcat(label, plot2di->plot_label);
         BUTTON_rem_plot->set_name(label);
         strcpy(label, "curve properties(");
-        strcat(label, plot2dinfo[iplot2dinfo].plot_label);
+        strcat(label, plot2di->plot_label);
         strcat(label, ")");
         PANEL_curve_properties->set_name(label);
         csvfiledata *csvfi;
@@ -1054,7 +1062,7 @@ void GenPlotCB(int var){
         strcpy(label, "add");
         if(plot2dinfo != NULL){
           strcat(label, " curves to ");
-          strcat(label, plot2dinfo[iplot2dinfo].plot_label);
+          strcat(label, plot2di->plot_label);
         }
         else{
           strcat(label, " curves");
