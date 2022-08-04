@@ -915,14 +915,14 @@ void GenPlotCB(int var){
     int curve_id;
 
     case GENPLOT_RESET_BOUNDS:
-      plot2ddata *plot2di;
+      plot2ddata *plot2dii;
       int i;
 
-      plot2di = plot2dinfo + iplot2dinfo;
-      GetPlot2DBounds(plot2di, plot2di->valmin, plot2di->valmax);
+      plot2dii = plot2dinfo + iplot2dinfo;
+      GetPlot2DBounds(plot2dii, plot2dii->valmin, plot2dii->valmax);
       for(i=0;i<2;i++){
-        SPINNER_genplot_valmin[i]->set_float_val(plot2di->valmin[i]);
-        SPINNER_genplot_valmax[i]->set_float_val(plot2di->valmax[i]);
+        SPINNER_genplot_valmin[i]->set_float_val(plot2dii->valmin[i]);
+        SPINNER_genplot_valmax[i]->set_float_val(plot2dii->valmax[i]);
       }
       break;
     case GENPLOT_PLOT_MINMAX:
