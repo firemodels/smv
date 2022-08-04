@@ -689,6 +689,28 @@ void InitPlot2D(plot2ddata *plot2di, int plot_index){
   plot2di->plot_index = plot_index;
   sprintf(plot2di->plot_label, "plot %i", plot_index);
   plot2di->curve_index = 0;
+
+  float zmax;
+  int first;
+  int i;
+
+  first = 1;
+  for(i = 0; i<nplot2dinfo; i++){
+    plot2ddata *plot2di;
+
+    plot2di = plot2dinfo+i;
+    if(plot2di->plot_index==plot_index)continue;
+    if(first==1){
+      first = 0;
+      zmax = plot2di->xyz[2];
+    }
+    else{
+      zmax = MAX(zmax, plot2di->xyz[2]);
+    }
+  }
+  if(first==0&&nplot2dinfo>1){
+    plot2di->xyz[2] = zmax+1.3*SCALE2FDS(plot2d_size_factor);
+  }
   UpdateCurveBounds(plot2di, 1);
   }
 
