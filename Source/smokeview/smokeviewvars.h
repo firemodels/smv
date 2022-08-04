@@ -799,6 +799,8 @@ SVEXTERN int SVDECL(ideviceinfo, 0);
 #endif
 
 // gen plot variables
+SVEXTERN float SVDECL(plot2d_zstart, 0.0);
+SVEXTERN float SVDECL(plot2d_zend, 0.0);
 SVEXTERN int SVDECL(plot2d_show_plot_title,   0);
 SVEXTERN int SVDECL(plot2d_show_yaxis_labels, 1);
 SVEXTERN int SVDECL(plot2d_show_xaxis_labels, 1);
