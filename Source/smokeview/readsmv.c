@@ -11631,6 +11631,7 @@ int ReadIni2(char *inifile, int localfile){
           plot2di->curve[j].csv_file_index = file_index;
           plot2di->curve[j].csv_col_index  = col_index;
           curve                            = plot2di->curve+j;
+          strcpy(curve->c_type, csvfileinfo[file_index].c_type);
           curve->color[0]                  = color[0];
           curve->color[1]                  = color[1];
           curve->color[2]                  = color[2];
