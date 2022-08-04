@@ -696,16 +696,16 @@ void InitPlot2D(plot2ddata *plot2di, int plot_index){
 
   first = 1;
   for(i = 0; i<nplot2dinfo; i++){
-    plot2ddata *plot2di;
+    plot2ddata *plot2dii;
 
-    plot2di = plot2dinfo+i;
-    if(plot2di->plot_index==plot_index)continue;
+    plot2dii = plot2dinfo+i;
+    if(plot2dii->plot_index==plot_index)continue;
     if(first==1){
       first = 0;
-      zmax = plot2di->xyz[2];
+      zmax = plot2dii->xyz[2];
     }
     else{
-      zmax = MAX(zmax, plot2di->xyz[2]);
+      zmax = MAX(zmax, plot2dii->xyz[2]);
     }
   }
   if(first==0&&nplot2dinfo>1){
