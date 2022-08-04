@@ -167,8 +167,8 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   }
   else{
     for(i = 0; i < n - 1; i++){
-      glVertex3f(x[i],     0.0, z[i]);
-      glVertex3f(x[i + 1], 0.0, z[i + 1]);
+      glVertex3f(x[i],     0.0, CLAMP(z[i],     zmin, zmax));
+      glVertex3f(x[i + 1], 0.0, CLAMP(z[i + 1], zmin, zmax));
     }
   }
   glEnd();
@@ -210,7 +210,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
     glVertex3f(x_cur, 0.0, CLAMP(z_cur, zmin/curve_factor, zmax/curve_factor));
   }
   else{
-    glVertex3f(x_cur, 0.0, z_cur);
+    glVertex3f(x_cur, 0.0, CLAMP(z_cur, zmin, zmax));
   }
   glEnd();
   if(apply_curve_factor==1)glPopMatrix();
@@ -689,6 +689,28 @@ void InitPlot2D(plot2ddata *plot2di, int plot_index){
   plot2di->plot_index = plot_index;
   sprintf(plot2di->plot_label, "plot %i", plot_index);
   plot2di->curve_index = 0;
+
+  float zmax;
+  int first;
+  int i;
+
+  first = 1;
+  for(i = 0; i<nplot2dinfo; i++){
+    plot2ddata *plot2di;
+
+    plot2di = plot2dinfo+i;
+    if(plot2di->plot_index==plot_index)continue;
+    if(first==1){
+      first = 0;
+      zmax = plot2di->xyz[2];
+    }
+    else{
+      zmax = MAX(zmax, plot2di->xyz[2]);
+    }
+  }
+  if(first==0&&nplot2dinfo>1){
+    plot2di->xyz[2] = zmax+1.3*SCALE2FDS(plot2d_size_factor);
+  }
   UpdateCurveBounds(plot2di, 1);
   }
 
