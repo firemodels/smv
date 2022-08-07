@@ -1576,7 +1576,6 @@ extern "C" void GluiPlot2DSetup(int main_window){
       }
       for(i = 0; i<ndeviceinfo; i++){
         devicedata *devi;
-        int j;
 
         devi = deviceinfo+i;
         devi->inlist = 1-InDevList(devi, i);
