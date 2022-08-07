@@ -11600,7 +11600,6 @@ int ReadIni2(char *inifile, int localfile){
 
         plot2di = plot2dini + i;
         plot2di->plot_index = i;
-        plot2d_count++;
         fgets(buffer, 255, stream);
         TrimBack(buffer);
         labelptr = TrimFront(buffer);

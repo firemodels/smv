@@ -1011,6 +1011,7 @@ typedef struct _curvedata{
 // when updating curve variables look for occurrences of color in glui_objects.cpp and in
 // UpdateCurveBounds in IOplot2d.c
   char c_type[64];
+  char *quantity;
   int csv_file_index, csv_col_index, csv_col_index_ini, color[3];
   int apply_curve_factor;
   float curve_factor;
