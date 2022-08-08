@@ -1023,6 +1023,7 @@ void GenPlotCB(int var){
       break;
     case GENPLOT_PLOT_MINMAX:
       Glui2Plot2D(iplot2dinfo);
+      DeviceCB(DEVICE_TIMEAVERAGE);
       break;
     case GENPLOT_ADD_CURVE:
 #ifdef pp_PLOT2D_DEBUG
