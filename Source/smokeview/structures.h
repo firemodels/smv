@@ -995,6 +995,16 @@ typedef struct _device {
   int valid;
 } devicedata;
 
+
+/* --------------------------  devicelistdata ------------------------------------ */
+#ifdef pp_PLOT2D_DEV
+typedef struct _devicelistdata {
+  int loaded, show;
+  devicedata *deviceinfo;
+  char *quantity;
+} devicelistdata;
+#endif
+
 /* --------------------------  hrrdata ------------------------------------ */
 
 typedef struct _hrrdata {

@@ -795,7 +795,9 @@ SVEXTERN float SVDECL(device_valmin,0.0), SVDECL(device_valmax,1.0);
 SVEXTERN devicedata SVDECL(**devicetypes,NULL);
 SVEXTERN int SVDECL(ndevicetypes,0);
 #ifdef pp_PLOT2D_DEV
-SVEXTERN int SVDECL(ideviceinfo, 0);
+SVEXTERN int SVDECL(idevice_add, 0);
+SVEXTERN int SVDECL(idevice_show, 0);
+SVEXTERN int SVDECL(idevice_rem, 0);
 #endif
 
 // gen plot variables
@@ -1561,6 +1563,9 @@ SVEXTERN int SVDECL(devicetypes_index,0);
 
 SVEXTERN float SVDECL(plot2d_hrr_min,0.0), SVDECL(plot2d_hrr_max,1.0);
 SVEXTERN devicedata SVDECL(*deviceinfo,NULL);
+#ifdef pp_PLOT2D_DEV
+SVEXTERN devicelistdata SVDECL(*devicelistinfo, NULL);
+#endif
 SVEXTERN vdevicedata SVDECL(*vdeviceinfo, NULL);
 SVEXTERN vdevicesortdata SVDECL(*vdevices_sorted, NULL);
 
