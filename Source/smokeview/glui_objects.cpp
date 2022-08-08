@@ -1132,6 +1132,7 @@ void GenPlotCB(int var){
         LIST_plots->set_int_val(-1);
         LIST_plots->set_int_val(iplot2dinfo_save);
       }
+      DeviceCB(DEVICE_TIMEAVERAGE);
       break;
     case GENPLOT_SET_PLOTPOS:
       if(glui_plot2dinfo->curve_index<ndeviceinfo){
@@ -1338,6 +1339,7 @@ void GenPlotCB(int var){
       curve = glui_plot2dinfo->curve+index;
       memcpy(curve, &glui_curve, sizeof(curvedata));
       Glui2Plot2D(iplot2dinfo);
+      DeviceCB(DEVICE_TIMEAVERAGE);
       break;
     case GENPLOT_SAVE:
       WriteIni(LOCAL_INI, NULL);
