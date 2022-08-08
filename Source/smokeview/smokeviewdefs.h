@@ -52,8 +52,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define DEVICE_PLOT_SHOW_SELECTED 1
 #define DEVICE_PLOT_SHOW_ALL      2
 #define DEVICE_PLOT_SHOW_TREE_ALL 3
-#define PLOT_ONLY_DATA 0
-#define PLOT_ALL       1
+#define PLOT_ONLY_DATA  0
+#define PLOT_ALL        1
+#define PLOT_ONLY_FRAME 2
 
 
 #define    ALL_FILES 0

@@ -8785,6 +8785,9 @@ int ReadSMV(bufferstreamdata *stream){
 
   if(ndeviceinfo>0){
     if(NewMemory((void **)&deviceinfo,ndeviceinfo*sizeof(devicedata))==0)return 2;
+#ifdef pp_PLOT2D_DEV
+    if(NewMemory((void **)&devicelistinfo, ndeviceinfo*sizeof(devicelistdata))==0)return 2;
+#endif
     devicecopy=deviceinfo;;
   }
   ndeviceinfo=0;
@@ -11600,7 +11603,6 @@ int ReadIni2(char *inifile, int localfile){
 
         plot2di = plot2dini + i;
         plot2di->plot_index = i;
-        plot2d_count++;
         fgets(buffer, 255, stream);
         TrimBack(buffer);
         labelptr = TrimFront(buffer);
