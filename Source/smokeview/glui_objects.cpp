@@ -160,7 +160,6 @@ GLUI_Panel *PANEL_bound1 = NULL;
 GLUI_Panel *PANEL_bound2 = NULL;
 GLUI_Panel *PANEL_csv = NULL;
 GLUI_Panel *PANEL_curve_color = NULL;
-GLUI_Panel *PANEL_curve_bounds = NULL;
 GLUI_Panel *PANEL_curve_usermin = NULL;
 GLUI_Panel *PANEL_curve_usermax = NULL;
 GLUI_Panel *PANEL_modify_curve = NULL;
@@ -234,9 +233,6 @@ GLUI_Spinner *SPINNER_scale_increment_windrose = NULL;
 GLUI_Spinner *SPINNER_scale_max_windrose = NULL;
 GLUI_Spinner *SPINNER_windrose_first=NULL;
 GLUI_Spinner *SPINNER_windrose_next=NULL;
-
-GLUI_StaticText *STATIC_curv_min = NULL;
-GLUI_StaticText *STATIC_curv_max = NULL;
 
 #define OBJECTS_ROLLOUT     0
 #define FLOWVECTORS_ROLLOUT 1
@@ -653,26 +649,6 @@ void UpdateCurveControls(char *unit){
   SPINNER_genplot_linewidth->set_float_val(glui_curve.linewidth);
   SPINNER_curve_factor->set_float_val(glui_curve.curve_factor);
   CHECKBOX_curve_apply_factor->set_int_val(glui_curve.apply_curve_factor);
-
-  char label[100], cval[100];
-  int ndigits = 6;
-  strcpy(label, "min: ");
-  Float2String(cval, glui_curve.vmin, ndigits, force_fixedpoint);
-  strcat(label, cval);
-  if(unit != NULL){
-    strcat(label, " ");
-    strcat(label, unit);
-    }
-  STATIC_curv_min->set_name(label);
-
-  strcpy(label, "max: ");
-  Float2String(cval, glui_curve.vmax, ndigits, force_fixedpoint);
-  strcat(label, cval);
-  if(unit != NULL){
-    strcat(label, " ");
-    strcat(label, unit);
-  }
-  STATIC_curv_max->set_name(label);
 }
 
 /* ------------------ EnableDisablePlot2D ------------------------ */
@@ -1766,10 +1742,6 @@ extern "C" void GluiPlot2DSetup(int main_window){
 
     SPINNER_genplot_linewidth = glui_plot2d->add_spinner_to_panel(PANEL_curve_properties, "line width", GLUI_SPINNER_FLOAT, &(glui_curve.linewidth), GENPLOT_XYZ, GenPlotCB);
     SPINNER_genplot_linewidth->set_float_limits(1.0, 10.0);
-
-    PANEL_curve_bounds = glui_plot2d->add_panel_to_panel(PANEL_curve_properties, "", 0);
-    STATIC_curv_max = glui_plot2d->add_statictext_to_panel(PANEL_curve_bounds, "max: 0.0");
-    STATIC_curv_min = glui_plot2d->add_statictext_to_panel(PANEL_curve_bounds, "min: 0.0");
 
     PANEL_plot_bounds = glui_plot2d->add_panel("plot bounds");
     PANEL_plot_bounds2 = glui_plot2d->add_panel_to_panel(PANEL_plot_bounds, "", 0);
