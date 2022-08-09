@@ -148,7 +148,7 @@ GLUI_Listbox *LIST_plot_rem_dev = NULL;
 
 GLUI_Panel *PANEL_allplotproperties = NULL;
 GLUI_Panel *PANEL_plotproperties = NULL;
-GLUI_Panel *PANEL_zdist = NULL;
+GLUI_Panel *PANEL_positions = NULL;
 GLUI_Panel *PANEL_plottitle = NULL;
 GLUI_Panel *PANEL_plotother = NULL;
 GLUI_Panel *PANEL_newplot = NULL;
@@ -1148,21 +1148,26 @@ void GenPlotCB(int var){
       break;
     case GENPLOT_DIST_ZPOS:
       if(nplot2dinfo==1){
-        plot2dinfo[0].xyz[2] = plot2d_zstart;
+        memcpy(plot2dinfo[0].xyz, plot2d_xyzstart, 3*sizeof(float));
       }
       else{
         for(i = 0; i<nplot2dinfo; i++){
           plot2ddata *plot2di;
-          float dz, zval;
+          float dxyz[3], xyzval[3];
+          int j;
 
-          dz = (plot2d_zend-plot2d_zstart)/(float)(nplot2dinfo-1);
           plot2di = plot2dinfo+i;
-          zval = plot2d_zstart+(float)i*dz;
-          if(i==nplot2dinfo-1)zval = plot2d_zend;
-          plot2di->xyz[2] = zval;
+          for(j=0;j<3;j++){
+
+            dxyz[j] = (plot2d_xyzend[j]-plot2d_xyzstart[j])/(float)(nplot2dinfo-1);
+            xyzval[j] = plot2d_xyzstart[j]+(float)i*dxyz[j];
+          }
+          memcpy(plot2di->xyz, xyzval, 3*sizeof(float));
           if(plot2di->plot_index==glui_plot2dinfo->plot_index){
-            glui_plot2dinfo->xyz[2] = zval;
-            SPINNER_genplot_z->set_float_val(zval);
+            memcpy(glui_plot2dinfo->xyz, xyzval, 3*sizeof(float));
+            SPINNER_genplot_x->set_float_val(xyzval[0]);
+            SPINNER_genplot_y->set_float_val(xyzval[1]);
+            SPINNER_genplot_z->set_float_val(xyzval[2]);
           }
         }
       }
@@ -1686,15 +1691,20 @@ extern "C" void GluiPlot2DSetup(int main_window){
     SPINNER_genplot_y = glui_plot2d->add_spinner_to_panel(PANEL_plot_position, "y", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+1, GENPLOT_XYZ, GenPlotCB);
     SPINNER_genplot_z = glui_plot2d->add_spinner_to_panel(PANEL_plot_position, "z", GLUI_SPINNER_FLOAT, glui_plot2dinfo->xyz+2, GENPLOT_XYZ, GenPlotCB);
    // BUTTON_plot_position = glui_plot2d->add_button_to_panel(PANEL_plot_position, _("Set to device location"), GENPLOT_SET_PLOTPOS, GenPlotCB);
-    PANEL_zdist = glui_plot2d->add_panel_to_panel(PANEL_plot_position, "distribute z's");
-    glui_plot2d->add_spinner_to_panel(PANEL_zdist, "max", GLUI_SPINNER_FLOAT, &plot2d_zend);
-    glui_plot2d->add_spinner_to_panel(PANEL_zdist, "min", GLUI_SPINNER_FLOAT, &plot2d_zstart);
-    glui_plot2d->add_button_to_panel(PANEL_zdist, _("Apply"), GENPLOT_DIST_ZPOS, GenPlotCB);
-
-    PANEL_plottitle = glui_plot2d->add_panel_to_panel(PANEL_plotproperties, "title");
-    CHECKBOX_show_plot_title = glui_plot2d->add_checkbox_to_panel(PANEL_plottitle,   "show",         &plot2d_show_plot_title, GENPLOT_PLOT_LABEL, GenPlotCB);
-    EDIT_plot_label = glui_plot2d->add_edittext_to_panel(PANEL_plottitle, "edit:", GLUI_EDITTEXT_TEXT, glui_plot2dinfo->plot_label, GENPLOT_PLOT_LABEL, GenPlotCB);
-    glui_plot2d->add_button_to_panel(PANEL_plottitle, _("Apply"), GENPLOT_PLOT_LABEL, GenPlotCB);
+    plot2d_xyzstart[0] = xbar0FDS;
+    plot2d_xyzend[0]   = xbar0FDS;
+    plot2d_xyzstart[1] = ybar0FDS;
+    plot2d_xyzend[1]   = ybar0FDS;
+    plot2d_xyzstart[2] = zbar0FDS;
+    plot2d_xyzend[2]   = zbarFDS-1.3*SCALE2FDS(plot2d_size_factor);
+    PANEL_positions = glui_plot2d->add_panel_to_panel(PANEL_plot_position, "distribute positions");
+    glui_plot2d->add_spinner_to_panel(PANEL_positions, "x max", GLUI_SPINNER_FLOAT, plot2d_xyzend);
+    glui_plot2d->add_spinner_to_panel(PANEL_positions, "x min", GLUI_SPINNER_FLOAT, plot2d_xyzstart);
+    glui_plot2d->add_spinner_to_panel(PANEL_positions, "y max", GLUI_SPINNER_FLOAT, plot2d_xyzend+1);
+    glui_plot2d->add_spinner_to_panel(PANEL_positions, "y min", GLUI_SPINNER_FLOAT, plot2d_xyzstart+1);
+    glui_plot2d->add_spinner_to_panel(PANEL_positions, "z max", GLUI_SPINNER_FLOAT, plot2d_xyzend+2);
+    glui_plot2d->add_spinner_to_panel(PANEL_positions, "z min", GLUI_SPINNER_FLOAT, plot2d_xyzstart+2);
+    glui_plot2d->add_button_to_panel(PANEL_positions, _("Apply"), GENPLOT_DIST_ZPOS, GenPlotCB);
 
   //  glui_plot2d->add_column_to_panel(PANEL_genplot, false);
 
@@ -1714,6 +1724,11 @@ extern "C" void GluiPlot2DSetup(int main_window){
     SPINNER_size_factor = glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("size factor"), GLUI_SPINNER_FLOAT, &plot2d_size_factor, GENPLOT_PLOT_SIZE, GenPlotCB);
     glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("font spacing"), GLUI_SPINNER_FLOAT, &plot2d_font_spacing);
     SPINNER_plot2d_time_average = glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("smoothing interval (s)"), GLUI_SPINNER_FLOAT, &plot2d_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
+
+    PANEL_plottitle = glui_plot2d->add_panel_to_panel(PANEL_plotproperties, "title");
+    CHECKBOX_show_plot_title = glui_plot2d->add_checkbox_to_panel(PANEL_plottitle,   "show",         &plot2d_show_plot_title, GENPLOT_PLOT_LABEL, GenPlotCB);
+    EDIT_plot_label = glui_plot2d->add_edittext_to_panel(PANEL_plottitle, "edit:", GLUI_EDITTEXT_TEXT, glui_plot2dinfo->plot_label, GENPLOT_PLOT_LABEL, GenPlotCB);
+    glui_plot2d->add_button_to_panel(PANEL_plottitle, _("Apply"), GENPLOT_PLOT_LABEL, GenPlotCB);
 
     if(nplot2dinfo==0){
       if(PANEL_add_curve!=NULL)PANEL_add_curve->disable();
