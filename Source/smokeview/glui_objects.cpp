@@ -554,6 +554,29 @@ void Plot2D2Glui(int index){
   UpdateCurveControls(NULL);
 }
 
+/* ------------------ GetPlotLabel ------------------------ */
+
+void GetPlotLabel(char *label){
+  int index, i;
+
+  for(index = 1;; index++){
+    int skip;
+
+    sprintf(label, "plot %i", index);
+    skip = 0;
+    for(i = 0; i<nplot2dinfo-1; i++){
+      plot2ddata *plot2di;
+
+      plot2di = plot2dinfo+i;
+      if(strcmp(plot2di->plot_label, label)==0){
+        skip = 1;
+        break;
+      }
+    }
+    if(skip==0)return;
+  }
+}
+
 /* ------------------ AddPlot ------------------------ */
 
 extern "C" void AddPlot(void){
@@ -569,7 +592,7 @@ extern "C" void AddPlot(void){
   iplot2dinfo = nplot2dinfo - 1;
   InitPlot2D(plot2dinfo + iplot2dinfo, nplot2dinfo);
   Plot2D2Glui(iplot2dinfo);
-  sprintf(label, "plot %i", iplot2dinfo+1);
+  GetPlotLabel(label);
   strcpy(plot2dinfo[iplot2dinfo].plot_label, label);
   LIST_plots->add_item(iplot2dinfo, label);
   LIST_plots->set_int_val(iplot2dinfo);
@@ -1312,6 +1335,7 @@ void GenPlotCB(int var){
       BUTTON_rem_plot->set_name(label);
       EnableDisablePlot2D();
       GenPlotCB(GENPLOT_SELECT_PLOT);
+      ForceIdle();
       break;
     case GENPLOT_RESET_FUEL_1P0:
       SPINNER_curve_factor->set_float_val(1.0);
