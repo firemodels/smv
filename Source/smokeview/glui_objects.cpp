@@ -1611,7 +1611,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
 #ifdef pp_PLOT2D_DEV
     if(ndeviceinfo>0){
       InitDevList();
-      PANEL_devplots = glui_plot2d->add_panel_to_panel(PANEL_plots, "Multiple devc plots");
+      PANEL_devplots = glui_plot2d->add_panel_to_panel(PANEL_plots, "Multiple devc plots (experimental)");
       for(i = 0; i<ndeviceinfo; i++){
         devicedata *devi;
 
