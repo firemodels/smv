@@ -796,7 +796,6 @@ SVEXTERN devicedata SVDECL(**devicetypes,NULL);
 SVEXTERN int SVDECL(ndevicetypes,0);
 #ifdef pp_PLOT2D_DEV
 SVEXTERN int SVDECL(idevice_add, 0);
-SVEXTERN int SVDECL(idevice_show, 0);
 SVEXTERN int SVDECL(idevice_rem, 0);
 #endif
 
