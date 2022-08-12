@@ -925,22 +925,6 @@ int HaveDevcPlot(char *quant){
   return 0;
 }
 
-/* ------------------ InitDevList ------------------------ */
-
-void InitDevList(void){
-  int i;
-
-  for(i=0;i<ndeviceinfo;i++){
-    devicelistdata *devli;
-
-    devli             = devicelistinfo + i;
-    devli->loaded     = 0;
-    devli->show       = 0;
-    devli->deviceinfo = NULL;
-    devli->quantity   = NULL;
-  }
-}
-
 /* ------------------ UpdatePlotDevList ------------------------ */
 
 void UpdatePlotDevList(void){
@@ -1610,7 +1594,6 @@ extern "C" void GluiPlot2DSetup(int main_window){
 
 #ifdef pp_PLOT2D_DEV
     if(ndeviceinfo>0){
-      InitDevList();
       PANEL_devplots = glui_plot2d->add_panel_to_panel(PANEL_plots, "Multiple devc plots (experimental)");
       for(i = 0; i<ndeviceinfo; i++){
         devicedata *devi;

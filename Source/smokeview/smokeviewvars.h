@@ -1561,9 +1561,6 @@ SVEXTERN int SVDECL(devicetypes_index,0);
 
 SVEXTERN float SVDECL(plot2d_hrr_min,0.0), SVDECL(plot2d_hrr_max,1.0);
 SVEXTERN devicedata SVDECL(*deviceinfo,NULL);
-#ifdef pp_PLOT2D_DEV
-SVEXTERN devicelistdata SVDECL(*devicelistinfo, NULL);
-#endif
 SVEXTERN vdevicedata SVDECL(*vdeviceinfo, NULL);
 SVEXTERN vdevicesortdata SVDECL(*vdevices_sorted, NULL);
 
