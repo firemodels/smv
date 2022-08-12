@@ -8785,9 +8785,6 @@ int ReadSMV(bufferstreamdata *stream){
 
   if(ndeviceinfo>0){
     if(NewMemory((void **)&deviceinfo,ndeviceinfo*sizeof(devicedata))==0)return 2;
-#ifdef pp_PLOT2D_DEV
-    if(NewMemory((void **)&devicelistinfo, ndeviceinfo*sizeof(devicelistdata))==0)return 2;
-#endif
     devicecopy=deviceinfo;;
   }
   ndeviceinfo=0;
