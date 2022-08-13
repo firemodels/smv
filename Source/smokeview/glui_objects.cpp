@@ -1567,6 +1567,20 @@ float GetDeviceTminTmax(void){
   return return_val;
 }
 
+/* ------------------ HaveExt ------------------------ */
+
+int HaveExt(void){
+  int i;
+
+  for(i = 0; i<ncsvfileinfo; i++){
+    csvfiledata *csvfi;
+
+    csvfi = csvfileinfo+i;
+    if(strcmp(csvfi->c_type, "ext")==0)return 1;
+  }
+  return 0;
+}
+
 /* ------------------ GluiPlot2DSetup ------------------------ */
 
 extern "C" void GluiPlot2DSetup(int main_window){
@@ -1574,12 +1588,17 @@ extern "C" void GluiPlot2DSetup(int main_window){
     glui_plot2d->close();
     glui_plot2d = NULL;
   }
-  glui_plot2d = GLUI_Master.create_glui("2D plots", 0, 0, 0);
-  glui_plot2d->hide();
 
-
+#ifdef pp_PLOT2D_EXT
   if(ncsvfileinfo>0){
+#else
+  have_ext = HaveExt();
+  if((ncsvfileinfo>0&&have_ext==0)||(ncsvfileinfo>1&&have_ext==1)){
+#endif
     int i;
+
+    glui_plot2d = GLUI_Master.create_glui("2D plots", 0, 0, 0);
+    glui_plot2d->hide();
 
     PANEL_genplot = glui_plot2d->add_panel("", 0);
     PANEL_newplot = glui_plot2d->add_panel_to_panel(PANEL_genplot,"", 0);
@@ -1622,7 +1641,11 @@ extern "C" void GluiPlot2DSetup(int main_window){
       csvfiledata *csvfi;
 
       csvfi = csvfileinfo+i;
+#ifdef pp_PLOT2D_EXT
       LIST_csvfile->add_item(i, csvfi->c_type);
+#else
+      if(strcmp(csvfi->c_type, "ext")!=0)LIST_csvfile->add_item(i, csvfi->c_type);
+#endif
     }
     LIST_csvID = glui_plot2d->add_listbox_to_panel(PANEL_add_curve, "curves:", &icsv_cols, GENPLOT_ADD_CURVE, GenPlotCB);
     LIST_csvunits = glui_plot2d->add_listbox_to_panel(PANEL_add_curve, "show", &icsv_units, GENPLOT_CSV_TYPE, GenPlotCB);
@@ -1749,18 +1772,18 @@ extern "C" void GluiPlot2DSetup(int main_window){
     GenPlotCB(GENPLOT_SHOW_PLOT);
     plot2d_dialogs_defined = 1;
     EnableDisablePlot2D();
-  }
 
-  PANEL_plot2d_label3 = glui_plot2d->add_panel("",false);
-  glui_plot2d->add_column_to_panel(PANEL_plot2d_label3,false);
+    PANEL_plot2d_label3 = glui_plot2d->add_panel("", false);
+    glui_plot2d->add_column_to_panel(PANEL_plot2d_label3, false);
 
-  glui_plot2d->add_button_to_panel(PANEL_plot2d_label3,_("Save settings"),GENPLOT_SAVE,GenPlotCB);
-  glui_plot2d->add_column_to_panel(PANEL_plot2d_label3,false);
+    glui_plot2d->add_button_to_panel(PANEL_plot2d_label3, _("Save settings"), GENPLOT_SAVE, GenPlotCB);
+    glui_plot2d->add_column_to_panel(PANEL_plot2d_label3, false);
 
-  BUTTON_plot2d_2 = glui_plot2d->add_button_to_panel(PANEL_plot2d_label3,_("Close"),GENPLOT_CLOSE,GenPlotCB);
+    BUTTON_plot2d_2 = glui_plot2d->add_button_to_panel(PANEL_plot2d_label3, _("Close"), GENPLOT_CLOSE, GenPlotCB);
 #ifdef pp_CLOSEOFF
-  BUTTON_plot2d_2->disable();
+    BUTTON_plot2d_2->disable();
 #endif
+  }
 }
 
 /* ------------------ GluiDeviceSetup ------------------------ */

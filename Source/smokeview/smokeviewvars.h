@@ -1564,6 +1564,7 @@ SVEXTERN devicedata SVDECL(*deviceinfo,NULL);
 SVEXTERN vdevicedata SVDECL(*vdeviceinfo, NULL);
 SVEXTERN vdevicesortdata SVDECL(*vdevices_sorted, NULL);
 
+SVEXTERN int SVDECL(have_ext, 0);
 SVEXTERN int SVDECL(ntreedeviceinfo, 0), SVDECL(mintreesize, 3);
 SVEXTERN int SVDECL(nzwindtreeinfo, 0);
 SVEXTERN treedevicedata SVDECL(*treedeviceinfo,NULL);
