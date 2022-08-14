@@ -131,7 +131,6 @@ GLUI_Listbox *LIST_plot_add_dev = NULL;
 
 GLUI_Panel *PANEL_allplotproperties = NULL;
 GLUI_Panel *PANEL_plotproperties = NULL;
-GLUI_Panel *PANEL_positions = NULL;
 GLUI_Panel *PANEL_plottitle = NULL;
 GLUI_Panel *PANEL_plotother = NULL;
 GLUI_Panel *PANEL_newplot = NULL;
@@ -152,9 +151,6 @@ GLUI_Panel *PANEL_plot1 = NULL;
 GLUI_Panel *PANEL_curve_properties = NULL;
 GLUI_Panel *PANEL_add_curve = NULL;
 GLUI_Panel *PANEL_plots = NULL;
-#ifdef pp_PLOT2D_DEV
-GLUI_Panel *PANEL_devplots = NULL;
-#endif
 GLUI_Panel *PANEL_genplot = NULL;
 GLUI_Panel *PANEL_plot_position = NULL;
 GLUI_Panel *PANEL_objects=NULL;
@@ -176,6 +172,10 @@ GLUI_RadioGroup *RADIO_vectortype=NULL;
 GLUI_RadioGroup *RADIO_scale_windrose=NULL;
 GLUI_RadioGroup *RADIO_windstate_windrose = NULL;
 
+#ifdef pp_PLOT2D_DEV
+GLUI_Rollout *ROLLOUT_devplots = NULL;
+#endif
+GLUI_Rollout *ROLLOUT_positions = NULL;
 GLUI_Rollout *ROLLOUT_plotdevice = NULL;
 GLUI_Rollout *ROLLOUT_plotproperties = NULL;
 GLUI_Rollout *ROLLOUT_values = NULL;
@@ -1639,7 +1639,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
 
 #ifdef pp_PLOT2D_DEV
     if(ndeviceinfo>0){
-      PANEL_devplots = glui_plot2d->add_panel_to_panel(PANEL_plots, "Multiple devc plots (experimental)");
+      ROLLOUT_devplots = glui_plot2d->add_rollout_to_panel(PANEL_plots, "Multiple device plots", 0);
       for(i = 0; i<ndeviceinfo; i++){
         devicedata *devi;
 
@@ -1652,9 +1652,9 @@ extern "C" void GluiPlot2DSetup(int main_window){
         devi = deviceinfo+i;
         devi->inlist = 1-InDevList(devi, i);
       }
-      LIST_plot_add_dev = glui_plot2d->add_listbox_to_panel(PANEL_devplots,    "Add:",    &idevice_add,  GENPLOT_ADD_DEV_PLOTS,  GenPlotCB);
-      BUTTON_rem_dev = glui_plot2d->add_button_to_panel(PANEL_devplots, _("Remove"), GENPLOT_REM_DEV_PLOTS, GenPlotCB);
-      glui_plot2d->add_button_to_panel(PANEL_devplots, _("Reset Positions"), GENPLOT_RESET_DEV_PLOTS, GenPlotCB);
+      LIST_plot_add_dev = glui_plot2d->add_listbox_to_panel(ROLLOUT_devplots,    "Add:",    &idevice_add,  GENPLOT_ADD_DEV_PLOTS,  GenPlotCB);
+      BUTTON_rem_dev = glui_plot2d->add_button_to_panel(ROLLOUT_devplots, _("Remove"), GENPLOT_REM_DEV_PLOTS, GenPlotCB);
+      glui_plot2d->add_button_to_panel(ROLLOUT_devplots, _("Reset Positions"), GENPLOT_RESET_DEV_PLOTS, GenPlotCB);
       GenPlotCB(GENPLOT_SELECT_DEV_PLOTS);
       UpdatePlotDevList();
       LIST_plot_add_dev->set_int_val(-1);
@@ -1694,11 +1694,11 @@ extern "C" void GluiPlot2DSetup(int main_window){
     plot2d_xyzend[1]   = ybar0FDS;
     plot2d_xyzstart[2] = zbar0FDS;
     plot2d_xyzend[2]   = zbarFDS-1.3*SCALE2FDS(plot2d_size_factor);
-    PANEL_positions = glui_plot2d->add_panel_to_panel(PANEL_plot_position, "distribute x0->x1, y0->y1, z0->z1");
-    glui_plot2d->add_spinner_to_panel(PANEL_positions, "x1", GLUI_SPINNER_FLOAT, plot2d_xyzend);
-    glui_plot2d->add_spinner_to_panel(PANEL_positions, "y1", GLUI_SPINNER_FLOAT, plot2d_xyzend+1);
-    glui_plot2d->add_spinner_to_panel(PANEL_positions, "z1", GLUI_SPINNER_FLOAT, plot2d_xyzend+2);
-    glui_plot2d->add_button_to_panel(PANEL_positions, _("Apply"), GENPLOT_PLOT_DIST, GenPlotCB);
+    ROLLOUT_positions = glui_plot2d->add_rollout_to_panel(PANEL_plot_position, "distribute positions", 0);
+    glui_plot2d->add_spinner_to_panel(ROLLOUT_positions, "x1", GLUI_SPINNER_FLOAT, plot2d_xyzend);
+    glui_plot2d->add_spinner_to_panel(ROLLOUT_positions, "y1", GLUI_SPINNER_FLOAT, plot2d_xyzend+1);
+    glui_plot2d->add_spinner_to_panel(ROLLOUT_positions, "z1", GLUI_SPINNER_FLOAT, plot2d_xyzend+2);
+    glui_plot2d->add_button_to_panel(ROLLOUT_positions, _("Apply x0->x1, y0->y1, z0->z1"), GENPLOT_PLOT_DIST, GenPlotCB);
 
   //  glui_plot2d->add_column_to_panel(PANEL_genplot, false);
 
