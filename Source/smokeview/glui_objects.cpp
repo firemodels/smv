@@ -19,6 +19,7 @@
 #define GENPLOT_ADD_DEV_PLOTS       105
 #define GENPLOT_REM_DEV_PLOTS       106
 #define GENPLOT_SELECT_DEV_PLOTS    107
+#define GENPLOT_RESET_DEV_PLOTS     108
 #endif
 
 #define GENPLOT_PLOT_SIZE           110
@@ -1195,6 +1196,28 @@ void GenPlotCB(int var){
       }
       UpdatePlotDevList();
       break;
+    case GENPLOT_RESET_DEV_PLOTS:
+      char *dev_pos;
+
+      dev_pos = deviceinfo[idevice_add].quantity;
+      for(i = 0; i<nplot2dinfo; i++){
+        plot2ddata *plot2di;
+        curvedata *curvei;
+
+        plot2di = plot2dinfo+i;
+        if(plot2di->ncurves!=1)continue;
+        curvei = plot2di->curve;
+        if(strcmp(curvei->c_type,"devc")==0&&curvei->quantity!=NULL&&strcmp(curvei->quantity, dev_pos)==0){
+          iplot2dinfo = i;
+          GenPlotCB(GENPLOT_SELECT_PLOT);
+          memcpy(plot2di->xyz, plot2di->xyz_orig, 3*sizeof(float));
+          SPINNER_genplot_x->set_float_val(plot2di->xyz[0]);
+          SPINNER_genplot_y->set_float_val(plot2di->xyz[1]);
+          SPINNER_genplot_z->set_float_val(plot2di->xyz[2]);
+          GenPlotCB(GENPLOT_XYZ);
+        }
+      }
+      break;
     case GENPLOT_ADD_DEV_PLOTS:
       char *dev_quant;
 
@@ -1231,7 +1254,8 @@ void GenPlotCB(int var){
         SPINNER_genplot_y->set_float_val(devi->xyz[1]);
         SPINNER_genplot_z->set_float_val(devi->xyz[2]);
         GenPlotCB(GENPLOT_XYZ);
-
+        memcpy(glui_plot2dinfo->xyz_orig,        devi->xyz, 3*sizeof(float));
+        memcpy(plot2dinfo[iplot2dinfo].xyz_orig, devi->xyz, 3*sizeof(float));
         CHECKBOX_show_genplot->set_int_val(1);
         GenPlotCB(GENPLOT_SHOW_PLOT);
       }
@@ -1630,6 +1654,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
       }
       LIST_plot_add_dev = glui_plot2d->add_listbox_to_panel(PANEL_devplots,    "Add:",    &idevice_add,  GENPLOT_ADD_DEV_PLOTS,  GenPlotCB);
       BUTTON_rem_dev = glui_plot2d->add_button_to_panel(PANEL_devplots, _("Remove"), GENPLOT_REM_DEV_PLOTS, GenPlotCB);
+      glui_plot2d->add_button_to_panel(PANEL_devplots, _("Reset Positions"), GENPLOT_RESET_DEV_PLOTS, GenPlotCB);
       GenPlotCB(GENPLOT_SELECT_DEV_PLOTS);
       UpdatePlotDevList();
       LIST_plot_add_dev->set_int_val(-1);

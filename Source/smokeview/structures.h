@@ -1032,7 +1032,7 @@ typedef struct _plot2ddata{
   int   use_valmin[2], use_valmax[2];
   curvedata curve[PLOT2D_MAX_CURVES];
   int bounds_defined;
-  float xyz[3];
+  float xyz[3], xyz_orig[3];
 } plot2ddata;
 
 /* --------------------------  windrosedata ------------------------------------ */
