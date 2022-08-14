@@ -18,7 +18,7 @@
 //*** options: all platforms
 
 //#define pp_PLOT2D_EXT         // add ext csv files to plot2d menus
-//#define  pp_PLOT2D_DEV        // button for adding all device plots
+#define  pp_PLOT2D_DEV        // button for adding all device plots
 //#define pp_PLOT2D_DEBUG     // 2d plot debug output
 #define pp_PART_MULTI        // load particles in parallel
 //#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds

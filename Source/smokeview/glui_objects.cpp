@@ -81,6 +81,7 @@ GLUI *glui_plot2d = NULL;
 
 GLUI_EditText *EDIT_plot_label = NULL;
 
+GLUI_Button *BUTTON_rem_dev = NULL;
 GLUI_Button *BUTTON_plot_position = NULL;
 GLUI_Button *BUTTON_add_plot = NULL;
 GLUI_Button *BUTTON_rem_plot = NULL;
@@ -125,7 +126,6 @@ GLUI_Listbox *LIST_plotcurves = NULL;
 GLUI_Listbox *LIST_open=NULL;
 #ifdef pp_PLOT2D_DEV
 GLUI_Listbox *LIST_plot_add_dev = NULL;
-GLUI_Listbox *LIST_plot_rem_dev = NULL;
 #endif
 
 GLUI_Panel *PANEL_allplotproperties = NULL;
@@ -942,8 +942,8 @@ void UpdatePlotDevList(void){
     devi = deviceinfo+i;
     devi->inlist = 1 - InDevList(devi, i);;
     LIST_plot_add_dev->delete_item(i);
-    LIST_plot_rem_dev->delete_item(i);
   }
+  LIST_plot_add_dev->add_item(-1, "");
   for(i = 0; i<ndeviceinfo; i++){
     devicedata *devi;
 
@@ -954,7 +954,6 @@ void UpdatePlotDevList(void){
       strcpy(label, "");
       if(HaveDevcPlot(devi->quantity)==1){
         strcat(label, "*");
-        LIST_plot_rem_dev->add_item(i, devi->quantity);
       }
       strcat(label, devi->quantity);
       LIST_plot_add_dev->add_item(i, label);
@@ -1175,7 +1174,7 @@ void GenPlotCB(int var){
       char *rem_quant;
       int stop;
 
-      rem_quant = deviceinfo[idevice_rem].quantity;
+      rem_quant = deviceinfo[idevice_add].quantity;
       for(;;){
 
         stop = 0;
@@ -1195,7 +1194,6 @@ void GenPlotCB(int var){
         if(stop==0)break;
       }
       UpdatePlotDevList();
-      LIST_plot_rem_dev->set_int_val(idevice_rem);
       break;
     case GENPLOT_ADD_DEV_PLOTS:
       char *dev_quant;
@@ -1211,6 +1209,10 @@ void GenPlotCB(int var){
         if(strcmp(curvei->c_type, "devc")==0)plot2di->show = 0;
       }
       dev_quant = deviceinfo[idevice_add].quantity;
+      strcpy(label, "Remove all ");
+      strcat(label, dev_quant);
+      strcat(label, " plots");
+      BUTTON_rem_dev->set_name(label);
       glui_csv_file_index = 0;
       LIST_csvfile->set_int_val(glui_csv_file_index);
       GenPlotCB(GENPLOT_SELECT_CSV_FILE);
@@ -1627,9 +1629,10 @@ extern "C" void GluiPlot2DSetup(int main_window){
         devi->inlist = 1-InDevList(devi, i);
       }
       LIST_plot_add_dev = glui_plot2d->add_listbox_to_panel(PANEL_devplots,    "Add:",    &idevice_add,  GENPLOT_ADD_DEV_PLOTS,  GenPlotCB);
-      LIST_plot_rem_dev = glui_plot2d->add_listbox_to_panel(PANEL_devplots,    "Remove:", &idevice_rem,  GENPLOT_REM_DEV_PLOTS,  GenPlotCB);
+      BUTTON_rem_dev = glui_plot2d->add_button_to_panel(PANEL_devplots, _("Remove"), GENPLOT_REM_DEV_PLOTS, GenPlotCB);
       GenPlotCB(GENPLOT_SELECT_DEV_PLOTS);
       UpdatePlotDevList();
+      LIST_plot_add_dev->set_int_val(-1);
     }
 #endif
 
