@@ -11638,6 +11638,13 @@ int ReadIni2(char *inifile, int localfile){
           curve->curve_factor              = factor;
           curve->apply_curve_factor        = apply_factor;
           curve->vals                      = NULL;
+          if(strcmp(curve->c_type, "devc")==0){
+            curve->quantity = csvfileinfo[file_index].csvinfo[col_index].label.longlabel;
+          }
+          else{
+            curve->quantity = NULL;
+          }
+
         }
       }
       update_glui_devices = 1;
