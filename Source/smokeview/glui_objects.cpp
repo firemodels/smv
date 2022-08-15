@@ -1637,9 +1637,10 @@ extern "C" void GluiPlot2DSetup(int main_window){
     LIST_plots->add_item(-1, "");
     CHECKBOX_show_genplot = glui_plot2d->add_checkbox_to_panel(PANEL_plots, "show", &(glui_plot2dinfo->show), GENPLOT_SHOW_PLOT, GenPlotCB);
 
+    glui_plot2d->add_column_to_panel(PANEL_newplot, false);
 #ifdef pp_PLOT2D_DEV
     if(ndeviceinfo>0){
-      ROLLOUT_devplots = glui_plot2d->add_rollout_to_panel(PANEL_plots, "Multiple device plots", 0);
+      ROLLOUT_devplots = glui_plot2d->add_rollout_to_panel(PANEL_newplot, "add/remove multiple device plots", 0);
       for(i = 0; i<ndeviceinfo; i++){
         devicedata *devi;
 
@@ -1661,7 +1662,6 @@ extern "C" void GluiPlot2DSetup(int main_window){
     }
 #endif
 
-    glui_plot2d->add_column_to_panel(PANEL_newplot, false);
     PANEL_add_curve = glui_plot2d->add_panel_to_panel(PANEL_newplot, "");
     PANEL_csv = glui_plot2d->add_panel_to_panel(PANEL_add_curve, "", 0);
     LIST_csvfile = glui_plot2d->add_listbox_to_panel(PANEL_csv, "select csv file type:", &glui_csv_file_index, GENPLOT_SELECT_CSV_FILE, GenPlotCB);
