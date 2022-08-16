@@ -11600,13 +11600,14 @@ int ReadIni2(char *inifile, int localfile){
 
         plot2di = plot2dini + i;
         plot2di->plot_index = i;
+        plot2di->mult_devc  = 0;
         fgets(buffer, 255, stream);
         TrimBack(buffer);
         labelptr = TrimFront(buffer);
         strcpy(plot2di->plot_label, labelptr);
 
         fgets(buffer, 255, stream);
-        sscanf(buffer, " %f %f %f %i %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->ncurves);
+        sscanf(buffer, " %f %f %f %i %i %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->ncurves, &plot2di->mult_devc);
         fgets(buffer, 255, stream);
         sscanf(buffer, " %f %i %f %i %f %i %f %i ",
                plot2di->valmin,   plot2di->use_valmin,   plot2di->valmax,   plot2di->use_valmax,
@@ -15014,7 +15015,7 @@ void WriteIniLocal(FILE *fileout){
 
     plot2di = plot2dinfo + i;
     fprintf(fileout, " %s\n", plot2di->plot_label);
-    fprintf(fileout, " %f %f %f %i %i\n", plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->ncurves);
+    fprintf(fileout, " %f %f %f %i %i %i\n", plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->ncurves, plot2di->mult_devc);
     fprintf(fileout, " %f %i %f %i %f %i %f %i\n",
             plot2di->valmin[0], plot2di->use_valmin[0], plot2di->valmax[0], plot2di->use_valmax[0],
             plot2di->valmin[1], plot2di->use_valmin[1], plot2di->valmax[1], plot2di->use_valmax[1]

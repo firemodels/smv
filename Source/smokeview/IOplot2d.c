@@ -726,6 +726,7 @@ void InitPlot2D(plot2ddata *plot2di, int plot_index){
   plot2di->plot_index = plot_index;
   sprintf(plot2di->plot_label, "plot %i", plot_index);
   plot2di->curve_index = 0;
+  plot2di->mult_devc = 0;
 
   float zmax;
   int first;

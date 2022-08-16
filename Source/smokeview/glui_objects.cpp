@@ -909,23 +909,6 @@ int InDevList(devicedata *devi, int n){
   return 0;
 }
 
-/* ------------------ HaveDevcPlot ------------------------ */
-
-int HaveDevcPlot(char *quant){
-  int i;
-
-  for(i = 0; i<nplot2dinfo; i++){
-    plot2ddata *plot2di;
-    curvedata *curvei;
-
-    plot2di = plot2dinfo+i;
-    if(plot2di->ncurves!=1)continue;
-    curvei = plot2di->curve;
-    if(curvei->quantity!=NULL && strcmp(curvei->quantity, quant)==0)return 1;
-  }
-  return 0;
-}
-
 /* ------------------ UpdatePlotDevList ------------------------ */
 
 void UpdatePlotDevList(void){
@@ -937,6 +920,7 @@ void UpdatePlotDevList(void){
     devi = deviceinfo + i;
     devi->inlist = 0;;
   }
+  LIST_plot_add_dev->delete_item(-1);
   for(i = 0; i<ndeviceinfo; i++){
     devicedata *devi;
 
@@ -953,9 +937,6 @@ void UpdatePlotDevList(void){
       char label[64];
 
       strcpy(label, "");
-      if(HaveDevcPlot(devi->quantity)==1){
-        strcat(label, "*");
-      }
       strcat(label, devi->quantity);
       LIST_plot_add_dev->add_item(i, label);
     }
@@ -1172,10 +1153,8 @@ void GenPlotCB(int var){
       break;
 #ifdef pp_PLOT2D_DEV
     case GENPLOT_REM_DEV_PLOTS:
-      char *rem_quant;
       int stop;
 
-      rem_quant = deviceinfo[idevice_add].quantity;
       for(;;){
 
         stop = 0;
@@ -1186,10 +1165,11 @@ void GenPlotCB(int var){
           plot2di = plot2dinfo+i;
           if(plot2di->ncurves!=1)continue;
           curvei = plot2di->curve;
-          if(strcmp(curvei->c_type,"devc")==0&&curvei->quantity!=NULL&&strcmp(curvei->quantity, rem_quant)==0){
+          if(strcmp(curvei->c_type,"devc")==0&&plot2di->mult_devc==1){
             iplot2dinfo = i;
             GenPlotCB(GENPLOT_REM_PLOT);
             stop = 1;
+            break;
           }
         }
         if(stop==0)break;
@@ -1222,15 +1202,6 @@ void GenPlotCB(int var){
       char *dev_quant;
 
       GenPlotCB(GENPLOT_REM_DEV_PLOTS);
-      for(i = 0; i<nplot2dinfo; i++){
-        plot2ddata *plot2di;
-        curvedata *curvei;
-
-        plot2di = plot2dinfo+i;
-        if(plot2di->ncurves!=1)continue;
-        curvei = plot2di->curve;
-        if(strcmp(curvei->c_type, "devc")==0)plot2di->show = 0;
-      }
       dev_quant = deviceinfo[idevice_add].quantity;
       strcpy(label, "Remove all ");
       strcat(label, dev_quant);
@@ -1254,6 +1225,7 @@ void GenPlotCB(int var){
         SPINNER_genplot_y->set_float_val(devi->xyz[1]);
         SPINNER_genplot_z->set_float_val(devi->xyz[2]);
         GenPlotCB(GENPLOT_XYZ);
+        glui_plot2dinfo->mult_devc = 1;
         memcpy(glui_plot2dinfo->xyz_orig,        devi->xyz, 3*sizeof(float));
         memcpy(plot2dinfo[iplot2dinfo].xyz_orig, devi->xyz, 3*sizeof(float));
         CHECKBOX_show_genplot->set_int_val(1);
