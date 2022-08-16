@@ -7916,6 +7916,10 @@ updatemenu=0;
     }
     glutAddMenuEntry("-",MENU_DUMMY);
     GLUTADDSUBMENU(_("Segments"),spheresegmentmenu);
+    if(nobject_defs>0&&ndeviceinfo>0){
+      glutAddMenuEntry("-",MENU_DUMMY);
+      GLUTADDSUBMENU(_("Plot data"),showobjectsplotmenu);
+    }
     glutAddMenuEntry(_("Settings..."), MENU_DEVICE_SETTINGS);
 
   }
@@ -9401,9 +9405,6 @@ updatemenu=0;
   if(GetNumActiveDevices()>0||ncvents>0){
     GLUTADDSUBMENU(_("Devices"), showobjectsmenu);
   }
-  if(nobject_defs>0&&ndeviceinfo>0){
-    GLUTADDSUBMENU(_("Plot data"),showobjectsplotmenu);
-  }
   GLUTADDSUBMENU(_("Labels"),labelmenu);
 
   GLUTADDSUBMENU(_("Viewpoints (default)"), defaultviewmenu);
@@ -9794,13 +9795,17 @@ updatemenu=0;
     glutAddMenuEntry(_("Trainer..."), DIALOG_TRAINER);
   }
 
-  /* --------------------------------datad ialog menu -------------------------- */
+  /* --------------------------------data dialog menu -------------------------- */
 
   CREATEMENU(datadialogmenu, DialogMenu);
   if(ndeviceinfo>0&&GetNumActiveDevices()>0){
     glutAddMenuEntry(_("Devices/Objects"), DIALOG_DEVICE);
   }
-  if((ndeviceinfo>0&&GetNumActiveDevices()>0)||nsliceinfo>0||nhrrinfo>0){
+#ifdef pp_PLOT2D_EXT
+  if(ncsvfileinfo>0){
+#else
+  if((ncsvfileinfo>0&&have_ext==0)||(ncsvfileinfo>1&&have_ext==1)){
+#endif
     glutAddMenuEntry(_("2D plots"), DIALOG_2DPLOTS);
   }
   glutAddMenuEntry(_("Show/Hide..."), DIALOG_SHOWFILES);

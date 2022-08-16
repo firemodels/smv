@@ -794,13 +794,9 @@ SVEXTERN int SVDECL(showdevice_type,1), SVDECL(showdevice_unit,1);
 SVEXTERN float SVDECL(device_valmin,0.0), SVDECL(device_valmax,1.0);
 SVEXTERN devicedata SVDECL(**devicetypes,NULL);
 SVEXTERN int SVDECL(ndevicetypes,0);
-#ifdef pp_PLOT2D_DEV
-SVEXTERN int SVDECL(idevice_add, 0);
-SVEXTERN int SVDECL(idevice_show, 0);
-SVEXTERN int SVDECL(idevice_rem, 0);
-#endif
 
 // gen plot variables
+SVEXTERN int SVDECL(idevice_add, 0);
 SVEXTERN float plot2d_xyzstart[3], plot2d_xyzend[3];
 SVEXTERN int SVDECL(plot2d_show_plot_title,   1);
 SVEXTERN int SVDECL(plot2d_show_yaxis_labels, 1);
@@ -1562,12 +1558,10 @@ SVEXTERN int SVDECL(devicetypes_index,0);
 
 SVEXTERN float SVDECL(plot2d_hrr_min,0.0), SVDECL(plot2d_hrr_max,1.0);
 SVEXTERN devicedata SVDECL(*deviceinfo,NULL);
-#ifdef pp_PLOT2D_DEV
-SVEXTERN devicelistdata SVDECL(*devicelistinfo, NULL);
-#endif
 SVEXTERN vdevicedata SVDECL(*vdeviceinfo, NULL);
 SVEXTERN vdevicesortdata SVDECL(*vdevices_sorted, NULL);
 
+SVEXTERN int SVDECL(have_ext, 0);
 SVEXTERN int SVDECL(ntreedeviceinfo, 0), SVDECL(mintreesize, 3);
 SVEXTERN int SVDECL(nzwindtreeinfo, 0);
 SVEXTERN treedevicedata SVDECL(*treedeviceinfo,NULL);

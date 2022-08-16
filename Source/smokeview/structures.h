@@ -997,15 +997,6 @@ typedef struct _device {
 } devicedata;
 
 
-/* --------------------------  devicelistdata ------------------------------------ */
-#ifdef pp_PLOT2D_DEV
-typedef struct _devicelistdata {
-  int loaded, show;
-  devicedata *deviceinfo;
-  char *quantity;
-} devicelistdata;
-#endif
-
 /* --------------------------  hrrdata ------------------------------------ */
 
 typedef struct _hrrdata {
@@ -1037,12 +1028,12 @@ typedef struct _curvedata{
 #define PLOT2D_MAX_CURVES 50
 typedef struct _plot2ddata{
   char plot_label[350];
-  int ncurves, ncurves_ini, curve_index, plot_index, show;
+  int ncurves, ncurves_ini, curve_index, plot_index, show, mult_devc;
   float valmin[2],     valmax[2];
   int   use_valmin[2], use_valmax[2];
   curvedata curve[PLOT2D_MAX_CURVES];
   int bounds_defined;
-  float xyz[3];
+  float xyz[3], xyz_orig[3];
 } plot2ddata;
 
 /* --------------------------  windrosedata ------------------------------------ */
