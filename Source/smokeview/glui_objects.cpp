@@ -165,6 +165,9 @@ GLUI_Panel *PANEL_wr1=NULL;
 GLUI_Panel *PANEL_windrose_merge = NULL;
 GLUI_Panel *PANEL_windrose_merget = NULL;
 GLUI_Panel *PANEL_windrose_mergexyz = NULL;
+#ifdef pp_PLOT2D_DEV
+GLUI_Panel *PANEL_devplots = NULL;
+#endif
 
 GLUI_RadioGroup *RADIO_windrose_ttype = NULL;
 GLUI_RadioGroup *RADIO_windrose_merge_type=NULL;
@@ -172,9 +175,6 @@ GLUI_RadioGroup *RADIO_vectortype=NULL;
 GLUI_RadioGroup *RADIO_scale_windrose=NULL;
 GLUI_RadioGroup *RADIO_windstate_windrose = NULL;
 
-#ifdef pp_PLOT2D_DEV
-GLUI_Rollout *ROLLOUT_devplots = NULL;
-#endif
 GLUI_Rollout *ROLLOUT_positions = NULL;
 GLUI_Rollout *ROLLOUT_plotdevice = NULL;
 GLUI_Rollout *ROLLOUT_plotproperties = NULL;
@@ -678,6 +678,16 @@ void EnableDisablePlot2D(void){
     }
   }
 }
+
+/* ------------------ UpdateDeviceAdd ------------------------ */
+
+#ifdef pp_PLOT2D_DEV
+extern "C" void UpdateDeviceAdd(void){
+  if(LIST_plot_add_dev!=NULL){
+    LIST_plot_add_dev->set_int_val(idevice_add);
+  }
+}
+#endif
 
 /* ------------------ ShowPlot2D ------------------------ */
 
@@ -1609,10 +1619,9 @@ extern "C" void GluiPlot2DSetup(int main_window){
     LIST_plots->add_item(-1, "");
     CHECKBOX_show_genplot = glui_plot2d->add_checkbox_to_panel(PANEL_plots, "show", &(glui_plot2dinfo->show), GENPLOT_SHOW_PLOT, GenPlotCB);
 
-    glui_plot2d->add_column_to_panel(PANEL_newplot, false);
 #ifdef pp_PLOT2D_DEV
     if(ndeviceinfo>0){
-      ROLLOUT_devplots = glui_plot2d->add_rollout_to_panel(PANEL_newplot, "add/remove multiple device plots", 0);
+      PANEL_devplots = glui_plot2d->add_panel_to_panel(PANEL_newplot, "add/remove multiple device plots");
       for(i = 0; i<ndeviceinfo; i++){
         devicedata *devi;
 
@@ -1625,14 +1634,15 @@ extern "C" void GluiPlot2DSetup(int main_window){
         devi = deviceinfo+i;
         devi->inlist = 1-InDevList(devi, i);
       }
-      LIST_plot_add_dev = glui_plot2d->add_listbox_to_panel(ROLLOUT_devplots,    "Add:",    &idevice_add,  GENPLOT_ADD_DEV_PLOTS,  GenPlotCB);
-      BUTTON_rem_dev = glui_plot2d->add_button_to_panel(ROLLOUT_devplots, _("Remove"), GENPLOT_REM_DEV_PLOTS, GenPlotCB);
-      glui_plot2d->add_button_to_panel(ROLLOUT_devplots, _("Reset Positions"), GENPLOT_RESET_DEV_PLOTS, GenPlotCB);
+      LIST_plot_add_dev = glui_plot2d->add_listbox_to_panel(PANEL_devplots,    "Add:",    &idevice_add,  GENPLOT_ADD_DEV_PLOTS,  GenPlotCB);
+      BUTTON_rem_dev = glui_plot2d->add_button_to_panel(PANEL_devplots, _("Remove"), GENPLOT_REM_DEV_PLOTS, GenPlotCB);
+      glui_plot2d->add_button_to_panel(PANEL_devplots, _("Reset Positions"), GENPLOT_RESET_DEV_PLOTS, GenPlotCB);
       GenPlotCB(GENPLOT_SELECT_DEV_PLOTS);
       UpdatePlotDevList();
       LIST_plot_add_dev->set_int_val(-1);
     }
 #endif
+    glui_plot2d->add_column_to_panel(PANEL_newplot, false);
 
     PANEL_add_curve = glui_plot2d->add_panel_to_panel(PANEL_newplot, "");
     PANEL_csv = glui_plot2d->add_panel_to_panel(PANEL_add_curve, "", 0);

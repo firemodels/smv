@@ -11590,9 +11590,12 @@ int ReadIni2(char *inifile, int localfile){
       NewMemory((void **)&plot2dini, nplot2dini*sizeof(plot2ddata));
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %i %i",
+      sscanf(buffer, " %i %i %i %i %i %i",
              &plot2d_show_plot_title, &plot2d_show_curve_labels, &plot2d_show_curve_values,
-             &plot2d_show_xaxis_labels, &plot2d_show_yaxis_labels);
+             &plot2d_show_xaxis_labels, &plot2d_show_yaxis_labels, &idevice_add);
+#ifdef pp_PLOT2D_DEV
+      UpdateDeviceAdd();
+#endif
       for(i=0;i<nplot2dini;i++){
         plot2ddata *plot2di;
         char *labelptr;
@@ -15006,9 +15009,9 @@ void WriteIniLocal(FILE *fileout){
   );
   fprintf(fileout, "SHOWGENPLOTS\n");
   fprintf(fileout, " %i\n", nplot2dinfo);
-  fprintf(fileout, " %i %i %i %i %i\n",
+  fprintf(fileout, " %i %i %i %i %i %i\n",
          plot2d_show_plot_title, plot2d_show_curve_labels, plot2d_show_curve_values,
-         plot2d_show_xaxis_labels, plot2d_show_yaxis_labels);
+         plot2d_show_xaxis_labels, plot2d_show_yaxis_labels, idevice_add);
   for(i=0; i<nplot2dinfo; i++){
     plot2ddata *plot2di;
     int j;

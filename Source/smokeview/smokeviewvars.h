@@ -794,11 +794,9 @@ SVEXTERN int SVDECL(showdevice_type,1), SVDECL(showdevice_unit,1);
 SVEXTERN float SVDECL(device_valmin,0.0), SVDECL(device_valmax,1.0);
 SVEXTERN devicedata SVDECL(**devicetypes,NULL);
 SVEXTERN int SVDECL(ndevicetypes,0);
-#ifdef pp_PLOT2D_DEV
-SVEXTERN int SVDECL(idevice_add, 0);
-#endif
 
 // gen plot variables
+SVEXTERN int SVDECL(idevice_add, 0);
 SVEXTERN float plot2d_xyzstart[3], plot2d_xyzend[3];
 SVEXTERN int SVDECL(plot2d_show_plot_title,   1);
 SVEXTERN int SVDECL(plot2d_show_yaxis_labels, 1);
