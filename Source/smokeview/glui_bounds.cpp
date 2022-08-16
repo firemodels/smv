@@ -5964,8 +5964,6 @@ extern "C" void SliceBoundCB(int var){
   switch(var){
     case SLICE_SIZE:
       update_avg = 1;
-// also defined in glui_obects.cpp
-#define DEVICE_TIMEAVERAGE 31
       DeviceCB(DEVICE_TIMEAVERAGE);
       if(plot2d_size_factor<0){
         plot2d_size_factor = 0.0;

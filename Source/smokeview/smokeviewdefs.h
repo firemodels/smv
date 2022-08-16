@@ -20,9 +20,22 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define OBJECT_PLOT_SHOW_SELECTED  -11
 #define OBJECT_PLOT_SHOW_TREE_ALL  -12
 
+
 #define PLOT_HRRPUV           -13
-#define HRRPUV_PLOT            30
-#define HRRPUV2_PLOT           31
+
+#define DEVICE_HRRPUV_PLOT            30
+#define DEVICE_HRRPUV2_PLOT           31
+#define DEVICE_sensorsize             20
+#define DEVICE_SHOWDEVICEVALS         26
+#define DEVICE_SHOWDEVICEPLOT         29
+#define DEVICE_COLORDEVICEVALS        27
+#define DEVICE_SAVE_SETTINGS_OBJECTS  99
+#define DEVICE_close                   3
+#define DEVICE_show_orientation        4
+#define DEVICE_NBUCKETS                5
+#define DEVICE_SHOWBEAM                6
+#define DEVICE_RADIUS                  7
+#define DEVICE_TIMEAVERAGE            32
 
 #ifdef pp_OSX_HIGHRES
 #define GLUT_BITMAP_HELVETICA_20	(&glutBitmapHelvetica20)
