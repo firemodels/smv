@@ -11590,9 +11590,12 @@ int ReadIni2(char *inifile, int localfile){
       NewMemory((void **)&plot2dini, nplot2dini*sizeof(plot2ddata));
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %i %i",
+      sscanf(buffer, " %i %i %i %i %i %i",
              &plot2d_show_plot_title, &plot2d_show_curve_labels, &plot2d_show_curve_values,
-             &plot2d_show_xaxis_labels, &plot2d_show_yaxis_labels);
+             &plot2d_show_xaxis_labels, &plot2d_show_yaxis_labels, &idevice_add);
+#ifdef pp_PLOT2D_DEV
+      UpdateDeviceAdd();
+#endif
       for(i=0;i<nplot2dini;i++){
         plot2ddata *plot2di;
         char *labelptr;
@@ -11600,13 +11603,14 @@ int ReadIni2(char *inifile, int localfile){
 
         plot2di = plot2dini + i;
         plot2di->plot_index = i;
+        plot2di->mult_devc  = 0;
         fgets(buffer, 255, stream);
         TrimBack(buffer);
         labelptr = TrimFront(buffer);
         strcpy(plot2di->plot_label, labelptr);
 
         fgets(buffer, 255, stream);
-        sscanf(buffer, " %f %f %f %i %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->ncurves);
+        sscanf(buffer, " %f %f %f %i %i %i", plot2di->xyz, plot2di->xyz+1, plot2di->xyz+2, &plot2di->show, &plot2di->ncurves, &plot2di->mult_devc);
         fgets(buffer, 255, stream);
         sscanf(buffer, " %f %i %f %i %f %i %f %i ",
                plot2di->valmin,   plot2di->use_valmin,   plot2di->valmax,   plot2di->use_valmax,
@@ -11638,6 +11642,13 @@ int ReadIni2(char *inifile, int localfile){
           curve->curve_factor              = factor;
           curve->apply_curve_factor        = apply_factor;
           curve->vals                      = NULL;
+          if(strcmp(curve->c_type, "devc")==0){
+            curve->quantity = csvfileinfo[file_index].csvinfo[col_index].label.longlabel;
+          }
+          else{
+            curve->quantity = NULL;
+          }
+
         }
       }
       update_glui_devices = 1;
@@ -14998,16 +15009,16 @@ void WriteIniLocal(FILE *fileout){
   );
   fprintf(fileout, "SHOWGENPLOTS\n");
   fprintf(fileout, " %i\n", nplot2dinfo);
-  fprintf(fileout, " %i %i %i %i %i\n",
+  fprintf(fileout, " %i %i %i %i %i %i\n",
          plot2d_show_plot_title, plot2d_show_curve_labels, plot2d_show_curve_values,
-         plot2d_show_xaxis_labels, plot2d_show_yaxis_labels);
+         plot2d_show_xaxis_labels, plot2d_show_yaxis_labels, idevice_add);
   for(i=0; i<nplot2dinfo; i++){
     plot2ddata *plot2di;
     int j;
 
     plot2di = plot2dinfo + i;
     fprintf(fileout, " %s\n", plot2di->plot_label);
-    fprintf(fileout, " %f %f %f %i %i\n", plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->ncurves);
+    fprintf(fileout, " %f %f %f %i %i %i\n", plot2di->xyz[0], plot2di->xyz[1], plot2di->xyz[2], plot2di->show, plot2di->ncurves, plot2di->mult_devc);
     fprintf(fileout, " %f %i %f %i %f %i %f %i\n",
             plot2di->valmin[0], plot2di->use_valmin[0], plot2di->valmax[0], plot2di->use_valmax[0],
             plot2di->valmin[1], plot2di->use_valmin[1], plot2di->valmax[1], plot2di->use_valmax[1]

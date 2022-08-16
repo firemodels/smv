@@ -19,6 +19,7 @@
 #define GENPLOT_ADD_DEV_PLOTS       105
 #define GENPLOT_REM_DEV_PLOTS       106
 #define GENPLOT_SELECT_DEV_PLOTS    107
+#define GENPLOT_RESET_DEV_PLOTS     108
 #endif
 
 #define GENPLOT_PLOT_SIZE           110
@@ -81,6 +82,7 @@ GLUI *glui_plot2d = NULL;
 
 GLUI_EditText *EDIT_plot_label = NULL;
 
+GLUI_Button *BUTTON_rem_dev = NULL;
 GLUI_Button *BUTTON_plot_position = NULL;
 GLUI_Button *BUTTON_add_plot = NULL;
 GLUI_Button *BUTTON_rem_plot = NULL;
@@ -125,12 +127,10 @@ GLUI_Listbox *LIST_plotcurves = NULL;
 GLUI_Listbox *LIST_open=NULL;
 #ifdef pp_PLOT2D_DEV
 GLUI_Listbox *LIST_plot_add_dev = NULL;
-GLUI_Listbox *LIST_plot_rem_dev = NULL;
 #endif
 
 GLUI_Panel *PANEL_allplotproperties = NULL;
 GLUI_Panel *PANEL_plotproperties = NULL;
-GLUI_Panel *PANEL_positions = NULL;
 GLUI_Panel *PANEL_plottitle = NULL;
 GLUI_Panel *PANEL_plotother = NULL;
 GLUI_Panel *PANEL_newplot = NULL;
@@ -151,9 +151,6 @@ GLUI_Panel *PANEL_plot1 = NULL;
 GLUI_Panel *PANEL_curve_properties = NULL;
 GLUI_Panel *PANEL_add_curve = NULL;
 GLUI_Panel *PANEL_plots = NULL;
-#ifdef pp_PLOT2D_DEV
-GLUI_Panel *PANEL_devplots = NULL;
-#endif
 GLUI_Panel *PANEL_genplot = NULL;
 GLUI_Panel *PANEL_plot_position = NULL;
 GLUI_Panel *PANEL_objects=NULL;
@@ -168,6 +165,9 @@ GLUI_Panel *PANEL_wr1=NULL;
 GLUI_Panel *PANEL_windrose_merge = NULL;
 GLUI_Panel *PANEL_windrose_merget = NULL;
 GLUI_Panel *PANEL_windrose_mergexyz = NULL;
+#ifdef pp_PLOT2D_DEV
+GLUI_Panel *PANEL_devplots = NULL;
+#endif
 
 GLUI_RadioGroup *RADIO_windrose_ttype = NULL;
 GLUI_RadioGroup *RADIO_windrose_merge_type=NULL;
@@ -175,6 +175,7 @@ GLUI_RadioGroup *RADIO_vectortype=NULL;
 GLUI_RadioGroup *RADIO_scale_windrose=NULL;
 GLUI_RadioGroup *RADIO_windstate_windrose = NULL;
 
+GLUI_Rollout *ROLLOUT_positions = NULL;
 GLUI_Rollout *ROLLOUT_plotdevice = NULL;
 GLUI_Rollout *ROLLOUT_plotproperties = NULL;
 GLUI_Rollout *ROLLOUT_values = NULL;
@@ -678,6 +679,16 @@ void EnableDisablePlot2D(void){
   }
 }
 
+/* ------------------ UpdateDeviceAdd ------------------------ */
+
+#ifdef pp_PLOT2D_DEV
+extern "C" void UpdateDeviceAdd(void){
+  if(LIST_plot_add_dev!=NULL){
+    LIST_plot_add_dev->set_int_val(idevice_add);
+  }
+}
+#endif
+
 /* ------------------ ShowPlot2D ------------------------ */
 
 extern "C" void ShowPlot2D(void){
@@ -908,23 +919,6 @@ int InDevList(devicedata *devi, int n){
   return 0;
 }
 
-/* ------------------ HaveDevcPlot ------------------------ */
-
-int HaveDevcPlot(char *quant){
-  int i;
-
-  for(i = 0; i<nplot2dinfo; i++){
-    plot2ddata *plot2di;
-    curvedata *curvei;
-
-    plot2di = plot2dinfo+i;
-    if(plot2di->ncurves!=1)continue;
-    curvei = plot2di->curve;
-    if(curvei->quantity!=NULL && strcmp(curvei->quantity, quant)==0)return 1;
-  }
-  return 0;
-}
-
 /* ------------------ UpdatePlotDevList ------------------------ */
 
 void UpdatePlotDevList(void){
@@ -936,14 +930,15 @@ void UpdatePlotDevList(void){
     devi = deviceinfo + i;
     devi->inlist = 0;;
   }
+  LIST_plot_add_dev->delete_item(-1);
   for(i = 0; i<ndeviceinfo; i++){
     devicedata *devi;
 
     devi = deviceinfo+i;
     devi->inlist = 1 - InDevList(devi, i);;
     LIST_plot_add_dev->delete_item(i);
-    LIST_plot_rem_dev->delete_item(i);
   }
+  LIST_plot_add_dev->add_item(-1, "");
   for(i = 0; i<ndeviceinfo; i++){
     devicedata *devi;
 
@@ -952,10 +947,6 @@ void UpdatePlotDevList(void){
       char label[64];
 
       strcpy(label, "");
-      if(HaveDevcPlot(devi->quantity)==1){
-        strcat(label, "*");
-        LIST_plot_rem_dev->add_item(i, devi->quantity);
-      }
       strcat(label, devi->quantity);
       LIST_plot_add_dev->add_item(i, label);
     }
@@ -1172,10 +1163,8 @@ void GenPlotCB(int var){
       break;
 #ifdef pp_PLOT2D_DEV
     case GENPLOT_REM_DEV_PLOTS:
-      char *rem_quant;
       int stop;
 
-      rem_quant = deviceinfo[idevice_rem].quantity;
       for(;;){
 
         stop = 0;
@@ -1186,21 +1175,21 @@ void GenPlotCB(int var){
           plot2di = plot2dinfo+i;
           if(plot2di->ncurves!=1)continue;
           curvei = plot2di->curve;
-          if(strcmp(curvei->c_type,"devc")==0&&curvei->quantity!=NULL&&strcmp(curvei->quantity, rem_quant)==0){
+          if(strcmp(curvei->c_type,"devc")==0&&plot2di->mult_devc==1){
             iplot2dinfo = i;
             GenPlotCB(GENPLOT_REM_PLOT);
             stop = 1;
+            break;
           }
         }
         if(stop==0)break;
       }
       UpdatePlotDevList();
-      LIST_plot_rem_dev->set_int_val(idevice_rem);
       break;
-    case GENPLOT_ADD_DEV_PLOTS:
-      char *dev_quant;
+    case GENPLOT_RESET_DEV_PLOTS:
+      char *dev_pos;
 
-      GenPlotCB(GENPLOT_REM_DEV_PLOTS);
+      dev_pos = deviceinfo[idevice_add].quantity;
       for(i = 0; i<nplot2dinfo; i++){
         plot2ddata *plot2di;
         curvedata *curvei;
@@ -1208,9 +1197,26 @@ void GenPlotCB(int var){
         plot2di = plot2dinfo+i;
         if(plot2di->ncurves!=1)continue;
         curvei = plot2di->curve;
-        if(strcmp(curvei->c_type, "devc")==0)plot2di->show = 0;
+        if(strcmp(curvei->c_type,"devc")==0&&curvei->quantity!=NULL&&strcmp(curvei->quantity, dev_pos)==0){
+          iplot2dinfo = i;
+          GenPlotCB(GENPLOT_SELECT_PLOT);
+          memcpy(plot2di->xyz, plot2di->xyz_orig, 3*sizeof(float));
+          SPINNER_genplot_x->set_float_val(plot2di->xyz[0]);
+          SPINNER_genplot_y->set_float_val(plot2di->xyz[1]);
+          SPINNER_genplot_z->set_float_val(plot2di->xyz[2]);
+          GenPlotCB(GENPLOT_XYZ);
+        }
       }
+      break;
+    case GENPLOT_ADD_DEV_PLOTS:
+      char *dev_quant;
+
+      GenPlotCB(GENPLOT_REM_DEV_PLOTS);
       dev_quant = deviceinfo[idevice_add].quantity;
+      strcpy(label, "Remove all ");
+      strcat(label, dev_quant);
+      strcat(label, " plots");
+      BUTTON_rem_dev->set_name(label);
       glui_csv_file_index = 0;
       LIST_csvfile->set_int_val(glui_csv_file_index);
       GenPlotCB(GENPLOT_SELECT_CSV_FILE);
@@ -1229,7 +1235,9 @@ void GenPlotCB(int var){
         SPINNER_genplot_y->set_float_val(devi->xyz[1]);
         SPINNER_genplot_z->set_float_val(devi->xyz[2]);
         GenPlotCB(GENPLOT_XYZ);
-
+        glui_plot2dinfo->mult_devc = 1;
+        memcpy(glui_plot2dinfo->xyz_orig,        devi->xyz, 3*sizeof(float));
+        memcpy(plot2dinfo[iplot2dinfo].xyz_orig, devi->xyz, 3*sizeof(float));
         CHECKBOX_show_genplot->set_int_val(1);
         GenPlotCB(GENPLOT_SHOW_PLOT);
       }
@@ -1567,6 +1575,20 @@ float GetDeviceTminTmax(void){
   return return_val;
 }
 
+/* ------------------ HaveExt ------------------------ */
+
+int HaveExt(void){
+  int i;
+
+  for(i = 0; i<ncsvfileinfo; i++){
+    csvfiledata *csvfi;
+
+    csvfi = csvfileinfo+i;
+    if(strcmp(csvfi->c_type, "ext")==0)return 1;
+  }
+  return 0;
+}
+
 /* ------------------ GluiPlot2DSetup ------------------------ */
 
 extern "C" void GluiPlot2DSetup(int main_window){
@@ -1574,12 +1596,17 @@ extern "C" void GluiPlot2DSetup(int main_window){
     glui_plot2d->close();
     glui_plot2d = NULL;
   }
-  glui_plot2d = GLUI_Master.create_glui("2D plots", 0, 0, 0);
-  glui_plot2d->hide();
 
-
+#ifdef pp_PLOT2D_EXT
   if(ncsvfileinfo>0){
+#else
+  have_ext = HaveExt();
+  if((ncsvfileinfo>0&&have_ext==0)||(ncsvfileinfo>1&&have_ext==1)){
+#endif
     int i;
+
+    glui_plot2d = GLUI_Master.create_glui("2D plots", 0, 0, 0);
+    glui_plot2d->hide();
 
     PANEL_genplot = glui_plot2d->add_panel("", 0);
     PANEL_newplot = glui_plot2d->add_panel_to_panel(PANEL_genplot,"", 0);
@@ -1594,7 +1621,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
 
 #ifdef pp_PLOT2D_DEV
     if(ndeviceinfo>0){
-      PANEL_devplots = glui_plot2d->add_panel_to_panel(PANEL_plots, "Multiple devc plots (experimental)");
+      PANEL_devplots = glui_plot2d->add_panel_to_panel(PANEL_newplot, "add/remove multiple device plots");
       for(i = 0; i<ndeviceinfo; i++){
         devicedata *devi;
 
@@ -1608,13 +1635,15 @@ extern "C" void GluiPlot2DSetup(int main_window){
         devi->inlist = 1-InDevList(devi, i);
       }
       LIST_plot_add_dev = glui_plot2d->add_listbox_to_panel(PANEL_devplots,    "Add:",    &idevice_add,  GENPLOT_ADD_DEV_PLOTS,  GenPlotCB);
-      LIST_plot_rem_dev = glui_plot2d->add_listbox_to_panel(PANEL_devplots,    "Remove:", &idevice_rem,  GENPLOT_REM_DEV_PLOTS,  GenPlotCB);
+      BUTTON_rem_dev = glui_plot2d->add_button_to_panel(PANEL_devplots, _("Remove"), GENPLOT_REM_DEV_PLOTS, GenPlotCB);
+      glui_plot2d->add_button_to_panel(PANEL_devplots, _("Reset Positions"), GENPLOT_RESET_DEV_PLOTS, GenPlotCB);
       GenPlotCB(GENPLOT_SELECT_DEV_PLOTS);
       UpdatePlotDevList();
+      LIST_plot_add_dev->set_int_val(-1);
     }
 #endif
-
     glui_plot2d->add_column_to_panel(PANEL_newplot, false);
+
     PANEL_add_curve = glui_plot2d->add_panel_to_panel(PANEL_newplot, "");
     PANEL_csv = glui_plot2d->add_panel_to_panel(PANEL_add_curve, "", 0);
     LIST_csvfile = glui_plot2d->add_listbox_to_panel(PANEL_csv, "select csv file type:", &glui_csv_file_index, GENPLOT_SELECT_CSV_FILE, GenPlotCB);
@@ -1622,7 +1651,11 @@ extern "C" void GluiPlot2DSetup(int main_window){
       csvfiledata *csvfi;
 
       csvfi = csvfileinfo+i;
+#ifdef pp_PLOT2D_EXT
       LIST_csvfile->add_item(i, csvfi->c_type);
+#else
+      if(strcmp(csvfi->c_type, "ext")!=0)LIST_csvfile->add_item(i, csvfi->c_type);
+#endif
     }
     LIST_csvID = glui_plot2d->add_listbox_to_panel(PANEL_add_curve, "curves:", &icsv_cols, GENPLOT_ADD_CURVE, GenPlotCB);
     LIST_csvunits = glui_plot2d->add_listbox_to_panel(PANEL_add_curve, "show", &icsv_units, GENPLOT_CSV_TYPE, GenPlotCB);
@@ -1643,11 +1676,11 @@ extern "C" void GluiPlot2DSetup(int main_window){
     plot2d_xyzend[1]   = ybar0FDS;
     plot2d_xyzstart[2] = zbar0FDS;
     plot2d_xyzend[2]   = zbarFDS-1.3*SCALE2FDS(plot2d_size_factor);
-    PANEL_positions = glui_plot2d->add_panel_to_panel(PANEL_plot_position, "distribute x0->x1, y0->y1, z0->z1");
-    glui_plot2d->add_spinner_to_panel(PANEL_positions, "x1", GLUI_SPINNER_FLOAT, plot2d_xyzend);
-    glui_plot2d->add_spinner_to_panel(PANEL_positions, "y1", GLUI_SPINNER_FLOAT, plot2d_xyzend+1);
-    glui_plot2d->add_spinner_to_panel(PANEL_positions, "z1", GLUI_SPINNER_FLOAT, plot2d_xyzend+2);
-    glui_plot2d->add_button_to_panel(PANEL_positions, _("Apply"), GENPLOT_PLOT_DIST, GenPlotCB);
+    ROLLOUT_positions = glui_plot2d->add_rollout_to_panel(PANEL_plot_position, "distribute positions", 0);
+    glui_plot2d->add_spinner_to_panel(ROLLOUT_positions, "x1", GLUI_SPINNER_FLOAT, plot2d_xyzend);
+    glui_plot2d->add_spinner_to_panel(ROLLOUT_positions, "y1", GLUI_SPINNER_FLOAT, plot2d_xyzend+1);
+    glui_plot2d->add_spinner_to_panel(ROLLOUT_positions, "z1", GLUI_SPINNER_FLOAT, plot2d_xyzend+2);
+    glui_plot2d->add_button_to_panel(ROLLOUT_positions, _("Apply x0->x1, y0->y1, z0->z1"), GENPLOT_PLOT_DIST, GenPlotCB);
 
   //  glui_plot2d->add_column_to_panel(PANEL_genplot, false);
 
@@ -1749,18 +1782,18 @@ extern "C" void GluiPlot2DSetup(int main_window){
     GenPlotCB(GENPLOT_SHOW_PLOT);
     plot2d_dialogs_defined = 1;
     EnableDisablePlot2D();
-  }
 
-  PANEL_plot2d_label3 = glui_plot2d->add_panel("",false);
-  glui_plot2d->add_column_to_panel(PANEL_plot2d_label3,false);
+    PANEL_plot2d_label3 = glui_plot2d->add_panel("", false);
+    glui_plot2d->add_column_to_panel(PANEL_plot2d_label3, false);
 
-  glui_plot2d->add_button_to_panel(PANEL_plot2d_label3,_("Save settings"),GENPLOT_SAVE,GenPlotCB);
-  glui_plot2d->add_column_to_panel(PANEL_plot2d_label3,false);
+    glui_plot2d->add_button_to_panel(PANEL_plot2d_label3, _("Save settings"), GENPLOT_SAVE, GenPlotCB);
+    glui_plot2d->add_column_to_panel(PANEL_plot2d_label3, false);
 
-  BUTTON_plot2d_2 = glui_plot2d->add_button_to_panel(PANEL_plot2d_label3,_("Close"),GENPLOT_CLOSE,GenPlotCB);
+    BUTTON_plot2d_2 = glui_plot2d->add_button_to_panel(PANEL_plot2d_label3, _("Close"), GENPLOT_CLOSE, GenPlotCB);
 #ifdef pp_CLOSEOFF
-  BUTTON_plot2d_2->disable();
+    BUTTON_plot2d_2->disable();
 #endif
+  }
 }
 
 /* ------------------ GluiDeviceSetup ------------------------ */
