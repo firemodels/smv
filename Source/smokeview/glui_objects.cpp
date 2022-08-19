@@ -1007,6 +1007,7 @@ void GenPlotCB(int var){
       else{
         LIST_csvunits->set_name("only show curves with units:");
       }
+      LIST_csvID->set_int_val(-1);
       break;
     case GENPLOT_SELECT_CURVE:
       index = glui_plot2dinfo->curve_index;
