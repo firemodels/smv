@@ -30,8 +30,8 @@
 #define GENPLOT_PLOT_DIST           115
 #define GENPLOT_UPDATE              116
 
-#define GENPLOT_SELECT_CSV_FILE     121
-#define GENPLOT_CSV_TYPE            122
+#define GENPLOT_CSV_FILETYPE        121
+#define GENPLOT_CURVE_UNIT          122
 
 #define GENPLOT_ADD_CURVE           131
 #define GENPLOT_REM_CURVE           132
@@ -69,6 +69,8 @@
 
 class CGluiOpen {
 };
+
+static char *dimensionless="dimensionless";
 
 int gluiopen_file_index=0;
 int gluiopen_nfilelist=0;
@@ -120,7 +122,7 @@ GLUI_EditText *EDIT_filter=NULL;
 
 GLUI_Listbox *LIST_csvfile = NULL;
 GLUI_Listbox *LIST_csvID    = NULL;
-GLUI_Listbox *LIST_csvunits = NULL;
+GLUI_Listbox *LIST_curve_unit = NULL;
 GLUI_Listbox *LIST_plots = NULL;
 GLUI_Listbox *LIST_plotcurves = NULL;
 GLUI_Listbox *LIST_open=NULL;
@@ -435,7 +437,7 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int option){
   csvdata *csvi;
   char *c_type;
 
-  csvi = GetCurrentCsv(index, &csvfi);
+  csvi = GetCsvCurve(index, &csvfi);
   c_type = csvfi->c_type;
 
   have_plot = 0;
@@ -697,6 +699,25 @@ extern "C" void ShowPlot2D(void){
   }
 }
 
+/* ------------------ GetCsvUnit ------------------------ */
+
+char *GetCsvUnit(void){
+  int unit_id;
+
+  unit_id = LIST_curve_unit->get_int_val();
+  if(unit_id>=0){
+    csvdata *csvunit;
+
+    csvunit = GetCsvCurve(unit_id, NULL);
+    if(csvunit==NULL)return NULL;
+    if(csvunit->dimensionless==1)return dimensionless;
+    return csvunit->label.unit;
+  }
+  else{
+    return NULL;
+  }
+}
+
 /* ------------------ FilterList ------------------------ */
 
 void FilterList(void){
@@ -711,13 +732,13 @@ void FilterList(void){
   {
     csvfiledata *csvfi;
 
-    GetCurrentCsv(0, &csvfi);
-    unit_id = LIST_csvunits->get_int_val();
+    GetCsvCurve(0, &csvfi);
+    unit_id = LIST_curve_unit->get_int_val();
     strcpy(unit_label, "all");
     if(unit_id >= 0){
       csvdata *csvunit;
 
-      csvunit = GetCurrentCsv(unit_id, NULL);
+      csvunit = GetCsvCurve(unit_id, NULL);
       if(csvunit->dimensionless == 0){
         strcpy(unit_label, csvunit->label.unit);
       }
@@ -728,7 +749,7 @@ void FilterList(void){
     for(i = 0; i < csvfi->ncsvinfo; i++){
       csvdata *csvi;
 
-      csvi = GetCurrentCsv(i, NULL);
+      csvi = GetCsvCurve(i, NULL);
       if(csvi == csvfi->time)continue;
       if(csvi->skip == 0){
         if(strcmp(unit_label, "all") == 0){
@@ -748,9 +769,45 @@ void FilterList(void){
   }
 }
 
-/* ------------------ UpdateCvsList ------------------------ */
+/* ------------------ GetCsvType ------------------------ */
 
-void UpdateCvsList(void){
+char *GetCsvType(void){
+  csvfiledata *csvfi;
+
+  if(glui_csv_file_index>=0){
+    csvfi = csvfileinfo+glui_csv_file_index;
+    return csvfi->c_type;
+  }
+  else{
+    return NULL;
+  }
+}
+
+/* ------------------ UpdateCurveLabels ------------------------ */
+
+void UpdateCurveLabels(void){
+  char label[256], *unit, *c_type;
+
+  c_type = GetCsvType();
+  unit = GetCsvUnit();
+  strcpy(label, "select ");
+  if(c_type!=NULL)strcat(label, c_type);
+  strcat(label, " curve");
+  if(unit==NULL){
+    strcat(label, "(any unit):");
+  }
+  else{
+    strcat(label, "(");
+    strcat(label, unit);
+    strcat(label, ")");
+  }
+  LIST_csvID->set_name(label);
+
+}
+
+/* ------------------ UpdateCsvList ------------------------ */
+
+void UpdateCsvList(void){
   int i;
   char label[256];
   char label2[256];
@@ -759,11 +816,11 @@ void UpdateCvsList(void){
   for(i=0; i<plot2d_max_columns; i++){
     LIST_csvID->delete_item(i);
   }
-  GetCurrentCsv(0, &csvfi);
+  GetCsvCurve(0, &csvfi);
   for(i = 0; i < csvfi->ncsvinfo; i++){
     csvdata *csvi;
 
-    csvi = GetCurrentCsv(i, NULL);
+    csvi = GetCsvCurve(i, NULL);
     if(csvi == csvfi->time||csvi->skip==1)continue;
     LIST_csvID->add_item(i, csvi->label.shortlabel);
   }
@@ -783,19 +840,19 @@ void UpdateCvsList(void){
   LIST_csvID->set_name(label2);
 
   for(i=0; i<plot2d_max_columns; i++){
-    LIST_csvunits->delete_item(i);
+    LIST_curve_unit->delete_item(i);
   }
   for(i = 0; i < csvfi->ncsvinfo; i++){
     csvdata *csvi;
     int dup_unit, j;
 
-    csvi = GetCurrentCsv(i, NULL);
+    csvi = GetCsvCurve(i, NULL);
     dup_unit = 0;
     if(csvi == csvfi->time)continue;
     for(j=0; j<i; j++){
       csvdata *csvj;
 
-      csvj = GetCurrentCsv(j, NULL);
+      csvj = GetCsvCurve(j, NULL);
       if(csvj == csvfi->time)continue;
       if(csvi->dimensionless==0){
         if(strcmp(csvi->label.unit, csvj->label.unit) == 0){
@@ -812,10 +869,10 @@ void UpdateCvsList(void){
     }
     if(dup_unit == 0){
       if(csvi->dimensionless==0){
-        LIST_csvunits->add_item(i, csvi->label.unit);
+        LIST_curve_unit->add_item(i, csvi->label.unit);
       }
       else{
-        LIST_csvunits->add_item(i, "dimensionless");
+        LIST_curve_unit->add_item(i, "dimensionless");
       }
     }
   }
@@ -829,12 +886,9 @@ void UpdateCvsList(void){
   }
   PANEL_add_curve->set_name(label);
 
-  strcpy(label2, "select ");
-  strcat(label2, csvfi->c_type);
-  strcat(label2, " curve:");
-  LIST_csvID->set_name(label2);
+  UpdateCurveLabels();
 
-  LIST_csvunits->set_int_val(-1);
+  LIST_curve_unit->set_int_val(-1);
 
   if(BUTTON_plot_position!=NULL){
     if(strcmp(csvfi->c_type, "devc")==0){
@@ -995,19 +1049,15 @@ void GenPlotCB(int var){
       SetPlot2DBoundLabels(plot2dinfo + iplot2dinfo);
       DeviceCB(DEVICE_TIMEAVERAGE);
       break;
-    case GENPLOT_SELECT_CSV_FILE:
-      UpdateCvsList();
+    case GENPLOT_CSV_FILETYPE:
+      UpdateCsvList();
       LIST_csvID->set_int_val(-1);
+      UpdateCurveLabels();
       break;
-    case GENPLOT_CSV_TYPE:
+    case GENPLOT_CURVE_UNIT:
       FilterList();
-      if(icsv_units==-1){
-        LIST_csvunits->set_name("show all curves");
-      }
-      else{
-        LIST_csvunits->set_name("only show curves with units:");
-      }
       LIST_csvID->set_int_val(-1);
+      UpdateCurveLabels();
       break;
     case GENPLOT_SELECT_CURVE:
       index = glui_plot2dinfo->curve_index;
@@ -1148,7 +1198,7 @@ void GenPlotCB(int var){
         strcat(label, ")");
         PANEL_curve_properties->set_name(label);
         csvfiledata *csvfi;
-        GetCurrentCsv(0, &csvfi);
+        GetCsvCurve(0, &csvfi);
         strcpy(label, "add");
         if(plot2dinfo != NULL){
           strcat(label, " curves to ");
@@ -1215,7 +1265,7 @@ void GenPlotCB(int var){
       dev_quant = deviceinfo[idevice_add].quantity;
       glui_csv_file_index = 0;
       LIST_csvfile->set_int_val(glui_csv_file_index);
-      GenPlotCB(GENPLOT_SELECT_CSV_FILE);
+      GenPlotCB(GENPLOT_CSV_FILETYPE);
       for(i=0;i<ndeviceinfo;i++){
         devicedata *devi;
 
@@ -1642,7 +1692,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
 
     PANEL_add_curve = glui_plot2d->add_panel_to_panel(PANEL_newplot, "");
     PANEL_csv = glui_plot2d->add_panel_to_panel(PANEL_add_curve, "", 0);
-    LIST_csvfile = glui_plot2d->add_listbox_to_panel(PANEL_csv, "select csv file type:", &glui_csv_file_index, GENPLOT_SELECT_CSV_FILE, GenPlotCB);
+    LIST_csvfile = glui_plot2d->add_listbox_to_panel(PANEL_csv, "select csv file type:", &glui_csv_file_index, GENPLOT_CSV_FILETYPE, GenPlotCB);
     for(i = 0; i<ncsvfileinfo; i++){
       csvfiledata *csvfi;
 
@@ -1653,12 +1703,12 @@ extern "C" void GluiPlot2DSetup(int main_window){
       if(strcmp(csvfi->c_type, "ext")!=0)LIST_csvfile->add_item(i, csvfi->c_type);
 #endif
     }
-    LIST_csvID = glui_plot2d->add_listbox_to_panel(PANEL_add_curve, "curves:", &icsv_cols, GENPLOT_ADD_CURVE, GenPlotCB);
-    LIST_csvunits = glui_plot2d->add_listbox_to_panel(PANEL_add_curve, "show", &icsv_units, GENPLOT_CSV_TYPE, GenPlotCB);
-    LIST_csvunits->add_item(-1, "all");
+    LIST_csvID = glui_plot2d->add_listbox_to_panel(PANEL_add_curve,      "curves:", &icsv_cols,  GENPLOT_ADD_CURVE,  GenPlotCB);
+    LIST_curve_unit = glui_plot2d->add_listbox_to_panel(PANEL_add_curve, "unit:",    &icsv_units, GENPLOT_CURVE_UNIT, GenPlotCB);
+    LIST_curve_unit->add_item(-1, "any");
     LIST_csvID->add_item(-1, "");
-    GenPlotCB(GENPLOT_SELECT_CSV_FILE);
-    GenPlotCB(GENPLOT_CSV_TYPE);
+    GenPlotCB(GENPLOT_CSV_FILETYPE);
+    GenPlotCB(GENPLOT_CURVE_UNIT);
 
     PANEL_plotproperties = glui_plot2d->add_panel_to_panel(PANEL_genplot, "plot properties");
     PANEL_plot_position = glui_plot2d->add_panel_to_panel(PANEL_plotproperties, "position");
