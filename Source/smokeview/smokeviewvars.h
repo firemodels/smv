@@ -1837,6 +1837,7 @@ SVEXTERN int SVDECL(selectedtour_index, TOURINDEX_MANUAL), SVDECL(selectedtour_i
 SVEXTERN int SVDECL(update_selectedtour_index,0);
 SVEXTERN int viewtourfrompath,viewalltours,viewanytours,edittour;
 
+SVEXTERN origblockagedata SVDECL(*origblockageinfo, NULL);
 SVEXTERN selectdata SVDECL(*selectfaceinfo,NULL);
 SVEXTERN blockagedata SVDECL(**selectblockinfo,NULL);
 SVEXTERN tickdata SVDECL(*tickinfo,NULL);
