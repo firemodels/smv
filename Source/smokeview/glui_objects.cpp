@@ -790,7 +790,7 @@ void UpdateCurveLabels(void){
 
   c_type = GetCsvType();
   unit = GetCsvUnit();
-  strcpy(label, "select ");
+  strcpy(label, "");
   if(c_type!=NULL)strcat(label, c_type);
   strcat(label, " curve");
   if(unit==NULL){
@@ -834,7 +834,7 @@ void UpdateCsvList(void){
   }
   PANEL_add_curve->set_name(label);
 
-  strcpy(label2, "select ");
+  strcpy(label2, "");
   strcat(label2, csvfi->c_type);
   strcat(label2, " curve:");
   LIST_csvID->set_name(label2);
@@ -1692,7 +1692,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
 
     PANEL_add_curve = glui_plot2d->add_panel_to_panel(PANEL_newplot, "");
     PANEL_csv = glui_plot2d->add_panel_to_panel(PANEL_add_curve, "", 0);
-    LIST_csvfile = glui_plot2d->add_listbox_to_panel(PANEL_csv, "select csv file type:", &glui_csv_file_index, GENPLOT_CSV_FILETYPE, GenPlotCB);
+    LIST_csvfile = glui_plot2d->add_listbox_to_panel(PANEL_csv, "csv file type:", &glui_csv_file_index, GENPLOT_CSV_FILETYPE, GenPlotCB);
     for(i = 0; i<ncsvfileinfo; i++){
       csvfiledata *csvfi;
 
@@ -1728,7 +1728,10 @@ extern "C" void GluiPlot2DSetup(int main_window){
     glui_plot2d->add_spinner_to_panel(ROLLOUT_positions, "z1", GLUI_SPINNER_FLOAT, plot2d_xyzend+2);
     glui_plot2d->add_button_to_panel(ROLLOUT_positions, _("Apply x0->x1, y0->y1, z0->z1"), GENPLOT_PLOT_DIST, GenPlotCB);
 
-  //  glui_plot2d->add_column_to_panel(PANEL_genplot, false);
+    PANEL_plottitle = glui_plot2d->add_panel_to_panel(PANEL_plotproperties, "title");
+    CHECKBOX_show_plot_title = glui_plot2d->add_checkbox_to_panel(PANEL_plottitle, "show", &plot2d_show_plot_title, GENPLOT_PLOT_LABEL, GenPlotCB);
+    EDIT_plot_label = glui_plot2d->add_edittext_to_panel(PANEL_plottitle, "edit:", GLUI_EDITTEXT_TEXT, glui_plot2dinfo->plot_label, GENPLOT_PLOT_LABEL, GenPlotCB);
+    glui_plot2d->add_button_to_panel(PANEL_plottitle, _("Apply"), GENPLOT_PLOT_LABEL, GenPlotCB);
 
     glui_plot2d->add_column_to_panel(PANEL_plotproperties, false);
 
@@ -1743,14 +1746,9 @@ extern "C" void GluiPlot2DSetup(int main_window){
 
     PANEL_plotother = glui_plot2d->add_panel_to_panel(PANEL_plotproperties, "");
     glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("frame line width"), GLUI_SPINNER_FLOAT, &plot2d_frame_width,                       GENPLOT_UPDATE,    GenPlotCB);
-    SPINNER_size_factor = glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("size multipler"), GLUI_SPINNER_FLOAT, &plot2d_size_factor,   GENPLOT_PLOT_SIZE, GenPlotCB);
+    SPINNER_size_factor = glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("plot size multipler"), GLUI_SPINNER_FLOAT, &plot2d_size_factor,   GENPLOT_PLOT_SIZE, GenPlotCB);
     glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("vertical font spacing"), GLUI_SPINNER_FLOAT, &plot2d_font_spacing,                 GENPLOT_UPDATE,    GenPlotCB);
     SPINNER_plot2d_time_average = glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("smoothing interval (s)"), GLUI_SPINNER_FLOAT, &plot2d_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
-
-    PANEL_plottitle = glui_plot2d->add_panel_to_panel(PANEL_plotproperties, "title");
-    CHECKBOX_show_plot_title = glui_plot2d->add_checkbox_to_panel(PANEL_plottitle,   "show",         &plot2d_show_plot_title,       GENPLOT_PLOT_LABEL, GenPlotCB);
-    EDIT_plot_label = glui_plot2d->add_edittext_to_panel(PANEL_plottitle, "edit:", GLUI_EDITTEXT_TEXT, glui_plot2dinfo->plot_label, GENPLOT_PLOT_LABEL, GenPlotCB);
-    glui_plot2d->add_button_to_panel(PANEL_plottitle, _("Apply"), GENPLOT_PLOT_LABEL, GenPlotCB);
 
     if(nplot2dinfo==0){
       if(PANEL_add_curve!=NULL)PANEL_add_curve->disable();

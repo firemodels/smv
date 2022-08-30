@@ -438,6 +438,12 @@ typedef struct _selectdadta {
 
 /* -------------------------- blockagedata ------------------------------------ */
 
+typedef struct _origblockagedata {
+  float xyz[6];
+} origblockagedata;
+
+/* -------------------------- blockagedata ------------------------------------ */
+
 typedef struct _blockagedata {
   int ijk[6],ijkORIG[6];
   float xmin, xmax, ymin, ymax, zmin, zmax, xyzORIG[6];
