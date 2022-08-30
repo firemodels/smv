@@ -1256,6 +1256,7 @@ void ReadSMVDynamic(char *file){
       if(tempval<0||tempval>=meshi->nbptrs)continue;
       bc=meshi->blockageinfoptrs[tempval];
       bc->nshowtime++;
+      have_animate_blockages = 1;
       continue;
     }
 
