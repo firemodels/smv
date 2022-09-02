@@ -132,6 +132,7 @@ void InitMisc(void){
   mat_ambient2[3] = 1.0;
   mat_specular2[3] = 1.0;
 
+  glui_curve_default.use_foreground_color = 1;
   glui_curve_default.color[0]           = 0;
   glui_curve_default.color[1]           = 0;
   glui_curve_default.color[2]           = 0;
@@ -1801,35 +1802,15 @@ void InitVars(void){
   heatoffcolor[2]=0.0;
   heatoffcolor[3]=1.0;
 
-  backgroundbasecolor[0]=0.0;
-  backgroundbasecolor[1]=0.0;
-  backgroundbasecolor[2]=0.0;
-  backgroundbasecolor[3]=1.0;
-
   glui_backgroundbasecolor[0] = 255 * backgroundbasecolor[0];
   glui_backgroundbasecolor[1] = 255 * backgroundbasecolor[1];
   glui_backgroundbasecolor[2] = 255 * backgroundbasecolor[2];
   glui_backgroundbasecolor[3] = 255 * backgroundbasecolor[3];
 
-  backgroundcolor[0]=0.0;
-  backgroundcolor[1]=0.0;
-  backgroundcolor[2]=0.0;
-  backgroundcolor[3]=1.0;
-
-  foregroundbasecolor[0]=1.0;
-  foregroundbasecolor[1]=1.0;
-  foregroundbasecolor[2]=1.0;
-  foregroundbasecolor[3]=1.0;
-
   glui_foregroundbasecolor[0] = 255 * foregroundbasecolor[0];
   glui_foregroundbasecolor[1] = 255 * foregroundbasecolor[1];
   glui_foregroundbasecolor[2] = 255 * foregroundbasecolor[2];
   glui_foregroundbasecolor[3] = 255 * foregroundbasecolor[3];
-
-  foregroundcolor[0]=1.0;
-  foregroundcolor[1]=1.0;
-  foregroundcolor[2]=1.0;
-  foregroundcolor[3]=1.0;
 
   boundcolor[0]=0.5;
   boundcolor[1]=0.5;

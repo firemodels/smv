@@ -11635,13 +11635,15 @@ int ReadIni2(char *inifile, int localfile){
           curvedata *curve;
           float factor;
           int apply_factor;
+          int use_foreground_color;
 
           fgets(buffer, 255, stream);
           TrimBack(buffer);
           linewidth1 = 1.0;
           factor = 1.0;
           apply_factor = 0;
-          sscanf(buffer, " %i %i %i %i %i %f %f %i",    &file_index, &col_index, color, color+1, color+2, &linewidth1, &factor, &apply_factor);
+          use_foreground_color;
+          sscanf(buffer, " %i %i %i %i %i %f %f %i %i",    &file_index, &col_index, color, color+1, color+2, &linewidth1, &factor, &apply_factor, &use_foreground_color);
 
           plot2di->curve[j].csv_file_index = file_index;
           plot2di->curve[j].csv_col_index  = col_index;
@@ -11654,6 +11656,7 @@ int ReadIni2(char *inifile, int localfile){
           curve->curve_factor              = factor;
           curve->apply_curve_factor        = apply_factor;
           curve->vals                      = NULL;
+          curve->use_foreground_color      = use_foreground_color;
           if(strcmp(curve->c_type, "devc")==0){
             curve->quantity = csvfileinfo[file_index].csvinfo[col_index].label.longlabel;
           }
@@ -15042,6 +15045,7 @@ void WriteIniLocal(FILE *fileout){
       curvedata *curve;
       float factor;
       int apply_factor;
+      int use_foreground_color;
 
       file_index        = plot2di->curve[j].csv_file_index;
       col_index         = plot2di->curve[j].csv_col_index;
@@ -15050,7 +15054,8 @@ void WriteIniLocal(FILE *fileout){
       linewidth1        = curve->linewidth;
       factor            = curve->curve_factor;
       apply_factor      = curve->apply_curve_factor;
-      fprintf(fileout, " %i %i %i %i %i %f %f %i\n", file_index, col_index, color[0], color[1], color[2], linewidth1, factor, apply_factor);
+      use_foreground_color  = curve->use_foreground_color;
+      fprintf(fileout, " %i %i %i %i %i %f %f %i %i\n", file_index, col_index, color[0], color[1], color[2], linewidth1, factor, apply_factor, use_foreground_color);
     };
   }
   fprintf(fileout, "SHOWDEVICEVALS\n");
