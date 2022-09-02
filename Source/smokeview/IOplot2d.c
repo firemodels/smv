@@ -104,11 +104,20 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   float fplot_color[3];
   float curve_factor;
   int apply_curve_factor;
+  int foregroundcolor_rgb[3];
 
   SNIFF_ERRORS("after DrawGenCurve 1 - beginning");
   xyz0               = plot2di->xyz;
   if(curve!=NULL){
-    plot_color = curve->color;
+    if(curve->use_foreground_color == 1){
+      foregroundcolor_rgb[0] = foregroundcolor[0]*255;
+      foregroundcolor_rgb[1] = foregroundcolor[1]*255;
+      foregroundcolor_rgb[2] = foregroundcolor[2]*255;
+      plot_color = foregroundcolor_rgb;
+    }
+    else{
+      plot_color = curve->color;
+    }
     linewidth_arg = curve->linewidth;
     curve_factor = curve->curve_factor;
     apply_curve_factor = curve->apply_curve_factor;
@@ -356,6 +365,7 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
       curve->color[0]           = 0;
       curve->color[1]           = 0;
       curve->color[2]           = 0;
+      curve->use_foreground_color = 1;
       curve->linewidth          = 1.0;
       curve->apply_curve_factor = 0;
       curve->curve_factor       = 1.0;

@@ -45,6 +45,7 @@
 #define GENPLOT_XYZ                 151
 #define GENPLOT_RESET_FUEL_HOC      152
 #define GENPLOT_RESET_FUEL_1P0      153
+#define GENPLOT_USE_FOREGROUND_COLOR 154
 
 #define GENPLOT_SAVE                161
 #define GENPLOT_CLOSE               162
@@ -457,6 +458,7 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int option){
       curve->color[0]           = glui_curve_default.color[0];
       curve->color[1]           = glui_curve_default.color[1];
       curve->color[2]           = glui_curve_default.color[2];
+      curve->use_foreground_color = glui_curve_default.use_foreground_color;
       curve->linewidth          = glui_curve_default.linewidth;
       curve->curve_factor       = glui_curve_default.curve_factor;
       curve->apply_curve_factor = glui_curve_default.apply_curve_factor;
@@ -1114,12 +1116,29 @@ void GenPlotCB(int var){
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       update_times = 1;
       break;
+    case GENPLOT_USE_FOREGROUND_COLOR:
+      if(glui_curve.use_foreground_color==1){
+        glui_curve.color[0] = foregroundcolor[0]*255;
+        glui_curve.color[1] = foregroundcolor[1]*255;
+        glui_curve.color[2] = foregroundcolor[2]*255;
+        SPINNER_genplot_red->set_int_val(glui_curve.color[0]);
+        SPINNER_genplot_green->set_int_val(glui_curve.color[1]);
+        SPINNER_genplot_blue->set_int_val(glui_curve.color[2]);
+        GenPlotCB(GENPLOT_XYZ);
+      }
+      break;
     case GENPLOT_XYZ:
       index = glui_plot2dinfo->curve_index;
       curve = glui_plot2dinfo->curve+index;
       memcpy(curve, &glui_curve, sizeof(curvedata));
       Glui2Plot2D(iplot2dinfo);
       DeviceCB(DEVICE_TIMEAVERAGE);
+      if(
+        glui_curve.color[0]!=foregroundcolor[0]*255||
+        glui_curve.color[1]!=foregroundcolor[1]*255||
+        glui_curve.color[2]!=foregroundcolor[2]*255){
+        glui_curve.use_foreground_color = 0;
+      }
       break;
     case GENPLOT_PLOT_SIZE:
       if(plot2d_size_factor<0.0){
@@ -1776,13 +1795,15 @@ extern "C" void GluiPlot2DSetup(int main_window){
 
     glui_plot2d->add_column_to_panel(PANEL_curve_properties, false);
 
-    PANEL_curve_color = glui_plot2d->add_panel_to_panel(PANEL_curve_properties, "color");
-    SPINNER_genplot_red = glui_plot2d->add_spinner_to_panel(PANEL_curve_color, "red", GLUI_SPINNER_INT, glui_curve.color+0, GENPLOT_XYZ, GenPlotCB);
+    PANEL_curve_color     = glui_plot2d->add_panel_to_panel(PANEL_curve_properties, "color");
+    SPINNER_genplot_red   = glui_plot2d->add_spinner_to_panel(PANEL_curve_color, "red",   GLUI_SPINNER_INT, glui_curve.color+0, GENPLOT_XYZ, GenPlotCB);
     SPINNER_genplot_green = glui_plot2d->add_spinner_to_panel(PANEL_curve_color, "green", GLUI_SPINNER_INT, glui_curve.color+1, GENPLOT_XYZ, GenPlotCB);
-    SPINNER_genplot_blue = glui_plot2d->add_spinner_to_panel(PANEL_curve_color, "blue", GLUI_SPINNER_INT, glui_curve.color+2, GENPLOT_XYZ, GenPlotCB);
+    SPINNER_genplot_blue  = glui_plot2d->add_spinner_to_panel(PANEL_curve_color, "blue",  GLUI_SPINNER_INT, glui_curve.color+2, GENPLOT_XYZ, GenPlotCB);
     SPINNER_genplot_red->set_int_limits(0, 255);
     SPINNER_genplot_green->set_int_limits(0, 255);
     SPINNER_genplot_blue->set_int_limits(0, 255);
+    glui_plot2d->add_button_to_panel(PANEL_curve_color, "Apply colors", GENPLOT_XYZ, GenPlotCB);
+
 
     SPINNER_genplot_linewidth = glui_plot2d->add_spinner_to_panel(PANEL_curve_properties, "line width", GLUI_SPINNER_FLOAT, &(glui_curve.linewidth), GENPLOT_XYZ, GenPlotCB);
     SPINNER_genplot_linewidth->set_float_limits(1.0, 10.0);
