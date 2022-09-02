@@ -11642,7 +11642,7 @@ int ReadIni2(char *inifile, int localfile){
           linewidth1 = 1.0;
           factor = 1.0;
           apply_factor = 0;
-          use_foreground_color;
+          use_foreground_color = 0;
           sscanf(buffer, " %i %i %i %i %i %f %f %i %i",    &file_index, &col_index, color, color+1, color+2, &linewidth1, &factor, &apply_factor, &use_foreground_color);
 
           plot2di->curve[j].csv_file_index = file_index;
