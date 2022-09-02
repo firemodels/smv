@@ -118,9 +118,6 @@ GLUI_Checkbox *CHECKBOX_showbeam_as_line = NULL;
 GLUI_Checkbox *CHECKBOX_use_beamcolor = NULL;
 GLUI_Checkbox **CHECKBOX_showz_windrose;
 GLUI_Checkbox *CHECKBOX_curve_apply_factor = NULL;
-#ifdef pp_PLOT2D_FOREGROUND
-GLUI_Checkbox *CHECKBOX_use_foreground_color = NULL;
-#endif
 
 GLUI_EditText *EDIT_filter=NULL;
 
@@ -660,9 +657,6 @@ void UpdateCurveControls(char *unit){
   SPINNER_genplot_blue->set_int_val(glui_curve.color[2]);
   SPINNER_genplot_linewidth->set_float_val(glui_curve.linewidth);
   SPINNER_curve_factor->set_float_val(glui_curve.curve_factor);
-#ifdef pp_PLOT2D_FOREGROUND
-  CHECKBOX_use_foreground_color->set_int_val(glui_curve.use_foreground_color);
-#endif
   CHECKBOX_curve_apply_factor->set_int_val(glui_curve.apply_curve_factor);
 }
 
@@ -1143,10 +1137,7 @@ void GenPlotCB(int var){
         glui_curve.color[0]!=foregroundcolor[0]*255||
         glui_curve.color[1]!=foregroundcolor[1]*255||
         glui_curve.color[2]!=foregroundcolor[2]*255){
-          glui_curve.use_foreground_color = 0;
-#ifdef pp_PLOT2D_FOREGROUND
-          CHECKBOX_use_foreground_color->set_int_val(glui_curve.use_foreground_color);
-#endif
+        glui_curve.use_foreground_color = 0;
       }
       break;
     case GENPLOT_PLOT_SIZE:
@@ -1811,9 +1802,6 @@ extern "C" void GluiPlot2DSetup(int main_window){
     SPINNER_genplot_red->set_int_limits(0, 255);
     SPINNER_genplot_green->set_int_limits(0, 255);
     SPINNER_genplot_blue->set_int_limits(0, 255);
-#ifdef pp_PLOT2D_FOREGROUND
-    CHECKBOX_use_foreground_color = glui_plot2d->add_checkbox_to_panel(PANEL_curve_color, "Use foreground color", &glui_curve.use_foreground_color, GENPLOT_USE_FOREGROUND_COLOR, GenPlotCB);
-#endif
     glui_plot2d->add_button_to_panel(PANEL_curve_color, "Apply colors", GENPLOT_XYZ, GenPlotCB);
 
 

@@ -17,7 +17,6 @@
 
 //*** options: all platforms
 
-//#define pp_PLOT2D_FOREGROUND  // use foreground color checkbox
 //#define pp_PLOT2D_EXT         // add ext csv files to plot2d menus
 #define  pp_PLOT2D_DEV        // button for adding all device plots
 //#define pp_PLOT2D_DEBUG     // 2d plot debug output
