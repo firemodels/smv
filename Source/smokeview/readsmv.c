@@ -220,14 +220,16 @@ void ReadCSV(csvfiledata *csvfi, int flag){
     }
   }
 
-  NewMemory((void **)&(csvfi->csvinfo), csvfi->ncsvinfo*sizeof(csvdata));
-  NewMemory((void **)&labels,           csvfi->ncsvinfo*sizeof(char *));
-  NewMemory((void **)&units,            csvfi->ncsvinfo*sizeof(char *));
-  NewMemory((void **)&vals,             csvfi->ncsvinfo*sizeof(float));
-  NewMemory((void **)&valids,           csvfi->ncsvinfo*sizeof(int));
+  int nsize;
+  nsize = csvfi->ncsvinfo+1;
+  NewMemory((void **)&(csvfi->csvinfo), nsize*sizeof(csvdata));
+  NewMemory((void **)&labels,           nsize*sizeof(char *));
+  NewMemory((void **)&units,            nsize*sizeof(char *));
+  NewMemory((void **)&vals,             nsize*sizeof(float));
+  NewMemory((void **)&valids,           nsize*sizeof(int));
 
   // initialize each column
-  for(i=0; i<csvfi->ncsvinfo; i++){
+  for(i=0; i<nsize; i++){
     csvdata *ci;
 
     ci = csvfi->csvinfo + i;
@@ -324,6 +326,43 @@ void ReadCSV(csvfiledata *csvfi, int flag){
     if(irow >= nrows)break;
   }
   CheckMemory;
+
+  // compute -QRAD_I/HRR if columns are present
+  csvdata *hrr_csvcol=NULL, *qradi_csvcol=NULL;
+  for(i = 0; i<csvfi->ncsvinfo; i++){
+    csvdata *ci;
+
+    ci = csvfi->csvinfo+i;
+    if(strcmp(ci->label.shortlabel, "HRR")==0)hrr_csvcol = ci;
+    if(strcmp(ci->label.shortlabel, "Q_RADI")==0)qradi_csvcol = ci;
+  }
+  if(hrr_csvcol!=NULL&&qradi_csvcol!=NULL){
+    csvdata *cchirad;
+    float *vals;
+
+    cchirad = csvfi->csvinfo+csvfi->ncsvinfo;
+    cchirad->dimensionless = 1;
+    cchirad->skip = 0;
+    vals = cchirad->vals;
+    for(i=0;i<nrows;i++){
+      if(hrr_csvcol->vals[i]!=0.0){
+        vals[i] = -qradi_csvcol->vals[i]/hrr_csvcol->vals[i];
+      }
+      else{
+        vals[i] = 0.0;
+      }
+      if(i==0){
+        cchirad->valmin = vals[i];
+        cchirad->valmax = vals[i];
+      }
+      else{
+        cchirad->valmin = MIN(cchirad->valmin, vals[i]);
+        cchirad->valmax = MAX(cchirad->valmax, vals[i]);
+      }
+    }
+    SetLabels(&(cchirad->label), "-QRAD_I/HRR", "-QRAD_I/HRR", "");
+    csvfi->ncsvinfo++;
+  }
 
   //copy vals into vals_orig
   for(i=0; i<csvfi->ncsvinfo; i++){
