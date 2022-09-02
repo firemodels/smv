@@ -338,26 +338,26 @@ void ReadCSV(csvfiledata *csvfi, int flag){
   }
   if(hrr_csvcol!=NULL&&qradi_csvcol!=NULL){
     csvdata *cchirad;
-    float *vals;
+    float *vals2;
 
     cchirad = csvfi->csvinfo+csvfi->ncsvinfo;
     cchirad->dimensionless = 1;
     cchirad->skip = 0;
-    vals = cchirad->vals;
+    vals2 = cchirad->vals;
     for(i=0;i<nrows;i++){
       if(hrr_csvcol->vals[i]!=0.0){
-        vals[i] = -qradi_csvcol->vals[i]/hrr_csvcol->vals[i];
+        vals2[i] = -qradi_csvcol->vals[i]/hrr_csvcol->vals[i];
       }
       else{
-        vals[i] = 0.0;
+        vals2[i] = 0.0;
       }
       if(i==0){
-        cchirad->valmin = vals[i];
-        cchirad->valmax = vals[i];
+        cchirad->valmin = vals2[i];
+        cchirad->valmax = vals2[i];
       }
       else{
-        cchirad->valmin = MIN(cchirad->valmin, vals[i]);
-        cchirad->valmax = MAX(cchirad->valmax, vals[i]);
+        cchirad->valmin = MIN(cchirad->valmin, vals2[i]);
+        cchirad->valmax = MAX(cchirad->valmax, vals2[i]);
       }
     }
     SetLabels(&(cchirad->label), "-QRAD_I/HRR", "-QRAD_I/HRR", "");
