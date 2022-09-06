@@ -1154,11 +1154,21 @@ void GenPlotCB(int var){
       memcpy(curve, &glui_curve, sizeof(curvedata));
       Glui2Plot2D(iplot2dinfo);
       DeviceCB(DEVICE_TIMEAVERAGE);
+#define COLOR_EPS 5
       if(
-        glui_curve.color[0]!=foregroundcolor[0]*255||
-        glui_curve.color[1]!=foregroundcolor[1]*255||
-        glui_curve.color[2]!=foregroundcolor[2]*255){
-        glui_curve.use_foreground_color = 0;
+        ABS(glui_curve.color[0]-foregroundcolor[0]*255)<=COLOR_EPS&&
+        ABS(glui_curve.color[1]-foregroundcolor[1]*255)<=COLOR_EPS&&
+        ABS(glui_curve.color[2]-foregroundcolor[2]*255)<=COLOR_EPS
+        ){
+        glui_curve.use_foreground_color = 1;
+        break;
+      }
+      if(
+        ABS(glui_curve.color[0]-backgroundcolor[0]*255)<=COLOR_EPS&&
+        ABS(glui_curve.color[1]-backgroundcolor[1]*255)<=COLOR_EPS&&
+        ABS(glui_curve.color[2]-backgroundcolor[2]*255)<=COLOR_EPS
+        ){
+        glui_curve.use_foreground_color = 1;
       }
       break;
     case GENPLOT_PLOT_SIZE:
