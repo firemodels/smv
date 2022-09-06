@@ -9818,11 +9818,7 @@ updatemenu=0;
   if(ndeviceinfo>0&&GetNumActiveDevices()>0){
     glutAddMenuEntry(_("Devices/Objects"), DIALOG_DEVICE);
   }
-#ifdef pp_PLOT2D_EXT
-  if(ncsvfileinfo>0){
-#else
   if((ncsvfileinfo>0&&have_ext==0)||(ncsvfileinfo>1&&have_ext==1)){
-#endif
     glutAddMenuEntry(_("2D plots"), DIALOG_2DPLOTS);
   }
   glutAddMenuEntry(_("Show/Hide..."), DIALOG_SHOWFILES);

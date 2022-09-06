@@ -1662,12 +1662,8 @@ extern "C" void GluiPlot2DSetup(int main_window){
     glui_plot2d = NULL;
   }
 
-#ifdef pp_PLOT2D_EXT
-  if(ncsvfileinfo>0){
-#else
   have_ext = HaveExt();
   if((ncsvfileinfo>0&&have_ext==0)||(ncsvfileinfo>1&&have_ext==1)){
-#endif
     int i;
 
     glui_plot2d = GLUI_Master.create_glui("2D plots", 0, 0, 0);
@@ -1716,11 +1712,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
       csvfiledata *csvfi;
 
       csvfi = csvfileinfo+i;
-#ifdef pp_PLOT2D_EXT
-      LIST_csvfile->add_item(i, csvfi->c_type);
-#else
       if(strcmp(csvfi->c_type, "ext")!=0)LIST_csvfile->add_item(i, csvfi->c_type);
-#endif
     }
     LIST_csvID = glui_plot2d->add_listbox_to_panel(PANEL_add_curve,      "curves:", &icsv_cols,  GENPLOT_ADD_CURVE,  GenPlotCB);
     LIST_curve_unit = glui_plot2d->add_listbox_to_panel(PANEL_add_curve, "unit:",    &icsv_units, GENPLOT_CURVE_UNIT, GenPlotCB);
