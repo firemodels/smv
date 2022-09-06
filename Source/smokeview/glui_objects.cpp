@@ -359,27 +359,6 @@ void UpdateShowWindRoses(void) {
   }
 }
 
-/* ------------------ PrintPlotInfo ------------------------ */
-
-#ifdef pp_PLOT2D_DEBUG
-void PrintPlot2dInfo(void){
-  int i;
-
-  for(i=0; i<nplot2dinfo; i++){
-    int j;
-    plot2ddata *plot2di;
-
-    plot2di = plot2dinfo + i;
-    for(j = 0; j < plot2di->ncurves; j++){
-      char *label;
-
-      label = GetPlotShortLabel(plot2di, j);
-      printf("plot: %i, curve: %i, label: %s\n",i, j, label);
-    }
-  }
-}
-#endif
-
 /* ------------------ RemoveCurve ------------------------ */
 
 void RemoveCurve(plot2ddata *plot2di, int index){
@@ -1025,19 +1004,11 @@ void GenPlotCB(int var){
       DeviceCB(DEVICE_TIMEAVERAGE);
       break;
     case GENPLOT_ADD_CURVE:
-#ifdef pp_PLOT2D_DEBUG
-      printf("before add *********************\n");
-      PrintPlot2dInfo();
-#endif
       curve_id = LIST_csvID->get_int_val();
       AddCSVCurve(glui_plot2dinfo, curve_id, NEW_CURVE);
       Glui2Plot2D(iplot2dinfo);
       EnableDisablePlot2D();
       GenPlotCB(GENPLOT_RESET_BOUNDS);
-#ifdef pp_PLOT2D_DEBUG
-      printf("after add *********************\n");
-      PrintPlot2dInfo();
-#endif
       SetPlot2DBoundLabels(plot2dinfo + iplot2dinfo);
       DeviceCB(DEVICE_TIMEAVERAGE);
       break;
@@ -1073,18 +1044,8 @@ void GenPlotCB(int var){
       SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
       break;
     case GENPLOT_REM_CURVE:
-#ifdef pp_PLOT2D_DEBUG
-  printf("before remove*******************\n");
-  PrintPlot2dInfo();
-  printf("*******************\n");
-#endif
       RemoveCurve(glui_plot2dinfo, glui_plot2dinfo->curve_index);
       Glui2Plot2D(iplot2dinfo);
-#ifdef pp_PLOT2D_DEBUG
-  printf("after*******************\n");
-  PrintPlot2dInfo();
-  printf("*******************\n");
-#endif
       EnableDisablePlot2D();
       SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
       break;
