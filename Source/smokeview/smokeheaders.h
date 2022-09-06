@@ -808,9 +808,7 @@ EXTERNCPP char *STRSTR(char *c, const char *key);
 EXTERNCPP void HandlePLOT3DKeys(int  key);
 EXTERNCPP void HandleMoveKeys(int  key);
 EXTERNCPP int GetInterval(float val, float *array, int n);
-#ifdef pp_PLOT2D_DEV
 EXTERNCPP void UpdateDeviceAdd(void);
-#endif
 
 EXTERNCPP void SetUnitVis(void);
 EXTERNCPP void ShowHideTranslate(int var);

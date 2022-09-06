@@ -11644,9 +11644,7 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, " %i %i %i %i %i %i",
              &plot2d_show_plot_title, &plot2d_show_curve_labels, &plot2d_show_curve_values,
              &plot2d_show_xaxis_labels, &plot2d_show_yaxis_labels, &idevice_add);
-#ifdef pp_PLOT2D_DEV
       UpdateDeviceAdd();
-#endif
       for(i=0;i<nplot2dini;i++){
         plot2ddata *plot2di;
         char *labelptr;

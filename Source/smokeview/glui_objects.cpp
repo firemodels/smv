@@ -15,12 +15,10 @@
 #define GENPLOT_REM_PLOT            102
 #define GENPLOT_SHOW_PLOT           103
 #define GENPLOT_SELECT_PLOT         104
-#ifdef pp_PLOT2D_DEV
 #define GENPLOT_ADD_DEV_PLOTS       105
 #define GENPLOT_REM_DEV_PLOTS       106
 #define GENPLOT_SELECT_DEV_PLOTS    107
 #define GENPLOT_RESET_DEV_PLOTS     108
-#endif
 
 #define GENPLOT_PLOT_SIZE           110
 #define GENPLOT_SET_PLOTPOS         111
@@ -127,9 +125,7 @@ GLUI_Listbox *LIST_curve_unit = NULL;
 GLUI_Listbox *LIST_plots = NULL;
 GLUI_Listbox *LIST_plotcurves = NULL;
 GLUI_Listbox *LIST_open=NULL;
-#ifdef pp_PLOT2D_DEV
 GLUI_Listbox *LIST_plot_add_dev = NULL;
-#endif
 
 GLUI_Panel *PANEL_allplotproperties = NULL;
 GLUI_Panel *PANEL_plotproperties = NULL;
@@ -168,9 +164,7 @@ GLUI_Panel *PANEL_wr1=NULL;
 GLUI_Panel *PANEL_windrose_merge = NULL;
 GLUI_Panel *PANEL_windrose_merget = NULL;
 GLUI_Panel *PANEL_windrose_mergexyz = NULL;
-#ifdef pp_PLOT2D_DEV
 GLUI_Panel *ROLLOUT_devplots = NULL;
-#endif
 
 GLUI_RadioGroup *RADIO_windrose_ttype = NULL;
 GLUI_RadioGroup *RADIO_windrose_merge_type=NULL;
@@ -685,13 +679,11 @@ void EnableDisablePlot2D(void){
 
 /* ------------------ UpdateDeviceAdd ------------------------ */
 
-#ifdef pp_PLOT2D_DEV
 extern "C" void UpdateDeviceAdd(void){
   if(LIST_plot_add_dev!=NULL){
     LIST_plot_add_dev->set_int_val(idevice_add);
   }
 }
-#endif
 
 /* ------------------ ShowPlot2D ------------------------ */
 
@@ -959,8 +951,6 @@ void SetPlot2DBoundLabels(plot2ddata *plot2di){
   }
 }
 
-#ifdef pp_PLOT2D_DEV
-
 /* ------------------ InDevList ------------------------ */
 
 int InDevList(devicedata *devi, int n){
@@ -1008,7 +998,6 @@ void UpdatePlotDevList(void){
     }
   }
 }
-#endif
 
 /* ------------------ GenPlotCB ------------------------ */
 
@@ -1242,7 +1231,6 @@ void GenPlotCB(int var){
         SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
       }
       break;
-#ifdef pp_PLOT2D_DEV
     case GENPLOT_REM_DEV_PLOTS:
       int stop;
 
@@ -1323,7 +1311,6 @@ void GenPlotCB(int var){
       break;
     case GENPLOT_SELECT_DEV_PLOTS:
       break;
-#endif
     case GENPLOT_ADD_PLOT:
       AddPlot();
       {
@@ -1692,7 +1679,6 @@ extern "C" void GluiPlot2DSetup(int main_window){
     LIST_plots->add_item(-1, "");
     CHECKBOX_show_genplot = glui_plot2d->add_checkbox_to_panel(PANEL_plots, "show", &(glui_plot2dinfo->show), GENPLOT_SHOW_PLOT, GenPlotCB);
 
-#ifdef pp_PLOT2D_DEV
     if(ndeviceinfo>0){
       ROLLOUT_devplots = glui_plot2d->add_rollout_to_panel(PANEL_newplot, "add plots at device locations", 0);
       for(i = 0; i<ndeviceinfo; i++){
@@ -1714,7 +1700,6 @@ extern "C" void GluiPlot2DSetup(int main_window){
       UpdatePlotDevList();
       LIST_plot_add_dev->set_int_val(-1);
     }
-#endif
     glui_plot2d->add_column_to_panel(PANEL_newplot, false);
 
     PANEL_add_curve = glui_plot2d->add_panel_to_panel(PANEL_newplot, "");
