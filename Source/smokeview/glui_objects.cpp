@@ -1770,7 +1770,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
 
     PANEL_plotother = glui_plot2d->add_panel_to_panel(PANEL_plotproperties, "");
     glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("frame line width"), GLUI_SPINNER_FLOAT, &plot2d_frame_width,                       GENPLOT_UPDATE,    GenPlotCB);
-    SPINNER_size_factor = glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("plot size multipler"), GLUI_SPINNER_FLOAT, &plot2d_size_factor,   GENPLOT_PLOT_SIZE, GenPlotCB);
+    SPINNER_size_factor = glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("plot size(relative)"), GLUI_SPINNER_FLOAT, &plot2d_size_factor,   GENPLOT_PLOT_SIZE, GenPlotCB);
     glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("vertical font spacing"), GLUI_SPINNER_FLOAT, &plot2d_font_spacing,                 GENPLOT_UPDATE,    GenPlotCB);
     SPINNER_plot2d_time_average = glui_plot2d->add_spinner_to_panel(PANEL_plotother, _("smoothing interval (s)"), GLUI_SPINNER_FLOAT, &plot2d_time_average, DEVICE_TIMEAVERAGE, DeviceCB);
 
