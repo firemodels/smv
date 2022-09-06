@@ -17,7 +17,6 @@
 
 //*** options: all platforms
 
-//#define pp_PLOT2D_OPERATE    // multiply or divide two curves befoer adding to a plot
 #define  pp_PLOT2D_DEV        // button for adding all device plots
 //#define pp_PLOT2D_DEBUG     // 2d plot debug output
 #define pp_PART_MULTI        // load particles in parallel

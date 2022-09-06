@@ -46,7 +46,6 @@
 #define GENPLOT_RESET_FUEL_HOC      152
 #define GENPLOT_RESET_FUEL_1P0      153
 #define GENPLOT_USE_FOREGROUND_COLOR 154
-#define GENPLOT_OPERATE             155
 
 #define GENPLOT_SAVE                161
 #define GENPLOT_CLOSE               162
@@ -144,9 +143,6 @@ GLUI_Panel *PANEL_plot2d_label3 = NULL;
 GLUI_Panel *PANEL_bound1 = NULL;
 GLUI_Panel *PANEL_bound2 = NULL;
 GLUI_Panel *PANEL_csv1 = NULL;
-#ifdef pp_PLOT2D_OPERATE
-GLUI_Panel *PANEL_csv2 = NULL;
-#endif
 GLUI_Panel *PANEL_curve_color = NULL;
 GLUI_Panel *PANEL_curve_usermin = NULL;
 GLUI_Panel *PANEL_curve_usermax = NULL;
@@ -176,18 +172,12 @@ GLUI_Panel *PANEL_windrose_mergexyz = NULL;
 GLUI_Panel *PANEL_devplots = NULL;
 #endif
 
-#ifdef pp_PLOT2D_OPERATE
-GLUI_RadioGroup *RADIO_plot2d_operate = NULL;
-#endif
 GLUI_RadioGroup *RADIO_windrose_ttype = NULL;
 GLUI_RadioGroup *RADIO_windrose_merge_type=NULL;
 GLUI_RadioGroup *RADIO_vectortype=NULL;
 GLUI_RadioGroup *RADIO_scale_windrose=NULL;
 GLUI_RadioGroup *RADIO_windstate_windrose = NULL;
 
-#ifdef pp_PLOT2D_OPERATE
-GLUI_Rollout *ROLLOUT_add_curve2 = NULL;
-#endif
 GLUI_Rollout *ROLLOUT_positions = NULL;
 GLUI_Rollout *ROLLOUT_plotdevice = NULL;
 GLUI_Rollout *ROLLOUT_plotproperties = NULL;
@@ -1030,16 +1020,6 @@ void GenPlotCB(int var){
     curvedata *curve;
     int curve_id;
 
-    case GENPLOT_OPERATE:
-#ifdef pp_PLOT2D_OPERATE
-      if(plot2d_operate==0){
-        ROLLOUT_add_curve2->close();
-      }
-      else{
-        ROLLOUT_add_curve2->open();
-      }
-      break;
-#endif
     case GENPLOT_RESET_BOUNDS:
       plot2ddata *plot2dii;
       int i;
@@ -1738,11 +1718,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
     glui_plot2d->add_column_to_panel(PANEL_newplot, false);
 
     PANEL_add_curve = glui_plot2d->add_panel_to_panel(PANEL_newplot, "");
-#ifdef pp_PLOT2D_OPERATE
-    PANEL_add_curve1 = glui_plot2d->add_panel_to_panel(PANEL_add_curve, "curve 1");
-#else
     PANEL_add_curve1 = PANEL_add_curve;
-#endif
     PANEL_csv1 = glui_plot2d->add_panel_to_panel(PANEL_add_curve1, "", 0);
     LIST_csvfile = glui_plot2d->add_listbox_to_panel(PANEL_csv1, "csv file type:", &glui_csv_file_index, GENPLOT_CSV_FILETYPE, GenPlotCB);
     for(i = 0; i<ncsvfileinfo; i++){
@@ -1757,32 +1733,6 @@ extern "C" void GluiPlot2DSetup(int main_window){
     LIST_csvID->add_item(-1, "");
     GenPlotCB(GENPLOT_CSV_FILETYPE);
     GenPlotCB(GENPLOT_CURVE_UNIT);
-
-#ifdef pp_PLOT2D_OPERATE
-    ROLLOUT_add_curve2 = glui_plot2d->add_rollout_to_panel(PANEL_add_curve, "curve 2", 0);
-    PANEL_csv2 = glui_plot2d->add_panel_to_panel(ROLLOUT_add_curve2, "", 0);
-    LIST_csvfile = glui_plot2d->add_listbox_to_panel(PANEL_csv2, "csv file type:", &glui_csv_file_index, GENPLOT_CSV_FILETYPE, GenPlotCB);
-    for(i = 0; i<ncsvfileinfo; i++){
-      csvfiledata *csvfi;
-
-      csvfi = csvfileinfo+i;
-      if(strcmp(csvfi->c_type, "ext")!=0)LIST_csvfile->add_item(i, csvfi->c_type);
-    }
-    LIST_csvID = glui_plot2d->add_listbox_to_panel(ROLLOUT_add_curve2,      "curves:", &icsv_cols,  GENPLOT_ADD_CURVE,  GenPlotCB);
-    LIST_curve_unit = glui_plot2d->add_listbox_to_panel(ROLLOUT_add_curve2, "unit:",    &icsv_units, GENPLOT_CURVE_UNIT, GenPlotCB);
-    LIST_curve_unit->add_item(-1, "any");
-    LIST_csvID->add_item(-1, "");
-    GenPlotCB(GENPLOT_CSV_FILETYPE);
-    GenPlotCB(GENPLOT_CURVE_UNIT);
-
-    glui_plot2d->add_spinner_to_panel(PANEL_add_curve, "factor", GLUI_SPINNER_FLOAT, &plot2d_factor);
-    RADIO_plot2d_operate = glui_plot2d->add_radiogroup_to_panel(PANEL_add_curve, &plot2d_operate, GENPLOT_OPERATE, GenPlotCB);
-    glui_plot2d->add_radiobutton_to_group(RADIO_plot2d_operate, "factor*curve 1");
-    glui_plot2d->add_radiobutton_to_group(RADIO_plot2d_operate, "factor*curve 1/curve 2");
-    glui_plot2d->add_radiobutton_to_group(RADIO_plot2d_operate, "factor*curve 1*curve 2");
-    glui_plot2d->add_button_to_panel(PANEL_add_curve, "Add curve");
-    GenPlotCB(GENPLOT_OPERATE);
-#endif
 
     PANEL_plotproperties = glui_plot2d->add_panel_to_panel(PANEL_genplot, "plot properties");
     PANEL_plot_position = glui_plot2d->add_panel_to_panel(PANEL_plotproperties, "position");
