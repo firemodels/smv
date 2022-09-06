@@ -1155,6 +1155,7 @@ void GenPlotCB(int var){
       Glui2Plot2D(iplot2dinfo);
       DeviceCB(DEVICE_TIMEAVERAGE);
 #define COLOR_EPS 5
+      glui_curve.use_foreground_color = 0;
       if(
         ABS(glui_curve.color[0]-foregroundcolor[0]*255)<=COLOR_EPS&&
         ABS(glui_curve.color[1]-foregroundcolor[1]*255)<=COLOR_EPS&&
