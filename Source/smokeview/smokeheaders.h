@@ -7,7 +7,9 @@
 
 // gen plot routines
 
-EXTERNCPP void GetPlot2DBounds(plot2ddata *plot2di, float *valmin, float *valmax);
+EXTERNCPP char *GetPlotUnit2(plot2ddata *plot2di, curvedata *curve);
+EXTERNCPP char *GetPlotShortLabel2(plot2ddata *plot2di, curvedata *curv);
+EXTERNCPP void GetPlot2DBounds(plot2ddata*plot2di, float *valmin, float *valmax);
 EXTERNCPP char *GetPlotUnit(plot2ddata * plot2di, int curv_index);
 EXTERNCPP void GenPlotCB(int var);
 EXTERNCPP void UpdateCurveControls(char *unit);

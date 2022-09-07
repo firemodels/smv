@@ -312,22 +312,59 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   SNIFF_ERRORS("after DrawGenCurve end");
 }
 
+/* ------------------ GetPlotUnit2 ------------------------ */
+
+char *GetPlotUnit2(plot2ddata *plot2di, curvedata *curve){
+  csvdata *csvi;
+  int curv_index;
+
+  curv_index = curve - plot2di->curve;
+  csvi = GetCsvData(plot2di->curve[curv_index].csv_file_index, plot2di->curve[curv_index].csv_col_index, NULL);
+  return csvi->label.unit;
+}
+
 /* ------------------ GetPlotUnit ------------------------ */
 
 char *GetPlotUnit(plot2ddata *plot2di, int curv_index){
   csvdata *csvi;
+  curvedata *curve;
 
   csvi = GetCsvData(plot2di->curve[curv_index].csv_file_index, plot2di->curve[curv_index].csv_col_index, NULL);
-  return csvi->label.unit;
+  curve = plot2di->curve + curv_index;
+  if(curve->apply_curve_factor==1&&strlen(curve->scaled_unit)>0){
+    return curve->scaled_unit;
+  }
+  else{
+    return csvi->label.unit;
+  }
+}
+
+/* ------------------ GetPlotShortLabel2 ------------------------ */
+
+char *GetPlotShortLabel2(plot2ddata *plot2di, curvedata *curv){
+  csvdata *csvi;
+  int curv_index;
+
+  curv_index = curv - plot2di->curve;
+  csvi = GetCsvData(plot2di->curve[curv_index].csv_file_index, plot2di->curve[curv_index].csv_col_index, NULL);
+  return csvi->label.shortlabel;
 }
 
 /* ------------------ GetPlotShortLabel ------------------------ */
 
 char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index){
   csvdata *csvi;
+  curvedata *curve;
 
-  csvi = GetCsvData(plot2di->curve[curv_index].csv_file_index, plot2di->curve[curv_index].csv_col_index, NULL);
-  return csvi->label.shortlabel;
+  curve = plot2di->curve + curv_index;
+
+  if(curve->apply_curve_factor==1&&strlen(curve->scaled_label)>0){
+    return curve->scaled_label;
+  }
+  else{
+    csvi = GetCsvData(plot2di->curve[curv_index].csv_file_index, plot2di->curve[curv_index].csv_col_index, NULL);
+    return csvi->label.shortlabel;
+  }
 }
 
 /* ------------------ GetCSVVal ------------------------ */
@@ -371,6 +408,8 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
       curve->curve_factor       = 1.0;
       curve->update_avg         = 0;
       curve->vals               = NULL;
+      strcpy(curve->scaled_label, "");
+      strcpy(curve->scaled_unit,  "");
     }
   }
   for(i = 0; i<ncsvfileinfo; i++){

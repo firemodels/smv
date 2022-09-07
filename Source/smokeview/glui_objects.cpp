@@ -81,7 +81,9 @@ char gluiopen_filter2[sizeof(GLUI_String)];
 GLUI *glui_device=NULL;
 GLUI *glui_plot2d = NULL;
 
-GLUI_EditText *EDIT_plot_label = NULL;
+GLUI_EditText *EDIT_plot_label   = NULL;
+GLUI_EditText *EDIT_scaled_label = NULL;
+GLUI_EditText *EDIT_scaled_unit  = NULL;
 
 GLUI_Button *BUTTON_plot_position = NULL;
 GLUI_Button *BUTTON_add_plot = NULL;
@@ -428,6 +430,8 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int option){
     curve->csv_col_index = index;
     curve->quantity = NULL;
     if(option==NEW_CURVE){
+      char *shortlabel, *unit;
+
       curve->csv_file_index     = glui_csv_file_index;
       curve->color[0]           = glui_curve_default.color[0];
       curve->color[1]           = glui_curve_default.color[1];
@@ -438,6 +442,12 @@ void AddCSVCurve(plot2ddata *plot2di, int index, int option){
       curve->apply_curve_factor = glui_curve_default.apply_curve_factor;
       curve->vals               = glui_curve_default.vals;
       curve->update_avg         = glui_curve_default.update_avg;
+
+      shortlabel = GetPlotShortLabel2(plot2di, curve);
+      strcpy(curve->scaled_label, shortlabel);
+
+      unit = GetPlotUnit2(plot2di, curve);
+      strcpy(curve->scaled_unit,  unit);
     }
     else{
       csvfi  = csvfileinfo+curve->csv_file_index;
@@ -632,6 +642,8 @@ void UpdateCurveControls(char *unit){
   SPINNER_genplot_linewidth->set_float_val(glui_curve.linewidth);
   SPINNER_curve_factor->set_float_val(glui_curve.curve_factor);
   CHECKBOX_curve_apply_factor->set_int_val(glui_curve.apply_curve_factor);
+  EDIT_scaled_label->set_text(glui_curve.scaled_label);
+  EDIT_scaled_unit->set_text(glui_curve.scaled_unit);
 }
 
 /* ------------------ EnableDisablePlot2D ------------------------ */
@@ -1741,6 +1753,9 @@ extern "C" void GluiPlot2DSetup(int main_window){
     glui_curve.apply_curve_factor = 0;
     SPINNER_curve_factor = glui_plot2d->add_spinner_to_panel(PANEL_curve_factor,     "factor", GLUI_SPINNER_FLOAT, &glui_curve.curve_factor, GENPLOT_CURVE_FACTOR, GenPlotCB);
     CHECKBOX_curve_apply_factor = glui_plot2d->add_checkbox_to_panel(PANEL_curve_factor, "Multiply selected curve by factor", &glui_curve.apply_curve_factor,   GENPLOT_APPLY_CURVE_FACTOR, GenPlotCB);
+    EDIT_scaled_label = glui_plot2d->add_edittext_to_panel(PANEL_curve_factor, "scaled label:", GLUI_EDITTEXT_TEXT, glui_curve.scaled_label, GENPLOT_CURVE_FACTOR, GenPlotCB);
+    EDIT_scaled_unit  = glui_plot2d->add_edittext_to_panel(PANEL_curve_factor, "scaled unit:",  GLUI_EDITTEXT_TEXT, glui_curve.scaled_unit,  GENPLOT_CURVE_FACTOR, GenPlotCB);
+
     glui_plot2d->add_button_to_panel(PANEL_curve_factor, "Reset factor(HOC)",   GENPLOT_RESET_FUEL_HOC, GenPlotCB);
     glui_plot2d->add_button_to_panel(PANEL_curve_factor, "Reset factor(1.0)",   GENPLOT_RESET_FUEL_1P0, GenPlotCB);
 
@@ -1754,7 +1769,6 @@ extern "C" void GluiPlot2DSetup(int main_window){
     SPINNER_genplot_green->set_int_limits(0, 255);
     SPINNER_genplot_blue->set_int_limits(0, 255);
     glui_plot2d->add_button_to_panel(PANEL_curve_color, "Apply colors", GENPLOT_XYZ, GenPlotCB);
-
 
     SPINNER_genplot_linewidth = glui_plot2d->add_spinner_to_panel(PANEL_curve_properties, "line width", GLUI_SPINNER_FLOAT, &(glui_curve.linewidth), GENPLOT_XYZ, GenPlotCB);
     SPINNER_genplot_linewidth->set_float_limits(1.0, 10.0);
