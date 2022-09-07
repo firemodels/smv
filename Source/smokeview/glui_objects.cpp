@@ -37,8 +37,7 @@
 #define GENPLOT_REM_SELECTEDCURVE   134
 #define GENPLOT_SELECT_CURVE        135
 
-#define GENPLOT_APPLY_CURVE_FACTOR  141
-#define GENPLOT_CURVE_FACTOR        142
+#define GENPLOT_CURVE_FACTOR        141
 
 #define GENPLOT_XYZ                 151
 #define GENPLOT_RESET_FUEL_HOC      152
@@ -736,7 +735,6 @@ void FilterList(void){
       csvdata *csvi;
 
       csvi = GetCsvCurve(i, NULL);
-      if(csvi == csvfi->time)continue;
       if(csvi->skip == 0){
         if(strcmp(unit_label, "all") == 0){
           LIST_csvID->add_item(i, csvi->label.shortlabel);
@@ -807,7 +805,7 @@ void UpdateCsvList(void){
     csvdata *csvi;
 
     csvi = GetCsvCurve(i, NULL);
-    if(csvi == csvfi->time||csvi->skip==1)continue;
+    if(csvi->skip==1)continue;
     LIST_csvID->add_item(i, csvi->label.shortlabel);
   }
   strcpy(label, "add");
@@ -834,12 +832,10 @@ void UpdateCsvList(void){
 
     csvi = GetCsvCurve(i, NULL);
     dup_unit = 0;
-    if(csvi == csvfi->time)continue;
     for(j=0; j<i; j++){
       csvdata *csvj;
 
       csvj = GetCsvCurve(j, NULL);
-      if(csvj == csvfi->time)continue;
       if(csvi->dimensionless==0){
         if(strcmp(csvi->label.unit, csvj->label.unit) == 0){
           dup_unit = 1;
@@ -1332,18 +1328,24 @@ void GenPlotCB(int var){
       }
       index = glui_plot2dinfo->curve_index;
       curve = glui_plot2dinfo->curve+index;
-      memcpy(curve, &glui_curve, sizeof(curvedata));
+      {
+        int file_index, curv_index;
+
+        file_index = curve->csv_file_index;
+        curv_index = curve->csv_col_index;
+        memcpy(curve, &glui_curve, sizeof(curvedata));
+        curve->csv_file_index = file_index;
+        curve->csv_col_index = curv_index;
+      }
       Glui2Plot2D(iplot2dinfo);
       DeviceCB(DEVICE_TIMEAVERAGE);
+      SetPlot2DBoundLabels(plot2dinfo+iplot2dinfo);
       break;
     case GENPLOT_SAVE:
       WriteIni(LOCAL_INI, NULL);
       break;
     case GENPLOT_CLOSE:
       glui_plot2d->hide();
-      break;
-    case GENPLOT_APPLY_CURVE_FACTOR:
-      GenPlotCB(GENPLOT_CURVE_FACTOR);
       break;
     case GENPLOT_UPDATE:
       break;
@@ -1752,7 +1754,7 @@ extern "C" void GluiPlot2DSetup(int main_window){
     glui_curve.curve_factor       = 1.0;
     glui_curve.apply_curve_factor = 0;
     SPINNER_curve_factor = glui_plot2d->add_spinner_to_panel(PANEL_curve_factor,     "factor", GLUI_SPINNER_FLOAT, &glui_curve.curve_factor, GENPLOT_CURVE_FACTOR, GenPlotCB);
-    CHECKBOX_curve_apply_factor = glui_plot2d->add_checkbox_to_panel(PANEL_curve_factor, "Multiply selected curve by factor", &glui_curve.apply_curve_factor,   GENPLOT_APPLY_CURVE_FACTOR, GenPlotCB);
+    CHECKBOX_curve_apply_factor = glui_plot2d->add_checkbox_to_panel(PANEL_curve_factor, "Multiply selected curve by factor", &glui_curve.apply_curve_factor,   GENPLOT_CURVE_FACTOR, GenPlotCB);
     EDIT_scaled_label = glui_plot2d->add_edittext_to_panel(PANEL_curve_factor, "scaled label:", GLUI_EDITTEXT_TEXT, glui_curve.scaled_label, GENPLOT_CURVE_FACTOR, GenPlotCB);
     EDIT_scaled_unit  = glui_plot2d->add_edittext_to_panel(PANEL_curve_factor, "scaled unit:",  GLUI_EDITTEXT_TEXT, glui_curve.scaled_unit,  GENPLOT_CURVE_FACTOR, GenPlotCB);
 
