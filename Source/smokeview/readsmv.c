@@ -11706,6 +11706,28 @@ int ReadIni2(char *inifile, int localfile){
       update_glui_devices = 1;
       continue;
     }
+    if(Match(buffer, "GENPLOTLABELS") == 1){
+      fgets(buffer, 255, stream);
+      for(i=0;i<nplot2dini;i++){
+        plot2ddata *plot2di;
+        char *labelptr;
+        int j;
+
+        plot2di = plot2dini + i;
+        fgets(buffer, 255, stream);
+        for(j=0; j<plot2di->ncurves; j++){
+          curvedata *curve;
+
+          curve = plot2di->curve + j;
+          fgets(buffer, 255, stream);
+          fgets(buffer, 255, stream);
+          strcpy(curve->scaled_label, TrimFrontBack(buffer));
+          fgets(buffer, 255, stream);
+          strcpy(curve->scaled_unit, TrimFrontBack(buffer));
+        }
+      }
+      continue;
+    }
     if(Match(buffer, "SHOWMISSINGOBJECTS") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &show_missing_objects);
@@ -15095,6 +15117,24 @@ void WriteIniLocal(FILE *fileout){
       fprintf(fileout, " %i %i %i %i %i %f %f %i %i\n", file_index, col_index, color[0], color[1], color[2], linewidth1, factor, apply_factor, use_foreground_color);
     };
   }
+  fprintf(fileout, "GENPLOTLABELS\n");
+  fprintf(fileout, " %i\n", nplot2dinfo);
+  for(i = 0; i<nplot2dinfo; i++){
+    plot2ddata *plot2di;
+    int j;
+
+    plot2di = plot2dinfo+i;
+    fprintf(fileout, " %i\n", plot2di->ncurves);
+    for(j = 0; j<plot2di->ncurves; j++){
+      curvedata *curve;
+
+      curve = plot2di->curve+j;
+      fprintf(fileout, " %i %i\n", i, j);
+      fprintf(fileout, " %s\n", curve->scaled_label);
+      fprintf(fileout, " %s\n", curve->scaled_unit);
+    }
+  }
+
   fprintf(fileout, "SHOWDEVICEVALS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n", showdevice_val, showvdevice_val, devicetypes_index, colordevice_val, vectortype, viswindrose, showdevice_type,showdevice_unit,showdevice_id);
   fprintf(fileout, "SHOWHRRPLOT\n");
