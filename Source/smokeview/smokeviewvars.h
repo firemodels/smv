@@ -1846,6 +1846,7 @@ SVEXTERN int viewtourfrompath,viewalltours,viewanytours,edittour;
 
 SVEXTERN int SVDECL(have_animate_blockages, 0), SVDECL(animate_blockages, 0);
 SVEXTERN origblockagedata SVDECL(*origblockageinfo, NULL);
+SVEXTERN int SVDECL(norigblockageinfo, 0);
 SVEXTERN selectdata SVDECL(*selectfaceinfo,NULL);
 SVEXTERN blockagedata SVDECL(**selectblockinfo,NULL);
 SVEXTERN tickdata SVDECL(*tickinfo,NULL);

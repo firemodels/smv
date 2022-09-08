@@ -7107,15 +7107,21 @@ int ReadSMV(bufferstreamdata *stream){
       sscanf(buffer,"%f %f %f %f %f %f",&xbar0,&xbar,&ybar0,&ybar,&zbar0,&zbar);
       continue;
     }
-    if(Match(buffer, "OBST_ORIG")==1){
+    if(Match(buffer, "OBSTORIG")==1){
       float *xyz;
 
-      if(origblockageinfo==NULL){
-        NewMemory((void **)&origblockageinfo,sizeof(origblockagedata));
-      }
-      xyz = origblockageinfo->xyz;
+      FREEMEMORY(origblockageinfo);
       FGETS(buffer,255,stream);
-      sscanf(buffer,"%f %f %f %f %f %f",xyz,xyz+1,xyz+2,xyz+3,xyz+4,xyz+5);
+      sscanf(buffer,"%i", &norigblockageinfo);
+      NewMemory((void **)&origblockageinfo,norigblockageinfo*sizeof(origblockagedata));
+      for(i=0; i<norigblockageinfo; i++){
+        origblockagedata *obi;
+
+        obi = origblockageinfo + i;
+        xyz = obi->xyz;
+        FGETS(buffer,255,stream);
+        sscanf(buffer,"%f %f %f %f %f %f",xyz,xyz+1,xyz+2,xyz+3,xyz+4,xyz+5);
+      }
       continue;
     }
     if(Match(buffer,"OBST") == 1){

@@ -636,6 +636,63 @@ void UpdateIndexColors(void){
   updatefaces=1;
 }
 
+/* ------------------ DrawOrigObstOutlines ------------------------ */
+
+void DrawOrigObstOutlines(void){
+  int i;
+
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
+  glTranslatef(-xbar0,-ybar0,-zbar0);
+  AntiAliasLine(ON);
+  glLineWidth(linewidth);
+  glBegin(GL_LINES);
+  glColor3fv(foregroundcolor);
+  for(i=0; i<norigblockageinfo; i++){
+    origblockagedata *obi;
+    float *xyz;
+    float xmin, xmax, ymin, ymax, zmin, zmax;
+
+    obi = origblockageinfo + i;
+    xyz = obi->xyz;
+    xmin = xyz[0];
+    xmax = xyz[1];
+    ymin = xyz[2];
+    ymax = xyz[3];
+    zmin = xyz[4];
+    zmax = xyz[5];
+    glVertex3f(xmin, ymin, zmin);
+    glVertex3f(xmin, ymin, zmax);
+    glVertex3f(xmax, ymin, zmin);
+    glVertex3f(xmax, ymin, zmax);
+    glVertex3f(xmin, ymax, zmin);
+    glVertex3f(xmin, ymax, zmax);
+    glVertex3f(xmax, ymax, zmin);
+    glVertex3f(xmax, ymax, zmax);
+
+    glVertex3f(xmin, ymin, zmin);
+    glVertex3f(xmin, ymax, zmin);
+    glVertex3f(xmax, ymin, zmin);
+    glVertex3f(xmax, ymax, zmin);
+    glVertex3f(xmin, ymin, zmax);
+    glVertex3f(xmin, ymax, zmax);
+    glVertex3f(xmax, ymin, zmax);
+    glVertex3f(xmax, ymax, zmax);
+
+    glVertex3f(xmin, ymin, zmin);
+    glVertex3f(xmax, ymin, zmin);
+    glVertex3f(xmin, ymax, zmin);
+    glVertex3f(xmax, ymax, zmin);
+    glVertex3f(xmin, ymin, zmax);
+    glVertex3f(xmax, ymin, zmax);
+    glVertex3f(xmin, ymax, zmax);
+    glVertex3f(xmax, ymax, zmax);
+  }
+  glEnd();
+  AntiAliasLine(OFF);
+  glPopMatrix();
+}
+
 /* ------------------ DrawOutlines ------------------------ */
 
 void DrawOutlines(void){
@@ -667,6 +724,7 @@ void DrawOutlines(void){
   glEnd();
   AntiAliasLine(OFF);
 }
+
 /* ------------------ DrawCBox ------------------------ */
 
 void DrawCBox(float x, float y, float z, float size){
@@ -2859,7 +2917,7 @@ void UpdateFaceLists(void){
          (facej->type==BLOCK_outline&&visBlocks==visBLOCKAsInput)||
          ((j>=vent_offset&&j<vent_offset+meshi->nvents)&&vi->isOpenvent==1&&visOpenVentsAsOutline==1)
         ){
-        meshi->face_outlines[n_outlines++]=facej;
+        if(norigblockageinfo==0)meshi->face_outlines[n_outlines++]=facej;
         if(visBlocks!=visBLOCKSolidOutline&&visBlocks!=visBLOCKAsInputOutline)continue;
       }
       if(j<vent_offset){
