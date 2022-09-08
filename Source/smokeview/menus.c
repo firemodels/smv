@@ -3885,6 +3885,7 @@ void LoadAllPartFiles(int partnum){
         parti->loadstatus = FILE_LOADED;
         part_load_size += file_size;
         part_file_count++;
+        parti->file_size = file_size;
       }
     }
     UNLOCK_PART_LOAD;
@@ -3979,6 +3980,7 @@ void LoadParticleEvacMenu(int value, int option){
       SetupPart(value,option);                                                // load only particle file with index value
       GetAllPartBoundsMT();
       LoadAllPartFilesMT(value);
+      if(partinfo[value].file_size == 0.0)printf("***warning: particle file has no particles\n");
     }
   }
   else{
@@ -4030,9 +4032,29 @@ void LoadParticleEvacMenu(int value, int option){
 
         START_TIMER(part_load_time);
         GetAllPartBoundsMT();
-        LoadAllPartFilesMT(LOAD_ALL_PART_FILES);
-        STOP_TIMER(part_load_time);
-        PRINT_LOADTIMES(part_file_count,part_load_size,part_load_time);
+        int have_particles = 0, load_particles=0;
+        for(i = 0; i<npartinfo; i++){
+          partdata *parti;
+
+          parti = partinfo+i;
+          parti->file_size = 0;
+          if(parti->skipload==0)load_particles = 1;
+        }
+        if(load_particles==1){
+          LoadAllPartFilesMT(LOAD_ALL_PART_FILES);
+          for(i = 0; i<npartinfo; i++){
+            partdata *parti;
+
+            parti = partinfo+i;
+            if(parti->file_size>0){
+              have_particles = 1;
+              break;
+            }
+          }
+          STOP_TIMER(part_load_time);
+          PRINT_LOADTIMES(part_file_count,part_load_size,part_load_time);
+          if(have_particles==0)printf("***warning: particle files have no particles\n");
+        }
 
         force_redisplay = 1;
         UpdateFrameNumber(0);

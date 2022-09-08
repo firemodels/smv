@@ -828,6 +828,7 @@ int ReadPartBounds(partdata *parti,int read_bounds_arg){
     if(stream==NULL)return 0;
     fclose(stream);
   }
+  fclose(stream);
 
   // make sure a bound file exists
 
