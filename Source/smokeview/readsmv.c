@@ -11716,7 +11716,6 @@ int ReadIni2(char *inifile, int localfile){
       fgets(buffer, 255, stream);
       for(i=0;i<nplot2dini;i++){
         plot2ddata *plot2di;
-        char *labelptr;
         int j;
 
         plot2di = plot2dini + i;
