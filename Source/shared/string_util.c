@@ -1082,7 +1082,7 @@ int MatchUpper(char *buffer, const char *key){
   TrimBack(buffer);
   lenbuffer=strlen(buffer);
 
-  if(lenbuffer<lenkey)return NOTMATCH;
+  if(lenbuffer!=lenkey)return NOTMATCH;
   for(i=0;i<lenkey;i++){
     if(toupper(buffer[i])!=toupper(key[i]))return NOTMATCH;
   }
