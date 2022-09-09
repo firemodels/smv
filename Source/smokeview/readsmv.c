@@ -16059,7 +16059,7 @@ void WriteIni(int flag,char *filename){
   }
   if((have_fire == NO_FIRE && have_smoke == NO_SMOKE)||(have_fire != NO_FIRE && have_smoke != NO_SMOKE)){
     fprintf(fileout, "SMOKEFIREPROP\n");
-    fprintf(fileout, " %i %i", use_opacity_depth, use_opacity_multiplier);
+    fprintf(fileout, " %i %i\n", use_opacity_depth, use_opacity_multiplier);
   }
   fprintf(fileout, "SMOKEPROP\n");
   fprintf(fileout, "%f\n", glui_smoke3d_extinct);
