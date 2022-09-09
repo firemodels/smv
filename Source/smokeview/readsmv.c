@@ -6367,6 +6367,123 @@ void UpdateFileBoundList(void){
 }
 #endif
 
+#ifdef pp_PARSE_OBST
+/* ------------------ SubtractBlock ------------------------ */
+#define XMIN 0
+#define XMAX 1
+#define YMIN 2
+#define YMAX 3
+#define ZMIN 4
+#define ZMAX 5
+int SubtractBlock(float *block, float *hole, float *blockMhole, int *nblockMhole){
+  int nblocks = 0;
+  float *xyz;
+
+  // block: [-------------]
+  // hole:         [-----------]
+  if(hole[XMIN]>block[XMAX]||hole[XMAX]<block[XMIN])return 0;
+  if(hole[YMIN]>block[YMAX]||hole[YMAX]<block[YMIN])return 0;
+  if(hole[ZMIN]>block[ZMAX]||hole[ZMAX]<block[ZMIN])return 0;
+
+  // zmin
+  if(block[ZMIN]<hole[ZMIN]){
+    xyz = blockMhole+6*nblocks;
+    nblocks++;
+    xyz[0] = block[XMIN];
+    xyz[1] = block[XMAX];
+    xyz[2] = block[YMIN];
+    xyz[3] = block[YMAX];
+    xyz[4] = block[ZMIN];
+    xyz[5] = hole[ZMIN];
+  }
+
+  // zmax
+  if(hole[ZMAX]<block[ZMAX]){
+    xyz = blockMhole+6*nblocks;
+    nblocks++;
+    xyz[0] = block[XMIN];
+    xyz[1] = block[XMAX];
+    xyz[2] = block[YMIN];
+    xyz[3] = block[YMAX];
+    xyz[4] = hole[ZMAX];
+    xyz[5] = block[ZMAX];
+  }
+
+  // xmin
+  if(block[XMIN]<hole[XMIN]){
+    xyz = blockMhole+6*nblocks;
+    nblocks++;
+    xyz[0] = block[XMIN];
+    xyz[1] = hole[XMIN];
+    xyz[2] = block[YMIN];
+    xyz[3] = block[YMAX];
+    xyz[4] = MAX(block[ZMIN],hole[ZMIN]);
+    xyz[5] = MIN(block[ZMAX],hole[ZMAX]);
+  }
+
+  // xmax
+  if(hole[XMAX]<block[XMAX]){
+    xyz = blockMhole+6*nblocks;
+    nblocks++;
+    xyz[0] = hole[XMAX];
+    xyz[1] = block[XMAX];
+    xyz[2] = block[YMIN];
+    xyz[3] = block[YMAX];
+    xyz[4] = MAX(block[ZMIN], hole[ZMIN]);
+    xyz[5] = MIN(block[ZMAX], hole[ZMAX]);
+  }
+
+  // ymin
+  if(block[YMIN]<hole[YMIN]){
+    xyz = blockMhole+6*nblocks;
+    nblocks++;
+    xyz[0] = MAX(block[XMIN],hole[XMIN]);
+    xyz[1] = MIN(block[XMAX],hole[XMAX]);
+    xyz[2] = block[YMIN];
+    xyz[3] = hole[YMIN];
+    xyz[4] = MAX(block[ZMIN], hole[ZMIN]);
+    xyz[5] = MIN(block[ZMAX], hole[ZMAX]);
+  }
+
+  // ymax
+  if(hole[YMAX]<block[YMAX]){
+    xyz = blockMhole+6*nblocks;
+    nblocks++;
+    xyz[0] = MAX(block[XMIN], hole[XMIN]);
+    xyz[1] = MIN(block[XMAX], hole[XMAX]);
+    xyz[2] = hole[YMAX];
+    xyz[3] = block[YMAX];
+    xyz[4] = MAX(block[ZMIN], hole[ZMIN]);
+    xyz[5] = MIN(block[ZMAX], hole[ZMAX]);
+  }
+  return 1;
+}
+
+/* ------------------ SubtractBlocks ------------------------ */
+
+void SubtractBlocks(xbdata *block_info, int nblock_info, xbdata *hole_info, int nhole_info, xbdata **blockhole_info, int *nblockhole_info){
+  int i;
+
+  for(i=0;i<nblock_info; i++){
+    int j;
+    xbdata *obi;
+    float *obst_xyz;
+
+    obi = block_info + i;
+    obst_xyz = obi->xyz;
+    for(j=0;j<nhole_info;j++){
+      xbdata *hj;
+      float *hole_xyz, vals[36];
+      int nvals;
+
+      hj = hole_info + j;
+      hole_xyz = hj->xyz;
+      if(SubtractBlock(obst_xyz, hole_xyz, vals, &nvals)==1){
+      }
+    }
+  }
+}
+
 /* ------------------ GetXBVals ------------------------ */
 
 void GetXBVals(char *obst_buffer, float *xyz){
@@ -6379,6 +6496,7 @@ void GetXBVals(char *obst_buffer, float *xyz){
     xyz[1] = 0.0;
     xyz[2] = 0.0;
     xyz[3] = 0.0;
+
     xyz[4] = 0.0;
     xyz[5] = 0.0;
     return;
@@ -6386,20 +6504,15 @@ void GetXBVals(char *obst_buffer, float *xyz){
   for(i = 0; i<strlen(xb); i++){
     if(xb[i]=='='){
       char *tok;
+      int j;
 
       tok = xb+i+1;
       tok = strtok(tok, ",");
       sscanf(tok, "%f", xyz);
-      tok = strtok(NULL, ",");
-      sscanf(tok, "%f", xyz+1);
-      tok = strtok(NULL, ",");
-      sscanf(tok, "%f", xyz+2);
-      tok = strtok(NULL, ",");
-      sscanf(tok, "%f", xyz+3);
-      tok = strtok(NULL, ",");
-      sscanf(tok, "%f", xyz+4);
-      tok = strtok(NULL, ",");
-      sscanf(tok, "%f", xyz+5);
+      for(j = 0; j<5; j++){
+        tok = strtok(NULL, ",");
+        sscanf(tok, "%f", xyz+1+j);
+      }
       return;
     }
   }
@@ -6467,6 +6580,7 @@ void GetXBData(const char *filein, xbdata **blockinfoptr, int *nblockinfoptr, ch
   }
   fclose(stream_in);
 }
+#endif
 
 /* ------------------ ReadSMV ------------------------ */
 
@@ -11223,8 +11337,11 @@ typedef struct {
 
   ClassifyAllGeomMT();
 
+#ifdef pp_PARSE_OBST
   GetXBData(fds_filein, &obstinfo, &nobstinfo, "&OBST");
   GetXBData(fds_filein, &holeinfo, &nholeinfo, "&HOLE");
+  SubtractBlocks(obstinfo, nobstinfo, holeinfo, nholeinfo, &obstholeinfo, &nobstholeinfo);
+#endif
 
   PRINT_TIMER(timer_readsmv, "null");
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
