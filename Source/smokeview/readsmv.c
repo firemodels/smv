@@ -6417,7 +6417,6 @@ void GetObstXBs(const char *filein){
 
   FILE *stream_in;
   int fdsobstcount = 0;
-  int i;
 
   FREEMEMORY(origblockageinfo);
   norigblockageinfo = 0;
