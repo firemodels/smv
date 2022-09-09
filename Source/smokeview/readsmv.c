@@ -6367,6 +6367,107 @@ void UpdateFileBoundList(void){
 }
 #endif
 
+/* ------------------ GetXBVals ------------------------ */
+
+void GetXBVals(char *obst_buffer, float *xyz){
+  char *xb;
+  int i;
+
+  xb = STRSTR(obst_buffer, "XB");
+  if(xb==NULL){
+    xyz[0] = 0.0;
+    xyz[1] = 0.0;
+    xyz[2] = 0.0;
+    xyz[3] = 0.0;
+    xyz[4] = 0.0;
+    xyz[5] = 0.0;
+    return;
+  }
+  for(i = 0; i<strlen(xb); i++){
+    if(xb[i]=='='){
+      char *tok;
+
+      tok = xb+i+1;
+      tok = strtok(tok, ",");
+      sscanf(tok, "%f", xyz);
+      tok = strtok(NULL, ",");
+      sscanf(tok, "%f", xyz+1);
+      tok = strtok(NULL, ",");
+      sscanf(tok, "%f", xyz+2);
+      tok = strtok(NULL, ",");
+      sscanf(tok, "%f", xyz+3);
+      tok = strtok(NULL, ",");
+      sscanf(tok, "%f", xyz+4);
+      tok = strtok(NULL, ",");
+      sscanf(tok, "%f", xyz+5);
+      return;
+    }
+  }
+  xyz[0] = 0.0;
+  xyz[1] = 0.0;
+  xyz[2] = 0.0;
+  xyz[3] = 0.0;
+  xyz[4] = 0.0;
+  xyz[5] = 0.0;
+}
+
+/* ------------------ GetObstXBs ------------------------ */
+
+void GetObstXBs(const char *filein){
+
+  FILE *stream_in;
+  int fdsobstcount = 0;
+  int i;
+
+  FREEMEMORY(origblockageinfo);
+  norigblockageinfo = 0;
+
+  if(filein==NULL)return;
+  stream_in = fopen(filein, "r");
+  if(stream_in==NULL)return;
+
+  // count OBSTs
+
+  while(!feof(stream_in)){
+    char buffer[1000];
+
+    if(fgets(buffer, 1000, stream_in)==NULL)break;
+    if(STRSTR(buffer, "&OBST")!=NULL)fdsobstcount++;
+  }
+
+  norigblockageinfo = fdsobstcount;
+  if(norigblockageinfo==0)return;
+
+  NewMemory((void **)&origblockageinfo, norigblockageinfo*sizeof(origblockagedata));
+  rewind(stream_in);
+
+  fdsobstcount = 0;
+  while(!feof(stream_in)){
+    char buffer[1000], obst_buffer[10000], *buff_ptr;
+    origblockagedata *obi;
+
+    if(fgets(buffer, 1000, stream_in)==NULL)break;
+    if(STRSTR(buffer, "&OBST")==NULL)continue;
+    buff_ptr = TrimFrontBack(buffer);
+    strcpy(obst_buffer, "");
+    obi = origblockageinfo+fdsobstcount;
+
+    fdsobstcount++;
+    while((strstr(buffer, "/"))==NULL){
+      fgets(buffer, 1000, stream_in);
+      buff_ptr = TrimFrontBack(buffer);
+      if(strlen(buff_ptr)+strlen(obst_buffer)<10000){
+        strcat(obst_buffer, buff_ptr);
+      }
+    }
+    if(strlen(buff_ptr)+strlen(obst_buffer)<10000){
+      strcat(obst_buffer, buff_ptr);
+    }
+    GetXBVals(obst_buffer, obi->xyz);
+  }
+  fclose(stream_in);
+}
+
 /* ------------------ ReadSMV ------------------------ */
 
 int ReadSMV(bufferstreamdata *stream){
@@ -11138,6 +11239,8 @@ typedef struct {
   PRINT_TIMER(timer_readsmv, "InitVolRender");
 
   ClassifyAllGeomMT();
+
+  GetObstXBs(fds_filein);
 
   PRINT_TIMER(timer_readsmv, "null");
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);
