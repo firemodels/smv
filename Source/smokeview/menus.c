@@ -5989,6 +5989,19 @@ void GeometryMenu(int val);
 void BlockageMenu(int value){
   int change_state=0;
 
+  if(value==ANIMATE_BLOCKAGES){
+    animate_blockages = 1 - animate_blockages;
+    if(animate_blockages==1){
+      tourinfo->display = 0;
+      show_avatar = 0;
+    }
+    if(animate_blockages==0){
+      tourinfo->display = 1;
+    }
+    TourMenu(0);
+    updatemenu = 1;
+    return;
+  }
   if(value==visLightFaces){
     light_faces = 1 - light_faces;
     updatemenu=1;
@@ -7251,6 +7264,10 @@ updatemenu=0;
 
   CREATEMENU(blockagemenu,BlockageMenu);
   glutAddMenuEntry(_("View Method:"),MENU_DUMMY);
+  if(tourinfo!=NULL&&have_animate_blockages == 1){
+    if(animate_blockages == 1)glutAddMenuEntry(_("   *Animate blockages"), ANIMATE_BLOCKAGES);
+    if(animate_blockages==0)glutAddMenuEntry(_("   Animate blockages"),    ANIMATE_BLOCKAGES);
+  }
   if(visBlocks==visBLOCKAsInput||visBlocks==visBLOCKAsInputOutline){
     glutAddMenuEntry(_("   *Defined in input file"),visBLOCKAsInput);
   }

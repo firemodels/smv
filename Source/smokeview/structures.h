@@ -439,6 +439,12 @@ typedef struct _selectdadta {
 
 /* -------------------------- blockagedata ------------------------------------ */
 
+typedef struct _origblockagedata {
+  float xyz[6];
+} origblockagedata;
+
+/* -------------------------- blockagedata ------------------------------------ */
+
 typedef struct _blockagedata {
   int ijk[6],ijkORIG[6];
   float xmin, xmax, ymin, ymax, zmin, zmax, xyzORIG[6];
@@ -1014,7 +1020,7 @@ typedef struct _curvedata{
 // UpdateCurveBounds in IOplot2d.c
   char c_type[64];
   char *quantity;
-  int csv_file_index, csv_col_index, csv_col_index_ini, color[3];
+  int csv_file_index, csv_col_index, csv_col_index_ini, color[3], use_foreground_color;
   int apply_curve_factor;
   float curve_factor;
   float vmin, vmax;
