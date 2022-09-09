@@ -7,9 +7,9 @@
 #include "datadefs.h"
 #include "smokeviewvars.h"
 
-/* ------------------ GetCurrentCsv ------------------------ */
+/* ------------------ GetCsvData ------------------------ */
 
-csvdata *GetCsv(int file_index, int col_index, csvfiledata **csvf_ptr){
+csvdata *GetCsvData(int file_index, int col_index, csvfiledata **csvf_ptr){
   csvfiledata *csvfi;
   csvdata *csvi;
 
@@ -19,10 +19,10 @@ csvdata *GetCsv(int file_index, int col_index, csvfiledata **csvf_ptr){
   return csvi;
 }
 
-/* ------------------ GetCurrentCsv ------------------------ */
+/* ------------------ GetCsvCurve ------------------------ */
 
-csvdata *GetCurrentCsv(int col_index, csvfiledata **csvf_ptr){
-  return GetCsv(glui_csv_file_index, col_index, csvf_ptr);
+csvdata *GetCsvCurve(int col_index, csvfiledata **csvf_ptr){
+  return GetCsvData(glui_csv_file_index, col_index, csvf_ptr);
 }
 
 /* ------------------ HaveGenDevShow ------------------------ */
@@ -104,11 +104,20 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
   float fplot_color[3];
   float curve_factor;
   int apply_curve_factor;
+  int foregroundcolor_rgb[3];
 
   SNIFF_ERRORS("after DrawGenCurve 1 - beginning");
   xyz0               = plot2di->xyz;
   if(curve!=NULL){
-    plot_color = curve->color;
+    if(curve->use_foreground_color == 1){
+      foregroundcolor_rgb[0] = foregroundcolor[0]*255;
+      foregroundcolor_rgb[1] = foregroundcolor[1]*255;
+      foregroundcolor_rgb[2] = foregroundcolor[2]*255;
+      plot_color = foregroundcolor_rgb;
+    }
+    else{
+      plot_color = curve->color;
+    }
     linewidth_arg = curve->linewidth;
     curve_factor = curve->curve_factor;
     apply_curve_factor = curve->apply_curve_factor;
@@ -308,7 +317,7 @@ void DrawGenCurve(int option, plot2ddata *plot2di, curvedata *curve, float size_
 char *GetPlotUnit(plot2ddata *plot2di, int curv_index){
   csvdata *csvi;
 
-  csvi = GetCsv(plot2di->curve[curv_index].csv_file_index, plot2di->curve[curv_index].csv_col_index, NULL);
+  csvi = GetCsvData(plot2di->curve[curv_index].csv_file_index, plot2di->curve[curv_index].csv_col_index, NULL);
   return csvi->label.unit;
 }
 
@@ -317,7 +326,7 @@ char *GetPlotUnit(plot2ddata *plot2di, int curv_index){
 char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index){
   csvdata *csvi;
 
-  csvi = GetCsv(plot2di->curve[curv_index].csv_file_index, plot2di->curve[curv_index].csv_col_index, NULL);
+  csvi = GetCsvData(plot2di->curve[curv_index].csv_file_index, plot2di->curve[curv_index].csv_col_index, NULL);
   return csvi->label.shortlabel;
 }
 
@@ -356,6 +365,7 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
       curve->color[0]           = 0;
       curve->color[1]           = 0;
       curve->color[2]           = 0;
+      curve->use_foreground_color = 1;
       curve->linewidth          = 1.0;
       curve->apply_curve_factor = 0;
       curve->curve_factor       = 1.0;
@@ -396,7 +406,7 @@ void UpdateCurveBounds(plot2ddata *plot2di, int option){
     csvdata *csvi;
 
     curve = plot2di->curve+i;
-    csvi = GetCsv(curve->csv_file_index, curve->csv_col_index, NULL);
+    csvi = GetCsvData(curve->csv_file_index, curve->csv_col_index, NULL);
     curve->vmin = csvi->valmin;
     curve->vmax = csvi->valmax;
   }
@@ -544,7 +554,7 @@ void DrawGenPlot(plot2ddata *plot2di){
     csvdata *csvi;
 
     curve = plot2di->curve + i;
-    csvi = GetCsv(curve->csv_file_index, curve->csv_col_index, &csvfi);
+    csvi = GetCsvData(curve->csv_file_index, curve->csv_col_index, &csvfi);
 
     shortlabel = GetPlotShortLabel(plot2di, i);
     if(curve->vals==NULL){

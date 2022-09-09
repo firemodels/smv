@@ -1501,12 +1501,19 @@ SVEXTERN float sprinkoncolor[4];
 SVEXTERN float sprinkoffcolor[4];
 SVEXTERN float heatoncolor[4];
 SVEXTERN float heatoffcolor[4];
+#ifdef INMAIN
+SVEXTERN float backgroundbasecolor[4]  = {0.0, 0.0, 0.0, 1.0};
+SVEXTERN float backgroundcolor[4]      = {0.0, 0.0, 0.0, 1.0};
+SVEXTERN float foregroundbasecolor[4]  = {1.0, 1.0, 1.0, 1.0};
+SVEXTERN float foregroundcolor[4]      = {1.0, 1.0, 1.0, 1.0};
+#else
 SVEXTERN float backgroundbasecolor[4];
 SVEXTERN float backgroundcolor[4];
 SVEXTERN float foregroundbasecolor[4];
+SVEXTERN float foregroundcolor[4];
+#endif
 SVEXTERN int glui_foregroundbasecolor[4];
 SVEXTERN int glui_backgroundbasecolor[4];
-SVEXTERN float foregroundcolor[4];
 SVEXTERN float boundcolor[4];
 SVEXTERN float timebarcolor[4];
 
@@ -1837,6 +1844,8 @@ SVEXTERN int SVDECL(selectedtour_index, TOURINDEX_MANUAL), SVDECL(selectedtour_i
 SVEXTERN int SVDECL(update_selectedtour_index,0);
 SVEXTERN int viewtourfrompath,viewalltours,viewanytours,edittour;
 
+SVEXTERN int SVDECL(have_animate_blockages, 0), SVDECL(animate_blockages, 0);
+SVEXTERN origblockagedata SVDECL(*origblockageinfo, NULL);
 SVEXTERN selectdata SVDECL(*selectfaceinfo,NULL);
 SVEXTERN blockagedata SVDECL(**selectblockinfo,NULL);
 SVEXTERN tickdata SVDECL(*tickinfo,NULL);
