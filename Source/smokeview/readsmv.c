@@ -6411,48 +6411,48 @@ void GetXBVals(char *obst_buffer, float *xyz){
   xyz[5] = 0.0;
 }
 
-/* ------------------ GetObstXBs ------------------------ */
+/* ------------------ GetXBData ------------------------ */
 
-void GetObstXBs(const char *filein){
+void GetXBData(const char *filein, xbdata **blockinfoptr, int *nblockinfoptr, char *blocktype){
 
   FILE *stream_in;
-  int fdsobstcount = 0;
-  int i;
+  int count = 0;
 
-  FREEMEMORY(origblockageinfo);
-  norigblockageinfo = 0;
+  FREEMEMORY(*blockinfoptr);
+  *nblockinfoptr = 0;
+  *blockinfoptr = NULL;
 
   if(filein==NULL)return;
   stream_in = fopen(filein, "r");
   if(stream_in==NULL)return;
 
-  // count OBSTs
+  // count blocks
 
   while(!feof(stream_in)){
     char buffer[1000];
 
     if(fgets(buffer, 1000, stream_in)==NULL)break;
-    if(STRSTR(buffer, "&OBST")!=NULL)fdsobstcount++;
+    if(STRSTR(buffer, blocktype)!=NULL)count++;
   }
 
-  norigblockageinfo = fdsobstcount;
-  if(norigblockageinfo==0)return;
+  *nblockinfoptr = count;
+  if(*nblockinfoptr==0)return;
 
-  NewMemory((void **)&origblockageinfo, norigblockageinfo*sizeof(origblockagedata));
+  NewMemory((void **)&(*blockinfoptr), *nblockinfoptr*sizeof(xbdata));
   rewind(stream_in);
 
-  fdsobstcount = 0;
+  count = 0;
   while(!feof(stream_in)){
     char buffer[1000], obst_buffer[10000], *buff_ptr;
-    origblockagedata *obi;
+    xbdata *obi;
 
     if(fgets(buffer, 1000, stream_in)==NULL)break;
-    if(STRSTR(buffer, "&OBST")==NULL)continue;
+    if(STRSTR(buffer, blocktype)==NULL)continue;
     buff_ptr = TrimFrontBack(buffer);
     strcpy(obst_buffer, "");
-    obi = origblockageinfo+fdsobstcount;
+    obi = *blockinfoptr+count;
 
-    fdsobstcount++;
+    count++;
     while((strstr(buffer, "/"))==NULL){
       fgets(buffer, 1000, stream_in);
       buff_ptr = TrimFrontBack(buffer);
@@ -7206,23 +7206,6 @@ int ReadSMV(bufferstreamdata *stream){
       setPDIM=1;
       FGETS(buffer,255,stream);
       sscanf(buffer,"%f %f %f %f %f %f",&xbar0,&xbar,&ybar0,&ybar,&zbar0,&zbar);
-      continue;
-    }
-    if(Match(buffer, "OBSTORIG")==1){
-      float *xyz;
-
-      FREEMEMORY(origblockageinfo);
-      FGETS(buffer,255,stream);
-      sscanf(buffer,"%i", &norigblockageinfo);
-      NewMemory((void **)&origblockageinfo,norigblockageinfo*sizeof(origblockagedata));
-      for(i=0; i<norigblockageinfo; i++){
-        origblockagedata *obi;
-
-        obi = origblockageinfo + i;
-        xyz = obi->xyz;
-        FGETS(buffer,255,stream);
-        sscanf(buffer,"%f %f %f %f %f %f",xyz,xyz+1,xyz+2,xyz+3,xyz+4,xyz+5);
-      }
       continue;
     }
     if(Match(buffer,"OBST") == 1){
@@ -11240,7 +11223,8 @@ typedef struct {
 
   ClassifyAllGeomMT();
 
-  GetObstXBs(fds_filein);
+  GetXBData(fds_filein, &obstinfo, &nobstinfo, "&OBST");
+  GetXBData(fds_filein, &holeinfo, &nholeinfo, "&HOLE");
 
   PRINT_TIMER(timer_readsmv, "null");
   UpdateTriangles(GEOM_STATIC,GEOM_UPDATE_ALL);

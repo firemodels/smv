@@ -151,7 +151,7 @@ void ShowScene2(int mode){
 
     /* ++++++++++++++++++++++++ draw fds specified blockage outlines +++++++++++++++++++++++++ */
 
-    if(norigblockageinfo>0&&blocklocation!=BLOCKlocation_grid){
+    if(nobstinfo>0&&blocklocation!=BLOCKlocation_grid){
       if(visBlocks==visBLOCKOutline||visBlocks==visBLOCKAsInputOutline||
          visBlocks==visBLOCKSolidOutline||visBlocks==visBLOCKAddOutline){
         DrawOrigObstOutlines();

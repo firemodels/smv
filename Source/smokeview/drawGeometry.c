@@ -648,12 +648,12 @@ void DrawOrigObstOutlines(void){
   glLineWidth(linewidth);
   glBegin(GL_LINES);
   glColor3fv(foregroundcolor);
-  for(i=0; i<norigblockageinfo; i++){
-    origblockagedata *obi;
+  for(i=0; i<nobstinfo; i++){
+    xbdata *obi;
     float *xyz;
     float xmin, xmax, ymin, ymax, zmin, zmax;
 
-    obi = origblockageinfo + i;
+    obi = obstinfo + i;
     xyz = obi->xyz;
     xmin = xyz[0];
     xmax = xyz[1];
@@ -2917,7 +2917,7 @@ void UpdateFaceLists(void){
          (facej->type==BLOCK_outline&&visBlocks==visBLOCKAsInput)||
          ((j>=vent_offset&&j<vent_offset+meshi->nvents)&&vi->isOpenvent==1&&visOpenVentsAsOutline==1)
         ){
-        if(norigblockageinfo==0||(norigblockageinfo>0&&blocklocation==BLOCKlocation_grid))meshi->face_outlines[n_outlines++]=facej;
+        if(nobstinfo==0||(nobstinfo>0&&blocklocation==BLOCKlocation_grid))meshi->face_outlines[n_outlines++]=facej;
         if(visBlocks!=visBLOCKSolidOutline&&visBlocks!=visBLOCKAsInputOutline)continue;
       }
       if(j<vent_offset){

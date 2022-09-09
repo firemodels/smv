@@ -436,11 +436,11 @@ typedef struct _selectdadta {
   int type;
 } selectdata;
 
-/* -------------------------- blockagedata ------------------------------------ */
+/* -------------------------- xbdata ------------------------------------ */
 
-typedef struct _origblockagedata {
+typedef struct _xbdata {
   float xyz[6];
-} origblockagedata;
+} xbdata;
 
 /* -------------------------- blockagedata ------------------------------------ */
 
