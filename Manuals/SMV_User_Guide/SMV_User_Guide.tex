@@ -5380,8 +5380,6 @@ lightest shade.  For example the 3-tuple 1.0 0.0 0.0 is bright red, 0.0 0.0 0.0 
 
 \blist
 
-\hitemini{AMBIENTLIGHT}Sets the color used for specifying ambient light. (default: {\tt 0.6 0.6 0.6})
-
 \hitem{BACKGROUNDCOLOR}Sets the color used to visualize
 the scene background.
 (default: {\tt 0.0 0.0 0.0})
@@ -5432,77 +5430,9 @@ COLOR2BAR
 \noindent where the 8 indicates the number of colors defined and
 the character string after the {\tt ``:''}\ are ignored.
 
-%\hitemini{GENCOLORBAR}\ Specifies one or more general colorbars.  A
-%colorbar consists of one or more color line segments.  Each line
-%segment traverses the 3D color cube from
-%$(r_{beg}^i,g_{beg}^i,b_{beg}^i)$ to
-%$(r_{end}^i,g_{end}^i,b_{end}^i)$ where each of the six color
-%components range from 0.0 to 1.0.  The line segments do not have
-%to be continuous, in other words the last color of one segment may
-%be different than the first color of the next segment. The format is given by
-%\begin{lstlisting}
-%GENCOLORBAR
-%ncolorbars                // number of colorbars
-%label                     // menu label for first colorbar
-%nlegs                     // number of legs or segments in colorbar
-%frac r1 g1 b1 r2 g2 b2    // frac - portion of colorbar used by segment
-%...
-%...
-%label for second colorbar
-%frac r1 g1 b1 r2 g2 b2
-%...
-%...
-%...
-%\end{lstlisting}
-%
-%The color at the end of a segment, ({\tt r2, b2, g2}), is only
-%required if it differs from the color at the beginning of the next
-%segment, ({\tt r1,g1,b1}).  In other words, it is required if the
-%colorbar is discontinuous. The, {\tt frac}, parameter ranges from
-%0.0 to 1.0 and is the portion of the colorbar taken up by its
-%segment. Smokeview normalizes the {\tt fracs's}\ so that their
-%total sums to 1.0.
-%
-%The following example defines two colorbars.  The first colorbar
-%is the so called {\em rainbow}\ colorbar because it traverses the
-%entire spectrum.  The second colorbar discontinuous and is useful
-%for highlighting important data values, for example a zero
-%velocity or an ignition temperature.
-%\begin{lstlisting}
-%GENCOLORBAR
-%2
-%rainbow
-%4
-%0.25 0.0 1.0 0.0
-%0.25 1.0 0.0 0.0
-%0.25 0.0 1.0 1.0
-%0.25 0.0 0.0 0.0 1.0 1.0 1.0
-%split data
-%2
-%0.5  0.0 0.0 0.0 0.0 0.0 1.0
-%0.5  1.0 0.0 0.0 1.0 1.0 1.0
-%
-%\end{lstlisting}
-%
-%\begin{figure}[bph]
-%\begin{center}
-%\begin{tabular}{ccc}
-%\includegraphics[height=2.0in]{figures/figCBorig}
-%&\includegraphics[height=2.0in]{figures/figCBrainbow}
-%&\includegraphics[height=2.0in]{figures/figCBzerosplit}\\
-%a) original Smokeview colorbar&
-%b) rainbow colorbar&
-%c) colorbar for splitting data
-%\end{tabular}
-%\end{center}
-%\caption{Colorbars created using the {\bf GENCOLORBAR}\ keyword.  }
-%\label{figcolorbars}%
-%\end{figure}
-
 \hitemini{COLORBAR\_FLIP}\ Specifies whether the colorbar is flipped (1) or not flipped (0)
 (default: {\tt 0}).
-\hitemini{DIFFUSELIGHT}\ Sets the color for specifying diffuse light (default: {\tt 0.5 0.5
-0.5}).
+
 \hitemNULL{DIRECTIONCOLOR}
 \hitemini{FLIP}\ Specifies whether to flip (1) or not to flip (0) the foreground and background
 colors.  By default the background color is black and the foreground color
@@ -5806,7 +5736,7 @@ TLOAD
  1 10. 1 50. 1 3
 \end{lstlisting}
 
-\hitemini{V2\_BOUNDARY, V2\_PARICLES, V2\_SLICE}Defines the minimum and maximum
+\hitemini{V2\_BOUNDARY, V2\_PARTICLES, V2\_SLICE}Defines the minimum and maximum
 data bounds used for converting boundary, particle or slice file data values to color indices.
 The format of these keyword is
 \begin{lstlisting}
@@ -5948,11 +5878,6 @@ display a Smokeview scene.  Viewing angles of 30, 45, 60,
 75 and 90 degrees are displayed when APERTURE has the value
 of 0, 1, 2, 3 and 4 respectively.  (default: 2)
 
-\hitemini{AXISSMOOTH}Specifies
-whether axis  numerical labels should be smoothed
-({\tt AXISSMOOTH set to 1}) or not smoothed ({\tt AXISSMOOTH}\ set to 0).
-(default: 1)
-
 \hitemini{BLOCKLOCATION}\ Specifies the location or method used to
 draw blockages.  Blockages are drawn either snapped to the nearest
 grid (5), drawn at locations as specified in the FDS input file
@@ -5968,9 +5893,6 @@ an FDS scene. (default: 0.001 3.000)
 
 \hitemNULL{CONTOURTYPE}
 
-\hitemini{COLORBAND}\ Specifies the width in pixels of the black colorband created when the
-colorbar is selected by the mouse.  (default: 1)
-
 \hitemini{COMPRESSAUTO}\ Specifies that files that are to be auto-loaded
 by Smokeview (and no other files) should be compressed by Smokezip.
 
@@ -5980,10 +5902,6 @@ by Smokeview (and no other files) should be compressed by Smokezip.
 the scene should be rotated relative to the observer ({\tt EYEVIEW}\ set to 1)
 or the scene center ({\tt EYEVIEW}=0).
 (default: 0)
-
-\hitemini{EYEX, EYEY, EYEZ}The parameters {\tt EYEX, EYEY, EYEZ}\ specify the
-$x$, $y$ and $z$ location respectively of the viewing origin (where your eyes are).
-(default: {\tt 0.5 -0.9 1.5})
 
 \hitemini{FONTSIZE}\ Specifies whether small (0) or large (1)
 fonts should be used to display text labels. (default: 0)
@@ -6013,7 +5931,7 @@ where ncolorbars is the number of colorbars, m\_nodes is the number of nodes
 node i.
 
 
-\hitemini{ISOTRANS}Specifies the transparency state for iso-surfaces. The choices
+\hitemini{ISOTRAN2}Specifies the transparency state for iso-surfaces. The choices
 are
 \begin{itemize}
 \item all iso-surface levels are transparent (ALL\_TRANSPARENT=1),
@@ -6023,23 +5941,12 @@ are
 \end{itemize}
 
 
-\hitemini{LABELSTARTUPVIEW}Specifies a viewpoint to be applied when Smokeview first starts up.
-Any viewpoint defined by the VIEWPOINT5 ini keyword or the predefined viewpoints external or internal may used to with the LABELSTARTUPVIEW keyword.
-(default: external)
-
 \hitemini{MSCALE}\ Specifies how dimensions along the X, Y
 and/or Z axes should be scaled. (default: 1.0 1.0 1.0)
 
 \hitemini{PROJECTION}\ Specifies whether a perspective (0) or orthographic (1) projection
 is used to draw Smokeview scenes.
 (default: 0)
-
-\hitemini{P3CONT2D}The parameter {\tt P3CONT2D}\ may be set to 0, 1 or
-2.  If P3CONT2D is set to 0 then Plot3D color contours are drawn
-by coloring each node and letting OpenGL interpolate colors
-between nodes.  If P3CONT2D is set to 1 then discrete or stepped
-shaded contours are drawn.  If P3CONT2D is set to 2 then contour
-lines are drawn. (default: 1)
 
 \hitemini{P3DSURFACETYPE}Specifies how Plot3D isosurfaces should be
 drawn.  If P3DSURFACETYPE is set to 1 then Plot3D isosurfaces are
@@ -6071,8 +5978,6 @@ active mesh should be drawn (1) or not drawn (0). (default: 1)
 \hitemini{SHOWBLOCKS}Specifies how a blockage should
 be drawn.  A value of 0, 1 or 2 indicates that the blockages are
 invisible, drawn normally or drawn as outlines respectively.  (default: 1)
-
-\hitemini{SHOWCADANDGRID}
 
 \hitemini{SHOWCEILING}Specifies whether
 the ceiling (upper bounding surface) should be drawn (1) or not drawn (0).
@@ -6209,12 +6114,6 @@ option specifies whether to draw (1) or not to draw (0) wall textures.
 \hitemini{SHOWWALLS}Specifies whether
 the four walls (four vertical bounding surfaces) should be drawn (1) or not drawn (0).
 (default: 1)
-
-\hitemini{SMOKERTHICK}\ When the GPU is used to visualize smoke, this parameter specifies a
-relative thickness scaling factor.
-
-\hitemini{STARTUPVIEW}Used by Smokeview to record the view to be
-displayed at startup (as defined in a previous Smokeview run).
 
 \hitemini{SURFINC}Smokeview allows one to display two Plot3D
 isosurfaces simultaneously.  The SURFINC parameter specifies the
@@ -6384,9 +6283,6 @@ TOURCOLORS
 -1.000000 -1.000000 -1.000000   :text
 1.000000 0.000000 0.000000   :avatar
 \end{lstlisting}
-\hitemini{TOURCONSTANTVEL}Specifies whether the avatar should (1) or
-should not (0) traverse the path with a constant velocity.
-(default: 1)
 
 \hitemini{VIEWALLTOURS}Specifies whether all (1) tours should be
 drawn. (default: 0)
@@ -6394,7 +6290,7 @@ drawn. (default: 0)
 \hitemini{VIEWTIMES}Specifies the tour start time, tour stop time and
 number of points to specify a tour. (default: 0.0 100.0 1000)
 
-\hitemini{VIEWTOURFROM}Specifies whether the scene should (1) or
+\hitemini{VIEWTOURFROMPATH}Specifies whether the scene should (1) or
 should not (0) be observed from the selected tour.
 
 \elist
@@ -6402,18 +6298,6 @@ should not (0) be observed from the selected tour.
 \subsection{Realistic Smoke Parameters}
 
 \blist
-
-\hitemini{ADJUSTALPHA}The ALPHA parameter in OpenGL/Smokeview is used
-to specify the transparency of an object.  The ALPHA's are
-computed in FDS and adjusted in SMOKEVIEW according to value of
-the ADJUSTALPHA keyword.  If ADJUSTALPHA is zero, then no
-adjustments to ALPHA are made. If ADJUSTALHPA is one, then ALPHA's
-are adjusted for non-orthogonal view directions (ALPHA is
-increased to account for longer path lengths along non-orthogonal
-view directions. If ADJUSTALPHA is two, then ALPHA's are adjusted
-as in the ADJUSTALPHA=1 case and are also set to zero on wall at
-blockage boundaries (this reduces graphical artifacts). (default:
-1)
 
 \hitemini{FIRECOLOR}\ Specifies the color of the fire in red, green,
 blue coordinates.  Each color component is an integer ranging from
@@ -6426,15 +6310,8 @@ percent transparent. (default: 2.0)
 \hitemini{SMOKECULL}\ Cull (or do not draw) smoke if it is outside of
 the viewing frustum.  (default: 1)
 
-\hitemini{SMOKESHADE}\ Grey level of smoke, may range from 0 to 255.
-(default: 255)
-
 \hitemini{SMOKESKIP}\ To speed up smoke drawing, spatial frames may be
 skipped.  Allowable parameters are (0, 1, 2).  (default: 0)
-
-\hitemini{SMOKETHICK}\ The ALPHA transparency parameter may be divided
-by a power of two ($2^{\tt SMOKETHICK}$) to make the smoke
-thinner. Parameters may range from 0 to 7. (default: 0)
 
  \elist
 
