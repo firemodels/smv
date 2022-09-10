@@ -1179,7 +1179,7 @@ void ReadSMVDynamic(char *file){
     ++++++++++++++++++++++ OFFSET ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"OFFSET") == 1){
+    if(MatchSMV(buffer,"OFFSET") == 1){
       ioffset++;
       continue;
     }
@@ -1189,7 +1189,7 @@ void ReadSMVDynamic(char *file){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
 
-    if(Match(buffer,"PL3D") == 1){
+    if(MatchSMV(buffer,"PL3D") == 1){
       int n;
 
       do_pass2=1;
@@ -1206,8 +1206,10 @@ void ReadSMVDynamic(char *file){
     ++++++++++++++++++++++ OPEN_VENT ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"OPEN_VENT") == 1||Match(buffer,"CLOSE_VENT")==1||
-       Match(buffer, "OPEN_CVENT") == 1 || Match(buffer, "CLOSE_CVENT") == 1){
+    if(MatchSMV(buffer,"OPEN_VENT") == 1||
+       MatchSMV(buffer,"CLOSE_VENT")==1||
+       MatchSMV(buffer, "OPEN_CVENT") == 1 ||
+       MatchSMV(buffer, "CLOSE_CVENT") == 1){
       meshdata *meshi;
       int len;
       int showvent, blocknumber, tempval, isvent;
@@ -1215,8 +1217,10 @@ void ReadSMVDynamic(char *file){
       do_pass2=1;
       showvent=1;
       isvent = 0;
-      if(Match(buffer, "CLOSE_VENT") == 1 || Match(buffer, "OPEN_VENT") == 1)isvent = 1;
-      if(Match(buffer,"CLOSE_VENT") == 1 || Match(buffer, "CLOSE_CVENT") == 1)showvent = 0;
+      if(MatchSMV(buffer, "CLOSE_VENT") == 1 ||
+         MatchSMV(buffer, "OPEN_VENT") == 1)isvent = 1;
+      if(MatchSMV(buffer,"CLOSE_VENT") == 1 ||
+         MatchSMV(buffer, "CLOSE_CVENT") == 1)showvent = 0;
       if(nmeshes>1){
         blocknumber=ioffset-1;
       }
@@ -1272,7 +1276,8 @@ void ReadSMVDynamic(char *file){
     ++++++++++++++++++++++ SHOW_OBST ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"SHOW_OBST") == 1||Match(buffer,"HIDE_OBST")==1){
+    if(MatchSMV(buffer,"SHOW_OBST") == 1||
+       MatchSMV(buffer,"HIDE_OBST")==1){
       meshdata *meshi;
       int blocknumber,blocktemp,tempval;
       blockagedata *bc;
@@ -1304,7 +1309,7 @@ void ReadSMVDynamic(char *file){
     ++++++++++++++++++++++ DEVICE_ACT +++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"DEVICE_ACT") == 1){
+    if(MatchSMV(buffer,"DEVICE_ACT") == 1){
       devicedata *devicei;
       int idevice;
       float act_time;
@@ -1327,7 +1332,7 @@ void ReadSMVDynamic(char *file){
     ++++++++++++++++++++++ HEAT_ACT +++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"HEAT_ACT") == 1){
+    if(MatchSMV(buffer,"HEAT_ACT") == 1){
       meshdata *meshi;
       int blocknumber,blocktemp;
       int nn;
@@ -1370,7 +1375,7 @@ void ReadSMVDynamic(char *file){
     ++++++++++++++++++++++ SPRK_ACT ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"SPRK_ACT") == 1){
+    if(MatchSMV(buffer,"SPRK_ACT") == 1){
       meshdata *meshi;
       int blocknumber,blocktemp;
       int nn;
@@ -1414,7 +1419,7 @@ void ReadSMVDynamic(char *file){
     ++++++++++++++++++++++ SMOD_ACT ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"SMOD_ACT") == 1){
+    if(MatchSMV(buffer,"SMOD_ACT") == 1){
       int idev;
       int count=0;
       int nn;
@@ -1440,7 +1445,7 @@ void ReadSMVDynamic(char *file){
     ++++++++++++++++++++++ MINMAXPL3D +++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"MINMAXPL3D") == 1){
+    if(MatchSMV(buffer,"MINMAXPL3D") == 1){
       minmaxpl3d=1;
       do_pass2=1;
       continue;
@@ -1479,7 +1484,7 @@ void ReadSMVDynamic(char *file){
     ++++++++++++++++++++++ OFFSET ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"OFFSET") == 1){
+    if(MatchSMV(buffer,"OFFSET") == 1){
       ioffset++;
       continue;
     }
@@ -1488,7 +1493,7 @@ void ReadSMVDynamic(char *file){
     ++++++++++++++++++++++ PL3D ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"PL3D") == 1){
+    if(MatchSMV(buffer,"PL3D") == 1){
       plot3ddata *plot3di;
       int len,blocknumber,blocktemp;
       char *bufferptr;
@@ -1629,15 +1634,19 @@ void ReadSMVDynamic(char *file){
     ++++++++++++++++++++++ OPEN_VENT ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"OPEN_VENT") == 1||Match(buffer,"CLOSE_VENT")==1||
-       Match(buffer, "OPEN_CVENT") == 1 || Match(buffer, "CLOSE_CVENT") == 1){
+    if(MatchSMV(buffer,"OPEN_VENT") == 1||
+       MatchSMV(buffer,"CLOSE_VENT")==1||
+       MatchSMV(buffer, "OPEN_CVENT") == 1 ||
+       MatchSMV(buffer, "CLOSE_CVENT") == 1){
       meshdata *meshi;
       int len,showvent,blocknumber,tempval,isvent;
 
       showvent=1;
       isvent = 0;
-      if(Match(buffer, "CLOSE_VENT") == 1 || Match(buffer, "OPEN_VENT") == 1)isvent = 1;
-      if(Match(buffer,"CLOSE_VENT") == 1|| Match(buffer, "CLOSE_CVENT") == 1)showvent=0;
+      if(MatchSMV(buffer, "CLOSE_VENT") == 1 ||
+         MatchSMV(buffer, "OPEN_VENT") == 1)isvent = 1;
+      if(MatchSMV(buffer,"CLOSE_VENT") == 1||
+         MatchSMV(buffer, "CLOSE_CVENT") == 1)showvent=0;
       if(nmeshes>1){
         blocknumber=ioffset-1;
       }
@@ -1713,7 +1722,8 @@ void ReadSMVDynamic(char *file){
     ++++++++++++++++++++++ SHOW_OBST ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"SHOW_OBST") == 1||Match(buffer,"HIDE_OBST")==1){
+    if(MatchSMV(buffer,"SHOW_OBST") == 1||
+       MatchSMV(buffer,"HIDE_OBST")==1){
       meshdata *meshi;
       int blocknumber,tempval,showobst,blocktemp;
       blockagedata *bc;
@@ -1729,7 +1739,7 @@ void ReadSMVDynamic(char *file){
         if(blocktemp>0&&blocktemp<=nmeshes)blocknumber = blocktemp-1;
       }
       showobst=0;
-      if(Match(buffer,"SHOW_OBST") == 1)showobst=1;
+      if(MatchSMV(buffer,"SHOW_OBST") == 1)showobst=1;
       meshi=meshinfo + blocknumber;
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i %f",&tempval,&time_local);
@@ -1768,7 +1778,7 @@ void ReadSMVDynamic(char *file){
     ++++++++++++++++++++++ DEVICE_ACT ++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"DEVICE_ACT") == 1){
+    if(MatchSMV(buffer,"DEVICE_ACT") == 1){
       devicedata *devicei;
       int idevice;
       float act_time;
@@ -1815,7 +1825,7 @@ void ReadSMVDynamic(char *file){
     ++++++++++++++++++++++ MINMAXPL3D +++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(Match(buffer,"MINMAXPL3D") == 1){
+    if(MatchSMV(buffer,"MINMAXPL3D") == 1){
       char *file_ptr, file2[1024];
       float valmin[5], valmax[5];
       float percentile_min[5], percentile_max[5];
