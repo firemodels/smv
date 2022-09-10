@@ -1071,6 +1071,19 @@ int Match(char *buffer, const char *key){
   return MATCH;
 }
 
+/* ------------------ MatchINI ------------------------ */
+
+int MatchINI(char *buffer, const char *key){
+  return Match(buffer, key);
+}
+
+
+/* ------------------ MatchSMV ------------------------ */
+
+int MatchSMV(char *buffer, const char *key){
+  return Match(buffer, key);
+}
+
 /* ------------------ MatchUpper ------------------------ */
 
 int MatchUpper(char *buffer, const char *key){
