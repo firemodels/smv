@@ -5380,21 +5380,21 @@ lightest shade.  For example the 3-tuple 1.0 0.0 0.0 is bright red, 0.0 0.0 0.0 
 
 \blist
 
-\hitem{AMBIENTLIGHT}Sets the color used for specifying ambient light. (default: {\tt 0.6 0.6 0.6})
+\hitemini{AMBIENTLIGHT}Sets the color used for specifying ambient light. (default: {\tt 0.6 0.6 0.6})
 
 \hitem{BACKGROUNDCOLOR}Sets the color used to visualize
 the scene background.
 (default: {\tt 0.0 0.0 0.0})
 
-\hitem{BLOCKCOLOR}Sets the color used to visualize
+\hitemini{BLOCKCOLOR}Sets the color used to visualize
 internal blockages.
 (default: {\tt 1.0 0.8 4.0})
 
-\hitem{BOUNDCOLOR}Sets the color used to visualize
+\hitemini{BOUNDCOLOR}Sets the color used to visualize
 floors, walls and ceilings.
 (default: {\tt 0.5 0.5 0.2})
 
-\hitem{COLORBAR}Entries for the color palette in RGB (red, green, blue) format where
+\hitemini{COLORBAR}Entries for the color palette in RGB (red, green, blue) format where
 each color component ranges from 0.0 to 1.0 .
 The default values (rounded to 2 digits) are specified with:
 \begin{lstlisting}
@@ -5414,7 +5414,7 @@ COLORBAR
 1.00 0.00 0.00
 \end{lstlisting}
 
-\hitem{COLOR2BAR}\ Miscellaneous colors used by Smokeview.  The
+\hitemini{COLOR2BAR}\ Miscellaneous colors used by Smokeview.  The
 default values are specified using:
 \begin{lstlisting}
 COLOR2BAR
@@ -5432,7 +5432,7 @@ COLOR2BAR
 \noindent where the 8 indicates the number of colors defined and
 the character string after the {\tt ``:''}\ are ignored.
 
-%\hitem{GENCOLORBAR}\ Specifies one or more general colorbars.  A
+%\hitemini{GENCOLORBAR}\ Specifies one or more general colorbars.  A
 %colorbar consists of one or more color line segments.  Each line
 %segment traverses the 3D color cube from
 %$(r_{beg}^i,g_{beg}^i,b_{beg}^i)$ to
@@ -5499,30 +5499,30 @@ the character string after the {\tt ``:''}\ are ignored.
 %\label{figcolorbars}%
 %\end{figure}
 
-\hitem{COLORBAR\_FLIP}\ Specifies whether the colorbar is flipped (1) or not flipped (0)
+\hitemini{COLORBAR\_FLIP}\ Specifies whether the colorbar is flipped (1) or not flipped (0)
 (default: {\tt 0}).
-\hitem{DIFFUSELIGHT}\ Sets the color for specifying diffuse light (default: {\tt 0.5 0.5
+\hitemini{DIFFUSELIGHT}\ Sets the color for specifying diffuse light (default: {\tt 0.5 0.5
 0.5}).
 \hitemNULL{DIRECTIONCOLOR}
-\hitem{FLIP}\ Specifies whether to flip (1) or not to flip (0) the foreground and background
+\hitemini{FLIP}\ Specifies whether to flip (1) or not to flip (0) the foreground and background
 colors.  By default the background color is black and the foreground color
 is white.  Setting FLIP to 1 has the effect of having a white background and black foreground.
 (default: {\tt 0}).
 
-\hitem{FOREGROUNDCOLOR}Sets the color used to visualize
+\hitemini{FOREGROUNDCOLOR}Sets the color used to visualize
 the scene foreground (such as text labels).
 (default: {\tt 1.0 1.0 1.0})
 
-\hitem{HEATOFFCOLOR}Sets the color used to visualize
+\hitemini{HEATOFFCOLOR}Sets the color used to visualize
 heat detectors before they activate.
 (default: {\tt 1.0 0.0 0.0})
 
-\hitem{HEATONCOLOR}Sets the color used to visualize
+\hitemini{HEATONCOLOR}Sets the color used to visualize
 heat detectors after they activate.
 (default: {\tt 0.0 1.0 0.0})
 
 
-\hitem{ISOCOLORS}\ Colors and parameters used to display animated isocontours.
+\hitemini{ISOCOLORS}\ Colors and parameters used to display animated isocontours.
 Default:
 \begin{lstlisting}
 ISOCOLORS
@@ -5534,28 +5534,28 @@ ISOCOLORS
  0.000000 0.960000 0.280000 0.800000
 \end{lstlisting}
 
-\hitem{SENSORCOLOR}Sets the color used to visualize sensors.
+\hitemini{SENSORCOLOR}Sets the color used to visualize sensors.
 (default: {\tt 1.0 1.0 0.0})
 
-\hitem{SETBW}The parameter used to set whether color shades (0) or shades of gray (1)
+\hitemini{SETBW}The parameter used to set whether color shades (0) or shades of gray (1)
 are to used for coloring contours and blockages.
 (default: {\tt 0})
 
-\hitem{SPRINKOFFCOLOR}Sets the color used to visualize
+\hitemini{SPRINKOFFCOLOR}Sets the color used to visualize
 sprinklers before they activate.
 (default: {\tt 1.0 0.0 0.0})
 
-\hitem{SPRINKONCOLOR}Sets the color used to visualize
+\hitemini{SPRINKONCOLOR}Sets the color used to visualize
 sprinklers after they activate.
 (default: {\tt 0.0 1.0 0.0})
 
-\hitem{STATICPARTCOLOR}Sets the color used to visualize static particles (particles
+\hitemini{STATICPARTCOLOR}Sets the color used to visualize static particles (particles
 displayed in frame 0).
  (default: {\tt 0.0 1.0 0.0}).
 
-\hitem{TIMEBARCOLOR}\ Sets the color used to visualize the timebar. (default: {\tt 0.6 0.6 0.6})
+\hitemini{TIMEBARCOLOR}\ Sets the color used to visualize the timebar. (default: {\tt 0.6 0.6 0.6})
 
-\hitem{VENTCOLOR}Sets the color used to visualize vents.
+\hitemini{VENTCOLOR}Sets the color used to visualize vents.
 (default: {\tt 1.0 0.0 1.0})
 \elist
 
@@ -5564,80 +5564,80 @@ The parameters described in this section allow one to customize
 the size of various Smokeview scene elements. \blist
 
 \hitemNULL{GRIDLINEWIDTH}
-\hitem{ISOLINEWIDTH}Defines the width in pixels
+\hitemini{ISOLINEWIDTH}Defines the width in pixels
 of lines used to draw animated iso-surfaces in outline mode.
 (default: $2.0$)
 
-\hitem{ISOPOINTSIZE}Defines the size in pixels
+\hitemini{ISOPOINTSIZE}Defines the size in pixels
 of iso-surface particles.
 (default: $4.0$)
 
-\hitem{LINEWIDTH}Defines the width of
+\hitemini{LINEWIDTH}Defines the width of
 lines\footnote{Except lines used to draw vents}\ in pixels.
 (default: $2.0$)
 
-\hitem{PARTPOINTSIZE}Defines the size in pixels
+\hitemini{PARTPOINTSIZE}Defines the size in pixels
 of smoke or tracer particles.
 (default: $1.0$)
 
-\hitem{PLOT3DLINEWIDTH}Defines the width in pixels
+\hitemini{PLOT3DLINEWIDTH}Defines the width in pixels
 of lines used to draw Plot3D iso-surfaces in outline mode.
 (default: $2.0$)
 
-\hitem{PLOT3DPOINTSIZE}Defines the size in pixels
+\hitemini{PLOT3DPOINTSIZE}Defines the size in pixels
 of Plot3D iso-surface particles.
 (default: $4.0$)
 
-\hitem{SENSORABSSIZE}Defines the sensor size drawn
+\hitemini{SENSORABSSIZE}Defines the sensor size drawn
 by Smokeview using the same units as used to specify the grid coordinates.
 (default: $0.038$)
 
 \hitemNULL{SENSORRELSIZE}
 
-\hitem{SLICEOFFSET}Defines an offset
+\hitemini{SLICEOFFSET}Defines an offset
 distance\footnote{distance is relative to the maximum grid cell width}
 animated slices are drawn from adjacent solid surfaces.
 (default: $0.10$)
 
-\hitem{SMOOTHLINES}Specifies whether lines should be drawn (1) or not drawn (0) using
+\hitemini{SMOOTHLINES}Specifies whether lines should be drawn (1) or not drawn (0) using
 anti-aliasing  (default: {\tt 1}).
 
 \hitemNULL{SPHERESEGS}
 
-\hitem{SPRINKLERABSSIZE}Defines the sprinkler size drawn
+\hitemini{SPRINKLERABSSIZE}Defines the sprinkler size drawn
 by Smokeview using the same units as used to specify the grid coordinates.
 (default: $0.076$)
 
-\hitem{STREAKLINEWIDTH}Defines the width of a streak line.
+\hitemini{STREAKLINEWIDTH}Defines the width of a streak line.
 (default: $1.0$)
 
 \hitemNULL{VECCONTOURS}
 
-\hitem{VECLENGTH}Defines the length of Plot3D vectors. A vector
+\hitemini{VECLENGTH}Defines the length of Plot3D vectors. A vector
 length of $1.0$ fills one grid cell.  Vector lengths may also be
 changed from within Smokeview by depressing the ``{\tt a}'' key.
 (default: $4.0$)
 
 \hitemNULL{VECTORLINEWIDTH}
 
-\hitem{VECTORPOINTSIZE}Defines the size in pixels of the point
+\hitemini{VECTORPOINTSIZE}Defines the size in pixels of the point
 that is drawn at the end of a Plot3D vector. (default: $3.0$)
 
-\hitem{VENTLINEWIDTH}Defines the width of
+\hitemini{VENTLINEWIDTH}Defines the width of
 lines used to draw vents in pixels.
 (default: $2.0$)
 
-\hitem{VENTOFFSET}Defines a distance used to offset
+\hitemini{VENTOFFSET}Defines a distance used to offset
 vents drawn from adjacent surfaces.
 (default: $0.10$ (units of fraction of a grid cell width))
 
-\hitem{WINDOWHEIGHT}Defines the initial window height in pixels.
+\hitemini{WINDOWHEIGHT}Defines the initial window height in pixels.
 (default: $480$)
 
-\hitem{WINDOWWIDTH}Defines the initial window width in pixels.
+\hitemini{WINDOWWIDTH}Defines the initial window width in pixels.
 (default: $640$)
 
-\hitem{WINDOWOFFSET}Defines a margin offset around the
+\hitemini{WINDOWOFFSET}Defines a margin offset around the
 Smokeview scene for use when capturing images to video.
 (default: 45)
 \elist
@@ -5728,7 +5728,7 @@ is also found in the .smv file.
 
 \blist
 
-\hitem{C\_BOUNDARY}\ Defines the minimum and maximum values used to
+\hitemini{C\_BOUNDARY}\ Defines the minimum and maximum values used to
 discard boundary file data in a visualization. To discard boundary data
 below 70\degC\ and above 200\degC\ use:
 
@@ -5737,7 +5737,7 @@ C_BOUNDARY
   1 70. 1 200. temp
 \end{lstlisting}
 
-\hitem{C\_PARTICLES}\ Defines the minimum and maximum values used
+\hitemini{C\_PARTICLES}\ Defines the minimum and maximum values used
 to discard particle data in a visualization. To discard particle data
 below 70\degC\ and above 200\degC\ use:
 \begin{lstlisting}
@@ -5745,7 +5745,7 @@ C_PARTICLES
   1 70. 1 200. temp
 \end{lstlisting}
 
-\hitem{C\_PLOT3D}\ Defines the minimum and maximum data values used
+\hitemini{C\_PLOT3D}\ Defines the minimum and maximum data values used
 to discard or chop Plot3D data.  To cause Smokeview to set the minimum and
 maximum chop values for the first Plot3D quantity (usually
 temperature) to 100 and 300 use:
@@ -5760,7 +5760,7 @@ C_PLOT3D
 5 0 1.0 0 0.0
 \end{lstlisting}
 
-\hitem{C\_SLICE}\ Defines the minimum and maximum values used to
+\hitemini{C\_SLICE}\ Defines the minimum and maximum values used to
 discard slice file data in a visualization. To discard slice data
 below 70\degC\ and above 200\degC\ use:
 
@@ -5775,7 +5775,7 @@ C_SLICE
 
 \hitemNULL{PATCHDATAOUT}
 
-\hitem{PERCENTILELEVEL} Defines the minimum and maximum percentile levels for setting data bounds.
+\hitemini{PERCENTILELEVEL} Defines the minimum and maximum percentile levels for setting data bounds.
 The defaults are 0.01 for the minimum level and 0.99 for maximum level.
 
 \begin{lstlisting}
@@ -5787,7 +5787,7 @@ PERCENTILLEVEL
 
 \hitemNULL{TIMEOFFSET}
 
-\hitem{TLOAD}\ Defines the minimum and maximum time used to
+\hitemini{TLOAD}\ Defines the minimum and maximum time used to
 load data in a visualization and to also skip data.
 The general form of this keyword is
 \begin{lstlisting}
@@ -5806,7 +5806,7 @@ TLOAD
  1 10. 1 50. 1 3
 \end{lstlisting}
 
-\hitem{V2\_BOUNDARY, V2\_PARICLES, V2\_SLICE}Defines the minimum and maximum
+\hitemini{V2\_BOUNDARY, V2\_PARICLES, V2\_SLICE}Defines the minimum and maximum
 data bounds used for converting boundary, particle or slice file data values to color indices.
 The format of these keyword is
 \begin{lstlisting}
@@ -5860,7 +5860,7 @@ V2_SLICE
 
 \input{SLCFlabels.tex}
 
-\hitem{V2\_PLOT3D}Defines the minimum and maximum
+\hitemini{V2\_PLOT3D}Defines the minimum and maximum
 data bounds used for converting plot3D file data component values to color indices.
 The format of this keyword is
 \begin{lstlisting}
@@ -5900,7 +5900,7 @@ exist for limiting particles and frames. Other keywords exist for
 compressing particle data and skipping particles and frames.
 \blist
 
-\hitem{BOUNDZIPSTEP}\ Defines the number of intervals or steps between
+\hitemini{BOUNDZIPSTEP}\ Defines the number of intervals or steps between
 boundary file frames when
 compressed by Smokezip. (default: 1)
 
@@ -5908,11 +5908,11 @@ compressed by Smokezip. (default: 1)
 
 \hitemNULL{FEDCOLORBAR}
 
-\hitem{ISOZIPSTEP}\ Defines the number of intervals or steps between
+\hitemini{ISOZIPSTEP}\ Defines the number of intervals or steps between
 isosurface file frames when
 compressed by Smokezip. (default: 1)
 
-\hitem{NOPART}Indicates that a particle file should not (1) or
+\hitemini{NOPART}Indicates that a particle file should not (1) or
 should (0) be loaded when Smokeview starts up. This option is used
 when one wants to look at other files besides the particle file.
 (default: 1)
@@ -5921,14 +5921,14 @@ when one wants to look at other files besides the particle file.
 
 \hitemNULL{SLICEAVERAGE}
 
-\hitem{SLICEDATAOUT}When set to 1 will output data corresponding
+\hitemini{SLICEDATAOUT}When set to 1 will output data corresponding
 to any loaded slice files whenever the scene is rendered.
 
-\hitem{SLICEZIPSTEP}\  Specifies the number of intervals or steps between
+\hitemini{SLICEZIPSTEP}\  Specifies the number of intervals or steps between
 slice frames when compressed
 by Smokezip.  (default: 1)
 
-\hitem{SMOKE3DZIPSTEP}
+\hitemini{SMOKE3DZIPSTEP}
 
 \hitemNULL{USER\_ROTATE}
 \elist
@@ -5943,17 +5943,17 @@ and for modifying how various scene elements appear.
 
 \blist
 
-\hitem{APERTURE}\ Specifies the viewing angle used to
+\hitemini{APERTURE}\ Specifies the viewing angle used to
 display a Smokeview scene.  Viewing angles of 30, 45, 60,
 75 and 90 degrees are displayed when APERTURE has the value
 of 0, 1, 2, 3 and 4 respectively.  (default: 2)
 
-\hitem{AXISSMOOTH}Specifies
+\hitemini{AXISSMOOTH}Specifies
 whether axis  numerical labels should be smoothed
 ({\tt AXISSMOOTH set to 1}) or not smoothed ({\tt AXISSMOOTH}\ set to 0).
 (default: 1)
 
-\hitem{BLOCKLOCATION}\ Specifies the location or method used to
+\hitemini{BLOCKLOCATION}\ Specifies the location or method used to
 draw blockages.  Blockages are drawn either snapped to the nearest
 grid (5), drawn at locations as specified in the FDS input file
 (6) or drawn as specified in a compatible CAD package (7)\footnote{There are various
@@ -5962,39 +5962,39 @@ the FDS/Smokeview website, \hhref{http://pages.nist.gov/fds/}, for details.}.   
 
 \hitemNULL{BOUNDARYTWOSIDE}
 
-\hitem{CLIP}\ Specifies the near and far clipping plane
+\hitemini{CLIP}\ Specifies the near and far clipping plane
 locations.  Dimensions are relative to the longest side of
 an FDS scene. (default: 0.001 3.000)
 
 \hitemNULL{CONTOURTYPE}
 
-\hitem{COLORBAND}\ Specifies the width in pixels of the black colorband created when the
+\hitemini{COLORBAND}\ Specifies the width in pixels of the black colorband created when the
 colorbar is selected by the mouse.  (default: 1)
 
-\hitem{COMPRESSAUTO}\ Specifies that files that are to be auto-loaded
+\hitemini{COMPRESSAUTO}\ Specifies that files that are to be auto-loaded
 by Smokeview (and no other files) should be compressed by Smokezip.
 
-\hitem{CULLFACES}Hide (1) or show (0) the back side of various surfaces.
+\hitemini{CULLFACES}Hide (1) or show (0) the back side of various surfaces.
 
-\hitem{EYEVIEW}Specifies whether
+\hitemini{EYEVIEW}Specifies whether
 the scene should be rotated relative to the observer ({\tt EYEVIEW}\ set to 1)
 or the scene center ({\tt EYEVIEW}=0).
 (default: 0)
 
-\hitem{EYEX, EYEY, EYEZ}The parameters {\tt EYEX, EYEY, EYEZ}\ specify the
+\hitemini{EYEX, EYEY, EYEZ}The parameters {\tt EYEX, EYEY, EYEZ}\ specify the
 $x$, $y$ and $z$ location respectively of the viewing origin (where your eyes are).
 (default: {\tt 0.5 -0.9 1.5})
 
-\hitem{FONTSIZE}\ Specifies whether small (0) or large (1)
+\hitemini{FONTSIZE}\ Specifies whether small (0) or large (1)
 fonts should be used to display text labels. (default: 0)
 
-\hitem{FRAMERATEVALUE}Specifies the maximum rate (frames per
+\hitemini{FRAMERATEVALUE}Specifies the maximum rate (frames per
 second) that Smokeview should display frames. This value is an
 upper bound.  Smokeview will not display frames faster than this
 rate but may display frames at a slower rate if the scene to be
 visualized is complex. (default: 1000000 (essentially unlimited))
 
-\hitem{GCOLORBAR}Specifies colorbars created with the colorbar editor.
+\hitemini{GCOLORBAR}Specifies colorbars created with the colorbar editor.
 The format of this keyword is
 \begin{lstlisting}
 GCOLORBAR
@@ -6013,7 +6013,7 @@ where ncolorbars is the number of colorbars, m\_nodes is the number of nodes
 node i.
 
 
-\hitem{ISOTRANS}Specifies the transparency state for iso-surfaces. The choices
+\hitemini{ISOTRANS}Specifies the transparency state for iso-surfaces. The choices
 are
 \begin{itemize}
 \item all iso-surface levels are transparent (ALL\_TRANSPARENT=1),
@@ -6023,101 +6023,101 @@ are
 \end{itemize}
 
 
-\hitem{LABELSTARTUPVIEW}Specifies a viewpoint to be applied when Smokeview first starts up.
+\hitemini{LABELSTARTUPVIEW}Specifies a viewpoint to be applied when Smokeview first starts up.
 Any viewpoint defined by the VIEWPOINT5 ini keyword or the predefined viewpoints external or internal may used to with the LABELSTARTUPVIEW keyword.
 (default: external)
 
-\hitem{MSCALE}\ Specifies how dimensions along the X, Y
+\hitemini{MSCALE}\ Specifies how dimensions along the X, Y
 and/or Z axes should be scaled. (default: 1.0 1.0 1.0)
 
-\hitem{PROJECTION}\ Specifies whether a perspective (0) or orthographic (1) projection
+\hitemini{PROJECTION}\ Specifies whether a perspective (0) or orthographic (1) projection
 is used to draw Smokeview scenes.
 (default: 0)
 
-\hitem{P3CONT2D}The parameter {\tt P3CONT2D}\ may be set to 0, 1 or
+\hitemini{P3CONT2D}The parameter {\tt P3CONT2D}\ may be set to 0, 1 or
 2.  If P3CONT2D is set to 0 then Plot3D color contours are drawn
 by coloring each node and letting OpenGL interpolate colors
 between nodes.  If P3CONT2D is set to 1 then discrete or stepped
 shaded contours are drawn.  If P3CONT2D is set to 2 then contour
 lines are drawn. (default: 1)
 
-\hitem{P3DSURFACETYPE}Specifies how Plot3D isosurfaces should be
+\hitemini{P3DSURFACETYPE}Specifies how Plot3D isosurfaces should be
 drawn.  If P3DSURFACETYPE is set to 1 then Plot3D isosurfaces are
 drawn using shaded triangles.  If P3DSURFACETYPE is set to 2 or 3
 then Plot3D isosurfaces are drawn using triangle outlines and
 points respectively. (default: 1)
 
-\hitem{P3DSURFACESMOOTH}When drawing Plot3D isosurfaces using
+\hitemini{P3DSURFACESMOOTH}When drawing Plot3D isosurfaces using
 shaded triangles, this option specifies whether the vertex normals
 should be averaged (P3DSURFACESMOOTH set to 1) resulting in smooth
 isosurfaces or not averaged resulting in isosurfaces that have
 sharp edges (P3DSURFACESMOOTH set to 0). (default: 1)
 
-\hitem{RENDERFILETYPE}Specifies whether PNG (RENDERFILETYPE set to 0) or
+\hitemini{RENDERFILETYPE}Specifies whether PNG (RENDERFILETYPE set to 0) or
 JPEG (RENDERFILETYPE set to 1)
 should be used to render images.  (default: 1)
 
-\hitem{RENDEROPTION}\ Records the option used to render images.
+\hitemini{RENDEROPTION}\ Records the option used to render images.
 
-\hitem{SENSORRELSIZE}\ Specifies a scaling factor that is applied when
+\hitemini{SENSORRELSIZE}\ Specifies a scaling factor that is applied when
 drawing all sensors.  (default: 1.0)
 
-\hitem{SHOWAXISLABELS}\ Specifies whether axis labels should
+\hitemini{SHOWAXISLABELS}\ Specifies whether axis labels should
 be drawn (1) or not drawn (0) drawn. (default: 0)
 
-\hitem{SHOWBLOCKLABEL}\ Specifies whether a label identifying the
+\hitemini{SHOWBLOCKLABEL}\ Specifies whether a label identifying the
 active mesh should be drawn (1) or not drawn (0). (default: 1)
 
-\hitem{SHOWBLOCKS}Specifies how a blockage should
+\hitemini{SHOWBLOCKS}Specifies how a blockage should
 be drawn.  A value of 0, 1 or 2 indicates that the blockages are
 invisible, drawn normally or drawn as outlines respectively.  (default: 1)
 
-\hitem{SHOWCADANDGRID}
+\hitemini{SHOWCADANDGRID}
 
-\hitem{SHOWCEILING}Specifies whether
+\hitemini{SHOWCEILING}Specifies whether
 the ceiling (upper bounding surface) should be drawn (1) or not drawn (0).
 (default: 0)
 
 
-\hitem{SHOWCOLORBARS}Specifies whether
+\hitemini{SHOWCOLORBARS}Specifies whether
 the colorbars should be drawn (1) or not drawn (0).
 (default: 1)
 
-\hitem{SHOWEXTREMEDATA}Specifies whether data exceeding the maximum colorbar
+\hitemini{SHOWEXTREMEDATA}Specifies whether data exceeding the maximum colorbar
 label value or less than the minimum colorbar label value should be colored
 with a different color (black).  If SHOWEXTREMEDATA is set to 1 then extreme
 data is colored black, if SHOWEXTREMEDATA is set to 0 then extreme data is
 colored as indicated by the maximum and minimum region of the colorbar. (default: 0).  .
 
-\hitem{SHOWFLOOR}Specifies whether
+\hitemini{SHOWFLOOR}Specifies whether
 the floor (lower bounding surface) should be drawn (1) or not drawn
 (0).
 (default: 1)
 
-\hitem{SHOWFRAME}\ Specifies whether the frame surrounding
+\hitemini{SHOWFRAME}\ Specifies whether the frame surrounding
 the scene should be drawn (1) or not drawn (0). (default:
 1)
 
-\hitem{SHOWFRAMELABEL}\ Specifies whether the frame number
+\hitemini{SHOWFRAMELABEL}\ Specifies whether the frame number
 should be drawn (1) or not drawn (0). (default: 1)
 
-\hitem{SHOWFRAMERATE}Specifies whether
+\hitemini{SHOWFRAMERATE}Specifies whether
 the frame rate label should be drawn (1) or not drawn (0).
 (default: 0)
 
-\hitem{SHOWGRIDLOC}\ Specifies where grid location should be drawn (1) or not
+\hitemini{SHOWGRIDLOC}\ Specifies where grid location should be drawn (1) or not
 drawn (0). (default: 0)
 
-\hitem{SHOWHRRCUTOFF}Specifies whether the HRRPUV cutoff label should be (1)
+\hitemini{SHOWHRRCUTOFF}Specifies whether the HRRPUV cutoff label should be (1)
 or should not be (0) displayed. (default: 0)
 
-\hitem{SHOWISO}Specifies how an isosurface should be drawn: hidden (0),
+\hitemini{SHOWISO}Specifies how an isosurface should be drawn: hidden (0),
 solid (1), outline (2) or with points (3).  (default: 1)
 
-\hitem{SHOWISONORMALS}\ Specifies whether iso-surface normals are drawn
+\hitemini{SHOWISONORMALS}\ Specifies whether iso-surface normals are drawn
 (1) or not drawn (0).  (default: 0)
 
-\hitem{SHOWIGNITION}\ When drawing a temperature boundary file, this option
+\hitemini{SHOWIGNITION}\ When drawing a temperature boundary file, this option
 specifies whether ignited materials (regions exceeding the materials
 ignition temperature) should be drawn (1) or not drawn (0).
 A second parameter specifies whether only the ignited regions
@@ -6125,41 +6125,41 @@ should be drawn (1) or both the ignited regions and other regions should be draw
 (default: 0 0)
 
 
-\hitem{SHOWLABELS}Specifies whether labels should be drawn (1) or
+\hitemini{SHOWLABELS}Specifies whether labels should be drawn (1) or
 not drawn (0).  Labels are specified using the {\em LABEL}\
 keyword described in subsection \ref{subsect_features}. (default:
 0)
 
-\hitem{SHOWMEMLOAD}\ Specifies (when run on a PC) whether a label
+\hitemini{SHOWMEMLOAD}\ Specifies (when run on a PC) whether a label
 giving the memory used should be drawn (1) or not drawn (0).
 (default: 0)
 
-\hitem{SHOWOPENVENTS}\ Specifies that open vents should be drawn
+\hitemini{SHOWOPENVENTS}\ Specifies that open vents should be drawn
 (1) or not drawn (0).  (default: 0)
 
-\hitem{SHOWDUMMYVENTS}\ Specifies that dummy vents (vents created
+\hitemini{SHOWDUMMYVENTS}\ Specifies that dummy vents (vents created
 by FDS) should be drawn (1) or not drawn (0).  (default: 0)
 
-\hitem{SHOWSENSORS}\ Specifies whether sensors should be drawn (1) or not drawn (0).
+\hitemini{SHOWSENSORS}\ Specifies whether sensors should be drawn (1) or not drawn (0).
 A second parameter specifies whether the sensor's orientation or normal vector
 should be drawn (1) or not drawn (0). (default: 1 0).
 
-\hitem{SHOWSLICEINOBST}\ Specifies whether a slice file should be drawn (1) inside
+\hitemini{SHOWSLICEINOBST}\ Specifies whether a slice file should be drawn (1) inside
 a blockage or not drawn (0) inside a blockage.  Normally a slice file
 is not drawn inside a blockage but one would want to draw a
 slice file inside a blockage if the blockage disappears over the
 duration of a run.  (default: 0).
 
 
-\hitem{SHOWSMOKEPART}Specifies whether smoke or trace particles
+\hitemini{SHOWSMOKEPART}Specifies whether smoke or trace particles
 should be drawn (1) or not drawn (0). (default: 1)
 
-\hitem{SHOWSPRINKPART}Specifies whether
+\hitemini{SHOWSPRINKPART}Specifies whether
 sprinkler droplet particles (if present in the particle file)
 should be drawn (1) or not drawn (0).
 (default: 1)
 
-\hitem{SHOWSTREAK}Specify parameters that define streak properties.  This keyword
+\hitemini{SHOWSTREAK}Specify parameters that define streak properties.  This keyword
 has four integer parameters with format:
 \begin{lstlisting}
 SHOWSTREAK
@@ -6173,54 +6173,54 @@ whether a streak head is not (0) or is (1) shown.
 The {\tt streakindex}\ parameter indicates the length of the streak.
 
 
-\hitem{SHOWTERRAIN}\ If terrain is present, specifies that terrain
+\hitemini{SHOWTERRAIN}\ If terrain is present, specifies that terrain
 should be visualized as a {\em warped}\ sheet
 rather than as a set of FDS blockages.
 
-\hitem{SHOWTICKS}\ Specifies whether labels should be drawn (1) or
+\hitemini{SHOWTICKS}\ Specifies whether labels should be drawn (1) or
 not drawn (0).  Ticks are specified using the {\em TICK}\ keyword
 described in subsection \ref{subsect_features}. (default: 0)
 
-\hitem{SHOWTIMEBAR}Specifies whether the timebar should be drawn
+\hitemini{SHOWTIMEBAR}Specifies whether the timebar should be drawn
 (1) or not drawn (0). (default: 1)
 
-\hitem{SHOWTIMELABEL}\ Specifies whether the time label should be
+\hitemini{SHOWTIMELABEL}\ Specifies whether the time label should be
 drawn (1) or not drawn (0). (default: 1)
 
-\hitem{SHOWTRANSPARENTVENTS}\ Specifies whether vents specified as being invisible should be
+\hitemini{SHOWTRANSPARENTVENTS}\ Specifies whether vents specified as being invisible should be
 shown (1) or not shown (0). (default: 0)..
 
-\hitem{SHOWHMSTIMELABEL}Specifies whether the time label should be
+\hitemini{SHOWHMSTIMELABEL}Specifies whether the time label should be
 drawn (1) or not drawn (0) using the format ``h:m:s'' where ``h''
 is hours, ``m'' is minutes and ``s'' is seconds.  (default: 0)
 
-\hitem{SHOWTITLE}Specifies whether
+\hitemini{SHOWTITLE}Specifies whether
 the title should be drawn (1) or not drawn (0).
 (default: 1)
 
-\hitem{SHOWVENTS}\ Specifies whether vents should be drawn
+\hitemini{SHOWVENTS}\ Specifies whether vents should be drawn
 (1) or not drawn (0).  (default: 1)
 
-\hitem{SHOWALLTEXTURES}\ If wall textures are defined in the input .smv file, this
+\hitemini{SHOWALLTEXTURES}\ If wall textures are defined in the input .smv file, this
 option specifies whether to draw (1) or not to draw (0) wall textures.
 (default: 0)
 
 
-\hitem{SHOWWALLS}Specifies whether
+\hitemini{SHOWWALLS}Specifies whether
 the four walls (four vertical bounding surfaces) should be drawn (1) or not drawn (0).
 (default: 1)
 
-\hitem{SMOKERTHICK}\ When the GPU is used to visualize smoke, this parameter specifies a
+\hitemini{SMOKERTHICK}\ When the GPU is used to visualize smoke, this parameter specifies a
 relative thickness scaling factor.
 
-\hitem{STARTUPVIEW}Used by Smokeview to record the view to be
+\hitemini{STARTUPVIEW}Used by Smokeview to record the view to be
 displayed at startup (as defined in a previous Smokeview run).
 
-\hitem{SURFINC}Smokeview allows one to display two Plot3D
+\hitemini{SURFINC}Smokeview allows one to display two Plot3D
 isosurfaces simultaneously.  The SURFINC parameter specifies the
 interval between displayed Plot3D surface values. (default: 0)
 
-\hitem{TERRAINPARMS}\ Specifies various parameters used to characterize
+\hitemini{TERRAINPARMS}\ Specifies various parameters used to characterize
 how terrain appears.  The parameters are the color at the minimum depth,
 the color at the maximum depth and scaling factor used to vertically exaggerate
 the scene.
@@ -6231,32 +6231,32 @@ the scene.
   vertical_factor);
 \end{lstlisting}
 
-\hitem{TIMEOFFSET}\ Specifies that offset time in seconds added to
+\hitemini{TIMEOFFSET}\ Specifies that offset time in seconds added to
 the displayed simulation time.  Along with the {\em
 SHOWHMSTIMELABEL}\ keyword, the {\em TIMEOFFSET}\ keyword allows
 one to display {\em wall clock}\ rather than simulation time.
 (default: 0.0)
 
-\hitem{TITLESAFE}Amount in pixels to offset titles when displaying
+\hitemini{TITLESAFE}Amount in pixels to offset titles when displaying
 scene in {\em title safe}\ mode.   (default: 0)
 
-\hitem{TRANSPARENT}Specifies whether 2D and 3D contours should be
+\hitemini{TRANSPARENT}Specifies whether 2D and 3D contours should be
 drawn with solid colors (0) or transparent colors(1). (default: 1)
 
-\hitem{TWOSIDEDVENTS}\  Specifies whether to draw vents so that they are visible from
+\hitemini{TWOSIDEDVENTS}\  Specifies whether to draw vents so that they are visible from
 both sides (1) or visible from only one side (0).  (default: 0)
 
-\hitem{USEGPU}\ If the GPU is available, specifies whether it should be used. (default: 1)
+\hitemini{USEGPU}\ If the GPU is available, specifies whether it should be used. (default: 1)
 
 
-\hitem{VECLENGTH}\ Specifies vector lengths.
+\hitemini{VECLENGTH}\ Specifies vector lengths.
 
-\hitem{VECTORSKIP}Specifies
+\hitemini{VECTORSKIP}Specifies
 what vectors to draw.  For example, if this parameter is set to 2 then
 every 2nd vector is drawn when displaying vectors.
 (default: 1)
 
-\hitem{VIEWPOINT5}Specifies the internal Smokeview parameters used
+\hitemini{VIEWPOINT5}Specifies the internal Smokeview parameters used
 to record a scene's viewpoint and orientation.  This parameter is
 set automatically by Smokeview when a .ini file is created.
 (default: none)
@@ -6293,7 +6293,7 @@ VIEWPOINT5
 \item name - label appearing in Viewpoint menu
 \end{itemize}
 
-\hitem{XYZCLIP}\ Specifies clip planes in physical
+\hitemini{XYZCLIP}\ Specifies clip planes in physical
 coordinates. There are six clipping planes, a minimum and
 maximum X, a minimum and maximum Y, a minimum and maximum
 Z. Each clipping plane may be used or not. The first
@@ -6317,7 +6317,7 @@ dialog box found under the {\em Options}\ menu item.
 0 0.0 0 0.0
 \end{lstlisting}
 
-\hitem{ZOOM}\ Specifies the zoom amount used to display a Smokeview
+\hitemini{ZOOM}\ Specifies the zoom amount used to display a Smokeview
 scene using two parameters, an integer zoom index and a floating
 point zoom amount.  If the zoom index is 0->4 then the zoom amount
 is 0.25, 0.5, 1.0, 2.0 and 4.0 respectively.  If the zoom index is
@@ -6335,13 +6335,13 @@ amount. (default: 0 1.0)
 \subsection{Tour}
 \blist
 
-\hitem{SHOWPATHNODES}\ Specifies whether the path nodes should (1) or should not (0)
+\hitemini{SHOWPATHNODES}\ Specifies whether the path nodes should (1) or should not (0)
 be drawn.  This is a debugging parameter, not normally used.  (default: 0)
 
-\hitem{SHOWTOURROUTE}\ Specifies whether the tour route should (1) or should not (0)
+\hitemini{SHOWTOURROUTE}\ Specifies whether the tour route should (1) or should not (0)
 be drawn.  (default: 0)
 
-\hitem{TOURS}Keyword used to specify the tours. The format is
+\hitemini{TOURS}Keyword used to specify the tours. The format is
 \begin{lstlisting}
 TOURS
 ntours - number of tours
@@ -6369,7 +6369,7 @@ Added Tour 1
 100.0 7.4 9.0 7.4 0 0.0 0.0 0.0 0.0 0.0 1.0 0
 \end{lstlisting}
 
-\hitem{TOURCOLORS}Keyword used to specify the tour colors.  The colors as before
+\hitemini{TOURCOLORS}Keyword used to specify the tour colors.  The colors as before
 consist of a red, green and blue component ranging from 0.0 to 1.0 .  One can override
 Smokeview's choice for the path, the path knots for both the selected and un-selected
 case.  One may also specify the color of the time labels and the location of the
@@ -6387,17 +6387,17 @@ TOURCOLORS
 -1.000000 -1.000000 -1.000000   :text
 1.000000 0.000000 0.000000   :avatar
 \end{lstlisting}
-\hitem{TOURCONSTANTVEL}Specifies whether the avatar should (1) or
+\hitemini{TOURCONSTANTVEL}Specifies whether the avatar should (1) or
 should not (0) traverse the path with a constant velocity.
 (default: 1)
 
-\hitem{VIEWALLTOURS}Specifies whether all (1) tours should be
+\hitemini{VIEWALLTOURS}Specifies whether all (1) tours should be
 drawn. (default: 0)
 
-\hitem{VIEWTIMES}Specifies the tour start time, tour stop time and
+\hitemini{VIEWTIMES}Specifies the tour start time, tour stop time and
 number of points to specify a tour. (default: 0.0 100.0 1000)
 
-\hitem{VIEWTOURFROM}Specifies whether the scene should (1) or
+\hitemini{VIEWTOURFROM}Specifies whether the scene should (1) or
 should not (0) be observed from the selected tour.
 
 \elist
@@ -6406,7 +6406,7 @@ should not (0) be observed from the selected tour.
 
 \blist
 
-\hitem{ADJUSTALPHA}The ALPHA parameter in OpenGL/Smokeview is used
+\hitemini{ADJUSTALPHA}The ALPHA parameter in OpenGL/Smokeview is used
 to specify the transparency of an object.  The ALPHA's are
 computed in FDS and adjusted in SMOKEVIEW according to value of
 the ADJUSTALPHA keyword.  If ADJUSTALPHA is zero, then no
@@ -6418,24 +6418,24 @@ as in the ADJUSTALPHA=1 case and are also set to zero on wall at
 blockage boundaries (this reduces graphical artifacts). (default:
 1)
 
-\hitem{FIRECOLOR}\ Specifies the color of the fire in red, green,
+\hitemini{FIRECOLOR}\ Specifies the color of the fire in red, green,
 blue coordinates.  Each color component is an integer ranging from
 0 to 255.  (default: 255, 128, 0)
 
-\hitem{FIREDEPTH}\ Specifies the depth  at which the fire is 50
+\hitemini{FIREDEPTH}\ Specifies the depth  at which the fire is 50
 percent transparent. (default: 2.0)
 
 
-\hitem{SMOKECULL}\ Cull (or do not draw) smoke if it is outside of
+\hitemini{SMOKECULL}\ Cull (or do not draw) smoke if it is outside of
 the viewing frustum.  (default: 1)
 
-\hitem{SMOKESHADE}\ Grey level of smoke, may range from 0 to 255.
+\hitemini{SMOKESHADE}\ Grey level of smoke, may range from 0 to 255.
 (default: 255)
 
-\hitem{SMOKESKIP}\ To speed up smoke drawing, spatial frames may be
+\hitemini{SMOKESKIP}\ To speed up smoke drawing, spatial frames may be
 skipped.  Allowable parameters are (0, 1, 2).  (default: 0)
 
-\hitem{SMOKETHICK}\ The ALPHA transparency parameter may be divided
+\hitemini{SMOKETHICK}\ The ALPHA transparency parameter may be divided
 by a power of two ($2^{\tt SMOKETHICK}$) to make the smoke
 thinner. Parameters may range from 0 to 7. (default: 0)
 
@@ -6443,11 +6443,11 @@ thinner. Parameters may range from 0 to 7. (default: 0)
 
 \subsection{Zone Fire Modeling Parameters}
 \blist
-\hitem{SHOWHZONE}Specifies whether upper layer temperatures should be (1) drawn horizontally
+\hitemini{SHOWHZONE}Specifies whether upper layer temperatures should be (1) drawn horizontally
 or not (0).  (default: 0)
-\hitem{SHOWVZONE}Specifies whether upper layer temperatures should be (1) drawn vertically
+\hitemini{SHOWVZONE}Specifies whether upper layer temperatures should be (1) drawn vertically
 or not (0).  (default: 1)
-\hitem{SHOWHAZARDCOLORS}\ Specifies whether upper layer temperatures should be (1) drawn
+\hitemini{SHOWHAZARDCOLORS}\ Specifies whether upper layer temperatures should be (1) drawn
 in terms of hazard or drawn in terms of a standard color scale (0).  (default: 0)
 
 \elist
@@ -6455,7 +6455,7 @@ in terms of hazard or drawn in terms of a standard color scale (0).  (default: 0
 \subsection{Local Parameters}
 
 \blist
-\hitem{SCRIPTFILE}\ Specifies the name of a script file either created by
+\hitemini{SCRIPTFILE}\ Specifies the name of a script file either created by
 hand or created automatically
 by Smokeview using the script recorder.
 \elist
@@ -6472,7 +6472,7 @@ information, etc.
 \subsection{Geometry Keywords}
 \blist
 
-\hitem{GRID}This keyword specifies the number of grid cells in the
+\hitemsmv{GRID}This keyword specifies the number of grid cells in the
 {\tt X}, {\tt Y}\ and {\tt Z}\ directions.
 For example,
 \begin{lstlisting}
@@ -6482,7 +6482,7 @@ GRID
 specifies that there are 10, 20 and 30 grid cells in the {\tt X},
 {\tt Y}\ and {\tt Z}\ directions respectively.
 
-\hitem{OFFSET}This keyword specifies signals to Smokeview that a new mesh has begun and also
+\hitemsmv{OFFSET}This keyword specifies signals to Smokeview that a new mesh has begun and also
 gives values for the front, left bottom corner of the mesh.  For example,
 \begin{lstlisting}
 OFFSET
@@ -6494,7 +6494,7 @@ the {\tt PDIM}\ keyword. The {\tt OFFSET}\ keyword cannot be eliminated from the
 (it may seem logical to do this due
 to the presence of redundant data) because of its role in signaling new meshes.
 
-\hitem{PDIM}This keyword specifies the region where a mesh is located
+\hitemsmv{PDIM}This keyword specifies the region where a mesh is located
 using the same convention as is used in an FDS input file to specify a blockage location.
 PDIM also specifies a color to use for drawing grids.  For example,
 \begin{lstlisting}
@@ -6510,7 +6510,7 @@ Note that the xmin, ymin and zmin values must be identical to the values given i
 {\tt OFFSET}\ keyword.
 
 
-\hitem{SHOW\_OBST(HIDE\_OBST)}\ This keyword specifies when a
+\hitemsmv{SHOW\_OBST(HIDE\_OBST)}\ This keyword specifies when a
 blockage should be shown(hidden). For example,
 \begin{lstlisting}
 SHOW_OBST  2
@@ -6520,7 +6520,7 @@ specifies that the tenth blockage in mesh 2 should be opened at
 120.1 seconds.  This keyword is automatically added to the {\tt
 .smv}\ file by FDS.
 
-\hitem{OBST}This keyword specifies internal blockages. A
+\hitemsmv{OBST}This keyword specifies internal blockages. A
 FORTRAN~2003 code segment describing the format of {\tt OBST}\ data
 is given by:
 \begin{lstlisting}
@@ -6582,7 +6582,7 @@ represents transparency, alpha=0.0 is transparent, alpha=1.0 is opaque.}\\  \hli
 \end{center}
 \end{table}
 
-\hitem{TOFFSET}The {\tt TOFFSET}\ keyword defines a default texture origin, $(x_0, y_0, z_0)$ .
+\hitemsmv{TOFFSET}The {\tt TOFFSET}\ keyword defines a default texture origin, $(x_0, y_0, z_0)$ .
 This origin may be overridden with data provided with the {\tt OBST}\ keyword. For example,
 
 \begin{lstlisting}
@@ -6590,7 +6590,7 @@ TOFFSET
 0.0 0.0 0.0
 \end{lstlisting}
 
-\hitem{TRNX,TRNY,TRNZ}The {\tt TRNX, TRNY, TRNZ}\ keywords specify
+\hitemsmv{TRNX,TRNY,TRNZ}The {\tt TRNX, TRNY, TRNZ}\ keywords specify
 grid nodes in the {\tt X, Y, Z}\ coordinate directions.  A
 FORTAN~2003 code segment describing the format of {\tt TRNX}\ data
 is given by:
@@ -6606,7 +6606,7 @@ is given by:
 {\tt TRNY}\ and {\tt TRNZ}\ data entries are defined similarly. The
 first {\tt nx}\ data items are not required by Smokeview.
 
-\hitem{VENT, CVENT}These keywords specify vent coordinates for regular and circular vents.
+\hitemsmv{VENT, CVENT}These keywords specify vent coordinates for regular and circular vents.
 Note that the parameters {\tt x0, y0, z0}\ and {\tt radius}\ describing the center and radius
 of a circular vent
 only appear with the CVENT keyword.
@@ -6681,7 +6681,7 @@ radius & float &
 \end{table}
 
 
-\hitem{OPEN\_VENT(CLOSE\_VENT)}This keyword specifies when a vent
+\hitemsmv{OPEN\_VENT(CLOSE\_VENT)}This keyword specifies when a vent
 should be opened(closed). For example,
 \begin{lstlisting}
 OPEN_VENT 2
@@ -6690,7 +6690,7 @@ OPEN_VENT 2
 specifies that the third vent in mesh 2 should be opened at
 15.6~S.
 
-\hitem{XYZ}The {\tt XYZ}\ keyword defines the .xyz or {\tt Plot3D}
+\hitemsmv{XYZ}The {\tt XYZ}\ keyword defines the .xyz or {\tt Plot3D}
 grid file name. A FORTAN~2003 code segment describing the format
 of {\tt XYZ}\ data is given by:
 \begin{lstlisting}
@@ -6703,30 +6703,30 @@ name of the .xyz file.
 \subsection{File Keywords}
 \blist
 
-\hitem{BNDF}The {\tt BNDF}\ keyword defines the {\tt .bf}\ file name along with character
+\hitemsmv{BNDF}The {\tt BNDF}\ keyword defines the {\tt .bf}\ file name along with character
 labels used to describe the data contents of the boundary file.
 
-\hitem{HRRPUVCUT}The {\tt HRRPUVCUT}\ keyword defines the heat release
+\hitemsmv{HRRPUVCUT}The {\tt HRRPUVCUT}\ keyword defines the heat release
 rate per unit volume cutoff value.  When displaying
 realistic smoke and fire, fire is displayed above this
 cutoff and smoke is displayed below.
 
-\hitem{INPF}The {\tt INPF}\ keyword specifies a file containing a
+\hitemsmv{INPF}The {\tt INPF}\ keyword specifies a file containing a
 copy of the FDS input file.
 
 
-\hitem{ISOF}The {\tt ISOF}\ keyword defines the {\tt .iso}\ file name along with
+\hitemsmv{ISOF}The {\tt ISOF}\ keyword defines the {\tt .iso}\ file name along with
 character labels used to describe the data contents of the isosurface file.
 
-\hitem{PART,PRT5}The {\tt PART}\ and {\tt PRT5}\ keywords define
+\hitemsmv{PART,PRT5}The {\tt PART}\ and {\tt PRT5}\ keywords define
 the {\tt .part}\ file name along with character
 labels used to describe the data contents of the particle file.
 
-\hitem{PL3D}The {\tt PL3D}\ keyword defines the {\tt .q}
+\hitemsmv{PL3D}The {\tt PL3D}\ keyword defines the {\tt .q}
 file name along with character labels used to describe the
 data contents for each Plot3D variable.
 
-\hitem{SLCF,SLCT}The {\tt SLCF}\ and {\tt SLCT}\ keywords define the {\tt .sf}
+\hitemsmv{SLCF,SLCT}The {\tt SLCF}\ and {\tt SLCT}\ keywords define the {\tt .sf}
 file name along with character labels used to describe the
 data contents of the slice file.  The {\tt SLCT}\ keyword is used
 for wildland urban interface fire simulations performed over terrains.  Smokeview allows one
@@ -6738,7 +6738,7 @@ to visualize slice files for these types of simulations that conform to the terr
 \subsection{Device (sensor) Keywords}
 \blist
 
-\hitem{DEVICE}A {\em device}\ generalizes the notion of a sensor,
+\hitemsmv{DEVICE}A {\em device}\ generalizes the notion of a sensor,
 sprinkler or heat detector.  The {\tt DEVICE}\ keyword defines the
 device location and name.  This name is used to access the set of
 instructions for drawing the device.  These instructions are
@@ -6767,7 +6767,7 @@ for drawing the device
 (see the {\tt PROP}\ entry in this section for more details).
 Note, the two {\tt 0 0}\ numbers are used for backwards compatibility.
 
-\hitem{DEVICE\_ACT}The {\tt DEVICE\_ACT}\ keyword defines the
+\hitemsmv{DEVICE\_ACT}The {\tt DEVICE\_ACT}\ keyword defines the
 activation time for a particular device. The format for the {\tt
 DEVICE\_ACT}\ keyword is
 \begin{lstlisting}
@@ -6779,7 +6779,7 @@ State is the state of the device, 0 for off or in-active and 1 for
 on or active.  If the device may be drawn more than two ways then
 more than 2 states may be used with this keyword.
 
-\hitem{HEAT}The {\tt HEAT}\ keyword defines heat detector location
+\hitemsmv{HEAT}The {\tt HEAT}\ keyword defines heat detector location
 data. A FORTAN~2003 code segment describing the format of {\tt
 HEAT}\ data is given by:
 \begin{lstlisting}
@@ -6792,7 +6792,7 @@ where {\tt nheat}\ is the number of heat detectors and
 {\tt xheat, yheat, zheat}\ are the {\tt x, y, z}\
 coordinates of the heat detectors.
 
-\hitem{HEAT\_ACT}The {\tt HEAT\_ACT}\ keyword defines heat detector
+\hitemsmv{HEAT\_ACT}The {\tt HEAT\_ACT}\ keyword defines heat detector
 activation data. A FORTAN~2003 code segment describing the format
 of {\tt HEAT\_ACT}\ data is given by:
 \begin{lstlisting}
@@ -6801,7 +6801,7 @@ of {\tt HEAT\_ACT}\ data is given by:
 where {\tt heat\_time}\ is the activation time of the {\tt iheat}'th heat
 detector.
 
-\hitem{PROP}The {\tt PROP}\ keyword specifies
+\hitemsmv{PROP}The {\tt PROP}\ keyword specifies
 a list of general properties used
 by Smokeview to customize the drawing of devices defined in
 the objects.svo file.
@@ -6823,7 +6823,7 @@ PROP
  texture file n
 \end{lstlisting}
 
-\hitem{SPRK}The {\tt SPRK}\ keyword defines sprinkler location
+\hitemsmv{SPRK}The {\tt SPRK}\ keyword defines sprinkler location
 data. A FORTAN~2003 code segment describing the format of {\tt
 SPRK}\ data is given by:
 \begin{lstlisting}
@@ -6836,7 +6836,7 @@ where {\tt nsprink}\ is the number of sprinklers and
 {\tt xsprink, ysprink, zsprink}\ are the {\tt x, y, z}\
 coordinates of the sprinklers.
 
-\hitem{SPRK\_ACT}The {\tt SPRK\_ACT}\ keyword defines sprinkler
+\hitemsmv{SPRK\_ACT}The {\tt SPRK\_ACT}\ keyword defines sprinkler
 activation data. A FORTAN~2003 code segment describing the format
 of {\tt SPRK\_ACT}\ data is given by:
 \begin{lstlisting}
@@ -6844,7 +6844,7 @@ of {\tt SPRK\_ACT}\ data is given by:
 \end{lstlisting}
 where {\tt sprink\_time}\ is the activation time of the {\tt isprink}'th sprinkler.
 
-\hitem{THCP}The {\tt THCP}\ keyword defines thermocouple location
+\hitemsmv{THCP}The {\tt THCP}\ keyword defines thermocouple location
 data. A FORTAN~2003 code segment describing the format of {\tt
 THCP}\ data is given by:
 \begin{lstlisting}
@@ -6867,7 +6867,7 @@ to support visualization of slice files, isosurface files, and devices for zone 
 
 \blist
 
-\hitem{FIRE}The {\tt FIRE}\ keyword defines the location and
+\hitemsmv{FIRE}The {\tt FIRE}\ keyword defines the location and
 room number of a zone fire modeling fire.
 The format for the {\tt FIRE}\ keyword is
 \begin{lstlisting}
@@ -6881,7 +6881,7 @@ The order of the {\tt FIRE}\ entries found in the .smv file should correspond
 to the ordering of the fires (i.e., The n'th fire is specified with
 the n'th .smv {\tt FIRE}\ entry.)
 
-\hitem{VENTGEOM}The {\tt VENTGEOM}\ keyword defines the location,
+\hitemsmv{VENTGEOM}The {\tt VENTGEOM}\ keyword defines the location,
 orientation and size of a zone fire modeling vent (
 with horizontal flow).
 The format for the {\tt VENTGEOM}\ keyword is
@@ -6903,7 +6903,7 @@ to the ordering of the vents  (i.e., The n'th vent is
 specified with the n'th .smv {\tt VENTGEOM}\ entry.) Note that the VENTGEOM keyword is not used in CFAST 7 files and has
 been replaced by {\tt HVENTPOS}\, {\tt VVENTPOS}\, and {\tt MVENTPOS}\ keywords described below.
 
-\hitem{HVENTPOS} defines the location, orientation, size, color, and initial opening for a zone fire modeling wall vent.
+\hitemsmv{HVENTPOS} defines the location, orientation, size, color, and initial opening for a zone fire modeling wall vent.
 The format for the {\tt HVENTPOS}\ keyword is
 \begin{lstlisting}
 HVENTPOS
@@ -6914,7 +6914,7 @@ where {\tt from}\ and {\tt to}\  are the room indices
 coordinates of the vent relative to the lower left/front corner of the {\tt from}\ compartment, {\tt red green blue}\ (optional) specify the
 color of the drawn vent (color values range from 0.0 to 1.0), and {\tt opening}\ (optional) is the initial opening area of the vent.
 
-\hitem{VVENTPOS} defines the location, orientation, size, color, and initial opening for a zone fire modeling ceiling/floor vent.
+\hitemsmv{VVENTPOS} defines the location, orientation, size, color, and initial opening for a zone fire modeling ceiling/floor vent.
 The format for the {\tt VVENTPOS}\ keyword is
 \begin{lstlisting}
 VVENTPOS
@@ -6925,7 +6925,7 @@ where {\tt from}\ and {\tt to}\  are the room indices
 coordinates of the vent relative to the lower left/front corner of the {\tt from}\ compartment, {\tt red green blue}\ (optional) specify the
 color of the drawn vent (color values range from 0.0 to 1.0), and {\tt opening}\ (optional) is the initial opening area of the vent.
 
-\hitem{MVENTPOS} defines the location, orientation, size, color, and initial opening for a zone fire modeling wall vent.
+\hitemsmv{MVENTPOS} defines the location, orientation, size, color, and initial opening for a zone fire modeling wall vent.
 The format for the {\tt MVENTPOS}\ keyword is
 \begin{lstlisting}
 MVENTPOS
@@ -6936,14 +6936,14 @@ where {\tt from}\ and {\tt to}\  are the room indices
 coordinates of the vent relative to the lower left/front corner of the {\tt from}\ compartment, {\tt red green blue}\ (optional) specify the
 color of the drawn vent (color values range from 0.0 to 1.0), and {\tt opening}\ (optional) is the initial opening area of the vent.
 
-\hitem{ROOM}The {\tt ROOM}\ keyword defines the size and
+\hitemsmv{ROOM}The {\tt ROOM}\ keyword defines the size and
 location of a zone fire modeling compartment or room.
 The format for the {\tt ROOM}\ keyword is
 \begin{lstlisting}
 ROOM
  x y z
  x0 y0 z0
-\end{lstlisting}\hitem{ROOM}
+\end{lstlisting}\hitemsmv{ROOM}
 where $(x,y,z)$ is the width, depth and height of the room
 respectively and $(x0,y0,z0)$ is the location of the
 left, front, bottom corner of the room.
@@ -6951,7 +6951,7 @@ The order of the {\tt ROOM}\ entries found in the .smv file should correspond
 to the ordering of the rooms (i.e., The n'th room is specified
 with the n'th .smv {\tt ROOM}\ entry.)
 
-\hitem{ZONE}The {\tt ZONE}\ keyword defines the file used to store
+\hitemsmv{ZONE}The {\tt ZONE}\ keyword defines the file used to store
 zone fire modeling data and the types of data
 found within the file. The format for the {\tt ZONE}\ keyword is
 \begin{lstlisting}
@@ -6970,6 +6970,7 @@ ZONE
  short label
  unit
 \end{lstlisting}
+
 where {\tt file}\ is the name of the file containing the zone fire modeling data. {\tt long label}\, {\tt short label}\, and {\tt unit}\ describe
 the columns of data in the {\tt ZONE file}\. Note, Smokeview does not use the label or unit data with CFAST 6 or later.
 This data is found within the spread sheet data now used to store zone fire modeling data.
@@ -6979,11 +6980,11 @@ This data is found within the spread sheet data now used to store zone fire mode
 \subsection{Miscellaneous Keywords}
 \blist
 
-\hitem{REVISION}The {\tt REVISION}\ keyword defines the GIT revision or
+\hitemsmv{REVISION}The {\tt REVISION}\ keyword defines the GIT revision or
 build number for the version of FDS that ran the case being visualized.
 The FDS and Smokeview revisions are displayed in the Help menu.
 
-\hitem{TITLE1/TITLE2}The {\tt TITLE1}\ and {\tt TITLE2}\ keywords
+\hitemsmv{TITLE1/TITLE2}The {\tt TITLE1}\ and {\tt TITLE2}\ keywords
 allow one to specify extra information documenting a Smokeview
 case.  These keywords and associated labels are added by hand to
 the Smokeview (\tt .smv) file using the format:
@@ -6995,6 +6996,8 @@ second line of descriptive text
 \end{lstlisting}
 
 \elist
+
+
 
 \section{CAD/GE1 file format}
 
