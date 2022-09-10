@@ -15954,12 +15954,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", enable_texture_lighting);
   fprintf(fileout, "EYEVIEW\n");
   fprintf(fileout, " %i\n", rotation_type);
-  fprintf(fileout, "EYEX\n");
-  fprintf(fileout, " %f\n", eyexfactor);
-  fprintf(fileout, "EYEY\n");
-  fprintf(fileout, " %f\n", eyeyfactor);
-  fprintf(fileout, "EYEZ\n");
-  fprintf(fileout, " %f\n", eyezfactor);
   fprintf(fileout, "FONTSIZE\n");
   fprintf(fileout, " %i\n", fontindex);
   fprintf(fileout, "FIREPARAMS\n");
@@ -16053,8 +16047,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", visBlocks);
   fprintf(fileout, "SHOWBOUNDS\n");
   fprintf(fileout, " %i %i\n", bounds_each_mesh, show_bound_diffs);
-  fprintf(fileout, "SHOWCADANDGRID\n");
-  fprintf(fileout, " %i\n", show_cad_and_grid);
   fprintf(fileout, "SHOWCADOPAQUE\n");
   fprintf(fileout, " %i\n", viscadopaque);
   fprintf(fileout, "SHOWCEILING\n");
@@ -16401,8 +16393,6 @@ void WriteIni(int flag,char *filename){
 
 
   }
-  fprintf(fileout, "TOURCONSTANTVEL\n");
-  fprintf(fileout, " %i\n", 1);
   fprintf(fileout, "VIEWALLTOURS\n");
   fprintf(fileout, " %i\n", viewalltours);
   fprintf(fileout, "VIEWTIMES\n");
