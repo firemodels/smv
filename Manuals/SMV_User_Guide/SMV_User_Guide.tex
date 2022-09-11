@@ -3963,17 +3963,44 @@ VOLSMOKERENDERALL
   file name base (char) (or blank to use the Smokeview default)
 \end{lstlisting}
 
-\hitemssfN{RENDER360ALL}
+\hitemssf{RENDER360ALL}Render frames using 360 degree format (all view directions are recorded) .
+Every skip frames are rendered.  Usage:
+\begin{lstlisting}
+RENDER360ALL
+ skip (int)
+ file name base (char) (or blank to use smokeview default)
+\end{lstlisting}
+
 \hitemssfN{RENDERHTMLALL}
-\hitemssfN{RENDERHTMLDIR}
+\hitemssf{RENDERHTMLDIR}Set directory containing html files to be rendered. Usage:
+\begin{lstlisting}
+RENDERHTMLDIR
+  directory name (char) (where rendered files will go)
+\end{lstlisting}
+
 \hitemssfN{RENDERHTMLGEOM}
 \hitemssfN{RENDERHTMLOBST}
 \hitemssfN{RENDERHTMLONCE}
 \hitemssfN{RENDERHTMLSLICECELL}
 \hitemssfN{RENDERHTMLSLICENODE}
-\hitemssfN{RENDERSIZE}
-\hitemssfN{RENDERSTART}
-\hitemssfN{RENDERTYPE}
+\hitemssf{RENDERSIZE}Set the width and heightt of rendered images.  Usage:
+\begin{lstlisting}
+RENDERSIZE
+ width height (int)
+\end{lstlisting}
+
+\hitemssf{RENDERSTART}Set the first frame and the number of frames to skip for the frames to be rendered. Usage:
+\begin{lstlisting}
+RENDERSTART
+ start_frame (int) skip_frame (int)
+\end{lstlisting}
+
+\hitemssfN{RENDERTYPE}Set the type of image to be rendered to jpg or png. Usage:
+\begin{lstlisting}
+RENDERTYPE
+ jpg or png  (char)
+\end{lstlisting}
+
 \hitemssfN{MAKEMOVIE}
 \hitemssfN{MOVIETYPE}
 \hitemssfN{ISORENDERALL}
@@ -3985,9 +4012,26 @@ VOLSMOKERENDERALL
 \subsection{Miscellaneous}
 
 \blist
-\hitemssfN{LABEL}
-\hitemssfN{RGBTEST}
-\hitemssfN{SETTOURKEYFRAME}
+\hitemssf{LABEL}Add a comment to script output. Usage:
+\begin{lstlisting}
+LABEL
+  text
+\end{lstlisting}
+
+\hitemssf{RGBTEST}Test color value at an $(x,y,z)$ location. Usage:
+\begin{lstlisting}
+RGBTEST
+  x y z r g b delta
+\end{lstlisting}
+\noindent where r, g and b are red green and blue color components each ranging from 0 to 255 and delta is an error tolerance.  
+If any color component difference is found to be greater than delta, a warning message is output.
+
+\hitemssf{SETTOURKEYFRAME}Set the time position along the current tour to time. Usage:
+\begin{lstlisting}
+SETTOURKEYFRAME
+  time (float)
+\end{lstlisting}
+
 \hitemssfN{SETTOURVIEW}
 \hitemssfN{SHOWSMOKESENSORS}
 \elist
