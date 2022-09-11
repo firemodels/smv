@@ -109,6 +109,7 @@ EXTERNCPP int            Match(char *buffer, const char *key);
 EXTERNCPP int            MatchINI(char *buffer, const char *key);
 EXTERNCPP int            MatchSMV(char *buffer, const char *key);
 EXTERNCPP int            MatchUpper(char *buffer, const char *key);
+EXTERNCPP int            MatchSSF(char *buffer, const char *key);
 EXTERNCPP int            RandInt(int min, int max);
 EXTERNCPP void           FParseCSV(char *buffer, float *vals, int *valids, int ncols, int *ntokens);
 EXTERNCPP void           ParseCSV(char *buffer, char **tokens, int *ntokens);

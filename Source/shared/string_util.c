@@ -1103,6 +1103,12 @@ int MatchUpper(char *buffer, const char *key){
   return MATCH;
 }
 
+/* ------------------ MatchSSF ------------------------ */
+
+int MatchSSF(char *buffer, const char *key){
+  return MatchUpper(buffer, key);
+}
+
 /* ----------------------- MatchWild ----------------------------- */
 
 int MatchWild(char *pTameText, char *pWildText){
