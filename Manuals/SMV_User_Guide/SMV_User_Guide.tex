@@ -5700,65 +5700,99 @@ Smokeview scene for use when capturing images to video.
 (default: 45)
 \elist
 
-%%\subsection{Geometry Settings}
-\hiteminiN{GEOMAXIS}
-\hiteminiN{GEOMBOUNDARYPROPS}
+\subsection{Geometry Settings}
+\blist
+\hitemini{GEOMAXIS}This keyword specifies the length and line width of an x, y, z coordinate axes when it is drawn.
+\begin{lstlisting}
+GEOMAXIS
+  length (float) width (float)
+\end{lstlisting}
+
+\hiteminiN{GEOMBOUNDARYPROPS}This keyword specifies how the geometry is drawn. Usage:
+
+\begin{lstlisting}
+GEOMBOUNDARYPROPS
+  show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize, boundary_edgetype
+\end{lstlisting}
+where geometry is drawn as a solid shaded surface if {\tt show\_boundary\_shaded}\ is 1 .  Outlines and points are drawn
+if {\tt show\_boundary\_outline}\ or {\tt show\_boundary\_points}\ are 1. Geometry outline line width and point size are specified as positive
+floating numbers using {\tt geomboundary\_linewidth}\ and {\tt geomboundary\_pointsize}.
+\
 \hiteminiN{GEOMCELLPROPS}
-\hiteminiN{GEOMDOMAIN}
+
+\hiteminiN{GEOMDOMAIN}Specifies whether geometry is drawn inside the domain and outside the domain. Usage:
+\begin{lstlisting}
+GEOMDOMAIN
+  inside_domain (0/1)  outside_domain (0/1)
+\end{lstlisting}
+
+\hiteminiN{SHOWGEOMTERRAIN}
 \hiteminiN{GEOMSELECTCOLOR}
 \hiteminiN{GEOMSHOW}
+\hiteminiN{SHOWTRIANGLECOUNT}
+\hiteminiN{SHOWTRIANGLES}
+\hiteminiN{SHOWTETRAS}
+\elist
 
-%%\subsection{Visibility Settings}
-\hiteminiN{SHOOTER}
-\hiteminiN{SHOWAVATAR}
-\hiteminiN{SHOWBOUNDS}
-\hiteminiN{SHOWCADOPAQUE}
-\hiteminiN{SHOWCHID}
-\hiteminiN{SHOWCVENTS}
+\subsection{2D Plot Settings}
 \hiteminiN{SHOWDEVICEPLOTS}
+\hiteminiN{SHOWGENPLOTS}
+\hiteminiN{GENPLOTLABELS}
+\hiteminiN{SHOWHRRPLOT}
+\hiteminiN{SHOWSLICEPLOT}
+
+\subsection{Visibility Settings}
+\blist
+\hiteminiN{SHOOTER}
+\hitemini{SHOWAVATAR}Specifies whether to show an avatar.
+\begin{lstlisting}
+SHOWAVATAR
+  show_avatar (0/1)
+\end{lstlisting}
+
+\hitemini{SHOWBOUNDS}Specify if bounds are output for each mesh. Usage:
+\begin{lstlisting}
+  SHOWBOUNDS
+  bounds_each_mesh (0/1) show_bound_diffs (0/1)
+\end{lstlisting}
+
+\hiteminiN{SHOWCADOPAQUE}
+
+\hitemini{SHOWCHID}When drawing the title, specify whether the CHID is drawn.
+\begin{lstlisting}
+  SHOWCHID
+  show_chid (0/1)
+\end{lstlisting}
+
+\hitemini{SHOWCVENTS}Specify whether circular vents are drawn. Usage:
+\begin{lstlisting}
+  SHOWCVENTS
+  show_vent (0/1) show_outline (0/1)
+\end{lstlisting}
+
+
 \hiteminiN{SHOWDEVICES}
 \hiteminiN{SHOWDEVICEVALS}
 \hiteminiN{SHOWEVACSLICES}
 \hiteminiN{SHOWFEDAREA}
 \hiteminiN{SHOWFIRECUTOFF}
 \hiteminiN{SHOWFRAMETIMELABEL}
-\hiteminiN{SHOWGENPLOTS}
-\hiteminiN{SHOWGEOMTERRAIN}
 \hiteminiN{SHOWGRAVVECTOR}
 \hiteminiN{SHOWGRID}
 \hiteminiN{SHOWHRRLABEL}
-\hiteminiN{SHOWHRRPLOT}
 \hiteminiN{SHOWMISSINGOBJECTS}
 \hiteminiN{SHOWOTHERVENTS}
 \hiteminiN{SHOWROOMS}
-\hiteminiN{SHOWSLICEPLOT}
 \hiteminiN{SHOWSLICEVALS}
 \hiteminiN{SHOWSZONE}
 \hiteminiN{SHOWTARGETS}
-\hiteminiN{SHOWTETRAS}
 \hiteminiN{SHOWTHRESHOLD}
 \hiteminiN{SHOWTRACERSALWAYS}
 \hiteminiN{SHOWTRANSPARENT}
-\hiteminiN{SHOWTRIANGLECOUNT}
-\hiteminiN{SHOWTRIANGLES}
 \hiteminiN{SHOWVENTFLOW}
 \hiteminiN{SHOWZONEFIRE}
+\elist
 
-
-\subsection{Time and data bounds}
-\hiteminiN{C_ISO}
-\hiteminiN{V_ISO}
-\hiteminiN{VOLSMOKE}
-\hiteminiN{V_PARTICLES}
-\hiteminiN{V_PLOT3D}
-\hiteminiN{V_SLICE}
-\hiteminiN{VSLICEAUTO}
-\hiteminiN{V_TARGET}
-\hiteminiN{V_ZONE}
-\hiteminiN{V2_BOUNDARY}
-\hiteminiN{V2_PARTICLES}
-\hiteminiN{V2_SLICE}
-\hiteminiN{V_BOUNDARY}
 
 %%\subsection{Data Settings}
 \hiteminiN{FREEZEVOLSMOKE}
@@ -5786,7 +5820,6 @@ Smokeview scene for use when capturing images to video.
 \hiteminiN{SMOKEFIREPROP}
 \hiteminiN{SMOKELOAD}
 \hiteminiN{SMOKEPROP}
-\hiteminiN{GENPLOTLABELS}
 \hiteminiN{RESEARCHMODE}
 \hiteminiN{S3DAUTO}
 \hiteminiN{UNITCLASSES}
@@ -5810,6 +5843,22 @@ Smokeview scene for use when capturing images to video.
 \hiteminiN{ISOAUTO}
 \hiteminiN{LOADINC}
 \hiteminiN{SKIPEMBEDSLICE}
+
+\subsection{Time and data bounds}
+\hiteminiN{C_ISO}
+\hiteminiN{V_ISO}
+\hiteminiN{VOLSMOKE}
+\hiteminiN{V_PARTICLES}
+\hiteminiN{V_PLOT3D}
+\hiteminiN{V_SLICE}
+\hiteminiN{VSLICEAUTO}
+\hiteminiN{V_TARGET}
+\hiteminiN{V_ZONE}
+\hiteminiN{V2_BOUNDARY}
+\hiteminiN{V2_PARTICLES}
+\hiteminiN{V2_SLICE}
+\hiteminiN{V_BOUNDARY}
+
 
 
 \label{section:timedatabounds}
