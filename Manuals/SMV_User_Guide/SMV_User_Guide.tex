@@ -3444,42 +3444,12 @@ Commands fall into three logical categories.  Commands
 to load data files, commands to position the scene in both time and space
 and commands to output the scene to image files.
 
-
-
-%%\hitem{XYZVIEW}
-
-%%\hitem{SCENECLIP}
-
-%%\hitem{SETTOURKEYFRAME}
-%%\hitem{SETTOURVIEW}
-
-%%\hitem{SHOWSMOKESENSORS}
-
-%%\hitem{SMOKEFRAMES}
-
-%%\hitem{MAKEMOVIE}
-%%\hitem{MOVIETYPE}
-%%\hitem{RENDER360ALL}
-%%\hitem{RENDERHTMLALL}
-%%\hitem{RENDERHTMLDIR}
-%%\hitem{RENDERHTMLGEOM}
-%%\hitem{RENDERHTMLOBST}
-%%\hitem{RENDERHTMLONCE}
-%%\hitem{RENDERHTMLSLICE}
-%%\hitem{RENDERSIZE}
-%%\hitem{RENDERSTART}
-%%\hitem{RENDERTYPE}
-
-%%\hitem{LOADBOUNDARYM}
-%%\hitem{LOADSLICEM}
-%%\hitem{LOADVSLICEM}
-
 %%-----------------------------------------------------------------------
 \subsection{Loading and Unloading  Files}
 \subsubsection{3D Smoke Files}
 \blist
 
-\hitem{LOAD3DSMOKE}
+\hitemssf{LOAD3DSMOKE}
 Load a 3D smoke file.  The types supported are
 SOOT DENSITY, HRRPUV,\\
 TEMPERATURE and CARBON DIOXIDE DENSITY.
@@ -3489,7 +3459,7 @@ LOAD3DSMOKE
   type (char)
 \end{lstlisting}
 
-\hitem{LOADVOLSMOKE}\ Load files needed to view volume rendered
+\hitemssf{LOADVOLSMOKE}\ Load files needed to view volume rendered
 smoke.  One may either load files for all meshes or for one
 particular mesh.  Usage:
 \begin{lstlisting}
@@ -3498,7 +3468,7 @@ LOADVOLSMOKE
  \end{lstlisting}
 
 
-\hitem{LOADVOLSMOKEFRAME}\ Load a volume rendered smoke frame.
+\hitemssf{LOADVOLSMOKEFRAME}\ Load a volume rendered smoke frame.
 Usage:
 \begin{lstlisting}
 LOADVOLSMOKEFRAME
@@ -3514,7 +3484,7 @@ rendered smoke for all meshes is loaded.
 
 \blist
 
-\hitem{LOADBOUNDARY}\ Load a boundary file of a particular type.
+\hitemssf{LOADBOUNDARY}\ Load a boundary file of a particular type.
 The type is the same as what Smokeview displays in the Load menus for boundary files.
 Usage:
 \begin{lstlisting}
@@ -3522,7 +3492,7 @@ LOADBOUNDARY
    type (char)
 \end{lstlisting}
 
-\hitem{SETBOUNDBOUNDS}
+\hitemssf{SETBOUNDBOUNDS}
 Use {\tt SETBOUNDBOUNDS}\ to set minimum and maximum bounds for boundary files.
 {\tt SETBOUNDBOUNDS}\ must be used before a boundary file is loaded.
 \begin{lstlisting}
@@ -3541,7 +3511,7 @@ parameters is the same as those used for the
 
 \subsubsection{General Files}
 \blist
-\hitem{LOADFILE}
+\hitemssf{LOADFILE}
 Use LOADFILE to load a particular file.  Smokeview will determine
 what kind of file it is (3d smoke, slice, etc.) and call the
 appropriate routine to load the data.
@@ -3553,7 +3523,7 @@ LOADFILE
   file (char)
 \end{lstlisting}
 
-\hitem{LOADINIFILE}
+\hitemssf{LOADINIFILE}
 Use LOADINIFILE to load a configuration of {\tt .ini}\ file.
 Usage:
 \begin{lstlisting}
@@ -3561,7 +3531,7 @@ LOADINIFILE
   file (char)
 \end{lstlisting}
 
-\hitem{UNLOADALL}Unload all data files currently loaded.
+\hitemssf{UNLOADALL}Unload all data files currently loaded.
 Usage:
 \begin{lstlisting}
 UNLOADALL
@@ -3570,7 +3540,7 @@ UNLOADALL
 
 \subsubsection{Slice and Vector Slice Files}
 \blist
-\hitem{LOADVFILE}
+\hitemssf{LOADVFILE}
 Use LOADVFILE to load a particular vector slice file.  Smokeview will load the file
 specified along with the corresponding U, V and W velocity slice files if they are available.
 Usage:
@@ -3579,7 +3549,7 @@ LOADVFILE
   file (char)
 \end{lstlisting}
 
-\hitem{LOADSLCF}Load a slice file.
+\hitemssf{LOADSLCF}Load a slice file.
 This script command uses one or more of the keywords ID, PBX, PBY, PBZ, QUANTITY, CELL\_CENTERED and VECTOR to specify slice files to load.
 These keywords are defined in the same way as when used with an \&SLCF namelist in an FDS input file.
 ID specifies an identifier.  PBX, PBY, PBZ specify a position and orientation.
@@ -3644,7 +3614,7 @@ LOADSLCF
 \end{lstlisting}
 
 
-\hitem{SETSLICEBOUNDS}
+\hitemssf{SETSLICEBOUNDS}
 Use {\tt SETSLICEBOUNDS}\ to set minimum and maximum bounds for slice files.
 {\tt SETSLICEBOUNDS}\ must be used before a slice
 file is loaded.
@@ -3661,14 +3631,14 @@ parameters is the same as those used for the
 
 \subsubsection{Particle Files}
 \blist
-\hitem{LOADPARTICLES}Load particle files.  Only particle files created with FDS version 5 or
+\hitemssf{LOADPARTICLES}Load particle files.  Only particle files created with FDS version 5 or
 later are supported.
 Usage:
 \begin{lstlisting}
 LOADPARTICLES
 \end{lstlisting}
 
-\hitem{PARTCLASSCOLOR}Show a particular particle class.  Class names supported for a given
+\hitemssf{PARTCLASSCOLOR}Show a particular particle class.  Class names supported for a given
 run are displayed in the Particle Class Smokeview menu.
 Usage:
 \begin{lstlisting}
@@ -3676,7 +3646,7 @@ PARTCLASSCOLOR
    color (char)
 \end{lstlisting}
 
-\hitem{PARTCLASSTYPE}Show a particular particle type.  Type names supported for a given
+\hitemssf{PARTCLASSTYPE}Show a particular particle type.  Type names supported for a given
 run are displayed in the Particle Type Smokeview menu.
 Usage:
 \begin{lstlisting}
@@ -3687,14 +3657,14 @@ PARTCLASSTYPE
 
 \subsubsection{PLOT3D Files}
 \blist
-\hitem{LOADPLOT3D}Load a Plot3D file for a given mesh at a specified time.
+\hitemssf{LOADPLOT3D}Load a Plot3D file for a given mesh at a specified time.
 Usage:
 \begin{lstlisting}
 LOADPLOT3D
   mesh number (an integer from 1 to the number of meshes) time (float)
 \end{lstlisting}
 
-\hitem{PLOT3DPROPS}Specifies Plot3D plot properties that
+\hitemssf{PLOT3DPROPS}Specifies Plot3D plot properties that
 apply to all Plot3D plots currently being displayed.
 Usage:
 \begin{lstlisting}
@@ -3715,7 +3685,7 @@ contours and 2 for continuous contours
 then Smokeview uses vector\_length set the PLOT3D vector length
 \end{itemize}
 
-\hitem{SHOWPLOT3DDATA}Specifies a particular Plot3D plot to be
+\hitemssf{SHOWPLOT3DDATA}Specifies a particular Plot3D plot to be
 displayed (mesh number, whether visible or not, orientation and position)
 Usage:
 \begin{lstlisting}
@@ -3733,7 +3703,7 @@ where
 
 \subsubsection{Isosurface Files}
 \blist
-\hitem{LOADISO}Load an iso-surface file for all meshes for a specified type.
+\hitemssf{LOADISO}Load an iso-surface file for all meshes for a specified type.
 The type is the same as what Smokeview displays in the Load menus for iso-surface files.
 Usage:
 \begin{lstlisting}
@@ -3741,7 +3711,7 @@ LOADISO
   type (char)
 \end{lstlisting}
 
-\hitem{LOADISOM}Load an iso-surface file for a specified mesh and type.
+\hitemssf{LOADISOM}Load an iso-surface file for a specified mesh and type.
 The type is the same as what Smokeview displays in the Load menus for iso-surface files.
 Usage:
 \begin{lstlisting}
@@ -3758,32 +3728,32 @@ LOADISO
 
 
 \blist
-\hitem{EXIT}Cause Smokeview to quit.
+\hitemssf{EXIT}Cause Smokeview to quit.
 Usage:
 \begin{lstlisting}
  EXIT
 \end{lstlisting}
 
-\hitem{CBARFLIP}\ Display the colorbar in the opposite orientation from which it was defined.
+\hitemssf{CBARFLIP}\ Display the colorbar in the opposite orientation from which it was defined.
 Usage:
 \begin{lstlisting}
  CBARFLIP
 \end{lstlisting}
 
-\hitem{CBARNORMAL}
+\hitemssf{CBARNORMAL}
 Usage: Display the colorbar in the same orientation as it was defined.
 \begin{lstlisting}
  CBARNORMAL
 \end{lstlisting}
 
-\hitem{GSLICEVIEW}Show general oriented slice plane, and/or triangles and normals used to represent slice.
+\hitemssf{GSLICEVIEW}Show general oriented slice plane, and/or triangles and normals used to represent slice.
 Usage:
 \begin{lstlisting}
  GSLICEVIEW
  show_gslice, show_triangles, show_triangulation, show_normals (all ints)
 \end{lstlisting}
 
-\hitem{GSLICEPOS}Set position (xpos, ypos, zpos) of general oriented slice plane.
+\hitemssf{GSLICEPOS}Set position (xpos, ypos, zpos) of general oriented slice plane.
 Usage:
 \begin{lstlisting}
  GSLICEPOS
@@ -3791,14 +3761,14 @@ Usage:
 \end{lstlisting}
 
 
-\hitem{GSLICEORIEN}Set orientiation (azimuth elevation orientation angles) of general oriented slice plane.
+\hitemssf{GSLICEORIEN}Set orientiation (azimuth elevation orientation angles) of general oriented slice plane.
 Usage:
 \begin{lstlisting}
  GSLICEORIEN
  azimuth (float), elevation (float)
 \end{lstlisting}
 
-\hitem{KEYBOARD}Passes a keyboard character to Smokeview
+\hitemssf{KEYBOARD}Passes a keyboard character to Smokeview
 Usage:
 \begin{lstlisting}
  KEYBOARD
@@ -3811,21 +3781,21 @@ or
 \end{lstlisting}
 where {\tt c}\ is any keyboard character (recognized by Smokeview) and {\tt ALT}\ is the ALT key.
 
-\hitem{LOADTOUR}Load a tour of a given name.
+\hitemssf{LOADTOUR}Load a tour of a given name.
 Usage:
 \begin{lstlisting}
 LOADTOUR
  type (char)
 \end{lstlisting}
 
-\hitem{SETTIMEVAL}Set the time for displaying data to a specified value.
+\hitemssf{SETTIMEVAL}Set the time for displaying data to a specified value.
 Usage:
 \begin{lstlisting}
 SETTIMEVAL
   time (float)
 \end{lstlisting}
 
-\hitem{SETVIEWPOINT}Set a view point .  The view point must have been previously defined and
+\hitemssf{SETVIEWPOINT}Set a view point .  The view point must have been previously defined and
 saved in an .ini file.
 Usage:
 \begin{lstlisting}
@@ -3833,19 +3803,19 @@ SETVIEWPOINT
   viewpoint (char)
 \end{lstlisting}
 
-\hitem{UNLOADTOUR}Unload a tour.
+\hitemssf{UNLOADTOUR}Unload a tour.
 \begin{lstlisting}
 UNLOADTOUR
 \end{lstlisting}
 
-\hitem{XYZVIEW}Sets the position (x, y and z location) and view direction (azimuth and elevation angle in degrees).
+\hitemssf{XYZVIEW}Sets the position (x, y and z location) and view direction (azimuth and elevation angle in degrees).
 Usge:
 \begin{lstlisting}
 XYZVIEW
  xpos ypos zpos az elev
 \end{lstlisting}
 
-\hitem{VIEWXMIN,VIEWYMIN,VIEWZMIN}The {\tt VIEWXMIN}\ script keyword sets the view so that the scene
+\hitemssf{VIEWXMIN,VIEWYMIN,VIEWZMIN}The {\tt VIEWXMIN}\ script keyword sets the view so that the scene
 is viewed towards the XMIN direction.  It sets
 the scene view location to (x,ymid,zmid)
 and the scene view direction to $(-1.0,0.0,0.0)$ where
@@ -3858,7 +3828,7 @@ VIEWYMIN
 VIEWZMIN
 \end{lstlisting}
 
-\hitem{VIEWXMAX,VIEWYMAX,VIEWZMAX}The {\tt VIEWXMAX}\ script keyword sets the view so that the scene
+\hitemssf{VIEWXMAX,VIEWYMAX,VIEWZMAX}The {\tt VIEWXMAX}\ script keyword sets the view so that the scene
 is viewed towards the XMAX direction.  It sets
 the scene view location to (x,ymid,zmid)
 and the scene view direction to $(+1.0,0.0,0.0)$ where
@@ -3871,7 +3841,7 @@ VIEWYMAX
 VIEWZMAX
 \end{lstlisting}
 
-\hitem{XSCENECLIP}\ Sets clipping planes along the X axis.
+\hitemssf{XSCENECLIP}\ Sets clipping planes along the X axis.
 Portions of the scene before {\tt xmin}\
 or after {\tt xmax}\ are hidden if setxmin or setxmax are set to 1 respectively.
 Usage:
@@ -3880,7 +3850,7 @@ XSCENECLIP
   setxmin xmin setxmax xmax
 \end{lstlisting}
 
-\hitem{YSCENECLIP}\ Sets clipping planes along the Y axis.
+\hitemssf{YSCENECLIP}\ Sets clipping planes along the Y axis.
 Portions of the scene before {\tt ymin}\
 or after {\tt ymax}\ are hidden if setymin or setymax are set to 1 respectively.
 Usage:
@@ -3889,7 +3859,7 @@ YSCENECLIP
   setymin ymin setymax ymax
 \end{lstlisting}
 
-\hitem{ZSCENECLIP}\ Sets clipping planes along the Z axis.
+\hitemssf{ZSCENECLIP}\ Sets clipping planes along the Z axis.
 Portions of the scene before {\tt zmin}\
 or after {\tt zmax}\ are hidden if setzmin or setzmax are set to 1 respectively.
 Usage:
@@ -3906,7 +3876,7 @@ ZSCENECLIP
 
 
 \blist
-\hitem{RENDERCLIP}\ Specify clip offsets in pixels when
+\hitemssf{RENDERCLIP}\ Specify clip offsets in pixels when
 rendering a scene.  Usage:
 \begin{lstlisting}
 RENDERCLIP
@@ -3914,7 +3884,7 @@ RENDERCLIP
 \end{lstlisting}
 where clipping is turn on if {\tt flag}\ is set to 1 and
 turned off if {\tt flag}\ is set to 0.
-\hitem{RENDERDIR}\ Specify a
+\hitemssf{RENDERDIR}\ Specify a
 directory where rendered files should go. Usage:
 \begin{lstlisting}
 RENDERDIR
@@ -3923,7 +3893,7 @@ RENDERDIR
 Smokeview automatically converts directory separators (`/' for Linux/Mac systems
 and `//' for Windows systems) to the separator appropriate for the host system.
 
-\hitem{RENDERONCE}\ Render the current scene.
+\hitemssf{RENDERONCE}\ Render the current scene.
 Usage:
 \begin{lstlisting}
 RENDERONCE
@@ -3932,7 +3902,7 @@ RENDERONCE
 Smokeview will assign the filename automatically if the
 entry after the {\tt RENDERONCE}\ keyword is blank.
 
-\hitem{RENDERDOUBLEONCE}\ Render the current scene at double resolution.
+\hitemssf{RENDERDOUBLEONCE}\ Render the current scene at double resolution.
 Usage:
 \begin{lstlisting}
 RENDERDOUBLEONCE
@@ -3941,7 +3911,7 @@ RENDERDOUBLEONCE
 As with {\tt RENDERONCE}, Smokeview will assign the filename
 automatically if the entry after the {\tt RENDERDOUBLEONCE}\ keyword is blank.
 
-\hitem{RENDERALL}\ Render a sequence of frames.  By default this
+\hitemssf{RENDERALL}\ Render a sequence of frames.  By default this
 command renders every frame starting with the first. One may also
 specify a starting frame index (default: 0) and a skip value
 (default: 1) indicating the difference in indices between rendered
@@ -3966,7 +3936,7 @@ RENDERALL
 \end{lstlisting}
 renders every third frame starting with the second (index 1).
 
-\hitem{VOLSMOKERENDERALL}\ Render a sequence of volume rendered
+\hitemssf{VOLSMOKERENDERALL}\ Render a sequence of volume rendered
 frames. As with {\tt RENDERALL}, this command by default command
 renders every frame starting with the first. One may also specify
 a starting frame index (default: 0) and a skip value (default: 1)
