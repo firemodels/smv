@@ -3484,6 +3484,8 @@ rendered smoke for all meshes is loaded.
 
 \blist
 
+\hitemssfN{LOADBOUNDARYM}
+
 \hitemssf{LOADBOUNDARY}\ Load a boundary file of a particular type.
 The type is the same as what Smokeview displays in the Load menus for boundary files.
 Usage:
@@ -3622,6 +3624,12 @@ file is loaded.
   SETSLICEBOUNDS
   ivalmin (int) valmin (float) ivalmax (int) valmax quantity (char)
 \end{lstlisting}
+
+\hitemssfN{LOADSLICE}
+\hitemssfN{LOADSLICEM}
+\hitemssfN{LOADSLICERENDER}
+\hitemssfN{LOADVSLICE}
+\hitemssfN{LOADVSLICEM}
 \elist
 
 The usage of the
@@ -3725,7 +3733,6 @@ LOADISO
 
 %%-----------------------------------------------------------------------
 \subsection{Controlling the Scene}
-
 
 \blist
 \hitemssf{EXIT}Cause Smokeview to quit.
@@ -3868,6 +3875,8 @@ ZSCENECLIP
   setzmin zmin setzmax zmax
 \end{lstlisting}
 
+\hitemssfN{PROJECTION}
+\hitemssfN{SCENECLIP}
 \elist
 
 %%-----------------------------------------------------------------------
@@ -3954,8 +3963,35 @@ VOLSMOKERENDERALL
   file name base (char) (or blank to use the Smokeview default)
 \end{lstlisting}
 
+\hitemssfN{RENDER360ALL}
+\hitemssfN{RENDERHTMLALL}
+\hitemssfN{RENDERHTMLDIR}
+\hitemssfN{RENDERHTMLGEOM}
+\hitemssfN{RENDERHTMLOBST}
+\hitemssfN{RENDERHTMLONCE}
+\hitemssfN{RENDERHTMLSLICECELL}
+\hitemssfN{RENDERHTMLSLICENODE}
+\hitemssfN{RENDERSIZE}
+\hitemssfN{RENDERSTART}
+\hitemssfN{RENDERTYPE}
+\hitemssfN{MAKEMOVIE}
+\hitemssfN{MOVIETYPE}
+\hitemssfN{ISORENDERALL}
 
 \elist
+
+%%-----------------------------------------------------------------------
+
+\subsection{Miscellaneous}
+
+\blist
+\hitemssfN{LABEL}
+\hitemssfN{RGBTEST}
+\hitemssfN{SETTOURKEYFRAME}
+\hitemssfN{SETTOURVIEW}
+\hitemssfN{SHOWSMOKESENSORS}
+\elist
+
 
 %---------------------------------------------------------------------------------
 %------------------------ Advanced Features --------------------------------------
