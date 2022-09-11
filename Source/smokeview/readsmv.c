@@ -2300,7 +2300,7 @@ int GetInpf(bufferstreamdata *stream_in){
       BREAK;
     }
     if(strncmp(buffer," ",1)==0)continue;
-    if(Match(buffer,"INPF") == 1){
+    if(MatchSMV(buffer,"INPF") == 1){
       if(FGETS(buffer,255,stream)==NULL){
         BREAK;
       }
