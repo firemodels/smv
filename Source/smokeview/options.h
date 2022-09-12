@@ -17,7 +17,7 @@
 
 //*** options: all platforms
 
-//#define pp_PARSE_OBST        // parse fds input file to get &OBST XB vals
+#define pp_PARSE_OBST        // parse fds input file to get &OBST XB vals
 #define pp_PART_MULTI        // load particles in parallel
 //#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds
 #define pp_THREADBUFFER

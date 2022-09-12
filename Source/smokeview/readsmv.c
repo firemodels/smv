@@ -6385,19 +6385,21 @@ void UpdateFileBoundList(void){
 #define YMAX 3
 #define ZMIN 4
 #define ZMAX 5
-int SubtractBlock(float *block, float *hole, float *blockMhole, int *nblockMhole){
-  int nblocks = 0;
+void SubtractBlock(float *block, float *hole, float *blockdiffs, int *nblockdiffs){
   float *xyz;
+  int nblocks = 0;
 
-  // block: [-------------]
-  // hole:         [-----------]
-  if(hole[XMIN]>block[XMAX]||hole[XMAX]<block[XMIN])return 0;
-  if(hole[YMIN]>block[YMAX]||hole[YMAX]<block[YMIN])return 0;
-  if(hole[ZMIN]>block[ZMAX]||hole[ZMAX]<block[ZMIN])return 0;
+  if(hole[XMIN]>=block[XMAX]||hole[XMAX]<=block[XMIN]||
+     hole[YMIN]>=block[YMAX]||hole[YMAX]<=block[YMIN]||
+     hole[ZMIN]>=block[ZMAX]||hole[ZMAX]<=block[ZMIN]){
+    *nblockdiffs = 1;
+    memcpy(blockdiffs, block, 6*sizeof(float));
+    return;
+  }
 
   // zmin
   if(block[ZMIN]<hole[ZMIN]){
-    xyz = blockMhole+6*nblocks;
+    xyz = blockdiffs+6*nblocks;
     nblocks++;
     xyz[0] = block[XMIN];
     xyz[1] = block[XMAX];
@@ -6409,7 +6411,7 @@ int SubtractBlock(float *block, float *hole, float *blockMhole, int *nblockMhole
 
   // zmax
   if(hole[ZMAX]<block[ZMAX]){
-    xyz = blockMhole+6*nblocks;
+    xyz = blockdiffs+6*nblocks;
     nblocks++;
     xyz[0] = block[XMIN];
     xyz[1] = block[XMAX];
@@ -6421,7 +6423,7 @@ int SubtractBlock(float *block, float *hole, float *blockMhole, int *nblockMhole
 
   // xmin
   if(block[XMIN]<hole[XMIN]){
-    xyz = blockMhole+6*nblocks;
+    xyz = blockdiffs+6*nblocks;
     nblocks++;
     xyz[0] = block[XMIN];
     xyz[1] = hole[XMIN];
@@ -6433,7 +6435,7 @@ int SubtractBlock(float *block, float *hole, float *blockMhole, int *nblockMhole
 
   // xmax
   if(hole[XMAX]<block[XMAX]){
-    xyz = blockMhole+6*nblocks;
+    xyz = blockdiffs+6*nblocks;
     nblocks++;
     xyz[0] = hole[XMAX];
     xyz[1] = block[XMAX];
@@ -6445,7 +6447,7 @@ int SubtractBlock(float *block, float *hole, float *blockMhole, int *nblockMhole
 
   // ymin
   if(block[YMIN]<hole[YMIN]){
-    xyz = blockMhole+6*nblocks;
+    xyz = blockdiffs+6*nblocks;
     nblocks++;
     xyz[0] = MAX(block[XMIN],hole[XMIN]);
     xyz[1] = MIN(block[XMAX],hole[XMAX]);
@@ -6457,7 +6459,7 @@ int SubtractBlock(float *block, float *hole, float *blockMhole, int *nblockMhole
 
   // ymax
   if(hole[YMAX]<block[YMAX]){
-    xyz = blockMhole+6*nblocks;
+    xyz = blockdiffs+6*nblocks;
     nblocks++;
     xyz[0] = MAX(block[XMIN], hole[XMIN]);
     xyz[1] = MIN(block[XMAX], hole[XMAX]);
@@ -6466,32 +6468,40 @@ int SubtractBlock(float *block, float *hole, float *blockMhole, int *nblockMhole
     xyz[4] = MAX(block[ZMIN], hole[ZMIN]);
     xyz[5] = MIN(block[ZMAX], hole[ZMAX]);
   }
-  return 1;
+  *nblockdiffs = nblocks;
+  return ;
 }
 
 /* ------------------ SubtractBlocks ------------------------ */
 
-void SubtractBlocks(xbdata *block_info, int nblock_info, xbdata *hole_info, int nhole_info, xbdata **blockhole_info, int *nblockhole_info){
+void SubtractBlocks(xbdata *blocks, int nblocks, xbdata *holes, int nholes, xbdata **blockholes, int *nblockholes){
   int i;
+  int nvals_total = 0, NBUFFER = 1000;
+  float *buffer=NULL;
 
-  for(i=0;i<nblock_info; i++){
+  NewMemory((void **)&buffer, 6*NBUFFER*sizeof(float));
+  for(i=0; i<nblocks; i++){
     int j;
-    xbdata *obi;
-    float *obst_xyz;
+    xbdata *blocki;
 
-    obi = block_info + i;
-    obst_xyz = obi->xyz;
-    for(j=0;j<nhole_info;j++){
-      xbdata *hj;
-      float *hole_xyz, vals[36];
+    blocki = blocks + 6*i;
+    for(j=0; j<nholes; j++){
+      xbdata *holej;
+      float vals[36];
       int nvals;
 
-      hj = hole_info + j;
-      hole_xyz = hj->xyz;
-      if(SubtractBlock(obst_xyz, hole_xyz, vals, &nvals)==1){
+      holej = holes + 6*j;
+      SubtractBlock(blocki->xyz, holej->xyz, vals, &nvals);
+      if(nvals==0)continue;
+      nvals_total += nvals;
+      if(nvals_total>NBUFFER){
+        NBUFFER += 1000;
+        ResizeMemory((void **)&buffer, 6*NBUFFER*sizeof(float));
       }
+      memcpy(buffer+6*(nvals_total-nvals), vals, 6*nvals*sizeof(float));
     }
   }
+  FREEMEMORY(buffer);
 }
 
 /* ------------------ GetXBVals ------------------------ */
@@ -11375,8 +11385,8 @@ typedef struct {
 
 #ifdef pp_PARSE_OBST
   GetXBData(fds_filein, &obstinfo, &nobstinfo, "&OBST");
-  GetXBData(fds_filein, &holeinfo, &nholeinfo, "&HOLE");
-  SubtractBlocks(obstinfo, nobstinfo, holeinfo, nholeinfo, &obstholeinfo, &nobstholeinfo);
+ // GetXBData(fds_filein, &holeinfo, &nholeinfo, "&HOLE");
+ // SubtractBlocks(obstinfo, nobstinfo, holeinfo, nholeinfo, &obstholeinfo, &nobstholeinfo);
 #endif
 
   PRINT_TIMER(timer_readsmv, "null");
