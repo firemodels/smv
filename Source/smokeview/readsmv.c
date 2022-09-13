@@ -6602,7 +6602,41 @@ void GetXBData(const char *filein, xbdata **blockinfoptr, int *nblockinfoptr, ch
 }
 #endif
 
-/* ------------------ ReadSMV ------------------------ */
+/* ------------------ ReadSMVOrig ------------------------ */
+
+void ReadSMVOrig(void){
+  FILE *stream=NULL;
+
+  stream = fopen(smv_orig_filename, "r");
+  if(stream == NULL)return;
+
+  for(;;){
+    char buffer[255];
+
+    if(fgets(buffer, 255, stream)==NULL)break;
+    if(Match(buffer, "OBST")==1){
+      float *xyz;
+      int i;
+
+      FREEMEMORY(obstinfo);
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &nobstinfo);
+      NewMemory((void **)&obstinfo, nobstinfo*sizeof(xbdata));
+      for(i = 0; i<nobstinfo; i++){
+        xbdata *obi;
+
+        obi = obstinfo+i;
+        xyz = obi->xyz;
+        fgets(buffer, 255, stream);
+        sscanf(buffer, "%f %f %f %f %f %f", xyz, xyz+1, xyz+2, xyz+3, xyz+4, xyz+5);
+      }
+      break;
+    }
+  }
+  fclose(stream);
+}
+
+  /* ------------------ ReadSMV ------------------------ */
 
 int ReadSMV(bufferstreamdata *stream){
 
@@ -6629,6 +6663,9 @@ int ReadSMV(bufferstreamdata *stream){
 
   char buffer[256], buffers[6][256];
   patchdata *patchgeom;
+
+  // read casename.smo to define a one mes version of OBST's
+  ReadSMVOrig();
 
   INIT_PRINT_TIMER(timer_readsmv);
   START_TIMER(processing_time);
@@ -7340,23 +7377,6 @@ int ReadSMV(bufferstreamdata *stream){
       setPDIM=1;
       FGETS(buffer,255,stream);
       sscanf(buffer,"%f %f %f %f %f %f",&xbar0,&xbar,&ybar0,&ybar,&zbar0,&zbar);
-      continue;
-    }
-    if(Match(buffer, "OBSTORIG")==1){
-      float *xyz;
-
-      FREEMEMORY(obstinfo);
-      FGETS(buffer, 255, stream);
-      sscanf(buffer, "%i", &nobstinfo);
-      NewMemory((void **)&obstinfo, nobstinfo*sizeof(xbdata));
-      for(i = 0; i<nobstinfo; i++){
-        xbdata *obi;
-
-        obi = obstinfo+i;
-        xyz = obi->xyz;
-        FGETS(buffer, 255, stream);
-        sscanf(buffer, "%f %f %f %f %f %f", xyz, xyz+1, xyz+2, xyz+3, xyz+4, xyz+5);
-      }
       continue;
     }
     if(MatchSMV(buffer,"OBST") == 1){
@@ -11401,11 +11421,11 @@ typedef struct {
   ClassifyAllGeomMT();
 
 #ifdef pp_PARSE_OBST
-  if(nobstinfo==0){
-    GetXBData(fds_filein, &obstinfo, &nobstinfo, "&OBST");
+ // if(nobstinfo==0){
+ //   GetXBData(fds_filein, &obstinfo, &nobstinfo, "&OBST");
    // GetXBData(fds_filein, &holeinfo, &nholeinfo, "&HOLE");
    // SubtractBlocks(obstinfo, nobstinfo, holeinfo, nholeinfo, &obstholeinfo, &nobstholeinfo);
-  }
+  //}
 #endif
 
   PRINT_TIMER(timer_readsmv, "null");

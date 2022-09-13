@@ -1654,7 +1654,7 @@ SVEXTERN int SVDECL(*sorted_surfidlist,NULL),SVDECL(*inv_sorted_surfidlist,NULL)
 SVEXTERN char SVDECL(*trainer_filename,NULL), SVDECL(*test_filename,NULL);
 SVEXTERN FILE SVDECL(*STREAM_SB,NULL);
 SVEXTERN float temp_threshold;
-SVEXTERN char SVDECL(*smv_filename,NULL),SVDECL(*fed_filename,NULL),fed_filename_base[1024],SVDECL(*stop_filename,NULL);
+SVEXTERN char SVDECL(*smv_filename,NULL),SVDECL(*smv_orig_filename,NULL),SVDECL(*fed_filename,NULL),fed_filename_base[1024],SVDECL(*stop_filename,NULL);
 SVEXTERN char SVDECL(*part_globalbound_filename, NULL);
 SVEXTERN char SVDECL(*sliceinfo_filename,NULL);
 SVEXTERN char SVDECL(*deviceinfo_filename, NULL);

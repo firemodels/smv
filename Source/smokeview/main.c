@@ -323,6 +323,11 @@ char *ParseCommandline(int argc, char **argv){
   STRCPY(html_filename, fdsprefix);
   STRCAT(html_filename, ".html");
 
+  FREEMEMORY(smv_orig_filename);
+  NewMemory((void **)&smv_orig_filename, len_casename+strlen(".smo")+1);
+  STRCPY(smv_orig_filename, fdsprefix);
+  STRCAT(smv_orig_filename, ".smo");
+
   FREEMEMORY(htmlvr_filename);
   NewMemory((void **)&htmlvr_filename, len_casename+strlen("_vr.html")+1);
   STRCPY(htmlvr_filename, fdsprefix);
