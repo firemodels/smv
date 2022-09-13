@@ -7342,6 +7342,23 @@ int ReadSMV(bufferstreamdata *stream){
       sscanf(buffer,"%f %f %f %f %f %f",&xbar0,&xbar,&ybar0,&ybar,&zbar0,&zbar);
       continue;
     }
+    if(Match(buffer, "OBSTORIG")==1){
+      float *xyz;
+
+      FREEMEMORY(obstinfo);
+      FGETS(buffer, 255, stream);
+      sscanf(buffer, "%i", &nobstinfo);
+      NewMemory((void **)&obstinfo, nobstinfo*sizeof(xbdata));
+      for(i = 0; i<nobstinfo; i++){
+        xbdata *obi;
+
+        obi = obstinfo+i;
+        xyz = obi->xyz;
+        FGETS(buffer, 255, stream);
+        sscanf(buffer, "%f %f %f %f %f %f", xyz, xyz+1, xyz+2, xyz+3, xyz+4, xyz+5);
+      }
+      continue;
+    }
     if(MatchSMV(buffer,"OBST") == 1){
       nOBST++;
       continue;
@@ -11384,9 +11401,11 @@ typedef struct {
   ClassifyAllGeomMT();
 
 #ifdef pp_PARSE_OBST
-  GetXBData(fds_filein, &obstinfo, &nobstinfo, "&OBST");
- // GetXBData(fds_filein, &holeinfo, &nholeinfo, "&HOLE");
- // SubtractBlocks(obstinfo, nobstinfo, holeinfo, nholeinfo, &obstholeinfo, &nobstholeinfo);
+  if(nobstinfo==0){
+    GetXBData(fds_filein, &obstinfo, &nobstinfo, "&OBST");
+   // GetXBData(fds_filein, &holeinfo, &nholeinfo, "&HOLE");
+   // SubtractBlocks(obstinfo, nobstinfo, holeinfo, nholeinfo, &obstholeinfo, &nobstholeinfo);
+  }
 #endif
 
   PRINT_TIMER(timer_readsmv, "null");
