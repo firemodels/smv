@@ -2076,10 +2076,10 @@ int GetColorbarState(void){
 /* ------------------ OutputMinMax  ------------------------ */
 
 void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, float valmax_fds, float valmin_smv, float valmax_smv){
-  char cvalmin_fds[20], cvalmax_fds[20];
-  char cdiff_min[20], cdiff_max[20];
-  char cmin[100], cmax[100];
-  char labelunit[50];
+  char cvalmin_fds[256], cvalmax_fds[256];
+  char cdiff_min[256], cdiff_max[256];
+  char cmin[256], cmax[256];
+  char labelunit[256];
 
   Float2String(cvalmin_fds, valmin_fds, 6, force_fixedpoint);
   Float2String(cvalmax_fds, valmax_fds, 6, force_fixedpoint);
