@@ -2075,11 +2075,13 @@ int GetColorbarState(void){
 
 /* ------------------ OutputMinMax  ------------------------ */
 
+#define BSIZE 256
 void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, float valmax_fds, float valmin_smv, float valmax_smv){
-  char cvalmin_fds[256], cvalmax_fds[256];
-  char cdiff_min[256], cdiff_max[256];
-  char cmin[256], cmax[256];
-  char labelunit[256];
+  char cvalmin_fds[BSIZE], cvalmax_fds[BSIZE];
+  char cdiff_min[BSIZE], cdiff_max[BSIZE];
+  char cmin[BSIZE], cmax[BSIZE];
+  char labelunit[BSIZE];
+  int abortprint = 0, buffer_size;
 
   Float2String(cvalmin_fds, valmin_fds, 6, force_fixedpoint);
   Float2String(cvalmax_fds, valmax_fds, 6, force_fixedpoint);
@@ -2087,25 +2089,48 @@ void OutputMinMax(char *meshlabel, char *label, char *unit, float valmin_fds, fl
   Float2String(cdiff_min, valmin_fds-valmin_smv, 3, force_fixedpoint);
   Float2String(cdiff_max, valmax_fds-valmax_smv, 3, force_fixedpoint);
 
-  strcpy(cmin,cvalmin_fds);
-  strcat(cmin,"(");
-  strcat(cmin,cdiff_min);
-  strcat(cmin,")");
-
-  strcpy(cmax,cvalmax_fds);
-  strcat(cmax,"(");
-  strcat(cmax,cdiff_max);
-  strcat(cmax,")");
-
-  strcpy(labelunit, label);
-  strcat(labelunit," ");
-  strcat(labelunit,unit);
-
-  if(show_bound_diffs==1){
-    printf("%s: %23.23s, min(delta)=%22.22s, max(delta)=%22.22s\n", meshlabel, labelunit, cmin, cmax);
+  buffer_size = strlen(cvalmin_fds)+strlen(cdiff_min)+3;
+  if(buffer_size <  BSIZE){
+    strcpy(cmin, cvalmin_fds);
+    strcat(cmin, "(");
+    strcat(cmin, cdiff_min);
+    strcat(cmin, ")");
   }
   else{
-    printf("%s: %s, min=%12.12s, max=%12.12s\n", meshlabel, labelunit, cvalmin_fds, cvalmax_fds);
+    abortprint = 1;
+    printf("***error: cmin buffer in OutputMinMax is %i > %i", buffer_size, BSIZE);
+  }
+
+  buffer_size = strlen(cvalmax_fds)+strlen(cdiff_max)+3;
+  if(buffer_size <  BSIZE){
+    strcpy(cmax, cvalmax_fds);
+    strcat(cmax, "(");
+    strcat(cmax, cdiff_max);
+    strcat(cmax, ")");
+  }
+  else{
+    abortprint = 1;
+    printf("***error: cmax buffer in OutputMinMax is %i > %i", buffer_size, BSIZE);
+  }
+
+  buffer_size = strlen(label)+strlen(unit)+2;
+  if(buffer_size < BSIZE){
+    strcpy(labelunit, label);
+    strcat(labelunit, " ");
+    strcat(labelunit, unit);
+  }
+  else{
+    printf("***error: labelunit buffer in OutputMinMax is %i > %i", buffer_size, BSIZE);
+    abortprint = 1;
+  }
+
+  if(abortprint == 0){
+    if(show_bound_diffs==1){
+      printf("%s: %23.23s, min(delta)=%22.22s, max(delta)=%22.22s\n", meshlabel, labelunit, cmin, cmax);
+    }
+    else{
+      printf("%s: %s, min=%12.12s, max=%12.12s\n", meshlabel, labelunit, cvalmin_fds, cvalmax_fds);
+    }
   }
 }
 
