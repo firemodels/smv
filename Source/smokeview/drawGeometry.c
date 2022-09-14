@@ -640,6 +640,7 @@ void UpdateIndexColors(void){
 
 void DrawOrigObstOutlines(void){
   int i;
+  float *color, *oldcolor=NULL;
 
   glPushMatrix();
   glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
@@ -647,13 +648,19 @@ void DrawOrigObstOutlines(void){
   AntiAliasLine(ON);
   glLineWidth(linewidth);
   glBegin(GL_LINES);
-  glColor3fv(foregroundcolor);
   for(i=0; i<nobstinfo; i++){
     xbdata *obi;
     float *xyz;
     float xmin, xmax, ymin, ymax, zmin, zmax;
 
     obi = obstinfo + i;
+    color = foregroundcolor;
+    if(obi->color!=NULL)color = obi->color;
+    if(obi->color==NULL&&obi->surfs!=NULL&&obi->surfs[0]->color!=NULL)color = obi->surfs[0]->color;
+    if(color!=oldcolor){
+      glColor3fv(color);
+      oldcolor = color;
+    }
     xyz = obi->xyz;
     xmin = xyz[0];
     xmax = xyz[1];

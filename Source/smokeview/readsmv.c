@@ -6609,11 +6609,40 @@ void ReadSMVOrig(void){
 
   stream = fopen(smv_orig_filename, "r");
   if(stream == NULL)return;
+  PRINTF("reading  %s\n", smv_orig_filename);
 
   for(;;){
     char buffer[255];
 
     if(fgets(buffer, 255, stream)==NULL)break;
+        /*
+        OBST format:
+        nblockages
+        xmin xmax ymin ymax zmin zmax bid s_i1 s_i2 s_j1 s_j2 s_k1 s_k2 t_x0 t_y0 t_z0
+        ...
+        ...
+
+        bid             - blockage id
+        s_i1, ..., s_k2 - surf indices for i1, ..., k2 blockage faces
+        t_x0,t_y0,t_z0  - texture origin
+
+        i1 i2 j1 j2 k1 k2 colorindex blocktype r g b : ignore rgb if blocktype != -3
+        ...
+        ...
+
+        int colorindex, blocktype;
+        colorindex: -1 default color
+                    -2 invisible
+                    -3 use r g b color
+                    >=0 color/color2/texture index
+        blocktype: 0 regular block
+                   2 outline
+                   3 smoothed block
+                   -1 (use type from surf)
+                   (note: if blocktype&8 == 8 then this is a "terrain" blockage
+                         if so then subtract 8 and set bc->is_wuiblock=1)
+        r g b           colors used if colorindex==-3
+        */
     if(Match(buffer, "OBST")==1){
       float *xyz;
       int i;
@@ -6624,11 +6653,73 @@ void ReadSMVOrig(void){
       NewMemory((void **)&obstinfo, nobstinfo*sizeof(xbdata));
       for(i = 0; i<nobstinfo; i++){
         xbdata *obi;
+        int blockid, *surf_index;
 
         obi = obstinfo+i;
         xyz = obi->xyz;
+        surf_index = obi->surf_index;
         fgets(buffer, 255, stream);
-        sscanf(buffer, "%f %f %f %f %f %f", xyz, xyz+1, xyz+2, xyz+3, xyz+4, xyz+5);
+        sscanf(buffer, "%f %f %f %f %f %f %i %i %i %i %i %i %i",
+             xyz, xyz+1, xyz+2, xyz+3, xyz+4, xyz+5,
+             &blockid,
+             surf_index, surf_index+1, surf_index+2, surf_index+3, surf_index+4, surf_index+5);
+      }
+      for(i = 0; i<nobstinfo; i++){
+        xbdata *obi;
+        int dummy[6];
+        float s_color[4];
+        int colorindex, blocktype;
+
+        obi = obstinfo+i;
+        obi->transparent   = 0;
+        obi->invisible     = 0;
+        obi->usecolorindex = 0;
+        obi->color = NULL;
+
+        fgets(buffer, 255, stream);
+
+        s_color[0] = -1.0;
+        s_color[1] = -1.0;
+        s_color[2] = -1.0;
+        s_color[3] = 1.0;
+        sscanf(buffer, "%i %i %i %i %i %i %i %i %f %f %f %f",
+        dummy, dummy+1, dummy+2, dummy+3, dummy+4, dummy+5,
+        &colorindex, &blocktype, s_color, s_color+1, s_color+2, s_color+3);
+
+        if((blocktype&3)==3)blocktype -= 3; // convert any smooth blocks to 'normal' blocks
+        if(blocktype>0&&(blocktype&8)==8)blocktype -= 8;
+        if(s_color[3]<0.999)obi->transparent=1;
+
+        /* custom color */
+
+        if(colorindex==0||colorindex==7)colorindex=-3;
+        if(colorindex==COLOR_INVISIBLE){
+          obi->blocktype=BLOCK_hidden;
+          obi->invisible=1;
+        }
+        if(colorindex>=0){
+          obi->color = GetColorPtr(rgb[nrgb+colorindex]);
+          obi->usecolorindex=1;
+          obi->colorindex=colorindex;
+          updateindexcolors=1;
+        }
+        if(colorindex==-3){
+          obi->color = GetColorPtr(s_color);
+          updateindexcolors=1;
+        }
+        obi->colorindex = colorindex;
+        obi->blocktype = blocktype;
+
+        int j;
+
+        for(j=0;j<6;j++){
+          obi->surfs[0] = NULL;
+        }
+        if(surfinfo!=NULL){
+          for(j=0;j<6;j++){
+            if(obi->surf_index[j]>=0)obi->surfs[j] = surfinfo + obi->surf_index[j];
+          }
+        }
       }
       break;
     }
@@ -6663,9 +6754,6 @@ int ReadSMV(bufferstreamdata *stream){
 
   char buffer[256], buffers[6][256];
   patchdata *patchgeom;
-
-  // read casename.smo to define a one mes version of OBST's
-  ReadSMVOrig();
 
   INIT_PRINT_TIMER(timer_readsmv);
   START_TIMER(processing_time);
@@ -10254,7 +10342,18 @@ typedef struct {
 
         /*
         OBST format:
+        nblockages
+        xmin xmax ymin ymax zmin zmax bid s_i1 s_i2 s_j1 s_j2 s_k1 s_k2 t_x0 t_y0 t_z0
+        ...
+        ...
+
+        bid             - blockage id
+        s_i1, ..., s_k2 - surf indices for i1, ..., k2 blockage faces
+        t_x0,t_y0,t_z0  - texture origin
+
         i1 i2 j1 j2 k1 k2 colorindex blocktype r g b : ignore rgb if blocktype != -3
+        ...
+        ...
 
         int colorindex, blocktype;
         colorindex: -1 default color
@@ -10264,6 +10363,7 @@ typedef struct {
         blocktype: 0 regular block
                    2 outline
                    3 smoothed block
+                   -1 (use type from surf)
                    (note: if blocktype&8 == 8 then this is a "terrain" blockage
                          if so then subtract 8 and set bc->is_wuiblock=1)
         r g b           colors used if colorindex==-3

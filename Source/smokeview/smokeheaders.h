@@ -1030,8 +1030,11 @@ EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_fra
 EXTERNCPP void GetGlobalDeviceBounds(int type);
 EXTERNCPP float GetDeviceVal(float time_local, devicedata *devicei, int *valid);
 EXTERNCPP void InitMenus(int unload);
-int ReadSMV(bufferstreamdata *stream);
+
+EXTERNCPP int ReadSMV(bufferstreamdata *stream);
+EXTERNCPP void ReadSMVOrig(void);
 EXTERNCPP void ReadSMVDynamic(char *file);
+
 EXTERNCPP int  STRCMP(const char *s1, const char *s2);
 EXTERNCPP void OutputAxisLabels(void);
 EXTERNCPP void OutputLargeText(float x, float y, char *string);

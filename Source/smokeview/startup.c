@@ -252,6 +252,9 @@ int SetupCase(char *filename){
     if(smv_streaminfo!=NULL){
       FCLOSE(smv_streaminfo);
     }
+
+  // read casename.smo (only OBST lines) to define a one mesh version of OBST's
+    ReadSMVOrig();
   }
   if(return_code==0&&trainer_mode==1){
     ShowGluiTrainer();

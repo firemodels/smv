@@ -439,7 +439,12 @@ typedef struct _selectdadta {
 /* -------------------------- xbdata ------------------------------------ */
 
 typedef struct _xbdata {
-  float xyz[6];
+  float xyz[6], *color;
+  int surf_index[6];
+  int blocktype, transparent;
+  int usecolorindex, colorindex;
+  int invisible;
+  surfdata *surfs[6];
 } xbdata;
 
 /* -------------------------- blockagedata ------------------------------------ */
@@ -1485,7 +1490,7 @@ typedef struct _smoke3ddata {
   int dir;
 } smoke3ddata;
 
-  /* --------------------------  smoke3dttypedata ------------------------------------ */
+  /* --------------------------  smoke3dtypedata ------------------------------------ */
 
 typedef struct smoke3dtypedata {
   char *shortlabel, *longlabel;
