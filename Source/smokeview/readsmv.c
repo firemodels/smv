@@ -6604,6 +6604,39 @@ void GetXBData(const char *filein, xbdata **blockinfoptr, int *nblockinfoptr, ch
 
 /* ------------------ ReadSMVOrig ------------------------ */
 
+blockagedata *GetBlockagePtr(float *xyz){
+  float xyzcenter[3];
+  int i;
+
+  xyzcenter[0] = (xyz[0]+xyz[1])/2.0;
+  xyzcenter[1] = (xyz[2]+xyz[3])/2.0;
+  xyzcenter[2] = (xyz[4]+xyz[5])/2.0;
+  for(i=0;i<nmeshes;i++){
+    meshdata *meshi;
+    int j;
+
+    meshi = meshinfo + i;
+    if(xyzcenter[0]<meshi->boxmin[0]||xyzcenter[0]>meshi->boxmax[0])continue;
+    if(xyzcenter[1]<meshi->boxmin[1]||xyzcenter[1]>meshi->boxmax[1])continue;
+    if(xyzcenter[2]<meshi->boxmin[2]||xyzcenter[2]>meshi->boxmax[2])continue;
+    for(j=0;j<meshi->nbptrs;j++){
+      int k;
+      blockagedata *bc;
+      float *xyzEXACT;
+
+      bc=meshi->blockageinfoptrs[j];
+      xyzEXACT = bc->xyzEXACT;
+      if(xyzcenter[0]<xyzEXACT[0]||xyzcenter[0]>xyzEXACT[1])continue;
+      if(xyzcenter[1]<xyzEXACT[2]||xyzcenter[1]>xyzEXACT[3])continue;
+      if(xyzcenter[2]<xyzEXACT[4]||xyzcenter[2]>xyzEXACT[5])continue;
+      return bc;
+    }
+  }
+  return NULL;
+}
+
+/* ------------------ ReadSMVOrig ------------------------ */
+
 void ReadSMVOrig(void){
   FILE *stream=NULL;
 
@@ -6720,6 +6753,7 @@ void ReadSMVOrig(void){
             if(obi->surf_index[j]>=0)obi->surfs[j] = surfinfo + obi->surf_index[j];
           }
         }
+        obi->bc = GetBlockagePtr(obi->xyz);
       }
       break;
     }

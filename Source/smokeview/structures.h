@@ -441,6 +441,7 @@ typedef struct _selectdadta {
 typedef struct _xbdata {
   float xyz[6], *color;
   int surf_index[6];
+  struct _blockagedata *bc;
   int blocktype, transparent;
   int usecolorindex, colorindex;
   int invisible;
