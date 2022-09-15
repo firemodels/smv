@@ -415,7 +415,7 @@ typedef struct _facedata {
   int meshindex, blockageindex;
   int imin, imax, jmin, jmax, kmin, kmax;
   float xmin, xmax, ymin, ymax, zmin, zmax;
-  int dir,hidden,dup;
+  int dir,hidden,dup,interior;
   int del;
   int transparent;
   int patchpresent;
@@ -452,8 +452,8 @@ typedef struct _xbdata {
 typedef struct _blockagedata {
   int ijk[6],ijkORIG[6];
   float xmin, xmax, ymin, ymax, zmin, zmax, xyzORIG[6];
-  float xyzEXACT[6];
-  surfdata *surf[6],*surfORIG[6];
+  float xyzEXACT[6], xyzDELTA[18];
+  surfdata *surf[6], *surfORIG[6];
   propdata *prop;
   int walltype,walltypeORIG;
   int surf_index[6],surf_indexORIG[6];
@@ -463,11 +463,11 @@ typedef struct _blockagedata {
   int is_wuiblock;
   int hole;
   int nnodes;
-  int hidden,invisible;
+  int hidden, invisible, interior[6];
   int transparent;
   int meshindex;
   int del;
-  int changed,changed_surface;
+  int changed, changed_surface;
   int type;
   float *showtime;
   int *showtimelist;

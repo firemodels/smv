@@ -11557,6 +11557,7 @@ typedef struct {
 // initialize 2d plot data structures
   NewMemory((void **)&glui_plot2dinfo, sizeof(plot2ddata));
   InitPlot2D(glui_plot2dinfo, 0);
+  SetInteriorBlockages(1);
 
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");

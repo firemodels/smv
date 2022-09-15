@@ -1034,6 +1034,7 @@ EXTERNCPP void InitMenus(int unload);
 EXTERNCPP int ReadSMV(bufferstreamdata *stream);
 EXTERNCPP void ReadSMVOrig(void);
 EXTERNCPP void ReadSMVDynamic(char *file);
+EXTERNCPP void SetInteriorBlockages(int flag);
 
 EXTERNCPP int  STRCMP(const char *s1, const char *s2);
 EXTERNCPP void OutputAxisLabels(void);

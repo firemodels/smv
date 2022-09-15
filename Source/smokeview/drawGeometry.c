@@ -1390,9 +1390,96 @@ int InBlockage(const meshdata *meshi,float x, float y, float z){
     xmin = xplt[bc->ijk[IMIN]]; xmax = xplt[bc->ijk[IMAX]];
     ymin = yplt[bc->ijk[JMIN]]; ymax = yplt[bc->ijk[JMAX]];
     zmin = zplt[bc->ijk[KMIN]]; zmax = zplt[bc->ijk[KMAX]];
-    if(xmin<x && x<xmax && ymin<y && y<ymax && zmin<z && z<zmax){return(1);}
+    if(xmin<x && x<xmax && ymin<y && y<ymax && zmin<z && z<zmax){
+      return 1;
+    }
   }
-  return(0);
+  return 0;
+}
+
+/* ------------------ InAnyBlockage ------------------------ */
+
+int InAnyBlockage(float *xyz){
+  int i;
+
+  for(i = 0; i<nmeshes; i++){
+    meshdata *meshi;
+
+    meshi = meshinfo+i;
+    if(InBlockage(meshi, xyz[0], xyz[1], xyz[2])==1)return 1;
+  }
+  return 0;
+}
+
+/* ------------------ SetInteriorBlockages ------------------------ */
+
+void SetInteriorBlockages(int flag){
+  int i;
+
+  for(i=0; i<nmeshes; i++){
+    int j;
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    for(j=0; j<meshi->nbptrs; j++){
+      blockagedata *bc;
+      int k;
+      float *xyzDELTA;
+
+      bc = meshi->blockageinfoptrs[j];
+      for(k=0; k<6; k++){
+        bc->interior[k] = 0;
+      }
+      xyzDELTA = bc->xyzDELTA;
+
+      xyzDELTA[0] = bc->xmin-meshi->boxeps[0];
+      xyzDELTA[1] = (bc->ymin+bc->ymax)/2.0;
+      xyzDELTA[2] = (bc->zmin+bc->zmax)/2.0;
+
+      xyzDELTA += 3;
+      xyzDELTA[0] = bc->xmax+meshi->boxeps[0];
+      xyzDELTA[1] = (bc->ymin+bc->ymax)/2.0;
+      xyzDELTA[2] = (bc->zmin+bc->zmax)/2.0;
+
+      xyzDELTA += 3;
+      xyzDELTA[0] = (bc->xmin+bc->xmax)/2.0;
+      xyzDELTA[1] = bc->ymin-meshi->boxeps[1];
+      xyzDELTA[2] = (bc->zmin+bc->zmax)/2.0;
+
+      xyzDELTA += 3;
+      xyzDELTA[0] = (bc->xmin+bc->xmax)/2.0;
+      xyzDELTA[1] = bc->ymax+meshi->boxeps[1];
+      xyzDELTA[2] = (bc->zmin+bc->zmax)/2.0;
+
+      xyzDELTA += 3;
+      xyzDELTA[0] = (bc->xmin+bc->xmax)/2.0;
+      xyzDELTA[1] = (bc->ymin+bc->ymax)/2.0;
+      xyzDELTA[2] = bc->zmin-meshi->boxeps[2];
+
+      xyzDELTA += 3;
+      xyzDELTA[0] = (bc->xmin+bc->xmax)/2.0;
+      xyzDELTA[1] = (bc->ymin+bc->ymax)/2.0;
+      xyzDELTA[2] = bc->zmax+meshi->boxeps[2];
+    }
+  }
+  if(flag==0)return;
+  for(i = 0; i<nmeshes; i++){
+    int j;
+    meshdata *meshi;
+
+    meshi = meshinfo+i;
+    for(j = 0; j<meshi->nbptrs; j++){
+      blockagedata *bc;
+      int k;
+
+      bc = meshi->blockageinfoptrs[j];
+      if(bc->transparent==0)continue;k0
+      for(k=0;k<6;k++){
+        bc->interior[k] = InAnyBlockage(bc->xyzDELTA+3*k);
+      }
+    }
+  }k
+
 }
 
 /* ------------------ FreeCADInfo ------------------------ */
@@ -2167,6 +2254,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
     faceptr->is_interior=0;
     faceptr->show_bothsides=0;
     faceptr->bc=NULL;
+    faceptr->interior = 0;
 
     if(bc!=NULL){
       faceptr->bc=bc;
@@ -2350,6 +2438,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
        ytex2 = zz2;
        xstart = &xbar0;
        ystart = &zbar0;
+       if(bc!=NULL)faceptr->interior = bc->interior[2];
        break;
      case UP_X:
        faceptr->normal[0]=(float)1.0;
@@ -2362,6 +2451,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
        ytex2 = zz2;
        xstart = &ybar0;
        ystart = &zbar0;
+       if(bc!=NULL)faceptr->interior = bc->interior[1];
        break;
      case UP_Y:
        faceptr->normal[1]=(float)1.0;
@@ -2374,6 +2464,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
        ytex2 = zz2;
        xstart = &xbar0;
        ystart = &zbar0;
+       if(bc!=NULL)faceptr->interior = bc->interior[3];
        break;
      case DOWN_X:
        if(facetype==VENT_face&&vi!=NULL&&vi->dummy==0)offset[XXX] = -meshi->vent_offset[XXX];
@@ -2386,6 +2477,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
        if(faceptr->jmin==faceptr->jmax||faceptr->kmin==faceptr->kmax)faceptr->thinface=1;
        xstart = &ybar0;
        ystart = &zbar0;
+       if(bc!=NULL)faceptr->interior = bc->interior[0];
        break;
      case DOWN_Z:
        if(facetype==VENT_face&&vi!=NULL&&vi->dummy==0)offset[ZZZ] = -meshi->vent_offset[ZZZ];
@@ -2398,6 +2490,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
        if(faceptr->imin==faceptr->imax||faceptr->jmin==faceptr->jmax)faceptr->thinface=1;
        xstart = &xbar0;
        ystart = &ybar0;
+       if(bc!=NULL)faceptr->interior = bc->interior[4];
        break;
      case UP_Z:
        if(facetype==VENT_face&&vi!=NULL&&vi->dummy==0)offset[ZZZ] = meshi->vent_offset[ZZZ];
@@ -2410,6 +2503,7 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
        if(faceptr->imin==faceptr->imax||faceptr->jmin==faceptr->jmax)faceptr->thinface=1;
        xstart = &xbar0;
        ystart = &ybar0;
+       if(bc!=NULL)faceptr->interior = bc->interior[5];
        break;
      default:
        ASSERT(FFALSE);
@@ -2946,6 +3040,7 @@ void UpdateFaceLists(void){
           }
         }
         if(facej->transparent==1&&drawing_blockage_transparent==1){
+          if(blocklocation!=BLOCKlocation_grid&facej->interior==1)continue;
           face_transparent[nface_transparent++]=facej;
           continue;
         }
