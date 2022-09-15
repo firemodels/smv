@@ -1473,13 +1473,12 @@ void SetInteriorBlockages(int flag){
       int k;
 
       bc = meshi->blockageinfoptrs[j];
-      if(bc->transparent==0)continue;k0
+      if(bc->transparent==0)continue;
       for(k=0;k<6;k++){
         bc->interior[k] = InAnyBlockage(bc->xyzDELTA+3*k);
       }
     }
-  }k
-
+  }
 }
 
 /* ------------------ FreeCADInfo ------------------------ */
