@@ -2332,7 +2332,6 @@ void UpdateSliceMenuLabels(void){
     }
     for(i=1;i<nsliceinfo;i++){
       meshdata *meshi;
-      char *slicedir;
 
       sdold = sliceinfo + sliceorderindex[i - 1];
       sd = sliceinfo + sliceorderindex[i];
