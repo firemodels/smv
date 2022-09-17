@@ -1847,10 +1847,6 @@ SVEXTERN int viewtourfrompath,viewalltours,viewanytours,edittour;
 SVEXTERN int SVDECL(have_animate_blockages, 0), SVDECL(animate_blockages, 0);
 SVEXTERN xbdata SVDECL(*obstinfo, NULL);
 SVEXTERN int SVDECL(nobstinfo, 0);
-#ifdef pp_PARSE_OBST
-SVEXTERN xbdata SVDECL(*holeinfo, NULL), SVDECL(*obstholeinfo, NULL);
-SVEXTERN int SVDECL(nholeinfo, 0), SVDECL(nobstholeinfo, 0);
-#endif
 SVEXTERN selectdata SVDECL(*selectfaceinfo,NULL);
 SVEXTERN blockagedata SVDECL(**selectblockinfo,NULL);
 SVEXTERN tickdata SVDECL(*tickinfo,NULL);
