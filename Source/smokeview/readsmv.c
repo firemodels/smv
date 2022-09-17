@@ -6620,7 +6620,6 @@ blockagedata *GetBlockagePtr(float *xyz){
     if(xyzcenter[1]<meshi->boxmin[1]||xyzcenter[1]>meshi->boxmax[1])continue;
     if(xyzcenter[2]<meshi->boxmin[2]||xyzcenter[2]>meshi->boxmax[2])continue;
     for(j=0;j<meshi->nbptrs;j++){
-      int k;
       blockagedata *bc;
       float *xyzEXACT;
 
