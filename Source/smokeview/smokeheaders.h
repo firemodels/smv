@@ -1036,6 +1036,7 @@ EXTERNCPP void ReadSMVOrig(void);
 EXTERNCPP void ReadSMVDynamic(char *file);
 EXTERNCPP void SetInteriorBlockages(int flag);
 
+EXTERNCPP void CreateSliceBoundFile(void);
 EXTERNCPP int  STRCMP(const char *s1, const char *s2);
 EXTERNCPP void OutputAxisLabels(void);
 EXTERNCPP void OutputLargeText(float x, float y, char *string);

@@ -328,6 +328,16 @@ char *ParseCommandline(int argc, char **argv){
   STRCPY(smv_orig_filename, fdsprefix);
   STRCAT(smv_orig_filename, ".smo");
 
+  FREEMEMORY(slice_bounds_filename);
+  NewMemory((void **)&slice_bounds_filename, len_casename+strlen(".slcf.bnd")+1);
+  STRCPY(slice_bounds_filename, fdsprefix);
+  STRCAT(slice_bounds_filename, ".slcf.bnd");
+
+  FREEMEMORY(hrr_filename);
+  NewMemory((void **)&hrr_filename, len_casename+strlen("_hrr.csv")+1);
+  STRCPY(hrr_filename, fdsprefix);
+  STRCAT(hrr_filename, "_hrr.csv");
+
   FREEMEMORY(htmlvr_filename);
   NewMemory((void **)&htmlvr_filename, len_casename+strlen("_vr.html")+1);
   STRCPY(htmlvr_filename, fdsprefix);

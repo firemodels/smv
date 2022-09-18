@@ -1262,6 +1262,13 @@ typedef struct _menudata {
   char label[256];
 } menudata;
 
+/* --------------------------  filebounddata ------------------------------------ */
+
+typedef struct _fileboundsdata {
+  char file[255];
+  float valmin, valmax;
+} fileboundsdata;
+
 /* --------------------------  slicedata ------------------------------------ */
 
 typedef struct _slicedata {
