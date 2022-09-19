@@ -286,7 +286,7 @@ int GetBounds(char *file, float *valmin, float *valmax,
         bi->valmin = vmin;
 
         tok = strtok(NULL, " ");
-        sscanf(tok, "%f%", &vmax);
+        sscanf(tok, "%f", &vmax);
         bi->valmax = vmax;
       }
       fclose(stream);
