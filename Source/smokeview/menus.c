@@ -9006,9 +9006,7 @@ updatemenu=0;
         glutAddMenuEntry(mlabel,-20-i);
       }
     }
-    if(nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo){
-    }
-    else{
+    if(have_multislice==0){
       glutAddMenuEntry("-", MENU_DUMMY);
       if(HaveTerrainSlice()==1){
         if(planar_terrain_slice==1)glutAddMenuEntry(_("*Planar terrain slice"), MENU_SHOWSLICE_TERRAIN);
@@ -9070,7 +9068,7 @@ updatemenu=0;
       }
     }
   }
-  if((nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo)||patchgeom_slice_showhide==1){
+  if(have_multislice==1||patchgeom_slice_showhide==1){
     int ii;
     patchdata *patchim1=NULL;
 
@@ -9515,7 +9513,7 @@ updatemenu=0;
   }
   if(nsliceloaded>0||patchgeom_slice_showhide==1){
     showhide_data = 1;
-    if(nmultisliceinfo+nfedinfo<nsliceinfo){
+    if(have_multislice==1){
       GLUTADDSUBMENU(_("Slice"),showmultislicemenu);
     }
     else{
@@ -10508,7 +10506,7 @@ updatemenu=0;
             glutAddMenuEntry(_("  keep coarse"), MENU_KEEP_COARSE);
           }
         }
-        if(nmultivsliceinfo<nvsliceinfo){
+        if(have_multivslice==1){
           CREATEMENU(unloadmultivslicemenu,UnloadMultiVSliceMenu);
           for(i=0;i<nmultivsliceinfo;i++){
             multivslicedata *mvslicei;
@@ -10632,7 +10630,7 @@ updatemenu=0;
     if(nslicedups > 0){
       GLUTADDSUBMENU(_("Duplicate vector slices"), duplicatevectorslicemenu);
     }
-    if(nmultivsliceinfo>0&&nmultivsliceinfo<nvsliceinfo){
+    if(nmeshes>1){
       char loadmenulabel[100];
       char steplabel[100];
 
@@ -10770,7 +10768,7 @@ updatemenu=0;
         sdip1 = sliceinfo + sliceorderindex[i+1];
       }
       if(i==0||strcmp(sd->label.longlabel,sdim1->label.longlabel)!=0){
-        CREATEMENU(loadsubslicemenu[iloadsubslicemenu],LoadSliceMenu);
+        CREATEMENU(loadsubslicemenu[iloadsubslicemenu], LoadSliceMenu);
       }
       STRCPY(menulabel,"");
       if(sd->loaded==1){
@@ -10870,7 +10868,7 @@ updatemenu=0;
 
 // call slice submenus from main slice menu
 
-    CREATEMENU(loadslicemenu,LoadSliceMenu);
+    CREATEMENU(loadslicemenu, LoadSliceMenu);
     iloadsubslicemenu=0;
     for(i=0;i<nsliceinfo;i++){
       slicedata *sd,*sdim1;
@@ -10925,7 +10923,7 @@ updatemenu=0;
 
   /* --------------------------------unload and load multislice menus -------------------------- */
 
-  if(nmultisliceinfo+nfedinfo<nsliceinfo||have_geom_slice_menus==1){
+  if(have_multislice==1||have_geom_slice_menus==1){
     CREATEMENU(unloadmultislicemenu, UnloadMultiSliceMenu);
     nmultisliceloaded = 0;
     for(i = 0;i<nmultisliceinfo;i++){
@@ -11013,7 +11011,7 @@ updatemenu=0;
         }
       }
     }
-    if(nslicedups>0){
+    if(have_multislice==1){
       CREATEMENU(duplicateslicemenu,LoadMultiSliceMenu);
       if(slicedup_option==SLICEDUP_KEEPALL){
         glutAddMenuEntry(_("  *keep all"), MENU_KEEP_ALL);
@@ -11094,7 +11092,7 @@ updatemenu=0;
     else{
       glutAddMenuEntry(_("Show slice file sizes"), MENU_SLICE_FILE_SIZES);
     }
-    if(nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo){
+    if(nmeshes>1){
       char loadmenulabel[100];
       char steplabel[100];
 
@@ -12163,7 +12161,7 @@ updatemenu=0;
 
       // slice
 
-      if((nmultisliceinfo > 0 && nmultisliceinfo + nfedinfo < nsliceinfo)||have_geom_slice_menus==1){
+      if(have_multislice==1||have_geom_slice_menus==1){
         strcpy(loadmenulabel, _("Slice"));
         if(tload_step > 1){
           sprintf(steplabel, "/Skip %i", tload_skip);
@@ -12182,7 +12180,7 @@ updatemenu=0;
 
       // vector slice
 
-      if(nvsliceinfo > 0 && nmultivsliceinfo < nvsliceinfo){
+      if(have_multivslice==1){
         strcpy(loadmenulabel,_("Vector Slice"));
         if(tload_step > 1){
           sprintf(steplabel,"/Skip %i",tload_skip);

@@ -2110,16 +2110,22 @@ int SliceCompare( const void *arg1, const void *arg2 ){
 
 /* ------------------ VSliceCompare ------------------------ */
 
-int VSliceCompare( const void *arg1, const void *arg2 ){
+int VSliceCompare(const void *arg1, const void *arg2){
   slicedata *slicei, *slicej;
   vslicedata *vslicei, *vslicej;
 
-  vslicei = vsliceinfo + *(int *)arg1;
-  vslicej = vsliceinfo + *(int *)arg2;
-  slicei = sliceinfo + vslicei->ival;
-  slicej = sliceinfo + vslicej->ival;
-  return SliceCompare(slicei, slicej);
+  vslicei = vsliceinfo+*(int *)arg1;
+  vslicej = vsliceinfo+*(int *)arg2;
+  slicei = sliceinfo+vslicei->ival;
+  slicej = sliceinfo+vslicej->ival;
+
+  if(strcmp(slicei->label.longlabel, slicej->label.longlabel)<0)return -1;
+  if(strcmp(slicei->label.longlabel, slicej->label.longlabel)>0)return 1;
+  if(slicei->slcf_index<slicej->slcf_index)return -1;
+  if(slicei->slcf_index>slicej->slcf_index)return 1;
+  return 0;
 }
+
 #else
 /* ------------------ SliceCompare ------------------------ */
 
@@ -2881,6 +2887,7 @@ void UpdateFedinfo(void){
     nn_slice = nsliceinfo + i;
 
     sd->is_fed = 1;
+    sd->slcf_index = co2->slcf_index;;
     sd->uvw = 0;
     sd->fedptr = fedi;
     sd->slice_filetype = co2->slice_filetype;
@@ -3353,7 +3360,7 @@ void GetSliceParams(void){
       mslicei->nslices=1;
       sd = sliceinfo + sliceorderindex[0];
       mslicei->islices[0] = sliceorderindex[0];
-      mslicei->mslicefile_labelindex=sd->slicefile_labelindex;//check  'type'
+      mslicei->mslicefile_labelindex=sd->slicefile_labelindex;
       for(i=1;i<nsliceinfo;i++){
         slicedata *sdold;
 
@@ -3373,6 +3380,9 @@ void GetSliceParams(void){
         mslicei->islices[mslicei->nslices-1]=sliceorderindex[i];
       }
     }
+    //have_multislice = 0;
+    //if(nmultisliceinfo>0&&nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo)have_multislice = 1;
+    have_multislice = 1; // use multi slice for all cases
   }
   for(i = 0; i < nsliceinfo; i++){
     slicedata *slicei;
@@ -3625,6 +3635,9 @@ void UpdateVSlices(void){
       vslicei->reload = 0;
     }
   }
+  //have_multivslice = 0;
+  //if(nvsliceinfo > 0 && nmultivsliceinfo < nvsliceinfo)have_multivslice = 1;
+  have_multivslice = 1; // use multi vslice for all cases
 
   UpdateVSliceDups();
 

@@ -328,10 +328,17 @@ char *ParseCommandline(int argc, char **argv){
   STRCPY(smv_orig_filename, fdsprefix);
   STRCAT(smv_orig_filename, ".smo");
 
+#ifdef pp_FILEBOUNDS
   FREEMEMORY(slice_bounds_filename);
   NewMemory((void **)&slice_bounds_filename, len_casename+strlen(".slcf.bnd")+1);
   STRCPY(slice_bounds_filename, fdsprefix);
   STRCAT(slice_bounds_filename, ".slcf.bnd");
+
+  FREEMEMORY(patch_bounds_filename);
+  NewMemory((void **)&patch_bounds_filename, len_casename+strlen(".bndf.bnd")+1);
+  STRCPY(patch_bounds_filename, fdsprefix);
+  STRCAT(patch_bounds_filename, ".bndf.bnd");
+#endif
 
   FREEMEMORY(hrr_filename);
   NewMemory((void **)&hrr_filename, len_casename+strlen("_hrr.csv")+1);

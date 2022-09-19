@@ -17,7 +17,7 @@
 
 //*** options: all platforms
 
-#define pp_SLICEBOUNDS       // create and use a single slice bounds file
+#define pp_FILEBOUNDS       // create and use a single slice and boundday file bounds file
 #define pp_SLICEMENU_FIX     // fix to slice menus
 //#define pp_CLIP_FIX          // fixes to clipping
 #define pp_PART_MULTI        // load particles in parallel

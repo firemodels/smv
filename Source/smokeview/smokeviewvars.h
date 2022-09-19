@@ -1655,7 +1655,10 @@ SVEXTERN char SVDECL(*trainer_filename,NULL), SVDECL(*test_filename,NULL);
 SVEXTERN FILE SVDECL(*STREAM_SB,NULL);
 SVEXTERN float temp_threshold;
 SVEXTERN char SVDECL(*smv_filename,NULL),SVDECL(*smv_orig_filename,NULL),SVDECL(*fed_filename,NULL),fed_filename_base[1024],SVDECL(*stop_filename,NULL);
-SVEXTERN char SVDECL(*slice_bounds_filename, NULL);
+#ifdef pp_FILEBOUNDS
+SVEXTERN char SVDECL(*slice_bounds_filename, NULL), SVDECL(*patch_bounds_filename, NULL);
+#endif
+SVEXTERN int  SVDECL(have_multislice, 0), SVDECL(have_multivslice, 0);
 SVEXTERN char SVDECL(*hrr_filename, NULL);
 SVEXTERN char SVDECL(*part_globalbound_filename, NULL);
 SVEXTERN char SVDECL(*sliceinfo_filename,NULL);
@@ -1908,8 +1911,8 @@ SVEXTERN partpropdata SVDECL(*part5propinfo,NULL), SVDECL(*current_property,NULL
 SVEXTERN int SVDECL(npart5prop,0),ipart5prop,ipart5prop_old;
 SVEXTERN int SVDECL(global_prop_index,-1);
 SVEXTERN slicedata SVDECL(*sliceinfo, NULL), SVDECL(*slicexyzinfo, NULL);
-SVEXTERN fileboundsdata SVDECL(*sliceboundsinfo, NULL);
-SVEXTERN int SVDECL(nsliceboundsinfo, 0);
+SVEXTERN fileboundsdata SVDECL(*sliceboundsinfo, NULL), SVDECL(*patchboundsinfo, NULL);
+SVEXTERN int SVDECL(nsliceboundsinfo, 0), SVDECL(npatchboundsinfo, 0);
 SVEXTERN feddata SVDECL(*fedinfo,NULL);
 SVEXTERN camdata SVDECL(*caminfo,NULL);
 SVEXTERN multislicedata SVDECL(*multisliceinfo,NULL);
