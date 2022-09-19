@@ -3380,9 +3380,9 @@ void GetSliceParams(void){
         mslicei->islices[mslicei->nslices-1]=sliceorderindex[i];
       }
     }
-    //have_multislice = 0;
+    have_multislice = 0;
     //if(nmultisliceinfo>0&&nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo)have_multislice = 1;
-    have_multislice = 1; // use multi slice for all cases
+    if(nmultisliceinfo>0)have_multislice = 1; // use multi slice for all cases
   }
   for(i = 0; i < nsliceinfo; i++){
     slicedata *slicei;
@@ -3635,9 +3635,9 @@ void UpdateVSlices(void){
       vslicei->reload = 0;
     }
   }
-  //have_multivslice = 0;
+  have_multivslice = 0;
   //if(nvsliceinfo > 0 && nmultivsliceinfo < nvsliceinfo)have_multivslice = 1;
-  have_multivslice = 1; // use multi vslice for all cases
+  if(nvsliceinfo>0)have_multivslice = 1; // use multi vslice for all cases
 
   UpdateVSliceDups();
 
