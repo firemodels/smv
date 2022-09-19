@@ -277,15 +277,15 @@ int GetBounds(char *file, float *valmin, float *valmax,
         bi = *boundsinfoptr + i;
 
         if(fgets(buffer, 255, stream)==NULL)break;
-        tok = strtok(buffer, " ");
+        tok = strtok(buffer, ",");
         tok = TrimFrontBack(tok);
         strcpy(bi->file, tok);
 
-        tok = strtok(NULL, " ");
+        tok = strtok(NULL, ",");
         sscanf(tok, "%f", &vmin);
         bi->valmin = vmin;
 
-        tok = strtok(NULL, " ");
+        tok = strtok(NULL, ",");
         sscanf(tok, "%f", &vmax);
         bi->valmax = vmax;
       }
@@ -339,7 +339,7 @@ void CreateSliceBoundFile(void){
 
     slicei = sliceinfo+i;
     if(GetFileBounds(slicei->bound_file, &valmin, &valmax)==1){
-      fprintf(stream, "%s %f %f\n", slicei->bound_file, valmin, valmax);
+      fprintf(stream, "%s,%f,%f\n", slicei->bound_file, valmin, valmax);
     }
   }
   fclose(stream);
@@ -371,7 +371,7 @@ void CreatePatchBoundFile(void){
 
     patchi = patchinfo+i;
     if(GetFileBounds(patchi->bound_file, &valmin, &valmax)==1){
-      fprintf(stream, "%s %f %f\n", patchi->bound_file, valmin, valmax);
+      fprintf(stream, "%s,%f,%f\n", patchi->bound_file, valmin, valmax);
     }
   }
   fclose(stream);

@@ -330,14 +330,14 @@ char *ParseCommandline(int argc, char **argv){
 
 #ifdef pp_FILEBOUNDS
   FREEMEMORY(slice_bounds_filename);
-  NewMemory((void **)&slice_bounds_filename, len_casename+strlen(".slcf.bnd")+1);
+  NewMemory((void **)&slice_bounds_filename, len_casename+strlen("_slcf.bnd")+1);
   STRCPY(slice_bounds_filename, fdsprefix);
-  STRCAT(slice_bounds_filename, ".slcf.bnd");
+  STRCAT(slice_bounds_filename, "_slcf.bnd");
 
   FREEMEMORY(patch_bounds_filename);
-  NewMemory((void **)&patch_bounds_filename, len_casename+strlen(".bndf.bnd")+1);
+  NewMemory((void **)&patch_bounds_filename, len_casename+strlen("_bndf.bnd")+1);
   STRCPY(patch_bounds_filename, fdsprefix);
-  STRCAT(patch_bounds_filename, ".bndf.bnd");
+  STRCAT(patch_bounds_filename, "_bndf.bnd");
 #endif
 
   FREEMEMORY(hrr_filename);
