@@ -2105,6 +2105,8 @@ int SliceCompare( const void *arg1, const void *arg2 ){
   if(slicei->slice_filetype>slicej->slice_filetype)return 1;
   if(strcmp(slicei->label.longlabel,slicej->label.longlabel)<0)return -1;
   if(strcmp(slicei->label.longlabel,slicej->label.longlabel)>0)return 1;
+  if(slicei->volslice==1&&slicej->volslice==0)return -1;
+  if(slicei->volslice==0&&slicej->volslice==1)return 1;
   if(slicei->slcf_index<slicej->slcf_index)return -1;
   if(slicei->slcf_index>slicej->slcf_index)return 1;
   return 0;
@@ -2125,6 +2127,8 @@ int VSliceCompare(const void *arg1, const void *arg2){
   if(slicei->slice_filetype>slicej->slice_filetype)return 1;
   if(strcmp(slicei->label.longlabel, slicej->label.longlabel)<0)return -1;
   if(strcmp(slicei->label.longlabel, slicej->label.longlabel)>0)return 1;
+  if(slicei->volslice==1&&slicej->volslice==0)return -1;
+  if(slicei->volslice==0&&slicej->volslice==1)return 1;
   if(slicei->slcf_index<slicej->slcf_index)return -1;
   if(slicei->slcf_index>slicej->slcf_index)return 1;
   return 0;
