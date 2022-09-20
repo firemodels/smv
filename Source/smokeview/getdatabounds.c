@@ -234,8 +234,8 @@ int GetFileBounds(char *file, float *valmin, float *valmax){
 }
 
 #ifdef pp_FILEBOUNDS
-#define GETSLICEBOUNDS(file, valmin, valmax) GetBounds(file, valmin, valmax, &sliceboundsinfo, &nsliceboundsinfo, slice_bounds_filename)
-#define GETPATCHBOUNDS(file, valmin, valmax) GetBounds(file, valmin, valmax, &patchboundsinfo, &npatchboundsinfo, patch_bounds_filename)
+#define GETSLICEBOUNDS(file, valmin, valmax) GetBounds(file, valmin, valmax, &sliceboundsinfo, &nsliceboundsinfo, slice_bounds_filename, slice_bounds_fdsfilename)
+#define GETPATCHBOUNDS(file, valmin, valmax) GetBounds(file, valmin, valmax, &patchboundsinfo, &npatchboundsinfo, patch_bounds_filename, patch_bounds_fdsfilename)
 #else
 #define GETSLICEBOUNDS(file, valmin, valmax) GetFileBounds(file, valmin, valmax)
 #define GETPATCHBOUNDS(file, valmin, valmax) GetFileBounds(file, valmin, valmax)
@@ -245,7 +245,7 @@ int GetFileBounds(char *file, float *valmin, float *valmax){
 /* ------------------ GetSliceBounds ------------------------ */
 
 int GetBounds(char *file, float *valmin, float *valmax,
-                   fileboundsdata **boundsinfoptr, int *nboundsinfoptr, char *bounds_filename){
+                   fileboundsdata **boundsinfoptr, int *nboundsinfoptr, char *bounds_filename, char *bounds_fdsfilename){
   FILE *stream=NULL;
   int return_val, nbounds;
 
@@ -254,7 +254,8 @@ int GetBounds(char *file, float *valmin, float *valmax,
   return_val = 0;
 
   if(*boundsinfoptr==NULL){
-    if(bounds_filename!=NULL)stream = fopen(bounds_filename, "r");
+    if(bounds_fdsfilename!=NULL)stream = fopen(bounds_fdsfilename, "r");
+    if(bounds_filename!=NULL && stream==NULL)stream = fopen(bounds_filename, "r"); // only use smokeview generated bounds file if fds bounds file does not exist
 
     if(stream!=NULL){
       int i;

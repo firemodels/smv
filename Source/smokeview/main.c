@@ -334,10 +334,20 @@ char *ParseCommandline(int argc, char **argv){
   STRCPY(slice_bounds_filename, fdsprefix);
   STRCAT(slice_bounds_filename, "_slcf.bnd");
 
+  FREEMEMORY(slice_bounds_fdsfilename);
+  NewMemory((void **)&slice_bounds_fdsfilename, len_casename+strlen("_slcf.bounds")+1);
+  STRCPY(slice_bounds_fdsfilename, fdsprefix);
+  STRCAT(slice_bounds_fdsfilename, "_slcf.bounds");
+
   FREEMEMORY(patch_bounds_filename);
   NewMemory((void **)&patch_bounds_filename, len_casename+strlen("_bndf.bnd")+1);
   STRCPY(patch_bounds_filename, fdsprefix);
   STRCAT(patch_bounds_filename, "_bndf.bnd");
+
+  FREEMEMORY(patch_bounds_fdsfilename);
+  NewMemory((void **)&patch_bounds_fdsfilename, len_casename+strlen("_bndf.bounds")+1);
+  STRCPY(patch_bounds_fdsfilename, fdsprefix);
+  STRCAT(patch_bounds_fdsfilename, "_bndf.bounds");
 #endif
 
   FREEMEMORY(hrr_filename);

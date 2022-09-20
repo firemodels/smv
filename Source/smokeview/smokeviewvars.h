@@ -1657,6 +1657,7 @@ SVEXTERN float temp_threshold;
 SVEXTERN char SVDECL(*smv_filename,NULL),SVDECL(*smv_orig_filename,NULL),SVDECL(*fed_filename,NULL),fed_filename_base[1024],SVDECL(*stop_filename,NULL);
 #ifdef pp_FILEBOUNDS
 SVEXTERN char SVDECL(*slice_bounds_filename, NULL), SVDECL(*patch_bounds_filename, NULL);
+SVEXTERN char SVDECL(*slice_bounds_fdsfilename, NULL), SVDECL(*patch_bounds_fdsfilename, NULL);
 #endif
 SVEXTERN int  SVDECL(have_multislice, 0), SVDECL(have_multivslice, 0);
 SVEXTERN char SVDECL(*hrr_filename, NULL);
