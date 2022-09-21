@@ -112,7 +112,7 @@ EXTERNCPP int            MatchUpper(char *buffer, const char *key);
 EXTERNCPP int            MatchSSF(char *buffer, const char *key);
 EXTERNCPP int            RandInt(int min, int max);
 EXTERNCPP void           FParseCSV(char *buffer, float *vals, int *valids, int ncols, int *ntokens);
-EXTERNCPP void           ParseCSV(char *buffer, char **tokens, int *ntokens);
+EXTERNCPP void           ParseCSV(char *buffer, char *buffer_temp, char **tokens, int *ntokens);
 EXTERNCPP void           StripQuotes(char *buffer);
 EXTERNCPP void           StripCommas(char *buffer);
 EXTERNCPP int            GetRowCols(FILE *stream, int *nrows, int *ncols);

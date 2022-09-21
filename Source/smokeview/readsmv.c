@@ -171,7 +171,7 @@ void ReadCSV(csvfiledata *csvfi, int flag){
   FILE *stream;
   int nrows, ncols;
   int nunits, nlabels;
-  char *buffer, *buffer_labels, *buffer_units;
+  char *buffer, *buffer_labels, *buffer_units, *buffer_temp;
   char *buffptr;
   char **labels, **units;
   float *vals;
@@ -193,13 +193,14 @@ void ReadCSV(csvfiledata *csvfi, int flag){
   if(stream == NULL)return;
 
   len_buffer = GetRowCols(stream, &nrows, &ncols);
-  len_buffer = MAX(len_buffer + 100, 1000);
+  len_buffer = MAX(len_buffer + 100 + ncols, 1000);
   csvfi->ncsvinfo = ncols;
 
   // allocate memory
   NewMemory((void **)&(buffer),        len_buffer);
   NewMemory((void **)&(buffer_labels), len_buffer);
   NewMemory((void **)&(buffer_units),  len_buffer);
+  NewMemory((void **)&(buffer_temp),   len_buffer);
 
   if(strcmp(csvfi->c_type, "ext") == 0){
     fgets(buffer, len_buffer, stream);
@@ -243,14 +244,13 @@ void ReadCSV(csvfiledata *csvfi, int flag){
 
   fgets(buffer_units,    len_buffer, stream);
   TrimBack(buffer_units);
-  ParseCSV(buffer_units, units,     &nunits);
+  ParseCSV(buffer_units, buffer_temp, units,     &nunits);
 
   fgets(buffer_labels,    len_buffer, stream);
   TrimBack(buffer_labels);
-  ParseCSV(buffer_labels, labels,    &nlabels);
+  ParseCSV(buffer_labels, buffer_temp, labels,    &nlabels);
   CheckMemory;
 
-  plot2d_max_columns = MAX(plot2d_max_columns, csvfi->ncsvinfo);
   for(i=0; i<csvfi->ncsvinfo; i++){
     csvdata *ci;
     char label[64];
@@ -363,6 +363,7 @@ void ReadCSV(csvfiledata *csvfi, int flag){
     SetLabels(&(cchirad->label), "-QRAD_I/HRR", "-QRAD_I/HRR", "");
     csvfi->ncsvinfo++;
   }
+  plot2d_max_columns = MAX(plot2d_max_columns, csvfi->ncsvinfo);
 
   //copy vals into vals_orig
   for(i=0; i<csvfi->ncsvinfo; i++){
@@ -423,7 +424,7 @@ void ReadHRR(int flag){
   float *vals;
   int *valids;
   int i, irow;
-  char *buffer, *buffer_labels, *buffer_units;
+  char *buffer, *buffer_labels, *buffer_units, *buffer_temp;
   int len_buffer;
 
   GetHoc(&fuel_hoc, fuel_name);
@@ -448,7 +449,7 @@ void ReadHRR(int flag){
   if(stream==NULL)return;
 
   len_buffer = GetRowCols(stream, &nrows, &ncols);
-  len_buffer = MAX(len_buffer + 100, 1000);
+  len_buffer = MAX(len_buffer + 100, 1000) + ncols;
   nhrrinfo = ncols;
 
   if(nhrrinfo == 0)return;
@@ -457,6 +458,7 @@ void ReadHRR(int flag){
   NewMemory((void **)&(buffer),        len_buffer);
   NewMemory((void **)&(buffer_labels), len_buffer);
   NewMemory((void **)&(buffer_units),  len_buffer);
+  NewMemory((void **)&(buffer_temp),   len_buffer);
 
   NewMemory((void **)&labels,         nhrrinfo*sizeof(char *));
   NewMemory((void **)&units,          nhrrinfo*sizeof(char *));
@@ -479,10 +481,10 @@ void ReadHRR(int flag){
 // setup labels and units
 
   fgets(buffer_units, len_buffer, stream);
-  ParseCSV(buffer_units, units, &nunits);
+  ParseCSV(buffer_units, buffer_temp, units, &nunits);
 
   fgets(buffer_labels, len_buffer, stream);
-  ParseCSV(buffer_labels, labels, &nlabels);
+  ParseCSV(buffer_labels, buffer_temp, labels, &nlabels);
   CheckMemory;
 
   for(i = 0; i<nhrrinfo; i++){
@@ -6157,20 +6159,21 @@ void UpdateEvents(void){
     tokens[i] = NULL;
   }
 
-  char temp_buffer[255];
-  if(fgets(temp_buffer, 255, stream)==NULL)return;
+#define LEN_BUFFER 1000
+  char temp_buffer[LEN_BUFFER];
+  if(fgets(temp_buffer, LEN_BUFFER, stream)==NULL)return;
   while(!feof(stream)){
-    char buffer[255], *message;
+    char buffer[LEN_BUFFER], buffer_temp[LEN_BUFFER], *message;
     int ntokens;
     float tminmax[2], xyz[3], frgb[3];
     int rgblabel[3];
     labeldata label;
 
     CheckMemory;
-    if(fgets(buffer, 255, stream)==NULL)break;
+    if(fgets(buffer, LEN_BUFFER, stream)==NULL)break;
     if(buffer[0]=='#')continue;
     // tmin, tmax, x, y, z, r, g, b, 1/0 (foreground color) ! message
-    ParseCSV(buffer, tokens, &ntokens);
+    ParseCSV(buffer, buffer_temp, tokens, &ntokens);
     if(ntokens>=9){
       char *c_tstart, *c_tend, *c_x, *c_y, *c_type;
 

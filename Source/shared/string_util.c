@@ -88,41 +88,53 @@ void FParseCSV(char *buffer, float *vals, int *valids, int ncols, int *ntokens){
   *ntokens=nt;
 }
 
+/* ----------------------- TrimQuotesFrontBack ----------------------------- */
+
+char *TrimQuotesFrontBack(char *buffer){
+  int len;
+
+  buffer = TrimFrontBack(buffer);
+  if(strlen(buffer)==0)return buffer;
+  if(buffer[0]=='"')buffer++;
+  len = strlen(buffer);
+  if(len==0)return buffer;
+  if(buffer[len-1]=='"')buffer[len-1] = 0;
+  buffer = TrimFrontBack(buffer);
+  return buffer;
+}
+
 /* ----------------------- ParseCSV ----------------------------- */
 
-void ParseCSV(char *buffer, char **tokens, int *ntokens){
+void ParseCSV(char *buffer, char *buffer_temp, char **tokens, int *ntokens){
 
 //  copy comma delimited values from buffer into character array tokens
 //  returning number of values found in ntokens
 
   int nt=0;
-  int i;
+  int i, ii;
   int lenbuffer;
   int inside_quote=0;
+  char *tok;
 
-  lenbuffer=strlen(buffer);
-  for(i=0;i<lenbuffer;i++){
-    if(buffer[i]=='"'){
-      buffer[i]=' ';
-      inside_quote=1-inside_quote;
-      continue;
+  ii = 0;
+  for(ii=0,i=0;i<strlen(buffer);i++){
+    if(buffer[i]==','){
+      buffer_temp[ii++] = ' ';
     }
-    if(inside_quote==0&&buffer[i]==',')buffer[i]=0;
+    buffer_temp[ii++] = buffer[i];
   }
-  tokens[nt++]=buffer;
-  for(i=0;i<lenbuffer;i++){
-    if(buffer[i]==0){
-      tokens[nt++]=buffer+i+1;
-    }
+  buffer_temp[ii] = 0;
+  strcpy(buffer, buffer_temp);
+
+  tok = strtok(buffer, ",");
+  tokens[nt++] = TrimQuotesFrontBack(tok);
+
+  for(;;){
+    tok = strtok(NULL, ",");
+    if(tok==NULL)break;
+    tokens[nt++] = TrimQuotesFrontBack(tok);
   }
   *ntokens=nt;
-  for(i = 0; i<nt; i++){
-    char *token;
-
-    token = tokens[i];
-    token = TrimFrontBack(token);
-    tokens[i] = token;
-  }
 }
 
 /* ------------------ GetRowCols ------------------------ */
