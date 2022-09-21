@@ -112,8 +112,6 @@ void ParseCSV(char *buffer, char *buffer_temp, char **tokens, int *ntokens){
 
   int nt=0;
   int i, ii;
-  int lenbuffer;
-  int inside_quote=0;
   char *tok;
 
   ii = 0;
