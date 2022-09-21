@@ -115,11 +115,15 @@ void ParseCSV(char *buffer, char *buffer_temp, char **tokens, int *ntokens){
   char *tok;
 
   ii = 0;
+  TrimBack(buffer);
   for(ii=0,i=0;i<strlen(buffer);i++){
     if(buffer[i]==','){
       buffer_temp[ii++] = ' ';
     }
     buffer_temp[ii++] = buffer[i];
+  }
+  if(buffer[strlen(buffer)-1]==','){
+    buffer_temp[ii++] = ' ';
   }
   buffer_temp[ii] = 0;
   strcpy(buffer, buffer_temp);
