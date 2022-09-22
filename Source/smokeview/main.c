@@ -404,9 +404,9 @@ char *ParseCommandline(int argc, char **argv){
   STRCAT(boundinfo_filename, ".binfo");
 
   FREEMEMORY(event_filename);
-  NewMemory((void **)&event_filename, len_casename+strlen(".csv")+1);
+  NewMemory((void **)&event_filename, len_casename+strlen("_events.csv")+1);
   STRCPY(event_filename, fdsprefix);
-  STRCAT(event_filename, ".csv");
+  STRCAT(event_filename, "_events.csv");
 
   if(filename_local==NULL){
     NewMemory((void **)&filename_local, (unsigned int)(len_casename+6));
