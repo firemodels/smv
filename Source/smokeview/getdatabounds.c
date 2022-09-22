@@ -303,7 +303,7 @@ int GetBounds(char *file, float *valmin, float *valmax,
       bi = *boundsinfoptr + i;
       if(strcmp(bi->file, file)==0){
         *valmin = bi->valmin;
-        *valmin = bi->valmin;
+        *valmax = bi->valmax;
         return_val = 1;
         break;
       }
