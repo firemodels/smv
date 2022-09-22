@@ -6786,6 +6786,153 @@ void PartLoadState(int  *load_state){
     }
   }
 }
+#ifdef pp_DEBUG_SUBMENU
+
+#define CREATEMENU(menu,Menu) menu=glutCreateMenu(Menu);\
+  if(nmenus<10000){\
+    strcpy(menuinfo[nmenus].label,#Menu);\
+    menuinfo[nmenus].menuvar_ptr=&menu;\
+    menuinfo[nmenus++].menuvar = menu;\
+  }
+
+#ifdef _DEBUG
+#define GLUTADDSUBMENU(menu_label,menu_value){ASSERT(menu_value!=0);glutAddSubMenu(menu_label,menu_value);}
+#else
+#define GLUTADDSUBMENU(menu_label,menu_value){if(menu_value==0){printf("*** warning: sub-menu entry %s added to non-existant menu at line %i in file %s\n",menu_label,__LINE__,__FILE__);};glutAddSubMenu(menu_label,menu_value);}
+#endif
+
+#else
+
+#define CREATEMENU(menu,Menu) menu=glutCreateMenu(Menu);\
+  if(nmenus<10000){\
+    strcpy(menuinfo[nmenus].label,#Menu);\
+    menuinfo[nmenus++].menuvar=menu;\
+  }
+
+#define GLUTADDSUBMENU(menu_label,menu_value) glutAddSubMenu(menu_label,menu_value)
+
+#endif
+
+/* ------------------ InitShowSliceMenu ------------------------ */
+
+void InitShowSliceMenu(int *showhideslicemenuptr, int patchgeom_slice_showhide){
+  if(nsliceloaded>0||patchgeom_slice_showhide==1){
+    int ii;
+    int showhideslicemenu;
+    int i;
+
+    CREATEMENU(showhideslicemenu, ShowHideSliceMenu);
+    *showhideslicemenuptr = showhideslicemenu;
+    // loaded slice entries
+    for(ii = 0; ii<nslice_loaded; ii++){
+      slicedata *sd;
+      char menulabel[1024];
+      int doit;
+
+      i = slice_loaded_list[ii];
+      sd = sliceinfo+i;
+      if(sd_shown==NULL&&sd->slicefile_labelindex==slicefile_labelindex){
+        sd_shown = sd;
+      }
+      STRCPY(menulabel, "");
+      if(plotstate==DYNAMIC_PLOTS&&sd->display==1&&sd->slicefile_labelindex==slicefile_labelindex){
+        sd_shown = sd;
+        STRCAT(menulabel, "*");
+      }
+      STRCAT(menulabel, sd->menulabel2);
+      if(sd->slicelabel!=NULL){
+        STRCAT(menulabel, " - ");
+        STRCAT(menulabel, sd->slicelabel);
+      }
+      doit = 1;
+      if(sd->slice_filetype==SLICE_TERRAIN){
+        meshdata *meshslice;
+        terraindata *terri;
+
+        meshslice = meshinfo+sd->blocknumber;
+        terri = meshslice->terrain;
+        if(terri==NULL||terri->nvalues==0)doit = 0;
+      }
+      if(doit==1)glutAddMenuEntry(menulabel, i);
+    }
+    // loaded geometry slice entries
+    for(ii = 0; ii<npatchinfo; ii++){
+      patchdata *patchi;
+
+      i = patchorderindex[ii];
+      patchi = patchinfo+i;
+      if(patchi->loaded==1&&patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0){
+        char mlabel[250];
+
+        strcpy(mlabel, "");
+        if(patchi->display==1)strcat(mlabel, "*");
+        strcat(mlabel, patchi->label.longlabel);
+        glutAddMenuEntry(mlabel, -20-i);
+      }
+    }
+    if(have_multislice==0){
+      glutAddMenuEntry("-", MENU_DUMMY);
+      if(HaveTerrainSlice()==1){
+        if(planar_terrain_slice==1)glutAddMenuEntry(_("*Planar terrain slice"), MENU_SHOWSLICE_TERRAIN);
+        if(planar_terrain_slice==0)glutAddMenuEntry(_("Planar terrain slice"), MENU_SHOWSLICE_TERRAIN);
+      }
+
+      if(nsliceloaded>0){
+        glutAddMenuEntry(_("Show in:"), MENU_DUMMY);
+        if(show_slice_in_obst==ONLY_IN_GAS){
+          glutAddMenuEntry(_("  *gas"), MENU_SHOWSLICE_IN_GAS);
+          glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
+          glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+        }
+        if(show_slice_in_obst==GAS_AND_SOLID){
+          glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
+          glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
+          glutAddMenuEntry(_("  *gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+        }
+        if(show_slice_in_obst==ONLY_IN_SOLID){
+          glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
+          glutAddMenuEntry(_("  *solid"), MENU_SHOWSLICE_IN_SOLID);
+          glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+        }
+      }
+      if(nsliceloaded>0){
+        if(offset_slice==1)glutAddMenuEntry(_("*Offset slice"), MENU_SHOWSLICE_OFFSET);
+        if(offset_slice==0)glutAddMenuEntry(_("Offset slice"), MENU_SHOWSLICE_OFFSET);
+        if(show_node_slices_and_vectors==1)glutAddMenuEntry(_("*Show node centered slices and vectors"), MENU_SHOWSLICE_NODESLICEANDVECTORS);
+        if(show_node_slices_and_vectors==0)glutAddMenuEntry(_("Show node centered slices and vectors"), MENU_SHOWSLICE_NODESLICEANDVECTORS);
+        if(show_cell_slices_and_vectors==1)glutAddMenuEntry(_("*Show cell centered slices and vectors"), MENU_SHOWSLICE_CELLSLICEANDVECTORS);
+        if(show_cell_slices_and_vectors==0)glutAddMenuEntry(_("Show cell centered slices and vectors"), MENU_SHOWSLICE_CELLSLICEANDVECTORS);
+      }
+      if(nfedinfo>0){
+        int showfedmenu = 0;
+
+        for(i = nsliceinfo-nfedinfo; i<nsliceinfo; i++){
+          slicedata *slicei;
+
+          slicei = sliceinfo+i;
+          if(slicei->loaded==1){
+            showfedmenu = 1;
+            break;
+          }
+        }
+        if(showfedmenu==1){
+          if(show_fed_area==1)glutAddMenuEntry(_("*Show FED areas"), MENU_SHOWSLICE_FEDAREA);
+          if(show_fed_area==0)glutAddMenuEntry(_("Show FED areas"), MENU_SHOWSLICE_FEDAREA);
+        }
+      }
+      if(nsliceloaded>0&&sd_shown!=NULL){
+        char menulabel[1024];
+
+        glutAddMenuEntry("-", MENU_DUMMY);
+        STRCPY(menulabel, "");
+        if(showall_slices==1)STRCAT(menulabel, "*");
+        STRCAT(menulabel, sd_shown->label.longlabel);
+        glutAddMenuEntry(menulabel, SHOW_ALL);
+        glutAddMenuEntry("", MENU_DUMMY);
+      }
+    }
+  }
+}
 
 /* ------------------ InitMenus ------------------------ */
 
@@ -6917,33 +7064,6 @@ updatemenu=0;
       mvslicei->display=1;
     }
   }
-
-#ifdef pp_DEBUG_SUBMENU
-
-#define CREATEMENU(menu,Menu) menu=glutCreateMenu(Menu);\
-  if(nmenus<10000){\
-    strcpy(menuinfo[nmenus].label,#Menu);\
-    menuinfo[nmenus].menuvar_ptr=&menu;\
-    menuinfo[nmenus++].menuvar = menu;\
-  }
-
-#ifdef _DEBUG
-#define GLUTADDSUBMENU(menu_label,menu_value){ASSERT(menu_value!=0);glutAddSubMenu(menu_label,menu_value);}
-#else
-#define GLUTADDSUBMENU(menu_label,menu_value){if(menu_value==0){printf("*** warning: sub-menu entry %s added to non-existant menu at line %i in file %s\n",menu_label,__LINE__,__FILE__);};glutAddSubMenu(menu_label,menu_value);}
-#endif
-
-#else
-
-#define CREATEMENU(menu,Menu) menu=glutCreateMenu(Menu);\
-  if(nmenus<10000){\
-    strcpy(menuinfo[nmenus].label,#Menu);\
-    menuinfo[nmenus++].menuvar=menu;\
-  }
-
-#define GLUTADDSUBMENU(menu_label,menu_value) glutAddSubMenu(menu_label,menu_value)
-
-#endif
 
   {
     for(i=0;i<nmenus;i++){
@@ -8955,119 +9075,7 @@ updatemenu=0;
   if(nsliceloaded==0){
     sd_shown=NULL;
   }
-  if(nsliceloaded>0||patchgeom_slice_showhide==1){
-    int ii;
-
-    CREATEMENU(showhideslicemenu,ShowHideSliceMenu);
-    // loaded slice entries
-    for(ii=0;ii<nslice_loaded;ii++){
-      slicedata *sd;
-      char menulabel[1024];
-      int doit;
-
-      i = slice_loaded_list[ii];
-      sd = sliceinfo + i;
-      if(sd_shown==NULL&&sd->slicefile_labelindex==slicefile_labelindex){
-        sd_shown = sd;
-      }
-      STRCPY(menulabel,"");
-      if(plotstate==DYNAMIC_PLOTS&&sd->display==1&&sd->slicefile_labelindex==slicefile_labelindex){
-        sd_shown=sd;
-        STRCAT(menulabel,"*");
-      }
-      STRCAT(menulabel,sd->menulabel2);
-      if(sd->slicelabel!=NULL){
-        STRCAT(menulabel," - ");
-        STRCAT(menulabel,sd->slicelabel);
-      }
-      doit=1;
-      if(sd->slice_filetype==SLICE_TERRAIN){
-        meshdata *meshslice;
-        terraindata *terri;
-
-        meshslice = meshinfo + sd->blocknumber;
-        terri = meshslice->terrain;
-        if(terri==NULL||terri->nvalues==0)doit = 0;
-      }
-      if(doit==1)glutAddMenuEntry(menulabel,i);
-    }
-    // loaded geometry slice entries
-    for(ii = 0;ii<npatchinfo;ii++){
-      patchdata *patchi;
-
-      i = patchorderindex[ii];
-      patchi = patchinfo+i;
-      if(patchi->loaded==1&&patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0){
-        char mlabel[250];
-
-        strcpy(mlabel, "");
-        if(patchi->display == 1)strcat(mlabel, "*");
-        strcat(mlabel, patchi->label.longlabel);
-        glutAddMenuEntry(mlabel,-20-i);
-      }
-    }
-    if(have_multislice==0){
-      glutAddMenuEntry("-", MENU_DUMMY);
-      if(HaveTerrainSlice()==1){
-        if(planar_terrain_slice==1)glutAddMenuEntry(_("*Planar terrain slice"), MENU_SHOWSLICE_TERRAIN);
-        if(planar_terrain_slice==0)glutAddMenuEntry(_("Planar terrain slice"), MENU_SHOWSLICE_TERRAIN);
-      }
-
-      if(nsliceloaded>0){
-        glutAddMenuEntry(_("Show in:"), MENU_DUMMY);
-        if(show_slice_in_obst==ONLY_IN_GAS){
-          glutAddMenuEntry(_("  *gas"), MENU_SHOWSLICE_IN_GAS);
-          glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
-          glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
-        }
-        if(show_slice_in_obst==GAS_AND_SOLID){
-          glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
-          glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
-          glutAddMenuEntry(_("  *gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
-        }
-        if(show_slice_in_obst==ONLY_IN_SOLID){
-          glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
-          glutAddMenuEntry(_("  *solid"), MENU_SHOWSLICE_IN_SOLID);
-          glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
-        }
-      }
-      if(nsliceloaded>0){
-        if(offset_slice==1)glutAddMenuEntry(_("*Offset slice"), MENU_SHOWSLICE_OFFSET);
-        if(offset_slice==0)glutAddMenuEntry(_("Offset slice"), MENU_SHOWSLICE_OFFSET);
-        if(show_node_slices_and_vectors==1)glutAddMenuEntry(_("*Show node centered slices and vectors"), MENU_SHOWSLICE_NODESLICEANDVECTORS);
-        if(show_node_slices_and_vectors==0)glutAddMenuEntry(_("Show node centered slices and vectors"), MENU_SHOWSLICE_NODESLICEANDVECTORS);
-        if(show_cell_slices_and_vectors==1)glutAddMenuEntry(_("*Show cell centered slices and vectors"), MENU_SHOWSLICE_CELLSLICEANDVECTORS);
-        if(show_cell_slices_and_vectors==0)glutAddMenuEntry(_("Show cell centered slices and vectors"), MENU_SHOWSLICE_CELLSLICEANDVECTORS);
-      }
-      if(nfedinfo>0){
-        int showfedmenu = 0;
-
-        for(i = nsliceinfo-nfedinfo;i<nsliceinfo;i++){
-          slicedata *slicei;
-
-          slicei = sliceinfo+i;
-          if(slicei->loaded==1){
-            showfedmenu = 1;
-            break;
-          }
-        }
-        if(showfedmenu==1){
-          if(show_fed_area==1)glutAddMenuEntry(_("*Show FED areas"), MENU_SHOWSLICE_FEDAREA);
-          if(show_fed_area==0)glutAddMenuEntry(_("Show FED areas"), MENU_SHOWSLICE_FEDAREA);
-        }
-      }
-      if(nsliceloaded>0&&sd_shown!=NULL){
-        char menulabel[1024];
-
-        glutAddMenuEntry("-", MENU_DUMMY);
-        STRCPY(menulabel, "");
-        if(showall_slices==1)STRCAT(menulabel, "*");
-        STRCAT(menulabel, sd_shown->label.longlabel);
-        glutAddMenuEntry(menulabel, SHOW_ALL);
-        glutAddMenuEntry("", MENU_DUMMY);
-      }
-    }
-  }
+  InitShowSliceMenu(&showhideslicemenu, patchgeom_slice_showhide);
   if(have_multislice==1||patchgeom_slice_showhide==1){
     int ii;
     patchdata *patchim1=NULL;
