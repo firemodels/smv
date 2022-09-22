@@ -7269,6 +7269,33 @@ void InitLoadSliceMenu(int *loadslicemenuptr, int unloadslicemenu, int *loadsubs
   }
 }
 
+/* ------------------ InitUnloadMultiSliceMenu ------------------------ */
+
+void InitUnloadMultiSliceMenu(int *unloadmultislicemenuptr){
+  int i, unloadmultislicemenu;
+
+  CREATEMENU(unloadmultislicemenu, UnloadMultiSliceMenu);
+  *unloadmultislicemenuptr = unloadmultislicemenu;
+
+  for(i = 0; i<nmultisliceinfo; i++){
+    multislicedata *mslicei;
+
+    mslicei = multisliceinfo+i;
+    if(mslicei->loaded!=0){
+      glutAddMenuEntry(mslicei->menulabel2, i);
+    }
+  }
+  for(i = 0; i<npatchinfo; i++){
+    patchdata *patchi;
+
+    patchi = patchinfo+i;
+    if(patchi->loaded==1&&patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0){
+      glutAddMenuEntry(patchi->label.longlabel, -3-i);
+    }
+  }
+  glutAddMenuEntry(_("Unload all"), UNLOAD_ALL);
+}
+
 /* ------------------ InitMenus ------------------------ */
 
 void InitMenus(int unload){
@@ -10976,25 +11003,8 @@ updatemenu=0;
   /* --------------------------------unload and load multislice menus -------------------------- */
 
   if(have_multislice==1||have_geom_slice_menus==1){
-    CREATEMENU(unloadmultislicemenu, UnloadMultiSliceMenu);
     nmultisliceloaded = 0;
-    for(i = 0;i<nmultisliceinfo;i++){
-      multislicedata *mslicei;
-
-      mslicei = multisliceinfo+i;
-      if(mslicei->loaded!=0){
-        glutAddMenuEntry(mslicei->menulabel2, i);
-      }
-    }
-    for(i = 0;i<npatchinfo;i++){
-      patchdata *patchi;
-
-      patchi = patchinfo+i;
-      if(patchi->loaded==1&&patchi->filetype_label!=NULL&&strcmp(patchi->filetype_label, "INCLUDE_GEOM")==0){
-        glutAddMenuEntry(patchi->label.longlabel, -3-i);
-      }
-    }
-    glutAddMenuEntry(_("Unload all"), UNLOAD_ALL);
+    InitUnloadMultiSliceMenu(&unloadmultislicemenu);
 
     nloadsubmslicemenu = 1;
     for(i = 1;i<nmultisliceinfo;i++){
