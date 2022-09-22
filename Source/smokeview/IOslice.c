@@ -3919,6 +3919,11 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   if(sd->slice_filetype == SLICE_GEOM){
     pdata = sd->patchgeom->geom_vals;
     ndata = sd->patchgeom->geom_nvals;
+    if(pdata==NULL||ndata==0){
+      *pmin = 1.0;
+      *pmax = 0.0;
+      return;
+    }
     *pmin = pdata[0];
     *pmax = pdata[0];
     for (i = 0; i < ndata; i++) {

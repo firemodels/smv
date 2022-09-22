@@ -269,6 +269,7 @@ int GetBounds(char *file, float *valmin, float *valmax,
       }
       *nboundsinfoptr = nbounds;
       rewind(stream);
+      if(nbounds==0)return return_val;
       NewMemory((void **)&*boundsinfoptr, *nboundsinfoptr*sizeof(fileboundsdata));
       for(i=0; i<*nboundsinfoptr; i++){
         char buffer[255], *tok;
