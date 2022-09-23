@@ -7533,7 +7533,7 @@ static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
 static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
 static int unloadevacmenu=0, unloadpartmenu=0, loadslicemenu=0, loadmultislicemenu=0;
 static int *loadsubvslicemenu=NULL, nloadsubvslicemenu=0;
-static int *loadsubslicemenu=NULL, nloadsubslicemenu=0, iloadsubslicemenu=0;
+static int *loadsubslicemenu=NULL, nloadsubslicemenu=0;
 static int *loadsubpatchmenu_b = NULL, *nsubpatchmenus_b=NULL, iloadsubpatchmenu_b=0, nloadsubpatchmenu_b = 0;
 static int *loadsubpatchmenu_s = NULL, *nsubpatchmenus_s=NULL, iloadsubpatchmenu_s=0, nloadsubpatchmenu_s = 0;
 static int *loadsubmslicemenu=NULL, nloadsubmslicemenu=0;
