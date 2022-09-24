@@ -7302,6 +7302,7 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
   int i, *loadsubmslicemenu, nloadsubmslicemenu;
   int nmultisliceloaded;
 
+  nmultisliceloaded = 0;
   nloadsubmslicemenu = 1;
   for(i = 1;i<nmultisliceinfo;i++){
     slicedata *sd, *sdim1;
