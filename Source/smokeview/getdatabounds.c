@@ -234,8 +234,8 @@ int GetFileBounds(char *file, float *valmin, float *valmax){
 }
 
 #ifdef pp_FILEBOUNDS
-#define GETSLICEBOUNDS(file, valmin, valmax) GetBounds(file, valmin, valmax, &sliceboundsinfo, &nsliceboundsinfo, slice_bounds_filename, slice_bounds_fdsfilename)
-#define GETPATCHBOUNDS(file, valmin, valmax) GetBounds(file, valmin, valmax, &patchboundsinfo, &npatchboundsinfo, patch_bounds_filename, patch_bounds_fdsfilename)
+#define GETSLICEBOUNDS(file, valmin, valmax) GetBounds(file, valmin, valmax, &sliceboundsinfo, &nsliceboundsinfo, slice_bounds_fdsfilename)
+#define GETPATCHBOUNDS(file, valmin, valmax) GetBounds(file, valmin, valmax, &patchboundsinfo, &npatchboundsinfo, patch_bounds_fdsfilename)
 #else
 #define GETSLICEBOUNDS(file, valmin, valmax) GetFileBounds(file, valmin, valmax)
 #define GETPATCHBOUNDS(file, valmin, valmax) GetFileBounds(file, valmin, valmax)
@@ -245,7 +245,7 @@ int GetFileBounds(char *file, float *valmin, float *valmax){
 /* ------------------ GetSliceBounds ------------------------ */
 
 int GetBounds(char *file, float *valmin, float *valmax,
-                   fileboundsdata **boundsinfoptr, int *nboundsinfoptr, char *bounds_filename, char *bounds_fdsfilename){
+                   fileboundsdata **boundsinfoptr, int *nboundsinfoptr, char *bounds_fdsfilename){
   FILE *stream=NULL;
   int return_val, nbounds;
 
@@ -255,8 +255,6 @@ int GetBounds(char *file, float *valmin, float *valmax,
 
   if(*boundsinfoptr==NULL){
     if(bounds_fdsfilename!=NULL)stream = fopen(bounds_fdsfilename, "r");
-    if(bounds_filename!=NULL && stream==NULL)stream = fopen(bounds_filename, "r"); // only use smokeview generated bounds file if fds bounds file does not exist
-
     if(stream!=NULL){
       int i;
 
@@ -313,70 +311,6 @@ int GetBounds(char *file, float *valmin, float *valmax,
     return_val = GetFileBounds(file, valmin, valmax);
   }
   return return_val;
-}
-
-/* ------------------ CreateSliceBoundFile ------------------------ */
-
-void CreateSliceBoundFile(void){
-  int i;
-  FILE *stream=NULL, *stream2=NULL;
-
-  //do not generate file if exists and the hrr file is older than it
-
-  if(slice_bounds_filename!=NULL)stream = fopen(slice_bounds_filename, "r");
-  if(hrr_filename!=NULL)stream2 = fopen(hrr_filename, "r");
-  if(stream!=NULL&&stream2!=NULL){
-    fclose(stream);
-    fclose(stream2);
-    if(IsFileNewer(hrr_filename, slice_bounds_filename)==0)return;
-  }
-  if(stream!=NULL)fclose(stream);
-  if(stream2!=NULL)fclose(stream2);
-
-  stream = fopen(slice_bounds_filename, "w");
-  if(stream==NULL)return;
-  for(i = 0; i<nsliceinfo; i++){
-    slicedata *slicei;
-    float valmin, valmax;
-
-    slicei = sliceinfo+i;
-    if(GetFileBounds(slicei->bound_file, &valmin, &valmax)==1){
-      fprintf(stream, "%s,%f,%f\n", slicei->bound_file, valmin, valmax);
-    }
-  }
-  fclose(stream);
-}
-
-/* ------------------ CreatePatchBoundFile ------------------------ */
-
-void CreatePatchBoundFile(void){
-  int i;
-  FILE *stream = NULL, *stream2 = NULL;
-
-  //do not generate file if exists and the hrr file is older than it
-
-  if(patch_bounds_filename!=NULL)stream = fopen(patch_bounds_filename, "r");
-  if(hrr_filename!=NULL)stream2 = fopen(hrr_filename, "r");
-  if(stream!=NULL&&stream2!=NULL){
-    fclose(stream);
-    fclose(stream2);
-    if(IsFileNewer(hrr_filename, patch_bounds_filename)==0)return;
-  }
-  if(stream!=NULL)fclose(stream);
-  if(stream2!=NULL)fclose(stream2);
-
-  stream = fopen(patch_bounds_filename, "w");
-  if(stream==NULL)return;
-  for(i = 0; i<npatchinfo; i++){
-    patchdata *patchi;
-    float valmin, valmax;
-
-    patchi = patchinfo+i;
-    if(GetFileBounds(patchi->bound_file, &valmin, &valmax)==1){
-      fprintf(stream, "%s,%f,%f\n", patchi->bound_file, valmin, valmax);
-    }
-  }
-  fclose(stream);
 }
 #endif
 

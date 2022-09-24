@@ -11364,14 +11364,6 @@ typedef struct {
   InitPlot2D(glui_plot2dinfo, 0);
   SetInteriorBlockages(1);
 
-#ifdef pp_FILEBOUNDS
-// create casename.slcf.bnd
-  CreateSliceBoundFile();
-
-// create casename.bndf.bnd
-  CreatePatchBoundFile();
-#endif
-
   PRINTF("%s", _("complete"));
   PRINTF("\n\n");
   PrintMemoryInfo;
