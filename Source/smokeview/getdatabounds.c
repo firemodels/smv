@@ -233,15 +233,9 @@ int GetFileBounds(char *file, float *valmin, float *valmax){
   return 1;
 }
 
-#ifdef pp_FILEBOUNDS
 #define GETSLICEBOUNDS(file, valmin, valmax) GetBounds(file, valmin, valmax, &sliceboundsinfo, &nsliceboundsinfo, slice_bounds_fdsfilename)
 #define GETPATCHBOUNDS(file, valmin, valmax) GetBounds(file, valmin, valmax, &patchboundsinfo, &npatchboundsinfo, patch_bounds_fdsfilename)
-#else
-#define GETSLICEBOUNDS(file, valmin, valmax) GetFileBounds(file, valmin, valmax)
-#define GETPATCHBOUNDS(file, valmin, valmax) GetFileBounds(file, valmin, valmax)
-#endif
 
-#ifdef pp_FILEBOUNDS
 /* ------------------ GetSliceBounds ------------------------ */
 
 int GetBounds(char *file, float *valmin, float *valmax,
@@ -312,7 +306,6 @@ int GetBounds(char *file, float *valmin, float *valmax,
   }
   return return_val;
 }
-#endif
 
 #ifdef pp_CACHE_FILEBOUNDS
 /* ------------------ GetFileBoundMinMax ------------------------ */
