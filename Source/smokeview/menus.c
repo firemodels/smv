@@ -245,12 +245,13 @@ float     part_load_time;
 #define MENU_UNITS_SHOWALL -3
 #define MENU_UNITS_HMS -2
 
-#define MENU_HELP_ISSUES -1
-#define MENU_HELP_DOWNLOADS -2
-#define MENU_HELP_DOCUMENTATION -3
-#define MENU_HELP_FDSWEB -4
-#define MENU_HELP_FORUM -5
-#define MENU_HELP_RELEASENOTES -6
+#define MENU_HELP_SMV_ISSUES    -1
+#define MENU_HELP_FDS_ISSUES    -2
+#define MENU_HELP_DOWNLOADS     -3
+#define MENU_HELP_DOCUMENTATION -4
+#define MENU_HELP_FDSWEB        -5
+#define MENU_HELP_FORUM         -6
+#define MENU_HELP_RELEASENOTES  -7
 
 #define GRID_yz 1
 #define GRID_xz 2
@@ -2447,9 +2448,12 @@ void HelpMenu(int value){
     case MENU_HELP_FORUM:
       OPENURL("https://groups.google.com/forum/?fromgroups#!forum/fds-smv");
       break;
-    case MENU_HELP_ISSUES:
-      OPENURL("https://github.com/firemodels/smv/issues");
+    case MENU_HELP_FDS_ISSUES:
+      OPENURL("https://github.com/firemodels/fds/issues");
        break;
+    case MENU_HELP_SMV_ISSUES:
+      OPENURL("https://github.com/firemodels/smv/issues");
+      break;
     case MENU_HELP_DOWNLOADS:
       OPENURL("https://pages.nist.gov/fds-smv/downloads.html");
       break;
@@ -10936,28 +10940,31 @@ updatemenu=0;
   CREATEMENU(webhelpmenu,HelpMenu);
 
 #ifdef WIN32
-  glutAddMenuEntry(_("Downloads"), MENU_HELP_DOWNLOADS);
-  glutAddMenuEntry(_("Documentation"), MENU_HELP_DOCUMENTATION);
-  glutAddMenuEntry(_("Discussion forum"), MENU_HELP_FORUM);
-  glutAddMenuEntry(_("Issue tracker"), MENU_HELP_ISSUES);
-  glutAddMenuEntry(_("Release notes"), MENU_HELP_RELEASENOTES);
-  glutAddMenuEntry(_("Home page"), MENU_HELP_FDSWEB);
+  glutAddMenuEntry(_("Downloads"),               MENU_HELP_DOWNLOADS);
+  glutAddMenuEntry(_("Documentation"),           MENU_HELP_DOCUMENTATION);
+  glutAddMenuEntry(_("Discussion forum"),        MENU_HELP_FORUM);
+  glutAddMenuEntry(_("FDS issue tracker"),       MENU_HELP_FDS_ISSUES);
+  glutAddMenuEntry(_("Smokeview issue tracker"), MENU_HELP_SMV_ISSUES);
+  glutAddMenuEntry(_("Release notes"),           MENU_HELP_RELEASENOTES);
+  glutAddMenuEntry(_("Home page"),               MENU_HELP_FDSWEB);
 #endif
 #ifdef pp_OSX
-  glutAddMenuEntry(_("Downloads"), MENU_HELP_DOWNLOADS);
-  glutAddMenuEntry(_("Documentation"), MENU_HELP_DOCUMENTATION);
-  glutAddMenuEntry(_("Discussion forum"), MENU_HELP_FORUM);
-  glutAddMenuEntry(_("Issue tracker"), MENU_HELP_ISSUES);
-  glutAddMenuEntry(_("Release notes"), MENU_HELP_RELEASENOTES);
-  glutAddMenuEntry(_("Home page"), MENU_HELP_FDSWEB);
+  glutAddMenuEntry(_("Downloads"),               MENU_HELP_DOWNLOADS);
+  glutAddMenuEntry(_("Documentation"),           MENU_HELP_DOCUMENTATION);
+  glutAddMenuEntry(_("Discussion forum"),        MENU_HELP_FORUM);
+  glutAddMenuEntry(_("FDS issue tracker"),       MENU_HELP_ISSUES);
+  glutAddMenuEntry(_("Smokeview issue tracker"), MENU_HELP_ISSUES);
+  glutAddMenuEntry(_("Release notes"),           MENU_HELP_RELEASENOTES);
+  glutAddMenuEntry(_("Home page"),               MENU_HELP_FDSWEB);
 #endif
 #ifdef pp_LINUX
-  glutAddMenuEntry(_("Downloads: https://pages.nist.gov/fds-smv/"),MENU_HELP_DOWNLOADS);
-  glutAddMenuEntry(_("Documentation:  https://pages.nist.gov/fds-smv/manuals.html"),MENU_HELP_DOCUMENTATION);
+  glutAddMenuEntry(_("Downloads: https://pages.nist.gov/fds-smv/"),                                   MENU_HELP_DOWNLOADS);
+  glutAddMenuEntry(_("Documentation:  https://pages.nist.gov/fds-smv/manuals.html"),                  MENU_HELP_DOCUMENTATION);
   glutAddMenuEntry(_("Discussion forum: https://groups.google.com/forum/?fromgroups#!forum/fds-smv"), MENU_HELP_FORUM);
-  glutAddMenuEntry(_("Issue tracker: https://pages.nist.gov/fds-smv/"),MENU_HELP_ISSUES);
-  glutAddMenuEntry(_("Release notes: https://pages.nist.gov/fds-smv/smv_readme.html"), MENU_HELP_RELEASENOTES);
-  glutAddMenuEntry(_("Home page: https://pages.nist.gov/fds-smv/"),MENU_HELP_FDSWEB);
+  glutAddMenuEntry(_("FDS issue tracker: https://github.com/firemodels/fds/issues"),                  MENU_HELP_FDS_ISSUES);
+  glutAddMenuEntry(_("Smokeview issue tracker: https://github.com/firemodels/smv/issues"),            MENU_HELP_SMV_ISSUES);
+  glutAddMenuEntry(_("Release notes: https://pages.nist.gov/fds-smv/smv_readme.html"),                MENU_HELP_RELEASENOTES);
+  glutAddMenuEntry(_("Home page: https://pages.nist.gov/fds-smv/"),                                   MENU_HELP_FDSWEB);
 #endif
 
   /* --------------------------------keyboard help menu -------------------------- */
