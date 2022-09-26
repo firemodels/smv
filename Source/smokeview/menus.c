@@ -10952,8 +10952,8 @@ updatemenu=0;
   glutAddMenuEntry(_("Downloads"),               MENU_HELP_DOWNLOADS);
   glutAddMenuEntry(_("Documentation"),           MENU_HELP_DOCUMENTATION);
   glutAddMenuEntry(_("Discussion forum"),        MENU_HELP_FORUM);
-  glutAddMenuEntry(_("FDS issue tracker"),       MENU_HELP_ISSUES);
-  glutAddMenuEntry(_("Smokeview issue tracker"), MENU_HELP_ISSUES);
+  glutAddMenuEntry(_("FDS issue tracker"),       MENU_HELP_FDS_ISSUES);
+  glutAddMenuEntry(_("Smokeview issue tracker"), MENU_HELP_SMV_ISSUES);
   glutAddMenuEntry(_("Release notes"),           MENU_HELP_RELEASENOTES);
   glutAddMenuEntry(_("Home page"),               MENU_HELP_FDSWEB);
 #endif
