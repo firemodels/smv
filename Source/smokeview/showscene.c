@@ -149,6 +149,15 @@ void ShowScene2(int mode){
       SNIFF_ERRORS("after drawaxis");
     }
 
+    /* ++++++++++++++++++++++++ draw fds specified blockage outlines +++++++++++++++++++++++++ */
+
+    if(nobstinfo>0&&blocklocation!=BLOCKlocation_grid){
+      if(visBlocks==visBLOCKOutline||visBlocks==visBLOCKAsInputOutline||
+         visBlocks==visBLOCKSolidOutline||visBlocks==visBLOCKAddOutline){
+        DrawOrigObstOutlines();
+      }
+    }
+
     /* draw the box framing the simulation (corners at (0,0,0) (xbar,ybar,zbar) */
 
 

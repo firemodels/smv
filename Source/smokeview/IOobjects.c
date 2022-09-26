@@ -6080,7 +6080,7 @@ void SetupZoneDevs(void){
     FILE *stream;
     char *file;
     int nrows, ncols, buffer_len,ntokens;
-    char *buffer=NULL,**devclabels=NULL;
+    char *buffer=NULL, *buffer_temp, **devclabels=NULL;
     zonedata *zonei;
     int j;
 
@@ -6091,6 +6091,7 @@ void SetupZoneDevs(void){
     stream=fopen(file,"r");
     if(stream==NULL)continue;
     buffer_len=GetRowCols(stream,&nrows,&ncols);
+    buffer_len += ncols;
     if(nrows<=0||ncols<=0||buffer_len<=0){
       fclose(stream);
       continue;
@@ -6098,11 +6099,12 @@ void SetupZoneDevs(void){
     buffer_len+=10;
     rewind(stream);
 
-    NewMemory((void **)&buffer,buffer_len);
-    NewMemory((void **)&devclabels,ncols*sizeof(char *));
+    NewMemory((void **)&buffer,      buffer_len);
+    NewMemory((void **)&buffer_temp, buffer_len);
+    NewMemory((void **)&devclabels,  ncols*sizeof(char *));
     fgets(buffer,buffer_len,stream);
     fgets(buffer,buffer_len,stream);
-    ParseCSV(buffer,devclabels,&ntokens);
+    ParseCSV(buffer, buffer_temp, devclabels, &ntokens);
     for(j=0;j<ntokens;j++){
       devicedata *devi;
 
@@ -6126,7 +6128,7 @@ void ReadDeviceData(char *file, int filetype, int loadstatus){
   float *vals=NULL;
   int *valids=NULL;
   int i;
-  char *buffer, *buffer2;
+  char *buffer, *buffer2, *buffer_temp;
   char **devcunits=NULL, **devclabels=NULL;
   devicedata **devices=NULL;
   int ntokens;
@@ -6170,6 +6172,7 @@ void ReadDeviceData(char *file, int filetype, int loadstatus){
   if(stream==NULL)return;
   RewindDeviceFile(stream);
   buffer_len=GetRowCols(stream,&nrows,&ncols);
+  buffer_len += (ncols+1);
   if(nrows<=0||ncols<=0||buffer_len<=0){
     fclose(stream);
     return;
@@ -6177,27 +6180,28 @@ void ReadDeviceData(char *file, int filetype, int loadstatus){
   buffer_len+=10;
   RewindDeviceFile(stream);
 
-  NewMemory((void **)&buffer,buffer_len);
-  NewMemory((void **)&buffer2,buffer_len);
-  NewMemory((void **)&vals,ncols*sizeof(float));
-  NewMemory((void **)&valids,ncols*sizeof(int));
-  NewMemory((void **)&devcunits,ncols*sizeof(char *));
-  NewMemory((void **)&devclabels,ncols*sizeof(char *));
-  NewMemory((void **)&devices,ncols*sizeof(devicedata *));
+  NewMemory((void **)&buffer,      buffer_len);
+  NewMemory((void **)&buffer2,     buffer_len);
+  NewMemory((void **)&buffer_temp, buffer_len);
+  NewMemory((void **)&vals,        ncols*sizeof(float));
+  NewMemory((void **)&valids,      ncols*sizeof(int));
+  NewMemory((void **)&devcunits,   ncols*sizeof(char *));
+  NewMemory((void **)&devclabels,  ncols*sizeof(char *));
+  NewMemory((void **)&devices,     ncols*sizeof(devicedata *));
 
   for(i = 0; i<ncols; i++){
     devices[i] = NULL;
   }
 
-  fgets(buffer,buffer_len,stream);
-  ParseCSV(buffer,devcunits,&ntokens);
+  fgets(buffer, buffer_len, stream);
+  ParseCSV(buffer, buffer_temp, devcunits, &ntokens);
   for(i=0;i<ntokens;i++){
     TrimBack(devcunits[i]);
     devcunits[i]=TrimFront(devcunits[i]);
   }
 
-  fgets(buffer2,buffer_len,stream);
-  ParseCSV(buffer2,devclabels,&ntokens);
+  fgets(buffer2, buffer_len, stream);
+  ParseCSV(buffer2, buffer_temp, devclabels, &ntokens);
   for(i=0;i<ntokens;i++){
     TrimBack(devclabels[i]);
     devclabels[i]=TrimFront(devclabels[i]);
