@@ -144,6 +144,8 @@ void InitMisc(void){
   glui_curve_default.update_avg         = 0;
   glui_curve_default.vals               = NULL;
   memcpy(&glui_curve, &glui_curve_default, sizeof(curvedata));
+  strcpy(glui_curve_default.scaled_label, "");
+  strcpy(glui_curve_default.scaled_unit,  "");
 
   ResetGluiView(startup_view_ini);
   UpdateShow();
@@ -250,6 +252,9 @@ int SetupCase(char *filename){
     if(smv_streaminfo!=NULL){
       FCLOSE(smv_streaminfo);
     }
+
+  // read casename.smo (only OBST lines) to define a one mesh version of OBST's
+    ReadSMVOrig();
   }
   if(return_code==0&&trainer_mode==1){
     ShowGluiTrainer();

@@ -1808,6 +1808,7 @@ extern "C" void UpdateRotationIndex(int val){
   if(SPINNER_ycenCUSTOM!=NULL)SPINNER_ycenCUSTOM->set_float_val(ycenCUSTOMsmv);
   if(SPINNER_zcenCUSTOM!=NULL)SPINNER_zcenCUSTOM->set_float_val(zcenCUSTOMsmv);
 
+#ifndef pp_CLIP_FIX
   if(*rotation_index!=ROTATE_ABOUT_USER_CENTER){
     float *az_elev;
 
@@ -1817,7 +1818,7 @@ extern "C" void UpdateRotationIndex(int val){
     camera_current->azimuth    = 0.0;
     camera_current->view_angle = 0.0;
   }
-
+#endif
   UpdateMeshList1(val);
 
   glutPostRedisplay();

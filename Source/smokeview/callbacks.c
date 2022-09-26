@@ -2364,6 +2364,7 @@ void Keyboard(unsigned char key, int flag){
         }
         ObjectCB(BLOCKAGE_AS_INPUT2);
       }
+      updatefacelists = 1;
       break;
     case 'Q':
       showhide_textures = 1-showhide_textures;

@@ -1458,7 +1458,7 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
         int *sort_tags_local;
         int j;
 
-        sort_tags_local =datacopy_local->sort_tags;
+        sort_tags_local = datacopy_local->sort_tags;
         FORTPART5READ_m(datacopy_local->tags,nparts_local);
         if(returncode==FAIL_m)goto wrapup;
         CheckMemory;
@@ -1851,7 +1851,7 @@ int GetMinPartFrames(int flag){
 
 /* ------------------ GetPartHeader ------------------------ */
 
-void GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option_arg){
+int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option_arg){
   FILE *stream;
   char buffer_local[256];
   float time_local;
@@ -1861,7 +1861,7 @@ void GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_optio
   parti->ntimes=0;
 
   sizefile_status_local = GetSizeFileStatus(parti);
-  if(sizefile_status_local== -1)return; // particle file does not exist so cannot be sized
+  if(sizefile_status_local== -1)return 0; // particle file does not exist so cannot be sized
   if(option_arg==FORCE||sizefile_status_local== 1){        // size file is missing or older than particle file
     int angle_flag_local = 0;
 
@@ -1872,7 +1872,7 @@ void GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_optio
   }
 
   stream=fopen(parti->size_file,"r");
-  if(stream==NULL)return;
+  if(stream==NULL)return 0;
 
     // pass 1: count frames
 
@@ -1900,7 +1900,7 @@ void GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_optio
   *nf_all = nframes_all_local;
   if(parti->ntimes==0){
     fclose(stream);
-    return;
+    return 0;
   }
 
   // allocate memory for number of time steps * number of classes
@@ -1921,11 +1921,12 @@ void GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_optio
 
   // pass 2 - allocate memory for x, y, z frame data
 
+  int nall_points_local;
   {
     part5data *datacopy_local;
     int fail_local;
     LINT filepos_local;
-    int nall_points_types_local, nall_points_local;
+    int nall_points_types_local;
 
     fail_local =0;
     count_local =-1;
@@ -2056,6 +2057,12 @@ void GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_optio
         datacopy_local++;
       }
     }
+  }
+  if(nall_points_local==0){
+    return 0;
+  }
+  else{
+    return 1;
   }
 }
 
@@ -2224,7 +2231,14 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   else{
     PRINTF("Loading %s", file_arg);
   }
-  GetPartHeader(parti, &nf_all_local, NOT_FORCE, 1);
+  int have_particles;
+
+  have_particles = GetPartHeader(parti, &nf_all_local, NOT_FORCE, 1);
+  if(have_particles==0){
+    ReadPart("", ifile_arg, UNLOAD, &error_local);
+    UpdateTimes();
+    return 0.0;
+  }
   CheckMemory;
   GetPartData(parti, nf_all_local, &file_size_local);
   CheckMemory;
