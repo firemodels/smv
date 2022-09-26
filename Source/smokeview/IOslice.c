@@ -2101,10 +2101,14 @@ int SliceCompare( const void *arg1, const void *arg2 ){
   slicei = sliceinfo + *(int *)arg1;
   slicej = sliceinfo + *(int *)arg2;
 
-  if(slicei->slice_filetype<slicej->slice_filetype)return -1;
-  if(slicei->slice_filetype>slicej->slice_filetype)return 1;
   if(strcmp(slicei->label.longlabel,slicej->label.longlabel)<0)return -1;
   if(strcmp(slicei->label.longlabel,slicej->label.longlabel)>0)return 1;
+  if(slicei->idir<slicej->idir)return -1;
+  if(slicei->idir>slicej->idir)return 1;
+  if(slicei->position_orig<slicej->position_orig)return -1;
+  if(slicei->position_orig>slicej->position_orig)return 1;
+  if(slicei->slice_filetype<slicej->slice_filetype)return -1;
+  if(slicei->slice_filetype>slicej->slice_filetype)return 1;
   if(slicei->volslice==1&&slicej->volslice==0)return -1;
   if(slicei->volslice==0&&slicej->volslice==1)return 1;
   if(slicei->slcf_index<slicej->slcf_index)return -1;
@@ -2123,17 +2127,8 @@ int VSliceCompare(const void *arg1, const void *arg2){
   slicei = sliceinfo+vslicei->ival;
   slicej = sliceinfo+vslicej->ival;
 
-  if(slicei->slice_filetype<slicej->slice_filetype)return -1;
-  if(slicei->slice_filetype>slicej->slice_filetype)return 1;
-  if(strcmp(slicei->label.longlabel, slicej->label.longlabel)<0)return -1;
-  if(strcmp(slicei->label.longlabel, slicej->label.longlabel)>0)return 1;
-  if(slicei->volslice==1&&slicej->volslice==0)return -1;
-  if(slicei->volslice==0&&slicej->volslice==1)return 1;
-  if(slicei->slcf_index<slicej->slcf_index)return -1;
-  if(slicei->slcf_index>slicej->slcf_index)return 1;
-  return 0;
+  return SliceCompare(&(vslicei->ival), &(vslicej->ival));
 }
-
 #else
 /* ------------------ SliceCompare ------------------------ */
 
@@ -3368,7 +3363,6 @@ void GetSliceParams(void){
       mslicei->nslices=1;
       sd = sliceinfo + sliceorderindex[0];
       mslicei->islices[0] = sliceorderindex[0];
-      mslicei->mslicefile_labelindex=sd->slicefile_labelindex;
       for(i=1;i<nsliceinfo;i++){
         slicedata *sdold;
 
@@ -3379,7 +3373,6 @@ void GetSliceParams(void){
           nmultisliceinfo++;
           mslicei++;
           mslicei->nslices=0;
-          mslicei->mslicefile_labelindex=sd->slicefile_labelindex;//check 'type'
           mslicei->mesh_type=sd->mesh_type;
           mslicei->islices=NULL;
           NewMemory((void **)&mslicei->islices,sizeof(int)*nsliceinfo);
@@ -3410,6 +3403,14 @@ void GetSliceParams(void){
       slicedata *slicei;
 
       slicei = sliceinfo + mslicei->islices[ii];
+      if(ii==0){
+        mslicei->slice_filetype = slicei->slice_filetype;
+      }
+      else{
+        if(slicei->slice_filetype!=SLICE_CELL_CENTER&&slicei->slice_filetype!=SLICE_NODE_CENTER){
+          mslicei->slice_filetype = slicei->slice_filetype;
+        }
+      }
       ASSERT(slicei->mslice == NULL);
       slicei->mslice = mslicei;
     }
