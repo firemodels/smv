@@ -2092,6 +2092,48 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
 }
 
 /* ------------------ SliceCompare ------------------------ */
+#ifdef pp_SLICEMENU_FIX
+int SliceCompare( const void *arg1, const void *arg2 ){
+  slicedata *slicei, *slicej;
+
+  slicei = sliceinfo + *(int *)arg1;
+  slicej = sliceinfo + *(int *)arg2;
+
+  if(slicei->slice_filetype<slicej->slice_filetype)return -1;
+  if(slicei->slice_filetype>slicej->slice_filetype)return 1;
+  if(strcmp(slicei->label.longlabel,slicej->label.longlabel)<0)return -1;
+  if(strcmp(slicei->label.longlabel,slicej->label.longlabel)>0)return 1;
+  if(slicei->volslice==1&&slicej->volslice==0)return -1;
+  if(slicei->volslice==0&&slicej->volslice==1)return 1;
+  if(slicei->slcf_index<slicej->slcf_index)return -1;
+  if(slicei->slcf_index>slicej->slcf_index)return 1;
+  return 0;
+}
+
+/* ------------------ VSliceCompare ------------------------ */
+
+int VSliceCompare(const void *arg1, const void *arg2){
+  slicedata *slicei, *slicej;
+  vslicedata *vslicei, *vslicej;
+
+  vslicei = vsliceinfo+*(int *)arg1;
+  vslicej = vsliceinfo+*(int *)arg2;
+  slicei = sliceinfo+vslicei->ival;
+  slicej = sliceinfo+vslicej->ival;
+
+  if(slicei->slice_filetype<slicej->slice_filetype)return -1;
+  if(slicei->slice_filetype>slicej->slice_filetype)return 1;
+  if(strcmp(slicei->label.longlabel, slicej->label.longlabel)<0)return -1;
+  if(strcmp(slicei->label.longlabel, slicej->label.longlabel)>0)return 1;
+  if(slicei->volslice==1&&slicej->volslice==0)return -1;
+  if(slicei->volslice==0&&slicej->volslice==1)return 1;
+  if(slicei->slcf_index<slicej->slcf_index)return -1;
+  if(slicei->slcf_index>slicej->slcf_index)return 1;
+  return 0;
+}
+
+#else
+/* ------------------ SliceCompare ------------------------ */
 
 int SliceCompare( const void *arg1, const void *arg2 ){
   slicedata *slicei, *slicej;
@@ -2185,6 +2227,7 @@ int VSliceCompare( const void *arg1, const void *arg2 ){
   if(slicei->blocknumber>slicej->blocknumber)return 1;
   return 0;
 }
+#endif
 
 /* ------------------ UpdateSliceMenuShow ------------------------ */
 
@@ -2210,6 +2253,40 @@ void UpdateSliceMenuShow(void){
   }
 }
 
+/* ------------------ GetMSliceDir ------------------------ */
+#ifdef pp_SLICEMENU_FIX
+char *GetMSliceDir(multislicedata *mslicei){
+  char *slicedir;
+  int i;
+  float deltamin;
+
+  deltamin = 0.0;
+  for(i = 0; i<mslicei->nslices; i++){
+    slicedata *slicei;
+    meshdata *meshi;
+    float delta;
+
+    slicei = sliceinfo+mslicei->islices[i];
+    meshi = meshinfo+slicei->blocknumber;
+    if(slicei->idir==0){
+      return slicei->slicedir;
+    }
+    delta = meshi->dcell3[slicei->idir-1];
+    if(i==0||delta<deltamin){
+      if(i==0){
+        deltamin = delta;
+      }
+      else{
+        deltamin = MIN(delta, deltamin);
+      }
+      slicedir = slicei->slicedir;
+    }
+
+  }
+  return slicedir;
+}
+#endif
+
 /* ------------------ UpdateSliceMenuLabels ------------------------ */
 
 void UpdateSliceMenuLabels(void){
@@ -2220,9 +2297,16 @@ void UpdateSliceMenuLabels(void){
 
   UpdateSliceMenuShow();
   if(nsliceinfo>0){
+    char *slicedir;
+
     mslicei = multisliceinfo;
     sd = sliceinfo + sliceorderindex[0];
-    STRCPY(mslicei->menulabel,sd->slicedir);
+#ifdef pp_SLICEMENU_FIX
+    slicedir = GetMSliceDir(mslicei);
+#else
+    slicedir = sd->slicedir;
+#endif
+    STRCPY(mslicei->menulabel, slicedir);
     STRCPY(sd->menulabel,mslicei->menulabel);
 
     STRCPY(mslicei->menulabel2,sd->label.longlabel);
@@ -2263,13 +2347,21 @@ void UpdateSliceMenuLabels(void){
 
       sdold = sliceinfo + sliceorderindex[i - 1];
       sd = sliceinfo + sliceorderindex[i];
-      STRCPY(sd->menulabel,sd->slicedir);
+#ifdef pp_SLICEMENU_FIX
+      slicedir = GetMSliceDir(mslicei);
+#else
+      slicedir = sd->slicedir;
+#endif
+      STRCPY(sd->menulabel, slicedir);
       if(NewMultiSlice(sdold,sd)==1){
         mslicei++;
-        STRCPY(mslicei->menulabel,sd->menulabel);
+#ifdef pp_SLICEMENU_FIX
+        slicedir = GetMSliceDir(mslicei);
+#endif
+        STRCPY(mslicei->menulabel,slicedir);
         STRCPY(mslicei->menulabel2,sd->label.longlabel);
         STRCAT(mslicei->menulabel2,", ");
-        STRCAT(mslicei->menulabel2,sd->menulabel);
+        STRCAT(mslicei->menulabel2,slicedir);
         meshi = meshinfo + sd->blocknumber;
         if(nevac>0){
           if(meshi->mesh_type==0){
@@ -2378,7 +2470,12 @@ void UpdateVsliceMenuLabels(void){
 }
 
 /* ------------------ NewMultiSlice ------------------------ */
-
+#ifdef pp_SLICEMENU_FIX
+int NewMultiSlice(slicedata *sdold,slicedata *sd){
+  if(strcmp(sd->label.longlabel, sdold->label.longlabel)==0&&sd->slcf_index==sdold->slcf_index)return 0;
+  return 1;
+}
+#else
 int NewMultiSlice(slicedata *sdold,slicedata *sd){
   int same=0;
 
@@ -2441,6 +2538,7 @@ int NewMultiSlice(slicedata *sdold,slicedata *sd){
   }
   return 0;
 }
+#endif
 
 /* ------------------ GetGSliceParams ------------------------ */
 
@@ -2795,6 +2893,7 @@ void UpdateFedinfo(void){
     nn_slice = nsliceinfo + i;
 
     sd->is_fed = 1;
+    sd->slcf_index = co2->slcf_index;;
     sd->uvw = 0;
     sd->fedptr = fedi;
     sd->slice_filetype = co2->slice_filetype;
@@ -3267,7 +3366,7 @@ void GetSliceParams(void){
       mslicei->nslices=1;
       sd = sliceinfo + sliceorderindex[0];
       mslicei->islices[0] = sliceorderindex[0];
-      mslicei->mslicefile_labelindex=sd->slicefile_labelindex;//check  'type'
+      mslicei->mslicefile_labelindex=sd->slicefile_labelindex;
       for(i=1;i<nsliceinfo;i++){
         slicedata *sdold;
 
@@ -3287,6 +3386,9 @@ void GetSliceParams(void){
         mslicei->islices[mslicei->nslices-1]=sliceorderindex[i];
       }
     }
+    have_multislice = 0;
+    //if(nmultisliceinfo>0&&nsliceinfo>0&&nmultisliceinfo+nfedinfo<nsliceinfo)have_multislice = 1;
+    if(nmultisliceinfo>0)have_multislice = 1; // use multi slice for all cases
   }
   for(i = 0; i < nsliceinfo; i++){
     slicedata *slicei;
@@ -3539,6 +3641,9 @@ void UpdateVSlices(void){
       vslicei->reload = 0;
     }
   }
+  have_multivslice = 0;
+  //if(nvsliceinfo > 0 && nmultivsliceinfo < nvsliceinfo)have_multivslice = 1;
+  if(nvsliceinfo>0)have_multivslice = 1; // use multi vslice for all cases
 
   UpdateVSliceDups();
 
@@ -3812,6 +3917,11 @@ void GetSliceDataBounds(slicedata *sd, float *pmin, float *pmax){
   if(sd->slice_filetype == SLICE_GEOM){
     pdata = sd->patchgeom->geom_vals;
     ndata = sd->patchgeom->geom_nvals;
+    if(pdata==NULL||ndata==0){
+      *pmin = 1.0;
+      *pmax = 0.0;
+      return;
+    }
     *pmin = pdata[0];
     *pmax = pdata[0];
     for (i = 0; i < ndata; i++) {

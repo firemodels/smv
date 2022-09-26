@@ -75,7 +75,11 @@ void ClipCB(int var){
   switch(var){
   case CLIP_ROTATE:
     if(clip_rotate==0){
+#ifdef pp_CLIP_FIX
+      UpdateGluiRotateAbout(ROTATE_ABOUT_FDS_CENTER);
+#else
       UpdateGluiRotateAbout(nmeshes);
+#endif
     }
     else{
       UpdateGluiRotateAbout(ROTATE_ABOUT_CLIPPING_CENTER);
@@ -204,14 +208,19 @@ void ClipCB(int var){
     camera_current->zmin = clipinfo.zmin;
     camera_current->zmax = clipinfo.zmax;
     break;
+  case CLIP_ROTATE:
+  case CLIP_SHOW_ROTATE2:
+    break;
   default:
     ASSERT(FFALSE);
     break;
   }
   if(glui_rotation_index==ROTATE_ABOUT_CLIPPING_CENTER)UpdateRotationIndex(ROTATE_ABOUT_CLIPPING_CENTER);
+#ifndef pp_CLIP_FIX
   if(var >= CLIP_xlower&&var <= CLIP_zupper){
     Clip2Cam(camera_current);
   }
+#endif
 }
 
 /* ------------------ SetClipControls ------------------------ */

@@ -7,7 +7,9 @@
 
 // gen plot routines
 
-EXTERNCPP void GetPlot2DBounds(plot2ddata *plot2di, float *valmin, float *valmax);
+EXTERNCPP char *GetPlotUnit2(plot2ddata *plot2di, curvedata *curve);
+EXTERNCPP char *GetPlotShortLabel2(plot2ddata *plot2di, curvedata *curv);
+EXTERNCPP void GetPlot2DBounds(plot2ddata*plot2di, float *valmin, float *valmax);
 EXTERNCPP char *GetPlotUnit(plot2ddata * plot2di, int curv_index);
 EXTERNCPP void GenPlotCB(int var);
 EXTERNCPP void UpdateCurveControls(char *unit);
@@ -808,9 +810,7 @@ EXTERNCPP char *STRSTR(char *c, const char *key);
 EXTERNCPP void HandlePLOT3DKeys(int  key);
 EXTERNCPP void HandleMoveKeys(int  key);
 EXTERNCPP int GetInterval(float val, float *array, int n);
-#ifdef pp_PLOT2D_DEV
 EXTERNCPP void UpdateDeviceAdd(void);
-#endif
 
 EXTERNCPP void SetUnitVis(void);
 EXTERNCPP void ShowHideTranslate(int var);
@@ -957,6 +957,7 @@ EXTERNCPP void DisplayVersionInfo(char *progname);
 EXTERNCPP void DrawDemo(int nlat, int nlong);
 EXTERNCPP void DrawDemo2(void);
 EXTERNCPP void InitDemo(float rad, int nlat, int nlong);
+EXTERNCPP void DrawOrigObstOutlines(void);
 EXTERNCPP void DrawOutlines(void);
 EXTERNCPP void DrawCBox(float x, float y, float z, float size);
 EXTERNCPP void HandleIso(void);
@@ -1029,8 +1030,12 @@ EXTERNCPP FILE_SIZE ReadIso(const char *file, int ifile, int flag, int *geom_fra
 EXTERNCPP void GetGlobalDeviceBounds(int type);
 EXTERNCPP float GetDeviceVal(float time_local, devicedata *devicei, int *valid);
 EXTERNCPP void InitMenus(int unload);
-int ReadSMV(bufferstreamdata *stream);
+
+EXTERNCPP int ReadSMV(bufferstreamdata *stream);
+EXTERNCPP void ReadSMVOrig(void);
 EXTERNCPP void ReadSMVDynamic(char *file);
+EXTERNCPP void SetInteriorBlockages(int flag);
+
 EXTERNCPP int  STRCMP(const char *s1, const char *s2);
 EXTERNCPP void OutputAxisLabels(void);
 EXTERNCPP void OutputLargeText(float x, float y, char *string);
