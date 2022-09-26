@@ -1292,7 +1292,6 @@ typedef struct _slicedata {
   int menu_show;
   float *constant_color;
   float qval256[256];
-  char slicedir[50];
   int loaded, loading, display;
   int loaded_save, display_save;
   float position_orig;
@@ -1331,6 +1330,7 @@ typedef struct _slicedata {
   float xyz_min[3], xyz_max[3];
   int nsliceijk;
   int *timeslist;
+  char cdir[256];
   int idir;
   float sliceoffset;
   int nslicei, nslicej, nslicek;

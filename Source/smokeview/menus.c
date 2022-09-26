@@ -10004,7 +10004,7 @@ updatemenu=0;
       slice_shown = sliceinfo+vd_shown->ival;
       STRCAT(menulabel, slice_shown->label.longlabel);
       STRCAT(menulabel, ", ");
-      STRCAT(menulabel, slice_shown->slicedir);
+      STRCAT(menulabel, slice_shown->cdir);
       if(slice_shown->slicelabel!=NULL){
         STRCAT(menulabel, " - ");
         STRCAT(menulabel, slice_shown->slicelabel);
