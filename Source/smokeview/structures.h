@@ -416,7 +416,7 @@ typedef struct _facedata {
   int meshindex, blockageindex;
   int imin, imax, jmin, jmax, kmin, kmax;
   float xmin, xmax, ymin, ymax, zmin, zmax;
-  int dir,hidden,dup;
+  int dir,hidden,dup,interior;
   int del;
   int transparent;
   int patchpresent;
@@ -437,19 +437,25 @@ typedef struct _selectdadta {
   int type;
 } selectdata;
 
-/* -------------------------- blockagedata ------------------------------------ */
+/* -------------------------- xbdata ------------------------------------ */
 
-typedef struct _origblockagedata {
-  float xyz[6];
-} origblockagedata;
+typedef struct _xbdata {
+  float xyz[6], *color;
+  int surf_index[6];
+  struct _blockagedata *bc;
+  int blocktype, transparent;
+  int usecolorindex, colorindex;
+  int invisible;
+  surfdata *surfs[6];
+} xbdata;
 
 /* -------------------------- blockagedata ------------------------------------ */
 
 typedef struct _blockagedata {
   int ijk[6],ijkORIG[6];
   float xmin, xmax, ymin, ymax, zmin, zmax, xyzORIG[6];
-  float xyzEXACT[6];
-  surfdata *surf[6],*surfORIG[6];
+  float xyzEXACT[6], xyzDELTA[18];
+  surfdata *surf[6], *surfORIG[6];
   propdata *prop;
   int walltype,walltypeORIG;
   int surf_index[6],surf_indexORIG[6];
@@ -459,11 +465,11 @@ typedef struct _blockagedata {
   int is_wuiblock;
   int hole;
   int nnodes;
-  int hidden,invisible;
+  int hidden, invisible, interior[6];
   int transparent;
   int meshindex;
   int del;
-  int changed,changed_surface;
+  int changed, changed_surface;
   int type;
   float *showtime;
   int *showtimelist;
@@ -996,12 +1002,9 @@ typedef struct _device {
   struct _vdevicedata *vdevice;
   int type, is_beam;
   int selected;
-#ifdef pp_PLOT2D_DEV
   int inlist;
-#endif
   int valid;
 } devicedata;
-
 
 /* --------------------------  hrrdata ------------------------------------ */
 
@@ -1019,6 +1022,7 @@ typedef struct _curvedata{
 // when updating curve variables look for occurrences of color in glui_objects.cpp and in
 // UpdateCurveBounds in IOplot2d.c
   char c_type[64];
+  char scaled_label[301], scaled_unit[301];
   char *quantity;
   int csv_file_index, csv_col_index, csv_col_index_ini, color[3], use_foreground_color;
   int apply_curve_factor;
@@ -1222,7 +1226,7 @@ typedef struct _partdata {
   FILE_SIZE bound_file_size;
 
   float zoffset, *times;
-  FILE_SIZE reg_file_size;
+  FILE_SIZE reg_file_size, file_size;
   LINT *filepos;
 
   char menulabel[128];
@@ -1258,6 +1262,13 @@ typedef struct _menudata {
 #endif
   char label[256];
 } menudata;
+
+/* --------------------------  filebounddata ------------------------------------ */
+
+typedef struct _fileboundsdata {
+  char file[255];
+  float valmin, valmax;
+} fileboundsdata;
 
 /* --------------------------  slicedata ------------------------------------ */
 
@@ -1488,7 +1499,7 @@ typedef struct _smoke3ddata {
   int dir;
 } smoke3ddata;
 
-  /* --------------------------  smoke3dttypedata ------------------------------------ */
+  /* --------------------------  smoke3dtypedata ------------------------------------ */
 
 typedef struct smoke3dtypedata {
   char *shortlabel, *longlabel;
