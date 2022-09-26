@@ -2119,14 +2119,10 @@ int SliceCompare( const void *arg1, const void *arg2 ){
 /* ------------------ VSliceCompare ------------------------ */
 
 int VSliceCompare(const void *arg1, const void *arg2){
-  slicedata *slicei, *slicej;
   vslicedata *vslicei, *vslicej;
 
   vslicei = vsliceinfo+*(int *)arg1;
   vslicej = vsliceinfo+*(int *)arg2;
-  slicei = sliceinfo+vslicei->ival;
-  slicej = sliceinfo+vslicej->ival;
-
   return SliceCompare(&(vslicei->ival), &(vslicej->ival));
 }
 #else
