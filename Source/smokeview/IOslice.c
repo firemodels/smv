@@ -2094,7 +2094,7 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
 }
 
 /* ------------------ SliceCompare ------------------------ */
-#ifdef pp_SLICEMENU_FIX
+
 int SliceCompare( const void *arg1, const void *arg2 ){
   slicedata *slicei, *slicej;
 
@@ -2125,102 +2125,6 @@ int VSliceCompare(const void *arg1, const void *arg2){
   vslicej = vsliceinfo+*(int *)arg2;
   return SliceCompare(&(vslicei->ival), &(vslicej->ival));
 }
-#else
-/* ------------------ SliceCompare ------------------------ */
-
-int SliceCompare( const void *arg1, const void *arg2 ){
-  slicedata *slicei, *slicej;
-
-  slicei = sliceinfo + *(int *)arg1;
-  slicej = sliceinfo + *(int *)arg2;
-
-  if(slicei->menu_show>slicej->menu_show)return -1;
-  if(slicei->menu_show<slicej->menu_show)return 1;
-  if(slicei->mesh_type<slicej->mesh_type)return -1;
-  if(slicei->mesh_type>slicej->mesh_type)return 1;
-  if(slicei->slice_filetype<slicej->slice_filetype)return -1;
-  if(slicei->slice_filetype>slicej->slice_filetype)return 1;
-
-  if( strncmp(slicei->label.longlabel,"VE",2)==0){
-    if(
-      strncmp(slicej->label.longlabel,"U-",2)==0||
-      strncmp(slicej->label.longlabel,"V-",2)==0||
-      strncmp(slicej->label.longlabel,"W-",2)==0){
-      return -1;
-    }
-  }
-  if(strncmp(slicej->label.longlabel,"VE",2)==0){
-    if(
-      strncmp(slicei->label.longlabel,"U-",2)==0||
-      strncmp(slicei->label.longlabel,"V-",2)==0||
-      strncmp(slicei->label.longlabel,"W-",2)==0){
-      return 1;
-    }
-  }
-  if(strcmp(slicei->label.longlabel,slicej->label.longlabel)<0)return -1;
-  if(strcmp(slicei->label.longlabel,slicej->label.longlabel)>0)return 1;
-  if(slicei->volslice>slicej->volslice)return -1;
-  if(slicei->volslice<slicej->volslice)return 1;
-  if(slicei->idir<slicej->idir)return -1;
-  if(slicei->idir>slicej->idir)return 1;
-  if(slicei->volslice==0){
-    float slice_eps, delta_slice;
-
-    slice_eps = MAX(slicei->delta_orig, slicej->delta_orig);
-    delta_slice = slicei->position_orig-slicej->position_orig;
-    if(delta_slice<-slice_eps)return -1;
-    if(delta_slice>slice_eps)return 1;
-  }
-  if(slicei->blocknumber<slicej->blocknumber)return -1;
-  if(slicei->blocknumber>slicej->blocknumber)return 1;
-  return 0;
-}
-
-/* ------------------ VSliceCompare ------------------------ */
-
-int VSliceCompare( const void *arg1, const void *arg2 ){
-  slicedata *slicei, *slicej;
-  vslicedata *vslicei, *vslicej;
-  float delta_orig;
-
-  vslicei = vsliceinfo + *(int *)arg1;
-  vslicej = vsliceinfo + *(int *)arg2;
-  slicei = sliceinfo + vslicei->ival;
-  slicej = sliceinfo + vslicej->ival;
-
-  if(slicei->mesh_type<slicej->mesh_type)return -1;
-  if(slicei->mesh_type>slicej->mesh_type)return 1;
-
-  if( strncmp(slicei->label.longlabel,"VE",2)==0){
-    if(
-      strncmp(slicej->label.longlabel,"U-",2)==0||
-      strncmp(slicej->label.longlabel,"V-",2)==0||
-      strncmp(slicej->label.longlabel,"W-",2)==0){
-      return -1;
-    }
-  }
-  if(strncmp(slicej->label.longlabel,"VE",2)==0){
-    if(
-      strncmp(slicei->label.longlabel,"U-",2)==0||
-      strncmp(slicei->label.longlabel,"V-",2)==0||
-      strncmp(slicei->label.longlabel,"W-",2)==0){
-      return 1;
-    }
-  }
-  if(strcmp(slicei->label.longlabel,slicej->label.longlabel)<0)return -1;
-  if(strcmp(slicei->label.longlabel,slicej->label.longlabel)>0)return 1;
-  if(slicei->volslice<slicej->volslice)return -1;
-  if(slicei->volslice>slicej->volslice)return 1;
-  if(slicei->idir<slicej->idir)return -1;
-  if(slicei->idir>slicej->idir)return 1;
-  delta_orig = MAX(slicei->delta_orig,slicej->delta_orig);
-  if(slicei->position_orig+delta_orig<slicej->position_orig)return -1;
-  if(slicei->position_orig-delta_orig>slicej->position_orig)return 1;
-  if(slicei->blocknumber<slicej->blocknumber)return -1;
-  if(slicei->blocknumber>slicej->blocknumber)return 1;
-  return 0;
-}
-#endif
 
 /* ------------------ UpdateSliceMenuShow ------------------------ */
 
@@ -2247,7 +2151,7 @@ void UpdateSliceMenuShow(void){
 }
 
 /* ------------------ GetMSliceDir ------------------------ */
-#ifdef pp_SLICEMENU_FIX
+
 char *GetMSliceDir(multislicedata *mslicei){
   char *cdir;
   int i;
@@ -2278,7 +2182,6 @@ char *GetMSliceDir(multislicedata *mslicei){
   }
   return cdir;
 }
-#endif
 
 /* ------------------ UpdateSliceMenuLabels ------------------------ */
 
@@ -2294,11 +2197,7 @@ void UpdateSliceMenuLabels(void){
 
     mslicei = multisliceinfo;
     sd = sliceinfo + sliceorderindex[0];
-#ifdef pp_SLICEMENU_FIX
     cdir = GetMSliceDir(mslicei);
-#else
-    cdir = sd->cdir;
-#endif
     STRCPY(mslicei->menulabel, cdir);
     STRCPY(sd->menulabel,mslicei->menulabel);
 
@@ -2340,17 +2239,11 @@ void UpdateSliceMenuLabels(void){
 
       sdold = sliceinfo + sliceorderindex[i - 1];
       sd = sliceinfo + sliceorderindex[i];
-#ifdef pp_SLICEMENU_FIX
       cdir = GetMSliceDir(mslicei);
-#else
-      cdir = sd->cdir;
-#endif
       STRCPY(sd->menulabel, cdir);
       if(NewMultiSlice(sdold,sd)==1){
         mslicei++;
-#ifdef pp_SLICEMENU_FIX
         cdir = GetMSliceDir(mslicei);
-#endif
         STRCPY(mslicei->menulabel, cdir);
         STRCPY(mslicei->menulabel2,sd->label.longlabel);
         STRCAT(mslicei->menulabel2,", ");
@@ -2463,75 +2356,11 @@ void UpdateVsliceMenuLabels(void){
 }
 
 /* ------------------ NewMultiSlice ------------------------ */
-#ifdef pp_SLICEMENU_FIX
+
 int NewMultiSlice(slicedata *sdold,slicedata *sd){
   if(strcmp(sd->label.longlabel, sdold->label.longlabel)==0&&sd->slcf_index==sdold->slcf_index)return 0;
   return 1;
 }
-#else
-int NewMultiSlice(slicedata *sdold,slicedata *sd){
-  int same=0;
-
-  if(sdold->volslice!=sd->volslice)return 1;
-  if(sd->volslice==0&&sd->slcf_index==0&&sd->slice_filetype==SLICE_TERRAIN){
-    if(ABS(sd->above_ground_level-sdold->above_ground_level)<0.001&&
-      strcmp(sd->label.longlabel, sdold->label.longlabel)==0
-      ){
-      return 0;
-    }
-    else{
-      return 1;
-    }
-  }
-  if(sd->volslice==0){
-    float delta_orig;
-    float delta_scaled;
-
-  // sd->delta is in FDS physical units
-  // sd->xmin/xmax etc are in Smokeview scaled units
-  // convert from physical to scaled units using xyzmaxdiff
-    delta_orig = 1.5*MAX(sdold->delta_orig,sd->delta_orig);
-    delta_scaled = SCALE2SMV(delta_orig);
-    if(sd->cell_center_edge==0){
-      if(sd->slcf_index==0){
-        if(
-        ABS(sd->xmin-sdold->xmin)<delta_scaled&&ABS(sd->xmax-sdold->xmax)<delta_scaled&&         // test whether two slices are identical
-        ABS(sd->ymin-sdold->ymin)<delta_scaled&&ABS(sd->ymax-sdold->ymax)<delta_scaled&&
-        ABS(sd->zmin-sdold->zmin)<delta_scaled&&ABS(sd->zmax-sdold->zmax)<delta_scaled
-        )same=1;
-      }
-      else{
-        if(sd->slcf_index==sdold->slcf_index)same=1;
-      }
-    }
-    if(
-      same==1&&
-      sd->blocknumber==sdold->blocknumber
-        ){
-      return 1;
-    }
-
-    if(strcmp(sd->label.shortlabel,sdold->label.shortlabel)!=0
-      ||sd->idir!=sdold->idir
-      ||(sd->slcf_index!=0&&sd->slcf_index!=sdold->slcf_index)
-      ||(sd->slcf_index==0&&ABS(sd->position_orig-sdold->position_orig)>delta_orig)
-      ||(sd->cell_center_edge==1&&ABS(sd->position_orig-sdold->position_orig)>delta_orig)
-      ||sd->mesh_type!=sdold->mesh_type
-      ||sd->slice_filetype!=sdold->slice_filetype
-        ){
-      return 1;
-    }
-  }
-  else{
-    if(strcmp(sd->label.shortlabel,sdold->label.shortlabel)!=0
-      ||sd->mesh_type!=sdold->mesh_type||sd->slice_filetype!=sdold->slice_filetype
-        ){
-      return 1;
-    }
-  }
-  return 0;
-}
-#endif
 
 /* ------------------ GetGSliceParams ------------------------ */
 
