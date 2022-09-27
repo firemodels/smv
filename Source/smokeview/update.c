@@ -1331,6 +1331,7 @@ void UpdateTimes(void){
     slicedata *sd;
 
     sd = sliceinfo + i;
+    if(sd->loaded==0)continue;
     if(sd->slice_filetype == SLICE_GEOM){
       FREEMEMORY(sd->patchgeom->geom_timeslist);
       if(nglobal_times > 0)NewMemory((void **)&(sd->patchgeom->geom_timeslist), nglobal_times * sizeof(int));
