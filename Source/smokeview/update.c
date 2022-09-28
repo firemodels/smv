@@ -1044,7 +1044,7 @@ void ConvertSsf(void){
   /* ------------------ MergeCurves ------------------------ */
 
 void MergeCurves(float *x, int nx, float *y, int ny, float *z){
-  int ix, iy, iz;
+  int ix, iy;
 
   if(nx<=0&&ny==0)return;
   if(nx<=0){
@@ -1068,7 +1068,7 @@ void MergeCurves(float *x, int nx, float *y, int ny, float *z){
   /* ------------------ MergeGlobalTimes ------------------------ */
 
 void MergeGlobalTimes(float *time_in, int ntimes_in){
-  int left, right, nbuffer, i;
+  int i;
   float dt_eps;
 
   if(ntimes_in<=0||time_in==NULL){
