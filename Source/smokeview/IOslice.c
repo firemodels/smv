@@ -7675,7 +7675,7 @@ void Slice2Device(void){
     sdev = &(slicei->vals2d);
     if(slicei->loaded==0||slicei->ntimes==0)continue;
     if(InSliceMesh(slicei, slice_xyz)==0)continue;
-    TimeAveragePlot2DData(sdev->times, sdev->vals_orig, sdev->vals, sdev->nvals);
+    TimeAveragePlot2DData(sdev->times, sdev->vals_orig, sdev->vals, sdev->nvals, plot2d_time_average);
   }
 }
 

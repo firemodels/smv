@@ -1175,9 +1175,9 @@ void ViewportHrrPlot(int quad, GLint screen_left, GLint screen_down) {
     hitime = hrrinfo+time_col;
 
     if(update_avg==1){
-      TimeAveragePlot2DData(hitime->vals, hi->vals_orig, hi->vals, hi->nvals);
+      TimeAveragePlot2DData(hitime->vals, hi->vals_orig, hi->vals, hi->nvals, plot2d_time_average);
       if(hi2!=NULL){
-        TimeAveragePlot2DData(hitime->vals, hi2->vals_orig, hi2->vals, hi->nvals);
+        TimeAveragePlot2DData(hitime->vals, hi2->vals_orig, hi2->vals, hi->nvals, plot2d_time_average);
       }
       update_avg = 0;
     }
@@ -1232,7 +1232,7 @@ void ViewportSlicePlot(int quad, GLint screen_left, GLint screen_down) {
         valmax = sb->dev_max;
       }
       if(update_avg==1){
-        TimeAveragePlot2DData(devicei->times, devicei->vals_orig, devicei->vals, devicei->nvals);
+        TimeAveragePlot2DData(devicei->times, devicei->vals_orig, devicei->vals, devicei->nvals, plot2d_time_average);
         update_avg = 0;
       }
       DrawPlot2D(PLOT_ALL, devicei->times, devicei->vals, NULL, devicei->nvals,
