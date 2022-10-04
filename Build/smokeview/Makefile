@@ -35,7 +35,7 @@ endif
 GITINFO=-Dpp_GITHASH=\"$(GIT_HASH)-$(GIT_BRANCH)\" -Dpp_GITDATE=\""$(GIT_DATE)\""
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")
-  INTEL_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\intel_compversion icl)
+  INTEL_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\intel_compversion icx)
   GNU_COMPVERSION := $(shell ..\..\..\Utilities\Scripts\gnu_compversion)
 else
   INTEL_COMPVERSION := $(shell ../../../Utilities/Scripts/intel_compversion.sh)
@@ -189,9 +189,9 @@ intel_win_64_db : LFLAGS    = /F32768000 /traceback /Zi /DEBUG
 #intel_win_64_db : CC        = $(I_CC)
 #intel_win_64_db : CPP       = $(I_CC)
 #intel_win_64_db : FC        = $(I_IFORT)
-intel_win_64_db : CC        = icl
-intel_win_64_db : CPP       = icl
-intel_win_64_db : FC        = ifort
+intel_win_64_db : CC        = icx
+intel_win_64_db : CPP       = icx
+intel_win_64_db : FC        = ifx
 
 intel_win_64_db : exe       = smokeview_win_$(SMV_TESTSTRING)64_db
 
@@ -217,9 +217,9 @@ intel_win_64 : LFLAGS    = /F32768000 -D FREEGLUT_STATIC
 #intel_win_64 : CC        = $(I_CC)
 #intel_win_64 : CPP       = $(I_CC)
 #intel_win_64 : FC        = $(I_IFORT)
-intel_win_64 : CC        = icl
-intel_win_64 : CPP       = icl
-intel_win_64 : FC        = ifort
+intel_win_64 : CC        = icx
+intel_win_64 : CPP       = icx
+intel_win_64 : FC        = ifx
 intel_win_64 : exe       = smokeview_win_$(SMV_TESTSTRING)64
 
 intel_win_64 : $(objwin)
@@ -287,9 +287,9 @@ intel_linux_64 : SMVLUACORE_FILES += $(LIB_DIR_PLAT)/lpeg.so
 intel_linux_64 : LIBLUA    += $(LIB_DIR_PLAT)/liblua.a -ldl
 endif
 intel_linux_64 : LFLAGS    = -m64 $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
-intel_linux_64 : CC        = icc
-intel_linux_64 : CPP       = icpc
-intel_linux_64 : FC        = ifort
+intel_linux_64 : CC        = icx
+intel_linux_64 : CPP       = icpx
+intel_linux_64 : FC        = ifx
 intel_linux_64 : exe       = smokeview_linux_$(SMV_TESTSTRING)64$(SMV_PROFILESTRING)
 
 intel_linux_64 : $(obj) $(if $(LUA_SCRIPTING),smvluacore)
@@ -302,9 +302,9 @@ intel_linux_64_db : CFLAGS    = -O0 -g -m64 $(SMV_TESTFLAG) -D _DEBUG -D pp_LINU
                                 -Wall -Wextra -Wuninitialized -Wunused-function -Wunused-variable -Wno-sign-compare \
                                 -Wno-unused-parameter $(GITINFO) $(INTEL_COMPINFO)
 intel_linux_64_db : LFLAGS    = -m64 -static-intel $(INTEL_LIBS_LINUX) $(SMV_PROFILEFLAG)
-intel_linux_64_db : CC        = icc
-intel_linux_64_db : CPP       = icpc
-intel_linux_64_db : FC        = ifort
+intel_linux_64_db : CC        = icx
+intel_linux_64_db : CPP       = icpx
+intel_linux_64_db : FC        = ifx
 intel_linux_64_db : exe       = smokeview_linux_$(SMV_TESTSTRING)64_db$(SMV_PROFILESTRING)
 
 intel_linux_64_db : $(obj)
