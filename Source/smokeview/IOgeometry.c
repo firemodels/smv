@@ -3315,7 +3315,7 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
     if(nverts > 0){
       int nvertlist_index = 0;
       vertdata **vertlist_ptr, *verts;
-      int ii, ndups;
+      int ii;
 
       verts = geomlisti->verts;
       nvertlist_index = nverts;
@@ -3341,18 +3341,18 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
           v2->isdup = 1;
         }
       }
-      ndups = 0;
+#ifdef pp_GEOM_DEBUG
+      int ndups = 0;
       for(ii = 0; ii < nvertlist_index; ii++){
         vertdata *vi;
 
         vi = verts + ii;
         if(vi->isdup == 1)ndups++;
       }
-#ifdef pp_GEOM_DEBUG
-//      printf("\nvertices\n");
-//      printf("\n   total: %i\n", nverts);
-//      printf("duplicates: %i\n", ndups);
-//      printf("  (eps=%f m)\n", VERT_EPS);
+      printf("\nvertices\n");
+      printf("\n   total: %i\n", nverts);
+      printf("duplicates: %i\n", ndups);
+      printf("  (eps=%f m)\n", VERT_EPS);
 #endif
         FREEMEMORY(vertlist_ptr);
     }
