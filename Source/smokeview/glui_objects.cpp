@@ -68,8 +68,6 @@
 class CGluiOpen {
 };
 
-static char *dimensionless="dimensionless";
-
 int gluiopen_file_index=0;
 int gluiopen_nfilelist=0;
 char gluiopen_path_dir[1024];
