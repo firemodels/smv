@@ -7,7 +7,7 @@ SIZE=-m32
 COMPILER=icc
 CC=$(COMPILER) $(SIZE)
 
-FILTERC=
+FILTERC=-Wno-implicit-int -Wno-implicit-function-declaration -Wint-to-pointer-cast
 # FILTERC= -D WIN32 -D _LIB
 
 .c.obj:
