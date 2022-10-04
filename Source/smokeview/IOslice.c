@@ -2099,12 +2099,16 @@ int SliceCompare( const void *arg1, const void *arg2 ){
   slicei = sliceinfo + *(int *)arg1;
   slicej = sliceinfo + *(int *)arg2;
 
-  if(slicei->slice_filetype<slicej->slice_filetype)return -1;
-  if(slicei->slice_filetype>slicej->slice_filetype)return 1;
   if(strcmp(slicei->label.longlabel,slicej->label.longlabel)<0)return -1;
   if(strcmp(slicei->label.longlabel,slicej->label.longlabel)>0)return 1;
   if(slicei->volslice==1&&slicej->volslice==0)return -1;
   if(slicei->volslice==0&&slicej->volslice==1)return 1;
+  if(slicei->idir<slicej->idir)return -1;
+  if(slicei->idir>slicej->idir)return 1;
+  if(slicei->position_orig<slicej->position_orig)return -1;
+  if(slicei->position_orig>slicej->position_orig)return 1;
+  if(slicei->slice_filetype<slicej->slice_filetype)return -1;
+  if(slicei->slice_filetype>slicej->slice_filetype)return 1;
   if(slicei->slcf_index<slicej->slcf_index)return -1;
   if(slicei->slcf_index>slicej->slcf_index)return 1;
   return 0;
@@ -2113,25 +2117,12 @@ int SliceCompare( const void *arg1, const void *arg2 ){
 /* ------------------ VSliceCompare ------------------------ */
 
 int VSliceCompare(const void *arg1, const void *arg2){
-  slicedata *slicei, *slicej;
   vslicedata *vslicei, *vslicej;
 
   vslicei = vsliceinfo+*(int *)arg1;
   vslicej = vsliceinfo+*(int *)arg2;
-  slicei = sliceinfo+vslicei->ival;
-  slicej = sliceinfo+vslicej->ival;
-
-  if(slicei->slice_filetype<slicej->slice_filetype)return -1;
-  if(slicei->slice_filetype>slicej->slice_filetype)return 1;
-  if(strcmp(slicei->label.longlabel, slicej->label.longlabel)<0)return -1;
-  if(strcmp(slicei->label.longlabel, slicej->label.longlabel)>0)return 1;
-  if(slicei->volslice==1&&slicej->volslice==0)return -1;
-  if(slicei->volslice==0&&slicej->volslice==1)return 1;
-  if(slicei->slcf_index<slicej->slcf_index)return -1;
-  if(slicei->slcf_index>slicej->slcf_index)return 1;
-  return 0;
+  return SliceCompare(&(vslicei->ival), &(vslicej->ival));
 }
-
 #else
 /* ------------------ SliceCompare ------------------------ */
 
@@ -2256,7 +2247,7 @@ void UpdateSliceMenuShow(void){
 /* ------------------ GetMSliceDir ------------------------ */
 #ifdef pp_SLICEMENU_FIX
 char *GetMSliceDir(multislicedata *mslicei){
-  char *slicedir;
+  char *cdir;
   int i;
   float deltamin;
 
@@ -2269,7 +2260,7 @@ char *GetMSliceDir(multislicedata *mslicei){
     slicei = sliceinfo+mslicei->islices[i];
     meshi = meshinfo+slicei->blocknumber;
     if(slicei->idir==0){
-      return slicei->slicedir;
+      return slicei->cdir;
     }
     delta = meshi->dcell3[slicei->idir-1];
     if(i==0||delta<deltamin){
@@ -2279,11 +2270,11 @@ char *GetMSliceDir(multislicedata *mslicei){
       else{
         deltamin = MIN(delta, deltamin);
       }
-      slicedir = slicei->slicedir;
+      cdir = slicei->cdir;
     }
 
   }
-  return slicedir;
+  return cdir;
 }
 #endif
 
@@ -2297,16 +2288,16 @@ void UpdateSliceMenuLabels(void){
 
   UpdateSliceMenuShow();
   if(nsliceinfo>0){
-    char *slicedir;
+    char *cdir;
 
     mslicei = multisliceinfo;
     sd = sliceinfo + sliceorderindex[0];
 #ifdef pp_SLICEMENU_FIX
-    slicedir = GetMSliceDir(mslicei);
+    cdir = GetMSliceDir(mslicei);
 #else
-    slicedir = sd->slicedir;
+    cdir = sd->cdir;
 #endif
-    STRCPY(mslicei->menulabel, slicedir);
+    STRCPY(mslicei->menulabel, cdir);
     STRCPY(sd->menulabel,mslicei->menulabel);
 
     STRCPY(mslicei->menulabel2,sd->label.longlabel);
@@ -2348,20 +2339,20 @@ void UpdateSliceMenuLabels(void){
       sdold = sliceinfo + sliceorderindex[i - 1];
       sd = sliceinfo + sliceorderindex[i];
 #ifdef pp_SLICEMENU_FIX
-      slicedir = GetMSliceDir(mslicei);
+      cdir = GetMSliceDir(mslicei);
 #else
-      slicedir = sd->slicedir;
+      cdir = sd->cdir;
 #endif
-      STRCPY(sd->menulabel, slicedir);
+      STRCPY(sd->menulabel, cdir);
       if(NewMultiSlice(sdold,sd)==1){
         mslicei++;
 #ifdef pp_SLICEMENU_FIX
-        slicedir = GetMSliceDir(mslicei);
+        cdir = GetMSliceDir(mslicei);
 #endif
-        STRCPY(mslicei->menulabel,slicedir);
+        STRCPY(mslicei->menulabel, cdir);
         STRCPY(mslicei->menulabel2,sd->label.longlabel);
         STRCAT(mslicei->menulabel2,", ");
-        STRCAT(mslicei->menulabel2,slicedir);
+        STRCAT(mslicei->menulabel2, cdir);
         meshi = meshinfo + sd->blocknumber;
         if(nevac>0){
           if(meshi->mesh_type==0){
@@ -2416,10 +2407,10 @@ void UpdateVsliceMenuLabels(void){
     vsd = vsliceinfo + vsliceorderindex[0];
     sd = sliceinfo + vsd->ival;
 
-    STRCPY(mvslicei->menulabel,sd->slicedir);
-    STRCPY(mvslicei->menulabel2,sd->label.longlabel);
-    STRCAT(mvslicei->menulabel2,", ");
-    STRCAT(mvslicei->menulabel2,sd->slicedir);
+    STRCPY(mvslicei->menulabel,  sd->cdir);
+    STRCPY(mvslicei->menulabel2, sd->label.longlabel);
+    STRCAT(mvslicei->menulabel2, ", ");
+    STRCAT(mvslicei->menulabel2, sd->cdir);
 
     STRCPY(vsd->menulabel,mvslicei->menulabel);
     STRCPY(vsd->menulabel2,mvslicei->menulabel2);
@@ -2439,7 +2430,7 @@ void UpdateVsliceMenuLabels(void){
       sdold = sliceinfo + vsdold->ival;
       vsd = vsliceinfo + vsliceorderindex[i];
       sd = sliceinfo + vsd->ival;
-      STRCPY(vsd->menulabel,sd->slicedir);
+      STRCPY(vsd->menulabel,sd->cdir);
       if(NewMultiSlice(sdold,sd)==1){
         mvslicei++;
         STRCPY(mvslicei->menulabel,vsd->menulabel);
@@ -3204,7 +3195,7 @@ void GetSliceParams(void){
 
       sd->idir=-1;
 
-      strcpy(sd->slicedir,"");
+      strcpy(sd->cdir,"");
       position=-999.0;
       if(sd->is1==sd->is2||(sd->js1!=sd->js2&&sd->ks1!=sd->ks2)){
         sd->idir=1;
@@ -3226,12 +3217,12 @@ void GetSliceParams(void){
         if(sd->volslice==0){
           sd->dplane_min = meshi->dplane_min[1];
           sd->dplane_max = meshi->dplane_max[1];
-          sprintf(sd->slicedir, "X=%f", position);
+          sprintf(sd->cdir, "X=%f", position);
         }
         else{
           sd->dplane_min = meshi->dplane_min[0];
           sd->dplane_max = meshi->dplane_max[0];
-          sprintf(sd->slicedir, "3D slice");
+          sprintf(sd->cdir, "3D slice");
         }
       }
       if(sd->js1==sd->js2){
@@ -3254,7 +3245,7 @@ void GetSliceParams(void){
         else{
           sd->delta_orig=(meshi->yplt_orig[js1+1]-meshi->yplt_orig[js1])/2.0;
         }
-        sprintf(sd->slicedir,"Y=%f",position);
+        sprintf(sd->cdir,"Y=%f",position);
       }
       if(sd->ks1==sd->ks2){
         sd->dplane_min = meshi->dplane_min[3];
@@ -3278,14 +3269,14 @@ void GetSliceParams(void){
         }
         if(sd->slice_filetype==SLICE_TERRAIN){
           position=sd->above_ground_level;
-          sprintf(sd->slicedir,"AGL=%f",position);
+          sprintf(sd->cdir,"AGL=%f",position);
         }
         else{
-          sprintf(sd->slicedir,"Z=%f",position);
+          sprintf(sd->cdir,"Z=%f",position);
         }
       }
       sd->position_orig=position;
-      TrimZeros(sd->slicedir);
+      TrimZeros(sd->cdir);
     }
     {
       float *xplt, *yplt, *zplt;
@@ -3366,7 +3357,6 @@ void GetSliceParams(void){
       mslicei->nslices=1;
       sd = sliceinfo + sliceorderindex[0];
       mslicei->islices[0] = sliceorderindex[0];
-      mslicei->mslicefile_labelindex=sd->slicefile_labelindex;
       for(i=1;i<nsliceinfo;i++){
         slicedata *sdold;
 
@@ -3377,7 +3367,6 @@ void GetSliceParams(void){
           nmultisliceinfo++;
           mslicei++;
           mslicei->nslices=0;
-          mslicei->mslicefile_labelindex=sd->slicefile_labelindex;//check 'type'
           mslicei->mesh_type=sd->mesh_type;
           mslicei->islices=NULL;
           NewMemory((void **)&mslicei->islices,sizeof(int)*nsliceinfo);
@@ -3408,6 +3397,14 @@ void GetSliceParams(void){
       slicedata *slicei;
 
       slicei = sliceinfo + mslicei->islices[ii];
+      if(ii==0){
+        mslicei->slice_filetype = slicei->slice_filetype;
+      }
+      else{
+        if(slicei->slice_filetype!=SLICE_CELL_CENTER&&slicei->slice_filetype!=SLICE_NODE_CENTER){
+          mslicei->slice_filetype = slicei->slice_filetype;
+        }
+      }
       ASSERT(slicei->mslice == NULL);
       slicei->mslice = mslicei;
     }

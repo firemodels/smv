@@ -7356,6 +7356,9 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
       STRCAT(menulabel, " - ");
       STRCAT(menulabel, sd->slicelabel);
     }
+    if(mslicei->slice_filetype==SLICE_GEOM){
+      strcat(menulabel, " - geometry");
+    }
     glutAddMenuEntry(menulabel, i);
     if(i==nmultisliceinfo-1||strcmp(sd->label.longlabel, sdip1->label.longlabel)!=0){
       if(mslicei->ndirxyz[1] + mslicei->ndirxyz[2] + mslicei->ndirxyz[3] > 1){
@@ -10001,7 +10004,7 @@ updatemenu=0;
       slice_shown = sliceinfo+vd_shown->ival;
       STRCAT(menulabel, slice_shown->label.longlabel);
       STRCAT(menulabel, ", ");
-      STRCAT(menulabel, slice_shown->slicedir);
+      STRCAT(menulabel, slice_shown->cdir);
       if(slice_shown->slicelabel!=NULL){
         STRCAT(menulabel, " - ");
         STRCAT(menulabel, slice_shown->slicelabel);

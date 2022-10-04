@@ -5726,10 +5726,10 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     char geom_label[20];
 
     if(sd->cell_center==1){
-      strcpy(geom_label, "(geometry/cell)");
+      strcpy(geom_label, "(cell centered)");
     }
     else{
-      strcpy(geom_label, "(geometry/node)");
+      strcpy(geom_label, "");
     }
     if(ReadLabelsBNDS(&sd->label, stream, buffers[3], buffers[4], buffers[5], geom_label)==LABEL_ERR)return RETURN_TWO;
   }

@@ -16,7 +16,7 @@ COMPILER=icc
 SIZE=-m64
 CC=$(COMPILER)
 
-CFLAGS=-O2 $(SIZE)
+CFLAGS=-O2 $(SIZE) -Wno-deprecated-non-prototype -Wno-implicit-function-declaration
 
 VER=1.1.4
 
