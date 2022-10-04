@@ -900,13 +900,19 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  if(clip_commandline==1||(showplot3d==1||visGrid!=NOGRID_NOPROBE)&&(visx_all==1||visy_all||visz_all||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE)){
+  if(clip_commandline==1||
+     ((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&(visx_all==1||visy_all==1||visz_all==1))||
+     visGrid==GRID_PROBE||
+     visGrid==NOGRID_PROBE){
     xyz[0]=DENORMALIZE_X(plotx_all[iplotx_all]);
     xyz[1]=DENORMALIZE_Y(ploty_all[iploty_all]);
     xyz[2]=DENORMALIZE_Z(plotz_all[iplotz_all]);
     mesh_xyz= GetMeshNoFail(xyz);
   }
-  if(clip_commandline==1||((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visx_all==1)||visGrid==NOGRID_PROBE||visGrid==GRID_PROBE){
+  if(clip_commandline==1||
+     ((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visx_all==1)||
+     visGrid==NOGRID_PROBE||
+     visGrid==GRID_PROBE){
     int iplotval;
     char buff_label[128], *buff_label_ptr;
 
@@ -927,7 +933,10 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
       info_lines++;
     }
   }
-  if(clip_commandline==1||((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visy_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
+  if(clip_commandline==1||
+     ((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visy_all==1)||
+     visGrid==GRID_PROBE||
+     visGrid==NOGRID_PROBE){
     int iplotval;
     char buff_label[128], *buff_label_ptr;
 
@@ -947,7 +956,10 @@ void ViewportInfo(int quad, GLint screen_left, GLint screen_down){
       info_lines++;
     }
   }
-  if(clip_commandline==1||((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visz_all==1)||visGrid==GRID_PROBE||visGrid==NOGRID_PROBE){
+  if(clip_commandline==1||
+     ((showplot3d==1||visGrid!=NOGRID_NOPROBE)&&visz_all==1)||
+     visGrid==GRID_PROBE||
+     visGrid==NOGRID_PROBE){
     int iplotval;
     char buff_label[128], *buff_label_ptr;
 

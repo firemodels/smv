@@ -611,10 +611,10 @@ void DrawGenPlot(plot2ddata *plot2di){
     if(global_times!=NULL){
       highlight_time = global_times[itimes];
       highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, curve->vals, csvi->nvals);
+      DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, curve->vals, csvi->nvals,
+                   highlight_time, highlight_val, valmin, valmax, side,
+                   position, shortlabel, unit_display);
     }
-    DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, curve->vals, csvi->nvals,
-                 highlight_time, highlight_val, valmin, valmax, side,
-                 position, shortlabel, unit_display);
   }
 }
 

@@ -141,8 +141,10 @@ SVEXTERN char SVDECL(*histogram_label1, NULL), SVDECL(*histogram_label2, NULL);
 
 #ifdef INMAIN
 SVEXTERN char *cslice_label = "Slice",  *cpart_label = "Part", *cbound_label = "Bndry", *cplot3d_label = "Plot3D";
+SVEXTERN char *dimensionless = "dimensionless";
 #else
 SVEXTERN char *cslice_label, *cpart_label, *cbound_label, *cplot3d_label;
+SVEXTERN char *dimensionless;
 #endif
 
 SVEXTERN float SVDECL(plot2d_size_factor, 0.15), SVDECL(plot2d_font_spacing, 1.2);
