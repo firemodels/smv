@@ -3207,7 +3207,7 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
       tridata *triangles;
       int ii;
       int ntris;
-      int nedges, ntri0, ntri1, ntri2, ntri_other;
+      int nedges;
       int nedgelist_index = 0;
 
       ntris = geomlisti->ntriangles;
@@ -3278,6 +3278,9 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
         if(edgei != NULL)edgei->ntriangles++;
       }
 
+#ifdef pp_GEOM_DEBUG
+      int ntri0, ntri1, ntri2, ntri_other;
+
       ntri0 = 0;
       ntri1 = 0;
       ntri2 = 0;
@@ -3301,7 +3304,6 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
           break;
         }
       }
-#ifdef pp_GEOM_DEBUG
       printf("\n\nedges\n");
       printf("                       total: %i\n", nedges);
       printf("        0 connected triangle: %i\n", ntri0);
