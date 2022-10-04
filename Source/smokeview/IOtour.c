@@ -648,7 +648,6 @@ void GetTourProperties(tourdata *touri){
   thiskey->time = tour_tstart;
   float cum_dist = 0.0;
   int cum_npoints = 0;
-  int ii=0;
   float *tour_times, *xyzs, *views, total_distance;
 
   for(keyj = (touri->first_frame).next; keyj->next!=NULL; keyj = keyj->next){
@@ -660,7 +659,6 @@ void GetTourProperties(tourdata *touri){
       thiskey->npoints = 0;
       break;
     }
-    ii++;
 
     npoints_i = tour_ntimes*(thiskey->arc_dist/touri->global_dist);
     cum_npoints += npoints_i;
