@@ -809,19 +809,15 @@ void SynchTimes(void){
 
   /* synchronize slice times */
 
-    for(jj=0;jj<nsliceinfo;jj++){
+    for(jj=0;jj<nslice_loaded;jj++){
       slicedata *sd;
 
-      sd = sliceinfo + jj;
-      if(sd->loaded==0)continue;
+      sd = sliceinfo + slice_loaded_list[jj];
       if(sd->slice_filetype == SLICE_GEOM){
         sd->patchgeom->geom_timeslist[n] = GetItime(n, sd->patchgeom->geom_timeslist, sd->patchgeom->geom_times, sd->ntimes);
       }
       else{
-        int ilist;
-
-        ilist = GetItime(n, sd->timeslist, sd->times, sd->ntimes);
-        sd->timeslist[n] = ilist;
+        sd->timeslist[n] = GetItime(n, sd->timeslist, sd->times, sd->ntimes);
       }
     }
 
@@ -1335,6 +1331,7 @@ void UpdateTimes(void){
     slicedata *sd;
 
     sd = sliceinfo + i;
+    if(sd->loaded==0)continue;
     if(sd->slice_filetype == SLICE_GEOM){
       FREEMEMORY(sd->patchgeom->geom_timeslist);
       if(nglobal_times > 0)NewMemory((void **)&(sd->patchgeom->geom_timeslist), nglobal_times * sizeof(int));
@@ -1490,7 +1487,7 @@ void UpdateTimes(void){
   }
 
   /* determine state of each device at each time step */
-#ifdef xyz
+
   for(i=0;i<ndeviceinfo;i++){
     devicedata *devicei;
 
@@ -1510,7 +1507,6 @@ void UpdateTimes(void){
       }
     }
   }
-#endif
 
   /* determine visibility of each vent at each time step */
 

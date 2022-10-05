@@ -26,7 +26,7 @@ EXTERNCPP csvdata *GetCsvData(int file_index, int col_index, csvfiledata **csvf_
 EXTERNCPP csvdata *GetCsvCurve(int i, csvfiledata **csvf_ptr);
 EXTERNCPP void SetupPlot2DUnitData(void);
 
-EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals);
+EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals, float time_interval);
 
 EXTERNCPP void SplitCB(int var);
 
