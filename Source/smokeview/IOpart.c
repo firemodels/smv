@@ -2236,7 +2236,6 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   have_particles = GetPartHeader(parti, &nf_all_local, NOT_FORCE, 1);
   if(have_particles==0){
     ReadPart("", ifile_arg, UNLOAD, &error_local);
-    UpdateTimes();
     return 0.0;
   }
   CheckMemory;
