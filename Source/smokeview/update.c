@@ -809,19 +809,15 @@ void SynchTimes(void){
 
   /* synchronize slice times */
 
-    for(jj=0;jj<nsliceinfo;jj++){
+    for(jj=0;jj<nslice_loaded;jj++){
       slicedata *sd;
 
-      sd = sliceinfo + jj;
-      if(sd->loaded==0)continue;
+      sd = sliceinfo + slice_loaded_list[jj];
       if(sd->slice_filetype == SLICE_GEOM){
         sd->patchgeom->geom_timeslist[n] = GetItime(n, sd->patchgeom->geom_timeslist, sd->patchgeom->geom_times, sd->ntimes);
       }
       else{
-        int ilist;
-
-        ilist = GetItime(n, sd->timeslist, sd->times, sd->ntimes);
-        sd->timeslist[n] = ilist;
+        sd->timeslist[n] = GetItime(n, sd->timeslist, sd->times, sd->ntimes);
       }
     }
 
@@ -1045,37 +1041,13 @@ void ConvertSsf(void){
   }
 }
 
-  /* ------------------ MergeCurves ------------------------ */
-
-void MergeCurves(float *x, int nx, float *y, int ny, float *z){
-  int ix, iy;
-
-  if(nx<=0&&ny==0)return;
-  if(nx<=0){
-    memcpy(z, y, ny*sizeof(float));
-    return;
-  }
-  if(ny<=0){
-    memcpy(z, x, nx*sizeof(float));
-    return;
-  }
-  for(ix=0,iy=0;ix<nx&&iy<ny;){
-    if(iy>=ny||x[ix]<=y[iy]){
-      *z++ = x[ix++];
-    }
-    else{
-      *z++ = y[iy++];
-    }
-  }
-}
-
   /* ------------------ MergeGlobalTimes ------------------------ */
 
 void MergeGlobalTimes(float *time_in, int ntimes_in){
-  int i;
+  int left, right, nbuffer, i;
   float dt_eps;
 
-  if(ntimes_in<=0||time_in==NULL){
+  if(ntimes_in<=0){
     nglobal_times = 0;
     return;
   }
@@ -1086,6 +1058,7 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
     float dt;
 
     dt = time_in[i]-time_in[i-1];
+ //   ASSERT(dt>=0.0);
     dt_eps = MIN(dt_eps, ABS(dt)/2.0);
   }
   if(nglobal_times>1){
@@ -1093,29 +1066,65 @@ void MergeGlobalTimes(float *time_in, int ntimes_in){
       float dt;
 
       dt = global_times[i]-global_times[i-1];
+  //    ASSERT(dt>=0.0);
       dt_eps = MIN(dt_eps, ABS(dt)/2.0);
     }
   }
 
+  // add time_in values to global_times the first time
+  if(global_times==NULL || nglobal_times<=0){
+    if(global_times==NULL){
+      NewMemory((void **)&global_times, ntimes_in*sizeof(float));
+    }
+    memcpy(global_times, time_in, ntimes_in*sizeof(float));
+    nglobal_times = ntimes_in;
+    return;
+  }
+
 // allocate buffer for merged times
-  int ntotal;
-  ntotal = nglobal_times+ntimes_in;
-  if(ntotal>ntimes_buffer){
-    ntimes_buffer = ntotal+1000;
+  if(nglobal_times+ntimes_in>ntimes_buffer){
+    ntimes_buffer = nglobal_times+ntimes_in+1000;
     FREEMEMORY(times_buffer);
     NewMemory((void **)&times_buffer, ntimes_buffer*sizeof(float));
   }
 
-  MergeCurves(time_in, ntimes_in, global_times, nglobal_times, times_buffer);
+  // merge global_times and times_in into times_buffer
+  for(left=0,right=0,nbuffer=0;left<nglobal_times||right<ntimes_in;){
+    float minval;
+
+    if(left>=nglobal_times){
+      minval = time_in[right++];
+    }
+    else if(right>=ntimes_in){
+      minval = global_times[left++];
+    }
+    else{
+      float lval, rval;
+
+      lval = global_times[left];
+      rval = time_in[right];
+      if(lval<rval){
+        minval = lval;
+        left++;
+      }
+      else{
+        minval = rval;
+        right++;
+      }
+    }
+    if(nbuffer==0||minval>times_buffer[nbuffer-1]+dt_eps){
+      times_buffer[nbuffer++] = minval;
+    }
+  }
 
   // copy merged times array back into original global_times array
-  FREEMEMORY(global_times);
-  NewMemory((void **)&global_times, ntotal*sizeof(float));
-  nglobal_times = 0;
-  global_times[nglobal_times++] = times_buffer[0];
-  for(i=1;i<ntotal;i++){
-    if(times_buffer[i]-times_buffer[i-1]>dt_eps)global_times[nglobal_times++] = times_buffer[i];
+  if(nbuffer>nglobal_times){
+    FREEMEMORY(global_times);
+    NewMemory((void **)&global_times, nbuffer*sizeof(float));
   }
+  memcpy(global_times, times_buffer, nbuffer*sizeof(float));
+
+  nglobal_times = nbuffer;
 }
 
   /* ------------------ UpdateTimes ------------------------ */
@@ -1478,7 +1487,7 @@ void UpdateTimes(void){
   }
 
   /* determine state of each device at each time step */
-#ifdef xyz
+
   for(i=0;i<ndeviceinfo;i++){
     devicedata *devicei;
 
@@ -1498,7 +1507,6 @@ void UpdateTimes(void){
       }
     }
   }
-#endif
 
   /* determine visibility of each vent at each time step */
 
