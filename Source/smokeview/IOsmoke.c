@@ -445,7 +445,7 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
   float xyz1[3],xyz2[3];
   float *xplt, *yplt, *zplt, dxyz[3];
   int ibar, jbar, kbar;
-  int itime, ntimes, ntotal, ncount;
+  int itime, ntimes, ntotal;
   volrenderdata *vr;
   float *light_fraction;
 
@@ -510,7 +510,6 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
   light_fraction = meshi->light_fraction;
 //  NewMemory((void **)&meshi->uc_light_fraction,  ntotal*sizeof(unsigned char));
 
-  ncount = 0;
   for(itime = 0;itime<ntimes;itime++){
     int k;
 
@@ -573,7 +572,6 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
             opacity = exp(-arg);  // fraction of light reaching xyz
           }
           *light_fraction++ = opacity;
-          ncount++;
         }
       }
     }
@@ -4753,7 +4751,6 @@ void MergeSmoke3DColors(smoke3ddata *smoke3dset){
 void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
   int i;
   int fire_index;
-  int total1 = 0, total2=0;
 
   fire_index = HRRPUV_index;
   for(i = 0; i<nsmoke3dinfo; i++){
@@ -4803,9 +4800,7 @@ void MergeSmoke3DBlack(smoke3ddata *smoke3dset){
     smoke3di = smoke3dinfo+i;
     if(smoke3dset!=NULL&&smoke3dset!=smoke3di)continue;
     if(smoke3di->loaded==0||smoke3di->primary_file==0)continue;
-    total1++;
     if(IsSmokeComponentPresent(smoke3di)==0)continue;
-    total2++;
     meshi = meshinfo+smoke3di->blocknumber;
 
     if(fire_halfdepth<=0.0){

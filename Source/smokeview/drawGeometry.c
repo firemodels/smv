@@ -657,7 +657,7 @@ void DrawOrigObstOutlines(void){
     color = foregroundcolor;
     if(obi->bc!=NULL&&obi->bc->showtimelist!=NULL&&obi->bc->showtimelist[itimes]==0)continue;
     if(obi->color!=NULL)color = obi->color;
-    if(obi->color==NULL&&obi->surfs!=NULL&&obi->surfs[0]->color!=NULL)color = obi->surfs[0]->color;
+    if(obi->color==NULL&&obi->surfs[0]->color!=NULL)color = obi->surfs[0]->color;
     if(color!=oldcolor){
       glColor3fv(color);
       oldcolor = color;

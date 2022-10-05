@@ -1522,7 +1522,7 @@ void ScriptVolSmokeRenderAll(scriptdata *scripti){
 
 void ScriptLoadIsoFrame(scriptdata *scripti, int flag){
   int framenum, index;
-  int i, count = 0;
+  int i;
   int fileindex;
 
   index = scripti->ival;
@@ -1539,7 +1539,6 @@ void ScriptLoadIsoFrame(scriptdata *scripti, int flag){
     isoi = isoinfo + i;
     if(isoi->isof_index + 1 == fileindex){
       ReadIso(isoi->file, i, LOAD, &framenum, &errorcode);
-      count++;
     }
   }
   if(update_readiso_geom_wrapup == UPDATE_ISO_ALL_NOW)ReadIsoGeomWrapup(FOREGROUND);

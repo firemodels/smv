@@ -7694,7 +7694,7 @@ void InitMultiVectorUnloadSliceMenu(int *unloadmultivslicemenuptr){
 
 void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
   int i, *loadsubmvslicemenu;
-  int nmultisliceloaded, nloadsubmvslicemenu;
+  int nloadsubmvslicemenu;
 
 
   nloadsubmvslicemenu = 1;
@@ -7716,7 +7716,6 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
     loadsubmvslicemenu[i] = 0;
   }
 
-  nmultisliceloaded = 0;
   nloadsubmvslicemenu = 0;
   for(i = 0; i<nmultivsliceinfo; i++){
     vslicedata *vi, *vim1, *vip1;
@@ -7744,7 +7743,6 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
     STRCPY(menulabel, "");
     if(mvslicei->loaded==1){
       STRCAT(menulabel, "*");
-      nmultisliceloaded++;
     }
     else if(mvslicei->loaded==-1){
       STRCAT(menulabel, "#");
