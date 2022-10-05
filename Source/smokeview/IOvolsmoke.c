@@ -287,16 +287,12 @@ void InitVolRenderSurface(int flag){
 #ifdef pp_GPU
 void InitVolsmokeSuperTexture(supermeshdata *smesh){
   GLint border_size = 0;
-  int supermesh_index;
   GLsizei nx, ny, nz;
   int i;
 
   nx = smesh->ibar+1;
   ny = smesh->jbar+1;
   nz = smesh->kbar+1;
-
-  supermesh_index = smesh-supermeshinfo;
-  supermesh_index++;
 
   FFLUSH();
 

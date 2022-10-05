@@ -7356,6 +7356,9 @@ void InitLoadMultiSubMenu(int **loadsubmslicemenuptr, int *nmultisliceloadedptr)
       STRCAT(menulabel, " - ");
       STRCAT(menulabel, sd->slicelabel);
     }
+    if(mslicei->slice_filetype==SLICE_GEOM){
+      strcat(menulabel, " - geometry");
+    }
     glutAddMenuEntry(menulabel, i);
     if(i==nmultisliceinfo-1||strcmp(sd->label.longlabel, sdip1->label.longlabel)!=0){
       if(mslicei->ndirxyz[1] + mslicei->ndirxyz[2] + mslicei->ndirxyz[3] > 1){
@@ -7691,7 +7694,7 @@ void InitMultiVectorUnloadSliceMenu(int *unloadmultivslicemenuptr){
 
 void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
   int i, *loadsubmvslicemenu;
-  int nmultisliceloaded, nloadsubmvslicemenu;
+  int nloadsubmvslicemenu;
 
 
   nloadsubmvslicemenu = 1;
@@ -7713,7 +7716,6 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
     loadsubmvslicemenu[i] = 0;
   }
 
-  nmultisliceloaded = 0;
   nloadsubmvslicemenu = 0;
   for(i = 0; i<nmultivsliceinfo; i++){
     vslicedata *vi, *vim1, *vip1;
@@ -7741,7 +7743,6 @@ void InitMultiVectorSubMenu(int **loadsubmvslicemenuptr){
     STRCPY(menulabel, "");
     if(mvslicei->loaded==1){
       STRCAT(menulabel, "*");
-      nmultisliceloaded++;
     }
     else if(mvslicei->loaded==-1){
       STRCAT(menulabel, "#");
@@ -10001,7 +10002,7 @@ updatemenu=0;
       slice_shown = sliceinfo+vd_shown->ival;
       STRCAT(menulabel, slice_shown->label.longlabel);
       STRCAT(menulabel, ", ");
-      STRCAT(menulabel, slice_shown->slicedir);
+      STRCAT(menulabel, slice_shown->cdir);
       if(slice_shown->slicelabel!=NULL){
         STRCAT(menulabel, " - ");
         STRCAT(menulabel, slice_shown->slicelabel);

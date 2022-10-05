@@ -602,7 +602,7 @@ void DrawGenPlot(plot2ddata *plot2di){
     if(curve->update_avg==1||plot2d_time_average>0.0){
       if(curve->update_avg==1){
         curve->update_avg = 0;
-        TimeAveragePlot2DData(csvfi->time->vals, csvi->vals, curve->vals, csvi->nvals);
+        TimeAveragePlot2DData(csvfi->time->vals, csvi->vals, curve->vals, csvi->nvals, plot2d_time_average);
       }
     }
     else{
@@ -611,10 +611,10 @@ void DrawGenPlot(plot2ddata *plot2di){
     if(global_times!=NULL){
       highlight_time = global_times[itimes];
       highlight_val = GetCSVVal(global_times[itimes], csvfi->time->vals, curve->vals, csvi->nvals);
+      DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, curve->vals, csvi->nvals,
+                   highlight_time, highlight_val, valmin, valmax, side,
+                   position, shortlabel, unit_display);
     }
-    DrawGenCurve(option, plot2di, curve, plot2d_size_factor, csvfi->time->vals, curve->vals, csvi->nvals,
-                 highlight_time, highlight_val, valmin, valmax, side,
-                 position, shortlabel, unit_display);
   }
 }
 
@@ -916,11 +916,12 @@ void DrawPlot(int option, float *xyz0, float factor, float *x, float *z, int n,
 
 /* ------------------ TimeAveragePlot2DData ------------------------ */
 
-void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals){
+
+void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals, float time_interval){
   int i;
 
   if(nvals<=0)return;
-  if(times[nvals-1]<=plot2d_time_average){
+  if(times[nvals-1]<=time_interval){
     float sum = 0.0;
 
     for(i = 0; i<nvals; i++){
@@ -939,17 +940,17 @@ void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg, int nvals
     int j;
     int count;
 
-    if(times[i]>=plot2d_time_average/2.0&&times[i]<=times[nvals-1]-plot2d_time_average/2.0){
-      tlower = times[i]-plot2d_time_average/2.0;
-      tupper = tlower+plot2d_time_average;
+    if(times[i]>=time_interval/2.0&&times[i]<=times[nvals-1]-time_interval/2.0){
+      tlower = times[i]-time_interval/2.0;
+      tupper = tlower+time_interval;
     }
-    else if(times[i]<=plot2d_time_average/2.0){
+    else if(times[i]<=time_interval/2.0){
       tlower = times[0];
-      tupper = tlower+plot2d_time_average;
+      tupper = tlower+time_interval;
     }
     else{
       tupper = times[nvals-1];
-      tlower = tupper-plot2d_time_average;
+      tlower = tupper-time_interval;
     }
     for(j = i; j>=0; j--){
       ilower = j;
@@ -990,7 +991,7 @@ void DrawDevicePlots(void){
       if(devicei->times==NULL||devicei->vals==NULL)continue;
       if(devicei->update_avg==1){
         devicei->update_avg = 0;
-        TimeAveragePlot2DData(devicei->times, devicei->vals_orig, devicei->vals, devicei->nvals);
+        TimeAveragePlot2DData(devicei->times, devicei->vals_orig, devicei->vals, devicei->nvals, plot2d_time_average);
       }
       if(devicei->nvals>1&&devicei->type2==devicetypes_index){
         int valid;

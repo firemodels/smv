@@ -5726,10 +5726,10 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
     char geom_label[20];
 
     if(sd->cell_center==1){
-      strcpy(geom_label, "(geometry/cell)");
+      strcpy(geom_label, "(cell centered)");
     }
     else{
-      strcpy(geom_label, "(geometry/node)");
+      strcpy(geom_label, "");
     }
     if(ReadLabelsBNDS(&sd->label, stream, buffers[3], buffers[4], buffers[5], geom_label)==LABEL_ERR)return RETURN_TWO;
   }
@@ -5851,24 +5851,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
       if(sd->cell_center_edge==0&&sd->ks1==sd->ks2&&sd->ks1==meshi->kbar)sd->cell_center_edge = 1;
     }
   }
-#ifndef pp_SLICEMENU_FIX
-  if(IsSliceDup(sd, nn_slice)==1){
-    FREEMEMORY(sd->reg_file);
-    FREEMEMORY(sd->comp_file);
-    FREEMEMORY(sd->vol_file);
-    FREEMEMORY(sd->slicelabel);
-
-    nsliceinfo--;
-
-    nslicefiles--;
-    *nslicefiles_in = nslicefiles;
-
-    nn_slice--;
-    *nn_slice_in = nn_slice;
-
-    return RETURN_CONTINUE;
-  }
-#endif
 
   sliceinfo_copy++;
   *sliceinfo_copy_in = sliceinfo_copy;
