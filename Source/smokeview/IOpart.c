@@ -1388,6 +1388,7 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
 
     if(doit_local==1){
       parti->times[count2_local]=time_local;
+      parti->ntimes = count2_local+1;
     }
     for(class_index=0;class_index<nclasses_local;class_index++){
       FORTPART5READ_m(&nparts_local,1);
@@ -1532,9 +1533,6 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
         datacopy_local++;
       }
       CheckMemory;
-    }
-    if(doit_local==1){
-      (parti->ntimes)++;
     }
     CheckMemory;
     if(first_frame_local==1)first_frame_local =0;
@@ -2147,6 +2145,7 @@ void FinalizePartLoad(partdata *parti){
   else{
     update_generate_part_histograms = 1;
   }
+  GetGlobalPartBounds(ALL_FILES);
   if(cache_part_data==1){
     SetPercentilePartBounds();
     for(j = 0; j<npartinfo; j++){
