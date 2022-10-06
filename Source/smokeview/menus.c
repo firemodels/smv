@@ -12140,7 +12140,6 @@ updatemenu=0;
     }
    }
 
-   glutAddMenuEntry("Save settings (all cases - smokeview.ini)", MENU_WRITEINI);
 
     {
       char caselabel[255];
@@ -12151,12 +12150,13 @@ updatemenu=0;
 
       glutAddMenuEntry(caselabel,MENU_WRITECASEINI);
     }
-    glutAddMenuEntry("Revert settings to installation defaults", MENU_REVERT_WRITEINI);
 
+    glutAddMenuEntry("-", MENU_DUMMY);
     if(ndeviceinfo>0){
-      glutAddMenuEntry("-",MENU_DUMMY);
       glutAddMenuEntry(_("Read .svo files"),MENU_READSVO);
     }
+    glutAddMenuEntry("Save settings (all cases - smokeview.ini)", MENU_WRITEINI);
+    glutAddMenuEntry("Revert settings to installation defaults", MENU_REVERT_WRITEINI);
     glutAddMenuEntry(_("Settings..."), MENU_CONFIG_SETTINGS);
 
     CREATEMENU(reloadmenu,ReloadMenu);
