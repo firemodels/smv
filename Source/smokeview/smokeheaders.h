@@ -985,6 +985,7 @@ EXTERNCPP void UpdateRGBColors(int colorindex);
 EXTERNCPP void InitRGB(void);
 EXTERNCPP void UpdateChopColors(void);
 EXTERNCPP int  ReadIni(char *inifile);
+EXTERNCPP int ReadBinIni(void);
 EXTERNCPP void WriteIni(int flag,char *file);
 EXTERNCPP void AdjustPart5Chops(void);
 EXTERNCPP void ScaleFloat2String(float floatfrom, char *stringto, const float *scale);

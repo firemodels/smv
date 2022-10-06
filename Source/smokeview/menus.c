@@ -90,12 +90,13 @@ float     part_load_time;
 #define MENU_TRAINER_CLEAR 998
 #define MENU_MAIN_QUIT 3
 
-#define MENU_READCASEINI -1
-#define MENU_READINI 1
-#define MENU_WRITEINI 2
-#define MENU_WRITECASEINI 3
-#define MENU_READSVO 4
+#define MENU_READCASEINI    -1
+#define MENU_READINI         1
+#define MENU_WRITEINI        2
+#define MENU_WRITECASEINI    3
+#define MENU_READSVO         4
 #define MENU_CONFIG_SETTINGS 5
+#define MENU_REVERT_WRITEINI 6
 
 #define MENU_DUMMY2 -1
 
@@ -2794,8 +2795,12 @@ void SmokeviewIniMenu(int value){
     ReadIni(NULL);
     UpdateRGBColors(COLORBAR_INDEX_NONE);
     break;
+  case MENU_REVERT_WRITEINI:
+    ReadBinIni();
+    break;
   case MENU_WRITEINI:
     WriteIni(GLOBAL_INI,NULL);
+    WriteIni(LOCAL_INI,NULL);
     break;
   case MENU_WRITECASEINI:
     WriteIni(LOCAL_INI,NULL);
@@ -12133,19 +12138,20 @@ updatemenu=0;
         GLUTADDSUBMENU(_("Read ini files"),inisubmenu);
       }
     }
-  }
+   }
 
-    glutAddMenuEntry("Write smokeview.ini",MENU_WRITEINI);
+   glutAddMenuEntry("Save settings (all cases - smokeview.ini)", MENU_WRITEINI);
 
     {
       char caselabel[255];
 
-      STRCPY(caselabel,_("Write"));
-      STRCAT(caselabel," ");
+      STRCPY(caselabel,_("Save settings (this case - "));
       STRCAT(caselabel,caseini_filename);
+      STRCAT(caselabel, ")");
 
       glutAddMenuEntry(caselabel,MENU_WRITECASEINI);
     }
+    glutAddMenuEntry("Revert settings to installation defaults", MENU_REVERT_WRITEINI);
 
     if(ndeviceinfo>0){
       glutAddMenuEntry("-",MENU_DUMMY);
