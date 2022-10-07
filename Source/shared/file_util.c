@@ -35,21 +35,31 @@
 FILE *alt_stdout=NULL;
 
 
-/* ------------------  MemMap ------------------------ */
-#ifdef pp_OSXLINUX
 #ifdef pp_SLICETEST
-char *MemMap(char *file){
+#ifdef pp_OSXLINUX
+
+/* ------------------  MemMap ------------------------ */
+
+char *MemMap(char *file, size_t *size){
    int fd;
    char *ptr;
 
    if(file==NULL)return NULL;
-  fd = open(file, O_RDONLY);
+   fd = open(file, O_RDONLY);
    struct stat statbuf;
    int err = fstat(fd, &statbuf);
-   ptr = mmap(NULL,statbuf.st_size,
+   *size = statbuf.st_size;
+   ptr = mmap(NULL, *size,
             PROT_READ|PROT_WRITE,MAP_SHARED,
             fd,0);
+   if(ptr==MAP_FAILED)return NULL;
    return ptr;
+}
+
+/* ------------------  MemUnMap ------------------------ */
+
+void MemUnMap(char *data, size_t size){
+  munmap(data, size);
 }
 #endif
 #endif
