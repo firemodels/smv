@@ -5,6 +5,12 @@
 #include <sys/stat.h>
 #include <ctype.h>
 #include <stdlib.h>
+#ifdef pp_SLICETEST
+#ifdef pp_OSXLINUX
+#include <fcntl.h>
+#include <sys/mman.h>
+#endif
+#endif
 #ifdef pp_OSX
 #include <unistd.h>
 #endif
@@ -27,6 +33,26 @@
 #include "MALLOCC.h"
 
 FILE *alt_stdout=NULL;
+
+
+/* ------------------  MemMap ------------------------ */
+#ifdef pp_OSXLINUX
+#ifdef pp_SLICETEST
+char *MemMap(char *file){
+   int fd;
+   char *ptr;
+
+   if(file==NULL)return NULL;
+  fd = open(file, O_RDONLY);
+   struct stat statbuf;
+   int err = fstat(fd, &statbuf);
+   ptr = mmap(NULL,statbuf.st_size,
+            PROT_READ|PROT_WRITE,MAP_SHARED,
+            fd,0);
+   return ptr;
+}
+#endif
+#endif
 
 /* ------------------ TestWrite ------------------------ */
 

@@ -15,6 +15,13 @@
   #define PROGVERSION ""
 #endif
 
+#ifdef pp_LINUX
+#define pp_OSXLINUX
+#endif
+#ifdef pp_OSX
+#define pp_OSXLINUX
+#endif
+
 //*** options: all platforms
 
 #define pp_SLICETEST         // draw slices using floating point vals and memory mapped files
