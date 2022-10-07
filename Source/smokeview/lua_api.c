@@ -1851,7 +1851,7 @@ int lua_get_sliceinfo(lua_State *L) {
     lua_pushnumber(L, sliceinfo[i].nslicey);
     lua_setfield(L, -2, "nslicey");
 
-    lua_pushstring(L, sliceinfo[i].slicedir);
+    lua_pushstring(L, sliceinfo[i].cdir);
     lua_setfield(L, -2, "slicedir");
 
     // can't be done until loaded
