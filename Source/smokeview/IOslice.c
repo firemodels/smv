@@ -4980,7 +4980,11 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
           for(ii = 0; ii<256; ii++){
             slicei->qval256[ii] = (qmin*(255 - ii) + qmax*ii) / 255;
           }
+#ifdef pp_SLICETEST
+          SetSliceColors(qmin, qmax, slicei, 0, errorcode);
+#else
           SetSliceColors(qmin, qmax, slicei, 1, errorcode);
+#endif
         }
       }
       else{
@@ -6367,7 +6371,10 @@ void DrawVolAllSlicesTextureDiag(const slicedata *sd, int direction){
 /* ------------------ DrawVolSliceTexture ------------------------ */
 #ifdef pp_SLICETEST
 #define SLICETEXTURE(i,j,k) \
-    CLAMP((sd->qslice[ IJK_SLICE(i, j,  k)]-valmin)/(valmax-valmin),0.0,1.0)
+    (sd->compression_type==UNCOMPRESSED ? \
+    CLAMP((sd->qslice[ IJK_SLICE((i), (j),  (k))]-valmin)/(valmax-valmin),0.0,1.0) : \
+    CLAMP(((float)sd->slicecomplevel[ IJK_SLICE((i), (j),  (k))])/255.0,0.0,1.0) \
+    )
 #endif
 
 void DrawVolSliceTexture(const slicedata *sd){
