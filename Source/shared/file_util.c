@@ -155,7 +155,7 @@ char *MemMap(char *file, size_t *size){
    if(file==NULL)return NULL;
    fd = open(file, O_RDONLY);
    struct stat statbuf;
-   int err = fstat(fd, &statbuf);
+   fstat(fd, &statbuf);
    *size = statbuf.st_size;
    ptr = mmap(NULL, *size, PROT_READ|PROT_WRITE,MAP_SHARED, fd,0);
    if(ptr==MAP_FAILED)return NULL;

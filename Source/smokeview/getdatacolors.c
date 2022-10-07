@@ -837,7 +837,7 @@ void UpdateSliceBounds2(void){
   int ii, error;
 
   for(ii = 0; ii<nslice_loaded; ii++){
-    int i,jj;
+    int i;
     slicedata *sd;
     int set_valmin, set_valmax;
     float qmin, qmax;
