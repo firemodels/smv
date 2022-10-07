@@ -1705,11 +1705,16 @@ extern "C" void SliceBoundsCPP_CB(int var){
 
   sliceboundsCPP.CB(var);
   switch(var){
-    case BOUND_VAL_TYPE:
     case BOUND_VALMIN:
     case BOUND_VALMAX:
     case BOUND_SETVALMIN:
     case BOUND_SETVALMAX:
+#ifdef pp_SLICETEST
+      SetLoadedSliceBounds(NULL, 0);
+      UpdateSliceBounds2();
+      break;
+#endif
+    case BOUND_VAL_TYPE:
     case BOUND_CHOPMIN:
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:

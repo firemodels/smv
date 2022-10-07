@@ -17,6 +17,7 @@
 
 //*** options: all platforms
 
+#define pp_SLICETEST         // draw slices using floating point vals and memory mapped files
 #define pp_CLIP_FIX          // fixes to clipping
 #define pp_PART_MULTI        // load particles in parallel
 //#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds

@@ -2024,7 +2024,7 @@ void UpdateAllSliceLabels(int slicetype, int *errorcode){
 
 /* ------------------ SetSliceColors ------------------------ */
 
-void SetSliceColors(float smin, float smax, slicedata *sd, int *errorcode){
+void SetSliceColors(float smin, float smax, slicedata *sd, int flag, int *errorcode){
   int slicetype;
   boundsdata *sb;
 
@@ -2042,7 +2042,7 @@ void SetSliceColors(float smin, float smax, slicedata *sd, int *errorcode){
       smin, smax,
       nrgb_full, nrgb,
       sb->colorlabels, sb->colorvalues, sb->levels256,
-      &sd->extreme_min, &sd->extreme_max
+      &sd->extreme_min, &sd->extreme_max, flag
     );
   }
   else{
@@ -2051,7 +2051,7 @@ void SetSliceColors(float smin, float smax, slicedata *sd, int *errorcode){
       smin, smax,
       nrgb_full, nrgb,
       sb->colorlabels, sb->colorvalues, sb->levels256,
-      &sd->extreme_min, &sd->extreme_max
+      &sd->extreme_min, &sd->extreme_max, flag
     );
   }
 }
@@ -2087,7 +2087,7 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
     i = slice_loaded_list[ii];
     sd = sliceinfo + i;
     if(sd->slicefile_labelindex!=slicetype)continue;
-    SetSliceColors(valmin,valmax,sd,errorcode);
+    SetSliceColors(valmin,valmax,sd,1,errorcode);
     if(*errorcode!=0)return;
   }
   SliceBounds2Glui(slicetype);
@@ -4980,7 +4980,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
           for(ii = 0; ii<256; ii++){
             slicei->qval256[ii] = (qmin*(255 - ii) + qmax*ii) / 255;
           }
-          SetSliceColors(qmin, qmax, slicei, errorcode);
+          SetSliceColors(qmin, qmax, slicei, 1, errorcode);
         }
       }
       else{
@@ -6365,6 +6365,10 @@ void DrawVolAllSlicesTextureDiag(const slicedata *sd, int direction){
 }
 
 /* ------------------ DrawVolSliceTexture ------------------------ */
+#ifdef pp_SLICETEST
+#define SLICETEXTURE(i,j,k) \
+    CLAMP((sd->qslice[ IJK_SLICE(i, j,  k)]-valmin)/(valmax-valmin),0.0,1.0)
+#endif
 
 void DrawVolSliceTexture(const slicedata *sd){
   int i, j, k;
@@ -6380,6 +6384,16 @@ void DrawVolSliceTexture(const slicedata *sd){
 
   meshdata *meshi;
 
+#ifdef pp_SLICETEST
+  float valmin, valmax;
+
+  valmin = sd->valmin;
+  valmax = sd->valmax;
+  if(valmin>=valmax){
+    valmin = 0.0;
+    valmax = 1.0;
+  }
+#endif
   if(sd->volslice == 1 && visx_all == 0 && visy_all == 0 && visz_all == 0)return;
   meshi = meshinfo + sd->blocknumber;
 
@@ -6450,10 +6464,17 @@ void DrawVolSliceTexture(const slicedata *sd){
             }
             if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
           }
+#ifdef pp_SLICETEST
+        r11 = SLICETEXTURE(plotx,  j,  k);
+        r31 = SLICETEXTURE(plotx, j2,  k);
+        r13 = SLICETEXTURE(plotx,  j, k2);
+        r33 = SLICETEXTURE(plotx, j2, k2);
+#else
         r11 = (float)sd->iqsliceframe[ IJK_SLICE(plotx, j,  k)   ] / 255.0;
         r31 = (float)sd->iqsliceframe[ IJK_SLICE(plotx, j2, k)  ] / 255.0;
         r13 = (float)sd->iqsliceframe[ IJK_SLICE(plotx, j, k2)  ] / 255.0;
         r33 = (float)sd->iqsliceframe[ IJK_SLICE(plotx, j2,k2) ] / 255.0;
+#endif
         rmid = (r11 + r31 + r13 + r33) / 4.0;
 
         z1 = zplt[k];
@@ -6529,10 +6550,17 @@ void DrawVolSliceTexture(const slicedata *sd){
           }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, ploty, k)] == EMBED_YES)continue;
         }
+#ifdef pp_SLICETEST
+        r11 = SLICETEXTURE(i,  ploty, k);
+        r31 = SLICETEXTURE(i2, ploty, k);
+        r13 = SLICETEXTURE(i,  ploty, k2);
+        r33 = SLICETEXTURE(i2, ploty, k2);
+#else
         r11 = (float)sd->iqsliceframe[IJK_SLICE(i,  ploty, k)]/255.0;
         r31 = (float)sd->iqsliceframe[IJK_SLICE(i2, ploty, k)]/255.0;
         r13 = (float)sd->iqsliceframe[IJK_SLICE(i,  ploty, k2)]/255.0;
         r33 = (float)sd->iqsliceframe[IJK_SLICE(i2, ploty, k2)]/255.0;
+#endif
         rmid = (r11 + r31 + r13 + r33) / 4.0;
 
         z1 = zplt[k];
@@ -6604,10 +6632,17 @@ void DrawVolSliceTexture(const slicedata *sd){
           }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
         }
+#ifdef pp_SLICETEST
+        r11 = SLICETEXTURE(i,   j, plotz);
+        r31 = SLICETEXTURE(i2,  j, plotz);
+        r13 = SLICETEXTURE(i,  j2, plotz);
+        r33 = SLICETEXTURE(i2, j2, plotz);
+#else
         r11 = (float)sd->iqsliceframe[ IJK_SLICE(i,   j, plotz)   ] / 255.0;
         r31 = (float)sd->iqsliceframe[ IJK_SLICE(i2,  j, plotz)  ] / 255.0;
         r13 = (float)sd->iqsliceframe[ IJK_SLICE(i,  j2, plotz)  ] / 255.0;
         r33 = (float)sd->iqsliceframe[ IJK_SLICE(i2, j2, plotz) ] / 255.0;
+#endif
         rmid = (r11 + r31 + r13 + r33) / 4.0;
 
         yy1 = yplt[j];
