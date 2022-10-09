@@ -5197,6 +5197,10 @@ void DrawGSliceDataGpu(slicedata *slicei){
   glPopMatrix();
 }
 
+#ifdef pp_SMOKESTREAM
+#define SLICECOLOR(index) CLAMP((int)(255.0*(sd->qslice[index]-valmin)/(valmax-valmin)),0,255)
+#endif
+
 /* ------------------ DrawVolSliceCellFaceCenter ------------------------ */
 
 void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
@@ -5214,6 +5218,17 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
   rgb_ptr = rgb_slice;
 
   meshi = meshinfo + sd->blocknumber;
+
+#ifdef pp_SMOKESTREAM
+  float valmin, valmax;
+
+  valmin = sd->valmin;
+  valmax = sd->valmax;
+  if(valmin>=valmax){
+    valmin = 0.0;
+    valmax = 1.0;
+  }
+#endif
 
   xplt = meshi->xplt;
   yplt = meshi->yplt;
@@ -5296,7 +5311,11 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(plotx, j, k)] == EMBED_YES)continue;
 
         index_cell = (plotx+1-incx-iimin)*sd->nslicej*sd->nslicek + (j+1-sd->js1)*sd->nslicek + k+1-sd->ks1;
+#ifdef pp_SMOKESTREAM
+        i33 = 4*SLICECOLOR(index_cell);
+#else
         i33 = 4 * sd->iqsliceframe[index_cell];
+#endif
         z1 = zplt[k];
         z3 = zplt[k + 1];
         /*
@@ -5363,7 +5382,11 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, ploty, k)] == EMBED_YES)continue;
 
         index_cell = (i+incx-sd->is1)*sd->nslicej*sd->nslicek + (ploty+1-incy-sd->js1)*sd->nslicek + k+1-sd->ks1;
+#ifdef pp_SMOKESTREAM
+        i33 = 4*CLAMP((int)(255.0*(sd->qslice[index_cell]-valmin)/(valmax-valmin)),0,255);
+#else
         i33 = 4 * sd->iqsliceframe[index_cell];
+#endif
         z1 = zplt[k];
         z3 = zplt[k + 1];
         /*
@@ -5431,7 +5454,11 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, j, plotz)] == EMBED_YES)continue;
 
         index_cell = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (j+incy-sd->js1)*sd->nslicek + plotz+1-incz-sd->ks1;
+#ifdef pp_SMOKESTREAM
+        i33 = 4*CLAMP((int)(255.0*(sd->qslice[index_cell]-valmin)/(valmax-valmin)),0,255);
+#else
         i33 = 4 * sd->iqsliceframe[index_cell];
+#endif
         yy1 = yplt[j];
         y3 = yplt[j + 1];
         /*
