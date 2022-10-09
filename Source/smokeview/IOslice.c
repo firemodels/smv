@@ -19,6 +19,16 @@
 
 #define IJK_SLICE(i,j,k)  ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
 
+#ifdef pp_SMOKESTREAM
+#define SLICETEXTURE(i,j,k) \
+    (sd->compression_type==UNCOMPRESSED ? \
+    CLAMP((sd->qslice[ IJK_SLICE((i), (j),  (k))]-valmin)/(valmax-valmin),0.0,1.0) : \
+    CLAMP(((float)sd->slicecomplevel[ IJK_SLICE((i), (j),  (k))])/255.0,0.0,1.0) \
+    )
+
+#define SLICECOLOR(index) CLAMP((int)(255.0*(sd->qslice[index]-valmin)/(valmax-valmin)),0,255)
+#endif
+
 #ifdef pp_SLICE_BUFFER
 
 #define FOPEN_SLICE(a,b)         fopen_buffer(a,b)
@@ -5197,10 +5207,6 @@ void DrawGSliceDataGpu(slicedata *slicei){
   glPopMatrix();
 }
 
-#ifdef pp_SMOKESTREAM
-#define SLICECOLOR(index) CLAMP((int)(255.0*(sd->qslice[index]-valmin)/(valmax-valmin)),0,255)
-#endif
-
 /* ------------------ DrawVolSliceCellFaceCenter ------------------------ */
 
 void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
@@ -6093,7 +6099,16 @@ void DrawVolSliceTerrain(const slicedata *sd){
   else{
     plotz = sd->ks1;
   }
+#ifdef pp_SMOKESTREAM
+  float valmin, valmax;
 
+  valmin = sd->valmin;
+  valmax = sd->valmax;
+  if(valmin>=valmax){
+    valmin = 0.0;
+    valmax = 1.0;
+  }
+#endif
   if(cullfaces == 1)glDisable(GL_CULL_FACE);
 
   if(use_transparency_data == 1)TransparentOn();
@@ -6137,7 +6152,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
       x3 = xplt[i2];
 
       for(j = sd->js1; j<sd->js2; j += slice_skip){
-        int n11, n31, n13, n33;
         int j2;
         int draw123=0, draw134=0;
 
@@ -6170,15 +6184,17 @@ void DrawVolSliceTerrain(const slicedata *sd){
         yy1 = yplt[j];
         y3 = yplt[j2];
 
-        n11 = IJK_SLICE(i,   j, sd->ks1);
-        n31 = IJK_SLICE(i2,  j, sd->ks1);
-        n13 = IJK_SLICE( i, j2, sd->ks1);
-        n33 = IJK_SLICE(i2, j2, sd->ks1);
-
-        r11 = (float)sd->iqsliceframe[n11]/255.0;
-        r31 = (float)sd->iqsliceframe[n31]/255.0;
-        r13 = (float)sd->iqsliceframe[n13]/255.0;
-        r33 = (float)sd->iqsliceframe[n33]/255.0;
+#ifdef pp_SMOKESTREAM
+        r11 = SLICETEXTURE(i,   j, sd->ks1);
+        r31 = SLICETEXTURE(i2,  j, sd->ks1);
+        r13 = SLICETEXTURE(i,  j2, sd->ks1);
+        r33 = SLICETEXTURE(i2, j2, sd->ks1);
+#else
+        r11 = (float)sd->iqsliceframe[ IJK_SLICE(i,   j, sd->ks1)   ] / 255.0;
+        r31 = (float)sd->iqsliceframe[ IJK_SLICE(i2,  j, sd->ks1)  ] / 255.0;
+        r13 = (float)sd->iqsliceframe[ IJK_SLICE(i,  j2, sd->ks1)  ] / 255.0;
+        r33 = (float)sd->iqsliceframe[ IJK_SLICE(i2, j2, sd->ks1) ] / 255.0;
+#endif
 
         if(draw123==1){
           glTexCoord1f(r11);  glVertex3f(x1, yy1, z11);
@@ -6396,13 +6412,6 @@ void DrawVolAllSlicesTextureDiag(const slicedata *sd, int direction){
 }
 
 /* ------------------ DrawVolSliceTexture ------------------------ */
-#ifdef pp_SMOKESTREAM
-#define SLICETEXTURE(i,j,k) \
-    (sd->compression_type==UNCOMPRESSED ? \
-    CLAMP((sd->qslice[ IJK_SLICE((i), (j),  (k))]-valmin)/(valmax-valmin),0.0,1.0) : \
-    CLAMP(((float)sd->slicecomplevel[ IJK_SLICE((i), (j),  (k))])/255.0,0.0,1.0) \
-    )
-#endif
 
 void DrawVolSliceTexture(const slicedata *sd){
   int i, j, k;
