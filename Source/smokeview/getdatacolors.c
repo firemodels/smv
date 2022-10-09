@@ -830,7 +830,7 @@ void UpdateSliceColors(int last_slice){
     }
   }
 }
-#ifdef pp_SLICETEST
+#ifdef pp_SMOKESTREAM
 /* ------------------ UpdateSliceBounds2 ------------------------ */
 
 void UpdateSliceBounds2(void){

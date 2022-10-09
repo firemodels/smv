@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <ctype.h>
 #include <stdlib.h>
-#ifdef pp_SLICETEST
+#ifdef pp_SMOKESTREAM
 #include <fcntl.h>
 #ifdef pp_OSXLINUX
 #include <sys/mman.h>
@@ -34,7 +34,7 @@
 
 FILE *alt_stdout=NULL;
 
-#ifdef pp_SLICETEST
+#ifdef pp_SMOKESTREAM
 #ifdef WIN32
 #include <io.h>
 #include <windows.h>

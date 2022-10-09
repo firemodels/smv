@@ -94,7 +94,7 @@ int FileExistsOrig(char *filename);
 
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-#ifdef pp_SLICETEST
+#ifdef pp_SMOKESTREAM
 EXTERNCPP char *MemMap(char *file, size_t *size);
 EXTERNCPP void MemUnMap(char *data, size_t size);
 #endif

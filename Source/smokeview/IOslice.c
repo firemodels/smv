@@ -4980,7 +4980,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
           for(ii = 0; ii<256; ii++){
             slicei->qval256[ii] = (qmin*(255 - ii) + qmax*ii) / 255;
           }
-#ifdef pp_SLICETEST
+#ifdef pp_SMOKESTREAM
           SetSliceColors(qmin, qmax, slicei, 0, errorcode);
 #else
           SetSliceColors(qmin, qmax, slicei, 1, errorcode);
@@ -6369,7 +6369,7 @@ void DrawVolAllSlicesTextureDiag(const slicedata *sd, int direction){
 }
 
 /* ------------------ DrawVolSliceTexture ------------------------ */
-#ifdef pp_SLICETEST
+#ifdef pp_SMOKESTREAM
 #define SLICETEXTURE(i,j,k) \
     (sd->compression_type==UNCOMPRESSED ? \
     CLAMP((sd->qslice[ IJK_SLICE((i), (j),  (k))]-valmin)/(valmax-valmin),0.0,1.0) : \
@@ -6391,7 +6391,7 @@ void DrawVolSliceTexture(const slicedata *sd){
 
   meshdata *meshi;
 
-#ifdef pp_SLICETEST
+#ifdef pp_SMOKESTREAM
   float valmin, valmax;
 
   valmin = sd->valmin;
@@ -6471,7 +6471,7 @@ void DrawVolSliceTexture(const slicedata *sd){
             }
             if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
           }
-#ifdef pp_SLICETEST
+#ifdef pp_SMOKESTREAM
         r11 = SLICETEXTURE(plotx,  j,  k);
         r31 = SLICETEXTURE(plotx, j2,  k);
         r13 = SLICETEXTURE(plotx,  j, k2);
@@ -6557,7 +6557,7 @@ void DrawVolSliceTexture(const slicedata *sd){
           }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, ploty, k)] == EMBED_YES)continue;
         }
-#ifdef pp_SLICETEST
+#ifdef pp_SMOKESTREAM
         r11 = SLICETEXTURE(i,  ploty, k);
         r31 = SLICETEXTURE(i2, ploty, k);
         r13 = SLICETEXTURE(i,  ploty, k2);
@@ -6639,7 +6639,7 @@ void DrawVolSliceTexture(const slicedata *sd){
           }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
         }
-#ifdef pp_SLICETEST
+#ifdef pp_SMOKESTREAM
         r11 = SLICETEXTURE(i,   j, plotz);
         r31 = SLICETEXTURE(i2,  j, plotz);
         r13 = SLICETEXTURE(i,  j2, plotz);
