@@ -94,11 +94,6 @@ int FileExistsOrig(char *filename);
 
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-#ifdef pp_SMOKESTREAM
-EXTERNCPP char *MemMap(char *file, size_t *size);
-EXTERNCPP void MemUnMap(char *data, size_t size);
-#endif
-
 EXTERNCPP FILE *fopen_indir(char *dir, char *file, char *mode);
 EXTERNCPP void TestWrite(char *scratchdir, char **fileptr);
 EXTERNCPP int FFLUSH(void);

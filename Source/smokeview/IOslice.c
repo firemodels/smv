@@ -4541,6 +4541,28 @@ void HideSlices(char *longlabel){
   }
 }
 
+/* ------------------ GetSliceTimes ------------------------ */
+
+void GetSliceTimes(char *file, float *times, int ntimes){
+  FILE *stream;
+  int i;
+  char buffer[256];
+
+  stream = fopen(file, "r");
+  if(stream == NULL){
+    for(i = 0; i<ntimes; i++){
+      times[i] = (float)i;
+    }
+  }
+  else{
+    for(i = 0; i<ntimes; i++){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%f", times+i);
+    }
+    fclose(stream);
+  }
+}
+
 /* ------------------ ReadSlice ------------------------ */
 
 FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode){
@@ -4614,6 +4636,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 // reset slice variables to an unloaded state
 
     if(flag == UNLOAD){
+#ifdef pp_SMOKESTREAM
+      StreamClose(&(sd->slicestream));
+#endif
       update_flipped_colorbar = 1;
       sd->ntimes_old = 0;
       sd->ntimes = 0;
@@ -4700,6 +4725,11 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       sd->ntimes_old = sd->ntimes;
       GetSliceSizes(sd, file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step, &error,
                     use_tload_begin, use_tload_end, tload_begin, tload_end, &headersize, &framesize);
+#ifdef pp_SMOKESTREAM
+      sd->slicestream=StreamOpen(sd->slicestream, sd->file, headersize, &framesize, sd->ntimes, 1);
+      NewResizeMemory(sd->times, sizeof(float)*sd->ntimes);
+      GetSliceTimes(sd->bound_file, sd->times, sd->ntimes);
+#endif
     }
     else if(sd->compression_type != UNCOMPRESSED){
       if(
@@ -4742,6 +4772,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     }
     MEMSTATUS(1, &availmemory, NULL, NULL);
     START_TIMER(read_time);
+#ifndef pp_SMOKESTREAM
     if(sd->compression_type != UNCOMPRESSED){
       int return_code;
 
@@ -4808,11 +4839,13 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
 #endif
     }
+#endif
     if(time_value!=NULL&&sd->ntimes>0){
       *time_value = sd->times[0];
     }
     STOP_TIMER(read_time);
 
+#ifndef pp_SMOKESTREAM
     if(slice_average_flag == 1){
       int data_per_timestep;
       int ndata;
@@ -4830,6 +4863,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         show_slice_average = 0; // averaging failed
       }
     }
+#endif
 
     /*  initialize slice data */
 
@@ -4911,9 +4945,11 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     }
 
 #ifdef pp_MEMDEBUG
+#ifndef pp_SMOKESTREAM
     if(sd->compression_type == UNCOMPRESSED){
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicetotal));
     }
+#endif
 #endif
   }  /* RESETBOUNDS */
 
@@ -5014,10 +5050,12 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     CheckMemory;
     CheckMemory;
 #ifdef pp_MEMDEBUG
+#ifndef pp_SMOKESTREAM
     if(sd->compression_type==UNCOMPRESSED&&sd->slice_filetype!=SLICE_GEOM){
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
     }
     CheckMemory;
+#endif
 #endif
     ForceIdle();
   }

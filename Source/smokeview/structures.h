@@ -2,6 +2,7 @@
 #define FLOWFILES_H_DEFINED
 
 #include "stdio_m.h"
+#include "smokestream.h"
 
 /* --------------------------  circdata ------------------------------------ */
 
@@ -1351,6 +1352,9 @@ typedef struct _slicedata {
   devicedata vals2d;
 #ifdef pp_SLICETHREAD
   int loadstatus;
+#endif
+#ifdef pp_SMOKESTREAM
+  streamdata *slicestream;
 #endif
 #ifdef pp_SLICE_BUFFER
   FILEBUFFER *stream_slice;

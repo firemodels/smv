@@ -68,7 +68,7 @@ obj = main.o menus.o IOscript.o IOshooter.o glui_objects.o glui_shooter.o\
       IOiso.o callbacks.o drawGeometry.o glui_colorbar.o skybox.o file_util.o string_util.o\
       startup.o glui_trainer.o shaders.o unit.o threader.o histogram.o translate.o update.o\
       viewports.o smv_geometry.o showscene.o glew.o infoheader.o  md5.o sha1.o sha256.o\
-      stdio_m.o stdio_buffer.o \
+      stdio_m.o stdio_buffer.o smokestream.o\
       fdsmodules.o gsmv.o getdata.o
 
 incs = contourdefs.h glui_bounds.h glui_motion.h glui_smoke.h glui_tour.h infoheader.h \
