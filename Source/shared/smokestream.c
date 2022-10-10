@@ -230,7 +230,6 @@ streamdata *StreamOpen(streamdata *streamin, char *file, size_t offset, int *fra
 /* ------------------  StreamClose ------------------------ */
 
 void StreamClose(streamdata **streamptr){
-  char **frameptrs, *filebuffer;
   streamdata *stream;
 
   stream = *streamptr;
