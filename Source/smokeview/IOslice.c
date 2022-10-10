@@ -4569,7 +4569,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   float *xplt_local, *yplt_local, *zplt_local, offset, qmin, qmax, read_time, total_time;
   int blocknumber, error, i, ii, headersize, framesize, flag2 = 0;
   slicedata *sd;
+#ifndef pp_SMOKESTREAM
   int ntimes_slice_old;
+#endif
 
   SNIFF_ERRORS("ReadSlice: start");
   SetTimeState();
