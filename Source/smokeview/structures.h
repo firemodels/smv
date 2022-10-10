@@ -1356,9 +1356,6 @@ typedef struct _slicedata {
 #ifdef pp_SMOKESTREAM
   streamdata *slicestream;
 #endif
-#ifdef pp_SLICE_BUFFER
-  FILEBUFFER *stream_slice;
-#endif
 } slicedata;
 
 /* --------------------------  slicemenudata ------------------------------------ */

@@ -29,16 +29,6 @@
 #define SLICECOLOR(index) CLAMP((int)(255.0*(sd->qslice[index]-valmin)/(valmax-valmin)),0,255)
 #endif
 
-#ifdef pp_SLICE_BUFFER
-
-#define FOPEN_SLICE(a,b)         fopen_buffer(a,b)
-#define FSEEK_SLICE(a,b,c)       fseek_buffer(a,b,c)
-#define FTELL_SLICE(a)           ftell_buffer(a)
-#define FREAD_SLICE(a,b,c,d)     fread_buffer(a,b,c,d)
-#define FCLOSE_SLICE(a)          fclose_buffer(a)
-
-#else
-
 #define FOPEN_SLICE(a,b)         fopen(a,b)
 #ifdef X64
 #define FSEEK_SLICE(a,b,c)       _fseeki64(a,b,c)
@@ -49,8 +39,6 @@
 #endif
 #define FREAD_SLICE(a,b,c,d)     fread(a,b,c,d)
 #define FCLOSE_SLICE(a)          fclose(a)
-
-#endif
 
 #define FORT_SLICEREAD(var,count,STREAM) \
                            FSEEK_SLICE(STREAM,SLICE_HEADER_SIZE,SEEK_CUR);\
@@ -889,9 +877,6 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   skip_local += frame_index_local*(HEADER_SIZE + 4 + TRAILER_SIZE); //
   skip_local += frame_index_local*(HEADER_SIZE + frame_size*4 + TRAILER_SIZE); //
 
-#ifdef pp_SLICE_BUFFER
-  SLICEFILE = sd->stream_slice;
-#endif
   if(SLICEFILE==NULL){
     SLICEFILE=FOPEN_SLICE(sd->file,"rb");
   }
@@ -4126,9 +4111,6 @@ void GetSliceSizes(slicedata *sd, const char *slicefilenameptr, int time_frame, 
   *errorptr = 0;
   *ntimesptr = 0;
 
-#ifdef pp_SLICE_BUFFER
-  SLICEFILE = sd->stream_slice;
-#endif
   if(SLICEFILE==NULL){
     SLICEFILE = FOPEN_SLICE(slicefilenameptr, "rb");
   }
@@ -4196,11 +4178,7 @@ void GetSliceSizes(slicedata *sd, const char *slicefilenameptr, int time_frame, 
     count++;
   }
   *errorptr = 0;
-#ifdef pp_SLICE_BUFFER
-  rewind_buffer(SLICEFILE);
-#else
   FCLOSE_SLICE(SLICEFILE);
-#endif
 }
 
 /* ------------------ GetSliceFileHeader ------------------------ */
@@ -4260,9 +4238,6 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
   koff = 0;
   file_size = 0;
 
-#ifdef pp_SLICE_BUFFER
-  stream = sd->stream_slice;
-#endif
   if(stream==NULL){
     stream = FOPEN_SLICE(slicefilename,"rb");
   }

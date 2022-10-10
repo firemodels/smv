@@ -5046,40 +5046,15 @@ void LoadMultiVSliceMenu(int value){
 
 FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
   float load_time;
-#ifdef pp_SLICE_BUFFER
-  float process_time;
-#endif
   FILE_SIZE file_size = 0;
   int file_count=0;
 
   START_TIMER(load_time);
-#ifdef pp_SLICE_BUFFER
-  for(i = 0; i<mslicei->nslices; i++){
-    slicedata *slicei;
-    int set_slicecolor;
-
-    slicei = sliceinfo+mslicei->islices[i];
-    if(slicei->slice_filetype==SLICE_TERRAIN&&slicei->have_agl_data==0)continue;
-    printf("reading %s\n",slicei->file);
-    slicei->stream_slice = fopen_buffer(slicei->file,"rb");
-    file_size += slicei->stream_slice->filesize;
-    file_count++;
-  }
-  STOP_TIMER(load_time);
-  PRINT_LOADTIMES(file_count, (float)file_size, load_time);
-  START_TIMER(process_time);
-#endif
 
   SetLoadedSliceBounds(mslicei->islices, mslicei->nslices);
   file_size = LoadAllMSlicesMT(last_slice, mslicei, &file_count);
-
-#ifdef pp_SLICE_BUFFER
-  STOP_TIMER(process_time);
-  PRINT_PROCESSTIMES(file_count, (float)file_size, process_time);
-#else
   STOP_TIMER(load_time);
   PRINT_LOADTIMES(file_count,(float)file_size,load_time);
-#endif
   return file_size;
 }
 

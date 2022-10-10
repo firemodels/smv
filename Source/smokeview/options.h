@@ -55,7 +55,6 @@
 #define pp_SLICETHREAD        // parallel slice file loading
 //#define pp_SHOW_CACHE         // show file cache checkbox
 //#define pp_PLOT3D_REDUCEMENUS // eliminate plot3d sub-menus
-//#define pp_SLICE_BUFFER       // read  slice file into a buffer before processing
 //#define pp_RESEARCH_DEBUG     // output whether data is reloaded or colors re-mapped when toggling to/from research mode
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
 //#define pp_TERRAIN_SKIP
