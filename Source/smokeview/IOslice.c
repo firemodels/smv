@@ -19,7 +19,7 @@
 
 #define IJK_SLICE(i,j,k)  ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
 
-#ifdef pp_SMOKESTREAM
+#ifdef pp_SLICEVAL
 #define SLICETEXTURE(i,j,k) \
     (sd->compression_type==UNCOMPRESSED ? \
     CLAMP((sd->qslice[ IJK_SLICE((i), (j),  (k))]-valmin)/(valmax-valmin),0.0,1.0) : \
@@ -1640,7 +1640,6 @@ void GetSliceHists(slicedata *sd){
 
   ntimes = ndata / sd->nsliceijk;
 
-#ifndef pp_SMOKESTREAM
   // initialize histograms
 
   sd->nhistograms = ntimes + 1;
@@ -1676,7 +1675,6 @@ void GetSliceHists(slicedata *sd){
     MergeHistogram(histall, histi, MERGE_BOUNDS);
   }
   FREEMEMORY(pdata0);
-#endif
   FREEMEMORY(slice_mask0);
   FREEMEMORY(slice_weight0);
 }
@@ -4546,9 +4544,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
   float *xplt_local, *yplt_local, *zplt_local, offset, qmin, qmax, read_time, total_time;
   int blocknumber, error, i, ii, headersize, framesize, flag2 = 0;
   slicedata *sd;
-#ifndef pp_SMOKESTREAM
   int ntimes_slice_old;
-#endif
 
   SNIFF_ERRORS("ReadSlice: start");
   SetTimeState();
@@ -4615,9 +4611,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 // reset slice variables to an unloaded state
 
     if(flag == UNLOAD){
-#ifdef pp_SMOKESTREAM
-      StreamClose(&(sd->slicestream));
-#endif
       update_flipped_colorbar = 1;
       sd->ntimes_old = 0;
       sd->ntimes = 0;
@@ -4704,11 +4697,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       sd->ntimes_old = sd->ntimes;
       GetSliceSizes(sd, file, time_frame, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step, &error,
                     use_tload_begin, use_tload_end, tload_begin, tload_end, &headersize, &framesize);
-#ifdef pp_SMOKESTREAM
-      sd->slicestream=StreamOpen(sd->slicestream, sd->file, headersize, &framesize, sd->ntimes, 1);
-      NewResizeMemory(sd->times, sizeof(float)*sd->ntimes);
-      GetSliceTimes(sd->bound_file, sd->times, sd->ntimes);
-#endif
     }
     else if(sd->compression_type != UNCOMPRESSED){
       if(
@@ -4751,7 +4739,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     }
     MEMSTATUS(1, &availmemory, NULL, NULL);
     START_TIMER(read_time);
-#ifndef pp_SMOKESTREAM
     if(sd->compression_type != UNCOMPRESSED){
       int return_code;
 
@@ -4818,13 +4805,11 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
 #endif
     }
-#endif
     if(time_value!=NULL&&sd->ntimes>0){
       *time_value = sd->times[0];
     }
     STOP_TIMER(read_time);
 
-#ifndef pp_SMOKESTREAM
     if(slice_average_flag == 1){
       int data_per_timestep;
       int ndata;
@@ -4842,7 +4827,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
         show_slice_average = 0; // averaging failed
       }
     }
-#endif
 
     /*  initialize slice data */
 
@@ -4924,11 +4908,9 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     }
 
 #ifdef pp_MEMDEBUG
-#ifndef pp_SMOKESTREAM
     if(sd->compression_type == UNCOMPRESSED){
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicetotal));
     }
-#endif
 #endif
   }  /* RESETBOUNDS */
 
@@ -4965,9 +4947,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       cpp_boundsdata *bounds;
 
       bounds = GetBoundsData(BOUND_SLICE);
-#ifndef pp_SMOKESTREAM
       ComputeLoadedSliceHist(bounds->label, &(bounds->hist));
-#endif
       if(bounds->hist!=NULL&&bounds->hist->defined==1){
         if(set_valmin==BOUND_PERCENTILE_MIN){
           GetHistogramValProc(bounds->hist, percentile_level_min, &qmin);
@@ -5007,11 +4987,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
           for(ii = 0; ii<256; ii++){
             slicei->qval256[ii] = (qmin*(255 - ii) + qmax*ii) / 255;
           }
-#ifdef pp_SMOKESTREAM
-          SetSliceColors(qmin, qmax, slicei, 0, errorcode);
-#else
           SetSliceColors(qmin, qmax, slicei, 1, errorcode);
-#endif
         }
       }
       else{
@@ -5031,12 +5007,10 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
     CheckMemory;
     CheckMemory;
 #ifdef pp_MEMDEBUG
-#ifndef pp_SMOKESTREAM
     if(sd->compression_type==UNCOMPRESSED&&sd->slice_filetype!=SLICE_GEOM){
       ASSERT(ValidPointer(sd->qslicedata, sizeof(float)*sd->nslicei*sd->nslicej*sd->nslicek*sd->ntimes));
     }
     CheckMemory;
-#endif
 #endif
     ForceIdle();
   }
@@ -5244,7 +5218,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
 
   meshi = meshinfo + sd->blocknumber;
 
-#ifdef pp_SMOKESTREAM
+#ifdef pp_SLICEVAL
   float valmin, valmax;
 
   valmin = sd->valmin;
@@ -5336,7 +5310,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(plotx, j, k)] == EMBED_YES)continue;
 
         index_cell = (plotx+1-incx-iimin)*sd->nslicej*sd->nslicek + (j+1-sd->js1)*sd->nslicek + k+1-sd->ks1;
-#ifdef pp_SMOKESTREAM
+#ifdef pp_SLICEVAL
         i33 = 4*SLICECOLOR(index_cell);
 #else
         i33 = 4 * sd->iqsliceframe[index_cell];
@@ -5407,7 +5381,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, ploty, k)] == EMBED_YES)continue;
 
         index_cell = (i+incx-sd->is1)*sd->nslicej*sd->nslicek + (ploty+1-incy-sd->js1)*sd->nslicek + k+1-sd->ks1;
-#ifdef pp_SMOKESTREAM
+#ifdef pp_SLICEVAL
         i33 = 4*CLAMP((int)(255.0*(sd->qslice[index_cell]-valmin)/(valmax-valmin)),0,255);
 #else
         i33 = 4 * sd->iqsliceframe[index_cell];
@@ -5479,7 +5453,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, j, plotz)] == EMBED_YES)continue;
 
         index_cell = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (j+incy-sd->js1)*sd->nslicek + plotz+1-incz-sd->ks1;
-#ifdef pp_SMOKESTREAM
+#ifdef pp_SLICEVAL
         i33 = 4*CLAMP((int)(255.0*(sd->qslice[index_cell]-valmin)/(valmax-valmin)),0,255);
 #else
         i33 = 4 * sd->iqsliceframe[index_cell];
@@ -6118,7 +6092,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
   else{
     plotz = sd->ks1;
   }
-#ifdef pp_SMOKESTREAM
+#ifdef pp_SLICEVAL
   float valmin, valmax;
 
   valmin = sd->valmin;
@@ -6203,7 +6177,7 @@ void DrawVolSliceTerrain(const slicedata *sd){
         yy1 = yplt[j];
         y3 = yplt[j2];
 
-#ifdef pp_SMOKESTREAM
+#ifdef pp_SLICEVAL
         r11 = SLICETEXTURE(i,   j, sd->ks1);
         r31 = SLICETEXTURE(i2,  j, sd->ks1);
         r13 = SLICETEXTURE(i,  j2, sd->ks1);
@@ -6446,7 +6420,7 @@ void DrawVolSliceTexture(const slicedata *sd){
 
   meshdata *meshi;
 
-#ifdef pp_SMOKESTREAM
+#ifdef pp_SLICEVAL
   float valmin, valmax;
 
   valmin = sd->valmin;
@@ -6526,7 +6500,7 @@ void DrawVolSliceTexture(const slicedata *sd){
             }
             if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
           }
-#ifdef pp_SMOKESTREAM
+#ifdef pp_SLICEVAL
         r11 = SLICETEXTURE(plotx,  j,  k);
         r31 = SLICETEXTURE(plotx, j2,  k);
         r13 = SLICETEXTURE(plotx,  j, k2);
@@ -6612,7 +6586,7 @@ void DrawVolSliceTexture(const slicedata *sd){
           }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, ploty, k)] == EMBED_YES)continue;
         }
-#ifdef pp_SMOKESTREAM
+#ifdef pp_SLICEVAL
         r11 = SLICETEXTURE(i,  ploty, k);
         r31 = SLICETEXTURE(i2, ploty, k);
         r13 = SLICETEXTURE(i,  ploty, k2);
@@ -6694,7 +6668,7 @@ void DrawVolSliceTexture(const slicedata *sd){
           }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
         }
-#ifdef pp_SMOKESTREAM
+#ifdef pp_SLICEVAL
         r11 = SLICETEXTURE(i,   j, plotz);
         r31 = SLICETEXTURE(i2,  j, plotz);
         r13 = SLICETEXTURE(i,  j2, plotz);
@@ -7853,24 +7827,7 @@ void DrawSliceFrame(){
         ASSERT(ValidPointer(sd->qslicedata,sizeof(float)*sd->nslicetotal));
       }
 #endif
-#ifdef pp_SMOKESTREAM
-      int iframe;
-
-      iframe = GetFrameIndex(global_times[itimes], sd->times, sd->ntimes);
-      if(sd->slicestream->frameptrs[iframe]==NULL){
-        int swap[3];
-
-        swap[0] = sd->nslicei;
-        swap[1] = sd->nslicej;
-        swap[2] = sd->nslicek;
-        StreamRead(sd->slicestream, iframe, swap);
-        CheckMemory;
-      }
-      sd->qslice = (float *)(sd->slicestream->frameptrs[iframe]+16);
-      sd->qsliceframe = sd->qslice;
-#else
       if(sd->qslicedata!= NULL)sd->qsliceframe = sd->qslicedata + sd->itime*sd->nsliceijk;
-#endif
     }
     orien = 0;
     direction = 1;

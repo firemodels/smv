@@ -1353,9 +1353,6 @@ typedef struct _slicedata {
 #ifdef pp_SLICETHREAD
   int loadstatus;
 #endif
-#ifdef pp_SMOKESTREAM
-  streamdata *slicestream;
-#endif
 } slicedata;
 
 /* --------------------------  slicemenudata ------------------------------------ */

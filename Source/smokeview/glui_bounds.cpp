@@ -1709,7 +1709,7 @@ extern "C" void SliceBoundsCPP_CB(int var){
     case BOUND_VALMAX:
     case BOUND_SETVALMIN:
     case BOUND_SETVALMAX:
-#ifdef pp_SMOKESTREAM
+#ifdef pp_SLICEVAL
       SetLoadedSliceBounds(NULL, 0);
       UpdateSliceBounds2();
       break;
