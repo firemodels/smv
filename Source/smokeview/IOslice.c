@@ -1640,6 +1640,7 @@ void GetSliceHists(slicedata *sd){
 
   ntimes = ndata / sd->nsliceijk;
 
+#ifndef pp_SMOKESTREAM
   // initialize histograms
 
   sd->nhistograms = ntimes + 1;
@@ -1674,9 +1675,10 @@ void GetSliceHists(slicedata *sd){
     CopyVals2Histogram(pdata0, slice_mask0, slice_weight0, nframe, histi);
     MergeHistogram(histall, histi, MERGE_BOUNDS);
   }
+  FREEMEMORY(pdata0);
+#endif
   FREEMEMORY(slice_mask0);
   FREEMEMORY(slice_weight0);
-  FREEMEMORY(pdata0);
 }
 
 /* ------------------ GetSliceGeomHists ------------------------ */
@@ -4963,8 +4965,10 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
       cpp_boundsdata *bounds;
 
       bounds = GetBoundsData(BOUND_SLICE);
+#ifndef pp_SMOKESTREAM
       ComputeLoadedSliceHist(bounds->label, &(bounds->hist));
-      if(bounds->hist->defined==1){
+#endif
+      if(bounds->hist!=NULL&&bounds->hist->defined==1){
         if(set_valmin==BOUND_PERCENTILE_MIN){
           GetHistogramValProc(bounds->hist, percentile_level_min, &qmin);
           SetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, qmin);
@@ -7849,7 +7853,24 @@ void DrawSliceFrame(){
         ASSERT(ValidPointer(sd->qslicedata,sizeof(float)*sd->nslicetotal));
       }
 #endif
+#ifdef pp_SMOKESTREAM
+      int iframe;
+
+      iframe = GetFrameIndex(global_times[itimes], sd->times, sd->ntimes);
+      if(sd->slicestream->frameptrs[iframe]==NULL){
+        int swap[3];
+
+        swap[0] = sd->nslicei;
+        swap[1] = sd->nslicej;
+        swap[2] = sd->nslicek;
+        StreamRead(sd->slicestream, iframe, swap);
+        CheckMemory;
+      }
+      sd->qslice = (float *)(sd->slicestream->frameptrs[iframe]+16);
+      sd->qsliceframe = sd->qslice;
+#else
       if(sd->qslicedata!= NULL)sd->qsliceframe = sd->qslicedata + sd->itime*sd->nsliceijk;
+#endif
     }
     orien = 0;
     direction = 1;

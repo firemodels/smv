@@ -186,7 +186,7 @@ streamdata *StreamOpen(streamdata *streamin, char *file, size_t offset, int *fra
       NewMemory((void **)&(stream->file), strlen(file)+1);
       strcpy(stream->file, file);
       NewMemory((void **)&(stream->frameptrs),     nframes*sizeof(char *));
-      NewMemory((void **)&(stream->filebuffer),    nframes*sizeof(char *));
+      NewMemory((void **)&(stream->filebuffer),    statbuffer.st_size);
       NewMemory((void **)&(stream->framesizes),    nframes*sizeof(size_t));
       NewMemory((void **)&(stream->frame_offsets), nframes*sizeof(size_t));
       stream->frame_offsets[0] = offset;
@@ -195,10 +195,18 @@ streamdata *StreamOpen(streamdata *streamin, char *file, size_t offset, int *fra
       start = 1;
     }
     else{
+      char *filebuffer_old;
+
+      filebuffer_old = stream->filebuffer;
       ResizeMemory((void **)&(stream->frameptrs),     nframes*sizeof(char *));
-      ResizeMemory((void **)&(stream->filebuffer),    nframes*sizeof(char *));
+      ResizeMemory((void **)&(stream->filebuffer),    statbuffer.st_size);
       ResizeMemory((void **)&(stream->framesizes),    nframes*sizeof(size_t));
       ResizeMemory((void **)&(stream->frame_offsets), nframes*sizeof(size_t));
+      if(filebuffer_old!=stream->filebuffer){
+        for(i = 0; i<streamin->nframes; i++){
+          if(stream->frameptrs[i]!=NULL)stream->frameptrs[i] = stream->filebuffer+stream->frame_offsets[i];
+        }
+      }
       start = streamin->nframes;
     }
     stop = nframes;
@@ -245,7 +253,7 @@ void StreamClose(streamdata **streamptr){
 
 /* ------------------  StreamRead ------------------------ */
 
-FILE_SIZE StreamRead(streamdata *stream, int frame_index){
+FILE_SIZE StreamRead(streamdata *stream, int frame_index, int *swap){
   FILE *filestream;
   FILE_SIZE file_size;
 
@@ -255,7 +263,42 @@ FILE_SIZE StreamRead(streamdata *stream, int frame_index){
   if(filestream==NULL)return 0;
 
   fseek(filestream, stream->frame_offsets[frame_index], SEEK_SET);
-  file_size = fread(stream->filebuffer+stream->frame_offsets[frame_index], 1, stream->framesizes[frame_index], filestream);
+  if(swap==NULL){
+    file_size = fread(stream->filebuffer+stream->frame_offsets[frame_index], 1, stream->framesizes[frame_index], filestream);
+  }
+  else{
+    char *cvals, *fvals;
+    int i, j, k;
+    float *to, *from;
+
+
+#define IJKNODE(i,j,k) ((i)+(j)*nx+(k)*nxy)
+#define COLMAJOR(i,j,k) ((i)*nz*ny+(j)*nz+(k))
+    int nx, ny, nz, nxy;
+
+    nx = swap[0];
+    ny = swap[1];
+    nz = swap[2];
+    nxy = nx*ny;
+
+    NewMemory((void **)&cvals, stream->framesizes[frame_index]);
+    memcpy(stream->filebuffer+stream->frame_offsets[frame_index], cvals, 12);
+
+    file_size = fread(cvals, 1, stream->framesizes[frame_index], filestream);
+    to = (float *)(stream->filebuffer+stream->frame_offsets[frame_index]+16);
+    from = (float *)(cvals+16);
+     for(k = 0; k<swap[2]; k++){
+      for(j = 0; j<swap[1]; j++){
+       for(i = 0; i<swap[0]; i++){
+//          to[IJKFORT(i,j,k)] = from[IJKNODE(i,j,k)];
+//          to[COLMAJOR(i,j,k)] = from[IJKNODE(i,j,k)];
+          *to++ = *from++;
+        }
+      }
+    }
+    FREEMEMORY(cvals);
+  }
+  stream->frameptrs[frame_index] = stream->filebuffer+stream->frame_offsets[frame_index];
   fclose(filestream);
   return file_size;
 }
