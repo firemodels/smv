@@ -166,7 +166,7 @@ EXTERNCPP void SetPercentileDrawOff(void);
 EXTERNCPP void ClosePartFiles(void);
 EXTERNCPP void PartBoundsCPP_CB(int var);
 EXTERNCPP void UpdatdateResearchModeCPP(void);
-EXTERNCPP void UpdatePartColors(partdata *parti);
+EXTERNCPP void UpdatePartColors(partdata *parti, int flag);
 EXTERNCPP void SetPercentilePartBounds(void);
 EXTERNCPP void SetPercentilePlot3DBounds(void);
 EXTERNCPP void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax, float gmin, float gmax, int ndigits);
@@ -1055,7 +1055,7 @@ EXTERNCPP void UpdateAllGeomTriangles(void);
 EXTERNCPP void SetSliceBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2);
 EXTERNCPP void SetBoundBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2);
 
-EXTERNCPP void GetPartColors(partdata *parti, int nlevels);
+EXTERNCPP void GetPartColors(partdata *parti, int nlevels, int flag);
 EXTERNCPP void GetBoundaryColors(float *t, int nt, unsigned char *it,
               int settmin, float *tmin, int settmax, float *tmax,
               float *tmin_global, float *tmax_global,

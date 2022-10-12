@@ -2049,15 +2049,21 @@ extern "C" void PartBoundsCPP_CB(int var){
   bounds = all_bounds+ipart5prop;
 
   switch(var){
+    case BOUND_COLORBAR_DIGITS:
+      break;
     case BOUND_VAL_TYPE:
       ipart5prop = GetValType(BOUND_PART);
       ParticlePropShowMenu(ipart5prop);
       PartBoundsCPP_CB(BOUND_PERCENTILE_DRAW);
       break;
-    case BOUND_VALMIN:
-    case BOUND_VALMAX:
     case BOUND_SETVALMIN:
     case BOUND_SETVALMAX:
+    case BOUND_VALMIN:
+    case BOUND_VALMAX:
+#ifdef pp_PARTVAL
+      UpdatePartColors(NULL, 0);
+      break;
+#endif
     case BOUND_CHOPMIN:
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
@@ -2153,7 +2159,7 @@ extern "C" void PartBoundsCPP_CB(int var){
       }
       break;
     case BOUND_UPDATE_COLORS:
-      UpdatePartColors(NULL);
+      UpdatePartColors(NULL, 1);
       break;
     case BOUND_RELOAD_DATA:
       if(npartinfo>0){
@@ -2179,11 +2185,17 @@ extern "C" void PartBoundsCPP_CB(int var){
       if(npatchinfo>0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
       if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
+#ifdef pp_PARTVAL
+      UpdatePartColors(NULL, 0);
+#endif
       break;
     case BOUND_PERCENTILE_MODE:
       if(npatchinfo>0)patchboundsCPP.CB(BOUND_PERCENTILE_MODE);
-      if(npatchinfo>0)patchboundsCPP.CB(BOUND_PERCENTILE_MODE);
+      if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_PERCENTILE_MODE);
       if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_PERCENTILE_MODE);
+#ifdef pp_PARTVAL
+      UpdatePartColors(NULL, 0);
+#endif
       break;
     case BOUND_LEFT_PERCEN:
     case BOUND_DOWN_PERCEN:

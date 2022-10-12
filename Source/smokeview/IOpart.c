@@ -68,7 +68,12 @@ void ClosePartFiles(void){
 
 /* ------------------ GetEvacPartColor ------------------------ */
 
+#ifdef pp_PARTVAL
+int GetEvacPartColor(float **color_handle, part5data *datacopy, int show_default, int j, int itype,
+                     float valmin, float valmax){
+#else
 int GetEvacPartColor(float **color_handle, part5data *datacopy, int show_default, int j, int itype){
+#endif
   int is_human_color;
   float *colorptr;
   unsigned char *color;
@@ -83,12 +88,24 @@ int GetEvacPartColor(float **color_handle, part5data *datacopy, int show_default
     colorptr = datacopy->partclassbase->rgb;
   }
   else{
+    float *rvals;
+
     color = datacopy->irvals + itype*datacopy->npoints;
+    rvals = datacopy->rvals + itype*datacopy->npoints;
     if(is_human_color == 1){
       colorptr = avatar_colors + 3 * color[j];
     }
     else{
-      colorptr = rgb_part + 4*color[j];
+     int colorj;
+#ifdef pp_PARTVAL
+      float rval;
+
+      rval = CLAMP(254.0*(rvals[j]-valmin)/(valmax-valmin), 0.0, 254.0);
+      colorj = rval;
+#else
+      colorj = color[j];
+#endif
+      colorptr = rgb_part + 4*colorj;
     }
     if(current_property != NULL && (color[j] > current_property->imax || color[j] < current_property->imin))showcolor = 0;
   }
@@ -209,6 +226,14 @@ int GetTagIndex(const partdata *partin_arg, part5data **datain_arg, int tagval_a
   return -1;
 }
 
+/* ------------------ GetPartBounds ------------------------ */
+#ifdef pp_PARTVAL
+void GetPartBounds(float *valmin, float *valmax){
+  *valmin = part5propinfo[global_prop_index].ppartlevels256[0];
+  *valmax = part5propinfo[global_prop_index].ppartlevels256[255];
+}
+#endif
+
 /* ------------------ DrawPart ------------------------ */
 
 void DrawPart(const partdata *parti){
@@ -218,6 +243,9 @@ void DrawPart(const partdata *parti){
   int i, j;
   int offset_terrain;
   propdata *prop;
+#ifdef pp_PARTVAL
+  float valmin, valmax;
+#endif
 
   if(nglobal_times<1||parti->times[0] > global_times[itimes])return;
   if(nterraininfo > 0 && ABS(vertical_factor - 1.0) > 0.01){
@@ -228,6 +256,13 @@ void DrawPart(const partdata *parti){
   }
 
   if(current_property == NULL)return;
+#ifdef pp_PARTVAL
+  GetPartBounds(&valmin, &valmax);
+  if(valmin>=valmax){
+    valmin = 0.0;
+    valmax = 1.0;
+  }
+#endif
   ipframe = parti->itime;
   if(ipframe < 0){
     ipframe = 0;
@@ -301,7 +336,11 @@ void DrawPart(const partdata *parti){
               az_angle = angle[j];
               glRotatef(az_angle, 0.0, 0.0, 1.0);
 
+#ifdef pp_PARTVAL
+              GetEvacPartColor(&colorptr, datacopy, show_default, j, itype, valmin, valmax);
+#else
               GetEvacPartColor(&colorptr, datacopy, show_default, j, itype);
+#endif
 
               //  :W :D :H1 :SX :SY :SZ :R :G :B :HX :HY :HZ
               //  class color: rgbobject[0], rgbobject[1], rgbobject[2]
@@ -406,12 +445,24 @@ void DrawPart(const partdata *parti){
                 }
               }
               else{
+                float *rvals;
+
                 color = datacopy->irvals + itype*datacopy->npoints;
+                rvals = datacopy->rvals+itype*datacopy->npoints;
                 for(j = 0;j < datacopy->npoints;j++){
                   if(vis[j] == 1){
-                    if(current_property != NULL && (color[j] > current_property->imax || color[j] < current_property->imin))continue;
-                    if(rgb_part[4*color[j]+3]==0.0)continue;
-                    glColor4fv(rgb_part+4*color[j]);
+                    int colorj;
+
+#ifdef pp_PARTVAL
+                    float rval;
+                    rval = CLAMP(254.0*(rvals[j]-valmin)/(valmax-valmin), 0.0, 254.0);
+                    colorj = rval;
+#else
+                    colorj = color[j];
+#endif
+                    if(current_property != NULL && (colorj > current_property->imax || colorj < current_property->imin))continue;
+                    if(rgb_part[4*colorj+3]==0.0)continue;
+                    glColor4fv(rgb_part+4*colorj);
                     glVertex3f(xplts[sx[j]], yplts[sy[j]], zplts[sz[j]]);
                   }
                 }
@@ -590,7 +641,11 @@ void DrawPart(const partdata *parti){
 
         // draw the streak line
 
+#ifdef pp_PARTVAL
+        GetEvacPartColor(&colorptr, datacopy, show_default, 0, itype, valmin, valmax);
+#else
         GetEvacPartColor(&colorptr, datacopy, show_default, 0, itype);
+#endif
         glColor4fv(colorptr);
 
         glLineWidth(streaklinewidth);
@@ -627,7 +682,11 @@ void DrawPart(const partdata *parti){
 
           tagval = datacopy->tags[j];
           if(vis[j] == 0)continue;
+#ifdef pp_PARTVAL
+          if(GetEvacPartColor(&colorptr, datacopy, show_default, j, itype, valmin, valmax)==0)continue;
+#else
           if(GetEvacPartColor(&colorptr, datacopy, show_default, j, itype) == 0)continue;
+#endif
           if(colorptr[3]==0.0)continue;
 
           glBegin(GL_LINE_STRIP);
@@ -644,7 +703,11 @@ void DrawPart(const partdata *parti){
             syy = datapast->sy;
             szz = datapast->sz;
 
+#ifdef pp_PARTVAL
+            GetEvacPartColor(&colorptr, datacopy, show_default, jj, itype, valmin, valmax);
+#else
             GetEvacPartColor(&colorptr, datacopy, show_default, jj, itype);
+#endif
             glColor4fv(colorptr);
             glVertex3f(xplts[sxx[jj]], yplts[syy[jj]], zplts[szz[jj]]);
           }
@@ -2066,7 +2129,7 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
 
 /* ------------------ UpdatePartColors ------------------------ */
 
-void UpdatePartColors(partdata *parti){
+void UpdatePartColors(partdata *parti, int flag){
   int j;
 
   if(colorlabelpart==NULL){
@@ -2085,7 +2148,7 @@ void UpdatePartColors(partdata *parti){
   if(parti!=NULL){
     if(parti->loaded==1&&parti->display==1){
       if(parti->stream!=NULL){
-        GetPartColors(parti, nrgb);
+        GetPartColors(parti, nrgb, flag);
       }
       else{
         printf("***warning: particle data in %s was unloaded, colors not updated\n",parti->file);
@@ -2109,7 +2172,7 @@ void UpdatePartColors(partdata *parti){
 
       partj = partinfo+j;
       if(partj->loaded==1&&partj->display==1){
-        GetPartColors(partj, nrgb);
+        GetPartColors(partj, nrgb, flag);
       }
     }
   }
@@ -2153,7 +2216,7 @@ void FinalizePartLoad(partdata *parti){
 
       partj = partinfo+j;
       if(partj->loaded==1){
-        UpdatePartColors(partj);
+        UpdatePartColors(partj, 1);
       }
     }
   }
@@ -2205,7 +2268,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
 
   if(loadflag_arg==UNLOAD){
     if(parti->finalize == 1){
-      UpdatePartColors(parti);
+      UpdatePartColors(parti, 1);
       UpdateTimes();
       updatemenu = 1;
       UpdatePart5Extremes();
@@ -2244,7 +2307,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   parti->loaded = 1;
   parti->display = 1;
   if(cache_part_data==0){
-    UpdatePartColors(parti);
+    UpdatePartColors(parti, 1);
   }
   UNLOCK_PART_LOAD;
   if(cache_part_data==0){
