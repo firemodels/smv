@@ -88,10 +88,14 @@ int GetEvacPartColor(float **color_handle, part5data *datacopy, int show_default
     colorptr = datacopy->partclassbase->rgb;
   }
   else{
+#ifdef pp_PARTVAL
     float *rvals;
+#endif
 
     color = datacopy->irvals + itype*datacopy->npoints;
+#ifdef pp_PARTVAL
     rvals = datacopy->rvals + itype*datacopy->npoints;
+#endif
     if(is_human_color == 1){
       colorptr = avatar_colors + 3 * color[j];
     }
@@ -445,10 +449,14 @@ void DrawPart(const partdata *parti){
                 }
               }
               else{
+#ifdef pp_PARTVAL
                 float *rvals;
+#endif
 
                 color = datacopy->irvals + itype*datacopy->npoints;
+#ifdef pp_PARTVAL
                 rvals = datacopy->rvals+itype*datacopy->npoints;
+#endif
                 for(j = 0;j < datacopy->npoints;j++){
                   if(vis[j] == 1){
                     int colorj;
