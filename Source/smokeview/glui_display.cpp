@@ -763,18 +763,6 @@ extern "C" void GluiLabelsSetup(int main_window){
   SPINNER_shininess = glui_labels->add_spinner_to_panel(PANEL_diffuse, "shininess", GLUI_SPINNER_FLOAT, &glui_shininess,
                                                         COLOR_DIFF_GREY, ColorCB);
 
-#ifdef pp_SPECULAR
-  PANEL_specular = glui_labels->add_panel_to_panel(ROLLOUT_light2, "specular");
-  SPINNER_spec_red = glui_labels->add_spinner_to_panel(PANEL_specular, _("red:"),     GLUI_SPINNER_INT, glui_specularlight,   COLOR_SPEC_RGB,  ColorCB);
-  SPINNER_spec_green = glui_labels->add_spinner_to_panel(PANEL_specular, _("green:"), GLUI_SPINNER_INT, glui_specularlight+1, COLOR_SPEC_RGB,  ColorCB);
-  SPINNER_spec_blue = glui_labels->add_spinner_to_panel(PANEL_specular, _("blue:"),   GLUI_SPINNER_INT, glui_specularlight+2, COLOR_SPEC_RGB,  ColorCB);
-  SPINNER_spec_grey = glui_labels->add_spinner_to_panel(PANEL_specular, _("grey:"),   GLUI_SPINNER_INT, &glui_speculargrey,   COLOR_SPEC_GREY, ColorCB);
-  SPINNER_spec_red->set_int_limits(0, 255);
-  SPINNER_spec_green->set_int_limits(0, 255);
-  SPINNER_spec_blue->set_int_limits(0, 255);
-  SPINNER_spec_grey->set_int_limits(0, 255);
-#endif
-
   PANEL_positional = glui_labels->add_panel_to_panel(ROLLOUT_light2, "direction");
   glui_labels->add_checkbox_to_panel(PANEL_positional, "show directions", &drawlights);
 

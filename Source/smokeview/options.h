@@ -41,7 +41,6 @@
 #define pp_THREAD             // turn on multi-threading
 #define pp_DRAWISO            // turn on drawing routines
 //#define pp_UPDATE_FILELOAD  // updates fileload variables when a file has been loaded or unloaded
-//#define pp_SPECULAR         // add widgets for specular lighting parameters to the lighting dialog box
 //#define pp_LOAD_NEWDATA     // add button for loading new data
 //#define pp_TERRAIN_UPDATE     // add button to update terrain buttons
 
