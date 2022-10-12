@@ -14951,6 +14951,37 @@ int ReadIni2(char *inifile, int localfile){
   return 0;
 }
 
+/* ------------------ ReadBinIni ------------------------ */
+
+int ReadBinIni(void){
+  char smvprogini[1024];
+  char *smvprogini_ptr = NULL;
+
+  strcpy(smvprogini, "");
+  if(smokeview_bindir!=NULL)strcat(smvprogini, smokeview_bindir);
+  strcat(smvprogini, "smokeview.ini");
+  smvprogini_ptr = smokeviewini;
+  if(smokeviewini!=NULL){
+#ifdef WIN32
+    if(STRCMP(smvprogini, smokeviewini)!=0)smvprogini_ptr = smvprogini;
+#else
+    if(strcmp(smvprogini, smokeviewini)!=0)smvprogini_ptr = smvprogini;
+#endif
+  }
+
+  //*** read in config files if they exist
+
+  // smokeview.ini ini in install directory
+
+  if(smvprogini_ptr!=NULL){
+    int returnval;
+
+    returnval = ReadIni2(smvprogini_ptr, 0);
+    return returnval;
+  }
+  return 0;
+}
+
 /* ------------------ ReadIni ------------------------ */
 
 int ReadIni(char *inifile){

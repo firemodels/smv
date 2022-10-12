@@ -830,6 +830,32 @@ void UpdateSliceColors(int last_slice){
     }
   }
 }
+#ifdef pp_SMOKESTREAM
+/* ------------------ UpdateSliceBounds2 ------------------------ */
+
+void UpdateSliceBounds2(void){
+  int ii, error;
+
+  for(ii = 0; ii<nslice_loaded; ii++){
+    int i;
+    slicedata *sd;
+    int set_valmin, set_valmax;
+    float qmin, qmax;
+
+    i = slice_loaded_list[ii];
+    sd = sliceinfo+i;
+    if(sd->vloaded==0&&sd->display==0)continue;
+    GetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
+    sd->valmin      = qmin;
+    sd->valmax      = qmax;
+    sd->globalmin   = qmin;
+    sd->globalmax   = qmax;
+    sd->valmin_data = qmin;
+    sd->valmax_data = qmax;
+    SetSliceColors(qmin, qmax, sd, 0, &error);
+  }
+}
+#endif
 
 /* ------------------ GetSliceColors ------------------------ */
 
@@ -837,7 +863,7 @@ void GetSliceColors(const float *t, int nt, unsigned char *it,
               float local_tmin, float local_tmax,
               int ndatalevel, int nlevel,
               char colorlabels[12][11], float colorvalues[12], float *tlevels256,
-              int *extreme_min, int *extreme_max
+              int *extreme_min, int *extreme_max, int flag
               ){
   int n;
   float factor, tval;
@@ -850,27 +876,29 @@ void GetSliceColors(const float *t, int nt, unsigned char *it,
   if(range!=0.0f){
     factor = (float)(ndatalevel-2*extreme_data_offset)/range;
   }
-   else{
-     factor = 0.0f;
-   }
-  for(n=0;n<nt;n++){
-    float val;
+  else{
+    factor = 0.0f;
+  }
+  if(flag==1){
+    for(n=0;n<nt;n++){
+      float val;
 
-    val = *t;
+      val = *t;
 
-    if(val<local_tmin){
-      itt=0;
-      *extreme_min=1;
+      if(val<local_tmin){
+        itt=0;
+        *extreme_min=1;
+      }
+      else if(val>local_tmax){
+        itt=ndatalevel-1;
+        *extreme_max=1;
+      }
+      else{
+        itt=extreme_data_offset+(int)(factor*(val-local_tmin));
+      }
+      *it++ = CLAMP(itt, colorbar_offset, ndatalevel - 1 - colorbar_offset);
+      t++;
     }
-    else if(val>local_tmax){
-      itt=ndatalevel-1;
-      *extreme_max=1;
-    }
-    else{
-      itt=extreme_data_offset+(int)(factor*(val-local_tmin));
-    }
-    *it++ = CLAMP(itt, colorbar_offset, ndatalevel - 1 - colorbar_offset);
-    t++;
   }
 
   MakeColorLabels(colorlabels, colorvalues, local_tmin, local_tmax, nlevel);
