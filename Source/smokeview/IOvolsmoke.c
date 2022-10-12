@@ -799,7 +799,6 @@ void InitVolRender(void){
   int i;
 
   nvolrenderinfo=0;
-  update_fileload = 1;
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
     volrenderdata *vr;
@@ -2797,7 +2796,6 @@ void UnloadVolsmokeFrameAllMeshes(int framenum){
   int i;
 
   PRINTF("Unloading smoke frame: %i\n",framenum);
-  update_fileload = 1;
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
     volrenderdata *vr;
@@ -2818,7 +2816,6 @@ void UnloadVolsmokeAllFrames(volrenderdata *vr){
   int i;
 
   PRINTF("Unloading smoke %s - ",vr->rendermeshlabel);
-  update_fileload = 1;
   for(i=0;i<vr->ntimes;i++){
     FREEMEMORY(vr->firedataptrs[i]);
     FREEMEMORY(vr->smokedataptrs[i]);
@@ -2839,7 +2836,6 @@ void ReadVolsmokeAllFrames(volrenderdata *vr){
   int i;
   int first=1;
 
-  update_fileload = 1;
   nframes = vr->ntimes;
   for(i=0;i<nframes;i++){
     ReadVolsmokeFrame(vr, i, &first);
@@ -2868,7 +2864,6 @@ void ReadVolsmokeFrameAllMeshes(int framenum, supermeshdata *smesh){
   int first=1;
   int nm;
 
-  update_fileload = 1;
   if(smesh==NULL){
     nm=nmeshes;
   }
@@ -3116,7 +3111,6 @@ void DefineVolsmokeTextures(void){
 void ReadVolsmokeAllFramesAllMeshes(void){
   int i;
 
-  update_fileload = 1;
   compress_volsmoke=glui_compress_volsmoke;
   load_volcompressed=glui_load_volcompressed;
   for(i=0;i<nmeshes;i++){

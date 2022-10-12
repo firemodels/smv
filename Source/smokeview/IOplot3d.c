@@ -222,7 +222,6 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
 
   CheckMemory;
   START_TIMER(total_time);
-  update_fileload = 1;
   *errorcode=0;
 
   ASSERT(ifile>=0&&ifile<nplot3dinfo);

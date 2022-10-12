@@ -4277,7 +4277,6 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   int fortran_skip=0;
 
   SetTimeState();
-  update_fileload = 1;
   update_smokefire_colors = 1;
 #ifndef pp_FSEEK
   if(flag_arg==RELOAD)flag_arg = LOAD;
@@ -4426,7 +4425,6 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
 void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode){
   int i;
 
-  update_fileload = 1;
   for(i = 0; i < nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
     int first_time;
