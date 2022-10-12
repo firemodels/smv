@@ -287,9 +287,6 @@ EXTERNCPP void UpdateVentOffset(void);
 EXTERNCPP void ColorbarCB(int var);
 EXTERNCPP void UpdateOpacityMap(void);
 EXTERNCPP void ShowBoundsDialog(int type);
-#ifdef  pp_SPECTRAL
-EXTERNCPP void GetBlackBodyColors(float tmin, float tmax, float *intensities, int n);
-#endif
 EXTERNCPP void UpdateFreeze(int val);
 EXTERNCPP void UpdateLoadTimeVal(float val);
 EXTERNCPP void UpdateTimeFrameBounds(float time_min, float time_max);

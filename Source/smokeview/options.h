@@ -52,7 +52,6 @@
 //#define pp_PART_TEST        // for debugging, set particle values to 100*parti->seq_id + small random number
 
 //*** in development: all platforms
-//#define pp_SPECTRAL           // use black body colors - not fully implemented
 #define pp_SLICETHREAD        // parallel slice file loading
 //#define pp_SHOW_CACHE         // show file cache checkbox
 //#define pp_PLOT3D_REDUCEMENUS // eliminate plot3d sub-menus
