@@ -518,7 +518,21 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
       // glui_bounds->add_button_to_panel(ROLLOUT_percentiles, "Update", BOUND_COMPUTE_PERCENTILES, Callback);
     }
     PANEL_buttons = glui_bounds->add_panel_to_panel(PANEL_minmax, "", GLUI_PANEL_NONE);
-    BUTTON_update_colors      = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
+    int skip_update_colors_button=0;
+#ifdef pp_PARTVAL
+    if(strcmp(file_type,"particle")==0)skip_update_colors_button = 1;
+#endif
+#ifdef pp_SLICEVAL
+    if(strcmp(file_type,"slice")==0)skip_update_colors_button = 1;
+#endif
+    if(skip_update_colors_button==1){
+      BUTTON_update_colors      = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
+    }
+    else{
+      BUTTON_update_colors = NULL;
+      // define Update colors button always for now
+      BUTTON_update_colors      = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
+    }
     glui_bounds->add_column_to_panel(PANEL_buttons, false);
   }
   if(PANEL_buttons==NULL){

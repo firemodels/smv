@@ -25,7 +25,8 @@
 //*** options: all platforms
 
 //#define pp_SMOKESTREAM         // option to stream data
-#define pp_SLICEVAL         // speed up slice file updating and loading
+//#define pp_PARTVAL         // speed up part file color updating
+//#define pp_SLICEVAL         // speed up slice file color updating
 #define pp_CLIP_FIX          // fixes to clipping
 #define pp_PART_MULTI        // load particles in parallel
 //#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds
