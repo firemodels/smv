@@ -4238,23 +4238,19 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
       ncomp_smoke_total_skipped_local += smoke3di->nchars_compressed_smoke_full[i];
     }
   }
-#ifndef pp_SMOKEBUFFERPTR
   if(NewResizeMemory(smoke3di->smoke_comp_all, ncomp_smoke_total_skipped_local*sizeof(unsigned char))==0){
     SetupSmoke3D(smoke3di, UNLOAD, iframe_arg, &error_local);
     *errorcode_arg = 1;
     fprintf(stderr, "\n*** Error: problems allocating memory for 3d smoke file: %s\n", smoke3di->file);
     return READSMOKE3D_RETURN;
   }
-#endif
   smoke3di->ncomp_smoke_total = ncomp_smoke_total_skipped_local;
 
   ncomp_smoke_total_local = 0;
   i = 0;
   for(ii = 0; ii<smoke3di->ntimes_full; ii++){
     if(smoke3di->use_smokeframe[ii]==1){
-#ifndef pp_SMOKEBUFFERPTR
       smoke3di->smokeframe_comp_list[i] = smoke3di->smoke_comp_all+ncomp_smoke_total_local;
-#endif
       ncomp_smoke_total_local += smoke3di->nchars_compressed_smoke[i];
       i++;
     }
@@ -4357,11 +4353,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
       float complevel_local;
 
       nframes_found_local++;
-#ifdef pp_SMOKEBUFFERPTR
-      SKIP_SMOKE;FREADPTR_SMOKE((void **)&(smoke3di->smokeframe_comp_list[iii]),1,smoke3di->nchars_compressed_smoke[iii],SMOKE3DFILE); SKIP_SMOKE;
-#else
       SKIP_SMOKE;FREAD_SMOKE(smoke3di->smokeframe_comp_list[iii],1,smoke3di->nchars_compressed_smoke[iii],SMOKE3DFILE); SKIP_SMOKE;
-#endif
       file_size_local +=4+smoke3di->nchars_compressed_smoke[iii]+4;
       iii++;
       CheckMemory;
