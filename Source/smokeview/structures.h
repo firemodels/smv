@@ -1497,7 +1497,7 @@ typedef struct _smoke3ddata {
   float *smoke_boxmin, *smoke_boxmax;
   smokedata smoke, light;
 #ifdef pp_SMOKE3DSTREAM
-  streamdata *smokes3dtream;
+  streamdata *smokes3dstream;
 #endif
   int dir;
 } smoke3ddata;

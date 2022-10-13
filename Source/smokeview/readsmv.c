@@ -5370,7 +5370,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->lastiframe = -999;
     smoke3di->ismoke3d_time = 0;
 #ifdef pp_SMOKE3DSTREAM
-    smoke3di->smokes3dtream = NULL;
+    smoke3di->smokes3dstream = NULL;
 #endif
 
     STRCPY(buffer2, bufferptr);
