@@ -14,6 +14,6 @@ typedef struct _streamdata {
 EXTERNCPP streamdata *StreamOpen(streamdata *streamin, char *file, size_t offset, int *framesizes, int nframes, int constant_frame_size);
 EXTERNCPP void StreamClose(streamdata **stream);
 EXTERNCPP int GetFrameIndex(float time, float *times, int ntimes);
-FILE_SIZE StreamRead(streamdata *stream, int frame_index, int *swap);
+FILE_SIZE StreamRead(streamdata *stream, int frame_index);
 #endif
 #endif

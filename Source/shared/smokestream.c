@@ -232,6 +232,7 @@ streamdata *StreamOpen(streamdata *streamin, char *file, size_t offset, int *fra
     stream = streamin;
   }
   stream->nframes = nframes;
+  CheckMemory;
   return stream;
 }
 
@@ -249,57 +250,27 @@ void StreamClose(streamdata **streamptr){
   FREEMEMORY(stream->file);
   FREEMEMORY(stream);
   *streamptr = NULL;
+  CheckMemory;
 }
 
 /* ------------------  StreamRead ------------------------ */
 
-FILE_SIZE StreamRead(streamdata *stream, int frame_index, int *swap){
+FILE_SIZE StreamRead(streamdata *stream, int frame_index){
   FILE *filestream;
   FILE_SIZE file_size;
 
   if(stream==NULL||frame_index<0||frame_index>=stream->nframes)return 0;
 
-  filestream = fopen(stream->file, "r");
+  filestream = fopen(stream->file, "rb");
   if(filestream==NULL)return 0;
 
   fseek(filestream, stream->frame_offsets[frame_index], SEEK_SET);
-  if(swap==NULL){
-    file_size = fread(stream->filebuffer+stream->frame_offsets[frame_index], 1, stream->framesizes[frame_index], filestream);
-  }
-  else{
-    char *cvals, *fvals;
-    int i, j, k;
-    float *to, *from;
-
-
-#define IJKNODE(i,j,k) ((i)+(j)*nx+(k)*nxy)
-#define COLMAJOR(i,j,k) ((i)*nz*ny+(j)*nz+(k))
-    int nx, ny, nz, nxy;
-
-    nx = swap[0];
-    ny = swap[1];
-    nz = swap[2];
-    nxy = nx*ny;
-
-    NewMemory((void **)&cvals, stream->framesizes[frame_index]);
-    memcpy(stream->filebuffer+stream->frame_offsets[frame_index], cvals, 12);
-
-    file_size = fread(cvals, 1, stream->framesizes[frame_index], filestream);
-    to = (float *)(stream->filebuffer+stream->frame_offsets[frame_index]+16);
-    from = (float *)(cvals+16);
-     for(k = 0; k<swap[2]; k++){
-      for(j = 0; j<swap[1]; j++){
-       for(i = 0; i<swap[0]; i++){
-//          to[IJKFORT(i,j,k)] = from[IJKNODE(i,j,k)];
-//          to[COLMAJOR(i,j,k)] = from[IJKNODE(i,j,k)];
-          *to++ = *from++;
-        }
-      }
-    }
-    FREEMEMORY(cvals);
-  }
+  file_size = fread(stream->filebuffer+stream->frame_offsets[frame_index], 1, stream->framesizes[frame_index], filestream);
+  CheckMemory;
   stream->frameptrs[frame_index] = stream->filebuffer+stream->frame_offsets[frame_index];
+  CheckMemory;
   fclose(filestream);
+  ASSERT(file_size==stream->framesizes[frame_index]);
   return file_size;
 }
 

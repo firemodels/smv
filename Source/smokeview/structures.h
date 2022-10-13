@@ -1455,6 +1455,9 @@ typedef struct {
 typedef struct _smoke3ddata {
   int seq_id,autoload;
   char *file;
+#ifdef pp_SMOKE3DSTREAM
+  char *size_file;
+#endif
   char *comp_file, *reg_file;
   int filetype;
   int loaded, finalize, display, request_load, primary_file;
@@ -1493,6 +1496,9 @@ typedef struct _smoke3ddata {
   FILE_SIZE file_size;
   float *smoke_boxmin, *smoke_boxmax;
   smokedata smoke, light;
+#ifdef pp_SMOKE3DSTREAM
+  streamdata *smokes3dtream;
+#endif
   int dir;
 } smoke3ddata;
 

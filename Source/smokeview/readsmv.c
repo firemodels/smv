@@ -5326,6 +5326,11 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
 
     if(NewMemory((void **)&smoke3di->reg_file, (unsigned int)(len+1))==0)return RETURN_TWO;
     STRCPY(smoke3di->reg_file, bufferptr);
+#ifdef pp_SMOKE3DSTREAM
+    if(NewMemory((void **)&smoke3di->size_file, (unsigned int)(len+3+1))==0)return RETURN_TWO;
+    STRCPY(smoke3di->size_file, bufferptr);
+    strcat(smoke3di->size_file, ".sz");
+#endif
 
     for(i=0; i<6; i++){
       unsigned char *alpha_dir;
@@ -5364,6 +5369,9 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->blocknumber = blocknumber;
     smoke3di->lastiframe = -999;
     smoke3di->ismoke3d_time = 0;
+#ifdef pp_SMOKE3DSTREAM
+    smoke3di->smokes3dtream = NULL;
+#endif
 
     STRCPY(buffer2, bufferptr);
     STRCAT(buffer2, ".svz");
