@@ -1,6 +1,6 @@
 #ifndef SMOKESTREAM_H_DEFINED
 #define SMOKESTREAM_H_DEFINED
-#ifdef pp_SMOKESTREAM
+#ifdef pp_STREAM
 EXTERNCPP char *MemMap(char *file, size_t *size);
 EXTERNCPP void MemUnMap(char *data, size_t size);
 

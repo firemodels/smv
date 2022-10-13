@@ -24,10 +24,25 @@
 
 //*** options: all platforms
 
+// use floarint point to color data
+
 #define pp_PARTVAL          // speed up part file color updating
 #define pp_SLICEVAL         // speed up slice file color updating
 
+// streaming directives
+
 #define pp_SMOKE3DSTREAM      // stream smoke3d data
+#define pp_PARTSTREAM         // stream particle data
+
+// turn on pp_STREAM if an streaming is on for any file type
+
+#ifdef pp_SMOKE3DSTREAM
+#define pp_STREAM
+#endif
+#ifdef pp_PARTSTREAM
+#undef pp_STREAM
+#define pp_STREAM
+#endif
 
 #define pp_CLIP_FIX          // fixes to clipping
 #define pp_PART_MULTI        // load particles in parallel
@@ -59,10 +74,6 @@
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
 #ifdef pp_BETA
 #define pp_TERRAIN_DEBUG         // show terrain slice debugging output (only use with test smokeview's)
-#endif
-
-#ifdef pp_SMOKE3DSTREAM
-#define pp_SMOKESTREAM         // option to stream data, defined if pp_SMOKE3DSTREAM is defined
 #endif
 
 #ifdef pp_GPU

@@ -1,5 +1,5 @@
 #include "options.h"
-#ifdef pp_SMOKESTREAM
+#ifdef pp_STREAM
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
