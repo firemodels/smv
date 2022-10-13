@@ -4348,9 +4348,6 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
 
   GetSmoke3dTimesSizes(smoke3di->size_file, &smoke_times, &smokeframe_sizes, &nsmokeframes);
   smoke3di->smokes3dstream = StreamOpen(smoke3di->smokes3dstream, smoke3di->reg_file, header_size, smokeframe_sizes, nsmokeframes, 0);
-  for(i = 0; i<nsmokeframes; i++){
-    if(smokeframe_sizes[i]!=smoke3di->nchars_compressed_smoke_full[i]+36)printf("%i %i %i\n", i,smokeframe_sizes[i], smoke3di->nchars_compressed_smoke_full[i]);
-  }
   FREEMEMORY(smoke_times);
   FREEMEMORY(smokeframe_sizes);
 #endif

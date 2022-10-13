@@ -1245,6 +1245,9 @@ typedef struct _partdata {
   int *sort_tags;
   short *sx, *sy, *sz;
   unsigned char *irvals;
+#ifdef pp_SMOKE3DSTREAM
+  streamdata *partstream;
+#endif
 } partdata;
 
 /* --------------------------  compdata ------------------------------------ */
