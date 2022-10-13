@@ -24,10 +24,11 @@
 
 //*** options: all platforms
 
-//#define pp_SMOKESTREAM         // option to stream data
+#define pp_PARTVAL          // speed up part file color updating
+#define pp_SLICEVAL         // speed up slice file color updating
+
 //#define pp_SMOKE3DSTREAM      // stream smoke3d data
-//#define pp_PARTVAL         // speed up part file color updating
-//#define pp_SLICEVAL         // speed up slice file color updating
+
 #define pp_CLIP_FIX          // fixes to clipping
 #define pp_PART_MULTI        // load particles in parallel
 //#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds
@@ -59,6 +60,10 @@
 //#define pp_TERRAIN_SKIP
 #ifdef pp_BETA
 #define pp_TERRAIN_DEBUG         // show terrain slice debugging output (only use with test smokeview's)
+#endif
+
+#ifdef pp_SMOKE3DSTREAM
+#define pp_SMOKESTREAM         // option to stream data, defined if pp_SMOKE3DSTREAM is defined
 #endif
 
 #ifdef pp_GPU

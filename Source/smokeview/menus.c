@@ -4711,9 +4711,11 @@ void LoadSmoke3DMenu(int value){
     }
   }
   STOP_TIMER(load_time);
+#ifndef pp_SMOKE3DSTREAM
   if(compute_smoke3d_file_sizes==0){
     PRINT_LOADTIMES(file_count, load_size, load_time);
   }
+#endif
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
