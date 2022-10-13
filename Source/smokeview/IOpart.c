@@ -1384,6 +1384,53 @@ void GeneratePartHistograms(void){
 }
 
 /* ------------------ GetPartData ------------------------ */
+#ifdef pp_PARTSTREAM
+void GetPartHeaderInfo(char *file, int *headersize, int **ntypesptr, int *nclassesptr){
+  FILE *PART5FILE;
+  size_t file_size = 0;
+  int *ntypes, *ntypescopy, nclasses, skip;
+  int one_local, version_local, returncode, numtypes[2];
+
+  PART5FILE = fopen(file, "rb");
+  if(PART5FILE==NULL)goto wrapup;
+
+  fseek(PART5FILE, 4, SEEK_CUR);
+  fread(&one_local, 4, 1, PART5FILE);
+  fseek(PART5FILE, 4, SEEK_CUR);
+  file_size = 12;
+
+  FORTPART5READ(&version_local, 1);
+  file_size += 12;
+  if(returncode==FAIL_m)goto wrapup;
+
+  FORTPART5READ(&nclasses, 1);
+  file_size += 12;
+  if(returncode==FAIL_m)goto wrapup;
+
+  NewMemory((void **)&ntypes, nclasses*sizeof(int));
+  CheckMemory;
+  ntypescopy=ntypes;
+  int i;
+  for(i = 0; i<nclasses; i++){
+    FORTPART5READ(numtypes, 2);
+    if(returncode==FAIL_m)break;
+    file_size += 4+8+4;
+    *ntypescopy++ = numtypes[0];
+    skip = 2*(numtypes[0])*(8+30);
+    file_size += skip;
+    FSEEK(PART5FILE, skip, SEEK_CUR);
+    if(returncode==FAIL_m)break;
+  }
+  *ntypesptr = ntypes;
+  *nclassesptr = nclasses;
+  *headersize = file_size;
+  CheckMemory;
+wrapup:
+  fclose(PART5FILE);
+}
+#endif
+
+/* ------------------ GetPartData ------------------------ */
 
 void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
   FILE_m *PART5FILE;
@@ -2311,12 +2358,12 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
     return 0.0;
   }
 #ifdef pp_PARTSTREAM
- // int header_size = 40;
- // int *partframe_sizes;
- // int npartframes;
- // GetPartTimesSizes(parti->size_file, NULL, &partframe_sizes, &npartframes);
- // parti->partstream = StreamOpen(parti->partstream, parti->file, header_size, partframe_sizes, npartframes, 0);
- // FREEMEMORY(partframe_sizes);
+  int header_size, *ntypes, nclasses, *partframe_sizes, npartframes;
+
+  GetPartHeaderInfo(parti->reg_file, &header_size, &ntypes, &nclasses);
+ // GetPartSizes(parti->size_file, &partframe_sizes, &npartframes);
+  parti->partstream = StreamOpen(parti->partstream, parti->file, header_size, partframe_sizes, npartframes, 0);
+  FREEMEMORY(partframe_sizes);
 #endif
   CheckMemory;
   GetPartData(parti, nf_all_local, &file_size_local);
