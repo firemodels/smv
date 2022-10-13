@@ -197,17 +197,18 @@ streamdata *StreamOpen(streamdata *streamin, char *file, size_t offset, int *fra
     else{
       char *filebuffer_old;
 
+      stream = streamin;
       filebuffer_old = stream->filebuffer;
       ResizeMemory((void **)&(stream->frameptrs),     nframes*sizeof(char *));
       ResizeMemory((void **)&(stream->filebuffer),    statbuffer.st_size);
       ResizeMemory((void **)&(stream->framesizes),    nframes*sizeof(size_t));
       ResizeMemory((void **)&(stream->frame_offsets), nframes*sizeof(size_t));
       if(filebuffer_old!=stream->filebuffer){
-        for(i = 0; i<streamin->nframes; i++){
+        for(i = 0; i<stream->nframes; i++){
           if(stream->frameptrs[i]!=NULL)stream->frameptrs[i] = stream->filebuffer+stream->frame_offsets[i];
         }
       }
-      start = streamin->nframes;
+      start = stream->nframes;
     }
     stop = nframes;
     stream->filesize = statbuffer.st_size;
