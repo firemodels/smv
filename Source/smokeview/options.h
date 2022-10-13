@@ -24,8 +24,8 @@
 
 //*** options: all platforms
 
-#define pp_PARTVAL          // speed up part file color updating
-#define pp_SLICEVAL         // speed up slice file color updating
+//#define pp_PARTVAL          // speed up part file color updating
+//#define pp_SLICEVAL         // speed up slice file color updating
 
 //#define pp_SMOKE3DSTREAM      // stream smoke3d data
 
@@ -43,7 +43,7 @@
 #define pp_THREAD             // turn on multi-threading
 #define pp_DRAWISO            // turn on drawing routines
 //#define pp_LOAD_NEWDATA     // add button for loading new data
-//#define pp_TERRAIN_UPDATE     // add button to update terrain buttons
+//#define pp_TERRAIN_UPDATE     // add button to update terrain normals
 
 //#define pp_WUI_VAO            // use opengl vao objects for drawing terrain
 
