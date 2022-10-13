@@ -4306,15 +4306,18 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   MFILE *SMOKE3DFILE;
   int error_local;
   FILE_SIZE file_size_local=0;
-  float read_time_local, total_time_local;
-  int iii,i;
+  float total_time_local;
+  int i;
   int nxyz_local[8];
+#ifndef pp_SMOKE3DSTREAM
+  float read_time_local;
+  int iii;
   int nchars_local[2];
   int nframes_found_local=0;
   int frame_start_local, frame_end_local;
-
   float time_local;
   char compstring_local[128];
+#endif
   int fortran_skip=0;
 
   SetTimeState();
