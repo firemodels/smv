@@ -24,10 +24,10 @@
 
 //*** options: all platforms
 
-//#define pp_PARTVAL          // speed up part file color updating
-//#define pp_SLICEVAL         // speed up slice file color updating
+#define pp_PARTVAL          // speed up part file color updating
+#define pp_SLICEVAL         // speed up slice file color updating
 
-//#define pp_SMOKE3DSTREAM      // stream smoke3d data
+#define pp_SMOKE3DSTREAM      // stream smoke3d data
 
 #define pp_CLIP_FIX          // fixes to clipping
 #define pp_PART_MULTI        // load particles in parallel
