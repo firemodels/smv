@@ -4305,7 +4305,9 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   smoke3ddata *smoke3di;
   MFILE *SMOKE3DFILE;
   int error_local;
+#ifndef pp_SMOKE3DSTREAM
   FILE_SIZE file_size_local=0;
+#endif
   float total_time_local;
   int i;
   int nxyz_local[8];
@@ -4360,7 +4362,9 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   }
 
   SKIP_SMOKE;FREAD_SMOKE(nxyz_local,4,8,SMOKE3DFILE);SKIP_SMOKE;
+#ifndef pp_SMOKE3DSTREAM
   file_size_local +=4+4*8+4;
+#endif
   smoke3di->is1=nxyz_local[2];
   smoke3di->is2=nxyz_local[3];
   smoke3di->js1=nxyz_local[4];
