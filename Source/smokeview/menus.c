@@ -6545,12 +6545,6 @@ void GeometryMenu(int value){
   case 7:
     visCeiling=1-visCeiling;
     break;
-#ifdef pp_TERRAIN_SKIP
-  case 17+TERRAIN_SKIP:
-    terrain_skip = 1-terrain_skip;
-    updatemenu = 1;
-    break;
-#endif
 #ifdef pp_TERRAIN_DEBUG
   case 17+TERRAIN_DEBUG:
     terrain_debug = 1-terrain_debug;
@@ -8853,10 +8847,6 @@ updatemenu=0;
   }
   if(visTerrainType==TERRAIN_HIDDEN)glutAddMenuEntry(_("*Hidden"),17+TERRAIN_HIDDEN);
   if(visTerrainType!=TERRAIN_HIDDEN)glutAddMenuEntry(_("Hidden"),17+TERRAIN_HIDDEN);
-#ifdef pp_TERRAIN_SKIP
-  if(terrain_skip==1)glutAddMenuEntry(_("*skip"), 17+TERRAIN_SKIP);
-  if(terrain_skip==0)glutAddMenuEntry(_("skip"), 17+TERRAIN_SKIP);
-#endif
 #ifdef pp_TERRAIN_DEBUG
   if(terrain_debug==1)glutAddMenuEntry(_("*terrain slice debug"), 17+TERRAIN_DEBUG);
   if(terrain_debug==0)glutAddMenuEntry(_("terrain slice debug"), 17+TERRAIN_DEBUG);
