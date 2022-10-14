@@ -2,11 +2,8 @@
 #define FLOWFILES_H_DEFINED
 
 #include "stdio_m.h"
-<<<<<<< HEAD
 #include "string_util.h" // necessary for flowlabels
-=======
 #include "smokestream.h"
->>>>>>> firemodels/master
 
 /* --------------------------  circdata ------------------------------------ */
 
