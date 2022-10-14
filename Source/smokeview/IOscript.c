@@ -1383,7 +1383,6 @@ void LoadSmokeFrame(int meshnum, int framenum){
   framenum = CLAMP(framenum, 0, max_frames-1);
   if(framenum!=frame_old)UpdateLoadFrameVal(framenum);
 
-  update_fileload = 1;
   for(i = 0; i<nmeshes; i++){
     meshdata *meshi;
     volrenderdata *vr;

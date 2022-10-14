@@ -69,7 +69,7 @@ obj = main.o menus.o IOscript.o IOshooter.o glui_objects.o glui_shooter.o\
       startup.o glui_trainer.o shaders.o unit.o threader.o histogram.o translate.o update.o\
       viewports.o smv_geometry.o showscene.o glew.o infoheader.o  md5.o sha1.o sha256.o\
       stdio_m.o stdio_buffer.o \
-      gsmv.o getdata.o color2rgb.o
+      gsmv.o getdata.o color2rgb.o smokestream.o
 
 incs = contourdefs.h glui_bounds.h glui_motion.h glui_smoke.h glui_tour.h infoheader.h \
        IOobjects.h IOscript.h IOvolsmoke.h lua_api.h options.h smokefortheaders.h smokeheaders.h smokeviewdefs.h \

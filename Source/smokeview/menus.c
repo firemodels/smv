@@ -4627,15 +4627,19 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
 void LoadSmoke3DMenu(int value){
   int i,errorcode;
   int file_count;
+#ifndef pp_SMOKE3DSTREAM
   float load_time, load_size;
+#endif
 
 #define MENU_DUMMY_SMOKE           -9
 #define MENU_SMOKE_SETTINGS        -4
 #define MENU_SMOKE_FILE_SIZES     -10
 
   if(value == MENU_DUMMY_SMOKE)return;
+#ifndef pp_SMOKE3DSTREAM
   START_TIMER(load_time);
   load_size = 0.0;
+#endif
   file_count=0;
   GLUTSETCURSOR(GLUT_CURSOR_WAIT);
   if(value>=0){
@@ -4707,13 +4711,18 @@ void LoadSmoke3DMenu(int value){
         }
         if(add_blank==1)printf("\n");
       }
-      load_size=LoadSmoke3D(smoke3di->type, &file_count);
+#ifndef pp_SMOKE3DSTREAM
+      load_size=
+#endif
+	      LoadSmoke3D(smoke3di->type, &file_count);
     }
   }
+#ifndef pp_SMOKE3DSTREAM
   STOP_TIMER(load_time);
   if(compute_smoke3d_file_sizes==0){
     PRINT_LOADTIMES(file_count, load_size, load_time);
   }
+#endif
   updatemenu=1;
   GLUTPOSTREDISPLAY;
   GLUTSETCURSOR(GLUT_CURSOR_LEFT_ARROW);
@@ -5046,40 +5055,15 @@ void LoadMultiVSliceMenu(int value){
 
 FILE_SIZE LoadAllMSlices(int last_slice, multislicedata *mslicei){
   float load_time;
-#ifdef pp_SLICE_BUFFER
-  float process_time;
-#endif
   FILE_SIZE file_size = 0;
   int file_count=0;
 
   START_TIMER(load_time);
-#ifdef pp_SLICE_BUFFER
-  for(i = 0; i<mslicei->nslices; i++){
-    slicedata *slicei;
-    int set_slicecolor;
-
-    slicei = sliceinfo+mslicei->islices[i];
-    if(slicei->slice_filetype==SLICE_TERRAIN&&slicei->have_agl_data==0)continue;
-    printf("reading %s\n",slicei->file);
-    slicei->stream_slice = fopen_buffer(slicei->file,"rb");
-    file_size += slicei->stream_slice->filesize;
-    file_count++;
-  }
-  STOP_TIMER(load_time);
-  PRINT_LOADTIMES(file_count, (float)file_size, load_time);
-  START_TIMER(process_time);
-#endif
 
   SetLoadedSliceBounds(mslicei->islices, mslicei->nslices);
   file_size = LoadAllMSlicesMT(last_slice, mslicei, &file_count);
-
-#ifdef pp_SLICE_BUFFER
-  STOP_TIMER(process_time);
-  PRINT_PROCESSTIMES(file_count, (float)file_size, process_time);
-#else
   STOP_TIMER(load_time);
   PRINT_LOADTIMES(file_count,(float)file_size,load_time);
-#endif
   return file_size;
 }
 
@@ -6568,12 +6552,6 @@ void GeometryMenu(int value){
   case 7:
     visCeiling=1-visCeiling;
     break;
-#ifdef pp_TERRAIN_SKIP
-  case 17+TERRAIN_SKIP:
-    terrain_skip = 1-terrain_skip;
-    updatemenu = 1;
-    break;
-#endif
 #ifdef pp_TERRAIN_DEBUG
   case 17+TERRAIN_DEBUG:
     terrain_debug = 1-terrain_debug;
@@ -8876,10 +8854,6 @@ updatemenu=0;
   }
   if(visTerrainType==TERRAIN_HIDDEN)glutAddMenuEntry(_("*Hidden"),17+TERRAIN_HIDDEN);
   if(visTerrainType!=TERRAIN_HIDDEN)glutAddMenuEntry(_("Hidden"),17+TERRAIN_HIDDEN);
-#ifdef pp_TERRAIN_SKIP
-  if(terrain_skip==1)glutAddMenuEntry(_("*skip"), 17+TERRAIN_SKIP);
-  if(terrain_skip==0)glutAddMenuEntry(_("skip"), 17+TERRAIN_SKIP);
-#endif
 #ifdef pp_TERRAIN_DEBUG
   if(terrain_debug==1)glutAddMenuEntry(_("*terrain slice debug"), 17+TERRAIN_DEBUG);
   if(terrain_debug==0)glutAddMenuEntry(_("terrain slice debug"), 17+TERRAIN_DEBUG);

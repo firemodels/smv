@@ -224,7 +224,6 @@ SVEXTERN float SVDECL(colorbar_shift, 1.0);
 SVEXTERN int SVDECL(compute_slice_file_sizes, 0);
 SVEXTERN int SVDECL(compute_smoke3d_file_sizes, 0);
 
-SVEXTERN int SVDECL(update_fileload, 1);
 SVEXTERN int SVDECL(update_colorbar_digits, 0);
 
 SVEXTERN int SVDECL(show_bndf_mesh_interface, 0);
