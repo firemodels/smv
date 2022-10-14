@@ -377,7 +377,7 @@ void UpdatePart5Extremes(void){
 
 /* ------------------ GetPartColors ------------------------ */
 
-void GetPartColors(partdata *parti, int nlevel){
+void GetPartColors(partdata *parti, int nlevel, int convert){
   int i;
   part5data *datacopy;
   // float *diameter_data;
@@ -402,7 +402,9 @@ void GetPartColors(partdata *parti, int nlevel){
   NewMemory((void **)&part_valmax,     num*sizeof(float));
   GetMinMaxAll(BOUND_PART, part_set_valmin, part_valmin, part_set_valmax, part_valmax, &num2);
 
-  for(i=0;i<parti->ntimes;i++){
+  int start=0;
+  if(convert==0)start = parti->ntimes+1;// skip particle conversion if convert is 0
+  for(i=start;i<parti->ntimes;i++){
     int j;
 
     for(j=0;j<parti->nclasses;j++){
@@ -830,7 +832,7 @@ void UpdateSliceColors(int last_slice){
     }
   }
 }
-#ifdef pp_SMOKESTREAM
+#ifdef pp_SLICEVAL
 /* ------------------ UpdateSliceBounds2 ------------------------ */
 
 void UpdateSliceBounds2(void){

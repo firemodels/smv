@@ -166,7 +166,7 @@ EXTERNCPP void SetPercentileDrawOff(void);
 EXTERNCPP void ClosePartFiles(void);
 EXTERNCPP void PartBoundsCPP_CB(int var);
 EXTERNCPP void UpdatdateResearchModeCPP(void);
-EXTERNCPP void UpdatePartColors(partdata *parti);
+EXTERNCPP void UpdatePartColors(partdata *parti, int flag);
 EXTERNCPP void SetPercentilePartBounds(void);
 EXTERNCPP void SetPercentilePlot3DBounds(void);
 EXTERNCPP void DrawHistogram(histogramdata *histogram, float xxmin, float xxmax, float gmin, float gmax, int ndigits);
@@ -287,9 +287,6 @@ EXTERNCPP void UpdateVentOffset(void);
 EXTERNCPP void ColorbarCB(int var);
 EXTERNCPP void UpdateOpacityMap(void);
 EXTERNCPP void ShowBoundsDialog(int type);
-#ifdef  pp_SPECTRAL
-EXTERNCPP void GetBlackBodyColors(float tmin, float tmax, float *intensities, int n);
-#endif
 EXTERNCPP void UpdateFreeze(int val);
 EXTERNCPP void UpdateLoadTimeVal(float val);
 EXTERNCPP void UpdateTimeFrameBounds(float time_min, float time_max);
@@ -1055,7 +1052,7 @@ EXTERNCPP void UpdateAllGeomTriangles(void);
 EXTERNCPP void SetSliceBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2);
 EXTERNCPP void SetBoundBounds(int set_valmin, float valmin, int set_valmax, float valmax, char *buffer2);
 
-EXTERNCPP void GetPartColors(partdata *parti, int nlevels);
+EXTERNCPP void GetPartColors(partdata *parti, int nlevels, int flag);
 EXTERNCPP void GetBoundaryColors(float *t, int nt, unsigned char *it,
               int settmin, float *tmin, int settmax, float *tmax,
               float *tmin_global, float *tmax_global,
@@ -1085,7 +1082,7 @@ EXTERNCPP void GetPlot3DColors(int iplot, float *ttmin, float *ttmax,
 EXTERNCPP void GetSliceLabels(float tmin, float tmax, int nlevel,
               char labels[12][11],float *tlevels256);
 EXTERNCPP void UpdatePart5Extremes(void);
-#ifdef pp_SMOKESTREAM
+#ifdef pp_SLICEVAL
 EXTERNCPP void SetSliceColors(float smin, float smax, slicedata *sd, int flag, int *errorcode);
 EXTERNCPP void UpdateSliceBounds2(void);
 #endif

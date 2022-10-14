@@ -253,10 +253,6 @@ void UpdateFrameNumber(int changetime){
 void UpdateFileLoad(void){
   int i;
 
-// remove following directive when update_fileload has been set everywhere that a file has been loaded or unloaded
-#ifdef pp_UPDATE_FILELOAD
-  update_fileload = 0;
-#endif
   npartloaded = 0;
   nevacloaded = 0;
   for(i = 0; i<npartinfo; i++){
@@ -348,7 +344,7 @@ void UpdateShow(void){
   int showhrrflag;
   int plot2dflag;
 
-  if(update_fileload==1)UpdateFileLoad();
+  UpdateFileLoad();
   showtime=0;
   showtime2=0;
   showplot3d=0;

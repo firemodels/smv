@@ -3,11 +3,7 @@
 
 /* --------------------------  _filedata ------------------------------------ */
 
-#ifdef pp_SLICE_BUFFER
-#define FILEBUFFER               filedata
-#else
 #define FILEBUFFER               FILE
-#endif
 #define FILE_ASCII  0
 #define FILE_BINARY 1
 typedef struct _filedata {
