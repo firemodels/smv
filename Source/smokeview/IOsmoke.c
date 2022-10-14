@@ -4312,9 +4312,9 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   FILE_SIZE file_size_local=0;
 #endif
   float total_time_local;
-  int i;
   int nxyz_local[8];
 #ifndef pp_SMOKE3DSTREAM
+  int i;
   float read_time_local;
   int iii;
   int nchars_local[2];

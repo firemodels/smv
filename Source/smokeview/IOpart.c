@@ -1388,10 +1388,10 @@ void GeneratePartHistograms(void){
 #ifdef pp_PARTSTREAM
 void GetPartSizes(char *file, int *header_size, int *frame_sizes, int nframes){
   FILE *stream;
-  size_t file_size;
+//  size_t file_size;
   int i, skip;
 
-  file_size = GetFileSizeSMV(file);
+//  file_size = GetFileSizeSMV(file); use late to make more robust
 
   stream = fopen(file, "rb");
   if(stream==NULL)return;

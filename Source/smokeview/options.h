@@ -26,13 +26,13 @@
 
 // use floarint point to color data
 
-#define pp_PARTVAL          // speed up part file color updating
-#define pp_SLICEVAL         // speed up slice file color updating
+//#define pp_PARTVAL          // speed up part file color updating
+//#define pp_SLICEVAL         // speed up slice file color updating
 
 // streaming directives
 
-#define pp_SMOKE3DSTREAM      // stream smoke3d data
-#define pp_PARTSTREAM         // stream particle data
+//#define pp_SMOKE3DSTREAM      // stream smoke3d data
+//#define pp_PARTSTREAM         // stream particle data
 
 // turn on pp_STREAM if an streaming is on for any file type
 
