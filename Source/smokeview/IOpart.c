@@ -268,6 +268,7 @@ void DrawPart(const partdata *parti){
   }
 #endif
   ipframe = parti->itime;
+  ASSERT(ipframe>=0);
   if(ipframe < 0){
     ipframe = 0;
   } //xxx need to check this - why is ipframe < 0 ???
