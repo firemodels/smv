@@ -3,6 +3,7 @@
 
 #include "stdio_m.h"
 #include "string_util.h" // necessary for flowlabels
+#include "smokestream.h"
 
 /* --------------------------  circdata ------------------------------------ */
 
@@ -1245,6 +1246,9 @@ typedef struct _partdata {
   int *sort_tags;
   short *sx, *sy, *sz;
   unsigned char *irvals;
+#ifdef pp_SMOKE3DSTREAM
+  streamdata *partstream;
+#endif
 } partdata;
 
 /* --------------------------  compdata ------------------------------------ */
@@ -1353,9 +1357,6 @@ typedef struct _slicedata {
 #ifdef pp_SLICETHREAD
   int loadstatus;
 #endif
-#ifdef pp_SLICE_BUFFER
-  FILEBUFFER *stream_slice;
-#endif
 } slicedata;
 
 /* --------------------------  slicemenudata ------------------------------------ */
@@ -1458,6 +1459,9 @@ typedef struct {
 typedef struct _smoke3ddata {
   int seq_id,autoload;
   char *file;
+#ifdef pp_SMOKE3DSTREAM
+  char *size_file;
+#endif
   char *comp_file, *reg_file;
   int filetype;
   int loaded, finalize, display, request_load, primary_file;
@@ -1496,6 +1500,9 @@ typedef struct _smoke3ddata {
   FILE_SIZE file_size;
   float *smoke_boxmin, *smoke_boxmax;
   smokedata smoke, light;
+#ifdef pp_SMOKE3DSTREAM
+  streamdata *smokes3dstream;
+#endif
   int dir;
 } smoke3ddata;
 

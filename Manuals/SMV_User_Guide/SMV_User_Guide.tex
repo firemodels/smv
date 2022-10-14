@@ -4023,7 +4023,7 @@ LABEL
 RGBTEST
   x y z r g b delta
 \end{lstlisting}
-\noindent where r, g and b are red green and blue color components each ranging from 0 to 255 and delta is an error tolerance.  
+\noindent where r, g and b are red green and blue color components each ranging from 0 to 255 and delta is an error tolerance.
 If any color component difference is found to be greater than delta, a warning message is output.
 
 \hitemssf{SETTOURKEYFRAME}Set the time position along the current tour to time. Usage:
@@ -5351,72 +5351,37 @@ B_BOUNDARY
 
 
 
-\section{Smokeview Preference File Format (.ini files)}
+\section{Smokeview Configuration File Format (.ini files)}
 \label{sectionconfig}
 \label{appendixini}
 % --------------------CONFIGURATION FILES -----------------------
 
-Smokeview uses preference files to set input parameters not
-settable by using menus or the keyboard and to save the {\em
-state}\ of a visualization. Smokeview looks for preference files
-in three locations in the following order:
-\begin{enumerate}
+Smokeview uses configuration files (.ini files) to set input parameters not
+settable using menus or the keyboard and to save the visualization state. 
+Smokeview looks for configuration files in the installation directory 
+(directory where the smokeview program is located), a directory named .smokeview
+in your home directory and the directory containing the case you are running.
+The configuration file is named smokeview.ini in the installation 
+and  home/.smokeview directories and casename.ini in the case directory where casename is the name of the case.
 
-\item a file named \svini\ in a global directory defined by the
-{\tt SMOKEVIEWINI}\ environment variable. On the PC, the directory
-{\tt C:$\backslash$Program Files$\backslash$
-FDS$\backslash$FDS5$\backslash$bin$\backslash$smokeview.ini}\ is
-the default location for this preference file. The {\tt
-SMOKEVIEWINI}\ environment variable may be defined on the PC to
-specify the location of the smokeview.ini file. This step is
-performed automatically by the Smokeview installation program.
+The \svini\ file found in the home/.smokeview directory may be created by typing:
+{\tt smokeview -ini}\ 
+from the command line or by selecting the {{\tt Save settings(all cases)}\ menu item.
+Likewise the casename.ini file may be created by selecting the {\tt Save settings(this case)}\ menu item.
 
-This environment variable may be
-defined on a UNIX workstation by adding the line:\\
-
-{\tt setenv SMOKEVIEWINI dir}\ \\
-
-to a {\tt .login}\  or {\tt .cshrc}\ start up file
-again where {\tt dir}\ is the directory containing the
-global preference file. Changes to this \svini\
-file apply to all cases visualized on the computer unless
-overridden by preference files named or located in
-directories named in steps 2. and  3.
-
-\item a file named \svini\ in the directory
-containing the case being visualized.  Changes to
-this \svini\ file apply to all cases in the current
-directory unless overridden by the {\tt casename.ini}\ file
-contained in this directory.
-
-\item a file named {\tt casename.ini}\ in the directory containing the case being
-visualized where casename is the name of the case.
-\end{enumerate}
-
-The \svini\ file may be created by typing:
-\begin{lstlisting}
-smokeview -ini
-\end{lstlisting}
-\noindent from the command line or by selecting the \svini\ menu item.
-The \fbox{\tt casename.ini}
-preference file can be created {\em via}\ the menus or by copying a
-previously created \svini\ file.
-
-Smokeview reads the global \svini\ file first (step 1. above),
-followed by the local \svini\ file (step 2. above), followed by
-the {\tt casename.ini}\ file. The global \svini\ file is used to
-customize parameters for all Smokeview runs. The local \svini\
-file is used to customize parameters for just those Smokeview runs
-contained in the local directory. The {\tt casename.ini}\ file is
+Smokeview reads the installation .ini file first followed by the home/.smokeview .ini file followed by the .ini file in your case directory.
+The global \svini\ file is used to
+customize parameters for all Smokeview runs. The {\tt casename.ini}\ file is
 used to customize parameters for only those Smokeview runs with
 the prefix casename.
 
-All preference file parameters unless otherwise noted consist of a {\tt KEYWORD}
+All configuration file parameters unless otherwise noted consist of a {\tt KEYWORD}
 followed by a value, as in:
 \begin{lstlisting}
 KEYWORD
 value
 \end{lstlisting}
+Descriptions of many of the .ini keywords follow.
 
 %%\subsection{Miscellaneous Settings}
 \hiteminiN{CACHE_DATA}
@@ -5464,7 +5429,7 @@ value
 \hiteminiN{WINDROSESHOWHIDE}
 \hiteminiN{BEAM}
 
-\%%subsection{Visibility Settings}
+%%subsection{Visibility Settings}
 \hiteminiN{FRAMERATE}
 \hiteminiN{APERATURE}
 \hiteminiN{GRIDPARMS}

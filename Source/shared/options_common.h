@@ -34,7 +34,9 @@
 
 // Microsofts MSVC has timespec defined
 #ifdef _MSC_VER
+#ifndef HAVE_STRUCT_TIMESPEC
 #define HAVE_STRUCT_TIMESPEC
+#endif
 #endif
 
 //*** options: windows

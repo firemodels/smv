@@ -20,15 +20,15 @@
 
 #define IJK_SLICE(i,j,k)  ( ((i)-sd->is1)*sd->nslicej*sd->nslicek + ((j)-sd->js1)*sd->nslicek + ((k)-sd->ks1) )
 
-#ifdef pp_SLICE_BUFFER
+#ifdef pp_SLICEVAL
+#define SLICETEXTURE(i,j,k) \
+    (sd->compression_type==UNCOMPRESSED ? \
+    CLAMP((sd->qslice[ IJK_SLICE((i), (j),  (k))]-valmin)/(valmax-valmin),0.0,1.0) : \
+    CLAMP(((float)sd->slicecomplevel[ IJK_SLICE((i), (j),  (k))])/255.0,0.0,1.0) \
+    )
 
-#define FOPEN_SLICE(a,b)         fopen_buffer(a,b)
-#define FSEEK_SLICE(a,b,c)       fseek_buffer(a,b,c)
-#define FTELL_SLICE(a)           ftell_buffer(a)
-#define FREAD_SLICE(a,b,c,d)     fread_buffer(a,b,c,d)
-#define FCLOSE_SLICE(a)          fclose_buffer(a)
-
-#else
+#define SLICECOLOR(index) CLAMP((int)(255.0*(sd->qslice[index]-valmin)/(valmax-valmin)),0,255)
+#endif
 
 #define FOPEN_SLICE(a,b)         fopen(a,b)
 #ifdef X64
@@ -40,8 +40,6 @@
 #endif
 #define FREAD_SLICE(a,b,c,d)     fread(a,b,c,d)
 #define FCLOSE_SLICE(a)          fclose(a)
-
-#endif
 
 #define FORT_SLICEREAD(var,count,STREAM) \
                            FSEEK_SLICE(STREAM,SLICE_HEADER_SIZE,SEEK_CUR);\
@@ -877,9 +875,6 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   skip_local += frame_index_local*(HEADER_SIZE + 4 + TRAILER_SIZE); //
   skip_local += frame_index_local*(HEADER_SIZE + frame_size*4 + TRAILER_SIZE); //
 
-#ifdef pp_SLICE_BUFFER
-  SLICEFILE = sd->stream_slice;
-#endif
   if(SLICEFILE==NULL){
     SLICEFILE=FOPEN_SLICE(sd->file,"rb");
   }
@@ -949,7 +944,6 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
 #define FEDO2(O2)  ( exp( -(8.13-0.54*(20.9-100.0*CLAMP(O2,0.0,0.2))) )/60.0 )
 #define HVCO2(CO2) (exp(0.1930*CLAMP(CO2,0.0,0.1)*100.0+2.0004)/7.1)
 
-  update_fileload = 1;
   ASSERT(fedinfo!=NULL);
   ASSERT(file_index>=0);
   if(file_type==FED_SLICE){
@@ -1271,7 +1265,6 @@ FILE_SIZE ReadVSlice(int ivslice, int time_frame, float *time_value, int flag, i
   FILE_SIZE return_filesize=0;
   int finalize = 0;
 
-  update_fileload = 1;
   valmin = 1000000000.0;
   valmax = -valmin;
   vd = vsliceinfo + ivslice;
@@ -1677,9 +1670,9 @@ void GetSliceHists(slicedata *sd){
     CopyVals2Histogram(pdata0, slice_mask0, slice_weight0, nframe, histi);
     MergeHistogram(histall, histi, MERGE_BOUNDS);
   }
+  FREEMEMORY(pdata0);
   FREEMEMORY(slice_mask0);
   FREEMEMORY(slice_weight0);
-  FREEMEMORY(pdata0);
 }
 
 /* ------------------ GetSliceGeomHists ------------------------ */
@@ -2022,7 +2015,7 @@ void UpdateAllSliceLabels(int slicetype, int *errorcode){
 
 /* ------------------ SetSliceColors ------------------------ */
 
-void SetSliceColors(float smin, float smax, slicedata *sd, int *errorcode){
+void SetSliceColors(float smin, float smax, slicedata *sd, int flag, int *errorcode){
   int slicetype;
   boundsdata *sb;
 
@@ -2040,7 +2033,7 @@ void SetSliceColors(float smin, float smax, slicedata *sd, int *errorcode){
       smin, smax,
       nrgb_full, nrgb,
       sb->colorlabels, sb->colorvalues, sb->levels256,
-      &sd->extreme_min, &sd->extreme_max
+      &sd->extreme_min, &sd->extreme_max, flag
     );
   }
   else{
@@ -2049,7 +2042,7 @@ void SetSliceColors(float smin, float smax, slicedata *sd, int *errorcode){
       smin, smax,
       nrgb_full, nrgb,
       sb->colorlabels, sb->colorvalues, sb->levels256,
-      &sd->extreme_min, &sd->extreme_max
+      &sd->extreme_min, &sd->extreme_max, flag
     );
   }
 }
@@ -2085,7 +2078,7 @@ void UpdateAllSliceColors(int slicetype, int *errorcode){
     i = slice_loaded_list[ii];
     sd = sliceinfo + i;
     if(sd->slicefile_labelindex!=slicetype)continue;
-    SetSliceColors(valmin,valmax,sd,errorcode);
+    SetSliceColors(valmin,valmax,sd,1,errorcode);
     if(*errorcode!=0)return;
   }
   SliceBounds2Glui(slicetype);
@@ -4114,9 +4107,6 @@ void GetSliceSizes(slicedata *sd, const char *slicefilenameptr, int time_frame, 
   *errorptr = 0;
   *ntimesptr = 0;
 
-#ifdef pp_SLICE_BUFFER
-  SLICEFILE = sd->stream_slice;
-#endif
   if(SLICEFILE==NULL){
     SLICEFILE = FOPEN_SLICE(slicefilenameptr, "rb");
   }
@@ -4184,11 +4174,7 @@ void GetSliceSizes(slicedata *sd, const char *slicefilenameptr, int time_frame, 
     count++;
   }
   *errorptr = 0;
-#ifdef pp_SLICE_BUFFER
-  rewind_buffer(SLICEFILE);
-#else
   FCLOSE_SLICE(SLICEFILE);
-#endif
 }
 
 /* ------------------ GetSliceFileHeader ------------------------ */
@@ -4248,9 +4234,6 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
   koff = 0;
   file_size = 0;
 
-#ifdef pp_SLICE_BUFFER
-  stream = sd->stream_slice;
-#endif
   if(stream==NULL){
     stream = FOPEN_SLICE(slicefilename,"rb");
   }
@@ -4529,6 +4512,28 @@ void HideSlices(char *longlabel){
   }
 }
 
+/* ------------------ GetSliceTimes ------------------------ */
+
+void GetSliceTimes(char *file, float *times, int ntimes){
+  FILE *stream;
+  int i;
+  char buffer[256];
+
+  stream = fopen(file, "r");
+  if(stream == NULL){
+    for(i = 0; i<ntimes; i++){
+      times[i] = (float)i;
+    }
+  }
+  else{
+    for(i = 0; i<ntimes; i++){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%f", times+i);
+    }
+    fclose(stream);
+  }
+}
+
 /* ------------------ ReadSlice ------------------------ */
 
 FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_value, int flag, int set_slicecolor, int *errorcode){
@@ -4552,7 +4557,6 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 #ifndef pp_FSEEK
   if(flag==RELOAD)flag = LOAD;
 #endif
-  update_fileload = 1;
   CheckMemory;
   START_TIMER(total_time);
   *errorcode = 0;
@@ -4939,7 +4943,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
 
       bounds = GetBoundsData(BOUND_SLICE);
       ComputeLoadedSliceHist(bounds->label, &(bounds->hist));
-      if(bounds->hist->defined==1){
+      if(bounds->hist!=NULL&&bounds->hist->defined==1){
         if(set_valmin==BOUND_PERCENTILE_MIN){
           GetHistogramValProc(bounds->hist, percentile_level_min, &qmin);
           SetMin(BOUND_SLICE, bounds->label, BOUND_PERCENTILE_MIN, qmin);
@@ -4978,7 +4982,7 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
           for(ii = 0; ii<256; ii++){
             slicei->qval256[ii] = (qmin*(255 - ii) + qmax*ii) / 255;
           }
-          SetSliceColors(qmin, qmax, slicei, errorcode);
+          SetSliceColors(qmin, qmax, slicei, 1, errorcode);
         }
       }
       else{
@@ -5209,6 +5213,17 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
 
   meshi = meshinfo + sd->blocknumber;
 
+#ifdef pp_SLICEVAL
+  float valmin, valmax;
+
+  valmin = sd->valmin;
+  valmax = sd->valmax;
+  if(valmin>=valmax){
+    valmin = 0.0;
+    valmax = 1.0;
+  }
+#endif
+
   xplt = meshi->xplt;
   yplt = meshi->yplt;
   zplt = meshi->zplt;
@@ -5290,7 +5305,11 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(plotx, j, k)] == EMBED_YES)continue;
 
         index_cell = (plotx+1-incx-iimin)*sd->nslicej*sd->nslicek + (j+1-sd->js1)*sd->nslicek + k+1-sd->ks1;
+#ifdef pp_SLICEVAL
+        i33 = 4*SLICECOLOR(index_cell);
+#else
         i33 = 4 * sd->iqsliceframe[index_cell];
+#endif
         z1 = zplt[k];
         z3 = zplt[k + 1];
         /*
@@ -5357,7 +5376,11 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, ploty, k)] == EMBED_YES)continue;
 
         index_cell = (i+incx-sd->is1)*sd->nslicej*sd->nslicek + (ploty+1-incy-sd->js1)*sd->nslicek + k+1-sd->ks1;
+#ifdef pp_SLICEVAL
+        i33 = 4*CLAMP((int)(255.0*(sd->qslice[index_cell]-valmin)/(valmax-valmin)),0,255);
+#else
         i33 = 4 * sd->iqsliceframe[index_cell];
+#endif
         z1 = zplt[k];
         z3 = zplt[k + 1];
         /*
@@ -5425,7 +5448,11 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
         if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJKCELL(i, j, plotz)] == EMBED_YES)continue;
 
         index_cell = (i+1-sd->is1)*sd->nslicej*sd->nslicek + (j+incy-sd->js1)*sd->nslicek + plotz+1-incz-sd->ks1;
+#ifdef pp_SLICEVAL
+        i33 = 4*CLAMP((int)(255.0*(sd->qslice[index_cell]-valmin)/(valmax-valmin)),0,255);
+#else
         i33 = 4 * sd->iqsliceframe[index_cell];
+#endif
         yy1 = yplt[j];
         y3 = yplt[j + 1];
         /*
@@ -5862,13 +5889,6 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
 
   float *xplt, *yplt;
   int plotz;
-#ifdef pp_TERRAIN_SKIP
-  int ibar, jbar;
-  int nx, ny;
-  int nxy;
-  char *iblank_z;
-  char *iblank_embed;
-#endif
   terraindata *terri;
   int nycell;
   meshdata *meshi;
@@ -5889,15 +5909,6 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
   else{
     plotz = sd->ks1;
   }
-#ifdef pp_TERRAIN_SKIP
-  ibar = meshi->ibar;
-  jbar = meshi->jbar;
-  iblank_z = meshi->c_iblank_z;
-  iblank_embed = meshi->c_iblank_embed;
-  nx = ibar+1;
-  ny = jbar+1;
-  nxy = nx*ny;
-#endif
 
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
@@ -5954,14 +5965,6 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
 
         yy1 = yplt[j];
 
-#ifdef pp_TERRAIN_SKIP
-        if(terrain_skip==0){
-          if(slice_skip==1){
-            if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
-            if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
-          }
-        }
-#endif
         if(this_color!=last_color){
           last_color = this_color;
           glColor3fv(this_color);
@@ -6000,14 +6003,6 @@ void DrawVolSliceTerrainLinePt(const slicedata *sd){
         yy1 = yplt[j];
         y3 = yplt[j+1];
 
-#ifdef pp_TERRAIN_SKIP
-        if(terrain_skip==0){
-          if(slice_skip==1){
-            if(iblank_z!=NULL&&iblank_z[IJK(i, j, plotz)]!=GASGAS)continue;
-            if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(i, j, plotz)]==EMBED_YES)continue;
-          }
-        }
-#endif
         if(draw1==1){
           glVertex3f(x1, yy1, z11);
           glVertex3f(x3, yy1, z31);
@@ -6060,7 +6055,16 @@ void DrawVolSliceTerrain(const slicedata *sd){
   else{
     plotz = sd->ks1;
   }
+#ifdef pp_SLICEVAL
+  float valmin, valmax;
 
+  valmin = sd->valmin;
+  valmax = sd->valmax;
+  if(valmin>=valmax){
+    valmin = 0.0;
+    valmax = 1.0;
+  }
+#endif
   if(cullfaces == 1)glDisable(GL_CULL_FACE);
 
   if(use_transparency_data == 1)TransparentOn();
@@ -6104,7 +6108,6 @@ void DrawVolSliceTerrain(const slicedata *sd){
       x3 = xplt[i2];
 
       for(j = sd->js1; j<sd->js2; j += slice_skip){
-        int n11, n31, n13, n33;
         int j2;
         int draw123=0, draw134=0;
 
@@ -6137,15 +6140,17 @@ void DrawVolSliceTerrain(const slicedata *sd){
         yy1 = yplt[j];
         y3 = yplt[j2];
 
-        n11 = IJK_SLICE(i,   j, sd->ks1);
-        n31 = IJK_SLICE(i2,  j, sd->ks1);
-        n13 = IJK_SLICE( i, j2, sd->ks1);
-        n33 = IJK_SLICE(i2, j2, sd->ks1);
-
-        r11 = (float)sd->iqsliceframe[n11]/255.0;
-        r31 = (float)sd->iqsliceframe[n31]/255.0;
-        r13 = (float)sd->iqsliceframe[n13]/255.0;
-        r33 = (float)sd->iqsliceframe[n33]/255.0;
+#ifdef pp_SLICEVAL
+        r11 = SLICETEXTURE(i,   j, sd->ks1);
+        r31 = SLICETEXTURE(i2,  j, sd->ks1);
+        r13 = SLICETEXTURE(i,  j2, sd->ks1);
+        r33 = SLICETEXTURE(i2, j2, sd->ks1);
+#else
+        r11 = (float)sd->iqsliceframe[ IJK_SLICE(i,   j, sd->ks1)   ] / 255.0;
+        r31 = (float)sd->iqsliceframe[ IJK_SLICE(i2,  j, sd->ks1)  ] / 255.0;
+        r13 = (float)sd->iqsliceframe[ IJK_SLICE(i,  j2, sd->ks1)  ] / 255.0;
+        r33 = (float)sd->iqsliceframe[ IJK_SLICE(i2, j2, sd->ks1) ] / 255.0;
+#endif
 
         if(draw123==1){
           glTexCoord1f(r11);  glVertex3f(x1, yy1, z11);
@@ -6378,6 +6383,16 @@ void DrawVolSliceTexture(const slicedata *sd){
 
   meshdata *meshi;
 
+#ifdef pp_SLICEVAL
+  float valmin, valmax;
+
+  valmin = sd->valmin;
+  valmax = sd->valmax;
+  if(valmin>=valmax){
+    valmin = 0.0;
+    valmax = 1.0;
+  }
+#endif
   if(sd->volslice == 1 && visx_all == 0 && visy_all == 0 && visz_all == 0)return;
   meshi = meshinfo + sd->blocknumber;
 
@@ -6448,10 +6463,17 @@ void DrawVolSliceTexture(const slicedata *sd){
             }
             if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
           }
+#ifdef pp_SLICEVAL
+        r11 = SLICETEXTURE(plotx,  j,  k);
+        r31 = SLICETEXTURE(plotx, j2,  k);
+        r13 = SLICETEXTURE(plotx,  j, k2);
+        r33 = SLICETEXTURE(plotx, j2, k2);
+#else
         r11 = (float)sd->iqsliceframe[ IJK_SLICE(plotx, j,  k)   ] / 255.0;
         r31 = (float)sd->iqsliceframe[ IJK_SLICE(plotx, j2, k)  ] / 255.0;
         r13 = (float)sd->iqsliceframe[ IJK_SLICE(plotx, j, k2)  ] / 255.0;
         r33 = (float)sd->iqsliceframe[ IJK_SLICE(plotx, j2,k2) ] / 255.0;
+#endif
         rmid = (r11 + r31 + r13 + r33) / 4.0;
 
         z1 = zplt[k];
@@ -6527,10 +6549,17 @@ void DrawVolSliceTexture(const slicedata *sd){
           }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, ploty, k)] == EMBED_YES)continue;
         }
+#ifdef pp_SLICEVAL
+        r11 = SLICETEXTURE(i,  ploty, k);
+        r31 = SLICETEXTURE(i2, ploty, k);
+        r13 = SLICETEXTURE(i,  ploty, k2);
+        r33 = SLICETEXTURE(i2, ploty, k2);
+#else
         r11 = (float)sd->iqsliceframe[IJK_SLICE(i,  ploty, k)]/255.0;
         r31 = (float)sd->iqsliceframe[IJK_SLICE(i2, ploty, k)]/255.0;
         r13 = (float)sd->iqsliceframe[IJK_SLICE(i,  ploty, k2)]/255.0;
         r33 = (float)sd->iqsliceframe[IJK_SLICE(i2, ploty, k2)]/255.0;
+#endif
         rmid = (r11 + r31 + r13 + r33) / 4.0;
 
         z1 = zplt[k];
@@ -6602,10 +6631,17 @@ void DrawVolSliceTexture(const slicedata *sd){
           }
           if(skip_slice_in_embedded_mesh == 1 && iblank_embed != NULL&&iblank_embed[IJK(i, j, plotz)] == EMBED_YES)continue;
         }
+#ifdef pp_SLICEVAL
+        r11 = SLICETEXTURE(i,   j, plotz);
+        r31 = SLICETEXTURE(i2,  j, plotz);
+        r13 = SLICETEXTURE(i,  j2, plotz);
+        r33 = SLICETEXTURE(i2, j2, plotz);
+#else
         r11 = (float)sd->iqsliceframe[ IJK_SLICE(i,   j, plotz)   ] / 255.0;
         r31 = (float)sd->iqsliceframe[ IJK_SLICE(i2,  j, plotz)  ] / 255.0;
         r13 = (float)sd->iqsliceframe[ IJK_SLICE(i,  j2, plotz)  ] / 255.0;
         r33 = (float)sd->iqsliceframe[ IJK_SLICE(i2, j2, plotz) ] / 255.0;
+#endif
         rmid = (r11 + r31 + r13 + r33) / 4.0;
 
         yy1 = yplt[j];

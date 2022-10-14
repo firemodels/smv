@@ -4835,6 +4835,9 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->valmin_smv = NULL;
   parti->valmax_smv = NULL;
   parti->stream     = NULL;
+#ifdef pp_PARTSTREAM
+  parti->partstream = NULL;
+#endif
   if(FGETS(buffer, 255, stream)==NULL){
     npartinfo--;
     return RETURN_BREAK;
@@ -5326,6 +5329,11 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
 
     if(NewMemory((void **)&smoke3di->reg_file, (unsigned int)(len+1))==0)return RETURN_TWO;
     STRCPY(smoke3di->reg_file, bufferptr);
+#ifdef pp_SMOKE3DSTREAM
+    if(NewMemory((void **)&smoke3di->size_file, (unsigned int)(len+3+1))==0)return RETURN_TWO;
+    STRCPY(smoke3di->size_file, bufferptr);
+    strcat(smoke3di->size_file, ".sz");
+#endif
 
     for(i=0; i<6; i++){
       unsigned char *alpha_dir;
@@ -5364,6 +5372,9 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->blocknumber = blocknumber;
     smoke3di->lastiframe = -999;
     smoke3di->ismoke3d_time = 0;
+#ifdef pp_SMOKE3DSTREAM
+    smoke3di->smokes3dstream = NULL;
+#endif
 
     STRCPY(buffer2, bufferptr);
     STRCAT(buffer2, ".svz");
@@ -5612,9 +5623,6 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->vol_file = NULL;
   sd->slicelabel = NULL;
   sd->cell_center_edge = 0;
-#ifdef pp_SLICE_BUFFER
-  sd->stream_slice = NULL;
-#endif
   sd->file_size = 0;
   sd->slice_filetype = SLICE_NODE_CENTER;
   sd->patchgeom = NULL;
@@ -14948,6 +14956,37 @@ int ReadIni2(char *inifile, int localfile){
     }
   }
   fclose(stream);
+  return 0;
+}
+
+/* ------------------ ReadBinIni ------------------------ */
+
+int ReadBinIni(void){
+  char smvprogini[1024];
+  char *smvprogini_ptr = NULL;
+
+  strcpy(smvprogini, "");
+  if(smokeview_bindir!=NULL)strcat(smvprogini, smokeview_bindir);
+  strcat(smvprogini, "smokeview.ini");
+  smvprogini_ptr = smokeviewini;
+  if(smokeviewini!=NULL){
+#ifdef WIN32
+    if(STRCMP(smvprogini, smokeviewini)!=0)smvprogini_ptr = smvprogini;
+#else
+    if(strcmp(smvprogini, smokeviewini)!=0)smvprogini_ptr = smvprogini;
+#endif
+  }
+
+  //*** read in config files if they exist
+
+  // smokeview.ini ini in install directory
+
+  if(smvprogini_ptr!=NULL){
+    int returnval;
+
+    returnval = ReadIni2(smvprogini_ptr, 0);
+    return returnval;
+  }
   return 0;
 }
 

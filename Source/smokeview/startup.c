@@ -1328,10 +1328,6 @@ void InitVars(void){
   }
 #endif
 
-#ifdef pp_SPECTRAL
-  GetBlackBodyColors(300.0,1200.0, blackbody_colors, 256);
-#endif
-
   beam_color[0] = 255 * foregroundcolor[0];
   beam_color[1] = 255 * foregroundcolor[1];
   beam_color[2] = 255 * foregroundcolor[2];

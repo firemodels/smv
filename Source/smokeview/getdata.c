@@ -840,8 +840,10 @@ int skipdata(FILE *file, int skip) { return fortseek(file, 1, skip, SEEK_CUR); }
 // TODO: distinguish between more error conditions
 void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
                   int *pj2, int *pk1, int *pk2, float *patchtime, float *pqq,
-                  int *npqq, int *file_size, int *error) {
+                  int *npqq, int *file_sizeptr, int *error) {
   int i1, i2, j1, j2, k1, k2, size, ibeg;
+  int file_size;
+
   file_size = 0;
   *error = 0;
   *error = fortread(patchtime, sizeof(*patchtime), 1, file);
@@ -866,6 +868,7 @@ void getpatchdata(FILE *file, int npatch, int *pi1, int *pi2, int *pj1,
     if (*error != 0) break;
     ibeg += size;
   }
+  *file_sizeptr = file_size;
   return;
 }
 
@@ -1243,8 +1246,7 @@ void getplot3dq(const char *qfilename, int nx, int ny, int nz, float *qq,
     } else {
       *error = 1;
       printf(" *** Fatal error in getplot3dq ***\n");
-      printf(" Grid size found in plot3d file was: %d,%d,%d\n", nxpts, nypts,
-             nzpts);
+      printf(" Grid size found in plot3d file was: %d,%d,%d\n", (int)nxpts, (int)nypts, (int)nzpts);
       printf(" Was expecting: %d,%d,%d\n", nx, ny, nz);
       exit(1);
     }
