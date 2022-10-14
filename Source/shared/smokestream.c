@@ -275,5 +275,26 @@ FILE_SIZE StreamRead(streamdata *stream, int frame_index){
   return file_size;
 }
 
+/* ------------------  StreamCheck ------------------------ */
+
+void StreamCheck(streamdata *framestream){
+  FILE *filestream;
+  int i;
+
+  filestream = fopen(framestream->file, "rb");
+  for(i = 0; i<framestream->nframes; i++){
+    int offset;
+    float time;
+
+    offset = framestream->frame_offsets[i]+4;
+    fseek(filestream, offset, SEEK_SET);
+    fread(&time, 4, 1, filestream);
+    printf("%f ", time);
+    if(i%10==0)printf("\n");
+  }
+  printf("\n");
+  fclose(filestream);
+}
+
 #endif
 
