@@ -11,7 +11,7 @@
 #ifdef pp_GCC
 #include <unistd.h>
 #endif
-#ifdef pp_LINUX
+#if defined(pp_LINUX) || defined(pp_OSX)
 #include <unistd.h>
 #endif
 #ifndef WIN32
@@ -92,6 +92,7 @@ int FileExistsOrig(char *filename);
 #define SEP '/'
 #endif
 
+#include "string_util.h"
 
 // vvvvvvvvvvvvvvvvvvvvvvvv headers vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 EXTERNCPP FILE *fopen_indir(char *dir, char *file, char *mode);

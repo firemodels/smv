@@ -8,6 +8,7 @@
 #include "smokeviewvars.h"
 #include "compress.h"
 #include "IOscript.h"
+#include "getdata.h"
 
 #define FIRST_TIME 1
 
@@ -1369,7 +1370,6 @@ void ComputeLoadedPatchHist(char *label, histogramdata **histptr, float *global_
 
 FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int error;
-  FILE_SIZE lenfile;
   int patchfilenum;
   float *xyzpatchcopy;
   float *xyzpatch_ignitecopy;
@@ -1397,7 +1397,8 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   int ncompressed_buffer;
   char *file;
   float read_time, total_time;
-  int file_unit, wallcenter=0;
+  FILE *file_unit = NULL;
+  int wallcenter=0;
   FILE_SIZE return_filesize = 0;
 
   patchi = patchinfo + ifile;
@@ -1518,9 +1519,8 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
 
   UpdateBoundaryHist(patchi);
 
-  lenfile = strlen(file);
   if(patchi->compression_type==UNCOMPRESSED){
-    FORTgetpatchsizes1(&file_unit,file,&meshi->npatches,&headersize,&error,lenfile);
+    getpatchsizes1(&file_unit,file,&meshi->npatches,&headersize,&error);
     if(error!=0){
       ReadBoundary(ifile,UNLOAD,&error);
       *errorcode=1;
@@ -1552,7 +1552,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
        NewResizeMemory(meshi->blockstart,        sizeof(int)*(1+meshi->npatches))==0){
       *errorcode=1;
       if(patchi->compression_type==UNCOMPRESSED){
-        FORTclosefortranfile(&file_unit);
+        closefortranfile(file_unit);
       }
       ReadBoundary(ifile,UNLOAD,&error);
       return 0;
@@ -1560,8 +1560,8 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   }
 
   if(patchi->compression_type==UNCOMPRESSED){
-    FORTgetpatchsizes2(&file_unit,&patchi->version,
-      &meshi->npatches,&meshi->npatchsize,
+    getpatchsizes2(file_unit,patchi->version,
+      meshi->npatches,&meshi->npatchsize,
       meshi->pi1,meshi->pi2,meshi->pj1,meshi->pj2,meshi->pk1,meshi->pk2,meshi->patchdir,
       &headersize,&framesize);
 
@@ -1620,7 +1620,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       patchi->loaded=0;
       patchi->display=0;
       if(patchi->compression_type==UNCOMPRESSED){
-        FORTclosefortranfile(&file_unit);
+        closefortranfile(file_unit);
       }
       ReadBoundary(ifile,UNLOAD,&error);
       return 0;
@@ -2112,7 +2112,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   NewResizeMemory(meshi->zipsize,    sizeof(unsigned int)*maxtimes_boundary);
   if(meshi->patch_times==NULL){
     *errorcode=1;
-    FORTclosefortranfile(&file_unit);
+    closefortranfile(file_unit);
     ReadBoundary(ifile,UNLOAD,&error);
     return 0;
   }
@@ -2126,7 +2126,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   else{
     if(meshi->patchval == NULL){
       *errorcode = 1;
-      FORTclosefortranfile(&file_unit);
+      closefortranfile(file_unit);
       ReadBoundary(ifile, UNLOAD, &error);
       return 0;
     }
@@ -2151,7 +2151,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         int framesizes;
 
         framesizes = framesize*framestart-8;
-        FORTskipdata(&file_unit,&framesizes);
+        skipdata(file_unit,framesizes);
         local_first = 0;
       }
       for(n=0;n<tload_step;n++){
@@ -2159,7 +2159,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
           int npatchval_iframe;
           int filesize;
 
-          FORTgetpatchdata(&file_unit,&meshi->npatches,
+          getpatchdata(file_unit,meshi->npatches,
           meshi->pi1,meshi->pi2,meshi->pj1,meshi->pj2,meshi->pk1,meshi->pk2,
           meshi->patch_timesi,meshi->patchval_iframe,&npatchval_iframe,&filesize, &error);
           return_filesize += filesize;
@@ -2240,7 +2240,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
              ){
               *errorcode=1;
               ReadBoundary(ifile,UNLOAD,&error);
-              FORTclosefortranfile(&file_unit);
+              closefortranfile(file_unit);
               return 0;
             }
           }
@@ -2266,7 +2266,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     npatchvals = meshi->npatch_times*meshi->npatchsize;
     if(npatchvals==0||NewResizeMemory(meshi->cpatchval,sizeof(unsigned char)*npatchvals)==0){
       *errorcode=1;
-      FORTclosefortranfile(&file_unit);
+      closefortranfile(file_unit);
       ReadBoundary(ifile,UNLOAD,&error);
       return 0;
     }
@@ -2274,7 +2274,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   if(NewResizeMemory(colorlabelpatch,MAXRGB*sizeof(char *))==0){
     *errorcode=1;
     if(loadpatchbysteps!=COMPRESSED_ALLFRAMES){
-      FORTclosefortranfile(&file_unit);
+      closefortranfile(file_unit);
     }
     ReadBoundary(ifile,UNLOAD,&error);
     return 0;
@@ -2286,7 +2286,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
     if(NewResizeMemory(colorlabelpatch[n],11)==0){
       *errorcode=1;
       if(loadpatchbysteps!=COMPRESSED_ALLFRAMES){
-        FORTclosefortranfile(&file_unit);
+        closefortranfile(file_unit);
       }
       ReadBoundary(ifile,UNLOAD,&error);
       return 0;
@@ -4680,8 +4680,7 @@ int UpdateBoundaryHist(patchdata *patchj){
   for(i=0;i<npatchinfo;i++){
     int npatches, error;
     patchdata *patchi;
-    int unit1;
-    FILE_SIZE lenfile;
+    FILE *unit1 = NULL;
     int error1;
     int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2, *patchdir, *patchsize;
     float patchtime1, *patchframe;
@@ -4709,12 +4708,11 @@ int UpdateBoundaryHist(patchdata *patchj){
       first=0;
     }
     sum++;
-    lenfile=strlen(patchi->file);
 
     if (patchj->structured == YES) {
-      FORTgetboundaryheader1(patchi->file, &unit1, &npatches, &error, lenfile);
+      getboundaryheader1(patchi->file, &unit1, &npatches, &error);
       if (npatches == 0) {
-        FORTclosefortranfile(&unit1);
+        closefortranfile(unit1);
         continue;
       }
 
@@ -4727,7 +4725,7 @@ int UpdateBoundaryHist(patchdata *patchj){
       NewMemory((void **)&patchdir, npatches * sizeof(int));
       NewMemory((void **)&patchsize, npatches * sizeof(int));
 
-      FORTgetboundaryheader2(&unit1, &patchi->version, &npatches, pi1, pi2, pj1, pj2, pk1, pk2, patchdir);
+      getboundaryheader2(unit1, patchi->version, npatches, pi1, pi2, pj1, pj2, pk1, pk2, patchdir);
 
       patchframesize = 0;
       for (j = 0; j < npatches; j++) {
@@ -4745,11 +4743,11 @@ int UpdateBoundaryHist(patchdata *patchj){
       while (error1 == 0) {
         int ndummy, filesize;
 
-        FORTgetpatchdata(&unit1, &npatches,
+        getpatchdata(unit1, npatches,
           pi1, pi2, pj1, pj2, pk1, pk2, &patchtime1, patchframe, &ndummy, &filesize, &error1);
         UpdateHistogram(patchframe, NULL, patchframesize, patchi->histogram);
       }
-      FORTclosefortranfile(&unit1);
+      closefortranfile(unit1);
       FREEMEMORY(patchframe);
       FREEMEMORY(pi1);
       FREEMEMORY(pi2);

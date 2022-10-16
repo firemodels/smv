@@ -7,6 +7,9 @@
 #include <stdlib.h>
 #ifdef pp_OSX
 #include <unistd.h>
+#ifdef pp_LUA
+#include <sys/syslimits.h>
+#endif
 #endif
 #include <math.h>
 #ifdef WIN32
@@ -25,6 +28,8 @@
 #include <dirent.h>
 #endif
 #include "MALLOCC.h"
+#include "string_util.h"
+#include "file_util.h"
 
 FILE *alt_stdout=NULL;
 

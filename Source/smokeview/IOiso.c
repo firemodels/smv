@@ -6,6 +6,7 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
+#include "getdata.h"
 
 /* ------------------ GetIsoLevels ------------------------ */
 
@@ -285,11 +286,10 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
 
   if(isoi->dataflag==1){
     int filesize;
-    int lenfile, ntimes_local;
+    int ntimes_local;
     float *valptr;
 
-    lenfile = strlen(isoi->tfile);
-    FORTgetgeomdatasize(isoi->tfile, &ntimes_local, &isoi->geom_nvals, &error, lenfile);
+    getgeomdatasize(isoi->tfile, &ntimes_local, &isoi->geom_nvals, &error);
 
     if(isoi->geom_nvals>0&&ntimes_local>0){
       NewMemoryMemID((void **)&isoi->geom_nstatics,  ntimes_local*sizeof(int),       isoi->memory_id);
@@ -298,8 +298,8 @@ FILE_SIZE ReadIsoGeom(int ifile, int load_flag, int *geom_frame_index, int *erro
       NewMemoryMemID((void **)&isoi->geom_vals,      isoi->geom_nvals*sizeof(float), isoi->memory_id);
     }
 
-    FORTgetgeomdata(isoi->tfile, &ntimes_local, &isoi->geom_nvals, isoi->geom_times,
-      isoi->geom_nstatics, isoi->geom_ndynamics, isoi->geom_vals, &filesize, &error, lenfile);
+    getgeomdata(isoi->tfile, ntimes_local, isoi->geom_nvals, isoi->geom_times,
+      isoi->geom_nstatics, isoi->geom_ndynamics, isoi->geom_vals, &filesize, &error);
     return_filesize += filesize;
     FREEMEMORY(isoi->geom_nstatics);
     FREEMEMORY(isoi->geom_times);

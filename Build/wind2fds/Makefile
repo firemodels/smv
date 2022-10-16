@@ -4,13 +4,13 @@
 SOURCE_DIR = ../../../Source/
 BUILD_DIR = $(SOURCE_DIR)/../Build
 LIB_DIR = $(BUILD_DIR)/LIBS
-INC_DIR =  -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/wind2fds 
+INC_DIR =  -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared -I $(SOURCE_DIR)/wind2fds
 FILTERC =
 
 # Intel compiler definitions
 include ../../scripts/intel_compiler.mak
 
-VPATH = $(SOURCE_DIR)/wind2fds $(SOURCE_DIR)/shared 
+VPATH = $(SOURCE_DIR)/wind2fds $(SOURCE_DIR)/shared
 bin = .
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")
@@ -87,7 +87,7 @@ gnu_linux_64 : CC        = gcc
 gnu_linux_64 : exe       = wind2fds_linux_64
 
 gnu_linux_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) -lm
 
 
 # ------------- gnu linux 64 db ----------------
@@ -98,7 +98,7 @@ gnu_linux_64_db : CC        = gcc
 gnu_linux_64_db : exe       = wind2fds_linux_64_db
 
 gnu_linux_64_db : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj)
+	$(CC) -o $(bin)/$(exe) $(obj) -lm
 
 # ------------- intel osx 64 ----------------
 

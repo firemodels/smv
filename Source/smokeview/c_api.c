@@ -56,6 +56,7 @@ int set_slice_bounds(const char *quantity, int set_valmin, float valmin, int set
   char *quantity_var;
   if(NewMemory((void **)&quantity_var, sizeof(char)*strlen(quantity)+1) == 0)return 2;
   SetSliceBounds(set_valmin, valmin, set_valmax, valmax, quantity_var);
+  SliceBoundsCPP_CB(110);
   FREEMEMORY(quantity_var);
   return 0;
 }
@@ -973,9 +974,8 @@ void set_framelabel_visibility(int setting) {
   // so show timebar if necessary.
   if(visFramelabel==1)visTimebar=1;
   if(visFramelabel==1){
-    visHRRlabel=0;
+    vis_hrr_label=0;
     if(hrrinfo!=NULL){
-      hrrinfo->display=visHRRlabel;
       UpdateTimes();
     }
   }
@@ -993,9 +993,8 @@ void toggle_framelabel_visibility() {
   // so show timebar if necessary.
   if(visFramelabel==1)visTimebar=1;
     if(visFramelabel==1){
-      visHRRlabel=0;
+      vis_hrr_label=0;
       if(hrrinfo!=NULL){
-        hrrinfo->display=visHRRlabel;
         UpdateTimes();
       }
   }
@@ -1056,19 +1055,17 @@ void toggle_hrrcutoff_visibility() {
 
 // HRR label
 void set_hrrlabel_visibility(int setting) {
-  visHRRlabel = setting;
-  if (hrrinfo != NULL&&hrrinfo->display != 0)UpdateHRRInfo(0);
+  vis_hrr_label = setting;
   if(show_hrrcutoff_active==0)PRINTF("HRR label hidden\n");
   if(show_hrrcutoff_active==1)PRINTF("HRR label visible\n");
 }
 
 int get_hrrlabel_visibility() {
-  return visHRRlabel;
+  return vis_hrr_label;
 }
 
 void toggle_hrrlabel_visibility() {
-  visHRRlabel = 1 - visHRRlabel;
-  if (hrrinfo != NULL&&hrrinfo->display != 0)UpdateHRRInfo(0);
+  vis_hrr_label = 1 - vis_hrr_label;
   if(show_hrrcutoff_active==0)PRINTF("HRR label hidden\n");
   if(show_hrrcutoff_active==1)PRINTF("HRR label visible\n");
 }
@@ -1924,18 +1921,17 @@ void unloadslice(int value){
 
 void unloadall() {
   int errorcode;
-  int i;
 
   if(scriptoutstream!=NULL){
     fprintf(scriptoutstream,"UNLOADALL\n");
   }
   if(hrr_csv_filename!=NULL){
-    ReadHRR(UNLOAD, &errorcode);
+    ReadHRR(UNLOAD);
   }
   if(nvolrenderinfo>0){
     LoadVolsmoke3DMenu(UNLOAD_ALL);
   }
-  for(i = 0; i < nsliceinfo; i++){
+  for(int i = 0; i < nsliceinfo; i++){
     slicedata *slicei;
 
     slicei = sliceinfo + i;
@@ -1948,22 +1944,22 @@ void unloadall() {
       }
     }
   }
-  for(i = 0; i<nplot3dinfo; i++){
+  for(int i = 0; i<nplot3dinfo; i++){
     ReadPlot3D("",i,UNLOAD,&errorcode);
   }
-  for(i=0;i<npatchinfo;i++){
+  for(int i=0;i<npatchinfo;i++){
     ReadBoundary(i,UNLOAD,&errorcode);
   }
-  for(i=0;i<npartinfo;i++){
+  for(int i=0;i<npartinfo;i++){
     ReadPart("",i,UNLOAD,&errorcode);
   }
-  for(i=0;i<nisoinfo;i++){
+  for(int i=0;i<nisoinfo;i++){
     ReadIso("",i,UNLOAD,NULL,&errorcode);
   }
-  for(i=0;i<nzoneinfo;i++){
+  for(int i=0;i<nzoneinfo;i++){
     ReadZone(i,UNLOAD,&errorcode);
   }
-  for(i=0;i<nsmoke3dinfo;i++){
+  for(int i=0;i<nsmoke3dinfo;i++){
     ReadSmoke3D(ALL_SMOKE_FRAMES, i, UNLOAD, FIRST_TIME, &errorcode);
   }
   if(nvolrenderinfo>0){
@@ -2013,7 +2009,7 @@ int get_clipping_mode() {
 void set_clipping_mode(int mode) {
     clip_mode=mode;
     updatefacelists=1;
-    Update_Glui_Clip();
+    UpdateGluiClip();
     UpdateClipAll();
 }
 
@@ -2024,7 +2020,7 @@ void set_sceneclip_x(int clipMin, float min, int clipMax, float max) {
     clipinfo.clip_xmax=clipMax;
     clipinfo.xmax = max;
     updatefacelists=1;
-    Update_Glui_Clip();
+    UpdateGluiClip();
     UpdateClipAll();
 }
 
@@ -2032,7 +2028,7 @@ void set_sceneclip_x_min(int flag, float value) {
     clipinfo.clip_xmin = flag;
     clipinfo.xmin = value;
     updatefacelists = 1;
-    Update_Glui_Clip();
+    UpdateGluiClip();
     UpdateClipAll();
 }
 
@@ -2040,7 +2036,7 @@ void set_sceneclip_x_max(int flag, float value) {
     clipinfo.clip_xmax = flag;
     clipinfo.xmax = value;
     updatefacelists = 1;
-    Update_Glui_Clip();
+    UpdateGluiClip();
     UpdateClipAll();
 }
 
@@ -2051,7 +2047,7 @@ void set_sceneclip_y(int clipMin, float min, int clipMax, float max) {
     clipinfo.clip_ymax=clipMax;
     clipinfo.ymax = max;
     updatefacelists=1;
-    Update_Glui_Clip();
+    UpdateGluiClip();
     UpdateClipAll();
 }
 
@@ -2059,7 +2055,7 @@ void set_sceneclip_y_min(int flag, float value) {
     clipinfo.clip_ymin = flag;
     clipinfo.ymin = value;
     updatefacelists = 1;
-    Update_Glui_Clip();
+    UpdateGluiClip();
     UpdateClipAll();
 }
 
@@ -2067,7 +2063,7 @@ void set_sceneclip_y_max(int flag, float value) {
     clipinfo.clip_ymax = flag;
     clipinfo.ymax = value;
     updatefacelists = 1;
-    Update_Glui_Clip();
+    UpdateGluiClip();
     UpdateClipAll();
 }
 
@@ -2078,7 +2074,7 @@ void set_sceneclip_z(int clipMin, float min, int clipMax, float max) {
     clipinfo.clip_zmax=clipMax;
     clipinfo.zmax = max;
     updatefacelists=1;
-    Update_Glui_Clip();
+    UpdateGluiClip();
     UpdateClipAll();
 }
 
@@ -2086,7 +2082,7 @@ void set_sceneclip_z_min(int flag, float value) {
     clipinfo.clip_zmin = flag;
     clipinfo.zmin = value;
     updatefacelists = 1;
-    Update_Glui_Clip();
+    UpdateGluiClip();
     UpdateClipAll();
 }
 
@@ -2094,7 +2090,7 @@ void set_sceneclip_z_max(int flag, float value) {
     clipinfo.clip_zmax = flag;
     clipinfo.zmax = value;
     updatefacelists = 1;
-    Update_Glui_Clip();
+    UpdateGluiClip();
     UpdateClipAll();
 }
 
@@ -3071,7 +3067,7 @@ int set_showhmstimelabel(int v) {
 } // SHOWHMSTIMELABEL
 
 int set_showhrrcutoff(int v) {
-  visHRRlabel = v;
+  vis_hrr_label = v;
   return 0;
 } // SHOWHRRCUTOFF
 

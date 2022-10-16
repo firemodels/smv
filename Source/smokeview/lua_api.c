@@ -14,8 +14,6 @@
 #include "c_api.h"
 #include "lua_api.h"
 
-#include "csv.h"
-
 #include GLUT_H
 #include "gd.h"
 
@@ -164,6 +162,9 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
   // Load information about smokeview into the lua interpreter.
   lua_initsmvproginfo(L);
 
+  if (smv_filename==NULL) {
+    return 0;
+  }
   lua_pushstring(L, smv_filename);
   // TODO: only set up a case if one is specified, otherwise leave it to the
   // interpreter to call this.
@@ -171,16 +172,12 @@ int RunLuaBranch(lua_State *L, int argc, char **argv) {
   return_code = lua_tonumber(L,-1);
 
   if(return_code==0&&update_bounds==1){
-    float timer_update_bounds;
-
     INIT_PRINT_TIMER(timer_update_bounds);
     return_code=Update_Bounds();
     PRINT_TIMER(timer_update_bounds, "Update_Bounds");
   }
   if(return_code!=0)return 1;
   if(convert_ini==1){
-    float timer_read_ini;
-
     INIT_PRINT_TIMER(timer_read_ini);
     ReadIni(ini_from);
     PRINT_TIMER(timer_read_ini, "ReadIni");
@@ -774,10 +771,10 @@ int lua_get_devices(lua_State *L) {
   lua_createtable(L, 0, entries);
   int i;
   for (i = 0; i < entries; i++) {
-    lua_pushstring(L, infotable[i].label);
+    lua_pushstring(L, infotable[i].deviceID);
     lua_createtable(L, 0, 2);
 
-    lua_pushstring(L, infotable[i].label);
+    lua_pushstring(L, infotable[i].deviceID);
     lua_setfield(L, -2, "label");
 
     lua_settable(L, -3);
@@ -785,37 +782,37 @@ int lua_get_devices(lua_State *L) {
   return 1;
 }
 
-int lua_create_vector(lua_State *L, dvector *dvector) {
+int lua_create_vector(lua_State *L, csvdata *csv_x, csvdata *csv_y) {
   size_t i;
   lua_createtable(L, 0, 3);
 
-  lua_pushstring(L, dvector->y->name);
+  lua_pushstring(L, csv_y->label.longlabel);
   lua_setfield(L, -2, "name");
 
-  // // x-vector
+  // x-vector
   lua_createtable(L, 0, 3);
-  lua_pushstring(L, dvector->x->name);
+  lua_pushstring(L, csv_x->label.longlabel);
   lua_setfield(L, -2, "name");
-  lua_pushstring(L, dvector->x->units);
+  lua_pushstring(L, csv_x->label.unit);
   lua_setfield(L, -2, "units");
-  lua_createtable(L, 0, dvector->x->nvalues);
-  for (i = 0; i < dvector->x->nvalues; ++i) {
+  lua_createtable(L, 0, csv_x->nvals);
+  for (i = 0; i < csv_x->nvals; ++i) {
     lua_pushnumber(L, i+1);
-    lua_pushnumber(L, dvector->x->values[i]);
+    lua_pushnumber(L, csv_x->vals[i]);
     lua_settable(L, -3);
   }
   lua_setfield(L, -2, "values");
   lua_setfield(L, -2, "x");
-  // // y-vector
+  // y-vector
   lua_createtable(L, 0, 3);
-  lua_pushstring(L, dvector->y->name);
+  lua_pushstring(L, csv_y->label.longlabel);
   lua_setfield(L, -2, "name");
-  lua_pushstring(L, dvector->y->units);
+  lua_pushstring(L, csv_y->label.unit);
   lua_setfield(L, -2, "units");
-  lua_createtable(L, 0, dvector->y->nvalues);
-  for (i = 0; i < dvector->y->nvalues; ++i) {
+  lua_createtable(L, 0, csv_y->nvals);
+  for (i = 0; i < csv_y->nvals; ++i) {
     lua_pushnumber(L, i+1);
-    lua_pushnumber(L, dvector->y->values[i]);
+    lua_pushnumber(L, csv_y->vals[i]);
     lua_settable(L, -3);
   }
   lua_setfield(L, -2, "values");
@@ -827,16 +824,16 @@ int lua_create_vector(lua_State *L, dvector *dvector) {
   Get the number of CSV files available to the model.
 */
 int lua_get_ncsvinfo(lua_State *L) {
-  lua_pushnumber(L, ncsvinfo);
+  lua_pushnumber(L, ncsvfileinfo);
   return 1;
 }
 
-csvdata *get_csvinfo(const char *key) {
+csvfiledata *get_csvinfo(const char *key) {
   // Loop through csvinfo until we find the right entry
   size_t i;
-  for (i = 0; i < ncsvinfo; ++i) {
-    if(strcmp(csvinfo[i].key,key)==0){
-      return &csvinfo[i];
+  for (i = 0; i < ncsvfileinfo; ++i) {
+    if(strcmp(csvfileinfo[i].c_type,key)==0){
+      return &csvfileinfo[i];
     }
   }
   return NULL;
@@ -845,8 +842,8 @@ csvdata *get_csvinfo(const char *key) {
 int get_csvindex(const char *key) {
   // Loop through csvinfo until we find the right entry
   size_t i;
-  for (i = 0; i < ncsvinfo; ++i) {
-    if(strcmp(csvinfo[i].key,key)==0){
+  for (i = 0; i < ncsvfileinfo; ++i) {
+    if(strcmp(csvfileinfo[i].c_type,key)==0){
       return i;
     }
   }
@@ -860,7 +857,7 @@ int access_csventry_prop(lua_State *L) {
   int index = lua_tonumber(L, -1);
   const char *field = lua_tostring(L, 2);
   if (strcmp(field,"loaded")==0) {
-    lua_pushboolean(L, csvinfo[index].loaded);
+    lua_pushboolean(L, csvfileinfo[index].loaded);
     return 1;
   } else {
     return 0;
@@ -869,32 +866,34 @@ int access_csventry_prop(lua_State *L) {
 
 int lua_get_csventry(lua_State *L) {
   const char *key = lua_tostring(L, -1);
-  fprintf(stderr, "key: %s\n", key);
-  csvdata *csventry = get_csvinfo(key);
+  csvfiledata *csventry = get_csvinfo(key);
   int index = get_csvindex(key);
   lua_createtable(L, 0, 4);
   lua_pushstring(L, csventry->file);
   lua_setfield(L, -2, "file");
 
+  lua_pushstring(L, csventry->c_type);
+  lua_setfield(L, -2, "c_type");
+
   lua_pushnumber(L, index);
   lua_setfield(L, -2, "index");
 
-  // fprintf(stderr, "csventry->loaded: %d\n", csventry->loaded);
-  // lua_pushboolean(L, csventry->loaded);
-  // lua_setfield(L, -2, "loaded");
+  lua_pushboolean(L, csventry->loaded);
+  lua_setfield(L, -2, "loaded");
 
   lua_pushboolean(L, csventry->display);
   lua_setfield(L, -2, "display");
 
   if(csventry->loaded) {
-    lua_createtable(L, 0, csventry->nvectors);
+    lua_createtable(L, 0, csventry->ncsvinfo);
     size_t j;
-    for (j = 0; j < csventry->nvectors; j++) {
+    for (j = 0; j < csventry->ncsvinfo; j++) {
       // Load vector data into lua.
       // TODO: change to access indirectly rater than copying via stack
       // printf("adding: %s\n", csventry->vectors[j].y->name);
-      lua_create_vector(L, &(csventry->vectors[j]));
-      lua_setfield(L, -2, csventry->vectors[j].y->name);
+
+      lua_create_vector(L, csventry->time, &(csventry->csvinfo[j]));
+      lua_setfield(L, -2, csventry->csvinfo[j].label.longlabel);
     }
     lua_setfield(L, -2, "vectors");
   }
@@ -923,18 +922,17 @@ int initcsvdata(lua_State *L) {
   return 0;
 }
 
-void load_csv(csvdata *csventry) {
-  readcsv(csventry->file, &(csventry->vectors));
+void ReadCSV(csvfiledata *csvfi, int flag);
+void load_csv(csvfiledata *csventry) {
+  ReadCSV(csventry, LOAD);
   csventry->loaded = 1;
 }
 
 int lua_load_csv(lua_State *L) {
   const char *key = lua_tostring(L, 1);
-  csvdata *csventry = get_csvinfo(key);
+  csvfiledata *csventry = get_csvinfo(key);
   if(csventry == NULL)return 0;
-  size_t n = readcsv(csventry->file, &(csventry->vectors));
-  csventry->loaded = 1;
-  csventry->nvectors = n;
+  load_csv(csventry);
   initcsvdata(L);
   return 0;
 }
@@ -945,14 +943,14 @@ int lua_get_csvdata(lua_State *L) {
   // L2 is the string key
   const char *key = lua_tostring(L, 2);
   // char *file = lua_tostring(L, 1);
-  csvdata *csventry = get_csvinfo(key);
+  csvfiledata *csventry = get_csvinfo(key);
   // Check if the chosen csv data is loaded
   if(!csventry->loaded) {
     // Load the data.
     load_csv(csventry);
   }
   // TODO: put userdata on stack
-  lua_pushlightuserdata(L, csventry->vectors);
+  lua_pushlightuserdata(L, csventry->csvinfo);
   return 1;
 }
 
@@ -1217,7 +1215,6 @@ int lua_get_qdata_max_bounded(lua_State *L) {
 
   for (vari = 0; vari < vars; ++vari) {
     lua_pushnumber(L, maxs[vari]);
-    // fprintf(stderr, "vartotal[%d] value: %.2f\n", vari,totals[vari]);
   }
   lua_pushnumber(L, bounded_total);
   return vars+1;
@@ -1227,7 +1224,6 @@ int lua_get_qdata_mean(lua_State *L) {
   int meshnumber = lua_tonumber(L, 1);
   int vari, i, j, k;
   meshdata mesh = meshinfo[meshnumber];
-  // fprintf(stderr, "mesh label: %s\n", mesh.label);
   int ntotal = (mesh.ibar+1)*(mesh.jbar+1)*(mesh.kbar+1);
   int vars = 5;
   float totals[5];
@@ -1249,7 +1245,6 @@ int lua_get_qdata_mean(lua_State *L) {
   }
   for (vari = 0; vari < vars; ++vari) {
     lua_pushnumber(L, totals[vari]/ntotal);
-    // fprintf(stderr, "vartotal[%d] value: %.2f\n", vari,totals[vari]);
   }
   return vars;
 }
@@ -1257,7 +1252,6 @@ int lua_get_qdata_mean(lua_State *L) {
 int lua_get_global_time_n(lua_State *L) {
   // argument 1 is the table, argument 2 is the index
   int index = lua_tonumber(L, 2);
-  // fprintf(stderr, "finding global time for: %d\n", index);
   if (index < 0 || index >= nglobal_times) {
     return luaL_error(L, "%d is not a valid global time index\n", index);
   }
@@ -1530,7 +1524,6 @@ int lua_get_part_npoints(lua_State *L) {
   // Create a table with an entry for each time
   for (index = 0; index < parti->ntimes; index++) {
     part5data *part5 = parti->data5 + index*parti->nclasses;
-    // fprintf(stderr, "%d particles at time %.2f s (%.2f s)\n", part5->npoints, part5->time,parti->times[index]);
     // sum += part5->npoints;
 
     // use a 1-indexed array to match lua
@@ -1559,7 +1552,6 @@ int lua_get_part_npoints(lua_State *L) {
   // Create a table with an entry for each time
   for (index = 0; index < parti->ntimes; index++) {
     part5data *part5 = parti->data5 + index*parti->nclasses;
-    // fprintf(stderr, "%d particles at time %.2f s (%.2f s)\n", part5->npoints, part5->time,parti->times[index]);
     // sum += part5->npoints;
 
     // use a 1-indexed array to match lua
@@ -1752,7 +1744,7 @@ int lua_getslicedata(lua_State *L) {
   int i = lua_tonumber(L, 2);
   int j = lua_tonumber(L, 3);
   int k = lua_tonumber(L, 4);
-  printf("getting slice data: %d, %d, %d-%d-%d\n", slice_index, f, i, j, k);
+  // printf("getting slice data: %d, %d, %d-%d-%d\n", slice_index, f, i, j, k);
   // print all the times
   // printf("times: %d\n", sliceinfo[slice_index].ntimes);
   // int n = 0;
@@ -1768,7 +1760,6 @@ int lua_getslicedata(lua_State *L) {
   int di = sliceinfo[slice_index].nslicei;
   int dj = sliceinfo[slice_index].nslicej;
   int dk = sliceinfo[slice_index].nslicek;
-  // fprintf(stderr, "imax:%d jmax:%d  kmax:%d\n", imax,jmax,kmax);
   // Check that the offsets do not exceed the bounds of a single data frame
   if (i>imax || j>jmax || k>kmax) {
     fprintf(stderr, "ERROR: offsets exceed bounds");
@@ -1778,25 +1769,11 @@ int lua_getslicedata(lua_State *L) {
   int i_offset = i - sliceinfo[slice_index].ijk_min[0];
   int j_offset = j - sliceinfo[slice_index].ijk_min[1];
   int k_offset = k - sliceinfo[slice_index].ijk_min[2];
-  // fprintf(stderr, "i_offset:%d j_offset:%d  k_offset:%d\n", i_offset,j_offset,k_offset);
 
   // Offset into a single frame
   int offset = (dk*dj)*i_offset+dk*j_offset+k_offset;
   int framesize = di*dj*dk;
   float val = sliceinfo[slice_index].qslicedata[offset+f*framesize];
-  // int x;
-  // for (x = 0; x < framesize*sliceinfo[slice_index].ntimes; x++) {
-  //   printf("x:%d - %.2f\n", x, sliceinfo[slice_index].qslicedata[x]);
-  // }
-  // fprintf(stderr, "i_min:%d j_min:%d  k_min:%d\n", sliceinfo[slice_index].ijk_min[0],sliceinfo[slice_index].ijk_min[1],sliceinfo[slice_index].ijk_min[2]);
-  // fprintf(stderr, "i_min:%d j_min:%d  k_min:%d\n", imax, jmax, kmax);
-  // fprintf(stderr, "di:%d dj:%d  dk:%d\n", di, dj, dk);
-  // fprintf(stderr, "i_offset:%d j_offset:%d  k_offset:%d\n", i_offset,j_offset,k_offset);
-  // printf("offset: %d\n", offset);
-  // printf("framesize: %d\n", framesize);
-  // printf("nframes: %d\n", sliceinfo[slice_index].ntimes);
-  // printf("total_offset: %d\n", offset+f*framesize);
-  // printf("total_max: %d\n", framesize*sliceinfo[slice_index].ntimes);
   // lua_pushstring(L,sliceinfo[slice_index].file);
   lua_pushnumber(L,val);
   return 1;
@@ -1874,7 +1851,7 @@ int lua_get_sliceinfo(lua_State *L) {
     lua_pushnumber(L, sliceinfo[i].nslicey);
     lua_setfield(L, -2, "nslicey");
 
-    lua_pushstring(L, sliceinfo[i].slicedir);
+    lua_pushstring(L, sliceinfo[i].cdir);
     lua_setfield(L, -2, "slicedir");
 
     // can't be done until loaded
@@ -1901,16 +1878,12 @@ int lua_get_sliceinfo(lua_State *L) {
 // TODO: use metatables so that the most up-to-date information is retrieved.
 int lua_get_csvinfo(lua_State *L) {
   PRINTF("lua: initialising csv table\n");
-  lua_createtable(L, 0, ncsvinfo);
+  lua_createtable(L, 0, ncsvfileinfo);
   int i;
-  for (i = 0; i < ncsvinfo; i++) {
-    fprintf(stderr, "csvinfo[i].key: %s\n", csvinfo[i].key);
-    lua_pushstring(L, csvinfo[i].key);
+  for (i = 0; i < ncsvfileinfo; i++) {
+    lua_pushstring(L, csvfileinfo[i].c_type);
     lua_get_csventry(L);
-
     lua_settable(L, -3);
-    fprintf(stderr, "done csvinfo[i].key: %s\n", csvinfo[i].key);
-
   }
   return 1;
 }
@@ -2176,7 +2149,6 @@ int lua_set_colorbar(lua_State *L) {
 
 int lua_set_named_colorbar(lua_State *L) {
   const char *name = lua_tostring(L, 1);
-  fprintf(stderr,"lua_api: name: %s\n", name);
   int err = set_named_colorbar(name);
   if (err==1) {
     luaL_error(L, "%s is not a valid colorbar name", name);
@@ -2668,7 +2640,6 @@ int lua_camera_set_viewdir(lua_State *L) {
   float xcen = lua_tonumber(L, 1);
   float ycen = lua_tonumber(L, 2);
   float zcen = lua_tonumber(L, 3);
-  printf("lua_api: Setting viewDir to %f %f %f\n", xcen, ycen, zcen);
   camera_set_viewdir(xcen, ycen, zcen);
   return 0;
 }
@@ -2702,13 +2673,6 @@ int lua_set_slice_bounds(lua_State *L) {
   float value_min = lua_tonumber(L, 3);
   int set_max = lua_tonumber(L, 4);
   float value_max = lua_tonumber(L, 5);
-  printf("lua: setting %s min bound ", slice_type);
-  if(set_min==3) {printf("ON");} else {printf("OFF");}
-  printf(" with value of %f\n", value_min);
-  printf("lua: setting %s max bound ", slice_type);
-  if(set_max==3) {printf("ON");} else {printf("OFF");}
-  printf(" with value of %f\n", value_max);
-  fprintf(stderr,"lua_api: set_valmin: %d, set_valmax: %d, valmin: %f, valmax: %f\n",set_min,set_max,value_min,value_max);
   set_slice_bounds(slice_type, set_min, value_min,set_max,value_max);
   return 0;
 }
@@ -2716,9 +2680,6 @@ int lua_set_slice_bound_min(lua_State *L) {
   const char *slice_type = lua_tostring(L, 1);
   int set = lua_toboolean(L, 2);
   float value = lua_tonumber(L, 3);
-  printf("lua: setting %s min bound ", slice_type);
-  if(set) {printf("ON");} else {printf("OFF");}
-  printf(" with value of %f\n", value);
   set_slice_bound_min(slice_type, set, value);
   return 0;
 }
@@ -2741,9 +2702,6 @@ int lua_set_slice_bound_max(lua_State *L) {
   const char *slice_type = lua_tostring(L, 1);
   int set = lua_toboolean(L, 2);
   float value = lua_tonumber(L, 3);
-  printf("lua: setting %s max bound ", slice_type);
-  if(set) {printf("ON");} else {printf("OFF");}
-  printf(" with value of %f\n", value);
   set_slice_bound_max(slice_type, set, value);
   return 0;
 }
@@ -4265,16 +4223,12 @@ int lua_get_units(lua_State *L) {
 
 int lua_set_units(lua_State *L) {
   int i;
-  fprintf(stderr, "set_units\n");
   const char *unitclassname = lua_tostring(L, 1);
   const char *unitname = lua_tostring(L, 2);
-  fprintf(stderr, "set_units (unitclassname): %s\n", unitclassname);
-  fprintf(stderr, "set_units (unitname): %s\n", unitname);
 
   int unitclass_index;
   int unit_index;
   for (i=0; i < nunitclasses_default; i++) {
-    fprintf(stderr, "set_units_loop (unitclassname): %s\n", unitclasses[i].unitclass);
     if (strcmp(unitclasses[i].unitclass,unitclassname)==0) {
       unitclass_index = i;
       break;
@@ -4287,8 +4241,6 @@ int lua_set_units(lua_State *L) {
     }
   }
 
-  fprintf(stderr, "set_units (unitclassname): %s\n", unitclasses[unitclass_index].unitclass);
-  fprintf(stderr, "set_units (unitname): %s\n", unitclasses[unitclass_index].units[unit_index].unit);
   set_units(unitclass_index, unit_index);
   return 0;
 }
@@ -5700,8 +5652,9 @@ lua_State *initLua() {
 
   // luaL_requiref (L, "smv", luaopen_smv, 1)
   int smv_loaded_err = luaL_dostring(L, "require(\"smv\")");
-  if (smv_loaded_err) {
+  if (smv_loaded_err != LUA_OK) {
     fprintf(stderr, "Failed to load smv (lua)\n");
+    lua_pop(L,1);
   }
   // luaL_loadfile(L, "smv.lua");
   // int luaL_1dofile (lua_State *L, const char *filename);
@@ -5739,7 +5692,6 @@ int runScriptString(char *string) {
 }
 
 int loadLuaScript(char *filename) {
-  printf("scriptfile: %s\n", filename);
   // The display callback needs to be run once initially.
   // PROBLEM: the display CB does not work without a loaded case.
   runluascript=0;
@@ -5751,8 +5703,6 @@ int loadLuaScript(char *filename) {
 #else
   getcwd(cwd,1000);
 #endif
-  printf("cwd: %s\n", cwd);
-  printf("loading: %s\n", filename);
   const char *err_msg;
   lua_Debug info;
   int level = 0;
@@ -5792,7 +5742,6 @@ int loadLuaScript(char *filename) {
       }
       break;
   }
-  printf("after lua loadfile\n");
   return return_code;
 }
 

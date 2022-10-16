@@ -7,11 +7,8 @@
 #define pp_HASH   // md5, sha1 and sha255 hashing
 #endif
 
-#ifndef pp_GCC
-#define INTEL_LLVM_COMPILER_FORCE
 #ifdef __INTEL_COMPILER
 #define INTEL_COMPILER_ANY
-#endif
 #endif
 
 #ifdef __INTEL_LLVM_COMPILER
@@ -35,10 +32,16 @@
 #endif
 #endif
 
+// Microsofts MSVC has timespec defined
+#ifdef _MSC_VER
+#ifndef HAVE_STRUCT_TIMESPEC
+#define HAVE_STRUCT_TIMESPEC
+#endif
+#endif
+
 //*** options: windows
 
 #ifdef WIN32
-#undef pp_append
 
 //*** needed when using Windows Intel compilers
 //    to prevent warnings/errors
@@ -63,26 +66,7 @@
 
 #endif
 
-#ifdef __MINGW32__
-#ifndef pp_append
-#define pp_append // append underscore to Fortran file names
-#endif
-#endif
-
-
 #include "pragmas.h"
-#endif
-
-//*** options: Mac
-
-#ifdef pp_OSX
-#define pp_append // append underscore to Fortran file names
-#endif
-
-//*** options: Linux
-
-#ifdef pp_LINUX
-#define pp_append // append underscore to Fortran file names
 #endif
 
 //*** options: debug options
@@ -98,16 +82,6 @@
 #define PRINTVERSION(a,b) PRINTversion(a,b,hash_option)
 #else
 #define PRINTVERSION(a,b) PRINTversion(a)
-#endif
-
-// used to access Fortran routines from C
-
-#ifndef _F
-#ifdef pp_append
-#define _F(name) name ## _
-#else
-#define _F(name) name
-#endif
 #endif
 
 // debugging macros
@@ -172,4 +146,3 @@
 #include "lint.h"
 
 #endif
-

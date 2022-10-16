@@ -70,12 +70,18 @@ if NOT x%arg2% == xlua goto skip_lua
 :: Lua interpreter
 cd %SRCDIR%\lua-5.3.1
 start "building liblua" %WAIT% makelib.bat
-copy src\liblua.a %LIBDIR%\liblua.lib
+copy build\Release\lua.dll %LIBDIR%\lua.dll
+copy build\Release\lua.lib %LIBDIR%\lua.lib
 
 :: LPEG
 cd %SRCDIR%\lpeg-1.0.0
 start "building lpeg" %WAIT% makelib.bat
 copy lpeg.dll %LIBDIR%\lpeg.dll
+
+:: LFS
+cd %SRCDIR%\lfs
+start "building lfs" %WAIT% makelib.bat
+copy luafilesystem-1_8_0\src\lfs.dll %LIBDIR%\lfs.dll
 :skip_lua
 
 :: FREEGLUT

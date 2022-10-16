@@ -6,8 +6,8 @@ bounds.pl3d = {}
 -- bounds.slices["VIS_C0.9H0.1"].x = {}
 -- function bounds.slices["VIS_C0.9H0.1"].x.set(xMin, xMax)
 function bounds.slices.set(name, min, max)
-    local set_min = 3
-    local set_max = 3
+    local set_min = 2
+    local set_max = 2
     if (min ~= nil)
         then
             set_min = 0

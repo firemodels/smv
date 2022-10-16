@@ -1,5 +1,5 @@
 #include "options.h"
-#include "ASSERT.h"
+#include "smv_assert.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -17,6 +17,9 @@ void _Assert(const char *filename, unsigned linenumber){
   fflush(NULL);
   fprintf(stderr, "\n*** Error: Assertion failed: %s, line %u\n",filename, linenumber);
   fflush(stderr);
+#ifdef pp_CMAKE
+  exit(1);
+#endif
 #ifdef ASSERT_DEBUG
    y=1.0/x;
    fprintf(stderr,"y=%f\n",y);

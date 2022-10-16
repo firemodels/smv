@@ -84,11 +84,11 @@ int main(int argc, char **argv){
   ParseCommonOptions(argc, argv);
   if(show_help!=0){
     Usage("smokediff",show_help);
-    return 1;
+    return 0;
   }
   if(show_version==1){
     PRINTVERSION("smokediff", argv[0]);
-    return 1;
+    return 0;
   }
 
   NewMemory((void **)&caseinfo,2*sizeof(casedata));
@@ -103,7 +103,7 @@ int main(int argc, char **argv){
 
   if(argc==1){
     PRINTVERSION("Smokediff ",argv[0]);
-    return 1;
+    return 0;
   }
 
 /* -e{850} loop index i is modified within loop */

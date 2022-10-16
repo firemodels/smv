@@ -4067,8 +4067,7 @@ void DoScript(void){
       }
     }
     int advance_script = 0;
-
-    if(current_script_command->command==SCRIPT_SETVIEWPOINT&&update_viewpoint_script>0){
+    if(current_script_command>=scriptinfo&&current_script_command->command==SCRIPT_SETVIEWPOINT&&update_viewpoint_script>0){
       advance_script=0;
     }
     else{

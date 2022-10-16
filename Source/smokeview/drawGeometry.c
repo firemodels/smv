@@ -3040,7 +3040,7 @@ void UpdateFaceLists(void){
           }
         }
         if(facej->transparent==1&&drawing_blockage_transparent==1){
-          if(blocklocation!=BLOCKlocation_grid&facej->interior==1)continue;
+          if(blocklocation!=BLOCKlocation_grid&&facej->interior==1)continue;
           face_transparent[nface_transparent++]=facej;
           continue;
         }

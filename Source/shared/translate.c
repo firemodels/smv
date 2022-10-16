@@ -5,6 +5,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "MALLOCC.h"
+#include "string_util.h"
 #include "translate.h"
 
 /* ------------------ CompareTrdata ------------------------ */

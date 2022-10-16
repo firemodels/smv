@@ -5,7 +5,7 @@
 #include <string.h>
 #include <windows.h>
 #include <ctype.h>
-#include "ASSERT.h"
+#include "smv_assert.h"
 #include "string_util.h"
 #include "file_util.h"
 #include "datadefs.h"

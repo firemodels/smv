@@ -25,6 +25,7 @@
 #include "MALLOCC.h"
 #include "datadefs.h"
 #include "file_util.h"
+#include "string_util.h"
 #ifdef pp_HASH
 #include "mbedtls/md5.h"
 #include "mbedtls/sha256.h"
@@ -314,6 +315,20 @@ char *TrimFront(char *line){
 //  returns first non-blank character at the begininn of line
 
   char *c;
+
+  for(c=line;c<=line+strlen(line)-1;c++){
+    if(!isspace((unsigned char)(*c)))return c;
+  }
+  return line;
+}
+
+/* ------------------ TrimFrontConst ------------------------ */
+
+const char *TrimFrontConst(const char *line){
+
+//  returns first non-blank character at the begininn of line
+
+  const char *c;
 
   for(c=line;c<=line+strlen(line)-1;c++){
     if(!isspace((unsigned char)(*c)))return c;

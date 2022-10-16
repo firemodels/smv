@@ -7,6 +7,7 @@
 #include "datadefs.h"
 #include "smokeviewvars.h"
 #include "IOobjects.h"
+#include "getdata.h"
 
 static float *cos_long = NULL, *sin_long = NULL, *cos_lat = NULL, *sin_lat = NULL;
 static float specular[4] = {0.4,0.4,0.4,1.0};
@@ -4591,14 +4592,12 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
     case SV_SETRGB:
     case SV_SETRGBVAL:
       if(toki->command == SV_SETCOLOR){
-        FILE_SIZE lenstring;
         int iarg[3];
         char *stringptr;
 
         stringptr = (toki - 1)->string;
 
-        lenstring = (FILE_SIZE)strlen(stringptr);
-        FORTcolor2rgb(iarg, stringptr, lenstring);
+        color2rgb(iarg, stringptr);
         arg[0] = iarg[0];
         arg[1] = iarg[1];
         arg[2] = iarg[2];

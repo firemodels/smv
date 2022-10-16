@@ -1,5 +1,5 @@
 SOURCE_DIR = ../../../Source/
-INC_DIR = -I $(SOURCE_DIR)/makepo -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared 
+INC_DIR = -I $(SOURCE_DIR)/makepo -I $(SOURCE_DIR)/zlib128 -I $(SOURCE_DIR)/shared
 FILTERC =
 FILTERF =
 
@@ -28,8 +28,6 @@ endif
 INTEL_COMPINFO=-Dpp_COMPVER=\"$(INTEL_COMPVERSION)\"
 GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
-LINUX64FORTLIBDIR = $(IFORT_COMPILER)/lib/intel64
-
 # Definition of the object variables
 
 obj = main.o file_util.o string_util.o dmalloc.o assert.o md5.o sha1.o sha256.o stdio_buffer.o
@@ -41,31 +39,21 @@ no_target:
 	@echo \******** You did not specify a make target \********
 	@echo Use one of targets found in the Makefile
 
-.SUFFIXES: .F90 .c .obj .o .f90 .cpp
+.SUFFIXES: .c .obj .o .cpp
 
 .c.obj:
 	$(CC) -c $(CFLAGS) $(FILTERC) $(INC_DIR) $<
 .c.o:
 	$(CC) -c $(CFLAGS) $(FILTERC) $(INC_DIR) $<
-.F90.o:
-	$(FC) -c $(FFLAGS) $(FILTERF) $<
-.F90.obj:
-	$(FC) -c $(FFLAGS) $(FILTERF) $<
-.f90.obj:
-	$(FC) -c $(FFLAGS) $(FILTERF) $<
-.f90.o:
-	$(FC) -c $(FFLAGS) $(FILTERF) $<
-
-
 
 # ********  rules for each platform supported *************
 
 # ------------- intel win 64 ----------------
 
 intel_win_64 : CFLAGS    = -O2 /nologo -D X64 -D WIN32 -D PTW32_STATIC_LIB  $(GITINFO) $(INTEL_COMPINFO)
-intel_win_64 : LFLAGS    = 
+intel_win_64 : LFLAGS    =
 intel_win_64 : CC        = $(I_CC)
-intel_win_64 : exe       = makepo_win_64.exe 
+intel_win_64 : exe       = makepo_win_64.exe
 
 intel_win_64 : $(objwin)
 	$(CC) -o $(bin)/$(exe) $(objwin) $(LFLAGS)
@@ -73,9 +61,9 @@ intel_win_64 : $(objwin)
 # ------------- gnu win 64 ----------------
 
 gnu_win_64 : CFLAGS    = -O0 -m64 -D WIN32 -D _WIN32 -D GLEW_STATIC -D MINGW
-gnu_win_64 : LFLAGS    = 
+gnu_win_64 : LFLAGS    =
 gnu_win_64 : CC        = gcc
-gnu_win_64 : exe       = makepo_win_64.exe 
+gnu_win_64 : exe       = makepo_win_64.exe
 
 gnu_win_64 : $(obj)
 	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
@@ -93,12 +81,12 @@ intel_linux_64 : $(obj)
 # ------------- gnu linux 64 ----------------
 
 gcc_linux_64 : CFLAGS    = -O2 -m64 -D pp_LINUX $(GITINFO) $(GNU_COMPINFO)
+gcc_linux_64 : LFLAGS    = -lm
 gcc_linux_64 : CC        = gcc
-gcc_linux_64 : FC        = ifort
 gcc_linux_64 : exe       = makepo_linux_64
 
 gcc_linux_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) 
+	$(CC) -o $(bin)/$(exe) $(obj) $(LFLAGS)
 
 # ------------- intel osx 64 ----------------
 
@@ -114,11 +102,10 @@ intel_osx_64 : $(obj)
 
 gcc_osx_64 : CFLAGS    = -O2 -m64 -D pp_OSX $(GITINFO) $(GNU_COMPINFO)
 gcc_osx_64 : CC        = gcc
-gcc_osx_64 : FC        = ifort
 gcc_osx_64 : exe       = makepo_osx_64
 
 gcc_osx_64 : $(obj)
-	$(CC) -o $(bin)/$(exe) $(obj) 
+	$(CC) -o $(bin)/$(exe) $(obj)
 
 
 #-------------- Clean Target to remove Object and Module files -----------

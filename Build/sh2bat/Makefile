@@ -42,7 +42,7 @@ no_target:
 	@echo \******** You did not specify a make target \********
 	@echo Use one of targets found in the Makefile
 
-.SUFFIXES: .F90 .c .obj .o .f90 .cpp
+.SUFFIXES: .c .obj .o .cpp
 
 .c.obj:
 	$(CC) -c $(CFLAGS) $(FILTERC) $(INC_DIR) $<
@@ -84,4 +84,3 @@ string_util.o:  .FORCE
 string_util.obj:        .FORCE
 
 .FORCE:
-

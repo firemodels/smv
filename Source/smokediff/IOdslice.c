@@ -7,6 +7,7 @@
 #include "MALLOCC.h"
 #include "datadefs.h"
 #include "file_util.h"
+#include "../smokeview/getdata.h"
 
 /* ------------------ setup_slice ------------------------ */
 
@@ -76,8 +77,7 @@ void diff_slices(FILE *stream_out){
     char fullfile1[1024], fullfile2[1024], outfile[1024], outfile_bnd[1024], outfile2[1024];
     slice *slicei, *slice1;//, *slice2;
     FILE *stream;
-    int unit1, unit2, unit3;
-    FILE_SIZE len1,len2;
+    FILE *unit1, *unit2, *unit3;
     int is1a, is2a, js1a, js2a, ks1a, ks2a;
     int is1b, is2b, js1b, js2b, ks1b, ks2b;
     int error1=0,error2a=0,error2b=0;
@@ -88,7 +88,6 @@ void diff_slices(FILE *stream_out){
     int nqframe2;
     float *qframeout;
     int i;
-    int len;
     float f1, f2, dt;
     int slicetest1,slicetest2;
     float fraction_complete;
@@ -125,19 +124,17 @@ void diff_slices(FILE *stream_out){
 
     MakeOutFile(outfile2,NULL,slice1->file,".sf");
 
-    len1=strlen(fullfile1);
     slicetest1=0;
     slicetest2=0;
     if(test_mode==1){
       slicetest1=1;
       slicetest2=2;
     }
-    FORTopenslice(fullfile1,&unit1,&is1a,&is2a,&js1a,&js2a,&ks1a,&ks2a,&error1,len1);
-    len2=strlen(fullfile2);
-    FORTopenslice(fullfile2,&unit2,&is1b,&is2b,&js1b,&js2b,&ks1b,&ks2b,&error2a,len2);
+    openslice(fullfile1,&unit1,&is1a,&is2a,&js1a,&js2a,&ks1a,&ks2a,&error1);
+    openslice(fullfile2,&unit2,&is1b,&is2b,&js1b,&js2b,&ks1b,&ks2b,&error2a);
     if(error1!=0||error2a!=0){
-      FORTclosefortranfile(&unit1);
-      FORTclosefortranfile(&unit2);
+      closefortranfile(unit1);
+      closefortranfile(unit2);
       if(error1!=0||error2a!=0){
         if(error1==0)fprintf(stderr,"*** problem opening %s\n",fullfile1);
         if(error2a==0)fprintf(stderr,"*** problem opening %s\n",fullfile2);
@@ -159,11 +156,10 @@ void diff_slices(FILE *stream_out){
     NewMemory((void **)&qframe2a,nqframe2*sizeof(float));
     NewMemory((void **)&qframe2b,nqframe2*sizeof(float));
 
-    len=strlen(outfile);
-    FORToutsliceheader(outfile,&unit3,&is1a,&is2a,&js1a,&js2a,&ks1a,&ks2a,&error1,len);
+    outsliceheader(outfile,&unit3,is1a,is2a,js1a,js2a,ks1a,ks2a,&error1);
     if(error1!=0){
-      FORTclosefortranfile(&unit1);
-      FORTclosefortranfile(&unit2);
+      closefortranfile(unit1);
+      closefortranfile(unit2);
       fprintf(stderr,"*** problem writing out header for %s\n",fullfile1);
       continue;
     }
@@ -172,13 +168,13 @@ void diff_slices(FILE *stream_out){
     error2a=1;
     error2b=1;
     ResetHistogram(slice1->histogram,NULL,NULL);
-    FORTgetsliceframe(&unit1,&is1a,&is2a,&js1a,&js2a,&ks1a,&ks2a,&time1,qframe1,&slicetest1,&error1);
-    if(error1==0 )FORTgetsliceframe(&unit2,&is1b,&is2b,&js1b,&js2b,&ks1b,&ks2b,&time2a,qframe2a,&slicetest2,&error2a);
-    if(error2a==0)FORTgetsliceframe(&unit2,&is1b,&is2b,&js1b,&js2b,&ks1b,&ks2b,&time2b,qframe2b,&slicetest2,&error2b);
+    getsliceframe(unit1,is1a,is2a,js1a,js2a,ks1a,ks2a,&time1,qframe1,slicetest1,&error1);
+    if(error1==0 )getsliceframe(unit2,is1b,is2b,js1b,js2b,ks1b,ks2b,&time2a,qframe2a,slicetest2,&error2a);
+    if(error2a==0)getsliceframe(unit2,is1b,is2b,js1b,js2b,ks1b,ks2b,&time2b,qframe2b,slicetest2,&error2b);
     if(error1!=0||error2a!=0||error2b!=0){
-      FORTclosefortranfile(&unit1);
-      FORTclosefortranfile(&unit2);
-      FORTclosefortranfile(&unit3);
+      closefortranfile(unit1);
+      closefortranfile(unit2);
+      closefortranfile(unit3);
       FREEMEMORY(qframe1);
       FREEMEMORY(qframe2a);
       FREEMEMORY(qframe2b);
@@ -207,7 +203,7 @@ void diff_slices(FILE *stream_out){
           qframe2a[i]=qframe2b[i];
         }
         time2a=time2b;
-        FORTgetsliceframe(&unit2,&is1b,&is2b,&js1b,&js2b,&ks1b,&ks2b,&time2b,qframe2b,&slicetest2,&error2a);
+        getsliceframe(unit2,is1b,is2b,js1b,js2b,ks1b,ks2b,&time2b,qframe2b,slicetest2,&error2a);
         if(error2a!=0)break;
       }
       if(error2a!=0)break;
@@ -243,9 +239,9 @@ void diff_slices(FILE *stream_out){
         if(qframe1[i]<valmin)valmin=qframe1[i];
         if(qframe1[i]>valmax)valmax=qframe1[i];
       }
-      FORToutsliceframe(&unit3,&is1a,&is2a,&js1a,&js2a,&ks1a,&ks2a,&time1,qframeout,&error1);
+      outsliceframe(unit3,is1a,is2a,js1a,js2a,ks1a,ks2a,time1,qframeout,&error1);
       if(error1!=0)break;
-      FORTgetsliceframe(&unit1,&is1a,&is2a,&js1a,&js2a,&ks1a,&ks2a,&time1,qframe1,&slicetest1,&error1);
+      getsliceframe(unit1,is1a,is2a,js1a,js2a,ks1a,ks2a,&time1,qframe1,slicetest1,&error1);
       if(error1!=0)break;
       UpdateHistogram(qframe1, NULL,nqframe1, slice1->histogram);
     }
@@ -268,9 +264,9 @@ void diff_slices(FILE *stream_out){
       }
     }
 
-    FORTclosefortranfile(&unit1);
-    FORTclosefortranfile(&unit2);
-    FORTclosefortranfile(&unit3);
+    closefortranfile(unit1);
+    closefortranfile(unit2);
+    closefortranfile(unit3);
     FREEMEMORY(qframe1);
     FREEMEMORY(qframe2a);
     FREEMEMORY(qframe2b);

@@ -8,6 +8,7 @@
 #include "svzip.h"
 #include "MALLOCC.h"
 #include "compress.h"
+#include "../smokeview/getdata.h"
 
 pdfdata pdfmerge,pdfframe;
 
@@ -540,8 +541,7 @@ void update_patch_hist(void){
 
   for(i=0;i<npatchinfo;i++){
     patch *patchi;
-    int unit1;
-    FILE_SIZE lenfile;
+    FILE *unit1;
     int error1;
     int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2;
     float patchtime1, *patchframe;
@@ -558,7 +558,6 @@ void update_patch_hist(void){
     UNLOCK_PATCH_BOUND;
 
     PRINTF("  Examining %s\n",patchi->file);
-    lenfile=strlen(patchi->file);
     pi1 = patchi->pi1;
     pi2 = patchi->pi2;
     pj1 = patchi->pj1;
@@ -567,7 +566,7 @@ void update_patch_hist(void){
     pk2 = patchi->pk2;
 
     LOCK_COMPRESS;
-    FORTopenboundary(patchi->file,&unit1,&patchi->version,&error1,lenfile);
+    unit1 = openboundary(patchi->file,patchi->version,&error1);
     UNLOCK_COMPRESS;
 
     patchframesize=0;
@@ -580,12 +579,12 @@ void update_patch_hist(void){
       int ndummy;
       int file_size;
 
-      FORTgetpatchdata(&unit1, &patchi->npatches,
+      getpatchdata(unit1, patchi->npatches,
         pi1, pi2, pj1, pj2, pk1, pk2, &patchtime1, patchframe, &ndummy,&file_size, &error1);
       UpdateHistogram(patchframe, NULL,patchframesize, patchi->histogram);
     }
     LOCK_COMPRESS;
-    FORTclosefortranfile(&unit1);
+    closefortranfile(unit1);
     UNLOCK_COMPRESS;
     FREEMEMORY(patchframe);
   }

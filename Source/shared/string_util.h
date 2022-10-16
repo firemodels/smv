@@ -12,10 +12,8 @@
 
 // vvvvvvvvvvvvvvvvvvvvvvvv header files vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-#ifdef __MINGW32__
 #include <stdio.h>
 #include "options.h"
-#endif
 #include "file_util.h"
 
 // vvvvvvvvvvvvvvvvvvvvvvvv structures vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -121,6 +119,7 @@ EXTERNCPP char          *RemoveComment(char *buffer);
 EXTERNCPP void           TrimBack(char *line);
 EXTERNCPP void           TrimCommas(char *line);
 EXTERNCPP char          *TrimFront(char *line);
+EXTERNCPP const char    *TrimFrontConst(const char *line);
 EXTERNCPP void           TrimZeros(char *line);
 EXTERNCPP char          *TrimFrontZeros(char *line);
 

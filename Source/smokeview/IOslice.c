@@ -13,6 +13,7 @@
 #include "interp.h"
 #include "smokeviewvars.h"
 #include "IOscript.h"
+#include "getdata.h"
 
 #define SLICE_HEADER_SIZE 4
 #define SLICE_TRAILER_SIZE 4
@@ -658,9 +659,9 @@ int LastVSliceLoadstack(void){
 /* ------------------ OutSlicefile ------------------------ */
 
 void OutSlicefile(slicedata *sd){
-  FORTwriteslicedata(sd->file,
-    &sd->is1,&sd->is2,&sd->js1,&sd->js2,&sd->ks1,&sd->ks2,
-    sd->qslicedata,sd->times,&sd->ntimes, &redirect, strlen(sd->file));
+  writeslicedata(sd->file,
+    sd->is1,sd->is2,sd->js1,sd->js2,sd->ks1,sd->ks2,
+    sd->qslicedata,sd->times,sd->ntimes, redirect);
 }
 
 
@@ -834,7 +835,6 @@ int GetSliceHeader(char *comp_file, char *size_file, int compression_type,
 
 int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
   slicedata *sd;
-  int slicefilelen;
   int headersize,framesize;
   int frame_size;
   long int skip_local;
@@ -850,13 +850,11 @@ int CReadSlice_frame(int frame_index_local,int sd_index,int flag){
     FREEMEMORY(sd->times);
     return 0;
   }
-  slicefilelen = strlen(sd->file);
   if(frame_index_local==first_frame_index){
     if(sd->compression_type==UNCOMPRESSED){
 
-      FORTgetslicesizes(sd->file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, &tload_step,&error,
-        &use_tload_begin, &use_tload_end, &tload_begin, &tload_end, &headersize, &framesize,
-        slicefilelen);
+      getslicesizes(sd->file, &sd->nslicei, &sd->nslicej, &sd->nslicek, &sd->ntimes, tload_step,&error,
+        use_tload_begin, use_tload_end, tload_begin, tload_end, &headersize, &framesize);
     }
     else if(sd->compression_type!=UNCOMPRESSED){
       if(
@@ -2967,7 +2965,7 @@ void GetSliceParams(void){
         js2=sd->js2;
         ks1=sd->ks1;
         ks2=sd->ks2;
-        FORTgetslicefiledirection(&is1, &is2, &iis1, &iis2, &js1, &js2, &ks1, &ks2, &idir, &joff, &koff,&volslice);
+        getslicefiledirection(&is1, &is2, &iis1, &iis2, &js1, &js2, &ks1, &ks2, &idir, &joff, &koff,&volslice);
         if(volslice == 1){
           is1 = iis1;
           is2 = iis2;

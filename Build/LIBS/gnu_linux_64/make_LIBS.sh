@@ -19,13 +19,13 @@ cp libgd.a $LIBDIR/.
 
 # GLUI
 cd $SRCDIR/glui_v2_1_beta
-./makelib.sh $OPTS 
+./makelib.sh $OPTS
 cp libglui.a $LIBDIR/.
 
 # GLUT
 if [ "$GLUT" == "freeglut" ]; then
   cd $BUILDDIR/freeglut3.0.0/gnu_linux_64
-  ./make_freeglut.sh $OPTS 
+  ./make_freeglut.sh $OPTS
 else
   cd $SRCDIR/glut-3.7.6
   ./makelib.sh $OPTS
@@ -47,6 +47,7 @@ cd $SRCDIR/zlib128
 ./makelib.sh $OPTS
 cp libz.a $LIBDIR/.
 
+if [[ "$LUA_SCRIPTING" == "true" ]]; then
 # Lua # Lua interpreter
 cd $SRCDIR/lua-5.3.1/src
 export TARGET=liblua.a
@@ -58,3 +59,9 @@ cd $SRCDIR/lpeg-1.0.0
 export TARGET=linux
 ./makelib.sh $OPTS
 cp lpeg.so $LIBDIR/.
+
+# LFS # Lua library for interacting with the filesystem
+cd $SRCDIR/lfs
+./makelib.sh $OPTS
+cp luafilesystem-1_8_0/src/lfs.so $LIBDIR/.
+fi

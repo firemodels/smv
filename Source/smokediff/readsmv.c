@@ -5,6 +5,8 @@
 #include <math.h>
 #include "svdiff.h"
 #include "MALLOCC.h"
+// TODO: Fix this by moving to shared
+#include "../smokeview/getdata.h"
 
 /* ------------------ ReadSMV ------------------------ */
 
@@ -427,7 +429,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
       if(GetFileInfo(full_file,NULL,&filesize)==0){
         int is1=-1, is2=-1, js1=-1, js2=-1, ks1=-1, ks2=-1;
         int ni, nj, nk;
-        int error, lenfile;
+        int error;
         float *xplt, *yplt, *zplt;
 
         NewMemory((void **)&slicei->file,(unsigned int)(strlen(full_file)+1));
@@ -439,8 +441,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
           break;
         }
         slicei->filesize=filesize;
-        lenfile=strlen(full_file);
-        FORTgetsliceparms(full_file,&is1,&is2,&js1,&js2,&ks1,&ks2,&ni,&nj,&nk,&slicei->volslice,&error,lenfile);
+        getsliceparms(full_file,&is1,&is2,&js1,&js2,&ks1,&ks2,&ni,&nj,&nk,&slicei->volslice,&error);
         slicei->is1=is1;
         slicei->is2=is2;
         slicei->js1=js1;
@@ -511,7 +512,8 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
       if(strlen(buffer)==0)break;
       FullFile(full_file,smvcase->dir,buffer);
       if(GetFileInfo(full_file,NULL,&filesize)==0){
-        int lenfile, npatches, error, boundaryunitnumber;
+        int npatches, error;
+        FILE *boundaryunitnumber;
 
         NewMemory((void **)&boundaryi->file,(unsigned int)(strlen(full_file)+1));
         NewMemory((void **)&boundaryi->histogram,sizeof(histogramdata));
@@ -522,9 +524,9 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
           break;
         }
         boundaryi->filesize=filesize;
-        lenfile=strlen(full_file);
-        boundaryunitnumber=15;
-        FORTgetboundaryheader1(full_file,&boundaryunitnumber, &npatches, &error, lenfile);
+        // TODO: why was this set to 15.
+        // boundaryunitnumber=15;
+        getboundaryheader1(full_file,&boundaryunitnumber, &npatches, &error);
         if(npatches>0){
           int *pi1, *pi2, *pj1, *pj2, *pk1, *pk2, *patchdir, *patch2index, *patchsize, *qoffset;
           int i;
@@ -550,7 +552,7 @@ int ReadSMV(bufferstreamdata *streamsmv, FILE *stream_out, casedata *smvcase){
           boundaryi->npatches=npatches;
           boundaryi->patchsize=patchsize;
           boundaryi->qoffset=qoffset;
-          FORTgetboundaryheader2(&boundaryunitnumber, &version_local, &npatches, pi1, pi2, pj1, pj2, pk1, pk2, patchdir);
+          getboundaryheader2(boundaryunitnumber, version_local, npatches, pi1, pi2, pj1, pj2, pk1, pk2, patchdir);
           for(i=0;i<npatches;i++){
             boundaryi->patchsize[i] = (pi2[i]+1-pi1[i])*(pj2[i]+1-pj1[i])*(pk2[i]+1-pk1[i]);
             if(i==0){

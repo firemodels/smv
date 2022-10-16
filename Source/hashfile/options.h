@@ -1,6 +1,8 @@
 #ifndef OPTIONS_H_DEFINED
 #define OPTIONS_H_DEFINED
 
+#define pp_HASH
+
 #include "options_common.h"
 
 //*** uncomment the following two lines to force all versions to be beta
@@ -8,8 +10,6 @@
 //#define pp_BETA
 
 //*** define dem2fds title
-
-#define pp_HASH
 
 #ifdef pp_BETA
 #define PROGVERSION "Test"

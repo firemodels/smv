@@ -12,6 +12,7 @@
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 #include "compress.h"
+#include "getdata.h"
 
 #ifdef pp_SMOKEBUFFER
 typedef bufferstreamdata MFILE;
@@ -582,7 +583,6 @@ int InitLightFractions(meshdata *meshi, float *xyz_light, int light_type){
 
 void LightFractions2File(meshdata *meshi){
   char longlabel[30], shortlabel[30], unitlabel[30], slicefile[256];
-  int len_longlabel, len_shortlabel, len_unitlabel, len_slicefile;
   int meshnum;
   char smvlight_file[256];
   FILE *slicesmv = NULL;
@@ -601,16 +601,9 @@ void LightFractions2File(meshdata *meshi){
   }
   meshnum = (int)(meshi-meshinfo)+1;
   sprintf(slicefile, "%s_frac_%i.sf", fdsprefix, meshnum);
-  len_slicefile = strlen(slicefile);
-
   strcpy(longlabel, "light fraction");
-  len_longlabel = strlen(longlabel);
-
   strcpy(shortlabel, "frac");
-  len_shortlabel = strlen(shortlabel);
-
   strcpy(unitlabel, " ");
-  len_unitlabel = strlen(unitlabel);
 
   is1 = 0;
   is2 = meshi->ibar;
@@ -628,9 +621,9 @@ void LightFractions2File(meshdata *meshi){
   fprintf(slicesmv, " %s\n", unitlabel);
   fclose(slicesmv);
 
-  FORTwriteslicedata2(slicefile, longlabel, shortlabel, unitlabel,
-    &is1, &is2, &js1, &js2, &ks1, &ks2,
-    meshi->light_fraction, vr->times, &vr->ntimes, len_slicefile, len_longlabel, len_shortlabel, len_unitlabel);
+  writeslicedata2(slicefile, longlabel, shortlabel, unitlabel,
+    is1, is2, js1, js2, ks1, ks2,
+    meshi->light_fraction, vr->times, vr->ntimes);
 }
 
 /* ------------------ InitAllLightFractions ------------------------ */
