@@ -2376,7 +2376,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   nframes = GetNPartFrames(parti);
   NewMemory((void **)&frame_sizes,nframes*sizeof(int));
   GetPartSizes(parti->reg_file, &header_size, frame_sizes, nframes);
-  parti->partstream = StreamOpen(parti->partstream, parti->file, header_size, frame_sizes, nframes, 0);
+  parti->partstream = StreamOpen(parti->partstream, parti->file, header_size, frame_sizes, nframes, NULL, 0);
  // StreamCheck(parti->partstream);
 
   FREEMEMORY(frame_sizes);

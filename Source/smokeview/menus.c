@@ -4586,6 +4586,19 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
     break;
     }
   }
+#ifdef pp_SMOKE3DSTREAM
+  int nstreams = 0;
+  streamdata **streams = NULL;
+
+  for(i = 0; i<nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo+i;
+    if(smoke3di->type==type&&compute_smoke3d_file_sizes!=1)nstreams++;
+  }
+  if(nstreams>0)NewMemory((void **)&streams, nstreams*sizeof(streamdata *));
+  nstreams = 0;
+#endif
   total_size = 0;
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
@@ -4601,9 +4614,17 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
       }
       else{
         load_size += ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
+#ifdef pp_SMOKE3DSTREAM
+        streams[nstreams++] = smoke3di->smokes3dstream;
+#endif
       }
     }
   }
+#ifdef pp_SMOKE3DSTREAM
+  if(nstreams>0){
+    StreamReadList(streams, nstreams, label);
+  }
+#endif
   if(compute_smoke3d_file_sizes==1){
     PRINTF(" file size: ");
     if(total_size>1000000000){
