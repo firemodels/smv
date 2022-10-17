@@ -4615,14 +4615,20 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
       else{
         load_size += ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
 #ifdef pp_SMOKE3DSTREAM
-        streams[nstreams++] = smoke3di->smokes3dstream;
+        if(smoke3di->smokes3dstream!=NULL)streams[nstreams++] = smoke3di->smokes3dstream;
 #endif
       }
     }
   }
 #ifdef pp_SMOKE3DSTREAM
   if(nstreams>0){
-    StreamReadList(streams, nstreams);
+    if(streamlistarg==NULL){
+      NewMemory((void **)&streamlistarg, sizeof(streamlistargdata));
+    }
+    streamlistarg->streams  = streams;
+    streamlistarg->nstreams = nstreams;
+    StreamReadListMT(streamlistarg);
+    //StreamReadList(streams, nstreams);
   }
 #endif
   if(compute_smoke3d_file_sizes==1){

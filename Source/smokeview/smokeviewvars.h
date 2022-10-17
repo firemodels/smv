@@ -268,6 +268,10 @@ SVEXTERN int SVDECL(npartthread_ids, 2);
 #ifdef pp_SLICETHREAD
 SVEXTERN int SVDECL(nslicethread_ids, 4);
 #endif
+#ifdef pp_STREAM
+SVEXTERN int SVDECL(stream_multithread, 0);
+SVEXTERN streamlistargdata SVDECL(*streamlistarg, NULL);
+#endif
 SVEXTERN int SVDECL(nreadallgeomthread_ids, 4);
 SVEXTERN int SVDECL(partfast, 1);
 SVEXTERN int SVDECL(have_vr, 0), SVDECL(use_vr,0);

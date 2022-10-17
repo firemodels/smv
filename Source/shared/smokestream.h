@@ -18,11 +18,17 @@ typedef struct _streamdata {
   size_t *framesizes, *frame_offsets, filesize;
 } streamdata;
 
+typedef struct _streamlistargdata {
+  streamdata **streams;
+  int nstreams;
+} streamlistargdata;
+
 EXTERNCPP streamdata *StreamOpen(streamdata *streamin, char *file, size_t offset, int *framesizes, int nframes, char *label, int constant_frame_size);
 EXTERNCPP void StreamClose(streamdata **stream);
 EXTERNCPP int GetFrameIndex(float time, float *times, int ntimes);
 EXTERNCPP FILE_SIZE StreamRead(streamdata *stream, int frame_index);
 EXTERNCPP void StreamReadList(streamdata **streams, int nstreams);
+EXTERNCPP void StreamReadListMT(streamlistargdata *arg);
 EXTERNCPP void StreamCheck(streamdata *framestream);
 #endif
 #endif

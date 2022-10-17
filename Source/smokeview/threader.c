@@ -6,6 +6,7 @@
 
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
+#include "smokestream.h"
 
 /* ------------------ InitMultiThreading ------------------------ */
 
@@ -19,6 +20,9 @@ void InitMultiThreading(void){
   pthread_mutex_init(&mutexCOMPRESS,NULL);
   pthread_mutex_init(&mutexVOLLOAD,NULL);
   pthread_mutex_init(&mutexIBLANK, NULL);
+#ifdef pp_STREAM
+  pthread_mutex_init(&mutexSTREAM, NULL);
+#endif
 #endif
 }
 
@@ -483,6 +487,56 @@ void SampleMT(void){
 #else
 void SampleMT(void){
   Sample();
+}
+#endif
+#endif
+
+/* ------------------ I/O streaming ------------------------ */
+
+#ifdef pp_STREAM
+
+#ifdef pp_THREAD
+
+/* ------------------ MtStreamReadList ------------------------ */
+
+void *MtStreamReadList(void *arg){
+  streamlistargdata *streamlistarg;
+  streamdata **streams;
+  int nstreams;
+
+  streamlistarg = (streamlistargdata *)arg;
+
+  streams  = streamlistarg->streams;
+  nstreams = streamlistarg->nstreams;
+
+  StreamReadList(streams, nstreams);
+  pthread_exit(NULL);
+  return NULL;
+}
+
+/* ------------------ StreamReadListMT ------------------------ */
+
+void StreamReadListMT(streamlistargdata *arg){
+  if(stream_multithread==1){
+    pthread_create(&stream_thread_id, NULL, MtStreamReadList, (void *)arg);
+  }
+  else{
+    streamdata **streams;
+    int nstreams;
+
+    streams = arg->streams;
+    nstreams = arg->nstreams;
+    StreamReadList(streams, nstreams);
+  }
+}
+#else
+void StreamReadListMT(streamlistargdata *arg){
+  streamdata **streams;
+  int nstreams;
+
+  streams = arg->streams;
+  nstreams = arg->nstreams;
+  StreamReadList(streams, nstreams);
 }
 #endif
 #endif
