@@ -4622,7 +4622,7 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
   }
 #ifdef pp_SMOKE3DSTREAM
   if(nstreams>0){
-    StreamReadList(streams, nstreams, label);
+    StreamReadList(streams, nstreams);
   }
 #endif
   if(compute_smoke3d_file_sizes==1){
