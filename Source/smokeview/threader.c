@@ -500,14 +500,14 @@ void SampleMT(void){
 /* ------------------ MtStreamReadList ------------------------ */
 
 void *MtStreamReadList(void *arg){
-  streamlistargdata *streamlistarg;
+  streamlistargdata *streamlist;
   streamdata **streams;
   int nstreams;
 
-  streamlistarg = (streamlistargdata *)arg;
+  streamlist = (streamlistargdata *)arg;
 
-  streams  = streamlistarg->streams;
-  nstreams = streamlistarg->nstreams;
+  streams  = streamlist->streams;
+  nstreams = streamlist->nstreams;
 
   StreamReadList(streams, nstreams);
   pthread_exit(NULL);

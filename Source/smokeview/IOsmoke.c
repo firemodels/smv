@@ -3553,6 +3553,9 @@ void DrawSmokeFrame(void){
     blend_mode = 1;
     glBlendEquation(GL_MAX);
   }
+#ifdef pp_SMOKE3DSTREAM
+  printf("Displaying smoke frame: %i\n", itimes);
+#endif
   for(i = 0; i<nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
 
