@@ -92,6 +92,7 @@ static void *mmap(void *start, size_t length, int prot, int flags, int fd, off_t
     return MAP_FAILED;
 
   DWORD flProtect;
+  flProtect = PAGE_READWRITE;
   if(prot&PROT_WRITE) {
     if(prot&PROT_EXEC)
       flProtect = PAGE_EXECUTE_READWRITE;
@@ -307,7 +308,6 @@ int StreamAllLoaded(streamdata *stream){
 
 void StreamReadList(streamdata **streams, int nstreams){
   int frame_index, stream_index;
-  size_t file_size = 0;
 
   for(stream_index = 0; stream_index<nstreams; stream_index++){
     printf("Loading %s",streams[stream_index]->file);
@@ -326,7 +326,7 @@ void StreamReadList(streamdata **streams, int nstreams){
         if(frame_index>stream->nframes-1)continue;
         have_frames = 1;
         if(stream->frameptrs[frame_index]==NULL){
-          file_size += StreamRead(stream, frame_index);
+          StreamRead(stream, frame_index);
           ASSERT(stream->frameptrs[frame_index]!=NULL);
         }
       }
