@@ -34,7 +34,7 @@
 //#define pp_SMOKE3DSTREAM      // stream smoke3d data
 //#define pp_PARTSTREAM         // stream particle data
 
-// turn on pp_STREAM if an streaming is on for any file type
+// turn on pp_STREAM if streaming is on for any file type
 
 #ifdef pp_SMOKE3DSTREAM
 #define pp_STREAM
@@ -48,7 +48,7 @@
 #define pp_PART_MULTI        // load particles in parallel
 //#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds
 #define pp_THREADBUFFER
-#define pp_SMOKEBUFFER       // read 3d smoke files using memory buffer i/o routines
+//#define pp_SMOKEBUFFER       // read 3d smoke files using memory buffer i/o routines
 //#define pp_GEOM_DEBUG        // debug out in geometry routines
 //#define pp_CRASH_TEST         // test detection of division by zero or use of undefined pointer
 //#define pp_SHOW_BOUND_MIRROR  // add menu for showing boundary files on mirror/open vents
