@@ -310,13 +310,14 @@ int StreamAllLoaded(streamdata *stream){
 void StreamReadList(streamdata **streams, int nstreams){
   int frame_index, stream_index;
 
-  stream_loading_frame = 1;
   for(;;){ //continue until all frames are loaded
     for(frame_index = 0;; frame_index++){
       int have_frames;
 
       have_frames = 0;
+#ifdef  pp_STREAM_OUTPUT
       int loading = 0;
+#endif
       for(stream_index = 0; stream_index<nstreams; stream_index++){
         streamdata *stream;
 
@@ -324,7 +325,9 @@ void StreamReadList(streamdata **streams, int nstreams){
         if(frame_index>stream->nframes-1)continue;
         have_frames = 1;
         if(stream->frameptrs[frame_index]==NULL){
+#ifdef  pp_STREAM_OUTPUT
           loading = 1;
+#endif
           StreamRead(stream, frame_index);
           ASSERT(stream->frameptrs[frame_index]!=NULL);
         }
@@ -332,7 +335,9 @@ void StreamReadList(streamdata **streams, int nstreams){
 #ifdef pp_STREAM_PAUSE
       PauseTime(0.5);
 #endif
+#ifdef  pp_STREAM_OUTPUT
       if(loading==1)printf("Loading frame: %i\n", frame_index);
+#endif
       if(have_frames==0)break;
     }
     // check if all frames have been loaded, if so then we are finished if not then load someo more
@@ -342,7 +347,6 @@ void StreamReadList(streamdata **streams, int nstreams){
       if(all_loaded==STREAM_NO)break;
     }
     if(all_loaded==STREAM_YES){
-      stream_loading_frame = 0;
       return;
     }
   }

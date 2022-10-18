@@ -1237,8 +1237,6 @@ SVEXTERN int SVDECL(update_cache_data, 0);
 SVEXTERN int editwindow_status;
 SVEXTERN int startup_pass;
 
-SVEXTERN int stream_loading_frame;
-
 SVEXTERN int slicefilenumber;
 SVEXTERN int SVDECL(frame_count,1), SVDECL(last_frame_count,1);
 SVEXTERN int nspr;
