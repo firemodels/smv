@@ -6578,12 +6578,6 @@ void GeometryMenu(int value){
   case 7:
     visCeiling=1-visCeiling;
     break;
-#ifdef pp_TERRAIN_DEBUG
-  case 17+TERRAIN_DEBUG:
-    terrain_debug = 1-terrain_debug;
-    updatemenu = 1;
-    break;
-#endif
   case 17+TERRAIN_TOP:
     terrain_showonly_top = 1 - terrain_showonly_top;
     updatemenu = 1;
@@ -8880,11 +8874,6 @@ updatemenu=0;
   }
   if(visTerrainType==TERRAIN_HIDDEN)glutAddMenuEntry(_("*Hidden"),17+TERRAIN_HIDDEN);
   if(visTerrainType!=TERRAIN_HIDDEN)glutAddMenuEntry(_("Hidden"),17+TERRAIN_HIDDEN);
-#ifdef pp_TERRAIN_DEBUG
-  if(terrain_debug==1)glutAddMenuEntry(_("*terrain slice debug"), 17+TERRAIN_DEBUG);
-  if(terrain_debug==0)glutAddMenuEntry(_("terrain slice debug"), 17+TERRAIN_DEBUG);
-#endif
-
 
   if(nobject_defs>0){
     int multiprop;

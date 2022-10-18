@@ -41,9 +41,6 @@ SVEXTERN float geom_bounding_box[6];
 #ifdef pp_TERRAIN_SKIP
 SVEXTERN int SVDECL(terrain_skip, 1);
 #endif
-#ifdef pp_TERRAIN_DEBUG
-SVEXTERN int SVDECL(terrain_debug, 0);
-#endif
 SVEXTERN int nsmoke3dtypes, smoke3d_other;
 SVEXTERN smoke3dtypedata SVDECL(*smoke3dtypes, NULL);
 

@@ -75,9 +75,6 @@
 //#define pp_PLOT3D_REDUCEMENUS // eliminate plot3d sub-menus
 //#define pp_RESEARCH_DEBUG     // output whether data is reloaded or colors re-mapped when toggling to/from research mode
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
-#ifdef pp_BETA
-#define pp_TERRAIN_DEBUG         // show terrain slice debugging output (only use with test smokeview's)
-#endif
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
