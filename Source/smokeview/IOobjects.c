@@ -3881,7 +3881,10 @@ void DrawDevices(int mode){
 /* ----------------------- DrawSmvObject ----------------------------- */
 
 void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int recurse_level, float *valrgb, int vis_override){
-  sv_object_frame *framei, *frame0;
+  sv_object_frame *framei;
+#ifdef pp_EVAC
+  sv_object_frame *frame0;
+#endif
   tokendata *toknext;
   unsigned char *rgbptr_local;
   unsigned char rgbcolor[4];
@@ -3900,7 +3903,9 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
   if(object == missing_device&&show_missing_objects == 0)return;
   if(iframe_local > object->nframes - 1 || iframe_local < 0)iframe_local = 0;
   framei = object->obj_frames[iframe_local];
+#ifdef pp_EVAC
   frame0 = object->obj_frames[0];
+#endif
 
   ASSERT(framei->error == 0 || framei->error == 1);
 
@@ -7262,7 +7267,6 @@ void InitObjectDefs(void){
   char com_buffer[1024];
   char com_buffer2[1024];
   char objectfile[1024];
-  int i;
 
   svofile_exists = 0;
 
@@ -7324,6 +7328,7 @@ void InitObjectDefs(void){
   }
 
 #ifdef pp_EVAC
+  int i;
   for(i=0;i<navatar_types;i++){
     sv_object_frame *obj_frame;
     int n;

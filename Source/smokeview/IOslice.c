@@ -2123,13 +2123,15 @@ void UpdateSliceMenuShow(void){
   int i;
 
   for(i=0;i<nsliceinfo;i++){
+#ifdef pp_EVAC
     meshdata *slicemesh;
+#endif
     slicedata *sd;
 
     sd = sliceinfo + i;
-    slicemesh = meshinfo + sd->blocknumber;
     sd->menu_show=1;
 #ifdef pp_EVAC
+    slicemesh = meshinfo + sd->blocknumber;
     if(show_evac_slices==0&&slicemesh->mesh_type!=0){
       sd->menu_show=0;
     }
@@ -2201,14 +2203,16 @@ void UpdateSliceMenuLabels(void){
     STRCAT(mslicei->menulabel2,sd->menulabel);
 
     if(nmeshes>1){
+#ifdef pp_EVAC
       meshdata *meshi;
+#endif
       meshdata *slicemesh;
 
       slicemesh = meshinfo + sd->blocknumber;
       sprintf(label,", %s",slicemesh->label);
       STRCAT(sd->menulabel,label);
-      meshi = meshinfo + sd->blocknumber;
 #ifdef pp_EVAC
+      meshi = meshinfo + sd->blocknumber;
       if(nevac>0){
         if(meshi->mesh_type==0){
           strcpy(label,", FDS mesh");
@@ -2232,8 +2236,6 @@ void UpdateSliceMenuLabels(void){
       STRCAT(sd->menulabel," (RLE)");
     }
     for(i=1;i<nsliceinfo;i++){
-      meshdata *meshi;
-
       sdold = sliceinfo + sliceorderindex[i - 1];
       sd = sliceinfo + sliceorderindex[i];
       cdir = GetMSliceDir(mslicei);
@@ -2245,8 +2247,9 @@ void UpdateSliceMenuLabels(void){
         STRCPY(mslicei->menulabel2,sd->label.longlabel);
         STRCAT(mslicei->menulabel2,", ");
         STRCAT(mslicei->menulabel2, cdir);
-        meshi = meshinfo + sd->blocknumber;
 #ifdef pp_EVAC
+      meshdata *meshi;
+        meshi = meshinfo + sd->blocknumber;
         if(nevac>0){
           if(meshi->mesh_type==0){
             strcpy(label,", FDS mesh");

@@ -289,7 +289,9 @@ void DrawPart(const partdata *parti){
     if(streak5show == 0 || (streak5show == 1 && showstreakhead == 1)){
       for(i = 0;i < parti->nclasses;i++){
         short *sx, *sy, *sz;
+#ifdef pp_EVAC
         float *angle, *width, *depth, *height;
+#endif
         unsigned char *vis, *color;
         partclassdata *partclassi;
         int partclass_index, itype, vistype, class_vis;
@@ -1599,7 +1601,9 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
         if(nparts_local>0){
           float *x_local, *y_local, *z_local;
           short *sx_local, *sy_local, *sz_local;
+#ifdef pp_EVAC
           float *angle_local, *width_local, *depth_local, *height_local;
+#endif
 
           x_local = xyz;
           y_local = xyz+nparts_local;
@@ -1979,7 +1983,9 @@ int GetNPartFrames(partdata *parti){
     doit = 1;
   }
   if(doit==1||stat_sizefile != 0 || stat_regfile_buffer.st_mtime>stat_sizefile_buffer.st_mtime){
+#ifdef pp_EVAC
     int angle_flag=0;
+#endif
 
     TrimBack(reg_file);
     TrimBack(size_file);
@@ -2061,7 +2067,9 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
   sizefile_status_local = GetSizeFileStatus(parti);
   if(sizefile_status_local== -1)return 0; // particle file does not exist so cannot be sized
   if(option_arg==FORCE||sizefile_status_local== 1){        // size file is missing or older than particle file
+#ifdef pp_EVAC
     int angle_flag_local = 0;
+#endif
 
     TrimBack(parti->reg_file);
     TrimBack(parti->size_file);
