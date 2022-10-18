@@ -183,6 +183,7 @@ void UpdateFrameNumber(int changetime){
         patchi->geom_nval_dynamic = patchi->geom_ndynamics[patchi->geom_itime];
       }
     }
+    display_smoke_frame = 0;
     if(show3dsmoke==1){
       if(nsmoke3dinfo > 0){
         for(i = 0;i < nsmoke3dinfo;i++){
@@ -194,7 +195,7 @@ void UpdateFrameNumber(int changetime){
           if(IsSmokeComponentPresent(smoke3di) == 0)continue;
           if(smoke3di->ismoke3d_time != smoke3di->lastiframe){
             smoke3di->lastiframe = smoke3di->ismoke3d_time;
-            UpdateSmoke3D(smoke3di);
+            if(UpdateSmoke3D(smoke3di)==1)display_smoke_frame=1;
           }
         }
         MergeSmoke3D(NULL);
@@ -1439,7 +1440,6 @@ void UpdateTimes(void){
     sd = sliceinfo + i;
     sd->itime=0;
   }
-  frame_index=first_frame_index;
   for(i=0;i<nmeshes;i++){
     meshdata *meshi;
 
@@ -2353,7 +2353,6 @@ void OutputBounds(void){
 /* ------------------ UpdateDisplay ------------------------ */
 
 void UpdateDisplay(void){
-
   SNIFF_ERRORS("UpdateDisplay: start");
   LOCK_IBLANK;
   if(update_adjust_y>0){

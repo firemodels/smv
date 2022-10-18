@@ -658,7 +658,6 @@ void CheckTimeBound(void){
         current_script_command->exit=1;
       }
     }
-    frame_index=first_frame_index;
     for(i=0;i<nsliceinfo;i++){
       slicedata *sd;
 

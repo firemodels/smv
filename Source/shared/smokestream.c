@@ -12,6 +12,7 @@
 #endif
 #include <math.h>
 #include "MALLOCC.h"
+#include "smokeviewvars.h"
 #include "smokestream.h"
 
 #ifdef WIN32
@@ -309,11 +310,7 @@ int StreamAllLoaded(streamdata *stream){
 void StreamReadList(streamdata **streams, int nstreams){
   int frame_index, stream_index;
 
-  for(stream_index = 0; stream_index<nstreams; stream_index++){
-    printf("Loading %s",streams[stream_index]->file);
-    if(streams[stream_index]->label!=NULL)printf("(%s)", streams[stream_index]->label);
-    printf("\n");
-  }
+  stream_loading_frame = 1;
   for(;;){ //continue until all frames are loaded
     for(frame_index = 0;; frame_index++){
       int have_frames;
@@ -332,6 +329,9 @@ void StreamReadList(streamdata **streams, int nstreams){
           ASSERT(stream->frameptrs[frame_index]!=NULL);
         }
       }
+#ifdef pp_STREAM_PAUSE
+      PauseTime(0.5);
+#endif
       if(loading==1)printf("Loading frame: %i\n", frame_index);
       if(have_frames==0)break;
     }
@@ -341,7 +341,10 @@ void StreamReadList(streamdata **streams, int nstreams){
       all_loaded = StreamAllLoaded(streams[stream_index]);
       if(all_loaded==STREAM_NO)break;
     }
-    if(all_loaded==STREAM_YES)return;
+    if(all_loaded==STREAM_YES){
+      stream_loading_frame = 0;
+      return;
+    }
   }
 }
 

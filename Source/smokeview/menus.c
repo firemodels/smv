@@ -2093,7 +2093,6 @@ void RenderMenu(int value){
         sd=sliceinfo+i;
         sd->itime=0;
       }
-      frame_index=first_frame_index;
       for(i=0;i<nmeshes;i++){
         meshi=meshinfo+i;
         meshi->patch_itime=0;

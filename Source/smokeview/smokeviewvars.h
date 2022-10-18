@@ -268,6 +268,8 @@ SVEXTERN int SVDECL(npartthread_ids, 2);
 #ifdef pp_SLICETHREAD
 SVEXTERN int SVDECL(nslicethread_ids, 4);
 #endif
+#ifdef pp_SMOKE3DSTREAM
+#endif
 #ifdef pp_STREAM
 SVEXTERN int SVDECL(stream_multithread, 1);
 SVEXTERN streamlistargdata SVDECL(*streamlistarg, NULL);
@@ -1235,12 +1237,15 @@ SVEXTERN int SVDECL(update_cache_data, 0);
 SVEXTERN int editwindow_status;
 SVEXTERN int startup_pass;
 
+SVEXTERN int stream_loading_frame;
+
+SVEXTERN int display_smoke_frame;
 SVEXTERN int slicefilenumber;
 SVEXTERN int SVDECL(frame_count,1), SVDECL(last_frame_count,1);
 SVEXTERN int nspr;
 SVEXTERN int SVDECL(render_skip,RENDER_CURRENT_SINGLE);
 SVEXTERN int vectorskip;
-SVEXTERN int SVDECL(frame_index,0), SVDECL(first_frame_index,0), SVDECL(izone,0);
+SVEXTERN int SVDECL(first_frame_index,0), SVDECL(izone,0);
 SVEXTERN int rotation_type,eyeview_level;
 SVEXTERN int rotation_type_old,eyeview_SAVE,eyeview_last;
 SVEXTERN int frameratevalue;

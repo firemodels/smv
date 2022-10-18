@@ -3554,7 +3554,7 @@ void DrawSmokeFrame(void){
     glBlendEquation(GL_MAX);
   }
 #ifdef pp_SMOKE3DSTREAM
-  printf("Displaying smoke frame: %i\n", itimes);
+  if(stream_loading_frame==1&&display_smoke_frame==1)printf("Displaying 3D smoke frame: %i\n", itimes);
 #endif
   for(i = 0; i<nsmoke3dinfo; i++){
     smoke3ddata *smoke3di;
@@ -4511,7 +4511,7 @@ void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode){
 
 /* ------------------ UpdateSmoke3d ------------------------ */
 
-void UpdateSmoke3D(smoke3ddata *smoke3di){
+int UpdateSmoke3D(smoke3ddata *smoke3di){
   int iframe_local;
   int countin;
   uLongf countout;
@@ -4524,7 +4524,7 @@ void UpdateSmoke3D(smoke3ddata *smoke3di){
     case RLE:
 
 #ifdef pp_SMOKE3DSTREAM
-      if(smoke3di->smokes3dstream->frameptrs[iframe_local]==NULL)return;
+      if(smoke3di->smokes3dstream->frameptrs[iframe_local]==NULL)return 0;
       buffer_in = (unsigned char *)smoke3di->smokes3dstream->frameptrs[iframe_local]+32;
 #else
     buffer_in = smoke3di->smokeframe_comp_list[iframe_local];
@@ -4556,6 +4556,7 @@ void UpdateSmoke3D(smoke3ddata *smoke3di){
     }
   }
   //ASSERT(countout==smoke3di->nchars_uncompressed);
+  return 1;
 }
 
 /* ------------------ MergeSmoke3DColors ------------------------ */
