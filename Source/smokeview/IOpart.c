@@ -1,6 +1,3 @@
-#define NXYZ_COMP_EVAC 7
-#define NXYZ_COMP_PART 3
-
 #include "options.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,6 +11,11 @@
 #include "compress.h"
 #include "IOobjects.h"
 #include "stdio_m.h"
+
+#ifdef pp_EVAC
+#define NXYZ_COMP_EVAC 7
+#endif
+#define NXYZ_COMP_PART 3
 
 #define LOADING 0
 #define DRAWING 1
@@ -69,21 +71,25 @@ void ClosePartFiles(void){
 /* ------------------ GetEvacPartColor ------------------------ */
 
 #ifdef pp_PARTVAL
-int GetEvacPartColor(float **color_handle, part5data *datacopy, int show_default, int j, int itype,
+int GetPartColor(float **color_handle, part5data*datacopy, int show_default, int j, int itype,
                      float valmin, float valmax){
 #else
-int GetEvacPartColor(float **color_handle, part5data *datacopy, int show_default, int j, int itype){
+int GetPartColor(float **color_handle, part5data*datacopy, int show_default, int j, int itype){
 #endif
+#ifdef pp_EVAC
   int is_human_color;
+#endif
   float *colorptr;
   unsigned char *color;
   int showcolor;
 
   showcolor = 1;
+#ifdef pp_EVAC
   is_human_color = 0;
   if(current_property != NULL&&strcmp(current_property->label->longlabel, "HUMAN_COLOR") == 0 && navatar_colors > 0){
     is_human_color = 1;
   }
+#endif
   if(show_default == 1){
     colorptr = datacopy->partclassbase->rgb;
   }
@@ -96,10 +102,14 @@ int GetEvacPartColor(float **color_handle, part5data *datacopy, int show_default
 #ifdef pp_PARTVAL
     rvals = datacopy->rvals + itype*datacopy->npoints;
 #endif
+#ifdef pp_EVAC
     if(is_human_color == 1){
       colorptr = avatar_colors + 3 * color[j];
     }
     else{
+#else
+    {
+#endif
      int colorj;
 #ifdef pp_PARTVAL
       float rval;
@@ -308,6 +318,7 @@ void DrawPart(const partdata *parti){
         sy = datacopy->sy;
         sz = datacopy->sz;
         vis = datacopy->vis_part;
+#ifdef pp_EVAC
         if(parti->evac == 1){
           int avatar_type = 0;
 
@@ -342,9 +353,9 @@ void DrawPart(const partdata *parti){
               glRotatef(az_angle, 0.0, 0.0, 1.0);
 
 #ifdef pp_PARTVAL
-              GetEvacPartColor(&colorptr, datacopy, show_default, j, itype, valmin, valmax);
+              GetPartColor(&colorptr, datacopy, show_default, j, itype, valmin, valmax);
 #else
-              GetEvacPartColor(&colorptr, datacopy, show_default, j, itype);
+              GetPartColor(&colorptr, datacopy, show_default, j, itype);
 #endif
 
               //  :W :D :H1 :SX :SY :SZ :R :G :B :HX :HY :HZ
@@ -434,6 +445,10 @@ void DrawPart(const partdata *parti){
           SNIFF_ERRORS("after draw in Evac");
         }
         else{
+#endif
+#ifndef pp_EVAC
+        {
+#endif
           glPointSize(partpointsize);
           if(offset_terrain == 0){
 
@@ -651,9 +666,9 @@ void DrawPart(const partdata *parti){
         // draw the streak line
 
 #ifdef pp_PARTVAL
-        GetEvacPartColor(&colorptr, datacopy, show_default, 0, itype, valmin, valmax);
+        GetPartColor(&colorptr, datacopy, show_default, 0, itype, valmin, valmax);
 #else
-        GetEvacPartColor(&colorptr, datacopy, show_default, 0, itype);
+        GetPartColor(&colorptr, datacopy, show_default, 0, itype);
 #endif
         glColor4fv(colorptr);
 
@@ -692,9 +707,9 @@ void DrawPart(const partdata *parti){
           tagval = datacopy->tags[j];
           if(vis[j] == 0)continue;
 #ifdef pp_PARTVAL
-          if(GetEvacPartColor(&colorptr, datacopy, show_default, j, itype, valmin, valmax)==0)continue;
+          if(GetPartColor(&colorptr, datacopy, show_default, j, itype, valmin, valmax)==0)continue;
 #else
-          if(GetEvacPartColor(&colorptr, datacopy, show_default, j, itype) == 0)continue;
+          if(GetPartColor(&colorptr, datacopy, show_default, j, itype)==0)continue;
 #endif
           if(colorptr[3]==0.0)continue;
 
@@ -713,9 +728,9 @@ void DrawPart(const partdata *parti){
             szz = datapast->sz;
 
 #ifdef pp_PARTVAL
-            GetEvacPartColor(&colorptr, datacopy, show_default, jj, itype, valmin, valmax);
+            GetPartColor(&colorptr, datacopy, show_default, jj, itype, valmin, valmax);
 #else
-            GetEvacPartColor(&colorptr, datacopy, show_default, jj, itype);
+            GetPartColor(&colorptr, datacopy, show_default, jj, itype);
 #endif
             glColor4fv(colorptr);
             glVertex3f(xplts[sxx[jj]], yplts[syy[jj]], zplts[szz[jj]]);
@@ -741,6 +756,7 @@ void DrawPartFrame(void){
   for(i=0;i<npartinfo;i++){
     parti = partinfo + i;
     if(parti->loaded==0||parti->display==0)continue;
+#ifdef pp_EVAC
     if(parti->evac==1){
       DrawEvac(parti);
       SNIFF_ERRORS("after DrawEvac");
@@ -749,11 +765,15 @@ void DrawPartFrame(void){
       DrawPart(parti);
       SNIFF_ERRORS("after DrawPart");
     }
+#else
+    DrawPart(parti);
+    SNIFF_ERRORS("after DrawPart");
+#endif
   }
 }
 
 /* ------------------ DrawEvacFrame ------------------------ */
-
+#ifdef pp_EVAC
 void DrawEvacFrame(void){
   int i;
 
@@ -768,6 +788,7 @@ void DrawEvacFrame(void){
   }
   SNIFF_ERRORS("after DrawEvac 2");
 }
+#endif
 
 /* ------------------ FreePart5Data ------------------------ */
 
@@ -962,7 +983,11 @@ int GetSizeFileStatus(partdata *parti){
 
 /* ------------------ CreatePartSizeFileFromBound ------------------------ */
 
+#ifdef pp_EVAC
 void CreatePartSizeFileFromBound(char *part5boundfile_arg, char *part5sizefile_arg, int angle_flag_arg, LINT filepos_arg){
+#else
+void CreatePartSizeFileFromBound(char *part5boundfile_arg, char *part5sizefile_arg, LINT filepos_arg){
+#endif
   FILE *streamin_local, *streamout_local;
   float time_local;
   char buffer_local[255];
@@ -996,12 +1021,16 @@ void CreatePartSizeFileFromBound(char *part5boundfile_arg, char *part5sizefile_a
         break;
       }
       sscanf(buffer_local, "%i %i", &ntypes_local, &npoints_local);
+#ifdef pp_EVAC
       if(angle_flag_arg== 1){
         frame_size_local += 4 + 4*NXYZ_COMP_EVAC*npoints_local+ 4;
       }
       else {
         frame_size_local += 4 + 4*NXYZ_COMP_PART*npoints_local+ 4;
       }
+#else
+      frame_size_local += 4+4*NXYZ_COMP_PART*npoints_local+4;
+#endif
       frame_size_local += 4 + 4*npoints_local+ 4;
       if(ntypes_local>0){
         frame_size_local += 4 + 4*npoints_local*ntypes_local+ 4;
@@ -1024,7 +1053,11 @@ void CreatePartSizeFileFromBound(char *part5boundfile_arg, char *part5sizefile_a
 
 /* ------------------ CreatePartSizeFileFromPart ------------------------ */
 
+#ifdef pp_EVAC
 void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, int angle_flag_arg, LINT file_offset_arg){
+#else
+void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, LINT file_offset_arg){
+#endif
   FILE *PART5FILE, *streamout_local;
   int returncode=0;
   int one_local, version_local, nclasses_local=0;
@@ -1060,12 +1093,16 @@ void CreatePartSizeFileFromPart(char *part5file_arg, char *part5sizefile_arg, in
     for (i = 0; i < nclasses_local; i++){
       FORTPART5READ(numpoints_local+ i, 1);
       frame_size_local += 12;
+#ifdef pp_EVAC
       if(angle_flag_arg== 1){
         skip_local = 4 + 4*NXYZ_COMP_EVAC*numpoints_local[i] + 4;
       }
       else {
         skip_local = 4 + 4*NXYZ_COMP_PART*numpoints_local[i] + 4;
       }
+#else
+      skip_local = 4+4*NXYZ_COMP_PART*numpoints_local[i]+4;
+#endif
       skip_local += 4 + 4 * numpoints_local[i] + 4;
       if(numtypes_local[2 * i] > 0)    skip_local += 4 + 4 * numpoints_local[i] * numtypes_local[2 * i] + 4;
       if(numtypes_local[2 * i + 1] > 0)skip_local += 4 + 4 * numpoints_local[i] * numtypes_local[2 * i + 1] + 4;
@@ -1209,12 +1246,16 @@ void CreatePartBoundFile(partdata *parti){
       fprintf(stream_out_local, "%i %i\n", numtypes_local[2*jj], nparts_local);
       CheckMemory;
 
+#ifdef pp_EVAC
       if(parti->evac==1){
         skip_local = 4+NXYZ_COMP_EVAC*nparts_local*sizeof(float)+4; // skip over evac xyz coords
       }
       else{
         skip_local = 4+NXYZ_COMP_PART*nparts_local*sizeof(float)+4; // skip over particle xyz coords
       }
+#else
+      skip_local = 4+NXYZ_COMP_PART*nparts_local*sizeof(float)+4; // skip over particle xyz coords
+#endif
       skip_local += 4+nparts_local*sizeof(int)+4;                   // skip over tags
       FSEEK_m(PART5FILE, skip_local, SEEK_CUR);
       if(returncode == FAIL_m)goto wrapup;
@@ -1254,7 +1295,11 @@ wrapup:
 
 /* ------------------ CreatePartSizeFile ------------------------ */
 
+#ifdef pp_EVAC
 void CreatePartSizeFile(partdata *parti, int angle_flag_arg){
+#else
+void CreatePartSizeFile(partdata*parti){
+#endif
   FILE *stream_local;
   LINT header_offset_local;
 
@@ -1268,13 +1313,21 @@ void CreatePartSizeFile(partdata *parti, int angle_flag_arg){
   if(stream_local!=NULL){
     fclose(stream_local);
     TestWrite(smokeview_scratchdir, &(parti->size_file));
+#ifdef pp_EVAC
     CreatePartSizeFileFromBound(parti->bound_file, parti->size_file, angle_flag_arg, header_offset_local);
+#else
+    CreatePartSizeFileFromBound(parti->bound_file, parti->size_file, header_offset_local);
+#endif
     return;
   }
   printf("***warning: particle bound/size file %s could not be opened\n", parti->bound_file);
   printf("            particle sizing proceeding using the full particle file: %s\n", parti->reg_file);
   TestWrite(smokeview_scratchdir, &(parti->size_file));
+#ifdef pp_EVAC
   CreatePartSizeFileFromPart(parti->reg_file, parti->size_file, angle_flag_arg, header_offset_local);
+#else
+  CreatePartSizeFileFromPart(parti->reg_file, parti->size_file, header_offset_local);
+#endif
 }
 
   /* ------------------ GetPartHistogramFile ------------------------ */
@@ -1531,12 +1584,16 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
         float *xyz;
         int j;
 
+#ifdef pp_EVAC
         if(parti->evac==1){
           FORTPART5READ_mv((void **)&xyz, NXYZ_COMP_EVAC*nparts_local);
         }
         else{
           FORTPART5READ_mv((void **)&xyz, NXYZ_COMP_PART*nparts_local);
         }
+#else
+        FORTPART5READ_mv((void **)&xyz, NXYZ_COMP_PART*nparts_local);
+#endif
         if(returncode==FAIL_m)goto wrapup;
         CheckMemory;
         if(nparts_local>0){
@@ -1550,12 +1607,14 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
           sx_local = datacopy_local->sx;
           sy_local = datacopy_local->sy;
           sz_local = datacopy_local->sz;
+#ifdef pp_EVAC
           if(parti->evac==1){
             angle_local =datacopy_local->avatar_angle;
             width_local =datacopy_local->avatar_width;
             depth_local =datacopy_local->avatar_depth;
             height_local =datacopy_local->avatar_height;
           }
+#endif
           for(j=0;j<nparts_local;j++){
             float xx_local, yy_local, zz_local;
             int factor_local=256*128-1;
@@ -1567,23 +1626,29 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
             sx_local[j] = factor_local*xx_local;
             sy_local[j] = factor_local*yy_local;
             sz_local[j] = factor_local*zz_local;
+#ifdef pp_EVAC
             if(parti->evac==1){
               angle_local[j] =x_local[j+3*nparts_local];
               width_local[j] =x_local[j+4*nparts_local];
               depth_local[j] =x_local[j+5*nparts_local];
               height_local[j]=x_local[j+6*nparts_local];
             }
+#endif
           }
           CheckMemory;
         }
       }
       else{
+#ifdef pp_EVAC
         if(parti->evac==1){
           skip_local += 4 + NXYZ_COMP_EVAC*nparts_local*sizeof(float) + 4;
         }
         else{
           skip_local += 4 + NXYZ_COMP_PART*nparts_local*sizeof(float) + 4;
         }
+#else
+        skip_local += 4+NXYZ_COMP_PART*nparts_local*sizeof(float)+4;
+#endif
       }
       CheckMemory;
       if(doit_local==1){
@@ -1919,8 +1984,12 @@ int GetNPartFrames(partdata *parti){
     TrimBack(reg_file);
     TrimBack(size_file);
     TrimBack(bound_file);
+#ifdef pp_EVAC
     if(parti->evac==1)angle_flag=1;
     CreatePartSizeFile(parti, angle_flag);
+#else
+    CreatePartSizeFile(parti);
+#endif
   }
 
   stream=fopen(size_file,"r");
@@ -1996,8 +2065,12 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
 
     TrimBack(parti->reg_file);
     TrimBack(parti->size_file);
+#ifdef pp_EVAC
     if(parti->evac == 1)angle_flag_local = 1;
     CreatePartSizeFile(parti, angle_flag_local);
+#else
+    CreatePartSizeFile(parti);
+#endif
   }
 
   stream=fopen(parti->size_file,"r");
@@ -2111,12 +2184,14 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
             NewMemory((void **)&datacopy_local->dsx, npoints_local*sizeof(float));
             NewMemory((void **)&datacopy_local->dsy, npoints_local*sizeof(float));
             NewMemory((void **)&datacopy_local->dsz, npoints_local*sizeof(float));
+#ifdef pp_EVAC
             if(parti->evac==1){
               NewMemory((void **)&datacopy_local->avatar_angle,npoints_local*sizeof(float));
               NewMemory((void **)&datacopy_local->avatar_width,npoints_local*sizeof(float));
               NewMemory((void **)&datacopy_local->avatar_depth,npoints_local*sizeof(float));
               NewMemory((void **)&datacopy_local->avatar_height,npoints_local*sizeof(float));
             }
+#endif
           }
         }
         datacopy_local++;
@@ -2261,12 +2336,16 @@ void FinalizePartLoad(partdata *parti){
       partj->display = 1;
     }
   }
+#ifdef pp_EVAC
   if(parti->evac==0){
     visParticles = 1;
   }
   else{
     visEvac = 1;
   }
+#else
+  visParticles = 1;
+#endif
 
   // generate histograms now rather than in the background if a script is running
 
@@ -2425,6 +2504,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
 
 /* ----------------------- DrawSelectAvatars ----------------------------- */
 
+#ifdef pp_EVAC
 void DrawSelectAvatars(void){
   int i;
 
@@ -2445,6 +2525,7 @@ void DrawSelectAvatars(void){
 void DrawEvac(const partdata *parti){
   DrawPart(parti);
 }
+#endif
 
 /* ------------------ UpdatePartMenuLabels ------------------------ */
 
@@ -2465,12 +2546,16 @@ void UpdatePartMenuLabels(void){
     for(i=0;i<npartinfo;i++){
       parti = partinfo + i;
       STRCPY(parti->menulabel,"");
+#ifdef pp_EVAC
       if(parti->evac==1){
         STRCAT(parti->menulabel,"humans");
       }
       else{
         STRCAT(parti->menulabel,"particles");
       }
+#else
+      STRCAT(parti->menulabel, "particles");
+#endif
       lenlabel=strlen(parti->menulabel);
       if(nmeshes>1){
         meshdata *partmesh;

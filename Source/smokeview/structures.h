@@ -199,10 +199,19 @@ typedef struct _propdata {
   struct _sv_object *smv_object, **smv_objects;
   int ntextures;
   char **texturefiles, **vars_indep, **svals;
-  int *vars_indep_index, vars_dep_index[PROPVARMAX], fvars_evac_index[PROPVARMAX];
-  int nvars_indep,      nvars_dep,                   nvars_evac;
-  float *fvals, fvars_evac[PROPVARMAX], fvars_dep[PROPVARMAX];
+  int *vars_indep_index, vars_dep_index[PROPVARMAX];
+#ifdef pp_EVAC
+  int fvars_evac_index[PROPVARMAX];
+#endif
+  int nvars_indep, nvars_dep;
+#ifdef pp_EVAC
+  int nvars_evac;
+#endif
+  float *fvals, fvars_dep[PROPVARMAX];
+#ifdef pp_EVAC
+  float fvars_evac[PROPVARMAX];
   int draw_evac;
+#endif
   int tag_number;
 } propdata;
 
@@ -925,7 +934,10 @@ typedef struct _tourdata {
 /* --------------------------  tokendata ------------------------------------ */
 
 typedef struct _tokendata {
-  float var,*varptr,default_val,evac_var;
+  float var, *varptr, default_val;
+#ifdef pp_EVAC
+  float evac_var;
+#endif
   int command,loc,type,reads,nvars,noutvars,is_label,is_string,is_texturefile;
   struct _sv_object *included_object;
   int included_frame;
@@ -943,8 +955,13 @@ typedef struct _sv_object_frame {
   int display_list_ID;
   int *symbols, nsymbols;
   tokendata *tokens, **command_list;
+#ifdef pp_EVAC
   tokendata *evac_tokens[NEVAC_TOKENS];
-  int ntokens,ncommands,ntextures,nevac_tokens;
+#endif
+  int ntokens, ncommands, ntextures;
+#ifdef pp_EVAC
+  int nevac_tokens;
+#endif
   struct _sv_object *device;
   struct _sv_object_frame *prev, *next;
 } sv_object_frame;
@@ -1221,7 +1238,10 @@ typedef struct _partdata {
   int have_bound_file;
   int seq_id, autoload, loaded, skipload, request_load, display, reload, finalize;
   int loadstatus, boundstatus;
-  int compression_type, evac;
+  int compression_type;
+#ifdef pp_EVAC
+  int evac;
+#endif
   int blocknumber;
   int *timeslist, ntimes, itime;
   FILE_SIZE bound_file_size;

@@ -1492,8 +1492,10 @@ void InitVars(void){
   selected_avatar_tag=-1;
   select_device_color_ptr=NULL;
   avatar_types=NULL;
+#ifdef pp_EVAC
   navatar_colors=0;
   avatar_colors=NULL;
+#endif
   view_from_selected_avatar=0;
   GetGitInfo(smv_githash,smv_gitdate);
   force_isometric=0;
@@ -1680,7 +1682,9 @@ void InitVars(void){
   n_devices=0;
 
   npartinfo=0, nsliceinfo=0, nvsliceinfo=0, npatch2=0, nplot3dinfo=0, npatchinfo=0;
+#ifdef pp_EVAC
   nevac=0;
+#endif
   nsmoke3dinfo=0;
   nisoinfo=0, niso_bounds=0;
   ntrnx=0, ntrny=0, ntrnz=0,npdim=0,nmeshes=0,clip_mesh=0;
@@ -1931,7 +1935,9 @@ void InitVars(void){
   show_path_knots=0;
   tourrad_avatar=0.1;
   dirtycircletour=0;
+#ifdef pp_EVAC
   iavatar_evac=0;
+#endif
   viewtourfrompath=0,viewalltours=0,viewanytours=0,edittour=0;
   tour_usecurrent=0;
   visFDSticks=0;

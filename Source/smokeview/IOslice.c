@@ -2129,6 +2129,7 @@ void UpdateSliceMenuShow(void){
     sd = sliceinfo + i;
     slicemesh = meshinfo + sd->blocknumber;
     sd->menu_show=1;
+#ifdef pp_EVAC
     if(show_evac_slices==0&&slicemesh->mesh_type!=0){
       sd->menu_show=0;
     }
@@ -2138,6 +2139,9 @@ void UpdateSliceMenuShow(void){
     else{
       sd->constant_color=NULL;
     }
+#else
+    sd->constant_color = NULL;
+#endif
   }
 }
 
@@ -2204,6 +2208,7 @@ void UpdateSliceMenuLabels(void){
       sprintf(label,", %s",slicemesh->label);
       STRCAT(sd->menulabel,label);
       meshi = meshinfo + sd->blocknumber;
+#ifdef pp_EVAC
       if(nevac>0){
         if(meshi->mesh_type==0){
           strcpy(label,", FDS mesh");
@@ -2214,6 +2219,7 @@ void UpdateSliceMenuLabels(void){
         STRCAT(mslicei->menulabel2,label);
         STRCAT(mslicei->menulabel,label);
       }
+#endif
     }
     if(showfiles==1){
       STRCAT(sd->menulabel,", ");
@@ -2240,6 +2246,7 @@ void UpdateSliceMenuLabels(void){
         STRCAT(mslicei->menulabel2,", ");
         STRCAT(mslicei->menulabel2, cdir);
         meshi = meshinfo + sd->blocknumber;
+#ifdef pp_EVAC
         if(nevac>0){
           if(meshi->mesh_type==0){
             strcpy(label,", FDS mesh");
@@ -2250,6 +2257,7 @@ void UpdateSliceMenuLabels(void){
           STRCAT(mslicei->menulabel2,label);
           STRCAT(mslicei->menulabel,label);
         }
+#endif
       }
       if(nmeshes>1){
         meshdata *slicemesh;

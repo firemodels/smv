@@ -3937,7 +3937,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
     int i;
 
     // copy time dependent evac data
-
+#ifdef pp_EVAC
     if(prop->draw_evac == 1 && frame0->nevac_tokens > 0){
       tokendata *tok00;
 
@@ -3953,6 +3953,7 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
         toki->var = tok0->evac_var;
       }
     }
+#endif
 
     // copy static data from PROP line
 
@@ -5598,7 +5599,9 @@ sv_object *InitSmvObject1(char *label, char *commands, int visible){
   framei->error=0;
   framei->use_bw=setbw;
   framei->ntextures=0;
+#ifdef pp_EVAC
   framei->nevac_tokens=0;
+#endif
 
   return object;
 }
@@ -5632,7 +5635,9 @@ sv_object *InitSmvObject2(char *label, char *commandsoff, char *commandson, int 
       framei->display_list_ID=-1;
       framei->use_bw=setbw;
       framei->ntextures=0;
+#ifdef pp_EVAC
       framei->nevac_tokens=0;
+#endif
     }
     else{
       NewMemory((void **)&framei,sizeof(sv_object_frame));
@@ -5643,7 +5648,9 @@ sv_object *InitSmvObject2(char *label, char *commandsoff, char *commandson, int 
       framei->display_list_ID=-1;
       framei->use_bw=setbw;
       framei->ntextures=0;
+#ifdef pp_EVAC
       framei->nevac_tokens=0;
+#endif
     }
   }
   return object;
@@ -6985,7 +6992,9 @@ int ReadObjectDefs(char *file){
       current_frame->display_list_ID=-1;
       current_frame->use_bw=setbw;
       current_frame->device=current_object;
+#ifdef pp_EVAC
       current_frame->nevac_tokens=0;
+#endif
 
       current_object->nframes++;
 
@@ -7314,6 +7323,7 @@ void InitObjectDefs(void){
     object_defs[3] = smoke_detector_object_backup;
   }
 
+#ifdef pp_EVAC
   for(i=0;i<navatar_types;i++){
     sv_object_frame *obj_frame;
     int n;
@@ -7362,6 +7372,7 @@ void InitObjectDefs(void){
     evac_token= GetTokenPtr("HZ",obj_frame);
     evac_tokens[n++]=evac_token;
   }
+#endif
 }
 
 /* ----------------------- UpdateObjectUsed ----------------------------- */
@@ -7574,12 +7585,14 @@ void UpdatePartClassDepend(partclassdata *partclassi){
     sv_object_frame *obj_frame;
     int nvar;
 
+#ifdef pp_EVAC
     if(partclassi->kind==HUMANS){
       partclassi->prop->draw_evac=1;
     }
     else{
       partclassi->prop->draw_evac=0;
     }
+#endif
     obj_frame=partclassi->prop->smv_object->obj_frames[0];
     for(i=0;i<partclassi->nvars_dep-3;i++){
       char *var;
