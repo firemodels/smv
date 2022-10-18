@@ -34,7 +34,7 @@
 //#define pp_SMOKE3DSTREAM      // stream smoke3d data
 //#define pp_PARTSTREAM         // stream particle data
 
-//#define pp_STREAM_PAUSE      // add a 0.5 s pause each time a frame is loaded to test multi threading
+//#define pp_STREAM_PAUSE      // add a pause each time a frame is loaded to test multi threading
 
 // turn on pp_STREAM if streaming is on for any file type
 
