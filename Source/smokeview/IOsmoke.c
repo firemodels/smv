@@ -4140,7 +4140,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
 
   if(flag_arg==UNLOAD){
 #ifdef pp_SMOKE3DSTREAM
-    StreamClose(&(smoke3di->smokes3dstream));
+    StreamClose(&(smoke3di->smoke_stream));
 #endif
     plotstate = GetPlotState(DYNAMIC_PLOTS);
     UpdateTimes();
@@ -4339,7 +4339,7 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   size_t header_size = 40;
 
   GetSmoke3dTimesSizes(smoke3di->size_file, &smoke_times, &smokeframe_sizes, &nsmokeframes);
-  smoke3di->smokes3dstream = StreamOpen(smoke3di->smokes3dstream, smoke3di->reg_file, header_size, smokeframe_sizes, nsmokeframes,
+  smoke3di->smoke_stream = StreamOpen(smoke3di->smoke_stream, smoke3di->reg_file, header_size, smokeframe_sizes, nsmokeframes,
                                         smoke3di->label.shortlabel, 0);
   FREEMEMORY(smoke_times);
   FREEMEMORY(smokeframe_sizes);
@@ -4521,8 +4521,8 @@ int UpdateSmoke3D(smoke3ddata *smoke3di){
     case RLE:
 
 #ifdef pp_SMOKE3DSTREAM
-      if(smoke3di->smokes3dstream->frameptrs[iframe_local]==NULL)return 0;
-      buffer_in = (unsigned char *)smoke3di->smokes3dstream->frameptrs[iframe_local]+32;
+      if(smoke3di->smoke_stream->frameptrs[iframe_local]==NULL)return 0;
+      buffer_in = (unsigned char *)smoke3di->smoke_stream->frameptrs[iframe_local]+32;
 #else
     buffer_in = smoke3di->smokeframe_comp_list[iframe_local];
 #endif

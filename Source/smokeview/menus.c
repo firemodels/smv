@@ -4643,7 +4643,7 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
       else{
         load_size += ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
 #ifdef pp_SMOKE3DSTREAM
-        if(smoke3di->smokes3dstream!=NULL)streams[nstreams++] = smoke3di->smokes3dstream;
+        if(smoke3di->smoke_stream!=NULL)streams[nstreams++] = smoke3di->smoke_stream;
 #endif
       }
     }

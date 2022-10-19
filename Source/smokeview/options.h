@@ -31,7 +31,7 @@
 
 // streaming directives
 
-//#define pp_SMOKE3DSTREAM      // stream smoke3d data
+#define pp_SMOKE3DSTREAM      // stream smoke3d data
 //#define pp_PARTSTREAM         // stream particle data
 
 //#define pp_STREAM_PAUSE      // add a pause each time a frame is loaded to test multi threading

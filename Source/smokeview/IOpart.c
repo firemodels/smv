@@ -2422,7 +2422,7 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
 
   if(loadflag_arg==UNLOAD){
 #ifdef pp_PARTSTREAM
-    StreamClose(&(parti->partstream));
+    StreamClose(&(parti->part_stream));
 #endif
     if(parti->finalize == 1){
       UpdatePartColors(parti, 1);
@@ -2463,8 +2463,8 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   nframes = GetNPartFrames(parti);
   NewMemory((void **)&frame_sizes,nframes*sizeof(int));
   GetPartSizes(parti->reg_file, &header_size, frame_sizes, nframes);
-  parti->partstream = StreamOpen(parti->partstream, parti->file, header_size, frame_sizes, nframes, NULL, 0);
- // StreamCheck(parti->partstream);
+  parti->part_stream = StreamOpen(parti->part_stream, parti->file, header_size, frame_sizes, nframes, NULL, 0);
+ // StreamCheck(parti->part_stream);
 
   FREEMEMORY(frame_sizes);
 #endif

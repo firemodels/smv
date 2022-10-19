@@ -1267,7 +1267,7 @@ typedef struct _partdata {
   short *sx, *sy, *sz;
   unsigned char *irvals;
 #ifdef pp_SMOKE3DSTREAM
-  streamdata *partstream;
+  streamdata *part_stream;
 #endif
 } partdata;
 
@@ -1521,7 +1521,7 @@ typedef struct _smoke3ddata {
   float *smoke_boxmin, *smoke_boxmax;
   smokedata smoke, light;
 #ifdef pp_SMOKE3DSTREAM
-  streamdata *smokes3dstream;
+  streamdata *smoke_stream;
 #endif
   int dir;
 } smoke3ddata;

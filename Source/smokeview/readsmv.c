@@ -4847,7 +4847,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->valmax_smv = NULL;
   parti->stream     = NULL;
 #ifdef pp_PARTSTREAM
-  parti->partstream = NULL;
+  parti->part_stream = NULL;
 #endif
   if(FGETS(buffer, 255, stream)==NULL){
     npartinfo--;
@@ -5386,7 +5386,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->lastiframe = -999;
     smoke3di->ismoke3d_time = 0;
 #ifdef pp_SMOKE3DSTREAM
-    smoke3di->smokes3dstream = NULL;
+    smoke3di->smoke_stream = NULL;
 #endif
 
     STRCPY(buffer2, bufferptr);
