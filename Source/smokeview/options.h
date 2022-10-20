@@ -26,7 +26,7 @@
 
 // use floating point to color data
 
-#//define pp_PARTVAL          // speed up part file color updating
+//#define pp_PARTVAL          // speed up part file color updating
 //#define pp_SLICEVAL         // speed up slice file color updating
 
 // streaming directives
