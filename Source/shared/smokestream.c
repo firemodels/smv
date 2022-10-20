@@ -185,7 +185,6 @@ streamdata *StreamOpen(streamdata *streamin, char *file, size_t offset, int *fra
   if(streamin==NULL||nframes>streamin->nframes){
     if(streamin==NULL){
       NewMemory((void **)&stream, sizeof(streamdata));
-      stream->load_status = STREAM_UNLOADED;
       NewMemory((void **)&(stream->file), strlen(file)+1);
       strcpy(stream->file, file);
       if(label==NULL){
@@ -199,9 +198,11 @@ streamdata *StreamOpen(streamdata *streamin, char *file, size_t offset, int *fra
       NewMemory((void **)&(stream->filebuffer),    statbuffer.st_size);
       NewMemory((void **)&(stream->framesizes),    nframes*sizeof(size_t));
       NewMemory((void **)&(stream->frame_offsets), nframes*sizeof(size_t));
+      NewMemory((void **)&(stream->load_status),   nframes*sizeof(int));
       stream->frame_offsets[0] = offset;
-      stream->frameptrs[0] = NULL;
-      stream->framesizes[0] = framesizes[0];
+      stream->frameptrs[0]     = NULL;
+      stream->framesizes[0]    = framesizes[0];
+      stream->load_status[0]   = STREAM_UNLOADED;
       start = 1;
     }
     else{
@@ -234,9 +235,10 @@ streamdata *StreamOpen(streamdata *streamin, char *file, size_t offset, int *fra
         sizei   = framesizes[i];
         sizeim1 = framesizes[i-1];
       }
-      stream->framesizes[i] = sizei;
+      stream->load_status[i]   = STREAM_UNLOADED;
+      stream->framesizes[i]    = sizei;
       stream->frame_offsets[i] = stream->frame_offsets[i-1]+sizeim1;
-      stream->frameptrs[i] = NULL;
+      stream->frameptrs[i]     = NULL;
     }
   }
   else{
@@ -270,14 +272,18 @@ FILE_SIZE StreamRead(streamdata *stream, int frame_index){
   FILE *filestream;
   FILE_SIZE file_size;
 
+  LOCK_STREAM;
   if(stream==NULL||frame_index<0||frame_index>stream->nframes-1){
+    stream->load_status[frame_index] = STREAM_ERROR;
+    UNLOCK_STREAM;
     return 0;
   }
-
-  if(stream->load_status==STREAM_LOADING){
+  if(stream->load_status[frame_index]!=STREAM_UNLOADED){
+    UNLOCK_STREAM;
     return 0;
   }
-  stream->load_status = STREAM_LOADING;
+  stream->load_status[frame_index] = STREAM_LOADING;
+  UNLOCK_STREAM;
 
    filestream = fopen(stream->file, "rb");
   if(filestream==NULL)return 0;
@@ -290,7 +296,7 @@ FILE_SIZE StreamRead(streamdata *stream, int frame_index){
   fclose(filestream);
   ASSERT(file_size==stream->framesizes[frame_index]);
 
-  stream->load_status = STREAM_LOADED;
+  stream->load_status[frame_index] = STREAM_LOADED;
   return file_size;
 }
 
@@ -305,50 +311,69 @@ int StreamAllLoaded(streamdata *stream){
   return 1;
 }
 
+/* ------------------  StreamFrameSizeOutput ------------------------ */
+
+void StreamFrameSizeOutput(size_t file_size){
+  if(file_size>1000000000){
+    PRINTF("(%.1f GB)\n", (float)file_size/1000000000.);
+  }
+  else if(file_size>1000000){
+    PRINTF("(%.1f MB)\n", (float)file_size/1000000.);
+  }
+  else{
+    PRINTF("(%.0f KB)\n", (float)file_size/1000.);
+  }
+}
+
 /* ------------------  StreamReadList ------------------------ */
 
 void StreamReadList(streamdata **streams, int nstreams){
-  int frame_index, stream_index;
+  int frame_index, stream_index, i, max_frames;
+  int stream_output = 0;
+  int stream_pause = 0;
+
+  max_frames = streams[0]->nframes;
+  for(i = 1; i<nstreams; i++){
+    max_frames = MAX(max_frames, streams[i]->nframes);
+  }
 
   for(;;){ //continue until all frames are loaded
-    for(frame_index = 0;; frame_index++){
-      int have_frames;
+    for(frame_index = 0; frame_index<max_frames; frame_index++){
+      int count_streams;
+      FILE_SIZE file_size;
 
-      have_frames = 0;
-#ifdef  pp_STREAM_OUTPUT
-      int loading = 0;
-#endif
-      for(stream_index = 0; stream_index<nstreams; stream_index++){
+      file_size = 0;
+      for(count_streams=0, stream_index = 0; stream_index<nstreams; stream_index++){
         streamdata *stream;
 
         stream = streams[stream_index];
         if(frame_index>stream->nframes-1)continue;
-        have_frames = 1;
-        if(stream->frameptrs[frame_index]==NULL){
-#ifdef  pp_STREAM_OUTPUT
-          loading = 1;
-#endif
-          StreamRead(stream, frame_index);
-          ASSERT(stream->frameptrs[frame_index]!=NULL);
+        int read_stream;
+
+        LOCK_STREAM;
+        read_stream = 0;
+        if(stream->load_status[frame_index]==STREAM_UNLOADED)read_stream = 1;
+        UNLOCK_STREAM;
+        if(read_stream==1){
+          count_streams++;
+          file_size+=StreamRead(stream, frame_index);
         }
       }
-#ifdef pp_STREAM_PAUSE
-      PauseTime(0.5);
-#endif
-#ifdef  pp_STREAM_OUTPUT
-      if(loading==1)printf("Loading frame: %i\n", frame_index);
-#endif
-      if(have_frames==0)break;
+      if(stream_pause==1)PauseTime(0.5);
+      if(count_streams>0&&stream_output==1){
+        printf("Loading frame(%i streams): %i", count_streams, frame_index);
+        StreamFrameSizeOutput(file_size);
+      }
     }
-    // check if all frames have been loaded, if so then we are finished if not then load someo more
-    int all_loaded = STREAM_YES;
+    // check if all frames have been loaded, if so then we are finished if not then load some more
+    int all_loaded = 1;
     for(stream_index = 0; stream_index<nstreams; stream_index++){
       all_loaded = StreamAllLoaded(streams[stream_index]);
-      if(all_loaded==STREAM_NO)break;
+      if(all_loaded==0){
+        break;
+      }
     }
-    if(all_loaded==STREAM_YES){
-      return;
-    }
+    if(all_loaded==1)return;
   }
 }
 

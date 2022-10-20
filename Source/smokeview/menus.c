@@ -4655,7 +4655,7 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
     }
     streamlistarg->streams  = streams;
     streamlistarg->nstreams = nstreams;
-    StreamReadListMT(streamlistarg);
+    StreamReadListMT(streamlistarg, 1);
     //StreamReadList(streams, nstreams);
   }
 #endif

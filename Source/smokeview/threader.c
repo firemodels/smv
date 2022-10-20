@@ -514,11 +514,28 @@ void *MtStreamReadList(void *arg){
   return NULL;
 }
 
+/* ------------------ GetThreads ------------------------ */
+
+pthread_t *GetThreads(int nthreads){
+  pthread_t *threads = NULL;
+
+  if(nthreads<=0)return NULL;
+  NewMemory((void **)&threads, nthreads*sizeof(pthread_t));
+  return threads;
+}
+
 /* ------------------ StreamReadListMT ------------------------ */
 
-void StreamReadListMT(streamlistargdata *arg){
-  if(stream_multithread==1){
-    pthread_create(&stream_thread_id, NULL, MtStreamReadList, (void *)arg);
+void StreamReadListMT(streamlistargdata *arg, int nthreads){
+  pthread_t *threads=NULL;
+
+  if(nthreads>0&&stream_multithread==1)threads = GetThreads(nthreads);
+  if(threads!=NULL){
+    int i;
+
+    for(i=0;i<nthreads;i++){
+      pthread_create(threads+i, NULL, MtStreamReadList, (void *)arg);
+    }
   }
   else{
     streamdata **streams;
