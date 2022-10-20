@@ -24,6 +24,8 @@
 
 //*** options: all platforms
 
+//#define pp_THINFACE         // don't draw sides of thin faces
+
 // use floating point to color data
 
 //#define pp_PARTVAL          // speed up part file color updating

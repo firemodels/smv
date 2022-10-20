@@ -432,7 +432,9 @@ typedef struct _facedata {
   int patchpresent;
   struct _culldata *cullport;
   int **showtimelist_handle;
+#ifdef pp_THINFACE
   int thinface;
+#endif
   int show_bothsides, is_interior;
   struct _blockagedata *bc;
   surfdata *surfinfo;
@@ -462,13 +464,13 @@ typedef struct _xbdata {
 /* -------------------------- blockagedata ------------------------------------ */
 
 typedef struct _blockagedata {
-  int ijk[6],ijkORIG[6];
-  float xmin, xmax, ymin, ymax, zmin, zmax, xyzORIG[6];
+  int ijk[6];
+  float xmin, xmax, ymin, ymax, zmin, zmax;
   float xyzEXACT[6], xyzDELTA[18];
-  surfdata *surf[6], *surfORIG[6];
+  surfdata *surf[6];
   propdata *prop;
   int walltype,walltypeORIG;
-  int surf_index[6],surf_indexORIG[6];
+  int surf_index[6];
   int patchvis[7];
   int usecolorindex;
   int blockage_id,dup;

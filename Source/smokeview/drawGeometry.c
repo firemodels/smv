@@ -2250,7 +2250,9 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
   for(j=0;j<jend;j++){
     faceptr->meshindex=meshi-meshinfo;
     faceptr->type2=facetype;
+#ifdef pp_THINFACE
     faceptr->thinface=0;
+#endif
     faceptr->is_interior=0;
     faceptr->show_bothsides=0;
     faceptr->bc=NULL;
@@ -2431,7 +2433,9 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
        faceptr->normal[1]=(float)-1.0;
        if(facetype==VENT_face&&vi!=NULL&&vi->dummy==0)offset[YYY] = -meshi->vent_offset[YYY];
        faceptr->jmax=faceptr->jmin;
+#ifdef pp_THINFACE
        if(faceptr->imin==faceptr->imax||faceptr->kmin==faceptr->kmax)faceptr->thinface=1;
+#endif
        xtex = xx;
        ytex = zz;
        xtex2 = xx2;
@@ -2444,7 +2448,9 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
        faceptr->normal[0]=(float)1.0;
        if(facetype==VENT_face&&vi!=NULL&&vi->dummy==0)offset[XXX] = meshi->vent_offset[XXX];
        faceptr->imin=faceptr->imax;
+#ifdef pp_THINFACE
        if(faceptr->jmin==faceptr->jmax||faceptr->kmin==faceptr->kmax)faceptr->thinface=1;
+#endif
        xtex = yy;
        ytex = zz;
        xtex2 = yy2;
@@ -2457,7 +2463,9 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
        faceptr->normal[1]=(float)1.0;
        if(facetype==VENT_face&&vi!=NULL&&vi->dummy==0)offset[YYY] = meshi->vent_offset[YYY];
        faceptr->jmin=faceptr->jmax;
+#ifdef pp_THINFACE
        if(faceptr->imin==faceptr->imax||faceptr->kmin==faceptr->kmax)faceptr->thinface=1;
+#endif
        xtex = xx;
        ytex = zz;
        xtex2 = xx2;
@@ -2474,7 +2482,9 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
        ytex2 = zz2;
        faceptr->normal[0]=(float)-1.0;
        faceptr->imax=faceptr->imin;
+#ifdef pp_THINFACE
        if(faceptr->jmin==faceptr->jmax||faceptr->kmin==faceptr->kmax)faceptr->thinface=1;
+#endif
        xstart = &ybar0;
        ystart = &zbar0;
        if(bc!=NULL)faceptr->interior = bc->interior[0];
@@ -2487,7 +2497,9 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
        ytex2 = yy2;
        faceptr->normal[2]=(float)-1.0;
        faceptr->kmax=faceptr->kmin;
+#ifdef pp_THINFACE
        if(faceptr->imin==faceptr->imax||faceptr->jmin==faceptr->jmax)faceptr->thinface=1;
+#endif
        xstart = &xbar0;
        ystart = &ybar0;
        if(bc!=NULL)faceptr->interior = bc->interior[4];
@@ -2500,7 +2512,9 @@ void ObstOrVent2Faces(const meshdata *meshi,blockagedata *bc,
        ytex2 = yy2;
        faceptr->normal[2]=(float)1.0;
        faceptr->kmin=faceptr->kmax;
+#ifdef pp_THINFACE
        if(faceptr->imin==faceptr->imax||faceptr->jmin==faceptr->jmax)faceptr->thinface=1;
+#endif
        xstart = &xbar0;
        ystart = &ybar0;
        if(bc!=NULL)faceptr->interior = bc->interior[5];
@@ -2953,7 +2967,9 @@ void UpdateFaceLists(void){
 
       if(showonly_hiddenfaces==0&&facej->hidden==1)continue;
       if(showonly_hiddenfaces==1&&facej->hidden==0)continue;
+#ifdef pp_THINFACE
       if(facej->thinface==1)continue;
+#endif
       if(facej->bc!=NULL&&facej->bc->prop!=NULL&&facej->bc->prop->blockvis==0)continue;
       if(ClipFace(&clipinfo,facej)==1)continue;
 
@@ -3120,7 +3136,11 @@ void UpdateFaceLists(void){
           facei->imax-facei->imin<=1&&facei->jmax-facei->jmin<=1&&facei->kmax-facei->kmin<=1&& // only hide duplicate one cell faces
           faceim1->imin==facei->imin&&faceim1->imax==facei->imax&&
           faceim1->jmin==facei->jmin&&faceim1->jmax==facei->jmax&&
-          faceim1->kmin==facei->kmin&&faceim1->kmax==facei->kmax&&faceim1->dir!=facei->dir&&facei->thinface==0){
+          faceim1->kmin==facei->kmin&&faceim1->kmax==facei->kmax&&faceim1->dir!=facei->dir
+#ifdef pp_THINFACE
+          &&facei->thinface==0
+#endif
+          ){
           if(*(faceim1->showtimelist_handle)==NULL)faceim1->dup=1;
           if(*(facei->showtimelist_handle)==NULL){
             facei->dup=1;

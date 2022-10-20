@@ -2858,29 +2858,6 @@ blocktype: 0 regular block non-textured
 r g b           colors used if colorindex==-3
 */
 
-/* ------------------ BackupBlockage ------------------------ */
-
-void BackupBlockage(blockagedata *bc){
-  int i;
-
-  bc->xyzORIG[0] = bc->xmin;
-  bc->xyzORIG[1] = bc->xmax;
-  bc->xyzORIG[2] = bc->ymin;
-  bc->xyzORIG[3] = bc->ymax;
-  bc->xyzORIG[4] = bc->zmin;
-  bc->xyzORIG[5] = bc->zmax;
-  bc->ijkORIG[0] = bc->ijk[0];
-  bc->ijkORIG[1] = bc->ijk[1];
-  bc->ijkORIG[2] = bc->ijk[2];
-  bc->ijkORIG[3] = bc->ijk[3];
-  bc->ijkORIG[4] = bc->ijk[4];
-  bc->ijkORIG[5] = bc->ijk[5];
-  for(i = 0; i<6; i++){
-    bc->surfORIG[i] = bc->surf[i];
-    bc->surf_indexORIG[i] = bc->surf_index[i];
-  }
-}
-
 /* ------------------ UpdateVentOffset ------------------------ */
 
 void UpdateVentOffset(void){
@@ -3645,18 +3622,6 @@ void UpdateMeshCoords(void){
       bc->ymax = NORMALIZE_Y(bc->ymax);
       bc->zmin = NORMALIZE_Z(bc->zmin);
       bc->zmax = NORMALIZE_Z(bc->zmax);
-      bc->xyzORIG[0]=bc->xmin;
-      bc->xyzORIG[1]=bc->xmax;
-      bc->xyzORIG[2]=bc->ymin;
-      bc->xyzORIG[3]=bc->ymax;
-      bc->xyzORIG[4]=bc->zmin;
-      bc->xyzORIG[5]=bc->zmax;
-      bc->ijkORIG[0]=bc->ijk[0];
-      bc->ijkORIG[1]=bc->ijk[1];
-      bc->ijkORIG[2]=bc->ijk[2];
-      bc->ijkORIG[3]=bc->ijk[3];
-      bc->ijkORIG[4]=bc->ijk[4];
-      bc->ijkORIG[5]=bc->ijk[5];
     }
     for(i=0;i<meshi->nvents+12;i++){
       ventdata *vi;
@@ -3670,18 +3635,6 @@ void UpdateMeshCoords(void){
       vi->zmax = NORMALIZE_Z(vi->zmax);
     }
   }
-  for(igrid=0;igrid<nmeshes;igrid++){
-    meshdata *meshi;
-
-    meshi=meshinfo+igrid;
-    for(i=0;i<meshi->nbptrs;i++){
-      blockagedata *bc;
-
-      bc=meshi->blockageinfoptrs[i];
-      BackupBlockage(bc);
-    }
-  }
-
   for(i=0;i<ncadgeom;i++){
     cadgeomdata *cd;
     int j;
