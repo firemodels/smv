@@ -12,6 +12,7 @@
 #endif
 #include <math.h>
 #include "MALLOCC.h"
+#include "smokeviewvars.h"
 #include "smokestream.h"
 
 #ifdef WIN32
@@ -92,6 +93,7 @@ static void *mmap(void *start, size_t length, int prot, int flags, int fd, off_t
     return MAP_FAILED;
 
   DWORD flProtect;
+  flProtect = PAGE_READWRITE;
   if(prot&PROT_WRITE) {
     if(prot&PROT_EXEC)
       flProtect = PAGE_EXECUTE_READWRITE;
@@ -170,7 +172,7 @@ void MemUnMap(char *data, size_t size){
 
 /* ------------------  StreamOpen ------------------------ */
 
-streamdata *StreamOpen(streamdata *streamin, char *file, size_t offset, int *framesizes, int nframes, int constant_frame_size){
+streamdata *StreamOpen(streamdata *streamin, char *file, size_t offset, int *framesizes, int nframes, char *label, int constant_frame_size){
   streamdata *stream;
   STRUCTSTAT statbuffer;
   int i, statfile;
@@ -185,13 +187,22 @@ streamdata *StreamOpen(streamdata *streamin, char *file, size_t offset, int *fra
       NewMemory((void **)&stream, sizeof(streamdata));
       NewMemory((void **)&(stream->file), strlen(file)+1);
       strcpy(stream->file, file);
+      if(label==NULL){
+        stream->label = NULL;
+      }
+      else{
+        NewMemory((void **)&(stream->label), strlen(label)+1);
+        strcpy(stream->label, label);
+      }
       NewMemory((void **)&(stream->frameptrs),     nframes*sizeof(char *));
       NewMemory((void **)&(stream->filebuffer),    statbuffer.st_size);
       NewMemory((void **)&(stream->framesizes),    nframes*sizeof(size_t));
       NewMemory((void **)&(stream->frame_offsets), nframes*sizeof(size_t));
+      NewMemory((void **)&(stream->load_status),   nframes*sizeof(int));
       stream->frame_offsets[0] = offset;
-      stream->frameptrs[0] = NULL;
-      stream->framesizes[0] = framesizes[0];
+      stream->frameptrs[0]     = NULL;
+      stream->framesizes[0]    = framesizes[0];
+      stream->load_status[0]   = STREAM_UNLOADED;
       start = 1;
     }
     else{
@@ -224,9 +235,10 @@ streamdata *StreamOpen(streamdata *streamin, char *file, size_t offset, int *fra
         sizei   = framesizes[i];
         sizeim1 = framesizes[i-1];
       }
-      stream->framesizes[i] = sizei;
+      stream->load_status[i]   = STREAM_UNLOADED;
+      stream->framesizes[i]    = sizei;
       stream->frame_offsets[i] = stream->frame_offsets[i-1]+sizeim1;
-      stream->frameptrs[i] = NULL;
+      stream->frameptrs[i]     = NULL;
     }
   }
   else{
@@ -260,9 +272,20 @@ FILE_SIZE StreamRead(streamdata *stream, int frame_index){
   FILE *filestream;
   FILE_SIZE file_size;
 
-  if(stream==NULL||frame_index<0||frame_index>=stream->nframes)return 0;
+  LOCK_STREAM;
+  if(stream==NULL||frame_index<0||frame_index>stream->nframes-1){
+    stream->load_status[frame_index] = STREAM_ERROR;
+    UNLOCK_STREAM;
+    return 0;
+  }
+  if(stream->load_status[frame_index]!=STREAM_UNLOADED){
+    UNLOCK_STREAM;
+    return 0;
+  }
+  stream->load_status[frame_index] = STREAM_LOADING;
+  UNLOCK_STREAM;
 
-  filestream = fopen(stream->file, "rb");
+   filestream = fopen(stream->file, "rb");
   if(filestream==NULL)return 0;
 
   fseek(filestream, stream->frame_offsets[frame_index], SEEK_SET);
@@ -272,7 +295,86 @@ FILE_SIZE StreamRead(streamdata *stream, int frame_index){
   CheckMemory;
   fclose(filestream);
   ASSERT(file_size==stream->framesizes[frame_index]);
+
+  stream->load_status[frame_index] = STREAM_LOADED;
   return file_size;
+}
+
+/* ------------------  StreamAllLoaded ------------------------ */
+
+int StreamAllLoaded(streamdata *stream){
+  int i;
+
+  for(i = 0; i<stream->nframes; i++){
+    if(stream->frameptrs[i]==NULL)return 0;
+  }
+  return 1;
+}
+
+/* ------------------  StreamFrameSizeOutput ------------------------ */
+
+void StreamFrameSizeOutput(size_t file_size){
+  if(file_size>1000000000){
+    PRINTF("(%.1f GB)\n", (float)file_size/1000000000.);
+  }
+  else if(file_size>1000000){
+    PRINTF("(%.1f MB)\n", (float)file_size/1000000.);
+  }
+  else{
+    PRINTF("(%.0f KB)\n", (float)file_size/1000.);
+  }
+}
+
+/* ------------------  StreamReadList ------------------------ */
+
+void StreamReadList(streamdata **streams, int nstreams){
+  int frame_index, stream_index, i, max_frames;
+  int stream_output = 0;
+  int stream_pause = 0;
+
+  max_frames = streams[0]->nframes;
+  for(i = 1; i<nstreams; i++){
+    max_frames = MAX(max_frames, streams[i]->nframes);
+  }
+
+  for(;;){ //continue until all frames are loaded
+    for(frame_index = 0; frame_index<max_frames; frame_index++){
+      int count_streams;
+      FILE_SIZE file_size;
+
+      file_size = 0;
+      for(count_streams=0, stream_index = 0; stream_index<nstreams; stream_index++){
+        streamdata *stream;
+
+        stream = streams[stream_index];
+        if(frame_index>stream->nframes-1)continue;
+        int read_stream;
+
+        LOCK_STREAM;
+        read_stream = 0;
+        if(stream->load_status[frame_index]==STREAM_UNLOADED)read_stream = 1;
+        UNLOCK_STREAM;
+        if(read_stream==1){
+          count_streams++;
+          file_size+=StreamRead(stream, frame_index);
+        }
+      }
+      if(stream_pause==1)PauseTime(0.5);
+      if(count_streams>0&&stream_output==1){
+        printf("Loading frame(%i streams): %i", count_streams, frame_index);
+        StreamFrameSizeOutput(file_size);
+      }
+    }
+    // check if all frames have been loaded, if so then we are finished if not then load some more
+    int all_loaded = 1;
+    for(stream_index = 0; stream_index<nstreams; stream_index++){
+      all_loaded = StreamAllLoaded(streams[stream_index]);
+      if(all_loaded==0){
+        break;
+      }
+    }
+    if(all_loaded==1)return;
+  }
 }
 
 /* ------------------  StreamCheck ------------------------ */

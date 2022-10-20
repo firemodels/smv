@@ -430,6 +430,7 @@ void GetPartColors(partdata *parti, int nlevel, int convert){
         prop_id = GetPartProp(partclassi->labels[k].longlabel);
         if(prop_id==NULL)continue;
 
+#ifdef pp_EVAC
         if(strcmp(partclassi->labels[k].longlabel,"HUMAN_COLOR")==0){
           int m;
 
@@ -441,6 +442,9 @@ void GetPartColors(partdata *parti, int nlevel, int convert){
           }
         }
         else{
+#else
+          {
+#endif
           int prop_id_index;
           int m;
 

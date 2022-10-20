@@ -4140,7 +4140,7 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
 
   if(flag_arg==UNLOAD){
 #ifdef pp_SMOKE3DSTREAM
-    StreamClose(&(smoke3di->smokes3dstream));
+    StreamClose(&(smoke3di->smoke_stream));
 #endif
     plotstate = GetPlotState(DYNAMIC_PLOTS);
     UpdateTimes();
@@ -4204,9 +4204,8 @@ int SetupSmoke3D(smoke3ddata *smoke3di, int flag_arg, int iframe_arg, int *error
     UpdateSmoke3dMenuLabels();
   }
 
-  if(iframe_arg==ALL_SMOKE_FRAMES)PRINTF("Loading %s(%s) ", smoke3di->file, smoke3di->label.shortlabel);
-#ifdef pp_SMOKE3DSTREAM
-  if(iframe_arg==ALL_SMOKE_FRAMES)PRINTF("\n");
+#ifndef pp_SMOKE3DSTREAM
+  if(iframe_arg==ALL_SMOKE_FRAMES)PRINTF("Loading %s(%s)", smoke3di->file, smoke3di->label.shortlabel);
 #endif
   CheckMemory;
   smoke3di->request_load = 1;
@@ -4340,7 +4339,8 @@ FILE_SIZE ReadSmoke3D(int iframe_arg,int ifile_arg,int flag_arg, int first_time,
   size_t header_size = 40;
 
   GetSmoke3dTimesSizes(smoke3di->size_file, &smoke_times, &smokeframe_sizes, &nsmokeframes);
-  smoke3di->smokes3dstream = StreamOpen(smoke3di->smokes3dstream, smoke3di->reg_file, header_size, smokeframe_sizes, nsmokeframes, 0);
+  smoke3di->smoke_stream = StreamOpen(smoke3di->smoke_stream, smoke3di->reg_file, header_size, smokeframe_sizes, nsmokeframes,
+                                        smoke3di->label.shortlabel, 0);
   FREEMEMORY(smoke_times);
   FREEMEMORY(smokeframe_sizes);
 #endif
@@ -4508,7 +4508,7 @@ void ReadSmoke3DAllMeshes(int iframe, int smoketype, int *errorcode){
 
 /* ------------------ UpdateSmoke3d ------------------------ */
 
-void UpdateSmoke3D(smoke3ddata *smoke3di){
+int UpdateSmoke3D(smoke3ddata *smoke3di){
   int iframe_local;
   int countin;
   uLongf countout;
@@ -4521,10 +4521,8 @@ void UpdateSmoke3D(smoke3ddata *smoke3di){
     case RLE:
 
 #ifdef pp_SMOKE3DSTREAM
-      if(smoke3di->smokes3dstream->frameptrs[iframe_local]==NULL){
-        StreamRead(smoke3di->smokes3dstream, iframe_local);
-      }
-      buffer_in = (unsigned char *)smoke3di->smokes3dstream->frameptrs[iframe_local]+32;
+      if(smoke3di->smoke_stream->frameptrs[iframe_local]==NULL)return 0;
+      buffer_in = (unsigned char *)smoke3di->smoke_stream->frameptrs[iframe_local]+32;
 #else
     buffer_in = smoke3di->smokeframe_comp_list[iframe_local];
 #endif
@@ -4555,6 +4553,7 @@ void UpdateSmoke3D(smoke3ddata *smoke3di){
     }
   }
   //ASSERT(countout==smoke3di->nchars_uncompressed);
+  return 1;
 }
 
 /* ------------------ MergeSmoke3DColors ------------------------ */

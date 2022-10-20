@@ -2093,7 +2093,6 @@ void RenderMenu(int value){
         sd=sliceinfo+i;
         sd->itime=0;
       }
-      frame_index=first_frame_index;
       for(i=0;i<nmeshes;i++){
         meshi=meshinfo+i;
         meshi->patch_itime=0;
@@ -2136,7 +2135,7 @@ void RenderMenu(int value){
 }
 
 /* ------------------ EvacShowMenu ------------------------ */
-
+#ifdef pp_EVAC
 void EvacShowMenu(int value){
   partdata *parti;
   int i;
@@ -2195,6 +2194,7 @@ void EvacShowMenu(int value){
   plotstate=GetPlotState(DYNAMIC_PLOTS);
   GLUTPOSTREDISPLAY;
 }
+#endif
 
 /* ------------------ ParticleShowMenu ------------------------ */
 
@@ -2232,7 +2232,11 @@ void ParticleShowMenu(int value){
         visSmokePart=2;
         for(i=0;i<npartinfo;i++){
           parti = partinfo + i;
+#ifdef pp_EVAC
           if(parti->loaded==0||parti->evac==1)continue;
+#else
+          if(parti->loaded==0)continue;
+#endif
           parti->display=1;
         }
         break;
@@ -2243,7 +2247,11 @@ void ParticleShowMenu(int value){
         visSmokePart=0;
         for(i=0;i<npartinfo;i++){
           parti = partinfo + i;
+#ifdef pp_EVAC
           if(parti->loaded==0||parti->evac==1)continue;
+#else
+          if(parti->loaded==0)continue;
+#endif
           parti->display=0;
         }
         break;
@@ -3479,11 +3487,13 @@ void LoadUnloadMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_RIGHT_ARROW);
 }
 
+#ifdef pp_EVAC
 void AvatarEvacMenu(int value){
   if(value==MENU_DUMMY)return;
   iavatar_evac=value;
   updatemenu=1;
 }
+#endif
 
 /* ------------------ TourMenu ------------------------ */
 
@@ -3866,7 +3876,11 @@ void UnloadAllPartFiles(void){
     int errorcode;
 
     parti = partinfo+i;
+#ifdef pp_EVAC
     if(parti->evac==1||parti->loaded==0)continue;
+#else
+    if(parti->loaded==0)continue;
+#endif
     ReadPart(parti->file, i, UNLOAD, &errorcode);
   }
 }
@@ -3918,8 +3932,10 @@ void SetupPart(int value, int option){
     partdata *parti;
 
     parti = partinfo+i;
+#ifdef pp_EVAC
     if(option==PART&&parti->evac==1)continue;                 // don't load an evac file if part files are loaded
     if(option==EVAC&&parti->evac==0)continue;                 // don't load a part file if evac files are loaded
+#endif
     if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
     if(parti->loaded==0&&value>=0&&value!=i)continue;         // if value>0 only load file with index  value
     list[nlist++] = i;
@@ -3934,8 +3950,10 @@ void SetupPart(int value, int option){
     parti->skipload = 1;
     parti->loadstatus = FILE_UNLOADED;
     parti->boundstatus = PART_BOUND_UNDEFINED;
+#ifdef pp_EVAC
     if(option==PART&&parti->evac==1)continue;                 // don't load an evac file if part files are loaded
     if(option==EVAC&&parti->evac==0)continue;                 // don't load a part file if evac files are loaded
+#endif
     if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
     if(parti->loaded==0&&value>=0&&value!=i)continue;         // if value>0 only load file with index  value
     parti->skipload = 0;
@@ -3995,11 +4013,13 @@ void LoadParticleEvacMenu(int value, int option){
   else{
     if(value==MENU_PARTICLE_UNLOAD_ALL){
       for(i=0;i<npartinfo;i++){
+#ifdef pp_EVAC
         partdata *parti;
 
         parti = partinfo + i;
         if(option==PART&&parti->evac==1)continue;
         if(option==EVAC&&parti->evac==0)continue;
+#endif
         ReadPart("", i, UNLOAD, &errorcode);
       }
     }
@@ -4033,7 +4053,11 @@ void LoadParticleEvacMenu(int value, int option){
         // unload particle files
 
 
+#ifdef pp_EVAC
         if(value!=PARTFILE_RELOADALL&&value!=EVACFILE_RELOADALL){
+#else
+        if(value!=PARTFILE_RELOADALL){
+#endif
           UnloadAllPartFiles();
         }
 
@@ -4212,6 +4236,7 @@ void UnloadPlot3dMenu(int value){
   }
 }
 
+#ifdef pp_EVAC
 /* ------------------ UnloadEvacMenu ------------------------ */
 
 void UnloadEvacMenu(int value){
@@ -4229,6 +4254,7 @@ void UnloadEvacMenu(int value){
     }
   }
 }
+#endif
 
 /* ------------------ UnloadPartMenu ------------------------ */
 
@@ -4242,7 +4268,9 @@ void UnloadPartMenu(int value){
   }
   else{
     for(i=0;i<npartinfo;i++){
+#ifdef pp_EVAC
       if(partinfo[i].evac==1)continue;
+#endif
       ReadPart("", i, UNLOAD, &errorcode);
     }
   }
@@ -4586,6 +4614,19 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
     break;
     }
   }
+#ifdef pp_SMOKE3DSTREAM
+  int nstreams = 0;
+  streamdata **streams = NULL;
+
+  for(i = 0; i<nsmoke3dinfo; i++){
+    smoke3ddata *smoke3di;
+
+    smoke3di = smoke3dinfo+i;
+    if(smoke3di->type==type&&compute_smoke3d_file_sizes!=1)nstreams++;
+  }
+  if(nstreams>0)NewMemory((void **)&streams, nstreams*sizeof(streamdata *));
+  nstreams = 0;
+#endif
   total_size = 0;
   for(i=0;i<nsmoke3dinfo;i++){
     smoke3ddata *smoke3di;
@@ -4601,9 +4642,23 @@ FILE_SIZE LoadSmoke3D(int type, int *count){
       }
       else{
         load_size += ReadSmoke3D(ALL_SMOKE_FRAMES, i, LOAD, FIRST_TIME, &errorcode);
+#ifdef pp_SMOKE3DSTREAM
+        if(smoke3di->smoke_stream!=NULL)streams[nstreams++] = smoke3di->smoke_stream;
+#endif
       }
     }
   }
+#ifdef pp_SMOKE3DSTREAM
+  if(nstreams>0){
+    if(streamlistarg==NULL){
+      NewMemory((void **)&streamlistarg, sizeof(streamlistargdata));
+    }
+    streamlistarg->streams  = streams;
+    streamlistarg->nstreams = nstreams;
+    StreamReadListMT(streamlistarg, 1);
+    //StreamReadList(streams, nstreams);
+  }
+#endif
   if(compute_smoke3d_file_sizes==1){
     PRINTF(" file size: ");
     if(total_size>1000000000){
@@ -6552,12 +6607,6 @@ void GeometryMenu(int value){
   case 7:
     visCeiling=1-visCeiling;
     break;
-#ifdef pp_TERRAIN_DEBUG
-  case 17+TERRAIN_DEBUG:
-    terrain_debug = 1-terrain_debug;
-    updatemenu = 1;
-    break;
-#endif
   case 17+TERRAIN_TOP:
     terrain_showonly_top = 1 - terrain_showonly_top;
     updatemenu = 1;
@@ -7920,7 +7969,10 @@ static int loadplot3dmenu=0, unloadvslicemenu=0, unloadslicemenu=0;
 static int loadsmoke3dmenu = 0;
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
 static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
-static int unloadevacmenu=0, unloadpartmenu=0, loadslicemenu=0, loadmultislicemenu=0;
+static int unloadpartmenu=0, loadslicemenu=0, loadmultislicemenu=0;
+#ifdef  pp_EVAC
+static int unloadevacmenu=0;
+#endif
 static int *loadsubvslicemenu=NULL, nloadsubvslicemenu=0;
 static int *loadsubslicemenu=NULL, nloadsubslicemenu=0;
 static int *loadsubpatchmenu_b = NULL, *nsubpatchmenus_b=NULL, iloadsubpatchmenu_b=0, nloadsubpatchmenu_b = 0;
@@ -7931,14 +7983,19 @@ static int *loadsubplot3dmenu=NULL, nloadsubplot3dmenu=0;
 static int loadmultivslicemenu=0, unloadmultivslicemenu=0;
 static int duplicatevectorslicemenu=0, duplicateslicemenu=0, duplicateboundaryslicemenu=0;
 static int unloadmultislicemenu=0, vsliceloadmenu=0, staticslicemenu=0;
-static int evacmenu=0, particlemenu=0, particlesubmenu=0, showpatchmenu=0, zonemenu=0, isoshowmenu=0, isoshowsubmenu=0, isolevelmenu=0, smoke3dshowmenu=0;
+static int particlemenu=0, particlesubmenu=0, showpatchmenu=0, zonemenu=0, isoshowmenu=0, isoshowsubmenu=0, isolevelmenu=0, smoke3dshowmenu=0;
 static int smoke3dshowsinglemenu = 0;
 static int particlepropshowmenu=0,humanpropshowmenu=0;
 static int *particlepropshowsubmenu=NULL;
 static int particlestreakshowmenu=0;
 static int tourmenu=0,tourcopymenu=0;
-static int avatartourmenu=0,avatarevacmenu=0;
-static int trainerviewmenu=0,mainmenu=0,zoneshowmenu=0,particleshowmenu=0,evacshowmenu=0;
+static int trainerviewmenu=0,mainmenu=0,zoneshowmenu=0,particleshowmenu=0;
+#ifdef pp_EVAC
+static int evacmenu=0;
+static int avatartourmenu=0;
+static int avatarevacmenu=0;
+static int evacshowmenu=0;
+#endif
 static int showobjectsmenu=0,showobjectsplotmenu=0,devicetypemenu=0,spheresegmentmenu=0,propmenu=0;
 static int unloadplot3dmenu=0, unloadpatchmenu=0, unloadisomenu=0;
 static int showmultislicemenu=0;
@@ -8854,11 +8911,6 @@ updatemenu=0;
   }
   if(visTerrainType==TERRAIN_HIDDEN)glutAddMenuEntry(_("*Hidden"),17+TERRAIN_HIDDEN);
   if(visTerrainType!=TERRAIN_HIDDEN)glutAddMenuEntry(_("Hidden"),17+TERRAIN_HIDDEN);
-#ifdef pp_TERRAIN_DEBUG
-  if(terrain_debug==1)glutAddMenuEntry(_("*terrain slice debug"), 17+TERRAIN_DEBUG);
-  if(terrain_debug==0)glutAddMenuEntry(_("terrain slice debug"), 17+TERRAIN_DEBUG);
-#endif
-
 
   if(nobject_defs>0){
     int multiprop;
@@ -9594,7 +9646,11 @@ updatemenu=0;
 
 /* --------------------------------particle show menu -------------------------- */
 
+#ifdef pp_EVAC
   if(npartinfo>0&&nevac!=npartinfo){
+#else
+  if(npartinfo>0){
+#endif
     int ii;
     int showall;
 
@@ -9606,7 +9662,9 @@ updatemenu=0;
       i = partorderindex[ii];
       parti = partinfo + i;
       if(parti->loaded==0)continue;
+#ifdef pp_EVAC
       if(parti->evac==1)continue;
+#endif
       STRCPY(menulabel,"");
       if(parti->display==1)STRCAT(menulabel,"*");
       STRCAT(menulabel,parti->menulabel);
@@ -9656,7 +9714,7 @@ updatemenu=0;
   }
 
 /* --------------------------------Evac show menu -------------------------- */
-
+#ifdef pp_EVAC
   if(nevac>0){
     int ii;
 
@@ -9680,6 +9738,7 @@ updatemenu=0;
       glutAddMenuEntry(_("Hide all"), MENU_PARTSHOW_HIDEALL);
     }
   }
+#endif
 
 /* -------------------------------- colorbarmenu -------------------------- */
 
@@ -10018,6 +10077,7 @@ updatemenu=0;
   InitShowSliceMenu(&showhideslicemenu, patchgeom_slice_showhide);
   InitShowMultiSliceMenu(&showmultislicemenu, showhideslicemenu, patchgeom_slice_showhide);
 
+#ifdef pp_EVAC
 /* -------------------------------- avatar tour menu -------------------------- */
 
   CREATEMENU(avatarevacmenu,AvatarEvacMenu);
@@ -10064,6 +10124,7 @@ updatemenu=0;
       glutAddMenuEntry(menulabel,-23-i);
     }
   }
+#endif
 
   CREATEMENU(tourcopymenu, TourCopyMenu);
   glutAddMenuEntry("Path through domain", -1);
@@ -10336,8 +10397,12 @@ updatemenu=0;
 
         parti = partinfo + ii;
         if(parti->loaded==0)continue;
+#ifdef pp_EVAC
         if(parti->evac==1)human_present=1;
         if(parti->evac==0)particle_present=1;
+#else
+        particle_present = 1;
+#endif
       }
       if(particle_present==1){
         GLUTADDSUBMENU(_("Particles"),particlepropshowmenu);
@@ -11100,7 +11165,11 @@ updatemenu=0;
 
   /* --------------------------------particle menu -------------------------- */
 
+#ifdef pp_EVAC
   if(npartinfo>0&&nevac!=npartinfo){
+#else
+  if(npartinfo>0){
+#endif
     int ii;
 
     CREATEMENU(unloadpartmenu,UnloadPartMenu);
@@ -11110,7 +11179,11 @@ updatemenu=0;
 
       i = partorderindex[ii];
       parti = partinfo + i;
+#ifdef pp_EVAC
       if(parti->loaded==1&&parti->evac==0){
+#else
+      if(parti->loaded==1){
+#endif
         STRCPY(menulabel,parti->menulabel);
         glutAddMenuEntry(menulabel,i);
       }
@@ -11127,7 +11200,9 @@ updatemenu=0;
       char menulabel[1024];
 
       i = partorderindex[ii];
+#ifdef pp_EVAC
       if(partinfo[i].evac==1)continue;
+#endif
       if(partinfo[i].loaded==1){
         STRCPY(menulabel,"*");
         STRCAT(menulabel,partinfo[i].menulabel);
@@ -11168,6 +11243,7 @@ updatemenu=0;
     }
   }
 
+#ifdef pp_EVAC
   if(nevac>0){
     int ii;
 
@@ -11225,6 +11301,7 @@ updatemenu=0;
        }
   }
     }
+#endif
   if(nvsliceinfo>0){
 
   //*** setup vector slice menus
@@ -12383,6 +12460,7 @@ updatemenu=0;
       // particle
 
       if(npartinfo>0){
+#ifdef pp_EVAC
         if(nevac!=npartinfo){
           strcpy(loadmenulabel,"Particles");
           if(tload_step > 1){
@@ -12391,6 +12469,15 @@ updatemenu=0;
           }
           GLUTADDSUBMENU(loadmenulabel,particlemenu);
         }
+#else
+        strcpy(loadmenulabel,"Particles");
+        if(tload_step > 1){
+          sprintf(steplabel,"/Skip Frame %i",tload_skip);
+          strcat(loadmenulabel,steplabel);
+        }
+        GLUTADDSUBMENU(loadmenulabel,particlemenu);
+#endif
+#ifdef pp_EVAC
         if(nevac>0){
           strcpy(loadmenulabel,_("Evacuation"));
           if(tload_step > 1){
@@ -12399,6 +12486,7 @@ updatemenu=0;
           }
           GLUTADDSUBMENU(loadmenulabel,evacmenu);
         }
+#endif
       }
 
       // plot3d

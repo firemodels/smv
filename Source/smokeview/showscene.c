@@ -90,10 +90,12 @@ void ShowScene2(int mode){
 
     /* ++++++++++++++++++++++++ draw evacuation +++++++++++++++++++++++++ */
 
+#ifdef pp_EVAC
     if(showevac == 1){
       CLIP_VALS;
       DrawEvacFrame();
     }
+#endif
 
     /* ++++++++++++++++++++++++ draw screeninfo +++++++++++++++++++++++++ */
 
@@ -220,6 +222,7 @@ void ShowScene2(int mode){
 
   /* ++++++++++++++++++++++++ draw selected avatars +++++++++++++++++++++++++ */
 
+#ifdef pp_EVAC
   if(mode == SELECTOBJECT){
     if(select_avatar == 1){
       CLIP_GEOMETRY;
@@ -228,6 +231,7 @@ void ShowScene2(int mode){
       return;
     }
   }
+#endif
 
   /* ++++++++++++++++++++++++ draw selected avatars +++++++++++++++++++++++++ */
   if(mode==SELECTOBJECT){
