@@ -46,7 +46,7 @@
 #define pp_STREAM
 #endif
 
-//#define pp_EVAC              // isolate EVAC code
+#define pp_EVAC              // isolate EVAC code
 #define pp_CLIP_FIX          // fixes to clipping
 #define pp_PART_MULTI        // load particles in parallel
 //#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds
