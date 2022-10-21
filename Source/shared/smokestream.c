@@ -344,7 +344,9 @@ void StreamReadList(streamdata **streams, int nstreams){
   int frame_index, stream_index, i, max_frames;
   int stream_output = 0;
   int stream_pause = 0;
+  float totaltime;
 
+  clock_t totalticks = clock();
   max_frames = streams[0]->nframes;
   for(i = 1; i<nstreams; i++){
     max_frames = MAX(max_frames, streams[i]->nframes);
@@ -389,6 +391,8 @@ void StreamReadList(streamdata **streams, int nstreams){
       size_t total_filesize = 0;
       float total_time=0.0;
 
+      totalticks = (clock()-totalticks);
+      totaltime = (float)totalticks/(float)CLOCKS_PER_SEC;
       for(stream_index = 0; stream_index<nstreams; stream_index++){
         streamdata *streami;
 
@@ -399,7 +403,7 @@ void StreamReadList(streamdata **streams, int nstreams){
         total_time     += streami->load_time;
       }
       if(nstreams>1){
-        printf("Loaded total");
+        printf("Loaded total(%f)", totaltime);
         StreamFrameSizeOutput(total_filesize, &total_time);
       }
       return;
