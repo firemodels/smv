@@ -3677,16 +3677,6 @@ int lua_set_showdummyvents(lua_State *L) {
   return 1;
 }
 
-int lua_set_showevacslices(lua_State *L) {
-  int show_slices = lua_tonumber(L, 1);
-  int constant_coloring = lua_tonumber(L, 2);
-  int show_colorbar = lua_tonumber(L, 3);
-  int return_code = set_showevacslices(show_slices, constant_coloring,
-                                       show_colorbar);
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
 int lua_set_showfloor(lua_State *L) {
   int v = lua_tonumber(L, 1);
   int return_code = set_showfloor(v);
@@ -4571,13 +4561,6 @@ int lua_set_viewtourfrompath(lua_State *L) {
   return 1;
 }
 
-int lua_set_avatarevac(lua_State *L) {
-  int v = lua_tonumber(L, 1);
-  int return_code = set_avatarevac(v);
-  lua_pushnumber(L, return_code);
-  return 1;
-}
-
 int *lua_get_int_array(lua_State *L, int snumber) {
   // count the length of vals
   int nvals = 0;
@@ -5448,7 +5431,6 @@ lua_State *initLua() {
   lua_register(L, "set_showcolorbars", lua_set_showcolorbars);
   lua_register(L, "set_showcvents", lua_set_showcvents);
   lua_register(L, "set_showdummyvents", lua_set_showdummyvents);
-  lua_register(L, "set_showevacslices", lua_set_showevacslices);
   lua_register(L, "set_showfloor", lua_set_showfloor);
   lua_register(L, "set_showframe", lua_set_showframe);
   lua_register(L, "set_showframelabel", lua_set_showframelabel);
@@ -5569,7 +5551,6 @@ lua_State *initLua() {
   lua_register(L, "set_viewalltours", lua_set_viewalltours);
   lua_register(L, "set_viewtimes", lua_set_viewtimes);
   lua_register(L, "set_viewtourfrompath", lua_set_viewtourfrompath);
-  lua_register(L, "set_avatarevac", lua_set_avatarevac);
   lua_register(L, "set_devicevectordimensions",
                lua_set_devicevectordimensions);
   lua_register(L, "set_devicebounds", lua_set_devicebounds);
