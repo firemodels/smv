@@ -897,7 +897,11 @@ int ReadPartBounds(partdata *parti,int read_bounds_arg){
 
   stream = fopen(parti->size_file, "r");
   if(stream==NULL){
+#ifdef pp_EVAC
     CreatePartSizeFile(parti, parti->evac==1);
+#else
+    CreatePartSizeFile(parti);
+#endif
     stream = fopen(parti->size_file, "r");
     if(stream==NULL)return 0;
   }

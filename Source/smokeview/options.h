@@ -24,6 +24,8 @@
 
 //*** options: all platforms
 
+//#define pp_THINFACE         // don't draw sides of thin faces
+
 // use floating point to color data
 
 //#define pp_PARTVAL          // speed up part file color updating
@@ -34,7 +36,7 @@
 //#define pp_SMOKE3DSTREAM      // stream smoke3d data
 //#define pp_PARTSTREAM         // stream particle data
 
-// turn on pp_STREAM if an streaming is on for any file type
+// turn on pp_STREAM if streaming is on for any file type
 
 #ifdef pp_SMOKE3DSTREAM
 #define pp_STREAM
@@ -44,11 +46,12 @@
 #define pp_STREAM
 #endif
 
+#define pp_EVAC              // isolate EVAC code
 #define pp_CLIP_FIX          // fixes to clipping
 #define pp_PART_MULTI        // load particles in parallel
 //#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds
 #define pp_THREADBUFFER
-#define pp_SMOKEBUFFER       // read 3d smoke files using memory buffer i/o routines
+//#define pp_SMOKEBUFFER       // read 3d smoke files using memory buffer i/o routines
 //#define pp_GEOM_DEBUG        // debug out in geometry routines
 //#define pp_CRASH_TEST         // test detection of division by zero or use of undefined pointer
 //#define pp_SHOW_BOUND_MIRROR  // add menu for showing boundary files on mirror/open vents
@@ -72,9 +75,6 @@
 //#define pp_PLOT3D_REDUCEMENUS // eliminate plot3d sub-menus
 //#define pp_RESEARCH_DEBUG     // output whether data is reloaded or colors re-mapped when toggling to/from research mode
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
-#ifdef pp_BETA
-#define pp_TERRAIN_DEBUG         // show terrain slice debugging output (only use with test smokeview's)
-#endif
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set

@@ -670,7 +670,10 @@ void InitProp(propdata *propi, int nsmokeview_ids, char *label){
   propi->inblockage = 0;
   propi->ntextures = 0;
   propi->nvars_dep = 0;
+#ifdef pp_EVAC
   propi->nvars_evac = 0;
+  propi->draw_evac = 0;
+#endif
   propi->nvars_indep = 0;
   propi->vars_indep = NULL;
   propi->svals = NULL;
@@ -680,7 +683,6 @@ void InitProp(propdata *propi, int nsmokeview_ids, char *label){
   propi->fvals = NULL;
   propi->vars_indep_index = NULL;
   propi->tag_number = 0;
-  propi->draw_evac = 0;
 }
 
 /* ------------------ InitDefaultProp ------------------------ */
@@ -790,7 +792,9 @@ PROP
       }
     }
     GetIndepVarIndices(propi->smv_object,propi->vars_indep,propi->nvars_indep,propi->vars_indep_index);
+#ifdef pp_EVAC
     GetEvacIndices(propi->smv_object,propi->fvars_evac_index,&propi->nvars_evac);
+#endif
   }
   propi->ntextures=ntextures_local;
 }
@@ -2854,29 +2858,6 @@ blocktype: 0 regular block non-textured
 r g b           colors used if colorindex==-3
 */
 
-/* ------------------ BackupBlockage ------------------------ */
-
-void BackupBlockage(blockagedata *bc){
-  int i;
-
-  bc->xyzORIG[0] = bc->xmin;
-  bc->xyzORIG[1] = bc->xmax;
-  bc->xyzORIG[2] = bc->ymin;
-  bc->xyzORIG[3] = bc->ymax;
-  bc->xyzORIG[4] = bc->zmin;
-  bc->xyzORIG[5] = bc->zmax;
-  bc->ijkORIG[0] = bc->ijk[0];
-  bc->ijkORIG[1] = bc->ijk[1];
-  bc->ijkORIG[2] = bc->ijk[2];
-  bc->ijkORIG[3] = bc->ijk[3];
-  bc->ijkORIG[4] = bc->ijk[4];
-  bc->ijkORIG[5] = bc->ijk[5];
-  for(i = 0; i<6; i++){
-    bc->surfORIG[i] = bc->surf[i];
-    bc->surf_indexORIG[i] = bc->surf_index[i];
-  }
-}
-
 /* ------------------ UpdateVentOffset ------------------------ */
 
 void UpdateVentOffset(void){
@@ -3641,18 +3622,6 @@ void UpdateMeshCoords(void){
       bc->ymax = NORMALIZE_Y(bc->ymax);
       bc->zmin = NORMALIZE_Z(bc->zmin);
       bc->zmax = NORMALIZE_Z(bc->zmax);
-      bc->xyzORIG[0]=bc->xmin;
-      bc->xyzORIG[1]=bc->xmax;
-      bc->xyzORIG[2]=bc->ymin;
-      bc->xyzORIG[3]=bc->ymax;
-      bc->xyzORIG[4]=bc->zmin;
-      bc->xyzORIG[5]=bc->zmax;
-      bc->ijkORIG[0]=bc->ijk[0];
-      bc->ijkORIG[1]=bc->ijk[1];
-      bc->ijkORIG[2]=bc->ijk[2];
-      bc->ijkORIG[3]=bc->ijk[3];
-      bc->ijkORIG[4]=bc->ijk[4];
-      bc->ijkORIG[5]=bc->ijk[5];
     }
     for(i=0;i<meshi->nvents+12;i++){
       ventdata *vi;
@@ -3666,18 +3635,6 @@ void UpdateMeshCoords(void){
       vi->zmax = NORMALIZE_Z(vi->zmax);
     }
   }
-  for(igrid=0;igrid<nmeshes;igrid++){
-    meshdata *meshi;
-
-    meshi=meshinfo+igrid;
-    for(i=0;i<meshi->nbptrs;i++){
-      blockagedata *bc;
-
-      bc=meshi->blockageinfoptrs[i];
-      BackupBlockage(bc);
-    }
-  }
-
   for(i=0;i<ncadgeom;i++){
     cadgeomdata *cd;
     int j;
@@ -3879,7 +3836,7 @@ surfdata *GetSurface(char *label){
 }
 
 /* ------------------ InitEvacProp ------------------------ */
-
+#ifdef pp_EVAC
 void InitEvacProp(void){
   char label[256];
   char *smokeview_id;
@@ -3903,6 +3860,7 @@ void InitEvacProp(void){
 
   prop_evacdefault->ntextures = 0;
 }
+#endif
 
 /* ------------------ InitMatl ------------------------ */
 
@@ -4798,12 +4756,14 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti = partinfo+ipart;
 
   lenkey = 4;
+#ifdef pp_EVAC
   parti->evac = 0;
   if(Match(buffer, "EVA5")==1
     ){
     parti->evac = 1;
     nevac++;
   }
+#endif
   len = strlen(buffer);
   if(nmeshes>1){
     blocknumber = ioffset-1;
@@ -4813,6 +4773,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   }
   if(len>lenkey+1){
     buffer3 = buffer+lenkey;
+#ifdef pp_EVAC
     if(parti->evac==1){
       float zoffset = 0.0;
 
@@ -4822,6 +4783,9 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
     else{
       sscanf(buffer3, "%i", &blocknumber);
     }
+#else
+    sscanf(buffer3, "%i", &blocknumber);
+#endif
     blocknumber--;
   }
 
@@ -4836,7 +4800,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti->valmax_smv = NULL;
   parti->stream     = NULL;
 #ifdef pp_PARTSTREAM
-  parti->partstream = NULL;
+  parti->part_stream = NULL;
 #endif
   if(FGETS(buffer, 255, stream)==NULL){
     npartinfo--;
@@ -4951,8 +4915,10 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
         partclassdata *pci;
 
         pci = partclassinfo+iii;
+#ifdef pp_EVAC
         if(parti->evac==1&&pci->kind!=HUMANS)continue;
         if(parti->evac==0&&pci->kind!=PARTICLES)continue;
+#endif
         if(iclass-1==ic){
           parti->partclassptr[i] = pci;
           break;
@@ -5373,7 +5339,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
     smoke3di->lastiframe = -999;
     smoke3di->ismoke3d_time = 0;
 #ifdef pp_SMOKE3DSTREAM
-    smoke3di->smokes3dstream = NULL;
+    smoke3di->smoke_stream = NULL;
 #endif
 
     STRCPY(buffer2, bufferptr);
@@ -6572,8 +6538,10 @@ int ReadSMV(bufferstreamdata *stream){
   STOP_TIMER(read_time_elapsed);
 
   npropinfo=1; // the 0'th prop is the default human property
+#ifdef pp_EVAC
   navatar_colors=0;
   FREEMEMORY(avatar_colors);
+#endif
 
   FREEMEMORY(fds_title);
 
@@ -7028,6 +6996,7 @@ int ReadSMV(bufferstreamdata *stream){
       have_northangle = 1;
       continue;
     }
+#ifdef pp_EVAC
     if(MatchSMV(buffer,"AVATAR_COLOR")==1){
       FGETS(buffer,255,stream);
       sscanf(buffer,"%i",&navatar_colors);
@@ -7052,6 +7021,7 @@ int ReadSMV(bufferstreamdata *stream){
       }
       continue;
     }
+#endif
     if(MatchSMV(buffer,"TERRAIN") == 1){
       manual_terrain = 1;
       FGETS(buffer, 255, stream);
@@ -8114,7 +8084,9 @@ int ReadSMV(bufferstreamdata *stream){
           }
         }
         GetIndepVarIndices(propi->smv_object,propi->vars_indep,propi->nvars_indep,propi->vars_indep_index);
+#ifdef pp_EVAC
         GetEvacIndices(propi->smv_object,propi->fvars_evac_index,&propi->nvars_evac);
+#endif
 
       }
       propi->ntextures=ntextures_local;
@@ -11082,7 +11054,9 @@ typedef struct {
 
   //RemoveDupBlockages();
   InitCullGeom(cullgeom);
+#ifdef pp_EVAC
   InitEvacProp();
+#endif
 
   UpdateINIList();
 
@@ -12106,6 +12080,7 @@ int ReadIni2(char *inifile, int localfile){
       InitCircle(2 * device_sphere_segments, &object_circ);
       continue;
     }
+#ifdef pp_EVAC
     if(MatchINI(buffer, "SHOWEVACSLICES") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i %i", &show_evac_slices, &constant_evac_coloring, &show_evac_colorbar);
@@ -12117,6 +12092,7 @@ int ReadIni2(char *inifile, int localfile){
       UpdateEvacParms();
       continue;
     }
+#endif
     if(MatchINI(buffer, "DIRECTIONCOLOR") == 1){
       float *dc;
 
@@ -12126,7 +12102,9 @@ int ReadIni2(char *inifile, int localfile){
       dc[3] = 1.0;
       direction_color_ptr = GetColorPtr(direction_color);
       UpdateSliceMenuShow();
+#ifdef pp_EVAC
       UpdateEvacParms();
+#endif
       continue;
     }
 
@@ -13294,11 +13272,13 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(visSensorNorm);
       continue;
     }
+#ifdef pp_EVAC
     if(MatchINI(buffer, "AVATAREVAC") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i ", &iavatar_evac);
       continue;
     }
+#endif
     if(MatchINI(buffer, "SHOWVENTFLOW") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i %i %i %i", &visVentHFlow, &visventslab, &visventprofile, &visVentVFlow, &visVentMFlow);
@@ -13893,7 +13873,11 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(MatchINI(buffer, "PARTFAST")==1){
       fgets(buffer, 255, stream);
+#ifdef pp_EVAC
       if(current_script_command==NULL&&nevac==0){
+#else
+      if(current_script_command==NULL){
+#endif
         sscanf(buffer, "%i %i %i", &partfast, &part_multithread, &npartthread_ids);
 #ifndef pp_PART_MULTI
         part_multithread = 0;
@@ -15167,8 +15151,10 @@ void WriteIniLocal(FILE *fileout){
 
   fprintf(fileout, "\n ------------ local ini settings ------------\n\n");
 
+#ifdef pp_EVAC
   fprintf(fileout, "AVATAREVAC\n");
   fprintf(fileout, " %i\n", iavatar_evac);
+#endif
   fprintf(fileout, "DEVICEVECTORDIMENSIONS\n");
   fprintf(fileout, " %f %f %f %f\n", vector_baselength, vector_basediameter, vector_headlength, vector_headdiameter);
   fprintf(fileout, "DEVICEBOUNDS\n");
@@ -15369,7 +15355,7 @@ void WriteIniLocal(FILE *fileout){
   fprintf(fileout, "SHOWDEVICEVALS\n");
   fprintf(fileout, " %i %i %i %i %i %i %i %i %i\n", showdevice_val, showvdevice_val, devicetypes_index, colordevice_val, vectortype, viswindrose, showdevice_type,showdevice_unit,showdevice_id);
   fprintf(fileout, "SHOWHRRPLOT\n");
-  fprintf(fileout, " %i %i %f %f %i", glui_hrr, hoc_hrr, fuel_hoc, plot2d_size_factor, vis_hrr_plot);
+  fprintf(fileout, " %i %i %f %f %i\n", glui_hrr, hoc_hrr, fuel_hoc, plot2d_size_factor, vis_hrr_plot);
   fprintf(fileout, "SHOWMISSINGOBJECTS\n");
   fprintf(fileout, " %i\n", show_missing_objects);
   fprintf(fileout, "SHOWSLICEPLOT\n");
@@ -15712,7 +15698,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %i %i %i\n", colorsplit[6], colorsplit[7], colorsplit[8], colorsplit[9], colorsplit[10], colorsplit[11]);
   fprintf(fileout, " %f %f %f\n", splitvals[0], splitvals[1], splitvals[2]);
   fprintf(fileout,"CO2COLOR\n");
-  fprintf(fileout," %i %i %i", co2_color_int255[0],co2_color_int255[1],co2_color_int255[2]);
+  fprintf(fileout," %i %i %i\n", co2_color_int255[0],co2_color_int255[1],co2_color_int255[2]);
   fprintf(fileout, "DIRECTIONCOLOR\n");
   fprintf(fileout, " %f %f %f\n", direction_color[0], direction_color[1], direction_color[2]);
   fprintf(fileout, "FLIP\n");
@@ -16045,8 +16031,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", visCircularVents, circle_outline);
   fprintf(fileout, "SHOWDUMMYVENTS\n");
   fprintf(fileout, " %i\n", visDummyVents);
+#ifdef pp_EVAC
   fprintf(fileout, "SHOWEVACSLICES\n");
   fprintf(fileout, " %i %i %i\n", show_evac_slices, constant_evac_coloring, show_evac_colorbar);
+#endif
   fprintf(fileout, "SHOWFIRECUTOFF\n");
   fprintf(fileout, " %i\n", show_firecutoff);
   fprintf(fileout, "SHOWFLOOR\n");
