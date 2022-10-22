@@ -60,7 +60,7 @@ bin = .
 # Definition of the object variables
 
 obj = main.o menus.o IOscript.o IOshooter.o glui_objects.o glui_shooter.o\
-      csphere.o colortimebar.o smv_endian.o camera.o IOgeometry.o IOwui.o IOobjects.o\
+      csphere.o colortimebar.o camera.o IOgeometry.o IOwui.o IOobjects.o\
       IOtour.o glui_display.o glui_tour.o getdatacolors.o smokeview.o output.o renderimage.o\
       renderhtml.o isobox.o getdatabounds.o readsmv.o scontour2d.o glui_smoke.o glui_clip.o\
       glui_stereo.o glui_geometry.o glui_motion.o glui_bounds.o dmalloc.o assert.o\
