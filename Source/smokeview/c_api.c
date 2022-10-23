@@ -1540,7 +1540,6 @@ void loadparticles(const char *name){
     partdata *parti;
 
     parti = partinfo + i;
-    if(parti->evac==1)continue;
     ReadPart(parti->file,i,UNLOAD,&errorcode);
     count++;
   }
@@ -1548,7 +1547,6 @@ void loadparticles(const char *name){
     partdata *parti;
 
     parti = partinfo + i;
-    if(parti->evac==1)continue;
       ReadPart(parti->file,i,LOAD,&errorcode);
       if(name!=NULL&&strlen(name)>0){
         FREEMEMORY(loaded_file);
@@ -3024,13 +3022,6 @@ int set_showdummyvents(int v) {
   return 0;
 } // SHOWDUMMYVENTS
 
-int set_showevacslices(int a, int b, int c) {
-  show_evac_slices = a;
-  constant_evac_coloring = b;
-  show_evac_colorbar = c;
-  return 0;
-} // SHOWEVACSLICES
-
 int set_showfloor(int v) {
   visFloor = v;
   return 0;
@@ -3693,11 +3684,6 @@ int set_viewtourfrompath(int v) {
   viewtourfrompath = v;
   return 0;
 } // VIEWTOURFROMPATH
-
-int set_avatarevac(int v) {
-  iavatar_evac = v;
-  return 0;
-} // AVATAREVAC
 
 int set_devicevectordimensions(float baselength, float basediameter,
                                float headlength, float headdiameter) {

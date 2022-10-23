@@ -16,6 +16,7 @@ typedef struct _streamdata {
   char *file, *label;
   char **frameptrs, *filebuffer;
   int nframes, *load_status;
+  float load_time;
   size_t *framesizes, *frame_offsets, filesize;
 } streamdata;
 
