@@ -12,7 +12,6 @@
 #include GLUT_H
 #include <pthread.h>
 
-#include "smv_endian.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 #include "stdio_buffer.h"
