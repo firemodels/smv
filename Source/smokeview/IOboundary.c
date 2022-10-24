@@ -3638,8 +3638,6 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
         nn2 = nn1 + ncol;
 
         for(icol=0;icol<ncol-1;icol++){
-          unsigned char cvals[4];
-
 #ifdef pp_BOUNDVAL
           float vals[4];
 
@@ -3647,11 +3645,8 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
           vals[1]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow,   icol+1)], ttmin, ttmax);
           vals[2]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow+1, icol)],   ttmin, ttmax);
           vals[3]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow+1, icol+1)], ttmin, ttmax);
-          cvals[0]  = 255*CLAMP(vals[0], 0.0, 1.0);
-          cvals[1]  = 255*CLAMP(vals[1], 0.0, 1.0);
-          cvals[2]  = 255*CLAMP(vals[2], 0.0, 1.0);
-          cvals[3]  = 255*CLAMP(vals[3], 0.0, 1.0);
 #else
+          unsigned char cvals[4];
           cvals[0]  = cpatchval_iframe_copy[IJKBF(irow,   icol)];
           cvals[1]  = cpatchval_iframe_copy[IJKBF(irow,   icol+1)];
           cvals[2]  = cpatchval_iframe_copy[IJKBF(irow+1, icol)];
@@ -3753,8 +3748,6 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
         nn2 = nn1 + ncol;
 
         for(icol=0;icol<ncol-1;icol++){
-          unsigned char cvals[4];
-
 #ifdef pp_BOUNDVAL
           float vals[4];
 
@@ -3762,11 +3755,8 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
           vals[1]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow,   icol+1)], ttmin, ttmax);
           vals[2]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow+1, icol)],   ttmin, ttmax);
           vals[3]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow+1, icol+1)], ttmin, ttmax);
-          cvals[0]  = 255*CLAMP(vals[0], 0.0, 1.0);
-          cvals[1]  = 255*CLAMP(vals[1], 0.0, 1.0);
-          cvals[2]  = 255*CLAMP(vals[2], 0.0, 1.0);
-          cvals[3]  = 255*CLAMP(vals[3], 0.0, 1.0);
 #else
+          unsigned char cvals[4];
           cvals[0]  = cpatchval_iframe_copy[IJKBF(irow,   icol)];
           cvals[1]  = cpatchval_iframe_copy[IJKBF(irow,   icol+1)];
           cvals[2]  = cpatchval_iframe_copy[IJKBF(irow+1, icol)];
@@ -3864,8 +3854,6 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
         nn2 = nn1 + ncol;
 
         for(icol=0;icol<ncol-1;icol++){
-          unsigned char cvals[4];
-
 #ifdef pp_BOUNDVAL
           float vals[4];
 
@@ -3873,11 +3861,8 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
           vals[1]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow,   icol+1)], ttmin, ttmax);
           vals[2]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow+1, icol)],   ttmin, ttmax);
           vals[3]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow+1, icol+1)], ttmin, ttmax);
-          cvals[0]  = 255*CLAMP(vals[0], 0.0, 1.0);
-          cvals[1]  = 255*CLAMP(vals[1], 0.0, 1.0);
-          cvals[2]  = 255*CLAMP(vals[2], 0.0, 1.0);
-          cvals[3]  = 255*CLAMP(vals[3], 0.0, 1.0);
 #else
+          unsigned char cvals[4];
           cvals[0]  = cpatchval_iframe_copy[IJKBF(irow,   icol)];
           cvals[1]  = cpatchval_iframe_copy[IJKBF(irow,   icol+1)];
           cvals[2]  = cpatchval_iframe_copy[IJKBF(irow+1, icol)];
