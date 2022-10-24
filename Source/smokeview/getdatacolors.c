@@ -199,7 +199,7 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
               float *ttmin, float *ttmax,
               int nlevel,
               char **patchlabels, float *patchvalues, float *tvals256,
-              int *extreme_min, int *extreme_max
+              int *extreme_min, int *extreme_max, int flag
               ){
   int n;
   float factor, tval, range;
@@ -214,30 +214,32 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
   new_tmin = *ttmin;
   new_tmax = *ttmax;
 
-  CheckMemory;
-  range = new_tmax - new_tmin;
-  factor = 0.0f;
-  if(range!=0.0f)factor = (float)(255-2*extreme_data_offset)/range;
+  if(flag==1){
+    CheckMemory;
+    range = new_tmax-new_tmin;
+    factor = 0.0f;
+    if(range!=0.0f)factor = (float)(255-2*extreme_data_offset)/range;
 
-  t+=start;
-  it+=start;
-  for(n=start;n<nt;n++){
-    float val;
+    t += start;
+    it += start;
+    for(n = start; n<nt; n++){
+      float val;
 
-    val = *t++;
+      val = *t++;
 
-    if(val<new_tmin){
-      itt=0;
-      *extreme_min=1;
+      if(val<new_tmin){
+        itt = 0;
+        *extreme_min = 1;
+      }
+      else if(val>new_tmax){
+        itt = 255;
+        *extreme_max = 1;
+      }
+      else{
+        itt = extreme_data_offset+(int)(factor*(val-new_tmin));
+      }
+      *it++ = CLAMP(itt, colorbar_offset, 255-colorbar_offset);
     }
-    else if(val>new_tmax){
-      itt=255;
-      *extreme_max=1;
-    }
-    else{
-      itt=extreme_data_offset+(int)(factor*(val-new_tmin));
-    }
-    *it++=CLAMP(itt,colorbar_offset,255-colorbar_offset);
   }
   CheckMemory;
   range = new_tmax - new_tmin;
@@ -260,7 +262,7 @@ void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt, unsigned
 
 /* ------------------ UpdateAllBoundaryColors ------------------------ */
 
-void UpdateAllBoundaryColors(void){
+void UpdateAllBoundaryColors(int flag){
   int i, *list = NULL, nlist = 0;
 
   if(npatchinfo==0)return;
@@ -315,7 +317,7 @@ void UpdateAllBoundaryColors(void){
               GetBoundaryColors3(patchi, meshi->patchval, 0, npatchvals, meshi->cpatchval,
                                  &glui_patchmin, &glui_patchmax,
                                  nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
-                                 &patchi->extreme_min, &patchi->extreme_max);
+                                 &patchi->extreme_min, &patchi->extreme_max, flag);
             }
             break;
           case PATCH_GEOMETRY_BOUNDARY:
@@ -323,7 +325,7 @@ void UpdateAllBoundaryColors(void){
             GetBoundaryColors3(patchi, patchi->geom_vals, 0, patchi->geom_nvals, patchi->geom_ivals,
                                &valmin, &valmax,
                                nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
-                               &patchi->extreme_min, &patchi->extreme_max);
+                               &patchi->extreme_min, &patchi->extreme_max, flag);
             break;
           default:
             ASSERT(FFALSE);

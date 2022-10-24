@@ -274,7 +274,6 @@ void StreamClose(streamdata **streamptr){
 FILE_SIZE StreamRead(streamdata *stream, int frame_index){
   FILE *filestream;
   FILE_SIZE file_size;
-  float dtime;
 
   clock_t time_start = clock();
 
@@ -355,9 +354,7 @@ void StreamReadList(streamdata **streams, int nstreams){
   for(;;){ //continue until all frames are loaded
     for(frame_index = 0; frame_index<max_frames; frame_index++){
       int count_streams;
-      FILE_SIZE file_size;
 
-      file_size = 0;
       for(count_streams=0, stream_index = 0; stream_index<nstreams; stream_index++){
         streamdata *stream;
 
@@ -371,7 +368,7 @@ void StreamReadList(streamdata **streams, int nstreams){
         UNLOCK_STREAM;
         if(read_stream==1){
           count_streams++;
-          file_size+=StreamRead(stream, frame_index);
+          StreamRead(stream, frame_index);
         }
       }
       if(stream_pause==1)PauseTime(0.5);

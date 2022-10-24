@@ -452,7 +452,7 @@ EXTERNCPP void HideGluiBounds(void);
 EXTERNCPP void ShowGluiGeometry(void);
 EXTERNCPP void HideGluiGeometry(void);
 
-EXTERNCPP void UpdateAllBoundaryColors(void);
+EXTERNCPP void UpdateAllBoundaryColors(int flag);
 EXTERNCPP void UpdateBoundaryListIndex(int patchfilenum);
 EXTERNCPP void UpdateBoundaryListIndex2(char *label);
 EXTERNCPP void UpdatePlot3dListIndex(void);
@@ -1081,7 +1081,7 @@ EXTERNCPP void GetBoundaryColors3(patchdata *patchi, float *t, int start, int nt
               float *tmin, float *tmax,
               int nlevel,
               char **patchlabels, float *patchvalues, float *tvals256,
-              int *extreme_min, int *extreme_max);
+              int *extreme_min, int *extreme_max, int flag);
 EXTERNCPP void GetBoundaryLabels(
               float tmin, float tmax,
               char **labels, float *boundaryvaluespatch, float *tvals256, int nlevel);

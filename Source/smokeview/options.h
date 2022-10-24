@@ -30,6 +30,7 @@
 
 //#define pp_PARTVAL          // speed up part file color updating
 //#define pp_SLICEVAL         // speed up slice file color updating
+//#define pp_BOUNDVAL         // speed up boundary file color updating
 
 // streaming directives
 

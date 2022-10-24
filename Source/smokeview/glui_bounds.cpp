@@ -627,12 +627,21 @@ int bounds_dialog::set_valtype(char *label){
     cpp_boundsdata *boundi;
 
     boundi = all_bounds+i;
+#ifdef pp_BOUNDVAL
+    if(strcmp(boundi->label, label)==0&&boundi->set_valtype!=i){
+      boundi->set_valtype = i;
+      if(RADIO_set_valtype!=NULL)RADIO_set_valtype->set_int_val(i);
+      CB(BOUND_VAL_TYPE);
+      return 1;
+    }
+#else
     if(strcmp(boundi->label, label)==0){
       boundi->set_valtype = i;
       if(RADIO_set_valtype!=NULL)RADIO_set_valtype->set_int_val(i);
       CB(BOUND_VAL_TYPE);
       return 1;
     }
+#endif
   }
   return 0;
 }
@@ -2269,10 +2278,15 @@ extern "C" void PatchBoundsCPP_CB(int var){
   patchboundsCPP.CB(var);
   switch(var){
     case BOUND_VAL_TYPE:
+      break;
     case BOUND_VALMIN:
     case BOUND_VALMAX:
     case BOUND_SETVALMIN:
     case BOUND_SETVALMAX:
+#ifdef pp_BOUNDVAL
+      UpdateAllBoundaryColors(0);
+#endif
+      break;
     case BOUND_CHOPMIN:
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
@@ -2371,7 +2385,7 @@ extern "C" void PatchBoundsCPP_CB(int var){
         if(npatchloaded>0)printf("*** updating boundary file colors");
 #endif
         SetLoadedPatchBounds(NULL, 0);
-        UpdateAllBoundaryColors();
+        UpdateAllBoundaryColors(1);
       }
       else{
         PatchBoundsCPP_CB(BOUND_RELOAD_DATA);
@@ -4078,7 +4092,7 @@ extern "C" void BoundBoundCB(int var){
   case UPDATE_DATA_COLORS:
     GetGlobalPatchBounds();
     if(patchlabellist != NULL)Global2GLUIBoundaryBounds(patchlabellist[list_patch_index]);
-    UpdateAllBoundaryColors();
+    UpdateAllBoundaryColors(1);
     break;
   case FILE_RELOAD:
     if(npatchinfo>0){
