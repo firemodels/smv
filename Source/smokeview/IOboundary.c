@@ -2350,6 +2350,9 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
   if(patchi->finalize==1){
     UpdateBoundaryListIndex(patchfilenum);
 #define BOUND_UPDATE_COLORS       110
+#ifdef pp_BOUNDVAL
+#define BOUND_DONTUPDATE_COLORS   128
+#endif
 #define BOUND_COMPUTE_PERCENTILES 116
     cpp_boundsdata *bounds;
 
@@ -2358,7 +2361,11 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
       update_patchfile_bounds = 0;
       GetGlobalPatchBounds();
       SetLoadedPatchBounds(NULL, 0);
+#ifdef pp_BOUNDVAL
+      PatchBoundsCPP_CB(BOUND_DONTUPDATE_COLORS);
+#else
       PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
+#endif
     }
     else{
       bounds = GetBoundsData(BOUND_PATCH);
@@ -4045,13 +4052,17 @@ void DrawBoundaryThresholdCellcenter(const meshdata *meshi){
 void DrawBoundaryCellCenter(const meshdata *meshi){
   int n, nn, nn1;
   int nrow, ncol, irow, icol;
-  unsigned char *cpatchval1;
+#ifdef pp_BOUNDVAL
+  float *patchval_iframe_copy;
+  float *patchval_iframe;
+#else
+  unsigned char *cpatchval_iframe;
   unsigned char *cpatchval_iframe_copy;
+#endif
   float *patch_times;
   int *vis_boundaries;
   int *patchdir, *boundary_row, *boundary_col, *boundarytype;
   int *blockstart;
-  unsigned char *cpatchval_iframe;
   int iblock;
   blockagedata *bc;
   patchdata *patchi;
@@ -4092,17 +4103,28 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 #ifdef pp_BOUNDVAL
   label = patchi->label.shortlabel;
   GetMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
-  printf("ttmin=%f ttmax=%f\n", ttmin, ttmax);
+  if(ttmin>=ttmax){
+    ttmin = 0.0;
+    ttmax = 1.0;
+  }
 #endif
 
   switch(patchi->compression_type){
   case UNCOMPRESSED:
+#ifdef pp_BOUNDVAL
+    patchval_iframe = meshi->patchval_iframe;
+    if(patchval_iframe==NULL)return;
+#else
     cpatchval_iframe = meshi->cpatchval_iframe;
     if(cpatchval_iframe==NULL)return;
+#endif
     break;
   case COMPRESSED_ZLIB:
+#ifdef pp_BOUNDVAL
+#else
     ASSERT(meshi->cpatchval_iframe_zlib!=NULL);
     cpatchval_iframe = meshi->cpatchval_iframe_zlib;
+#endif
     break;
   default:
     ASSERT(FFALSE);
@@ -4135,7 +4157,11 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     if(drawit==1){
       nrow = boundary_row[n];
       ncol = boundary_col[n];
+#ifdef pp_BOUNDVAL
+      patchval_iframe_copy = patchval_iframe+blockstart[n];
+#else
       cpatchval_iframe_copy = cpatchval_iframe+blockstart[n];
+#endif
       for(irow = 0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
         float *xyzp1, *xyzp2;
@@ -4144,12 +4170,17 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         patchblank1 = meshi->patchblank+blockstart[n]+irow*ncol;
         nn1 = nn+irow*ncol;
         xyzp2 = xyzp1+3*ncol;
-        cpatchval1 = cpatchval_iframe_copy+irow*ncol;
         patchblank2 = patchblank1+ncol;
 
         for(icol = 0;icol<ncol-1;icol++){
-          if(rgb_patch[4*cpatchval1[0]+3]==0.0){
-            cpatchval1++;
+          unsigned char cval;
+
+#ifdef pp_BOUNDVAL
+          cval = CLAMP(255*(patchval_iframe_copy[irow*ncol+icol]-ttmin)/(ttmax-ttmin), 0, 255);
+#else
+          cval = cpatchval_iframe_copy[irow*ncol+icol];
+#endif
+          if(rgb_patch[4*cval+3]==0.0){
             patchblank1++;
             patchblank2++;
             xyzp1 += 3;
@@ -4158,13 +4189,13 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
           }
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
             if(patchventcolors==NULL){
-              color11 = rgb_patch+4*(*cpatchval1);
+              color11 = rgb_patch+4*cval;
               if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
                 if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
               }
             }
             else{
-              color11 = patchventcolors[(cpatchval1-cpatchval_iframe)];
+              color11 = patchventcolors[(irow*ncol+icol)];
             }
             glColor4fv(color11);
             glVertex3fv(xyzp1);
@@ -4175,7 +4206,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
             glVertex3fv(xyzp2+3);
             glVertex3fv(xyzp2);
           }
-          cpatchval1++;
           patchblank1++;
           patchblank2++;
           xyzp1 += 3;
@@ -4215,7 +4245,11 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     if(drawit==1){
       nrow = boundary_row[n];
       ncol = boundary_col[n];
+#ifdef pp_BOUNDVAL
+      patchval_iframe_copy = patchval_iframe+blockstart[n];
+#else
       cpatchval_iframe_copy = cpatchval_iframe+blockstart[n];
+#endif
       if(hidepatchsurface==0){
         glPushMatrix();
         switch(meshi->patchdir[n]){
@@ -4239,7 +4273,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         float *xyzp1, *xyzp2;
 
         xyzp1 = meshi->xyzpatch+3*blockstart[n]+3*irow*ncol;
-        cpatchval1 = cpatchval_iframe_copy+irow*ncol;
         patchblank1 = meshi->patchblank+blockstart[n]+irow*ncol;
         nn1 = nn+irow*ncol;
 
@@ -4247,8 +4280,14 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         patchblank2 = patchblank1+ncol;
 
         for(icol = 0;icol<ncol-1;icol++){
-          if(rgb_patch[4*cpatchval1[0]+3]==0.0){
-            cpatchval1++;
+          unsigned char cval;
+
+#ifdef pp_BOUNDVAL
+          cval = CLAMP(255*(patchval_iframe_copy[irow*ncol+icol]-ttmin)/(ttmax-ttmin), 0, 255);
+#else
+          cval = cpatchval_iframe_copy[irow*ncol+icol];
+#endif
+          if(rgb_patch[4*cval+3]==0.0){
             patchblank1++;
             patchblank2++;
             xyzp1 += 3;
@@ -4257,13 +4296,13 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
           }
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
             if(patchventcolors==NULL){
-              color11 = rgb_patch+4*(*cpatchval1);
+              color11 = rgb_patch+4*cval;
               if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
                 if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
               }
             }
             else{
-              color11 = patchventcolors[(cpatchval1-cpatchval_iframe)];
+              color11 = patchventcolors[irow*ncol+icol];
             }
             glColor4fv(color11);
             glVertex3fv(xyzp1);
@@ -4274,7 +4313,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
             glVertex3fv(xyzp2+3);
             glVertex3fv(xyzp2);
           }
-          cpatchval1++;
           patchblank1++;
           patchblank2++;
           xyzp1 += 3;
@@ -4313,7 +4351,11 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
     if(drawit==1){
       nrow = boundary_row[n];
       ncol = boundary_col[n];
+#ifdef pp_BOUNDVAL
+      patchval_iframe_copy = patchval_iframe+blockstart[n];
+#else
       cpatchval_iframe_copy = cpatchval_iframe+blockstart[n];
+#endif
       if(hidepatchsurface==0){
         glPushMatrix();
         switch(meshi->patchdir[n]){
@@ -4340,12 +4382,17 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
         patchblank1 = meshi->patchblank+blockstart[n]+irow*ncol;
         nn1 = nn+irow*ncol;
         xyzp2 = xyzp1+3*ncol;
-        cpatchval1 = cpatchval_iframe_copy+irow*ncol;
         patchblank2 = patchblank1+ncol;
 
         for(icol = 0;icol<ncol-1;icol++){
-          if(rgb_patch[4*cpatchval1[0]+3]==0.0){
-            cpatchval1++;
+          unsigned char cval;
+
+#ifdef pp_BOUNDVAL
+          cval = CLAMP(255*(patchval_iframe_copy[irow*ncol+icol]-ttmin)/(ttmax-ttmin), 0, 255);
+#else
+          cval = cpatchval_iframe_copy[irow*ncol+icol];
+#endif
+          if(rgb_patch[4*cval+3]==0.0){
             patchblank1++;
             patchblank2++;
             xyzp1 += 3;
@@ -4354,13 +4401,13 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
           }
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
             if(patchventcolors==NULL){
-              color11 = rgb_patch+4*(*cpatchval1);
+              color11 = rgb_patch+4*cval;
               if(vis_threshold==1&&vis_onlythreshold==0&&do_threshold==1){
                 if(meshi->thresholdtime[nn1+icol]>=0.0&&global_times[itimes]>meshi->thresholdtime[nn1+icol])color11 = &char_color[0];
               }
             }
             else{
-              color11 = patchventcolors[(cpatchval1-cpatchval_iframe)];
+              color11 = patchventcolors[irow*ncol+icol];
             }
             glColor4fv(color11);
             glVertex3fv(xyzp1);
@@ -4371,7 +4418,6 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
             glVertex3fv(xyzp2);
             glVertex3fv(xyzp2+3);
           }
-          cpatchval1++;
           patchblank1++;
           patchblank2++;
           xyzp1 += 3;
