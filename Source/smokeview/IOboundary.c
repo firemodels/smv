@@ -16,6 +16,9 @@
 #define BUILD_GEOM_OFFSETS 0
 #define GET_GEOM_OFFSETS  -1
 
+#define IJKBF(i,j) ((i)*ncol+(j))
+#define BOUNDCONVERT(val, valmin, valmax) ( (val-valmin)/(valmax-valmin) )
+
 /* ------------------ OutputBoundaryData ------------------------ */
 
 void OutputBoundaryData(char *csvfile, char *patchfile, meshdata *meshi, int first_time, float *csvtime){
@@ -3033,7 +3036,6 @@ void Global2GLUIBoundaryBounds(const char *key){
   }
 }
 
-#define BOUNDCONVERT(val, valmin, valmax) ( (val-valmin)/(valmax-valmin) )
 /* ------------------ DrawBoundaryTexture ------------------------ */
 
 void DrawBoundaryTexture(const meshdata *meshi){
@@ -3156,7 +3158,6 @@ void DrawBoundaryTexture(const meshdata *meshi){
         patchblank1 = patchblankcopy + irow*ncol;
         patchblank2 = patchblank1 + ncol;
         xyzp2 = xyzp1 + 3*ncol;
-#define IJKBF(i,j) ((i)*ncol+(j))
 
         for(icol=0;icol<ncol-1;icol++){
 #ifdef pp_BOUNDVAL
@@ -3527,8 +3528,13 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   float r11, r12, r21, r22;
   int n,nn,nn1,nn2;
   int nrow, ncol, irow, icol;
-  unsigned char *cpatchval1, *cpatchval2;
+#ifdef pp_BOUNDVAL
+  float *patchval_iframe_copy;
+  float *patchval_iframe;
+#else
   unsigned char *cpatchval_iframe_copy;
+  unsigned char *cpatchval_iframe;
+#endif
   float *xyzpatchcopy;
   int *patchblankcopy;
   float *patch_times;
@@ -3537,7 +3543,6 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   int *patchdir, *boundary_row, *boundary_col;
   int *blockstart;
   int *patchblank;
-  unsigned char *cpatchval_iframe;
   int iblock;
   blockagedata *bc;
   patchdata *patchi;
@@ -3559,12 +3564,20 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   patchi=patchinfo+meshi->patchfilenum;
   switch(patchi->compression_type){
   case UNCOMPRESSED:
+#ifdef pp_BOUNDVAL
+    ASSERT(meshi->patchval_iframe!=NULL);
+    patchval_iframe=meshi->patchval_iframe;
+#else
     ASSERT(meshi->cpatchval_iframe!=NULL);
     cpatchval_iframe=meshi->cpatchval_iframe;
+#endif
     break;
   case COMPRESSED_ZLIB:
+#ifdef pp_BOUNDVAL
+#else
     ASSERT(meshi->cpatchval_iframe_zlib!=NULL);
     cpatchval_iframe=meshi->cpatchval_iframe_zlib;
+#endif
     break;
   default:
     ASSERT(FFALSE);
@@ -3572,6 +3585,16 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
   patchi = patchinfo + meshi->patchfilenum;
 
   if(patch_times[0]>global_times[itimes]||patchi->display==0)return;
+
+#ifdef pp_BOUNDVAL
+  int set_valmin, set_valmax;
+  char *label;
+  float ttmin, ttmax;
+
+  label = patchi->label.shortlabel;
+  GetMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
+#endif
+
   if(cullfaces==1)glDisable(GL_CULL_FACE);
 
   /* if a contour boundary does not match a blockage face then draw "both sides" of boundary */
@@ -3598,8 +3621,11 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
       ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
+#ifdef pp_BOUNDVAL
+      patchval_iframe_copy = patchval_iframe + blockstart[n];
+#else
       cpatchval_iframe_copy = cpatchval_iframe + blockstart[n];
-
+#endif
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
         float *xyzp1, *xyzp2;
@@ -3608,17 +3634,41 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
         patchblank1 = patchblankcopy + irow*ncol;
         nn1 = nn + irow*ncol;
         xyzp2 = xyzp1 + 3*ncol;
-        cpatchval1 = cpatchval_iframe_copy + irow*ncol;
-        cpatchval2 = cpatchval1 + ncol;
         patchblank2 = patchblank1 + ncol;
         nn2 = nn1 + ncol;
 
         for(icol=0;icol<ncol-1;icol++){
+          unsigned char cvals[4];
+
+#ifdef pp_BOUNDVAL
+          float vals[4];
+
+          vals[0]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow,   icol)],   ttmin, ttmax);
+          vals[1]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow,   icol+1)], ttmin, ttmax);
+          vals[2]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow+1, icol)],   ttmin, ttmax);
+          vals[3]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow+1, icol+1)], ttmin, ttmax);
+          cvals[0]  = 255*CLAMP(vals[0], 0.0, 1.0);
+          cvals[1]  = 255*CLAMP(vals[1], 0.0, 1.0);
+          cvals[2]  = 255*CLAMP(vals[2], 0.0, 1.0);
+          cvals[3]  = 255*CLAMP(vals[3], 0.0, 1.0);
+#else
+          cvals[0]  = cpatchval_iframe_copy[IJKBF(irow,   icol)];
+          cvals[1]  = cpatchval_iframe_copy[IJKBF(irow,   icol+1)];
+          cvals[2]  = cpatchval_iframe_copy[IJKBF(irow+1, icol)];
+          cvals[3]  = cpatchval_iframe_copy[IJKBF(irow+1, icol+1)];
+#endif
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            r11 = (float)((unsigned char)(*cpatchval1))/255.0;
-            r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
-            r21 = (float)((unsigned char)(*cpatchval2))/255.0;
-            r22 = (float)((unsigned char)(*(cpatchval2+1)))/255.0;
+#ifdef pp_BOUNDVAL
+            r11 = vals[0];
+            r12 = vals[1];
+            r21 = vals[2];
+            r22 = vals[3];
+#else
+            r11 = (float)cvals[0]/255.0;
+            r12 = (float)cvals[1]/255.0;
+            r21 = (float)cvals[2]/255.0;
+            r22 = (float)cvals[3]/255.0;
+#endif
             color11=clear_color;
             color12=clear_color;
             color21=clear_color;
@@ -3655,7 +3705,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
              }
             }
           }
-          cpatchval1++; cpatchval2++; patchblank1++; patchblank2++;
+          patchblank1++; patchblank2++;
           xyzp1+=3;
           xyzp2+=3;
         }
@@ -3685,27 +3735,55 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
       ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
+#ifdef pp_BOUNDVAL
+      patchval_iframe_copy = patchval_iframe + blockstart[n];
+#else
       cpatchval_iframe_copy = cpatchval_iframe + blockstart[n];
+#endif
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
         float *xyzp1, *xyzp2;
 
         xyzp1 = xyzpatchcopy + 3*irow*ncol;
-        cpatchval1 = cpatchval_iframe_copy + irow*ncol;
         patchblank1 = patchblankcopy + irow*ncol;
         nn1 = nn + irow*ncol;
 
         xyzp2 = xyzp1 + 3*ncol;
-        cpatchval2 = cpatchval1 + ncol;
         patchblank2 = patchblank1 + ncol;
         nn2 = nn1 + ncol;
 
         for(icol=0;icol<ncol-1;icol++){
+          unsigned char cvals[4];
+
+#ifdef pp_BOUNDVAL
+          float vals[4];
+
+          vals[0]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow,   icol)],   ttmin, ttmax);
+          vals[1]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow,   icol+1)], ttmin, ttmax);
+          vals[2]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow+1, icol)],   ttmin, ttmax);
+          vals[3]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow+1, icol+1)], ttmin, ttmax);
+          cvals[0]  = 255*CLAMP(vals[0], 0.0, 1.0);
+          cvals[1]  = 255*CLAMP(vals[1], 0.0, 1.0);
+          cvals[2]  = 255*CLAMP(vals[2], 0.0, 1.0);
+          cvals[3]  = 255*CLAMP(vals[3], 0.0, 1.0);
+#else
+          cvals[0]  = cpatchval_iframe_copy[IJKBF(irow,   icol)];
+          cvals[1]  = cpatchval_iframe_copy[IJKBF(irow,   icol+1)];
+          cvals[2]  = cpatchval_iframe_copy[IJKBF(irow+1, icol)];
+          cvals[3]  = cpatchval_iframe_copy[IJKBF(irow+1, icol+1)];
+#endif
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            r11 = (float)((unsigned char)(*cpatchval1))/255.0;
-            r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
-            r21 = (float)((unsigned char)(*cpatchval2))/255.0;
-            r22 = (float)((unsigned char)(*(cpatchval2+1)))/255.0;
+#ifdef pp_BOUNDVAL
+            r11 = vals[0];
+            r12 = vals[1];
+            r21 = vals[2];
+            r22 = vals[3];
+#else
+            r11 = (float)cvals[0]/255.0;
+            r12 = (float)cvals[1]/255.0;
+            r21 = (float)cvals[2]/255.0;
+            r22 = (float)cvals[3]/255.0;
+#endif
             color11=clear_color;
             color12=clear_color;
             color21=clear_color;
@@ -3724,7 +3802,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
               glTexCoord1f(r21);glVertex3fv(xyzp2);
             }
             else{
-              if(ABS(*cpatchval1-*(cpatchval2+1))<ABS(*(cpatchval1+1)-*cpatchval2)){
+             if(ABS(r11-r22)<ABS(r12-r21)){
                 glTexCoord1f(r11);glColor4fv(color11);glVertex3fv(xyzp1);
                 glTexCoord1f(r12);glColor4fv(color12);glVertex3fv(xyzp1+3);
                 glTexCoord1f(r22);glColor4fv(color22);glVertex3fv(xyzp2+3);
@@ -3742,7 +3820,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
               }
             }
           }
-          cpatchval1++; cpatchval2++; patchblank1++; patchblank2++;
+          patchblank1++; patchblank2++;
           xyzp1+=3;
           xyzp2+=3;
         }
@@ -3769,7 +3847,11 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
       ncol=boundary_col[n];
       xyzpatchcopy = xyzpatch + 3*blockstart[n];
       patchblankcopy = patchblank + blockstart[n];
+#ifdef pp_BOUNDVAL
+      patchval_iframe_copy = patchval_iframe + blockstart[n];
+#else
       cpatchval_iframe_copy = cpatchval_iframe + blockstart[n];
+#endif
       for(irow=0;irow<nrow-1;irow++){
         int *patchblank1, *patchblank2;
         float *xyzp1, *xyzp2;
@@ -3778,17 +3860,41 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
         patchblank1 = patchblankcopy + irow*ncol;
         nn1 = nn + irow*ncol;
         xyzp2 = xyzp1 + 3*ncol;
-        cpatchval1 = cpatchval_iframe_copy + irow*ncol;
-        cpatchval2 = cpatchval1 + ncol;
         patchblank2 = patchblank1 + ncol;
         nn2 = nn1 + ncol;
 
         for(icol=0;icol<ncol-1;icol++){
+          unsigned char cvals[4];
+
+#ifdef pp_BOUNDVAL
+          float vals[4];
+
+          vals[0]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow,   icol)],   ttmin, ttmax);
+          vals[1]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow,   icol+1)], ttmin, ttmax);
+          vals[2]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow+1, icol)],   ttmin, ttmax);
+          vals[3]  = BOUNDCONVERT(patchval_iframe_copy[IJKBF(irow+1, icol+1)], ttmin, ttmax);
+          cvals[0]  = 255*CLAMP(vals[0], 0.0, 1.0);
+          cvals[1]  = 255*CLAMP(vals[1], 0.0, 1.0);
+          cvals[2]  = 255*CLAMP(vals[2], 0.0, 1.0);
+          cvals[3]  = 255*CLAMP(vals[3], 0.0, 1.0);
+#else
+          cvals[0]  = cpatchval_iframe_copy[IJKBF(irow,   icol)];
+          cvals[1]  = cpatchval_iframe_copy[IJKBF(irow,   icol+1)];
+          cvals[2]  = cpatchval_iframe_copy[IJKBF(irow+1, icol)];
+          cvals[3]  = cpatchval_iframe_copy[IJKBF(irow+1, icol+1)];
+#endif
           if(*patchblank1==GAS&&*patchblank2==GAS&&*(patchblank1+1)==GAS&&*(patchblank2+1)==GAS){
-            r11 = (float)((unsigned char)(*cpatchval1))/255.0;
-            r12 = (float)((unsigned char)(*(cpatchval1+1)))/255.0;
-            r21 = (float)((unsigned char)(*cpatchval2))/255.0;
-            r22 = (float)((unsigned char)(*(cpatchval2+1)))/255.0;
+#ifdef pp_BOUNDVAL
+            r11 = vals[0];
+            r12 = vals[1];
+            r21 = vals[2];
+            r22 = vals[3];
+#else
+            r11 = (float)cvals[0]/255.0;
+            r12 = (float)cvals[1]/255.0;
+            r21 = (float)cvals[2]/255.0;
+            r22 = (float)cvals[3]/255.0;
+#endif
             color11=clear_color;
             color12=clear_color;
             color21=clear_color;
@@ -3807,7 +3913,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
               glTexCoord1f(r22);glVertex3fv(xyzp2+3);
             }
             else{
-              if(ABS(*cpatchval1-*(cpatchval2+1))<ABS(*(cpatchval1+1)-*cpatchval2)){
+             if(ABS(r11-r22)<ABS(r12-r21)){
                 glTexCoord1f(r11);glColor4fv(color11);glVertex3fv(xyzp1);
                 glTexCoord1f(r22);glColor4fv(color22);glVertex3fv(xyzp2+3);
                 glTexCoord1f(r12);glColor4fv(color12);glVertex3fv(xyzp1+3);
@@ -3825,7 +3931,7 @@ void DrawBoundaryTextureThreshold(const meshdata *meshi){
               }
             }
           }
-          cpatchval1++; cpatchval2++; patchblank1++; patchblank2++;
+          patchblank1++; patchblank2++;
           xyzp1+=3;
           xyzp2+=3;
         }
