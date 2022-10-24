@@ -2316,10 +2316,17 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         update_patchfile_bounds = 1;
       }
     }
+#ifdef BOUNDVAL
+    GetBoundaryColors3(patchi, meshi->patchval, patchstart, npatchvals, meshi->cpatchval,
+                       &glui_patchmin, &glui_patchmax,
+                       nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
+                       &patchi->extreme_min, &patchi->extreme_max, 0);
+#else
     GetBoundaryColors3(patchi, meshi->patchval, patchstart, npatchvals, meshi->cpatchval,
       &glui_patchmin, &glui_patchmax,
       nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
       &patchi->extreme_min, &patchi->extreme_max, 1);
+#endif
     break;
   case COMPRESSED_ALLFRAMES:
     GetBoundaryLabels(
