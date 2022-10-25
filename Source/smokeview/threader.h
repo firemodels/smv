@@ -22,6 +22,9 @@
 #ifdef pp_STREAM
   #define LOCK_STREAM     pthread_mutex_lock(&mutexSTREAM);
   #define UNLOCK_STREAM   pthread_mutex_unlock(&mutexSTREAM);
+#else
+  #define LOCK_STREAM
+  #define UNLOCK_STREAM
 #endif
 
   #define LOCK_READALLGEOM     pthread_mutex_lock(&mutexREADALLGEOM);
@@ -60,10 +63,8 @@
 // blank out all preprocessing symbols if we arn't using threading
 #ifndef pp_THREAD
 
-#ifdef pp_STREAM
   #define LOCK_STREAM
   #define UNLOCK_STREAM
-#endif
 
   #define LOCK_READALLGEOM
   #define UNLOCK_READALLGEOM
