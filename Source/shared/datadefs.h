@@ -280,6 +280,12 @@
 #define IJKN(i,j,k,n) (IJKNODE(i,j,k)+(n)*nxyz)
 #endif
 
+#ifdef pp_PLOT3DVAL
+#ifndef GET_QDATA
+#define GET_QDATA(i,j,k,n) qdata[IJKN(i,j,k,n)]
+#endif
+#endif
+
 #ifndef GET_QVAL
 #define GET_QVAL(i,j,k,n) \
   if(qdata!=NULL){\

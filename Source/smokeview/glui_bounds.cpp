@@ -1932,6 +1932,10 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
     case BOUND_VALMAX:
     case BOUND_SETVALMIN:
     case BOUND_SETVALMAX:
+#ifdef pp_PLOT3DVAL
+      UpdateAllPlot3DColors(0);
+      break;
+#endif
     case BOUND_CHOPMIN:
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
@@ -1945,7 +1949,7 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
 #ifdef pp_RESEARCH_DEBUG
         printf("*** updating plot3d colors\n");
 #endif
-        UpdateAllPlot3DColors();
+        UpdateAllPlot3DColors(1);
       }
       else{
         Plot3DBoundsCPP_CB(BOUND_RELOAD_DATA);
@@ -5531,7 +5535,7 @@ extern "C" void Plot3DBoundCB(int var){
    break;
   case UPDATE_DATA_COLORS:
     Plot3DBoundCB(FILE_UPDATE);
-    UpdateAllPlot3DColors();
+    UpdateAllPlot3DColors(1);
     break;
   case FILE_RELOAD:
    Plot3DBoundCB(FILE_UPDATE);

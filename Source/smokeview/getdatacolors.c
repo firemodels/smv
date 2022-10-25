@@ -673,7 +673,7 @@ void GetZoneColors(const float *t, int nt, unsigned char *it,
 void GetPlot3DColors(int plot3dvar, float *ttmin, float *ttmax,
               int ndatalevel, int nlevel,
               char **labels,char **labelsiso,float *tlevels, float *tlevels256,
-              int *extreme_min, int *extreme_max
+              int *extreme_min, int *extreme_max, int flag
               ){
   int n;
   float dt, factor, tval;
@@ -690,43 +690,45 @@ void GetPlot3DColors(int plot3dvar, float *ttmin, float *ttmax,
 
   local_tmin = *ttmin;
   local_tmax = *ttmax;
+  tminorig = local_tmin;
+  tmaxorig = local_tmax;
 
-  range = local_tmax-local_tmin;
-  tminorig=local_tmin;
-  tmaxorig=local_tmax;
-  if(range!=0.0f){
-    factor = (float)(ndatalevel-2*extreme_data_offset)/range;
-  }
-  else{
-    factor = 0.0f;
-  }
+  if(flag==1){
+    range = local_tmax-local_tmin;
+    if(range!=0.0f){
+      factor = (float)(ndatalevel-2*extreme_data_offset)/range;
+    }
+    else{
+      factor = 0.0f;
+    }
 
-  for(i=0;i<nplot3dinfo;i++){
-    p = plot3dinfo+i;
-    if(p->loaded==0||p->display==0)continue;
-    meshi = meshinfo+p->blocknumber;
-    ntotal=(meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
+    for(i = 0; i<nplot3dinfo; i++){
+      p = plot3dinfo+i;
+      if(p->loaded==0||p->display==0)continue;
+      meshi = meshinfo+p->blocknumber;
+      ntotal = (meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
 
-    if(meshi->qdata!=NULL){
-      q=meshi->qdata+plot3dvar*ntotal;
-      iq=meshi->iqdata+plot3dvar*ntotal;
-      for(n=0;n<ntotal;n++){
-        float val;
+      if(meshi->qdata!=NULL){
+        q  = meshi->qdata  + plot3dvar*ntotal;
+        iq = meshi->iqdata + plot3dvar*ntotal;
+        for(n = 0; n<ntotal; n++){
+          float val;
 
-        val=*q;
-        if(val<local_tmin){
-          itt=0;
-          *extreme_min=1;
+          val = *q;
+          if(val<local_tmin){
+            itt = 0;
+            *extreme_min = 1;
+          }
+          else if(val>local_tmax){
+            itt = ndatalevel-1;
+            *extreme_max = 1;
+          }
+          else{
+            itt = extreme_data_offset+(int)(factor*(val-local_tmin));
+          }
+          *iq++ = CLAMP(itt, colorbar_offset, ndatalevel-1-colorbar_offset);
+          q++;
         }
-        else if(val>local_tmax){
-          itt=ndatalevel-1;
-          *extreme_max=1;
-        }
-        else{
-          itt=extreme_data_offset+(int)(factor*(val-local_tmin));
-        }
-        *iq++=CLAMP(itt,colorbar_offset,ndatalevel-1-colorbar_offset);
-        q++;
       }
     }
   }
@@ -752,23 +754,25 @@ void GetPlot3DColors(int plot3dvar, float *ttmin, float *ttmax,
     tlevels[n]=tminorig+(float)n*dtorig;
   }
 
-  for(i=0;i<nplot3dinfo;i++){
-    p = plot3dinfo+i;
-    if(p->loaded==0||p->display==0)continue;
-    meshi = meshinfo+p->blocknumber;
-    ntotal=(meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
+  if(flag==1){
+    for(i = 0; i<nplot3dinfo; i++){
+      p = plot3dinfo+i;
+      if(p->loaded==0||p->display==0)continue;
+      meshi = meshinfo+p->blocknumber;
+      ntotal = (meshi->ibar+1)*(meshi->jbar+1)*(meshi->kbar+1);
 
-    if(meshi->qdata==NULL){
-      float qval, *qvals;
+      if(meshi->qdata==NULL){
+        float qval, *qvals;
 
-      qvals=p3levels256[plot3dvar];
-      iq=meshi->iqdata+plot3dvar*ntotal;
-      for(n=0;n<ntotal;n++){
-        qval=qvals[*iq];
-        itt=(int)(factor*(qval-local_tmin));
-        if(itt<0)itt=0;
-        if(itt>ndatalevel-1)itt=ndatalevel-1;
-        *iq++=itt;
+        qvals = p3levels256[plot3dvar];
+        iq = meshi->iqdata+plot3dvar*ntotal;
+        for(n = 0; n<ntotal; n++){
+          qval = qvals[*iq];
+          itt = (int)(factor*(qval-local_tmin));
+          if(itt<0)itt = 0;
+          if(itt>ndatalevel-1)itt = ndatalevel-1;
+          *iq++ = itt;
+        }
       }
     }
   }
@@ -776,7 +780,7 @@ void GetPlot3DColors(int plot3dvar, float *ttmin, float *ttmax,
 
 /* ------------------ UpdateAllPlot3DColors ------------------------ */
 
-void UpdateAllPlot3DColors(void){
+void UpdateAllPlot3DColors(int flag){
   int i, updated=0;
 
   for(i = 0; i < nplot3dinfo; i++){
@@ -785,11 +789,11 @@ void UpdateAllPlot3DColors(void){
 
     plot3di = plot3dinfo + i;
     if(plot3di->loaded == 1){
-      UpdatePlot3DColors(i, &errorcode);
+      UpdatePlot3DColors(plot3di, flag, &errorcode);
       updated = 1;
     }
   }
-  if(updated==1){
+  if(updated==1&&flag==1){
     UpdatePlotSlice(XDIR);
     UpdatePlotSlice(YDIR);
     UpdatePlotSlice(ZDIR);
