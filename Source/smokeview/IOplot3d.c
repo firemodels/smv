@@ -513,16 +513,21 @@ void ReadPlot3D(char *file, int ifile, int flag, int *errorcode){
 void DrawPlot3dTexture(meshdata *meshi){
   int i,j,k;
   int colorindex;
-  float *color1t, *color2t;
+#ifndef pp_PLOT3DVAL
+  float *color1t;
+  float *color2t;
+#endif
   float dx, dy, dz;
   int plotx, ploty, plotz;
   int visx, visy, visz;
   float *xplt, *yplt, *zplt;
   int ibar, jbar, kbar;
   isosurface *currentsurfptr,*currentsurf2ptr;
-  contour *plot3dcontour1ptr, *plot3dcontour2ptr, *plot3dcontour3ptr;
   unsigned char *yzcolorbase, *xzcolorbase, *xycolorbase;
+#ifndef pp_PLOT3DVAL
+  contour *plot3dcontour1ptr, *plot3dcontour2ptr, *plot3dcontour3ptr;
   float *yzcolortbase, *xzcolortbase, *xycolortbase;
+#endif
 
   float *dx_xy, *dy_xy, *dz_xy;
   float *dx_xz, *dy_xz, *dz_xz;
@@ -533,20 +538,26 @@ void DrawPlot3dTexture(meshdata *meshi){
   int nx, ny, nz,nxy;
   char *c_iblank_x, *c_iblank_y, *c_iblank_z, *iblank;
   float *vector_color;
+#ifdef pp_PLOT3DVAL
   float *qdata;
   int nxyz;
   int num;
+#endif
 
   plotx = meshi->iplotx_all[iplotx_all];
   ploty = meshi->iploty_all[iploty_all];
   plotz = meshi->iplotz_all[iplotz_all];
+#ifdef pp_PLOT3DVAL
   qdata = meshi->qdata;
+#endif
 
+#ifdef pp_PLOT3DVAL
   GetMinMaxAll(BOUND_PLOT3D, setp3min_all, p3min_all, setp3max_all, p3max_all, &num);
   float ttmin, ttmax;
 
   ttmin = p3min_all[plotn-1];
   ttmax = p3max_all[plotn-1];
+#endif
 
   visx = visx_all;
   visy = visy_all;
@@ -567,19 +578,25 @@ void DrawPlot3dTexture(meshdata *meshi){
   ny = jbar+1;
   nz = kbar+1;
   nxy = nx*ny;
+#ifdef pp_PLOT3DVAL
   nxyz = nx*ny*nz;
+#endif
 
   currentsurfptr=&meshi->currentsurf;
   currentsurf2ptr=&meshi->currentsurf2;
+#ifndef pp_PLOT3DVAL
   plot3dcontour1ptr=&meshi->plot3dcontour1;
   plot3dcontour2ptr=&meshi->plot3dcontour2;
   plot3dcontour3ptr=&meshi->plot3dcontour3;
+#endif
   yzcolorbase=meshi->yzcolorbase;
   xzcolorbase=meshi->xzcolorbase;
   xycolorbase=meshi->xycolorbase;
+#ifndef pp_PLOT3DVAL
   yzcolortbase=meshi->yzcolortbase;
   xzcolortbase=meshi->xzcolortbase;
   xycolortbase=meshi->xycolortbase;
+#endif
   dx_xy=meshi->dx_xy;
   dx_xz=meshi->dx_xz;
   dx_yz=meshi->dx_yz;
@@ -783,8 +800,10 @@ void DrawPlot3dTexture(meshdata *meshi){
        ){
       glBegin(GL_TRIANGLES);
       for(i=0; i<ibar; i++){
+#ifndef pp_PLOT3DVAL
         color1t=xzcolortbase + i*nz;
         color2t=color1t+nz;
+#endif
         for(k=0; k<kbar; k++){
 #ifdef pp_PLOT3DVAL
           float val[4];
@@ -930,8 +949,10 @@ void DrawPlot3dTexture(meshdata *meshi){
       }
       glBegin(GL_TRIANGLES);
       for(i=0; i<ibar; i++){
+#ifndef pp_PLOT3DVAL
         color1t=xycolortbase + i*ny;
         color2t=color1t+ny;
+#endif
         for(j=0; j<jbar; j++){
 #ifdef pp_PLOT3DVAL
           float val[4];
