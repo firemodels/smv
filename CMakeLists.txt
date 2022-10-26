@@ -32,7 +32,7 @@ add_subdirectory(Source/png-1.6.21)
 # endif ()
 
 add_executable(smokeview Source/smokeview/main.c Source/smokeview/menus.c Source/smokeview/IOscript.c Source/smokeview/IOshooter.c Source/smokeview/glui_objects.cpp Source/smokeview/glui_shooter.cpp
-    Source/shared/csphere.c Source/smokeview/colortimebar.c Source/shared/smv_endian.c Source/smokeview/camera.c Source/smokeview/IOgeometry.c Source/smokeview/IOwui.c Source/smokeview/IOobjects.c
+    Source/shared/csphere.c Source/smokeview/colortimebar.c Source/smokeview/camera.c Source/smokeview/IOgeometry.c Source/smokeview/IOwui.c Source/smokeview/IOobjects.c
     Source/smokeview/IOtour.c Source/smokeview/glui_display.cpp Source/smokeview/glui_tour.cpp Source/smokeview/getdatacolors.c Source/smokeview/smokeview.c Source/smokeview/output.c Source/smokeview/renderimage.c
     Source/smokeview/renderhtml.c Source/shared/isobox.c Source/smokeview/getdatabounds.c Source/smokeview/readsmv.c Source/smokeview/scontour2d.c Source/smokeview/glui_smoke.cpp Source/smokeview/glui_clip.cpp
     Source/smokeview/glui_stereo.cpp Source/smokeview/glui_geometry.cpp Source/smokeview/glui_motion.cpp Source/smokeview/glui_bounds.cpp Source/shared/dmalloc.c Source/shared/assert.c
