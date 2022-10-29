@@ -6553,7 +6553,9 @@ void DrawVolSliceLines(const slicedata *sd){
   char *iblank_embed;
   int plotx, ploty, plotz;
   int draw_x_slice = 0, draw_y_slice = 0, draw_z_slice = 0;
+#ifndef pp_SLICEVAL
   int n;
+#endif
   float *slice_color, *slice_color13, *slice_color31, *slice_color33;
 
   meshdata *meshi;
@@ -6561,6 +6563,16 @@ void DrawVolSliceLines(const slicedata *sd){
   if(sd->volslice==1&&visx_all==0&&visy_all==0&&visz_all==0)return;
   meshi = meshinfo+sd->blocknumber;
 
+#ifdef pp_SLICEVAL
+  float valmin, valmax;
+
+  valmin = sd->valmin;
+  valmax = sd->valmax;
+  if(valmin>=valmax){
+    valmin = 0.0;
+    valmax = 1.0;
+  }
+#endif
   xplt = meshi->xplt;
   yplt = meshi->yplt;
   zplt = meshi->zplt;
@@ -6606,8 +6618,10 @@ void DrawVolSliceLines(const slicedata *sd){
     for(j = sd->js1; j<maxj; j += slice_skipy){
       int j2;
 
+#ifndef pp_SLICEVAL
       n = (j - sd->js1)*sd->nslicek - slice_skipy;
       n += (plotx - sd->is1)*sd->nslicej*sd->nslicek;
+#endif
       j2 = MIN(j+slice_skipy, sd->js2);
       yy1 = yplt[j];
       y3 = yplt[j2];
@@ -6616,7 +6630,9 @@ void DrawVolSliceLines(const slicedata *sd){
       for(k = sd->ks1; k<sd->ks2; k += slice_skipz){
         int k2, in_gas, in_solid;
 
+#ifndef pp_SLICEVAL
         n += slice_skipz;
+#endif
 
         in_gas=1;
         if(c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)in_gas=0;
@@ -6644,10 +6660,23 @@ void DrawVolSliceLines(const slicedata *sd){
           slice_color33 = foregroundcolor;
         }
         else{
+#ifdef pp_SLICEVAL
+          int val[4];
+
+          val[0] = SLICECOLOR(IJK_SLICE(plotx, j,  k));
+          val[1] = SLICECOLOR(IJK_SLICE(plotx, j,  k2));
+          val[2] = SLICECOLOR(IJK_SLICE(plotx, j2, k2));
+          val[3] = SLICECOLOR(IJK_SLICE(plotx, j2, k));
+          slice_color   = rgb_slice + 4 * val[0];
+          slice_color13 = rgb_slice + 4 * val[1];
+          slice_color33 = rgb_slice + 4 * val[2];
+          slice_color31 = rgb_slice + 4 * val[3];
+#else
           slice_color   = rgb_slice + 4 * sd->iqsliceframe[n];
           slice_color13 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEX(0,1)];
           slice_color33 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEX(1,1)];
           slice_color31 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEX(1,0)];
+#endif
         }
         z1 = zplt[k];
         z3 = zplt[k2];
@@ -6697,8 +6726,10 @@ void DrawVolSliceLines(const slicedata *sd){
       int kmin, kmax;
       int i2;
 
+#ifndef pp_SLICEVAL
       n = (i - sd->is1)*sd->nslicej*sd->nslicek - slice_skipx;
       n += (ploty - sd->js1)*sd->nslicek;
+#endif
 
       i2 = MIN(i+slice_skipx, iend);
 
@@ -6711,7 +6742,9 @@ void DrawVolSliceLines(const slicedata *sd){
         int k2;
         int in_solid, in_gas;
 
+#ifndef pp_SLICEVAL
         n += slice_skipz;
+#endif
 
         in_gas = 1;
         if(c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]!=GASGAS)in_gas = 0;
@@ -6728,7 +6761,9 @@ void DrawVolSliceLines(const slicedata *sd){
         z1 = zplt[k];
         z3 = zplt[k2];
 
+#ifndef pp_SLICEVAL
 #define IND_SLICEY(II,KK) II*sd->nslicej*sd->nslicek + KK*slice_skipz
+#endif
 
         if(in_gas==1&&show_slice_shaded[IN_GAS_GLUI]==1){
           slice_color   = foregroundcolor;
@@ -6743,10 +6778,23 @@ void DrawVolSliceLines(const slicedata *sd){
           slice_color33 = foregroundcolor;
         }
         else{
+#ifdef pp_SLICEVAL
+          int val[4];
+
+          val[0] = SLICECOLOR(IJK_SLICE(i,  ploty,  k));
+          val[1] = SLICECOLOR(IJK_SLICE(i,  ploty,  k2));
+          val[2] = SLICECOLOR(IJK_SLICE(i2, ploty,  k2));
+          val[3] = SLICECOLOR(IJK_SLICE(i2, ploty,  k));
+          slice_color   = rgb_slice + 4 * val[0];
+          slice_color13 = rgb_slice + 4 * val[1];
+          slice_color33 = rgb_slice + 4 * val[2];
+          slice_color31 = rgb_slice + 4 * val[3];
+#else
           slice_color   = rgb_slice + 4 * sd->iqsliceframe[n];
           slice_color13 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEY(0,1)];
           slice_color33 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEY(1,1)];
           slice_color31 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEY(1,0)];
+#endif
         }
         /*
         n+1 (x1,z3)   n2+1 (x3,z3)
@@ -6791,8 +6839,10 @@ void DrawVolSliceLines(const slicedata *sd){
       int i2;
       int in_gas, in_solid;
 
+#ifndef pp_SLICEVAL
       n = (i - sd->is1)*sd->nslicej*sd->nslicek - slice_skipx*sd->nslicek;
       n += (plotz - sd->ks1);
+#endif
 
       i2 = MIN(i+slice_skipx, sd->is2);
 
@@ -6802,7 +6852,9 @@ void DrawVolSliceLines(const slicedata *sd){
       for(j = sd->js1; j<sd->js2; j += slice_skipy){
         int j2;
 
+#ifndef pp_SLICEVAL
         n += slice_skipy*sd->nslicek;
+#endif
         j2 = MIN(j+slice_skipy, sd->js2);
         in_gas = 1;
         if(c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]!=GASGAS)in_gas = 0;
@@ -6832,10 +6884,23 @@ void DrawVolSliceLines(const slicedata *sd){
           slice_color33 = foregroundcolor;
         }
         else{
+#ifdef pp_SLICEVAL
+          int val[4];
+
+          val[0] = SLICECOLOR(IJK_SLICE(i,  j,  plotz));
+          val[1] = SLICECOLOR(IJK_SLICE(i,  j2, plotz));
+          val[2] = SLICECOLOR(IJK_SLICE(i2, j2, plotz));
+          val[3] = SLICECOLOR(IJK_SLICE(i2, j,  plotz));
+          slice_color   = rgb_slice + 4 * val[0];
+          slice_color13 = rgb_slice + 4 * val[1];
+          slice_color33 = rgb_slice + 4 * val[2];
+          slice_color31 = rgb_slice + 4 * val[3];
+#else
           slice_color   = rgb_slice + 4 * sd->iqsliceframe[n];
           slice_color13 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEY(0,1)];
           slice_color33 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEY(1,1)];
           slice_color31 = rgb_slice + 4 * sd->iqsliceframe[n+IND_SLICEY(1,0)];
+#endif
         }
         /*
         n+nk (x1,y3)   n2+nk (x3,y3)
@@ -6880,7 +6945,9 @@ void DrawVolSliceVerts(const slicedata *sd){
   char *iblank_embed;
   int plotx, ploty, plotz;
   int draw_x_slice = 0, draw_y_slice = 0, draw_z_slice = 0;
+#ifndef pp_SLICEVAL
   int n;
+#endif
   float *slice_color, *slice_color13, *slice_color31, *slice_color33;
 
   meshdata *meshi;
@@ -6888,6 +6955,16 @@ void DrawVolSliceVerts(const slicedata *sd){
   if(sd->volslice==1&&visx_all==0&&visy_all==0&&visz_all==0)return;
   meshi = meshinfo+sd->blocknumber;
 
+#ifdef pp_SLICEVAL
+  float valmin, valmax;
+
+  valmin = sd->valmin;
+  valmax = sd->valmax;
+  if(valmin>=valmax){
+    valmin = 0.0;
+    valmax = 1.0;
+  }
+#endif
   xplt = meshi->xplt;
   yplt = meshi->yplt;
   zplt = meshi->zplt;
@@ -6933,8 +7010,10 @@ void DrawVolSliceVerts(const slicedata *sd){
     for(j = sd->js1; j<maxj; j += slice_skipy){
       int j2;
 
+#ifndef pp_SLICEVAL
       n = (j-sd->js1)*sd->nslicek-slice_skipy;
       n += (plotx-sd->is1)*sd->nslicej*sd->nslicek;
+#endif
       j2 = MIN(j+slice_skipy, sd->js2);
       yy1 = yplt[j];
       y3 = yplt[j2];
@@ -6943,7 +7022,9 @@ void DrawVolSliceVerts(const slicedata *sd){
       for(k = sd->ks1; k<sd->ks2; k += slice_skipz){
         int k2, in_gas, in_solid;
 
+#ifndef pp_SLICEVAL
         n += slice_skipz;
+#endif
 
         in_gas = 1;
         if(c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)in_gas = 0;
@@ -6970,10 +7051,23 @@ void DrawVolSliceVerts(const slicedata *sd){
           slice_color33 = foregroundcolor;
         }
         else{
+#ifdef pp_SLICEVAL
+          int val[4];
+
+          val[0] = SLICECOLOR(IJK_SLICE(plotx,  j,   k));
+          val[1] = SLICECOLOR(IJK_SLICE(plotx,  j,   k2));
+          val[2] = SLICECOLOR(IJK_SLICE(plotx,  j2,  k2));
+          val[3] = SLICECOLOR(IJK_SLICE(plotx,  j2,  k));
+          slice_color   = rgb_slice + 4 * val[0];
+          slice_color13 = rgb_slice + 4 * val[1];
+          slice_color33 = rgb_slice + 4 * val[2];
+          slice_color31 = rgb_slice + 4 * val[3];
+#else
           slice_color = rgb_slice+4*sd->iqsliceframe[n];
           slice_color13 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEX(0, 1)];
           slice_color33 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEX(1, 1)];
           slice_color31 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEX(1, 0)];
+#endif
         }
         z1 = zplt[k];
         z3 = zplt[k2];
@@ -7015,8 +7109,10 @@ void DrawVolSliceVerts(const slicedata *sd){
       int kmin, kmax;
       int i2;
 
+#ifndef pp_SLICEVAL
       n = (i-sd->is1)*sd->nslicej*sd->nslicek-slice_skipx;
       n += (ploty-sd->js1)*sd->nslicek;
+#endif
 
       i2 = MIN(i+slice_skipx, iend);
 
@@ -7029,7 +7125,9 @@ void DrawVolSliceVerts(const slicedata *sd){
         int k2;
         int in_solid, in_gas;
 
+#ifndef pp_SLICEVAL
         n += slice_skipz;
+#endif
 
         in_gas = 1;
         if(c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]!=GASGAS)in_gas = 0;
@@ -7059,10 +7157,23 @@ void DrawVolSliceVerts(const slicedata *sd){
           slice_color33 = foregroundcolor;
         }
         else{
+#ifdef pp_SLICEVAL
+          int val[4];
+
+          val[0] = SLICECOLOR(IJK_SLICE(i,  ploty,  k));
+          val[1] = SLICECOLOR(IJK_SLICE(i,  ploty,  k2));
+          val[2] = SLICECOLOR(IJK_SLICE(i2, ploty,  k2));
+          val[3] = SLICECOLOR(IJK_SLICE(i2, ploty,  k));
+          slice_color   = rgb_slice + 4 * val[0];
+          slice_color13 = rgb_slice + 4 * val[1];
+          slice_color33 = rgb_slice + 4 * val[2];
+          slice_color31 = rgb_slice + 4 * val[3];
+#else
           slice_color = rgb_slice+4*sd->iqsliceframe[n];
           slice_color13 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEY(0, 1)];
           slice_color33 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEY(1, 1)];
           slice_color31 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEY(1, 0)];
+#endif
         }
         /*
         n+1 (x1,z3)   n2+1 (x3,z3)
@@ -7099,8 +7210,10 @@ void DrawVolSliceVerts(const slicedata *sd){
       int i2;
       int in_gas, in_solid;
 
+#ifndef pp_SLICEVAL
       n = (i-sd->is1)*sd->nslicej*sd->nslicek-slice_skipx*sd->nslicek;
       n += (plotz-sd->ks1);
+#endif
 
       i2 = MIN(i+slice_skipx, sd->is2);
 
@@ -7110,7 +7223,9 @@ void DrawVolSliceVerts(const slicedata *sd){
       for(j = sd->js1; j<sd->js2; j += slice_skipy){
         int j2;
 
+#ifndef pp_SLICEVAL
         n += slice_skipy*sd->nslicek;
+#endif
         j2 = MIN(j+slice_skipy, sd->js2);
         in_gas = 1;
         if(c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)]!=GASGAS)in_gas = 0;
@@ -7138,10 +7253,23 @@ void DrawVolSliceVerts(const slicedata *sd){
           slice_color33 = foregroundcolor;
         }
         else{
+#ifdef pp_SLICEVAL
+          int val[4];
+
+          val[0] = SLICECOLOR(IJK_SLICE(i,  j,  plotz));
+          val[1] = SLICECOLOR(IJK_SLICE(i,  j2, plotz));
+          val[2] = SLICECOLOR(IJK_SLICE(i2, j2, plotz));
+          val[3] = SLICECOLOR(IJK_SLICE(i2, j,  plotz));
+          slice_color   = rgb_slice + 4 * val[0];
+          slice_color13 = rgb_slice + 4 * val[1];
+          slice_color33 = rgb_slice + 4 * val[2];
+          slice_color31 = rgb_slice + 4 * val[3];
+#else
           slice_color = rgb_slice+4*sd->iqsliceframe[n];
           slice_color13 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEY(0, 1)];
           slice_color33 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEY(1, 1)];
           slice_color31 = rgb_slice+4*sd->iqsliceframe[n+IND_SLICEY(1, 0)];
+#endif
         }
         /*
         n+nk (x1,y3)   n2+nk (x3,y3)
