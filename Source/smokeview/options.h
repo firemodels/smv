@@ -38,6 +38,17 @@
 //#define pp_SMOKE3DSTREAM      // stream smoke3d data
 //#define pp_PARTSTREAM         // stream particle data
 
+#ifdef pp_SLICEVAL
+#define pp_SLICEBOUNDVAL
+#endif
+
+#ifdef pp_BOUNDVAL
+#ifndef pp_SLICEBOUNDVAL
+#define pp_SLICEBOUNDVAL
+#endif
+#endif
+
+
 // turn on pp_STREAM if streaming is on for any file type
 
 #ifdef pp_SMOKE3DSTREAM

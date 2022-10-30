@@ -183,6 +183,10 @@ void UpdateFrameNumber(int changetime){
         patchi->geom_itime = patchi->geom_timeslist[itimes];
         patchi->geom_ival_static = patchi->geom_ivals_static[patchi->geom_itime];
         patchi->geom_ival_dynamic = patchi->geom_ivals_dynamic[patchi->geom_itime];
+#ifdef pp_SLICEBOUNDVAL
+        patchi->geom_val_static  = patchi->geom_vals_static[patchi->geom_itime];
+        patchi->geom_val_dynamic = patchi->geom_vals_dynamic[patchi->geom_itime];
+#endif
         patchi->geom_nval_static = patchi->geom_nstatics[patchi->geom_itime];
         patchi->geom_nval_dynamic = patchi->geom_ndynamics[patchi->geom_itime];
       }

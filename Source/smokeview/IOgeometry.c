@@ -3579,45 +3579,6 @@ void UpdatePatchGeomTriangles(patchdata *patchi, int geom_type){
   UpdateGeomTriangles(geomi, geom_type);
 }
 
-/* ------------------ AverageGeomColors ------------------------ */
-
-void AverageGeomColors(geomlistdata *geomlisti, int itriangle, unsigned char *ivals, int *color_indices){
-  int i;
-  tridata *trianglei;
-
-  trianglei = geomlisti->triangles+itriangle;
-  for(i = 0; i<3; i++){
-    vertdata *verti;
-
-    verti = trianglei->verts[i];
-    if(verti->ntriangles>0){
-      int j, color_index;
-      float total_area;
-
-      color_index = 0;
-      total_area = 0.0;
-      for(j = 0; j<verti->ntriangles; j++){
-        int trij_index;
-        tridata *trianglej;
-
-        trianglej    = verti->triangles[j];
-        trij_index   = trianglej-geomlisti->triangles;
-        color_index += trianglej->area*ivals[trij_index];
-        total_area  += trianglej->area;
-      }
-      if(total_area>0.0){
-        color_indices[i] = color_index/total_area;
-      }
-      else{
-        color_indices[i] = ivals[itriangle];
-      }
-    }
-    else{
-      color_indices[i] = ivals[itriangle];
-    }
-  }
-}
-
 /* ------------------ Tri2Verts ------------------------ */
 
 void Tri2Verts(tridata *triangles, int ntriangles, vertdata *verts, int nverts){
@@ -3850,9 +3811,42 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
   int i;
   unsigned char *ivals;
   int is_ccell = 0;
+#ifdef pp_SLICEVAL
+  float *vals;
+#endif
 
-  if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
+
+#ifdef pp_BOUNDVAL
+  int set_valmin, set_valmax;
+  char *label;
+  float ttmin, ttmax;
+
+  label = patchi->label.shortlabel;
+  GetMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
+#define GEOMBOUNDCOLOR(val) CLAMP((int)(255.0*(val-ttmin)/(ttmax-ttmin)),0,255)
+#define GEOMBOUNDTEXTURE(val) CLAMP(((val-ttmin)/(ttmax-ttmin)),0.0,1.0)
+#endif
+
+#ifdef pp_SLICEVAL
+  float valmin, valmax;
+  float rvals[3];
+  if(sd!=NULL){
+    valmin = sd->valmin;
+    valmax = sd->valmax;
+    if(valmin>=valmax){
+      valmin = 0.0;
+      valmax = 1.0;
+    }
+  }
+#define GEOMSLICECOLOR(val) CLAMP((int)(255.0*(val-valmin)/(valmax-valmin)),0,255)
+#define GEOMSLICETEXTURE(val) CLAMP(((val-valmin)/(valmax-valmin)),0.0,1.0)
+#endif
+
+if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
   if(geom_type==GEOM_STATIC){
+#ifdef pp_SLICEBOUNDVAL
+    vals = patchi->geom_vals_static[patchi->geom_itime];
+#endif
     ivals = patchi->geom_ival_static;
   }
   else{
@@ -3903,6 +3897,10 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
       else{
         DISABLE_LIGHTING;
       }
+// add texture drawing later
+//      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+//      glEnable(GL_TEXTURE_1D);
+//      glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
       glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR,            iso_specular);
       glMaterialf(GL_FRONT_AND_BACK,  GL_SHININESS,           iso_shininess);
       glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, block_ambient2);
@@ -3926,19 +3924,23 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
           float t_level;
 
           trianglei = geomlisti->triangles + j;
-          if(geomdata_smoothcolors==1){
-            AverageGeomColors(geomlisti, j, ivals, color_indices);
-            color0 = rgb_patch+4*color_indices[0];
-            color1 = rgb_patch+4*color_indices[1];
-            color2 = rgb_patch+4*color_indices[2];
+#ifdef pp_BOUNDVAL
+          if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
+            color_index = GEOMBOUNDCOLOR(vals[j]);
+          }
+          else if(patchi->patch_filetype==PATCH_GEOMETRY_SLICE){
+            color_index = GEOMSLICECOLOR(vals[j]);
           }
           else{
             color_index = ivals[j];
-            color = rgb_patch+4*color_index;
-            color0 = color;
-            color1 = color;
-            color2 = color;
           }
+#else
+          color_index = ivals[j];
+#endif
+          color = rgb_patch+4*color_index;
+          color0 = color;
+          color1 = color;
+          color2 = color;
 
           if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
             int insolid;
@@ -4018,26 +4020,42 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
             t_level = 1.0;
           }
 
-          if(geomdata_smoothcolors==1){
-            AverageGeomColors(geomlisti, j, ivals, color_indices);
-            color0 = rgb_patch+4*color_indices[0];
-            color1 = rgb_patch+4*color_indices[1];
-            color2 = rgb_patch+4*color_indices[2];
-          }
-          else{
-            if(sd==NULL||sd->cell_center==1){
-              color_index = ivals[j];
-              color = rgb_patch+4*color_index;
-              color0 = color;
-              color1 = color;
-              color2 = color;
+#ifdef pp_SLICEVAL
+          if(sd==NULL||sd->cell_center==1){
+            if(sd!=NULL){
+              color_index = GEOMSLICECOLOR(vals[j]);
             }
             else{
-              color0 = rgb_patch+4*ivals[trianglei->vert_index[0]];
-              color1 = rgb_patch+4*ivals[trianglei->vert_index[1]];
-              color2 = rgb_patch+4*ivals[trianglei->vert_index[2]];
+              color_index = ivals[j];
             }
+            color = rgb_patch+4*color_index;
+            color0 = color;
+            color1 = color;
+            color2 = color;
           }
+          else{
+            color0 = rgb_patch+4*GEOMSLICECOLOR(vals[trianglei->vert_index[0]]);
+            color1 = rgb_patch+4*GEOMSLICECOLOR(vals[trianglei->vert_index[1]]);
+            color2 = rgb_patch+4*GEOMSLICECOLOR(vals[trianglei->vert_index[2]]);
+       // add textures lateer
+       //     rvals[0] = GEOMSLICETEXTURE(vals[trianglei->vert_index[0]]);
+       //     rvals[1] = GEOMSLICETEXTURE(vals[trianglei->vert_index[1]]);
+       //     rvals[2] = GEOMSLICETEXTURE(vals[trianglei->vert_index[2]]);
+          }
+#else
+          if(sd==NULL||sd->cell_center==1){
+            color_index = ivals[j];
+            color = rgb_patch+4*color_index;
+            color0 = color;
+            color1 = color;
+            color2 = color;
+          }
+          else{
+            color0 = rgb_patch+4*ivals[trianglei->vert_index[0]];
+            color1 = rgb_patch+4*ivals[trianglei->vert_index[1]];
+            color2 = rgb_patch+4*ivals[trianglei->vert_index[2]];
+          }
+#endif
 
           xyzptr[0] = trianglei->verts[0]->xyz;
           xyzptr[1] = trianglei->verts[1]->xyz;
@@ -4048,22 +4066,30 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
           xyznorm[2] = trianglei->verts[2]->vert_norm;
 
           if(lighting_on==1)glNormal3fv(xyznorm[0]);
+//          glTexCoord1f(rvals[0]);
           glColor4f(color0[0], color0[1], color0[2], t_level);
           glVertex3fv(xyzptr[0]);
 
           if(lighting_on==1)glNormal3fv(xyznorm[1]);
+//          glTexCoord1f(rvals[1]);
           glColor4f(color1[0], color1[1], color1[2], t_level);
           glVertex3fv(xyzptr[1]);
 
           if(lighting_on==1)glNormal3fv(xyznorm[2]);
+//          glTexCoord1f(rvals[2]);
           glColor4f(color2[0], color2[1], color2[2], t_level);
           glVertex3fv(xyzptr[2]);
 
           if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
+//            glTexCoord1f(rvals[0]);
             glColor4f(color0[0], color0[1], color0[2], t_level);
             glVertex3fv(xyzptr[0]);
+
+//            glTexCoord1f(rvals[2]);
             glColor4f(color2[0], color2[1], color2[2], t_level);
             glVertex3fv(xyzptr[2]);
+
+//            glTexCoord1f(rvals[1]);
             glColor4f(color1[0], color1[1], color1[2], t_level);
             glVertex3fv(xyzptr[1]);
           }
@@ -4075,6 +4101,7 @@ void DrawGeomData(int flag, slicedata *sd, patchdata *patchi, int geom_type){
       if(enable_lighting==1){
         DISABLE_LIGHTING;
       }
+//      glDisable(GL_TEXTURE_1D);
       if(is_ccell==0&&flag == DRAW_TRANSPARENT&&use_transparency_data == 1 && patchi->patch_filetype == PATCH_GEOMETRY_SLICE)TransparentOff();
     }
   }

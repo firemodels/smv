@@ -305,7 +305,7 @@ SVEXTERN int SVDECL(slice_multithread, 0);
 #endif
 SVEXTERN int SVDECL(readallgeom_multithread, 1);
 SVEXTERN int SVDECL(lighting_on,0);
-SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 1);
+SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_lighting, 1);
 SVEXTERN int SVDECL(update_texturebar, 0);
 SVEXTERN float SVDECL(iso_valmin, 20.0), SVDECL(iso_valmax, 1020.0);
 SVEXTERN float SVDECL(glui_iso_valmin, 20.0), SVDECL(glui_iso_valmax, 1020.0);
