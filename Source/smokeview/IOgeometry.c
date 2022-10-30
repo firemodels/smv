@@ -3916,31 +3916,23 @@ if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
         for(j = 0; j < ntris; j++){
           float *xyzptr[3];
           tridata *trianglei;
-          int color_index;
-          float *color;
-          float *color0, *color1, *color2;
-          int color_indices[3];
-          float t_level;
 
           trianglei = geomlisti->triangles + j;
 #ifdef pp_BOUNDVAL
           if(patchi->patch_filetype==PATCH_GEOMETRY_BOUNDARY){
-            color_index = GEOMBOUNDCOLOR(vals[j]);
+            rvals[0] = GEOMBOUNDTEXTURE(vals[j]);
           }
           else if(patchi->patch_filetype==PATCH_GEOMETRY_SLICE){
-            color_index = GEOMSLICECOLOR(vals[j]);
+            rvals[0] = GEOMSLICETEXTURE(vals[j]);
           }
           else{
-            color_index = ivals[j];
+            rvals[0] = (float)ivals[j]/255.0;
           }
 #else
-          color_index = ivals[j];
+          rvals[0] = (float)ivals[j]/255.0;
 #endif
-          color = rgb_patch+4*color_index;
-          color0 = color;
-          color1 = color;
-          color2 = color;
-
+          rvals[1] = rvals[0];
+          rvals[2] = rvals[0];
           if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
             int insolid;
 
@@ -3948,14 +3940,9 @@ if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
             if(insolid == IN_CUTCELL && show_slice_shaded[IN_CUTCELL_GLUI] == 0)continue;
             if(insolid == IN_SOLID   && show_slice_shaded[IN_SOLID_GLUI] == 0)continue;
             if(insolid == IN_GAS     && show_slice_shaded[IN_GAS_GLUI] == 0)continue;
-            t_level = transparent_level;
           }
           else if(trianglei->geomtype == GEOM_BOUNDARY){
             if(show_boundary_shaded == 0)continue;
-            t_level = transparent_level;
-          }
-          else{
-            t_level = 1.0;
           }
 
           xyzptr[0] = trianglei->verts[0]->xyz;
@@ -3963,23 +3950,23 @@ if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
           xyzptr[2] = trianglei->verts[2]->xyz;
 
           if(lighting_on==1)glNormal3fv(trianglei->tri_norm);
-          glColor4f(color0[0], color0[1], color0[2], t_level);
+          glTexCoord1f(rvals[0]);
           glVertex3fv(xyzptr[0]);
 
-          glColor4f(color1[0], color1[1], color1[2], t_level);
+          glTexCoord1f(rvals[1]);
           glVertex3fv(xyzptr[1]);
 
-          glColor4f(color2[0], color2[1], color2[2], t_level);
+          glTexCoord1f(rvals[2]);
           glVertex3fv(xyzptr[2]);
 
           if(patchi->patch_filetype == PATCH_GEOMETRY_SLICE){
-            glColor4f(color0[0], color0[1], color0[2], t_level);
+            glTexCoord1f(rvals[0]);
             glVertex3fv(xyzptr[0]);
 
-            glColor4f(color2[0], color2[1], color2[2], t_level);
+            glTexCoord1f(rvals[2]);
             glVertex3fv(xyzptr[2]);
 
-            glColor4f(color1[0], color1[1], color1[2], t_level);
+            glTexCoord1f(rvals[1]);
             glVertex3fv(xyzptr[1]);
           }
         }
@@ -3989,7 +3976,6 @@ if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
           float *xyzptr[3];
           float *xyznorm[3];
           tridata *trianglei;
-          float  t_level;
 
           trianglei = geomlisti->triangles+j;
 
@@ -4000,19 +3986,9 @@ if(strcmp(patchi->label.shortlabel, "ccell")==0)is_ccell = 1;
             if(insolid == IN_CUTCELL && show_slice_shaded[IN_CUTCELL_GLUI] == 0)continue;
             if(insolid == IN_SOLID   && show_slice_shaded[IN_SOLID_GLUI] == 0)continue;
             if(insolid == IN_GAS     && show_slice_shaded[IN_GAS_GLUI] == 0)continue;
-            if(is_ccell==1){
-              t_level = 1.0;
-            }
-            else{
-              t_level = transparent_level;
-            }
           }
           else if(patchi->patch_filetype == PATCH_GEOMETRY_BOUNDARY){
             if(show_boundary_shaded == 0)continue;
-            t_level = transparent_level;
-          }
-          else{
-            t_level = 1.0;
           }
 
 #ifdef pp_SLICEVAL
