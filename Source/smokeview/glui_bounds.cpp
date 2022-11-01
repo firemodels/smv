@@ -630,21 +630,12 @@ int bounds_dialog::set_valtype(char *label){
     cpp_boundsdata *boundi;
 
     boundi = all_bounds+i;
-#ifdef pp_BOUNDVAL
-    if(strcmp(boundi->label, label)==0&&boundi->set_valtype!=i){
-      boundi->set_valtype = i;
-      if(RADIO_set_valtype!=NULL)RADIO_set_valtype->set_int_val(i);
-      CB(BOUND_VAL_TYPE);
-      return 1;
-    }
-#else
     if(strcmp(boundi->label, label)==0){
       boundi->set_valtype = i;
       if(RADIO_set_valtype!=NULL)RADIO_set_valtype->set_int_val(i);
       CB(BOUND_VAL_TYPE);
       return 1;
     }
-#endif
   }
   return 0;
 }

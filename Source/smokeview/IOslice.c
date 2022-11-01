@@ -8701,8 +8701,7 @@ void DrawVVolSlice(const vslicedata *vd){
     if(sd->js1 + 1 > maxj)maxj = sd->js1 + 1;
     for(j = sd->js1; j < maxj + 1; j += vectorskipj){
 #ifndef pp_SLICEVAL
-      n = (j - sd->js1)*sd->nslicek - vectorskipj;
-      n += (plotx - sd->is1)*sd->nslicej*sd->nslicek;
+      n = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek - vectorskipk;
 #endif
       yy1 = yplttemp[j];
       for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
@@ -8758,8 +8757,7 @@ void DrawVVolSlice(const vslicedata *vd){
     if(sd->js1 + 1 > maxj)maxj = sd->js1 + 1;
     for(j = sd->js1; j < maxj + 1; j += vectorskipj){
 #ifndef pp_SLICEVAL
-      n = (j - sd->js1)*sd->nslicek - vectorskipj;
-      n += (plotx - sd->is1)*sd->nslicej*sd->nslicek;
+      n = (plotx - sd->is1)*sd->nslicej*sd->nslicek + (j - sd->js1)*sd->nslicek - vectorskipk;
 #endif
       yy1 = yplttemp[j];
       for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
@@ -8825,15 +8823,14 @@ void DrawVVolSlice(const vslicedata *vd){
     if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
     for(i = sd->is1; i < maxi + 1; i += vectorskipi){
 #ifndef pp_SLICEVAL
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskipi;
-      n += (ploty - sd->js1)*sd->nslicek;
+      n = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek - vectorskipk;
 #endif
 
       x1 = xplttemp[i];
 
       for(k = sd->ks1; k < sd->ks2 + 1; k += vectorskipk){
 #ifdef pp_SLICEVAL
-        n = SLICECOLOR(IJK_SLICE(i,ploty,k));
+        n = IJK_SLICE(i,ploty,k);
 #else
         n += vectorskipk;
 #endif
@@ -8881,8 +8878,7 @@ void DrawVVolSlice(const vslicedata *vd){
     glBegin(GL_POINTS);
     for(i = sd->is1; i < maxi + 1; i += vectorskipi){
 #ifndef pp_SLICEVAL
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskipi;
-      n += (ploty - sd->js1)*sd->nslicek;
+      n = (i - sd->is1)*sd->nslicej*sd->nslicek + (ploty - sd->js1)*sd->nslicek - vectorskipk;
 #endif
 
       x1 = xplttemp[i];
@@ -8950,8 +8946,7 @@ void DrawVVolSlice(const vslicedata *vd){
     if(sd->is1 + 1 > maxi)maxi = sd->is1 + 1;
     for(i = sd->is1; i < maxi + 1; i += vectorskipi){
 #ifndef pp_SLICEVAL
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskipi*sd->nslicek;
-      n += (plotz - sd->ks1);
+      n = (i - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) - vectorskipj*sd->nslicek;
 #endif
 
       x1 = xplttemp[i];
@@ -9006,8 +9001,7 @@ void DrawVVolSlice(const vslicedata *vd){
     glBegin(GL_POINTS);
     for(i = sd->is1; i < sd->is1 + sd->nslicei; i += vectorskipi){
 #ifndef pp_SLICEVAL
-      n = (i - sd->is1)*sd->nslicej*sd->nslicek - vectorskipi*sd->nslicek;
-      n += (plotz - sd->ks1);
+      n = (i - sd->is1)*sd->nslicej*sd->nslicek + (plotz - sd->ks1) - vectorskipj*sd->nslicek;
 #endif
 
       x1 = xplttemp[i];

@@ -856,12 +856,30 @@ void UpdateSliceBounds2(void){
 
     i = slice_loaded_list[ii];
     sd = sliceinfo+i;
-    if(sd->vloaded==0&&sd->display==0)continue;
+    if(sd->display==0)continue;
     GetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
     sd->valmin      = qmin;
     sd->valmax      = qmax;
     sd->globalmin   = qmin;
     sd->globalmax   = qmax;
+    sd->valmin_data = qmin;
+    sd->valmax_data = qmax;
+    SetSliceColors(qmin, qmax, sd, 0, &error);
+  }
+  for(ii = 0; ii<nvsliceinfo; ii++){
+    vslicedata *vd;
+    slicedata *sd;
+    int set_valmin, set_valmax;
+    float qmin, qmax;
+
+    vd = vsliceinfo+ii;
+    if(vd->loaded==0||vd->display==0||vd->ival==-1)continue;
+    sd = sliceinfo+vd->ival;
+    GetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
+    sd->valmin = qmin;
+    sd->valmax = qmax;
+    sd->globalmin = qmin;
+    sd->globalmax = qmax;
     sd->valmin_data = qmin;
     sd->valmax_data = qmax;
     SetSliceColors(qmin, qmax, sd, 0, &error);
