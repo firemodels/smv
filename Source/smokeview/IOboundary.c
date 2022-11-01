@@ -2319,7 +2319,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         update_patchfile_bounds = 1;
       }
     }
-#ifdef BOUNDVAL
+#ifdef pp_BOUNDVAL
     GetBoundaryColors3(patchi, meshi->patchval, patchstart, npatchvals, meshi->cpatchval,
                        &glui_patchmin, &glui_patchmax,
                        nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
