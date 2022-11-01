@@ -4193,7 +4193,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 
 #ifdef pp_BOUNDVAL
   label = patchi->label.shortlabel;
-  GetMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
+  GetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
   if(ttmin>=ttmax){
     ttmin = 0.0;
     ttmax = 1.0;
