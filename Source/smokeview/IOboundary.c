@@ -4642,8 +4642,6 @@ void UpdateBoundaryType(void){
     }
   }
   iboundarytype = -1;
-  return;
-
 }
 
 /* ------------------ BoundaryCompare ------------------------ */

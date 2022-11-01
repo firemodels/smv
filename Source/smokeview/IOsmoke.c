@@ -3770,7 +3770,6 @@ void GetSmoke3DTimeSteps(int fortran_skip, char *smokefile, int version, int *nt
     *ntimes_full = iframe_local + 1;
   }
   fclose(SMOKE_SIZE);
-  return;
 }
 
 /* ------------------ GetSmoke3dTimesSizes ------------------------ */

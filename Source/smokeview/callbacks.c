@@ -739,9 +739,7 @@ int GetColorbarIndex(int flag, int x, int y){
         index = CLAMP(255*(float)(y-vcolorbar_down_pos)/(float)(vcolorbar_top_pos - vcolorbar_down_pos),0,255);
         return index;
       }
-      else{
-        return CB_SELECT_STOP;
-      }
+      return CB_SELECT_STOP;
   }
   return CB_SELECT_CONTINUE;
 }
@@ -3111,7 +3109,6 @@ void HandleRotationType(int flag){
   }
   ShowHideTranslate(rotation_type);
   rotation_type_old = rotation_type;
-  return;
 }
 
 /* ------------------ UpdateClipPlanes ------------------------ */
@@ -3139,14 +3136,13 @@ void UpdateClipPlanes(void){
 /* ------------------ HandleIso ------------------------ */
 
 void HandleIso(void){
-    if(nplot3dloaded>0){
-      UpdateShowStep(1-visiso,ISO);
-      if(visiso==1){
-        UpdateSurface();
-        plotstate=STATIC_PLOTS;
-      }
+  if(nplot3dloaded>0){
+    UpdateShowStep(1-visiso,ISO);
+    if(visiso==1){
+      UpdateSurface();
+      plotstate=STATIC_PLOTS;
     }
-    return;
+  }
 }
 
 /* ------------------ SpecialKeyboardUpCB ------------------------ */
@@ -3384,10 +3380,6 @@ void HandlePLOT3DKeys(int  key){
   }
   if(iplot_state!=0)UpdatePlotSlice(iplot_state);
   if(visx_all==1||visy_all==1||visz_all==1)update_slice2device = 1;
-  return;
-
-//  plotstate=GetPlotState(STATIC_PLOTS);
-
 }
 
 /* ------------------ HandleMoveKeys ------------------------ */

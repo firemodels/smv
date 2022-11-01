@@ -159,9 +159,7 @@ void GetSmokeColor(float *smoke_tran, float **smoke_color, float *scaled_intensi
       *inobst = 1;
       return;
     }
-    else{
-      *inobst = 0;
-    }
+    *inobst = 0;
   }
 
   *scaled_intensity = 1.0;

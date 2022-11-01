@@ -1839,8 +1839,6 @@ void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned cha
   b = val&rgbmask[nbluebits-1];
   b = b << nblueshift;
   *rr=r; *gg=g; *bb=b;
-
-  return;
 }
 
 /* ------------------ GetColorPtr ------------------------ */

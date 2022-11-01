@@ -1571,10 +1571,8 @@ void ReadCADGeom(cadgeomdata *cd){
     ReadCAD2Geom(cd);
     return;
   }
-  else{
-    cd->version=1;
-    rewind(stream);
-  }
+  cd->version=1;
+  rewind(stream);
   while(!feof(stream)){
     if(fgets(buffer,255,stream)==NULL)break;
     if(fgets(buffer,255,stream)==NULL)break;
@@ -3266,7 +3264,6 @@ void DrawSelectFaces(){
     }
   }
   glEnd();
-  return;
 }
 
 #define DRAWFACE(DEFfacetest,DEFeditcolor)    \

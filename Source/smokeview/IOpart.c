@@ -2273,9 +2273,7 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
   if(nall_points_local==0){
     return 0;
   }
-  else{
-    return 1;
-  }
+  return 1;
 }
 
 /* ------------------ UpdatePartColors ------------------------ */

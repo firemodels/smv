@@ -3192,5 +3192,4 @@ void color2rgb(int rgb[3], const char *color) {
     rgb[1] = 0;
     rgb[2] = 0;
   }
-  return;
 }
