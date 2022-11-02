@@ -13579,7 +13579,6 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &ncolors);
       for(i = 0; i<ncolors; i++){
         surfdata *surfi;
-        int *ini_surf_color;
         char *surflabel;
         float s_color[4];
 

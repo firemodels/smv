@@ -415,7 +415,7 @@ void GetPartColors(partdata *parti, int nlevel, int flag){
       float *rvals;
       unsigned char *irvals;
       float *dsx, *dsy, *dsz;
-      int flag, k;
+      int local_flag, k;
 
       partclassi = parti->partclassptr[j];
       rvals = datacopy->rvals;
@@ -497,11 +497,11 @@ void GetPartColors(partdata *parti, int nlevel, int flag){
         if(partclassi->col_w_vel>=0){
           w_vel_data = datacopy->rvals+partclassi->col_w_vel*datacopy->npoints;
         }
-        flag = 0;
+        local_flag = 0;
         if(azimuth_data!=NULL&&elevation_data!=NULL&&length_data!=NULL){
           int m;
 
-          flag = 1;
+          local_flag = 1;
           dsx = datacopy->dsx;
           dsy = datacopy->dsy;
           dsz = datacopy->dsz;
@@ -538,7 +538,7 @@ void GetPartColors(partdata *parti, int nlevel, int flag){
             denom = 1.0;
           }
 
-          flag = 1;
+          local_flag = 1;
           dsx = datacopy->dsx;
           dsy = datacopy->dsy;
           dsz = datacopy->dsz;
@@ -548,7 +548,7 @@ void GetPartColors(partdata *parti, int nlevel, int flag){
             dsz[m] = 0.05*w_vel_data[m]/denom;
           }
         }
-        if(flag==0){
+        if(local_flag==0){
           FREEMEMORY(datacopy->dsx);
           FREEMEMORY(datacopy->dsy);
           FREEMEMORY(datacopy->dsz);

@@ -655,6 +655,8 @@ void SurfaceCB(int var){
       }
     }
     break;
+  default:
+    ASSERT(FFALSE);
   }
 }
 
@@ -829,14 +831,11 @@ extern "C" void GluiLabelsSetup(int main_window){
   INSERT_ROLLOUT(ROLLOUT_light2, glui_labels);
   ADDPROCINFO(displayprocinfo, ndisplayprocinfo, ROLLOUT_light2, LIGHT_ROLLOUT, glui_labels);
 
-  {
-    int i;
-
-    for(i = 0; i<3;i++){
-      glui_ambientlight[i] = CLAMP(255*ambientlight[i],0,255);
-      glui_diffuselight[i] = CLAMP(255*diffuselight[i],0,255);
-    }
+  for(i = 0; i<3;i++){
+    glui_ambientlight[i] = CLAMP(255*ambientlight[i],0,255);
+    glui_diffuselight[i] = CLAMP(255*diffuselight[i],0,255);
   }
+
   glui_ambientgrey = 255*ambientgrey;
   glui_diffusegrey = 255*diffusegrey;
   glui_speculargrey = 255*speculargrey;
