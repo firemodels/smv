@@ -2273,9 +2273,7 @@ int GetPartHeader(partdata *parti, int *nf_all, int option_arg, int print_option
   if(nall_points_local==0){
     return 0;
   }
-  else{
-    return 1;
-  }
+  return 1;
 }
 
 /* ------------------ UpdatePartColors ------------------------ */
@@ -2371,7 +2369,11 @@ void FinalizePartLoad(partdata *parti){
 
       partj = partinfo+j;
       if(partj->loaded==1){
+#ifdef pp_PARTVAL
+        UpdatePartColors(partj, 0);
+#else
         UpdatePartColors(partj, 1);
+#endif
       }
     }
   }
@@ -2425,7 +2427,11 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
     StreamClose(&(parti->part_stream));
 #endif
     if(parti->finalize == 1){
+#ifdef pp_PARTVAL
+      UpdatePartColors(parti, 0);
+#else
       UpdatePartColors(parti, 1);
+#endif
       UpdateTimes();
       updatemenu = 1;
       UpdatePart5Extremes();
@@ -2475,7 +2481,11 @@ FILE_SIZE ReadPart(char *file_arg, int ifile_arg, int loadflag_arg, int *errorco
   parti->loaded = 1;
   parti->display = 1;
   if(cache_part_data==0){
+#ifdef pp_PARTVAL
+    UpdatePartColors(parti, 0);
+#else
     UpdatePartColors(parti, 1);
+#endif
   }
   UNLOCK_PART_LOAD;
   if(cache_part_data==0){

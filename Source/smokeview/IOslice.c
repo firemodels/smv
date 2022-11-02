@@ -4993,7 +4993,11 @@ FILE_SIZE ReadSlice(const char *file, int ifile, int time_frame, float *time_val
           for(ii = 0; ii<256; ii++){
             slicei->qval256[ii] = (qmin*(255 - ii) + qmax*ii) / 255;
           }
+#ifdef pp_SLICEVAL
+          SetSliceColors(qmin, qmax, slicei, 0, errorcode);
+#else
           SetSliceColors(qmin, qmax, slicei, 1, errorcode);
+#endif
         }
       }
       else{

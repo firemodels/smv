@@ -184,6 +184,7 @@ EXTERNCPP void SetValTypeIndex(int type, int valtype_index);
 EXTERNCPP int GetNValtypes(int type);
 EXTERNCPP int GetValType(int type);
 EXTERNCPP void GetMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax);
+EXTERNCPP void GetOnlyMinMax(int type, char* label, int* set_valmin, float* valmin, int* set_valmax, float* valmax);
 EXTERNCPP void GetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int *nall);
 EXTERNCPP void SetMin(int type, char *label, int set_valmin, float valmin);
 EXTERNCPP void SetMax(int type, char *label, int set_valmax, float valmax);

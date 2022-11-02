@@ -1511,6 +1511,40 @@ extern "C" void SetValTypeIndex(int type, int valtype_index){
   }
 }
 
+/* ------------------ GetOnlyMinMax ------------------------ */
+
+extern "C" void GetOnlyMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax){
+  switch(type){
+    case BOUND_PATCH:
+      if(npatchinfo>0){
+        patchboundsCPP.get_min(label, set_valmin, valmin);
+        patchboundsCPP.get_max(label, set_valmax, valmax);
+      }
+      break;
+    case BOUND_PART:
+      if(npartinfo>0){
+        partboundsCPP.get_min(label, set_valmin, valmin);
+        partboundsCPP.get_max(label, set_valmax, valmax);
+      }
+      break;
+    case BOUND_PLOT3D:
+      if(nplot3dinfo>0){
+        plot3dboundsCPP.get_min(label, set_valmin, valmin);
+        plot3dboundsCPP.get_max(label, set_valmax, valmax);
+      }
+      break;
+    case BOUND_SLICE:
+      if(nsliceinfo>0){
+        sliceboundsCPP.get_min(label, set_valmin, valmin);
+        sliceboundsCPP.get_max(label, set_valmax, valmax);
+      }
+      break;
+    default:
+      ASSERT(FFALSE);
+      break;
+  }
+}
+
 /* ------------------ GetMinMax ------------------------ */
 
 extern "C" void GetMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax){

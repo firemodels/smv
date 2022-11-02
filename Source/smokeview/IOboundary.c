@@ -2319,7 +2319,7 @@ FILE_SIZE ReadBoundaryBndf(int ifile, int flag, int *errorcode){
         update_patchfile_bounds = 1;
       }
     }
-#ifdef BOUNDVAL
+#ifdef pp_BOUNDVAL
     GetBoundaryColors3(patchi, meshi->patchval, patchstart, npatchvals, meshi->cpatchval,
                        &glui_patchmin, &glui_patchmax,
                        nrgb, colorlabelpatch, colorvaluespatch, boundarylevels256,
@@ -4193,7 +4193,7 @@ void DrawBoundaryCellCenter(const meshdata *meshi){
 
 #ifdef pp_BOUNDVAL
   label = patchi->label.shortlabel;
-  GetMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
+  GetOnlyMinMax(BOUND_PATCH, label, &set_valmin, &ttmin, &set_valmax, &ttmax);
   if(ttmin>=ttmax){
     ttmin = 0.0;
     ttmax = 1.0;
@@ -4642,8 +4642,6 @@ void UpdateBoundaryType(void){
     }
   }
   iboundarytype = -1;
-  return;
-
 }
 
 /* ------------------ BoundaryCompare ------------------------ */

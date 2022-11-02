@@ -379,7 +379,7 @@ void UpdatePart5Extremes(void){
 
 /* ------------------ GetPartColors ------------------------ */
 
-void GetPartColors(partdata *parti, int nlevel, int convert){
+void GetPartColors(partdata *parti, int nlevel, int flag){
   int i;
   part5data *datacopy;
   // float *diameter_data;
@@ -405,7 +405,7 @@ void GetPartColors(partdata *parti, int nlevel, int convert){
   GetMinMaxAll(BOUND_PART, part_set_valmin, part_valmin, part_set_valmax, part_valmax, &num2);
 
   int start=0;
-  if(convert==0)start = parti->ntimes+1;// skip particle conversion if convert is 0
+  if(flag==0)start = parti->ntimes+1;// skip particle conversion if flag is 0
   for(i=start;i<parti->ntimes;i++){
     int j;
 
@@ -1839,8 +1839,6 @@ void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned cha
   b = val&rgbmask[nbluebits-1];
   b = b << nblueshift;
   *rr=r; *gg=g; *bb=b;
-
-  return;
 }
 
 /* ------------------ GetColorPtr ------------------------ */
