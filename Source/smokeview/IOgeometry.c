@@ -662,7 +662,7 @@ void DrawGeom(int flag, int timestate){
           if(use_surf_color==1){
             int *gcolor;
 
-            gcolor = trianglei->geomsurf->glui_color;
+            gcolor = trianglei->geomsurf->geom_surf_color;
             geom_rgb_uc[0] = (unsigned char)gcolor[0];
             geom_rgb_uc[1] = (unsigned char)gcolor[1];
             geom_rgb_uc[2] = (unsigned char)gcolor[2];

@@ -8616,9 +8616,9 @@ int ReadSMV(bufferstreamdata *stream){
       else{
         surfi->transparent_level = 1.0;
       }
-      surfi->glui_color[0] = CLAMP(255*surfi->color[0],0,255);
-      surfi->glui_color[1] = CLAMP(255*surfi->color[1], 0, 255);
-      surfi->glui_color[2] = CLAMP(255*surfi->color[2], 0, 255);
+      surfi->geom_surf_color[0] = CLAMP(255*surfi->color[0],0,255);
+      surfi->geom_surf_color[1] = CLAMP(255*surfi->color[1], 0, 255);
+      surfi->geom_surf_color[2] = CLAMP(255*surfi->color[2], 0, 255);
       surfi->temp_ignition=temp_ignition;
       surfi->emis=emis;
       surfi->t_height=t_height;
@@ -13561,7 +13561,7 @@ int ReadIni2(char *inifile, int localfile){
         surflabel = TrimFrontBack(surflabel+1);
         surfi = GetSurface(surflabel);
         if(surfi==NULL)continue;
-        ini_surf_color = surfi->glui_color;
+        ini_surf_color = surfi->geom_surf_color;
         sscanf(buffer, "%i %i %i", ini_surf_color, ini_surf_color+1, ini_surf_color+2);
         ini_surf_color[0] = CLAMP(ini_surf_color[0], 0, 255);
         ini_surf_color[1] = CLAMP(ini_surf_color[1], 0, 255);
@@ -15786,7 +15786,7 @@ void WriteIni(int flag,char *filename){
         if(surfi->used_by_geom==1){
           int *ini_surf_color;
 
-          ini_surf_color = surfi->glui_color;
+          ini_surf_color = surfi->geom_surf_color;
           fprintf(fileout, " %i %i %i : %s\n", ini_surf_color[0], ini_surf_color[1], ini_surf_color[2], surfi->surfacelabel);
         }
       }

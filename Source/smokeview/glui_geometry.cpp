@@ -763,7 +763,7 @@ extern "C" void VolumeCB(int var){
         int *rgb_local;
         float *axis;
 
-        rgb_local = surfi->glui_color;
+        rgb_local = surfi->geom_surf_color;
         glui_surf_rgb[0] = CLAMP(rgb_local[0],0,255);
         glui_surf_rgb[1] = CLAMP(rgb_local[1],0,255);
         glui_surf_rgb[2] = CLAMP(rgb_local[2],0,255);
@@ -791,7 +791,7 @@ extern "C" void VolumeCB(int var){
         int *rgb_local;
         float *axis;
 
-        rgb_local = surfi->glui_color;
+        rgb_local = surfi->geom_surf_color;
         rgb_local[0] = glui_surf_rgb[0];
         rgb_local[1] = glui_surf_rgb[1];
         rgb_local[2] = glui_surf_rgb[2];
