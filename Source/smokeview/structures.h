@@ -391,8 +391,8 @@ typedef struct _surfdata {
                3 - smoothed block
                4 - invisible
              */
-  float *color, emis, temp_ignition;
-  float transparent_level;
+  float *color, *color_orig, emis, temp_ignition;
+  float transparent_level, transparent_level_orig;
   int iso_level;
   float t_width, t_height;
   texturedata *textureinfo;
@@ -402,10 +402,11 @@ typedef struct _surfdata {
   int transparent;
   int used_by_obst,used_by_vent;
   int used_by_geom;
-  int glui_color[3];
+  int geom_surf_color[3];
   float axis[3];
   int in_geom_list;
   int ntris;
+  int in_color_dialog;
   float geom_area;
 } surfdata;
 

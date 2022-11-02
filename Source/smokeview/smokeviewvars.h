@@ -23,6 +23,7 @@
 #include "glutbitmap.h"
 #endif
 
+SVEXTERN int SVDECL(glui_surf_index, 0);
 SVEXTERN int SVDECL(clip_commandline, 0), SVDECL(special_modifier, 0);
 SVEXTERN int SVDECL(update_slicexyz, 0);
 SVEXTERN int SVDECL(update_splitcolorbar, 0);
@@ -33,9 +34,11 @@ SVEXTERN float geom_bounding_box[6] = {1000000000.0, -1000000000.0,
                                        1000000000.0, -1000000000.0,
                                        1000000000.0, -1000000000.0
                                       };
+SVEXTERN int glui_surface_color[4] = {255, 255, 255, 255};
 #else
 SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
+SVEXTERN int glui_surface_color[4];
 #endif
 
 #ifdef pp_TERRAIN_SKIP
@@ -827,7 +830,7 @@ SVEXTERN int SVDECL(ndeviceunits, 0);
 SVEXTERN hrrdata SVDECL(**hrrunits, NULL);
 SVEXTERN int SVDECL(nhrrunits, 0);
 
-SVEXTERN int SVDECL(sort_geometry,1),SVDECL(sort_transparent_faces,0);
+SVEXTERN int SVDECL(sort_geometry,1),SVDECL(sort_transparent_faces,1);
 SVEXTERN isotri SVDECL(***iso_trans_list,NULL),SVDECL(***iso_opaques_list,NULL);
 SVEXTERN int SVDECL(*niso_trans_list,NULL),SVDECL(*niso_opaques_list,NULL);
 SVEXTERN int SVDECL(niso_timesteps,0);

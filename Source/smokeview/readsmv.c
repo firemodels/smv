@@ -3953,6 +3953,7 @@ void InitObst(blockagedata *bc, surfdata *surf, int index, int meshindex){
 /* ------------------ InitSurface ------------------------ */
 
 void InitSurface(surfdata *surf){
+  surf->in_color_dialog = 0;
   surf->iso_level = -1;
   surf->used_by_obst = 0;
   surf->used_by_geom = 0;
@@ -8616,6 +8617,8 @@ int ReadSMV(bufferstreamdata *stream){
       else{
         surfi->transparent_level = 1.0;
       }
+      surfi->color_orig = surfi->color;
+      surfi->transparent_level_orig = surfi->transparent_level;
       surfi->geom_surf_color[0] = CLAMP(255*surfi->color[0],0,255);
       surfi->geom_surf_color[1] = CLAMP(255*surfi->color[1], 0, 255);
       surfi->geom_surf_color[2] = CLAMP(255*surfi->color[2], 0, 255);
@@ -13569,6 +13572,38 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
+    if(MatchINI(buffer, "OBSTSURFCOLORS")==1){
+      int ncolors;
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &ncolors);
+      for(i = 0; i<ncolors; i++){
+        surfdata *surfi;
+        int *ini_surf_color;
+        char *surflabel;
+        float s_color[4];
+
+        fgets(buffer, 255, stream);
+        surflabel = strchr(buffer, ':');
+        if(surflabel==NULL)continue;
+        surflabel = TrimFrontBack(surflabel+1);
+        surfi = GetSurface(surflabel);
+        if(surfi==NULL)continue;
+        s_color[0] = -1.0;
+        s_color[1] = -1.0;
+        s_color[2] = -1.0;
+        s_color[3] = -1.0;
+        sscanf(buffer, "%f %f %f %f", s_color, s_color+1, s_color+2, s_color+3);
+        if(s_color[3]<0.0)s_color[3] = 1.0;
+        if(s_color[0]<0.0||s_color[1]<0.0||s_color[2]<0.0)continue;
+        s_color[0] = CLAMP(s_color[0], 0.0, 1.0);
+        s_color[1] = CLAMP(s_color[1], 0.0, 1.0);
+        s_color[2] = CLAMP(s_color[2], 0.0, 1.0);
+        surfi->color = GetColorPtr(s_color);
+        surfi->transparent_level=s_color[3];
+      }
+      continue;
+    }
     if(MatchINI(buffer, "GEOMSELECTCOLOR") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%u %u %u",  geom_vertex1_rgb,  geom_vertex1_rgb+1,  geom_vertex1_rgb+2);
@@ -15788,6 +15823,32 @@ void WriteIni(int flag,char *filename){
 
           ini_surf_color = surfi->geom_surf_color;
           fprintf(fileout, " %i %i %i : %s\n", ini_surf_color[0], ini_surf_color[1], ini_surf_color[2], surfi->surfacelabel);
+        }
+      }
+    }
+  }
+  {
+    int scount;
+
+    scount = 0;
+    for(i = 0; i<nsurfinfo; i++){
+      surfdata *surfi;
+
+      surfi = surfinfo+sorted_surfidlist[i];
+      if(surfi->in_color_dialog==1&&surfi->color!=surfi->color_orig)scount++;
+    }
+    if(scount>0){
+      fprintf(fileout, "OBSTSURFCOLORS\n");
+      fprintf(fileout, " %i %i\n", scount, use_surf_color);
+      for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
+        surfi = surfinfo+sorted_surfidlist[i];
+        if(surfi->in_color_dialog==1&&surfi->color!=surfi->color_orig){
+          float *color;
+
+          color = surfi->color;
+          fprintf(fileout, " %f %f %f %f: %s\n", color[0], color[1], color[2], surfi->transparent_level, surfi->surfacelabel);
         }
       }
     }
