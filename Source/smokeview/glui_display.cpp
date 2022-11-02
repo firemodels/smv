@@ -761,7 +761,7 @@ extern "C" void GluiLabelsSetup(int main_window){
   }
   if(surfcount>0){
     glui_surf_index = first_surf;
-    PANEL_surfs = glui_labels->add_panel_to_panel(PANEL_gen3, "Surface transparency");
+    PANEL_surfs = glui_labels->add_panel_to_panel(PANEL_gen3, "Surface color");
     LIST_surfs = glui_labels->add_listbox_to_panel(PANEL_surfs, _("Select"), &glui_surf_index, SURFACE_SELECT, SurfaceCB);
     for(i = 0; i<nsurfinfo; i++){
       surfdata *surfi;
@@ -771,15 +771,15 @@ extern "C" void GluiLabelsSetup(int main_window){
       if(strcmp(surfi->surfacelabel, "INERT")==0)continue;
       LIST_surfs->add_item(i, surfi->surfacelabel);
     }
-    SPINNER_surf_color[0] = glui_labels->add_spinner_to_panel(PANEL_surfs, _("red"),          GLUI_SPINNER_INT, glui_surface_color,   SURFACE_COLOR, SurfaceCB);
-    SPINNER_surf_color[1] = glui_labels->add_spinner_to_panel(PANEL_surfs, _("green"),        GLUI_SPINNER_INT, glui_surface_color+1, SURFACE_COLOR, SurfaceCB);
-    SPINNER_surf_color[2] = glui_labels->add_spinner_to_panel(PANEL_surfs, _("blue"),         GLUI_SPINNER_INT, glui_surface_color+2, SURFACE_COLOR, SurfaceCB);
-    SPINNER_surf_color[3] = glui_labels->add_spinner_to_panel(PANEL_surfs, _("transparency"), GLUI_SPINNER_INT, glui_surface_color+3, SURFACE_COLOR, SurfaceCB);
+    SPINNER_surf_color[0] = glui_labels->add_spinner_to_panel(PANEL_surfs, _("red"),   GLUI_SPINNER_INT, glui_surface_color,   SURFACE_COLOR, SurfaceCB);
+    SPINNER_surf_color[1] = glui_labels->add_spinner_to_panel(PANEL_surfs, _("green"), GLUI_SPINNER_INT, glui_surface_color+1, SURFACE_COLOR, SurfaceCB);
+    SPINNER_surf_color[2] = glui_labels->add_spinner_to_panel(PANEL_surfs, _("blue"),  GLUI_SPINNER_INT, glui_surface_color+2, SURFACE_COLOR, SurfaceCB);
+    SPINNER_surf_color[3] = glui_labels->add_spinner_to_panel(PANEL_surfs, _("alpha"), GLUI_SPINNER_INT, glui_surface_color+3, SURFACE_COLOR, SurfaceCB);
     SPINNER_surf_color[0]->set_int_limits(0, 255, GLUI_LIMIT_CLAMP);
     SPINNER_surf_color[1]->set_int_limits(0, 255, GLUI_LIMIT_CLAMP);
     SPINNER_surf_color[2]->set_int_limits(0, 255, GLUI_LIMIT_CLAMP);
     SPINNER_surf_color[3]->set_int_limits(0, 255, GLUI_LIMIT_CLAMP);
-    glui_labels->add_button_to_panel(PANEL_surfs,"Revert",SURFACE_REVERT_COLOR,SurfaceCB);
+    glui_labels->add_button_to_panel(PANEL_surfs,"Revert (input file)",SURFACE_REVERT_COLOR,SurfaceCB);
     SurfaceCB(SURFACE_SELECT);
   }
 
