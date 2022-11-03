@@ -1646,7 +1646,9 @@ void GetSliceHists(slicedata *sd){
   }
 
   n = 0;
-  for(istep = 0; istep < ntimes; istep++){
+  int skip;
+  skip = MAX(ntimes/ histogram_nframes, 1);
+  for(istep = 0; istep < ntimes; istep+=skip){
     histogramdata *histi, *histall;
     int nn;
 
@@ -1661,7 +1663,7 @@ void GetSliceHists(slicedata *sd){
         pdata0[nn] = sd->qslicedata[n + nn];
       }
     }
-    n += sd->nslicei*sd->nslicej*sd->nslicek;
+    n += skip*sd->nslicei*sd->nslicej*sd->nslicek;
 
     // compute histogram for each timestep, histi and all time steps, histall
 

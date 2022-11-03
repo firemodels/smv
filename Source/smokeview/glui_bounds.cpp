@@ -2996,6 +2996,7 @@ GLUI_Spinner *SPINNER_npartthread_ids = NULL;
 GLUI_Spinner *SPINNER_iso_outline_ioffset = NULL;
 GLUI_Spinner *SPINNER_histogram_width_factor = NULL;
 GLUI_Spinner *SPINNER_histogram_nbuckets=NULL;
+GLUI_Spinner *SPINNER_histogram_nframes=NULL;
 GLUI_Spinner *SPINNER_iso_level = NULL;
 GLUI_Spinner *SPINNER_iso_colors[4];
 GLUI_Spinner *SPINNER_iso_transparency;
@@ -4984,6 +4985,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_histogram_width_factor->set_float_limits(1.0,100.0);
     SPINNER_histogram_nbuckets=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _("bins"), GLUI_SPINNER_INT,&histogram_nbuckets,UPDATE_HISTOGRAM,SliceBoundCB);
     SPINNER_histogram_nbuckets->set_int_limits(3,255);
+    SPINNER_histogram_nframes=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _("frames"), GLUI_SPINNER_INT,&histogram_nframes,FRAMES_HISTOGRAM,SliceBoundCB);
     CHECKBOX_histogram_show_numbers = glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _("percentages"), &histogram_show_numbers, INIT_HISTOGRAM, SliceBoundCB);
     CHECKBOX_histogram_show_graph=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _("graph"), &histogram_show_graph, INIT_HISTOGRAM, SliceBoundCB);
     CHECKBOX_histogram_show_outline=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _("outline"), &histogram_show_outline);
@@ -6121,6 +6123,12 @@ extern "C" void SliceBoundCB(int var){
     case UPDATE_HISTOGRAM:
       update_slice_hists = 1;
       histograms_defined = 0;
+      break;
+    case FRAMES_HISTOGRAM:
+      if(histogram_nframes<10){
+        histogram_nframes = 10;
+        SPINNER_histogram_nframes->set_int_val(histogram_nframes);
+      }
       break;
     case INIT_HISTOGRAM:
       if(histogram_show_graph == 1 || histogram_show_numbers == 1){
