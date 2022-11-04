@@ -5014,19 +5014,20 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   for(i = 0; i<6; i++){
     patchi->ijk[i] = -1;
   }
-  patchi->finalize = 1;
-  patchi->valmin_fds = 1.0;
-  patchi->valmax_fds = 0.0;
-  patchi->valmin_smv = 1.0;
-  patchi->valmax_smv = 0.0;
-  patchi->skip = 0;
-  patchi->version = version;
-  patchi->ntimes = 0;
-  patchi->ntimes_old = 0;
-  patchi->filetype_label = NULL;
-  patchi->patch_filetype = PATCH_STRUCTURED_NODE_CENTER;
-  patchi->structured = YES;
-  patchi->boundary = 1;
+  patchi->finalize          = 1;
+  patchi->valmin_fds        = 1.0;
+  patchi->valmax_fds        = 0.0;
+  patchi->valmin_smv        = 1.0;
+  patchi->valmax_smv        = 0.0;
+  patchi->skip              = 0;
+  patchi->version           = version;
+  patchi->ntimes            = -1;
+  patchi->ntimes_old        = -1;
+  patchi->histogram_nframes = -1;
+  patchi->filetype_label    = NULL;
+  patchi->patch_filetype    = PATCH_STRUCTURED_NODE_CENTER;
+  patchi->structured        = YES;
+  patchi->boundary          = 1;
   if(Match(buffer, "BNDC")==1){
     patchi->patch_filetype = PATCH_STRUCTURED_CELL_CENTER;
   }

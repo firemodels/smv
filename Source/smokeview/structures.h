@@ -1585,6 +1585,7 @@ typedef struct _patchdata {
   time_t modtime;
   int finalize;
   histogramdata *histogram;
+  int histogram_nframes;
   bounddata bounds;
   boundsdata *bounds2;
 } patchdata;

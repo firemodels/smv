@@ -559,7 +559,6 @@ EXTERNCPP void UpdateSliceMenuShow(void);
 EXTERNCPP void UpdateBoundaryBounds(patchdata *patchi);
 EXTERNCPP void UpdateAllBoundaryBounds(void);
 EXTERNCPP void UpdateAllBoundaryBoundsST(void);
-EXTERNCPP int  UpdateBoundaryHist(patchdata *patchi);
 EXTERNCPP void UpdateHideBoundarySurface(void);
 EXTERNCPP int  LastSliceLoadstack(void);
 EXTERNCPP int  LastVSliceLoadstack(void);
