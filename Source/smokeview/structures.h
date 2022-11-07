@@ -1280,6 +1280,40 @@ typedef struct _compdata {
   int offset, size;
 } compdata;
 
+
+#ifdef pp_HVAC
+/* --------------------------  hvacnodedata ------------------------------------ */
+
+// HVAC
+// label
+// n_nodes
+//  id x y z vent filter comp
+// ...
+// n_ducts
+// id node1 node2 comp
+
+typedef struct _hvacnodedata {
+  int id, vent, filter, comp;
+  float xyz[3];
+} hvacnodedata;
+
+/* --------------------------  hvacductdata ------------------------------------ */
+
+typedef struct _hvacductdata {
+  int id, comp;
+  int nodes[2];
+} hvacductdata;
+
+/* --------------------------  hvacdata ------------------------------------ */
+
+typedef struct _hvacdata {
+  char *label;
+  int n_nodes, n_ducts;
+  hvacnodedata *nodeinfo;
+  hvacductdata *ductinfo;
+} hvacdata;
+#endif
+
 /* --------------------------  menudata ------------------------------------ */
 
 typedef struct _menudata {

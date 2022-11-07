@@ -23,6 +23,10 @@
 #include "glutbitmap.h"
 #endif
 
+#ifdef pp_HVAC
+SVEXTERN int SVDECL(nhvacinfo, 0);
+SVEXTERN hvacdata SVDECL(*hvacinfo, NULL);
+#endif
 SVEXTERN int SVDECL(histogram_nframes, 40);
 SVEXTERN int SVDECL(glui_surf_index, 0);
 SVEXTERN int SVDECL(clip_commandline, 0), SVDECL(special_modifier, 0);

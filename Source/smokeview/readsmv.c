@@ -5948,7 +5948,6 @@ char *GetCharPtr(char *label){
   char *labelptr, labelcopy[256], *labelcopyptr;
   int lenlabel;
 
-
   if(label==NULL||strlen(label)==0)return NULL;
   strcpy(labelcopy,label);
   labelcopyptr = TrimFrontBack(labelcopy);
@@ -6825,6 +6824,9 @@ int ReadSMV(bufferstreamdata *stream){
   FREEMEMORY(fireinfo);
   FREEMEMORY(zoneinfo);
   FREEMEMORY(zventinfo);
+#ifdef pp_HVAC
+  FREEMEMORY(hvacinfo);
+#endif
 
   FREEMEMORY(textureinfo);
   FREEMEMORY(surfinfo);
@@ -6868,6 +6870,19 @@ int ReadSMV(bufferstreamdata *stream){
       BUT if any one these keywords are present then the number of each MUST be equal
     */
 
+    // HVAC
+    // label
+    // n_nodes
+    //  id x y z vent filter comp
+    // ...
+    // n_ducts
+    // id node1 node2 comp
+
+#ifdef pp_HVAC
+    if(MatchSMV(buffer, "HVAC") == 1){
+      nhvacinfo++;
+    }
+#endif
 
     if(MatchSMV(buffer, "HoC") == 1){
       int nfuelinfo_local;
@@ -7657,6 +7672,14 @@ int ReadSMV(bufferstreamdata *stream){
     InitDefaultProp();
     npropinfo=1;
   }
+
+#ifdef pp_HVAC
+  FREEMEMORY(hvacinfo);
+  if(nhvacinfo > 0){
+    if(NewMemory((void**)&hvacinfo, nhvacinfo*sizeof(hvacdata)) == 0)return 2;
+    nhvacinfo = 0;
+  }
+#endif
   PRINT_TIMER(timer_readsmv, "pass 1");
 
 /*
@@ -7696,6 +7719,63 @@ int ReadSMV(bufferstreamdata *stream){
     }
 
     /*
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++ HVAC ++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  */
+    // HVAC
+    // label
+    // n_nodes
+    //  id x y z vent filter comp
+    // ...
+    // n_ducts
+    // id node1 node2 comp
+#ifdef pp_HVAC
+    if (MatchSMV(buffer, "HVAC") == 1) {
+      hvacdata *hvaci;
+      hvacnodedata *nodeinfo;
+      hvacductdata *ductinfo;
+
+      hvaci = hvacinfo + nhvacinfo;
+      if(FGETS(buffer,255,stream)==NULL){
+        BREAK;
+      }
+      hvaci->label = GetCharPtr(buffer);
+      if(FGETS(buffer,255,stream)==NULL){
+        BREAK;
+      }
+      sscanf(buffer, "%i", &(hvaci->n_nodes));
+      NewMemory((void **)&nodeinfo, hvaci->n_nodes*sizeof(hvacnodedata));
+      hvaci->nodeinfo = nodeinfo;
+      for(i=0;i<hvaci->n_nodes;i++){
+        hvacnodedata *nodei;
+
+        if(FGETS(buffer,255,stream)==NULL){
+          BREAK;
+        }
+        nodei = hvaci->nodeinfo + i;
+        sscanf(buffer, "%i %f %f %f %i %i %i", &(nodei->id), nodei->xyz, nodei->xyz+1, nodei->xyz+2, &(nodei->vent), &(nodei->filter), &(nodei->comp));
+      }
+      if(FGETS(buffer,255,stream)==NULL){
+        BREAK;
+      }
+      sscanf(buffer, "%i", &(hvaci->n_ducts));
+      NewMemory((void **)&ductinfo, hvaci->n_ducts*sizeof(hvacductdata));
+      hvaci->ductinfo = ductinfo;
+      for(i=0;i<hvaci->n_ducts;i++){
+        hvacductdata *ducti;
+
+        if(FGETS(buffer,255,stream)==NULL){
+          BREAK;
+        }
+        ducti = hvaci->ductinfo + i;
+        sscanf(buffer, "%i %i %i %i", &ducti->id, ducti->nodes, ducti->nodes+1, &ducti->comp);
+      }
+      nhvacinfo++;
+    }
+#endif
+
+      /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++ CSVF ++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
