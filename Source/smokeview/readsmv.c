@@ -5021,8 +5021,8 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   patchi->valmax_smv        = 0.0;
   patchi->skip              = 0;
   patchi->version           = version;
-  patchi->ntimes            = -1;
-  patchi->ntimes_old        = -1;
+  patchi->ntimes            = 0;
+  patchi->ntimes_old        = 0;
   patchi->histogram_nframes = -1;
   patchi->filetype_label    = NULL;
   patchi->patch_filetype    = PATCH_STRUCTURED_NODE_CENTER;
