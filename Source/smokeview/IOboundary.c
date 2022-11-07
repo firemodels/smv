@@ -1465,12 +1465,12 @@ float UpdateBoundaryHist(patchdata *patchj){
       NewMemory((void **)&patchframe, patchframesize * sizeof(float));
       ResetHistogram(patchi->histogram, NULL, NULL);
       error1 = 0;
-      int skip, i, total_frame_size;
+      int skip, ii, total_frame_size;
 
       skip = MAX(patchi->ntimes / histogram_nframes, 1);
       total_frame_size =
           4 + 4 + 4 + patchframesize * sizeof(float) + npatches * 2 * 4;
-      for (i = 0; i < patchi->ntimes; i += skip){
+      for (ii = 0; ii < patchi->ntimes; ii += skip){
         int ndummy, filesize;
 
         getpatchdata(unit1, npatches, pi1, pi2, pj1, pj2, pk1, pk2, &patchtime1,
