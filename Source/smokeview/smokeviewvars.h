@@ -268,8 +268,6 @@ SVEXTERN int SVDECL(npartthread_ids, 2);
 #ifdef pp_SLICETHREAD
 SVEXTERN int SVDECL(nslicethread_ids, 4);
 #endif
-#ifdef pp_SMOKE3DSTREAM
-#endif
 #ifdef pp_STREAM
 SVEXTERN int SVDECL(stream_multithread, 1);
 SVEXTERN streamlistargdata SVDECL(*streamlistarg, NULL);

@@ -30,6 +30,8 @@
 
 //#define pp_PARTVAL          // speed up part file color updating
 //#define pp_SLICEVAL         // speed up slice file color updating
+//#define pp_BOUNDVAL         // speed up boundary file color updating
+//#define pp_PLOT3DVAL        // speed up plot3d file color updating
 
 // streaming directives
 
@@ -46,7 +48,7 @@
 #define pp_STREAM
 #endif
 
-#define pp_EVAC              // isolate EVAC code
+//#define pp_EVAC              // isolate EVAC code
 #define pp_CLIP_FIX          // fixes to clipping
 #define pp_PART_MULTI        // load particles in parallel
 //#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds
