@@ -241,6 +241,7 @@ void UpdateFrameNumber(int changetime){
         meshi->patch_itime=meshi->patch_timeslist[itimes];
         if(patchi->compression_type==UNCOMPRESSED){
           meshi->cpatchval_iframe = meshi->cpatchval + meshi->patch_itime*meshi->npatchsize;
+          meshi->patchval_iframe  = meshi->patchval+meshi->patch_itime*meshi->npatchsize;
         }
         else{
           UncompressBoundaryDataFrame(meshi,meshi->patch_itime);

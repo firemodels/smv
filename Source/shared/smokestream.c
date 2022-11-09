@@ -10,6 +10,7 @@
 #ifdef pp_OSXLINUX
 #include <sys/mman.h>
 #endif
+#include <time.h>
 #include <math.h>
 #include "MALLOCC.h"
 #include "smokeviewvars.h"
@@ -203,6 +204,7 @@ streamdata *StreamOpen(streamdata *streamin, char *file, size_t offset, int *fra
       stream->frameptrs[0]     = NULL;
       stream->framesizes[0]    = framesizes[0];
       stream->load_status[0]   = STREAM_UNLOADED;
+      stream->load_time        = 0.0;
       start = 1;
     }
     else{
@@ -256,6 +258,7 @@ void StreamClose(streamdata **streamptr){
 
   stream = *streamptr;
   if(stream==NULL)return;
+  FREEMEMORY(stream->load_status);
   FREEMEMORY(stream->frameptrs);
   FREEMEMORY(stream->filebuffer);
   FREEMEMORY(stream->framesizes);
@@ -271,6 +274,8 @@ void StreamClose(streamdata **streamptr){
 FILE_SIZE StreamRead(streamdata *stream, int frame_index){
   FILE *filestream;
   FILE_SIZE file_size;
+
+  clock_t time_start = clock();
 
   LOCK_STREAM;
   if(stream==NULL||frame_index<0||frame_index>stream->nframes-1){
@@ -297,6 +302,11 @@ FILE_SIZE StreamRead(streamdata *stream, int frame_index){
   ASSERT(file_size==stream->framesizes[frame_index]);
 
   stream->load_status[frame_index] = STREAM_LOADED;
+  clock_t time_end = clock();
+  LOCK_STREAM;
+  stream->load_time += (float)(time_end - time_start)/CLOCKS_PER_SEC;
+  UNLOCK_STREAM;
+
   return file_size;
 }
 
@@ -313,16 +323,18 @@ int StreamAllLoaded(streamdata *stream){
 
 /* ------------------  StreamFrameSizeOutput ------------------------ */
 
-void StreamFrameSizeOutput(size_t file_size){
+void StreamFrameSizeOutput(size_t file_size, float *time){
   if(file_size>1000000000){
-    PRINTF("(%.1f GB)\n", (float)file_size/1000000000.);
+    PRINTF("(%.1f GB", (float)file_size/1000000000.);
   }
   else if(file_size>1000000){
-    PRINTF("(%.1f MB)\n", (float)file_size/1000000.);
+    PRINTF("(%.1f MB", (float)file_size/1000000.);
   }
   else{
-    PRINTF("(%.0f KB)\n", (float)file_size/1000.);
+    PRINTF("(%.0f KB", (float)file_size/1000.);
   }
+  if(time!=NULL)PRINTF("/%.1f s", *time);
+  PRINTF(")\n");
 }
 
 /* ------------------  StreamReadList ------------------------ */
@@ -331,7 +343,9 @@ void StreamReadList(streamdata **streams, int nstreams){
   int frame_index, stream_index, i, max_frames;
   int stream_output = 0;
   int stream_pause = 0;
+  float totaltime;
 
+  clock_t totalticks = clock();
   max_frames = streams[0]->nframes;
   for(i = 1; i<nstreams; i++){
     max_frames = MAX(max_frames, streams[i]->nframes);
@@ -340,9 +354,7 @@ void StreamReadList(streamdata **streams, int nstreams){
   for(;;){ //continue until all frames are loaded
     for(frame_index = 0; frame_index<max_frames; frame_index++){
       int count_streams;
-      FILE_SIZE file_size;
 
-      file_size = 0;
       for(count_streams=0, stream_index = 0; stream_index<nstreams; stream_index++){
         streamdata *stream;
 
@@ -356,13 +368,12 @@ void StreamReadList(streamdata **streams, int nstreams){
         UNLOCK_STREAM;
         if(read_stream==1){
           count_streams++;
-          file_size+=StreamRead(stream, frame_index);
+          StreamRead(stream, frame_index);
         }
       }
       if(stream_pause==1)PauseTime(0.5);
       if(count_streams>0&&stream_output==1){
-        printf("Loading frame(%i streams): %i", count_streams, frame_index);
-        StreamFrameSizeOutput(file_size);
+        printf("Loading frame(%i streams): %i\n", count_streams, frame_index);
       }
     }
     // check if all frames have been loaded, if so then we are finished if not then load some more
@@ -373,7 +384,27 @@ void StreamReadList(streamdata **streams, int nstreams){
         break;
       }
     }
-    if(all_loaded==1)return;
+    if(all_loaded==1){
+      size_t total_filesize = 0;
+      float total_time=0.0;
+
+      totalticks = (clock()-totalticks);
+      totaltime = (float)totalticks/(float)CLOCKS_PER_SEC;
+      for(stream_index = 0; stream_index<nstreams; stream_index++){
+        streamdata *streami;
+
+        streami = streams[stream_index];
+        printf("Loaded %s", streami->file);
+        StreamFrameSizeOutput(streami->filesize, &(streami->load_time));
+        total_filesize += streami->filesize;
+        total_time     += streami->load_time;
+      }
+      if(nstreams>1){
+        printf("Loaded total(%f)", totaltime);
+        StreamFrameSizeOutput(total_filesize, &total_time);
+      }
+      return;
+    }
   }
 }
 

@@ -60,7 +60,7 @@ bin = .
 # Definition of the object variables
 
 obj = main.o menus.o IOscript.o IOshooter.o glui_objects.o glui_shooter.o\
-      csphere.o colortimebar.o smv_endian.o camera.o IOgeometry.o IOwui.o IOobjects.o\
+      csphere.o colortimebar.o camera.o IOgeometry.o IOwui.o IOobjects.o\
       IOtour.o glui_display.o glui_tour.o getdatacolors.o smokeview.o output.o renderimage.o\
       renderhtml.o isobox.o getdatabounds.o readsmv.o scontour2d.o glui_smoke.o glui_clip.o\
       glui_stereo.o glui_geometry.o glui_motion.o glui_bounds.o dmalloc.o assert.o\
@@ -75,7 +75,7 @@ incs = contourdefs.h glui_bounds.h glui_motion.h glui_smoke.h glui_tour.h infohe
        IOobjects.h IOscript.h IOvolsmoke.h lua_api.h options.h smokefortheaders.h smokeheaders.h smokeviewdefs.h \
        smokeviewvars.h structures.h threader.h viewports.h smv_assert.h csphere.h dirent_win.h histogram.h isodefs.h \
        MALLOCC.h pragmas.h stdio_buffer.h string_util.h compress.h datadefs.h file_util.h interp.h lint.h options_common.h \
-       smv_endian.h stdio_m.h translate.h
+       stdio_m.h translate.h
 
 ifeq ($(ICON),icon)
 obj += resource.o

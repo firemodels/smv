@@ -12,7 +12,6 @@
 #include GLUT_H
 #include <pthread.h>
 
-#include "smv_endian.h"
 #include "smokeviewvars.h"
 #include "IOvolsmoke.h"
 #include "stdio_buffer.h"
@@ -167,7 +166,7 @@ int IsDimensionless(char *unit){
 
 /* ------------------ ReadCSV ------------------------ */
 
-void ReadCSV(csvfiledata *csvfi, int flag){
+int ReadCSV(csvfiledata *csvfi, int flag){
   FILE *stream;
   int nrows, ncols;
   int nunits, nlabels;
@@ -187,12 +186,13 @@ void ReadCSV(csvfiledata *csvfi, int flag){
     FREEMEMORY(ci->vals_orig);
   }
   FREEMEMORY(csvfi->csvinfo);
-  if(flag == UNLOAD)return;
+  if(flag == UNLOAD)return 0;
 
   stream = fopen(csvfi->file, "r");
-  if(stream == NULL)return;
+  if(stream == NULL)return 0;
 
   len_buffer = GetRowCols(stream, &nrows, &ncols);
+  if(nrows==0||ncols==0)return 0;
   len_buffer = MAX(len_buffer + 100 + ncols, 1000);
   csvfi->ncsvinfo = ncols;
 
@@ -208,7 +208,7 @@ void ReadCSV(csvfiledata *csvfi, int flag){
       FREEMEMORY(buffer);
       FREEMEMORY(buffer_labels);
       FREEMEMORY(buffer_units);
-      return;
+      return 0;
     }
     while(strstr(buffer, "//DATA") == NULL){
       fgets(buffer, len_buffer, stream);
@@ -216,7 +216,7 @@ void ReadCSV(csvfiledata *csvfi, int flag){
         FREEMEMORY(buffer);
         FREEMEMORY(buffer_labels);
         FREEMEMORY(buffer_units);
-        return;
+        return 0;
       }
     }
   }
@@ -383,6 +383,7 @@ void ReadCSV(csvfiledata *csvfi, int flag){
   FREEMEMORY(buffer_units);
 
   fclose(stream);
+  return 1;
 }
 
 /* ------------------ CompareCSV ------------------------ */
@@ -400,18 +401,23 @@ int CompareCSV( const void *arg1, const void *arg2 ){
 /* ------------------ ReadAllCSV ------------------------ */
 
 void ReadAllCSV(int flag){
-  int i;
+  int ifrom, ito;
   csvfiledata *csvfilecopy=NULL;
 
   if(ncsvfileinfo==0)return;
   NewMemory((void **)&(csvfilecopy), ncsvfileinfo*sizeof(csvfiledata));
 
-  for(i=0; i<ncsvfileinfo; i++){
-    ReadCSV(csvfileinfo + i, flag);
+  for(ifrom=0,ito=0; ifrom<ncsvfileinfo; ifrom++){
+    if(ReadCSV(csvfileinfo+ifrom, flag)==1){
+      memcpy(csvfilecopy+ito, csvfileinfo+ifrom, sizeof(csvfiledata));
+      ito++;
+    }
   }
-  memcpy(csvfilecopy, csvfileinfo, ncsvfileinfo*sizeof(csvfiledata));
-  qsort((csvfiledata *)csvfilecopy, ncsvfileinfo, sizeof(csvfiledata), CompareCSV);
-  memcpy(csvfileinfo, csvfilecopy, ncsvfileinfo*sizeof(csvfiledata));
+  ncsvfileinfo = ito;
+  if(ncsvfileinfo>0){
+    qsort((csvfiledata *)csvfilecopy, ncsvfileinfo, sizeof(csvfiledata), CompareCSV);
+    memcpy(csvfileinfo, csvfilecopy, ncsvfileinfo*sizeof(csvfiledata));
+  }
 }
 
 /* ------------------ ReadHRR ------------------------ */

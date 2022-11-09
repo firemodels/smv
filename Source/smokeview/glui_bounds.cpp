@@ -40,6 +40,9 @@ GLUI *glui_bounds=NULL;
 #define BOUND_PERCENTILE_MODE          125
 #define BOUND_PLOT_MINMAX              126
 #define BOUND_COLORBAR_DIGITS          127
+#ifdef pp_BOUNDVAL
+#define BOUND_DONTUPDATE_COLORS        128
+#endif
 
 #define PERCENTILE_DISABLED 0
 #define PERCENTILE_ENABLED  1
@@ -627,12 +630,21 @@ int bounds_dialog::set_valtype(char *label){
     cpp_boundsdata *boundi;
 
     boundi = all_bounds+i;
+#ifdef pp_BOUNDVAL
+    if(strcmp(boundi->label, label)==0&&boundi->set_valtype!=i){
+      boundi->set_valtype = i;
+      if(RADIO_set_valtype!=NULL)RADIO_set_valtype->set_int_val(i);
+      CB(BOUND_VAL_TYPE);
+      return 1;
+    }
+#else
     if(strcmp(boundi->label, label)==0){
       boundi->set_valtype = i;
       if(RADIO_set_valtype!=NULL)RADIO_set_valtype->set_int_val(i);
       CB(BOUND_VAL_TYPE);
       return 1;
     }
+#endif
   }
   return 0;
 }
@@ -1050,8 +1062,10 @@ void bounds_dialog::CB(int var){
       break;
 
       // update colors, reload data buttons - handle in calling routine
+#ifdef pp_BOUNDVAL
+    case BOUND_DONTUPDATE_COLORS:
+#endif
     case BOUND_UPDATE_COLORS:
-      break;
     case BOUND_RELOAD_DATA:
       break;
     case BOUND_RESEARCH_MODE:
@@ -1918,6 +1932,10 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
     case BOUND_VALMAX:
     case BOUND_SETVALMIN:
     case BOUND_SETVALMAX:
+#ifdef pp_PLOT3DVAL
+      UpdateAllPlot3DColors(0);
+      break;
+#endif
     case BOUND_CHOPMIN:
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
@@ -1931,7 +1949,7 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
 #ifdef pp_RESEARCH_DEBUG
         printf("*** updating plot3d colors\n");
 #endif
-        UpdateAllPlot3DColors();
+        UpdateAllPlot3DColors(1);
       }
       else{
         Plot3DBoundsCPP_CB(BOUND_RELOAD_DATA);
@@ -2268,15 +2286,20 @@ extern "C" void PatchBoundsCPP_CB(int var){
 
   patchboundsCPP.CB(var);
   switch(var){
-    case BOUND_VAL_TYPE:
     case BOUND_VALMIN:
     case BOUND_VALMAX:
     case BOUND_SETVALMIN:
     case BOUND_SETVALMAX:
+#ifdef pp_BOUNDVAL
+      UpdateAllBoundaryColors(0);
+#endif
+      break;
+    case BOUND_VAL_TYPE:
     case BOUND_CHOPMIN:
     case BOUND_CHOPMAX:
     case BOUND_SETCHOPMIN:
     case BOUND_SETCHOPMAX:
+    case BOUND_COLORBAR_DIGITS:
       break;
     case BOUND_PERCENTILE_MINVAL:
     case BOUND_PERCENTILE_MAXVAL:
@@ -2365,13 +2388,29 @@ extern "C" void PatchBoundsCPP_CB(int var){
         histogram_label2 = NULL;
       }
       break;
+#ifdef pp_BOUNDVAL
+    case BOUND_DONTUPDATE_COLORS:
+#endif
     case BOUND_UPDATE_COLORS:
       if(HavePatchData()==1){
 #ifdef pp_RESEARCH_DEBUG
+#ifdef pp_BOUNDVAL
+        if(npatchloaded>0&&var==BOUND_UPDATE_COLORS)printf("*** updating boundary file colors");
+#else
         if(npatchloaded>0)printf("*** updating boundary file colors");
 #endif
+#endif
         SetLoadedPatchBounds(NULL, 0);
-        UpdateAllBoundaryColors();
+#ifdef pp_BOUNDVAL
+        if(var==BOUND_DONTUPDATE_COLORS){
+          UpdateAllBoundaryColors(0);
+        }
+        else{
+          UpdateAllBoundaryColors(1);
+        }
+#else
+        UpdateAllBoundaryColors(1);
+#endif
       }
       else{
         PatchBoundsCPP_CB(BOUND_RELOAD_DATA);
@@ -4078,7 +4117,7 @@ extern "C" void BoundBoundCB(int var){
   case UPDATE_DATA_COLORS:
     GetGlobalPatchBounds();
     if(patchlabellist != NULL)Global2GLUIBoundaryBounds(patchlabellist[list_patch_index]);
-    UpdateAllBoundaryColors();
+    UpdateAllBoundaryColors(1);
     break;
   case FILE_RELOAD:
     if(npatchinfo>0){
@@ -5496,7 +5535,7 @@ extern "C" void Plot3DBoundCB(int var){
    break;
   case UPDATE_DATA_COLORS:
     Plot3DBoundCB(FILE_UPDATE);
-    UpdateAllPlot3DColors();
+    UpdateAllPlot3DColors(1);
     break;
   case FILE_RELOAD:
    Plot3DBoundCB(FILE_UPDATE);
