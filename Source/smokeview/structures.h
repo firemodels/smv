@@ -1284,31 +1284,27 @@ typedef struct _compdata {
 #ifdef pp_HVAC
 /* --------------------------  hvacnodedata ------------------------------------ */
 
-// HVAC
-// label
-// n_nodes
-//  id x y z vent filter comp
-// ...
-// n_ducts
-// id node1 node2 comp
-
 typedef struct _hvacnodedata {
-  int id, vent, filter, comp;
+  char *node_name, *vent_name;
+  int node_id, filter;
   float xyz[3];
 } hvacnodedata;
 
 /* --------------------------  hvacductdata ------------------------------------ */
 
 typedef struct _hvacductdata {
-  int id, comp;
+  char *duct_name;
+  int duct_id, component, nduct_cells, n_waypoints;
   int nodes[2];
+  float *waypoints;
 } hvacductdata;
 
 /* --------------------------  hvacdata ------------------------------------ */
 
 typedef struct _hvacdata {
-  char *label;
+  char *network_name;
   int n_nodes, n_ducts;
+  int valid_nodes, valid_ducts;
   hvacnodedata *nodeinfo;
   hvacductdata *ductinfo;
 } hvacdata;

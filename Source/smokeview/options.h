@@ -50,7 +50,6 @@
 #endif
 #endif
 
-
 // turn on pp_STREAM if streaming is on for any file type
 
 #ifdef pp_SMOKE3DSTREAM
