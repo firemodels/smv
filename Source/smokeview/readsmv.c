@@ -7733,6 +7733,14 @@ int ReadSMV(bufferstreamdata *stream){
   // network_name
       if(FGETS(buffer,255,stream)==NULL)BREAK;
       hvaci->network_name = GetCharPtr(buffer);
+      if(strcmp(hvaci->network_name, "null")==0){
+        char network_name[256];
+
+        FREEMEMORY(hvaci->network_name);
+        sprintf(network_name, "hvac network %i", nhvacinfo+1);
+        NewMemory((void **)&hvaci->network_name, strlen(network_name)+1);
+        strcpy(hvaci->network_name, network_name);
+      }
 
       hvaci->n_waypoints = 0;
       hvaci->waypoints   = NULL;
@@ -7740,6 +7748,7 @@ int ReadSMV(bufferstreamdata *stream){
       hvaci->ductinfo    = NULL;
       hvaci->valid_nodes = 0;
       hvaci->valid_ducts = 0;
+      hvaci->display     = 1;
   // n_nodes
   // id_num XYZ
   // node_name
@@ -7815,9 +7824,10 @@ int ReadSMV(bufferstreamdata *stream){
         component = TrimFrontBack(buffer);
 
         ducti->component = HVAC_NONE;
-        if(component != NULL && component[0] == 'F')ducti->component = HVAC_FAN;
-        if(component != NULL && component[0] == 'A')ducti->component = HVAC_AIRCOIL;
-        if(component != NULL && component[0] == 'D')ducti->component = HVAC_DAMPER;
+        if(component != NULL && component[0] == '-')ducti->component = HVAC_NONE;
+        if(component != NULL && (component[0] == 'F' || component[0] == 'f'))ducti->component = HVAC_FAN;
+        if(component != NULL && (component[0] == 'A' || component[0] == 'a'))ducti->component = HVAC_AIRCOIL;
+        if(component != NULL && (component[0] == 'D' || component[0] == 'd'))ducti->component = HVAC_DAMPER;
 
         ducti->waypoints = NULL;
         if(ducti->n_waypoints > 0){

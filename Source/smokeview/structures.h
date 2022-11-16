@@ -1305,6 +1305,7 @@ typedef struct _hvacdata {
   char *network_name;
   int n_nodes, n_ducts, n_waypoints;
   int valid_nodes, valid_ducts;
+  int display;
   float *waypoints;
   hvacnodedata *nodeinfo;
   hvacductdata *ductinfo;
