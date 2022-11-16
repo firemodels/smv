@@ -7734,14 +7734,15 @@ int ReadSMV(bufferstreamdata *stream){
       if(FGETS(buffer,255,stream)==NULL)BREAK;
       hvaci->network_name = GetCharPtr(buffer);
 
+      hvaci->n_waypoints = 0;
+      hvaci->waypoints   = NULL;
       hvaci->nodeinfo    = NULL;
       hvaci->ductinfo    = NULL;
       hvaci->valid_nodes = 0;
       hvaci->valid_ducts = 0;
   // n_nodes
-  // id_num
+  // id_num XYZ
   // node_name
-  // XYZ
   // vent_name
   // filter_flag
       if (FGETS(buffer, 255, stream) == NULL)BREAK;
@@ -7753,20 +7754,23 @@ int ReadSMV(bufferstreamdata *stream){
         NewMemory((void **)&nodeinfo, hvaci->n_nodes*sizeof(hvacnodedata));
         hvaci->nodeinfo = nodeinfo;
       }
+
       int count=0;
+
       for(i=0;i<hvaci->n_nodes;i++){
         hvacnodedata *nodei;
         char *filter;
 
         nodei = hvaci->nodeinfo + i;
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
-        sscanf(buffer, "%i", &nodei->node_id);
+        sscanf(buffer, "%i %f %f %f", &nodei->node_id, nodei->xyz, nodei->xyz + 1, nodei->xyz + 2);
+
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         nodei->node_name = GetCharPtr(buffer);
-        if(FGETS(buffer, 255, stream) == NULL)BREAK;
-        sscanf(buffer, "%f %f %f", nodei->xyz, nodei->xyz+1, nodei->xyz+2);
+
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         nodei->vent_name = GetCharPtr(buffer);
+
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         filter = TrimFrontBack(buffer);
         if(filter[0] == 'T' || filter[0] == 't'){
@@ -7779,12 +7783,9 @@ int ReadSMV(bufferstreamdata *stream){
       }
       if(count>0&&count==hvaci->n_nodes)hvaci->valid_nodes=1;
   // n_ducts
-  // duct_id
+  // duct_id node_id1 node_id2 n_cells n_waypoints
   // duct_name
-  // duct_id1, duct_id2
   // component Fan(F), Aircoil(A), Damper(D), none(-)
-  // nduct_cells
-  // nwaypoints
   // waypoint xyz
       if(FGETS(buffer, 255, stream) == NULL)BREAK;
       sscanf(buffer, "%i", &hvaci->n_ducts);
@@ -7795,17 +7796,21 @@ int ReadSMV(bufferstreamdata *stream){
         hvaci->ductinfo = ductinfo;
       }
       count = 0;
+      int count_waypoints = 0;
+      int valid_waypoints = 1;
       for(i=0;i<hvaci->n_ducts;i++){
         hvacductdata *ducti;
         char *component;
 
         ducti = hvaci->ductinfo + i;
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
-        sscanf(buffer, "%i", &ducti->duct_id);
+        sscanf(buffer, "%i %i %i %i %i", &ducti->duct_id, ducti->nodes, ducti->nodes + 1, &ducti->nduct_cells, &ducti->n_waypoints);
+        ducti->n_waypoints  = MAX(0, ducti->n_waypoints);
+        ducti->nduct_cells  = MAX(0, ducti->nduct_cells);
+        hvaci->n_waypoints += ducti->n_waypoints;
+
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         ducti->duct_name = GetCharPtr(buffer);
-        if(FGETS(buffer, 255, stream) == NULL)BREAK;
-        sscanf(buffer, "%i %i", ducti->nodes, ducti->nodes+1);
         if (FGETS(buffer, 255, stream) == NULL)BREAK;
         component = TrimFrontBack(buffer);
 
@@ -7814,32 +7819,26 @@ int ReadSMV(bufferstreamdata *stream){
         if(component != NULL && component[0] == 'A')ducti->component = HVAC_AIRCOIL;
         if(component != NULL && component[0] == 'D')ducti->component = HVAC_DAMPER;
 
-        int n_waypoints;
-        if (FGETS(buffer, 255, stream) == NULL)BREAK;
-        sscanf(buffer, "%i", &n_waypoints);
-        n_waypoints = MAX(0, n_waypoints);
         ducti->waypoints = NULL;
-        ducti->n_waypoints = n_waypoints;
-        if(n_waypoints > 0){
-          float *waypoints = NULL;
+        if(ducti->n_waypoints > 0){
           int j;
 
-          NewMemory((void**)&waypoints, 3*n_waypoints*sizeof(float));
-          ducti->waypoints = waypoints;
-          int valid_waypoints=1;
           for(j = 0; j < ducti->n_waypoints; j++){
-            if(FGETS(buffer, 255, stream) == NULL){
-              valid_waypoints = 0;
-              BREAK;
-            }
-            sscanf(buffer, "%f %f %f", waypoints, waypoints + 1, waypoints + 2);
-            waypoints += 3;
+            if(FGETS(buffer, 255, stream) == NULL)BREAK;
+            count_waypoints++;
           }
-          if(valid_waypoints==0)BREAK;
         }
+        if(count_waypoints != ducti->n_waypoints)valid_waypoints = 0;
         count++;
       }
-      if(count>0&&count==hvaci->n_ducts)hvaci->valid_ducts=1;
+      if(count>0&&count==hvaci->n_ducts&&valid_waypoints==1)hvaci->valid_ducts=1;
+
+      float *waypoints = NULL;
+
+      if(hvaci->n_waypoints>0){
+        NewMemory((void**)&waypoints, 3*hvaci->n_waypoints*sizeof(float));
+      }
+      hvaci->waypoints = waypoints;
       nhvacinfo++;
     }
 #endif
@@ -9137,6 +9136,9 @@ int ReadSMV(bufferstreamdata *stream){
     devicecopy=deviceinfo;;
   }
   ndeviceinfo=0;
+#ifdef pp_HVAC
+  nhvacinfo = 0;
+#endif
   REWIND(stream);
   PRINTF("%s","  pass 3\n");
   PRINT_TIMER(timer_readsmv, "pass 2");
@@ -9159,6 +9161,60 @@ int ReadSMV(bufferstreamdata *stream){
     if(MatchSMV(buffer, "PL3D")==1){
       continue;
     }
+    /*
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++ HVAC ++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  */
+
+#ifdef pp_HVAC
+    if (MatchSMV(buffer, "HVAC") == 1) {
+      hvacdata *hvaci;
+      float *waypoints;
+
+      hvaci = hvacinfo + nhvacinfo;
+      waypoints = hvaci->waypoints;
+
+      // HVAC
+      // network_name
+      if (FGETS(buffer, 255, stream) == NULL)BREAK;
+      // n_nodes
+      // id_num XYZ
+      // node_name
+      // vent_name
+      // filter_flag
+      if (FGETS(buffer, 255, stream) == NULL)BREAK;
+      int count = 0;
+      for (i = 0; i < hvaci->n_nodes; i++) {
+        if (FGETS(buffer, 255, stream) == NULL)BREAK;
+        if (FGETS(buffer, 255, stream) == NULL)BREAK;
+        if (FGETS(buffer, 255, stream) == NULL)BREAK;
+        if (FGETS(buffer, 255, stream) == NULL)BREAK;
+      }
+      // n_ducts
+      // duct_id node_id1 node_id2 nduct_cells nwaypoints
+      // duct_name
+      // component Fan(F), Aircoil(A), Damper(D), none(-)
+      // waypoint xyz
+      for (i = 0; i < hvaci->n_ducts; i++) {
+        hvacductdata* ducti;
+        int j;
+
+        ducti = hvaci->ductinfo + i;
+        ducti->waypoints = waypoints;
+        if (FGETS(buffer, 255, stream) == NULL)BREAK;
+        if (FGETS(buffer, 255, stream) == NULL)BREAK;
+        if (FGETS(buffer, 255, stream) == NULL)BREAK;
+        for (j = 0; j < ducti->n_waypoints; j++) {
+          if (FGETS(buffer, 255, stream) == NULL)BREAK;
+          sscanf(buffer, "%f %f %f", waypoints, waypoints + 1, waypoints +2);
+          waypoints += 3;
+        }
+      }
+      nhvacinfo++;
+    }
+#endif
+
     /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ AMBIENT ++++++++++++++++++++++++++++++
