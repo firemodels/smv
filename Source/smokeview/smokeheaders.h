@@ -30,6 +30,11 @@ EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg,
 
 EXTERNCPP void SplitCB(int var);
 
+#ifdef pp_HVAC
+EXTERNCPP void DrawHVACS(void);
+EXTERNCPP hvacnodedata *GetHVACNode(hvacdata *hvaci, int node_id);
+#endif
+
 #ifdef pp_REFRESH
 EXTERNCPP void PeriodicRefresh(int var);
 #endif

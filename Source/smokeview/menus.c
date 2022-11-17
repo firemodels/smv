@@ -6601,6 +6601,7 @@ void HVACMenu(int value){
     hvaci->display = 1 - hvaci->display;
   }
   updatemenu = 1;
+  GLUTPOSTREDISPLAY;
 }
 #endif
 
@@ -9099,7 +9100,6 @@ updatemenu=0;
 #ifdef pp_HVAC
   if (nhvacinfo > 0) {
     CREATEMENU(hvacmenu, HVACMenu);
-    glutAddMenuEntry("test", -1);
     for(i = 0; i < nhvacinfo; i++){
       hvacdata *hvaci;
       char label[256];
