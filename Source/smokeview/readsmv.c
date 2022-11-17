@@ -9210,7 +9210,6 @@ int ReadSMV(bufferstreamdata *stream){
       // vent_name
       // filter_flag
       if (FGETS(buffer, 255, stream) == NULL)BREAK;
-      int count = 0;
       for (i = 0; i < hvaci->n_nodes; i++) {
         if (FGETS(buffer, 255, stream) == NULL)BREAK;
         if (FGETS(buffer, 255, stream) == NULL)BREAK;
