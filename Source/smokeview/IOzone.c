@@ -1430,33 +1430,39 @@ void DrawZoneRoomGeom(void){
         glPopMatrix();
       }
       else{
-        float delta;
+        float delta1, delta2;
 
-        delta = 0.1/xyzmaxdiff;
+#ifdef pp_ZONEVENT_DEPTH
+        delta1 = 0.1/xyzmaxdiff;
+        delta2 = delta1;
+#else
+        delta1 = 0.005/xyzmaxdiff;
+        delta2 = -delta1;
+#endif
         glBegin(GL_LINES);
         switch(zvi->wall){
         case LEFT_WALL:
-          DrawZoneVent(zvi->area_fraction, x1-delta, x1+delta, y1, y2, z1, z2);
+          DrawZoneVent(zvi->area_fraction, x1-delta1, x1+delta2, y1, y2, z1, z2);
           break;
 
         case RIGHT_WALL:
-          DrawZoneVent(zvi->area_fraction, x2-delta, x2+delta, y1, y2, z1, z2);
+          DrawZoneVent(zvi->area_fraction, x2-delta2, x2+delta1, y1, y2, z1, z2);
           break;
 
         case FRONT_WALL:
-          DrawZoneVent(zvi->area_fraction, x1, x2, y1-delta, y1+delta, z1, z2);
+          DrawZoneVent(zvi->area_fraction, x1, x2, y1-delta1, y1+delta2, z1, z2);
           break;
 
         case BACK_WALL:
-          DrawZoneVent(zvi->area_fraction, x1, x2, y2-delta, y2+delta, z1, z2);
+          DrawZoneVent(zvi->area_fraction, x1, x2, y2-delta1, y2+delta2, z1, z2);
           break;
 
         case BOTTOM_WALL:
-          DrawZoneVent(zvi->area_fraction, x1, x2, y1, y2, z1-delta, z1+delta);
+          DrawZoneVent(zvi->area_fraction, x1, x2, y1, y2, z1-delta1, z1+delta2);
           break;
 
         case TOP_WALL:
-          DrawZoneVent(zvi->area_fraction, x1, x2, y1, y2, z2-delta, z2+delta);
+          DrawZoneVent(zvi->area_fraction, x1, x2, y1, y2, z2-delta2, z2+delta1);
           break;
 
         default:
