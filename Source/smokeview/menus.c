@@ -184,8 +184,9 @@ float     part_load_time;
 #define MENU_ZONE_2DTEMP 6
 #define MENU_ZONE_2DHAZARD 5
 #define MENU_ZONE_3DSMOKE 7
-#define MENU_ZONE_HORIZONTAL 1
-#define MENU_ZONE_VERTICAL 2
+#define MENU_ZONE_ZPLANE 1
+#define MENU_ZONE_YPLANE 2
+#define MENU_ZONE_XPLANE 24
 #define MENU_ZONE_LAYERHIDE 4
 #define MENU_ZONE_VENTS 14
 #define MENU_ZONE_HVENTS 15
@@ -6484,27 +6485,47 @@ void ZoneShowMenu(int value){
   switch(value){
   case MENU_DUMMY:
     return;
-  case MENU_ZONE_HORIZONTAL:
-    if(zonecolortype==ZONESMOKE_COLOR)zonecolortype = ZONETEMP_COLOR;
-    visVZone=0;
-    visHZone=1;
-    visZone=1;
+  case MENU_ZONE_XPLANE:
+    if (zonecolortype == ZONESMOKE_COLOR)zonecolortype = ZONETEMP_COLOR;
+    if(visZonePlane==ZONE_XPLANE){
+      visZonePlane = ZONE_HIDDEN;
+      visZone=0;
+    }
+    else{
+      visZonePlane = ZONE_XPLANE;
+      visZone=1;
+    }
     break;
-  case MENU_ZONE_VERTICAL:
+  case MENU_ZONE_YPLANE:
     if(zonecolortype==ZONESMOKE_COLOR)zonecolortype = ZONETEMP_COLOR;
-    visVZone = 1;
-    visHZone=0;
-    visZone=1;
+    if(visZonePlane==ZONE_YPLANE){
+      visZonePlane = ZONE_HIDDEN;
+      visZone=0;
+    }
+    else{
+      visZonePlane = ZONE_YPLANE;
+      visZone=1;
+    }
+    break;
+  case MENU_ZONE_ZPLANE:
+    if(zonecolortype==ZONESMOKE_COLOR)zonecolortype = ZONETEMP_COLOR;
+    if(visZonePlane==ZONE_ZPLANE){
+      visZonePlane = ZONE_HIDDEN;
+      visZone=0;
+    }
+    else{
+      visZonePlane = ZONE_ZPLANE;
+      visZone=1;
+    }
     break;
   case MENU_ZONE_LAYERHIDE:
-    visVZone=0;
-    visHZone=0;
+    visZone=ZONE_HIDDEN;
     visSZone=0;
     break;
   case MENU_ZONE_2DHAZARD:
     zonecolortype=ZONEHAZARD_COLOR;
     visSZone=0;
-    if(visVZone==0&&visHZone==0)visVZone=1;
+    if (visZonePlane = ZONE_HIDDEN)visZonePlane = ZONE_YPLANE;
     visZone=1;
     break;
   case MENU_ZONE_2DTEMP:
@@ -6513,7 +6534,7 @@ void ZoneShowMenu(int value){
     if(value==MENU_ZONE_2DTEMP)show_zonelower = 0;
     zonecolortype=ZONETEMP_COLOR;
     visSZone=0;
-    if(visVZone==0&&visHZone==0)visVZone=1;
+    if (visZonePlane = ZONE_HIDDEN)visZonePlane = ZONE_YPLANE;
     visZone=1;
     break;
   case MENU_ZONE_3DSMOKE:
@@ -9277,19 +9298,32 @@ updatemenu=0;
     glutAddMenuEntry(_("   Orientation:"), MENU_DUMMY);
     if(visZone==1){
       if(zonecolortype==ZONESMOKE_COLOR){
-        glutAddMenuEntry(_("      Horizontal"), MENU_ZONE_HORIZONTAL);
-        glutAddMenuEntry(_("      Vertical"), MENU_ZONE_VERTICAL);
+        glutAddMenuEntry(_("      Vertical(X plane)"),   MENU_ZONE_XPLANE);
+        glutAddMenuEntry(_("      Vertical(Y plane)"),   MENU_ZONE_YPLANE);
+        glutAddMenuEntry(_("      Horizontal(Z plane)"), MENU_ZONE_ZPLANE);
       }
       else{
-        if(visHZone==1)glutAddMenuEntry(_("      *Horizontal"), MENU_ZONE_HORIZONTAL);
-        if(visHZone==0)glutAddMenuEntry(_("      Horizontal"), MENU_ZONE_HORIZONTAL);
-        if(visVZone==1)glutAddMenuEntry(_("      *Vertical"), MENU_ZONE_VERTICAL);
-        if(visVZone==0)glutAddMenuEntry(_("      Vertical"), MENU_ZONE_VERTICAL);
+        if (visZonePlane == ZONE_XPLANE) {
+          glutAddMenuEntry(_("      *Vertical(X plane)"),  MENU_ZONE_XPLANE);
+          glutAddMenuEntry(_("      Vertical(Y plane)"),   MENU_ZONE_YPLANE);
+          glutAddMenuEntry(_("      Horizontal(Z plane)"), MENU_ZONE_ZPLANE);
+        }
+        if (visZonePlane == ZONE_YPLANE) {
+          glutAddMenuEntry(_("      Vertical(X plane)"),   MENU_ZONE_XPLANE);
+          glutAddMenuEntry(_("      *Vertical(Y plane)"),  MENU_ZONE_YPLANE);
+          glutAddMenuEntry(_("      Horizontal(Z plane)"), MENU_ZONE_ZPLANE);
+        }
+        if (visZonePlane == ZONE_ZPLANE) {
+          glutAddMenuEntry(_("      Vertical(X plane)"),    MENU_ZONE_XPLANE);
+          glutAddMenuEntry(_("      Vertical(Y plane)"),    MENU_ZONE_YPLANE);
+          glutAddMenuEntry(_("      *Horizontal(Z plane)"), MENU_ZONE_ZPLANE);
+        }
       }
     }
     else{
-      glutAddMenuEntry(_("      Horizontal"), MENU_ZONE_HORIZONTAL);
-      glutAddMenuEntry(_("      Vertical"), MENU_ZONE_VERTICAL);
+      glutAddMenuEntry(_("      Vertical(X plane)"),   MENU_ZONE_XPLANE);
+      glutAddMenuEntry(_("      Vertical(Y plane)"),   MENU_ZONE_YPLANE);
+      glutAddMenuEntry(_("      Horizontal(Z plane)"), MENU_ZONE_ZPLANE);
     }
     if(visZone==0){
       glutAddMenuEntry(_("   *Hide"), MENU_ZONE_LAYERHIDE);
