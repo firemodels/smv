@@ -1219,74 +1219,70 @@ void ReadZone(int ifile, int flag, int *errorcode){
 /* ------------------ DrawZoneVent ------------------------ */
 
 void DrawZoneVent(float area_fraction, float x1, float x2, float y1, float y2, float z1, float z2){
+// draw an X through the vent if it is closed
   if(area_fraction < 0.0001){
-    if(ABS(x1-x2)>0.0001&&ABS(y1-y2)>0.0001){
+    if(ABS(x1-x2)>0.0 && ABS(y1-y2)>0.0){
       glVertex3f(x1,y1,z1);
       glVertex3f(x2,y2,z1);
       glVertex3f(x1,y2,z1);
       glVertex3f(x2,y1,z1);
-
-      glVertex3f(x1,y1,z2);
-      glVertex3f(x2,y2,z2);
-      glVertex3f(x1,y2,z2);
-      glVertex3f(x2,y1,z2);
     }
-    if(ABS(x1-x2)>0.0001&&ABS(z1-z2)>0.0001){
+    if(ABS(x1-x2)>0.0 && ABS(z1-z2)>0.0){
       glVertex3f(x1,y1,z1);
       glVertex3f(x2,y1,z2);
       glVertex3f(x1,y1,z2);
       glVertex3f(x2,y1,z1);
-
-      glVertex3f(x1,y2,z1);
-      glVertex3f(x2,y2,z2);
-      glVertex3f(x1,y2,z2);
-      glVertex3f(x2,y2,z1);
     }
-    if(ABS(y1-y2)>0.0001&&ABS(y1-y2)>0.0001){
+    if(ABS(y1-y2)>0.0 && ABS(z1-z2)>0.0){
       glVertex3f(x1,y1,z1);
       glVertex3f(x1,y2,z2);
       glVertex3f(x1,y1,z2);
       glVertex3f(x1,y2,z1);
-
-      glVertex3f(x2,y1,z1);
-      glVertex3f(x2,y2,z2);
-      glVertex3f(x2,y1,z2);
-      glVertex3f(x2,y2,z1);
     }
   }
-  if(ABS(x1-x2)>0.0001){
+  // on Z plane
+  if(ABS(x1 - x2)>0.0 && ABS(y1 - y2)>0.0){
     glVertex3f(x1,y1,z1);
     glVertex3f(x2,y1,z1);
-    glVertex3f(x1,y2,z1);
+
+    glVertex3f(x2, y1, z1);
     glVertex3f(x2,y2,z1);
-    glVertex3f(x1,y1,z2);
-    glVertex3f(x2,y1,z2);
-    glVertex3f(x1,y2,z2);
-    glVertex3f(x2,y2,z2);
-    if(area_fraction < 0.0001){
-    }
+
+    glVertex3f(x2, y2, z1);
+    glVertex3f(x1,y2,z1);
+
+    glVertex3f(x1, y2, z1);
+    glVertex3f(x1,y1,z1);
   }
 
-  if(ABS(y1-y2)>0.0001){
-    glVertex3f(x1,y1,z1);
-    glVertex3f(x1,y2,z1);
-    glVertex3f(x2,y1,z1);
-    glVertex3f(x2,y2,z1);
-    glVertex3f(x1,y1,z2);
-    glVertex3f(x1,y2,z2);
-    glVertex3f(x2,y1,z2);
-    glVertex3f(x2,y2,z2);
+  // on y plane
+  if(ABS(x1 - x2)>0.0 && ABS(z1 - z2)>0.0){
+    glVertex3f(x1, y1, z1);
+    glVertex3f(x2, y1, z1);
+
+    glVertex3f(x2, y1, z1);
+    glVertex3f(x2, y1, z2);
+
+    glVertex3f(x2, y1, z2);
+    glVertex3f(x1, y1, z2);
+
+    glVertex3f(x1, y1, z2);
+    glVertex3f(x1, y1, z1);
   }
 
-  if(ABS(z1-z2)>0.0001){
-    glVertex3f(x1,y1,z1);
-    glVertex3f(x1,y1,z2);
-    glVertex3f(x2,y1,z1);
-    glVertex3f(x2,y1,z2);
-    glVertex3f(x1,y2,z1);
-    glVertex3f(x1,y2,z2);
-    glVertex3f(x2,y2,z1);
-    glVertex3f(x2,y2,z2);
+  // on x plane
+  if(ABS(y1 - y2)>0.0 && ABS(z1 - z2)>0.0){
+    glVertex3f(x1, y1, z1);
+    glVertex3f(x1, y1, z2);
+
+    glVertex3f(x1, y1, z2);
+    glVertex3f(x1, y2, z2);
+
+    glVertex3f(x1, y2, z2);
+    glVertex3f(x1, y2, z1);
+
+    glVertex3f(x1, y2, z1);
+    glVertex3f(x1, y1, z1);
   }
 }
 
@@ -1430,45 +1426,53 @@ void DrawZoneRoomGeom(void){
         glPopMatrix();
       }
       else{
-        float delta1, delta2;
+        float delta;
+        float XB[6];
 
-#ifdef pp_ZONEVENT_DEPTH
-        delta1 = 0.1/xyzmaxdiff;
-        delta2 = delta1;
-#else
-        delta1 = 0.005/xyzmaxdiff;
-        delta2 = -delta1;
-#endif
+        delta = ventoffset_factor*0.05/xyzmaxdiff;
+        XB[0] = x1;
+        XB[1] = x2;
+        XB[2] = y1;
+        XB[3] = y2;
+        XB[4] = z1;
+        XB[5] = z2;
         glBegin(GL_LINES);
         switch(zvi->wall){
         case LEFT_WALL:
-          DrawZoneVent(zvi->area_fraction, x1-delta1, x1+delta2, y1, y2, z1, z2);
+          XB[0] += delta;
+          XB[1]  = XB[0];
           break;
 
         case RIGHT_WALL:
-          DrawZoneVent(zvi->area_fraction, x2-delta2, x2+delta1, y1, y2, z1, z2);
+          XB[0] -= delta;
+          XB[1]  = XB[0];
           break;
 
         case FRONT_WALL:
-          DrawZoneVent(zvi->area_fraction, x1, x2, y1-delta1, y1+delta2, z1, z2);
+          XB[2] += delta;
+          XB[3]  = XB[2];
           break;
 
         case BACK_WALL:
-          DrawZoneVent(zvi->area_fraction, x1, x2, y2-delta1, y2+delta2, z1, z2);
+          XB[2] -= delta;
+          XB[3]  = XB[2];
           break;
 
         case BOTTOM_WALL:
-          DrawZoneVent(zvi->area_fraction, x1, x2, y1, y2, z1-delta1, z1+delta2);
+          XB[4] += delta;
+          XB[5]  = XB[4];
           break;
 
         case TOP_WALL:
-          DrawZoneVent(zvi->area_fraction, x1, x2, y1, y2, z2-delta2, z2+delta1);
+          XB[4] -= delta;
+          XB[5]  = XB[4];
           break;
 
         default:
           ASSERT(FFALSE);
           break;
         }
+        DrawZoneVent(zvi->area_fraction, XB[0], XB[1], XB[2], XB[3], XB[4], XB[5]);
         glEnd();
       }
     }
@@ -2293,7 +2297,7 @@ void DrawZoneFireData(void){
 
 void DrawZoneRoomData(void){
   float xroom0, yroom0, zroom0, xroom, yroom, zroom;
-  float *zoneylaybase,dy;
+  float *zoneylaybase,dx,dy;
   unsigned char *hazardcolorbase, *zonecolorbaseU;
   unsigned char *zonecolorbaseL;
   float ylay;
@@ -2349,6 +2353,7 @@ void DrawZoneRoomData(void){
     yroom = roomi->y1;
     zroom0 = roomi->z0;
     zroom = roomi->z1;
+    dx = roomi->dx/2.;
     dy = roomi->dy/2.;
 
     if(zonecolortype==ZONESMOKE_COLOR&&visSZone==1){
@@ -2364,7 +2369,7 @@ void DrawZoneRoomData(void){
 #endif
     }
     else{
-      if(visHZone==1){
+      if(visZonePlane==ZONE_ZPLANE){
         glColor4fv(colorvU);
         glBegin(GL_QUADS);
         glVertex3f(xroom0,yroom0,ylay+zroom0);
@@ -2373,20 +2378,37 @@ void DrawZoneRoomData(void){
         glVertex3f(xroom0,yroom,ylay+zroom0);
         glEnd();
       }
-      if(visVZone==1){
+      if(visZonePlane == ZONE_YPLANE){
         glBegin(GL_QUADS);
         glColor4fv(colorvU);
-        glVertex3f(xroom0,yroom0+dy,ylay+zroom0);
-        glVertex3f(xroom,yroom0+dy,ylay+zroom0);
-        glVertex3f(xroom, yroom0+dy,zroom);
-        glVertex3f(xroom0,yroom0+dy,zroom);
+        glVertex3f(xroom0, yroom0+dy,ylay+zroom0);
+        glVertex3f(xroom,  yroom0+dy,ylay+zroom0);
+        glVertex3f(xroom,  yroom0+dy,zroom);
+        glVertex3f(xroom0, yroom0+dy,zroom);
 
         if(show_zonelower == 1&&zonecolortype!=ZONEHAZARD_COLOR){
           glColor4fv(colorvL);
           glVertex3f(xroom0, yroom0 + dy, zroom0);
-          glVertex3f(xroom, yroom0 + dy, zroom0);
-          glVertex3f(xroom, yroom0 + dy, zroom0 + ylay);
+          glVertex3f(xroom,  yroom0 + dy, zroom0);
+          glVertex3f(xroom,  yroom0 + dy, zroom0 + ylay);
           glVertex3f(xroom0, yroom0 + dy, zroom0 + ylay);
+        }
+        glEnd();
+      }
+      if(visZonePlane == ZONE_XPLANE){
+        glBegin(GL_QUADS);
+        glColor4fv(colorvU);
+        glVertex3f(xroom0+dx, yroom0, ylay + zroom0);
+        glVertex3f(xroom0+dx, yroom,  ylay + zroom0);
+        glVertex3f(xroom0+dx, yroom,  zroom);
+        glVertex3f(xroom0+dx, yroom0, zroom);
+
+        if (show_zonelower == 1 && zonecolortype != ZONEHAZARD_COLOR) {
+          glColor4fv(colorvL);
+          glVertex3f(xroom0+dx, yroom0, zroom0);
+          glVertex3f(xroom0+dx, yroom,  zroom0);
+          glVertex3f(xroom0+dx, yroom,  zroom0+ylay);
+          glVertex3f(xroom0+dx, yroom0, zroom0+ylay);
         }
         glEnd();
       }
