@@ -1429,7 +1429,7 @@ void DrawZoneRoomGeom(void){
         float delta;
         float XB[6];
 
-        delta = ventoffset_factor*0.1/xyzmaxdiff;
+        delta = ventoffset_factor*0.05/xyzmaxdiff;
         XB[0] = x1;
         XB[1] = x2;
         XB[2] = y1;
@@ -2297,7 +2297,7 @@ void DrawZoneFireData(void){
 
 void DrawZoneRoomData(void){
   float xroom0, yroom0, zroom0, xroom, yroom, zroom;
-  float *zoneylaybase,dy;
+  float *zoneylaybase,dx,dy;
   unsigned char *hazardcolorbase, *zonecolorbaseU;
   unsigned char *zonecolorbaseL;
   float ylay;
@@ -2353,6 +2353,7 @@ void DrawZoneRoomData(void){
     yroom = roomi->y1;
     zroom0 = roomi->z0;
     zroom = roomi->z1;
+    dx = roomi->dx/2.;
     dy = roomi->dy/2.;
 
     if(zonecolortype==ZONESMOKE_COLOR&&visSZone==1){
@@ -2368,7 +2369,7 @@ void DrawZoneRoomData(void){
 #endif
     }
     else{
-      if(visHZone==1){
+      if(visZonePlane==ZONE_ZPLANE){
         glColor4fv(colorvU);
         glBegin(GL_QUADS);
         glVertex3f(xroom0,yroom0,ylay+zroom0);
@@ -2377,20 +2378,37 @@ void DrawZoneRoomData(void){
         glVertex3f(xroom0,yroom,ylay+zroom0);
         glEnd();
       }
-      if(visVZone==1){
+      if(visZonePlane == ZONE_YPLANE){
         glBegin(GL_QUADS);
         glColor4fv(colorvU);
-        glVertex3f(xroom0,yroom0+dy,ylay+zroom0);
-        glVertex3f(xroom,yroom0+dy,ylay+zroom0);
-        glVertex3f(xroom, yroom0+dy,zroom);
-        glVertex3f(xroom0,yroom0+dy,zroom);
+        glVertex3f(xroom0, yroom0+dy,ylay+zroom0);
+        glVertex3f(xroom,  yroom0+dy,ylay+zroom0);
+        glVertex3f(xroom,  yroom0+dy,zroom);
+        glVertex3f(xroom0, yroom0+dy,zroom);
 
         if(show_zonelower == 1&&zonecolortype!=ZONEHAZARD_COLOR){
           glColor4fv(colorvL);
           glVertex3f(xroom0, yroom0 + dy, zroom0);
-          glVertex3f(xroom, yroom0 + dy, zroom0);
-          glVertex3f(xroom, yroom0 + dy, zroom0 + ylay);
+          glVertex3f(xroom,  yroom0 + dy, zroom0);
+          glVertex3f(xroom,  yroom0 + dy, zroom0 + ylay);
           glVertex3f(xroom0, yroom0 + dy, zroom0 + ylay);
+        }
+        glEnd();
+      }
+      if(visZonePlane == ZONE_XPLANE){
+        glBegin(GL_QUADS);
+        glColor4fv(colorvU);
+        glVertex3f(xroom0+dx, yroom0, ylay + zroom0);
+        glVertex3f(xroom0+dx, yroom,  ylay + zroom0);
+        glVertex3f(xroom0+dx, yroom,  zroom);
+        glVertex3f(xroom0+dx, yroom0, zroom);
+
+        if (show_zonelower == 1 && zonecolortype != ZONEHAZARD_COLOR) {
+          glColor4fv(colorvL);
+          glVertex3f(xroom0+dx, yroom0, zroom0);
+          glVertex3f(xroom0+dx, yroom,  zroom0);
+          glVertex3f(xroom0+dx, yroom,  zroom0+ylay);
+          glVertex3f(xroom0+dx, yroom0, zroom0+ylay);
         }
         glEnd();
       }
