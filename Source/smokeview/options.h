@@ -24,6 +24,7 @@
 
 //*** options: all platforms
 
+//#define pp_ZONEVENT_DEPTH   // draw cfast vents with depth
 //#define pp_THINFACE         // don't draw sides of thin faces
 
 //#define pp_HVAC                // visualize HVAC networks
