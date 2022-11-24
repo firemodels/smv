@@ -6525,7 +6525,7 @@ void ZoneShowMenu(int value){
   case MENU_ZONE_2DHAZARD:
     zonecolortype=ZONEHAZARD_COLOR;
     visSZone=0;
-    if (visZonePlane = ZONE_HIDDEN)visZonePlane = ZONE_YPLANE;
+    if (visZonePlane == ZONE_HIDDEN)visZonePlane = ZONE_YPLANE;
     visZone=1;
     break;
   case MENU_ZONE_2DTEMP:
@@ -6534,7 +6534,7 @@ void ZoneShowMenu(int value){
     if(value==MENU_ZONE_2DTEMP)show_zonelower = 0;
     zonecolortype=ZONETEMP_COLOR;
     visSZone=0;
-    if (visZonePlane = ZONE_HIDDEN)visZonePlane = ZONE_YPLANE;
+    if (visZonePlane == ZONE_HIDDEN)visZonePlane = ZONE_YPLANE;
     visZone=1;
     break;
   case MENU_ZONE_3DSMOKE:
