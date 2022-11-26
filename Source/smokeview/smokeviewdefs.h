@@ -206,6 +206,11 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define ZONEVENT_CIRCLE 1
 #define ZONEVENT_SQUARE 2
 
+#define ZONE_HIDDEN 0
+#define ZONE_XPLANE 1
+#define ZONE_YPLANE 2
+#define ZONE_ZPLANE 3
+
 #define ROTATE_ABOUT_USER_CENTER     -1
 #define ROTATE_ABOUT_CLIPPING_CENTER -2
 #define ROTATE_ABOUT_FDS_CENTER      -3

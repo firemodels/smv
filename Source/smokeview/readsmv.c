@@ -14012,9 +14012,22 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i", &visMeshlabel);
       continue;
     }
-    if(MatchINI(buffer, "SHOWVZONE") == 1){
+    if(MatchINI(buffer, "SHOWZONEPLANE") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i", &visVZone, &show_zonelower);
+      sscanf(buffer, "%i %i", &visZonePlane, &show_zonelower);
+      continue;
+    }
+    if(MatchINI(buffer, "SHOWVZONE") == 1){
+      int vis;
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i %i", &vis, &show_zonelower);
+      if(vis==1){
+        visZonePlane = ZONE_YPLANE;
+      }
+      else{
+        visZonePlane = ZONE_HIDDEN;
+      }
       continue;
     }
     if(MatchINI(buffer, "SHOWZONEFIRE") == 1){
@@ -14029,8 +14042,16 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
     if(MatchINI(buffer, "SHOWHZONE") == 1){
+      int vis;
+
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &visHZone);
+      sscanf(buffer, "%i", &vis);
+      if(vis==1){
+        visZonePlane = ZONE_ZPLANE;
+      }
+      else{
+        visZonePlane = ZONE_HIDDEN;
+      }
       continue;
     }
     if(MatchINI(buffer, "SHOWHAZARDCOLORS") == 1){
@@ -16611,12 +16632,10 @@ void WriteIni(int flag,char *filename){
 
   fprintf(fileout, "SHOWHAZARDCOLORS\n");
   fprintf(fileout, " %i\n", zonecolortype);
-  fprintf(fileout, "SHOWHZONE\n");
-  fprintf(fileout, " %i\n", visHZone);
+  fprintf(fileout, "SHOWZONEPLANE\n");
+  fprintf(fileout, " %i %i\n", visZonePlane, show_zonelower);
   fprintf(fileout, "SHOWSZONE\n");
   fprintf(fileout, " %i\n", visSZone);
-  fprintf(fileout, "SHOWVZONE\n");
-  fprintf(fileout, " %i %i\n", visVZone, show_zonelower);
   fprintf(fileout, "SHOWZONEFIRE\n");
   fprintf(fileout, " %i\n", viszonefire);
 
