@@ -523,13 +523,14 @@ void Plot2D2Glui(int index){
 
 /* ------------------ GetPlotLabel ------------------------ */
 
-void GetPlotLabel(char *label){
+void GetPlotLabel(char *label, int size){
   int index, i;
 
   for(index = 1;; index++){
     int skip;
 
-    sprintf(label, "plot %i", index);
+//    sprintf(label, "plot %i", index);
+    snprintf(label, size, "plot %i", index);
     skip = 0;
     for(i = 0; i<nplot2dinfo-1; i++){
       plot2ddata *plot2di;
@@ -559,7 +560,7 @@ extern "C" void AddPlot(void){
   iplot2dinfo = nplot2dinfo - 1;
   InitPlot2D(plot2dinfo + iplot2dinfo, nplot2dinfo);
   Plot2D2Glui(iplot2dinfo);
-  GetPlotLabel(label);
+  GetPlotLabel(label, 32);
   strcpy(plot2dinfo[iplot2dinfo].plot_label, label);
   LIST_plots->add_item(iplot2dinfo, label);
   LIST_plots->set_int_val(iplot2dinfo);
@@ -1989,11 +1990,14 @@ extern "C" void GluiDeviceSetup(int main_window){
           treei = zwindtreeinfo[i];
           xyz = treei->xyz;
 
-          sprintf(xlabel, "%f", xyz[0]);
-          sprintf(ylabel, "%f", xyz[1]);
+          //sprintf(xlabel, "%f", xyz[0]);
+          snprintf(xlabel, sizeof(xlabel), "%f", xyz[0]);
+          //sprintf(ylabel, "%f", xyz[1]);
+          snprintf(ylabel, sizeof(ylabel), "%f", xyz[1]);
           TrimZeros(xlabel);
           TrimZeros(ylabel);
-          sprintf(roselabel, "x=%s, y=%s", xlabel, ylabel);
+          //sprintf(roselabel, "x=%s, y=%s", xlabel, ylabel);
+          snprintf(roselabel, sizeof(roselabel), "x=%s, y=%s", xlabel, ylabel);
           ROLLOUT_showz_windrose[i] = glui_device->add_rollout_to_panel(ROLLOUT_showhide_windrose, roselabel, false);
           INSERT_ROLLOUT(ROLLOUT_showz_windrose[i], glui_device);
           glui_device->add_button_to_panel(ROLLOUT_showz_windrose[i], _("Show all"), DEVICE_WINDROSE_SHOWHIDEALL+i, DeviceCB);
@@ -2014,7 +2018,8 @@ extern "C" void GluiDeviceSetup(int main_window){
             if(xyz!=NULL&&vdevsorti->dir==ZDIR&&vd->unique!=0){
               char zlabel[256];
 
-              sprintf(zlabel, "z=%f", xyz[2]);
+              //sprintf(zlabel, "z=%f", xyz[2]);
+              snprintf(zlabel, sizeof(zlabel), "z=%f", xyz[2]);
               TrimZeros(zlabel);
               CHECKBOX_showz_windrose[icheckboxes++] = glui_device->add_checkbox_to_panel(ROLLOUT_showz_windrose[i], zlabel, &vd->display);
             }

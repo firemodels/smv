@@ -269,7 +269,8 @@ void MakeMovieBashScript(void){
 
   fclose(stream);
 
-  sprintf(command_line, "bash %s", movie_bash_script);
+  //sprintf(command_line, "bash %s", movie_bash_script);
+  snprintf(command_line, sizeof(command_line), "bash %s", movie_bash_script);
   system(command_line);
 }
 
@@ -370,15 +371,18 @@ extern "C" void UpdateRenderRadioButtons(int width_low, int height_low, int widt
   char label[1024];
 
   if(width_low > 2){
-    sprintf(label, "%ix%i (current)", width_low, height_low);
+    //sprintf(label, "%ix%i (current)", width_low, height_low);
+    snprintf(label, sizeof(label), "%ix%i (current)", width_low, height_low);
     if(RADIOBUTTON_render_current != NULL)RADIOBUTTON_render_current->set_name(label);
 
-    sprintf(label, "%ix%i ( %i x current)", width_high, height_high, glui_resolution_multiplier);
+    //sprintf(label, "%ix%i ( %i x current)", width_high, height_high, glui_resolution_multiplier);
+    snprintf(label, sizeof(label), "%ix%i ( %i x current)", width_high, height_high, glui_resolution_multiplier);
     if(RADIOBUTTON_render_high != NULL)RADIOBUTTON_render_high->set_name(label);
   }
 
   if(nwidth360 > 2){
-    sprintf(label, "%s %ix%i", deg360, nwidth360, nheight360);
+    //sprintf(label, "%s %ix%i", deg360, nwidth360, nheight360);
+    snprintf(label, sizeof(label), "%s %ix%i", deg360, nwidth360, nheight360);
     if(RADIOBUTTON_render_360 != NULL)RADIOBUTTON_render_360->set_name(label);
   }
 }
@@ -458,7 +462,8 @@ extern "C" void SetColorControls(void){
 void MovieCB(int val){
   switch (val){
     case MOVIE_SLICE_INDEX:
-      sprintf(movie_basename, "%s_slice_%i", fdsprefix, movie_slice_index+1);
+      //sprintf(movie_basename, "%s_slice_%i", fdsprefix, movie_slice_index+1);
+      snprintf(movie_basename, sizeof(movie_basename), "%s_slice_%i", fdsprefix, movie_slice_index+1);
 
       strcpy(movie_ssf_script, movie_basename);
       strcat(movie_ssf_script, ".ssf");
@@ -672,7 +677,8 @@ void GetUniqueViewName(void){
     int i;
 
     for(i = 1;;i++){
-      sprintf(viewlabel, "view %i", i);
+      //sprintf(viewlabel, "view %i", i);
+      snprintf(viewlabel, sizeof(viewlabel),"view %i", i);
       if(ViewExist(viewlabel) == 0)break;
     }
     EDIT_view_label->set_text(viewlabel);
@@ -1196,7 +1202,8 @@ extern "C" void GluiMotionSetup(int main_window){
   {
     char rotate_label[100];
 
-    sprintf(rotate_label,"%s rotate",deg90);
+    //sprintf(rotate_label,"%s rotate",deg90);
+    snprintf(rotate_label,sizeof(rotate_label),"%s rotate",deg90);
     BUTTON_rotate90 = glui_motion->add_button_to_panel(PANEL_custom_view, rotate_label, ROTATE_90, SceneMotionCB);
   }
   glui_motion->add_button_to_panel(PANEL_custom_view, "Reset", RESET_VIEW, SceneMotionCB);
@@ -1627,7 +1634,8 @@ extern "C" void GluiMotionSetup(int main_window){
       quantity = slicei->label.longlabel;
       idir = CLAMP(slicei->idir, 0, 4);
       position = slicei->position_orig;
-      sprintf(cposition, "%f", position);
+      //sprintf(cposition, "%f", position);
+      snprintf(cposition, sizeof(cposition),"%f", position);
       TrimZeros(cposition);
       strcpy(label, " ");
       if(idir>=1&&idir<=3){
@@ -2585,7 +2593,8 @@ void RenderCB(int var){
   switch(var){
     case RENDER_360CB:
       nwidth360 = nheight360*2;
-      sprintf(widthlabel,"width: %i",nwidth360);
+      //sprintf(widthlabel,"width: %i",nwidth360);
+      snprintf(widthlabel,sizeof(widthlabel),"width: %i",nwidth360);
       {
         int width_low, height_low, width_high, height_high;
 
