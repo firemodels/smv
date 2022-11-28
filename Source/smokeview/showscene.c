@@ -390,6 +390,13 @@ void ShowScene2(int mode){
     }
   }
 
+  /* ++++++++++++++++++++++++ draw HVAC networks +++++++++++++++++++++++++ */
+#ifdef pp_HVAC
+  if (nhvacinfo > 0) {
+    DrawHVACS();
+  }
+#endif
+
   /* ++++++++++++++++++++++++ draw slice files +++++++++++++++++++++++++ */
 
   if(show_gslice_triangles == 1 || show_gslice_normal == 1 || show_gslice_normal_keyboard == 1 || show_gslice_triangulation == 1){

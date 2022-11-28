@@ -7771,6 +7771,8 @@ int ReadSMV(bufferstreamdata *stream){
         char *filter;
 
         nodei = hvaci->nodeinfo + i;
+        nodei->use_node = 0;
+
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         sscanf(buffer, "%i %f %f %f", &nodei->node_id, nodei->xyz, nodei->xyz + 1, nodei->xyz + 2);
 
@@ -7813,7 +7815,21 @@ int ReadSMV(bufferstreamdata *stream){
 
         ducti = hvaci->ductinfo + i;
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
-        sscanf(buffer, "%i %i %i %i %i", &ducti->duct_id, ducti->nodes, ducti->nodes + 1, &ducti->nduct_cells, &ducti->n_waypoints);
+        sscanf(buffer, "%i %i %i %i %i", &ducti->duct_id, &ducti->node_id_from, &ducti->node_id_to, &ducti->nduct_cells, &ducti->n_waypoints);
+        ducti->node_from = GetHVACNode(hvaci, ducti->node_id_from);
+        if(ducti->node_from!=NULL){
+          int index_from;
+
+          index_from = ducti->node_from - hvaci->nodeinfo;
+          hvaci->nodeinfo[index_from].use_node=1;
+        }
+        ducti->node_to   = GetHVACNode(hvaci, ducti->node_id_to);
+        if(ducti->node_to  !=NULL){
+          int index_to;
+
+          index_to   = ducti->node_to - hvaci->nodeinfo;
+          hvaci->nodeinfo[index_to].use_node=1;
+        }
         ducti->n_waypoints  = MAX(0, ducti->n_waypoints);
         ducti->nduct_cells  = MAX(0, ducti->nduct_cells);
         hvaci->n_waypoints += ducti->n_waypoints;
@@ -9194,7 +9210,6 @@ int ReadSMV(bufferstreamdata *stream){
       // vent_name
       // filter_flag
       if (FGETS(buffer, 255, stream) == NULL)BREAK;
-      int count = 0;
       for (i = 0; i < hvaci->n_nodes; i++) {
         if (FGETS(buffer, 255, stream) == NULL)BREAK;
         if (FGETS(buffer, 255, stream) == NULL)BREAK;
