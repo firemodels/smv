@@ -3594,7 +3594,11 @@ int set_showhazardcolors(int v) {
 } // SHOWHAZARDCOLORS
 
 int set_showhzone(int v) {
-  visHZone = v;
+  if (v) {
+    visZonePlane = ZONE_ZPLANE;
+  } else {
+    visZonePlane = ZONE_HIDDEN;
+  }
   return 0;
 } // SHOWHZONE
 
@@ -3604,7 +3608,11 @@ int set_showszone(int v) {
 } // SHOWSZONE
 
 int set_showvzone(int v) {
-  visVZone = v;
+  if (v) {
+    visZonePlane = ZONE_YPLANE;
+  } else {
+    visZonePlane = ZONE_HIDDEN;
+  }
   return 0;
 } // SHOWVZONE
 
