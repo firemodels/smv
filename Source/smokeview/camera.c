@@ -395,10 +395,8 @@ other  1    1    strcmp
     if(y_state == IS_EXT)return 0;
     return -1;
   }
-  else{
-    if(y_state == IS_OTHER)return strcmp(x->name, y->name);
-    return 1;
-  }
+  if(y_state == IS_OTHER)return strcmp(x->name, y->name);
+  return 1;
 }
 
 /* ------------------ SortCameras ------------------------ */

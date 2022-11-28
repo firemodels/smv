@@ -65,7 +65,7 @@ obj = main.o menus.o IOscript.o IOshooter.o glui_objects.o glui_shooter.o\
       renderhtml.o isobox.o getdatabounds.o readsmv.o scontour2d.o glui_smoke.o glui_clip.o\
       glui_stereo.o glui_geometry.o glui_motion.o glui_bounds.o dmalloc.o assert.o\
       compress.o IOvolsmoke.o IOsmoke.o IOplot3d.o IOplot2d.o IOslice.o IOboundary.o IOpart.o IOzone.o\
-      IOiso.o callbacks.o drawGeometry.o glui_colorbar.o skybox.o file_util.o string_util.o\
+      IOiso.o IOhvac.o callbacks.o drawGeometry.o glui_colorbar.o skybox.o file_util.o string_util.o\
       startup.o glui_trainer.o shaders.o unit.o threader.o histogram.o translate.o update.o\
       viewports.o smv_geometry.o showscene.o glew.o infoheader.o  md5.o sha1.o sha256.o\
       stdio_m.o stdio_buffer.o \

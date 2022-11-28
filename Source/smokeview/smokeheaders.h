@@ -30,6 +30,11 @@ EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg,
 
 EXTERNCPP void SplitCB(int var);
 
+#ifdef pp_HVAC
+EXTERNCPP void DrawHVACS(void);
+EXTERNCPP hvacnodedata *GetHVACNode(hvacdata *hvaci, int node_id);
+#endif
+
 #ifdef pp_REFRESH
 EXTERNCPP void PeriodicRefresh(int var);
 #endif
@@ -184,6 +189,7 @@ EXTERNCPP void SetValTypeIndex(int type, int valtype_index);
 EXTERNCPP int GetNValtypes(int type);
 EXTERNCPP int GetValType(int type);
 EXTERNCPP void GetMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax);
+EXTERNCPP void GetOnlyMinMax(int type, char* label, int* set_valmin, float* valmin, int* set_valmax, float* valmax);
 EXTERNCPP void GetMinMaxAll(int type, int *set_valmin, float *valmin, int *set_valmax, float *valmax, int *nall);
 EXTERNCPP void SetMin(int type, char *label, int set_valmin, float valmin);
 EXTERNCPP void SetMax(int type, char *label, int set_valmax, float valmax);
@@ -558,7 +564,6 @@ EXTERNCPP void UpdateSliceMenuShow(void);
 EXTERNCPP void UpdateBoundaryBounds(patchdata *patchi);
 EXTERNCPP void UpdateAllBoundaryBounds(void);
 EXTERNCPP void UpdateAllBoundaryBoundsST(void);
-EXTERNCPP int  UpdateBoundaryHist(patchdata *patchi);
 EXTERNCPP void UpdateHideBoundarySurface(void);
 EXTERNCPP int  LastSliceLoadstack(void);
 EXTERNCPP int  LastVSliceLoadstack(void);

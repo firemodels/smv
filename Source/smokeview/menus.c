@@ -6611,7 +6611,22 @@ void ZoneShowMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
-/* ------------------ GeometryMenu ------------------------ */
+/* ------------------ HVACMenu ------------------------ */
+
+#ifdef pp_HVAC
+void HVACMenu(int value){
+  if(value>=0&&value<nhvacinfo){
+    hvacdata *hvaci;
+
+    hvaci = hvacinfo + value;
+    hvaci->display = 1 - hvaci->display;
+  }
+  updatemenu = 1;
+  GLUTPOSTREDISPLAY;
+}
+#endif
+
+  /* ------------------ GeometryMenu ------------------------ */
 
 void GeometryMenu(int value){
 
@@ -7981,6 +7996,9 @@ static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
 static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchsinglemenu=0,showpatchextmenu=0;
 static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, fileinfomenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
 static int scriptmenu=0;
+#ifdef pp_HVAC
+static int hvacmenu = 0;
+#endif
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
 #ifdef pp_LUA
 static int luascriptmenu=0;
@@ -9097,6 +9115,24 @@ updatemenu=0;
     glutAddMenuEntry(_("Settings..."), MENU_DEVICE_SETTINGS);
 
   }
+
+  /* --------------------------------hvac menu -------------------------- */
+
+#ifdef pp_HVAC
+  if (nhvacinfo > 0) {
+    CREATEMENU(hvacmenu, HVACMenu);
+    for(i = 0; i < nhvacinfo; i++){
+      hvacdata *hvaci;
+      char label[256];
+
+      hvaci = hvacinfo + i;
+      strcpy(label, "");
+      if(hvaci->display==1)strcat(label, "*");
+      strcat(label, hvaci->network_name);
+      glutAddMenuEntry(label, i);
+    }
+  }
+#endif
 
   /* --------------------------------geometry menu -------------------------- */
 
@@ -10392,6 +10428,9 @@ updatemenu=0;
   CREATEMENU(showhidemenu,ShowHideMenu);
   GLUTADDSUBMENU(_("Color"), colorbarmenu);
   GLUTADDSUBMENU(_("Geometry"),geometrymenu);
+#ifdef pp_HVAC
+  if(nhvacinfo>0)GLUTADDSUBMENU(_("HVAC"), hvacmenu);
+#endif
   if(nterraininfo>0&&ngeominfo==0){
     GLUTADDSUBMENU(_("Terrain"), terrain_obst_showmenu);
   }

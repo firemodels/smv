@@ -220,7 +220,6 @@ void UnloadIso(meshdata *meshi){
   PrintMemoryInfo;
   updatemenu = 1;
   ForceIdle();
-  return;
 }
 
 /* ------------------ GetIsoType ------------------------ */
@@ -1486,8 +1485,6 @@ void UpdateIsoType(void){
   }
 
   iisotype = -1;
-  return;
-
 }
 
 /* ------------------ IsoCompare ------------------------ */

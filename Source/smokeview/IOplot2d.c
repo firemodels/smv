@@ -334,9 +334,7 @@ char *GetPlotUnit(plot2ddata *plot2di, int curv_index){
   if(curve->apply_curve_factor==1&&strlen(curve->scaled_unit)>0){
     return curve->scaled_unit;
   }
-  else{
-    return csvi->label.unit;
-  }
+  return csvi->label.unit;
 }
 
 /* ------------------ GetPlotShortLabel2 ------------------------ */
@@ -361,10 +359,8 @@ char *GetPlotShortLabel(plot2ddata *plot2di, int curv_index){
   if(curve->apply_curve_factor==1&&strlen(curve->scaled_label)>0){
     return curve->scaled_label;
   }
-  else{
-    csvi = GetCsvData(plot2di->curve[curv_index].csv_file_index, plot2di->curve[curv_index].csv_col_index, NULL);
-    return csvi->label.shortlabel;
-  }
+  csvi = GetCsvData(plot2di->curve[curv_index].csv_file_index, plot2di->curve[curv_index].csv_col_index, NULL);
+  return csvi->label.shortlabel;
 }
 
 /* ------------------ GetCSVVal ------------------------ */

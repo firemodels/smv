@@ -391,8 +391,8 @@ typedef struct _surfdata {
                3 - smoothed block
                4 - invisible
              */
-  float *color, emis, temp_ignition;
-  float transparent_level;
+  float *color, *color_orig, emis, temp_ignition;
+  float transparent_level, transparent_level_orig;
   int iso_level;
   float t_width, t_height;
   texturedata *textureinfo;
@@ -402,10 +402,11 @@ typedef struct _surfdata {
   int transparent;
   int used_by_obst,used_by_vent;
   int used_by_geom;
-  int glui_color[3];
+  int geom_surf_color[3];
   float axis[3];
   int in_geom_list;
   int ntris;
+  int in_color_dialog;
   float geom_area;
 } surfdata;
 
@@ -1279,6 +1280,39 @@ typedef struct _compdata {
   int offset, size;
 } compdata;
 
+
+#ifdef pp_HVAC
+/* --------------------------  hvacnodedata ------------------------------------ */
+
+typedef struct _hvacnodedata {
+  char *node_name, *vent_name;
+  int node_id, filter, use_node;
+  float xyz[3];
+} hvacnodedata;
+
+/* --------------------------  hvacductdata ------------------------------------ */
+
+typedef struct _hvacductdata {
+  char *duct_name;
+  int duct_id, component, nduct_cells, n_waypoints;
+  int node_id_from, node_id_to, use_duct;
+  hvacnodedata *node_from, *node_to;
+  float *waypoints;
+} hvacductdata;
+
+/* --------------------------  hvacdata ------------------------------------ */
+
+typedef struct _hvacdata {
+  char *network_name;
+  int n_nodes, n_ducts, n_waypoints;
+  int valid_nodes, valid_ducts;
+  int display;
+  float *waypoints;
+  hvacnodedata *nodeinfo;
+  hvacductdata *ductinfo;
+} hvacdata;
+#endif
+
 /* --------------------------  menudata ------------------------------------ */
 
 typedef struct _menudata {
@@ -1584,6 +1618,7 @@ typedef struct _patchdata {
   time_t modtime;
   int finalize;
   histogramdata *histogram;
+  int histogram_nframes;
   bounddata bounds;
   boundsdata *bounds2;
 } patchdata;

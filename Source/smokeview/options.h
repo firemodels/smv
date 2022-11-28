@@ -26,6 +26,8 @@
 
 //#define pp_THINFACE         // don't draw sides of thin faces
 
+//#define pp_HVAC                // visualize HVAC networks
+
 // use floating point to color data
 
 //#define pp_PARTVAL          // speed up part file color updating
@@ -37,6 +39,16 @@
 
 //#define pp_SMOKE3DSTREAM      // stream smoke3d data
 //#define pp_PARTSTREAM         // stream particle data
+
+#ifdef pp_SLICEVAL
+#define pp_SLICEBOUNDVAL
+#endif
+
+#ifdef pp_BOUNDVAL
+#ifndef pp_SLICEBOUNDVAL
+#define pp_SLICEBOUNDVAL
+#endif
+#endif
 
 // turn on pp_STREAM if streaming is on for any file type
 

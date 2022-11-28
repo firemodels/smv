@@ -388,11 +388,9 @@ int Writable(char *dir){
       UNLINK(tempfullfile);
       return NO;
     }
-    else{
-      fclose(stream);
-      UNLINK(tempfullfile);
-      return YES;
-    }
+    fclose(stream);
+    UNLINK(tempfullfile);
+    return YES;
   }
 #endif
 }
@@ -505,9 +503,7 @@ int FileExists(char *filename, filelistdata *filelist, int nfilelist, filelistda
   if(ACCESS(filename,F_OK)==-1){
     return NO;
   }
-  else{
-    return YES;
-  }
+  return YES;
 }
 
 /* ------------------ FreeFileList ------------------------ */

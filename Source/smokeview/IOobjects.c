@@ -3997,11 +3997,9 @@ void DrawSmvObject(sv_object *object_dev, int iframe_local, propdata *prop, int 
       glPopMatrix();
       return;
     }
-    else{
-      framei->use_bw = setbw;
-      glDeleteLists(framei->display_list_ID, 1);
-      framei->display_list_ID = -1;
-    }
+    framei->use_bw = setbw;
+    glDeleteLists(framei->display_list_ID, 1);
+    framei->display_list_ID = -1;
   }
 
   if(object->use_displaylist == 1){
@@ -5746,7 +5744,6 @@ void RewindDeviceFile(FILE *stream){
   if(found_data==0){
     fprintf(stderr,"*** Warning //DATA keyword not found in spreadsheet file\n");
   }
-  return;
 }
 
 /* ----------------------- GetNDevices ----------------------------- */

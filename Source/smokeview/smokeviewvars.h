@@ -23,6 +23,12 @@
 #include "glutbitmap.h"
 #endif
 
+#ifdef pp_HVAC
+SVEXTERN int SVDECL(nhvacinfo, 0);
+SVEXTERN hvacdata SVDECL(*hvacinfo, NULL);
+#endif
+SVEXTERN int SVDECL(histogram_nframes, 40);
+SVEXTERN int SVDECL(glui_surf_index, 0);
 SVEXTERN int SVDECL(clip_commandline, 0), SVDECL(special_modifier, 0);
 SVEXTERN int SVDECL(update_slicexyz, 0);
 SVEXTERN int SVDECL(update_splitcolorbar, 0);
@@ -33,9 +39,11 @@ SVEXTERN float geom_bounding_box[6] = {1000000000.0, -1000000000.0,
                                        1000000000.0, -1000000000.0,
                                        1000000000.0, -1000000000.0
                                       };
+SVEXTERN int glui_surface_color[4] = {255, 255, 255, 255};
 #else
 SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
+SVEXTERN int glui_surface_color[4];
 #endif
 
 #ifdef pp_TERRAIN_SKIP
@@ -305,7 +313,7 @@ SVEXTERN int SVDECL(slice_multithread, 0);
 #endif
 SVEXTERN int SVDECL(readallgeom_multithread, 1);
 SVEXTERN int SVDECL(lighting_on,0);
-SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 1);
+SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_lighting, 1);
 SVEXTERN int SVDECL(update_texturebar, 0);
 SVEXTERN float SVDECL(iso_valmin, 20.0), SVDECL(iso_valmax, 1020.0);
 SVEXTERN float SVDECL(glui_iso_valmin, 20.0), SVDECL(glui_iso_valmax, 1020.0);
@@ -827,7 +835,7 @@ SVEXTERN int SVDECL(ndeviceunits, 0);
 SVEXTERN hrrdata SVDECL(**hrrunits, NULL);
 SVEXTERN int SVDECL(nhrrunits, 0);
 
-SVEXTERN int SVDECL(sort_geometry,1),SVDECL(sort_transparent_faces,0);
+SVEXTERN int SVDECL(sort_geometry,1),SVDECL(sort_transparent_faces,1);
 SVEXTERN isotri SVDECL(***iso_trans_list,NULL),SVDECL(***iso_opaques_list,NULL);
 SVEXTERN int SVDECL(*niso_trans_list,NULL),SVDECL(*niso_opaques_list,NULL);
 SVEXTERN int SVDECL(niso_timesteps,0);

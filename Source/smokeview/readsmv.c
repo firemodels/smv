@@ -3953,6 +3953,7 @@ void InitObst(blockagedata *bc, surfdata *surf, int index, int meshindex){
 /* ------------------ InitSurface ------------------------ */
 
 void InitSurface(surfdata *surf){
+  surf->in_color_dialog = 0;
   surf->iso_level = -1;
   surf->used_by_obst = 0;
   surf->used_by_geom = 0;
@@ -5013,19 +5014,20 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   for(i = 0; i<6; i++){
     patchi->ijk[i] = -1;
   }
-  patchi->finalize = 1;
-  patchi->valmin_fds = 1.0;
-  patchi->valmax_fds = 0.0;
-  patchi->valmin_smv = 1.0;
-  patchi->valmax_smv = 0.0;
-  patchi->skip = 0;
-  patchi->version = version;
-  patchi->ntimes = 0;
-  patchi->ntimes_old = 0;
-  patchi->filetype_label = NULL;
-  patchi->patch_filetype = PATCH_STRUCTURED_NODE_CENTER;
-  patchi->structured = YES;
-  patchi->boundary = 1;
+  patchi->finalize          = 1;
+  patchi->valmin_fds        = 1.0;
+  patchi->valmax_fds        = 0.0;
+  patchi->valmin_smv        = 1.0;
+  patchi->valmax_smv        = 0.0;
+  patchi->skip              = 0;
+  patchi->version           = version;
+  patchi->ntimes            = 0;
+  patchi->ntimes_old        = 0;
+  patchi->histogram_nframes = -1;
+  patchi->filetype_label    = NULL;
+  patchi->patch_filetype    = PATCH_STRUCTURED_NODE_CENTER;
+  patchi->structured        = YES;
+  patchi->boundary          = 1;
   if(Match(buffer, "BNDC")==1){
     patchi->patch_filetype = PATCH_STRUCTURED_CELL_CENTER;
   }
@@ -5946,7 +5948,6 @@ char *GetCharPtr(char *label){
   char *labelptr, labelcopy[256], *labelcopyptr;
   int lenlabel;
 
-
   if(label==NULL||strlen(label)==0)return NULL;
   strcpy(labelcopy,label);
   labelcopyptr = TrimFrontBack(labelcopy);
@@ -6823,6 +6824,9 @@ int ReadSMV(bufferstreamdata *stream){
   FREEMEMORY(fireinfo);
   FREEMEMORY(zoneinfo);
   FREEMEMORY(zventinfo);
+#ifdef pp_HVAC
+  FREEMEMORY(hvacinfo);
+#endif
 
   FREEMEMORY(textureinfo);
   FREEMEMORY(surfinfo);
@@ -6866,6 +6870,19 @@ int ReadSMV(bufferstreamdata *stream){
       BUT if any one these keywords are present then the number of each MUST be equal
     */
 
+    // HVAC
+    // label
+    // n_nodes
+    //  id x y z vent filter comp
+    // ...
+    // n_ducts
+    // id node1 node2 comp
+
+#ifdef pp_HVAC
+    if(MatchSMV(buffer, "HVAC") == 1){
+      nhvacinfo++;
+    }
+#endif
 
     if(MatchSMV(buffer, "HoC") == 1){
       int nfuelinfo_local;
@@ -7655,6 +7672,14 @@ int ReadSMV(bufferstreamdata *stream){
     InitDefaultProp();
     npropinfo=1;
   }
+
+#ifdef pp_HVAC
+  FREEMEMORY(hvacinfo);
+  if(nhvacinfo > 0){
+    if(NewMemory((void**)&hvacinfo, nhvacinfo*sizeof(hvacdata)) == 0)return 2;
+    nhvacinfo = 0;
+  }
+#endif
   PRINT_TIMER(timer_readsmv, "pass 1");
 
 /*
@@ -7694,6 +7719,157 @@ int ReadSMV(bufferstreamdata *stream){
     }
 
     /*
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++ HVAC ++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  */
+#ifdef pp_HVAC
+    if (MatchSMV(buffer, "HVAC") == 1) {
+      hvacdata *hvaci;
+
+      hvaci = hvacinfo + nhvacinfo;
+
+  // HVAC
+  // network_name
+      if(FGETS(buffer,255,stream)==NULL)BREAK;
+      hvaci->network_name = GetCharPtr(buffer);
+      if(strcmp(hvaci->network_name, "null")==0){
+        char network_name[256];
+
+        FREEMEMORY(hvaci->network_name);
+        sprintf(network_name, "hvac network %i", nhvacinfo+1);
+        NewMemory((void **)&hvaci->network_name, strlen(network_name)+1);
+        strcpy(hvaci->network_name, network_name);
+      }
+
+      hvaci->n_waypoints = 0;
+      hvaci->waypoints   = NULL;
+      hvaci->nodeinfo    = NULL;
+      hvaci->ductinfo    = NULL;
+      hvaci->valid_nodes = 0;
+      hvaci->valid_ducts = 0;
+      hvaci->display     = 1;
+  // n_nodes
+  // id_num XYZ
+  // node_name
+  // vent_name
+  // filter_flag
+      if (FGETS(buffer, 255, stream) == NULL)BREAK;
+      sscanf(buffer, "%i", &hvaci->n_nodes);
+      hvaci->n_nodes = MAX(0, hvaci->n_nodes);
+      if(hvaci->n_nodes>0){
+        hvacnodedata *nodeinfo;
+
+        NewMemory((void **)&nodeinfo, hvaci->n_nodes*sizeof(hvacnodedata));
+        hvaci->nodeinfo = nodeinfo;
+      }
+
+      int count=0;
+
+      for(i=0;i<hvaci->n_nodes;i++){
+        hvacnodedata *nodei;
+        char *filter;
+
+        nodei = hvaci->nodeinfo + i;
+        nodei->use_node = 0;
+
+        if(FGETS(buffer, 255, stream) == NULL)BREAK;
+        sscanf(buffer, "%i %f %f %f", &nodei->node_id, nodei->xyz, nodei->xyz + 1, nodei->xyz + 2);
+
+        if(FGETS(buffer, 255, stream) == NULL)BREAK;
+        nodei->node_name = GetCharPtr(buffer);
+
+        if(FGETS(buffer, 255, stream) == NULL)BREAK;
+        nodei->vent_name = GetCharPtr(buffer);
+
+        if(FGETS(buffer, 255, stream) == NULL)BREAK;
+        filter = TrimFrontBack(buffer);
+        if(filter[0] == 'T' || filter[0] == 't'){
+          nodei->filter = HVAC_FILTER_YES;
+        }
+        else{
+          nodei->filter = HVAC_FILTER_NO;
+        }
+        count++;
+      }
+      if(count>0&&count==hvaci->n_nodes)hvaci->valid_nodes=1;
+  // n_ducts
+  // duct_id node_id1 node_id2 n_cells n_waypoints
+  // duct_name
+  // component Fan(F), Aircoil(A), Damper(D), none(-)
+  // waypoint xyz
+      if(FGETS(buffer, 255, stream) == NULL)BREAK;
+      sscanf(buffer, "%i", &hvaci->n_ducts);
+      if(hvaci->n_ducts>0){
+        hvacductdata *ductinfo;
+
+        NewMemory((void **)&ductinfo, hvaci->n_ducts*sizeof(hvacductdata));
+        hvaci->ductinfo = ductinfo;
+      }
+      count = 0;
+      int count_waypoints = 0;
+      int valid_waypoints = 1;
+      for(i=0;i<hvaci->n_ducts;i++){
+        hvacductdata *ducti;
+        char *component;
+
+        ducti = hvaci->ductinfo + i;
+        if(FGETS(buffer, 255, stream) == NULL)BREAK;
+        sscanf(buffer, "%i %i %i %i %i", &ducti->duct_id, &ducti->node_id_from, &ducti->node_id_to, &ducti->nduct_cells, &ducti->n_waypoints);
+        ducti->node_from = GetHVACNode(hvaci, ducti->node_id_from);
+        if(ducti->node_from!=NULL){
+          int index_from;
+
+          index_from = ducti->node_from - hvaci->nodeinfo;
+          hvaci->nodeinfo[index_from].use_node=1;
+        }
+        ducti->node_to   = GetHVACNode(hvaci, ducti->node_id_to);
+        if(ducti->node_to  !=NULL){
+          int index_to;
+
+          index_to   = ducti->node_to - hvaci->nodeinfo;
+          hvaci->nodeinfo[index_to].use_node=1;
+        }
+        ducti->n_waypoints  = MAX(0, ducti->n_waypoints);
+        ducti->nduct_cells  = MAX(0, ducti->nduct_cells);
+        hvaci->n_waypoints += ducti->n_waypoints;
+
+        if(FGETS(buffer, 255, stream) == NULL)BREAK;
+        ducti->duct_name = GetCharPtr(buffer);
+        if (FGETS(buffer, 255, stream) == NULL)BREAK;
+        component = TrimFrontBack(buffer);
+
+        ducti->component = HVAC_NONE;
+        if(component != NULL && component[0] == '-')ducti->component = HVAC_NONE;
+        if(component != NULL && (component[0] == 'F' || component[0] == 'f'))ducti->component = HVAC_FAN;
+        if(component != NULL && (component[0] == 'A' || component[0] == 'a'))ducti->component = HVAC_AIRCOIL;
+        if(component != NULL && (component[0] == 'D' || component[0] == 'd'))ducti->component = HVAC_DAMPER;
+
+        ducti->waypoints = NULL;
+        if(ducti->n_waypoints > 0){
+          int j;
+
+          for(j = 0; j < ducti->n_waypoints; j++){
+            if(FGETS(buffer, 255, stream) == NULL)BREAK;
+            count_waypoints++;
+          }
+        }
+        if(count_waypoints != ducti->n_waypoints)valid_waypoints = 0;
+        count++;
+      }
+      if(count>0&&count==hvaci->n_ducts&&valid_waypoints==1)hvaci->valid_ducts=1;
+
+      float *waypoints = NULL;
+
+      if(hvaci->n_waypoints>0){
+        NewMemory((void**)&waypoints, 3*hvaci->n_waypoints*sizeof(float));
+      }
+      hvaci->waypoints = waypoints;
+      nhvacinfo++;
+    }
+#endif
+
+      /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++ CSVF ++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -8616,9 +8792,11 @@ int ReadSMV(bufferstreamdata *stream){
       else{
         surfi->transparent_level = 1.0;
       }
-      surfi->glui_color[0] = CLAMP(255*surfi->color[0],0,255);
-      surfi->glui_color[1] = CLAMP(255*surfi->color[1], 0, 255);
-      surfi->glui_color[2] = CLAMP(255*surfi->color[2], 0, 255);
+      surfi->color_orig = surfi->color;
+      surfi->transparent_level_orig = surfi->transparent_level;
+      surfi->geom_surf_color[0] = CLAMP(255*surfi->color[0],0,255);
+      surfi->geom_surf_color[1] = CLAMP(255*surfi->color[1], 0, 255);
+      surfi->geom_surf_color[2] = CLAMP(255*surfi->color[2], 0, 255);
       surfi->temp_ignition=temp_ignition;
       surfi->emis=emis;
       surfi->t_height=t_height;
@@ -8984,6 +9162,9 @@ int ReadSMV(bufferstreamdata *stream){
     devicecopy=deviceinfo;;
   }
   ndeviceinfo=0;
+#ifdef pp_HVAC
+  nhvacinfo = 0;
+#endif
   REWIND(stream);
   PRINTF("%s","  pass 3\n");
   PRINT_TIMER(timer_readsmv, "pass 2");
@@ -9006,6 +9187,59 @@ int ReadSMV(bufferstreamdata *stream){
     if(MatchSMV(buffer, "PL3D")==1){
       continue;
     }
+    /*
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++ HVAC ++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  */
+
+#ifdef pp_HVAC
+    if (MatchSMV(buffer, "HVAC") == 1) {
+      hvacdata *hvaci;
+      float *waypoints;
+
+      hvaci = hvacinfo + nhvacinfo;
+      waypoints = hvaci->waypoints;
+
+      // HVAC
+      // network_name
+      if (FGETS(buffer, 255, stream) == NULL)BREAK;
+      // n_nodes
+      // id_num XYZ
+      // node_name
+      // vent_name
+      // filter_flag
+      if (FGETS(buffer, 255, stream) == NULL)BREAK;
+      for (i = 0; i < hvaci->n_nodes; i++) {
+        if (FGETS(buffer, 255, stream) == NULL)BREAK;
+        if (FGETS(buffer, 255, stream) == NULL)BREAK;
+        if (FGETS(buffer, 255, stream) == NULL)BREAK;
+        if (FGETS(buffer, 255, stream) == NULL)BREAK;
+      }
+      // n_ducts
+      // duct_id node_id1 node_id2 nduct_cells nwaypoints
+      // duct_name
+      // component Fan(F), Aircoil(A), Damper(D), none(-)
+      // waypoint xyz
+      for (i = 0; i < hvaci->n_ducts; i++) {
+        hvacductdata* ducti;
+        int j;
+
+        ducti = hvaci->ductinfo + i;
+        ducti->waypoints = waypoints;
+        if (FGETS(buffer, 255, stream) == NULL)BREAK;
+        if (FGETS(buffer, 255, stream) == NULL)BREAK;
+        if (FGETS(buffer, 255, stream) == NULL)BREAK;
+        for (j = 0; j < ducti->n_waypoints; j++) {
+          if (FGETS(buffer, 255, stream) == NULL)BREAK;
+          sscanf(buffer, "%f %f %f", waypoints, waypoints + 1, waypoints +2);
+          waypoints += 3;
+        }
+      }
+      nhvacinfo++;
+    }
+#endif
+
     /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ AMBIENT ++++++++++++++++++++++++++++++
@@ -13561,11 +13795,42 @@ int ReadIni2(char *inifile, int localfile){
         surflabel = TrimFrontBack(surflabel+1);
         surfi = GetSurface(surflabel);
         if(surfi==NULL)continue;
-        ini_surf_color = surfi->glui_color;
+        ini_surf_color = surfi->geom_surf_color;
         sscanf(buffer, "%i %i %i", ini_surf_color, ini_surf_color+1, ini_surf_color+2);
         ini_surf_color[0] = CLAMP(ini_surf_color[0], 0, 255);
         ini_surf_color[1] = CLAMP(ini_surf_color[1], 0, 255);
         ini_surf_color[2] = CLAMP(ini_surf_color[2], 0, 255);
+      }
+      continue;
+    }
+    if(MatchINI(buffer, "OBSTSURFCOLORS")==1){
+      int ncolors;
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &ncolors);
+      for(i = 0; i<ncolors; i++){
+        surfdata *surfi;
+        char *surflabel;
+        float s_color[4];
+
+        fgets(buffer, 255, stream);
+        surflabel = strchr(buffer, ':');
+        if(surflabel==NULL)continue;
+        surflabel = TrimFrontBack(surflabel+1);
+        surfi = GetSurface(surflabel);
+        if(surfi==NULL)continue;
+        s_color[0] = -1.0;
+        s_color[1] = -1.0;
+        s_color[2] = -1.0;
+        s_color[3] = -1.0;
+        sscanf(buffer, "%f %f %f %f", s_color, s_color+1, s_color+2, s_color+3);
+        if(s_color[3]<0.0)s_color[3] = 1.0;
+        if(s_color[0]<0.0||s_color[1]<0.0||s_color[2]<0.0)continue;
+        s_color[0] = CLAMP(s_color[0], 0.0, 1.0);
+        s_color[1] = CLAMP(s_color[1], 0.0, 1.0);
+        s_color[2] = CLAMP(s_color[2], 0.0, 1.0);
+        surfi->color = GetColorPtr(s_color);
+        surfi->transparent_level=s_color[3];
       }
       continue;
     }
@@ -15807,8 +16072,34 @@ void WriteIni(int flag,char *filename){
         if(surfi->used_by_geom==1){
           int *ini_surf_color;
 
-          ini_surf_color = surfi->glui_color;
+          ini_surf_color = surfi->geom_surf_color;
           fprintf(fileout, " %i %i %i : %s\n", ini_surf_color[0], ini_surf_color[1], ini_surf_color[2], surfi->surfacelabel);
+        }
+      }
+    }
+  }
+  {
+    int scount;
+
+    scount = 0;
+    for(i = 0; i<nsurfinfo; i++){
+      surfdata *surfi;
+
+      surfi = surfinfo+sorted_surfidlist[i];
+      if(surfi->in_color_dialog==1&&surfi->color!=surfi->color_orig)scount++;
+    }
+    if(scount>0){
+      fprintf(fileout, "OBSTSURFCOLORS\n");
+      fprintf(fileout, " %i %i\n", scount, use_surf_color);
+      for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
+        surfi = surfinfo+sorted_surfidlist[i];
+        if(surfi->in_color_dialog==1&&surfi->color!=surfi->color_orig){
+          float *color;
+
+          color = surfi->color;
+          fprintf(fileout, " %f %f %f %f: %s\n", color[0], color[1], color[2], surfi->transparent_level, surfi->surfacelabel);
         }
       }
     }

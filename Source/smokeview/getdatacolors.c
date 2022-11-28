@@ -379,7 +379,7 @@ void UpdatePart5Extremes(void){
 
 /* ------------------ GetPartColors ------------------------ */
 
-void GetPartColors(partdata *parti, int nlevel, int convert){
+void GetPartColors(partdata *parti, int nlevel, int flag){
   int i;
   part5data *datacopy;
   // float *diameter_data;
@@ -405,7 +405,7 @@ void GetPartColors(partdata *parti, int nlevel, int convert){
   GetMinMaxAll(BOUND_PART, part_set_valmin, part_valmin, part_set_valmax, part_valmax, &num2);
 
   int start=0;
-  if(convert==0)start = parti->ntimes+1;// skip particle conversion if convert is 0
+  if(flag==0)start = parti->ntimes+1;// skip particle conversion if flag is 0
   for(i=start;i<parti->ntimes;i++){
     int j;
 
@@ -415,7 +415,7 @@ void GetPartColors(partdata *parti, int nlevel, int convert){
       float *rvals;
       unsigned char *irvals;
       float *dsx, *dsy, *dsz;
-      int flag, k;
+      int local_flag, k;
 
       partclassi = parti->partclassptr[j];
       rvals = datacopy->rvals;
@@ -497,11 +497,11 @@ void GetPartColors(partdata *parti, int nlevel, int convert){
         if(partclassi->col_w_vel>=0){
           w_vel_data = datacopy->rvals+partclassi->col_w_vel*datacopy->npoints;
         }
-        flag = 0;
+        local_flag = 0;
         if(azimuth_data!=NULL&&elevation_data!=NULL&&length_data!=NULL){
           int m;
 
-          flag = 1;
+          local_flag = 1;
           dsx = datacopy->dsx;
           dsy = datacopy->dsy;
           dsz = datacopy->dsz;
@@ -538,7 +538,7 @@ void GetPartColors(partdata *parti, int nlevel, int convert){
             denom = 1.0;
           }
 
-          flag = 1;
+          local_flag = 1;
           dsx = datacopy->dsx;
           dsy = datacopy->dsy;
           dsz = datacopy->dsz;
@@ -548,7 +548,7 @@ void GetPartColors(partdata *parti, int nlevel, int convert){
             dsz[m] = 0.05*w_vel_data[m]/denom;
           }
         }
-        if(flag==0){
+        if(local_flag==0){
           FREEMEMORY(datacopy->dsx);
           FREEMEMORY(datacopy->dsy);
           FREEMEMORY(datacopy->dsz);
@@ -856,12 +856,30 @@ void UpdateSliceBounds2(void){
 
     i = slice_loaded_list[ii];
     sd = sliceinfo+i;
-    if(sd->vloaded==0&&sd->display==0)continue;
+    if(sd->display==0)continue;
     GetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
     sd->valmin      = qmin;
     sd->valmax      = qmax;
     sd->globalmin   = qmin;
     sd->globalmax   = qmax;
+    sd->valmin_data = qmin;
+    sd->valmax_data = qmax;
+    SetSliceColors(qmin, qmax, sd, 0, &error);
+  }
+  for(ii = 0; ii<nvsliceinfo; ii++){
+    vslicedata *vd;
+    slicedata *sd;
+    int set_valmin, set_valmax;
+    float qmin, qmax;
+
+    vd = vsliceinfo+ii;
+    if(vd->loaded==0||vd->display==0||vd->ival==-1)continue;
+    sd = sliceinfo+vd->ival;
+    GetMinMax(BOUND_SLICE, sd->label.shortlabel, &set_valmin, &qmin, &set_valmax, &qmax);
+    sd->valmin = qmin;
+    sd->valmax = qmax;
+    sd->globalmin = qmin;
+    sd->globalmax = qmax;
     sd->valmin_data = qmin;
     sd->valmax_data = qmax;
     SetSliceColors(qmin, qmax, sd, 0, &error);
@@ -1821,8 +1839,6 @@ void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned cha
   b = val&rgbmask[nbluebits-1];
   b = b << nblueshift;
   *rr=r; *gg=g; *bb=b;
-
-  return;
 }
 
 /* ------------------ GetColorPtr ------------------------ */

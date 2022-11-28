@@ -630,21 +630,12 @@ int bounds_dialog::set_valtype(char *label){
     cpp_boundsdata *boundi;
 
     boundi = all_bounds+i;
-#ifdef pp_BOUNDVAL
-    if(strcmp(boundi->label, label)==0&&boundi->set_valtype!=i){
-      boundi->set_valtype = i;
-      if(RADIO_set_valtype!=NULL)RADIO_set_valtype->set_int_val(i);
-      CB(BOUND_VAL_TYPE);
-      return 1;
-    }
-#else
     if(strcmp(boundi->label, label)==0){
       boundi->set_valtype = i;
       if(RADIO_set_valtype!=NULL)RADIO_set_valtype->set_int_val(i);
       CB(BOUND_VAL_TYPE);
       return 1;
     }
-#endif
   }
   return 0;
 }
@@ -1513,6 +1504,40 @@ extern "C" void SetValTypeIndex(int type, int valtype_index){
       break;
     case BOUND_SLICE:
       if(nsliceinfo>0)sliceboundsCPP.set_valtype_index(valtype_index);
+      break;
+    default:
+      ASSERT(FFALSE);
+      break;
+  }
+}
+
+/* ------------------ GetOnlyMinMax ------------------------ */
+
+extern "C" void GetOnlyMinMax(int type, char *label, int *set_valmin, float *valmin, int *set_valmax, float *valmax){
+  switch(type){
+    case BOUND_PATCH:
+      if(npatchinfo>0){
+        patchboundsCPP.get_min(label, set_valmin, valmin);
+        patchboundsCPP.get_max(label, set_valmax, valmax);
+      }
+      break;
+    case BOUND_PART:
+      if(npartinfo>0){
+        partboundsCPP.get_min(label, set_valmin, valmin);
+        partboundsCPP.get_max(label, set_valmax, valmax);
+      }
+      break;
+    case BOUND_PLOT3D:
+      if(nplot3dinfo>0){
+        plot3dboundsCPP.get_min(label, set_valmin, valmin);
+        plot3dboundsCPP.get_max(label, set_valmax, valmax);
+      }
+      break;
+    case BOUND_SLICE:
+      if(nsliceinfo>0){
+        sliceboundsCPP.get_min(label, set_valmin, valmin);
+        sliceboundsCPP.get_max(label, set_valmax, valmax);
+      }
       break;
     default:
       ASSERT(FFALSE);
@@ -2971,6 +2996,7 @@ GLUI_Spinner *SPINNER_npartthread_ids = NULL;
 GLUI_Spinner *SPINNER_iso_outline_ioffset = NULL;
 GLUI_Spinner *SPINNER_histogram_width_factor = NULL;
 GLUI_Spinner *SPINNER_histogram_nbuckets=NULL;
+GLUI_Spinner *SPINNER_histogram_nframes=NULL;
 GLUI_Spinner *SPINNER_iso_level = NULL;
 GLUI_Spinner *SPINNER_iso_colors[4];
 GLUI_Spinner *SPINNER_iso_transparency;
@@ -4660,7 +4686,6 @@ extern "C" void GluiBoundsSetup(int main_window){
 
       PANEL_geomexp = glui_bounds->add_panel_to_panel(ROLLOUT_boundary_settings,"experimental");
       glui_bounds->add_checkbox_to_panel(PANEL_geomexp, _("smooth normals"), &geomdata_smoothnormals);
-      glui_bounds->add_checkbox_to_panel(PANEL_geomexp, _("smooth color/data"), &geomdata_smoothcolors);
       glui_bounds->add_checkbox_to_panel(PANEL_geomexp, _("lighting"), &geomdata_lighting);
 
       glui_bounds->add_spinner_to_panel(ROLLOUT_boundary_settings, "line width", GLUI_SPINNER_FLOAT, &geomboundary_linewidth);
@@ -4960,6 +4985,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_histogram_width_factor->set_float_limits(1.0,100.0);
     SPINNER_histogram_nbuckets=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _("bins"), GLUI_SPINNER_INT,&histogram_nbuckets,UPDATE_HISTOGRAM,SliceBoundCB);
     SPINNER_histogram_nbuckets->set_int_limits(3,255);
+    SPINNER_histogram_nframes=glui_bounds->add_spinner_to_panel(ROLLOUT_slice_histogram, _("frames"), GLUI_SPINNER_INT,&histogram_nframes,FRAMES_HISTOGRAM,SliceBoundCB);
     CHECKBOX_histogram_show_numbers = glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _("percentages"), &histogram_show_numbers, INIT_HISTOGRAM, SliceBoundCB);
     CHECKBOX_histogram_show_graph=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _("graph"), &histogram_show_graph, INIT_HISTOGRAM, SliceBoundCB);
     CHECKBOX_histogram_show_outline=glui_bounds->add_checkbox_to_panel(ROLLOUT_slice_histogram, _("outline"), &histogram_show_outline);
@@ -6097,6 +6123,12 @@ extern "C" void SliceBoundCB(int var){
     case UPDATE_HISTOGRAM:
       update_slice_hists = 1;
       histograms_defined = 0;
+      break;
+    case FRAMES_HISTOGRAM:
+      if(histogram_nframes<10){
+        histogram_nframes = 10;
+        SPINNER_histogram_nframes->set_int_val(histogram_nframes);
+      }
       break;
     case INIT_HISTOGRAM:
       if(histogram_show_graph == 1 || histogram_show_numbers == 1){
