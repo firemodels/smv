@@ -26,7 +26,7 @@
 
 //#define pp_THINFACE         // don't draw sides of thin faces
 
-//#define pp_HVAC                // visualize HVAC networks
+#define pp_HVAC                // visualize HVAC networks
 
 // use floating point to color data
 

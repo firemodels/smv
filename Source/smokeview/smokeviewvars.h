@@ -24,8 +24,10 @@
 #endif
 
 #ifdef pp_HVAC
-SVEXTERN int SVDECL(nhvacinfo, 0);
+SVEXTERN int SVDECL(nhvacnodeinfo, 0), SVDECL(nhvacductinfo, 0), SVDECL(nhvacinfo, 0);
 SVEXTERN hvacdata SVDECL(*hvacinfo, NULL);
+SVEXTERN hvacnodedata SVDECL(*hvacnodeinfo, NULL);
+SVEXTERN hvacductdata SVDECL(*hvacductinfo, NULL);
 #endif
 SVEXTERN int SVDECL(histogram_nframes, 40);
 SVEXTERN int SVDECL(glui_surf_index, 0);
