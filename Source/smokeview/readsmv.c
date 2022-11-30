@@ -11818,6 +11818,11 @@ int ReadIni2(char *inifile, int localfile){
         fgets(buffer, 255, stream);
         sscanf(buffer, " %i", &hvaci->display);
       }
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i", &hvac_show_node_labels, &hvac_show_duct_labels);
+      ONEORZERO(hvac_show_node_labels);
+      ONEORZERO(hvac_show_duct_labels);
+
     }
 #endif
     if(MatchINI(buffer, "SHOWSLICEVALS")==1){
@@ -16204,6 +16209,7 @@ void WriteIni(int flag,char *filename){
       hvaci = hvacinfo + i;
       fprintf(fileout, " %i\n", hvaci->display);
     }
+    fprintf(" %i %i\n", hvac_show_node_labels, hvac_show_duct_labels);
   }
 #endif
   fprintf(fileout, "SHOWSLICEVALS\n");
