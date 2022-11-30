@@ -16209,7 +16209,7 @@ void WriteIni(int flag,char *filename){
       hvaci = hvacinfo + i;
       fprintf(fileout, " %i\n", hvaci->display);
     }
-    fprintf(" %i %i\n", hvac_show_node_labels, hvac_show_duct_labels);
+    fprintf(fileout, " %i %i\n", hvac_show_node_labels, hvac_show_duct_labels);
   }
 #endif
   fprintf(fileout, "SHOWSLICEVALS\n");
