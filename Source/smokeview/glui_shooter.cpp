@@ -338,7 +338,8 @@ extern "C" void GluiShooterSetup(int main_window){
     for(i=0;i<nplot3dtimelist;i++){
       char label[255];
 
-      sprintf(label,"%f",plot3dtimelist[i]);
+//      sprintf(label,"%f",plot3dtimelist[i]);
+      snprintf(label,sizeof(label),"%f",plot3dtimelist[i]);
       TrimZeros(label);
       LIST_shooter_times->add_item(i,label);
     }

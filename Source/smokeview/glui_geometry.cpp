@@ -283,7 +283,8 @@ extern "C" void UpdateTriangleInfo(surfdata *tri_surf, float tri_area){
 
   LIST_geom_surface->set_int_val(tri_surf->in_geom_list);
 
-  sprintf(label, "triangle area: %f m2", tri_area);
+  //sprintf(label, "triangle area: %f m2", tri_area);
+  snprintf(label, sizeof(label), "triangle area: %f m2", tri_area);
   STATIC_tri_area->set_name(label);
   VolumeCB(SURF_GET);
 }
@@ -294,11 +295,14 @@ extern "C" void UpdateVertexInfo(float *xyz1, float *xyz2){
   char label[100];
 
   if(xyz1!=NULL){
-    sprintf(label, "x1: %f", xyz1[0]);
+//    sprintf(label, "x1: %f", xyz1[0]);
+    snprintf(label, sizeof(label), "x1: %f", xyz1[0]);
     STATIC_vertx1->set_name(label);
-    sprintf(label, "y1: %f", xyz1[1]);
+//    sprintf(label, "y1: %f", xyz1[1]);
+    snprintf(label, sizeof(label), "y1: %f", xyz1[1]);
     STATIC_verty1->set_name(label);
-    sprintf(label, "z1: %f", xyz1[2]);
+//    sprintf(label, "z1: %f", xyz1[2]);
+    snprintf(label, sizeof(label), "z1: %f", xyz1[2]);
     STATIC_vertz1->set_name(label);
   }
   else{
@@ -307,11 +311,14 @@ extern "C" void UpdateVertexInfo(float *xyz1, float *xyz2){
     STATIC_vertz1->set_name("z1:");
   }
   if(xyz2!=NULL){
-    sprintf(label, "x2: %f", xyz2[0]);
+//    sprintf(label, "x2: %f", xyz2[0]);
+    snprintf(label, sizeof(label), "x2: %f", xyz2[0]);
     STATIC_vertx2->set_name(label);
-    sprintf(label, "y2: %f", xyz2[1]);
+//    sprintf(label, "y2: %f", xyz2[1]);
+    snprintf(label, sizeof(label), "y2: %f", xyz2[1]);
     STATIC_verty2->set_name(label);
-    sprintf(label, "z2: %f", xyz2[2]);
+//    sprintf(label, "z2: %f", xyz2[2]);
+    snprintf(label, sizeof(label), "z2: %f", xyz2[2]);
     STATIC_vertz2->set_name(label);
   }
   else{
@@ -326,7 +333,8 @@ extern "C" void UpdateVertexInfo(float *xyz1, float *xyz2){
     dy = xyz1[1]-xyz2[1];
     dz = xyz1[2]-xyz2[2];
     dist = sqrt(dx*dx+dy*dy+dz*dz);
-    sprintf(label, "dist: %f", dist);
+//    sprintf(label, "dist: %f", dist);
+    snprintf(label, sizeof(label), "dist: %f", dist);
     STATIC_dist->set_name(label);
   }
   else{
@@ -626,7 +634,8 @@ extern "C" void GluiGeometrySetup(int main_window){
           char label[100];
 
           surfi->in_geom_list = ii;
-          sprintf(label, "%s/%f m2", surfi->surfacelabel, surfi->geom_area);
+//          sprintf(label, "%s/%f m2", surfi->surfacelabel, surfi->geom_area);
+          snprintf(label, sizeof(label), "%s/%f m2", surfi->surfacelabel, surfi->geom_area);
           LIST_geom_surface->add_item(ii, label);
           ii++;
         }
@@ -979,10 +988,12 @@ extern "C" void UpdateBlockVals(int flag){
 
       if(nmeshes>1){
         blockmesh = meshinfo + bchighlight->meshindex;
-        sprintf(dialog_label,"Mesh label: %s",blockmesh->label);
+//        sprintf(dialog_label,"Mesh label: %s",blockmesh->label);
+        snprintf(dialog_label,sizeof(dialog_label),"Mesh label: %s",blockmesh->label);
         STATIC_mesh_index->set_text(dialog_label);
       }
-      sprintf(dialog_label,"&OBST index: %i",bchighlight->blockage_id);
+//      sprintf(dialog_label,"&OBST index: %i",bchighlight->blockage_id);
+      snprintf(dialog_label,sizeof(dialog_label),"&OBST index: %i",bchighlight->blockage_id);
       STATIC_blockage_index->set_text(dialog_label);
       strcpy(dialog_label,"&OBST label: ");
       strcat(dialog_label,bchighlight->label);
