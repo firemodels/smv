@@ -83,7 +83,7 @@ void DrawHVAC(hvacdata *hvaci) {
 
 /* ------------------ DrawHVACS ------------------------ */
 
-void DrawHVACS() {
+void DrawHVACS(void){
   int i;
 
   for(i=0; i<nhvacinfo; i++){
