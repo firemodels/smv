@@ -456,6 +456,12 @@ EXTERNCPP void UpdateClipPlanes(void);
 EXTERNCPP void ShowGluiBounds(int menu_id);
 EXTERNCPP void HideGluiBounds(void);
 EXTERNCPP void ShowGluiGeometry(void);
+#ifdef pp_HVAC
+EXTERNCPP void HideGluiHVAC(void);
+EXTERNCPP void ShowGluiHVAC(void);
+EXTERNCPP void UpdateShowHVAC(void);
+#endif
+
 EXTERNCPP void HideGluiGeometry(void);
 
 EXTERNCPP void UpdateAllBoundaryColors(int flag);

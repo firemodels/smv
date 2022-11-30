@@ -1567,6 +1567,17 @@ void DialogMenu(int value){
       HideGluiColorbar();
     }
     break;
+#ifdef pp_HVAC
+  case DIALOG_HVAC:
+    showedit_dialog = 1 - showedit_dialog;
+    if (showedit_dialog == 1) {
+      ShowGluiHVAC();
+    }
+    if (showedit_dialog == 0) {
+      HideGluiHVAC();
+    }
+    break;
+#endif
   case DIALOG_GEOMETRY:
     showedit_dialog=1-showedit_dialog;
     if(showedit_dialog==1){
@@ -6632,6 +6643,7 @@ void HVACMenu(int value){
 
     hvaci = hvacinfo + value;
     hvaci->display = 1 - hvaci->display;
+    UpdateShowHVAC();
   }
   else{
     switch(value){
@@ -6648,6 +6660,7 @@ void HVACMenu(int value){
           hvaci = hvacinfo + i;
           hvaci->display = 1;
         }
+        UpdateShowHVAC();
         break;
       case MENU_HVAC_HIDEALL_NETWORKS:
         for(i = 0; i < nhvacinfo; i++){
@@ -6656,6 +6669,7 @@ void HVACMenu(int value){
           hvaci = hvacinfo + i;
           hvaci->display = 0;
         }
+        UpdateShowHVAC();
         break;
       default:
         ASSERT(FFALSE);
@@ -10897,6 +10911,12 @@ updatemenu=0;
     glutAddMenuEntry(_("Examine geometry...  "), DIALOG_GEOMETRY);
   }
 #endif
+#ifdef pp_HVAC
+  if(nhvacinfo > 0){
+    glutAddMenuEntry(_("HVAC settings...  ALT e"), DIALOG_HVAC);
+  }
+#endif
+
   if(have_vr==1){
     glutAddMenuEntry(_("Stereo/VR settings..."), DIALOG_STEREO);
   }

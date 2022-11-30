@@ -11823,6 +11823,20 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(hvac_show_node_labels);
       ONEORZERO(hvac_show_duct_labels);
 
+      int dc[3], nc[3];
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i %f", dc, dc+1, dc+2, &hvac_duct_width);
+      hvac_duct_color[0] = CLAMP(dc[0], 0, 255);
+      hvac_duct_color[1] = CLAMP(dc[1], 0, 255);
+      hvac_duct_color[2] = CLAMP(dc[2], 0, 255);
+      hvac_duct_width = MAX(1.0, hvac_duct_width);
+      
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i %f", nc, nc + 1, nc + 2, &hvac_node_size);
+      hvac_node_color[0] = CLAMP(nc[0], 0, 255);
+      hvac_node_color[1] = CLAMP(nc[1], 0, 255);
+      hvac_node_color[2] = CLAMP(nc[2], 0, 255);
+      hvac_node_size = MAX(1.0, hvac_node_size);
     }
 #endif
     if(MatchINI(buffer, "SHOWSLICEVALS")==1){
@@ -16202,7 +16216,7 @@ void WriteIni(int flag,char *filename){
 #ifdef pp_HVAC
   if(nhvacinfo > 0){
     fprintf(fileout, "HVACVIEW\n");
-    fprintf(fileout, "%i\n", nhvacinfo);
+    fprintf(fileout, " %i\n", nhvacinfo);
     for(i = 0; i < nhvacinfo; i++){
       hvacdata *hvaci;
 
@@ -16210,6 +16224,13 @@ void WriteIni(int flag,char *filename){
       fprintf(fileout, " %i\n", hvaci->display);
     }
     fprintf(fileout, " %i %i\n", hvac_show_node_labels, hvac_show_duct_labels);
+    int *dc, *nc;
+    
+    dc = hvac_duct_color;
+    nc = hvac_node_color;
+
+    fprintf(fileout, " %i %i %i %f\n", dc[0], dc[1], dc[2], hvac_duct_width);
+    fprintf(fileout, " %i %i %i %f\n", nc[0], nc[1], nc[2], hvac_node_size);
   }
 #endif
   fprintf(fileout, "SHOWSLICEVALS\n");

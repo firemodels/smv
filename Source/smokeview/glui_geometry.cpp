@@ -12,8 +12,11 @@
 #define STRUCTURED_ROLLOUT     0
 #define UNSTRUCTURED_ROLLOUT   1
 #define IMMERSED_DIAGNOSTICS   2
+#ifdef pp_HVAC
+#define HVAC_ROLLOUT           3
+#endif
 
-procdata  geomprocinfo[3];
+procdata  geomprocinfo[4];
 int      ngeomprocinfo = 0;
 
 #define XMIN_SPIN             20
@@ -43,6 +46,14 @@ int      ngeomprocinfo = 0;
 #define UPDATE_NORMALS        53
 #endif
 
+#ifdef pp_HVAC
+#define HVAC_PROPS            1
+#define HVAC_SHOWHIDE_NETWORK 2
+#endif
+
+#ifdef pp_HVAC
+GLUI_Checkbox *CHECKBOX_hvac_showhide = NULL;
+#endif
 GLUI_Checkbox *CHECKBOX_showgeom_inside_domain = NULL;
 GLUI_Checkbox *CHECKBOX_showgeom_outside_domain = NULL;
 GLUI_Checkbox **CHECKBOX_terrain_texture_show = NULL;
@@ -81,6 +92,10 @@ GLUI_Rollout *ROLLOUT_geom_properties=NULL;
 GLUI_Panel *PANEL_surf_color = NULL;
 GLUI_Panel *PANEL_surf_axis = NULL;
 GLUI_Panel *PANEL_surf_coloraxis = NULL;
+#ifdef pp_HVAC
+GLUI_Panel *PANEL_hvac_duct = NULL;
+GLUI_Panel *PANEL_hvac_node = NULL;
+#endif
 
 GLUI_Panel *PANEL_face_cface = NULL;
 GLUI_Panel *PANEL_elevation_color = NULL;
@@ -90,6 +105,13 @@ GLUI_Panel *PANEL_geom_transparency = NULL;
 GLUI_Panel *PANEL_normals = NULL;
 
 GLUI_Spinner *SPINNER_geom_transparency=NULL;
+#ifdef pp_HVAC
+GLUI_Spinner *SPINNER_hvac_duct_width=NULL;
+GLUI_Spinner *SPINNER_hvac_node_size=NULL;
+GLUI_Spinner *SPINNER_hvac_duct_color[3];
+GLUI_Spinner *SPINNER_hvac_node_color[3];
+#endif
+
 GLUI_Spinner *SPINNER_geom_ivecfactor = NULL;
 GLUI_Spinner *SPINNER_geom_vert_exag=NULL;
 GLUI_Spinner *SPINNER_geom_zmin = NULL, *SPINNER_geom_zmax = NULL, *SPINNER_geom_zlevel=NULL;
@@ -136,6 +158,9 @@ GLUI_Panel *PANEL_geom_offset=NULL;
 GLUI_Panel *PANEL_terrain_images = NULL;
 GLUI_Panel *PANEL_geom_show = NULL;
 
+#ifdef pp_HVAC
+GLUI_Rollout *ROLLOUT_hvac = NULL;
+#endif
 GLUI_Rollout *ROLLOUT_structured=NULL;
 GLUI_Rollout *ROLLOUT_unstructured=NULL;
 
@@ -342,6 +367,43 @@ extern "C" void UpdateVertexInfo(float *xyz1, float *xyz2){
   }
 }
 
+/* ------------------ HvacCB ------------------------ */
+#ifdef pp_HVAC
+void HvacCB(int var){
+  int i;
+
+  switch(var){
+    case HVAC_PROPS:
+      if(hvac_duct_width<1.0){
+        hvac_duct_width = 1.0;
+        SPINNER_hvac_duct_width->set_float_val(hvac_duct_width);
+      }
+      if(hvac_node_size<1.0){
+        hvac_node_size = 1.0;
+        SPINNER_hvac_node_size->set_float_val(hvac_node_size);
+      }
+      break;
+    case HVAC_SHOWHIDE_NETWORK:
+      for(i=0;i<nhvacinfo;i++){
+        hvacdata *hvaci;
+
+        hvaci = hvacinfo + i;
+        if(hvac_showhide==1){
+          hvaci->display = 1;
+        }
+        else{
+          hvaci->display = 0;
+        }
+      }
+      break;
+    default:
+      ASSERT(FFALSE);
+      break;
+  }
+  updatemenu = 1;
+}
+#endif
+
 /* ------------------ GluiGeometrySetup ------------------------ */
 
 extern "C" void GluiGeometrySetup(int main_window){
@@ -363,6 +425,31 @@ extern "C" void GluiGeometrySetup(int main_window){
   }
   glui_geometry = GLUI_Master.create_glui("Geometry",0,0,0);
   if(showedit_dialog==0)glui_geometry->hide();
+
+#ifdef pp_HVAC
+  if(nhvacinfo > 0){
+    ROLLOUT_hvac = glui_geometry->add_rollout("HVAC", false, HVAC_ROLLOUT, GeomRolloutCB);
+    INSERT_ROLLOUT(ROLLOUT_hvac, glui_geometry);
+    ADDPROCINFO(geomprocinfo, ngeomprocinfo, ROLLOUT_hvac, HVAC_ROLLOUT, glui_geometry);
+
+    CHECKBOX_hvac_showhide = glui_geometry->add_checkbox_to_panel(ROLLOUT_hvac, "show", &hvac_showhide, HVAC_SHOWHIDE_NETWORK, HvacCB);
+    PANEL_hvac_duct = glui_geometry->add_panel_to_panel(ROLLOUT_hvac, "duct");
+    SPINNER_hvac_duct_width = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct, "width",   GLUI_SPINNER_FLOAT, &hvac_duct_width,   HVAC_PROPS, HvacCB);
+    SPINNER_hvac_duct_color[0] = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct, "red",   GLUI_SPINNER_INT, hvac_duct_color);
+    SPINNER_hvac_duct_color[1] = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct, "green", GLUI_SPINNER_INT, hvac_duct_color + 1);
+    SPINNER_hvac_duct_color[2] = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct, "blue",  GLUI_SPINNER_INT, hvac_duct_color + 2);
+
+    PANEL_hvac_node = glui_geometry->add_panel_to_panel(ROLLOUT_hvac, "node");
+    SPINNER_hvac_node_size = glui_geometry->add_spinner_to_panel(PANEL_hvac_node, "size", GLUI_SPINNER_FLOAT, &hvac_node_size,        HVAC_PROPS, HvacCB);
+    SPINNER_hvac_node_color[0] = glui_geometry->add_spinner_to_panel(PANEL_hvac_node, "red",   GLUI_SPINNER_INT, hvac_node_color);
+    SPINNER_hvac_node_color[1] = glui_geometry->add_spinner_to_panel(PANEL_hvac_node, "green", GLUI_SPINNER_INT, hvac_node_color + 1);
+    SPINNER_hvac_node_color[2] = glui_geometry->add_spinner_to_panel(PANEL_hvac_node, "blue",  GLUI_SPINNER_INT, hvac_node_color + 2);
+    for(i = 0; i < 3; i++){
+      SPINNER_hvac_duct_color[i]->set_int_limits(0, 255);
+      SPINNER_hvac_node_color[i]->set_int_limits(0, 255);
+    }
+  }
+#endif
 
   if(have_obsts == 1){
     ROLLOUT_structured = glui_geometry->add_rollout("Structured", false, STRUCTURED_ROLLOUT, GeomRolloutCB);
@@ -759,6 +846,34 @@ extern "C" void GluiGeometrySetup(int main_window){
 }
 
 /* ------------------ VolumeCB ------------------------ */
+#ifdef pp_HVAC
+extern "C" void UpdateShowHVAC(void){
+  int i;
+  int show_all_networks = 1, hide_all_networks = 1;
+
+  for(i = 0; i < nhvacinfo; i++){
+    hvacdata *hvaci;
+
+    hvaci = hvacinfo + i;
+    if(hvaci->display == 1){
+      hide_all_networks = 0;
+    }
+    else{
+      show_all_networks = 0;
+    }
+  }
+  if(show_all_networks==1){
+    hvac_showhide = 1;
+    CHECKBOX_hvac_showhide->set_int_val(hvac_showhide);
+  }
+  else if(hide_all_networks==1){
+    hvac_showhide = 0;
+    CHECKBOX_hvac_showhide->set_int_val(hvac_showhide);
+  }
+}
+#endif
+
+/* ------------------ VolumeCB ------------------------ */
 
 extern "C" void VolumeCB(int var){
   int i;
@@ -916,6 +1031,23 @@ extern "C" void VolumeCB(int var){
     break;
   }
 }
+
+/* ------------------ HideGluiGeometry ------------------------ */
+#ifdef pp_HVAC
+extern "C" void HideGluiHVAC(void){
+  CloseRollouts(glui_geometry);
+}
+
+/* ------------------ ShowGluiHVAC ------------------------ */
+
+extern "C" void ShowGluiHVAC(void){
+  showedit_dialog=1;
+  if(glui_geometry!=NULL && ROLLOUT_hvac!=NULL){
+    glui_geometry->show();
+    ROLLOUT_hvac->open();
+  }
+}
+#endif
 
 /* ------------------ HideGluiGeometry ------------------------ */
 
