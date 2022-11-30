@@ -37,6 +37,24 @@ void DrawHVAC(hvacdata *hvaci) {
     glVertex3fv(node_to->xyz);
   }
   glEnd();
+  if (hvac_show_duct_labels == 1) {
+    for (i = 0; i < nhvacductinfo; i++) {
+      hvacductdata *hvacducti;
+      hvacnodedata *node_from, *node_to;
+      float xyz[3];
+
+      hvacducti = hvacductinfo + i;
+      if(strcmp(hvaci->network_name, hvacducti->network_name) != 0)continue;
+
+      node_from = hvacnodeinfo + hvacducti->node_id_from;
+      node_to   = hvacnodeinfo + hvacducti->node_id_to;
+      if (node_from == NULL || node_to == NULL)continue;
+      xyz[0] = (node_from->xyz[0] + node_to->xyz[0])/2.0;
+      xyz[1] = (node_from->xyz[1] + node_to->xyz[1])/2.0;
+      xyz[2] = (node_from->xyz[2] + node_to->xyz[2])/2.0;
+      Output3Text(foregroundcolor, xyz[0], xyz[1], xyz[2], hvacducti->duct_name);
+    }
+  }
 
   // draw nodes
   glPointSize(hvac_node_size);
@@ -50,6 +68,15 @@ void DrawHVAC(hvacdata *hvaci) {
     glVertex3fv(nodei->xyz);
   }
   glEnd();
+
+  if (hvac_show_node_labels == 1) {
+    for (i = 0; i < nhvacnodeinfo; i++) {
+      hvacnodedata* nodei;
+
+      nodei = hvacnodeinfo + i;
+      Output3Text(foregroundcolor, nodei->xyz[0], nodei->xyz[1], nodei->xyz[2], nodei->node_name);
+    }
+  }
 
   glPopMatrix();
 }

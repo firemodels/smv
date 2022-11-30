@@ -7735,16 +7735,16 @@ int ReadSMV(bufferstreamdata *stream){
 
       for(i=0;i<nhvacnodeinfo;i++){
         hvacnodedata *nodei;
-        char *filter, *duct_label, *network_label;
+        char *filter, *node_label, *network_label;
 
         nodei=hvacnodeinfo + i;
 
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         sscanf(buffer, "%i", &nodei->node_id);
         strtok(buffer, "%");
-        duct_label = strtok(NULL, "%");
+        node_label = strtok(NULL, "%");
         network_label = strtok(NULL, "%");
-        nodei->duct_name = GetCharPtr(duct_label);
+        nodei->node_name = GetCharPtr(node_label);
         nodei->network_name = GetCharPtr(network_label);
 
         if(FGETS(buffer, 255, stream) == NULL)BREAK;

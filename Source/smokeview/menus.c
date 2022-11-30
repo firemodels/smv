@@ -280,6 +280,15 @@ float     part_load_time;
 
 #define ISO_COLORS 4
 
+#ifdef pp_HVAC
+#define MENU_HVAC_SHOW_NODE_IGNORE -1
+#define MENU_HVAC_SHOW_NODE_LABELS -2
+#define MENU_HVAC_SHOW_DUCT_LABELS -3
+#define MENU_HVAC_SHOWALL_NETWORKS -4
+#define MENU_HVAC_HIDEALL_NETWORKS -5
+#endif
+
+
 #ifdef WIN32
 
 /* ------------------ OpenSMVFile ------------------------ */
@@ -555,7 +564,7 @@ void ShowMultiSliceMenu(int value){
           if(mslicei->display == -1){
             mdisplay = 0;
           }
-          else {
+          else{
             mdisplay = 1 - mslicei->display;
           }
         }
@@ -759,9 +768,9 @@ void LabelMenu(int value){
       visColorbarVertical = 1 - visColorbarVertical;
       if(visColorbarVertical == 1)visColorbarHorizontal = 0;
     }
-    else {
+    else{
       visColorbarHorizontal = 1 - visColorbarHorizontal;
-      if (visColorbarHorizontal == 1)visColorbarVertical = 0;
+      if(visColorbarHorizontal == 1)visColorbarVertical = 0;
     }
     UpdateColorbarControls();
     UpdateColorbarControls2();
@@ -4843,7 +4852,7 @@ FILE_SIZE LoadSlicei(int set_slicecolor, int value, int time_frame, float *time_
       if(slicei->slice_filetype == SLICE_GEOM){
         return_filesize = ReadGeomData(slicei->patchgeom, slicei, LOAD, time_frame, time_value, &errorcode);
       }
-      else {
+      else{
         return_filesize = ReadSlice(slicei->file, value, time_frame, time_value, LOAD, set_slicecolor, &errorcode);
       }
       if(reset_colorbar == 1)ColorbarMenu(colorbartype_save);
@@ -6486,7 +6495,7 @@ void ZoneShowMenu(int value){
   case MENU_DUMMY:
     return;
   case MENU_ZONE_XPLANE:
-    if (zonecolortype == ZONESMOKE_COLOR)zonecolortype = ZONETEMP_COLOR;
+    if(zonecolortype == ZONESMOKE_COLOR)zonecolortype = ZONETEMP_COLOR;
     if(visZonePlane==ZONE_XPLANE){
       visZonePlane = ZONE_HIDDEN;
       visZone=0;
@@ -6525,7 +6534,7 @@ void ZoneShowMenu(int value){
   case MENU_ZONE_2DHAZARD:
     zonecolortype=ZONEHAZARD_COLOR;
     visSZone=0;
-    if (visZonePlane == ZONE_HIDDEN)visZonePlane = ZONE_YPLANE;
+    if(visZonePlane == ZONE_HIDDEN)visZonePlane = ZONE_YPLANE;
     visZone=1;
     break;
   case MENU_ZONE_2DTEMP:
@@ -6534,7 +6543,7 @@ void ZoneShowMenu(int value){
     if(value==MENU_ZONE_2DTEMP)show_zonelower = 0;
     zonecolortype=ZONETEMP_COLOR;
     visSZone=0;
-    if (visZonePlane == ZONE_HIDDEN)visZonePlane = ZONE_YPLANE;
+    if(visZonePlane == ZONE_HIDDEN)visZonePlane = ZONE_YPLANE;
     visZone=1;
     break;
   case MENU_ZONE_3DSMOKE:
@@ -6615,11 +6624,43 @@ void ZoneShowMenu(int value){
 
 #ifdef pp_HVAC
 void HVACMenu(int value){
+  int i;
+
+  if(value==MENU_HVAC_SHOW_NODE_IGNORE)return;
   if(value>=0&&value<nhvacinfo){
     hvacdata *hvaci;
 
     hvaci = hvacinfo + value;
     hvaci->display = 1 - hvaci->display;
+  }
+  else{
+    switch(value){
+      case MENU_HVAC_SHOW_NODE_LABELS:
+        hvac_show_node_labels = 1 - hvac_show_node_labels;
+        break;
+      case MENU_HVAC_SHOW_DUCT_LABELS:
+        hvac_show_duct_labels = 1 - hvac_show_duct_labels;
+        break;
+      case MENU_HVAC_SHOWALL_NETWORKS:
+        for(i = 0; i < nhvacinfo; i++){
+          hvacdata *hvaci;
+
+          hvaci = hvacinfo + i;
+          hvaci->display = 1;
+        }
+        break;
+      case MENU_HVAC_HIDEALL_NETWORKS:
+        for(i = 0; i < nhvacinfo; i++){
+          hvacdata *hvaci;
+
+          hvaci = hvacinfo + i;
+          hvaci->display = 0;
+        }
+        break;
+      default:
+        ASSERT(FFALSE);
+        break;
+    }
   }
   updatemenu = 1;
   GLUTPOSTREDISPLAY;
@@ -8348,13 +8389,13 @@ updatemenu=0;
   if(showgeom_inside_domain == 1){
     glutAddMenuEntry(_("   *Inside FDS domain"), GEOMETRY_INSIDE_DOMAIN);
   }
-  else {
+  else{
     glutAddMenuEntry(_("   Inside Domain domain"), GEOMETRY_INSIDE_DOMAIN);
   }
   if(showgeom_outside_domain == 1){
     glutAddMenuEntry(_("   *Outside FDS domain"), GEOMETRY_OUTSIDE_DOMAIN);
   }
-  else {
+  else{
     glutAddMenuEntry(_("   Outside FDS domain"), GEOMETRY_OUTSIDE_DOMAIN);
   }
   glutAddMenuEntry("-", GEOMETRY_DUMMY);
@@ -8420,13 +8461,13 @@ updatemenu=0;
   if(show_volumes_interior == 1){
     glutAddMenuEntry(_("   *Interior"), GEOMETRY_VOLUMES_INTERIOR);
   }
-  else {
+  else{
     glutAddMenuEntry(_("   Interior"), GEOMETRY_VOLUMES_INTERIOR);
   }
   if(show_volumes_exterior == 1){
     glutAddMenuEntry(_("   *Exterior"), GEOMETRY_VOLUMES_EXTERIOR);
   }
-  else {
+  else{
     glutAddMenuEntry(_("   Exterior"), GEOMETRY_VOLUMES_EXTERIOR);
   }
 
@@ -9119,17 +9160,52 @@ updatemenu=0;
   /* --------------------------------hvac menu -------------------------- */
 
 #ifdef pp_HVAC
-  if (nhvacinfo > 0) {
+  if(nhvacinfo > 0){
+    int show_all_networks=1;
+    int hide_all_networks=1;
+
     CREATEMENU(hvacmenu, HVACMenu);
+    glutAddMenuEntry("networks", MENU_HVAC_SHOW_NODE_IGNORE);
     for(i = 0; i < nhvacinfo; i++){
       hvacdata *hvaci;
       char label[256];
 
       hvaci = hvacinfo + i;
-      strcpy(label, "");
-      if(hvaci->display==1)strcat(label, "*");
+      strcpy(label, "  ");
+      if(hvaci->display == 1){
+        strcat(label, "*");
+        hide_all_networks = 0;
+      }
+      else{
+        show_all_networks = 0;
+      }
       strcat(label, hvaci->network_name);
       glutAddMenuEntry(label, i);
+    }
+    if(show_all_networks == 1){
+      glutAddMenuEntry("  *show all", MENU_HVAC_SHOWALL_NETWORKS);
+    }
+    else{
+      glutAddMenuEntry("  show all", MENU_HVAC_SHOWALL_NETWORKS);
+    }
+    if(hide_all_networks == 1){
+      glutAddMenuEntry("  *hide all", MENU_HVAC_HIDEALL_NETWORKS);
+    }
+    else{
+      glutAddMenuEntry("  hide all", MENU_HVAC_HIDEALL_NETWORKS);
+    }
+    glutAddMenuEntry("labels", MENU_HVAC_SHOW_NODE_IGNORE);
+    if(hvac_show_node_labels == 1){
+      glutAddMenuEntry("  *node", MENU_HVAC_SHOW_NODE_LABELS);
+    }
+    else{
+      glutAddMenuEntry("  node", MENU_HVAC_SHOW_NODE_LABELS);
+    }
+    if(hvac_show_duct_labels == 1){
+      glutAddMenuEntry("  *duct", MENU_HVAC_SHOW_DUCT_LABELS);
+    }
+    else{
+      glutAddMenuEntry("  duct", MENU_HVAC_SHOW_DUCT_LABELS);
     }
   }
 #endif
@@ -9339,17 +9415,17 @@ updatemenu=0;
         glutAddMenuEntry(_("      Horizontal(Z plane)"), MENU_ZONE_ZPLANE);
       }
       else{
-        if (visZonePlane == ZONE_XPLANE) {
+        if(visZonePlane == ZONE_XPLANE){
           glutAddMenuEntry(_("      *Vertical(X plane)"),  MENU_ZONE_XPLANE);
           glutAddMenuEntry(_("      Vertical(Y plane)"),   MENU_ZONE_YPLANE);
           glutAddMenuEntry(_("      Horizontal(Z plane)"), MENU_ZONE_ZPLANE);
         }
-        if (visZonePlane == ZONE_YPLANE) {
+        if(visZonePlane == ZONE_YPLANE){
           glutAddMenuEntry(_("      Vertical(X plane)"),   MENU_ZONE_XPLANE);
           glutAddMenuEntry(_("      *Vertical(Y plane)"),  MENU_ZONE_YPLANE);
           glutAddMenuEntry(_("      Horizontal(Z plane)"), MENU_ZONE_ZPLANE);
         }
-        if (visZonePlane == ZONE_ZPLANE) {
+        if(visZonePlane == ZONE_ZPLANE){
           glutAddMenuEntry(_("      Vertical(X plane)"),    MENU_ZONE_XPLANE);
           glutAddMenuEntry(_("      Vertical(Y plane)"),    MENU_ZONE_YPLANE);
           glutAddMenuEntry(_("      *Horizontal(Z plane)"), MENU_ZONE_ZPLANE);
