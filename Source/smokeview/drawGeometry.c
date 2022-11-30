@@ -1169,6 +1169,22 @@ void SetCVentDirs(void){
   UNLOCK_IBLANK
 }
 
+/* ------------------ CheckVentDup ------------------------ */
+
+int CheckVentDup(ventdata* vi, meshdata* meshi){
+  int i;
+
+  for(i = 0; i < meshi->nvents - meshi->ndummyvents; i++){
+    ventdata *vi2;
+
+    vi2 = meshi->ventinfo + i;
+    if(vi2->imin != vi->imin || vi2->imax != vi->imax)return 0;
+    if(vi2->jmin != vi->jmin || vi2->jmax != vi->jmax)return 0;
+    if(vi2->kmin != vi->kmin || vi2->kmax != vi->kmax)return 0;
+  }
+  return 1;
+}
+
 /* ------------------ SetVentDirs ------------------------ */
 
 void SetVentDirs(void){
@@ -1260,6 +1276,9 @@ void SetVentDirs(void){
           voffset=-offset;
         }
         if(iv<meshi->nvents)vi->dir=ventdir;
+        if(vi->dummy != 0){
+          if(CheckVentDup(vi, meshi)==1)vi->dummy = 0;
+        }
         if(vi->dummy==0){
           vi->xvent1 = vi->xvent1_orig+voffset;
           vi->xvent2 = vi->xvent2_orig+voffset;
@@ -1310,6 +1329,9 @@ void SetVentDirs(void){
           voffset=-offset;
         }
         if(iv<meshi->nvents)vi->dir=ventdir;
+        if(vi->dummy != 0){
+          if(CheckVentDup(vi, meshi)==1)vi->dummy = 0;
+        }
         if(vi->dummy==0){
           vi->yvent1 = vi->yvent1_orig+voffset;
           vi->yvent2 = vi->yvent2_orig+voffset;
@@ -1360,6 +1382,9 @@ void SetVentDirs(void){
           voffset=-offset;
         }
         if(iv<meshi->nvents)vi->dir=ventdir;
+        if(vi->dummy != 0){
+          if(CheckVentDup(vi, meshi)==1)vi->dummy = 0;
+        }
         if(vi->dummy==0){
           vi->zvent1 = vi->zvent1_orig+voffset;
           vi->zvent2 = vi->zvent2_orig+voffset;
