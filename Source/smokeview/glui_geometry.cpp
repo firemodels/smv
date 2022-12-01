@@ -438,12 +438,16 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_hvac_duct_color[0] = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct, "red",   GLUI_SPINNER_INT, hvac_duct_color);
     SPINNER_hvac_duct_color[1] = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct, "green", GLUI_SPINNER_INT, hvac_duct_color + 1);
     SPINNER_hvac_duct_color[2] = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct, "blue",  GLUI_SPINNER_INT, hvac_duct_color + 2);
+    glui_geometry->add_checkbox_to_panel(PANEL_hvac_duct, "show duct labels",      &hvac_show_duct_labels);
+    glui_geometry->add_checkbox_to_panel(PANEL_hvac_duct, "show component labels", &hvac_show_components);
 
     PANEL_hvac_node = glui_geometry->add_panel_to_panel(ROLLOUT_hvac, "node");
     SPINNER_hvac_node_size = glui_geometry->add_spinner_to_panel(PANEL_hvac_node, "size", GLUI_SPINNER_FLOAT, &hvac_node_size,        HVAC_PROPS, HvacCB);
     SPINNER_hvac_node_color[0] = glui_geometry->add_spinner_to_panel(PANEL_hvac_node, "red",   GLUI_SPINNER_INT, hvac_node_color);
     SPINNER_hvac_node_color[1] = glui_geometry->add_spinner_to_panel(PANEL_hvac_node, "green", GLUI_SPINNER_INT, hvac_node_color + 1);
     SPINNER_hvac_node_color[2] = glui_geometry->add_spinner_to_panel(PANEL_hvac_node, "blue",  GLUI_SPINNER_INT, hvac_node_color + 2);
+    glui_geometry->add_checkbox_to_panel(PANEL_hvac_node, "show node labels",   &hvac_show_node_labels);
+    glui_geometry->add_checkbox_to_panel(PANEL_hvac_node, "show filter labels", &hvac_show_filters);
     for(i = 0; i < 3; i++){
       SPINNER_hvac_duct_color[i]->set_int_limits(0, 255);
       SPINNER_hvac_node_color[i]->set_int_limits(0, 255);
