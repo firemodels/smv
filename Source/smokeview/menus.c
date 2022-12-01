@@ -1569,11 +1569,11 @@ void DialogMenu(int value){
     break;
 #ifdef pp_HVAC
   case DIALOG_HVAC:
-    showedit_dialog = 1 - showedit_dialog;
-    if (showedit_dialog == 1) {
+    showhvac_dialog = 1 - showhvac_dialog;
+    if (showhvac_dialog == 1) {
       ShowGluiHVAC();
     }
-    if (showedit_dialog == 0) {
+    if (showhvac_dialog == 0) {
       HideGluiHVAC();
     }
     break;

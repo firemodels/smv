@@ -1036,17 +1036,18 @@ extern "C" void VolumeCB(int var){
   }
 }
 
-/* ------------------ HideGluiGeometry ------------------------ */
+/* ------------------ HideGluiHVAC ------------------------ */
 #ifdef pp_HVAC
 extern "C" void HideGluiHVAC(void){
+  showhvac_dialog = 0;
   CloseRollouts(glui_geometry);
 }
 
 /* ------------------ ShowGluiHVAC ------------------------ */
 
 extern "C" void ShowGluiHVAC(void){
-  showedit_dialog=1;
   if(glui_geometry!=NULL && ROLLOUT_hvac!=NULL){
+    showhvac_dialog=1;
     glui_geometry->show();
     ROLLOUT_hvac->open();
   }
