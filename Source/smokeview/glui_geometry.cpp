@@ -47,12 +47,15 @@ int      ngeomprocinfo = 0;
 #endif
 
 #ifdef pp_HVAC
-#define HVAC_PROPS            1
-#define HVAC_SHOWHIDE_NETWORK 2
+#define HVAC_PROPS            -1
+#define HVAC_SHOWALL_NETWORK  -2
+#define HVAC_HIDEALL_NETWORK  -3
 #endif
 
 #ifdef pp_HVAC
-GLUI_Checkbox *CHECKBOX_hvac_showhide = NULL;
+GLUI_Checkbox *CHECKBOX_hvac_showall = NULL;
+GLUI_Checkbox *CHECKBOX_hvac_hideall = NULL;
+GLUI_Checkbox **CHECKBOX_hvac_show   = NULL;
 #endif
 GLUI_Checkbox *CHECKBOX_showgeom_inside_domain = NULL;
 GLUI_Checkbox *CHECKBOX_showgeom_outside_domain = NULL;
@@ -93,8 +96,9 @@ GLUI_Panel *PANEL_surf_color = NULL;
 GLUI_Panel *PANEL_surf_axis = NULL;
 GLUI_Panel *PANEL_surf_coloraxis = NULL;
 #ifdef pp_HVAC
-GLUI_Panel *PANEL_hvac_duct = NULL;
-GLUI_Panel *PANEL_hvac_node = NULL;
+GLUI_Panel *PANEL_hvac_duct    = NULL;
+GLUI_Panel *PANEL_hvac_node    = NULL;
+GLUI_Panel *PANEL_hvac_network = NULL;
 #endif
 
 GLUI_Panel *PANEL_face_cface = NULL;
@@ -372,6 +376,10 @@ extern "C" void UpdateVertexInfo(float *xyz1, float *xyz2){
 void HvacCB(int var){
   int i;
 
+  if(var>=0){
+    if(var<nhvacinfo)UpdateShowHVAC();
+    return;
+  }
   switch(var){
     case HVAC_PROPS:
       if(hvac_duct_width<1.0){
@@ -383,18 +391,27 @@ void HvacCB(int var){
         SPINNER_hvac_node_size->set_float_val(hvac_node_size);
       }
       break;
-    case HVAC_SHOWHIDE_NETWORK:
+    case HVAC_SHOWALL_NETWORK:
+      if(hvac_showall==0)break;
       for(i=0;i<nhvacinfo;i++){
         hvacdata *hvaci;
 
         hvaci = hvacinfo + i;
-        if(hvac_showhide==1){
-          hvaci->display = 1;
-        }
-        else{
-          hvaci->display = 0;
-        }
+        hvaci->display = 1;
+        CHECKBOX_hvac_show[i]->set_int_val(hvaci->display);
       }
+      UpdateShowHVAC();
+      break;
+    case HVAC_HIDEALL_NETWORK:
+      if(hvac_hideall==0)break;
+      for(i=0;i<nhvacinfo;i++){
+        hvacdata *hvaci;
+
+        hvaci = hvacinfo + i;
+        hvaci->display = 0;
+        CHECKBOX_hvac_show[i]->set_int_val(hvaci->display);
+      }
+      UpdateShowHVAC();
       break;
     default:
       ASSERT(FFALSE);
@@ -432,7 +449,22 @@ extern "C" void GluiGeometrySetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_hvac, glui_geometry);
     ADDPROCINFO(geomprocinfo, ngeomprocinfo, ROLLOUT_hvac, HVAC_ROLLOUT, glui_geometry);
 
-    CHECKBOX_hvac_showhide = glui_geometry->add_checkbox_to_panel(ROLLOUT_hvac, "show", &hvac_showhide, HVAC_SHOWHIDE_NETWORK, HvacCB);
+    if(nhvacinfo > 1){
+      PANEL_hvac_network = glui_geometry->add_panel_to_panel(ROLLOUT_hvac, "network");
+      NewMemory((void **)&CHECKBOX_hvac_show, sizeof(GLUI_Checkbox *)*nhvacinfo);
+      for(i = 0; i < nhvacinfo; i++){
+        hvacdata *hvaci;
+
+        hvaci = hvacinfo + i;
+        CHECKBOX_hvac_show[i] = glui_geometry->add_checkbox_to_panel(PANEL_hvac_network, hvaci->network_name, &hvaci->display, i, HvacCB);
+      }
+      glui_geometry->add_separator_to_panel(PANEL_hvac_network);
+      CHECKBOX_hvac_showall = glui_geometry->add_checkbox_to_panel(PANEL_hvac_network, "show all", &hvac_showall, HVAC_SHOWALL_NETWORK, HvacCB);
+      CHECKBOX_hvac_hideall = glui_geometry->add_checkbox_to_panel(PANEL_hvac_network, "hide all", &hvac_hideall, HVAC_HIDEALL_NETWORK, HvacCB);
+    }
+    else{
+      CHECKBOX_hvac_showall = glui_geometry->add_checkbox_to_panel(ROLLOUT_hvac, "show", &hvac_showall, HVAC_SHOWALL_NETWORK, HvacCB);
+    }
     PANEL_hvac_duct = glui_geometry->add_panel_to_panel(ROLLOUT_hvac, "duct");
     SPINNER_hvac_duct_width = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct, "width",   GLUI_SPINNER_FLOAT, &hvac_duct_width,   HVAC_PROPS, HvacCB);
     SPINNER_hvac_duct_color[0] = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct, "red",   GLUI_SPINNER_INT, hvac_duct_color);
@@ -849,7 +881,7 @@ extern "C" void GluiGeometrySetup(int main_window){
   glui_geometry->set_main_gfx_window( main_window );
 }
 
-/* ------------------ VolumeCB ------------------------ */
+/* ------------------ UpdateShowHVAC ------------------------ */
 #ifdef pp_HVAC
 extern "C" void UpdateShowHVAC(void){
   int i;
@@ -866,14 +898,20 @@ extern "C" void UpdateShowHVAC(void){
       show_all_networks = 0;
     }
   }
-  if(show_all_networks==1){
-    hvac_showhide = 1;
-    CHECKBOX_hvac_showhide->set_int_val(hvac_showhide);
+  if(show_all_networks == 1){
+      hvac_showall = 1;
+    }
+  else{
+    hvac_showall = 0;
   }
-  else if(hide_all_networks==1){
-    hvac_showhide = 0;
-    CHECKBOX_hvac_showhide->set_int_val(hvac_showhide);
+  if(hide_all_networks == 1){
+    hvac_hideall = 1;
   }
+  else{
+    hvac_hideall = 0;
+  }
+  CHECKBOX_hvac_showall->set_int_val(hvac_showall);
+  CHECKBOX_hvac_hideall->set_int_val(hvac_hideall);
 }
 #endif
 

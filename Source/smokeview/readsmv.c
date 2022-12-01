@@ -7797,7 +7797,8 @@ int ReadSMV(bufferstreamdata *stream){
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         sscanf(buffer, "%i", &ducti->nduct_cells);
-        hvac_label = strtok(buffer, "%");
+        strtok(buffer, "%");
+        hvac_label = strtok(NULL, "%");
         hvac_label = TrimFrontBack(hvac_label);
 
         char *c_component[4]={"-","F","A","D"};
