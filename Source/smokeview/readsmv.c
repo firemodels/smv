@@ -3063,16 +3063,18 @@ int GetSmoke3DType(char *label){
   return -1;
 }
 
+#ifdef pp_HVAC
 /* ------------------ CompareLabel ------------------------ */
 
 int CompareLabel(const void *arg1, const void *arg2){
   char *x, *y;
 
-  x = ( char * )arg1;
-  y = ( char * )arg2;
+  x = *( char ** )arg1;
+  y = *( char ** )arg2;
 
   return strcmp(x, y);
 }
+#endif
 
 /* ------------------ CompareSmoketypes ------------------------ */
 
