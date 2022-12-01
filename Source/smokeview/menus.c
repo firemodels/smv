@@ -9196,17 +9196,19 @@ updatemenu=0;
       strcat(label, hvaci->network_name);
       glutAddMenuEntry(label, i);
     }
-    if(show_all_networks == 1){
-      glutAddMenuEntry("  *show all", MENU_HVAC_SHOWALL_NETWORKS);
-    }
-    else{
-      glutAddMenuEntry("  show all", MENU_HVAC_SHOWALL_NETWORKS);
-    }
-    if(hide_all_networks == 1){
-      glutAddMenuEntry("  *hide all", MENU_HVAC_HIDEALL_NETWORKS);
-    }
-    else{
-      glutAddMenuEntry("  hide all", MENU_HVAC_HIDEALL_NETWORKS);
+    if(nhvacinfo > 1){
+      if(show_all_networks == 1){
+        glutAddMenuEntry("  *show all", MENU_HVAC_SHOWALL_NETWORKS);
+      }
+      else{
+        glutAddMenuEntry("  show all", MENU_HVAC_SHOWALL_NETWORKS);
+      }
+      if(hide_all_networks == 1){
+        glutAddMenuEntry("  *hide all", MENU_HVAC_HIDEALL_NETWORKS);
+      }
+      else{
+        glutAddMenuEntry("  hide all", MENU_HVAC_HIDEALL_NETWORKS);
+      }
     }
     glutAddMenuEntry("labels", MENU_HVAC_SHOW_NODE_IGNORE);
     if(hvac_show_node_labels == 1){
@@ -10913,7 +10915,7 @@ updatemenu=0;
 #endif
 #ifdef pp_HVAC
   if(nhvacinfo > 0){
-    glutAddMenuEntry(_("HVAC settings...  ALT e"), DIALOG_HVAC);
+    glutAddMenuEntry(_("HVAC settings..."), DIALOG_HVAC);
   }
 #endif
 
