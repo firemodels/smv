@@ -43,6 +43,7 @@ add_executable(smokeview Source/smokeview/main.c Source/smokeview/menus.c Source
     Source/shared/stdio_m.c Source/shared/stdio_buffer.c
     Source/smokeview/gsmv.c Source/smokeview/getdata.c Source/smokeview/color2rgb.c
     Source/smokeview/IOplot2d.c
+    Source/smokeview/IOhvac.c
 )
 # target_include_directories(smokeview PRIVATE ${OPENGL_INCLUDE_DIRS}  )
 
