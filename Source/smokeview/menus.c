@@ -286,6 +286,9 @@ float     part_load_time;
 #define MENU_HVAC_SHOW_DUCT_LABELS -3
 #define MENU_HVAC_SHOWALL_NETWORKS -4
 #define MENU_HVAC_HIDEALL_NETWORKS -5
+#define MENU_HVAC_SHOW_COMPONENTS  -6
+#define MENU_HVAC_SHOW_FILTERS     -7
+#define MENU_HVAC_METRO_VIEW       -8
 #endif
 
 
@@ -1567,6 +1570,17 @@ void DialogMenu(int value){
       HideGluiColorbar();
     }
     break;
+#ifdef pp_HVAC
+  case DIALOG_HVAC:
+    showhvac_dialog = 1 - showhvac_dialog;
+    if (showhvac_dialog == 1) {
+      ShowGluiHVAC();
+    }
+    if (showhvac_dialog == 0) {
+      HideGluiHVAC();
+    }
+    break;
+#endif
   case DIALOG_GEOMETRY:
     showedit_dialog=1-showedit_dialog;
     if(showedit_dialog==1){
@@ -6632,14 +6646,25 @@ void HVACMenu(int value){
 
     hvaci = hvacinfo + value;
     hvaci->display = 1 - hvaci->display;
+    UpdateShowHVAC();
   }
   else{
     switch(value){
+      case MENU_HVAC_SHOW_COMPONENTS:
+        hvac_show_components = 1 - hvac_show_components;
+        UpdateGluiHVAC();
+        break;
+      case MENU_HVAC_SHOW_FILTERS:
+        hvac_show_filters = 1 - hvac_show_filters;
+        UpdateGluiHVAC();
+        break;
       case MENU_HVAC_SHOW_NODE_LABELS:
         hvac_show_node_labels = 1 - hvac_show_node_labels;
+        UpdateGluiHVAC();
         break;
       case MENU_HVAC_SHOW_DUCT_LABELS:
         hvac_show_duct_labels = 1 - hvac_show_duct_labels;
+        UpdateGluiHVAC();
         break;
       case MENU_HVAC_SHOWALL_NETWORKS:
         for(i = 0; i < nhvacinfo; i++){
@@ -6648,6 +6673,11 @@ void HVACMenu(int value){
           hvaci = hvacinfo + i;
           hvaci->display = 1;
         }
+        UpdateShowHVAC();
+        break;
+      case MENU_HVAC_METRO_VIEW:
+        hvac_metro_view = 1 - hvac_metro_view;
+        UpdateGluiHVAC();
         break;
       case MENU_HVAC_HIDEALL_NETWORKS:
         for(i = 0; i < nhvacinfo; i++){
@@ -6656,6 +6686,7 @@ void HVACMenu(int value){
           hvaci = hvacinfo + i;
           hvaci->display = 0;
         }
+        UpdateShowHVAC();
         break;
       default:
         ASSERT(FFALSE);
@@ -9182,17 +9213,25 @@ updatemenu=0;
       strcat(label, hvaci->network_name);
       glutAddMenuEntry(label, i);
     }
-    if(show_all_networks == 1){
-      glutAddMenuEntry("  *show all", MENU_HVAC_SHOWALL_NETWORKS);
+    if(nhvacinfo > 1){
+      if(show_all_networks == 1){
+        glutAddMenuEntry("  *show all", MENU_HVAC_SHOWALL_NETWORKS);
+      }
+      else{
+        glutAddMenuEntry("  show all", MENU_HVAC_SHOWALL_NETWORKS);
+      }
+      if(hide_all_networks == 1){
+        glutAddMenuEntry("  *hide all", MENU_HVAC_HIDEALL_NETWORKS);
+      }
+      else{
+        glutAddMenuEntry("  hide all", MENU_HVAC_HIDEALL_NETWORKS);
+      }
     }
-    else{
-      glutAddMenuEntry("  show all", MENU_HVAC_SHOWALL_NETWORKS);
+    if (hvac_metro_view==1 == 1) {
+      glutAddMenuEntry("  *metro view", MENU_HVAC_METRO_VIEW);
     }
-    if(hide_all_networks == 1){
-      glutAddMenuEntry("  *hide all", MENU_HVAC_HIDEALL_NETWORKS);
-    }
-    else{
-      glutAddMenuEntry("  hide all", MENU_HVAC_HIDEALL_NETWORKS);
+    else {
+      glutAddMenuEntry("  metro view", MENU_HVAC_METRO_VIEW);
     }
     glutAddMenuEntry("labels", MENU_HVAC_SHOW_NODE_IGNORE);
     if(hvac_show_node_labels == 1){
@@ -9201,11 +9240,23 @@ updatemenu=0;
     else{
       glutAddMenuEntry("  node", MENU_HVAC_SHOW_NODE_LABELS);
     }
+    if(hvac_show_filters == 1){
+      glutAddMenuEntry("     *filters", MENU_HVAC_SHOW_FILTERS);
+    }
+    else{
+      glutAddMenuEntry("     filters", MENU_HVAC_SHOW_FILTERS);
+    }
     if(hvac_show_duct_labels == 1){
       glutAddMenuEntry("  *duct", MENU_HVAC_SHOW_DUCT_LABELS);
     }
     else{
       glutAddMenuEntry("  duct", MENU_HVAC_SHOW_DUCT_LABELS);
+    }
+    if(hvac_show_components == 1){
+      glutAddMenuEntry("     *components", MENU_HVAC_SHOW_COMPONENTS);
+    }
+    else{
+      glutAddMenuEntry("      components", MENU_HVAC_SHOW_COMPONENTS);
     }
   }
 #endif
@@ -10897,6 +10948,12 @@ updatemenu=0;
     glutAddMenuEntry(_("Examine geometry...  "), DIALOG_GEOMETRY);
   }
 #endif
+#ifdef pp_HVAC
+  if(nhvacinfo > 0){
+    glutAddMenuEntry(_("HVAC settings..."), DIALOG_HVAC);
+  }
+#endif
+
   if(have_vr==1){
     glutAddMenuEntry(_("Stereo/VR settings..."), DIALOG_STEREO);
   }

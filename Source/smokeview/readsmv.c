@@ -3063,16 +3063,18 @@ int GetSmoke3DType(char *label){
   return -1;
 }
 
+#ifdef pp_HVAC
 /* ------------------ CompareLabel ------------------------ */
 
 int CompareLabel(const void *arg1, const void *arg2){
   char *x, *y;
 
-  x = ( char * )arg1;
-  y = ( char * )arg2;
+  x = *( char ** )arg1;
+  y = *( char ** )arg2;
 
   return strcmp(x, y);
 }
+#endif
 
 /* ------------------ CompareSmoketypes ------------------------ */
 
@@ -7753,7 +7755,12 @@ int ReadSMV(bufferstreamdata *stream){
         filter = strtok(NULL, "%");
         filter = TrimFrontBack(filter);
         nodei->filter = HVAC_FILTER_NO;
-        if(filter != NULL && strcmp(filter, "FILTER") == 0)nodei->filter = HVAC_FILTER_NO;
+        strcpy(nodei->c_filter, "");
+        if(filter != NULL && strcmp(filter, "FILTER") == 0){
+          nodei->filter = HVAC_FILTER_YES;
+          strcpy(nodei->c_filter, "FI");
+        }
+        
       }
   // DUCTS
   // n_ducts
@@ -7790,14 +7797,18 @@ int ReadSMV(bufferstreamdata *stream){
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         sscanf(buffer, "%i", &ducti->nduct_cells);
-        hvac_label = strtok(buffer, "%");
+        strtok(buffer, "%");
+        hvac_label = strtok(NULL, "%");
         hvac_label = TrimFrontBack(hvac_label);
 
+        char *c_component[4]={"-","F","A","D"};
         ducti->component = HVAC_NONE;
-        if(hvac_label != NULL && hvac_label[0] == '-')ducti->component = HVAC_NONE;
-        if(hvac_label != NULL && hvac_label[0] == 'F')ducti->component = HVAC_FAN;
-        if(hvac_label != NULL && hvac_label[0] == 'A')ducti->component = HVAC_AIRCOIL;
-        if(hvac_label != NULL && hvac_label[0] == 'D')ducti->component = HVAC_DAMPER;
+        if(hvac_label != NULL){
+          if(hvac_label[0] == 'F')ducti->component = HVAC_FAN;
+          if(hvac_label[0] == 'A')ducti->component = HVAC_AIRCOIL;
+          if(hvac_label[0] == 'D')ducti->component = HVAC_DAMPER;
+        }
+        strcpy(ducti->c_component, c_component[ducti->component]);
 
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
@@ -11808,7 +11819,7 @@ int ReadIni2(char *inifile, int localfile){
       int nh;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i", &nh);
+      sscanf(buffer, " %i %i", &nh, &hvac_metro_view);
 
       nh = MIN(nhvacinfo, nh);
       for(i = 0; i < nh; i++){
@@ -11819,10 +11830,24 @@ int ReadIni2(char *inifile, int localfile){
         sscanf(buffer, " %i", &hvaci->display);
       }
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i", &hvac_show_node_labels, &hvac_show_duct_labels);
+      sscanf(buffer, " %i %i %i %i", &hvac_show_node_labels, &hvac_show_duct_labels, &hvac_show_components, &hvac_show_filters);
       ONEORZERO(hvac_show_node_labels);
       ONEORZERO(hvac_show_duct_labels);
 
+      int dc[3], nc[3];
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i %f", dc, dc+1, dc+2, &hvac_duct_width);
+      hvac_duct_color[0] = CLAMP(dc[0], 0, 255);
+      hvac_duct_color[1] = CLAMP(dc[1], 0, 255);
+      hvac_duct_color[2] = CLAMP(dc[2], 0, 255);
+      hvac_duct_width = MAX(1.0, hvac_duct_width);
+      
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i %f", nc, nc + 1, nc + 2, &hvac_node_size);
+      hvac_node_color[0] = CLAMP(nc[0], 0, 255);
+      hvac_node_color[1] = CLAMP(nc[1], 0, 255);
+      hvac_node_color[2] = CLAMP(nc[2], 0, 255);
+      hvac_node_size = MAX(1.0, hvac_node_size);
     }
 #endif
     if(MatchINI(buffer, "SHOWSLICEVALS")==1){
@@ -16202,14 +16227,21 @@ void WriteIni(int flag,char *filename){
 #ifdef pp_HVAC
   if(nhvacinfo > 0){
     fprintf(fileout, "HVACVIEW\n");
-    fprintf(fileout, "%i\n", nhvacinfo);
+    fprintf(fileout, " %i %i\n", nhvacinfo, hvac_metro_view);
     for(i = 0; i < nhvacinfo; i++){
       hvacdata *hvaci;
 
       hvaci = hvacinfo + i;
       fprintf(fileout, " %i\n", hvaci->display);
     }
-    fprintf(fileout, " %i %i\n", hvac_show_node_labels, hvac_show_duct_labels);
+    fprintf(fileout, " %i %i %i %i\n", hvac_show_node_labels, hvac_show_duct_labels, hvac_show_components, hvac_show_filters);
+    int *dc, *nc;
+    
+    dc = hvac_duct_color;
+    nc = hvac_node_color;
+
+    fprintf(fileout, " %i %i %i %f\n", dc[0], dc[1], dc[2], hvac_duct_width);
+    fprintf(fileout, " %i %i %i %f\n", nc[0], nc[1], nc[2], hvac_node_size);
   }
 #endif
   fprintf(fileout, "SHOWSLICEVALS\n");

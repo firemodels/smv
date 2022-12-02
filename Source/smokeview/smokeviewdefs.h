@@ -1029,6 +1029,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define DIALOG_MOVIE     43
 #define DIALOG_MOVIE_BATCH 45
 #define DIALOG_SHRINKALL -3
+#ifdef pp_HVAC
+#define DIALOG_HVAC      47
+#endif
 
 #define UNLOAD_LAST -2
 
