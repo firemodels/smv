@@ -286,6 +286,8 @@ float     part_load_time;
 #define MENU_HVAC_SHOW_DUCT_LABELS -3
 #define MENU_HVAC_SHOWALL_NETWORKS -4
 #define MENU_HVAC_HIDEALL_NETWORKS -5
+#define MENU_HVAC_SHOW_COMPONENTS  -6
+#define MENU_HVAC_SHOW_FILTERS     -7
 #endif
 
 
@@ -6647,11 +6649,21 @@ void HVACMenu(int value){
   }
   else{
     switch(value){
+      case MENU_HVAC_SHOW_COMPONENTS:
+        hvac_show_components = 1 - hvac_show_components;
+        UpdateGluiHVAC();
+        break;
+      case MENU_HVAC_SHOW_FILTERS:
+        hvac_show_filters = 1 - hvac_show_filters;
+        UpdateGluiHVAC();
+        break;
       case MENU_HVAC_SHOW_NODE_LABELS:
         hvac_show_node_labels = 1 - hvac_show_node_labels;
+        UpdateGluiHVAC();
         break;
       case MENU_HVAC_SHOW_DUCT_LABELS:
         hvac_show_duct_labels = 1 - hvac_show_duct_labels;
+        UpdateGluiHVAC();
         break;
       case MENU_HVAC_SHOWALL_NETWORKS:
         for(i = 0; i < nhvacinfo; i++){
@@ -9217,11 +9229,23 @@ updatemenu=0;
     else{
       glutAddMenuEntry("  node", MENU_HVAC_SHOW_NODE_LABELS);
     }
+    if(hvac_show_filters == 1){
+      glutAddMenuEntry("     *filters", MENU_HVAC_SHOW_FILTERS);
+    }
+    else{
+      glutAddMenuEntry("     filters", MENU_HVAC_SHOW_FILTERS);
+    }
     if(hvac_show_duct_labels == 1){
       glutAddMenuEntry("  *duct", MENU_HVAC_SHOW_DUCT_LABELS);
     }
     else{
       glutAddMenuEntry("  duct", MENU_HVAC_SHOW_DUCT_LABELS);
+    }
+    if(hvac_show_components == 1){
+      glutAddMenuEntry("     *components", MENU_HVAC_SHOW_COMPONENTS);
+    }
+    else{
+      glutAddMenuEntry("      components", MENU_HVAC_SHOW_COMPONENTS);
     }
   }
 #endif

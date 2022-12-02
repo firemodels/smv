@@ -460,6 +460,7 @@ EXTERNCPP void ShowGluiGeometry(void);
 EXTERNCPP void HideGluiHVAC(void);
 EXTERNCPP void ShowGluiHVAC(void);
 EXTERNCPP void UpdateShowHVAC(void);
+EXTERNCPP void UpdateGluiHVAC(void);
 #endif
 
 EXTERNCPP void HideGluiGeometry(void);
