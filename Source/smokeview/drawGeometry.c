@@ -1173,8 +1173,12 @@ void SetCVentDirs(void){
 
 int CheckVentDup(ventdata* vi, meshdata* meshi){
   int i;
+  int nreal_vents;
 
-  for(i = 0; i < meshi->nvents - meshi->ndummyvents; i++){
+  nreal_vents = meshi->nvents - meshi->ndummyvents;
+  if (nreal_vents == 0)return 0;
+
+  for(i = 0; i < nreal_vents; i++){
     ventdata *vi2;
 
     vi2 = meshi->ventinfo + i;
