@@ -1308,6 +1308,7 @@ typedef struct _hvacductdata {
 typedef struct _hvacdata {
   char *network_name;
   int display;
+  int duct_color[3], node_color[3];
 } hvacdata;
 #endif
 

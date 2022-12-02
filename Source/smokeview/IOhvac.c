@@ -22,9 +22,9 @@ void DrawHVAC(hvacdata *hvaci) {
   
   glLineWidth(hvac_duct_width);
   glBegin(GL_LINES);
-  uc_color[0] = CLAMP(hvac_duct_color[0], 0, 255);
-  uc_color[1] = CLAMP(hvac_duct_color[1], 0, 255);
-  uc_color[2] = CLAMP(hvac_duct_color[2], 0, 255);
+  uc_color[0] = CLAMP(hvaci->duct_color[0], 0, 255);
+  uc_color[1] = CLAMP(hvaci->duct_color[1], 0, 255);
+  uc_color[2] = CLAMP(hvaci->duct_color[2], 0, 255);
   glColor3ubv(uc_color);
   for (i = 0; i < nhvacductinfo; i++) {
     hvacductdata *hvacducti;
@@ -78,9 +78,9 @@ void DrawHVAC(hvacdata *hvaci) {
   // draw nodes
   glPointSize(hvac_node_size);
   glBegin(GL_POINTS);
-  uc_color[0] = CLAMP(hvac_node_color[0], 0, 255);
-  uc_color[1] = CLAMP(hvac_node_color[1], 0, 255);
-  uc_color[2] = CLAMP(hvac_node_color[2], 0, 255);
+  uc_color[0] = CLAMP(hvaci->node_color[0], 0, 255);
+  uc_color[1] = CLAMP(hvaci->node_color[1], 0, 255);
+  uc_color[2] = CLAMP(hvaci->node_color[2], 0, 255);
   glColor3ubv(uc_color);
   for (i = 0; i < nhvacnodeinfo; i++) {
     hvacnodedata *nodei;

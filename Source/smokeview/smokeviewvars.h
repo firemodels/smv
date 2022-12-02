@@ -31,8 +31,9 @@ SVEXTERN hvacductdata SVDECL(*hvacductinfo, NULL);
 SVEXTERN int SVDECL(hvac_show_node_labels, 0), SVDECL(hvac_show_duct_labels, 0);
 SVEXTERN int SVDECL(hvac_show_filters, 0), SVDECL(hvac_show_components, 0);
 SVEXTERN float SVDECL(hvac_node_size, 8.0), SVDECL(hvac_duct_width, 4.0);
-SVEXTERN int SVDECL(hvac_showall, 0), SVDECL(hvac_hideall, 0);
 SVEXTERN int SVDECL(hvac_metro_view, 0);
+SVEXTERN hvacdata SVDECL(*glui_hvac, NULL);
+SVEXTERN int SVDECL(hvac_network_index, 0);
 #ifdef INMAIN
 SVEXTERN int hvac_duct_color[3] = { 63,0,15};
 SVEXTERN int hvac_node_color[3] = { 63,0,15};
@@ -40,7 +41,6 @@ SVEXTERN int hvac_node_color[3] = { 63,0,15};
 SVEXTERN int hvac_duct_color[3];
 SVEXTERN int hvac_node_color[3];
 #endif
-
 #endif
 SVEXTERN int SVDECL(histogram_nframes, 40);
 SVEXTERN int SVDECL(glui_surf_index, 0);
