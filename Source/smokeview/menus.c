@@ -288,6 +288,7 @@ float     part_load_time;
 #define MENU_HVAC_HIDEALL_NETWORKS -5
 #define MENU_HVAC_SHOW_COMPONENTS  -6
 #define MENU_HVAC_SHOW_FILTERS     -7
+#define MENU_HVAC_METRO_VIEW       -8
 #endif
 
 
@@ -6674,6 +6675,10 @@ void HVACMenu(int value){
         }
         UpdateShowHVAC();
         break;
+      case MENU_HVAC_METRO_VIEW:
+        hvac_metro_view = 1 - hvac_metro_view;
+        UpdateGluiHVAC();
+        break;
       case MENU_HVAC_HIDEALL_NETWORKS:
         for(i = 0; i < nhvacinfo; i++){
           hvacdata *hvaci;
@@ -9221,6 +9226,12 @@ updatemenu=0;
       else{
         glutAddMenuEntry("  hide all", MENU_HVAC_HIDEALL_NETWORKS);
       }
+    }
+    if (hvac_metro_view==1 == 1) {
+      glutAddMenuEntry("  *metro view", MENU_HVAC_METRO_VIEW);
+    }
+    else {
+      glutAddMenuEntry("  metro view", MENU_HVAC_METRO_VIEW);
     }
     glutAddMenuEntry("labels", MENU_HVAC_SHOW_NODE_IGNORE);
     if(hvac_show_node_labels == 1){

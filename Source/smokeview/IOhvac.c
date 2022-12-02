@@ -29,6 +29,7 @@ void DrawHVAC(hvacdata *hvaci) {
   for (i = 0; i < nhvacductinfo; i++) {
     hvacductdata *hvacducti;
     hvacnodedata *node_from, *node_to;
+    float* xyz0, * xyz1;
 
     hvacducti = hvacductinfo + i;
     if(strcmp(hvaci->network_name, hvacducti->network_name) != 0)continue;
@@ -36,8 +37,16 @@ void DrawHVAC(hvacdata *hvaci) {
     node_from = hvacnodeinfo + hvacducti->node_id_from;
     node_to   = hvacnodeinfo + hvacducti->node_id_to;
     if (node_from == NULL || node_to == NULL)continue;
-    glVertex3fv(node_from->xyz);
-    glVertex3fv(node_to->xyz);
+    xyz0 = node_from->xyz;
+    xyz1 = node_to->xyz;
+    glVertex3f(xyz0[0], xyz0[1], xyz0[2]);
+    if(hvac_metro_view == 1){
+      glVertex3f(xyz1[0], xyz0[1], xyz0[2]);
+      glVertex3f(xyz1[0], xyz0[1], xyz0[2]);
+      glVertex3f(xyz1[0], xyz1[1], xyz0[2]);
+      glVertex3f(xyz1[0], xyz1[1], xyz0[2]);
+    }
+    glVertex3f(xyz1[0], xyz1[1], xyz1[2]);
   }
   glEnd();
   if (hvac_show_duct_labels == 1|| hvac_show_components==1) {

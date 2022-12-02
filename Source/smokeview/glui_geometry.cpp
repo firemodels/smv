@@ -54,6 +54,7 @@ int      ngeomprocinfo = 0;
 #define HVAC_SHOW_COMPONENTS  -5
 #define HVAC_SHOW_NODE_LABELS -6
 #define HVAC_SHOW_FILTERS     -7
+#define HVAC_METRO_VIEW       -8
 #endif
 
 #ifdef pp_HVAC
@@ -64,6 +65,7 @@ GLUI_Checkbox *CHECKBOX_hvac_show_duct_labels = NULL;
 GLUI_Checkbox *CHECKBOX_hvac_show_components  = NULL;
 GLUI_Checkbox *CHECKBOX_hvac_show_node_labels = NULL;
 GLUI_Checkbox *CHECKBOX_hvac_show_filters     = NULL;
+GLUI_Checkbox* CHECKBOX_hvac_metro_view       = NULL;
 #endif
 GLUI_Checkbox *CHECKBOX_showgeom_inside_domain = NULL;
 GLUI_Checkbox *CHECKBOX_showgeom_outside_domain = NULL;
@@ -394,6 +396,7 @@ void HvacCB(int var){
     case HVAC_SHOW_COMPONENTS:
     case HVAC_SHOW_NODE_LABELS:
     case HVAC_SHOW_FILTERS:
+    case HVAC_METRO_VIEW:
       break;
     case HVAC_PROPS:
       if(hvac_duct_width<1.0){
@@ -462,24 +465,20 @@ extern "C" void GluiGeometrySetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_hvac, glui_geometry);
     ADDPROCINFO(geomprocinfo, ngeomprocinfo, ROLLOUT_hvac, HVAC_ROLLOUT, glui_geometry);
 
-    if(nhvacinfo > 0){
-      PANEL_hvac_network = glui_geometry->add_panel_to_panel(ROLLOUT_hvac, "network");
-      NewMemory((void**)&CHECKBOX_hvac_show, sizeof(GLUI_Checkbox*) * nhvacinfo);
-      for (i = 0; i < nhvacinfo; i++){
-        hvacdata* hvaci;
+    PANEL_hvac_network = glui_geometry->add_panel_to_panel(ROLLOUT_hvac, "network");
+    NewMemory((void**)&CHECKBOX_hvac_show, sizeof(GLUI_Checkbox*) * nhvacinfo);
+    for (i = 0; i < nhvacinfo; i++){
+      hvacdata* hvaci;
 
-        hvaci = hvacinfo + i;
-        CHECKBOX_hvac_show[i] = glui_geometry->add_checkbox_to_panel(PANEL_hvac_network, hvaci->network_name, &hvaci->display, i, HvacCB);
-      }
-      if(nhvacinfo > 1){
-        glui_geometry->add_separator_to_panel(PANEL_hvac_network);
-        CHECKBOX_hvac_showall = glui_geometry->add_checkbox_to_panel(PANEL_hvac_network, "show all", &hvac_showall, HVAC_SHOWALL_NETWORK, HvacCB);
-        CHECKBOX_hvac_hideall = glui_geometry->add_checkbox_to_panel(PANEL_hvac_network, "hide all", &hvac_hideall, HVAC_HIDEALL_NETWORK, HvacCB);
-      }
+      hvaci = hvacinfo + i;
+      CHECKBOX_hvac_show[i] = glui_geometry->add_checkbox_to_panel(PANEL_hvac_network, hvaci->network_name, &hvaci->display, i, HvacCB);
     }
-    else{
-      CHECKBOX_hvac_showall = glui_geometry->add_checkbox_to_panel(ROLLOUT_hvac, "show", &hvac_showall, HVAC_SHOWALL_NETWORK, HvacCB);
+    if(nhvacinfo > 1){
+      glui_geometry->add_separator_to_panel(PANEL_hvac_network);
+      CHECKBOX_hvac_showall = glui_geometry->add_checkbox_to_panel(PANEL_hvac_network, "show all", &hvac_showall, HVAC_SHOWALL_NETWORK, HvacCB);
+      CHECKBOX_hvac_hideall = glui_geometry->add_checkbox_to_panel(PANEL_hvac_network, "hide all", &hvac_hideall, HVAC_HIDEALL_NETWORK, HvacCB);
     }
+    CHECKBOX_hvac_metro_view = glui_geometry->add_checkbox_to_panel(ROLLOUT_hvac, "metro view", &hvac_metro_view, HVAC_METRO_VIEW, HvacCB);
     PANEL_hvac_duct = glui_geometry->add_panel_to_panel(ROLLOUT_hvac, "duct");
     SPINNER_hvac_duct_width = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct, "width",   GLUI_SPINNER_FLOAT, &hvac_duct_width,   HVAC_PROPS, HvacCB);
     SPINNER_hvac_duct_color[0] = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct, "red",   GLUI_SPINNER_INT, hvac_duct_color);
@@ -942,6 +941,7 @@ extern "C" void UpdateGluiHVAC(void){
     CHECKBOX_hvac_show_components->set_int_val(hvac_show_components);
     CHECKBOX_hvac_show_node_labels->set_int_val(hvac_show_node_labels);
     CHECKBOX_hvac_show_filters->set_int_val(hvac_show_filters);
+    CHECKBOX_hvac_metro_view->set_int_val(hvac_metro_view);
 }
 #endif
 
