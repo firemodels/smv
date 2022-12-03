@@ -1287,7 +1287,6 @@ typedef struct _compdata {
 typedef struct _hvacnodedata {
   char *node_name, *vent_name, *duct_name, *network_name;
   char c_filter[10];
-  struct _hvacdata *hvacinfo;
   int node_id, filter, use_node;
   float xyz[3];
 } hvacnodedata;
@@ -1296,10 +1295,9 @@ typedef struct _hvacnodedata {
 
 typedef struct _hvacductdata {
   char *duct_name, *network_name, c_component[4];
-  struct _hvacdata *hvacinfo;
   int duct_id, component, nduct_cells, n_waypoints;
   int node_id_from, node_id_to, use_duct;
-  hvacnodedata *node_from, *node_to;
+  hvacnodedata* node_from, * node_to;
   float *waypoints;
 } hvacductdata;
 
@@ -1308,6 +1306,9 @@ typedef struct _hvacductdata {
 typedef struct _hvacdata {
   char *network_name;
   int display;
+  int show_node_labels, show_duct_labels;
+  int show_filters, show_components;
+  float node_size, duct_width;
   int duct_color[3], node_color[3];
 } hvacdata;
 #endif

@@ -459,8 +459,7 @@ EXTERNCPP void ShowGluiGeometry(void);
 #ifdef pp_HVAC
 EXTERNCPP void HideGluiHVAC(void);
 EXTERNCPP void ShowGluiHVAC(void);
-EXTERNCPP void UpdateShowHVAC(void);
-EXTERNCPP void UpdateGluiHVAC(void);
+EXTERNCPP void HVAC2Glui(int index);
 #endif
 
 EXTERNCPP void HideGluiGeometry(void);

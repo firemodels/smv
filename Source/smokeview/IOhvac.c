@@ -20,7 +20,7 @@ void DrawHVAC(hvacdata *hvaci) {
 
   // draw ducts
   
-  glLineWidth(hvac_duct_width);
+  glLineWidth(hvaci->duct_width);
   glBegin(GL_LINES);
   uc_color[0] = CLAMP(hvaci->duct_color[0], 0, 255);
   uc_color[1] = CLAMP(hvaci->duct_color[1], 0, 255);
@@ -49,7 +49,7 @@ void DrawHVAC(hvacdata *hvaci) {
     glVertex3f(xyz1[0], xyz1[1], xyz1[2]);
   }
   glEnd();
-  if (hvac_show_duct_labels == 1|| hvac_show_components==1) {
+  if (hvaci->show_duct_labels == 1|| hvaci->show_components==1) {
     for (i = 0; i < nhvacductinfo; i++) {
       hvacductdata *ducti;
       hvacnodedata *node_from, *node_to;
@@ -60,9 +60,9 @@ void DrawHVAC(hvacdata *hvaci) {
       if(strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
 
       strcpy(label, "");
-      if(hvac_show_components == 1)strcat(label, ducti->c_component);
-      if (hvac_show_duct_labels == 1) {
-        if (hvac_show_components == 1)strcat(label, ":");
+      if(hvaci->show_components == 1)strcat(label, ducti->c_component);
+      if (hvaci->show_duct_labels == 1) {
+        if (hvaci->show_components == 1)strcat(label, ":");
         strcat(label, ducti->duct_name);
       }
       node_from = hvacnodeinfo + ducti->node_id_from;
@@ -76,7 +76,7 @@ void DrawHVAC(hvacdata *hvaci) {
   }
 
   // draw nodes
-  glPointSize(hvac_node_size);
+  glPointSize(hvaci->node_size);
   glBegin(GL_POINTS);
   uc_color[0] = CLAMP(hvaci->node_color[0], 0, 255);
   uc_color[1] = CLAMP(hvaci->node_color[1], 0, 255);
@@ -92,16 +92,16 @@ void DrawHVAC(hvacdata *hvaci) {
   }
   glEnd();
 
-  if (hvac_show_node_labels == 1|| hvac_show_filters==1) {
+  if (hvaci->show_node_labels == 1|| hvaci->show_filters==1) {
     for (i = 0; i < nhvacnodeinfo; i++) {
       hvacnodedata* nodei;
       char label[256];
 
       nodei = hvacnodeinfo + i;
       strcpy(label, "");
-      if(hvac_show_filters == 1)strcat(label, nodei->c_filter);
-      if(hvac_show_node_labels == 1){
-        if(hvac_show_filters == 1&&nodei->filter== HVAC_FILTER_YES)strcat(label, ":");
+      if(hvaci->show_filters == 1)strcat(label, nodei->c_filter);
+      if(hvaci->show_node_labels == 1){
+        if(hvaci->show_filters == 1&&nodei->filter== HVAC_FILTER_YES)strcat(label, ":");
         strcat(label, nodei->node_name);
       }
       Output3Text(foregroundcolor, nodei->xyz[0], nodei->xyz[1], nodei->xyz[2], label);
