@@ -921,20 +921,6 @@ extern "C" void GluiGeometrySetup(int main_window){
 /* ------------------ UpdateShowHVAC ------------------------ */
 #ifdef pp_HVAC
 extern "C" void UpdateShowHVAC(void){
-  int i;
-  int show_all_networks = 1, hide_all_networks = 1;
-
-  for(i = 0; i < nhvacinfo; i++){
-    hvacdata *hvaci;
-
-    hvaci = hvacinfo + i;
-    if(hvaci->display == 1){
-      hide_all_networks = 0;
-    }
-    else{
-      show_all_networks = 0;
-    }
-  }
 }
 
 /* ------------------ UpdateShowHVAC ------------------------ */
