@@ -1316,7 +1316,40 @@ void ReadSMVDynamic(char *file){
       continue;
     }
 
-  /*
+    /*
+      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      ++++++++++++++++++++++ DUCT_ACT +++++++++++++++++++++++++++++
+      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    */
+#ifdef pp_HVAC
+    if(MatchSMV(buffer, "DUCT_ACT") == 1){
+      char *ductname;
+      hvacductdata *ducti;
+      float *act_time, *act_times;
+      int *act_state, *act_states;;
+
+      FGETS(buffer, 255, stream);
+      ductname = TrimFrontBack(buffer);
+      ducti = GetHVACDuctID(ductname);
+      if(ducti == NULL)continue;
+      act_times  = ducti->act_times;
+      act_states = ducti->act_states;
+      ducti->nact_times++;
+      ResizeMemory((void **)&act_times,  ducti->nact_times*sizeof(float));
+      ResizeMemory((void **)&act_states, ducti->nact_times*sizeof(int));
+
+      act_time  = act_times + ducti->nact_times - 1;
+      act_state = act_states + ducti->nact_times -1;
+
+      FGETS(buffer, 255, stream);
+      sscanf(buffer, "%f %i", act_time, act_state);
+      ONEORZERO(*act_state);
+      ducti->act_times  = act_times;
+      ducti->act_states = act_states;
+      continue;
+    }
+#endif
+    /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ DEVICE_ACT +++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -7714,12 +7747,12 @@ int ReadSMV(bufferstreamdata *stream){
       continue;
     }
 
+#ifdef pp_HVAC
     /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++ HVAC ++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-#ifdef pp_HVAC
     if(MatchSMV(buffer, "HVAC") == 1) {
       // HVAC
       //  NODES
@@ -7793,6 +7826,9 @@ int ReadSMV(bufferstreamdata *stream){
         network_label = strtok(NULL, "%");
         ducti->duct_name = GetCharPtr(duct_label);
         ducti->network_name = GetCharPtr(network_label);
+        ducti->act_times  = NULL;
+        ducti->act_states = NULL;
+        ducti->nact_times = 0;
 
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         if(FGETS(buffer, 255, stream) == NULL)BREAK;

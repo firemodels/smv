@@ -32,6 +32,8 @@ SVEXTERN int SVDECL(hvac_metro_view, 0);
 SVEXTERN hvacdata SVDECL(*glui_hvac, NULL);
 SVEXTERN int SVDECL(hvac_network_index, 0);
 SVEXTERN int SVDECL(hvac_copy_all, 0);
+#define HVAC_NCIRC 72
+SVEXTERN float SVDECL(*hvac_circ_x, NULL), SVDECL(*hvac_circ_y, NULL);
 #ifdef INMAIN
 SVEXTERN int hvac_duct_color[3] = { 63,0,15};
 SVEXTERN int hvac_node_color[3] = { 63,0,15};

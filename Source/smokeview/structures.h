@@ -1297,6 +1297,8 @@ typedef struct _hvacductdata {
   char *duct_name, *network_name, c_component[4];
   int duct_id, component, nduct_cells, n_waypoints;
   int node_id_from, node_id_to, use_duct;
+  int nact_times, *act_states;
+  float *act_times;
   hvacnodedata* node_from, * node_to;
   float *waypoints;
 } hvacductdata;
