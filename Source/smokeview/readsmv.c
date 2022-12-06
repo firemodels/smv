@@ -11885,7 +11885,7 @@ int ReadIni2(char *inifile, int localfile){
         hvaci = hvacinfo + i;
         fgets(buffer, 255, stream);
         sscanf(buffer, " %i %i %i %i %i %f %f",
-          &hvaci->display,  &hvaci->show_node_labels, &hvaci->show_duct_labels, &hvaci->show_duct_labels, &hvaci->show_filters, &hvaci->duct_width, &hvaci->node_size);
+          &hvaci->display,  &hvaci->show_node_labels, &hvaci->show_duct_labels, &hvaci->show_component, &hvaci->show_filters, &hvaci->duct_width, &hvaci->node_size);
         fgets(buffer, 255, stream);
         sscanf(buffer, " %i %i %i %i %i %i", dc, dc + 1, dc + 2, nc, nc + 1, nc + 2);
         for(j=0;j<3;j++){
@@ -16285,7 +16285,7 @@ void WriteIni(int flag,char *filename){
       dc = hvaci->duct_color;
       nc = hvaci->node_color;
       fprintf(fileout, " %i %i %i %i %i %f %f\n",
-        hvaci->display, hvaci->show_node_labels, hvaci->show_duct_labels, hvaci->show_duct_labels, hvaci->show_filters, hvaci->duct_width, hvaci->node_size);
+        hvaci->display, hvaci->show_node_labels, hvaci->show_duct_labels, hvaci->show_component, hvaci->show_filters, hvaci->duct_width, hvaci->node_size);
       fprintf(fileout, " %i %i %i %i %i %i\n", dc[0], dc[1], dc[2], nc[0], nc[1], nc[2]);
     }
   }
