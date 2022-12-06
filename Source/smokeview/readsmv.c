@@ -7790,6 +7790,7 @@ int ReadSMV(bufferstreamdata *stream){
         network_label = strtok(NULL, "%");
         nodei->node_name = GetCharPtr(node_label);
         nodei->network_name = GetCharPtr(network_label);
+        nodei->duct = NULL;
 
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         sscanf(buffer, "%f %f %f", nodei->xyz, nodei->xyz + 1, nodei->xyz + 2);
@@ -7830,8 +7831,13 @@ int ReadSMV(bufferstreamdata *stream){
         sscanf(buffer, "%i %i %i", &ducti->duct_id, &ducti->node_id_from, &ducti->node_id_to);
         ducti->node_id_from--;
         ducti->node_id_to--;
+
         ducti->node_from = hvacnodeinfo + ducti->node_id_from;
         ducti->node_to   = hvacnodeinfo + ducti->node_id_to;
+
+        if(ducti->node_from->duct == NULL)ducti->node_from->duct = ducti;
+        if(ducti->node_to->duct == NULL)ducti->node_to->duct = ducti;
+
         strtok(buffer, "%");
         duct_label = strtok(NULL, "%");
         network_label = strtok(NULL, "%");

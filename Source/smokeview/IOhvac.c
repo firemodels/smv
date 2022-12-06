@@ -52,8 +52,10 @@ int GetDuctDir(float *xyz){
 
 void DrawHVACDamper(hvacductdata *ducti, float *xyz, float diam, int state){
   float cyl_diam, cyl_height;
-  unsigned char color2[3]         = {0, 0, 0};
+  unsigned char color2[3] = {0, 0, 0};
   unsigned char *color;
+  float axis[3];
+  float u[3] = {0.0, 0.0, 1.0}, v[3], angle;
 
   color = hvac_color_states[state];
   color2[0] = CLAMP(255 * foregroundcolor[0], 0, 255);
@@ -65,19 +67,16 @@ void DrawHVACDamper(hvacductdata *ducti, float *xyz, float diam, int state){
   glPushMatrix();
   glTranslatef(xyz[0], xyz[1], xyz[2]);
   DrawSphere(diam, color);
-  int damper_dir;
 
-  damper_dir = GetDuctDir(xyz);
-  if(damper_dir == 0){
-    glRotatef(45.0, 0.0, 1.0, 0.0);
-  }
-  else if(damper_dir == 1){
-    glRotatef(45.0, 1.0, 0.0, 0.0);
-  }
-  else{
-    glRotatef(90.0, 1.0, 0.0, 0.0);
-    glRotatef(45.0, 0.0, 1.0, 0.0);
-  }
+  v[0] = ducti->node_to->xyz[0] - ducti->node_from->xyz[0];
+  v[1] = ducti->node_to->xyz[1] - ducti->node_from->xyz[1];
+  v[2] = ducti->node_to->xyz[2] - ducti->node_from->xyz[2];
+
+  RotateU2V(u, v, axis, &angle);
+  angle *= 180.0 / 3.14159;
+  glRotatef(-45.0, 0.0, 1.0, 0.0);
+  glRotatef(angle, axis[0], axis[1], axis[2]);
+
   glTranslatef(0.0, 0.0, -cyl_height/2.0);
   DrawDisk(cyl_diam, cyl_height, color2);
   glPopMatrix();
@@ -85,14 +84,24 @@ void DrawHVACDamper(hvacductdata *ducti, float *xyz, float diam, int state){
 
 /* ------------------ DrawHVACAircoil ------------------------ */
 
-void DrawHVACAircoil(float *xyz, float size, float diam, int state){
+void DrawHVACAircoil(hvacductdata *ducti, float *xyz, float size, float diam, int state){
   unsigned char *color;
+  float axis[3];
+  float u[3] = {1.0, 0.0, 0.0}, v[3], angle;
 
   color = hvac_color_states[state];
 
   glPushMatrix();
   glTranslatef(xyz[0], xyz[1], xyz[2]);
   DrawSphere(diam, color);
+
+  v[0] = ducti->node_to->xyz[0] - ducti->node_from->xyz[0];
+  v[1] = ducti->node_to->xyz[1] - ducti->node_from->xyz[1];
+  v[2] = ducti->node_to->xyz[2] - ducti->node_from->xyz[2];
+  RotateU2V(u, v, axis, &angle);
+  angle *= 180.0 / 3.14159;
+  glRotatef(angle, axis[0], axis[1], axis[2]);
+
   glLineWidth(2.0);
   glColor3fv(foregroundcolor);
   glScalef(size, size, size);
@@ -117,9 +126,11 @@ void DrawHVACAircoil(float *xyz, float size, float diam, int state){
 
 /* ------------------ DrawHVACFan ------------------------ */
 
-void DrawHVACFan(float *xyz, float size, float diam, int state){
+void DrawHVACFan(hvacductdata *ducti, float *xyz, float size, float diam, int state){
   int i;
   unsigned char *color;
+  float axis[3];
+  float u[3] = {1.0, 0.0, 0.0}, v[3], angle;
 
   color = hvac_color_states[state];
   if(hvac_circ_x == NULL||hvac_circ_y==NULL){
@@ -139,6 +150,15 @@ void DrawHVACFan(float *xyz, float size, float diam, int state){
   glTranslatef(xyz[0], xyz[1], xyz[2]);
   DrawSphere(diam, color);
   glLineWidth(2.0);
+
+  v[0] = ducti->node_to->xyz[0] - ducti->node_from->xyz[0];
+  v[1] = ducti->node_to->xyz[1] - ducti->node_from->xyz[1];
+  v[2] = ducti->node_to->xyz[2] - ducti->node_from->xyz[2];
+  RotateU2V(u, v, axis, &angle);
+  angle *= 180.0 / 3.14159;
+  glRotatef(angle, axis[0], axis[1], axis[2]);
+  glRotatef(90, 0.0,0.0,1.0);
+
   glScalef(size,size,size);
   glColor3fv(foregroundcolor);
   glBegin(GL_LINES);
@@ -191,9 +211,21 @@ void DrawHVACFan(float *xyz, float size, float diam, int state){
 
 /* ------------------ DrawHVACFilter ------------------------ */
 
-void DrawHVACFilter(float *xyz, float size){
+void DrawHVACFilter(hvacductdata *ducti, float *xyz, float size){
+  float axis[3];
+  float u[3] = {0.0, 1.0, 0.0}, v[3], angle;
+
   glPushMatrix();
   glTranslatef(xyz[0], xyz[1], xyz[2]);
+  if(ducti!=NULL){
+    v[0] = ducti->node_to->xyz[0] - ducti->node_from->xyz[0];
+    v[1] = ducti->node_to->xyz[1] - ducti->node_from->xyz[1];
+    v[2] = ducti->node_to->xyz[2] - ducti->node_from->xyz[2];
+    RotateU2V(u, v, axis, &angle);
+    angle *= 180.0 / 3.14159;
+    glRotatef(angle, axis[0], axis[1], axis[2]);
+  }
+  glRotatef(90.0, 0.0, 0.0, 1.0);
   glLineWidth(2.0);
   glScalef(size,size,size);
   glBegin(GL_LINES);
@@ -357,10 +389,10 @@ void DrawHVAC(hvacdata *hvaci){
       case HVAC_NONE:
         break;
       case HVAC_FAN:
-        DrawHVACFan(xyz, 2.0*size, size, state);
+        DrawHVACFan(ducti, xyz, 2.0*size, size, state);
         break;
       case HVAC_AIRCOIL:
-        DrawHVACAircoil(xyz, 2.0*size, size, state);
+        DrawHVACAircoil(ducti, xyz, 2.0*size, size, state);
         break;
       case HVAC_DAMPER:
         DrawHVACDamper(ducti, xyz, size, state);
@@ -424,7 +456,7 @@ void DrawHVAC(hvacdata *hvaci){
       nodei = hvacnodeinfo + i;
       if(strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
       if(nodei->filter == HVAC_FILTER_NO)continue;
-      DrawHVACFilter(nodei->xyz, size);
+      DrawHVACFilter(nodei->duct, nodei->xyz, size);
     }
   }
 
