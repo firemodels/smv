@@ -1282,10 +1282,9 @@ typedef struct _compdata {
 
 
 #ifdef pp_HVAC
-
-#define DUCT_INFO_LABELS  0
-#define DUCT_INFO_SYMBOLS 1
-#define DUCT_INFO_HIDE    2
+#define DUCT_COMPONENT_TEXT    0
+#define DUCT_COMPONENT_SYMBOLS 1
+#define DUCT_COMPONENT_HIDE    2
 
 #define NODE_INFO_LABELS  0
 #define NODE_INFO_SYMBOLS 1

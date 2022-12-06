@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP float GetTime(void);
+
 // gen plot routines
 
 EXTERNCPP char *GetPlotUnit2(plot2ddata *plot2di, curvedata *curve);

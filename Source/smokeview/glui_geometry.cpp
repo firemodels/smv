@@ -560,6 +560,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     }
     HVAC2Glui(hvac_network_index);
     HvacCB(HVAC_COPY_ALL);
+    HvacCB(HVAC_PROPS);
   }
 #endif
 

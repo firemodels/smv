@@ -1322,6 +1322,9 @@ void ReadSMVDynamic(char *file){
       +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     */
 #ifdef pp_HVAC
+    //DUCT_ACT
+    // duct_label (char)
+    // time state  (float int)
     if(MatchSMV(buffer, "DUCT_ACT") == 1){
       char *ductname;
       hvacductdata *ducti;
@@ -1335,8 +1338,14 @@ void ReadSMVDynamic(char *file){
       act_times  = ducti->act_times;
       act_states = ducti->act_states;
       ducti->nact_times++;
-      ResizeMemory((void **)&act_times,  ducti->nact_times*sizeof(float));
-      ResizeMemory((void **)&act_states, ducti->nact_times*sizeof(int));
+      if(ducti->nact_times == 1){
+        NewMemory((void **)&act_times,  ducti->nact_times * sizeof(float));
+        NewMemory((void **)&act_states, ducti->nact_times * sizeof(int));
+      }
+      else{
+        ResizeMemory((void **)&act_times,  ducti->nact_times * sizeof(float));
+        ResizeMemory((void **)&act_states, ducti->nact_times * sizeof(int));
+      }
 
       act_time  = act_times + ducti->nact_times - 1;
       act_state = act_states + ducti->nact_times -1;
@@ -7890,9 +7899,9 @@ int ReadSMV(bufferstreamdata *stream){
         hvaci->network_name = hvac_network_labels[i];
         hvaci->display           = 0;
         hvaci->show_node_labels  = 0;
-        hvaci->show_duct_labels  = DUCT_INFO_HIDE;
+        hvaci->show_duct_labels  = 0;
         hvaci->show_filters      = 0;
-        hvaci->show_duct_labels   = 0;
+        hvaci->show_component    = DUCT_COMPONENT_HIDE;
         hvaci->node_size         = 8.0;
         hvaci->duct_width        = 4.0;
         memcpy(hvaci->node_color, hvac_node_color, 3*sizeof(int));

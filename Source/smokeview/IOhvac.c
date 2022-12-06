@@ -9,6 +9,31 @@
 #include "smokeviewvars.h"
 #include "IOobjects.h"
 
+unsigned char active_color[3] = {0, 255, 0}, inactive_color[3] = {255, 0, 0};
+unsigned char *hvac_color_states[2] = {active_color, inactive_color};
+
+/* ------------------ GetHVACState ------------------------ */
+
+int GetHVACDuctState(hvacductdata *ducti){
+  int i, n, *states;
+  float *times;
+  float current_time;
+
+  if(global_times==NULL)return HVAC_STATE_INACTIVE;
+  times = ducti->act_times;
+  states = ducti->act_states;
+  n = ducti->nact_times;
+  if(n==0||times==NULL)return HVAC_STATE_INACTIVE;
+
+  current_time = GetTime();
+
+  if(current_time < times[0])return HVAC_STATE_INACTIVE;
+  for(i = 0;i < n - 1;i++){
+    if(current_time >= times[i] && current_time < times[i + 1])return states[i];
+  }
+  return states[n - 1];
+}
+
 /* ------------------ GetDuctDir ------------------------ */
 
 int GetDuctDir(float *xyz){
@@ -26,21 +51,14 @@ int GetDuctDir(float *xyz){
 /* ------------------ DrawHVACDamper ------------------------ */
 
 void DrawHVACDamper(hvacductdata *ducti, float *xyz, float diam, int state){
-  unsigned char color_active[3]   = {0, 255, 0};
-  unsigned char color_inactive[3] = {255, 0, 0};
+  float cyl_diam, cyl_height;
   unsigned char color2[3]         = {0, 0, 0};
   unsigned char *color;
 
+  color = hvac_color_states[state];
   color2[0] = CLAMP(255 * foregroundcolor[0], 0, 255);
   color2[1] = CLAMP(255 * foregroundcolor[1], 0, 255);
   color2[2] = CLAMP(255 * foregroundcolor[2], 0, 255);
-  if(state == 0){
-    color = color_active;
-  }
-  else{
-    color = color_inactive;
-  }
-  float cyl_diam, cyl_height;
 
   cyl_diam = diam / 4.0;
   cyl_height = 3.0 * diam;
@@ -68,21 +86,15 @@ void DrawHVACDamper(hvacductdata *ducti, float *xyz, float diam, int state){
 /* ------------------ DrawHVACAircoil ------------------------ */
 
 void DrawHVACAircoil(float *xyz, float size, float diam, int state){
-  unsigned char color_active[3] = {0, 255, 0};
-  unsigned char color_inactive[3] = {255, 0, 0};
   unsigned char *color;
 
-  if(state == 0){
-    color = color_active;
-  }
-  else{
-    color = color_inactive;
-  }
+  color = hvac_color_states[state];
 
   glPushMatrix();
   glTranslatef(xyz[0], xyz[1], xyz[2]);
   DrawSphere(diam, color);
   glLineWidth(2.0);
+  glColor3fv(foregroundcolor);
   glScalef(size, size, size);
   glBegin(GL_LINES);
   glVertex3f(-1.0,  0.0,  0.0);
@@ -107,17 +119,9 @@ void DrawHVACAircoil(float *xyz, float size, float diam, int state){
 
 void DrawHVACFan(float *xyz, float size, float diam, int state){
   int i;
-  unsigned char color_active[3] = {0, 255, 0};
-  unsigned char color_inactive[3] = {255, 0, 0};
   unsigned char *color;
 
-  if(state == 0){
-    color = color_active;
-  }
-  else{
-    color = color_inactive;
-  }
-
+  color = hvac_color_states[state];
   if(hvac_circ_x == NULL||hvac_circ_y==NULL){
     FREEMEMORY(hvac_circ_x);
     FREEMEMORY(hvac_circ_y);
@@ -309,7 +313,7 @@ void DrawHVAC(hvacdata *hvaci){
       Output3Text(foregroundcolor, xyz[0]+offset, xyz[1]+offset, xyz[2]+offset, label);
     }
   }
-  if(hvaci->show_component == DUCT_INFO_LABELS){
+  if(hvaci->show_component == DUCT_COMPONENT_TEXT){
     for(i = 0; i < nhvacductinfo; i++){
       hvacductdata *ducti;
       hvacnodedata *node_from, *node_to;
@@ -330,7 +334,7 @@ void DrawHVAC(hvacdata *hvaci){
       Output3Text(foregroundcolor, xyz[0], xyz[1], xyz[2]+0.01/xyzmaxdiff, label);
     }
   }
-  if(hvaci->show_component == DUCT_INFO_SYMBOLS){
+  if(hvaci->show_component == DUCT_COMPONENT_SYMBOLS){
     for(i = 0; i < nhvacductinfo; i++){
       hvacductdata *ducti;
       hvacnodedata *node_from, *node_to;
@@ -347,8 +351,8 @@ void DrawHVAC(hvacdata *hvaci){
       float size;
       int state;
 
+      state = GetHVACDuctState(ducti);
       size = xyzmaxdiff / 40.0;
-      state = 0;
       switch(ducti->component){
       case HVAC_NONE:
         break;

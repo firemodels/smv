@@ -289,6 +289,7 @@ float     part_load_time;
 #define MENU_HVAC_SHOW_COMPONENTS  -6
 #define MENU_HVAC_SHOW_FILTERS     -7
 #define MENU_HVAC_METRO_VIEW       -8
+#define MENU_HVAC_DIALOG_HVAC      -9
 #endif
 
 
@@ -6677,7 +6678,7 @@ void HVACMenu(int value){
         }
         break;
       case MENU_HVAC_SHOW_DUCT_LABELS:
-        glui_hvac->show_duct_labels = DUCT_INFO_LABELS;
+        glui_hvac->show_duct_labels = 1 - glui_hvac->show_duct_labels;
         for(i=0;i<nhvacinfo;i++){
           hvacdata *hvaci;
 
@@ -6695,6 +6696,9 @@ void HVACMenu(int value){
         break;
       case MENU_HVAC_METRO_VIEW:
         hvac_metro_view = 1 - hvac_metro_view;
+        break;
+      case MENU_HVAC_DIALOG_HVAC:
+        DialogMenu(DIALOG_HVAC);
         break;
       case MENU_HVAC_HIDEALL_NETWORKS:
         for(i = 0; i < nhvacinfo; i++){
@@ -9263,7 +9267,7 @@ updatemenu=0;
     else{
       glutAddMenuEntry("     filters", MENU_HVAC_SHOW_FILTERS);
     }
-    if(glui_hvac->show_duct_labels == DUCT_INFO_LABELS){
+    if(glui_hvac->show_duct_labels == 1){
       glutAddMenuEntry("  *duct", MENU_HVAC_SHOW_DUCT_LABELS);
     }
     else{
@@ -9275,6 +9279,7 @@ updatemenu=0;
     else{
       glutAddMenuEntry("      components", MENU_HVAC_SHOW_COMPONENTS);
     }
+    glutAddMenuEntry(_("Settings..."), MENU_HVAC_DIALOG_HVAC);
   }
 #endif
 
