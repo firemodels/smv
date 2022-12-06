@@ -9,26 +9,23 @@
 #include "smokeviewvars.h"
 #include "IOobjects.h"
 
-/* ------------------ GetDamperDir ------------------------ */
+/* ------------------ GetDuctDir ------------------------ */
 
-int GetDamperDir(float *xyz){
+int GetDuctDir(float *xyz){
   float eyedir[3];
-  // 0 y
-  // 1 x
-  // 2 z
+
   //cos(angle) = dir1 .dot. dir2 /(norm(dir1)*norm(dir2))
-  eyedir[0] = fds_eyepos[0] - xyz[0];
-  eyedir[1] = fds_eyepos[1] - xyz[1];
-  eyedir[2] = fds_eyepos[2] - xyz[2];
-  NORMALIZE3(eyedir);
-  if(eyedir[0]<MIN(eyedir[1],eyedir[2]))return 1;
-  if(eyedir[1]<MIN(eyedir[0],eyedir[2]))return 0;
+  eyedir[0] = ABS(xyz[0] - fds_eyepos[0]);
+  eyedir[1] = ABS(xyz[1] - fds_eyepos[1]);
+  eyedir[2] = ABS(xyz[2] - fds_eyepos[2]);
+  if(eyedir[0]>MAX(eyedir[1],eyedir[2]))return 1;
+  if(eyedir[1]>MAX(eyedir[0],eyedir[2]))return 0;
   return 2;
 }
 
 /* ------------------ DrawHVACDamper ------------------------ */
 
-void DrawHVACDamper(float *xyz, float diam, int state){
+void DrawHVACDamper(hvacductdata *ducti, float *xyz, float diam, int state){
   unsigned char color_active[3]   = {0, 255, 0};
   unsigned char color_inactive[3] = {255, 0, 0};
   unsigned char color2[3]         = {0, 0, 0};
@@ -50,7 +47,19 @@ void DrawHVACDamper(float *xyz, float diam, int state){
   glPushMatrix();
   glTranslatef(xyz[0], xyz[1], xyz[2]);
   DrawSphere(diam, color);
-  glRotatef(45.0, 0.0, 1.0, 0.0);
+  int damper_dir;
+
+  damper_dir = GetDuctDir(xyz);
+  if(damper_dir == 0){
+    glRotatef(45.0, 0.0, 1.0, 0.0);
+  }
+  else if(damper_dir == 1){
+    glRotatef(45.0, 1.0, 0.0, 0.0);
+  }
+  else{
+    glRotatef(90.0, 1.0, 0.0, 0.0);
+    glRotatef(45.0, 0.0, 1.0, 0.0);
+  }
   glTranslatef(0.0, 0.0, -cyl_height/2.0);
   DrawDisk(cyl_diam, cyl_height, color2);
   glPopMatrix();
@@ -185,19 +194,25 @@ void DrawHVACFilter(float *xyz, float size){
   glScalef(size,size,size);
   glBegin(GL_LINES);
   glVertex3f(0.0, -0.5, -1.0);
-  glVertex3f(0.0, 0.5,  -1.0);
+  glVertex3f(0.0,  0.5, -1.0);
+
   glVertex3f(0.0, -0.5, -0.5);
-  glVertex3f(0.0, 0.5,  0.5);
-  glVertex3f(0.0, -0.5, 0.0);
-  glVertex3f(0.0, 0.5,  0.0);
-  glVertex3f(0.0, -0.5, 0.5);
-  glVertex3f(0.0, 0.5,  0.5);
-  glVertex3f(0.0, -0.5, 1.0);
-  glVertex3f(0.0, 0.5,  1.0);
-  glVertex3f(0.0, -0.5,-1.0);
-  glVertex3f(0.0, -0.5, 1.0);
-  glVertex3f(0.0, 0.5, -1.0);
-  glVertex3f(0.0, 0.5,  1.0);
+  glVertex3f(0.0,  0.5, -0.5);
+
+  glVertex3f(0.0, -0.5,  0.0);
+  glVertex3f(0.0,  0.5,  0.0);
+
+  glVertex3f(0.0, -0.5,  0.5);
+  glVertex3f(0.0,  0.5,  0.5);
+
+  glVertex3f(0.0, -0.5,  1.0);
+  glVertex3f(0.0,  0.5,  1.0);
+
+  glVertex3f(0.0, -0.5, -1.0);
+  glVertex3f(0.0, -0.5,  1.0);
+  
+  glVertex3f(0.0,  0.5, -1.0);
+  glVertex3f(0.0,  0.5,  1.0);
   glEnd();
   glPopMatrix();
 }
@@ -232,7 +247,7 @@ hvacnodedata *GetHVACNodeID(char *node_name){
 
 /* ------------------ DrawHVAC ------------------------ */
 
-void DrawHVAC(hvacdata *hvaci) {
+void DrawHVAC(hvacdata *hvaci){
   int i;
   unsigned char uc_color[3];
 
@@ -248,7 +263,7 @@ void DrawHVAC(hvacdata *hvaci) {
   uc_color[1] = CLAMP(hvaci->duct_color[1], 0, 255);
   uc_color[2] = CLAMP(hvaci->duct_color[2], 0, 255);
   glColor3ubv(uc_color);
-  for (i = 0; i < nhvacductinfo; i++) {
+  for(i = 0; i < nhvacductinfo; i++){
     hvacductdata *hvacducti;
     hvacnodedata *node_from, *node_to;
     float* xyz0, * xyz1;
@@ -258,7 +273,7 @@ void DrawHVAC(hvacdata *hvaci) {
 
     node_from = hvacnodeinfo + hvacducti->node_id_from;
     node_to   = hvacnodeinfo + hvacducti->node_id_to;
-    if (node_from == NULL || node_to == NULL)continue;
+    if(node_from == NULL || node_to == NULL)continue;
     xyz0 = node_from->xyz;
     xyz1 = node_to->xyz;
     glVertex3f(xyz0[0], xyz0[1], xyz0[2]);
@@ -271,8 +286,31 @@ void DrawHVAC(hvacdata *hvaci) {
     glVertex3f(xyz1[0], xyz1[1], xyz1[2]);
   }
   glEnd();
-  if (hvaci->show_duct_labels == 1|| hvaci->show_components==1) {
-    for (i = 0; i < nhvacductinfo; i++) {
+  if(hvaci->show_duct_labels == 1){
+    for(i = 0; i < nhvacductinfo; i++){
+      hvacductdata *ducti;
+      hvacnodedata *node_from, *node_to;
+      float xyz[3];
+      char label[256];
+      float offset;
+
+      ducti = hvacductinfo + i;
+      if(strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
+
+      strcpy(label, ducti->duct_name);
+      node_from = hvacnodeinfo + ducti->node_id_from;
+      node_to   = hvacnodeinfo + ducti->node_id_to;
+      if(node_from == NULL || node_to == NULL)continue;
+      float f1=0.33;
+      xyz[0] = f1*node_from->xyz[0] + (1.0-f1)*node_to->xyz[0];
+      xyz[1] = f1*node_from->xyz[1] + (1.0-f1)*node_to->xyz[1];
+      xyz[2] = f1*node_from->xyz[2] + (1.0-f1)*node_to->xyz[2];
+      offset = 0.01/xyzmaxdiff;
+      Output3Text(foregroundcolor, xyz[0]+offset, xyz[1]+offset, xyz[2]+offset, label);
+    }
+  }
+  if(hvaci->show_component == DUCT_INFO_LABELS){
+    for(i = 0; i < nhvacductinfo; i++){
       hvacductdata *ducti;
       hvacnodedata *node_from, *node_to;
       float xyz[3];
@@ -282,20 +320,18 @@ void DrawHVAC(hvacdata *hvaci) {
       if(strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
 
       strcpy(label, "");
-      if(hvaci->show_components == 1)strcat(label, ducti->c_component);
-      if (hvaci->show_duct_labels == 1) {
-        if (hvaci->show_components == 1)strcat(label, ":");
-        strcat(label, ducti->duct_name);
-      }
+      strcat(label, ducti->c_component);
       node_from = hvacnodeinfo + ducti->node_id_from;
       node_to   = hvacnodeinfo + ducti->node_id_to;
-      if (node_from == NULL || node_to == NULL)continue;
+      if(node_from == NULL || node_to == NULL)continue;
       xyz[0] = (node_from->xyz[0] + node_to->xyz[0])/2.0;
       xyz[1] = (node_from->xyz[1] + node_to->xyz[1])/2.0;
       xyz[2] = (node_from->xyz[2] + node_to->xyz[2])/2.0;
-      Output3Text(foregroundcolor, xyz[0], xyz[1], xyz[2], label);
+      Output3Text(foregroundcolor, xyz[0], xyz[1], xyz[2]+0.01/xyzmaxdiff, label);
     }
-    for(i = 0; i < nhvacductinfo; i++) {
+  }
+  if(hvaci->show_component == DUCT_INFO_SYMBOLS){
+    for(i = 0; i < nhvacductinfo; i++){
       hvacductdata *ducti;
       hvacnodedata *node_from, *node_to;
       float xyz[3];
@@ -304,20 +340,32 @@ void DrawHVAC(hvacdata *hvaci) {
       if(strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
       node_from = hvacnodeinfo + ducti->node_id_from;
       node_to   = hvacnodeinfo + ducti->node_id_to;
-      if (node_from == NULL || node_to == NULL)continue;
+      if(node_from == NULL || node_to == NULL)continue;
       xyz[0] = (node_from->xyz[0] + node_to->xyz[0])/2.0;
       xyz[1] = (node_from->xyz[1] + node_to->xyz[1])/2.0;
       xyz[2] = (node_from->xyz[2] + node_to->xyz[2])/2.0;
       float size;
       int state;
 
-      size = xyzmaxdiff / 80.0;
+      size = xyzmaxdiff / 40.0;
       state = 0;
-     // DrawHVACDamper(xyz, size, state);
-      // DrawHVACFilter(xyz, size);
-     //  DrawHVACAircoil(xyz, 2.0*size, size, state);
-     //  DrawHVACFan(xyz, 2.0*size, size, state);
-     }
+      switch(ducti->component){
+      case HVAC_NONE:
+        break;
+      case HVAC_FAN:
+        DrawHVACFan(xyz, 2.0*size, size, state);
+        break;
+      case HVAC_AIRCOIL:
+        DrawHVACAircoil(xyz, 2.0*size, size, state);
+        break;
+      case HVAC_DAMPER:
+        DrawHVACDamper(ducti, xyz, size, state);
+        break;
+      default:
+        ASSERT(FFALSE);
+        break;
+      }
+    }
   }
 
   // draw nodes
@@ -327,7 +375,7 @@ void DrawHVAC(hvacdata *hvaci) {
   uc_color[1] = CLAMP(hvaci->node_color[1], 0, 255);
   uc_color[2] = CLAMP(hvaci->node_color[2], 0, 255);
   glColor3ubv(uc_color);
-  for (i = 0; i < nhvacnodeinfo; i++) {
+  for(i = 0; i < nhvacnodeinfo; i++){
     hvacnodedata *nodei;
 
     nodei = hvacnodeinfo + i;
@@ -337,19 +385,42 @@ void DrawHVAC(hvacdata *hvaci) {
   }
   glEnd();
 
-  if (hvaci->show_node_labels == 1|| hvaci->show_filters==1) {
-    for (i = 0; i < nhvacnodeinfo; i++) {
+  if(hvaci->show_node_labels == 1){
+    for(i = 0; i < nhvacnodeinfo; i++){
       hvacnodedata* nodei;
       char label[256];
+      float offset;
 
       nodei = hvacnodeinfo + i;
-      strcpy(label, "");
-      if(hvaci->show_filters == 1)strcat(label, nodei->c_filter);
-      if(hvaci->show_node_labels == 1){
-        if(hvaci->show_filters == 1&&nodei->filter== HVAC_FILTER_YES)strcat(label, ":");
-        strcat(label, nodei->node_name);
-      }
-      Output3Text(foregroundcolor, nodei->xyz[0], nodei->xyz[1], nodei->xyz[2], label);
+      if(strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
+      offset = 0.01/xyzmaxdiff;
+      strcpy(label, nodei->node_name);
+      Output3Text(foregroundcolor, nodei->xyz[0]+offset, nodei->xyz[1]+offset, nodei->xyz[2]+offset, label);
+    }
+  }
+  if(hvaci->show_filters == NODE_INFO_LABELS){
+    for(i = 0; i < nhvacnodeinfo; i++){
+      hvacnodedata *nodei;
+      char label[256];
+      float offset;
+
+      nodei = hvacnodeinfo + i;
+      if(strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
+      strcpy(label, nodei->c_filter);
+      offset = 0.01 / xyzmaxdiff;
+      Output3Text(foregroundcolor, nodei->xyz[0]+offset, nodei->xyz[1] + offset, nodei->xyz[2] + offset, label);
+    }
+  }
+  if(hvaci->show_filters == NODE_INFO_SYMBOLS){
+    for(i = 0; i < nhvacnodeinfo; i++){
+      hvacnodedata *nodei;
+      float size;
+
+      size = xyzmaxdiff / 20.0;
+      nodei = hvacnodeinfo + i;
+      if(strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
+      if(nodei->filter == HVAC_FILTER_NO)continue;
+      DrawHVACFilter(nodei->xyz, size);
     }
   }
 

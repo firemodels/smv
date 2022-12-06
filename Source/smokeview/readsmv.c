@@ -7821,6 +7821,8 @@ int ReadSMV(bufferstreamdata *stream){
         sscanf(buffer, "%i %i %i", &ducti->duct_id, &ducti->node_id_from, &ducti->node_id_to);
         ducti->node_id_from--;
         ducti->node_id_to--;
+        ducti->node_from = hvacnodeinfo + ducti->node_id_from;
+        ducti->node_to   = hvacnodeinfo + ducti->node_id_to;
         strtok(buffer, "%");
         duct_label = strtok(NULL, "%");
         network_label = strtok(NULL, "%");
@@ -7888,9 +7890,9 @@ int ReadSMV(bufferstreamdata *stream){
         hvaci->network_name = hvac_network_labels[i];
         hvaci->display           = 0;
         hvaci->show_node_labels  = 0;
-        hvaci->show_duct_labels  = 0;
+        hvaci->show_duct_labels  = DUCT_INFO_HIDE;
         hvaci->show_filters      = 0;
-        hvaci->show_components   = 0;
+        hvaci->show_duct_labels   = 0;
         hvaci->node_size         = 8.0;
         hvaci->duct_width        = 4.0;
         memcpy(hvaci->node_color, hvac_node_color, 3*sizeof(int));
@@ -11874,7 +11876,7 @@ int ReadIni2(char *inifile, int localfile){
         hvaci = hvacinfo + i;
         fgets(buffer, 255, stream);
         sscanf(buffer, " %i %i %i %i %i %f %f",
-          &hvaci->display,  &hvaci->show_node_labels, &hvaci->show_duct_labels, &hvaci->show_components, &hvaci->show_filters, &hvaci->duct_width, &hvaci->node_size);
+          &hvaci->display,  &hvaci->show_node_labels, &hvaci->show_duct_labels, &hvaci->show_duct_labels, &hvaci->show_filters, &hvaci->duct_width, &hvaci->node_size);
         fgets(buffer, 255, stream);
         sscanf(buffer, " %i %i %i %i %i %i", dc, dc + 1, dc + 2, nc, nc + 1, nc + 2);
         for(j=0;j<3;j++){
@@ -16274,7 +16276,7 @@ void WriteIni(int flag,char *filename){
       dc = hvaci->duct_color;
       nc = hvaci->node_color;
       fprintf(fileout, " %i %i %i %i %i %f %f\n",
-        hvaci->display, hvaci->show_node_labels, hvaci->show_duct_labels, hvaci->show_components, hvaci->show_filters, hvaci->duct_width, hvaci->node_size);
+        hvaci->display, hvaci->show_node_labels, hvaci->show_duct_labels, hvaci->show_duct_labels, hvaci->show_filters, hvaci->duct_width, hvaci->node_size);
       fprintf(fileout, " %i %i %i %i %i %i\n", dc[0], dc[1], dc[2], nc[0], nc[1], nc[2]);
     }
   }

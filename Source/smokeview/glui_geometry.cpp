@@ -60,16 +60,14 @@ int      ngeomprocinfo = 0;
 #endif
 
 #ifdef pp_HVAC
-GLUI_Checkbox *CHECKBOX_hvac_show            = NULL;
+GLUI_Checkbox *CHECKBOX_hvac_show             = NULL;
 GLUI_Checkbox *CHECKBOX_hvac_show_duct_labels = NULL;
-GLUI_Checkbox *CHECKBOX_hvac_show_components  = NULL;
 GLUI_Checkbox *CHECKBOX_hvac_show_node_labels = NULL;
-GLUI_Checkbox *CHECKBOX_hvac_show_filters     = NULL;
 GLUI_Checkbox* CHECKBOX_hvac_metro_view       = NULL;
 #endif
-GLUI_Checkbox *CHECKBOX_showgeom_inside_domain = NULL;
+GLUI_Checkbox *CHECKBOX_showgeom_inside_domain  = NULL;
 GLUI_Checkbox *CHECKBOX_showgeom_outside_domain = NULL;
-GLUI_Checkbox **CHECKBOX_terrain_texture_show = NULL;
+GLUI_Checkbox **CHECKBOX_terrain_texture_show   = NULL;
 GLUI_Checkbox *CHECKBOX_cfaces = NULL;
 GLUI_Checkbox *CHECKBOX_show_cface_normals = NULL;
 GLUI_Checkbox *CHECKBOX_show_zlevel = NULL;
@@ -87,6 +85,11 @@ GLUI_Checkbox *CHECKBOX_showonly_top = NULL;
 GLUI_RadioGroup *RADIO_select_geom = NULL;
 GLUI_RadioGroup *RADIO_cface_type = NULL;
 GLUI_RadioGroup *RADIO_show_geom_boundingbox = NULL;
+#ifdef pp_HVAC
+GLUI_RadioGroup *RADIO_hvac_show_component_labels = NULL;
+GLUI_RadioGroup *RADIO_hvac_show_filters          = NULL;
+#endif
+
 
 GLUI_StaticText *STATIC_vertx1=NULL;
 GLUI_StaticText *STATIC_verty1=NULL;
@@ -102,15 +105,18 @@ GLUI_Checkbox *CHECKBOX_use_surf_color=NULL;
 GLUI_Rollout *ROLLOUT_geomtest=NULL;
 GLUI_Rollout *ROLLOUT_geom_rgbs = NULL;
 GLUI_Rollout *ROLLOUT_geom_properties=NULL;
-GLUI_Panel *PANEL_surf_color = NULL;
-GLUI_Panel *PANEL_surf_axis = NULL;
-GLUI_Panel *PANEL_surf_coloraxis = NULL;
+
 #ifdef pp_HVAC
+GLUI_Panel *PANEL_hvac_filter     = NULL;
+GLUI_Panel *PANEL_hvac_components = NULL;
 GLUI_Panel *PANEL_hvac_duct    = NULL;
 GLUI_Panel *PANEL_hvac_node    = NULL;
 GLUI_Panel *PANEL_hvac_network = NULL;
 #endif
 
+GLUI_Panel *PANEL_surf_color = NULL;
+GLUI_Panel *PANEL_surf_axis = NULL;
+GLUI_Panel *PANEL_surf_coloraxis = NULL;
 GLUI_Panel *PANEL_face_cface = NULL;
 GLUI_Panel *PANEL_elevation_color = NULL;
 GLUI_Panel *PANEL_geom_offset_outline = NULL;
@@ -408,12 +414,12 @@ extern "C" void HVAC2Glui(int index){
 
   CHECKBOX_hvac_metro_view->set_int_val(hvac_metro_view);
   SPINNER_hvac_duct_width->set_float_val(glui_hvac->duct_width);
+  RADIO_hvac_show_component_labels->set_int_val(glui_hvac->show_component);
   CHECKBOX_hvac_show_duct_labels->set_int_val(glui_hvac->show_duct_labels);
-  CHECKBOX_hvac_show_components->set_int_val(glui_hvac->show_components);
 
   SPINNER_hvac_node_size->set_float_val(glui_hvac->node_size);
   CHECKBOX_hvac_show_node_labels->set_int_val(glui_hvac->show_node_labels);
-  CHECKBOX_hvac_show_filters->set_int_val(glui_hvac->show_filters);
+  RADIO_hvac_show_filters->set_int_val(glui_hvac->show_filters);
 }
 
 /* ------------------ HvacCB ------------------------ */
@@ -530,16 +536,24 @@ extern "C" void GluiGeometrySetup(int main_window){
     SPINNER_hvac_duct_color[0]     = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct,  "red",   GLUI_SPINNER_INT,    glui_hvac->duct_color,       HVAC_PROPS, HvacCB);
     SPINNER_hvac_duct_color[1]     = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct,  "green", GLUI_SPINNER_INT,    glui_hvac->duct_color + 1,   HVAC_PROPS, HvacCB);
     SPINNER_hvac_duct_color[2]     = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct,  "blue",  GLUI_SPINNER_INT,    glui_hvac->duct_color + 2,   HVAC_PROPS, HvacCB);
-    CHECKBOX_hvac_show_duct_labels = glui_geometry->add_checkbox_to_panel(PANEL_hvac_duct, "show duct labels",          &glui_hvac->show_duct_labels, HVAC_PROPS, HvacCB);
-    CHECKBOX_hvac_show_components  = glui_geometry->add_checkbox_to_panel(PANEL_hvac_duct, "show component labels",     &glui_hvac->show_components,  HVAC_PROPS, HvacCB);
+    CHECKBOX_hvac_show_duct_labels = glui_geometry->add_checkbox_to_panel(PANEL_hvac_duct, "show duct IDs", &glui_hvac->show_duct_labels, HVAC_PROPS, HvacCB);
+    PANEL_hvac_components          = glui_geometry->add_panel_to_panel(PANEL_hvac_duct,       "components");
+    RADIO_hvac_show_component_labels = glui_geometry->add_radiogroup_to_panel(PANEL_hvac_components, &glui_hvac->show_component, HVAC_PROPS, HvacCB);
+    glui_geometry->add_radiobutton_to_group(RADIO_hvac_show_component_labels, "text");
+    glui_geometry->add_radiobutton_to_group(RADIO_hvac_show_component_labels, "symbol");
+    glui_geometry->add_radiobutton_to_group(RADIO_hvac_show_component_labels, "hide");
 
     PANEL_hvac_node                = glui_geometry->add_panel_to_panel(ROLLOUT_hvac, "node");
     SPINNER_hvac_node_size         = glui_geometry->add_spinner_to_panel(PANEL_hvac_node,  "size", GLUI_SPINNER_FLOAT, &glui_hvac->node_size,        HVAC_PROPS, HvacCB);
     SPINNER_hvac_node_color[0]     = glui_geometry->add_spinner_to_panel(PANEL_hvac_node,  "red",   GLUI_SPINNER_INT,   glui_hvac->node_color,       HVAC_PROPS, HvacCB);
     SPINNER_hvac_node_color[1]     = glui_geometry->add_spinner_to_panel(PANEL_hvac_node,  "green", GLUI_SPINNER_INT,   glui_hvac->node_color + 1,   HVAC_PROPS, HvacCB);
     SPINNER_hvac_node_color[2]     = glui_geometry->add_spinner_to_panel(PANEL_hvac_node,  "blue",  GLUI_SPINNER_INT,   glui_hvac->node_color + 2,   HVAC_PROPS, HvacCB);
-    CHECKBOX_hvac_show_node_labels = glui_geometry->add_checkbox_to_panel(PANEL_hvac_node, "show node labels",         &glui_hvac->show_node_labels, HVAC_PROPS, HvacCB);
-    CHECKBOX_hvac_show_filters     = glui_geometry->add_checkbox_to_panel(PANEL_hvac_node, "show filter labels",       &glui_hvac->show_filters,     HVAC_PROPS, HvacCB);
+    CHECKBOX_hvac_show_node_labels = glui_geometry->add_checkbox_to_panel(PANEL_hvac_node, "show node IDs",            &glui_hvac->show_node_labels, HVAC_PROPS, HvacCB);
+    PANEL_hvac_filter              = glui_geometry->add_panel_to_panel(PANEL_hvac_node,       "filter");
+    RADIO_hvac_show_filters        = glui_geometry->add_radiogroup_to_panel(PANEL_hvac_filter, &glui_hvac->show_filters, HVAC_PROPS, HvacCB);
+    glui_geometry->add_radiobutton_to_group(RADIO_hvac_show_filters, "text");
+    glui_geometry->add_radiobutton_to_group(RADIO_hvac_show_filters, "symbol");
+    glui_geometry->add_radiobutton_to_group(RADIO_hvac_show_filters, "hide");
     for(i = 0; i < 3; i++){
       SPINNER_hvac_duct_color[i]->set_int_limits(0, 255);
       SPINNER_hvac_node_color[i]->set_int_limits(0, 255);
