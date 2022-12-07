@@ -1289,6 +1289,14 @@ typedef struct _compdata {
 #define NODE_INFO_LABELS  0
 #define NODE_INFO_SYMBOLS 1
 #define NODE_INFO_HIDE    2
+
+#define DUCT_XYZ 0
+#define DUCT_YXZ 1
+#define DUCT_XZY 2
+#define DUCT_ZXY 3
+#define DUCT_YZX 4
+#define DUCT_ZYX 5
+
 /* --------------------------  hvacnodedata ------------------------------------ */
 
 typedef struct _hvacnodedata {
@@ -1305,8 +1313,12 @@ typedef struct _hvacductdata {
   char *duct_name, *network_name, c_component[4];
   int duct_id, component, nduct_cells, n_waypoints;
   int node_id_from, node_id_to, use_duct;
-  int nact_times, *act_states;
+  int nact_times, *act_states, metro_path;
   float *act_times;
+  float xyz_symbol[3], xyz_symbol_metro[3];
+  float xyz_label[3],  xyz_label_metro[3];
+  float xyz_metro1[3], xyz_metro2[3], xyz_metro3[3], xyz_metro4[3];
+  float normal[3], normal_metro[3];
   hvacnodedata* node_from, * node_to;
   float *waypoints;
 } hvacductdata;

@@ -12,6 +12,193 @@
 unsigned char active_color[3] = {0, 255, 0}, inactive_color[3] = {255, 0, 0};
 unsigned char *hvac_color_states[2] = {active_color, inactive_color};
 
+/* ------------------ SetMetroPaths ------------------------ */
+
+void SetMetroPaths(void){
+  int i;
+
+  for(i = 0;i < nhvacductinfo;i++){
+    int j;
+    hvacductdata *ducti;
+    hvacnodedata *from_i, *to_i;
+    float *xyz_from;
+    float *xyz_to;
+
+    ducti  = hvacductinfo + i;
+    from_i = ducti->node_from;
+    to_i   = ducti->node_to;
+    if(from_i == NULL || to_i == NULL)continue;
+    xyz_from = from_i->xyz;
+    xyz_to   = to_i->xyz;
+    for(j = 0;j < nhvacductinfo;j++){
+      hvacductdata *ductj;
+      hvacnodedata *from_j, *to_j;
+      float diff[3];
+
+      if(i == j)continue;
+      ductj = hvacductinfo + j;
+      from_j = ductj->node_from;
+      to_j   = ductj->node_to;
+      if(from_j == NULL || to_j == NULL)continue;
+      if(from_i != from_j && from_i != to_j && to_i != from_j && to_i != to_j)continue;
+      diff[0] = ABS(xyz_from[0] - xyz_to[0]);
+      diff[1] = ABS(xyz_from[1] - xyz_to[1]);
+      diff[2] = ABS(xyz_from[2] - xyz_to[2]);
+      if(diff[0] < MIN(diff[1], diff[2])){
+        ducti->metro_path = DUCT_YZX;
+        ductj->metro_path = DUCT_ZYX;
+      }
+      else if(diff[1] < MIN(diff[0], diff[2])){
+        ducti->metro_path = DUCT_XZY;
+        ductj->metro_path = DUCT_ZXY;
+      }
+      else{
+        ducti->metro_path = DUCT_XYZ;
+        ductj->metro_path = DUCT_YXZ;
+      }
+    }
+  }
+#define COPYVALS3(xyz, x, y, z) \
+  xyz[0] = (x);\
+  xyz[1] = (y);\
+  xyz[2] = (z)
+  for(i=0;i<nhvacductinfo;i++){
+    hvacductdata *ducti;
+    hvacnodedata *node_from, *node_to;
+    float *xyz0, *xyz1;
+
+    ducti = hvacductinfo + i;
+    node_from = hvacnodeinfo + ducti->node_id_from;
+    node_to = hvacnodeinfo + ducti->node_id_to;
+    if(node_from == NULL || node_to == NULL)continue;
+    xyz0 = node_from->xyz;
+    xyz1 = node_to->xyz;
+    float *dxyz, *dxyz_metro;
+    dxyz = ducti->normal;
+    dxyz_metro = ducti->normal_metro;
+    dxyz[0] = xyz1[0] - xyz0[0];
+    dxyz[1] = xyz1[1] - xyz0[1];
+    dxyz[2] = xyz1[2] - xyz0[2];
+    dxyz_metro[0] = 0.0;
+    dxyz_metro[1] = 0.0;
+    dxyz_metro[2] = 0.0;
+    memcpy(ducti->xyz_symbol_metro, xyz0, 3 * sizeof(float));
+    memcpy(ducti->xyz_label_metro,  xyz0, 3 * sizeof(float));
+    switch(ducti->metro_path){
+      case DUCT_XYZ:
+        COPYVALS3(ducti->xyz_metro1, xyz1[0], xyz0[1], xyz0[2]);
+        COPYVALS3(ducti->xyz_metro2, xyz1[0], xyz0[1], xyz0[2]);
+        COPYVALS3(ducti->xyz_metro3, xyz1[0], xyz1[1], xyz0[2]);
+        COPYVALS3(ducti->xyz_metro4, xyz1[0], xyz1[1], xyz0[2]);
+        if(ABS(dxyz[0]) > ABS(dxyz[1])){
+          ducti->xyz_symbol_metro[0] += 0.5*dxyz[0];
+          ducti->xyz_label_metro[0]  += 0.75*dxyz[0];
+          dxyz_metro[0] = 1.0;
+        }
+        else{
+          ducti->xyz_symbol_metro[0] += dxyz[0];
+          ducti->xyz_symbol_metro[1] += 0.5*dxyz[1];
+          ducti->xyz_label_metro[0] += dxyz[0];
+          ducti->xyz_label_metro[1] += 0.75*dxyz[1];
+          dxyz_metro[1] = 1.0;
+        }
+        break;
+      case DUCT_XZY:
+        COPYVALS3(ducti->xyz_metro1, xyz1[0], xyz0[1], xyz0[2]);
+        COPYVALS3(ducti->xyz_metro2, xyz1[0], xyz0[1], xyz0[2]);
+        COPYVALS3(ducti->xyz_metro3, xyz1[0], xyz0[1], xyz1[2]);
+        COPYVALS3(ducti->xyz_metro4, xyz1[0], xyz0[1], xyz1[2]);
+        if(ABS(dxyz[0]) > ABS(dxyz[2])){
+          ducti->xyz_symbol_metro[0] += 0.50*dxyz[0];
+          ducti->xyz_label_metro[0]  += 0.75*dxyz[0];
+          dxyz_metro[0] = 1.0;
+        }
+        else{
+          ducti->xyz_symbol_metro[0] += dxyz[0];
+          ducti->xyz_symbol_metro[2] += 0.5*dxyz[2];
+          ducti->xyz_label_metro[0]  += dxyz[0];
+          ducti->xyz_label_metro[2]  += 0.75*dxyz[2];
+          dxyz_metro[2] = 1.0;
+        }
+        break;
+      case DUCT_YXZ:
+        COPYVALS3(ducti->xyz_metro1, xyz0[0], xyz1[1], xyz0[2]);
+        COPYVALS3(ducti->xyz_metro2, xyz0[0], xyz1[1], xyz0[2]);
+        COPYVALS3(ducti->xyz_metro3, xyz1[0], xyz1[1], xyz0[2]);
+        COPYVALS3(ducti->xyz_metro4, xyz1[0], xyz1[1], xyz0[2]);
+        if(ABS(dxyz[1]) > ABS(dxyz[0])){
+          ducti->xyz_symbol_metro[1] += 0.50*dxyz[1];
+          ducti->xyz_label_metro[1]  += 0.75*dxyz[1];
+          dxyz_metro[1] = 1.0;
+        }
+        else{
+          ducti->xyz_symbol_metro[0] += 0.50*dxyz[0];
+          ducti->xyz_symbol_metro[1] += dxyz[1];
+          ducti->xyz_label_metro[0] += 0,75*dxyz[0];
+          ducti->xyz_label_metro[1] += dxyz[1];
+          dxyz_metro[0] = 1.0;
+        }
+        break;
+      case DUCT_YZX:
+        COPYVALS3(ducti->xyz_metro1, xyz0[0], xyz1[1], xyz0[2]);
+        COPYVALS3(ducti->xyz_metro2, xyz0[0], xyz1[1], xyz0[2]);
+        COPYVALS3(ducti->xyz_metro3, xyz0[0], xyz1[1], xyz1[2]);
+        COPYVALS3(ducti->xyz_metro4, xyz0[0], xyz1[1], xyz1[2]);
+        if(ABS(dxyz[1]) > ABS(dxyz[2])){
+          ducti->xyz_symbol_metro[1] += 0.50*dxyz[1];
+          ducti->xyz_label_metro[1]  += 0.75*dxyz[1];
+          dxyz_metro[1] = 1.0;
+        }
+        else{
+          ducti->xyz_symbol_metro[1] += dxyz[1];
+          ducti->xyz_symbol_metro[2] += 0.50*dxyz[2];
+          ducti->xyz_label_metro[1]  += dxyz[1];
+          ducti->xyz_label_metro[2]  += 0.75*dxyz[2];
+          dxyz_metro[2] = 1.0;
+        }
+        break;
+      case DUCT_ZXY:
+        COPYVALS3(ducti->xyz_metro1, xyz0[0], xyz0[1], xyz1[2]);
+        COPYVALS3(ducti->xyz_metro2, xyz0[0], xyz0[1], xyz1[2]);
+        COPYVALS3(ducti->xyz_metro3, xyz1[0], xyz0[1], xyz1[2]);
+        COPYVALS3(ducti->xyz_metro4, xyz1[0], xyz0[1], xyz1[2]);
+        if(ABS(dxyz[2]) > ABS(dxyz[0])){
+          ducti->xyz_symbol_metro[2] += 0.50*dxyz[2];
+          ducti->xyz_label_metro[2]  += 0.75*dxyz[2];
+          dxyz_metro[2] = 1.0;
+        }
+        else{
+          ducti->xyz_symbol_metro[0] += 0.50*dxyz[0];
+          ducti->xyz_symbol_metro[2] += dxyz[2];
+          ducti->xyz_label_metro[0] += 0.75 * dxyz[0];
+          ducti->xyz_label_metro[2] += dxyz[2];
+          dxyz_metro[0] = 1.0;
+        }
+        break;
+      case DUCT_ZYX:
+        COPYVALS3(ducti->xyz_metro1, xyz0[0], xyz0[1], xyz1[2]);
+        COPYVALS3(ducti->xyz_metro2, xyz0[0], xyz0[1], xyz1[2]);
+        COPYVALS3(ducti->xyz_metro3, xyz0[0], xyz1[1], xyz1[2]);
+        COPYVALS3(ducti->xyz_metro4, xyz0[0], xyz1[1], xyz1[2]);
+        if(ABS(dxyz[2]) > ABS(dxyz[1])){
+          ducti->xyz_symbol_metro[2] += 0.50*dxyz[2];
+          ducti->xyz_label_metro[2]  += 0.75 * dxyz[2];
+          dxyz_metro[2] = 1.0;
+        }
+        else{
+          ducti->xyz_symbol_metro[1] += 0.50*dxyz[1];
+          ducti->xyz_symbol_metro[2] += dxyz[2];
+          ducti->xyz_label_metro[1] += 0.75 * dxyz[1];
+          ducti->xyz_label_metro[2] += dxyz[2];
+          dxyz_metro[1] = 1.0;
+        }
+      default:
+        ASSERT(FFALSE);
+        break;
+    }
+  }
+}
+
 /* ------------------ GetHVACState ------------------------ */
 
 int GetHVACDuctState(hvacductdata *ducti){
@@ -55,7 +242,7 @@ void DrawHVACDamper(hvacductdata *ducti, float *xyz, float diam, int state){
   unsigned char color2[3] = {0, 0, 0};
   unsigned char *color;
   float axis[3];
-  float u[3] = {0.0, 0.0, 1.0}, v[3], angle;
+  float u[3] = {0.0, 0.0, 1.0}, *v, angle;
 
   color = hvac_color_states[state];
   color2[0] = CLAMP(255 * foregroundcolor[0], 0, 255);
@@ -68,9 +255,12 @@ void DrawHVACDamper(hvacductdata *ducti, float *xyz, float diam, int state){
   glTranslatef(xyz[0], xyz[1], xyz[2]);
   DrawSphere(diam, color);
 
-  v[0] = ducti->node_to->xyz[0] - ducti->node_from->xyz[0];
-  v[1] = ducti->node_to->xyz[1] - ducti->node_from->xyz[1];
-  v[2] = ducti->node_to->xyz[2] - ducti->node_from->xyz[2];
+  if(hvac_metro_view == 1){
+    v = ducti->normal_metro;
+  }
+  else{
+    v = ducti->normal;
+  }
 
   RotateU2V(u, v, axis, &angle);
   angle *= 180.0 / 3.14159;
@@ -87,7 +277,7 @@ void DrawHVACDamper(hvacductdata *ducti, float *xyz, float diam, int state){
 void DrawHVACAircoil(hvacductdata *ducti, float *xyz, float size, float diam, int state){
   unsigned char *color;
   float axis[3];
-  float u[3] = {1.0, 0.0, 0.0}, v[3], angle;
+  float u[3] = {1.0, 0.0, 0.0}, *v, angle;
 
   color = hvac_color_states[state];
 
@@ -95,9 +285,12 @@ void DrawHVACAircoil(hvacductdata *ducti, float *xyz, float size, float diam, in
   glTranslatef(xyz[0], xyz[1], xyz[2]);
   DrawSphere(diam, color);
 
-  v[0] = ducti->node_to->xyz[0] - ducti->node_from->xyz[0];
-  v[1] = ducti->node_to->xyz[1] - ducti->node_from->xyz[1];
-  v[2] = ducti->node_to->xyz[2] - ducti->node_from->xyz[2];
+  if(hvac_metro_view == 1){
+    v = ducti->normal_metro;
+  }
+  else{
+    v = ducti->normal;
+  }
   RotateU2V(u, v, axis, &angle);
   angle *= 180.0 / 3.14159;
   glRotatef(angle, axis[0], axis[1], axis[2]);
@@ -130,7 +323,7 @@ void DrawHVACFan(hvacductdata *ducti, float *xyz, float size, float diam, int st
   int i;
   unsigned char *color;
   float axis[3];
-  float u[3] = {1.0, 0.0, 0.0}, v[3], angle;
+  float u[3] = {1.0, 0.0, 0.0}, *v, angle;
 
   color = hvac_color_states[state];
   if(hvac_circ_x == NULL||hvac_circ_y==NULL){
@@ -151,9 +344,12 @@ void DrawHVACFan(hvacductdata *ducti, float *xyz, float size, float diam, int st
   DrawSphere(diam, color);
   glLineWidth(2.0);
 
-  v[0] = ducti->node_to->xyz[0] - ducti->node_from->xyz[0];
-  v[1] = ducti->node_to->xyz[1] - ducti->node_from->xyz[1];
-  v[2] = ducti->node_to->xyz[2] - ducti->node_from->xyz[2];
+  if(hvac_metro_view == 1){
+    v = ducti->normal_metro;
+  }
+  else{
+    v = ducti->normal;
+  }
   RotateU2V(u, v, axis, &angle);
   angle *= 180.0 / 3.14159;
   glRotatef(angle, axis[0], axis[1], axis[2]);
@@ -213,14 +409,17 @@ void DrawHVACFan(hvacductdata *ducti, float *xyz, float size, float diam, int st
 
 void DrawHVACFilter(hvacductdata *ducti, float *xyz, float size){
   float axis[3];
-  float u[3] = {0.0, 1.0, 0.0}, v[3], angle;
+  float u[3] = {0.0, 1.0, 0.0}, *v, angle;
 
   glPushMatrix();
   glTranslatef(xyz[0], xyz[1], xyz[2]);
   if(ducti!=NULL){
-    v[0] = ducti->node_to->xyz[0] - ducti->node_from->xyz[0];
-    v[1] = ducti->node_to->xyz[1] - ducti->node_from->xyz[1];
-    v[2] = ducti->node_to->xyz[2] - ducti->node_from->xyz[2];
+    if(hvac_metro_view == 1){
+      v = ducti->normal_metro;
+    }
+    else{
+      v = ducti->normal;
+    }
     RotateU2V(u, v, axis, &angle);
     angle *= 180.0 / 3.14159;
     glRotatef(angle, axis[0], axis[1], axis[2]);
@@ -300,28 +499,29 @@ void DrawHVAC(hvacdata *hvaci){
   uc_color[2] = CLAMP(hvaci->duct_color[2], 0, 255);
   glColor3ubv(uc_color);
   for(i = 0; i < nhvacductinfo; i++){
-    hvacductdata *hvacducti;
+    hvacductdata *ducti;
     hvacnodedata *node_from, *node_to;
-    float* xyz0, * xyz1;
+    float *xyz0, *xyz1;
 
-    hvacducti = hvacductinfo + i;
-    if(strcmp(hvaci->network_name, hvacducti->network_name) != 0)continue;
+    ducti = hvacductinfo + i;
+    if(strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
 
-    node_from = hvacnodeinfo + hvacducti->node_id_from;
-    node_to   = hvacnodeinfo + hvacducti->node_id_to;
+    node_from = hvacnodeinfo + ducti->node_id_from;
+    node_to = hvacnodeinfo + ducti->node_id_to;
     if(node_from == NULL || node_to == NULL)continue;
     xyz0 = node_from->xyz;
     xyz1 = node_to->xyz;
-    glVertex3f(xyz0[0], xyz0[1], xyz0[2]);
+    glVertex3fv(xyz0);
     if(hvac_metro_view == 1){
-      glVertex3f(xyz1[0], xyz0[1], xyz0[2]);
-      glVertex3f(xyz1[0], xyz0[1], xyz0[2]);
-      glVertex3f(xyz1[0], xyz1[1], xyz0[2]);
-      glVertex3f(xyz1[0], xyz1[1], xyz0[2]);
+      glVertex3fv(ducti->xyz_metro1);
+      glVertex3fv(ducti->xyz_metro2);
+      glVertex3fv(ducti->xyz_metro3);
+      glVertex3fv(ducti->xyz_metro4);
     }
-    glVertex3f(xyz1[0], xyz1[1], xyz1[2]);
+    glVertex3fv(xyz1);
   }
   glEnd();
+  SNIFF_ERRORS("after hvac network");
   if(hvaci->show_duct_labels == 1){
     for(i = 0; i < nhvacductinfo; i++){
       hvacductdata *ducti;
@@ -337,10 +537,12 @@ void DrawHVAC(hvacdata *hvaci){
       node_from = hvacnodeinfo + ducti->node_id_from;
       node_to   = hvacnodeinfo + ducti->node_id_to;
       if(node_from == NULL || node_to == NULL)continue;
-      float f1=0.33;
-      xyz[0] = f1*node_from->xyz[0] + (1.0-f1)*node_to->xyz[0];
-      xyz[1] = f1*node_from->xyz[1] + (1.0-f1)*node_to->xyz[1];
-      xyz[2] = f1*node_from->xyz[2] + (1.0-f1)*node_to->xyz[2];
+      if(hvac_metro_view==1){
+        memcpy(xyz, ducti->xyz_label_metro, 3 * sizeof(float));
+      }
+      else{
+        memcpy(xyz, ducti->xyz_label, 3 * sizeof(float));
+      }
       offset = 0.01/xyzmaxdiff;
       Output3Text(foregroundcolor, xyz[0]+offset, xyz[1]+offset, xyz[2]+offset, label);
     }
@@ -360,9 +562,13 @@ void DrawHVAC(hvacdata *hvaci){
       node_from = hvacnodeinfo + ducti->node_id_from;
       node_to   = hvacnodeinfo + ducti->node_id_to;
       if(node_from == NULL || node_to == NULL)continue;
-      xyz[0] = (node_from->xyz[0] + node_to->xyz[0])/2.0;
-      xyz[1] = (node_from->xyz[1] + node_to->xyz[1])/2.0;
-      xyz[2] = (node_from->xyz[2] + node_to->xyz[2])/2.0;
+      if(hvac_metro_view == 1){
+        memcpy(xyz, ducti->xyz_symbol_metro, 3 * sizeof(float));
+      }
+      else{
+        memcpy(xyz, ducti->xyz_symbol, 3 * sizeof(float));
+      }
+      xyz[2] += 0.01 / xyzmaxdiff;
       Output3Text(foregroundcolor, xyz[0], xyz[1], xyz[2]+0.01/xyzmaxdiff, label);
     }
   }
@@ -370,26 +576,29 @@ void DrawHVAC(hvacdata *hvaci){
     for(i = 0; i < nhvacductinfo; i++){
       hvacductdata *ducti;
       hvacnodedata *node_from, *node_to;
-      float xyz[3];
+      float *xyz;
 
       ducti = hvacductinfo + i;
       if(strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
       node_from = hvacnodeinfo + ducti->node_id_from;
       node_to   = hvacnodeinfo + ducti->node_id_to;
       if(node_from == NULL || node_to == NULL)continue;
-      xyz[0] = (node_from->xyz[0] + node_to->xyz[0])/2.0;
-      xyz[1] = (node_from->xyz[1] + node_to->xyz[1])/2.0;
-      xyz[2] = (node_from->xyz[2] + node_to->xyz[2])/2.0;
       float size;
       int state;
 
       state = GetHVACDuctState(ducti);
       size = xyzmaxdiff / 40.0;
+      if(hvac_metro_view == 1){
+        xyz = ducti->xyz_symbol_metro;
+      }
+      else{
+        xyz = ducti->xyz_symbol;
+      }
       switch(ducti->component){
       case HVAC_NONE:
         break;
       case HVAC_FAN:
-        DrawHVACFan(ducti, xyz, 2.0*size, size, state);
+        DrawHVACFan(ducti, xyz, 0.75*2.0*size, 0.75*size, state);
         break;
       case HVAC_AIRCOIL:
         DrawHVACAircoil(ducti, xyz, 2.0*size, size, state);
@@ -452,7 +661,7 @@ void DrawHVAC(hvacdata *hvaci){
       hvacnodedata *nodei;
       float size;
 
-      size = xyzmaxdiff / 20.0;
+      size = xyzmaxdiff / 25.0;
       nodei = hvacnodeinfo + i;
       if(strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
       if(nodei->filter == HVAC_FILTER_NO)continue;

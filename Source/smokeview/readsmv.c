@@ -7825,6 +7825,7 @@ int ReadSMV(bufferstreamdata *stream){
       for(i=0;i<nhvacductinfo;i++){
         hvacductdata *ducti;
         char *duct_label, *network_label, *hvac_label;
+        int j;
 
         ducti = hvacductinfo + i;
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
@@ -7837,15 +7838,23 @@ int ReadSMV(bufferstreamdata *stream){
 
         if(ducti->node_from->duct == NULL)ducti->node_from->duct = ducti;
         if(ducti->node_to->duct == NULL)ducti->node_to->duct = ducti;
+        float *xyz1, *xyz2;
+        xyz1 = ducti->node_from->xyz;
+        xyz2 = ducti->node_to->xyz;
+        for(j = 0;j < 3;j++){
+          ducti->xyz_symbol[j] = 0.50 * xyz1[j] + 0.50 * xyz2[j];
+          ducti->xyz_label[j]  = 0.25 * xyz1[j] + 0.75 * xyz2[j];
+        }
 
         strtok(buffer, "%");
-        duct_label = strtok(NULL, "%");
-        network_label = strtok(NULL, "%");
-        ducti->duct_name = GetCharPtr(duct_label);
+        duct_label          = strtok(NULL, "%");
+        network_label       = strtok(NULL, "%");
+        ducti->duct_name    = GetCharPtr(duct_label);
         ducti->network_name = GetCharPtr(network_label);
-        ducti->act_times  = NULL;
-        ducti->act_states = NULL;
-        ducti->nact_times = 0;
+        ducti->act_times    = NULL;
+        ducti->act_states   = NULL;
+        ducti->nact_times   = 0;
+        ducti->metro_path   = DUCT_XYZ;
 
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
@@ -7867,7 +7876,6 @@ int ReadSMV(bufferstreamdata *stream){
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         sscanf(buffer, "%i", &ducti->n_waypoints);
 
-        int j;
         if(ducti->n_waypoints > 0){
           float *waypoints;
 
@@ -7914,6 +7922,7 @@ int ReadSMV(bufferstreamdata *stream){
         memcpy(hvaci->duct_color, hvac_duct_color, 3*sizeof(int));
       }
       FREEMEMORY(hvac_network_labels);
+      SetMetroPaths();
     }
 #endif
 
