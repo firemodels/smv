@@ -134,8 +134,8 @@ void SetMetroPaths(void){
         else{
           ducti->xyz_symbol_metro[0] += 0.50*dxyz[0];
           ducti->xyz_symbol_metro[1] += dxyz[1];
-          ducti->xyz_label_metro[0] += 0,75*dxyz[0];
-          ducti->xyz_label_metro[1] += dxyz[1];
+          ducti->xyz_label_metro[0]  += 0.75*dxyz[0];
+          ducti->xyz_label_metro[1]  += dxyz[1];
           dxyz_metro[0] = 1.0;
         }
         break;
