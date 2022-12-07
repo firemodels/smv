@@ -588,6 +588,7 @@ void DrawHVAC(hvacdata *hvaci){
 
       state = GetHVACDuctState(ducti);
       size = xyzmaxdiff / 40.0;
+      size *= hvaci->duct_size;
       if(hvac_metro_view == 1){
         xyz = ducti->xyz_symbol_metro;
       }
@@ -662,6 +663,7 @@ void DrawHVAC(hvacdata *hvaci){
       float size;
 
       size = xyzmaxdiff / 25.0;
+      size *= hvaci->duct_size;
       nodei = hvacnodeinfo + i;
       if(strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
       if(nodei->filter == HVAC_FILTER_NO)continue;

@@ -128,6 +128,7 @@ GLUI_Spinner *SPINNER_geom_transparency=NULL;
 #ifdef pp_HVAC
 GLUI_Spinner *SPINNER_hvac_duct_width=NULL;
 GLUI_Spinner *SPINNER_hvac_node_size=NULL;
+GLUI_Spinner *SPINNER_hvac_duct_size = NULL;
 GLUI_Spinner *SPINNER_hvac_duct_color[3];
 GLUI_Spinner *SPINNER_hvac_node_color[3];
 #endif
@@ -417,6 +418,7 @@ extern "C" void HVAC2Glui(int index){
   RADIO_hvac_show_component_labels->set_int_val(glui_hvac->show_component);
   CHECKBOX_hvac_show_duct_labels->set_int_val(glui_hvac->show_duct_labels);
 
+  SPINNER_hvac_duct_size->set_float_val(glui_hvac->duct_size);
   SPINNER_hvac_node_size->set_float_val(glui_hvac->node_size);
   CHECKBOX_hvac_show_node_labels->set_int_val(glui_hvac->show_node_labels);
   RADIO_hvac_show_filters->set_int_val(glui_hvac->show_filters);
@@ -459,6 +461,10 @@ void HvacCB(int var){
       if(glui_hvac->duct_width<1.0){
         glui_hvac->duct_width = 1.0;
         SPINNER_hvac_duct_width->set_float_val(glui_hvac->duct_width);
+      }
+      if(glui_hvac->duct_size < 0.1){
+        glui_hvac->duct_size = 0.1;
+        SPINNER_hvac_duct_size->set_float_val(glui_hvac->duct_size);
       }
       if(glui_hvac->node_size<1.0){
         glui_hvac->node_size = 1.0;
@@ -533,6 +539,7 @@ extern "C" void GluiGeometrySetup(int main_window){
     CHECKBOX_hvac_metro_view = glui_geometry->add_checkbox_to_panel(ROLLOUT_hvac, "metro view", &hvac_metro_view, HVAC_METRO_VIEW, HvacCB);
     PANEL_hvac_duct                = glui_geometry->add_panel_to_panel(ROLLOUT_hvac,       "duct");
     SPINNER_hvac_duct_width        = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct,  "width", GLUI_SPINNER_FLOAT, &glui_hvac->duct_width,       HVAC_PROPS, HvacCB);
+    SPINNER_hvac_duct_size         = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct,  "size",  GLUI_SPINNER_FLOAT, &glui_hvac->duct_size,        HVAC_PROPS, HvacCB);
     SPINNER_hvac_duct_color[0]     = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct,  "red",   GLUI_SPINNER_INT,    glui_hvac->duct_color,       HVAC_PROPS, HvacCB);
     SPINNER_hvac_duct_color[1]     = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct,  "green", GLUI_SPINNER_INT,    glui_hvac->duct_color + 1,   HVAC_PROPS, HvacCB);
     SPINNER_hvac_duct_color[2]     = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct,  "blue",  GLUI_SPINNER_INT,    glui_hvac->duct_color + 2,   HVAC_PROPS, HvacCB);

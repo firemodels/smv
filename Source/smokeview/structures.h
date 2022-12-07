@@ -1330,7 +1330,7 @@ typedef struct _hvacdata {
   int display;
   int show_node_labels, show_duct_labels;
   int show_filters, show_component;
-  float node_size, duct_width;
+  float node_size, duct_size, duct_width;
   int duct_color[3], node_color[3];
 } hvacdata;
 #endif
