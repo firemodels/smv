@@ -331,12 +331,18 @@ void DrawHVACFan(hvacductdata *ducti, float *xyz, float size, float diam, int st
     FREEMEMORY(hvac_circ_y);
     NewMemory((void **)&hvac_circ_x,2*HVAC_NCIRC*sizeof(float));
     NewMemory((void **)&hvac_circ_y,2*HVAC_NCIRC*sizeof(float));
-    for(i=0;i<2*HVAC_NCIRC;i++){
+    for(i=0;i<HVAC_NCIRC;i++){
       float arg;
+      float r, xx, yy;
 
       arg = 2.0*PI*(float)i/(float)(HVAC_NCIRC-1);
       hvac_circ_x[i] = cos(arg);
       hvac_circ_y[i] = sin(arg);
+      r = sin(2.0 * arg);
+      xx = r * cos(arg);
+      yy = r * sin(arg);
+      hvac_circ_x[i + HVAC_NCIRC] = xx;
+      hvac_circ_y[i + HVAC_NCIRC] = yy;
     }
   }
   glPushMatrix();
@@ -358,48 +364,16 @@ void DrawHVACFan(hvacductdata *ducti, float *xyz, float size, float diam, int st
   glScalef(size,size,size);
   glColor3fv(foregroundcolor);
   glBegin(GL_LINES);
-  for(i=0;i<HVAC_NCIRC-1;i++){
+  for(i=0;i<2*HVAC_NCIRC-1;i++){
     float x, y, xp1, yp1;
 
+    if(i == HVAC_NCIRC - 1)continue;
     x   = hvac_circ_x[i];
     xp1 = hvac_circ_x[i+1];
     y   = hvac_circ_y[i];
     yp1 = hvac_circ_y[i+1];
     glVertex3f(x,   0.0, y);
     glVertex3f(xp1, 0.0, yp1);
-  }
-  int ibeg, iend;
-  float x0, y0;
-
-  int ii;
-  for(ii = 0;ii <3;ii++){
-    if(ii == 0){
-      ibeg = HVAC_NCIRC / 12;
-      x0 = 0.0;
-      y0 = -1.0;
-    }
-    else if(ii==1){
-      ibeg = 5*HVAC_NCIRC/12;
-      x0 = sqrt(3.0)/2.0;
-      y0 = 0.5;
-    }
-    else{
-      ibeg = HVAC_NCIRC / 12 + 2*HVAC_NCIRC/3;
-      x0 = -sqrt(3.0)/ 2.0;
-      y0 = 0.5;
-    }
-    iend = ibeg + HVAC_NCIRC / 3;
-
-    for(i = ibeg;i < iend;i++){
-      float x, y, xp1, yp1;
-
-      x   = hvac_circ_x[i]     + x0;
-      xp1 = hvac_circ_x[i + 1] + x0;
-      y   = hvac_circ_y[i]     + y0;
-      yp1 = hvac_circ_y[i + 1] + y0;
-      glVertex3f(x, 0.0, y);
-      glVertex3f(xp1, 0.0, yp1);
-    }
   }
   glEnd();
   glPopMatrix();
