@@ -426,7 +426,7 @@ extern "C" void HVAC2Glui(int index){
 
 /* ------------------ HvacCB ------------------------ */
 
-void HvacCB(int var){
+extern "C" void HvacCB(int var){
   int i;
 
   updatemenu = 1;
