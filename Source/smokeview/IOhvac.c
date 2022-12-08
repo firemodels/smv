@@ -360,6 +360,13 @@ void DrawHVACFan(hvacductdata *ducti, float *xyz, float size, float diam, int st
   angle *= 180.0 / 3.14159;
   glRotatef(angle, axis[0], axis[1], axis[2]);
   glRotatef(90, 0.0,0.0,1.0);
+  if(state==1&&global_times != NULL){
+    float angle2, time2;
+
+    time2 = global_times[itimes];
+    angle2 = 360.0*time2 / 10.0;
+    glRotatef(angle2, 0.0, 1.0, 0.0);
+  }
 
   glScalef(size,size,size);
   glColor3fv(foregroundcolor);
