@@ -9,8 +9,8 @@
 #include "smokeviewvars.h"
 #include "IOobjects.h"
 
-unsigned char active_color[3] = {0, 255, 0}, inactive_color[3] = {255, 0, 0};
-unsigned char *hvac_color_states[2] = {active_color, inactive_color};
+unsigned char hvac_off_color[3] = {0, 255, 0}, hvac_on_color[3] = {255, 0, 0};
+unsigned char *hvac_color_states[2] = {hvac_off_color, hvac_on_color};
 
 /* ------------------ SetMetroPaths ------------------------ */
 
@@ -264,7 +264,13 @@ void DrawHVACDamper(hvacductdata *ducti, float *xyz, float diam, int state){
 
   RotateU2V(u, v, axis, &angle);
   angle *= 180.0 / 3.14159;
-  glRotatef(-45.0, 0.0, 1.0, 0.0);
+  if(state == 0){
+    glRotatef(-45.0, 0.0, 1.0, 0.0);
+  }
+  else{
+    glRotatef(-90.0, 0.0, 1.0, 0.0);
+  }
+
   glRotatef(angle, axis[0], axis[1], axis[2]);
 
   glTranslatef(0.0, 0.0, -cyl_height/2.0);
