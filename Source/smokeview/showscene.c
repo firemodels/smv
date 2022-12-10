@@ -369,11 +369,10 @@ void ShowScene2(int mode){
   }
 
   /* ++++++++++++++++++++++++ draw HVAC networks +++++++++++++++++++++++++ */
-#ifdef pp_HVAC
+
   if (nhvacinfo > 0) {
     DrawHVACS();
   }
-#endif
 
   /* ++++++++++++++++++++++++ draw slice files +++++++++++++++++++++++++ */
 

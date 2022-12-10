@@ -23,7 +23,6 @@
 #include "glutbitmap.h"
 #endif
 
-#ifdef pp_HVAC
 SVEXTERN int SVDECL(nhvacnodeinfo, 0), SVDECL(nhvacductinfo, 0), SVDECL(nhvacinfo, 0);
 SVEXTERN hvacdata SVDECL(*hvacinfo, NULL);
 SVEXTERN hvacnodedata SVDECL(*hvacnodeinfo, NULL);
@@ -40,7 +39,6 @@ SVEXTERN int hvac_node_color[3] = { 63,0,15};
 #else
 SVEXTERN int hvac_duct_color[3];
 SVEXTERN int hvac_node_color[3];
-#endif
 #endif
 SVEXTERN int SVDECL(histogram_nframes, 40);
 SVEXTERN int SVDECL(glui_surf_index, 0);
@@ -1304,9 +1302,7 @@ SVEXTERN int SVDECL(p3dsurfacetype,SURFACE_SOLID);
 SVEXTERN int parttype;
 SVEXTERN int allinterior;
 SVEXTERN int SVDECL(showedit_dialog,0);
-#ifdef pp_HVAC
 SVEXTERN int SVDECL(showhvac_dialog, 0);
-#endif
 SVEXTERN int SVDECL(showcolorbar_dialog,0);
 SVEXTERN int SVDECL(showtour_dialog,0),SVDECL(showtrainer_dialog,0);
 SVEXTERN int SVDECL(showtours,0);

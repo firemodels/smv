@@ -1314,7 +1314,6 @@ void ReadSMVDynamic(char *file){
       ++++++++++++++++++++++ DUCT_ACT +++++++++++++++++++++++++++++
       +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     */
-#ifdef pp_HVAC
     //DUCT_ACT
     // duct_label (char)
     // time state  (float int)
@@ -1350,7 +1349,6 @@ void ReadSMVDynamic(char *file){
       ducti->act_states = act_states;
       continue;
     }
-#endif
     /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ DEVICE_ACT +++++++++++++++++++++++++++
@@ -3098,7 +3096,6 @@ int GetSmoke3DType(char *label){
   return -1;
 }
 
-#ifdef pp_HVAC
 /* ------------------ CompareLabel ------------------------ */
 
 int CompareLabel(const void *arg1, const void *arg2){
@@ -3109,7 +3106,6 @@ int CompareLabel(const void *arg1, const void *arg2){
 
   return strcmp(x, y);
 }
-#endif
 
 /* ------------------ CompareSmoketypes ------------------------ */
 
@@ -7667,8 +7663,6 @@ int ReadSMV(bufferstreamdata *stream){
     if(MatchSMV(buffer, "PL3D")==1){
       continue;
     }
-
-#ifdef pp_HVAC
     /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++ HVAC ++++++++++++++++++++++++++
@@ -7837,8 +7831,6 @@ int ReadSMV(bufferstreamdata *stream){
       FREEMEMORY(hvac_network_labels);
       SetMetroPaths();
     }
-#endif
-
       /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++ CSVF ++++++++++++++++++++++++++
@@ -11789,7 +11781,6 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(boundary_edgetype);
       continue;
     }
-#ifdef pp_HVAC
     if(MatchINI(buffer, "HVACVIEW") == 1&&hvacinfo!=NULL&&nhvacinfo > 0){
       int nh;
 
@@ -11821,7 +11812,6 @@ int ReadIni2(char *inifile, int localfile){
         ONEORZERO(hvaci->show_duct_labels);
       }
     }
-#endif
     if(MatchINI(buffer, "SHOWSLICEVALS")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i", show_slice_values, show_slice_values+1, show_slice_values+2);
@@ -16165,7 +16155,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", freeze_volsmoke, autofreeze_volsmoke);
   fprintf(fileout, "GEOMBOUNDARYPROPS\n");
   fprintf(fileout, " %i %i %i %f %f %i\n",show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize, boundary_edgetype);
-#ifdef pp_HVAC
   if(nhvacinfo > 0){
     fprintf(fileout, "HVACVIEW\n");
     fprintf(fileout, " %i %i %i\n", nhvacinfo, hvac_metro_view, hvac_copy_all);
@@ -16182,7 +16171,6 @@ void WriteIni(int flag,char *filename){
       fprintf(fileout, " %i %i %i %i %i %i\n", dc[0], dc[1], dc[2], nc[0], nc[1], nc[2]);
     }
   }
-#endif
   fprintf(fileout, "SHOWSLICEVALS\n");
   fprintf(fileout, " %i %i %i\n", show_slice_values[0], show_slice_values[1], show_slice_values[2]);
   fprintf(fileout, "GEOMCELLPROPS\n");

@@ -1259,7 +1259,6 @@ typedef struct _compdata {
 } compdata;
 
 
-#ifdef pp_HVAC
 #define DUCT_COMPONENT_TEXT    0
 #define DUCT_COMPONENT_SYMBOLS 1
 #define DUCT_COMPONENT_HIDE    2
@@ -1311,7 +1310,6 @@ typedef struct _hvacdata {
   float node_size, duct_size, duct_width;
   int duct_color[3], node_color[3];
 } hvacdata;
-#endif
 
 /* --------------------------  menudata ------------------------------------ */
 

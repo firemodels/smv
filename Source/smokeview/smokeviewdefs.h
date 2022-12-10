@@ -7,7 +7,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
-#ifdef pp_HVAC
 #define HVAC_FILTER_NO  0
 #define HVAC_FILTER_YES 1
 #define HVAC_NONE    0
@@ -17,7 +16,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define HVAC_STATE_INACTIVE 0
 #define HVAC_STATE_ACTIVE   1
-#endif
 
 #define SPLIT_COLORBAR         1
 
@@ -1024,9 +1022,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define DIALOG_MOVIE     43
 #define DIALOG_MOVIE_BATCH 45
 #define DIALOG_SHRINKALL -3
-#ifdef pp_HVAC
 #define DIALOG_HVAC      47
-#endif
 
 #define UNLOAD_LAST -2
 

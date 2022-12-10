@@ -280,7 +280,6 @@ float     part_load_time;
 
 #define ISO_COLORS 4
 
-#ifdef pp_HVAC
 #define MENU_HVAC_SHOW_NODE_IGNORE        -1
 #define MENU_HVAC_SHOWALL_NETWORKS        -2
 #define MENU_HVAC_HIDEALL_NETWORKS        -3
@@ -294,7 +293,6 @@ float     part_load_time;
 #define MENU_HVAC_SHOW_FILTER_HIDE       -11
 #define MENU_HVAC_SHOW_DUCT_IDS          -12
 #define MENU_HVAC_SHOW_NODE_IDS          -13
-#endif
 
 #ifdef WIN32
 
@@ -1574,7 +1572,6 @@ void DialogMenu(int value){
       HideGluiColorbar();
     }
     break;
-#ifdef pp_HVAC
   case DIALOG_HVAC:
     showhvac_dialog = 1 - showhvac_dialog;
     if(showhvac_dialog == 1){
@@ -1584,7 +1581,6 @@ void DialogMenu(int value){
       HideGluiHVAC();
     }
     break;
-#endif
   case DIALOG_GEOMETRY:
     showedit_dialog=1-showedit_dialog;
     if(showedit_dialog==1){
@@ -6516,7 +6512,6 @@ void ZoneShowMenu(int value){
 
 /* ------------------ HVACMenu ------------------------ */
 
-#ifdef pp_HVAC
 void HVACMenu(int value){
   int i;
 
@@ -6593,7 +6588,6 @@ void HVACMenu(int value){
   updatemenu = 1;
   GLUTPOSTREDISPLAY;
 }
-#endif
 
   /* ------------------ GeometryMenu ------------------------ */
 
@@ -7965,9 +7959,7 @@ static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
 static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchsinglemenu=0,showpatchextmenu=0;
 static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, fileinfomenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
 static int scriptmenu=0;
-#ifdef pp_HVAC
 static int hvacmenu = 0, showcomponentmenu=0, showfiltermenu=0;
-#endif
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
 #ifdef pp_LUA
 static int luascriptmenu=0;
@@ -9078,7 +9070,6 @@ updatemenu=0;
 
   /* --------------------------------hvac menu -------------------------- */
 
-#ifdef pp_HVAC
   if(nhvacinfo > 0){
     int show_all_networks=1;
     int hide_all_networks=1;
@@ -9175,7 +9166,6 @@ updatemenu=0;
     }
     glutAddMenuEntry(_("Settings..."), MENU_HVAC_DIALOG_HVAC);
   }
-#endif
 
   /* --------------------------------geometry menu -------------------------- */
 
@@ -10388,9 +10378,7 @@ updatemenu=0;
   CREATEMENU(showhidemenu,ShowHideMenu);
   GLUTADDSUBMENU(_("Color"), colorbarmenu);
   GLUTADDSUBMENU(_("Geometry"),geometrymenu);
-#ifdef pp_HVAC
   if(nhvacinfo>0)GLUTADDSUBMENU(_("HVAC"), hvacmenu);
-#endif
   if(nterraininfo>0&&ngeominfo==0){
     GLUTADDSUBMENU(_("Terrain"), terrain_obst_showmenu);
   }
@@ -10776,12 +10764,9 @@ updatemenu=0;
     glutAddMenuEntry(_("Examine geometry...  "), DIALOG_GEOMETRY);
   }
 #endif
-#ifdef pp_HVAC
   if(nhvacinfo > 0){
     glutAddMenuEntry(_("HVAC settings..."), DIALOG_HVAC);
   }
-#endif
-
   if(have_vr==1){
     glutAddMenuEntry(_("Stereo/VR settings..."), DIALOG_STEREO);
   }
