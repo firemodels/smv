@@ -1485,11 +1485,7 @@ int CountColorbars(void){
   for(i=0;i<6;i++){
     hcolorbar_vis[i]=-1;
   }
-#ifdef pp_EVAC
-  if(showevac_colorbar == 1 || showsmoke == 1){
-#else
   if(showsmoke==1){
-#endif
     hcolorbar_vis[COLORBAR_PART]=count+2;
     count++;
   }
@@ -1540,9 +1536,6 @@ void DrawHorizontalColorbars(void){
     if(showcfast_local==1)doit=1;
   }
   else if(vis_colorbar==hcolorbar_vis[COLORBAR_PART]){
-#ifdef pp_EVAC
-    if(showevac_colorbar==1)doit=1;
-#endif
     if(showsmoke==1&&parttype!=0)doit=1;
   }
   else if(vis_colorbar==hcolorbar_vis[COLORBAR_ISO]){
@@ -1670,11 +1663,7 @@ void DrawVerticalColorbars(void){
 
   // -------------- compute columns where left labels will occur ------------
 
-#ifdef pp_EVAC
-  if(showiso_colorbar==1||showevac_colorbar==1||
-#else
   if(showiso_colorbar==1||
-#endif
     (showsmoke==1&&parttype!=0)|| show_slice_colorbar_local==1||
     (showpatch==1&&wall_cell_color_flag==0)||
     showcfast_local==1||
@@ -1837,11 +1826,7 @@ void DrawHorizontalColorbarRegLabels(void){
   axis_label_left = -colorbar_label_width/4;
   axis_label_down = hcolorbar_down_pos-(VP_vcolorbar.text_height + v_space);
 
-#ifdef pp_EVAC
-  if(showiso_colorbar == 1 || showevac_colorbar == 1 ||
-#else
   if(showiso_colorbar==1||
-#endif
     (showsmoke == 1 && parttype != 0) || show_slice_colorbar_local == 1 ||
     (showpatch == 1 && wall_cell_color_flag == 0) ||
     showcfast_local==1 || showplot3d == 1){
@@ -1865,11 +1850,7 @@ void DrawHorizontalColorbarRegLabels(void){
 
   // -------------- particle file top labels ------------
 
-#ifdef pp_EVAC
-  if(vis_colorbar==hcolorbar_vis[COLORBAR_PART]&&(showevac_colorbar == 1 || showsmoke == 1)){
-#else
   if(vis_colorbar==hcolorbar_vis[COLORBAR_PART]&&showsmoke == 1){
-#endif
     char partunitlabel2[256], partshortlabel2[256];
 
     strcpy(partshortlabel2, "");
@@ -1879,12 +1860,7 @@ void DrawHorizontalColorbarRegLabels(void){
     glTranslatef(type_label_left, type_label_down, 0.0);
 
     if(parttype != 0){
-#ifdef pp_EVAC
-      if(showsmoke == 1 && showevac == 0)OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Part");
-      if(showevac == 1)OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Human");
-#else
       if(showsmoke == 1)OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Part");
-#endif
     }
     if(parttype == -1){
       strcpy(partshortlabel2, "temp");
@@ -2090,11 +2066,7 @@ void DrawHorizontalColorbarRegLabels(void){
 
   // -------------- particle left labels ------------
 
-#ifdef pp_EVAC
-  if(vis_colorbar==hcolorbar_vis[COLORBAR_PART]&&(showevac_colorbar == 1 || (showsmoke == 1 && parttype != 0))){
-#else
   if(vis_colorbar==hcolorbar_vis[COLORBAR_PART]&&showsmoke == 1 && parttype != 0){
-#endif
     float *partlevels256_ptr;
     float tttval, tttmin, tttmax;
 
@@ -2469,11 +2441,7 @@ void DrawVerticalColorbarRegLabels(void){
     leftiso = ileft;
     ileft++;
   }
-#ifdef pp_EVAC
-  if(showevac_colorbar == 1 || showsmoke == 1){
-#else
   if(showsmoke == 1){
-#endif
     if(parttype != 0){
       leftsmoke = ileft;
       ileft++;
@@ -2495,11 +2463,7 @@ void DrawVerticalColorbarRegLabels(void){
 
   foreground_color = &(foregroundcolor[0]);
   red_color = &(redcolor[0]);
-#ifdef pp_EVAC
-  if(showiso_colorbar == 1 || showevac_colorbar == 1 ||
-#else
   if(showiso_colorbar == 1 ||
-#endif
     (showsmoke == 1 && parttype != 0) || show_slice_colorbar_local == 1 ||
     (showpatch == 1 && wall_cell_color_flag == 0) ||
     showcfast_local==1 ||
@@ -2639,11 +2603,7 @@ void DrawVerticalColorbarRegLabels(void){
   }
 
   // -------------- particle left labels ------------
-#ifdef pp_EVAC
-  if(showevac_colorbar == 1 || (showsmoke == 1 && parttype != 0)){
-#else
   if(showsmoke == 1 && parttype != 0){
-#endif
     float *partlevels256_ptr;
     float tttval;
 
@@ -2703,11 +2663,7 @@ void DrawVerticalColorbarRegLabels(void){
 
   // -------------- particle file top labels ------------
 
-#ifdef pp_EVAC
-  if(showevac_colorbar==1||(showsmoke==1&&parttype!=0)){
-#else
   if(showsmoke==1&&parttype!=0){
-#endif
     char partunitlabel2[256], partshortlabel2[256];
 
     strcpy(partshortlabel2, "");
@@ -2721,12 +2677,7 @@ void DrawVerticalColorbarRegLabels(void){
     if(dohist == 1)glTranslatef(colorbar_label_width / 2.0, 0.0, 0.0);
 
     if(parttype != 0){
-#ifdef pp_EVAC
-      if(showsmoke == 1 && showevac == 0)OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Part");
-      if(showevac == 1)OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space),                   foreground_color, "Human");
-#else
       if(showsmoke == 1)OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "Part");
-#endif
     }
     if(parttype == -1){
       strcpy(partshortlabel2, "temp");

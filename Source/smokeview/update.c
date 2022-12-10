@@ -34,11 +34,7 @@ void UpdateFrameNumber(int changetime){
 
     force_redisplay=0;
     itimeold=itimes;
-#ifdef pp_EVAC
-    if(showsmoke==1||showevac==1){
-#else
     if(showsmoke==1){
-#endif
       for(i=0;i<npartinfo;i++){
         partdata *parti;
 
@@ -276,19 +272,11 @@ void UpdateFileLoad(void){
   int i;
 
   npartloaded = 0;
-#ifdef pp_EVAC
-  nevacloaded = 0;
-#endif
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
 
     parti = partinfo+i;
-#ifdef pp_EVAC
-    if(parti->loaded==1&&parti->evac==0)npartloaded++;
-    if(parti->loaded==1&&parti->evac==1)nevacloaded++;
-#else
     if(parti->loaded==1)npartloaded++;
-#endif
   }
 
   nsliceloaded = 0;
@@ -352,19 +340,11 @@ void UpdateFileLoad(void){
 
   npart5loaded = 0;
   npartloaded = 0;
-#ifdef pp_EVAC
-  nevacloaded = 0;
-#endif
   for(i = 0; i<npartinfo; i++){
     partdata *parti;
 
     parti = partinfo+i;
-#ifdef pp_EVAC
-    if(parti->loaded==1&&parti->evac==0)npartloaded++;
-    if(parti->loaded==1&&parti->evac==1)nevacloaded++;
-#else
     if(parti->loaded==1)npartloaded++;
-#endif
     if(parti->loaded==1)npart5loaded++;
   }
 }
@@ -373,9 +353,6 @@ void UpdateFileLoad(void){
 
 void UpdateShow(void){
   int i,sliceflag,vsliceflag,partflag,patchflag,isoflag,smoke3dflag,tisoflag,showdeviceflag;
-#ifdef pp_EVAC
-  int evacflag;
-#endif
   int slicecolorbarflag;
   int shooter_flag;
   int showhrrflag;
@@ -395,10 +372,6 @@ void UpdateShow(void){
   have_extreme_mindata=0;
   have_extreme_maxdata=0;
   showshooter=0;
-#ifdef pp_EVAC
-  showevac=0;
-  showevac_colorbar=0;
-#endif
   show3dsmoke=0;
   smoke3dflag=0;
   showtours=0;
@@ -494,11 +467,7 @@ void UpdateShow(void){
       sd = sliceinfo+i;
       slicemesh = meshinfo + sd->blocknumber;
       if(sd->display==0||sd->slicefile_labelindex!=slicefile_labelindex)continue;
-#ifdef pp_EVAC
-      if(sd->constant_color==NULL&&show_evac_colorbar==0&&slicemesh->mesh_type!=0)continue;
-#else
       if(sd->constant_color==NULL&&slicemesh->mesh_type!=0)continue;
-#endif
       if(sd->constant_color!=NULL)continue;
       if(sd->ntimes>0){
         slicecolorbarflag=1;
@@ -591,11 +560,7 @@ void UpdateShow(void){
       slicemesh = meshinfo + sd->blocknumber;
       if(vd->loaded==0||vd->display==0)continue;
       if(sliceinfo[vd->ival].slicefile_labelindex!=slicefile_labelindex)continue;
-#ifdef pp_EVAC
-      if(sd->constant_color==NULL&&show_evac_colorbar==0&&slicemesh->mesh_type!=0)continue;
-#else
       if(sd->constant_color==NULL&&slicemesh->mesh_type!=0)continue;
-#endif
       if(sd->constant_color!=NULL)continue;
       vslicecolorbarflag=1;
       break;
@@ -634,11 +599,7 @@ void UpdateShow(void){
       partdata *parti;
 
       parti = partinfo + i;
-#ifdef pp_EVAC
-      if(parti->evac==0&&parti->loaded==1&&parti->display==1){
-#else
       if(parti->loaded==1&&parti->display==1){
-#endif
         partflag=1;
         break;
       }
@@ -653,21 +614,6 @@ void UpdateShow(void){
   plot2dflag = 0;
   if(GenDevShow() == 1 || GenHrrShow() == 1)plot2dflag = 1;
 
-#ifdef pp_EVAC
-  evacflag=0;
-  if(visEvac==1&&visTimeEvac==1){
-    for(i=0;i<npartinfo;i++){
-      partdata *parti;
-
-      parti = partinfo + i;
-      if(parti->evac==1&&parti->loaded==1&&parti->display==1){
-        evacflag=1;
-        break;
-      }
-    }
-  }
-#endif
-
   shooter_flag=0;
   if(visShooter!=0&&shooter_active==1){
     shooter_flag=1;
@@ -676,9 +622,6 @@ void UpdateShow(void){
   if( plotstate==DYNAMIC_PLOTS &&
     ( showdeviceflag==1 || showhrrflag==1 || sliceflag==1 || vsliceflag==1 || partflag==1 || patchflag==1 ||
     shooter_flag==1|| smoke3dflag==1 || showtours==1 ||
-#ifdef pp_EVAC
-    evacflag==1 ||
-#endif
     plot2dflag == 1 ||
     (ReadZoneFile==1&&visZone==1&&visTimeZone==1)||showvolrender==1
     )
@@ -687,15 +630,6 @@ void UpdateShow(void){
   if(plotstate==DYNAMIC_PLOTS){
     if(smoke3dflag==1)show3dsmoke=1;
     if(partflag==1)showsmoke=1;
-#ifdef pp_EVAC
-    if(evacflag==1)showevac=1;
-    if(showevac==1&&parttype>0){
-      showevac_colorbar=1;
-      if(current_property!=NULL&&strcmp(current_property->label->longlabel,"HUMAN_COLOR")==0){
-        showevac_colorbar=0;
-      }
-    }
-#endif
     if(patchflag==1)showpatch=1;
     drawing_boundary_files = showpatch;
 
@@ -726,11 +660,7 @@ void UpdateShow(void){
     }
     if(shooter_flag==1)showshooter=1;
   }
-#ifdef pp_EVAC
-  if(showsmoke==1||showevac==1||showpatch==1||showslice==1||showvslice==1||showzone==1||showiso==1||showevac==1)RenderTime=1;
-#else
   if(showsmoke==1||showpatch==1||showslice==1||showvslice==1||showzone==1||showiso==1)RenderTime=1;
-#endif
   if(showtours==1||show3dsmoke==1||touring==1||showvolrender==1)RenderTime=1;
   if(showshooter==1)RenderTime=1;
   if(plotstate==STATIC_PLOTS&&nplot3dloaded>0&&plotn>0&&plotn<=numplot3dvars)showplot3d=1;
@@ -761,11 +691,7 @@ void UpdateShow(void){
 
   num_colorbars=0;
   if(plotstate==DYNAMIC_PLOTS){
-#ifdef pp_EVAC
-    if(evacflag==1||(partflag==1&&parttype!=0))num_colorbars++;
-#else
     if(partflag==1&&parttype!=0)num_colorbars++;
-#endif
     if(slicecolorbarflag==1||vslicecolorbarflag==1)num_colorbars++;
     if(patchflag==1&&wall_cell_color_flag==0)num_colorbars++;
     if(ReadZoneFile==1)num_colorbars++;

@@ -254,10 +254,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define PARTFILE_LOADALL   -11
 #define PARTFILE_RELOADALL -12
-#ifdef pp_EVAC
-#define EVACFILE_LOADALL   -11
-#define EVACFILE_RELOADALL -12
-#endif
 
 #define FIRST_TIME     1
 #define NOT_FIRST_TIME 2
@@ -596,10 +592,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define TOGGLE_ISO          10003
 #define HIDEALL_ISO         10002
 #define SHOWALL_ISO         10001
-#ifdef pp_EVAC
-#define HIDEALL_EVAC            4
-#define SHOWALL_EVAC            3
-#endif
 
 #define GEOM_PROP_NONE     0
 #define GEOM_PROP_VERTEX1  1

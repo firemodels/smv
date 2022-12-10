@@ -2162,68 +2162,6 @@ void RenderMenu(int value){
   UpdateResolutionMultiplier();
 }
 
-/* ------------------ EvacShowMenu ------------------------ */
-#ifdef pp_EVAC
-void EvacShowMenu(int value){
-  partdata *parti;
-  int i;
-
-  if(nevac==0)return;
-  if(value==MENU_DUMMY)return;
-  if(value<0){
-    value = -value;
-    value--;
-    parti = partinfo + value;
-    parti->display = 1 - parti->display;
-    updatemenu=1;
-    GLUTPOSTREDISPLAY;
-    plotstate=GetPlotState(DYNAMIC_PLOTS);
-    return;
-  }
-  if(plotstate==DYNAMIC_PLOTS){
-    switch(value){
-    case 3:
-      visEvac=1;
-      for(i=0;i<npartinfo;i++){
-        parti = partinfo + i;
-        if(parti->loaded==0||parti->evac==0)continue;
-        parti->display=1;
-      }
-      break;
-    case 4:
-      visEvac=0;
-      for(i=0;i<npartinfo;i++){
-        parti = partinfo + i;
-        if(parti->loaded==0||parti->evac==0)continue;
-        parti->display=0;
-      }
-      break;
-      default:
-        ASSERT(FFALSE);
-        break;
-    }
-  }
-  else{
-    switch(value){
-    case 3:
-      visEvac=1;
-      for(i=0;i<npartinfo;i++){
-        parti = partinfo + i;
-        if(parti->loaded==0||parti->evac==0)continue;
-        parti->display=1;
-      }
-      break;
-    default:
-      ASSERT(FFALSE);
-      break;
-    }
-  }
-  updatemenu=1;
-  plotstate=GetPlotState(DYNAMIC_PLOTS);
-  GLUTPOSTREDISPLAY;
-}
-#endif
-
 /* ------------------ ParticleShowMenu ------------------------ */
 
 void ParticleShowMenu(int value){
@@ -2260,11 +2198,7 @@ void ParticleShowMenu(int value){
         visSmokePart=2;
         for(i=0;i<npartinfo;i++){
           parti = partinfo + i;
-#ifdef pp_EVAC
-          if(parti->loaded==0||parti->evac==1)continue;
-#else
           if(parti->loaded==0)continue;
-#endif
           parti->display=1;
         }
         break;
@@ -2275,11 +2209,7 @@ void ParticleShowMenu(int value){
         visSmokePart=0;
         for(i=0;i<npartinfo;i++){
           parti = partinfo + i;
-#ifdef pp_EVAC
-          if(parti->loaded==0||parti->evac==1)continue;
-#else
           if(parti->loaded==0)continue;
-#endif
           parti->display=0;
         }
         break;
@@ -3515,14 +3445,6 @@ void LoadUnloadMenu(int value){
   GLUTSETCURSOR(GLUT_CURSOR_RIGHT_ARROW);
 }
 
-#ifdef pp_EVAC
-void AvatarEvacMenu(int value){
-  if(value==MENU_DUMMY)return;
-  iavatar_evac=value;
-  updatemenu=1;
-}
-#endif
-
 /* ------------------ TourMenu ------------------------ */
 
 void TourMenu(int value){
@@ -3904,11 +3826,7 @@ void UnloadAllPartFiles(void){
     int errorcode;
 
     parti = partinfo+i;
-#ifdef pp_EVAC
-    if(parti->evac==1||parti->loaded==0)continue;
-#else
     if(parti->loaded==0)continue;
-#endif
     ReadPart(parti->file, i, UNLOAD, &errorcode);
   }
 }
@@ -3960,10 +3878,6 @@ void SetupPart(int value, int option){
     partdata *parti;
 
     parti = partinfo+i;
-#ifdef pp_EVAC
-    if(option==PART&&parti->evac==1)continue;                 // don't load an evac file if part files are loaded
-    if(option==EVAC&&parti->evac==0)continue;                 // don't load a part file if evac files are loaded
-#endif
     if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
     if(parti->loaded==0&&value>=0&&value!=i)continue;         // if value>0 only load file with index  value
     list[nlist++] = i;
@@ -3978,10 +3892,6 @@ void SetupPart(int value, int option){
     parti->skipload = 1;
     parti->loadstatus = FILE_UNLOADED;
     parti->boundstatus = PART_BOUND_UNDEFINED;
-#ifdef pp_EVAC
-    if(option==PART&&parti->evac==1)continue;                 // don't load an evac file if part files are loaded
-    if(option==EVAC&&parti->evac==0)continue;                 // don't load a part file if evac files are loaded
-#endif
     if(parti->loaded==0&&value==PARTFILE_RELOADALL)continue;  // don't reload a file that is not currently loaded
     if(parti->loaded==0&&value>=0&&value!=i)continue;         // if value>0 only load file with index  value
     parti->skipload = 0;
@@ -4041,13 +3951,6 @@ void LoadParticleEvacMenu(int value, int option){
   else{
     if(value==MENU_PARTICLE_UNLOAD_ALL){
       for(i=0;i<npartinfo;i++){
-#ifdef pp_EVAC
-        partdata *parti;
-
-        parti = partinfo + i;
-        if(option==PART&&parti->evac==1)continue;
-        if(option==EVAC&&parti->evac==0)continue;
-#endif
         ReadPart("", i, UNLOAD, &errorcode);
       }
     }
@@ -4081,11 +3984,7 @@ void LoadParticleEvacMenu(int value, int option){
         // unload particle files
 
 
-#ifdef pp_EVAC
-        if(value!=PARTFILE_RELOADALL&&value!=EVACFILE_RELOADALL){
-#else
         if(value!=PARTFILE_RELOADALL){
-#endif
           UnloadAllPartFiles();
         }
 
@@ -4264,26 +4163,6 @@ void UnloadPlot3dMenu(int value){
   }
 }
 
-#ifdef pp_EVAC
-/* ------------------ UnloadEvacMenu ------------------------ */
-
-void UnloadEvacMenu(int value){
-  int errorcode,i;
-
-  updatemenu=1;
-  GLUTPOSTREDISPLAY;
-  if(value>=0){
-    ReadPart("", value, UNLOAD, &errorcode);
-  }
-  else{
-    for(i=0;i<npartinfo;i++){
-      if(partinfo[i].evac==0)continue;
-      ReadPart("", i, UNLOAD, &errorcode);
-    }
-  }
-}
-#endif
-
 /* ------------------ UnloadPartMenu ------------------------ */
 
 void UnloadPartMenu(int value){
@@ -4296,9 +4175,6 @@ void UnloadPartMenu(int value){
   }
   else{
     for(i=0;i<npartinfo;i++){
-#ifdef pp_EVAC
-      if(partinfo[i].evac==1)continue;
-#endif
       ReadPart("", i, UNLOAD, &errorcode);
     }
   }
@@ -8102,9 +7978,6 @@ static int loadsmoke3dmenu = 0;
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
 static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
 static int unloadpartmenu=0, loadslicemenu=0, loadmultislicemenu=0;
-#ifdef  pp_EVAC
-static int unloadevacmenu=0;
-#endif
 static int *loadsubvslicemenu=NULL, nloadsubvslicemenu=0;
 static int *loadsubslicemenu=NULL, nloadsubslicemenu=0;
 static int *loadsubpatchmenu_b = NULL, *nsubpatchmenus_b=NULL, iloadsubpatchmenu_b=0, nloadsubpatchmenu_b = 0;
@@ -8122,12 +7995,6 @@ static int *particlepropshowsubmenu=NULL;
 static int particlestreakshowmenu=0;
 static int tourmenu=0,tourcopymenu=0;
 static int trainerviewmenu=0,mainmenu=0,zoneshowmenu=0,particleshowmenu=0;
-#ifdef pp_EVAC
-static int evacmenu=0;
-static int avatartourmenu=0;
-static int avatarevacmenu=0;
-static int evacshowmenu=0;
-#endif
 static int showobjectsmenu=0,showobjectsplotmenu=0,devicetypemenu=0,spheresegmentmenu=0,propmenu=0;
 static int unloadplot3dmenu=0, unloadpatchmenu=0, unloadisomenu=0;
 static int showmultislicemenu=0;
@@ -9892,11 +9759,7 @@ updatemenu=0;
 
 /* --------------------------------particle show menu -------------------------- */
 
-#ifdef pp_EVAC
-  if(npartinfo>0&&nevac!=npartinfo){
-#else
   if(npartinfo>0){
-#endif
     int ii;
     int showall;
 
@@ -9908,9 +9771,6 @@ updatemenu=0;
       i = partorderindex[ii];
       parti = partinfo + i;
       if(parti->loaded==0)continue;
-#ifdef pp_EVAC
-      if(parti->evac==1)continue;
-#endif
       STRCPY(menulabel,"");
       if(parti->display==1)STRCAT(menulabel,"*");
       STRCAT(menulabel,parti->menulabel);
@@ -9958,33 +9818,6 @@ updatemenu=0;
       }
     }
   }
-
-/* --------------------------------Evac show menu -------------------------- */
-#ifdef pp_EVAC
-  if(nevac>0){
-    int ii;
-
-    CREATEMENU(evacshowmenu,EvacShowMenu);
-    for(ii=0;ii<npartinfo;ii++){
-      partdata *parti;
-      char menulabel[1024];
-
-      i = partorderindex[ii];
-      parti = partinfo + i;
-      if(parti->loaded==0)continue;
-      if(parti->evac==0)continue;
-      STRCPY(menulabel,"");
-      if(parti->display==1)STRCAT(menulabel,"*");
-      STRCAT(menulabel,parti->menulabel);
-      glutAddMenuEntry(menulabel,-1-i);
-    }
-    glutAddMenuEntry("-",MENU_DUMMY);
-    glutAddMenuEntry(_("Show all"), MENU_PARTSHOW_SHOWALL);
-    if(plotstate==DYNAMIC_PLOTS){
-      glutAddMenuEntry(_("Hide all"), MENU_PARTSHOW_HIDEALL);
-    }
-  }
-#endif
 
 /* -------------------------------- colorbarmenu -------------------------- */
 
@@ -10323,55 +10156,6 @@ updatemenu=0;
   InitShowSliceMenu(&showhideslicemenu, patchgeom_slice_showhide);
   InitShowMultiSliceMenu(&showmultislicemenu, showhideslicemenu, patchgeom_slice_showhide);
 
-#ifdef pp_EVAC
-/* -------------------------------- avatar tour menu -------------------------- */
-
-  CREATEMENU(avatarevacmenu,AvatarEvacMenu);
-  if(navatar_types>0){
-    if(iavatar_evac==-1){
-      glutAddMenuEntry(_("*Defined in evac file"),MENU_AVATAR_DEFINED);
-    }
-    else{
-      glutAddMenuEntry(_("Defined in evac file"),MENU_AVATAR_DEFINED);
-    }
-    glutAddMenuEntry("-",MENU_DUMMY);
-    for(i=0;i<navatar_types;i++){
-      char menulabel[1024];
-
-      strcpy(menulabel,"");
-      if(iavatar_evac==i){
-        strcat(menulabel,"*");
-      }
-      strcat(menulabel,avatar_types[i]->label);
-      glutAddMenuEntry(menulabel,i);
-    }
-  }
-  CREATEMENU(avatartourmenu,TourMenu);
-  if(navatar_types>0){
-    if(selectedtour_index>=0&&selectedtour_index<ntourinfo){
-      tourdata *touri;
-      char menulabel[1024];
-
-      touri = tourinfo + selectedtour_index;
-      strcpy(menulabel,"For ");
-      strcat(menulabel,touri->label);
-      glutAddMenuEntry(menulabel,MENU_DUMMY);
-      glutAddMenuEntry("-",MENU_DUMMY);
-    }
-
-    for(i=0;i<navatar_types;i++){
-      char menulabel[1024];
-
-      strcpy(menulabel,"");
-      if(tourlocus_type==2&&iavatar_types==i){
-        strcat(menulabel,"*");
-      }
-      strcat(menulabel,avatar_types[i]->label);
-      glutAddMenuEntry(menulabel,-23-i);
-    }
-  }
-#endif
-
   CREATEMENU(tourcopymenu, TourCopyMenu);
   glutAddMenuEntry("Path through domain", -1);
   for(i = 0; i < ntourinfo; i++){
@@ -10646,12 +10430,7 @@ updatemenu=0;
 
         parti = partinfo + ii;
         if(parti->loaded==0)continue;
-#ifdef pp_EVAC
-        if(parti->evac==1)human_present=1;
-        if(parti->evac==0)particle_present=1;
-#else
         particle_present = 1;
-#endif
       }
       if(particle_present==1){
         GLUTADDSUBMENU(_("Particles"),particlepropshowmenu);
@@ -11420,11 +11199,7 @@ updatemenu=0;
 
   /* --------------------------------particle menu -------------------------- */
 
-#ifdef pp_EVAC
-  if(npartinfo>0&&nevac!=npartinfo){
-#else
   if(npartinfo>0){
-#endif
     int ii;
 
     CREATEMENU(unloadpartmenu,UnloadPartMenu);
@@ -11434,11 +11209,7 @@ updatemenu=0;
 
       i = partorderindex[ii];
       parti = partinfo + i;
-#ifdef pp_EVAC
-      if(parti->loaded==1&&parti->evac==0){
-#else
       if(parti->loaded==1){
-#endif
         STRCPY(menulabel,parti->menulabel);
         glutAddMenuEntry(menulabel,i);
       }
@@ -11455,9 +11226,6 @@ updatemenu=0;
       char menulabel[1024];
 
       i = partorderindex[ii];
-#ifdef pp_EVAC
-      if(partinfo[i].evac==1)continue;
-#endif
       if(partinfo[i].loaded==1){
         STRCPY(menulabel,"*");
         STRCAT(menulabel,partinfo[i].menulabel);
@@ -11498,65 +11266,6 @@ updatemenu=0;
     }
   }
 
-#ifdef pp_EVAC
-  if(nevac>0){
-    int ii;
-
-    CREATEMENU(unloadevacmenu,UnloadEvacMenu);
-    for(ii=0;ii<npartinfo;ii++){
-      partdata *parti;
-      char menulabel[1024];
-
-      i = partorderindex[ii];
-      parti = partinfo + i;
-      if(parti->loaded==1&&parti->evac==0){
-        STRCPY(menulabel,parti->menulabel);
-        glutAddMenuEntry(menulabel,i);
-      }
-    }
-    glutAddMenuEntry(_("Unload all"),MENU_UNLOADEVAC_UNLOADALL);
-
-    CREATEMENU(evacmenu,LoadEvacMenu);
-    {
-      int nevacs=0,nevacloaded2=0;
-      char menulabel[1024];
-
-      for(ii=0;ii<npartinfo;ii++){
-        partdata *parti;
-
-        parti = partinfo + ii;
-        if(parti->evac==1){
-          if(parti->loaded==1)nevacloaded2++;
-          nevacs++;
-        }
-      }
-
-      if(nevacs>1){
-        strcpy(menulabel,_("Humans - all meshes"));
-        glutAddMenuEntry(menulabel,EVACFILE_LOADALL);
-        glutAddMenuEntry("-",MENU_EVAC_DUMMY);
-      }
-      for(ii=0;ii<npartinfo;ii++){
-        i = partorderindex[ii];
-        if(partinfo[i].evac==0)continue;
-        if(partinfo[i].loaded==1){
-          STRCPY(menulabel,"*");
-          STRCAT(menulabel,partinfo[i].menulabel);
-        }
-        else{
-          STRCPY(menulabel,partinfo[i].menulabel);
-        }
-        glutAddMenuEntry(menulabel,i);
-      }
-      if(nevacloaded2<=1){
-        glutAddMenuEntry(_("Unload"),MENU_EVAC_UNLOADALL);
-      }
-       else{
-         GLUTADDSUBMENU(_("Unload"),unloadevacmenu);
-       }
-  }
-    }
-#endif
   if(nvsliceinfo>0){
 
   //*** setup vector slice menus
@@ -12715,33 +12424,12 @@ updatemenu=0;
       // particle
 
       if(npartinfo>0){
-#ifdef pp_EVAC
-        if(nevac!=npartinfo){
-          strcpy(loadmenulabel,"Particles");
-          if(tload_step > 1){
-            sprintf(steplabel,"/Skip Frame %i",tload_skip);
-            strcat(loadmenulabel,steplabel);
-          }
-          GLUTADDSUBMENU(loadmenulabel,particlemenu);
-        }
-#else
         strcpy(loadmenulabel,"Particles");
         if(tload_step > 1){
           sprintf(steplabel,"/Skip Frame %i",tload_skip);
           strcat(loadmenulabel,steplabel);
         }
         GLUTADDSUBMENU(loadmenulabel,particlemenu);
-#endif
-#ifdef pp_EVAC
-        if(nevac>0){
-          strcpy(loadmenulabel,_("Evacuation"));
-          if(tload_step > 1){
-            sprintf(steplabel,"/Skip Frame %i",tload_skip);
-            strcat(loadmenulabel,steplabel);
-          }
-          GLUTADDSUBMENU(loadmenulabel,evacmenu);
-        }
-#endif
       }
 
       // plot3d

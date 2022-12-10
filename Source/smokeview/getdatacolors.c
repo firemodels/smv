@@ -432,21 +432,7 @@ void GetPartColors(partdata *parti, int nlevel, int flag){
         prop_id = GetPartProp(partclassi->labels[k].longlabel);
         if(prop_id==NULL)continue;
 
-#ifdef pp_EVAC
-        if(strcmp(partclassi->labels[k].longlabel,"HUMAN_COLOR")==0){
-          int m;
-
-          for(m = 0; m<datacopy->npoints; m++){
-            float val;
-
-            val = *rvals++;
-            *irvals++ = CLAMP(val+0.5, 0, navatar_colors-1);
-          }
-        }
-        else{
-#else
           {
-#endif
           int prop_id_index;
           int m;
 
