@@ -1,2 +1,2 @@
 #!/bin/bash
-cat *.c *.cpp *.h *.f90 ../shared/*.h ../shared/*.c  | wc -l
+cat *.c *.cpp *.h ../shared/*.h ../shared/*.c  | wc -l

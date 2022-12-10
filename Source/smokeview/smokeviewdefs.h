@@ -14,6 +14,9 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define HVAC_FAN     1
 #define HVAC_AIRCOIL 2
 #define HVAC_DAMPER  3
+
+#define HVAC_STATE_INACTIVE 0
+#define HVAC_STATE_ACTIVE   1
 #endif
 
 #define SPLIT_COLORBAR         1

@@ -5,6 +5,8 @@
 #include "gd.h"
 #endif
 
+EXTERNCPP float GetTime(void);
+
 // gen plot routines
 
 EXTERNCPP char *GetPlotUnit2(plot2ddata *plot2di, curvedata *curve);
@@ -31,6 +33,7 @@ EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg,
 EXTERNCPP void SplitCB(int var);
 
 #ifdef pp_HVAC
+EXTERNCPP void SetMetroPaths(void);
 EXTERNCPP void DrawHVACS(void);
 EXTERNCPP hvacnodedata *GetHVACNode(hvacdata *hvaci, int node_id);
 #endif
@@ -459,8 +462,9 @@ EXTERNCPP void ShowGluiGeometry(void);
 #ifdef pp_HVAC
 EXTERNCPP void HideGluiHVAC(void);
 EXTERNCPP void ShowGluiHVAC(void);
-EXTERNCPP void UpdateShowHVAC(void);
-EXTERNCPP void UpdateGluiHVAC(void);
+EXTERNCPP void HVAC2Glui(int index);
+EXTERNCPP hvacductdata *GetHVACDuctID(char *duct_name);
+EXTERNCPP hvacnodedata *GetHVACNodeID(char *node_name);
 #endif
 
 EXTERNCPP void HideGluiGeometry(void);

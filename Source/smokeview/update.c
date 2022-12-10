@@ -1103,6 +1103,13 @@ void ConvertSsf(void){
   }
 }
 
+/* ------------------ GetTime ------------------------ */
+
+float GetTime(void){
+  if(global_times != NULL)return global_times[CLAMP(itimes,0,nglobal_times)];
+  return 0.0;
+}
+
   /* ------------------ MergeGlobalTimes ------------------------ */
 
 void MergeGlobalTimes(float *time_in, int ntimes_in){

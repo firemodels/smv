@@ -1316,7 +1316,49 @@ void ReadSMVDynamic(char *file){
       continue;
     }
 
-  /*
+    /*
+      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      ++++++++++++++++++++++ DUCT_ACT +++++++++++++++++++++++++++++
+      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    */
+#ifdef pp_HVAC
+    //DUCT_ACT
+    // duct_label (char)
+    // time state  (float int)
+    if(MatchSMV(buffer, "DUCT_ACT") == 1){
+      char *ductname;
+      hvacductdata *ducti;
+      float *act_time, *act_times;
+      int *act_state, *act_states;;
+
+      FGETS(buffer, 255, stream);
+      ductname = TrimFrontBack(buffer);
+      ducti = GetHVACDuctID(ductname);
+      if(ducti == NULL)continue;
+      act_times  = ducti->act_times;
+      act_states = ducti->act_states;
+      ducti->nact_times++;
+      if(ducti->nact_times == 1){
+        NewMemory((void **)&act_times,  ducti->nact_times * sizeof(float));
+        NewMemory((void **)&act_states, ducti->nact_times * sizeof(int));
+      }
+      else{
+        ResizeMemory((void **)&act_times,  ducti->nact_times * sizeof(float));
+        ResizeMemory((void **)&act_states, ducti->nact_times * sizeof(int));
+      }
+
+      act_time  = act_times + ducti->nact_times - 1;
+      act_state = act_states + ducti->nact_times -1;
+
+      FGETS(buffer, 255, stream);
+      sscanf(buffer, "%f %i", act_time, act_state);
+      ONEORZERO(*act_state);
+      ducti->act_times  = act_times;
+      ducti->act_states = act_states;
+      continue;
+    }
+#endif
+    /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ DEVICE_ACT +++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -7714,12 +7756,12 @@ int ReadSMV(bufferstreamdata *stream){
       continue;
     }
 
+#ifdef pp_HVAC
     /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++ HVAC ++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-#ifdef pp_HVAC
     if(MatchSMV(buffer, "HVAC") == 1) {
       // HVAC
       //  NODES
@@ -7748,6 +7790,7 @@ int ReadSMV(bufferstreamdata *stream){
         network_label = strtok(NULL, "%");
         nodei->node_name = GetCharPtr(node_label);
         nodei->network_name = GetCharPtr(network_label);
+        nodei->duct = NULL;
 
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         sscanf(buffer, "%f %f %f", nodei->xyz, nodei->xyz + 1, nodei->xyz + 2);
@@ -7782,17 +7825,36 @@ int ReadSMV(bufferstreamdata *stream){
       for(i=0;i<nhvacductinfo;i++){
         hvacductdata *ducti;
         char *duct_label, *network_label, *hvac_label;
+        int j;
 
         ducti = hvacductinfo + i;
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         sscanf(buffer, "%i %i %i", &ducti->duct_id, &ducti->node_id_from, &ducti->node_id_to);
         ducti->node_id_from--;
         ducti->node_id_to--;
+
+        ducti->node_from = hvacnodeinfo + ducti->node_id_from;
+        ducti->node_to   = hvacnodeinfo + ducti->node_id_to;
+
+        if(ducti->node_from->duct == NULL)ducti->node_from->duct = ducti;
+        if(ducti->node_to->duct == NULL)ducti->node_to->duct = ducti;
+        float *xyz1, *xyz2;
+        xyz1 = ducti->node_from->xyz;
+        xyz2 = ducti->node_to->xyz;
+        for(j = 0;j < 3;j++){
+          ducti->xyz_symbol[j] = 0.50 * xyz1[j] + 0.50 * xyz2[j];
+          ducti->xyz_label[j]  = 0.25 * xyz1[j] + 0.75 * xyz2[j];
+        }
+
         strtok(buffer, "%");
-        duct_label = strtok(NULL, "%");
-        network_label = strtok(NULL, "%");
-        ducti->duct_name = GetCharPtr(duct_label);
+        duct_label          = strtok(NULL, "%");
+        network_label       = strtok(NULL, "%");
+        ducti->duct_name    = GetCharPtr(duct_label);
         ducti->network_name = GetCharPtr(network_label);
+        ducti->act_times    = NULL;
+        ducti->act_states   = NULL;
+        ducti->nact_times   = 0;
+        ducti->metro_path   = DUCT_XYZ;
 
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
@@ -7814,7 +7876,6 @@ int ReadSMV(bufferstreamdata *stream){
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         sscanf(buffer, "%i", &ducti->n_waypoints);
 
-        int j;
         if(ducti->n_waypoints > 0){
           float *waypoints;
 
@@ -7850,11 +7911,19 @@ int ReadSMV(bufferstreamdata *stream){
 
         hvaci = hvacinfo + i;
         hvaci->network_name = hvac_network_labels[i];
-        hvaci->display = 0;
+        hvaci->display           = 0;
+        hvaci->show_node_labels  = 0;
+        hvaci->show_duct_labels  = 0;
+        hvaci->show_filters      = 0;
+        hvaci->show_component    = DUCT_COMPONENT_HIDE;
+        hvaci->duct_size         = 1.0;
+        hvaci->node_size         = 8.0;
+        hvaci->duct_width        = 4.0;
         memcpy(hvaci->node_color, hvac_node_color, 3*sizeof(int));
         memcpy(hvaci->duct_color, hvac_duct_color, 3*sizeof(int));
       }
       FREEMEMORY(hvac_network_labels);
+      SetMetroPaths();
     }
 #endif
 
@@ -11821,7 +11890,7 @@ int ReadIni2(char *inifile, int localfile){
       int nh;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i", &nh, &hvac_metro_view);
+      sscanf(buffer, " %i %i %i", &nh, &hvac_metro_view, &hvac_copy_all);
 
       nh = MIN(nhvacinfo, nh);
       for(i = 0; i < nh; i++){
@@ -11831,18 +11900,22 @@ int ReadIni2(char *inifile, int localfile){
 
         hvaci = hvacinfo + i;
         fgets(buffer, 255, stream);
-        sscanf(buffer, " %i %i %i %i %i %i %i",  &hvaci->display, dc, dc+1, dc+2, nc, nc + 1, nc + 2);
+        sscanf(buffer, " %i %i %i %i %i %f %f %f",
+          &hvaci->display,  &hvaci->show_node_labels, &hvaci->show_duct_labels,
+          &hvaci->show_component, &hvaci->show_filters, &hvaci->duct_width,
+          &hvaci->node_size, &hvaci->duct_size);
+        fgets(buffer, 255, stream);
+        sscanf(buffer, " %i %i %i %i %i %i", dc, dc + 1, dc + 2, nc, nc + 1, nc + 2);
         for(j=0;j<3;j++){
           hvaci->duct_color[j] = CLAMP(dc[j], 0, 255);
           hvaci->node_color[j] = CLAMP(nc[j], 0, 255);
         }
+        hvaci->duct_width = MAX(1.0, hvaci->duct_width);
+        hvaci->node_size = MAX(1.0, hvaci->node_size);
+        hvaci->duct_size = MAX(0.1, hvaci->duct_size);
+        ONEORZERO(hvaci->show_node_labels);
+        ONEORZERO(hvaci->show_duct_labels);
       }
-      fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i %i %f %f", &hvac_show_node_labels, &hvac_show_duct_labels, &hvac_show_components, &hvac_show_filters, &hvac_duct_width, &hvac_node_size);
-      hvac_duct_width = MAX(1.0, hvac_duct_width);
-      hvac_node_size = MAX(1.0, hvac_node_size);
-      ONEORZERO(hvac_show_node_labels);
-      ONEORZERO(hvac_show_duct_labels);
     }
 #endif
     if(MatchINI(buffer, "SHOWSLICEVALS")==1){
@@ -16222,7 +16295,7 @@ void WriteIni(int flag,char *filename){
 #ifdef pp_HVAC
   if(nhvacinfo > 0){
     fprintf(fileout, "HVACVIEW\n");
-    fprintf(fileout, " %i %i\n", nhvacinfo, hvac_metro_view);
+    fprintf(fileout, " %i %i %i\n", nhvacinfo, hvac_metro_view, hvac_copy_all);
     for(i = 0; i < nhvacinfo; i++){
       hvacdata *hvaci;
       int *dc, *nc;
@@ -16230,9 +16303,11 @@ void WriteIni(int flag,char *filename){
       hvaci = hvacinfo + i;
       dc = hvaci->duct_color;
       nc = hvaci->node_color;
-      fprintf(fileout, " %i %i %i %i %i %i %i\n", hvaci->display, dc[0], dc[1], dc[2], nc[0], nc[1], nc[2]);
+      fprintf(fileout, " %i %i %i %i %i %f %f %f\n",
+        hvaci->display, hvaci->show_node_labels, hvaci->show_duct_labels, hvaci->show_component,
+        hvaci->show_filters, hvaci->duct_width, hvaci->node_size, hvaci->duct_size);
+      fprintf(fileout, " %i %i %i %i %i %i\n", dc[0], dc[1], dc[2], nc[0], nc[1], nc[2]);
     }
-    fprintf(fileout, " %i %i %i %i %f %f\n", hvac_show_node_labels, hvac_show_duct_labels, hvac_show_components, hvac_show_filters, hvac_duct_width, hvac_node_size);
   }
 #endif
   fprintf(fileout, "SHOWSLICEVALS\n");
