@@ -2125,27 +2125,11 @@ void UpdateSliceMenuShow(void){
   int i;
 
   for(i=0;i<nsliceinfo;i++){
-#ifdef pp_EVAC
-    meshdata *slicemesh;
-#endif
     slicedata *sd;
 
     sd = sliceinfo + i;
     sd->menu_show=1;
-#ifdef pp_EVAC
-    slicemesh = meshinfo + sd->blocknumber;
-    if(show_evac_slices==0&&slicemesh->mesh_type!=0){
-      sd->menu_show=0;
-    }
-    if(strcmp(sd->label.longlabel,"Direction")==0&&constant_evac_coloring==1){
-      sd->constant_color=direction_color_ptr;
-    }
-    else{
-      sd->constant_color=NULL;
-    }
-#else
     sd->constant_color = NULL;
-#endif
   }
 }
 
@@ -2205,27 +2189,11 @@ void UpdateSliceMenuLabels(void){
     STRCAT(mslicei->menulabel2,sd->menulabel);
 
     if(nmeshes>1){
-#ifdef pp_EVAC
-      meshdata *meshi;
-#endif
       meshdata *slicemesh;
 
       slicemesh = meshinfo + sd->blocknumber;
       sprintf(label,", %s",slicemesh->label);
       STRCAT(sd->menulabel,label);
-#ifdef pp_EVAC
-      meshi = meshinfo + sd->blocknumber;
-      if(nevac>0){
-        if(meshi->mesh_type==0){
-          strcpy(label,", FDS mesh");
-        }
-        else{
-          strcpy(label,", Evacuation mesh");
-        }
-        STRCAT(mslicei->menulabel2,label);
-        STRCAT(mslicei->menulabel,label);
-      }
-#endif
     }
     if(showfiles==1){
       STRCAT(sd->menulabel,", ");
@@ -2249,20 +2217,6 @@ void UpdateSliceMenuLabels(void){
         STRCPY(mslicei->menulabel2,sd->label.longlabel);
         STRCAT(mslicei->menulabel2,", ");
         STRCAT(mslicei->menulabel2, cdir);
-#ifdef pp_EVAC
-      meshdata *meshi;
-        meshi = meshinfo + sd->blocknumber;
-        if(nevac>0){
-          if(meshi->mesh_type==0){
-            strcpy(label,", FDS mesh");
-          }
-          else{
-            strcpy(label,", Evacuation mesh");
-          }
-          STRCAT(mslicei->menulabel2,label);
-          STRCAT(mslicei->menulabel,label);
-        }
-#endif
       }
       if(nmeshes>1){
         meshdata *slicemesh;

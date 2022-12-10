@@ -102,11 +102,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
     *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
   }
 
-#ifdef pp_EVAC
-  if(showevac_colorbar == 1 || (showsmoke == 1 && parttype != 0)){
-#else
   if(showsmoke==1&&parttype!=0){
-#endif
     char partcolorlabel[256];
 
     if(parttype!=0){

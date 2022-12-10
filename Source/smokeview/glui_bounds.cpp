@@ -2235,9 +2235,6 @@ extern "C" void PartBoundsCPP_CB(int var){
         if(doit==1)printf("*** reloading particle file data\n");
 #endif
         LoadParticleMenu(PARTFILE_RELOADALL);
-#ifdef pp_EVAC
-        LoadEvacMenu(EVACFILE_RELOADALL);
-#endif
       }
       break;
     case BOUND_RESEARCH_MODE:
@@ -2961,9 +2958,6 @@ GLUI_Panel *PANEL_iso_eachlevel = NULL;
 GLUI_Panel *PANEL_iso_alllevels = NULL;
 GLUI_Panel *PANEL_bounds = NULL;
 GLUI_Panel *PANEL_zone_a=NULL, *PANEL_zone_b=NULL;
-#ifdef pp_EVAC
-GLUI_Panel *PANEL_evac_direction=NULL;
-#endif
 GLUI_Panel *PANEL_pan1=NULL;
 GLUI_Panel *PANEL_pan2=NULL;
 GLUI_Panel *PANEL_run=NULL;
@@ -3077,10 +3071,6 @@ GLUI_Checkbox *CHECKBOX_show_cell_slices_and_vectors=NULL;
 GLUI_Checkbox *CHECKBOX_showpatch_both=NULL;
 GLUI_Checkbox *CHECKBOX_showchar=NULL, *CHECKBOX_showonlychar;
 GLUI_Checkbox *CHECKBOX_script_step=NULL;
-#ifdef pp_EVAC
-GLUI_Checkbox *CHECKBOX_show_evac_slices=NULL;
-GLUI_Checkbox *CHECKBOX_show_evac_color=NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_constant_coloring=NULL;
 GLUI_Checkbox *CHECKBOX_data_coloring=NULL;
 GLUI_Checkbox *CHECKBOX_sort2=NULL;
@@ -3644,14 +3634,6 @@ extern "C" void UpdateScriptStep(void){
 
 /* ------------------ UpdateEvacParms ------------------------ */
 
-#ifdef pp_EVAC
-extern "C" void UpdateEvacParms(void){
-  if(CHECKBOX_show_evac_slices!=NULL)CHECKBOX_show_evac_slices->set_int_val(show_evac_slices);
-  if(CHECKBOX_constant_coloring!=NULL)CHECKBOX_constant_coloring->set_int_val(constant_evac_coloring);
-  if(CHECKBOX_data_coloring!=NULL)CHECKBOX_data_coloring->set_int_val(data_evac_coloring);
-  if(CHECKBOX_show_evac_color!=NULL)CHECKBOX_show_evac_color->set_int_val(show_evac_colorbar);
-}
-#endif
 
 /* ------------------ ColorTableCompare ------------------------ */
 
@@ -3725,30 +3707,6 @@ extern "C" void FileShowCB(int var){
       break;
     }
     break;
-#ifdef pp_EVAC
-  case FILESHOW_evac:
-    switch(showhide_option){
-    case SHOWALL_FILES:
-      EvacShowMenu(SHOWALL_EVAC);
-      break;
-    case SHOWONLY_FILE:
-      EvacShowMenu(SHOWALL_EVAC);
-      if(npartloaded != 0)ParticleShowMenu(HIDEALL_PARTICLE);
-      if(nsmoke3dloaded != 0)Smoke3DShowMenu(HIDEALL_SMOKE3D);
-      if(nisoloaded != 0)IsoShowMenu(HIDEALL_ISO);
-      if(nsliceloaded != 0)ShowHideSliceMenu(GLUI_HIDEALL_SLICE);
-      if(nvsliceloaded != 0)ShowVSliceMenu(GLUI_HIDEALL_VSLICE);
-      if(npatchloaded != 0)ShowBoundaryMenu(GLUI_HIDEALL_BOUNDARY);
-      break;
-    case HIDEALL_FILES:
-      EvacShowMenu(HIDEALL_EVAC);
-      break;
-    default:
-      ASSERT(FFALSE);
-      break;
-    }
-    break;
-#endif
   case  FILESHOW_particle:
     switch(showhide_option){
     case SHOWALL_FILES:
@@ -3756,9 +3714,6 @@ extern "C" void FileShowCB(int var){
       break;
     case SHOWONLY_FILE:
       ParticleShowMenu(SHOWALL_PARTICLE);
-#ifdef pp_EVAC
-      if(nevacloaded != 0)EvacShowMenu(HIDEALL_EVAC);
-#endif
       if(nsmoke3dloaded != 0)Smoke3DShowMenu(HIDEALL_SMOKE3D);
       if(nisoloaded != 0)IsoShowMenu(HIDEALL_ISO);
       if(nsliceloaded != 0)ShowHideSliceMenu(GLUI_HIDEALL_SLICE);
@@ -3780,9 +3735,6 @@ extern "C" void FileShowCB(int var){
       break;
     case SHOWONLY_FILE:
       ShowHideSliceMenu(GLUI_SHOWALL_SLICE);
-#ifdef pp_EVAC
-      if(nevacloaded != 0)EvacShowMenu(HIDEALL_EVAC);
-#endif
       if(nvsliceloaded != 0)ShowVSliceMenu(GLUI_HIDEALL_VSLICE);
       if(npatchloaded != 0)ShowBoundaryMenu(GLUI_HIDEALL_BOUNDARY);
       if(nsmoke3dloaded != 0)Smoke3DShowMenu(HIDEALL_SMOKE3D);
@@ -3804,9 +3756,6 @@ extern "C" void FileShowCB(int var){
       break;
     case SHOWONLY_FILE:
       ShowVSliceMenu(GLUI_SHOWALL_VSLICE);
-#ifdef pp_EVAC
-      if(nevacloaded != 0)EvacShowMenu(HIDEALL_EVAC);
-#endif
       if(npatchloaded != 0)ShowBoundaryMenu(GLUI_HIDEALL_BOUNDARY);
       if(nsmoke3dloaded != 0)Smoke3DShowMenu(HIDEALL_SMOKE3D);
       if(nisoloaded != 0)IsoShowMenu(HIDEALL_ISO);
@@ -3828,9 +3777,6 @@ extern "C" void FileShowCB(int var){
       break;
     case SHOWONLY_FILE:
       ShowBoundaryMenu(GLUI_SHOWALL_BOUNDARY);
-#ifdef pp_EVAC
-      if(nevacloaded != 0)EvacShowMenu(HIDEALL_EVAC);
-#endif
       if(nsmoke3dloaded != 0)Smoke3DShowMenu(HIDEALL_SMOKE3D);
       if(npartloaded != 0)ParticleShowMenu(HIDEALL_PARTICLE);
       if(nvsliceloaded != 0)ShowVSliceMenu(GLUI_HIDEALL_VSLICE);
@@ -3852,9 +3798,6 @@ extern "C" void FileShowCB(int var){
       break;
     case SHOWONLY_FILE:
       Smoke3DShowMenu(SHOWALL_SMOKE3D);
-#ifdef pp_EVAC
-      if(nevacloaded != 0)EvacShowMenu(HIDEALL_EVAC);
-#endif
       if(npatchloaded != 0)ShowBoundaryMenu(GLUI_HIDEALL_BOUNDARY);
       if(npartloaded != 0)ParticleShowMenu(HIDEALL_PARTICLE);
       if(nvsliceloaded != 0)ShowVSliceMenu(GLUI_HIDEALL_VSLICE);
@@ -3876,9 +3819,6 @@ extern "C" void FileShowCB(int var){
       break;
     case SHOWONLY_FILE:
       IsoShowMenu(SHOWALL_ISO);
-#ifdef pp_EVAC
-      if(nevacloaded != 0)EvacShowMenu(HIDEALL_EVAC);
-#endif
       if(nsmoke3dloaded != 0)Smoke3DShowMenu(HIDEALL_SMOKE3D);
       if(npatchloaded != 0)ShowBoundaryMenu(GLUI_HIDEALL_BOUNDARY);
       if(npartloaded != 0)ParticleShowMenu(HIDEALL_PARTICLE);
@@ -4433,9 +4373,6 @@ extern "C" void UpdateSliceXYZ(void){
 extern "C" void GluiBoundsSetup(int main_window){
   int i;
   int have_part;
-#ifdef pp_EVAC
-  int have_evac;
-#endif
 
   if(glui_bounds!=NULL){
     glui_bounds->close();
@@ -4470,13 +4407,7 @@ extern "C" void GluiBoundsSetup(int main_window){
 
     glui_bounds->add_column_to_panel(ROLLOUT_showhide, false);
 
-#ifdef pp_EVAC
-    if(nevac > 0){}
-    if(npartinfo > 0 && nevac != npartinfo)BUTTON_PART = glui_bounds->add_button_to_panel(ROLLOUT_showhide, "Particle", FILESHOW_particle, FileShowCB);
-    if(nevac > 0)BUTTON_EVAC = glui_bounds->add_button_to_panel(ROLLOUT_showhide, "Evacuation", FILESHOW_evac, FileShowCB);
-#else
     if(npartinfo > 0)BUTTON_PART = glui_bounds->add_button_to_panel(ROLLOUT_showhide, "Particle", FILESHOW_particle, FileShowCB);
-#endif
     if(nsliceinfo > 0)BUTTON_SLICE = glui_bounds->add_button_to_panel(ROLLOUT_showhide, "Slice", FILESHOW_slice, FileShowCB);
     if(nvsliceinfo > 0)BUTTON_VSLICE = glui_bounds->add_button_to_panel(ROLLOUT_showhide, "Vector", FILESHOW_vslice, FileShowCB);
     if(nisoinfo > 0)BUTTON_ISO = glui_bounds->add_button_to_panel(ROLLOUT_showhide, "Isosurface", FILESHOW_isosurface, FileShowCB);
@@ -4827,27 +4758,12 @@ extern "C" void GluiBoundsSetup(int main_window){
   /* Particle File Bounds  */
 
   have_part = 0;
-#ifdef pp_EVAC
-  have_evac = 0;
-  if(npartinfo > 0 && nevac != npartinfo)have_part = 1;
-  if(nevac > 0)have_evac = 1;
-  if(have_part==1||have_evac==1){
-#else
   if(npartinfo > 0)have_part = 1;
   if(have_part==1){
-#endif
     char label[100];
 
     strcpy(label, "");
-#ifdef pp_EVAC
-    if(have_part == 1)strcat(label, "Particle");
-#else
     strcat(label, "Particle");
-#endif
-#ifdef pp_EVAC
-    if(have_part == 1 && have_evac == 1)strcat(label, "/");
-    if(have_evac == 1)strcat(label, "Evac");
-#endif
 
     glui_active=1;
     ROLLOUT_part = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds,label,false,PART_ROLLOUT,BoundRolloutCB);
@@ -4888,20 +4804,6 @@ extern "C" void GluiBoundsSetup(int main_window){
     PartBoundCB(PARTFAST);
   }
   PartBoundCB(FILETYPE_INDEX);
-
-#ifdef pp_EVAC
-  if(have_evac==1){
-    glui_active=1;
-
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_part,_("Select avatar"),&select_avatar);
-    CHECKBOX_show_evac_slices=glui_bounds->add_checkbox_to_panel(ROLLOUT_part,_("Show slice menus"),&show_evac_slices,SHOW_EVAC_SLICES,SliceBoundCB);
-    PANEL_evac_direction=glui_bounds->add_panel_to_panel(ROLLOUT_part,_("Direction vectors"));
-    CHECKBOX_constant_coloring=glui_bounds->add_checkbox_to_panel(PANEL_evac_direction,_("Constant coloring"),&constant_evac_coloring,SHOW_EVAC_SLICES,SliceBoundCB);
-    CHECKBOX_data_coloring=glui_bounds->add_checkbox_to_panel(PANEL_evac_direction,_("Data coloring"),&data_evac_coloring,DATA_EVAC_COLORING,SliceBoundCB);
-    CHECKBOX_show_evac_color=glui_bounds->add_checkbox_to_panel(PANEL_evac_direction,_("Show colorbar (when data coloring)"),&show_evac_colorbar,SHOW_EVAC_SLICES,SliceBoundCB);
-    glui_bounds->add_checkbox_to_panel(ROLLOUT_part,_("View from selected Avatar"),&view_from_selected_avatar);
-  }
-#endif
 
   // ----------------------------------- Plot3D ----------------------------------------
 
@@ -5980,21 +5882,10 @@ void PartBoundCB(int var){
     break;
   case TRACERS:
   case PARTFAST:
-#ifdef pp_EVAC
-    if(npartinfo<=1||nevac>0){
-#else
     if(npartinfo<=1){
-#endif
       CHECKBOX_part_multithread->disable();
       SPINNER_npartthread_ids->disable();
       part_multithread = 0;
-#ifdef pp_EVAC
-      if(nevac>0){
-        partfast = 0;
-        CHECKBOX_partfast->set_int_val(partfast);
-        CHECKBOX_partfast->disable();
-      }
-#endif
       CHECKBOX_part_multithread->set_int_val(part_multithread);
     }
     else{
@@ -6061,9 +5952,6 @@ void PartBoundCB(int var){
      prop_index_SAVE= global_prop_index;
      PartBoundCB(FILETYPE_INDEX);
      LoadParticleMenu(PARTFILE_RELOADALL);
-#ifdef pp_EVAC
-     LoadEvacMenu(EVACFILE_RELOADALL);
-#endif
      ParticlePropShowMenu(prop_index_SAVE);
     }
     break;
@@ -6232,18 +6120,6 @@ extern "C" void SliceBoundCB(int var){
       CHECKBOX_sort2->set_int_val(sort_iso_triangles);
       IsoBoundCB(GLOBAL_ALPHA);
       break;
-#ifdef pp_EVAC
-    case SHOW_EVAC_SLICES:
-      data_evac_coloring = 1-constant_evac_coloring;
-      UpdateSliceMenuShow();
-      if(CHECKBOX_data_coloring!=NULL)CHECKBOX_data_coloring->set_int_val(data_evac_coloring);
-      break;
-    case DATA_EVAC_COLORING:
-      constant_evac_coloring = 1-data_evac_coloring;
-      UpdateSliceMenuShow();
-      if(CHECKBOX_constant_coloring!=NULL)CHECKBOX_constant_coloring->set_int_val(constant_evac_coloring);
-      break;
-#endif
     case COLORBAND:
       UpdateRGBColors(colorbar_select_index);
       break;

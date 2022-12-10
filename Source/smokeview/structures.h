@@ -200,18 +200,8 @@ typedef struct _propdata {
   int ntextures;
   char **texturefiles, **vars_indep, **svals;
   int *vars_indep_index, vars_dep_index[PROPVARMAX];
-#ifdef pp_EVAC
-  int fvars_evac_index[PROPVARMAX];
-#endif
   int nvars_indep, nvars_dep;
-#ifdef pp_EVAC
-  int nvars_evac;
-#endif
   float *fvals, fvars_dep[PROPVARMAX];
-#ifdef pp_EVAC
-  float fvars_evac[PROPVARMAX];
-  int draw_evac;
-#endif
   int tag_number;
 } propdata;
 
@@ -938,9 +928,6 @@ typedef struct _tourdata {
 
 typedef struct _tokendata {
   float var, *varptr, default_val;
-#ifdef pp_EVAC
-  float evac_var;
-#endif
   int command,loc,type,reads,nvars,noutvars,is_label,is_string,is_texturefile;
   struct _sv_object *included_object;
   int included_frame;
@@ -958,13 +945,7 @@ typedef struct _sv_object_frame {
   int display_list_ID;
   int *symbols, nsymbols;
   tokendata *tokens, **command_list;
-#ifdef pp_EVAC
-  tokendata *evac_tokens[NEVAC_TOKENS];
-#endif
   int ntokens, ncommands, ntextures;
-#ifdef pp_EVAC
-  int nevac_tokens;
-#endif
   struct _sv_object *device;
   struct _sv_object_frame *prev, *next;
 } sv_object_frame;
@@ -1242,9 +1223,6 @@ typedef struct _partdata {
   int seq_id, autoload, loaded, skipload, request_load, display, reload, finalize;
   int loadstatus, boundstatus;
   int compression_type;
-#ifdef pp_EVAC
-  int evac;
-#endif
   int blocknumber;
   int *timeslist, ntimes, itime;
   FILE_SIZE bound_file_size;
@@ -1281,7 +1259,6 @@ typedef struct _compdata {
 } compdata;
 
 
-#ifdef pp_HVAC
 #define DUCT_COMPONENT_TEXT    0
 #define DUCT_COMPONENT_SYMBOLS 1
 #define DUCT_COMPONENT_HIDE    2
@@ -1333,7 +1310,6 @@ typedef struct _hvacdata {
   float node_size, duct_size, duct_width;
   int duct_color[3], node_color[3];
 } hvacdata;
-#endif
 
 /* --------------------------  menudata ------------------------------------ */
 

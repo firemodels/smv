@@ -26,8 +26,6 @@
 
 //#define pp_THINFACE         // don't draw sides of thin faces
 
-#define pp_HVAC                // visualize HVAC networks
-
 // use floating point to color data
 
 //#define pp_PARTVAL          // speed up part file color updating
@@ -60,7 +58,6 @@
 #define pp_STREAM
 #endif
 
-//#define pp_EVAC              // isolate EVAC code
 #define pp_CLIP_FIX          // fixes to clipping
 #define pp_PART_MULTI        // load particles in parallel
 //#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds

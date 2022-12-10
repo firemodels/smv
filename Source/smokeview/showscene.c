@@ -88,15 +88,6 @@ void ShowScene2(int mode){
       DrawPartFrame();
     }
 
-    /* ++++++++++++++++++++++++ draw evacuation +++++++++++++++++++++++++ */
-
-#ifdef pp_EVAC
-    if(showevac == 1){
-      CLIP_VALS;
-      DrawEvacFrame();
-    }
-#endif
-
     /* ++++++++++++++++++++++++ draw screeninfo +++++++++++++++++++++++++ */
 
 #ifdef pp_RENDER360_DEBUG
@@ -220,20 +211,7 @@ void ShowScene2(int mode){
     }
   }
 
-  /* ++++++++++++++++++++++++ draw selected avatars +++++++++++++++++++++++++ */
-
-#ifdef pp_EVAC
-  if(mode == SELECTOBJECT){
-    if(select_avatar == 1){
-      CLIP_GEOMETRY;
-      DrawSelectAvatars();
-      SNIFF_ERRORS("after DrawSelectAvatars");
-      return;
-    }
-  }
-#endif
-
-  /* ++++++++++++++++++++++++ draw selected avatars +++++++++++++++++++++++++ */
+  /* ++++++++++++++++++++++++ draw selected geometry +++++++++++++++++++++++++ */
   if(mode==SELECTOBJECT){
     if(select_geom!=GEOM_PROP_NONE){
       CLIP_GEOMETRY;
@@ -391,11 +369,10 @@ void ShowScene2(int mode){
   }
 
   /* ++++++++++++++++++++++++ draw HVAC networks +++++++++++++++++++++++++ */
-#ifdef pp_HVAC
+
   if (nhvacinfo > 0) {
     DrawHVACS();
   }
-#endif
 
   /* ++++++++++++++++++++++++ draw slice files +++++++++++++++++++++++++ */
 

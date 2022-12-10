@@ -32,11 +32,9 @@ EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg,
 
 EXTERNCPP void SplitCB(int var);
 
-#ifdef pp_HVAC
 EXTERNCPP void SetMetroPaths(void);
 EXTERNCPP void DrawHVACS(void);
 EXTERNCPP hvacnodedata *GetHVACNode(hvacdata *hvaci, int node_id);
-#endif
 
 #ifdef pp_REFRESH
 EXTERNCPP void PeriodicRefresh(int var);
@@ -228,11 +226,7 @@ EXTERNCPP FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int t
 EXTERNCPP void GetSliceSizes(slicedata *sd, const char *slicefilenameptr, int time_frame, int *nsliceiptr, int *nslicejptr, int *nslicekptr, int *ntimesptr, int tload_step_arg,
   int *errorptr, int tload_beg_arg, int settmax_s_arg, float tmin_s_arg, float tmax_s_arg, int *headersizeptr, int *framesizeptr);
 EXTERNCPP void PrintPartLoadSummary(int option, int type);
-#ifdef pp_EVAC
-EXTERNCPP void CreatePartSizeFile(partdata *parti, int angle_flag_arg);
-#else
 EXTERNCPP void CreatePartSizeFile(partdata *parti);
-#endif
 EXTERNCPP void GetAllPartBounds(void);
 EXTERNCPP void MergeAllPartBounds(void);
 EXTERNCPP void ShrinkDialogs(void);
@@ -459,13 +453,11 @@ EXTERNCPP void UpdateClipPlanes(void);
 EXTERNCPP void ShowGluiBounds(int menu_id);
 EXTERNCPP void HideGluiBounds(void);
 EXTERNCPP void ShowGluiGeometry(void);
-#ifdef pp_HVAC
 EXTERNCPP void HideGluiHVAC(void);
 EXTERNCPP void ShowGluiHVAC(void);
 EXTERNCPP void HVAC2Glui(int index);
 EXTERNCPP hvacductdata *GetHVACDuctID(char *duct_name);
 EXTERNCPP hvacnodedata *GetHVACNodeID(char *node_name);
-#endif
 
 EXTERNCPP void HideGluiGeometry(void);
 
@@ -568,9 +560,6 @@ EXTERNCPP void DrawGeom(int flag,int frameflag);
 EXTERNCPP void RemoveDupBlockages(void);
 EXTERNCPP void SortIsoTriangles(float *mm);
 EXTERNCPP void UpdateIsoTriangles(int flag);
-#ifdef pp_EVAC
-EXTERNCPP void UpdateEvacParms(void);
-#endif
 EXTERNCPP void UpdateSliceMenuShow(void);
 EXTERNCPP void UpdateBoundaryBounds(patchdata *patchi);
 EXTERNCPP void UpdateAllBoundaryBounds(void);
@@ -587,9 +576,6 @@ EXTERNCPP void UpdateTBounds(void);
 EXTERNCPP void UpdateGluiTimeBounds(float time_min, float time_max);
 EXTERNCPP void SetTimeVal(float timeval);
 EXTERNCPP void GetIndepVarIndices(sv_object *smv_object,char **var_indep_strings, int nvars_indep,int *index);
-#ifdef pp_EVAC
-EXTERNCPP void GetEvacIndices(sv_object *smv_object, int *evac_index,int *nevac_index);
-#endif
 EXTERNCPP void UpdateColorbarList(void);
 EXTERNCPP void UpdateColorbarList2(void);
 EXTERNCPP void UpdateColorbarFlip(void);
@@ -615,9 +601,6 @@ EXTERNCPP char *GetScriptFileName(int id);
 EXTERNCPP inifiledata *InsertIniFile(char *file);
 EXTERNCPP void Keyboard(unsigned char key, int flag);
 EXTERNCPP void GetNewScriptFileName(char *newscriptfilename);
-#ifdef pp_EVAC
-EXTERNCPP void DrawSelectAvatars(void);
-#endif
 EXTERNCPP void OutputFedCSV(void);
 EXTERNCPP void ParticlePropShowMenu(int value);
 EXTERNCPP int  GetGridIndex(float x, int dir, float *plotxyz, int nplotxyz);
@@ -704,9 +687,6 @@ EXTERNCPP void ResetMenu(int var);
 EXTERNCPP void LabelMenu(int value);
 EXTERNCPP void FontMenu(int value);
 EXTERNCPP void ShowHideSliceMenu(int var);
-#ifdef pp_EVAC
-EXTERNCPP void EvacShowMenu(int value);
-#endif
 EXTERNCPP void ParticleShowMenu(int value);
 EXTERNCPP void Plot3DShowMenu(int value);
 EXTERNCPP void IsoShowMenu(int value);
@@ -723,9 +703,6 @@ EXTERNCPP partpropdata *GetPartProp(char *label);
 EXTERNCPP void InitPartProp(void);
 EXTERNCPP void UpdateStreakValue(float value);
 EXTERNCPP void LoadParticleMenu(int value);
-#ifdef pp_EVAC
-EXTERNCPP void LoadEvacMenu(int value);
-#endif
 EXTERNCPP void LoadBoundaryMenu(int value);
 EXTERNCPP void LoadSliceMenu(int value);
 EXTERNCPP void LoadVSliceMenu(int value);
@@ -796,9 +773,6 @@ EXTERNCPP void DrawSmokeFrame(void);
 EXTERNCPP void DrawVolSmokeFrame(void);
 EXTERNCPP void DrawLightDirections(void);
 EXTERNCPP void DrawPartFrame(void);
-#ifdef pp_EVAC
-EXTERNCPP void DrawEvacFrame(void);
-#endif
 EXTERNCPP void DrawPlot3dFrame(void);
 EXTERNCPP void DrawVSliceFrame(void);
 EXTERNCPP void DrawSliceFrame(void);
@@ -966,9 +940,6 @@ EXTERNCPP void DrawHorizontalColorbars(void);
 EXTERNCPP void DrawVerticalColorbars(void);
 EXTERNCPP void DrawHorizontalColorbarRegLabels(void);
 EXTERNCPP void DrawVerticalColorbarRegLabels(void);
-#ifdef pp_EVAC
-EXTERNCPP void DrawEvac(const partdata *parti);
-#endif
 EXTERNCPP void DrawGrid(const meshdata *gb);
 EXTERNCPP void DrawZoneRoomGeom(void);
 EXTERNCPP void DrawZoneFireData(void);

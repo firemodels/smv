@@ -12,9 +12,7 @@
 #define STRUCTURED_ROLLOUT     0
 #define UNSTRUCTURED_ROLLOUT   1
 #define IMMERSED_DIAGNOSTICS   2
-#ifdef pp_HVAC
 #define HVAC_ROLLOUT           3
-#endif
 
 procdata  geomprocinfo[4];
 int      ngeomprocinfo = 0;
@@ -46,7 +44,6 @@ int      ngeomprocinfo = 0;
 #define UPDATE_NORMALS        53
 #endif
 
-#ifdef pp_HVAC
 #define HVAC_PROPS            -1
 #define HVAC_SHOWALL_NETWORK  -2
 #define HVAC_HIDEALL_NETWORK  -3
@@ -57,14 +54,11 @@ int      ngeomprocinfo = 0;
 #define HVAC_METRO_VIEW       -8
 #define HVAC_UPDATE_LIST      -9
 #define HVAC_COPY_ALL         -10
-#endif
 
-#ifdef pp_HVAC
 GLUI_Checkbox *CHECKBOX_hvac_show             = NULL;
 GLUI_Checkbox *CHECKBOX_hvac_show_duct_labels = NULL;
 GLUI_Checkbox *CHECKBOX_hvac_show_node_labels = NULL;
 GLUI_Checkbox* CHECKBOX_hvac_metro_view       = NULL;
-#endif
 GLUI_Checkbox *CHECKBOX_showgeom_inside_domain  = NULL;
 GLUI_Checkbox *CHECKBOX_showgeom_outside_domain = NULL;
 GLUI_Checkbox **CHECKBOX_terrain_texture_show   = NULL;
@@ -85,10 +79,8 @@ GLUI_Checkbox *CHECKBOX_showonly_top = NULL;
 GLUI_RadioGroup *RADIO_select_geom = NULL;
 GLUI_RadioGroup *RADIO_cface_type = NULL;
 GLUI_RadioGroup *RADIO_show_geom_boundingbox = NULL;
-#ifdef pp_HVAC
 GLUI_RadioGroup *RADIO_hvac_show_component_labels = NULL;
 GLUI_RadioGroup *RADIO_hvac_show_filters          = NULL;
-#endif
 
 
 GLUI_StaticText *STATIC_vertx1=NULL;
@@ -106,13 +98,11 @@ GLUI_Rollout *ROLLOUT_geomtest=NULL;
 GLUI_Rollout *ROLLOUT_geom_rgbs = NULL;
 GLUI_Rollout *ROLLOUT_geom_properties=NULL;
 
-#ifdef pp_HVAC
 GLUI_Panel *PANEL_hvac_filter     = NULL;
 GLUI_Panel *PANEL_hvac_components = NULL;
 GLUI_Panel *PANEL_hvac_duct    = NULL;
 GLUI_Panel *PANEL_hvac_node    = NULL;
 GLUI_Panel *PANEL_hvac_network = NULL;
-#endif
 
 GLUI_Panel *PANEL_surf_color = NULL;
 GLUI_Panel *PANEL_surf_axis = NULL;
@@ -125,13 +115,11 @@ GLUI_Panel *PANEL_geom_transparency = NULL;
 GLUI_Panel *PANEL_normals = NULL;
 
 GLUI_Spinner *SPINNER_geom_transparency=NULL;
-#ifdef pp_HVAC
 GLUI_Spinner *SPINNER_hvac_duct_width=NULL;
 GLUI_Spinner *SPINNER_hvac_node_size=NULL;
 GLUI_Spinner *SPINNER_hvac_duct_size = NULL;
 GLUI_Spinner *SPINNER_hvac_duct_color[3];
 GLUI_Spinner *SPINNER_hvac_node_color[3];
-#endif
 
 GLUI_Spinner *SPINNER_geom_ivecfactor = NULL;
 GLUI_Spinner *SPINNER_geom_vert_exag=NULL;
@@ -160,9 +148,7 @@ GLUI_EditText *EDIT_xmax=NULL, *EDIT_ymax=NULL, *EDIT_zmax=NULL;
 
 GLUI_Listbox *LIST_obst_surface[7]={NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 GLUI_Listbox *LIST_geom_surface=NULL;
-#ifdef pp_HVAC
 GLUI_Listbox *LIST_hvac_network = NULL;
-#endif
 
 GLUI_Panel *PANEL_geomtest2 = NULL;
 GLUI_Panel *PANEL_cfaces = NULL;
@@ -182,9 +168,7 @@ GLUI_Panel *PANEL_geom_offset=NULL;
 GLUI_Panel *PANEL_terrain_images = NULL;
 GLUI_Panel *PANEL_geom_show = NULL;
 
-#ifdef pp_HVAC
 GLUI_Rollout *ROLLOUT_hvac = NULL;
-#endif
 GLUI_Rollout *ROLLOUT_structured=NULL;
 GLUI_Rollout *ROLLOUT_unstructured=NULL;
 
@@ -390,7 +374,6 @@ extern "C" void UpdateVertexInfo(float *xyz1, float *xyz2){
     STATIC_dist->set_name("dist:");
   }
 }
-#ifdef pp_HVAC
 
 /* ------------------ Glui2HVAC ------------------------ */
 
@@ -489,7 +472,6 @@ extern "C" void HvacCB(int var){
   }
   if(hvac_copy_all==1&&var!=HVAC_COPY_ALL)HvacCB(HVAC_COPY_ALL);
 }
-#endif
 
 /* ------------------ GluiGeometrySetup ------------------------ */
 
@@ -513,7 +495,6 @@ extern "C" void GluiGeometrySetup(int main_window){
   glui_geometry = GLUI_Master.create_glui("Geometry",0,0,0);
   if(showedit_dialog==0)glui_geometry->hide();
 
-#ifdef pp_HVAC
   if(nhvacinfo > 0){
     NewMemory(( void ** )&glui_hvac, sizeof(hvacdata));
     memcpy(glui_hvac, hvacinfo + hvac_network_index, sizeof(hvacdata));
@@ -569,7 +550,6 @@ extern "C" void GluiGeometrySetup(int main_window){
     HvacCB(HVAC_COPY_ALL);
     HvacCB(HVAC_PROPS);
   }
-#endif
 
   if(have_obsts == 1){
     ROLLOUT_structured = glui_geometry->add_rollout("Structured", false, STRUCTURED_ROLLOUT, GeomRolloutCB);
@@ -1125,7 +1105,7 @@ extern "C" void VolumeCB(int var){
 }
 
 /* ------------------ HideGluiHVAC ------------------------ */
-#ifdef pp_HVAC
+
 extern "C" void HideGluiHVAC(void){
   showhvac_dialog = 0;
   CloseRollouts(glui_geometry);
@@ -1140,7 +1120,6 @@ extern "C" void ShowGluiHVAC(void){
     ROLLOUT_hvac->open();
   }
 }
-#endif
 
 /* ------------------ HideGluiGeometry ------------------------ */
 

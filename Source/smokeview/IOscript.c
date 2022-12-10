@@ -1626,9 +1626,6 @@ void ScriptLoadParticles(scriptdata *scripti){
     partdata *parti;
 
     parti = partinfo + i;
-#ifdef pp_EVAC
-    if(parti->evac==1)continue;
-#endif
     ReadPart(parti->file,i,UNLOAD,&errorcode);
     count++;
   }
@@ -1642,9 +1639,6 @@ void ScriptLoadParticles(scriptdata *scripti){
     partdata *parti;
 
     parti = partinfo+i;
-#ifdef pp_EVAC
-    if(parti->evac==1)continue;
-#endif
     parti->finalize = 1;
     break;
   }
@@ -1652,9 +1646,6 @@ void ScriptLoadParticles(scriptdata *scripti){
     partdata *parti;
 
     parti = partinfo + i;
-#ifdef pp_EVAC
-    if(parti->evac==1)continue;
-#endif
     ReadPart(parti->file,i,LOAD,&errorcode);
     if(scripti->cval!=NULL&&strlen(scripti->cval)>0){
       FREEMEMORY(loaded_file);
