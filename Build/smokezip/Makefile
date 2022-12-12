@@ -38,10 +38,11 @@ GNU_COMPINFO=-Dpp_COMPVER=\"$(GNU_COMPVERSION)\"
 
 # Definition of the object variables
 
-obj =    main.o CNV3dsmoke.o CNVboundary.o CNVpart.o CNVplot3d.o CNVslice.o assert.o \
-         csphere.o dmalloc.o lightsmoke.o histogram.o readfiles.o utilities.o isobox.o\
-         file_util.o string_util.o threader.o compress.o md5.o sha1.o sha256.o stdio_buffer.o\
-	 gsmv.o getdata.o color2rgb.o
+obj =    assert.o CNV3dsmoke.o CNVboundary.o CNVpart.o CNVplot3d.o CNVslice.o  \
+         color2rgb.o compress.o csphere.o dmalloc.o file_util.o getdata.o gsmv.o histogram.o \
+         isobox.o lightsmoke.o main.o md5.o readfiles.o sha1.o sha256.o stdio_buffer.o \
+         string_util.o threader.o utilities.o 
+	    
 objwin = $(obj:.o=.obj)
 
 # main has to be compiled without optimization (on a Windows PC) otherwise errors occcur
