@@ -2923,8 +2923,9 @@ void Keyboard(unsigned char key, int flag){
       script_step_now=1;
       break;
     case '&':
-      antialiasflag=1-antialiasflag;
-      PRINTF("antialiasflag=%i\n",antialiasflag);
+    void ToggleMetroMode(void);
+      ToggleMetroMode();
+      PRINTF("HVAC metro view mode=%i\n",hvac_metro_view);
       break;
     case '*':
       visx_all=0;
