@@ -449,6 +449,7 @@ EXTERNCPP void HideGluiTour(void);
 EXTERNCPP void ShowGluiStereo(void);
 EXTERNCPP void HideGluiStereo(void);
 
+EXTERNCPP void ToggleMetroMode(void);
 EXTERNCPP void UpdateClipPlanes(void);
 EXTERNCPP void ShowGluiBounds(int menu_id);
 EXTERNCPP void HideGluiBounds(void);
