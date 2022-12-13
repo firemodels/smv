@@ -123,7 +123,6 @@ void SetMetroPaths(void){
     qsort((int *)hvac_sort_yz, nhvacnodeinfo, sizeof(int), CompareFloatYZ);
     qsort((int *)hvac_sort_xz, nhvacnodeinfo, sizeof(int), CompareFloatXZ);
     qsort((int *)hvac_sort_xy, nhvacnodeinfo, sizeof(int), CompareFloatXY);
-    int offset_index = 0;
     line_yz[0]=0;
     line_xz[0]=0;
     line_xy[0]=0;
