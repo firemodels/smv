@@ -54,7 +54,9 @@ int      ngeomprocinfo = 0;
 #define HVAC_METRO_VIEW       -8
 #define HVAC_UPDATE_LIST      -9
 #define HVAC_COPY_ALL         -10
+#define HVAC_OFFSET_NODES     -11
 
+GLUI_Checkbox *CHECKBOX_hvac_offset_nodes     = NULL;
 GLUI_Checkbox *CHECKBOX_hvac_show             = NULL;
 GLUI_Checkbox *CHECKBOX_hvac_show_duct_labels = NULL;
 GLUI_Checkbox *CHECKBOX_hvac_show_node_labels = NULL;
@@ -114,6 +116,7 @@ GLUI_Panel *PANEL_geom_close = NULL;
 GLUI_Panel *PANEL_geom_transparency = NULL;
 GLUI_Panel *PANEL_normals = NULL;
 
+GLUI_Spinner *SPINNER_hvac_offset_inc=NULL;
 GLUI_Spinner *SPINNER_geom_transparency=NULL;
 GLUI_Spinner *SPINNER_hvac_duct_width=NULL;
 GLUI_Spinner *SPINNER_hvac_node_size=NULL;
@@ -381,6 +384,13 @@ void Glui2HVAC(void){
   memcpy(hvacinfo + hvac_network_index, glui_hvac, sizeof(hvacdata));
 }
 
+/* ------------------ UpdateHvacOffset ------------------------ */
+
+extern "C" void UpdateHvacOffset(void){
+  CHECKBOX_hvac_offset_nodes->set_int_val(hvac_offset_nodes);
+  SPINNER_hvac_offset_inc->set_float_val(hvac_offset_inc);
+}
+
 /* ------------------ HVAC2Glui ------------------------ */
 
 extern "C" void HVAC2Glui(int index){
@@ -395,6 +405,9 @@ extern "C" void HVAC2Glui(int index){
     SPINNER_hvac_node_color[i]->set_int_val(glui_hvac->node_color[i]);
   }
   CHECKBOX_hvac_show->set_int_val(glui_hvac->display);
+
+  CHECKBOX_hvac_offset_nodes->set_int_val(hvac_offset_nodes);
+  SPINNER_hvac_offset_inc->set_float_val(hvac_offset_inc);
 
   CHECKBOX_hvac_metro_view->set_int_val(hvac_metro_view);
   SPINNER_hvac_duct_width->set_float_val(glui_hvac->duct_width);
@@ -439,6 +452,14 @@ extern "C" void HvacCB(int var){
     case HVAC_SHOW_NODE_LABELS:
     case HVAC_SHOW_FILTERS:
     case HVAC_METRO_VIEW:
+      break;
+    case HVAC_OFFSET_NODES:
+      updatemenu = 1;
+      if(hvac_offset_inc<0.0){
+        hvac_offset_inc = 0.0;
+        SPINNER_hvac_offset_inc->set_float_val(hvac_offset_inc);
+      }
+      SetMetroPaths();
       break;
     case HVAC_PROPS:
       if(glui_hvac->duct_width<1.0){
@@ -517,7 +538,9 @@ extern "C" void GluiGeometrySetup(int main_window){
       glui_geometry->add_button_to_panel(ROLLOUT_hvac, "hide all networks",    HVAC_HIDEALL_NETWORK, HvacCB);
       glui_geometry->add_checkbox_to_panel(ROLLOUT_hvac, "copy settings to all networks", &hvac_copy_all, HVAC_COPY_ALL, HvacCB);
     }
-    CHECKBOX_hvac_metro_view = glui_geometry->add_checkbox_to_panel(ROLLOUT_hvac, "metro view", &hvac_metro_view, HVAC_METRO_VIEW, HvacCB);
+    CHECKBOX_hvac_metro_view   = glui_geometry->add_checkbox_to_panel(ROLLOUT_hvac, "metro view",                           &hvac_metro_view,   HVAC_METRO_VIEW,   HvacCB);
+    CHECKBOX_hvac_offset_nodes = glui_geometry->add_checkbox_to_panel(ROLLOUT_hvac, "offset nodes",                         &hvac_offset_nodes, HVAC_OFFSET_NODES, HvacCB);
+    SPINNER_hvac_offset_inc    = glui_geometry->add_spinner_to_panel(ROLLOUT_hvac,  "offset increment", GLUI_SPINNER_FLOAT, &hvac_offset_inc,   HVAC_OFFSET_NODES, HvacCB);
     PANEL_hvac_duct                = glui_geometry->add_panel_to_panel(ROLLOUT_hvac,       "duct");
     SPINNER_hvac_duct_width        = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct,  "width", GLUI_SPINNER_FLOAT, &glui_hvac->duct_width,       HVAC_PROPS, HvacCB);
     SPINNER_hvac_duct_size         = glui_geometry->add_spinner_to_panel(PANEL_hvac_duct,  "size",  GLUI_SPINNER_FLOAT, &glui_hvac->duct_size,        HVAC_PROPS, HvacCB);
