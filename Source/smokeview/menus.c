@@ -6589,6 +6589,12 @@ void HVACMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
+/* ------------------ ToggleMetroMode ------------------------ */
+
+void ToggleMetroMode(void){
+  HVACMenu(MENU_HVAC_METRO_VIEW);
+}
+
   /* ------------------ GeometryMenu ------------------------ */
 
 void GeometryMenu(int value){

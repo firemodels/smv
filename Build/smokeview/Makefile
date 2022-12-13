@@ -59,23 +59,21 @@ bin = .
 
 # Definition of the object variables
 
-obj = main.o menus.o IOscript.o IOshooter.o glui_objects.o glui_shooter.o\
-      csphere.o colortimebar.o camera.o IOgeometry.o IOwui.o IOobjects.o\
-      IOtour.o glui_display.o glui_tour.o getdatacolors.o smokeview.o output.o renderimage.o\
-      renderhtml.o isobox.o getdatabounds.o readsmv.o scontour2d.o glui_smoke.o glui_clip.o\
-      glui_stereo.o glui_geometry.o glui_motion.o glui_bounds.o dmalloc.o assert.o\
-      compress.o IOvolsmoke.o IOsmoke.o IOplot3d.o IOplot2d.o IOslice.o IOboundary.o IOpart.o IOzone.o\
-      IOiso.o IOhvac.o callbacks.o drawGeometry.o glui_colorbar.o skybox.o file_util.o string_util.o\
-      startup.o glui_trainer.o shaders.o unit.o threader.o histogram.o translate.o update.o\
-      viewports.o smv_geometry.o showscene.o glew.o infoheader.o  md5.o sha1.o sha256.o\
-      stdio_m.o stdio_buffer.o \
-      gsmv.o getdata.o color2rgb.o smokestream.o
+obj = assert.o callbacks.o camera.o color2rgb.o colortimebar.o compress.o csphere.o dmalloc.o \
+      drawGeometry.o file_util.o getdata.o getdatabounds.o getdatacolors.o glew.o glui_bounds.o \
+      glui_clip.o glui_colorbar.o glui_display.o glui_geometry.o glui_motion.o glui_objects.o \
+      glui_shooter.o glui_smoke.o glui_stereo.o glui_tour.o glui_trainer.o histogram.o infoheader.o \
+      IOboundary.o IOgeometry.o IOhvac.o IOiso.o IOobjects.o IOpart.o IOplot2d.o IOplot3d.o \
+      IOscript.o IOshooter.o IOslice.o IOsmoke.o IOtour.o IOvolsmoke.o IOwui.o IOzone.o isobox.o \
+      main.o md5.o menus.o output.o readsmv.o renderhtml.o renderimage.o scontour2d.o sha1.o \
+      sha256.o shaders.o showscene.o skybox.o smokestream.o smokeview.o smv_geometry.o startup.o \
+      stdio_buffer.o stdio_m.o string_util.o threader.o translate.o unit.o update.o viewports.o
 
-incs = contourdefs.h glui_bounds.h glui_motion.h glui_smoke.h glui_tour.h infoheader.h \
-       IOobjects.h IOscript.h IOvolsmoke.h lua_api.h options.h smokefortheaders.h smokeheaders.h smokeviewdefs.h \
-       smokeviewvars.h structures.h threader.h viewports.h smv_assert.h csphere.h dirent_win.h histogram.h isodefs.h \
-       MALLOCC.h pragmas.h stdio_buffer.h string_util.h compress.h datadefs.h file_util.h interp.h lint.h options_common.h \
-       stdio_m.h translate.h
+incs = compress.h contourdefs.h csphere.h datadefs.h dirent_win.h file_util.h glui_bounds.h \
+       glui_motion.h glui_smoke.h glui_tour.h histogram.h infoheader.h interp.h isodefs.h \
+       IOobjects.h IOscript.h IOvolsmoke.h lint.h lua_api.h MALLOCC.h options.h options_common.h \
+       pragmas.h smokefortheaders.h smokeheaders.h smokeviewdefs.h smokeviewvars.h smv_assert.h \
+       stdio_buffer.h stdio_m.h string_util.h structures.h translate.h threader.h viewports.h
 
 ifeq ($(ICON),icon)
 obj += resource.o

@@ -43,9 +43,8 @@
 #endif
 
 #ifdef pp_BOUNDVAL
-#ifndef pp_SLICEBOUNDVAL
+#undef pp_SLICEBOUNDVAL
 #define pp_SLICEBOUNDVAL
-#endif
 #endif
 
 // turn on pp_STREAM if streaming is on for any file type
