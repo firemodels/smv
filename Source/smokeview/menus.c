@@ -6524,7 +6524,7 @@ int GetHVACConnectState(int index){
     hvacconnectdata *hi;
 
     hi = hvacconnectinfo + i;
-    if(hi->index == index)return hi->state;
+    if(hi->index == index)return hi->display;
   }
   return 1;
 }
@@ -6535,16 +6535,16 @@ void HVACConnectMenu(int var){
   int i;
 
   if(var >= 0){
-    hvacconnectinfo[var].state = 1 - hvacconnectinfo[var].state;
+    hvacconnectinfo[var].display = 1 - hvacconnectinfo[var].display;
   }
   else if(var == MENU_HVAC_SHOWALL_CONNECTIONS){
     for(i = 0;i < nhvacconnectinfo;i++){
-      hvacconnectinfo[i].state = 1;
+      hvacconnectinfo[i].display = 1;
     }
   }
   else if(var == MENU_HVAC_HIDEALL_CONNECTIONS){
     for(i = 0;i < nhvacconnectinfo;i++){
-      hvacconnectinfo[i].state = 0;
+      hvacconnectinfo[i].display = 0;
     }
   }
 
@@ -9138,7 +9138,7 @@ updatemenu=0;
 
         hi = hvacconnectinfo + i;
 
-        if(hi->state==1){
+        if(hi->display==1){
           sprintf(label, "*%i", hi->index);
           hide_all_connections = 0;
         }

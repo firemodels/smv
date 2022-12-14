@@ -1278,7 +1278,7 @@ typedef struct _compdata {
 /* --------------------------  hvacconnectdata ------------------------------------ */
 
 typedef struct hvacconnectdata {
-  int index, state;
+  int index, display;
 } hvacconnectdata;
 
 

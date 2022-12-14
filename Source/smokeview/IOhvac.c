@@ -143,7 +143,7 @@ void SetHVACInfo(void){
       ducti = hvacductinfo + i;
       if(HaveHVACConnect(ducti->connect_id, hvacconnectinfo, nhvacconnectinfo) == 1)continue;
       hvacconnectinfo[nhvacconnectinfo].index = ducti->connect_id;
-      hvacconnectinfo[nhvacconnectinfo].state = 1;
+      hvacconnectinfo[nhvacconnectinfo].display = 1;
       nhvacconnectinfo++;
     }
     for(i = 0;i < nhvacnodeinfo;i++){
@@ -152,7 +152,7 @@ void SetHVACInfo(void){
       nodei = hvacnodeinfo + i;
       if(HaveHVACConnect(nodei->connect_id, hvacconnectinfo, nhvacconnectinfo) == 1)continue;
       hvacconnectinfo[nhvacconnectinfo].index = nodei->connect_id;
-      hvacconnectinfo[nhvacconnectinfo].state = 1;
+      hvacconnectinfo[nhvacconnectinfo].display = 1;
       nhvacconnectinfo++;
     }
     if(nhvacconnectinfo > 0){
@@ -716,7 +716,7 @@ void DrawHVAC(hvacdata *hvaci){
 
     ducti = hvacductinfo + i;
     if(strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
-    if(ducti->connect != NULL && ducti->connect->state == 0)continue;
+    if(ducti->connect != NULL && ducti->connect->display == 0)continue;
 
     node_from = hvacnodeinfo + ducti->node_id_from;
     node_to = hvacnodeinfo + ducti->node_id_to;
@@ -744,7 +744,7 @@ void DrawHVAC(hvacdata *hvaci){
 
       ducti = hvacductinfo + i;
       if(strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
-      if(ducti->connect != NULL && ducti->connect->state == 0)continue;
+      if(ducti->connect != NULL && ducti->connect->display == 0)continue;
 
       strcpy(label, ducti->duct_name);
       node_from = hvacnodeinfo + ducti->node_id_from;
@@ -793,7 +793,7 @@ void DrawHVAC(hvacdata *hvaci){
 
       ducti = hvacductinfo + i;
       if(strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
-      if(ducti->connect != NULL && ducti->connect->state == 0)continue;
+      if(ducti->connect != NULL && ducti->connect->display == 0)continue;
       node_from = hvacnodeinfo + ducti->node_id_from;
       node_to   = hvacnodeinfo + ducti->node_id_to;
       if(node_from == NULL || node_to == NULL)continue;
@@ -840,7 +840,7 @@ void DrawHVAC(hvacdata *hvaci){
 
     nodei = hvacnodeinfo + i;
     if(strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
-    if(nodei->connect != NULL && nodei->connect->state == 0)continue;
+    if(nodei->connect != NULL && nodei->connect->display == 0)continue;
 
     glVertex3fv(nodei->xyz);
   }
@@ -854,7 +854,7 @@ void DrawHVAC(hvacdata *hvaci){
 
       nodei = hvacnodeinfo + i;
       if(strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
-      if(nodei->connect != NULL && nodei->connect->state == 0)continue;
+      if(nodei->connect != NULL && nodei->connect->display == 0)continue;
       offset = 0.01/xyzmaxdiff;
       strcpy(label, nodei->node_name);
       Output3Text(foregroundcolor, nodei->xyz[0]+offset, nodei->xyz[1]+offset, nodei->xyz[2]+offset, label);
@@ -868,7 +868,7 @@ void DrawHVAC(hvacdata *hvaci){
 
       nodei = hvacnodeinfo + i;
       if(strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
-      if(nodei->connect != NULL && nodei->connect->state == 0)continue;
+      if(nodei->connect != NULL && nodei->connect->display == 0)continue;
       strcpy(label, nodei->c_filter);
       offset = 0.01 / xyzmaxdiff;
       Output3Text(foregroundcolor, nodei->xyz[0]+offset, nodei->xyz[1] + offset, nodei->xyz[2] + offset, label);
@@ -883,7 +883,7 @@ void DrawHVAC(hvacdata *hvaci){
       size *= hvaci->duct_size;
       nodei = hvacnodeinfo + i;
       if(strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
-      if(nodei->connect != NULL && nodei->connect->state == 0)continue;
+      if(nodei->connect != NULL && nodei->connect->display == 0)continue;
       if(nodei->filter == HVAC_FILTER_NO)continue;
       DrawHVACFilter(nodei->duct, nodei->xyz, size);
     }

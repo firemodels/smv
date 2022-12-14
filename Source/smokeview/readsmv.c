@@ -11818,6 +11818,7 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(hvac_metro_view);
       ONEORZERO(hvac_offset_nodes);
       hvac_offset_inc = MAX(0.0, hvac_offset_inc);
+      hvac_copy_all = 1; // force copy to all networks for now
 
       nh = MIN(nhvacinfo, nh);
       for(i = 0; i < nh; i++){
