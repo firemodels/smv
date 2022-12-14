@@ -10171,6 +10171,23 @@ typedef struct {
         bc=meshi->blockageinfoptrs[nn];
         InitObst(bc,surfacedefault,nn+1,iobst-1);
         FGETS(buffer,255,stream);
+
+        char id_label[100], *id_labelptr;
+
+        id_labelptr = strchr(buffer, '!');
+        if(id_labelptr == NULL){
+          sprintf(id_label, "OB%i_%i", bc->meshindex+1,i+1);
+          id_labelptr = id_label;
+        }
+        else{
+          char *id_labelptr2;
+
+          id_labelptr2 = id_labelptr;
+          id_labelptr = TrimFrontBack(id_labelptr+1);
+          *id_labelptr2 = 0;
+        }
+        bc->id_label = GetCharPtr(id_labelptr);
+    
         TrimBack(buffer);
         for(i=0;i<6;i++){
           s_num[i]=-1;

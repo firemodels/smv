@@ -180,6 +180,7 @@ GLUI_Spinner *SPINNER_face_factor=NULL;
 GLUI_StaticText *STATIC_blockage_index=NULL;
 GLUI_StaticText *STATIC_mesh_index=NULL;
 GLUI_StaticText *STATIC_label=NULL;
+GLUI_StaticText *STATIC_id_label = NULL;
 
 char a_updatelabel[1000];
 char *updatelabel=NULL;
@@ -679,7 +680,8 @@ extern "C" void GluiGeometrySetup(int main_window){
 
     }
     STATIC_blockage_index = glui_geometry->add_statictext_to_panel(PANEL_obj_stretch4, "&OBST number: ");
-    STATIC_label = glui_geometry->add_statictext_to_panel(PANEL_obj_stretch4, "&OBST label:");
+    STATIC_label          = glui_geometry->add_statictext_to_panel(PANEL_obj_stretch4, "&OBST label:");
+    STATIC_id_label       = glui_geometry->add_statictext_to_panel(PANEL_obj_stretch4, "&OBST ID:");
 
     PANEL_obj_stretch2 = glui_geometry->add_panel_to_panel(ROLLOUT_structured, "Coordinates");
 
@@ -1211,6 +1213,7 @@ extern "C" void UpdateBlockVals(int flag){
   if(flag==SELECT_BLOCKS){
     if(bchighlight!=NULL){
       char dialog_label[255];
+      char dialog_id[255];
       meshdata *blockmesh;
 
       if(nmeshes>1){
@@ -1225,6 +1228,9 @@ extern "C" void UpdateBlockVals(int flag){
       strcpy(dialog_label,"&OBST label: ");
       strcat(dialog_label,bchighlight->label);
       STATIC_label->set_text(dialog_label);
+      strcpy(dialog_id, "&OBST ID: ");
+      strcat(dialog_id, bchighlight->id_label);
+      STATIC_id_label->set_text(dialog_id);
 
       switch(wall_case){
       case WALL_1:
