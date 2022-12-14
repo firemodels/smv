@@ -25,6 +25,8 @@
 
 // hvac data
 SVEXTERN int SVDECL(nhvacnodeinfo, 0), SVDECL(nhvacductinfo, 0), SVDECL(nhvacinfo, 0);
+SVEXTERN int SVDECL(nhvacconnectinfo, 0);
+SVEXTERN hvacconnectdata SVDECL(*hvacconnectinfo, NULL);
 SVEXTERN int SVDECL(hvac_offset_nodes, 0);
 SVEXTERN float SVDECL(hvac_offset_inc, 0.1);
 SVEXTERN hvacdata SVDECL(*hvacinfo, NULL);

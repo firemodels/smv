@@ -460,7 +460,7 @@ extern "C" void HvacCB(int var){
         hvac_offset_inc = 0.0;
         SPINNER_hvac_offset_inc->set_float_val(hvac_offset_inc);
       }
-      SetMetroPaths();
+      SetHVACInfo();
       break;
     case HVAC_PROPS:
       if(glui_hvac->duct_width<1.0){

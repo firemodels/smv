@@ -7687,18 +7687,23 @@ int ReadSMV(bufferstreamdata *stream){
 
       for(i=0;i<nhvacnodeinfo;i++){
         hvacnodedata *nodei;
-        char *filter, *node_label, *network_label;
+        char *filter, *node_label, *network_label, *connect_id;
+
 
         nodei=hvacnodeinfo + i;
 
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         sscanf(buffer, "%i", &nodei->node_id);
+        TrimBack(buffer);
         strtok(buffer, "%");
-        node_label = strtok(NULL, "%");
+        node_label    = strtok(NULL, "%");
         network_label = strtok(NULL, "%");
+        connect_id    = strtok(NULL, "%");
         nodei->node_name = GetCharPtr(node_label);
         nodei->network_name = GetCharPtr(network_label);
         nodei->duct = NULL;
+        nodei->connect_id = -1;
+        if(connect_id != NULL)sscanf(connect_id, "%i", &nodei->connect_id);
 
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         sscanf(buffer, "%f %f %f", nodei->xyz, nodei->xyz + 1, nodei->xyz + 2);
@@ -7733,7 +7738,7 @@ int ReadSMV(bufferstreamdata *stream){
       NewMemory((void **)&hvacductinfo, nhvacductinfo*sizeof(hvacductdata));
       for(i=0;i<nhvacductinfo;i++){
         hvacductdata *ducti;
-        char *duct_label, *network_label, *hvac_label;
+        char *duct_label, *network_label, *hvac_label, *connect_id;
         int j;
 
         ducti = hvacductinfo + i;
@@ -7758,12 +7763,15 @@ int ReadSMV(bufferstreamdata *stream){
         strtok(buffer, "%");
         duct_label          = strtok(NULL, "%");
         network_label       = strtok(NULL, "%");
+        connect_id          = strtok(NULL, "%");
         ducti->duct_name    = GetCharPtr(duct_label);
         ducti->network_name = GetCharPtr(network_label);
         ducti->act_times    = NULL;
         ducti->act_states   = NULL;
         ducti->nact_times   = 0;
         ducti->metro_path   = DUCT_XYZ;
+        ducti->connect_id = -1;
+        if(connect_id != NULL)sscanf(connect_id, "%i", &ducti->connect_id);
 
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
@@ -7832,7 +7840,7 @@ int ReadSMV(bufferstreamdata *stream){
         memcpy(hvaci->duct_color, hvac_duct_color, 3*sizeof(int));
       }
       FREEMEMORY(hvac_network_labels);
-      SetMetroPaths();
+      SetHVACInfo();
     }
       /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

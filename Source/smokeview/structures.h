@@ -1274,12 +1274,21 @@ typedef struct _compdata {
 #define DUCT_YZX 4
 #define DUCT_ZYX 5
 
+
+/* --------------------------  hvacconnectdata ------------------------------------ */
+
+typedef struct hvacconnectdata {
+  int index, state;
+} hvacconnectdata;
+
+
 /* --------------------------  hvacnodedata ------------------------------------ */
 
 typedef struct _hvacnodedata {
   char *node_name, *vent_name, *duct_name, *network_name;
   char c_filter[10];
-  int node_id, filter, use_node;
+  int node_id, filter, use_node, connect_id;
+  hvacconnectdata *connect;
   struct _hvacductdata *duct;
   float xyz[3], xyz_orig[3];
 } hvacnodedata;
@@ -1289,7 +1298,8 @@ typedef struct _hvacnodedata {
 typedef struct _hvacductdata {
   char *duct_name, *network_name, c_component[4];
   int duct_id, component, nduct_cells, n_waypoints;
-  int node_id_from, node_id_to, use_duct;
+  int node_id_from, node_id_to, use_duct, connect_id;
+  hvacconnectdata *connect;
   int nact_times, *act_states, metro_path;
   float *act_times;
   float xyz_symbol[3], xyz_symbol_metro[3];
