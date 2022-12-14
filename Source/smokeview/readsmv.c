@@ -1321,12 +1321,14 @@ void ReadSMVDynamic(char *file){
       char *ductname;
       hvacductdata *ducti;
       float *act_time, *act_times;
-      int *act_state, *act_states;;
+      int *act_state, *act_states;
 
-      FGETS(buffer, 255, stream);
-      ductname = TrimFrontBack(buffer);
+      ductname = strchr(buffer, ' ');
+      if(ductname == NULL)continue;
+      ductname = TrimFrontBack(ductname + 1);
       ducti = GetHVACDuctID(ductname);
       if(ducti == NULL)continue;
+
       act_times  = ducti->act_times;
       act_states = ducti->act_states;
       ducti->nact_times++;
