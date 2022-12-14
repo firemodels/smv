@@ -82,7 +82,6 @@ int CompareFloatXZ(const void *arg1, const void *arg2){
   return 0;
 }
 
-
 /* ------------------ CompareFloatXY ------------------------ */
 
 int CompareFloatXY(const void *arg1, const void *arg2){
@@ -100,14 +99,102 @@ int CompareFloatXY(const void *arg1, const void *arg2){
   return 0;
 }
 
-/* ------------------ SetMetroPaths ------------------------ */
 
-void SetMetroPaths(void){
+/* ------------------ CompareHvacConnect ------------------------ */
+
+int CompareHvacConnect(const void *arg1, const void *arg2){
+  hvacconnectdata *hi, *hj;
+  int indexi, indexj;
+
+  hi = (hvacconnectdata *)arg1;
+  hj = (hvacconnectdata *)arg2;
+  indexi = hi->index;
+  indexj = hj->index;
+  if(indexi < indexj)return -1;
+  if(indexi > indexj)return 1;
+  return 0;
+}
+
+/* ------------------ HaveHVACConnect ------------------------ */
+
+int HaveHVACConnect(int val, hvacconnectdata *vals, int nvals){
+  int i;
+
+  for(i = 0;i < nvals;i++){
+    if(val == vals[i].index)return 1;
+  }
+  return 0;
+}
+
+/* ------------------ SetHVACInfo ------------------------ */
+
+void SetHVACInfo(void){
   int i;
 
   int *hvac_sort_yz, *hvac_sort_xz, *hvac_sort_xy;
   int *line_yz, *line_xz, *line_xy;
 
+  if(hvacconnectinfo == NULL){
+    NewMemory((void **)&hvacconnectinfo, (nhvacnodeinfo+nhvacductinfo+1)*sizeof(hvacconnectdata));
+    nhvacconnectinfo = 0;
+    for(i = 0;i < nhvacductinfo;i++){
+      hvacductdata *ducti;
+
+      ducti = hvacductinfo + i;
+      if(HaveHVACConnect(ducti->connect_id, hvacconnectinfo, nhvacconnectinfo) == 1)continue;
+      hvacconnectinfo[nhvacconnectinfo].index = ducti->connect_id;
+      hvacconnectinfo[nhvacconnectinfo].state = 1;
+      nhvacconnectinfo++;
+    }
+    for(i = 0;i < nhvacnodeinfo;i++){
+      hvacnodedata *nodei;
+
+      nodei = hvacnodeinfo + i;
+      if(HaveHVACConnect(nodei->connect_id, hvacconnectinfo, nhvacconnectinfo) == 1)continue;
+      hvacconnectinfo[nhvacconnectinfo].index = nodei->connect_id;
+      hvacconnectinfo[nhvacconnectinfo].state = 1;
+      nhvacconnectinfo++;
+    }
+    if(nhvacconnectinfo > 0){
+      ResizeMemory((void **)&hvacconnectinfo, nhvacconnectinfo * sizeof(hvacconnectdata));
+      qsort((int *)hvacconnectinfo, nhvacconnectinfo, sizeof(hvacconnectdata), CompareHvacConnect);
+      for(i = 0;i < nhvacductinfo;i++){
+        hvacductdata *ducti;
+        int j;
+
+        ducti = hvacductinfo + i;
+        ducti->connect = NULL;
+        for(j = 0;j<nhvacconnectinfo;j++){
+          hvacconnectdata *hj;
+
+          hj = hvacconnectinfo + j;
+          if(ducti->connect_id == hj->index){
+            ducti->connect = hj;
+            break;
+          }
+        }
+      }
+      for(i = 0;i < nhvacnodeinfo;i++){
+        hvacnodedata *nodei;
+        int j;
+
+        nodei = hvacnodeinfo + i;
+        nodei->connect = NULL;
+        for(j = 0;j<nhvacconnectinfo;j++){
+          hvacconnectdata *hj;
+
+          hj = hvacconnectinfo + j;
+          if(nodei->connect_id == hj->index){
+            nodei->connect = hj;
+            break;
+          }
+        }
+      }
+    }
+    else{
+      FREEMEMORY(hvacconnectinfo);
+    }
+  }
   if(hvac_offset_nodes==1){
     NewMemory((void **)&hvac_sort_yz, nhvacnodeinfo * sizeof(int));
     NewMemory((void **)&hvac_sort_xz, nhvacnodeinfo * sizeof(int));
@@ -629,6 +716,7 @@ void DrawHVAC(hvacdata *hvaci){
 
     ducti = hvacductinfo + i;
     if(strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
+    if(ducti->connect != NULL && ducti->connect->state == 0)continue;
 
     node_from = hvacnodeinfo + ducti->node_id_from;
     node_to = hvacnodeinfo + ducti->node_id_to;
@@ -656,6 +744,7 @@ void DrawHVAC(hvacdata *hvaci){
 
       ducti = hvacductinfo + i;
       if(strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
+      if(ducti->connect != NULL && ducti->connect->state == 0)continue;
 
       strcpy(label, ducti->duct_name);
       node_from = hvacnodeinfo + ducti->node_id_from;
@@ -704,6 +793,7 @@ void DrawHVAC(hvacdata *hvaci){
 
       ducti = hvacductinfo + i;
       if(strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
+      if(ducti->connect != NULL && ducti->connect->state == 0)continue;
       node_from = hvacnodeinfo + ducti->node_id_from;
       node_to   = hvacnodeinfo + ducti->node_id_to;
       if(node_from == NULL || node_to == NULL)continue;
@@ -750,6 +840,7 @@ void DrawHVAC(hvacdata *hvaci){
 
     nodei = hvacnodeinfo + i;
     if(strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
+    if(nodei->connect != NULL && nodei->connect->state == 0)continue;
 
     glVertex3fv(nodei->xyz);
   }
@@ -763,6 +854,7 @@ void DrawHVAC(hvacdata *hvaci){
 
       nodei = hvacnodeinfo + i;
       if(strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
+      if(nodei->connect != NULL && nodei->connect->state == 0)continue;
       offset = 0.01/xyzmaxdiff;
       strcpy(label, nodei->node_name);
       Output3Text(foregroundcolor, nodei->xyz[0]+offset, nodei->xyz[1]+offset, nodei->xyz[2]+offset, label);
@@ -776,6 +868,7 @@ void DrawHVAC(hvacdata *hvaci){
 
       nodei = hvacnodeinfo + i;
       if(strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
+      if(nodei->connect != NULL && nodei->connect->state == 0)continue;
       strcpy(label, nodei->c_filter);
       offset = 0.01 / xyzmaxdiff;
       Output3Text(foregroundcolor, nodei->xyz[0]+offset, nodei->xyz[1] + offset, nodei->xyz[2] + offset, label);
@@ -790,6 +883,7 @@ void DrawHVAC(hvacdata *hvaci){
       size *= hvaci->duct_size;
       nodei = hvacnodeinfo + i;
       if(strcmp(hvaci->network_name, nodei->network_name) != 0)continue;
+      if(nodei->connect != NULL && nodei->connect->state == 0)continue;
       if(nodei->filter == HVAC_FILTER_NO)continue;
       DrawHVACFilter(nodei->duct, nodei->xyz, size);
     }
