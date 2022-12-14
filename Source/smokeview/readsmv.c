@@ -10176,7 +10176,7 @@ typedef struct {
 
         id_labelptr = strchr(buffer, '!');
         if(id_labelptr == NULL){
-          sprintf(id_label, "OB%i_%i", bc->meshindex+1,i+1);
+          sprintf(id_label, "OB%i_%i", bc->meshindex+1,iblock+1);
           id_labelptr = id_label;
         }
         else{
