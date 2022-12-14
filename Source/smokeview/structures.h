@@ -478,7 +478,7 @@ typedef struct _blockagedata {
   int *showtimelist;
   unsigned char *showhide;
   int nshowtime, show;
-  char *label;
+  char *label, *id_label;
   float *color;
   int colorindex;
   int useblockcolor;
@@ -1281,7 +1281,7 @@ typedef struct _hvacnodedata {
   char c_filter[10];
   int node_id, filter, use_node;
   struct _hvacductdata *duct;
-  float xyz[3];
+  float xyz[3], xyz_orig[3];
 } hvacnodedata;
 
 /* --------------------------  hvacductdata ------------------------------------ */

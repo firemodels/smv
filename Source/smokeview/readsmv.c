@@ -7700,6 +7700,7 @@ int ReadSMV(bufferstreamdata *stream){
 
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         sscanf(buffer, "%f %f %f", nodei->xyz, nodei->xyz + 1, nodei->xyz + 2);
+        memcpy(nodei->xyz_orig, nodei->xyz, 3 * sizeof(float));
         strtok(buffer, "%");
         filter = strtok(NULL, "%");
         filter = TrimFrontBack(filter);
@@ -10170,6 +10171,23 @@ typedef struct {
         bc=meshi->blockageinfoptrs[nn];
         InitObst(bc,surfacedefault,nn+1,iobst-1);
         FGETS(buffer,255,stream);
+
+        char id_label[100], *id_labelptr;
+
+        id_labelptr = strchr(buffer, '!');
+        if(id_labelptr == NULL){
+          sprintf(id_label, "OB%i_%i", bc->meshindex+1,iblock+1);
+          id_labelptr = id_label;
+        }
+        else{
+          char *id_labelptr2;
+
+          id_labelptr2 = id_labelptr;
+          id_labelptr = TrimFrontBack(id_labelptr+1);
+          *id_labelptr2 = 0;
+        }
+        bc->id_label = GetCharPtr(id_labelptr);
+    
         TrimBack(buffer);
         for(i=0;i<6;i++){
           s_num[i]=-1;
@@ -11785,7 +11803,11 @@ int ReadIni2(char *inifile, int localfile){
       int nh;
 
       fgets(buffer, 255, stream);
-      sscanf(buffer, " %i %i %i", &nh, &hvac_metro_view, &hvac_copy_all);
+      sscanf(buffer, " %i %i %i %i %f", 
+        &nh, &hvac_metro_view, &hvac_copy_all, &hvac_offset_nodes, &hvac_offset_inc);
+      ONEORZERO(hvac_metro_view);
+      ONEORZERO(hvac_offset_nodes);
+      hvac_offset_inc = MAX(0.0, hvac_offset_inc);
 
       nh = MIN(nhvacinfo, nh);
       for(i = 0; i < nh; i++){
@@ -16157,7 +16179,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %f %f %i\n",show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize, boundary_edgetype);
   if(nhvacinfo > 0){
     fprintf(fileout, "HVACVIEW\n");
-    fprintf(fileout, " %i %i %i\n", nhvacinfo, hvac_metro_view, hvac_copy_all);
+    fprintf(fileout, " %i %i %i %i %f\n", nhvacinfo, hvac_metro_view, hvac_copy_all, hvac_offset_nodes, hvac_offset_inc);
     for(i = 0; i < nhvacinfo; i++){
       hvacdata *hvaci;
       int *dc, *nc;

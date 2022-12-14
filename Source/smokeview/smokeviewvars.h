@@ -23,7 +23,10 @@
 #include "glutbitmap.h"
 #endif
 
+// hvac data
 SVEXTERN int SVDECL(nhvacnodeinfo, 0), SVDECL(nhvacductinfo, 0), SVDECL(nhvacinfo, 0);
+SVEXTERN int SVDECL(hvac_offset_nodes, 0);
+SVEXTERN float SVDECL(hvac_offset_inc, 0.1);
 SVEXTERN hvacdata SVDECL(*hvacinfo, NULL);
 SVEXTERN hvacnodedata SVDECL(*hvacnodeinfo, NULL);
 SVEXTERN hvacductdata SVDECL(*hvacductinfo, NULL);
@@ -40,6 +43,7 @@ SVEXTERN int hvac_node_color[3] = { 63,0,15};
 SVEXTERN int hvac_duct_color[3];
 SVEXTERN int hvac_node_color[3];
 #endif
+
 SVEXTERN int SVDECL(histogram_nframes, 40);
 SVEXTERN int SVDECL(glui_surf_index, 0);
 SVEXTERN int SVDECL(clip_commandline, 0), SVDECL(special_modifier, 0);
