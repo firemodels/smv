@@ -7782,7 +7782,8 @@ int ReadSMV(bufferstreamdata *stream){
         ducti->act_states   = NULL;
         ducti->nact_times   = 0;
         ducti->metro_path   = DUCT_XYZ;
-        ducti->connect_id = -1;
+        ducti->connect_id   = -1;
+        ducti->waypoints    = NULL;
         if(connect_id != NULL)sscanf(connect_id, "%i", &ducti->connect_id);
 
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
@@ -7843,7 +7844,7 @@ int ReadSMV(bufferstreamdata *stream){
         hvaci->display           = 0;
         hvaci->show_node_labels  = 0;
         hvaci->show_duct_labels  = 0;
-        hvaci->show_filters      = 0;
+        hvaci->show_filters      = NODE_FILTERS_HIDE;
         hvaci->show_component    = DUCT_COMPONENT_HIDE;
         hvaci->duct_size         = 1.0;
         hvaci->node_size         = 8.0;
@@ -11822,15 +11823,14 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
     if(MatchINI(buffer, "HVACVIEW") == 1&&hvacinfo!=NULL&&nhvacinfo > 0){
-      int nh;
+      int nh, dummy;
 
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i %f", 
-        &nh, &hvac_metro_view, &hvac_copy_all, &hvac_offset_nodes, &hvac_offset_inc);
+        &nh, &hvac_metro_view, &dummy, &hvac_offset_nodes, &hvac_offset_inc);
       ONEORZERO(hvac_metro_view);
       ONEORZERO(hvac_offset_nodes);
       hvac_offset_inc = MAX(0.0, hvac_offset_inc);
-      hvac_copy_all = 1; // force copy to all networks for now
 
       nh = MIN(nhvacinfo, nh);
       for(i = 0; i < nh; i++){
@@ -16202,7 +16202,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %f %f %i\n",show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize, boundary_edgetype);
   if(nhvacinfo > 0){
     fprintf(fileout, "HVACVIEW\n");
-    fprintf(fileout, " %i %i %i %i %f\n", nhvacinfo, hvac_metro_view, hvac_copy_all, hvac_offset_nodes, hvac_offset_inc);
+    fprintf(fileout, " %i %i %i %i %f\n", nhvacinfo, hvac_metro_view, 1, hvac_offset_nodes, hvac_offset_inc);
     for(i = 0; i < nhvacinfo; i++){
       hvacdata *hvaci;
       int *dc, *nc;

@@ -1263,9 +1263,9 @@ typedef struct _compdata {
 #define DUCT_COMPONENT_SYMBOLS 1
 #define DUCT_COMPONENT_HIDE    2
 
-#define NODE_INFO_LABELS  0
-#define NODE_INFO_SYMBOLS 1
-#define NODE_INFO_HIDE    2
+#define NODE_FILTERS_LABELS  0
+#define NODE_FILTERS_SYMBOLS 1
+#define NODE_FILTERS_HIDE    2
 
 #define DUCT_XYZ 0
 #define DUCT_YXZ 1
