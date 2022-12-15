@@ -7758,13 +7758,6 @@ int ReadSMV(bufferstreamdata *stream){
 
         if(ducti->node_from->duct == NULL)ducti->node_from->duct = ducti;
         if(ducti->node_to->duct == NULL)ducti->node_to->duct = ducti;
-        float *xyz1, *xyz2;
-        xyz1 = ducti->node_from->xyz;
-        xyz2 = ducti->node_to->xyz;
-        for(j = 0;j < 3;j++){
-          ducti->xyz_symbol[j] = 0.50 * xyz1[j] + 0.50 * xyz2[j];
-          ducti->xyz_label[j]  = 0.25 * xyz1[j] + 0.75 * xyz2[j];
-        }
 
         strtok(buffer, "%");
         duct_label          = strtok(NULL, "%");
@@ -7809,9 +7802,22 @@ int ReadSMV(bufferstreamdata *stream){
         if(ducti->n_waypoints > 0){
           float *waypoints;
 
-          NewMemory(( void ** )&waypoints, 3*ducti->n_waypoints * sizeof(float));
-          ducti->waypoints = waypoints;
-          waypoints = ducti->waypoints;
+          NewMemory(( void ** )&waypoints, 3*(ducti->n_waypoints+2) * sizeof(float));
+          ducti->waypoints0 = waypoints;
+          ducti->waypoints = waypoints+3;
+
+          hvacnodedata *node_from, *node_to;
+          float *xyz0, *xyz1;
+
+          node_from = hvacnodeinfo + ducti->node_id_from;
+          node_to = hvacnodeinfo + ducti->node_id_to;
+          xyz0 = node_from->xyz;
+          xyz1 = node_to->xyz;
+          memcpy(ducti->waypoints0,                            xyz0, 3*sizeof(float));
+          memcpy(ducti->waypoints0 + 3*(ducti->n_waypoints+1), xyz1, 3*sizeof(float));
+
+          //store node xyz position at the first and last waypoint
+          waypoints += 3;
           for(j = 0; j < ducti->n_waypoints; j++){
             if(FGETS(buffer, 255, stream) == NULL)BREAK;
             sscanf(buffer, "%f %f %f", waypoints, waypoints + 1, waypoints + 2);

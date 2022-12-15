@@ -127,6 +127,79 @@ int HaveHVACConnect(int val, hvacconnectdata *vals, int nvals){
   return 0;
 }
 
+/* ------------------ GetHVACPathXYZ ------------------------ */
+
+void GetHVACPathXYZ(float fraction, float *xyzs, int n, float *xyz){ 
+  int i;
+  float length=0.0, lengthf;
+  float length1, length2;
+
+  if(fraction<=0.0){
+    memcpy(xyz, xyzs, 3*sizeof(float));
+    return;
+  }
+  if(fraction>=1.0){
+    memcpy(xyz, xyzs+3*(n-1), 3*sizeof(float));
+    return;
+  }
+  for(i=0; i<n-1; i++){
+    float *x1, *x2;
+    float dx, dy, dz;
+
+    x1 = xyzs+3*i;
+    x2 = x1 + 3;
+    dx = x1[0] - x2[0];
+    dy = x1[1] - x2[1];
+    dz = x1[2] - x2[2];
+    length += sqrt(dx*dx+dy*dy+dz*dz);
+  }
+  lengthf = fraction*length;
+  length1 = 0.0;
+  for(i=0; i<n-1; i++){
+    float *x1, *x2;
+    float dx, dy, dz;
+
+    x1 = xyzs+3*i;
+    x2 = x1 + 3;
+    dx = x1[0] - x2[0];
+    dy = x1[1] - x2[1];
+    dz = x1[2] - x2[2];
+    length2 =length1 +  sqrt(dx*dx+dy*dy+dz*dz);
+    if(lengthf>=length1&&lengthf<=length2){
+      float f1;
+
+      f1 = 0.5;
+      if(length2>length1)f1 = (length2-lengthf)/(length2-length1);
+      xyz[0] = f1*x1[0] + (1.0-f1)*x2[0];
+      xyz[1] = f1*x1[1] + (1.0-f1)*x2[1];
+      xyz[2] = f1*x1[2] + (1.0-f1)*x2[2];
+      return;
+    }
+    length1 = length2;
+  }
+  memcpy(xyz, xyzs+3*(n-1), 3*sizeof(float));
+}
+
+/* ------------------ SetDuctXYZ ------------------------ */
+
+void SetDuctXYZ(hvacductdata *ducti){
+  int j;
+  float *xyz1, *xyz2;
+
+  if(ducti->n_waypoints == 0){
+    xyz1 = ducti->node_from->xyz;
+    xyz2 = ducti->node_to->xyz;
+    for(j = 0;j < 3;j++){
+      ducti->xyz_symbol[j] = 0.50 * xyz1[j] + 0.50 * xyz2[j];
+      ducti->xyz_label[j]  = 0.25 * xyz1[j] + 0.75 * xyz2[j];
+    }
+  }
+  else{
+    GetHVACPathXYZ(0.50, ducti->waypoints0, ducti->n_waypoints+2, ducti->xyz_symbol);
+    GetHVACPathXYZ(0.75, ducti->waypoints0, ducti->n_waypoints+2, ducti->xyz_label);
+  }
+}
+
 /* ------------------ SetHVACInfo ------------------------ */
 
 void SetHVACInfo(void){
@@ -421,6 +494,9 @@ void SetHVACInfo(void){
         ASSERT(FFALSE);
         break;
     }
+  }
+  for(i = 0;i < nhvacductinfo;i++){
+    SetDuctXYZ(hvacductinfo + i);
   }
 }
 

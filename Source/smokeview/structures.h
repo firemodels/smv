@@ -1307,7 +1307,7 @@ typedef struct _hvacductdata {
   float xyz_metro1[3], xyz_metro2[3], xyz_metro3[3], xyz_metro4[3];
   float normal[3], normal_metro[3];
   hvacnodedata* node_from, * node_to;
-  float *waypoints;
+  float *waypoints0, *waypoints;
 } hvacductdata;
 
 /* --------------------------  hvacdata ------------------------------------ */
