@@ -6601,6 +6601,9 @@ void HVACNetworkMenu(int value){
         hvaci->display = 0;
       }
       break;
+    default:
+      ASSERT(FFALSE);
+      break;
     }
   }
   updatemenu = 1;
