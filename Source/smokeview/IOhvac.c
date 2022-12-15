@@ -120,6 +120,7 @@ int CompareHvacConnect(const void *arg1, const void *arg2){
 int HaveHVACConnect(int val, hvacconnectdata *vals, int nvals){
   int i;
 
+  if(val == -1)return 1;
   for(i = 0;i < nvals;i++){
     if(val == vals[i].index)return 1;
   }
