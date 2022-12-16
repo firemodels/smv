@@ -36,6 +36,7 @@ SVEXTERN hvacductdata SVDECL(*hvacductinfo, NULL);
 SVEXTERN int SVDECL(hvac_metro_view, 0);
 SVEXTERN hvacdata SVDECL(*glui_hvac, NULL);
 SVEXTERN int SVDECL(hvac_network_ductnode_index, -1);
+SVEXTERN int SVDECL(nhvacfilters, 0), SVDECL(nhvaccomponents, 0);
 #define HVAC_NCIRC 72
 SVEXTERN float SVDECL(*hvac_circ_x, NULL), SVDECL(*hvac_circ_y, NULL);
 #ifdef INMAIN

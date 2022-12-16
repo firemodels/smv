@@ -9206,38 +9206,42 @@ updatemenu=0;
       }
     }
 
-    CREATEMENU(showcomponentmenu, HVACMenu);
-    if(glui_hvac->show_component == 0){
-      glutAddMenuEntry("*text",   MENU_HVAC_SHOW_COMPONENT_TEXT);
-      glutAddMenuEntry("symbols", MENU_HVAC_SHOW_COMPONENT_SYMBOLS);
-      glutAddMenuEntry("hide",    MENU_HVAC_SHOW_COMPONENT_HIDE);
-    }
-    else if(glui_hvac->show_component == 1){
-      glutAddMenuEntry("text",     MENU_HVAC_SHOW_COMPONENT_TEXT);
-      glutAddMenuEntry("*symbols", MENU_HVAC_SHOW_COMPONENT_SYMBOLS);
-      glutAddMenuEntry("hide",     MENU_HVAC_SHOW_COMPONENT_HIDE);
-    }
-    else{
-      glutAddMenuEntry("text",    MENU_HVAC_SHOW_COMPONENT_TEXT);
-      glutAddMenuEntry("symbols", MENU_HVAC_SHOW_COMPONENT_SYMBOLS);
-      glutAddMenuEntry("*hide",   MENU_HVAC_SHOW_COMPONENT_HIDE);
+    if(nhvaccomponents > 0){
+      CREATEMENU(showcomponentmenu, HVACMenu);
+      if(glui_hvac->show_component == 0){
+        glutAddMenuEntry("*text",   MENU_HVAC_SHOW_COMPONENT_TEXT);
+        glutAddMenuEntry("symbols", MENU_HVAC_SHOW_COMPONENT_SYMBOLS);
+        glutAddMenuEntry("hide",    MENU_HVAC_SHOW_COMPONENT_HIDE);
+      }
+      else if(glui_hvac->show_component == 1){
+        glutAddMenuEntry("text",     MENU_HVAC_SHOW_COMPONENT_TEXT);
+        glutAddMenuEntry("*symbols", MENU_HVAC_SHOW_COMPONENT_SYMBOLS);
+        glutAddMenuEntry("hide",     MENU_HVAC_SHOW_COMPONENT_HIDE);
+      }
+      else{
+        glutAddMenuEntry("text",    MENU_HVAC_SHOW_COMPONENT_TEXT);
+        glutAddMenuEntry("symbols", MENU_HVAC_SHOW_COMPONENT_SYMBOLS);
+        glutAddMenuEntry("*hide",   MENU_HVAC_SHOW_COMPONENT_HIDE);
+      }
     }
 
-    CREATEMENU(showfiltermenu, HVACMenu);
-    if(glui_hvac->show_filters == 0){
-      glutAddMenuEntry("*text",   MENU_HVAC_SHOW_FILTER_TEXT);
-      glutAddMenuEntry("symbols", MENU_HVAC_SHOW_FILTER_SYMBOLS);
-      glutAddMenuEntry("hide",    MENU_HVAC_SHOW_FILTER_HIDE);
-    }
-    else if(glui_hvac->show_filters == 1){
-      glutAddMenuEntry("text",     MENU_HVAC_SHOW_FILTER_TEXT);
-      glutAddMenuEntry("*symbols", MENU_HVAC_SHOW_FILTER_SYMBOLS);
-      glutAddMenuEntry("hide",     MENU_HVAC_SHOW_FILTER_HIDE);
-    }
-    else{
-      glutAddMenuEntry("text",    MENU_HVAC_SHOW_FILTER_TEXT);
-      glutAddMenuEntry("symbols", MENU_HVAC_SHOW_FILTER_SYMBOLS);
-      glutAddMenuEntry("*hide",   MENU_HVAC_SHOW_FILTER_HIDE);
+    if(nhvacfilters > 0){
+      CREATEMENU(showfiltermenu, HVACMenu);
+      if(glui_hvac->show_filters == 0){
+        glutAddMenuEntry("*text", MENU_HVAC_SHOW_FILTER_TEXT);
+        glutAddMenuEntry("symbols", MENU_HVAC_SHOW_FILTER_SYMBOLS);
+        glutAddMenuEntry("hide", MENU_HVAC_SHOW_FILTER_HIDE);
+      }
+      else if(glui_hvac->show_filters == 1){
+        glutAddMenuEntry("text", MENU_HVAC_SHOW_FILTER_TEXT);
+        glutAddMenuEntry("*symbols", MENU_HVAC_SHOW_FILTER_SYMBOLS);
+        glutAddMenuEntry("hide", MENU_HVAC_SHOW_FILTER_HIDE);
+      }
+      else{
+        glutAddMenuEntry("text", MENU_HVAC_SHOW_FILTER_TEXT);
+        glutAddMenuEntry("symbols", MENU_HVAC_SHOW_FILTER_SYMBOLS);
+        glutAddMenuEntry("*hide", MENU_HVAC_SHOW_FILTER_HIDE);
+      }
     }
 
     CREATEMENU(hvacnetworkmenu, HVACNetworkMenu);
@@ -9292,7 +9296,9 @@ updatemenu=0;
     else{
       glutAddMenuEntry("   IDs", MENU_HVAC_SHOW_DUCT_IDS);
     }
-    GLUTADDSUBMENU(_(  "   Components"), showcomponentmenu);
+    if(nhvaccomponents > 0){
+      GLUTADDSUBMENU(_(  "   Components"), showcomponentmenu);
+    }
     glutAddMenuEntry("Nodes", MENU_HVAC_SHOW_NODE_IGNORE);
     if(glui_hvac->show_node_labels == 1){
       glutAddMenuEntry("   *IDs", MENU_HVAC_SHOW_NODE_IDS);
@@ -9300,7 +9306,9 @@ updatemenu=0;
     else{
       glutAddMenuEntry("   IDs", MENU_HVAC_SHOW_NODE_IDS);
     }
-    GLUTADDSUBMENU(_("   Filters"), showfiltermenu);
+    if(nhvacfilters > 0){
+      GLUTADDSUBMENU(_("   Filters"), showfiltermenu);
+    }
     glutAddMenuEntry("-", MENU_HVAC_SHOW_NODE_IGNORE);
     if(hvac_metro_view==1){
       glutAddMenuEntry("*metro view", MENU_HVAC_METRO_VIEW);

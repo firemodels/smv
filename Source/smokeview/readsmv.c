@@ -7722,6 +7722,7 @@ int ReadSMV(bufferstreamdata *stream){
         if(filter != NULL && strcmp(filter, "FILTER") == 0){
           nodei->filter = HVAC_FILTER_YES;
           strcpy(nodei->c_filter, "FI");
+          nhvacfilters++;
         }
         
       }
@@ -7793,6 +7794,7 @@ int ReadSMV(bufferstreamdata *stream){
           if(hvac_label[0] == 'A')ducti->component = HVAC_AIRCOIL;
           if(hvac_label[0] == 'D')ducti->component = HVAC_DAMPER;
         }
+        if(ducti->component != HVAC_NONE)nhvaccomponents++;
         strcpy(ducti->c_component, c_component[ducti->component]);
 
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
