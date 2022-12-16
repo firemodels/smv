@@ -280,6 +280,12 @@ float     part_load_time;
 
 #define ISO_COLORS 4
 
+#define MENU_HVAC_CONNECTION_IGNORE    -999
+#define MENU_HVAC_SHOWALL_CONNECTIONS  -1
+#define MENU_HVAC_HIDEALL_CONNECTIONS  -2
+#define MENU_HVAC_CONNECTION_VIEW      -3
+#define MENU_HVAC_NETWORK_VIEW         -4
+
 #define MENU_HVAC_SHOW_NODE_IGNORE        -1
 #define MENU_HVAC_SHOWALL_NETWORKS        -2
 #define MENU_HVAC_HIDEALL_NETWORKS        -3
@@ -6511,12 +6517,66 @@ void ZoneShowMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
-/* ------------------ HVACMenu ------------------------ */
+/* ------------------ GetHVACConnectState ------------------------ */
 
-void HVACMenu(int value){
+int GetHVACConnectState(int index){
+  int i;
+
+  for(i = 0;i < nhvacconnectinfo;i++){
+    hvacconnectdata *hi;
+
+    hi = hvacconnectinfo + i;
+    if(hi->index == index)return hi->display;
+  }
+  return 1;
+}
+
+/* ------------------ HVACConnectMenu ------------------------ */
+
+void HVACConnectMenu(int var){
+  int i;
+
+  if(var==MENU_HVAC_CONNECTION_VIEW){
+    hvac_show_networks = hvac_show_connections;
+    hvac_show_connections = 1 - hvac_show_connections;
+    updatemenu = 1;
+    GLUTPOSTREDISPLAY;
+    return;
+  }
+  hvac_show_networks    = 0;  
+  hvac_show_connections = 1;
+  if(var >= 0){
+    hvacconnectinfo[var].display = 1 - hvacconnectinfo[var].display;
+  }
+  else if(var == MENU_HVAC_SHOWALL_CONNECTIONS){
+    for(i = 0;i < nhvacconnectinfo;i++){
+      hvacconnectinfo[i].display = 1;
+    }
+  }
+  else if(var == MENU_HVAC_HIDEALL_CONNECTIONS){
+    for(i = 0;i < nhvacconnectinfo;i++){
+      hvacconnectinfo[i].display = 0;
+    }
+  }
+  updatemenu = 1;
+  GLUTPOSTREDISPLAY;
+}
+
+/* ------------------ HVACNetworkMenu ------------------------ */
+
+void HVACNetworkMenu(int value){
   int i;
 
   if(value==MENU_HVAC_SHOW_NODE_IGNORE)return;
+  if(value==MENU_HVAC_NETWORK_VIEW){
+    hvac_show_connections = hvac_show_networks;
+    hvac_show_networks = 1 - hvac_show_networks;
+    updatemenu = 1;
+    GLUTPOSTREDISPLAY;
+    return;
+  }
+  hvac_show_networks    = 1;  
+  hvac_show_connections = 0;
   if(value>=0&&value<nhvacinfo){
     hvacdata *hvaci;
 
@@ -6525,72 +6585,90 @@ void HVACMenu(int value){
   }
   else{
     switch(value){
-      case MENU_HVAC_SHOW_DUCT_IDS:
-        glui_hvac->show_duct_labels = 1 - glui_hvac->show_duct_labels;
-        break;
-      case MENU_HVAC_SHOW_NODE_IDS:
-        glui_hvac->show_node_labels = 1 - glui_hvac->show_node_labels;
-        break;
-      case MENU_HVAC_SHOW_COMPONENT_TEXT:
-        glui_hvac->show_component = 0;     
-        break;
-      case MENU_HVAC_SHOW_COMPONENT_SYMBOLS:
-        glui_hvac->show_component = 1;     
-        break;
-      case MENU_HVAC_SHOW_COMPONENT_HIDE:
-        glui_hvac->show_component = 2;     
-        break;
-      case MENU_HVAC_SHOW_FILTER_TEXT:
-        glui_hvac->show_filters = 0;     
-        break;
-      case MENU_HVAC_SHOW_FILTER_SYMBOLS:
-        glui_hvac->show_filters = 1;     
-        break;
-      case MENU_HVAC_SHOW_FILTER_HIDE:
-        glui_hvac->show_filters = 2;     
-        break;
-      case MENU_HVAC_SHOWALL_NETWORKS:
-        for(i = 0; i < nhvacinfo; i++){
-          hvacdata *hvaci;
+    case MENU_HVAC_SHOWALL_NETWORKS:
+      for(i = 0; i < nhvacinfo; i++){
+        hvacdata *hvaci;
 
-          hvaci = hvacinfo + i;
-          hvaci->display = 1;
-        }
-        break;
-      case MENU_HVAC_METRO_VIEW:
-        hvac_metro_view = 1 - hvac_metro_view;
-        break;
-      case MENU_HVAC_OFFSET_NODES:
-        hvac_offset_nodes = 1 - hvac_offset_nodes;
-        SetMetroPaths();
-        UpdateHvacOffset();        
-        break;
-      case MENU_HVAC_DIALOG_HVAC:
-        DialogMenu(DIALOG_HVAC);
-        break;
-      case MENU_HVAC_HIDEALL_NETWORKS:
-        for(i = 0; i < nhvacinfo; i++){
-          hvacdata *hvaci;
+        hvaci = hvacinfo + i;
+        hvaci->display = 1;
+      }
+      break;
+    case MENU_HVAC_HIDEALL_NETWORKS:
+      for(i = 0; i < nhvacinfo; i++){
+        hvacdata *hvaci;
 
-          hvaci = hvacinfo + i;
-          hvaci->display = 0;
-        }
-        break;
-      default:
-        ASSERT(FFALSE);
-        break;
+        hvaci = hvacinfo + i;
+        hvaci->display = 0;
+      }
+      break;
+    default:
+      ASSERT(FFALSE);
+      break;
     }
-    for(i = 0; i < nhvacinfo; i++){
-      char *labelsave;
-      hvacdata *hvaci;
-
-      hvaci = hvacinfo + i;
-      labelsave = hvaci->network_name;
-      memcpy(hvaci, glui_hvac, sizeof(hvacdata));
-      hvaci->network_name = labelsave;
-    }
-    HVAC2Glui(0);
   }
+  updatemenu = 1;
+  GLUTPOSTREDISPLAY;
+}
+
+/* ------------------ HVACMenu ------------------------ */
+
+void HVACMenu(int value){
+  int i;
+
+  if(value==MENU_HVAC_SHOW_NODE_IGNORE)return;
+  switch(value){
+  case MENU_HVAC_SHOW_DUCT_IDS:
+      glui_hvac->show_duct_labels = 1 - glui_hvac->show_duct_labels;
+      break;
+    case MENU_HVAC_SHOW_NODE_IDS:
+      glui_hvac->show_node_labels = 1 - glui_hvac->show_node_labels;
+      break;
+    case MENU_HVAC_SHOW_COMPONENT_TEXT:
+      glui_hvac->show_component = 0;     
+      break;
+    case MENU_HVAC_SHOW_COMPONENT_SYMBOLS:
+      glui_hvac->show_component = 1;     
+      break;
+    case MENU_HVAC_SHOW_COMPONENT_HIDE:
+      glui_hvac->show_component = 2;     
+      break;
+    case MENU_HVAC_SHOW_FILTER_TEXT:
+      glui_hvac->show_filters = 0;     
+      break;
+    case MENU_HVAC_SHOW_FILTER_SYMBOLS:
+      glui_hvac->show_filters = 1;     
+      break;
+    case MENU_HVAC_SHOW_FILTER_HIDE:
+      glui_hvac->show_filters = 2;     
+      break;
+    case MENU_HVAC_METRO_VIEW:
+      hvac_metro_view = 1 - hvac_metro_view;
+      break;
+    case MENU_HVAC_OFFSET_NODES:
+      hvac_offset_nodes = 1 - hvac_offset_nodes;
+      SetHVACInfo();
+      UpdateHvacOffset();        
+      break;
+    case MENU_HVAC_DIALOG_HVAC:
+      DialogMenu(DIALOG_HVAC);
+      break;
+    default:
+      ASSERT(FFALSE);
+      break;
+  }
+  for(i = 0; i < nhvacinfo; i++){
+    char *labelsave;
+    hvacdata *hvaci;
+    int display;
+
+    hvaci = hvacinfo + i;
+    labelsave = hvaci->network_name;
+    display   = hvaci->display;
+    memcpy(hvaci, glui_hvac, sizeof(hvacdata));
+    hvaci->network_name = labelsave;
+    hvaci->display      = display;
+  }
+  HVAC2Glui(0);
   updatemenu = 1;
   GLUTPOSTREDISPLAY;
 }
@@ -7971,7 +8049,7 @@ static int showsingleslicemenu=0,plot3dsinglemeshmenu=0;
 static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchsinglemenu=0,showpatchextmenu=0;
 static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, fileinfomenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
 static int scriptmenu=0;
-static int hvacmenu = 0, showcomponentmenu=0, showfiltermenu=0;
+static int hvacmenu = 0, hvacnetworkmenu, showcomponentmenu = 0, showfiltermenu = 0, connectivitymenu = 0;
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
 #ifdef pp_LUA
 static int luascriptmenu=0;
@@ -9086,48 +9164,102 @@ updatemenu=0;
     int show_all_networks=1;
     int hide_all_networks=1;
 
-    CREATEMENU(showcomponentmenu, HVACMenu);
-    if(glui_hvac->show_component == 0){
-      glutAddMenuEntry("*text",   MENU_HVAC_SHOW_COMPONENT_TEXT);
-      glutAddMenuEntry("symbols", MENU_HVAC_SHOW_COMPONENT_SYMBOLS);
-      glutAddMenuEntry("hide",    MENU_HVAC_SHOW_COMPONENT_HIDE);
-    }
-    else if(glui_hvac->show_component == 1){
-      glutAddMenuEntry("text",     MENU_HVAC_SHOW_COMPONENT_TEXT);
-      glutAddMenuEntry("*symbols", MENU_HVAC_SHOW_COMPONENT_SYMBOLS);
-      glutAddMenuEntry("hide",     MENU_HVAC_SHOW_COMPONENT_HIDE);
-    }
-    else{
-      glutAddMenuEntry("text",    MENU_HVAC_SHOW_COMPONENT_TEXT);
-      glutAddMenuEntry("symbols", MENU_HVAC_SHOW_COMPONENT_SYMBOLS);
-      glutAddMenuEntry("*hide",   MENU_HVAC_SHOW_COMPONENT_HIDE);
+    if(nhvacconnectinfo > 0){
+      int show_all_connections=1;
+      int hide_all_connections=1;
+      
+      CREATEMENU(connectivitymenu, HVACConnectMenu);
+      if(hvac_show_connections==1){
+        glutAddMenuEntry("*connection view", MENU_HVAC_CONNECTION_VIEW);
+      }
+      else{
+        glutAddMenuEntry("connection view",  MENU_HVAC_CONNECTION_VIEW);
+      }
+      glutAddMenuEntry("-", MENU_HVAC_SHOW_NODE_IGNORE);
+      for(i=0;i<nhvacconnectinfo;i++){
+        char label[32];
+        hvacconnectdata *hi;
+
+        hi = hvacconnectinfo + i;
+
+        if(hi->display==1){
+          sprintf(label, "*%i", hi->index);
+          hide_all_connections = 0;
+        }
+        else{
+          sprintf(label, "%i", hi->index);
+          show_all_connections = 0;
+        }
+        glutAddMenuEntry(label,   i);
+      }
+      if(show_all_connections==1){
+        glutAddMenuEntry("*Show all", MENU_HVAC_SHOWALL_CONNECTIONS);
+      }
+      else{
+        glutAddMenuEntry("Show all", MENU_HVAC_SHOWALL_CONNECTIONS);
+      }
+      if(hide_all_connections==1){
+        glutAddMenuEntry("*Hide all", MENU_HVAC_HIDEALL_CONNECTIONS);
+      }
+      else{
+        glutAddMenuEntry("Hide all", MENU_HVAC_HIDEALL_CONNECTIONS);
+      }
     }
 
-    CREATEMENU(showfiltermenu, HVACMenu);
-    if(glui_hvac->show_filters == 0){
-      glutAddMenuEntry("*text",   MENU_HVAC_SHOW_FILTER_TEXT);
-      glutAddMenuEntry("symbols", MENU_HVAC_SHOW_FILTER_SYMBOLS);
-      glutAddMenuEntry("hide",    MENU_HVAC_SHOW_FILTER_HIDE);
-    }
-    else if(glui_hvac->show_filters == 1){
-      glutAddMenuEntry("text",     MENU_HVAC_SHOW_FILTER_TEXT);
-      glutAddMenuEntry("*symbols", MENU_HVAC_SHOW_FILTER_SYMBOLS);
-      glutAddMenuEntry("hide",     MENU_HVAC_SHOW_FILTER_HIDE);
-    }
-    else{
-      glutAddMenuEntry("text",    MENU_HVAC_SHOW_FILTER_TEXT);
-      glutAddMenuEntry("symbols", MENU_HVAC_SHOW_FILTER_SYMBOLS);
-      glutAddMenuEntry("*hide",   MENU_HVAC_SHOW_FILTER_HIDE);
+    if(nhvaccomponents > 0){
+      CREATEMENU(showcomponentmenu, HVACMenu);
+      if(glui_hvac->show_component == 0){
+        glutAddMenuEntry("*text",   MENU_HVAC_SHOW_COMPONENT_TEXT);
+        glutAddMenuEntry("symbols", MENU_HVAC_SHOW_COMPONENT_SYMBOLS);
+        glutAddMenuEntry("hide",    MENU_HVAC_SHOW_COMPONENT_HIDE);
+      }
+      else if(glui_hvac->show_component == 1){
+        glutAddMenuEntry("text",     MENU_HVAC_SHOW_COMPONENT_TEXT);
+        glutAddMenuEntry("*symbols", MENU_HVAC_SHOW_COMPONENT_SYMBOLS);
+        glutAddMenuEntry("hide",     MENU_HVAC_SHOW_COMPONENT_HIDE);
+      }
+      else{
+        glutAddMenuEntry("text",    MENU_HVAC_SHOW_COMPONENT_TEXT);
+        glutAddMenuEntry("symbols", MENU_HVAC_SHOW_COMPONENT_SYMBOLS);
+        glutAddMenuEntry("*hide",   MENU_HVAC_SHOW_COMPONENT_HIDE);
+      }
     }
 
-    CREATEMENU(hvacmenu, HVACMenu);
-    glutAddMenuEntry("Networks", MENU_HVAC_SHOW_NODE_IGNORE);
+    if(nhvacfilters > 0){
+      CREATEMENU(showfiltermenu, HVACMenu);
+      if(glui_hvac->show_filters == 0){
+        glutAddMenuEntry("*text", MENU_HVAC_SHOW_FILTER_TEXT);
+        glutAddMenuEntry("symbols", MENU_HVAC_SHOW_FILTER_SYMBOLS);
+        glutAddMenuEntry("hide", MENU_HVAC_SHOW_FILTER_HIDE);
+      }
+      else if(glui_hvac->show_filters == 1){
+        glutAddMenuEntry("text", MENU_HVAC_SHOW_FILTER_TEXT);
+        glutAddMenuEntry("*symbols", MENU_HVAC_SHOW_FILTER_SYMBOLS);
+        glutAddMenuEntry("hide", MENU_HVAC_SHOW_FILTER_HIDE);
+      }
+      else{
+        glutAddMenuEntry("text", MENU_HVAC_SHOW_FILTER_TEXT);
+        glutAddMenuEntry("symbols", MENU_HVAC_SHOW_FILTER_SYMBOLS);
+        glutAddMenuEntry("*hide", MENU_HVAC_SHOW_FILTER_HIDE);
+      }
+    }
+
+    CREATEMENU(hvacnetworkmenu, HVACNetworkMenu);
+    if(nhvacinfo>1){
+      if(hvac_show_networks==1){
+        glutAddMenuEntry("*network view", MENU_HVAC_NETWORK_VIEW);
+      }
+      else{
+        glutAddMenuEntry("network view", MENU_HVAC_NETWORK_VIEW);
+      }
+      glutAddMenuEntry("-", MENU_HVAC_SHOW_NODE_IGNORE);
+    }
     for(i = 0; i < nhvacinfo; i++){
       hvacdata *hvaci;
       char label[256];
 
       hvaci = hvacinfo + i;
-      strcpy(label, "   ");
+      strcpy(label, "");
       if(hvaci->display == 1){
         strcat(label, "*");
         hide_all_networks = 0;
@@ -9140,19 +9272,23 @@ updatemenu=0;
     }
     if(nhvacinfo > 1){
       if(show_all_networks == 1){
-        glutAddMenuEntry("   *show all", MENU_HVAC_SHOWALL_NETWORKS);
+        glutAddMenuEntry("*show all", MENU_HVAC_SHOWALL_NETWORKS);
       }
       else{
-        glutAddMenuEntry("   show all", MENU_HVAC_SHOWALL_NETWORKS);
+        glutAddMenuEntry("show all", MENU_HVAC_SHOWALL_NETWORKS);
       }
       if(hide_all_networks == 1){
-        glutAddMenuEntry("   *hide all", MENU_HVAC_HIDEALL_NETWORKS);
+        glutAddMenuEntry("*hide all", MENU_HVAC_HIDEALL_NETWORKS);
       }
       else{
-        glutAddMenuEntry("   hide all", MENU_HVAC_HIDEALL_NETWORKS);
+        glutAddMenuEntry("hide all", MENU_HVAC_HIDEALL_NETWORKS);
       }
     }
-    glutAddMenuEntry("-", MENU_HVAC_SHOW_NODE_IGNORE);
+    CREATEMENU(hvacmenu, HVACMenu);
+    GLUTADDSUBMENU(_("Networks"), hvacnetworkmenu);
+    if(nhvacconnectinfo > 0){
+      GLUTADDSUBMENU(_("Connections"), connectivitymenu);
+    }
     glutAddMenuEntry("Ducts", MENU_HVAC_SHOW_NODE_IGNORE);
     if(glui_hvac->show_duct_labels == 1){
       glutAddMenuEntry("   *IDs", MENU_HVAC_SHOW_DUCT_IDS);
@@ -9160,7 +9296,9 @@ updatemenu=0;
     else{
       glutAddMenuEntry("   IDs", MENU_HVAC_SHOW_DUCT_IDS);
     }
-    GLUTADDSUBMENU(_(  "   Components"), showcomponentmenu);
+    if(nhvaccomponents > 0){
+      GLUTADDSUBMENU(_(  "   Components"), showcomponentmenu);
+    }
     glutAddMenuEntry("Nodes", MENU_HVAC_SHOW_NODE_IGNORE);
     if(glui_hvac->show_node_labels == 1){
       glutAddMenuEntry("   *IDs", MENU_HVAC_SHOW_NODE_IDS);
@@ -9168,9 +9306,11 @@ updatemenu=0;
     else{
       glutAddMenuEntry("   IDs", MENU_HVAC_SHOW_NODE_IDS);
     }
-    GLUTADDSUBMENU(_("   Filters"), showfiltermenu);
+    if(nhvacfilters > 0){
+      GLUTADDSUBMENU(_("   Filters"), showfiltermenu);
+    }
     glutAddMenuEntry("-", MENU_HVAC_SHOW_NODE_IGNORE);
-    if(hvac_metro_view==1 == 1){
+    if(hvac_metro_view==1){
       glutAddMenuEntry("*metro view", MENU_HVAC_METRO_VIEW);
     }
     else{
