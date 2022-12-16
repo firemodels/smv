@@ -356,9 +356,9 @@ void SetHVACInfo(void){
     }
   }
 #define COPYVALS3(xyz, x, y, z) \
-  xyz[0] = (x);\
-  xyz[1] = (y);\
-  xyz[2] = (z)
+  *(xyz+0) = (x);\
+  *(xyz+1) = (y);\
+  *(xyz+2) = (z)
   for(i=0;i<nhvacductinfo;i++){
     hvacductdata *ducti;
     hvacnodedata *node_from, *node_to;
@@ -383,10 +383,8 @@ void SetHVACInfo(void){
     memcpy(ducti->xyz_label_metro,  xyz0, 3 * sizeof(float));
     switch(ducti->metro_path){
       case DUCT_XYZ:
-        COPYVALS3(ducti->xyz_metro1, xyz1[0], xyz0[1], xyz0[2]);
-        COPYVALS3(ducti->xyz_metro2, xyz1[0], xyz0[1], xyz0[2]);
-        COPYVALS3(ducti->xyz_metro3, xyz1[0], xyz1[1], xyz0[2]);
-        COPYVALS3(ducti->xyz_metro4, xyz1[0], xyz1[1], xyz0[2]);
+        COPYVALS3(ducti->xyz_metro,   xyz1[0], xyz0[1], xyz0[2]);
+        COPYVALS3(ducti->xyz_metro+3, xyz1[0], xyz1[1], xyz0[2]);
         if(ABS(dxyz[0]) > ABS(dxyz[1])){
           ducti->xyz_symbol_metro[0] += 0.5*dxyz[0];
           ducti->xyz_label_metro[0]  += 0.75*dxyz[0];
@@ -395,16 +393,14 @@ void SetHVACInfo(void){
         else{
           ducti->xyz_symbol_metro[0] += dxyz[0];
           ducti->xyz_symbol_metro[1] += 0.5*dxyz[1];
-          ducti->xyz_label_metro[0] += dxyz[0];
-          ducti->xyz_label_metro[1] += 0.75*dxyz[1];
+          ducti->xyz_label_metro[0]  += dxyz[0];
+          ducti->xyz_label_metro[1]  += 0.75*dxyz[1];
           dxyz_metro[1] = 1.0;
         }
         break;
       case DUCT_XZY:
-        COPYVALS3(ducti->xyz_metro1, xyz1[0], xyz0[1], xyz0[2]);
-        COPYVALS3(ducti->xyz_metro2, xyz1[0], xyz0[1], xyz0[2]);
-        COPYVALS3(ducti->xyz_metro3, xyz1[0], xyz0[1], xyz1[2]);
-        COPYVALS3(ducti->xyz_metro4, xyz1[0], xyz0[1], xyz1[2]);
+        COPYVALS3(ducti->xyz_metro,   xyz1[0], xyz0[1], xyz0[2]);
+        COPYVALS3(ducti->xyz_metro+3, xyz1[0], xyz0[1], xyz1[2]);
         if(ABS(dxyz[0]) > ABS(dxyz[2])){
           ducti->xyz_symbol_metro[0] += 0.50*dxyz[0];
           ducti->xyz_label_metro[0]  += 0.75*dxyz[0];
@@ -419,10 +415,8 @@ void SetHVACInfo(void){
         }
         break;
       case DUCT_YXZ:
-        COPYVALS3(ducti->xyz_metro1, xyz0[0], xyz1[1], xyz0[2]);
-        COPYVALS3(ducti->xyz_metro2, xyz0[0], xyz1[1], xyz0[2]);
-        COPYVALS3(ducti->xyz_metro3, xyz1[0], xyz1[1], xyz0[2]);
-        COPYVALS3(ducti->xyz_metro4, xyz1[0], xyz1[1], xyz0[2]);
+        COPYVALS3(ducti->xyz_metro,   xyz0[0], xyz1[1], xyz0[2]);
+        COPYVALS3(ducti->xyz_metro+3, xyz1[0], xyz1[1], xyz0[2]);
         if(ABS(dxyz[1]) > ABS(dxyz[0])){
           ducti->xyz_symbol_metro[1] += 0.50*dxyz[1];
           ducti->xyz_label_metro[1]  += 0.75*dxyz[1];
@@ -437,10 +431,8 @@ void SetHVACInfo(void){
         }
         break;
       case DUCT_YZX:
-        COPYVALS3(ducti->xyz_metro1, xyz0[0], xyz1[1], xyz0[2]);
-        COPYVALS3(ducti->xyz_metro2, xyz0[0], xyz1[1], xyz0[2]);
-        COPYVALS3(ducti->xyz_metro3, xyz0[0], xyz1[1], xyz1[2]);
-        COPYVALS3(ducti->xyz_metro4, xyz0[0], xyz1[1], xyz1[2]);
+        COPYVALS3(ducti->xyz_metro,   xyz0[0], xyz1[1], xyz0[2]);
+        COPYVALS3(ducti->xyz_metro+3, xyz0[0], xyz1[1], xyz1[2]);
         if(ABS(dxyz[1]) > ABS(dxyz[2])){
           ducti->xyz_symbol_metro[1] += 0.50*dxyz[1];
           ducti->xyz_label_metro[1]  += 0.75*dxyz[1];
@@ -455,10 +447,8 @@ void SetHVACInfo(void){
         }
         break;
       case DUCT_ZXY:
-        COPYVALS3(ducti->xyz_metro1, xyz0[0], xyz0[1], xyz1[2]);
-        COPYVALS3(ducti->xyz_metro2, xyz0[0], xyz0[1], xyz1[2]);
-        COPYVALS3(ducti->xyz_metro3, xyz1[0], xyz0[1], xyz1[2]);
-        COPYVALS3(ducti->xyz_metro4, xyz1[0], xyz0[1], xyz1[2]);
+        COPYVALS3(ducti->xyz_metro  , xyz0[0], xyz0[1], xyz1[2]);
+        COPYVALS3(ducti->xyz_metro+3, xyz1[0], xyz0[1], xyz1[2]);
         if(ABS(dxyz[2]) > ABS(dxyz[0])){
           ducti->xyz_symbol_metro[2] += 0.50*dxyz[2];
           ducti->xyz_label_metro[2]  += 0.75*dxyz[2];
@@ -467,16 +457,14 @@ void SetHVACInfo(void){
         else{
           ducti->xyz_symbol_metro[0] += 0.50*dxyz[0];
           ducti->xyz_symbol_metro[2] += dxyz[2];
-          ducti->xyz_label_metro[0] += 0.75 * dxyz[0];
-          ducti->xyz_label_metro[2] += dxyz[2];
+          ducti->xyz_label_metro[0]  += 0.75 * dxyz[0];
+          ducti->xyz_label_metro[2]  += dxyz[2];
           dxyz_metro[0] = 1.0;
         }
         break;
       case DUCT_ZYX:
-        COPYVALS3(ducti->xyz_metro1, xyz0[0], xyz0[1], xyz1[2]);
-        COPYVALS3(ducti->xyz_metro2, xyz0[0], xyz0[1], xyz1[2]);
-        COPYVALS3(ducti->xyz_metro3, xyz0[0], xyz1[1], xyz1[2]);
-        COPYVALS3(ducti->xyz_metro4, xyz0[0], xyz1[1], xyz1[2]);
+        COPYVALS3(ducti->xyz_metro  , xyz0[0], xyz0[1], xyz1[2]);
+        COPYVALS3(ducti->xyz_metro+3, xyz0[0], xyz1[1], xyz1[2]);
         if(ABS(dxyz[2]) > ABS(dxyz[1])){
           ducti->xyz_symbol_metro[2] += 0.50*dxyz[2];
           ducti->xyz_label_metro[2]  += 0.75 * dxyz[2];
@@ -485,8 +473,8 @@ void SetHVACInfo(void){
         else{
           ducti->xyz_symbol_metro[1] += 0.50*dxyz[1];
           ducti->xyz_symbol_metro[2] += dxyz[2];
-          ducti->xyz_label_metro[1] += 0.75 * dxyz[1];
-          ducti->xyz_label_metro[2] += dxyz[2];
+          ducti->xyz_label_metro[1]  += 0.75 * dxyz[1];
+          ducti->xyz_label_metro[2]  += dxyz[2];
           dxyz_metro[1] = 1.0;
         }
         break;
@@ -802,10 +790,10 @@ void DrawHVAC(hvacdata *hvaci){
     xyz1 = node_to->xyz;
     glVertex3fv(xyz0);
     if(hvac_metro_view == 1){
-      glVertex3fv(ducti->xyz_metro1);
-      glVertex3fv(ducti->xyz_metro2);
-      glVertex3fv(ducti->xyz_metro3);
-      glVertex3fv(ducti->xyz_metro4);
+      glVertex3fv(ducti->xyz_metro);
+      glVertex3fv(ducti->xyz_metro);
+      glVertex3fv(ducti->xyz_metro+3);
+      glVertex3fv(ducti->xyz_metro+3);
     }
     else{
       if(ducti->n_waypoints > 0){
