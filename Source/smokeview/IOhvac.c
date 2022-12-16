@@ -306,7 +306,7 @@ void SetHVACInfo(void){
     FREEMEMORY(line_xy);
   }
   else{
-    for(i = 1;i < nhvacnodeinfo;i++){
+    for(i = 0;i < nhvacnodeinfo;i++){
       hvacnodedata *nodei;
 
       nodei = hvacnodeinfo + i;
