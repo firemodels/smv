@@ -1,0 +1,10 @@
+// put rendered files in specified directory
+
+RENDERDIR
+ ..\..\Manuals\SMV_User_Guide\SCRIPT_FIGURES
+
+UNLOADALL
+LOADINIFILE
+ hvac_comp.ini
+RENDERONCE
+ hvac_comp_00
