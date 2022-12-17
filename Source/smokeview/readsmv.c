@@ -7671,35 +7671,38 @@ int ReadSMV(bufferstreamdata *stream){
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
     if(MatchSMV(buffer, "HVACVALS") == 1){
-      flowlabels *labels;
-
-      FREEMEMORY(hvacvalinfo);
-      NewMemory(( void ** )&hvacvalinfo, sizeof(hvacvaldata));
+      FREEMEMORY(hvacvalsinfo);
+      NewMemory(( void ** )&hvacvalsinfo, sizeof(hvacvalsdata));
+      
       if(FGETS(buffer, 255, stream) == NULL)BREAK;
-      hvacvalinfo->file = GetCharPtr(TrimFrontBack(buffer));
+      hvacvalsinfo->file = GetCharPtr(TrimFrontBack(buffer));
+      
       if(FGETS(buffer, 255, stream) == NULL)BREAK;
-      sscanf(buffer, "%i", &hvacvalinfo->nnode_vars);
-      NewMemory((void **)&labels, hvacvalinfo->nnode_vars*sizeof(flowlabels));
-      NewMemory((void **)&hvacvalinfo->vis_valnodes, hvacvalinfo->nnode_vars * sizeof(int));
-      hvacvalinfo->node_labels = labels;
-      for(i = 0;i < hvacvalinfo->nnode_vars;i++){
+      sscanf(buffer, "%i", &hvacvalsinfo->nnode_vars);
+      
+      NewMemory((void **)&hvacvalsinfo->nodevals, hvacvalsinfo->nnode_vars * sizeof(hvacvaldata));
+      for(i = 0;i < hvacvalsinfo->nnode_vars;i++){
+        hvacvaldata *hi;
         flowlabels *labeli;
 
-        labeli = hvacvalinfo->node_labels + i;
+        hi = hvacvalsinfo->nodevals + i;
+        InitHvacData(hi);
+        labeli = &hi->label;
         ReadLabels(labeli, stream, NULL);
-        hvacvalinfo->vis_valnodes[i] = 0;
       }
+      
       if(FGETS(buffer, 255, stream) == NULL)BREAK;
-      sscanf(buffer, "%i", &hvacvalinfo->nduct_vars);
-      NewMemory((void **)&labels, hvacvalinfo->nduct_vars*sizeof(flowlabels));
-      NewMemory((void **)&hvacvalinfo->vis_valducts, hvacvalinfo->nduct_vars * sizeof(int));
-      hvacvalinfo->duct_labels = labels;
-      for(i = 0;i < hvacvalinfo->nduct_vars;i++){
+      sscanf(buffer, "%i", &hvacvalsinfo->nduct_vars);
+      
+      NewMemory((void **)&hvacvalsinfo->ductvals, hvacvalsinfo->nduct_vars * sizeof(hvacvaldata));
+      for(i = 0;i < hvacvalsinfo->nduct_vars;i++){
+        hvacvaldata *hi;
         flowlabels *labeli;
 
-        labeli = hvacvalinfo->duct_labels + i;
+        hi = hvacvalsinfo->ductvals + i;
+        InitHvacData(hi);
+        labeli = &hi->label;
         ReadLabels(labeli, stream, NULL);
-        hvacvalinfo->vis_valducts[i] = 0;
       }
 
     }

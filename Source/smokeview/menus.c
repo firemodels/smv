@@ -6615,12 +6615,15 @@ void HVACNetworkMenu(int value){
 void HVACNodeValueMenu(int value){
   int i;
 
-  for(i = 0;i < hvacvalinfo->nnode_vars;i++){
+  for(i = 0;i < hvacvalsinfo->nnode_vars;i++){
+    hvacvaldata *hi;
+
+    hi = hvacvalsinfo->nodevals + i;
     if(value==i){
-      hvacvalinfo->vis_valnodes[i] = 1 - hvacvalinfo->vis_valnodes[i];
+      hi->vis = 1 - hi->vis;
     }
     else{
-      hvacvalinfo->vis_valnodes[i] = 0;
+      hi->vis = 0;
     }
   }
   updatemenu = 1;
@@ -6632,12 +6635,15 @@ void HVACNodeValueMenu(int value){
 void HVACDuctValueMenu(int value){
   int i;
 
-  for(i = 0;i < hvacvalinfo->nduct_vars;i++){
-    if(value==i){
-      hvacvalinfo->vis_valducts[i] = 1 - hvacvalinfo->vis_valducts[i];
+  for(i = 0;i < hvacvalsinfo->nduct_vars;i++){
+    hvacvaldata *hi;
+
+    hi = hvacvalsinfo->ductvals + i;
+    if(value == i){
+      hi->vis = 1 - hi->vis;
     }
     else{
-      hvacvalinfo->vis_valducts[i] = 0;
+      hi->vis = 0;
     }
   }
   updatemenu = 1;
@@ -9318,25 +9324,31 @@ updatemenu=0;
         glutAddMenuEntry("hide all", MENU_HVAC_HIDEALL_NETWORKS);
       }
     }
-    if(hvacvalinfo != NULL){
+    if(hvacvalsinfo != NULL){
       CREATEMENU(hvacnodevaluemenu, HVACNodeValueMenu);
-      for(i = 0;i < hvacvalinfo->nnode_vars;i++){
+      for(i = 0;i < hvacvalsinfo->nnode_vars;i++){
         char label[255], *labeli;
+        hvacvaldata *hi;
 
-        labeli = hvacvalinfo->node_labels[i].longlabel;
+        hi = hvacvalsinfo->nodevals + i;
+
+        labeli = hi->label.longlabel;
         strcpy(label, "");
-        if(hvacvalinfo->vis_valnodes[i] == 1)strcat(label, "*");
+        if(hi->vis == 1)strcat(label, "*");
         strcat(label, labeli);
         glutAddMenuEntry(label, i);
       }
 
       CREATEMENU(hvacductvaluemenu, HVACDuctValueMenu);
-      for(i = 0;i < hvacvalinfo->nduct_vars;i++){
+      for(i = 0;i < hvacvalsinfo->nduct_vars;i++){
         char label[255], *labeli;
+        hvacvaldata *hi;
 
-        labeli = hvacvalinfo->duct_labels[i].longlabel;
+        hi = hvacvalsinfo->ductvals + i;
+
+        labeli = hi->label.longlabel;
         strcpy(label, "");
-        if(hvacvalinfo->vis_valducts[i] == 1)strcat(label, "*");
+        if(hi->vis == 1)strcat(label, "*");
         strcat(label, labeli);
         glutAddMenuEntry(label, i);
       }
@@ -9347,7 +9359,7 @@ updatemenu=0;
     }
 
     CREATEMENU(hvacmenu, HVACMenu);
-    if(hvacvalinfo != NULL){
+    if(hvacvalsinfo != NULL){
       GLUTADDSUBMENU(_("Values"), hvacvaluemenu);
     }
     GLUTADDSUBMENU(_("Networks"), hvacnetworkmenu);

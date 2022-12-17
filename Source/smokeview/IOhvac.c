@@ -200,6 +200,17 @@ void SetDuctXYZ(hvacductdata *ducti){
   }
 }
 
+/* ------------------ InitHvacData ------------------------ */
+
+void InitHvacData(hvacvaldata *hi){
+  hi->vals   = NULL;
+  hi->ivals  = NULL;
+  hi->nvals  = 0;
+  hi->vis    = 0;
+  hi->valmax = 1.0;
+  hi->valmin = 0.0;
+}
+
 /* ------------------ SetHVACInfo ------------------------ */
 
 void SetHVACInfo(void){
