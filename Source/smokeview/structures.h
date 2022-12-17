@@ -1321,6 +1321,17 @@ typedef struct _hvacdata {
   int duct_color[3], node_color[3];
 } hvacdata;
 
+/* --------------------------  hvacvaldata ------------------------------------ */
+
+typedef struct _hvacvaldata {
+  char *file;
+  int nnode_vars, nduct_vars;
+  float *valmin, *valmax;
+  float **node_vals, **duct_vals;
+  int *vis_valnodes, *vis_valducts;
+  flowlabels *node_labels, *duct_labels;
+} hvacvaldata;
+
 /* --------------------------  menudata ------------------------------------ */
 
 typedef struct _menudata {
