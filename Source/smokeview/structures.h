@@ -1326,8 +1326,7 @@ typedef struct _hvacdata {
 typedef struct _hvacvaldata{
   float *vals, valmin, valmax;
   unsigned char *ivals;
-  int vis;
-  int nvals;
+  int vis, nvals;
   flowlabels label;
 } hvacvaldata;
 
@@ -1335,8 +1334,9 @@ typedef struct _hvacvaldata{
 
 typedef struct _hvacvalsdata {
   char *file;
-  int nnode_vars, nduct_vars;
-  hvacvaldata *nodevals, *ductvals;
+  int n_node_vars, n_duct_vars;
+  float *times;
+  hvacvaldata *node_vars, *duct_vars;
 } hvacvalsdata;
 
 /* --------------------------  menudata ------------------------------------ */

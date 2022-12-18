@@ -6615,10 +6615,13 @@ void HVACNetworkMenu(int value){
 void HVACNodeValueMenu(int value){
   int i;
 
-  for(i = 0;i < hvacvalsinfo->nnode_vars;i++){
+  if(hvacvalsinfo->times==NULL){
+    ReadHVACData();
+  }
+  for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
     hvacvaldata *hi;
 
-    hi = hvacvalsinfo->nodevals + i;
+    hi = hvacvalsinfo->node_vars + i;
     if(value==i){
       hi->vis = 1 - hi->vis;
     }
@@ -6635,10 +6638,13 @@ void HVACNodeValueMenu(int value){
 void HVACDuctValueMenu(int value){
   int i;
 
-  for(i = 0;i < hvacvalsinfo->nduct_vars;i++){
+  if(hvacvalsinfo->times==NULL){
+    ReadHVACData();
+  }
+  for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
     hvacvaldata *hi;
 
-    hi = hvacvalsinfo->ductvals + i;
+    hi = hvacvalsinfo->duct_vars + i;
     if(value == i){
       hi->vis = 1 - hi->vis;
     }
@@ -9326,11 +9332,11 @@ updatemenu=0;
     }
     if(hvacvalsinfo != NULL){
       CREATEMENU(hvacnodevaluemenu, HVACNodeValueMenu);
-      for(i = 0;i < hvacvalsinfo->nnode_vars;i++){
+      for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
         char label[255], *labeli;
         hvacvaldata *hi;
 
-        hi = hvacvalsinfo->nodevals + i;
+        hi = hvacvalsinfo->node_vars + i;
 
         labeli = hi->label.longlabel;
         strcpy(label, "");
@@ -9340,11 +9346,11 @@ updatemenu=0;
       }
 
       CREATEMENU(hvacductvaluemenu, HVACDuctValueMenu);
-      for(i = 0;i < hvacvalsinfo->nduct_vars;i++){
+      for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
         char label[255], *labeli;
         hvacvaldata *hi;
 
-        hi = hvacvalsinfo->ductvals + i;
+        hi = hvacvalsinfo->duct_vars + i;
 
         labeli = hi->label.longlabel;
         strcpy(label, "");

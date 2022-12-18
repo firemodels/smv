@@ -7673,33 +7673,34 @@ int ReadSMV(bufferstreamdata *stream){
     if(MatchSMV(buffer, "HVACVALS") == 1){
       FREEMEMORY(hvacvalsinfo);
       NewMemory(( void ** )&hvacvalsinfo, sizeof(hvacvalsdata));
+      hvacvalsinfo->times = NULL;
       
       if(FGETS(buffer, 255, stream) == NULL)BREAK;
       hvacvalsinfo->file = GetCharPtr(TrimFrontBack(buffer));
       
       if(FGETS(buffer, 255, stream) == NULL)BREAK;
-      sscanf(buffer, "%i", &hvacvalsinfo->nnode_vars);
+      sscanf(buffer, "%i", &hvacvalsinfo->n_node_vars);
       
-      NewMemory((void **)&hvacvalsinfo->nodevals, hvacvalsinfo->nnode_vars * sizeof(hvacvaldata));
-      for(i = 0;i < hvacvalsinfo->nnode_vars;i++){
+      NewMemory((void **)&hvacvalsinfo->node_vars, hvacvalsinfo->n_node_vars * sizeof(hvacvaldata));
+      for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
         hvacvaldata *hi;
         flowlabels *labeli;
 
-        hi = hvacvalsinfo->nodevals + i;
+        hi = hvacvalsinfo->node_vars + i;
         InitHvacData(hi);
         labeli = &hi->label;
         ReadLabels(labeli, stream, NULL);
       }
       
       if(FGETS(buffer, 255, stream) == NULL)BREAK;
-      sscanf(buffer, "%i", &hvacvalsinfo->nduct_vars);
+      sscanf(buffer, "%i", &hvacvalsinfo->n_duct_vars);
       
-      NewMemory((void **)&hvacvalsinfo->ductvals, hvacvalsinfo->nduct_vars * sizeof(hvacvaldata));
-      for(i = 0;i < hvacvalsinfo->nduct_vars;i++){
+      NewMemory((void **)&hvacvalsinfo->duct_vars, hvacvalsinfo->n_duct_vars * sizeof(hvacvaldata));
+      for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
         hvacvaldata *hi;
         flowlabels *labeli;
 
-        hi = hvacvalsinfo->ductvals + i;
+        hi = hvacvalsinfo->duct_vars + i;
         InitHvacData(hi);
         labeli = &hi->label;
         ReadLabels(labeli, stream, NULL);
