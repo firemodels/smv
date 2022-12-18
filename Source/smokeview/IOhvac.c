@@ -216,8 +216,7 @@ void InitHvacData(hvacvaldata *hi){
 void ReadHVACData(void){
   FILE *stream = NULL;
   float node_buffer[1000], duct_buffer[1000], *times;
-  int vals[4];
-  int n_nodes, n_node_vars, n_ducts, n_duct_vars;
+  int parms[4], n_nodes, n_node_vars, n_ducts, n_duct_vars;
   int frame_size, header_size, nframes;
   FILE_SIZE file_size;
   int i, iframe;
@@ -227,11 +226,11 @@ void ReadHVACData(void){
   if(stream == NULL)return;
 
  // WRITE(LU_HVAC)N_NODE_OUT, N_NODE_VARS, N_DUCT_OUT, N_DUCT_VARS
-  FSEEK(stream, 4, SEEK_CUR); fread(vals, 4, 4, stream); FSEEK(stream, 4, SEEK_CUR);
-  n_nodes      = vals[0];
-  n_node_vars  = vals[1];
-  n_ducts      = vals[2];
-  n_duct_vars  = vals[3];
+  FSEEK(stream, 4, SEEK_CUR); fread(parms, 4, 4, stream); FSEEK(stream, 4, SEEK_CUR);
+  n_nodes      = parms[0];
+  n_node_vars  = parms[1];
+  n_ducts      = parms[2];
+  n_duct_vars  = parms[3];
   header_size  = 4 + 4 * 4 + 4;                       // n_node_out n_node_vars n_duct_out n_ductd_vars
   header_size += 4 + 4 * n_nodes + 4;                 // list of valid node indices
   header_size += 4 + 4 * n_ducts + 4;                 // list of valid duct indices
