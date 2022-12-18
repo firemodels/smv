@@ -609,7 +609,7 @@ extern "C" void GluiGeometrySetup(int main_window){
         char label[100];
 
         hi = hvacconnectinfo + i;
-        sprintf(label, "%i", hi->index);
+        snprintf(label, sizeof(label), "%i", hi->index);
         CHECKBOX_hvac_show_connections[i] = glui_geometry->add_checkbox_to_panel(PANEL_hvac_connections, label, &hi->display);
       }
       if(nhvacconnectinfo > 1){

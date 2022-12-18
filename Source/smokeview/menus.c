@@ -6610,6 +6610,55 @@ void HVACNetworkMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
+/* ------------------ HVACNodeValueMenu ------------------------ */
+
+void HVACNodeValueMenu(int value){
+  int i;
+
+  if(hvacvalsinfo->times==NULL){
+    ReadHVACData();
+  }
+  hvacnodevar_index = -1;
+  for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
+    hvacvaldata *hi;
+
+    hi = hvacvalsinfo->node_vars + i;
+    if(value==i){
+      hi->vis = 1 - hi->vis;
+    }
+    else{
+      hi->vis = 0;
+    }
+    if(hi->vis==1)hvacnodevar_index = i;
+  }
+  updatemenu = 1;
+}
+  
+
+/* ------------------ HVACDuctValueMenu ------------------------ */
+
+void HVACDuctValueMenu(int value){
+  int i;
+
+  if(hvacvalsinfo->times==NULL){
+    ReadHVACData();
+  }
+  hvacductvar_index = -1;
+  for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
+    hvacvaldata *hi;
+
+    hi = hvacvalsinfo->duct_vars + i;
+    if(value == i){
+      hi->vis = 1 - hi->vis;
+    }
+    else{
+      hi->vis = 0;
+    }
+    if(hi->vis==1)hvacductvar_index = i;
+  }
+  updatemenu = 1;
+}
+
 /* ------------------ HVACMenu ------------------------ */
 
 void HVACMenu(int value){
@@ -8050,6 +8099,7 @@ static int loadisomenu=0, isosinglemeshmenu=0, isosurfacetypemenu=0,showpatchsin
 static int geometrymenu=0, loadunloadmenu=0, reloadmenu=0, fileinfomenu=0, aboutmenu=0, disclaimermenu=0, terrain_obst_showmenu=0;
 static int scriptmenu=0;
 static int hvacmenu = 0, hvacnetworkmenu, showcomponentmenu = 0, showfiltermenu = 0, connectivitymenu = 0;
+static int hvacvaluemenu = 0, hvacnodevaluemenu = 0, hvacductvaluemenu = 0;
 static int scriptlistmenu=0,scriptsteplistmenu=0,scriptrecordmenu=0;
 #ifdef pp_LUA
 static int luascriptmenu=0;
@@ -9284,7 +9334,44 @@ updatemenu=0;
         glutAddMenuEntry("hide all", MENU_HVAC_HIDEALL_NETWORKS);
       }
     }
+    if(hvacvalsinfo != NULL){
+      CREATEMENU(hvacnodevaluemenu, HVACNodeValueMenu);
+      for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
+        char label[255], *labeli;
+        hvacvaldata *hi;
+
+        hi = hvacvalsinfo->node_vars + i;
+
+        labeli = hi->label.longlabel;
+        strcpy(label, "");
+        if(hvacnodevar_index == i)strcat(label, "*");
+        strcat(label, labeli);
+        glutAddMenuEntry(label, i);
+      }
+
+      CREATEMENU(hvacductvaluemenu, HVACDuctValueMenu);
+      for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
+        char label[255], *labeli;
+        hvacvaldata *hi;
+
+        hi = hvacvalsinfo->duct_vars + i;
+
+        labeli = hi->label.longlabel;
+        strcpy(label, "");
+        if(hvacductvar_index == i)strcat(label, "*");
+        strcat(label, labeli);
+        glutAddMenuEntry(label, i);
+      }
+
+      CREATEMENU(hvacvaluemenu, HVACMenu);
+      GLUTADDSUBMENU(_("Node"), hvacnodevaluemenu);
+      GLUTADDSUBMENU(_("Duct"), hvacductvaluemenu);
+    }
+
     CREATEMENU(hvacmenu, HVACMenu);
+    if(hvacvalsinfo != NULL){
+      GLUTADDSUBMENU(_("Values"), hvacvaluemenu);
+    }
     GLUTADDSUBMENU(_("Networks"), hvacnetworkmenu);
     if(nhvacconnectinfo > 0){
       GLUTADDSUBMENU(_("Connections"), connectivitymenu);

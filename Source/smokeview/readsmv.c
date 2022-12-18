@@ -5365,7 +5365,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
       if(strcmp(smoke3di->label.longlabel, "HRRPUV")==0){
         show_hrrcutoff_active = 1;
       }
-      if(strcmp(smoke3di->label.longlabel, "TEMPERATURE")==0) {
+      if(strcmp(smoke3di->label.longlabel, "TEMPERATURE")==0){
         show_tempcutoff_active = 1;
       }
       ismoke3d++;
@@ -7234,11 +7234,11 @@ int ReadSMV(bufferstreamdata *stream){
       nVENT++;
       continue;
     }
-    if (
+    if(
       MatchSMV(buffer, "MINMAXBNDF") == 1 ||
       MatchSMV(buffer, "MINMAXPL3D") == 1 ||
       MatchSMV(buffer, "MINMAXSLCF") == 1
-      ) {
+      ){
       do_pass4 = 1;
       continue;
     }
@@ -7667,10 +7667,52 @@ int ReadSMV(bufferstreamdata *stream){
     }
     /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    +++++++++++++++++++++++++ HVACVALS ++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  */
+    if(MatchSMV(buffer, "HVACVALS") == 1){
+      FREEMEMORY(hvacvalsinfo);
+      NewMemory(( void ** )&hvacvalsinfo, sizeof(hvacvalsdata));
+      hvacvalsinfo->times = NULL;
+      
+      if(FGETS(buffer, 255, stream) == NULL)BREAK;
+      hvacvalsinfo->file = GetCharPtr(TrimFrontBack(buffer));
+      
+      if(FGETS(buffer, 255, stream) == NULL)BREAK;
+      sscanf(buffer, "%i", &hvacvalsinfo->n_node_vars);
+      
+      NewMemory((void **)&hvacvalsinfo->node_vars, hvacvalsinfo->n_node_vars * sizeof(hvacvaldata));
+      for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
+        hvacvaldata *hi;
+        flowlabels *labeli;
+
+        hi = hvacvalsinfo->node_vars + i;
+        InitHvacData(hi);
+        labeli = &hi->label;
+        ReadLabels(labeli, stream, NULL);
+      }
+      
+      if(FGETS(buffer, 255, stream) == NULL)BREAK;
+      sscanf(buffer, "%i", &hvacvalsinfo->n_duct_vars);
+      
+      NewMemory((void **)&hvacvalsinfo->duct_vars, hvacvalsinfo->n_duct_vars * sizeof(hvacvaldata));
+      for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
+        hvacvaldata *hi;
+        flowlabels *labeli;
+
+        hi = hvacvalsinfo->duct_vars + i;
+        InitHvacData(hi);
+        labeli = &hi->label;
+        ReadLabels(labeli, stream, NULL);
+      }
+
+    }
+    /*
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++ HVAC ++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   */
-    if(MatchSMV(buffer, "HVAC") == 1) {
+    if(MatchSMV(buffer, "HVAC") == 1){
       // HVAC
       //  NODES
       //  n_nodes
@@ -7680,6 +7722,7 @@ int ReadSMV(bufferstreamdata *stream){
       nhvacnodeinfo = MAX(nhvacnodeinfo, 0);
       if(nhvacnodeinfo == 0)continue;
 
+      FREEMEMORY(hvacnodeinfo);
       NewMemory(( void ** )&hvacnodeinfo, nhvacnodeinfo * sizeof(hvacnodedata));
 
   // node_id duct_label network_label
@@ -7742,6 +7785,8 @@ int ReadSMV(bufferstreamdata *stream){
         nhvacnodeinfo = 0;
         break;
       }
+
+      FREEMEMORY(hvacductinfo);
       NewMemory((void **)&hvacductinfo, nhvacductinfo*sizeof(hvacductdata));
       for(i=0;i<nhvacductinfo;i++){
         hvacductdata *ducti;
@@ -9586,11 +9631,11 @@ int ReadSMV(bufferstreamdata *stream){
     FREEMEMORY(nexp_devices);
     devicecopy2=deviceinfo;
   }
-  for (i = 0; i < ndeviceinfo; i++) {
+  for(i = 0; i < ndeviceinfo; i++){
     devicedata *devicei;
 
     devicei = deviceinfo + i;
-    if (strcmp(devicei->deviceID, "null") == 0) {
+    if(strcmp(devicei->deviceID, "null") == 0){
       sprintf(devicei->deviceID, "DEV%03i", i + 1);
     }
   }
@@ -11952,7 +11997,7 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
-    if(MatchINI(buffer, "SHOWGRAVVECTOR") == 1) {
+    if(MatchINI(buffer, "SHOWGRAVVECTOR") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &showgravity_vector);
       continue;
@@ -12877,8 +12922,8 @@ int ReadIni2(char *inifile, int localfile){
       if(vmax > MAXVAL)vmax = 1.0;
       if(vmin < MINVAL)vmin = 0.0;
 
-      if (ivmin == PERCENTILE_MIN && vmin > vmax)continue;
-      if (ivmax == PERCENTILE_MAX && vmin > vmax)continue;
+      if(ivmin == PERCENTILE_MIN && vmin > vmax)continue;
+      if(ivmax == PERCENTILE_MAX && vmin > vmax)continue;
 
       if(npart5prop>0){
         int label_index = 0;

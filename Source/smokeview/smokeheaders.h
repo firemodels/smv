@@ -35,6 +35,10 @@ EXTERNCPP void SplitCB(int var);
 EXTERNCPP void SetHVACInfo(void);
 EXTERNCPP void DrawHVACS(void);
 EXTERNCPP hvacnodedata *GetHVACNode(hvacdata *hvaci, int node_id);
+EXTERNCPP void InitHvacData(hvacvaldata *hi);
+EXTERNCPP void ReadHVACData(void);
+
+
 
 #ifdef pp_REFRESH
 EXTERNCPP void PeriodicRefresh(int var);
@@ -816,6 +820,8 @@ EXTERNCPP char *STRSTR(char *c, const char *key);
 EXTERNCPP void HandlePLOT3DKeys(int  key);
 EXTERNCPP void HandleMoveKeys(int  key);
 EXTERNCPP int GetInterval(float val, float *array, int n);
+EXTERNCPP int GetTimeInterval(float val, float *array, int n);
+
 EXTERNCPP void UpdateDeviceAdd(void);
 
 EXTERNCPP void SetUnitVis(void);
