@@ -6618,6 +6618,7 @@ void HVACNodeValueMenu(int value){
   if(hvacvalsinfo->times==NULL){
     ReadHVACData();
   }
+  hvacnodevar_index = -1;
   for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
     hvacvaldata *hi;
 
@@ -6628,6 +6629,7 @@ void HVACNodeValueMenu(int value){
     else{
       hi->vis = 0;
     }
+    if(hi->vis==1)hvacnodevar_index = i;
   }
   updatemenu = 1;
 }
@@ -6641,6 +6643,7 @@ void HVACDuctValueMenu(int value){
   if(hvacvalsinfo->times==NULL){
     ReadHVACData();
   }
+  hvacductvar_index = -1;
   for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
     hvacvaldata *hi;
 
@@ -6651,6 +6654,7 @@ void HVACDuctValueMenu(int value){
     else{
       hi->vis = 0;
     }
+    if(hi->vis==1)hvacductvar_index = i;
   }
   updatemenu = 1;
 }
@@ -9340,7 +9344,7 @@ updatemenu=0;
 
         labeli = hi->label.longlabel;
         strcpy(label, "");
-        if(hi->vis == 1)strcat(label, "*");
+        if(hvacnodevar_index == i)strcat(label, "*");
         strcat(label, labeli);
         glutAddMenuEntry(label, i);
       }
@@ -9354,7 +9358,7 @@ updatemenu=0;
 
         labeli = hi->label.longlabel;
         strcpy(label, "");
-        if(hi->vis == 1)strcat(label, "*");
+        if(hvacductvar_index == i)strcat(label, "*");
         strcat(label, labeli);
         glutAddMenuEntry(label, i);
       }

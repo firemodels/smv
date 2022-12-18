@@ -1334,13 +1334,10 @@ typedef struct _hvacvaldata{
 
 typedef struct _hvacvalsdata {
   char *file;
-  int n_node_vars, n_duct_vars;
+  int n_node_vars, n_duct_vars, ntimes;
   float *times;
   hvacvaldata *node_vars, *duct_vars;
 } hvacvalsdata;
-
-/* --------------------------  menudata ------------------------------------ */
-
 
 /* --------------------------  menudata ------------------------------------ */
 
