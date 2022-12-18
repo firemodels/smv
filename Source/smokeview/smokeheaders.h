@@ -35,6 +35,10 @@ EXTERNCPP void SplitCB(int var);
 EXTERNCPP void SetHVACInfo(void);
 EXTERNCPP void DrawHVACS(void);
 EXTERNCPP hvacnodedata *GetHVACNode(hvacdata *hvaci, int node_id);
+EXTERNCPP void InitHvacData(hvacvaldata *hi);
+EXTERNCPP void ReadHVACData(void);
+
+
 
 #ifdef pp_REFRESH
 EXTERNCPP void PeriodicRefresh(int var);
