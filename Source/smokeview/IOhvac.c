@@ -232,8 +232,6 @@ void ReadHVACData(void){
   n_ducts      = parms[2];
   n_duct_vars  = parms[3];
   header_size  = 4 + 4 * 4 + 4;                       // n_node_out n_node_vars n_duct_out n_ductd_vars
-  header_size += 4 + 4 * n_nodes + 4;                 // list of valid node indices
-  header_size += 4 + 4 * n_ducts + 4;                 // list of valid duct indices
   frame_size   = 4 + 4 + 4;                           // time
   frame_size  += n_nodes * (4 + 4 * n_node_vars + 4); // node data
   frame_size  += n_ducts * (4 + 4 * n_duct_vars + 4); // duct data
@@ -273,7 +271,6 @@ void ReadHVACData(void){
     FSEEK(stream, 4, SEEK_CUR); fread(&time, 4, 1, stream); FSEEK(stream, 4, SEEK_CUR);
     times[iframe] = time;
     
-
     for(j = 0;j < n_nodes;j++){
       int k;
 
