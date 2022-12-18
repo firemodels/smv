@@ -1106,6 +1106,10 @@ void DrawHVAC(hvacdata *hvaci){
   }
   glEnd();
 
+  uc_color[0] = CLAMP(hvaci->node_color[0], 0, 255);
+  uc_color[1] = CLAMP(hvaci->node_color[1], 0, 255);
+  uc_color[2] = CLAMP(hvaci->node_color[2], 0, 255);
+  glColor3ubv(uc_color);
   if(hvaci->show_node_labels == 1){
     for(i = 0; i < nhvacnodeinfo; i++){
       hvacnodedata* nodei;
