@@ -227,7 +227,7 @@ void InitHvacData(hvacvaldata *hi){
 
 /* ------------------ ReadHVACData ------------------------ */
 
-void ReadHVACData(void){
+void ReadHVACData(int flag){
   FILE *stream = NULL;
   float node_buffer[1000], duct_buffer[1000], *times;
   int parms[4], n_nodes, n_node_vars, n_ducts, n_duct_vars;
@@ -236,6 +236,25 @@ void ReadHVACData(void){
   int i, iframe;
 
   if(hvacvalsinfo == NULL)return;
+  FREEMEMORY(hvacvalsinfo->times);
+
+  for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
+    hvacvaldata *hi;
+
+    hi = hvacvalsinfo->duct_vars + i;
+    FREEMEMORY(hi->vals);
+    FREEMEMORY(hi->ivals);
+  }
+  
+  for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
+    hvacvaldata *hi;
+
+    hi = hvacvalsinfo->node_vars + i;
+    FREEMEMORY(hi->vals);
+    FREEMEMORY(hi->ivals);
+  }
+  if(flag==HVAC_UNLOAD)return;
+
   stream = fopen(hvacvalsinfo->file, "rb");
   if(stream == NULL)return;
 
@@ -259,9 +278,7 @@ void ReadHVACData(void){
     hvacvaldata *hi;
 
     hi = hvacvalsinfo->duct_vars + i;
-    FREEMEMORY(hi->vals);
     NewMemory((void **)&hi->vals, n_ducts*nframes * sizeof(float));
-    FREEMEMORY(hi->ivals);
     NewMemory((void **)&hi->ivals, n_ducts*nframes * sizeof(unsigned char));
   }
   for(i = 0;i < hvacvalsinfo->n_node_vars;i++){

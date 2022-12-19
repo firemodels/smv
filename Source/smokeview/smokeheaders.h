@@ -36,7 +36,7 @@ EXTERNCPP void SetHVACInfo(void);
 EXTERNCPP void DrawHVACS(void);
 EXTERNCPP hvacnodedata *GetHVACNode(hvacdata *hvaci, int node_id);
 EXTERNCPP void InitHvacData(hvacvaldata *hi);
-EXTERNCPP void ReadHVACData(void);
+EXTERNCPP void ReadHVACData(int flag);
 EXTERNCPP int IsHVACVisible(void);
 
 #ifdef pp_REFRESH

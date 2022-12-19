@@ -3239,6 +3239,10 @@ void LoadUnloadMenu(int value){
     if(scriptoutstream!=NULL){
       fprintf(scriptoutstream,"UNLOADALL\n");
     }
+    if(nhvacinfo>0){
+      void LoadHVACMenu(int var);
+      LoadHVACMenu(MENU_HVAC_UNLOAD);
+    }
     if(nvolrenderinfo>0){
       LoadVolsmoke3DMenu(UNLOAD_ALL);
     }
@@ -6611,8 +6615,6 @@ void HVACNetworkMenu(int value){
   GLUTPOSTREDISPLAY;
 }
 
-
-
 /* ------------------ SetHVACNodeIndex ------------------------ */
 
 int SetHVACNodeIndex(int value){
@@ -6632,6 +6634,33 @@ int SetHVACNodeIndex(int value){
     if(hi->vis == 1)return_val = i;
   }
   return return_val;
+}
+
+/* ------------------ SetAllHVACDucts ------------------------ */
+
+void SetHVACDuct(void){
+  int i;
+
+  for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
+    hvacvaldata *hi;
+
+    hi = hvacvalsinfo->duct_vars + i;
+    if(i==0){
+      hi->vis = 1;
+    }
+    else{
+      hi->vis = 0;
+    }
+  }
+  hvacductvar_index = 0;
+  if(IsHVACVisible()==0){
+    for(i = 0; i < nhvacinfo; i++){
+      hvacdata *hvaci;
+
+      hvaci = hvacinfo + i;
+      hvaci->display = 1;
+    }
+  }
 }
 
 /* ------------------ SetHVACDuctIndex ------------------------ */
@@ -6661,7 +6690,7 @@ void HVACNodeValueMenu(int value){
   int i;
 
   if(hvacvalsinfo->times==NULL){
-    ReadHVACData();
+    ReadHVACData(HVAC_LOAD);
   }
   hvacnodevar_index = SetHVACNodeIndex(value);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
@@ -6686,7 +6715,7 @@ void HVACDuctValueMenu(int value){
   int i;
 
   if(hvacvalsinfo->times==NULL){
-    ReadHVACData();
+    ReadHVACData(HVAC_LOAD);
   }
   hvacductvar_index = SetHVACDuctIndex(value);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
@@ -6703,6 +6732,31 @@ void HVACDuctValueMenu(int value){
   }
   updatemenu = 1;
   GLUTPOSTREDISPLAY;
+}
+
+/* ------------------ LoadHVACMenu ------------------------ */
+
+void LoadHVACMenu(int value){
+  switch(value){
+    case MENU_HVAC_LOAD:
+      ReadHVACData(HVAC_LOAD);
+      SetHVACDuct();
+      plotstate = GetPlotState(DYNAMIC_PLOTS);
+      UpdateTimes();
+      GLUTPOSTREDISPLAY;      
+      break;
+    case MENU_HVAC_UNLOAD:
+      hvacnodevar_index = SetHVACNodeIndex(-1);
+      hvacductvar_index = SetHVACDuctIndex(-1);
+      ReadHVACData(HVAC_UNLOAD);
+      plotstate = GetPlotState(DYNAMIC_PLOTS);
+      UpdateTimes();
+      GLUTPOSTREDISPLAY;
+      break;
+    default:
+      ASSERT(FFALSE);
+      break;
+  }
 }
 
 /* ------------------ HVACMenu ------------------------ */
@@ -8164,7 +8218,7 @@ static int loadplot3dmenu=0, unloadvslicemenu=0, unloadslicemenu=0;
 static int loadsmoke3dmenu = 0;
 static int loadvolsmoke3dmenu=0,showvolsmoke3dmenu=0;
 static int unloadsmoke3dmenu=0,unloadvolsmoke3dmenu=0;
-static int unloadpartmenu=0, loadslicemenu=0, loadmultislicemenu=0;
+static int unloadpartmenu=0, loadslicemenu=0, loadmultislicemenu = 0, loadhvacmenu = 0;
 static int *loadsubvslicemenu=NULL, nloadsubvslicemenu=0;
 static int *loadsubslicemenu=NULL, nloadsubslicemenu=0;
 static int *loadsubpatchmenu_b = NULL, *nsubpatchmenus_b=NULL, iloadsubpatchmenu_b=0, nloadsubpatchmenu_b = 0;
@@ -11483,6 +11537,19 @@ updatemenu=0;
   GLUTADDSUBMENU(_("Mouse"),mousehelpmenu);
   GLUTADDSUBMENU(_("About"),aboutmenu);
 
+  /* --------------------------------hvac menu -------------------------- */
+
+  if(nhvacinfo > 0){
+    char menulabel[1024];
+
+    CREATEMENU(loadhvacmenu, LoadHVACMenu);
+    strcpy(menulabel, "");
+    if(hvacvalsinfo->times!=NULL)strcat(menulabel, "*");
+    strcat(menulabel, hvacvalsinfo->file);
+    glutAddMenuEntry(menulabel, MENU_HVAC_LOAD);
+    glutAddMenuEntry("Unload",  MENU_HVAC_UNLOAD);
+  }
+
   /* --------------------------------particle menu -------------------------- */
 
   if(npartinfo>0){
@@ -12730,6 +12797,9 @@ updatemenu=0;
       }
       if(glui_active==1){
         glutAddMenuEntry("-",MENU_DUMMY);
+      }
+      if(nhvacinfo > 0){
+        GLUTADDSUBMENU("HVAC", loadhvacmenu);
       }
       GLUTADDSUBMENU(_("Configuration files"),smokeviewinimenu);
       GLUTADDSUBMENU(_("Scripts"),scriptmenu);
