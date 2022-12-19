@@ -1574,7 +1574,7 @@ void SetIsoLabels(float smin, float smax,
 
   *errorcode=0;
   PRINTF("setting up iso labels \n");
-  GetIsoLabels(smin,smax,nrgb,sb->colorlabels,sb->levels256);
+  GetColorbarLabels(smin,smax,nrgb,sb->colorlabels,sb->levels256);
 }
 
 /* ------------------ CompareIsoTriangles ------------------------ */

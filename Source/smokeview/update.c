@@ -700,6 +700,8 @@ void UpdateShow(void){
     if(slicecolorbarflag==1||vslicecolorbarflag==1)num_colorbars++;
     if(patchflag==1&&wall_cell_color_flag==0)num_colorbars++;
     if(ReadZoneFile==1)num_colorbars++;
+    if(hvacductvar_index >= 0 || hvacnodevar_index >= 0)num_colorbars++;
+
     if(tisoflag==1&&1==0){ // disable isosurface colorbar label for now
       showiso_colorbar = 1;
       num_colorbars++;

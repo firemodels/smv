@@ -381,6 +381,18 @@ void ReadHVACData(int flag){
       }
     }
   }
+  for(i = 0;i < n_node_vars;i++){
+    hvacvaldata *hi;
+
+    hi = hvacvalsinfo->node_vars+i;
+    GetColorbarLabels(hi->valmin, hi->valmax,nrgb,hi->colorlabels,hi->levels256);
+  }
+  for(i = 0;i < n_duct_vars;i++){
+    hvacvaldata *hi;
+
+    hi = hvacvalsinfo->duct_vars+i;
+    GetColorbarLabels(hi->valmin, hi->valmax, nrgb, hi->colorlabels, hi->levels256);
+  }
 }
 
 /* ------------------ SetHVACInfo ------------------------ */

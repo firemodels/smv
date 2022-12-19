@@ -91,7 +91,7 @@ EXTERNCPP void InitStartupDirs(void);
 
 EXTERNCPP int GetFontHeight(void);
 
-EXTERNCPP void UpdateShowSliceColorbar(int *showcfast_arg, int *show_slice_colorbar_arg);
+EXTERNCPP void UpdateShowColorbar(int *showcfast_arg, int *show_slice_colorbar_arg, int *show_hvac_colorbar_arg);
 
 EXTERNCPP void UpdateSliceSkip(void);
 
@@ -1092,7 +1092,7 @@ EXTERNCPP void GetPlot3DColors(int iplot, float *ttmin, float *ttmax,
               char **labels,char **labelsiso, float *tlevels, float *tlevels256,
               int *extreme_min, int *extreme_max, int flag
               );
-EXTERNCPP void GetSliceLabels(float tmin, float tmax, int nlevel,
+EXTERNCPP void GetColorbarLabels(float tmin, float tmax, int nlevel,
               char labels[12][11],float *tlevels256);
 EXTERNCPP void UpdatePart5Extremes(void);
 #ifdef pp_SLICEVAL
@@ -1109,7 +1109,6 @@ EXTERNCPP void GetSliceColors(const float *t, int nt, unsigned char *it,
 EXTERNCPP meshdata *GetLoadedIsoMesh(void);
 EXTERNCPP void SetIsoLabels(float smin, float smax,
                     isodata *sd, int *errorcode);
-EXTERNCPP void GetIsoLabels(float tmin, float tmax, int nlevel,char labels[12][11],float *tlevels256);
 EXTERNCPP int  SmokeviewImage2File(char *directory, char *GIFfilename, int rendertype, int woffset, int width, int hoffset, int height);
 #ifdef pp_LUA
 EXTERNCPP int SVimage2var(int rendertype, int woffset, int width, int hoffset, int height, gdImagePtr *RENDERimage);
