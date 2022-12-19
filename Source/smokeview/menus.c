@@ -6631,7 +6631,20 @@ void HVACNodeValueMenu(int value){
     }
     if(hi->vis==1)hvacnodevar_index = i;
   }
+  plotstate = GetPlotState(DYNAMIC_PLOTS);
+  UpdateTimes();
+  if(hvacductvar_index >= 0 || hvacnodevar_index >= 0){
+    if(IsHVACVisible()==0){
+      for(i = 0; i < nhvacinfo; i++){
+        hvacdata *hvaci;
+
+        hvaci = hvacinfo + i;
+        hvaci->display = 1;
+      }
+    }
+  }
   updatemenu = 1;
+  GLUTPOSTREDISPLAY;
 }
   
 
@@ -6656,7 +6669,20 @@ void HVACDuctValueMenu(int value){
     }
     if(hi->vis==1)hvacductvar_index = i;
   }
+  plotstate = GetPlotState(DYNAMIC_PLOTS);
+  UpdateTimes();
+  if(hvacductvar_index >= 0 || hvacnodevar_index >= 0){
+    if(IsHVACVisible()==0){
+      for(i = 0; i < nhvacinfo; i++){
+        hvacdata *hvaci;
+
+        hvaci = hvacinfo + i;
+        hvaci->display = 1;
+      }
+    }
+  }
   updatemenu = 1;
+  GLUTPOSTREDISPLAY;
 }
 
 /* ------------------ HVACMenu ------------------------ */

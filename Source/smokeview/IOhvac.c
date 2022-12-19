@@ -115,6 +115,20 @@ int CompareHvacConnect(const void *arg1, const void *arg2){
   return 0;
 }
 
+/* ------------------ IsHVACVisible ------------------------ */
+
+int IsHVACVisible(void){
+  int i;
+
+  for(i = 0; i < nhvacinfo; i++){
+    hvacdata *hvaci;
+
+    hvaci = hvacinfo + i;
+    if(hvaci->display == 1)return 1;
+  }
+  return 0;
+}
+
 /* ------------------ HaveHVACConnect ------------------------ */
 
 int HaveHVACConnect(int val, hvacconnectdata *vals, int nvals){
