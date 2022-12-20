@@ -332,7 +332,7 @@ void ReadHVACData(int flag){
         hvacvaldata *hk;
 
         hk = hvacvalsinfo->duct_vars + k;
-        hk->vals[iframe + j * nframes] = node_buffer[k];
+        hk->vals[iframe + j * nframes] = duct_buffer[k];
       }
     }
   }
