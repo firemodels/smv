@@ -2900,7 +2900,7 @@ void DrawVerticalColorbarRegLabels(void){
     hvacrange = tttmax - tttmin;
     glPushMatrix();
     glTranslatef(vcolorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
-    glTranslatef(-leftpatch*(colorbar_label_width + h_space), 0.0, 0.0);
+    glTranslatef(-lefthvac*(colorbar_label_width + h_space), 0.0, 0.0);
     if(global_colorbar_index != -1){
       char hvaclabel[256], *hvac_colorlabel_ptr = NULL;
       float vert_position;
@@ -2960,7 +2960,7 @@ void DrawVerticalColorbarRegLabels(void){
       vcolorbar_left_pos - colorbar_label_width,
       vcolorbar_top_pos + v_space + vcolorbar_delta,
       0.0);
-    glTranslatef(-leftslice*(colorbar_label_width + h_space), 0.0, 0.0);
+    glTranslatef(-lefthvac*(colorbar_label_width + h_space), 0.0, 0.0);
     OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "HVAC");
     OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, slabel);
     OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
