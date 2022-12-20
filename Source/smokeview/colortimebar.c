@@ -2881,40 +2881,6 @@ void DrawVerticalColorbarRegLabels(void){
     glPopMatrix();
   }
 
-
-  // -------------- HVAC file top labels ------------
-
-  if(show_hvac_colorbar_local==1){
-    char *slabel, *unitlabel;
-
-    if(hvacnodevar_index >= 0){
-      hvacvaldata *hi;
-
-      hi = hvacvalsinfo->node_vars + hvacnodevar_index;
-      slabel = hi->label.shortlabel;
-      unitlabel = hi->label.unit;
-    }
-    if(hvacductvar_index >= 0){
-      hvacvaldata *hi;
-
-      hi = hvacvalsinfo->duct_vars + hvacductvar_index;
-      slabel = hi->label.shortlabel;
-      unitlabel = hi->label.unit;
-    }
-
-    glPushMatrix();
-    glTranslatef(
-      vcolorbar_left_pos - colorbar_label_width,
-      vcolorbar_top_pos + v_space + vcolorbar_delta,
-      0.0);
-    glTranslatef(-leftslice*(colorbar_label_width + h_space), 0.0, 0.0);
-    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "HVAC");
-    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, slabel);
-    OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
-    glPopMatrix();
-  }
-
-
   // -------------- HVAC left labels ------------
 
   if(show_hvac_colorbar_local==1){
@@ -2966,6 +2932,39 @@ void DrawVerticalColorbarRegLabels(void){
       OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
       max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(colorbar_labels[i]));
     }
+    glPopMatrix();
+  }
+
+  // -------------- HVAC file top labels ------------
+
+  if(show_hvac_colorbar_local==1){
+    char *slabel, *unitlabel;
+
+    if(hvacnodevar_index >= 0){
+      hvacvaldata *hi;
+
+      hi = hvacvalsinfo->node_vars + hvacnodevar_index;
+      slabel = hi->label.shortlabel;
+      unitlabel = hi->label.unit;
+    }
+    if(hvacductvar_index >= 0){
+      hvacvaldata *hi;
+
+      hi = hvacvalsinfo->duct_vars + hvacductvar_index;
+      slabel = hi->label.shortlabel;
+      unitlabel = hi->label.unit;
+    }
+
+    glPushMatrix();
+    glTranslatef(
+      vcolorbar_left_pos - colorbar_label_width,
+      vcolorbar_top_pos + v_space + vcolorbar_delta,
+      0.0);
+    glTranslatef(-leftslice*(colorbar_label_width + h_space), 0.0, 0.0);
+    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "HVAC");
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, slabel);
+    OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0, 0, foreground_color, exp_factor_label);
     glPopMatrix();
   }
 
