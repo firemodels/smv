@@ -234,6 +234,7 @@ void ReadHVACData(int flag){
   int frame_size, header_size, nframes;
   FILE_SIZE file_size;
   int i, iframe;
+  int *duct_ncells;
 
   if(hvacvalsinfo == NULL)return;
   FREEMEMORY(hvacvalsinfo->times);
@@ -265,11 +266,15 @@ void ReadHVACData(int flag){
   n_ducts      = parms[2];
   n_duct_vars  = parms[3];
   header_size  = 4 + 4 * 4 + 4;                       // n_node_out n_node_vars n_duct_out n_ductd_vars
+  header_size += 4 + 4 * n_ducts + 4;                 // number of cells in each duct
   frame_size   = 4 + 4 + 4;                           // time
   frame_size  += n_nodes * (4 + 4 * n_node_vars + 4); // node data
   frame_size  += n_ducts * (4 + 4 * n_duct_vars + 4); // duct data
   file_size    = GetFileSizeSMV(hvacvalsinfo->file);
   nframes      = (file_size - header_size) / frame_size;
+
+  NewMemory((void **)&duct_ncells, n_ducts * sizeof(int));
+  FSEEK(stream, 4, SEEK_CUR); fread(duct_ncells, 4, n_ducts, stream); FSEEK(stream, 4, SEEK_CUR);
 
   FREEMEMORY(hvacvalsinfo->times);
   NewMemory((void **)&hvacvalsinfo->times, nframes * sizeof(float));
@@ -317,6 +322,12 @@ void ReadHVACData(int flag){
       int k;
 
       FSEEK(stream, 4, SEEK_CUR); fread(duct_buffer, 4, n_duct_vars, stream); FSEEK(stream, 4, SEEK_CUR);
+      if(duct_ncells[j] > 1){ // for now skip over extra cell data
+        int skip;
+
+        skip = (duct_ncells[j] - 1) * (4 + n_duct_vars * 4 + 4);
+        FSEEK(stream, skip, SEEK_CUR);
+      }
       for(k = 0;k < n_duct_vars;k++){
         hvacvaldata *hk;
 
@@ -326,6 +337,7 @@ void ReadHVACData(int flag){
     }
   }
   fclose(stream);
+  FREEMEMORY(duct_ncells);
 
   for(i = 0;i < n_node_vars;i++){
     hvacvaldata *hi;
