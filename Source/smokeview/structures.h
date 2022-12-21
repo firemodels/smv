@@ -200,18 +200,8 @@ typedef struct _propdata {
   int ntextures;
   char **texturefiles, **vars_indep, **svals;
   int *vars_indep_index, vars_dep_index[PROPVARMAX];
-#ifdef pp_EVAC
-  int fvars_evac_index[PROPVARMAX];
-#endif
   int nvars_indep, nvars_dep;
-#ifdef pp_EVAC
-  int nvars_evac;
-#endif
   float *fvals, fvars_dep[PROPVARMAX];
-#ifdef pp_EVAC
-  float fvars_evac[PROPVARMAX];
-  int draw_evac;
-#endif
   int tag_number;
 } propdata;
 
@@ -391,8 +381,8 @@ typedef struct _surfdata {
                3 - smoothed block
                4 - invisible
              */
-  float *color, emis, temp_ignition;
-  float transparent_level;
+  float *color, *color_orig, emis, temp_ignition;
+  float transparent_level, transparent_level_orig;
   int iso_level;
   float t_width, t_height;
   texturedata *textureinfo;
@@ -402,10 +392,11 @@ typedef struct _surfdata {
   int transparent;
   int used_by_obst,used_by_vent;
   int used_by_geom;
-  int glui_color[3];
+  int geom_surf_color[3];
   float axis[3];
   int in_geom_list;
   int ntris;
+  int in_color_dialog;
   float geom_area;
 } surfdata;
 
@@ -487,7 +478,7 @@ typedef struct _blockagedata {
   int *showtimelist;
   unsigned char *showhide;
   int nshowtime, show;
-  char *label;
+  char *label, *id_label;
   float *color;
   int colorindex;
   int useblockcolor;
@@ -937,9 +928,6 @@ typedef struct _tourdata {
 
 typedef struct _tokendata {
   float var, *varptr, default_val;
-#ifdef pp_EVAC
-  float evac_var;
-#endif
   int command,loc,type,reads,nvars,noutvars,is_label,is_string,is_texturefile;
   struct _sv_object *included_object;
   int included_frame;
@@ -957,13 +945,7 @@ typedef struct _sv_object_frame {
   int display_list_ID;
   int *symbols, nsymbols;
   tokendata *tokens, **command_list;
-#ifdef pp_EVAC
-  tokendata *evac_tokens[NEVAC_TOKENS];
-#endif
   int ntokens, ncommands, ntextures;
-#ifdef pp_EVAC
-  int nevac_tokens;
-#endif
   struct _sv_object *device;
   struct _sv_object_frame *prev, *next;
 } sv_object_frame;
@@ -1241,9 +1223,6 @@ typedef struct _partdata {
   int seq_id, autoload, loaded, skipload, request_load, display, reload, finalize;
   int loadstatus, boundstatus;
   int compression_type;
-#ifdef pp_EVAC
-  int evac;
-#endif
   int blocknumber;
   int *timeslist, ntimes, itime;
   FILE_SIZE bound_file_size;
@@ -1278,6 +1257,90 @@ typedef struct _partdata {
 typedef struct _compdata {
   int offset, size;
 } compdata;
+
+
+#define DUCT_COMPONENT_TEXT    0
+#define DUCT_COMPONENT_SYMBOLS 1
+#define DUCT_COMPONENT_HIDE    2
+
+#define NODE_FILTERS_LABELS  0
+#define NODE_FILTERS_SYMBOLS 1
+#define NODE_FILTERS_HIDE    2
+
+#define DUCT_XYZ 0
+#define DUCT_YXZ 1
+#define DUCT_XZY 2
+#define DUCT_ZXY 3
+#define DUCT_YZX 4
+#define DUCT_ZYX 5
+
+
+/* --------------------------  hvacconnectdata ------------------------------------ */
+
+typedef struct hvacconnectdata {
+  int index, display;
+} hvacconnectdata;
+
+
+/* --------------------------  hvacnodedata ------------------------------------ */
+
+typedef struct _hvacnodedata {
+  char *node_name, *vent_name, *duct_name, *network_name;
+  char c_filter[10];
+  int node_id, filter, use_node, connect_id;
+  hvacconnectdata *connect;
+  struct _hvacductdata *duct;
+  float xyz[3], xyz_orig[3];
+} hvacnodedata;
+
+/* --------------------------  hvacductdata ------------------------------------ */
+
+typedef struct _hvacductdata {
+  char *duct_name, *network_name, c_component[4];
+  int duct_id, component, nduct_cells, n_waypoints;
+  int node_id_from, node_id_to, use_duct, connect_id;
+  hvacconnectdata *connect;
+  int nact_times, *act_states, metro_path;
+  float *act_times;
+  float xyz_symbol[3], xyz_symbol_metro[3];
+  float xyz_label[3],  xyz_label_metro[3];
+  float xyz_metro[6];
+  float normal[3], normal_metro[3];
+  hvacnodedata* node_from, * node_to;
+  float *waypoints0, *waypoints;
+} hvacductdata;
+
+/* --------------------------  hvacdata ------------------------------------ */
+
+typedef struct _hvacdata {
+  char *network_name;
+  int display;
+  int show_node_labels, show_duct_labels;
+  int show_filters, show_component;
+  float node_size, component_size, duct_width, filter_size;
+  int duct_color[3], node_color[3];
+} hvacdata;
+
+/* --------------------------  hvacvaldata ------------------------------------ */
+
+typedef struct _hvacvaldata{
+  float *vals, valmin, valmax;
+  unsigned char *ivals;
+  int vis, nvals;
+  char  colorlabels[12][11];
+  float colorvalues[12];
+  float levels256[256];
+  flowlabels label;
+} hvacvaldata;
+
+/* --------------------------  _hvacvalsdata ------------------------------------ */
+
+typedef struct _hvacvalsdata {
+  char *file;
+  int n_node_vars, n_duct_vars, ntimes;
+  float *times;
+  hvacvaldata *node_vars, *duct_vars;
+} hvacvalsdata;
 
 /* --------------------------  menudata ------------------------------------ */
 
@@ -1584,6 +1647,7 @@ typedef struct _patchdata {
   time_t modtime;
   int finalize;
   histogramdata *histogram;
+  int histogram_nframes;
   bounddata bounds;
   boundsdata *bounds2;
 } patchdata;

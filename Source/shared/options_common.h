@@ -46,8 +46,6 @@
 //*** needed when using Windows Intel compilers
 //    to prevent warnings/errors
 
-#ifdef INTEL_COMPILER_ANY
-
 #ifndef _CRT_SECURE_NO_DEPRECATE
 #define _CRT_SECURE_NO_DEPRECATE
 #endif
@@ -62,8 +60,6 @@
 
 #ifndef HAVE_STRUCT_TIMESPEC
 #define HAVE_STRUCT_TIMESPEC
-#endif
-
 #endif
 
 #include "pragmas.h"

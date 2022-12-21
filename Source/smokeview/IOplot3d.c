@@ -523,8 +523,8 @@ void DrawPlot3dTexture(meshdata *meshi){
   float *xplt, *yplt, *zplt;
   int ibar, jbar, kbar;
   isosurface *currentsurfptr,*currentsurf2ptr;
-  unsigned char *yzcolorbase, *xzcolorbase, *xycolorbase;
 #ifndef pp_PLOT3DVAL
+  unsigned char *yzcolorbase, *xzcolorbase, *xycolorbase;
   contour *plot3dcontour1ptr, *plot3dcontour2ptr, *plot3dcontour3ptr;
   float *yzcolortbase, *xzcolortbase, *xycolortbase;
 #endif
@@ -588,11 +588,9 @@ void DrawPlot3dTexture(meshdata *meshi){
   plot3dcontour1ptr=&meshi->plot3dcontour1;
   plot3dcontour2ptr=&meshi->plot3dcontour2;
   plot3dcontour3ptr=&meshi->plot3dcontour3;
-#endif
-  yzcolorbase=meshi->yzcolorbase;
-  xzcolorbase=meshi->xzcolorbase;
-  xycolorbase=meshi->xycolorbase;
-#ifndef pp_PLOT3DVAL
+  yzcolorbase = meshi->yzcolorbase;
+  xzcolorbase = meshi->xzcolorbase;
+  xycolorbase = meshi->xycolorbase;
   yzcolortbase=meshi->yzcolortbase;
   xzcolortbase=meshi->xzcolortbase;
   xycolortbase=meshi->xycolortbase;
@@ -665,9 +663,9 @@ void DrawPlot3dTexture(meshdata *meshi){
 #ifdef pp_PLOT3DVAL
             float val[4];
 
-            val[0] = GET_QDATA(plotx, j, k, plotn-1);
-            val[1] = GET_QDATA(plotx, j, k+1, plotn-1);
-            val[2] = GET_QDATA(plotx, j+1, k, plotn-1);
+            val[0] = GET_QDATA(plotx, j,   k,   plotn-1);
+            val[1] = GET_QDATA(plotx, j,   k+1, plotn-1);
+            val[2] = GET_QDATA(plotx, j+1, k,   plotn-1);
             val[3] = GET_QDATA(plotx, j+1, k+1, plotn-1);
             val[0] = CLAMP(PLOT3DCONVERT(val[0], ttmin, ttmax), 0.0, 1.0);
             val[1] = CLAMP(PLOT3DCONVERT(val[1], ttmin, ttmax), 0.0, 1.0);
@@ -719,9 +717,11 @@ void DrawPlot3dTexture(meshdata *meshi){
     /* draw yz vectors */
 
     if(visVector==1){
+#ifndef pp_PLOT3DVAL
       unsigned char *yzcolor;
 
       yzcolor=yzcolorbase;
+#endif
       dx_yzcopy=dx_yz; dy_yzcopy=dy_yz; dz_yzcopy=dz_yz;
       AntiAliasLine(ON);
       glLineWidth(vectorlinewidth);
@@ -730,9 +730,18 @@ void DrawPlot3dTexture(meshdata *meshi){
         dx_yzcopy = dx_yz+j*(kbar+1);
         dy_yzcopy = dy_yz+j*(kbar+1);
         dz_yzcopy = dz_yz+j*(kbar+1);
+#ifndef pp_PLOT3DVAL
         yzcolor = yzcolorbase + j*(kbar+1);
+#endif
         for(k=0; k<=kbar; k+=vectorskip){
+#ifdef pp_PLOT3DVAL
+          float val;
+
+          val = GET_QDATA(plotx, j,   k,   plotn-1);
+          colorindex = 255*CLAMP(PLOT3DCONVERT(val, ttmin, ttmax), 0.0, 1.0);
+#else
           colorindex=*yzcolor;
+#endif
           vector_color = rgb_plot3d + 4*colorindex;
           if((iblank==NULL||iblank[IJKNODE(plotx,j,k)]==GAS)&&vector_color[3]>0.5){
             glColor4fv(vector_color);
@@ -745,7 +754,9 @@ void DrawPlot3dTexture(meshdata *meshi){
           dx_yzcopy+=vectorskip;
           dy_yzcopy+=vectorskip;
           dz_yzcopy+=vectorskip;
+#ifndef pp_PLOT3DVAL
           yzcolor+=vectorskip;
+#endif
         }
       }
       glEnd();
@@ -753,7 +764,9 @@ void DrawPlot3dTexture(meshdata *meshi){
 
       /* draw points for yz vectors */
 
+#ifndef pp_PLOT3DVAL
       yzcolor=yzcolorbase;
+#endif
       dx_yzcopy=dx_yz;
       dy_yzcopy=dy_yz;
       dz_yzcopy=dz_yz;
@@ -763,9 +776,18 @@ void DrawPlot3dTexture(meshdata *meshi){
         dx_yzcopy = dx_yz+j*(kbar+1);
         dy_yzcopy = dy_yz+j*(kbar+1);
         dz_yzcopy = dz_yz+j*(kbar+1);
+#ifndef pp_PLOT3DVAL
         yzcolor = yzcolorbase + j*(kbar+1);
+#endif
         for(k=0; k<=kbar; k+=vectorskip){
+#ifdef pp_PLOT3DVAL
+          float val;
+
+          val = GET_QDATA(plotx, j,   k,   plotn-1);
+          colorindex = 255*CLAMP(PLOT3DCONVERT(val, ttmin, ttmax), 0.0, 1.0);
+#else
           colorindex=*yzcolor;
+#endif
           vector_color = rgb_plot3d + 4*colorindex;
           if((iblank==NULL||iblank[IJKNODE(plotx,j,k)]==GAS)&&vector_color[3]>0.5){
             glColor4fv(vector_color);
@@ -778,7 +800,9 @@ void DrawPlot3dTexture(meshdata *meshi){
           dx_yzcopy+=vectorskip;
           dy_yzcopy+=vectorskip;
           dz_yzcopy+=vectorskip;
+#ifndef pp_PLOT3DVAL
           yzcolor+=vectorskip;
+#endif
         }
       }
       glEnd();
@@ -865,9 +889,13 @@ void DrawPlot3dTexture(meshdata *meshi){
     /* draw xz vectors */
 
     if(visVector==1){
+#ifndef pp_PLOT3DVAL
       unsigned char*xzcolor;
+#endif
 
+#ifndef pp_PLOT3DVAL
       xzcolor=xzcolorbase;
+#endif
       AntiAliasLine(ON);
       glLineWidth(vectorlinewidth);
       glBegin(GL_LINES);
@@ -875,9 +903,18 @@ void DrawPlot3dTexture(meshdata *meshi){
         dx_xzcopy=dx_xz+i*(kbar+1);
         dy_xzcopy=dy_xz+i*(kbar+1);
         dz_xzcopy=dz_xz+i*(kbar+1);
+#ifndef pp_PLOT3DVAL
         xzcolor = xzcolorbase + i*(kbar+1);
+#endif
         for(k=0; k<=kbar; k+=vectorskip){
+#ifdef pp_PLOT3DVAL
+          float val;
+
+          val = GET_QDATA(i, ploty,   k,   plotn-1);
+          colorindex = 255*CLAMP(PLOT3DCONVERT(val, ttmin, ttmax), 0.0, 1.0);
+#else
           colorindex=*xzcolor;
+#endif
           vector_color = rgb_plot3d + 4*colorindex;
           if((iblank==NULL||iblank[IJKNODE(i,ploty,k)]==GAS)&&vector_color[3]>0.5){
             glColor4fv(vector_color);
@@ -890,7 +927,9 @@ void DrawPlot3dTexture(meshdata *meshi){
           dx_xzcopy+=vectorskip;
           dy_xzcopy+=vectorskip;
           dz_xzcopy+=vectorskip;
+#ifndef pp_PLOT3DVAL
           xzcolor+=vectorskip;
+#endif
         }
       }
       glEnd();
@@ -898,16 +937,27 @@ void DrawPlot3dTexture(meshdata *meshi){
 
       /* draw points for xz vectors */
 
+#ifndef pp_PLOT3DVAL
       xzcolor=xzcolorbase;
+#endif
       glPointSize(vectorpointsize);
       glBegin(GL_POINTS);
       for(i=0; i<=ibar; i+=vectorskip){
         dx_xzcopy=dx_xz+i*(kbar+1);
         dy_xzcopy=dy_xz+i*(kbar+1);
         dz_xzcopy=dz_xz+i*(kbar+1);
+#ifndef pp_PLOT3DVAL
         xzcolor = xzcolorbase + i*(kbar+1);
+#endif
         for(k=0; k<=kbar; k+=vectorskip){
+#ifdef pp_PLOT3DVAL
+          float val;
+
+          val = GET_QDATA(i, ploty,   k,   plotn-1);
+          colorindex = 255*CLAMP(PLOT3DCONVERT(val, ttmin, ttmax), 0.0, 1.0);
+#else
           colorindex=*xzcolor;
+#endif
           vector_color = rgb_plot3d + 4*colorindex;
           if((iblank==NULL||iblank[IJKNODE(i,ploty,k)]==GAS)&&vector_color[3]>0.5){
             glColor4fv(vector_color);
@@ -919,7 +969,9 @@ void DrawPlot3dTexture(meshdata *meshi){
           dx_xzcopy+=vectorskip;
           dy_xzcopy+=vectorskip;
           dz_xzcopy+=vectorskip;
+#ifndef pp_PLOT3DVAL
           xzcolor+=vectorskip;
+#endif
         }
       }
       glEnd();
@@ -1015,9 +1067,13 @@ void DrawPlot3dTexture(meshdata *meshi){
     /* draw xy vectors */
 
     if(visVector==1){
+#ifndef pp_PLOT3DVAL
       unsigned char *xycolor;
+#endif
 
+#ifndef pp_PLOT3DVAL
       xycolor=xycolorbase;
+#endif
       AntiAliasLine(ON);
       glLineWidth(vectorlinewidth);
       glBegin(GL_LINES);
@@ -1025,9 +1081,18 @@ void DrawPlot3dTexture(meshdata *meshi){
         dx_xycopy=dx_xy+i*(jbar+1);
         dy_xycopy=dy_xy+i*(jbar+1);
         dz_xycopy=dz_xy+i*(jbar+1);
+#ifndef pp_PLOT3DVAL
         xycolor = xycolorbase + i*(jbar+1);
+#endif
         for(j=0; j<=jbar; j+=vectorskip){
+#ifdef pp_PLOT3DVAL
+          float val;
+
+          val = GET_QDATA(i, j, plotz,   plotn-1);
+          colorindex = 255*CLAMP(PLOT3DCONVERT(val, ttmin, ttmax), 0.0, 1.0);
+#else
           colorindex=*xycolor;
+#endif
           vector_color = rgb_plot3d + 4*colorindex;
           if((iblank==NULL||iblank[IJKNODE(i,j,plotz)]==GAS)&&vector_color[3]>0.5){
             glColor4fv(vector_color);
@@ -1040,7 +1105,9 @@ void DrawPlot3dTexture(meshdata *meshi){
           dx_xycopy+=vectorskip;
           dy_xycopy+=vectorskip;
           dz_xycopy+=vectorskip;
+#ifndef pp_PLOT3DVAL
           xycolor+=vectorskip;
+#endif
         }
       }
       glEnd();
@@ -1048,16 +1115,27 @@ void DrawPlot3dTexture(meshdata *meshi){
 
       /* draw points for xy vectors */
 
+#ifndef pp_PLOT3DVAL
       xycolor=xycolorbase;
+#endif
       glPointSize(vectorpointsize);
       glBegin(GL_POINTS);
       for(i=0; i<=ibar; i+=vectorskip){
         dx_xycopy=dx_xy+i*(jbar+1);
         dy_xycopy=dy_xy+i*(jbar+1);
         dz_xycopy=dz_xy+i*(jbar+1);
+#ifndef pp_PLOT3DVAL
         xycolor = xycolorbase + i*(jbar+1);
+#endif
         for(j=0; j<=jbar; j+=vectorskip){
+#ifdef pp_PLOT3DVAL
+          float val;
+
+          val = GET_QDATA(i, j, plotz,   plotn-1);
+          colorindex = 255*CLAMP(PLOT3DCONVERT(val, ttmin, ttmax), 0.0, 1.0);
+#else
           colorindex=*xycolor;
+#endif
           vector_color = rgb_plot3d + 4*colorindex;
           if((iblank==NULL||iblank[IJKNODE(i,j,plotz)]==GAS)&&vector_color[3]>0.5){
             glColor4fv(vector_color);
@@ -1070,7 +1148,9 @@ void DrawPlot3dTexture(meshdata *meshi){
           dx_xycopy+=vectorskip;
           dy_xycopy+=vectorskip;
           dz_xycopy+=vectorskip;
+#ifndef pp_PLOT3DVAL
           xycolor+=vectorskip;
+#endif
         }
       }
       glEnd();

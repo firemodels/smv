@@ -102,11 +102,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
     *boundary_label_width = MAX(*boundary_label_width, GetStringWidth(boundary_colorlabel));
   }
 
-#ifdef pp_EVAC
-  if(showevac_colorbar == 1 || (showsmoke == 1 && parttype != 0)){
-#else
   if(showsmoke==1&&parttype!=0){
-#endif
     char partcolorlabel[256];
 
     if(parttype!=0){
@@ -141,6 +137,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
     int i, max_width;
     char sample_label[32];
     int show_slice_colorbar_local, showcfast_local, slice_label_width, boundary_label_width, part_label_width, plot3d_label_width, zone_label_width;
+    int show_hvac_colorbar_local;
 
     strcpy(sample_label, "");
     for(i=0;i<MAX(5,ncolorlabel_digits+nextra);i++){
@@ -148,7 +145,7 @@ void GetColorbarLabelWidth(int show_slice_colorbar_local, int showcfast_local,
     }
     max_width = GetStringWidth(sample_label);
 
-    UpdateShowSliceColorbar(&showcfast_local, &show_slice_colorbar_local);
+    UpdateShowColorbar(&showcfast_local, &show_slice_colorbar_local, &show_hvac_colorbar_local);
     GetColorbarLabelWidth(show_slice_colorbar_local, showcfast_local,
                           &slice_label_width, &boundary_label_width, &part_label_width, &plot3d_label_width, &zone_label_width);
     max_width = MAX(max_width, slice_label_width);

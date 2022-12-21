@@ -16,6 +16,7 @@ GLUI_Spinner *SPINNER_cullgeom_portsize=NULL;
 #endif
 
 GLUI_Listbox *LIST_LB_labels=NULL;
+GLUI_Listbox *LIST_surfs=NULL;
 
 #ifdef pp_REFRESH
 GLUI_Spinner *SPINNER_refresh_rate=NULL;
@@ -35,6 +36,7 @@ GLUI_Spinner *SPINNER_light_az1=NULL;
 GLUI_Spinner *SPINNER_light_elev0=NULL;
 GLUI_Spinner *SPINNER_light_elev1=NULL;
 
+GLUI_Spinner *SPINNER_surf_color[4];
 GLUI_Spinner *SPINNER_LB_time_start=NULL;
 GLUI_Spinner *SPINNER_LB_time_stop=NULL;
 GLUI_Spinner *SPINNER_LB_red=NULL;
@@ -165,6 +167,7 @@ GLUI_Panel *PANEL_font3d=NULL;
 GLUI_Panel *PANEL_LB_tick = NULL;
 GLUI_Panel *PANEL_linewidth = NULL;
 GLUI_Panel *PANEL_offset = NULL;
+GLUI_Panel *PANEL_surfs = NULL;
 
 GLUI_RadioGroup *RADIO_timebar_overlap = NULL;
 GLUI_RadioGroup *RADIO_fontsize = NULL;
@@ -184,9 +187,13 @@ GLUI_Button *BUTTON_label_3=NULL;
 GLUI_Button *BUTTON_label_4=NULL;
 
 #define COLORBAR_EXTREME_RGB 15
-#define COLORBAR_EXTREME 16
-#define FLIP 19
-#define APPLY_VENTOFFSET 20
+#define COLORBAR_EXTREME     16
+#define FLIP                 19
+#define APPLY_VENTOFFSET     20
+
+#define SURFACE_COLOR        101
+#define SURFACE_SELECT       102
+#define SURFACE_REVERT_COLOR 103
 
 #define LB_LIST 0
 #define LB_ADD 1
@@ -590,6 +597,69 @@ void UpdateMenuCB(int var){
   updatemenu = 1;
 }
 
+/* ------------------ SurfaceCB ------------------------ */
+
+void SurfaceCB(int var){
+  updatemenu = 1;
+  switch(var){
+  case SURFACE_REVERT_COLOR:
+    {
+      surfdata *surfi;
+
+      surfi = surfinfo + glui_surf_index;
+      surfi->color = surfi->color_orig;
+      surfi->transparent_level = surfi->transparent_level_orig;
+      SurfaceCB(SURFACE_SELECT);
+      SurfaceCB(SURFACE_COLOR);
+    }
+    break;
+  case SURFACE_COLOR:
+    {
+      surfdata *surfi;
+      float s_color[4];
+
+      surfi = surfinfo + glui_surf_index;
+      s_color[0] = (float)glui_surface_color[0]/255.0;
+      s_color[1] = (float)glui_surface_color[1]/255.0;
+      s_color[2] = (float)glui_surface_color[2]/255.0;
+      s_color[3] = (float)glui_surface_color[3]/255.0;
+      if(glui_surface_color[3]<255){
+        surfi->transparent=1;
+        surfi->transparent_level = (float)glui_surface_color[3]/255.0;
+
+      }
+      else{
+        surfi->transparent = 0;
+        surfi->transparent_level = 1.0;
+      }
+      s_color[3] = surfi->transparent_level;
+      surfi->color = GetColorPtr(s_color);
+      updatefacelists = 1;
+      updatefaces = 1;
+      updatehiddenfaces = 1;
+    }
+    break;
+  case SURFACE_SELECT:
+    {
+      surfdata *surfi;
+      float s_color[4];
+      int i;
+
+      surfi = surfinfo + glui_surf_index;
+      memcpy(s_color, surfi->color, 3*sizeof(float));
+      s_color[3] = surfi->transparent_level;
+
+      for(i=0;i<4;i++){
+        glui_surface_color[i] = CLAMP((int)(255.0*s_color[i]+0.5),0,255);
+        SPINNER_surf_color[i]->set_int_val(glui_surface_color[i]);
+      }
+    }
+    break;
+  default:
+    ASSERT(FFALSE);
+  }
+}
+
 /* ------------------ GluiLabelsSetup ------------------------ */
 
 extern "C" void GluiLabelsSetup(int main_window){
@@ -670,11 +740,48 @@ extern "C" void GluiLabelsSetup(int main_window){
   SPINNER_gridlinewidth->set_float_limits(1.0,10.0,GLUI_LIMIT_CLAMP);
   SPINNER_ticklinewidth = glui_labels->add_spinner_to_panel(PANEL_linewidth, _("tick"), GLUI_SPINNER_FLOAT, &ticklinewidth);
   SPINNER_ticklinewidth->set_float_limits(1.0, 10.0, GLUI_LIMIT_CLAMP);
+
   PANEL_offset=glui_labels->add_panel_to_panel(PANEL_gen3,"offset");
   SPINNER_ventoffset_factor=glui_labels->add_spinner_to_panel(PANEL_offset,_("vent"),GLUI_SPINNER_FLOAT,&ventoffset_factor,APPLY_VENTOFFSET,LabelsCB);
   SPINNER_ventoffset_factor->set_float_limits(-1.0,1.0,GLUI_LIMIT_CLAMP);
   SPINNER_sliceoffset_factor=glui_labels->add_spinner_to_panel(PANEL_offset,_("slice"),GLUI_SPINNER_FLOAT,&sliceoffset_factor);
   SPINNER_sliceoffset_factor->set_float_limits(-1.0,1.0,GLUI_LIMIT_CLAMP);
+
+  int i, surfcount = 0, first_surf=-1;
+
+  for(i = 0; i<nsurfinfo; i++){
+    surfdata *surfi;
+
+    surfi = surfinfo+i;
+    if(surfi->used_by_geom==0&&surfi->used_by_obst==0)continue;
+    if(strcmp(surfi->surfacelabel, "INERT")==0)continue;
+    if(first_surf<0)first_surf = i;
+    surfi->in_color_dialog = 1;
+    surfcount++;
+  }
+  if(surfcount>0){
+    glui_surf_index = first_surf;
+    PANEL_surfs = glui_labels->add_panel_to_panel(PANEL_gen3, "Surface color");
+    LIST_surfs = glui_labels->add_listbox_to_panel(PANEL_surfs, _("Select"), &glui_surf_index, SURFACE_SELECT, SurfaceCB);
+    for(i = 0; i<nsurfinfo; i++){
+      surfdata *surfi;
+
+      surfi = surfinfo+i;
+      if(surfi->used_by_geom==0&&surfi->used_by_obst==0)continue;
+      if(strcmp(surfi->surfacelabel, "INERT")==0)continue;
+      LIST_surfs->add_item(i, surfi->surfacelabel);
+    }
+    SPINNER_surf_color[0] = glui_labels->add_spinner_to_panel(PANEL_surfs, _("red"),   GLUI_SPINNER_INT, glui_surface_color,   SURFACE_COLOR, SurfaceCB);
+    SPINNER_surf_color[1] = glui_labels->add_spinner_to_panel(PANEL_surfs, _("green"), GLUI_SPINNER_INT, glui_surface_color+1, SURFACE_COLOR, SurfaceCB);
+    SPINNER_surf_color[2] = glui_labels->add_spinner_to_panel(PANEL_surfs, _("blue"),  GLUI_SPINNER_INT, glui_surface_color+2, SURFACE_COLOR, SurfaceCB);
+    SPINNER_surf_color[3] = glui_labels->add_spinner_to_panel(PANEL_surfs, _("alpha"), GLUI_SPINNER_INT, glui_surface_color+3, SURFACE_COLOR, SurfaceCB);
+    SPINNER_surf_color[0]->set_int_limits(0, 255, GLUI_LIMIT_CLAMP);
+    SPINNER_surf_color[1]->set_int_limits(0, 255, GLUI_LIMIT_CLAMP);
+    SPINNER_surf_color[2]->set_int_limits(0, 255, GLUI_LIMIT_CLAMP);
+    SPINNER_surf_color[3]->set_int_limits(0, 255, GLUI_LIMIT_CLAMP);
+    glui_labels->add_button_to_panel(PANEL_surfs,"Revert (input file)",SURFACE_REVERT_COLOR,SurfaceCB);
+    SurfaceCB(SURFACE_SELECT);
+  }
 
   SPINNER_ngridloc_digits = glui_labels->add_spinner_to_panel(PANEL_gen3, _("grid location digits:"),
     GLUI_SPINNER_INT, &ngridloc_digits, UPDATEMENU, UpdateMenuCB);
@@ -724,14 +831,11 @@ extern "C" void GluiLabelsSetup(int main_window){
   INSERT_ROLLOUT(ROLLOUT_light2, glui_labels);
   ADDPROCINFO(displayprocinfo, ndisplayprocinfo, ROLLOUT_light2, LIGHT_ROLLOUT, glui_labels);
 
-  {
-    int i;
-
-    for(i = 0; i<3;i++){
-      glui_ambientlight[i] = CLAMP(255*ambientlight[i],0,255);
-      glui_diffuselight[i] = CLAMP(255*diffuselight[i],0,255);
-    }
+  for(i = 0; i<3;i++){
+    glui_ambientlight[i] = CLAMP(255*ambientlight[i],0,255);
+    glui_diffuselight[i] = CLAMP(255*diffuselight[i],0,255);
   }
+
   glui_ambientgrey = 255*ambientgrey;
   glui_diffusegrey = 255*diffusegrey;
   glui_speculargrey = 255*speculargrey;
@@ -1019,6 +1123,7 @@ extern "C" void UpdateColorbarControls(void){
   if(CHECKBOX_visColorbarVertical!=NULL&&CHECKBOX_visColorbarVertical->get_int_val() != visColorbarVertical)CHECKBOX_visColorbarVertical->set_int_val(visColorbarVertical);
   if(CHECKBOX_visColorbarHorizontal!=NULL&&CHECKBOX_visColorbarHorizontal->get_int_val() != visColorbarHorizontal)CHECKBOX_visColorbarHorizontal->set_int_val(visColorbarHorizontal);
 }
+
 /* ------------------ LabelsCB ------------------------ */
 
 extern "C" void LabelsCB(int var){

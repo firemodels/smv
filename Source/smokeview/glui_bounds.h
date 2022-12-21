@@ -53,15 +53,12 @@
 #define TBOUNDS_USE 206
 #define RELOAD_ALL_DATA 207
 #define RELOAD_INCREMENTAL_DATA 215
-#ifdef pp_EVAC
-#define SHOW_EVAC_SLICES 208
-#define DATA_EVAC_COLORING 209
-#endif
-#define SLICE_VECTORSKIP 210
-#define PLOT3D_VECTORSKIP 211
-#define UPDATE_SLICEDUPS 212
-#define UPDATE_HISTOGRAM 213
-#define INIT_HISTOGRAM 214
+#define SLICE_VECTORSKIP         210
+#define PLOT3D_VECTORSKIP        211
+#define UPDATE_SLICEDUPS         212
+#define UPDATE_HISTOGRAM         213
+#define FRAMES_HISTOGRAM         223
+#define INIT_HISTOGRAM           214
 #define UPDATE_BOUNDARYSLICEDUPS 215
 #define BOUNDARY_EDGETYPE        227
 #define SHOW_BOUNDARY_OUTLINE    228
@@ -130,9 +127,6 @@
 #define FILESHOW_boundary    13
 #define FILESHOW_3dsmoke     14
 #define FILESHOW_isosurface  15
-#ifdef pp_EVAC
-#define FILESHOW_evac        19
-#endif
 #define FILESHOW_plot3d      16
 #define FILESHOW_sizes       20
 #define BOUNDARY_LOAD_INCREMENTAL 16

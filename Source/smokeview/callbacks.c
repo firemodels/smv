@@ -739,9 +739,7 @@ int GetColorbarIndex(int flag, int x, int y){
         index = CLAMP(255*(float)(y-vcolorbar_down_pos)/(float)(vcolorbar_top_pos - vcolorbar_down_pos),0,255);
         return index;
       }
-      else{
-        return CB_SELECT_STOP;
-      }
+      return CB_SELECT_STOP;
   }
   return CB_SELECT_CONTINUE;
 }
@@ -2890,28 +2888,13 @@ void Keyboard(unsigned char key, int flag){
     case '/':
       updatemenu=1;
       partfast = 1 - partfast;
-#ifdef pp_EVAC
-      if(nevac>0){
-        partfast = 0;
-        part_multithread = 0;
-      }
-#endif
       if(current_script_command==NULL){
-#ifdef pp_EVAC
-        if(npartinfo>1&&nevac==0){
-          part_multithread = partfast;
-        }
-        else{
-          part_multithread = 0;
-        }
-#else
         if(npartinfo>1){
           part_multithread = partfast;
         }
         else{
           part_multithread = 0;
         }
-#endif
       }
       if(part_multithread==1){
         if(npartthread_ids>1)printf("parallel particle loading: on(%i threads)\n",npartthread_ids);
@@ -2940,8 +2923,8 @@ void Keyboard(unsigned char key, int flag){
       script_step_now=1;
       break;
     case '&':
-      antialiasflag=1-antialiasflag;
-      PRINTF("antialiasflag=%i\n",antialiasflag);
+      ToggleMetroMode();
+      PRINTF("HVAC metro view mode=%i\n",hvac_metro_view);
       break;
     case '*':
       visx_all=0;
@@ -3111,7 +3094,6 @@ void HandleRotationType(int flag){
   }
   ShowHideTranslate(rotation_type);
   rotation_type_old = rotation_type;
-  return;
 }
 
 /* ------------------ UpdateClipPlanes ------------------------ */
@@ -3139,14 +3121,13 @@ void UpdateClipPlanes(void){
 /* ------------------ HandleIso ------------------------ */
 
 void HandleIso(void){
-    if(nplot3dloaded>0){
-      UpdateShowStep(1-visiso,ISO);
-      if(visiso==1){
-        UpdateSurface();
-        plotstate=STATIC_PLOTS;
-      }
+  if(nplot3dloaded>0){
+    UpdateShowStep(1-visiso,ISO);
+    if(visiso==1){
+      UpdateSurface();
+      plotstate=STATIC_PLOTS;
     }
-    return;
+  }
 }
 
 /* ------------------ SpecialKeyboardUpCB ------------------------ */
@@ -3384,10 +3365,6 @@ void HandlePLOT3DKeys(int  key){
   }
   if(iplot_state!=0)UpdatePlotSlice(iplot_state);
   if(visx_all==1||visy_all==1||visz_all==1)update_slice2device = 1;
-  return;
-
-//  plotstate=GetPlotState(STATIC_PLOTS);
-
 }
 
 /* ------------------ HandleMoveKeys ------------------------ */

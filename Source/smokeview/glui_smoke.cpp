@@ -458,7 +458,8 @@ extern "C" void Glui3dSmokeSetup(int main_window){
   {
     char temp_cutoff_label[300];
 
-    sprintf(temp_cutoff_label, "temperature (%s) > ", degC);
+    //sprintf(temp_cutoff_label, "temperature (%s) > ", degC);
+    snprintf(temp_cutoff_label, sizeof(temp_cutoff_label), "temperature (%s) > ", degC);
     SPINNER_temperature_cutoff = glui_3dsmoke->add_spinner_to_panel(PANEL_fire_cutoff, temp_cutoff_label, GLUI_SPINNER_FLOAT,
       &global_temp_cutoff, TEMP_CUTOFF, Smoke3dCB);
   }

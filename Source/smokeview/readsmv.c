@@ -676,10 +676,6 @@ void InitProp(propdata *propi, int nsmokeview_ids, char *label){
   propi->inblockage = 0;
   propi->ntextures = 0;
   propi->nvars_dep = 0;
-#ifdef pp_EVAC
-  propi->nvars_evac = 0;
-  propi->draw_evac = 0;
-#endif
   propi->nvars_indep = 0;
   propi->vars_indep = NULL;
   propi->svals = NULL;
@@ -798,9 +794,6 @@ PROP
       }
     }
     GetIndepVarIndices(propi->smv_object,propi->vars_indep,propi->nvars_indep,propi->vars_indep_index);
-#ifdef pp_EVAC
-    GetEvacIndices(propi->smv_object,propi->fvars_evac_index,&propi->nvars_evac);
-#endif
   }
   propi->ntextures=ntextures_local;
 }
@@ -1316,7 +1309,49 @@ void ReadSMVDynamic(char *file){
       continue;
     }
 
-  /*
+    /*
+      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      ++++++++++++++++++++++ DUCT_ACT +++++++++++++++++++++++++++++
+      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    */
+    //DUCT_ACT
+    // duct_label (char)
+    // time state  (float int)
+    if(MatchSMV(buffer, "DUCT_ACT") == 1){
+      char *ductname;
+      hvacductdata *ducti;
+      float *act_time, *act_times;
+      int *act_state, *act_states;
+
+      ductname = strchr(buffer, ' ');
+      if(ductname == NULL)continue;
+      ductname = TrimFrontBack(ductname + 1);
+      ducti = GetHVACDuctID(ductname);
+      if(ducti == NULL)continue;
+
+      act_times  = ducti->act_times;
+      act_states = ducti->act_states;
+      ducti->nact_times++;
+      if(ducti->nact_times == 1){
+        NewMemory((void **)&act_times,  ducti->nact_times * sizeof(float));
+        NewMemory((void **)&act_states, ducti->nact_times * sizeof(int));
+      }
+      else{
+        ResizeMemory((void **)&act_times,  ducti->nact_times * sizeof(float));
+        ResizeMemory((void **)&act_states, ducti->nact_times * sizeof(int));
+      }
+
+      act_time  = act_times + ducti->nact_times - 1;
+      act_state = act_states + ducti->nact_times -1;
+
+      FGETS(buffer, 255, stream);
+      sscanf(buffer, "%f %i", act_time, act_state);
+      ONEORZERO(*act_state);
+      ducti->act_times  = act_times;
+      ducti->act_states = act_states;
+      continue;
+    }
+    /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ++++++++++++++++++++++ DEVICE_ACT +++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -3063,6 +3098,17 @@ int GetSmoke3DType(char *label){
   return -1;
 }
 
+/* ------------------ CompareLabel ------------------------ */
+
+int CompareLabel(const void *arg1, const void *arg2){
+  char *x, *y;
+
+  x = *( char ** )arg1;
+  y = *( char ** )arg2;
+
+  return strcmp(x, y);
+}
+
 /* ------------------ CompareSmoketypes ------------------------ */
 
 int CompareSmoketypes( const void *arg1, const void *arg2 ){
@@ -3841,33 +3887,6 @@ surfdata *GetSurface(char *label){
   return surfacedefault;
 }
 
-/* ------------------ InitEvacProp ------------------------ */
-#ifdef pp_EVAC
-void InitEvacProp(void){
-  char label[256];
-  char *smokeview_id;
-  int nsmokeview_ids;
-
-  strcpy(label, "evac default");
-
-  NewMemory((void **)&prop_evacdefault, sizeof(propdata));
-  nsmokeview_ids = 1;
-
-  InitProp(prop_evacdefault, nsmokeview_ids, label);
-
-
-  NewMemory((void **)&smokeview_id, 6 + 1);
-  strcpy(smokeview_id, "sensor");
-  prop_evacdefault->smokeview_ids[0] = smokeview_id;
-  prop_evacdefault->smv_objects[0] = GetSmvObjectType(prop_evacdefault->smokeview_ids[0], missing_device);
-
-  prop_evacdefault->smv_object = prop_evacdefault->smv_objects[0];
-  prop_evacdefault->smokeview_id = prop_evacdefault->smokeview_ids[0];
-
-  prop_evacdefault->ntextures = 0;
-}
-#endif
-
 /* ------------------ InitMatl ------------------------ */
 
 void InitMatl(matldata *matl){
@@ -3953,6 +3972,7 @@ void InitObst(blockagedata *bc, surfdata *surf, int index, int meshindex){
 /* ------------------ InitSurface ------------------------ */
 
 void InitSurface(surfdata *surf){
+  surf->in_color_dialog = 0;
   surf->iso_level = -1;
   surf->used_by_obst = 0;
   surf->used_by_geom = 0;
@@ -4762,14 +4782,6 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   parti = partinfo+ipart;
 
   lenkey = 4;
-#ifdef pp_EVAC
-  parti->evac = 0;
-  if(Match(buffer, "EVA5")==1
-    ){
-    parti->evac = 1;
-    nevac++;
-  }
-#endif
   len = strlen(buffer);
   if(nmeshes>1){
     blocknumber = ioffset-1;
@@ -4779,19 +4791,7 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
   }
   if(len>lenkey+1){
     buffer3 = buffer+lenkey;
-#ifdef pp_EVAC
-    if(parti->evac==1){
-      float zoffset = 0.0;
-
-      sscanf(buffer3, "%i %f", &blocknumber, &zoffset);
-      parti->zoffset = zoffset;
-    }
-    else{
-      sscanf(buffer3, "%i", &blocknumber);
-    }
-#else
     sscanf(buffer3, "%i", &blocknumber);
-#endif
     blocknumber--;
   }
 
@@ -4921,10 +4921,6 @@ int ParsePRT5Process(bufferstreamdata *stream, char *buffer, int *nn_part_in, in
         partclassdata *pci;
 
         pci = partclassinfo+iii;
-#ifdef pp_EVAC
-        if(parti->evac==1&&pci->kind!=HUMANS)continue;
-        if(parti->evac==0&&pci->kind!=PARTICLES)continue;
-#endif
         if(iclass-1==ic){
           parti->partclassptr[i] = pci;
           break;
@@ -5013,19 +5009,20 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
   for(i = 0; i<6; i++){
     patchi->ijk[i] = -1;
   }
-  patchi->finalize = 1;
-  patchi->valmin_fds = 1.0;
-  patchi->valmax_fds = 0.0;
-  patchi->valmin_smv = 1.0;
-  patchi->valmax_smv = 0.0;
-  patchi->skip = 0;
-  patchi->version = version;
-  patchi->ntimes = 0;
-  patchi->ntimes_old = 0;
-  patchi->filetype_label = NULL;
-  patchi->patch_filetype = PATCH_STRUCTURED_NODE_CENTER;
-  patchi->structured = YES;
-  patchi->boundary = 1;
+  patchi->finalize          = 1;
+  patchi->valmin_fds        = 1.0;
+  patchi->valmax_fds        = 0.0;
+  patchi->valmin_smv        = 1.0;
+  patchi->valmax_smv        = 0.0;
+  patchi->skip              = 0;
+  patchi->version           = version;
+  patchi->ntimes            = 0;
+  patchi->ntimes_old        = 0;
+  patchi->histogram_nframes = -1;
+  patchi->filetype_label    = NULL;
+  patchi->patch_filetype    = PATCH_STRUCTURED_NODE_CENTER;
+  patchi->structured        = YES;
+  patchi->boundary          = 1;
   if(Match(buffer, "BNDC")==1){
     patchi->patch_filetype = PATCH_STRUCTURED_CELL_CENTER;
   }
@@ -5368,7 +5365,7 @@ int ParseSMOKE3DProcess(bufferstreamdata *stream, char *buffer, int *nn_smoke3d_
       if(strcmp(smoke3di->label.longlabel, "HRRPUV")==0){
         show_hrrcutoff_active = 1;
       }
-      if(strcmp(smoke3di->label.longlabel, "TEMPERATURE")==0) {
+      if(strcmp(smoke3di->label.longlabel, "TEMPERATURE")==0){
         show_tempcutoff_active = 1;
       }
       ismoke3d++;
@@ -5945,7 +5942,6 @@ char *GetViewPointPtr(char **viewpoint_list, int nviewpoint_list, char *viewpoin
 char *GetCharPtr(char *label){
   char *labelptr, labelcopy[256], *labelcopyptr;
   int lenlabel;
-
 
   if(label==NULL||strlen(label)==0)return NULL;
   strcpy(labelcopy,label);
@@ -6544,10 +6540,6 @@ int ReadSMV(bufferstreamdata *stream){
   STOP_TIMER(read_time_elapsed);
 
   npropinfo=1; // the 0'th prop is the default human property
-#ifdef pp_EVAC
-  navatar_colors=0;
-  FREEMEMORY(avatar_colors);
-#endif
 
   FREEMEMORY(fds_title);
 
@@ -6823,7 +6815,6 @@ int ReadSMV(bufferstreamdata *stream){
   FREEMEMORY(fireinfo);
   FREEMEMORY(zoneinfo);
   FREEMEMORY(zventinfo);
-
   FREEMEMORY(textureinfo);
   FREEMEMORY(surfinfo);
   FREEMEMORY(terrain_textures);
@@ -6866,6 +6857,13 @@ int ReadSMV(bufferstreamdata *stream){
       BUT if any one these keywords are present then the number of each MUST be equal
     */
 
+    // HVAC
+    // label
+    // n_nodes
+    //  id x y z vent filter comp
+    // ...
+    // n_ducts
+    // id node1 node2 comp
 
     if(MatchSMV(buffer, "HoC") == 1){
       int nfuelinfo_local;
@@ -7002,32 +7000,6 @@ int ReadSMV(bufferstreamdata *stream){
       have_northangle = 1;
       continue;
     }
-#ifdef pp_EVAC
-    if(MatchSMV(buffer,"AVATAR_COLOR")==1){
-      FGETS(buffer,255,stream);
-      sscanf(buffer,"%i",&navatar_colors);
-      if(navatar_colors<0)navatar_colors=0;
-      if(navatar_colors>0){
-        float *acolor;
-
-        NewMemory((void **)&avatar_colors,3*navatar_colors*sizeof(float));
-        acolor=avatar_colors;
-        for(i=0;i<navatar_colors;i++){
-          int irgb[3];
-          FGETS(buffer,255,stream);
-          irgb[0]=0;
-          irgb[1]=0;
-          irgb[2]=0;
-          sscanf(buffer,"%i %i %i",irgb,irgb+1,irgb+2);
-          acolor[0]=(float)irgb[0]/255.0;
-          acolor[1]=(float)irgb[1]/255.0;
-          acolor[2]=(float)irgb[2]/255.0;
-          acolor+=3;
-        }
-      }
-      continue;
-    }
-#endif
     if(MatchSMV(buffer,"TERRAIN") == 1){
       manual_terrain = 1;
       FGETS(buffer, 255, stream);
@@ -7262,11 +7234,11 @@ int ReadSMV(bufferstreamdata *stream){
       nVENT++;
       continue;
     }
-    if (
+    if(
       MatchSMV(buffer, "MINMAXBNDF") == 1 ||
       MatchSMV(buffer, "MINMAXPL3D") == 1 ||
       MatchSMV(buffer, "MINMAXSLCF") == 1
-      ) {
+      ){
       do_pass4 = 1;
       continue;
     }
@@ -7655,6 +7627,7 @@ int ReadSMV(bufferstreamdata *stream){
     InitDefaultProp();
     npropinfo=1;
   }
+
   PRINT_TIMER(timer_readsmv, "pass 1");
 
 /*
@@ -7692,8 +7665,251 @@ int ReadSMV(bufferstreamdata *stream){
     if(MatchSMV(buffer, "PL3D")==1){
       continue;
     }
-
     /*
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    +++++++++++++++++++++++++ HVACVALS ++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  */
+    if(MatchSMV(buffer, "HVACVALS") == 1){
+      FREEMEMORY(hvacvalsinfo);
+      NewMemory(( void ** )&hvacvalsinfo, sizeof(hvacvalsdata));
+      hvacvalsinfo->times = NULL;
+      
+      if(FGETS(buffer, 255, stream) == NULL)BREAK;
+      hvacvalsinfo->file = GetCharPtr(TrimFrontBack(buffer));
+      
+      if(FGETS(buffer, 255, stream) == NULL)BREAK;
+      sscanf(buffer, "%i", &hvacvalsinfo->n_node_vars);
+      
+      NewMemory((void **)&hvacvalsinfo->node_vars, hvacvalsinfo->n_node_vars * sizeof(hvacvaldata));
+      for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
+        hvacvaldata *hi;
+        flowlabels *labeli;
+
+        hi = hvacvalsinfo->node_vars + i;
+        InitHvacData(hi);
+        labeli = &hi->label;
+        ReadLabels(labeli, stream, NULL);
+      }
+      
+      if(FGETS(buffer, 255, stream) == NULL)BREAK;
+      sscanf(buffer, "%i", &hvacvalsinfo->n_duct_vars);
+      
+      NewMemory((void **)&hvacvalsinfo->duct_vars, hvacvalsinfo->n_duct_vars * sizeof(hvacvaldata));
+      for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
+        hvacvaldata *hi;
+        flowlabels *labeli;
+
+        hi = hvacvalsinfo->duct_vars + i;
+        InitHvacData(hi);
+        labeli = &hi->label;
+        ReadLabels(labeli, stream, NULL);
+      }
+
+    }
+    /*
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++ HVAC ++++++++++++++++++++++++++
+    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  */
+    if(MatchSMV(buffer, "HVAC") == 1){
+      // HVAC
+      //  NODES
+      //  n_nodes
+      if(FGETS(buffer, 255, stream) == NULL)BREAK;
+      if(FGETS(buffer, 255, stream) == NULL)BREAK;
+      sscanf(buffer, "%i", &nhvacnodeinfo);
+      nhvacnodeinfo = MAX(nhvacnodeinfo, 0);
+      if(nhvacnodeinfo == 0)continue;
+
+      FREEMEMORY(hvacnodeinfo);
+      NewMemory(( void ** )&hvacnodeinfo, nhvacnodeinfo * sizeof(hvacnodedata));
+
+  // node_id duct_label network_label
+  // x y z filter_flag vent_label
+
+      for(i=0;i<nhvacnodeinfo;i++){
+        hvacnodedata *nodei;
+        char *filter, *node_label, *network_label, *connect_id;
+
+
+        nodei=hvacnodeinfo + i;
+
+        if(FGETS(buffer, 255, stream) == NULL)BREAK;
+        sscanf(buffer, "%i", &nodei->node_id);
+        TrimBack(buffer);
+        strtok(buffer, "%");
+        node_label    = strtok(NULL, "%");
+        network_label = strtok(NULL, "%");
+        connect_id    = strtok(NULL, "%");
+        nodei->node_name = GetCharPtr(node_label);
+        network_label = TrimFrontBack(network_label);
+        if(strcmp(network_label, "null") == 0){
+          nodei->network_name = GetCharPtr("Unassigned");
+        }
+        else{
+          nodei->network_name = GetCharPtr(network_label);
+        }
+        nodei->duct = NULL;
+        nodei->connect_id = -1;
+        if(connect_id != NULL)sscanf(connect_id, "%i", &nodei->connect_id);
+
+        if(FGETS(buffer, 255, stream) == NULL)BREAK;
+        sscanf(buffer, "%f %f %f", nodei->xyz, nodei->xyz + 1, nodei->xyz + 2);
+        memcpy(nodei->xyz_orig, nodei->xyz, 3 * sizeof(float));
+        strtok(buffer, "%");
+        filter = strtok(NULL, "%");
+        filter = TrimFrontBack(filter);
+        nodei->filter = HVAC_FILTER_NO;
+        strcpy(nodei->c_filter, "");
+        if(filter != NULL && strcmp(filter, "FILTER") == 0){
+          nodei->filter = HVAC_FILTER_YES;
+          strcpy(nodei->c_filter, "FI");
+          nhvacfilters++;
+        }
+        
+      }
+  // DUCTS
+  // n_ducts
+  // duct_id node_id1 node_id2 duct_name network_name
+  // fan_type
+  // duct_name
+  // component Fan(F), Aircoil(A), Damper(D), none(-)
+  // waypoint xyz
+      if(FGETS(buffer, 255, stream) == NULL)BREAK;
+      if(FGETS(buffer, 255, stream) == NULL)BREAK;
+      sscanf(buffer, "%i", &nhvacductinfo);
+      nhvacductinfo = MAX(nhvacductinfo, 0);
+      if(nhvacductinfo == 0){
+        FREEMEMORY(hvacnodeinfo);
+        nhvacnodeinfo = 0;
+        break;
+      }
+
+      FREEMEMORY(hvacductinfo);
+      NewMemory((void **)&hvacductinfo, nhvacductinfo*sizeof(hvacductdata));
+      for(i=0;i<nhvacductinfo;i++){
+        hvacductdata *ducti;
+        char *duct_label, *network_label, *hvac_label, *connect_id;
+        int j;
+
+        ducti = hvacductinfo + i;
+        if(FGETS(buffer, 255, stream) == NULL)BREAK;
+        sscanf(buffer, "%i %i %i", &ducti->duct_id, &ducti->node_id_from, &ducti->node_id_to);
+        ducti->node_id_from--;
+        ducti->node_id_to--;
+
+        ducti->node_from = hvacnodeinfo + ducti->node_id_from;
+        ducti->node_to   = hvacnodeinfo + ducti->node_id_to;
+
+        if(ducti->node_from->duct == NULL)ducti->node_from->duct = ducti;
+        if(ducti->node_to->duct == NULL)ducti->node_to->duct = ducti;
+
+        strtok(buffer, "%");
+        duct_label          = strtok(NULL, "%");
+        network_label       = strtok(NULL, "%");
+        connect_id          = strtok(NULL, "%");
+        ducti->duct_name    = GetCharPtr(duct_label);
+        network_label = TrimFrontBack(network_label);
+        if(strcmp(network_label, "null") == 0){
+          ducti->network_name = GetCharPtr("Unassigned");
+        }
+        else{
+          ducti->network_name = GetCharPtr(network_label);
+        }
+        ducti->act_times    = NULL;
+        ducti->act_states   = NULL;
+        ducti->nact_times   = 0;
+        ducti->metro_path   = DUCT_XYZ;
+        ducti->connect_id   = -1;
+        ducti->waypoints    = NULL;
+        if(connect_id != NULL)sscanf(connect_id, "%i", &ducti->connect_id);
+
+        if(FGETS(buffer, 255, stream) == NULL)BREAK;
+        if(FGETS(buffer, 255, stream) == NULL)BREAK;
+        sscanf(buffer, "%i", &ducti->nduct_cells);
+        strtok(buffer, "%");
+        hvac_label = strtok(NULL, "%");
+        hvac_label = TrimFrontBack(hvac_label);
+
+        char *c_component[4]={"-","F","A","D"};
+        ducti->component = HVAC_NONE;
+        if(hvac_label != NULL){
+          if(hvac_label[0] == 'F')ducti->component = HVAC_FAN;
+          if(hvac_label[0] == 'A')ducti->component = HVAC_AIRCOIL;
+          if(hvac_label[0] == 'D')ducti->component = HVAC_DAMPER;
+        }
+        if(ducti->component != HVAC_NONE)nhvaccomponents++;
+        strcpy(ducti->c_component, c_component[ducti->component]);
+
+        if(FGETS(buffer, 255, stream) == NULL)BREAK;
+        if(FGETS(buffer, 255, stream) == NULL)BREAK;
+        sscanf(buffer, "%i", &ducti->n_waypoints);
+
+        if(ducti->n_waypoints > 0){
+          float *waypoints;
+
+          NewMemory(( void ** )&waypoints, 3*(ducti->n_waypoints+2) * sizeof(float));
+          ducti->waypoints0 = waypoints;
+          ducti->waypoints = waypoints+3;
+
+          hvacnodedata *node_from, *node_to;
+          float *xyz0, *xyz1;
+
+          node_from = hvacnodeinfo + ducti->node_id_from;
+          node_to = hvacnodeinfo + ducti->node_id_to;
+          xyz0 = node_from->xyz;
+          xyz1 = node_to->xyz;
+          memcpy(ducti->waypoints0,                            xyz0, 3*sizeof(float));
+          memcpy(ducti->waypoints0 + 3*(ducti->n_waypoints+1), xyz1, 3*sizeof(float));
+
+          //store node xyz position at the first and last waypoint
+          waypoints += 3;
+          for(j = 0; j < ducti->n_waypoints; j++){
+            if(FGETS(buffer, 255, stream) == NULL)BREAK;
+            sscanf(buffer, "%f %f %f", waypoints, waypoints + 1, waypoints + 2);
+            waypoints += 3;
+          }
+        }
+      }
+      char **hvac_network_labels = NULL;
+
+      NewMemory(( void ** )&hvac_network_labels, (nhvacnodeinfo + nhvacductinfo) * sizeof(char *));
+      for(i = 0; i < nhvacnodeinfo; i++){
+        hvac_network_labels[i] = hvacnodeinfo[i].network_name;
+      }
+      for(i = 0; i < nhvacductinfo; i++){
+        hvac_network_labels[i+nhvacnodeinfo] = hvacductinfo[i].network_name;
+      }
+      qsort(( char * )hvac_network_labels, ( size_t )(nhvacnodeinfo + nhvacductinfo), sizeof(char *), CompareLabel);
+      nhvacinfo = 1;
+      for(i = 1; i < nhvacnodeinfo + nhvacductinfo; i++){
+        if(strcmp(hvac_network_labels[nhvacinfo-1], hvac_network_labels[i]) == 0)continue;
+        hvac_network_labels[nhvacinfo] = hvac_network_labels[i];
+        nhvacinfo++;
+      }
+      NewMemory(( void ** )&hvacinfo, nhvacinfo * sizeof(hvacdata));
+      for(i = 0; i < nhvacinfo; i++){
+        hvacdata *hvaci;
+
+        hvaci = hvacinfo + i;
+        hvaci->network_name = hvac_network_labels[i];
+        hvaci->display           = 0;
+        hvaci->show_node_labels  = 0;
+        hvaci->show_duct_labels  = 0;
+        hvaci->show_filters      = NODE_FILTERS_HIDE;
+        hvaci->show_component    = DUCT_COMPONENT_HIDE;
+        hvaci->component_size    = 1.0;
+        hvaci->filter_size       = 1.0;
+        hvaci->node_size         = 8.0;
+        hvaci->duct_width        = 4.0;
+        memcpy(hvaci->node_color, hvac_node_color, 3*sizeof(int));
+        memcpy(hvaci->duct_color, hvac_duct_color, 3*sizeof(int));
+      }
+      FREEMEMORY(hvac_network_labels);
+      SetHVACInfo();
+    }
+      /*
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++ CSVF ++++++++++++++++++++++++++
     +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -8090,10 +8306,6 @@ int ReadSMV(bufferstreamdata *stream){
           }
         }
         GetIndepVarIndices(propi->smv_object,propi->vars_indep,propi->nvars_indep,propi->vars_indep_index);
-#ifdef pp_EVAC
-        GetEvacIndices(propi->smv_object,propi->fvars_evac_index,&propi->nvars_evac);
-#endif
-
       }
       propi->ntextures=ntextures_local;
       npropinfo++;
@@ -8616,9 +8828,11 @@ int ReadSMV(bufferstreamdata *stream){
       else{
         surfi->transparent_level = 1.0;
       }
-      surfi->glui_color[0] = CLAMP(255*surfi->color[0],0,255);
-      surfi->glui_color[1] = CLAMP(255*surfi->color[1], 0, 255);
-      surfi->glui_color[2] = CLAMP(255*surfi->color[2], 0, 255);
+      surfi->color_orig = surfi->color;
+      surfi->transparent_level_orig = surfi->transparent_level;
+      surfi->geom_surf_color[0] = CLAMP(255*surfi->color[0],0,255);
+      surfi->geom_surf_color[1] = CLAMP(255*surfi->color[1], 0, 255);
+      surfi->geom_surf_color[2] = CLAMP(255*surfi->color[2], 0, 255);
       surfi->temp_ignition=temp_ignition;
       surfi->emis=emis;
       surfi->t_height=t_height;
@@ -9417,11 +9631,11 @@ int ReadSMV(bufferstreamdata *stream){
     FREEMEMORY(nexp_devices);
     devicecopy2=deviceinfo;
   }
-  for (i = 0; i < ndeviceinfo; i++) {
+  for(i = 0; i < ndeviceinfo; i++){
     devicedata *devicei;
 
     devicei = deviceinfo + i;
-    if (strcmp(devicei->deviceID, "null") == 0) {
+    if(strcmp(devicei->deviceID, "null") == 0){
       sprintf(devicei->deviceID, "DEV%03i", i + 1);
     }
   }
@@ -10034,6 +10248,23 @@ typedef struct {
         bc=meshi->blockageinfoptrs[nn];
         InitObst(bc,surfacedefault,nn+1,iobst-1);
         FGETS(buffer,255,stream);
+
+        char id_label[100], *id_labelptr;
+
+        id_labelptr = strchr(buffer, '!');
+        if(id_labelptr == NULL){
+          sprintf(id_label, "OB%i_%i", bc->meshindex+1,iblock+1);
+          id_labelptr = id_label;
+        }
+        else{
+          char *id_labelptr2;
+
+          id_labelptr2 = id_labelptr;
+          id_labelptr = TrimFrontBack(id_labelptr+1);
+          *id_labelptr2 = 0;
+        }
+        bc->id_label = GetCharPtr(id_labelptr);
+    
         TrimBack(buffer);
         for(i=0;i<6;i++){
           s_num[i]=-1;
@@ -11060,10 +11291,6 @@ typedef struct {
 
   //RemoveDupBlockages();
   InitCullGeom(cullgeom);
-#ifdef pp_EVAC
-  InitEvacProp();
-#endif
-
   UpdateINIList();
 
   if(meshinfo!=NULL&&meshinfo->jbar==1)force_isometric=1;
@@ -11649,6 +11876,42 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(boundary_edgetype);
       continue;
     }
+    if(MatchINI(buffer, "HVACVIEW") == 1&&hvacinfo!=NULL&&nhvacinfo > 0){
+      int nh, dummy;
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, " %i %i %i %i %f", 
+        &nh, &hvac_metro_view, &dummy, &hvac_offset_nodes, &hvac_offset_inc);
+      ONEORZERO(hvac_metro_view);
+      ONEORZERO(hvac_offset_nodes);
+      hvac_offset_inc = MAX(0.0, hvac_offset_inc);
+
+      nh = MIN(nhvacinfo, nh);
+      for(i = 0; i < nh; i++){
+        hvacdata *hvaci;
+        int dc[3], nc[3];
+        int j;
+
+        hvaci = hvacinfo + i;
+        fgets(buffer, 255, stream);
+        sscanf(buffer, " %i %i %i %i %i %f %f %f %f",
+          &hvaci->display,  &hvaci->show_node_labels, &hvaci->show_duct_labels,
+          &hvaci->show_component, &hvaci->show_filters, &hvaci->duct_width,
+          &hvaci->node_size, &hvaci->component_size, &hvaci->filter_size);
+        fgets(buffer, 255, stream);
+        sscanf(buffer, " %i %i %i %i %i %i", dc, dc + 1, dc + 2, nc, nc + 1, nc + 2);
+        for(j=0;j<3;j++){
+          hvaci->duct_color[j] = CLAMP(dc[j], 0, 255);
+          hvaci->node_color[j] = CLAMP(nc[j], 0, 255);
+        }
+        hvaci->duct_width     = MAX(1.0, hvaci->duct_width);
+        hvaci->node_size      = MAX(1.0, hvaci->node_size);
+        hvaci->component_size = MAX(0.1, hvaci->component_size);
+        hvaci->filter_size    = MAX(0.1, hvaci->filter_size);
+        ONEORZERO(hvaci->show_node_labels);
+        ONEORZERO(hvaci->show_duct_labels);
+      }
+    }
     if(MatchINI(buffer, "SHOWSLICEVALS")==1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i", show_slice_values, show_slice_values+1, show_slice_values+2);
@@ -11734,7 +11997,7 @@ int ReadIni2(char *inifile, int localfile){
       }
       continue;
     }
-    if(MatchINI(buffer, "SHOWGRAVVECTOR") == 1) {
+    if(MatchINI(buffer, "SHOWGRAVVECTOR") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i", &showgravity_vector);
       continue;
@@ -12086,19 +12349,6 @@ int ReadIni2(char *inifile, int localfile){
       InitCircle(2 * device_sphere_segments, &object_circ);
       continue;
     }
-#ifdef pp_EVAC
-    if(MatchINI(buffer, "SHOWEVACSLICES") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i %i %i", &show_evac_slices, &constant_evac_coloring, &show_evac_colorbar);
-      ONEORZERO(show_evac_slices);
-      if(constant_evac_coloring != 1)constant_evac_coloring = 0;
-      data_evac_coloring = 1 - constant_evac_coloring;
-      ONEORZERO(show_evac_colorbar);
-      UpdateSliceMenuShow();
-      UpdateEvacParms();
-      continue;
-    }
-#endif
     if(MatchINI(buffer, "DIRECTIONCOLOR") == 1){
       float *dc;
 
@@ -12108,9 +12358,6 @@ int ReadIni2(char *inifile, int localfile){
       dc[3] = 1.0;
       direction_color_ptr = GetColorPtr(direction_color);
       UpdateSliceMenuShow();
-#ifdef pp_EVAC
-      UpdateEvacParms();
-#endif
       continue;
     }
 
@@ -12675,8 +12922,8 @@ int ReadIni2(char *inifile, int localfile){
       if(vmax > MAXVAL)vmax = 1.0;
       if(vmin < MINVAL)vmin = 0.0;
 
-      if (ivmin == PERCENTILE_MIN && vmin > vmax)continue;
-      if (ivmax == PERCENTILE_MAX && vmin > vmax)continue;
+      if(ivmin == PERCENTILE_MIN && vmin > vmax)continue;
+      if(ivmax == PERCENTILE_MAX && vmin > vmax)continue;
 
       if(npart5prop>0){
         int label_index = 0;
@@ -13278,13 +13525,6 @@ int ReadIni2(char *inifile, int localfile){
       ONEORZERO(visSensorNorm);
       continue;
     }
-#ifdef pp_EVAC
-    if(MatchINI(buffer, "AVATAREVAC") == 1){
-      fgets(buffer, 255, stream);
-      sscanf(buffer, "%i ", &iavatar_evac);
-      continue;
-    }
-#endif
     if(MatchINI(buffer, "SHOWVENTFLOW") == 1){
       fgets(buffer, 255, stream);
       sscanf(buffer, "%i %i %i %i %i", &visVentHFlow, &visventslab, &visventprofile, &visVentVFlow, &visVentMFlow);
@@ -13561,11 +13801,42 @@ int ReadIni2(char *inifile, int localfile){
         surflabel = TrimFrontBack(surflabel+1);
         surfi = GetSurface(surflabel);
         if(surfi==NULL)continue;
-        ini_surf_color = surfi->glui_color;
+        ini_surf_color = surfi->geom_surf_color;
         sscanf(buffer, "%i %i %i", ini_surf_color, ini_surf_color+1, ini_surf_color+2);
         ini_surf_color[0] = CLAMP(ini_surf_color[0], 0, 255);
         ini_surf_color[1] = CLAMP(ini_surf_color[1], 0, 255);
         ini_surf_color[2] = CLAMP(ini_surf_color[2], 0, 255);
+      }
+      continue;
+    }
+    if(MatchINI(buffer, "OBSTSURFCOLORS")==1){
+      int ncolors;
+
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &ncolors);
+      for(i = 0; i<ncolors; i++){
+        surfdata *surfi;
+        char *surflabel;
+        float s_color[4];
+
+        fgets(buffer, 255, stream);
+        surflabel = strchr(buffer, ':');
+        if(surflabel==NULL)continue;
+        surflabel = TrimFrontBack(surflabel+1);
+        surfi = GetSurface(surflabel);
+        if(surfi==NULL)continue;
+        s_color[0] = -1.0;
+        s_color[1] = -1.0;
+        s_color[2] = -1.0;
+        s_color[3] = -1.0;
+        sscanf(buffer, "%f %f %f %f", s_color, s_color+1, s_color+2, s_color+3);
+        if(s_color[3]<0.0)s_color[3] = 1.0;
+        if(s_color[0]<0.0||s_color[1]<0.0||s_color[2]<0.0)continue;
+        s_color[0] = CLAMP(s_color[0], 0.0, 1.0);
+        s_color[1] = CLAMP(s_color[1], 0.0, 1.0);
+        s_color[2] = CLAMP(s_color[2], 0.0, 1.0);
+        surfi->color = GetColorPtr(s_color);
+        surfi->transparent_level=s_color[3];
       }
       continue;
     }
@@ -13900,11 +14171,7 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(MatchINI(buffer, "PARTFAST")==1){
       fgets(buffer, 255, stream);
-#ifdef pp_EVAC
-      if(current_script_command==NULL&&nevac==0){
-#else
       if(current_script_command==NULL){
-#endif
         sscanf(buffer, "%i %i %i", &partfast, &part_multithread, &npartthread_ids);
 #ifndef pp_PART_MULTI
         part_multithread = 0;
@@ -15178,10 +15445,6 @@ void WriteIniLocal(FILE *fileout){
 
   fprintf(fileout, "\n ------------ local ini settings ------------\n\n");
 
-#ifdef pp_EVAC
-  fprintf(fileout, "AVATAREVAC\n");
-  fprintf(fileout, " %i\n", iavatar_evac);
-#endif
   fprintf(fileout, "DEVICEVECTORDIMENSIONS\n");
   fprintf(fileout, " %f %f %f %f\n", vector_baselength, vector_basediameter, vector_headlength, vector_headdiameter);
   fprintf(fileout, "DEVICEBOUNDS\n");
@@ -15807,8 +16070,34 @@ void WriteIni(int flag,char *filename){
         if(surfi->used_by_geom==1){
           int *ini_surf_color;
 
-          ini_surf_color = surfi->glui_color;
+          ini_surf_color = surfi->geom_surf_color;
           fprintf(fileout, " %i %i %i : %s\n", ini_surf_color[0], ini_surf_color[1], ini_surf_color[2], surfi->surfacelabel);
+        }
+      }
+    }
+  }
+  {
+    int scount;
+
+    scount = 0;
+    for(i = 0; i<nsurfinfo; i++){
+      surfdata *surfi;
+
+      surfi = surfinfo+sorted_surfidlist[i];
+      if(surfi->in_color_dialog==1&&surfi->color!=surfi->color_orig)scount++;
+    }
+    if(scount>0){
+      fprintf(fileout, "OBSTSURFCOLORS\n");
+      fprintf(fileout, " %i %i\n", scount, use_surf_color);
+      for(i = 0; i<nsurfinfo; i++){
+        surfdata *surfi;
+
+        surfi = surfinfo+sorted_surfidlist[i];
+        if(surfi->in_color_dialog==1&&surfi->color!=surfi->color_orig){
+          float *color;
+
+          color = surfi->color;
+          fprintf(fileout, " %f %f %f %f: %s\n", color[0], color[1], color[2], surfi->transparent_level, surfi->surfacelabel);
         }
       }
     }
@@ -15966,6 +16255,22 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", freeze_volsmoke, autofreeze_volsmoke);
   fprintf(fileout, "GEOMBOUNDARYPROPS\n");
   fprintf(fileout, " %i %i %i %f %f %i\n",show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize, boundary_edgetype);
+  if(nhvacinfo > 0){
+    fprintf(fileout, "HVACVIEW\n");
+    fprintf(fileout, " %i %i %i %i %f\n", nhvacinfo, hvac_metro_view, 1, hvac_offset_nodes, hvac_offset_inc);
+    for(i = 0; i < nhvacinfo; i++){
+      hvacdata *hvaci;
+      int *dc, *nc;
+
+      hvaci = hvacinfo + i;
+      dc = hvaci->duct_color;
+      nc = hvaci->node_color;
+      fprintf(fileout, " %i %i %i %i %i %f %f %f %f\n",
+        hvaci->display, hvaci->show_node_labels, hvaci->show_duct_labels, hvaci->show_component,
+        hvaci->show_filters, hvaci->duct_width, hvaci->node_size, hvaci->component_size, hvaci->filter_size);
+      fprintf(fileout, " %i %i %i %i %i %i\n", dc[0], dc[1], dc[2], nc[0], nc[1], nc[2]);
+    }
+  }
   fprintf(fileout, "SHOWSLICEVALS\n");
   fprintf(fileout, " %i %i %i\n", show_slice_values[0], show_slice_values[1], show_slice_values[2]);
   fprintf(fileout, "GEOMCELLPROPS\n");
@@ -16058,10 +16363,6 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i\n", visCircularVents, circle_outline);
   fprintf(fileout, "SHOWDUMMYVENTS\n");
   fprintf(fileout, " %i\n", visDummyVents);
-#ifdef pp_EVAC
-  fprintf(fileout, "SHOWEVACSLICES\n");
-  fprintf(fileout, " %i %i %i\n", show_evac_slices, constant_evac_coloring, show_evac_colorbar);
-#endif
   fprintf(fileout, "SHOWFIRECUTOFF\n");
   fprintf(fileout, " %i\n", show_firecutoff);
   fprintf(fileout, "SHOWFLOOR\n");

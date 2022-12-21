@@ -374,9 +374,7 @@ float GetCharAdvance(GLUTbitmapFont font, int c){
   if(ch){
     return ch->advance;
   }
-  else{
-    return 0.0;
-  }
+  return 0.0;
 }
 
 /* ------------------ GetStringLength ------------------------ */
@@ -512,11 +510,9 @@ void OutputTextColor(float *fontcolor, float x, float y, char *string){
     OutputSText2(x, y, 0.0, string);
     return;
   }
-  else{
-    glRasterPos2f(x, y);
-    for(c = string; *c!='\0'; c++){
-      glutBitmapCharacter(font_ptr, (unsigned char)*c);
-    }
+  glRasterPos2f(x, y);
+  for(c = string; *c!='\0'; c++){
+    glutBitmapCharacter(font_ptr, (unsigned char)*c);
   }
 }
 
@@ -532,11 +528,9 @@ void OutputText(float x, float y, char *string){
     OutputSText2(x,y,0.0,string);
     return;
   }
-  else{
-    glRasterPos2f(x, y);
-    for(c=string; *c!='\0'; c++){
-      glutBitmapCharacter(font_ptr,(unsigned char)*c);
-    }
+  glRasterPos2f(x, y);
+  for(c=string; *c!='\0'; c++){
+    glutBitmapCharacter(font_ptr,(unsigned char)*c);
   }
 }
 

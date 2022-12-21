@@ -7,6 +7,22 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define MENU_HVAC_LOAD     0
+#define MENU_HVAC_UNLOAD   1
+
+#define HVAC_LOAD      1
+#define HVAC_UNLOAD   -1
+
+#define HVAC_FILTER_NO  0
+#define HVAC_FILTER_YES 1
+#define HVAC_NONE    0
+#define HVAC_FAN     1
+#define HVAC_AIRCOIL 2
+#define HVAC_DAMPER  3
+
+#define HVAC_STATE_INACTIVE 0
+#define HVAC_STATE_ACTIVE   1
+
 #define SPLIT_COLORBAR         1
 
 #define LABELS_vcolorbar 34
@@ -242,10 +258,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 
 #define PARTFILE_LOADALL   -11
 #define PARTFILE_RELOADALL -12
-#ifdef pp_EVAC
-#define EVACFILE_LOADALL   -11
-#define EVACFILE_RELOADALL -12
-#endif
 
 #define FIRST_TIME     1
 #define NOT_FIRST_TIME 2
@@ -584,10 +596,6 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define TOGGLE_ISO          10003
 #define HIDEALL_ISO         10002
 #define SHOWALL_ISO         10001
-#ifdef pp_EVAC
-#define HIDEALL_EVAC            4
-#define SHOWALL_EVAC            3
-#endif
 
 #define GEOM_PROP_NONE     0
 #define GEOM_PROP_VERTEX1  1
@@ -1020,6 +1028,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define DIALOG_MOVIE     43
 #define DIALOG_MOVIE_BATCH 45
 #define DIALOG_SHRINKALL -3
+#define DIALOG_HVAC      47
 
 #define UNLOAD_LAST -2
 

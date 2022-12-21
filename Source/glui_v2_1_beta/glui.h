@@ -818,7 +818,8 @@ public:
     int_val        = 0;
     last_live_int  = 0;
     float_array_size = 0;
-    sprintf( (char*)name, "Control: %p", this );
+//    sprintf( (char*)name, "Control: %p", this );
+    snprintf( (char*)name, sizeof(name), "Control: %p", this );
     float_val      = 0.0;
     last_live_float = 0.0;
     ptr_val        = NULL;
@@ -874,7 +875,8 @@ public:
   void update_size( void );
 
   GLUI_Button( void ) {
-    sprintf( name, "Button: %p", this );
+//    sprintf( name, "Button: %p", this );
+    snprintf( name, sizeof(name), "Button: %p", this );
     type         = GLUI_CONTROL_BUTTON;
     h            = GLUI_BUTTON_SIZE;
     w            = 100;
@@ -914,7 +916,8 @@ public:
   void set_int_val( int new_val );
 
   GLUI_Checkbox( void ) {
-    sprintf( name, "Checkbox: %p", this );
+//    sprintf( name, "Checkbox: %p", this );
+    snprintf( name, sizeof(name), "Checkbox: %p", this );
     type           = GLUI_CONTROL_CHECKBOX;
     w              = 100;
     h              = GLUI_CHECKBOX_SIZE;
@@ -1303,7 +1306,8 @@ public:
   GLUI_RadioGroup *group;
 
   GLUI_RadioButton( void ) {
-    sprintf( name, "RadioButton: %p", this );
+//    sprintf( name, "RadioButton: %p", this );
+    snprintf( name, sizeof(name), "RadioButton: %p", this );
     type           = GLUI_CONTROL_RADIOBUTTON;
     h              = GLUI_RADIOBUTTON_SIZE;
     group          = NULL;
@@ -1403,7 +1407,8 @@ public:
   void set_speed( float speed ) { user_speed = speed; };
 
   GLUI_Spinner( void ) {
-    sprintf( name, "Spinner: %p", this );
+//    sprintf( name, "Spinner: %p", this );
+    snprintf( name, sizeof(name), "Spinner: %p", this );
     type         = GLUI_CONTROL_SPINNER;
     h            = GLUI_EDITTEXT_HEIGHT;
     w            = GLUI_EDITTEXT_WIDTH;
@@ -1498,7 +1503,8 @@ public:
   
 
   GLUI_Listbox( void ) {
-    sprintf( name, "Listbox: %p", this );
+//    sprintf( name, "Listbox: %p", this );
+    snprintf( name, sizeof(name), "Listbox: %p", this );
     type           = GLUI_CONTROL_LISTBOX;
     w              = GLUI_EDITTEXT_WIDTH;
     h              = GLUI_EDITTEXT_HEIGHT;
@@ -1548,7 +1554,8 @@ public:
   virtual void iaction_init( void ) = 0;
   
   GLUI_Mouse_Interaction( void ) {
-    sprintf( name, "Mouse_Interaction: %p", this );
+//    sprintf( name, "Mouse_Interaction: %p", this );
+    snprintf( name, sizeof(name), "Mouse_Interaction: %p", this );
     type           = GLUI_CONTROL_MOUSE_INTERACTION;
     w              = GLUI_MOUSE_INTERACTION_WIDTH;
     h              = GLUI_MOUSE_INTERACTION_HEIGHT;
@@ -1663,7 +1670,8 @@ public:
 
   GLUI_Translation( void ) {
     locked              = GLUI_TRANSLATION_LOCK_NONE;
-    sprintf( name, "Translation: %p", this );
+//    sprintf( name, "Translation: %p", this );
+    snprintf( name, sizeof(name), "Translation: %p", this );
     type                = GLUI_CONTROL_TRANSLATION;
     w                   = GLUI_MOUSE_INTERACTION_WIDTH;
     h                   = GLUI_MOUSE_INTERACTION_HEIGHT;

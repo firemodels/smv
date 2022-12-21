@@ -23,6 +23,34 @@
 #include "glutbitmap.h"
 #endif
 
+// hvac data
+SVEXTERN int SVDECL(hvacductvar_index, -1), SVDECL(hvacnodevar_index, -1);
+SVEXTERN int SVDECL(nhvacnodeinfo, 0), SVDECL(nhvacductinfo, 0), SVDECL(nhvacinfo, 0);
+SVEXTERN int SVDECL(hvac_show_connections, 0), SVDECL(hvac_show_networks, 1);
+SVEXTERN int SVDECL(nhvacconnectinfo, 0);
+SVEXTERN hvacconnectdata SVDECL(*hvacconnectinfo, NULL);
+SVEXTERN hvacvalsdata SVDECL(*hvacvalsinfo, NULL);
+SVEXTERN int SVDECL(hvac_offset_nodes, 0);
+SVEXTERN float SVDECL(hvac_offset_inc, 0.1);
+SVEXTERN hvacdata SVDECL(*hvacinfo, NULL);
+SVEXTERN hvacnodedata SVDECL(*hvacnodeinfo, NULL);
+SVEXTERN hvacductdata SVDECL(*hvacductinfo, NULL);
+SVEXTERN int SVDECL(hvac_metro_view, 0);
+SVEXTERN hvacdata SVDECL(*glui_hvac, NULL);
+SVEXTERN int SVDECL(hvac_network_ductnode_index, -1);
+SVEXTERN int SVDECL(nhvacfilters, 0), SVDECL(nhvaccomponents, 0);
+#define HVAC_NCIRC 72
+SVEXTERN float SVDECL(*hvac_circ_x, NULL), SVDECL(*hvac_circ_y, NULL);
+#ifdef INMAIN
+SVEXTERN int hvac_duct_color[3] = { 63,0,15};
+SVEXTERN int hvac_node_color[3] = { 63,0,15};
+#else
+SVEXTERN int hvac_duct_color[3];
+SVEXTERN int hvac_node_color[3];
+#endif
+
+SVEXTERN int SVDECL(histogram_nframes, 40);
+SVEXTERN int SVDECL(glui_surf_index, 0);
 SVEXTERN int SVDECL(clip_commandline, 0), SVDECL(special_modifier, 0);
 SVEXTERN int SVDECL(update_slicexyz, 0);
 SVEXTERN int SVDECL(update_splitcolorbar, 0);
@@ -33,9 +61,11 @@ SVEXTERN float geom_bounding_box[6] = {1000000000.0, -1000000000.0,
                                        1000000000.0, -1000000000.0,
                                        1000000000.0, -1000000000.0
                                       };
+SVEXTERN int glui_surface_color[4] = {255, 255, 255, 255};
 #else
 SVEXTERN float obst_bounding_box[6];
 SVEXTERN float geom_bounding_box[6];
+SVEXTERN int glui_surface_color[4];
 #endif
 
 #ifdef pp_TERRAIN_SKIP
@@ -258,9 +288,6 @@ SVEXTERN int SVDECL(slice_temp_bounds_defined, 0);
 SVEXTERN int nplot3dloaded, nsmoke3dloaded, nisoloaded, nsliceloaded, nvsliceloaded, npartloaded, npatchloaded;
 SVEXTERN int nvolsmoke3dloaded;
 SVEXTERN int npart5loaded, npartloaded;
-#ifdef pp_EVAC
-SVEXTERN int nevacloaded;
-#endif
 
 SVEXTERN int SVDECL(global_have_global_bound_file, 0);
 SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
@@ -305,7 +332,7 @@ SVEXTERN int SVDECL(slice_multithread, 0);
 #endif
 SVEXTERN int SVDECL(readallgeom_multithread, 1);
 SVEXTERN int SVDECL(lighting_on,0);
-SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_smoothcolors, 0), SVDECL(geomdata_lighting, 1);
+SVEXTERN int SVDECL(geomdata_smoothnormals, 0), SVDECL(geomdata_lighting, 1);
 SVEXTERN int SVDECL(update_texturebar, 0);
 SVEXTERN float SVDECL(iso_valmin, 20.0), SVDECL(iso_valmax, 1020.0);
 SVEXTERN float SVDECL(glui_iso_valmin, 20.0), SVDECL(glui_iso_valmax, 1020.0);
@@ -366,7 +393,8 @@ SVEXTERN float SVDECL(tour_snap_time, 0.0);
 SVEXTERN int SVDECL(render_resolution, RENDER_RESOLUTION_CURRENT);
 SVEXTERN int SVDECL(timebar_overlap, TIMEBAR_OVERLAP_AUTO);
 SVEXTERN int SVDECL(vis_colorbar, COLORBAR_HIDDEN);
-SVEXTERN int hcolorbar_vis[6];
+#define N_COLORBARS 7
+SVEXTERN int hcolorbar_vis[N_COLORBARS];
 
 SVEXTERN int SVDECL(windrose_ttype, 2);
 #ifdef INMAIN
@@ -827,7 +855,7 @@ SVEXTERN int SVDECL(ndeviceunits, 0);
 SVEXTERN hrrdata SVDECL(**hrrunits, NULL);
 SVEXTERN int SVDECL(nhrrunits, 0);
 
-SVEXTERN int SVDECL(sort_geometry,1),SVDECL(sort_transparent_faces,0);
+SVEXTERN int SVDECL(sort_geometry,1),SVDECL(sort_transparent_faces,1);
 SVEXTERN isotri SVDECL(***iso_trans_list,NULL),SVDECL(***iso_opaques_list,NULL);
 SVEXTERN int SVDECL(*niso_trans_list,NULL),SVDECL(*niso_opaques_list,NULL);
 SVEXTERN int SVDECL(niso_timesteps,0);
@@ -836,13 +864,7 @@ SVEXTERN int SVDECL(niso_trans,0),SVDECL(niso_opaques,0);
 SVEXTERN int SVDECL(sort_iso_triangles,1);
 SVEXTERN int SVDECL(object_outlines,0), SVDECL(object_box, 0), SVDECL(have_object_box, 0);
 SVEXTERN int SVDECL(usemenu,1);
-#ifdef pp_EVAC
-SVEXTERN int SVDECL(show_evac_slices,0);
-#endif
 SVEXTERN float direction_color[4], SVDECL(*direction_color_ptr,NULL);
-#ifdef pp_EVAC
-SVEXTERN int SVDECL(constant_evac_coloring,1),SVDECL(data_evac_coloring,1),SVDECL(show_evac_colorbar,0);
-#endif
 SVEXTERN float hrrpuv_iso_color[4];
 SVEXTERN int npropinfo;
 SVEXTERN propdata SVDECL(*propinfo,NULL);
@@ -854,15 +876,9 @@ SVEXTERN float SVDECL(glui_time,0.0);
 SVEXTERN int show_mode;
 SVEXTERN int SVDECL(cellcenter_slice_active,0), SVDECL(facecenter_slice_active,0);
 SVEXTERN int SVDECL(part5colorindex,0), SVDECL(show_tracers_always,0);
-#ifdef pp_EVAC
-SVEXTERN int navatar_colors;
-#endif
 SVEXTERN int select_avatar, selected_avatar_tag, view_from_selected_avatar;
 SVEXTERN float selected_avatar_pos[3], selected_avatar_angle;
 SVEXTERN unsigned char select_device_color[4], SVDECL(*select_device_color_ptr,NULL);
-#ifdef pp_EVAC
-SVEXTERN float SVDECL(*avatar_colors,NULL);
-#endif
 SVEXTERN int SVDECL(script_render_flag,0), SVDECL(script_itime,0);
 
 SVEXTERN int SVDECL(show_slice_in_obst,ONLY_IN_GAS), offset_slice;
@@ -1081,9 +1097,6 @@ SVEXTERN char *shortp3label[MAXPLOT3DVARS], *unitp3label[MAXPLOT3DVARS];
 SVEXTERN int show3dsmoke;
 SVEXTERN float frustum[6][4];
 SVEXTERN int showtime, showtime2, showplot3d, showpatch, showslice, showvslice, showsmoke, showzone, showiso;
-#ifdef pp_EVAC
-SVEXTERN int showevac, showevac_colorbar;
-#endif
 SVEXTERN int SVDECL(showvolrender,0);
 SVEXTERN int vis_slice_contours;
 SVEXTERN int update_slicecontours;
@@ -1283,9 +1296,6 @@ SVEXTERN float SVDECL(glui_slicemin,1.0),       SVDECL(glui_slicemax,0.0);
 
 SVEXTERN float SVDECL(zonemin,1.0), SVDECL(zonemax,0.0);
 SVEXTERN float speedmax;
-#ifdef pp_EVAC
-SVEXTERN propdata SVDECL(*prop_evacdefault,NULL);
-#endif
 SVEXTERN float hrrpuv_max_smv;
 SVEXTERN int FlowDir,ClipDir;
 SVEXTERN int plotn;
@@ -1302,6 +1312,7 @@ SVEXTERN int SVDECL(p3dsurfacetype,SURFACE_SOLID);
 SVEXTERN int parttype;
 SVEXTERN int allinterior;
 SVEXTERN int SVDECL(showedit_dialog,0);
+SVEXTERN int SVDECL(showhvac_dialog, 0);
 SVEXTERN int SVDECL(showcolorbar_dialog,0);
 SVEXTERN int SVDECL(showtour_dialog,0),SVDECL(showtrainer_dialog,0);
 SVEXTERN int SVDECL(showtours,0);
@@ -1338,9 +1349,6 @@ SVEXTERN int n_devices;
 SVEXTERN int npartinfo, nsliceinfo, nvsliceinfo, nplot3dinfo, npatchinfo;
 SVEXTERN int SVDECL(nslicebounds, 0), SVDECL(npatchbounds,0), npatch2;
 SVEXTERN int nfedinfo;
-#ifdef pp_EVAC
-SVEXTERN int nevac;
-#endif
 SVEXTERN int SVDECL(nsmoke3dinfo,0);
 SVEXTERN int nisoinfo, niso_bounds;
 SVEXTERN int ntrnx, ntrny, ntrnz,npdim,nmeshes,clip_mesh;
@@ -1841,9 +1849,6 @@ SVEXTERN int show_path_knots;
 SVEXTERN int SVDECL(show_avatar,1);
 SVEXTERN int SVDECL(tourlocus_type,0);
 SVEXTERN int iavatar_types, navatar_types;
-#ifdef pp_EVAC
-SVEXTERN int iavatar_evac;
-#endif
 SVEXTERN sv_object SVDECL(**avatar_types,NULL);
 SVEXTERN int SVDECL(glui_avatar_index,0);
 SVEXTERN sv_object *avatar_defs_backup[2];

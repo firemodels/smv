@@ -38,6 +38,15 @@
 //#define pp_SMOKE3DSTREAM      // stream smoke3d data
 //#define pp_PARTSTREAM         // stream particle data
 
+#ifdef pp_SLICEVAL
+#define pp_SLICEBOUNDVAL
+#endif
+
+#ifdef pp_BOUNDVAL
+#undef pp_SLICEBOUNDVAL
+#define pp_SLICEBOUNDVAL
+#endif
+
 // turn on pp_STREAM if streaming is on for any file type
 
 #ifdef pp_SMOKE3DSTREAM
@@ -48,7 +57,6 @@
 #define pp_STREAM
 #endif
 
-//#define pp_EVAC              // isolate EVAC code
 #define pp_CLIP_FIX          // fixes to clipping
 #define pp_PART_MULTI        // load particles in parallel
 //#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds

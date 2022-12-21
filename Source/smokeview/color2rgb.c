@@ -1,4 +1,5 @@
 #include <string.h>
+#include "getdata.h"
 
 // Translate character string of a color name to RGB value
 void color2rgb(int rgb[3], const char *color) {
@@ -3192,5 +3193,4 @@ void color2rgb(int rgb[3], const char *color) {
     rgb[1] = 0;
     rgb[2] = 0;
   }
-  return;
 }
