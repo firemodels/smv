@@ -358,6 +358,13 @@ void TrimZeros(char *line){
 char *TrimFrontZeros(char *line){
   char *c;
 
+  if(line[0]=='-'){
+    char *trim;
+
+    trim = TrimFrontZeros(line+1);
+    trim[-1] = '-';
+    return trim-1;
+  }
   for(c = line; c<line+strlen(line); c++){
     if(c[0]!='0')return c;
     if(c[0]=='0'&&c[1]=='.')return c;
@@ -732,7 +739,7 @@ void Floats2Strings(char **c_vals, float *vals, int nvals, int ndigits, int fixe
   if(exponential_labels==1)doit = 0;
 
   if(doit==1){
-    if(ABS(exp_offset)>=3){
+    if(ABS(exp_offset)>=4){
       sprintf(exp_offset_label, "*10^%i", exp_offset);
     }
     else{

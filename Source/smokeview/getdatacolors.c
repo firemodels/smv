@@ -927,38 +927,13 @@ void GetSliceColors(const float *t, int nt, unsigned char *it,
   Float2String(&colorlabels[nlevel-1][0], tval, ncolorlabel_digits, force_fixedpoint);
 }
 
-/* ------------------ getSliceLabelels ------------------------ */
+/* ------------------ GetColorbarLabels ------------------------ */
 
-void GetSliceLabels(float local_tmin, float local_tmax, int nlevel,
-              char labels[12][11],float *tlevels256){
+void GetColorbarLabels(float local_tmin, float local_tmax, int nlevel,
+              char labels[12][11], float *tlevels256){
   int n;
   float dt, tval;
   float range;
-
-  range = local_tmax-local_tmin;
-
-  range = local_tmax-local_tmin;
-  dt = range/(float)(nlevel-2);
-  for(n=1;n<nlevel-1;n++){
-    tval = local_tmin + (n-1)*dt;
-    Num2String(&labels[n][0],tval);
-  }
-  for(n=0;n<256;n++){
-    tlevels256[n] = (local_tmin*(255-n) + local_tmax*n)/255.;
-  }
-  tval = local_tmax;
-  Num2String(&labels[nlevel-1][0],tval);
-}
-
-
-/* ------------------ GetIsoLabels ------------------------ */
-
-void GetIsoLabels(float local_tmin, float local_tmax, int nlevel,char labels[12][11],float *tlevels256){
-  int n;
-  float dt, tval;
-  float range;
-
-  range = local_tmax-local_tmin;
 
   range = local_tmax-local_tmin;
   dt = range/(float)(nlevel-2);

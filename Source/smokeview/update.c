@@ -357,26 +357,28 @@ void UpdateShow(void){
   int shooter_flag;
   int showhrrflag;
   int plot2dflag;
+  int showhvacflag;
 
   UpdateFileLoad();
-  showtime=0;
-  showtime2=0;
-  showplot3d=0;
-  showpatch=0;
-  showslice=0;
-  showvslice=0;
-  showsmoke=0;
-  showzone=0;
-  showiso=0;
-  showvolrender=0;
-  have_extreme_mindata=0;
-  have_extreme_maxdata=0;
-  showshooter=0;
-  show3dsmoke=0;
-  smoke3dflag=0;
-  showtours=0;
-  showdeviceflag = 0;
-  showhrrflag = 0;
+  showtime             = 0;
+  showtime2            = 0;
+  showplot3d           = 0;
+  showpatch            = 0;
+  showslice            = 0;
+  showvslice           = 0;
+  showsmoke            = 0;
+  showzone             = 0;
+  showiso              = 0;
+  showvolrender        = 0;
+  have_extreme_mindata = 0;
+  have_extreme_maxdata = 0;
+  showshooter          = 0;
+  show3dsmoke          = 0;
+  smoke3dflag          = 0;
+  showtours            = 0;
+  showdeviceflag       = 0;
+  showhrrflag          = 0;
+  showhvacflag         = 0;
   visTimeParticles=1; visTimeSlice=1; visTimeBoundary=1; visTimeZone=1; visTimeIso=1;
 
   drawing_boundary_files = 0;
@@ -384,6 +386,10 @@ void UpdateShow(void){
   RenderTime=0;
 
   if(vis_hrr_plot==1&&hrrptr!=NULL)showhrrflag = 1;
+
+  if(hvacductvar_index >= 0 || hvacnodevar_index >= 0){
+    showhvacflag = 1;
+  }
 
   if(showdevice_val==1||vis_device_plot!=DEVICE_PLOT_HIDDEN){
     for(i = 0; i<ndeviceinfo; i++){
@@ -621,8 +627,7 @@ void UpdateShow(void){
 
   if( plotstate==DYNAMIC_PLOTS &&
     ( showdeviceflag==1 || showhrrflag==1 || sliceflag==1 || vsliceflag==1 || partflag==1 || patchflag==1 ||
-    shooter_flag==1|| smoke3dflag==1 || showtours==1 ||
-    plot2dflag == 1 ||
+    shooter_flag==1|| smoke3dflag==1 || showtours==1 || showhvacflag == 1 || plot2dflag == 1 ||
     (ReadZoneFile==1&&visZone==1&&visTimeZone==1)||showvolrender==1
     )
     )showtime=1;
@@ -695,6 +700,8 @@ void UpdateShow(void){
     if(slicecolorbarflag==1||vslicecolorbarflag==1)num_colorbars++;
     if(patchflag==1&&wall_cell_color_flag==0)num_colorbars++;
     if(ReadZoneFile==1)num_colorbars++;
+    if(hvacductvar_index >= 0 || hvacnodevar_index >= 0)num_colorbars++;
+
     if(tisoflag==1&&1==0){ // disable isosurface colorbar label for now
       showiso_colorbar = 1;
       num_colorbars++;
@@ -1154,7 +1161,9 @@ void UpdateTimes(void){
       MergeGlobalTimes(stimes, 2);
     }
   }
-
+  if(hvacductvar_index >= 0 || hvacnodevar_index >= 0){
+    MergeGlobalTimes(hvacvalsinfo->times, hvacvalsinfo->ntimes);
+  }
   if(use_tload_begin==1){
     MergeGlobalTimes(&tload_begin, 1);
   }
@@ -1596,8 +1605,11 @@ int GetPlotStateSub(int choice){
       break;
     case DYNAMIC_PLOTS:
     case DYNAMIC_PLOTS_NORECURSE:
+      if(hvacductvar_index>=0||hvacnodevar_index>=0){
+        stept = 1;
+        return DYNAMIC_PLOTS;
+      }
       if(vis_hrr_plot==1&&hrrptr!=NULL){
-
         stept = 1;
         return DYNAMIC_PLOTS;
       }

@@ -115,6 +115,20 @@ int CompareHvacConnect(const void *arg1, const void *arg2){
   return 0;
 }
 
+/* ------------------ IsHVACVisible ------------------------ */
+
+int IsHVACVisible(void){
+  int i;
+
+  for(i = 0; i < nhvacinfo; i++){
+    hvacdata *hvaci;
+
+    hvaci = hvacinfo + i;
+    if(hvaci->display == 1)return 1;
+  }
+  return 0;
+}
+
 /* ------------------ HaveHVACConnect ------------------------ */
 
 int HaveHVACConnect(int val, hvacconnectdata *vals, int nvals){
@@ -213,15 +227,35 @@ void InitHvacData(hvacvaldata *hi){
 
 /* ------------------ ReadHVACData ------------------------ */
 
-void ReadHVACData(void){
+void ReadHVACData(int flag){
   FILE *stream = NULL;
   float node_buffer[1000], duct_buffer[1000], *times;
   int parms[4], n_nodes, n_node_vars, n_ducts, n_duct_vars;
   int frame_size, header_size, nframes;
   FILE_SIZE file_size;
   int i, iframe;
+  int *duct_ncells;
 
   if(hvacvalsinfo == NULL)return;
+  FREEMEMORY(hvacvalsinfo->times);
+
+  for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
+    hvacvaldata *hi;
+
+    hi = hvacvalsinfo->duct_vars + i;
+    FREEMEMORY(hi->vals);
+    FREEMEMORY(hi->ivals);
+  }
+  
+  for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
+    hvacvaldata *hi;
+
+    hi = hvacvalsinfo->node_vars + i;
+    FREEMEMORY(hi->vals);
+    FREEMEMORY(hi->ivals);
+  }
+  if(flag==HVAC_UNLOAD)return;
+
   stream = fopen(hvacvalsinfo->file, "rb");
   if(stream == NULL)return;
 
@@ -232,11 +266,15 @@ void ReadHVACData(void){
   n_ducts      = parms[2];
   n_duct_vars  = parms[3];
   header_size  = 4 + 4 * 4 + 4;                       // n_node_out n_node_vars n_duct_out n_ductd_vars
+  header_size += 4 + 4 * n_ducts + 4;                 // number of cells in each duct
   frame_size   = 4 + 4 + 4;                           // time
   frame_size  += n_nodes * (4 + 4 * n_node_vars + 4); // node data
   frame_size  += n_ducts * (4 + 4 * n_duct_vars + 4); // duct data
   file_size    = GetFileSizeSMV(hvacvalsinfo->file);
   nframes      = (file_size - header_size) / frame_size;
+
+  NewMemory((void **)&duct_ncells, n_ducts * sizeof(int));
+  FSEEK(stream, 4, SEEK_CUR); fread(duct_ncells, 4, n_ducts, stream); FSEEK(stream, 4, SEEK_CUR);
 
   FREEMEMORY(hvacvalsinfo->times);
   NewMemory((void **)&hvacvalsinfo->times, nframes * sizeof(float));
@@ -245,9 +283,7 @@ void ReadHVACData(void){
     hvacvaldata *hi;
 
     hi = hvacvalsinfo->duct_vars + i;
-    FREEMEMORY(hi->vals);
     NewMemory((void **)&hi->vals, n_ducts*nframes * sizeof(float));
-    FREEMEMORY(hi->ivals);
     NewMemory((void **)&hi->ivals, n_ducts*nframes * sizeof(unsigned char));
   }
   for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
@@ -286,15 +322,22 @@ void ReadHVACData(void){
       int k;
 
       FSEEK(stream, 4, SEEK_CUR); fread(duct_buffer, 4, n_duct_vars, stream); FSEEK(stream, 4, SEEK_CUR);
+      if(duct_ncells[j] > 1){ // for now skip over extra cell data
+        int skip;
+
+        skip = (duct_ncells[j] - 1) * (4 + n_duct_vars * 4 + 4);
+        FSEEK(stream, skip, SEEK_CUR);
+      }
       for(k = 0;k < n_duct_vars;k++){
         hvacvaldata *hk;
 
         hk = hvacvalsinfo->duct_vars + k;
-        hk->vals[iframe + j * nframes] = node_buffer[k];
+        hk->vals[iframe + j * nframes] = duct_buffer[k];
       }
     }
   }
   fclose(stream);
+  FREEMEMORY(duct_ncells);
 
   for(i = 0;i < n_node_vars;i++){
     hvacvaldata *hi;
@@ -349,6 +392,18 @@ void ReadHVACData(void){
         ivals[j] = 0;
       }
     }
+  }
+  for(i = 0;i < n_node_vars;i++){
+    hvacvaldata *hi;
+
+    hi = hvacvalsinfo->node_vars+i;
+    GetColorbarLabels(hi->valmin, hi->valmax,nrgb,hi->colorlabels,hi->levels256);
+  }
+  for(i = 0;i < n_duct_vars;i++){
+    hvacvaldata *hi;
+
+    hi = hvacvalsinfo->duct_vars+i;
+    GetColorbarLabels(hi->valmin, hi->valmax, nrgb, hi->colorlabels, hi->levels256);
   }
 }
 

@@ -1973,7 +1973,7 @@ void SetSliceLabels(float smin, float smax,
     if(pd!=NULL)sb->label = &(pd->label);
 
     *errorcode = 0;
-    GetSliceLabels(smin, smax, nrgb, sb->colorlabels, sb->levels256);
+    GetColorbarLabels(smin, smax, nrgb, sb->colorlabels, sb->levels256);
   }
 }
 

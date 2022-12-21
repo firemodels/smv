@@ -7,6 +7,12 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define SNIFF_ERRORS(f)
 #endif
 
+#define MENU_HVAC_LOAD     0
+#define MENU_HVAC_UNLOAD   1
+
+#define HVAC_LOAD      1
+#define HVAC_UNLOAD   -1
+
 #define HVAC_FILTER_NO  0
 #define HVAC_FILTER_YES 1
 #define HVAC_NONE    0

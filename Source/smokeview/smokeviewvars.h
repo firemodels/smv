@@ -393,7 +393,8 @@ SVEXTERN float SVDECL(tour_snap_time, 0.0);
 SVEXTERN int SVDECL(render_resolution, RENDER_RESOLUTION_CURRENT);
 SVEXTERN int SVDECL(timebar_overlap, TIMEBAR_OVERLAP_AUTO);
 SVEXTERN int SVDECL(vis_colorbar, COLORBAR_HIDDEN);
-SVEXTERN int hcolorbar_vis[6];
+#define N_COLORBARS 7
+SVEXTERN int hcolorbar_vis[N_COLORBARS];
 
 SVEXTERN int SVDECL(windrose_ttype, 2);
 #ifdef INMAIN
