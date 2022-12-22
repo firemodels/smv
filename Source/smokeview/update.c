@@ -2365,7 +2365,9 @@ void OutputBounds(void){
 void UpdateDisplay(void){
   SNIFF_ERRORS("UpdateDisplay: start");
 #ifdef pp_SPLITSLICES
-  SplitSlices();
+  if(split_slices == 1){
+    SplitSlices();
+  }
 #endif
   LOCK_IBLANK;
   if(update_adjust_y>0){
