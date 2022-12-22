@@ -9735,6 +9735,20 @@ int CompareSliceZ(const void *arg1, const void *arg2){
   return 0;
 }
 
+/* ------------------ CompareSplitSlices ------------------------ */
+
+int CompareSplitSlices(const void *arg1, const void *arg2){
+  splitslicedata *sf1, *sf2;
+
+  sf1 = ( splitslicedata * )arg1;
+  sf2 = ( splitslicedata * )arg2;
+  if(sf1->slice->idir==sf2->slice->idir){
+  }
+  else{
+  }
+  return 0;
+}
+
 /* ------------------ SplitSlices ------------------------ */
 
 void SplitSlices(void){
@@ -9866,6 +9880,9 @@ void SplitSlices(void){
       }
     }
   }
+ // if(nsplitsliceinfo > 1){
+ //   qsort(( splitslicedata * )splitsliceinfo, ( size_t )nsplitsliceinfo, sizeof(splitslicedata), CompareSplitSlices);
+ // }
 }
 
 /* ------------------ DrawSplitSlices ------------------------ */
