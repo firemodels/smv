@@ -7703,6 +7703,9 @@ void DrawSliceFrame(){
   if(use_tload_end==1   && global_times[itimes]>tload_end)return;
   SortLoadedSliceList();
 
+#ifdef pp_SPLITSLICES
+  DrawSplitSlices();
+#endif
   for(ii = 0; ii<nslice_loaded; ii++){
     slicedata *sd;
     int i;
@@ -9688,3 +9691,254 @@ void GenerateSliceMenu(int option){
     fclose(stream);
   }
 }
+
+#ifdef pp_SPLITSLICES
+/* ------------------ CompareSliceX ------------------------ */
+
+int CompareSliceX(const void *arg1, const void *arg2){
+  slicedata *sf1, *sf2;
+
+  sf1 = *(slicedata **)arg1;
+  sf2 = *(slicedata **)arg2;
+
+  if(sf1->xmin<sf2->xmin)return  -1;
+  if(sf1->xmin>sf2->xmin)return   1;
+
+  return 0;
+}
+
+/* ------------------ CompareSliceZ ------------------------ */
+
+int CompareSliceY(const void *arg1, const void *arg2){
+  slicedata *sf1, *sf2;
+
+  sf1 = *(slicedata **)arg1;
+  sf2 = *(slicedata **)arg2;
+
+  if(sf1->ymin<sf2->ymin)return  -1;
+  if(sf1->ymin>sf2->ymin)return  +1;
+
+  return 0;
+}
+
+/* ------------------ CompareSliceZ ------------------------ */
+
+int CompareSliceZ(const void *arg1, const void *arg2){
+  slicedata *sf1, *sf2;
+
+  sf1 = *(slicedata **)arg1;
+  sf2 = *(slicedata **)arg2;
+
+  if(sf1->zmin<sf2->zmin)return  -1;
+  if(sf1->zmin>sf2->zmin)return   1;
+
+  return 0;
+}
+
+/* ------------------ SplitSlices ------------------------ */
+
+void SplitSlices(void){
+  int i;
+
+  if(slicex==NULL)NewMemory((void **)&slicex, nsliceinfo*sizeof(slicedata *));
+  if(slicey==NULL)NewMemory((void **)&slicey, nsliceinfo*sizeof(slicedata *));
+  if(slicez==NULL)NewMemory((void **)&slicez, nsliceinfo*sizeof(slicedata *));
+  nsplitsliceinfo = 0;
+  for(i = 0;i < nmeshes;i++){
+    int j, nx, ny, nz;
+    meshdata *meshi;
+
+    meshi = meshinfo + i;
+    nx = 0;
+    ny = 0;
+    nz = 0;
+    for(j = 0;j < nsliceinfo;j++){
+      slicedata *slicej;
+
+      slicej = sliceinfo + j;
+      if(slicej->loaded == 0 || slicej->display == 0 || slicej->blocknumber != i)continue;
+      if(slicej->idir == 1)slicex[nx++]=slicej;
+      if(slicej->idir == 2)slicey[ny++]=slicej;
+      if(slicej->idir == 3)slicez[nz++]=slicej;
+    }
+    nsplitsliceinfo += nx*(ny+1)*(nz+1);
+    nsplitsliceinfo += ny*(nx+1)*(nz+1);
+    nsplitsliceinfo += nz*(nx+1)*(ny+1);
+    meshi->nslicex = nx;
+    meshi->nslicey = ny;
+    meshi->nslicez = nz;
+  }
+  if(nsplitsliceinfo==0)return;
+  if(nsplitsliceinfo>nsplitsliceinfoMAX){
+    FREEMEMORY(splitsliceinfo);
+    NewMemory((void **)&splitsliceinfo, nsplitsliceinfo*sizeof(splitslicedata));
+    nsplitsliceinfoMAX = nsplitsliceinfo;
+  }
+  nsplitsliceinfo = 0;
+  for(i = 0;i < nmeshes;i++){
+    meshdata *meshi;
+    int ii, jj, kk;
+    int is1, is2, js1, js2, ks1, ks2;
+
+    meshi = meshinfo + i;
+    // x slices
+    for(ii=0;ii<meshi->nslicex;ii++){
+      is1 = slicex[ii]->is1;
+      is2 = slicex[ii]->is2;
+      for(jj=0;jj<=meshi->nslicey;jj++){
+        js1 = slicex[ii]->js1;
+        js2 = slicex[ii]->js2;
+        if(jj!=0)js1 = slicey[jj-1]->js1;
+        if(jj!=meshi->nslicey)js2 = slicey[jj]->js2;
+        for(kk=0;kk<=meshi->nslicez;kk++){
+          splitslicedata *spliti;
+
+          ks1 = slicex[ii]->ks1;
+          ks2 = slicex[ii]->ks2;
+          if(kk!=0)ks1 = slicez[kk-1]->ks1;
+          if(kk!=meshi->nslicez)ks2 = slicez[kk]->ks2;
+          spliti = splitsliceinfo + nsplitsliceinfo++;
+          spliti->mesh = meshi;
+          spliti->slice = slicex[ii];
+          spliti->is1 = is1;
+          spliti->is2 = is2;
+          spliti->js1 = js1;
+          spliti->js2 = js2;
+          spliti->ks1 = ks1;
+          spliti->ks2 = ks2;
+        }
+      }
+    }
+    // y slices
+    for(jj=0;jj<meshi->nslicey;jj++){
+      js1 = slicey[jj]->js1;
+      js2 = slicey[jj]->js2;
+      for(ii=0;ii<=meshi->nslicex;ii++){
+        is1 = slicey[jj]->is1;
+        is2 = slicey[jj]->is2;
+        if(ii!=0)is1 = slicex[ii-1]->is1;
+        if(ii!=meshi->nslicex)is2 = slicex[ii]->is2;
+        for(kk=0;kk<=meshi->nslicez;kk++){
+          splitslicedata *spliti;
+
+          ks1 = slicey[jj]->ks1;
+          ks2 = slicey[jj]->ks2;
+          if(kk!=0)ks1 = slicez[kk-1]->ks1;
+          if(kk!=meshi->nslicez)ks2 = slicez[kk]->ks2;
+          spliti = splitsliceinfo + nsplitsliceinfo++;
+          spliti->mesh = meshi;
+          spliti->slice = slicey[jj];
+          spliti->is1 = is1;
+          spliti->is2 = is2;
+          spliti->js1 = js1;
+          spliti->js2 = js2;
+          spliti->ks1 = ks1;
+          spliti->ks2 = ks2;
+        }
+      }
+    }
+    // z slices
+    for(kk=0;kk<meshi->nslicez;kk++){
+      ks1 = slicez[kk]->ks1;
+      ks2 = slicez[kk]->ks2;
+      for(jj=0;jj<=meshi->nslicey;jj++){
+        js1 = slicez[kk]->js1;
+        js2 = slicez[kk]->js2;
+        if(jj!=0)js1 = slicey[jj-1]->js1;
+        if(jj!=meshi->nslicey)js2 = slicey[jj]->js2;
+        for(ii=0;ii<=meshi->nslicex;ii++){
+          splitslicedata *spliti;
+
+          is1 = slicez[kk]->is1;
+          is2 = slicez[kk]->is2;
+          if(ii!=0)is1 = slicex[ii-1]->is1;
+          if(ii!=meshi->nslicex)is2 = slicex[ii]->is2;
+          spliti = splitsliceinfo + nsplitsliceinfo++;
+          spliti->mesh = meshi;
+          spliti->slice = slicez[kk];
+          spliti->is1 = is1;
+          spliti->is2 = is2;
+          spliti->js1 = js1;
+          spliti->js2 = js2;
+          spliti->ks1 = ks1;
+          spliti->ks2 = ks2;
+        }
+      }
+    }
+  }
+}
+
+/* ------------------ DrawSplitSlices ------------------------ */
+
+void DrawSplitSlices(void){
+  int i;
+
+  if(nsplitsliceinfo==0)return;
+  
+  glPushMatrix();
+  glScalef(SCALE2SMV(1.0),SCALE2SMV(1.0),SCALE2SMV(1.0));
+  glTranslatef(-xbar0,-ybar0,-zbar0);
+
+  glLineWidth(4.0);
+  glColor3f(0.0, 0.0, 0.0);
+  glBegin(GL_LINES);
+  for(i=0;i<nsplitsliceinfo;i++){
+    splitslicedata *spliti;
+    float *xplt, *yplt, *zplt;
+    int is1, is2, js1, js2, ks1, ks2;
+
+    spliti = splitsliceinfo + i;
+    xplt = spliti->mesh->xplt_orig;
+    yplt = spliti->mesh->yplt_orig;
+    zplt = spliti->mesh->zplt_orig;
+    is1 = spliti->is1;
+    is2 = spliti->is2;
+    js1 = spliti->js1;
+    js2 = spliti->js2;
+    ks1 = spliti->ks1;
+    ks2 = spliti->ks2;
+    if(spliti->slice->idir==1){
+      glVertex3f(xplt[is1],yplt[js1],zplt[ks1]);
+      glVertex3f(xplt[is1],yplt[js2],zplt[ks1]);
+
+      glVertex3f(xplt[is1],yplt[js2],zplt[ks1]);
+      glVertex3f(xplt[is1],yplt[js2],zplt[ks2]);
+
+      glVertex3f(xplt[is1],yplt[js2],zplt[ks2]);
+      glVertex3f(xplt[is1],yplt[js1],zplt[ks2]);
+
+      glVertex3f(xplt[is1],yplt[js1],zplt[ks2]);
+      glVertex3f(xplt[is1],yplt[js1],zplt[ks1]);
+    }
+    else if(spliti->slice->idir==2){
+      glVertex3f(xplt[is1],yplt[js1],zplt[ks1]);
+      glVertex3f(xplt[is2],yplt[js1],zplt[ks1]);
+
+      glVertex3f(xplt[is2],yplt[js1],zplt[ks1]);
+      glVertex3f(xplt[is2],yplt[js1],zplt[ks2]);
+
+      glVertex3f(xplt[is2],yplt[js1],zplt[ks2]);
+      glVertex3f(xplt[is1],yplt[js1],zplt[ks2]);
+
+      glVertex3f(xplt[is1],yplt[js1],zplt[ks2]);
+      glVertex3f(xplt[is1],yplt[js1],zplt[ks1]);
+    }
+    else{
+      glVertex3f(xplt[is1],yplt[js1],zplt[ks1]);
+      glVertex3f(xplt[is2],yplt[js1],zplt[ks1]);
+
+      glVertex3f(xplt[is2],yplt[js1],zplt[ks1]);
+      glVertex3f(xplt[is2],yplt[js2],zplt[ks1]);
+
+      glVertex3f(xplt[is2],yplt[js2],zplt[ks1]);
+      glVertex3f(xplt[is1],yplt[js2],zplt[ks1]);
+
+      glVertex3f(xplt[is1],yplt[js2],zplt[ks1]);
+      glVertex3f(xplt[is1],yplt[js1],zplt[ks1]);
+    }
+  }
+  glEnd();
+  glPopMatrix();
+
+}
+#endif

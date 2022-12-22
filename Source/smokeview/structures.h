@@ -852,6 +852,9 @@ typedef struct _meshdata {
   struct _culldata *cullgeominfo;
 
   volrenderdata volrenderinfo;
+#ifdef pp_SPLITSLICES
+  int nslicex, nslicey, nslicez;
+#endif
 
   meshplanedata gsliceinfo;
   meshplanedata *smokeplaneinfo;
@@ -1475,6 +1478,16 @@ typedef struct _multivslicedata {
   char menulabel[128];
   char menulabel2[128];
 } multivslicedata;
+
+#ifdef pp_SPLITSLICES
+/* --------------------------  splitslicedata ------------------------------------ */
+
+typedef struct _splitslicedata {
+  slicedata *slice;
+  meshdata *mesh;
+  int is1, is2, js1, js2, ks1, ks2;
+} splitslicedata;
+#endif
 
 /* --------------------------  cpp_boundsdata ------------------------------------ */
 
