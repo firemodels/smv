@@ -7688,6 +7688,63 @@ void DrawSlicePlots(void){
   }
 }
 
+#ifdef pp_SPLITSLICES
+/* ------------------ DrawSplitNodeSlices ------------------------ */
+
+void DrawSplitNodeSlices(void){
+  int i;
+
+  for(i = 0;i < nsplitsliceinfo;i++){
+    splitslicedata *s;
+    slicedata *sd;
+
+    s = splitsliceinfoptr[i];
+    sd = s->slice;
+    if(sd->slice_filetype != SLICE_GEOM){
+      if(sd->compression_type!=UNCOMPRESSED){
+        UncompressSliceDataFrame(sd,sd->itime);
+        sd->iqsliceframe=sd->slicecomplevel;
+      }
+      else{
+        sd->iqsliceframe = sd->slicelevel + sd->itime*sd->nsliceijk;
+        sd->qslice = sd->qslicedata + sd->itime*sd->nsliceijk;
+      }
+      sd->qsliceframe=NULL;
+#ifdef pp_MEMDEBUG
+      if(sd->compression_type==UNCOMPRESSED&&sd->qslicedata!=NULL){
+        ASSERT(ValidPointer(sd->qslicedata,sizeof(float)*sd->nslicetotal));
+      }
+#endif
+      if(sd->qslicedata!= NULL)sd->qsliceframe = sd->qslicedata + sd->itime*sd->nsliceijk;
+    }
+
+    int nx, ny, nz;
+    sd->iis1 = s->is1;
+    sd->iis2 = s->is2;
+    sd->jjs1 = s->js1;
+    sd->jjs2 = s->js2;
+    sd->kks1 = s->ks1;
+    sd->kks2 = s->ks2;
+    nx = sd->nslicei;
+    ny = sd->nslicej;
+    nz = sd->nslicek;
+    sd->nslicei = s->is2+1-s->is1;
+    sd->nslicej = s->js2+1-s->js1;
+    sd->nslicek = s->ks2+1-s->ks1;
+    DrawVolSliceTexture(sd);
+    sd->nslicei = nx;
+    sd->nslicej = ny;
+    sd->nslicek = nz;
+    sd->iis1 = sd->is1;
+    sd->iis2 = sd->is2;
+    sd->jjs1 = sd->js1;
+    sd->jjs2 = sd->js2;
+    sd->kks1 = sd->ks1;
+    sd->kks2 = sd->ks2;
+  }
+}
+#endif
+
 /* ------------------ DrawSliceFrame ------------------------ */
 
 void DrawSliceFrame(){
@@ -7704,7 +7761,9 @@ void DrawSliceFrame(){
   SortLoadedSliceList();
 
 #ifdef pp_SPLITSLICES
-  DrawSplitSlices();
+  if(split_slices==1){
+    DrawSplitSlices();
+  }
 #endif
   for(ii = 0; ii<nslice_loaded; ii++){
     slicedata *sd;
@@ -7848,7 +7907,13 @@ void DrawSliceFrame(){
       switch(sd->slice_filetype){
       case SLICE_NODE_CENTER:
         if(orien==0){
-          DrawVolSliceTexture(sd);
+#ifdef pp_SPLITSLICES
+          if(split_slices==0){
+            DrawVolSliceTexture(sd);
+          }
+#else
+            DrawVolSliceLines(sd);
+#endif
           SNIFF_ERRORS("after DrawVolSliceTexture");
           if(show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1){
             DrawVolSliceLines(sd);
@@ -9738,14 +9803,36 @@ int CompareSliceZ(const void *arg1, const void *arg2){
 /* ------------------ CompareSplitSlices ------------------------ */
 
 int CompareSplitSlices(const void *arg1, const void *arg2){
-  splitslicedata *sf1, *sf2;
+  splitslicedata *s1, *s2;
+  meshdata *m1, *m2;
+  float *x1, *y1, *z1;
+  float *x2, *y2, *z2;
+  float dist1, dist2;
 
-  sf1 = ( splitslicedata * )arg1;
-  sf2 = ( splitslicedata * )arg2;
-  if(sf1->slice->idir==sf2->slice->idir){
-  }
-  else{
-  }
+  s1 = *(splitslicedata **)arg1;
+  s2 = *(splitslicedata **)arg2;
+  m1 = s1->mesh;
+  m2 = s2->mesh;
+  x1 = m1->xplt;
+  y1 = m1->yplt;
+  z1 = m1->zplt;
+  x2 = m2->xplt;
+  y2 = m2->yplt;
+  z2 = m2->zplt;
+  float dx1, dy1, dz1;
+  float dx2, dy2, dz2;
+
+  dx1 = (x1[s1->is1]+x1[s1->is2])/2.0 - smv_eyepos[0];
+  dy1 = (y1[s1->js1]+y1[s1->js2])/2.0 - smv_eyepos[1];
+  dz1 = (z1[s1->ks1]+z1[s1->ks2])/2.0 - smv_eyepos[2];
+  dist1 = sqrt(dx1*dx1+dy1*dy1+dz1*dz1);
+  dx2 = (x2[s2->is1]+x2[s2->is2])/2.0 - smv_eyepos[0];
+  dy2 = (y2[s2->js1]+y2[s2->js2])/2.0 - smv_eyepos[1];
+  dz2 = (z2[s2->ks1]+z2[s2->ks2])/2.0 - smv_eyepos[2];
+  dist2 = sqrt(dx2*dx2+dy2*dy2+dz2*dz2);
+
+  if(dist1 < dist2)return 1;
+  if(dist1 > dist2)return -1;
   return 0;
 }
 
@@ -9786,6 +9873,8 @@ void SplitSlices(void){
   if(nsplitsliceinfo>nsplitsliceinfoMAX){
     FREEMEMORY(splitsliceinfo);
     NewMemory((void **)&splitsliceinfo, nsplitsliceinfo*sizeof(splitslicedata));
+    FREEMEMORY(splitsliceinfoptr);
+    NewMemory((void **)&splitsliceinfoptr, nsplitsliceinfo*sizeof(splitslicedata *));
     nsplitsliceinfoMAX = nsplitsliceinfo;
   }
   nsplitsliceinfo = 0;
@@ -9880,9 +9969,12 @@ void SplitSlices(void){
       }
     }
   }
- // if(nsplitsliceinfo > 1){
- //   qsort(( splitslicedata * )splitsliceinfo, ( size_t )nsplitsliceinfo, sizeof(splitslicedata), CompareSplitSlices);
- // }
+  for(i=0;i<nsplitsliceinfo;i++){
+    splitsliceinfoptr[i] = splitsliceinfo + i;
+  }
+  if(nsplitsliceinfo > 1){
+    qsort(( splitslicedata ** )splitsliceinfoptr, ( size_t )nsplitsliceinfo, sizeof(splitslicedata *), CompareSplitSlices);
+  }
 }
 
 /* ------------------ DrawSplitSlices ------------------------ */
@@ -9904,7 +9996,7 @@ void DrawSplitSlices(void){
     float *xplt, *yplt, *zplt;
     int is1, is2, js1, js2, ks1, ks2;
 
-    spliti = splitsliceinfo + i;
+    spliti = splitsliceinfoptr[i];
     xplt = spliti->mesh->xplt_orig;
     yplt = spliti->mesh->yplt_orig;
     zplt = spliti->mesh->zplt_orig;
@@ -9955,6 +10047,29 @@ void DrawSplitSlices(void){
     }
   }
   glEnd();
+  for(i = 0;i < nsplitsliceinfo;i++){
+    splitslicedata *spliti;
+    float *xplt, *yplt, *zplt;
+    int is1, is2, js1, js2, ks1, ks2;
+    char label[32];
+    float xmid, ymid, zmid;
+
+    spliti = splitsliceinfoptr[i];
+    xplt = spliti->mesh->xplt_orig;
+    yplt = spliti->mesh->yplt_orig;
+    zplt = spliti->mesh->zplt_orig;
+    is1 = spliti->is1;
+    is2 = spliti->is2;
+    js1 = spliti->js1;
+    js2 = spliti->js2;
+    ks1 = spliti->ks1;
+    ks2 = spliti->ks2;
+    xmid = (xplt[is1] + xplt[is2]) / 2.0;
+    ymid = (yplt[js1] + yplt[js2]) / 2.0;
+    zmid = (zplt[ks1] + zplt[ks2]) / 2.0;
+    sprintf(label, "%i", i);
+    Output3Text(foregroundcolor, xmid, ymid, zmid, label);
+  }
   glPopMatrix();
 
 }
