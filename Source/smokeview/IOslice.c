@@ -6254,10 +6254,7 @@ void DrawVolSliceTexture(const slicedata *sd){
 
     constval = xplt[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glBegin(GL_TRIANGLES);
-    maxj = sd->js2;
-    if(sd->js1 + 1>maxj){
-      maxj = sd->js1 + 1;
-    }
+    maxj = MAX(sd->js2, sd->js1 + 1);
     for(j = sd->js1; j<maxj; j+=slice_skipy){
       float ymid;
       int j2;
@@ -6278,13 +6275,13 @@ void DrawVolSliceTexture(const slicedata *sd){
         in_solid = 1 - in_gas;
 
         k2 = MIN(k+slice_skipz, sd->ks2);
-          if(slice_skipz==1&&slice_skipy==1){
-            if(c_iblank_x!=NULL){
-              if(show_slice_shaded[IN_SOLID_GLUI]==0&&in_solid==1)continue;
-              if(show_slice_shaded[IN_GAS_GLUI]==0&&in_gas==1)continue;
-            }
-            if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
+        if(slice_skipz==1&&slice_skipy==1){
+          if(c_iblank_x!=NULL){
+            if(show_slice_shaded[IN_SOLID_GLUI]==0&&in_solid==1)continue;
+            if(show_slice_shaded[IN_GAS_GLUI]==0&&in_gas==1)continue;
           }
+          if(skip_slice_in_embedded_mesh==1&&iblank_embed!=NULL&&iblank_embed[IJK(plotx, j, k)]==EMBED_YES)continue;
+        }
 #ifdef pp_SLICEVAL
         r11 = SLICETEXTURE(plotx,  j,  k);
         r31 = SLICETEXTURE(plotx, j2,  k);
@@ -6334,10 +6331,7 @@ void DrawVolSliceTexture(const slicedata *sd){
 
     constval = yplt[ploty]+offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glBegin(GL_TRIANGLES);
-    maxi = sd->is1+sd->nslicei-1;
-    if(sd->is1+1>maxi){
-      maxi = sd->is1+1;
-    }
+    maxi = MAX(sd->is1 + 1, sd->is1+sd->nslicei-1);
     istart = sd->is1;
     iend = maxi;
 
@@ -6422,10 +6416,7 @@ void DrawVolSliceTexture(const slicedata *sd){
     constval = zplt[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glBegin(GL_TRIANGLES);
 
-    maxi = sd->is1 + sd->nslicei - 1;
-    if(sd->is1 + 1>maxi){
-      maxi = sd->is1 + 1;
-    }
+    maxi = MAX(sd->is1 + 1, sd->is1 + sd->nslicei - 1);
     for(i = sd->is1; i<maxi; i+=slice_skipx){
       float xmid;
       int i2;
@@ -7912,7 +7903,7 @@ void DrawSliceFrame(){
             DrawVolSliceTexture(sd);
           }
 #else
-            DrawVolSliceLines(sd);
+          DrawVolSliceTexture(sd);
 #endif
           SNIFF_ERRORS("after DrawVolSliceTexture");
           if(show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1){
