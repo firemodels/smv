@@ -327,19 +327,19 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
       if(slicei->loaded==0||slicei->display==0||slicei->slice_filetype!=SLICE_CELL_CENTER||slicei->volslice==1)continue;
       if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
 
-      iq = slicei->slicelevel+itime*slicei->nsliceijk;
+      iq = slicei->slicelevel+itime*slicei->nfileijk;
       switch(slicei->idir){
       case XDIR:
-        ncols = slicei->nslicej;
-        nrows = slicei->nslicek;
+        ncols = slicei->nfilej;
+        nrows = slicei->nfilek;
         break;
       case YDIR:
-        ncols = slicei->nslicei;
-        nrows = slicei->nslicek;
+        ncols = slicei->nfilei;
+        nrows = slicei->nfilek;
         break;
       case ZDIR:
-        ncols = slicei->nslicei;
-        nrows = slicei->nslicej;
+        ncols = slicei->nfilei;
+        nrows = slicei->nfilej;
         break;
       default:
 	ASSERT(FFALSE);
@@ -400,8 +400,8 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
             }
             // textures
             for(j = slicei->js1; j<slicei->js2; j++){
-              n = (j+1-slicei->js1)*slicei->nslicei*slicei->nslicek-1;
-              n += (plotx-slicei->is1)*slicei->nslicek+1;
+              n = (j+1-slicei->js1)*slicei->nfilei*slicei->nfilek-1;
+              n += (plotx-slicei->is1)*slicei->nfilek+1;
 
               for(k = slicei->ks1; k<slicei->ks2; k++){
                 n++;
@@ -442,8 +442,8 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
             }
             // textures
             for(i = slicei->is1; i<slicei->is2; i++){
-              n = (i+1-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
-              n += (ploty-slicei->js1)*slicei->nslicek+1;
+              n = (i+1-slicei->is1)*slicei->nfilej*slicei->nfilek-1;
+              n += (ploty-slicei->js1)*slicei->nfilek+1;
 
               for(k = slicei->ks1; k<slicei->ks2; k++){
                 n++;
@@ -484,7 +484,7 @@ void GetSliceCellVerts(int option, int option2, int *offset, float *verts, unsig
             }
             // textures
             for(i = slicei->is1; i<slicei->is2; i++){
-              n = (i+1-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
+              n = (i+1-slicei->is1)*slicei->nfilej*slicei->nfilek-1;
               n += (plotz-slicei->ks1)*slicei->nslicey+1;
 
               for(j = slicei->js1; j<slicei->js2; j++){
@@ -678,19 +678,19 @@ void GetSliceNodeVerts(int option, int option2,
       if(slicei->loaded==0||slicei->display==0||(slicei->slice_filetype!=SLICE_NODE_CENTER&&slicei->slice_filetype!=SLICE_TERRAIN)||slicei->volslice==1)continue;
       if(slicei->idir!=XDIR&&slicei->idir!=YDIR&&slicei->idir!=ZDIR)continue;
 
-      iq = slicei->slicelevel+itime*slicei->nsliceijk;
+      iq = slicei->slicelevel+itime*slicei->nfileijk;
       switch(slicei->idir){
       case XDIR:
-        ncols = slicei->nslicej;
-        nrows = slicei->nslicek;
+        ncols = slicei->nfilej;
+        nrows = slicei->nfilek;
         break;
       case YDIR:
-        ncols = slicei->nslicei;
-        nrows = slicei->nslicek;
+        ncols = slicei->nfilei;
+        nrows = slicei->nfilek;
         break;
       case ZDIR:
-        ncols = slicei->nslicei;
-        nrows = slicei->nslicej;
+        ncols = slicei->nfilei;
+        nrows = slicei->nfilej;
         break;
       default:
         ASSERT(FFALSE);
@@ -780,8 +780,8 @@ void GetSliceNodeVerts(int option, int option2,
             }
             // textures
             for(j = slicei->js1; j<=slicei->js2; j++){
-              n = (j-slicei->js1)*slicei->nslicei*slicei->nslicek-1;
-              n += (plotx-slicei->is1)*slicei->nslicek;
+              n = (j-slicei->js1)*slicei->nfilei*slicei->nfilek-1;
+              n += (plotx-slicei->is1)*slicei->nfilek;
 
               for(k = slicei->ks1; k<=slicei->ks2; k++){
                 *textures++ = iq[++n];
@@ -836,8 +836,8 @@ void GetSliceNodeVerts(int option, int option2,
             }
             // textures
             for(i = slicei->is1; i<=slicei->is2; i++){
-              n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
-              n += (ploty-slicei->js1)*slicei->nslicek;
+              n = (i-slicei->is1)*slicei->nfilej*slicei->nfilek-1;
+              n += (ploty-slicei->js1)*slicei->nfilek;
 
               for(k = slicei->ks1; k<=slicei->ks2; k++){
                 *textures++ = iq[++n];
@@ -897,7 +897,7 @@ void GetSliceNodeVerts(int option, int option2,
             }
             // textures
             for(i = slicei->is1; i<=slicei->is2; i++){
-              n = (i-slicei->is1)*slicei->nslicej*slicei->nslicek-1;
+              n = (i-slicei->is1)*slicei->nfilej*slicei->nfilek-1;
               n += (plotz-slicei->ks1)*slicei->nslicey;
 
               for(j = slicei->js1; j<=slicei->js2; j++){

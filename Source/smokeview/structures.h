@@ -1424,12 +1424,12 @@ typedef struct _slicedata {
   int ijk_min[3], ijk_max[3];
   float xmin,xmax,ymin,ymax,zmin,zmax;
   float xyz_min[3], xyz_max[3];
-  int nsliceijk;
+  int nfileijk;
   int *timeslist;
   char cdir[256];
   int idir;
   float sliceoffset;
-  int nslicei, nslicej, nslicek;
+  int nfilei, nfilej, nfilek;
   int nslicex, nslicey;
   int ndirxyz[4];
   int nslicetotal;

@@ -408,7 +408,7 @@ void OutputSliceData(void){
       PRINTF("  Slice data unavailable for output\n");
       continue;
     }
-    data = sd->qslicedata + sd->itime*sd->nsliceijk;
+    data = sd->qslicedata + sd->itime*sd->nfileijk;
     strcpy(datafile, sd->file);
     ext = strstr(datafile, ".");
     if(ext != NULL){
@@ -427,7 +427,7 @@ void OutputSliceData(void){
       fprintf(fileout, "%i,%i\n", sd->ks2 + 1 - sd->ks1, sd->js2 + 1 - sd->js1);
       for(row = sd->ks1; row <= sd->ks2; row++){
         for(col = sd->js1; col <= sd->js2; col++){
-          n = (col - sd->js1)*sd->nslicek + row - sd->ks1;
+          n = (col - sd->js1)*sd->nfilek + row - sd->ks1;
           if(col != sd->js2)fprintf(fileout, "%f, ", data[n]);
           if(col == sd->js2)fprintf(fileout, "%f ", data[n]);
         }
@@ -438,7 +438,7 @@ void OutputSliceData(void){
       fprintf(fileout, "%i, %i \n", sd->ks2 + 1 - sd->ks1, sd->is2 + 1 - sd->is1);
       for(row = sd->ks1; row <= sd->ks2; row++){
         for(col = sd->is1; col <= sd->is2; col++){
-          n = (col - sd->is1)*sd->nslicek + row - sd->ks1;
+          n = (col - sd->is1)*sd->nfilek + row - sd->ks1;
           if(col != sd->is2)fprintf(fileout, "%f, ", data[n]);
           if(col == sd->is2)fprintf(fileout, "%f ", data[n]);
         }
@@ -449,7 +449,7 @@ void OutputSliceData(void){
       fprintf(fileout, "%i, %i \n", sd->js2 + 1 - sd->js1, sd->is2 + 1 - sd->is1);
       for(row = sd->js1; row <= sd->js2; row++){
         for(col = sd->is1; col <= sd->is2; col++){
-          n = (col - sd->is1)*sd->nslicej + row - sd->js1;
+          n = (col - sd->is1)*sd->nfilej + row - sd->js1;
           if(col != sd->is2)fprintf(fileout, "%f, ", data[n]);
           if(col == sd->is2)fprintf(fileout, "%f ", data[n]);
         }
