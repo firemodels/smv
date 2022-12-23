@@ -9864,7 +9864,12 @@ void SplitSlices(void){
     // x slices
     for(ii=0;ii<meshi->nslicex;ii++){
       is1 = slicex[ii]->is1;
-      is2 = slicex[ii]->is2;
+      if(slicex[ii]->volslice == 1){
+        is2 = slicex[ii]->is1+ slicex[ii]->nfilei-1;
+      }
+      else{
+        is2 = slicex[ii]->is2;
+      }
       for(jj=0;jj<=meshi->nslicey;jj++){
         js1 = slicex[ii]->js1;
         js2 = slicex[ii]->js2;
