@@ -6191,7 +6191,7 @@ void DrawVolAllSlicesTextureDiag(const slicedata *sd, int direction){
 
 /* ------------------ DrawVolSliceTexture ------------------------ */
 
-void DrawVolSliceTexture(const slicedata *sd){
+void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2, int ks1, int ks2){
   int i, j, k;
   float r11, r31, r13, r33;
   float constval, x1, x3, yy1, y3, z1, z3;
@@ -6227,9 +6227,9 @@ void DrawVolSliceTexture(const slicedata *sd){
     plotz = meshi->iplotz_all[iplotz_all];
   }
   else{
-    plotx = sd->is1;
-    ploty = sd->js1;
-    plotz = sd->ks1;
+    plotx = is1;
+    ploty = js1;
+    plotz = ks1;
   }
   ibar = meshi->ibar;
   jbar = meshi->jbar;
@@ -6254,18 +6254,18 @@ void DrawVolSliceTexture(const slicedata *sd){
 
     constval = xplt[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glBegin(GL_TRIANGLES);
-    maxj = MAX(sd->js2, sd->js1 + 1);
-    for(j = sd->js1; j<maxj; j+=slice_skipy){
+    maxj = MAX(js2, js1 + 1);
+    for(j = js1; j<maxj; j+=slice_skipy){
       float ymid;
       int j2;
 
-      j2 = MIN(j+slice_skipy, sd->js2);
+      j2 = MIN(j+slice_skipy, js2);
       yy1 = yplt[j];
       y3 = yplt[j2];
       ymid = (yy1 + y3) / 2.0;
 
       // val(i,j,k) = di*nj*nk + dj*nk + dk
-      for(k = sd->ks1; k<sd->ks2; k+=slice_skipz){
+      for(k = ks1; k<ks2; k+=slice_skipz){
         float rmid, zmid;
         int k2;
         int in_solid, in_gas;
@@ -6274,7 +6274,7 @@ void DrawVolSliceTexture(const slicedata *sd){
         if(c_iblank_x!=NULL&&c_iblank_x[IJK(plotx, j, k)]!=GASGAS)in_gas=0;
         in_solid = 1 - in_gas;
 
-        k2 = MIN(k+slice_skipz, sd->ks2);
+        k2 = MIN(k+slice_skipz, ks2);
         if(slice_skipz==1&&slice_skipy==1){
           if(c_iblank_x!=NULL){
             if(show_slice_shaded[IN_SOLID_GLUI]==0&&in_solid==1)continue;
@@ -6331,8 +6331,8 @@ void DrawVolSliceTexture(const slicedata *sd){
 
     constval = yplt[ploty]+offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glBegin(GL_TRIANGLES);
-    maxi = MAX(sd->is1 + 1, sd->is1+sd->nfilei-1);
-    istart = sd->is1;
+    maxi = MAX(is1 + 1, is2);
+    istart = is1;
     iend = maxi;
 
     for(i = istart; i<iend; i+=slice_skipx){
@@ -6346,8 +6346,8 @@ void DrawVolSliceTexture(const slicedata *sd){
       x3 = xplt[i2];
       xmid = (x1 + x3) / 2.0;
 
-      kmin = sd->ks1;
-      kmax = sd->ks2;
+      kmin = ks1;
+      kmax = ks2;
       for(k = kmin; k<kmax; k+=slice_skipz){
         float rmid, zmid;
         int k2;
@@ -6357,7 +6357,7 @@ void DrawVolSliceTexture(const slicedata *sd){
         if(c_iblank_y!=NULL&&c_iblank_y[IJK(i, ploty, k)]!=GASGAS)in_gas=0;
         in_solid = 1 - in_gas;
 
-        k2 = MIN(k + slice_skipz, sd->ks2);
+        k2 = MIN(k + slice_skipz, ks2);
         if(slice_skipx==1&&slice_skipz==1){
           if(c_iblank_y!=NULL){
             if(show_slice_shaded[IN_SOLID_GLUI]==0   && in_solid==1)continue;
@@ -6416,8 +6416,8 @@ void DrawVolSliceTexture(const slicedata *sd){
     constval = zplt[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
     glBegin(GL_TRIANGLES);
 
-    maxi = MAX(sd->is1 + 1, sd->is1 + sd->nfilei - 1);
-    for(i = sd->is1; i<maxi; i+=slice_skipx){
+    maxi = MAX(is1 + 1, is2);
+    for(i = is1; i<maxi; i+=slice_skipx){
       float xmid;
       int i2;
 
@@ -6427,7 +6427,7 @@ void DrawVolSliceTexture(const slicedata *sd){
       x3 = xplt[i2];
       xmid = (x1 + x3) / 2.0;
 
-      for(j = sd->js1; j<sd->js2; j+=slice_skipy){
+      for(j = js1; j<js2; j+=slice_skipy){
         float ymid, rmid;
         int j2;
         int in_solid, in_gas;
@@ -6436,7 +6436,7 @@ void DrawVolSliceTexture(const slicedata *sd){
         if(c_iblank_z!=NULL&&c_iblank_z[IJK(i, j, plotz)] != GASGAS)in_gas=0;
         in_solid = 1 - in_gas;
 
-        j2 = MIN(j+slice_skipy, sd->js2);
+        j2 = MIN(j+slice_skipy, js2);
         if(slice_skipy==1&&slice_skipx==1){
           if(c_iblank_z!=NULL){
             if(show_slice_shaded[IN_SOLID_GLUI]==0 && in_solid==1)continue;
@@ -7709,29 +7709,7 @@ void DrawSplitNodeSlices(void){
       if(sd->qslicedata!= NULL)sd->qsliceframe = sd->qslicedata + sd->itime*sd->nfileijk;
     }
 
-    int nx, ny, nz;
-    sd->iis1 = s->is1;
-    sd->iis2 = s->is2;
-    sd->jjs1 = s->js1;
-    sd->jjs2 = s->js2;
-    sd->kks1 = s->ks1;
-    sd->kks2 = s->ks2;
-    nx = sd->nfilei;
-    ny = sd->nfilej;
-    nz = sd->nfilek;
-    sd->nfilei = s->is2+1-s->is1;
-    sd->nfilej = s->js2+1-s->js1;
-    sd->nfilek = s->ks2+1-s->ks1;
-    DrawVolSliceTexture(sd);
-    sd->nfilei = nx;
-    sd->nfilej = ny;
-    sd->nfilek = nz;
-    sd->iis1 = sd->is1;
-    sd->iis2 = sd->is2;
-    sd->jjs1 = sd->js1;
-    sd->jjs2 = sd->js2;
-    sd->kks1 = sd->ks1;
-    sd->kks2 = sd->ks2;
+    DrawVolSliceTexture(sd,s->is1, s->is2, s->js1, s->js2, s->ks1, s->ks2);
   }
 }
 #endif
@@ -7898,12 +7876,20 @@ void DrawSliceFrame(){
       switch(sd->slice_filetype){
       case SLICE_NODE_CENTER:
         if(orien==0){
+          int is2;
+
+          if(sd->volslice==1){
+            is2 = sd->is1 + sd->nfilei - 1;
+          }
+          else{
+            is2 = sd->is2;
+          }
 #ifdef pp_SPLITSLICES
           if(split_slices==0){
-            DrawVolSliceTexture(sd);
+            DrawVolSliceTexture(sd, sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
           }
 #else
-          DrawVolSliceTexture(sd);
+          DrawVolSliceTexture(sd, sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
 #endif
           SNIFF_ERRORS("after DrawVolSliceTexture");
           if(show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1){
