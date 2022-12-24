@@ -853,7 +853,8 @@ typedef struct _meshdata {
 
   volrenderdata volrenderinfo;
 #ifdef pp_SPLITSLICES
-  int nslicex, nslicey, nslicez;
+  int  nslicex,  nslicey,  nslicez;
+  struct _slicedata **slicex, **slicey, **slicez;
 #endif
 
   meshplanedata gsliceinfo;

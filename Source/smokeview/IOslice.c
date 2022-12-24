@@ -9817,16 +9817,23 @@ int CompareSplitSlices(const void *arg1, const void *arg2){
 
 void SplitSlices(void){
   int i;
+  slicedata **slicex0, **slicey0, **slicez0;
 
   if(slicex==NULL)NewMemory((void **)&slicex, nsliceinfo*sizeof(slicedata *));
   if(slicey==NULL)NewMemory((void **)&slicey, nsliceinfo*sizeof(slicedata *));
   if(slicez==NULL)NewMemory((void **)&slicez, nsliceinfo*sizeof(slicedata *));
   nsplitsliceinfo = 0;
+  slicex0 = slicex;
+  slicey0 = slicey;
+  slicez0 = slicez;
   for(i = 0;i < nmeshes;i++){
     int j, nx, ny, nz;
     meshdata *meshi;
 
     meshi = meshinfo + i;
+    meshi->slicex = slicex0;
+    meshi->slicey = slicey0;
+    meshi->slicez = slicez0;
     nx = 0;
     ny = 0;
     nz = 0;
@@ -9835,9 +9842,9 @@ void SplitSlices(void){
 
       slicej = sliceinfo + j;
       if(slicej->loaded == 0 || slicej->display == 0 || slicej->blocknumber != i)continue;
-      if(slicej->idir == 1)slicex[nx++]=slicej;
-      if(slicej->idir == 2)slicey[ny++]=slicej;
-      if(slicej->idir == 3)slicez[nz++]=slicej;
+      if(slicej->idir == 1)slicex0[nx++]=slicej;
+      if(slicej->idir == 2)slicey0[ny++]=slicej;
+      if(slicej->idir == 3)slicez0[nz++]=slicej;
     }
     nsplitsliceinfo += nx*(ny+1)*(nz+1);
     nsplitsliceinfo += ny*(nx+1)*(nz+1);
@@ -9845,6 +9852,9 @@ void SplitSlices(void){
     meshi->nslicex = nx;
     meshi->nslicey = ny;
     meshi->nslicez = nz;
+    slicex0 += nx;
+    slicey0 += ny;
+    slicez0 += nz;
   }
   if(nsplitsliceinfo==0)return;
   if(nsplitsliceinfo>nsplitsliceinfoMAX){
@@ -9859,32 +9869,38 @@ void SplitSlices(void){
     meshdata *meshi;
     int ii, jj, kk;
     int is1, is2, js1, js2, ks1, ks2;
+    slicedata **slicexx, **sliceyy, **slicezz;
 
     meshi = meshinfo + i;
+
+    slicexx = meshi->slicex;
+    sliceyy = meshi->slicey;
+    slicezz = meshi->slicez;
+
     // x slices
     for(ii=0;ii<meshi->nslicex;ii++){
-      is1 = slicex[ii]->is1;
-      if(slicex[ii]->volslice == 1){
-        is2 = slicex[ii]->is1+ slicex[ii]->nfilei-1;
+      is1 = slicexx[ii]->is1;
+      if(slicexx[ii]->volslice == 1){
+        is2 = slicexx[ii]->is1 + slicexx[ii]->nfilei-1;
       }
       else{
-        is2 = slicex[ii]->is2;
+        is2 = slicexx[ii]->is2;
       }
       for(jj=0;jj<=meshi->nslicey;jj++){
-        js1 = slicex[ii]->js1;
-        js2 = slicex[ii]->js2;
-        if(jj!=0)js1 = slicey[jj-1]->js1;
-        if(jj!=meshi->nslicey)js2 = slicey[jj]->js2;
+        js1 = slicexx[ii]->js1;
+        js2 = slicexx[ii]->js2;
+        if(jj!=0)js1 = sliceyy[jj-1]->js1;
+        if(jj!=meshi->nslicey)js2 = sliceyy[jj]->js2;
         for(kk=0;kk<=meshi->nslicez;kk++){
           splitslicedata *spliti;
 
-          ks1 = slicex[ii]->ks1;
-          ks2 = slicex[ii]->ks2;
-          if(kk!=0)ks1 = slicez[kk-1]->ks1;
-          if(kk!=meshi->nslicez)ks2 = slicez[kk]->ks2;
+          ks1 = slicexx[ii]->ks1;
+          ks2 = slicexx[ii]->ks2;
+          if(kk!=0)ks1 = slicezz[kk-1]->ks1;
+          if(kk!=meshi->nslicez)ks2 = slicezz[kk]->ks2;
           spliti = splitsliceinfo + nsplitsliceinfo++;
           spliti->mesh = meshi;
-          spliti->slice = slicex[ii];
+          spliti->slice = slicexx[ii];
           spliti->is1 = is1;
           spliti->is2 = is2;
           spliti->js1 = js1;
@@ -9896,23 +9912,23 @@ void SplitSlices(void){
     }
     // y slices
     for(jj=0;jj<meshi->nslicey;jj++){
-      js1 = slicey[jj]->js1;
-      js2 = slicey[jj]->js2;
+      js1 = sliceyy[jj]->js1;
+      js2 = sliceyy[jj]->js2;
       for(ii=0;ii<=meshi->nslicex;ii++){
-        is1 = slicey[jj]->is1;
-        is2 = slicey[jj]->is2;
-        if(ii!=0)is1 = slicex[ii-1]->is1;
-        if(ii!=meshi->nslicex)is2 = slicex[ii]->is2;
+        is1 = sliceyy[jj]->is1;
+        is2 = sliceyy[jj]->is2;
+        if(ii!=0)is1 = slicexx[ii-1]->is1;
+        if(ii!=meshi->nslicex)is2 = slicexx[ii]->is2;
         for(kk=0;kk<=meshi->nslicez;kk++){
           splitslicedata *spliti;
 
-          ks1 = slicey[jj]->ks1;
-          ks2 = slicey[jj]->ks2;
-          if(kk!=0)ks1 = slicez[kk-1]->ks1;
-          if(kk!=meshi->nslicez)ks2 = slicez[kk]->ks2;
+          ks1 = sliceyy[jj]->ks1;
+          ks2 = sliceyy[jj]->ks2;
+          if(kk!=0)ks1 = slicezz[kk-1]->ks1;
+          if(kk!=meshi->nslicez)ks2 = slicezz[kk]->ks2;
           spliti = splitsliceinfo + nsplitsliceinfo++;
           spliti->mesh = meshi;
-          spliti->slice = slicey[jj];
+          spliti->slice = sliceyy[jj];
           spliti->is1 = is1;
           spliti->is2 = is2;
           spliti->js1 = js1;
@@ -9924,23 +9940,23 @@ void SplitSlices(void){
     }
     // z slices
     for(kk=0;kk<meshi->nslicez;kk++){
-      ks1 = slicez[kk]->ks1;
-      ks2 = slicez[kk]->ks2;
+      ks1 = slicezz[kk]->ks1;
+      ks2 = slicezz[kk]->ks2;
       for(jj=0;jj<=meshi->nslicey;jj++){
-        js1 = slicez[kk]->js1;
-        js2 = slicez[kk]->js2;
-        if(jj!=0)js1 = slicey[jj-1]->js1;
-        if(jj!=meshi->nslicey)js2 = slicey[jj]->js2;
+        js1 = slicezz[kk]->js1;
+        js2 = slicezz[kk]->js2;
+        if(jj!=0)js1 = sliceyy[jj-1]->js1;
+        if(jj!=meshi->nslicey)js2 = sliceyy[jj]->js2;
         for(ii=0;ii<=meshi->nslicex;ii++){
           splitslicedata *spliti;
 
-          is1 = slicez[kk]->is1;
-          is2 = slicez[kk]->is2;
-          if(ii!=0)is1 = slicex[ii-1]->is1;
-          if(ii!=meshi->nslicex)is2 = slicex[ii]->is2;
+          is1 = slicezz[kk]->is1;
+          is2 = slicezz[kk]->is2;
+          if(ii!=0)is1 = slicexx[ii-1]->is1;
+          if(ii!=meshi->nslicex)is2 = slicexx[ii]->is2;
           spliti = splitsliceinfo + nsplitsliceinfo++;
           spliti->mesh = meshi;
-          spliti->slice = slicez[kk];
+          spliti->slice = slicezz[kk];
           spliti->is1 = is1;
           spliti->is2 = is2;
           spliti->js1 = js1;
