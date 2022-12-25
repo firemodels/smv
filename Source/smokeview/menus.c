@@ -70,7 +70,8 @@ float     part_load_time;
 
 #define MENU_SLICECOLORDEFER -5
 #ifdef pp_SPLITSLICES
-#define MENU_SPLITSLICES -10
+#define MENU_SPLITSLICES       -10
+#define MENU_SPLITSLICES_DEBUG -11
 #endif
 
 #define MENU_SLICE_FILE_SIZES -9
@@ -5192,6 +5193,12 @@ void LoadMultiSliceMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         break;
+      case MENU_SPLITSLICES_DEBUG:
+        split_slices_debug = 1 - split_slices_debug;
+        if(split_slices_debug == 1)split_slices = 1;
+        updatemenu = 1;
+        GLUTPOSTREDISPLAY;
+        break;
 #endif
       case MENU_SLICECOLORDEFER:
         use_set_slicecolor = 1 - use_set_slicecolor;
@@ -7781,6 +7788,12 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
   }
   else{
     glutAddMenuEntry(_("Sort slices"), MENU_SPLITSLICES);
+  }
+  if(split_slices == 1){
+    glutAddMenuEntry(_("*Sort slicesO(debug)"), MENU_SPLITSLICES_DEBUG);
+  }
+  else{
+    glutAddMenuEntry(_("Sort slices(debug)"), MENU_SPLITSLICES_DEBUG);
   }
 #endif
   if(use_set_slicecolor == 1){
