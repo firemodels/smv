@@ -9898,6 +9898,9 @@ void SplitSlices(void){
           ks2 = slicexx[ii]->ks2;
           if(kk!=0)ks1 = slicezz[kk-1]->ks1;
           if(kk!=meshi->nslicez)ks2 = slicezz[kk]->ks2;
+          if(is1==is2&&js1==js2)continue;
+          if(is1==is2&&ks1==ks2)continue;
+          if(js1==js2&&ks1==ks2)continue;
           spliti = splitsliceinfo + nsplitsliceinfo++;
           spliti->mesh = meshi;
           spliti->slice = slicexx[ii];
@@ -9926,6 +9929,9 @@ void SplitSlices(void){
           ks2 = sliceyy[jj]->ks2;
           if(kk!=0)ks1 = slicezz[kk-1]->ks1;
           if(kk!=meshi->nslicez)ks2 = slicezz[kk]->ks2;
+          if(is1==is2&&js1==js2)continue;
+          if(is1==is2&&ks1==ks2)continue;
+          if(js1==js2&&ks1==ks2)continue;
           spliti = splitsliceinfo + nsplitsliceinfo++;
           spliti->mesh = meshi;
           spliti->slice = sliceyy[jj];
@@ -9954,6 +9960,9 @@ void SplitSlices(void){
           is2 = slicezz[kk]->is2;
           if(ii!=0)is1 = slicexx[ii-1]->is1;
           if(ii!=meshi->nslicex)is2 = slicexx[ii]->is2;
+          if(is1==is2&&js1==js2)continue;
+          if(is1==is2&&ks1==ks2)continue;
+          if(js1==js2&&ks1==ks2)continue;
           spliti = splitsliceinfo + nsplitsliceinfo++;
           spliti->mesh = meshi;
           spliti->slice = slicezz[kk];
