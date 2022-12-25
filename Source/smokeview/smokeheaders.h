@@ -792,6 +792,7 @@ EXTERNCPP void DrawVolSliceVerts(const slicedata *sd);
 #ifdef pp_SPLITSLICES
 EXTERNCPP void SplitSlices(void);
 EXTERNCPP void DrawSplitSlices(void);
+EXTERNCPP void DrawSplitSlicesDebug(void);
 #endif
 
 EXTERNCPP void DrawSmoke3DVol(void);

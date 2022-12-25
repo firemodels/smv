@@ -7714,6 +7714,42 @@ void DrawSplitNodeSlices(void){
 }
 #endif
 
+/* ------------------ SetupSlice ------------------------ */
+
+int SetupSlice(slicedata *sd){
+  if(strcmp(sd->label.shortlabel, "ccell") != 0 && sd->slicefile_labelindex != slicefile_labelindex)return 0;
+  if(sd->display == 0){
+    if(showvslice == 0)return 0;
+    if((sd->slice_filetype == SLICE_NODE_CENTER || sd->slice_filetype == SLICE_TERRAIN) && show_node_slices_and_vectors == 0)return 0;
+    if(sd->slice_filetype == SLICE_CELL_CENTER || sd->slice_filetype == SLICE_FACE_CENTER){
+      if(show_cell_slices_and_vectors == 0)return 0;
+    }
+  }
+  if(current_script_command == NULL || current_script_command->command != SCRIPT_LOADSLICERENDER){
+    // don't draw slice if the global time is before the first or after the last slice time
+    if(global_times[itimes] < sd->times[0])return 0;
+    if(global_times[itimes] > sd->times[sd->ntimes - 1])return 0;
+  }
+  if(sd->slice_filetype != SLICE_GEOM){
+    if(sd->compression_type != UNCOMPRESSED){
+      UncompressSliceDataFrame(sd, sd->itime);
+      sd->iqsliceframe = sd->slicecomplevel;
+    }
+    else{
+      sd->iqsliceframe = sd->slicelevel + sd->itime * sd->nfileijk;
+      sd->qslice = sd->qslicedata + sd->itime * sd->nfileijk;
+    }
+    sd->qsliceframe = NULL;
+#ifdef pp_MEMDEBUG
+    if(sd->compression_type == UNCOMPRESSED && sd->qslicedata != NULL){
+      ASSERT(ValidPointer(sd->qslicedata, sizeof(float) * sd->nslicetotal));
+    }
+#endif
+    if(sd->qslicedata != NULL)sd->qsliceframe = sd->qslicedata + sd->itime * sd->nfileijk;
+  }
+  return 1;
+}
+
 /* ------------------ DrawSliceFrame ------------------------ */
 
 void DrawSliceFrame(){
@@ -7731,7 +7767,12 @@ void DrawSliceFrame(){
 
 #ifdef pp_SPLITSLICES
   if(split_slices==1){
-    DrawSplitSlices();
+    if(split_slices_debug == 1){
+      DrawSplitSlicesDebug();
+    }
+    else{
+      DrawSplitSlices();
+    }
   }
 #endif
   for(ii = 0; ii<nslice_loaded; ii++){
@@ -7743,36 +7784,7 @@ void DrawSliceFrame(){
 
     i=slice_sorted_loaded_list[ii];
     sd = sliceinfo + i;
-    if(strcmp(sd->label.shortlabel,"ccell")!=0&&sd->slicefile_labelindex!=slicefile_labelindex)continue;
-    if(sd->display==0){
-      if(showvslice==0)continue;
-      if((sd->slice_filetype==SLICE_NODE_CENTER||sd->slice_filetype==SLICE_TERRAIN)&&show_node_slices_and_vectors==0)continue;
-      if(sd->slice_filetype==SLICE_CELL_CENTER||sd->slice_filetype==SLICE_FACE_CENTER){
-        if(show_cell_slices_and_vectors==0)continue;
-      }
-    }
-    if(current_script_command==NULL||current_script_command->command!=SCRIPT_LOADSLICERENDER){
-    // don't draw slice if the global time is before the first or after the last slice time
-      if(global_times[itimes] < sd->times[0])continue;
-      if(global_times[itimes] > sd->times[sd->ntimes-1])continue;
-    }
-    if(sd->slice_filetype != SLICE_GEOM){
-      if(sd->compression_type!=UNCOMPRESSED){
-        UncompressSliceDataFrame(sd,sd->itime);
-        sd->iqsliceframe=sd->slicecomplevel;
-      }
-      else{
-        sd->iqsliceframe = sd->slicelevel + sd->itime*sd->nfileijk;
-        sd->qslice = sd->qslicedata + sd->itime*sd->nfileijk;
-      }
-      sd->qsliceframe=NULL;
-#ifdef pp_MEMDEBUG
-      if(sd->compression_type==UNCOMPRESSED&&sd->qslicedata!=NULL){
-        ASSERT(ValidPointer(sd->qslicedata,sizeof(float)*sd->nslicetotal));
-      }
-#endif
-      if(sd->qslicedata!= NULL)sd->qsliceframe = sd->qslicedata + sd->itime*sd->nfileijk;
-    }
+    if(SetupSlice(sd) == 0)continue;;
     orien = 0;
     direction = 1;
     blend_mode = 0;
@@ -9987,6 +9999,20 @@ void SplitSlices(void){
 /* ------------------ DrawSplitSlices ------------------------ */
 
 void DrawSplitSlices(void){
+  int i;
+
+  for(i = 0;i < nsplitsliceinfo;i++){
+    splitslicedata *si;
+
+    si = splitsliceinfoptr[i];
+    if(SetupSlice(si->slice) == 0)continue;
+    DrawVolSliceTexture(si->slice, si->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2);
+  }
+}
+
+/* ------------------ DrawSplitSlicesDebug ------------------------ */
+
+void DrawSplitSlicesDebug(void){
   int i;
 
   if(nsplitsliceinfo==0)return;
