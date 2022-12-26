@@ -7933,6 +7933,7 @@ void DrawSliceFrame(){
       case SLICE_CELL_CENTER:
         {
           int is2;
+
           if(sd->volslice==1){
             is2 = sd->is1 + sd->nfilei - 1;
           }
@@ -7976,11 +7977,11 @@ void DrawSliceFrame(){
 #ifdef pp_SPLITSLICES
           if(split_slices==0||sd->volslice==1){
             DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER,
-                                       sd->is1, sd->is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
+                                       sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
           }
 #else
           DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER,
-                                     sd->is1, sd->is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
+                                     sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
 #endif
         }
         SNIFF_ERRORS("after DrawVolSliceCellFaceCenter SLICE_FACE_CENTER");
