@@ -3039,6 +3039,9 @@ GLUI_EditText *EDIT_ini=NULL;
 GLUI_EditText *EDIT_renderdir=NULL;
 GLUI_EditText *EDIT_rendersuffix=NULL;
 
+#ifdef pp_SPLITSLICES
+GLUI_Checkbox* CHECKBOX_sortslices = NULL;
+#endif
 GLUI_Checkbox* CHECKBOX_visColorbarHorizontal2 = NULL;
 GLUI_Checkbox* CHECKBOX_visColorbarVertical2 = NULL;
 GLUI_Checkbox *CHECKBOX_show_boundary_outline=NULL;
@@ -3207,6 +3210,14 @@ int      nparticleprocinfo=0;
 
 procdata  subboundprocinfo[5];
 int       nsubboundprocinfo=0;
+
+/* ------------------ UpdateSortSlices ------------------------ */
+
+#ifdef pp_SPLITSLICES
+extern "C" void UpdateSortSlices(void){
+  CHECKBOX_sortslices->set_int_val(split_slices);
+}
+#endif
 
 /* ------------------ UpdatePlot2DSize2 ------------------------ */
 
@@ -5063,6 +5074,9 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_transparent_level = glui_bounds->add_spinner_to_panel(PANEL_slice_misc, _("Transparent level"), GLUI_SPINNER_FLOAT, &transparent_level, TRANSPARENTLEVEL, SliceBoundCB);
     SPINNER_transparent_level->set_float_limits(0.0, 1.0);
     glui_bounds->add_spinner_to_panel(PANEL_slice_misc, "slice offset", GLUI_SPINNER_FLOAT, &slice_dz);
+#ifdef pp_SPLITSLICES
+    CHECKBOX_sortslices = glui_bounds->add_checkbox_to_panel(PANEL_slice_misc, "sort slices(back to front)", &split_slices, SORTSLICES, SliceBoundCB);
+#endif
     for(i = 0; i<nmeshes; i++){
       meshdata *meshi;
 
@@ -6140,6 +6154,12 @@ extern "C" void SliceBoundCB(int var){
       slice_skipy = slice_skip;
       slice_skipz = slice_skip;
       break;
+#ifdef pp_SPLITSLICES
+    case SORTSLICES:
+      GLUTPOSTREDISPLAY;
+      updatemenu = 1;
+      break;
+#endif
     case TRANSPARENTLEVEL:
       for(i=nsurfinfo;i<nsurfinfo+MAX_ISO_COLORS+1;i++){
         surfdata *surfi;

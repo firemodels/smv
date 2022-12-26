@@ -13733,6 +13733,14 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %f", &use_transparency_data, &transparent_level);
       continue;
     }
+#ifdef pp_SPLITSLICES
+    if(MatchINI(buffer, "SPLITSLICES") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &split_slices);
+      ONEORZERO(split_slices);
+      continue;
+    }
+#endif
     if(MatchINI(buffer, "VENTCOLOR") == 1){
       float ventcolor_temp[4];
 
@@ -16135,6 +16143,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", antialiasflag);
   fprintf(fileout, "SPHERESEGS\n");
   fprintf(fileout, " %i\n", device_sphere_segments);
+#ifdef pp_SPLITSLICES
+  fprintf(fileout, "SPLITSLICES\n");
+  fprintf(fileout, " %i\n", split_slices);
+#endif
   fprintf(fileout, "SPRINKLERABSSIZE\n");
   fprintf(fileout, " %f\n", sprinklerabssize);
   fprintf(fileout, "STREAKLINEWIDTH\n");
