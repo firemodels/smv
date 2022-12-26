@@ -6169,6 +6169,13 @@ extern "C" void SliceBoundCB(int var){
       }
       UpdateRGBColors(COLORBAR_INDEX_NONE);
       if(SPINNER_transparent_level!=NULL)SPINNER_transparent_level->set_float_val(transparent_level);
+      if(SPINNER_labels_transparency_data != NULL)SPINNER_labels_transparency_data->set_float_val(transparent_level);
+      if(transparent_level > 0.999){
+        CHECKBOX_transparentflag->set_int_val(0);
+      }
+      else{
+        CHECKBOX_transparentflag->set_int_val(1);
+      }
       break;
     case LINE_CONTOUR_VALUE:
       if(slice_line_contour_num<1){
