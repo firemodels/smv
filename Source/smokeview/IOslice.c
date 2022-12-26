@@ -5168,7 +5168,8 @@ void DrawGSliceDataGpu(slicedata *slicei){
 
 /* ------------------ DrawVolSliceCellFaceCenter ------------------------ */
 
-void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
+void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag, 
+                                int is1, int is2, int js1, int js2, int ks1, int ks2){
   float *xplt, *yplt, *zplt;
   int plotx, ploty, plotz;
   int ibar, jbar;
@@ -5208,9 +5209,9 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
     iimin = 0;
   }
   else{
-    plotx = sd->is1;
-    ploty = sd->js1;
-    plotz = sd->ks1;
+    plotx = is1;
+    ploty = js1;
+    plotz = ks1;
     //tentative fix (was iimin = plotx) to FDS issue 7266
     iimin = plotx+1;
   }
@@ -5246,11 +5247,8 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
     constval += SCALE2SMV(slice_dz);
 
     glBegin(GL_TRIANGLES);
-    maxj = sd->js2;
-    if(sd->js1 + 1>maxj){
-      maxj = sd->js1 + 1;
-    }
-    for(j = sd->js1; j<maxj; j++){
+    maxj = MAX(js2, js1 + 1);
+    for(j = js1; j<maxj; j++){
       float yy1;
       int k;
       float y3;
@@ -5259,7 +5257,7 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
       yy1 = yplt[j];
       y3 = yplt[j + 1];
       // val(i,j,k) = di*nj*nk + dj*nk + dk
-      for(k = sd->ks1; k<sd->ks2; k++){
+      for(k = ks1; k<ks2; k++){
         int index_cell;
         int i33;
         float z1, z3;
@@ -5320,18 +5318,15 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
     constval += SCALE2SMV(slice_dz);
 
     glBegin(GL_TRIANGLES);
-    maxi = sd->is1 + sd->nfilei - 1;
-    if(sd->is1 + 1>maxi){
-      maxi = sd->is1 + 1;
-    }
-    for(i = sd->is1; i<maxi; i++){
+    maxi = MAX(is2, is1 + 1);
+    for(i = is1; i<maxi; i++){
       int index_cell;
       float x1, x3;
       int k;
 
       x1 = xplt[i];
       x3 = xplt[i + 1];
-      for(k = sd->ks1; k<sd->ks2; k++){
+      for(k = ks1; k<ks2; k++){
         int i33;
         float z1, z3;
         int in_solid, in_gas;
@@ -5392,17 +5387,14 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag){
     constval += SCALE2SMV(slice_dz);
 
     glBegin(GL_TRIANGLES);
-    maxi = sd->is1 + sd->nfilei - 1;
-    if(sd->is1 + 1>maxi){
-      maxi = sd->is1 + 1;
-    }
-    for(i = sd->is1; i<maxi; i++){
+    maxi = MAX(is2, is1 + 1);
+    for(i = is1; i<maxi; i++){
       float x1, x3;
       int j;
 
       x1 = xplt[i];
       x3 = xplt[i + 1];
-      for(j = sd->js1; j<sd->js2; j++){
+      for(j = js1; j<js2; j++){
         int index_cell;
         int i33;
         float yy1, y3;
@@ -7939,7 +7931,24 @@ void DrawSliceFrame(){
 #endif
         break;
       case SLICE_CELL_CENTER:
-        DrawVolSliceCellFaceCenter(sd, SLICE_CELL_CENTER);
+        {
+          int is2;
+          if(sd->volslice==1){
+            is2 = sd->is1 + sd->nfilei - 1;
+          }
+          else{
+            is2 = sd->is2;
+          }
+#ifdef pp_SPLITSLICES
+          if(split_slices==0||sd->volslice==1){
+            DrawVolSliceCellFaceCenter(sd, SLICE_CELL_CENTER, 
+                                       sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
+          }
+#else
+          DrawVolSliceCellFaceCenter(sd, SLICE_CELL_CENTER, 
+                                   sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
+#endif
+        }
         SNIFF_ERRORS("after DrawVolSliceCellFaceCenter SLICE_CELL_CENTER");
         if(show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1){
           DrawVolSliceLines(sd);
@@ -7955,7 +7964,25 @@ void DrawSliceFrame(){
         }
         break;
       case SLICE_FACE_CENTER:
-        DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER);
+        {
+          int is2;
+          
+          if(sd->volslice==1){
+            is2 = sd->is1 + sd->nfilei - 1;
+          }
+          else{
+            is2 = sd->is2;
+          }
+#ifdef pp_SPLITSLICES
+          if(split_slices==0||sd->volslice==1){
+            DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER,
+                                       sd->is1, sd->is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
+          }
+#else
+          DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER,
+                                     sd->is1, sd->is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
+#endif
+        }
         SNIFF_ERRORS("after DrawVolSliceCellFaceCenter SLICE_FACE_CENTER");
         if(show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1){
           DrawVolSliceLines(sd);
@@ -9855,6 +9882,9 @@ void SplitSlices(void){
       slicej = sliceinfo + j;
       if(slicej->volslice == 1)continue;
       if(slicej->loaded == 0 || slicej->display == 0 || slicej->blocknumber != i)continue;
+      if(slicej->slice_filetype!=SLICE_NODE_CENTER&&
+         slicej->slice_filetype!=SLICE_CELL_CENTER&&
+         slicej->slice_filetype!=SLICE_FACE_CENTER)continue;
       if(slicej->idir == 1)slicex0[nx++]=slicej;
       if(slicej->idir == 2)slicey0[ny++]=slicej;
       if(slicej->idir == 3)slicez0[nz++]=slicej;
@@ -10004,10 +10034,28 @@ void DrawSplitSlices(void){
 
   for(i = 0;i < nsplitsliceinfo;i++){
     splitslicedata *si;
+    slicedata *sd;
 
     si = splitsliceinfoptr[i];
-    if(SetupSlice(si->slice) == 0)continue;
-    DrawVolSliceTexture(si->slice, si->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2);
+    sd = si->slice;
+    if(SetupSlice(sd) == 0)continue;
+    switch(sd->slice_filetype){
+      case SLICE_NODE_CENTER:
+        DrawVolSliceTexture(sd, si->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2);
+        break;
+      case SLICE_CELL_CENTER:
+        DrawVolSliceCellFaceCenter(sd, SLICE_CELL_CENTER, 
+                                   si->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2);
+        break;
+                                   
+      case SLICE_FACE_CENTER:
+        DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER,
+                                   sd->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2);
+        break;
+      default:
+        ASSERT(FFALSE);
+        break;
+    }
   }
 }
 
