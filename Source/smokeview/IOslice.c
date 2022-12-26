@@ -7897,7 +7897,7 @@ void DrawSliceFrame(){
             is2 = sd->is2;
           }
 #ifdef pp_SPLITSLICES
-          if(split_slices==0){
+          if(split_slices==0||sd->volslice==1){
             DrawVolSliceTexture(sd, sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
           }
 #else
@@ -9853,6 +9853,7 @@ void SplitSlices(void){
       slicedata *slicej;
 
       slicej = sliceinfo + j;
+      if(slicej->volslice == 1)continue;
       if(slicej->loaded == 0 || slicej->display == 0 || slicej->blocknumber != i)continue;
       if(slicej->idir == 1)slicex0[nx++]=slicej;
       if(slicej->idir == 2)slicey0[ny++]=slicej;
