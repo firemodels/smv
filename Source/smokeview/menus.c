@@ -69,6 +69,10 @@ float     part_load_time;
 #define MENU_KEEP_COARSE -4
 
 #define MENU_SLICECOLORDEFER -5
+#ifdef pp_SPLITSLICES
+#define MENU_SPLITSLICES       -10
+#define MENU_SPLITSLICES_DEBUG -11
+#endif
 
 #define MENU_SLICE_FILE_SIZES -9
 
@@ -5183,13 +5187,30 @@ void LoadMultiSliceMenu(int value){
         UpdateSliceDupDialog();
       }
       break;
+#ifdef pp_SPLITSLICES
+      case MENU_SPLITSLICES:
+        split_slices = 1 - split_slices;
+        updatemenu = 1;
+        GLUTPOSTREDISPLAY;
+        UpdateSortSlices();
+        break;
+      case MENU_SPLITSLICES_DEBUG:
+        split_slices_debug = 1 - split_slices_debug;
+        if(split_slices_debug == 1)split_slices = 1;
+        UpdateSortSlices();
+        updatemenu = 1;
+        GLUTPOSTREDISPLAY;
+        break;
+#endif
       case MENU_SLICECOLORDEFER:
         use_set_slicecolor = 1 - use_set_slicecolor;
         updatemenu = 1;
+        GLUTPOSTREDISPLAY;
         break;
       case MENU_SLICE_FILE_SIZES:
         compute_slice_file_sizes = 1-compute_slice_file_sizes;
         updatemenu = 1;
+        GLUTPOSTREDISPLAY;
         break;
       case MENU_SLICE_SETTINGS:
         ShowBoundsDialog(DLG_SLICE);
@@ -5559,7 +5580,7 @@ void LoadBoundaryMenu(int value){
     case MENU_BNDF_OPEN:
       show_open_boundary = 1 - show_open_boundary;
       updatemenu = 1;
-     break;
+      break;
     case MENU_BNDF_SHOW_MESH_INTERFACE:
       show_bndf_mesh_interface = 1-show_bndf_mesh_interface;
       updatemenu = 1;
@@ -7763,7 +7784,23 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
 
   if(nmultisliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
   GLUTADDSUBMENU(_("Skip"), sliceskipmenu);
-  if(use_set_slicecolor==1){
+#ifdef pp_SPLITSLICES
+  if(split_slices == 1){
+    glutAddMenuEntry(_("*Sort slices(back to front)"), MENU_SPLITSLICES);
+  }
+  else{
+    glutAddMenuEntry(_("Sort slices(back to front)"), MENU_SPLITSLICES);
+  }
+#ifdef _DEBUG
+  if(split_slices == 1){
+    glutAddMenuEntry(_("*Sort slices(debug)"), MENU_SPLITSLICES_DEBUG);
+  }
+  else{
+    glutAddMenuEntry(_("Sort slices(debug)"), MENU_SPLITSLICES_DEBUG);
+  }
+#endif
+#endif
+  if(use_set_slicecolor == 1){
     glutAddMenuEntry(_("*Defer slice coloring"), MENU_SLICECOLORDEFER);
   }
   else{

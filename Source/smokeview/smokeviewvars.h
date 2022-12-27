@@ -1789,7 +1789,6 @@ SVEXTERN int slicefile_labelindex,slicefile_labelindex_save,iboundarytype;
 SVEXTERN int iisotype,iisottype;
 SVEXTERN char SVDECL(**colorlabelpart,NULL), SVDECL(**colorlabelpatch,NULL),  SVDECL(**colorlabelzone,NULL);
 SVEXTERN float colorvaluespatch[12], colorvalueszone[12], colorvaluesp3[MAXPLOT3DVARS][12];
-
 SVEXTERN int SVDECL(hilight_skinny,0);
 
 SVEXTERN int minfill, maxfill;
@@ -1933,7 +1932,15 @@ SVEXTERN int npartclassinfo;
 SVEXTERN partpropdata SVDECL(*part5propinfo,NULL), SVDECL(*current_property,NULL);
 SVEXTERN int SVDECL(npart5prop,0),ipart5prop,ipart5prop_old;
 SVEXTERN int SVDECL(global_prop_index,-1);
-SVEXTERN slicedata SVDECL(*sliceinfo, NULL), SVDECL(*slicexyzinfo, NULL);
+
+SVEXTERN slicedata SVDECL(*sliceinfo, NULL);
+#ifdef pp_SPLITSLICES
+SVEXTERN splitslicedata SVDECL(*splitsliceinfo, NULL), SVDECL(**splitsliceinfoptr, NULL);
+SVEXTERN int SVDECL(nsplitsliceinfo, 0), SVDECL(nsplitsliceinfoMAX, 0);
+SVEXTERN int SVDECL(split_slices, 1), SVDECL(split_slices_debug, 0);
+SVEXTERN slicedata SVDECL(**slicex, NULL), SVDECL(**slicey, NULL), SVDECL(**slicez, NULL);
+#endif
+
 SVEXTERN fileboundsdata SVDECL(*sliceboundsinfo, NULL), SVDECL(*patchboundsinfo, NULL);
 SVEXTERN int SVDECL(nsliceboundsinfo, 0), SVDECL(npatchboundsinfo, 0);
 SVEXTERN feddata SVDECL(*fedinfo,NULL);

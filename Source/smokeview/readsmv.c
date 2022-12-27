@@ -5770,6 +5770,20 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->js2 = jj2;
   sd->ks1 = kk1;
   sd->ks2 = kk2;
+#ifdef pp_SPLITSLICES
+  sd->iis1 = ii1;
+  sd->iis2 = ii2;
+  sd->jjs1 = jj1;
+  sd->jjs2 = jj2;
+  sd->kks1 = kk1;
+  sd->kks2 = kk2;
+#endif
+  sd->plotx = -1;
+  sd->ploty = -1;
+  sd->plotz = -1;
+  if(ii1==ii2)sd->plotx = ii1;
+  if(jj1==jj2)sd->ploty = jj1;
+  if(kk1==kk2)sd->plotz = kk1;
   sd->ijk_min[0] = ii1;
   sd->ijk_max[0] = ii2;
   sd->ijk_min[1] = jj1;
@@ -13733,6 +13747,14 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %f", &use_transparency_data, &transparent_level);
       continue;
     }
+#ifdef pp_SPLITSLICES
+    if(MatchINI(buffer, "SPLITSLICES") == 1){
+      fgets(buffer, 255, stream);
+      sscanf(buffer, "%i", &split_slices);
+      ONEORZERO(split_slices);
+      continue;
+    }
+#endif
     if(MatchINI(buffer, "VENTCOLOR") == 1){
       float ventcolor_temp[4];
 
@@ -16135,6 +16157,10 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", antialiasflag);
   fprintf(fileout, "SPHERESEGS\n");
   fprintf(fileout, " %i\n", device_sphere_segments);
+#ifdef pp_SPLITSLICES
+  fprintf(fileout, "SPLITSLICES\n");
+  fprintf(fileout, " %i\n", split_slices);
+#endif
   fprintf(fileout, "SPRINKLERABSSIZE\n");
   fprintf(fileout, " %f\n", sprinklerabssize);
   fprintf(fileout, "STREAKLINEWIDTH\n");
