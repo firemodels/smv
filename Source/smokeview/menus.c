@@ -5197,6 +5197,7 @@ void LoadMultiSliceMenu(int value){
       case MENU_SPLITSLICES_DEBUG:
         split_slices_debug = 1 - split_slices_debug;
         if(split_slices_debug == 1)split_slices = 1;
+        UpdateSortSlices();
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         break;
@@ -7792,7 +7793,7 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
   }
 #ifdef _DEBUG
   if(split_slices == 1){
-    glutAddMenuEntry(_("*Sort slicesO(debug)"), MENU_SPLITSLICES_DEBUG);
+    glutAddMenuEntry(_("*Sort slices(debug)"), MENU_SPLITSLICES_DEBUG);
   }
   else{
     glutAddMenuEntry(_("Sort slices(debug)"), MENU_SPLITSLICES_DEBUG);

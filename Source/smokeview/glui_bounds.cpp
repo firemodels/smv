@@ -3041,6 +3041,7 @@ GLUI_EditText *EDIT_rendersuffix=NULL;
 
 #ifdef pp_SPLITSLICES
 GLUI_Checkbox* CHECKBOX_sortslices = NULL;
+GLUI_Checkbox* CHECKBOX_sortslices_debug = NULL;
 #endif
 GLUI_Checkbox* CHECKBOX_visColorbarHorizontal2 = NULL;
 GLUI_Checkbox* CHECKBOX_visColorbarVertical2 = NULL;
@@ -3216,6 +3217,7 @@ int       nsubboundprocinfo=0;
 #ifdef pp_SPLITSLICES
 extern "C" void UpdateSortSlices(void){
   CHECKBOX_sortslices->set_int_val(split_slices);
+  CHECKBOX_sortslices_debug->set_int_val(split_slices_debug);
 }
 #endif
 
@@ -5076,6 +5078,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     glui_bounds->add_spinner_to_panel(PANEL_slice_misc, "slice offset", GLUI_SPINNER_FLOAT, &slice_dz);
 #ifdef pp_SPLITSLICES
     CHECKBOX_sortslices = glui_bounds->add_checkbox_to_panel(PANEL_slice_misc, "sort slices(back to front)", &split_slices, SORTSLICES, SliceBoundCB);
+    CHECKBOX_sortslices_debug = glui_bounds->add_checkbox_to_panel(PANEL_slice_misc, "sort slices(debug)", &split_slices_debug, SORTSLICES_DEBUG, SliceBoundCB);
 #endif
     for(i = 0; i<nmeshes; i++){
       meshdata *meshi;
@@ -6155,7 +6158,19 @@ extern "C" void SliceBoundCB(int var){
       slice_skipz = slice_skip;
       break;
 #ifdef pp_SPLITSLICES
+    case SORTSLICES_DEBUG:
+      if(split_slices_debug == 1 && split_slices == 0){
+        split_slices = 1;
+        CHECKBOX_sortslices->set_int_val(split_slices);
+      }
+      GLUTPOSTREDISPLAY;
+      updatemenu = 1;
+      break;
     case SORTSLICES:
+      if(split_slices_debug == 1 && split_slices == 0){
+        split_slices_debug = 0;
+        CHECKBOX_sortslices_debug->set_int_val(split_slices_debug);
+      }
       GLUTPOSTREDISPLAY;
       updatemenu = 1;
       break;

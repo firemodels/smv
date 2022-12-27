@@ -5169,7 +5169,7 @@ void DrawGSliceDataGpu(slicedata *slicei){
 /* ------------------ DrawVolSliceCellFaceCenter ------------------------ */
 
 void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag, 
-                                int is1, int is2, int js1, int js2, int ks1, int ks2){
+                                int is1, int is2, int js1, int js2, int ks1, int ks2, int slicedir){
   float *xplt, *yplt, *zplt;
   int plotx, ploty, plotz;
   int ibar, jbar;
@@ -5225,7 +5225,13 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag,
   if(cullfaces == 1)glDisable(GL_CULL_FACE);
 
   if(use_transparency_data == 1)TransparentOn();
-  if((sd->volslice == 1 && plotx > 0 && visx_all == 1) || (sd->volslice == 0 && sd->idir == XDIR)){
+  int doit;
+  
+  doit = 0;
+  if(sd->volslice == 1 && plotx > 0 && visx_all == 1)doit = 1;
+  if(sd->volslice == 0 && sd->idir == XDIR)doit = 1;
+  if(slicedir>0&&slicedir!=XDIR)doit = 0;
+  if(doit == 1){
     float constval;
     int maxj;
     int j;
@@ -5298,7 +5304,11 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag,
     }
     glEnd();
   }
-  if((sd->volslice == 1 && ploty > 0 && visy_all == 1) || (sd->volslice == 0 && sd->idir == YDIR)){
+  doit = 0;
+  if(sd->volslice == 1 && ploty > 0 && visy_all == 1)doit = 1;
+  if(sd->volslice == 0 && sd->idir == YDIR)doit = 1;
+  if(slicedir>0&&slicedir!=YDIR)doit = 0;
+  if(doit == 1){
     float constval;
     int i;
     int maxi;
@@ -5367,7 +5377,11 @@ void DrawVolSliceCellFaceCenter(const slicedata *sd, int flag,
     }
     glEnd();
   }
-  if((sd->volslice == 1 && plotz > 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
+  doit = 0;
+  if(sd->volslice == 1 && plotz > 0 && visz_all == 1)doit = 1;
+  if(sd->volslice == 0 && sd->idir == ZDIR)doit = 1;
+  if(slicedir>0&&slicedir!=ZDIR)doit = 0;
+  if(doit == 1){
     float constval;
     int i;
     int maxi;
@@ -6183,7 +6197,7 @@ void DrawVolAllSlicesTextureDiag(const slicedata *sd, int direction){
 
 /* ------------------ DrawVolSliceTexture ------------------------ */
 
-void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2, int ks1, int ks2){
+void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2, int ks1, int ks2, int slicedir){
   int i, j, k;
   float r11, r31, r13, r33;
   float constval, x1, x3, yy1, y3, z1, z3;
@@ -6239,9 +6253,14 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
   glEnable(GL_TEXTURE_1D);
   glBindTexture(GL_TEXTURE_1D, texture_slice_colorbar_id);
 
-  //*** x plane slices
+  int doit;
 
-  if((sd->volslice == 1 && plotx >= 0 && visx_all == 1) || (sd->volslice == 0 && sd->idir == XDIR)){
+  //*** x plane slices
+  doit = 0;
+  if(sd->volslice == 1 && plotx >= 0 && visx_all == 1)doit = 1;
+  if(sd->volslice == 0 && sd->idir == XDIR)doit = 1;
+  if(slicedir>0&&slicedir!=XDIR)doit = 0;
+  if(doit == 1){
     int maxj;
 
     constval = xplt[plotx] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
@@ -6317,7 +6336,11 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
 
   //*** y plane slices
 
-  if((sd->volslice==1&&ploty>=0&&visy_all==1)||(sd->volslice==0&&sd->idir==YDIR)){
+  doit = 0;
+  if(sd->volslice == 1 && ploty >= 0 && visy_all == 1)doit = 1;
+  if(sd->volslice == 0 && sd->idir == YDIR)doit = 1;
+  if(slicedir>0&&slicedir!=YDIR)doit = 0;
+  if(doit == 1){
     int maxi;
     int istart, iend;
 
@@ -6402,7 +6425,11 @@ void DrawVolSliceTexture(const slicedata *sd, int is1, int is2, int js1, int js2
 
   //*** z plane slices
 
-  if((sd->volslice == 1 && plotz >= 0 && visz_all == 1) || (sd->volslice == 0 && sd->idir == ZDIR)){
+  doit = 0;
+  if(sd->volslice == 1 && plotz >= 0 && visz_all == 1)doit = 1;
+  if(sd->volslice == 0 && sd->idir == ZDIR)doit = 1;
+  if(slicedir>0&&slicedir!=ZDIR)doit = 0;
+  if(doit == 1){
     int maxi;
 
     constval = zplt[plotz] + offset_slice*sd->sliceoffset+SCALE2SMV(slice_dz);
@@ -7671,41 +7698,6 @@ void DrawSlicePlots(void){
   }
 }
 
-#ifdef pp_SPLITSLICES
-/* ------------------ DrawSplitNodeSlices ------------------------ */
-
-void DrawSplitNodeSlices(void){
-  int i;
-
-  for(i = 0;i < nsplitsliceinfo;i++){
-    splitslicedata *s;
-    slicedata *sd;
-
-    s = splitsliceinfoptr[i];
-    sd = s->slice;
-    if(sd->slice_filetype != SLICE_GEOM){
-      if(sd->compression_type!=UNCOMPRESSED){
-        UncompressSliceDataFrame(sd,sd->itime);
-        sd->iqsliceframe=sd->slicecomplevel;
-      }
-      else{
-        sd->iqsliceframe = sd->slicelevel + sd->itime*sd->nfileijk;
-        sd->qslice = sd->qslicedata + sd->itime*sd->nfileijk;
-      }
-      sd->qsliceframe=NULL;
-#ifdef pp_MEMDEBUG
-      if(sd->compression_type==UNCOMPRESSED&&sd->qslicedata!=NULL){
-        ASSERT(ValidPointer(sd->qslicedata,sizeof(float)*sd->nslicetotal));
-      }
-#endif
-      if(sd->qslicedata!= NULL)sd->qsliceframe = sd->qslicedata + sd->itime*sd->nfileijk;
-    }
-
-    DrawVolSliceTexture(sd,s->is1, s->is2, s->js1, s->js2, s->ks1, s->ks2);
-  }
-}
-#endif
-
 /* ------------------ SetupSlice ------------------------ */
 
 int SetupSlice(slicedata *sd){
@@ -7889,11 +7881,11 @@ void DrawSliceFrame(){
             is2 = sd->is2;
           }
 #ifdef pp_SPLITSLICES
-          if(split_slices==0||sd->volslice==1){
-            DrawVolSliceTexture(sd, sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
+          if(split_slices==0){
+            DrawVolSliceTexture(sd, sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
           }
 #else
-          DrawVolSliceTexture(sd, sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
+          DrawVolSliceTexture(sd, sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
 #endif
           SNIFF_ERRORS("after DrawVolSliceTexture");
           if(show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1){
@@ -7943,11 +7935,11 @@ void DrawSliceFrame(){
 #ifdef pp_SPLITSLICES
           if(split_slices==0||sd->volslice==1){
             DrawVolSliceCellFaceCenter(sd, SLICE_CELL_CENTER, 
-                                       sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
+                                       sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
           }
 #else
           DrawVolSliceCellFaceCenter(sd, SLICE_CELL_CENTER, 
-                                   sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
+                                   sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
 #endif
         }
         SNIFF_ERRORS("after DrawVolSliceCellFaceCenter SLICE_CELL_CENTER");
@@ -7977,11 +7969,11 @@ void DrawSliceFrame(){
 #ifdef pp_SPLITSLICES
           if(split_slices==0||sd->volslice==1){
             DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER,
-                                       sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
+                                       sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
           }
 #else
           DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER,
-                                     sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2);
+                                     sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
 #endif
         }
         SNIFF_ERRORS("after DrawVolSliceCellFaceCenter SLICE_FACE_CENTER");
@@ -9881,14 +9873,28 @@ void SplitSlices(void){
       slicedata *slicej;
 
       slicej = sliceinfo + j;
-      if(slicej->volslice == 1)continue;
       if(slicej->loaded == 0 || slicej->display == 0 || slicej->blocknumber != i)continue;
       if(slicej->slice_filetype!=SLICE_NODE_CENTER&&
          slicej->slice_filetype!=SLICE_CELL_CENTER&&
          slicej->slice_filetype!=SLICE_FACE_CENTER)continue;
-      if(slicej->idir == 1)slicex0[nx++]=slicej;
-      if(slicej->idir == 2)slicey0[ny++]=slicej;
-      if(slicej->idir == 3)slicez0[nz++]=slicej;
+      if(slicej->volslice == 1){
+        int plotx, ploty, plotz;
+
+        plotx = meshi->iplotx_all[iplotx_all];
+        ploty = meshi->iploty_all[iploty_all];
+        plotz = meshi->iplotz_all[iplotz_all];
+        slicej->plotx = plotx;
+        slicej->ploty = ploty;
+        slicej->plotz = plotz;
+        if(plotx >= 0 && visx_all == 1)slicex0[nx++] = slicej;
+        if(ploty >= 0 && visy_all == 1)slicey0[ny++] = slicej;
+        if(plotz >= 0 && visz_all == 1)slicez0[nz++] = slicej;
+      }
+      else{
+        if(slicej->idir == 1)slicex0[nx++] = slicej;
+        if(slicej->idir == 2)slicey0[ny++] = slicej;
+        if(slicej->idir == 3)slicez0[nz++] = slicej;
+      }
     }
     nsplitsliceinfo += nx*(ny+1)*(nz+1);
     nsplitsliceinfo += ny*(nx+1)*(nz+1);
@@ -9923,25 +9929,20 @@ void SplitSlices(void){
 
     // x slices
     for(ii=0;ii<meshi->nslicex;ii++){
-      is1 = slicexx[ii]->is1;
-      if(slicexx[ii]->volslice == 1){
-        is2 = slicexx[ii]->is1 + slicexx[ii]->nfilei-1;
-      }
-      else{
-        is2 = slicexx[ii]->is2;
-      }
+      is1 = slicexx[ii]->plotx;
+      is2 = is1;
       for(jj=0;jj<=meshi->nslicey;jj++){
-        js1 = slicexx[ii]->js1;
-        js2 = slicexx[ii]->js2;
-        if(jj!=0)js1 = sliceyy[jj-1]->js1;
-        if(jj!=meshi->nslicey)js2 = sliceyy[jj]->js2;
+        js1 = slicexx[ii]->jjs1;
+        js2 = slicexx[ii]->jjs2;
+        if(jj!=0)js1 = sliceyy[jj-1]->ploty;
+        if(jj!=meshi->nslicey)js2 = sliceyy[jj]->ploty;
         for(kk=0;kk<=meshi->nslicez;kk++){
           splitslicedata *spliti;
 
           ks1 = slicexx[ii]->ks1;
           ks2 = slicexx[ii]->ks2;
-          if(kk!=0)ks1 = slicezz[kk-1]->ks1;
-          if(kk!=meshi->nslicez)ks2 = slicezz[kk]->ks2;
+          if(kk!=0)ks1 = slicezz[kk-1]->plotz;
+          if(kk!=meshi->nslicez)ks2 = slicezz[kk]->plotz;
           if(is1==is2&&js1==js2)continue;
           if(is1==is2&&ks1==ks2)continue;
           if(js1==js2&&ks1==ks2)continue;
@@ -9954,25 +9955,26 @@ void SplitSlices(void){
           spliti->js2 = js2;
           spliti->ks1 = ks1;
           spliti->ks2 = ks2;
+          spliti->splitdir = 1;
         }
       }
     }
     // y slices
     for(jj=0;jj<meshi->nslicey;jj++){
-      js1 = sliceyy[jj]->js1;
-      js2 = sliceyy[jj]->js2;
+      js1 = sliceyy[jj]->ploty;
+      js2 = js1;
       for(ii=0;ii<=meshi->nslicex;ii++){
-        is1 = sliceyy[jj]->is1;
-        is2 = sliceyy[jj]->is2;
-        if(ii!=0)is1 = slicexx[ii-1]->is1;
-        if(ii!=meshi->nslicex)is2 = slicexx[ii]->is2;
+        is1 = sliceyy[jj]->iis1;
+        is2 = sliceyy[jj]->iis2;
+        if(ii!=0)is1 = slicexx[ii-1]->plotx;
+        if(ii!=meshi->nslicex)is2 = slicexx[ii]->plotx;
         for(kk=0;kk<=meshi->nslicez;kk++){
           splitslicedata *spliti;
 
-          ks1 = sliceyy[jj]->ks1;
-          ks2 = sliceyy[jj]->ks2;
-          if(kk!=0)ks1 = slicezz[kk-1]->ks1;
-          if(kk!=meshi->nslicez)ks2 = slicezz[kk]->ks2;
+          ks1 = sliceyy[jj]->kks1;
+          ks2 = sliceyy[jj]->kks2;
+          if(kk!=0)ks1 = slicezz[kk-1]->plotz;
+          if(kk!=meshi->nslicez)ks2 = slicezz[kk]->plotz;
           if(is1==is2&&js1==js2)continue;
           if(is1==is2&&ks1==ks2)continue;
           if(js1==js2&&ks1==ks2)continue;
@@ -9985,25 +9987,26 @@ void SplitSlices(void){
           spliti->js2 = js2;
           spliti->ks1 = ks1;
           spliti->ks2 = ks2;
+          spliti->splitdir = 2;
         }
       }
     }
     // z slices
     for(kk=0;kk<meshi->nslicez;kk++){
-      ks1 = slicezz[kk]->ks1;
-      ks2 = slicezz[kk]->ks2;
+      ks1 = slicezz[kk]->plotz;
+      ks2 = ks1;
       for(jj=0;jj<=meshi->nslicey;jj++){
-        js1 = slicezz[kk]->js1;
-        js2 = slicezz[kk]->js2;
-        if(jj!=0)js1 = sliceyy[jj-1]->js1;
-        if(jj!=meshi->nslicey)js2 = sliceyy[jj]->js2;
+        js1 = slicezz[kk]->jjs1;
+        js2 = slicezz[kk]->jjs2;
+        if(jj!=0)js1 = sliceyy[jj-1]->ploty;
+        if(jj!=meshi->nslicey)js2 = sliceyy[jj]->ploty;
         for(ii=0;ii<=meshi->nslicex;ii++){
           splitslicedata *spliti;
 
-          is1 = slicezz[kk]->is1;
-          is2 = slicezz[kk]->is2;
-          if(ii!=0)is1 = slicexx[ii-1]->is1;
-          if(ii!=meshi->nslicex)is2 = slicexx[ii]->is2;
+          is1 = slicezz[kk]->iis1;
+          is2 = slicezz[kk]->iis2;
+          if(ii!=0)is1 = slicexx[ii-1]->plotx;
+          if(ii!=meshi->nslicex)is2 = slicexx[ii]->plotx;
           if(is1==is2&&js1==js2)continue;
           if(is1==is2&&ks1==ks2)continue;
           if(js1==js2&&ks1==ks2)continue;
@@ -10016,6 +10019,7 @@ void SplitSlices(void){
           spliti->js2 = js2;
           spliti->ks1 = ks1;
           spliti->ks2 = ks2;
+          spliti->splitdir = 3;
         }
       }
     }
@@ -10042,16 +10046,16 @@ void DrawSplitSlices(void){
     if(SetupSlice(sd) == 0)continue;
     switch(sd->slice_filetype){
       case SLICE_NODE_CENTER:
-        DrawVolSliceTexture(sd, si->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2);
+        DrawVolSliceTexture(sd, si->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2, si->splitdir);
         break;
       case SLICE_CELL_CENTER:
         DrawVolSliceCellFaceCenter(sd, SLICE_CELL_CENTER, 
-                                   si->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2);
+                                   si->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2, si->splitdir);
         break;
                                    
       case SLICE_FACE_CENTER:
         DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER,
-                                   sd->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2);
+                                   sd->is1, si->is2, si->js1, si->js2, si->ks1, si->ks2, si->splitdir);
         break;
       default:
         ASSERT(FFALSE);
@@ -10076,6 +10080,8 @@ void DrawSplitSlicesDebug(void){
   glBegin(GL_LINES);
   for(i=0;i<nsplitsliceinfo;i++){
     splitslicedata *spliti;
+    slicedata *sd;
+    meshdata *meshi;
     float *xplt, *yplt, *zplt;
     int is1, is2, js1, js2, ks1, ks2;
 
@@ -10089,7 +10095,15 @@ void DrawSplitSlicesDebug(void){
     js2 = spliti->js2;
     ks1 = spliti->ks1;
     ks2 = spliti->ks2;
-    if(spliti->slice->idir==1){
+    sd = spliti->slice;
+    int plotx, ploty, plotz;
+    meshi = spliti->mesh;
+
+    plotx = meshi->iplotx_all[iplotx_all];
+    ploty = meshi->iploty_all[iploty_all];
+    plotz = meshi->iplotz_all[iplotz_all];
+
+    if((sd->volslice==0&&sd->idir==1)||(sd->volslice == 1 && plotx >= 0 && visx_all == 1)){
       glVertex3f(xplt[is1],yplt[js1],zplt[ks1]);
       glVertex3f(xplt[is1],yplt[js2],zplt[ks1]);
 
@@ -10102,7 +10116,7 @@ void DrawSplitSlicesDebug(void){
       glVertex3f(xplt[is1],yplt[js1],zplt[ks2]);
       glVertex3f(xplt[is1],yplt[js1],zplt[ks1]);
     }
-    else if(spliti->slice->idir==2){
+    if((sd->volslice==0&&sd->idir==2)||(sd->volslice == 1 && ploty >= 0 && visy_all == 1)){
       glVertex3f(xplt[is1],yplt[js1],zplt[ks1]);
       glVertex3f(xplt[is2],yplt[js1],zplt[ks1]);
 
@@ -10115,7 +10129,7 @@ void DrawSplitSlicesDebug(void){
       glVertex3f(xplt[is1],yplt[js1],zplt[ks2]);
       glVertex3f(xplt[is1],yplt[js1],zplt[ks1]);
     }
-    else{
+    if((sd->volslice == 0 && sd->idir == 3) || (sd->volslice == 1 && plotz >= 0 && visz_all == 1)){
       glVertex3f(xplt[is1],yplt[js1],zplt[ks1]);
       glVertex3f(xplt[is2],yplt[js1],zplt[ks1]);
 

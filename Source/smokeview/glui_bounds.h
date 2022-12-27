@@ -109,7 +109,8 @@
 #define SLICE_SKIP 124
 #define FORCE_EXPONENTIAL 125
 #ifdef pp_SPLITSLICES
-#define SORTSLICES 126
+#define SORTSLICES       126
+#define SORTSLICES_DEBUG 127
 #endif
 
 #define UPDATE_VECTOR 101

@@ -1419,6 +1419,10 @@ typedef struct _slicedata {
   int have_agl_data;
   int volslice;
   int is1, is2, js1, js2, ks1, ks2;
+#ifdef pp_SPLITSLICES
+  int iis1, iis2, jjs1, jjs2, kks1, kks2;
+#endif
+  int plotx, ploty, plotz;
   int ijk_min[3], ijk_max[3];
   float xmin,xmax,ymin,ymax,zmin,zmax;
   float xyz_min[3], xyz_max[3];
@@ -1486,7 +1490,9 @@ typedef struct _multivslicedata {
 typedef struct _splitslicedata {
   slicedata *slice;
   meshdata *mesh;
+  int splitdir;
   int is1, is2, js1, js2, ks1, ks2;
+  int plotx, ploty, plotz;
 } splitslicedata;
 #endif
 
