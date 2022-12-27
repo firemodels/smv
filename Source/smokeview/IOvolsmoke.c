@@ -757,7 +757,7 @@ int GetVolsmokeNFrames(volrenderdata *vr){
     volstream = fopen(vr->smokeslice->vol_file, "rb");
   }
   if(volstream==NULL){
-    framesize = smokeslice->nfilei*smokeslice->nfilej*smokeslice->nfilek;
+    framesize = smokeslice->nslicei*smokeslice->nslicej*smokeslice->nslicek;
     framesize *= 4; // convert to bytes
     framesize += HEADER_SIZE+TRAILER_SIZE;
 
@@ -2337,7 +2337,7 @@ float GetVolsmokeFrameTime(volrenderdata *vr, int framenum){
 
   if(framenum<0||framenum>=vr->ntimes)return time_local;
   smokeslice=vr->smokeslice;
-  framesize = smokeslice->nfilei*smokeslice->nfilej*smokeslice->nfilek;
+  framesize = smokeslice->nslicei*smokeslice->nslicej*smokeslice->nslicek;
 
   skip_local =           (HEADER_SIZE+30        +TRAILER_SIZE); // long label
   skip_local +=          (HEADER_SIZE+30        +TRAILER_SIZE); // short label
@@ -2485,7 +2485,7 @@ void ReadVolsmokeFrame(volrenderdata *vr, int framenum, int *first){
   co2slice   = vr->co2slice;
 #endif
 
-  framesize = smokeslice->nfilei*smokeslice->nfilej*smokeslice->nfilek;
+  framesize = smokeslice->nslicei*smokeslice->nslicej*smokeslice->nslicek;
   framesize2 = framesize+VOL_OFFSET;
   if(compress_volsmoke==1){
     vr->is_compressed=1;
