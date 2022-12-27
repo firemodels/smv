@@ -2680,6 +2680,17 @@ void UpdateFedinfo(void){
     sd->ks1 = co2->ks1;
     sd->ks2 = co2->ks2;
     sd->finalize = 1;
+#ifdef pp_SPLITSLICES
+    sd->iis1  = co2->iis1;
+    sd->iis2  = co2->iis2;
+    sd->jjs1  = co2->jjs1;
+    sd->jjs2  = co2->jjs2;
+    sd->kks1  = co2->kks1;
+    sd->kks2  = co2->kks2;
+    sd->plotx = co2->plotx;
+    sd->ploty = co2->ploty;
+    sd->plotz = co2->plotz;
+#endif
 
     nn_slice = nsliceinfo + i;
 
