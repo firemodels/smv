@@ -1,0 +1,42 @@
+// put rendered files in specified directory
+
+RENDERDIR
+ ..\..\Manuals\SMV_Verification_Guide\SCRIPT_FIGURES
+UNLOADALL
+LOADINIFILE
+ testsort_sort.ini
+LOADSLCF
+ QUANTITY='TEMPERATURE' PBX=0.4
+SETTIMEVAL
+ 1.0
+RENDERONCE
+ testsort_x0p4
+UNLOADALL
+LOADINIFILE
+ testsort_sort.ini
+LOADSLCF
+ QUANTITY='TEMPERATURE' PBY=1.2
+SETTIMEVAL
+ 1.0
+RENDERONCE
+ testsort_y1p2
+UNLOADALL
+LOADINIFILE
+ testsort_sort.ini
+LOADSLCF
+ QUANTITY='TEMPERATURE' PBX=0.4
+LOADSLCF
+ QUANTITY='TEMPERATURE' PBY=1.2
+SETTIMEVAL
+ 1.0
+RENDERONCE
+ testsort_sort
+LOADINIFILE
+ testsort_unsort.ini
+SETTIMEVAL
+ 1.0
+RENDERONCE
+ testsort_unsort
+
+
+
