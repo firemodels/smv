@@ -1100,6 +1100,17 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     fed_slice->nfilej=co->nfilej;
     fed_slice->nfilek=co->nfilek;
     fed_slice->volslice=co->volslice;
+#ifdef pp_SPLITSLICES
+    fed_slice->iis1 = co->iis1;
+    fed_slice->iis2 = co->iis2;
+    fed_slice->jjs1 = co->jjs1;
+    fed_slice->jjs2 = co->jjs2;
+    fed_slice->kks1 = co->kks1;
+    fed_slice->kks2 = co->kks2;
+    fed_slice->plotx = co->plotx;
+    fed_slice->ploty = co->ploty;
+    fed_slice->plotz = co->plotz;
+#endif
     if(fed_slice->volslice==1){
       if(fed_slice->nfilei!=fed_slice->is2+1-fed_slice->is1)fed_slice->is2=fed_slice->nfilei+fed_slice->is1-1;
       if(fed_slice->nfilej!=fed_slice->js2+1-fed_slice->js1)fed_slice->js2=fed_slice->nfilej+fed_slice->js1-1;
@@ -4241,7 +4252,9 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
   nxy = nx*ny;
 
   GetSliceFileDirection(*is1ptr, is2ptr, &iis1, &iis2, *js1ptr, js2ptr, *ks1ptr, ks2ptr, idirptr, &joff, &koff, &volslice);
-
+#ifdef pp_SPLITSLICES
+  sd->iis1 = *is1ptr;
+#endif
   NewMemory((void **)&qq, nxsp*(nysp+joff)*(nzsp+koff)*sizeof(float));
 
   count = -1;
