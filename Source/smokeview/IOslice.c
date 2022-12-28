@@ -7363,9 +7363,7 @@ void SortLoadedSliceList(void){
   for(i=0;i<nslice_loaded;i++){
     slice_sorted_loaded_list[i] = slice_loaded_list[i];
   }
-  if(sort_slices==1){
-    qsort((int *)slice_sorted_loaded_list,nslice_loaded,sizeof(int), CompareLoadedSliceList);
-  }
+  qsort((int *)slice_sorted_loaded_list,nslice_loaded,sizeof(int), CompareLoadedSliceList);
 }
 
 /* ------------------ GetSliceOffsetGeom ------------------------ */
@@ -7806,14 +7804,6 @@ void DrawSliceFrame(){
       slice_normal[1] = 0.0;
       slice_normal[2] = 0.0;
       slicemesh = meshinfo+sd->blocknumber;
-      if(show_sort_labels==1){
-        float *mid;
-        char label[100];
-
-        mid = slicemesh->boxmiddle_scaled;
-        sprintf(label, "%i %f", ii,slicemesh->eyedist);
-        Output3Text(foregroundcolor, mid[0], mid[1], mid[2], label);
-      }
       if(slicemesh->smokedir<0)direction = -1;
       switch (ABS(slicemesh->smokedir)){
       case 4:  // -45 slope slices
