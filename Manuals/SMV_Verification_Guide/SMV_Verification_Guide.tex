@@ -585,8 +585,10 @@ all of the data in the slice.  The second column discards or chops data below
 \SI{140}{\degreeCelsius}. Note that the color near the chopped boundary should
 match the color in the color bar near \SI{140}{\degreeCelsius}.
 
-Figure \ref{figslicesort} verifies that two slices are displayed without visual artifacts by
-being drawn sorted from back to front.  
+Figure \ref{figslicesort} presents images verifying that two slices
+illustrated in Figure \ref{figslicexy}\
+are displayed without visual artifacts when drawn sorted from back to front.
+These same two images show visual artifactds when drawn unsorted.
 
 Figures \ref{figcellaslicetest} and \ref{figcellbslicetest} present images
 verifying the display of cell centered data. Images in Fig. \ref{figcellaslicetest}
@@ -648,14 +650,24 @@ files. Difference contours from these slice files are displayed at \SI{0}{s},
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/testsort_x0p4}&
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/testsort_y1p2}\\
  $x=0.4$&$y=1.2$\\
+ \end{tabular}
+\end{center}
+ \caption[Two vertical slices drawn at $x=0.4$ and $y=1.2$.]{Two vertical slices drawn at $x=0.4$ and $y=1.2$.}
+}
+\label{figslicexy}%
+\end{figure}
 
+\begin{figure}[bph]
+\begin{center}
+\begin{tabular}{cccp{1.0in}}
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/testsort_sort}&
  \includegraphics[height=\figheightE]{SCRIPT_FIGURES/testsort_unsort}\\
-
  sorted&unsorted\\
  \end{tabular}
 \end{center}
- \caption[A test showing two slices drawn with and without visual artifacts.]{A test showing two slices drawn sorted with without visual artifacts and unsorted with visual artifacts.}
+ \caption[A test showing two vertical slices drawn without visual artifacts when drawn sorted
+ from back to front.]{A test showing two vertical slices drawn without visual artifacts when drawn sorted
+ from back to front and drawn with visual artifacts when drawn unsorted.}
 \label{figslicesort}%
 \end{figure}
 
