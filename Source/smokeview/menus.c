@@ -69,7 +69,7 @@ float     part_load_time;
 #define MENU_KEEP_COARSE -4
 
 #define MENU_SLICECOLORDEFER -5
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
 #define MENU_SPLITSLICES       -10
 #define MENU_SPLITSLICES_DEBUG -11
 #endif
@@ -5187,7 +5187,7 @@ void LoadMultiSliceMenu(int value){
         UpdateSliceDupDialog();
       }
       break;
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
       case MENU_SPLITSLICES:
         split_slices = 1 - split_slices;
         updatemenu = 1;
@@ -7784,7 +7784,7 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
 
   if(nmultisliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
   GLUTADDSUBMENU(_("Skip"), sliceskipmenu);
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
   if(split_slices == 1){
     glutAddMenuEntry(_("*Sort slices(back to front)"), MENU_SPLITSLICES);
   }

@@ -2364,7 +2364,7 @@ void OutputBounds(void){
 
 void UpdateDisplay(void){
   SNIFF_ERRORS("UpdateDisplay: start");
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
   if(split_slices == 1&&nsliceloaded>0){
     SplitSlices();
   }

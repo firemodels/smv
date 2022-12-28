@@ -789,7 +789,7 @@ EXTERNCPP void DrawBoundaryFrame(int flag);
 EXTERNCPP void SceneMotionCB(int var);
 EXTERNCPP void DrawVolSliceLines(const slicedata *sd);
 EXTERNCPP void DrawVolSliceVerts(const slicedata *sd);
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
 EXTERNCPP void SplitSlices(void);
 EXTERNCPP void DrawSplitSlices(void);
 EXTERNCPP void DrawSplitSlicesDebug(void);

@@ -1100,7 +1100,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     fed_slice->nslicej=co->nslicej;
     fed_slice->nslicek=co->nslicek;
     fed_slice->volslice=co->volslice;
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
     fed_slice->iis1 = co->iis1;
     fed_slice->iis2 = co->iis2;
     fed_slice->jjs1 = co->jjs1;
@@ -2680,7 +2680,7 @@ void UpdateFedinfo(void){
     sd->ks1 = co2->ks1;
     sd->ks2 = co2->ks2;
     sd->finalize = 1;
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
     sd->iis1  = co2->iis1;
     sd->iis2  = co2->iis2;
     sd->jjs1  = co2->jjs1;
@@ -4263,7 +4263,7 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
   nxy = nx*ny;
 
   GetSliceFileDirection(*is1ptr, is2ptr, &iis1, &iis2, *js1ptr, js2ptr, *ks1ptr, ks2ptr, idirptr, &joff, &koff, &volslice);
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
   sd->iis1 = *is1ptr;
 #endif
   NewMemory((void **)&qq, nxsp*(nysp+joff)*(nzsp+koff)*sizeof(float));
@@ -7771,7 +7771,7 @@ void DrawSliceFrame(){
   if(use_tload_end==1   && global_times[itimes]>tload_end)return;
   SortLoadedSliceList();
 
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
   if(split_slices==1){
     if(split_slices_debug == 1){
       DrawSplitSlicesDebug();
@@ -7894,7 +7894,7 @@ void DrawSliceFrame(){
           else{
             is2 = sd->is2;
           }
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
           if(split_slices==0){
             DrawVolSliceTexture(sd, sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
           }
@@ -7946,7 +7946,7 @@ void DrawSliceFrame(){
           else{
             is2 = sd->is2;
           }
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
           if(split_slices==0||sd->volslice==1){
             DrawVolSliceCellFaceCenter(sd, SLICE_CELL_CENTER, 
                                        sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
@@ -7980,7 +7980,7 @@ void DrawSliceFrame(){
           else{
             is2 = sd->is2;
           }
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
           if(split_slices==0||sd->volslice==1){
             DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER,
                                        sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
@@ -9780,7 +9780,7 @@ void GenerateSliceMenu(int option){
   }
 }
 
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
 /* ------------------ CompareSliceX ------------------------ */
 
 int CompareSliceX(const void *arg1, const void *arg2){

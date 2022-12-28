@@ -1933,7 +1933,7 @@ SVEXTERN int SVDECL(npart5prop,0),ipart5prop,ipart5prop_old;
 SVEXTERN int SVDECL(global_prop_index,-1);
 
 SVEXTERN slicedata SVDECL(*sliceinfo, NULL);
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
 SVEXTERN splitslicedata SVDECL(*splitsliceinfo, NULL), SVDECL(**splitsliceinfoptr, NULL);
 SVEXTERN int SVDECL(nsplitsliceinfo, 0), SVDECL(nsplitsliceinfoMAX, 0);
 SVEXTERN int SVDECL(split_slices, 1), SVDECL(split_slices_debug, 0);
