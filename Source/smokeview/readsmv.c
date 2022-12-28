@@ -5770,7 +5770,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
   sd->js2 = jj2;
   sd->ks1 = kk1;
   sd->ks2 = kk2;
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
   sd->iis1 = ii1;
   sd->iis2 = ii2;
   sd->jjs1 = jj1;
@@ -13747,11 +13747,11 @@ int ReadIni2(char *inifile, int localfile){
       sscanf(buffer, "%i %f", &use_transparency_data, &transparent_level);
       continue;
     }
-#ifdef pp_SPLITSLICES
-    if(MatchINI(buffer, "SPLITSLICES") == 1){
+#ifdef pp_SORTSLICES
+    if(MatchINI(buffer, "SORTSLICES") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &split_slices);
-      ONEORZERO(split_slices);
+      sscanf(buffer, "%i", &sortslices);
+      ONEORZERO(sortslices);
       continue;
     }
 #endif
@@ -16157,9 +16157,9 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", antialiasflag);
   fprintf(fileout, "SPHERESEGS\n");
   fprintf(fileout, " %i\n", device_sphere_segments);
-#ifdef pp_SPLITSLICES
-  fprintf(fileout, "SPLITSLICES\n");
-  fprintf(fileout, " %i\n", split_slices);
+#ifdef pp_SORTSLICES
+  fprintf(fileout, "SORTSLICES\n");
+  fprintf(fileout, " %i\n", sortslices);
 #endif
   fprintf(fileout, "SPRINKLERABSSIZE\n");
   fprintf(fileout, " %f\n", sprinklerabssize);

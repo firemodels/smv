@@ -1100,7 +1100,7 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     fed_slice->nslicej=co->nslicej;
     fed_slice->nslicek=co->nslicek;
     fed_slice->volslice=co->volslice;
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
     fed_slice->iis1 = co->iis1;
     fed_slice->iis2 = co->iis2;
     fed_slice->jjs1 = co->jjs1;
@@ -2680,7 +2680,7 @@ void UpdateFedinfo(void){
     sd->ks1 = co2->ks1;
     sd->ks2 = co2->ks2;
     sd->finalize = 1;
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
     sd->iis1  = co2->iis1;
     sd->iis2  = co2->iis2;
     sd->jjs1  = co2->jjs1;
@@ -4263,7 +4263,7 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
   nxy = nx*ny;
 
   GetSliceFileDirection(*is1ptr, is2ptr, &iis1, &iis2, *js1ptr, js2ptr, *ks1ptr, ks2ptr, idirptr, &joff, &koff, &volslice);
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
   sd->iis1 = *is1ptr;
 #endif
   NewMemory((void **)&qq, nxsp*(nysp+joff)*(nzsp+koff)*sizeof(float));
@@ -7363,9 +7363,7 @@ void SortLoadedSliceList(void){
   for(i=0;i<nslice_loaded;i++){
     slice_sorted_loaded_list[i] = slice_loaded_list[i];
   }
-  if(sort_slices==1){
-    qsort((int *)slice_sorted_loaded_list,nslice_loaded,sizeof(int), CompareLoadedSliceList);
-  }
+  qsort((int *)slice_sorted_loaded_list,nslice_loaded,sizeof(int), CompareLoadedSliceList);
 }
 
 /* ------------------ GetSliceOffsetGeom ------------------------ */
@@ -7773,13 +7771,13 @@ void DrawSliceFrame(){
   if(use_tload_end==1   && global_times[itimes]>tload_end)return;
   SortLoadedSliceList();
 
-#ifdef pp_SPLITSLICES
-  if(split_slices==1){
-    if(split_slices_debug == 1){
-      DrawSplitSlicesDebug();
+#ifdef pp_SORTSLICES
+  if(sortslices==1){
+    if(sortslices_debug == 1){
+      DrawSortSlicesDebug();
     }
     else{
-      DrawSplitSlices();
+      DrawSortSlices();
     }
   }
 #endif
@@ -7806,14 +7804,6 @@ void DrawSliceFrame(){
       slice_normal[1] = 0.0;
       slice_normal[2] = 0.0;
       slicemesh = meshinfo+sd->blocknumber;
-      if(show_sort_labels==1){
-        float *mid;
-        char label[100];
-
-        mid = slicemesh->boxmiddle_scaled;
-        sprintf(label, "%i %f", ii,slicemesh->eyedist);
-        Output3Text(foregroundcolor, mid[0], mid[1], mid[2], label);
-      }
       if(slicemesh->smokedir<0)direction = -1;
       switch (ABS(slicemesh->smokedir)){
       case 4:  // -45 slope slices
@@ -7904,8 +7894,8 @@ void DrawSliceFrame(){
           else{
             is2 = sd->is2;
           }
-#ifdef pp_SPLITSLICES
-          if(split_slices==0){
+#ifdef pp_SORTSLICES
+          if(sortslices==0){
             DrawVolSliceTexture(sd, sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
           }
 #else
@@ -7956,8 +7946,8 @@ void DrawSliceFrame(){
           else{
             is2 = sd->is2;
           }
-#ifdef pp_SPLITSLICES
-          if(split_slices==0||sd->volslice==1){
+#ifdef pp_SORTSLICES
+          if(sortslices==0||sd->volslice==1){
             DrawVolSliceCellFaceCenter(sd, SLICE_CELL_CENTER, 
                                        sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
           }
@@ -7990,8 +7980,8 @@ void DrawSliceFrame(){
           else{
             is2 = sd->is2;
           }
-#ifdef pp_SPLITSLICES
-          if(split_slices==0||sd->volslice==1){
+#ifdef pp_SORTSLICES
+          if(sortslices==0||sd->volslice==1){
             DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER,
                                        sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
           }
@@ -9790,7 +9780,7 @@ void GenerateSliceMenu(int option){
   }
 }
 
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
 /* ------------------ CompareSliceX ------------------------ */
 
 int CompareSliceX(const void *arg1, const void *arg2){
@@ -9833,9 +9823,9 @@ int CompareSliceZ(const void *arg1, const void *arg2){
   return 0;
 }
 
-/* ------------------ CompareSplitSlices ------------------------ */
+/* ------------------ CompareSortSlices ------------------------ */
 
-int CompareSplitSlices(const void *arg1, const void *arg2){
+int CompareSortSlices(const void *arg1, const void *arg2){
   splitslicedata *s1, *s2;
   meshdata *m1, *m2;
   float *x1, *y1, *z1;
@@ -9869,9 +9859,9 @@ int CompareSplitSlices(const void *arg1, const void *arg2){
   return 0;
 }
 
-/* ------------------ SplitSlices ------------------------ */
+/* ------------------ SortSlices ------------------------ */
 
-void SplitSlices(void){
+void SortSlices(void){
   int i;
   slicedata **slicex0, **slicey0, **slicez0;
 
@@ -10052,13 +10042,13 @@ void SplitSlices(void){
     splitsliceinfoptr[i] = splitsliceinfo + i;
   }
   if(nsplitsliceinfo > 1){
-    qsort(( splitslicedata ** )splitsliceinfoptr, ( size_t )nsplitsliceinfo, sizeof(splitslicedata *), CompareSplitSlices);
+    qsort(( splitslicedata ** )splitsliceinfoptr, ( size_t )nsplitsliceinfo, sizeof(splitslicedata *), CompareSortSlices);
   }
 }
 
-/* ------------------ DrawSplitSlices ------------------------ */
+/* ------------------ DrawSortSlices ------------------------ */
 
-void DrawSplitSlices(void){
+void DrawSortSlices(void){
   int i;
 
   for(i = 0;i < nsplitsliceinfo;i++){
@@ -10088,9 +10078,9 @@ void DrawSplitSlices(void){
   }
 }
 
-/* ------------------ DrawSplitSlicesDebug ------------------------ */
+/* ------------------ DrawSortSlicesDebug ------------------------ */
 
-void DrawSplitSlicesDebug(void){
+void DrawSortSlicesDebug(void){
   int i;
 
   if(nsplitsliceinfo==0)return;

@@ -31,6 +31,7 @@ $QFDS -d Visualization smoke_test2.fds
 $QFDS -d Visualization smoke_test3.fds
 $QFDS -d Visualization smoke_test_geom.fds
 $QFDS -d Visualization sprinkler_many.fds
+$QFDS -d Visualization testsort.fds
 $QFDS -d Visualization thouse5.fds
 $QFDS -d Visualization thouse5delta.fds
 $QFDS -d Visualization tour.fds

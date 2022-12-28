@@ -432,7 +432,6 @@ SVEXTERN int cb_rgb[3];
 SVEXTERN float SVDECL(geom_linewidth, 2.0);
 SVEXTERN float SVDECL(geom_pointsize, 6.0);
 SVEXTERN int SVDECL(slice_opacity_adjustment, 0);
-SVEXTERN int SVDECL(sort_slices, 1),SVDECL(show_sort_labels,0);
 SVEXTERN int SVDECL(showall_3dslices, 0);
 SVEXTERN int SVDECL(slices3d_max_blending, 0);
 SVEXTERN int SVDECL(hrrpuv_max_blending, 0);
@@ -1934,10 +1933,10 @@ SVEXTERN int SVDECL(npart5prop,0),ipart5prop,ipart5prop_old;
 SVEXTERN int SVDECL(global_prop_index,-1);
 
 SVEXTERN slicedata SVDECL(*sliceinfo, NULL);
-#ifdef pp_SPLITSLICES
+#ifdef pp_SORTSLICES
 SVEXTERN splitslicedata SVDECL(*splitsliceinfo, NULL), SVDECL(**splitsliceinfoptr, NULL);
 SVEXTERN int SVDECL(nsplitsliceinfo, 0), SVDECL(nsplitsliceinfoMAX, 0);
-SVEXTERN int SVDECL(split_slices, 1), SVDECL(split_slices_debug, 0);
+SVEXTERN int SVDECL(sortslices, 1), SVDECL(sortslices_debug, 0);
 SVEXTERN slicedata SVDECL(**slicex, NULL), SVDECL(**slicey, NULL), SVDECL(**slicez, NULL);
 #endif
 
