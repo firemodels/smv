@@ -2366,7 +2366,7 @@ void UpdateDisplay(void){
   SNIFF_ERRORS("UpdateDisplay: start");
 #ifdef pp_SORTSLICES
   if(sortslices == 1&&nsliceloaded>0){
-    SplitSlices();
+    SortSlices();
   }
 #endif
   LOCK_IBLANK;

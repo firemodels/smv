@@ -7774,10 +7774,10 @@ void DrawSliceFrame(){
 #ifdef pp_SORTSLICES
   if(sortslices==1){
     if(sortslices_debug == 1){
-      DrawSplitSlicesDebug();
+      DrawSortSlicesDebug();
     }
     else{
-      DrawSplitSlices();
+      DrawSortSlices();
     }
   }
 #endif
@@ -9823,9 +9823,9 @@ int CompareSliceZ(const void *arg1, const void *arg2){
   return 0;
 }
 
-/* ------------------ CompareSplitSlices ------------------------ */
+/* ------------------ CompareSortSlices ------------------------ */
 
-int CompareSplitSlices(const void *arg1, const void *arg2){
+int CompareSortSlices(const void *arg1, const void *arg2){
   splitslicedata *s1, *s2;
   meshdata *m1, *m2;
   float *x1, *y1, *z1;
@@ -9859,9 +9859,9 @@ int CompareSplitSlices(const void *arg1, const void *arg2){
   return 0;
 }
 
-/* ------------------ SplitSlices ------------------------ */
+/* ------------------ SortSlices ------------------------ */
 
-void SplitSlices(void){
+void SortSlices(void){
   int i;
   slicedata **slicex0, **slicey0, **slicez0;
 
@@ -10042,13 +10042,13 @@ void SplitSlices(void){
     splitsliceinfoptr[i] = splitsliceinfo + i;
   }
   if(nsplitsliceinfo > 1){
-    qsort(( splitslicedata ** )splitsliceinfoptr, ( size_t )nsplitsliceinfo, sizeof(splitslicedata *), CompareSplitSlices);
+    qsort(( splitslicedata ** )splitsliceinfoptr, ( size_t )nsplitsliceinfo, sizeof(splitslicedata *), CompareSortSlices);
   }
 }
 
-/* ------------------ DrawSplitSlices ------------------------ */
+/* ------------------ DrawSortSlices ------------------------ */
 
-void DrawSplitSlices(void){
+void DrawSortSlices(void){
   int i;
 
   for(i = 0;i < nsplitsliceinfo;i++){
@@ -10078,9 +10078,9 @@ void DrawSplitSlices(void){
   }
 }
 
-/* ------------------ DrawSplitSlicesDebug ------------------------ */
+/* ------------------ DrawSortSlicesDebug ------------------------ */
 
-void DrawSplitSlicesDebug(void){
+void DrawSortSlicesDebug(void){
   int i;
 
   if(nsplitsliceinfo==0)return;
