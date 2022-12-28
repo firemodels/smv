@@ -1936,7 +1936,7 @@ SVEXTERN slicedata SVDECL(*sliceinfo, NULL);
 #ifdef pp_SORTSLICES
 SVEXTERN splitslicedata SVDECL(*splitsliceinfo, NULL), SVDECL(**splitsliceinfoptr, NULL);
 SVEXTERN int SVDECL(nsplitsliceinfo, 0), SVDECL(nsplitsliceinfoMAX, 0);
-SVEXTERN int SVDECL(split_slices, 1), SVDECL(split_slices_debug, 0);
+SVEXTERN int SVDECL(sortslices, 1), SVDECL(sortslices_debug, 0);
 SVEXTERN slicedata SVDECL(**slicex, NULL), SVDECL(**slicey, NULL), SVDECL(**slicez, NULL);
 #endif
 

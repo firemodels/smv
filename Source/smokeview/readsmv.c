@@ -13750,8 +13750,8 @@ int ReadIni2(char *inifile, int localfile){
 #ifdef pp_SORTSLICES
     if(MatchINI(buffer, "SORTSLICES") == 1){
       fgets(buffer, 255, stream);
-      sscanf(buffer, "%i", &split_slices);
-      ONEORZERO(split_slices);
+      sscanf(buffer, "%i", &sortslices);
+      ONEORZERO(sortslices);
       continue;
     }
 #endif
@@ -16159,7 +16159,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i\n", device_sphere_segments);
 #ifdef pp_SORTSLICES
   fprintf(fileout, "SORTSLICES\n");
-  fprintf(fileout, " %i\n", split_slices);
+  fprintf(fileout, " %i\n", sortslices);
 #endif
   fprintf(fileout, "SPRINKLERABSSIZE\n");
   fprintf(fileout, " %f\n", sprinklerabssize);

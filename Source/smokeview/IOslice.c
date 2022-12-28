@@ -7772,8 +7772,8 @@ void DrawSliceFrame(){
   SortLoadedSliceList();
 
 #ifdef pp_SORTSLICES
-  if(split_slices==1){
-    if(split_slices_debug == 1){
+  if(sortslices==1){
+    if(sortslices_debug == 1){
       DrawSplitSlicesDebug();
     }
     else{
@@ -7895,7 +7895,7 @@ void DrawSliceFrame(){
             is2 = sd->is2;
           }
 #ifdef pp_SORTSLICES
-          if(split_slices==0){
+          if(sortslices==0){
             DrawVolSliceTexture(sd, sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
           }
 #else
@@ -7947,7 +7947,7 @@ void DrawSliceFrame(){
             is2 = sd->is2;
           }
 #ifdef pp_SORTSLICES
-          if(split_slices==0||sd->volslice==1){
+          if(sortslices==0||sd->volslice==1){
             DrawVolSliceCellFaceCenter(sd, SLICE_CELL_CENTER, 
                                        sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
           }
@@ -7981,7 +7981,7 @@ void DrawSliceFrame(){
             is2 = sd->is2;
           }
 #ifdef pp_SORTSLICES
-          if(split_slices==0||sd->volslice==1){
+          if(sortslices==0||sd->volslice==1){
             DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER,
                                        sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
           }

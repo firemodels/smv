@@ -3216,8 +3216,8 @@ int       nsubboundprocinfo=0;
 
 #ifdef pp_SORTSLICES
 extern "C" void UpdateSortSlices(void){
-  CHECKBOX_sortslices->set_int_val(split_slices);
-  CHECKBOX_sortslices_debug->set_int_val(split_slices_debug);
+  CHECKBOX_sortslices->set_int_val(sortslices);
+  CHECKBOX_sortslices_debug->set_int_val(sortslices_debug);
 }
 #endif
 
@@ -5077,8 +5077,8 @@ extern "C" void GluiBoundsSetup(int main_window){
     SPINNER_transparent_level->set_float_limits(0.0, 1.0);
     glui_bounds->add_spinner_to_panel(PANEL_slice_misc, "slice offset", GLUI_SPINNER_FLOAT, &slice_dz);
 #ifdef pp_SORTSLICES
-    CHECKBOX_sortslices = glui_bounds->add_checkbox_to_panel(PANEL_slice_misc, "sort slices(back to front)", &split_slices, SORTSLICES, SliceBoundCB);
-    CHECKBOX_sortslices_debug = glui_bounds->add_checkbox_to_panel(PANEL_slice_misc, "sort slices(debug)", &split_slices_debug, SORTSLICES_DEBUG, SliceBoundCB);
+    CHECKBOX_sortslices = glui_bounds->add_checkbox_to_panel(PANEL_slice_misc, "sort slices(back to front)", &sortslices, SORTSLICES, SliceBoundCB);
+    CHECKBOX_sortslices_debug = glui_bounds->add_checkbox_to_panel(PANEL_slice_misc, "sort slices(debug)", &sortslices_debug, SORTSLICES_DEBUG, SliceBoundCB);
 #endif
     for(i = 0; i<nmeshes; i++){
       meshdata *meshi;
@@ -6159,17 +6159,17 @@ extern "C" void SliceBoundCB(int var){
       break;
 #ifdef pp_SORTSLICES
     case SORTSLICES_DEBUG:
-      if(split_slices_debug == 1 && split_slices == 0){
-        split_slices = 1;
-        CHECKBOX_sortslices->set_int_val(split_slices);
+      if(sortslices_debug == 1 && sortslices == 0){
+        sortslices = 1;
+        CHECKBOX_sortslices->set_int_val(sortslices);
       }
       GLUTPOSTREDISPLAY;
       updatemenu = 1;
       break;
     case SORTSLICES:
-      if(split_slices_debug == 1 && split_slices == 0){
-        split_slices_debug = 0;
-        CHECKBOX_sortslices_debug->set_int_val(split_slices_debug);
+      if(sortslices_debug == 1 && sortslices == 0){
+        sortslices_debug = 0;
+        CHECKBOX_sortslices_debug->set_int_val(sortslices_debug);
       }
       GLUTPOSTREDISPLAY;
       updatemenu = 1;
