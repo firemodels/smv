@@ -67,7 +67,7 @@ obj = assert.o callbacks.o camera.o color2rgb.o colortimebar.o compress.o cspher
       IOscript.o IOshooter.o IOslice.o IOsmoke.o IOtour.o IOvolsmoke.o IOwui.o IOzone.o isobox.o \
       main.o md5.o menus.o output.o readsmv.o renderhtml.o renderimage.o scontour2d.o sha1.o \
       sha256.o shaders.o showscene.o skybox.o smokestream.o smokeview.o smv_geometry.o startup.o \
-      stdio_buffer.o stdio_m.o string_util.o threader.o translate.o unit.o update.o viewports.o
+      stdio_buffer.o stdio_m.o string_util.o threader.o translate.o unit.o update.o viewports.o colortable.o
 
 incs = compress.h contourdefs.h csphere.h datadefs.h dirent_win.h file_util.h glui_bounds.h \
        glui_motion.h glui_smoke.h glui_tour.h histogram.h infoheader.h interp.h isodefs.h \

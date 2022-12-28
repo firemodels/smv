@@ -5541,36 +5541,6 @@ extern "C" void UpdatePlot3dListIndex(void){
   SetValTypeIndex(BOUND_PLOT3D, plotn-1);
 }
 
-/* ------------------ GetColorTableIndex ------------------------ */
-
-int GetColorTableIndex(int *color){
-  int i;
-
-  if(colortableinfo==NULL)return -1;
-  for(i=0;i<ncolortableinfo;i++){
-    colortabledata *cti;
-
-    cti = colortableinfo + i;
-    if(color[0]==cti->color[0]&&color[1]==cti->color[1]&&color[2]==cti->color[2])return i;
-  }
-  return -1;
-}
-
-/* ------------------ GetColorTable ------------------------ */
-
-colortabledata *GetColorTable(char *label){
-  int i;
-
-  if(label==NULL||strlen(label)==0)return NULL;
-  for(i=0;i<ncolortableinfo;i++){
-    colortabledata *cti;
-
-    cti = colortableinfo + i;
-    if(strcmp(label,cti->label)==0)return cti;
-  }
-  return NULL;
-}
-
 /* ------------------ IsoBoundCB ------------------------ */
 
 extern "C" void IsoBoundCB(int var){
