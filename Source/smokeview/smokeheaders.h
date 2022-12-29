@@ -361,6 +361,7 @@ EXTERNCPP void UpdateObjectUsed(void);
 EXTERNCPP void UpdateColorTableList(int ncolortableinfo_old);
 EXTERNCPP void UpdateColorTable(colortabledata *ctableinfo, int nctableinfo);
 EXTERNCPP colortabledata *GetColorTable(char *label);
+EXTERNCPP int GetColorTableIndex(int *color);
 EXTERNCPP void UpdateIsoColorlevel(void);
 EXTERNCPP void ReadIsoGeomWrapup(int flag);
 EXTERNCPP void PSystem(char *commandline);
