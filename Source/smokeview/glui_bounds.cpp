@@ -487,7 +487,7 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
       GLUI_Panel *PANEL_drawA, *PANEL_drawB;
 
       percentile_draw = 0;
-      ROLLOUT_percentiles = glui_bounds->add_rollout_to_panel(PANEL_minmax, "data distribution", false);
+      ROLLOUT_percentiles = glui_bounds->add_rollout_to_panel(PANEL_minmax, "percentile settings", false);
 
       percentile_min_cpp100 = CLAMP(percentile_level_min, 0.0, 1.0)*100.0;
       percentile_max_cpp100 = CLAMP(percentile_level_max, percentile_level_min,1.0)*100.0;
@@ -501,7 +501,7 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
 
       glui_bounds->add_column_to_panel(ROLLOUT_percentiles, false);
 
-      PANEL_drawB = glui_bounds->add_panel_to_panel(ROLLOUT_percentiles, "plot bounds/position");
+      PANEL_drawB = glui_bounds->add_panel_to_panel(ROLLOUT_percentiles, "percentile plot settings");
       CHECKBOX_hist_show_labels = glui_bounds->add_checkbox_to_panel(PANEL_drawB, _("show labels"),             &hist_show_labels_cpp, BOUND_HIST_LABELS, Callback);
       CHECKBOX_percentile_draw  = glui_bounds->add_checkbox_to_panel(PANEL_drawB, _("show plot"),               &percentile_draw, BOUND_PERCENTILE_DRAW, Callback);
       SPINNER_plot_max          = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("max:"), GLUI_SPINNER_FLOAT, &plot_max_cpp, BOUND_PLOT_MINMAX, Callback);
@@ -522,18 +522,19 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
     }
     PANEL_buttons = glui_bounds->add_panel_to_panel(PANEL_minmax, "", GLUI_PANEL_NONE);
     int skip_update_colors_button=0;
+#ifdef pp_BOUNDVAL
+    if(strcmp(file_type,"boundary")==0)skip_update_colors_button = 1;
+#endif
 #ifdef pp_PARTVAL
     if(strcmp(file_type,"particle")==0)skip_update_colors_button = 1;
+#endif
+#ifdef pp_PLOT3DVAL
+    if(strcmp(file_type,"PLOT3D")==0)skip_update_colors_button = 1;
 #endif
 #ifdef pp_SLICEVAL
     if(strcmp(file_type,"slice")==0)skip_update_colors_button = 1;
 #endif
-    if(skip_update_colors_button==1){
-      BUTTON_update_colors      = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
-    }
-    else{
-      BUTTON_update_colors = NULL;
-      // define Update colors button always for now
+    if(skip_update_colors_button==0){
       BUTTON_update_colors      = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
     }
     glui_bounds->add_column_to_panel(PANEL_buttons, false);
