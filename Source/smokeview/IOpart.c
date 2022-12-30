@@ -317,16 +317,14 @@ void DrawPart(const partdata *parti){
               else{
 #ifdef pp_PARTVAL
                 float *rvals;
-#endif
 
-                color = datacopy->irvals + itype*datacopy->npoints;
-#ifdef pp_PARTVAL
                 rvals = datacopy->rvals+itype*datacopy->npoints;
+#else
+                color = datacopy->irvals + itype*datacopy->npoints;
 #endif
                 for(j = 0;j < datacopy->npoints;j++){
                   if(vis[j] == 1){
                     int colorj;
-
 #ifdef pp_PARTVAL
                     float rval;
                     rval = CLAMP(254.0*(rvals[j]-valmin)/(valmax-valmin), 0.0, 254.0);
@@ -366,10 +364,17 @@ void DrawPart(const partdata *parti){
                   colorptr = datacopy->partclassbase->rgb;
                 }
                 else{
+#ifdef pp_PARTVAL
+                  float *rvals, rval;
+
+                  rvals = datacopy->rvals+itype*datacopy->npoints;
+                  rval = CLAMP(254.0*(rvals[j]-valmin)/(valmax-valmin), 0.0, 254.0);
+                  colorptr = rgb_full[(int)rval];
+#else
                   color = datacopy->irvals + itype*datacopy->npoints;
                   colorptr = rgb_full[color[j]];
+#endif
                 }
-
                 prop = datacopy->partclassbase->prop;
                 CopyDepVals(partclassi, datacopy, colorptr, prop, j);
                 glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
