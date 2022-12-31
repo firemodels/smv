@@ -970,11 +970,12 @@ typedef struct _sv_object {
 
 /* --------------------------  device ------------------------------------ */
 
+#define LENDEVICEBUFFER 255
 typedef struct _device {
   int active;
   int screenijk[3], visval, target_index;
-  char deviceID[30], csvlabel[30], *labelptr;
-  char quantity[30], unit[30];
+  char deviceID[LENDEVICEBUFFER], csvlabel[LENDEVICEBUFFER], *labelptr;
+  char quantity[LENDEVICEBUFFER], unit[LENDEVICEBUFFER];
   float *times, *vals;
   float *vals_orig;
   int update_avg;
