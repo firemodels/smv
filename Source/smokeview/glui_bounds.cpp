@@ -1860,9 +1860,6 @@ extern "C" void SliceBoundsCPP_CB(int var){
       break;
     case BOUND_UPDATE_COLORS:
       if(nslice_loaded==0)break;
-#ifdef pp_RESEARCH_DEBUG
-      printf("*** updating slice file colors\n");
-#endif
       SetLoadedSliceBounds(NULL, 0);
 
       last_slice = slice_loaded_list[nslice_loaded - 1];
@@ -1972,9 +1969,6 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
       break;
     case BOUND_UPDATE_COLORS:
       if(HavePlot3DData()==1){
-#ifdef pp_RESEARCH_DEBUG
-        printf("*** updating plot3d colors\n");
-#endif
         UpdateAllPlot3DColors(1);
       }
       else{
@@ -2066,9 +2060,6 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
       }
       break;
     case BOUND_RELOAD_DATA:
-#ifdef pp_RESEARCH_DEBUG
-      printf("*** reloading plot3d data\n");
-#endif
       LoadPlot3dMenu(RELOAD_ALL);
       break;
     case BOUND_RESEARCH_MODE:
@@ -2221,20 +2212,6 @@ extern "C" void PartBoundsCPP_CB(int var){
       break;
     case BOUND_RELOAD_DATA:
       if(npartinfo>0){
-#ifdef pp_RESEARCH_DEBUG
-        int doit=0, i;
-
-        for(i = 0; i<npartinfo; i++){
-          partdata *parti;
-
-          parti = partinfo+i;
-          if(parti->loaded==1){
-            doit = 1;
-            break;
-          }
-        }
-        if(doit==1)printf("*** reloading particle file data\n");
-#endif
         LoadParticleMenu(PARTFILE_RELOADALL);
       }
       break;
@@ -2416,13 +2393,6 @@ extern "C" void PatchBoundsCPP_CB(int var){
 #endif
     case BOUND_UPDATE_COLORS:
       if(HavePatchData()==1){
-#ifdef pp_RESEARCH_DEBUG
-#ifdef pp_BOUNDVAL
-        if(npatchloaded>0&&var==BOUND_UPDATE_COLORS)printf("*** updating boundary file colors");
-#else
-        if(npatchloaded>0)printf("*** updating boundary file colors");
-#endif
-#endif
         SetLoadedPatchBounds(NULL, 0);
 #ifdef pp_BOUNDVAL
         if(var==BOUND_DONTUPDATE_COLORS){
@@ -2440,9 +2410,6 @@ extern "C" void PatchBoundsCPP_CB(int var){
       }
       break;
     case BOUND_RELOAD_DATA:
-#ifdef pp_RESEARCH_DEBUG
-      printf("*** reloading boundary file data\n");
-#endif
       SetLoadedPatchBounds(NULL, 0);
       for(i = 0; i<npatchinfo; i++){
         patchdata *patchi;

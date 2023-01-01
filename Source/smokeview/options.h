@@ -83,7 +83,6 @@
 #define pp_SLICETHREAD        // parallel slice file loading
 //#define pp_SHOW_CACHE         // show file cache checkbox
 //#define pp_PLOT3D_REDUCEMENUS // eliminate plot3d sub-menus
-//#define pp_RESEARCH_DEBUG     // output whether data is reloaded or colors re-mapped when toggling to/from research mode
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
 
 #ifdef pp_GPU
@@ -141,9 +140,6 @@
 
 #ifdef _DEBUG
 #define pp_MOVIE_BATCH_DEBUG // allow movei batch dialogs to be defined for testing
-#ifndef pp_RESEARCH_DEBUG
-#define pp_RESEARCH_DEBUG
-#endif
 #define pp_SNIFF_ERROR
 #endif
 #define pp_RENDER360_DEBUG
