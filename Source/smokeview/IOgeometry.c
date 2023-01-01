@@ -5,9 +5,6 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
-#ifdef pp_ISOTIME
-#include GLUT_H
-#endif
 
 void UpdateGeomTriangles(geomdata *geomi, int geom_type);
 
@@ -3340,9 +3337,6 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   int returncode=0;
   int one=0;
   FILE_SIZE return_filesize=0;
-#ifdef pp_ISOTIME
-  float time1, time2;
-#endif
 
   if(geomi->file==NULL)return 0;
   stream = fopen(geomi->file,"rb");
@@ -3352,22 +3346,12 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   fclose(stream);
   return_filesize = 2*(4+4+4);
 
-#ifdef pp_ISOTIME
-  START_TIMER(time1);
-#endif
   if(version<=1){
     return_filesize+=ReadGeom0(geomi,load_flag,type,geom_frame_index);
   }
   else{
     return_filesize += ReadGeom2(geomi,load_flag,type);
   }
-#ifdef pp_ISOTIME
-  STOP_TIMER(time1);
-  START_TIMER(time2);
-  STOP_TIMER(time2);
-  printf("\niso load time=%f\n",time1);
-  printf("\niso classify time=%f\n",time2);
-#endif
   PrintMemoryInfo;
   return return_filesize;
 }

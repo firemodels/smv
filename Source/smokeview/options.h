@@ -66,9 +66,6 @@
 #define pp_DRAWISO            // turn on drawing routines
 //#define pp_LOAD_NEWDATA     // add button for loading new data
 
-//*** debug: all platforms
-//#define pp_ISOTIME          // output iso load times
-
 //*** in development: all platforms
 #define pp_SLICETHREAD        // parallel slice file loading
 
