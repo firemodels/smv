@@ -71,7 +71,6 @@
 #define pp_THREAD             // turn on multi-threading
 #define pp_DRAWISO            // turn on drawing routines
 //#define pp_LOAD_NEWDATA     // add button for loading new data
-//#define pp_TERRAIN_UPDATE     // add button to update terrain normals
 
 //*** debug: all platforms
 //#define pp_ISOTIME          // output iso load times
