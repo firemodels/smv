@@ -64,7 +64,6 @@
 //#define pp_SMOKEBUFFER       // read 3d smoke files using memory buffer i/o routines
 //#define pp_GEOM_DEBUG        // debug out in geometry routines
 //#define pp_CRASH_TEST         // test detection of division by zero or use of undefined pointer
-//#define pp_SHOW_BOUND_MIRROR  // add menu for showing boundary files on mirror/open vents
 //#define pp_HTML_VR           // output VR html code
 //#define pp_SKIP_BOUNDARY_GEOMS // skips reading of boundary geometry files
 #define pp_GPU                // support the GPU

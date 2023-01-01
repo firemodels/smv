@@ -12156,11 +12156,6 @@ updatemenu=0;
 //*** these same lines also appear below
       glutAddMenuEntry("-",MENU_DUMMY3);
 
-#ifdef pp_SHOW_BOUND_MIRROR
-      if(nmeshes>1||n_mirrorvents>0||n_openvents>0){
-        GLUTADDSUBMENU(_("Include"),includepatchmenu);
-      }
-#endif
       glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
       if(nboundaryslicedups>0){
         GLUTADDSUBMENU(_("Duplicate boundary slices"),duplicateboundaryslicemenu);
@@ -12311,11 +12306,6 @@ updatemenu=0;
       }
 //*** these same lines also appear above (except for nmeshes>1 line)
       glutAddMenuEntry("-",MENU_DUMMY3);
-#ifdef pp_SHOW_BOUND_MIRROR
-      if(nmeshes>1||n_mirrorvents>0||n_openvents>0){
-        GLUTADDSUBMENU(_("Include"),includepatchmenu);
-      }
-#endif
 
       glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
       if(nboundaryslicedups>0){
