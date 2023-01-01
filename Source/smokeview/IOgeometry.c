@@ -2133,31 +2133,9 @@ void ReadAllGeom(void){
 
   for(i=0;i<ngeominfo;i++){
     geomdata *geomi;
-#ifdef pp_GEOM_DEBUG
-    int j, count;
-#endif
 
     geomi = geominfo + i;
     LOCK_READALLGEOM;
-#ifdef pp_GEOM_DEBUG
-    count = 0;
-    for(j = 0; j<ngeominfo; j++){
-      geomdata *geomj;
-
-      geomj = geominfo+j;
-      if(geomj->read_status==1)count++;
-    }
-    if(count>0){
-      printf("loading geom: ");
-      for(j = 0; j<ngeominfo; j++){
-        geomdata *geomj;
-
-        geomj = geominfo+j;
-        if(geomj->read_status==1)printf(" %i", j);
-      }
-      printf("\n");
-    }
-#endif
     if(geomi->read_status!=0){
       UNLOCK_READALLGEOM;
       continue;
@@ -2172,31 +2150,9 @@ void ReadAllGeom(void){
   }
   for(i = 0; i<ncgeominfo; i++){
     geomdata *geomi;
-#ifdef pp_GEOM_DEBUG
-    int j, count;
-#endif
 
     geomi = cgeominfo+i;
     LOCK_READALLGEOM;
-#ifdef pp_GEOM_DEBUG
-    count = 0;
-    for(j = 0; j<ncgeominfo; j++){
-      geomdata *geomj;
-
-      geomj = cgeominfo+j;
-      if(geomj->read_status==1)count++;
-    }
-    if(count>0){
-      printf("loading cgeom: ");
-      for(j = 0; j<ncgeominfo; j++){
-        geomdata *geomj;
-
-        geomj = cgeominfo+j;
-        if(geomj->read_status==1)printf(" %i", j);
-      }
-      printf("\n");
-    }
-#endif
     if(geomi->read_status!=0){
       UNLOCK_READALLGEOM;
       continue;
@@ -3275,39 +3231,6 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
         if(edgei != NULL)edgei->ntriangles++;
       }
 
-#ifdef pp_GEOM_DEBUG
-      int ntri0, ntri1, ntri2, ntri_other;
-
-      ntri0 = 0;
-      ntri1 = 0;
-      ntri2 = 0;
-      ntri_other = 0;
-      for(ii = 0; ii < nedges; ii++){
-        edgedata *edgei;
-
-        edgei = edges + ii;
-        switch (edgei->ntriangles){
-        case 0:
-          ntri0++;
-          break;
-        case 1:
-          ntri1++;
-          break;
-        case 2:
-          ntri2++;
-          break;
-        default:
-          ntri_other++;
-          break;
-        }
-      }
-      printf("\n\nedges\n");
-      printf("                       total: %i\n", nedges);
-      printf("        0 connected triangle: %i\n", ntri0);
-      printf("        1 connected triangle: %i\n", ntri1);
-      printf("        2 connected triangle: %i\n", ntri2);
-      printf("3 or more connected triangle: %i\n", ntri_other);      FREEMEMORY(edgelist_index);
-#endif
     }
     if(nverts > 0){
       int nvertlist_index = 0;
@@ -3338,19 +3261,6 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
           v2->isdup = 1;
         }
       }
-#ifdef pp_GEOM_DEBUG
-      int ndups = 0;
-      for(ii = 0; ii < nvertlist_index; ii++){
-        vertdata *vi;
-
-        vi = verts + ii;
-        if(vi->isdup == 1)ndups++;
-      }
-      printf("\nvertices\n");
-      printf("\n   total: %i\n", nverts);
-      printf("duplicates: %i\n", ndups);
-      printf("  (eps=%f m)\n", VERT_EPS);
-#endif
         FREEMEMORY(vertlist_ptr);
     }
   }
