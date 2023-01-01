@@ -64,7 +64,6 @@
 //#define pp_GEOM_DEBUG        // debug out in geometry routines
 //#define pp_CRASH_TEST         // test detection of division by zero or use of undefined pointer
 //#define pp_HTML_VR           // output VR html code
-//#define pp_SKIP_BOUNDARY_GEOMS // skips reading of boundary geometry files
 #define pp_GPU                // support the GPU
 #define pp_THREAD             // turn on multi-threading
 #define pp_DRAWISO            // turn on drawing routines

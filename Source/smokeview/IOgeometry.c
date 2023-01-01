@@ -2165,13 +2165,10 @@ void ReadAllGeom(void){
     geomi->read_status = 1;
     UNLOCK_READALLGEOM;
 
-#ifdef pp_SKIP_BOUNDARY_GEOMS
-      if(geomi->geomtype!=GEOM_GEOM)continue; // skips geometries for boundary files
-#endif
-      ReadGeom(geomi, LOAD, GEOM_GEOM, NULL);
-      LOCK_READALLGEOM;
-      geomi->read_status = 2;
-      UNLOCK_READALLGEOM;
+    ReadGeom(geomi, LOAD, GEOM_GEOM, NULL);
+    LOCK_READALLGEOM;
+    geomi->read_status = 2;
+    UNLOCK_READALLGEOM;
   }
   for(i = 0; i<ncgeominfo; i++){
     geomdata *geomi;
