@@ -60,7 +60,6 @@
 
 #define pp_PART_MULTI        // load particles in parallel
 #define pp_THREADBUFFER
-//#define pp_SMOKEBUFFER       // read 3d smoke files using memory buffer i/o routines
 //#define pp_GEOM_DEBUG        // debug out in geometry routines
 //#define pp_CRASH_TEST         // test detection of division by zero or use of undefined pointer
 //#define pp_HTML_VR           // output VR html code
