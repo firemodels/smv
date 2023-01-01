@@ -11907,7 +11907,6 @@ updatemenu=0;
       int ii;
 
       CREATEMENU(unloadplot3dmenu,UnloadPlot3dMenu);
-#ifndef pp_PLOT3D_REDUCEMENUS
       for(ii=0;ii<nplot3dinfo;ii++){
         i=plot3dorderindex[ii];
         plot3di = plot3dinfo + i;
@@ -11922,10 +11921,8 @@ updatemenu=0;
         STRCPY(menulabel,plot3dinfo[i].menulabel);
         glutAddMenuEntry(menulabel,i);
       }
-#endif
       glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
 
-#ifndef pp_PLOT3D_REDUCEMENUS
       nloadsubplot3dmenu=1;
       for(ii=1;ii<nplot3dinfo;ii++){
         int im1;
@@ -11971,10 +11968,7 @@ updatemenu=0;
         strcat(menulabel,plot3di->menulabel);
         glutAddMenuEntry(menulabel,i);
       }
-#endif
-
       nloadsubplot3dmenu=0;
-#ifndef pp_PLOT3D_REDUCEMENUS
       CREATEMENU(plot3dsinglemeshmenu,LoadPlot3dMenu);
       for(ii=0;ii<nplot3dinfo;ii++){
         int im1;
@@ -12009,8 +12003,6 @@ updatemenu=0;
           }
         }
       }
-#endif
-
       nloadsubplot3dmenu=0;
       CREATEMENU(loadplot3dmenu,LoadPlot3dMenu);
       for(ii=0;ii<nplot3dinfo;ii++){
@@ -12080,11 +12072,9 @@ updatemenu=0;
         }
         if(ii==nplot3dinfo-1){
           glutAddMenuEntry("-", MENU_PLOT3D_DUMMY);
-#ifndef pp_PLOT3D_REDUCEMENUS
           if(nmeshes>1){
             GLUTADDSUBMENU(_("Mesh"), plot3dsinglemeshmenu);
           }
-#endif
           glutAddMenuEntry(_("Settings..."), MENU_PLOT3D_SETTINGS);
           if(nplot3dloaded>1){
             GLUTADDSUBMENU(_("Unload"), unloadplot3dmenu);

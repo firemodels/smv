@@ -201,14 +201,7 @@ void bounds_dialog::set_percentile_minmax(float p_min, float p_max){
 void bounds_dialog::set_cache_flag(int cache_flag){
   if(cache_flag!=1)cache_flag = 0;
   bounds.cache = cache_flag;
-#ifdef pp_SHOW_CACHE
-  if(CHECKBOX_cache!=NULL){
-    CHECKBOX_cache->set_int_val(cache_flag);
-    CB(BOUND_CACHE_DATA);
-  }
-#else
   CB(BOUND_CACHE_DATA);
-#endif
 }
 
   /* ------------------ get_bounds_data ------------------------ */
@@ -416,12 +409,6 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
   CHECKBOX_cache = NULL;
   if(cache_flag!=NULL){
     bounds.cache = *cache_flag;
-#ifdef pp_SHOW_CACHE
-    CHECKBOX_cache = glui_bounds->add_checkbox_to_panel(PANEL_minmax, "Cache data", &(bounds.cache), BOUND_CACHE_DATA, Callback);
-    if(cache_enable==0){
-      CHECKBOX_cache->disable();
-    }
-#endif
   }
 
   strcpy(label1, "global(loaded ");
@@ -1007,10 +994,7 @@ void bounds_dialog::CB(int var){
       {
         int i, cache_val = 0, enable_update_colors;
 
-#ifndef pp_SHOW_CACHE
         cache_val = cache_file_data;
-#endif
-
         if(CHECKBOX_cache!=NULL)cache_val = CHECKBOX_cache->get_int_val();
 
         for(i = 0; i<nall_bounds; i++){
@@ -1038,11 +1022,7 @@ void bounds_dialog::CB(int var){
         }
         if(BUTTON_update_colors!=NULL){
           enable_update_colors = 0;
-#ifdef pp_SHOW_CACHE
-          if(CHECKBOX_cache!=NULL&&CHECKBOX_cache->get_int_val()==1)enable_update_colors = 1;
-#else
           if(cache_val==1)enable_update_colors = 1;
-#endif
           if(enable_update_colors==1){
             BUTTON_update_colors->enable();
           }

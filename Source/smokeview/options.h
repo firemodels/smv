@@ -81,8 +81,6 @@
 
 //*** in development: all platforms
 #define pp_SLICETHREAD        // parallel slice file loading
-//#define pp_SHOW_CACHE         // show file cache checkbox
-//#define pp_PLOT3D_REDUCEMENUS // eliminate plot3d sub-menus
 //#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
 
 #ifdef pp_GPU
