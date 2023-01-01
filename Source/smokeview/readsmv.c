@@ -11550,17 +11550,11 @@ typedef struct {
   GetBoxGeomCorners();
   PRINT_TIMER(timer_readsmv, "update trianglesfaces");
 
-#ifdef pp_WUI_VAO
-  have_terrain_vao = 0;
-#endif
   if(ngeominfo>0&&auto_terrain==1){
     int sizeof_vertices, sizeof_indices;
 
     PRINT_TIMER(timer_readsmv, "null");
     GenerateTerrainGeom(&terrain_vertices, &sizeof_vertices, &terrain_indices, &sizeof_indices, &terrain_nindices);
-#ifdef pp_WUI_VAO
-    have_terrain_vao = InitTerrainVAO(sizeof_vertices, sizeof_indices);
-#endif
     PRINT_TIMER(timer_readsmv, "GenerateTerrainGeom");
   }
 

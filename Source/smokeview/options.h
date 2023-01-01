@@ -73,8 +73,6 @@
 //#define pp_LOAD_NEWDATA     // add button for loading new data
 //#define pp_TERRAIN_UPDATE     // add button to update terrain normals
 
-//#define pp_WUI_VAO            // use opengl vao objects for drawing terrain
-
 //*** debug: all platforms
 //#define pp_ISOTIME          // output iso load times
 //#define pp_PART_TEST        // for debugging, set particle values to 100*parti->seq_id + small random number
