@@ -78,7 +78,6 @@
 
 //*** in development: all platforms
 #define pp_SLICETHREAD        // parallel slice file loading
-//#define pp_MERGE_GEOMS          // merge geometry and structure boundary file menu items
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set

@@ -5185,11 +5185,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     else if(patchi->structured==NO){
       char geomlabel[256];
 
-#ifdef pp_MERGE_GEOMS
-      strcpy(geomlabel, "(cell centered)");
-#else
       strcpy(geomlabel, "(geometry)");
-#endif
       if(patchi->filetype_label!=NULL){
         if(strcmp(patchi->filetype_label, "EXIMBND_FACES")==0){
           strcat(geomlabel, " - EXIM faces");
