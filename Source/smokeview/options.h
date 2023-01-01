@@ -72,7 +72,6 @@
 
 //*** debug: all platforms
 //#define pp_ISOTIME          // output iso load times
-//#define pp_PART_TEST        // for debugging, set particle values to 100*parti->seq_id + small random number
 
 //*** in development: all platforms
 #define pp_SLICETHREAD        // parallel slice file loading

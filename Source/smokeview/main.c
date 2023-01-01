@@ -128,9 +128,6 @@ void Usage(char *prog,int option){
 #ifdef pp_OSX
     strcat(label, ", pp_OSX");
 #endif
-#ifdef pp_PART_TEST
-    strcat(label, ", pp_PART_TEST");
-#endif
 #ifdef pp_release
     strcat(label, ", pp_release");
 #endif
