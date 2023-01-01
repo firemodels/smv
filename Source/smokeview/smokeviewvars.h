@@ -1717,14 +1717,6 @@ SVEXTERN char SVDECL(*hrr_csv_filename,NULL),SVDECL(*devc_csv_filename,NULL),SVD
 SVEXTERN char SVDECL(*smokezippath,NULL),SVDECL(*smokeviewpath,NULL);
 SVEXTERN char SVDECL(*INI_fds_filein,NULL), SVDECL(*fds_filein,NULL);
 SVEXTERN char SVDECL(*caseini_filename,NULL),SVDECL(*boundinfo_filename,NULL);
-#ifdef pp_CACHE_FILEBOUNDS
-SVEXTERN char SVDECL(*bnds_slice_filename, NULL);
-SVEXTERN char SVDECL(*bnds_patch_filename, NULL);
-SVEXTERN boundfiledata SVDECL(*sliceboundfileinfo, NULL);
-SVEXTERN boundfiledata SVDECL(*patchboundfileinfo, NULL);
-SVEXTERN char SVDECL(**sorted_slice_list, NULL), SVDECL(**sorted_patch_list, NULL);
-SVEXTERN int nsliceboundfileinfo, npatchboundfileinfo;
-#endif
 SVEXTERN char SVDECL(*event_filename, NULL);
 SVEXTERN int SVDECL(event_file_exists,0);
 SVEXTERN char SVDECL(*zonelonglabels,NULL), SVDECL(*zoneshortlabels,NULL), SVDECL(*zoneunits,NULL);

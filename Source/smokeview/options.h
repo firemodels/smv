@@ -59,7 +59,6 @@
 #endif
 
 #define pp_PART_MULTI        // load particles in parallel
-//#define pp_CACHE_FILEBOUNDS   // cache slice and boundary file bounds
 #define pp_THREADBUFFER
 //#define pp_SMOKEBUFFER       // read 3d smoke files using memory buffer i/o routines
 //#define pp_GEOM_DEBUG        // debug out in geometry routines
