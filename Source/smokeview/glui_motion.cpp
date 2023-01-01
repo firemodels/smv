@@ -2622,10 +2622,7 @@ void RenderCB(int var){
     case RENDER_TYPE:
       break;
     case RENDER_HTML:
-      Smv2Html(html_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_NO);
-#ifdef pp_HTML_VR
-      Smv2Html(htmlvr_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_YES);
-#endif
+      Smv2Html(html_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW);
       break;
 #ifdef pp_RENDER360_DEBUG
     case RENDER_DEBUG_360:

@@ -2080,16 +2080,10 @@ void RenderMenu(int value){
     }
     break;
   case RenderHTML:
-    Smv2Html(html_filename,   HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_NO);
-#ifdef pp_HTML_VR
-    Smv2Html(htmlvr_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_YES);
-#endif
+    Smv2Html(html_filename,   HTML_CURRENT_TIME, FROM_SMOKEVIEW);
     break;
   case RenderHTMLALL:
-    Smv2Html(html_filename,   HTML_ALL_TIMES, FROM_SMOKEVIEW, VR_NO);
-#ifdef pp_HTML_VR
-    Smv2Html(htmlvr_filename, HTML_ALL_TIMES, FROM_SMOKEVIEW, VR_YES);
-#endif
+    Smv2Html(html_filename,   HTML_ALL_TIMES, FROM_SMOKEVIEW);
     break;
   case RenderCancel:
     RenderState(RENDER_OFF);

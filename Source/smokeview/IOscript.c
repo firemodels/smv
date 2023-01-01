@@ -1273,13 +1273,10 @@ void ScriptRenderHtml(scriptdata *scripti, int option){
 
   GetWebFileName(web_filename, scripti);
   strcat(web_filename,".html");
-  Smv2Html(web_filename, option, FROM_SCRIPT, VR_NO);
+  Smv2Html(web_filename, option, FROM_SCRIPT);
 
   GetWebFileName(webvr_filename, scripti);
   strcat(webvr_filename,"_vr.html");
-#ifdef pp_HTML_VR
-  Smv2Html(webvr_filename, option, FROM_SCRIPT, VR_YES);
-#endif
 }
 
 /* ------------------ ScriptRenderStart ------------------------ */
