@@ -317,16 +317,14 @@ void DrawPart(const partdata *parti){
               else{
 #ifdef pp_PARTVAL
                 float *rvals;
-#endif
 
-                color = datacopy->irvals + itype*datacopy->npoints;
-#ifdef pp_PARTVAL
                 rvals = datacopy->rvals+itype*datacopy->npoints;
+#else
+                color = datacopy->irvals + itype*datacopy->npoints;
 #endif
                 for(j = 0;j < datacopy->npoints;j++){
                   if(vis[j] == 1){
                     int colorj;
-
 #ifdef pp_PARTVAL
                     float rval;
                     rval = CLAMP(254.0*(rvals[j]-valmin)/(valmax-valmin), 0.0, 254.0);
@@ -366,10 +364,17 @@ void DrawPart(const partdata *parti){
                   colorptr = datacopy->partclassbase->rgb;
                 }
                 else{
+#ifdef pp_PARTVAL
+                  float *rvals, rval;
+
+                  rvals = datacopy->rvals+itype*datacopy->npoints;
+                  rval = CLAMP(254.0*(rvals[j]-valmin)/(valmax-valmin), 0.0, 254.0);
+                  colorptr = rgb_full[(int)rval];
+#else
                   color = datacopy->irvals + itype*datacopy->npoints;
                   colorptr = rgb_full[color[j]];
+#endif
                 }
-
                 prop = datacopy->partclassbase->prop;
                 CopyDepVals(partclassi, datacopy, colorptr, prop, j);
                 glScalef(SCALE2SMV(1.0), SCALE2SMV(1.0), SCALE2SMV(1.0));
@@ -1417,16 +1422,6 @@ void GetPartData(partdata *parti, int nf_all_arg, FILE_SIZE *file_size_arg){
 
           FORTPART5READ_mv((void **)&(datacopy_local->rvals), nparts_local*numtypes_local[2*class_index]);
           if(returncode==FAIL_m)goto wrapup;
-
-#ifdef pp_PART_TEST
-          int iii, jjj;
-
-          for(jjj = 0; jjj < numtypes_local[2 * class_index]; jjj++){
-            for(iii = 0; iii < nparts_local; iii++){
-              datacopy_local->rvals[iii+jjj*nparts_local] = 1000.0*parti->seq_id + 200*jjj+ (float)RandInt(-1000, 1000) / 1000.0;
-            }
-          }
-#endif
 
           valmin_smv = parti->valmin_smv;
           valmax_smv = parti->valmax_smv;

@@ -40,9 +40,6 @@ int      ngeomprocinfo = 0;
 #define SURF_GET              50
 #define SHOWONLY_TOP          51
 #define GEOM_FDS_DOMAIN       52
-#ifdef pp_TERRAIN_UPDATE
-#define UPDATE_NORMALS        53
-#endif
 
 #define HVAC_PROPS            -1
 #define HVAC_SHOWALL_NETWORK  -2
@@ -996,9 +993,6 @@ extern "C" void GluiGeometrySetup(int main_window){
     PANEL_geom_show->set_alignment(GLUI_ALIGN_LEFT);
     if(terrain_nindices>0){
       CHECKBOX_showonly_top = glui_geometry->add_checkbox_to_panel(PANEL_geom_show, "only top surface", &terrain_showonly_top, SHOWONLY_TOP, VolumeCB);
-#ifdef pp_TERRAIN_UPDATE
-      glui_geometry->add_button_to_panel(PANEL_geom_show, _("Update normals"), UPDATE_NORMALS, VolumeCB);
-#endif
     }
     CHECKBOX_showgeom_inside_domain = glui_geometry->add_checkbox_to_panel(PANEL_geom_show, "inside FDS domain", &showgeom_inside_domain, GEOM_FDS_DOMAIN, VolumeCB);
     CHECKBOX_showgeom_outside_domain = glui_geometry->add_checkbox_to_panel(PANEL_geom_show, "outside FDS domain", &showgeom_outside_domain, GEOM_FDS_DOMAIN, VolumeCB);
@@ -1149,12 +1143,6 @@ extern "C" void VolumeCB(int var){
   case SHOWONLY_TOP:
     updatemenu = 1;
     break;
-#ifdef pp_TERRAIN_UPDATE
-  case UPDATE_NORMALS:
-    terrain_update_normals = 1;
-    GLUTPOSTREDISPLAY;
-    break;
-#endif
   case SHOW_ZLEVEL:
     if(show_texture_1dimage==0&&show_zlevel==1){
       show_texture_1dimage = 1;

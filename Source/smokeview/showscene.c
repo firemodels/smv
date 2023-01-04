@@ -267,12 +267,6 @@ void ShowScene2(int mode){
 
   if(ngeominfoptrs>0){
     CLIP_GEOMETRY;
-#ifdef pp_WUI_VAO
-    if(have_terrain_vao==0){
-      DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
-      DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
-    }
-#else
     if(use_cfaces==1){
       int i;
 
@@ -285,7 +279,6 @@ void ShowScene2(int mode){
     }
     DrawGeom(DRAW_OPAQUE, GEOM_STATIC);
     DrawGeom(DRAW_OPAQUE, GEOM_DYNAMIC);
-#endif
     SNIFF_ERRORS("DrawGeom");
   }
 
@@ -300,19 +293,8 @@ void ShowScene2(int mode){
   /* ++++++++++++++++++++++++ draw terrain +++++++++++++++++++++++++ */
 
   if(use_cfaces==0||ncgeominfo==0){
-#ifdef pp_WUI_VAO
-    if(have_terrain_vao==1&&usegpu==1){
-      CLIP_GEOMETRY;
-      DrawTerrainGeomGPU();
-    }
-    else{
-      CLIP_GEOMETRY;
-      DrawTerrainGeom(DRAW_OPAQUE);
-    }
-#else
     CLIP_GEOMETRY;
     DrawTerrainGeom(DRAW_OPAQUE);
-#endif
   }
 
   if(visTerrainType != TERRAIN_HIDDEN&&nterraininfo>0&&ngeominfo==0 && geom_bounding_box_mousedown==0){
@@ -444,17 +426,8 @@ void ShowScene2(int mode){
   /* ++++++++++++++++++++++++ draw terrain +++++++++++++++++++++++++ */
 
   if(use_cfaces==0||ncgeominfo==0){
-#ifdef pp_WUI_VAO
-    if(have_terrain_vao==1&&usegpu==1){
-    }
-    else{
-      CLIP_GEOMETRY;
-      DrawTerrainGeom(DRAW_TRANSPARENT);
-    }
-#else
     CLIP_GEOMETRY;
     DrawTerrainGeom(DRAW_TRANSPARENT);
-#endif
   }
 
   /* ++++++++++++++++++++++++ draw transparent cfaces +++++++++++++++++++++++++ */

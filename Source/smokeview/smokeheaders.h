@@ -139,10 +139,6 @@ EXTERNCPP void OutputMinMax(char *meshlabel, char *label, char *unit, float valm
 EXTERNCPP void ScriptLoadSliceRender(scriptdata*scripti);
 EXTERNCPP int GetNSliceFrames(char *file, float *stime_min, float *stime_max);
 EXTERNCPP void GenerateSliceMenu(int from_commandline);
-#ifdef pp_WUI_VAO
-int InitTerrainVAO(int sizeof_vertices, int sizeof_indices);
-void DrawTerrainGeomGPU(void);
-#endif
 void DrawTerrainGeom(int option);
 void GenerateTerrainGeom(float **vertices_arg, int *sizeof_vertices_arg, unsigned int **indices_arg, int *sizeof_indices_arg, int *nindices_arg);
 
@@ -259,7 +255,7 @@ EXTERNCPP int GetTourFrame(tourdata *touri, int itime);
 EXTERNCPP int MeshConnect(meshdata *mesh_from, int val, meshdata *mesh_to);
 EXTERNCPP int IsBottomMesh(meshdata *mesh_from);
 EXTERNCPP void InitNabors(void);
-EXTERNCPP int Smv2Html(char *html_out, int option, int from_where, int vr_flag);
+EXTERNCPP int Smv2Html(char *html_out, int option, int from_where);
 EXTERNCPP int Smv2Geom(char *html_file);
 EXTERNCPP int Obst2Data(char *html_file);
 EXTERNCPP int SliceNode2Data(char *html_file, int option);

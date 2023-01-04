@@ -1831,7 +1831,6 @@ void InitVars(void){
   loadfiles_at_startup=0;
 
   nmenus=0;
-  showbuild=0;
 
   strcpy(emptylabel,"");
   font_ptr          = GLUT_BITMAP_HELVETICA_12;

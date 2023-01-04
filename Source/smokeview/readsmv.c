@@ -5185,11 +5185,7 @@ int ParseBNDFProcess(bufferstreamdata *stream, char *buffer, int *nn_patch_in, i
     else if(patchi->structured==NO){
       char geomlabel[256];
 
-#ifdef pp_MERGE_GEOMS
-      strcpy(geomlabel, "(cell centered)");
-#else
       strcpy(geomlabel, "(geometry)");
-#endif
       if(patchi->filetype_label!=NULL){
         if(strcmp(patchi->filetype_label, "EXIMBND_FACES")==0){
           strcat(geomlabel, " - EXIM faces");
@@ -6225,134 +6221,6 @@ void UpdateObstBoundingBox(float *XB){
     }
   }
 }
-
-#ifdef pp_CACHE_FILEBOUNDS
-/* ------------------ GetSliceInfoIndex ------------------------ */
-
-char *GetSliceInfoFileptr(char *file){
-  int i;
-
-  for(i=0;i<nsliceinfo;i++){
-    slicedata *slicei;
-
-    slicei = sliceinfo + i;
-    if(strcmp(slicei->file, file)==0)return slicei->file;
-  }
-  return NULL;
-}
-
-/* ------------------ GetPatchInfoIndex ------------------------ */
-
-char *GetPatchInfoFileptr(char *file){
-  int i;
-
-  for(i=0;i<npatchinfo;i++){
-    patchdata *patchi;
-
-    patchi = patchinfo + i;
-    if(strcmp(patchi->file, file)==0)return patchi->file;
-  }
-  return NULL;
-}
-
-/* ------------------ UpdateFileBoundList ------------------------ */
-
-void UpdateFileBoundList(void){
-  int call_again=0;
-
-  if(nsliceinfo>0){
-    int i;
-    FILE *stream;
-
-    stream = fopen(bnds_slice_filename, "r");
-    if(stream!=NULL){
-      nsliceboundfileinfo = 0;
-      for(;;){
-        char buffer[255];
-
-        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
-        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
-        nsliceboundfileinfo++;
-      }
-      NewMemory((void **)&sliceboundfileinfo, nsliceboundfileinfo*sizeof(boundfiledata));
-      rewind(stream);
-
-      for(i=0;i<nsliceboundfileinfo;i++){
-        sliceboundfileinfo[i].file   = NULL;
-        sliceboundfileinfo[i].valmin = 1.0;
-        sliceboundfileinfo[i].valmax = 0.0;
-      }
-      for(i=0;i<nsliceboundfileinfo;i++){
-        char buffer[255];
-        float valmin, valmax;
-
-        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
-        sliceboundfileinfo[i].file=GetSliceInfoFileptr(TrimFrontBack(buffer));
-
-        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
-        sscanf(buffer, "%f %f", &valmin, &valmax);
-        sliceboundfileinfo[i].valmin = valmin;
-        sliceboundfileinfo[i].valmax = valmax;
-      }
-      fclose(stream);
-    }
-    else{
-      nsliceboundfileinfo = nsliceinfo;
-      NewMemory((void **)&sliceboundfileinfo, nsliceboundfileinfo*sizeof(boundfiledata));
-      void GetGlobalSliceBounds(void);
-      GetGlobalSliceBounds();
-      call_again = 1;
-    }
-  }
-  if(npatchinfo>0){
-    int i;
-    FILE *stream;
-
-    stream = fopen(bnds_patch_filename, "r");
-    if(stream!=NULL){
-      npatchboundfileinfo = 0;
-      for(;;){
-        char buffer[255];
-
-        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
-        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
-        npatchboundfileinfo++;
-      }
-      NewMemory((void **)&patchboundfileinfo, npatchboundfileinfo*sizeof(boundfiledata));
-      rewind(stream);
-
-      for(i=0;i<npatchboundfileinfo;i++){
-        patchboundfileinfo[i].file   = NULL;
-        patchboundfileinfo[i].valmin = 1.0;
-        patchboundfileinfo[i].valmax = 0.0;
-      }
-      for(i=0;i<npatchboundfileinfo;i++){
-        char buffer[255];
-        float valmin, valmax;
-
-        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
-        patchboundfileinfo[i].file=GetPatchInfoFileptr(TrimFrontBack(buffer));
-
-        if(feof(stream)!=0||fgets(buffer,255,stream)==NULL)break;
-        sscanf(buffer, "%f %f", &valmin, &valmax);
-        patchboundfileinfo[i].valmin = valmin;
-        patchboundfileinfo[i].valmax = valmax;
-      }
-      fclose(stream);
-    }
-    else{
-      npatchboundfileinfo = npatchinfo;
-      NewMemory((void **)&patchboundfileinfo, npatchboundfileinfo*sizeof(boundfiledata));
-      void GetGlobalPatchBounds(void);
-      GetGlobalPatchBounds();
-      call_again = 1;
-    }
-  }
-  if(call_again == 1){
-    UpdateFileBoundList();
-  }
-}
-#endif
 
 /* ------------------ ReadSMVOrig ------------------------ */
 
@@ -11475,9 +11343,6 @@ typedef struct {
 
   glui_rotation_index = ROTATE_ABOUT_FDS_CENTER;
 
-#ifdef pp_CACHE_FILEBOUNDS
-  UpdateFileBoundList();
-#endif
   PRINT_TIMER(timer_readsmv, "UpdateFileBoundList");
   UpdateBoundInfo();
 
@@ -11550,17 +11415,11 @@ typedef struct {
   GetBoxGeomCorners();
   PRINT_TIMER(timer_readsmv, "update trianglesfaces");
 
-#ifdef pp_WUI_VAO
-  have_terrain_vao = 0;
-#endif
   if(ngeominfo>0&&auto_terrain==1){
     int sizeof_vertices, sizeof_indices;
 
     PRINT_TIMER(timer_readsmv, "null");
     GenerateTerrainGeom(&terrain_vertices, &sizeof_vertices, &terrain_indices, &sizeof_indices, &terrain_nindices);
-#ifdef pp_WUI_VAO
-    have_terrain_vao = InitTerrainVAO(sizeof_vertices, sizeof_indices);
-#endif
     PRINT_TIMER(timer_readsmv, "GenerateTerrainGeom");
   }
 

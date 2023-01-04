@@ -1627,7 +1627,7 @@ void GeomLitTriangles2Geom(float **vertsptr, float **normalsptr, float **colorsp
 
 /* ------------------ GetHtmlFileName ------------------------ */
 
-int GetHtmlFileName(char *htmlfile_full, int option, int vr_flag){
+int GetHtmlFileName(char *htmlfile_full, int option){
   char htmlfile_dir[1024], htmlfile_suffix[1024];
   int image_num;
 
@@ -1673,12 +1673,7 @@ int GetHtmlFileName(char *htmlfile_full, int option, int vr_flag){
 
   strcpy(htmlfile_full, html_file_base);
   strcat(htmlfile_full, htmlfile_suffix);
-  if(vr_flag==VR_NO){
-    strcat(htmlfile_full, ".html");
-  }
-  else{
-    strcat(htmlfile_full, "_vr.html");
-  }
+  strcat(htmlfile_full, ".html");
   return 0;
 }
 
@@ -2176,7 +2171,7 @@ int Smv2Geom(char *html_file){
 
 /* ------------------ Smv2Html ------------------------ */
 
-int Smv2Html(char *html_file, int option, int from_where, int vr_flag){
+int Smv2Html(char *html_file, int option, int from_where){
   FILE *stream_in = NULL, *stream_out = NULL;
   float *vertsObstLit, *normalsObstLit, *colorsObstLit, *colors4ObstLit;
   int nvertsObstLit, nverts4ObstLit, *facesObstLit, nfacesObstLit;
@@ -2192,12 +2187,7 @@ int Smv2Html(char *html_file, int option, int from_where, int vr_flag){
   int copy_html, i;
   webgeomdata slice_node_web, slice_cell_web, slice_geom_web, bndf_node_web, part_node_web;
 
-  if(vr_flag==VR_NO){
-    template_file = smokeview_html;
-  }
-  else{
-    template_file = smokeviewvr_html;
-  }
+  template_file = smokeview_html;
   stream_in = fopen(template_file, "r");
   if(stream_in==NULL){
     printf("***error: smokeview html template file %s failed to open\n", template_file);
@@ -2210,7 +2200,7 @@ int Smv2Html(char *html_file, int option, int from_where, int vr_flag){
   else{
     int return_val;
 
-    return_val = GetHtmlFileName(html_fullfile, option, vr_flag);
+    return_val = GetHtmlFileName(html_fullfile, option);
     if(return_val==1){
       fclose(stream_in);
       return 1;

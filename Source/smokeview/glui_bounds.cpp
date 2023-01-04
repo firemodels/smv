@@ -201,14 +201,7 @@ void bounds_dialog::set_percentile_minmax(float p_min, float p_max){
 void bounds_dialog::set_cache_flag(int cache_flag){
   if(cache_flag!=1)cache_flag = 0;
   bounds.cache = cache_flag;
-#ifdef pp_SHOW_CACHE
-  if(CHECKBOX_cache!=NULL){
-    CHECKBOX_cache->set_int_val(cache_flag);
-    CB(BOUND_CACHE_DATA);
-  }
-#else
   CB(BOUND_CACHE_DATA);
-#endif
 }
 
   /* ------------------ get_bounds_data ------------------------ */
@@ -416,12 +409,6 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
   CHECKBOX_cache = NULL;
   if(cache_flag!=NULL){
     bounds.cache = *cache_flag;
-#ifdef pp_SHOW_CACHE
-    CHECKBOX_cache = glui_bounds->add_checkbox_to_panel(PANEL_minmax, "Cache data", &(bounds.cache), BOUND_CACHE_DATA, Callback);
-    if(cache_enable==0){
-      CHECKBOX_cache->disable();
-    }
-#endif
   }
 
   strcpy(label1, "global(loaded ");
@@ -487,7 +474,7 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
       GLUI_Panel *PANEL_drawA, *PANEL_drawB;
 
       percentile_draw = 0;
-      ROLLOUT_percentiles = glui_bounds->add_rollout_to_panel(PANEL_minmax, "data distribution", false);
+      ROLLOUT_percentiles = glui_bounds->add_rollout_to_panel(PANEL_minmax, "percentile settings", false);
 
       percentile_min_cpp100 = CLAMP(percentile_level_min, 0.0, 1.0)*100.0;
       percentile_max_cpp100 = CLAMP(percentile_level_max, percentile_level_min,1.0)*100.0;
@@ -501,7 +488,7 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
 
       glui_bounds->add_column_to_panel(ROLLOUT_percentiles, false);
 
-      PANEL_drawB = glui_bounds->add_panel_to_panel(ROLLOUT_percentiles, "plot bounds/position");
+      PANEL_drawB = glui_bounds->add_panel_to_panel(ROLLOUT_percentiles, "percentile plot settings");
       CHECKBOX_hist_show_labels = glui_bounds->add_checkbox_to_panel(PANEL_drawB, _("show labels"),             &hist_show_labels_cpp, BOUND_HIST_LABELS, Callback);
       CHECKBOX_percentile_draw  = glui_bounds->add_checkbox_to_panel(PANEL_drawB, _("show plot"),               &percentile_draw, BOUND_PERCENTILE_DRAW, Callback);
       SPINNER_plot_max          = glui_bounds->add_spinner_to_panel(PANEL_drawB, _("max:"), GLUI_SPINNER_FLOAT, &plot_max_cpp, BOUND_PLOT_MINMAX, Callback);
@@ -522,18 +509,19 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
     }
     PANEL_buttons = glui_bounds->add_panel_to_panel(PANEL_minmax, "", GLUI_PANEL_NONE);
     int skip_update_colors_button=0;
+#ifdef pp_BOUNDVAL
+    if(strcmp(file_type,"boundary")==0)skip_update_colors_button = 1;
+#endif
 #ifdef pp_PARTVAL
     if(strcmp(file_type,"particle")==0)skip_update_colors_button = 1;
+#endif
+#ifdef pp_PLOT3DVAL
+    if(strcmp(file_type,"PLOT3D")==0)skip_update_colors_button = 1;
 #endif
 #ifdef pp_SLICEVAL
     if(strcmp(file_type,"slice")==0)skip_update_colors_button = 1;
 #endif
-    if(skip_update_colors_button==1){
-      BUTTON_update_colors      = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
-    }
-    else{
-      BUTTON_update_colors = NULL;
-      // define Update colors button always for now
+    if(skip_update_colors_button==0){
       BUTTON_update_colors      = glui_bounds->add_button_to_panel(PANEL_buttons, "Update colors", BOUND_UPDATE_COLORS, Callback);
     }
     glui_bounds->add_column_to_panel(PANEL_buttons, false);
@@ -1006,10 +994,7 @@ void bounds_dialog::CB(int var){
       {
         int i, cache_val = 0, enable_update_colors;
 
-#ifndef pp_SHOW_CACHE
         cache_val = cache_file_data;
-#endif
-
         if(CHECKBOX_cache!=NULL)cache_val = CHECKBOX_cache->get_int_val();
 
         for(i = 0; i<nall_bounds; i++){
@@ -1037,11 +1022,7 @@ void bounds_dialog::CB(int var){
         }
         if(BUTTON_update_colors!=NULL){
           enable_update_colors = 0;
-#ifdef pp_SHOW_CACHE
-          if(CHECKBOX_cache!=NULL&&CHECKBOX_cache->get_int_val()==1)enable_update_colors = 1;
-#else
           if(cache_val==1)enable_update_colors = 1;
-#endif
           if(enable_update_colors==1){
             BUTTON_update_colors->enable();
           }
@@ -1859,9 +1840,6 @@ extern "C" void SliceBoundsCPP_CB(int var){
       break;
     case BOUND_UPDATE_COLORS:
       if(nslice_loaded==0)break;
-#ifdef pp_RESEARCH_DEBUG
-      printf("*** updating slice file colors\n");
-#endif
       SetLoadedSliceBounds(NULL, 0);
 
       last_slice = slice_loaded_list[nslice_loaded - 1];
@@ -1971,9 +1949,6 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
       break;
     case BOUND_UPDATE_COLORS:
       if(HavePlot3DData()==1){
-#ifdef pp_RESEARCH_DEBUG
-        printf("*** updating plot3d colors\n");
-#endif
         UpdateAllPlot3DColors(1);
       }
       else{
@@ -2065,9 +2040,6 @@ extern "C" void Plot3DBoundsCPP_CB(int var){
       }
       break;
     case BOUND_RELOAD_DATA:
-#ifdef pp_RESEARCH_DEBUG
-      printf("*** reloading plot3d data\n");
-#endif
       LoadPlot3dMenu(RELOAD_ALL);
       break;
     case BOUND_RESEARCH_MODE:
@@ -2220,20 +2192,6 @@ extern "C" void PartBoundsCPP_CB(int var){
       break;
     case BOUND_RELOAD_DATA:
       if(npartinfo>0){
-#ifdef pp_RESEARCH_DEBUG
-        int doit=0, i;
-
-        for(i = 0; i<npartinfo; i++){
-          partdata *parti;
-
-          parti = partinfo+i;
-          if(parti->loaded==1){
-            doit = 1;
-            break;
-          }
-        }
-        if(doit==1)printf("*** reloading particle file data\n");
-#endif
         LoadParticleMenu(PARTFILE_RELOADALL);
       }
       break;
@@ -2415,13 +2373,6 @@ extern "C" void PatchBoundsCPP_CB(int var){
 #endif
     case BOUND_UPDATE_COLORS:
       if(HavePatchData()==1){
-#ifdef pp_RESEARCH_DEBUG
-#ifdef pp_BOUNDVAL
-        if(npatchloaded>0&&var==BOUND_UPDATE_COLORS)printf("*** updating boundary file colors");
-#else
-        if(npatchloaded>0)printf("*** updating boundary file colors");
-#endif
-#endif
         SetLoadedPatchBounds(NULL, 0);
 #ifdef pp_BOUNDVAL
         if(var==BOUND_DONTUPDATE_COLORS){
@@ -2439,9 +2390,6 @@ extern "C" void PatchBoundsCPP_CB(int var){
       }
       break;
     case BOUND_RELOAD_DATA:
-#ifdef pp_RESEARCH_DEBUG
-      printf("*** reloading boundary file data\n");
-#endif
       SetLoadedPatchBounds(NULL, 0);
       for(i = 0; i<npatchinfo; i++){
         patchdata *patchi;

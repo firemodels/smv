@@ -2080,16 +2080,10 @@ void RenderMenu(int value){
     }
     break;
   case RenderHTML:
-    Smv2Html(html_filename,   HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_NO);
-#ifdef pp_HTML_VR
-    Smv2Html(htmlvr_filename, HTML_CURRENT_TIME, FROM_SMOKEVIEW, VR_YES);
-#endif
+    Smv2Html(html_filename,   HTML_CURRENT_TIME, FROM_SMOKEVIEW);
     break;
   case RenderHTMLALL:
-    Smv2Html(html_filename,   HTML_ALL_TIMES, FROM_SMOKEVIEW, VR_NO);
-#ifdef pp_HTML_VR
-    Smv2Html(htmlvr_filename, HTML_ALL_TIMES, FROM_SMOKEVIEW, VR_YES);
-#endif
+    Smv2Html(html_filename,   HTML_ALL_TIMES, FROM_SMOKEVIEW);
     break;
   case RenderCancel:
     RenderState(RENDER_OFF);
@@ -5533,11 +5527,7 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo+i;
-#ifdef pp_MERGE_GEOMS
-        if(strcmp(patchi->label.longlabel, patchj->label.longlabel)==0){
-#else
         if(strcmp(patchi->label.longlabel, patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
-#endif
           LOCK_COMPRESS;
           patchi->finalize = 1;
           UNLOCK_COMPRESS;
@@ -5548,11 +5538,7 @@ void LoadBoundaryMenu(int value){
         patchdata *patchi;
 
         patchi = patchinfo + i;
-#ifdef pp_MERGE_GEOMS
-        if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0){
-#else
         if(strcmp(patchi->label.longlabel,patchj->label.longlabel)==0&&patchi->patch_filetype==patchj->patch_filetype){
-#endif
           LOCK_COMPRESS;
           if(patchi->structured == YES){
             PRINTF("Loading %s(%s)", patchi->file, patchi->label.shortlabel);
@@ -11907,7 +11893,6 @@ updatemenu=0;
       int ii;
 
       CREATEMENU(unloadplot3dmenu,UnloadPlot3dMenu);
-#ifndef pp_PLOT3D_REDUCEMENUS
       for(ii=0;ii<nplot3dinfo;ii++){
         i=plot3dorderindex[ii];
         plot3di = plot3dinfo + i;
@@ -11922,10 +11907,8 @@ updatemenu=0;
         STRCPY(menulabel,plot3dinfo[i].menulabel);
         glutAddMenuEntry(menulabel,i);
       }
-#endif
       glutAddMenuEntry(_("Unload all"),UNLOAD_ALL);
 
-#ifndef pp_PLOT3D_REDUCEMENUS
       nloadsubplot3dmenu=1;
       for(ii=1;ii<nplot3dinfo;ii++){
         int im1;
@@ -11971,10 +11954,7 @@ updatemenu=0;
         strcat(menulabel,plot3di->menulabel);
         glutAddMenuEntry(menulabel,i);
       }
-#endif
-
       nloadsubplot3dmenu=0;
-#ifndef pp_PLOT3D_REDUCEMENUS
       CREATEMENU(plot3dsinglemeshmenu,LoadPlot3dMenu);
       for(ii=0;ii<nplot3dinfo;ii++){
         int im1;
@@ -12009,8 +11989,6 @@ updatemenu=0;
           }
         }
       }
-#endif
-
       nloadsubplot3dmenu=0;
       CREATEMENU(loadplot3dmenu,LoadPlot3dMenu);
       for(ii=0;ii<nplot3dinfo;ii++){
@@ -12080,11 +12058,9 @@ updatemenu=0;
         }
         if(ii==nplot3dinfo-1){
           glutAddMenuEntry("-", MENU_PLOT3D_DUMMY);
-#ifndef pp_PLOT3D_REDUCEMENUS
           if(nmeshes>1){
             GLUTADDSUBMENU(_("Mesh"), plot3dsinglemeshmenu);
           }
-#endif
           glutAddMenuEntry(_("Settings..."), MENU_PLOT3D_SETTINGS);
           if(nplot3dloaded>1){
             GLUTADDSUBMENU(_("Unload"), unloadplot3dmenu);
@@ -12174,11 +12150,6 @@ updatemenu=0;
 //*** these same lines also appear below
       glutAddMenuEntry("-",MENU_DUMMY3);
 
-#ifdef pp_SHOW_BOUND_MIRROR
-      if(nmeshes>1||n_mirrorvents>0||n_openvents>0){
-        GLUTADDSUBMENU(_("Include"),includepatchmenu);
-      }
-#endif
       glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
       if(nboundaryslicedups>0){
         GLUTADDSUBMENU(_("Duplicate boundary slices"),duplicateboundaryslicemenu);
@@ -12329,11 +12300,6 @@ updatemenu=0;
       }
 //*** these same lines also appear above (except for nmeshes>1 line)
       glutAddMenuEntry("-",MENU_DUMMY3);
-#ifdef pp_SHOW_BOUND_MIRROR
-      if(nmeshes>1||n_mirrorvents>0||n_openvents>0){
-        GLUTADDSUBMENU(_("Include"),includepatchmenu);
-      }
-#endif
 
       glutAddMenuEntry(_("Update bounds"),MENU_UPDATEBOUNDS);
       if(nboundaryslicedups>0){

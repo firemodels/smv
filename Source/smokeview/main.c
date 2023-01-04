@@ -38,7 +38,6 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -2x            - turn on 2x scene scaling."));
 #endif
     PRINTF("%s\n", _(" -big           - hide scene and data when moving scene or selecting menus"));
-    PRINTF("%s\n", _(" -build         - show pre-processing directives used in this build of Smokeview"));
     PRINTF("%s\n", _(" -casedir dir   - specify location of case (if different than current directory)"));
     PRINTF("%s\n", _(" -convert_ini case1.ini case2.ini - update case1.ini to the current format"));
     PRINTF("%s\n", _("                  and save results into case2.ini"));
@@ -76,83 +75,6 @@ void Usage(char *prog,int option){
     PRINTF("%s\n", _(" -update_ini case.ini - update case.ini to the current format"));
     PRINTF("%s\n", _(" -volrender     - generate images of volume rendered smoke and fire"));
     UsageCommon(HELP_ALL);
-  }
-
-  if(showbuild == 1){
-    char label[1024], *labelptr;
-
-    labelptr = label + 2;
-    strcpy(label, "");
-#ifdef _DEBUG
-    strcat(label, ", _DEBUG");
-#endif
-#ifdef pp_BETA
-    strcat(label, ", pp_BETA");
-#endif
-#ifdef pp_COMPRESS
-    strcat(label, ", pp_COMPRESS");
-#endif
-#ifdef pp_DRAWISO
-    strcat(label, ", pp_DRAWISO");
-#endif
-#ifdef pp_GCC
-    strcat(label, ", pp_GCC");
-#endif
-#ifdef pp_GPU
-    strcat(label, ", pp_GPU");
-#endif
-#ifdef pp_GPUTHROTTLE
-    strcat(label, ", pp_GPUTHROTTLE");
-#endif
-#ifdef pp_HASH
-    strcat(label, ", pp_HASH");
-#endif
-#ifdef pp_LINUX
-    strcat(label, ", pp_LINUX");
-#endif
-#ifdef pp_LUA
-    strcat(label, ", pp_LUA");
-#endif
-#ifdef pp_LUA_SSF
-    strcat(label, ", pp_LUA_SSF");
-#endif
-#ifdef pp_MEMDEBUG
-    strcat(label, ", pp_MEMDEBUG");
-#endif
-#ifdef pp_MEMPRINT
-    strcat(label, ", pp_MEMPRINT");
-#endif
-#ifdef pp_memstatus
-    strcat(label, ", pp_memstatus");
-#endif
-#ifdef pp_OSX
-    strcat(label, ", pp_OSX");
-#endif
-#ifdef pp_PART_TEST
-    strcat(label, ", pp_PART_TEST");
-#endif
-#ifdef pp_release
-    strcat(label, ", pp_release");
-#endif
-#ifdef pp_RENDER360_DEBUG
-    strcat(label, ", pp_RENDER360_DEBUG");
-#endif
-#ifdef pp_SETTIME
-    strcat(label, ", pp_SETTIME");
-#endif
-#ifdef pp_THREAD
-    strcat(label, ", pp_THREAD");
-#endif
-#ifdef WIN32
-    strcat(label, ", WIN32");
-#endif
-#ifdef X64
-    strcat(label, ", X64");
-#endif
-
-    PRINTF("  \n");
-    PRINTF("%s\n\n", _("  Smokeview was built using the following pre-processing directives:"));
-    PRINTF("%s \n", labelptr);
   }
 }
 
@@ -359,29 +281,6 @@ char *ParseCommandline(int argc, char **argv){
   NewMemory((void **)&htmlslicecell_filename, len_casename+strlen("_slicecell.json")+1);
   STRCPY(htmlslicecell_filename, fdsprefix);
   STRCAT(htmlslicecell_filename, "_slicecell.json");
-
-#ifdef pp_CACHE_FILEBOUNDS
-  char frontdir[256];
-
-  if(Writable(".")==0){
-    strcpy(frontdir, GetHomeDir());
-    strcat(frontdir, dirseparator);
-  }
-  else{
-    strcpy(frontdir, "");
-  }
-  FREEMEMORY(bnds_slice_filename);
-  NewMemory((void **)&bnds_slice_filename, strlen(frontdir) + len_casename+strlen("_sf.bnds")+1);
-  STRCPY(bnds_slice_filename, frontdir);
-  STRCAT(bnds_slice_filename, fdsprefix);
-  STRCAT(bnds_slice_filename, "_sf.bnds");
-
-  FREEMEMORY(bnds_patch_filename);
-  NewMemory((void **)&bnds_patch_filename, strlen(frontdir) + len_casename+strlen("_bf.bnds")+1);
-  STRCPY(bnds_patch_filename, frontdir);
-  STRCAT(bnds_patch_filename, fdsprefix);
-  STRCAT(bnds_patch_filename, "_bf.bnds");
-#endif
 
   FREEMEMORY(boundinfo_filename);
   NewMemory((void **)&boundinfo_filename, len_casename + strlen(".binfo") + 1);
@@ -789,11 +688,6 @@ char *ParseCommandline(int argc, char **argv){
         sscanf(argv[i], "%i", &nreadallgeomthread_ids);
         nreadallgeomthread_ids = CLAMP(nreadallgeomthread_ids, 1, 16);
       }
-    }
-    else if(strncmp(argv[i], "-build", 6) == 0){
-      showbuild = 1;
-      Usage(argv[0],HELP_ALL);
-      SMV_EXIT(0);
     }
     else{
       fprintf(stderr, "*** Error: unknown option: %s\n", argv[i]);

@@ -5,9 +5,6 @@
 #include <math.h>
 
 #include "smokeviewvars.h"
-#ifdef pp_ISOTIME
-#include GLUT_H
-#endif
 
 void UpdateGeomTriangles(geomdata *geomi, int geom_type);
 
@@ -2133,31 +2130,9 @@ void ReadAllGeom(void){
 
   for(i=0;i<ngeominfo;i++){
     geomdata *geomi;
-#ifdef pp_GEOM_DEBUG
-    int j, count;
-#endif
 
     geomi = geominfo + i;
     LOCK_READALLGEOM;
-#ifdef pp_GEOM_DEBUG
-    count = 0;
-    for(j = 0; j<ngeominfo; j++){
-      geomdata *geomj;
-
-      geomj = geominfo+j;
-      if(geomj->read_status==1)count++;
-    }
-    if(count>0){
-      printf("loading geom: ");
-      for(j = 0; j<ngeominfo; j++){
-        geomdata *geomj;
-
-        geomj = geominfo+j;
-        if(geomj->read_status==1)printf(" %i", j);
-      }
-      printf("\n");
-    }
-#endif
     if(geomi->read_status!=0){
       UNLOCK_READALLGEOM;
       continue;
@@ -2165,41 +2140,16 @@ void ReadAllGeom(void){
     geomi->read_status = 1;
     UNLOCK_READALLGEOM;
 
-#ifdef pp_SKIP_BOUNDARY_GEOMS
-      if(geomi->geomtype!=GEOM_GEOM)continue; // skips geometries for boundary files
-#endif
-      ReadGeom(geomi, LOAD, GEOM_GEOM, NULL);
-      LOCK_READALLGEOM;
-      geomi->read_status = 2;
-      UNLOCK_READALLGEOM;
+    ReadGeom(geomi, LOAD, GEOM_GEOM, NULL);
+    LOCK_READALLGEOM;
+    geomi->read_status = 2;
+    UNLOCK_READALLGEOM;
   }
   for(i = 0; i<ncgeominfo; i++){
     geomdata *geomi;
-#ifdef pp_GEOM_DEBUG
-    int j, count;
-#endif
 
     geomi = cgeominfo+i;
     LOCK_READALLGEOM;
-#ifdef pp_GEOM_DEBUG
-    count = 0;
-    for(j = 0; j<ncgeominfo; j++){
-      geomdata *geomj;
-
-      geomj = cgeominfo+j;
-      if(geomj->read_status==1)count++;
-    }
-    if(count>0){
-      printf("loading cgeom: ");
-      for(j = 0; j<ncgeominfo; j++){
-        geomdata *geomj;
-
-        geomj = cgeominfo+j;
-        if(geomj->read_status==1)printf(" %i", j);
-      }
-      printf("\n");
-    }
-#endif
     if(geomi->read_status!=0){
       UNLOCK_READALLGEOM;
       continue;
@@ -3278,39 +3228,6 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
         if(edgei != NULL)edgei->ntriangles++;
       }
 
-#ifdef pp_GEOM_DEBUG
-      int ntri0, ntri1, ntri2, ntri_other;
-
-      ntri0 = 0;
-      ntri1 = 0;
-      ntri2 = 0;
-      ntri_other = 0;
-      for(ii = 0; ii < nedges; ii++){
-        edgedata *edgei;
-
-        edgei = edges + ii;
-        switch (edgei->ntriangles){
-        case 0:
-          ntri0++;
-          break;
-        case 1:
-          ntri1++;
-          break;
-        case 2:
-          ntri2++;
-          break;
-        default:
-          ntri_other++;
-          break;
-        }
-      }
-      printf("\n\nedges\n");
-      printf("                       total: %i\n", nedges);
-      printf("        0 connected triangle: %i\n", ntri0);
-      printf("        1 connected triangle: %i\n", ntri1);
-      printf("        2 connected triangle: %i\n", ntri2);
-      printf("3 or more connected triangle: %i\n", ntri_other);      FREEMEMORY(edgelist_index);
-#endif
     }
     if(nverts > 0){
       int nvertlist_index = 0;
@@ -3341,19 +3258,6 @@ void ClassifyGeom(geomdata *geomi,int *geom_frame_index){
           v2->isdup = 1;
         }
       }
-#ifdef pp_GEOM_DEBUG
-      int ndups = 0;
-      for(ii = 0; ii < nvertlist_index; ii++){
-        vertdata *vi;
-
-        vi = verts + ii;
-        if(vi->isdup == 1)ndups++;
-      }
-      printf("\nvertices\n");
-      printf("\n   total: %i\n", nverts);
-      printf("duplicates: %i\n", ndups);
-      printf("  (eps=%f m)\n", VERT_EPS);
-#endif
         FREEMEMORY(vertlist_ptr);
     }
   }
@@ -3433,9 +3337,6 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   int returncode=0;
   int one=0;
   FILE_SIZE return_filesize=0;
-#ifdef pp_ISOTIME
-  float time1, time2;
-#endif
 
   if(geomi->file==NULL)return 0;
   stream = fopen(geomi->file,"rb");
@@ -3445,22 +3346,12 @@ FILE_SIZE ReadGeom(geomdata *geomi, int load_flag, int type, int *geom_frame_ind
   fclose(stream);
   return_filesize = 2*(4+4+4);
 
-#ifdef pp_ISOTIME
-  START_TIMER(time1);
-#endif
   if(version<=1){
     return_filesize+=ReadGeom0(geomi,load_flag,type,geom_frame_index);
   }
   else{
     return_filesize += ReadGeom2(geomi,load_flag,type);
   }
-#ifdef pp_ISOTIME
-  STOP_TIMER(time1);
-  START_TIMER(time2);
-  STOP_TIMER(time2);
-  printf("\niso load time=%f\n",time1);
-  printf("\niso classify time=%f\n",time2);
-#endif
   PrintMemoryInfo;
   return return_filesize;
 }
