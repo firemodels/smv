@@ -5560,7 +5560,7 @@ int ParseSLCFProcess(int option, bufferstreamdata *stream, char *buffer, int *nn
 
   sd = sliceinfo+nn_slice-1;
 
-#ifdef pp_SLICETHREAD
+#ifdef pp_SLICE_MULTI
   sd->loadstatus = FILE_UNLOADED;
 #endif
   sd->vals2d.vals      = NULL;

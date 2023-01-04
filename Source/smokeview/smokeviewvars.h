@@ -286,7 +286,7 @@ SVEXTERN int npart5loaded, npartloaded;
 SVEXTERN int SVDECL(global_have_global_bound_file, 0);
 SVEXTERN FILE_SIZE  SVDECL(global_part_boundsize, 0);
 SVEXTERN int SVDECL(npartthread_ids, 2);
-#ifdef pp_SLICETHREAD
+#ifdef pp_SLICE_MULTI
 SVEXTERN int SVDECL(nslicethread_ids, 4);
 #endif
 #ifdef pp_STREAM
@@ -321,7 +321,7 @@ SVEXTERN int SVDECL(part_multithread, 1);
 #else
 SVEXTERN int SVDECL(part_multithread, 0);
 #endif
-#ifdef pp_SLICETHREAD
+#ifdef pp_SLICE_MULTI
 SVEXTERN int SVDECL(slice_multithread, 0);
 #endif
 SVEXTERN int SVDECL(readallgeom_multithread, 1);
