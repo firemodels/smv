@@ -414,9 +414,6 @@ typedef struct _facedata {
   int patchpresent;
   struct _culldata *cullport;
   int **showtimelist_handle;
-#ifdef pp_THINFACE
-  int thinface;
-#endif
   int show_bothsides, is_interior;
   struct _blockagedata *bc;
   surfdata *surfinfo;
