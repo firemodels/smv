@@ -843,10 +843,8 @@ typedef struct _meshdata {
   struct _culldata *cullgeominfo;
 
   volrenderdata volrenderinfo;
-#ifdef pp_SORTSLICES
   int  nslicex,  nslicey,  nslicez;
   struct _slicedata **slicex, **slicey, **slicez;
-#endif
 
   meshplanedata gsliceinfo;
   meshplanedata *smokeplaneinfo;
@@ -1411,9 +1409,7 @@ typedef struct _slicedata {
   int have_agl_data;
   int volslice;
   int is1, is2, js1, js2, ks1, ks2;
-#ifdef pp_SORTSLICES
   int iis1, iis2, jjs1, jjs2, kks1, kks2;
-#endif
   int plotx, ploty, plotz;
   int ijk_min[3], ijk_max[3];
   float xmin,xmax,ymin,ymax,zmin,zmax;
@@ -1476,7 +1472,6 @@ typedef struct _multivslicedata {
   char menulabel2[128];
 } multivslicedata;
 
-#ifdef pp_SORTSLICES
 /* --------------------------  splitslicedata ------------------------------------ */
 
 typedef struct _splitslicedata {
@@ -1486,7 +1481,6 @@ typedef struct _splitslicedata {
   int is1, is2, js1, js2, ks1, ks2;
   int plotx, ploty, plotz;
 } splitslicedata;
-#endif
 
 /* --------------------------  cpp_boundsdata ------------------------------------ */
 

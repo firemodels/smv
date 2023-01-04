@@ -1100,7 +1100,6 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     fed_slice->nslicej=co->nslicej;
     fed_slice->nslicek=co->nslicek;
     fed_slice->volslice=co->volslice;
-#ifdef pp_SORTSLICES
     fed_slice->iis1 = co->iis1;
     fed_slice->iis2 = co->iis2;
     fed_slice->jjs1 = co->jjs1;
@@ -1110,7 +1109,6 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
     fed_slice->plotx = co->plotx;
     fed_slice->ploty = co->ploty;
     fed_slice->plotz = co->plotz;
-#endif
     if(fed_slice->volslice==1){
       if(fed_slice->nslicei!=fed_slice->is2+1-fed_slice->is1)fed_slice->is2=fed_slice->nslicei+fed_slice->is1-1;
       if(fed_slice->nslicej!=fed_slice->js2+1-fed_slice->js1)fed_slice->js2=fed_slice->nslicej+fed_slice->js1-1;
@@ -2680,7 +2678,6 @@ void UpdateFedinfo(void){
     sd->ks1 = co2->ks1;
     sd->ks2 = co2->ks2;
     sd->finalize = 1;
-#ifdef pp_SORTSLICES
     sd->iis1  = co2->iis1;
     sd->iis2  = co2->iis2;
     sd->jjs1  = co2->jjs1;
@@ -2690,7 +2687,6 @@ void UpdateFedinfo(void){
     sd->plotx = co2->plotx;
     sd->ploty = co2->ploty;
     sd->plotz = co2->plotz;
-#endif
 
     nn_slice = nsliceinfo + i;
 
@@ -4263,9 +4259,7 @@ FILE_SIZE GetSliceData(slicedata *sd, const char *slicefilename, int time_frame,
   nxy = nx*ny;
 
   GetSliceFileDirection(*is1ptr, is2ptr, &iis1, &iis2, *js1ptr, js2ptr, *ks1ptr, ks2ptr, idirptr, &joff, &koff, &volslice);
-#ifdef pp_SORTSLICES
   sd->iis1 = *is1ptr;
-#endif
   NewMemory((void **)&qq, nxsp*(nysp+joff)*(nzsp+koff)*sizeof(float));
 
   count = -1;
@@ -7771,7 +7765,6 @@ void DrawSliceFrame(){
   if(use_tload_end==1   && global_times[itimes]>tload_end)return;
   SortLoadedSliceList();
 
-#ifdef pp_SORTSLICES
   if(sortslices==1){
     if(sortslices_debug == 1){
       DrawSortSlicesDebug();
@@ -7780,7 +7773,6 @@ void DrawSliceFrame(){
       DrawSortSlices();
     }
   }
-#endif
   for(ii = 0; ii<nslice_loaded; ii++){
     slicedata *sd;
     int i;
@@ -7894,13 +7886,9 @@ void DrawSliceFrame(){
           else{
             is2 = sd->is2;
           }
-#ifdef pp_SORTSLICES
           if(sortslices==0){
             DrawVolSliceTexture(sd, sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
           }
-#else
-          DrawVolSliceTexture(sd, sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
-#endif
           SNIFF_ERRORS("after DrawVolSliceTexture");
           if(show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1){
             DrawVolSliceLines(sd);
@@ -7946,15 +7934,10 @@ void DrawSliceFrame(){
           else{
             is2 = sd->is2;
           }
-#ifdef pp_SORTSLICES
           if(sortslices==0||sd->volslice==1){
             DrawVolSliceCellFaceCenter(sd, SLICE_CELL_CENTER, 
                                        sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
           }
-#else
-          DrawVolSliceCellFaceCenter(sd, SLICE_CELL_CENTER, 
-                                   sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
-#endif
         }
         SNIFF_ERRORS("after DrawVolSliceCellFaceCenter SLICE_CELL_CENTER");
         if(show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1){
@@ -7980,15 +7963,10 @@ void DrawSliceFrame(){
           else{
             is2 = sd->is2;
           }
-#ifdef pp_SORTSLICES
           if(sortslices==0||sd->volslice==1){
             DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER,
                                        sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
           }
-#else
-          DrawVolSliceCellFaceCenter(sd, SLICE_FACE_CENTER,
-                                     sd->is1, is2, sd->js1, sd->js2, sd->ks1, sd->ks2, 0);
-#endif
         }
         SNIFF_ERRORS("after DrawVolSliceCellFaceCenter SLICE_FACE_CENTER");
         if(show_slice_outlines[IN_SOLID_GLUI]==1||show_slice_outlines[IN_GAS_GLUI]==1){
@@ -9780,7 +9758,6 @@ void GenerateSliceMenu(int option){
   }
 }
 
-#ifdef pp_SORTSLICES
 /* ------------------ CompareSliceX ------------------------ */
 
 int CompareSliceX(const void *arg1, const void *arg2){
@@ -10184,4 +10161,3 @@ void DrawSortSlicesDebug(void){
   glPopMatrix();
 
 }
-#endif

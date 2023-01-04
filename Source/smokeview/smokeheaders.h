@@ -786,12 +786,10 @@ EXTERNCPP void DrawBoundaryFrame(int flag);
 EXTERNCPP void SceneMotionCB(int var);
 EXTERNCPP void DrawVolSliceLines(const slicedata *sd);
 EXTERNCPP void DrawVolSliceVerts(const slicedata *sd);
-#ifdef pp_SORTSLICES
 EXTERNCPP void SortSlices(void);
 EXTERNCPP void DrawSortSlices(void);
 EXTERNCPP void DrawSortSlicesDebug(void);
 EXTERNCPP void UpdateSortSlices(void);
-#endif
 
 EXTERNCPP void DrawSmoke3DVol(void);
 EXTERNCPP void GetDrawingParms(int *drawing_transparent, int *drawing_blockage_transparent, int *drawing_vent_transparent);
