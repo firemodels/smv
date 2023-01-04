@@ -69,10 +69,8 @@ float     part_load_time;
 #define MENU_KEEP_COARSE -4
 
 #define MENU_SLICECOLORDEFER -5
-#ifdef pp_SORTSLICES
 #define MENU_SPLITSLICES       -10
 #define MENU_SPLITSLICES_DEBUG -11
-#endif
 
 #define MENU_SLICE_FILE_SIZES -9
 
@@ -5181,7 +5179,6 @@ void LoadMultiSliceMenu(int value){
         UpdateSliceDupDialog();
       }
       break;
-#ifdef pp_SORTSLICES
       case MENU_SPLITSLICES:
         sortslices = 1 - sortslices;
         updatemenu = 1;
@@ -5195,7 +5192,6 @@ void LoadMultiSliceMenu(int value){
         updatemenu = 1;
         GLUTPOSTREDISPLAY;
         break;
-#endif
       case MENU_SLICECOLORDEFER:
         use_set_slicecolor = 1 - use_set_slicecolor;
         updatemenu = 1;
@@ -7770,7 +7766,6 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
 
   if(nmultisliceinfo>0)glutAddMenuEntry("-", MENU_DUMMY);
   GLUTADDSUBMENU(_("Skip"), sliceskipmenu);
-#ifdef pp_SORTSLICES
   if(sortslices == 1){
     glutAddMenuEntry(_("*Sort slices(back to front)"), MENU_SPLITSLICES);
   }
@@ -7784,7 +7779,6 @@ void InitLoadMultiSliceMenu(int *loadmultislicemenuptr, int *loadsubmslicemenu, 
   else{
     glutAddMenuEntry(_("Sort slices(debug)"), MENU_SPLITSLICES_DEBUG);
   }
-#endif
 #endif
   if(use_set_slicecolor == 1){
     glutAddMenuEntry(_("*Defer slice coloring"), MENU_SLICECOLORDEFER);

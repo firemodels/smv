@@ -24,9 +24,6 @@
 
 //*** options: all platforms
 
-//#define pp_THINFACE         // don't draw sides of thin faces
-
-#define pp_SORTSLICES        // split slices to improve transparent drawing
 // use floating point to color data
 
 #define pp_PARTVAL          // speed up part file color updating
@@ -58,7 +55,6 @@
 #define pp_STREAM
 #endif
 
-#define pp_PART_MULTI         // load particles in parallel
 #define pp_THREADBUFFER
 //#define pp_CRASH_TEST       // test detection of division by zero or use of undefined pointer
 #define pp_GPU                // support the GPU
@@ -66,8 +62,9 @@
 #define pp_DRAWISO            // turn on drawing routines
 //#define pp_LOAD_NEWDATA     // add button for loading new data
 
-//*** in development: all platforms
-#define pp_SLICETHREAD        // parallel slice file loading
+//*** parallel file loading
+#define pp_SLICE_MULTI        // load slice files in parallel
+#define pp_PART_MULTI         // load particle files in parallel
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set

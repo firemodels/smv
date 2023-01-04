@@ -33,7 +33,7 @@
   #define LOCK_PART_LOAD    pthread_mutex_lock(&mutexPART_LOAD);
   #define UNLOCK_PART_LOAD  pthread_mutex_unlock(&mutexPART_LOAD);
 
-#ifdef pp_SLICETHREAD
+#ifdef pp_SLICE_MULTI
   #define LOCK_SLICE_LOAD    pthread_mutex_lock(&mutexSLICE_LOAD);
   #define UNLOCK_SLICE_LOAD  pthread_mutex_unlock(&mutexSLICE_LOAD);
 #else
@@ -101,7 +101,7 @@ void MtReadVolsmokeAllFramesAllMeshes2(void);
 #ifdef pp_THREAD
 
 MT_EXTERN pthread_mutex_t mutexREADALLGEOM;
-#ifdef pp_SLICETHREAD
+#ifdef pp_SLICE_MULTI
 MT_EXTERN pthread_mutex_t mutexSLICE_LOAD;
 #endif
 MT_EXTERN pthread_mutex_t mutexPART_LOAD;
@@ -127,7 +127,7 @@ MT_EXTERN pthread_t triangles_id;
 MT_EXTERN pthread_t partthread_ids[MAX_THREADS];
 MT_EXTERN pthread_t generate_part_histogram_id;
 MT_EXTERN pthread_t *readbuffer_ids;
-#ifdef pp_SLICETHREAD
+#ifdef pp_SLICE_MULTI
 MT_EXTERN pthread_t slicethread_ids[MAX_THREADS];
 #endif
 MT_EXTERN pthread_t readallgeomthread_ids[MAX_THREADS];
