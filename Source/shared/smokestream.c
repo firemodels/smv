@@ -7,7 +7,10 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#ifdef pp_OSXLINUX
+#ifdef pp_LINUX
+#include <sys/mman.h>
+#endif
+#ifdef pp_OSX
 #include <sys/mman.h>
 #endif
 #include <time.h>
