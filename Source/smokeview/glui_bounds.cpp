@@ -1119,6 +1119,9 @@ void bounds_dialog::CB(int var){
 };
 
 bounds_dialog patchboundsCPP, partboundsCPP, plot3dboundsCPP, sliceboundsCPP;
+#ifdef pp_HVAC
+bounds_dialog hvacboundsCPP;
+#endif
 
 /* ------------------ SliceBoundsCPPSetupNoGraphics ------------------------ */
 
@@ -1729,6 +1732,14 @@ extern "C" void SetChopMax(int type, char *label, int set_valmax, float valmax){
       break;
   }
 }
+
+#ifdef pp_HVAC
+/* ------------------ HVAC callback: HVACBoundsCPP_CB ------------------------ */
+
+extern "C" void HVACBoundsCPP_CB(int var){
+}
+#endif
+
 
 /* ------------------ slice callback: SliceBoundsCPP_CB ------------------------ */
 
@@ -2859,6 +2870,9 @@ GLUI_Rollout *ROLLOUT_config = NULL;
 GLUI_Rollout *ROLLOUT_autoload=NULL;
 GLUI_Rollout *ROLLOUT_compress=NULL;
 GLUI_Rollout *ROLLOUT_plot3d=NULL,*ROLLOUT_part=NULL,*ROLLOUT_slice=NULL,*ROLLOUT_bound=NULL,*ROLLOUT_iso=NULL;
+#ifdef pp_HVAC
+GLUI_Rollout *ROLLOUT_hvac2;
+#endif
 GLUI_Rollout *ROLLOUT_iso_colors = NULL;
 GLUI_Rollout *ROLLOUT_smoke3d=NULL,*ROLLOUT_volsmoke3d=NULL;
 GLUI_Rollout *ROLLOUT_time=NULL,*ROLLOUT_colorbar=NULL;
@@ -3093,8 +3107,11 @@ GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
 #define PLOT3D_ROLLOUT   6
 #define SLICE_ROLLOUT    7
 #define TIME_ROLLOUT     8
+#ifdef pp_HVAC
+#define HVAC_ROLLOUT     9
+#endif
 
-procdata  boundprocinfo[9];
+procdata  boundprocinfo[10];
 int      nboundprocinfo = 0;
 
 //*** isoprocinfo entries
@@ -3104,6 +3121,12 @@ int      nboundprocinfo = 0;
 procdata  isoprocinfo[3];
 int      nisoprocinfo=0;
 
+
+//*** hvacprocinfo entries
+#ifdef pp_HVAC
+procdata  hvacprocinfo[1];
+int      nhvacprocinfo = 0;
+#endif
 
 //*** sliceprocinfo entries
 #define SLICE_BOUND             0
@@ -3500,6 +3523,13 @@ void ParticleRolloutCB(int var){
 void Plot3dRolloutCB(int var){
   ToggleRollout(plot3dprocinfo, nplot3dprocinfo, var);
 }
+
+/* ------------------ HVACRolloutCB ------------------------ */
+
+#ifdef pp_HVAC
+void HVACRolloutCB(int var){
+}
+#endif
 
 /* ------------------ SliceRolloutCB ------------------------ */
 
@@ -4819,6 +4849,20 @@ extern "C" void GluiBoundsSetup(int main_window){
     p3chopmax_temp=p3chopmax[0];
     glui_bounds->add_column_to_panel(ROLLOUT_plot3d,false);
   }
+
+  // ----------------------------------- HVAC ----------------------------------------
+
+#ifdef pp_HVAC
+  if(nhvacinfo > 0){
+    glui_active = 1;
+    ROLLOUT_hvac2 = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "HVAC", false, HVAC_ROLLOUT, BoundRolloutCB);
+    INSERT_ROLLOUT(ROLLOUT_hvac2, glui_bounds);
+    ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_hvac2, HVAC_ROLLOUT, glui_bounds);
+
+    hvacboundsCPP.setup("hvac", ROLLOUT_hvac2, hvacbounds_cpp, nhvacbounds_cpp, &cache_hvac_data, HIDE_CACHE_CHECKBOX, PERCENTILE_ENABLED, HVACBoundsCPP_CB,
+      HVACRolloutCB, hvacprocinfo, &nhvacprocinfo);
+  }
+#endif
 
   // ----------------------------------- Slice ----------------------------------------
 
