@@ -12,7 +12,7 @@
   #define PROGVERSION ""
 #endif
 
-//#define pp_HVAC             // bounds dialog box for hvac
+#define pp_HVAC             // bounds dialog box for hvac
 
 // use floating point to color data
 
