@@ -3106,12 +3106,11 @@ GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
 #define EVAC_ROLLOUT     5
 #define PLOT3D_ROLLOUT   6
 #define SLICE_ROLLOUT    7
-#define TIME_ROLLOUT     8
 #ifdef pp_HVAC
-#define HVAC_ROLLOUT     9
+#define HVAC_ROLLOUT     8
 #endif
 
-procdata  boundprocinfo[10];
+procdata  boundprocinfo[9];
 int      nboundprocinfo = 0;
 
 //*** isoprocinfo entries
@@ -3160,8 +3159,9 @@ int      nplot3dprocinfo=0;
 #define FILEBOUNDS_ROLLOUT 5
 #define COLORING_ROLLOUT   6
 #define MEMCHECK_ROLLOUT   7
+#define TIME_ROLLOUT       8
 
-procdata  fileprocinfo[8];
+procdata  fileprocinfo[9];
 int      nfileprocinfo = 0;
 
 //*** particleprocinfo entries
@@ -4853,7 +4853,7 @@ extern "C" void GluiBoundsSetup(int main_window){
   // ----------------------------------- HVAC ----------------------------------------
 
 #ifdef pp_HVAC
-  if(nhvacinfo > 0){
+  if(nhvacinfo > 0&&nhvacbounds_cpp>0){
     glui_active = 1;
     ROLLOUT_hvac2 = glui_bounds->add_rollout_to_panel(ROLLOUT_filebounds, "HVAC", false, HVAC_ROLLOUT, BoundRolloutCB);
     INSERT_ROLLOUT(ROLLOUT_hvac2, glui_bounds);

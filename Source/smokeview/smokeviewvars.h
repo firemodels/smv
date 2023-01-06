@@ -1949,6 +1949,10 @@ SVEXTERN int SVDECL(nhvacbounds_cpp, 0);
 SVEXTERN boundsdata SVDECL(*slicebounds,NULL), SVDECL(*isobounds,NULL), SVDECL(*patchbounds,NULL);
 SVEXTERN boundsdata SVDECL(*slicebounds_temp, NULL);
 SVEXTERN vslicedata SVDECL(*vsliceinfo,NULL);
+#ifdef pp_HVAC
+SVEXTERN boundsdata SVDECL(*hvacbounds_temp, NULL), SVDECL(*hvacbounds, NULL);
+SVEXTERN int SVDECL(nhvacbounds, 0);
+#endif
 SVEXTERN int force_redisplay;
 SVEXTERN int glui_setp3min, glui_setp3max;
 SVEXTERN int setp3chopmin_temp, setp3chopmax_temp;
