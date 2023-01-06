@@ -10,6 +10,7 @@
 
 unsigned char hvac_off_color[3] = {0, 255, 0}, hvac_on_color[3] = {255, 0, 0};
 unsigned char *hvac_color_states[2] = {hvac_off_color, hvac_on_color};
+#define HVACCOLORCONV(v,min,max) (max) < (min) ? 0 : 255*((v)-(min)/((max)-(min)))
 
 /* ------------------ OffsetHvacNodes ------------------------ */
 
@@ -218,7 +219,6 @@ void SetDuctXYZ(hvacductdata *ducti){
 
 void InitHvacData(hvacvaldata *hi){
   hi->vals   = NULL;
-  hi->ivals  = NULL;
   hi->nvals  = 0;
   hi->vis    = 0;
   hi->valmax = 1.0;
@@ -245,7 +245,6 @@ void ReadHVACData(int flag){
 
     hi = hvacvalsinfo->duct_vars + i;
     FREEMEMORY(hi->vals);
-    FREEMEMORY(hi->ivals);
   }
   
   for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
@@ -253,7 +252,6 @@ void ReadHVACData(int flag){
 
     hi = hvacvalsinfo->node_vars + i;
     FREEMEMORY(hi->vals);
-    FREEMEMORY(hi->ivals);
   }
   if(flag==HVAC_UNLOAD)return;
 
@@ -285,7 +283,6 @@ void ReadHVACData(int flag){
 
     hi = hvacvalsinfo->duct_vars + i;
     NewMemory((void **)&hi->vals, n_ducts*nframes * sizeof(float));
-    NewMemory((void **)&hi->ivals, n_ducts*nframes * sizeof(unsigned char));
   }
   for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
     hvacvaldata *hi;
@@ -293,8 +290,6 @@ void ReadHVACData(int flag){
     hi = hvacvalsinfo->node_vars + i;
     FREEMEMORY(hi->vals);
     NewMemory((void **)&hi->vals, n_nodes*nframes * sizeof(float));
-    FREEMEMORY(hi->ivals);
-    NewMemory((void **)&hi->ivals, n_nodes*nframes * sizeof(unsigned char));
   }
 
   rewind(stream);
@@ -354,55 +349,31 @@ void ReadHVACData(int flag){
   for(i = 0;i < n_node_vars;i++){
     hvacvaldata *hi;
     float *vals;
-    unsigned char *ivals;
     int j;
 
     hi = hvacvalsinfo->node_vars+i;
 
     vals = hi->vals;
-    ivals = hi->ivals;
     hi->valmin = vals[0];
     hi->valmax = hi->valmin;
     for(j=1;j<nframes*n_nodes;j++){
       hi->valmin = MIN(vals[j],hi->valmin);
       hi->valmax = MAX(vals[j],hi->valmax);
     }
-    if(hi->valmax>hi->valmin){
-      for(j=0;j<nframes*n_nodes;j++){
-        ivals[j] = 255*(vals[j]-hi->valmin)/(hi->valmax - hi->valmin);
-      }
-    }
-    else{
-      for(j=0;j<nframes*n_ducts;j++){
-        ivals[j] = 0;
-      }
-    }
   }
   for(i = 0;i < n_duct_vars;i++){
     hvacvaldata *hi;
     float *vals;
-    unsigned char *ivals;
     int j;
 
     hi = hvacvalsinfo->duct_vars+i;
 
     vals  = hi->vals;
-    ivals = hi->ivals;
     hi->valmin = vals[0];
     hi->valmax = hi->valmin;
     for(j=1;j<nframes*n_ducts;j++){
       hi->valmin = MIN(vals[j],hi->valmin);
       hi->valmax = MAX(vals[j],hi->valmax);
-    }
-    if(hi->valmax>hi->valmin){
-      for(j=0;j<nframes*n_ducts;j++){
-        ivals[j] = 255*(vals[j]-hi->valmin)/(hi->valmax - hi->valmin);
-      }
-    }
-    else{
-      for(j=0;j<nframes*n_ducts;j++){
-        ivals[j] = 0;
-      }
     }
   }
   for(i = 0;i < n_node_vars;i++){
@@ -1015,7 +986,7 @@ void DrawHVAC(hvacdata *hvaci){
       //        time: itime
       //   var index: hvacductvar_index
       ductvar = hvacvalsinfo->duct_vars + hvacductvar_index;
-      ival = ductvar->ivals[frame_index + i * hvacvalsinfo->ntimes];
+      ival = HVACCOLORCONV(ductvar->vals[frame_index + i * hvacvalsinfo->ntimes],ductvar->valmin,ductvar->valmax);
       glColor3fv(rgb_full[ival]);
     }
 
@@ -1166,7 +1137,7 @@ void DrawHVAC(hvacdata *hvaci){
       //        time: itime
       //   var index: hvacductvar_index
       nodevar = hvacvalsinfo->node_vars + hvacnodevar_index;
-      ival = nodevar->ivals[frame_index + i * hvacvalsinfo->ntimes];
+      ival = HVACCOLORCONV(nodevar->vals[frame_index + i * hvacvalsinfo->ntimes], nodevar->valmin, nodevar->valmax);
       glColor3fv(rgb_full[ival]);
     }
     glVertex3fv(nodei->xyz);
