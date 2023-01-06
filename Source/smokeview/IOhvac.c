@@ -348,6 +348,8 @@ void ReadHVACData(int flag){
   }
   fclose(stream);
   FREEMEMORY(duct_ncells);
+  FREEMEMORY(duct_buffer);
+  FREEMEMORY(node_buffer);
 
   for(i = 0;i < n_node_vars;i++){
     hvacvaldata *hi;
