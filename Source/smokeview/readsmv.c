@@ -7703,6 +7703,13 @@ int ReadSMV(bufferstreamdata *stream){
         ducti->metro_path   = DUCT_XYZ;
         ducti->connect_id   = -1;
         ducti->waypoints    = NULL;
+        ducti->xyz_met      = NULL;
+        ducti->xyz_reg      = NULL;
+        ducti->cell_met     = NULL;
+        ducti->cell_reg     = NULL;
+        ducti->nxyz_met     = 0;
+        ducti->nxyz_reg     = 0;
+
         if(connect_id != NULL)sscanf(connect_id, "%i", &ducti->connect_id);
 
         if(FGETS(buffer, 255, stream) == NULL)BREAK;

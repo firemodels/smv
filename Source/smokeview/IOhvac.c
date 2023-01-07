@@ -8,6 +8,9 @@
 #include "smokeviewvars.h"
 #include "IOobjects.h"
 
+#define HVACVAL(itime, iduct, icell) \
+  (itime)*hvac_maxcells*hvac_n_ducts + (iduct)*hvac_maxcells + (icell)
+
 unsigned char hvac_off_color[3] = {0, 255, 0}, hvac_on_color[3] = {255, 0, 0};
 unsigned char *hvac_color_states[2] = {hvac_off_color, hvac_on_color};
 #define HVACCOLORCONV(v,min,max) (max) < (min) ? 0 : 255*((v)-(min)/((max)-(min)))
@@ -278,11 +281,18 @@ void ReadHVACData(int flag){
   FREEMEMORY(hvacvalsinfo->times);
   NewMemory((void **)&hvacvalsinfo->times, nframes * sizeof(float));
   hvacvalsinfo->ntimes = nframes;
+
+  hvac_maxcells = duct_ncells[0];
+  for(i=1;i<n_ducts;i++){
+    hvac_maxcells = MAX(hvac_maxcells, duct_ncells[i]);
+  }
+  hvac_n_ducts   = n_ducts;
+
   for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
     hvacvaldata *hi;
 
     hi = hvacvalsinfo->duct_vars + i;
-    NewMemory((void **)&hi->vals, n_ducts*nframes * sizeof(float));
+    NewMemory((void **)&hi->vals, n_ducts*hvac_maxcells*nframes * sizeof(float));
   }
   for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
     hvacvaldata *hi;
@@ -318,31 +328,32 @@ void ReadHVACData(int flag){
         hk->vals[iframe + j * nframes] = node_buffer[k];
       }
     }
-    for(j = 0;j < n_ducts;j++){
-      int k, ntotalvals;
-      float *duct_buffer_ptr;
+  
+    int iduct;
+    for(iduct = 0;iduct < n_ducts;iduct++){
+      int ntotalvals;
 
-      ntotalvals = n_duct_vars*duct_ncells[j];
+      ntotalvals = n_duct_vars*duct_ncells[iduct];
       if(ntotalvals > max_duct_buffer){
         FREEMEMORY(duct_buffer);
         NewMemory((void **)&duct_buffer, (ntotalvals + 100) * sizeof(float));
         max_duct_buffer = ntotalvals + 100;
       }
-      duct_buffer_ptr = duct_buffer;
-      for(k = 0;k < duct_ncells[j];k++){
-        FSEEK(stream, 4, SEEK_CUR); fread(duct_buffer_ptr, 4, n_duct_vars, stream); FSEEK(stream, 4, SEEK_CUR);
-        duct_buffer_ptr += n_duct_vars;
-      }
-      for(k = 0;k < n_duct_vars;k++){
-        hvacvaldata *hk;
+      int icell;
+      for(icell = 0;icell < duct_ncells[iduct];icell++){
+        int ivar;
 
-        hk = hvacvalsinfo->duct_vars + k;
-        hk->vals[iframe + j * nframes] = duct_buffer[k];
+        FSEEK(stream, 4, SEEK_CUR); fread(duct_buffer, 4, n_duct_vars, stream); FSEEK(stream, 4, SEEK_CUR);
+        for(ivar = 0;ivar < n_duct_vars;ivar++){
+          hvacvaldata *hk;
+
+          hk = hvacvalsinfo->duct_vars + ivar;
+          hk->vals[HVACVAL(iframe,iduct,icell)] = duct_buffer[ivar];
+        }
       }
     }
   }
   fclose(stream);
-  FREEMEMORY(duct_ncells);
   FREEMEMORY(duct_buffer);
   FREEMEMORY(node_buffer);
 
@@ -363,17 +374,26 @@ void ReadHVACData(int flag){
   }
   for(i = 0;i < n_duct_vars;i++){
     hvacvaldata *hi;
-    float *vals;
-    int j;
+    int iduct;
 
     hi = hvacvalsinfo->duct_vars+i;
 
-    vals  = hi->vals;
-    hi->valmin = vals[0];
+    hi->valmin = hi->vals[0];
     hi->valmax = hi->valmin;
-    for(j=1;j<nframes*n_ducts;j++){
-      hi->valmin = MIN(vals[j],hi->valmin);
-      hi->valmax = MAX(vals[j],hi->valmax);
+    for(iduct=0;iduct<n_ducts;iduct++){
+      int icell;
+
+      for(icell=0;icell<duct_ncells[iduct];icell++){
+        int iframe;
+
+        for(iframe=0;iframe<nframes;iframe++){
+          int index;
+
+          index = HVACVAL(iframe, iduct, icell);
+          hi->valmin = MIN(hi->vals[index],hi->valmin);
+          hi->valmax = MAX(hi->vals[index],hi->valmax);
+        }
+      }
     }
   }
   for(i = 0;i < n_node_vars;i++){
@@ -388,6 +408,7 @@ void ReadHVACData(int flag){
     hi = hvacvalsinfo->duct_vars+i;
     GetColorbarLabels(hi->valmin, hi->valmax, nrgb, hi->colorlabels, hi->levels256);
   }
+  FREEMEMORY(duct_ncells);
 }
 
 /* ------------------ SetHVACInfo ------------------------ */
@@ -986,7 +1007,9 @@ void DrawHVAC(hvacdata *hvaci){
       //        time: itime
       //   var index: hvacductvar_index
       ductvar = hvacvalsinfo->duct_vars + hvacductvar_index;
-      ival = HVACCOLORCONV(ductvar->vals[frame_index + i * hvacvalsinfo->ntimes],ductvar->valmin,ductvar->valmax);
+
+      int index = HVACVAL(frame_index, i, 0);
+      ival = HVACCOLORCONV(ductvar->vals[index],ductvar->valmin,ductvar->valmax);
       glColor3fv(rgb_full[ival]);
     }
 
