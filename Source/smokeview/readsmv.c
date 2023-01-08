@@ -7702,13 +7702,15 @@ int ReadSMV(bufferstreamdata *stream){
         ducti->nact_times   = 0;
         ducti->metro_path   = DUCT_XYZ;
         ducti->connect_id   = -1;
-        ducti->waypoints    = NULL;
-        ducti->xyz_met      = NULL;
         ducti->xyz_reg      = NULL;
         ducti->cell_met     = NULL;
         ducti->cell_reg     = NULL;
         ducti->nxyz_met     = 0;
         ducti->nxyz_reg     = 0;
+        ducti->xyz_met_cell = NULL;
+        ducti->xyz_reg_cell = NULL;
+        ducti->nxyz_met_cell = 0;
+        ducti->nxyz_reg_cell = 0;
 
         if(connect_id != NULL)sscanf(connect_id, "%i", &ducti->connect_id);
 
@@ -7731,32 +7733,31 @@ int ReadSMV(bufferstreamdata *stream){
 
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
         if(FGETS(buffer, 255, stream) == NULL)BREAK;
-        sscanf(buffer, "%i", &ducti->n_waypoints);
+        int n_waypoints;
+        sscanf(buffer, "%i", &n_waypoints);
 
-        if(ducti->n_waypoints > 0){
-          float *waypoints;
+        float *waypoints;
 
-          NewMemory(( void ** )&waypoints, 3*(ducti->n_waypoints+2) * sizeof(float));
-          ducti->waypoints0 = waypoints;
-          ducti->waypoints = waypoints+3;
+        NewMemory(( void ** )&waypoints, 3*(n_waypoints+2) * sizeof(float));
+        ducti->xyz_reg   = waypoints;
+        ducti->nxyz_reg  = n_waypoints + 2;
 
-          hvacnodedata *node_from, *node_to;
-          float *xyz0, *xyz1;
+        hvacnodedata *node_from, *node_to;
+        float *xyz0, *xyz1;
 
-          node_from = hvacnodeinfo + ducti->node_id_from;
-          node_to = hvacnodeinfo + ducti->node_id_to;
-          xyz0 = node_from->xyz;
-          xyz1 = node_to->xyz;
-          memcpy(ducti->waypoints0,                            xyz0, 3*sizeof(float));
-          memcpy(ducti->waypoints0 + 3*(ducti->n_waypoints+1), xyz1, 3*sizeof(float));
+        node_from = hvacnodeinfo + ducti->node_id_from;
+        node_to = hvacnodeinfo + ducti->node_id_to;
+        xyz0 = node_from->xyz;
+        xyz1 = node_to->xyz;
 
-          //store node xyz position at the first and last waypoint
+        memcpy(ducti->xyz_reg,                            xyz0, 3*sizeof(float));  // first point
+        memcpy(ducti->xyz_reg + 3*(n_waypoints+1), xyz1, 3*sizeof(float));  // last point
+
+        waypoints += 3;
+        for(j = 0; j < n_waypoints; j++){ // points between first and last point
+          if(FGETS(buffer, 255, stream) == NULL)BREAK;
+          sscanf(buffer, "%f %f %f", waypoints, waypoints + 1, waypoints + 2);
           waypoints += 3;
-          for(j = 0; j < ducti->n_waypoints; j++){
-            if(FGETS(buffer, 255, stream) == NULL)BREAK;
-            sscanf(buffer, "%f %f %f", waypoints, waypoints + 1, waypoints + 2);
-            waypoints += 3;
-          }
         }
       }
       char **hvac_network_labels = NULL;

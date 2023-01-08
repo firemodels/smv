@@ -460,7 +460,6 @@ EXTERNCPP void HVAC2Glui(int index);
 EXTERNCPP hvacductdata *GetHVACDuctID(char *duct_name);
 EXTERNCPP hvacnodedata *GetHVACNodeID(char *node_name);
 EXTERNCPP void UpdateHvacOffset(void);
-EXTERNCPP void SetDuctXYZ(hvacductdata *ducti);
 
 EXTERNCPP void HideGluiGeometry(void);
 

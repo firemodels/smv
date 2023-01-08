@@ -1288,20 +1288,20 @@ typedef struct _hvacnodedata {
 
 typedef struct _hvacductdata {
   char *duct_name, *network_name, c_component[4];
-  int duct_id, component, nduct_cells, n_waypoints;
+  int duct_id, component, nduct_cells;
   int node_id_from, node_id_to, use_duct, connect_id;
   hvacconnectdata *connect;
   int nact_times, *act_states, metro_path;
   float *act_times;
   float xyz_symbol[3], xyz_symbol_metro[3];
   float xyz_label[3],  xyz_label_metro[3];
-  float xyz_metro[6];
   float normal[3], normal_metro[3];
   hvacnodedata* node_from, * node_to;
-  float *waypoints0, *waypoints;
-  float *xyz_met, *xyz_reg;
-  int *cell_met, *cell_reg;
-  int nxyz_met, nxyz_reg;
+  float xyz_met[12], *xyz_reg;
+  int   nxyz_met, nxyz_reg;
+  float *xyz_met_cell, *xyz_reg_cell;
+  int   nxyz_met_cell, nxyz_reg_cell;
+  int    *cell_met,    *cell_reg;
 } hvacductdata;
 
 /* --------------------------  hvacdata ------------------------------------ */
