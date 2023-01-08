@@ -384,12 +384,12 @@ void ReadHVACData(int flag){
       int icell;
 
       for(icell=0;icell<duct_ncells[iduct];icell++){
-        int iframe;
-
-        for(iframe=0;iframe<nframes;iframe++){
+	int iframe2;
+	
+        for(iframe2=0;iframe2<nframes;iframe2++){
           int index;
 
-          index = HVACVAL(iframe, iduct, icell);
+          index = HVACVAL(iframe2, iduct, icell);
           hi->valmin = MIN(hi->vals[index],hi->valmin);
           hi->valmax = MAX(hi->vals[index],hi->valmax);
         }
