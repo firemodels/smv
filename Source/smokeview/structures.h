@@ -1319,7 +1319,6 @@ typedef struct _hvacdata {
 
 typedef struct _hvacvaldata{
   float *vals, valmin, valmax;
-  unsigned char *ivals;
   int vis, nvals;
   char  colorlabels[12][11];
   float colorvalues[12];
