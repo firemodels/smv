@@ -198,6 +198,82 @@ void GetHVACPathXYZ(float fraction, float *xyzs, int n, float *xyz){
   memcpy(xyz, xyzs+3*(n-1), 3*sizeof(float));
 }
 
+/* ------------------ GetCellXYZs ------------------------ */
+
+void GetCellXYZs(float *xyz, int nxyz, int ncells, float **xyz_cellptr, int *nxyz_cell, int **cell_indptr){
+  float length, dlength, *xyzi;
+  float *fractions, *fractions_cell, *fractions_both;
+  float *xyz_cell;
+  int *cell_ind;
+  int i;
+
+  length = 0.0;
+  xyzi = xyz;
+  NewMemory((void **)&fractions, nxyz*sizeof(float));
+  NewMemory((void **)&fractions_cell, (ncells+1)*sizeof(float));
+  NewMemory((void **)&xyz_cell, 3*(nxyz+ncells+1)*sizeof(float));
+  NewMemory((void **)&fractions_both, (nxyz+ncells+1)*sizeof(float));
+  fractions[0] = 0.0;
+  for(i = 0;i < nxyz-1;i++){
+    float dx, dy, dz, *xyzip1;
+
+    xyzip1 = xyzi + 3;
+    dx = xyzip1[0] - xyzi[0];
+    dy = xyzip1[1] - xyzi[1];
+    dz = xyzip1[2] - xyzi[2];
+    length += sqrt(dx*dx + dy*dy + dz*dz);
+    fractions[i+1] = length;
+    xyzi += 3;
+  }
+  dlength = length/(float)ncells;
+  for(i = 1;i < nxyz-1;i++){
+    fractions[i] /= length;
+  }
+  fractions[nxyz-1] = 1.0;
+  
+  fractions_cell[0]      = 0.0;
+  for(i=1;i<ncells-1;i++){
+    fractions_cell[i]=(float)i/(float)ncells;
+  }
+  fractions_cell[ncells] = 1.0;
+
+  int i1, i2, nmerge;
+  for(i1=0,i2=0,nmerge=0;i1<nxyz||i2<ncells;){
+    if(i1>=nxyz){
+      fractions_both[nmerge++] = fractions_cell[i2++];
+      continue;
+    }
+    if(i2>=ncells){
+      fractions_both[nmerge++] = fractions[i1++];
+      continue;
+    }
+    if(fractions[i1]<fractions_cell[i2]){
+      fractions_both[nmerge++] = fractions[i1++];
+      continue;
+    }
+    if(fractions_cell[i2]<fractions[i1]){
+      fractions_both[nmerge++] = fractions_cell[i2++];
+      continue;
+    }
+    fractions_both[nmerge++] = fractions[i1++];
+    i2++;
+  }
+  *nxyz_cell = nmerge;
+  NewMemory((void **)&xyz_cell, 3*nmerge*sizeof(float));
+  NewMemory((void **)&cell_ind, nmerge*sizeof(int));
+  *xyz_cellptr = xyz_cell;
+  *cell_indptr = cell_ind;
+  for(i = 0;i < nmerge;i++){
+    GetHVACPathXYZ(fractions_both[i], xyz, nxyz, xyz_cell + 3*i);
+  }
+  for(i = 0;i < nmerge-1;i++){
+    float frac_avg;
+
+    frac_avg = (fractions_both[i] + fractions_both[i + 1]) / 2.0;
+    cell_ind[i] = CLAMP((int)(frac_avg*(float)ncells), 0, ncells - 1);
+  }
+}
+
 /* ------------------ SetDuctLabelSymbolXYZ ------------------------ */
 
 void SetDuctLabelSymbolXYZ(hvacductdata *ducti){
@@ -697,6 +773,10 @@ void SetHVACInfo(void){
         ASSERT(FFALSE);
         break;
     }
+    GetCellXYZs(ducti->xyz_reg, ducti->nxyz_reg, ducti->nduct_cells,
+      &ducti->xyz_reg_cell, &ducti->nxyz_reg_cell, &ducti->cell_reg);
+    GetCellXYZs(ducti->xyz_met, ducti->nxyz_met, ducti->nduct_cells,
+      &ducti->xyz_met_cell, &ducti->nxyz_met_cell, &ducti->cell_met);
   }
   for(i = 0;i < nhvacductinfo;i++){
     SetDuctLabelSymbolXYZ(hvacductinfo + i);
