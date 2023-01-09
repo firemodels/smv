@@ -1141,19 +1141,17 @@ void DrawHVAC(hvacdata *hvaci){
     for(i = 0; i < nhvacductinfo; i++){
       hvacductdata *ducti;
       float *xyzs;
-      int nxyzs, j, *cell_index;
+      int nxyzs, j;
  
       ducti = hvacductinfo + i;
       if(ducti->nduct_cells <= 1)continue;
     
       if(hvac_metro_view == 1){
         xyzs       = ducti->xyz_met_cell;
-        cell_index = ducti->cell_met;
         nxyzs      = ducti->nxyz_met_cell-1;
       }
       else{
         xyzs       = ducti->xyz_reg_cell;
-        cell_index = ducti->cell_reg;
         nxyzs      = ducti->nxyz_reg_cell-1;
       }
       for(j = 0;j < nxyzs;j++){
