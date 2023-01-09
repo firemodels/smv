@@ -55,6 +55,7 @@ int      ngeomprocinfo = 0;
 #define HVAC_SHOW_NETWORKS     -15
 #define HVAC_SHOW_CONNECTIONS  -16
 #define HVAC_DUCTNODE_NETWORK  -17
+#define HVAC_CELL_VIEW         -18
 
 GLUI_Checkbox **CHECKBOX_hvac_show_networks    = NULL;
 GLUI_Checkbox **CHECKBOX_hvac_show_connections = NULL;
@@ -64,6 +65,7 @@ GLUI_Checkbox *CHECKBOX_hvac_offset_nodes      = NULL;
 GLUI_Checkbox *CHECKBOX_hvac_show_duct_labels  = NULL;
 GLUI_Checkbox *CHECKBOX_hvac_show_node_labels  = NULL;
 GLUI_Checkbox* CHECKBOX_hvac_metro_view        = NULL;
+GLUI_Checkbox *CHECKBOX_hvac_cell_view         = NULL;
 
 GLUI_Checkbox *CHECKBOX_showgeom_inside_domain  = NULL;
 GLUI_Checkbox *CHECKBOX_showgeom_outside_domain = NULL;
@@ -193,7 +195,15 @@ GLUI_StaticText *STATIC_id_label = NULL;
 char a_updatelabel[1000];
 char *updatelabel=NULL;
 
-/* ------------------ UpdateTerrainTexture ------------------------ */
+
+/* ------------------ UpdateHVACViews ------------------------ */
+
+extern "C" void UpdateHVACViews(void){
+  CHECKBOX_hvac_metro_view->set_int_val(hvac_metro_view);
+  CHECKBOX_hvac_cell_view->set_int_val(hvac_cell_view);
+}
+
+  /* ------------------ UpdateTerrainTexture ------------------------ */
 
 extern "C" void UpdateTerrainTexture(int val){
   if(CHECKBOX_terrain_texture_show!=NULL&&val>=0&&val<nterrain_textures){
@@ -463,6 +473,7 @@ extern "C" void HvacCB(int var){
     case HVAC_SHOW_NODE_LABELS:
     case HVAC_SHOW_FILTERS:
     case HVAC_METRO_VIEW:
+    case HVAC_CELL_VIEW:
       break;
     case HVAC_OFFSET_NODES:
       updatemenu = 1;
@@ -615,6 +626,7 @@ extern "C" void GluiGeometrySetup(int main_window){
       }
     }
     CHECKBOX_hvac_metro_view = glui_geometry->add_checkbox_to_panel(ROLLOUT_hvac, "metro view", &hvac_metro_view, HVAC_METRO_VIEW, HvacCB);
+    CHECKBOX_hvac_cell_view = glui_geometry->add_checkbox_to_panel(ROLLOUT_hvac, "cell view", &hvac_cell_view, HVAC_CELL_VIEW, HvacCB);
     CHECKBOX_hvac_offset_nodes = glui_geometry->add_checkbox_to_panel(ROLLOUT_hvac, "offset nodes", &hvac_offset_nodes, HVAC_OFFSET_NODES, HvacCB);
     SPINNER_hvac_offset_inc = glui_geometry->add_spinner_to_panel(ROLLOUT_hvac, "offset increment", GLUI_SPINNER_FLOAT, &hvac_offset_inc, HVAC_OFFSET_NODES, HvacCB);
 

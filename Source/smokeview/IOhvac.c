@@ -211,7 +211,6 @@ void GetCellXYZs(float *xyz, int nxyz, int ncells, float **xyz_cellptr, int *nxy
   xyzi = xyz;
   NewMemory((void **)&fractions, nxyz*sizeof(float));
   NewMemory((void **)&fractions_cell, (ncells+1)*sizeof(float));
-  NewMemory((void **)&xyz_cell, 3*(nxyz+ncells+1)*sizeof(float));
   NewMemory((void **)&fractions_both, (nxyz+ncells+1)*sizeof(float));
   fractions[0] = 0.0;
   for(i = 0;i < nxyz-1;i++){
@@ -231,7 +230,7 @@ void GetCellXYZs(float *xyz, int nxyz, int ncells, float **xyz_cellptr, int *nxy
   fractions[nxyz-1] = 1.0;
   
   fractions_cell[0]      = 0.0;
-  for(i=1;i<ncells-1;i++){
+  for(i=1;i<ncells;i++){
     fractions_cell[i]=(float)i/(float)ncells;
   }
   fractions_cell[ncells] = 1.0;
@@ -271,6 +270,9 @@ void GetCellXYZs(float *xyz, int nxyz, int ncells, float **xyz_cellptr, int *nxy
     frac_avg = (fractions_both[i] + fractions_both[i + 1]) / 2.0;
     cell_ind[i] = CLAMP((int)(frac_avg*(float)ncells), 0, ncells - 1);
   }
+  FREEMEMORY(fractions);
+  FREEMEMORY(fractions_cell);
+  FREEMEMORY(fractions_both);
 }
 
 /* ------------------ SetDuctLabelSymbolXYZ ------------------------ */
@@ -1099,15 +1101,17 @@ void DrawHVAC(hvacdata *hvaci){
     node_to = hvacnodeinfo + ducti->node_id_to;
     if(node_from == NULL || node_to == NULL)continue;
     float *xyzs;
-    int nxyzs, j;
+    int nxyzs, j, *cell_index;
     
     if(hvac_metro_view == 1){
-      xyzs  = ducti->xyz_met;
-      nxyzs = ducti->nxyz_met;
+      xyzs       = ducti->xyz_met_cell;
+      cell_index = ducti->cell_met;
+      nxyzs      = ducti->nxyz_met_cell-1;
     }
     else{
-      xyzs  = ducti->xyz_reg;
-      nxyzs = ducti->nxyz_reg-1;
+      xyzs       = ducti->xyz_reg_cell;
+      cell_index = ducti->cell_reg;
+      nxyzs      = ducti->nxyz_reg_cell-1;
     }
     for(j = 0;j < nxyzs;j++){
       float *xyz;
@@ -1118,6 +1122,37 @@ void DrawHVAC(hvacdata *hvaci){
     }
   }
   glEnd();
+
+  if(hvac_cell_view==1){
+    glPointSize(hvaci->node_size);
+    glBegin(GL_POINTS);
+    for(i = 0; i < nhvacductinfo; i++){
+      hvacductdata *ducti;
+      float *xyzs;
+      int nxyzs, j, *cell_index;
+ 
+      ducti = hvacductinfo + i;
+      if(ducti->nduct_cells <= 1)continue;
+    
+      if(hvac_metro_view == 1){
+        xyzs       = ducti->xyz_met_cell;
+        cell_index = ducti->cell_met;
+        nxyzs      = ducti->nxyz_met_cell-1;
+      }
+      else{
+        xyzs       = ducti->xyz_reg_cell;
+        cell_index = ducti->cell_reg;
+        nxyzs      = ducti->nxyz_reg_cell-1;
+      }
+      for(j = 0;j < nxyzs;j++){
+        float *xyz;
+
+        xyz = xyzs + 3 * j;
+        glVertex3fv(xyz);
+      }
+    }
+    glEnd();
+  }
   SNIFF_ERRORS("after hvac network");
   if(hvaci->show_duct_labels == 1){
     for(i = 0; i < nhvacductinfo; i++){

@@ -303,6 +303,7 @@ float     part_load_time;
 #define MENU_HVAC_SHOW_DUCT_IDS          -12
 #define MENU_HVAC_SHOW_NODE_IDS          -13
 #define MENU_HVAC_HIDE_ALL_VALUES        -15
+#define MENU_HVAC_CELL_VIEW              -16
 
 #ifdef WIN32
 
@@ -6824,6 +6825,11 @@ void HVACMenu(int value){
       break;
     case MENU_HVAC_METRO_VIEW:
       hvac_metro_view = 1 - hvac_metro_view;
+      UpdateHVACViews();
+      break;
+    case MENU_HVAC_CELL_VIEW:
+      hvac_cell_view = 1 - hvac_cell_view;
+      UpdateHVACViews();
       break;
     case MENU_HVAC_OFFSET_NODES:
       hvac_offset_nodes = 1 - hvac_offset_nodes;
@@ -9549,6 +9555,12 @@ updatemenu=0;
     }
     else{
       glutAddMenuEntry("metro view", MENU_HVAC_METRO_VIEW);
+    }
+    if(hvac_cell_view == 1){
+      glutAddMenuEntry("*cell view", MENU_HVAC_CELL_VIEW);
+    }
+    else{
+      glutAddMenuEntry("cell view", MENU_HVAC_CELL_VIEW);
     }
     if(hvac_offset_nodes == 1){
       glutAddMenuEntry("*offset nodes", MENU_HVAC_OFFSET_NODES);
