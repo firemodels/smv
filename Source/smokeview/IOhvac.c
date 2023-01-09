@@ -1057,6 +1057,7 @@ hvacnodedata *GetHVACNodeID(char *node_name){
 void DrawHVAC(hvacdata *hvaci){
   int i, frame_index=0;
   unsigned char uc_color[3];
+  float *last_color = NULL;
 
   if((hvacductvar_index >= 0||hvacnodevar_index>=0)&&global_times!=NULL){
     frame_index = GetTimeInterval(GetTime(), hvacvalsinfo->times, hvacvalsinfo->ntimes);
@@ -1083,19 +1084,6 @@ void DrawHVAC(hvacdata *hvaci){
     ducti = hvacductinfo + i;
     if(hvac_show_networks==1&&strcmp(hvaci->network_name, ducti->network_name) != 0)continue;
     if(hvac_show_connections==1&&ducti->connect != NULL && ducti->connect->display == 0)continue;
-    if(global_times != NULL && hvacductvar_index >= 0){
-      hvacvaldata *ductvar;
-      unsigned char ival;
-
-      //        duct: i
-      //        time: itime
-      //   var index: hvacductvar_index
-      ductvar = hvacvalsinfo->duct_vars + hvacductvar_index;
-
-      int index = HVACVAL(frame_index, i, 0);
-      ival = HVACCOLORCONV(ductvar->vals[index],ductvar->valmin,ductvar->valmax);
-      glColor3fv(rgb_full[ival]);
-    }
 
     node_from = hvacnodeinfo + ducti->node_id_from;
     node_to = hvacnodeinfo + ducti->node_id_to;
@@ -1113,12 +1101,36 @@ void DrawHVAC(hvacdata *hvaci){
       cell_index = ducti->cell_reg;
       nxyzs      = ducti->nxyz_reg_cell-1;
     }
-    for(j = 0;j < nxyzs;j++){
-      float *xyz;
+    if(global_times != NULL && hvacductvar_index >= 0){
+      for(j = 0;j < nxyzs;j++){
+        hvacvaldata *ductvar;
+        float *xyz, *this_color;
+        int cell;
+        unsigned char ival;
 
-      xyz = xyzs + 3 * j;
-      glVertex3fv(xyz);
-      glVertex3fv(xyz+3);
+        xyz = xyzs + 3 * j;
+        cell = cell_index[j];
+        ductvar = hvacvalsinfo->duct_vars + hvacductvar_index;
+
+        int index = HVACVAL(frame_index, i, cell);
+        ival = HVACCOLORCONV(ductvar->vals[index], ductvar->valmin, ductvar->valmax);
+        this_color = rgb_full[ival];
+        if(this_color != last_color){
+          last_color = this_color;
+          glColor3fv(this_color);
+        }
+        glVertex3fv(xyz);
+        glVertex3fv(xyz+3);
+      }
+    }
+    else{
+      for(j = 0;j < nxyzs;j++){
+        float *xyz;
+
+        xyz = xyzs + 3 * j;
+        glVertex3fv(xyz);
+        glVertex3fv(xyz+3);
+      }
     }
   }
   glEnd();
@@ -1325,7 +1337,6 @@ void DrawHVAC(hvacdata *hvaci){
       DrawHVACFilter(nodei->duct, nodei->xyz, size);
     }
   }
-
   glPopMatrix();
 }
 
