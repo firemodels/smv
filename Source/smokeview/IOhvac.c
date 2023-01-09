@@ -201,7 +201,7 @@ void GetHVACPathXYZ(float fraction, float *xyzs, int n, float *xyz){
 /* ------------------ GetCellXYZs ------------------------ */
 
 void GetCellXYZs(float *xyz, int nxyz, int ncells, float **xyz_cellptr, int *nxyz_cell, int **cell_indptr){
-  float length, dlength, *xyzi;
+  float length, *xyzi;
   float *fractions, *fractions_cell, *fractions_both;
   float *xyz_cell;
   int *cell_ind;
@@ -225,7 +225,6 @@ void GetCellXYZs(float *xyz, int nxyz, int ncells, float **xyz_cellptr, int *nxy
     fractions[i+1] = length;
     xyzi += 3;
   }
-  dlength = length/(float)ncells;
   for(i = 1;i < nxyz-1;i++){
     fractions[i] /= length;
   }
