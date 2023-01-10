@@ -222,9 +222,10 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define ROTATE_ABOUT_FDS_CENTER      -3
 #define ROTATE_ABOUT_WORLD_CENTER    -4
 
-#define ONLY_IN_GAS   0
-#define GAS_AND_SOLID 1
-#define ONLY_IN_SOLID 2
+#define ONLY_IN_GAS           0
+#define GAS_AND_SOLID         1
+#define ONLY_IN_SOLID         2
+#define NEITHER_GAS_NOR_SOLID 3
 
 #define UPDATE_WINDROSE_DEVICE   0
 #define UPDATE_WINDROSE_CHECKBOX 1

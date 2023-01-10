@@ -544,13 +544,13 @@ void ShowMultiSliceMenu(int value){
     ShowHideSliceMenu(value);
     return;
   case MENU_SHOWSLICE_IN_GAS:
-    UpdateShowSliceInObst(ONLY_IN_GAS);
+    SliceInObstMenu2Dialog(ONLY_IN_GAS);
     break;
   case MENU_SHOWSLICE_IN_GASANDSOLID:
-    UpdateShowSliceInObst(GAS_AND_SOLID);
+    SliceInObstMenu2Dialog(GAS_AND_SOLID);
     break;
   case MENU_SHOWSLICE_IN_SOLID:
-    UpdateShowSliceInObst(ONLY_IN_SOLID);
+    SliceInObstMenu2Dialog(ONLY_IN_SOLID);
     break;
   case -12:
     offset_slice = 1 - offset_slice;
@@ -1272,15 +1272,15 @@ void ShowVSliceMenu(int value){
     return;
   }
   if(value==MENU_SHOWSLICE_IN_GAS){
-    UpdateShowSliceInObst(ONLY_IN_GAS);
+    SliceInObstMenu2Dialog(ONLY_IN_GAS);
     return;
   }
   else if(value==MENU_SHOWSLICE_IN_GASANDSOLID){
-    UpdateShowSliceInObst(GAS_AND_SOLID);
+    SliceInObstMenu2Dialog(GAS_AND_SOLID);
     return;
   }
   else if(value==MENU_SHOWSLICE_IN_SOLID){
-    UpdateShowSliceInObst(ONLY_IN_SOLID);
+    SliceInObstMenu2Dialog(ONLY_IN_SOLID);
     return;
   }
   if(value == MENU_SHOWSLICE_OFFSET){
@@ -1366,13 +1366,13 @@ void ShowHideSliceMenu(int value){
       }
       break;
     case MENU_SHOWSLICE_IN_GAS:
-      UpdateShowSliceInObst(ONLY_IN_GAS);
+      SliceInObstMenu2Dialog(ONLY_IN_GAS);
       break;
     case MENU_SHOWSLICE_IN_GASANDSOLID:
-      UpdateShowSliceInObst(GAS_AND_SOLID);
+      SliceInObstMenu2Dialog(GAS_AND_SOLID);
       break;
     case MENU_SHOWSLICE_IN_SOLID:
-      UpdateShowSliceInObst(ONLY_IN_SOLID);
+      SliceInObstMenu2Dialog(ONLY_IN_SOLID);
       break;
     case MENU_SHOWSLICE_OFFSET:
       offset_slice=1-offset_slice;
@@ -4836,13 +4836,13 @@ void LoadSliceMenu(int value){
         }
         break;
       case MENU_SHOWSLICE_IN_GAS:
-        UpdateShowSliceInObst(ONLY_IN_GAS);
+        SliceInObstMenu2Dialog(ONLY_IN_GAS);
         break;
       case  MENU_SHOWSLICE_IN_GASANDSOLID:
-        UpdateShowSliceInObst(GAS_AND_SOLID);
+        SliceInObstMenu2Dialog(GAS_AND_SOLID);
         break;
       case MENU_SHOWSLICE_IN_SOLID:
-        UpdateShowSliceInObst(ONLY_IN_SOLID);
+        SliceInObstMenu2Dialog(ONLY_IN_SOLID);
         break;
       case MENU_SLICE_SETTINGS:
         ShowBoundsDialog(DLG_SLICE);
@@ -7206,6 +7206,11 @@ void InitShowSliceMenu(int *showhideslicemenuptr, int patchgeom_slice_showhide){
           glutAddMenuEntry(_("  *solid"), MENU_SHOWSLICE_IN_SOLID);
           glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
         }
+        if(show_slice_in_obst==NEITHER_GAS_NOR_SOLID){
+          glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
+          glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
+          glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+        }
       }
       if(nsliceloaded>0){
         if(offset_slice==1)glutAddMenuEntry(_("*Offset slice"), MENU_SHOWSLICE_OFFSET);
@@ -7314,6 +7319,11 @@ void InitShowMultiSliceMenu(int *showmultislicemenuptr, int showhideslicemenu, i
         glutAddMenuEntry(_("    gas"), MENU_SHOWSLICE_IN_GAS);
         glutAddMenuEntry(_("    *solid"), MENU_SHOWSLICE_IN_SOLID);
         glutAddMenuEntry(_("    gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+      }
+      if(show_slice_in_obst==NEITHER_GAS_NOR_SOLID){
+        glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
+        glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
+        glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
       }
     }
     if(nsliceloaded>0){
@@ -10535,6 +10545,11 @@ updatemenu=0;
       glutAddMenuEntry(_("    gas"), MENU_SHOWSLICE_IN_GAS);
       glutAddMenuEntry(_("    *solid"), MENU_SHOWSLICE_IN_SOLID);
       glutAddMenuEntry(_("    gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
+    }
+    if(show_slice_in_obst==NEITHER_GAS_NOR_SOLID){
+      glutAddMenuEntry(_("  gas"), MENU_SHOWSLICE_IN_GAS);
+      glutAddMenuEntry(_("  solid"), MENU_SHOWSLICE_IN_SOLID);
+      glutAddMenuEntry(_("  gas and solid"), MENU_SHOWSLICE_IN_GASANDSOLID);
     }
     if(show_node_slices_and_vectors == 1)glutAddMenuEntry(_("*Show node centered slices and vectors"), MENU_SHOWSLICE_NODESLICEANDVECTORS);
     if(show_node_slices_and_vectors == 0)glutAddMenuEntry(_("Show node centered slices and vectors"), MENU_SHOWSLICE_NODESLICEANDVECTORS);
