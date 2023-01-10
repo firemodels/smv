@@ -3457,9 +3457,9 @@ extern "C" void UpdateHistogramType(void){
   CHECKBOX_histogram_show_outline->set_int_val(histogram_show_outline);
 }
 
-/* ------------------ UpdateShowSliceInObst ------------------------ */
+/* ------------------ SliceInObstMenu2Dialog ------------------------ */
 
-extern "C" void UpdateShowSliceInObst(int var){
+extern "C" void SliceInObstMenu2Dialog(int var){
   show_slice_in_obst = var;
   if(show_slice_in_obst==GAS_AND_SOLID){
     show_slice_in_gas   = 1;
@@ -3474,12 +3474,30 @@ extern "C" void UpdateShowSliceInObst(int var){
     show_slice_in_solid = 1;
   }
   else{
-    show_slice_in_gas   = 1;
+    show_slice_in_gas   = 0;
     show_slice_in_solid = 0;
   }
   show_slice_shaded[IN_GAS_GLUI]   = show_slice_in_gas;
   show_slice_shaded[IN_SOLID_GLUI] = show_slice_in_solid;
   ImmersedBoundCB(IMMERSED_SWITCH_CELLTYPE);
+}
+
+/* ------------------ SliceInObstDialog2Menu ------------------------ */
+
+extern "C" void SliceInObstDialog2Menu(void){
+  if(show_slice_shaded[IN_GAS_GLUI] == 1 && show_slice_shaded[IN_SOLID_GLUI] == 1){
+    show_slice_in_obst = GAS_AND_SOLID;
+  }
+  else if(show_slice_shaded[IN_GAS_GLUI] == 1 && show_slice_shaded[IN_SOLID_GLUI] == 0){
+    show_slice_in_obst = ONLY_IN_GAS;
+  }
+  else if(show_slice_shaded[IN_GAS_GLUI] == 0 && show_slice_shaded[IN_SOLID_GLUI] == 1){
+    show_slice_in_obst = ONLY_IN_SOLID;
+  }
+  else{
+    show_slice_in_obst = NEITHER_GAS_NOR_SOLID;
+  }
+  updatemenu = 1;
 }
 
 /* ------------------ UpdateIsoColorlevel ------------------------ */
@@ -3900,6 +3918,7 @@ extern "C" void ImmersedBoundCB(int var){
     show_slice_points[slice_celltype]   = glui_show_slice_points;
     show_slice_values[slice_celltype] = glui_show_slice_values;
     if(RADIO_slice_edgetype!=NULL)RADIO_slice_edgetype->set_int_val(glui_slice_edgetype);
+    SliceInObstDialog2Menu();
     break;
   case IMMERSED_SWITCH_EDGETYPE:
     switch (glui_slice_edgetype){

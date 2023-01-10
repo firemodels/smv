@@ -2067,8 +2067,8 @@ void Keyboard(unsigned char key, int flag){
       break;
     case 'I':
       show_slice_in_obst++;
-      if(show_slice_in_obst>2)show_slice_in_obst = 0;
-      UpdateShowSliceInObst(show_slice_in_obst);
+      if(show_slice_in_obst>3)show_slice_in_obst = 0;
+      SliceInObstMenu2Dialog(show_slice_in_obst);
       updatemenu = 1;
       break;
     case 'j':
