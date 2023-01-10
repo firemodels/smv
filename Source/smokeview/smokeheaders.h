@@ -343,7 +343,8 @@ EXTERNCPP void Enable360Zoom(void);
 #ifdef pp_RENDER360_DEBUG
 EXTERNCPP void DrawScreenInfo(void);
 #endif
-EXTERNCPP void UpdateShowSliceInObst(int var);
+EXTERNCPP void SliceInObstMenu2Dialog(int var);
+EXTERNCPP void SliceInObstDialog2Menu(void);
 EXTERNCPP void GetGeomZBounds(float *zmin, float *zmax);
 EXTERNCPP void MakeIBlankAll(void);
 EXTERNCPP void UpdateSliceDupDialog(void);
