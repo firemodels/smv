@@ -1813,6 +1813,8 @@ extern "C" void HVACBoundsCPP_CB(int var){
     if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
     if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
     break;
+  default:
+    break;
   }
 }
 /* ------------------ UpdateHVACType ------------------------ */
