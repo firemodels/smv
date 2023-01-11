@@ -644,7 +644,6 @@ void GetGlobalSliceBounds(void){
     }
   }
 }
-#ifdef pp_HVAC
 
 /* ------------------ GetGlobalHVACBounds ------------------------ */
 
@@ -738,7 +737,6 @@ void GetGlobalHVACBounds(void){
     }
   }
 }
-#endif
 
 /* ------------------ UpdateGlobalFEDSliceBounds ------------------------ */
 

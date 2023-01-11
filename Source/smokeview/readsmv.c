@@ -2877,7 +2877,6 @@ void UpdateBoundInfo(void){
     }
   }
 
-#ifdef pp_HVAC
   int nhvacboundsmax = 0;
   if(hvacvalsinfo != NULL)nhvacboundsmax = hvacvalsinfo->n_duct_vars + hvacvalsinfo->n_node_vars;
   if(nhvacboundsmax>0){
@@ -2932,15 +2931,12 @@ void UpdateBoundInfo(void){
       }
     }
   }
-#endif
   UpdateChar();
   GetGlobalPartBounds(ALL_FILES);
   GetGlobalSliceBounds();
   GetGlobalPatchBounds();
-#ifdef pp_HVAC
   ReadHVACData(HVAC_LOAD);
   GetGlobalHVACBounds();
-#endif
 }
 
 /*

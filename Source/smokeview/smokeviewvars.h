@@ -1243,9 +1243,7 @@ SVEXTERN int ReadZoneFile, SVDECL(ReadPartFile,0);
 SVEXTERN int SVDECL(cache_plot3d_data,1);
 SVEXTERN int SVDECL(cache_boundary_data, 1);
 SVEXTERN int SVDECL(cache_slice_data, 1);
-#ifdef pp_HVAC
 SVEXTERN int SVDECL(cache_hvac_data, 1);
-#endif
 SVEXTERN int SVDECL(cache_part_data, 1);
 SVEXTERN int SVDECL(cache_file_data, 1);
 
@@ -1944,17 +1942,13 @@ SVEXTERN int showfiles;
 SVEXTERN cpp_boundsdata SVDECL(*slicebounds_cpp, NULL), SVDECL(*partbounds_cpp, NULL), SVDECL(*patchbounds_cpp, NULL), SVDECL(*plot3dbounds_cpp, NULL);
 SVEXTERN int SVDECL(nslicebounds_cpp, 0), SVDECL(npartbounds_cpp, 0), SVDECL(npatchbounds_cpp, 0), SVDECL(nplot3dbounds_cpp, 0);
 SVEXTERN int SVDECL(update_glui_bounds, 0), SVDECL(update_ini, 0), SVDECL(update_chop_colors,0);
-#ifdef pp_HVAC
 SVEXTERN cpp_boundsdata SVDECL(*hvacbounds_cpp, NULL);
 SVEXTERN int SVDECL(nhvacbounds_cpp, 0);
-#endif
 SVEXTERN boundsdata SVDECL(*slicebounds,NULL), SVDECL(*isobounds,NULL), SVDECL(*patchbounds,NULL);
 SVEXTERN boundsdata SVDECL(*slicebounds_temp, NULL);
 SVEXTERN vslicedata SVDECL(*vsliceinfo,NULL);
-#ifdef pp_HVAC
 SVEXTERN boundsdata SVDECL(*hvacbounds, NULL);
 SVEXTERN int SVDECL(nhvacbounds, 0);
-#endif
 SVEXTERN int SVDECL(hvac_maxcells, 0), SVDECL(hvac_n_ducts, 0);
 
 SVEXTERN int force_redisplay;
