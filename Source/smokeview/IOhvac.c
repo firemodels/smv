@@ -486,6 +486,8 @@ void ReadHVACData(int flag){
     GetColorbarLabels(hi->valmin, hi->valmax, nrgb, hi->colorlabels, hi->levels256);
   }
   FREEMEMORY(duct_ncells);
+  GetGlobalHVACBounds();
+  UpdateHVACType();
 }
 
 /* ------------------ SetHVACInfo ------------------------ */

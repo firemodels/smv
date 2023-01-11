@@ -102,6 +102,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define BOUND_SLICE  1
 #define BOUND_PLOT3D 2
 #define BOUND_PATCH  3
+#define BOUND_HVAC   4
 
 #define MINMAX_ALL    0
 #define MINMAX_LOADED 1

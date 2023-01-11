@@ -1264,8 +1264,9 @@ SVEXTERN int rotation_type,eyeview_level;
 SVEXTERN int rotation_type_old,eyeview_SAVE,eyeview_last;
 SVEXTERN int frameratevalue;
 SVEXTERN int setpartmin, setpartmax;
-SVEXTERN int SVDECL(setisomin, PERCENTILE_MIN), SVDECL(setisomax, PERCENTILE_MAX);
-SVEXTERN int SVDECL(glui_setslicemin,GLOBAL_MIN),      SVDECL(glui_setslicemax,GLOBAL_MAX);
+SVEXTERN int SVDECL(setisomin, PERCENTILE_MIN),   SVDECL(setisomax, PERCENTILE_MAX);
+SVEXTERN int SVDECL(glui_setslicemin,GLOBAL_MIN), SVDECL(glui_setslicemax,GLOBAL_MAX);
+SVEXTERN int SVDECL(glui_sethvacmin, GLOBAL_MIN), SVDECL(glui_sethvacmax, GLOBAL_MAX);
 
 SVEXTERN float slice_line_contour_min;
 SVEXTERN float slice_line_contour_max;
@@ -1951,7 +1952,7 @@ SVEXTERN boundsdata SVDECL(*slicebounds,NULL), SVDECL(*isobounds,NULL), SVDECL(*
 SVEXTERN boundsdata SVDECL(*slicebounds_temp, NULL);
 SVEXTERN vslicedata SVDECL(*vsliceinfo,NULL);
 #ifdef pp_HVAC
-SVEXTERN boundsdata SVDECL(*hvacbounds_temp, NULL), SVDECL(*hvacbounds, NULL);
+SVEXTERN boundsdata SVDECL(*hvacbounds, NULL);
 SVEXTERN int SVDECL(nhvacbounds, 0);
 #endif
 SVEXTERN int SVDECL(hvac_maxcells, 0), SVDECL(hvac_n_ducts, 0);
