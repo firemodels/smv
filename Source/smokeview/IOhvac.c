@@ -305,6 +305,25 @@ void InitHvacData(hvacvaldata *hi){
   hi->valmin = 0.0;
 }
 
+/* ------------------ UpdateHVACColorLabels ------------------------ */
+
+void UpdateHVACColorLabels(void){
+  int i;
+
+  for(i = 0; i < hvacvalsinfo->n_node_vars; i++){
+    hvacvaldata *hi;
+
+    hi = hvacvalsinfo->node_vars + i;
+    GetColorbarLabels(hi->valmin, hi->valmax, nrgb, hi->colorlabels, hi->levels256);
+  }
+  for(i = 0; i < hvacvalsinfo->n_duct_vars; i++){
+    hvacvaldata *hi;
+
+    hi = hvacvalsinfo->duct_vars + i;
+    GetColorbarLabels(hi->valmin, hi->valmax, nrgb, hi->colorlabels, hi->levels256);
+  }
+}
+
 /* ------------------ ReadHVACData ------------------------ */
 
 void ReadHVACData(int flag){
@@ -461,7 +480,7 @@ void ReadHVACData(int flag){
       int icell;
 
       for(icell=0;icell<duct_ncells[iduct];icell++){
-	int iframe2;
+	      int iframe2;
 	
         for(iframe2=0;iframe2<nframes;iframe2++){
           int index;
@@ -473,18 +492,7 @@ void ReadHVACData(int flag){
       }
     }
   }
-  for(i = 0;i < n_node_vars;i++){
-    hvacvaldata *hi;
-
-    hi = hvacvalsinfo->node_vars+i;
-    GetColorbarLabels(hi->valmin, hi->valmax,nrgb,hi->colorlabels,hi->levels256);
-  }
-  for(i = 0;i < n_duct_vars;i++){
-    hvacvaldata *hi;
-
-    hi = hvacvalsinfo->duct_vars+i;
-    GetColorbarLabels(hi->valmin, hi->valmax, nrgb, hi->colorlabels, hi->levels256);
-  }
+  UpdateHVACColorLabels();
   FREEMEMORY(duct_ncells);
   GetGlobalHVACBounds();
   UpdateHVACType();
