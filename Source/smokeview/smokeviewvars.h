@@ -35,7 +35,7 @@ SVEXTERN float SVDECL(hvac_offset_inc, 0.1);
 SVEXTERN hvacdata SVDECL(*hvacinfo, NULL);
 SVEXTERN hvacnodedata SVDECL(*hvacnodeinfo, NULL);
 SVEXTERN hvacductdata SVDECL(*hvacductinfo, NULL);
-SVEXTERN int SVDECL(hvac_metro_view, 0), SVDECL(hvac_cell_view, 1);
+SVEXTERN int SVDECL(hvac_metro_view, 0), SVDECL(hvac_cell_view, 0);
 
 SVEXTERN hvacdata SVDECL(*glui_hvac, NULL);
 SVEXTERN int SVDECL(hvac_network_ductnode_index, -1);

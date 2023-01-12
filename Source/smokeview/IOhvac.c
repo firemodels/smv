@@ -1190,6 +1190,7 @@ void DrawHVAC(hvacdata *hvaci){
   SNIFF_ERRORS("after hvac duct lines");
 
   if(hvac_cell_view==1){
+    glColor3fv(foregroundcolor);
     glPointSize(hvaci->node_size);
     glBegin(GL_POINTS);
     for(i = 0; i < nhvacductinfo; i++){
