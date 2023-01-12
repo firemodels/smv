@@ -119,6 +119,7 @@ class bounds_dialog{
   void set_percentile_minmax(float p_min, float p_max);
   void set_research_mode(int flag);
   void set_percentile_mode(int flag);
+  void bounds_dialog::open_minmax(void);
 
   void set_colorbar_digits(int ndigits);
   void set_percentiles(float val_00, float per_valmin, float val_50, float per_valmax, float val_100);
@@ -257,6 +258,12 @@ int bounds_dialog::in_percentile_mode(void){
     if(boundi->set_valmax!=BOUND_PERCENTILE_MAX)return 0;
   }
   return 1;
+}
+
+/* ------------------ open_minmax ------------------------ */
+
+void bounds_dialog::open_minmax(void){
+  ROLLOUT_main_bound->open();
 }
 
   /* ------------------ set_research_mode ------------------------ */
@@ -6448,6 +6455,10 @@ extern "C" void ShowBoundsDialog(int type){
     case DLG_SLICE:
       if(ROLLOUT_slice != NULL)ROLLOUT_slice->open();
       if(ROLLOUT_slice_settings != NULL)ROLLOUT_slice_settings->open();
+      break;
+    case DLG_HVAC:
+      if(ROLLOUT_hvac2 != NULL)ROLLOUT_hvac2->open();
+      hvacboundsCPP.open_minmax();
       break;
     case DLG_PART:
       if(ROLLOUT_part!=NULL)ROLLOUT_part->open();

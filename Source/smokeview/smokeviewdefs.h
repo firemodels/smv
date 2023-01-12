@@ -206,6 +206,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define DLG_PART     3
 #define DLG_PLOT3D   4
 #define DLG_ISO      5
+#define DLG_HVAC     6
 
 #define ZONEVENT_CIRCLE 1
 #define ZONEVENT_SQUARE 2
