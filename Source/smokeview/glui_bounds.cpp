@@ -411,9 +411,14 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
     bounds.cache = *cache_flag;
   }
 
-  strcpy(label1, "global(loaded ");
-  strcat(label1, file_type);
-  strcat(label1, " files)");
+  if(strcmp(file_type, "hvac") == 0){
+    strcpy(label1, "global");
+  }
+  else{
+    strcpy(label1, "global(loaded ");
+    strcat(label1, file_type);
+    strcat(label1, " files)");
+  }
 
   strcpy(label2, "global(all ");
   strcat(label2, file_type);
@@ -441,7 +446,9 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
   RADIO_set_valmin = glui_bounds->add_radiogroup_to_panel(PANEL_min, &(bounds.set_valmin), BOUND_SETVALMIN, Callback);
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "set");
   RADIO_button_loaded_min = glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, label1);
-  RADIO_button_all_min    = glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, label2);
+  if(strcmp(file_type, "hvac") != 0){
+    RADIO_button_all_min = glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, label2);
+  }
   if(cache_flag!=NULL&&percentile_enabled==1&&strcmp(file_type,"hvac")!=0){
     RADIO_button_percentile_min = glui_bounds->add_radiobutton_to_group(RADIO_set_valmin, "percentile");
   }
@@ -458,7 +465,9 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
   RADIO_set_valmax = glui_bounds->add_radiogroup_to_panel(PANEL_max, &(bounds.set_valmax), BOUND_SETVALMAX, Callback);
   glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "set");
   RADIO_button_loaded_max = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, label1);
-  RADIO_button_all_max    = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, label2);
+  if(strcmp(file_type, "hvac") != 0){
+    RADIO_button_all_max = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, label2);
+  }
   if(cache_flag!=NULL&&percentile_enabled==1&&strcmp(file_type,"hvac")!=0){
     RADIO_button_percentile_max = glui_bounds->add_radiobutton_to_group(RADIO_set_valmax, "percentile");
   }
