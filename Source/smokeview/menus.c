@@ -3220,6 +3220,8 @@ void ReloadAllSliceFiles(void){
   slicefile_labelindex = slicefile_labelindex_save;
 }
 
+void LoadHVACMenu(int value);
+
 /* ------------------ LoadUnloadMenu ------------------------ */
 
 void LoadUnloadMenu(int value){
