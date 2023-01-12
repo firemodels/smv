@@ -7610,6 +7610,7 @@ int ReadSMV(bufferstreamdata *stream){
       FREEMEMORY(hvacvalsinfo);
       NewMemory(( void ** )&hvacvalsinfo, sizeof(hvacvalsdata));
       hvacvalsinfo->times = NULL;
+      hvacvalsinfo->loaded = 0;
 
       if(FGETS(buffer, 255, stream) == NULL)BREAK;
       hvacvalsinfo->file = GetCharPtr(TrimFrontBack(buffer));

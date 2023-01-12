@@ -278,7 +278,11 @@ void ReadHVACData(int flag){
   FILE_SIZE file_size;
   int i, iframe;
   int *duct_ncells;
+  float total_time;
 
+  if(flag == LOAD){
+    START_TIMER(total_time);
+  }
   if(hvacvalsinfo == NULL)return;
   FREEMEMORY(hvacvalsinfo->times);
 
@@ -295,6 +299,7 @@ void ReadHVACData(int flag){
     hi = hvacvalsinfo->node_vars + i;
     FREEMEMORY(hi->vals);
   }
+  hvacvalsinfo->loaded = 0;
   if(flag==UNLOAD)return;
 
   stream = fopen(hvacvalsinfo->file, "rb");
@@ -441,6 +446,19 @@ void ReadHVACData(int flag){
     GetGlobalHVACBounds(1);
     UpdateHVACType();
     SetValTypeIndex(BOUND_HVAC, 0);
+
+    STOP_TIMER(total_time);
+    PRINTF("Loading %s", hvacvalsinfo->file);
+    if(file_size > 1000000000){
+      PRINTF(" - %.1f GB/%.1f s\n", ( float )file_size / 1000000000., total_time);
+    }
+    else if(file_size > 1000000){
+      PRINTF(" - %.1f MB/%.1f s\n", ( float )file_size / 1000000., total_time);
+    }
+    else{
+      PRINTF(" - %.0f KB/%.1f s\n", ( float )file_size / 1000., total_time);
+    }
+    hvacvalsinfo->loaded = 1;
   }
   if(flag == BOUNDS_ONLY){
     ReadHVACData(UNLOAD);

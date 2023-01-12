@@ -1332,6 +1332,7 @@ typedef struct _hvacvaldata{
 
 typedef struct _hvacvalsdata {
   char *file;
+  int loaded;
   int n_node_vars, n_duct_vars, ntimes;
   float *times;
   hvacvaldata *node_vars, *duct_vars;

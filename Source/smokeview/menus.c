@@ -3298,6 +3298,10 @@ void LoadUnloadMenu(int value){
       ReadHRR(LOAD);
     }
 
+    //*** reload hvac file
+      if(hvacvalsinfo!=NULL&&hvacvalsinfo->loaded==1){
+        LoadHVACMenu(MENU_HVAC_LOAD);
+      }
 
     //*** reload vector slice and slice files
 
