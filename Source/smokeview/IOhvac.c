@@ -13,7 +13,7 @@
 
 unsigned char hvac_off_color[3] = {0, 255, 0}, hvac_on_color[3] = {255, 0, 0};
 unsigned char *hvac_color_states[2] = {hvac_off_color, hvac_on_color};
-#define HVACCOLORCONV(v,min,max) (max) < (min) ? 0 : 255*((v)-(min)/((max)-(min)))
+#define HVACCOLORCONV(v,min,max) max < min ? 0 : CLAMP(255*((v)-min)/(max-min),0,254)
 
 /* ------------------ OffsetHvacNodes ------------------------ */
 
@@ -307,20 +307,50 @@ void InitHvacData(hvacvaldata *hi){
 
 /* ------------------ UpdateHVACColorLabels ------------------------ */
 
-void UpdateHVACColorLabels(void){
+void UpdateHVACColorLabels(int index){
+  if(index < hvacvalsinfo->n_duct_vars){
+    hvacvaldata *hi;
+    int set_valmin, set_valmax;
+    float valmin, valmax;
+
+    hi = hvacvalsinfo->duct_vars + index;
+    GetMinMax(BOUND_HVAC, hi->label.shortlabel, &set_valmin, &valmin, &set_valmax, &valmax);
+    GetColorbarLabels(valmin, valmax, nrgb, hi->colorlabels, hi->levels256);
+  }
+  else{
+    hvacvaldata *hi;
+    int set_valmin, set_valmax;
+    float valmin, valmax;
+
+    index -= hvacvalsinfo->n_duct_vars;
+    hi = hvacvalsinfo->node_vars + index;
+    GetMinMax(BOUND_HVAC, hi->label.shortlabel, &set_valmin, &valmin, &set_valmax, &valmax);
+    GetColorbarLabels(valmin, valmax, nrgb, hi->colorlabels, hi->levels256);
+  }
+}
+
+/* ------------------ UpdateAllHVACColorLabels ------------------------ */
+
+void UpdateAllHVACColorLabels(void){
   int i;
 
-  for(i = 0; i < hvacvalsinfo->n_node_vars; i++){
-    hvacvaldata *hi;
-
-    hi = hvacvalsinfo->node_vars + i;
-    GetColorbarLabels(hi->valmin, hi->valmax, nrgb, hi->colorlabels, hi->levels256);
-  }
   for(i = 0; i < hvacvalsinfo->n_duct_vars; i++){
     hvacvaldata *hi;
+    int set_valmin, set_valmax;
+    float valmin, valmax;
 
     hi = hvacvalsinfo->duct_vars + i;
+    GetMinMax(BOUND_HVAC, hi->label.shortlabel, &set_valmin, &valmin, &set_valmax, &valmax);
     GetColorbarLabels(hi->valmin, hi->valmax, nrgb, hi->colorlabels, hi->levels256);
+  }
+  for(i = 0; i < hvacvalsinfo->n_node_vars; i++){
+    hvacvaldata *hi;
+    int set_valmin, set_valmax;
+    float valmin, valmax;
+
+    hi = hvacvalsinfo->node_vars + i;
+    GetMinMax(BOUND_HVAC, hi->label.shortlabel, &set_valmin, &valmin, &set_valmax, &valmax);
+    GetColorbarLabels(valmin, valmax, nrgb, hi->colorlabels, hi->levels256);
   }
 }
 
@@ -492,10 +522,11 @@ void ReadHVACData(int flag){
       }
     }
   }
-  UpdateHVACColorLabels();
+  UpdateAllHVACColorLabels();
   FREEMEMORY(duct_ncells);
   GetGlobalHVACBounds();
   UpdateHVACType();
+  SetValTypeIndex(BOUND_HVAC, 0);
 }
 
 /* ------------------ SetHVACInfo ------------------------ */
@@ -1078,7 +1109,15 @@ void DrawHVAC(hvacdata *hvaci){
   glTranslatef(-xbar0, -ybar0, -zbar0);
 
   // draw ducts
-  
+
+  float valmin, valmax;
+  int set_valmin, set_valmax;
+  hvacvaldata *ductvar;
+  if(global_times != NULL && hvacductvar_index>=0){
+    ductvar = hvacvalsinfo->duct_vars + hvacductvar_index;
+    GetOnlyMinMax(BOUND_HVAC, ductvar->label.shortlabel, &set_valmin, &valmin, &set_valmax, &valmax);
+  }
+
   glLineWidth(hvaci->duct_width);
   glBegin(GL_LINES);
   if(hvacductvar_index < 0||global_times==NULL){
@@ -1100,7 +1139,7 @@ void DrawHVAC(hvacdata *hvaci){
     if(node_from == NULL || node_to == NULL)continue;
     float *xyzs;
     int nxyzs, j, *cell_index;
-    
+
     if(hvac_metro_view == 1){
       xyzs       = ducti->xyz_met_cell;
       cell_index = ducti->cell_met;
@@ -1113,17 +1152,16 @@ void DrawHVAC(hvacdata *hvaci){
     }
     if(global_times != NULL && hvacductvar_index >= 0){
       for(j = 0;j < nxyzs;j++){
-        hvacvaldata *ductvar;
         float *xyz, *this_color;
         int cell;
         unsigned char ival;
 
         xyz = xyzs + 3 * j;
         cell = cell_index[j];
-        ductvar = hvacvalsinfo->duct_vars + hvacductvar_index;
 
         int index = HVACVAL(frame_index, i, cell);
-        ival = HVACCOLORCONV(ductvar->vals[index], ductvar->valmin, ductvar->valmax);
+
+        ival = HVACCOLORCONV(ductvar->vals[index], valmin, valmax);
         this_color = rgb_full[ival];
         if(this_color != last_color){
           last_color = this_color;
@@ -1144,6 +1182,7 @@ void DrawHVAC(hvacdata *hvaci){
     }
   }
   glEnd();
+  SNIFF_ERRORS("after hvac duct lines");
 
   if(hvac_cell_view==1){
     glPointSize(hvaci->node_size);
@@ -1172,8 +1211,8 @@ void DrawHVAC(hvacdata *hvaci){
       }
     }
     glEnd();
+    SNIFF_ERRORS("after hvac duct points");
   }
-  SNIFF_ERRORS("after hvac network");
   if(hvaci->show_duct_labels == 1){
     for(i = 0; i < nhvacductinfo; i++){
       hvacductdata *ducti;
@@ -1199,6 +1238,7 @@ void DrawHVAC(hvacdata *hvaci){
       offset = 0.01/xyzmaxdiff;
       Output3Text(foregroundcolor, xyz[0]+offset, xyz[1]+offset, xyz[2]+offset, label);
     }
+    SNIFF_ERRORS("after hvac duct labels");
   }
   if(hvaci->show_component == DUCT_COMPONENT_TEXT){
     for(i = 0; i < nhvacductinfo; i++){
@@ -1225,6 +1265,7 @@ void DrawHVAC(hvacdata *hvaci){
       xyz[2] += 0.01 / xyzmaxdiff;
       Output3Text(foregroundcolor, xyz[0], xyz[1], xyz[2]+0.01/xyzmaxdiff, label);
     }
+    SNIFF_ERRORS("after hvac duct component text");
   }
   if(hvaci->show_component == DUCT_COMPONENT_SYMBOLS){
     for(i = 0; i < nhvacductinfo; i++){
@@ -1267,6 +1308,7 @@ void DrawHVAC(hvacdata *hvaci){
         break;
       }
     }
+    SNIFF_ERRORS("after hvac component symbols");
   }
 
   // draw nodes
@@ -1298,6 +1340,7 @@ void DrawHVAC(hvacdata *hvaci){
     glVertex3fv(nodei->xyz);
   }
   glEnd();
+  SNIFF_ERRORS("after hvac duct nodes");
 
   uc_color[0] = CLAMP(hvaci->node_color[0], 0, 255);
   uc_color[1] = CLAMP(hvaci->node_color[1], 0, 255);
@@ -1316,6 +1359,7 @@ void DrawHVAC(hvacdata *hvaci){
       strcpy(label, nodei->node_name);
       Output3Text(foregroundcolor, nodei->xyz[0]+offset, nodei->xyz[1]+offset, nodei->xyz[2]+offset, label);
     }
+    SNIFF_ERRORS("after hvac node labels");
   }
   if(hvaci->show_filters == NODE_FILTERS_LABELS){
     for(i = 0; i < nhvacnodeinfo; i++){
@@ -1330,6 +1374,7 @@ void DrawHVAC(hvacdata *hvaci){
       offset = 0.01 / xyzmaxdiff;
       Output3Text(foregroundcolor, nodei->xyz[0]+offset, nodei->xyz[1] + offset, nodei->xyz[2] + offset, label);
     }
+    SNIFF_ERRORS("after hvac node filter labels");
   }
   if(hvaci->show_filters == NODE_FILTERS_SYMBOLS){
     for(i = 0; i < nhvacnodeinfo; i++){
@@ -1344,6 +1389,7 @@ void DrawHVAC(hvacdata *hvaci){
       if(nodei->filter == HVAC_FILTER_NO)continue;
       DrawHVACFilter(nodei->duct, nodei->xyz, size);
     }
+    SNIFF_ERRORS("after hvac node filter symbols");
   }
   glPopMatrix();
 }

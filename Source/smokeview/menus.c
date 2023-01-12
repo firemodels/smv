@@ -6729,6 +6729,7 @@ void HVACNodeValueMenu(int value){
       }
     }
   }
+  SetValTypeIndex(BOUND_HVAC, hvacvalsinfo->n_duct_vars+value);
   updatemenu = 1;
   GLUTPOSTREDISPLAY;
 }
@@ -6756,6 +6757,7 @@ void HVACDuctValueMenu(int value){
   }
   updatemenu = 1;
   GLUTPOSTREDISPLAY;
+  SetValTypeIndex(BOUND_HVAC, value);
 }
 
 /* ------------------ LoadHVACMenu ------------------------ */
@@ -9524,10 +9526,9 @@ updatemenu=0;
         strcat(label, labeli);
         glutAddMenuEntry(label, i);
       }
-
       CREATEMENU(hvacvaluemenu, HVACMenu);
-      GLUTADDSUBMENU(_("Node"), hvacnodevaluemenu);
       GLUTADDSUBMENU(_("Duct"), hvacductvaluemenu);
+      GLUTADDSUBMENU(_("Node"), hvacnodevaluemenu);
       glutAddMenuEntry("Hide all", MENU_HVAC_HIDE_ALL_VALUES);
     }
 

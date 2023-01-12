@@ -646,10 +646,12 @@ void bounds_dialog::set_valtype_index(int index){
 
   i = CLAMP(index, 0, nall_bounds-1);
 
-  boundi = all_bounds+i;
-  boundi->set_valtype = i;
-  RADIO_set_valtype->set_int_val(i);
-  CB(BOUND_VAL_TYPE);
+  if(all_bounds != NULL){
+    boundi = all_bounds + i;
+    boundi->set_valtype = i;
+    RADIO_set_valtype->set_int_val(i);
+    CB(BOUND_VAL_TYPE);
+  }
 }
 
 /* ------------------ get_valtype ------------------------ */
@@ -1809,6 +1811,15 @@ extern "C" void HVACBoundsCPP_CB(int var){
     if(npatchinfo>0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
     if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
     if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
+    break;
+  case BOUND_VALMAX:
+  case BOUND_VALMIN:
+  case BOUND_SETVALMIN:
+  case BOUND_SETVALMAX:
+    int valtype;
+
+    valtype = GetValType(BOUND_HVAC);
+    UpdateHVACColorLabels(valtype);
     break;
   default:
     break;

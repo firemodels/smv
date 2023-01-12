@@ -38,6 +38,8 @@ EXTERNCPP hvacnodedata *GetHVACNode(hvacdata *hvaci, int node_id);
 EXTERNCPP void InitHvacData(hvacvaldata *hi);
 EXTERNCPP void ReadHVACData(int flag);
 EXTERNCPP int IsHVACVisible(void);
+EXTERNCPP void UpdateHVACColorLabels(int index);
+EXTERNCPP void UpdateAllHVACColorLabels(void);
 
 #ifdef pp_REFRESH
 EXTERNCPP void PeriodicRefresh(int var);
