@@ -1804,20 +1804,23 @@ extern "C" void HVACBoundsCPP_CB(int var){
   hvacboundsCPP.CB(var);
   switch(var){
   case BOUND_RELOAD_DATA:
-    ReadHVACData(HVAC_LOAD);
+    ReadHVACData(LOAD);
     break;
   case BOUND_RESEARCH_MODE:
-    if(npartinfo>0)partboundsCPP.CB(BOUND_RESEARCH_MODE);
-    if(npatchinfo>0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
-    if(nplot3dinfo>0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
-    if(nsliceinfo>0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
+    if(npartinfo > 0)partboundsCPP.CB(BOUND_RESEARCH_MODE);
+    if(npatchinfo > 0)patchboundsCPP.CB(BOUND_RESEARCH_MODE);
+    if(nplot3dinfo > 0)plot3dboundsCPP.CB(BOUND_RESEARCH_MODE);
+    if(nsliceinfo > 0)sliceboundsCPP.CB(BOUND_RESEARCH_MODE);
+    HVACBoundsCPP_CB(BOUND_UPDATE_COLORS);
     break;
   case BOUND_VALMAX:
   case BOUND_VALMIN:
   case BOUND_SETVALMIN:
   case BOUND_SETVALMAX:
+  case BOUND_UPDATE_COLORS:
     int valtype;
 
+    hvacboundsCPP.CB(var);
     valtype = GetValType(BOUND_HVAC);
     UpdateHVACColorLabels(valtype);
     break;
@@ -6156,31 +6159,14 @@ extern "C" void SliceBoundCB(int var){
       SetLabelControls();
       break;
     case RESEARCH_MODE:
-     SetResearchMode(research_mode);
-      {
-
-        // slice files
-
-        SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
-
-        // boundary files
-
-        PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
-
-        // particle files
-
-        PartBoundsCPP_CB(BOUND_RELOAD_DATA);
-
-        // plot3d files
-
-        if(nplot3dloaded>0){
-          Plot3DBoundsCPP_CB(BOUND_UPDATE_COLORS);
-        }
-        if(research_mode==1)PRINTF("\nresearch mode on, using global bounds\n\n");
-      }
-      if(research_mode==0){
-        PRINTF("research mode off\n");
-      }
+      SetResearchMode(research_mode);
+      HVACBoundsCPP_CB(BOUND_UPDATE_COLORS);
+      SliceBoundsCPP_CB(BOUND_UPDATE_COLORS);
+      PatchBoundsCPP_CB(BOUND_UPDATE_COLORS);
+      PartBoundsCPP_CB(BOUND_RELOAD_DATA);
+      if(nplot3dloaded>0)Plot3DBoundsCPP_CB(BOUND_UPDATE_COLORS);
+      if(research_mode==1)PRINTF("\nresearch mode on, using global bounds\n\n");
+      if(research_mode==0)PRINTF("research mode off\n");
       SliceBoundCB(FILE_UPDATE);
       break;
     case SMOOTH_SURFACES:

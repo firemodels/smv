@@ -382,7 +382,7 @@ void ReadHVACData(int flag){
     hi = hvacvalsinfo->node_vars + i;
     FREEMEMORY(hi->vals);
   }
-  if(flag==HVAC_UNLOAD)return;
+  if(flag==UNLOAD)return;
 
   stream = fopen(hvacvalsinfo->file, "rb");
   if(stream == NULL)return;
@@ -522,11 +522,16 @@ void ReadHVACData(int flag){
       }
     }
   }
-  UpdateAllHVACColorLabels();
   FREEMEMORY(duct_ncells);
-  GetGlobalHVACBounds();
-  UpdateHVACType();
-  SetValTypeIndex(BOUND_HVAC, 0);
+  if(flag == LOAD){
+    UpdateAllHVACColorLabels();
+    GetGlobalHVACBounds(1);
+    UpdateHVACType();
+    SetValTypeIndex(BOUND_HVAC, 0);
+  }
+  if(flag == BOUNDS_ONLY){
+    ReadHVACData(UNLOAD);
+  }
 }
 
 /* ------------------ SetHVACInfo ------------------------ */

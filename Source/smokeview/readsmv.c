@@ -2935,8 +2935,7 @@ void UpdateBoundInfo(void){
   GetGlobalPartBounds(ALL_FILES);
   GetGlobalSliceBounds();
   GetGlobalPatchBounds();
-  ReadHVACData(HVAC_LOAD);
-  GetGlobalHVACBounds();
+  GetGlobalHVACBounds(0);
 }
 
 /*
@@ -7611,13 +7610,13 @@ int ReadSMV(bufferstreamdata *stream){
       FREEMEMORY(hvacvalsinfo);
       NewMemory(( void ** )&hvacvalsinfo, sizeof(hvacvalsdata));
       hvacvalsinfo->times = NULL;
-      
+
       if(FGETS(buffer, 255, stream) == NULL)BREAK;
       hvacvalsinfo->file = GetCharPtr(TrimFrontBack(buffer));
-      
+
       if(FGETS(buffer, 255, stream) == NULL)BREAK;
       sscanf(buffer, "%i", &hvacvalsinfo->n_node_vars);
-      
+
       NewMemory((void **)&hvacvalsinfo->node_vars, hvacvalsinfo->n_node_vars * sizeof(hvacvaldata));
       for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
         hvacvaldata *hi;

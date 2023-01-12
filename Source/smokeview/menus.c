@@ -6714,7 +6714,7 @@ void HVACNodeValueMenu(int value){
   int i;
 
   if(hvacvalsinfo->times==NULL){
-    ReadHVACData(HVAC_LOAD);
+    ReadHVACData(LOAD);
   }
   SetHVACNodeIndex(value);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
@@ -6740,7 +6740,7 @@ void HVACDuctValueMenu(int value){
   int i;
 
   if(hvacvalsinfo->times==NULL){
-    ReadHVACData(HVAC_LOAD);
+    ReadHVACData(LOAD);
   }
   SetHVACDuctIndex(value);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
@@ -6765,7 +6765,7 @@ void HVACDuctValueMenu(int value){
 void LoadHVACMenu(int value){
   switch(value){
     case MENU_HVAC_LOAD:
-      ReadHVACData(HVAC_LOAD);
+      ReadHVACData(LOAD);
       SetHVACDuct();
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       UpdateTimes();
@@ -6774,7 +6774,7 @@ void LoadHVACMenu(int value){
     case MENU_HVAC_UNLOAD:
       SetHVACNodeIndex(-1);
       SetHVACDuctIndex(-1);
-      ReadHVACData(HVAC_UNLOAD);
+      ReadHVACData(UNLOAD);
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       UpdateTimes();
       GLUTPOSTREDISPLAY;

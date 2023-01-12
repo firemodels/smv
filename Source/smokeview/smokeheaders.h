@@ -160,7 +160,7 @@ EXTERNCPP void GetGlobalPatchBounds(void);
 EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded_max);
 EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(void);
-EXTERNCPP void GetGlobalHVACBounds(void);
+EXTERNCPP void GetGlobalHVACBounds(int flag);
 EXTERNCPP void UpdateHVACType(void);
 EXTERNCPP void UpdateGlobalFEDSliceBounds(void);
 

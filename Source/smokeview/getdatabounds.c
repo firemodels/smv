@@ -682,12 +682,13 @@ void GetHVACBounds(char *shortlabel, float *valminptr, float *valmaxptr){
 
 /* ------------------ GetGlobalHVACBounds ------------------------ */
 
-void GetGlobalHVACBounds(void){
+void GetGlobalHVACBounds(int flag){
   int i;
 
   int nhvacboundsmax = 0;
   if(hvacvalsinfo != NULL)nhvacboundsmax = hvacvalsinfo->n_duct_vars + hvacvalsinfo->n_node_vars;
   if(nhvacboundsmax == 0)return;
+  if(flag==0)ReadHVACData(BOUNDS_ONLY);
   for(i = 0;i < nhvacbounds;i++){
     boundsdata *boundi;
     float valmin, valmax;
