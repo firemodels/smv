@@ -119,7 +119,7 @@ class bounds_dialog{
   void set_percentile_minmax(float p_min, float p_max);
   void set_research_mode(int flag);
   void set_percentile_mode(int flag);
-  void bounds_dialog::open_minmax(void);
+  void open_minmax(void);
 
   void set_colorbar_digits(int ndigits);
   void set_percentiles(float val_00, float per_valmin, float val_50, float per_valmax, float val_100);
