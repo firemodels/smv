@@ -466,6 +466,10 @@ EXTERNCPP hvacductdata *GetHVACDuctID(char *duct_name);
 EXTERNCPP hvacnodedata *GetHVACNodeID(char *node_name);
 EXTERNCPP void GetCellXYZs(float *xyz, int nxyz, int ncells, float **xyz_cellptr, int *nxyz_cell, int **cell_indptr);
 EXTERNCPP void UpdateHVACViews(void);
+EXTERNCPP void HVACDuctValueMenu(int value);
+EXTERNCPP void HVACNodeValueMenu(int value);
+EXTERNCPP void UpdateHVACVarLists(void);
+
 
 EXTERNCPP void HideGluiGeometry(void);
 

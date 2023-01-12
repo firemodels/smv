@@ -6734,6 +6734,7 @@ void HVACNodeValueMenu(int value){
   }
   SetValTypeIndex(BOUND_HVAC, hvacvalsinfo->n_duct_vars+value);
   updatemenu = 1;
+  UpdateHVACVarLists();
   GLUTPOSTREDISPLAY;
 }
   
@@ -6759,6 +6760,7 @@ void HVACDuctValueMenu(int value){
     }
   }
   updatemenu = 1;
+  UpdateHVACVarLists();
   GLUTPOSTREDISPLAY;
   SetValTypeIndex(BOUND_HVAC, value);
 }

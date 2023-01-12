@@ -55,6 +55,8 @@ int      ngeomprocinfo = 0;
 #define HVAC_SHOW_CONNECTIONS  -16
 #define HVAC_DUCTNODE_NETWORK  -17
 #define HVAC_CELL_VIEW         -18
+#define HVAC_NODE_LIST         -19
+#define HVAC_DUCT_LIST         -20
 
 GLUI_Checkbox **CHECKBOX_hvac_show_networks    = NULL;
 GLUI_Checkbox **CHECKBOX_hvac_show_connections = NULL;
@@ -159,6 +161,8 @@ GLUI_EditText *EDIT_xmax=NULL, *EDIT_ymax=NULL, *EDIT_zmax=NULL;
 GLUI_Listbox *LIST_obst_surface[7]={NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 GLUI_Listbox *LIST_geom_surface=NULL;
 GLUI_Listbox *LIST_hvac_network_ductnode_index = NULL;
+GLUI_Listbox *LIST_hvacnodevar_index = NULL;
+GLUI_Listbox *LIST_hvacductvar_index = NULL;
 
 GLUI_Panel *PANEL_geomtest2 = NULL;
 GLUI_Panel *PANEL_cfaces = NULL;
@@ -445,6 +449,13 @@ extern "C" void HVAC2Glui(int index){
   RADIO_hvac_show_filters->set_int_val(glui_hvac->show_filters);
 }
 
+/* ------------------ UpdateHVACVarLists ------------------------ */
+
+extern "C" void UpdateHVACVarLists(void){
+  if(LIST_hvacductvar_index!=NULL)LIST_hvacductvar_index->set_int_val(hvacductvar_index);
+  if(LIST_hvacnodevar_index!=NULL)LIST_hvacnodevar_index->set_int_val(hvacnodevar_index);
+}
+
 /* ------------------ HvacCB ------------------------ */
 
 extern "C" void HvacCB(int var){
@@ -455,6 +466,20 @@ extern "C" void HvacCB(int var){
     return;
   }
   switch(var){
+    case HVAC_NODE_LIST:
+      if(hvacnodevar_index>=0){
+        if(hvacvalsinfo->loaded == 0)ReadHVACData(LOAD);
+        if(LIST_hvacductvar_index!=NULL)LIST_hvacductvar_index->set_int_val(-1);
+        HVACNodeValueMenu(hvacnodevar_index);
+      }
+      break;
+    case HVAC_DUCT_LIST:
+      if(hvacductvar_index>=0){
+        if(hvacvalsinfo->loaded == 0)ReadHVACData(LOAD);
+        if(LIST_hvacnodevar_index!=NULL)LIST_hvacnodevar_index->set_int_val(-1);
+        HVACDuctValueMenu(hvacductvar_index);
+      }
+    break;
     case HVAC_DUCTNODE_NETWORK:
       HVAC2Glui(hvac_network_ductnode_index);
       break;
@@ -633,6 +658,17 @@ extern "C" void GluiGeometrySetup(int main_window){
     glui_geometry->add_radiobutton_to_group(RADIO_hvac_show_component_labels, "hide");
     SPINNER_hvac_component_size = glui_geometry->add_spinner_to_panel(PANEL_hvac_components, "size", GLUI_SPINNER_FLOAT, &glui_hvac->component_size, HVAC_PROPS, HvacCB);
 
+    if(hvacvalsinfo!=NULL&&hvacvalsinfo->n_duct_vars>0){
+      LIST_hvacductvar_index = glui_geometry->add_listbox_to_panel(PANEL_hvac_duct, "quantity:", &hvacductvar_index, HVAC_DUCT_LIST, HvacCB);
+      LIST_hvacductvar_index->add_item(-1, "");
+      for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
+        hvacvaldata *hi;
+
+        hi = hvacvalsinfo->duct_vars + i;
+        LIST_hvacductvar_index->add_item(i, hi->label.shortlabel);
+      }
+    }
+
     glui_geometry->add_column_to_panel(PANEL_hvac_group2, false);
     PANEL_hvac_node                = glui_geometry->add_panel_to_panel(PANEL_hvac_group2, "node properties");
 
@@ -650,6 +686,16 @@ extern "C" void GluiGeometrySetup(int main_window){
     for(i = 0; i < 3; i++){
       SPINNER_hvac_duct_color[i]->set_int_limits(0, 255);
       SPINNER_hvac_node_color[i]->set_int_limits(0, 255);
+    }
+    if(hvacvalsinfo!=NULL&&hvacvalsinfo->n_node_vars>0){
+      LIST_hvacnodevar_index = glui_geometry->add_listbox_to_panel(PANEL_hvac_node, "quantity:", &hvacnodevar_index, HVAC_NODE_LIST, HvacCB);
+      LIST_hvacnodevar_index->add_item(-1, "");
+      for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
+        hvacvaldata *hi;
+
+        hi = hvacvalsinfo->node_vars + i;
+        LIST_hvacnodevar_index->add_item(i, hi->label.shortlabel);
+      }
     }
     HvacCB(HVAC_PROPS);
     HvacCB(HVAC_SHOW_NETWORKS);   
