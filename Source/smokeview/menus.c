@@ -292,7 +292,6 @@ float     part_load_time;
 #define MENU_HVAC_SHOWALL_NETWORKS        -2
 #define MENU_HVAC_HIDEALL_NETWORKS        -3
 #define MENU_HVAC_METRO_VIEW              -4
-#define MENU_HVAC_OFFSET_NODES            -14
 #define MENU_HVAC_DIALOG_HVAC             -5
 #define MENU_HVAC_SHOW_COMPONENT_TEXT     -6
 #define MENU_HVAC_SHOW_COMPONENT_SYMBOLS  -7
@@ -6833,11 +6832,6 @@ void HVACMenu(int value){
       hvac_cell_view = 1 - hvac_cell_view;
       UpdateHVACViews();
       break;
-    case MENU_HVAC_OFFSET_NODES:
-      hvac_offset_nodes = 1 - hvac_offset_nodes;
-      SetHVACInfo();
-      UpdateHvacOffset();        
-      break;
     case MENU_HVAC_DIALOG_HVAC:
       DialogMenu(DIALOG_HVAC);
       break;
@@ -9572,12 +9566,6 @@ updatemenu=0;
     }
     else{
       glutAddMenuEntry("cell view", MENU_HVAC_CELL_VIEW);
-    }
-    if(hvac_offset_nodes == 1){
-      glutAddMenuEntry("*offset nodes", MENU_HVAC_OFFSET_NODES);
-    }
-    else{
-      glutAddMenuEntry("offset nodes", MENU_HVAC_OFFSET_NODES);
     }
     glutAddMenuEntry(_("Settings..."), MENU_HVAC_DIALOG_HVAC);
   }

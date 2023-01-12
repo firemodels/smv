@@ -15,94 +15,7 @@ unsigned char hvac_off_color[3] = {0, 255, 0}, hvac_on_color[3] = {255, 0, 0};
 unsigned char *hvac_color_states[2] = {hvac_off_color, hvac_on_color};
 #define HVACCOLORCONV(v,min,max) max < min ? 0 : CLAMP(255*((v)-min)/(max-min),0,254)
 
-/* ------------------ OffsetHvacNodes ------------------------ */
-
-void OffsetHvacNodes(int *line, int *hvac_index, int flag){
-  int offset_index;
-  int i;
-
-  offset_index = 0;
-  for(i = 1;i < nhvacnodeinfo;i++){
-    if(line[i] == 1){
-      hvacnodedata *nodei;
-      float *xyz, *xyz_orig;
-
-      offset_index++;
-      nodei = hvacnodeinfo + hvac_index[i];
-      xyz      = nodei->xyz;
-      xyz_orig = nodei->xyz_orig;
-      if(flag == 0){
-        xyz[1] = xyz_orig[1] + (float)offset_index * hvac_offset_inc;
-        xyz[2] = xyz_orig[2] + (float)offset_index * hvac_offset_inc;
-      }
-      else if(flag == 1){
-        xyz[0] = xyz_orig[0] + (float)offset_index * hvac_offset_inc;
-        xyz[2] = xyz_orig[2] + (float)offset_index * hvac_offset_inc;
-      }
-      else{
-        xyz[0] = xyz_orig[0] + (float)offset_index * hvac_offset_inc;
-        xyz[1] = xyz_orig[1] + (float)offset_index * hvac_offset_inc;
-      }
-    }
-    else{
-      offset_index = 0;
-    }
-  }
-}
-
 #define NODE_XYZ 0.1
-
-/* ------------------ CompareFloatYZ ------------------------ */
-
-int CompareFloatYZ(const void *arg1, const void *arg2){
-  int i, j;
-  float *xyzi, *xyzj;
-
-  i = *(int *)arg1;
-  j = *(int *)arg2;
-  xyzi = hvacnodeinfo[i].xyz_orig;
-  xyzj = hvacnodeinfo[j].xyz_orig;
-  if(xyzi[1] < xyzj[1] - NODE_XYZ)return -1;
-  if(xyzi[1] > xyzj[1] + NODE_XYZ)return 1;
-  if(xyzi[2] < xyzj[2] - NODE_XYZ)return -1;
-  if(xyzi[2] > xyzj[2] + NODE_XYZ)return 1;
-  return 0;
-}
-
-/* ------------------ CompareFloatXZ ------------------------ */
-
-int CompareFloatXZ(const void *arg1, const void *arg2){
-  int i, j;
-  float *xyzi, *xyzj;
-
-  i = *(int *)arg1;
-  j = *(int *)arg2;
-  xyzi = hvacnodeinfo[i].xyz_orig;
-  xyzj = hvacnodeinfo[j].xyz_orig;
-  if(xyzi[0] < xyzj[0] - NODE_XYZ)return -1;
-  if(xyzi[0] > xyzj[0] + NODE_XYZ)return 1;
-  if(xyzi[2] < xyzj[2] - NODE_XYZ)return -1;
-  if(xyzi[2] > xyzj[2] + NODE_XYZ)return 1;
-  return 0;
-}
-
-/* ------------------ CompareFloatXY ------------------------ */
-
-int CompareFloatXY(const void *arg1, const void *arg2){
-  int i, j;
-  float *xyzi, *xyzj;
-
-  i = *(int *)arg1;
-  j = *(int *)arg2;
-  xyzi = hvacnodeinfo[i].xyz_orig;
-  xyzj = hvacnodeinfo[j].xyz_orig;
-  if(xyzi[0] < xyzj[0] - NODE_XYZ)return -1;
-  if(xyzi[0] > xyzj[0] + NODE_XYZ)return 1;
-  if(xyzi[1] < xyzj[1] - NODE_XYZ)return -1;
-  if(xyzi[1] > xyzj[1] + NODE_XYZ)return 1;
-  return 0;
-}
-
 
 /* ------------------ CompareHvacConnect ------------------------ */
 
@@ -539,9 +452,6 @@ void ReadHVACData(int flag){
 void SetHVACInfo(void){
   int i;
 
-  int *hvac_sort_yz, *hvac_sort_xz, *hvac_sort_xy;
-  int *line_yz, *line_xz, *line_xy;
-
   if(hvacconnectinfo == NULL){
     NewMemory((void **)&hvacconnectinfo, (nhvacnodeinfo+nhvacductinfo+1)*sizeof(hvacconnectdata));
     nhvacconnectinfo = 0;
@@ -603,49 +513,11 @@ void SetHVACInfo(void){
       FREEMEMORY(hvacconnectinfo);
     }
   }
-  if(hvac_offset_nodes==1){
-    NewMemory((void **)&hvac_sort_yz, nhvacnodeinfo * sizeof(int));
-    NewMemory((void **)&hvac_sort_xz, nhvacnodeinfo * sizeof(int));
-    NewMemory((void **)&hvac_sort_xy, nhvacnodeinfo * sizeof(int));
-    NewMemory((void **)&line_yz, nhvacnodeinfo * sizeof(int));
-    NewMemory((void **)&line_xz, nhvacnodeinfo * sizeof(int));
-    NewMemory((void **)&line_xy, nhvacnodeinfo * sizeof(int));
-    for(i = 0;i < nhvacnodeinfo;i++){
-      hvac_sort_yz[i] = i;
-      hvac_sort_xz[i] = i;
-      hvac_sort_xy[i] = i;
-    }
-    qsort((int *)hvac_sort_yz, nhvacnodeinfo, sizeof(int), CompareFloatYZ);
-    qsort((int *)hvac_sort_xz, nhvacnodeinfo, sizeof(int), CompareFloatXZ);
-    qsort((int *)hvac_sort_xy, nhvacnodeinfo, sizeof(int), CompareFloatXY);
-    line_yz[0]=0;
-    line_xz[0]=0;
-    line_xy[0]=0;
-    for(i=1;i<nhvacnodeinfo;i++){
-      line_yz[i]=0;
-      line_xz[i]=0;
-      line_xy[i]=0;
-      if(CompareFloatYZ(hvac_sort_yz + i, hvac_sort_yz + i - 1) == 0)line_yz[i]=1;
-      if(CompareFloatYZ(hvac_sort_xz + i, hvac_sort_xz + i - 1) == 0)line_xz[i]=1;
-      if(CompareFloatYZ(hvac_sort_xy + i, hvac_sort_xy + i - 1) == 0)line_xy[i]=1;
-    }
-    OffsetHvacNodes(line_yz, hvac_sort_yz, 0);
-    OffsetHvacNodes(line_xz, hvac_sort_xz, 1);
-    OffsetHvacNodes(line_xy, hvac_sort_xy, 2);
-    FREEMEMORY(hvac_sort_yz);
-    FREEMEMORY(hvac_sort_xz);
-    FREEMEMORY(hvac_sort_xy);
-    FREEMEMORY(line_yz);
-    FREEMEMORY(line_xz);
-    FREEMEMORY(line_xy);
-  }
-  else{
-    for(i = 0;i < nhvacnodeinfo;i++){
-      hvacnodedata *nodei;
+  for(i = 0;i < nhvacnodeinfo;i++){
+    hvacnodedata *nodei;
 
-      nodei = hvacnodeinfo + i;
-      memcpy(nodei->xyz, nodei->xyz_orig, 3*sizeof(float));
-    }
+    nodei = hvacnodeinfo + i;
+    memcpy(nodei->xyz, nodei->xyz_orig, 3*sizeof(float));
   }
 
   for(i = 0;i < nhvacductinfo;i++){

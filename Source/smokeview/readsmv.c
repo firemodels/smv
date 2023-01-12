@@ -11831,14 +11831,13 @@ int ReadIni2(char *inifile, int localfile){
     }
     if(MatchINI(buffer, "HVACVIEW") == 1&&hvacinfo!=NULL&&nhvacinfo > 0){
       int nh, dummy;
+      float rdummy;
 
       fgets(buffer, 255, stream);
       sscanf(buffer, " %i %i %i %i %f %i", 
-        &nh, &hvac_metro_view, &dummy, &hvac_offset_nodes, &hvac_offset_inc, &hvac_cell_view);
+        &nh, &hvac_metro_view, &dummy, &dummy, &rdummy, &hvac_cell_view);
       ONEORZERO(hvac_metro_view);
       ONEORZERO(hvac_cell_view);
-      ONEORZERO(hvac_offset_nodes);
-      hvac_offset_inc = MAX(0.0, hvac_offset_inc);
 
       nh = MIN(nhvacinfo, nh);
       for(i = 0; i < nh; i++){
@@ -16246,7 +16245,7 @@ void WriteIni(int flag,char *filename){
   fprintf(fileout, " %i %i %i %f %f %i\n",show_boundary_shaded, show_boundary_outline, show_boundary_points, geomboundary_linewidth, geomboundary_pointsize, boundary_edgetype);
   if(nhvacinfo > 0){
     fprintf(fileout, "HVACVIEW\n");
-    fprintf(fileout, " %i %i %i %i %f %i\n", nhvacinfo, hvac_metro_view, 1, hvac_offset_nodes, hvac_offset_inc, hvac_cell_view);
+    fprintf(fileout, " %i %i %i %i %f %i\n", nhvacinfo, hvac_metro_view, 1, 0, 0.0, hvac_cell_view);
     for(i = 0; i < nhvacinfo; i++){
       hvacdata *hvaci;
       int *dc, *nc;
