@@ -1817,6 +1817,7 @@ extern "C" void SetChopMax(int type, char *label, int set_valmax, float valmax){
 /* ------------------ HVAC callback: HVACBoundsCPP_CB ------------------------ */
 
 extern "C" void HVACBoundsCPP_CB(int var){
+  if(nhvacbounds == 0)return;
   hvacboundsCPP.CB(var);
   switch(var){
   case BOUND_RELOAD_DATA:
