@@ -599,12 +599,12 @@ extern "C" void GluiGeometrySetup(int main_window){
     NewMemory((void **)&CHECKBOX_hvac_show_networks, nhvacinfo*sizeof(GLUI_Checkbox *));
     PANEL_hvac_options = glui_geometry->add_panel_to_panel(ROLLOUT_hvac, "", false);
     PANEL_hvac_options->set_alignment(GLUI_ALIGN_LEFT);
-    if(nhvacconnectinfo > 0){
-      CHECKBOX_hvac_show_network = glui_geometry->add_checkbox_to_panel(PANEL_hvac_options, "Show ducts/nodes by network", &hvac_show_networks, HVAC_SHOW_NETWORKS, HvacCB);
-      CHECKBOX_hvac_show_connection = glui_geometry->add_checkbox_to_panel(PANEL_hvac_options, "Show ducts/nodes by connection", &hvac_show_connections, HVAC_SHOW_CONNECTIONS, HvacCB);
-    }
     CHECKBOX_hvac_metro_view = glui_geometry->add_checkbox_to_panel(PANEL_hvac_options, "metro view", &hvac_metro_view, HVAC_METRO_VIEW, HvacCB);
     CHECKBOX_hvac_cell_view = glui_geometry->add_checkbox_to_panel(PANEL_hvac_options, "show cells", &hvac_cell_view, HVAC_CELL_VIEW, HvacCB);
+    if(nhvacconnectinfo > 0){
+      CHECKBOX_hvac_show_network = glui_geometry->add_checkbox_to_panel(PANEL_hvac_options, "Show by network", &hvac_show_networks, HVAC_SHOW_NETWORKS, HvacCB);
+      CHECKBOX_hvac_show_connection = glui_geometry->add_checkbox_to_panel(PANEL_hvac_options, "Show by connection", &hvac_show_connections, HVAC_SHOW_CONNECTIONS, HvacCB);
+    }
     if(nhvacconnectinfo > 0){
       PANEL_hvac_group1 = glui_geometry->add_panel_to_panel(ROLLOUT_hvac, "", false);
       PANEL_hvac_network = glui_geometry->add_panel_to_panel(PANEL_hvac_group1, "networks");
@@ -643,7 +643,7 @@ extern "C" void GluiGeometrySetup(int main_window){
       }
     }
 
-    LIST_hvac_network_ductnode_index = glui_geometry->add_listbox_to_panel(ROLLOUT_hvac, "set duct/node properties for network:", &hvac_network_ductnode_index, HVAC_DUCTNODE_NETWORK, HvacCB);
+    LIST_hvac_network_ductnode_index = glui_geometry->add_listbox_to_panel(ROLLOUT_hvac, "set duct/node properties for:", &hvac_network_ductnode_index, HVAC_DUCTNODE_NETWORK, HvacCB);
     LIST_hvac_network_ductnode_index->add_item(-1, "all networks");
     for(i = 0; i<nhvacinfo; i++){
       hvacdata *hvaci;
