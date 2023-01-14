@@ -5325,10 +5325,10 @@ extern "C" void GluiBoundsSetup(int main_window){
 #ifdef pp_ADJUST_COLORBAR
   PANEL_adjust_colorbar = glui_bounds->add_panel_to_panel(PANEL_coloring, _("adjust colorbar"));
   RADIO_adjust_colorbar = glui_bounds->add_radiogroup_to_panel(PANEL_adjust_colorbar,&adjust_colorbar,ADJUST_COLORBAR, SliceBoundCB);
+  glui_bounds->add_radiobutton_to_group(RADIO_adjust_colorbar, _("none"));
   glui_bounds->add_radiobutton_to_group(RADIO_adjust_colorbar,_("constant(average)"));
   glui_bounds->add_radiobutton_to_group(RADIO_adjust_colorbar,_("min->max"));
   glui_bounds->add_radiobutton_to_group(RADIO_adjust_colorbar,_("0->1"));
-  glui_bounds->add_radiobutton_to_group(RADIO_adjust_colorbar,_("none"));
 #endif
 
   PANEL_extreme = glui_bounds->add_panel_to_panel(ROLLOUT_coloring, "", GLUI_PANEL_NONE);

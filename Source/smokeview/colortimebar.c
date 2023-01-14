@@ -18,6 +18,7 @@ void AdjustRGB(float rgb_arg[256][4], int option){
   // 2 linear 0 1
   int i;
 
+  if(option == COLORBAR_ADJUST_NONE)return;
   for(i = 0;i < 255;i++){
     greys[i] = TOBW(rgb_arg[i]);
   }
@@ -40,13 +41,13 @@ void AdjustRGB(float rgb_arg[256][4], int option){
     }
     else{
       switch(option){
-      case 0:
+      case COLORBAR_ADJUST_CONSTANT:
         factor = avg;
         break;
-      case 1:
+      case COLORBAR_ADJUST_MINMAX:
         factor = min + ((float)i / 255.0) * (max - min);
         break;
-      case 2:
+      case COLORBAR_ADJUST_01:
         factor = ((float)i / 255.0);
         break;
       default:

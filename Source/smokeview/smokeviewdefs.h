@@ -892,6 +892,13 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define CO2_RGB      0
 #define CO2_COLORBAR 1
 
+#ifdef pp_ADJUST_COLORBAR
+#define COLORBAR_ADJUST_NONE     0
+#define COLORBAR_ADJUST_CONSTANT 1
+#define COLORBAR_ADJUST_MINMAX   2
+#define COLORBAR_ADJUST_01       3
+#endif
+
 #define RENDER_SLICE  0
 #define RENDER_VOLUME 1
 
