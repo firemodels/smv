@@ -101,7 +101,7 @@ SVEXTERN int SVDECL(have_geom_triangles, 0);
 SVEXTERN int SVDECL(force_fixedpoint, FORCE_FIXEDPOINT_NO);
 SVEXTERN int SVDECL(force_exponential, 0);
 SVEXTERN int SVDECL(geom_cface_type, 1);
-SVEXTERN int SVDECL(glui_use_cfaces, 0);
+SVEXTERN int SVDECL(glui_use_cfaces, 1);
 SVEXTERN int SVDECL(use_cfaces, 0);
 SVEXTERN int SVDECL(update_reshape, 0);
 SVEXTERN int SVDECL(last_time_paused, 0);

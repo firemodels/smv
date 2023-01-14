@@ -1241,8 +1241,9 @@ extern "C" void VolumeCB(int var){
     break;
   case VOL_USE_CFACES:
     if(glui_use_cfaces==1&&show_faces_outline==0){
-      show_faces_outline = 1;
-      CHECKBOX_surface_outline->set_int_val(1);
+    //*** check
+    //  show_faces_outline = 1;
+     // CHECKBOX_surface_outline->set_int_val(1);
       VolumeCB(VOL_SHOWHIDE);
     }
     blocklocation--;
