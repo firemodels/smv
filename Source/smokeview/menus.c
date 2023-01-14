@@ -6737,6 +6737,7 @@ void HVACNodeValueMenu(int value){
   SetValTypeIndex(BOUND_HVAC, hvacvalsinfo->n_duct_vars+value);
   updatemenu = 1;
   UpdateHVACVarLists();
+  HVACBoundsCPP_CB(BOUND_UPDATE_COLORS);
   GLUTPOSTREDISPLAY;
 }
   
@@ -6763,8 +6764,9 @@ void HVACDuctValueMenu(int value){
   }
   updatemenu = 1;
   UpdateHVACVarLists();
-  GLUTPOSTREDISPLAY;
   SetValTypeIndex(BOUND_HVAC, value);
+  HVACBoundsCPP_CB(BOUND_UPDATE_COLORS);//
+  GLUTPOSTREDISPLAY;
 }
 
 /* ------------------ LoadHVACMenu ------------------------ */
@@ -6776,6 +6778,7 @@ void LoadHVACMenu(int value){
       SetHVACDuct();
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       UpdateTimes();
+      HVACBoundsCPP_CB(BOUND_UPDATE_COLORS);//
       GLUTPOSTREDISPLAY;      
       break;
     case MENU_HVAC_UNLOAD:

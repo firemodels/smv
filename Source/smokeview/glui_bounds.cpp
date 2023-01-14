@@ -24,7 +24,7 @@ GLUI *glui_bounds=NULL;
 #define BOUND_CHOPMAX                  107
 #define BOUND_SETCHOPMIN               108
 #define BOUND_SETCHOPMAX               109
-#define BOUND_UPDATE_COLORS            110
+//#define BOUND_UPDATE_COLORS            110 // defined in smokeviewdefs.h
 #define BOUND_RELOAD_DATA              111
 #define BOUND_CACHE_DATA               112
 #define BOUND_RESEARCH_MODE            115
@@ -1845,6 +1845,7 @@ extern "C" void HVACBoundsCPP_CB(int var){
     break;
   }
 }
+
 /* ------------------ UpdateHVACType ------------------------ */
 
 extern "C" void UpdateHVACType(void){
