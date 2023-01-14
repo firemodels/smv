@@ -1107,7 +1107,7 @@ SVEXTERN float SVDECL(*rgb2_ini,NULL);
 SVEXTERN float rgb_full[MAXRGB][4];
 SVEXTERN float rgb_full2[MAXRGB][4];
 #ifdef pp_ADJUST_COLORBAR
-SVEXTERN int SVDECL(adjust_colorbar, 0);
+SVEXTERN int SVDECL(adjust_colorbar, 3);
 #endif
 SVEXTERN float rgb_terrain2[4 * MAXRGB];
 SVEXTERN float rgb_slice[4 * MAXRGB];
