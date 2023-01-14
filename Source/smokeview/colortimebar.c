@@ -9,7 +9,7 @@
 
 /* ------------------ AdjustRGB ------------------------ */
 #ifdef pp_ADJUST_COLORBAR
-AdjustRGB(float rgb[256][4], int option){
+void AdjustRGB(float rgb_arg[256][4], int option){
   float greys[255];
   float min, max, avg;
   // option 
@@ -19,7 +19,7 @@ AdjustRGB(float rgb[256][4], int option){
   int i;
 
   for(i = 0;i < 255;i++){
-    greys[i] = TOBW(rgb[i]);
+    greys[i] = TOBW(rgb_arg[i]);
   }
   avg = greys[0];
   min = avg;
@@ -55,35 +55,35 @@ AdjustRGB(float rgb[256][4], int option){
       }
       factor /= grey;
     }
-    rgb[i][0] *= factor;
-    rgb[i][1] *= factor;
-    rgb[i][2] *= factor;
-    rgbmax = MAX(rgb[i][0], rgb[i][1]);
-    rgbmax = MAX(rgbmax, rgb[i][2]);
+    rgb_arg[i][0] *= factor;
+    rgb_arg[i][1] *= factor;
+    rgb_arg[i][2] *= factor;
+    rgbmax = MAX(rgb_arg[i][0], rgb_arg[i][1]);
+    rgbmax = MAX(rgbmax, rgb_arg[i][2]);
     if(rgbmax > 1.0){
-      rgb[i][0] /= rgbmax;
-      rgb[i][1] /= rgbmax;
-      rgb[i][2] /= rgbmax;
+      rgb_arg[i][0] /= rgbmax;
+      rgb_arg[i][1] /= rgbmax;
+      rgb_arg[i][2] /= rgbmax;
     }
   }
 }
 
 /* ------------------ AdjustRGB255 ------------------------ */
 
-AdjustRGB255(int rgb255[256][4], int option){
-  float rgb[256][4];
+void AdjustRGB255(int rgb255[256][4], int option){
+  float rgb_local[256][4];
   int i;
 
   for(i = 0;i < 255;i++){
-    rgb[i][0] = (float)rgb255[i][0] / 255.0;
-    rgb[i][1] = (float)rgb255[i][1] / 255.0;
-    rgb[i][2] = (float)rgb255[i][2] / 255.0;
+    rgb_local[i][0] = (float)rgb255[i][0] / 255.0;
+    rgb_local[i][1] = (float)rgb255[i][1] / 255.0;
+    rgb_local[i][2] = (float)rgb255[i][2] / 255.0;
   }
   AdjustRGB(rgb, option);
   for(i = 0;i < 255;i++){
-    rgb255[i][0] = 255 * rgb[i][0];
-    rgb255[i][1] = 255 * rgb[i][1];
-    rgb255[i][2] = 255 * rgb[i][2];
+    rgb255[i][0] = 255 * rgb_local[i][0];
+    rgb255[i][1] = 255 * rgb_local[i][1];
+    rgb255[i][2] = 255 * rgb_local[i][2];
   }
 }
 #endif
