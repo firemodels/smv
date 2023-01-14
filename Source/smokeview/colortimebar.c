@@ -7,6 +7,87 @@
 #include "smokeviewvars.h"
 #include "IOscript.h"
 
+/* ------------------ AdjustRGB ------------------------ */
+#ifdef pp_ADJUST_COLORBAR
+AdjustRGB(float rgb[256][4], int option){
+  float greys[255];
+  float min, max, avg;
+  // option 
+  // 0 constant average
+  // 1 linear min to max
+  // 2 linear 0 1
+  int i;
+
+  for(i = 0;i < 255;i++){
+    greys[i] = TOBW(rgb[i]);
+  }
+  avg = greys[0];
+  min = avg;
+  max = avg;
+  for(i = 1;i < 255;i++){
+    avg += greys[i];
+    min = MIN(min, greys[i]);
+    max = MAX(max, greys[i]);
+  }
+  avg /= 256.0;
+  for(i = 0;i < 255;i++){
+    float grey, factor;
+    float rgbmax;
+
+    grey = greys[i];
+    if(grey == 0.0){
+      factor = 1.0;
+    }
+    else{
+      switch(option){
+      case 0:
+        factor = avg;
+        break;
+      case 1:
+        factor = min + ((float)i / 255.0) * (max - min);
+        break;
+      case 2:
+        factor = ((float)i / 255.0);
+        break;
+      default:
+        ASSERT(FFALSE);
+        break;
+      }
+      factor /= grey;
+    }
+    rgb[i][0] *= factor;
+    rgb[i][1] *= factor;
+    rgb[i][2] *= factor;
+    rgbmax = MAX(rgb[i][0], rgb[i][1]);
+    rgbmax = MAX(rgbmax, rgb[i][2]);
+    if(rgbmax > 1.0){
+      rgb[i][0] /= rgbmax;
+      rgb[i][1] /= rgbmax;
+      rgb[i][2] /= rgbmax;
+    }
+  }
+}
+
+/* ------------------ AdjustRGB255 ------------------------ */
+
+AdjustRGB255(int rgb255[256][4], int option){
+  float rgb[256][4];
+  int i;
+
+  for(i = 0;i < 255;i++){
+    rgb[i][0] = (float)rgb255[i][0] / 255.0;
+    rgb[i][1] = (float)rgb255[i][1] / 255.0;
+    rgb[i][2] = (float)rgb255[i][2] / 255.0;
+  }
+  AdjustRGB(rgb, option);
+  for(i = 0;i < 255;i++){
+    rgb255[i][0] = 255 * rgb[i][0];
+    rgb255[i][1] = 255 * rgb[i][1];
+    rgb255[i][2] = 255 * rgb[i][2];
+  }
+}
+#endif
+
 /* ------------------ UpdateTimeLabels ------------------------ */
 
 void UpdateTimeLabels(void){

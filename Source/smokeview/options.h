@@ -12,6 +12,8 @@
   #define PROGVERSION ""
 #endif
 
+#define pp_ADJUST_COLORBAR  // adjust "brightness" of colorbar to make transition more uniform
+
 // use floating point to color data
 
 #define pp_PARTVAL          // speed up part file color updating

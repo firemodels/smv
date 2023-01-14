@@ -3058,6 +3058,9 @@ GLUI_Panel *PANEL_split2L = NULL, *PANEL_split2H = NULL;
 GLUI_Panel *PANEL_split3 = NULL;
 GLUI_Panel *PANEL_extreme = NULL, *PANEL_cb8 = NULL, *PANEL_cb7 = NULL;
 GLUI_Panel *PANEL_extreme_min = NULL, *PANEL_extreme_max = NULL;
+#ifdef pp_ADJUST_COLORBAR
+GLUI_Panel *PANEL_adjust_colorbar = NULL;
+#endif
 
 GLUI_Spinner *SPINNER_sliceval_ndigits = NULL;
 GLUI_Spinner *SPINNER_npartthread_ids = NULL;
@@ -3174,6 +3177,9 @@ GLUI_Checkbox *CHECKBOX_use_lighting = NULL;
 GLUI_Checkbox *CHECKBOX_show_extreme_mindata = NULL;
 GLUI_Checkbox *CHECKBOX_show_extreme_maxdata = NULL;
 
+#ifdef pp_ADJUST_COLORBAR
+GLUI_RadioGroup *RADIO_adjust_colorbar=NULL;
+#endif
 GLUI_RadioGroup *RADIO_iso_setmin=NULL;
 GLUI_RadioGroup *RADIO_iso_setmax=NULL;
 GLUI_RadioGroup *RADIO_transparency_option=NULL;
@@ -3207,6 +3213,9 @@ GLUI_RadioButton *RADIOBUTTON_zone_permax=NULL;
 #define CB_USE_LIGHTING      120
 #define COLORBAR_EXTREME_RGB  15
 #define COLORBAR_EXTREME      16
+#ifdef pp_ADJUST_COLORBAR
+#define ADJUST_COLORBAR       1001
+#endif
 // #define SPLIT_COLORBAR         1 now defined in smokeviewdefs.h
 
 //*** boundprocinfo entries
@@ -5313,7 +5322,14 @@ extern "C" void GluiBoundsSetup(int main_window){
   SPINNER_labels_transparency_data->set_w(0);
   SPINNER_labels_transparency_data->set_float_limits(0.0, 1.0, GLUI_LIMIT_CLAMP);
   CHECKBOX_use_lighting = glui_bounds->add_checkbox_to_panel(PANEL_coloring, _("Lighting"), &use_lighting, CB_USE_LIGHTING, LabelsCB);
-
+#ifdef pp_ADJUST_COLORBAR
+  PANEL_adjust_colorbar = glui_bounds->add_panel_to_panel(PANEL_coloring, _("adjust colorbar"));
+  RADIO_adjust_colorbar = glui_bounds->add_radiogroup_to_panel(PANEL_adjust_colorbar,&adjust_colorbar,ADJUST_COLORBAR, SliceBoundCB);
+  glui_bounds->add_radiobutton_to_group(RADIO_adjust_colorbar,_("constant(average)"));
+  glui_bounds->add_radiobutton_to_group(RADIO_adjust_colorbar,_("min->max"));
+  glui_bounds->add_radiobutton_to_group(RADIO_adjust_colorbar,_("0->1"));
+  glui_bounds->add_radiobutton_to_group(RADIO_adjust_colorbar,_("none"));
+#endif
 
   PANEL_extreme = glui_bounds->add_panel_to_panel(ROLLOUT_coloring, "", GLUI_PANEL_NONE);
 
@@ -6093,6 +6109,11 @@ extern "C" void SliceBoundCB(int var){
     ColorbarGlobal2Local();
   }
   switch(var){
+#ifdef pp_ADJUST_COLORBAR
+    case ADJUST_COLORBAR:
+      UpdateRGBColors(COLORBAR_INDEX_NONE);
+      break;
+#endif
     case SLICE_SIZE:
       update_avg = 1;
       DeviceCB(DEVICE_TIMEAVERAGE);
