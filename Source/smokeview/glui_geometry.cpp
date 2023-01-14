@@ -1240,12 +1240,7 @@ extern "C" void VolumeCB(int var){
     updatemenu=1;
     break;
   case VOL_USE_CFACES:
-    if(glui_use_cfaces==1&&show_faces_outline==0){
-    //*** check
-    //  show_faces_outline = 1;
-     // CHECKBOX_surface_outline->set_int_val(1);
-      VolumeCB(VOL_SHOWHIDE);
-    }
+    VolumeCB(VOL_SHOWHIDE);
     blocklocation--;
     use_cfaces = 1 - glui_use_cfaces;
     Keyboard('q',FROM_SMOKEVIEW);
