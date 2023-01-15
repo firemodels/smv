@@ -1456,10 +1456,6 @@ void UpdateRGBColors(int colorbar_index){
       facej->color=foregroundcolor;
     }
   }
-#ifdef pp_ADJUST_COLORBAR
-  void AdjustRGB(float rgb_full[256][4], int option);
-  if(adjust_colorbar!=COLORBAR_ADJUST_NONE)AdjustRGB(rgb_full, adjust_colorbar);
-#endif
   UpdateChopColors();
   InitCadColors();
   UpdateTexturebar();
