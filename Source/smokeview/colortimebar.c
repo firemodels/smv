@@ -568,7 +568,6 @@ void UpdateColorbarNodes(colorbardata *cbi){
 /* ------------------ UpdateColorbarConstant ------------------------ */
 
 void UpdateColorbarConstant(colorbardata *cbi, float grey_arg){
-  float total_dist = 0.0;
   int i;
 
   for(i = 0;i < cbi->nnodes;i++){
