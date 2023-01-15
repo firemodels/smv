@@ -54,6 +54,7 @@ GLUI_Button *BUTTON_colorbar_close=NULL;
 GLUI_Button *BUTTON_autonodes = NULL;
 #ifdef pp_COLORBAR_CONSTANT
 GLUI_Button *BUTTON_constant_brightness = NULL;
+GLUI_Button *BUTTON_reset_colorbar = NULL;
 #endif
 
 GLUI_Checkbox *CHECKBOX_hidesv=NULL;
@@ -80,6 +81,7 @@ int cb_usecolorbar_extreme;
 #define COLORBAR_UNIFORM             17
 #ifdef pp_COLORBAR_CONSTANT
 #define COLORBAR_CONSTANT_BRIGHTNESS 19
+#define COLORBAR_CONSTANT_RESET      20
 #endif
 
 /* ------------------ UpdateColorbarList ------------------------ */
@@ -153,8 +155,13 @@ extern "C" void ColorbarCB(int var){
 #ifdef pp_COLORBAR_CONSTANT
   case COLORBAR_CONSTANT_BRIGHTNESS:
     cbi = colorbarinfo + colorbartype;
-    void UpdateColorbarConstant(colorbardata *cbi, float grey);
-    UpdateColorbarConstant(cbi, 0.5);
+    void UpdateColorbarConstant(colorbardata *cbi, int grey);
+    UpdateColorbarConstant(cbi, colorbar_brightness);
+    break;
+  case COLORBAR_CONSTANT_RESET:
+    cbi = colorbarinfo + colorbartype;
+    void UpdateColorbarConstant(colorbardata *cbi, int grey);
+    UpdateColorbarConstant(cbi, -1);
     break;
 #endif
   case COLORBAR_UNIFORM:
@@ -213,6 +220,12 @@ extern "C" void ColorbarCB(int var){
       rgb2_local[0] = rgb1[0];
       rgb2_local[1] = rgb1[1];
       rgb2_local[2] = rgb1[2];
+
+      rgb2_local = cbi->rgb_node_orig + 3 * i;
+      rgb1 = rgb2_local - 3;
+      rgb2_local[0] = rgb1[0];
+      rgb2_local[1] = rgb1[1];
+      rgb2_local[2] = rgb1[2];
       cbi->index_node[i] = cbi->index_node[i - 1];
     }
     {
@@ -220,6 +233,13 @@ extern "C" void ColorbarCB(int var){
       unsigned char *inew, *ibef, *iaft;
 
       rnew = cbi->rgb_node + 3 * colorbarpoint;
+      rbef = rnew - 3;
+      raft = rnew + 3;
+      rnew[0] = (int)(((float)rbef[0] + (float)raft[0]) / 2.0);
+      rnew[1] = (int)(((float)rbef[1] + (float)raft[1]) / 2.0);
+      rnew[2] = (int)(((float)rbef[2] + (float)raft[2]) / 2.0);
+
+      rnew = cbi->rgb_node_orig + 3 * colorbarpoint;
       rbef = rnew - 3;
       raft = rnew + 3;
       rnew[0] = (int)(((float)rbef[0] + (float)raft[0]) / 2.0);
@@ -397,8 +417,9 @@ extern "C" void GluiColorbarSetup(int main_window){
   BUTTON_autonodes=glui_colorbar->add_button_to_panel(PANEL_cb1,_("Distribute nodes uniformly"),COLORBAR_UNIFORM,ColorbarCB);
 #ifdef pp_COLORBAR_CONSTANT
   BUTTON_constant_brightness = glui_colorbar->add_button_to_panel(PANEL_cb1, _("Constant brightness"), COLORBAR_CONSTANT_BRIGHTNESS, ColorbarCB);
-  SPINNER_colorbar_brightness=  glui_colorbar->add_spinner_to_panel(PANEL_cb1,_("brightness"),  GLUI_SPINNER_FLOAT,&colorbar_brightness,  COLORBAR_CONSTANT_BRIGHTNESS,ColorbarCB);
-  SPINNER_colorbar_brightness->set_float_limits(0.0,1.0);
+  BUTTON_reset_colorbar      = glui_colorbar->add_button_to_panel(PANEL_cb1, _("Reset colorbar"),      COLORBAR_CONSTANT_RESET,      ColorbarCB);
+  SPINNER_colorbar_brightness=  glui_colorbar->add_spinner_to_panel(PANEL_cb1,_("brightness"),  GLUI_SPINNER_INT,&colorbar_brightness,  COLORBAR_CONSTANT_BRIGHTNESS,ColorbarCB);
+  SPINNER_colorbar_brightness->set_int_limits(0,255);
 #endif
   PANEL_point = glui_colorbar->add_panel(_("Node"));
 

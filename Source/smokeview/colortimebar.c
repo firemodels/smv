@@ -567,21 +567,25 @@ void UpdateColorbarNodes(colorbardata *cbi){
 #ifdef pp_COLORBAR_CONSTANT
 /* ------------------ UpdateColorbarConstant ------------------------ */
 
-void UpdateColorbarConstant(colorbardata *cbi, float grey_arg){
+void UpdateColorbarConstant(colorbardata *cbi, int grey_arg){
   float total_dist = 0.0;
   int i;
 
   for(i = 0;i < cbi->nnodes;i++){
-    unsigned char *node1;
-    float grey;
+    unsigned char *node, *node_orig;
+    unsigned char grey;
+    float factor;
 
-    node1 = cbi->rgb_node + 3 * i;
-    grey = TOBW(node1);
-    if(grey != 0.0){
-      node1[0] /= grey_arg / grey;
-      node1[1] /= grey_arg / grey;
-      node1[2] /= grey_arg / grey;
+    node      = cbi->rgb_node + 3 * i;
+    node_orig = cbi->rgb_node_orig + 3 * i;
+    factor = 1.0;
+    if(grey_arg>=0){
+      grey = TOBW(node_orig);
+      if(grey!=0)factor = (float)grey_arg / (float)grey;
     }
+    node[0] = CLAMP(factor*node_orig[0],0,255);
+    node[1] = CLAMP(factor*node_orig[1],0,255);
+    node[2] = CLAMP(factor*node_orig[2],0,255);
   }
   RemapColorbar(cbi);
 }
@@ -1369,6 +1373,7 @@ void InitDefaultColorbars(int nini){
 
     RemapColorbar(cbi);
     UpdateColorbarSplits(cbi);
+    memcpy(cbi->rgb_node_orig, cbi->rgb_node, 3 * cbi->nnodes * sizeof(unsigned char));
   }
 }
 

@@ -723,7 +723,7 @@ SVEXTERN int SVDECL(show_fed_area,1);
 SVEXTERN char default_fed_colorbar[255];
 
 #ifdef pp_COLORBAR_CONSTANT
-SVEXTERN float SVDECL(colorbar_brightness, 0.8);
+SVEXTERN int SVDECL(colorbar_brightness, 192);
 #endif
 
 SVEXTERN int SVDECL(*meshvisptr,NULL);
