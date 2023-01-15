@@ -12,6 +12,7 @@
   #define PROGVERSION ""
 #endif
 
+#define pp_COLORBARS_CSV      // add csv colorbars
 //#define pp_ADJUST_COLORBAR  // adjust "brightness" of colorbar to make transition more uniform
 
 // use floating point to color data

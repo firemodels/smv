@@ -865,6 +865,9 @@ EXTERNCPP void UpdateVsliceMenuLabels(void);
 EXTERNCPP void UpdatePlot3dMenuLabels(void);
 EXTERNCPP void HandleRotationType(int flag);
 
+#ifdef pp_COLORBARS_CSV
+EXTERNCPP void InitColorbarsDir(void);
+#endif
 EXTERNCPP void InitTextureDir(void);
 EXTERNCPP void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned char *bb);
 EXTERNCPP unsigned char *ReadPicture(char *filename, int *width, int *height, int *is_transparent, int printflag);
