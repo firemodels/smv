@@ -646,6 +646,29 @@ void UpdateColorbarNodes(colorbardata *cbi){
   RemapColorbar(cbi);
 }
 
+#ifdef pp_COLORBAR_CONSTANT
+/* ------------------ UpdateColorbarConstant ------------------------ */
+
+void UpdateColorbarConstant(colorbardata *cbi, float grey_arg){
+  float total_dist = 0.0;
+  int i;
+
+  for(i = 0;i < cbi->nnodes;i++){
+    unsigned char *node1;
+    float grey;
+
+    node1 = cbi->rgb_node + 3 * i;
+    grey = TOBW(node1);
+    if(grey != 0.0){
+      node1[0] /= grey_arg / grey;
+      node1[1] /= grey_arg / grey;
+      node1[2] /= grey_arg / grey;
+    }
+  }
+  RemapColorbar(cbi);
+}
+#endif
+
 /* ------------------ RemapColorbarType ------------------------ */
 
 void RemapColorbarType(int cb_oldtype, char *cb_newname){

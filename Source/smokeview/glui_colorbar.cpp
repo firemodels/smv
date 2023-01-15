@@ -38,6 +38,9 @@ GLUI_Spinner *SPINNER_valmin=NULL;
 GLUI_Spinner *SPINNER_valmax=NULL;
 GLUI_Spinner *SPINNER_val=NULL;
 GLUI_Spinner *SPINNER_colorindex=NULL;
+#ifdef pp_COLORBAR_CONSTANT
+GLUI_Spinner *SPINNER_colorbar_brightness=NULL;
+#endif
 
 GLUI_Button *BUTTON_next=NULL,*BUTTON_prev=NULL;
 GLUI_Button *BUTTON_new=NULL;
@@ -49,6 +52,9 @@ GLUI_Button *BUTTON_update=NULL;
 GLUI_Button *BUTTON_colorbar_save=NULL;
 GLUI_Button *BUTTON_colorbar_close=NULL;
 GLUI_Button *BUTTON_autonodes = NULL;
+#ifdef pp_COLORBAR_CONSTANT
+GLUI_Button *BUTTON_constant_brightness = NULL;
+#endif
 
 GLUI_Checkbox *CHECKBOX_hidesv=NULL;
 
@@ -58,20 +64,23 @@ GLUI_StaticText *STATICTEXT_left=NULL, *STATICTEXT_right=NULL;
 
 int cb_usecolorbar_extreme;
 
-#define COLORBAR_LIST 0
-#define COLORBAR_CLOSE 1
-#define COLORBAR_NEXT 3
-#define COLORBAR_PREV 4
-#define COLORBAR_NEW 5
-#define COLORBAR_ADDPOINT 7
-#define COLORBAR_DELETEPOINT 8
-#define COLORBAR_SAVE 9
-#define COLORBAR_LABEL 10
-#define COLORBAR_UPDATE 11
-#define COLORBAR_COLORINDEX 12
-#define COLORBAR_DELETE 14
-#define COLORBAR_EXTREME 16
-#define COLORBAR_UNIFORM 17
+#define COLORBAR_LIST                 0
+#define COLORBAR_CLOSE                1
+#define COLORBAR_NEXT                 3
+#define COLORBAR_PREV                 4
+#define COLORBAR_NEW                  5
+#define COLORBAR_ADDPOINT             7
+#define COLORBAR_DELETEPOINT          8
+#define COLORBAR_SAVE                 9
+#define COLORBAR_LABEL               10
+#define COLORBAR_UPDATE              11
+#define COLORBAR_COLORINDEX          12
+#define COLORBAR_DELETE              14
+#define COLORBAR_EXTREME             16
+#define COLORBAR_UNIFORM             17
+#ifdef pp_COLORBAR_CONSTANT
+#define COLORBAR_CONSTANT_BRIGHTNESS 19
+#endif
 
 /* ------------------ UpdateColorbarList ------------------------ */
 
@@ -141,6 +150,13 @@ extern "C" void ColorbarCB(int var){
   int i;
 
   switch(var){
+#ifdef pp_COLORBAR_CONSTANT
+  case COLORBAR_CONSTANT_BRIGHTNESS:
+    cbi = colorbarinfo + colorbartype;
+    void UpdateColorbarConstant(colorbardata *cbi, float grey);
+    UpdateColorbarConstant(cbi, 0.5);
+    break;
+#endif
   case COLORBAR_UNIFORM:
     if(colorbartype >= ndefaultcolorbars&&colorbartype < ncolorbars){
       cbi = colorbarinfo + colorbartype;
@@ -379,7 +395,11 @@ extern "C" void GluiColorbarSetup(int main_window){
   EDITTEXT_colorbar_label=glui_colorbar->add_edittext_to_panel(PANEL_cb1,_("Label"),GLUI_EDITTEXT_TEXT,colorbar_label,COLORBAR_LABEL,ColorbarCB);
   BUTTON_update=glui_colorbar->add_button_to_panel(PANEL_cb1,_("Update label"),COLORBAR_UPDATE,ColorbarCB);
   BUTTON_autonodes=glui_colorbar->add_button_to_panel(PANEL_cb1,_("Distribute nodes uniformly"),COLORBAR_UNIFORM,ColorbarCB);
-
+#ifdef pp_COLORBAR_CONSTANT
+  BUTTON_constant_brightness = glui_colorbar->add_button_to_panel(PANEL_cb1, _("Constant brightness"), COLORBAR_CONSTANT_BRIGHTNESS, ColorbarCB);
+  SPINNER_colorbar_brightness=  glui_colorbar->add_spinner_to_panel(PANEL_cb1,_("brightness"),  GLUI_SPINNER_FLOAT,&colorbar_brightness,  COLORBAR_CONSTANT_BRIGHTNESS,ColorbarCB);
+  SPINNER_colorbar_brightness->set_float_limits(0.0,1.0);
+#endif
   PANEL_point = glui_colorbar->add_panel(_("Node"));
 
   PANEL_cb5 = glui_colorbar->add_panel_to_panel(PANEL_point,"",GLUI_PANEL_NONE);
