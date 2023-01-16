@@ -10531,7 +10531,7 @@ updatemenu=0;
       glutAddMenuEntry(ccolorbarmenu,i);
     }
   }
-#ifdef pp_COLORBARS_CAV
+#ifdef pp_COLORBARS_CSV
   if(nlinear_filelist > 0){
     GLUTADDSUBMENU(_("linear"), colorbars_submenu1);
   }
