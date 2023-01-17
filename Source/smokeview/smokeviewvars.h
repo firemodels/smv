@@ -725,6 +725,7 @@ SVEXTERN char default_fed_colorbar[255];
 #ifdef pp_COLORBAR_CONSTANT
 SVEXTERN int SVDECL(colorbar_brightness, 192);
 #endif
+SVEXTERN int SVDECL(colorbar_hsl, 0);
 
 SVEXTERN int SVDECL(*meshvisptr,NULL);
 SVEXTERN smoke3ddata SVDECL(**smoke3dinfo_sorted,NULL);

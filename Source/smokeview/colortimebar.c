@@ -200,10 +200,9 @@ void DrawSelectColorbar(void){
   glEnd();
 }
 
+/* ------------------ DrawColorbarPathRGB ------------------------ */
 
-/* ------------------ DrawColorbarPath ------------------------ */
-
-void DrawColorbarPath(void){
+void DrawColorbarPathRGB(void){
   int i;
   colorbardata *cbi;
   int ncolors;
@@ -401,6 +400,85 @@ void DrawColorbarPath(void){
     }
     glEnd();
   }
+}
+
+/* ------------------ DrawColorbarPathHSL ------------------------ */
+
+void DrawColorbarPathHSL(void){
+  int i;
+  colorbardata *cbi;
+
+  if(show_firecolormap == 0){
+    cbi = colorbarinfo + colorbartype;
+  }
+  else{
+    cbi = colorbarinfo + fire_colorbar_index;
+  }
+  glPointSize(5.0);
+  glBegin(GL_POINTS);
+  for(i = 0;i < 255;i++){
+    float *rgbi, hsl[3], xyz[3];
+    unsigned char rgb255[3];
+
+    rgbi = cbi->colorbar + 3 * i;
+    rgb255[0] = rgbi[0] * 255.0;
+    rgb255[1] = rgbi[1] * 255.0;
+    rgb255[2] = rgbi[2] * 255.0;
+    glColor3fv(rgbi);
+    Rgb2Hsl(rgb255, hsl);
+    xyz[0] = (1.0 + cos(2.0 * 3.14159 * hsl[0] / 360.0) * hsl[1]) / 2.0;
+    xyz[1] = (1.0 + sin(2.0 * 3.14159 * hsl[0] / 360.0) * hsl[1]) / 2.0;
+    xyz[2] = hsl[2];
+    xyz[2] = TOBW(rgbi);
+    glVertex3fv(xyz);
+  }
+
+  for(i = 0;i < 360;i++){
+    float hsl[3], xyz[3];
+    unsigned char rgb255[3];
+
+    hsl[0]=(float)i;
+    hsl[1] = 0.75;
+    hsl[2] = 0.75;
+    Hsl2Rgb(hsl, rgb255);
+    glColor3ubv(rgb255);
+    xyz[0] = (1.0 + cos(2.0 * 3.14159 * hsl[0] / 360.0) * hsl[1]) / 2.0;
+    xyz[1] = (1.0 + sin(2.0 * 3.14159 * hsl[0] / 360.0) * hsl[1]) / 2.0;
+    xyz[2] = hsl[2];
+    glVertex3fv(xyz);
+  }
+
+  for(i = 0;i < 100;i++){
+    float hsl[3], xyz[3];
+    unsigned char rgb255[3];
+
+    hsl[0] = 0.0;
+    hsl[1] = (float)i/100.0;
+    hsl[2] = 0.75;
+    Hsl2Rgb(hsl, rgb255);
+    glColor3ubv(rgb255);
+    xyz[0] = (1.0 + cos(2.0 * 3.14159 * hsl[0] / 360.0) * hsl[1]) / 2.0;
+    xyz[1] = (1.0 + sin(2.0 * 3.14159 * hsl[0] / 360.0) * hsl[1]) / 2.0;
+    xyz[2] = hsl[2];
+    glVertex3fv(xyz);
+  }
+
+  for(i = 0;i < 100;i++){
+    float hsl[3], xyz[3];
+    unsigned char rgb255[3];
+
+    hsl[0] = 0.0;
+    hsl[1] = 0.75;
+    hsl[2] = (float)i/100.0;
+    Hsl2Rgb(hsl, rgb255);
+    glColor3ubv(rgb255);
+    xyz[0] = (1.0+cos(2.0 * 3.14159 * hsl[0] / 360.0) * hsl[1])/2.0;
+    xyz[1] = (1.0 + sin(2.0 * 3.14159 * hsl[0] / 360.0) * hsl[1])/2.0;
+    xyz[2] = hsl[2];
+    glVertex3fv(xyz);
+  }
+  glEnd();
+
 }
 
 /* ------------------ GetColorbar ------------------------ */
@@ -3498,7 +3576,7 @@ void Hsl2Rgb(float *hslvals, unsigned char *rgbvals255){
 
   float hue, saturation, luminance;
   float r, g, b;
-//  float temp_1, temp_2;
+  float temp_1, temp_2;
   float temp_r, temp_g, temp_b;
 
   hue = ABS(hslvals[0]);
@@ -3513,13 +3591,13 @@ void Hsl2Rgb(float *hslvals, unsigned char *rgbvals255){
     rgbvals255[2] = (unsigned char)CLAMP(b, 0.0, 255.0);
     return;
   }
-//  if(luminance<0.5){
-//    temp_1 = luminance*(1.0+saturation);
-//  }
-//  else{
-//    temp_1 = luminance+saturation-luminance*saturation;
-//  }
-//  temp_2 = 2.0*luminance-temp_1;
+  if(luminance<0.5){
+    temp_1 = luminance*(1.0+saturation);
+  }
+  else{
+    temp_1 = luminance+saturation-luminance*saturation;
+  }
+  temp_2 = 2.0*luminance-temp_1;
 
   hue /= 360.0;
 
@@ -3535,9 +3613,48 @@ void Hsl2Rgb(float *hslvals, unsigned char *rgbvals255){
   if(temp_b<0.0)temp_b += 1.0;
   if(temp_b>1.0)temp_b -= 1.0;
 
-  rgbvals255[0] = CLAMP((unsigned char)(temp_r * 255.0), 0, 255);
-  rgbvals255[1] = CLAMP((unsigned char)(temp_g * 255.0), 0, 255);
-  rgbvals255[2] = CLAMP((unsigned char)(temp_b * 255.0), 0, 255);
+  float val;
+  if(temp_r < 1.0 / 6.0){
+    val = temp_2 + (temp_2 - temp_1) * 6.0 * temp_r;
+  }
+  else if(temp_r >= 1.0 / 6.0 && temp_r < 0.5){
+    val = temp_1;
+  }
+  else if(temp_r >= 0.5 && temp_r < 2.0 / 3.0){
+    val = temp_2 + (temp_2 - temp_1) * (4.0 - 6.0*temp_r);
+  }
+  else{
+    val = temp_2;
+  }
+  rgbvals255[0] = CLAMP((unsigned char)(val * 255.0), 0, 255);
+
+  if(temp_g < 1.0 / 6.0){
+    val = temp_2 + (temp_2 - temp_1) * 6.0 * temp_g;
+  }
+  else if(temp_g >= 1.0 / 6.0 && temp_g < 0.5){
+    val = temp_1;
+  }
+  else if(temp_g >= 0.5 && temp_g < 2.0 / 3.0){
+    val = temp_2 + (temp_2 - temp_1) * (4.0 - 6.0 * temp_g);
+  }
+  else{
+    val = temp_2;
+  }
+  rgbvals255[1] = CLAMP((unsigned char)(val * 255.0), 0, 255);
+
+  if(temp_b < 1.0 / 6.0){
+    val = temp_2 + (temp_2 - temp_1) * 6.0 * temp_b;
+  }
+  else if(temp_g >= 1.0 / 6.0 && temp_b < 0.5){
+    val = temp_1;
+  }
+  else if(temp_b >= 0.5 && temp_b < 2.0 / 3.0){
+    val = temp_2 + (temp_2 - temp_1) * (4.0 - 6.0 * temp_b);
+  }
+  else{
+    val = temp_2;
+  }
+  rgbvals255[2] = CLAMP((unsigned char)(val * 255.0), 0, 255);
 }
 
 
