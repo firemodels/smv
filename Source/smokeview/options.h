@@ -13,7 +13,7 @@
 #endif
 
 //#define pp_COLORBAR_DEBUG     // output colorbar debug info
-#define pp_COLORBARS_CSV      // add csv colorbars//
+//#define pp_COLORBARS_CSV      // add csv colorbars//
 //#define pp_COLORBAR_CONSTANT  // make colorbar brightness constant in colorbar dialog box
 
 // use floating point to color data
