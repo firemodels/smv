@@ -3432,21 +3432,16 @@ void DrawVerticalColorbarRegLabels(void){
 
 /* ------------------ Rgb2Hsl ------------------------ */
 
-void Rgb2Hsl(float *rgbvals, float *hslvals, int flag){
+void Rgb2Hsl(unsigned char *rgbvals255, float *hslvals){
   // https://www.niwa.nu/2013/05/math-behind-colorspace-conversions-rgb-hsl/
   float cmin, cmax, r, g, b;
   float luminance, saturation, hue;
   int maxmode;
   float cmaxmcmin;
 
-  r = rgbvals[0];
-  g = rgbvals[1];
-  b = rgbvals[2];
-  if(flag==1){
-    r /= 255.0;
-    g /= 255.0;
-    b /= 255.0;
-  }
+  r = (float)rgbvals255[0]/255.0;
+  g = (float)rgbvals255[1]/255.0;
+  b = (float)rgbvals255[2]/255.0;
 
   cmin = MIN(r, MIN(g, b));
   cmax = MAX(r, MAX(g, b));
@@ -3463,22 +3458,19 @@ void Rgb2Hsl(float *rgbvals, float *hslvals, int flag){
   }
   else{
     if(luminance>0.0&&luminance<0.5){
-      saturation = (cmax-cmin)/(2.0*luminance);
+      saturation = (cmax-cmin)/(cmax + cmin);
     }
-    else if(luminance>=0.5){
+    else{
       float denom;
 
-      denom = 2.0-2.0*luminance;
-      if(denom!=0.0){
-        saturation = (cmax-cmin)/denom;
-      }
-      else{
-        saturation = 1.0;
-        hue = 0.0;
-      }
+      denom = 2.0-cmax-cmin;
+      saturation = 1.0;
+      hue = 0.0;
+      if(denom!=0.0)saturation = (cmax-cmin)/denom;
     }
   }
 
+  hue = 0.0;
   if(cmaxmcmin>0.0&&luminance!=0.0&&luminance!=1.0){
     if(maxmode==0){
       hue = (g-b)/cmaxmcmin;
@@ -3492,9 +3484,6 @@ void Rgb2Hsl(float *rgbvals, float *hslvals, int flag){
     hue *= 60.0;
     if(hue<0.0)hue += 360.0;
   }
-  else{
-    hue = 0.0;
-  }
   hslvals[0] = hue;
   hslvals[1] = saturation;
   hslvals[2] = luminance;
@@ -3502,39 +3491,33 @@ void Rgb2Hsl(float *rgbvals, float *hslvals, int flag){
 
 /* ------------------ Hsl2Rgb ------------------------ */
 
-void Hsl2Rgb(float *hslvals, float *rgbvals, int flag){
+void Hsl2Rgb(float *hslvals, unsigned char *rgbvals255){
   // https://www.niwa.nu/2013/05/math-behind-colorspace-conversions-rgb-hsl/
 
   float hue, saturation, luminance;
   float r, g, b;
-//  float temp_1;
-//  float  temp_2;
+  float temp_1, temp_2;
   float temp_r, temp_g, temp_b;
 
   hue = ABS(hslvals[0]);
   saturation = ABS(hslvals[1]);
   luminance = ABS(hslvals[2]);
   if(saturation==0.0){
-    r = saturation;
-    g = saturation;
-    b = saturation;
-    if(flag==1){
-      r *= 255.0;
-      g *= 255.0;
-      b *= 255.0;
-    }
-    rgbvals[0] = r;
-    rgbvals[1] = b;
-    rgbvals[2] = g;
+    r = 255.0*luminance;
+    g = 255.0*luminance;
+    b = 255.0*luminance;
+    rgbvals255[0] = (unsigned char)CLAMP(r, 0.0, 255.0);
+    rgbvals255[1] = (unsigned char)CLAMP(g, 0.0, 255.0);
+    rgbvals255[2] = (unsigned char)CLAMP(b, 0.0, 255.0);
     return;
   }
   if(luminance<0.5){
-//    temp_1 = luminance*(1.0+saturation);
+    temp_1 = luminance*(1.0+saturation);
   }
   else{
-//    temp_1 = luminance+saturation-luminance*saturation;
+    temp_1 = luminance+saturation-luminance*saturation;
   }
-//  temp_2 = 2.0*luminance-temp_1;
+  temp_2 = 2.0*luminance-temp_1;
 
   hue /= 360.0;
 
@@ -3550,6 +3533,9 @@ void Hsl2Rgb(float *hslvals, float *rgbvals, int flag){
   if(temp_b<0.0)temp_b += 1.0;
   if(temp_b>1.0)temp_b -= 1.0;
 
+  rgbvals255[0] = CLAMP((unsigned char)(temp_r * 255.0), 0, 255);
+  rgbvals255[1] = CLAMP((unsigned char)(temp_g * 255.0), 0, 255);
+  rgbvals255[2] = CLAMP((unsigned char)(temp_b * 255.0), 0, 255);
 }
 
 

@@ -1062,6 +1062,19 @@ void ColorbarMenu(int value){
   if(value>-10){
     UpdateRGBColors(COLORBAR_INDEX_NONE);
   }
+#ifdef pp_COLORBAR_DEBUG
+  int i;
+  colorbardata *cbi;
+  cbi = colorbarinfo + colorbartype;
+  for(i = 0;i < cbi->nnodes;i++){
+    float hsl[3],factor;
+    Rgb2Hsl(cbi->rgb_node+3*i, hsl);
+    factor = 255.0;
+    if(hsl[2] != 0.0)factor = TOBW(cbi->rgb_node + 3 * i) / hsl[2];
+    factor /= 255.0;
+    printf("%i: h:%f s:%f l:%f g:%f f:%f\n", i, hsl[0], hsl[1], hsl[2], TOBW(cbi->rgb_node+3*i),factor);
+  }
+#endif
 }
 
 /* ------------------ Smoke3DShowMenu ------------------------ */
