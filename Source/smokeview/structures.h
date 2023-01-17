@@ -280,7 +280,9 @@ typedef struct _treedata {
 
 typedef struct _colorbardata {
   char label[1024], *label_ptr ;        // menu label
+  char type[256];
   int nnodes,nodehilight,nsplits;
+  unsigned char rgb_node_orig[3 * 1024];
   unsigned char rgb_node[3*1024];
   unsigned char alpha[1024];
   unsigned char index_node[1024];  // colorbar index
@@ -1288,17 +1290,20 @@ typedef struct _hvacnodedata {
 
 typedef struct _hvacductdata {
   char *duct_name, *network_name, c_component[4];
-  int duct_id, component, nduct_cells, n_waypoints;
+  int duct_id, component, nduct_cells;
   int node_id_from, node_id_to, use_duct, connect_id;
   hvacconnectdata *connect;
   int nact_times, *act_states, metro_path;
   float *act_times;
   float xyz_symbol[3], xyz_symbol_metro[3];
   float xyz_label[3],  xyz_label_metro[3];
-  float xyz_metro[6];
   float normal[3], normal_metro[3];
   hvacnodedata* node_from, * node_to;
-  float *waypoints0, *waypoints;
+  float xyz_met[12], *xyz_reg;
+  int   nxyz_met, nxyz_reg;
+  float *xyz_met_cell, *xyz_reg_cell;
+  int   nxyz_met_cell, nxyz_reg_cell;
+  int    *cell_met,    *cell_reg;
 } hvacductdata;
 
 /* --------------------------  hvacdata ------------------------------------ */
@@ -1316,8 +1321,9 @@ typedef struct _hvacdata {
 
 typedef struct _hvacvaldata{
   float *vals, valmin, valmax;
-  unsigned char *ivals;
+  int setvalmin, setvalmax;
   int vis, nvals;
+  int firstshort;
   char  colorlabels[12][11];
   float colorvalues[12];
   float levels256[256];
@@ -1328,6 +1334,7 @@ typedef struct _hvacvaldata{
 
 typedef struct _hvacvalsdata {
   char *file;
+  int loaded;
   int n_node_vars, n_duct_vars, ntimes;
   float *times;
   hvacvaldata *node_vars, *duct_vars;

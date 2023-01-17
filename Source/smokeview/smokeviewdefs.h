@@ -10,8 +10,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define MENU_HVAC_LOAD     0
 #define MENU_HVAC_UNLOAD   1
 
-#define HVAC_LOAD      1
-#define HVAC_UNLOAD   -1
+#define BOUND_UPDATE_COLORS            110 
 
 #define HVAC_FILTER_NO  0
 #define HVAC_FILTER_YES 1
@@ -102,6 +101,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define BOUND_SLICE  1
 #define BOUND_PLOT3D 2
 #define BOUND_PATCH  3
+#define BOUND_HVAC   4
 
 #define MINMAX_ALL    0
 #define MINMAX_LOADED 1
@@ -208,6 +208,7 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define DLG_PART     3
 #define DLG_PLOT3D   4
 #define DLG_ISO      5
+#define DLG_HVAC     6
 
 #define ZONEVENT_CIRCLE 1
 #define ZONEVENT_SQUARE 2

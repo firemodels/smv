@@ -1211,7 +1211,22 @@ void InitOpenGL(int option){
     TrainerViewMenu(trainerview);
   }
 
-/* ------------------ InitTextureDir ------------------------ */
+#ifdef pp_COLORBARS_CSV
+  /* ------------------ InitColorbarsDir ------------------------ */
+
+  void InitColorbarsDir(void){
+    if(colorbarsdir != NULL)return;
+    if(smokeview_bindir != NULL){
+      size_t colorbars_len;
+
+      colorbars_len = strlen(smokeview_bindir) + strlen("colorbars");
+      NewMemory((void **)&colorbarsdir, colorbars_len + 2);
+      strcpy(colorbarsdir, smokeview_bindir);
+      strcat(colorbarsdir, "colorbars");
+    }
+  }
+#endif
+  /* ------------------ InitTextureDir ------------------------ */
 
 void InitTextureDir(void){
   char *texture_buffer;

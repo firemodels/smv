@@ -3,26 +3,18 @@
 
 #include "options_common.h"
 
-//*** uncomment the following two lines to force all versions to be beta
-//#undef pp_BETA
-//#define pp_BETA
-
 //*** define smokeview title
 
 #ifdef pp_BETA
   #define PROGVERSION "Test"
+  #define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 #else
   #define PROGVERSION ""
 #endif
 
-#ifdef pp_LINUX
-#define pp_OSXLINUX
-#endif
-#ifdef pp_OSX
-#define pp_OSXLINUX
-#endif
-
-//*** options: all platforms
+//#define pp_COLORBAR_DEBUG     // output colorbar debug info
+//#define pp_COLORBARS_CSV      // add csv colorbars//
+//#define pp_COLORBAR_CONSTANT  // make colorbar brightness constant in colorbar dialog box
 
 // use floating point to color data
 
@@ -30,6 +22,10 @@
 #define pp_SLICEVAL         // speed up slice file color updating
 #define pp_BOUNDVAL         // speed up boundary file color updating
 #define pp_PLOT3DVAL        // speed up plot3d file color updating
+
+//*** parallel file loading
+#define pp_SLICE_MULTI        // load slice files in parallel
+#define pp_PART_MULTI         // load particle files in parallel
 
 // streaming directives
 
@@ -61,10 +57,6 @@
 #define pp_THREAD             // turn on multi-threading
 #define pp_DRAWISO            // turn on drawing routines
 //#define pp_LOAD_NEWDATA     // add button for loading new data
-
-//*** parallel file loading
-#define pp_SLICE_MULTI        // load slice files in parallel
-#define pp_PART_MULTI         // load particle files in parallel
 
 #ifdef pp_GPU
 #define pp_GPUTHROTTLE  // pp_GPU directive must also be set
@@ -109,12 +101,6 @@
 #define pp_OSX_HIGHRES
 #endif
 #endif
-#endif
-
-//*** options: options being tested on all platforms
-
-#ifdef pp_BETA
-#define pp_DEBUG_SUBMENU       // debug output and testing for building menus
 #endif
 
 //*** options: for debugging

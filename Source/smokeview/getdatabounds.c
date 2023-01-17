@@ -645,6 +645,100 @@ void GetGlobalSliceBounds(void){
   }
 }
 
+/* ------------------ GetGlobalHVACBounds ------------------------ */
+
+void GetHVACBounds(char *shortlabel, float *valminptr, float *valmaxptr){
+  float valmin = 1.0, valmax = 0.0;
+  int i;
+
+  *valminptr = 1.0;
+  *valmaxptr = 0.0;
+  int nhvacboundsmax = 0;
+  if(hvacvalsinfo != NULL)nhvacboundsmax = hvacvalsinfo->n_duct_vars + hvacvalsinfo->n_node_vars;
+  if(nhvacboundsmax==0)return;
+
+  for(i=0;i<nhvacboundsmax;i++){
+    hvacvaldata *hi;
+
+    if(i<hvacvalsinfo->n_duct_vars){
+      hi = hvacvalsinfo->duct_vars + i;
+    }
+    else{
+      hi = hvacvalsinfo->node_vars + i - hvacvalsinfo->n_duct_vars;
+    }
+    if(strcmp(shortlabel, hi->label.shortlabel)!=0)continue;
+    if(valmin<valmax){
+      valmin = MIN(valmin,hi->valmin);
+      valmax = MAX(valmax,hi->valmax);
+    }
+    else{
+      valmin = hi->valmin;
+      valmax = hi->valmax;
+    }
+  }
+  *valminptr = valmin;
+  *valmaxptr = valmax;
+}
+
+/* ------------------ GetGlobalHVACBounds ------------------------ */
+
+void GetGlobalHVACBounds(int flag){
+  int i;
+
+  int nhvacboundsmax = 0;
+  if(hvacvalsinfo != NULL)nhvacboundsmax = hvacvalsinfo->n_duct_vars + hvacvalsinfo->n_node_vars;
+  if(nhvacboundsmax == 0)return;
+  if(flag==0)ReadHVACData(BOUNDS_ONLY);
+  for(i = 0;i < nhvacbounds;i++){
+    boundsdata *boundi;
+    float valmin, valmax;
+
+    boundi = hvacbounds + i;
+    boundi->dlg_global_valmin = 1.0;
+    boundi->dlg_global_valmax = 0.0;
+    GetHVACBounds(boundi->label->shortlabel, &valmin, &valmax);
+    boundi->dlg_global_valmin = valmin;
+    boundi->dlg_global_valmax = valmax;
+    boundi->dlg_valmin = boundi->dlg_global_valmin;
+    boundi->dlg_valmax = boundi->dlg_global_valmax;
+  }
+  nhvacbounds_cpp = nhvacbounds;
+  if(nhvacbounds_cpp > 0 && hvacbounds_cpp == NULL){ // only initialize once
+    NewMemory((void **)&hvacbounds_cpp, nhvacbounds_cpp * sizeof(cpp_boundsdata));
+    for(i = 0; i < nhvacbounds_cpp; i++){
+      cpp_boundsdata *boundscppi;
+      boundsdata *boundi;
+
+      boundscppi = hvacbounds_cpp + i;
+      boundi = hvacbounds + i;
+      strcpy(boundscppi->label, boundi->shortlabel);
+      strcpy(boundscppi->unit, boundi->label->unit);
+
+      boundscppi->cache = cache_hvac_data;
+      boundscppi->set_valtype = 0;
+
+      boundscppi->set_valmin = 0;
+      boundscppi->valmin[BOUND_SET_MIN] = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_LOADED_MIN] = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_GLOBAL_MIN] = boundi->dlg_global_valmin;
+      boundscppi->valmin[BOUND_PERCENTILE_MIN] = boundi->dlg_global_valmin;
+
+      boundscppi->set_valmax = 0;
+      boundscppi->valmax[BOUND_SET_MAX] = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_LOADED_MAX] = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_GLOBAL_MAX] = boundi->dlg_global_valmax;
+      boundscppi->valmax[BOUND_PERCENTILE_MAX] = boundi->dlg_global_valmax;
+
+      boundscppi->set_chopmin = boundi->setchopmin;
+      boundscppi->set_chopmax = boundi->setchopmax;
+      boundscppi->chopmin = boundi->chopmin;
+      boundscppi->chopmax = boundi->chopmax;
+
+      boundscppi->hist = NULL;
+    }
+  }
+}
+
 /* ------------------ UpdateGlobalFEDSliceBounds ------------------------ */
 
 void UpdateGlobalFEDSliceBounds(void){

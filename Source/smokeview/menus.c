@@ -292,7 +292,6 @@ float     part_load_time;
 #define MENU_HVAC_SHOWALL_NETWORKS        -2
 #define MENU_HVAC_HIDEALL_NETWORKS        -3
 #define MENU_HVAC_METRO_VIEW              -4
-#define MENU_HVAC_OFFSET_NODES            -14
 #define MENU_HVAC_DIALOG_HVAC             -5
 #define MENU_HVAC_SHOW_COMPONENT_TEXT     -6
 #define MENU_HVAC_SHOW_COMPONENT_SYMBOLS  -7
@@ -303,6 +302,7 @@ float     part_load_time;
 #define MENU_HVAC_SHOW_DUCT_IDS          -12
 #define MENU_HVAC_SHOW_NODE_IDS          -13
 #define MENU_HVAC_HIDE_ALL_VALUES        -15
+#define MENU_HVAC_CELL_VIEW              -16
 
 #ifdef WIN32
 
@@ -1062,6 +1062,19 @@ void ColorbarMenu(int value){
   if(value>-10){
     UpdateRGBColors(COLORBAR_INDEX_NONE);
   }
+#ifdef pp_COLORBAR_DEBUG
+  int i;
+  colorbardata *cbi;
+  cbi = colorbarinfo + colorbartype;
+  for(i = 0;i < cbi->nnodes;i++){
+    float hsl[3],factor;
+    Rgb2Hsl(cbi->rgb_node+3*i, hsl);
+    factor = 255.0;
+    if(hsl[2] != 0.0)factor = TOBW(cbi->rgb_node + 3 * i) / hsl[2];
+    factor /= 255.0;
+    printf("%i: h:%f s:%f l:%f g:%f f:%f\n", i, hsl[0], hsl[1], hsl[2], TOBW(cbi->rgb_node+3*i),factor);
+  }
+#endif
 }
 
 /* ------------------ Smoke3DShowMenu ------------------------ */
@@ -3220,6 +3233,8 @@ void ReloadAllSliceFiles(void){
   slicefile_labelindex = slicefile_labelindex_save;
 }
 
+void LoadHVACMenu(int value);
+
 /* ------------------ LoadUnloadMenu ------------------------ */
 
 void LoadUnloadMenu(int value){
@@ -3298,6 +3313,10 @@ void LoadUnloadMenu(int value){
       ReadHRR(LOAD);
     }
 
+    //*** reload hvac file
+      if(hvacvalsinfo!=NULL&&hvacvalsinfo->loaded==1){
+        LoadHVACMenu(MENU_HVAC_LOAD);
+      }
 
     //*** reload vector slice and slice files
 
@@ -6713,7 +6732,7 @@ void HVACNodeValueMenu(int value){
   int i;
 
   if(hvacvalsinfo->times==NULL){
-    ReadHVACData(HVAC_LOAD);
+    ReadHVACData(LOAD);
   }
   SetHVACNodeIndex(value);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
@@ -6728,7 +6747,10 @@ void HVACNodeValueMenu(int value){
       }
     }
   }
+  SetValTypeIndex(BOUND_HVAC, hvacvalsinfo->n_duct_vars+value);
   updatemenu = 1;
+  UpdateHVACVarLists();
+  HVACBoundsCPP_CB(BOUND_UPDATE_COLORS);
   GLUTPOSTREDISPLAY;
 }
   
@@ -6738,7 +6760,7 @@ void HVACDuctValueMenu(int value){
   int i;
 
   if(hvacvalsinfo->times==NULL){
-    ReadHVACData(HVAC_LOAD);
+    ReadHVACData(LOAD);
   }
   SetHVACDuctIndex(value);
   plotstate = GetPlotState(DYNAMIC_PLOTS);
@@ -6754,6 +6776,9 @@ void HVACDuctValueMenu(int value){
     }
   }
   updatemenu = 1;
+  UpdateHVACVarLists();
+  SetValTypeIndex(BOUND_HVAC, value);
+  HVACBoundsCPP_CB(BOUND_UPDATE_COLORS);//
   GLUTPOSTREDISPLAY;
 }
 
@@ -6762,16 +6787,17 @@ void HVACDuctValueMenu(int value){
 void LoadHVACMenu(int value){
   switch(value){
     case MENU_HVAC_LOAD:
-      ReadHVACData(HVAC_LOAD);
+      ReadHVACData(LOAD);
       SetHVACDuct();
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       UpdateTimes();
+      HVACBoundsCPP_CB(BOUND_UPDATE_COLORS);//
       GLUTPOSTREDISPLAY;      
       break;
     case MENU_HVAC_UNLOAD:
       SetHVACNodeIndex(-1);
       SetHVACDuctIndex(-1);
-      ReadHVACData(HVAC_UNLOAD);
+      ReadHVACData(UNLOAD);
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       UpdateTimes();
       GLUTPOSTREDISPLAY;
@@ -6824,11 +6850,11 @@ void HVACMenu(int value){
       break;
     case MENU_HVAC_METRO_VIEW:
       hvac_metro_view = 1 - hvac_metro_view;
+      UpdateHVACViews();
       break;
-    case MENU_HVAC_OFFSET_NODES:
-      hvac_offset_nodes = 1 - hvac_offset_nodes;
-      SetHVACInfo();
-      UpdateHvacOffset();        
+    case MENU_HVAC_CELL_VIEW:
+      hvac_cell_view = 1 - hvac_cell_view;
+      UpdateHVACViews();
       break;
     case MENU_HVAC_DIALOG_HVAC:
       DialogMenu(DIALOG_HVAC);
@@ -8235,6 +8261,9 @@ void InitMenus(int unload){
 static int filesdialogmenu = 0, viewdialogmenu = 0, datadialogmenu = 0, windowdialogmenu=0;
 static int labelmenu=0, titlemenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarshademenu, smokecolorbarmenu=0, showhidemenu=0,colorbardigitmenu=0;
 static int optionmenu=0, rotatetypemenu=0;
+#ifdef pp_COLORBARS_CSV
+static int colorbars_submenu1=0, colorbars_submenu2 = 0, colorbars_submenu3 = 0;
+#endif
 static int resetmenu=0, defaultviewmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
 static int terrain_geom_showmenu = 0;
 static int render_resolutionmenu=0, render_filetypemenu=0, render_filesuffixmenu=0, render_skipmenu=0;
@@ -9518,10 +9547,9 @@ updatemenu=0;
         strcat(label, labeli);
         glutAddMenuEntry(label, i);
       }
-
       CREATEMENU(hvacvaluemenu, HVACMenu);
-      GLUTADDSUBMENU(_("Node"), hvacnodevaluemenu);
       GLUTADDSUBMENU(_("Duct"), hvacductvaluemenu);
+      GLUTADDSUBMENU(_("Node"), hvacnodevaluemenu);
       glutAddMenuEntry("Hide all", MENU_HVAC_HIDE_ALL_VALUES);
     }
 
@@ -9560,11 +9588,11 @@ updatemenu=0;
     else{
       glutAddMenuEntry("metro view", MENU_HVAC_METRO_VIEW);
     }
-    if(hvac_offset_nodes == 1){
-      glutAddMenuEntry("*offset nodes", MENU_HVAC_OFFSET_NODES);
+    if(hvac_cell_view == 1){
+      glutAddMenuEntry("*cell view", MENU_HVAC_CELL_VIEW);
     }
     else{
-      glutAddMenuEntry("offset nodes", MENU_HVAC_OFFSET_NODES);
+      glutAddMenuEntry("cell view", MENU_HVAC_CELL_VIEW);
     }
     glutAddMenuEntry(_("Settings..."), MENU_HVAC_DIALOG_HVAC);
   }
@@ -10433,6 +10461,68 @@ updatemenu=0;
   else{
     glutAddMenuEntry(_("  Auto flip"), COLORBAR_AUTOFLIP);
   }
+#ifdef pp_COLORBARS_CSV
+  if(nlinear_filelist > 0){
+    CREATEMENU(colorbars_submenu1, ColorbarMenu);
+    colorbardata *cbi;
+    char ccolorbarmenu[256];
+
+    for(i = 0;i < ncolorbars;i++){
+      cbi = colorbarinfo + i;
+
+      if(strcmp(cbi->type, "linear") != 0)continue;
+      strcpy(ccolorbarmenu, "  ");
+      if(colorbartype == i){
+        strcat(ccolorbarmenu, "*");
+        strcat(ccolorbarmenu, cbi->label);
+      }
+      else{
+        strcat(ccolorbarmenu, cbi->label);
+      }
+      glutAddMenuEntry(ccolorbarmenu, i);
+    }
+  }
+  if(ncyclic_filelist > 0){
+    CREATEMENU(colorbars_submenu2, ColorbarMenu);
+    colorbardata *cbi;
+    char ccolorbarmenu[256];
+
+    for(i = 0;i < ncolorbars;i++){
+      cbi = colorbarinfo + i;
+
+      if(strcmp(cbi->type, "cyclic") != 0)continue;
+      strcpy(ccolorbarmenu, "  ");
+      if(colorbartype == i){
+        strcat(ccolorbarmenu, "*");
+        strcat(ccolorbarmenu, cbi->label);
+      }
+      else{
+        strcat(ccolorbarmenu, cbi->label);
+      }
+      glutAddMenuEntry(ccolorbarmenu, i);
+    }
+  }
+  if(nrainbow_filelist > 0){
+    CREATEMENU(colorbars_submenu3, ColorbarMenu);
+    colorbardata *cbi;
+    char ccolorbarmenu[256];
+
+    for(i = 0;i < ncolorbars;i++){
+      cbi = colorbarinfo + i;
+
+      if(strcmp(cbi->type, "rainbow") != 0)continue;
+      strcpy(ccolorbarmenu, "  ");
+      if(colorbartype == i){
+        strcat(ccolorbarmenu, "*");
+        strcat(ccolorbarmenu, cbi->label);
+      }
+      else{
+        strcat(ccolorbarmenu, cbi->label);
+      }
+      glutAddMenuEntry(ccolorbarmenu, i);
+    }
+  }
+#endif
 
   CREATEMENU(colorbarsmenu,ColorbarMenu);
   {
@@ -10442,6 +10532,7 @@ updatemenu=0;
     for(i=0;i<ncolorbars;i++){
       cbi = colorbarinfo + i;
 
+      if(strcmp(cbi->type, "original") != 0)continue;
       strcpy(ccolorbarmenu,"  ");
       if(colorbartype==i){
         strcat(ccolorbarmenu,"*");
@@ -10453,6 +10544,17 @@ updatemenu=0;
       glutAddMenuEntry(ccolorbarmenu,i);
     }
   }
+#ifdef pp_COLORBARS_CSV
+  if(nlinear_filelist > 0){
+    GLUTADDSUBMENU(_("linear"), colorbars_submenu1);
+  }
+  if(ncyclic_filelist > 0){
+    GLUTADDSUBMENU(_("cyclic"), colorbars_submenu2);
+  }
+  if(nrainbow_filelist > 0){
+    GLUTADDSUBMENU(_("rainbow"), colorbars_submenu3);
+  }
+#endif
 
 /* -------------------------------- colorbarmenu -------------------------- */
 

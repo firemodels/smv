@@ -32,12 +32,15 @@ EXTERNCPP void TimeAveragePlot2DData(float *times, float *vals, float *vals_avg,
 
 EXTERNCPP void SplitCB(int var);
 
+EXTERNCPP void HVACBoundsCPP_CB(int var);
 EXTERNCPP void SetHVACInfo(void);
 EXTERNCPP void DrawHVACS(void);
 EXTERNCPP hvacnodedata *GetHVACNode(hvacdata *hvaci, int node_id);
 EXTERNCPP void InitHvacData(hvacvaldata *hi);
 EXTERNCPP void ReadHVACData(int flag);
 EXTERNCPP int IsHVACVisible(void);
+EXTERNCPP void UpdateHVACColorLabels(int index);
+EXTERNCPP void UpdateAllHVACColorLabels(void);
 
 #ifdef pp_REFRESH
 EXTERNCPP void PeriodicRefresh(int var);
@@ -158,6 +161,8 @@ EXTERNCPP void GetGlobalPatchBounds(void);
 EXTERNCPP void GetLoadedPlot3dBounds(int *compute_loaded, float *loaded_min, float *loaded_max);
 EXTERNCPP void GetGlobalPlot3DBounds(void);
 EXTERNCPP void GetGlobalSliceBounds(void);
+EXTERNCPP void GetGlobalHVACBounds(int flag);
+EXTERNCPP void UpdateHVACType(void);
 EXTERNCPP void UpdateGlobalFEDSliceBounds(void);
 
 EXTERNCPP void Slice2Device(void);
@@ -460,8 +465,12 @@ EXTERNCPP void ShowGluiHVAC(void);
 EXTERNCPP void HVAC2Glui(int index);
 EXTERNCPP hvacductdata *GetHVACDuctID(char *duct_name);
 EXTERNCPP hvacnodedata *GetHVACNodeID(char *node_name);
-EXTERNCPP void UpdateHvacOffset(void);
-EXTERNCPP void SetDuctXYZ(hvacductdata *ducti);
+EXTERNCPP void GetCellXYZs(float *xyz, int nxyz, int ncells, float **xyz_cellptr, int *nxyz_cell, int **cell_indptr);
+EXTERNCPP void UpdateHVACViews(void);
+EXTERNCPP void HVACDuctValueMenu(int value);
+EXTERNCPP void HVACNodeValueMenu(int value);
+EXTERNCPP void UpdateHVACVarLists(void);
+
 
 EXTERNCPP void HideGluiGeometry(void);
 
@@ -856,6 +865,12 @@ EXTERNCPP void UpdateVsliceMenuLabels(void);
 EXTERNCPP void UpdatePlot3dMenuLabels(void);
 EXTERNCPP void HandleRotationType(int flag);
 
+EXTERNCPP void Rgb2Hsl(unsigned char *rgbvals, float *hslvals);
+EXTERNCPP void Hsl2Rgb(float *hslvals, unsigned char *rgbvals);
+
+#ifdef pp_COLORBARS_CSV
+EXTERNCPP void InitColorbarsDir(void);
+#endif
 EXTERNCPP void InitTextureDir(void);
 EXTERNCPP void GetRGB(unsigned int val, unsigned char *rr, unsigned char *gg, unsigned char *bb);
 EXTERNCPP unsigned char *ReadPicture(char *filename, int *width, int *height, int *is_transparent, int printflag);

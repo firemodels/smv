@@ -30,12 +30,11 @@ SVEXTERN int SVDECL(hvac_show_connections, 0), SVDECL(hvac_show_networks, 1);
 SVEXTERN int SVDECL(nhvacconnectinfo, 0);
 SVEXTERN hvacconnectdata SVDECL(*hvacconnectinfo, NULL);
 SVEXTERN hvacvalsdata SVDECL(*hvacvalsinfo, NULL);
-SVEXTERN int SVDECL(hvac_offset_nodes, 0);
-SVEXTERN float SVDECL(hvac_offset_inc, 0.1);
 SVEXTERN hvacdata SVDECL(*hvacinfo, NULL);
 SVEXTERN hvacnodedata SVDECL(*hvacnodeinfo, NULL);
 SVEXTERN hvacductdata SVDECL(*hvacductinfo, NULL);
-SVEXTERN int SVDECL(hvac_metro_view, 0);
+SVEXTERN int SVDECL(hvac_metro_view, 0), SVDECL(hvac_cell_view, 0);
+
 SVEXTERN hvacdata SVDECL(*glui_hvac, NULL);
 SVEXTERN int SVDECL(hvac_network_ductnode_index, -1);
 SVEXTERN int SVDECL(nhvacfilters, 0), SVDECL(nhvaccomponents, 0);
@@ -102,7 +101,7 @@ SVEXTERN int SVDECL(have_geom_triangles, 0);
 SVEXTERN int SVDECL(force_fixedpoint, FORCE_FIXEDPOINT_NO);
 SVEXTERN int SVDECL(force_exponential, 0);
 SVEXTERN int SVDECL(geom_cface_type, 1);
-SVEXTERN int SVDECL(glui_use_cfaces, 0);
+SVEXTERN int SVDECL(glui_use_cfaces, 1);
 SVEXTERN int SVDECL(use_cfaces, 0);
 SVEXTERN int SVDECL(update_reshape, 0);
 SVEXTERN int SVDECL(last_time_paused, 0);
@@ -723,6 +722,10 @@ SVEXTERN int SVDECL(use_glui_rotate,0);
 SVEXTERN int SVDECL(show_fed_area,1);
 SVEXTERN char default_fed_colorbar[255];
 
+#ifdef pp_COLORBAR_CONSTANT
+SVEXTERN int SVDECL(colorbar_brightness, 192);
+#endif
+
 SVEXTERN int SVDECL(*meshvisptr,NULL);
 SVEXTERN smoke3ddata SVDECL(**smoke3dinfo_sorted,NULL);
 SVEXTERN int SVDECL(from_commandline,0);
@@ -1242,6 +1245,7 @@ SVEXTERN int ReadZoneFile, SVDECL(ReadPartFile,0);
 SVEXTERN int SVDECL(cache_plot3d_data,1);
 SVEXTERN int SVDECL(cache_boundary_data, 1);
 SVEXTERN int SVDECL(cache_slice_data, 1);
+SVEXTERN int SVDECL(cache_hvac_data, 1);
 SVEXTERN int SVDECL(cache_part_data, 1);
 SVEXTERN int SVDECL(cache_file_data, 1);
 
@@ -1260,8 +1264,9 @@ SVEXTERN int rotation_type,eyeview_level;
 SVEXTERN int rotation_type_old,eyeview_SAVE,eyeview_last;
 SVEXTERN int frameratevalue;
 SVEXTERN int setpartmin, setpartmax;
-SVEXTERN int SVDECL(setisomin, PERCENTILE_MIN), SVDECL(setisomax, PERCENTILE_MAX);
-SVEXTERN int SVDECL(glui_setslicemin,GLOBAL_MIN),      SVDECL(glui_setslicemax,GLOBAL_MAX);
+SVEXTERN int SVDECL(setisomin, PERCENTILE_MIN),   SVDECL(setisomax, PERCENTILE_MAX);
+SVEXTERN int SVDECL(glui_setslicemin,GLOBAL_MIN), SVDECL(glui_setslicemax,GLOBAL_MAX);
+SVEXTERN int SVDECL(glui_sethvacmin, GLOBAL_MIN), SVDECL(glui_sethvacmax, GLOBAL_MAX);
 
 SVEXTERN float slice_line_contour_min;
 SVEXTERN float slice_line_contour_max;
@@ -1547,6 +1552,10 @@ SVEXTERN menudata menuinfo[10000];
 SVEXTERN int max_screenWidth, max_screenHeight;
 SVEXTERN int saveW, saveH;
 SVEXTERN char SVDECL(*texturedir,NULL);
+#ifdef pp_COLORBARS_CSV
+SVEXTERN char SVDECL(*colorbarsdir, NULL);
+SVEXTERN int SVDECL(nlinear_filelist,0), SVDECL(ncyclic_filelist,0), SVDECL(nrainbow_filelist,0);
+#endif
 SVEXTERN char release_title[1024];
 SVEXTERN char plot3d_title[1024];
 SVEXTERN char SVDECL(*partshortlabel,NULL),SVDECL(*partunitlabel,NULL);
@@ -1939,9 +1948,15 @@ SVEXTERN int showfiles;
 SVEXTERN cpp_boundsdata SVDECL(*slicebounds_cpp, NULL), SVDECL(*partbounds_cpp, NULL), SVDECL(*patchbounds_cpp, NULL), SVDECL(*plot3dbounds_cpp, NULL);
 SVEXTERN int SVDECL(nslicebounds_cpp, 0), SVDECL(npartbounds_cpp, 0), SVDECL(npatchbounds_cpp, 0), SVDECL(nplot3dbounds_cpp, 0);
 SVEXTERN int SVDECL(update_glui_bounds, 0), SVDECL(update_ini, 0), SVDECL(update_chop_colors,0);
+SVEXTERN cpp_boundsdata SVDECL(*hvacbounds_cpp, NULL);
+SVEXTERN int SVDECL(nhvacbounds_cpp, 0);
 SVEXTERN boundsdata SVDECL(*slicebounds,NULL), SVDECL(*isobounds,NULL), SVDECL(*patchbounds,NULL);
 SVEXTERN boundsdata SVDECL(*slicebounds_temp, NULL);
 SVEXTERN vslicedata SVDECL(*vsliceinfo,NULL);
+SVEXTERN boundsdata SVDECL(*hvacbounds, NULL);
+SVEXTERN int SVDECL(nhvacbounds, 0);
+SVEXTERN int SVDECL(hvac_maxcells, 0), SVDECL(hvac_n_ducts, 0);
+
 SVEXTERN int force_redisplay;
 SVEXTERN int glui_setp3min, glui_setp3max;
 SVEXTERN int setp3chopmin_temp, setp3chopmax_temp;

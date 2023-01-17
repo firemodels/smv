@@ -825,6 +825,9 @@ int main(int argc, char **argv){
     SMV_EXIT(1);
   }
   InitTextureDir();
+#ifdef pp_COLORBARS_CSV
+  InitColorbarsDir();
+#endif
   InitScriptErrorFiles();
   smokezippath= GetSmokeZipPath(smokeview_bindir);
 #ifdef WIN32
