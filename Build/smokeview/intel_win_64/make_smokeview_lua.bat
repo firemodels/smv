@@ -30,7 +30,7 @@ erase *.obj *.mod *.exe *.dll *.lua *.lib *.exp 2> Nul
 copy ..\..\..\Source\smvluacore\*.lua .
 copy ..\..\..\Build\LIBS\intel_win_64\*.dll .
 copy ..\..\..\Build\LIBS\intel_win_64\*.lib .
-make -j 4 ICON="%ICON%" GLUT="%GLUT%" SHELL="%ComSpec%" LUA_SCRIPTING="true" SMV_TESTFLAG="%SMV_TESTFLAG%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win_64%debug%
+make -j %NUMBER_OF_PROCESSORS% ICON="%ICON%" GLUT="%GLUT%" SHELL="%ComSpec%" LUA_SCRIPTING="true" SMV_TESTFLAG="%SMV_TESTFLAG%" SMV_TESTSTRING="%SMV_TESTSTRING%" -f ..\Makefile intel_win_64%debug%
 if x%from% == xbot goto skip2
 pause
 :skip2
