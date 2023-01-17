@@ -3496,7 +3496,7 @@ void Hsl2Rgb(float *hslvals, unsigned char *rgbvals255){
 
   float hue, saturation, luminance;
   float r, g, b;
-  float temp_1, temp_2;
+//  float temp_1, temp_2;
   float temp_r, temp_g, temp_b;
 
   hue = ABS(hslvals[0]);
@@ -3511,13 +3511,13 @@ void Hsl2Rgb(float *hslvals, unsigned char *rgbvals255){
     rgbvals255[2] = (unsigned char)CLAMP(b, 0.0, 255.0);
     return;
   }
-  if(luminance<0.5){
-    temp_1 = luminance*(1.0+saturation);
-  }
-  else{
-    temp_1 = luminance+saturation-luminance*saturation;
-  }
-  temp_2 = 2.0*luminance-temp_1;
+//  if(luminance<0.5){
+//    temp_1 = luminance*(1.0+saturation);
+//  }
+//  else{
+//    temp_1 = luminance+saturation-luminance*saturation;
+//  }
+//  temp_2 = 2.0*luminance-temp_1;
 
   hue /= 360.0;
 
