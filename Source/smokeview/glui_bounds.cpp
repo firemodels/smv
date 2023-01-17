@@ -1519,7 +1519,7 @@ extern "C" int GetNValtypes(int type){
 extern "C" void SetValTypeIndex(int type, int valtype_index){
   switch(type){
     case BOUND_HVAC:
-      if(hvacbounds > 0)hvacboundsCPP.set_valtype_index(valtype_index);
+      if(nhvacbounds > 0)hvacboundsCPP.set_valtype_index(valtype_index);
       break;
     case BOUND_PATCH:
       if(npatchinfo>0)patchboundsCPP.set_valtype_index(valtype_index);
