@@ -727,11 +727,13 @@ void InitColorbar(colorbardata *cbptr, char *dir, char *file, char *type){
 void InitDefaultColorbars(int nini){
   int i;
   colorbardata *cbi;
+
+  ndefaultcolorbars = 0;
+
 #ifdef pp_COLORBARS_CSV
   filelistdata *linear_filelist=NULL, *cyclic_filelist=NULL,*rainbow_filelist=NULL;
   char filter_linear[256], filter_cyclic[256], filter_rainbow[256];
 
-  ndefaultcolorbars = 0;
   if(colorbarsdir!=NULL){
     strcpy(filter_linear, "CET-L*.csv");
     nlinear_filelist = GetFileListSize(colorbarsdir, filter_linear);
