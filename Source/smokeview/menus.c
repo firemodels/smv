@@ -10356,8 +10356,6 @@ updatemenu=0;
 /* -------------------------------- colorbarmenu -------------------------- */
 
   if(nsmoke3dloaded>0||nvolrenderinfo>0){
-    colorbardata *cbi;
-    char ccolorbarmenu[256];
     MakeColorbarMenu(&smokecolorbarmenu,
 #ifdef pp_COLORBARS_CSV
                      &smokecolorbars_submenu1, &smokecolorbars_submenu2, &smokecolorbars_submenu3,
