@@ -413,8 +413,9 @@ extern "C" void GluiColorbarSetup(int main_window){
   glui_colorbar->add_column_to_panel(PANEL_cb2R2,false);
   colorbar_hidescene=1;
   CHECKBOX_hidesv = glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2,_("Hide scene"),&colorbar_hidescene);
+#ifdef pp_COLORBAR_HSL
   CHECKBOX_colorbar_hsl = glui_colorbar->add_checkbox_to_panel(PANEL_cb2R2, _("HSL"), &colorbar_hsl);
-
+#endif
   PANEL_cb1 = glui_colorbar->add_panel(_("Colorbar"));
   if(ncolorbars>0){
     selectedcolorbar_index=-1;

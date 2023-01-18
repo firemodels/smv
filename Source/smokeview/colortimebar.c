@@ -649,21 +649,20 @@ void UpdateColorbarConstant(colorbardata *cbi, int grey_arg){
   float total_dist = 0.0;
   int i;
 
-  for(i = 0;i < cbi->nnodes;i++){
-    unsigned char *node, *node_orig;
-    unsigned char grey;
-    float factor;
+  if(grey_arg < 0){
+    memcpy(cbi->rgb_node, cbi->rgb_node_orig, 3 * cbi->nnodes);
+  }
+  else{
+    for(i = 0;i < cbi->nnodes;i++){
+      unsigned char *node, *node_orig;
+      float hsl[3];
 
-    node      = cbi->rgb_node + 3 * i;
-    node_orig = cbi->rgb_node_orig + 3 * i;
-    factor = 1.0;
-    if(grey_arg>=0){
-      grey = TOBW(node_orig);
-      if(grey!=0)factor = (float)grey_arg / (float)grey;
+      node = cbi->rgb_node + 3 * i;
+      node_orig = cbi->rgb_node_orig + 3 * i;
+      Rgb2Hsl(node_orig, hsl);
+      hsl[2] = (float)grey_arg / 255.0;
+      Hsl2Rgb(hsl, node);
     }
-    node[0] = CLAMP(factor*node_orig[0],0,255);
-    node[1] = CLAMP(factor*node_orig[1],0,255);
-    node[2] = CLAMP(factor*node_orig[2],0,255);
   }
   RemapColorbar(cbi);
 }
@@ -841,20 +840,6 @@ void InitDefaultColorbars(int nini){
   UpdateCurrentColorbar(colorbarinfo + colorbartype);
 
   cbi = colorbarinfo;
-#ifdef pp_COLORBARS_CSV
-  for(i = 0;i < nlinear_filelist;i++){
-    InitColorbar(cbi, colorbarsdir, linear_filelist[i].file, "linear");
-    cbi++;
-  }
-  for(i = 0;i < ncyclic_filelist;i++){
-    InitColorbar(cbi, colorbarsdir, cyclic_filelist[i].file, "cyclic");
-    cbi++;
-  }
-  for(i = 0;i < nrainbow_filelist;i++){
-    InitColorbar(cbi, colorbarsdir, rainbow_filelist[i].file, "rainbow");
-    cbi++;
-  }
-#endif
 
   // rainbow colorbar
 
@@ -1445,6 +1430,21 @@ void InitDefaultColorbars(int nini){
   cbi->rgb_node[8] = 255;
   strcpy(cbi->type, "original");
   cbi++;
+
+#ifdef pp_COLORBARS_CSV
+  for(i = 0;i < nlinear_filelist;i++){
+    InitColorbar(cbi, colorbarsdir, linear_filelist[i].file, "linear");
+    cbi++;
+  }
+  for(i = 0;i < ncyclic_filelist;i++){
+    InitColorbar(cbi, colorbarsdir, cyclic_filelist[i].file, "cyclic");
+    cbi++;
+  }
+  for(i = 0;i < nrainbow_filelist;i++){
+    InitColorbar(cbi, colorbarsdir, rainbow_filelist[i].file, "rainbow");
+    cbi++;
+  }
+#endif
 
   // construct colormaps from color node info
 

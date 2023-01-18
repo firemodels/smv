@@ -10246,7 +10246,6 @@ updatemenu=0;
     char ccolorbarmenu[256];
 
     CREATEMENU(smokecolorbarmenu,SmokeColorbarMenu);
-
     for(i=0;i<ncolorbars;i++){
       cbi = colorbarinfo + i;
 
