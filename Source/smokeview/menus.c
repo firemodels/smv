@@ -8251,6 +8251,119 @@ void InitPatchSubMenus(int **loadsubpatchmenu_sptr, int **nsubpatchmenus_sptr){
 
 /* ------------------ InitMenus ------------------------ */
 
+void MakeColorbarMenu(int *menuptr,
+#ifdef pp_COLORBARS_CSV
+                      int *submenu1ptr, int *submenu2ptr, int *submenu3ptr,
+#endif
+                      void (*CBMenu)(int)){
+  int i;
+  int menu = 0;
+#ifdef pp_COLORBARS_CSV
+  int submenu1=0, submenu2=0, submenu3=0;
+#endif
+
+#ifdef pp_COLORBARS_CSV
+  if(nlinear_filelist > 0){
+    CREATEMENU(submenu1, CBMenu);
+    colorbardata *cbi;
+    char ccolorbarmenu[256];
+
+    for(i = 0; i < ncolorbars; i++){
+      cbi = colorbarinfo + i;
+
+      if(strcmp(cbi->type, "linear") != 0)continue;
+      strcpy(ccolorbarmenu, "  ");
+      if(colorbartype == i){
+        strcat(ccolorbarmenu, "*");
+        strcat(ccolorbarmenu, cbi->label);
+      }
+      else{
+        strcat(ccolorbarmenu, cbi->label);
+      }
+      glutAddMenuEntry(ccolorbarmenu, i);
+    }
+  }
+  if(ncyclic_filelist > 0){
+    CREATEMENU(submenu2, CBMenu);
+    colorbardata *cbi;
+    char ccolorbarmenu[256];
+
+    for(i = 0; i < ncolorbars; i++){
+      cbi = colorbarinfo + i;
+
+      if(strcmp(cbi->type, "cyclic") != 0)continue;
+      strcpy(ccolorbarmenu, "  ");
+      if(colorbartype == i){
+        strcat(ccolorbarmenu, "*");
+        strcat(ccolorbarmenu, cbi->label);
+      }
+      else{
+        strcat(ccolorbarmenu, cbi->label);
+      }
+      glutAddMenuEntry(ccolorbarmenu, i);
+    }
+  }
+  if(nrainbow_filelist > 0){
+    CREATEMENU(submenu3, CBMenu);
+    colorbardata *cbi;
+    char ccolorbarmenu[256];
+
+    for(i = 0; i < ncolorbars; i++){
+      cbi = colorbarinfo + i;
+
+      if(strcmp(cbi->type, "rainbow") != 0)continue;
+      strcpy(ccolorbarmenu, "  ");
+      if(colorbartype == i){
+        strcat(ccolorbarmenu, "*");
+        strcat(ccolorbarmenu, cbi->label);
+      }
+      else{
+        strcat(ccolorbarmenu, cbi->label);
+      }
+      glutAddMenuEntry(ccolorbarmenu, i);
+    }
+  }
+#endif
+
+  CREATEMENU(menu, CBMenu);
+  {
+    colorbardata *cbi;
+    char ccolorbarmenu[256];
+
+    for(i = 0; i < ncolorbars; i++){
+      cbi = colorbarinfo + i;
+
+      if(strcmp(cbi->type, "original") != 0)continue;
+      strcpy(ccolorbarmenu, "  ");
+      if(colorbartype == i){
+        strcat(ccolorbarmenu, "*");
+        strcat(ccolorbarmenu, cbi->label);
+      }
+      else{
+        strcat(ccolorbarmenu, cbi->label);
+      }
+      glutAddMenuEntry(ccolorbarmenu, i);
+    }
+  }
+#ifdef pp_COLORBARS_CSV
+  if(nlinear_filelist > 0){
+    GLUTADDSUBMENU(_("linear"), submenu1);
+  }
+  if(ncyclic_filelist > 0){
+    GLUTADDSUBMENU(_("cyclic"), submenu2);
+  }
+  if(nrainbow_filelist > 0){
+    GLUTADDSUBMENU(_("rainbow"), submenu3);
+  }
+  *submenu1ptr = submenu1;
+  *submenu2ptr = submenu2;
+  *submenu3ptr = submenu3;
+#endif
+  *menuptr     = menu;
+}
+
+/* ------------------ InitMenus ------------------------ */
+
 void InitMenus(int unload){
   int i;
   int nmultisliceloaded;
@@ -8263,6 +8376,7 @@ static int labelmenu=0, titlemenu=0, colorbarmenu=0, colorbarsmenu=0, colorbarsh
 static int optionmenu=0, rotatetypemenu=0;
 #ifdef pp_COLORBARS_CSV
 static int colorbars_submenu1=0, colorbars_submenu2 = 0, colorbars_submenu3 = 0;
+static int smokecolorbars_submenu1=0, smokecolorbars_submenu2 = 0, smokecolorbars_submenu3 = 0;
 #endif
 static int resetmenu=0, defaultviewmenu=0, frameratemenu=0, rendermenu=0, smokeviewinimenu=0, inisubmenu=0, resolutionmultipliermenu=0;
 static int terrain_geom_showmenu = 0;
@@ -10244,21 +10358,12 @@ updatemenu=0;
   if(nsmoke3dloaded>0||nvolrenderinfo>0){
     colorbardata *cbi;
     char ccolorbarmenu[256];
+    MakeColorbarMenu(&smokecolorbarmenu,
+#ifdef pp_COLORBARS_CSV
+                     &smokecolorbars_submenu1, &smokecolorbars_submenu2, &smokecolorbars_submenu3,
+#endif
+                     SmokeColorbarMenu);
 
-    CREATEMENU(smokecolorbarmenu,SmokeColorbarMenu);
-    for(i=0;i<ncolorbars;i++){
-      cbi = colorbarinfo + i;
-
-      strcpy(ccolorbarmenu,"  ");
-      if(fire_colorbar_index==i){
-        strcat(ccolorbarmenu,"*");
-        strcat(ccolorbarmenu,cbi->label);
-      }
-      else{
-        strcat(ccolorbarmenu,cbi->label);
-      }
-      glutAddMenuEntry(ccolorbarmenu,i);
-    }
   }
 
 
@@ -10460,100 +10565,11 @@ updatemenu=0;
   else{
     glutAddMenuEntry(_("  Auto flip"), COLORBAR_AUTOFLIP);
   }
+  MakeColorbarMenu(&colorbarsmenu,
 #ifdef pp_COLORBARS_CSV
-  if(nlinear_filelist > 0){
-    CREATEMENU(colorbars_submenu1, ColorbarMenu);
-    colorbardata *cbi;
-    char ccolorbarmenu[256];
-
-    for(i = 0;i < ncolorbars;i++){
-      cbi = colorbarinfo + i;
-
-      if(strcmp(cbi->type, "linear") != 0)continue;
-      strcpy(ccolorbarmenu, "  ");
-      if(colorbartype == i){
-        strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, cbi->label);
-      }
-      else{
-        strcat(ccolorbarmenu, cbi->label);
-      }
-      glutAddMenuEntry(ccolorbarmenu, i);
-    }
-  }
-  if(ncyclic_filelist > 0){
-    CREATEMENU(colorbars_submenu2, ColorbarMenu);
-    colorbardata *cbi;
-    char ccolorbarmenu[256];
-
-    for(i = 0;i < ncolorbars;i++){
-      cbi = colorbarinfo + i;
-
-      if(strcmp(cbi->type, "cyclic") != 0)continue;
-      strcpy(ccolorbarmenu, "  ");
-      if(colorbartype == i){
-        strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, cbi->label);
-      }
-      else{
-        strcat(ccolorbarmenu, cbi->label);
-      }
-      glutAddMenuEntry(ccolorbarmenu, i);
-    }
-  }
-  if(nrainbow_filelist > 0){
-    CREATEMENU(colorbars_submenu3, ColorbarMenu);
-    colorbardata *cbi;
-    char ccolorbarmenu[256];
-
-    for(i = 0;i < ncolorbars;i++){
-      cbi = colorbarinfo + i;
-
-      if(strcmp(cbi->type, "rainbow") != 0)continue;
-      strcpy(ccolorbarmenu, "  ");
-      if(colorbartype == i){
-        strcat(ccolorbarmenu, "*");
-        strcat(ccolorbarmenu, cbi->label);
-      }
-      else{
-        strcat(ccolorbarmenu, cbi->label);
-      }
-      glutAddMenuEntry(ccolorbarmenu, i);
-    }
-  }
+                   &colorbars_submenu1, &colorbars_submenu2, &colorbars_submenu3,
 #endif
-
-  CREATEMENU(colorbarsmenu,ColorbarMenu);
-  {
-    colorbardata *cbi;
-    char ccolorbarmenu[256];
-
-    for(i=0;i<ncolorbars;i++){
-      cbi = colorbarinfo + i;
-
-      if(strcmp(cbi->type, "original") != 0)continue;
-      strcpy(ccolorbarmenu,"  ");
-      if(colorbartype==i){
-        strcat(ccolorbarmenu,"*");
-        strcat(ccolorbarmenu,cbi->label);
-      }
-      else{
-        strcat(ccolorbarmenu,cbi->label);
-      }
-      glutAddMenuEntry(ccolorbarmenu,i);
-    }
-  }
-#ifdef pp_COLORBARS_CSV
-  if(nlinear_filelist > 0){
-    GLUTADDSUBMENU(_("linear"), colorbars_submenu1);
-  }
-  if(ncyclic_filelist > 0){
-    GLUTADDSUBMENU(_("cyclic"), colorbars_submenu2);
-  }
-  if(nrainbow_filelist > 0){
-    GLUTADDSUBMENU(_("rainbow"), colorbars_submenu3);
-  }
-#endif
+                   ColorbarMenu);
 
 /* -------------------------------- colorbarmenu -------------------------- */
 
