@@ -1252,8 +1252,6 @@ void ReadFed(int file_index, int time_frame, float *time_value, int flag, int fi
   {
     colorbardata *cb;
 
-#define COLORBAR_LIST2 112
-
     cb = GetColorbar(default_fed_colorbar);
     if(cb!=NULL){
       colorbartype=cb-colorbarinfo;
