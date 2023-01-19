@@ -254,7 +254,6 @@ GLUI_Button *BUTTON_label_4=NULL;
 #define LIGHT_POSITION 122
 #define COLORLABEL_DIGITS 123
 
-#define COLORBAR_LIST2 112
 #define DATA_transparent 26
 #define TRANSPARENTLEVEL 110
 

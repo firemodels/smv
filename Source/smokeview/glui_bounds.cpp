@@ -5278,6 +5278,8 @@ extern "C" void GluiBoundsSetup(int main_window){
       LIST_colorbar2->add_item(i, cbi->label_ptr);
     }
     LIST_colorbar2->set_int_val(colorbartype);
+    glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("Next"),     COLORBAR_LIST2_NEXT, SliceBoundCB);
+    glui_bounds->add_button_to_panel(PANEL_colorbar_properties, _("Previous"), COLORBAR_LIST2_PREV, SliceBoundCB);
   }
 
   CHECKBOX_visColorbarVertical2   = glui_bounds->add_checkbox_to_panel(PANEL_colorbar_properties, "vertical",   &visColorbarVertical,   LABELS_vcolorbar, LabelsCB);
@@ -6086,13 +6088,16 @@ extern "C" void SliceBoundCB(int var){
 
   SNIFF_ERRORS("SliceBoundCB: start");
   updatemenu=1;
-  if(var==COLORBAR_LIST2){
-    selectedcolorbar_index= GetColorbarListIndex();
-    UpdateColorbarList();
-    ColorbarMenu(selectedcolorbar_index);
-    ColorbarGlobal2Local();
-  }
   switch(var){
+    case COLORBAR_LIST2_NEXT:
+    case COLORBAR_LIST2_PREV:
+      if(var==COLORBAR_LIST2_NEXT)selectedcolorbar_index2++;
+      if(var==COLORBAR_LIST2_PREV)selectedcolorbar_index2--;
+      if(selectedcolorbar_index2<0)selectedcolorbar_index2=ncolorbars-1;
+      if(selectedcolorbar_index2>ncolorbars-1)selectedcolorbar_index2=0;
+      LIST_colorbar2->set_int_val(selectedcolorbar_index2);
+      SliceBoundCB(COLORBAR_LIST2);
+      break;
     case SLICE_SIZE:
       update_avg = 1;
       DeviceCB(DEVICE_TIMEAVERAGE);
@@ -6165,6 +6170,10 @@ extern "C" void SliceBoundCB(int var){
       GetZoneColors(zonetl, nzonetotal, izonetl, zonemin, zonemax, nrgb, nrgb_full, colorlabelzone, colorvalueszone, zonelevels256);
       break;
     case COLORBAR_LIST2:
+      selectedcolorbar_index= GetColorbarListIndex();
+      UpdateColorbarList();
+      ColorbarMenu(selectedcolorbar_index);
+      ColorbarGlobal2Local();
       if(selectedcolorbar_index2 == bw_colorbar_index){
         setbwdata = 1;
         ColorbarMenu(bw_colorbar_index);

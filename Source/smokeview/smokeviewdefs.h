@@ -210,6 +210,10 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define DLG_ISO      5
 #define DLG_HVAC     6
 
+#define COLORBAR_LIST2 112
+#define COLORBAR_LIST2_PREV 128
+#define COLORBAR_LIST2_NEXT 129
+
 #define ZONEVENT_CIRCLE 1
 #define ZONEVENT_SQUARE 2
 
