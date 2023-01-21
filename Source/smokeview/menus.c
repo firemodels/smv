@@ -6640,7 +6640,7 @@ void HVACNetworkMenu(int value){
 /* ------------------ SetHVACNodeIndex ------------------------ */
 
 void SetHVACNodeIndex(int value){
-  int i, return_val, hival=-1;
+  int i, return_val;
 
   return_val = -1;
   for(i = 0;i < hvacnodevalsinfo->n_node_vars;i++){
@@ -6649,7 +6649,6 @@ void SetHVACNodeIndex(int value){
     hi = hvacnodevalsinfo->node_vars + i;
     if(value == i){
       hi->vis = 1 - hi->vis;
-      hival = hi->vis;
       if(hi->vis == 1)return_val = i;
     }
     else{
@@ -6685,7 +6684,7 @@ void SetHVACDuct(void){
 /* ------------------ SetHVACDuctIndex ------------------------ */
 
 void SetHVACDuctIndex(int value){
-  int i, return_val, hival=-1;
+  int i, return_val;
 
   return_val = -1;
   for(i = 0;i < hvacductvalsinfo->n_duct_vars;i++){
@@ -6694,7 +6693,6 @@ void SetHVACDuctIndex(int value){
     hi = hvacductvalsinfo->duct_vars + i;
     if(value == i){
       hi->vis = 1 - hi->vis;
-      hival = hi->vis;
       if(hi->vis == 1)return_val = i;
     }
     else{
