@@ -5087,7 +5087,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_hvacduct, glui_bounds);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_hvacduct, HVACDUCT_ROLLOUT, glui_bounds);
 
-    hvacductboundsCPP.setup("hvac ducts", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductbounds_cpp, &cache_hvac_data, HIDE_CACHE_CHECKBOX, PERCENTILE_ENABLED, HVACDuctBoundsCPP_CB,
+    hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductbounds_cpp, &cache_hvac_data, HIDE_CACHE_CHECKBOX, PERCENTILE_ENABLED, HVACDuctBoundsCPP_CB,
       HVACRolloutCB, hvacprocinfo, &nhvacprocinfo);
     HVACDuctBoundsCPP_CB(BOUND_VAL_TYPE);
   }
@@ -5100,7 +5100,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     INSERT_ROLLOUT(ROLLOUT_hvacnode, glui_bounds);
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_hvacnode, HVACNODE_ROLLOUT, glui_bounds);
 
-    hvacnodeboundsCPP.setup("hvac node", ROLLOUT_hvacnode, hvacnodebounds_cpp, nhvacnodebounds_cpp, &cache_hvac_data, HIDE_CACHE_CHECKBOX, PERCENTILE_ENABLED, HVACNodeBoundsCPP_CB,
+    hvacnodeboundsCPP.setup("hvac", ROLLOUT_hvacnode, hvacnodebounds_cpp, nhvacnodebounds_cpp, &cache_hvac_data, HIDE_CACHE_CHECKBOX, PERCENTILE_ENABLED, HVACNodeBoundsCPP_CB,
       HVACRolloutCB, hvacprocinfo, &nhvacprocinfo);
     HVACNodeBoundsCPP_CB(BOUND_VAL_TYPE);
   }
