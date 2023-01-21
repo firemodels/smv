@@ -1713,15 +1713,18 @@ void DrawVerticalColorbarReg(void){
 #define COLORBAR_BOUNDARY 3
 #define COLORBAR_PLOT3D   4
 #define COLORBAR_ZONE     5
-#define COLORBAR_HVAC     6
+#define COLORBAR_HVACDUCT 6
+#define COLORBAR_HVACNODE 7
 
 /* ------------------ UpdateShowSliceColorbar ------------------------ */
 
-void UpdateShowColorbar(int *showcfast_arg, int *show_slice_colorbar_arg, int *show_hvac_colorbar_arg){
+void UpdateShowColorbar(int *showcfast_arg, int *show_slice_colorbar_arg, 
+  int *show_hvacduct_colorbar_arg, int *show_hvacnode_colorbar_arg){
   int showcfast_local = 0;
   int show_slice_colorbar_local = 0;
 
-  if(hvacductvar_index >= 0 || hvacnodevar_index >= 0)*show_hvac_colorbar_arg = 1;
+  if(hvacductvar_index >= 0)*show_hvacduct_colorbar_arg = 1;
+  if(hvacnodevar_index >= 0)*show_hvacnode_colorbar_arg = 1;
   if(showzone==1&&zonecolortype==ZONETEMP_COLOR)showcfast_local = 1;
   if(showslice==1||(showcfast_local==0&&showvslice==1&&vslicecolorbarflag==1))show_slice_colorbar_local = 1;
   if(show_slice_colorbar_local==1&&showcfast_local==1&&strcmp(slicebounds[slicefile_labelindex].label->shortlabel, "TEMP")==0)show_slice_colorbar_local=0;
@@ -1736,15 +1739,21 @@ int CountColorbars(void){
   int i;
   int showcfast_local = 0;
   int show_slice_colorbar_local = 0;
-  int show_hvac_colorbar_local = 0;
+  int show_hvacduct_colorbar_local = 0;
+  int show_hvacnode_colorbar_local = 0;
 
-  UpdateShowColorbar(&showcfast_local, &show_slice_colorbar_local, &show_hvac_colorbar_local);
+  UpdateShowColorbar(&showcfast_local, &show_slice_colorbar_local, 
+    &show_hvacduct_colorbar_local, &show_hvacnode_colorbar_local);
 
   for(i=0;i< N_COLORBARS;i++){
     hcolorbar_vis[i]=-1;
   }
-  if(show_hvac_colorbar_local == 1){
-    hcolorbar_vis[COLORBAR_HVAC] = count + 2;
+  if(show_hvacduct_colorbar_local == 1){
+    hcolorbar_vis[COLORBAR_HVACDUCT] = count + 2;
+    count++;
+  }
+  if(show_hvacnode_colorbar_local == 1){
+    hcolorbar_vis[COLORBAR_HVACNODE] = count + 2;
     count++;
   }
   if(showsmoke==1){
@@ -1780,16 +1789,18 @@ void DrawHorizontalColorbars(void){
   int doit=0;
   int showcfast_local = 0;
   int show_slice_colorbar_local = 0;
-  int show_hvac_colorbar_local = 0;
+  int show_hvacduct_colorbar_local = 0;
+  int show_hvacnode_colorbar_local = 0;
 
-  UpdateShowColorbar(&showcfast_local, &show_slice_colorbar_local, &show_hvac_colorbar_local);
+  UpdateShowColorbar(&showcfast_local, &show_slice_colorbar_local, 
+    & show_hvacduct_colorbar_local, &show_hvacnode_colorbar_local);
 
   CountColorbars();
 
   if(vis_colorbar==hcolorbar_vis[COLORBAR_SLICE]){
     if(show_slice_colorbar_local == 1)doit=1;
   }
-  else if(show_hvac_colorbar_local==1){
+  else if(show_hvacduct_colorbar_local==1 || show_hvacnode_colorbar_local == 1){
     doit = 1;
   }
   else if(vis_colorbar==hcolorbar_vis[COLORBAR_BOUNDARY]){
@@ -1924,16 +1935,18 @@ void DrawVerticalColorbars(void){
   int i;
   int showcfast_local = 0;
   int show_slice_colorbar_local = 0;
-  int show_hvac_colorbar_local = 0;
+  int show_hvacduct_colorbar_local = 0;
+  int show_hvacnode_colorbar_local = 0;
 
-  UpdateShowColorbar(&showcfast_local, &show_slice_colorbar_local, &show_hvac_colorbar_local);
+  UpdateShowColorbar(&showcfast_local, &show_slice_colorbar_local, 
+    &show_hvacduct_colorbar_local, &show_hvacnode_colorbar_local);
 
   // -------------- compute columns where left labels will occur ------------
 
   if(showiso_colorbar==1||
     (showsmoke==1&&parttype!=0)|| show_slice_colorbar_local==1||
     (showpatch==1&&wall_cell_color_flag==0)||
-    showcfast_local==1||show_hvac_colorbar_local==1||
+    showcfast_local==1||show_hvacduct_colorbar_local==1||show_hvacnode_colorbar_local == 1 ||
     showplot3d==1){
 
     SNIFF_ERRORS("before vertical colorbar");
@@ -2082,9 +2095,11 @@ void DrawHorizontalColorbarRegLabels(void){
 
   int showcfast_local = 0;
   int show_slice_colorbar_local = 0;
-  int show_hvac_colorbar_local = 0;
+  int show_hvacduct_colorbar_local = 0;
+  int show_hvacnode_colorbar_local = 0;
 
-  UpdateShowColorbar(&showcfast_local, &show_slice_colorbar_local, &show_hvac_colorbar_local);
+  UpdateShowColorbar(&showcfast_local, &show_slice_colorbar_local, 
+    &show_hvacduct_colorbar_local, &show_hvacnode_colorbar_local);
 
   foreground_color = &(foregroundcolor[0]);
   red_color = &(redcolor[0]);
@@ -2657,7 +2672,8 @@ void DrawHorizontalColorbarRegLabels(void){
 void DrawVerticalColorbarRegLabels(void){
   int i;
   int ileft = 0;
-  int leftzone, leftsmoke, leftslice, lefthist, leftpatch, leftiso, lefthvac;
+  int leftzone, leftsmoke, leftslice, lefthist, leftpatch, leftiso;
+  int lefthvacduct, lefthvacnode;
   int iposition;
 
   int sliceflag = 0;
@@ -2689,51 +2705,40 @@ void DrawVerticalColorbarRegLabels(void){
 
   int showcfast_local = 0;
   int show_slice_colorbar_local = 0;
-  int show_hvac_colorbar_local = 0;
+  int show_hvacduct_colorbar_local = 0;
+  int show_hvacnode_colorbar_local = 0;
   char exp_factor_label[256];
 
   max_colorbar_label_width = 0.0;
 
-  UpdateShowColorbar(&showcfast_local, &show_slice_colorbar_local, &show_hvac_colorbar_local);
+  UpdateShowColorbar(&showcfast_local, &show_slice_colorbar_local, 
+    &show_hvacduct_colorbar_local, &show_hvacnode_colorbar_local);
 
   colorbar_eps = pow(10.0, -ncolorlabel_digits);
 
   // -------------- compute columns where left labels will occur ------------
 
-  lefthvac  = 0;
-  leftsmoke = 0;
-  leftslice = 0;
-  lefthist  = 0;
-  leftpatch = 0;
-  leftiso   = 0;
-  ileft     = 0;
-  if(showiso_colorbar == 1){
-    leftiso = ileft;
-    ileft++;
-  }
-  if(showsmoke == 1){
-    if(parttype != 0){
-      leftsmoke = ileft;
-      ileft++;
-    }
-  }
+  lefthvacnode = 0;
+  lefthvacduct = 0;
+  leftsmoke    = 0;
+  leftslice    = 0;
+  lefthist     = 0;
+  leftpatch    = 0;
+  leftiso      = 0;
+  ileft        = 0;
+  if(showiso_colorbar == 1)leftiso = ileft++;
+  if(showsmoke == 1&&parttype != 0)leftsmoke = ileft++;
   if(show_slice_colorbar_local == 1){
-    leftslice = ileft;
-    ileft++;
+    leftslice = ileft++;
     if(histogram_show_numbers == 1){
-      lefthist = ileft;
-      ileft++;
+      lefthist = ileft++;
       dohist = 1;
     }
   }
-  if(showpatch == 1 && wall_cell_color_flag == 0){
-    leftpatch = ileft;
-  }
-  if(show_hvac_colorbar_local == 1){
-    lefthvac = ileft;
-    ileft++;
-  }
-  leftzone = ileft;
+  if(showpatch == 1 && wall_cell_color_flag == 0)leftpatch = ileft++;
+  if(show_hvacnode_colorbar_local == 1)lefthvacnode = ileft++;
+  if(show_hvacduct_colorbar_local == 1)lefthvacduct = ileft++;
+  leftzone = ileft++;
 
   foreground_color = &(foregroundcolor[0]);
   red_color = &(redcolor[0]);
@@ -3136,18 +3141,15 @@ void DrawVerticalColorbarRegLabels(void){
     glPopMatrix();
   }
 
-  // -------------- HVAC left labels ------------
+  // -------------- HVAC node left labels ------------
 
-  if(show_hvac_colorbar_local==1){
+  if(show_hvacnode_colorbar_local==1){
     hvacvaldata *hi;
     float tttval, tttmin, tttmax;
     float hvacrange;
 
     if(hvacnodevar_index >= 0){
-      hi = hvacvalsinfo->node_vars + hvacnodevar_index;
-    }
-    if(hvacductvar_index >= 0){
-      hi = hvacvalsinfo->duct_vars + hvacductvar_index;
+      hi = hvacnodevalsinfo->node_vars + hvacnodevar_index;
     }
     iposition = -1;
     tttmin = hi->levels256[0];
@@ -3155,7 +3157,7 @@ void DrawVerticalColorbarRegLabels(void){
     hvacrange = tttmax - tttmin;
     glPushMatrix();
     glTranslatef(vcolorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
-    glTranslatef(-lefthvac*(colorbar_label_width + h_space), 0.0, 0.0);
+    glTranslatef(-lefthvacnode*(colorbar_label_width + h_space), 0.0, 0.0);
     if(global_colorbar_index != -1){
       char hvaclabel[256], *hvac_colorlabel_ptr = NULL;
       float vert_position;
@@ -3190,22 +3192,66 @@ void DrawVerticalColorbarRegLabels(void){
     glPopMatrix();
   }
 
-  // -------------- HVAC file top labels ------------
+  // -------------- HVAC duct left labels ------------
 
-  if(show_hvac_colorbar_local==1){
+  if(show_hvacduct_colorbar_local==1){
+    hvacvaldata *hi;
+    float tttval, tttmin, tttmax;
+    float hvacrange;
+
+    if(hvacductvar_index >= 0){
+      hi = hvacductvalsinfo->duct_vars + hvacductvar_index;
+    }
+    iposition = -1;
+    tttmin = hi->levels256[0];
+    tttmax = hi->levels256[255];
+    hvacrange = tttmax - tttmin;
+    glPushMatrix();
+    glTranslatef(vcolorbar_left_pos - colorbar_label_width, -VP_vcolorbar.text_height / 2.0, 0.0);
+    glTranslatef(-lefthvacduct*(colorbar_label_width + h_space), 0.0, 0.0);
+    if(global_colorbar_index != -1){
+      char hvaclabel[256], *hvac_colorlabel_ptr = NULL;
+      float vert_position;
+
+      // draw hvac file value selected with mouse
+      tttval = hi->levels256[valindex];
+      Num2String(hvaclabel, tttval);
+      hvac_colorlabel_ptr = &(hvaclabel[0]);
+      vert_position = MIX2(global_colorbar_index, 255, vcolorbar_top_pos, vcolorbar_down_pos);
+      iposition = MIX2(global_colorbar_index, 255, nrgb - 1, 0);
+      OutputBarText(0.0, vert_position, red_color, hvac_colorlabel_ptr);
+    }
+    for(i = 0; i < nrgb - 1; i++){
+      float val;
+
+      if(iposition == i)continue;
+      val = tttmin + i * hvacrange / (nrgb - 2);;
+      colorbar_vals[i] = val;
+      GetMantissaExponent(ABS(val), colorbar_exponents + i);
+    }
+    Floats2Strings(colorbar_labels, colorbar_vals, nrgb-1, ncolorlabel_digits, force_fixedpoint, force_exponential, exp_factor_label);
+    max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(exp_factor_label));
+    for(i = 0; i < nrgb - 1; i++){
+      float vert_position;
+
+      vert_position = MIX2(i, nrgb - 2, vcolorbar_top_pos, vcolorbar_down_pos);
+
+      if(iposition == i)continue;
+      OutputBarText(0.0, vert_position, foreground_color, colorbar_labels[i]);
+      max_colorbar_label_width = MAX(max_colorbar_label_width, GetStringWidth(colorbar_labels[i]));
+    }
+    glPopMatrix();
+  }
+
+  // -------------- HVAC file node top labels ------------
+
+  if(show_hvacnode_colorbar_local==1){
     char *slabel, *unitlabel;
 
     if(hvacnodevar_index >= 0){
       hvacvaldata *hi;
 
-      hi = hvacvalsinfo->node_vars + hvacnodevar_index;
-      slabel = hi->label.shortlabel;
-      unitlabel = hi->label.unit;
-    }
-    if(hvacductvar_index >= 0){
-      hvacvaldata *hi;
-
-      hi = hvacvalsinfo->duct_vars + hvacductvar_index;
+      hi = hvacnodevalsinfo->node_vars + hvacnodevar_index;
       slabel = hi->label.shortlabel;
       unitlabel = hi->label.unit;
     }
@@ -3215,7 +3261,33 @@ void DrawVerticalColorbarRegLabels(void){
       vcolorbar_left_pos - colorbar_label_width,
       vcolorbar_top_pos + v_space + vcolorbar_delta,
       0.0);
-    glTranslatef(-lefthvac*(colorbar_label_width + h_space), 0.0, 0.0);
+    glTranslatef(-lefthvacnode*(colorbar_label_width + h_space), 0.0, 0.0);
+    OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "HVAC");
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, slabel);
+    OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0, 0, foreground_color, exp_factor_label);
+    glPopMatrix();
+  }
+
+  // -------------- HVAC file duct top labels ------------
+
+  if(show_hvacduct_colorbar_local==1){
+    char *slabel, *unitlabel;
+
+    if(hvacductvar_index >= 0){
+      hvacvaldata *hi;
+
+      hi = hvacductvalsinfo->duct_vars + hvacductvar_index;
+      slabel = hi->label.shortlabel;
+      unitlabel = hi->label.unit;
+    }
+
+    glPushMatrix();
+    glTranslatef(
+      vcolorbar_left_pos - colorbar_label_width,
+      vcolorbar_top_pos + v_space + vcolorbar_delta,
+      0.0);
+    glTranslatef(-lefthvacduct*(colorbar_label_width + h_space), 0.0, 0.0);
     OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "HVAC");
     OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, slabel);
     OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);

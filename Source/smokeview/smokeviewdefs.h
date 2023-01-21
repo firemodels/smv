@@ -97,11 +97,12 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define BOUND_GLOBAL_MIN     2
 #define BOUND_PERCENTILE_MIN 3
 
-#define BOUND_PART   0
-#define BOUND_SLICE  1
-#define BOUND_PLOT3D 2
-#define BOUND_PATCH  3
-#define BOUND_HVAC   4
+#define BOUND_PART     0
+#define BOUND_SLICE    1
+#define BOUND_PLOT3D   2
+#define BOUND_PATCH    3
+#define BOUND_HVACDUCT 4
+#define BOUND_HVACNODE 5
 
 #define MINMAX_ALL    0
 #define MINMAX_LOADED 1
@@ -208,7 +209,8 @@ EXTERNCPP void _Sniff_Errors(const char *whereat, const char *file, int line);
 #define DLG_PART     3
 #define DLG_PLOT3D   4
 #define DLG_ISO      5
-#define DLG_HVAC     6
+#define DLG_HVACDUCT 6
+#define DLG_HVACNODE 7
 
 #define COLORBAR_LIST2 112
 #define COLORBAR_LIST2_PREV 128

@@ -3314,7 +3314,7 @@ void LoadUnloadMenu(int value){
     }
 
     //*** reload hvac file
-      if(hvacvalsinfo!=NULL&&hvacvalsinfo->loaded==1){
+      if(hvacductvalsinfo!=NULL&&hvacductvalsinfo->loaded==1){
         LoadHVACMenu(MENU_HVAC_LOAD);
       }
 
@@ -6643,10 +6643,10 @@ void SetHVACNodeIndex(int value){
   int i, return_val, hival=-1;
 
   return_val = -1;
-  for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
+  for(i = 0;i < hvacnodevalsinfo->n_node_vars;i++){
     hvacvaldata *hi;
 
-    hi = hvacvalsinfo->node_vars + i;
+    hi = hvacnodevalsinfo->node_vars + i;
     if(value == i){
       hi->vis = 1 - hi->vis;
       hival = hi->vis;
@@ -6656,15 +6656,6 @@ void SetHVACNodeIndex(int value){
       hi->vis = 0;
     }
   }
-  if(hival==1){
-    for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
-      hvacvaldata *hi;
-
-      hi = hvacvalsinfo->duct_vars + i;
-      hi->vis = 0;
-    }
-    hvacductvar_index = -1;
-  }
   hvacnodevar_index = return_val;
 }
 
@@ -6673,16 +6664,12 @@ void SetHVACNodeIndex(int value){
 void SetHVACDuct(void){
   int i;
 
-  for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
+  hvacductvalsinfo->duct_vars[0].vis = 1;
+  for(i = 1;i < hvacductvalsinfo->n_duct_vars;i++){
     hvacvaldata *hi;
 
-    hi = hvacvalsinfo->duct_vars + i;
-    if(i==0){
-      hi->vis = 1;
-    }
-    else{
-      hi->vis = 0;
-    }
+    hi = hvacductvalsinfo->duct_vars + i;
+     hi->vis = 0;
   }
   hvacductvar_index = 0;
   if(IsHVACVisible()==0){
@@ -6701,10 +6688,10 @@ void SetHVACDuctIndex(int value){
   int i, return_val, hival=-1;
 
   return_val = -1;
-  for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
+  for(i = 0;i < hvacductvalsinfo->n_duct_vars;i++){
     hvacvaldata *hi;
 
-    hi = hvacvalsinfo->duct_vars + i;
+    hi = hvacductvalsinfo->duct_vars + i;
     if(value == i){
       hi->vis = 1 - hi->vis;
       hival = hi->vis;
@@ -6714,15 +6701,6 @@ void SetHVACDuctIndex(int value){
       hi->vis = 0;
     }
   }
-  if(hival==1){
-    for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
-      hvacvaldata *hi;
-
-      hi = hvacvalsinfo->node_vars + i;
-      hi->vis = 0;
-    }
-    hvacnodevar_index = -1;
-  }
   hvacductvar_index = return_val;
 }
 
@@ -6731,7 +6709,7 @@ void SetHVACDuctIndex(int value){
 void HVACNodeValueMenu(int value){
   int i;
 
-  if(hvacvalsinfo->times==NULL){
+  if(hvacductvalsinfo->times==NULL){
     ReadHVACData(LOAD);
   }
   SetHVACNodeIndex(value);
@@ -6747,10 +6725,10 @@ void HVACNodeValueMenu(int value){
       }
     }
   }
-  SetValTypeIndex(BOUND_HVAC, hvacvalsinfo->n_duct_vars+value);
+  SetValTypeIndex(BOUND_HVACNODE, value);
   updatemenu = 1;
   UpdateHVACVarLists();
-  HVACBoundsCPP_CB(BOUND_UPDATE_COLORS);
+  HVACNodeBoundsCPP_CB(BOUND_UPDATE_COLORS);
   GLUTPOSTREDISPLAY;
 }
   
@@ -6759,7 +6737,7 @@ void HVACNodeValueMenu(int value){
 void HVACDuctValueMenu(int value){
   int i;
 
-  if(hvacvalsinfo->times==NULL){
+  if(hvacductvalsinfo->times==NULL){
     ReadHVACData(LOAD);
   }
   SetHVACDuctIndex(value);
@@ -6777,8 +6755,8 @@ void HVACDuctValueMenu(int value){
   }
   updatemenu = 1;
   UpdateHVACVarLists();
-  SetValTypeIndex(BOUND_HVAC, value);
-  HVACBoundsCPP_CB(BOUND_UPDATE_COLORS);//
+  SetValTypeIndex(BOUND_HVACDUCT, value);
+  HVACDuctBoundsCPP_CB(BOUND_UPDATE_COLORS);//
   GLUTPOSTREDISPLAY;
 }
 
@@ -6791,7 +6769,7 @@ void LoadHVACMenu(int value){
       SetHVACDuct();
       plotstate = GetPlotState(DYNAMIC_PLOTS);
       UpdateTimes();
-      HVACBoundsCPP_CB(BOUND_UPDATE_COLORS);//
+      HVACDuctBoundsCPP_CB(BOUND_UPDATE_COLORS);//
       GLUTPOSTREDISPLAY;      
       break;
     case MENU_HVAC_UNLOAD:
@@ -9633,13 +9611,13 @@ updatemenu=0;
         glutAddMenuEntry("hide all", MENU_HVAC_HIDEALL_NETWORKS);
       }
     }
-    if(hvacvalsinfo != NULL){
+    if(hvacnodevalsinfo != NULL){
       CREATEMENU(hvacnodevaluemenu, HVACNodeValueMenu);
-      for(i = 0;i < hvacvalsinfo->n_node_vars;i++){
+      for(i = 0;i < hvacnodevalsinfo->n_node_vars;i++){
         char label[255], *labeli;
         hvacvaldata *hi;
 
-        hi = hvacvalsinfo->node_vars + i;
+        hi = hvacnodevalsinfo->node_vars + i;
 
         labeli = hi->label.longlabel;
         strcpy(label, "");
@@ -9649,11 +9627,11 @@ updatemenu=0;
       }
 
       CREATEMENU(hvacductvaluemenu, HVACDuctValueMenu);
-      for(i = 0;i < hvacvalsinfo->n_duct_vars;i++){
+      for(i = 0;i < hvacductvalsinfo->n_duct_vars;i++){
         char label[255], *labeli;
         hvacvaldata *hi;
 
-        hi = hvacvalsinfo->duct_vars + i;
+        hi = hvacductvalsinfo->duct_vars + i;
 
         labeli = hi->label.longlabel;
         strcpy(label, "");
@@ -9668,7 +9646,7 @@ updatemenu=0;
     }
 
     CREATEMENU(hvacmenu, HVACMenu);
-    if(hvacvalsinfo != NULL){
+    if(hvacductvalsinfo != NULL){
       GLUTADDSUBMENU(_("Values"), hvacvaluemenu);
     }
     GLUTADDSUBMENU(_("Networks"), hvacnetworkmenu);
@@ -11711,8 +11689,8 @@ updatemenu=0;
 
     CREATEMENU(loadhvacmenu, LoadHVACMenu);
     strcpy(menulabel, "");
-    if(hvacvalsinfo->times!=NULL)strcat(menulabel, "*");
-    strcat(menulabel, hvacvalsinfo->file);
+    if(hvacductvalsinfo->times!=NULL)strcat(menulabel, "*");
+    strcat(menulabel, hvacductvalsinfo->file);
     glutAddMenuEntry(menulabel, MENU_HVAC_LOAD);
     glutAddMenuEntry("Unload",  MENU_HVAC_UNLOAD);
   }
