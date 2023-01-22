@@ -3143,14 +3143,12 @@ void DrawVerticalColorbarRegLabels(void){
 
   // -------------- HVAC node left labels ------------
 
-  if(show_hvacnode_colorbar_local==1){
+  if(show_hvacnode_colorbar_local==1 && hvacnodevar_index>=0){
     hvacvaldata *hi;
     float tttval, tttmin, tttmax;
     float hvacrange;
 
-    if(hvacnodevar_index >= 0){
-      hi = hvacnodevalsinfo->node_vars + hvacnodevar_index;
-    }
+    hi = hvacnodevalsinfo->node_vars + hvacnodevar_index;
     iposition = -1;
     tttmin = hi->levels256[0];
     tttmax = hi->levels256[255];
@@ -3194,14 +3192,12 @@ void DrawVerticalColorbarRegLabels(void){
 
   // -------------- HVAC duct left labels ------------
 
-  if(show_hvacduct_colorbar_local==1){
+  if(show_hvacduct_colorbar_local==1 && hvacductvar_index>=0){
     hvacvaldata *hi;
     float tttval, tttmin, tttmax;
     float hvacrange;
 
-    if(hvacductvar_index >= 0){
-      hi = hvacductvalsinfo->duct_vars + hvacductvar_index;
-    }
+    hi = hvacductvalsinfo->duct_vars + hvacductvar_index;
     iposition = -1;
     tttmin = hi->levels256[0];
     tttmax = hi->levels256[255];
@@ -3245,16 +3241,13 @@ void DrawVerticalColorbarRegLabels(void){
 
   // -------------- HVAC file node top labels ------------
 
-  if(show_hvacnode_colorbar_local==1){
+  if(show_hvacnode_colorbar_local==1 && hvacnodevar_index>=0){
     char *slabel, *unitlabel;
+    hvacvaldata *hi;
 
-    if(hvacnodevar_index >= 0){
-      hvacvaldata *hi;
-
-      hi = hvacnodevalsinfo->node_vars + hvacnodevar_index;
-      slabel = hi->label.shortlabel;
-      unitlabel = hi->label.unit;
-    }
+    hi = hvacnodevalsinfo->node_vars + hvacnodevar_index;
+    slabel = hi->label.shortlabel;
+    unitlabel = hi->label.unit;
 
     glPushMatrix();
     glTranslatef(
@@ -3272,16 +3265,13 @@ void DrawVerticalColorbarRegLabels(void){
 
   // -------------- HVAC file duct top labels ------------
 
-  if(show_hvacduct_colorbar_local==1){
+  if(show_hvacduct_colorbar_local==1 && hvacductvar_index >=0){
     char *slabel, *unitlabel;
+    hvacvaldata *hi;
 
-    if(hvacductvar_index >= 0){
-      hvacvaldata *hi;
-
-      hi = hvacductvalsinfo->duct_vars + hvacductvar_index;
-      slabel = hi->label.shortlabel;
-      unitlabel = hi->label.unit;
-    }
+    hi = hvacductvalsinfo->duct_vars + hvacductvar_index;
+    slabel = hi->label.shortlabel;
+    unitlabel = hi->label.unit;
 
     glPushMatrix();
     glTranslatef(
