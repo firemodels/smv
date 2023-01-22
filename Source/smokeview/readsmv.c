@@ -13237,39 +13237,37 @@ int ReadIni2(char *inifile, int localfile){
       continue;
     }
     if(MatchINI(buffer, "V2_HVACDUCT") == 1){
+      int sethvacductmin, sethvacductmax;
+      float hvacductmin, hvacductmax;
+
       fgets(buffer, 255, stream);
       TrimBack(buffer);
       strcpy(buffer2, "");
-      sscanf(buffer, "%i %f %i %f %s",
-                     &glui_sethvacductmin, &glui_hvacductmin,
-                     &glui_sethvacductmax, &glui_hvacductmax,
-                     buffer2);
-      if(
-        glui_sethvacductmin == BOUND_SET_MIN || glui_sethvacductmin == BOUND_PERCENTILE_MIN ||
-        glui_sethvacductmax == BOUND_SET_MAX || glui_sethvacductmax == BOUND_PERCENTILE_MAX
-        ){
+      sscanf(buffer, "%i %f %i %f %s", &sethvacductmin, &hvacductmin, &sethvacductmax, &hvacductmax, buffer2);
+      if(sethvacductmin != BOUND_SET_MIN)sethvacductmin = BOUND_LOADED_MIN;
+      if(sethvacductmax != BOUND_SET_MAX)sethvacductmax = BOUND_LOADED_MAX;
+      if(sethvacductmin == BOUND_SET_MIN || sethvacductmax == BOUND_SET_MAX){
         research_mode = 0;
         update_research_mode = 1;
       }
-      SetHVACDuctBounds(glui_sethvacductmin, glui_hvacductmin, glui_sethvacductmax, glui_hvacductmax, buffer2);
+      SetHVACDuctBounds(sethvacductmin, hvacductmin, sethvacductmax, hvacductmax, buffer2);
       continue;
     }
     if(MatchINI(buffer, "V2_HVACNODE") == 1){
+      int sethvacnodemin, sethvacnodemax;
+      float hvacnodemin, hvacnodemax;
+
       fgets(buffer, 255, stream);
       TrimBack(buffer);
       strcpy(buffer2, "");
-      sscanf(buffer, "%i %f %i %f %s",
-                     &glui_sethvacnodemin, &glui_hvacnodemin,
-                     &glui_sethvacnodemax, &glui_hvacnodemax,
-                     buffer2);
-      if(
-        glui_sethvacnodemin == BOUND_SET_MIN || glui_sethvacnodemin == BOUND_PERCENTILE_MIN ||
-        glui_sethvacnodemax == BOUND_SET_MAX || glui_sethvacnodemax == BOUND_PERCENTILE_MAX
-        ){
+      sscanf(buffer, "%i %f %i %f %s", &sethvacnodemin, &hvacnodemin, &sethvacnodemax, &hvacnodemax, buffer2);
+      if(sethvacnodemin != BOUND_SET_MIN)sethvacnodemin = BOUND_LOADED_MIN;
+      if(sethvacnodemax != BOUND_SET_MAX)sethvacnodemax = BOUND_LOADED_MAX;
+      if(sethvacnodemin == BOUND_SET_MIN || sethvacnodemax == BOUND_SET_MAX){
         research_mode = 0;
         update_research_mode = 1;
       }
-      SetHVACNodeBounds(glui_sethvacnodemin, glui_hvacnodemin, glui_sethvacnodemax, glui_hvacnodemax, buffer2);
+      SetHVACNodeBounds(sethvacnodemin, hvacnodemin, sethvacnodemax, hvacnodemax, buffer2);
       continue;
     }
     if(MatchINI(buffer, "V_ZONE") == 1){

@@ -1268,10 +1268,6 @@ SVEXTERN int frameratevalue;
 SVEXTERN int setpartmin, setpartmax;
 SVEXTERN int SVDECL(setisomin, PERCENTILE_MIN),   SVDECL(setisomax, PERCENTILE_MAX);
 SVEXTERN int SVDECL(glui_setslicemin,GLOBAL_MIN), SVDECL(glui_setslicemax,GLOBAL_MAX);
-SVEXTERN int SVDECL(glui_sethvacductmin, GLOBAL_MIN), SVDECL(glui_sethvacductmax, GLOBAL_MAX);
-SVEXTERN int SVDECL(glui_sethvacnodemin, GLOBAL_MIN), SVDECL(glui_sethvacnodemax, GLOBAL_MAX);
-SVEXTERN float SVDECL(glui_hvacductmin, 0.0), SVDECL(glui_hvacductmax, 1.0);
-SVEXTERN float SVDECL(glui_hvacnodemin, 0.0), SVDECL(glui_hvacnodemax, 1.0);
 
 SVEXTERN float slice_line_contour_min;
 SVEXTERN float slice_line_contour_max;
