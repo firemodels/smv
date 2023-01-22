@@ -1460,6 +1460,12 @@ extern "C" void SetPercentileDraw(int type, int val){
 /* ------------------ UpdateGluiBounds ------------------------ */
 
 extern "C" void UpdateGluiBounds(void){
+  if(nhvacductbounds > 0){
+    hvacductboundsCPP.CB(BOUND_VAL_TYPE);
+  }
+  if(nhvacnodebounds > 0){
+    hvacnodeboundsCPP.CB(BOUND_VAL_TYPE);
+  }
   if(npatchinfo>0){
     patchboundsCPP.CB(BOUND_VAL_TYPE);
     patchboundsCPP.CB(BOUND_SETCHOPMIN);
