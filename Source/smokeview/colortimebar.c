@@ -2709,7 +2709,7 @@ void DrawVerticalColorbarRegLabels(void){
   int show_hvacnode_colorbar_local = 0;
   char exp_factor_label[256];
 
-  max_colorbar_label_width = 0.0;
+  max_colorbar_label_width = GetStringWidth("123456");
 
   UpdateShowColorbar(&showcfast_local, &show_slice_colorbar_local, 
     &show_hvacduct_colorbar_local, &show_hvacnode_colorbar_local);
@@ -3263,9 +3263,10 @@ void DrawVerticalColorbarRegLabels(void){
       0.0);
     glTranslatef(-lefthvacnode*(colorbar_label_width + h_space), 0.0, 0.0);
     OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "HVAC");
-    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, slabel);
-    OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
-    OutputBarText(0.0, 0, foreground_color, exp_factor_label);
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, "node");
+    OutputBarText(0.0, 1 * (VP_vcolorbar.text_height + v_space), foreground_color, slabel);
+    OutputBarText(0.0, 0 * (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0,-1 * (VP_vcolorbar.text_height + v_space), foreground_color, exp_factor_label);
     glPopMatrix();
   }
 
@@ -3289,9 +3290,10 @@ void DrawVerticalColorbarRegLabels(void){
       0.0);
     glTranslatef(-lefthvacduct*(colorbar_label_width + h_space), 0.0, 0.0);
     OutputBarText(0.0, 3 * (VP_vcolorbar.text_height + v_space), foreground_color, "HVAC");
-    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, slabel);
-    OutputBarText(0.0,     (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
-    OutputBarText(0.0, 0, foreground_color, exp_factor_label);
+    OutputBarText(0.0, 2 * (VP_vcolorbar.text_height + v_space), foreground_color, "duct");
+    OutputBarText(0.0, 1 * (VP_vcolorbar.text_height + v_space), foreground_color, slabel);
+    OutputBarText(0.0, 0 * (VP_vcolorbar.text_height + v_space), foreground_color, unitlabel);
+    OutputBarText(0.0,-1 * (VP_vcolorbar.text_height + v_space), foreground_color, exp_factor_label);
     glPopMatrix();
   }
 
