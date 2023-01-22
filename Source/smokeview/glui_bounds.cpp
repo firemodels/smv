@@ -394,7 +394,14 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
   percentile_enabled = percentile_enabled_arg;
 
 // bound min/max
-  ROLLOUT_main_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_dialog, _("Bound/Truncate data"), false, 0, PROC_CB);
+  char main_label[256];
+  if(strcmp(file_type, "hvac") == 0){
+    strcpy(main_label, "Bound data");
+  }
+  else{
+    strcpy(main_label, "Bound/Truncate data");
+  }
+  ROLLOUT_main_bound = glui_bounds->add_rollout_to_panel(ROLLOUT_dialog, main_label, false, 0, PROC_CB);
   INSERT_ROLLOUT(ROLLOUT_main_bound, glui_bounds);
   ADDPROCINFO(procinfo, *nprocinfo, ROLLOUT_main_bound, 0, glui_bounds);
 
@@ -553,27 +560,29 @@ void bounds_dialog::setup(const char *file_type, GLUI_Rollout *ROLLOUT_dialog, c
 
 //*** chop above/below
 
-  ROLLOUT_truncate = glui_bounds->add_rollout_to_panel(PANEL_bound2, "Truncate data",false);
+  if(strcmp(file_type, "hvac") != 0){
+    ROLLOUT_truncate = glui_bounds->add_rollout_to_panel(PANEL_bound2, "Truncate data", false);
 
-  PANEL_truncate_max = glui_bounds->add_panel_to_panel(ROLLOUT_truncate, "", GLUI_PANEL_NONE);
-  EDIT_chopmax = glui_bounds->add_edittext_to_panel(PANEL_truncate_max, "", GLUI_EDITTEXT_FLOAT, &(bounds.chopmax), BOUND_CHOPMAX, Callback);
-  glui_bounds->add_column_to_panel(PANEL_truncate_max, false);
-  STATIC_chopmax_unit = glui_bounds->add_statictext_to_panel(PANEL_truncate_max, "");
-  STATIC_chopmax_unit->set_w(10);
-  glui_bounds->add_column_to_panel(PANEL_truncate_max, false);
-  CHECKBOX_set_chopmax = glui_bounds->add_checkbox_to_panel(PANEL_truncate_max, _("Above"), &(bounds.set_chopmax), BOUND_SETCHOPMAX, Callback);
+    PANEL_truncate_max = glui_bounds->add_panel_to_panel(ROLLOUT_truncate, "", GLUI_PANEL_NONE);
+    EDIT_chopmax = glui_bounds->add_edittext_to_panel(PANEL_truncate_max, "", GLUI_EDITTEXT_FLOAT, &(bounds.chopmax), BOUND_CHOPMAX, Callback);
+    glui_bounds->add_column_to_panel(PANEL_truncate_max, false);
+    STATIC_chopmax_unit = glui_bounds->add_statictext_to_panel(PANEL_truncate_max, "");
+    STATIC_chopmax_unit->set_w(10);
+    glui_bounds->add_column_to_panel(PANEL_truncate_max, false);
+    CHECKBOX_set_chopmax = glui_bounds->add_checkbox_to_panel(PANEL_truncate_max, _("Above"), &(bounds.set_chopmax), BOUND_SETCHOPMAX, Callback);
 
-  PANEL_truncate_min = glui_bounds->add_panel_to_panel(ROLLOUT_truncate, "", GLUI_PANEL_NONE);
-  EDIT_chopmin = glui_bounds->add_edittext_to_panel(PANEL_truncate_min, "", GLUI_EDITTEXT_FLOAT, &(bounds.chopmin), BOUND_CHOPMIN, Callback);
-  glui_bounds->add_column_to_panel(PANEL_truncate_min, false);
-  STATIC_chopmin_unit = glui_bounds->add_statictext_to_panel(PANEL_truncate_min, "");
-  STATIC_chopmin_unit->set_w(10);
-  glui_bounds->add_column_to_panel(PANEL_truncate_min, false);
-  CHECKBOX_set_chopmin = glui_bounds->add_checkbox_to_panel(PANEL_truncate_min, _("Below"), &(bounds.set_chopmin), BOUND_SETCHOPMIN, Callback);
+    PANEL_truncate_min = glui_bounds->add_panel_to_panel(ROLLOUT_truncate, "", GLUI_PANEL_NONE);
+    EDIT_chopmin = glui_bounds->add_edittext_to_panel(PANEL_truncate_min, "", GLUI_EDITTEXT_FLOAT, &(bounds.chopmin), BOUND_CHOPMIN, Callback);
+    glui_bounds->add_column_to_panel(PANEL_truncate_min, false);
+    STATIC_chopmin_unit = glui_bounds->add_statictext_to_panel(PANEL_truncate_min, "");
+    STATIC_chopmin_unit->set_w(10);
+    glui_bounds->add_column_to_panel(PANEL_truncate_min, false);
+    CHECKBOX_set_chopmin = glui_bounds->add_checkbox_to_panel(PANEL_truncate_min, _("Below"), &(bounds.set_chopmin), BOUND_SETCHOPMIN, Callback);
 
-  Callback(BOUND_VAL_TYPE);
-  Callback(BOUND_SETCHOPMIN);
-  Callback(BOUND_SETCHOPMAX);
+    Callback(BOUND_VAL_TYPE);
+    Callback(BOUND_SETCHOPMIN);
+    Callback(BOUND_SETCHOPMAX);
+  }
   if(cache_flag!=NULL&&percentile_enabled==1){
     Callback(BOUND_CACHE_DATA);
     if(strcmp(file_type, "hvac") != 0){
