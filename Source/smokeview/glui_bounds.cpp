@@ -3350,9 +3350,13 @@ procdata  isoprocinfo[3];
 int      nisoprocinfo=0;
 
 
-//*** hvacprocinfo entries
-procdata  hvacprocinfo[1];
-int      nhvacprocinfo = 0;
+//*** hvacductprocinfo entries
+procdata  hvacductprocinfo[1];
+int      nhvacductprocinfo = 0;
+
+//*** hvacnodeprocinfo entries
+procdata  hvacnodeprocinfo[1];
+int      nhvacnodeprocinfo = 0;
 
 //*** sliceprocinfo entries
 #define SLICE_BOUND             0
@@ -5103,7 +5107,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_hvacduct, HVACDUCT_ROLLOUT, glui_bounds);
 
     hvacductboundsCPP.setup("hvac", ROLLOUT_hvacduct, hvacductbounds_cpp, nhvacductbounds_cpp, &cache_hvac_data, HIDE_CACHE_CHECKBOX, PERCENTILE_ENABLED, HVACDuctBoundsCPP_CB,
-      HVACRolloutCB, hvacprocinfo, &nhvacprocinfo);
+      HVACRolloutCB, hvacductprocinfo, &nhvacductprocinfo);
     HVACDuctBoundsCPP_CB(BOUND_VAL_TYPE);
   }
 
@@ -5116,7 +5120,7 @@ extern "C" void GluiBoundsSetup(int main_window){
     ADDPROCINFO(boundprocinfo, nboundprocinfo, ROLLOUT_hvacnode, HVACNODE_ROLLOUT, glui_bounds);
 
     hvacnodeboundsCPP.setup("hvac", ROLLOUT_hvacnode, hvacnodebounds_cpp, nhvacnodebounds_cpp, &cache_hvac_data, HIDE_CACHE_CHECKBOX, PERCENTILE_ENABLED, HVACNodeBoundsCPP_CB,
-      HVACRolloutCB, hvacprocinfo, &nhvacprocinfo);
+      HVACRolloutCB, hvacnodeprocinfo, &nhvacnodeprocinfo);
     HVACNodeBoundsCPP_CB(BOUND_VAL_TYPE);
   }
 
